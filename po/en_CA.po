@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-12 11:04-0400\n"
-"PO-Revision-Date: 2004-09-12 19:50-0400\n"
+"POT-Creation-Date: 2004-09-13 02:45-0400\n"
+"PO-Revision-Date: 2004-09-13 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -401,7 +401,7 @@ msgstr "Move Control Event"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
-#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:129
+#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:131
 msgid "No target"
 msgstr "No target"
 
@@ -3736,35 +3736,43 @@ msgid "Procedure execution aborted"
 msgstr "Procedure execution aborted"
 
 #: bse/bseenums.c:124
+msgid "Invalid object property"
+msgstr "Invalid object property"
+
+#: bse/bseenums.c:125
+msgid "Invalid MIDI control type"
+msgstr "Invalid MIDI control type"
+
+#: bse/bseenums.c:126
 msgid "Parsing error"
 msgstr "Parsing error"
 
-#: bse/bseenums.c:125
+#: bse/bseenums.c:127
 msgid "Failed to spawn child process"
 msgstr "Failed to spawn child process"
 
 #. various procedure errors
-#: bse/bseenums.c:127
+#: bse/bseenums.c:129
 msgid "No such entry"
 msgstr "No such entry"
 
-#: bse/bseenums.c:128
+#: bse/bseenums.c:130
 msgid "No such event"
 msgstr "No such event"
 
-#: bse/bseenums.c:130
+#: bse/bseenums.c:132
 msgid "Ownership mismatch"
 msgstr "Ownership mismatch"
 
-#: bse/bseenums.c:131
+#: bse/bseenums.c:133
 msgid "Invalid offset"
 msgstr "Invalid offset"
 
-#: bse/bseenums.c:132
+#: bse/bseenums.c:134
 msgid "Invalid duration"
 msgstr "Invalid duration"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.c:135
 msgid "Invalid overlap"
 msgstr "Invalid overlap"
 
