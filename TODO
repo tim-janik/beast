@@ -27,7 +27,6 @@ FIXME(urgent):
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 - provide script to render bse file to WAV. then add File/Export function which:
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
-- make sfi_wstore_flush_fd() return -errno on errors and handle those in Wave::store()
 - add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 TODO:
 - add more menu tooltips

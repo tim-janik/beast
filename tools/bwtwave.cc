@@ -389,24 +389,22 @@ Wave::store (const string file_name)
     }
 
   sfi_wstore_puts (wstore, "}\n");
-  sfi_wstore_flush_fd (wstore, fd);
+  gint nerrno = sfi_wstore_flush_fd (wstore, fd);
+  BseErrorType error = bse_error_from_errno (-nerrno, BSE_ERROR_FILE_WRITE_FAILED);
+  if (close (fd) < 0 && error == BSE_ERROR_NONE)
+    error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
   sfi_wstore_destroy (wstore);
-  close (fd);
 
   /* replace output file by temporary file */
-  BseErrorType error;
-  if (0 /* in case of error */)
+  if (error != BSE_ERROR_NONE)
     {
       unlink (temp_file);
-      error = BSE_ERROR_FILE_WRITE_FAILED;
     }
   else if (rename (temp_file, file_name.c_str()) < 0)
     {
       error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
       unlink (temp_file);
     }
-  else /* success */
-    error = BSE_ERROR_NONE;
   g_free (temp_file);
 
   return error;
