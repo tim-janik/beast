@@ -1,13 +1,13 @@
 # BSE - Bedevilled Sound Engine dynamic Plugins
 # Copyright (C) 2003 Tim Janik
 #
-## Makefile.am for BSE tests
+## Makefile.am for BEAST tests
 
 SUBDIRS =
 
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
 
-DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
+DEFS += -DG_LOG_DOMAIN=\"BEAST-TEST\" # -DG_DISABLE_CONST_RETURNS
 
 SFIDL = $(top_builddir)/sfi/sfidl
 
