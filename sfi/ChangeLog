@@ -1,3 +1,9 @@
+Thu Jan 20 17:51:25 2005  Tim Janik  <timj@gtk.org>
+
+	* sfistore.[hc]: removed position arguemtn from SfiStoreReadBin().
+	it's the responsibility of the SfiStoreReadBin() implementation to
+	provide consequtive data blocks now.
+
 Thu Jan 20 17:31:01 2005  Tim Janik  <timj@gtk.org>
 
 	* sfitime.c (sfi_time_from_string_err): parse dates without time

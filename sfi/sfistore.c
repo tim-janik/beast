@@ -346,7 +346,7 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       /* dump binary */
       do
 	{
-	  n = bblock->reader (bblock->data, bblock->length, buffer, bsize);
+	  n = bblock->reader (bblock->data, buffer, bsize);
 	  if (n < 0)
 	    break;	// FIXME: error handling
 	  g_assert (n <= bsize);

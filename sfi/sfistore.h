@@ -26,7 +26,6 @@ G_BEGIN_DECLS
 
 /* --- typedefs and structures --- */
 typedef gint /* -errno || length */ (*SfiStoreReadBin)  (gpointer        data,
-                                                         SfiNum          pos,
                                                          void           *buffer,
                                                          guint           blength);
 typedef struct
