@@ -276,6 +276,8 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     AC_SUBST(bseinstrumentdir)
     bsescriptdir=$bsedatadir/scripts
     AC_SUBST(bsescriptdir)
+    bsedemodir=$bsedatadir/demo
+    AC_SUBST(bsedemodir)
     bseuserdatadir='~/beast'
     AC_SUBST(bseuserdatadir)
 ])
@@ -562,8 +564,13 @@ beast-gtk/icons/Makefile
 beast-gtk/images/Makefile
 docs/Makefile
 docs/generated/Makefile
-test/Makefile
 bse/bseconfig.h
+library/Makefile
+library/effects/Makefile
+library/instruments/Makefile
+library/scripts/Makefile
+library/demo/Makefile
+test/Makefile
 po/Makefile.in
 po-bse/Makefile.in
 po-helper.sh

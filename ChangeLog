@@ -1,3 +1,16 @@
+Fri Oct 17 21:07:55 2003  Tim Janik  <timj@gtk.org>
+
+	* library/instruments/test-string.bse: added simplistic test instrument
+	with MIDI input.
+
+	* configure.in: generate Makefiles for library/*, define bsedemodir.
+
+	* library/demo/:
+	* library/effects/:
+	* library/instruments/:
+	* library/scripts/: new directories to contain stock data
+	to be installed.
+
 Fri Oct 17 18:20:41 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.c (part_dialog_update_tool): allow button2

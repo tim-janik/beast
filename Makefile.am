@@ -1,13 +1,9 @@
 # BEAST/BSE - Bedevilled Audio System / Bedevilled Sound Engine
-# Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+# Copyright (C) 1998-2003 and Tim Janik
 #
 ## Makefile.am for BEAST/BSE
 
-# subdirs with source code to be compiled
-SRC_SUBDIRS = sfi bse plugins bsw shell beast-gtk po po-bse
-
-# other subdirs
-SUBDIRS = . $(SRC_SUBDIRS) docs test
+SUBDIRS = . sfi bse plugins bsw shell beast-gtk library docs test po po-bse
 
 site site-upgrade site-update site-preview site-update-con site-update-img site-update-nav:
 	$(MAKE) -C docs/ $(AM_MAKEFLAGS) $@
