@@ -1,3 +1,46 @@
+Thu Oct 30 22:08:48 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/Makefile.am: added new directory to keep
+	dialog (gadget) definition files. here, beast-xml-zfiles.c
+	is generated, containing compressed .xml files.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: standard gtk-wrapper
+	gadgets and composite containers.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: beast specific dialogs.
+
+	* beast-gtk/bsttrackview.c: simplified code by switing to
+	gadget based GUI and adapting to item-view changes.
+
+	* beast-gtk/bstwaveview.c:
+	* beast-gtk/bstpartview.c: switched to gadget based GUI.
+
+	* beast-gtk/bstutils.[hc]: uncompress and parse gadget files.
+
+	* beast-gtk/bstitemview.[hc]: switched to gadget based GUI,
+	greatly simplified the code, provided explicit feature
+	constructors for derived objects.
+
+	* beast-gtk/bstmain.c: initialize (parse) gadgets.
+
+	* beast-gtk/gxk/gxkgadget.[hc]: small "GUI Factory", creates
+	widget trees from templates read from xml files vi GMarkup.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_zfile_uncompress() which
+	is a utiliy zlib-uncompress() wrapper.
+
+	* beast-gtk/bstpartview.c:
+	* beast-gtk/bsttrackview.c:
+	* beast-gtk/bstparamview.c: make widgets visible by default.
+
+	* *.c: deleted redundant code to show widgets.
+
+	* configure.in: added beast-gtk/dialogs/Makefile.am.
+
+	* beast-gtk/Makefile.am: disabled bststest building.
+
+	* beast-gtk/bstapp.[hc]: switched to gadget based GUI.
+
 Tue Oct 28 00:34:38 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-links-synthesis.texi: updates.

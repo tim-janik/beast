@@ -266,6 +266,7 @@ main (int   argc,
    */
   bst_splash_update_entity (splash, _("Dialogs"));
   bst_catch_scripts_and_msgs ();
+  _bst_init_gadgets ();
 
   /* grab events on the splash to keep the user away
    * from application windows during loading.

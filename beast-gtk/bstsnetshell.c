@@ -120,9 +120,6 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
     }
   /* parameters */
   snet_shell->param_view = (BstParamView*) bst_param_view_new (snet);
-  g_object_set (GTK_WIDGET (snet_shell->param_view),
-		"visible", TRUE,
-		NULL);
   g_object_connect (GTK_WIDGET (snet_shell->param_view),
 		    "signal::destroy", gtk_widget_destroyed, &snet_shell->param_view,
 		    NULL);

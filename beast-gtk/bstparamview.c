@@ -76,37 +76,34 @@ bst_param_view_class_init (BstParamViewClass *class)
 }
 
 static void
-bst_param_view_init (BstParamView *param_view)
+bst_param_view_init (BstParamView *self)
 {
-  param_view->item = 0;
-  param_view->bparams = NULL;
+  self->item = 0;
+  self->bparams = NULL;
 
-  param_view->first_base_type = g_strdup ("BseObject");
-  param_view->last_base_type = NULL;
-  param_view->reject_pattern = NULL;
-  param_view->match_pattern = NULL;
+  self->first_base_type = g_strdup ("BseObject");
+  self->last_base_type = NULL;
+  self->reject_pattern = NULL;
+  self->match_pattern = NULL;
+  gtk_widget_show (GTK_WIDGET (self));
 }
 
 static void
-bst_param_view_destroy_contents (BstParamView *param_view)
+bst_param_view_destroy_contents (BstParamView *self)
 {
-  gtk_container_foreach (GTK_CONTAINER (param_view), (GtkCallback) gtk_widget_destroy, NULL);
-  while (param_view->bparams)
-    bst_param_destroy (g_slist_pop_head (&param_view->bparams));
+  gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
+  while (self->bparams)
+    bst_param_destroy (g_slist_pop_head (&self->bparams));
 }
 
 static void
 bst_param_view_destroy (GtkObject *object)
 {
-  BstParamView *param_view;
+  BstParamView *self = BST_PARAM_VIEW (object);
 
-  g_return_if_fail (object != NULL);
+  bst_param_view_destroy_contents (self);
 
-  param_view = BST_PARAM_VIEW (object);
-
-  bst_param_view_destroy_contents (param_view);
-
-  bst_param_view_set_item (param_view, 0);
+  bst_param_view_set_item (self, 0);
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -114,22 +111,22 @@ bst_param_view_destroy (GtkObject *object)
 static void
 bst_param_view_finalize (GObject *object)
 {
-  BstParamView *param_view = BST_PARAM_VIEW (object);
+  BstParamView *self = BST_PARAM_VIEW (object);
 
-  bst_param_view_set_item (param_view, 0);
+  bst_param_view_set_item (self, 0);
 
-  g_free (param_view->first_base_type);
-  g_free (param_view->last_base_type);
+  g_free (self->first_base_type);
+  g_free (self->last_base_type);
 
-  if (param_view->reject_pattern)
+  if (self->reject_pattern)
     {
-      g_pattern_spec_free (param_view->reject_pattern);
-      param_view->reject_pattern = NULL;
+      g_pattern_spec_free (self->reject_pattern);
+      self->reject_pattern = NULL;
     }
-  if (param_view->match_pattern)
+  if (self->match_pattern)
     {
-      g_pattern_spec_free (param_view->match_pattern);
-      param_view->match_pattern = NULL;
+      g_pattern_spec_free (self->match_pattern);
+      self->match_pattern = NULL;
     }
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -138,22 +135,21 @@ bst_param_view_finalize (GObject *object)
 GtkWidget*
 bst_param_view_new (SfiProxy item)
 {
-  GtkWidget *param_view;
+  GtkWidget *self = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
 
   if (item)
     g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
 
-  param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
   if (item)
-    bst_param_view_set_item (BST_PARAM_VIEW (param_view), item);
+    bst_param_view_set_item (BST_PARAM_VIEW (self), item);
 
-  return param_view;
+  return self;
 }
 
 static void
-param_view_reset_item (BstParamView *param_view)
+param_view_reset_item (BstParamView *self)
 {
-  bst_param_view_set_item (param_view, 0);
+  bst_param_view_set_item (self, 0);
 }
 
 void

@@ -230,6 +230,12 @@ GType	gxk_object_derive	(GType		parent_type,
 				 ...);
 
 
+/* --- zlib support --- */
+gchar*  gxk_zfile_uncompress    (guint                uncompressed_size,
+                                 const unsigned char *cdata,
+                                 guint                cdata_size);
+
+
 G_END_DECLS
 
 #endif /* __GXK_UTILS_H__ */

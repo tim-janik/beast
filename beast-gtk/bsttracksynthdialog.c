@@ -151,7 +151,6 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
   self->wpage = g_object_new (BST_TYPE_WAVE_VIEW, "visible", TRUE, NULL);
   gxk_notebook_add_page (GTK_NOTEBOOK (self->notebook), self->wpage, "Wave Selection", TRUE);
   bst_wave_view_set_editable (BST_WAVE_VIEW (self->wpage), FALSE);
-  bst_item_view_enable_param_view (BST_ITEM_VIEW (self->wpage), FALSE);
 
   /* provide buttons */
   self->ok = gxk_dialog_default_action_swapped (GXK_DIALOG (self), BST_STOCK_OK, bst_track_synth_dialog_activate, self);
@@ -159,7 +158,6 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
 
   /* make row connections */
   g_signal_connect_object (self->tview, "row_activated", G_CALLBACK (gtk_button_clicked), self->ok, G_CONNECT_SWAPPED);
-  bst_item_view_complete_tree (BST_ITEM_VIEW (self->wpage));
   g_signal_connect_object (BST_ITEM_VIEW (self->wpage)->tree, "row_activated",
                            G_CALLBACK (gtk_button_clicked), self->ok, G_CONNECT_SWAPPED);
 }

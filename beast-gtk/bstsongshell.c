@@ -112,22 +112,14 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
   g_return_if_fail (song_shell->param_view == NULL);
 
   song_shell->param_view = (BstParamView*) bst_param_view_new (song);
-  g_object_set (GTK_WIDGET (song_shell->param_view),
-		"visible", TRUE,
-		NULL);
   g_object_connect (GTK_WIDGET (song_shell->param_view),
 		    "signal::destroy", gtk_widget_destroyed, &song_shell->param_view,
 		    NULL);
   song_shell->track_view = (BstItemView*) bst_track_view_new (song);
-  g_object_set (GTK_WIDGET (song_shell->track_view),
-		"visible", TRUE,
-		NULL);
   g_object_connect (GTK_WIDGET (song_shell->track_view),
 		    "signal::destroy", gtk_widget_destroyed, &song_shell->track_view,
 		    NULL);
-  song_shell->part_view = g_object_new (BST_TYPE_PART_VIEW,
-					"visible", TRUE,
-					NULL);
+  song_shell->part_view = g_object_new (BST_TYPE_PART_VIEW, NULL);
   bst_item_view_set_container (song_shell->part_view, super_shell->super);
   g_object_connect (GTK_WIDGET (song_shell->part_view),
 		    "swapped_signal::destroy", g_nullify_pointer, &song_shell->part_view,

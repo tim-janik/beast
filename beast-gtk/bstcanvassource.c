@@ -331,7 +331,6 @@ canvas_source_create_params (BstCanvasSource *csource)
       GtkWidget *param_view;
 
       param_view = bst_param_view_new (csource->source);
-      gtk_widget_show (param_view);
       csource->params_dialog = gxk_dialog_new (&csource->params_dialog,
                                                GTK_OBJECT (csource),
                                                GXK_DIALOG_POPUP_POS,

@@ -69,7 +69,8 @@ main (int   argc,
   
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
-  
+
+  /* test polygons */
   {
     GxkPolygonLine lines[] = {
       { 0.5, 0.5, 0.0, 0.9 }, /* \ */

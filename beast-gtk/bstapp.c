@@ -217,7 +217,6 @@ bst_app_unregister (BstApp *app)
 static void
 bst_app_init (BstApp *app)
 {
-  GtkWidget *widget = GTK_WIDGET (app);
   GtkWindow *window = GTK_WINDOW (app);
   GtkItemFactory *factory;
   BseCategorySeq *cseq;
@@ -229,29 +228,14 @@ bst_app_init (BstApp *app)
                 "flags", GXK_DIALOG_STATUS_SHELL,
                 NULL);
   bst_app_register (app);
-  if (0)
-    g_object_connect (widget,
-                      "signal::map", bst_app_register, NULL,
-                      "signal::unrealize", bst_app_unregister, NULL,
-                      NULL);
-  bst_app_register (app);
-  app->main_vbox = g_object_connect (gtk_widget_new (GTK_TYPE_VBOX,
-                                                     "visible", TRUE,
-                                                     "parent", GXK_DIALOG (app)->vbox,
-                                                     NULL),
-                                     "swapped_signal::destroy", g_nullify_pointer, &app->main_vbox,
-                                     NULL);
-
+  app->box = gxk_gadget_create ("beast", "application-box", NULL);
+  gtk_container_add (GTK_CONTAINER (GXK_DIALOG (app)->vbox), app->box);
 
   /* setup the menu bar
    */
   factory = bst_item_factory_new (GTK_TYPE_MENU_BAR, bst_app_factories_path);
   gtk_window_add_accel_group (window, factory->accel_group);
-  gtk_container_add_with_properties (GTK_CONTAINER (app->main_vbox),
-                                     factory->widget,
-                                     "expand", FALSE,
-                                     "position", 0,
-                                     NULL);
+  gxk_gadget_add (app->box, "menu-area", factory->widget);
   gtk_widget_show (factory->widget);
   gtk_object_set_data_full (GTK_OBJECT (app),
                             bst_app_factories_path,
@@ -303,21 +287,10 @@ bst_app_init (BstApp *app)
 
   /* setup playback controls */
   app->pcontrols = g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
-  gtk_container_add_with_properties (GTK_CONTAINER (app->main_vbox),
-                                     app->pcontrols,
-                                     "expand", FALSE,
-                                     "position", 1,
-                                     NULL);
+  gxk_gadget_add (app->box, "control-area", app->pcontrols);
   /* setup the main notebook */
-  app->notebook = g_object_new (GTK_TYPE_NOTEBOOK,
-                                "visible", TRUE,
-                                "parent", app->main_vbox,
-                                "tab_pos", GTK_POS_LEFT,
-                                "scrollable", TRUE,
-                                "can_focus", TRUE,
-                                NULL);
+  app->notebook = gxk_gadget_find (app->box, "main-notebook");
   g_object_connect (app->notebook,
-                    "swapped_signal::destroy", g_nullify_pointer, &app->notebook,
                     "swapped_signal_after::switch-page", bst_widget_update_activatable, app,
                     "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
                     NULL);

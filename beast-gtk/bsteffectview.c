@@ -183,7 +183,6 @@ bst_effect_view_init (BstEffectView *effect_view)
   /* setup param view */
   effect_view->param_view =  bst_param_view_new (0);
   gtk_widget_set (effect_view->param_view,
-		  "visible", TRUE,
 		  "parent", pbox,
 		  (BST_EFFECT_VIEW_GET_CLASS (effect_view)->default_param_view_height > 0 ?
 		   "height_request" : NULL), BST_EFFECT_VIEW_GET_CLASS (effect_view)->default_param_view_height,

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
+<gxk-gadget-definitions>
+  
+
+  <!-- Primitive Gtk+ widget type wrappers -->
+
+  <!-- frame, alignment -->
+  <xdef:alignment             inherit="GtkAlignment"        />
+  <xdef:eventbox              inherit="GtkEventBox"         />
+  <xdef:frame                 inherit="GtkFrame"            />
+  <xdef:frame-shadow-in       inherit="frame"               prop:shadow="shadow-in" />
+  <xdef:frame-shadow-out      inherit="frame"               prop:shadow="shadow-out" />
+  <xdef:frame-etched-in       inherit="frame"               prop:shadow="etched-in" />
+  <xdef:frame-etched-out      inherit="frame"               prop:shadow="etched-out" />
+  <!-- frame -->
+  <xdef:hbox                  inherit="GtkHBox"
+    prop:spacing="$(ifdef,spacing,$spacing,0)"
+    default-pack:expand="0"
+    default-pack:fill="1"
+    />
+  <xdef:vbox                  inherit="GtkVBox"
+    prop:spacing="$(ifdef,spacing,$spacing,0)"
+    default-pack:expand="0"
+    default-pack:fill="1"
+    />
+  <xdef:outer-hbox            inherit="hbox"
+    prop:border-width="3" />
+  <xdef:outer-vbox            inherit="vbox"
+    prop:border-width="3" />
+  <!-- button: stock= label= -->
+  <xdef:button                inherit="GtkButton"
+    prop:label="$(null-collapse,$(if,$label,$label,$stock))"
+    prop:use-stock="$(if,$stock)" />
+  <xdef:can-default-button    inherit="button"
+    prop:can-default="1" />
+  <xdef:default-button        inherit="can-default-button"
+    prop:has-default="1" />
+  <!-- label: label= -->
+  <xdef:label                 inherit="GtkLabel"
+    prop:label="$label" />
+  <!-- decks (notebook) -->
+  <xdef:notebook              inherit="GtkNotebook"         />
+  <xdef:deck                  inherit="notebook"
+    prop:show-tabs="0"
+    prop:show-border="0"
+    prop:scrollable="1"
+    prop:enable-popup="0" />
+  <xdef:left-deck             inherit="deck"
+    prop:show-tabs="1" prop:tab-pos="left" />
+  <xdef:right-deck            inherit="deck"
+    prop:show-tabs="1" prop:tab-pos="right" />
+  <xdef:top-deck              inherit="deck"
+    prop:show-tabs="1" prop:tab-pos="top" />
+  <xdef:bottom-deck           inherit="deck"
+    prop:show-tabs="1" prop:tab-pos="bottom" />
+  <!-- menu widgets -->
+  <xdef:menubar               inherit="GtkMenuBar"          />
+  <xdef:menuitem              inherit="GtkImageMenuItem"    />
+  <!-- paned containers -->
+  <xdef:hpaned                inherit="GtkHPaned" />
+  <xdef:vpaned                inherit="GtkVPaned" />
+  <!-- scrollbars/scales -->
+  <xdef:hscale                inherit="GtkHScale" />
+  <xdef:vscale                inherit="GtkVScale" />
+  <xdef:hscrollbar            inherit="GtkHScrollbar" />
+  <xdef:vscrollbar            inherit="GtkVScrollbar" />
+  <!-- misc containers -->
+  <xdef:scrolledwindow        inherit="GtkScrolledWindow" />
+  <xdef:treeview              inherit="GtkTreeView" />
+  <xdef:window                inherit="GtkWindow"           />
+  <xdef:table                 inherit="GtkTable"            />
+  
+
+  <!-- Construction of composite containers -->
+
+  <!-- border-layout -->
+  <xdef:border-layout inherit="vbox" default-area="center" >
+    <vbox name="north" />
+    <hbox pack:expand="1" >
+      <hbox name="east" />
+      <vbox name="center" pack:expand="1" />
+      <hbox name="west" />
+    </hbox>
+    <vbox name="south" />
+  </xdef:border-layout>
+      
+</gxk-gadget-definitions>

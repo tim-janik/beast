@@ -89,7 +89,16 @@ bst_wave_view_class_init (BstWaveViewClass *class)
 static void
 bst_wave_view_init (BstWaveView *self)
 {
+  BstItemView *iview = BST_ITEM_VIEW (self);
+  /* complete GUI */
+  GxkGadget *gadget = gxk_gadget_complete (GTK_WIDGET (self), "beast", "wave-view", NULL);
+  /* setup tree view */
+  GtkTreeView *tview = gxk_gadget_find (gadget, "tree-view");
+  bst_item_view_complete_tree (iview, tview);
+  /* prime locals */
   self->editable = TRUE;
+  /* create tool buttons */
+  bst_item_view_build_buttons (iview, gxk_gadget_find (gadget, "tree-button-area"));
 }
 
 GtkWidget*
@@ -149,7 +158,6 @@ bst_wave_view_set_editable (BstWaveView *self,
   g_return_if_fail (BST_IS_WAVE_VIEW (self));
 
   self->editable = enabled != FALSE;
-  bst_item_view_complete_tree (iview);
   if (iview->tree)
     gxk_tree_view_set_editable (iview->tree, self->editable);
 

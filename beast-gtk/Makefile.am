@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BEAST
  
-SUBDIRS = gxk icons
+SUBDIRS = gxk dialogs icons
 
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk $(BEAST_CFLAGS) -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
 # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
@@ -174,9 +174,9 @@ bstutils.c: bstdebugkeys.defs
 bin_PROGRAMS = beast
 beast_SOURCES = bstmain.c $(beast_sources)
 beast_LDADD = $(progs_LDADD)
-noinst_PROGRAMS = bststest tsmview
-bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
-bststest_LDADD = $(progs_LDADD)
+noinst_PROGRAMS = tsmview # bststest
+# bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
+# bststest_LDADD = $(progs_LDADD)
 tsmview_SOURCES = tsmview.c cxxdummy.cc
 tsmview_LDADD = $(progs_LDADD)
 

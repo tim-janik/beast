@@ -217,6 +217,7 @@ gchar*          bst_file_scan_song_name         (const gchar    *file);
 
 /* --- internal --- */
 void	_bst_init_utils		(void);
+void	_bst_init_gadgets	(void);
 
 G_END_DECLS
 

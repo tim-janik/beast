@@ -2148,3 +2148,46 @@ gxk_file_selection_heal (GtkFileSelection *fs)
 
   return main_box;
 }
+
+/* --- zlib support --- */
+#include <zlib.h>
+gchar*
+gxk_zfile_uncompress (guint                uncompressed_size,
+                      const unsigned char *cdata,
+		      guint                cdata_size)
+{
+  uLongf dlen = uncompressed_size;
+  guint len = dlen + 1;
+  guint8 *text = g_malloc (len);
+  gint result;
+  const gchar *err;
+
+  result = uncompress (text, &dlen, cdata, cdata_size);
+  switch (result)
+    {
+    case Z_OK:
+      if (dlen == uncompressed_size)
+	{
+	  err = NULL;
+	  break;
+	}
+      /* fall through */
+    case Z_DATA_ERROR:
+      err = "internal data corruption";
+      break;
+    case Z_MEM_ERROR:
+      err = "out of memory";
+      break;
+    case Z_BUF_ERROR:
+      err = "insufficient buffer size";
+      break;
+    default:
+      err = "unknown error";
+      break;
+    }
+  if (err)
+    g_error ("while decompressing (%p, %u): %s", cdata, cdata_size, err);
+
+  text[dlen] = 0;
+  return text;
+}

@@ -43,7 +43,7 @@ struct _BstApp
 
   SfiProxy        project;
 
-  GtkWidget      *main_vbox;
+  GxkGadget      *box;
   GtkNotebook    *notebook;
 
   GtkWidget      *rack_dialog;

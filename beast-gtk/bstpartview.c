@@ -82,8 +82,18 @@ bst_part_view_class_init (BstPartViewClass *class)
 }
 
 static void
-bst_part_view_init (BstPartView *part_view)
+bst_part_view_init (BstPartView *self)
 {
+  BstItemView *iview = BST_ITEM_VIEW (self);
+  /* complete GUI */
+  GxkGadget *gadget = gxk_gadget_complete (GTK_WIDGET (self), "beast", "part-view", NULL);
+  /* setup tree view */
+  GtkTreeView *tview = gxk_gadget_find (gadget, "tree-view");
+  bst_item_view_complete_tree (iview, tview);
+  /* create tool buttons */
+  bst_item_view_build_buttons (iview, gxk_gadget_find (gadget, "tree-button-area"));
+  /* create property editor */
+  bst_item_view_build_param_view (iview, gxk_gadget_find (gadget, "property-area"));
 }
 
 static void

@@ -33,7 +33,6 @@ static void     bst_track_view_activate         (BstActivatable         *activat
                                                  gulong                  action);
 static gboolean bst_track_view_can_activate     (BstActivatable         *activatable,
                                                  gulong                  action);
-static void	bst_track_view_create_tree	(BstItemView		*iview);
 static void     track_view_set_container        (BstItemView            *self,
 						 SfiProxy                new_container);
 static void	track_view_listen_on		(BstItemView		*iview,
@@ -109,19 +108,11 @@ bst_track_view_class_init (BstTrackViewClass *class)
 
   item_view_class->n_ops = n_track_view_ops;
   item_view_class->ops = track_view_ops;
-  item_view_class->horizontal_ops = TRUE;
-  item_view_class->show_properties = FALSE;
-  item_view_class->create_tree = bst_track_view_create_tree;
   item_view_class->set_container = track_view_set_container;
   item_view_class->listen_on = track_view_listen_on;
   item_view_class->unlisten_on = track_view_unlisten_on;
 
   item_view_class->item_type = "BseTrack";
-}
-
-static void
-bst_track_view_init (BstTrackView *self)
-{
 }
 
 static void
@@ -445,15 +436,19 @@ track_view_repeat_changed (BstTrackView *self)
 }
 
 static void
-bst_track_view_create_tree (BstItemView *iview)
+bst_track_view_init (BstTrackView *self)
 {
-  BstTrackView *self = BST_TRACK_VIEW (iview);
-  GtkWidget *hscroll1, *hscroll2, *vscroll, *trframe, *tlframe, *vb1, *vb2, *vb3, *hb, *align1, *align2, *entry;
+  BstItemView *iview = BST_ITEM_VIEW (self);
+  GtkWidget *treehs, *trackhs, *vscroll, *entry;
   GtkObject *adjustment;
-  GtkPaned *paned;
+  GtkTreeView *tview;
   GtkTreeSelection *tsel;
   GtkTreeModel *smodel;
   GxkListWrapper *lwrapper;
+  GxkGadget *gadget;
+
+  /* create GUI */
+  gadget = gxk_gadget_complete (GTK_WIDGET (self), "beast", "track-view", NULL);
 
   /* item list model */
   lwrapper = gxk_list_wrapper_new (N_COLS,
@@ -473,24 +468,15 @@ bst_track_view_create_tree (BstItemView *iview)
   g_object_unref (lwrapper);
   
   /* scrollbars */
-  hscroll1 = gtk_hscrollbar_new (NULL);
-  hscroll2 = gtk_hscrollbar_new (NULL);
-  vscroll = gtk_vscrollbar_new (NULL);
-  align1 = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
-  align2 = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
-
+  treehs = gxk_gadget_find (gadget, "tree-hscrollbar");
+  trackhs = gxk_gadget_find (gadget, "track-hscrollbar");
+  vscroll = gxk_gadget_find (gadget, "tree-vscrollbar");
+  
   /* tree view (track list) */
-  tlframe = g_object_new (GTK_TYPE_FRAME, "shadow_type", GTK_SHADOW_IN, NULL);
-  iview->tree = g_object_new (GTK_TYPE_TREE_VIEW,
-			      "can_focus", TRUE,
-			      "model", smodel,
-			      "parent", tlframe,
-			      "rules_hint", TRUE,
-			      "height_request", BST_ITEM_VIEW_TREE_HEIGHT,
-			      "width_request", 200,
-			      NULL);
-  gxk_nullify_on_destroy (iview->tree, &iview->tree);
-  gtk_tree_view_set_hadjustment (iview->tree, gtk_range_get_adjustment (GTK_RANGE (hscroll1)));
+  tview = gxk_gadget_find (gadget, "tree-view");
+  gtk_tree_view_set_model (tview, smodel);
+  bst_item_view_set_tree (iview, tview);
+  gtk_tree_view_set_hadjustment (iview->tree, gtk_range_get_adjustment (GTK_RANGE (treehs)));
   gtk_tree_view_set_vadjustment (iview->tree, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   tsel = gtk_tree_view_get_selection (iview->tree);
   gtk_tree_selection_set_mode (tsel, GTK_SELECTION_BROWSE);
@@ -498,16 +484,16 @@ bst_track_view_create_tree (BstItemView *iview)
   g_object_unref (smodel);
 
   /* track roll */
-  trframe = g_object_new (GTK_TYPE_FRAME, "shadow_type", GTK_SHADOW_IN, NULL);
   self->troll = g_object_new (BST_TYPE_TRACK_ROLL,
-			      "parent", trframe,
+                              "visible", TRUE,
+			      "parent", gxk_gadget_find (gadget, "track-area"),
 			      NULL);
   gxk_nullify_on_destroy (self->troll, &self->troll);
-  bst_track_roll_set_hadjustment (self->troll, gtk_range_get_adjustment (GTK_RANGE (hscroll2)));
+  bst_track_roll_set_hadjustment (self->troll, gtk_range_get_adjustment (GTK_RANGE (trackhs)));
   bst_track_roll_set_vadjustment (self->troll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   bst_track_roll_set_track_callback (self->troll, self, get_track);
   track_view_marks_changed (self);
-  
+
   /* link track roll to tree view and list model */
   g_signal_connect_object (tsel, "changed",
 			   G_CALLBACK (update_selection),
@@ -537,15 +523,19 @@ bst_track_view_create_tree (BstItemView *iview)
   self->troll_ctrl = bst_track_roll_controller_new (self->troll);
   bst_track_roll_controller_set_song (self->troll_ctrl, iview->container);
 
+  /* create tool buttons */
+  bst_item_view_build_buttons (iview, gxk_gadget_find (gadget, "tree-button-area"));
+
   /* create toolbar */
   self->toolbar = gxk_toolbar_new (&self->toolbar);
+  gxk_gadget_add (gadget, "toolbar-area", self->toolbar);
   /* add radio tools to toolbar */
   bst_radio_tools_build_toolbar (self->troll_ctrl->canvas_rtools, self->toolbar);
   gxk_toolbar_append_separator (self->toolbar);
   bst_radio_tools_build_toolbar_choice (self->troll_ctrl->hpanel_rtools, self->toolbar);
   /* add repeat toggle */
   self->repeat_toggle = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_TOGGLE,
-						  "Repeat", "Repeat playback within loop points", BST_STOCK_REPEAT);
+						  _("Repeat"), _("Repeat playback within loop points"), BST_STOCK_REPEAT);
   gxk_nullify_on_destroy (self->repeat_toggle, &self->repeat_toggle);
   g_object_connect (self->repeat_toggle, "swapped_signal::toggled", track_view_repeat_toggled, self, NULL);
   track_view_repeat_changed (self);
@@ -565,53 +555,12 @@ bst_track_view_create_tree (BstItemView *iview)
 			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
 			NULL);
   gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
-		      "Zoom", "Horizontal Zoom", entry);
+		      _("Zoom"), _("Horizontal Zoom"), entry);
 
   /* setup accelerators */
   gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->canvas_rtools->accel_group);
   gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->hpanel_rtools->accel_group);
   gxk_widget_activate_accel_group (GTK_WIDGET (self), self->troll_ctrl->quant_rtools->accel_group);
-
-  /* tree view box */
-  vb1 = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
-  gtk_box_pack_start (GTK_BOX (vb1), iview->tools, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vb1), tlframe, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vb1), hscroll1, FALSE, TRUE, 0);
-  
-  /* track roll box */
-  vb2 = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
-  gtk_box_pack_start (GTK_BOX (vb2), GTK_WIDGET (self->toolbar), FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vb2), trframe, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vb2), hscroll2, FALSE, TRUE, 0);
-
-  /* vscrollbar box */
-  vb3 = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
-  gtk_box_pack_start (GTK_BOX (vb3), align1, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vb3), vscroll, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vb3), align2, FALSE, TRUE, 0);
-
-  /* pack boxes and group sizes */
-  gxk_size_group (GTK_SIZE_GROUP_VERTICAL,
-		  iview->tools, self->toolbar, align1,
-		  NULL);
-  gxk_size_group (GTK_SIZE_GROUP_VERTICAL,
-		  tlframe, trframe, vscroll,
-		  NULL);
-  gxk_size_group (GTK_SIZE_GROUP_VERTICAL,
-		  hscroll1, hscroll2, align2,
-		  NULL);
-  paned = g_object_new (GTK_TYPE_HPANED,
-			"height_request", 120,
-			"border_width", 0,
-			"position", 240,
-			NULL);
-  gtk_paned_pack1 (paned, vb1, FALSE, TRUE);
-  gtk_paned_pack2 (paned, vb2, TRUE, TRUE);
-  hb = g_object_new (GTK_TYPE_HBOX,
-		     "child", paned,
-		     "spacing", SCROLLBAR_SPACING,
-		     NULL);
-  gtk_box_pack_start (GTK_BOX (hb), vb3, FALSE, TRUE, 0);
 
   /* add list view columns */
   if (BST_DVL_HINTS)
@@ -639,9 +588,6 @@ bst_track_view_create_tree (BstItemView *iview)
   gxk_tree_view_add_text_column (iview->tree, COL_BLURB, "",
 				 0.0, _("Comment"), NULL,
 				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
-
-  /* make widgets visible */
-  gtk_widget_show_all (GTK_WIDGET (hb));
 }
 
 static void

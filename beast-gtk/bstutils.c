@@ -16,13 +16,16 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include        "bstutils.h"
+#include "bstutils.h"
 
-#include        "bstmenus.h"
-#include        <fcntl.h>
-#include        <errno.h>
-#include        <unistd.h>
-#include        <string.h>
+#include "bstmenus.h"
+#include "bsttrackview.h"
+#include "bstwaveview.h"
+#include "bstpartview.h"
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <string.h>
 
 
 /* --- generated enums --- */
@@ -89,6 +92,22 @@ _bst_init_utils (void)
     };
     gxk_stock_register_actions (G_N_ELEMENTS (stock_actions), stock_actions);
   }
+}
+
+#include "beast-gtk/dialogs/beast-xml-zfiles.c"
+void
+_bst_init_gadgets (void)
+{
+  gchar *text;
+  gxk_gadget_add_type (BST_TYPE_TRACK_VIEW);
+  gxk_gadget_add_type (BST_TYPE_WAVE_VIEW);
+  gxk_gadget_add_type (BST_TYPE_PART_VIEW);
+  text = gxk_zfile_uncompress (BST_GADGETS_STANDARD_SIZE, BST_GADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_GADGETS_STANDARD_DATA));
+  gxk_gadget_parse_text ("beast", text, -1, NULL);
+  g_free (text);
+  text = gxk_zfile_uncompress (BST_GADGETS_BEAST_SIZE, BST_GADGETS_BEAST_DATA, G_N_ELEMENTS (BST_GADGETS_BEAST_DATA));
+  gxk_gadget_parse_text ("beast", text, -1, NULL);
+  g_free (text);
 }
 
 GtkWidget*

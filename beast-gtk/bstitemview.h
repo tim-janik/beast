@@ -44,13 +44,11 @@ struct _BstItemView
   GtkTreeView    *tree;
   GxkListWrapper *wlist;
 
-  GtkPaned       *paned;
   GtkWidget	 *pview;
-  GtkWidget	 *tools;
 
   SfiProxy	 container;
   SfiProxy	 auto_select;
-  GtkWidget	**op_widgets;
+  GtkWidget    **op_widgets;
 };
 struct _BstItemViewClass
 {
@@ -59,12 +57,9 @@ struct _BstItemViewClass
   const gchar	   *item_type;
   guint		    n_ops;
   BstItemViewOp	   *ops;
-  guint		    horizontal_ops : 1;
-  guint		    show_properties : 1;
 
   void	      (*set_container)	(BstItemView	*self,
 				 SfiProxy	 new_container);
-  void	      (*create_tree)	(BstItemView	*self);
   void	      (*listen_on)	(BstItemView	*self,
 				 SfiProxy	 item);
   void	      (*unlisten_on)	(BstItemView	*self,
@@ -90,6 +85,14 @@ gint            bst_item_view_get_proxy_row     (BstItemView    *self,
                                                  SfiProxy        item);
 void		bst_item_view_set_container	(BstItemView	*item_view,
 						 SfiProxy	 new_container);
+void		bst_item_view_set_tree  	(BstItemView	*item_view,
+						 GtkTreeView    *tree);
+void            bst_item_view_complete_tree     (BstItemView    *self,
+						 GtkTreeView    *tree);
+void		bst_item_view_build_buttons  	(BstItemView	*item_view,
+						 GtkContainer   *container);
+void            bst_item_view_build_param_view  (BstItemView    *self,
+                                                 GtkContainer   *container);
 void		bst_item_view_refresh   	(BstItemView    *self,
 						 SfiProxy        item);
 void		bst_item_view_name_edited	(BstItemView    *self,
@@ -102,7 +105,6 @@ void		bst_item_view_enable_param_view	(BstItemView    *self,
                                                  gboolean        enabled);
 GtkTreeModel* bst_item_view_adapt_list_wrapper	(BstItemView	*self,
 						 GxkListWrapper *lwrapper);
-void            bst_item_view_complete_tree     (BstItemView    *self);
 
 
 G_END_DECLS

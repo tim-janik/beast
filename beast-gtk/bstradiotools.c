@@ -358,9 +358,9 @@ rtools_toggle_toggled (BstRadioTools   *self,
   
   if (!self->block_tool_id)
     {
-      GdkEvent *event = gtk_get_current_event ();
       tool_id = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (toggle)));
 #if 0
+      GdkEvent *event = gtk_get_current_event ();
       /* ignore untoggeling through the GUI (button release on depressed toggle) */
       if (toggle->active ||
           (gtk_get_event_widget (event) == GTK_WIDGET (toggle) &&

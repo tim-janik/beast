@@ -109,9 +109,6 @@ bst_wave_repo_shell_rebuild (BstSuperShell *super_shell)
   g_return_if_fail (wshell->param_view == NULL);
 
   wshell->param_view = (BstParamView*) bst_param_view_new (wrepo);
-  g_object_set (GTK_WIDGET (wshell->param_view),
-                "visible", TRUE,
-                NULL);
   g_object_connect (GTK_WIDGET (wshell->param_view),
                     "signal::destroy", gtk_widget_destroyed, &wshell->param_view,
                     NULL);

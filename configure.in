@@ -563,6 +563,7 @@ bsw/Makefile
 shell/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
+beast-gtk/dialogs/Makefile
 beast-gtk/icons/Makefile
 docs/Makefile
 docs/generated/Makefile
