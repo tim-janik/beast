@@ -144,6 +144,7 @@ param_automation_create (GxkParam    *param,
                                    NULL);
   gchar *string = g_strdup_printf (_("Setup automation for property: %s"), g_param_spec_get_nick (param->pspec));
   gxk_widget_set_tooltip (button, string);
+  gxk_widget_set_tooltip (widget, string);
   g_free (string);
   gtk_widget_show_all (widget);
   /* store handles */
@@ -180,7 +181,7 @@ param_automation_update (GxkParam  *param,
                 "label", content ? content : "--",
                 NULL);
   g_free (content);
-  gtk_widget_set_sensitive (widget, proxy && !bse_source_is_prepared (proxy));
+  gtk_widget_set_sensitive (GTK_BIN (widget)->child, proxy && !bse_source_is_prepared (proxy));
 }
 
 static GxkParamEditor param_automation = {
