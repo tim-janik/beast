@@ -1,3 +1,14 @@
+Tue Aug 31 12:09:38 2004  Tim Janik  <timj@gtk.org>
+
+	* bsewaverepo.proc:
+	load_file(): set wave name from filename directly.
+
+	* gsldatacache.c:
+	data_cache_new_node_L(): copy over overlapping data from adjacent node
+	instead of re-reading data from data-handle (which forces a slow
+	backward seek on the handle). based on a patch by stefan westerfeld.
+	gsl_data_cache_free_olders(): unlock properly, reported by stefan.
+
 Tue Aug 31 09:37:02 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesource.*:

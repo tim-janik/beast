@@ -326,6 +326,32 @@ data_cache_new_node_L (GslDataCache *dcache,
     offset -= dcache->padding;
   if (!demand_load)
     g_message (G_STRLOC ":FIXME: lazy data loading not yet supported");
+  
+  /* copy over data from previous node */
+  GslDataCacheNode *prev_node = pos ? dcache->nodes[pos - 1] : NULL;
+  if (prev_node)
+    {
+      GslLong prev_node_size = dcache->node_size;
+      GslLong prev_node_offset = prev_node->offset;
+      GslDataType *prev_node_data = prev_node->data;
+      
+      /* padding around prev_node */
+      prev_node_size += dcache->padding << 1;
+      prev_node_offset -= dcache->padding;
+      prev_node_data -= dcache->padding;
+      
+      /* check for overlap */
+      if (offset < prev_node_offset + prev_node_size)
+        {
+          GslLong overlap = prev_node_offset + prev_node_size - offset;
+          memcpy (data, prev_node_data + offset - prev_node_offset, overlap * sizeof (data[0]));
+          size -= overlap;
+          offset += overlap;
+          data += overlap;
+        }
+    }
+
+  /* fill from data handle */
   dhandle_length = gsl_data_handle_length (dcache->dhandle);
   do
     {
@@ -567,7 +593,9 @@ gsl_data_cache_free_olders (GslDataCache *dcache,
   g_return_if_fail (dcache != NULL);
 
   GSL_SPIN_LOCK (&dcache->mutex);
-  data_cache_free_olders_Lunlock (dcache, max_age);
+  gboolean needs_unlock = data_cache_free_olders_Lunlock (dcache, max_age);
+  if (needs_unlock)
+    GSL_SPIN_UNLOCK (&dcache->mutex);
 }
 
 GslDataCache*
