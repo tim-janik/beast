@@ -43,6 +43,7 @@ struct _BseTrack
 
   guint		   max_voices;
   BseSNet	  *snet;
+  BseSNet         *pnet;
 
   /* wave synthesis */
   BseWave	  *wave;
@@ -53,6 +54,7 @@ struct _BseTrack
   BseSource       *voice_input;
   BseSource       *voice_switch;
   BseSource       *context_merger;
+  BseSource       *postprocess;
 
   /* fields protected by sequencer mutex */
   guint		   n_entries_SL : 30;

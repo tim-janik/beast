@@ -174,7 +174,8 @@ bse_sub_synth_init (BseSubSynth *synth)
   guint i;
   
   synth->snet = NULL;
-  
+  synth->null_shortcut = FALSE;
+
   for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
       synth->input_ports[i] = g_strdup_printf ("synth_in_%u", i + 1);
@@ -371,6 +372,15 @@ bse_sub_synth_set_midi_receiver (BseSubSynth     *self,
     bse_midi_receiver_ref (self->midi_receiver);
 }
 
+void
+bse_sub_synth_set_null_shortcut (BseSubSynth *self,
+                                 gboolean     enabled)
+{
+  g_return_if_fail (BSE_IS_SUB_SYNTH (self));
+
+  self->null_shortcut = enabled != FALSE;
+}
+
 typedef struct {
   guint  synth_context_handle;
 } ModData;
@@ -387,8 +397,8 @@ bse_sub_synth_context_create (BseSource *source,
   ModData *mdata_out = g_new0 (ModData, 1);
   GslModule *imodule = gsl_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_in, g_free);
   GslModule *omodule = gsl_module_new_virtual (BSE_SUB_SYNTH_N_IOPORTS, mdata_out, g_free);
-  guint foreign_context_handle = 0;
-  
+  guint foreign_context_handle = 0, shortcut = FALSE;
+
   /* create new context for foreign synth */
   if (snet && g_slist_find (recursion_stack, source))
     {
@@ -410,7 +420,9 @@ bse_sub_synth_context_create (BseSource *source,
       recursion_stack = g_slist_remove (recursion_stack, self);
       g_assert (foreign_context_handle > 0);
     }
-  
+  else
+    shortcut = self->null_shortcut;
+
   mdata_in->synth_context_handle = foreign_context_handle;
   mdata_out->synth_context_handle = foreign_context_handle;
   
@@ -422,6 +434,13 @@ bse_sub_synth_context_create (BseSource *source,
   gsl_trans_add (trans, gsl_job_integrate (imodule));
   gsl_trans_add (trans, gsl_job_integrate (omodule));
   
+  if (shortcut)
+    {
+      guint i;
+      for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
+        gsl_trans_add (trans, gsl_job_connect (imodule, i, omodule, i));
+    }
+
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }

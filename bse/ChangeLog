@@ -1,3 +1,15 @@
+Sat Jul  5 02:49:20 2003  Tim Janik  <timj@gtk.org>
+
+	* bsesong.[hc]: added pnet property to set postprocessing synthesis
+	network per song. added sub synth (null-shortcut) after track merger
+	to hold pnet.
+
+	* bsetrack.[hc]: added pnet property and sub synth to support post
+	processing synthesis networks like above.
+
+	* bsesubsynth.[hc]: added bse_sub_synth_set_null_shortcut(). this
+	enables automatic signal-through connections if no snet is set.
+
 Wed Jun 25 00:18:11 2003  Tim Janik  <timj@gtk.org>
 
 	* bseserver.proc: seperate ladspa and core plugin loading.

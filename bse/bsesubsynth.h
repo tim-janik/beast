@@ -43,6 +43,7 @@ struct _BseSubSynth
   gchar		  *output_ports[BSE_SUB_SYNTH_N_IOPORTS];
   BseMidiReceiver *midi_receiver;
   guint            midi_channel;
+  guint            null_shortcut : 1;
 };
 struct _BseSubSynthClass
 {
@@ -54,6 +55,8 @@ struct _BseSubSynthClass
 void    bse_sub_synth_set_midi_receiver  (BseSubSynth     *self,
 					  BseMidiReceiver *midi_receiver,
 					  guint            midi_channel);
+void    bse_sub_synth_set_null_shortcut  (BseSubSynth     *self,
+                                          gboolean         enabled);
 
 
 G_END_DECLS

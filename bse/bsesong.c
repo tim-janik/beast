@@ -24,26 +24,29 @@
 #include "bseproject.h"
 #include "bsestorage.h"
 #include "bsemain.h"
+#include "bsecsynth.h"
 #include "bsessequencer.h"
+#include "bsesubsynth.h"
 #include "gslengine.h"	// FIXME: for gsl_engine_sample_freq()
 #include <string.h>
 
 
 enum
 {
-  PARAM_0,
-  PARAM_VOLUME_f,
-  PARAM_VOLUME_dB,
-  PARAM_VOLUME_PERC,
-  PARAM_TPQN,
-  PARAM_NOMINATOR,
-  PARAM_DENOMINATOR,
-  PARAM_BPM,
-  PARAM_AUTO_ACTIVATE,
-  PARAM_LOOP_ENABLED,
-  PARAM_LOOP_LEFT,
-  PARAM_LOOP_RIGHT,
-  PARAM_TICK_POINTER,
+  PROP_0,
+  PROP_VOLUME_f,
+  PROP_VOLUME_dB,
+  PROP_VOLUME_PERC,
+  PROP_TPQN,
+  PROP_NOMINATOR,
+  PROP_DENOMINATOR,
+  PROP_BPM,
+  PROP_POST_NET,
+  PROP_AUTO_ACTIVATE,
+  PROP_LOOP_ENABLED,
+  PROP_LOOP_LEFT,
+  PROP_LOOP_RIGHT,
+  PROP_TICK_POINTER,
 };
 
 enum {
@@ -52,31 +55,35 @@ enum {
 
 
 /* --- prototypes --- */
-static void	 bse_song_class_init		(BseSongClass	   *class);
-static void	 bse_song_init			(BseSong	   *song);
-static void	 bse_song_finalize		(GObject	   *object);
-static void	 bse_song_release_children	(BseContainer	   *container);
-static void	 bse_song_set_property		(GObject           *object,
-						 guint              param_id,
-						 const GValue      *value,
-						 GParamSpec        *pspec);
-static void	 bse_song_get_property		(GObject           *object,
-						 guint              param_id,
-						 GValue            *value,
-						 GParamSpec        *pspec);
-static void	 bse_song_add_item		(BseContainer	   *container,
-						 BseItem	   *item);
-static void	 bse_song_forall_items		(BseContainer	   *container,
-						 BseForallItemsFunc func,
-						 gpointer	    data);
-static void	 bse_song_remove_item		(BseContainer	   *container,
-						 BseItem	   *item);
-static void	 bse_song_prepare		(BseSource	   *source);
-static void      bse_song_context_create        (BseSource         *source,
-						 guint              context_handle,
-						 GslTrans          *trans);
-static void	 bse_song_reset			(BseSource	   *source);
-static void	 bse_song_update_tpsi_SL	(BseSong	   *song);
+static void         bse_song_class_init       (BseSongClass       *class);
+static void         bse_song_init             (BseSong            *song);
+static void         bse_song_finalize         (GObject            *object);
+static void         bse_song_release_children (BseContainer       *container);
+static BseProxySeq* bse_song_list_proxies     (BseItem            *item,
+                                               guint               param_id,
+                                               GParamSpec         *pspec);
+static void         bse_song_set_property     (GObject            *object,
+                                               guint               param_id,
+                                               const GValue       *value,
+                                               GParamSpec         *pspec);
+static void         bse_song_get_property     (GObject            *object,
+                                               guint               param_id,
+                                               GValue             *value,
+                                               GParamSpec         *pspec);
+static void         bse_song_add_item         (BseContainer       *container,
+                                               BseItem            *item);
+static void         bse_song_forall_items     (BseContainer       *container,
+                                               BseForallItemsFunc  func,
+                                               gpointer            data);
+static void         bse_song_remove_item      (BseContainer       *container,
+                                               BseItem            *item);
+static void         bse_song_prepare          (BseSource          *source);
+static void         bse_song_context_create   (BseSource          *source,
+                                               guint               context_handle,
+                                               GslTrans           *trans);
+static void         bse_song_reset            (BseSource          *source);
+static void         bse_song_update_tpsi_SL   (BseSong            *song);
+
 
 
 /* --- variables --- */
@@ -125,6 +132,7 @@ bse_song_class_init (BseSongClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseItemClass *item_class = BSE_ITEM_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
   BseSongTiming timing;
@@ -135,6 +143,8 @@ bse_song_class_init (BseSongClass *class)
   gobject_class->get_property = bse_song_get_property;
   gobject_class->finalize = bse_song_finalize;
   
+  item_class->list_proxies = bse_song_list_proxies;
+
   source_class->prepare = bse_song_prepare;
   source_class->context_create = bse_song_context_create;
   source_class->reset = bse_song_reset;
@@ -147,64 +157,70 @@ bse_song_class_init (BseSongClass *class)
   bse_song_timing_get_default (&timing);
 
   bse_object_class_add_param (object_class, "Adjustments",
-			      PARAM_VOLUME_f,
+			      PROP_VOLUME_f,
 			      sfi_pspec_real ("volume_f", "Master [float]", NULL,
 					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
 					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
 					      0.1, SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
-			      PARAM_VOLUME_dB,
+			      PROP_VOLUME_dB,
 			      sfi_pspec_real ("volume_dB", "Master [dB]", NULL,
 					      BSE_DFL_MASTER_VOLUME_dB,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
 					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
-			      PARAM_VOLUME_PERC,
+			      PROP_VOLUME_PERC,
 			      sfi_pspec_int ("volume_perc", "Master [%]", NULL,
 					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 					     SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Timing",
-			      PARAM_TPQN,
+			      PROP_TPQN,
 			      sfi_pspec_int ("tpqn", "Ticks", "Number of ticks per quarter note",
 					     timing.tpqn, 384, 384, 0, SFI_PARAM_DEFAULT_RDONLY));
   bse_object_class_add_param (object_class, "Timing",
-			      PARAM_NOMINATOR,
+			      PROP_NOMINATOR,
 			      sfi_pspec_int ("nominator", "Nominator", "Measure nominator",
 					     timing.nominator, 1, 256, 1, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Timing",
-			      PARAM_DENOMINATOR,
+			      PROP_DENOMINATOR,
 			      sfi_pspec_int ("denominator", "Denominator", "Measure denominator, must be a power of 2",
 					     timing.denominator, 1, 256, 0, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Timing",
-			      PARAM_BPM,
+			      PROP_BPM,
 			      sfi_pspec_real ("bpm", "Beats per minute", NULL,
 					      timing.bpm,
 					      BSE_MIN_BPM, BSE_MAX_BPM,
 					      BSE_GCONFIG (step_bpm),
 					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+  bse_object_class_add_param (object_class, "Synth Postprocess",
+                              PROP_POST_NET,
+                              bse_param_spec_object ("pnet", "Custom Postprocess Net",
+                                                     "Synthesis network to postprocess song sound",
+                                                     BSE_TYPE_CSYNTH,
+                                                     SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Playback Settings",
-			      PARAM_AUTO_ACTIVATE,
+			      PROP_AUTO_ACTIVATE,
 			      sfi_pspec_bool ("auto_activate", NULL, NULL,
 					      TRUE, /* change default */
 					      /* override parent property */ 0));
   bse_object_class_add_param (object_class, "Looping",
-			      PARAM_LOOP_ENABLED,
+			      PROP_LOOP_ENABLED,
 			      sfi_pspec_bool ("loop_enabled", NULL, NULL,
 					      FALSE, SFI_PARAM_READWRITE));
   bse_object_class_add_param (object_class, "Looping",
-			      PARAM_LOOP_LEFT,
+			      PROP_LOOP_LEFT,
 			      sfi_pspec_int ("loop_left", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
 					     SFI_PARAM_READWRITE));
   bse_object_class_add_param (object_class, "Looping",
-			      PARAM_LOOP_RIGHT,
+			      PROP_LOOP_RIGHT,
 			      sfi_pspec_int ("loop_right", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
 					     SFI_PARAM_READWRITE));
   bse_object_class_add_param (object_class, "Looping",
-			      PARAM_TICK_POINTER,
+			      PROP_TICK_POINTER,
 			      sfi_pspec_int ("tick_pointer", NULL, NULL,
 					     -1, -1, G_MAXINT, 384,
 					     SFI_PARAM_READWRITE));
@@ -232,6 +248,8 @@ bse_song_init (BseSong *self)
   
   self->parts = NULL;
 
+  self->pnet = NULL;
+
   self->last_position = -1;
   self->position_handler = 0;
 
@@ -241,18 +259,33 @@ bse_song_init (BseSong *self)
   self->loop_right_SL = -1;
 
   /* context merger */
-  self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
+  self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER,
+                                                  "uname", "Track-Merger",
+                                                  NULL);
   bse_snet_intern_child (snet, self->context_merger);
+
+  /* post processing slot */
+  self->postprocess = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SUB_SYNTH,
+                                               "uname", "Postprocess",
+                                               NULL);
+  bse_snet_intern_child (snet, self->postprocess);
+  bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self->postprocess), TRUE);
+
+  /* context merger <-> postprocess */
+  bse_source_must_set_input (self->postprocess, 0,
+			     self->context_merger, 0);
+  bse_source_must_set_input (self->postprocess, 1,
+			     self->context_merger, 1);
 
   /* output */
   self->output = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PCM_OUTPUT, NULL);
   bse_snet_intern_child (snet, self->output);
 
-  /* context merger <-> output */
+  /* postprocess <-> output */
   bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_LEFT,
-			     self->context_merger, 0);
+			     self->postprocess, 0);
   bse_source_must_set_input (self->output, BSE_PCM_OUTPUT_ICHANNEL_RIGHT,
-			     self->context_merger, 1);
+			     self->postprocess, 1);
 }
 
 static void
@@ -276,11 +309,40 @@ bse_song_finalize (GObject *object)
 
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->context_merger));
   self->context_merger = NULL;
+  bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->postprocess));
+  self->postprocess = NULL;
   bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (self->output));
   self->output = NULL;
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static BseProxySeq*
+bse_song_list_proxies (BseItem    *item,
+                       guint       param_id,
+                       GParamSpec *pspec)
+{
+  BseSong *self = BSE_SONG (item);
+  BseProxySeq *pseq = bse_proxy_seq_new ();
+  switch (param_id)
+    {
+    case PROP_POST_NET:
+      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+  return pseq;
+}
+
+static void
+song_uncross_pnet (BseItem *owner,
+                   BseItem *ref_item)
+{
+  BseSong *self = BSE_SONG (owner);
+  bse_item_set (self, "pnet", NULL, NULL);
 }
 
 static void
@@ -296,19 +358,19 @@ bse_song_set_property (GObject      *object,
       gboolean vbool;
       SfiInt vint;
       SfiRing *ring;
-    case PARAM_VOLUME_f:
-    case PARAM_VOLUME_dB:
-    case PARAM_VOLUME_PERC:
+    case PROP_VOLUME_f:
+    case PROP_VOLUME_dB:
+    case PROP_VOLUME_PERC:
       volume_factor = 0; /* silence gcc */
       switch (param_id)
 	{
-	case PARAM_VOLUME_f:
+	case PROP_VOLUME_f:
 	  volume_factor = sfi_value_get_real (value);
 	  break;
-	case PARAM_VOLUME_dB:
+	case PROP_VOLUME_dB:
 	  volume_factor = bse_dB_to_factor (sfi_value_get_real (value));
 	  break;
-	case PARAM_VOLUME_PERC:
+	case PROP_VOLUME_PERC:
 	  volume_factor = sfi_value_get_int (value) / 100.0;
 	  break;
 	}
@@ -319,24 +381,45 @@ bse_song_set_property (GObject      *object,
       g_object_notify (self, "volume_perc");
       g_object_notify (self, "volume_f");
       break;
-    case PARAM_BPM:
+    case PROP_BPM:
       self->bpm = sfi_value_get_real (value);
       bse_song_update_tpsi_SL (self);
       break;
-    case PARAM_NOMINATOR:
+    case PROP_POST_NET:
+      if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
+        {
+          if (self->pnet)
+            {
+              bse_object_unproxy_notifies (self->pnet, self, "notify::pnet");
+              bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->pnet), song_uncross_pnet);
+              self->pnet = NULL;
+            }
+          self->pnet = bse_value_get_object (value);
+          if (self->pnet)
+            {
+              bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->pnet), song_uncross_pnet);
+              bse_object_proxy_notifies (self->pnet, self, "notify::pnet");
+            }
+          if (self->postprocess)
+            g_object_set (self->postprocess, /* no undo */
+                          "snet", self->pnet,
+                          NULL);
+        }
+      break;
+    case PROP_NOMINATOR:
       self->nominator = sfi_value_get_int (value);
       bse_song_update_tpsi_SL (self);
       break;
-    case PARAM_DENOMINATOR:
+    case PROP_DENOMINATOR:
       vint = sfi_value_get_int (value);
       self->denominator = vint <= 2 ? vint : 1 << g_bit_storage (vint - 1);
       bse_song_update_tpsi_SL (self);
       break;
-    case PARAM_TPQN:
+    case PROP_TPQN:
       self->tpqn = sfi_value_get_int (value);
       bse_song_update_tpsi_SL (self);
       break;
-    case PARAM_LOOP_ENABLED:
+    case PROP_LOOP_ENABLED:
       vbool = sfi_value_get_bool (value);
       vbool = vbool && self->loop_left_SL >= 0 && self->loop_right_SL > self->loop_left_SL;
       if (vbool != self->loop_enabled_SL)
@@ -346,7 +429,7 @@ bse_song_set_property (GObject      *object,
 	  BSE_SEQUENCER_UNLOCK ();
 	}
       break;
-    case PARAM_LOOP_LEFT:
+    case PROP_LOOP_LEFT:
       vint = sfi_value_get_int (value);
       if (vint != self->loop_left_SL)
 	{
@@ -361,7 +444,7 @@ bse_song_set_property (GObject      *object,
 	    g_object_notify (self, "loop_enabled");
 	}
       break;
-    case PARAM_LOOP_RIGHT:
+    case PROP_LOOP_RIGHT:
       vint = sfi_value_get_int (value);
       if (vint != self->loop_right_SL)
 	{
@@ -376,7 +459,7 @@ bse_song_set_property (GObject      *object,
 	    g_object_notify (self, "loop_enabled");
 	}
       break;
-    case PARAM_TICK_POINTER:
+    case PROP_TICK_POINTER:
       vint = sfi_value_get_int (value);
       if (vint != self->tick_SL)
 	{
@@ -405,37 +488,40 @@ bse_song_get_property (GObject     *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
-    case PARAM_VOLUME_f:
+    case PROP_VOLUME_f:
       sfi_value_set_real (value, self->volume_factor);
       break;
-    case PARAM_VOLUME_dB:
+    case PROP_VOLUME_dB:
       sfi_value_set_real (value, bse_dB_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
       break;
-    case PARAM_VOLUME_PERC:
+    case PROP_VOLUME_PERC:
       sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);
       break;
-    case PARAM_BPM:
+    case PROP_BPM:
       sfi_value_set_real (value, self->bpm);
       break;
-    case PARAM_NOMINATOR:
+    case PROP_POST_NET:
+      bse_value_set_object (value, self->pnet);
+      break;
+    case PROP_NOMINATOR:
       sfi_value_set_int (value, self->nominator);
       break;
-    case PARAM_DENOMINATOR:
+    case PROP_DENOMINATOR:
       sfi_value_set_int (value, self->denominator);
       break;
-    case PARAM_TPQN:
+    case PROP_TPQN:
       sfi_value_set_int (value, self->tpqn);
       break;
-    case PARAM_LOOP_ENABLED:
+    case PROP_LOOP_ENABLED:
       sfi_value_set_bool (value, self->loop_enabled_SL);
       break;
-    case PARAM_LOOP_LEFT:
+    case PROP_LOOP_LEFT:
       sfi_value_set_int (value, self->loop_left_SL);
       break;
-    case PARAM_LOOP_RIGHT:
+    case PROP_LOOP_RIGHT:
       sfi_value_set_int (value, self->loop_right_SL);
       break;
-    case PARAM_TICK_POINTER:
+    case PROP_TICK_POINTER:
       sfi_value_set_int (value, self->tick_SL);
       break;
     default:

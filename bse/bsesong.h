@@ -51,7 +51,10 @@ struct _BseSong
   GList            *parts;              /* of type BsePart* */
 
   BseSource	   *context_merger;
+  BseSource	   *postprocess;
   BseSource	   *output;
+
+  BseSNet         *pnet;
 
   /* song position pointer */
   SfiInt	    last_position;
