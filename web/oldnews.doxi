@@ -11,7 +11,7 @@
 @unnumbered What Was New? (Ancient News)
 
 
-@news_title{Monday 2 Sep 2002, New Development Release}
+@newsTitle{Monday 2 Sep 2002, New Development Release}
 
 BEAST/BSE version 0.4.1 is available in the
 @uref{beast-doc://download,,download section}.
@@ -35,7 +35,7 @@ A good starting point are the test files shipped in the
 @uref{beast-doc://quickstart,,Quick Start Guide} in the Help menu.
 
 
-@news_title{Friday 23 Aug 2002, Logo Contest Winner}
+@newsTitle{Friday 23 Aug 2002, Logo Contest Winner}
 
 And the winner is... @strong{jimmac}!
 
@@ -49,20 +49,20 @@ contest entries at the
 @uref{beast-doc://logo-submissions/,,logo submissions} page.
 
 
-@news_title{Saturday 27 Jul 2002, Hold your breath}
+@newsTitle{Saturday 27 Jul 2002, Hold your breath}
 
 Tim has put lots of work into our new toy, Piano Roll Editor, and it shows.
 Also, Beast is able to playback songs once again. Enjoy, all.
 
 
-@news_title{Saturday 1 Jun 2002, Going on with the new features}
+@newsTitle{Saturday 1 Jun 2002, Going on with the new features}
 
 BSE now has a Guile based scheme shell called bswshell. In parallel,
 BEAST supports the execution of Scheme scripts.@*
 On the other news, there is a new filter called @strong{Biquad Filter}.
 
 
-@news_title{Monday 13 May 2002, Recovering from an ill-willed harddisk}
+@newsTitle{Monday 13 May 2002, Recovering from an ill-willed harddisk}
 
 We've been having a disk outage at gtk.org, which unfortunately took some
 recent work on the BEAST website with it. Nevertheless, BEAST development
@@ -78,7 +78,7 @@ them up). Also the new 19"-rack alike GUI front-end is already usable to some
 extend and a lot of overall GUI polishing has also been done. 
 
 
-@news_title{Sunday 3 March 2002, General Site Overhaul}
+@newsTitle{Sunday 3 March 2002, General Site Overhaul}
 
 We worked on the site to improve its structure so it will be easier
 for us to add new content or update the existing easier. Also, we now
@@ -91,7 +91,7 @@ On the CVS side, the rack editor is slowly becoming usable,
 filter) available, and right now Tim is working on an MP3 loader.
 
 
-@news_title{Monday 14 January 2002, Recent Going-Ons}
+@newsTitle{Monday 14 January 2002, Recent Going-Ons}
 
 There were many major changes in the core of BEAST/BSE in the
 CVS recently. The core engine has been replaced with a new one
@@ -116,7 +116,7 @@ Besides beast.gtk.org has a new webmaster, so hopefully it will
 get more frequent updates in the future.
 
 
-@news_title{Monday  2 July 2001, The-fix-the-loop-Release}
+@newsTitle{Monday  2 July 2001, The-fix-the-loop-Release}
 
 BEAST was packaged up and got included into
 @uref{http://www.debian.org,,Debian}
@@ -137,7 +137,7 @@ in this area and love contributing, send off an
 @uref{mailto://timj@@beast.gtk.org,,email}.
 
 
-@news_title{Monday 30 October 2000, BEASTIE BITS}
+@newsTitle{Monday 30 October 2000, BEASTIE BITS}
 
 We've recently had a few more logo submissions, so
 @uref{beast-doc://logo-submissions/,,logo submissions page}
@@ -154,7 +154,7 @@ placeholders, and some of the older ones could stand polishing. If you're intere
 helping out in this area, please send @uref{mailto://timj@@beast.gtk.org,,us} email.
 
 
-@news_title{Monday 9 May 2000, Logo Contest in Progress}
+@newsTitle{Monday 9 May 2000, Logo Contest in Progress}
 
 As announced on Sunday 12 March, we are in search of a decent logo.  Submissions are accepted to
 @uref{ftp://beast.gtk.org/incoming/} and are shown on 
@@ -162,7 +162,7 @@ As announced on Sunday 12 March, we are in search of a decent logo.  Submissions
 If you have questions/comments/feedback, @uref{mailto://timj@@beast.gtk.org,,contact us}.
 
 
-@news_title{Sunday 12 March 2000, Version @strong{0.3.2} released}
+@newsTitle{Sunday 12 March 2000, Version @strong{0.3.2} released}
 
 See the Gnotice @uref{http://beast.gtk.org/mirror/gnome-news/953148210.html,,here (mirrored from http://news.gnome.org:80/gnome-news/953148210/)}.
 
@@ -175,7 +175,7 @@ several more. If the placeholder icons [?] annoy you enough, sit down, or get on
 to sit down, and create some decent icons. Submissions are greatly appreciated.
 
 
-@news_title{Sunday 12 March 2000, We need an @strong{ICON}!}
+@newsTitle{Sunday 12 March 2000, We need an @strong{ICON}!}
 
 For the more adventurous ones, BEAST also lacks a decent logo. So if anyone feels like drawing up a cool 
 BEAST with BSE (having some musical tendencies), it could earn you an email alias at gtk.org,
@@ -185,7 +185,7 @@ to GUADEC ;)
 @uref{mailto://timj@@beast.gtk.org,, Contact us} if you're interested.
 
 
-@news_title{Thursday 9 March 2000,}
+@newsTitle{Thursday 9 March 2000,}
 
 We're currently seeking artists to help us with icons and logos.  Here are a couple of new screen shots (from the 
 current development version in CVS) to show what things currently look like:
@@ -199,14 +199,14 @@ current development version in CVS) to show what things currently look like:
 If you'd like to help, please @uref{mailto://timj@@beast.gtk.org,,email us}.
 
 
-@news_title{Friday 14 January 2000,}
+@newsTitle{Friday 14 January 2000,}
 
 Version 0.3.1 released. See the @uref{beast-doc://release-news,, NEWS page}
 for details.
 As usual, the ChangeLogs are always available for your perusal (see the links in the left column).
 
 
-@news_title{Friday 31 December 1999,}
+@newsTitle{Friday 31 December 1999,}
 
 Version 0.3.0 (pre-alpha) released.  For details, see the 
 @uref{http://beast.gtk.org/mirror/gnome-news/946616649.html,,announcement (mirrored from http://news.gnome.org/gnome-news/946616649/index_html)}

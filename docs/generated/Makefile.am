@@ -122,12 +122,47 @@ if HAVE_DOC_TOOLS
 	$(XSLTPROC) $(srcdir)/markup.xsl $< >$@
 # man from xml (installed)
 %.3: %.3.xml			$(srcdir)/man.xsl $(srcdir)/texinfo.dtd
+#       Below code's purpose is to extract valuable info from
+#       man files and then to combine them into one file.
+#
+#       TODO After we source files, especially TOC, page numbers
+#       change, so there should be another step to calculate the
+#       final numbers.
+#
+#       @XR@, @IF@, and @TF@ stands for the places where certion
+#       info is included into the main document, ie. @XR@ means
+#       'put xref info here'.
+#
+#       First, we create a nroff file from the xml source, and
+#       remove @XR@, and such lines as we don't have anything to do
+#       with them yet.
 	$(XSLTPROC) --param man_section 3 $(srcdir)/man.xsl $< \
-	| sed 's/@XR@/.so $@.xrf/g' >$@
-	$(GROFF) -man -t $@ >/dev/null 2>$@.err
+	| sed -e '/@XR@/ d' \
+	      -e '/@IF@/ d' \
+	      -e '/@TF@/ d' >$@.tmp
+#       We pass this file thru groff and catch its stderr which
+#       contains the info we are interested into.
+	$(GROFF) -man -t $@.tmp >/dev/null 2>$@.err
+#       Each type of info line has its specific prefix.  We create
+#       separate files according to those prefixes and remove them.
 	-grep '^XR: ' $@.err | cut -c5- >$@.xrf
-	$(SOELIM) <$@ >$@.tmp && mv -f $@.tmp $@
-	rm -f $@.err $@.xrf
+	-grep '^IX: ' $@.err | cut -c5- >$@.ind
+	-grep '^TC: ' $@.err | cut -c5- >$@.toc
+#       We create another nroff file from the xml source, but this
+#       time we substitute @XR@ and such lines with filenames to be
+#       sourced at those points.
+	$(XSLTPROC) --param man_section 3 $(srcdir)/man.xsl $< \
+	| sed -e 's/@XR@/.so $@.xrf/g' \
+	      -e 's/@IF@/.so $@.ind/g' \
+	      -e 's/@TF@/.so $@.toc/g' >$@.tmp
+#       Soelim loses the first line of the nroff file, which contains
+#       preprocessor info for `man'.
+	echo '.\" t' >$@
+#       Soelim processes .so lines and sources files into a big one
+#       which contains all of them.
+	$(SOELIM) <$@.tmp >>$@
+#       Remove scratch files.
+	rm -f $@.err $@.xrf $@.ind $@.toc $@.tmp
 # html from xml (website)
 %.html: %.xml	texinfo.dtd html.xsl navigation.xsl navigation.xml
 	$(XSLTPROC) --stringparam this_file "$@" \
@@ -135,12 +170,22 @@ if HAVE_DOC_TOOLS
 	            $(srcdir)/html.xsl $< >$@
 # postscript rules
 %.nroff: %.xml man.xsl
+#       See the %.3 rule above for an explanation of these steps
 	$(XSLTPROC) $(srcdir)/man.xsl $< \
-	| sed 's/@XR@/.so $@.xrf/g' >$@
-	$(GROFF) -man -t $@ >/dev/null 2>$@.err
+	| sed -e '/@XR@/ d' \
+	      -e '/@IF@/ d' \
+	      -e '/@TF@/ d' >$@.tmp
+	$(GROFF) -man -t $@.tmp >/dev/null 2>$@.err
 	-grep '^XR: ' $@.err | cut -c5- >$@.xrf
-	$(SOELIM) <$@ >$@.tmp && mv -f $@.tmp $@
-	rm -f $@.err $@.xrf
+	-grep '^IX: ' $@.err | cut -c5- >$@.ind
+	-grep '^TC: ' $@.err | cut -c5- >$@.toc
+	$(XSLTPROC) $(srcdir)/man.xsl $< \
+	| sed -e 's/@XR@/.so $@.xrf/g' \
+	      -e 's/@IF@/.so $@.ind/g' \
+	      -e 's/@TF@/.so $@.toc/g' >$@.tmp
+	echo '.\" t' >$@
+	$(SOELIM) <$@.tmp >>$@
+	rm -f $@.err $@.xrf $@.ind $@.toc $@.tmp
 %.ps: %.nroff
 	$(GROFF) -man -t $< >$@
 %.ps: %.3

@@ -33,26 +33,26 @@ function ChangeLog2texi ()
         -e '}' \
 	-e 's/<\([^@]*@[^>]*\)>/mailto:\1:end-mailto/g' \
 	-e 's/mailto:\([^@]*@[^ ]*\):end-mailto/<@uref{mailto:\/\/\1}\>/g' \
-	-e 's/\(ftp:\/\/[^ 	]*[^.;,]\)/@uref{\1}/g' \
-        -e 's/[^">]\(ftp:\/\/[^ 	]*$\)/@uref{\1}/g' \
-	-e 's/[^">]\(http:\/\/[^ 	]*$\)/@uref{\1}/g' \
-	-e 's/\(http:\/\/[^ 	]*[^.;,]\)/@uref{\1}/g' \
+	-e 's/\(ftp:\/\/[^ 	]*[^.;,]\)/ @uref{\1} /g' \
+        -e 's/[^">]\(ftp:\/\/[^ 	]*$\)/ @uref{\1} /g' \
+	-e 's/[^">]\(http:\/\/[^ 	]*$\)/ @uref{\1} /g' \
+	-e 's/\(http:\/\/[^ 	]*[^.;,]\)/ @uref{\1} /g' \
 	-e '/^[ 	]\+[^*]/s/^[ 	]\+/  /' \
 	-e '/^[		]\+\* [^:]\+$/s/^[ 	]\+//' \
 	-e '/^[12][-0-9]\{9\}/s/^\(.*\)$/@unnumberedsec @clogentry{\1}/' \
 	-e '/^[A-z]\{3\}/s/^\(.*\)$/@unnumberedsec @clogentry{\1}/' \
-	-e 's/\(\b'"$SYMBOL_PREFIX"''"$SYMBOL_PATTERN"'\)/@reference_type{\1}/g' \
-	-e 's/\(\b'"$SYMBOL_GLIB"'\)/@reference_type{\1}/g' \
-	-e 's/\(\b'"$FUNC_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_function{\1}/g' \
-	-e 's/\(\b'"$MACRO_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_constant{\1}/g' \
+	-e 's/\(\b'"$SYMBOL_PREFIX"''"$SYMBOL_PATTERN"'\)/@refType{\1}/g' \
+	-e 's/\(\b'"$SYMBOL_GLIB"'\)/@refType{\1}/g' \
+	-e 's/\(\b'"$FUNC_PREFIX"'_'"$FUNC_PATTERN"'\)/@refFunction{\1}/g' \
+	-e 's/\(\b'"$MACRO_PREFIX"'_'"$FUNC_PATTERN"'\)/@refConstant{\1}/g' \
 	-e '/^[ 	]\+/ { ' \
-	  -e 's/'"$CONST1_EXPR"'/@reference_constant{\1}/g;' \
-	  -e 's/'"$CONST2_EXPR"'/@reference_constant{\1}/g;' \
-	  -e 's/'"$CONST3_EXPR"'/@reference_constant{\1}/g;' \
-	  -e 's/'"$CONST4_EXPR"'/@reference_constant{\1}/g;' \
-	  -e 's/'"$CONST5_EXPR"'/@reference_constant{\1}/g;' \
-	  -e 's/'"$CONST6_EXPR"'/@reference_constant{\1}/g;' \
-	  -e 's/'"$CONST7_EXPR"'/@reference_constant{\1}/g;' \
+	  -e 's/'"$CONST1_EXPR"'/@refConstant{\1}/g;' \
+	  -e 's/'"$CONST2_EXPR"'/@refConstant{\1}/g;' \
+	  -e 's/'"$CONST3_EXPR"'/@refConstant{\1}/g;' \
+	  -e 's/'"$CONST4_EXPR"'/@refConstant{\1}/g;' \
+	  -e 's/'"$CONST5_EXPR"'/@refConstant{\1}/g;' \
+	  -e 's/'"$CONST6_EXPR"'/@refConstant{\1}/g;' \
+	  -e 's/'"$CONST7_EXPR"'/@refConstant{\1}/g;' \
         -e '}' \
 	-e 's/$/@*/g' \
 	-e 's/^[ 	]*@\*$//g' \

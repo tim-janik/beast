@@ -21,7 +21,7 @@ and a lot more content.
 So browse and enjoy! ;-)
 
 
-@news_title{Tuesday 31 Dec 2002, Ongoing Work}
+@newsTitle{Tuesday 31 Dec 2002, Ongoing Work}
 
 The CVS tree has undergone major shuffeling recently due to integration of a
 new middleware layer into BSE. In other news, our website maintainer

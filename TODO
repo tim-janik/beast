@@ -56,13 +56,11 @@ DOCS:
   tsmview. then, gsl-mplan.txt and NEWS don't need anymore markup. [timj]
 - report mising underline to havoc, alper has a tsmview example in
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
-- fix black backgrounds in logo contest thumbnails
-  (occours on entries with alpha channel) [alper]
 - adjust overall brightness of the site [alper]
 - in development docs, make function names in descriptions links to
   apropriate functions [alper]
-- function docs constants (e.g. %NULL) aren't marked up in cyan in .markup output [alper]
 - the beast site is unusable under IE [alper]
+- nroff files need another build step to get final page numbers [alper]
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq

@@ -142,7 +142,7 @@
 
 
 @c --- news item title ---
-@rmacro news_title{DATE, TITLE}
+@rmacro newsTitle{DATE, TITLE}
 @ifxmlelse{\DATE\,news-date,nop}
 @ifxmlelse{\TITLE\,news-title,nop}
 @end rmacro
@@ -153,34 +153,34 @@
 @c --- makeinfo formats the @deffn, @deftp, and similar
 @c --- commands in a way unsuitable for XML. So we try to
 @c --- reproduce their functionality
-@rmacro reference_function{TEXT}
+@rmacro refFunction{TEXT}
 @ifxmlelse{\TEXT\,reference-function,nop}
 @end rmacro
-@rmacro reference_parameter{TEXT}
+@rmacro refParameter{TEXT}
 @ifxmlelse{\TEXT\,reference-parameter,nop}
 @end rmacro
-@rmacro reference_constant{TEXT}
+@rmacro refConstant{TEXT}
 @ifxmlelse{\TEXT\,reference-constant,nop}
 @end rmacro
-@rmacro reference_type{TEXT}
+@rmacro refType{TEXT}
 @ifxmlelse{\TEXT\,reference-type,nop}
 @end rmacro
-@rmacro reference_returns
+@rmacro refReturns
 @ifxmlelse{RETURNS:,reference-returns,nop}
 @end rmacro
-@rmacro reference_blurb{TEXT}
+@rmacro refBlurb{TEXT}
 @ifxmlelse{\TEXT\,reference-blurb,nop}
 @end rmacro
-@rmacro reference_struct_type{TEXT}
+@rmacro refStructType{TEXT}
 @ifxmlelse{\TEXT\,reference-struct-type,nop}
 @end rmacro
-@rmacro reference_struct_name{TEXT}
+@rmacro refStructName{TEXT}
 @ifxmlelse{\TEXT\,reference-struct-name,nop}
 @end rmacro
-@rmacro reference_struct_open
+@rmacro refStructOpen
 @ifxmlelse{,reference-struct-open,nop}
 @end rmacro
-@rmacro reference_struct_close
+@rmacro refStructClose
 @ifxmlelse{,reference-struct-close,nop}
 @end rmacro
 

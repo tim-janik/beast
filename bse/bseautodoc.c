@@ -153,41 +153,41 @@ show_procdoc (void)
       gchar *sname = g_type_name_to_sname (cseq->cats[i]->type);
       guint j;
       
-      g_print ("@item (@reference_function{%s}@ ", sname);
+      g_print ("@item (@refFunction{%s}@ ", sname);
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
 	  gchar *sarg = g_type_name_to_sname (pspec->name);
 	  if (j)
 	    g_print ("@ ");
-	  g_print ("@reference_parameter{%s}", sarg);
+	  g_print ("@refParameter{%s}", sarg);
 	  g_free (sarg);
 	}
       g_print (") ");
       
-      g_print ("@findex @reference_function{%s} (", cname);
+      g_print ("@findex @refFunction{%s} (", cname);
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
 	  if (j)
 	    g_print (", ");
-	  g_print ("@reference_parameter{%s}", pspec->name);
+	  g_print ("@refParameter{%s}", pspec->name);
 	}
       g_print (");");
       
       if (class->blurb)
-	g_print (" - @reference_blurb{%s}", class->blurb);
+	g_print (" - @refBlurb{%s}", class->blurb);
       
       g_print ("\n");
       
-      g_print ("@itemx @reference_function{%s} (", cname);
+      g_print ("@itemx @refFunction{%s} (", cname);
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
 	  gchar *carg = g_type_name_to_cname (pspec->name);
 	  if (j)
 	    g_print (", ");
-	  g_print ("@reference_parameter{%s}", carg);
+	  g_print ("@refParameter{%s}", carg);
 	  g_free (carg);
 	}
       g_print (");\n");
@@ -201,20 +201,20 @@ show_procdoc (void)
 	      gchar *tname = type_name (pspec);
 	      const gchar *blurb = g_param_spec_get_blurb (pspec);
 	      gchar *carg = g_type_name_to_cname (pspec->name);
-	      g_print ("@item @reference_type{%s} @tab @reference_parameter{%s}; @tab %s\n",
+	      g_print ("@item @refType{%s} @tab @refParameter{%s}; @tab %s\n",
 		       tname, carg, blurb ? blurb : "");
 	      g_free (tname);
 	      g_free (carg);
 	    }
 	  if (class->n_out_pspecs)
-	    g_print ("@item @reference_returns @tab @tab\n");
+	    g_print ("@item @refReturns @tab @tab\n");
 	  for (j = 0; j < class->n_out_pspecs; j++)
 	    {
 	      GParamSpec *pspec = G_PARAM_SPEC (class->out_pspecs[j]);
 	      gchar *tname = type_name (pspec);
 	      const gchar *blurb = g_param_spec_get_blurb (pspec);
               gchar *carg = g_type_name_to_cname (pspec->name);
-	      g_print ("@item @reference_type{%s} @tab @reference_parameter{%s}; @tab %s\n",
+	      g_print ("@item @refType{%s} @tab @refParameter{%s}; @tab %s\n",
 		       tname, carg, blurb ? blurb : "");
 	      g_free (tname);
               g_free (carg);
@@ -283,12 +283,12 @@ show_structdoc (void)
 	  SfiRing *ring, *pspecs = NULL;
 	  guint j;
 
-	  g_print ("@item @reference_struct_type{%s} @reference_struct_name{%s} @reference_struct_open ", dname, name);
+	  g_print ("@item @refStructType{%s} @refStructName{%s} @refStructOpen ", dname, name);
 
-	  g_print ("@findex @reference_struct_type{%s}@ @reference_struct_name{%s};", dname, name);
+	  g_print ("@findex @refStructType{%s}@ @refStructName{%s};", dname, name);
 	  cstring = sfi_info_string_find (rinfo ? rinfo->infos : sinfo->infos, "BLURB");
 	  if (cstring)
-	    g_print (" - @reference_blurb{%s}", cstring);
+	    g_print (" - @refBlurb{%s}", cstring);
 	  g_print ("\n");
 
 	  if (rinfo)
@@ -302,7 +302,7 @@ show_structdoc (void)
 	    {
 	      GParamSpec *pspec = pspecs->data;
 	      gchar *carg = g_type_name_to_cname (pspec->name);
-	      g_print ("@item @reference_type{guint} @tab @reference_parameter{n_%s}; @tab %s\n",
+	      g_print ("@item @refType{guint} @tab @refParameter{n_%s}; @tab %s\n",
 		       carg,
 		       "C language specific number of elements\n");
 	      g_free (carg);
@@ -313,14 +313,14 @@ show_structdoc (void)
 	      gchar *tname = type_name (pspec);
 	      const gchar *blurb = g_param_spec_get_blurb (pspec);
 	      gchar *carg = g_type_name_to_cname (pspec->name);
-	      g_print ("@item @reference_type{%s%s} @tab @reference_parameter{%s}; @tab %s\n",
+	      g_print ("@item @refType{%s%s} @tab @refParameter{%s}; @tab %s\n",
 		       tname, sinfo ? "*" : "",
 		       carg, blurb ? blurb : "");
 	      g_free (tname);
 	      g_free (carg);
 	    }
 	  g_print ("@end multitable\n");
-	  g_print ("@reference_struct_close\n");
+	  g_print ("@refStructClose\n");
 
 	  cstring = sfi_info_string_find (rinfo ? rinfo->infos : sinfo->infos, "HELP");
 	  if (cstring)

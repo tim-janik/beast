@@ -157,8 +157,8 @@ sub tags_print_syntax {
     my $prefix    = shift || '';
     my @var_names = @{$rec->{var_names}};
 
-    print $prefix, '@reference_function{' . $rec->{name} . '} (',
-	join(', ', map { $_ = "\@reference_parameter{$_}" } @var_names),
+    print $prefix, '@refFunction{' . $rec->{name} . '} (',
+	join(', ', map { $_ = "\@refParameter{$_}" } @var_names),
 	");";
 }
 sub tags_highlight {
@@ -170,16 +170,16 @@ sub tags_highlight {
     $t =~ s/ \s \@ \* \s/ :scandocs_pl_QUOTE1:newline:scandocs_pl_QUOTE2:/gx;
 
     # A variable (parameter)
-    $t =~ s/ \@ ( $ident ) /\@reference_parameter{$1}/gx;
+    $t =~ s/ \@ ( $ident ) /\@refParameter{$1}/gx;
 
     # Restore explicit newline indicators
     $t =~ s/:scandocs_pl_QUOTE1:newline:scandocs_pl_QUOTE2:/\@*/gx;
 
     # A type
-    $t =~ s/ \# ( $ident ) /\@reference_type{$1}/gx;
+    $t =~ s/ \# ( $ident ) /\@refType{$1}/gx;
 
     # A function name
-    $t =~ s/    ( $ident \( [-+*=!^\$%&\/?\\~;:,.|<>A-Za-z0-9\s_]* \) ) /\@reference_function{$1}/gx;
+    $t =~ s/    ( $ident \( [-+*=!^\$%&\/?\\~;:,.|<>A-Za-z0-9\s_]* \) ) /\@refFunction{$1}/gx;
 
     # quote multiple dots
     die "input contains preserved keyword" if $t =~ m/scandocs_pl_QUOTE/;
@@ -195,7 +195,7 @@ sub tags_highlight {
 		  # integer:
 		  ( \b              [0-9]+ [LlUu]* \b ) |
 		  ( \b 0 [xX] [A-Fa-f0-9]+         \b )
-		)/\@reference_constant{$1}/gx ) {
+		)/\@refConstant{$1}/gx ) {
 	# print STDERR "CONSTANT: \$1\n";
     }
 
@@ -203,7 +203,7 @@ sub tags_highlight {
     $t =~ s/ :scandocs_pl_QUOTE1 ( .* ) scandocs_pl_QUOTE2: /$1/gx;
 
     # A constant
-    $t =~ s/  % ( $ident ) /\@reference_constant{$1}/gx;
+    $t =~ s/  % ( $ident ) /\@refConstant{$1}/gx;
 
     return $t;
 }
@@ -223,16 +223,16 @@ sub tags_print_description {
 	    # $t =~ s/\s/\\ /g;
 
 	    print "\@item\n";
-	    print "\@reference_type{$t}\n" if $t;
+	    print "\@refType{$t}\n" if $t;
 
 	    print "\@tab\n";
-	    printf ("\@reference_parameter{%s};\n", $$var_names[$i]) if $$var_names[$i];
+	    printf ("\@refParameter{%s};\n", $$var_names[$i]) if $$var_names[$i];
 
 	    printf ("\@tab\n%s\n", tags_highlight ($$var_blurbs[$i]));
 	}
 
 	for my $r (@$returns) {
-	    printf ("\@item\n\@reference_returns\n\@tab\n\@tab\n%s\n", tags_highlight ($r));
+	    printf ("\@item\n\@refReturns\n\@tab\n\@tab\n%s\n", tags_highlight ($r));
 	}
 
 	print "\@end multitable\n\n";

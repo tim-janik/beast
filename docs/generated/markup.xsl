@@ -543,7 +543,7 @@
   <!-- }}} -->
 
   <!-- {{{ reference generation -->
-  <xsl:template match="reference-function|reference-parameter|reference-returns|reference-type|reference-blurb|reference-struct-name|reference-struct-type">
+  <xsl:template match="reference-function|reference-parameter|reference-constant|reference-returns|reference-type|reference-blurb|reference-struct-name|reference-struct-type">
     <span>
       <xsl:attribute name="tag">
 	<xsl:value-of select="local-name()"/>
