@@ -1,3 +1,13 @@
+Fri Oct  8 14:21:06 2004  Tim Janik  <timj@gtk.org>
+
+	* bseobject.[hc]: added bse_object_strdup_debug_handle() for 
+	threrad-safe debugging handle generation.
+
+	* bsesequencer.h:
+	* bsesequencer.cc: reduces track position debugging verbosity.
+	added underrun detection and underrun debugging messages.
+	made BSE_SEQUENCER_FUTURE_BLOCKS private.
+
 Fri Oct  8 13:37:40 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepcmmodule.c: check for a readable pcm device upon resetting the

@@ -81,6 +81,29 @@ bse_object_debug_leaks (void)
     }
 }
 
+/**
+ * bse_object_strdup_debug_handle
+ * @object:  supposedly valid #GObject pointer
+ * @RETURNS: newly allocated string
+ * Construct a debugging identifier for @object. No mutable
+ * object members are accessed, so as long as the caller
+ * keeps @object alive for the duration of the function call,
+ * this function is MT-safe and may be called from any thread.
+ */
+gchar*
+bse_object_strdup_debug_handle (gpointer object)
+{
+  GTypeInstance *instance = object;
+  if (!instance)
+    return g_strdup ("<NULL>");
+  if (!instance->g_class)
+    return g_strdup ("<NULL-Class>");
+  if (!g_type_is_a (instance->g_class->g_type, G_TYPE_OBJECT))
+    return g_strdup ("<Non-GObject>");
+  /* we may not access GObject.data (includes BSE_OBJECT_UNAME()) */
+  return g_strdup_printf ("%s(%p)\"", G_OBJECT_TYPE_NAME (instance), object);
+}
+
 const gchar*
 bse_object_debug_name (gpointer object)
 {

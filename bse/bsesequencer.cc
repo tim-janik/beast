@@ -35,6 +35,8 @@ using namespace std;
 
 #define DEBUG(...)      sfi_debug ("sequencer", __VA_ARGS__)
 
+#define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
+
 /* --- prototypes --- */
 static void	bse_sequencer_thread_main	(gpointer	 data);
 static void	bse_sequencer_process_song_SL	(BseSong	*song,
@@ -409,6 +411,8 @@ bse_sequencer_thread_main (gpointer data)
           if (song->sequencer_start_SL && !song->sequencer_done_SL)
             {
               gdouble stamp_diff = (next_stamp - song->sequencer_start_SL) - song->delta_stamp_SL;
+              guint64 old_song_pos = bse_dtoll (song->sequencer_start_SL + song->delta_stamp_SL);
+              gboolean song_starting = song->delta_stamp_SL == 0;
 	      while (stamp_diff > 0)
 		{
 		  guint n_ticks = bse_dtoi (stamp_diff * song->tpsi_SL);
@@ -417,6 +421,14 @@ bse_sequencer_thread_main (gpointer data)
 		  bse_sequencer_process_song_SL (song, n_ticks);
 		  stamp_diff = (next_stamp - song->sequencer_start_SL) - song->delta_stamp_SL;
 		}
+              if (old_song_pos <= cur_stamp && !song_starting) /* detect underrun after song start */
+                {
+                  gchar *dh = bse_object_strdup_debug_handle (song);    /* thread safe */
+                  DEBUG ("sequencer underrun by %lld blocks for song: %s",
+                         (cur_stamp - old_song_pos) / bse_engine_block_size() + 1,
+                         dh);
+                  g_free (dh);
+                }
 	    }
 	}
       global_sequencer->stamp = next_stamp;
@@ -519,7 +531,7 @@ bse_sequencer_process_track_SL (BseTrack        *track,
   if (!part && next)
     {
       part = bse_track_get_part_SL (track, next, &start, &next);
-      DEBUG ("track[%u]: advancing to first part: %p", start_tick, part);
+      // DEBUG ("track[%u]: advancing to first part: %p", start_tick, part);
     }
   if (!part || (next == 0 && start + part->last_tick_SL < start_tick))
     {

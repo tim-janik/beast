@@ -132,6 +132,7 @@ GList*		bse_objects_list_by_uname	(GType		 type,
 						 const gchar	*uname);
 void		bse_object_debug_leaks		(void);
 const gchar*	bse_object_debug_name		(gpointer	 object);
+gchar*	        bse_object_strdup_debug_handle 	(gpointer	 object);
 void		bse_object_reemit_signal	(gpointer	 src_object,
 						 const gchar	*src_signal,
 						 gpointer	 dest_obejct,

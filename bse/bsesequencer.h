@@ -22,8 +22,6 @@
 
 G_BEGIN_DECLS
 
-#define	BSE_SEQUENCER_FUTURE_BLOCKS    (7)
-
 typedef struct {
   guint64		 stamp;	/* sequencer time (ahead of real time) */
   SfiRing		*songs;
