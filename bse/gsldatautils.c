@@ -266,6 +266,7 @@ typedef struct {
   gboolean          opened;
   GslWaveFormatType format;
   guint             byte_order;
+  guint             length;
 } WStoreContext;
 
 static void
@@ -280,7 +281,6 @@ wstore_context_destroy (gpointer data)
 
 static gint /* -errno || length */
 wstore_context_reader (gpointer data,
-		       SfiNum   pos,
 		       void    *buffer,
 		       guint    blength)
 {
@@ -295,19 +295,19 @@ wstore_context_reader (gpointer data,
       wc->opened = TRUE;
     }
 
-  pos /= gsl_wave_format_byte_width (wc->format);
   blength /= 4;	/* we use buffer for floats */
-  if (pos >= gsl_data_handle_length (wc->dhandle))
+  if (wc->length >= gsl_data_handle_length (wc->dhandle))
     return 0;	/* done */
 
-  l = gsl_data_handle_read (wc->dhandle, pos, blength, buffer);
+  l = gsl_data_handle_read (wc->dhandle, wc->length, blength, buffer);
   if (l < 1)
     {
       /* single retry */
-      l = gsl_data_handle_read (wc->dhandle, pos, blength, buffer);
+      l = gsl_data_handle_read (wc->dhandle, wc->length, blength, buffer);
       if (l < 1)
 	return -EIO;	/* bail out */
     }
+  wc->length += l;
 
   return gsl_conv_from_float_clip (wc->format, wc->byte_order, buffer, buffer, l);
 }
@@ -323,7 +323,7 @@ gsl_data_handle_dump_wstore (GslDataHandle    *dhandle,
   g_return_if_fail (dhandle != NULL);
   g_return_if_fail (wstore);
 
-  wc = g_new (WStoreContext, 1);
+  wc = g_new0 (WStoreContext, 1);
   wc->dhandle = gsl_data_handle_ref (dhandle);
   wc->opened = FALSE;
   wc->format = format;

@@ -1344,6 +1344,7 @@ typedef struct {
   guint          opened : 1;
   guint          bpv, format, byte_order;
   BseStorage    *storage;
+  guint          length;
 } WStoreDHandle;
 
 static void
@@ -1358,7 +1359,6 @@ wstore_data_handle_destroy (gpointer data)
 
 static gint /* -errno || length */
 wstore_data_handle_reader (gpointer data,
-                           SfiNum   pos,
                            void    *buffer,
                            guint    blength)
 {
@@ -1376,21 +1376,19 @@ wstore_data_handle_reader (gpointer data,
       wh->opened = TRUE;
     }
 
-  /* shouldn't need to seek, check alignment */
-  g_return_val_if_fail (pos % wh->bpv == 0, -EIO);
-
   /* catch end */
-  if (pos / wh->bpv >= gsl_data_handle_length (wh->dhandle))
+  if (wh->length >= gsl_data_handle_length (wh->dhandle))
     return 0;
 
   do
-    n = gsl_data_handle_read (wh->dhandle, pos / wh->bpv, blength / sizeof (gfloat), buffer);
+    n = gsl_data_handle_read (wh->dhandle, wh->length, blength / sizeof (gfloat), buffer);
   while (n < 0 && errno == EINTR);
   if (n < 0)    /* bail out */
     {
       bse_storage_error (wh->storage, "failed to read from data handle");
       return -EIO;
     }
+  wh->length += n;
 
   return gsl_conv_from_float_clip (wh->format, wh->byte_order, buffer, buffer, n);
 }

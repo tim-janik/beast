@@ -1,3 +1,14 @@
+Thu Jan 20 17:52:14 2005  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c: removed position arguemnt 
+	from wstore_data_handle_reader(), adsed data length counter.
+
+	* gsldatahandle-vorbis.c: removed position arguemnt
+	from vorbis1_handle_reader().
+
+	* gsldatautils.c: removed position arguemnt
+	from wstore_context_reader(), adsed data length counter.
+
 Thu Jan 20 17:12:24 2005  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c: use sfi_wstore_putf() and sfi_wstore_putd() internally.

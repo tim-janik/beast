@@ -544,7 +544,6 @@ gsl_vorbis1_handle_destroy (GslVorbis1Handle *v1h)
 
 static gint /* -errno || length */
 vorbis1_handle_reader (gpointer data,
-                       SfiNum   pos,
                        void    *buffer,
                        guint    blength)
 {
