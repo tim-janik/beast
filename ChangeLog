@@ -1,3 +1,9 @@
+Wed Sep 22 23:27:23 2004  Sven Herzberg  <herzi@gnome-de.org>
+
+	* beast-gtk/gxk/gxkcanvas.c: fixed this: if one set the zoom size
+	for a text object it was always set to display the 100% zoom font
+	size, even if the zoom factor was not 100%
+
 Wed Sep 22 14:26:12 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c: added documentation for --bse-latency,

@@ -170,7 +170,7 @@ gnome_canvas_text_set_zoom_size (GnomeCanvasText *item,
 {
   g_return_if_fail (GNOME_IS_CANVAS_TEXT (item));
 
-  g_object_set (item, "size_points", pixels, NULL);
+  g_object_set (item, "size_points", pixels * GNOME_CANVAS_ITEM(item)->canvas->pixels_per_unit, NULL);
   g_object_set_double (item, "zoom_size", pixels);
 }
 
