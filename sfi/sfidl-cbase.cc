@@ -261,17 +261,17 @@ CodeGeneratorCBase::typeArg (const string& type)
       case BOOL:
       case INT:
       case NUM:
-      case REAL:      return "Sfi" + type;
-      case STRING:    return "const gchar*";
+      case REAL:
       case CHOICE:    return makeMixedName (type);
-      case BBLOCK:    return "SfiBBlock*";
-      case FBLOCK:    return "SfiFBlock*";
-      case SFIREC:    return "SfiRec*";
+      case STRING:    return "const gchar*";
+      case BBLOCK:    
+      case FBLOCK:    
+      case SFIREC:    
       case RECORD:
       case SEQUENCE:  return makeMixedName (type)+"*";
       case OBJECT:    return "SfiProxy";
     }
-  return NULL;
+  return "*error*";
 }
 
 // how "type" looks like when stored as member in a struct or class
@@ -284,17 +284,17 @@ CodeGeneratorCBase::typeField (const string& type)
       case BOOL:
       case INT:
       case NUM:
-      case REAL:      return "Sfi" + type;
-      case STRING:    return "gchar*";
+      case REAL:
       case CHOICE:    return makeMixedName (type);
-      case BBLOCK:    return "SfiBBlock*";
-      case FBLOCK:    return "SfiFBlock*";
-      case SFIREC:    return "SfiRec*";
+      case STRING:    return "gchar*";
+      case BBLOCK:
+      case FBLOCK:
+      case SFIREC:
       case RECORD:
       case SEQUENCE:  return makeMixedName (type)+"*";
       case OBJECT:    return "SfiProxy";
     }
-  return NULL;
+  return "*error*";
 }
 
 // how the return type of a function returning "type" looks like
@@ -307,40 +307,24 @@ CodeGeneratorCBase::typeRet (const string& type)
       case BOOL:
       case INT:
       case NUM:
-      case REAL:      return "Sfi" + type;
+      case REAL:      
+      case CHOICE:    return makeMixedName (type);   
       case STRING:    return "const gchar*";
-      case CHOICE:    return makeMixedName (type);
-      case BBLOCK:    return "SfiBBlock*";
-      case FBLOCK:    return "SfiFBlock*";
-      case SFIREC:    return "SfiRec*";
+      case BBLOCK:
+      case FBLOCK:
+      case SFIREC:
       case RECORD:
       case SEQUENCE:  return makeMixedName (type)+"*";
       case OBJECT:    return "SfiProxy";
     }
-  return NULL;
+  return "*error*";
 }
 
 // how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
 string
 CodeGeneratorCBase::typeArray (const string& type)
 {
-  switch (parser.typeOf (type))
-    {
-      case VOID:      return "void";
-      case BOOL:
-      case INT:
-      case NUM:
-      case REAL:      return "Sfi" + type + "*";
-      case STRING:    return "gchar**";
-      case CHOICE:    return makeMixedName (type) + "*";
-      case BBLOCK:    return "SfiBBlock**";
-      case FBLOCK:    return "SfiFBlock**";
-      case SFIREC:    return "SfiRec**";
-      case RECORD:
-      case SEQUENCE:  return makeMixedName (type) + "**";
-      case OBJECT:    return "SfiProxy*";
-    }
-  return NULL;
+  return CodeGeneratorCBase::typeField (type) + "*";
 }
 
 // how to create a new "type" called "name" (blank return value allowed)
@@ -451,171 +435,186 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
       case MODEL_VCALL_RFREE: g_assert (name != ""); break;
     }
 
-  if (parser.isRecord (type) || parser.isSequence (type))
+  switch (parser.typeOf (type))
     {
-      if (model == MODEL_VCALL_RFREE)
-	return "if ("+name+" != NULL) sfi_glue_gc_add ("+name+", "+makeLowerName (type)+"_free)";
+      case RECORD:
+      case SEQUENCE:
+	{
+	  if (model == MODEL_VCALL_RFREE)
+	    return "if ("+name+" != NULL) sfi_glue_gc_add ("+name+", "+makeLowerName (type)+"_free)";
 
-      if (parser.isSequence (type))
-      {
-	if (model == MODEL_TO_VALUE)
-	  return "sfi_value_new_take_seq (" + makeLowerName (type)+"_to_seq ("+name+"))";
-	if (model == MODEL_FROM_VALUE) 
-	  return makeLowerName (type)+"_from_seq (sfi_value_get_seq ("+name+"))";
-	if (model == MODEL_VCALL) 
-	  return "sfi_glue_vcall_seq";
-	if (model == MODEL_VCALL_ARG) 
-	  return "'" + scatId (SFI_SCAT_SEQ) + "', "+name+",";
-	if (model == MODEL_VCALL_CARG) 
-	  return "SfiSeq*";
-	if (model == MODEL_VCALL_CONV) 
-	  return makeLowerName (type)+"_to_seq ("+name+")";
-	if (model == MODEL_VCALL_CFREE) 
-	  return "sfi_seq_unref ("+name+")";
-	if (model == MODEL_VCALL_RET) 
-	  return "SfiSeq*";
-	if (model == MODEL_VCALL_RCONV) 
-	  return makeLowerName (type)+"_from_seq ("+name+")";
-      }
-      else
-      {
-	if (model == MODEL_TO_VALUE)   
-	  return "sfi_value_new_take_rec (" + makeLowerName (type)+"_to_rec ("+name+"))";
-	if (model == MODEL_FROM_VALUE)
-	  return makeLowerName (type)+"_from_rec (sfi_value_get_rec ("+name+"))";
-	if (model == MODEL_VCALL) 
-	  return "sfi_glue_vcall_rec";
-	if (model == MODEL_VCALL_ARG) 
-	  return "'" + scatId (SFI_SCAT_REC) + "', "+name+",";
-	if (model == MODEL_VCALL_CARG) 
-	  return "SfiRec*";
-	if (model == MODEL_VCALL_CONV) 
-	  return makeLowerName (type)+"_to_rec ("+name+")";
-	if (model == MODEL_VCALL_RET) 
-	  return "SfiRec*";
-	if (model == MODEL_VCALL_RCONV) 
-	  return makeLowerName (type)+"_from_rec ("+name+")";
-      }
-    }
-  else if (parser.isChoice (type))
-    {
-      if (options.generateBoxedTypes)
-	{
-	  if (model == MODEL_TO_VALUE)
-	    return "sfi_value_choice_genum ("+name+", "+makeGTypeName(type)+")";
-	  if (model == MODEL_FROM_VALUE) 
-	    return "sfi_choice2enum (sfi_value_get_choice ("+name+"), "+makeGTypeName(type)+")";
+	  if (parser.isSequence (type))
+	  {
+	    if (model == MODEL_TO_VALUE)
+	      return "sfi_value_new_take_seq (" + makeLowerName (type)+"_to_seq ("+name+"))";
+	    if (model == MODEL_FROM_VALUE) 
+	      return makeLowerName (type)+"_from_seq (sfi_value_get_seq ("+name+"))";
+	    if (model == MODEL_VCALL) 
+	      return "sfi_glue_vcall_seq";
+	    if (model == MODEL_VCALL_ARG) 
+	      return "'" + scatId (SFI_SCAT_SEQ) + "', "+name+",";
+	    if (model == MODEL_VCALL_CARG) 
+	      return "SfiSeq*";
+	    if (model == MODEL_VCALL_CONV) 
+	      return makeLowerName (type)+"_to_seq ("+name+")";
+	    if (model == MODEL_VCALL_CFREE) 
+	      return "sfi_seq_unref ("+name+")";
+	    if (model == MODEL_VCALL_RET) 
+	      return "SfiSeq*";
+	    if (model == MODEL_VCALL_RCONV) 
+	      return makeLowerName (type)+"_from_seq ("+name+")";
+	  }
+	  else
+	  {
+	    if (model == MODEL_TO_VALUE)   
+	      return "sfi_value_new_take_rec (" + makeLowerName (type)+"_to_rec ("+name+"))";
+	    if (model == MODEL_FROM_VALUE)
+	      return makeLowerName (type)+"_from_rec (sfi_value_get_rec ("+name+"))";
+	    if (model == MODEL_VCALL) 
+	      return "sfi_glue_vcall_rec";
+	    if (model == MODEL_VCALL_ARG) 
+	      return "'" + scatId (SFI_SCAT_REC) + "', "+name+",";
+	    if (model == MODEL_VCALL_CARG) 
+	      return "SfiRec*";
+	    if (model == MODEL_VCALL_CONV) 
+	      return makeLowerName (type)+"_to_rec ("+name+")";
+	    if (model == MODEL_VCALL_RET) 
+	      return "SfiRec*";
+	    if (model == MODEL_VCALL_RCONV) 
+	      return makeLowerName (type)+"_from_rec ("+name+")";
+	  }
 	}
-      else /* client code */
+	break;
+      case CHOICE:
 	{
-	  if (model == MODEL_TO_VALUE)
-	    return "sfi_value_choice (" + makeLowerName (type) + "_to_choice ("+name+"))";
-	  if (model == MODEL_FROM_VALUE) 
-	    return makeLowerName (type) + "_from_choice (sfi_value_get_choice ("+name+"))";
+	  if (options.generateBoxedTypes)
+	    {
+	      if (model == MODEL_TO_VALUE)
+		return "sfi_value_choice_genum ("+name+", "+makeGTypeName(type)+")";
+	      if (model == MODEL_FROM_VALUE) 
+		return "sfi_choice2enum (sfi_value_get_choice ("+name+"), "+makeGTypeName(type)+")";
+	    }
+	  else /* client code */
+	    {
+	      if (model == MODEL_TO_VALUE)
+		return "sfi_value_choice (" + makeLowerName (type) + "_to_choice ("+name+"))";
+	      if (model == MODEL_FROM_VALUE) 
+		return makeLowerName (type) + "_from_choice (sfi_value_get_choice ("+name+"))";
+	    }
+	  if (model == MODEL_VCALL)       return "sfi_glue_vcall_choice";
+	  if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_CHOICE) + "', "+makeLowerName (type)+"_to_choice ("+name+"),";
+	  if (model == MODEL_VCALL_CARG)  return "";
+	  if (model == MODEL_VCALL_CONV)  return "";
+	  if (model == MODEL_VCALL_CFREE) return "";
+	  if (model == MODEL_VCALL_RET)   return "const gchar *";
+	  if (model == MODEL_VCALL_RCONV) return makeLowerName (type)+"_from_choice ("+name+")";
+	  if (model == MODEL_VCALL_RFREE) return "";
 	}
-      if (model == MODEL_VCALL)       return "sfi_glue_vcall_choice";
-      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_CHOICE) + "', "+makeLowerName (type)+"_to_choice ("+name+"),";
-      if (model == MODEL_VCALL_CARG)  return "";
-      if (model == MODEL_VCALL_CONV)  return "";
-      if (model == MODEL_VCALL_CFREE) return "";
-      if (model == MODEL_VCALL_RET)   return "const gchar *";
-      if (model == MODEL_VCALL_RCONV) return makeLowerName (type)+"_from_choice ("+name+")";
-      if (model == MODEL_VCALL_RFREE) return "";
-    }
-  else if (parser.isClass (type))
-    {
-      /*
-       * FIXME: we're currently not using the type of the proxy anywhere
-       * it might for instance be worthwile being able to ensure that if
-       * we're expecting a "SfkServer" object, we will have one
-       */
-      if (model == MODEL_TO_VALUE)    return "sfi_value_proxy ("+name+")";
-      if (model == MODEL_FROM_VALUE)  return "sfi_value_get_proxy ("+name+")";
-      if (model == MODEL_VCALL)       return "sfi_glue_vcall_proxy";
-      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_PROXY) + "', "+name+",";
-      if (model == MODEL_VCALL_CARG)  return "";
-      if (model == MODEL_VCALL_CONV)  return "";
-      if (model == MODEL_VCALL_CFREE) return "";
-      if (model == MODEL_VCALL_RET)   return "SfiProxy";
-      if (model == MODEL_VCALL_RCONV) return name;
-      if (model == MODEL_VCALL_RFREE) return "";
-    }
-  else if (type == "String")
-    {
-      switch (model)
+	break;
+      case OBJECT:
 	{
-	  case MODEL_TO_VALUE:    return "sfi_value_string ("+name+")";
-	  case MODEL_FROM_VALUE:  return "sfi_value_dup_string ("+name+")";
-	  case MODEL_VCALL:       return "sfi_glue_vcall_string";
-	  case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+",";
-	  case MODEL_VCALL_CARG:  return "";
-	  case MODEL_VCALL_CONV:  return "";
-	  case MODEL_VCALL_CFREE: return "";
-	  case MODEL_VCALL_RET:   return "const gchar*";
-	  case MODEL_VCALL_RCONV: return name;
-	  case MODEL_VCALL_RFREE: return "";
+	  /*
+	   * FIXME: we're currently not using the type of the proxy anywhere
+	   * it might for instance be worthwile being able to ensure that if
+	   * we're expecting a "SfkServer" object, we will have one
+	   */
+	  if (model == MODEL_TO_VALUE)    return "sfi_value_proxy ("+name+")";
+	  if (model == MODEL_FROM_VALUE)  return "sfi_value_get_proxy ("+name+")";
+	  if (model == MODEL_VCALL)       return "sfi_glue_vcall_proxy";
+	  if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_PROXY) + "', "+name+",";
+	  if (model == MODEL_VCALL_CARG)  return "";
+	  if (model == MODEL_VCALL_CONV)  return "";
+	  if (model == MODEL_VCALL_CFREE) return "";
+	  if (model == MODEL_VCALL_RET)   return "SfiProxy";
+	  if (model == MODEL_VCALL_RCONV) return name;
+	  if (model == MODEL_VCALL_RFREE) return "";
 	}
-    }
-  else if (type == "BBlock")
-    {
-      if (model == MODEL_TO_VALUE)    return "sfi_value_bblock ("+name+")";
-      if (model == MODEL_FROM_VALUE)  return "sfi_bblock_ref (sfi_value_get_bblock ("+name+"))";
-      if (model == MODEL_VCALL)       return "sfi_glue_vcall_bblock";
-      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_BBLOCK) + "', "+name+",";
-      if (model == MODEL_VCALL_CARG)  return "";
-      if (model == MODEL_VCALL_CONV)  return "";
-      if (model == MODEL_VCALL_CFREE) return "";
-      if (model == MODEL_VCALL_RET)   return "SfiBBlock*";
-      if (model == MODEL_VCALL_RCONV) return name;
-      if (model == MODEL_VCALL_RFREE) return "";
-    }
-  else if (type == "FBlock")
-    {
-      if (model == MODEL_TO_VALUE)    return "sfi_value_fblock ("+name+")";
-      if (model == MODEL_FROM_VALUE)  return "sfi_fblock_ref (sfi_value_get_fblock ("+name+"))";
-      if (model == MODEL_VCALL)       return "sfi_glue_vcall_fblock";
-      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_FBLOCK) + "', "+name+",";
-      if (model == MODEL_VCALL_CARG)  return "";
-      if (model == MODEL_VCALL_CONV)  return "";
-      if (model == MODEL_VCALL_CFREE) return "";
-      if (model == MODEL_VCALL_RET)   return "SfiFBlock*";
-      if (model == MODEL_VCALL_RCONV) return name;
-      if (model == MODEL_VCALL_RFREE) return "";
-    }
-  else if (type == "Rec")
-    {
-      /* FIXME: review this for correctness */
-      if (model == MODEL_TO_VALUE)    return "sfi_value_rec ("+name+")";
-      if (model == MODEL_FROM_VALUE)  return "sfi_rec_ref (sfi_value_get_rec ("+name+"))";
-      if (model == MODEL_VCALL)       return "sfi_glue_vcall_rec";
-      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_REC) + "', "+name+",";
-      if (model == MODEL_VCALL_CARG)  return "";
-      if (model == MODEL_VCALL_CONV)  return "";
-      if (model == MODEL_VCALL_CFREE) return "";
-      if (model == MODEL_VCALL_RET)   return "SfiRec*";
-      if (model == MODEL_VCALL_RCONV) return name;
-      if (model == MODEL_VCALL_RFREE) return "";
-    }
-  else
-    {
-      string sfi = (type == "void") ? "" : "Sfi"; /* there is no such thing as an SfiVoid */
+	break;
+      case STRING:
+	{
+	  switch (model)
+	    {
+	      case MODEL_TO_VALUE:    return "sfi_value_string ("+name+")";
+	      case MODEL_FROM_VALUE:  return "sfi_value_dup_string ("+name+")";
+	      case MODEL_VCALL:       return "sfi_glue_vcall_string";
+	      case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+",";
+	      case MODEL_VCALL_CARG:  return "";
+	      case MODEL_VCALL_CONV:  return "";
+	      case MODEL_VCALL_CFREE: return "";
+	      case MODEL_VCALL_RET:   return "const gchar*";
+	      case MODEL_VCALL_RCONV: return name;
+	      case MODEL_VCALL_RFREE: return "";
+	    }
+	}
+	break;
+      case BBLOCK:
+	{
+	  if (model == MODEL_TO_VALUE)    return "sfi_value_bblock ("+name+")";
+	  if (model == MODEL_FROM_VALUE)  return "sfi_bblock_ref (sfi_value_get_bblock ("+name+"))";
+	  if (model == MODEL_VCALL)       return "sfi_glue_vcall_bblock";
+	  if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_BBLOCK) + "', "+name+",";
+	  if (model == MODEL_VCALL_CARG)  return "";
+	  if (model == MODEL_VCALL_CONV)  return "";
+	  if (model == MODEL_VCALL_CFREE) return "";
+	  if (model == MODEL_VCALL_RET)   return "SfiBBlock*";
+	  if (model == MODEL_VCALL_RCONV) return name;
+	  if (model == MODEL_VCALL_RFREE) return "";
+	}
+	break;
+      case FBLOCK:
+	{
+	  if (model == MODEL_TO_VALUE)    return "sfi_value_fblock ("+name+")";
+	  if (model == MODEL_FROM_VALUE)  return "sfi_fblock_ref (sfi_value_get_fblock ("+name+"))";
+	  if (model == MODEL_VCALL)       return "sfi_glue_vcall_fblock";
+	  if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_FBLOCK) + "', "+name+",";
+	  if (model == MODEL_VCALL_CARG)  return "";
+	  if (model == MODEL_VCALL_CONV)  return "";
+	  if (model == MODEL_VCALL_CFREE) return "";
+	  if (model == MODEL_VCALL_RET)   return "SfiFBlock*";
+	  if (model == MODEL_VCALL_RCONV) return name;
+	  if (model == MODEL_VCALL_RFREE) return "";
+	}
+	break;
+      case SFIREC:
+	{
+	  /* FIXME: review this for correctness */
+	  if (model == MODEL_TO_VALUE)    return "sfi_value_rec ("+name+")";
+	  if (model == MODEL_FROM_VALUE)  return "sfi_rec_ref (sfi_value_get_rec ("+name+"))";
+	  if (model == MODEL_VCALL)       return "sfi_glue_vcall_rec";
+	  if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_REC) + "', "+name+",";
+	  if (model == MODEL_VCALL_CARG)  return "";
+	  if (model == MODEL_VCALL_CONV)  return "";
+	  if (model == MODEL_VCALL_CFREE) return "";
+	  if (model == MODEL_VCALL_RET)   return "SfiRec*";
+	  if (model == MODEL_VCALL_RCONV) return name;
+	  if (model == MODEL_VCALL_RFREE) return "";
+	}
+	break;
+      default:
+	{
+	  /* get rid of the Sfi:: (the code wasn't written for it) */
+	  string ptype = NamespaceHelper::nameOf (type);
 
-      if (model == MODEL_TO_VALUE)    return "sfi_value_" + makeLowerName(type) + " ("+name+")";
-      if (model == MODEL_FROM_VALUE)  return "sfi_value_get_" + makeLowerName(type) + " ("+name+")";
-      if (model == MODEL_VCALL)       return "sfi_glue_vcall_" + makeLowerName(type);
-      if (model == MODEL_VCALL_ARG)
-	{
-	  if (type == "Real")	      return "'" + scatId (SFI_SCAT_REAL) + "', "+name+",";
-	  if (type == "Bool")	      return "'" + scatId (SFI_SCAT_BOOL) + "', "+name+",";
-	  if (type == "Int")	      return "'" + scatId (SFI_SCAT_INT) + "', "+name+",";
-	  if (type == "Num")	      return "'" + scatId (SFI_SCAT_NUM) + "', "+name+",";
+	  string sfi = (ptype == "void") ? "" : "Sfi"; /* there is no such thing as an SfiVoid */
+
+	  if (model == MODEL_TO_VALUE)    return "sfi_value_" + makeLowerName(ptype) + " ("+name+")";
+	  if (model == MODEL_FROM_VALUE)  return "sfi_value_get_" + makeLowerName(ptype) + " ("+name+")";
+	  if (model == MODEL_VCALL)       return "sfi_glue_vcall_" + makeLowerName(ptype);
+	  if (model == MODEL_VCALL_ARG)
+	  {
+	    if (ptype == "Real")	  return "'" + scatId (SFI_SCAT_REAL) + "', "+name+",";
+	    if (ptype == "Bool")	  return "'" + scatId (SFI_SCAT_BOOL) + "', "+name+",";
+	    if (ptype == "Int")		  return "'" + scatId (SFI_SCAT_INT) + "', "+name+",";
+	    if (ptype == "Num")		  return "'" + scatId (SFI_SCAT_NUM) + "', "+name+",";
+	  }
+	  if (model == MODEL_VCALL_CARG)  return "";
+	  if (model == MODEL_VCALL_CONV)  return "";
+	  if (model == MODEL_VCALL_CFREE) return "";
+	  if (model == MODEL_VCALL_RET)   return sfi + ptype;
+	  if (model == MODEL_VCALL_RCONV) return name;
+	  if (model == MODEL_VCALL_RFREE) return "";
 	}
-      if (model == MODEL_VCALL_CARG)  return "";
-      if (model == MODEL_VCALL_CONV)  return "";
-      if (model == MODEL_VCALL_CFREE) return "";
-      if (model == MODEL_VCALL_RET)   return sfi + type;
-      if (model == MODEL_VCALL_RCONV) return name;
-      if (model == MODEL_VCALL_RFREE) return "";
+	break;
     }
   return "*createTypeCode*unknown*";
 }

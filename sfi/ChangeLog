@@ -1,3 +1,9 @@
+Tue Jan  6 01:36:31 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc sfidl-generator.cc: Move predefined Sfi types (like
+	Int, Real, Num) into the Sfi namespace and add an implicit using
+	namespace Sfi.
+
 Mon Jan  5 23:58:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.*: Support for "using namespace Foo;" statements.

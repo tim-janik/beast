@@ -199,21 +199,21 @@ bool Parser::isClass(const string& type) const
   return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdClass);
 }
 
-Type Parser::typeOf(const string& type) const
+Type Parser::typeOf (const string& type) const
 {
-  if (type == "void")	  return VOID;
-  if (type == "Bool")	  return BOOL;
-  if (type == "Int")	  return INT;
-  if (type == "Num")	  return NUM;
-  if (type == "Real")	  return REAL;
-  if (type == "String")   return STRING;
-  if (isChoice (type))	  return CHOICE;
-  if (type == "BBlock")   return BBLOCK;
-  if (type == "FBlock")   return FBLOCK;
-  if (type == "Rec")      return SFIREC;
-  if (isSequence (type))  return SEQUENCE;
-  if (isRecord (type))    return RECORD;
-  if (isClass (type))     return OBJECT;
+  if (type == "void")	      return VOID;
+  if (type == "Sfi::Bool")    return BOOL;
+  if (type == "Sfi::Int")     return INT;
+  if (type == "Sfi::Num")     return NUM;
+  if (type == "Sfi::Real")    return REAL;
+  if (type == "Sfi::String")  return STRING;
+  if (isChoice (type))	      return CHOICE;
+  if (type == "Sfi::BBlock")  return BBLOCK;
+  if (type == "Sfi::FBlock")  return FBLOCK;
+  if (type == "Sfi::Rec")     return SFIREC;
+  if (isSequence (type))      return SEQUENCE;
+  if (isRecord (type))	      return RECORD;
+  if (isClass (type))	      return OBJECT;
   g_error (("invalid type: " + type).c_str());
   return VOID;
 }
@@ -594,14 +594,18 @@ bool Parser::parse (const string& filename)
   currentNamespace = &rootNamespace;
 
   /* define primitive types into the basic namespace */
-  defineSymbol("Bool");
-  defineSymbol("Int");
-  defineSymbol("Num");
-  defineSymbol("Real");
-  defineSymbol("String");
-  defineSymbol("BBlock");
-  defineSymbol("FBlock");
-  defineSymbol("Rec");
+  enterNamespace ("Sfi");
+  defineSymbol ("Bool");
+  defineSymbol ("Int");
+  defineSymbol ("Num");
+  defineSymbol ("Real");
+  defineSymbol ("String");
+  defineSymbol ("BBlock");
+  defineSymbol ("FBlock");
+  defineSymbol ("Rec");
+  leaveNamespace ();
+
+  usingNamespace ("Sfi");
   
   GTokenType expected_token = G_TOKEN_NONE;
   
@@ -1046,7 +1050,7 @@ GTokenType Parser::parseRecordField (Param& def, const IString& group)
   if (expected_token != G_TOKEN_NONE)
     return expected_token;
 
-  def.pspec = def.type;
+  def.pspec = NamespaceHelper::nameOf (def.type); // FIXME: correct?
   def.group = group;
   def.line = scanner->line;
   
@@ -1379,7 +1383,7 @@ GTokenType Parser::parseMethod (Method& method)
       method.result.file = fileName();
     }
 
-  method.result.pspec = method.result.type;
+  method.result.pspec = NamespaceHelper::nameOf (method.result.type); // FIXME: correct?
 
   parse_or_return (G_TOKEN_IDENTIFIER);
   method.name = scanner->value.v_identifier;
@@ -1394,7 +1398,7 @@ GTokenType Parser::parseMethod (Method& method)
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
 
-      def.pspec = def.type;
+      def.pspec = NamespaceHelper::nameOf (def.type); // FIXME: correct?
   
       parse_or_return (G_TOKEN_IDENTIFIER);
       def.name = scanner->value.v_identifier;
