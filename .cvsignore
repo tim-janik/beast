@@ -1,0 +1,8 @@
+Makefile
+Makefile.in
+config.log
+stamp-h
+libtool
+config.status
+config.cache
+BEASTconfig.h

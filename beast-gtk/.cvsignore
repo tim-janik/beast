@@ -1,0 +1,6 @@
+*.lo
+.deps
+_libs
+.libs
+Makefile
+Makefile.in
