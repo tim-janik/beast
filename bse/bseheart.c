@@ -57,7 +57,7 @@ static GSourceFuncs bse_heart_gsource_funcs = {
   bse_heart_prepare,
   bse_heart_check,
   bse_heart_dispatch,
-  (GDestroyNotify) bse_object_unref
+  (GDestroyNotify) NULL
 };
 
 
@@ -101,7 +101,7 @@ bse_heart_class_init (BseHeartClass *class)
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_LATENCY,
 			      bse_param_spec_uint ("latency", "Latency [msecs]", NULL,
-						   10, 2 * 1000,
+						   2, 2 * 1000,
 						   50,
 						   1000,
 						   BSE_PARAM_GUI | BSE_PARAM_HINT_SCALE));
@@ -211,14 +211,14 @@ bse_heart_get_param (BseHeart *heart,
 BseHeart*
 bse_heart_get_global (gboolean with_ref)
 {
-  if (!bse_global_heart)
+  if (with_ref)
     {
-      if (with_ref)
+      if (!bse_global_heart)
 	bse_global_heart = bse_object_new (BSE_TYPE_HEART, NULL);
+      else
+	bse_object_ref ((BseObject*) bse_global_heart);
     }
-  else if (with_ref)
-    bse_object_ref ((BseObject*) bse_global_heart);
-
+  
   return bse_global_heart;
 }
 

@@ -1,4 +1,5 @@
 general:
+-	use defines instead of 32767
 -	rework undo, gotta decide on what hirarchy and function level undo
 	should be implemented.
 -	param_changed(): update modified stamp and record undo

@@ -1,3 +1,20 @@
+Wed Dec 29 22:41:27 1999  Tim Janik  <timj@gtk.org>
+
+	* bseglobals.[hc]: added BseGConfig object that exports the BseGlobals
+	values through its parameter interface, and provides notification for
+	when BseGlobals are locked/unlocked.
+
+	* bseglobals.c (bse_globals_unlock): clear up hunk/chunk memory pool
+	when BseGlobals are unlocked.
+
+	* bseheart.c: squeezy squeezy, the GSource was stealing a BseHeart ref
+	count that it didn't own.
+
+	* bsepcmdevice-oss.c (bse_pcm_device_oss_update_state): grr, the es1371
+	driver in 2.3.34 can report audio_buf_info.bytes greater than
+	audio_buf_info.fragsize * audio_buf_info.fragstotal, which could
+	cause int wrap arounds in calculations we perform.
+
 Wed Dec 29 14:36:17 1999  Tim Janik  <timj@gtk.org>
 
 	* bseheart.[hc]: completely revised the GSource part according to

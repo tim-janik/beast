@@ -88,7 +88,6 @@ main (int   argc,
 		   stream->file_name,
 		   attributes.play_frequency,
 		   attributes.n_channels);
-	  g_print ("output buffer size: %d\n", bse_globals->pcm_buffer_size);
 	}
     }
   if (error)

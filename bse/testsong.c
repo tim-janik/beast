@@ -90,7 +90,6 @@ main (int argc, char *argv[])
 	       bse_pcm_device_get_device_name (pdev),
 	       (guint) pdev->sample_freq,
 	       pdev->n_channels);
-      g_print ("output buffer size: %d\n", bse_globals->pcm_buffer_size);
     }
   
   FIXME ({

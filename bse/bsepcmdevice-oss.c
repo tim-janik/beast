@@ -236,6 +236,10 @@ bse_pcm_device_oss_update_state (BsePcmDevice *pdev)
   pdev->capture_buffer_size = info.fragstotal * info.fragsize;
   pdev->n_capture_bytes = info.fragments * info.fragsize;
   pdev->n_capture_bytes = info.bytes;
+
+  if (1) /* OSS-bug fix, at least for es1371 in 2.3.34 */
+    pdev->n_capture_bytes = MIN (pdev->n_capture_bytes, pdev->capture_buffer_size);
+
   BSE_IF_DEBUG (PCM)
     g_message ("ISPACE(%s): left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
 	       oss->device_name,
@@ -251,6 +255,10 @@ bse_pcm_device_oss_update_state (BsePcmDevice *pdev)
   pdev->playback_buffer_size = info.fragstotal * info.fragsize;
   pdev->n_playback_bytes = info.fragments * info.fragsize;
   pdev->n_playback_bytes = info.bytes;
+
+  if (1) /* OSS-bug fix, at least for es1371 in 2.3.34 */
+    pdev->n_playback_bytes = MIN (pdev->n_playback_bytes, pdev->playback_buffer_size);
+
   BSE_IF_DEBUG (PCM)
     g_message ("OSPACE(%s): left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
 	       oss->device_name,

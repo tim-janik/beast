@@ -87,6 +87,8 @@ typedef struct	_BseEnumClass		BseEnumClass;
 typedef struct	_BseEffect		BseEffect;
 typedef struct	_BseEffectClass		BseEffectClass;
 typedef struct	_BseFlagsClass		BseFlagsClass;
+typedef struct	_BseGConfig		BseGConfig;
+typedef struct	_BseGConfigClass	BseGConfigClass;
 typedef struct	_BseInstrument		BseInstrument;
 typedef struct	_BseInstrumentClass	BseInstrumentClass;
 typedef struct	_BseItem		BseItem;
@@ -242,6 +244,8 @@ typedef	void	(*BseNotify_store)		(BseObject	*object,
 						 BseStorage     *storage,
 						 gpointer	 data);
 typedef	void	(*BseNotify_icon_changed)	(BseObject	*object,
+						 gpointer	 data);
+typedef	void	(*BseNotify_lock_changed)	(BseGConfig	*gconf,
 						 gpointer	 data);
 typedef	void	(*BseNotify_io_changed)		(BseSource	*source,
 						 gpointer	 data);

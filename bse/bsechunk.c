@@ -104,7 +104,7 @@ bse_nuke_hunk_allocs (void)
   i = BSE_MAX_N_TRACKS - 1;
   if (g_trash_stack_height (&hunk_heap[i]) != hunk_count)
     {
-      g_warning ("hunk count discrepancy (%+d) - bleeding memory...", ((gint) i) - hunk_count);
+      g_warning ("hunk count discrepancy (%+d) - bleeding memory...", ((gint) i) - ((gint) hunk_count));
       hunk_heap[i] = NULL;
     }
   while (hunk_heap[i])
@@ -321,7 +321,6 @@ bse_chunk_unref (BseChunk *chunk)
 
       chunk_count--;
     }
-
 }
 
 void
@@ -454,7 +453,7 @@ bse_chunk_complete_state (BseChunk *chunk)
       g_return_if_fail (chunk->hunk_filled == TRUE);
 
       for (i = 0; i < BSE_TRACK_LENGTH * chunk->n_tracks; i++)
-	values[i % chunk->n_tracks] += chunk->hunk[i];
+	values[i % chunk->n_tracks] += chunk->hunk[i]; /* FIXME : optimize */
       
       for (i = 0; i < chunk->n_tracks; i++)
 	if (values[i] > 0)
@@ -485,7 +484,7 @@ bse_chunk_complete_hunk (BseChunk *chunk)
 	}
 
       for (i = 0; i < BSE_TRACK_LENGTH * chunk->n_tracks; i++)
-	chunk->hunk[i] = chunk->state[i % chunk->n_tracks];
+	chunk->hunk[i] = chunk->state[i % chunk->n_tracks]; /* FIXME : optimize */
 
       chunk->hunk_filled = TRUE;
     }

@@ -43,7 +43,7 @@ struct _BseChunk
   guint		  free_state : 1;
   guint		  foreign_hunk : 1;
   guint		  g_free_hunk : 1;
-  guint		  ref_count : 24;
+  guint		  ref_count;
 };
 
 
