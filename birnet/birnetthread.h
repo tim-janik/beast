@@ -85,7 +85,7 @@ void	sfi_cond_wait_timed		(SfiCond  *cond,
 
 
 /* --- implementation --- */
-#include "sficonfig.h"
+#include <sfi/sficonfig.h>
 union _SfiCond
 {
   gpointer cond_pointer;

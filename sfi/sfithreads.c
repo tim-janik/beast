@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sficonfig.h"
+#include <sfi/sficonfig.h>
 #if	(SFI_HAVE_MUTEXATTR_SETTYPE > 0)
 #define	_XOPEN_SOURCE   600	/* for full pthread facilities */
 #endif	/* defining _XOPEN_SOURCE on random systems can have bad effects */

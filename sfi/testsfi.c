@@ -34,7 +34,7 @@
 #define sfidl_pspec_PSpec(group, name, nick, blurb, hints)            \
   sfi_pspec_int (name, nick, blurb, 0, 0, 0, 0, hints)
 
-#include "testidl.h"
+#include <sfi/testidl.h>
 
 #define	MSG(what)	do g_print ("%s [", what); while (0)
 #define	TICK()		do g_print ("-"); while (0)
@@ -788,7 +788,7 @@ test_sfidl_seq (void)
   DONE ();
 }
 
-#include "testidl.c"
+#include <sfi/testidl.c>
 
 int
 main (int   argc,
