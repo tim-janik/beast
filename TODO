@@ -350,6 +350,7 @@ other stuff:
   - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
     libtool
   - Bse::MidiEvent: should be wire-passable
+  - Makefile.plugins doesn't get regenerated properly
 
 LEGAL:
 - email RMS about plugins covered by patents
