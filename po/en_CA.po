@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-19 13:02-0400\n"
-"PO-Revision-Date: 2004-08-19 19:50-0400\n"
+"POT-Creation-Date: 2004-08-22 19:51-0400\n"
+"PO-Revision-Date: 2004-08-22 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -52,143 +52,253 @@ msgstr "Import a standard MIDI file into the current project"
 msgid "_Close"
 msgstr "_Close"
 
+#: beast-gtk/bstapp.c:76
+msgid "Close the project"
+msgstr "Close the project"
+
 #: beast-gtk/bstapp.c:80
 msgid "_Save"
 msgstr "_Save"
+
+#: beast-gtk/bstapp.c:80
+msgid "Write project to disk"
+msgstr "Write project to disk"
 
 #: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr "Save _As..."
 
+#: beast-gtk/bstapp.c:82
+msgid "Write project to a specific file"
+msgstr "Write project to a specific file"
+
 #: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr "_Quit"
+
+#: beast-gtk/bstapp.c:86
+msgid "Close all windows and quit"
+msgstr "Close all windows and quit"
 
 #: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
 msgstr "_Preferences..."
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:90
+msgid "Adjust overall program behaviour"
+msgstr "Adjust overall program behaviour"
+
+#: beast-gtk/bstapp.c:94
 msgid "Rebuild"
 msgstr "Rebuild"
 
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:97
 msgid "_About..."
 msgstr "_About..."
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:97
+msgid "Display developer and contributor credits"
+msgstr "Display developer and contributor credits"
+
+#: beast-gtk/bstapp.c:101
 msgid "_Undo"
 msgstr "_Undo"
 
 #: beast-gtk/bstapp.c:101
+msgid "Undo the effect of the last action"
+msgstr "Undo the effect of the last action"
+
+#: beast-gtk/bstapp.c:103
 msgid "_Redo"
 msgstr "_Redo"
 
-#: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:103
+msgid "Redo the last undone action"
+msgstr "Redo the last undone action"
+
+#: beast-gtk/bstapp.c:107 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Clear Undo"
 
-#: beast-gtk/bstapp.c:109
+#: beast-gtk/bstapp.c:107
+msgid "Delete the complete undo history"
+msgstr "Delete the complete undo history"
+
+#: beast-gtk/bstapp.c:111
 msgid "Procedure _Browser"
 msgstr "Procedure _Browser"
 
 #: beast-gtk/bstapp.c:111
+msgid "Display an overview of all procedures"
+msgstr "Display an overview of all procedures"
+
+#: beast-gtk/bstapp.c:113
 msgid "Rack Editor"
 msgstr "Rack Editor"
 
-#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
+#: beast-gtk/bstapp.c:115 beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Profiler"
 
 #: beast-gtk/bstapp.c:115
+msgid "Display statistics and timing information"
+msgstr "Display statistics and timing information"
+
+#: beast-gtk/bstapp.c:117
 msgid "New View"
 msgstr "New View"
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:117
+msgid "Create an extra view of the project"
+msgstr "Create an extra view of the project"
+
+#: beast-gtk/bstapp.c:121
 msgid "_Play"
 msgstr "_Play"
 
 #: beast-gtk/bstapp.c:121
+msgid "Play or restart playback of the project"
+msgstr "Play or restart playback of the project"
+
+#: beast-gtk/bstapp.c:123
 msgid "_Stop"
 msgstr "_Stop"
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:123
+msgid "Stop playback of the project"
+msgstr "Stop playback of the project"
+
+#: beast-gtk/bstapp.c:127
 msgid "New Song"
 msgstr "New Song"
 
 #: beast-gtk/bstapp.c:127
+msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
+msgstr "Create a new song, consisting of a mixer, tracks, parts and notes"
+
+#: beast-gtk/bstapp.c:129
 msgid "New Custom Synthesizer"
 msgstr "New Custom Synthesizer"
 
 #: beast-gtk/bstapp.c:129
+msgid ""
+"Create a new synthesizer mesh to be used as effect or instrument in songs"
+msgstr ""
+"Create a new synthesizer mesh to be used as effect or instrument in songs"
+
+#: beast-gtk/bstapp.c:131
 msgid "New MIDI Synthesizer"
 msgstr "New MIDI Synthesizer"
 
 #: beast-gtk/bstapp.c:131
+msgid ""
+"Create a new MIDI synthesizer to control an instrument from external MIDI "
+"events"
+msgstr ""
+"Create a new MIDI synthesizer to control an instrument from external MIDI "
+"events"
+
+#: beast-gtk/bstapp.c:133
 msgid "Remove Song or Synthesizer"
 msgstr "Remove Song or Synthesizer"
 
-#: beast-gtk/bstapp.c:135
+#: beast-gtk/bstapp.c:133
+msgid "Remove the currently selected synthesizer (song)"
+msgstr "Remove the currently selected synthesizer (song)"
+
+#: beast-gtk/bstapp.c:137
 msgid "Load _Instrument"
 msgstr "Load _Instrument"
 
 #: beast-gtk/bstapp.c:137
+msgid "Load synthesizer mesh from instruments folder"
+msgstr "Load synthesizer mesh from instruments folder"
+
+#: beast-gtk/bstapp.c:139
 msgid "Load _Effect"
 msgstr "Load _Effect"
 
 #: beast-gtk/bstapp.c:139
+msgid "Load synthesizer mesh from effects folder"
+msgstr "Load synthesizer mesh from effects folder"
+
+#: beast-gtk/bstapp.c:141
 msgid "Save As Instrument"
 msgstr "Save As Instrument"
 
 #: beast-gtk/bstapp.c:141
+msgid "Save synthesizer mesh to instruments folder"
+msgstr "Save synthesizer mesh to instruments folder"
+
+#: beast-gtk/bstapp.c:143
 msgid "Save As Effect"
 msgstr "Save As Effect"
 
-#: beast-gtk/bstapp.c:145
+#: beast-gtk/bstapp.c:143
+msgid "Save synthesizer mesh to effects folder"
+msgstr "Save synthesizer mesh to effects folder"
+
+#: beast-gtk/bstapp.c:147
 msgid "_Release Notes..."
 msgstr "_Release Notes..."
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:147
+msgid "Notes and informations about this release cycle"
+msgstr "Notes and information about this release cycle"
+
+#: beast-gtk/bstapp.c:149
 msgid "Quick Start..."
 msgstr "Quick Start..."
 
-#: beast-gtk/bstapp.c:147
+#: beast-gtk/bstapp.c:149
+msgid "Provides an introduction about how to accomplish the most common tasks"
+msgstr "Provides an introduction about how to accomplish the most common tasks"
+
+#: beast-gtk/bstapp.c:151
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:150
-msgid "GSL Engine..."
-msgstr "GSL Engine..."
+#: beast-gtk/bstapp.c:151
+msgid "Frequently asked questions"
+msgstr "Frequently asked questions"
 
-#: beast-gtk/bstapp.c:280
+#: beast-gtk/bstapp.c:155
+msgid "DSP Engine..."
+msgstr "DSP Engine..."
+
+#: beast-gtk/bstapp.c:155
+msgid "Technical description of the multi-threaded synthesis engine innards"
+msgstr "Technical description of the multi-threaded synthesis engine innards"
+
+#: beast-gtk/bstapp.c:286
 msgid "Export Audio"
 msgstr "Export Audio"
 
-#: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:613 beast-gtk/bstapp.c:620 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Opening project `%s'"
 
-#: beast-gtk/bstapp.c:636
+#: beast-gtk/bstapp.c:680
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Loading skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:797
+#: beast-gtk/bstapp.c:847
 msgid "Rack editor"
 msgstr "Rack editor"
 
-#: beast-gtk/bstapp.c:811
+#: beast-gtk/bstapp.c:861
 msgid "Preferences"
 msgstr "Preferences"
 
-#: beast-gtk/bstapp.c:838
+#: beast-gtk/bstapp.c:888
 msgid "Procedure Browser"
 msgstr "Procedure Browser"
 
-#: beast-gtk/bstapp.c:895
+#: beast-gtk/bstapp.c:945
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release Notes"
@@ -201,6 +311,26 @@ msgstr "Please press the keyboard shortcut to be installed for function: %s"
 #: beast-gtk/bstauxdialogs.c:394
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Please press the keyboard shortcut to be installed..."
+
+#: beast-gtk/bstbuseditor.c:37 beast-gtk/bstbusmixer.c:34
+#: beast-gtk/bstbusview.c:34 beast-gtk/bstinstrumentview.c:33
+#: beast-gtk/bstpartview.c:39 beast-gtk/bsttrackview.c:61
+msgid "Add"
+msgstr "Add"
+
+#: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusview.c:35
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
+#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
+#: beast-gtk/bstsnetrouter.c:751 beast-gtk/bsttrackrollctrl.c:51
+#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
+msgid "Delete"
+msgstr "Delete"
+
+#: beast-gtk/bstbuseditor.c:39 beast-gtk/bstpartview.c:41
+#: beast-gtk/bstwaveview.c:47
+msgid "Editor"
+msgstr "Editor"
 
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
@@ -227,6 +357,32 @@ msgstr "Output"
 #: beast-gtk/bstcanvassource.c:975
 msgid "(Hint)"
 msgstr "(Hint)"
+
+#: beast-gtk/bstdbmeter.c:761
+msgid "Draw Values"
+msgstr "Draw Values"
+
+#: beast-gtk/bstdbmeter.c:761
+msgid "Adjust whether to draw dB values instead of lines"
+msgstr "Adjust whether to draw dB values instead of lines"
+
+#: beast-gtk/bstdbmeter.c:764 beast-gtk/bstdbmeter.c:1059
+#: beast-gtk/bstdbmeter.c:1506
+msgid "Orientation"
+msgstr "Orientation"
+
+#: beast-gtk/bstdbmeter.c:764 beast-gtk/bstdbmeter.c:1059
+#: beast-gtk/bstdbmeter.c:1506
+msgid "Choose horizontal or vertical orientation"
+msgstr "Choose horizontal or vertical orientation"
+
+#: beast-gtk/bstdbmeter.c:767
+msgid "Justify"
+msgstr "Justify"
+
+#: beast-gtk/bstdbmeter.c:767
+msgid "Adjust relative alignment of the values or bars to be drawn"
+msgstr "Adjust relative alignment of the values or bars to be drawn"
 
 #: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
 #: beast-gtk/bsteventrollctrl.c:427
@@ -417,20 +573,6 @@ msgstr "Shrink the scrollable area"
 #: beast-gtk/bstgrowbar.c:93
 msgid "Grow the scrollable area"
 msgstr "Grow the scrollable area"
-
-#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bstbusview.c:34 beast-gtk/bsttrackview.c:61
-msgid "Add"
-msgstr "Add"
-
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
-#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
-#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
-#: beast-gtk/bstsnetrouter.c:751 beast-gtk/bstbusview.c:35
-#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:64
-#: beast-gtk/bstwaveview.c:45
-msgid "Delete"
-msgstr "Delete"
 
 #: beast-gtk/bstitemview.c:205
 msgid "ID"
@@ -721,10 +863,6 @@ msgstr "Redo"
 #: beast-gtk/bstpartdialog.c:67
 msgid "Redo the last undone editing step"
 msgstr "Redo the last undone editing step"
-
-#: beast-gtk/bstpartview.c:41 beast-gtk/bstwaveview.c:47
-msgid "Editor"
-msgstr "Editor"
 
 #: beast-gtk/bstpatterncolumns.c:686
 msgid ""
@@ -2080,38 +2218,58 @@ msgstr "Mark Signal (Head)"
 msgid "Mark Signal (Tail)"
 msgstr "Mark Signal (Tail)"
 
-#: beast-gtk/bstsupershell.c:151 beast-gtk/bstsupershell.c:279
+#: beast-gtk/bstsupershell.c:161 beast-gtk/bstsupershell.c:195
+#: beast-gtk/bstsupershell.c:322
 msgid "Waves"
 msgstr "Waves"
 
-#: beast-gtk/bstsupershell.c:214
+#: beast-gtk/bstsupershell.c:162
+msgid "Wave Repository"
+msgstr "Wave Repository"
+
+#: beast-gtk/bstsupershell.c:167
+#, c-format
+msgid "Song: %s"
+msgstr "Song: %s"
+
+#: beast-gtk/bstsupershell.c:172
+#, c-format
+msgid "MIDI Synthesizer: %s"
+msgstr "MIDI Synthesizer: %s"
+
+#: beast-gtk/bstsupershell.c:177
+#, c-format
+msgid "Synthesizer: %s"
+msgstr "Synthesizer: %s"
+
+#: beast-gtk/bstsupershell.c:257
 msgid "Tracks"
 msgstr "Tracks"
 
-#: beast-gtk/bstsupershell.c:219
+#: beast-gtk/bstsupershell.c:262
 msgid "Mixer"
 msgstr "Mixer"
 
-#: beast-gtk/bstsupershell.c:224 beast-gtk/bstsupershell.c:266
-#: beast-gtk/bstsupershell.c:284 plugins/artscompressor.idl:34
+#: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:309
+#: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parameters"
 
-#: beast-gtk/bstsupershell.c:229
+#: beast-gtk/bstsupershell.c:272
 msgid "Parts"
 msgstr "Parts"
 
-#: beast-gtk/bstsupershell.c:235
+#: beast-gtk/bstsupershell.c:278
 msgid "Busses"
 msgstr "Busses"
 
-#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:260
+#: beast-gtk/bstsupershell.c:284 beast-gtk/bstsupershell.c:303
 msgid "Routing"
 msgstr "Routing"
 
-#: beast-gtk/bstsupershell.c:255
+#: beast-gtk/bstsupershell.c:298
 msgid "Rack"
 msgstr "Rack"
 
@@ -2986,6 +3144,90 @@ msgstr "Gain Modulation Input"
 msgid "Filtered Audio Signal"
 msgstr "Filtered Audio Signal"
 
+#: bse/bsebus.c:363
+msgid "Signal Inputs"
+msgstr "Signal Inputs"
+
+#: bse/bsebus.c:365 bse/bsetrack.c:130
+msgid "Custom Synth Net"
+msgstr "Custom Synth Net"
+
+#: bse/bsebus.c:365 bse/bsetrack.c:130
+msgid "Synthesis network to be used as instrument"
+msgstr "Synthesis network to be used as instrument"
+
+#: bse/bsebus.c:367 bse/bsebus.c:372 bse/bsetrack.c:124
+msgid "Adjustments"
+msgstr "Adjustments"
+
+#: bse/bsebus.c:369
+msgid "Left Volume [dB]"
+msgstr "Left Volume [dB]"
+
+#: bse/bsebus.c:369
+msgid "Volume adjustment of left bus channel"
+msgstr "Volume adjustment of left bus channel"
+
+#: bse/bsebus.c:374
+msgid "Right Volume [dB]"
+msgstr "Right Volume [dB]"
+
+#: bse/bsebus.c:374
+msgid "Volume adjustment of right bus channel"
+msgstr "Volume adjustment of right bus channel"
+
+#: bse/bsebus.c:377
+msgid "Internals"
+msgstr "Internals"
+
+#: bse/bsebus.c:379
+msgid "Master Output"
+msgstr "Master Output"
+
+#: bse/bsebus.c:382 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Audio In"
+msgstr "Left Audio In"
+
+#: bse/bsebus.c:382 bse/bsepcmoutput.c:128
+msgid "Left channel input"
+msgstr "Left channel input"
+
+#: bse/bsebus.c:384 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Audio In"
+msgstr "Right Audio In"
+
+#: bse/bsebus.c:384
+msgid "Right channel input"
+msgstr "Right channel input"
+
+#: bse/bsebus.c:386 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Audio Out"
+msgstr "Left Audio Out"
+
+#: bse/bsebus.c:386 bse/bsepcminput.c:128
+msgid "Left channel output"
+msgstr "Left channel output"
+
+#: bse/bsebus.c:388 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Audio Out"
+msgstr "Right Audio Out"
+
+#: bse/bsebus.c:388 bse/bsepcminput.c:130
+msgid "Right channel output"
+msgstr "Right channel output"
+
+#: bse/bsebus.c:407
+msgid ""
+"Bus implementation for songs, used to route track audio signals to the "
+"master output."
+msgstr ""
+"Bus implementation for songs, used to route track audio signals to the "
+"master output."
+
 #: bse/bseconstant.c:84
 msgid "/Other Sources/Constant"
 msgstr "/Other Sources/Constant"
@@ -3277,41 +3519,9 @@ msgstr "Parasite"
 msgid "/Input & Output/PCM Input"
 msgstr "/Input & Output/PCM Input"
 
-#: bse/bsepcminput.c:128 bse/bsebus.c:303 plugins/artscompressor.idl:51
-#: plugins/freeverb/bsefreeverb.c:125
-msgid "Left Audio Out"
-msgstr "Left Audio Out"
-
-#: bse/bsepcminput.c:128 bse/bsebus.c:303
-msgid "Left channel output"
-msgstr "Left channel output"
-
-#: bse/bsepcminput.c:130 bse/bsebus.c:305 plugins/artscompressor.idl:52
-#: plugins/freeverb/bsefreeverb.c:126
-msgid "Right Audio Out"
-msgstr "Right Audio Out"
-
-#: bse/bsepcminput.c:130 bse/bsebus.c:305
-msgid "Right channel output"
-msgstr "Right channel output"
-
 #: bse/bsepcmoutput.c:85
 msgid "/Input & Output/PCM Output"
 msgstr "/Input & Output/PCM Output"
-
-#: bse/bsepcmoutput.c:128 bse/bsebus.c:299 plugins/artscompressor.idl:49
-#: plugins/freeverb/bsefreeverb.c:123
-msgid "Left Audio In"
-msgstr "Left Audio In"
-
-#: bse/bsepcmoutput.c:128 bse/bsebus.c:299
-msgid "Left channel input"
-msgstr "Left channel input"
-
-#: bse/bsepcmoutput.c:130 bse/bsebus.c:301 plugins/artscompressor.idl:50
-#: plugins/freeverb/bsefreeverb.c:124
-msgid "Right Audio In"
-msgstr "Right Audio In"
 
 #: bse/bsepcmoutput.c:130
 msgid "Right channel Input"
@@ -3363,77 +3573,45 @@ msgstr "Create a new mixer bus for a Song."
 msgid "Delete a mixer bus from a Song."
 msgstr "Delete a mixer bus from a Song."
 
-#: bse/bsesong.proc:106
+#: bse/bsesong.proc:121
 msgid "Retrieve master output bus of a song."
 msgstr "Retrieve master output bus of a song."
 
-#: bse/bsesong.proc:133
+#: bse/bsesong.proc:148
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr "Ensure that each part in a song is inserted into at least one track."
 
-#: bse/bsesong.proc:154
-msgid "Ensure that each track in a song is connected to an output bus."
-msgstr "Ensure that each track in a song is connected to an output bus."
+#: bse/bsesong.proc:169
+msgid "Connect all unconnected track of a song to the master output bus."
+msgstr "Connect all unconnected tracks of a song to the master output bus."
 
-#: bse/bsesong.proc:194
+#: bse/bsesong.proc:209
 msgid "Create a new Part in a Song."
 msgstr "Create a new Part in a Song."
 
-#: bse/bsesong.proc:225
+#: bse/bsesong.proc:240
 msgid "Delete a Part from a Song."
 msgstr "Delete a Part from a Song."
 
-#: bse/bsesong.proc:263
+#: bse/bsesong.proc:278
 msgid "Create a new Track for a Song."
 msgstr "Create a new Track for a Song."
 
-#: bse/bsesong.proc:299
+#: bse/bsesong.proc:314
 msgid "Delete a Track from a Song."
 msgstr "Delete a Track from a Song."
 
-#: bse/bsesong.proc:338
+#: bse/bsesong.proc:353
 msgid "Find a track suitable for playing notes of a given part."
 msgstr "Find a track suitable for playing notes of a given part."
 
-#: bse/bsesong.proc:381
+#: bse/bsesong.proc:396
 msgid "Synthesize a note on a song of an active project."
 msgstr "Synthesize a note on a song of an active project."
 
-#: bse/bsesong.proc:431
+#: bse/bsesong.proc:446
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Retrieve song timing information at a specific tick."
-
-#: bse/bsebus.c:287
-msgid "Signal Inputs"
-msgstr "Signal Inputs"
-
-#: bse/bsebus.c:289
-msgid "Custom Synth Net"
-msgstr "Custom Synth Net"
-
-#: bse/bsebus.c:289
-msgid "Synthesis network to be used as instrument"
-msgstr "Synthesis network to be used as instrument"
-
-#: bse/bsebus.c:291
-msgid "Adjustments"
-msgstr "Adjustments"
-
-#: bse/bsebus.c:293
-msgid "Bus Gain [float]"
-msgstr "Bus Gain [float]"
-
-#: bse/bsebus.c:301
-msgid "Right channel input"
-msgstr "Right channel input"
-
-#: bse/bsebus.c:324
-msgid ""
-"Bus implementation for songs, used to route track audio signals to the "
-"master output."
-msgstr ""
-"Bus implementation for songs, used to route track audio signals to the "
-"master output."
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -3640,6 +3818,54 @@ msgstr "Creation Time"
 #: bse/bsesuper.c:118
 msgid "Last modification time"
 msgstr "Last modification time"
+
+#: bse/bsetrack.c:126
+msgid "Muted"
+msgstr "Muted"
+
+#: bse/bsetrack.c:128 bse/bsetrack.c:133 bse/bsetrack.c:138
+msgid "Synth Input"
+msgstr "Synth Input"
+
+#: bse/bsetrack.c:135
+msgid "Custom Wave"
+msgstr "Custom Wave"
+
+#: bse/bsetrack.c:135
+msgid "Wave to be used as instrument"
+msgstr "Wave to be used as instrument"
+
+#: bse/bsetrack.c:140
+msgid "Max Voixes"
+msgstr "Max Voices"
+
+#: bse/bsetrack.c:140
+msgid "Maximum number of voices for simultaneous playback"
+msgstr "Maximum number of voices for simultaneous playback"
+
+#: bse/bsetrack.c:143
+msgid "MIDI Instrument"
+msgstr "MIDI Instrument"
+
+#: bse/bsetrack.c:145
+msgid "MIDI Channel"
+msgstr "MIDI Channel"
+
+#: bse/bsetrack.c:146
+msgid "Midi channel assigned to this track, 0 uses private per-track channel"
+msgstr "Midi channel assigned to this track. 0 uses private per-track channel."
+
+#: bse/bsetrack.c:149
+msgid "Synth Postprocess"
+msgstr "Synth Postprocess"
+
+#: bse/bsetrack.c:151
+msgid "Custom Postprocess Net"
+msgstr "Custom Postprocess Net"
+
+#: bse/bsetrack.c:152
+msgid "Synthesis network to postprocess track sound"
+msgstr "Synthesis network to postprocess track sound"
 
 #: bse/bsewaveosc.c:97
 msgid "/Audio Sources/Wave Oscillator"
