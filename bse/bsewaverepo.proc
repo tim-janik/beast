@@ -78,7 +78,7 @@ load_file (BseWaveRepo *wrepo,
       *wave_p = wave;
       error = GSL_ERROR_NONE;
     }
-  else
+  else if (!error)
     error = BSE_ERROR_WAVE_NOT_FOUND;
   g_object_unref (wave);
   

@@ -1,3 +1,12 @@
+Fri Dec  3 21:31:26 2004  Tim Janik  <timj@gtk.org>
+
+	* bsewaverepo.proc: don't override detailed errors.
+
+	* gsldatahandle-mad.[hc]: provide GslErrorType errors instead of 
+	strings. added gsl_data_handle_new_mad_err(), improved debugging.
+
+	* gslloader-mad.c: pass on errors.
+
 Mon Nov 29 21:45:25 2004  Tim Janik  <timj@gtk.org>
 
 	* bseenginemaster.c: append probe jobs upon insertion, so probe data

@@ -62,7 +62,7 @@ typedef struct
   guint         eof : 1;
   GslHFile     *hfile;
   guint		file_pos;
-  const gchar  *error;
+  GslErrorType  error;
 
   /* seek table */
   GTime		seek_mtime;
@@ -89,6 +89,38 @@ static GslLong	dh_mad_coarse_seek	(GslDataHandle *data_handle,
 
 
 /* --- functions --- */
+static GslErrorType
+error_from_mad_stream (struct mad_stream *mstream,
+                       GslErrorType       fallback)
+{
+  switch (mstream->error)
+    {
+    case MAD_ERROR_NONE:                return GSL_ERROR_NONE;
+    case MAD_ERROR_BUFLEN:              return GSL_ERROR_EOF;
+    case MAD_ERROR_BUFPTR:              return fallback;
+    case MAD_ERROR_NOMEM:               return GSL_ERROR_NO_MEMORY;
+    case MAD_ERROR_LOSTSYNC:            return GSL_ERROR_DATA_CORRUPT;
+    case MAD_ERROR_BADLAYER:            return GSL_ERROR_FORMAT_UNKNOWN;
+    case MAD_ERROR_BADBITRATE:          return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADSAMPLERATE:       return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADEMPHASIS:         return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADCRC:              return GSL_ERROR_DATA_CORRUPT;
+    case MAD_ERROR_BADBITALLOC:         return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADSCALEFACTOR:      return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADMODE:             return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADFRAMELEN:         return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADBIGVALUES:        return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADBLOCKTYPE:        return GSL_ERROR_FORMAT_UNKNOWN;
+    case MAD_ERROR_BADSCFSI:            return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADDATAPTR:          return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADPART3LEN:         return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADHUFFTABLE:        return GSL_ERROR_FORMAT_INVALID;
+    case MAD_ERROR_BADHUFFDATA:         return GSL_ERROR_DATA_CORRUPT;
+    case MAD_ERROR_BADSTEREO:           return GSL_ERROR_FORMAT_INVALID;
+    default:                            return fallback;
+    }
+}
+
 static gboolean		/* FALSE: handle->eof || errno != 0 */
 stream_read (MadHandle *handle)
 {
@@ -169,7 +201,7 @@ read_next_frame_header (MadHandle *handle)
 	  /* read on */
 	  if (!stream_read (handle))
 	    {
-	      handle->error = handle->eof ? NULL : g_strerror (errno);
+	      handle->error = handle->eof ? 0 : gsl_error_from_errno (errno, GSL_ERROR_EOF);
 	      return FALSE;
 	    }
 	  return read_next_frame_header (handle);	/* retry */
@@ -181,12 +213,12 @@ read_next_frame_header (MadHandle *handle)
       succeeded = FALSE;
     }
 
-  handle->error = handle->stream.error ? mad_stream_errorstr (&handle->stream) : NULL;
+  handle->error = handle->stream.error ? error_from_mad_stream (&handle->stream, GSL_ERROR_SEEK_FAILED) : 0;
 
   return succeeded;
 }
 
-static gboolean		/* FALSE: handle->eof || handle->error != NULL */
+static gboolean		/* FALSE: handle->eof || handle->error != 0 */
 pcm_frame_read (MadHandle *handle,
 		gboolean   synth)
 {
@@ -205,7 +237,7 @@ pcm_frame_read (MadHandle *handle,
 	  /* read on */
 	  if (!stream_read (handle))
 	    {
-	      handle->error = handle->eof ? NULL : g_strerror (errno);
+	      handle->error = handle->eof ? 0 : gsl_error_from_errno (errno, GSL_ERROR_READ_FAILED);
 	      return FALSE;
 	    }
 	  return pcm_frame_read (handle, synth);	/* retry */
@@ -223,8 +255,10 @@ pcm_frame_read (MadHandle *handle,
   if (synth)
     mad_synth_frame (&handle->synth, &handle->frame);
 
-  handle->error = handle->stream.error && !succeeded ? mad_stream_errorstr (&handle->stream) : NULL;
-
+  if (!succeeded && handle->stream.error)
+    handle->error = error_from_mad_stream (&handle->stream, GSL_ERROR_READ_FAILED);
+  else
+    handle->error = 0;
   return succeeded;
 }
 
@@ -270,7 +304,7 @@ create_seek_table (MadHandle *handle,
 	  if (0)
 	    {
 	      if (mad_frame_decode (&handle->frame, &handle->stream) < 0)
-		MAD_DEBUG ("seektable frame read failed: %s", mad_stream_errorstr (&handle->stream));
+		MAD_DEBUG ("failed to read seektable frame: %s", mad_stream_errorstr (&handle->stream));
 	      mad_synth_frame (&handle->synth, &handle->frame);
 	      MAD_DEBUG ("frame(%u) PCM:%u => FILE:%u FDIFF:%d (%x %x %x) br:%lu time:%ld/%lu mode:%u ext:%u flags:0x%x phase:%u",
 			 i, i * handle->frame_size, this_pos, this_pos - seeks[MAX (i, 1) - 1],
@@ -288,11 +322,12 @@ create_seek_table (MadHandle *handle,
       
       if (!handle->eof)
 	{
-	  MAD_DEBUG ("reading seektable frame failed: %s", handle->error ? handle->error : "Unknown");
-	  
-	  /* frame read failed for a reason other than eof */
 	  g_free (seeks);
-	  return NULL;		/* FIXME: EIO/errno */
+	  /* frame read failed for a reason other than eof */
+          if (!handle->error)
+            handle->error = GSL_ERROR_IO;
+	  MAD_DEBUG ("failed to read seektable frame: %s", gsl_strerror (handle->error));
+	  return NULL;
 	}
     }
   while (!handle->eof);
@@ -406,7 +441,7 @@ dh_mad_open (GslDataHandle      *dhandle,
 
   /* our code already uses dhandle->setup */
   dhandle->setup = *setup;
-
+  
   if (dh_mad_coarse_seek (&handle->dhandle, 0) != 0)
     {
       error = GSL_ERROR_SEEK_FAILED;
@@ -416,6 +451,8 @@ dh_mad_open (GslDataHandle      *dhandle,
   return GSL_ERROR_NONE;
 
  OPEN_FAILED:
+  if (handle->error)
+    error = handle->error;
   g_free (handle->seeks);
   handle->seeks = NULL;
   handle->n_seeks = 0;
@@ -480,13 +517,13 @@ dh_mad_read (GslDataHandle *dhandle,
 	  else
 	    {
 	      MAD_DEBUG ("synthesizing frame failed, accumulate_state_frames is already %u: %s",
-			 handle->accumulate_state_frames, handle->error);
+			 handle->accumulate_state_frames, gsl_strerror (handle->error));
 	      return -1;
 	    }
 	}
       else
 	{
-	  MAD_DEBUG ("failed to synthesize frame: %s", handle->error);
+	  MAD_DEBUG ("failed to synthesize frame: %s", gsl_strerror (handle->error));
 	  return -1;
 	}
     }
@@ -581,7 +618,7 @@ dh_mad_coarse_seek (GslDataHandle *dhandle,
 	      gboolean synth = i + 1 == handle->accumulate_state_frames;
 
 	      if (!pcm_frame_read (handle, synth) && handle->stream.error != MAD_ERROR_BADDATAPTR)
-		MAD_DEBUG ("COARSE-SEEK: frame read ahead (%u): failed: %s", i, handle->error);
+		MAD_DEBUG ("failed to read frame ahead (%u) in coarse-seek: failed: %s", i, gsl_strerror (handle->error));
 	    }
 	}
 
@@ -652,9 +689,10 @@ static GslDataHandleFuncs dh_mad_vtable = {
 };
 
 static GslDataHandle*
-dh_mad_new (const gchar *file_name,
-            gfloat       osc_freq,
-	    gboolean     skip_seek_keep_open)
+dh_mad_new (const gchar  *file_name,
+            gfloat        osc_freq,
+	    gboolean      skip_seek_keep_open,
+            GslErrorType *errorp)
 {
   MadHandle *handle;
   gboolean success;
@@ -663,8 +701,6 @@ dh_mad_new (const gchar *file_name,
   success = gsl_data_handle_common_init (&handle->dhandle, file_name);
   if (success)
     {
-      GslErrorType error;
-
       handle->dhandle.vtable = &dh_mad_vtable;
       handle->osc_freq = osc_freq;
       handle->sample_rate = 0;
@@ -674,7 +710,7 @@ dh_mad_new (const gchar *file_name,
       handle->eof = FALSE;
       handle->hfile = NULL;
       handle->file_pos = 0;
-      handle->error = NULL;
+      handle->error = 0;
       handle->n_seeks = 0;
       handle->seeks = NULL;
       handle->seek_mtime = -1;
@@ -684,32 +720,38 @@ dh_mad_new (const gchar *file_name,
       /* we can only check matters upon opening
        */
       handle->skip_seek_table = skip_seek_keep_open != FALSE;
-      error = gsl_data_handle_open (&handle->dhandle);
+      GslErrorType error = gsl_data_handle_open (&handle->dhandle);
       if (!error)
 	{
 	  if (!skip_seek_keep_open)
 	    gsl_data_handle_close (&handle->dhandle);
+          *errorp = 0;
 	  return &handle->dhandle;
 	}
+      MAD_DEBUG ("failed to open \"%s\": %s", file_name, gsl_strerror (error));
       gsl_data_handle_unref (&handle->dhandle);
+      *errorp = error;
       return NULL;
     }
   else
     {
       g_free (handle->seeks);
       sfi_delete_struct (MadHandle, handle);
+      *errorp = GSL_ERROR_INTERNAL;
       return NULL;
     }
 }
 
 GslDataHandle*
-gsl_data_handle_new_mad (const gchar *file_name,
-                         gfloat       osc_freq)
+gsl_data_handle_new_mad_err (const gchar  *file_name,
+                             gfloat        osc_freq,
+                             GslErrorType *errorp)
 {
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (osc_freq > 0, NULL);
 
-  return dh_mad_new (file_name, osc_freq, FALSE);
+  GslErrorType error = 0;
+  return dh_mad_new (file_name, osc_freq, FALSE, errorp ? errorp : &error);
 }
 
 GslErrorType
@@ -722,9 +764,10 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
   
   g_return_val_if_fail (file_name != NULL, GSL_ERROR_INTERNAL);
 
-  dhandle = dh_mad_new (file_name, 439, TRUE);
+  GslErrorType error = 0;
+  dhandle = dh_mad_new (file_name, 439, TRUE, &error);
   if (!dhandle)
-    return GSL_ERROR_OPEN_FAILED;
+    return error ? error : GSL_ERROR_OPEN_FAILED;
 
   handle = (MadHandle*) dhandle;
   if (n_channels)
@@ -746,9 +789,12 @@ gsl_data_handle_mad_version (void)
 #else	/* !GSL_HAVE_LIBMAD */
 
 GslDataHandle*
-gsl_data_handle_new_mad (const gchar *file_name,
-                         gfloat       osc_freq)
+gsl_data_handle_new_mad_err (const gchar  *file_name,
+                             gfloat        osc_freq,
+                             GslErrorType *errorp)
 {
+  if (errorp)
+    *errorp = GSL_ERROR_FORMAT_UNKNOWN;
   return NULL;
 }
 
@@ -767,5 +813,12 @@ gsl_data_handle_mad_version (void)
 }
 
 #endif	/* !GSL_HAVE_LIBMAD */
+
+GslDataHandle*
+gsl_data_handle_new_mad (const gchar  *file_name,
+                         gfloat        osc_freq)
+{
+  return gsl_data_handle_new_mad_err (file_name, osc_freq, NULL);
+}
 
 /* vim:set ts=8 sts=2 sw=2: */
