@@ -43,7 +43,7 @@ Fri Dec 17 17:26:12 1999  Tim Janik  <timj@gtk.org>
 
 	* greeting.c: (test file anyways)
 	* bsegenosc.c: 
-	* bsefirfilter.c: adapted bse_param_spec* () calls to supply nick names.
+	* bsefirfilter.c: adapted bse_param_spec*() calls to supply nick names.
 
 Fri Dec 17 10:43:54 1999  Tim Janik  <timj@gtk.org>
 
