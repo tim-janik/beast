@@ -125,8 +125,11 @@ main (int   argc,
    */
   if (!pdev && BSE_TYPE_ID (BsePcmDeviceAlsa))
     {
+      BseErrorType error;
+
       pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceAlsa), NULL);
-      if (bse_pcm_device_update_caps (pdev) || 1) /* FIXME: DEBUG */
+      error = bse_pcm_device_update_caps (pdev); error |= 1; /* FIXME: DEBUG */
+      if (error && error != BSE_ERROR_DEVICE_BUSY)
 	{
 	  bse_object_unref (BSE_OBJECT (pdev));
 	  pdev = NULL;
@@ -134,8 +137,11 @@ main (int   argc,
     }
   if (!pdev && BSE_TYPE_ID (BsePcmDeviceOSS))
     {
+      BseErrorType error;
+
       pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceOSS), NULL);
-      if (bse_pcm_device_update_caps (pdev))
+      error = bse_pcm_device_update_caps (pdev);
+      if (error && error != BSE_ERROR_DEVICE_BUSY)
 	{
 	  bse_object_unref (BSE_OBJECT (pdev));
 	  pdev = NULL;

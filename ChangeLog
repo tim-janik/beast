@@ -1,3 +1,8 @@
+Wed Dec 22 19:01:56 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (main): do not bail out because opening of pcm
+	devices failed due to BSE_ERROR_DEVICE_BUSY.
+
 Tue Dec 21 20:48:45 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (bst_subwindow_new): provide button3 popup by
