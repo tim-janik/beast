@@ -801,13 +801,6 @@ bglue_signal_closure_marshal (GClosure       *closure,
     }
   gsl_glue_context_push (((BGlueClosure*) closure)->context);
   gsl_glue_enqueue_signal_event (signal, args, FALSE);
-  /* this is for the curious ;) */
-  if (!bse_procedure_exec_status_blocked ())
-    {
-      gchar *signame = g_strdup_printf ("%s::%s", G_OBJECT_TYPE_NAME (((BGlueClosure*) closure)->item), signal);
-      bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, signame, -1, BSE_ERROR_NONE);
-      g_free (signame);
-    }
   gsl_glue_free_seq (args);
   gsl_glue_context_pop ();
 }

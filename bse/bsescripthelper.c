@@ -182,7 +182,8 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   GString *gstring = g_string_new ("");
   GslGlueCodec *codec;
   BseScriptControl *sctrl;
-  gchar *error, *shellpath;
+  BseErrorType error;
+  gchar *shellpath;
   guint i;
 
   for (i = 0; i < proc->n_in_pspecs; i++)
@@ -199,32 +200,21 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   codec = gsl_glue_codec_new (bse_glue_context (),
 			      bse_script_send_event,
 			      bse_script_check_client_msg);
-  error = bse_server_run_remote (server, sdata->script_file, shellpath,
+  error = bse_server_run_remote (server, shellpath,
 				 bse_script_dispatcher, codec, (GDestroyNotify) gsl_glue_codec_destroy,
-				 params, &sctrl);
+				 params, sdata->script_file, proc->name, &sctrl);
   if (sctrl)
     gsl_glue_codec_set_user_data (codec, sctrl, NULL);
   g_free (shellpath);
   string_list_free_deep (params);
 
   if (error)
-    {
-      g_message ("failed to start interpreter for \"%s\": %s", sdata->script_file, error);
-      g_free (error);
-    }
+    g_message ("failed to start script \"%s::%s\": %s",
+	       sdata->script_file, proc->name, bse_error_blurb (error));
   else
-    {
-      bse_script_control_set_file_name (sctrl, sdata->script_file);
-      bse_script_control_push_current (sctrl);
-      bse_server_exec_status (server, BSE_EXEC_STATUS_START,
-			      bse_script_control_get_ident (sctrl),
-			      -1, BSE_ERROR_NONE);
-      bse_script_control_pop_current ();
-      /* don't let procedure notification override the status we just sent */
-      bse_procedure_skip_next_exec_status ();
-    }
+    bse_script_control_set_file_name (sctrl, sdata->script_file);
   
-  return error ? BSE_ERROR_SPAWN : BSE_ERROR_NONE;
+  return error;
 }
 
 static GslGlueValue
@@ -325,36 +315,34 @@ bse_script_dir_list_files (const gchar *dir_list)
   return g_slist_sort (slist, (GCompareFunc) strcmp);
 }
 
-const gchar*
+BseErrorType
 bse_script_file_register (const gchar *file_name)
 {
   BseServer *server = bse_server_get ();
   GSList *params = NULL;
-  gchar *error, *shellpath, *warning = NULL;
+  gchar *shellpath, *proc_name = "registration hook";
   BseScriptControl *sctrl;
   GslGlueCodec *codec;
-  
+  BseErrorType error;
+
   params = g_slist_prepend (params, g_strdup_printf ("--bse-enable-register"));
   params = g_slist_prepend (params, g_strdup_printf ("(load \"%s\")", file_name));
   shellpath = g_strdup_printf ("%s/%s", BSW_PATH_BINARIES, "bswshell");
   codec = gsl_glue_codec_new (bse_glue_context (),
 			      bse_script_send_event,
 			      bse_script_check_client_msg);
-  error = bse_server_run_remote (server, file_name, shellpath,
+  error = bse_server_run_remote (server, shellpath,
 				 bse_script_dispatcher, codec, (GDestroyNotify) gsl_glue_codec_destroy,
-				 params, &sctrl);
+				 params, file_name, proc_name, &sctrl);
   if (sctrl)
     gsl_glue_codec_set_user_data (codec, sctrl, NULL);
   g_free (shellpath);
   string_list_free_deep (params);
 
-  if (error)
-    warning = g_strdup_printf ("failed to start interpreter for \"%s\": %s", file_name, error);
-  else
+  if (!error)
     bse_script_control_set_file_name (sctrl, file_name);
-  g_free (error);
   
-  return warning;
+  return error;
 }
 
 static gchar*

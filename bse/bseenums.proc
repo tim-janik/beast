@@ -46,11 +46,6 @@ PROCEDURE (bse-error-name, "Utils/Error Name") {
   /* set output parameters */
   g_value_set_string (out_values++, bse_error_name (error));
 
-  /* this procedure is usually used in response to procedure notificaiton
-   * so skip notification about this procedure
-   */
-  bse_procedure_skip_next_exec_status ();
-  
   return BSE_ERROR_NONE;
 }
 
@@ -74,10 +69,5 @@ PROCEDURE (bse-error-blurb, "Utils/Error Blurb") {
   /* set output parameters */
   g_value_set_string (out_values++, bse_error_blurb (error));
   
-  /* this procedure is usually used in response to procedure notificaiton
-   * so skip notification about this procedure
-   */
-  bse_procedure_skip_next_exec_status ();
-
   return BSE_ERROR_NONE;
 }

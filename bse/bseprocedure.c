@@ -38,11 +38,6 @@ static void     bse_procedure_init		  (BseProcedureClass	    *proc,
 						   const BseExportProcedure *pspec);
 
 
-/* --- variables --- */
-static guint exec_status_skip_oneshot = 0;
-static guint exec_status_blocker = 0;
-
-
 /* --- functions --- */
 extern void
 bse_type_register_procedure_info (GTypeInfo *info)
@@ -254,45 +249,12 @@ bse_procedure_lookup (const gchar *proc_name)
   return BSE_TYPE_IS_PROCEDURE (type) ? type : 0;
 }
 
-void
-bse_procedure_block_exec_status (void)
-{
-  exec_status_blocker++;
-}
-
-gboolean
-bse_procedure_exec_status_blocked (void)
-{
-  return exec_status_blocker > 0;
-}
-
-void
-bse_procedure_skip_next_exec_status (void)
-{
-  exec_status_skip_oneshot++;
-}
-
-void
-bse_procedure_unblock_exec_status (void)
-{
-  g_return_if_fail (exec_status_blocker > 0);
-
-  exec_status_blocker--;
-}
-
 static void
 signal_exec_status (BseErrorType       error,
 		    BseProcedureClass *proc,
 		    GValue            *first_ovalue)
 {
-  if (exec_status_skip_oneshot)
-    {
-      exec_status_skip_oneshot--;
-      return;
-    }
-  else if (exec_status_blocker)
-    return;
-
+#if 0
   /* signal script status, supporting BseErrorType-outparam procedures
    */
   if (!error && proc->n_out_pspecs == 1 &&
@@ -304,6 +266,7 @@ signal_exec_status (BseErrorType       error,
     }
   else
     bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, proc->name, error ? 0 : 1, error);
+#endif
 }
 
 static BseErrorType

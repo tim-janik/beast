@@ -55,7 +55,7 @@ GType		bse_script_proc_register	(const gchar	*script_file,
 						 const gchar	*date,
 						 GSList		*params);
 GSList*		bse_script_dir_list_files	(const gchar	*dir_list);
-const gchar*    bse_script_file_register	(const gchar	*file_name);
+BseErrorType    bse_script_file_register	(const gchar	*file_name);
 
 
 #ifdef __cplusplus

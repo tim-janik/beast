@@ -83,7 +83,8 @@ static void	engine_shutdown			(BseServer	   *server);
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint       signal_user_message = 0;
-static guint       signal_exec_status = 0;
+static guint       signal_script_start = 0;
+static guint       signal_script_error = 0;
 
 
 /* --- functions --- */
@@ -142,13 +143,15 @@ bse_server_class_init (BseServerClass *class)
 						     G_TYPE_NONE, 2,
 						     BSE_TYPE_USER_MSG_TYPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
-  signal_exec_status = bse_object_class_add_signal (object_class, "exec-status",
-						    bse_marshal_VOID__ENUM_STRING_FLOAT_ENUM_OBJECT,
-						    bse_marshal_VOID__ENUM_STRING_FLOAT_ENUM_POINTER,
-						    G_TYPE_NONE, 5,
-						    BSE_TYPE_EXEC_STATUS,
-						    G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
-						    G_TYPE_FLOAT, BSE_TYPE_ERROR_TYPE, BSE_TYPE_SCRIPT_CONTROL);
+  signal_script_start = bse_object_class_add_signal (object_class, "script-start",
+						     bse_marshal_VOID__OBJECT,
+						     bse_marshal_VOID__POINTER,
+						     G_TYPE_NONE, 1,
+						     BSE_TYPE_SCRIPT_CONTROL);
+  signal_script_error = bse_object_class_add_signal (object_class, "script-error",
+						     bse_marshal_VOID__STRING_STRING_STRING, NULL,
+						     G_TYPE_NONE, 3,
+						     G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }
 
 static void
@@ -540,36 +543,41 @@ bse_server_get_midi_receiver (BseServer   *self,
   return self->midi_receiver;
 }
 
-/* bse_server_exec_status
- * @status:    execution status (start, progress or done)
- * @exec_name: name of procedure or script
- * @progress:  progress value for status=BSE_EXEC_STATUS_PROGRESS
- * error:      error condition for BSE_EXEC_STATUS_DONE
+/* bse_server_script_start
+ * @script_control: associated script control object
  *
- * Signal procedure or script execution status, The @progress value
- * is meaningfull for @status=BSE_EXEC_STATUS_PROGRESS, and contains
- * eitehr a value between 0 and 1 to indicate completion status, or
- * is -1 to signal progress of unknown amount.
+ * Signal script invocation start.
  */
 void
-bse_server_exec_status (BseServer    *server,
-			BseExecStatus status,
-			const gchar  *exec_name,
-			gfloat        progress,
-			BseErrorType  error)
+bse_server_script_start (BseServer        *server,
+			 BseScriptControl *script_control)
 {
-  BseScriptControl *sctrl;
-
   g_return_if_fail (BSE_IS_SERVER (server));
-  g_return_if_fail (exec_name != NULL);
+  g_return_if_fail (BSE_IS_SCRIPT_CONTROL (script_control));
 
-  progress = CLAMP (progress, -1, +1);
-  sctrl = bse_script_control_peek_current ();
-  if (sctrl && !BSE_ITEM (sctrl)->parent)
-    sctrl = NULL;
-  g_signal_emit (server, signal_exec_status, 0,
-		 status, exec_name, progress, error,
-		 sctrl);
+  g_signal_emit (server, signal_script_start, 0, script_control);
+}
+
+/* bse_server_script_error
+ * @script_name: name of the executed script
+ * @proc_name:   procedure name to execute
+ * @reason:      error condition
+ *
+ * Signal script invocation error.
+ */
+void
+bse_server_script_error (BseServer   *server,
+			 const gchar *script_name,
+			 const gchar *proc_name,
+			 const gchar *reason)
+{
+  g_return_if_fail (BSE_IS_SERVER (server));
+  g_return_if_fail (script_name != NULL);
+  g_return_if_fail (proc_name != NULL);
+  g_return_if_fail (reason != NULL);
+
+  g_signal_emit (server, signal_script_error, 0,
+		 script_name, proc_name, reason);
 }
 
 void
@@ -610,68 +618,73 @@ bse_server_remove_io_watch (BseServer *server,
     g_warning (G_STRLOC ": no such io watch installed %p(%p)", watch_func, data);
 }
 
-gchar*
-bse_server_run_remote (BseServer     *server,
-		       const gchar   *wire_name,
-		       const gchar   *process_name,
-		       BseComDispatch dispatcher,
-		       gpointer       dispatch_data,
-		       GDestroyNotify destroy_data,
-		       GSList        *params,
+BseErrorType
+bse_server_run_remote (BseServer         *server,
+		       const gchar       *process_name,
+		       BseComDispatch     dispatcher,
+		       gpointer           dispatch_data,
+		       GDestroyNotify     destroy_data,
+		       GSList            *params,
+		       const gchar       *script_name,
+		       const gchar       *proc_name,
 		       BseScriptControl **sctrl_p)
 {
   gint child_pid, standard_input, standard_output, standard_error, command_input, command_output;
-  gchar *error;
+  BseScriptControl *sctrl = NULL;
+  gchar *reason;
 
-  g_return_val_if_fail (BSE_IS_SERVER (server), NULL);
-  g_return_val_if_fail (process_name != NULL, NULL);
-  g_return_val_if_fail (dispatcher != NULL, NULL);
-
-  if (sctrl_p)
-    *sctrl_p = NULL;
+  g_return_val_if_fail (BSE_IS_SERVER (server), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (process_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (dispatcher != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (script_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
+  
   child_pid = standard_input = standard_output = standard_error = command_input = command_output = -1;
-  error = bse_com_spawn_async (process_name,
-			       &child_pid,
-			       NULL, /* &standard_input, */
-			       NULL, /* &standard_output, */
-			       NULL, /* &standard_error, */
-			       "--bse-command-pipe",
-			       &command_input,
-			       &command_output,
-			       params);
-  if (!error)
+  reason = bse_com_spawn_async (process_name,
+				&child_pid,
+				NULL, /* &standard_input, */
+				NULL, /* &standard_output, */
+				NULL, /* &standard_error, */
+				"--bse-command-pipe",
+				&command_input,
+				&command_output,
+				params);
+  if (!reason)
     {
-      BseComWire *wire = bse_com_wire_from_child (wire_name,
+      gchar *wire_ident = g_strdup_printf ("%s::%s", script_name, proc_name);
+      BseComWire *wire = bse_com_wire_from_child (wire_ident,
 						  command_output,
 						  command_input,
 						  standard_input,
 						  standard_output,
 						  standard_error,
 						  child_pid);
+      g_free (wire_ident);
       if (!wire->connected)	/* bad, bad */
 	{
 	  bse_com_wire_destroy (wire);
-	  error = g_strdup (bse_error_blurb (BSE_ERROR_SPAWN));
+	  reason = g_strdup ("failed to establish connection");
 	}
       else
 	{
-	  BseScriptControl *sctrl;
-
 	  bse_com_wire_set_dispatcher (wire, dispatcher, dispatch_data, destroy_data);
-	  sctrl = bse_script_control_new (wire);
+	  sctrl = bse_script_control_new (wire, script_name, proc_name);
 	  bse_container_add_item (BSE_CONTAINER (server), BSE_ITEM (sctrl));
-	  if (sctrl_p)
-	    *sctrl_p = sctrl;
+	  g_object_unref (sctrl);
 	}
     }
-  if (error)
+  if (sctrl_p)
+    *sctrl_p = sctrl;
+  if (reason)
     {
       if (destroy_data)
 	destroy_data (dispatch_data);
-      bse_server_exec_status (server, BSE_EXEC_STATUS_DONE, wire_name, 0, BSE_ERROR_SPAWN);
+      bse_server_script_error (server, script_name, proc_name, reason);
+      g_free (reason);
+      return BSE_ERROR_SPAWN;
     }
-
-  return error;
+  bse_server_script_start (server, sctrl);
+  return BSE_ERROR_NONE;
 }
 
 

@@ -63,16 +63,6 @@ struct _BseServer
 struct _BseServerClass
 {
   BseContainerClass parent_class;
-
-  void		(*user_message)		(BseServer	  *server,
-					 BseUserMsgType	   msg_type,
-					 const gchar	  *message);
-  void		(*exec_status)		(BseServer	  *server,
-					 BseExecStatus     status,
-					 const gchar	  *exec_name,
-					 gfloat		   progress,
-					 BseErrorType	   error,
-					 BseScriptControl *script_control);
 };
 
 
@@ -114,24 +104,26 @@ void		bse_server_remove_io_watch		(BseServer	*server,
 							 gpointer	 data);
 
 /* --- internal --- */
-void		bse_server_exec_status			(BseServer	*server,
-							 BseExecStatus   status,
-							 const gchar	*exec_name,
-							 gfloat		 progress,
-							 BseErrorType	 error);
-gchar*		bse_server_run_remote			(BseServer	*server,
-							 const gchar	*wire_name,
-							 const gchar	*process_name,
-							 BseComDispatch  dispatcher,
-							 gpointer        dispatch_data,
-							 GDestroyNotify  destroy_data,
-							 GSList		*params,
-							 BseScriptControl **sctrl);
-void		bse_server_queue_kill_wire		(BseServer	*server,
-							 BseComWire	*wire);
+void		bse_server_script_start			(BseServer        *server,
+							 BseScriptControl *script_control);
+void		bse_server_script_error			(BseServer	 *server,
+							 const gchar	 *script_name,
+							 const gchar	 *proc_name,
+							 const gchar     *reason);
 void		bse_server_user_message			(BseServer	*server,
 							 BseUserMsgType  msg_type,
 							 const gchar    *message);
+BseErrorType	bse_server_run_remote			(BseServer	   *server,
+							 const gchar	   *process_name,
+							 BseComDispatch     dispatcher,
+							 gpointer           dispatch_data,
+							 GDestroyNotify     destroy_data,
+							 GSList		   *params,
+							 const gchar       *script_name,
+							 const gchar       *proc_name,
+							 BseScriptControl **sctrl);
+void		bse_server_queue_kill_wire		(BseServer	*server,
+							 BseComWire	*wire);
 
 
 #ifdef __cplusplus

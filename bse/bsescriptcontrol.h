@@ -38,12 +38,11 @@ struct _BseScriptControl
   BseUserMsgType user_msg_type;
   gchar         *user_msg;
 
-  guint		block_exec_status : 1;
-  BseErrorType	error_status;
-
   BseComWire   *wire;
+  gchar        *script_name;
+  gchar        *proc_name;
   GSource      *source;
-  gchar	       *file_name;
+  gchar	       *file_name;	// FIXME: remove this
 
   GSList       *actions;
 };
@@ -59,12 +58,10 @@ typedef struct {
 
 
 /* --- prototypes --- */
-BseScriptControl*	bse_script_control_new		     (BseComWire	*wire);
-void			bse_script_control_preset_error	     (BseScriptControl	*self,
-							      BseErrorType	 error);
+BseScriptControl*	bse_script_control_new		     (BseComWire	*wire,
+							      const gchar       *script_name,
+							      const gchar       *proc_name);
 void			bse_script_control_queue_kill	     (BseScriptControl	*self);
-void			bse_script_control_block_exec_status (BseScriptControl	*self,
-							      gboolean		 block_exec);
 const gchar*		bse_script_control_get_ident	     (BseScriptControl	*self);
 const gchar*		bse_script_control_get_file_name     (BseScriptControl	*self);
 void			bse_script_control_set_file_name     (BseScriptControl	*self,
@@ -72,6 +69,8 @@ void			bse_script_control_set_file_name     (BseScriptControl	*self,
 void			bse_script_control_push_current	     (BseScriptControl	*self);
 BseScriptControl*	bse_script_control_peek_current	     (void);
 void			bse_script_control_pop_current	     (void);
+void			bse_script_control_progress	     (BseScriptControl	*self,
+							      gfloat		 progress);
 void			bse_script_control_add_action	     (BseScriptControl	*self,
 							      const gchar	*action,
 							      const gchar	*name,

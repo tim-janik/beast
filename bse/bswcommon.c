@@ -970,7 +970,7 @@ bsw_register_scripts (const gchar *path,
   for (list = free_list; list; list = list->next)
     {
       gchar *string = list->data;
-      const gchar *error;
+      BseErrorType error;
 
       if (callback)
 	callback (data, string);
@@ -979,7 +979,7 @@ bsw_register_scripts (const gchar *path,
       handle_message (gstring, messages);
       error = bse_script_file_register (string);
       if (error)
-	g_string_printfa (gstring, "error encountered loading script \"%s\": %s", string, error);
+	g_string_printfa (gstring, "error encountered loading script \"%s\": %s", string, bse_error_blurb (error));
       handle_message (gstring, messages);
       g_free (string);
     }

@@ -117,11 +117,6 @@ gchar*	bse_procedure_unmarshal_retval	(const gchar		*string,
 					 BseErrorType		*error_p,
 					 GValue			*value);
 
-void	 bse_procedure_block_exec_status	(void);
-void	 bse_procedure_skip_next_exec_status	(void);
-void	 bse_procedure_unblock_exec_status	(void);
-gboolean bse_procedure_exec_status_blocked	(void);
-
 
 #ifdef __cplusplus
 }

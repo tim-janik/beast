@@ -30,7 +30,6 @@ enum
   PROP_USER_MSG_TYPE,
   PROP_USER_MSG,
   PROP_RUNNING,
-  PROP_ERROR_STATUS,
   PROP_IDENT,
 };
 
@@ -67,6 +66,7 @@ static GSList     *sctrl_stack = NULL;
 static guint       signal_action = 0;
 static guint       signal_action_changed = 0;
 static guint       signal_killed = 0;
+static guint       signal_progress = 0;
 
 
 /* --- functions --- */
@@ -122,16 +122,14 @@ bse_script_control_class_init (BseScriptControlClass *class)
 			      g_param_spec_boolean ("running", "Running", NULL,
 						    FALSE, G_PARAM_READABLE));
   bse_object_class_add_param (object_class, NULL,
-			      PROP_ERROR_STATUS,
-			      g_param_spec_enum ("error_status", "Error State", NULL,
-						 BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
-						 G_PARAM_READABLE));
-  bse_object_class_add_param (object_class, NULL,
 			      PROP_IDENT,
 			      g_param_spec_string ("ident", "Script Identifier", NULL,
 						   NULL,
 						   BSE_PARAM_GUI));
-  
+
+  signal_progress = bse_object_class_add_signal (object_class, "progress",
+						 bse_marshal_VOID__FLOAT, NULL,
+						 G_TYPE_NONE, 1, G_TYPE_FLOAT);
   signal_action_changed = bse_object_class_add_dsignal (object_class, "action-changed",
 							bse_marshal_VOID__STRING_UINT, NULL,
 							G_TYPE_NONE, 2,
@@ -150,9 +148,9 @@ bse_script_control_init (BseScriptControl *self)
 {
   self->user_msg_type = BSE_USER_MSG_INFO;
   self->user_msg = NULL;
-  self->block_exec_status = FALSE;
-  self->error_status = BSE_ERROR_NONE;
   self->wire = NULL;
+  self->script_name = NULL;
+  self->proc_name = NULL;
   self->source = NULL;
   self->file_name = NULL;
   self->actions = NULL;
@@ -200,9 +198,6 @@ bse_script_control_get_property (GObject     *object,
     case PROP_RUNNING:
       g_value_set_boolean (value, self->wire && self->wire->connected);
       break;
-    case PROP_ERROR_STATUS:
-      g_value_set_enum (value, self->wire && self->wire->connected ? BSE_ERROR_NONE : self->error_status);
-      break;
     case PROP_IDENT:
       g_value_set_string (value, bse_script_control_get_ident (self));
       break;
@@ -226,6 +221,8 @@ bse_script_control_finalize (GObject *object)
       bse_script_control_remove_action (self, g_quark_to_string (a->action));
     }
 
+  g_free (self->script_name);
+  g_free (self->proc_name);
   g_free (self->file_name);
   g_free (self->user_msg);
 
@@ -234,7 +231,9 @@ bse_script_control_finalize (GObject *object)
 }
 
 BseScriptControl*
-bse_script_control_new (BseComWire *wire)
+bse_script_control_new (BseComWire  *wire,
+			const gchar *script_name,
+			const gchar *proc_name)
 {
   BseScriptControl *self;
   
@@ -244,21 +243,12 @@ bse_script_control_new (BseComWire *wire)
   
   self = g_object_new (BSE_TYPE_SCRIPT_CONTROL, NULL);
   self->wire = wire;
+  self->script_name = g_strdup (script_name);
+  self->proc_name = g_strdup (proc_name);
   wire->owner = self;
-  self->error_status = BSE_ERROR_NONE;
   script_control_add_wsource (self);
 
   return self;
-}
-
-void
-bse_script_control_preset_error (BseScriptControl *self,
-				 BseErrorType      error)
-{
-  g_return_if_fail (BSE_IS_SCRIPT_CONTROL (self));
-
-  if (self->wire)
-    self->error_status = error;
 }
 
 void
@@ -290,6 +280,27 @@ bse_script_control_get_ident (BseScriptControl *self)
   g_return_val_if_fail (BSE_IS_SCRIPT_CONTROL (self), NULL);
 
   return self->wire ? self->wire->ident : NULL;
+}
+
+/* bse_script_control_progress
+ * @self:     script control object
+ * @progress: progress value
+ *
+ * Signal progress, @progress is either a value between 0 and 1
+ * to indicate completion status or is -1 to indicate progress
+ * of unknown amount.
+ */
+void
+bse_script_control_progress (BseScriptControl *self,
+			     gfloat            progress)
+{
+  g_return_if_fail (BSE_IS_SCRIPT_CONTROL (self));
+
+  if (progress < 0)
+    progress = -1;
+  else
+    progress = CLAMP (progress, 0, 1.0);
+  g_signal_emit (self, signal_progress, 0, progress);
 }
 
 static BseScriptControlAction*
@@ -376,8 +387,6 @@ bse_script_control_push_current (BseScriptControl *self)
   g_return_if_fail (self->wire);
   g_return_if_fail (g_slist_find (sctrl_stack, self) == NULL);
 
-  if (self->block_exec_status)
-    bse_procedure_block_exec_status ();
   sctrl_stack = g_slist_prepend (sctrl_stack, self);
 }
 
@@ -396,41 +405,16 @@ bse_script_control_pop_current (void)
 
   self = sctrl_stack->data;
   sctrl_stack = g_slist_remove (sctrl_stack, self);
-  if (self->block_exec_status)
-    bse_procedure_unblock_exec_status ();
-}
-
-void
-bse_script_control_block_exec_status (BseScriptControl *self,
-				      gboolean          block_exec)
-{
-  g_return_if_fail (BSE_IS_SCRIPT_CONTROL (self));
-
-  if (self->block_exec_status != (block_exec != FALSE))
-    {
-      self->block_exec_status = block_exec != FALSE;
-      if (g_slist_find (sctrl_stack, self))
-	{
-	  if (self->block_exec_status)
-	    bse_procedure_block_exec_status ();
-	  else
-	    bse_procedure_unblock_exec_status ();
-	}
-    }
 }
 
 static void
 queue_kill (BseScriptControl *self)
 {
-  const gchar *ident = self->wire->ident;
-
   bse_com_wire_close_remote (self->wire, TRUE);
   self->wire = NULL;
   bse_idle_now (script_control_kill_wire, g_object_ref (self));
   g_signal_emit (self, signal_killed, 0);
-  bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, ident, -1, self->error_status);
   g_object_notify (self, "running");
-  g_object_notify (self, "error_status");
 }
 
 void

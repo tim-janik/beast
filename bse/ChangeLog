@@ -1,3 +1,22 @@
+Sat Sep  7 16:00:47 2002  Tim Janik  <timj@gtk.org>
+
+	* bseenums.[hc]: get rid of BSE_ERROR_USER_* values.
+
+	* bseprocedure.[hc]: remove exec status signalling code.
+
+	* bsescriptcontrol.[hcp]*: maintain script_name and proc_name
+	fields. remove error_status. add ::progress signal.
+
+	* bseserver.[hc]: remove ::exec-status signal and related code.
+	add ::script-start and ::script-error signals and proper
+	handling code.
+	(bse_server_run_remote): fix ref count leakage on script controls.
+
+	* bsescripthelper.[hc]: adapt to BseServer and
+	BseScriptControl changes.
+
+	* *.c, *.proc: remove procedure exec status skipping/blocking code.
+
 Mon Sep  2 06:17:55 2002  Tim Janik  <timj@gtk.org>
 
 	* bseitem.c (bse_item_store_property): fix missing newline in

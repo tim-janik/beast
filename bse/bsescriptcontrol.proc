@@ -53,6 +53,54 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseScriptControl, get-script-name) {
+  HELP	= "Retrive the script name of this script control.";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+  OUT    = g_param_spec_string ("script_name", "Script Name", NULL,
+				NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseScriptControl *self   = g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SCRIPT_CONTROL (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, self->script_name);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseScriptControl, get-proc-name) {
+  HELP	= "Retrive the procedure name of this script control.";
+  IN	= g_param_spec_object ("script_control", "Script Control", NULL,
+ 			       BSE_TYPE_SCRIPT_CONTROL, BSE_PARAM_DEFAULT);
+  OUT    = g_param_spec_string ("proc_name", "Proc Name", NULL,
+				NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseScriptControl *self   = g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SCRIPT_CONTROL (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, self->proc_name);
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseScriptControl, n-actions) {
   HELP	= "Retrive number of user actions of this script control.";
   IN	= g_param_spec_object ("script_control", "Script Control", NULL,
@@ -184,11 +232,8 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  bse_script_control_preset_error (self, BSE_ERROR_NONE);
   if (self->wire)
     bse_script_control_queue_kill (self);
-  /* we don't want our own exec status to override the one we just signalled */
-  bse_procedure_skip_next_exec_status ();
   
   return BSE_ERROR_NONE;
 }
@@ -275,7 +320,7 @@ BODY (BseProcedureClass *proc,
 PROCEDURE (bse-script-set-msg, "Script Utils/Set Message") {
   HELP  = "Alter script status message.";
   IN    = g_param_spec_enum ("msg_type", "Message Type", NULL,
-			     BSE_TYPE_USER_MSG_TYPE, BSE_ERROR_NONE,
+			     BSE_TYPE_USER_MSG_TYPE, BSE_USER_MSG_INFO,
 			     BSE_PARAM_DEFAULT);
   IN    = g_param_spec_string ("message", "Message", NULL,
 			       NULL, BSE_PARAM_DEFAULT);
@@ -324,16 +369,7 @@ PROCEDURE (bse-script-progress, "Script Utils/Progress") {
     return BSE_ERROR_PROC_EXECUTION;
 
   /* action */
-  bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_PROGRESS,
-			  bse_script_control_get_ident (self),
-			  progress > 0 ? progress : -1,
-			  BSE_ERROR_NONE);
-  /* we don't want our own exec status to override the one we just signalled */
-  bse_procedure_skip_next_exec_status ();
-  /* don't let further procedure invokations from this script override
-   * it's progress value.
-   */
-  bse_script_control_block_exec_status (self, TRUE);
+  bse_script_control_progress (self, progress);
 
   return BSE_ERROR_NONE;
 }
@@ -341,7 +377,7 @@ PROCEDURE (bse-script-progress, "Script Utils/Progress") {
 PROCEDURE (bse-script-exit, "Script Utils/Exit Message") {
   HELP  = "Exit a script, leaving a message.";
   IN    = g_param_spec_enum ("msg_type", "Message Type", NULL,
-			     BSE_TYPE_USER_MSG_TYPE, BSE_ERROR_NONE,
+			     BSE_TYPE_USER_MSG_TYPE, BSE_USER_MSG_INFO,
 			     BSE_PARAM_DEFAULT);
   IN    = g_param_spec_string ("message", "Message", NULL,
 			       NULL, BSE_PARAM_DEFAULT);
@@ -353,7 +389,6 @@ PROCEDURE (bse-script-exit, "Script Utils/Exit Message") {
   BseUserMsgType mtype   = g_value_get_enum (in_values++);
   const gchar   *message = g_value_get_string (in_values++);
   BseScriptControl *self = bse_script_control_peek_current ();
-  BseErrorType error;
 
   /* check parameters */
   if (!message)
@@ -365,28 +400,7 @@ PROCEDURE (bse-script-exit, "Script Utils/Exit Message") {
 
   /* action */
   bse_server_user_message (bse_server_get (), mtype, message);
-  switch (mtype)
-    {
-    case BSE_USER_MSG_INFO:
-      error = BSE_ERROR_USER_INFO;
-      break;
-    case BSE_USER_MSG_QUESTION:
-      error = BSE_ERROR_USER_QUESTION;
-      break;
-    case BSE_USER_MSG_WARNING:
-      error = BSE_ERROR_USER_WARNING;
-      break;
-    case BSE_USER_MSG_ERROR:
-      error = BSE_ERROR_USER_ERROR;
-      break;
-    default:
-      error = BSE_ERROR_NONE;
-      break;
-    }
-  bse_script_control_preset_error (self, error);
   bse_script_control_queue_kill (self);
-  /* we don't want our own exec status to override the one from killing the wire */
-  bse_procedure_skip_next_exec_status ();
 
   return BSE_ERROR_NONE;
 }
