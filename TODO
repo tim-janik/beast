@@ -577,28 +577,69 @@ sfidl:
 66  - createTypeCode refactoring
       funcFromValue, funcToValue,
       codeVCallArgs
-    - should we have toplevel (unnamespaced) symbols?
-    - should we have a "using Bse::Standard" (as opposed to "using namespace Bse")?
 
 bseprocidl:
   - doesn't really work when it comes to implementing _some_ objects yourself
   - should output lower case vars (Info help instead of Info HELP)
 
-scripts:
-  - pianoroll transpose up/down
-  - pianorool lengthen/shorten notes
+modules:
+  pwm osc:
+    - implement dht minphase reconstruction
+    - implement remez
+  vlen delay:
+    - add interpolation examples as reference
+  compressor:
+    - curve widget
+  arts:
+    equalizer:
+      - port me
+  freeverb:
+    - parameters are broken (it _says_ dB, but it definitely _is not_ dB)
 
 gui:
-  - hotkey to jump to loop marker
-  - beast should not suggest to put instruments in postproc
-  - Farbe fuer h (nicht blau), damit selektionen blau sein koennen
-    bstpianoroll.c: "light blue"
-  - library proposal
+  general:
+    - library proposal
+    - small icons in toolbars
+    - beautify icons
+    - rack editor is missing
+  song:
+    - hotkey to jump to loop marker
+    - beast should not suggest to put instruments in postproc
+    - theming for track view
+    - parts in track view should be directly on top of the pixmap
+    - parts should be colorizable
+  pianoroll:
+    - Farbe fuer h (nicht blau), damit selektionen blau sein koennen
+      bstpianoroll.c: "light blue"
+  snet router:
+    - grid
+    - theming for SNetRouter
+    - beautify toolbar::channel_hints
+    - non-transparent icons
+    - more beautiful arrows (no line crossing)
+    - die Bauelemente im SNetView sollten mehr aussehen wie Kloetze
+  mixer:
+    - looks broken on some gtk themes (button shading)
+    - looks incoherent
+    - lines in ledmeter
+  scripts:
+    - pianoroll transpose up/down
+    - pianoroll lengthen/shorten notes
 
 interop:
   portaudio driver:
     - fix JACK blocking interface in PortAudio
-  jack driver:
+    - port arts driver from csl to port-audio
+  native jack driver:
+    - write it
+    - maybe add a blocking API to JACK itself
+
+design instruments:
+  samples:
+    - korg samples
+    - timidity GM samples
+  synthesis:
+    - design some
 
 STEFAN TODO:
   - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
@@ -607,11 +648,5 @@ STEFAN TODO:
   - Makefile.plugins doesn't get regenerated properly
 82- C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
   - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
-  - rename bindings to client and core (instead of interface and implementation)
-  - port arts driver from csl to port-audio
-  - write port-audio driver for beast
-81- freeverb parameters are broken (it _says_ dB, but it definitely _is not_ dB)
-81- compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
-81- migrate artscompressor threshold/output to dB (keep compat code)
 
 vim:set ts=8 sts=2 sw=2:
