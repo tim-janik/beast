@@ -243,6 +243,7 @@ GParamSpec*  sfi_boxed_type_get_seq_element (GType               boxed_type);
  * "dial"               - dial knob hint
  * "scale"              - scale adjustment hint
  * "log-scale"          - logarithmic scale adjustment hint
+ * "DB"                 - decibell hint
  * "trigger"            - trigger button hint
  * "searchpath"         - indicates colon seperated directory list
  */
