@@ -1,3 +1,11 @@
+Sun Nov  7 20:48:04 1999  Tim Janik  <timj@gtk.org>
+
+	* bsenoise.[hc]: new noise generator.
+
+	* icons/noicon.xcf:
+	* icons/noicon.c: files to be used for objects/procedures that don't
+	come with their own icons but want one.
+
 Wed Nov  3 20:55:21 1999  Tim Janik  <timj@gtk.org>
 
 	* testos.c: we need to be *at least* of size sizeof (BseSource) if

@@ -39,7 +39,7 @@ for file in `echo $@ | sort | uniq` ; do
 	echo "$_name""_la_LDFLAGS = -module -avoid-version"
 	echo "$_name""_la_LIBADD  =" '$(plugin_libs)'
 	test -r "$hfile" && {
-		echo "EXTRA_DIST += $hfile"
+		echo "EXTRA_HEADERS += $hfile"
 	}
 	
 	last="$name.la"

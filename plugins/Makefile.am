@@ -19,6 +19,7 @@ Makefile.plugins: $(srcdir)/listplugins.sh *.c Makefile.am
 	$(srcdir)/listplugins.sh *.c >$@
 
 EXTRA_DIST += $(strip \
+        $(EXTRA_HEADERS) \
 	listplugins.sh \
 	TODO \
 )
@@ -31,5 +32,6 @@ include Makefile.plugins
 ##foo_la_SOURCES = foo.c
 ##foo_la_LDFLAGS = -module -avoid-version
 ##foo_la_LIBADD  = $(plugin_libs)
+##EXTRA_HEADERS += foo.h
 ##
 ##plugin_LTLIBRARIES += foo.la
