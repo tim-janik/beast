@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: BSE vUNSPECIFIED\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-11 21:32+0200\n"
+"POT-Creation-Date: 2003-10-14 21:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,7 +45,7 @@ msgstr ""
 msgid "Emphasis"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:159 bse/examplepeakfilter.cc:65
+#: bse/bsebiquadfilter.c:159
 msgid "Gain [dB]"
 msgstr ""
 
@@ -101,26 +101,4 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:203
 msgid "Filtered Audio Signal"
-msgstr ""
-
-#: bse/examplepeakfilter.cc:62
-msgid "Frequency"
-msgstr ""
-
-#: bse/examplepeakfilter.cc:62
-msgid "Frequency around which the peak is centered"
-msgstr ""
-
-#: bse/examplepeakfilter.cc:65
-msgid "Specify the peak level in decibell"
-msgstr ""
-
-#: bse/examplepeakfilter.cc:69
-msgid "Quality"
-msgstr ""
-
-#: bse/examplepeakfilter.cc:70
-msgid ""
-"The quality adjust how much neighbouring frequencies are affected by "
-"altering the peak frequency"
 msgstr ""
