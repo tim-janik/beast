@@ -207,6 +207,26 @@ app_set_title (BstApp *app)
 }
 
 static void
+project_cross_changes (BseContainer *container,
+		       BstApp       *app)
+{
+  BseProject *project = BSE_PROJECT (container);
+  GSList *slist;
+
+ restart:
+  for (slist = project->supers; slist; slist = slist->next)
+    {
+      BseItem *item = BSE_ITEM (slist->data);
+      
+      if (BSE_IS_SAMPLE (item) && BST_SAMPLE_SWEEP && !bse_item_has_cross_owners (item))
+	{
+	  bse_container_remove_item (container, item);
+	  goto restart;
+	}
+    }
+}
+
+static void
 bst_app_destroy (GtkObject *object)
 {
   BstApp *app = BST_APP (object);
@@ -219,6 +239,9 @@ bst_app_destroy (GtkObject *object)
 					   app);
       bse_object_remove_notifiers_by_func (BSE_OBJECT (app->project),
 					   bst_app_reload_supers,
+					   app);
+      bse_object_remove_notifiers_by_func (BSE_OBJECT (app->project),
+					   project_cross_changes,
 					   app);
       bse_object_unref (BSE_OBJECT (app->project));
       app->project = NULL;
@@ -259,6 +282,10 @@ bst_app_new (BseProject *project)
 				"item-removed",
 				bst_app_reload_supers,
 				app);
+  bse_object_add_notifier (BSE_OBJECT (project),
+			   "cross-changes",
+			   project_cross_changes,
+			   app);
   app_set_title (app);
 
   bst_app_reload_supers (app);
@@ -334,7 +361,7 @@ bst_app_reload_supers (BstApp *app)
 
   g_return_if_fail (BST_IS_APP (app));
 
-  gtk_widget_hide (GTK_WIDGET (app->notebook));
+  // gtk_widget_hide (GTK_WIDGET (app->notebook));
 
   old_page = app->notebook->cur_page ? app->notebook->cur_page->child : NULL;
   while (app->notebook->cur_page && app->notebook->cur_page->child)
@@ -364,6 +391,7 @@ bst_app_reload_supers (BstApp *app)
 				page,
 				gtk_widget_new (GTK_TYPE_LABEL,
 						"visible", TRUE,
+						"width", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
 						NULL));
       bst_super_shell_update_parent (BST_SUPER_SHELL (page));
       gtk_widget_unref (page);
@@ -379,7 +407,7 @@ bst_app_reload_supers (BstApp *app)
     }
   g_slist_free (page_list);
 
-  gtk_widget_show (GTK_WIDGET (app->notebook));
+  // gtk_widget_show (GTK_WIDGET (app->notebook));
 }
 
 static gboolean
@@ -466,12 +494,13 @@ bst_app_operate (BstApp *app,
       if (1)
 	{
 	  BseProject *project = bse_project_new ("Untitled.bse");
-	  BstApp *napp = bst_app_new (project);
+	  BstApp *new_app;
 
+	  new_app = bst_app_new (project);
 	  bse_object_unref (BSE_OBJECT (project));
-	  if (0)
-	    bst_app_operate (napp, BST_OP_PROJECT_NEW_SONG);
-	  gtk_idle_show_widget (GTK_WIDGET (napp));
+	  if (0) /* FIXME: config values */
+	    bst_app_operate (new_app, BST_OP_PROJECT_NEW_SONG);
+	  gtk_idle_show_widget (GTK_WIDGET (new_app));
 	}
       break;
     case BST_OP_PROJECT_OPEN:

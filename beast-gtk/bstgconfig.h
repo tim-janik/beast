@@ -27,12 +27,14 @@ extern "C" {
 
 
 /* --- BstGlobals - configurable defaults --- */
-#define BST_SNET_ANTI_ALIASED		(bst_globals->snet_anti_aliased)
-#define BST_SNET_EDIT_FALLBACK		(bst_globals->snet_edit_fallback)
-#define BST_SNET_SWAP_IO_CHANNELS	(bst_globals->snet_swap_io_channels)
 #define BST_XKB_FORCE_QUERY		(bst_globals->xkb_force_query)
 #define BST_XKB_SYMBOL			(bst_globals->xkb_symbol)
 #define BST_DISABLE_ALSA		(bst_globals->disable_alsa)
+#define BST_TAB_WIDTH			(bst_globals->tab_width)
+#define BST_SNET_ANTI_ALIASED		(bst_globals->snet_anti_aliased)
+#define BST_SNET_EDIT_FALLBACK		(bst_globals->snet_edit_fallback)
+#define BST_SNET_SWAP_IO_CHANNELS	(bst_globals->snet_swap_io_channels)
+#define BST_SAMPLE_SWEEP		(bst_globals->sample_sweep)
 
 
 /* --- BstGlobals --- */
@@ -45,6 +47,8 @@ struct _BstGlobals
   guint  xkb_force_query : 1;
   gchar *xkb_symbol;
   guint  disable_alsa : 1;
+  guint  sample_sweep : 1;
+  guint  tab_width : 16;
 };
 extern const BstGlobals * const bst_globals;
 

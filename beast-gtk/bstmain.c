@@ -216,7 +216,7 @@ main (int   argc,
   if (!app)
     {
       BseProject *project = bse_project_new ("Untitled.bse");
-      
+
       app = bst_app_new (project);
       bse_object_unref (BSE_OBJECT (project));
       /* bst_app_operate (app, BST_OP_PROJECT_NEW_SONG); */

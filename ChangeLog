@@ -1,4 +1,7 @@
-Sun Jan 16 07:33:35 2000  Tim Janik  <timj@gtk.org>
+Mon Jan 17 15:19:18 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (project_cross_changes): auto-sweep unsused
+	samples.
 
 	* beast-gtk/bstapp.c (bst_app_add_super): popup sample shell.
 	(bst_app_new): auto-update GUI when supers got added to/removed

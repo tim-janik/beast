@@ -27,7 +27,9 @@ enum
   PARAM_SNET_SWAP_IO_CHANNELS,
   PARAM_XKB_FORCE_QUERY,
   PARAM_XKB_SYMBOL,
-  PARAM_DISABLE_ALSA
+  PARAM_DISABLE_ALSA,
+  PARAM_TAB_WIDTH,
+  PARAM_SAMPLE_SWEEP
 };
 
 
@@ -61,6 +63,8 @@ static const BstGlobals  bst_globals_defaults = {
   FALSE			/* xkb_force_query */,
   NULL			/* xkb_symbol */,
   FALSE			/* disable_alsa */,
+  TRUE			/* sample_sweep */,
+  0			/* tab_width */,
 };
 
 
@@ -155,6 +159,12 @@ bst_gconfig_class_init (BstGConfigClass *class)
 			      bse_param_spec_string ("xkb_symbol", "Keyboard Layout", NULL,
 						     globals_defaults.xkb_symbol,
 						     BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Samples",
+			      PARAM_SAMPLE_SWEEP,
+			      bse_param_spec_bool ("sample_sweep", "Auto sweep",
+						   "Automatically remove (sweep) unused samples of a project",
+						   globals_defaults.sample_sweep,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_ANTI_ALIASED,
 			      bse_param_spec_bool ("snet_anti_aliased", "Anti aliased display", NULL,
@@ -170,6 +180,15 @@ bst_gconfig_class_init (BstGConfigClass *class)
 			      PARAM_SNET_SWAP_IO_CHANNELS,
 			      bse_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
 						   globals_defaults.snet_swap_io_channels,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Geometry",
+			      PARAM_TAB_WIDTH,
+			      bse_param_spec_uint ("tab_width", "Project tabulator width",
+						   "This is the width of the project notebook's "
+						   "tabulators that show the song, network or sample names. "
+						   "Setting it to a fixed width avoids window resizing when "
+						   "samples are added or removed.",
+						   0, 1024, 5, globals_defaults.tab_width,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Debugging",
 			      PARAM_DISABLE_ALSA,
@@ -203,6 +222,12 @@ bst_gconfig_set_param (BstGConfig *gconf,
       break;
     case PARAM_DISABLE_ALSA:
       gconf->globals.disable_alsa = param->value.v_bool;
+      break;
+    case PARAM_TAB_WIDTH:
+      gconf->globals.tab_width = param->value.v_uint;
+      break;
+    case PARAM_SAMPLE_SWEEP:
+      gconf->globals.sample_sweep = param->value.v_bool;
       break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
@@ -238,6 +263,12 @@ bst_gconfig_get_param (BstGConfig *gconf,
       break;
     case PARAM_DISABLE_ALSA:
       param->value.v_bool = gconf->globals.disable_alsa;
+      break;
+    case PARAM_TAB_WIDTH:
+      param->value.v_uint = gconf->globals.tab_width;
+      break;
+    case PARAM_SAMPLE_SWEEP:
+      param->value.v_bool = gconf->globals.sample_sweep;
       break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
