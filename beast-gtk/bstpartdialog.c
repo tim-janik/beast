@@ -78,9 +78,9 @@ static BstMenuConfigEntry popup_entries[] =
   {    "/Edit/-----1",   	NULL,     	NULL,   0,           	"<Separator>",	0 },
   { N_("/Edit/Undo"),   	"<ctrl>Z",      ACTION_CB (UNDO),	"<StockItem>",	BST_STOCK_UNDO },
   { N_("/Edit/Redo"),   	"<ctrl>R",      ACTION_CB (REDO),	"<StockItem>",	BST_STOCK_REDO },
-  {    "/-----1",             	NULL,		NULL,	0,		"<Separator>",	0 },
-  { N_("/Scripts"),		NULL,		NULL,   0,		"<Title>",	0 },
-  { N_("/Test"),		NULL,		NULL,	0,		"<Branch>",	0 },
+  // {    "/-----1",             	NULL,		NULL,	0,		"<Separator>",	0 },
+  // { N_("/Scripts"),		NULL,		NULL,   0,		"<Title>",	0 },
+  // { N_("/Test"),		NULL,		NULL,	0,		"<Branch>",	0 },
 };
 static gpointer	parent_class = NULL;
 

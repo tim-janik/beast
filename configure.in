@@ -109,8 +109,11 @@ dnl Define package requirements.
 dnl
 AC_DEFUN(AC_I18N_REQUIREMENTS,
 [
-    dnl supported translations:
-    ALL_LINGUAS="az de nl sr sr@Latn sv"
+    dnl TRANSLATORS: <LANG>.po files are required in both the po/ _and_ po-bse/
+    dnl directories before <LANG> may be added to ALL_LINGUAS.
+    ALL_LINGUAS="az de nl sr sr@Latn sv ru"
+    dnl TRANSLATORS: <LANG>.po files are required in both the po/ _and_ po-bse/
+    dnl directories before <LANG> may be added to ALL_LINGUAS.
     AC_SUBST(ALL_LINGUAS)
 
     dnl versioned BSE gettext domain (po-bse/)
