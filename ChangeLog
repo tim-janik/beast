@@ -1,3 +1,11 @@
+Sat Jan 17 03:05:49 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* docs/sfidl.texi: Started sfidl documentation.
+
+	* docs/generated/Makefile.am: Build sfidl.markup and sfidl.html.
+
+	* docs/Makefile.am: Include sfidl.texi.
+
 Fri Jan 16 23:13:56 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/Makefile.am: build plugin-devel.markup
