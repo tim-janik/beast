@@ -24,6 +24,7 @@ programs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
 
 headers = $(strip	\
 	bsewavetool.h	\
+	bwtwave.h	\
 	sfiutils.h	\
 	bseloopfuncs.h	\
 )
