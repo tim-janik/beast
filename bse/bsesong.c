@@ -439,7 +439,14 @@ bse_song_remove_item (BseContainer *container,
   if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
     list_p = &song->instruments;
   else if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
-    list_p = &song->patterns;
+    {
+      BsePattern *pattern = BSE_PATTERN (item);
+      guint i;
+
+      for (i = 0; i < song->n_pgroups; i++)
+	bse_pattern_group_remove_pattern (song->pgroups[i], pattern);
+      list_p = &song->patterns;
+    }
   else if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN_GROUP))
     {
       bse_song_remove_pgroup_links (song, BSE_PATTERN_GROUP (item));
