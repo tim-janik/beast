@@ -216,6 +216,7 @@ gxk_gadget_factory_finalize (GObject *object)
   GxkGadgetFactory *self = GXK_GADGET_FACTORY (object);
 
   g_assert (self->window == NULL);
+  g_datalist_clear (&self->branch_widgets);
   g_free (self->action_root);
   g_free (self->per_action);
   g_free (self->per_list);
@@ -223,8 +224,7 @@ gxk_gadget_factory_finalize (GObject *object)
   g_free (self->action_list);
   g_free (self->activatable);
   g_free (self->regulate);
-  gxk_gadget_free_options (self->pass_options);
-  g_datalist_clear (&self->branch_widgets);
+  gxk_gadget_free_options (self->call_options);
   while (self->branches)
     {
       GxkFactoryBranch *b = g_slist_pop_head (&self->branches);
@@ -243,7 +243,7 @@ gadget_factory_retrieve_branch (GxkGadgetFactory *self,
                                 const gchar      *label_path,   /* translated, contains ulines */
                                 GxkGadget        *parent,
                                 const gchar      *path_prefix,
-                                GxkGadgetOpt     *call_options)
+                                GxkGadgetOpt     *branch_options)
 {
   GxkGadget *gadget = g_datalist_get_data (&self->branch_widgets, key_path);
   if (!gadget)
@@ -252,25 +252,31 @@ gadget_factory_retrieve_branch (GxkGadgetFactory *self,
       const gchar *label_leaf = gxk_factory_path_get_leaf (label_path);
       gchar *action_path = g_strconcat (path_prefix, key_path, NULL);
       gchar *unescaped = g_strcompress (label_leaf ? label_leaf : key_leaf);
-      GxkGadgetOpt *options = gxk_gadget_options ("action-name", unescaped,
-                                                  "action-path", action_path,
-                                                  NULL);
+      GSList *option_list = NULL;
+      GxkGadgetOpt *action_options = gxk_gadget_options ("action-name", unescaped,
+                                                         "action-path", action_path,
+                                                         NULL);
       g_free (unescaped);
       g_free (action_path);
-      options = gxk_gadget_options_merge (options, call_options);
       if (key_leaf > key_path)
         {
           gchar *key_ppath = g_strndup (key_path, key_leaf - key_path - 1);
           gchar *label_ppath = label_leaf && label_leaf > label_path ? g_strndup (label_path, label_leaf - label_path - 1) : NULL;
-          parent = gadget_factory_retrieve_branch (self, key_ppath, label_ppath, parent, path_prefix, call_options);
+          parent = gadget_factory_retrieve_branch (self, key_ppath, label_ppath, parent, path_prefix, branch_options);
           g_free (key_ppath);
           g_free (label_ppath);
         }
+      if (self->call_options)
+        option_list = g_slist_prepend (option_list, self->call_options);
+      option_list = g_slist_prepend (option_list, action_options);
+      if (branch_options)
+        option_list = g_slist_prepend (option_list, branch_options);
       gadget = gxk_gadget_creator (NULL, gxk_gadget_get_domain (self),
-                                   self->per_branch, parent, self->pass_options, options);
+                                   self->per_branch, parent, option_list, NULL);
+      g_slist_free (option_list);
+      gxk_gadget_free_options (action_options);
       if (parent == self->gadget)
         gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
-      gxk_gadget_free_options (options);
       gadget = gxk_gadget_find_area (gadget, NULL);
       g_datalist_set_data (&self->branch_widgets, key_path, gadget);
     }
@@ -316,10 +322,16 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
       GSList *slist;
       if (self->per_list)
         {
-          GxkGadgetOpt *options = gxk_gadget_options ("action-path", path_prefix, NULL);
-          GxkGadget *gadget = gxk_gadget_creator (NULL, domain, self->per_list, self->gadget, self->pass_options, options);
+          GxkGadgetOpt *action_options = gxk_gadget_options ("action-path", path_prefix, NULL);
+          GSList *option_list = NULL;
+          GxkGadget *gadget;
+          if (self->call_options)
+            option_list = g_slist_prepend (option_list, self->call_options);
+          option_list = g_slist_prepend (option_list, action_options);
+          gadget = gxk_gadget_creator (NULL, domain, self->per_list, self->gadget, option_list, NULL);
+          g_slist_free (option_list);
+          gxk_gadget_free_options (action_options);
           gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
-          gxk_gadget_free_options (options);
         }
       for (slist = self->branches; slist; slist = slist->next)
         {
@@ -336,7 +348,8 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
       for (i = self->per_action ? 0 : n; i < n; i++)
         {
           GxkGadget *gadget, *parent;
-          GxkGadgetOpt *options;
+          GxkGadgetOpt *action_options;
+          GSList *option_list = NULL;
           GxkAction action;
           gxk_action_list_get_action (alist, i, &action);
           gchar *key_path = gxk_factory_path_unescape_uline (strip_slashes (action.key));
@@ -355,20 +368,24 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
             }
           else
             parent = self->gadget;
-          options = gxk_gadget_options ("action-name", unescaped,
-                                        "action-key", key_path,
-                                        "action-path", action_path,
-                                        "action-accel", action.accelerator,
-                                        "action-tooltip", action.tooltip,
-                                        "action-stock", action.stock_icon,
-                                        NULL);
+          action_options = gxk_gadget_options ("action-name", unescaped,
+                                               "action-key", key_path,
+                                               "action-path", action_path,
+                                               "action-accel", action.accelerator,
+                                               "action-tooltip", action.tooltip,
+                                               "action-stock", action.stock_icon,
+                                               NULL);
           g_free (key_path);
           g_free (action_path);
           g_free (unescaped);
-          gadget = gxk_gadget_creator (NULL, domain, self->per_action, parent, self->pass_options, options);
+          if (self->call_options)
+            option_list = g_slist_prepend (option_list, self->call_options);
+          option_list = g_slist_prepend (option_list, action_options);
+          gadget = gxk_gadget_creator (NULL, domain, self->per_action, parent, option_list, NULL);
+          g_slist_free (option_list);
+          gxk_gadget_free_options (action_options);
           if (parent == self->gadget)
             gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
-          gxk_gadget_free_options (options);
           if (GTK_IS_WIDGET (gadget))
             {
               GxkGadget *child = self->activatable ? gxk_gadget_find (gadget, self->activatable) : NULL;
@@ -477,12 +494,7 @@ gadget_factory_adopt (GxkGadget          *gadget,
                       GxkGadgetData      *gdgdata)
 {
   GxkGadgetFactory *self = gadget;
-  GxkGadgetOpt *options = gxk_gadget_data_copy_scope_options (gdgdata);
-  self->pass_options = gxk_gadget_options_merge (self->pass_options, options);
-  gxk_gadget_free_options (options);
-  options = gxk_gadget_data_copy_call_options (gdgdata);
-  self->pass_options = gxk_gadget_options_merge (self->pass_options, options);
-  gxk_gadget_free_options (options);
+  self->call_options = gxk_gadget_data_copy_call_options (gdgdata);
   self->xdef_gadget = gxk_gadget_data_get_scope_gadget (gdgdata);
   gxk_gadget_factory_attach (gadget, GTK_WIDGET (parent));
   self->cslot = gxk_container_get_insertion_slot (GTK_CONTAINER (parent));

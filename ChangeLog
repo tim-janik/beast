@@ -1,3 +1,40 @@
+Sun Dec 21 19:30:56 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkgadget.[hc]: another major overhaul of variable
+	scoping in xml files. all variables in an <xdef:... ...=... > line
+	are named call-arguments to the parent type.
+	all variables in <widget ...=... /> lines are (named) call-arguments to
+	widget. call-arguments to parent types are properly bound to inheritance
+	depth, and due to the different scopes and named argument support,
+	variables may reference equally named variable values, e.g.
+	label="$label" (where $label is simply assumed empty for endless
+	recursion).
+	added comparison macro-functions, <, >, <=, >=, == and !=, as well
+	as two-letter variants. added $(first-occupied) macro-function which
+	returns the first non-empty argument from its argument list.
+	(gxk_gadget_data_copy_call_options): for factories, flatten and expand
+	all call arguments to parent types into a single option list.
+	(gxk_gadget_define_widget_type): allow call arguments for most GtkWidget
+	properties.
+	(mf_null_collapse): fixed segfault possibility.
+	(node_define): restricted prop: arguments to xdef: lines.
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: adapt to gxkgadget.[hc] scoping
+	changes by passing on call-arguments to the action widgets.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: removed prop: arguments from
+	non-xdef: lines. used new GtkWidget arguments. other small fixes.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: extended many widget
+	types to take extra arguments. improved/fixed things by using new
+	scoping and macro-functions. 
+
+	* beast-gtk/gxk/gxkdialog.[hc]: explicitely maintain a child pointer
+	and allow the passed in child to already have parents.
+
+	* beast-gtk/bstcanvassource.c: fix inner GtkFrame border being
+	overwritten (apears to be a GtkFrame bug).
+
 Sun Dec 21 22:10:05 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/cxxbinding.cc: Removed iterator usage (no more iterators in

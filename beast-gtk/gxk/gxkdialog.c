@@ -149,7 +149,7 @@ gxk_dialog_init (GxkDialog *self)
                              "spacing", 0,
                              "parent", window,
                              NULL);
-  g_signal_connect_swapped (self->mbox, "destroy", G_CALLBACK (g_nullify_pointer), &self->mbox);
+  gxk_nullify_in_object (self->mbox, &self->mbox, self);
   
   /* user vbox */
   self->vbox = g_object_new (GTK_TYPE_VBOX,
@@ -158,11 +158,11 @@ gxk_dialog_init (GxkDialog *self)
                              "spacing", 0,
                              "parent", self->mbox,
                              NULL);
-  g_signal_connect_swapped (self->vbox, "destroy", G_CALLBACK (g_nullify_pointer), &self->vbox);
+  gxk_nullify_in_object (self->vbox, &self->vbox, self);
   
   /* status bar */
   self->status_bar = gxk_status_bar_create ();
-  g_signal_connect_swapped (self->status_bar, "destroy", G_CALLBACK (g_nullify_pointer), &self->status_bar);
+  gxk_nullify_in_object (self->status_bar, &self->status_bar, self);
   gtk_box_pack_end (GTK_BOX (self->mbox), self->status_bar, FALSE, FALSE, 0);
   
   /* button box */
@@ -172,14 +172,14 @@ gxk_dialog_init (GxkDialog *self)
                              "spacing", GXK_INNER_PADDING,
                              "border_width", GXK_INNER_PADDING,
                              NULL);
-  g_signal_connect_swapped (self->hbox, "destroy", G_CALLBACK (g_nullify_pointer), &self->hbox);
+  gxk_nullify_in_object (self->hbox, &self->hbox, self);
   gtk_box_pack_end (GTK_BOX (self->mbox), self->hbox, FALSE, TRUE, GXK_INNER_PADDING);
   
   /* separator */
   self->sep = g_object_new (GTK_TYPE_HSEPARATOR,
                             "visible", FALSE,
                             NULL);
-  g_signal_connect_swapped (self->sep, "destroy", G_CALLBACK (g_nullify_pointer), &self->sep);
+  gxk_nullify_in_object (self->sep, &self->sep, self);
   gtk_box_pack_end (GTK_BOX (self->mbox), self->sep, FALSE, FALSE, GXK_INNER_PADDING);
 }
 
@@ -306,7 +306,11 @@ gxk_dialog_destroy (GtkObject *object)
 static void
 gxk_dialog_finalize (GObject *object)
 {
-  // GxkDialog *dialog = GXK_DIALOG (object);
+  GxkDialog *dialog = GXK_DIALOG (object);
+
+  if (dialog->child)
+    g_object_unref (dialog->child);
+  dialog->child = NULL;
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -417,16 +421,9 @@ gxk_dialog_clear_flags (GxkDialog     *dialog,
 GtkWidget*
 gxk_dialog_get_child (GxkDialog *dialog)
 {
-  GtkBoxChild *child;
-  GtkBox *box;
-
   g_return_val_if_fail (GXK_IS_DIALOG (dialog), NULL);
-
   /* return the single child that was passed to gxk_dialog_new() if any */
-  box = dialog->vbox ? GTK_BOX (dialog->vbox) : NULL;
-  child = box && box->children ? box->children->data : NULL;
-
-  return child ? child->widget : NULL;
+  return dialog->child;
 }
 
 /**
@@ -444,8 +441,14 @@ gxk_dialog_set_child (GxkDialog *dialog,
   g_return_if_fail (GXK_IS_DIALOG (dialog));
 
   gtk_container_foreach (GTK_CONTAINER (dialog->vbox), (GtkCallback) gtk_widget_destroy, NULL);
-  if (child)
-    gtk_container_add (GTK_CONTAINER (dialog->vbox), child);
+  if (dialog->child)
+    g_object_unref (dialog->child);
+  dialog->child = child;
+  if (dialog->child)
+    {
+      g_object_ref (dialog->child);
+      gtk_container_add (GTK_CONTAINER (dialog->vbox), gtk_widget_get_toplevel (child));
+    }
 }
 
 /**

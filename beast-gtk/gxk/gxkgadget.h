@@ -60,8 +60,8 @@ GxkGadget*    gxk_gadget_creator        (GxkGadget          *gadget,
                                          const gchar        *domain_name,
                                          const gchar        *name,
                                          GxkGadget          *parent,
-                                         const GxkGadgetOpt *options,
-                                         const GxkGadgetOpt *env);
+                                         GSList             *call_options, /* const GxkGadgetOpt* */
+                                         GSList             *env_options); /* const GxkGadgetOpt* */
 const gchar*  gxk_gadget_get_domain     (GxkGadget          *gadget);
 void          gxk_gadget_parse          (const gchar        *domain_name,
                                          const gchar        *file_name,
@@ -110,7 +110,6 @@ void      gxk_gadget_define_type          (GType                type,
 gboolean  gxk_gadget_type_lookup          (GType                type,
                                            GxkGadgetType       *ggtype);
 GxkGadgetOpt* gxk_gadget_data_copy_call_options  (GxkGadgetData *gdgdata);
-GxkGadgetOpt* gxk_gadget_data_copy_scope_options (GxkGadgetData *gdgdata);
 GxkGadget*    gxk_gadget_data_get_scope_gadget   (GxkGadgetData *gdgdata);
 
 G_END_DECLS

@@ -7,13 +7,32 @@
   xmlns:size="http://beast.gtk.org/xmlns:size" >
   
   <!-- widget-patcher -->
-  <xdef:widget-patcher inherit="GxkWidgetPatcher" />
+  <xdef:tooltip inherit="GxkWidgetPatcher"
+    prop:tooltip="$(null-collapse,$text)"
+    prop:tooltip-visible="$(ifdef,latent-tooltip,$(not,$latent-tooltip),1)" />
+  <xdef:hidden-when-insensitive inherit="GxkWidgetPatcher"
+    prop:hide-insensitive="$(ifdef,hidden-when-insensitive,$hidden-when-insensitive,1)" />
+  <xdef:widget-patcher inherit="GxkWidgetPatcher"
+    prop:mute-events="$(ifdef,mute-events,$mute-events,0)"
+    prop:lower-windows="$(ifdef,lower-windows,$lower-windows,0)"
+    prop:width-from-height="$(ifdef,width-from-height,$width-from-height,0)"
+    prop:height-from-width="$(ifdef,height-from-width,$height-from-width,0)"
+    prop:force-resize-hsteps="$(ifdef,force-resize-hsteps,$force-resize-hsteps,0)"
+    prop:force-resize-vsteps="$(ifdef,force-resize-vsteps,$force-resize-vsteps,0)"
+    prop:min-resize-hunits="$(ifdef,min-resize-hunits,$min-resize-hunits,0)"
+    prop:min-resize-vunits="$(ifdef,min-resize-vunits,$min-resize-vunits,0)"
+    />
 
   <!-- Primitive Gtk+ widget type wrappers -->
   
   <xdef:entry                 inherit="GtkEntry"        />
   <!-- frame, alignment -->
-  <xdef:alignment             inherit="GtkAlignment"        />
+  <xdef:alignment             inherit="GtkAlignment"
+    prop:xalign="$(first-occupied,$xalign,0.5)"
+    prop:yalign="$(first-occupied,$yalign,0.5)"
+    prop:xscale="$(first-occupied,$xscale,1)"
+    prop:yscale="$(first-occupied,$yscale,1)"
+    />
   <xdef:event-box             inherit="GtkEventBox"         />
   <xdef:arrow                 inherit="GtkArrow"            prop:shadow-type="$shadow" prop:arrow-type="$arrow" />
   <xdef:frame                 inherit="GtkFrame"            />
@@ -25,28 +44,34 @@
   <xdef:vseparator            inherit="GtkVSeparator"       />
   <!-- boxes: expand= fill= spacing= -->
   <xdef:hbox                  inherit="GtkHBox"
+    prop:homogeneous="$(ifdef,homogeneous,$homogeneous,0)"
     prop:spacing="$(ifdef,spacing,$spacing,0)"
     default-pack:expand="$(ifdef,expand,$expand,0)"
     default-pack:fill="$(ifdef,fill,$fill,1)"
     />
   <xdef:vbox                  inherit="GtkVBox"
+    prop:homogeneous="$(ifdef,homogeneous,$homogeneous,0)"
     prop:spacing="$(ifdef,spacing,$spacing,0)"
     default-pack:expand="$(ifdef,expand,$expand,0)"
     default-pack:fill="$(ifdef,fill,$fill,1)"
     />
-  <xdef:outer-hbox            inherit="hbox"
-    prop:border-width="3" />
-  <xdef:outer-vbox            inherit="vbox"
-    prop:border-width="3" />
   <!-- wrap boxes -->
   <xdef:hwrap                 inherit="GtkHWrapBox"
-    default-pack:hexpand="$(ifdef,hexpand,$hexpand,$expand)"
-    default-pack:vexpand="$(ifdef,vexpand,$vexpand,$expand)"
-    default-pack:hfill="$(ifdef,hfill,$hfill,$(ifdef,fill,$fill,1))"
-    default-pack:vfill="$(ifdef,vfill,$vfill,$(ifdef,fill,$fill,1))"
-    default-pack:wrapped="$(ifdef,wrapped,$wrapped,0)"
+    prop:aspect-ratio="$(first-occupied,$aspect-ratio,1)"
+    default-pack:hexpand="$(first-occupied,$hexpand,$expand,0)"
+    default-pack:vexpand="$(first-occupied,$vexpand,$expand,0)"
+    default-pack:hfill="$(first-occupied,$hfill,$fill,1)"
+    default-pack:vfill="$(first-occupied,$vfill,$fill,1)"
+    default-pack:wrapped="$(first-occupied,$wrapped,0)"
     />
-  <xdef:vwrap                 inherit="GtkVWrapBox" />
+  <xdef:vwrap                 inherit="GtkVWrapBox"
+    prop:aspect-ratio="$(first-occupied,$aspect-ratio,1)"
+    default-pack:hexpand="$(first-occupied,$hexpand,$expand,0)"
+    default-pack:vexpand="$(first-occupied,$vexpand,$expand,0)"
+    default-pack:hfill="$(first-occupied,$hfill,$fill,1)"
+    default-pack:vfill="$(first-occupied,$vfill,$fill,1)"
+    default-pack:wrapped="$(first-occupied,$wrapped,0)"
+    />
   <!-- menubar -->
   <xdef:menubar               inherit="GtkMenuBar" />
   <xdef:popup-menu            inherit="GtkMenu" />
@@ -72,45 +97,42 @@
     prop:stock-image="$(ifdef,stock-image,$stock-image,BST_STOCK_FOLDER)"
     prop:menubar-image="0"
     prop:right-justify="$(ifdef,last,$last,0)" >
-    <widget-patcher prop:hide-insensitive="$hide-insensitive" />
+    <hidden-when-insensitive hidden-when-insensitive="$hidden-when-insensitive" />
     <GtkMenu name="menu" tearoff-title="$label" />
   </xdef:submenu>
   <xdef:submenu-last          inherit="submenu" last="1" />
   <!-- option-menu -->
   <xdef:option-menu           inherit="GtkOptionMenu" />
-  <!-- menu-button default= focus= arrow= relief= -->
+  <!-- menu-button arrow= relief= stock-size= -->
   <xdef:menu-button           inherit="GxkMenuButton"
     prop:relief="$(ifdef,relief,$relief,normal)"
-    prop:can-default="$(ifdef,default,$default,0)"
-    prop:can-focus="$(ifdef,focus,$focus,1)"
     prop:stock-size="$(null-collapse,$stock-size)"
-    prop:combo-arrow="$(ifdef,arrow,$arrow,1)" />
-  <!-- buttons: stock= label= focus= default= relief= -->
+    prop:combo-arrow="$(first-occupied,$arrow,1)"
+    prop:push-in="$(first-occupied,$push-in,0)"
+    prop:show-selection="$(first-occupied,$show-selection,1)"
+    />
+  <!-- buttons: stock= label= relief= -->
   <xdef:button                inherit="GtkButton"
-    prop:label="$(null-collapse,$(ifdef,label,$(if,$ignore-label,,$label),$stock))"
+    prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
     prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
     prop:relief="$(ifdef,relief,$relief,normal)"
-    prop:can-default="$(ifdef,default,$default,0)"
-    prop:can-focus="$(ifdef,focus,$focus,1)"
     prop:use-stock="$(if,$stock)" />
-  <xdef:can-default-button    inherit="button"
-    prop:can-default="1" />
-  <xdef:default-button        inherit="can-default-button"
-    prop:has-default="1" />
+  <xdef:can-default-button    inherit="button" can-default="1" />
+  <xdef:default-button        inherit="button" default="1" />
   <xdef:check-button          inherit="GtkCheckButton"
     prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
     prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
     prop:relief="$(ifdef,relief,$relief,normal)"
-    prop:can-default="$(ifdef,default,$default,0)"
-    prop:can-focus="$(ifdef,focus,$focus,1)"
     prop:use-stock="$(if,$stock)" />
   <xdef:toggle-button         inherit="check-button"
     prop:draw-indicator="0" />
   <!-- label: label= -->
   <xdef:label                 inherit="GxkSimpleLabel"
-    prop:label="$label" prop:use-underline="0" prop:auto-cut="1" />
+    prop:label="$label" prop:use-underline="0"
+    prop:auto-cut="$(first-occupied,$auto-cut,1)" />
   <xdef:ulabel                inherit="label"
-    prop:use-underline="1" />
+    prop:justify="$(first-occupied,$justify,justify-left)"
+    prop:use-underline="$(first-occupied,$use-underline,1)" />
   <!-- decks (notebook) -->
   <xdef:notebook              inherit="GtkNotebook"         />
   <xdef:deck                  inherit="notebook"
@@ -136,13 +158,23 @@
   <xdef:hscrollbar            inherit="GtkHScrollbar" />
   <xdef:vscrollbar            inherit="GtkVScrollbar" />
   <!-- misc containers -->
-  <xdef:scrolled-window       inherit="GtkScrolledWindow" />
-  <xdef:tree-view             inherit="GtkTreeView"       />
+  <xdef:scrolled-window       inherit="GtkScrolledWindow"
+    prop:shadow-type="$(first-occupied,$shadow-type,shadow-none)"
+    />
+  <xdef:tree-view             inherit="GtkTreeView"
+    prop:rules-hint="$(ifdef,rules-hint,$rules-hint,1)"
+    />
   <xdef:window                inherit="GtkWindow"         />
   <xdef:table                 inherit="GtkTable"          />
   <!-- paned containers -->
-  <xdef:hpaned                inherit="GtkHPaned" />
-  <xdef:vpaned                inherit="GtkVPaned" />
+  <xdef:hpaned                inherit="GtkHPaned"
+    prop:position_set="$(ifdef,position,$(ge,$position,0),0)"
+    prop:position="$(if,$(ge,$position,0),$position,0)"
+    />
+  <xdef:vpaned                inherit="GtkVPaned"
+    prop:position_set="$(ifdef,position,$(ge,$position,0),0)"
+    prop:position="$(if,$(ge,$position,0),$position,0)"
+    />
   <!-- rack table & items -->
   <xdef:rack-table            inherit="GxkRackTable" />
   <xdef:rack-item             inherit="GxkRackItem" />
@@ -163,10 +195,6 @@
 
   <!-- Gxk builtin types -->
 
-  <!-- tooltip: text= -->
-  <xdef:tooltip inherit="widget-patcher"
-    prop:tooltip="$(null-collapse,$text)"
-    prop:tooltip-visible="$(ifdef,latent-tooltip,$(not,$latent-tooltip),1)" />
   <!-- gadget-factory: actions= action-root= per-list= per-action= -->
   <xdef:gadget-factory        inherit="GxkGadgetFactory"
     prop:action-root="$(ifdef,action-root,$action-root,:xdef)"
@@ -183,7 +211,7 @@
     prop:per-branch="menu-factory-branch"
     per-list="$(if,$separator,menu-factory-per-list,)"
     per-action="menu-factory-per-action" />
-  <xdef:menu-factory-branch inherit="submenu" label="$action-name" hide-insensitive="$hidden" />
+  <xdef:menu-factory-branch inherit="submenu" label="$action-name" hidden-when-insensitive="$hidden" />
   <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
   <xdef:menu-factory-per-action inherit="menu-item"
     label="$action-name"
@@ -194,8 +222,7 @@
   </xdef:menu-factory-per-action>
   
   <!-- separator: hseparator= vseparator= -->
-  <xdef:separator inherit="alignment"
-    prop:yscale="0.4" prop:xscale="0.4"  >
+  <xdef:separator inherit="alignment" yscale="0.4" xscale="0.4"  >
     <hbox>
       <vseparator
 	visible="$vseparator"
@@ -212,16 +239,16 @@
   <!-- button factories: button-args, gadget-factory-args -->
   <xdef:button-factory  inherit="gadget-factory" per-action="action-button" width-from-height="1.25" />
   <xdef:toggle-factory  inherit="gadget-factory" per-action="action-toggle" width-from-height="1.25" />
-  <!-- action buttons: button-args, image-size= action-*= -->
+  <!-- action buttons: button, widget-patcher, image-size= action-*= -->
   <xdef:action-image-button inherit="button" focus="0" default-area="vbox" >
     <tooltip text="$action-tooltip" />
     <widget-patcher
-      prop:width-from-height="$width-from-height"
-      prop:height-from-width="$height-from-width"
-      prop:force-resize-hsteps="$force-resize-hsteps"
-      prop:force-resize-vsteps="$force-resize-vsteps"
-      prop:min-resize-hunits="$min-resize-hunits"
-      prop:min-resize-vunits="$min-resize-vunits" />
+      width-from-height="$width-from-height"
+      height-from-width="$height-from-width"
+      force-resize-hsteps="$force-resize-hsteps"
+      force-resize-vsteps="$force-resize-vsteps"
+      min-resize-hunits="$min-resize-hunits"
+      min-resize-vunits="$min-resize-vunits" />
     <vbox>
       <image
 	expand="1"
@@ -236,12 +263,12 @@
   <xdef:action-image-toggle inherit="toggle-button" focus="0" default-area="vbox" >
     <tooltip text="$action-tooltip" />
     <widget-patcher
-      prop:width-from-height="$width-from-height"
-      prop:height-from-width="$height-from-width"
-      prop:force-resize-hsteps="$force-resize-hsteps"
-      prop:force-resize-vsteps="$force-resize-vsteps"
-      prop:min-resize-hunits="$min-resize-hunits"
-      prop:min-resize-vunits="$min-resize-vunits" />
+      width-from-height="$width-from-height"
+      height-from-width="$height-from-width"
+      force-resize-hsteps="$force-resize-hsteps"
+      force-resize-vsteps="$force-resize-vsteps"
+      min-resize-hunits="$min-resize-hunits"
+      min-resize-vunits="$min-resize-vunits" />
     <vbox>
       <image
 	expand="1"
@@ -255,7 +282,7 @@
   </xdef:action-toggle>
   <!-- muted-button: button-args -->
   <xdef:muted-button inherit="button" focus="0" >
-    <widget-patcher prop:mute-events="1" prop:lower-windows="1" />
+    <widget-patcher mute-events="1" lower-windows="1" />
   </xdef:muted-button>
   
   <xdef:big-button-factory  inherit="button-factory" image-size="big-button" />
@@ -285,26 +312,24 @@
     </vbox>
   </xdef:tool-area>
   <!-- labeled-tool-area: label= tooltip= -->
-  <xdef:labeled-tool-area           inherit="muted-button" ignore-label="1"
+  <xdef:labeled-tool-area   inherit="muted-button" label=""
     hseparator="0" vseparator="0" relief="none" default-area="image-area" >
+    <!--local relief="foo" label="" /-->
     <tooltip text="$(null-collapse,$tooltip)" />
     <vbox>
       <vbox name="image-area" expand="1" />
       <vbox name="label-area" pack:pack-type="end" >
-	<ulabel area="label-area"
-	  prop:label="$label" />
+	<ulabel area="label-area" label="$label" />
       </vbox>
     </vbox>
   </xdef:labeled-tool-area>
   
   <xdef:text-toggle-factory inherit="gadget-factory"
     per-action="action-text-toggle" />
-  <xdef:action-text-toggle inherit="toggle-button"
-    focus="0" >
+  <xdef:action-text-toggle inherit="toggle-button" focus="0" >
     <tooltip text="$action-tooltip" />
-    <widget-patcher />
-    <alignment prop:yalign="$(ifdef,y-align,$y-align,0.5)" >
-      <ulabel label="$action-name" prop:justify="center" />
+    <alignment yalign="$(first-occupied,$yalign,0.5)" yscale="0" >
+      <ulabel label="$action-name" justify="center" />
     </alignment>
   </xdef:action-text-toggle>
   <xdef:tool-text-toggle-factory   inherit="text-toggle-factory" image-size="big-button" relief="none" />
@@ -314,19 +339,19 @@
     <tooltip text="$tooltip" />
     <vbox>
       <image expand="1"
-	prop:stock="$stock-image"
+	stock-image="$stock-image"
 	visible="$(ifdef,stock-image,1,0)"
 	stock-size="$image-size" />
     </vbox>
   </xdef:image-button>
   <!-- label-image-button: image-button, label= -->
-  <xdef:label-image-button inherit="image-button" ignore-label="1" >
-    <ulabel prop:label="$label" />
+  <xdef:label-image-button inherit="image-button" label="" >
+    <ulabel label="$label" />
   </xdef:label-image-button>
   <!-- big-button: label-image-button -->
   <xdef:big-button inherit="label-image-button" image-size="big-button" />
   <!-- big-tool-button: big-button -->
-  <xdef:big-tool-button inherit="big-button" relief="none" focus="0" />
+  <xdef:big-tool-button inherit="big-button" relief="none" focus="0" image-size="big-button" />
   
   <!-- gxk-scroll-text-toolbar -->
   <xdef:gxk-scroll-text-toolbar inherit="frame-shadow-out" >
@@ -350,9 +375,12 @@
       <big-tool-button name="find-button" size:hgroup="gxksttbtns"
 	_label="_Find"
 	_tooltip="Find in current document"
-	prop:sensitive="0"
+	sensitive="0"
 	stock-image="gtk-find" />
-      <labeled-tool-area expand="1" _label="Location" >
+      <labeled-tool-area
+	_label="Location"
+	_tooltip="Enter document or file location"
+	expand="1" >
 	<entry name="location-entry" />
       </labeled-tool-area>
     </hbox>

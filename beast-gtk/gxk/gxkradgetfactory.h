@@ -50,7 +50,7 @@ typedef struct {
   gchar           *action_list;
   gchar           *activatable;
   gchar           *regulate;
-  GxkGadgetOpt    *pass_options;
+  GxkGadgetOpt    *call_options;
   GData           *branch_widgets;
   GSList          *branches;
 } GxkGadgetFactory;

@@ -65,9 +65,12 @@ struct Node {
   const gchar  *domain;
   const gchar  *name;
   GType         type;
+  guint         depth; /* == number of ancestors */
   Node         *xdef_node;
+  guint         xdef_depth; /* xdef_node->depth */
+  GSList       *parent_options; /* of type GxkGadgetOpt* */
   GxkGadgetOpt *call_options;
-  GxkGadgetOpt *base_options;
+  GxkGadgetOpt *scope_options;
   GxkGadgetOpt *prop_options;
   GxkGadgetOpt *pack_options;
   GxkGadgetOpt *dfpk_options;
@@ -182,6 +185,7 @@ static Node*
 clone_node_intern (Node        *source,
                    const gchar *domain,
                    const gchar *name,
+                   gboolean     inherit,
                    CloneList   *clist)
 {
   Node *node = g_new0 (Node, 1);
@@ -190,10 +194,28 @@ clone_node_intern (Node        *source,
   node->domain = domain;
   node->name = g_intern_string (name);
   node->type = source->type;
+  if (inherit)
+    {
+      node->depth = source->depth + 1;
+      /* no deep copy needed, since source->parent_options are already parsed */
+      node->parent_options = source->parent_options;
+      /* "add-on" the new modifiable parent_options slot (works only with slists) */
+      node->parent_options = g_slist_prepend (node->parent_options, gxk_gadget_const_options ());
+    }
+  else
+    {
+      node->depth = source->depth;
+      /* no deep copy needed, since source->parent_options are already parsed */
+      node->parent_options = source->parent_options;
+    }
   if (source->xdef_node)
-    node->xdef_node = clone_list_find (clist, source->xdef_node);
+    {
+      g_assert (!inherit);
+      node->xdef_node = clone_list_find (clist, source->xdef_node);
+      node->xdef_depth = source->xdef_depth;
+    }
   node->call_options = clone_options (source->call_options);
-  node->base_options = clone_options (source->base_options);
+  node->scope_options = clone_options (source->scope_options);
   node->prop_options = clone_options (source->prop_options);
   node->pack_options = clone_options (source->pack_options);
   node->dfpk_options = clone_options (source->dfpk_options);
@@ -204,7 +226,7 @@ clone_node_intern (Node        *source,
   for (slist = source->children; slist; slist = slist->next)
     {
       Node *child = slist->data;
-      child = clone_node_intern (child, domain, child->name, clist);
+      child = clone_node_intern (child, domain, child->name, FALSE, clist);
       if (last)
         {
           last->next = g_slist_new (child);
@@ -213,16 +235,18 @@ clone_node_intern (Node        *source,
       else
         node->children = last = g_slist_new (child);
     }
+  g_assert (source->call_stack == NULL);
   return node;
 }
 
 static Node*
 clone_node (Node        *source,
             const gchar *domain,
-            const gchar *name)
+            const gchar *name,
+            gboolean     inherit)
 {
   CloneList clist = { 0, NULL };
-  Node *node = clone_node_intern (source, domain, name, &clist);
+  Node *node = clone_node_intern (source, domain, name, inherit, &clist);
   g_free (clist.clones);
   return node;
 }
@@ -496,7 +520,8 @@ parse_dollar (const gchar *c,
           if (opt)
             {
               gchar *exval = env_expand_option_value (env, opt, nth);
-              g_string_append (result, exval);
+              if (exval)
+                g_string_append (result, exval);
               g_free (exval);
             }
         }
@@ -645,7 +670,7 @@ node_define (Domain       *domain,
              GError       **error)
 {
   Node *node = NULL;
-  gboolean allow_defs = !source, inherits = source == NULL;
+  gboolean allow_defs = !source, inherit = FALSE;
   guint i;
   if (direct_type)                              /* builtin definition */
     {
@@ -656,16 +681,18 @@ node_define (Domain       *domain,
     }
   else if (source)                              /* call */
     {
-      node = clone_node (source, domain->domain, node_name);
+      node = clone_node (source, domain->domain, node_name, inherit);
       node->xdef_node = xdef_node;
       g_assert (xdef_node && !xdef_node->xdef_node);
+      node->xdef_depth = node->xdef_node->depth;
     }
   else for (i = 0; attribute_names[i]; i++)     /* node inheritance */
     if (!node && strcmp (attribute_names[i], "inherit") == 0)
       {
         source = node_lookup (domain, attribute_values[i]);
+        inherit = TRUE;
         if (source)
-          node = clone_node (source, domain->domain, node_name);
+          node = clone_node (source, domain->domain, node_name, inherit);
         break;
       }
   /* apply attributes */
@@ -682,7 +709,6 @@ node_define (Domain       *domain,
     set_error (error, "no gadget type specified in definition of: %s", node_name);
   if (*error)
     return NULL;
-  allow_defs = TRUE; // FIXME: hack?
   /* apply property attributes */
   for (i = 0; attribute_names[i]; i++)
     if (strncmp (attribute_names[i], "pack:", 5) == 0)
@@ -706,20 +732,24 @@ node_define (Domain       *domain,
              strcmp (attribute_names[i], "default-area") == 0 ||
              strcmp (attribute_names[i], "area") == 0)
       ; /* handled above */
+#if 0   // if at all, this should be part of an extra <local var=value"/> directive
+    else if (strncmp (attribute_names[i], "local:", 6) == 0)
+      node->scope_options = gadget_options_intern_set (node->scope_options, attribute_names[i] + 6, attribute_values[i]);
+#endif
     else if (strchr (attribute_names[i], ':'))
       set_error (error, "invalid attribute \"%s\" in definition of: %s", attribute_names[i], node_name);
     else
       {
         const gchar *name = attribute_names[i];
         const gchar *value = attribute_values[i];
-        if (inherits)
-          node->base_options = gadget_options_intern_set (node->base_options, name, value);
+        if (inherit)
+          gadget_options_intern_set (node->parent_options->data, name, value);
         else
           node->call_options = gadget_options_intern_set (node->call_options, name, value);
         if (name[0] == '_') /* i18n version */
           {
-            if (inherits)
-              node->base_options = gadget_options_intern_set (node->base_options, name + 1, dgettext (i18n_domain, value));
+            if (inherit)
+              gadget_options_intern_set (node->parent_options->data, name + 1, dgettext (i18n_domain, value));
             else
               node->call_options = gadget_options_intern_set (node->call_options, name + 1, dgettext (i18n_domain, value));
           }
@@ -1012,29 +1042,54 @@ property_value_from_string (GtkType      widget_type,
 }
 
 static GxkGadgetOpt*
-node_expand_call_options (Node               *node,
-                          const GxkGadgetOpt *ovr_options,
-                          Env                *env)
+merge_options_list (GxkGadgetOpt *opt,
+                    GSList       *call_options)
+{
+  if (call_options)
+    {
+      if (call_options->next)
+        opt = merge_options_list (opt, call_options->next);
+      opt = gxk_gadget_options_merge (opt, call_options->data);
+    }
+  return opt;
+}
+
+static GxkGadgetOpt*
+node_expand_call_options (Node   *node,
+                          GSList *call_options,
+                          Env    *env)
 {
   /* precedence for value lookups:
-   * + custom override options (ovr_options) count as extra call options
-   * - call_options (intra references)
-   * - xdef call_options (merged into xdef scope)
-   * - xdef base_options (xdef scope)
+   * x for call_options intra lookups are _not_ possible
+   * - xdef scope_options
+   * - xdef call_options
+   * - xdef ancestry call_options (dependant on parent level)
    * $name is special cased in the value lookup function
    */
   guint i, n_pops = 0;
-  /* destination options */
-  GxkGadgetOpt *opt = gxk_gadget_options_merge (NULL, node->call_options);
-  opt = gxk_gadget_options_merge (opt, ovr_options);
+  /* flatten call options */
+  GxkGadgetOpt *opt = gxk_gadget_options (NULL);
+  opt = merge_options_list (opt, call_options);
+  opt = gxk_gadget_options_merge (opt, node->call_options);
   /* prepare for $name lookups */
   env->name = node->name;
-  /* push reference options according to precedence */
-  if (node->xdef_node && node->xdef_node->base_options)
-    n_pops++, env->option_list = g_slist_prepend (env->option_list, node->xdef_node->base_options);
+  /* push option lists according to precedence */
+  if (node->xdef_node)
+    {
+      guint n = node->xdef_node->depth;
+      GSList *polist, *slist = NULL;
+      for (polist = node->xdef_node->parent_options; n > node->xdef_depth; n--, polist = polist->next)
+        slist = g_slist_prepend (slist, polist->data);
+      while (slist)     /* two times prepending keeps original order */
+        {
+          GxkGadgetOpt *popt = g_slist_pop_head (&slist);
+          n_pops++, env->option_list = g_slist_prepend (env->option_list, popt);
+        }
+    }
   if (node->xdef_node && node->xdef_node->call_stack)
     n_pops++, env->option_list = g_slist_prepend (env->option_list, node->xdef_node->call_stack->data);
-  n_pops++, env->option_list = g_slist_prepend (env->option_list, opt);
+  if (node->xdef_node && node->xdef_node->scope_options)
+    n_pops++, env->option_list = g_slist_prepend (env->option_list, node->xdef_node->scope_options);
   /* expand options */
   for (i = 0; i < OPTIONS_N_ENTRIES (opt); i++)
     {
@@ -1056,6 +1111,7 @@ struct GxkGadgetData {
   Node         *node;
   GxkGadgetOpt *call_stack_top;
   GxkGadget    *xdef_gadget;
+  Env          *env;
 };
 
 static GxkGadget*
@@ -1078,6 +1134,7 @@ gadget_create_from_node (Node         *node,
       gdgdata.node = node;
       gdgdata.call_stack_top = node->call_stack->data;
       gdgdata.xdef_gadget = env->xdef_gadget;
+      gdgdata.env = env;
       gadget = tinfo.create (node->type, node->name, &gdgdata);
     }
   g_object_set_qdata (gadget, quark_gadget_node, node);
@@ -1092,19 +1149,14 @@ gadget_create_from_node (Node         *node,
   if (node->size_hvgroup)
     gtk_size_group_add_widget (env_get_size_group (env, node->size_hvgroup, 'b'), gadget);
   /* precedence for property value lookups:
-   * - expanded node->call_options
-   * - node->base_options
-   * - xdef call_options (merged into xdef scope)
-   * - xdef base_options (xdef scope)
+   * - all node ancestry options
+   * - expanded call_options
    */
-  if (node->xdef_node && node->xdef_node->base_options)
-    n_pops++, env->option_list = g_slist_prepend (env->option_list, node->xdef_node->base_options);
-  if (node->xdef_node && node->xdef_node->call_stack)
-    n_pops++, env->option_list = g_slist_prepend (env->option_list, node->xdef_node->call_stack->data);
-  if (node->base_options)
-    n_pops++, env->option_list = g_slist_prepend (env->option_list, node->base_options);
   if (node->call_stack)
     n_pops++, env->option_list = g_slist_prepend (env->option_list, node->call_stack->data);
+  if (node->parent_options)
+    n_pops += g_slist_length (node->parent_options), env->option_list = g_slist_concat (g_slist_copy (node->parent_options),
+                                                                                        env->option_list);
   /* set properties */
   for (i = 0; i < OPTIONS_N_ENTRIES (node->prop_options); i++)
     {
@@ -1144,29 +1196,25 @@ gadget_add_to_parent (GxkGadget    *parent,
   env->name = cnode->name;
   /* retrive type info */
   gxk_gadget_type_lookup (cnode->type, &tinfo);
+  /* precedence for property value lookups:
+   * - all node ancestry options
+   * - expanded call_options
+   */
+  if (cnode->call_stack)
+    n_pops++, env->option_list = g_slist_prepend (env->option_list, cnode->call_stack->data);
+  if (cnode->parent_options)
+    n_pops += g_slist_length (cnode->parent_options), env->option_list = g_slist_concat (g_slist_copy (cnode->parent_options),
+                                                                                         env->option_list);
   /* perform set_parent() */
   {
     GxkGadgetData gdgdata;
     gdgdata.node = cnode;
     gdgdata.call_stack_top = cnode->call_stack->data;
     gdgdata.xdef_gadget = env->xdef_gadget;
+    gdgdata.env = env;
     needs_packing = tinfo.adopt (gadget, parent, &gdgdata);
   }
-  /* precedence for property value lookups:
-   * - expanded node->call_options
-   * - node->base_options
-   * - xdef call_options (merged into xdef scope)
-   * - xdef base_options (xdef scope)
-   */
-  if (cnode->xdef_node && cnode->xdef_node->base_options)
-    n_pops++, env->option_list = g_slist_prepend (env->option_list, cnode->xdef_node->base_options);
-  if (cnode->xdef_node && cnode->xdef_node->call_stack)
-    n_pops++, env->option_list = g_slist_prepend (env->option_list, cnode->xdef_node->call_stack->data);
-  if (cnode->base_options)
-    n_pops++, env->option_list = g_slist_prepend (env->option_list, cnode->base_options);
-  if (cnode->call_stack)
-    n_pops++, env->option_list = g_slist_prepend (env->option_list, cnode->call_stack->data);
-  /* construct set of pack options and apply */
+   /* construct set of pack options and apply */
   if (needs_packing)
     {
       GxkGadgetOpt *opt = gxk_gadget_options_merge (gxk_gadget_const_options (),
@@ -1228,8 +1276,8 @@ gadget_creator (GxkGadget          *gadget,
                 const gchar        *domain_name,
                 const gchar        *name,
                 GxkGadget          *parent,
-                const GxkGadgetOpt *options,
-                const GxkGadgetOpt *env_options)
+                GSList             *user_options,
+                GSList             *env_options)
 {
   Domain *domain = g_datalist_get_data (&domains, domain_name);
   if (domain)
@@ -1240,10 +1288,14 @@ gadget_creator (GxkGadget          *gadget,
           GxkGadgetOpt *call_options;
           Env env = { NULL, };
           GError *error = NULL;
+          guint n_pops = 0;
           if (env_options)
-            env.option_list = g_slist_prepend (env.option_list, (void*) env_options);
-          call_options = node_expand_call_options (node, options, &env);
-          node->call_stack = g_slist_prepend (node->call_stack, call_options);
+            {
+              n_pops += g_slist_length (node->parent_options);
+              env.option_list = g_slist_concat (g_slist_copy (env_options), env.option_list);
+            }
+          call_options = node_expand_call_options (node, user_options, &env);
+          n_pops++, node->call_stack = g_slist_prepend (node->call_stack, call_options);
           if (gadget && !g_type_is_a (G_OBJECT_TYPE (gadget), node->type))
             g_warning ("GxkGadget: gadget domain \"%s\": gadget `%s' differs from defined type: %s",
                        domain_name, G_OBJECT_TYPE_NAME (gadget), node->name);
@@ -1254,10 +1306,10 @@ gadget_creator (GxkGadget          *gadget,
             }
           if (parent && gadget)
             gadget_add_to_parent (parent, gadget, &env, &error);
-          g_slist_pop_head (&node->call_stack);
-          gxk_gadget_free_options (call_options);
-          if (env_options)
+          /* cleanup */
+          while (n_pops--)
             g_slist_pop_head (&env.option_list);
+          gxk_gadget_free_options (call_options);
           env_clear (&env);
           if (error)
             g_warning ("GxkGadget: while constructing gadget \"%s\": %s", node->name, error->message);
@@ -1274,14 +1326,13 @@ gadget_creator (GxkGadget          *gadget,
 GxkGadgetOpt*
 gxk_gadget_data_copy_call_options (GxkGadgetData *gdgdata)
 {
-  return gxk_gadget_options_merge (NULL, gdgdata->call_stack_top);
-}
-
-GxkGadgetOpt*
-gxk_gadget_data_copy_scope_options (GxkGadgetData *gdgdata)
-{
-  Node *node = gdgdata->node;
-  return gxk_gadget_options_merge (NULL, node->base_options);
+  GxkGadgetOpt *opt;
+  GSList *olist = NULL;
+  olist = g_slist_copy (gdgdata->node->parent_options);
+  olist = g_slist_prepend (olist, gdgdata->call_stack_top);
+  opt = node_expand_call_options (gdgdata->node, olist, gdgdata->env);
+  g_slist_free (olist);
+  return opt;
 }
 
 GxkGadget*
@@ -1295,8 +1346,8 @@ gxk_gadget_creator (GxkGadget          *gadget,
                     const gchar        *domain_name,
                     const gchar        *name,
                     GxkGadget          *parent,
-                    const GxkGadgetOpt *options,
-                    const GxkGadgetOpt *env)
+                    GSList             *call_options,
+                    GSList             *env_options)
 {
   g_return_val_if_fail (domain_name != NULL, NULL);
   g_return_val_if_fail (name != NULL, NULL);
@@ -1305,7 +1356,7 @@ gxk_gadget_creator (GxkGadget          *gadget,
       Node *gadget_node = g_object_get_qdata (gadget, quark_gadget_node);
       g_return_val_if_fail (gadget_node == NULL, NULL);
     }
-  return gadget_creator (gadget, domain_name, name, parent, options, env);
+  return gadget_creator (gadget, domain_name, name, parent, call_options, env_options);
 }
 
 GxkGadget*
@@ -1316,10 +1367,12 @@ gxk_gadget_create (const gchar        *domain_name,
 {
   GxkGadgetOpt *options;
   GxkGadget *gadget;
+  GSList olist = { 0, };
   va_list args;
   va_start (args, var1);
   options = gxk_gadget_options_valist (var1, args);
-  gadget = gxk_gadget_creator (NULL, domain_name, name, NULL, options, NULL);
+  olist.data = options;
+  gadget = gxk_gadget_creator (NULL, domain_name, name, NULL, &olist, NULL);
   gxk_gadget_free_options (options);
   va_end (args);
   return gadget;
@@ -1333,10 +1386,12 @@ gxk_gadget_complete (GxkGadget          *gadget,
                      ...)
 {
   GxkGadgetOpt *options;
+  GSList olist = { 0, };
   va_list args;
   va_start (args, var1);
   options = gxk_gadget_options_valist (var1, args);
-  gadget = gxk_gadget_creator (gadget, domain_name, name, NULL, options, NULL);
+  olist.data = options;
+  gadget = gxk_gadget_creator (gadget, domain_name, name, NULL, &olist, NULL);
   gxk_gadget_free_options (options);
   va_end (args);
   return gadget;
@@ -1541,7 +1596,7 @@ gxk_gadget_add (GxkGadget      *gadget,
   if (GTK_IS_CONTAINER (gadget))
     gtk_container_add (gadget, widget);
   else
-    g_warning ("GxkGadget: failed to find area \"%s\"", area);
+    g_error ("GxkGadget: failed to find area \"%s\"", area);
 }
 
 
@@ -1677,20 +1732,47 @@ gxk_gadget_define_widget_type (GType type)
     widget_find_pack,
     widget_set_pack,
   };
-  const gchar *attribute_names[4] = { NULL, NULL };
-  const gchar *attribute_values[4] = { NULL, NULL };
-  
+  static const struct { const gchar *name, *value; } widget_def[] = {
+    {   "prop:visible",         "$(first-occupied,$visible,1)" },
+    {   "prop:sensitive",       "$(first-occupied,$sensitive,1)" },
+    {   "prop:width-request",   "$(first-occupied,$width,0)" },
+    {   "prop:height-request",  "$(first-occupied,$height,0)" },
+    {   "prop:events",          "$events" },
+    {   "prop:can-focus",       "$(first-occupied,$can-focus,$focus,1)" },
+    {   "prop:has-focus",       "$(first-occupied,$has-focus,$focus,0)" },
+    {   "prop:can-default",     "$(first-occupied,$can-default,$default,0)" },
+    {   "prop:has-default",     "$(first-occupied,$has-default,$default,0)" },
+    {   "prop:receives-default","$(first-occupied,$receives-default,0)" },
+    {   "prop:extension-events","$extension-events" },
+    // gtk+-2.4: {   "prop:no-show-all",     "$(first-occupied,$no-show-all,$hidden,0)" },
+  };
+  static const struct { const gchar *name, *value; } container_def[] = {
+    {   "prop:border-width",    "$(first-occupied,$border-width,0)" },
+  };
+  const gchar *attribute_names[G_N_ELEMENTS (widget_def) + G_N_ELEMENTS (container_def) + 1];
+  const gchar *attribute_values[G_N_ELEMENTS (widget_def) + G_N_ELEMENTS (container_def) + 1];
+  guint i, j = 0;
+
   g_return_if_fail (!G_TYPE_IS_ABSTRACT (type));
   g_return_if_fail (g_type_is_a (type, GTK_TYPE_WIDGET));
   g_return_if_fail (g_type_get_qdata (type, quark_gadget_type) == NULL);
   
   g_type_set_qdata (type, quark_gadget_type, (gpointer) &widget_info);
-  attribute_names[0] = "prop:visible";
-  attribute_values[0] = "$(ifdef,visible,$visible,1)";
-  attribute_names[1] = "prop:width-request";
-  attribute_values[1] = "$(ifdef,width,$width,0)";
-  attribute_names[2] = "prop:height-request";
-  attribute_values[2] = "$(ifdef,height,$height,0)";
+  for (i = 0; i < G_N_ELEMENTS (widget_def); i++)
+    {
+      attribute_names[j] = widget_def[i].name;
+      attribute_values[j] = widget_def[i].value;
+      j++;
+    }
+  if (g_type_is_a (type, GTK_TYPE_CONTAINER))
+    for (i = 0; i < G_N_ELEMENTS (container_def); i++)
+      {
+        attribute_names[j] = container_def[i].name;
+        attribute_values[j] = container_def[i].value;
+        j++;
+      }
+  attribute_names[j] = NULL;
+  attribute_values[j] = NULL;
   gadget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
 
@@ -1805,6 +1887,60 @@ mf_blogic (GSList *args,
   return g_strdup (result ? "1" : "0");
 }
 
+#define EQ_FLAG 0x80
+
+static gchar*
+mf_floatcmp (GSList *args,
+             Env    *env)
+{
+  GSList      *argiter = args;
+  const gchar *name = argiter_pop (&argiter);
+  gchar *arg = argiter_exp (&argiter, env);
+  double last = arg ? float_from_string (arg) : 0;
+  gboolean result = TRUE;
+  g_free (arg);
+  arg = argiter_exp (&argiter, env);
+  while (arg)
+    {
+      gboolean match = FALSE;
+      double v = float_from_string (arg);
+      g_free (arg);
+      if (strcmp (name, "<") == 0 || strcmp (name, "lt") == 0)
+        match = last < v;
+      else if (strcmp (name, "<=") == 0 || strcmp (name, "le") == 0)
+        match = last <= v;
+      else if (strcmp (name, ">") == 0 || strcmp (name, "gt") == 0)
+        match = last > v;
+      else if (strcmp (name, ">=") == 0 || strcmp (name, "ge") == 0)
+        match = last >= v;
+      else if (strcmp (name, "!=") == 0 || strcmp (name, "ne") == 0)
+        match = last != v;
+      else if (strcmp (name, "==") == 0 || strcmp (name, "eq") == 0 || strcmp (name, "=") == 0)
+        match = last == v;
+      if (!match)
+        {
+          result = match;
+          break;
+        }
+      arg = argiter_exp (&argiter, env);
+    }
+  return g_strdup (result ? "1" : "0");
+}
+
+static gchar*
+mf_first_occupied (GSList *args,
+                   Env    *env)
+{
+  GSList      *argiter = args->next; /* skip func name */
+  gchar       *name = argiter_exp (&argiter, env);
+  while (name && !name[0])
+    {
+      g_free (name);
+      name = argiter_exp (&argiter, env);
+    }
+  return name ? name : g_strdup ("");
+}
+
 static gchar*
 mf_ifdef (GSList *args,
           Env    *env)
@@ -1839,7 +1975,7 @@ mf_null_collapse (GSList *args,
 {
   GSList *argiter = args->next; /* skip func name */
   gchar  *value = argiter_exp (&argiter, env);
-  if (value[0] == 0 && env->specials)
+  if ((!value || value[0] == 0) && env->specials)
     env->specials->null_collapse = TRUE;
   return value;
 }
@@ -1877,8 +2013,22 @@ macro_func_lookup (const gchar *name)
     { "nor",            mf_blogic, },
     { "and",            mf_blogic, },
     { "nand",           mf_blogic, },
+    { "<",              mf_floatcmp, },
+    { "<=",             mf_floatcmp, },
+    { ">",              mf_floatcmp, },
+    { ">=",             mf_floatcmp, },
+    { "!=",             mf_floatcmp, },
+    { "=",              mf_floatcmp, },
+    { "==",             mf_floatcmp, },
+    { "lt",             mf_floatcmp, },
+    { "le",             mf_floatcmp, },
+    { "gt",             mf_floatcmp, },
+    { "ge",             mf_floatcmp, },
+    { "ne",             mf_floatcmp, },
+    { "eq",             mf_floatcmp, },
     { "nth",            mf_nth, },
     { "ifdef",          mf_ifdef, },
+    { "first-occupied", mf_first_occupied, },
     { "null-collapse",  mf_null_collapse, },
     { "empty",          mf_empty, },
     { "println",        mf_println, },

@@ -392,12 +392,11 @@ bst_canvas_source_set_channel_hints (BstCanvasSource *csource,
 static void
 csource_info_update (BstCanvasSource *csource)
 {
-  GtkWidget *frame = (csource->source_info // && (force_update || GTK_WIDGET_VISIBLE (csource->source_info))
-		      ? gxk_dialog_get_child (GXK_DIALOG (csource->source_info))
-		      : NULL);
-  if (frame)
+  GtkWidget *text = (csource->source_info // && (force_update || GTK_WIDGET_VISIBLE (csource->source_info))
+                     ? gxk_dialog_get_child (GXK_DIALOG (csource->source_info))
+                     : NULL);
+  if (text)
     {
-      GtkWidget *text = GTK_BIN (frame)->child;
       const gchar *string;
       guint i;
 
@@ -482,16 +481,23 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 
   if (!csource->source_info)
     {
+      GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL);
+      GtkWidget *frame = gtk_widget_new (GTK_TYPE_FRAME,
+                                         "visible", TRUE,
+                                         "border_width", 5,
+                                         "label", _("Module Info"),
+                                         NULL);
+      g_object_new (GTK_TYPE_ALIGNMENT,
+                    "visible", TRUE,
+                    "parent", frame,
+                    "border_width", 1,
+                    "child", sctext,
+                    NULL),
       csource->source_info = gxk_dialog_new (&csource->source_info,
 					     GTK_OBJECT (csource),
 					     GXK_DIALOG_POPUP_POS,
 					     bse_item_get_name_or_type (csource->source),
-					     gtk_widget_new (GTK_TYPE_FRAME,
-							     "visible", TRUE,
-							     "border_width", 5,
-							     "label", _("Module Info"),
-							     "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL),
-							     NULL));
+                                             sctext);
     }
   csource_info_update (csource);
   source_name_changed (csource);

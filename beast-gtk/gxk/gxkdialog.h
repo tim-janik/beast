@@ -63,6 +63,7 @@ struct _GxkDialog
   GtkWidget	*sep;
   GtkWidget	*hbox;
   GtkWidget	*mbox;
+  GtkWidget	*child;
 };
 struct _GxkDialogClass
 {
