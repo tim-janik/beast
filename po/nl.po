@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-07 14:16+0100\n"
-"PO-Revision-Date: 2004-03-07 23:09+0100\n"
+"POT-Creation-Date: 2004-03-08 19:39+0100\n"
+"PO-Revision-Date: 2004-03-09 15:08+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -459,7 +459,7 @@ msgstr "Naar boven"
 
 #: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
-msgstr ""
+msgstr "De geselecteerde toetsbinding naar boven verplaatsen, relatief tot zijn buren"
 
 # verlagen
 # neerwaarts
@@ -469,7 +469,7 @@ msgstr "Naar beneden"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
-msgstr ""
+msgstr "De geselecteerde toetsbinding naar beneden verplaatsen, relatief tot zijn buren"
 
 # huidige geselecteerde golf? wave-bestand?
 #: beast-gtk/bstkeybindings.c:59
@@ -745,7 +745,7 @@ msgstr "offset-1, length-2, velocity-3, ..."
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
-msgstr ""
+msgstr "  verschuiving, lente of velocity van noten weergeven in het eerste, tweede, ... kanaal"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:693
@@ -754,7 +754,7 @@ msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: beast-gtk/bstpatterncolumns.c:694
 msgid "  select various event types (controls, continuous controllers)"
-msgstr ""
+msgstr "  verschillende gebeurtenistypen selecteren (controleknoppen, doorlopende controllers)"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:696
@@ -803,7 +803,7 @@ msgstr "hex2, hex4"
 
 #: beast-gtk/bstpatterncolumns.c:710
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
-msgstr ""
+msgstr "  hexadecimale getallen in 2 (00..FF) of 4 (0000..FFFF) cijfers weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:712
@@ -812,7 +812,7 @@ msgstr "shex2, shex4"
 
 #: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
-msgstr ""
+msgstr "  hexadecimale getallen met teken in 2 (-FF..+FF) of 4 (-FFFF..+FFFF) cijfers weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:715
@@ -821,7 +821,7 @@ msgstr "dec2, dec3"
 
 #: beast-gtk/bstpatterncolumns.c:716
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
-msgstr ""
+msgstr "  decimale getallen in 2 (00..99) of 3 (000..999) cijfers weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:718
@@ -830,7 +830,7 @@ msgstr "sdec2, sdec3"
 
 #: beast-gtk/bstpatterncolumns.c:719
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
-msgstr ""
+msgstr "  decimale getallen met teken in 2 (-99..+99) of 3 (-999..+999) cijfers weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:721
@@ -910,55 +910,55 @@ msgstr ""
 #: beast-gtk/bstpatternctrl.c:268
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
-msgstr ""
+msgstr "Focus naar de volgende cel verplaatsen (op/links/rechts/neer volgens de configuratie)"
 
 #: beast-gtk/bstpatternctrl.c:269
 msgid "Move focus cell upwards"
-msgstr ""
+msgstr "Focus-cel naar boven verplaatsen"
 
 #: beast-gtk/bstpatternctrl.c:270
 msgid "Move focus cell to the left"
-msgstr ""
+msgstr "Focus-cel naar links verplaatsen"
 
 #: beast-gtk/bstpatternctrl.c:271
 msgid "Move focus cell to the right"
-msgstr ""
+msgstr "Focus-cel naar rechts verplaatsen"
 
 #: beast-gtk/bstpatternctrl.c:272
 msgid "Move focus cell downwards"
-msgstr ""
+msgstr "Focus-cel naar beneden verplaatsen"
 
 #: beast-gtk/bstpatternctrl.c:273
 msgid "Move focus cell upwards page-wise"
-msgstr ""
+msgstr "Focus-cel naar boven verplaatsen paginagewijs"
 
 #: beast-gtk/bstpatternctrl.c:274
 msgid "Move focus cell to the left page-wise"
-msgstr ""
+msgstr "Focus-cel naar links verplaatsen paginagewijs"
 
 #: beast-gtk/bstpatternctrl.c:275
 msgid "Move focus cell to the right page-wise"
-msgstr ""
+msgstr "Focus-cel naar rechts verplaatsen paginagewijs"
 
 #: beast-gtk/bstpatternctrl.c:276
 msgid "Move focus cell downwards page-wise"
-msgstr ""
+msgstr "Focus-cel naar beneden verplaatsen paginagewijs"
 
 #: beast-gtk/bstpatternctrl.c:277
 msgid "Set the focus cell to the topmost position possible"
-msgstr ""
+msgstr "Focus-cel instellen op de hoogst mogelijke positie"
 
 #: beast-gtk/bstpatternctrl.c:278
 msgid "Set the focus cell to the leftmost position possible"
-msgstr ""
+msgstr "Focus-cel instellen op de meest linkse positie"
 
 #: beast-gtk/bstpatternctrl.c:279
 msgid "Set the focus cell to the rightmost position possible"
-msgstr ""
+msgstr "Focus-cel instellen op de meest rechtse positie"
 
 #: beast-gtk/bstpatternctrl.c:280
 msgid "Set the focus cell to the bottommost position possible"
-msgstr ""
+msgstr "Focus-cel instellen op de laagst mogelijke positie"
 
 #: beast-gtk/bstpatternctrl.c:283
 msgid "Set the number of steps to make when moving to the next cell"
@@ -1467,7 +1467,9 @@ msgstr "Lettertypegrootte"
 
 #: beast-gtk/bstrecords.idl:70
 msgid "Font size in pixels for labels displayed in synthesis networks"
-msgstr "Groote van lettertype in beeldpunten voor weergegeven labels in sythese netwerken"
+msgstr ""
+"Groote van lettertype in beeldpunten voor weergegeven labels in sythese "
+"netwerken"
 
 #: beast-gtk/bstrecords.idl:72
 msgid "Anti-Alias"
@@ -1499,7 +1501,7 @@ msgstr "Tabbreedte"
 
 #: beast-gtk/bstrecords.idl:80
 msgid "Specify project tab width in pixels"
-msgstr ""
+msgstr "Geef de tabbreedte van het project in pixels"
 
 #: beast-gtk/bstrecords.idl:82
 msgid "Homogeneous Input Fields"
@@ -1534,7 +1536,9 @@ msgstr "Afbeeldingschaduw"
 # percentage menging van achtergrondafbeelding met achtergrondkleur
 #: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
 msgid "Percentage of background image pixel to blend over background color."
-msgstr "Percentage van achtergrondafbeelding dat met de achtergrondkleur gemengd wordt."
+msgstr ""
+"Percentage van achtergrondafbeelding dat met de achtergrondkleur gemengd "
+"wordt."
 
 #: beast-gtk/bstrecords.idl:95 beast-gtk/bstrecords.idl:105
 msgid "Background Color"
@@ -2133,7 +2137,7 @@ msgstr "_Routing"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:43
 msgid "_Skins"
-msgstr ""
+msgstr "_Skins"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:44
 msgid "_Song"
@@ -2875,32 +2879,32 @@ msgid ""
 msgstr ""
 
 #: bse/bsecore.idl:399
-#, fuzzy
 msgid "Synth Mixing Frequency"
-msgstr "Centrale frequentie"
+msgstr "Mixfrequentie synthese"
 
 #: bse/bsecore.idl:400
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr ""
+msgstr "De mixfrequentie voor de synthese, veelgebruikte waarden zijn: 22050, 44100, 48000"
 
 #: bse/bsecore.idl:402
-#, fuzzy
 msgid "Synth Control Frequency"
-msgstr "Centrale frequentie"
+msgstr "Controlefrequentie synthese"
 
 #: bse/bsecore.idl:403
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
-msgstr ""
+msgstr "Frequentie waarmee controlewaardes worden geëvalueerd. Deze moet veel kleiner zijn dan de Mixfrequentie voor synthese zijn om de processor niet te zwaar te belasten"
 
 #: bse/bsesnooper.c:113
 msgid "Signal In"
 msgstr "Signaal in"
 
+# snoop: rondneuzen/bemoeial
+# afkijken, afsnoepen
 #: bse/bsesnooper.c:113
 msgid "Snoop Signal"
-msgstr ""
+msgstr "Afgesnoept signaal"
 
 #: bse/bsestandardosc.c:111
 msgid ""
@@ -3031,7 +3035,9 @@ msgstr "Toewijzingen"
 #: bse/bsesubiport.c:131 bse/bsesuboport.c:131
 msgid ""
 "The port name is a unique name to establish input<->output port relationships"
-msgstr "De poortnaam is een unieke naam om een relatie ingangspoort<->uitgangspoort tot stand te brengen"
+msgstr ""
+"De poortnaam is een unieke naam om een relatie ingangspoort<->uitgangspoort "
+"tot stand te brengen"
 
 #: bse/bsesubiport.c:139 bse/bsesubsynth.c:157
 #, c-format
@@ -3062,7 +3068,7 @@ msgstr "Ingangs-toewijzingen"
 
 #: bse/bsesubsynth.c:140
 msgid "Output port name to interface from"
-msgstr ""
+msgstr "Naam van uitgangspoort waar verbinding vandaan komt"
 
 #: bse/bsesubsynth.c:149
 msgid "Output Assignments"
@@ -3070,7 +3076,7 @@ msgstr "Uitgangs-toewijzingen"
 
 #: bse/bsesubsynth.c:150
 msgid "Input port name to interface to"
-msgstr ""
+msgstr "Naam van ingangspoort waar verbinding naar toe moet"
 
 #: bse/bsesuper.c:101
 msgid "Author"
@@ -3101,12 +3107,11 @@ msgid "Wave to play"
 msgstr "Af te spelen wav"
 
 #: bse/bsewaveosc.c:134
-#, fuzzy
 msgid "Modulation Strength for linear frequency modulation"
-msgstr "Mate van lineaire frequentiemodulatie"
+msgstr "Modulatiesterkte voor lineaire frequentiemodulatie"
 
+# taalfout in engels: spatie tussen modulation en instead ontbreekt
 #: bse/bsewaveosc.c:140
-#, fuzzy
 msgid "Perform exponential frequency modulationinstead of linear"
 msgstr "Exponentiële frequentiemodulatie uitvoeren in plaats van lineaire"
 
@@ -3237,29 +3242,24 @@ msgid "Compressed right audio output"
 msgstr "Gecomprimeerde rechter audio uitgang"
 
 #: plugins/bseadder.c:100 plugins/bsemult.c:60
-#, fuzzy
 msgid "Audio Input 1"
 msgstr "Audio ingang 1"
 
 #: plugins/bseadder.c:102 plugins/bsemult.c:62
-#, fuzzy
 msgid "Audio Input 2"
 msgstr "Audio ingang 2"
 
 #: plugins/bseadder.c:104 plugins/bsemult.c:68
-#, fuzzy
 msgid "Audio Output"
 msgstr "Audio uitgang"
 
 #: plugins/bseatandistort.c:90
-#, fuzzy
 msgid "Audio Input SIgnal"
-msgstr "Audio ingang"
+msgstr "Audio ingangsignaal"
 
 #: plugins/bseatandistort.c:92
-#, fuzzy
 msgid "Distorted Audio Output"
-msgstr "Gefilterde audio uitgang"
+msgstr "Vervormde audio uitgang"
 
 #: plugins/bsebalance.idl:27
 msgid "/Spatial/Balance"
@@ -3322,24 +3322,20 @@ msgid "Adjust output balance between left and right"
 msgstr "Balans tussen de linker en rechter uitgang instellen"
 
 #: plugins/bsefirfilter.c:143
-#, fuzzy
 msgid "Mono Out"
-msgstr "Mix uit"
+msgstr "Mono uit"
 
 #: plugins/bsefirfilter.c:143
-#, fuzzy
 msgid "Mono Filtered Output"
-msgstr "Gefilterde uitgan"
+msgstr "Mono gefilterde uitgang"
 
 #: plugins/bsefirfilter.c:145
-#, fuzzy
 msgid "Mono In"
-msgstr "Controle-ingang"
+msgstr "Mono in"
 
 #: plugins/bsefirfilter.c:145
-#, fuzzy
 msgid "Mono Signal Input"
-msgstr "Controle-ingang"
+msgstr "Monosignaal ingang"
 
 #: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
 msgid "Filter Choice"
@@ -3390,9 +3386,8 @@ msgid "Filtered Output"
 msgstr "Gefilterde uitgang"
 
 #: plugins/bsemixer.c:109
-#, fuzzy
 msgid "Sole Output"
-msgstr "Uitvoerkanalen verwijderen"
+msgstr "Enkele uitgang"
 
 #: plugins/bsemixer.c:115
 #, c-format
@@ -3482,7 +3477,7 @@ msgstr "Ctrl-uit"
 
 #: plugins/bsesimpleadsr.c:122
 msgid "Attack-Decay-Sustain-Release envelope output"
-msgstr ""
+msgstr "Attack-Decay-Sustain-Release envelope uitgang"
 
 #: plugins/bsesimpleadsr.c:124
 msgid "Done Out"
@@ -3604,7 +3599,9 @@ msgstr "Verhouding in"
 
 #: plugins/davsyndrum.c:118
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
-msgstr "Frequentieverschuiving verhouding (aangenomen wordt 1,0 indien niet verbonden)"
+msgstr ""
+"Frequentieverschuiving verhouding (aangenomen wordt 1,0 indien niet "
+"verbonden)"
 
 #: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
 msgid "Trigger In"
@@ -3618,10 +3615,12 @@ msgstr "De drum slaan op de stijgende kant"
 msgid "SynDrum Output"
 msgstr "SynDrum uitgang"
 
+# pluk frequentie,
+# maar een snaar pluk je niet, die tokkel je
+# mogelijk: aanslagfrequentie
 #: plugins/davxtalstrings.c:141
-#, fuzzy
 msgid "Pluck frequency input"
-msgstr "Ingang centrale frequentie"
+msgstr "Tokkelfrequentie ingang"
 
 #: plugins/davxtalstrings.c:143
 msgid "Pluck strings on raising edge"
