@@ -577,6 +577,7 @@ AC_SUBST(LDFLAGS)
 AC_CONFIG_FILES([
 Makefile
 sfi/Makefile
+bse/bseconfig.h
 bse/Makefile
 bse/icons/Makefile
 bse/zintern/Makefile
@@ -591,9 +592,6 @@ beast-gtk/Makefile
 beast-gtk/gxk/Makefile
 beast-gtk/dialogs/Makefile
 beast-gtk/icons/Makefile
-docs/Makefile
-docs/generated/Makefile
-bse/bseconfig.h
 launchers/Makefile
 library/Makefile
 library/effects/Makefile
@@ -604,15 +602,18 @@ library/keys/Makefile
 library/skins/Makefile
 library/skins/images/Makefile
 tools/Makefile
-tests/Makefile
-tests/audio/Makefile
 data/Makefile
 data/sfi.pc
 data/bse.pc
 data/beast.applications
-test/Makefile
+docs/Makefile
+docs/generated/Makefile
 po/Makefile.in
 po-helper.sh
+tests/Makefile
+tests/audio/Makefile
+tests/latency/Makefile
+test/Makefile
 ])
 
 AC_OUTPUT

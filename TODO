@@ -19,6 +19,7 @@ FIXMES:	(release-critical)
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 - update gtk/glib dependency to 2.4 in README and configure.in
+- add srcdir==builddir requirement for CVS builds to download area
 TODO:
 - add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - add executable versioning to sfidl 
