@@ -22,6 +22,10 @@ FIXME(urgent):
 - add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 - registering the same script function twice triggers GType assertion
 TODO:
+- TrackRoll: support shift/ctrl/alt modifier to copy/link/move parts
+- TrackRoll: disallow instrument field editing or dialog box during playback (simply gdk_beep())
+- PianoRoll: Ctrl+scrollwheel change hzoom
+- TrackRoll: add Lower and Raise buttons to move tracks relative to each other
 - driver interface: support multilpe MIDI devices
 - add more menu tooltips
 - add editable text fields to snet router
@@ -203,6 +207,7 @@ TODO:
 - fade in/out of samples in sample editor
 - wave editor: provide transpose spinner for wave preview
 - Time Counter: Measure,QuarterNote,SixteenthNote,3840ticks
+- PianoRoll: when moving selecitons reaches the left border (tick 0), stop movement instead of clinching notes
 
 DOCS:
 - command line option arguments in manual pages are incorrectly spaced
