@@ -44,23 +44,15 @@ while (<>) {
     # reset line numbering
     close (ARGV) if (eof);
 
-    # read lines until comment end is matched
-    while (m@/\*([^*]|\*[^/*])*\**$@x) {
+    # read lines until we have no open comments
+    while (m@/\*([^*]|\*(?!/))*$@) {
         my $new = <>;
         (defined ($new) && ($file_name eq $ARGV)) or die "$file_name:$.: Unmatched comment\n";
         $_ .= $new;
     }
 
-    # read lines until function decl is complete
-    while (m@^\w[^(]*\([^{;]*$@x) {
-        my $new = <>;
-        (defined ($new) && ($file_name eq $ARGV)) or die "$file_name:$.: Unmatched function declaration\n";
-        $_ .= $new;
-    }
-
-    # match docu comment
-    # if (m@^/\*\*\s+(([^*]|\*[^/*]|\*\*[^/])*)\*\*/@) {
-    if (m@^/\*\*\s+(([^*]|\*+[^*/])*)\*+/@) {
+    # match docu comment: /** ... */
+    if (m@^/\*\*\s+(([^*]|\*(?!/))*)\*/@) {
 	my @lines = split ('\n', $1);
 	my $line;
 	my $rec = { name => 'Unnamed',
@@ -101,9 +93,16 @@ while (<>) {
 	    }
 	    $first_line = 0;
 	}
+	# print STDERR "record: $rec->{name}\n";
 	push @records, $rec;
     }
 
+    # read lines until function decl is complete
+    while (m@^\w[^(/]*\([^{;]*$@x) {
+        my $new = <>;
+        (defined ($new) && ($file_name eq $ARGV)) or die "$file_name:$.: Unmatched function declaration\n";
+        $_ .= $new;
+    }
 
     # try to match function decls that we know about
     # if (m@([A-Za-z._][A-Za-z0-9._-]*)\s*\(([A-Za-z0-9\s,*_-]*)\)\s*\{@) {
@@ -164,6 +163,20 @@ sub tags_print_syntax {
 sub tags_highlight {
     my $t = shift;
 
+    die "input contains preserved keyword" if $t =~ m/scandocs_pl_QUOTE/;
+
+    my %quotes;
+
+    # replace URLs
+    my $nurl = 1;
+    my $urli = "scandocs_pl_QUOTE_" . $nurl;
+    while ($t =~ s/( (http:\/\/[^\s]+[^.,;:\s]) |
+                      (ftp:\/\/[^\s]+[^.,;:\s]) )/ $urli /x) {
+	$quotes{$urli} = $1;
+	$nurl++;
+	$urli = "scandocs_pl_QUOTE_" . $nurl;
+    }
+
     my $ident = "[*0-9A-Za-z?][*0-9A-Za-z_?]*";
 
     # Protect explicit newline indicators @*
@@ -182,7 +195,6 @@ sub tags_highlight {
     $t =~ s/    ( $ident \( [-+*=!^\$%&\/?\\~;:,.|<>A-Za-z0-9\s_]* \) ) /\@refFunction{$1}/gx;
 
     # quote multiple dots
-    die "input contains preserved keyword" if $t =~ m/scandocs_pl_QUOTE/;
     $t =~ s/ ( \. \.+ ) /:scandocs_pl_QUOTE1$1scandocs_pl_QUOTE2:/gx;
 
     # markup numeric constants automagically
@@ -206,6 +218,11 @@ sub tags_highlight {
     $t =~ s/  % ( $ident ) /\@refConstant{$1}/gx;
 
     $t =~ s/(\@ref[^{]+){([^}]+)}/$1 . '{' . fix_commas($2) . '}'/ge;
+
+    # restore URLs
+    while (my ($q, $v) = each %quotes) {
+	$t =~ s/ $q / \@uref{$v} /x;
+    }
 
     return $t;
 }
