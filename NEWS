@@ -1,3 +1,7 @@
+Overview of Changes in BEAST/BSE 0.6.3:
+
+* New Effect: BseSummation - Can be used to replace multiple BseAdder effects
+
 Overview of Changes in BEAST/BSE 0.6.2:
 
 * Rewrote scrollbar sizing, so tracks and parts are easily resizable

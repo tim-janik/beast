@@ -1,4 +1,6 @@
 FIXMES:
+- change [M] toggle tooltip in the track-view to explain *sequencer* muting (i.e. ignore notes)
+- optimize BseAdder according to BseSummation
 - verify that no IO channel buffer memory is being allocated for virtual modules
 - put "audio channels first, then Ctrl channels (amp)" convention into effect-writing-doc (needed for mix1, mix2, mix5.1 object options)
 - Error: "inputchannelalreadyinuse" should popup new error dialog
