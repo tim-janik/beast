@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-17 11:37+0100\n"
-"PO-Revision-Date: 2004-07-17 11:37+0100\n"
+"POT-Creation-Date: 2004-07-18 23:13+0100\n"
+"PO-Revision-Date: 2004-07-18 23:14+0100\n"
 "Last-Translator: David Lodge <dave@cirt.net>\n"
 "Language-Team: English/GB <en@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3385,10 +3385,10 @@ msgstr "Right channel input"
 
 #: bse/bsebus.c:294
 msgid ""
-"Bus implementation for songs, used to to route track audio signals to the "
+"Bus implementation for songs, used to route track audio signals to the "
 "master output."
 msgstr ""
-"Bus implementation for songs, used to to route track audio signals to the "
+"Bus implementation for songs, used to route track audio signals to the "
 "master output."
 
 #: bse/bsestandardosc.c:106
