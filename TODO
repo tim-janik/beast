@@ -6,7 +6,6 @@ FIXMES:	(release-critical)
 - auto-conenct new busses to master
 - auto-add orphan tracks to master when loading
 - auto-add orphan parts to a new track when loading
-- help menu updates (email) add plugin-devel menu item
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
 - instead of bse_engine_add_garbage(), the midireceiver needs a BSE_MIDI_RECEIVER_LOCK based callback mechanism (nodes aren't queued from teh BSE thread which invokes the engine gc)
 - disable vinput/vswitch job queueing (except for mono) if Done is not connected (use SCHEDULED(vinput/switch) to decide)
@@ -167,7 +166,7 @@ DOCS:
   rough outline: http://mail.gnome.org/archives/beast/2003-October/msg00007.html
 - document choice<->enum conversion functions
 - add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
-- rewrite bse-categories.txt as .texi and add to /Help menu
+- rewrite bse-categories.txt as .texi and add to devel section of Help Index
 - add tag to load/play bse files
 - add QuickStart section on wave selection
 - add QuickStart section on postprocessing effects
@@ -204,7 +203,6 @@ TASKS:
 - Main: make beast recognize and view .markup files from the command line
 - DocBrowser: pressing browsing hotkeys in release-notes dialog does stuff
 - DocBrowser: Ctrl+'+' and Ctrl+'-' should change font sizes in doc browser
-- DocBrowser: update /Help index to cover new docs
 - DocBrowser: implement Playback facility in doc browser for .bse file links
 - DocBrowser: try implementing some kind of table layout
 - PatternEditor: load default keytable
