@@ -557,7 +557,7 @@ parse_wave_chunk (BseWave         *wave,
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
       if (!pwchunk->wave_handle)
-	return bse_storage_warn_skip (storage, "invalid wave data reference");
+        bse_storage_warn (storage, "invalid wave data reference");
       /* don't eat closing brace in non-compat case */
       if (quark != quark_wave_handle) /* VERSION-FIXME: 0.5.1 compat */
         return G_TOKEN_NONE;

@@ -1371,20 +1371,21 @@ parse_raw_data_handle (BseStorage     *self,
   parse_or_return (scanner, ')');
 
   if (length < 1)
-    bse_storage_warn (self, "encountered empty data handle");
-  else
     {
-      *data_handle_p = gsl_wave_handle_new (self->rstore->fname,
-                                            n_channels, format, byte_order,
-                                            mix_freq, osc_freq,
-                                            offset, length);
-      if (n_channels_p)
-        *n_channels_p = n_channels;
-      if (mix_freq_p)
-        *mix_freq_p = mix_freq;
-      if (osc_freq_p)
-        *osc_freq_p = osc_freq;
+      bse_storage_warn (self, "encountered empty data handle");
+      *data_handle_p = NULL;
     }
+  else
+    *data_handle_p = gsl_wave_handle_new (self->rstore->fname,
+                                          n_channels, format, byte_order,
+                                          mix_freq, osc_freq,
+                                          offset, length);
+  if (n_channels_p)
+    *n_channels_p = n_channels;
+  if (mix_freq_p)
+    *mix_freq_p = mix_freq;
+  if (osc_freq_p)
+    *osc_freq_p = osc_freq;
   return G_TOKEN_NONE;
 }
 

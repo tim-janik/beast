@@ -1,3 +1,11 @@
+Sun Jan 11 06:18:05 2004  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c (parse_raw_data_handle): properly setup return values,
+	even for empty waves.
+
+	* bsewave.c (parse_wave_chunk): fixed error handling to not mess up
+	scanner state.
+
 Tue Jan  6 01:33:47 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsecxxsmart.h: Add typedefs for Sfi::Int, Sfi::Num and similar.
