@@ -1,3 +1,8 @@
+Tue Feb 22 07:28:03 2000  Tim Janik  <timj@gtk.org>
+
+	* builtin_bsepattern.c: added Tools/Fill random procedure, formerly
+	in fldbsepattern.c as a test procedure.
+
 Tue Feb 22 04:58:22 2000  Tim Janik  <timj@gtk.org>
 
 	* bsebuffermixer.[hc]: new files, containing abstracted and optimized 
