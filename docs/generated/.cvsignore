@@ -11,3 +11,4 @@ beast-site-*.tar.gz
 beast-site-*.tar.bz2
 gnome-index.lst
 index.lst
+version.texi

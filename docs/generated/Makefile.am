@@ -120,7 +120,11 @@ gnome-index.lst.gz: # default-generate if not present to avoid build breakage
 	echo | gzip -9 >$@
 gnome-index.lst: $(srcdir)/gnome-index.lst.gz	# uncompress rule
 	cat $< | gzip -d >$@
-%.texi: $(srcdir)/../%.texi
+version.texi:
+	cd . \
+	&& echo "@set BST_VERSION $(BST_VERSION)"  >$@ \
+	&& echo "@set BSE_VERSION $(BSE_VERSION)" >>$@
+%.texi: $(srcdir)/../%.texi version.texi
 	cp $< $@
 # generate *.xml from *.texi with texitheque
 %.xml: %.texi index.lst gnome-index.lst
@@ -141,7 +145,6 @@ index.lst: $(REFERENCE_XMLS)
 %.html: %.xml navigation.xml
 	$(XML2HTML) --output=$@ --images="cvs-images/" \
 		--banner="beast" --icon="beast16.png" $<
-
 # postscript rules
 %.nroff: %.xml
 	$(XML2NROFF) --output=$@ $<
@@ -178,7 +181,7 @@ conditional_clean = $(strip \
 	navigation.xml		gnome-index.lst		\
 	gsl-mplan.texi		release-news.texi	\
 	$(temp_ref_docu)	$(temp_log2texi)	\
-	$(distdocs)					\
+	$(distdocs)		version.texi		\
 )
 endif
 CLEANFILES += $(conditional_clean)

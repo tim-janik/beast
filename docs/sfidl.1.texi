@@ -5,8 +5,9 @@
 @c %**end of header
 
 @include teximacros.texi
+@include version.texi
 
-@docpackage{BEAST-0.5.5}	@c FIXME: use BST_VERSION here
+@docpackage{BEAST-@value{BST_VERSION}}
 @docfont{tech}
 
 @unnumbered NAME
@@ -21,19 +22,26 @@ BSE Plugin Generator - Code Generator for BSE Plugins
 	BSE interface definition language files.
 
 @unnumbered OPTIONS
-	@emph{-h, --help}
-@*		print usage information
-@*	@emph{-I <directory>}
-@*		add this directory to the include path
-@*	@emph{--version}
-@*              print version
-@*      @emph{--print-include-path}
-@*              print include path
-@*      @emph{--nostdinc}
-@*              don't use standard include path
+
+@table @samp
+@item -h, ---help
+print usage information
+
+@item -I <directory>
+add this directory to the include path
+
+@item ---version
+print version
+
+@item ---print-include-path
+print include path
+
+@item ---nostdinc
+don't use standard include path
+@end table
 
 @unnumbered SEE ALSO
-@uref{beast-man://3/bse-procs,BSE Procedures}
+@uref{beast-man://3/bse-procs,BSE Procedures},
 @uref{beast-man://3/bse-structs,BSE Structures}
 @*
 @revision{Document Revised:}

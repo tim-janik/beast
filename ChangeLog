@@ -1,3 +1,12 @@
+Fri Sep 26 06:45:03 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/bse-plugin-generator.1.texi: get bst version from version.texi.
+	improved/fixed options list layout.
+
+	* docs/generated/Makefile.am: create version.texi that keeps version
+	strings. texi files can use these strings to get versions from a
+	central source.
+
 Sun Sep 21 16:06:23 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/bse-plugin-generator.1.texi: Added the new options.
