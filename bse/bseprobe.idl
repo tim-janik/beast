@@ -31,6 +31,7 @@ record Probe {
   ProbeFeatures probe_features;
   Real          min;
   Real          max;
+  Real          energie;
   FBlock        sample_data;
   FBlock        fft_data;
 };

@@ -96,6 +96,7 @@ private:
             probe.channel_id = i;
             probe.max = SFI_MINREAL;
             probe.min = SFI_MAXREAL;
+            probe.energie = -999;
             ProbeFeatures features;
             features.probe_range = probes.range_ages[i] > 0;
             features.probe_energie = probes.energie_ages[i] > 0;
@@ -112,14 +113,19 @@ private:
               gfloat *values,
               bool    need_summing)
   {
-    if (probe.probe_features->probe_range)
-      for (gfloat *v = values; v < values + n_values; v++)
-        {
-          if (G_UNLIKELY (*v < probe.min))
-            probe.min = *v;
-          if (G_UNLIKELY (*v > probe.max))
-            probe.max = *v;
-        }
+    if (probe.probe_features->probe_range || probe.probe_features->probe_energie)
+      {
+        gdouble accu = 0;
+        for (gfloat *v = values; v < values + n_values; v++)
+          {
+            if (G_UNLIKELY (*v < probe.min))
+              probe.min = *v;
+            if (G_UNLIKELY (*v > probe.max))
+              probe.max = *v;
+            accu += *v * *v;
+          }
+        probe.energie = accu > 0 ? 10 * log10 (accu / n_values) : -999;
+      }
     SfiFBlock *fblock = probe.sample_data.fblock();
     if (need_summing && fblock)
       {
@@ -140,15 +146,27 @@ private:
           Probe &probe = **it;
           gfloat *block = oblocks[probe.channel_id];
           if (probe.probe_features->probe_samples || probe.probe_features->probe_fft)
-            probe.sample_data.take (sfi_fblock_new_foreign (n_values, block, g_free));
-          oblocks[probe.channel_id] = NULL;    /* steal from engine */
-          fill_probe (probe, n_values, block, FALSE);
+            {
+              probe.sample_data.take (sfi_fblock_new_foreign (n_values, block, g_free));
+              oblocks[probe.channel_id] = NULL; /* steal from engine */
+              fill_probe (probe, n_values, block, FALSE);
+            }
+          else
+            fill_probe (probe, n_values, block, FALSE);
         }
     else
       for (ProbeSeq::iterator it = pdata.pseq.begin(); it != pdata.pseq.end(); it++)
         fill_probe (**it, n_values, oblocks[(*it)->channel_id], TRUE);
     if (!pdata.n_pending)       /* last module */
       {
+        /* min/max fixup */
+        if (!n_values)
+          for (ProbeSeq::iterator it = pdata.pseq.begin(); it != pdata.pseq.end(); it++)
+            {
+              Probe &probe = **it;
+              if (probe.probe_features->probe_range && probe.max < probe.min)
+                probe.min = probe.max = 0;
+            }
         g_signal_emit (source, signal_probes, 0, pdata.pseq.c_ptr());
         /* clean up counters */
         for (guint i = 0; i < n_channels; i++)

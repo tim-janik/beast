@@ -1,3 +1,9 @@
+Sat Jul 24 20:00:22 2004  Tim Janik  <timj@gtk.org>
+
+	* bseprobe.idl: 
+	* bseprobe.cc: added signal energie to probed values. fixed up
+	value colelction and min/max for discarded modules.
+
 Sat Jul 24 11:40:50 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesniffer.idl:
