@@ -1,3 +1,26 @@
+Sun Feb  8 03:32:11 2004  Tim Janik  <timj@gtk.org>
+
+	* bseconstvalues.h: provide float and double versions of 
+	BSE_MAX_FINE_TUNE.
+
+	* bsepart.[hc]:
+	comletely reimplemented the basic data structures. switched to binary
+	searchable arrays rather than implementing one from scratch.
+	keep control events in their own array.
+	create an array per channel, each channel array may only contain one
+	note per tick, so polyphonic notes require multiple channels.
+	keep a list of crossing siblings per note to avoid O(n_notes)
+	complexity to expand regions. added ::n_channels property.
+	coalesce multiple control events of the same type at the same tick.
+	changed serialization format to be more compact for storing multiple
+	notes and control events. kept compat code to parse old format.
+
+	* bsepart.proc: adapted to BsePart API changes. added a channel argument
+	to insert-note(), introduced insert-note-auto() which preserves the old
+	channel-agnostic behaviour of insert-note().
+
+	* bsessequencer.c: adapt to BsePart API changes.
+
 Tue Feb  3 23:29:30 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemain.c (bse_init_core): minor improvement in passing gettimeofday

@@ -25,8 +25,8 @@ AUTHORS	= "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU General Public License";
 
 
-METHOD (BsePart, insert-note) {
-  HELP	= "Insert a new note into a part.";
+METHOD (BsePart, insert-note-auto) {
+  HELP	= "Insert a new note into a part with automatic channel selection.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
@@ -61,8 +61,59 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
+  ustack = bse_item_undo_open (self, "insert-note-auto");
+  id = bse_part_insert_note (self, ~0, tick, duration, note, fine_tune, velocity);
+  if (id)
+    bse_item_push_undo_proc (self, "delete-event", id);
+  bse_item_undo_close (ustack);
+
+  /* set output parameters */
+  sfi_value_set_int (out_values++, id);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, insert-note) {
+  HELP	= "Insert a new note into a part.";
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_int ("channel", "Channel", NULL,
+			 0, 0, BSE_PART_MAX_CHANNELS, 4, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
+  IN	= bse_pspec_note_simple ("note", "Note", NULL,
+				 SFI_PARAM_STANDARD);
+  IN	= bse_param_spec_fine_tune ("fine_tune", "Fine Tune", "Fine tune in cents per semitone");
+  IN	= sfi_pspec_real ("velocity", "Velocity", NULL,
+			  1.0, 0, 1.0, 0.01,
+			  SFI_PARAM_STANDARD ":scale");
+  OUT	= sfi_pspec_int ("id", "ID", NULL,
+			 0, 0, BSE_PART_MAX_TICK, 1, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self      = bse_value_get_object (in_values++);
+  guint    channel   = sfi_value_get_int (in_values++);
+  guint    tick	     = sfi_value_get_int (in_values++);
+  guint    duration  = sfi_value_get_int (in_values++);
+  gint     note	     = sfi_value_get_note (in_values++);
+  gint     fine_tune = sfi_value_get_int (in_values++);
+  gfloat   velocity  = sfi_value_get_real (in_values++);
+  BseUndoStack *ustack;
+  guint id;
+  
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
   ustack = bse_item_undo_open (self, "insert-note");
-  id = bse_part_insert_note (self, tick, duration, note, fine_tune, velocity);
+  id = bse_part_insert_note (self, channel, tick, duration, note, fine_tune, velocity);
   if (id)
     bse_item_push_undo_proc (self, "delete-event", id);
   bse_item_undo_close (ustack);
@@ -164,7 +215,7 @@ BODY (BseProcedureClass *proc,
           equery.note != note || equery.fine_tune != fine_tune ||
           equery.velocity != velocity)
         {
-          success = bse_part_change_note (self, id, tick, duration, note, fine_tune, velocity);
+          success = bse_part_change_note (self, id, ~0, tick, duration, note, fine_tune, velocity);
           if (success)
             bse_item_push_undo_proc (self, "change-note", id, equery.tick, equery.duration,
                                      equery.note, equery.fine_tune, equery.velocity);
@@ -286,16 +337,16 @@ BODY (BseProcedureClass *proc,
   if (equery.event_type == BSE_PART_EVENT_NOTE)
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "delete-note");
-      deleted = bse_part_delete_event (self, id);
+      deleted = bse_part_delete_note (self, id, equery.channel);
       if (deleted)
-        bse_item_push_undo_proc (self, "insert-note", equery.tick, equery.duration,
+        bse_item_push_undo_proc (self, "insert-note", equery.channel, equery.tick, equery.duration,
                                  equery.note, equery.fine_tune, equery.velocity);
       bse_item_undo_close (ustack);
     }
   else if (equery.event_type == BSE_PART_EVENT_CONTROL)
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "delete-control");
-      deleted = bse_part_delete_event (self, id);
+      deleted = bse_part_delete_control (self, id);
       if (deleted)
         bse_item_push_undo_proc (self, "insert-control", equery.tick, equery.control_type, equery.control_value);
       bse_item_undo_close (ustack);
@@ -307,8 +358,8 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BsePart, is-selected-event) {
-  HELP	= "Check whether a specific event is selected.";
+METHOD (BsePart, is-event-selected) {
+  HELP	= "Check whether an event is selected.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("id", "ID", NULL,
@@ -323,15 +374,17 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BsePart *self     = bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
-  gboolean selected;
-  
+  gboolean selected = FALSE;
+  BsePartQueryEvent equery;
+
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  selected = bse_part_is_selected_event (self, id);
-  
+  if (bse_part_query_event (self, id, &equery) != BSE_PART_EVENT_NONE)
+    selected = equery.selected;
+
   /* set output parameters */
   sfi_value_set_bool (out_values++, selected);
   
@@ -437,7 +490,7 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BsePart, queue-controls) {
-  HELP	= "Queue updates for all notes starting within the given range.";
+  HELP	= "Queue updates for all control events and notes starting within the given range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
@@ -807,7 +860,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_notes (self, tick, duration, min_note, max_note);
+  bse_part_select_notes (self, tick, duration, min_note, max_note, TRUE);
   
   return BSE_ERROR_NONE;
 }
@@ -840,7 +893,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_deselect_notes (self, tick, duration, min_note, max_note);
+  bse_part_select_notes (self, tick, duration, min_note, max_note, FALSE);
   
   return BSE_ERROR_NONE;
 }
@@ -871,7 +924,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_deselect_controls (self, tick, duration, ctype);
+  bse_part_select_controls (self, tick, duration, ctype, FALSE);
   
   return BSE_ERROR_NONE;
 }
@@ -890,16 +943,21 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BsePart *self     = bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
-  gboolean id_valid;
+  BsePartQueryEvent equery;
   
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  id_valid = bse_part_select_event (self, id);
-  
-  return id_valid ? BSE_ERROR_NONE : BSE_ERROR_PROC_PARAM_INVAL;
+  bse_part_query_event (self, id, &equery);
+  if (equery.event_type == BSE_PART_EVENT_CONTROL)
+    bse_part_set_control_selected (self, id, TRUE);
+  else if (equery.event_type == BSE_PART_EVENT_NOTE)
+    bse_part_set_note_selected (self, id, equery.channel, TRUE);
+  else
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, deselect-event) {
@@ -916,16 +974,21 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BsePart *self     = bse_value_get_object (in_values++);
   guint    id	    = sfi_value_get_int (in_values++);
-  gboolean id_valid;
+  BsePartQueryEvent equery;
   
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  id_valid = bse_part_deselect_event (self, id);
-  
-  return id_valid ? BSE_ERROR_NONE : BSE_ERROR_PROC_PARAM_INVAL;
+  bse_part_query_event (self, id, &equery);
+  if (equery.event_type == BSE_PART_EVENT_CONTROL)
+    bse_part_set_control_selected (self, id, FALSE);
+  else if (equery.event_type == BSE_PART_EVENT_NOTE)
+    bse_part_set_note_selected (self, id, equery.channel, FALSE);
+  else
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, get-timing) {

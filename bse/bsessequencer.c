@@ -380,38 +380,51 @@ static void
 bse_ssequencer_process_part_SL (BsePart         *part,
 				gdouble          start_stamp,
 				guint	         start_tick,
-				guint            bound, /* start_tick + n_ticks */
+				guint            tick_bound, /* start_tick + n_ticks */
 				gdouble          stamps_per_tick,
 				BseMidiReceiver *midi_receiver,
                                 guint            midi_channel)
 {
-  guint i = bse_part_node_lookup_SL (part, start_tick);
-  while (i < part->n_nodes && part->nodes[i].tick < bound)
+  BsePartTickNode *node, *last;
+  guint channel;
+
+  for (channel = 0; channel < part->n_channels; channel++)
     {
-      BsePartEventUnion *ev = part->nodes[i].events;
-      guint etick = part->nodes[i].tick - start_tick;
-      for (ev = part->nodes[i].events; ev; ev = ev->any.next)
-	if (ev && ev->type == BSE_PART_EVENT_NOTE)
-	  {
-	    BseMidiEvent *eon, *eoff;
-	    eon  = bse_midi_event_note_on (midi_channel, start_stamp + etick * stamps_per_tick,
-					   BSE_PART_NOTE_EVENT_FREQ (&ev->note), ev->note.velocity);
-	    eoff = bse_midi_event_note_off (midi_channel, start_stamp + (etick + ev->note.duration) * stamps_per_tick,
-					    BSE_PART_NOTE_EVENT_FREQ (&ev->note));
-	    bse_midi_receiver_push_event (midi_receiver, eon);
-	    bse_midi_receiver_push_event (midi_receiver, eoff);
-	    DEBUG ("note: %llu till %llu freq=%f (note=%d velocity=%f)",
-		   eon->delta_time, eoff->delta_time, BSE_PART_NOTE_EVENT_FREQ (&ev->note),
-                   ev->note.note, ev->note.velocity);
-	  }
-        else if (ev && ev->type == BSE_PART_EVENT_CONTROL)
-          {
-            BseMidiEvent *event = bse_midi_event_signal (midi_channel, start_stamp + etick * stamps_per_tick,
-                                                         ev->control.ctype, ev->control.value);
-            bse_midi_receiver_push_event (midi_receiver, event);
-            DEBUG ("control: %llu signal=%d (value=%f)",
-                   event->delta_time, ev->control.ctype, ev->control.value);
-          }
-      i = bse_part_node_lookup_SL (part, part->nodes[i].tick + 1);
+      BsePartEventNote *note = bse_part_note_channel_lookup_ge (&part->channels[channel], start_tick);
+      BsePartEventNote *bound = note ? bse_part_note_channel_get_bound (&part->channels[channel]) : NULL;
+      while (note < bound && note->tick < tick_bound)
+        {
+          BseMidiEvent *eon, *eoff;
+          gfloat freq = BSE_PART_NOTE_FREQ (note);
+          eon  = bse_midi_event_note_on (midi_channel,
+                                         start_stamp + (note->tick - start_tick) * stamps_per_tick,
+                                         freq, note->velocity);
+          eoff = bse_midi_event_note_off (midi_channel,
+                                          start_stamp + (note->tick - start_tick + note->duration) * stamps_per_tick,
+                                          freq);
+          bse_midi_receiver_push_event (midi_receiver, eon);
+          bse_midi_receiver_push_event (midi_receiver, eoff);
+          DEBUG ("note: %llu till %llu freq=%f (note=%d velocity=%f)",
+                 eon->delta_time, eoff->delta_time, freq,
+                 note->note, note->velocity);
+          note++;
+        }
+    }
+
+  node = bse_part_controls_lookup_ge (&part->controls, start_tick);
+  last = bse_part_controls_lookup_lt (&part->controls, tick_bound);
+  if (node) while (node <= last)
+    {
+      BsePartEventControl *cev;
+      for (cev = node->events; cev; cev = cev->next)
+        {
+          BseMidiEvent *event = bse_midi_event_signal (midi_channel,
+                                                       start_stamp + (node->tick - start_tick) * stamps_per_tick,
+                                                       cev->ctype, cev->value);
+          bse_midi_receiver_push_event (midi_receiver, event);
+          DEBUG ("control: %llu signal=%d (value=%f)",
+                 event->delta_time, cev->ctype, cev->value);
+        }
+      node++;
     }
 }

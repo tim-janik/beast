@@ -56,7 +56,9 @@ extern "C" {
 
 /* --- fine tune --- */
 /* fine tune in cents of a semitone */
-#define	BSE_MIN_FINE_TUNE		(-100)
+#define	BSE_MAX_FINE_TUNE_f		((float) BSE_MAX_FINE_TUNE)
+#define	BSE_MAX_FINE_TUNE_d		((float) BSE_MAX_FINE_TUNE)
+#define	BSE_MIN_FINE_TUNE		(-BSE_MAX_FINE_TUNE)
 #define	BSE_MAX_FINE_TUNE		(+100)
 #define BSE_FINE_TUNE_IS_VALID(n)	((n) >= BSE_MIN_FINE_TUNE && (n) <= BSE_MAX_FINE_TUNE)
 
