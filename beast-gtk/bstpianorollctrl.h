@@ -37,8 +37,8 @@ typedef struct {
   /* tool data */
   guint		   tool_index;
   /* tool selections */
-  BstRadioTools   *note_rtools;
-  BstRadioTools   *quant_rtools;
+  GxkActionGroup  *note_atools;
+  GxkActionGroup  *quant_atools;
   GxkActionGroup  *canvas_atools;
 } BstPianoRollController;
 
@@ -52,6 +52,8 @@ guint                   bst_piano_roll_controller_quantize       (BstPianoRollCo
 void			bst_piano_roll_controller_set_clipboard  (BsePartNoteSeq	 *pseq);
 BsePartNoteSeq*		bst_piano_roll_controller_get_clipboard	 (void);
 GxkActionList*          bst_piano_roll_controller_canvas_actions (BstPianoRollController *self);
+GxkActionList*          bst_piano_roll_controller_note_actions   (BstPianoRollController *self);
+GxkActionList*          bst_piano_roll_controller_quant_actions  (BstPianoRollController *self);
 void			bst_piano_roll_controller_clear		 (BstPianoRollController *self);
 void			bst_piano_roll_controller_cut		 (BstPianoRollController *self);
 gboolean		bst_piano_roll_controller_copy		 (BstPianoRollController *self);

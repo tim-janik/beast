@@ -46,6 +46,7 @@ typedef struct {
   gchar         *action_list;
   gchar         *activatable;
   gchar         *regulate;
+  GxkGadgetOpt  *pass_options;
 } GxkGadgetFactory;
 typedef GxkActionFactoryClass GxkGadgetFactoryClass;
 

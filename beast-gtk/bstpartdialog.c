@@ -183,12 +183,14 @@ bst_part_dialog_init (BstPartDialog *self)
   bst_piano_roll_set_hadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_piano_roll_set_vadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   self->pctrl = bst_piano_roll_controller_new (self->proll);
-  gxk_widget_publish_action_list (self, "piano-edit-tools", bst_piano_roll_controller_canvas_actions (self->pctrl));
+  gxk_widget_publish_action_list (self, "pctrl-canvas-tools", bst_piano_roll_controller_canvas_actions (self->pctrl));
+  gxk_widget_publish_action_list (self, "pctrl-note-tools", bst_piano_roll_controller_note_actions (self->pctrl));
+  gxk_widget_publish_action_list (self, "pctrl-quant-tools", bst_piano_roll_controller_quant_actions (self->pctrl));
 
   /* event roll */
   self->eroll = gxk_gadget_find (gadget, "event-roll");
   gxk_nullify_on_destroy (self->eroll, &self->eroll);
-  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, NULL); // FIXME: self->pctrl->canvas_rtools);
+  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_atools, self->pctrl->canvas_atools);
   bst_event_roll_set_hadjustment (self->eroll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
 
@@ -234,12 +236,12 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_paste, self->ectrl, NULL);
 
   /* add note-length choice to toolbar */
-  bst_radio_tools_build_toolbar_choice (self->pctrl->note_rtools, self->toolbar);
-  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->note_rtools->accel_group);
+  //bst_radio_tools_build_toolbar_choice (self->pctrl->note_rtools, self->toolbar);
+  //gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->note_rtools->accel_group);
   
   /* add quantization selection to toolbar */
-  bst_radio_tools_build_toolbar_choice (self->pctrl->quant_rtools, self->toolbar);
-  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->quant_rtools->accel_group);
+  //bst_radio_tools_build_toolbar_choice (self->pctrl->quant_rtools, self->toolbar);
+  //gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->quant_rtools->accel_group);
   
   /* hzoom */
   gxk_toolbar_append_separator (self->toolbar);
@@ -329,17 +331,9 @@ piano_canvas_clicked (BstPartDialog *self,
 		      BstPianoRoll  *proll)
 {
   if (button == 3 && event)
-    {
-#if 0
-      GtkItemFactory *popup_factory = BST_PART_DIALOG_GET_CLASS (self)->popup_factory;
-
-      bst_menu_popup (popup_factory,
-		      GTK_WIDGET (self),
-		      NULL, NULL,
-		      event->button.x_root, event->button.y_root,
-		      event->button.button, event->button.time);
-#endif
-    }
+    gxk_menu_popup (gxk_gadget_find (self, "piano-popup"),
+                    event->button.x_root, event->button.y_root, FALSE,
+                    event->button.button, event->button.time);
 }
 
 static void

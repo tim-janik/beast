@@ -19,8 +19,8 @@
 #include "bsteventrollctrl.h"
 
 
-#define NOTE_LENGTH(self)       ((self)->note_rtools->tool_id)
-#define QUANTIZATION(self)      ((self)->quant_rtools->tool_id)
+#define NOTE_LENGTH(self)       ((self)->note_atools->action_id)
+#define QUANTIZATION(self)      ((self)->quant_atools->action_id)
 #define HAVE_OBJECT             (1 << 31)
 
 
@@ -42,7 +42,7 @@ GxkActionList*
 bst_piano_roll_controller_canvas_actions (BstPianoRollController *self)
 {
   GxkActionList *alist = gxk_action_list_create_grouped (self->canvas_atools);
-  static const GxkStockAction piano_canvas_tools[] = {
+  static const GxkStockAction actions[] = {
     { N_("Insert"),           "I",    N_("Insert/resize/move notes (mouse button 1 and 2)"),
       BST_GENERIC_ROLL_TOOL_INSERT,   BST_STOCK_PART_TOOL },
     { N_("Delete"),           "D",    N_("Delete note (mouse button 1)"),
@@ -54,8 +54,53 @@ bst_piano_roll_controller_canvas_actions (BstPianoRollController *self)
     { N_("Vertical Select"),  "V",    N_("Select tick range vertically"),
       BST_GENERIC_ROLL_TOOL_VSELECT,  BST_STOCK_VERT_SELECT },
   };
-  gxk_action_list_add_actions (alist,
-                               G_N_ELEMENTS (piano_canvas_tools), piano_canvas_tools,
+  gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
+                               NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
+  return alist;
+}
+
+GxkActionList*
+bst_piano_roll_controller_note_actions (BstPianoRollController *self)
+{
+  GxkActionList *alist = gxk_action_list_create_grouped (self->note_atools);
+  static const GxkStockAction actions[] = {
+    { N_("1/1"),                "1",    N_("Insert full notes"),
+      1,                        BST_STOCK_NOTE_1, },
+    { N_("1/2"),                "2",    N_("Insert half notes"),
+      2,                        BST_STOCK_NOTE_2, },
+    { N_("1/4"),                "4",    N_("Insert quarter notes"),
+      4,                        BST_STOCK_NOTE_4, },
+    { N_("1/8"),                "8",    N_("Insert eighths note"),
+      8,                        BST_STOCK_NOTE_8, },
+    { N_("1/16"),               "6",    N_("Insert sixteenth note"),
+      16,                       BST_STOCK_NOTE_16, },
+  };
+  gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
+                               NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
+  return alist;
+}
+
+GxkActionList*
+bst_piano_roll_controller_quant_actions (BstPianoRollController *self)
+{
+  GxkActionList *alist = gxk_action_list_create_grouped (self->quant_atools);
+  static const GxkStockAction actions[] = {
+      { N_("Q: Tact"),          "<ctrl>T",      N_("Quantize to tact boundaries"),
+        BST_QUANTIZE_TACT,      BST_STOCK_QTACT, },
+      { N_("Q: None"),          "<ctrl>0",      N_("No quantization selected"),
+        BST_QUANTIZE_NONE,      BST_STOCK_QNOTE_NONE, },
+      { N_("Q: 1/1"),           "<ctrl>1",      N_("Quantize to full note boundaries"),
+        BST_QUANTIZE_NOTE_1,    BST_STOCK_QNOTE_1, },
+      { N_("Q: 1/2"),           "<ctrl>2",      N_("Quantize to half note boundaries"),
+        BST_QUANTIZE_NOTE_2,    BST_STOCK_QNOTE_2, },
+      { N_("Q: 1/4"),           "<ctrl>4",      N_("Quantize to quarter note boundaries"),
+        BST_QUANTIZE_NOTE_4,    BST_STOCK_QNOTE_4, },
+      { N_("Q: 1/8"),           "<ctrl>8",      N_("Quantize to eighths note boundaries"),
+        BST_QUANTIZE_NOTE_8,    BST_STOCK_QNOTE_8, },
+      { N_("Q: 1/16"),          "<ctrl>6",      N_("Quantize to sixteenth note boundaries"),
+        BST_QUANTIZE_NOTE_16,   BST_STOCK_QNOTE_16, },
+  };
+  gxk_action_list_add_actions (alist, G_N_ELEMENTS (actions), actions,
                                NULL /*i18n_domain*/, NULL /*acheck*/, NULL /*aexec*/, NULL);
   return alist;
 }
@@ -102,37 +147,16 @@ bst_piano_roll_controller_new (BstPianoRoll *proll)
 			 G_CALLBACK (controller_piano_drag),
 			 self, NULL,
 			 G_CONNECT_SWAPPED);
-  /* canvas tool default */
+  /* canvas tools */
   self->canvas_atools = gxk_action_group_new ();
   gxk_action_group_select (self->canvas_atools, BST_GENERIC_ROLL_TOOL_INSERT);
-  /* register note length tools */
-  self->note_rtools = bst_radio_tools_new ();
-  {
-    BstTool radio_tools[] = {
-      { CKEY ("Note/1"),                1,    BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Note/2"),                2,    BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Note/4"),                4,    BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Note/8"),                8,    BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Note/16"),               16,   BST_RADIO_TOOLS_EVERYWHERE },
-    };
-    bst_radio_tools_add_tools (self->note_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
-    bst_radio_tools_set_tool (self->note_rtools, 4);
-  }
-  /* register quantization tools */
-  self->quant_rtools = bst_radio_tools_new ();
-  {
-    BstTool radio_tools[] = {
-      { CKEY ("Quant/None"),    BST_QUANTIZE_NONE,      BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/1"),       BST_QUANTIZE_NOTE_1,    BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/2"),       BST_QUANTIZE_NOTE_2,    BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/4"),       BST_QUANTIZE_NOTE_4,    BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/8"),       BST_QUANTIZE_NOTE_8,    BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("Quant/16"),      BST_QUANTIZE_NOTE_16,   BST_RADIO_TOOLS_EVERYWHERE },
-    };
-    bst_radio_tools_add_tools (self->quant_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
-    bst_radio_tools_set_tool (self->quant_rtools, BST_QUANTIZE_NOTE_8);
-  }
-  /* update from rtools */
+  /* note length selection */
+  self->note_atools = gxk_action_group_new ();
+  gxk_action_group_select (self->note_atools, 4);
+  /* quantization selection */
+  self->quant_atools = gxk_action_group_new ();
+  gxk_action_group_select (self->quant_atools, BST_QUANTIZE_NOTE_8);
+  /* update from action group */
   g_signal_connect_swapped (self->canvas_atools, "changed",
                             G_CALLBACK (controller_reset_canvas_cursor), self);
   controller_reset_canvas_cursor (self);
@@ -161,10 +185,10 @@ bst_piano_roll_controller_unref (BstPianoRollController *self)
     {
       gxk_action_group_dispose (self->canvas_atools);
       g_object_unref (self->canvas_atools);
-      bst_radio_tools_dispose (self->note_rtools);
-      g_object_unref (self->note_rtools);
-      bst_radio_tools_dispose (self->quant_rtools);
-      g_object_unref (self->quant_rtools);
+      gxk_action_group_dispose (self->note_atools);
+      g_object_unref (self->note_atools);
+      gxk_action_group_dispose (self->quant_atools);
+      g_object_unref (self->quant_atools);
       g_free (self);
     }
 }
@@ -354,21 +378,24 @@ guint
 bst_piano_roll_controller_quantize (BstPianoRollController *self,
                                     guint                   fine_tick)
 {
+  BseSongTiming *timing;
+  guint quant, tick, qtick;
   g_return_val_if_fail (self != NULL, fine_tick);
 
-  /* quantize tick */
-  if (QUANTIZATION (self) && self->proll)
-    {
-      guint quant = self->proll->ppqn * 4 / QUANTIZATION (self);
-      guint qtick = fine_tick / quant;
-      qtick *= quant;
-      if (fine_tick - qtick > quant / 2 &&
-          qtick + quant > fine_tick)
-        fine_tick = qtick + quant;
-      else
-        fine_tick = qtick;
-    }
-  return fine_tick;
+  timing = bse_part_get_timing (self->proll->proxy, fine_tick);
+  if (QUANTIZATION (self) == BST_QUANTIZE_NONE)
+    quant = 1;
+  else if (QUANTIZATION (self) == BST_QUANTIZE_TACT)
+    quant = timing->tpt;
+  else
+    quant = timing->tpqn * 4 / QUANTIZATION (self);
+  tick = fine_tick - timing->tick;
+  qtick = tick / quant;
+  qtick *= quant;
+  if (tick - qtick > quant / 2)
+    qtick += quant;
+  tick = timing->tick + qtick;
+  return tick;
 }
 
 static void

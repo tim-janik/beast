@@ -1,32 +1,14 @@
 FIXMES:
-- fix button3 popup menu in piano roll
+- commit
+- fix multi-action factories
+- implement gdgdata_get_stencil_gadget() for a default factory boundary
+- add one-shot property to factories
+- implement toolbar separator
+- implement menubutton
+- implement menu title
+- add dashes to stencil names
 - fix event-roll controller
 - move bst_action_list_add_cat() to bstutils.[hc]
-- nodes have:
-  - pack_options
-  - prop_options
-  - dfpk_options
-  - call_options
-  clone: (<xdef:foo attr=""... />)
-  - make exact copy
-  - add xdef attributes (attr) to clone->call_options
-  use: (<hbox attr=""... />)
-  - make exact copy
-  - add use attributes (attr) to clone->call_options
-- gxk_gadget_create():
-  - add options to call_options of gadget
-  creation:
-  - evaluate all call_options in parent-env
-  - make call_options the new env
-  - create node
-  - set prop:...
-  - set pack:...
-  - make env the parent-env for evaluation of children's call_options
-  - create children
-- var evaluation:
-  copy call_options to dest:
-  for each in dest: do var="", val=eval(val), var=val
-* nodes: skip "call:" prefix ;)
 - recreate partdialog toolbar
 - recreate partdialog popup menu
 - delete BstActionRegions
@@ -34,6 +16,7 @@ FIXMES:
 - Tools, Demo
 - Help/Development
 - remove bstmenus.[hc]
+- remove bstcatalog.[hc]
 
 - rename gsl-mplan.txt to engine-mplan.txt
 - gxktexttools.c does eclass = g_type_class_ref (vtype); without unref

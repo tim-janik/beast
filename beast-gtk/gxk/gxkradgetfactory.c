@@ -196,6 +196,7 @@ gxk_gadget_factory_finalize (GObject *object)
   g_free (self->activatable);
   g_free (self->action_list);
   g_free (self->regulate);
+  gxk_gadget_free_options (self->pass_options);
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -217,7 +218,7 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
         {
           GxkGadgetOpt *options;
           options = gxk_gadget_options ("action-path", name, NULL);
-          gxk_gadget_create_add (domain, self->per_list, self->gadget, options);
+          gxk_gadget_creator (NULL, domain, self->per_list, self->gadget, self->pass_options, options);
           gxk_gadget_free_options (options);
         }
       for (i = 0; i < n; i++)
@@ -236,7 +237,7 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
                                         "action-stock", action.stock_icon,
                                         NULL);
           g_free (str1);
-          gadget = gxk_gadget_create_add (domain, self->per_action, self->gadget, options);
+          gadget = gxk_gadget_creator (NULL, domain, self->per_action, self->gadget, self->pass_options, options);
           gxk_gadget_free_options (options);
           if (GTK_IS_WIDGET (gadget))
             {
@@ -328,8 +329,9 @@ gxk_gadget_factory_attach (GxkGadgetFactory *self,
 
 /* --- gadget type hooks --- */
 static GxkGadget*
-gadget_factory_create (GType         type,
-                       const gchar  *name)
+gadget_factory_create (GType               type,
+                       const gchar        *name,
+                       GxkGadgetData      *gdgdata)
 {
   return g_object_new (type, "name", name, NULL);
 }
@@ -341,21 +343,28 @@ gadget_factory_find_prop (GxkGadget    *gadget,
   return g_object_class_find_property (G_OBJECT_GET_CLASS (gadget), prop_name);
 }
 
-static void
-gadget_factory_adopt (GxkGadget *gadget,
-                      GxkGadget *parent)
+static gboolean
+gadget_factory_adopt (GxkGadget          *gadget,
+                      GxkGadget          *parent,
+                      GxkGadgetData      *gdgdata)
 {
+  GxkGadgetFactory *self = gadget;
+  GxkGadgetOpt *options = gxk_gadget_data_copy_scope_options (gdgdata);
+  self->pass_options = gxk_gadget_options_merge (self->pass_options, options);
+  gxk_gadget_free_options (options);
+  options = gxk_gadget_data_copy_call_options (gdgdata);
+  self->pass_options = gxk_gadget_options_merge (self->pass_options, options);
+  gxk_gadget_free_options (options);
   gxk_gadget_factory_attach (gadget, GTK_WIDGET (parent));
+  return FALSE; /* no support for packing options */
 }
-
-static void* return_NULL (void) { return NULL; }
 
 static const GxkGadgetType gadget_factory_def = {
   gadget_factory_create,
   gadget_factory_find_prop,
   (void(*)(GxkGadget*,const gchar*,const GValue*)) g_object_set_property,
   gadget_factory_adopt,
-  (void*) return_NULL,/* find_pack */
-  NULL,               /* set_pack */
+  NULL, /* find_pack */
+  NULL, /* set_pack */
 };
 const GxkGadgetType *_gxk_gadget_factory_def = &gadget_factory_def;

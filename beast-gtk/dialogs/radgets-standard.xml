@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
-<gxk-gadget-definitions>
-  
+<gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
 
   <!-- Primitive Gtk+ widget type wrappers -->
 
@@ -64,20 +63,21 @@
     prop:show-tabs="1" prop:tab-pos="bottom" />
   <!-- image: stock-image= stock-size= -->
   <xdef:image                 inherit="GxkImage"
-    prop:stock-size="$stock-size"
+    prop:stock-size="$(null-collapse,$stock-size)"
     prop:stock="$stock-image" />
   <!-- menubar -->
   <xdef:menubar               inherit="GtkMenuBar" />
+  <xdef:popup-menu            inherit="GtkMenu" />
   <!-- menuitem: label= accel-path= accel= stock-image= -->
   <xdef:menuitem              inherit="GxkMenuItem"
-    prop:text="$label"
+    prop:uline-label="$label"
     prop:accel-path="$(null-collapse,$accel-path)"
     prop:accel="$accel"
     prop:stock-image="$stock-image" />
   <!-- submenu: label= stock-image= -->
   <xdef:submenu               inherit="GxkMenuItem"
     default-area="menu"
-    prop:text="$label"
+    prop:uline-label="$label"
     prop:stock-image="$stock-image" >
     <GtkMenu name="menu" tearoff-title="$label" />
   </xdef:submenu>
@@ -122,8 +122,7 @@
   <!-- gadget-factory: actions= activatable= regulate= per-list= per-action= -->
   <xdef:gadget-factory        inherit="GxkGadgetFactory"
     prop:action-list="$actions"
-    prop:activatable="$activatable"
-    prop:regulate="$regulate"
+    prop:activatable="$activatable" prop:regulate="$regulate"
     prop:per-list="$(null-collapse,$per-list)"
     prop:per-action="$(null-collapse,$per-action)" />
   <!-- menu-factory: actions= separator= -->
@@ -135,7 +134,7 @@
   </xdef:menu-factory>
   <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
   <xdef:menu-factory-per-action inherit="menuitem"
-    _label="$action-name"
+    label="$action-name"
     accel="$action-accel"
     accel-path="$action-path"
     stock-image="$action-stock" />

@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 #define GXK_MENU_ITEM_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_MENU_ITEM, GxkMenuItemClass))
 typedef GtkImageMenuItem      GxkMenuItem;
 typedef GtkImageMenuItemClass GxkMenuItemClass;
-GType   gxk_menu_item_get_type             (void);
+GType   gxk_menu_item_get_type          (void);
 
 
 /* --- image --- */
@@ -46,7 +46,7 @@ GType   gxk_menu_item_get_type             (void);
 #define GXK_IMAGE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_IMAGE, GxkImageClass))
 typedef GtkImage      GxkImage;
 typedef GtkImageClass GxkImageClass;
-GType   gxk_image_get_type             (void);
+GType   gxk_image_get_type              (void);
 
 
 /* --- widget-patcher --- */
@@ -62,7 +62,7 @@ typedef struct {
   gchar  *tooltip;
   guint   width_from_height : 1;
 } GxkWidgetPatcher;
-GType   gxk_widget_patcher_get_type          (void);
+GType   gxk_widget_patcher_get_type     (void);
 extern const GxkGadgetType *_gxk_widget_patcher_def;
 
 

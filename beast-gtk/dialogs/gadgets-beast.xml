@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
-<gxk-gadget-definitions>
+<gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
 
-  <!-- button-factory: actions= relief= -->
+  <!-- factory contents: relief= action-*= -->
+  <xdef:factory-button inherit="button"
+    focus="0"
+    prop:relief="$(ifdef,relief,$relief,normal)" >
+    <tooltip text="$action-tooltip" />
+    <widget-patcher prop:width-from-height="1" />
+    <vbox>
+      <image
+	expand="1"
+	stock-image="$action-stock"
+	visible="$(ifdef,action-stock,1,0)"
+	stock-size="$image-size" />
+      <label label="$action-name" />
+    </vbox>
+  </xdef:factory-button>
+  <xdef:factory-togglebutton inherit="togglebutton"
+    focus="0" prop:relief="$(ifdef,relief,$relief,normal)" >
+    <tooltip text="$action-tooltip" />
+    <widget-patcher prop:width-from-height="1" />
+    <vbox>
+      <image
+	expand="1"
+	stock-image="$action-stock"
+	visible="$(ifdef,action-stock,1,0)"
+        stock-size="$image-size" />
+      <label label="$action-name" />
+    </vbox>
+  </xdef:factory-togglebutton>
+  <!-- factories: actions= -->
   <xdef:button-factory inherit="gadget-factory"
-    per-action="button-factory-per-action"
-    activatable="button-factory-per-action"
-    regulate="button-factory-per-action" />
-  <xdef:button-factory-per-action inherit="button"
-    focus="0" prop:relief="$(ifdef,relief,$relief,normal)" >
-    <tooltip text="$action-tooltip" />
-    <widget-patcher prop:width-from-height="1" />
-    <vbox>
-      <image
-	expand="1"
-	stock-image="$action-stock"
-	visible="$(ifdef,action-stock,1,0)"
-	stock-size="big-button" />
-      <label _label="$action-name" />
-    </vbox>
-  </xdef:button-factory-per-action>
-  <!-- toggle-factory: actions= relief= -->
+    per-action="factory-button"
+    activatable="factory-button"
+    regulate="factory-button" />
+  <xdef:big-button-factory inherit="button-factory" image-size="big-button" />
   <xdef:toggle-factory inherit="gadget-factory"
-    per-action="toggle-factory-per-action"
-    activatable="toggle-factory-per-action"
-    regulate="toggle-factory-per-action" />
-  <xdef:toggle-factory-per-action inherit="togglebutton"
-    focus="0" prop:relief="$(ifdef,relief,$relief,normal)" >
-    <tooltip text="$action-tooltip" />
-    <widget-patcher prop:width-from-height="1" />
-    <vbox>
-      <image
-	expand="1"
-	stock-image="$action-stock"
-	visible="$(ifdef,action-stock,1,0)"
-	stock-size="big-button" />
-      <label _label="$action-name" />
-    </vbox>
-  </xdef:toggle-factory-per-action>
+    per-action="factory-togglebutton"
+    activatable="factory-togglebutton"
+    regulate="factory-togglebutton" />
+  <xdef:big-toggle-factory inherit="toggle-factory" image-size="big-button" />
 
   <!-- track view -->
   <xdef:track-view inherit="BstTrackView" prop:visible="1" prop:border-width="3" >
@@ -44,8 +47,8 @@
       <hpaned prop:height-request="120" prop:position="240" pack:expand="1" >
 	<vbox spacing="3" >
 	  <alignment prop:xscale="0" prop:xalign="0" >
-	    <hbox size:vgroup="toolbar-size" prop:homogeneous="1" >
-	      <button-factory actions="track-view-actions" />
+	    <hbox prop:homogeneous="1" spacing="3" size:vgroup="toolbar-size" >
+	      <big-button-factory actions="track-view-actions" />
 	    </hbox>
 	  </alignment>
 	  <frame-shadow-in size:vgroup="tree-size" pack:expand="1" >
@@ -74,8 +77,8 @@
 	<treeview name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
       </scrolledwindow>
       <alignment prop:yscale="0" prop:yalign="0" >
-	<vbox prop:homogeneous="1" >
-	  <button-factory actions="wave-view-actions" />
+	<vbox prop:homogeneous="1" spacing="3" >
+	  <big-button-factory actions="wave-view-actions" />
 	</vbox>
       </alignment>
     </hbox>
@@ -89,8 +92,8 @@
 	  <treeview name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
 	</scrolledwindow>
 	<alignment prop:yscale="0" prop:yalign="0" >
-	  <vbox prop:homogeneous="1" >
-	    <button-factory actions="part-view-actions" />
+	  <vbox prop:homogeneous="1" spacing="3" >
+	    <big-button-factory actions="part-view-actions" />
 	  </vbox>
 	</alignment>
       </hbox>
@@ -173,22 +176,39 @@
   <xdef:piano-roll-box inherit="vbox" spacing="3" >
     <vbox name="toolbar-area" area="north" >
       <frame-shadow-out >
-	<hbox name="toolbar" spacing="3" >
-	  <toggle-factory actions="piano-edit-tools" relief="none" expand="0" />
-	  <button-factory actions="piano-edit-actions" relief="none" expand="0" />
+	<hbox name="toolbar" >
+	  <big-toggle-factory actions="pctrl-canvas-tools" relief="none" />
+	  <big-button-factory actions="piano-edit-actions" relief="none" />
 	</hbox>
       </frame-shadow-out>
     </vbox>
     <vpaned name="piano-paned" prop:height-request="500" prop:position="400" pack:expand="1" >
-      <!-- child1 of the vpaned is meant to expand, but only gtk+-2.4 has
-      ---- child properties on paned, so C code patches up "piano-paned" -->
+      <!--! child1 of the vpaned is meant to expand, but only gtk+-2.4 has
+      !   ! child properties on paned, so C code patches up "piano-paned"
+      -->
       <hbox spacing="3" >
 	<frame-shadow-in pack:expand="1" >
-	  <piano-roll prop:height-request="200" />
+	  <piano-roll prop:height-request="200" >
+	    <popup-menu name="piano-popup" >
+	      <submenu _label="_Tools" >
+		<menu-factory actions="pctrl-canvas-tools" />
+	      </submenu>
+	      <submenu _label="_Edit" >
+		<menu-factory actions="piano-edit-actions" />
+		<menu-factory actions="piano-edit-undo" separator="1" />
+	      </submenu>
+	      <submenu _label="_Quantization" >
+		<menu-factory actions="pctrl-quant-tools" />
+	      </submenu>
+	      <submenu _label="Note _Length" >
+		<menu-factory actions="pctrl-note-tools" />
+	      </submenu>
+	    </popup-menu>
+	  </piano-roll>
 	</frame-shadow-in>
 	<vscrollbar name="piano-roll-vscrollbar" size:hgroup="scroll-size" />
       </hbox>
-      <hbox>
+      <hbox spacing="3" >
 	<vbox spacing="3" pack:expand="1" >
 	  <frame-shadow-in pack:expand="1" >
 	    <event-roll prop:height-request="50" />

@@ -31,20 +31,31 @@ G_BEGIN_DECLS
 
 
 /* --- Gtk+ workarounds and amendments --- */
-void        gxk_cell_editable_is_focus_handler  (GtkCellEditable *ecell);
-gboolean    gxk_cell_editable_canceled		(GtkCellEditable *ecell);
-GtkWidget*  gxk_item_factory_sensitize		(GtkItemFactory	 *ifactory,
-						 const gchar	 *path,
-                                                 gboolean         sensitive);
-GtkWidget*  gxk_item_factory_get_item		(GtkItemFactory	 *ifactory,
-						 const gchar	 *path);
-GtkWidget*  gxk_item_factory_get_widget		(GtkItemFactory	 *ifactory,
-						 const gchar	 *path);
-void	    gxk_widget_proxy_requisition	(GtkWidget	 *widget);
-void        gxk_submenu_attach_to_item          (GtkMenu         *menu,
-                                                 GtkMenuItem     *menu_item);
-GtkWidget*  gxk_widget_get_attach_toplevel      (GtkWidget       *widget);
-GtkAccelGroup*  gxk_window_get_menu_accel_group (GtkWindow       *window);
+void            gxk_cell_editable_is_focus_handler (GtkCellEditable *ecell);
+gboolean        gxk_cell_editable_canceled         (GtkCellEditable *ecell);
+GtkWidget*      gxk_item_factory_sensitize         (GtkItemFactory  *ifactory,
+                                                    const gchar     *path,
+                                                    gboolean         sensitive);
+GtkWidget*      gxk_item_factory_get_item          (GtkItemFactory  *ifactory,
+                                                    const gchar     *path);
+GtkWidget*      gxk_item_factory_get_widget        (GtkItemFactory  *ifactory,
+                                                    const gchar     *path);
+void            gxk_widget_proxy_requisition       (GtkWidget       *widget);
+gboolean        gxk_menu_check_sensitive           (GtkMenu         *menu);
+void            gxk_menu_attach_as_submenu         (GtkMenu         *menu,
+                                                    GtkMenuItem     *menu_item);
+void            gxk_menu_attach_as_popup           (GtkMenu         *menu,
+                                                    GtkWidget       *widget);
+void            gxk_menu_popup                     (GtkMenu         *menu,
+                                                    gint             x,
+                                                    gint             y,
+                                                    gboolean         push_in,
+                                                    guint            mouse_button,
+                                                    guint32          time);
+GtkWidget*      gxk_widget_find_level_ordered      (GtkWidget       *toplevel,
+                                                    const gchar     *name);
+GtkWidget*      gxk_widget_get_attach_toplevel     (GtkWidget       *widget);
+GtkAccelGroup*  gxk_window_get_menu_accel_group    (GtkWindow       *window);
 
 
 /* --- GtkFileSelection workarounds --- */

@@ -2079,31 +2079,35 @@ gxk_window_get_menu_accel_group (GtkWindow *window)
   return agroup;
 }
 
+/**
+ * gxk_menu_check_sensitive
+ * @menu:    valid #GtkMenu
+ * @RETURNS: TRUE if @menu contains selectable items
+ *
+ * This function tests whether a menu contains
+ * selectable menu items. It can be used to determine
+ * sensitivity for menu items containing submenus.
+ */
+gboolean
+gxk_menu_check_sensitive (GtkMenu *menu)
+{
+  GtkMenuShell *shell = GTK_MENU_SHELL (menu);
+  GList *list;
+  for (list = shell->children; list; list = list->next)
+    {
+      GtkWidget *child = list->data;
+      if (GTK_WIDGET_VISIBLE (child) && GTK_WIDGET_IS_SENSITIVE (child))
+        return TRUE;
+    }
+  return FALSE;
+}
+
 static void
 submenu_check_sensitive (GtkMenu *menu)
 {
   GtkWidget *widget = gtk_menu_get_attach_widget (menu);
   if (GTK_IS_MENU_ITEM (widget))
-    {
-      GtkMenuItem *item = GTK_MENU_ITEM (widget);
-      if (item->submenu == (GtkWidget*) menu)
-        {
-          GtkMenuShell *shell = GTK_MENU_SHELL (menu);
-          gboolean seen_visible = FALSE;
-          GList *list;
-          for (list = shell->children; list; list = list->next)
-            {
-              GtkWidget *child = list->data;
-              if (GTK_WIDGET_VISIBLE (child) &&
-                  G_OBJECT_TYPE (child) != GTK_TYPE_TEAROFF_MENU_ITEM)
-                {
-                  seen_visible = TRUE;
-                  break;
-                }
-            }
-          gtk_widget_set_sensitive (widget, seen_visible);
-        }
-    }
+    gtk_widget_set_sensitive (widget, gxk_menu_check_sensitive (menu));
 }
 
 static void
@@ -2114,23 +2118,18 @@ menu_refetch_accel_group (GtkMenu *menu)
     gtk_menu_set_accel_group (menu, gxk_window_get_menu_accel_group ((GtkWindow*) toplevel));
 }
 
+static void     menu_propagate_hierarchy_changed (GtkMenu *menu);
+
 static void
 menu_item_propagate_hierarchy_changed (GtkMenuItem *menu_item)
 {
   GtkWidget *menu = menu_item->submenu;
   if (menu)
-    {
-      GList *list;
-      for (list = GTK_MENU_SHELL (menu)->children; list; list = list->next)
-        if (gxk_signal_handler_pending (list->data, "hierarchy-changed",
-                                        G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL))
-          menu_item_propagate_hierarchy_changed (list->data);
-      menu_refetch_accel_group (GTK_MENU (menu));
-    }
+    menu_propagate_hierarchy_changed (GTK_MENU (menu));
 }
 
 /**
- * gxk_submenu_attach_to_item
+ * gxk_menu_attach_as_submenu
  * @menu:      valid #GtkMenu
  * @menu_item: valid #GtkMenuItem
  *
@@ -2147,7 +2146,7 @@ menu_item_propagate_hierarchy_changed (GtkMenuItem *menu_item)
  * from the toplevel window.
  */
 void
-gxk_submenu_attach_to_item (GtkMenu     *menu,
+gxk_menu_attach_as_submenu (GtkMenu     *menu,
                             GtkMenuItem *menu_item)
 {
   g_return_if_fail (GTK_IS_MENU (menu));
@@ -2166,6 +2165,181 @@ gxk_submenu_attach_to_item (GtkMenu     *menu,
                       "signal_after::remove", submenu_check_sensitive, NULL,
                       NULL);
   submenu_check_sensitive (menu);
+}
+
+static void
+menu_propagate_hierarchy_changed (GtkMenu *menu)
+{
+  GList *list;
+  for (list = GTK_MENU_SHELL (menu)->children; list; list = list->next)
+    if (gxk_signal_handler_pending (list->data, "hierarchy-changed",
+                                    G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL))
+      menu_item_propagate_hierarchy_changed (list->data);
+  menu_refetch_accel_group (menu);
+}
+
+static void
+menu_widget_propagate_hierarchy_changed (GtkWidget *widget)
+{
+  GList *menu_list = g_object_get_data (widget, "GxkWidget-popup-menus");
+  for (; menu_list; menu_list = menu_list->next)
+    menu_propagate_hierarchy_changed (menu_list->data);
+}
+
+static void
+popup_menus_detach (gpointer data)
+{
+  GSList *menu_list = data;
+  while (menu_list)
+    {
+      GtkMenu *menu = g_slist_pop_head (&menu_list);
+      if (gtk_menu_get_attach_widget (menu))
+        gtk_menu_detach (menu);
+    }
+}
+
+static void
+popup_menu_detacher (GtkWidget *widget,
+                     GtkMenu   *menu)
+{
+  GList *menu_list = g_object_steal_data (widget, "GxkWidget-popup-menus");
+  if (menu_list)
+    {
+      menu_list = g_list_remove (menu_list, menu);
+      g_object_set_data_full (widget, "GxkWidget-popup-menus", menu_list, popup_menus_detach);
+    }
+}
+
+/**
+ * gxk_menu_attach_as_popup
+ * @menu:      valid #GtkMenu
+ * @menu_item: valid #GtkMenuItem
+ *
+ * This function is a replacement for gtk_menu_attach_to_widget().
+ * Similar to gxk_menu_attach_as_submenu(), it sets up a propagation
+ * mechanism, so @menu and submenus thereof automatically fetch their
+ * accelerator groups via gxk_window_get_menu_accel_group() from the
+ * toplevel window. In addition, this function allowes
+ * gxk_widget_find_level_ordered() to also consider popup menus
+ * in its search.
+ */
+void
+gxk_menu_attach_as_popup (GtkMenu         *menu,
+                          GtkWidget       *widget)
+{
+  GList *menu_list;
+  g_return_if_fail (GTK_IS_MENU (menu));
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  menu_list = g_object_steal_data (widget, "GxkWidget-popup-menus");
+  menu_list = g_list_prepend (menu_list, menu);
+  g_object_set_data_full (widget, "GxkWidget-popup-menus", menu_list, popup_menus_detach);
+  gtk_menu_attach_to_widget (menu, widget, popup_menu_detacher);
+
+  if (!gxk_signal_handler_pending (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL))
+    g_signal_connect_after (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL);
+  menu_widget_propagate_hierarchy_changed (widget);
+}
+
+typedef struct {
+  gint     x, y;
+  gboolean push_in;
+} PopupData;
+
+static void
+menu_position_func (GtkMenu  *menu,
+                    gint     *x,
+                    gint     *y,
+                    gboolean *push_in,
+                    gpointer  func_data)
+{
+  PopupData *pdata = func_data;
+  *x = pdata->x;
+  *y = pdata->y;
+  *push_in = pdata->push_in;
+}
+
+void
+gxk_menu_popup (GtkMenu *menu,
+                gint     x,
+                gint     y,
+                gboolean push_in,
+                guint    mouse_button,
+                guint32  time)
+{
+  PopupData *pdata = g_new0 (PopupData, 1);
+  g_return_if_fail (GTK_IS_MENU (menu));
+  pdata->x = x;
+  pdata->y = y;
+  pdata->push_in = push_in;
+  gtk_menu_popup (menu, NULL, NULL,
+                  menu_position_func, pdata,
+                  mouse_button, time);
+}
+
+static GtkWidget*
+widget_find_level_ordered (GtkWidget   *widget,
+                           const gchar *name)
+{
+  GList *children = g_list_prepend (NULL, widget);
+  while (children)
+    {
+      GList *list, *newlist = NULL;
+      for (list = children; list; list = list->next)
+        {
+          GtkWidget *child = list->data;
+          if (child->name && strcmp (child->name, name) == 0)
+            {
+              g_list_free (children);
+              return child;
+            }
+        }
+      /* none found, search next level */
+      for (list = children; list; list = list->next)
+        {
+          GList *extra_children;
+          widget = list->data;
+          if (GTK_IS_CONTAINER (widget))
+            newlist = g_list_concat (gtk_container_get_children (GTK_CONTAINER (widget)), newlist);
+          if (GTK_IS_MENU_ITEM (widget))
+            {
+              GtkMenuItem *mitem = GTK_MENU_ITEM (widget);
+              if (mitem->submenu)
+                newlist = g_list_prepend (newlist, mitem->submenu);
+            }
+          extra_children = g_object_get_data (widget, "GxkWidget-popup-menus");
+          if (extra_children)
+            newlist = g_list_concat (g_list_copy (extra_children), newlist);
+        }
+      g_list_free (children);
+      children = newlist;
+    }
+  return NULL;
+}
+
+/**
+ * gxk_widget_find_level_ordered
+ * @toplevel: valid #GtkWidget
+ * @name:     name of the widget being looked for
+ * @RETURNS:  a widget named @name or %NULL
+ *
+ * Search for a widget named @name, child of @toplevel.
+ * The search is ordered by looking at all children of
+ * a container before increasing depth.
+ * This function also considers submenus in menu items
+ * "children", as well as popup menus attached via
+ * gxk_menu_attach_as_popup() (not ones attached via
+ * gtk_menu_attach_to_widget() though, since Gtk+ doesn't
+ * store/export the neccessary information).
+ */
+GtkWidget*
+gxk_widget_find_level_ordered (GtkWidget   *toplevel,
+                               const gchar *name)
+{
+  g_return_val_if_fail (GTK_IS_WIDGET (toplevel), NULL);
+  g_return_val_if_fail (name != NULL, NULL);
+
+  return widget_find_level_ordered (toplevel, name);
 }
 
 /**

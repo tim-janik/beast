@@ -1,3 +1,41 @@
+Fri Nov 14 04:34:04 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_menu_check_sensitive(),
+	renamed gxk_menu_attach_as_submenu(), added gxk_menu_attach_as_popup()
+	and moved gxk_widget_find_level_ordered() here from code in gxkgadget.c.
+
+	* beast-gtk/bstpartdialog.[hc]: publish piano-roll-ctrl actions,
+	had to disable radio-tools based toolbar widgets.
+	reenabled button3 popup menu based on a gadget menu.
+
+	* beast-gtk/bstpianorollctrl.[hc]: provide note and quantization
+	actions. use action-groups for note lengths and quantization.
+	use bse_part_get_timing() for quantization, support tact quantization.
+
+	* beast-gtk/dialogs/Makefile.am: run the .xml gadget files through
+	xmllint before conversion.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: adjusted button factories,
+	now that we have proper (definition-based) variable scoping.
+	minor GUI adjustments. added button3 popup menu for piano-roll.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: null-collapse image
+	stock-size. added popup-menu, minor fixes.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: changed menu item label property
+	name to uline-label. adaptions to changes in the GxkGadget type
+	registration API.
+
+	* beast-gtk/gxk/gxkgadget.[hc]: support variable inheritance in
+	gadget definitions. implemented definition-as-scope validity for
+	variables (achieved by keeping a back-pointer to the xdef-node
+	from nodes). commented precedence bahaviour for value lookups.
+	fixups to menu adoption. added $(println) function.
+	extended type registration API. streamlined gadget creation API.
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: construct arguments to be
+	passed on to factory children at adoption time.
+
 Wed Nov 12 04:26:22 2003  Tim Janik  <timj@gtk.org>
 
 	* overall switch to Gxk gadget and action based GUIs.

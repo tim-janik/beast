@@ -576,7 +576,7 @@ bst_early_parse_args (int    *argc_p,
     *argc_p = e;
 }
 
-static void
+static void G_GNUC_NORETURN
 bst_exit_print_version (void)
 {
   const gchar *c;

@@ -22,7 +22,7 @@
 /* --- GxkMenuItem --- */
 enum {
   MENU_ITEM_PROP_0,
-  MENU_ITEM_PROP_TEXT,
+  MENU_ITEM_PROP_ULINE_LABEL,
   MENU_ITEM_PROP_STOCK_IMAGE,
   MENU_ITEM_PROP_ACCEL_PATH,
   MENU_ITEM_PROP_ACCEL,
@@ -52,7 +52,7 @@ gxk_menu_item_set_property (GObject      *object,
     {
       const gchar *string, *path;
       gchar *accel;
-    case MENU_ITEM_PROP_TEXT:
+    case MENU_ITEM_PROP_ULINE_LABEL:
       if (bin->child)
         gtk_container_remove (GTK_CONTAINER (self), bin->child);
       string = g_value_get_string (value);
@@ -128,8 +128,8 @@ gxk_menu_item_class_init (GxkMenuItemClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   gobject_class->set_property = gxk_menu_item_set_property;
   gobject_class->get_property = gxk_menu_item_get_property;
-  g_object_class_install_property (gobject_class, MENU_ITEM_PROP_TEXT,
-                                   g_param_spec_string ("text", NULL, NULL, NULL, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, MENU_ITEM_PROP_ULINE_LABEL,
+                                   g_param_spec_string ("uline-label", NULL, NULL, NULL, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, MENU_ITEM_PROP_STOCK_IMAGE,
                                    g_param_spec_string ("stock-image", NULL, NULL, NULL, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, MENU_ITEM_PROP_ACCEL,
@@ -293,9 +293,10 @@ widget_patcher_width_from_height (GtkWidget      *widget,
 {
   requisition->width = requisition->height;
 }
-static void
-widget_patcher_adopt (GxkGadget *gadget,
-                      GxkGadget *parent)
+static gboolean
+widget_patcher_adopt (GxkGadget          *gadget,
+                      GxkGadget          *parent,
+                      GxkGadgetData      *gdgdata)
 {
   GxkWidgetPatcher *self = GXK_WIDGET_PATCHER (gadget);
   if (self->tooltip)
@@ -303,6 +304,7 @@ widget_patcher_adopt (GxkGadget *gadget,
   if (self->width_from_height)
     g_object_connect (parent, "signal_after::size_request", widget_patcher_width_from_height, NULL, NULL);
   g_idle_add (widget_patcher_unref, self);      /* takes over initial ref count */
+  return FALSE; /* no support for packing options */
 }
 
 GType
@@ -328,8 +330,9 @@ gxk_widget_patcher_get_type (void)
 }
 
 static GxkGadget*
-widget_patcher_create (GType         type,
-                       const gchar  *name)
+widget_patcher_create (GType               type,
+                       const gchar        *name,
+                       GxkGadgetData      *gdgdata)
 {
   return g_object_new (type, NULL);
 }
@@ -341,14 +344,12 @@ widget_patcher_find_prop (GxkGadget    *gadget,
   return g_object_class_find_property (G_OBJECT_GET_CLASS (gadget), prop_name);
 }
 
-static void* return_NULL (void) { return NULL; }
-
 static const GxkGadgetType widget_patcher_def = {
   widget_patcher_create,
   widget_patcher_find_prop,
   (void(*)(GxkGadget*,const gchar*,const GValue*)) g_object_set_property,
   widget_patcher_adopt,
-  (void*) return_NULL,/* find_pack */
-  NULL,               /* set_pack */
+  NULL,         /* find_pack */
+  NULL,         /* set_pack */
 };
 const GxkGadgetType *_gxk_widget_patcher_def = &widget_patcher_def;
