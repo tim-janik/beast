@@ -32,25 +32,27 @@ sub make_xref {
     "<uref><urefurl>$url</urefurl><urefreplacement>$prefix$item$postfix</urefreplacement></uref>";
 }
 
-my $index_file = 'index.lst';
+my @index_files = 0;
 my %item_index;
 
 while ($_ = $ARGV[0], defined $_ && /^-/) {
     shift;
     last if /^--$/;
-    if (/^--index$/) { $index_file = shift; }
+    if (/^--index$/) { push @index_files, shift; }
 }
 
-die "Cannot read $index_file" unless -r $index_file;
-
-# Read the index file and make a hash out of it
-open(INDEX, "<$index_file");
-while (<INDEX>) {
-  chomp;
-  my ($function, $url) = split(/\s+/, $_, 2);
-  $item_index{$function} = $url;
+# Read the index files into a hash table
+for (my $i = 1; $i < @index_files; $i++) {
+    my $index_file = $index_files[$i];
+    die "Failed to read $index_file" unless -r $index_file;
+    open(INDEX, "<$index_file");
+    while (<INDEX>) {
+	chomp;
+	my ($function, $url) = split(/\s+/, $_, 2);
+	$item_index{$function} = $url;
+    }
+    close(INDEX);
 }
-close(INDEX);
 
 while (<>) {
   # Match functions

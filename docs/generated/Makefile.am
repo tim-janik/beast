@@ -112,18 +112,30 @@ temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
 # texi/xml/target rules
 #
 XMLANTISPACE=$(top_builddir)/docs/utils/xmlantispace
-REFERENCE_XMLS = $(patsubst %.3, %.3-unpatched.xml, $(man_MANS))
+REFERENCE_XMLS = $(patsubst %.3, %.3.crossfix.xml, $(man_MANS))
 if HAVE_DOC_TOOLS
+gnome-index.lst.gz: # default-generate if not present to avoid build breakage
+	echo | gzip -9 >$@
+gnome-index.lst: $(srcdir)/gnome-index.lst.gz	# uncompress rule
+	cat $< | gzip -d >$@
+# generate *.xml from *.texi with makeinfo gnome-index
+%.xml: %.crossfix.xml $(srcdir)/reference-filter.pl index.lst gnome-index.lst
+	$(srcdir)/reference-filter.pl 		\
+		--index index.lst		\
+		--index gnome-index.lst		\
+		$< >$@
+%.crossfix.xml: %.texi		$(srcdir)/../teximacros.texi $(XMLANTISPACE)
+	$(XMLMAKEINFO)  -D "TexiStamp `date -r $<`"	\
+			-I $(srcdir)/.. --xml $< -o -	\
+	| $(XMLANTISPACE) >$@
 index.lst: $(REFERENCE_XMLS) $(srcdir)/reference-index.xsl
-	$(XSLTPROC) $(srcdir)/reference-index.xsl $(REFERENCE_XMLS) >$@
-# generate *.xml from *.texi with makeinfo
-%.xml: %-unpatched.xml index.lst
-	$(srcdir)/reference-filter.pl $< >$@
-%-unpatched.xml: %.texi		$(srcdir)/../teximacros.texi $(XMLANTISPACE)
-	$(XMLMAKEINFO)  -D "TexiStamp `date -r $<`" \
-			-I $(srcdir)/.. --xml $< -o $@
-	$(XMLANTISPACE) <$@ >$@.tmp
-	mv $@.tmp $@
+	rm -f $@ && touch $@
+	for i in $(REFERENCE_XMLS) ; do					\
+	  $(XSLTPROC)							\
+	    --stringparam protocol "`echo beast-man://3/$$i		\
+                                     | sed -e 's/.3.crossfix.xml//'`"	\
+	    $(srcdir)/reference-index.xsl $$i >>$@ ;			\
+	done
 # *.markup from xml (program docs)
 %.markup: %.xml			$(srcdir)/markup.xsl $(srcdir)/texinfo.dtd
 	$(XSLTPROC) $(srcdir)/markup.xsl $< >$@
@@ -233,7 +245,7 @@ release-news.texi: $(top_srcdir)/NEWS Makefile
 	&& echo "@bye"				>>$@
 # cleanup
 conditional_clean = $(strip \
-	navigation.xml					\
+	navigation.xml		gnome-index.lst		\
 	gsl-mplan.texi		release-news.texi	\
 	$(markup_targets)	$(man_MANS)		\
 	$(temp_ref_docu)	$(temp_log2texi)	\

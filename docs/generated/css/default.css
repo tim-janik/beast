@@ -148,12 +148,12 @@
 }
 
 #navigation a:hover {
-  text-decoration: none;
+  text-decoration: underline; /* none; */
   background-image: url(images/gradient.png);
   background-position: top left;
   background-repeat: repeat-y;
 /*  background-color: #b0b0de; */
-  color: #444444;
+/*  color: #444444; */
 }
 
 #navigation a.closed-tree {
@@ -255,7 +255,7 @@ body {
 
 a {
   text-decoration: none;
-  /* text-decoration: underline; */
+  text-decoration: underline;
   color: #0000ff;
 }
 

@@ -1,3 +1,22 @@
+Fri Feb 21 20:02:16 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: call xml files with unfixed cross
+	references *.crossfix.xml. generate xml files from texi sources
+	without intermediate temporary files. create pass beast-man:
+	protocoll specification into generation of index.lst.
+	added gnome-index.lst to the cross reference fixup rule.
+
+	* docs/generated/gnome-index.lst.gz: index file containing anchors
+	and links of glib/pango/gdk/gtk/gnome API docs on developer.gnome.org.
+
+	* docs/generated/reference-filter.pl: support multiple index files.
+
+	* docs/generated/reference-index.xsl: figure the index reference
+	from a stringparam $protocol.
+
+	* docs/generated/css/default.css: resurrect hover underlines
+	for navigation items. underline clickable cross references.
+
 Fri Feb 21 19:14:55 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/reference-index.xsl: new file added by

@@ -7,6 +7,7 @@ Makefile.in
 *.texi
 *.ps
 *.pdf
+gnome-index.lst
 beast-site-*.tar.gz
 beast-site-*.tar.bz2
 log2texi.sh

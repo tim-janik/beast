@@ -3,6 +3,8 @@
   <xsl:output method="text" indent="no" encoding="ISO-8859-1" />
   <xsl:strip-space elements="*" />
 
+<xsl:param name="protocol"/>
+
   <!-- {{{ root of all evil -->
   <xsl:template match="/texinfo">
     <xsl:apply-templates select="//tableterm/reference-function" />
@@ -14,7 +16,7 @@
   <!-- {{{ url of the struct/function/etc. -->
   <xsl:template name="url">
     <xsl:param name="anchor"/>
-    <xsl:variable name="url_tmp">
+<!--    <xsl:variable name="url_tmp">
       <xsl:value-of select="substring-before(/texinfo/setfilename, '-unpatched')" />
     </xsl:variable>
     <xsl:variable name="file">
@@ -25,9 +27,14 @@
     </xsl:variable>
 
     <xsl:text>beast-man://</xsl:text>
-    <xsl:value-of select="$section" />
+-->
+    
+    <xsl:value-of select="$protocol"/>
+
+<!--    <xsl:value-of select="$section" />
     <xsl:text>/</xsl:text>
     <xsl:value-of select="$file" />
+-->
     <xsl:text>#</xsl:text>
     <xsl:value-of select="$anchor" />
   </xsl:template>
