@@ -1,4 +1,5 @@
 FIXMES:
+- make sfidl/bse-plugin-generator manual pages match new/changed options
 - rc setting for canvas font sizes
 - record classes in c++ need to derive from GNewAllocator
 - put bstrecords.idl generated files into CLEAN files or at least MAINTAINER-CLEAN files
