@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-18 03:06+0200\n"
-"PO-Revision-Date: 2003-10-19 20:33+0200\n"
+"POT-Creation-Date: 2003-10-22 03:20+0200\n"
+"PO-Revision-Date: 2003-10-22 03:22+0200\n"
 "Last-Translator: Vincent van Adrighem <adrighem@gnome.org>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -233,24 +233,24 @@ msgid "/Help/_About..."
 msgstr "/Hulp/_Info..."
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:724
+#: beast-gtk/bstapp.c:730
 msgid "Rack editor"
 msgstr "Rack bewerken"
 
-#: beast-gtk/bstapp.c:738
+#: beast-gtk/bstapp.c:744
 msgid "Preferences"
 msgstr "Voorkeuren"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:752
+#: beast-gtk/bstapp.c:758
 msgid "Device Monitor"
 msgstr "Apparaatbeheer"
 
-#: beast-gtk/bstapp.c:767
+#: beast-gtk/bstapp.c:773
 msgid "Procedure Browser"
 msgstr "Procedurebeheer"
 
-#: beast-gtk/bstapp.c:824
+#: beast-gtk/bstapp.c:830
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release Notes"
@@ -331,53 +331,68 @@ msgstr "Afbreken"
 msgid "Contents"
 msgstr "Inhoud"
 
-#: beast-gtk/bstfiledialog.c:205
-msgid "Store references to wave files"
-msgstr "Refenties naar Wave-bestanden opslaan"
-
-#: beast-gtk/bstfiledialog.c:212
-msgid "Include wave files"
-msgstr "Wave-bestanden bijvoegen"
-
 #. setup remaining bits
 #: beast-gtk/bstfiledialog.c:229
 msgid "File Selection"
 msgstr "Bestandsselectie"
 
-#: beast-gtk/bstfiledialog.c:393
+#: beast-gtk/bstfiledialog.c:400
 msgid "Open Project"
 msgstr "Project openen"
 
-#: beast-gtk/bstfiledialog.c:407
+#: beast-gtk/bstfiledialog.c:414
 msgid "Select Directory"
 msgstr "Map selecteren"
 
-#: beast-gtk/bstfiledialog.c:421 beast-gtk/bstfiledialog.c:428
+#: beast-gtk/bstfiledialog.c:428 beast-gtk/bstfiledialog.c:435
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Openen van project `%s'"
 
-#: beast-gtk/bstfiledialog.c:446
+#: beast-gtk/bstfiledialog.c:453
 #, c-format
 msgid "Merge: %s"
 msgstr "Samenvoegen: %s"
 
-#: beast-gtk/bstfiledialog.c:459
+#: beast-gtk/bstfiledialog.c:466
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Samenvoegen van project `%s'"
 
-#: beast-gtk/bstfiledialog.c:475
+#: beast-gtk/bstfiledialog.c:489
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Kon `%s'\n"
+"niet verwijderen\n"
+"wegens:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:518
 #, c-format
 msgid "Save: %s"
 msgstr "Opslaan %s"
 
-#: beast-gtk/bstfiledialog.c:496 beast-gtk/bstfiledialog.c:531
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:520
+msgid "Fully include wave files"
+msgstr "Wave-bestanden volledig bijvoegen"
+
+#: beast-gtk/bstfiledialog.c:521
+msgid "Store references to wave files"
+msgstr "Refenties naar Wave-bestanden opslaan"
+
+#: beast-gtk/bstfiledialog.c:542 beast-gtk/bstfiledialog.c:552
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Opslaan van project: `%s'"
 
-#: beast-gtk/bstfiledialog.c:497
+#: beast-gtk/bstfiledialog.c:543 beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:695
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -392,47 +407,47 @@ msgstr ""
 "`%s':\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:513
-#, c-format
-msgid "Deleting file `%s'"
-msgstr "Verwijderen van bestand `%s'"
-
-#: beast-gtk/bstfiledialog.c:514
-#, c-format
-msgid ""
-"Failed to delete file\n"
-"`%s'\n"
-"due to:\n"
-"%s"
-msgstr ""
-"Kon `%s'\n"
-"niet verwijderen\n"
-"wegens:\n"
-"%s"
-
-#: beast-gtk/bstfiledialog.c:546
+#: beast-gtk/bstfiledialog.c:567
 msgid "Load Effect"
 msgstr "Effect laden"
 
-#: beast-gtk/bstfiledialog.c:559
+#: beast-gtk/bstfiledialog.c:580
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Samenvoegen van effect `%s'"
 
-#: beast-gtk/bstfiledialog.c:575
+#: beast-gtk/bstfiledialog.c:597
+msgid "Save Effect"
+msgstr "Effect opslaan"
+
+#: beast-gtk/bstfiledialog.c:618 beast-gtk/bstfiledialog.c:628
+#, c-format
+msgid "Saving effect `%s'"
+msgstr "Opslaan van effect: `%s'"
+
+#: beast-gtk/bstfiledialog.c:643
 msgid "Load Instrument"
 msgstr "Instrument laden"
 
-#: beast-gtk/bstfiledialog.c:588
+#: beast-gtk/bstfiledialog.c:656
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Samenvoegen van intrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:605
+#: beast-gtk/bstfiledialog.c:673
+msgid "Save Instrument"
+msgstr "Instrument opslaan"
+
+#: beast-gtk/bstfiledialog.c:694 beast-gtk/bstfiledialog.c:704
+#, c-format
+msgid "Saving instrument `%s'"
+msgstr "Opslaan van intrument `%s'"
+
+#: beast-gtk/bstfiledialog.c:720
 msgid "Load Wave"
 msgstr "Wave laden"
 
-#: beast-gtk/bstfiledialog.c:617 beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:732 beast-gtk/bstfiledialog.c:734
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Laden van wave `%s'"
@@ -1052,3 +1067,6 @@ msgstr "Rechts schuiven"
 #: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
 msgid "Waves"
 msgstr "Waves"
+
+#~ msgid "Deleting file `%s'"
+#~ msgstr "Verwijderen van bestand `%s'"
