@@ -1,0 +1,41 @@
+/* BseEvaluator - evaluates expressions               -*-mode: c++;-*-
+ * Copyright (C) 2003 Stefan Westerfeld <stefan@space.twc.de>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ */
+#include <bse/bse.idl>
+
+namespace Bse {
+
+class Evaluator : Bse::Effect {
+  /*Info    icon      = "icons/chorus.png";*/
+  Info    authors   = "Stefan Westerfeld";
+  Info    license   = "GNU General Public License";
+  Info    category  = "/Modules/Enhance/Evaluator";
+  Info    blurb     = ("BseEvaluator is a module which can compute arithmetic operations in a small language."
+		       "The audio input signal is called input, the audio output signal is called output."
+		       "Simple examples for programs would be \"output = input * 5\" or \"output = 2 * input + 1\"");
+  IStream input     = ("Audio In", "Audio input");
+  OStream output    = ("Audio Out", "Audio output");
+  group "Parameters" {
+    String source  = String ("Source code", "The source code", "output = input", STANDARD);
+    String status  = String ("Status", "Status used to output error messages", "", GUI_RDONLY);
+  };
+};
+
+}; // Bse
+
+/* vim:set ts=8 sw=2 sts=2: */
