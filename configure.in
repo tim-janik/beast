@@ -270,7 +270,7 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
         ],[{
           snd_pcm_open (0, 0, 0, SND_PCM_OPEN_CAPTURE);
           snd_pcm_channel_setup (0, 0);
-          // snd_card_type_name (SND_CARD_TYPE_SHARE);
+          snd_card_get_longname (SND_CARD_TYPE_SHARE, NULL);
         }],[
           bse_have_pcmdev=yes
 	  AC_MSG_RESULT([found it - ALSA support enabled])
@@ -335,18 +335,28 @@ AC_BSE_SNDDEV_CHECK
 # BEAST requirements
 AC_BEAST_REQUIREMENTS
 
-# check for awk, perl, etags and indent which are required
+# check for perl, python, etags and indent which are required
 # to build generated sources
 AC_PROG_AWK
 AC_CHECK_PROGS(PERL, perl5 perl)
+AC_CHECK_PROGS(PYTHON, python)
+AC_CHECK_PROGS(FOLD, fold)
 AC_CHECK_PROG(INDENT, indent, indent)
 AC_CHECK_PROG(ETAGS, etags, etags)
-MISSING_PERL5=#
 MISSING_AWK=#
+MISSING_PERL5=#
+MISSING_PYTHON=#
+MISSING_FOLD=#
 MISSING_INDENT=#
 MISSING_ETAGS=#
 if test -n "$PERL" && perl -v | grep 'version 5.' > /dev/null ; then
     MISSING_PERL5=
+fi
+if test -n "$PYTHON" && python -c "import sys ; print sys.version" | grep '^1.5.' > /dev/null ; then
+    MISSING_PYTHON=
+fi
+if test -n "$FOLD" ; then
+    MISSING_FOLD=
 fi
 if test -n "$AWK" ; then
     MISSING_AWK=
@@ -368,6 +378,8 @@ else
     AC_MSG_RESULT(no)
 fi
 AC_SUBST(MISSING_PERL5)
+AC_SUBST(MISSING_PYTHON)
+AC_SUBST(MISSING_FOLD)
 AC_SUBST(MISSING_AWK)
 AC_SUBST(MISSING_INDENT)
 AC_SUBST(MISSING_ETAGS)

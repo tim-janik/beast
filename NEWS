@@ -11,6 +11,7 @@ Overview of Changes in BEAST/BSE 0.3.1:
 * New synthesis object: BseCompressor
 * Runtime display of FAQ ;)
 * Random GUI improvements
+* ALSA 0.5.0 support
 * Miscellaneous minor bugfixes
 
 What's new in BEAST/BSE 0.3.0:

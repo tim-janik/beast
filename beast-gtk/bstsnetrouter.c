@@ -487,7 +487,7 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
    */
   radio = toolbar_add_radio (router, bar, radio, 0,
 			     "Edit",
-			     "Edit\n"
+			     "Edit tool (mouse buttons 1-3)\n"
 			     "Use button1 to create links, "
 			     "button2 for movement and "
 			     "button3 to change properties",

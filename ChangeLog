@@ -1,3 +1,16 @@
+Fri Jan 14 02:41:14 2000  Tim Janik  <timj@gtk.org>
+
+	* configure.in: check for python and fold, since we use them in the
+	docs/ dir for file generation.
+
+	* docs/Makefile.am: 
+	* docs/faq.src: 
+	* docs/text.1.faq:
+	* docs/text.2.faq:
+	* docs/makefaq.py:
+	generate faq.txt now, files and build setup provided by Dave Seidel
+	<dave@superluminal.com>.
+
 Thu Jan 13 19:10:19 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (main): 
