@@ -54,7 +54,7 @@ static gint	signals_compare	(gconstpointer	 bsearch_node1, /* key */
 static const GBSearchConfig signals_config = {
   sizeof (GlueSignal),
   signals_compare,
-  G_BSEARCH_ARRAY_FORCE_SHRINK,
+  G_BSEARCH_ARRAY_AUTO_SHRINK,
 };
 static GQuark quark_weak_refs = 0;
 

@@ -1,3 +1,11 @@
+Tue Aug 19 04:21:32 2003  Tim Janik  <timj@gtk.org>
+
+	* gbsearcharray.h: sync with gbsearcharray.h in newer glib (2.3.0).
+	new flag name G_BSEARCH_ARRAY_AUTO_SHRINK to shrink arrays upon
+	removal.
+	(g_bsearch_array_insert): do nothing if the node is already there.
+	(g_bsearch_array_replace): replace node or fallback to insert.
+
 Sat Aug  9 20:06:57 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-namespace.cc sfidl-parser.*: fix parsing type names from
