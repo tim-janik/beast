@@ -315,17 +315,14 @@ bst_image_from_icon (BswIcon    *icon,
 }
 
 GtkWidget*
-bst_stock_button (const gchar *stock_id,
-		  const gchar *label)
+bst_stock_button_child (const gchar *stock_id,
+			const gchar *label)
 {
-  GtkWidget *button, *alignment, *hbox, *image;
+  GtkWidget *alignment, *hbox, *image;
 
   g_return_val_if_fail (stock_id != NULL, NULL);
 
-  button = g_object_new (GTK_TYPE_BUTTON,
-			 NULL);
   alignment = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
-  gtk_container_add (GTK_CONTAINER (button), alignment);
   hbox = gtk_hbox_new (FALSE, 2);
   gtk_container_add (GTK_CONTAINER (alignment), hbox);
   image = bst_image_from_stock (stock_id, BST_SIZE_BUTTON);
@@ -337,7 +334,24 @@ bst_stock_button (const gchar *stock_id,
 				    "use_underline", TRUE,
 				    NULL),
 		      FALSE, TRUE, 0);
-  gtk_widget_show_all (button);
+  gtk_widget_show_all (alignment);
+
+  return alignment;
+}
+
+GtkWidget*
+bst_stock_button (const gchar *stock_id,
+		  const gchar *label)
+{
+  GtkWidget *button, *alignment;
+
+  g_return_val_if_fail (stock_id != NULL, NULL);
+
+  button = g_object_new (GTK_TYPE_BUTTON,
+			 "visible", TRUE,
+			 NULL);
+  alignment = bst_stock_button_child (stock_id, label);
+  gtk_container_add (GTK_CONTAINER (button), alignment);
 
   return button;
 }

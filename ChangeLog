@@ -1,3 +1,9 @@
+Wed May 15 08:46:53 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstwaveeditor.c (play_back_wchunk_off): clear playback mark.
+	(bst_wave_editor_rebuild): resort to a single playback button with
+	different stcok children for start/stop playback.
+
 Wed May 15 06:59:20 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstwaveview.c (popup_wave_dialog): popup BstWaveEditor

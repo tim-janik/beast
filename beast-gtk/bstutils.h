@@ -108,6 +108,8 @@ GtkWidget*	bst_image_from_icon		(BswIcon	*icon,
 						 GtkIconSize	 icon_size);
 GtkWidget*	bst_stock_button		(const gchar	*stock_id,
 						 const gchar	*label);
+GtkWidget*	bst_stock_button_child		(const gchar	*stock_id,
+						 const gchar	*label);
 GtkWidget*	bst_drag_window_from_stock	(const gchar	*stock_id);
 void		_bst_utils_init			(void);
 guint		bst_size_width			(GtkIconSize	 bst_size);

@@ -247,6 +247,12 @@ play_back_wchunk_off (BstWaveEditor *self)
     gtk_widget_hide (self->preview_off);
   if (self->preview_on)
     gtk_widget_show (self->preview_on);
+  if (self->qsampler)
+    {
+      guint i;
+      for (i = 0; i < self->n_channels; i++)
+	bst_qsampler_set_mark (self->qsampler[i], 3, 0, 0);
+    }
 }
 
 static void
@@ -299,6 +305,15 @@ play_back_wchunk_on (BstWaveEditor *self)
       if (self->preview_on)
 	gtk_widget_show (self->preview_on);
     }
+}
+
+static void
+play_back_button_clicked (BstWaveEditor *self)
+{
+  if (bst_play_back_handle_is_playing (self->phandle))
+    play_back_wchunk_off (self);
+  else
+    play_back_wchunk_on (self);
 }
 
 void
@@ -624,21 +639,25 @@ bst_wave_editor_rebuild (BstWaveEditor *self)
   any = g_object_new (GTK_TYPE_HBOX,
 		      "visible", TRUE,
 		      NULL);
-  self->preview_on = bst_stock_button (BST_STOCK_PREVIEW_AUDIO, "Start _Preview");
-  self->preview_off = bst_stock_button (BST_STOCK_PREVIEW_NOAUDIO, "Stop _Preview");
+  self->preview_on = bst_stock_button_child (BST_STOCK_PREVIEW_AUDIO, "Start _Preview");
+  self->preview_off = bst_stock_button_child (BST_STOCK_PREVIEW_NOAUDIO, "Stop _Preview");
   gtk_container_add (GTK_CONTAINER (any), self->preview_on);
   gtk_container_add (GTK_CONTAINER (any), self->preview_off);
   g_object_connect (self->preview_on,
-		    "swapped_signal::clicked", play_back_wchunk_on, self,
 		    "swapped_signal::destroy", g_nullify_pointer, &self->preview_on,
 		    NULL);
   g_object_connect (self->preview_off,
-		    "swapped_signal::clicked", play_back_wchunk_off, self,
 		    "swapped_signal::destroy", g_nullify_pointer, &self->preview_off,
+		    NULL);
+  any = g_object_new (GTK_TYPE_BUTTON,
+		      "visible", TRUE,
+		      "child", any,
+		      NULL);
+  g_object_connect (any,
+		    "swapped_signal::clicked", play_back_button_clicked, self,
 		    NULL);
   gtk_widget_show (self->preview_on);
   gtk_widget_hide (self->preview_off);
-  
   gmask = bst_gmask_quick (mask_parent, 2, NULL, any, NULL);
   
   /* add columns to chunk list
