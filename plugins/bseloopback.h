@@ -49,9 +49,6 @@ typedef struct _BseLoopbackClass BseLoopbackClass;
 struct _BseLoopback
 {
   BseSource       parent_object;
-
-  BseChunk	 *mchunk;
-  BseChunk	 *schunk;
 };
 struct _BseLoopbackClass
 {

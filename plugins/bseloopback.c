@@ -59,6 +59,7 @@ bse_loopback_class_init (BseLoopbackClass *class)
 {
   BseObjectClass *object_class;
   BseSourceClass *source_class;
+  BseSourceIChannelDef *ic_def;
   guint ichannel_id, ochannel_id;
 
   parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
@@ -79,6 +80,12 @@ bse_loopback_class_init (BseLoopbackClass *class)
   g_assert (ochannel_id == BSE_LOOPBACK_OCHANNEL_MONO);
   ochannel_id = bse_source_class_add_ochannel (source_class, "stereo_out", "Stereo Loopback", 1);
   g_assert (ochannel_id == BSE_LOOPBACK_OCHANNEL_STEREO);
+
+  /* we need history buffers for the input channels */
+  ic_def = BSE_SOURCE_CLASS_ICHANNEL_DEF (class, BSE_LOOPBACK_ICHANNEL_MONO);
+  ic_def->history = 1;
+  ic_def = BSE_SOURCE_CLASS_ICHANNEL_DEF (class, BSE_LOOPBACK_ICHANNEL_STEREO);
+  ic_def->history = 1;
 }
 
 static void
@@ -89,8 +96,6 @@ bse_loopback_class_destroy (BseLoopbackClass *class)
 static void
 bse_loopback_init (BseLoopback *loopback)
 {
-  loopback->mchunk = NULL;
-  loopback->schunk = NULL;
 }
 
 static void
@@ -105,20 +110,15 @@ bse_loopback_do_shutdown (BseObject *object)
 }
 
 #define N_STATIC_BLOCKS (17) /* FIXME: need n_blocks_per_second() */
-
+BseSampleValue *debug = NULL;
 static void
 bse_loopback_prepare (BseSource *source,
 		     BseIndex   index)
 {
-  BseLoopback *loopback = BSE_LOOPBACK (source);
-
-  loopback->mchunk = bse_chunk_new (1);
-  memset (loopback->mchunk->hunk, BSE_MAX_SAMPLE_VALUE, sizeof (BseSampleValue) * BSE_TRACK_LENGTH);
-  loopback->mchunk->hunk_filled = TRUE;
-
-  loopback->schunk = bse_chunk_new (2);
-  memset (loopback->schunk->hunk, BSE_MAX_SAMPLE_VALUE, sizeof (BseSampleValue) * BSE_TRACK_LENGTH * 2);
-  loopback->schunk->hunk_filled = TRUE;
+  // BseLoopback *loopback = BSE_LOOPBACK (source);
+  BseChunk *dummy = bse_chunk_new_static_zero (1);
+  debug = dummy->hunk;
+  bse_chunk_unref (dummy);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
@@ -128,45 +128,49 @@ static BseChunk*
 bse_loopback_calc_chunk (BseSource *source,
 			 guint      ochannel_id)
 {
-  BseLoopback *loopback = BSE_LOOPBACK (source);
+  // BseLoopback *loopback = BSE_LOOPBACK (source);
   BseSourceInput *input;
-  BseChunk *chunk = NULL;
+  guint ichannel_id = 0;
 
   /* FIXME: drop delay */
 
   if (ochannel_id == BSE_LOOPBACK_OCHANNEL_MONO)
-    {
-      chunk = loopback->mchunk;
-      input = bse_source_get_input (source, BSE_LOOPBACK_ICHANNEL_MONO);
-      if (input)
-	loopback->mchunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-      else
-	loopback->mchunk = bse_chunk_new_static_zero (1);
-    }
+    ichannel_id = BSE_LOOPBACK_ICHANNEL_MONO;
   else if (ochannel_id == BSE_LOOPBACK_OCHANNEL_STEREO)
-    {
-      chunk = loopback->schunk;
-      input = bse_source_get_input (source, BSE_LOOPBACK_ICHANNEL_STEREO);
-      if (input)
-	loopback->schunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-      else
-	loopback->schunk = bse_chunk_new_static_zero (2);
-    }
+    ichannel_id = BSE_LOOPBACK_ICHANNEL_STEREO;
   else
     g_assert_not_reached ();
 
-  return chunk;
+  input = bse_source_get_input (source, ichannel_id);
+  if (input)
+    {
+      BseChunk *chunk;
+
+      /* make sure there is a chunk calculated, so we can fetch it through
+       * the history on our next roundtrip
+       */
+      chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
+      bse_chunk_unref (chunk);
+
+      /* fetch history chunk from last roundtrip
+       */
+      chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index - 1);
+
+      if (chunk->hunk == debug)
+	{
+	  g_print ("loopback to static zero\n");
+	}
+
+      return chunk;
+    }
+  else
+    return bse_chunk_new_static_zero (ochannel_id == BSE_LOOPBACK_ICHANNEL_STEREO ? 2 : 1);
 }
 
 static void
 bse_loopback_reset (BseSource *source)
 {
-  BseLoopback *loopback = BSE_LOOPBACK (source);
-
-  bse_chunk_unref (loopback->mchunk);
-  loopback->mchunk = NULL;
-  bse_chunk_unref (loopback->schunk);
-  loopback->schunk = NULL;
+  // BseLoopback *loopback = BSE_LOOPBACK (source);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);

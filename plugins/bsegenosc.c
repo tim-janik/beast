@@ -385,13 +385,16 @@ bse_gen_osc_set_param (BseGenOsc *gosc,
       /* fall through */
     case PARAM_SINE:
       wave++;
-      gosc->wave = param->value.v_bool ? wave : BSE_GEN_OSC_SINE;
-      bse_gen_osc_update_locals (gosc);
-      bse_object_param_changed (BSE_OBJECT (gosc), "sine_table");
-      bse_object_param_changed (BSE_OBJECT (gosc), "gsaw_table");
-      bse_object_param_changed (BSE_OBJECT (gosc), "ssaw_table");
-      bse_object_param_changed (BSE_OBJECT (gosc), "pulse_table");
-      bse_object_param_changed (BSE_OBJECT (gosc), "triangle_table");
+      if (param->value.v_bool)
+	{
+	  gosc->wave = wave;
+	  bse_gen_osc_update_locals (gosc);
+	  bse_object_param_changed (BSE_OBJECT (gosc), "sine_table");
+	  bse_object_param_changed (BSE_OBJECT (gosc), "gsaw_table");
+	  bse_object_param_changed (BSE_OBJECT (gosc), "ssaw_table");
+	  bse_object_param_changed (BSE_OBJECT (gosc), "pulse_table");
+	  bse_object_param_changed (BSE_OBJECT (gosc), "triangle_table");
+	}
       break;
     case PARAM_PHASE:
       gosc->phase = param->value.v_float;
