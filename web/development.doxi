@@ -19,7 +19,7 @@ overall track keeping, the release specific
 @unnumbered Web Site Development
 
 Most of the BEAST website is kept in CVS, to aid development, here're
-various validatior results:
+various validator results:
 
 @itemize
 @item @uref{http://jigsaw.w3.org/css-validator/validator?uri=http://beast.gtk.org,

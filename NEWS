@@ -18,6 +18,7 @@ Overview of Changes in BEAST/BSE 0.5.5:
 * Support NetBSD sound device names [Ben Collver]
 * Added i18n infrastrukture for BEAST and BSE [Christian Neumair, Tim Janik]
 * Made search paths for various resources user configurable
+* Added Swedish translation [Christian Rose]
 * First German translation efforts
 * Lots of bug fixes
 
