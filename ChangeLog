@@ -1,3 +1,7 @@
+Fri Nov 28 00:55:55 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/cxxbinding.cc: Don't mention SFI in the license.
+
 Fri Nov 28 03:27:55 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: nullify notebook on destruction, so we don't operate

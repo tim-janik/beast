@@ -1,4 +1,4 @@
-/* SFI - Synthesis Fusion Kit Interface
+/*
  * Copyright (C) 2003 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
