@@ -19,6 +19,7 @@
 #define __BSE_TRACK_H__
 
 #include	<bse/bseitem.h>
+#include	<bse/bsesnet.h>
 
 G_BEGIN_DECLS
 
@@ -80,7 +81,7 @@ void	bse_track_remove_modules	(BseTrack		*self,
 void	bse_track_clone_voices		(BseTrack		*self,
 					 BseSNet		*snet,
 					 guint			 context,
-                                         BseMidiReceiver        *midi_receiver,
+                                         BseMidiContext          mcontext,
 					 GslTrans		*trans);
 guint        	 bse_track_insert_part	(BseTrack		*self,
 					 guint			 tick,

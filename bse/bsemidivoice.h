@@ -50,25 +50,27 @@ struct _BseMidiVoiceInput
 {
   BseSource	parent_object;
 
-  BseMidiReceiver *midi_receiver;
-  guint		   midi_channel;
-
-  SfiRing	  *midi_voices;
+  BseMidiVoiceSwitch *voice_switch;
 };
 struct _BseMidiVoiceSwitch
 {
-  BseSource	parent_object;
-
-  BseMidiVoiceInput *voice_input;
+  BseSource      parent_object;
+  guint		 midi_channel;
+  GSList        *midi_voices;
 };
 
 
 /* --- prototypes --- */
-void	bse_midi_voice_input_set_midi_receiver	(BseMidiVoiceInput	*self,
-						 BseMidiReceiver	*midi_receiver,
+void	bse_midi_voice_switch_set_midi_channel	(BseMidiVoiceSwitch	*self,
 						 guint			 midi_channel);
-void	bse_midi_voice_switch_set_voice_input	(BseMidiVoiceSwitch	*self,
-						 BseMidiVoiceInput	*voice_input);
+guint   bse_midi_voice_switch_ref_midi_voice    (BseMidiVoiceSwitch     *self,
+                                                 guint                   context_handle,
+                                                 GslTrans               *trans);
+void    bse_midi_voice_switch_unref_midi_voice  (BseMidiVoiceSwitch     *self,
+                                                 guint                   context_handle,
+                                                 GslTrans               *trans);
+void	bse_midi_voice_input_set_voice_switch	(BseMidiVoiceInput	*self,
+						 BseMidiVoiceSwitch	*voice_switch);
 
 
 /* --- channels --- */

@@ -41,7 +41,6 @@ struct _BseSubSynth
   BseSNet	  *snet;
   gchar		  *input_ports[BSE_SUB_SYNTH_N_IOPORTS];
   gchar		  *output_ports[BSE_SUB_SYNTH_N_IOPORTS];
-  BseMidiReceiver *midi_receiver;
   guint            midi_channel;
   guint            null_shortcut : 1;
 };
@@ -52,11 +51,12 @@ struct _BseSubSynthClass
 
 
 /* --- prototypes --- */
-void    bse_sub_synth_set_midi_receiver  (BseSubSynth     *self,
-					  BseMidiReceiver *midi_receiver,
-					  guint            midi_channel);
+/* whether to shortcut inputs with outputs for snet==NULL */
 void    bse_sub_synth_set_null_shortcut  (BseSubSynth     *self,
                                           gboolean         enabled);
+/* override midi_channel for snet, or if midi_channel==0 inherit from parent */
+void    bse_sub_synth_set_midi_channel   (BseSubSynth     *self,
+                                          guint            midi_channel);
 
 
 G_END_DECLS

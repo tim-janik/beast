@@ -1,3 +1,33 @@
+Thu Sep  4 18:55:56 2003  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.[hc]: introduce BseMidiContext structure which holds
+	the midi_receiver, midi_channel, etc. for a (synthesis) context.
+	changed context creation, branch cloning and midi-retrival API
+	to use BseMidiContext.
+
+	* bsemidivoice.[hc]: give the voice input a voice switch handle,
+	rather than the other way around. allocate midi voice from voice
+	switch code, and for midi channel of voice switch module. got
+	rid of midi_receiver references by means of BseMidiContext usage.
+
+	* bsesubsynth.[hc]: forgo midi-receiver reference, use BseMidiContext.
+	allow midi-channel overriding for sub snets.
+
+	* bsetrack.[hc]: fix code according to voice input/switch changes.
+	use BseMidiContext, fix midi-channel updates.
+
+	* bsesong.c:
+	* bseproject.c:
+	* bsemonokeyboard.c:
+	* bsemidiicontroller.c: BseMidiContext related fixes.
+
+	* bsemidisynth.c: adapt to new midi voice input/switch code.
+	fix midi channel handling. BseMidiContext related fixes.
+
+	* bsemidireceiver.c: assert midi_channel and voice_id to be >= 1.
+
+	* bsemidievent.c: assert midi_channel to be >= 1.
+
 Thu Sep  4 14:34:36 2003  Tim Janik  <timj@gtk.org>
 
 	* bsenote.[hc]: newly added files. these take over note utility

@@ -742,6 +742,7 @@ bse_song_context_create (BseSource *source,
 {
   BseSong *self = BSE_SONG (source);
   BseSNet *snet = BSE_SNET (self);
+  BseMidiContext mcontext = bse_snet_get_midi_context (snet, context_handle);
   SfiRing *ring;
 
   /* chain parent class' handler */
@@ -749,7 +750,7 @@ bse_song_context_create (BseSource *source,
 
   if (!bse_snet_context_is_branch (snet, context_handle))       /* catch recursion */
     for (ring = self->tracks_SL; ring; ring = sfi_ring_walk (ring, self->tracks_SL))
-      bse_track_clone_voices (ring->data, snet, context_handle, self->midi_receiver_SL, trans);
+      bse_track_clone_voices (ring->data, snet, context_handle, mcontext, trans);
 }
 
 static void

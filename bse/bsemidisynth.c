@@ -48,23 +48,25 @@ enum
 
 
 /* --- prototypes --- */
-static void	bse_midi_synth_class_init	 (BseMidiSynthClass	*class);
-static void	bse_midi_synth_init		 (BseMidiSynth		*msynth);
-static void	bse_midi_synth_finalize		 (GObject		*object);
-static void	bse_midi_synth_set_property	 (GObject		*object,
-						  guint			 param_id,
-						  const GValue		*value,
-						  GParamSpec		*pspec);
-static void	bse_midi_synth_get_property	 (GObject		*msynth,
-						  guint			 param_id,
-						  GValue		*value,
-						  GParamSpec		*pspec);
-static BseProxySeq* bse_midi_synth_list_proxies  (BseItem		*item,
-						  guint			 param_id,
-						  GParamSpec		*pspec);
-static void	bse_midi_synth_context_create	 (BseSource		*source,
-						  guint			 context_handle,
-						  GslTrans		*trans);
+static void         bse_midi_synth_class_init          (BseMidiSynthClass *class);
+static void         bse_midi_synth_init                (BseMidiSynth      *msynth);
+static void         bse_midi_synth_finalize            (GObject           *object);
+static void         bse_midi_synth_set_property        (GObject           *object,
+                                                        guint              param_id,
+                                                        const GValue      *value,
+                                                        GParamSpec        *pspec);
+static void         bse_midi_synth_get_property        (GObject           *msynth,
+                                                        guint              param_id,
+                                                        GValue            *value,
+                                                        GParamSpec        *pspec);
+static BseProxySeq* bse_midi_synth_list_proxies        (BseItem           *item,
+                                                        guint              param_id,
+                                                        GParamSpec        *pspec);
+static void         bse_midi_synth_context_create      (BseSource         *source,
+                                                        guint              context_handle,
+                                                        GslTrans          *trans);
+static void         bse_misi_synth_update_midi_channel (BseMidiSynth      *self);
+
 
 
 /* --- variables --- */
@@ -178,7 +180,7 @@ bse_midi_synth_init (BseMidiSynth *self)
   bse_snet_intern_child (snet, self->voice_input);
   self->voice_switch = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
   bse_snet_intern_child (snet, self->voice_switch);
-  bse_midi_voice_switch_set_voice_input (BSE_MIDI_VOICE_SWITCH (self->voice_switch), BSE_MIDI_VOICE_INPUT (self->voice_input));
+  bse_midi_voice_input_set_voice_switch (BSE_MIDI_VOICE_INPUT (self->voice_input), BSE_MIDI_VOICE_SWITCH (self->voice_switch));
   
   /* context merger */
   self->context_merger = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_CONTEXT_MERGER, NULL);
@@ -243,6 +245,19 @@ bse_midi_synth_init (BseMidiSynth *self)
                              self->sub_synth, 1);
   bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_DISCONNECT,
                              self->sub_synth, 3);
+
+  bse_misi_synth_update_midi_channel (self);
+}
+
+static void
+bse_misi_synth_update_midi_channel (BseMidiSynth      *self)
+{
+  if (self->voice_switch)
+    {
+      bse_sub_synth_set_midi_channel (BSE_SUB_SYNTH (self->sub_synth), self->midi_channel_id);
+      bse_sub_synth_set_midi_channel (BSE_SUB_SYNTH (self->postprocess), self->midi_channel_id);
+      bse_midi_voice_switch_set_midi_channel (BSE_MIDI_VOICE_SWITCH (self->voice_switch), self->midi_channel_id);
+    }
 }
 
 static void
@@ -357,7 +372,10 @@ bse_midi_synth_set_property (GObject      *object,
       break;
     case PROP_MIDI_CHANNEL:
       if (!BSE_SOURCE_PREPARED (self))	/* midi channel is locked while prepared */
-	self->midi_channel_id = sfi_value_get_int (value);
+        {
+          self->midi_channel_id = sfi_value_get_int (value);
+          bse_misi_synth_update_midi_channel (self);
+        }
       break;
     case PROP_N_VOICES:
       if (!BSE_OBJECT_IS_LOCKED (self))
@@ -442,11 +460,9 @@ bse_midi_synth_context_create (BseSource *source,
   
   if (!bse_snet_context_is_branch (snet, context_handle))	/* catch recursion */
     {
-      BseMidiReceiver *mrec;
-      guint i, midi_channel;
-      
-      mrec = bse_snet_get_midi_receiver (snet, context_handle, &midi_channel);
+      BseMidiContext mcontext = bse_snet_get_midi_context (snet, context_handle);
+      guint i;
       for (i = 0; i < self->n_voices; i++)
-	bse_snet_context_clone_branch (snet, context_handle, self->context_merger, mrec, midi_channel, trans);
+	bse_snet_context_clone_branch (snet, context_handle, self->context_merger, mcontext, trans);
     }
 }

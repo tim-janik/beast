@@ -72,26 +72,27 @@ struct _BseSNetClass
 {
   BseSuperClass parent_class;
 };
+struct _BseMidiContext {
+  BseMidiReceiver *midi_receiver;
+  guint            midi_channel;
+};
 
 
 /* --- prototypes --- */
 guint            bse_snet_create_context        (BseSNet         *snet,
-                                                 BseMidiReceiver *midi_receiver,
-                                                 guint            midi_channel,
+                                                 BseMidiContext   mcontext,
                                                  GslTrans        *trans);
 guint            bse_snet_context_clone_branch  (BseSNet         *self,
                                                  guint            context,
                                                  BseSource       *context_merger,
-                                                 BseMidiReceiver *midi_receiver,
-                                                 guint            midi_channel,
+                                                 BseMidiContext   mcontext,
                                                  GslTrans        *trans);
 gboolean         bse_snet_context_is_branch     (BseSNet         *self,
                                                  guint            context_id);
 void             bse_snet_intern_child          (BseSNet         *self,
                                                  gpointer         child);
-BseMidiReceiver* bse_snet_get_midi_receiver     (BseSNet         *snet,
-                                                 guint            context_handle,
-                                                 guint           *midi_channel);
+BseMidiContext   bse_snet_get_midi_context      (BseSNet         *snet,
+                                                 guint            context_handle);
 const gchar*     bse_snet_iport_name_register   (BseSNet         *snet,
                                                  const gchar     *tmpl_name);
 gboolean         bse_snet_iport_name_registered (BseSNet         *snet,

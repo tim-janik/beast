@@ -193,9 +193,11 @@ bse_mono_keyboard_context_create (BseSource *source,
   ModuleData *mdata = g_new (ModuleData, 1);
   GslModule *module = gsl_module_new_virtual (BSE_MONO_KEYBOARD_N_OCHANNELS, mdata, module_data_free);
   BseItem *parent = BSE_ITEM (self)->parent;
+  BseMidiContext mcontext = bse_snet_get_midi_context (BSE_SNET (parent), context_handle);
 
   /* setup module data */
-  mdata->midi_receiver = bse_snet_get_midi_receiver (BSE_SNET (parent), context_handle, &mdata->default_channel);
+  mdata->midi_receiver = mcontext.midi_receiver;
+  mdata->default_channel = mcontext.midi_channel;
   mdata->midi_channel = self->midi_channel > 0 ? self->midi_channel : mdata->default_channel;
   mdata->msynth_module = bse_midi_receiver_retrieve_mono_synth (mdata->midi_receiver,
                                                                 mdata->midi_channel,

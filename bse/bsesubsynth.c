@@ -194,7 +194,6 @@ bse_sub_synth_do_dispose (GObject *object)
       g_object_unref (self->snet);
       self->snet = NULL;
     }
-  bse_sub_synth_set_midi_receiver (self, NULL, 0);
   for (i = 0; i < BSE_SUB_SYNTH_N_IOPORTS; i++)
     {
       g_free (self->input_ports[i]);
@@ -358,18 +357,12 @@ bse_sub_synth_get_property (GObject    *object,
 }
 
 void
-bse_sub_synth_set_midi_receiver (BseSubSynth     *self,
-				 BseMidiReceiver *midi_receiver,
-				 guint            midi_channel)
+bse_sub_synth_set_midi_channel (BseSubSynth     *self,
+                                guint            midi_channel)
 {
   g_return_if_fail (BSE_IS_SUB_SYNTH (self));
   
-  if (self->midi_receiver)
-    bse_midi_receiver_unref (self->midi_receiver);
-  self->midi_receiver = midi_receiver;
   self->midi_channel = midi_channel;
-  if (self->midi_receiver)
-    bse_midi_receiver_ref (self->midi_receiver);
 }
 
 void
@@ -407,16 +400,12 @@ bse_sub_synth_context_create (BseSource *source,
     }
   else if (snet)
     {
-      BseMidiReceiver *midi_receiver = self->midi_receiver;
-      guint midi_channel = self->midi_channel;
-      
-      if (!midi_receiver)
-	{
-	  BseItem *parent = BSE_ITEM (self)->parent;
-	  midi_receiver = bse_snet_get_midi_receiver (BSE_SNET (parent), context_handle, &midi_channel);
-	}
+      BseItem *parent = BSE_ITEM (self)->parent;
+      BseMidiContext mcontext = bse_snet_get_midi_context (BSE_SNET (parent), context_handle);
+      if (self->midi_channel)
+	mcontext.midi_channel = self->midi_channel;
       recursion_stack = g_slist_prepend (recursion_stack, self);
-      foreign_context_handle = bse_snet_create_context (snet, midi_receiver, midi_channel, trans);
+      foreign_context_handle = bse_snet_create_context (snet, mcontext, trans);
       recursion_stack = g_slist_remove (recursion_stack, self);
       g_assert (foreign_context_handle > 0);
     }

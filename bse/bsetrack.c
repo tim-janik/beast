@@ -478,7 +478,8 @@ bse_track_set_property (GObject      *object,
 	}
       break;
     case PROP_N_SYNTH_VOICES:
-      self->max_voices = sfi_value_get_int (value);
+      if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
+        self->max_voices = sfi_value_get_int (value);
       break;
     case PROP_MIDI_CHANNEL:
       i = sfi_value_get_int (value);
@@ -716,7 +717,6 @@ bse_track_add_modules (BseTrack        *self,
   /* midi voice input */
   self->voice_input = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_INPUT, NULL);
   bse_item_set_internal (self->voice_input, TRUE);
-  bse_midi_voice_input_set_midi_receiver (BSE_MIDI_VOICE_INPUT (self->voice_input), midi_receiver, self->midi_channel_SL);
   
   /* sub synth */
   self->sub_synth = bse_container_new_child (container, BSE_TYPE_SUB_SYNTH,
@@ -745,8 +745,8 @@ bse_track_add_modules (BseTrack        *self,
   /* midi voice switch */
   self->voice_switch = bse_container_new_child (container, BSE_TYPE_MIDI_VOICE_SWITCH, NULL);
   bse_item_set_internal (self->voice_switch, TRUE);
-  bse_midi_voice_switch_set_voice_input (BSE_MIDI_VOICE_SWITCH (self->voice_switch), BSE_MIDI_VOICE_INPUT (self->voice_input));
-  
+  bse_midi_voice_input_set_voice_switch (BSE_MIDI_VOICE_INPUT (self->voice_input), BSE_MIDI_VOICE_SWITCH (self->voice_switch));
+
   /* sub-synth <-> voice switch */
   bse_source_must_set_input (self->voice_switch, BSE_MIDI_VOICE_SWITCH_ICHANNEL_LEFT,
 			     self->sub_synth, 0);
@@ -785,17 +785,11 @@ bse_track_add_modules (BseTrack        *self,
 static void
 bse_track_update_midi_channel (BseTrack *self)
 {
-  if (self->voice_input)
+  if (self->voice_switch)
     {
-      BseMidiVoiceInput *voice_input = BSE_MIDI_VOICE_INPUT (self->voice_input);
-      /* rather than keeping track of the midi_receiver we last set, steal receiver from voice_input module */
-      BseMidiReceiver *midi_receiver = voice_input->midi_receiver;
-      if (midi_receiver)
-        {
-          bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->sub_synth), midi_receiver, self->midi_channel_SL);
-          bse_sub_synth_set_midi_receiver (BSE_SUB_SYNTH (self->postprocess), midi_receiver, self->midi_channel_SL);
-          bse_midi_voice_input_set_midi_receiver (BSE_MIDI_VOICE_INPUT (self->voice_input), midi_receiver, self->midi_channel_SL);
-        }
+      bse_sub_synth_set_midi_channel (BSE_SUB_SYNTH (self->sub_synth), self->midi_channel_SL);
+      bse_sub_synth_set_midi_channel (BSE_SUB_SYNTH (self->postprocess), self->midi_channel_SL);
+      bse_midi_voice_switch_set_midi_channel (BSE_MIDI_VOICE_SWITCH (self->voice_switch), self->midi_channel_SL);
     }
 }
 
@@ -820,20 +814,20 @@ bse_track_remove_modules (BseTrack     *self,
 }
 
 void
-bse_track_clone_voices (BseTrack        *self,
-			BseSNet         *snet,
-			guint            context,
-                        BseMidiReceiver *midi_receiver,
-			GslTrans        *trans)
+bse_track_clone_voices (BseTrack       *self,
+			BseSNet        *snet,
+			guint           context,
+                        BseMidiContext  mcontext,
+			GslTrans       *trans)
 {
   guint i;
   
   g_return_if_fail (BSE_IS_TRACK (self));
   g_return_if_fail (BSE_IS_SNET (snet));
   g_return_if_fail (trans != NULL);
-  
+
   for (i = 0; i < self->max_voices - 1; i++)
-    bse_snet_context_clone_branch (snet, context, self->context_merger, midi_receiver, self->midi_channel_SL, trans);
+    bse_snet_context_clone_branch (snet, context, self->context_merger, mcontext, trans);
 }
 
 static void

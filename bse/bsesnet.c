@@ -771,8 +771,7 @@ free_context_data (BseSource *source,
 
 guint
 bse_snet_create_context (BseSNet         *self,
-			 BseMidiReceiver *midi_receiver,
-			 guint		  midi_channel,
+                         BseMidiContext   mcontext,
 			 GslTrans        *trans)
 {
   ContextData *cdata;
@@ -780,13 +779,13 @@ bse_snet_create_context (BseSNet         *self,
   
   g_return_val_if_fail (BSE_IS_SNET (self), 0);
   g_return_val_if_fail (BSE_SOURCE_PREPARED (self), 0);
-  g_return_val_if_fail (midi_receiver != NULL, 0);
+  g_return_val_if_fail (mcontext.midi_receiver != NULL, 0);
   g_return_val_if_fail (trans != NULL, 0);
   
   cid = bse_id_alloc ();
   g_return_val_if_fail (bse_source_has_context (BSE_SOURCE (self), cid) == FALSE, 0);
   
-  cdata = create_context_data (self, cid, 0, midi_receiver, midi_channel);
+  cdata = create_context_data (self, cid, 0, mcontext.midi_receiver, mcontext.midi_channel);
   bse_source_create_context_with_data (BSE_SOURCE (self), cid, cdata, free_context_data, trans);
   
   return cid;
@@ -796,8 +795,7 @@ guint
 bse_snet_context_clone_branch (BseSNet         *self,
 			       guint            context,
 			       BseSource       *context_merger,
-			       BseMidiReceiver *midi_receiver,
-			       guint            midi_channel,
+                               BseMidiContext   mcontext,
 			       GslTrans        *trans)
 {
   SfiRing *ring;
@@ -809,7 +807,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
   g_return_val_if_fail (BSE_IS_CONTEXT_MERGER (context_merger), 0);
   g_return_val_if_fail (bse_source_has_context (context_merger, context), 0);
   g_return_val_if_fail (BSE_ITEM (context_merger)->parent == BSE_ITEM (self), 0);
-  g_return_val_if_fail (midi_receiver != NULL, 0);
+  g_return_val_if_fail (mcontext.midi_receiver != NULL, 0);
   g_return_val_if_fail (trans != NULL, 0);
   
   ring = bse_source_collect_inputs_recursive (context_merger);
@@ -824,7 +822,7 @@ bse_snet_context_clone_branch (BseSNet         *self,
       self->tmp_context_children = g_slist_prepend (self->tmp_context_children, context_merger);
       bse_source_free_collection (ring);
       bcid = bse_id_alloc ();
-      cdata = create_context_data (self, bcid, context, midi_receiver, midi_channel);
+      cdata = create_context_data (self, bcid, context, mcontext.midi_receiver, mcontext.midi_channel);
       bse_source_create_context_with_data (BSE_SOURCE (self), bcid, cdata, free_context_data, trans);
       g_assert (self->tmp_context_children == NULL);
     }
@@ -869,19 +867,22 @@ snet_context_children (BseContainer *container)
   return slist;
 }
 
-BseMidiReceiver*
-bse_snet_get_midi_receiver (BseSNet *self,
-			    guint    context_handle,
-			    guint   *midi_channel)
+BseMidiContext
+bse_snet_get_midi_context (BseSNet *self,
+                           guint    context_handle)
 {
+  BseMidiContext mcontext = { 0, };
   ContextData *cdata;
-  
-  g_return_val_if_fail (BSE_IS_SNET (self), 0);
+
+  g_return_val_if_fail (BSE_IS_SNET (self), mcontext);
   
   cdata = find_context_data (self, context_handle);
-  if (midi_channel)
-    *midi_channel = cdata ? cdata->midi_channel : 0;
-  return cdata ? cdata->midi_receiver : NULL;
+  if (cdata)
+    {
+      mcontext.midi_receiver = cdata->midi_receiver;
+      mcontext.midi_channel = cdata->midi_channel;
+    }
+  return mcontext;
 }
 
 static void

@@ -693,8 +693,11 @@ bse_project_activate (BseProject *self)
       BseSuper *super = BSE_SUPER (slist->data);
       if (BSE_SUPER_NEEDS_CONTEXT (super))
 	{
-	  BseSNet *snet = BSE_SNET (super);	// FIXME: merge this snet functionality into super
-	  super->context_handle = bse_snet_create_context (snet, self->midi_receiver, 1, trans);
+          BseMidiContext mcontext = { 0, 0, 0 };
+	  BseSNet *snet = BSE_SNET (super);
+          mcontext.midi_receiver = self->midi_receiver;
+          mcontext.midi_channel = 1; /* midi channel default */
+	  super->context_handle = bse_snet_create_context (snet, mcontext, trans);
 	  bse_source_connect_context (BSE_SOURCE (snet), super->context_handle, trans);
 	}
       else
@@ -727,8 +730,11 @@ bse_project_start_playback (BseProject *self)
 	   BSE_SUPER_NEEDS_SEQUENCER_CONTEXT (super)) &&
 	  super->context_handle == ~0)
 	{
-	  BseSNet *snet = BSE_SNET (super);	// FIXME: merge this snet functionality into super
-	  super->context_handle = bse_snet_create_context (snet, self->midi_receiver, 1, trans);
+          BseMidiContext mcontext = { 0, 0, 0 };
+          BseSNet *snet = BSE_SNET (super);
+          mcontext.midi_receiver = self->midi_receiver;
+          mcontext.midi_channel = 1; /* midi channel default */
+          super->context_handle = bse_snet_create_context (snet, mcontext, trans);
 	  bse_source_connect_context (BSE_SOURCE (snet), super->context_handle, trans);
 	  seen_synth++;
 	}

@@ -910,6 +910,7 @@ bse_midi_receiver_retrieve_control_module (BseMidiReceiver  *self,
   guint i;
   
   g_return_val_if_fail (self != NULL, NULL);
+  g_return_val_if_fail (midi_channel > 0, NULL);
   g_return_val_if_fail (signals != NULL, NULL);
   
   BSE_MIDI_RECEIVER_LOCK (self);
@@ -991,6 +992,7 @@ bse_midi_receiver_retrieve_mono_synth (BseMidiReceiver *self,
   guint i;
   
   g_return_val_if_fail (self != NULL, NULL);
+  g_return_val_if_fail (midi_channel > 0, NULL);
   
   BSE_MIDI_RECEIVER_LOCK (self);
   for (i = 0; i < self->n_msynths; i++)
@@ -1054,7 +1056,8 @@ bse_midi_receiver_create_voice (BseMidiReceiver *self,
 {
   guint i;
   
-  g_return_val_if_fail (self != NULL, G_MAXUINT);
+  g_return_val_if_fail (self != NULL, 0);
+  g_return_val_if_fail (midi_channel > 0, 0);
   
   BSE_MIDI_RECEIVER_LOCK (self);
   /* find free voice slot */
@@ -1070,49 +1073,53 @@ bse_midi_receiver_create_voice (BseMidiReceiver *self,
   self->pvoices[i] = create_midi_voice (midi_channel, trans);
   BSE_MIDI_RECEIVER_UNLOCK (self);
   
-  return i;
+  return i + 1;
 }
 
 void
 bse_midi_receiver_discard_voice (BseMidiReceiver *self,
-				 guint            nth_voice,
+				 guint            voice_id,
 				 GslTrans        *trans)
 {
   BseMidiVoice *voice;
 
   g_return_if_fail (self != NULL);
-  g_return_if_fail (nth_voice < self->n_pvoices);
-  
+  g_return_if_fail (voice_id > 0);
+  g_return_if_fail (voice_id <= self->n_pvoices);
+  voice_id -= 1;
+
   BSE_MIDI_RECEIVER_LOCK (self);
-  voice = self->pvoices[nth_voice];
+  voice = self->pvoices[voice_id];
   if (!voice)
     {
       BSE_MIDI_RECEIVER_UNLOCK (self);
-      g_warning ("MIDI receiver %p has no voice %u", self, nth_voice);
+      g_warning ("MIDI receiver %p has no voice %u", self, voice_id);
       return;
     }
   g_return_if_fail (voice->ref_count > 0);
   voice->ref_count--;
   if (!voice->ref_count)
     {
-      destroy_midi_voice (self->pvoices[nth_voice], trans);
-      self->pvoices[nth_voice] = NULL;
+      destroy_midi_voice (self->pvoices[voice_id], trans);
+      self->pvoices[voice_id] = NULL;
     }
   BSE_MIDI_RECEIVER_UNLOCK (self);
 }
 
 GslModule*
 bse_midi_receiver_get_note_module (BseMidiReceiver *self,
-                                   guint            nth_voice)
+                                   guint            voice_id)
 {
   BseMidiVoice *voice;
   GslModule *module;
   
   g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (nth_voice < self->n_pvoices, NULL);
+  g_return_val_if_fail (voice_id > 0, NULL);
+  g_return_val_if_fail (voice_id <= self->n_pvoices, NULL);
+  voice_id -= 1;
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  voice = self->pvoices[nth_voice];
+  voice = self->pvoices[voice_id];
   module = voice ? voice->fmodule : NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
   
@@ -1121,16 +1128,18 @@ bse_midi_receiver_get_note_module (BseMidiReceiver *self,
 
 GslModule*
 bse_midi_receiver_get_input_module (BseMidiReceiver *self,
-                                    guint            nth_voice)
+                                    guint            voice_id)
 {
   BseMidiVoice *voice;
   GslModule *module;
   
   g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (nth_voice < self->n_pvoices, NULL);
+  g_return_val_if_fail (voice_id > 0, NULL);
+  g_return_val_if_fail (voice_id <= self->n_pvoices, NULL);
+  voice_id -= 1;
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  voice = self->pvoices[nth_voice];
+  voice = self->pvoices[voice_id];
   module = voice ? voice->smodule : NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
   
@@ -1139,16 +1148,18 @@ bse_midi_receiver_get_input_module (BseMidiReceiver *self,
 
 GslModule*
 bse_midi_receiver_get_output_module (BseMidiReceiver *self,
-                                     guint            nth_voice)
+                                     guint            voice_id)
 {
   BseMidiVoice *voice;
   GslModule *module;
   
   g_return_val_if_fail (self != NULL, NULL);
-  g_return_val_if_fail (nth_voice < self->n_pvoices, NULL);
+  g_return_val_if_fail (voice_id > 0, NULL);
+  g_return_val_if_fail (voice_id <= self->n_pvoices, NULL);
+  voice_id -= 1;
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  voice = self->pvoices[nth_voice];
+  voice = self->pvoices[voice_id];
   module = voice ? voice->omodule : NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
   
@@ -1163,6 +1174,7 @@ bse_midi_receiver_voices_pending (BseMidiReceiver *self,
   guint i, active = 0;
 
   g_return_val_if_fail (self != NULL, FALSE);
+  g_return_val_if_fail (midi_channel > 0, FALSE);
 
   if (self->events)
     return TRUE;
