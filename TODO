@@ -1,4 +1,7 @@
 FIXME(urgent):
+- loading bsewave overrides mixing frequencies from wav-file chunks with the default bsewave mix frequency
+  (should only happen if mixfreq is specified per chunk)
+- create track with own bus, use wave as instrument, save/load: track is added to master though it has its own bus
 - fix beast argument parser: beast foo.notexistant doesn't give an error message
 - ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
