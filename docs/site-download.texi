@@ -15,6 +15,7 @@ Publically consumable releases can be found via ftp:
 @* Or alternatively via http:
 @uref{http://beast.gtk.org/beast-ftp/}.
 
+@anchor{requirements}
 @unnumbered Requirements
 
 To get a basic start, you'll also need Gtk+-2.2, a recent version

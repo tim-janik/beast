@@ -35,11 +35,13 @@
 @unnumbered Miscellaneous related pages
 
 @itemize
-@item @uref{http://www.advogato.org/proj/BEAST%20-%20BSE/,, BEAST at Advogato}
 @item @uref{http://freshmeat.net/projects/beastbse/,, BEAST at Freshmeat}
-@item @uref{http://www.gnome.org/softwaremap/projects/beast/,, BEAST at the GNOME application repository}
+@item @uref{http://gnomefiles.org/app.php?soft_id=276,, BEAST at GnomeFiles}
+@item @uref{http://www.advogato.org/proj/BEAST%20-%20BSE/,, BEAST at Advogato}
+@item @uref{http://cia.navi.cx/stats/project/gnome/beast,, BEAST at the CIA Open Source Notification System}
+@c @item @uref{http://www.gnome.org/softwaremap/projects/beast/,, BEAST at the GNOME application repository}
 @c login for GNOME Admin Repo: http://www.gnome.org/account/login.php
-@item @uref{http://cvs.gnome.org/lxr/source/beast/,, BEAST in the GNOME CVS repository}
+@item @uref{http://cvs.gnome.org/viewcvs/beast/,, BEAST in the GNOME CVS repository}
 @end itemize
 
 
