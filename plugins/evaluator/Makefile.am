@@ -10,7 +10,7 @@ plugindir = $(bseplugindir)
 SFIDL = ../../sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 %.gen-idl.h: %.idl $(SFIDL)
-	$(SFIDL) --core-cxx $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
+	$(SFIDL) --plugin $(SFIDL_INC) -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 CLEANFILES += $(plugins_built_sources)
 
 EVALUATE_SOURCES = instruction.cc compiler.cc cpu.cc
