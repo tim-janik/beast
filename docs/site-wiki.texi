@@ -9,7 +9,7 @@
 @navigation{navigation.xml}
 
 PHPX<?php
-include(``../ewiki-recent/config.php'');
+include(``../ewiki-current/config.php'');
 echo ewiki_page();
 ?>XPHP
 
