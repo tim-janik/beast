@@ -1,3 +1,7 @@
+Sun Sep 21 04:42:33 2003  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am (libbseinclude_HEADERS): include bse.idl.
+
 Tue Sep  9 05:22:07 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecxxutils.h: implemented binary-search templates.
