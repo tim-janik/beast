@@ -206,11 +206,14 @@ bst_part_dialog_init (BstPartDialog *self)
   g_signal_connect_swapped (gxk_gadget_find (gadget, "configure-button"), "clicked",
                             G_CALLBACK (bst_pattern_column_layouter_popup), self->pview);
   box = gxk_gadget_find (gadget, "pattern-control-box");
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "name"));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, NULL));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, "name"));
   gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, NULL));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "name"));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, NULL));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->hwrap, NULL));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
 
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);

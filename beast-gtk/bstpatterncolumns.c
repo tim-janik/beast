@@ -22,6 +22,10 @@
 
 
 /* --- defines --- */
+/* checks */
+#define ISSPACE(c)      ((c) == ' ' || ((c) >= '\t' && (c) <= '\r'))
+#define ISDIGIT(c)      ((c) >= '0' && (c) <= '9')
+#define ISHEXDIGIT(c)   (ISDIGIT (c) || ((c) >= 'A' && (c) <= 'Z') || ((c) >= 'a' && (c) <= 'z'))
 /* accessors */
 #define STYLE(self)             (GTK_WIDGET (self)->style)
 #define STATE(self)             (GTK_WIDGET (self)->state)
@@ -182,10 +186,12 @@ pattern_column_note_key_event (BstPatternColumn       *column,
                                guint                   tick,
                                guint                   duration,
                                GdkRectangle           *cell_rect,
+                               gint                    focus_pos,
                                guint                   keyval,
                                GdkModifierType         modifier,
-                               BstPatternAction        action,
-                               gdouble                 param)
+                               BstPatternFunction      action,
+                               gdouble                 param,
+                               BstPatternFunction     *movement)
 {
   // BstPatternColumnNote *self = (BstPatternColumnNote*) column;
   SfiProxy proxy = pview->proxy;
@@ -194,8 +200,10 @@ pattern_column_note_key_event (BstPatternColumn       *column,
   switch (action)
     {
     case BST_PATTERN_REMOVE_EVENTS:
+      bse_item_group_undo (proxy, "Remove Events");
       for (i = 0; i < pseq->n_pnotes; i++)
         bse_part_delete_event (proxy, pseq->pnotes[i]->id);
+      bse_item_ungroup_undo (proxy);
       return TRUE;
     case BST_PATTERN_SET_NOTE:
       if (pseq->n_pnotes == 1)
@@ -221,13 +229,14 @@ pattern_column_note_finalize (BstPatternColumn *column)
 }
 
 static BstPatternColumnClass pattern_column_note_class = {
-  1,  /* n_focus_positions */
+  1,    /* n_focus_positions */
   sizeof (BstPatternColumnNote),
   NULL, /* init */
   pattern_column_note_create_font_desc,
   pattern_column_note_width_request,
   pattern_column_note_draw_cell,
   NULL, /* get_focus_pos */
+  1,    /* collision_group */
   pattern_column_note_key_event,
   pattern_column_note_finalize,
 };
@@ -283,25 +292,38 @@ control_get_max (guint num_type,
 }
 
 static guint
-control_to_string (BstPatternLFlags lflags,
-                   gchar            buffer[64],
-                   gfloat           value,
-                   gchar            placeholder)
+control_get_digit_increment (guint num_type,
+                             guint nth_digits)
 {
-  gboolean is_signed  = (lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
-  guint num_type = lflags & BST_PATTERN_LFLAG_NUM_MASK;
-  guint n_digits = MIN (9, 1 + (lflags & BST_PATTERN_LFLAG_DIGIT_MASK));
+  g_assert (nth_digits > 0);
+  if (num_type == BST_PATTERN_LFLAG_DEC)
+    return pow (10, nth_digits - 1);
+  else /* if (num_type == BST_PATTERN_LFLAG_HEX) */
+    return pow (16, nth_digits - 1);
+}
 
+static guint
+pattern_column_event_to_string (BstPatternColumn *column,
+                                gchar             buffer[64],
+                                BsePartControl   *pctrl,
+                                gchar             placeholder,
+                                guint            *ivalue_p)
+{
+  gboolean is_signed  = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
+  guint num_type = column->lflags & BST_PATTERN_LFLAG_NUM_MASK;
+  guint n_digits = MIN (9, 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK));
   if (placeholder)
     {
       memset (buffer, placeholder, 64);
       buffer[n_digits + is_signed] = 0;
+      if (ivalue_p)
+        *ivalue_p = 0;
     }
   else
     {
       const gchar *format;
       gchar *p = buffer;
-      gint ival = control_get_max (num_type, n_digits) * value;
+      gint ival = control_get_max (num_type, n_digits) * pctrl->value;
       if (num_type == BST_PATTERN_LFLAG_DEC)
         {
           static const char *formats[] = { "%1u", "%2u", "%3u", "%4u", "%5u", "%6u", "%7u", "%8u", "%9u" };
@@ -315,8 +337,83 @@ control_to_string (BstPatternLFlags lflags,
       if (is_signed)
         *p++ = ival == 0 ? ' ' : ival > 0 ? '+' : '-';
       g_snprintf (p, 63, format, ABS (ival));
+      if (ivalue_p)
+        *ivalue_p = ival;
     }
   return is_signed + n_digits;
+}
+
+static gfloat
+pattern_column_event_value_from_int (BstPatternColumn *column,
+                                     gint              ivalue)
+{
+  guint num_type = column->lflags & BST_PATTERN_LFLAG_NUM_MASK;
+  guint n_digits = MIN (9, 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK));
+  double value = ivalue;
+  value /= control_get_max (num_type, n_digits);
+  /* to avoid rounding artefacts, we need to fudge values away from zero.
+   * since our effective input precision is 16bit (0xffff) and pristine
+   * float precision is 23 bit, we fudge around the 20th bit.
+   */
+  value += value < 0 ? -0.000001 : +0.000001;
+  return CLAMP (value, -1, +1);
+}
+
+static gint
+pattern_column_event_ivalue_from_string (BstPatternColumn *column,
+                                         const gchar      *string)
+{
+  guint num_type = column->lflags & BST_PATTERN_LFLAG_NUM_MASK;
+  guint n_digits = MIN (9, 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK));
+  gboolean is_hex = num_type == BST_PATTERN_LFLAG_HEX;
+  gchar *stripped = g_strdup (string), *s = stripped;
+  gint ival, i, vmax = control_get_max (num_type, n_digits);
+  for (i = 0; string[i]; i++)
+    if (!ISSPACE (string[i]))
+      *s++ = string[i];
+  *s = 0;
+  ival = g_ascii_strtoull (stripped, NULL, is_hex ? 16 : 10);
+  g_free (stripped);
+  return CLAMP (ival, -vmax, vmax);
+}
+
+static gfloat
+pattern_column_event_value_from_string (BstPatternColumn *column,
+                                        const gchar      *string)
+{
+  gint ival = pattern_column_event_ivalue_from_string (column, string);
+  return pattern_column_event_value_from_int (column, ival);
+}
+
+static BsePartControl*
+pattern_column_event_lookup (BstPatternColumn   *column,
+                             BstPatternView     *pview,
+                             guint               tick,
+                             guint               duration,
+                             BsePartControlSeq **cseq_p,
+                             gchar              *placeholder_p)
+{
+  BsePartControl *pctrl = NULL;
+  BsePartControlSeq *cseq;
+  if (column->ltype == BST_PATTERN_LTYPE_VELOCITY)
+    cseq = bse_part_get_channel_controls (pview->proxy, column->num, tick, duration, BSE_MIDI_SIGNAL_VELOCITY);
+  else if (column->ltype == BST_PATTERN_LTYPE_FINE_TUNE)
+    cseq = bse_part_get_channel_controls (pview->proxy, column->num, tick, duration, BSE_MIDI_SIGNAL_FINE_TUNE);
+  else
+    cseq = bse_part_list_controls (pview->proxy, tick, duration, BSE_MIDI_SIGNAL_CONTINUOUS_0 + column->num);
+  if ((!cseq || cseq->n_pcontrols < 1) && placeholder_p)
+    *placeholder_p = '-';
+  else if (cseq && cseq->n_pcontrols == 1)
+    {
+      pctrl = cseq->pcontrols[0];
+      if (placeholder_p)
+        *placeholder_p = 0;
+    }
+  else if (cseq && cseq->n_pcontrols > 1 && placeholder_p)
+    *placeholder_p = '*';
+  if (cseq_p)
+    *cseq_p = cseq;
+  return pctrl;
 }
 
 static void
@@ -332,25 +429,13 @@ pattern_column_event_draw_cell (BstPatternColumn       *column,
   BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
   GdkGC *dark_gc = STYLE (pview)->dark_gc[GTK_STATE_NORMAL];
   GdkGC *black_gc = STYLE (pview)->black_gc;
-  GdkGC *draw_gc;
-  SfiProxy proxy = pview->proxy;
-  BsePartControlSeq *cseq;
-  BsePartControl *pctrl;
-  gint i, n, accu, yline;
+  gchar placeholder;
+  BsePartControl *pctrl = pattern_column_event_lookup (column, pview, tick, duration, NULL, &placeholder);
   gchar buffer[64] = { 0, };
+  guint n = pattern_column_event_to_string (column, buffer, pctrl, placeholder, NULL);
+  GdkGC *draw_gc = pctrl ? black_gc : dark_gc;
+  gint i, yline, accu = crect->x + FOCUS_WIDTH (pview) + 1;
 
-  if (column->ltype == BST_PATTERN_LTYPE_VELOCITY)
-    cseq = proxy ? bse_part_get_channel_controls (proxy, column->num, tick, duration, BSE_MIDI_SIGNAL_VELOCITY) : NULL;
-  else if (column->ltype == BST_PATTERN_LTYPE_FINE_TUNE)
-    cseq = proxy ? bse_part_get_channel_controls (proxy, column->num, tick, duration, BSE_MIDI_SIGNAL_FINE_TUNE) : NULL;
-  else
-    cseq = proxy ? bse_part_list_controls (proxy, tick, duration, BSE_MIDI_SIGNAL_CONTINUOUS_0 + column->num) : NULL;
-  pctrl = cseq && cseq->n_pcontrols == 1 ? cseq->pcontrols[0] : NULL;
-  n = control_to_string (column->lflags, buffer, pctrl ? pctrl->value : 0,
-                         cseq && cseq->n_pcontrols > 1 ? '*' : pctrl ? 0 : '-');
-
-  draw_gc = pctrl ? black_gc : dark_gc;
-  accu = crect->x + FOCUS_WIDTH (pview) + 1;
   for (i = 0; i < n; i++)
     {
       PangoRectangle irect, prect;
@@ -391,12 +476,77 @@ pattern_column_event_key_event (BstPatternColumn       *column,
                                 guint                   tick,
                                 guint                   duration,
                                 GdkRectangle           *cell_rect,
+                                gint                    focus_pos,
                                 guint                   keyval,
                                 GdkModifierType         modifier,
-                                BstPatternAction        action,
-                                gdouble                 param)
+                                BstPatternFunction      action,
+                                gdouble                 param,
+                                BstPatternFunction     *movement)
 {
-  return FALSE;
+  guint num_type = column->lflags & BST_PATTERN_LFLAG_NUM_MASK;
+  guint n_digits = MIN (9, 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK));
+  gboolean is_signed = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
+  SfiProxy proxy = pview->proxy;
+  gchar placeholder;
+  BsePartControlSeq *cseq;
+  BsePartControl *pctrl = pattern_column_event_lookup (column, pview, tick, duration, &cseq, &placeholder);
+  gchar buffer[64] = { 0, };
+  gint ivalue, handled = FALSE;
+  pattern_column_event_to_string (column, buffer, pctrl, placeholder, &ivalue);
+  if (action == BST_PATTERN_REMOVE_EVENTS)
+    {
+      guint i;
+      bse_item_group_undo (proxy, "Remove Events");
+      for (i = 0; i < (cseq ? cseq->n_pcontrols : 0); i++)
+        bse_part_delete_event (proxy, cseq->pcontrols[i]->id);
+      bse_item_ungroup_undo (proxy);
+      handled = TRUE;
+    }
+  else if (pctrl && focus_pos < strlen (buffer) && !(modifier & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
+    {
+      gfloat value = 0;
+      gchar *newstr = g_strdup (buffer);
+      switch (action)
+        {
+        case BST_PATTERN_SET_DIGIT:
+          if (!is_signed || focus_pos > 0)
+            {
+              guint digit = column->n_focus_positions - focus_pos;
+              gint dmax = control_get_max (num_type, 1);
+              if (ISHEXDIGIT (newstr[focus_pos]))
+                {
+                  newstr[focus_pos] = '0';
+                  ivalue = pattern_column_event_ivalue_from_string (column, newstr);
+                }
+              ivalue += MIN (param, dmax) * control_get_digit_increment (num_type, digit);
+              value = pattern_column_event_value_from_int (column, ivalue);
+            }
+          handled = TRUE;
+          break;
+        case BST_PATTERN_NUMERIC_CHANGE:
+          if (is_signed && focus_pos == 0)
+            {
+              newstr[focus_pos] = param < 0 ? '-' : '+';
+              value = pattern_column_event_value_from_string (column, newstr);
+            }
+          else
+            {
+              guint digit = column->n_focus_positions - focus_pos;
+              gint newvalue = ivalue + param * control_get_digit_increment (num_type, digit);
+              gint dmax = control_get_max (num_type, n_digits);
+              if (ABS (newvalue) <= dmax && (is_signed || newvalue >= 0))
+                ivalue = newvalue;
+              value = pattern_column_event_value_from_int (column, ivalue);
+            }
+          handled = TRUE;
+          break;
+        default: ;
+        }
+      if (handled)
+        bse_part_change_control (proxy, pctrl->id, pctrl->tick, pctrl->control_type, value);
+      g_free (newstr);
+    }
+  return handled;
 }
 
 static void
@@ -407,13 +557,14 @@ pattern_column_event_finalize (BstPatternColumn *column)
 }
 
 static BstPatternColumnClass pattern_column_event_class = {
-  1,  /* n_focus_positions */
+  1,    /* n_focus_positions */
   sizeof (BstPatternColumnEvent),
   pattern_column_event_init,
   pattern_column_event_create_font_desc,
   pattern_column_event_width_request,
   pattern_column_event_draw_cell,
   pattern_column_event_get_focus_pos,
+  2,    /* collision_group */
   pattern_column_event_key_event,
   pattern_column_event_finalize,
 };
@@ -474,6 +625,7 @@ static BstPatternColumnClass pattern_column_vbar_class = {
   pattern_column_vbar_width_request,
   pattern_column_vbar_draw_cell,
   NULL, /* get_focus_pos */
+  0,    /* collision_group */
   NULL, /* key_event */
   pattern_column_vbar_finalize,
 };
@@ -645,7 +797,7 @@ bst_pattern_layout_parse_column (const gchar      *string,
     {
       const gchar *p = string;
       gchar *mem;
-      while (string[0] >= '0' && string[0] <= '9')
+      while (ISDIGIT (string[0]))
         string++;
       if (string == p)
         return string;  /* failed */
@@ -717,4 +869,10 @@ bst_pattern_column_create (BstPatternLType   ltype,
   if (class->init)
     class->init (column);
   return column;
+}
+
+gboolean
+bst_pattern_column_has_notes (BstPatternColumn *column)
+{
+  return column->klass == &pattern_column_note_class;
 }

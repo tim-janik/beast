@@ -28,19 +28,32 @@ typedef enum /*< skip >*/
   BST_PATTERN_NONE                = 0,
   /* events */
   BST_PATTERN_REMOVE_EVENTS,
-  /* notes */
   BST_PATTERN_SET_NOTE,           /* #note */
-  BST_PATTERN_SET_CONF_NOTE,      /* #note */
-  /* octaves */
   BST_PATTERN_SET_OCTAVE,         /* #octave */
-  BST_PATTERN_CHANGE_OCTAVE,      /* #octave */
-  /* fine tune */
-  BST_PATTERN_SET_FINE_TUNE,      /* -100 .. +100 */
-  BST_PATTERN_CHANGE_FINE_TUNE,   /* -100 .. +100 */
-  /* values (and velocity) */
-  BST_PATTERN_SET_VALUE,          /* -1 .. +1 */
-  BST_PATTERN_CHANGE_VALUE,       /* -1 .. +1 */
-} BstPatternAction;
+  BST_PATTERN_NUMERIC_CHANGE,     /* -32 .. +32 */
+  BST_PATTERN_SET_DIGIT,          /* 0 .. +32 */
+#define BST_PATTERN_MASK_ACTION    (0x000000ff)
+  /* base octave */
+  BST_PATTERN_SET_BASE_OCTAVE     = 0x1 << 8,
+  BST_PATTERN_CHANGE_BASE_OCTAVE  = 0x2 << 8,
+#define BST_PATTERN_MASK_CONTROLS  (0x0000ff00)
+  /* focus movement */
+  BST_PATTERN_MOVE_LEFT           = 0x1 << 16,
+  BST_PATTERN_MOVE_RIGHT          = 0x2 << 16,
+  BST_PATTERN_MOVE_UP             = 0x3 << 16,
+  BST_PATTERN_MOVE_DOWN           = 0x4 << 16,
+  BST_PATTERN_PAGE_LEFT           = 0x5 << 16,
+  BST_PATTERN_PAGE_RIGHT          = 0x6 << 16,
+  BST_PATTERN_PAGE_UP             = 0x7 << 16,
+  BST_PATTERN_PAGE_DOWN           = 0x8 << 16,
+  BST_PATTERN_JUMP_LEFT           = 0x9 << 16,
+  BST_PATTERN_JUMP_RIGHT          = 0xa << 16,
+  BST_PATTERN_JUMP_TOP            = 0xb << 16,
+  BST_PATTERN_JUMP_BOTTOM         = 0xc << 16,
+  BST_PATTERN_MOVE_NEXT           = 0xd << 16,
+  BST_PATTERN_SET_STEP_WIDTH      = 0xe << 16,
+#define BST_PATTERN_MASK_MOVEMENT  (0x00ff0000)
+} BstPatternFunction;
 
 
 /* --- typedefs & structures --- */
@@ -87,6 +100,7 @@ struct _BstPatternColumnClass
                                                  gint                    focus_pos,
                                                  gint                   *pos_x,
                                                  gint                   *pos_width);
+  guint                   collision_group;
   gboolean              (*key_event)            (BstPatternColumn       *self,
                                                  BstPatternView         *pview,
                                                  GdkWindow              *drawable,
@@ -94,10 +108,12 @@ struct _BstPatternColumnClass
                                                  guint                   tick,
                                                  guint                   duration,
                                                  GdkRectangle           *cell_rect,
+                                                 gint                    focus_pos,
                                                  guint                   keyval,
                                                  GdkModifierType         modifier,
-                                                 BstPatternAction        action,
-                                                 gdouble                 param);
+                                                 BstPatternFunction      action,
+                                                 gdouble                 param,
+                                                 BstPatternFunction     *movement);
   void                  (*finalize)             (BstPatternColumn       *self);
 };
 
@@ -138,6 +154,7 @@ const gchar*      bst_pattern_layout_parse_column   (const gchar      *string,
 BstPatternColumn* bst_pattern_column_create         (BstPatternLType   ltype,
                                                      gint              num,
                                                      BstPatternLFlags  lflags);
+gboolean          bst_pattern_column_has_notes      (BstPatternColumn *column);
 
 G_END_DECLS
 

@@ -32,7 +32,8 @@ typedef enum /*< skip >*/
   BST_KEY_BINDING_PARAM_0_p1,           /* +0.0 - +1.0 */
   BST_KEY_BINDING_PARAM_m1_0,           /* -1.0 - +0.0 */
   BST_KEY_BINDING_PARAM_PERC,           /* +0.0 - +100.0 */
-  BST_KEY_BINDING_PARAM_OCTAVE,         /* -4   - +6 */
+  BST_KEY_BINDING_PARAM_SHORT,          /*  -32 - +32 */
+  BST_KEY_BINDING_PARAM_USHORT,         /*    0 - +32 */
   BST_KEY_BINDING_PARAM_NOTE,           /* midi note */
 } BstKeyBindingParam;
 typedef struct {
@@ -40,6 +41,7 @@ typedef struct {
   gchar *function_name;
   BstKeyBindingParam ptype;
   gchar *function_blurb;        /* translated */
+  guint  collision_group;
 } BstKeyBindingFunction;
 typedef struct {
   guint           keyval;
@@ -66,14 +68,17 @@ void                         bst_key_binding_box_set      (GtkWidget            
 BstKeyBindingItemSeq*        bst_key_binding_box_get      (GtkWidget                   *self);
 BstKeyBindingKey*            bst_key_binding_lookup_key   (BstKeyBinding               *kbinding,
                                                            guint                        keyval,
-                                                           GdkModifierType              modifier);
+                                                           GdkModifierType              modifier,
+                                                           guint                        collision_group);
 const BstKeyBindingFunction* bst_key_binding_lookup       (BstKeyBinding               *kbinding,
                                                            guint                        keyval,
                                                            GdkModifierType              modifier,
+                                                           guint                        collision_group,
                                                            gdouble                     *param);
 guint                        bst_key_binding_lookup_id    (BstKeyBinding               *kbinding,
                                                            guint                        keyval,
                                                            GdkModifierType              modifier,
+                                                           guint                        collision_group,
                                                            gdouble                     *param);
 void                         bst_key_binding_set_item_seq (BstKeyBinding               *kbinding,
                                                            BstKeyBindingItemSeq        *seq);

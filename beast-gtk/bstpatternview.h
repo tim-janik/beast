@@ -136,8 +136,9 @@ BstPatternColumn* bst_pattern_view_get_focus_cell  (BstPatternView            *s
 gboolean          bst_pattern_view_dispatch_key    (BstPatternView            *self,
                                                     guint                      keyval,
                                                     GdkModifierType            modifier,
-                                                    BstPatternAction           action,
-                                                    gdouble                    param);
+                                                    BstPatternFunction         action,
+                                                    gdouble                    param,
+                                                    BstPatternFunction        *movement);
 gint              bst_pattern_view_get_last_row    (BstPatternView            *self);
 const gchar*      bst_pattern_view_get_layout      (BstPatternView            *self);
 guint             bst_pattern_view_set_layout      (BstPatternView            *self,

@@ -1,3 +1,23 @@
+Tue Feb 24 07:51:04 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterncolumns.[hc]: added focus-position to key
+	event handlers. undo-group event removals. implemented control
+	cell editing.
+
+	* beast-gtk/bstpatterncolumns.[hc]: added hwrap parameter for focus cell
+	movement around edges. rewrote key lookup to honour piano vs. generic
+	key bindings and pattern-column specific collision groups. implemented
+	step-width handling via key bindings. rearranged key binding functions
+	and default bindings. simplified bindings by handling shift as movement
+	blocker automatically. 
+
+	* beast-gtk/bstkeybindings.[hc]: provide SHORT/USHORT parameters
+	instead of OCTAVE parameter. added collision-group handling so
+	keys can be setup for multiple functions from different collision
+	groups. throw messages for unknown key functions.
+
+	* beast-gtk/bstpartdialog.c: added HWrap widget.
+
 Tue Feb 24 04:05:59 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* docs/sfidl.1.texi: Updated sfidl manual page.

@@ -802,8 +802,9 @@ gboolean
 bst_pattern_view_dispatch_key (BstPatternView            *self,
                                guint                      keyval,
                                GdkModifierType            modifier,
-                               BstPatternAction           action,
-                               gdouble                    param)
+                               BstPatternFunction         action,
+                               gdouble                    param,
+                               BstPatternFunction        *movement)
 {
   GdkRectangle rect;
   guint focus_col = self->focus_col;
@@ -818,8 +819,8 @@ bst_pattern_view_dispatch_key (BstPatternView            *self,
       if (col->klass->key_event &&
           col->klass->key_event (col, self, CANVAS (self),
                                  pattern_view_column_pango_layout (self, col),
-                                 tick, duration, &rect,
-                                 keyval, modifier, action, param))
+                                 tick, duration, &rect, focus_col - col->focus_base,
+                                 keyval, modifier, action, param, movement))
         return TRUE;
     }
   return FALSE;

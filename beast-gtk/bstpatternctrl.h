@@ -22,34 +22,10 @@
 
 G_BEGIN_DECLS
 
-typedef enum /*< skip >*/
-{
-  /* 0xff reserved for BstPatternAction values */
-#define BST_PATTERN_MASK_ACTION    (0x000000ff)
-  /* base octave */
-  BST_PATTERN_SET_BASE_OCTAVE     = 0x1 << 8,
-  BST_PATTERN_CHANGE_BASE_OCTAVE  = 0x2 << 8,
-#define BST_PATTERN_MASK_CONTROLS  (0x0000ff00)
-  /* focus movement */
-  BST_PATTERN_MOVE_LEFT           = 0x1 << 16,
-  BST_PATTERN_MOVE_RIGHT          = 0x2 << 16,
-  BST_PATTERN_MOVE_UP             = 0x3 << 16,
-  BST_PATTERN_MOVE_DOWN           = 0x4 << 16,
-  BST_PATTERN_PAGE_LEFT           = 0x5 << 16,
-  BST_PATTERN_PAGE_RIGHT          = 0x6 << 16,
-  BST_PATTERN_PAGE_UP             = 0x7 << 16,
-  BST_PATTERN_PAGE_DOWN           = 0x8 << 16,
-  BST_PATTERN_JUMP_LEFT           = 0x9 << 16,
-  BST_PATTERN_JUMP_RIGHT          = 0xa << 16,
-  BST_PATTERN_JUMP_TOP            = 0xb << 16,
-  BST_PATTERN_JUMP_BOTTOM         = 0xc << 16,
-  BST_PATTERN_MOVE_NEXT           = 0xd << 16,
-#define BST_PATTERN_MASK_MOVEMENT  (0x00ff0000)
-} BstPatternFunction;
-
 typedef struct {
   GxkParam        *steps;
   GxkParam        *step_dir;
+  GxkParam        *hwrap;
   /* misc data */
   guint            ref_count;
   BstPatternView  *pview;

@@ -62,11 +62,14 @@ static const GxkStockAction key_bindings_actions[] = {
 static inline guint
 key_binding_find_key (BstKeyBinding  *kbinding,
                       guint           keyval,
-                      GdkModifierType modifier)
+                      GdkModifierType modifier,
+                      guint           collision_group,
+                      guint           exception)
 {
   guint i;
   for (i = 0; i < kbinding->n_keys; i++)
-    if (kbinding->keys[i].keyval == keyval && kbinding->keys[i].modifier == modifier)
+    if (kbinding->keys[i].keyval == keyval && kbinding->keys[i].modifier == modifier && i != exception &&
+        kbinding->funcs[kbinding->keys[i].func_index].collision_group == collision_group)
       return i;
   return G_MAXINT;
 }
@@ -88,7 +91,7 @@ key_bindings_exec_action (gpointer data,
       GdkModifierType modifier;
       guint           keyval;
       gboolean valid;
-      guint i, nf, nb;
+      guint nb, nf;
     case ACTION_ADD:
       tsel = gtk_tree_view_get_selection (ftview);
       if (gtk_tree_selection_get_selected (tsel, &model, &iter))
@@ -105,7 +108,7 @@ key_bindings_exec_action (gpointer data,
       else
         nb = kbinding->n_keys;
       valid = bst_key_combo_popup (kbinding->funcs[nf].function_name, &keyval, &modifier);
-      valid &= key_binding_find_key (kbinding, keyval, modifier) >= kbinding->n_keys;
+      valid &= key_binding_find_key (kbinding, keyval, modifier, kbinding->funcs[nf].collision_group, ~0) >= kbinding->n_keys;
       if (valid)
         {
           kbinding->keys = g_realloc (kbinding->keys, sizeof (kbinding->keys[0]) * (kbinding->n_keys + 1));
@@ -119,7 +122,7 @@ key_bindings_exec_action (gpointer data,
           kbinding->keys[nb].param = 0;
           gxk_list_wrapper_notify_insert (GXK_LIST_WRAPPER (model), nb);
           gxk_tree_view_select_index (btview, nb);
-#if 0   /* usefull for entering movement bindings, not notes */
+#if 0     /* usefull for entering movement bindings, not notes */
           if (nf + 1 < kbinding->n_funcs)
             gxk_tree_view_select_index (ftview, nf + 1);
 #endif
@@ -137,10 +140,9 @@ key_bindings_exec_action (gpointer data,
         }
       else
         break;
-      valid = bst_key_combo_popup (kbinding->funcs[kbinding->keys[nb].func_index].function_name, &keyval, &modifier);
-      for (i = 0; valid && i < kbinding->n_keys; i++)
-        if (i != nb && kbinding->keys[i].keyval == keyval && kbinding->keys[i].modifier == modifier)
-          valid = FALSE;
+      nf = kbinding->keys[nb].func_index;
+      valid = bst_key_combo_popup (kbinding->funcs[nf].function_name, &keyval, &modifier);
+      valid &= key_binding_find_key (kbinding, keyval, modifier, kbinding->funcs[nf].collision_group, nb) >= kbinding->n_keys;
       if (valid)
         {
           kbinding->keys[nb].keyval = keyval;
@@ -251,7 +253,8 @@ key_binding_clamp_param (BstKeyBindingParam ptype,
     case BST_KEY_BINDING_PARAM_0_p1:    return CLAMP (param, 0, 1);
     case BST_KEY_BINDING_PARAM_m1_0:    return CLAMP (param, -1, 0);
     case BST_KEY_BINDING_PARAM_PERC:    return CLAMP (param, 0, 100);
-    case BST_KEY_BINDING_PARAM_OCTAVE:  return (gint) CLAMP (param, -4, +6);
+    case BST_KEY_BINDING_PARAM_SHORT:   return (gint) CLAMP (param, -32, +32);
+    case BST_KEY_BINDING_PARAM_USHORT:  return (gint) CLAMP (param, 0, +32);
     case BST_KEY_BINDING_PARAM_NOTE:    return SFI_NOTE_CLAMP ((gint) param);
     default:                            return 0;
     }
@@ -316,7 +319,8 @@ key_binding_fill_binding_value (GtkWidget      *self,
         case BST_KEY_BINDING_PARAM_0_p1:        str = g_strdup_printf ("% .7f", param);         break;
         case BST_KEY_BINDING_PARAM_m1_0:        str = g_strdup_printf ("%+.7f", param);         break;
         case BST_KEY_BINDING_PARAM_PERC:        str = g_strdup_printf ("% 3.2f", param);        break;
-        case BST_KEY_BINDING_PARAM_OCTAVE:      str = g_strdup_printf ("% d", (gint) param);    break;
+        case BST_KEY_BINDING_PARAM_SHORT:       str = g_strdup_printf ("% d", (gint) param);    break;
+        case BST_KEY_BINDING_PARAM_USHORT:      str = g_strdup_printf ("% d", (gint) param);    break;
         case BST_KEY_BINDING_PARAM_NOTE:        str = sfi_note_to_string (param);               break;
         default:                                str = g_strdup ("");                            break;
         }
@@ -445,14 +449,16 @@ bst_key_binding_box_get (GtkWidget *self)
 BstKeyBindingKey*
 bst_key_binding_lookup_key (BstKeyBinding  *kbinding,
                             guint           keyval,
-                            GdkModifierType modifier)
+                            GdkModifierType modifier,
+                            guint           collision_group)
 {
   guint i;
   keyval = gdk_keyval_to_lower (keyval);
   modifier &= GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK;
   for (i = 0; i < kbinding->n_keys; i++)
     if (kbinding->keys[i].keyval == keyval &&
-        kbinding->keys[i].modifier == modifier)
+        kbinding->keys[i].modifier == modifier &&
+        kbinding->funcs[kbinding->keys[i].func_index].collision_group == collision_group)
       return &kbinding->keys[i];
   return NULL;
 }
@@ -461,9 +467,10 @@ const BstKeyBindingFunction*
 bst_key_binding_lookup (BstKeyBinding   *kbinding,
                         guint            keyval,
                         GdkModifierType  modifier,
+                        guint            collision_group,
                         gdouble         *param)
 {
-  BstKeyBindingKey *key = bst_key_binding_lookup_key (kbinding, keyval, modifier);
+  BstKeyBindingKey *key = bst_key_binding_lookup_key (kbinding, keyval, modifier, collision_group);
   if (param)
     *param = key ? key->param : 0;
   return key ? &kbinding->funcs[key->func_index] : NULL;
@@ -473,9 +480,10 @@ guint
 bst_key_binding_lookup_id (BstKeyBinding   *kbinding,
                            guint            keyval,
                            GdkModifierType  modifier,
+                           guint            collision_group,
                            gdouble         *param)
 {
-  const BstKeyBindingFunction *func = bst_key_binding_lookup (kbinding, keyval, modifier, param);
+  const BstKeyBindingFunction *func = bst_key_binding_lookup (kbinding, keyval, modifier, collision_group, param);
   return func ? func->id : 0;
 }
 
@@ -511,6 +519,8 @@ bst_key_binding_set_item_seq (BstKeyBinding        *kbinding,
           key->param = key_binding_clamp_param (kbinding->funcs[key->func_index].ptype, seq->items[i]->func_param);
           key++;
         }
+      else
+        g_message ("ignoring unknown key-binding function: %s", seq->items[i]->func_name);
     }
   /* admit registration */
   kbinding->n_keys = key - kbinding->keys;
