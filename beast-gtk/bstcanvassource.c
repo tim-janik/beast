@@ -319,7 +319,8 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
 
       param_view = bst_param_view_new (bse_object_from_id (csource->source));
       gtk_widget_show (param_view);
-      csource->source_view = bst_adialog_new (GTK_OBJECT (csource), &csource->source_view, param_view, 0, NULL);
+      csource->source_view = bst_adialog_new (GTK_OBJECT (csource), &csource->source_view, param_view,
+					      BST_ADIALOG_POPUP_POS, NULL);
       source_name_changed (csource);
     }
   gtk_widget_showraise (csource->source_view);
@@ -399,7 +400,8 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 										     "xpad", 5,
 										     NULL),
 							    NULL),
-					    0, NULL);
+					    BST_ADIALOG_POPUP_POS,
+					    NULL);
   csource_info_update (csource);
   source_name_changed (csource);
   gtk_widget_showraise (csource->source_info);

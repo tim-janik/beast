@@ -817,7 +817,12 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      handled = TRUE;
 	    }
 	  else if (csource && csource->source != router->snet)
-	    bst_canvas_source_toggle_view (csource);
+	    {
+	      if (event->button.state & GDK_SHIFT_MASK)
+		bst_canvas_source_toggle_info (csource);
+	      else
+		bst_canvas_source_toggle_view (csource);
+	    }
 	  else if (clink && !csource)
 	    bst_canvas_link_toggle_view (clink);
 	}

@@ -1,3 +1,13 @@
+Tue Jan 15 17:41:28 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: popup the info window of a synth module
+	upon shift+button1.
+
+Mon Jan 14 15:46:26 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/reference/mkdocs.pl: applied patch from
+	Alper Ersoy <dirt@tfz.net>, to produce html output with --html.
+
 Sat Jan 12 11:21:10 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterneditor.c (bst_pattern_editor_init): disable debugging

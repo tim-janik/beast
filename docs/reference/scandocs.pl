@@ -11,6 +11,7 @@ use POSIX "strftime";
 my $pname = "Foo-Manual";
 my $pblurb = "Official Foo Manual";
 my $package = "FooFactory";
+my $outmode = "man";
 
 # parse options
 while ($_ = $ARGV[0], defined $_ && /^-/) {
@@ -19,6 +20,8 @@ while ($_ = $ARGV[0], defined $_ && /^-/) {
     if (/^--name$/) { $pname = shift; }
     elsif (/^--blurb$/) { $pblurb = shift; }
     elsif (/^--package$/) { $package = shift; }
+    elsif (/^--html/) { $outmode = 'html'; }
+    elsif (/^--man/) { $outmode = 'man'; }
 }
 
 # construct tmpfile name
@@ -218,11 +221,66 @@ sub man_print_description {
     print ".PD 1\n.PP\n" . man_highlight ($rec->{text}) . "\n.PD\n";
 }
 
+sub html_print_syntax {
+    my $rec = shift;
+    my $var_names = $rec->{var_names};
+    my $var_blurbs = $rec->{var_blurbs};
+    my $returns = $rec->{returns};
+    my $i;
+
+    print '<strong>'.$rec->{name}.' (</strong>';
+    for ($i = 0; $i <= $#$var_names; $i++) {
+	print '<u>'.$$var_names[$i].'</u>';
+	print ", " if $i < $#$var_names;
+    }
+    print "<strong>)</strong>;\n";
+}
+sub html_highlight {
+    my $t = shift;
+    $t =~ s/@([A-Za-z0-9_-]+)/<u>$1<\/u>/g;
+    $t =~ s/%([A-Za-z0-9_-]+)/<u>$1<\/u>/g;
+    $t =~ s/#([A-Za-z0-9_-]+)/<strong>$1<\/strong>/g;
+    # $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/<strong>$1<\/strong>/g;
+    $t =~ s/([A-Za-z0-9_-]+\([+\/%&|^~!A-Za-z0-9\s,*_-]*\))/<strong>$1<\/strong>/g;
+    return $t;
+}
+sub html_print_description {
+    my $rec = shift;
+    my $var_types = $rec->{var_types};
+    my $var_names = $rec->{var_names};
+    my $var_blurbs = $rec->{var_blurbs};
+    my $returns = $rec->{returns};
+    my $i;
+    my $twidth = 0;
+    my $nwidth = 0;
+
+    print "<blockquote>\n";
+    html_print_syntax ($rec);
+
+    if (scalar(@$var_names) + scalar(@$returns) > 0) {
+	print "<blockquote>\n";
+	print "<table border=0 summary=\" \">\n";
+	for ($i = 0; $i <= $#$var_names; $i++) {
+	    my $t = $$var_types[$i];
+	    $t = "" if (!defined $t);
+	    printf("<tr><td><u>%s</u><td><u>%s</u><td>%s\n",
+	    $t, $$var_names[$i],
+	    html_highlight ($$var_blurbs[$i]));
+	}
+	for my $r (@$returns) {
+	    printf ("<tr><td colspan=2><u>%s</u><td>%s\n", "RETURNS:", html_highlight ($r));
+	}
+	print "</table>\n";
+	print "</blockquote>\n";
+    }
+    print "<blockquote>\n" . html_highlight ($rec->{text}) . "\n</blockquote>\n</blockquote>\n";
+}
+
 my %test_hash = ();
 my @dups = ();
 
-if (1) {
-    # .TH PRINTF "1" "July 2001" "GNU sh-utils 2.0.11" FSF
+if ($outmode eq 'man') {
+#     .TH PRINTF "1" "July 2001" "GNU sh-utils 2.0.11" FSF
     printf(".TH $pname 3 \"%s\" \"$package\" \n".
 	   ".SH NAME\n".
 	   "$pname \\- $pblurb\n".
@@ -239,6 +297,29 @@ if (1) {
 	man_print_description ($rec);
     }
     print "\n";
+} elsif ($outmode eq 'html') {
+    print "<html>\n<head>\n";
+    printf("<title>$pname - %s - $package</title>\n</head>\n<body>\n".
+	   "<h1>NAME</h1>\n".
+	   "<blockquote>$pname - $pblurb</blockquote>\n".
+	   "<h1>SYNOPSIS</h1>\n",
+	   strftime ("%02d %b %Y", localtime ()));
+    print "<blockquote>\n";
+    for my $rec (@records) {
+	html_print_syntax ($rec);
+	print "<br>\n";
+	push (@dups, $rec->{name}) if (defined $test_hash{$rec->{name}});
+	$test_hash{$rec->{name}} = 1;
+    }
+    print "</blockquote>\n";
+    printf('<h1>DESCRIPTION</h1>'."\n");
+    for my $rec (@records) {
+	html_print_description ($rec);
+    }
+    print "\n";
+    print "</body>\n</html>\n";
+} else {
+  die "Shite, don't know how to generate a $outmode!";
 }
 
 # provide feedback
