@@ -25,6 +25,16 @@ static SfiGlueContext *bse_context = NULL;
 using namespace Bse;
 using namespace std;
 
+void do_sleep (int seconds)
+{
+  /*
+   * sleeps at least the required time, even in the presence of signals
+   * for instance due to (gdb)
+   */
+  while (seconds > 0)
+    seconds = sleep (seconds);
+}
+
 int main(int argc, char **argv)
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
@@ -59,18 +69,18 @@ int main(int argc, char **argv)
 
   g_print ("server.get_custom_instrument_dir()=%s\n", server.get_custom_instrument_dir().c_str());
 
-  GConfigHandle prefs = GConfig::_from_rec (server.bse_preferences ());
+  GConfigHandle prefs = GConfig::from_rec (server.bse_preferences ());
   prefs->plugin_path = "./.libs/testplugin.so";
-  SfiRec *rec = GConfig::_to_rec (prefs);
+  SfiRec *rec = GConfig::to_rec (prefs);
   server.set_bse_preferences (rec);
   sfi_rec_unref (rec);
-  prefs = GConfig::_from_rec (server.bse_preferences());
+  prefs = GConfig::from_rec (server.bse_preferences());
 
   printf ("server.bse_preferences().plugin_path=%s\n", prefs->plugin_path.c_str());
   printf ("register core plugins...\n");
   server.register_core_plugins();
   printf ("waiting... (FIXME: need to connect to server signals here)\n");
-  sleep (2);
+  do_sleep (2);
   g_print ("done.\n");
 
   /* ... test plugin ... */

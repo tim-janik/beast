@@ -54,8 +54,8 @@ int main(int argc, char **argv)
     note_to_freq (60, 0);
 
   double t = gettime () - start;
-  printf ("%f seconds for %d invocations => %f invocations/second, %f ms per invocation\n",
-          t, MAX, MAX / t, t * 1000.0 / MAX);
+  printf ("%f seconds for %d invocations => %f invocations/second, %f sec per invocation\n",
+          t, MAX, MAX / t, t / MAX);
 
   sfi_glue_context_pop ();
 }

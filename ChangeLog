@@ -1,3 +1,14 @@
+Tue Jan 20 23:22:43 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/bstrecords.idl: Added "using namespace Sfi;".
+
+	* tests/testplugin.idl: New testcase for records/sequences.
+
+	* tests/cxxbinding.cc: Adapted to renames (due to record/sequence
+	binding in C++).
+
+	* tests/perftest.cc: From milliseconds to seconds.
+
 Tue Jan 20 05:09:07 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/testplugin.idl: Added "using namespace Sfi;".

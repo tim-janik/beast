@@ -29,6 +29,16 @@ choice FunkynessType {
   NON_FUNKY = (42, "No Funk At All"),
 };
 
+// test record
+record TestRecord {
+  Int           i;
+  String        str;
+  FunkynessType funky;
+};
+
+// adds i and str to the record given by rec
+// TestRecord record_add (TestRecord rec, Int i, String str);
+
 // test effect
 class TestObject : Bse::Effect {
   Info    category  = "/Test/Plugin";

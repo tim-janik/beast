@@ -17,6 +17,9 @@
  */
 
 namespace Bst {
+
+using namespace Sfi;
+
 /* BEAST Global Config */
 record GConfig {
   String rc_version			= (NULL, _("Release counter"), NULL, SFI_PARAM_STORAGE);
