@@ -285,6 +285,18 @@ sfi_seq_ref (SfiSeq *seq)
 }
 
 void
+sfi_seq_clear (SfiSeq *seq)
+{
+  g_return_if_fail (seq != NULL);
+  g_return_if_fail (seq->ref_count > 0);
+
+  while (seq->n_elements)
+    g_value_unset (seq->elements + --seq->n_elements);
+  g_free (seq->elements);
+  seq->elements = NULL;
+}
+
+void
 sfi_seq_unref (SfiSeq *seq)
 {
   g_return_if_fail (seq != NULL);
@@ -293,9 +305,8 @@ sfi_seq_unref (SfiSeq *seq)
   seq->ref_count--;
   if (seq->ref_count == 0)
     {
-      guint i;
-      for (i = 0; i < seq->n_elements; i++)
-	g_value_unset (seq->elements + i);
+      while (seq->n_elements)
+	g_value_unset (seq->elements + --seq->n_elements);
       g_free (seq->elements);
       g_free (seq);
     }

@@ -60,7 +60,7 @@ gstring_handle_break (GString *gstring)
 static void
 store_value_nonstruct (const GValue *value,
 		       GString      *gstring,
-		       SfiPSpecFlags cat)
+		       SfiSCategory  cat)
 {
   switch (cat)
     {
@@ -69,13 +69,13 @@ store_value_nonstruct (const GValue *value,
       SfiProxy proxy;
       gchar *string;
       const gchar *cstring;
-    case SFI_PSPEC_BOOL:
+    case SFI_SCAT_BOOL:
       gstring_puts (gstring, sfi_value_get_bool (value) ? "#t" : "#f");
       break;
-    case SFI_PSPEC_INT:
+    case SFI_SCAT_INT:
       gstring_printf (gstring, "%d", sfi_value_get_int (value));
       break;
-    case SFI_PSPEC_NUM:
+    case SFI_SCAT_NUM:
       num = sfi_value_get_num (value);
       if (num <= G_MAXINT && num >= G_MININT)
 	gstring_printf (gstring, "%d", (SfiInt) num);
@@ -91,10 +91,10 @@ store_value_nonstruct (const GValue *value,
 	  gstring_printf (gstring, "'(0x%x . 0x%08x)", i1, i2);
 	}
       break;
-    case SFI_PSPEC_REAL:
+    case SFI_SCAT_REAL:
       gstring_printf (gstring, "%.18g", sfi_value_get_real (value));
       break;
-    case SFI_PSPEC_FBLOCK:
+    case SFI_SCAT_FBLOCK:
       fblock = sfi_value_get_fblock (value);
       if (!fblock)
 	gstring_puts (gstring, "nil");
@@ -109,7 +109,7 @@ store_value_nonstruct (const GValue *value,
 	  gstring_printf (gstring, ")");
 	}
       break;
-    case SFI_PSPEC_STRING:
+    case SFI_SCAT_STRING:
       cstring = sfi_value_get_string (value);
       if (cstring)
 	{
@@ -122,23 +122,23 @@ store_value_nonstruct (const GValue *value,
       else
 	gstring_puts (gstring, "nil");
       break;
-    case SFI_PSPEC_CHOICE:
+    case SFI_SCAT_CHOICE:
       cstring = sfi_value_get_string (value);
       if (!cstring)
 	gstring_puts (gstring, "nil");
       else
 	gstring_printf (gstring, "'%s", cstring);
       break;
-    case SFI_PSPEC_PROXY:
+    case SFI_SCAT_PROXY:
       proxy = sfi_value_get_proxy (value);
       gstring_printf (gstring, "%lu", proxy);
       break;
-    case SFI_PSPEC_NOTE:
+    case SFI_SCAT_NOTE:
       string = sfi_note_to_string (sfi_value_get_int (value));
       gstring_printf (gstring, "\"%s\"", string);
       g_free (string);
       break;
-    case SFI_PSPEC_TIME:
+    case SFI_SCAT_TIME:
       string = sfi_time_to_string (sfi_time_to_utc (sfi_value_get_num (value)));
       gstring_printf (gstring, "\"%s\"", string);
       g_free (string);
@@ -154,7 +154,7 @@ sfi_value_store (const GValue *value,
 		 GString      *gstring,
 		 GParamSpec   *pspec)
 {
-  SfiPSpecFlags cat;
+  SfiSCategory cat;
   const gchar *indent = "";
   
   g_return_if_fail (G_IS_VALUE (value));
@@ -163,32 +163,26 @@ sfi_value_store (const GValue *value,
 
   gstring_handle_break (gstring);
 
-  cat = sfi_pspec_categorize (pspec, value);
+  cat = sfi_categorize_pspec (pspec);
   switch (cat)
     {
       SfiSeq *seq;
       SfiRec *rec;
       GParamSpec *espec;
       SfiRecFields rfields;
-      GValue *tmpval;
-    case SFI_PSPEC_BOOL:
-    case SFI_PSPEC_INT:
-    case SFI_PSPEC_NUM:
-    case SFI_PSPEC_REAL:
-    case SFI_PSPEC_STRING:
-    case SFI_PSPEC_CHOICE:
-    case SFI_PSPEC_PROXY:
-    case SFI_PSPEC_NOTE:
-    case SFI_PSPEC_TIME:
-    case SFI_PSPEC_FBLOCK:
+    case SFI_SCAT_BOOL:
+    case SFI_SCAT_INT:
+    case SFI_SCAT_NUM:
+    case SFI_SCAT_REAL:
+    case SFI_SCAT_STRING:
+    case SFI_SCAT_CHOICE:
+    case SFI_SCAT_PROXY:
+    case SFI_SCAT_NOTE:
+    case SFI_SCAT_TIME:
+    case SFI_SCAT_FBLOCK:
       store_value_nonstruct (value, gstring, cat);
       break;
-    case SFI_PSPEC_ENUM:
-      tmpval = sfi_value_choice_enum (value);
-      store_value_nonstruct (tmpval, gstring, SFI_PSPEC_CHOICE);
-      sfi_value_free (tmpval);
-      break;
-    case SFI_PSPEC_SEQ:
+    case SFI_SCAT_SEQ:
       seq = sfi_value_get_seq (value);
       espec = sfi_pspec_get_seq_element (pspec);
       if (!seq || !sfi_seq_check (seq, G_PARAM_SPEC_VALUE_TYPE (espec)))
@@ -208,7 +202,7 @@ sfi_value_store (const GValue *value,
 	  g_free (lbreak);
 	}
       break;
-    case SFI_PSPEC_REC:
+    case SFI_SCAT_REC:
       rec = sfi_value_get_rec (value);
       rfields = sfi_pspec_get_rec_fields (pspec);
       if (!rec || !sfi_rec_check (rec, rfields))
@@ -292,7 +286,7 @@ parse_num (GScanner *scanner,
 static GTokenType
 parse_value_nonstruct (GValue       *value,
 		       GScanner     *scanner,
-		       SfiPSpecFlags cat,
+		       SfiSCategory  cat,
 		       GError      **errorp)
 {
   GTokenType token;
@@ -302,7 +296,7 @@ parse_value_nonstruct (GValue       *value,
       SfiReal real;
       SfiTime ustime;
       gboolean v_bool;
-    case SFI_PSPEC_BOOL:
+    case SFI_SCAT_BOOL:
       v_bool = FALSE;
       g_scanner_get_next_token (scanner);
       if (scanner->token == G_TOKEN_INT && scanner->value.v_int <= 1)
@@ -321,19 +315,19 @@ parse_value_nonstruct (GValue       *value,
 	return '#';
       sfi_value_set_bool (value, v_bool);
       break;
-    case SFI_PSPEC_INT:
+    case SFI_SCAT_INT:
       token = parse_num (scanner, &num);
       if (token != G_TOKEN_NONE)
 	return token;
       sfi_value_set_int (value, num);
       break;
-    case SFI_PSPEC_NUM:
+    case SFI_SCAT_NUM:
       token = parse_num (scanner, &num);
       if (token != G_TOKEN_NONE)
 	return token;
       sfi_value_set_num (value, num);
       break;
-    case SFI_PSPEC_REAL:
+    case SFI_SCAT_REAL:
       g_scanner_get_next_token (scanner);
       if (scanner->token == '-')
 	{
@@ -350,7 +344,7 @@ parse_value_nonstruct (GValue       *value,
 	return G_TOKEN_FLOAT;
       sfi_value_set_real (value, v_bool ? -real : real);
       break;
-    case SFI_PSPEC_FBLOCK:
+    case SFI_SCAT_FBLOCK:
       g_scanner_get_next_token (scanner);
       if (check_nil (scanner))
 	sfi_value_set_fblock (value, NULL);
@@ -380,7 +374,7 @@ parse_value_nonstruct (GValue       *value,
 	    }
 	}
       break;
-    case SFI_PSPEC_STRING:
+    case SFI_SCAT_STRING:
       g_scanner_get_next_token (scanner);
       if (check_nil (scanner))
 	sfi_value_set_string (value, NULL);
@@ -389,7 +383,7 @@ parse_value_nonstruct (GValue       *value,
       else
 	return G_TOKEN_STRING;
       break;
-    case SFI_PSPEC_CHOICE:
+    case SFI_SCAT_CHOICE:
       g_scanner_get_next_token (scanner);
       if (check_nil (scanner))
 	sfi_value_set_choice (value, NULL);
@@ -401,18 +395,18 @@ parse_value_nonstruct (GValue       *value,
       else
 	return '\'';
       break;
-    case SFI_PSPEC_PROXY:
+    case SFI_SCAT_PROXY:
       parse_or_return (scanner, G_TOKEN_INT);
       sfi_value_set_proxy (value, scanner->value.v_int);
       break;
-    case SFI_PSPEC_NOTE:
+    case SFI_SCAT_NOTE:
       parse_or_return (scanner, G_TOKEN_STRING);
       num = sfi_note_from_string (scanner->value.v_string);
       if (!SFI_NOTE_IS_VALID (num))
 	return G_TOKEN_STRING;
       sfi_value_set_int (value, num);
       break;
-    case SFI_PSPEC_TIME:
+    case SFI_SCAT_TIME:
       parse_or_return (scanner, G_TOKEN_STRING);
       ustime = sfi_time_from_string (scanner->value.v_string, errorp);
       if (!ustime)
@@ -457,7 +451,7 @@ sfi_value_parse (GValue     *value,
 		 GParamSpec *pspec,
 		 GError    **errorp)
 {
-  SfiPSpecFlags cat;
+  SfiSCategory cat;
   GType vtype;
 
   g_return_val_if_fail (G_IS_VALUE (value), G_TOKEN_ERROR);
@@ -467,24 +461,24 @@ sfi_value_parse (GValue     *value,
 
   vtype = G_VALUE_TYPE (value);
 
-  cat = sfi_pspec_categorize (pspec, value);
+  cat = sfi_categorize_pspec (pspec);
   switch (cat)
     {
       GParamSpec *espec;
       SfiSeq *seq;
-    case SFI_PSPEC_BOOL:
-    case SFI_PSPEC_INT:
-    case SFI_PSPEC_NUM:
-    case SFI_PSPEC_REAL:
-    case SFI_PSPEC_STRING:
-    case SFI_PSPEC_CHOICE:
-    case SFI_PSPEC_PROXY:
-    case SFI_PSPEC_NOTE:
-    case SFI_PSPEC_TIME:
-    case SFI_PSPEC_FBLOCK:
+    case SFI_SCAT_BOOL:
+    case SFI_SCAT_INT:
+    case SFI_SCAT_NUM:
+    case SFI_SCAT_REAL:
+    case SFI_SCAT_STRING:
+    case SFI_SCAT_CHOICE:
+    case SFI_SCAT_PROXY:
+    case SFI_SCAT_NOTE:
+    case SFI_SCAT_TIME:
+    case SFI_SCAT_FBLOCK:
       return parse_value_nonstruct (value, scanner, cat, errorp);
       break;
-    case SFI_PSPEC_SEQ:
+    case SFI_SCAT_SEQ:
       espec = sfi_pspec_get_seq_element (pspec);
       if (check_nil (scanner))
 	sfi_value_set_seq (value, NULL);
@@ -514,7 +508,7 @@ sfi_value_parse (GValue     *value,
       else
 	return '\'';
       break;
-    case SFI_PSPEC_REC:
+    case SFI_SCAT_REC:
       if (check_nil (scanner))
 	sfi_value_set_rec (value, NULL);
       else if (scanner->token == '\'')

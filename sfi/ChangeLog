@@ -1,3 +1,21 @@
+Sun Oct  6 08:04:55 2002  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: add sfi_seq_clear().
+	
+	* sfitypes.[hc]: introduce sfi_boxed_make_record(),
+	sfi_boxed_make_sequence(), sfi_boxed_get_record_info() and
+	sfi_boxed_get_sequence_info() to support boxed<->rec and seq
+	transformations.
+	 
+	* sfiparams.[hc]: remove non-serializable pspecs Object and Enum.
+	set hints via sfi_pspec_set_static_hints() in the constructors,
+	so we can map these (partially) onto flags.
+	provide accessors for pspec hints. cleanup serializable param spec
+	categories. renamed a few things for consistency.
+	
+	* sfivalues.[hc]: same here, remove object and enum values.
+	added sfi_value_lstring() and sfi_value_lchoice().
+
 Sat Oct  5 02:07:57 2002  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: add type name conversion functions.

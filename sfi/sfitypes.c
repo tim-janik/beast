@@ -23,6 +23,12 @@
 #include "sfitime.h"
 
 
+
+/* --- variables --- */
+static GQuark quark_boxed_sequence = 0;
+static GQuark quark_boxed_record = 0;
+
+
 /* --- functions --- */
 void
 sfi_init (void)
@@ -34,10 +40,54 @@ sfi_init (void)
       initialized = TRUE;
 
       g_type_init ();
+      quark_boxed_sequence = g_quark_from_static_string ("sfi-boxed-sequence-info");
+      quark_boxed_record = g_quark_from_static_string ("sfi-boxed-record-info");
       _sfi_init_values ();
       _sfi_init_params ();
       _sfi_init_time ();
     }
+}
+
+
+/* --- boxed types --- */
+GType
+sfi_boxed_make_record (const SfiBoxedRecordInfo *info,
+		       GBoxedCopyFunc            copy,
+		       GBoxedFreeFunc            free)
+{
+  GType btype;
+
+  g_return_val_if_fail (info != NULL && copy != NULL && free != NULL, 0);
+
+  btype = g_boxed_type_register_static (info->name, copy, free);
+  g_type_set_qdata (btype, quark_boxed_record, (gpointer) info);
+  return btype;
+}
+
+const SfiBoxedRecordInfo*
+sfi_boxed_get_record_info (GType boxed_type)
+{
+  return g_type_get_qdata (boxed_type, quark_boxed_record);
+}
+
+GType
+sfi_boxed_make_sequence (const SfiBoxedSequenceInfo *info,
+			 GBoxedCopyFunc              copy,
+			 GBoxedFreeFunc              free)
+{
+  GType btype;
+
+  g_return_val_if_fail (info != NULL && copy != NULL && free != NULL, 0);
+
+  btype = g_boxed_type_register_static (info->name, copy, free);
+  g_type_set_qdata (btype, quark_boxed_sequence, (gpointer) info);
+  return btype;
+}
+
+const SfiBoxedSequenceInfo*
+sfi_boxed_get_sequence_info (GType boxed_type)
+{
+  return g_type_get_qdata (boxed_type, quark_boxed_sequence);
 }
 
 

@@ -30,6 +30,8 @@ typedef gint			SfiInt;
 typedef gint64			SfiNum;
 typedef guint64			SfiTime;
 typedef gdouble			SfiReal;
+#define SFI_MINREAL (2.2250738585072014e-308)	/* IEEE754 double */
+#define SFI_MAXREAL (1.7976931348623157e+308)	/* IEEE754 double */
 typedef gchar*			SfiString;
 typedef const gchar*		SfiChoice;
 typedef struct _SfiBBlock	SfiBBlock;
@@ -37,14 +39,46 @@ typedef struct _SfiFBlock	SfiFBlock;
 typedef struct _SfiSeq		SfiSeq;
 typedef struct _SfiRec		SfiRec;
 typedef GType /* pointer */	SfiProxy;
-typedef struct _SfiRing         SfiRing;
+typedef struct _SfiRing		SfiRing;
+typedef struct {
+  guint        n_fields;
+  GParamSpec **fields;
+} SfiRecFields;
 
 
 /* --- global --- */
 void	sfi_init	(void);
 
 
-/* FIXME: hacks! */
+/* --- boxed types --- */
+typedef SfiRec*           (*SfiBoxedToRec)              (gpointer                  boxed);
+typedef gpointer          (*SfiBoxedFromRec)            (SfiRec                   *rec);
+typedef struct {
+  const gchar    *name;
+  SfiRecFields    fields;
+  SfiBoxedToRec   to_rec;
+  SfiBoxedFromRec from_rec;
+} SfiBoxedRecordInfo;
+GType                       sfi_boxed_make_record       (const SfiBoxedRecordInfo *info,
+							 GBoxedCopyFunc            copy,
+							 GBoxedFreeFunc            free);
+const SfiBoxedRecordInfo*   sfi_boxed_get_record_info   (GType                     boxed_type);
+typedef SfiSeq*           (*SfiBoxedToSeq)              (gpointer                  boxed);
+typedef gpointer          (*SfiBoxedFromSeq)            (SfiSeq                   *seq);
+typedef struct {
+  const gchar    *name;
+  GParamSpec     *element;
+  SfiBoxedToSeq   to_seq;
+  SfiBoxedFromSeq from_seq;
+} SfiBoxedSequenceInfo;
+GType                       sfi_boxed_make_sequence     (const SfiBoxedSequenceInfo *info,
+							 GBoxedCopyFunc              copy,
+							 GBoxedFreeFunc              free);
+const SfiBoxedSequenceInfo* sfi_boxed_get_sequence_info (GType                       boxed_type);
+
+
+/* --- FIXME: hacks! --- */
+typedef struct _GslGlueProc SfiGlueProc;
 void	sfi_set_error	(GError       **errorp,	// do nothing if *errorp is set already
 			 GQuark         domain,
 			 gint           code,

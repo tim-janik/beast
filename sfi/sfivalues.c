@@ -407,10 +407,28 @@ sfi_value_string (const gchar *vstring)
 }
 
 GValue*
+sfi_value_lstring (const gchar *vstring,
+		   guint        length)
+{
+  GValue *value = alloc_value (SFI_TYPE_STRING);
+  sfi_value_take_string (value, g_strndup (vstring, vstring ? length : 0));
+  return value;
+}
+
+GValue*
 sfi_value_choice (const gchar *vchoice)
 {
   GValue *value = alloc_value (SFI_TYPE_CHOICE);
   sfi_value_set_choice (value, vchoice);
+  return value;
+}
+
+GValue*
+sfi_value_lchoice (const gchar *vchoice,
+		   guint        length)
+{
+  GValue *value = alloc_value (SFI_TYPE_CHOICE);
+  sfi_value_take_string (value, g_strndup (vchoice, vchoice ? length : 0));
   return value;
 }
 
@@ -427,20 +445,6 @@ sfi_value_choice_enum (const GValue *enum_value)
   ev = g_enum_get_value (eclass, g_value_get_enum (enum_value));
   value = sfi_value_choice (ev ? ev->value_name : NULL);
   g_type_class_unref (eclass);
-  return value;
-}
-
-GValue*
-sfi_value_enum (GType enum_type,
-		gint  evalue)
-{
-  GValue *value;
-
-  g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), NULL);
-  g_return_val_if_fail (enum_type != G_TYPE_ENUM, NULL);
-
-  value = alloc_value (enum_type);
-  sfi_value_set_enum (value, evalue);
   return value;
 }
 
@@ -481,14 +485,6 @@ sfi_value_proxy (SfiProxy vproxy)
 {
   GValue *value = alloc_value (SFI_TYPE_PROXY);
   sfi_value_set_proxy (value, vproxy);
-  return value;
-}
-
-GValue*
-sfi_value_object (GObject *vobject)
-{
-  GValue *value = alloc_value (SFI_TYPE_OBJECT);
-  sfi_value_set_object (value, vobject);
   return value;
 }
 

@@ -83,6 +83,7 @@ SfiSeq*	   sfi_seq_copy_deep	(const SfiSeq	 *seq);
 #define	   sfi_seq_copy_shallow	sfi_seq_ref
 void	   sfi_seq_append	(SfiSeq		 *seq,
 				 const GValue	 *value);
+void	   sfi_seq_clear	(SfiSeq		 *seq);
 guint	   sfi_seq_length	(const SfiSeq	 *seq);
 GValue*	   sfi_seq_get		(const SfiSeq	 *seq,
 				 guint		  index);
@@ -91,10 +92,6 @@ gboolean   sfi_seq_check	(SfiSeq		 *seq,
 
 
 /* --- SfiRec primitive type --- */
-typedef struct {
-  guint        n_fields;
-  GParamSpec **fields;
-} SfiRecFields;
 struct _SfiRec {
   guint    ref_count;
   guint    n_fields;

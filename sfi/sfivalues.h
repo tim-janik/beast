@@ -30,8 +30,6 @@ G_BEGIN_DECLS
 #define	SFI_TYPE_NUM		G_TYPE_INT64
 #define	SFI_TYPE_REAL		G_TYPE_DOUBLE
 #define	SFI_TYPE_STRING		G_TYPE_STRING
-#define	SFI_TYPE_ENUM		G_TYPE_ENUM
-#define	SFI_TYPE_OBJECT		G_TYPE_OBJECT
 
 
 /* --- Sfi value types --- */
@@ -50,13 +48,11 @@ G_BEGIN_DECLS
 #define SFI_VALUE_HOLDS_REAL(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_REAL))
 #define SFI_VALUE_HOLDS_STRING(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_STRING))
 #define SFI_VALUE_HOLDS_CHOICE(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_CHOICE))
-#define SFI_VALUE_HOLDS_ENUM(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_ENUM))
 #define SFI_VALUE_HOLDS_BBLOCK(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_BBLOCK))
 #define SFI_VALUE_HOLDS_FBLOCK(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_FBLOCK))
 #define SFI_VALUE_HOLDS_SEQ(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_SEQ))
 #define SFI_VALUE_HOLDS_REC(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_REC))
 #define SFI_VALUE_HOLDS_PROXY(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_PROXY))
-#define SFI_VALUE_HOLDS_OBJECT(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), SFI_TYPE_OBJECT))
 
 
 /* --- Sfi value accessor aliases --- */
@@ -70,13 +66,8 @@ G_BEGIN_DECLS
 #define	sfi_value_set_real		g_value_set_double
 #define	sfi_value_get_string		g_value_get_string
 #define	sfi_value_set_string		g_value_set_string
-#define	sfi_value_get_enum		g_value_get_enum
-#define	sfi_value_set_enum		g_value_set_enum
 #define	sfi_value_set_static_string	g_value_set_static_string
 #define	sfi_value_take_string		g_value_set_string_take_ownership
-#define	sfi_value_get_object		g_value_get_object
-#define	sfi_value_set_object		g_value_set_object
-#define	sfi_value_take_object		g_value_take_object
 
 
 /* --- Sfi value accessors --- */
@@ -122,16 +113,17 @@ GValue*	sfi_value_int		(SfiInt		 vint);
 GValue*	sfi_value_num		(SfiNum		 vnum);
 GValue*	sfi_value_real		(SfiReal	 vreal);
 GValue*	sfi_value_string	(const gchar	*vstring);
+GValue*	sfi_value_lstring	(const gchar	*vstring,
+				 guint		 length);
 GValue*	sfi_value_choice	(const gchar	*vchoice);
+GValue*	sfi_value_lchoice	(const gchar	*vchoice,
+				 guint           length);
 GValue*	sfi_value_choice_enum	(const GValue	*enum_value);
-GValue*	sfi_value_enum		(GType		 enum_type,
-				 gint		 evalue);
 GValue*	sfi_value_bblock	(SfiBBlock	*vfblock);
 GValue*	sfi_value_fblock	(SfiFBlock	*vfblock);
 GValue*	sfi_value_seq		(SfiSeq		*vseq);
 GValue*	sfi_value_rec		(SfiRec		*vrec);
 GValue*	sfi_value_proxy		(SfiProxy	 vproxy);
-GValue*	sfi_value_object	(GObject	*vobject);
 void	sfi_value_free		(GValue		*value);
 
 
