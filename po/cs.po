@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-20 03:09+0100\n"
-"PO-Revision-Date: 2004-02-20 14:35+0100\n"
+"POT-Creation-Date: 2004-02-24 03:38+0100\n"
+"PO-Revision-Date: 2004-02-24 13:07+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -84,7 +84,7 @@ msgstr "_Zpět"
 msgid "_Redo"
 msgstr "Z_novu"
 
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:69
+#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "Vyma_zat historii"
 
@@ -642,51 +642,51 @@ msgstr "Pole textu názvu souboru"
 msgid "Time Entry"
 msgstr "Pole pro zadání času"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear"
 msgstr "Vymazat"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear the current selection"
 msgstr "Odstranit aktuální výběr"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:61
 msgid "Cut"
 msgstr "Vyjmout"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:61
 msgid "Move the current selection into clipboard"
 msgstr "Přesunout aktuální výběr do schránky"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy"
 msgstr "Kopírovat"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy the current selection into clipboard"
 msgstr "Kopírovat aktuální výběr do schránky"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:63
 msgid "Paste"
 msgstr "Vložit"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:63
 msgid "Insert clipboard contents as current selection"
 msgstr "Vložit obsah schránky jako aktuální výběr"
 
-#: beast-gtk/bstpartdialog.c:65
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo"
 msgstr "Zpět"
 
-#: beast-gtk/bstpartdialog.c:65
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo last editing step"
 msgstr "Vrátit poslední krok úprav"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo"
 msgstr "Znovu"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo the last undone editing step"
 msgstr "Zopakovat poslední vrácený krok úprav"
 
@@ -694,7 +694,7 @@ msgstr "Zopakovat poslední vrácený krok úprav"
 msgid "Editor"
 msgstr "Editor"
 
-#: beast-gtk/bstpatterncolumns.c:311
+#: beast-gtk/bstpatterncolumns.c:501
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -702,25 +702,25 @@ msgstr ""
 "Rozložení sloupců editoru vzorků je určeno vypsáním typů sloupců s možnými "
 "modifikátory v pořadí zobrazování."
 
-#: beast-gtk/bstpatterncolumns.c:313
+#: beast-gtk/bstpatterncolumns.c:503
 msgid "COLUMN TYPES:"
 msgstr "TYPY SLOUPCŮ:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:315
+#: beast-gtk/bstpatterncolumns.c:505
 msgid "note-1, note-2, ..."
 msgstr "note-1, note-2, ..."
 
-#: beast-gtk/bstpatterncolumns.c:316
+#: beast-gtk/bstpatterncolumns.c:506
 msgid "  display notes of the first, second, ... channel"
 msgstr "  poznámky o zobrazování prvního, druhého, ... kanálu"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:318
-msgid "offset-1, length-2, velocty-3, ..."
-msgstr "offset-1, length-2, velocty-3, ..."
+#: beast-gtk/bstpatterncolumns.c:508
+msgid "offset-1, length-2, velocity-3, ..."
+msgstr "offset-1, length-2, velocity-3, ..."
 
-#: beast-gtk/bstpatterncolumns.c:319
+#: beast-gtk/bstpatterncolumns.c:509
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
@@ -728,114 +728,124 @@ msgstr ""
 "  posun zobrazení, délka nebo rychlost not v prvním, druhém, ... kanálu"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:321
+#: beast-gtk/bstpatterncolumns.c:511
 msgid "control-0, ..., control-63, cc-0, cc-31"
 msgstr "control-0, ..., control-63, cc-0, cc-31"
 
-#: beast-gtk/bstpatterncolumns.c:322
+#: beast-gtk/bstpatterncolumns.c:512
 msgid "  select various event types (controls, continuous controllers)"
 msgstr "  zvolte různé typy událostí (řídicí signály, spojité ovladače)"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:324
+#: beast-gtk/bstpatterncolumns.c:514
 msgid "bar, |"
 msgstr "bar, |"
 
-#: beast-gtk/bstpatterncolumns.c:325
+#: beast-gtk/bstpatterncolumns.c:515
 msgid "  display solid vertical bar"
 msgstr "  zobrazit souvislý svislý pruh"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:327
+#: beast-gtk/bstpatterncolumns.c:517
 msgid "dbar, :"
 msgstr "dbar, :"
 
-#: beast-gtk/bstpatterncolumns.c:328
+#: beast-gtk/bstpatterncolumns.c:518
 msgid "  display dotted vertical bar"
 msgstr "  zobrazit tečkovaný svislý pruh"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:330
+#: beast-gtk/bstpatterncolumns.c:520
 msgid "space, _"
 msgstr "space, _"
 
-#: beast-gtk/bstpatterncolumns.c:331
+#: beast-gtk/bstpatterncolumns.c:521
 msgid "  insert vertical space"
 msgstr "  vložit vertikální prostor"
 
-#: beast-gtk/bstpatterncolumns.c:332
+#: beast-gtk/bstpatterncolumns.c:522
 msgid "EVENTS:"
 msgstr "UDÁLOSTI:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:334
+#: beast-gtk/bstpatterncolumns.c:524
 msgid "  balance, volume, cc-8, ..."
 msgstr "  balance, volume, cc-8, ..."
 
-#: beast-gtk/bstpatterncolumns.c:335
+#: beast-gtk/bstpatterncolumns.c:525
 msgid "MODIFIERS:"
 msgstr "MODIFIKÁTORY:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:337
+#: beast-gtk/bstpatterncolumns.c:527
 msgid "hex2, hex4"
 msgstr "hex2, hex4"
 
-#: beast-gtk/bstpatterncolumns.c:338
+#: beast-gtk/bstpatterncolumns.c:528
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr ""
 "  zobrazit šestnáctková čísla se 2 (00..FF) nebo 4 (0000..FFFF) číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:340
+#: beast-gtk/bstpatterncolumns.c:530
 msgid "shex2, shex4"
 msgstr "shex2, shex4"
 
-#: beast-gtk/bstpatterncolumns.c:341
+#: beast-gtk/bstpatterncolumns.c:531
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 "  zobrazit šestnáctková čísla se znaménkem se 2 (-FF..+FF) nebo 4 (-FFFF.."
 "+FFFF) číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:343
+#: beast-gtk/bstpatterncolumns.c:533
 msgid "dec2, dec3"
 msgstr "dec2, dec3"
 
-#: beast-gtk/bstpatterncolumns.c:344
+#: beast-gtk/bstpatterncolumns.c:534
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr "  zobrazit desítková čísla se 2 (00..99) nebo 3 (000..999) číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:346
+#: beast-gtk/bstpatterncolumns.c:536
 msgid "sdec2, sdec3"
 msgstr "sdec2, sdec3"
 
-#: beast-gtk/bstpatterncolumns.c:347
+#: beast-gtk/bstpatterncolumns.c:537
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 "  zobrazit desítková čísla se znaménkem se 2 (-99..+99) nebo 3 (-999..+999) "
 "číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:349
+#: beast-gtk/bstpatterncolumns.c:539
 msgid "col1, col2, col3"
 msgstr "col1, col2, col3"
 
-#: beast-gtk/bstpatterncolumns.c:350
+#: beast-gtk/bstpatterncolumns.c:540
 msgid "  selects one of 3 predefined colors"
 msgstr "  výběr jedné ze 3 předdefinovaných barev"
 
-#: beast-gtk/bstpatterncolumns.c:351
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:542
+msgid "lfold, rfold"
+msgstr "lfold, rfold"
+
+#: beast-gtk/bstpatterncolumns.c:543
+msgid "  allow folding the column into left/right neighbour"
+msgstr "  umožnit spojení sloupce s levým/pravým sousedem"
+
+#: beast-gtk/bstpatterncolumns.c:544
 msgid "EXAMPLE:"
 msgstr "PŘÍKLAD:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:353
+#: beast-gtk/bstpatterncolumns.c:546
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 
-#: beast-gtk/bstpatterncolumns.c:362
+#. GXK_DIALOG_MODAL
+#: beast-gtk/bstpatterncolumns.c:556
 msgid "Pattern Editor Layout"
 msgstr "Rozložení editoru vzorků"
 
@@ -1176,7 +1186,7 @@ msgstr ""
 "obcházení možných nestabilit kódu (mj. pravidelně ukládejte své projekty)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
 msgid "_Edit"
 msgstr "_Upravit"
 
@@ -1297,7 +1307,9 @@ msgstr "Homogenní vstupní pole"
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
-msgstr "Povolit homogenní velikosti většiny (číselných a textových) vstupních polí. Na některé pole bude mít vliv až po restartu."
+msgstr ""
+"Povolit homogenní velikosti většiny (číselných a textových) vstupních polí. "
+"Na některé pole bude mít vliv až po restartu."
 
 #: beast-gtk/bstrecords.idl:66
 msgid "Skin Name"
@@ -1748,194 +1760,198 @@ msgid "Edit the currently selected wave"
 msgstr "Upravit momentálně vybranou vlnu"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
+msgid "Adjust right view boundary"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Adjust the zoom factor of the router display"
 msgstr "Upravit faktor zvětšení zobrazení routeru"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+#: beast-gtk/dialogs/gadgets-beast.xml.h:3
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr "Použít změny nastavení rozložení editoru vzorků"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#: beast-gtk/dialogs/gadgets-beast.xml.h:4
 msgid "Configure"
 msgstr "nastavit"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#: beast-gtk/dialogs/gadgets-beast.xml.h:5
 msgid "Configure the column layout of the pattern editor"
 msgstr "Nastavit rozložení sloupců editoru vzorků"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#: beast-gtk/dialogs/gadgets-beast.xml.h:6
 msgid "Control Type:"
 msgstr "Typ řízení:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#: beast-gtk/dialogs/gadgets-beast.xml.h:7
 msgid "Development"
 msgstr "Vývoj"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+#: beast-gtk/dialogs/gadgets-beast.xml.h:8
 msgid "Discard changes and close dialog"
 msgstr "Zahodit změny a zavřít dialog"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/gadgets-beast.xml.h:9
 msgid "E_xamples"
 msgstr "_Příklady"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#: beast-gtk/dialogs/gadgets-beast.xml.h:10
 msgid "Events"
 msgstr "Události"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/gadgets-beast.xml.h:11
 msgid "HZoom"
 msgstr "VZvětšení"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/gadgets-beast.xml.h:12
 msgid "Horizontal piano zoom"
 msgstr "Vodorovné zvětšení klavíru"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/gadgets-beast.xml.h:13
 msgid "Horizontal track zoom"
 msgstr "Vodorovné zvětšení stopy"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/gadgets-beast.xml.h:14
 msgid "Layout:"
 msgstr "Rozložení:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#: beast-gtk/dialogs/gadgets-beast.xml.h:15
 msgid "Note _Length"
 msgstr "_Délka noty"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+#: beast-gtk/dialogs/gadgets-beast.xml.h:16
 msgid "Piano Notes"
 msgstr "Noty klavíru"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
 msgid "Repeat"
 msgstr "Opakovat"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
 msgid "Repeat playback within loop points"
 msgstr "Opakovat přehrávání mezi hranicemi smyčky"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
 msgid "Synthesis Modules"
 msgstr "Moduly syntézy"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
 msgid "VZoom"
 msgstr "SZvětšení"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "Vertical piano zoom"
 msgstr "Svislé zvětšení klavíru"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
 msgid "Virtual Rack"
 msgstr "Svislý rack"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "Wave_s"
 msgstr "_Vlny"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
 msgid "Zoom"
 msgstr "Zvětšení"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
 msgid "_Apply"
 msgstr "_Použít"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
 msgid "_Audio Sources"
 msgstr "_Zdroje zvuku"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
 msgid "_Cancel"
 msgstr "_Zrušit"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
 msgid "_Distortion"
 msgstr "_Zkreslení"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Enhance"
 msgstr "_Vylepšit"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
 msgid "_File"
 msgstr "_Soubor"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_Filters"
 msgstr "_Filtry"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
 msgid "_Help"
 msgstr "Nápo_věda"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Input & Output"
 msgstr "_Vstup a výstup"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Misc"
 msgstr "_Různé"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Other Sources"
 msgstr "_Jiné zdroje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Project"
 msgstr "_Projekt"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_Quantization"
 msgstr "_Kvantizace"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_Routing"
 msgstr "_Směrování"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/gadgets-beast.xml.h:42
 msgid "_Skins"
 msgstr "_Skiny"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:42
+#: beast-gtk/dialogs/gadgets-beast.xml.h:43
 msgid "_Song"
 msgstr "_Skladba"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:43
+#: beast-gtk/dialogs/gadgets-beast.xml.h:44
 msgid "_Spatial"
 msgstr "_Prostorové"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:44
+#: beast-gtk/dialogs/gadgets-beast.xml.h:45
 msgid "_Synth"
 msgstr "_Syntéza"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:45
+#: beast-gtk/dialogs/gadgets-beast.xml.h:46
 msgid "_Synthesizers"
 msgstr "_Syntetizátory"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:46
+#: beast-gtk/dialogs/gadgets-beast.xml.h:47
 msgid "_Tools"
 msgstr "_Nástroje"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:47
+#: beast-gtk/dialogs/gadgets-beast.xml.h:48
 msgid "_Utilities"
 msgstr "_Pomůcky"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:48
+#: beast-gtk/dialogs/gadgets-beast.xml.h:49
 msgid "_View"
 msgstr "_Zobrazit"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:49
+#: beast-gtk/dialogs/gadgets-beast.xml.h:50
 msgid "_Virtualization"
 msgstr "_Virtualizace"
 
@@ -2104,6 +2120,13 @@ msgstr "Widget mnemoniky"
 #: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Widget, který aktivovat, když je stisknuta mnemonická klávesa popisku"
+
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/gxk/gxksimplelabel.c:575
+msgid "..."
+msgstr "..."
 
 #: bse/bseamplifier.idl:32 plugins/bsebalance.idl:26
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
