@@ -34,7 +34,7 @@ typedef struct
   SfiProxy project;
   SfiProxy snet;
   SfiProxy speaker;
-  SfiProxy wosc;
+  SfiProxy wosc1, wosc2;
   SfiProxy constant;
   guint             current_delay;
   guint             pcm_timeout;
