@@ -1,3 +1,8 @@
+2003-10-22  Vincent van Adrighem  <adrighem@gnome.org>
+
+	* nl.po: Updated dutch translation. Sorry about 
+		that compilation-problem. Completely forgot this file.
+
 Mon Oct 20 18:24:26 2003  Tim Janik  <timj@gtk.org>
 
 	* nl.po: add empty file to keep beast compiling.
