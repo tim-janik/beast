@@ -409,7 +409,7 @@ dav_xtal_strings_context_create (BseSource *source,
     DAV_XTAL_STRINGS_N_OCHANNELS,	/* n_ostreams */
     xmod_process,			/* process */
     NULL,				/* process_defer */
-    xmod_reconnect,			/* reconnect */
+    xmod_reconnect,			/* reset */
     xmod_free,				/* free */
     GSL_COST_NORMAL,			/* cost */
   };

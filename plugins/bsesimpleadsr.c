@@ -415,7 +415,7 @@ bse_simple_adsr_context_create (BseSource *source,
     BSE_SIMPLE_ADSR_N_OCHANNELS,	/* n_ostreams */
     simple_adsr_process,		/* process */
     NULL,                       	/* process_defer */
-    NULL,                       	/* reconnect */
+    NULL,                       	/* reset */
     (GslModuleFreeFunc) g_free,		/* free */
     GSL_COST_CHEAP,			/* cost */
   };

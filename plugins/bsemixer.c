@@ -352,7 +352,7 @@ bse_mixer_context_create (BseSource *source,
     1,				/* n_ostreams */
     mixer_process,		/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* flags */
   };

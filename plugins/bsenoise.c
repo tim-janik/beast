@@ -121,7 +121,7 @@ bse_noise_context_create (BseSource *source,
     1,				/* n_ostreams */
     noise_process,		/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     NULL,			/* free */
     GSL_COST_CHEAP,		/* cost */
   };

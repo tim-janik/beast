@@ -426,7 +426,7 @@ bse_iir_filter_context_create (BseSource *source,
     BSE_IIR_FILTER_N_OCHANNELS,	/* n_ostreams */
     iir_filter_process,		/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
+    NULL,                       /* reset */
     (gpointer) g_free,		/* free */
     GSL_COST_NORMAL,		/* flags */
   };

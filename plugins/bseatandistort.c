@@ -212,7 +212,7 @@ bse_atan_distort_context_create (BseSource *source,
     BSE_ATAN_DISTORT_N_OCHANNELS, /* n_ostreams */
     atan_distort_process,	  /* process */
     NULL,                         /* process_defer */
-    NULL,                         /* reconnect */
+    NULL,                         /* reset */
     (GslModuleFreeFunc) g_free,	  /* free */
     GSL_COST_NORMAL,		  /* cost */
   };
