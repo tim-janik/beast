@@ -25,8 +25,8 @@
 #include <string>
 #include <set>
 
-set<string> needTypes;
-set<string> needClasses;
+std::set<std::string> needTypes;
+std::set<std::string> needClasses;
 bool silent = false;
 
 void print(const gchar *format, ...)
@@ -40,7 +40,7 @@ void print(const gchar *format, ...)
 }
 
 
-string removeBse (const string& name)
+std::string removeBse (const std::string& name)
 {
   if (strncmp (name.c_str(), "Bse", 3) == 0 || strncmp (name.c_str(), "Bsw", 3) == 0)
     return name.substr (3);
@@ -50,13 +50,13 @@ string removeBse (const string& name)
     return name;
 }
 
-string getInterface (const string& name)
+std::string getInterface (const std::string& name)
 {
   int i = name.find ("+", 0);
 
   if(i >= 0)
   {
-    string result = name.substr (0, i);
+    std::string result = name.substr (0, i);
     if (strncmp (result.c_str(), "Bse", 3) == 0 || strncmp (result.c_str(), "Bsw", 3) == 0)
       result = name.substr (3, i-3);
 
@@ -65,10 +65,10 @@ string getInterface (const string& name)
   return "";
 }
 
-string getMethod (const string& name)
+std::string getMethod (const std::string& name)
 {
-  string result;
-  string::const_iterator ni = name.begin ();
+  std::string result;
+  std::string::const_iterator ni = name.begin ();
 
   int pos = name.find ("+", 0);
   if (pos >= 0)
@@ -87,10 +87,10 @@ string getMethod (const string& name)
   return result;
 }
 
-string signalName (const string& signal)
+std::string signalName (const std::string& signal)
 {
-  string result;
-  string::const_iterator si = signal.begin ();
+  std::string result;
+  std::string::const_iterator si = signal.begin ();
 
   while (si != signal.end ())
   {
@@ -103,10 +103,10 @@ string signalName (const string& signal)
   return result;
 }
 
-string paramName (const string& name)
+std::string paramName (const std::string& name)
 {
-  string result;
-  string::const_iterator ni = name.begin ();
+  std::string result;
+  std::string::const_iterator ni = name.begin ();
   while (ni != name.end ())
   {
     if (*ni == '-')
@@ -118,7 +118,7 @@ string paramName (const string& name)
   return result;
 }
 
-string activeInterface = "";
+std::string activeInterface = "";
 int indent = 0;
 
 void printIndent ()
@@ -127,7 +127,7 @@ void printIndent ()
     print("  ");
 }
 
-void setActiveInterface (const string& x, const string& parent)
+void setActiveInterface (const std::string& x, const std::string& parent)
 {
   if (activeInterface != x)
   {
@@ -154,9 +154,9 @@ void setActiveInterface (const string& x, const string& parent)
   }
 }
 
-string idlType (GType g)
+std::string idlType (GType g)
 {
-  string s = g_type_name (g);
+  std::string s = g_type_name (g);
 
   if (s[0] == 'B' && s[1] == 's' && (s[2] == 'e' || s[2] == 'w'))
   {
@@ -176,20 +176,20 @@ string idlType (GType g)
   return "*" + s + "*";
 }
 
-string symbolForInt (int i)
+std::string symbolForInt (int i)
 {
   if (i == SFI_MAXINT) return "SFI_MAXINT";
   if (i == SFI_MININT) return "SFI_MININT";
 
   char *x = g_strdup_printf ("%d", i);
-  string result = x;
+  std::string result = x;
   g_free(x);
   return result;
 }
 
 void printPSpec (const char *dir, GParamSpec *pspec)
 {
-  string pname = paramName (pspec->name);
+  std::string pname = paramName (pspec->name);
 
   printIndent ();
   print ("%-4s%-20s@= (\"%s\", \"%s\", ",
@@ -219,7 +219,7 @@ void printPSpec (const char *dir, GParamSpec *pspec)
   print("\":flagstodo\");\n");
 }
 
-void printMethods (const string& iface)
+void printMethods (const std::string& iface)
 {
   BseCategorySeq *cseq;
   guint i;
@@ -231,10 +231,10 @@ void printMethods (const string& iface)
       BseProcedureClass *klass = (BseProcedureClass *)g_type_class_ref (type_id);
 
       /* procedures */
-      string t = cseq->cats[i]->type;
-      string iname = getInterface (t);
-      string mname = getMethod (t);
-      string rtype = klass->n_out_pspecs ?
+      std::string t = cseq->cats[i]->type;
+      std::string iname = getInterface (t);
+      std::string mname = getMethod (t);
+      std::string rtype = klass->n_out_pspecs ?
 	             idlType (klass->out_pspecs[0]->value_type) : "void";
 
       if (iname == iface)
@@ -246,8 +246,8 @@ void printMethods (const string& iface)
 	  print ("%s %s (", rtype.c_str(), mname.c_str ());
 	  for (guint p = first_p; p < klass->n_in_pspecs; p++)
 	    {
-	      string ptype = idlType (klass->in_pspecs[p]->value_type);
-	      string pname = paramName (klass->in_pspecs[p]->name);
+	      std::string ptype = idlType (klass->in_pspecs[p]->value_type);
+	      std::string pname = paramName (klass->in_pspecs[p]->name);
 	      if (p != first_p) print(", ");
 	      print ("%s %s", ptype.c_str(), pname.c_str());
 	    }
@@ -278,9 +278,9 @@ void printMethods (const string& iface)
 }
 
 /* FIXME: we might want to have a sfi_glue_iface_parent () method */
-void printInterface (const string& iface, const string& parent = "")
+void printInterface (const std::string& iface, const std::string& parent = "")
 {
-  string idliface = removeBse (iface);
+  std::string idliface = removeBse (iface);
 
   setActiveInterface (idliface, parent);
   printMethods (idliface);
@@ -301,8 +301,8 @@ void printInterface (const string& iface, const string& parent = "")
 	      print ("signal %s (", signalName (query.signal_name).c_str());
 	      for (guint p = 0; p < query.n_params; p++)
 		{
-		  string ptype = idlType (query.param_types[p]);
-		  string pname = ""; pname += char('a' + p);
+		  std::string ptype = idlType (query.param_types[p]);
+		  std::string pname = ""; pname += char('a' + p);
 		  if (p != 0) print(", ");
 		  print ("%s %s", ptype.c_str(), pname.c_str());
 	      }
@@ -360,7 +360,7 @@ printChoices (void)
 void
 printForwardDecls ()
 {
-  set<string>::iterator ci;
+  std::set<std::string>::iterator ci;
 
   for (ci = needClasses.begin(); ci != needClasses.end(); ci++)
     {
@@ -375,7 +375,7 @@ int main (int argc, char **argv)
   bse_init_intern (&argc, &argv, NULL);
 
   sfi_glue_context_push (bse_glue_context_intern ("BseProcIdl"));
-  string s = sfi_glue_base_iface ();
+  std::string s = sfi_glue_base_iface ();
 
   /* small hackery to collect all enum types that need to be printed */
   silent = true;

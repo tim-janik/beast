@@ -1,3 +1,7 @@
+Thu Feb  6 20:29:00 2003  Tim Janik  <timj@gtk.org>
+
+	* bseprocidl.cc: g++-3.2 wants std:: namespacing for strings and sets.
+
 Tue Feb  4 18:20:31 2003  Tim Janik  <timj@gtk.org>
 
 	* bseitem.proc: provide bse-item-set-name().
