@@ -63,6 +63,8 @@ typedef struct  _BseObject              BseObject;
 typedef struct  _BseObjectClass         BseObjectClass;
 typedef struct  _BsePart		BsePart;
 typedef struct  _BsePartClass		BsePartClass;
+typedef struct  _BsePcmWriter           BsePcmWriter;
+typedef struct  _BsePcmWriterClass      BsePcmWriterClass;
 typedef struct  _BseProcedureClass      BseProcedureClass;
 typedef struct  _BseProject             BseProject;
 typedef struct  _BseProjectClass        BseProjectClass;

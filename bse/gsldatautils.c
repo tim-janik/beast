@@ -67,11 +67,11 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 {
   GslLong l, offs = 0;
 
-  g_return_val_if_fail (dhandle != NULL, -EINVAL);
-  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), -EINVAL);
-  g_return_val_if_fail (fd >= 0, -EINVAL);
-  g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, -EINVAL);
-  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, -EINVAL);
+  g_return_val_if_fail (dhandle != NULL, EINVAL);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), EINVAL);
+  g_return_val_if_fail (fd >= 0, EINVAL);
+  g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, EINVAL);
+  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, EINVAL);
 
   l = dhandle->setup.n_values;
   while (l)
@@ -84,7 +84,7 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 	n = gsl_data_handle_read (dhandle, offs, n, src);
       while (n < 1 && retry--);
       if (retry < 0)
-	return -EIO;
+	return EIO;
 
       l -= n;
       offs += n;
@@ -95,7 +95,7 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 	j = write (fd, src, n);
       while (j < 0 && errno == EINTR);
       if (j < 0)
-	return errno ? -errno : -EIO;
+	return errno ? errno : EIO;
     }
   return 0;
 }
@@ -133,25 +133,23 @@ write_uint16_le (gint    fd,
 }
 
 gint /* errno */
-gsl_data_handle_dump_wav (GslDataHandle *dhandle,
-			  gint           fd,
-			  guint          n_bits,
-			  guint          n_channels,
-			  guint          sample_freq)
+gsl_wave_file_dump_header (gint           fd,
+			   guint	  n_data_bytes,
+			   guint          n_bits,
+			   guint          n_channels,
+			   guint          sample_freq)
 {
-  guint data_length, file_length, byte_per_sample, byte_per_second;
+  guint byte_per_sample, byte_per_second, file_length;
 
-  g_return_val_if_fail (dhandle != NULL, -EINVAL);
-  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), -EINVAL);
-  g_return_val_if_fail (fd >= 0, -EINVAL);
-  g_return_val_if_fail (n_bits == 16 || n_bits == 8, -EINVAL);
-  g_return_val_if_fail (n_channels >= 1, -EINVAL);
+  g_return_val_if_fail (fd >= 0, EINVAL);
+  g_return_val_if_fail (n_data_bytes < 4294967296 - 44, EINVAL);
+  g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
+  g_return_val_if_fail (n_channels >= 1, EINVAL);
 
-  data_length = dhandle->setup.n_values * (n_bits == 16 ? 2 : 1);
-  file_length = data_length;
-  file_length += 4 + 4;				/* 'RIFF' header */
-  file_length += 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;	/* 'fmt ' header */
-  file_length += 4 + 4;				/* 'data' header */
+  file_length = 0; /* 4 + 4; */				/* 'RIFF' header is left out*/
+  file_length += 4 + 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;	/* 'fmt ' header */
+  file_length += 4 + 4;					/* 'data' header */
+  file_length += n_data_bytes;
   byte_per_sample = (n_bits == 16 ? 2 : 1) * n_channels;
   byte_per_second = byte_per_sample * sample_freq;
 
@@ -168,10 +166,70 @@ gsl_data_handle_dump_wav (GslDataHandle *dhandle,
   write_uint16_le (fd, byte_per_sample);
   write_uint16_le (fd, n_bits);
   write_bytes (fd, 4, "data");		/* data chunk */
-  write_uint32_le (fd, data_length);
+  write_uint32_le (fd, n_data_bytes);
 
+  return errno;
+}
+
+gint /* errno */
+gsl_wave_file_patch_length (gint           fd,
+			    guint	   n_data_bytes)
+{
+  guint file_length;
+  glong l;
+
+  g_return_val_if_fail (fd >= 0, EINVAL);
+  g_return_val_if_fail (n_data_bytes < 4294967296 - 44, EINVAL);
+
+  file_length = 0; /* 4 + 4; */				/* 'RIFF' header is left out*/
+  file_length += 4 + 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;	/* 'fmt ' header */
+  file_length += 4 + 4;					/* 'data' header */
+  file_length += n_data_bytes;
+
+  errno = 0;
+
+  do
+    l = lseek (fd, 4, SEEK_SET);
+  while (l < 0 && errno == EINTR);
+  if (l != 4 || errno)
+    return errno ? errno : EIO;
+  write_uint32_le (fd, file_length);
   if (errno)
-    return -errno;
+    return errno;
+
+  do
+    l = lseek (fd, 40, SEEK_SET);
+  while (l < 0 && errno == EINTR);
+  if (l != 40 || errno)
+    return errno ? errno : EIO;
+  write_uint32_le (fd, n_data_bytes);
+  if (errno)
+    return errno;
+
+  return errno;
+}
+
+gint /* errno */
+gsl_data_handle_dump_wav (GslDataHandle *dhandle,
+			  gint           fd,
+			  guint          n_bits,
+			  guint          n_channels,
+			  guint          sample_freq)
+{
+  guint data_length;
+
+  g_return_val_if_fail (dhandle != NULL, EINVAL);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), EINVAL);
+  g_return_val_if_fail (fd >= 0, EINVAL);
+  g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
+  g_return_val_if_fail (n_channels >= 1, EINVAL);
+
+  data_length = dhandle->setup.n_values * (n_bits == 16 ? 2 : 1);
+
+  errno = 0;
+  errno = gsl_wave_file_dump_header (fd, data_length, n_bits, n_channels, sample_freq);
+  if (errno)
+    return errno;
 
   return gsl_data_handle_dump (dhandle, fd,
 			       n_bits == 16 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,

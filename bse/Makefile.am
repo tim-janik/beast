@@ -59,7 +59,7 @@ bse_public_h_sources = $(strip \
 	bsesubinstrument.h	bsesubiport.h		bsesubkeyboard.h		bsesuboport.h \
 	bsesubsynth.h		bsesuper.h		bsetrack.h			bsetype.h \
 	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
-	bsewaverepo.h		bseladspamodule.h \
+	bsewaverepo.h		bseladspamodule.h	bsepcmwriter.h \
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -82,7 +82,7 @@ bse_c_sources = $(strip \
 	bsesubinstrument.c	bsesubiport.c		bsesubkeyboard.c		bsesuboport.c \
 	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \
 	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
-	bsewaverepo.c		bseladspamodule.c \
+	bsewaverepo.c		bseladspamodule.c	bsepcmwriter.c \
 )
 # procedure sources
 bse_proc_sources = $(strip \

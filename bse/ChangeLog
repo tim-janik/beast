@@ -1,3 +1,28 @@
+Fri Apr 18 19:48:59 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepcmwriter.[hc]: new object dumping PCM output to a WAV file.
+
+	* bsepcmmodule.c: route PCM data into a BsePcmWriter if given.
+
+	* bseserver.[hc]: added WAV file name property and support for
+	BsePcmWriter.
+
+	* gslloader-wav.c: fixed WAV header file length check.
+
+	* gsldatautils.[hc]:
+	(gsl_wave_file_dump_header): new function to write out RIFF/WAVE
+	headers, fixing up the file_length logic which was broken in
+	gsl_data_handle_dump_wav().
+	(gsl_wave_file_patch_length): new function to change the data length
+	information in a RIFF/WAVE file after the header was written (changes
+	file position pointer).
+	(gsl_data_handle_dump): return normal errno.
+	(gsl_data_handle_dump_wav): return normal errno, use
+	gsl_wave_file_dump_header() to write the wav header.
+
+	* bseproject.c (bse_project_store_bse): use bse_error_from_errno() to
+	translate errno to BseErrorType.
+
 Wed Apr 16 19:24:12 2003  Tim Janik  <timj@gtk.org>
 
 	* bsewaverepo.proc (load_file): fix usage of g_basename().

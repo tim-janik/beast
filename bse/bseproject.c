@@ -327,7 +327,7 @@ bse_project_store_bse (BseProject  *project,
 
   fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
   if (fd < 0)
-    return (errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_FILE_IO);
+    return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 
   storage = g_object_new (BSE_TYPE_STORAGE, NULL);
   bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS);

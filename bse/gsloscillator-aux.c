@@ -51,8 +51,6 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
   gfloat *boundary = mono_out + n_values;
   GslOscWave *wave = &osc->wave;
   
-  /* FIXME: should we do gsl_fpu_setround() here? */
-  
   pos_inc = gsl_dtoi (osc->last_freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
   sync_pos = osc->config.phase * wave->phase_to_pos;
   posm_strength = pos_inc * osc->config.fm_strength;

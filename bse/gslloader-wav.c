@@ -79,7 +79,7 @@ wav_read_header (gint       fd,
       WAV_DEBUG ("unmatched token 'RIFF'");
       return GSL_ERROR_FORMAT_INVALID;
     }
-  if (header->file_length < 40)
+  if (header->file_length < 36)
     {
       WAV_DEBUG ("file length (%u) too small", header->file_length);
       return GSL_ERROR_FORMAT_INVALID;

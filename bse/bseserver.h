@@ -42,12 +42,15 @@ struct _BseServer
   
   GList	          *projects;
   GSList	  *children;
+
+  gchar		  *wave_file;
   
   guint		   dev_use_count;
   guint		   pcm_latency;
   BsePcmDevice    *pcm_device;
   GslModule       *pcm_imodule;
   GslModule       *pcm_omodule;
+  BsePcmWriter	  *pcm_writer;
   BseMidiDevice	  *midi_device;
   BseMidiReceiver *midi_receiver;
   

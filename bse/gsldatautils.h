@@ -69,11 +69,18 @@ GslLong		gsl_data_find_block		(GslDataHandle		*handle,
 static inline gfloat gsl_data_handle_peek_value	(GslDataHandle		*dhandle,
 						 GslLong		 position,
 						 GslDataPeekBuffer	*peekbuf);
-gint /* -errno */    gsl_data_handle_dump	(GslDataHandle		*dhandle,
+gint /* errno */     gsl_data_handle_dump	(GslDataHandle		*dhandle,
 						 gint			 fd,
 						 GslWaveFormatType	 format,
 						 guint			 byte_order);
-gint /* -errno */    gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
+gint /* errno */     gsl_wave_file_dump_header	(gint			 fd,
+						 guint			 n_data_bytes,
+						 guint			 n_bits,
+						 guint			 n_channels,
+						 guint		         sample_freq);
+gint /* errno */     gsl_wave_file_patch_length (gint			 fd,
+						 guint			 n_data_bytes);
+gint /* errno */     gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
 						 gint			 fd,
 						 guint			 n_bits,
 						 guint			 n_channels,

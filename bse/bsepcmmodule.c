@@ -30,6 +30,7 @@ typedef struct
   gfloat       *buffer;
   gfloat       *bound;
   BsePcmHandle *handle;
+  BsePcmWriter *pcm_writer;
 } BsePCMModuleData;
 enum
 {
@@ -47,6 +48,7 @@ enum
 
 /* --- prototypes --- */
 static GslModule*	bse_pcm_omodule_insert	(BsePcmHandle	*handle,
+						 BsePcmWriter	*writer,
 						 GslTrans	*trans);
 static void		bse_pcm_omodule_remove	(GslModule	*pcm_module,
 						 GslTrans	*trans);
@@ -163,6 +165,8 @@ bse_pcm_omodule_process (GslModule *module,
     }
   
   bse_pcm_handle_write (mdata->handle, mdata->n_values, mdata->buffer);
+  if (mdata->pcm_writer)
+    bse_pcm_writer_write (mdata->pcm_writer, mdata->n_values, mdata->buffer);
 }
 
 static void
@@ -177,6 +181,7 @@ bse_pcm_module_data_free (gpointer        data,
 
 static GslModule*
 bse_pcm_omodule_insert (BsePcmHandle *handle,
+			BsePcmWriter *writer,
 			GslTrans     *trans)
 {
   static const GslClass pcm_omodule_class = {
@@ -201,6 +206,7 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
   mdata->buffer = g_new (gfloat, mdata->n_values);
   mdata->bound = mdata->buffer + mdata->n_values;
   mdata->handle = handle;
+  mdata->pcm_writer = writer;
   module = gsl_module_new (&pcm_omodule_class, mdata);
   
   gsl_trans_add (trans,
@@ -280,6 +286,7 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
   mdata->buffer = g_new0 (gfloat, mdata->n_values);
   mdata->bound = mdata->buffer + mdata->n_values;
   mdata->handle = handle;
+  mdata->pcm_writer = NULL;
   module = gsl_module_new (&pcm_imodule_class, mdata);
   
   gsl_trans_add (trans,

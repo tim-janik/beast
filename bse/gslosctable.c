@@ -198,8 +198,9 @@ osc_table_entry_lookup_best (const GslOscTable *table,
       if (i + 1 < g_bsearch_array_get_n_nodes (table->entry_array))
 	ep = g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i + 1);
       else	/* bad, might cause aliasing */
-	OSC_DEBUG ("lookup mismatch, aliasing possible: want_freq=%f got_freq=%f",
-		   mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq);
+	OSC_DEBUG ("lookup mismatch, aliasing possible: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
+		   mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
+		   table, i, g_bsearch_array_get_n_nodes (table->entry_array));
     }
   
   if (min_mfreq)

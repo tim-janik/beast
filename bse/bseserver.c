@@ -25,6 +25,7 @@
 #include "bsegconfig.h"
 #include "bsemidinotifier.h"
 #include "bsemain.h"		/* threads enter/leave */
+#include "bsepcmwriter.h"
 #include "bsemidireceiver.h"
 #include "bsemididevice-null.h"
 #include "bsejanitor.h"
@@ -40,9 +41,10 @@
 /* --- parameters --- */
 enum
 {
-  PARAM_0,
-  PARAM_GCONFIG,
-  PARAM_PCM_LATENCY,
+  PROP_0,
+  PROP_GCONFIG,
+  PROP_PCM_LATENCY,
+  PROP_WAVE_FILE
 };
 
 
@@ -136,13 +138,17 @@ bse_server_class_init (BseServerClass *class)
   
   _bse_gconfig_init ();
   bse_object_class_add_param (object_class, "BSE Configuration",
-			      PARAM_GCONFIG,
+			      PROP_GCONFIG,
 			      bse_gconfig_pspec ());	/* "bse-preferences" */
   bse_object_class_add_param (object_class, "PCM Settings",
-			      PARAM_PCM_LATENCY,
+			      PROP_PCM_LATENCY,
 			      sfi_pspec_int ("latency", "Latency [ms]", NULL,
 					     50, 1, 2000, 5,
 					     SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, "PCM Recording",
+			      PROP_WAVE_FILE,
+			      sfi_pspec_string ("wave_file", "WAVE File", NULL,
+						NULL, SFI_PARAM_GUI));
   
   signal_registration = bse_object_class_add_signal (object_class, "registration",
 						     G_TYPE_NONE, 3,
@@ -201,6 +207,7 @@ bse_server_init (BseServer *server)
   server->pcm_device = NULL;
   server->pcm_imodule = NULL;
   server->pcm_omodule = NULL;
+  server->pcm_writer = NULL;
   server->midi_device = NULL;
   BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
   
@@ -245,16 +252,27 @@ bse_server_set_property (GObject      *object,
     {
       BsePcmHandle *handle;
       SfiRec *rec;
-    case PARAM_GCONFIG:
+    case PROP_GCONFIG:
       rec = sfi_value_get_rec (value);
       if (rec)
 	bse_gconfig_apply (rec);
       break;
-    case PARAM_PCM_LATENCY:
+    case PROP_PCM_LATENCY:
       server->pcm_latency = g_value_get_int (value);
       handle = server->pcm_device ? bse_pcm_device_get_handle (server->pcm_device) : NULL;
       if (handle)
 	bse_pcm_handle_set_watermark (handle, server->pcm_latency);
+      break;
+    case PROP_WAVE_FILE:
+      if (!bse_gconfig_locked ())
+	{
+	  server->wave_file = g_strdup_stripped (g_value_get_string (value));
+	  if (!server->wave_file[0])
+	    {
+	      g_free (server->wave_file);
+	      server->wave_file = NULL;
+	    }
+	}
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (server, param_id, pspec);
@@ -272,13 +290,16 @@ bse_server_get_property (GObject    *object,
   switch (param_id)
     {
       SfiRec *rec;
-    case PARAM_GCONFIG:
+    case PROP_GCONFIG:
       rec = bse_gconfig_to_rec (bse_global_config);
       sfi_value_set_rec (value, rec);
       sfi_rec_unref (rec);
       break;
-    case PARAM_PCM_LATENCY:
+    case PROP_PCM_LATENCY:
       g_value_set_int (value, server->pcm_latency);
+      break;
+    case PROP_WAVE_FILE:
+      g_value_set_string (value, server->wave_file);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (server, param_id, pspec);
@@ -530,7 +551,20 @@ bse_server_open_devices (BseServer *self)
 				    self->pcm_latency);
       engine_init (self, bse_pcm_device_get_handle (self->pcm_device)->mix_freq);
       self->pcm_imodule = bse_pcm_imodule_insert (bse_pcm_device_get_handle (self->pcm_device), trans);
-      self->pcm_omodule = bse_pcm_omodule_insert (bse_pcm_device_get_handle (self->pcm_device), trans);
+      if (self->wave_file)
+	{
+	  BseErrorType error;
+	  self->pcm_writer = g_object_new (BSE_TYPE_PCM_WRITER, NULL);
+	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, gsl_engine_sample_freq ());
+	  if (error)
+	    {
+	      sfi_info ("failed to open WAV file \"%s\": %s", self->wave_file, bse_error_blurb (error));
+	      g_object_unref (self->pcm_writer);
+	      self->pcm_writer = NULL;
+	    }
+	}
+      self->pcm_omodule = bse_pcm_omodule_insert (bse_pcm_device_get_handle (self->pcm_device),
+						  self->pcm_writer, trans);
       gsl_trans_commit (trans);
       self->dev_use_count++;
     }
@@ -566,6 +600,13 @@ bse_server_close_devices (BseServer *self)
       self->pcm_imodule = NULL;
       bse_pcm_omodule_remove (self->pcm_omodule, trans);
       self->pcm_omodule = NULL;
+      if (self->pcm_writer)
+	{
+	  if (self->pcm_writer->open)
+	    bse_pcm_writer_close (self->pcm_writer);
+	  g_object_unref (self->pcm_writer);
+	  self->pcm_writer = NULL;
+	}
       /* we don't need to discard the midi_receiver */
       // FIXME: discard midi_receiver modules
       gsl_trans_commit (trans);
