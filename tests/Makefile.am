@@ -3,9 +3,7 @@
 #
 ## Makefile.am for BEAST tests
 
-SUBDIRS =
-
-INCLUDES += -I$(top_srcdir) -I$(top_builddir) $(SFI_CFLAGS)
+INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
 
 DEFS += -DG_LOG_DOMAIN=\"BEAST-TEST\" # -DG_DISABLE_CONST_RETURNS
 
