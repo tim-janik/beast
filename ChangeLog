@@ -1,3 +1,9 @@
+Tue Apr 29 01:31:41 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkcellrendererpopup.c:
+	(gxk_cell_renderer_popup_start_editing): fixup popdown connection which
+	needs to be on the label.
+
 Mon Apr 28 22:13:19 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkutils.[hc]:

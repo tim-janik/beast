@@ -314,6 +314,7 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
   g_object_connect (entry,
 		    "swapped_signal::editing_done", gxk_cell_renderer_popup_editing_done, self,
 		    "signal::notify::is-focus", gxk_cell_editable_is_focus_handler, self,
+		    "swapped_signal::remove_widget", gxk_cell_renderer_popup_popdown, self,
 		    NULL);
   if (tcell->text)
     gtk_entry_set_text (GTK_ENTRY (entry), tcell->text);
@@ -348,7 +349,6 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
   g_object_connect (eproxy,
 		    // "swapped_signal::remove_widget", g_print, "remove_widget\n",
 		    // "swapped_signal::editing_done", g_print, "editing_done\n",
-		    "swapped_signal::remove_widget", gxk_cell_renderer_popup_popdown, self,
 		    NULL);
   gtk_box_pack_start (GTK_BOX (hbox), popup_area, FALSE, FALSE, 0);
   gxk_proxy_editable_set_cell_editable (eproxy, ecell);
