@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-22 08:40+0100\n"
+"POT-Creation-Date: 2003-12-23 23:41+0100\n"
 "PO-Revision-Date: 2003-12-22 08:43+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -186,7 +186,7 @@ msgstr "ЗВЕР-%s Објава издања"
 msgid "Module Link: "
 msgstr "Веза са модулом:"
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:914
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:927
 msgid "Module link"
 msgstr "Веза са модулом"
 
@@ -194,11 +194,11 @@ msgstr "Веза са модулом"
 msgid "Module Info"
 msgstr "Подаци о модулу"
 
-#: beast-gtk/bstcanvassource.c:986 beast-gtk/bstsnetrouter.c:200
+#: beast-gtk/bstcanvassource.c:986 beast-gtk/bstsnetrouter.c:210
 msgid "Input"
 msgstr "Улаз"
 
-#: beast-gtk/bstcanvassource.c:995 beast-gtk/bstsnetrouter.c:197
+#: beast-gtk/bstcanvassource.c:995 beast-gtk/bstsnetrouter.c:207
 #: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
 #: plugins/artscompressor.idl:57
 msgid "Output"
@@ -383,7 +383,7 @@ msgstr "Додај"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
+#: beast-gtk/bstsnetrouter.c:889 beast-gtk/bstsnetrouter.c:931
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
 #: beast-gtk/bstwaveview.c:47
 msgid "Delete"
@@ -470,16 +470,16 @@ msgstr "Учитавам „%s“"
 msgid "Loading project \"%s\""
 msgstr "Учитавам пројекат „%s“"
 
-#: beast-gtk/bstmain.c:694
+#: beast-gtk/bstmain.c:695
 msgid "BEAST About"
 msgstr "О Звери"
 
-#: beast-gtk/bstmain.c:695
+#: beast-gtk/bstmain.c:696
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ЗВЕР, издање %s"
 
-#: beast-gtk/bstmain.c:696
+#: beast-gtk/bstmain.c:697
 msgid "Contributions made by:"
 msgstr "Такође допринели:"
 
@@ -751,7 +751,7 @@ msgstr "Пусти ноту"
 msgid "Playback"
 msgstr "Пуштање"
 
-#: beast-gtk/bstprocedure.c:212
+#: beast-gtk/bstprocedure.c:206
 msgid "Description"
 msgstr "Опис"
 
@@ -898,7 +898,7 @@ msgstr "Уреди"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Уреди/Премести/Мени (1–3. дугме миша)"
 
-#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1069
+#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1082
 msgid "Palette"
 msgstr "Палета"
 
@@ -906,84 +906,84 @@ msgstr "Палета"
 msgid "Toggle visibility of the tool palette"
 msgstr "Измени видљивост палете алатки"
 
-#: beast-gtk/bstsnetrouter.c:197
+#: beast-gtk/bstsnetrouter.c:207
 msgid "PCM Output module"
 msgstr "PCM излазни модул"
 
-#: beast-gtk/bstsnetrouter.c:198
+#: beast-gtk/bstsnetrouter.c:208
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:198
+#: beast-gtk/bstsnetrouter.c:208
 msgid "Standard amplifier module"
 msgstr "Обични модул за појачавање"
 
-#: beast-gtk/bstsnetrouter.c:199
+#: beast-gtk/bstsnetrouter.c:209
 msgid "Snooper"
 msgstr "Њушкало"
 
-#: beast-gtk/bstsnetrouter.c:199
+#: beast-gtk/bstsnetrouter.c:209
 msgid "Signal debugging module"
 msgstr "Модул за разбубирање сигнала"
 
-#: beast-gtk/bstsnetrouter.c:200
+#: beast-gtk/bstsnetrouter.c:210
 msgid "PCM Input module"
 msgstr "PCM улазни модул"
 
-#: beast-gtk/bstsnetrouter.c:245
+#: beast-gtk/bstsnetrouter.c:258
 msgid "Channel Hints"
 msgstr "Наговештаји канала"
 
-#: beast-gtk/bstsnetrouter.c:245
+#: beast-gtk/bstsnetrouter.c:258
 msgid "Toggle channel name hints"
 msgstr "Искључи/укључи наговештаје имена канала"
 
-#: beast-gtk/bstsnetrouter.c:785
+#: beast-gtk/bstsnetrouter.c:798
 msgid "Input channel in use"
 msgstr "Улазни канал у употреби"
 
-#: beast-gtk/bstsnetrouter.c:812 beast-gtk/bstsnetrouter.c:814
-#: beast-gtk/bstsnetrouter.c:850
+#: beast-gtk/bstsnetrouter.c:825 beast-gtk/bstsnetrouter.c:827
+#: beast-gtk/bstsnetrouter.c:863
 msgid "Create Link"
 msgstr "Направи везу"
 
-#: beast-gtk/bstsnetrouter.c:812
+#: beast-gtk/bstsnetrouter.c:825
 msgid "Select output module"
 msgstr "Изаберите излазни модул"
 
-#: beast-gtk/bstsnetrouter.c:814
+#: beast-gtk/bstsnetrouter.c:827
 msgid "Select input module"
 msgstr "Изаберите улазни модул"
 
-#: beast-gtk/bstsnetrouter.c:870
+#: beast-gtk/bstsnetrouter.c:883
 msgid "Properties"
 msgstr "Особине"
 
-#: beast-gtk/bstsnetrouter.c:871
+#: beast-gtk/bstsnetrouter.c:884
 msgid "Reset Properties"
 msgstr "Врати особине"
 
-#: beast-gtk/bstsnetrouter.c:872
+#: beast-gtk/bstsnetrouter.c:885
 msgid "Delete Inputs"
 msgstr "Уклони улазе"
 
-#: beast-gtk/bstsnetrouter.c:873
+#: beast-gtk/bstsnetrouter.c:886
 msgid "Delete Outputs"
 msgstr "Уклони излазе"
 
-#: beast-gtk/bstsnetrouter.c:874 beast-gtk/bstsnetrouter.c:916
+#: beast-gtk/bstsnetrouter.c:887 beast-gtk/bstsnetrouter.c:929
 msgid "Show Info"
 msgstr "Прикажи податке"
 
-#: beast-gtk/bstsnetrouter.c:900
+#: beast-gtk/bstsnetrouter.c:913
 msgid "Remove Module"
 msgstr "Уклони модул"
 
-#: beast-gtk/bstsnetrouter.c:927
+#: beast-gtk/bstsnetrouter.c:940
 msgid "Delete Link"
 msgstr "Уклони везу"
 
-#: beast-gtk/bstsnetrouter.c:981
+#: beast-gtk/bstsnetrouter.c:994
 msgid "Insert Module"
 msgstr "Уметни модул"
 
@@ -1034,7 +1034,7 @@ msgstr "Песме"
 #: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
 #: beast-gtk/bstsupershell.c:295 plugins/artscompressor.idl:33
 #: plugins/artscompressor.idl:52 plugins/davbassfilter.idl:35
-#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:33
+#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Параметри"
 
@@ -1607,7 +1607,7 @@ msgstr "Други контролни улаз"
 
 #: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
 #: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
-#: plugins/evaluator/bseevaluator.idl:32
+#: plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
 msgstr "Излаз звука"
 
@@ -1708,11 +1708,11 @@ msgstr "Појачање излазне сцене"
 msgid "Filter"
 msgstr "Филтер"
 
-#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:124
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:125
 msgid "Filter Type"
 msgstr "Врста филтера"
 
-#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:118
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:119
 msgid "The filter design type"
 msgstr "Врста израде филтера"
 
@@ -1720,13 +1720,13 @@ msgstr "Врста израде филтера"
 msgid "Center Frequency"
 msgstr "Средишња учестаност"
 
-#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:140
-#: plugins/bseiirfilter.c:150
+#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:141
+#: plugins/bseiirfilter.c:151
 msgid "Cutoff [Hz]"
 msgstr "Исецање [Hz]"
 
-#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:145
-#: plugins/bseiirfilter.c:155
+#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:146
+#: plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr "Напомена"
 
@@ -1844,7 +1844,7 @@ msgid "BSE Synthesis File"
 msgstr "BSE датотека за синтезу"
 
 #: plugins/artscompressor.idl:28 plugins/artscompressor.idl:45
-#: plugins/evaluator/bseevaluator.idl:26
+#: plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
 msgstr "ГНУ-ова општа јавна лиценца (GPL)"
 
@@ -1857,12 +1857,12 @@ msgid "ArtsCompressor compresses the sound."
 msgstr "ArtsCompressor компресује звук."
 
 #: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:31
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Улаз звука"
 
 #: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:31
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr "Улаз звука"
 
@@ -2012,51 +2012,51 @@ msgstr "Равнотежа излаза"
 msgid "Adjust output balance between left and right"
 msgstr "Прилагодите равнотежу излаза лево и десно"
 
-#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
+#: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
 msgid "Filter Choice"
 msgstr "Избор филтера"
 
-#: plugins/bseiirfilter.c:118
+#: plugins/bseiirfilter.c:119
 msgid "Filter Algorithm"
 msgstr "Алгоритам филтера"
 
-#: plugins/bseiirfilter.c:124
+#: plugins/bseiirfilter.c:125
 msgid "The type of filter to use"
 msgstr "Врста филтера који се користи"
 
-#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
+#: plugins/bseiirfilter.c:129 plugins/bseiirfilter.c:134
 msgid "Filter Specification"
 msgstr "Спецификација филтера"
 
-#: plugins/bseiirfilter.c:130
+#: plugins/bseiirfilter.c:131
 msgid "Order"
 msgstr "Редослед"
 
-#: plugins/bseiirfilter.c:130
+#: plugins/bseiirfilter.c:131
 msgid "Order of Filter"
 msgstr "Ред филтера"
 
-#: plugins/bseiirfilter.c:135
+#: plugins/bseiirfilter.c:136
 msgid "Epsilon"
 msgstr "Епсилон"
 
-#: plugins/bseiirfilter.c:135
+#: plugins/bseiirfilter.c:136
 msgid "Passband falloff at cutoff frequency"
 msgstr "Пролаз опсега отпада на учестаности одсецања"
 
-#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
+#: plugins/bseiirfilter.c:139 plugins/bseiirfilter.c:144
 msgid "Cutoff Frequency (All Filters)"
 msgstr "Учестаност одсецања (сви филтери)"
 
-#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
+#: plugins/bseiirfilter.c:149 plugins/bseiirfilter.c:154
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
 msgstr "Учестаност одсецања 2 (пролаз опсега/заустављање)"
 
-#: plugins/bseiirfilter.c:159
+#: plugins/bseiirfilter.c:160
 msgid "Unfiltered Input"
 msgstr "Нефилтриран улаз"
 
-#: plugins/bseiirfilter.c:161
+#: plugins/bseiirfilter.c:162
 msgid "Filtered Output"
 msgstr "Филтриран улаз"
 
@@ -2135,11 +2135,11 @@ msgstr "Излаз влажног [%]"
 msgid "Set the amount of modified data to mix"
 msgstr "Постави количину измењених података за мешање"
 
-#: plugins/evaluator/bseevaluator.idl:27
+#: plugins/evaluator/bseevaluator.idl:28
 msgid "/Misc/Evaluator"
 msgstr "/Разно/Вредновање"
 
-#: plugins/evaluator/bseevaluator.idl:28
+#: plugins/evaluator/bseevaluator.idl:29
 msgid ""
 "BseEvaluator is a module which can compute arithmetic operations in a small "
 "language. The audio input signal is called input, the audio output signal is "
@@ -2151,22 +2151,22 @@ msgstr ""
 "назива излаз. Једноставни примери за програме треба да буде „output = input "
 "* 5“ или „output = 2 * input +1“."
 
-#: plugins/evaluator/bseevaluator.idl:32
+#: plugins/evaluator/bseevaluator.idl:33
 msgid "Audio output"
 msgstr "Звучни излаз"
 
-#: plugins/evaluator/bseevaluator.idl:34
+#: plugins/evaluator/bseevaluator.idl:35
 msgid "Source code"
 msgstr "Изворни код"
 
-#: plugins/evaluator/bseevaluator.idl:34
+#: plugins/evaluator/bseevaluator.idl:35
 msgid "The source code"
 msgstr "Изворни код"
 
-#: plugins/evaluator/bseevaluator.idl:35
+#: plugins/evaluator/bseevaluator.idl:36
 msgid "Status"
 msgstr "Стање"
 
-#: plugins/evaluator/bseevaluator.idl:35
+#: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr "Стање које се користи за испит порука о грешкама"

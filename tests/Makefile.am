@@ -76,6 +76,7 @@ BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
 testplugin_la_SOURCES = testplugin.cc
 testplugin_la_LDFLAGS = -module -avoid-version
 testplugin_la_LIBADD  = $(BSE_LIBS) -lm
+EXTRA_HEADERS += testplugin.idl
 
 lib_LTLIBRARIES = testplugin.la
 # Prevent those libs from being installed
@@ -86,5 +87,6 @@ $(srcdir)/testplugin.cc: testplugin.gen-idl.h
 
 CLEANFILES += testplugin.gen-idl.h
 EXTRA_DIST += $(strip \
-	testplugin.gen-idl.h \
+	testplugin.gen-idl.h 	\
+	$(EXTRA_HEADERS)	\
 )

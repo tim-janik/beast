@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-22 08:40+0100\n"
+"POT-Creation-Date: 2003-12-23 23:41+0100\n"
 "PO-Revision-Date: 2003-12-22 08:43+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -186,7 +186,7 @@ msgstr "ZVER-%s Objava izdanja"
 msgid "Module Link: "
 msgstr "Veza sa modulom:"
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:914
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:927
 msgid "Module link"
 msgstr "Veza sa modulom"
 
@@ -194,11 +194,11 @@ msgstr "Veza sa modulom"
 msgid "Module Info"
 msgstr "Podaci o modulu"
 
-#: beast-gtk/bstcanvassource.c:986 beast-gtk/bstsnetrouter.c:200
+#: beast-gtk/bstcanvassource.c:986 beast-gtk/bstsnetrouter.c:210
 msgid "Input"
 msgstr "Ulaz"
 
-#: beast-gtk/bstcanvassource.c:995 beast-gtk/bstsnetrouter.c:197
+#: beast-gtk/bstcanvassource.c:995 beast-gtk/bstsnetrouter.c:207
 #: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
 #: plugins/artscompressor.idl:57
 msgid "Output"
@@ -383,7 +383,7 @@ msgstr "Dodaj"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
+#: beast-gtk/bstsnetrouter.c:889 beast-gtk/bstsnetrouter.c:931
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
 #: beast-gtk/bstwaveview.c:47
 msgid "Delete"
@@ -470,16 +470,16 @@ msgstr "Učitavam „%s“"
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
 
-#: beast-gtk/bstmain.c:694
+#: beast-gtk/bstmain.c:695
 msgid "BEAST About"
 msgstr "O Zveri"
 
-#: beast-gtk/bstmain.c:695
+#: beast-gtk/bstmain.c:696
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ZVER, izdanje %s"
 
-#: beast-gtk/bstmain.c:696
+#: beast-gtk/bstmain.c:697
 msgid "Contributions made by:"
 msgstr "Takođe doprineli:"
 
@@ -751,7 +751,7 @@ msgstr "Pusti notu"
 msgid "Playback"
 msgstr "Puštanje"
 
-#: beast-gtk/bstprocedure.c:212
+#: beast-gtk/bstprocedure.c:206
 msgid "Description"
 msgstr "Opis"
 
@@ -783,9 +783,10 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih izdanja. "
-"Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
-"budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
+"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih "
+"izdanja. Znači, ne pouzdajte se da će izgled uređivača ostati isti u "
+"budućnosti, i budite spremni na nestabilnost u kodu (tj. redovno snimajte "
+"vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/gadgets-beast.xml.h:22
@@ -898,7 +899,7 @@ msgstr "Uredi"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Uredi/Premesti/Meni (1–3. dugme miša)"
 
-#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1069
+#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1082
 msgid "Palette"
 msgstr "Paleta"
 
@@ -906,84 +907,84 @@ msgstr "Paleta"
 msgid "Toggle visibility of the tool palette"
 msgstr "Izmeni vidljivost palete alatki"
 
-#: beast-gtk/bstsnetrouter.c:197
+#: beast-gtk/bstsnetrouter.c:207
 msgid "PCM Output module"
 msgstr "PCM izlazni modul"
 
-#: beast-gtk/bstsnetrouter.c:198
+#: beast-gtk/bstsnetrouter.c:208
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:198
+#: beast-gtk/bstsnetrouter.c:208
 msgid "Standard amplifier module"
 msgstr "Obični modul za pojačavanje"
 
-#: beast-gtk/bstsnetrouter.c:199
+#: beast-gtk/bstsnetrouter.c:209
 msgid "Snooper"
 msgstr "Njuškalo"
 
-#: beast-gtk/bstsnetrouter.c:199
+#: beast-gtk/bstsnetrouter.c:209
 msgid "Signal debugging module"
 msgstr "Modul za razbubiranje signala"
 
-#: beast-gtk/bstsnetrouter.c:200
+#: beast-gtk/bstsnetrouter.c:210
 msgid "PCM Input module"
 msgstr "PCM ulazni modul"
 
-#: beast-gtk/bstsnetrouter.c:245
+#: beast-gtk/bstsnetrouter.c:258
 msgid "Channel Hints"
 msgstr "Nagoveštaji kanala"
 
-#: beast-gtk/bstsnetrouter.c:245
+#: beast-gtk/bstsnetrouter.c:258
 msgid "Toggle channel name hints"
 msgstr "Isključi/uključi nagoveštaje imena kanala"
 
-#: beast-gtk/bstsnetrouter.c:785
+#: beast-gtk/bstsnetrouter.c:798
 msgid "Input channel in use"
 msgstr "Ulazni kanal u upotrebi"
 
-#: beast-gtk/bstsnetrouter.c:812 beast-gtk/bstsnetrouter.c:814
-#: beast-gtk/bstsnetrouter.c:850
+#: beast-gtk/bstsnetrouter.c:825 beast-gtk/bstsnetrouter.c:827
+#: beast-gtk/bstsnetrouter.c:863
 msgid "Create Link"
 msgstr "Napravi vezu"
 
-#: beast-gtk/bstsnetrouter.c:812
+#: beast-gtk/bstsnetrouter.c:825
 msgid "Select output module"
 msgstr "Izaberite izlazni modul"
 
-#: beast-gtk/bstsnetrouter.c:814
+#: beast-gtk/bstsnetrouter.c:827
 msgid "Select input module"
 msgstr "Izaberite ulazni modul"
 
-#: beast-gtk/bstsnetrouter.c:870
+#: beast-gtk/bstsnetrouter.c:883
 msgid "Properties"
 msgstr "Osobine"
 
-#: beast-gtk/bstsnetrouter.c:871
+#: beast-gtk/bstsnetrouter.c:884
 msgid "Reset Properties"
 msgstr "Vrati osobine"
 
-#: beast-gtk/bstsnetrouter.c:872
+#: beast-gtk/bstsnetrouter.c:885
 msgid "Delete Inputs"
 msgstr "Ukloni ulaze"
 
-#: beast-gtk/bstsnetrouter.c:873
+#: beast-gtk/bstsnetrouter.c:886
 msgid "Delete Outputs"
 msgstr "Ukloni izlaze"
 
-#: beast-gtk/bstsnetrouter.c:874 beast-gtk/bstsnetrouter.c:916
+#: beast-gtk/bstsnetrouter.c:887 beast-gtk/bstsnetrouter.c:929
 msgid "Show Info"
 msgstr "Prikaži podatke"
 
-#: beast-gtk/bstsnetrouter.c:900
+#: beast-gtk/bstsnetrouter.c:913
 msgid "Remove Module"
 msgstr "Ukloni modul"
 
-#: beast-gtk/bstsnetrouter.c:927
+#: beast-gtk/bstsnetrouter.c:940
 msgid "Delete Link"
 msgstr "Ukloni vezu"
 
-#: beast-gtk/bstsnetrouter.c:981
+#: beast-gtk/bstsnetrouter.c:994
 msgid "Insert Module"
 msgstr "Umetni modul"
 
@@ -1034,7 +1035,7 @@ msgstr "Pesme"
 #: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
 #: beast-gtk/bstsupershell.c:295 plugins/artscompressor.idl:33
 #: plugins/artscompressor.idl:52 plugins/davbassfilter.idl:35
-#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:33
+#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parametri"
 
@@ -1488,8 +1489,8 @@ msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
 msgstr ""
-"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak predstavlja "
-"prečicu"
+"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak "
+"predstavlja prečicu"
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
@@ -1499,8 +1500,8 @@ msgstr "Samo-iseci"
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
-"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju tri "
-"tačke „...“"
+"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju "
+"tri tačke „...“"
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
@@ -1567,9 +1568,9 @@ msgstr ""
 "signala. Podržava dva kontrolna ulaza i dva zvučna ulaza koji se mešaju "
 "zajedno prema prilagođivanju ravnoteže i nivoa. Dobitak kontroliše "
 "prepojačanje mešanog zvučnog singala. Mešani kontrolni signal, uz težinski "
-"koeficijent, određuje pojačanje programa, dozvoljavajući da spoljašnji izvori "
-"programa razdele opšti promet (tremolo). Mešani kontrolni signal ne može da "
-"utiče linearno na pojačivanje (ostalih kontrolnih signala) ili "
+"koeficijent, određuje pojačanje programa, dozvoljavajući da spoljašnji "
+"izvori programa razdele opšti promet (tremolo). Mešani kontrolni signal ne "
+"može da utiče linearno na pojačivanje (ostalih kontrolnih signala) ili "
 "eksponencijalno (za pojačanje zvučnih zignala). Konačno, glavna jačina "
 "upravlja pojačanje izlaznog signala."
 
@@ -1607,7 +1608,7 @@ msgstr "Drugi kontrolni ulaz"
 
 #: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
 #: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
-#: plugins/evaluator/bseevaluator.idl:32
+#: plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
 msgstr "Izlaz zvuka"
 
@@ -1708,11 +1709,11 @@ msgstr "Pojačanje izlazne scene"
 msgid "Filter"
 msgstr "Filter"
 
-#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:124
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:125
 msgid "Filter Type"
 msgstr "Vrsta filtera"
 
-#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:118
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:119
 msgid "The filter design type"
 msgstr "Vrsta izrade filtera"
 
@@ -1720,13 +1721,13 @@ msgstr "Vrsta izrade filtera"
 msgid "Center Frequency"
 msgstr "Središnja učestanost"
 
-#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:140
-#: plugins/bseiirfilter.c:150
+#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:141
+#: plugins/bseiirfilter.c:151
 msgid "Cutoff [Hz]"
 msgstr "Isecanje [Hz]"
 
-#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:145
-#: plugins/bseiirfilter.c:155
+#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:146
+#: plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr "Napomena"
 
@@ -1844,7 +1845,7 @@ msgid "BSE Synthesis File"
 msgstr "BSE datoteka za sintezu"
 
 #: plugins/artscompressor.idl:28 plugins/artscompressor.idl:45
-#: plugins/evaluator/bseevaluator.idl:26
+#: plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
 msgstr "GNU-ova opšta javna licenca (GPL)"
 
@@ -1857,12 +1858,12 @@ msgid "ArtsCompressor compresses the sound."
 msgstr "ArtsCompressor kompresuje zvuk."
 
 #: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:31
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Ulaz zvuka"
 
 #: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:31
+#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr "Ulaz zvuka"
 
@@ -1958,11 +1959,12 @@ msgid ""
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
 msgstr ""
-"BseBalance je moduo za stereo ravnanje sa dva zvučna i dva kontrolna ulaza, i "
-"na svakom se može odvojeno prilagoditi nivo. Izlazna ravnoteža se kontroliše "
-"ravnotežom prilagođenja i zbirom kontrolnih ulaza. Radi izbegavanja šuma za "
-"brzu izmenu ravnoteže, kontrolni signal se predobrađuje jednostavnim "
-"niskoprolaznim filterom sa prilagodljivom frekvencijom odsecanja."
+"BseBalance je moduo za stereo ravnanje sa dva zvučna i dva kontrolna ulaza, "
+"i na svakom se može odvojeno prilagoditi nivo. Izlazna ravnoteža se "
+"kontroliše ravnotežom prilagođenja i zbirom kontrolnih ulaza. Radi "
+"izbegavanja šuma za brzu izmenu ravnoteže, kontrolni signal se predobrađuje "
+"jednostavnim niskoprolaznim filterom sa prilagodljivom frekvencijom "
+"odsecanja."
 
 #: plugins/bsebalance.idl:40
 msgid "Left Out"
@@ -2012,51 +2014,51 @@ msgstr "Ravnoteža izlaza"
 msgid "Adjust output balance between left and right"
 msgstr "Prilagodite ravnotežu izlaza levo i desno"
 
-#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
+#: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
 msgid "Filter Choice"
 msgstr "Izbor filtera"
 
-#: plugins/bseiirfilter.c:118
+#: plugins/bseiirfilter.c:119
 msgid "Filter Algorithm"
 msgstr "Algoritam filtera"
 
-#: plugins/bseiirfilter.c:124
+#: plugins/bseiirfilter.c:125
 msgid "The type of filter to use"
 msgstr "Vrsta filtera koji se koristi"
 
-#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
+#: plugins/bseiirfilter.c:129 plugins/bseiirfilter.c:134
 msgid "Filter Specification"
 msgstr "Specifikacija filtera"
 
-#: plugins/bseiirfilter.c:130
+#: plugins/bseiirfilter.c:131
 msgid "Order"
 msgstr "Redosled"
 
-#: plugins/bseiirfilter.c:130
+#: plugins/bseiirfilter.c:131
 msgid "Order of Filter"
 msgstr "Red filtera"
 
-#: plugins/bseiirfilter.c:135
+#: plugins/bseiirfilter.c:136
 msgid "Epsilon"
 msgstr "Epsilon"
 
-#: plugins/bseiirfilter.c:135
+#: plugins/bseiirfilter.c:136
 msgid "Passband falloff at cutoff frequency"
 msgstr "Prolaz opsega otpada na učestanosti odsecanja"
 
-#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
+#: plugins/bseiirfilter.c:139 plugins/bseiirfilter.c:144
 msgid "Cutoff Frequency (All Filters)"
 msgstr "Učestanost odsecanja (svi filteri)"
 
-#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
+#: plugins/bseiirfilter.c:149 plugins/bseiirfilter.c:154
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
 msgstr "Učestanost odsecanja 2 (prolaz opsega/zaustavljanje)"
 
-#: plugins/bseiirfilter.c:159
+#: plugins/bseiirfilter.c:160
 msgid "Unfiltered Input"
 msgstr "Nefiltriran ulaz"
 
-#: plugins/bseiirfilter.c:161
+#: plugins/bseiirfilter.c:162
 msgid "Filtered Output"
 msgstr "Filtriran ulaz"
 
@@ -2135,11 +2137,11 @@ msgstr "Izlaz vlažnog [%]"
 msgid "Set the amount of modified data to mix"
 msgstr "Postavi količinu izmenjenih podataka za mešanje"
 
-#: plugins/evaluator/bseevaluator.idl:27
+#: plugins/evaluator/bseevaluator.idl:28
 msgid "/Misc/Evaluator"
 msgstr "/Razno/Vrednovanje"
 
-#: plugins/evaluator/bseevaluator.idl:28
+#: plugins/evaluator/bseevaluator.idl:29
 msgid ""
 "BseEvaluator is a module which can compute arithmetic operations in a small "
 "language. The audio input signal is called input, the audio output signal is "
@@ -2151,22 +2153,22 @@ msgstr ""
 "naziva izlaz. Jednostavni primeri za programe treba da bude „output = input "
 "* 5“ ili „output = 2 * input +1“."
 
-#: plugins/evaluator/bseevaluator.idl:32
+#: plugins/evaluator/bseevaluator.idl:33
 msgid "Audio output"
 msgstr "Zvučni izlaz"
 
-#: plugins/evaluator/bseevaluator.idl:34
+#: plugins/evaluator/bseevaluator.idl:35
 msgid "Source code"
 msgstr "Izvorni kod"
 
-#: plugins/evaluator/bseevaluator.idl:34
+#: plugins/evaluator/bseevaluator.idl:35
 msgid "The source code"
 msgstr "Izvorni kod"
 
-#: plugins/evaluator/bseevaluator.idl:35
+#: plugins/evaluator/bseevaluator.idl:36
 msgid "Status"
 msgstr "Stanje"
 
-#: plugins/evaluator/bseevaluator.idl:35
+#: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr "Stanje koje se koristi za ispit poruka o greškama"
