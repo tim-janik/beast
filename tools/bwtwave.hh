@@ -34,8 +34,9 @@ public:
   /*Con*/         WaveChunk();
   /*Copy*/        WaveChunk (const WaveChunk &rhs);
   WaveChunk&      operator= (const WaveChunk &);
-  BseErrorType    set_dhandle_from_temporary (const string &fname,
-                                              gdouble       osc_freq = -1);
+  BseErrorType    set_dhandle_from_file (const string &fname,
+                                         gdouble       osc_freq,
+                                         gchar       **xinfos);
   /*Des*/         ~WaveChunk();
 };
 

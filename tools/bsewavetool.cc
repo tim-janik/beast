@@ -520,7 +520,7 @@ public:
         unlink_file_list.push_back (temp_file);
         const guint ENCODER_BUFFER = 16 * 1024;
         g_printerr ("ENCODING: chunk % 7.2f/%.0f\r", gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle));
-        SfiNum n = 0, l = gsl_data_handle_length (dhandle);
+        SfiNum n = 0, v = 0, l = gsl_data_handle_length (dhandle);
         while (n < l)
           {
             gfloat buffer[ENCODER_BUFFER];
@@ -531,6 +531,7 @@ public:
                 gsl_vorbis_encoder_write_pcm (enc, r, buffer);
                 guint8 *buf = reinterpret_cast<guint8*> (buffer);
                 r = gsl_vorbis_encoder_read_ogg (enc, ENCODER_BUFFER, buf);
+                v += MAX (r, 0);
                 while (r > 0)
                   {
                     do
@@ -544,18 +545,19 @@ public:
                         exit (1);
                       }
                     r = gsl_vorbis_encoder_read_ogg (enc, ENCODER_BUFFER, buf);
+                    v += MAX (r, 0);
                   }
               }
             g_printerr ("ENCODING: chunk % 7.2f/%.0f, processed %0.1f%%       \r",
                         gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
-                        n * 100.0 / l);
+                        n * 99.999999 / l);
           }
         gsl_vorbis_encoder_pcm_done (enc);
-        g_printerr ("\n");
         while (!gsl_vorbis_encoder_ogg_eos (enc))
           {
             guint8 buf[ENCODER_BUFFER];
             SfiNum j, r = gsl_vorbis_encoder_read_ogg (enc, ENCODER_BUFFER, buf);
+            v += MAX (r, 0);
             if (r > 0)
               {
                 do
@@ -571,6 +573,10 @@ public:
               }
           }
         gsl_vorbis_encoder_destroy (enc);
+        guint n_bytes = (gsl_data_handle_bit_depth (dhandle) + 7) / 8;
+        g_printerr ("ENCODING: chunk % 7.2f/%.0f, processed %0.1f%% (reduced to: %5.2f%%)      \n",
+                    gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
+                    n * 100.0 / l, v * 100.0 / (l * MAX (1, n_bytes)));
         if (close (tmpfd) < 0)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
@@ -578,7 +584,7 @@ public:
                        g_strerror (errno));
             exit (1);
           }
-        error = chunk->set_dhandle_from_temporary (temp_file, gsl_data_handle_osc_freq (dhandle));
+        error = chunk->set_dhandle_from_file (temp_file, gsl_data_handle_osc_freq (dhandle), dhandle->setup.xinfos);
         if (error)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to read wave \"%s\": %s",

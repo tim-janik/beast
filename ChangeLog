@@ -1,3 +1,10 @@
+Fri Jan  7 01:13:49 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.cc: print compression ratio for oggenc.
+
+	* tools/bwtwave.cc: copy xinfos when changing dhandles.
+	don't store byte-order and mix-freq for pure Ogg/Vorbis waves.
+
 Thu Jan  6 23:58:38 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.cc: added -k option for continue-on-error behaviour.

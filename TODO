@@ -1,7 +1,5 @@
 FIXME(urgent):
-- copy xinfos in set_dhandle_from_temporary
 - fix serialno generation for ogg/vorbis encoder and cutter
-- fix bsewavetool oggenc saving osc_freq, not midi_note
 - install bsewavetool, bsewavetool.1
 - gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
 - fix float saving with de_DE
@@ -35,6 +33,7 @@ FIXME(urgent):
 - add dialog to ask the user whether he really wants to delete the last link to a part.
 TODO:
 - add editable text fields to snet router
+- implement ResetAll according to: http://www.midi.org/about-midi/rp15.shtml (more: http://www.midi.org/about-midi/specinfo.shtml)
 - provide a color/dB reference scale, next to the fft-scope view
 - add "..." to new dialog items in View/
 - show note and timing position of current mouse pointer in piano roll status bar

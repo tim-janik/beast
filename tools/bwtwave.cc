@@ -53,8 +53,9 @@ WaveChunk::WaveChunk (const WaveChunk &rhs)
 }
 
 BseErrorType
-WaveChunk::set_dhandle_from_temporary (const string &fname,
-                                       gdouble       osc_freq)
+WaveChunk::set_dhandle_from_file (const string &fname,
+                                  gdouble       osc_freq,
+                                  gchar       **copy_xinfos)
 {
   BseErrorType error = BSE_ERROR_NONE;
   GslWaveFileInfo *wfi = gsl_wave_file_info_load (fname.c_str(), &error);
@@ -67,10 +68,11 @@ WaveChunk::set_dhandle_from_temporary (const string &fname,
           xhandle = gsl_wave_handle_create (wdc, 0, &error);
           if (xhandle)
             {
+              gchar **xinfos = bse_xinfos_dup_consolidated (copy_xinfos, FALSE);
               if (osc_freq > 0)
+                xinfos = bse_xinfos_add_float (xinfos, "osc-freq", osc_freq);
+              if (xinfos)
                 {
-                  gchar **xinfos = NULL;
-                  xinfos = bse_xinfos_add_float (xinfos, "osc-freq", osc_freq);
                   GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (xhandle, xinfos);
                   g_strfreev (xinfos);
                   gsl_data_handle_unref (xhandle);
@@ -182,6 +184,7 @@ Wave::store (const string file_name)
     }
 
   /* figure default mix_freq */
+  guint n_raw_handles = 0;
   map<float, guint> mf_counters;
   for (list<WaveChunk>::iterator it = chunks.begin(); it != chunks.end(); it++)
     {
@@ -195,12 +198,15 @@ Wave::store (const string file_name)
       while (tmp_handle);
       GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle);
       if (!vhandle)
-        mf_counters[gsl_data_handle_mix_freq (chunk->dhandle)] += 1;
+        {
+          mf_counters[gsl_data_handle_mix_freq (chunk->dhandle)] += 1;
+          n_raw_handles += 1;
+        }
       else
         gsl_vorbis1_handle_destroy (vhandle);
     }
   float dfl_mix_freq = 0;
-  guint max_count = 3;
+  guint max_count = 2;
   for (map<float, guint>::iterator it = mf_counters.begin(); it != mf_counters.end(); it++)
     if (it->second > max_count)
       {
@@ -218,8 +224,9 @@ Wave::store (const string file_name)
   g_free (str);
   sfi_wstore_printf (wstore, "  n-channels = %u\n", n_channels);
   guint byte_order = G_LITTLE_ENDIAN;
-  sfi_wstore_printf (wstore, "  byte-order = %s\n", gsl_byte_order_to_string (byte_order));
-  if (dfl_mix_freq > 0)
+  if (n_raw_handles)
+    sfi_wstore_printf (wstore, "  byte-order = %s\n", gsl_byte_order_to_string (byte_order));
+  if (n_raw_handles && dfl_mix_freq > 0)
     sfi_wstore_printf (wstore, "  mix-freq = %.3f\n", dfl_mix_freq);
   gchar **xinfos = bse_xinfos_dup_consolidated (wave_xinfos, FALSE);
   if (xinfos)
