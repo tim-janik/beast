@@ -17,6 +17,7 @@
 @item @uref{http://www.mars.org/home/rob/proj/mpeg/,, MAD - MPEG Audio Decoder}
 @item @uref{http://sfk.evilplan.org/csl,, CSL - Common Sound Layer}
 @item @uref{http://www.dreampoint.co.uk,, Freeverb - Public Domain Reverb}
+@item @uref{http://www.lilypond.org,, LilyPond - Music Notation For Everyone}
 @item @uref{http://www.gnu.org/software/guile/guile.html,, Guile - Scheme Scipting Language}
 @item @uref{http://www.gnu.org/software/texinfo/,, Texinfo - BEAST and BSE documentation format}
 @item @uref{http://www.gtk.org,, GTK+ - The GIMP Toolkit}
