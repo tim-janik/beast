@@ -1,3 +1,8 @@
+Wed Jan  8 15:47:53 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkpolygon.c (gxk_polygon_expose): indicate insensitive
+	widget state.
+
 Tue Jan  7 19:01:25 2003  Tim Janik  <timj@gtk.org>
 
 	* README: fix libgnomecanvas link.

@@ -173,6 +173,7 @@ main (int   argc,
 			 "default_width", 400,
 			 "default_height", 400,
 			 "visible", TRUE,
+			 "sensitive", FALSE,
 			 NULL);
   g_timeout_add (400, led_timer, led);
 

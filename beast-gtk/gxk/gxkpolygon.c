@@ -251,6 +251,13 @@ gxk_polygon_expose (GtkWidget      *widget,
 	  iy2 = 1 + y + height - p.y2 * height;
 	  sx = ABS (p.y2 - p.y1) >= ABS (p.x2 - p.x1);
 	  sy = ABS (p.y2 - p.y1) < ABS (p.x2 - p.x1);
+          if (!GTK_WIDGET_IS_SENSITIVE (self))
+	    {
+	      black_gc = widget->style->dark_gc[widget->state];
+	      dark_gc = widget->style->bg_gc[widget->state];
+	      light_gc = widget->style->dark_gc[widget->state];
+	      bg_gc = widget->style->bg_gc[widget->state];
+	    }
 	  if (angle >= -0.25 && angle < 0.75)
 	    {
 	      if (bgpass)
@@ -301,11 +308,18 @@ gxk_polygon_expose (GtkWidget      *widget,
 	  a2 = MAX (p.sa, p.ea);
 	  if (a1 < p.ea)
 	    {
+	      s = -1;
 	      black_gc = light_gc;
 	      dark_gc = bg_gc;
 	      light_gc = widget->style->black_gc;
 	      bg_gc = widget->style->dark_gc[widget->state];
-	      s = -1;
+	    }
+	  if (!GTK_WIDGET_IS_SENSITIVE (self))
+	    {
+	      black_gc = widget->style->dark_gc[widget->state];
+	      dark_gc = widget->style->bg_gc[widget->state];
+	      light_gc = widget->style->dark_gc[widget->state];
+	      bg_gc = widget->style->bg_gc[widget->state];
 	    }
 	  while (a1 < a2)
 	    {
