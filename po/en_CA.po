@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-14 01:13-0400\n"
-"PO-Revision-Date: 2004-09-14 19:50-0400\n"
+"POT-Creation-Date: 2004-09-15 16:27-0400\n"
+"PO-Revision-Date: 2004-09-15 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -269,8 +269,7 @@ msgstr "Online _Help Desk..."
 #: beast-gtk/bstapp.c:159
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
-msgstr ""
-"Open a web browser to the online help desk at the BEAST website"
+msgstr "Open a web browser to the online help desk at the BEAST website"
 
 #: beast-gtk/bstapp.c:161
 msgid "_BEAST Website..."
@@ -1498,7 +1497,7 @@ msgstr "Procedure"
 msgid "Totals"
 msgstr "Totals"
 
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:409
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:578
 msgid "Thread Name"
 msgstr "Thread Name"
 
@@ -1661,7 +1660,8 @@ msgstr "Down"
 msgid "Move downwards"
 msgstr "Move downwards"
 
-#: beast-gtk/bstrecords.idl:42 beast-gtk/bstrecords.idl:70
+#. special cased signals
+#: beast-gtk/bstrecords.idl:42 beast-gtk/bstrecords.idl:70 bse/bsecore.idl:243
 msgid "None"
 msgstr "None"
 
@@ -3035,7 +3035,7 @@ msgstr "Second control input"
 
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
 #: bse/bsewaveosc.c:564 plugins/bseadder.c:101 plugins/bseatandistort.c:92
-#: plugins/bseiirfilter.c:162 plugins/bsemixer.c:109 plugins/bsemult.c:68
+#: plugins/bseiirfilter.c:164 plugins/bsemixer.c:109 plugins/bsemult.c:68
 #: plugins/davbassfilter.idl:36 plugins/davchorus.idl:32
 #: plugins/davorgan.c:133 plugins/davsyndrum.c:122
 #: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
@@ -3068,8 +3068,8 @@ msgstr "Input 2 [%]"
 msgid "Attenuate the level of audio input 2"
 msgstr "Attenuate the level of audio input 2"
 
-#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:46
-#: plugins/bsebalance.idl:51
+#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 bse/bsecore.idl:76
+#: bse/bsecore.idl:253 plugins/bsebalance.idl:46 plugins/bsebalance.idl:51
 msgid "Balance"
 msgstr "Balance"
 
@@ -3189,11 +3189,11 @@ msgstr "/Filters/Biquad Types"
 msgid "Filter"
 msgstr "Filter"
 
-#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:125
+#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:127
 msgid "Filter Type"
 msgstr "Filter Type"
 
-#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:119
+#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:121
 msgid "The filter design type"
 msgstr "The filter design type"
 
@@ -3201,13 +3201,13 @@ msgstr "The filter design type"
 msgid "Center Frequency"
 msgstr "Centre Frequency"
 
-#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:141
-#: plugins/bseiirfilter.c:151
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:143
+#: plugins/bseiirfilter.c:153
 msgid "Cutoff [Hz]"
 msgstr "Cutoff [Hz]"
 
 #: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:147
-#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
+#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:158
 msgid "Note"
 msgstr "Note"
 
@@ -3259,7 +3259,7 @@ msgid "Strength of gain modulation"
 msgstr "Strength of gain modulation"
 
 #: bse/bsebiquadfilter.c:184 plugins/bseatandistort.c:90
-#: plugins/bseiirfilter.c:160 plugins/davbassfilter.idl:34
+#: plugins/bseiirfilter.c:162 plugins/davbassfilter.idl:34
 #: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Audio In"
@@ -3461,27 +3461,724 @@ msgstr "Frequency"
 msgid "Const Out%u"
 msgstr "Const Out%u"
 
-#: bse/bsecore.idl:410
+#. special cased signals
+#: bse/bsecore.idl:62
+msgid "Program Change"
+msgstr "Program Change"
+
+#. 7bit
+#: bse/bsecore.idl:63
+msgid "Channel Pressure"
+msgstr "Channel Pressure"
+
+#. 7bit
+#: bse/bsecore.idl:64
+msgid "Pitch Bend"
+msgstr "Pitch Bend"
+
+#. 14bit
+#: bse/bsecore.idl:65
+msgid "Note Velocity"
+msgstr "Note Velocity"
+
+#: bse/bsecore.idl:66
+msgid "Note Fine Tune"
+msgstr "Note Fine Tune"
+
+#. 14bit, continuous controls
+#: bse/bsecore.idl:68 bse/bsecore.idl:245
+msgid "Bank Select"
+msgstr "Bank Select"
+
+#: bse/bsecore.idl:69 bse/bsecore.idl:246
+msgid "Modulation Depth"
+msgstr "Modulation Depth"
+
+#: bse/bsecore.idl:70 bse/bsecore.idl:247
+msgid "Breath Control"
+msgstr "Breath Control"
+
+#: bse/bsecore.idl:71 bse/bsecore.idl:248
+msgid "Continuous 3"
+msgstr "Continuous 3"
+
+#: bse/bsecore.idl:72 bse/bsecore.idl:249
+msgid "Foot Controller"
+msgstr "Foot Controller"
+
+#: bse/bsecore.idl:73 bse/bsecore.idl:250
+msgid "Portamento Time"
+msgstr "Portamento Time"
+
+#: bse/bsecore.idl:74 bse/bsecore.idl:251
+msgid "Data Entry"
+msgstr "Data Entry"
+
+#: bse/bsecore.idl:75 bse/bsecore.idl:252
+msgid "Volume"
+msgstr "Volume"
+
+#: bse/bsecore.idl:77 bse/bsecore.idl:254
+msgid "Continuous 9"
+msgstr "Continuous 9"
+
+#: bse/bsecore.idl:78 bse/bsecore.idl:255
+msgid "Panorama"
+msgstr "Panorama"
+
+#: bse/bsecore.idl:79 bse/bsecore.idl:256
+msgid "Expression"
+msgstr "Expression"
+
+#: bse/bsecore.idl:80 bse/bsecore.idl:257
+msgid "Effect Control 1"
+msgstr "Effect Control 1"
+
+#: bse/bsecore.idl:81 bse/bsecore.idl:258
+msgid "Effect Control 2"
+msgstr "Effect Control 2"
+
+#: bse/bsecore.idl:82 bse/bsecore.idl:259
+msgid "Continuous 14"
+msgstr "Continuous 14"
+
+#: bse/bsecore.idl:83 bse/bsecore.idl:260
+msgid "Continuous 15"
+msgstr "Continuous 15"
+
+#: bse/bsecore.idl:84 bse/bsecore.idl:261
+msgid "General Purpose Controller 1"
+msgstr "General Purpose Controller 1"
+
+#: bse/bsecore.idl:85 bse/bsecore.idl:262
+msgid "General Purpose Controller 2"
+msgstr "General Purpose Controller 2"
+
+#: bse/bsecore.idl:86 bse/bsecore.idl:263
+msgid "General Purpose Controller 3"
+msgstr "General Purpose Controller 3"
+
+#: bse/bsecore.idl:87 bse/bsecore.idl:264
+msgid "General Purpose Controller 4"
+msgstr "General Purpose Controller 4"
+
+#: bse/bsecore.idl:88 bse/bsecore.idl:265
+msgid "Continuous 20"
+msgstr "Continuous 20"
+
+#: bse/bsecore.idl:89 bse/bsecore.idl:266
+msgid "Continuous 21"
+msgstr "Continuous 21"
+
+#: bse/bsecore.idl:90 bse/bsecore.idl:267
+msgid "Continuous 22"
+msgstr "Continuous 22"
+
+#: bse/bsecore.idl:91 bse/bsecore.idl:268
+msgid "Continuous 23"
+msgstr "Continuous 23"
+
+#: bse/bsecore.idl:92 bse/bsecore.idl:269
+msgid "Continuous 24"
+msgstr "Continuous 24"
+
+#: bse/bsecore.idl:93 bse/bsecore.idl:270
+msgid "Continuous 25"
+msgstr "Continuous 25"
+
+#: bse/bsecore.idl:94 bse/bsecore.idl:271
+msgid "Continuous 26"
+msgstr "Continuous 26"
+
+#: bse/bsecore.idl:95 bse/bsecore.idl:272
+msgid "Continuous 27"
+msgstr "Continuous 27"
+
+#: bse/bsecore.idl:96 bse/bsecore.idl:273
+msgid "Continuous 28"
+msgstr "Continuous 28"
+
+#: bse/bsecore.idl:97 bse/bsecore.idl:274
+msgid "Continuous 29"
+msgstr "Continuous 29"
+
+#: bse/bsecore.idl:98 bse/bsecore.idl:275
+msgid "Continuous 30"
+msgstr "Continuous 30"
+
+#: bse/bsecore.idl:99 bse/bsecore.idl:276
+msgid "Continuous 31"
+msgstr "Continuous 31"
+
+#. 14bit, special cased signals
+#: bse/bsecore.idl:101
+msgid "Constant HIGH"
+msgstr "Constant HIGH"
+
+#: bse/bsecore.idl:102
+msgid "Constant CENTER"
+msgstr "Constant CENTRE"
+
+#: bse/bsecore.idl:103
+msgid "Constant LOW"
+msgstr "Constant LOW"
+
+#: bse/bsecore.idl:104
+msgid "Constant Negative CENTER"
+msgstr "Constant Negative CENTRE"
+
+#: bse/bsecore.idl:105
+msgid "Constant Negative HIGH"
+msgstr "Constant Negative HIGH"
+
+#: bse/bsecore.idl:106
+msgid "Registered Parameter"
+msgstr "Registered Parameter"
+
+#: bse/bsecore.idl:107
+msgid "Non-Registered Parameter"
+msgstr "Non-Registered Parameter"
+
+#. 7bit, literal channel controls, MSB values
+#: bse/bsecore.idl:109 bse/bsecore.idl:278
+msgid "Control 0 Bank Select MSB"
+msgstr "Control 0 Bank Select MSB"
+
+#: bse/bsecore.idl:110 bse/bsecore.idl:279
+msgid "Control 1 Modulation Depth MSB"
+msgstr "Control 1 Modulation Depth MSB"
+
+#: bse/bsecore.idl:111 bse/bsecore.idl:280
+msgid "Control 2 Breath Control MSB"
+msgstr "Control 2 Breath Control MSB"
+
+#: bse/bsecore.idl:112 bse/bsecore.idl:281
+msgid "control-3"
+msgstr "control-3"
+
+#: bse/bsecore.idl:113 bse/bsecore.idl:282
+msgid "Control 4 Foot Controller MSB"
+msgstr "Control 4 Foot Controller MSB"
+
+#: bse/bsecore.idl:114 bse/bsecore.idl:283
+msgid "Control 5 Portamento Time MSB"
+msgstr "Control 5 Portamento Time MSB"
+
+#: bse/bsecore.idl:115 bse/bsecore.idl:284
+msgid "Control 6 Data Entry MSB"
+msgstr "Control 6 Data Entry MSB"
+
+#: bse/bsecore.idl:116 bse/bsecore.idl:285
+msgid "Control 7 Volume MSB"
+msgstr "Control 7 Volume MSB"
+
+#: bse/bsecore.idl:117 bse/bsecore.idl:286
+msgid "Control 8 Balance MSB"
+msgstr "Control 8 Balance MSB"
+
+#: bse/bsecore.idl:118 bse/bsecore.idl:287
+msgid "control-9"
+msgstr "control-9"
+
+#: bse/bsecore.idl:119 bse/bsecore.idl:288
+msgid "Control 10 Panorama MSB"
+msgstr "Control 10 Panorama MSB"
+
+#: bse/bsecore.idl:120 bse/bsecore.idl:289
+msgid "Control 11 Expression MSB"
+msgstr "Control 11 Expression MSB"
+
+#: bse/bsecore.idl:121 bse/bsecore.idl:290
+msgid "Control 12 Effect Control 1 MSB"
+msgstr "Control 12 Effect Control 1 MSB"
+
+#: bse/bsecore.idl:122 bse/bsecore.idl:291
+msgid "Control 13 Effect Control 2 MSB"
+msgstr "Control 13 Effect Control 2 MSB"
+
+#: bse/bsecore.idl:123 bse/bsecore.idl:292
+msgid "control-14"
+msgstr "control-14"
+
+#: bse/bsecore.idl:124 bse/bsecore.idl:293
+msgid "control-15"
+msgstr "control-15"
+
+#: bse/bsecore.idl:125 bse/bsecore.idl:294
+msgid "Control 16 General Purpose Controller 1 MSB"
+msgstr "Control 16 General Purpose Controller 1 MSB"
+
+#: bse/bsecore.idl:126 bse/bsecore.idl:295
+msgid "Control 17 General Purpose Controller 2 MSB"
+msgstr "Control 17 General Purpose Controller 2 MSB"
+
+#: bse/bsecore.idl:127 bse/bsecore.idl:296
+msgid "Control 18 General Purpose Controller 3 MSB"
+msgstr "Control 18 General Purpose Controller 3 MSB"
+
+#: bse/bsecore.idl:128 bse/bsecore.idl:297
+msgid "Control 19 General Purpose Controller 4 MSB"
+msgstr "Control 19 General Purpose Controller 4 MSB"
+
+#: bse/bsecore.idl:129 bse/bsecore.idl:298
+msgid "control-20"
+msgstr "control-20"
+
+#: bse/bsecore.idl:130 bse/bsecore.idl:299
+msgid "control-21"
+msgstr "control-21"
+
+#: bse/bsecore.idl:131 bse/bsecore.idl:300
+msgid "control-22"
+msgstr "control-22"
+
+#: bse/bsecore.idl:132 bse/bsecore.idl:301
+msgid "control-23"
+msgstr "control-23"
+
+#: bse/bsecore.idl:133 bse/bsecore.idl:302
+msgid "control-24"
+msgstr "control-24"
+
+#: bse/bsecore.idl:134 bse/bsecore.idl:303
+msgid "control-25"
+msgstr "control-25"
+
+#: bse/bsecore.idl:135 bse/bsecore.idl:304
+msgid "control-26"
+msgstr "control-26"
+
+#: bse/bsecore.idl:136 bse/bsecore.idl:305
+msgid "control-27"
+msgstr "control-27"
+
+#: bse/bsecore.idl:137 bse/bsecore.idl:306
+msgid "control-28"
+msgstr "control-28"
+
+#: bse/bsecore.idl:138 bse/bsecore.idl:307
+msgid "control-29"
+msgstr "control-29"
+
+#: bse/bsecore.idl:139 bse/bsecore.idl:308
+msgid "control-30"
+msgstr "control-30"
+
+#: bse/bsecore.idl:140 bse/bsecore.idl:309
+msgid "control-31"
+msgstr "control-31"
+
+#. 7bit, literal channel controls, LSB values
+#: bse/bsecore.idl:142 bse/bsecore.idl:311
+msgid "Control 32 Bank Select LSB"
+msgstr "Control 32 Bank Select LSB"
+
+#: bse/bsecore.idl:143 bse/bsecore.idl:312
+msgid "Control 33 Modulation Depth LSB"
+msgstr "Control 33 Modulation Depth LSB"
+
+#: bse/bsecore.idl:144 bse/bsecore.idl:313
+msgid "Control 34 Breath Control LSB"
+msgstr "Control 34 Breath Control LSB"
+
+#: bse/bsecore.idl:145 bse/bsecore.idl:314
+msgid "control-35"
+msgstr "control-35"
+
+#: bse/bsecore.idl:146 bse/bsecore.idl:315
+msgid "Control 36 Foot Controller LSB"
+msgstr "Control 36 Foot Controller LSB"
+
+#: bse/bsecore.idl:147 bse/bsecore.idl:316
+msgid "Control 37 Portamento Time LSB"
+msgstr "Control 37 Portamento Time LSB"
+
+#: bse/bsecore.idl:148 bse/bsecore.idl:317
+msgid "Control 38 Data Entry LSB"
+msgstr "Control 38 Data Entry LSB"
+
+#: bse/bsecore.idl:149 bse/bsecore.idl:318
+msgid "Control 39 Volume LSB"
+msgstr "Control 39 Volume LSB"
+
+#: bse/bsecore.idl:150 bse/bsecore.idl:319
+msgid "Control 40 Balance LSB"
+msgstr "Control 40 Balance LSB"
+
+#: bse/bsecore.idl:151 bse/bsecore.idl:320
+msgid "control-41"
+msgstr "control-41"
+
+#: bse/bsecore.idl:152 bse/bsecore.idl:321
+msgid "Control 42 Panorama LSB"
+msgstr "Control 42 Panorama LSB"
+
+#: bse/bsecore.idl:153 bse/bsecore.idl:322
+msgid "Control 43 Expression LSB"
+msgstr "Control 43 Expression LSB"
+
+#: bse/bsecore.idl:154 bse/bsecore.idl:323
+msgid "Control 44 Effect Control 1 LSB"
+msgstr "Control 44 Effect Control 1 LSB"
+
+#: bse/bsecore.idl:155 bse/bsecore.idl:324
+msgid "Control 45 Effect Control 2 LSB"
+msgstr "Control 45 Effect Control 2 LSB"
+
+#: bse/bsecore.idl:156 bse/bsecore.idl:325
+msgid "control-46"
+msgstr "control-46"
+
+#: bse/bsecore.idl:157 bse/bsecore.idl:326
+msgid "control-47"
+msgstr "control-47"
+
+#: bse/bsecore.idl:158 bse/bsecore.idl:327
+msgid "Control 48 General Purpose Controller 1 LSB"
+msgstr "Control 48 General Purpose Controller 1 LSB"
+
+#: bse/bsecore.idl:159 bse/bsecore.idl:328
+msgid "Control 49 General Purpose Controller 2 LSB"
+msgstr "Control 49 General Purpose Controller 2 LSB"
+
+#: bse/bsecore.idl:160 bse/bsecore.idl:329
+msgid "Control 50 General Purpose Controller 3 LSB"
+msgstr "Control 50 General Purpose Controller 3 LSB"
+
+#: bse/bsecore.idl:161 bse/bsecore.idl:330
+msgid "Control 51 General Purpose Controller 4 LSB"
+msgstr "Control 51 General Purpose Controller 4 LSB"
+
+#: bse/bsecore.idl:162 bse/bsecore.idl:331
+msgid "control-52"
+msgstr "control-52"
+
+#: bse/bsecore.idl:163 bse/bsecore.idl:332
+msgid "control-53"
+msgstr "control-53"
+
+#: bse/bsecore.idl:164 bse/bsecore.idl:333
+msgid "control-54"
+msgstr "control-54"
+
+#: bse/bsecore.idl:165 bse/bsecore.idl:334
+msgid "control-55"
+msgstr "control-55"
+
+#: bse/bsecore.idl:166 bse/bsecore.idl:335
+msgid "control-56"
+msgstr "control-56"
+
+#: bse/bsecore.idl:167 bse/bsecore.idl:336
+msgid "control-57"
+msgstr "control-57"
+
+#: bse/bsecore.idl:168 bse/bsecore.idl:337
+msgid "control-58"
+msgstr "control-58"
+
+#: bse/bsecore.idl:169 bse/bsecore.idl:338
+msgid "control-59"
+msgstr "control-59"
+
+#: bse/bsecore.idl:170 bse/bsecore.idl:339
+msgid "control-60"
+msgstr "control-60"
+
+#: bse/bsecore.idl:171 bse/bsecore.idl:340
+msgid "control-61"
+msgstr "control-61"
+
+#: bse/bsecore.idl:172 bse/bsecore.idl:341
+msgid "control-62"
+msgstr "control-62"
+
+#: bse/bsecore.idl:173 bse/bsecore.idl:342
+msgid "control-63"
+msgstr "control-63"
+
+#. 7bit, literal channel controls
+#: bse/bsecore.idl:175 bse/bsecore.idl:344
+msgid "Control 64 Damper Pedal Switch (Sustain)"
+msgstr "Control 64 Damper Pedal Switch (Sustain)"
+
+#: bse/bsecore.idl:176 bse/bsecore.idl:345
+msgid "Control 65 Portamento Switch"
+msgstr "Control 65 Portamento Switch"
+
+#: bse/bsecore.idl:177 bse/bsecore.idl:346
+msgid "Control 66 Sustenuto Switch"
+msgstr "Control 66 Sustenuto Switch"
+
+#: bse/bsecore.idl:178 bse/bsecore.idl:347
+msgid "Control 67 Soft Switch"
+msgstr "Control 67 Soft Switch"
+
+#: bse/bsecore.idl:179 bse/bsecore.idl:348
+msgid "Control 68 Legato Pedal Switch"
+msgstr "Control 68 Legato Pedal Switch"
+
+#: bse/bsecore.idl:180 bse/bsecore.idl:349
+msgid "Control 69 Hold Pedal Switch"
+msgstr "Control 69 Hold Pedal Switch"
+
+#: bse/bsecore.idl:181 bse/bsecore.idl:350
+msgid "Control 70 Sound Variation"
+msgstr "Control 70 Sound Variation"
+
+#: bse/bsecore.idl:182 bse/bsecore.idl:351
+msgid "Control 71 Filter Resonance (Timbre)"
+msgstr "Control 71 Filter Resonance (Timbre)"
+
+#: bse/bsecore.idl:183 bse/bsecore.idl:352
+msgid "Control 72 Sound Release Time"
+msgstr "Control 72 Sound Release Time"
+
+#: bse/bsecore.idl:184 bse/bsecore.idl:353
+msgid "Control 73 Sound Attack Time"
+msgstr "Control 73 Sound Attack Time"
+
+#: bse/bsecore.idl:185 bse/bsecore.idl:354
+msgid "Control 74 Sound Brightness"
+msgstr "Control 74 Sound Brightness"
+
+#: bse/bsecore.idl:186 bse/bsecore.idl:355
+msgid "Control 75 Sound Decay Time"
+msgstr "Control 75 Sound Decay Time"
+
+#: bse/bsecore.idl:187 bse/bsecore.idl:356
+msgid "Control 76 Vibrato Rate"
+msgstr "Control 76 Vibrato Rate"
+
+#: bse/bsecore.idl:188 bse/bsecore.idl:357
+msgid "Control 77 Vibrato Depth"
+msgstr "Control 77 Vibrato Depth"
+
+#: bse/bsecore.idl:189 bse/bsecore.idl:358
+msgid "Control 78 Vibrato Delay"
+msgstr "Control 78 Vibrato Delay"
+
+#: bse/bsecore.idl:190 bse/bsecore.idl:359
+msgid "Control 79 Sound Control 10"
+msgstr "Control 79 Sound Control 10"
+
+#: bse/bsecore.idl:191 bse/bsecore.idl:360
+msgid "Control 80 General Purpose Switch 5"
+msgstr "Control 80 General Purpose Switch 5"
+
+#: bse/bsecore.idl:192 bse/bsecore.idl:361
+msgid "Control 81 General Purpose Switch 6"
+msgstr "Control 81 General Purpose Switch 6"
+
+#: bse/bsecore.idl:193 bse/bsecore.idl:362
+msgid "Control 82 General Purpose Switch 7"
+msgstr "Control 82 General Purpose Switch 7"
+
+#: bse/bsecore.idl:194 bse/bsecore.idl:363
+msgid "Control 83 General Purpose Switch 8"
+msgstr "Control 83 General Purpose Switch 8"
+
+#: bse/bsecore.idl:195 bse/bsecore.idl:364
+msgid "Control 84 Portamento Control (Note)"
+msgstr "Control 84 Portamento Control (Note)"
+
+#: bse/bsecore.idl:196 bse/bsecore.idl:365
+msgid "control-85"
+msgstr "control-85"
+
+#: bse/bsecore.idl:197 bse/bsecore.idl:366
+msgid "control-86"
+msgstr "control-86"
+
+#: bse/bsecore.idl:198 bse/bsecore.idl:367
+msgid "control-87"
+msgstr "control-87"
+
+#: bse/bsecore.idl:199 bse/bsecore.idl:368
+msgid "control-88"
+msgstr "control-88"
+
+#: bse/bsecore.idl:200 bse/bsecore.idl:369
+msgid "control-89"
+msgstr "control-89"
+
+#: bse/bsecore.idl:201 bse/bsecore.idl:370
+msgid "control-90"
+msgstr "control-90"
+
+#: bse/bsecore.idl:202 bse/bsecore.idl:371
+msgid "Control 91 Reverb Depth"
+msgstr "Control 91 Reverb Depth"
+
+#: bse/bsecore.idl:203 bse/bsecore.idl:372
+msgid "Control 92 Tremolo Depth"
+msgstr "Control 92 Tremolo Depth"
+
+#: bse/bsecore.idl:204 bse/bsecore.idl:373
+msgid "Control 93 Chorus Depth"
+msgstr "Control 93 Chorus Depth"
+
+#: bse/bsecore.idl:205 bse/bsecore.idl:374
+msgid "Control 93 Detune Depth"
+msgstr "Control 93 Detune Depth"
+
+#: bse/bsecore.idl:206 bse/bsecore.idl:375
+msgid "Control 95 Phase Depth"
+msgstr "Control 95 Phase Depth"
+
+#: bse/bsecore.idl:207 bse/bsecore.idl:376
+msgid "Control 96 Data Increment Trigger"
+msgstr "Control 96 Data Increment Trigger"
+
+#: bse/bsecore.idl:208 bse/bsecore.idl:377
+msgid "Control 97 Data Decrement Trigger"
+msgstr "Control 97 Data Decrement Trigger"
+
+#: bse/bsecore.idl:209 bse/bsecore.idl:378
+msgid "Control 98 Non-Registered Parameter MSB"
+msgstr "Control 98 Non-Registered Parameter MSB"
+
+#: bse/bsecore.idl:210 bse/bsecore.idl:379
+msgid "Control 99 Non-Registered Parameter LSB"
+msgstr "Control 99 Non-Registered Parameter LSB"
+
+#: bse/bsecore.idl:211 bse/bsecore.idl:380
+msgid "Control 100 Registered Parameter MSB"
+msgstr "Control 100 Registered Parameter MSB"
+
+#: bse/bsecore.idl:212 bse/bsecore.idl:381
+msgid "Control 101 Registered Parameter LSB"
+msgstr "Control 101 Registered Parameter LSB"
+
+#: bse/bsecore.idl:213 bse/bsecore.idl:382
+msgid "control-102"
+msgstr "control-102"
+
+#: bse/bsecore.idl:214 bse/bsecore.idl:383
+msgid "control-103"
+msgstr "control-103"
+
+#: bse/bsecore.idl:215 bse/bsecore.idl:384
+msgid "control-104"
+msgstr "control-104"
+
+#: bse/bsecore.idl:216 bse/bsecore.idl:385
+msgid "control-105"
+msgstr "control-105"
+
+#: bse/bsecore.idl:217 bse/bsecore.idl:386
+msgid "control-106"
+msgstr "control-106"
+
+#: bse/bsecore.idl:218 bse/bsecore.idl:387
+msgid "control-107"
+msgstr "control-107"
+
+#: bse/bsecore.idl:219 bse/bsecore.idl:388
+msgid "control-108"
+msgstr "control-108"
+
+#: bse/bsecore.idl:220 bse/bsecore.idl:389
+msgid "control-109"
+msgstr "control-109"
+
+#: bse/bsecore.idl:221 bse/bsecore.idl:390
+msgid "control-110"
+msgstr "control-110"
+
+#: bse/bsecore.idl:222 bse/bsecore.idl:391
+msgid "control-111"
+msgstr "control-111"
+
+#: bse/bsecore.idl:223 bse/bsecore.idl:392
+msgid "control-112"
+msgstr "control-112"
+
+#: bse/bsecore.idl:224 bse/bsecore.idl:393
+msgid "control-113"
+msgstr "control-113"
+
+#: bse/bsecore.idl:225 bse/bsecore.idl:394
+msgid "control-114"
+msgstr "control-114"
+
+#: bse/bsecore.idl:226 bse/bsecore.idl:395
+msgid "control-115"
+msgstr "control-115"
+
+#: bse/bsecore.idl:227 bse/bsecore.idl:396
+msgid "control-116"
+msgstr "control-116"
+
+#: bse/bsecore.idl:228 bse/bsecore.idl:397
+msgid "control-117"
+msgstr "control-117"
+
+#: bse/bsecore.idl:229 bse/bsecore.idl:398
+msgid "control-118"
+msgstr "control-118"
+
+#: bse/bsecore.idl:230 bse/bsecore.idl:399
+msgid "control-119"
+msgstr "control-119"
+
+#: bse/bsecore.idl:231 bse/bsecore.idl:400
+msgid "Control 120 All Sound Off ITrigger"
+msgstr "Control 120 All Sound Off ITrigger"
+
+#: bse/bsecore.idl:232 bse/bsecore.idl:401
+msgid "Control 121 All Controllers Off ITrigger"
+msgstr "Control 121 All Controllers Off ITrigger"
+
+#: bse/bsecore.idl:233 bse/bsecore.idl:402
+msgid "Control 122 Local Control Switch"
+msgstr "Control 122 Local Control Switch"
+
+#: bse/bsecore.idl:234 bse/bsecore.idl:403
+msgid "Control 123 All Notes Off ITrigger"
+msgstr "Control 123 All Notes Off ITrigger"
+
+#: bse/bsecore.idl:235 bse/bsecore.idl:404
+msgid "Control 124 Omni Mode Off ITrigger"
+msgstr "Control 124 Omni Mode Off ITrigger"
+
+#: bse/bsecore.idl:236 bse/bsecore.idl:405
+msgid "Control 125 Omni Mode On ITrigger"
+msgstr "Control 125 Omni Mode On ITrigger"
+
+#: bse/bsecore.idl:237 bse/bsecore.idl:406
+msgid "Control 126 Monophonic Voices Mode"
+msgstr "Control 126 Monophonic Voices Mode"
+
+#: bse/bsecore.idl:238 bse/bsecore.idl:407
+msgid "Control 127 Polyphonic Mode On ITrigger"
+msgstr "Control 127 Polyphonic Mode On ITrigger"
+
+#: bse/bsecore.idl:245
+msgid "Continuous MIDI Control #1 - Bank Select"
+msgstr "Continuous MIDI Control #1 - Bank Select"
+
+#: bse/bsecore.idl:579
 msgid "State"
 msgstr "State"
 
-#: bse/bsecore.idl:410
+#: bse/bsecore.idl:579
 msgid "The execution state of the thread"
 msgstr "The execution state of the thread"
 
-#: bse/bsecore.idl:411
+#: bse/bsecore.idl:580
 msgid "Thread ID"
 msgstr "Thread ID"
 
-#: bse/bsecore.idl:411
+#: bse/bsecore.idl:580
 msgid "A unique number identifying this thread"
 msgstr "A unique number identifying this thread"
 
-#: bse/bsecore.idl:413
+#: bse/bsecore.idl:582
 msgid "Priority"
 msgstr "Priority"
 
-#: bse/bsecore.idl:413
+#: bse/bsecore.idl:582
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -3489,66 +4186,66 @@ msgstr ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 
-#: bse/bsecore.idl:416
+#: bse/bsecore.idl:585
 msgid "Processor"
 msgstr "Processor"
 
-#: bse/bsecore.idl:416
+#: bse/bsecore.idl:585
 msgid "The processor that this thread is currently being executed on"
 msgstr "The processor that this thread is currently being executed on"
 
-#: bse/bsecore.idl:418
+#: bse/bsecore.idl:587
 msgid "User Time"
 msgstr "User Time"
 
-#: bse/bsecore.idl:418
+#: bse/bsecore.idl:587
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "The CPU time spent executing instructions of this thread"
 
-#: bse/bsecore.idl:420
+#: bse/bsecore.idl:589
 msgid "System Time"
 msgstr "System Time"
 
-#: bse/bsecore.idl:420
+#: bse/bsecore.idl:589
 msgid "The CPU time spent in the system for this thread"
 msgstr "The CPU time spent in the system for this thread"
 
-#: bse/bsecore.idl:422
+#: bse/bsecore.idl:591
 msgid "Child User Time"
 msgstr "Child User Time"
 
-#: bse/bsecore.idl:422
+#: bse/bsecore.idl:591
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "The CPU time spent executing instructions of children of this thread"
 
-#: bse/bsecore.idl:424
+#: bse/bsecore.idl:593
 msgid "Child System Time"
 msgstr "Child System Time"
 
-#: bse/bsecore.idl:424
+#: bse/bsecore.idl:593
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "The CPU time spent in the system for children of this thread"
 
-#: bse/bsecore.idl:439
+#: bse/bsecore.idl:608
 msgid "Search Paths"
 msgstr "Search Paths"
 
-#: bse/bsecore.idl:440
+#: bse/bsecore.idl:609
 msgid "Sample Path"
 msgstr "Sample Path"
 
-#: bse/bsecore.idl:441
+#: bse/bsecore.idl:610
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find audio samples."
 msgstr ""
 "Search path of directories, separated by \"%s\", used to find audio samples."
 
-#: bse/bsecore.idl:444
+#: bse/bsecore.idl:613
 msgid "Effect Path"
 msgstr "Effect Path"
 
-#: bse/bsecore.idl:445
+#: bse/bsecore.idl:614
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE effect "
@@ -3557,11 +4254,11 @@ msgstr ""
 "Search path of directories, separated by \"%s\", used to find BSE effect "
 "files."
 
-#: bse/bsecore.idl:448
+#: bse/bsecore.idl:617
 msgid "Instrument Path"
 msgstr "Instrument Path"
 
-#: bse/bsecore.idl:449
+#: bse/bsecore.idl:618
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE instrument "
@@ -3570,11 +4267,11 @@ msgstr ""
 "Search path of directories, separated by \"%s\", used to find BSE instrument "
 "files."
 
-#: bse/bsecore.idl:452
+#: bse/bsecore.idl:621
 msgid "Script Path"
 msgstr "Script Path"
 
-#: bse/bsecore.idl:453
+#: bse/bsecore.idl:622
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE scheme "
@@ -3583,11 +4280,11 @@ msgstr ""
 "Search path of directories, separated by \"%s\", used to find BSE scheme "
 "scripts."
 
-#: bse/bsecore.idl:456
+#: bse/bsecore.idl:625
 msgid "Plugin Path"
 msgstr "Plugin Path"
 
-#: bse/bsecore.idl:457
+#: bse/bsecore.idl:626
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find BSE plugins. "
@@ -3598,11 +4295,11 @@ msgstr ""
 "This path is searched in addition to the standard BSE plugin location on "
 "this system."
 
-#: bse/bsecore.idl:461
+#: bse/bsecore.idl:630
 msgid "LADSPA Path"
 msgstr "LADSPA Path"
 
-#: bse/bsecore.idl:462
+#: bse/bsecore.idl:631
 #, c-format
 msgid ""
 "Search path of directories, seperated by \"%s\", used to find LADSPA "
@@ -3617,15 +4314,15 @@ msgstr ""
 "More informations about LADSPA plugins can be found at http://www.ladspa."
 "org/."
 
-#: bse/bsecore.idl:468
+#: bse/bsecore.idl:637
 msgid "Synthesis Settings"
 msgstr "Synthesis Settings"
 
-#: bse/bsecore.idl:469
+#: bse/bsecore.idl:638
 msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
-#: bse/bsecore.idl:470
+#: bse/bsecore.idl:639
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -3633,19 +4330,19 @@ msgstr ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 
-#: bse/bsecore.idl:472
+#: bse/bsecore.idl:641
 msgid "Synth Mixing Frequency"
 msgstr "Synth Mixing Frequency"
 
-#: bse/bsecore.idl:473
+#: bse/bsecore.idl:642
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:475
+#: bse/bsecore.idl:644
 msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
-#: bse/bsecore.idl:476
+#: bse/bsecore.idl:645
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3653,37 +4350,37 @@ msgstr ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
 
-#: bse/bsecore.idl:480
+#: bse/bsecore.idl:649
 msgid "MIDI"
 msgstr "MIDI"
 
-#: bse/bsecore.idl:481
+#: bse/bsecore.idl:650
 msgid "Invert Sustain Pedal"
 msgstr "Invert Sustain Pedal"
 
-#: bse/bsecore.idl:482
+#: bse/bsecore.idl:651
 msgid ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 msgstr ""
 "Invert the state of sustain (damper) pedal so on/off meanings are reversed"
 
-#: bse/bsecore.idl:485
+#: bse/bsecore.idl:654
 msgid "Stepping Rates"
 msgstr "Stepping Rates"
 
-#: bse/bsecore.idl:486
+#: bse/bsecore.idl:655
 msgid "Volume [dB] Steps"
 msgstr "Volume [dB] Steps"
 
-#: bse/bsecore.idl:486
+#: bse/bsecore.idl:655
 msgid "Step width for volume in decibell"
 msgstr "Step width for volume in decibels"
 
-#: bse/bsecore.idl:488
+#: bse/bsecore.idl:657
 msgid "BPM Steps"
 msgstr "BPM Steps"
 
-#: bse/bsecore.idl:488
+#: bse/bsecore.idl:657
 msgid "Step width for beats per minute"
 msgstr "Step width for beats per minute"
 
@@ -4615,8 +5312,8 @@ msgid "Threshold [dB]"
 msgstr "Threshold [dB]"
 
 #: plugins/artscompressor.idl:58
-msgid "Set the threshold"
-msgstr "Set the threshold"
+msgid "Only parts louder than threshold are compressed"
+msgstr "Only parts louder than threshold are compressed"
 
 #: plugins/artscompressor.idl:59
 msgid "Ratio [x:1]"
@@ -4736,51 +5433,51 @@ msgstr "Mono In"
 msgid "Mono Signal Input"
 msgstr "Mono Signal Input"
 
-#: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
+#: plugins/bseiirfilter.c:119 plugins/bseiirfilter.c:125
 msgid "Filter Choice"
 msgstr "Filter Choice"
 
-#: plugins/bseiirfilter.c:119
+#: plugins/bseiirfilter.c:121
 msgid "Filter Algorithm"
 msgstr "Filter Algorithm"
 
-#: plugins/bseiirfilter.c:125
+#: plugins/bseiirfilter.c:127
 msgid "The type of filter to use"
 msgstr "The type of filter to use"
 
-#: plugins/bseiirfilter.c:129 plugins/bseiirfilter.c:134
+#: plugins/bseiirfilter.c:131 plugins/bseiirfilter.c:136
 msgid "Filter Specification"
 msgstr "Filter Specification"
 
-#: plugins/bseiirfilter.c:131
+#: plugins/bseiirfilter.c:133
 msgid "Order"
 msgstr "Order"
 
-#: plugins/bseiirfilter.c:131
+#: plugins/bseiirfilter.c:133
 msgid "Order of Filter"
 msgstr "Order of Filter"
 
-#: plugins/bseiirfilter.c:136
+#: plugins/bseiirfilter.c:138
 msgid "Epsilon"
 msgstr "Epsilon"
 
-#: plugins/bseiirfilter.c:136
+#: plugins/bseiirfilter.c:138
 msgid "Passband falloff at cutoff frequency"
 msgstr "Passband falloff at cutoff frequency"
 
-#: plugins/bseiirfilter.c:139 plugins/bseiirfilter.c:144
+#: plugins/bseiirfilter.c:141 plugins/bseiirfilter.c:146
 msgid "Cutoff Frequency (All Filters)"
 msgstr "Cutoff Frequency (All Filters)"
 
-#: plugins/bseiirfilter.c:149 plugins/bseiirfilter.c:154
+#: plugins/bseiirfilter.c:151 plugins/bseiirfilter.c:156
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
 msgstr "Cutoff Frequency 2 (Band Pass/Stop)"
 
-#: plugins/bseiirfilter.c:160
+#: plugins/bseiirfilter.c:162
 msgid "Unfiltered Input"
 msgstr "Unfiltered Input"
 
-#: plugins/bseiirfilter.c:162
+#: plugins/bseiirfilter.c:164
 msgid "Filtered Output"
 msgstr "Filtered Output"
 
