@@ -297,7 +297,7 @@ bsewave_parse_chunk_dsc (GScanner        *scanner,
 	  default:		return G_TOKEN_FLOAT;
 	  }
         chunk->osc_freq = vfloat;
-        chunk->xinfos = bse_xinfos_add_num (chunk->xinfos, "osc-freq", vfloat);
+        chunk->xinfos = bse_xinfos_add_float (chunk->xinfos, "osc-freq", vfloat);
 	break;
       case BSEWAVE_TOKEN_XINFO:
         parse_or_return (scanner, '[');
@@ -524,6 +524,18 @@ bsewave_parse_wave_dsc (GScanner    *scanner,
 	  return token;
         if (dsc->wdsc.chunks[i].mix_freq <= 0)
           dsc->wdsc.chunks[i].mix_freq = dsc->dfl_mix_freq;
+        if (dsc->wdsc.chunks[i].osc_freq <= 0)
+          {
+            /* try to set osc-freq from xinfos */
+            gfloat osc_freq = bse_xinfos_get_float (dsc->wdsc.chunks[i].xinfos, "osc-freq");
+            if (osc_freq == 0 && bse_xinfos_get_value (dsc->wdsc.chunks[i].xinfos, "midi-note")) /* also matches midi-note=0 */
+              {
+                SfiNum midi_note = bse_xinfos_get_num (dsc->wdsc.chunks[i].xinfos, "midi-note");
+                osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, midi_note - 69 /* MIDI kammer note */);
+              }
+            if (osc_freq > 0)
+              dsc->wdsc.chunks[i].osc_freq = osc_freq;
+          }
 	if (dsc->wdsc.chunks[i].osc_freq <= 0)
 	  g_scanner_error (scanner, "wave chunk \"%s\" without oscilator frequency: mix_freq=%f osc_freq=%f",
 			   LOADER_FILE (&dsc->wdsc.chunks[i]) ? (gchar*) LOADER_FILE (&dsc->wdsc.chunks[i]) : "",

@@ -1,3 +1,13 @@
+Fri Jan  7 01:11:04 2005  Tim Janik  <timj@gtk.org>
+
+	* bsewave.header: fixed midi-note docs.
+
+	* gsldatahandle.c: removed midi-note xinfo handling, this doesn't
+	belong here.
+
+	* gslloader-bsewave.c: fixed osc-freq parsing. fallback to midi-note
+	frequency specification if osc-freq is not given.
+
 Thu Jan  6 23:44:54 2005  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle.[hc]: removed unused QData.

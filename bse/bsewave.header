@@ -33,10 +33,10 @@ wave {
         chunk {
                 osc-freq = 440.0	# note frequency the chunk is to be
                 			# played at. (or, the note that was
-                			# played when the chunk was recorded).
-		midi-note = 57		# alternative way to specify osc-freq.
-					# e.g. the midi note number '57' means
-					# 440 Hz (A-1).
+                			# played when the chunk was recorded)
+		midi-note = 69		# fallback way to specify osc-freq;
+					# the MIDI note number '69' results in
+					# 440 Hz (MIDI standard pitch for A+1)
 		xinfo["key"] = "value"	# extra information per chunk
                 vorbis-link = (...)	# reference to Ogg/Vorbis data block
                 			# in binary appendix of the wave file

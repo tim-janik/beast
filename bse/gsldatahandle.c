@@ -251,8 +251,6 @@ gsl_data_handle_osc_freq (GslDataHandle *dhandle)
   
   GSL_SPIN_LOCK (&dhandle->mutex);
   gfloat f = bse_xinfos_get_float (dhandle->setup.xinfos, "osc-freq");
-  if (f == 0)
-    f = bse_temp_freq (gsl_get_config ()->kammer_freq, bse_xinfos_get_float (dhandle->setup.xinfos, "midi-note") - gsl_get_config ()->midi_kammer_note);
   GSL_SPIN_UNLOCK (&dhandle->mutex);
   
   return f;
