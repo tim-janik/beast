@@ -148,6 +148,13 @@
       </vbox>
     </hwrap>
   </xdef:snet-palette>
+
+  <!-- profiler -->
+  <xdef:profiler inherit="vbox">
+    <alignment border-width="5" expand="true">
+      <label name="textfield"/>
+    </alignment>
+  </xdef:profiler>
   
   <!-- wave view -->
   <xdef:wave-view inherit="BstWaveView" border-width="3" >

@@ -63,21 +63,6 @@ struct _BstAppClass
 /* --- actions --- */
 enum {
   BST_ACTION_APP_NONE,
-  /* dialogs */
-  BST_ACTION_SHOW_PREFERENCES,
-  BST_ACTION_SHOW_PROC_BROWSER,
-  BST_ACTION_EXTRA_VIEW,
-  /* help dialogs */
-#define BST_ACTION_HELP_FIRST   BST_ACTION_HELP_FAQ
-  BST_ACTION_HELP_FAQ,
-  BST_ACTION_HELP_KEYTABLE,
-  BST_ACTION_HELP_RELEASE_NOTES,
-  BST_ACTION_HELP_GSL_PLAN,
-  BST_ACTION_HELP_QUICK_START,
-  BST_ACTION_HELP_ABOUT,
-#define BST_ACTION_HELP_LAST    BST_ACTION_HELP_ABOUT
-  /* project dialogs */
-  BST_ACTION_RACK_EDITOR,
   /* project actions */
   BST_ACTION_NEW_PROJECT,
   BST_ACTION_OPEN_PROJECT,
@@ -124,8 +109,7 @@ void            bst_app_create_default          (BstApp         *app);
 GtkWidget*      bst_app_get_current_shell       (BstApp         *app);
 SfiProxy        bst_app_get_current_super       (BstApp         *app);
 BstApp*         bst_app_find                    (SfiProxy        project);
-void            bst_app_trigger_action          (BstApp         *app,
-                                                 gulong          action);
+void            bst_app_show_release_notes      (BstApp         *app);
 
 G_END_DECLS
 

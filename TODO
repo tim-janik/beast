@@ -1,4 +1,5 @@
 FIXMES:
+- add DSP engine module stats to profiler dialog
 - add tooltips to categories and use that for bst_action_list_add_cat()
 - remove docs/generated/bse-plugin-generator.1
 - new 32th note etc. icons

@@ -104,6 +104,7 @@ main (int   argc,
   sfi_init ();
   sfi_debug_allow ("misc");
   /* ensure SFI can wake us up */
+  sfi_thread_set_name ("BEAST-GUI");
   sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
 			 g_main_context_default (), NULL);
 
@@ -324,7 +325,7 @@ main (int   argc,
   if (!BST_RC_VERSION || strcmp (BST_RC_VERSION, BST_VERSION))
     {
       save_rc_file = TRUE;
-      bst_app_trigger_action (app, BST_ACTION_HELP_RELEASE_NOTES);
+      bst_app_show_release_notes (app);
       bst_gconfig_set_rc_version (BST_VERSION);
     }
 
