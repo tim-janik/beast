@@ -2,19 +2,19 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.3 2003/10/17 19:44:22 timj Exp $
+# $Id: sv.po,v 1.4 2003/10/18 10:11:05 menthos Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-17 21:42+0200\n"
-"PO-Revision-Date: 2003-10-16 19:39+0200\n"
+"POT-Creation-Date: 2003-10-18 12:08+0200\n"
+"PO-Revision-Date: 2003-10-18 12:10+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: beast-gtk/bstapp.c:64
 msgid "/_File"
@@ -121,8 +121,8 @@ msgid "/Project/New MIDI Synthesizer"
 msgstr "/Projekt/Ny MIDI-synthesizer"
 
 #: beast-gtk/bstapp.c:101
-msgid "/Project/Remove Synthesizer"
-msgstr "/Projekt/Ta bort synthesizer"
+msgid "/Project/Remove Song or Synthesizer"
+msgstr "/Projekt/Ta bort låt eller synthesizer"
 
 #: beast-gtk/bstapp.c:103
 msgid "/_Song"
@@ -168,65 +168,90 @@ msgstr "/Vågor/Ta bort våg"
 msgid "/Waves/_Edit Wave..."
 msgstr "/Vågor/_Redigera våg..."
 
-#: beast-gtk/bstapp.c:118 beast-gtk/bstpartdialog.c:72
+# "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
+#: beast-gtk/bstapp.c:118
+msgid "/_Synthesizers"
+msgstr "/_Synthesizers"
+
+#: beast-gtk/bstapp.c:120
+msgid "/Synthesizers/Load _Effect"
+msgstr "/Synthesizers/Läs in _effekt"
+
+#: beast-gtk/bstapp.c:121
+msgid "/Synthesizers/Load _Instrument"
+msgstr "/Synthesizers/Läs in _instrument"
+
+#: beast-gtk/bstapp.c:122
+msgid "/Synthesizers/Save As Effect"
+msgstr "/Synthesizers/Spara som effekt"
+
+#: beast-gtk/bstapp.c:123
+msgid "/Synthesizers/Save As Instrument"
+msgstr "/Synthesizers/Spara som instrument"
+
+#: beast-gtk/bstapp.c:124
+msgid "/_Demo"
+msgstr "/_Demo"
+
+#: beast-gtk/bstapp.c:126 beast-gtk/bstpartdialog.c:72
 msgid "/_Tools"
 msgstr "/_Verktyg"
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:127
 msgid "/Tools/_Song"
 msgstr "/Verktyg/_Låt"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:128
 msgid "/Tools/_Synth"
 msgstr "/Verktyg/_Synth"
 
-#: beast-gtk/bstapp.c:121
+#: beast-gtk/bstapp.c:129
 msgid "/Tools/Wave_s"
 msgstr "/Verktyg/V_ågor"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:132
 msgid "/_Help"
 msgstr "/_Hjälp"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:134
 msgid "/Help/_Release Notes..."
 msgstr "/Hjälp/_Utgåvenoteringar..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:135
 msgid "/Help/Quick Start..."
 msgstr "/Hjälp/Snabbstart..."
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:136
 msgid "/Help/_FAQ..."
 msgstr "/Hjälp/_Frågor och svar..."
 
-#: beast-gtk/bstapp.c:129
+#: beast-gtk/bstapp.c:137
 msgid "/Help/Development/GSL Engine..."
 msgstr "/Hjälp/Utveckling/GSL-motor..."
 
-#: beast-gtk/bstapp.c:131
+#: beast-gtk/bstapp.c:139
 msgid "/Help/_About..."
 msgstr "/Hjälp/_Om..."
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:710
+#: beast-gtk/bstapp.c:730
 msgid "Rack editor"
 msgstr "Rackredigerare"
 
-#: beast-gtk/bstapp.c:724
+#: beast-gtk/bstapp.c:744
 msgid "Preferences"
 msgstr "Inställningar"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:738
+#: beast-gtk/bstapp.c:758
 msgid "Device Monitor"
 msgstr "Enhetsövervakare"
 
-#: beast-gtk/bstapp.c:753
+#: beast-gtk/bstapp.c:773
 msgid "Procedure Browser"
 msgstr "Procedurbläddrare"
 
-#: beast-gtk/bstapp.c:810
+#: beast-gtk/bstapp.c:830
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Utgåvenoteringar för BEAST-%s"
@@ -303,57 +328,72 @@ msgstr "Markera område"
 msgid "Abortion"
 msgstr "Avbrytande"
 
-#: beast-gtk/bstfiledialog.c:196
+#: beast-gtk/bstfiledialog.c:197
 msgid "Contents"
 msgstr "Innehåll"
 
-#: beast-gtk/bstfiledialog.c:204
-msgid "Store references to wave files"
-msgstr "Lagra referenser till wave-filer"
-
-#: beast-gtk/bstfiledialog.c:211
-msgid "Include wave files"
-msgstr "Inkludera wave-filer"
-
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:228
+#: beast-gtk/bstfiledialog.c:229
 msgid "File Selection"
 msgstr "Filval"
 
-#: beast-gtk/bstfiledialog.c:343
+#: beast-gtk/bstfiledialog.c:400
 msgid "Open Project"
 msgstr "Öppna projekt"
 
-#: beast-gtk/bstfiledialog.c:357
+#: beast-gtk/bstfiledialog.c:414
 msgid "Select Directory"
 msgstr "Välj katalog"
 
-#: beast-gtk/bstfiledialog.c:371 beast-gtk/bstfiledialog.c:378
+#: beast-gtk/bstfiledialog.c:428 beast-gtk/bstfiledialog.c:435
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Öppnar projektet \"%s\""
 
-#: beast-gtk/bstfiledialog.c:396
+#: beast-gtk/bstfiledialog.c:453
 #, c-format
 msgid "Merge: %s"
 msgstr "Sammanfoga: %s"
 
-#: beast-gtk/bstfiledialog.c:409
+#: beast-gtk/bstfiledialog.c:466
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Sammanfogar projektet \"%s\""
 
-#: beast-gtk/bstfiledialog.c:425
+#: beast-gtk/bstfiledialog.c:489
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Misslyckades med att ta bort filen\n"
+"\"%s\"\n"
+"på grund av:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:518
 #, c-format
 msgid "Save: %s"
 msgstr "Spara: %s"
 
-#: beast-gtk/bstfiledialog.c:446 beast-gtk/bstfiledialog.c:481
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:520
+msgid "Fully include wave files"
+msgstr "Inkludera wave-filer fullständigt"
+
+#: beast-gtk/bstfiledialog.c:521
+msgid "Store references to wave files"
+msgstr "Lagra referenser till wave-filer"
+
+#: beast-gtk/bstfiledialog.c:542 beast-gtk/bstfiledialog.c:552
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Sparar projektet \"%s\""
 
-#: beast-gtk/bstfiledialog.c:447
+#: beast-gtk/bstfiledialog.c:543 beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:695
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -368,29 +408,47 @@ msgstr ""
 "\"%s\":\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:463
-#, c-format
-msgid "Deleting file `%s'"
-msgstr "Tar bort filen \"%s\""
+#: beast-gtk/bstfiledialog.c:567
+msgid "Load Effect"
+msgstr "Läs in effekt"
 
-#: beast-gtk/bstfiledialog.c:464
+#: beast-gtk/bstfiledialog.c:580
 #, c-format
-msgid ""
-"Failed to delete file\n"
-"`%s'\n"
-"due to:\n"
-"%s"
-msgstr ""
-"Misslyckades med att ta bort filen\n"
-"\"%s\"\n"
-"på grund av:\n"
-"%s"
+msgid "Merging effect `%s'"
+msgstr "Sammanfogar effekten \"%s\""
 
-#: beast-gtk/bstfiledialog.c:497
+#: beast-gtk/bstfiledialog.c:597
+msgid "Save Effect"
+msgstr "Spara effekt"
+
+#: beast-gtk/bstfiledialog.c:618 beast-gtk/bstfiledialog.c:628
+#, c-format
+msgid "Saving effect `%s'"
+msgstr "Sparar effekten \"%s\""
+
+#: beast-gtk/bstfiledialog.c:643
+msgid "Load Instrument"
+msgstr "Läs in instrument"
+
+#: beast-gtk/bstfiledialog.c:656
+#, c-format
+msgid "Merging instrument `%s'"
+msgstr "Sammanfogar instrumentet \"%s\""
+
+#: beast-gtk/bstfiledialog.c:673
+msgid "Save Instrument"
+msgstr "Spara instrument"
+
+#: beast-gtk/bstfiledialog.c:694 beast-gtk/bstfiledialog.c:704
+#, c-format
+msgid "Saving instrument `%s'"
+msgstr "Sparar instrumentet \"%s\""
+
+#: beast-gtk/bstfiledialog.c:720
 msgid "Load Wave"
 msgstr "Läs in våg"
 
-#: beast-gtk/bstfiledialog.c:509 beast-gtk/bstfiledialog.c:511
+#: beast-gtk/bstfiledialog.c:732 beast-gtk/bstfiledialog.c:734
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Läser in vågen \"%s\""
@@ -594,68 +652,56 @@ msgid "Remove Paths"
 msgstr "Ta bort sökvägar"
 
 #: beast-gtk/bstpartdialog.c:73
-#, fuzzy
 msgid "/Tools/Insert"
-msgstr "/Verktyg/_Synth"
+msgstr "/Verktyg/Infoga"
 
 #: beast-gtk/bstpartdialog.c:74
-#, fuzzy
 msgid "/Tools/Delete"
-msgstr "Ta bort"
+msgstr "/Verktyg/Ta bort"
 
 #: beast-gtk/bstpartdialog.c:75
-#, fuzzy
 msgid "/Tools/Align Events"
-msgstr "/Verktyg/V_ågor"
+msgstr "/Verktyg/Justera händelser"
 
 #: beast-gtk/bstpartdialog.c:76
-#, fuzzy
 msgid "/Tools/Select"
-msgstr "/Verktyg/_Synth"
+msgstr "/Verktyg/Markera"
 
 #: beast-gtk/bstpartdialog.c:77
-#, fuzzy
 msgid "/Tools/Vertical Select"
-msgstr "Vertikalmarkering"
+msgstr "/Verktyg/Vertikalmarkering"
 
 #: beast-gtk/bstpartdialog.c:79
-#, fuzzy
 msgid "/Edit/Cut"
-msgstr "/Redigera/-"
+msgstr "/Redigera/Klipp ut"
 
 #: beast-gtk/bstpartdialog.c:80
-#, fuzzy
 msgid "/Edit/Copy"
-msgstr "/Redigera/Spår/_Kopiera"
+msgstr "/Redigera/Kopiera"
 
 #: beast-gtk/bstpartdialog.c:81
-#, fuzzy
 msgid "/Edit/Paste"
-msgstr "/Redigera/_Mönster"
+msgstr "/Redigera/Klistra in"
 
 #: beast-gtk/bstpartdialog.c:82
-#, fuzzy
 msgid "/Edit/Clear"
-msgstr "/Redigera/_Töm ångra"
+msgstr "/Redigera/Töm"
 
 #: beast-gtk/bstpartdialog.c:84
-#, fuzzy
 msgid "/Edit/Undo"
-msgstr "/Redigera/_Ångra"
+msgstr "/Redigera/Ångra"
 
 #: beast-gtk/bstpartdialog.c:85
-#, fuzzy
 msgid "/Edit/Redo"
-msgstr "/Redigera/_Gör om"
+msgstr "/Redigera/Gör om"
 
 #: beast-gtk/bstpartdialog.c:87
-#, fuzzy
 msgid "/Scripts"
-msgstr "Skript"
+msgstr "/Skript"
 
 #: beast-gtk/bstpartdialog.c:88
 msgid "/Test"
-msgstr ""
+msgstr "/Test"
 
 #: beast-gtk/bstpartdialog.c:260
 msgid "Control Type: "
@@ -1024,6 +1070,50 @@ msgstr "Rulla höger"
 msgid "Waves"
 msgstr "Vågor"
 
+#~ msgid "/Project/Remove Synthesizer"
+#~ msgstr "/Projekt/Ta bort synthesizer"
+
+# "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
+#~ msgid "_Synthesizers"
+#~ msgstr "_Synthesizers"
+
+# "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
+#~ msgid "Synthesizers"
+#~ msgstr "Synthesizers"
+
+#~ msgid "Synthesizer"
+#~ msgstr "Synthesizer"
+
+#~ msgid "/Synthesizers/Load Effect"
+#~ msgstr "/Synthesizers/Läs in effekt"
+
+#~ msgid "Load _Instrument"
+#~ msgstr "Läs in _instrument"
+
+#~ msgid "_Demo"
+#~ msgstr "_Demo"
+
+#~ msgid "Demo"
+#~ msgstr "Demo"
+
+#~ msgid "Effect"
+#~ msgstr "Effekt"
+
+#~ msgid "Effects"
+#~ msgstr "Effekter"
+
+#~ msgid "Instrument"
+#~ msgstr "Instrument"
+
+#~ msgid "Instruments"
+#~ msgstr "Instrument"
+
+#~ msgid "Test"
+#~ msgstr "Test"
+
+#~ msgid "Deleting file `%s'"
+#~ msgstr "Tar bort filen \"%s\""
+
 #~ msgid "Number of Columns"
 #~ msgstr "Antal kolumner"
 
@@ -1104,9 +1194,6 @@ msgstr "Vågor"
 
 #~ msgid "/Project/_New Song"
 #~ msgstr "/Projekt/_Ny låt"
-
-#~ msgid "Synthesizer"
-#~ msgstr "Synthesizer"
 
 #~ msgid "_Song"
 #~ msgstr "_Låt"
@@ -1448,12 +1535,6 @@ msgstr "Vågor"
 #~ msgid "Save Sample"
 #~ msgstr "Spara sampling"
 
-#~ msgid "Load Instrument"
-#~ msgstr "Läs in instrument"
-
-#~ msgid "Save Instrument"
-#~ msgstr "Spara instrument"
-
 #~ msgid "Operation not supported."
 #~ msgstr "Åtgärden stöds inte."
 
@@ -1537,9 +1618,6 @@ msgstr "Vågor"
 
 #~ msgid "Instrument loaded."
 #~ msgstr "Instrument inläst."
-
-#~ msgid "Saving instrument..."
-#~ msgstr "Sparar instrument..."
 
 #~ msgid "Instrument saved."
 #~ msgstr "Instrument sparat."
