@@ -29,7 +29,7 @@ translations can be obtained from the following pages.
 @uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/de/extras/index.html,, de},
 @uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/el/extras/index.html,, el},
 @uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/es/extras/index.html,, es},
-@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/nl/extras/index.html,, mn},
+@uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/mn/extras/index.html,, mn},
 @uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/nl/extras/index.html,, nl},
 @uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/pt/extras/index.html,, pt},
 @uref{http://developer.gnome.org/projects/gtp/status/gnome-2.6/sr/extras/index.html,, sr},
