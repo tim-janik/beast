@@ -1,0 +1,57 @@
+/* BseStandardGusPatchEnvelope - Envelope for GUS Patches -*-mode: c++;-*-
+ * Copyright (C) 2004 Stefan Westerfeld
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include <bse/bsecxxmodule.idl>
+
+namespace Bse {
+namespace Standard {
+
+class GusPatchEnvelope : Effect {
+  // Info    icon        = "icons/noise.png";
+  Info    authors     = "Stefan Westerfeld";
+  Info    license     = _("GNU Lesser General Public License");
+  Info    category    = _("/Audio Sources/StandardGusPatchEnvelope");
+  Info    blurb       = _("StandardGusPatchEnvelope is an Envelope for GUS Patches\n\n"
+                          "GUS Patches contain different volume settings and tremolo "
+			  "settings for different notes, and the envelopes are of a non-standard "
+			  "form, thus using a BseWaveOsc alone is not enough to produce the sound "
+			  "of the GUS Patches; to accomplish the playing, you thus need to connect "
+			  "one (or for stereo two) BseWaveOsc(s) and their Gate Output Signal to this "
+			  "module.");
+
+  group _("Properties") {
+    String  wave_name      = (_("Wave Name"),    _("Name of the BseWave of the GUS Patch with the Envelope Data"), "", STANDARD);
+  };
+
+  // inputs
+  IStream frequency      = (_("Frequency"),    _("Frequency Input"));
+  IStream gate_in        = (_("Gate In"),      _("Gate input (activates/deactivates envelope)"));
+  IStream retrigger_in   = (_("Retrigger In"), _("Retrigger input (raising edge retriggers envelope)"));
+  IStream audio_in1      = (_("Audio In1"),    _("Audio input 1"));
+  IStream audio_gate1    = (_("Audio Gate1"),  _("Gate Output of the first channel of the patch"));
+  IStream audio_in2      = (_("Audio In2"),    _("Audio input 2"));
+  IStream audio_gate2    = (_("Audio Gate2"),  _("Gate Output of the second channel of the patch"));
+
+  // outputs
+  OStream audio_out1     = (_("Audio Out1"),   _("Envelope audio output 1 (left output signal)"));
+  OStream audio_out2     = (_("Audio Out2"),   _("Envelope audio output 2 (right output signal)"));
+  OStream done_out       = (_("Done Out"),     _("This signal goes high after the release phase has completed"));
+};
+
+} // Standard
+} // Bse
