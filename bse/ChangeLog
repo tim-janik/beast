@@ -1,3 +1,11 @@
+Sun Jan  4 12:30:30 2004  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c (show_plugindoc): added plugin documentation generation.
+	
+	* bseamplifier.idl: refine tooltip.
+
+	* bsestandardosc.c: added i18n markup.
+
 Fri Jan  2 19:04:16 2004  Tim Janik  <timj@gtk.org>
 
 	* bsewave.[hc]: added bse_wave_set_description_bits() to set comment and

@@ -18,6 +18,7 @@
 #include "bsemain.h"
 #include "bsecategories.h"
 #include "bseprocedure.h"
+#include "bsesource.h"
 #include "topconfig.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -344,6 +345,149 @@ show_structdoc (void)
   g_free (children);
 }
 
+static gboolean
+strequals (const gchar *s1,
+           const gchar *s2)
+{
+  if (!s1 || !s2)
+    return s1 == s2;
+  return strcmp (s1, s2) == 0;
+}
+
+static void
+show_objdoc (void)
+{
+  BseCategorySeq *cseq;
+  guint i, j, in_itemize = 0;
+  g_print ("\\input texinfo\n"
+	   "@c %%**start of header\n"
+	   "@settitle %s\n"
+	   "@footnotestyle end\n"
+	   "@c %%**end of header\n"
+	   "\n"
+	   "@include texiutils.texi\n"
+	   "\n"
+	   "@docpackage{BEAST-%s}\n"
+	   "@docfont{tech}\n"
+	   "\n"
+	   "@majorheading %s - %s\n"
+	   "\n"
+	   "@revision{Document Revised:}\n"
+	   "\n"
+           "@contents\n"
+	   "\n",
+           _("BSE-Objects"),
+	   BST_VERSION,
+           _("BSE-Objects"), _(" Object Reference"));
+  cseq = bse_categories_match_typed ("*", BSE_TYPE_SOURCE);
+  for (i = 0; i < cseq->n_cats; i++)
+    {
+      BseCategory *cat = cseq->cats[i];
+      GType btype, type = g_type_from_name (cat->type);
+      BseSource *source = g_object_new (type, NULL);
+      const gchar *string, *pgroup = NULL;
+      g_print ("\n\n@anchor{%s} ", g_type_name (type));
+      g_print ("@unnumbered %s\n", g_type_name (type));
+      string = bse_type_get_authors (type);
+      if (string)
+        g_print ("@* @emph{%s} %s\n", _("Authors:"), string);
+      string = bse_type_get_license (type);
+      if (string)
+        g_print ("@* @emph{%s} %s\n", _("License:"), string);
+      string = bse_type_get_blurb (type);
+      if (string)
+        g_print ("@* %s\n", string);
+      g_print ("@heading %s\n", _("Properties:"));
+      btype = G_TYPE_OBJECT;
+      do
+        {
+          GParamSpec **pspecs;
+          btype = g_type_next_base (type, btype);
+          pspecs = g_object_class_list_properties (g_type_class_peek (btype), NULL);
+          for (j = 0; pspecs[j]; j++)
+            {
+              GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), pspecs[j]->name);
+              const gchar *group = sfi_pspec_get_group (pspec);
+              if (pspec->owner_type != btype || !sfi_pspec_check_option (pspec, "G"))
+                continue;
+              if (!strequals (group, pgroup))
+                {
+                  if (in_itemize)
+                    g_print ("@end itemize\n");
+                  in_itemize = 0;
+                  pgroup = group;
+                  if (group)
+                    g_print ("@strong{%s:}\n", group);
+                }
+              if (!in_itemize++)
+                g_print ("@itemize\n");
+              g_print ("@anchor{%s::%s} ", g_type_name (type), sfi_pspec_get_name (pspec));
+              g_print ("@item @strong{@emph{%s}}\n", sfi_pspec_get_nick (pspec));
+              g_print ("@* @emph{%s} @var{%s}\n", _("Name:"), sfi_pspec_get_name (pspec));
+              if (SFI_IS_PSPEC_INT (pspec))
+                {
+                  SfiInt imin, imax;
+                  sfi_pspec_get_int_range (pspec, &imin, &imax, NULL);
+                  g_print ("@* @emph{%s} %d .. %d\n", _("Range:"), imin, imax);
+                }
+              else if (SFI_IS_PSPEC_REAL (pspec))
+                {
+                  SfiReal fmin, fmax;
+                  sfi_pspec_get_real_range (pspec, &fmin, &fmax, NULL);
+                  g_print ("@* @emph{%s} %.7g .. %.7g\n", _("Range:"), fmin, fmax);
+                }
+              string = sfi_pspec_get_blurb (pspec);
+              if (string)
+                g_print ("@* @emph{%s} %s\n", _("Description:"), string);
+            }
+          if (in_itemize)
+            {
+              g_print ("@end itemize\n");
+              in_itemize = 0;
+            }
+          g_free (pspecs);
+        }
+      while (btype != type);
+      g_print ("@heading %s\n", _("Input Channels:"));
+      for (j = 0; j < BSE_SOURCE_N_ICHANNELS (source); j++)
+        {
+          if (!in_itemize++)
+            g_print ("@itemize\n");
+          g_print ("@anchor{%s::%s} ", g_type_name (type), BSE_SOURCE_ICHANNEL_IDENT (source, j));
+          g_print ("@item @strong{@emph{%s %s}}\n", BSE_SOURCE_ICHANNEL_NAME (source, j),
+                   BSE_SOURCE_IS_JOINT_ICHANNEL (source, j) ? _("(Joint Input)") : "");
+          g_print ("@* @emph{%s} @var{%s}\n", _("Name:"), BSE_SOURCE_ICHANNEL_IDENT (source, j));
+          string = BSE_SOURCE_ICHANNEL_BLURB (source, j);
+          if (string)
+            g_print ("@* @emph{%s} %s\n", _("Description:"), string);
+        }
+      if (in_itemize)
+        {
+          g_print ("@end itemize\n");
+          in_itemize = 0;
+        }
+      g_print ("@heading %s\n", _("Output Channels:"));
+      for (j = 0; j < BSE_SOURCE_N_OCHANNELS (source); j++)
+        {
+          if (!in_itemize++)
+            g_print ("@itemize\n");
+          g_print ("@anchor{%s::%s} ", g_type_name (type), BSE_SOURCE_OCHANNEL_IDENT (source, j));
+          g_print ("@item @strong{@emph{%s}} \n", BSE_SOURCE_OCHANNEL_NAME (source, j));
+          g_print ("@* @emph{%s} @var{%s}\n", _("Name:"), BSE_SOURCE_OCHANNEL_IDENT (source, j));
+          string = BSE_SOURCE_OCHANNEL_BLURB (source, j);
+          if (string)
+            g_print ("@* @emph{%s} %s\n", _("Description:"), string);
+        }
+      if (in_itemize)
+        {
+          g_print ("@end itemize\n");
+          in_itemize = 0;
+        }
+      g_print ("\n");
+      g_object_unref (source);
+    }
+}
+
 static gint
 help (const gchar *name,
       const gchar *arg)
@@ -366,12 +510,12 @@ main (gint   argc,
   GSList *seealso = NULL;
   gboolean gen_procs = FALSE;
   gboolean gen_structs = FALSE;
+  gboolean gen_objects = FALSE;
   guint i;
   
   g_thread_init (NULL);
   
   bse_init_intern (&argc, &argv, NULL);
-
   boxed_type_tag = g_quark_from_static_string ("bse-auto-doc-boxed-type-tag");
   
   for (i = 1; i < argc; i++)
@@ -391,6 +535,10 @@ main (gint   argc,
       else if (strcmp ("structs", argv[i]) == 0)
 	{
 	  gen_structs = TRUE;
+	}
+      else if (strcmp ("objects", argv[i]) == 0)
+	{
+	  gen_objects = TRUE;
 	}
       else if (strcmp ("--seealso", argv[i]) == 0)
 	{
@@ -417,6 +565,8 @@ main (gint   argc,
     show_procdoc ();
   else if (gen_structs)
     show_structdoc ();
+  else if (gen_objects)
+    show_objdoc ();
   else
     return help (argv[0], NULL);
 

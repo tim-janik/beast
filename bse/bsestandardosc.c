@@ -108,10 +108,10 @@ BSE_BUILTIN_TYPE (BseStandardOsc)
   
   type = bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseStandardOsc",
-				   "StandardOsc is a basis oscillator that supports frequency, "
-				   "modulation and sync inputs",
+				   _("StandardOsc is the BSE basis oscillator which supports various types "
+                                     "of wave forms and modulation inputs."),
 				   &type_info);
-  bse_categories_register_icon ("/Modules/Audio Sources/Standard Oscillator",
+  bse_categories_register_icon (_("/Modules/Audio Sources/Standard Oscillator"),
 				type,
 				&pixdata);
   return type;
@@ -134,79 +134,79 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
   source_class->context_create = bse_standard_osc_context_create;
   source_class->reset = bse_standard_osc_reset;
   
-  bse_object_class_add_param (object_class, "Wave Form",
+  bse_object_class_add_param (object_class, _("Wave Form"),
 			      PROP_WAVE_FORM,
-			      bse_param_spec_genum ("wave_form", "Wave", "Oscillator wave form",
+			      bse_param_spec_genum ("wave_form", _("Wave"), _("Oscillator wave form"),
 						    BSE_TYPE_STANDARD_OSC_WAVE_TYPE,
 						    BSE_STANDARD_OSC_SAW_FALL,
 						    SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Wave Form",
+  bse_object_class_add_param (object_class, _("Wave Form"),
 			      PROP_PHASE,
-			      sfi_pspec_real ("phase", "Phase", NULL,
+			      sfi_pspec_real ("phase", _("Phase"), NULL,
 					      0.0, -180.0, 180.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:dial:skip-default"));
-  bse_object_class_add_param (object_class, "Base Frequency",
+  bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_BASE_FREQ,
-			      bse_param_spec_freq_simple ("base_freq", "Frequency", NULL,
+			      bse_param_spec_freq_simple ("base_freq", _("Frequency"), NULL,
 							  SFI_PARAM_STANDARD ":f:dial"));
-  bse_object_class_add_param (object_class, "Base Frequency",
+  bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_BASE_NOTE,
-			      bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
-  bse_object_class_add_param (object_class, "Base Frequency",
+			      bse_pspec_note_simple ("base_note", _("Note"), NULL, SFI_PARAM_GUI));
+  bse_object_class_add_param (object_class, _("Base Frequency"),
 			      PROP_FINE_TUNE,
-			      sfi_pspec_int ("fine_tune", "Fine Tune", NULL,
+			      sfi_pspec_int ("fine_tune", _("Fine Tune"), NULL,
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
 					     SFI_PARAM_STANDARD ":f:dial:skip-default"));
-  bse_object_class_add_param (object_class, "Modulation",
+  bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_FM_PERC,
-			      sfi_pspec_real ("fm_perc", "Input Modulation [%]",
-					      "Strength of linear frequency modulation",
+			      sfi_pspec_real ("fm_perc", _("Input Modulation [%]"),
+					      _("Strength of linear frequency modulation"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:scale"));
-  bse_object_class_add_param (object_class, "Modulation",
+  bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_FM_EXP,
-			      sfi_pspec_bool ("exponential_fm", "Exponential FM",
-					      "Perform exponential frequency modulation "
-					      "instead of linear",
+			      sfi_pspec_bool ("exponential_fm", _("Exponential FM"),
+					      _("Perform exponential frequency modulation "
+                                                "instead of linear"),
 					      FALSE, SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Modulation",
+  bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_FM_OCTAVES,
-			      sfi_pspec_real ("fm_n_octaves", "Octaves",
-					      "Number of octaves to be affected by exponential frequency modulation",
+			      sfi_pspec_real ("fm_n_octaves", _("Octaves"),
+					      _("Number of octaves to be affected by exponential frequency modulation"),
 					      1.0, 0, 5.0, 0.01,
 					      SFI_PARAM_STANDARD ":f:scale"));
-  bse_object_class_add_param (object_class, "Modulation",
+  bse_object_class_add_param (object_class, _("Modulation"),
 			      PROP_SELF_PERC,
-			      sfi_pspec_real ("self_perc", "Self Modulation [%]",
-					      "Strength of self modulation",
+			      sfi_pspec_real ("self_perc", _("Self Modulation [%]"),
+					      _("Strength of self modulation"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:scale:skip-default"));
-  bse_object_class_add_param (object_class, "Pulse Modulation",
+  bse_object_class_add_param (object_class, _("Pulse Modulation"),
 			      PROP_PULSE_WIDTH,
-			      sfi_pspec_real ("pulse_width", "Pulse Width",
-					      "Proportion of the positive component duration of the pulse wave form "
-					      "(Pulse has to be selected as wave form for this to take effect)",
+			      sfi_pspec_real ("pulse_width", _("Pulse Width"),
+					      _("Proportion of the positive component duration of the pulse wave form "
+                                                "(Pulse has to be selected as wave form for this to take effect)"),
 					      50.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:dial"));
-  bse_object_class_add_param (object_class, "Pulse Modulation",
+  bse_object_class_add_param (object_class, _("Pulse Modulation"),
 			      PROP_PULSE_MOD_PERC,
-			      sfi_pspec_real ("pulse_mod_perc", "Pulse Modulation [%]",
-					      "Strength of pulse wisth modulation input "
-					      "(Pulse has to be selected as wave form for this to take effect)",
+			      sfi_pspec_real ("pulse_mod_perc", _("Pulse Modulation [%]"),
+					      _("Strength of pulse wisth modulation input "
+                                                "(Pulse has to be selected as wave form for this to take effect)"),
 					      0.0, 0.0, 100.0, 5.0,
 					      SFI_PARAM_STANDARD ":f:dial"));
   
-  ichannel = bse_source_class_add_ichannel (source_class, "Freq In", "Oscillating Frequency Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "Freq In", _("Oscillating Frequency Input"));
   g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_FREQ);
-  ichannel = bse_source_class_add_ichannel (source_class, "Freq Mod In", "Frequency Modulation Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "Freq Mod In", _("Frequency Modulation Input"));
   g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD);
-  ichannel = bse_source_class_add_ichannel (source_class, "PWM In", "Pulse Width Modulation Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "PWM In", _("Pulse Width Modulation Input"));
   g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_PWM);
-  ichannel = bse_source_class_add_ichannel (source_class, "Sync In", "Syncronization Input");
+  ichannel = bse_source_class_add_ichannel (source_class, "Sync In", _("Syncronization Input"));
   g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_SYNC);
-  ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", "Oscillated Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", _("Oscillated Output"));
   g_assert (ochannel == BSE_STANDARD_OSC_OCHANNEL_OSC);
-  ochannel = bse_source_class_add_ochannel (source_class, "Sync Out", "Syncronization Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "Sync Out", _("Syncronization Output"));
   g_assert (ochannel == BSE_STANDARD_OSC_OCHANNEL_SYNC);
 }
 
