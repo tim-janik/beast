@@ -1,3 +1,9 @@
+Fri Dec 17 10:43:54 1999  Tim Janik  <timj@gtk.org>
+
+	* bsemult.[hc]: added multiplier source to fold signals.
+
+	* bseadder.[hc]: added adder source to sum up signals.
+
 Thu Dec 16 10:15:15 1999  Tim Janik  <timj@gtk.org>
 
 	* bsegenosc.c (bse_gen_osc_class_init): group frequency parameters.
