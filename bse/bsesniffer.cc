@@ -294,6 +294,33 @@ sniffer_get_mix_freq::exec (Sniffer *self)
   return module ? gsl_engine_sample_freq() : 0;
 }
 
+void
+sniffer_request_combined::exec (const SnifferRequestSeq &srs)
+{
+  for (guint i = 0; i < srs.length(); i++)
+    {
+      const SnifferRequestHandle sr = srs[i];
+      Sniffer *self = sr->sniffer;
+      if (!BSE_IS_SNIFFER (self))
+        throw InvalidArgument (self);
+      Int   n_samples = sr->n_samples;
+      SnifferType stype = sr->sniffer_type;
+      Num   tick_stamp = sr->variable_time;
+      switch (sr->time_type)
+        {
+        case SNIFFER_TIME_ABSOLUTE_TICK_STAMP:  /* handled in initialization */
+          break;
+        case SNIFFER_TIME_RELATIVE_USECS:
+          tick_stamp = Num (sr->variable_time * (gsl_engine_sample_freq() * 0.000001) + gsl_tick_stamp ());
+          break;
+        case SNIFFER_TIME_RELATIVE_TICK_STAMP:
+          tick_stamp = sr->variable_time + gsl_tick_stamp ();
+          break;
+        }
+      self->queue_job (tick_stamp, n_samples, stype);
+    }
+}
+
 } // Procedure
 
 BSE_CXX_DEFINE_EXPORTS ();
@@ -302,5 +329,9 @@ BSE_CXX_REGISTER_EFFECT (Sniffer);
 BSE_CXX_REGISTER_PROCEDURE (sniffer_request_samples);
 BSE_CXX_REGISTER_PROCEDURE (sniffer_get_tick_stamp);
 BSE_CXX_REGISTER_PROCEDURE (sniffer_get_mix_freq);
+BSE_CXX_REGISTER_ENUM (SnifferTimeType);
+BSE_CXX_REGISTER_RECORD (SnifferRequest);
+BSE_CXX_REGISTER_SEQUENCE (SnifferRequestSeq);
+BSE_CXX_REGISTER_PROCEDURE (sniffer_request_combined);
 
 } // Bse

@@ -235,7 +235,7 @@ bse_init_intern (gint    *argc,
 
   bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
-  
+
   /* initialize submodules */
   sfi_init ();
   if (!config)

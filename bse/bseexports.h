@@ -49,14 +49,18 @@ typedef struct {
   BseExportNode node;
   GEnumValue   *values;
 } BseExportNodeEnum;
+typedef SfiRecFields (*BseExportGetRecordFields)    (void);
+typedef GParamSpec*  (*BseExportGetSequenceElement) (void);
 struct _BseExportNodeBoxed {
   BseExportNode   node;
   GBoxedCopyFunc  copy;
   GBoxedFreeFunc  free;
   GValueTransform boxed2recseq;
   GValueTransform seqrec2boxed;
-  guint           n_fields;
-  GParamSpec    **fields;
+  union {
+    BseExportGetRecordFields    get_fields;
+    BseExportGetSequenceElement get_element;
+  } func;
 };
 typedef struct {
   BseExportNode      node;

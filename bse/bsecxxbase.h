@@ -94,20 +94,51 @@ public:
 
   static void     class_init        (CxxBaseClass *klass);
 
+  static inline bool instance_is_a  (CxxBase       *cbase,
+                                     GType          iface_type)
+  {
+    if (cbase)
+      {
+        GObject *gobject = cbase->gobject();
+        return G_TYPE_CHECK_INSTANCE_TYPE (gobject, iface_type);
+      }
+    else
+      return FALSE;
+  }
+
+  template<class OType> static inline OType*
+  value_get_gobject (const GValue *v)
+  {
+    gpointer p;
+    if (SFI_VALUE_HOLDS_PROXY (v))
+      p = bse_object_from_id (sfi_value_get_proxy (v));
+    else
+      p = g_value_get_object (v);
+    return (OType*) p;
+  }
   template<class CxxType> static inline CxxType
   value_get_object (const GValue *v)
   {
     assert_ptr_derivation<CxxType, CxxBase*>();
-    GObject *p = (GObject*) g_value_get_object (v);
+    GObject *p = value_get_gobject<GObject> (v);
     CxxBase *b = CxxBase::base_from_gobject (p);
     CxxType to = static_cast<CxxType> (b);
     return to;
   }
   static inline void
+  value_set_gobject (GValue  *value,
+                     gpointer object)
+  {
+    if (SFI_VALUE_HOLDS_PROXY (value))
+      sfi_value_set_proxy (value, BSE_IS_OBJECT (object) ? ((BseObject*) object)->unique_id : 0);
+    else
+      g_value_set_object (value, object);
+  }
+  static inline void
   value_set_object (GValue        *value,
                     const CxxBase *self)
   {
-    g_value_set_object (value, self ? self->gobject() : NULL);
+    value_set_gobject (value, self->gobject());
   }
   template<class Accepted, class Casted>
   static inline void

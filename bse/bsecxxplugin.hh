@@ -119,13 +119,11 @@ EnumValue (int         int_value,
       bnode.node.authors = RecordType::authors();                       \
       bnode.node.license = RecordType::license();                       \
       bnode.node.blurb = RecordType::blurb();                           \
-      bnode.copy = ::Sfi::cxx_boxed_copy<RecordType>;                   \
-      bnode.free = ::Sfi::cxx_boxed_free<RecordType>;                   \
+      bnode.copy = Sfi::RecordHandle< RecordType >::boxed_copy;         \
+      bnode.free = Sfi::RecordHandle< RecordType >::boxed_free;         \
       bnode.seqrec2boxed = ::Sfi::cxx_boxed_from_rec<RecordType>;       \
       bnode.boxed2recseq = ::Sfi::cxx_boxed_to_rec<RecordType>;         \
-      SfiRecFields rfields = RecordType::get_fields();                  \
-      bnode.n_fields = rfields.n_fields;                                \
-      bnode.fields = rfields.fields;                                    \
+      bnode.func.get_fields = RecordType::get_fields;                   \
     }                                                                   \
     return &bnode.node;                                                 \
   }                                                                     \
@@ -154,13 +152,11 @@ EnumValue (int         int_value,
       bnode.node.authors = SequenceType::authors();                             \
       bnode.node.license = SequenceType::license();                             \
       bnode.node.blurb = SequenceType::blurb();                                 \
-      bnode.copy = ::Sfi::cxx_boxed_copy<SequenceType>;                         \
-      bnode.free = ::Sfi::cxx_boxed_free<SequenceType>;                         \
+      bnode.copy = SequenceType::boxed_copy;                                    \
+      bnode.free = SequenceType::boxed_free;                                    \
       bnode.seqrec2boxed = ::Sfi::cxx_boxed_from_seq<SequenceType>;             \
       bnode.boxed2recseq = ::Sfi::cxx_boxed_to_seq<SequenceType>;               \
-      bnode.n_fields = 1;                                                       \
-      static GParamSpec *element = SequenceType::get_element();                 \
-      bnode.fields = &element;                                                  \
+      bnode.func.get_element = SequenceType::get_element;                       \
     }                                                                           \
     return &bnode.node;                                                         \
   }                                                                             \

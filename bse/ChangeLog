@@ -1,3 +1,19 @@
+Tue Jan 27 16:03:01 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecxxbase.h: added instance_is_a(), value_get_gobject<>()
+	and value_set_gobject().
+
+	* bseexports.h:
+	* bsecxxplugin.h: adapted to sficxx.h changes, don't call
+	record/sequence functions from static constructor as the
+	type system may not yet be initialized.
+
+	* bsecxxutils.h: tweak InvalidArgument() exception.
+
+	* bsesniffer.cc: implement combined requests.
+
+	* bsetype.c: fixed transform function registration.
+
 Mon Jan 26 02:36:07 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecxxmodule.idl: new idl file to define Bse::Effect.

@@ -294,13 +294,20 @@ bse_type_register_loadable_boxed (BseExportNodeBoxed *bnode,
   g_return_val_if_fail (bnode->node.name != NULL, 0);
   g_return_val_if_fail (bnode->copy != NULL, 0);
   g_return_val_if_fail (bnode->free != NULL, 0);
+  g_return_val_if_fail (bnode->node.ntype == BSE_EXPORT_NODE_RECORD || bnode->node.ntype == BSE_EXPORT_NODE_SEQUENCE, 0);
   g_return_val_if_fail (g_type_from_name (bnode->node.name) == 0, 0);
   
   type = g_type_register_static (G_TYPE_BOXED, bnode->node.name, &info, 0);
   if (bnode->boxed2recseq)
-    g_value_register_transform_func (SFI_TYPE_REC, type, bse_boxed_to_record);
+    g_value_register_transform_func (type,
+                                     bnode->node.ntype == BSE_EXPORT_NODE_RECORD
+                                     ? SFI_TYPE_REC : SFI_TYPE_SEQ,
+                                     bse_boxed_to_record);
   if (bnode->seqrec2boxed)
-    g_value_register_transform_func (type, SFI_TYPE_REC, bse_boxed_from_record);
+    g_value_register_transform_func (bnode->node.ntype == BSE_EXPORT_NODE_RECORD
+                                     ? SFI_TYPE_REC : SFI_TYPE_SEQ,
+                                     type,
+                                     bse_boxed_from_record);
   return type;
 }
 
@@ -311,14 +318,11 @@ bse_type_reinit_boxed (BseExportNodeBoxed *bnode)
   g_type_set_qdata (bnode->node.type, quark_boxed_export_node, bnode);
   switch (bnode->node.ntype)
     {
-      SfiRecFields rfields;
     case BSE_EXPORT_NODE_RECORD:
-      rfields.n_fields = bnode->n_fields;
-      rfields.fields = bnode->fields;
-      sfi_boxed_type_set_rec_fields (bnode->node.type, rfields);
+      sfi_boxed_type_set_rec_fields (bnode->node.type, bnode->func.get_fields());
       break;
     case BSE_EXPORT_NODE_SEQUENCE:
-      sfi_boxed_type_set_seq_element (bnode->node.type, bnode->fields[0]);
+      sfi_boxed_type_set_seq_element (bnode->node.type, bnode->func.get_element());
       break;
     default:    g_assert_not_reached();
     }
