@@ -40,9 +40,9 @@ extern "C" {
 /* list object types in BseExportObject array
  */
 #define BSE_EXPORT_OBJECTS              BSE_EXPORT_IMPL_A (Object)
-/* qualify exported procedure types as load handlers
+/* qualify exported procedure types as file handlers
  */
-#define BSE_EXPORT_LOAD_HANDLERS        BSE_EXPORT_IMPL_A (LoadHandler)
+#define BSE_EXPORT_FILE_HANDLERS        BSE_EXPORT_IMPL_A (FileHandler)
 /* list enum types as BseExportEnum array (mere internal use)
  */
 #define BSE_EXPORT_STATIC_ENUMS		static const BseExportEnum \
@@ -62,7 +62,7 @@ typedef const gchar*                        BseExportBegin;
 typedef union  _BseExportSpec               BseExportSpec;
 typedef struct _BseExportObject             BseExportObject;
 typedef struct _BseExportEnum               BseExportEnum;
-typedef struct _BseExportLoadHandler   	    BseExportLoadHandler;
+typedef struct _BseExportFileHandler   	    BseExportFileHandler;
 typedef struct _BseExportProcedure     	    BseExportProcedure;
 typedef guint                               BseExportEnd;
 typedef void         (*BseProcedureInit)   (BseProcedureClass *proc,
@@ -77,8 +77,17 @@ typedef enum			/*< skip >*/
   BSE_EXPORT_TYPE_PROCS		= 1,
   BSE_EXPORT_TYPE_OBJECTS	= 2,
   BSE_EXPORT_TYPE_ENUMS		= 3,
-  BSE_EXPORT_TYPE_LOAD_HANDLER	= 4
+  BSE_EXPORT_TYPE_FILE_HANDLERS	= 4
 } BseExportType;
+
+
+/* --- File Handler Types --- */
+typedef enum
+{
+  BSE_FILE_CUSTOM_LOADER	= -100,
+  BSE_FILE_STANDARD_LOADER	= 0,
+  BSE_FILE_FALLBACK_LOADER	= 100,
+} BseFileHandlerType;
 
 
 /* --- export declarations --- */
@@ -115,9 +124,10 @@ struct _BseExportEnum
   GType               parent_type; /* obligatory */
   gpointer            values;      /* obligatory */
 };
-struct _BseExportLoadHandler
+struct _BseExportFileHandler
 {
   GType              *type_p;      /* obligatory, referring to procedure type */
+  BseFileHandlerType  fh_type;
   const gchar        *prefix;	   /* optional */
   const gchar	     *extension;   /* optional */
   const gchar        *magic;	   /* optional, prerequisite if given */
@@ -131,7 +141,7 @@ union _BseExportSpec
   BseExportProcedure	  s_proc;
   BseExportObject	  s_object;
   BseExportEnum		  s_enum;
-  BseExportLoadHandler	  s_load_handler;
+  BseExportFileHandler	  s_file_handler;
 };
 
 

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2000 Red Hat, Inc.
+ * Copyright (C) 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,12 +29,12 @@ extern "C" {
 
 
 /* --- Gtk+ type macros --- */
-#define	BST_TYPE_PLAY_LIST		 (bst_play_list_get_type ())
-#define	BST_PLAY_LIST(object)	 (GTK_CHECK_CAST ((object), BST_TYPE_PLAY_LIST, BstPlayList))
-#define	BST_PLAY_LIST_CLASS(klass)	 (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PLAY_LIST, BstPlayListClass))
-#define	BST_IS_PLAY_LIST(object)	 (GTK_CHECK_TYPE ((object), BST_TYPE_PLAY_LIST))
+#define	BST_TYPE_PLAY_LIST	      (bst_play_list_get_type ())
+#define	BST_PLAY_LIST(object)	      (GTK_CHECK_CAST ((object), BST_TYPE_PLAY_LIST, BstPlayList))
+#define	BST_PLAY_LIST_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PLAY_LIST, BstPlayListClass))
+#define	BST_IS_PLAY_LIST(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_PLAY_LIST))
 #define	BST_IS_PLAY_LIST_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PLAY_LIST))
-#define BST_PLAY_LIST_GET_CLASS(obj)	 ((BstPlayListClass*) (((GtkObject*) (obj))->klass))
+#define BST_PLAY_LIST_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PLAY_LIST, BstPlayListClass))
 
 
 /* --- structures & typedefs --- */

@@ -49,7 +49,7 @@ BseTime		bse_time_from_string	(const gchar   *time_string,
 					 BseErrorType	errors[BSE_MAX_DATE_ERRORS]);
 
 
-/* --- notes --- */
+/* --- notes & frequencies --- */
 void	bse_note_examine	(gint		 note,
 				 gint		*octave_p,
 				 guint		*half_tone_p,
@@ -65,6 +65,14 @@ gint	bse_note_from_freq	(gdouble	 freq);
 gdouble	bse_note_to_freq	(gint		 note);
 gdouble	bse_note_to_tuned_freq	(gint		 note,
 				 gint            fine_tune);
+
+/* find match_freq in inclusive_set (NULL acts as wildcard) and don't
+ * find match_freq in exclusive_set (NULL acts as empty set). the sets
+ * have to contain GValues of type G_TYPE_FLOAT.
+ */
+gboolean        bse_value_arrays_match_freq     (gfloat          match_freq,
+						 GValueArray    *inclusive_set,
+						 GValueArray    *exclusive_set);
 
 
 /* --- icons --- */
@@ -88,6 +96,18 @@ gint		bse_string_equals		(gconstpointer	 string1,
 
 void		bse_nullify			(gpointer	*location);
 gchar*		bse_strdup_stripped		(const gchar	*string);
+
+
+/* --- file utils --- */
+void		bse_str_slist_free		(GSList		*slist);
+GSList*		bse_path_pattern_list_matches	(const gchar	*file_pattern,
+						 const gchar	*cwd,
+						 GFileTest	 file_test);
+GSList*		bse_search_path_list_entries	(const gchar	*search_path);
+GSList*		bse_search_path_list_matches	(const gchar	*search_path,
+						 const gchar	*cwd);
+GSList*		bse_search_path_list_files	(const gchar	*search_path,
+						 const gchar	*cwd);
 
 
 /* --- bbuffer utils --- */

@@ -28,15 +28,14 @@ while (<>) {
     my $line = $.;
 
     # read lines until comment end is matched
-    while (m@/\*([^*]|\*[^/])*$@x) {
+    while (m@/\*([^*]|\*[^/*])*\**$@x) {
         my $new = <>;
 
         (defined ($new) && ($file eq $ARGV)) or die "$0: $file:$.: Unmatched comment (line $line)\n";
         $_ .= $new;
     }
-    
     # strip comments
-    s@/\*([^*]|\*[^/])*\*/@@gx;
+    s@/\*([^*]|\*[^/*])*\**\*/@@gx;
     
     # discard non BSE_EXPORTS_* lines
     if (/BSE_EXPORTS_BEGIN/) {

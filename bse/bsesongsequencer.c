@@ -20,11 +20,10 @@
 #include	"bsepattern.h"
 #include	"bsevoice.h"
 #include	"bsehunkmixer.h"
-#include	<math.h>
 
 
 
-#define	MAX_JUMP_RECURSION	32
+#define	MAX_JUMP_RECURSION_DEPTH	32
 
 
 /* --- mixing functions --- */
@@ -48,19 +47,23 @@ bse_song_sequencer_setup (BseSong *song,
   g_return_if_fail (n_tracks == 2);
   
   sequencer = g_new0 (BseSongSequencer, 1);
+
   sequencer->loop_type = BSE_LOOP_NONE;
-  sequencer->next_pattern_row = 0;
-  sequencer->first_pattern_row = 0;
-  sequencer->last_pattern_row = 0;
-  
-  sequencer->next_pattern = 0;
   sequencer->first_pattern = 0;
   sequencer->last_pattern = 0;
-  
+  sequencer->first_pattern_row = 0;
+  sequencer->last_pattern_row = 0;
+
   sequencer->step_counter = 0;
   sequencer->step_threshold = 0;
 
-  sequencer->va = bse_voice_allocator_new (song->n_channels);
+  sequencer->cur_pattern = 0;
+  sequencer->cur_row = 0;
+
+  sequencer->next_pattern = 0;
+  sequencer->next_row = 0;
+
+  sequencer->va = _bse_voice_allocator_new (song->n_channels);
   sequencer->n_tracks = n_tracks;
   sequencer->mix_buffer_size = sequencer->n_tracks * BSE_TRACK_LENGTH;
   sequencer->mix_buffer = g_new0 (BseMixValue, sequencer->mix_buffer_size);
@@ -104,6 +107,7 @@ bse_song_sequencer_set_pattern_loop (BseSong *song,
   // FIXME
 }
 
+#ifdef	PRESERVE_THIS_CODE
 void
 bse_song_sequencer_step (BseSong *song)
 {
@@ -185,6 +189,135 @@ bse_song_sequencer_step (BseSong *song)
 	}
     }
 }
+#endif
+
+static void
+bse_song_sequencer_step_row (BseSong *song,
+			     guint   *pattern_p,
+			     guint   *row_p)
+{
+  guint jump_recursion_depth = 0;
+  BsePattern *pattern;
+  guint channel;
+  
+  /* increment postion */
+  *row_p += 1;
+  if (*row_p >= song->pattern_length)
+    {
+      *row_p = 0;
+      *pattern_p += 1;
+    }
+  
+  /* limit effect recursion bumps */
+  
+ restart_sequencer_step:
+  jump_recursion_depth += 1;
+  
+  /* handle sequencer positioning effects */
+  
+  pattern = bse_song_get_pattern_from_list (song, *pattern_p);
+  
+  if (!pattern)
+    {
+      // bse_song_sequencer_stop (song); /* FIXME: and btw, we should throw errors for empty songs */
+      // return;
+      *pattern_p = 0;
+      pattern = bse_song_get_pattern_from_list (song, *pattern_p); /* this should never fail! */
+      // FIXME: ned post-song-loading patetrnlist assurance
+    }
+  
+  for (channel = 0; channel < pattern->n_channels; channel++)
+    {
+      BsePatternNote *note;
+      guint j;
+      
+      note = bse_pattern_peek_note (pattern, channel, *row_p);
+      
+      /* process sequencer effects */
+      for (j = 0; j < note->n_effects; j++)
+	{
+	  guint next_pattern = *pattern_p;
+	  guint next_row = *row_p;
+	  
+	  bse_effect_jump_sequencer (note->effects[j], &next_pattern, &next_row);
+	  if ((next_pattern != *pattern_p || next_row != *row_p) &&
+	      jump_recursion_depth <= MAX_JUMP_RECURSION_DEPTH)
+	    {
+	      /* a position change occoured through a sequencer effect */
+	      
+	      *pattern_p = next_pattern;
+	      *row_p = next_row;
+	      if (*row_p >= pattern->n_rows)
+		{
+		  *row_p = 0;
+		  *pattern_p += 1;
+		}
+	      
+	      /* need to redo all the effects processing for the new position */
+	      
+	      goto restart_sequencer_step;
+	    }
+	}
+    }
+}
+
+void
+bse_song_sequencer_step (BseSong *song)
+{
+  BseSongSequencer *sequencer;
+  
+  g_return_if_fail (BSE_IS_SONG (song));
+  g_return_if_fail (song->sequencer != NULL);
+
+  sequencer = song->sequencer;
+
+  sequencer->step_counter++;
+  if (sequencer->step_counter >= sequencer->step_threshold)
+    {
+      BsePattern *cur_pattern, *next_pattern;
+      guint channel;
+
+      sequencer->step_counter = 0;
+
+      /* advance row */
+
+      sequencer->cur_pattern = sequencer->next_pattern;
+      sequencer->cur_row = sequencer->next_row;
+
+      /* do one row look ahead */
+      
+      bse_song_sequencer_step_row (song, &sequencer->next_pattern, &sequencer->next_row);
+      
+      cur_pattern = bse_song_get_pattern_from_list (song, sequencer->cur_pattern);
+      next_pattern = bse_song_get_pattern_from_list (song, sequencer->next_pattern);
+
+      /* process voices of all channels of current row */
+
+      for (channel = 0; channel < song->n_channels; channel++)
+	{
+	  static BsePatternNote empty_note = { NULL, BSE_NOTE_VOID, 0, 0, NULL };
+	  BsePatternNote *cur_note, *next_note;
+	  guint j;
+
+	  /* fetch relevant notes */
+	  
+	  cur_note = (!cur_pattern ? &empty_note : bse_pattern_peek_note (cur_pattern,
+									  channel,
+									  sequencer->cur_row));
+	  next_note = (!next_pattern ? &empty_note : bse_pattern_peek_note (next_pattern,
+									    channel,
+									    sequencer->next_row));
+
+	  /* setup voice */
+	  bse_song_mixer_activate_voice (sequencer->va->voices[channel], cur_note);
+
+	  /* process voicing effects */
+	  if (sequencer->va->voices[channel]->input_type != BSE_VOICE_INPUT_NONE)
+	    for (j = 0; j < cur_note->n_effects; j++)
+	      bse_effect_setup_voice (cur_note->effects[j], sequencer->va->voices[channel]);
+	}
+    }
+}
 
 void
 bse_song_sequencer_fill_hunk (BseSong	     *song,
@@ -197,7 +330,7 @@ bse_song_sequencer_fill_hunk (BseSong	     *song,
   
   sequencer = song->sequencer;
   
-  bse_song_mixer_fill_buffer (sequencer, BSE_SOURCE (song)->index);
+  // FIXME: bse_song_mixer_fill_buffer (sequencer, BSE_SOURCE (song)->index);
   
   /* fill the hunk and clip the values
    */
@@ -215,7 +348,7 @@ bse_song_sequencer_destroy (BseSong *song)
   sequencer = song->sequencer;
   song->sequencer = NULL;
 
-  bse_voice_allocator_destroy (sequencer->va);
+  _bse_voice_allocator_destroy (sequencer->va);
   
   g_free (sequencer->mix_buffer);
   
@@ -230,7 +363,7 @@ bse_song_mixer_fill_buffer (BseSongSequencer *sequencer,
   BseVoiceAllocator *va = sequencer->va;
   guint i, n_fixed_voices = va->n_voices;
 
-  /* fuellt den angegebenen buffer mit den aktiven voices
+  /* fill mix buffer with active voices
    */
 
   /* clear buffer, we use memset() because this function is
@@ -252,7 +385,7 @@ bse_song_mixer_fill_buffer (BseSongSequencer *sequencer,
 	{
 	  /* update values for buffer mix, handle some effects
 	   */
-	  if (!bse_voice_preprocess (voice))
+	  if (!_bse_voice_preprocess (voice))
 	    continue;
 
 	  /* add voice to mix buffer
@@ -261,7 +394,7 @@ bse_song_mixer_fill_buffer (BseSongSequencer *sequencer,
 	    bse_song_mixer_add_voice (sequencer, voice);
 	  else if (voice->input_type == BSE_VOICE_INPUT_SYNTH)
 	    {
-	      g_error ("foo");
+	      g_error ("can't handle synth voices");
 	      /*
 	      BseSource *source = BSE_SOURCE (voice->input.synth.sinstrument);
 	      BseChunk *chunk = bse_source_ref_chunk (source, BSE_DFL_OCHANNEL_ID, index);
@@ -278,7 +411,7 @@ bse_song_mixer_fill_buffer (BseSongSequencer *sequencer,
 
 	  /* handle effects
 	   */
-	  if (!bse_voice_postprocess (voice))
+	  if (!_bse_voice_postprocess (voice))
 	    continue;
 	  last = voice;
 	}
@@ -311,8 +444,8 @@ bse_song_mixer_activate_voice (BseVoice       *voice,
       if (voice->input_type != BSE_VOICE_INPUT_NONE)
 	{
 	  if (voice->input_type != BSE_VOICE_INPUT_SAMPLE || !voice->make_poly)
-	    bse_voice_fade_out (voice);
-	  voice = bse_voice_make_poly_and_renew (voice);
+	    _bse_voice_fade_out (voice);
+	  voice = _bse_voice_make_poly_and_renew (voice);
 	}
 
       if (note->note == BSE_NOTE_VOID || instrument->type == BSE_INSTRUMENT_NONE)
@@ -325,8 +458,8 @@ bse_song_mixer_activate_voice (BseVoice       *voice,
 
       /* ok, setup the voice
        */
-      bse_voice_activate (voice, instrument, note->note);
-      bse_voice_set_envelope_part (voice, BSE_ENVELOPE_PART_DELAY);
+      _bse_voice_activate (voice, instrument, note->note);
+      _bse_voice_set_envelope_part (voice, BSE_ENVELOPE_PART_DELAY);
     }
   else if (note->note != BSE_NOTE_VOID &&
 	   voice->input_type != BSE_VOICE_INPUT_NONE &&
@@ -334,7 +467,7 @@ bse_song_mixer_activate_voice (BseVoice       *voice,
     {
       /* only the note changed, so adjust the stepping rates
        */
-      bse_voice_set_note (voice, note->note);
+      _bse_voice_set_note (voice, note->note);
     }
 
   /* FIXME: handle effects here
@@ -390,14 +523,14 @@ bse_song_mixer_add_voice (BseSongSequencer *sequencer,
   BseMixBuffer mbuffer = { 0, };
 
   g_return_if_fail (voice->input_type == BSE_VOICE_INPUT_SAMPLE);
-  g_return_if_fail (BSE_MIX_SOURCE_ACTIVE (&voice->source));
+  g_return_if_fail (BSE_MIX_SOURCE_RUNNING (&voice->source));
 
   mbuffer.n_tracks = sequencer->n_tracks;
-  mbuffer.buffer = sequencer->mix_buffer;
-  mbuffer.bound = mbuffer.buffer + sequencer->mix_buffer_size;
+  mbuffer.start = sequencer->mix_buffer;
+  mbuffer.bound = mbuffer.start + sequencer->mix_buffer_size;
 
   bse_mix_buffer_add (&mbuffer, &voice->source, &voice->volume, &voice->input.sample.rate);
-  if (mbuffer.buffer < mbuffer.bound &&
-      bse_voice_need_after_fade (voice))
+  if (mbuffer.start < mbuffer.bound &&
+      _bse_voice_need_after_fade (voice))
     bse_mix_buffer_add (&mbuffer, &voice->source, &voice->volume, &voice->input.sample.rate);
 }

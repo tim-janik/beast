@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2001 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include        <bse/bsebuffermixer.h>
 #include        <bse/bseinstrument.h>
-#include        <bse/bsesinstrument.h>
 #include        <bse/bsesample.h>
 #include        <bse/bsebindata.h>
 #include        <bse/bsepattern.h>
@@ -34,11 +33,6 @@ extern "C" {
 
 
 /* --- Voice allocator --- */
-struct _BseSongChannel
-{
-  guint		  n_poly_voices;
-  BseVoice	**voices;		/* n_voices here is 1 + n_poly_voices */
-};
 struct _BseVoiceAllocator
 {
   /*< private >*/
@@ -67,7 +61,6 @@ typedef enum			/*< skip >*/
   BSE_ENVELOPE_PART_RELEASE,
   BSE_ENVELOPE_PART_DONE
 } BseEnvelopePartType;
-
 
 /* --- BseVoice --- */
 struct _BseVoice
@@ -115,9 +108,8 @@ struct _BseVoice
 
   union {
     struct {
-      /* object references for locking */
+      /* object reference for locking */
       BseSample*      sample;
-      BseBinData*     bin_data;		/* from sample's munk for current note */
 
       gfloat	      freq_factor;	/* sample->rec_freq / BSE_MIX_FREQ */
       gint	      base_rate;	/* base readout rate from note (<<16) */
@@ -135,34 +127,34 @@ struct _BseVoice
 
 
 /* --- prototypes (safely to be used from effects) --- */
-void		bse_voice_fade_out		(BseVoice	*voice);
-void		bse_voice_set_fine_tune		(BseVoice	*voice,
+void		_bse_voice_fade_out		(BseVoice	*voice);
+void		_bse_voice_set_fine_tune	(BseVoice	*voice,
 						 gint     	 fine_tune);
-void		bse_voice_set_envelope_part	(BseVoice       *voice,
+void		_bse_voice_set_envelope_part	(BseVoice       *voice,
 						 BseEnvelopePartType env_part);
-void		bse_voice_set_volume		(BseVoice	*voice,
+void		_bse_voice_set_volume		(BseVoice	*voice,
 						 gfloat          volume_factor);
-void		bse_voice_set_balance		(BseVoice	*voice,
+void		_bse_voice_set_balance		(BseVoice	*voice,
 						 gint		 balance);
 
 
 /* --- private --- */
-BseVoice*	bse_voice_make_poly_and_renew	(BseVoice	*voice);
-void		bse_voice_activate		(BseVoice	*voice,
+BseVoice*	_bse_voice_make_poly_and_renew	(BseVoice	*voice);
+void		_bse_voice_activate		(BseVoice	*voice,
 						 BseInstrument	*instrument,
 						 gint		 note);
-void		bse_voice_set_note		(BseVoice	*voice,
+void		_bse_voice_set_note		(BseVoice	*voice,
 						 gint		 note);
-void		bse_voice_fade_out_until	(BseVoice	*voice,
+void		_bse_voice_fade_out_until	(BseVoice	*voice,
 						 guint           n_values);
-gboolean	bse_voice_need_after_fade	(BseVoice	*voice);
-gboolean	bse_voice_preprocess		(BseVoice	*voice);
-gboolean	bse_voice_postprocess		(BseVoice	*voice);
+gboolean	_bse_voice_need_after_fade	(BseVoice	*voice);
+gboolean	_bse_voice_preprocess		(BseVoice	*voice);
+gboolean	_bse_voice_postprocess		(BseVoice	*voice);
 
 
 /* --- allocation --- */
-BseVoiceAllocator* bse_voice_allocator_new	(guint		    n_voices);
-void		   bse_voice_allocator_destroy	(BseVoiceAllocator *allocator);
+BseVoiceAllocator* _bse_voice_allocator_new	(guint		    n_voices);
+void		   _bse_voice_allocator_destroy	(BseVoiceAllocator *allocator);
 
 
 

@@ -1,5 +1,5 @@
 /* BseAdder - BSE Adder
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -20,6 +20,7 @@
 
 #include <bse/bsechunk.h>
 #include <bse/bsehunkmixer.h>
+#include <bse/gslengine.h>
 
 
 /* --- parameters --- */
@@ -33,36 +34,32 @@ enum
 /* --- prototypes --- */
 static void	 bse_adder_init			(BseAdder	*adder);
 static void	 bse_adder_class_init		(BseAdderClass	*class);
-static void	 bse_adder_class_finalize	(BseAdderClass	*class);
-static void	 bse_adder_set_param		(BseAdder	*adder,
+static void	 bse_adder_set_property		(BseAdder	*adder,
 						 guint           param_id,
 						 GValue         *value,
-						 GParamSpec     *pspec,
-						 const gchar    *trailer);
-static void	 bse_adder_get_param		(BseAdder	*adder,
+						 GParamSpec     *pspec);
+static void	 bse_adder_get_property		(BseAdder	*adder,
 						 guint           param_id,
 						 GValue         *value,
-						 GParamSpec     *pspec,
-						 const gchar    *trailer);
+						 GParamSpec     *pspec);
 static BseIcon*	 bse_adder_do_get_icon		(BseObject	*object);
-static void	 bse_adder_do_destroy		(BseObject	*object);
-static void	 bse_adder_prepare		(BseSource	*source,
-						 BseIndex	 index);
-static BseChunk* bse_adder_calc_chunk		(BseSource	*source,
-						 guint		 ochannel_id);
-static void	 bse_adder_reset		(BseSource	*source);
+static void      bse_adder_context_create       (BseSource      *source,
+						 guint           context_handle,
+						 GslTrans       *trans);
+static void	 bse_adder_update_modules	(BseAdder	*adder,
+						 GslTrans	*trans);
 
 
 /* --- variables --- */
 static GType		 type_id_adder = 0;
 static gpointer		 parent_class = NULL;
-static const GTypeInfo type_info_adder = {
+static const GTypeInfo   type_info_adder = {
   sizeof (BseAdderClass),
   
   (GBaseInitFunc) NULL,
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_adder_class_init,
-  (GClassFinalizeFunc) bse_adder_class_finalize,
+  (GClassFinalizeFunc) NULL,
   NULL /* class_data */,
   
   sizeof (BseAdder),
@@ -82,40 +79,37 @@ bse_adder_class_init (BseAdderClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint ichannel_id, ochannel_id;
+  guint ichannel, ochannel;
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_adder_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_adder_get_param;
-
-  object_class->get_icon = bse_adder_do_get_icon;
-  object_class->destroy = bse_adder_do_destroy;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_adder_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_adder_get_property;
   
-  source_class->prepare = bse_adder_prepare;
-  source_class->calc_chunk = bse_adder_calc_chunk;
-  source_class->reset = bse_adder_reset;
+  object_class->get_icon = bse_adder_do_get_icon;
+  
+  source_class->context_create = bse_adder_context_create;
   
   class->sub_icon = bse_icon_from_pixdata (&sub_pix_data);
   
   bse_object_class_add_param (object_class, "Features",
 			      PARAM_SUBTRACT,
-			      b_param_spec_bool ("subtract", "Subtract instead",
-						 "Use subtraction to combine sample"
-						 "values (instead of addition)",
-						 TRUE,
-						 B_PARAM_DEFAULT));
+			      bse_param_spec_bool ("subtract", "Subtract instead",
+						   "Use subtraction to combine sample"
+						   "values (instead of addition)",
+						   FALSE,
+						   BSE_PARAM_DEFAULT));
   
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in1", "Mono Input 1", 1, 1);
-  g_assert (ichannel_id == BSE_ADDER_ICHANNEL_MONO1);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in2", "Mono Input 2", 1, 1);
-  g_assert (ichannel_id == BSE_ADDER_ICHANNEL_MONO2);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in3", "Mono Input 3", 1, 1);
-  g_assert (ichannel_id == BSE_ADDER_ICHANNEL_MONO3);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in4", "Mono Input 4", 1, 1);
-  g_assert (ichannel_id == BSE_ADDER_ICHANNEL_MONO4);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Output", 1);
-  g_assert (ochannel_id == BSE_ADDER_OCHANNEL_MONO);
+  ichannel = bse_source_class_add_ichannel (source_class, "mono_in1", "Mono Input 1");
+  g_assert (ichannel == BSE_ADDER_ICHANNEL_MONO1);
+  ichannel = bse_source_class_add_ichannel (source_class, "mono_in2", "Mono Input 2");
+  g_assert (ichannel == BSE_ADDER_ICHANNEL_MONO2);
+  ichannel = bse_source_class_add_ichannel (source_class, "mono_in3", "Mono Input 3");
+  g_assert (ichannel == BSE_ADDER_ICHANNEL_MONO3);
+  ichannel = bse_source_class_add_ichannel (source_class, "mono_in4", "Mono Input 4");
+  g_assert (ichannel == BSE_ADDER_ICHANNEL_MONO4);
+  ochannel = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Output");
+  g_assert (ochannel == BSE_ADDER_OCHANNEL_MONO);
 }
 
 static void
@@ -144,155 +138,142 @@ bse_adder_do_get_icon (BseObject *object)
 }
 
 static void
-bse_adder_do_destroy (BseObject *object)
-{
-  BseAdder *adder;
-  
-  adder = BSE_ADDER (object);
-  
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-static void
-bse_adder_set_param (BseAdder    *adder,
-		     guint        param_id,
-		     GValue      *value,
-		     GParamSpec  *pspec,
-		     const gchar *trailer)
+bse_adder_set_property (BseAdder    *adder,
+			guint        param_id,
+			GValue      *value,
+			GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_SUBTRACT:
-      adder->subtract = b_value_get_bool (value);
+      adder->subtract = g_value_get_boolean (value);
+      bse_adder_update_modules (adder, NULL);
       bse_object_notify_icon_changed (BSE_OBJECT (adder));
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (adder, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (adder, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_adder_get_param (BseAdder *adder,
-		     guint        param_id,
-		     GValue      *value,
-		     GParamSpec  *pspec,
-		     const gchar *trailer)
+bse_adder_get_property (BseAdder    *adder,
+			guint        param_id,
+			GValue      *value,
+			GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_SUBTRACT:
-      b_value_set_bool (value, adder->subtract);
+      g_value_set_boolean (value, adder->subtract);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (adder, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (adder, param_id, pspec);
       break;
     }
 }
 
-static void
-bse_adder_prepare (BseSource *source,
-		   BseIndex   index)
+typedef struct
 {
-  BseAdder *adder = BSE_ADDER (source);
-  
-  adder->mix_buffer = g_new (BseMixValue, BSE_TRACK_LENGTH);
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
-}
+  gboolean subtract;
+} Adder;
 
-static BseChunk*
-bse_adder_calc_chunk (BseSource *source,
-		      guint	 ochannel_id)
+static void
+adder_process (GslModule *module,
+	       guint      n_values)
 {
-  BseAdder *adder = BSE_ADDER (source);
-  BseMixValue *mv, *bound;
-  BseSampleValue *hunk;
-  guint c;
-  
-  g_return_val_if_fail (ochannel_id == BSE_ADDER_OCHANNEL_MONO, NULL);
-  
-  if (source->n_inputs == 0)
-    return bse_chunk_new_static_zero (1);
-  else if (source->n_inputs == 1)
-    return bse_source_ref_chunk (source->inputs[0].osource, source->inputs[0].ochannel_id, source->index);
-  
-  bound = adder->mix_buffer + BSE_TRACK_LENGTH;
-  for (c = BSE_ADDER_ICHANNEL_MONO1; c <= BSE_ADDER_ICHANNEL_MONO4; c++)
+  Adder *add = module->user_data;
+  BseSampleValue *wave_out = GSL_MODULE_OBUFFER (module, 0);
+  BseSampleValue *bound = wave_out + n_values;
+  guint i;
+
+  if (!module->ostreams[0].connected)
+    return;     /* nothing to process */
+  for (i = 0; i < GSL_MODULE_N_ISTREAMS (module); i++)
+    if (module->istreams[i].connected)
+      {
+	/* found first channel */
+	memcpy (wave_out, GSL_MODULE_IBUFFER (module, i), n_values * sizeof (wave_out[0]));
+	break;
+      }
+  if (i >= GSL_MODULE_N_ISTREAMS (module))
     {
-      BseSourceInput *input = bse_source_get_input (source, c);
-      
-      if (input)
-	{
-	  BseChunk *chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-	  BseSampleValue *s = bse_chunk_complete_hunk (chunk);
-	  
-	  mv = adder->mix_buffer;
-	  do
-	    *(mv++) = *(s++);
-	  while (mv < bound);
-	  
-	  bse_chunk_unref (chunk);
-	  break;
-	}
+      /* no input, FIXME: should set static-0 here */
+      memset (wave_out, 0, n_values * sizeof (wave_out[0]));
     }
-  
-  if (adder->subtract)
-    for (c = c + 1; c <= BSE_ADDER_ICHANNEL_MONO4; c++)
-      {
-	BseSourceInput *input = bse_source_get_input (source, c);
-	
-	if (input)
+  if (!add->subtract)
+    {
+      for (; i < GSL_MODULE_N_ISTREAMS (module); i++)
+	if (module->istreams[i].connected)
 	  {
-	    BseChunk *chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-	    BseSampleValue *s = bse_chunk_complete_hunk (chunk);
+	    const BseSampleValue *in = GSL_MODULE_IBUFFER (module, i);
+	    BseSampleValue *out = wave_out;
 	    
-	    mv = adder->mix_buffer;
+	    /* found 1+nth channel to add on */
 	    do
-	      *(mv++) -= *(s++);
-	    while (mv < bound);
-	    
-	    bse_chunk_unref (chunk);
+	      *out++ += *in++;
+	    while (out < bound);
 	  }
-      }
+    }
   else
-    for (c = c + 1; c <= BSE_ADDER_ICHANNEL_MONO4; c++)
-      {
-	BseSourceInput *input = bse_source_get_input (source, c);
-	
-	if (input)
+    {
+      for (; i < GSL_MODULE_N_ISTREAMS (module); i++)
+	if (module->istreams[i].connected)
 	  {
-	    BseChunk *chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-	    BseSampleValue *s = bse_chunk_complete_hunk (chunk);
+	    const BseSampleValue *in = GSL_MODULE_IBUFFER (module, i);
+	    BseSampleValue *out = wave_out;
 	    
-	    mv = adder->mix_buffer;
+	    /* found 1+nth channel to subtract */
 	    do
-	      *(mv++) += *(s++);
-	    while (mv < bound);
-	    
-	    bse_chunk_unref (chunk);
+	      *out++ -= *in++;
+	    while (out < bound);
 	  }
-      }
-  
-  /* clip the mix buffer to output hunk */
-  hunk = bse_hunk_alloc (1);
-  bse_hunk_clip_from_mix_buffer (1, hunk, 1.0, adder->mix_buffer);
-  
-  return bse_chunk_new_orphan (1, hunk);
+    }
 }
 
 static void
-bse_adder_reset (BseSource *source)
+bse_adder_update_modules (BseAdder *adder,
+			  GslTrans *trans)
 {
+  if (BSE_SOURCE_PREPARED (adder))
+    bse_source_update_omodules (BSE_SOURCE (adder),
+				BSE_ADDER_OCHANNEL_MONO,
+				G_STRUCT_OFFSET (Adder, subtract),
+				&adder->subtract,
+				sizeof (adder->subtract),
+				trans);
+}
+
+static void
+bse_adder_context_create (BseSource *source,
+			  guint      context_handle,
+			  GslTrans  *trans)
+{
+  static const GslClass add_class = {
+    4,				/* n_istreams */
+    0,				/* n_jstreams */
+    1,				/* n_ostreams */
+    adder_process,		/* process */
+    (GslModuleFreeFunc) g_free,	/* free */
+    GSL_COST_CHEAP,		/* cost */
+  };
   BseAdder *adder = BSE_ADDER (source);
-  
-  g_free (adder->mix_buffer);
-  adder->mix_buffer = NULL;
-  
+  Adder *add = g_new0 (Adder, 1);
+  GslModule *module;
+
+  module = gsl_module_new (&add_class, add);
+
+  /* setup module i/o streams with BseSource i/o channels */
+  bse_source_set_context_module (source, context_handle, module);
+
+  /* commit module to engine */
+  gsl_trans_add (trans, gsl_job_integrate (module));
+
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->reset (source);
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
+
+  /* update module data */
+  bse_adder_update_modules (adder, trans);
 }
 
 
@@ -301,7 +282,8 @@ bse_adder_reset (BseSource *source)
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_adder, "BseAdder", "BseSource",
-    "BseAdder is a channel adder to sum up incomiong signals",
+    "The Adder is a very simplisitic prototype mixer that just sums up "
+    "incomiong signals (it does allow for switching to subtract mode though)",
     &type_info_adder,
     "/Source/Adder",
     { SUM_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,

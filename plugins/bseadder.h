@@ -1,5 +1,5 @@
 /* BseAdder - BSE Adder
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -65,7 +65,6 @@ struct _BseAdderClass
 /* --- channels --- */
 enum
 {
-  BSE_ADDER_ICHANNEL_NONE,
   BSE_ADDER_ICHANNEL_MONO1,
   BSE_ADDER_ICHANNEL_MONO2,
   BSE_ADDER_ICHANNEL_MONO3,
@@ -73,7 +72,6 @@ enum
 };
 enum
 {
-  BSE_ADDER_OCHANNEL_NONE,
   BSE_ADDER_OCHANNEL_MONO
 };
 

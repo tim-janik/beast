@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,15 @@
 /* --- BseSuper object --- */
 struct _BseSuper
 {
-  BseContainer	parent_object;
+  BseContainer	 parent_object;
 
   BseTime	 creation_time;
   BseTime	 mod_time;
   BseTime	 saved_mod_time;
+
+  /* for BseProject */
+  gboolean       auto_activate;
+  guint          auto_activate_context_handle;
 };
 struct _BseSuperClass
 {

@@ -36,7 +36,7 @@ extern "C" {
 #define	BST_SNET_SHELL_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_SNET_SHELL, BstSNetShellClass))
 #define	BST_IS_SNET_SHELL(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_SNET_SHELL))
 #define	BST_IS_SNET_SHELL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_SNET_SHELL))
-#define BST_SNET_SHELL_GET_CLASS(obj)  ((BstSNetShellClass*) (((GtkObject*) (obj))->klass))
+#define BST_SNET_SHELL_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_SNET_SHELL, BstSNetShellClass))
 
 
 /* --- structures & typedefs --- */
@@ -48,8 +48,6 @@ struct _BstSNetShell
 
   BstParamView   *param_view;
   BstSNetRouter  *snet_router;
-
-  GtkTooltips	*tooltips;
 };
 struct _BstSNetShellClass
 {
@@ -61,7 +59,6 @@ struct _BstSNetShellClass
 
 /* --- prototypes --- */
 GtkType		bst_snet_shell_get_type		(void);
-GtkWidget*	bst_snet_shell_new		(BseSNet	*snet);
 
 
 

@@ -21,6 +21,7 @@
 #include	"bstprocedure.h"
 #include	"bstmenus.h"
 #include	"bsteffectview.h"
+#include	<gdk/gdkkeysyms.h>
 
 
 
@@ -166,34 +167,36 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
   /* setup main container */
   bst_status_bar_ensure (GTK_WINDOW (pattern_dialog));	/* adds box and status bar */
   pattern_dialog->main_vbox = GTK_BIN (pattern_dialog)->child;
-  gtk_widget_set (pattern_dialog->main_vbox,
-		  "signal::destroy", gtk_widget_destroyed, &pattern_dialog->main_vbox,
-		  NULL);
+  g_object_connect (pattern_dialog->main_vbox,
+		    "signal::destroy", gtk_widget_destroyed, &pattern_dialog->main_vbox,
+		    NULL);
 
   /* setup effect view */
-  pattern_dialog->effect_view = gtk_widget_new (BST_TYPE_EFFECT_VIEW,
-						"visible", TRUE,
-						"signal::destroy", gtk_widget_destroyed, &pattern_dialog->effect_view,
-						NULL);
+  pattern_dialog->effect_view = g_object_connect (gtk_widget_new (BST_TYPE_EFFECT_VIEW,
+								  "visible", TRUE,
+								  NULL),
+						  "signal::destroy", gtk_widget_destroyed, &pattern_dialog->effect_view,
+						  NULL);
   gtk_box_pack_start (GTK_BOX (pattern_dialog->main_vbox), pattern_dialog->effect_view, FALSE, TRUE, 0);
 
   /* setup pattern editor parent */
   pattern_dialog->scrolled_window =
-    gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
-		    "visible", TRUE,
-		    "signal::destroy", gtk_widget_destroyed, &pattern_dialog->scrolled_window,
-		    "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
-		    "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-		    "parent", pattern_dialog->main_vbox,
-		    "border_width", 5,
-		    NULL);
+    g_object_connect (gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
+				      "visible", TRUE,
+				      "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+				      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+				      "parent", pattern_dialog->main_vbox,
+				      "border_width", 5,
+				      NULL),
+		      "signal::destroy", gtk_widget_destroyed, &pattern_dialog->scrolled_window,
+		      NULL);
   pattern_dialog->pattern_editor = NULL;
 
   /* setup the popup menu
    */
   factory = gtk_item_factory_new (GTK_TYPE_MENU, bst_pattern_dialog_factories_path, NULL);
   gtk_window_add_accel_group (GTK_WINDOW (pattern_dialog), factory->accel_group);
-  bst_menu_entries_create (factory, class->popup_entries, pattern_dialog);
+  bst_menu_entries_create_list (factory, class->popup_entries, pattern_dialog);
   pattern_dialog->popup = factory->widget;
   gtk_object_set_data_full (GTK_OBJECT (pattern_dialog),
 			    bst_pattern_dialog_factories_path,
@@ -210,8 +213,7 @@ bst_pattern_dialog_destroy (GtkObject *object)
   if (pattern_dialog->proc_dialog)
     gtk_widget_destroy (pattern_dialog->proc_dialog);
 
-  if (GTK_OBJECT_CLASS (parent_class)->destroy)
-    (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+  GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static guint
@@ -246,7 +248,7 @@ pe_effect_area_draw (BstPatternEditor *pe,
   guint n = note->n_effects;
   
   gdk_draw_string (window,
-		   pe_widget->style->font,
+		   gtk_style_get_font (pe_widget->style),
 		   n ? fg_gc : light_gc,
 		   x,
 		   y + pe->char_height - pe->char_descent,
@@ -365,13 +367,15 @@ bst_pattern_dialog_new (BsePattern *pattern)
   pattern_dialog->pattern_editor = bst_pattern_editor_new (pattern);
   gtk_widget_set (pattern_dialog->pattern_editor,
 		  "visible", TRUE,
-		  "signal::destroy", gtk_widget_destroyed, &pattern_dialog->pattern_editor,
-		  "signal::pattern-step", bst_pattern_editor_dfl_stepper, NULL,
-		  "signal::cell-activate", pe_cell_activate, pattern_dialog,
-		  "signal::key-press-event", pe_key_press, pattern_dialog,
-		  "signal::focus-changed", pe_focus_changed, pattern_dialog,
 		  "parent", pattern_dialog->scrolled_window,
 		  NULL);
+  g_object_connect (pattern_dialog->pattern_editor,
+		    "signal::destroy", gtk_widget_destroyed, &pattern_dialog->pattern_editor,
+		    "signal::pattern-step", bst_pattern_editor_dfl_stepper, NULL,
+		    "signal::cell-activate", pe_cell_activate, pattern_dialog,
+		    "signal::key-press-event", pe_key_press, pattern_dialog,
+		    "signal::focus-changed", pe_focus_changed, pattern_dialog,
+		    NULL);
   bst_pattern_editor_set_effect_hooks (BST_PATTERN_EDITOR (pattern_dialog->pattern_editor),
 				       pe_effect_area_width,
 				       pe_effect_area_draw,
@@ -422,14 +426,14 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
    * pass into the procedure and attempt applying them
    */
   bst_procedure_shell_unpreset (proc_shell);
-  g_value_init (&value, G_TYPE_PARAM_OBJECT);
+  g_value_init (&value, BSE_TYPE_PATTERN);
   g_value_set_object (&value, G_OBJECT (pattern));
   bst_procedure_shell_preset (proc_shell, "pattern", &value, TRUE);
   g_value_unset (&value);
-  g_value_init (&value, G_TYPE_PARAM_UINT);
-  b_value_set_uint (&value, pattern_editor->focus_channel);
+  g_value_init (&value, G_TYPE_UINT);
+  g_value_set_uint (&value, pattern_editor->focus_channel);
   bst_procedure_shell_preset (proc_shell, "focus-channel", &value, TRUE);
-  b_value_set_uint (&value, pattern_editor->focus_row);
+  g_value_set_uint (&value, pattern_editor->focus_row);
   bst_procedure_shell_preset (proc_shell, "focus-row", &value, TRUE);
   g_value_unset (&value);
 

@@ -38,16 +38,14 @@ enum
 static void        dav_syn_drum_init             (DavSynDrum       *drum);
 static void        dav_syn_drum_class_init       (DavSynDrumClass  *class);
 static void        dav_syn_drum_class_finalize   (DavSynDrumClass  *class);
-static void        dav_syn_drum_set_param        (DavSynDrum       *drum,
+static void        dav_syn_drum_set_property     (DavSynDrum       *drum,
 						  guint             param_id,
 						  GValue           *value,
-						  GParamSpec       *pspec,
-						  const gchar      *trailer);
-static void        dav_syn_drum_get_param        (DavSynDrum       *drum,
+						  GParamSpec       *pspec);
+static void        dav_syn_drum_get_property     (DavSynDrum       *drum,
 						  guint             param_id,
 						  GValue           *value,
-						  GParamSpec       *pspec,
-						  const gchar      *trailer);
+						  GParamSpec       *pspec);
 static void        dav_syn_drum_prepare          (BseSource        *source,
 						  BseIndex          index);
 static BseChunk*   dav_syn_drum_calc_chunk       (BseSource        *source,
@@ -105,43 +103,43 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_param = (GObjectSetParamFunc) dav_syn_drum_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) dav_syn_drum_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) dav_syn_drum_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) dav_syn_drum_get_property;
   
   source_class->prepare = dav_syn_drum_prepare;
   source_class->calc_chunk = dav_syn_drum_calc_chunk;
   source_class->reset = dav_syn_drum_reset;
   
   bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
-			      b_param_spec_float ("base_freq", "Frequency", NULL,
+			      bse_param_spec_float ("base_freq", "Frequency", NULL,
 						  1.0, bse_note_to_freq (BSE_NOTE_Gis (-1)),
 						  30.0, 10.0,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_DIAL));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Base Frequency",
                               PARAM_BASE_NOTE,
-                              b_param_spec_note ("base_note", "Note", NULL,
+                              bse_param_spec_note ("base_note", "Note", NULL,
 						 BSE_MIN_NOTE, BSE_NOTE_Gis (-1),
 						 BSE_NOTE_VOID, 1, TRUE,
-						 B_PARAM_GUI));
+						 BSE_PARAM_GUI));
   
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_VEL,
-			      b_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
+			      bse_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
 						  "Set the velocity of the drum hit",
 						  0.0, 1000.0, 75.0, 10.0,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_HIT,
-			      b_param_spec_bool ("trigger_pulse", "Trigger Hit", "Hit the drum",
-						 FALSE, B_PARAM_DEFAULT));
+			      bse_param_spec_bool ("trigger_pulse", "Trigger Hit", "Hit the drum",
+						 FALSE, BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Parameters", PARAM_RES,
-			      b_param_spec_float ("res", "Resonance",
+			      bse_param_spec_float ("res", "Resonance",
 						  "Set resonance half life in number of seconds",
 						  0.001, 1.0, 0.07, 0.0025,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Parameters", PARAM_RATIO,
-			      b_param_spec_float ("ratio", "Frequency Ratio",
+			      bse_param_spec_float ("ratio", "Frequency Ratio",
 						  "Set ratio of frequency shift. (i.e. 1.0 means shift equal to the drum's base frequency)",
 						  0.0, 10.0, 2.0, 0.1,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "SynDrum Output", 1);
   g_assert (ochannel_id == DAV_SYN_DRUM_OCHANNEL_MONO);
@@ -179,71 +177,69 @@ dav_syn_drum_trigger (DavSynDrum *drum)
 }
 
 static void
-dav_syn_drum_set_param (DavSynDrum  *drum,
-			guint        param_id,
-			GValue      *value,
-			GParamSpec  *pspec,
-			const gchar *trailer)
+dav_syn_drum_set_property (DavSynDrum  *drum,
+			   guint        param_id,
+			   GValue      *value,
+			   GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      drum->freq = b_value_get_float (value);
+      drum->freq = g_value_get_float (value);
       bse_object_param_changed (BSE_OBJECT (drum), "base_note");
       break;
     case PARAM_BASE_NOTE:
-      drum->freq = bse_note_to_freq (b_value_get_note (value));
+      drum->freq = bse_note_to_freq (bse_value_get_note (value));
       bse_object_param_changed (BSE_OBJECT (drum), "base_freq");
       break;
     case PARAM_TRIGGER_VEL:
-      drum->trigger_vel = b_value_get_float (value) / 100.0;
+      drum->trigger_vel = g_value_get_float (value) / 100.0;
       break;
     case PARAM_TRIGGER_HIT:
       dav_syn_drum_trigger (drum);
       break;
     case PARAM_RATIO:
-      drum->ratio = b_value_get_float (value);
+      drum->ratio = g_value_get_float (value);
       break;
     case PARAM_RES:
-      drum->half = b_value_get_float (value);
+      drum->half = g_value_get_float (value);
       dav_syn_drum_update_locals (drum);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (drum, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (drum, param_id, pspec);
       break;
     }
 }
 
 static void
-dav_syn_drum_get_param (DavSynDrum *drum,
-			guint        param_id,
-			GValue      *value,
-			GParamSpec  *pspec,
-			const gchar *trailer)
+dav_syn_drum_get_property (DavSynDrum *drum,
+			   guint        param_id,
+			   GValue      *value,
+			   GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      b_value_set_float (value, drum->freq);
+      g_value_set_float (value, drum->freq);
       break;
     case PARAM_BASE_NOTE:
-      b_value_set_note (value, bse_note_from_freq (drum->freq));
+      bse_value_set_note (value, bse_note_from_freq (drum->freq));
       break;
     case PARAM_TRIGGER_VEL:
-      b_value_set_float (value, drum->trigger_vel * 100.0);
+      g_value_set_float (value, drum->trigger_vel * 100.0);
       break;
     case PARAM_TRIGGER_HIT:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_RATIO:
-      b_value_set_float (value, drum->ratio);
+      g_value_set_float (value, drum->ratio);
       break;
     case PARAM_RES:
-      b_value_set_float (value, drum->half);
+      g_value_set_float (value, drum->half);
       break;
       
     default:
-      G_WARN_INVALID_PARAM_ID (drum, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (drum, param_id, pspec);
       break;
     }
 }

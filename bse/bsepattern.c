@@ -21,6 +21,7 @@
 #include	"bsesong.h"
 #include	"bseprocedure.h"
 #include	"bsestorage.h"
+#include	"bsemarshal.h"
 #include	<string.h>
 
 
@@ -30,10 +31,15 @@
       INDX (((BsePattern*) (pattern))->n_channels, (channel), (row)) \
 ])
 
-
-enum
-{
+enum {
   PARAM_0
+};
+
+enum {
+  SIGNAL_SIZE_CHANGED,
+  SIGNAL_NOTE_CHANGED,
+  SIGNAL_NOTE_SELECTION_CHANGED,
+  SIGNAL_LAST
 };
 
 
@@ -56,6 +62,7 @@ static BseTokenType bse_pattern_restore_private	 (BseObject		*object,
 
 /* --- variables --- */
 static GTypeClass	*parent_class = NULL;
+static guint             pattern_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
@@ -87,7 +94,7 @@ bse_pattern_class_init (BsePatternClass	*class)
   BseObjectClass *object_class;
   BseItemClass *item_class;
   
-  parent_class = g_type_class_peek (BSE_TYPE_ITEM);
+  parent_class = g_type_class_peek_parent (class);
   object_class = BSE_OBJECT_CLASS (class);
   item_class = BSE_ITEM_CLASS (class);
   
@@ -97,6 +104,18 @@ bse_pattern_class_init (BsePatternClass	*class)
   object_class->destroy = bse_pattern_do_destroy;
   
   item_class->set_parent = bse_pattern_do_set_parent;
+
+  pattern_signals[SIGNAL_SIZE_CHANGED] = bse_object_class_add_signal (object_class, "size-changed",
+								      bse_marshal_VOID__NONE,
+								      G_TYPE_NONE, 0);
+  pattern_signals[SIGNAL_NOTE_CHANGED] = bse_object_class_add_signal (object_class, "note-changed",
+								      bse_marshal_VOID__UINT_UINT,
+								      G_TYPE_NONE,
+								      2, G_TYPE_UINT, G_TYPE_UINT);
+  pattern_signals[SIGNAL_NOTE_SELECTION_CHANGED] = bse_object_class_add_signal (object_class, "note-selection-changed",
+										bse_marshal_VOID__UINT_UINT,
+										G_TYPE_NONE,
+										2, G_TYPE_UINT, G_TYPE_UINT);
 }
 
 static void
@@ -218,7 +237,7 @@ bse_pattern_set_n_channels (BsePattern *pattern,
       pattern->notes = notes;
       pattern->n_channels = n_channels;
       
-      BSE_NOTIFY (pattern, size_changed, NOTIFY (OBJECT, DATA));
+      g_signal_emit (pattern, pattern_signals[SIGNAL_SIZE_CHANGED], 0);
     }
 }
 
@@ -262,7 +281,7 @@ bse_pattern_set_n_rows (BsePattern *pattern,
       pattern->notes = notes;
       pattern->n_rows = n_rows;
       
-      BSE_NOTIFY (pattern, size_changed, NOTIFY (OBJECT, DATA));
+      g_signal_emit (pattern, pattern_signals[SIGNAL_SIZE_CHANGED], 0);
     }
 }
 
@@ -345,7 +364,7 @@ bse_pattern_note_actuate_effect (BsePattern *pattern,
       
       note->effects = g_renew (BseEffect*, note->effects, note->n_effects);
       note->effects[i] = bse_object_new (effect_type, NULL);
-      BSE_NOTIFY (pattern, note_changed, NOTIFY (OBJECT, channel, row, DATA));
+      g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
     }
 }
 
@@ -371,7 +390,7 @@ bse_pattern_note_drop_effect (BsePattern *pattern,
 	g_object_unref (G_OBJECT (note->effects[i]));
 	note->n_effects--;
 	g_memmove (note->effects + i, note->effects + i + 1, sizeof (note->effects[0]) * (note->n_effects - i));
-	BSE_NOTIFY (pattern, note_changed, NOTIFY (OBJECT, channel, row, DATA));
+	g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
 	return;
       }
 }
@@ -412,7 +431,7 @@ bse_pattern_modify_note (BsePattern    *pattern,
     }
 
   if (notify_changed)
-    BSE_NOTIFY (pattern, note_changed, NOTIFY (OBJECT, channel, row, DATA));
+    g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_CHANGED], 0, channel, row);
 
   bse_object_unlock (BSE_OBJECT (pattern));
 }
@@ -468,7 +487,7 @@ bse_pattern_select_note (BsePattern *pattern,
   if (!note->selected)
     {
       note->selected = TRUE;
-      BSE_NOTIFY (pattern, note_selection_changed, NOTIFY (OBJECT, channel, row, DATA));
+      g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_SELECTION_CHANGED], 0, channel, row);
     }
 }
 
@@ -487,7 +506,7 @@ bse_pattern_unselect_note (BsePattern *pattern,
   if (note->selected)
     {
       note->selected = FALSE;
-      BSE_NOTIFY (pattern, note_selection_changed, NOTIFY (OBJECT, channel, row, DATA));
+      g_signal_emit (pattern, pattern_signals[SIGNAL_NOTE_SELECTION_CHANGED], 0, channel, row);
     }
 }
 

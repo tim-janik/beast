@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,8 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bstzoomedwindow.h"
+
+#include "bstutils.h"
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtksignal.h>
 
@@ -35,15 +37,13 @@ typedef gboolean (*SignalZoom) (GtkObject *object,
 static void	bst_zoomed_window_class_init	(BstZoomedWindowClass	*klass);
 static void	bst_zoomed_window_init		(BstZoomedWindow	*zoomed_window);
 static void	bst_zoomed_window_destroy	(GtkObject		*object);
-static void	bst_zoomed_window_finalize	(GtkObject		*object);
+static void	bst_zoomed_window_finalize	(GObject		*object);
 static void	bst_zoomed_window_map		(GtkWidget		*widget);
 static void	bst_zoomed_window_unmap		(GtkWidget		*widget);
 static void     bst_zoomed_window_size_request  (GtkWidget              *widget,
 						 GtkRequisition         *requisition);
 static void     bst_zoomed_window_size_allocate (GtkWidget              *widget,
 						 GtkAllocation          *allocation);
-static void	bst_zoomed_window_draw		(GtkWidget		*widget,
-						 GdkRectangle           *area);
 static void	bst_zoomed_window_forall	(GtkContainer           *container,
 						 gboolean                include_internals,
 						 GtkCallback             callback,
@@ -84,42 +84,23 @@ bst_zoomed_window_get_type (void)
 }
 
 static void
-bst_zoomed_window_marshal_zoom (GtkObject    *object,
-				GtkSignalFunc func,
-				gpointer      func_data,
-				GtkArg       *args)
-{
-  SignalZoom rfunc = (SignalZoom) func;
-  gboolean *return_val;
-
-  return_val = GTK_RETLOC_BOOL (args[1]);
-  *return_val = (*rfunc) (object,
-			  GTK_VALUE_BOOL (args[0]),
-			  func_data);
-}
-
-static void
 bst_zoomed_window_class_init (BstZoomedWindowClass *class)
 {
-  GtkObjectClass *object_class;
-  GtkWidgetClass *widget_class;
-  GtkContainerClass *container_class;
-  
-  object_class = GTK_OBJECT_CLASS (class);
-  widget_class = GTK_WIDGET_CLASS (class);
-  container_class = GTK_CONTAINER_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  GtkContainerClass *container_class = GTK_CONTAINER_CLASS (class);
   
   bst_zoomed_window_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_SCROLLED_WINDOW);
+  parent_class = g_type_class_peek_parent (class);
   
+  G_OBJECT_CLASS (object_class)->finalize = bst_zoomed_window_finalize;
+
   object_class->destroy = bst_zoomed_window_destroy;
-  object_class->finalize = bst_zoomed_window_finalize;
   
   widget_class->map = bst_zoomed_window_map;
   widget_class->unmap = bst_zoomed_window_unmap;
   widget_class->size_request = bst_zoomed_window_size_request;
   widget_class->size_allocate = bst_zoomed_window_size_allocate;
-  widget_class->draw = bst_zoomed_window_draw;
   
   container_class->forall = bst_zoomed_window_forall;
   
@@ -128,12 +109,11 @@ bst_zoomed_window_class_init (BstZoomedWindowClass *class)
   zoomed_window_signals[SIGNAL_ZOOM] =
     gtk_signal_new ("zoom",
 		    GTK_RUN_LAST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (BstZoomedWindowClass, zoom),
-		    bst_zoomed_window_marshal_zoom,
+		    bst_marshal_BOOL__BOOL,
 		    GTK_TYPE_BOOL,
 		    1, GTK_TYPE_BOOL);
-  gtk_object_class_add_signals (object_class, zoomed_window_signals, SIGNAL_LAST);
 }
 
 static void
@@ -146,13 +126,13 @@ bst_zoomed_window_init (BstZoomedWindow *zoomed_window)
   gtk_scrolled_window_set_vadjustment (scrolled_window, NULL);
   
   gtk_widget_push_composite_child ();
-  zoomed_window->toggle_button = gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
-						 "visible", TRUE,
-						 "can_focus", FALSE,
-						 "object_signal::clicked", bst_zoomed_window_clicked, zoomed_window,
-						 NULL);
+  zoomed_window->toggle_button = g_object_connect (gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
+								   "visible", TRUE,
+								   "can_focus", FALSE,
+								   NULL),
+						   "swapped_signal::clicked", bst_zoomed_window_clicked, zoomed_window,
+						   NULL);
   gtk_widget_set_parent (zoomed_window->toggle_button, GTK_WIDGET (zoomed_window));
-  gtk_widget_ref (zoomed_window->toggle_button);
   gtk_widget_pop_composite_child ();
 }
 
@@ -161,20 +141,21 @@ bst_zoomed_window_destroy (GtkObject *object)
 {
   BstZoomedWindow *zoomed_window = BST_ZOOMED_WINDOW (object);
 
-  gtk_widget_unparent (zoomed_window->toggle_button);
-  gtk_widget_destroy (zoomed_window->toggle_button);
-  
+  if (zoomed_window->toggle_button)
+    {
+      gtk_widget_unparent (zoomed_window->toggle_button);
+      zoomed_window->toggle_button = NULL;
+    }
+
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
-bst_zoomed_window_finalize (GtkObject *object)
+bst_zoomed_window_finalize (GObject *object)
 {
-  BstZoomedWindow *zoomed_window = BST_ZOOMED_WINDOW (object);
-  
-  gtk_widget_unref (zoomed_window->toggle_button);
+  /* BstZoomedWindow *zoomed_window = BST_ZOOMED_WINDOW (object); */
 
-  GTK_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -184,8 +165,9 @@ bst_zoomed_window_map (GtkWidget *widget)
   
   /* chain parent class handler to map self and children */
   GTK_WIDGET_CLASS (parent_class)->map (widget);
-
-  if (GTK_WIDGET_VISIBLE (zoomed_window->toggle_button) &&
+  
+  if (zoomed_window->toggle_button &&
+      GTK_WIDGET_VISIBLE (zoomed_window->toggle_button) &&
       !GTK_WIDGET_MAPPED (zoomed_window->toggle_button))
     gtk_widget_map (zoomed_window->toggle_button);
 }
@@ -197,8 +179,9 @@ bst_zoomed_window_unmap	(GtkWidget *widget)
   
   /* chain parent class handler to unmap self and children */
   GTK_WIDGET_CLASS (parent_class)->unmap (widget);
-
-  if (GTK_WIDGET_MAPPED (zoomed_window->toggle_button))
+  
+  if (zoomed_window->toggle_button &&
+      GTK_WIDGET_MAPPED (zoomed_window->toggle_button))
     gtk_widget_unmap (zoomed_window->toggle_button);
 }
 
@@ -208,7 +191,8 @@ bst_zoomed_window_size_request (GtkWidget      *widget,
 {
   BstZoomedWindow *zoomed_window = BST_ZOOMED_WINDOW (widget);
 
-  gtk_widget_size_request (zoomed_window->toggle_button, NULL);
+  if (zoomed_window->toggle_button)
+    gtk_widget_size_request (zoomed_window->toggle_button, NULL);
 
   /* chain parent class handler for requisition */
   GTK_WIDGET_CLASS (parent_class)->size_request (widget, requisition);
@@ -224,36 +208,24 @@ bst_zoomed_window_size_allocate (GtkWidget     *widget,
   /* chain parent class handler to layout children */
   GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
 
-  if (scrolled_window->hscrollbar && GTK_WIDGET_VISIBLE (scrolled_window->hscrollbar) &&
-      scrolled_window->vscrollbar && GTK_WIDGET_VISIBLE (scrolled_window->vscrollbar))
+  if (zoomed_window->toggle_button)
     {
-      GtkAllocation child_allocation;
-
-      child_allocation.x = scrolled_window->vscrollbar->allocation.x;
-      child_allocation.y = scrolled_window->hscrollbar->allocation.y;
-      child_allocation.width = scrolled_window->vscrollbar->allocation.width;
-      child_allocation.height = scrolled_window->hscrollbar->allocation.height;
-
-      gtk_widget_size_allocate (zoomed_window->toggle_button, &child_allocation);
-      gtk_widget_show (zoomed_window->toggle_button);
+      if (scrolled_window->hscrollbar && GTK_WIDGET_VISIBLE (scrolled_window->hscrollbar) &&
+	  scrolled_window->vscrollbar && GTK_WIDGET_VISIBLE (scrolled_window->vscrollbar))
+	{
+	  GtkAllocation child_allocation;
+	  
+	  child_allocation.x = scrolled_window->vscrollbar->allocation.x;
+	  child_allocation.y = scrolled_window->hscrollbar->allocation.y;
+	  child_allocation.width = scrolled_window->vscrollbar->allocation.width;
+	  child_allocation.height = scrolled_window->hscrollbar->allocation.height;
+	  
+	  gtk_widget_size_allocate (zoomed_window->toggle_button, &child_allocation);
+	  gtk_widget_show (zoomed_window->toggle_button);
+	}
+      else
+	gtk_widget_hide (zoomed_window->toggle_button);
     }
-  else
-    gtk_widget_hide (zoomed_window->toggle_button);
-}
-
-static void
-bst_zoomed_window_draw (GtkWidget    *widget,
-			GdkRectangle *area)
-{
-  BstZoomedWindow *zoomed_window = BST_ZOOMED_WINDOW (widget);
-  GdkRectangle child_area;
-  
-  /* chain parent class handler to map self and children */
-  GTK_WIDGET_CLASS (parent_class)->draw (widget, area);
-
-  if (GTK_WIDGET_DRAWABLE (zoomed_window->toggle_button) &&
-      gtk_widget_intersect (zoomed_window->toggle_button, area, &child_area))
-    gtk_widget_draw (zoomed_window->toggle_button, &child_area);
 }
 
 static void
@@ -262,16 +234,14 @@ bst_zoomed_window_forall (GtkContainer *container,
 			  GtkCallback   callback,
 			  gpointer      callback_data)
 {
+  BstZoomedWindow *zoomed_window = BST_ZOOMED_WINDOW (container);
+
   GTK_CONTAINER_CLASS (parent_class)->forall (container,
 					      include_internals,
 					      callback,
 					      callback_data);
-  if (include_internals)
-    {
-      BstZoomedWindow *zoomed_window = BST_ZOOMED_WINDOW (container);
-
-      callback (zoomed_window->toggle_button, callback_data);
-    }
+  if (include_internals && zoomed_window->toggle_button)
+    callback (zoomed_window->toggle_button, callback_data);
 }
 
 static void

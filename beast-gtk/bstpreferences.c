@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 #include "bstpreferences.h"
 
 #include "bstgconfig.h"
+#include <unistd.h>
 
 
 /* --- prototypes --- */
@@ -77,25 +78,28 @@ bst_preferences_init (BstPreferences *prefs)
   GtkWidget *any, *hbox, *button;
 
   prefs->gconf = NULL;
-  prefs->bse_param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW,
-					  "visible", TRUE,
-					  "object_signal::destroy", bse_nullify_pointer, &prefs->bse_param_view,
-					  NULL);
+  prefs->bse_param_view = g_object_connect (gtk_widget_new (BST_TYPE_PARAM_VIEW,
+							    "visible", TRUE,
+							    NULL),
+					    "swapped_signal::destroy", bse_nullify_pointer, &prefs->bse_param_view,
+					    NULL);
   bst_param_view_set_mask (BST_PARAM_VIEW (prefs->bse_param_view), BSE_TYPE_GCONFIG, BSE_TYPE_GCONFIG, NULL, NULL);
-  prefs->bst_param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW,
-					  "object_signal::destroy", bse_nullify_pointer, &prefs->bst_param_view,
-					  NULL);
+  prefs->bst_param_view = g_object_connect (gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL),
+					    "swapped_signal::destroy", bse_nullify_pointer, &prefs->bst_param_view,
+					    NULL);
   bst_param_view_set_mask (BST_PARAM_VIEW (prefs->bst_param_view), BST_TYPE_GCONFIG, 0, NULL, NULL);
 
-  prefs->notebook = gtk_widget_new (GTK_TYPE_NOTEBOOK,
-				    "visible", TRUE,
-				    "parent", prefs,
-				    "tab_pos", GTK_POS_TOP,
-				    "scrollable", FALSE,
-				    "can_focus", TRUE,
-				    "border_width", 5,
-				    "object_signal::destroy", bse_nullify_pointer, &prefs->notebook,
-				    NULL);
+  prefs->notebook = g_object_connect (gtk_widget_new (GTK_TYPE_NOTEBOOK,
+						      "visible", TRUE,
+						      "parent", prefs,
+						      "tab_pos", GTK_POS_TOP,
+						      "scrollable", FALSE,
+						      "can_focus", TRUE,
+						      "border_width", 5,
+						      NULL),
+				      "swapped_signal::destroy", bse_nullify_pointer, &prefs->notebook,
+				      "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+				      NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (prefs->notebook), prefs->bst_param_view,
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "visible", TRUE,
@@ -120,49 +124,53 @@ bst_preferences_init (BstPreferences *prefs)
 			 "visible", TRUE,
 			 NULL);
   gtk_box_pack_end (GTK_BOX (prefs), hbox, FALSE, TRUE, 0);
-  button = gtk_widget_new (GTK_TYPE_BUTTON,
-			   "label", "Apply",
-			   "parent", hbox,
-			   "visible", TRUE,
-			   "can_default", TRUE,
-			   "object_signal::clicked", bst_preferences_apply, prefs,
-			   "object_signal::clicked", bst_preferences_save, prefs,
-			   "object_signal::destroy", bse_nullify_pointer, &prefs->apply,
-			   NULL);
-  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->bse_param_view)->tooltips, button,
+  button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
+					     "label", "Apply",
+					     "parent", hbox,
+					     "visible", TRUE,
+					     "can_default", TRUE,
+					     NULL),
+			     "swapped_signal::clicked", bst_preferences_apply, prefs,
+			     "swapped_signal::clicked", bst_preferences_save, prefs,
+			     "swapped_signal::destroy", bse_nullify_pointer, &prefs->apply,
+			     NULL);
+  gtk_tooltips_set_tip (BST_TOOLTIPS, button,
 			"Apply and save the preference values. Some values may only take effect after "
 			"restart. The preference values are locked against modifcation during "
 			"playback.",
 			NULL);
   prefs->apply = button;
-  button = gtk_widget_new (GTK_TYPE_BUTTON,
-			   "label", "Revert",
-			   "parent", hbox,
-			   "visible", TRUE,
-			   "can_default", TRUE,
-			   "object_signal::clicked", bst_preferences_revert, prefs,
-			   NULL);
-  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->bse_param_view)->tooltips, button,
+  button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
+					     "label", "Revert",
+					     "parent", hbox,
+					     "visible", TRUE,
+					     "can_default", TRUE,
+					     NULL),
+			     "swapped_signal::clicked", bst_preferences_revert, prefs,
+			     NULL);
+  gtk_tooltips_set_tip (BST_TOOLTIPS, button,
 			"Revert the preference values to the current internal values.",
 			NULL);
-  button = gtk_widget_new (GTK_TYPE_BUTTON,
-			   "label", "Defaults",
-			   "parent", hbox,
-			   "visible", TRUE,
-			   "can_default", TRUE,
-			   "object_signal::clicked", bst_preferences_default_revert, prefs,
-			   NULL);
-  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->bse_param_view)->tooltips, button,
+  button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
+					     "label", "Defaults",
+					     "parent", hbox,
+					     "visible", TRUE,
+					     "can_default", TRUE,
+					     NULL),
+			     "swapped_signal::clicked", bst_preferences_default_revert, prefs,
+			     NULL);
+  gtk_tooltips_set_tip (BST_TOOLTIPS, button,
 			"Revert to hardcoded default values (factory settings).",
 			NULL);
-  button = gtk_widget_new (GTK_TYPE_BUTTON,
-			   "label", "Close",
-			   "parent", hbox,
-			   "visible", TRUE,
-			   "can_default", TRUE,
-			   "signal::clicked", gtk_toplevel_hide, NULL,
-			   "object_signal::destroy", bse_nullify_pointer, &prefs->close,
-			   NULL);
+  button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
+					     "label", "Close",
+					     "parent", hbox,
+					     "visible", TRUE,
+					     "can_default", TRUE,
+					     NULL),
+			     "signal::clicked", gtk_toplevel_hide, NULL,
+			     "swapped_signal::destroy", bse_nullify_pointer, &prefs->close,
+			     NULL);
   prefs->close = button;
 }
 
@@ -192,7 +200,8 @@ bst_preferences_new (BseGConfig *gconf)
 static void
 preferences_lock_changed (BstPreferences *prefs)
 {
-  gtk_widget_set_sensitive (prefs->apply, prefs->gconf ? bse_gconfig_can_apply (prefs->gconf) : FALSE);
+  if (prefs->apply)
+    gtk_widget_set_sensitive (prefs->apply, prefs->gconf ? bse_gconfig_can_apply (prefs->gconf) : FALSE);
 }
 
 void
@@ -207,26 +216,25 @@ bst_preferences_set_gconfig (BstPreferences *prefs,
     {
       bst_param_view_set_object (BST_PARAM_VIEW (prefs->bse_param_view), NULL);
       bst_param_view_set_object (BST_PARAM_VIEW (prefs->bst_param_view), NULL);
-      bse_object_remove_notifiers_by_func (prefs->gconf,
-					   preferences_lock_changed,
-					   prefs);
+      g_object_disconnect (prefs->gconf,
+			   "any_signal", preferences_lock_changed, prefs,
+			   NULL);
       bse_object_unref (BSE_OBJECT (prefs->gconf));
       prefs->gconf = NULL;
     }
   prefs->gconf = gconf;
-  if (prefs->gconf)
+  if (prefs->gconf && prefs->notebook)
     {
       bse_object_ref (BSE_OBJECT (prefs->gconf));
-      bse_object_add_data_notifier (prefs->gconf,
-				    "lock_changed",
-				    preferences_lock_changed,
-				    prefs);
+      g_object_connect (prefs->gconf,
+			"swapped_signal::lock_changed", preferences_lock_changed, prefs,
+			NULL);
       bst_param_view_set_object (BST_PARAM_VIEW (prefs->bse_param_view), BSE_OBJECT (prefs->gconf));
       bst_param_view_set_object (BST_PARAM_VIEW (prefs->bst_param_view), BSE_OBJECT (prefs->gconf));
       if (g_type_next_base (BSE_OBJECT_TYPE (prefs->gconf), BSE_TYPE_GCONFIG))
 	{
 	  gtk_widget_show (prefs->bst_param_view);
-	  gtk_notebook_set_page (GTK_NOTEBOOK (prefs->notebook), 0);
+	  gtk_notebook_set_current_page (GTK_NOTEBOOK (prefs->notebook), 0);
 	}
       else
 	gtk_widget_hide (prefs->bst_param_view);
@@ -296,8 +304,8 @@ bst_preferences_default_revert (BstPreferences *prefs)
 #include <errno.h>
 #include "../PKG_config.h"
 static void
-ifactory_print_func (gpointer  user_data,
-		     gchar    *str)
+ifactory_print_func (gpointer     user_data,
+		     const gchar *str)
 {
   BseStorage *storage = user_data;
 
@@ -419,9 +427,9 @@ bst_rc_parse (const gchar *file_name,
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
 
-  bse_storage_destroy (storage);
-
   error = scanner->parse_errors >= scanner->max_parse_errors ? BSE_ERROR_PARSE_ERROR : BSE_ERROR_NONE;
+
+  bse_storage_destroy (storage);
 
   return error;
 }

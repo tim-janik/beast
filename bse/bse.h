@@ -30,18 +30,18 @@
 #include        <bse/bseconfig.h>
 #include        <bse/bsecontainer.h>
 #include        <bse/bsedefs.h>
-#include        <bse/bsedevice.h>
 #include        <bse/bseeffect.h>
 #include        <bse/bseenums.h>
 #include        <bse/bseexports.h>
 #include        <bse/bsegconfig.h>
 #include        <bse/bseglobals.h>
-#include        <bse/bseheart.h>
 #include        <bse/bseinstrument.h>
 #include        <bse/bseitem.h>
 #include        <bse/bsemagic.h>
 #include        <bse/bsemain.h>
+#include        <bse/bsemath.h>
 #include        <bse/bsehunkmixer.h>
+#include	<bse/bsemidisynth.h>
 #include        <bse/bseobject.h>
 #include        <bse/bseparam.h>
 #include        <bse/bseparasite.h>
@@ -52,6 +52,7 @@
 #include        <bse/bseprocedure.h>
 #include        <bse/bseproject.h>
 #include        <bse/bsesample.h>
+#include        <bse/bseserver.h>
 #include        <bse/bsesnet.h>
 #include        <bse/bsesong.h>
 #include        <bse/bsesource.h>
@@ -59,7 +60,8 @@
 #include        <bse/bsesuper.h>
 #include        <bse/bsetype.h>
 #include        <bse/bseutils.h>
-/* #include        <bse/bsevoice.h> */
+#include        <bse/bsewave.h>
+#include        <bse/bsewaverepo.h>
 
 
 #endif /* __BSE_H__ */

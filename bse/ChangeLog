@@ -1,3 +1,56 @@
+Thu Sep 27 13:10:43 2001  Tim Janik  <timj@gtk.org>
+
+	* MANY fixes, new APIs and cleanups.
+
+	* we're now using GSL, a common sound stuff backend for, at this
+	point, at least aRts and BSE. GSL comes with an abstraction to
+	sound file handles, file caches (that're designed for asyncronous
+	prereading), wavechunk looping, multi-sample waves and a flow
+	module operation engine. there're little docs on this yet, however
+	for the engine, the public guts are in engine.h and gsl-mplan.txt
+	gives a conceptual overview of the engine.
+	the core rationale for GSL is code sharing between BSE and aRts
+	to reduce required effords by both projects, and for the engine
+	specifically, the need to process modules of huge networks and
+	cycles tehreof, asyncronously and efficiently with full support
+	for multi processor systems.
+
+	* rough summary:
+	- we're using GSL now for data file caching, format conversion
+	  and similar things and filter calculation.
+	- we're just having GObject and GLib as BSE dependancy again,
+	  as the GObject move is completed now and remains of blib got
+	  backmerged into BSE.
+	- we're using the GSL engine at the core now. most things work
+	  again or better, except for songs. songs have to be implemented
+	  a whole lot differently using engine concepts, the exact outcome
+	  of this is not yet clear.
+	- a basic midi backend is supplied now
+	- BSE objects now just generally serve as templates for GSL module
+	  networks to be created. this allowes for the same synthesis network
+	  object to be plugged into different contexts and be realized
+	  multiple times.
+	- instead of BseSample, samples are now gotten from BseWaveRepo
+	  and BseWave now, which deals with samples, multi-samples and
+	  collection thereof via GSL.
+
+Sun Nov  5 02:30:38 2000  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: parallel build fix, bseenum_arrays.c wouldn't get
+	initially created.
+
+	* mktypes.pl: include perl script name when dieing. to figure parent
+	types, just match /_type_register_static/ so we catch bse_ and g_.
+
+Sun Jul 23 02:57:16 2000  Tim Janik  <timj@gtk.org>
+
+	* bsesongsequencer.c (bse_song_sequencer_step_row): seperated code for
+	row stepping, we do the checking of the bse_effect_jump_sequencer()
+	return values on the fly now.
+
+	* bseeffect.c (bse_effect_jump_sequencer): don't return a boolean value
+	on whether the arguments changed.
+
 Mon May 29 02:37:01 2000  Tim Janik  <timj@gtk.org>
 
 	* bsepattern.c: save and load effect list with notes.
@@ -1247,3 +1300,68 @@ Wed May  4 16:43:45 1999  Tim Janik  <timj@gtk.org>
 Tue Mar 24 04:28:26 1998  Tim Janik  <timj@gtk.org>
 
 	* started ChangeLog.
+Fri Apr 28 21:33:52 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.h: more adaptions for GLib 1.3.1 compatibility.
+	* glib-extra.c (g_strcanon): only allow characters passed as
+	valid_chars.
+
+	* glib-gparam.c (g_param_spec_internal): 
+	* glib-gparam.c (g_param_spec_hash_table_lookup): list all valid
+	characters in call to g_strcanon().
+
+Mon Apr 17 20:45:50 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-gobject.c (g_object_base_class_finalize): oops, don't unset
+	n_params prior to destructing them.
+
+Tue Apr 11 04:28:10 2000  Tim Janik  <timj@gtk.org>
+
+	* fixed a coupole of bugs in the initial parameter/object
+	implementations, after getting beast running on GObject and GValue.
+
+	* btype.[hc]: miscellaneous B* type stuff, provide sequential
+	is for B_TYPE_PARAM_* types, so code can switch() on them.
+
+Fri Apr  7 04:27:49 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-gobject.[hc]: completed parameter set/get implementations,
+	along with asyncronous parameter changed notification queue.
+
+Mon Apr  2 02:07:55 2000  Tim Janik  <timj@gtk.org>
+
+	* bparam.[hc]: BParamSpec implementations, some of them are just
+	simple extensions of the GLib parameter specifications.
+
+Sun Apr  2 04:54:36 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-includes.h: mangle GLib extension files together.
+
+	* glib-gobject.[hc]: GObject implementation, that is facilities
+	for setting/getting quarked data and reference counting.
+
+	* glib-gparamspecs.[hc]: first actuall parameter implementations
+	for GLib, so far we have: char, uchar, bool, int, uint, long,
+	ulong, enum, flags, float, double, string and object. each of these
+	GParamSpecs is a new instantiatable type in its own respect,
+	so the .c file derives 13 new types from G_TYPE_PARAM and
+	defines over 50 (*2) conversion facilities.
+
+	* glib-gvaluecollector.h: generic varargs handling stubs for
+	GParamSpecs, private header file (does get installed for
+	inclusion into user code though).
+
+	* glib-gvalue.[hc]: GValue functionality implementation.
+
+	* glib-gparam.[hc]: basis GParamSpec implementation for
+	the virtual base type G_TYPE_PARAM.
+
+        * glib-genums.[hc]: enum/flags type implementation, based on
+	bseenum.[hc].
+
+	* glib-extra.[hc]: GLib additions, including 1.3 compatibility
+	routines and various other functions, from string manipulation
+	over list manipulation up to a unix signal GSource.
+
+	* glib-gtype.[hc]: GLib Type System implementation, heavily
+	based on BSE's dynamic type system.

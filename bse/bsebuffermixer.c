@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2001 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,11 @@
 
 
 /* n valid bits for coefficient table (curve segment precision) */
-#define	CUBIC_IPOL_CBITS	(9)	/* 2^9=512 segment values */
+#define	CUBIC_IPOL_PRECISION_BITS	(9)	/* 2^9=512 segment values */
 /* n fraction bits for integer multiplication */
-#define	CUBIC_IPOL_SBITS	(15)
-#define	CUBIC_IPOL_MIN_PADDING	(2)
+#define	CUBIC_IPOL_SAMPLE_SHIFT		(BSE_SAMPLE_SHIFT - 1)
+#define CUBIC_IPOL_RASTER16(uint16)     ((uint16) >> (16 - CUBIC_IPOL_PRECISION_BITS))
+#define	CUBIC_IPOL_MIN_PADDING		(2)
 
 
 /* --- typedefs --- */
@@ -59,20 +60,20 @@ static gint32	      *bse_cubic_ipol_W3 = NULL;
 static void
 init_cubic_interpolation_coeff_table (void)
 {
-  static gint32 float_mem[4 * (1 << CUBIC_IPOL_CBITS)];
-  static const int imul = 1 << CUBIC_IPOL_SBITS;
+  static gint32 float_mem[4 * (1 << CUBIC_IPOL_PRECISION_BITS)];
+  static const int imul = 1 << CUBIC_IPOL_SAMPLE_SHIFT;
   guint i;
   
   bse_cubic_ipol_W0 = float_mem;
-  bse_cubic_ipol_W1 = bse_cubic_ipol_W0 + (1 << CUBIC_IPOL_CBITS);
-  bse_cubic_ipol_W2 = bse_cubic_ipol_W1 + (1 << CUBIC_IPOL_CBITS);
-  bse_cubic_ipol_W3 = bse_cubic_ipol_W2 + (1 << CUBIC_IPOL_CBITS);
+  bse_cubic_ipol_W1 = bse_cubic_ipol_W0 + (1 << CUBIC_IPOL_PRECISION_BITS);
+  bse_cubic_ipol_W2 = bse_cubic_ipol_W1 + (1 << CUBIC_IPOL_PRECISION_BITS);
+  bse_cubic_ipol_W3 = bse_cubic_ipol_W2 + (1 << CUBIC_IPOL_PRECISION_BITS);
   
-  for (i = 0; i < 1 << CUBIC_IPOL_CBITS; i++)
+  for (i = 0; i < 1 << CUBIC_IPOL_PRECISION_BITS; i++)
     {
       gfloat mmm, mm, m = i;
       
-      m /= 1 << CUBIC_IPOL_CBITS;
+      m /= 1 << CUBIC_IPOL_PRECISION_BITS;
       mm = m * m;
       mmm = m * m * m;
       bse_cubic_ipol_W3[i] = 0.5 + imul * (0.5 * mmm - 0.5 * mm);
@@ -90,7 +91,7 @@ bse_mix_buffer_fill (guint          n_tracks,
   g_return_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS);
   g_return_if_fail (mix_buffer != NULL);
 
-  if (value == 0)
+  if (BSE_MIX_VALUE_BYTES_EQUAL (value))
     memset (mix_buffer, value, n_tracks * BSE_TRACK_LENGTH * sizeof (BseMixValue));
   else
     {
@@ -110,27 +111,23 @@ bse_mix_buffer_add (BseMixBuffer *mix_buffer,
 {
   BufferMixerFunc bmixer_func;
   guint flags = 0;
-  
+
+  /* structure checks */
   g_return_if_fail (mix_buffer != NULL);
+  g_return_if_fail (mix_buffer->n_tracks == 2);		/* STEREO pita */
+  g_return_if_fail (mix_buffer->start != NULL);
+  g_return_if_fail (mix_buffer->bound >= mix_buffer->start + mix_buffer->n_tracks);
+
   g_return_if_fail (source != NULL);
-  g_return_if_fail (mix_buffer->n_tracks == 2);
-  g_return_if_fail (mix_buffer->buffer != NULL);
-  g_return_if_fail (mix_buffer->bound >= mix_buffer->buffer + mix_buffer->n_tracks);
-  g_return_if_fail (source->n_tracks >= 1 && source->n_tracks <= 2);
-  g_return_if_fail (source->bound >= source->cur_pos + source->n_tracks);
-  if (source->loop_count)
-    {
-      g_return_if_fail (source->loop_start != NULL);
-      g_return_if_fail (source->loop_bound >= source->loop_start + source->n_tracks);
-      g_return_if_fail (source->loop_bound <= source->bound);
-      g_return_if_fail (source->cur_pos < source->loop_bound);
-    }
-  g_return_if_fail (BSE_MIX_SOURCE_ACTIVE (source));
-  if (rate)
-    g_return_if_fail (rate->step > 0);
-  
+  g_return_if_fail (source->n_tracks >= 1 && source->n_tracks <= 2);	/* STEREO pita */
+  g_return_if_fail (source->direction == 0);	/* forward only currently */
+  /* we don't care about source->offset, padding is checked for ipol only  */
+  g_return_if_fail (source->values_left > 0);
+
   if (rate)
     {
+      g_return_if_fail (rate->step > 0);
+      
       flags |= MFLAG_CONST_RATE;
       if (rate->delta)
 	flags |= MFLAG_DELTA_RATE;
@@ -140,19 +137,24 @@ bse_mix_buffer_add (BseMixBuffer *mix_buffer,
 	  flags |= MFLAG_IPOL_LINEAR;
 	  break;
 	case BSE_INTERPOL_CUBIC:
-	  if (source->block_padding < CUBIC_IPOL_MIN_PADDING)
+	  if (source->padding < CUBIC_IPOL_MIN_PADDING)
 	    {
 	      static gboolean cubic_warn = FALSE;
 
 	      if (!cubic_warn)
 		{
 		  cubic_warn = TRUE;
-		  g_warning ("Cubic Interpolation for mix source without pad values, please report to beast@beast.gtk.org");
+		  g_warning (G_STRLOC ": Cubic Interpolation for mix source "
+			     "without pad values, please report to beast@beast.gtk.org");
 		}
 	      flags |= MFLAG_IPOL_LINEAR;
 	    }
 	  else
-	    flags |= MFLAG_IPOL_CUBIC;
+	    {
+	      flags |= MFLAG_IPOL_CUBIC;
+	      if (!bse_cubic_ipol_W0)
+		init_cubic_interpolation_coeff_table ();
+	    }
 	  break;
 	case BSE_INTERPOL_NONE:
 	default:
@@ -190,12 +192,8 @@ bse_mix_buffer_add (BseMixBuffer *mix_buffer,
     }
   
   bmixer_func = fetch_buffer_mixer_function (flags);
-  
   g_return_if_fail (bmixer_func != NULL);
 
-  if (!bse_cubic_ipol_W0)
-    init_cubic_interpolation_coeff_table ();
-  
   /* mix buffer */
   bmixer_func (mix_buffer, source, volume, rate);
   
@@ -283,18 +281,23 @@ MAKE_MIXER_CALLS_FOR = {
 };
 #endif  MAKE_MIXER_CALLS
 
+
 /* facility tests */
-#define MIX_CONST_RATE           ((MIXER_FLAGS) & MFLAG_CONST_RATE)
-#define MIX_DELTA_RATE           ((MIXER_FLAGS) & MFLAG_DELTA_RATE)
-#define MIX_IPOL_LINEAR          ((MIXER_FLAGS) & MFLAG_IPOL_LINEAR)
-#define MIX_IPOL_CUBIC           ((MIXER_FLAGS) & MFLAG_IPOL_CUBIC)
-#define MIX_STEREO               ((MIXER_FLAGS) & MFLAG_STEREO)
-#define MIX_VOLUME1              (((MIXER_FLAGS) & MFLAG_VOLUME1_C) || ((MIXER_FLAGS) & MFLAG_VOLUME1_D))
-#define MIX_VOLUME2              (((MIXER_FLAGS) & MFLAG_VOLUME2_C) || ((MIXER_FLAGS) & MFLAG_VOLUME2_D))
-#define MIX_VOLUME1_C            ((MIXER_FLAGS) & MFLAG_VOLUME1_C)
-#define MIX_VOLUME1_D            ((MIXER_FLAGS) & MFLAG_VOLUME1_D)
-#define MIX_VOLUME2_C            ((MIXER_FLAGS) & MFLAG_VOLUME2_C)
-#define MIX_VOLUME2_D            ((MIXER_FLAGS) & MFLAG_VOLUME2_D)
+#define MIX_RATE_CONST		((MIXER_FLAGS) & MFLAG_CONST_RATE)
+#define MIX_RATE_DELTA		((MIXER_FLAGS) & MFLAG_DELTA_RATE)
+#define MIX_IPOL_LINEAR		((MIXER_FLAGS) & MFLAG_IPOL_LINEAR)
+#define MIX_IPOL_CUBIC		((MIXER_FLAGS) & MFLAG_IPOL_CUBIC)
+#define MIX_STEREO		((MIXER_FLAGS) & MFLAG_STEREO)
+#define MIX_VOLUME1_CONST	((MIXER_FLAGS) & MFLAG_VOLUME1_C)
+#define MIX_VOLUME1_DELTA	((MIXER_FLAGS) & MFLAG_VOLUME1_D)
+#define MIX_VOLUME2_CONST	((MIXER_FLAGS) & MFLAG_VOLUME2_C)
+#define MIX_VOLUME2_DELTA	((MIXER_FLAGS) & MFLAG_VOLUME2_D)
+#define MIX_WITH_RATE		((MIXER_FLAGS) & (MFLAG_CONST_RATE | MFLAG_DELTA_RATE))
+#define MIX_WITH_IPOL		((MIXER_FLAGS) & (MFLAG_IPOL_LINEAR | MFLAG_IPOL_CUBIC))
+#define MIX_MONO		(!((MIXER_FLAGS) & MFLAG_STEREO))
+#define MIX_VOLUME1		((MIXER_FLAGS) & (MFLAG_VOLUME1_C | MFLAG_VOLUME1_D))
+#define MIX_VOLUME2		((MIXER_FLAGS) & (MFLAG_VOLUME2_C | MFLAG_VOLUME2_D))
+#define MIX_REVERSE		(0)
 
 /* include file generated from mkcalls.pl, it includes
  * bsebuffermixercore.c, specialized for all the above

@@ -33,7 +33,7 @@ extern "C" {
 #define	BST_HEART_MONITOR_CLASS(klass)	  (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_HEART_MONITOR, BstHeartMonitorClass))
 #define	BST_IS_HEART_MONITOR(object)	  (GTK_CHECK_TYPE ((object), BST_TYPE_HEART_MONITOR))
 #define	BST_IS_HEART_MONITOR_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_HEART_MONITOR))
-#define BST_HEART_MONITOR_GET_CLASS(obj)  ((BstHeartMonitorClass*) (((GtkObject*) (obj))->klass))
+#define BST_HEART_MONITOR_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_HEART_MONITOR, BstHeartMonitorClass))
 
 
 /* --- structures & typedefs --- */

@@ -17,7 +17,7 @@
  */
 #include        "bseprocedure.h"
 
-#include	<blib/glib-gvaluecollector.h>
+#include	<gobject/gvaluecollector.h>
 #include	"bseitem.h"
 #include	"bseexports.h"
 #include	<string.h>
@@ -162,7 +162,7 @@ bse_procedure_init (BseProcedureClass        *proc,
   for (i = 0; i < BSE_PROCEDURE_MAX_IN_PARAMS; i++)
     if (in_param_specs[i])
       {
-	if ((in_param_specs[i]->flags & B_PARAM_READWRITE) != B_PARAM_READWRITE)
+	if ((in_param_specs[i]->flags & BSE_PARAM_READWRITE) != BSE_PARAM_READWRITE)
 	  g_warning ("procedure \"%s\": input parameter \"%s\" has invalid flags",
 		     proc->name,
 		     in_param_specs[i]->name);
@@ -182,7 +182,7 @@ bse_procedure_init (BseProcedureClass        *proc,
   for (i = 0; i < BSE_PROCEDURE_MAX_OUT_PARAMS; i++)
     if (out_param_specs[i])
       {
-        if ((out_param_specs[i]->flags & B_PARAM_READWRITE) != B_PARAM_READWRITE)
+        if ((out_param_specs[i]->flags & BSE_PARAM_READWRITE) != BSE_PARAM_READWRITE)
 	  g_warning ("procedure \"%s\": output parameter \"%s\" has invalid flags",
 		     proc->name,
 		     out_param_specs[i]->name);
@@ -275,7 +275,7 @@ bse_procedure_execvl (BseProcedureClass *proc,
       GValue *lvalue, *value = in_values + i;
 
       lvalue = slist ? slist->data : NULL;
-      if (!lvalue || !g_value_types_exchangable (G_VALUE_TYPE (lvalue), G_PARAM_SPEC_TYPE (pspec)))
+      if (!lvalue || !g_value_type_compatible (G_VALUE_TYPE (lvalue), G_PARAM_SPEC_VALUE_TYPE (pspec)))
 	{
           g_warning ("%s: `%s' %s value %u of procedure \"%s\" is invalid or "
 		     "unspecified (should be `%s' for \"%s\")",
@@ -284,13 +284,12 @@ bse_procedure_execvl (BseProcedureClass *proc,
 		     "input",
 		     i,
 		     proc->name,
-		     g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+		     g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
 		     pspec->name);
 	  return BSE_ERROR_INTERNAL;
 	}
-      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
-      g_value_convert (lvalue, value);
-      g_value_validate (value, pspec);
+      g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      g_param_value_convert (pspec, lvalue, value, FALSE);
     }
   for (i = 0, slist = out_value_list; i < proc->n_out_params; i++, slist = slist->next)
     {
@@ -298,7 +297,7 @@ bse_procedure_execvl (BseProcedureClass *proc,
       GValue *lvalue, *value = out_values + i;
 
       lvalue = slist ? slist->data : NULL;
-      if (!lvalue || !g_value_types_exchangable (G_VALUE_TYPE (lvalue), G_PARAM_SPEC_TYPE (pspec)))
+      if (!lvalue || !g_value_type_compatible (G_VALUE_TYPE (lvalue), G_PARAM_SPEC_VALUE_TYPE (pspec)))
 	{
           g_warning ("%s: `%s' %s value %u of procedure \"%s\" is invalid or "
 		     "unspecified (should be `%s' for \"%s\")",
@@ -307,11 +306,11 @@ bse_procedure_execvl (BseProcedureClass *proc,
 		     "output",
 		     i,
 		     proc->name,
-		     g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+		     g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
 		     pspec->name);
 	  return BSE_ERROR_INTERNAL;
 	}
-      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
+      g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
     }
 
   bse_procedure_ref (proc);
@@ -338,8 +337,8 @@ bse_procedure_execvl (BseProcedureClass *proc,
       GValue *lvalue, *value = out_values + i;
 
       lvalue = slist->data;
-      g_value_validate (value, pspec);
-      g_value_convert (value, lvalue);
+      g_param_value_validate (pspec, value);
+      g_param_value_convert (pspec, value, lvalue, FALSE);
       g_value_unset (value);
     }
 
@@ -374,15 +373,15 @@ bse_procedure_execva_i (BseProcedureClass *proc,
       GParamSpec *pspec = proc->in_param_specs[i];
       GValue *value = in_values + i;
 
-      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
-      if (!g_value_convert (preset_values + 1, value))
+      g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      if (!g_param_value_convert (pspec, preset_values + i, value, TRUE))
 	g_warning ("%s: failed to convert `%s' preset value %u to `%s' for \"%s\"",
 		   G_STRLOC,
-		   g_type_name (G_VALUE_TYPE (preset_values + 1)),
+		   g_type_name (G_VALUE_TYPE (preset_values + i)),
 		   i,
-		   g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+		   g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
 		   pspec->name);
-      g_value_validate (value, pspec);
+      g_param_value_validate (pspec, value);
     }
   for (; i < proc->n_in_params; i++)
     {
@@ -390,26 +389,26 @@ bse_procedure_execva_i (BseProcedureClass *proc,
       GValue *value = in_values + i;
       gchar *error_msg = NULL;
 
-      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
-      G_PARAM_COLLECT_VALUE (value, pspec, var_args, &error_msg);
+      g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      G_VALUE_COLLECT (value, var_args, 0, &error_msg);
       if (error_msg)
 	{
 	  g_warning (G_STRLOC ": failed to collect `%s' value for \"%s\": %s",
-		     g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+		     g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
 		     pspec->name,
 		     error_msg);
 	  g_free (error_msg);
 
 	  return BSE_ERROR_PROC_PARAM_INVAL;
 	}
-      g_value_validate (value, pspec);
+      g_param_value_validate (pspec, value);
     }
   for (i = 0; i < proc->n_out_params; i++)
     {
       GParamSpec *pspec = proc->out_param_specs[i];
       GValue *value = out_values + i;
 
-      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
+      g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
     }
 
   bse_procedure_ref (proc);
@@ -435,12 +434,12 @@ bse_procedure_execva_i (BseProcedureClass *proc,
 	{
 	  gchar *error_msg = NULL;
 
-	  g_value_validate (value, pspec);
-	  G_PARAM_LCOPY_VALUE (value, pspec, var_args, &error_msg);
+	  g_param_value_validate (pspec, value);
+	  G_VALUE_LCOPY (value, var_args, 0, &error_msg);
 	  if (error_msg)
 	    {
 	      g_warning (G_STRLOC ": failed to lcopy `%s' value for \"%s\": %s",
-			 g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+			 g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
 			 pspec->name,
 			 error_msg);
 	      g_free (error_msg);
@@ -529,11 +528,11 @@ bse_procedure_execva_item (BseProcedureClass *proc,
     {
       g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
       g_return_val_if_fail (g_type_is_a (BSE_OBJECT_TYPE (item),
-					 G_PARAM_SPEC_OBJECT (proc->in_param_specs[0])->object_type),
+					 G_PARAM_SPEC_VALUE_TYPE (proc->in_param_specs[0])),
 			    BSE_ERROR_INTERNAL);
     }
 
-  g_value_init (&preset_value, G_PARAM_SPEC_TYPE (proc->in_param_specs[0]));
+  g_value_init (&preset_value, G_PARAM_SPEC_VALUE_TYPE (proc->in_param_specs[0]));
   g_value_set_object (&preset_value, G_OBJECT (item));
 
   ret_val = bse_procedure_execva_i (proc, 1, &preset_value, var_args, skip_oparams);

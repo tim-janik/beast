@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2000 Red Hat, Inc.
+ * Copyright (C) 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -127,10 +127,11 @@ bst_play_list_init (BstPlayList *plist)
 			"xalign", 0.0,
 			NULL);
   gtk_box_pack_start (GTK_BOX (vbox), any, FALSE, TRUE, 0);
-  plist->pattern_list = gtk_widget_new (GTK_TYPE_VBOX,
-					"visible", TRUE,
-					"signal::destroy", gtk_widget_destroyed, &plist->pattern_list,
-					NULL);
+  plist->pattern_list = g_object_connect (g_object_new (GTK_TYPE_VBOX,
+							"visible", TRUE,
+							NULL),
+					  "signal::destroy", gtk_widget_destroyed, &plist->pattern_list,
+					  NULL);
   sw = gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
 		       "visible", TRUE,
 		       "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -154,10 +155,11 @@ bst_play_list_init (BstPlayList *plist)
 			"xalign", 0.0,
 			NULL);
   gtk_box_pack_start (GTK_BOX (vbox), any, FALSE, TRUE, 0);
-  plist->group_list = gtk_widget_new (GTK_TYPE_VBOX,
-				      "visible", TRUE,
-				      "signal::destroy", gtk_widget_destroyed, &plist->group_list,
-				      NULL);
+  plist->group_list = g_object_connect (gtk_widget_new (GTK_TYPE_VBOX,
+							"visible", TRUE,
+							NULL),
+					"signal::destroy", gtk_widget_destroyed, &plist->group_list,
+					NULL);
   sw = gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
 		       "visible", TRUE,
 		       "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -166,7 +168,6 @@ bst_play_list_init (BstPlayList *plist)
 		       NULL);
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (sw), plist->group_list);
   bst_widget_modify_bg_as_base (plist->group_list->parent);
-  plist->group_name_kennel = gtk_kennel_new (GTK_KENNEL_TO_MAXIMUM, 0);
 
   /* setup group list as drag destination
    */
@@ -174,13 +175,13 @@ bst_play_list_init (BstPlayList *plist)
 		     GTK_DEST_DEFAULT_DROP,
 		     &target, 1,
 		     GDK_ACTION_COPY | GDK_ACTION_LINK | GDK_ACTION_MOVE);
-  gtk_widget_set (plist->group_list,
-		  "signal::drag_motion", group_list_drag_motion, plist,
-		  "signal::drag_leave", group_list_drag_leave, plist,
-		  "signal::drag_data_received", group_list_drag_data_received, plist,
-		  NULL);
-
-
+  g_object_connect (plist->group_list,
+		    "signal::drag_motion", group_list_drag_motion, plist,
+		    "signal::drag_leave", group_list_drag_leave, plist,
+		    "signal::drag_data_received", group_list_drag_data_received, plist,
+		    NULL);
+  
+  
   /* build insertion spots and drag_windows
    */
   if (!drag_windows_ref_count)
@@ -245,6 +246,7 @@ bst_play_list_init (BstPlayList *plist)
       bst_play_list_drag_window_pattern_group_icon = drag_widget;
     }
   drag_windows_ref_count += 1;
+  plist->group_name_kennel = gtk_kennel_new (GTK_KENNEL_TO_MAXIMUM, 0);
 }
 
 static void
@@ -254,35 +256,38 @@ bst_play_list_destroy (GtkObject *object)
 
   bst_play_list_set_song (plist, NULL);
 
-  gtk_kennel_unref (plist->group_name_kennel);
-  plist->group_name_kennel = NULL;
-
-  /* destroy drag_windows
-   */
-  drag_windows_ref_count -= 1;
-  if (!drag_windows_ref_count)
+  if (plist->group_name_kennel) /* catch first destroy only */
     {
-      GtkWidget *drag_widget;
-
-      drag_widget = bst_play_list_drop_spot_pattern_group;
-      bst_play_list_drop_spot_pattern_group = NULL;
-      gtk_widget_destroy (drag_widget);
-      gtk_widget_unref (drag_widget);
-
-      drag_widget = bst_play_list_drop_spot_pattern;
-      bst_play_list_drop_spot_pattern = NULL;
-      gtk_widget_destroy (drag_widget);
-      gtk_widget_unref (drag_widget);
-
-      drag_widget = bst_play_list_drag_window_pattern_icon;
-      bst_play_list_drag_window_pattern_icon = NULL;
-      gtk_widget_destroy (drag_widget);
-      gtk_widget_unref (drag_widget);
-
-      drag_widget = bst_play_list_drag_window_pattern_group_icon;
-      bst_play_list_drag_window_pattern_group_icon = NULL;
-      gtk_widget_destroy (drag_widget);
-      gtk_widget_unref (drag_widget);
+      gtk_kennel_unref (plist->group_name_kennel);
+      plist->group_name_kennel = NULL;
+      
+      /* destroy drag_windows
+       */
+      drag_windows_ref_count -= 1;
+      if (!drag_windows_ref_count)
+	{
+	  GtkWidget *drag_widget;
+	  
+	  drag_widget = bst_play_list_drop_spot_pattern_group;
+	  bst_play_list_drop_spot_pattern_group = NULL;
+	  gtk_widget_destroy (drag_widget);
+	  gtk_widget_unref (drag_widget);
+	  
+	  drag_widget = bst_play_list_drop_spot_pattern;
+	  bst_play_list_drop_spot_pattern = NULL;
+	  gtk_widget_destroy (drag_widget);
+	  gtk_widget_unref (drag_widget);
+	  
+	  drag_widget = bst_play_list_drag_window_pattern_icon;
+	  bst_play_list_drag_window_pattern_icon = NULL;
+	  gtk_widget_destroy (drag_widget);
+	  gtk_widget_unref (drag_widget);
+	  
+	  drag_widget = bst_play_list_drag_window_pattern_group_icon;
+	  bst_play_list_drag_window_pattern_group_icon = NULL;
+	  gtk_widget_destroy (drag_widget);
+	  gtk_widget_unref (drag_widget);
+	}
     }
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
@@ -401,9 +406,9 @@ song_item_added (BseSong     *song,
     {
       BstDragPattern *drag_pattern = bst_drag_pattern_new (BSE_PATTERN (item), NULL, 0, FALSE);
 
-      gtk_container_add_with_args (GTK_CONTAINER (plist->pattern_list), drag_pattern->widget,
-				   "expand", FALSE,
-				   NULL);
+      gtk_container_add_with_properties (GTK_CONTAINER (plist->pattern_list), drag_pattern->widget,
+					 "expand", FALSE,
+					 NULL);
     }
 }
 
@@ -417,10 +422,10 @@ song_pattern_group_insert (BseSong         *song,
   BstDragGroup *drag_group = bst_drag_group_new (pgroup, position, ignore_first_insert);
 
   gtk_kennel_add (plist->group_name_kennel, drag_group->name);
-  gtk_container_add_with_args (GTK_CONTAINER (plist->group_list), drag_group->widget,
-  			       "expand", FALSE,
-			       "position", position,
-			       NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (plist->group_list), drag_group->widget,
+				     "expand", FALSE,
+				     "position", position,
+				     NULL);
 }
 
 static void
@@ -429,7 +434,7 @@ song_pattern_group_inserted (BseSong         *song,
 			     guint            position,
 			     BstPlayList     *plist)
 {
-  song_pattern_group_insert (song, pgroup, position, plist, TRUE);
+  song_pattern_group_insert (song, pgroup, position, plist, FALSE); /* ignore_first_insert: TRUE */
 }
 
 void
@@ -442,8 +447,10 @@ bst_play_list_set_song (BstPlayList *plist,
 
   if (plist->song)
     {
-      bse_object_remove_notifiers_by_func (BSE_OBJECT (plist->song), song_item_added, plist);
-      bse_object_remove_notifiers_by_func (BSE_OBJECT (plist->song), song_pattern_group_inserted, plist);
+      g_object_disconnect (BSE_OBJECT (plist->song),
+			   "any_signal", song_item_added, plist,
+			   "any_signal", song_pattern_group_inserted, plist,
+			   NULL);
       gtk_container_foreach (GTK_CONTAINER (plist->pattern_list), (GtkCallback) gtk_widget_destroy, NULL);
       gtk_container_foreach (GTK_CONTAINER (plist->group_list), (GtkCallback) gtk_widget_destroy, NULL);
     }
@@ -455,10 +462,9 @@ bst_play_list_set_song (BstPlayList *plist,
 
       /* setup pattern list
        */
-      bse_object_add_notifier (BSE_OBJECT (plist->song),
-			       "item_added",
-			       song_item_added,
-			       plist);
+      g_object_connect (BSE_OBJECT (plist->song),
+			"signal::item_added", song_item_added, plist,
+			NULL);
       free_list = g_list_reverse (bse_container_list_items (BSE_CONTAINER (plist->song)));
       for (list = free_list; list; list = list->next)
 	song_item_added (plist->song, list->data, plist);
@@ -466,10 +472,9 @@ bst_play_list_set_song (BstPlayList *plist,
 
       /* setup pattern groups
        */
-      bse_object_add_notifier (BSE_OBJECT (plist->song),
-			       "pattern_group_inserted",
-			       song_pattern_group_inserted,
-			       plist);
+      g_object_connect (BSE_OBJECT (plist->song),
+			"signal::pattern_group_inserted", song_pattern_group_inserted, plist,
+			NULL);
       for (i = 0; i < plist->song->n_pgroups; i++)
 	song_pattern_group_insert (plist->song, plist->song->pgroups[i], i, plist, FALSE);
     }

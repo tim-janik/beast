@@ -42,6 +42,7 @@ extern "C" {
 
 /* --- BseEffectPatternJump --- */
 typedef struct _BseEffectPatternJump BseEffectPatternJump;
+typedef struct _BseEffectClass       BseEffectPatternJumpClass;
 struct _BseEffectPatternJump
 {
   BseEffect parent_object;

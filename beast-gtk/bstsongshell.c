@@ -24,17 +24,12 @@
 /* --- prototypes --- */
 static void	bst_song_shell_class_init	(BstSongShellClass	*klass);
 static void	bst_song_shell_init		(BstSongShell		*pe);
-static void	bst_song_shell_destroy		(GtkObject		*object);
 static void	bst_song_shell_rebuild		(BstSuperShell		*super_shell);
 static void	bst_song_shell_update		(BstSuperShell		*super_shell);
 static void	bst_song_shell_operate		(BstSuperShell		*super_shell,
 						 BstOps			 sop);
 static gboolean	bst_song_shell_can_operate	(BstSuperShell		*super_shell,
 						 BstOps			 sop);
-static void	bst_song_shell_setup_super	(BstSuperShell		*super_shell,
-						 BseSuper		*super);
-static void	bst_song_shell_release_super	(BstSuperShell		*super_shell,
-						 BseSuper		*super);
 
 
 /* --- static variables --- */
@@ -71,19 +66,11 @@ bst_song_shell_get_type (void)
 static void
 bst_song_shell_class_init (BstSongShellClass *class)
 {
-  GtkObjectClass *object_class;
-  BstSuperShellClass *super_shell_class;
-
-  object_class = GTK_OBJECT_CLASS (class);
-  super_shell_class = BST_SUPER_SHELL_CLASS (class);
+  BstSuperShellClass *super_shell_class = BST_SUPER_SHELL_CLASS (class);
 
   bst_song_shell_class = class;
-  parent_class = gtk_type_class (BST_TYPE_SUPER_SHELL);
+  parent_class = g_type_class_peek_parent (class);
 
-  object_class->destroy = bst_song_shell_destroy;
-
-  super_shell_class->setup_super = bst_song_shell_setup_super;
-  super_shell_class->release_super = bst_song_shell_release_super;
   super_shell_class->operate = bst_song_shell_operate;
   super_shell_class->can_operate = bst_song_shell_can_operate;
   super_shell_class->rebuild = bst_song_shell_rebuild;
@@ -99,82 +86,60 @@ bst_song_shell_init (BstSongShell *song_shell)
   song_shell->instrument_view = NULL;
   song_shell->pattern_view = NULL;
   song_shell->play_list = NULL;
-  song_shell->tooltips = gtk_tooltips_new ();
-  gtk_object_ref (GTK_OBJECT (song_shell->tooltips));
-  gtk_object_sink (GTK_OBJECT (song_shell->tooltips));
 }
 
 static void
-bst_song_shell_destroy (GtkObject *object)
+bst_song_shell_rebuild (BstSuperShell *super_shell)
 {
-  BstSongShell *song_shell = BST_SONG_SHELL (object);
-  BseSong *song = BSE_SONG (BST_SUPER_SHELL (song_shell)->super);
-  
-  if (song->sequencer != NULL)
-    bse_source_clear_ochannels (BSE_SOURCE (song));
-  
-  gtk_container_foreach (GTK_CONTAINER (song_shell), (GtkCallback) gtk_widget_destroy, NULL);
-  
-  gtk_object_unref (GTK_OBJECT (song_shell->tooltips));
-  song_shell->tooltips = NULL;
-  
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-GtkWidget*
-bst_song_shell_new (BseSong *song)
-{
-  GtkWidget *song_shell;
-  
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
-  g_return_val_if_fail (bst_super_shell_from_super (BSE_SUPER (song)) == NULL, NULL);
-  
-  song_shell = gtk_widget_new (BST_TYPE_SONG_SHELL,
-			       "super", song,
-			       NULL);
-  
-  return song_shell;
-}
-
-static void
-bst_song_shell_build (BstSongShell *song_shell)
-{
+  BstSongShell *song_shell = BST_SONG_SHELL (super_shell);
+  BseSong *song = bse_object_from_id (super_shell->super);
   GtkWidget *notebook;
-  BseSong *song = BSE_SONG (BST_SUPER_SHELL (song_shell)->super);
+
+  g_return_if_fail (song_shell->param_view == NULL);
 
   song_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT (song));
-  gtk_widget_set (GTK_WIDGET (song_shell->param_view),
-		  "signal::destroy", gtk_widget_destroyed, &song_shell->param_view,
-		  "visible", TRUE,
-		  NULL);
+  g_object_set (GTK_WIDGET (song_shell->param_view),
+		"visible", TRUE,
+		NULL);
+  g_object_connect (GTK_WIDGET (song_shell->param_view),
+		    "signal::destroy", gtk_widget_destroyed, &song_shell->param_view,
+		    NULL);
   song_shell->instrument_view = (BstItemView*) bst_instrument_view_new (song);
-  gtk_widget_set (GTK_WIDGET (song_shell->instrument_view),
-		  "signal::destroy", gtk_widget_destroyed, &song_shell->instrument_view,
-		  "visible", TRUE,
-		  NULL);
+  g_object_set (GTK_WIDGET (song_shell->instrument_view),
+		"visible", TRUE,
+		NULL);
+  g_object_connect (GTK_WIDGET (song_shell->instrument_view),
+		    "signal::destroy", gtk_widget_destroyed, &song_shell->instrument_view,
+		    NULL);
   song_shell->pattern_view = (BstItemView*) bst_pattern_view_new (song);
-  gtk_widget_set (GTK_WIDGET (song_shell->pattern_view),
-		  "signal::destroy", gtk_widget_destroyed, &song_shell->pattern_view,
-		  "visible", TRUE,
-		  NULL);
+  g_object_set (GTK_WIDGET (song_shell->pattern_view),
+		"visible", TRUE,
+		NULL);
+  g_object_connect (GTK_WIDGET (song_shell->pattern_view),
+		    "signal::destroy", gtk_widget_destroyed, &song_shell->pattern_view,
+		    NULL);
   song_shell->play_list = bst_play_list_new (song);
-  gtk_widget_set (GTK_WIDGET (song_shell->play_list),
-		  "signal::destroy", gtk_widget_destroyed, &song_shell->play_list,
-		  "visible", TRUE,
-		  NULL);
+  g_object_set (GTK_WIDGET (song_shell->play_list),
+		"visible", TRUE,
+		NULL);
+  g_object_connect (GTK_WIDGET (song_shell->play_list),
+		    "signal::destroy", gtk_widget_destroyed, &song_shell->play_list,
+		    NULL);
   
-  notebook = gtk_widget_new (GTK_TYPE_NOTEBOOK,
-			     "GtkNotebook::scrollable", FALSE,
-			     "GtkNotebook::tab_border", 0,
-			     "GtkNotebook::show_border", TRUE,
-			     "GtkNotebook::enable_popup", FALSE,
-			     "GtkNotebook::show_tabs", TRUE,
-			     "GtkNotebook::tab_pos", GTK_POS_LEFT,
-			     "GtkNotebook::tab_pos", GTK_POS_TOP,
-			     "border_width", 5,
-			     "parent", song_shell,
-			     "visible", TRUE,
-			     NULL);
+  notebook = g_object_connect (g_object_new (GTK_TYPE_NOTEBOOK,
+					     "scrollable", FALSE,
+					     "tab_border", 0,
+					     "show_border", TRUE,
+					     "enable_popup", FALSE,
+					     "show_tabs", TRUE,
+					     "tab_pos", GTK_POS_LEFT,
+					     "tab_pos", GTK_POS_TOP,
+					     "border_width", 5,
+					     "parent", song_shell,
+					     "visible", TRUE,
+					     NULL),
+			       "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+			       NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->param_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "label", "Parameters",
@@ -198,33 +163,6 @@ bst_song_shell_build (BstSongShell *song_shell)
 }
 
 static void
-bst_song_shell_setup_super (BstSuperShell *super_shell,
-			    BseSuper      *super)
-{
-  BstSongShell *song_shell;
-  
-  song_shell = BST_SONG_SHELL (super_shell);
-  
-  BST_SUPER_SHELL_CLASS (parent_class)->setup_super (super_shell, super);
-
-  if (super)
-    bst_song_shell_build (song_shell);
-}
-
-static void
-bst_song_shell_release_super (BstSuperShell *super_shell,
-			      BseSuper      *super)
-{
-  BstSongShell *song_shell;
-  
-  song_shell = BST_SONG_SHELL (super_shell);
-  
-  gtk_container_foreach (GTK_CONTAINER (song_shell), (GtkCallback) gtk_widget_destroy, NULL);
-  
-  BST_SUPER_SHELL_CLASS (parent_class)->release_super (super_shell, super);
-}
-
-static void
 bst_song_shell_update (BstSuperShell *super_shell)
 {
   BstSongShell *song_shell;
@@ -235,19 +173,6 @@ bst_song_shell_update (BstSuperShell *super_shell)
   bst_item_view_update (song_shell->instrument_view);
   bst_item_view_update (song_shell->pattern_view);
   // bst_play_list_update (song_shell->play_list);
-}
-
-static void
-bst_song_shell_rebuild (BstSuperShell *super_shell)
-{
-  BstSongShell *song_shell;
-  
-  song_shell = BST_SONG_SHELL (super_shell);
-  
-  bst_param_view_rebuild (song_shell->param_view);
-  bst_item_view_rebuild (song_shell->instrument_view);
-  bst_item_view_rebuild (song_shell->pattern_view);
-  bst_play_list_rebuild (BST_PLAY_LIST (song_shell->play_list));
 }
 
 static void

@@ -57,7 +57,7 @@ bse_effect_class_init (BseEffectClass *class)
 {
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
-  parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
+  parent_class = g_type_class_peek_parent (class);
 
   object_class->destroy = bse_effect_destroy;
 
@@ -78,22 +78,20 @@ bse_effect_destroy (BseObject *object)
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
-gboolean
+void
 bse_effect_jump_sequencer (BseEffect *effect,
 			   guint     *current_pattern,
 			   guint     *current_row)
 {
   BseEffectClass *class;
 
-  g_return_val_if_fail (BSE_IS_EFFECT (effect), FALSE);
-  g_return_val_if_fail (current_pattern != NULL, FALSE);
-  g_return_val_if_fail (current_row != NULL, FALSE);
+  g_return_if_fail (BSE_IS_EFFECT (effect));
+  g_return_if_fail (current_pattern != NULL);
+  g_return_if_fail (current_row != NULL);
 
   class = BSE_EFFECT_GET_CLASS (effect);
   if (class->jump_sequencer)
-    return class->jump_sequencer (effect, current_pattern, current_row);
-  else
-    return FALSE;
+    class->jump_sequencer (effect, current_pattern, current_row);
 }
 
 void

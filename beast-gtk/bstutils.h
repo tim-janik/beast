@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,14 +20,22 @@
 #define __BST_UTILS_H__
 
 #include        <bse/bse.h>
+#include        <bsw/bsw.h>
 #include        <gtk/gtk.h>
-#include        <gnome.h>
+#include        <libgnomecanvas/libgnomecanvas.h>
 
 #ifdef __cplusplus
 extern "C" {
 #pragma }
 #endif /* __cplusplus */
 
+/* --- generated type ids --- */
+#include	"bstgentypes.h"
+void		bst_init_gentypes	(void);
+
+
+/* --- marshallers --- */
+#include	"bstmarshal.h"
 
 
 /* --- pixmap stock --- */
@@ -57,6 +65,8 @@ BseIcon* bst_icon_from_stock (BstIconId icon_id);
 /* --- Gtk+ utilities & workarounds --- */
 #define    GTK_TYPE_VPANED               (gtk_vpaned_get_type ())
 #define    GTK_TYPE_HPANED               (gtk_hpaned_get_type ())
+void	   gtk_post_init_patch_ups	 (void);
+gboolean   gtk_widget_viewable		 (GtkWidget		*widget);
 void	   gtk_widget_showraise		 (GtkWidget		*widget);
 void	   gtk_toplevel_hide		 (GtkWidget		*widget);
 void	   gtk_toplevel_activate_default (GtkWidget		*widget);
@@ -73,10 +83,23 @@ void	   gtk_last_event_widget_coords	 (GtkWidget		*widget,
 void	   gtk_clist_moveto_selection	 (GtkCList		*clist);
 gpointer   gtk_clist_get_selection_data	 (GtkCList		*clist,
 					  guint                  index);
-#ifndef	gtk_marshal_NONE__UINT_UINT
-#  define gtk_marshal_NONE__UINT_UINT	gtk_marshal_NONE__INT_INT
-#endif
+void	   gtk_widget_viewable_changed	 (GtkWidget		*widget);
+guint	   gtk_tree_view_add_column	 (GtkTreeView	        *tree_view,
+					  gint                   position,
+					  GtkTreeViewColumn     *column,
+					  GtkCellRenderer       *cell,
+					  const gchar           *attrib_name,
+					  ...);
+void   gtk_tree_selection_select_spath   (GtkTreeSelection	*selection,
+					  const gchar		*str_path);
+void   gtk_tree_selection_unselect_spath (GtkTreeSelection	*selection,
+					  const gchar		*str_path);
 
+#define gtk_notebook_current_widget(n) \
+    gtk_notebook_get_nth_page ((n), gtk_notebook_get_current_page ((n)))
+
+#define GTK_STYLE_THICKNESS(s,xy)    ((s)-> xy##thickness)
+  
 
 /* --- Gtk+ Kennel --- */
 typedef enum
@@ -103,6 +126,58 @@ void	   gtk_kennel_resize		 (GtkKennel		*kennel,
 					  guint			 height);
 
 
+/* --- field mask --- */
+GtkWidget*	bst_gmask_parent_create	(gpointer	tooltips,
+					 guint		border_width);
+gpointer	bst_gmask_form		(GtkWidget     *gmask_parent,
+					 GtkWidget     *action,
+					 gboolean	expandable);
+gpointer	bst_gmask_form_big	(GtkWidget     *gmask_parent,
+					 GtkWidget     *action);
+void		bst_gmask_set_tip	(gpointer	mask,
+					 const gchar   *tip_text);
+void		bst_gmask_set_prompt	(gpointer	mask,
+					 gpointer	widget);
+void		bst_gmask_set_aux1	(gpointer	mask,
+					 gpointer	widget);
+void		bst_gmask_set_aux2	(gpointer	mask,
+					 gpointer	widget);
+void		bst_gmask_set_aux3	(gpointer	mask,
+					 gpointer	widget);
+void		bst_gmask_set_ahead	(gpointer	mask,
+					 gpointer	widget);
+void		bst_gmask_set_atail	(gpointer	mask,
+					 gpointer	widget);
+void		bst_gmask_set_column	(gpointer	mask,
+					 guint		column);
+GtkWidget*	bst_gmask_get_prompt	(gpointer	mask);
+GtkWidget*	bst_gmask_get_aux1	(gpointer	mask);
+GtkWidget*	bst_gmask_get_aux2	(gpointer	mask);
+GtkWidget*	bst_gmask_get_aux3	(gpointer	mask);
+GtkWidget*	bst_gmask_get_ahead	(gpointer	mask);
+GtkWidget*	bst_gmask_get_action	(gpointer	mask);
+GtkWidget*	bst_gmask_get_atail	(gpointer	mask);
+void		bst_gmask_foreach	(gpointer	mask,
+					 gpointer	func,
+					 gpointer	data);
+void		bst_gmask_pack		(gpointer	mask);
+gpointer	bst_gmask_quick		(GtkWidget     *gmask_parent,
+					 guint		column,
+					 const gchar   *prompt,
+					 gpointer       action_widget,
+					 const gchar   *tip_text);
+#define	bst_gmask_set_sensitive(mask, sensitive)	\
+    bst_gmask_foreach ((mask), \
+		       (sensitive) ? gtk_widget_make_sensitive : gtk_widget_make_insensitive, \
+		       NULL)
+#define	bst_gmask_ensure_styles(mask)			\
+    bst_gmask_foreach ((mask), gtk_widget_ensure_style, NULL)
+#define	bst_gmask_destroy(mask)				\
+    bst_gmask_foreach ((mask), gtk_widget_destroy, NULL)
+
+
+
+
 /* --- BEAST utilities --- */
 void	        bst_widget_modify_as_title	(GtkWidget	*widget);
 void	        bst_widget_modify_bg_as_base	(GtkWidget	*widget);
@@ -126,13 +201,17 @@ guint      bst_container_get_insertion_position (GtkContainer   *container,
 						 gint            xy,
 						 GtkWidget      *ignore_child,
 						 gint           *ignore_child_position);
+void		bst_container_set_named_child	(GtkWidget	*container,
+						 GQuark		 qname,
+						 GtkWidget	*child);
+GtkWidget*	bst_container_get_named_child	(GtkWidget	*container,
+						 GQuark		 qname);
 
 
 /* --- Canvas utilities & workarounds --- */
 GnomeCanvasPoints*	gnome_canvas_points_new0	 (guint            n_points);
 GnomeCanvasPoints*	gnome_canvas_points_newv	 (guint            n_points,
 							  ...);
-void			gnome_canvas_request_full_update (GnomeCanvas	  *canvas);
 GnomeCanvasItem*	gnome_canvas_typed_item_at	 (GnomeCanvas     *canvas,
 							  GtkType	   item_type,
 							  gdouble          world_x,
@@ -144,6 +223,7 @@ void			gnome_canvas_item_keep_between   (GnomeCanvasItem *between,
 void			gnome_canvas_item_keep_above	 (GnomeCanvasItem *above,
 							  GnomeCanvasItem *item1,
 							  GnomeCanvasItem *item2);
+void			gnome_canvas_FIXME_hard_update	 (GnomeCanvas	  *canvas);
 
 
 /* --- Auxillary Dialog --- */
@@ -152,7 +232,7 @@ void			gnome_canvas_item_keep_above	 (GnomeCanvasItem *above,
 #define BST_ADIALOG_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_ADIALOG, BstADialogClass))
 #define BST_IS_ADIALOG(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_ADIALOG))
 #define BST_IS_ADIALOG_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_ADIALOG))
-#define BST_ADIALOG_GET_CLASS(obj)  ((BstADialogClass*) (((GtkObject*) (obj))->klass))
+#define BST_ADIALOG_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_ADIALOG, BstADialogClass))
 typedef struct _BstADialog BstADialog;
 typedef GtkWindowClass     BstADialogClass;
 struct _BstADialog
@@ -166,9 +246,10 @@ struct _BstADialog
 typedef enum
 {
   BST_ADIALOG_DESTROY_ON_HIDE	= (1 << 0),	/* always auto-hides for delete-event */
-  BST_ADIALOG_POPUP_POS		= (1 << 1),
-  BST_ADIALOG_MODAL		= (1 << 2),
-  BST_ADIALOG_FORCE_HBOX	= (1 << 3)
+  BST_ADIALOG_DESTROY_ON_DELETE	= (1 << 1),	/* always auto-hides for delete-event */
+  BST_ADIALOG_POPUP_POS		= (1 << 2),
+  BST_ADIALOG_MODAL		= (1 << 3),
+  BST_ADIALOG_FORCE_HBOX	= (1 << 4)
 } BstADialogFlags;
 
 GtkType    bst_adialog_get_type		(void);
@@ -179,6 +260,8 @@ GtkWidget* bst_adialog_new       	(GtkObject		*alive_host,
 					 const gchar		*first_arg_name,
 					 ...);
 GtkWidget* bst_adialog_get_child	(GtkWidget		*adialog);
+void	   bst_adialog_setup_choices	(GtkWidget		*adialog,
+					 ...);
 
 
 /* --- Gdk utilities & workarounds --- */

@@ -30,12 +30,12 @@ enum {
 /* --- prototypes --- */
 static void bse_effect_balance_class_init   (BseEffectClass   *class);
 static void bse_effect_balance_init         (BseEffectBalance *effect);
-static void bse_effect_balance_set_param    (BseEffectBalance *effect,
+static void bse_effect_balance_set_property    (BseEffectBalance *effect,
 					     guint             param_id,
 					     GValue           *value,
 					     GParamSpec       *pspec,
 					     const gchar      *trailer);
-static void bse_effect_balance_get_param    (BseEffectBalance *effect,
+static void bse_effect_balance_get_property    (BseEffectBalance *effect,
 					     guint             param_id,
 					     GValue           *value,
 					     GParamSpec       *pspec,
@@ -48,7 +48,7 @@ static void bse_effect_balance_setup_voice  (BseEffect        *effect,
 BSE_BUILTIN_TYPE (BseEffectBalance)
 {
   static const GTypeInfo effect_info = {
-    sizeof (BseEffectClass),
+    sizeof (BseEffectBalanceClass),
     
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
@@ -77,18 +77,18 @@ bse_effect_balance_class_init (BseEffectClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_effect_balance_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_effect_balance_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_effect_balance_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_effect_balance_get_property;
   
   class->setup_voice = bse_effect_balance_setup_voice;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_BALANCE,
-			      b_param_spec_int ("balance", "Balance", NULL,
+			      bse_param_spec_int ("balance", "Balance", NULL,
 						BSE_MIN_BALANCE, BSE_MAX_BALANCE,
 						0, BSE_STP_BALANCE,
-						B_PARAM_DEFAULT |
-						B_PARAM_HINT_SCALE));
+						BSE_PARAM_DEFAULT |
+						BSE_PARAM_HINT_SCALE));
 }
 
 static void
@@ -98,7 +98,7 @@ bse_effect_balance_init (BseEffectBalance *effect)
 }
 
 static void
-bse_effect_balance_set_param (BseEffectBalance *effect,
+bse_effect_balance_set_property (BseEffectBalance *effect,
 			      guint             param_id,
 			      GValue           *value,
 			      GParamSpec       *pspec,
@@ -107,16 +107,16 @@ bse_effect_balance_set_param (BseEffectBalance *effect,
   switch (param_id)
     {
     case PARAM_BALANCE:
-      effect->balance = b_value_get_int (value);
+      effect->balance = g_value_get_int (value);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (effect, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (effect, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_effect_balance_get_param (BseEffectBalance *effect,
+bse_effect_balance_get_property (BseEffectBalance *effect,
 			      guint             param_id,
 			      GValue           *value,
 			      GParamSpec       *pspec,
@@ -125,10 +125,10 @@ bse_effect_balance_get_param (BseEffectBalance *effect,
   switch (param_id)
     {
     case PARAM_BALANCE:
-      b_value_set_int (value, effect->balance);
+      g_value_set_int (value, effect->balance);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (effect, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (effect, param_id, pspec);
       break;
     }
 }
@@ -139,5 +139,5 @@ bse_effect_balance_setup_voice (BseEffect *effect,
 {
   BseEffectBalance *balance_effect = BSE_EFFECT_BALANCE (effect);
 
-  bse_voice_set_balance (voice, balance_effect->balance);
+  _bse_voice_set_balance (voice, balance_effect->balance);
 }

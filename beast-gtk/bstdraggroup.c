@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2000 Red Hat, Inc.
+ * Copyright (C) 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -128,12 +128,12 @@ drag_group_pattern_inserted (BsePatternGroup *pattern_group,
   g_return_if_fail (drag_group != NULL);
   g_return_if_fail (drag_group->pattern_group == pattern_group);
 
-  drag_pattern = bst_drag_pattern_new (pattern, pattern_group, position, TRUE);
+  drag_pattern = bst_drag_pattern_new (pattern, pattern_group, position, FALSE); /* ignore_first_insert: TRUE */
   
-  gtk_container_add_with_args (GTK_CONTAINER (drag_group->hbox), drag_pattern->widget,
-			       "expand", FALSE,
-			       "position", position,
-			       NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (drag_group->hbox), drag_pattern->widget,
+				     "expand", FALSE,
+				     "position", position,
+				     NULL);
 }
 
 static void
@@ -143,26 +143,19 @@ bst_drag_group_destroy (BstDragGroup *drag_group)
 
   gtk_object_remove_no_notify (GTK_OBJECT (drag_group->widget), "BstDragGroup");
   gtk_signal_disconnect_by_func (GTK_OBJECT (drag_group->widget),
-				 bst_drag_group_destroy,
+				 G_CALLBACK (bst_drag_group_destroy),
 				 drag_group);
-
-  bse_object_remove_notifiers_by_func (drag_group->pattern_group,
-				       drag_group_changed,
-				       drag_group);
-  bse_object_remove_notifiers_by_func (drag_group->pattern_group,
-				       bst_drag_group_destroy,
-				       drag_group);
-  bse_object_remove_notifiers_by_func (drag_group->pattern_group,
-				       drag_group_pattern_inserted,
-				       drag_group);
-
-  bse_object_remove_notifiers_by_func (drag_group->song,
-				       drag_group_pattern_group_inserted,
-				       drag_group);
-  bse_object_remove_notifiers_by_func (drag_group->song,
-				       drag_group_pattern_group_removed,
-				       drag_group);
-
+  
+  g_object_disconnect (drag_group->pattern_group,
+		       "any_signal", drag_group_changed, drag_group,
+		       "any_signal", bst_drag_group_destroy, drag_group,
+		       "any_signal", drag_group_pattern_inserted, drag_group,
+		       NULL);
+  g_object_disconnect (drag_group->song,
+		       "any_signal", drag_group_pattern_group_inserted, drag_group,
+		       "any_signal", drag_group_pattern_group_removed, drag_group,
+		       NULL);
+  
   gtk_widget_destroy (drag_group->widget);
   g_free (drag_group);
 }
@@ -281,37 +274,27 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
   
   drag_group = g_new0 (BstDragGroup, 1);
   drag_group->pattern_group = pattern_group;
-  bse_object_add_data_notifier (BSE_OBJECT (pattern_group),
-				"param_changed",
-				drag_group_changed,
-				drag_group);
-  bse_object_add_data_notifier (BSE_OBJECT (pattern_group),
-				"set_parent",
-				bst_drag_group_destroy,
-				drag_group);
-  bse_object_add_notifier (BSE_OBJECT (pattern_group),
-			   "pattern_inserted",
-			   drag_group_pattern_inserted,
-			   drag_group);
-
+  g_object_connect (BSE_OBJECT (pattern_group),
+		    "swapped_signal::notify", drag_group_changed, drag_group,
+		    "swapped_signal::set_parent", bst_drag_group_destroy, drag_group,
+		    "signal::pattern_inserted", drag_group_pattern_inserted, drag_group,
+		    NULL);
+  
   drag_group->song = song;
   drag_group->position = position;
-  bse_object_add_notifier (BSE_OBJECT (song),
-			   "pattern_group_inserted",
-			   drag_group_pattern_group_inserted,
-			   drag_group);
+  g_object_connect (BSE_OBJECT (song),
+		    "signal::pattern_group_inserted", drag_group_pattern_group_inserted, drag_group,
+		    "signal::pattern_group_removed", drag_group_pattern_group_removed, drag_group,
+		    NULL);
   drag_group->ignore_first_insert = ignore_first_insert;
-  bse_object_add_notifier (BSE_OBJECT (song),
-			   "pattern_group_removed",
-			   drag_group_pattern_group_removed,
-			   drag_group);
   
   /* build outer containers
    */
-  drag_group->widget = gtk_widget_new (GTK_TYPE_EVENT_BOX,
-				       "visible", TRUE,
-				       "object_signal::destroy", bst_drag_group_destroy, drag_group,
-				       NULL);
+  drag_group->widget = g_object_connect (gtk_widget_new (GTK_TYPE_EVENT_BOX,
+							 "visible", TRUE,
+							 NULL),
+					 "swapped_signal::destroy", bst_drag_group_destroy, drag_group,
+					 NULL);
   gtk_object_set_data_full (GTK_OBJECT (drag_group->widget),
 			    "BstDragGroup",
 			    drag_group,
@@ -329,11 +312,12 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
 
   /* pattern name widget
    */
-  drag_group->name = gtk_widget_new (GTK_TYPE_LABEL,
-				     "visible", TRUE,
-				     "object_signal::destroy", bse_nullify_pointer, &drag_group->name,
-				     "xalign", 0.0,
-				     NULL);
+  drag_group->name = g_object_connect (gtk_widget_new (GTK_TYPE_LABEL,
+						       "visible", TRUE,
+						       "xalign", 0.0,
+						       NULL),
+				       "swapped_signal::destroy", bse_nullify_pointer, &drag_group->name,
+				       NULL);
   gtk_box_pack_start (GTK_BOX (hbox), drag_group->name, FALSE, TRUE, 5);
 
   
@@ -343,11 +327,12 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
 			"visible", TRUE,
 			NULL);
   gtk_box_pack_start (GTK_BOX (hbox), any, FALSE, TRUE, 0);
-  drag_group->hbox = gtk_widget_new (GTK_TYPE_HBOX,
-				     "visible", TRUE,
-				     "object_signal::destroy", bse_nullify_pointer, &drag_group->hbox,
-				     "parent", hbox,
-				     NULL);
+  drag_group->hbox = g_object_connect (gtk_widget_new (GTK_TYPE_HBOX,
+						       "visible", TRUE,
+						       "parent", hbox,
+						       NULL),
+				       "swapped_signal::destroy", bse_nullify_pointer, &drag_group->hbox,
+				       NULL);
   
 
   /* update contents
@@ -358,21 +343,21 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
       BstDragPattern *drag_pattern = bst_drag_pattern_new (pattern_group->entries[i].pattern,
 							   pattern_group, i, FALSE);
 
-      gtk_container_add_with_args (GTK_CONTAINER (drag_group->hbox), drag_pattern->widget,
-				   "expand", FALSE,
-				   "position", i,
-				   NULL);
+      gtk_container_add_with_properties (GTK_CONTAINER (drag_group->hbox), drag_pattern->widget,
+					 "expand", FALSE,
+					 "position", i,
+					 NULL);
     }
   
   /* setup as drag source
    */
-  gtk_widget_set (drag_group->widget,
-		  "signal::button_press_event", drag_group_button_press, drag_group,
-		  "signal::drag_begin", drag_group_drag_begin, drag_group,
-		  "signal::drag_data_get", drag_group_drag_data_get, drag_group,
-		  "signal::drag_data_delete", drag_group_drag_data_delete, drag_group,
-		  "signal::drag_end", gtk_widget_show, NULL,
-		  NULL);
+  g_object_connect (drag_group->widget,
+		    "signal::button_press_event", drag_group_button_press, drag_group,
+		    "signal::drag_begin", drag_group_drag_begin, drag_group,
+		    "signal::drag_data_get", drag_group_drag_data_get, drag_group,
+		    "signal::drag_data_delete", drag_group_drag_data_delete, drag_group,
+		    "signal::drag_end", gtk_widget_show, NULL,
+		    NULL);
 
   /* setup as drag destination
    */
@@ -380,11 +365,11 @@ bst_drag_group_new (BsePatternGroup *pattern_group,
 		     GTK_DEST_DEFAULT_DROP,
 		     &target, 1,
 		     GDK_ACTION_COPY | GDK_ACTION_MOVE);
-  gtk_widget_set (drag_group->hbox,
-		  "signal::drag_motion", drag_group_drag_motion, drag_group,
-		  "signal::drag_leave", drag_group_drag_leave, drag_group,
-		  "signal::drag_data_received", drag_group_drag_data_received, drag_group,
-		  NULL);
+  g_object_connect (drag_group->hbox,
+		    "signal::drag_motion", drag_group_drag_motion, drag_group,
+		    "signal::drag_leave", drag_group_drag_leave, drag_group,
+		    "signal::drag_data_received", drag_group_drag_data_received, drag_group,
+		    NULL);
 
   return drag_group;
 }

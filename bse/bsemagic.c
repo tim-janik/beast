@@ -17,8 +17,6 @@
  */
 #include	"bsemagic.h"
 
-#include	"bsesong.h"
-#include	"bsesongsequencer.h"
 #include	<string.h>
 #include	<unistd.h>
 #include	<errno.h>
@@ -60,30 +58,12 @@ static void	bfile_close		(BFile		*bfile);
 static guint	bfile_get_size		(BFile		*bfile);
 
 
-/* --- variables --- */
-static GSList *bse_magics_list = NULL;
-
-
 /* --- functions --- */
-void
-bse_magic_list_append (BseMagic *magic)
-{
-  static GSList *last_node = NULL;
-  GSList *node;
-
-  g_return_if_fail (magic != NULL);
-
-  node = g_slist_prepend (NULL, magic);
-  if (last_node)
-    last_node->next = node;
-  else
-    bse_magics_list = node;
-  last_node = node;
-}
-
 BseMagic*
-bse_magic_list_match_file (const gchar *file_name)
+bse_magic_list_match_file (GSList      *magic_list,
+			   const gchar *file_name)
 {
+  BseMagic *rmagic = NULL;
   BFile bfile = { -1, };
   
   g_return_val_if_fail (file_name != NULL, NULL);
@@ -92,58 +72,67 @@ bse_magic_list_match_file (const gchar *file_name)
     {
       gchar *extension = strrchr (file_name, '.');
       GQuark qext = extension ? g_quark_try_string (extension) : 0;
-      BseMagic *magic;
+      gint rpriority = G_MAXINT;
       GSList *node;
       
       /* we do a quick scan by extension first */
-      if (qext)
-	{
-	  for (node = bse_magics_list; node; node = node->next)
-	    {
-	      magic = node->data;
-	      if (magic->qextension != qext)
-		continue;
-	      if (magic_match_file (&bfile, magic->match_list))
-		{
-		  bfile_close (&bfile);
-		  return magic;
-		}
-	    }
-	  /* which failed, so we check the rest in order now */
-	  for (node = bse_magics_list; node; node = node->next)
-	    {
-	      magic = node->data;
-	      if (magic->qextension == qext)
-		continue;
-	      if (magic_match_file (&bfile, magic->match_list))
-		{
-		  bfile_close (&bfile);
-		  return magic;
-		}
-	    }
-	}
-      else
-	for (node = bse_magics_list; node; node = node->next)
+      if (!rmagic && qext)
+	for (node = magic_list; node; node = node->next)
 	  {
-	    magic = node->data;
-	    if (magic->qextension == qext)
+	    BseMagic *magic = node->data;
+	    
+	    if (magic->qextension != qext ||
+		rpriority < magic->priority ||
+		(rmagic && rpriority == magic->priority))
 	      continue;
 	    if (magic_match_file (&bfile, magic->match_list))
 	      {
-		bfile_close (&bfile);
-		return magic;
+		rmagic = magic;
+		rpriority = rmagic->priority;
+	      }
+	  }
+      /* then we do a normal walk but skip extension matches */
+      if (!rmagic && qext)
+	for (node = magic_list; node; node = node->next)
+	  {
+	    BseMagic *magic = node->data;
+	    
+	    if (magic->qextension == qext ||
+		rpriority < magic->priority ||
+		(rmagic && rpriority == magic->priority))
+	      continue;
+	    if (magic_match_file (&bfile, magic->match_list))
+              {
+		rmagic = magic;
+		rpriority = rmagic->priority;
+	      }
+	  }
+      /* for no extension, we do a full walk */
+      if (!rmagic && !qext)
+	for (node = magic_list; node; node = node->next)
+	  {
+	    BseMagic *magic = node->data;
+	    
+	    if (rpriority < magic->priority ||
+		(rmagic && rpriority == magic->priority))
+	      continue;
+	    if (magic_match_file (&bfile, magic->match_list))
+	      {
+		rmagic = magic;
+		rpriority = rmagic->priority;
 	      }
 	  }
       bfile_close (&bfile);
     }
   
-  return NULL;
+  return rmagic;
 }
 
 BseMagic*
-bse_magic_new (GType        proc_type,
-	       GQuark       qextension,
-	       const gchar *magic_spec)
+bse_magic_create (gpointer     data,
+		  gint	    priority,
+		  GQuark       qextension,
+		  const gchar *magic_spec)
 {
   BseMagic *magic;
   Magic *match_list;
@@ -158,45 +147,12 @@ bse_magic_new (GType        proc_type,
     return NULL;
 
   magic = g_new (BseMagic, 1);
-  magic->proc_type = proc_type;
+  magic->data = data;
   magic->qextension = qextension;
+  magic->priority = priority;
   magic->match_list = match_list;
 
   return magic;
-}
-
-BseMagic*
-bse_magic_match_file (const gchar *file_name,
-		      GSList      *magic_list)
-{
-  BFile bfile = { -1, };
-
-  g_return_val_if_fail (file_name != NULL, NULL);
-
-  if (bfile_open (&bfile, file_name))
-    {
-      GSList *node;
-
-      for (node = magic_list; node; node = node->next)
-	{
-	  BseMagic *magic = node->data;
-
-	  if (!magic || !magic->match_list)
-	    {
-	      g_warning ("Magic match list for \"%s\" contains NULL nodes", file_name);
-	      continue;
-	    }
-	  if (magic_match_file (&bfile, magic->match_list))
-	    {
-	      bfile_close (&bfile);
-
-	      return magic;
-	    }
-	}
-      bfile_close (&bfile);
-    }
-
-  return NULL;
 }
 
 
@@ -341,6 +297,11 @@ magic_parse_type (Magic       *magic,
 {
   gchar *f = NULL;
 
+  if (string[0] == 'u')
+    {
+      string += 1;
+      magic->cmp_unsigned = TRUE;
+    }
   if (strncmp (string, "byte", 4) == 0)
     {
       string += 4;
@@ -393,11 +354,6 @@ magic_parse_type (Magic       *magic,
       magic->data_size = 0;
       magic->read_string = TRUE;
     }
-  if (string[0] == 'u')
-    {
-      string += 1;
-      magic->cmp_unsigned = TRUE;
-    }
   if (string[0] == '&')
     {
       string += 1;
@@ -420,7 +376,10 @@ magic_parse_offset (Magic *magic,
 {
   gchar *f = NULL;
   
-  magic->offset = strtol (string, &f, 10);
+  if (string[0] == '0')
+    magic->offset = strtol (string, &f, string[1] == 'x' ? 16 : 8);
+  else
+    magic->offset = strtol (string, &f, 10);
 
   return !f || *f == 0;
 }

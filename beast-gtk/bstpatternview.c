@@ -119,7 +119,7 @@ popup_pattern_dialog (BstPatternView *pattern_view)
 
   gtk_signal_connect_object_while_alive (GTK_OBJECT (pattern_view),
 					 "destroy",
-					 gtk_widget_destroy,
+					 G_CALLBACK (gtk_widget_destroy),
 					 GTK_OBJECT (pd));
   gtk_widget_set (pd,
 		  "allow_shrink", TRUE,

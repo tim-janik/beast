@@ -123,19 +123,18 @@ bst_heart_monitor_set_heart (BstHeartMonitor *hmon,
     {
       bse_object_set_data (BSE_OBJECT (hmon->heart), "BstHeartMonitor", NULL);
       bst_param_view_set_object (BST_PARAM_VIEW (hmon->param_view), NULL);
-      bse_object_remove_notifiers_by_func (hmon->heart,
-					   heart_monitor_reset_object,
-					   hmon);
+      g_object_disconnect (hmon->heart,
+			   "any_signal", heart_monitor_reset_object, hmon,
+			   NULL);
       hmon->heart = NULL;
     }
   hmon->heart = heart;
   if (hmon->heart)
     {
       bse_object_set_data (BSE_OBJECT (hmon->heart), "BstHeartMonitor", hmon);
-      bse_object_add_data_notifier (hmon->heart,
-				    "destroy",
-				    heart_monitor_reset_object,
-				    hmon);
+      g_object_connect (hmon->heart,
+			"swapped_signal::destroy", heart_monitor_reset_object, hmon,
+			NULL);
       bst_param_view_set_object (BST_PARAM_VIEW (hmon->param_view), BSE_OBJECT (hmon->heart));
     }
 }

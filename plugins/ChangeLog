@@ -1,3 +1,22 @@
+Thu Sep 27 13:08:53 2001  Tim Janik  <timj@gtk.org>
+
+	* lots of adaptions to BSE changes, fixes and new plugins.
+
+	* a few dav*.[hc] plugins still remain unported, help apprechiated.
+
+	* davxtalstrings.[hc]: ported this to new BSE APIs, GSL engine and
+	floats processing.
+	* bsenoise.[hc] bsegenosc.[hc] bsemixer.[hc] bsemult.[hc] bseadder.[hc]:
+	likewise.
+
+	* bseconstant.[hc]: constant value plugin.
+
+	* bsesimpleosc.[hc]: new simple osciallator taking freq as input signal.
+
+	* bsesnooper.[hc]: new debugging module.
+
+	* bsesimpleadsr.[hc]: simple envelope generator.
+	
 Thu May 25 02:38:18 2000  Tim Janik  <timj@gtk.org>
 
 	* icons/chorus.c: preliminary icon for DavChorus.

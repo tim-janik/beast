@@ -27,18 +27,28 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+/* --- BSE type macros --- */
+#define BSE_TYPE_PLUGIN              (BSE_TYPE_ID (BsePlugin))
+#define BSE_PLUGIN(plugin)           (G_TYPE_CHECK_INSTANCE_CAST ((plugin), BSE_TYPE_PLUGIN, BsePlugin))
+#define BSE_PLUGIN_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PLUGIN, BsePluginClass))
+#define BSE_IS_PLUGIN(plugin)        (G_TYPE_CHECK_INSTANCE_TYPE ((plugin), BSE_TYPE_PLUGIN))
+#define BSE_IS_PLUGIN_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PLUGIN))
+#define BSE_PLUGIN_GET_CLASS(plugin) (G_TYPE_INSTANCE_GET_CLASS ((plugin), BSE_TYPE_PLUGIN, BsePluginClass))
+
+
 /* --- BsePlugin --- */
 struct _BsePlugin
 {
-  GTypePlugin    gtype_plugin;
+  GObject	 parent_instance;
 
   gchar		*name;
   gchar		*fname;
   gpointer	 gmodule;
-  guint		 module_refs : 24;
+  guint		 use_count : 16;
   guint		 exports_procedures : 1;
   guint		 exports_objects : 1;
   guint		 exports_enums : 1;
+  guint		 exports_file_handlers : 1;
 
   guint		 n_proc_types;
   GType  	*proc_types;
@@ -51,6 +61,11 @@ struct _BsePlugin
   gconstpointer	 e_procs;
   gconstpointer	 e_objects;
   gconstpointer	 e_enums;
+  gconstpointer	 e_file_handlers;
+};
+struct _BsePluginClass
+{
+  GObjectClass	parent_class;
 };
 
 
@@ -58,13 +73,11 @@ struct _BsePlugin
 GList*		bse_plugin_dir_list_files	(const gchar	*dir_list);
 gchar*		bse_plugin_check_load		(const gchar	*file_name);
 BsePlugin*	bse_plugin_lookup		(const gchar	*name);
-void		bse_plugin_ref			(BsePlugin	*plugin);
-void		bse_plugin_unref		(BsePlugin	*plugin);
 
 
 
 /* --- implementation details --- */
-void		bse_plugin_init			(void);
+void		bse_plugins_init		(void);
 /* _SYMBOL - stringified c-SYMBOL
  * _IMPL_B - EXPORTS_BEGIN magic
  * _IMPL_S - c-Symbol (variable name)
@@ -109,7 +122,7 @@ extern gconstpointer BSE_EXPORT_IMPL_S (Object); \
 BSE_EXPORT_IMPL_F (BSE_BUILTIN_NAME) \
 { \
   const gchar* __error = NULL; \
-  gchar* __plugin_name = "BSE-Builtin-" y; \
+  gchar* __plugin_name = "BSE-builtin::" y; \
   extern BSE_EXPORT_IMPL_T
 #  define BSE_EXPORT_IMPL_E             \
   __bplugin->name = __plugin_name; \

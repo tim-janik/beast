@@ -1,0 +1,211 @@
+conceptual approach to simulate flow-system behavior
+====================================================
+
+introductionary remarks:
+------------------------
+the GSL engine simulates signal flow systems by mapping them
+onto a network of signal processing modules which are connected
+via signal streams.
+the signal streams are value and time quantized, where C floats
+are used to store the quantized values and time quantization can
+be arbitrary, but is assumed to be synchronous for all nodes.
+in the public GSL C API, engine modules are exposed as GslModule
+structures, for the internal GSL engine implementation, each
+GslModule is embedded in an OpNode structure.
+
+node model:
+-----------
+* a node has n_istreams input streams
+* a node has n_ostreams output streams
+* all streams are equally value-quantized as IEEE754
+  floats, usually within the range -1..1
+* all streams are synchronously time-quantized
+* the flow-system behavior can be iteratively approximated
+  by calculating a nodes output streams from its input streams
+* since all streams are equally time discrete, n output
+  values for all output streams can be calculated from n input
+  values at all input streams
+* some nodes always react delayed ("deferred" nodes) and can
+  guarantee that they can always produce n output values ahead
+  of receiving the corresponding n input values, with n>=1
+* a node that has no output facilities (n_ostreams==0) is
+  considered a "consumer" and has to be processed
+
+node methods:
+-------------
+->process()
+  this method specifies through one of its arguments
+  the number of iterations the node has to perform,
+  and therefore the number of values that are supplied
+  in its stream input buffers and that have to be supplied
+  in its stream output buffers
+->process_deferred()
+  this method specifies the number of input values supplied
+  and the number of output values that should be supplied.
+  the number of input values may be smaller than the number
+  of output values requested, in which case the node may return
+  less output values than requested.
+
+node relationships:
+-------------------
+node B is an "input" of node A if:
+  * one of A's input streams is connected to one of B's output streams,
+  or
+  * node C is an "input" of A and B is an "input" of C
+
+processing order:
+-----------------
+if node A has an input node B and A is not a deferred node, B has to
+be processed prior to processing A.
+
+connection cycles:
+------------------
+nodes A and B "form a cycle" if A is an input to B and B is an
+input to A.
+
+invalid connections:
+--------------------
+for nodes A and B (not necessarily distinct) which form a cycle,
+the connections that the cycle consists of are only valid if
+the following is true:
+  (C is a deferred node) and
+  (C==A or C==B or (if C is completely disconnected, the nodes
+  A and B do not anymore form the cycle))
+
+
+implementation notes
+====================
+* if a node is deferred, all output channels are delayed
+* independent leaf nodes (nodes that have no inputs) can be
+  scheduled separately
+* nodes contained in a cycle have to be scheduled together
+
+scheduling algorithm
+--------------------
+to schedule a consumer and its dependency nodes, schedule_query it:
+
+schedule_query_node:
+* tag current node
+* ignore scheduled input nodes
+* schedule_query_node on untagged input nodes, then do one of:
+  * schedule input node (if it has no cycles)
+  * resolve all input nodes cycles and then schedule
+    the input nodes cycle (if not self in cycle)
+  * take over cycle dependencies from input node
+* a tagged node is added to the precondition list (opens new cycle)
+* own leaf level is MAX() of input node leaf-levels + 1
+* untag node
+
+resolving cycles:
+* eliminate child from precondition list, once the list
+  is empty the cycle is resolved
+* at least one node being eliminated has to be deferred
+  for the cycle to be valid
+
+scheduling:
+* nodes need to be processed in the order of leaf-level
+* within leaf-levels, processing is determined by a per-node
+  processing costs hint (cheap, normal, expensive)
+
+implementation considerations:
+------------------------------
+for deferred nodes, the number n specifying the amount of output
+values that are produced ahead of input can be considered
+mostly-fixed. that is, it's unlikely to change often and will do
+so only at block boundaries.
+supporting n to be completely variable or considering it mostly
+fixed has certain implications. here're the considerations that
+lead to supporting a completely variable n for the implementation:
+
+n is block-boundary fixed:
++ for complex cycles (i.e. cycles that contain other cycles,
+  "subcycles"), the subcycles can be scheduled separately
+  if the n of the subcycle is >= block_size
+- if n is the only thing that changed at a block-boundary,
+  rescheduling the flow-graph is required in the cases
+  where n = old_n + x with old_n < block_size or if x < 0
+- deferred nodes can not change their delay in response to
+  values of an input stream
+  
+n is variable for every iteration step:
++ no rescheduling is required if n changes at block-boundary
+- subcycles can not be scheduled separately from their outermost
+  cycle
++ the delay of deferred nodes can correlate to an input stream
+
+
+threads, communication, main loops
+==================================
+
+thread types:
+* UserThread; for the scope of the GSL engine (the functions exposed in
+  gslengine.h), only one user thread may execute API functions
+  at a time.
+  i.e. if more than one user thread need to call engine API
+  functions, the user has to take measures to avoid concurrency
+  in calling these functions, e.g. by using a GslMutex which is
+  to be locked around GSL engine API calls.
+* MasterThread; the engine, if configured accordingly,
+  sets up one master thread which
+  - processes transactions from the UserThread
+  - schedules processing order of engine modules
+  - processes sole modules when required
+  - processes module cycles when required
+* SlaveThread; the engine can be configured to spawn slave threads which,
+  in addition to the master thread
+  - process sole modules when required
+  - process module cycles when required
+
+communication at thread boundaries:
+* job transaction queue; the UserThread constructs job transactions and
+  enqueues them for the MasterThread. the UserThread also dequeues already
+  processed transactions, in order for destroy functions of modules and
+  accessors to only be executed from the UserThread.
+  also, the UserThread can wait (block) until all pending transactions
+  have been processed by the MasterThread (in order to sync state with
+  module network contained in the engine).
+* module/cycle pool; the MasterThread fills in the module/cycle pool with
+  modules than need to be processed. the MasterThread and the SlaveThreads
+  pop modules/cycles from this pool, process them, and push back processed
+  nodes.
+* load control; FIXME
+
+main loop integration:
+in order to process certain engine modules only from within
+the UserThread and to drive the engine even without master
+or slave threads, the engine can be hooked up to a main loop
+mechanism supplied by the UserThread.
+the engine provides API entry points to:
+- export file descriptors and timeout, suitable for main loop backends
+  such as poll(2)
+- check whether dispatching is necessary
+- dispatch outstanding work to be performed by the engine
+FIXME: needs mentioning of pollfd/callback jobs
+
+
+TODO:
+=====
+- virtualization (poke ibuffer into outbuffer) flag (needs memcpy for deferred nodes)
+- flag UserThread nodes
+- sample timed jobs
+- need global timestamp
+- need async-queues that have time-stamped jobs
+- process only so much samples until a time-stamped
+  job needs to be processed
+- self-input cycles need to be resolved in parent as well
+- node-locale async timestamped jobs
+- engine-init: { block(pipe-fd), check } 
+- sample-timed activation can offset node's block-boundary
+- need complete_blocks_only flag in node classes
+- cost rating: cost*n_inputs+cost*n_outputs
+- multi-input(joint) streams: job_disconnect(dmod,distr,smod,sistr); (jstreams)
+
+Aug 19 2001	Tim Janik
+	* notes on threads, communication, main loops
+Jul 29 2001	Tim Janik
+	* wording/spelling fixups
+May 05 2001	Tim Janik
+	* initial writeup
+
+LocalWords:  GSL API GslModule OpNode istreams ostreams A's B's sync
+LocalWords:  gslengine GslMutex UserThread MasterThread SlaveThread SlaveThreads

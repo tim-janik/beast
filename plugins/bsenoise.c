@@ -1,5 +1,5 @@
 /* BseNoise - BSE Noise generator
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999,2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -18,7 +18,7 @@
  */
 #include "bsenoise.h"
 
-#include <bse/bsechunk.h>
+#include <bse/gslengine.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -27,10 +27,10 @@
 static void	 bse_noise_init			(BseNoise	*noise);
 static void	 bse_noise_class_init		(BseNoiseClass	*class);
 static void	 bse_noise_class_finalize	(BseNoiseClass	*class);
-static void	 bse_noise_prepare		(BseSource	*source,
-						 BseIndex	 index);
-static BseChunk* bse_noise_calc_chunk		(BseSource	*source,
-						 guint		 ochannel_id);
+static void	 bse_noise_prepare		(BseSource	*source);
+static void	 bse_noise_context_create	(BseSource	*source,
+						 guint		 context_handle,
+						 GslTrans	*trans);
 static void	 bse_noise_reset		(BseSource	*source);
 
 
@@ -65,11 +65,11 @@ bse_noise_class_init (BseNoiseClass *class)
   source_class = BSE_SOURCE_CLASS (class);
   
   source_class->prepare = bse_noise_prepare;
-  source_class->calc_chunk = bse_noise_calc_chunk;
+  source_class->context_create = bse_noise_context_create;
   source_class->reset = bse_noise_reset;
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Noise Output", 1);
-  g_assert (ochannel_id == BSE_NOISE_OCHANNEL_MONO);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "noise_out", "Noise Output");
+  g_assert (ochannel_id == BSE_NOISE_OCHANNEL_NOISE);
 }
 
 static void
@@ -82,38 +82,60 @@ bse_noise_init (BseNoise *noise)
 {
 }
 
-#define N_STATIC_BLOCKS (17) /* FIXME: need n_blocks_per_second() */
+#define N_STATIC_BLOCKS (19) /* FIXME: need n_blocks_per_second() */
 
 static void
-bse_noise_prepare (BseSource *source,
-		   BseIndex   index)
+bse_noise_prepare (BseSource *source)
 {
   BseNoise *noise = BSE_NOISE (source);
   guint i, l;
   
-  l = 1 * BSE_TRACK_LENGTH * (N_STATIC_BLOCKS + 1);
+  l = BSE_BLOCK_N_VALUES * (N_STATIC_BLOCKS + 1);
   noise->static_noise = g_new (BseSampleValue, l);
   
   srand (time (NULL));
   for (i = 0; i < l; i++)
-    noise->static_noise[i] = rand ();
+    noise->static_noise[i] = 1.0 - rand () / (0.5 * RAND_MAX);	// FIXME: should have class noise
   
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
-static BseChunk*
-bse_noise_calc_chunk (BseSource *source,
-		      guint	 ochannel_id)
+static void
+noise_process (GslModule *module,
+	       guint      n_values)
 {
+  BseSampleValue *static_noise = module->user_data;
+
+  g_return_if_fail (n_values <= BSE_BLOCK_N_VALUES); /* paranoid */
+
+  GSL_MODULE_OBUFFER (module, 0) = static_noise + (rand () % (BSE_BLOCK_N_VALUES * N_STATIC_BLOCKS));
+}
+
+static void
+bse_noise_context_create (BseSource *source,
+			  guint      context_handle,
+			  GslTrans  *trans)
+{
+  static const GslClass output_mclass = {
+    0,			/* n_istreams */
+    0,                  /* n_jstreams */
+    1,			/* n_ostreams */
+    noise_process,	/* process */
+    NULL,		/* free */
+    GSL_COST_CHEAP,	/* cost */
+  };
   BseNoise *noise = BSE_NOISE (source);
-  BseSampleValue *hunk;
-  
-  g_return_val_if_fail (ochannel_id == BSE_NOISE_OCHANNEL_MONO, NULL);
-  
-  hunk = noise->static_noise + 1 * (rand () % (BSE_TRACK_LENGTH * N_STATIC_BLOCKS));
-  
-  return bse_chunk_new_foreign (1, hunk, FALSE);
+  GslModule *module = gsl_module_new (&output_mclass, noise->static_noise);
+
+  /* setup module i/o streams with BseSource i/o channels */
+  bse_source_set_context_module (source, context_handle, module);
+
+  /* commit module to engine */
+  gsl_trans_add (trans, gsl_job_integrate (module));
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
 
 static void
@@ -134,7 +156,7 @@ bse_noise_reset (BseSource *source)
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_noise, "BseNoise", "BseSource",
-    "BseNoise is a noise generator source",
+    "Noise is a generator of (supposedly) white noise",
     &type_info_noise,
     "/Source/Noise",
     { NOISE_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,

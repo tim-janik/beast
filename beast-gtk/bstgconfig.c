@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,12 +39,12 @@ enum
 static void	 bst_gconfig_init		(BstGConfig	  *gconf);
 static void	 bst_gconfig_class_init		(BstGConfigClass  *class);
 static void	 bst_gconfig_class_finalize	(BstGConfigClass  *class);
-static void      bst_gconfig_set_param          (BstGConfig	  *gconf,
+static void      bst_gconfig_set_property          (BstGConfig	  *gconf,
 						 guint             param_id,
 						 GValue           *value,
 						 GParamSpec       *pspec,
 						 const gchar      *trailer);
-static void      bst_gconfig_get_param          (BstGConfig	  *gconf,
+static void      bst_gconfig_get_property          (BstGConfig	  *gconf,
 						 guint             param_id,
 						 GValue           *value,
 						 GParamSpec       *pspec,
@@ -136,9 +136,10 @@ bst_gconfig_class_init (BstGConfigClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_GCONFIG);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bst_gconfig_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bst_gconfig_get_param;
-  gobject_class->finalize = bst_gconfig_do_finalize;
+  G_OBJECT_CLASS (class)->finalize = bst_gconfig_do_finalize;
+
+  gobject_class->set_property = (GObjectSetPropertyFunc) bst_gconfig_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bst_gconfig_get_property;
   
   bconfig_class->apply = bst_gconfig_do_apply;
   bconfig_class->revert = bst_gconfig_do_revert;
@@ -146,62 +147,62 @@ bst_gconfig_class_init (BstGConfigClass *class)
   bst_globals_copy (NULL, &globals_defaults);
   bse_object_class_add_param (object_class, "Keyboard Layout",
 			      PARAM_XKB_FORCE_QUERY,
-			      b_param_spec_bool ("xkb_force_query", "Always query X server on startup", NULL,
+			      bse_param_spec_bool ("xkb_force_query", "Always query X server on startup", NULL,
 						 globals_defaults.xkb_force_query,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Keyboard Layout",
 			      PARAM_XKB_SYMBOL,
-			      b_param_spec_string ("xkb_symbol", "Keyboard Layout", NULL,
+			      bse_param_spec_string ("xkb_symbol", "Keyboard Layout", NULL,
 						   globals_defaults.xkb_symbol,
-						   B_PARAM_DEFAULT));
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Samples",
 			      PARAM_SAMPLE_SWEEP,
-			      b_param_spec_bool ("sample_sweep", "Auto sweep",
+			      bse_param_spec_bool ("sample_sweep", "Auto sweep",
 						 "Automatically remove (sweep) unused samples of a project",
 						 globals_defaults.sample_sweep,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_ANTI_ALIASED,
-			      b_param_spec_bool ("snet_anti_aliased", "Anti aliased display", NULL,
+			      bse_param_spec_bool ("snet_anti_aliased", "Anti aliased display", NULL,
 						 globals_defaults.snet_anti_aliased,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_EDIT_FALLBACK,
-			      b_param_spec_bool ("snet_edit_fallback", "Auto fallback into Edit mode",
+			      bse_param_spec_bool ("snet_edit_fallback", "Auto fallback into Edit mode",
 						 "Fallback into Edit mode after a new source has been added",
 						 globals_defaults.snet_edit_fallback,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synthesis Networks",
 			      PARAM_SNET_SWAP_IO_CHANNELS,
-			      b_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
+			      bse_param_spec_bool ("snet_swap_io_channels", "Swap input/output channels", NULL,
 						 globals_defaults.snet_swap_io_channels,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Pattern Editor",
 			      PARAM_PE_KEY_FOCUS_UNSELECTS,
-			      b_param_spec_bool ("pe_key_focus_unselects", "Focus moves reset selection",
+			      bse_param_spec_bool ("pe_key_focus_unselects", "Focus moves reset selection",
 						 "Reset the pattern editor's selection when keyboard moves"
 						 "the focus",
 						 globals_defaults.pe_key_focus_unselects,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Geometry",
 			      PARAM_TAB_WIDTH,
-			      b_param_spec_uint ("tab_width", "Project tabulator width",
+			      bse_param_spec_uint ("tab_width", "Project tabulator width",
 						 "This is the width of the project notebook's "
 						 "tabulators that show the song, network or sample names. "
 						 "Setting it to a fixed width avoids window resizing when "
 						 "samples are added or removed.",
 						 0, 1024, globals_defaults.tab_width, 5,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Debugging",
 			      PARAM_DISABLE_ALSA,
-			      b_param_spec_bool ("disable_alsa", "Disable support for ALSA PCM driver", NULL,
+			      bse_param_spec_bool ("disable_alsa", "Disable support for ALSA PCM driver", NULL,
 						 globals_defaults.disable_alsa,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bst_globals_unset (&globals_defaults);
 }
 
 static void
-bst_gconfig_set_param (BstGConfig  *gconf,
+bst_gconfig_set_property (BstGConfig  *gconf,
                        guint        param_id,
 		       GValue      *value,
 		       GParamSpec  *pspec,
@@ -210,41 +211,41 @@ bst_gconfig_set_param (BstGConfig  *gconf,
   switch (param_id)
     {
     case PARAM_SNET_ANTI_ALIASED:
-      gconf->globals.snet_anti_aliased = b_value_get_bool (value);
+      gconf->globals.snet_anti_aliased = g_value_get_boolean (value);
       break;
     case PARAM_SNET_EDIT_FALLBACK:
-      gconf->globals.snet_edit_fallback = b_value_get_bool (value);
+      gconf->globals.snet_edit_fallback = g_value_get_boolean (value);
       break;
     case PARAM_SNET_SWAP_IO_CHANNELS:
-      gconf->globals.snet_swap_io_channels = b_value_get_bool (value);
+      gconf->globals.snet_swap_io_channels = g_value_get_boolean (value);
       break;
     case PARAM_XKB_FORCE_QUERY:
-      gconf->globals.xkb_force_query = b_value_get_bool (value);
+      gconf->globals.xkb_force_query = g_value_get_boolean (value);
       break;
     case PARAM_XKB_SYMBOL:
       g_free (gconf->globals.xkb_symbol);
-      gconf->globals.xkb_symbol = bse_strdup_stripped (b_value_get_string (value));
+      gconf->globals.xkb_symbol = bse_strdup_stripped (g_value_get_string (value));
       break;
     case PARAM_DISABLE_ALSA:
-      gconf->globals.disable_alsa = b_value_get_bool (value);
+      gconf->globals.disable_alsa = g_value_get_boolean (value);
       break;
     case PARAM_TAB_WIDTH:
-      gconf->globals.tab_width = b_value_get_uint (value);
+      gconf->globals.tab_width = g_value_get_uint (value);
       break;
     case PARAM_SAMPLE_SWEEP:
-      gconf->globals.sample_sweep = b_value_get_bool (value);
+      gconf->globals.sample_sweep = g_value_get_boolean (value);
       break;
     case PARAM_PE_KEY_FOCUS_UNSELECTS:
-      gconf->globals.pe_key_focus_unselects = b_value_get_bool (value);
+      gconf->globals.pe_key_focus_unselects = g_value_get_boolean (value);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (gconf, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (gconf, param_id, pspec);
       break;
     }
 }
 
 static void
-bst_gconfig_get_param (BstGConfig  *gconf,
+bst_gconfig_get_property (BstGConfig  *gconf,
                        guint        param_id,
 		       GValue      *value,
 		       GParamSpec  *pspec,
@@ -253,34 +254,34 @@ bst_gconfig_get_param (BstGConfig  *gconf,
   switch (param_id)
     {
     case PARAM_SNET_ANTI_ALIASED:
-      b_value_set_bool (value, gconf->globals.snet_anti_aliased);
+      g_value_set_boolean (value, gconf->globals.snet_anti_aliased);
       break;
     case PARAM_SNET_EDIT_FALLBACK:
-      b_value_set_bool (value, gconf->globals.snet_edit_fallback);
+      g_value_set_boolean (value, gconf->globals.snet_edit_fallback);
       break;
     case PARAM_SNET_SWAP_IO_CHANNELS:
-      b_value_set_bool (value, gconf->globals.snet_swap_io_channels);
+      g_value_set_boolean (value, gconf->globals.snet_swap_io_channels);
       break;
     case PARAM_XKB_FORCE_QUERY:
-      b_value_set_bool (value, gconf->globals.xkb_force_query);
+      g_value_set_boolean (value, gconf->globals.xkb_force_query);
       break;
     case PARAM_XKB_SYMBOL:
-      b_value_set_string (value, gconf->globals.xkb_symbol);
+      g_value_set_string (value, gconf->globals.xkb_symbol);
       break;
     case PARAM_DISABLE_ALSA:
-      b_value_set_bool (value, gconf->globals.disable_alsa);
+      g_value_set_boolean (value, gconf->globals.disable_alsa);
       break;
     case PARAM_TAB_WIDTH:
-      b_value_set_uint (value, gconf->globals.tab_width);
+      g_value_set_uint (value, gconf->globals.tab_width);
       break;
     case PARAM_SAMPLE_SWEEP:
-      b_value_set_bool (value, gconf->globals.sample_sweep);
+      g_value_set_boolean (value, gconf->globals.sample_sweep);
       break;
     case PARAM_PE_KEY_FOCUS_UNSELECTS:
-      b_value_set_bool (value, gconf->globals.pe_key_focus_unselects);
+      g_value_set_boolean (value, gconf->globals.pe_key_focus_unselects);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (gconf, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (gconf, param_id, pspec);
       break;
     }
 }

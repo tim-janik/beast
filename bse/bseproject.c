@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +22,20 @@
 #include	"bsemagic.h"
 #include	"bsesample.h"
 #include	"bsesong.h"
-#include	"bseheart.h"
+#include	"bsesnet.h"
+#include	"bsemarshal.h"
+#include	"gslengine.h"
 #include	<string.h>
 #include	<stdlib.h>
 #include	<fcntl.h>
 #include	<unistd.h>
 #include	<errno.h>
+
+
+enum {
+  SIGNAL_COMPLETE_RESTORE,
+  SIGNAL_LAST
+};
 
 
 /* --- prototypes --- */
@@ -50,7 +58,8 @@ static BseItem*	bse_project_get_item	(BseContainer		*container,
 
 
 /* --- variables --- */
-static GTypeClass	*parent_class = NULL;
+static GTypeClass *parent_class = NULL;
+static guint       project_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
@@ -82,7 +91,7 @@ bse_project_class_init (BseProjectClass *class)
   BseObjectClass *object_class;
   BseContainerClass *container_class;
   
-  parent_class = g_type_class_peek (BSE_TYPE_CONTAINER);
+  parent_class = g_type_class_peek_parent (class);
   object_class = BSE_OBJECT_CLASS (class);
   container_class = BSE_CONTAINER_CLASS (class);
   
@@ -93,6 +102,12 @@ bse_project_class_init (BseProjectClass *class)
   container_class->forall_items = bse_project_forall_items;
   container_class->item_seqid = bse_project_item_seqid;
   container_class->get_item = bse_project_get_item;
+
+  project_signals[SIGNAL_COMPLETE_RESTORE] = bse_object_class_add_signal (object_class, "complete-restore",
+									  bse_marshal_VOID__POINTER_BOOLEAN,
+									  G_TYPE_NONE,
+									  2, G_TYPE_POINTER, // FIXME TYPE_OBJECT
+									  G_TYPE_BOOLEAN);
 }
 
 static void
@@ -118,20 +133,6 @@ bse_project_do_destroy (BseObject *object)
 
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-BseProject*
-bse_project_new (const gchar *name)
-{
-  BseProject *project;
-
-  g_return_val_if_fail (name != NULL, NULL);
-
-  project = bse_object_new (BSE_TYPE_PROJECT,
-			    "name", name,
-			    NULL);
-
-  return project;
 }
 
 void
@@ -375,7 +376,7 @@ bse_project_restore (BseProject *project,
     bse_storage_unexp_token (storage, expected_token);
 
   expected_token = expected_token != G_TOKEN_NONE;
-  BSE_NOTIFY (project, complete_restore, NOTIFY (OBJECT, storage, expected_token, DATA));
+  g_signal_emit (project, project_signals[SIGNAL_COMPLETE_RESTORE], 0, storage, expected_token);
   
   bse_object_unref (BSE_OBJECT (project));
 
@@ -447,7 +448,7 @@ bse_project_path_resolver (gpointer     func_data,
 
   if (g_type_is_a (required_type, BSE_TYPE_ITEM))
     item = bse_container_item_from_path (BSE_CONTAINER (project), path);
-
+  
   return item;
 }
 
@@ -458,8 +459,26 @@ bse_project_start_playback (BseProject *project)
   
   if (!BSE_SOURCE_PREPARED (project))
     {
-      BSE_OBJECT_SET_FLAGS (project, BSE_SOURCE_FLAG_PREPARED);
-      BSE_SOURCE_GET_CLASS (project)->prepare (BSE_SOURCE (project), bse_heart_get_beat_index ());
+      GslTrans *trans = gsl_trans_open ();
+      GSList *slist;
+      
+      bse_source_prepare (BSE_SOURCE (project));
+      
+      for (slist = project->supers; slist; slist = slist->next)
+	{
+	  BseSuper *super = BSE_SUPER (slist->data);
+	  
+	  if (super->auto_activate)
+	    {
+	      BseSource *source = BSE_SOURCE (super);
+	      
+	      super->auto_activate_context_handle = bse_source_create_context (source, trans);
+	      bse_source_connect_context (source, super->auto_activate_context_handle, trans);
+	    }
+	  else
+	    super->auto_activate_context_handle = ~0;
+	}
+      gsl_trans_commit (trans);
     }
 }
 
@@ -469,5 +488,24 @@ bse_project_stop_playback (BseProject *project)
   g_return_if_fail (BSE_IS_PROJECT (project));
   
   if (BSE_SOURCE_PREPARED (project))
-    bse_source_reset (BSE_SOURCE (project));
+    {
+      GslTrans *trans = gsl_trans_open ();
+      GSList *slist;
+      
+      for (slist = project->supers; slist; slist = slist->next)
+	{
+          BseSuper *super = BSE_SUPER (slist->data);
+	  
+	  if (super->auto_activate_context_handle != ~0)
+	    {
+	      BseSource *source = BSE_SOURCE (super);
+	      
+	      bse_source_dismiss_context (source, super->auto_activate_context_handle, trans);
+	      super->auto_activate_context_handle = ~0;
+	    }
+	}
+      gsl_trans_commit (trans);
+      
+      bse_source_reset (BSE_SOURCE (project));
+    }
 }

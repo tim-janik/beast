@@ -28,9 +28,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-
-
-
 /* --- object type macros --- */
 #define BSE_TYPE_CAPTURE              (BSE_TYPE_ID (BseCapture))
 #define BSE_CAPTURE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_CAPTURE, BseCapture))
@@ -57,7 +54,6 @@ struct _BseCaptureClass
 /* --- channels --- */
 enum
 {
-  BSE_CAPTURE_OCHANNEL_NONE,
   BSE_CAPTURE_OCHANNEL_MONO
 };
 

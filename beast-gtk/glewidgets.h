@@ -45,7 +45,7 @@ extern "C" {
 #define GTK_WRAP_BOX_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_WRAP_BOX, GtkWrapBoxClass))
 #define GTK_IS_WRAP_BOX(obj)	     (GTK_CHECK_TYPE ((obj), GTK_TYPE_WRAP_BOX))
 #define GTK_IS_WRAP_BOX_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_WRAP_BOX))
-#define GTK_WRAP_BOX_GET_CLASS(obj)  (GTK_WRAP_BOX_CLASS (((GtkObject*) (obj))->klass))
+#define GTK_WRAP_BOX_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_WRAP_BOX, GtkWrapBoxClass))
 
 
 /* --- typedefs --- */
@@ -187,7 +187,8 @@ extern "C" {
 #define	GTK_CLUE_HUNTER_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_CLUE_HUNTER, GtkClueHunterClass))
 #define	GTK_IS_CLUE_HUNTER(object)	(GTK_CHECK_TYPE ((object), GTK_TYPE_CLUE_HUNTER))
 #define GTK_IS_CLUE_HUNTER_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CLUE_HUNTER))
- 
+#define GTK_CLUE_HUNTER_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_CLUE_HUNTER, GtkClueHunterClass))
+
 /* --- typedefs --- */
 typedef	struct	_GtkClueHunterClass GtkClueHunterClass;
 typedef	struct	_GtkClueHunter	    GtkClueHunter;
@@ -298,7 +299,7 @@ extern "C" {
 #define GTK_HWRAP_BOX_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_HWRAP_BOX, GtkHWrapBoxClass))
 #define GTK_IS_HWRAP_BOX(obj)	      (GTK_CHECK_TYPE ((obj), GTK_TYPE_HWRAP_BOX))
 #define GTK_IS_HWRAP_BOX_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_HWRAP_BOX))
-#define GTK_HWRAP_BOX_GET_CLASS(obj)  (GTK_HWRAP_BOX_CLASS (((GtkObject*) (obj))->klass))
+#define GTK_HWRAP_BOX_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_HWRAP_BOX, GtkHWrapBoxClass))
 
 
 /* --- typedefs --- */
@@ -312,8 +313,8 @@ struct _GtkHWrapBox
   GtkWrapBox parent_widget;
   
   /*<h2v-off>*/
-  guint16    max_child_width;
-  guint16    max_child_height;
+  guint      max_child_width;
+  guint      max_child_height;
   /*<h2v-on>*/
 };
 
@@ -373,7 +374,7 @@ extern "C" {
 #define GTK_VWRAP_BOX_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_VWRAP_BOX, GtkVWrapBoxClass))
 #define GTK_IS_VWRAP_BOX(obj)	      (GTK_CHECK_TYPE ((obj), GTK_TYPE_VWRAP_BOX))
 #define GTK_IS_VWRAP_BOX_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VWRAP_BOX))
-#define GTK_VWRAP_BOX_GET_CLASS(obj)  (GTK_VWRAP_BOX_CLASS (((GtkObject*) (obj))->klass))
+#define GTK_VWRAP_BOX_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_VWRAP_BOX, GtkVWrapBoxClass))
 
 
 /* --- typedefs --- */
@@ -387,8 +388,8 @@ struct _GtkVWrapBox
   GtkWrapBox parent_widget;
   
   /*<h2v-off>*/
-  guint16    max_child_width;
-  guint16    max_child_height;
+  guint      max_child_width;
+  guint      max_child_height;
   /*<h2v-on>*/
 };
 

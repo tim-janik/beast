@@ -33,23 +33,28 @@
 
 
 /* --- BseItem member macros --- */
-#define BSE_ITEM_PARENT_REF(object) ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_PARENT_REF) != 0)
+#define BSE_ITEM_PARENT_REF(object)  ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_PARENT_REF) != 0)
+#define BSE_ITEM_SINGLETON(object)   ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_SINGLETON) != 0)
+#define BSE_ITEM_NEVER_STORE(object) ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_NEVER_STORE) != 0)
 
 
 /* --- bse item flags --- */
 typedef enum                            /*< skip >*/
 {
-  BSE_ITEM_FLAG_PARENT_REF      = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0)
+  BSE_ITEM_FLAG_PARENT_REF	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
+  BSE_ITEM_FLAG_SINGLETON	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
+  BSE_ITEM_FLAG_NEVER_STORE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
 } BseItemFlags;
-#define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 1)
+#define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 3)
 
 
 /* --- BseItem object --- */
 struct _BseItem
 {
   BseObject     parent_object;
-  
-  BseItem       *parent;
+
+  guint         use_count;
+  BseItem      *parent;
 };
 struct _BseItemClass
 {
@@ -60,9 +65,13 @@ struct _BseItemClass
   guint  (*get_seqid)     (BseItem      *item);
 };
 
+#if 0
 typedef void    (*BseItemCrossFunc)          (BseItem        *owner,
 					      BseItem        *ref_item,
 					      gpointer        data);
+#endif
+typedef void    (*BseItemUncross)	     (BseItem        *owner,
+					      BseItem        *ref_item);
 
 
 /* --- prototypes --- */
@@ -81,16 +90,16 @@ gchar* /*fr*/   bse_item_make_handle         (BseItem         *item,
 gchar* /*fr*/   bse_item_make_nick_path      (BseItem         *item);
 void            bse_item_cross_ref           (BseItem         *owner,
 					      BseItem         *ref_item,
-					      BseItemCrossFunc destroy_func,
-					      gpointer         data);
+					      BseItemUncross   uncross_func);
 void            bse_item_cross_unref         (BseItem         *owner,
 					      BseItem         *ref_item);
 gboolean        bse_item_has_cross_owners    (BseItem         *ref_item);
 GList* /*fr*/   bse_item_list_cross_owners   (BseItem         *ref_item);
-BseErrorType    bse_item_exec_proc           (BseItem         *item,
+BseErrorType    bse_item_exec_proc           (gpointer	       item,
 					      const gchar     *procedure,
 					      ...);
-BseErrorType    bse_item_exec_void_proc      (BseItem         *item,
+#define	bse_item_exec /* (item, in_params..., &out_params...) */	bse_item_exec_proc
+BseErrorType    bse_item_exec_void_proc      (gpointer	       item,
 					      const gchar     *procedure,
 					      ...);
 BseStorage*     bse_item_open_undo           (BseItem         *item,

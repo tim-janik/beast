@@ -1,0 +1,231 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2000-2001 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include        <bse/bseplugin.h>
+#include        <bse/bseprocedure.h>
+#include        <bse/bseproject.h>
+#include        <bse/bsestorage.h>
+#include        <bse/bsesong.h>
+#include        <bse/bsewaverepo.h>
+#include        <bse/bsesnet.h>
+#include        <bse/bsemidisynth.h>
+
+
+AUTHOR	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik <timj@gtk.org>";
+DATE	= "2001";
+
+
+METHOD (BseProject, is_playing) {
+  HELP	= "Check whether a project is currently playing";
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_boolean ("is_playing", "Is Playing", NULL,
+				FALSE, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+
+  /* set output parameters */
+  g_value_set_boolean (out_values++, BSE_SOURCE_PREPARED (project));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, restore-from-file, "File/Restore") {
+  HELP	= "Load a project from file";
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("file-name", "File", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  gchar *file_name = g_value_get_string (in_values++);
+  BseStorage *storage;
+  BseErrorType error;
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !file_name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  storage = bse_storage_new ();
+  
+  error = bse_storage_input_file (storage, file_name);
+  if (!error)
+    {
+      bse_storage_set_path_resolver (storage, bse_project_path_resolver, project);
+      error = bse_project_restore (project, storage);
+    }
+  bse_storage_destroy (storage);
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, create-song) {
+  HELP	= "Create a new song in project";
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("n-channels", "Number of Channels", NULL,
+			     1, BSE_MAX_N_CHANNELS, 1, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("song", "Song", NULL,
+			       BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  guint n_channels = g_value_get_uint (in_values++);
+  BseSong *song;
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  song = bse_object_new (BSE_TYPE_SONG,
+			 "n-channels", n_channels,
+			 NULL);
+  bse_project_add_super (project, BSE_SUPER (song));
+
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (song));
+  g_object_unref (song);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, ensure-wave-repo) {
+  HELP	= "Ensure the project has a wave repository";
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("wrepo", "Wave Repo", NULL,
+			       BSE_TYPE_WAVE_REPO, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  BseWaveRepo *wrepo = NULL;
+  GSList *slist;
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  for (slist = project->supers; slist; slist = slist->next)
+    if (BSE_IS_WAVE_REPO (slist->data))
+      {
+	wrepo = slist->data;
+	break;
+      }
+  if (!wrepo)
+    {
+      wrepo = bse_object_new (BSE_TYPE_WAVE_REPO,
+			      "name", "Default",
+			      NULL);
+      bse_project_add_super (project, BSE_SUPER (wrepo));
+      g_object_unref (wrepo);
+    }
+
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (wrepo));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, create-snet) {
+  HELP	= "Create a synthsizer network in project";
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("snet", "Synthesizer Network", NULL,
+			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  BseSNet *snet;
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  snet = bse_object_new (BSE_TYPE_SNET,
+			 NULL);
+  bse_project_add_super (project, BSE_SUPER (snet));
+  
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (snet));
+  g_object_unref (snet);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, create-midi-synth) {
+  HELP	= "Create a MIDI synthesizer network in project";
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("midi_synth", "MIDI Synthesizer", NULL,
+			       BSE_TYPE_MIDI_SYNTH, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  BseMidiSynth *midi_synth;
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  midi_synth = bse_object_new (BSE_TYPE_MIDI_SYNTH, NULL);
+  bse_project_add_super (project, BSE_SUPER (midi_synth));
+
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (midi_synth));
+  g_object_unref (midi_synth);
+  
+  return BSE_ERROR_NONE;
+}

@@ -43,16 +43,14 @@ enum
 static void	   dav_bass_filter_init		    (DavBassFilter	 *filter);
 static void	   dav_bass_filter_class_init	    (DavBassFilterClass	 *class);
 static void	   dav_bass_filter_class_finalize   (DavBassFilterClass	 *class);
-static void	   dav_bass_filter_set_param	    (DavBassFilter	 *filter,
+static void	   dav_bass_filter_set_property	    (DavBassFilter	 *filter,
 						     guint                param_id,
 						     GValue              *value,
-						     GParamSpec          *pspec,
-						     const gchar         *trailer);
-static void	   dav_bass_filter_get_param	    (DavBassFilter	 *filter,
+						     GParamSpec          *pspec);
+static void	   dav_bass_filter_get_property	    (DavBassFilter	 *filter,
 						     guint                param_id,
 						     GValue              *value,
-						     GParamSpec          *pspec,
-						     const gchar         *trailer);
+						     GParamSpec          *pspec);
 static void	   dav_bass_filter_prepare	    (BseSource		 *source,
 						     BseIndex		   index);
 static BseChunk*   dav_bass_filter_calc_chunk	    (BseSource		 *source,
@@ -129,41 +127,41 @@ dav_bass_filter_class_init (DavBassFilterClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_param = (GObjectSetParamFunc) dav_bass_filter_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) dav_bass_filter_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) dav_bass_filter_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) dav_bass_filter_get_property;
   
   source_class->prepare = dav_bass_filter_prepare;
   source_class->calc_chunk = dav_bass_filter_calc_chunk;
   source_class->reset = dav_bass_filter_reset;
   
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER,
-			      b_param_spec_bool ("trigger", "Trigger filter",
+			      bse_param_spec_bool ("trigger", "Trigger filter",
 						 "Trigger the filter",
-						 FALSE, B_PARAM_GUI));
+						 FALSE, BSE_PARAM_GUI));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_CUTOFF_FREQ,
-			      b_param_spec_float ("cutoff_freq", "Cutoff [%]",
+			      bse_param_spec_float ("cutoff_freq", "Cutoff [%]",
 						  "Set the cutoff frequency",
 						  0.0, 100.0, 50.0, 0.1,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_RESONANCE,
-			      b_param_spec_float ("resonance", "Resonance [%]",
+			      bse_param_spec_float ("resonance", "Resonance [%]",
 						  "Set the amount of resonance",
 						  0.0, 100.0, 99.5, 0.1,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_ENV_MOD,
-			      b_param_spec_float ("env_mod", "Envelope Modulation [%]",
+			      bse_param_spec_float ("env_mod", "Envelope Modulation [%]",
 						  "Set the envelope magnitude",
 						  0.0, 100.0, 90.0, 0.1,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_DECAY,
-			      b_param_spec_float ("decay", "Decay [%]",
+			      bse_param_spec_float ("decay", "Decay [%]",
 						  "Set the decay length",
 						  0.0, 100.0, 20.0, 0.1,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "BassFilter Output", 1);
   g_assert (ochannel_id == DAV_BASS_FILTER_OCHANNEL_MONO);
@@ -195,11 +193,10 @@ dav_bass_filter_init (DavBassFilter *filter)
 }
 
 static void
-dav_bass_filter_set_param (DavBassFilter *filter,
-			   guint          param_id,
-			   GValue        *value,
-			   GParamSpec    *pspec,
-			   const gchar   *trailer)
+dav_bass_filter_set_property (DavBassFilter *filter,
+			      guint          param_id,
+			      GValue        *value,
+			      GParamSpec    *pspec)
 {
   switch (param_id)
     {
@@ -212,62 +209,61 @@ dav_bass_filter_set_param (DavBassFilter *filter,
       break;
       
     case PARAM_CUTOFF_FREQ:
-      filter->cutoff = b_value_get_float (value) / 100.0;
+      filter->cutoff = g_value_get_float (value) / 100.0;
       dav_bass_filter_update_locals (filter);
       break;
       
     case PARAM_RESONANCE:
-      filter->reso = b_value_get_float (value) / 100.0;
+      filter->reso = g_value_get_float (value) / 100.0;
       dav_bass_filter_update_locals (filter);
       break;
       
     case PARAM_ENV_MOD:
-      filter->envmod = b_value_get_float (value) / 100.0;
+      filter->envmod = g_value_get_float (value) / 100.0;
       dav_bass_filter_update_locals (filter);
       break;
       
     case PARAM_DECAY:
-      filter->envdecay = b_value_get_float (value) / 100.0;
+      filter->envdecay = g_value_get_float (value) / 100.0;
       dav_bass_filter_update_locals (filter);
       break;
       
     default:
-      G_WARN_INVALID_PARAM_ID (filter, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (filter, param_id, pspec);
       break;
     }
 }
 
 static void
-dav_bass_filter_get_param (DavBassFilter *filter,
-			   guint          param_id,
-			   GValue        *value,
-			   GParamSpec    *pspec,
-			   const gchar   *trailer)
+dav_bass_filter_get_property (DavBassFilter *filter,
+			      guint          param_id,
+			      GValue        *value,
+			      GParamSpec    *pspec)
 {
   switch (param_id)
     {
     case PARAM_TRIGGER:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
       
     case PARAM_CUTOFF_FREQ:
-      b_value_set_float (value, filter->cutoff * 100.0);
+      g_value_set_float (value, filter->cutoff * 100.0);
       break;
       
     case PARAM_RESONANCE:
-      b_value_set_float (value, filter->reso * 100.0);
+      g_value_set_float (value, filter->reso * 100.0);
       break;
       
     case PARAM_ENV_MOD:
-      b_value_set_float (value, filter->envmod * 100.0);
+      g_value_set_float (value, filter->envmod * 100.0);
       break;
       
     case PARAM_DECAY:
-      b_value_set_float (value, filter->envdecay * 100.0);
+      g_value_set_float (value, filter->envdecay * 100.0);
       break;
       
     default:
-      G_WARN_INVALID_PARAM_ID (filter, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (filter, param_id, pspec);
       break;
     }
 }

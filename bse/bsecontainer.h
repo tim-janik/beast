@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,12 +95,11 @@ gchar* /*fr*/	bse_container_make_item_path	(BseContainer	*container,
 						 gboolean	 persistent);
 
 
-/* --- internal fucntions --- */
+/* --- internal functions --- */
 void            bse_container_cross_ref         (BseContainer    *container,
 						 BseItem         *owner,
 						 BseItem         *ref_item,
-						 BseItemCrossFunc destroy_func,
-						 gpointer         data);
+						 BseItemUncross   uncross_func);
 void            bse_container_cross_unref       (BseContainer    *container,
 						 BseItem         *owner,
 						 BseItem         *ref_item);

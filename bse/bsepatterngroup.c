@@ -20,6 +20,7 @@
 #include        "bseglobals.h"
 #include        "bsecontainer.h"
 #include        "bsestorage.h"
+#include        "bsemarshal.h"
 #include        <string.h>
 
 
@@ -28,17 +29,23 @@ enum
   PARAM_0,
 };
 
+enum {
+  SIGNAL_PATTERN_INSERTED,
+  SIGNAL_PATTERN_REMOVED,
+  SIGNAL_LAST
+};
+
 
 /* --- prototypes --- */
 static void	    bse_pattern_group_class_init	(BsePatternGroupClass	*class);
 static void	    bse_pattern_group_init		(BsePatternGroup	*pattern_group);
 static void	    bse_pattern_group_destroy		(BseObject		*object);
-static void         bse_pattern_group_set_param 	(BsePatternGroup	*pattern_group,
+static void         bse_pattern_group_set_property 	(BsePatternGroup	*pattern_group,
 							 guint                   param_id,
 							 GValue                 *value,
 							 GParamSpec             *pspec,
 							 const gchar            *trailer);
-static void         bse_pattern_group_get_param 	(BsePatternGroup        *pattern_group,
+static void         bse_pattern_group_get_property 	(BsePatternGroup        *pattern_group,
 							 guint                   param_id,
 							 GValue                 *value,
 							 GParamSpec             *pspec,
@@ -51,7 +58,8 @@ static BseTokenType bse_pattern_group_restore_private	(BseObject         	*objec
 
 
 /* --- variables --- */
-static GTypeClass	*parent_class = NULL;
+static GTypeClass *parent_class = NULL;
+static guint       pattern_group_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
@@ -83,14 +91,23 @@ bse_pattern_group_class_init (BsePatternGroupClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
-  parent_class = g_type_class_peek (BSE_TYPE_ITEM);
+  parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_pattern_group_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_pattern_group_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_pattern_group_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_pattern_group_get_property;
 
   object_class->store_private = bse_pattern_group_store_private;
   object_class->restore_private = bse_pattern_group_restore_private;
   object_class->destroy = bse_pattern_group_destroy;
+
+  pattern_group_signals[SIGNAL_PATTERN_INSERTED] = bse_object_class_add_signal (object_class, "pattern-inserted",
+										bse_marshal_VOID__OBJECT_UINT,
+										G_TYPE_NONE,
+										2, BSE_TYPE_PATTERN, G_TYPE_UINT);
+  pattern_group_signals[SIGNAL_PATTERN_REMOVED] = bse_object_class_add_signal (object_class, "pattern-removed",
+										bse_marshal_VOID__OBJECT_UINT,
+										G_TYPE_NONE,
+										2, BSE_TYPE_PATTERN, G_TYPE_UINT);
 }
 
 static void
@@ -116,7 +133,7 @@ bse_pattern_group_destroy (BseObject *object)
 }
 
 static void
-bse_pattern_group_set_param (BsePatternGroup *pgroup,
+bse_pattern_group_set_property (BsePatternGroup *pgroup,
 			     guint            param_id,
 			     GValue          *value,
 			     GParamSpec      *pspec,
@@ -125,13 +142,13 @@ bse_pattern_group_set_param (BsePatternGroup *pgroup,
   switch (param_id)
     {
     default:
-      G_WARN_INVALID_PARAM_ID (pgroup, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (pgroup, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_pattern_group_get_param (BsePatternGroup *pgroup,
+bse_pattern_group_get_property (BsePatternGroup *pgroup,
 			     guint            param_id,
 			     GValue          *value,
 			     GParamSpec      *pspec,
@@ -140,7 +157,7 @@ bse_pattern_group_get_param (BsePatternGroup *pgroup,
   switch (param_id)
     {
     default:
-      G_WARN_INVALID_PARAM_ID (pgroup, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (pgroup, param_id, pspec);
       break;
     }
 }
@@ -174,7 +191,7 @@ bse_pattern_group_insert_pattern (BsePatternGroup *pgroup,
   update_pattern_count (pgroup);
 
   bse_object_ref (BSE_OBJECT (pattern));
-  BSE_NOTIFY (pgroup, pattern_inserted, NOTIFY (OBJECT, pattern, position, DATA));
+  g_signal_emit (pgroup, pattern_group_signals[SIGNAL_PATTERN_INSERTED], 0, pattern, position);
   bse_object_unref (BSE_OBJECT (pattern));
 }
 
@@ -198,7 +215,7 @@ bse_pattern_group_remove_entry (BsePatternGroup *pgroup,
       update_pattern_count (pgroup);
       
       bse_object_ref (BSE_OBJECT (pattern));
-      BSE_NOTIFY (pgroup, pattern_removed, NOTIFY (OBJECT, pattern, position, DATA));
+      g_signal_emit (pgroup, pattern_group_signals[SIGNAL_PATTERN_REMOVED], 0, pattern, position);
       bse_object_unref (BSE_OBJECT (pattern));
     }
 }
@@ -238,7 +255,7 @@ bse_pattern_group_remove_pattern (BsePatternGroup *pgroup,
   bse_object_ref (BSE_OBJECT (pattern));
 
   for (slist = remove_positions; slist; slist = slist->next)
-    BSE_NOTIFY (pgroup, pattern_removed, NOTIFY (OBJECT, pattern, GPOINTER_TO_UINT (slist->data), DATA));
+    g_signal_emit (pgroup, pattern_group_signals[SIGNAL_PATTERN_REMOVED], 0, pattern, GPOINTER_TO_UINT (slist->data));
   g_slist_free (remove_positions);
 
   bse_object_unref (BSE_OBJECT (pattern));

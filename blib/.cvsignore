@@ -1,9 +1,0 @@
-*.lo
-.deps
-_libs
-.libs
-Makefile
-Makefile.in
-libblib.la
-blibconfig.h
-testtypes

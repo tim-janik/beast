@@ -34,7 +34,7 @@ extern "C" {
 #define	BST_SUPER_SHELL_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_SUPER_SHELL, BstSuperShellClass))
 #define	BST_IS_SUPER_SHELL(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_SUPER_SHELL))
 #define	BST_IS_SUPER_SHELL_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_SUPER_SHELL))
-#define BST_SUPER_SHELL_GET_CLASS(obj)	((BstSuperShellClass*) (((GtkObject*) (obj))->klass))
+#define BST_SUPER_SHELL_GET_CLASS(obj)	(GTK_CHECK_GET_CLASS ((obj), BST_TYPE_SUPER_SHELL, BstSuperShellClass))
 
 
 /* --- structures & typedefs --- */
@@ -46,7 +46,7 @@ struct _BstSuperShell
 
   GtkAccelGroup	*accel_group;
 
-  BseSuper	*super;
+  BswProxy	 super;
   guint		 name_set_id;
 };
 struct _BstSuperShellClass
@@ -54,9 +54,9 @@ struct _BstSuperShellClass
   GtkVBoxClass	parent_class;
   
   void		(*setup_super)	 (BstSuperShell  *super_shell,
-				  BseSuper	 *super);
+				  BswProxy	  super);
   void		(*release_super) (BstSuperShell  *super_shell,
-				  BseSuper	 *super);
+				  BswProxy	  super);
   void		(*operate)	 (BstSuperShell  *super_shell,
 				  BstOps          op);
   gboolean	(*can_operate)	 (BstSuperShell  *super_shell,
@@ -73,9 +73,8 @@ void		bst_super_shell_operate		(BstSuperShell	*super_shell,
 gboolean	bst_super_shell_can_operate	(BstSuperShell	*super_shell,
 						 BstOps		 op);
 void		bst_super_shell_set_super	(BstSuperShell	*super_shell,
-						 BseSuper	*super);
-BstSuperShell*	bst_super_shell_from_super	(BseSuper	*super);
-void            bst_super_shell_rebuild         (BstSuperShell  *super_shell);
+						 BswProxy	 super);
+BstSuperShell*	bst_super_shell_from_super	(BswProxy	 super);
 void            bst_super_shell_update          (BstSuperShell  *super_shell);
 void            bst_super_shell_update_parent   (BstSuperShell  *super_shell);
 

@@ -19,6 +19,7 @@
 
 #include	"bseproject.h"
 #include	"bsebindata.h"
+#include	"bsebuffermixer.h"
 #include	"bsechunk.h"
 #include	"bsestorage.h"
 #include	<string.h>
@@ -40,12 +41,12 @@ enum
 static void	    bse_sample_class_init		(BseSampleClass *class);
 static void	    bse_sample_init			(BseSample	*sample);
 static void	    bse_sample_do_destroy		(BseObject	*object);
-static void	    bse_sample_set_param		(BseSample	*sample,
+static void	    bse_sample_set_property		(BseSample	*sample,
 							 guint           param_id,
 							 GValue         *value,
 							 GParamSpec     *pspec,
 							 const gchar    *trailer);
-static void	    bse_sample_get_param		(BseSample	*sample,
+static void	    bse_sample_get_property		(BseSample	*sample,
 							 guint           param_id,
 							 GValue         *value,
 							 GParamSpec     *pspec,
@@ -91,10 +92,10 @@ bse_sample_class_init (BseSampleClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
-  parent_class = g_type_class_peek (BSE_TYPE_SUPER);
+  parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_sample_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_sample_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_sample_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_sample_get_property;
 
   object_class->store_private = bse_sample_do_store_private;
   object_class->restore = bse_sample_do_restore;
@@ -106,18 +107,18 @@ bse_sample_class_init (BseSampleClass *class)
    */
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_N_TRACKS,
-			      b_param_spec_uint ("n_tracks", "Number of Tracks", NULL,
+			      bse_param_spec_uint ("n_tracks", "Number of Tracks", NULL,
 						 1, BSE_MAX_N_TRACKS,
 						 1, 1,
-						 B_PARAM_READWRITE |
-						 B_PARAM_SERVE_STORAGE));
+						 BSE_PARAM_READWRITE |
+						 BSE_PARAM_SERVE_STORAGE));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_REC_FREQ,
-			      b_param_spec_uint ("recording_frequency", "Recording Frequency", NULL,
+			      bse_param_spec_uint ("recording_frequency", "Recording Frequency", NULL,
 						 BSE_MIN_MIX_FREQ, BSE_MAX_MIX_FREQ,
 						 BSE_DFL_SAMPLE_REC_FREQ, 1024,
-						 B_PARAM_READWRITE |
-						 B_PARAM_SERVE_STORAGE));
+						 BSE_PARAM_READWRITE |
+						 BSE_PARAM_SERVE_STORAGE));
 }
 
 static void
@@ -162,7 +163,7 @@ bse_sample_do_destroy (BseObject *object)
 }
 
 static void
-bse_sample_set_param (BseSample   *sample,
+bse_sample_set_property (BseSample   *sample,
 		      guint        param_id,
 		      GValue      *value,
 		      GParamSpec  *pspec,
@@ -171,19 +172,19 @@ bse_sample_set_param (BseSample   *sample,
   switch (param_id)
     {
     case PARAM_N_TRACKS:
-      sample->n_tracks = b_value_get_uint (value);
+      sample->n_tracks = g_value_get_uint (value);
       break;
     case PARAM_REC_FREQ:
-      sample->rec_freq = b_value_get_uint (value);
+      sample->rec_freq = g_value_get_uint (value);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (sample, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (sample, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_sample_get_param (BseSample   *sample,
+bse_sample_get_property (BseSample   *sample,
 		      guint        param_id,
 		      GValue      *value,
 		      GParamSpec  *pspec,
@@ -192,13 +193,13 @@ bse_sample_get_param (BseSample   *sample,
   switch (param_id)
     {
     case PARAM_N_TRACKS:
-      b_value_set_uint (value, sample->n_tracks);
+      g_value_set_uint (value, sample->n_tracks);
       break;
     case PARAM_REC_FREQ:
-      b_value_set_uint (value, sample->rec_freq);
+      g_value_set_uint (value, sample->rec_freq);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (sample, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (sample, param_id, pspec);
       break;
     }
 }
@@ -271,6 +272,98 @@ bse_sample_fillup_munks (BseSample *sample)
     }
 }
 
+#define	MAX_SOURCE_VALUES 1024
+
+static void
+sample_mix_source_refill (BseMixSource *source)
+{
+  g_return_if_fail (BSE_IS_SAMPLE (source->data));
+  g_return_if_fail (source->direction == 0);
+
+  if (source->n_values != 0)
+    {
+      BseSampleValue *dest;
+      BseBinData *bin = source->block;
+      gint16 *src = (gpointer) bin->values;
+      guint n_values = bin->n_values;
+
+      if (source->total_offset < bin->n_values)
+	{
+	  gint left = BSE_QUICK_DIV (MIN (MAX_SOURCE_VALUES, bin->n_values - source->total_offset), source->n_tracks);
+	  guint i;
+
+	  source->start = source->block_start + BSE_DFL_BIN_DATA_PADDING;
+	  source->n_values = MIN (source->n_values, left);
+	  source->bound = source->start + BSE_QUICK_MUL (source->n_values, source->n_tracks);
+	  dest = source->start;
+	  for (i = 0; i < source->n_values * source->n_tracks; i++)
+	    dest[i] = src[source->total_offset + i] * (1.0 / 32768.0);
+	  source->total_offset += source->n_values * source->n_tracks;
+	  source->values_left = BSE_QUICK_DIV (n_values - source->total_offset, source->n_tracks);
+#if 0
+	  if (source->start >= source->block_start && source->start < source->block_bound)
+	    {
+	      gint left = BSE_QUICK_DIV (source->block_bound - source->start, source->n_tracks);
+	      
+	      source->n_values = MIN (source->n_values, left);
+	      source->bound = source->start + BSE_QUICK_MUL (source->n_values, source->n_tracks);
+	      source->values_left = BSE_QUICK_DIV (source->block_bound - source->bound, source->n_tracks);
+	    }
+#endif
+	}
+      else
+	source->n_values = 0;
+    }
+  else
+    {
+      /* clean up */
+      g_object_unref (source->block);
+      source->block = NULL;
+      g_object_unref (source->data);
+      source->data = NULL;
+      source->refill = NULL;
+      g_free (source->block_start);
+    }
+}
+
+void
+bse_sample_setup_mix_source (BseSample    *sample,
+			     gint          note,
+			     BseMixSource *source,
+			     gboolean      reverse_direction,
+			     guint         offset,
+			     gint         *recording_note)
+{
+  BseMunk *munk;
+
+  g_return_if_fail (BSE_IS_SAMPLE (sample));
+  g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
+  g_return_if_fail (source != NULL);
+  g_return_if_fail (source->refill == NULL);	/* don't overwrite setup sources */
+  g_return_if_fail (offset == 0);	/* FIXME */
+
+  munk = sample->munks + note;
+
+  source->n_tracks = sample->n_tracks;
+  source->direction = reverse_direction != 0;
+  source->offset = offset;
+  source->padding = munk->bin_data->byte_padding / sizeof (source->start[0]);
+  source->n_values = 0;
+  source->values_left = 1;
+  /* may not touch run_limit and max_run_values */
+  source->refill = sample_mix_source_refill;
+  source->total_offset = 0;
+  source->loop_count = 0;	/* FIXME */
+  source->data = g_object_ref (sample);
+  source->block = g_object_ref (munk->bin_data);
+  source->block_start = g_new0 (BseSampleValue, MAX_SOURCE_VALUES + 2 * BSE_DFL_BIN_DATA_PADDING);
+  source->block_bound = source->block_start + MAX_SOURCE_VALUES + 2 * BSE_DFL_BIN_DATA_PADDING;
+  source->start = source->block_start + BSE_DFL_BIN_DATA_PADDING;
+  source->bound = source->start;
+  if (recording_note)
+    *recording_note = munk->rec_note;
+}
+
 static inline void
 bse_sample_set_munk_i (BseSample     *sample,
 		       guint	      munk_index,
@@ -306,6 +399,7 @@ bse_sample_set_munk (BseSample	   *sample,
   g_return_if_fail (munk_index < BSE_MAX_SAMPLE_MUNKS);
   g_return_if_fail (recording_note >= BSE_MIN_NOTE && recording_note <= BSE_MAX_NOTE);
   g_return_if_fail (BSE_IS_BIN_DATA (bin_data));
+  g_return_if_fail (bin_data->bits_per_value == 16);
   g_return_if_fail (loop_begin <= loop_end);
   g_return_if_fail (loop_end <= bin_data->n_values);
   
@@ -359,7 +453,7 @@ bse_sample_do_store_private (BseObject	*object,
 	else
 	  bse_storage_putc (storage, ' ');
 	bse_storage_printf (storage, "(bin-data ");
-	bse_storage_put_bin_data (storage, munk->bin_data);
+	// bse_storage_put_bin_data (storage, munk->bin_data);
 	bse_storage_putc (storage, ')');
 	
 	bse_storage_pop_level (storage);
@@ -431,7 +525,7 @@ parse_munk (BseSample  *sample,
 
       g_scanner_get_next_token (scanner);
       
-      expected_token = bse_storage_parse_bin_data (storage, &munk->bin_data);
+      expected_token = G_TOKEN_ERROR; // bse_storage_parse_bin_data (storage, &munk->bin_data);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
       if (!munk->bin_data)

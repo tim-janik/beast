@@ -1,5 +1,5 @@
 /* BseMult - BSE Multiplier
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -20,17 +20,15 @@
 
 #include <bse/bsechunk.h>
 #include <bse/bsehunkmixer.h>
+#include <bse/gslengine.h>
 
 
 /* --- prototypes --- */
 static void	 bse_mult_init			(BseMult	*mult);
 static void	 bse_mult_class_init		(BseMultClass	*class);
-static void	 bse_mult_class_finalize	(BseMultClass	*class);
-static void	 bse_mult_prepare		(BseSource	*source,
-						 BseIndex	 index);
-static BseChunk* bse_mult_calc_chunk		(BseSource	*source,
-						 guint		 ochannel_id);
-static void	 bse_mult_reset			(BseSource	*source);
+static void	 bse_mult_context_create	(BseSource	*source,
+						 guint		 context_handle,
+						 GslTrans	*trans);
 
 
 /* --- variables --- */
@@ -42,7 +40,7 @@ static const GTypeInfo type_info_mult = {
   (GBaseInitFunc) NULL,
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_mult_class_init,
-  (GClassFinalizeFunc) bse_mult_class_finalize,
+  (GClassFinalizeFunc) NULL,
   NULL /* class_data */,
   
   sizeof (BseMult),
@@ -57,31 +55,24 @@ bse_mult_class_init (BseMultClass *class)
 {
   BseObjectClass *object_class;
   BseSourceClass *source_class;
-  guint ichannel_id, ochannel_id;
+  guint ichannel, ochannel;
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   
-  source_class->prepare = bse_mult_prepare;
-  source_class->calc_chunk = bse_mult_calc_chunk;
-  source_class->reset = bse_mult_reset;
+  source_class->context_create = bse_mult_context_create;
   
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in1", "Mono Input 1", 1, 1);
-  g_assert (ichannel_id == BSE_MULT_ICHANNEL_MONO1);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in2", "Mono Input 2", 1, 1);
-  g_assert (ichannel_id == BSE_MULT_ICHANNEL_MONO2);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in3", "Mono Input 3", 1, 1);
-  g_assert (ichannel_id == BSE_MULT_ICHANNEL_MONO3);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in4", "Mono Input 4", 1, 1);
-  g_assert (ichannel_id == BSE_MULT_ICHANNEL_MONO4);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Output", 1);
-  g_assert (ochannel_id == BSE_MULT_OCHANNEL_MONO);
-}
-
-static void
-bse_mult_class_finalize (BseMultClass *class)
-{
+  ichannel = bse_source_class_add_ichannel (source_class, "mono_in1", "Mono Input 1");
+  g_assert (ichannel == BSE_MULT_ICHANNEL_MONO1);
+  ichannel = bse_source_class_add_ichannel (source_class, "mono_in2", "Mono Input 2");
+  g_assert (ichannel == BSE_MULT_ICHANNEL_MONO2);
+  ichannel = bse_source_class_add_ichannel (source_class, "mono_in3", "Mono Input 3");
+  g_assert (ichannel == BSE_MULT_ICHANNEL_MONO3);
+  ichannel = bse_source_class_add_ichannel (source_class, "mono_in4", "Mono Input 4");
+  g_assert (ichannel == BSE_MULT_ICHANNEL_MONO4);
+  ochannel = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Output");
+  g_assert (ochannel == BSE_MULT_OCHANNEL_MONO);
 }
 
 static void
@@ -90,87 +81,67 @@ bse_mult_init (BseMult *mult)
 }
 
 static void
-bse_mult_prepare (BseSource *source,
-		  BseIndex   index)
+multiply_process (GslModule *module,
+		  guint      n_values)
 {
-  BseMult *mult;
+  // = module->user_data;
+  BseSampleValue *wave_out = GSL_MODULE_OBUFFER (module, 0);
+  BseSampleValue *bound = wave_out + n_values;
+  guint i;
   
-  mult = BSE_MULT (source);
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
-}
-
-static BseChunk*
-bse_mult_calc_chunk (BseSource *source,
-		     guint	ochannel_id)
-{
-  BseSampleValue *hunk, *bound;
-  guint c;
-  
-  
-  g_return_val_if_fail (ochannel_id == BSE_MULT_OCHANNEL_MONO, NULL);
-  
-  if (source->n_inputs == 0)
-    return bse_chunk_new_static_zero (1);
-  else if (source->n_inputs == 1)
-    return bse_source_ref_chunk (source->inputs[0].osource, source->inputs[0].ochannel_id, source->index);
-  
-  hunk = bse_hunk_alloc (1);
-  bound = hunk + BSE_TRACK_LENGTH;
-  for (c = BSE_MULT_ICHANNEL_MONO1; c <= BSE_MULT_ICHANNEL_MONO4; c++)
+  if (!module->ostreams[0].connected)
+    return;	/* nothing to process */
+  for (i = 0; i < GSL_MODULE_N_ISTREAMS (module); i++)
+    if (module->istreams[i].connected)
+      {
+	/* found first channel */
+	memcpy (wave_out, GSL_MODULE_IBUFFER (module, i), n_values * sizeof (wave_out[0]));
+	break;
+      }
+  if (i >= GSL_MODULE_N_ISTREAMS (module))
     {
-      BseSourceInput *input = bse_source_get_input (source, c);
-      
-      if (input)
-	{
-	  BseChunk *chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-	  
-	  bse_hunk_mix (1, hunk, NULL, chunk->n_tracks, bse_chunk_complete_hunk (chunk));
-	  
-	  bse_chunk_unref (chunk);
-	  break;
-	}
+      /* no input, FIXME: should set static-0 here */
+      memset (wave_out, 0, n_values * sizeof (wave_out[0]));
     }
-  for (c = c + 1; c <= BSE_MULT_ICHANNEL_MONO4; c++)
-    {
-      BseSourceInput *input = bse_source_get_input (source, c);
-      
-      if (input)
-	{
-	  BseChunk *chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-	  BseSampleValue *d, *s = bse_chunk_complete_hunk (chunk);
-	  
-	  d = hunk;
-	  do
-	    {
-	      BseMixValue mv = *(s++);
-	      
-	      mv *= *d;
-	      mv >>= 15;
-	      if (mv >= -BSE_MAX_SAMPLE_VALUE)
-		*(d++) = mv;
-	      else
-		*(d++) = BSE_MAX_SAMPLE_VALUE;
-	    }
-	  while (d < bound);
-	  
-	  bse_chunk_unref (chunk);
-	}
-    }
-  
-  return bse_chunk_new_orphan (1, hunk);
+  for (i += 1; i < GSL_MODULE_N_ISTREAMS (module); i++)
+    if (module->istreams[i].connected)
+      {
+	const BseSampleValue *in = GSL_MODULE_IBUFFER (module, i);
+	BseSampleValue *out = wave_out;
+	
+	/* found 1+nth channel to multiply with */
+	do
+	  *out++ *= *in++;
+	while (out < bound);
+      }
 }
 
 static void
-bse_mult_reset (BseSource *source)
+bse_mult_context_create (BseSource *source,
+			 guint      context_handle,
+			 GslTrans  *trans)
 {
-  BseMult *mult;
+  static const GslClass multiply_class = {
+    4,                          /* n_istreams */
+    0,                          /* n_jstreams */
+    1,                          /* n_ostreams */
+    multiply_process,           /* process */
+    NULL,                       /* free */
+    GSL_COST_CHEAP,             /* cost */
+  };
+  // BseMult *mult = BSE_MULT (source);
+  GslModule *module;
   
-  mult = BSE_MULT (source);
+  module = gsl_module_new (&multiply_class, NULL);
+  
+  /* setup module i/o streams with BseSource i/o channels */
+  bse_source_set_context_module (source, context_handle, module);
+  
+  /* commit module to engine */
+  gsl_trans_add (trans, gsl_job_integrate (module));
   
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->reset (source);
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
 
 
@@ -179,7 +150,7 @@ bse_mult_reset (BseSource *source)
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_mult, "BseMult", "BseSource",
-    "BseMult is a channel multiplier to fold incoming signals",
+    "Mult is a channel multiplier for ring-modulating incoming signals",
     &type_info_mult,
     "/Source/Mult",
     { PROD_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,

@@ -1,5 +1,5 @@
 /* BseGenOsc - BSE Generic Oscillator
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999,2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -18,11 +18,16 @@
  */
 #include "bsegenosc.h"
 
-#include <bse/bsechunk.h>
+#include <bse/gslengine.h>
 
 /* include generated enums
  */
 #include "bsegenosc.enums"
+
+
+#define FRAC_N_BITS     (19)
+#define FRAC_BIT_MASK   ((1 << FRAC_N_BITS) - 1)
+#define TABLE_SIZE      (1 << (32 - FRAC_N_BITS))
 
 
 /* --- parameters --- */
@@ -45,26 +50,25 @@ enum
 
 
 /* --- prototypes --- */
-static void	   bse_gen_osc_init		(BseGenOsc	*gen_osc);
-static void	   bse_gen_osc_class_init	(BseGenOscClass	*class);
-static void	   bse_gen_osc_class_finalize	(BseGenOscClass	*class);
-static void	   bse_gen_osc_do_destroy	(BseObject	*object);
-static void	   bse_gen_osc_set_param	(BseGenOsc	*gen_osc,
+static void	bse_gen_osc_init		(BseGenOsc	*gen_osc);
+static void	bse_gen_osc_class_init		(BseGenOscClass	*class);
+static void	bse_gen_osc_class_finalize	(BseGenOscClass	*class);
+static void	bse_gen_osc_do_destroy		(BseObject	*object);
+static void	bse_gen_osc_set_property	(BseGenOsc	*gen_osc,
 						 guint           param_id,
 						 GValue         *value,
-						 GParamSpec     *pspec,
-						 const gchar    *trailer);
-static void	   bse_gen_osc_get_param	(BseGenOsc	*gen_osc,
+						 GParamSpec     *pspec);
+static void	bse_gen_osc_get_property	(BseGenOsc	*gen_osc,
 						 guint           param_id,
 						 GValue         *value,
-						 GParamSpec     *pspec,
-						 const gchar    *trailer);
-static void	   bse_gen_osc_prepare		(BseSource	*source,
-						 BseIndex	 index);
-static BseChunk*   bse_gen_osc_calc_chunk	(BseSource	*source,
-						 guint		 ochannel_id);
-static void	   bse_gen_osc_reset		(BseSource	*source);
-static inline void bse_gen_osc_update_locals	(BseGenOsc	*gosc);
+						 GParamSpec     *pspec);
+static void	bse_gen_osc_prepare		(BseSource	*source);
+static void	bse_gen_osc_context_create	(BseSource	*source,
+						 guint		 context_handle,
+						 GslTrans	*trans);
+static void	bse_gen_osc_reset		(BseSource	*source);
+static void	bse_gen_osc_update_vars		(BseGenOsc	*gosc);
+static void	bse_gen_osc_update_modules	(BseGenOsc	*gen_osc);
 
 
 /* --- variables --- */
@@ -92,17 +96,17 @@ bse_gen_osc_class_init (BseGenOscClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint ochannel_id, ichannel_id;
+  guint ochannel, ichannel;
   
-  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_gen_osc_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_gen_osc_get_param;
-
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_gen_osc_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_gen_osc_get_property;
+  
   object_class->destroy = bse_gen_osc_do_destroy;
   
   source_class->prepare = bse_gen_osc_prepare;
-  source_class->calc_chunk = bse_gen_osc_calc_chunk;
+  source_class->context_create = bse_gen_osc_context_create;
   source_class->reset = bse_gen_osc_reset;
   
   class->ref_count = 0;
@@ -119,79 +123,83 @@ bse_gen_osc_class_init (BseGenOscClass *class)
   
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_WAVE_FORM,
-			      b_param_spec_enum ("wave_form", "Wave", "Oscillator wave form",
-						 BSE_TYPE_GEN_OSC_WAVE_TYPE,
-						 BSE_GEN_OSC_SINE,
-						 B_PARAM_DEFAULT));
+			      bse_param_spec_enum ("wave_form", "Wave", "Oscillator wave form",
+						   BSE_TYPE_GEN_OSC_WAVE_TYPE,
+						   BSE_GEN_OSC_SINE,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_PHASE,
-			      b_param_spec_float ("phase", "Phase", NULL,
-						  -180.0, 180.0,
-						  0.0, 5.0,
-						  B_PARAM_DEFAULT |
-						  B_PARAM_HINT_DIAL));
+			      bse_param_spec_float ("phase", "Phase", NULL,
+						    -180.0, 180.0,
+						    0.0, 5.0,
+						    BSE_PARAM_DEFAULT |
+						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_SINE,
-			      b_param_spec_bool ("sine_table", "Sine Wave", NULL,
-						 TRUE,
-						 B_PARAM_GUI | B_PARAM_HINT_RADIO));
+			      bse_param_spec_bool ("sine_table", "Sine Wave", NULL,
+						   TRUE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_PULSE,
-			      b_param_spec_bool ("pulse_table", "Pulse", NULL,
-						 FALSE,
-						 B_PARAM_GUI | B_PARAM_HINT_RADIO));
+			      bse_param_spec_bool ("pulse_table", "Pulse", NULL,
+						   FALSE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_GSAW,
-			      b_param_spec_bool ("gsaw_table", "Growing Saw", NULL,
-						 FALSE,
-						 B_PARAM_GUI | B_PARAM_HINT_RADIO));
+			      bse_param_spec_bool ("gsaw_table", "Growing Saw", NULL,
+						   FALSE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_SSAW,
-			      b_param_spec_bool ("ssaw_table", "Shrinking Saw", NULL,
-						 FALSE,
-						 B_PARAM_GUI | B_PARAM_HINT_RADIO));
+			      bse_param_spec_bool ("ssaw_table", "Shrinking Saw", NULL,
+						   FALSE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_TRIANGLE,
-			      b_param_spec_bool ("triangle_table", "Triangle", NULL,
-						 FALSE,
-						 B_PARAM_GUI | B_PARAM_HINT_RADIO));
+			      bse_param_spec_bool ("triangle_table", "Triangle", NULL,
+						   FALSE,
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_FREQ,
-			      b_param_spec_float ("base_freq", "Frequency", NULL,
-						  BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
-						  BSE_KAMMER_FREQ, 10.0,
-						  B_PARAM_DEFAULT |
-						  B_PARAM_HINT_DIAL));
+			      bse_param_spec_float ("base_freq", "Frequency", NULL,
+						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
+						    BSE_KAMMER_FREQ, 10.0,
+						    BSE_PARAM_DEFAULT |
+						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_NOTE,
-			      b_param_spec_note ("base_note", "Note", NULL,
-						 BSE_MIN_NOTE, BSE_MAX_NOTE,
-						 BSE_KAMMER_NOTE, 1, TRUE,
-						 B_PARAM_GUI));
+			      bse_param_spec_note ("base_note", "Note", NULL,
+						   BSE_MIN_NOTE, BSE_MAX_NOTE,
+						   BSE_KAMMER_NOTE, 1, TRUE,
+						   BSE_PARAM_GUI));
   bse_object_class_add_param (object_class, "Modulation",
 			      PARAM_FM_PERC,
-			      b_param_spec_float ("fm_perc", "Input Modulation [%]", "Modulation Strength for input channel",
-						  0, 100.0,
-						  10.0, 5.0,
-						  B_PARAM_DEFAULT |
-						  B_PARAM_HINT_SCALE));
+			      bse_param_spec_float ("fm_perc", "Input Modulation [%]", "Modulation Strength for input channel",
+						    0, 100.0,
+						    10.0, 5.0,
+						    BSE_PARAM_DEFAULT |
+						    BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Modulation",
 			      PARAM_SELF_MODULATION,
-			      b_param_spec_bool ("self_modulation", "Self Modulation", "Modulate oscillator with itself",
-						 FALSE,
-						 B_PARAM_DEFAULT));
+			      bse_param_spec_bool ("self_modulation", "Self Modulation", "Modulate oscillator with itself",
+						   FALSE,
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Modulation",
 			      PARAM_SELF_PERC,
-			      b_param_spec_float ("self_perc", "Self Modulation [%]", "Modualtion Strength for self modulation",
-						  0, 100.0,
-						  10.0, 5.0,
-						  B_PARAM_DEFAULT |
-						  B_PARAM_HINT_SCALE));
+			      bse_param_spec_float ("self_perc", "Self Modulation [%]", "Modualtion Strength for self modulation",
+						    0, 100.0,
+						    10.0, 5.0,
+						    BSE_PARAM_DEFAULT |
+						    BSE_PARAM_HINT_SCALE));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Oscillated Output", 1);
-  g_assert (ochannel_id == BSE_GEN_OSC_OCHANNEL_MONO);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "freq_mod_in", "Mono Frequency Modulation Input", 1, 1);
-  g_assert (ichannel_id == BSE_GEN_OSC_ICHANNEL_FREQ_MOD);
+  ochannel = bse_source_class_add_ochannel (source_class, "osc_out", "Oscillated Output");
+  g_assert (ochannel == BSE_GEN_OSC_OCHANNEL_OSC);
+  ochannel = bse_source_class_add_ochannel (source_class, "sync_out", "Syncronization Output");
+  g_assert (ochannel == BSE_GEN_OSC_OCHANNEL_SYNC);
+  ichannel = bse_source_class_add_ichannel (source_class, "freq_mod_in", "Frequency Modulation Input");
+  g_assert (ichannel == BSE_GEN_OSC_ICHANNEL_FREQ_MOD);
+  ichannel = bse_source_class_add_ichannel (source_class, "sync_in", "Syncronization Input");
+  g_assert (ichannel == BSE_GEN_OSC_ICHANNEL_SYNC);
 }
 
 static void
@@ -200,102 +208,94 @@ bse_gen_osc_class_finalize (BseGenOscClass *class)
 }
 
 static void
-bse_gen_osc_class_ref_tables (BseGenOscClass *class)
+bse_gen_osc_class_ref_tables (BseGenOsc *gen_osc)
 {
-  guint max_table_size;
-  gdouble table_size;
-  BseSampleValue *table;
-  guint i;
+  BseGenOscClass *class = BSE_GEN_OSC_GET_CLASS (gen_osc);
   
-  class->ref_count += 1;
-  if (class->ref_count > 1)
-    return;
-  
-  /* express assertments the code makes */
-  max_table_size = BSE_MIX_FREQ / 2;
-  g_assert (max_table_size + 2 * BSE_MAX_OSC_FREQ_d < 65535);
-  
-  /* sine */
-  class->sine_table_size = max_table_size;
-  table_size = class->sine_table_size;
-  table = g_new (BseSampleValue, table_size);
-  for (i = 0; i < table_size; i += 1)
+  if (class->ref_count == 0)
     {
-      gdouble d = i;
+      gdouble table_size;
+      BseSampleValue *table;
+      guint i;
       
-      table[i] = 0.5 + sin (d * (360.0 / table_size) / 180.0 * PI) * BSE_MAX_SAMPLE_VALUE;
-#if 0
-      if (!(i%(guint)(table_size/100)))
-	g_print ("sine_table[%06u]=%d\n", i, table[i]);
-#endif
-    }
-  class->sine_table = table;
-  
-  /* gsaw */
-  class->gsaw_table_size = 512;
-  table_size = class->gsaw_table_size;
-  table = g_new (BseSampleValue, table_size);
-  for (i = 0; i < table_size; i++)
-    {
-      table[i] = 0.5 + (1.0 * i) / table_size * BSE_MAX_SAMPLE_VALUE;
-#if 0
-      if (!(i%(guint)(table_size/100)))
-	g_print ("gsaw_table[%06u]=%d\n", i, table[i]);
-#endif
-    }
-  class->gsaw_table = table;
-  
-  /* ssaw */
-  class->ssaw_table_size = max_table_size;
-  table_size = class->ssaw_table_size;
-  table = g_new (BseSampleValue, table_size);
-  for (i = 0; i < table_size; i++)
-    {
-      table[i] = 0.5 + (table_size - i) / table_size * BSE_MAX_SAMPLE_VALUE;
-#if 0
-      if (!(i%(guint)(table_size/100)))
-	g_print ("ssaw_table[%06u]=%d\n", i, table[i]);
-#endif
-    }
-  class->ssaw_table = table;
-  
-  /* pulse */
-  class->pulse_table_size = 512;
-  table_size = class->pulse_table_size;
-  table = g_new (BseSampleValue, table_size);
-  for (i = 0; i < table_size; i++)
-    {
-      table[i] = i < table_size / 2 ? BSE_MAX_SAMPLE_VALUE : BSE_MIN_SAMPLE_VALUE;
-    }
-  class->pulse_table = table;
-  
-  /* triangle */
-  class->triangle_table_size = 512;
-  table_size = class->triangle_table_size;
-  table = g_new (BseSampleValue, table_size);
-  for (i = 0; i < table_size; i++)
-    {
-      gdouble d = i * 2;
-      
-      if (d < table_size)
-	table[i] = 0.5 + d / table_size * BSE_MAX_SAMPLE_VALUE;
-      else
+      /* sine */
+      class->sine_table_size = TABLE_SIZE;
+      table_size = class->sine_table_size;
+      table = g_new (BseSampleValue, table_size + 1);
+      for (i = 0; i < table_size; i += 1)
 	{
-	  d -= table_size;
-	  table[i] = 0.5 + (table_size - d) / table_size * BSE_MAX_SAMPLE_VALUE;
+	  gdouble d = i;
+
+	  table[i] = sin (2 * PI * (d / table_size));
 	}
-#if 0
-      g_print ("triangle_table[%06u]=%d\n", i, table[i]);
-#endif
+      table[(guint) table_size] = table[0];
+      class->sine_table = table;
+
+      /* gsaw */
+      class->gsaw_table_size = TABLE_SIZE;
+      table_size = class->gsaw_table_size;
+      table = g_new (BseSampleValue, table_size + 1);
+      for (i = 0; i < table_size; i++)
+	{
+	  gdouble d = i;
+
+	  table[i] = d * 2.0 / table_size - 1.0;
+	}
+      table[(guint) table_size] = table[0];
+      class->gsaw_table = table;
+
+      /* ssaw */
+      class->ssaw_table_size = TABLE_SIZE;
+      table_size = class->ssaw_table_size;
+      table = g_new (BseSampleValue, table_size + 1);
+      for (i = 0; i < table_size; i++)
+	{
+	  gdouble d = i;
+
+	  table[i] = (table_size - d) * 2.0 / table_size - 1.0;
+	}
+      table[(guint) table_size] = table[0];
+      class->ssaw_table = table;
+
+      /* pulse */
+      class->pulse_table_size = TABLE_SIZE;
+      table_size = class->pulse_table_size;
+      table = g_new (BseSampleValue, table_size + 1);
+      for (i = 0; i < table_size; i++)
+	{
+	  table[i] = i < table_size / 2 ? 1.0 : -1.0;
+	}
+      table[(guint) table_size] = table[0];
+      class->pulse_table = table;
+      
+      /* triangle */
+      class->triangle_table_size = TABLE_SIZE;
+      table_size = class->triangle_table_size;
+      table = g_new (BseSampleValue, table_size + 1);
+      for (i = 0; i < table_size; i++)
+	{
+	  gdouble d = i * 2;
+
+	  if (d < table_size)
+	    table[i] = d * 2.0 / table_size - 1.0;
+	  else
+	    {
+	      d -= table_size;
+	      table[i] = (table_size - d) * 2.0 / table_size - 1.0;
+	    }
+	}
+      table[(guint) table_size] = table[0];
+      class->triangle_table = table;
     }
-  class->triangle_table = table;
+  class->ref_count += 1;
 }
 
 static void
-bse_gen_osc_class_unref_tables (BseGenOscClass *class)
+bse_gen_osc_class_unref_tables (BseGenOsc *gen_osc)
 {
+  BseGenOscClass *class = BSE_GEN_OSC_GET_CLASS (gen_osc);
+
   class->ref_count -= 1;
-  
   if (!class->ref_count)
     {
       class->sine_table_size = 0;
@@ -325,12 +325,7 @@ bse_gen_osc_init (BseGenOsc *gosc)
   gosc->fm_perc = 10;
   gosc->self_modulation = FALSE;
   gosc->self_perc = 10;
-  gosc->rate_pos = 0;
-  gosc->rate = 0;
-  gosc->fm_strength = 0;
-  gosc->self_strength = 0;
-  gosc->table_size = 1;
-  gosc->table = NULL;
+  /* gosc->vars = 0; */
 }
 
 static void
@@ -344,68 +339,19 @@ bse_gen_osc_do_destroy (BseObject *object)
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
-static inline void
-bse_gen_osc_update_locals (BseGenOsc *gosc)
-{
-  BseGenOscClass *class = BSE_GEN_OSC_GET_CLASS (gosc);
-  gdouble d;
-  guint32 r;
-  
-  switch (BSE_SOURCE_PREPARED (gosc) ? gosc->wave : BSE_GEN_OSC_NOWAVE)
-    {
-    case BSE_GEN_OSC_SINE:
-      gosc->table_size = class->sine_table_size;
-      gosc->table = class->sine_table;
-      break;
-    case BSE_GEN_OSC_GSAW:
-      gosc->table_size = class->gsaw_table_size;
-      gosc->table = class->gsaw_table;
-      break;
-    case BSE_GEN_OSC_SSAW:
-      gosc->table_size = class->ssaw_table_size;
-      gosc->table = class->ssaw_table;
-      break;
-    case BSE_GEN_OSC_PULSE:
-      gosc->table_size = class->pulse_table_size;
-      gosc->table = class->pulse_table;
-      break;
-    case BSE_GEN_OSC_TRIANGLE:
-      gosc->table_size = class->triangle_table_size;
-      gosc->table = class->triangle_table;
-      break;
-    default:
-      gosc->table_size = 1;
-      gosc->table = NULL;
-      break;
-    }
-  
-  r = gosc->rate_pos;
-  gosc->rate_pos = (gosc->phase + 360.0) / 360.0 * gosc->table_size + (r >> 16);
-  gosc->rate_pos = (gosc->rate_pos % gosc->table_size) << 16;
-  gosc->rate_pos |= r & 0xffff;
-  d = gosc->table_size;
-  d /= BSE_MIX_FREQ;
-  d *= gosc->base_freq;
-  gosc->rate = d;
-  gosc->rate = (gosc->rate << 16) + (d - gosc->rate) * 65536.0;
-  gosc->fm_strength = gosc->rate * (gosc->fm_perc / 100.0) / (BSE_MAX_SAMPLE_VALUE + 1);
-  gosc->self_strength = gosc->rate * (gosc->self_perc / 100.0) / (BSE_MAX_SAMPLE_VALUE + 1);
-}
-
 static void
-bse_gen_osc_set_param (BseGenOsc   *gosc,
-		       guint        param_id,
-		       GValue      *value,
-		       GParamSpec  *pspec,
-		       const gchar *trailer)
+bse_gen_osc_set_property (BseGenOsc   *gosc,
+			  guint        param_id,
+			  GValue      *value,
+			  GParamSpec  *pspec)
 {
   guint wave = 0;
   
   switch (param_id)
     {
     case PARAM_WAVE_FORM:
-      gosc->wave = b_value_get_enum (value);
-      bse_gen_osc_update_locals (gosc);
+      gosc->wave = g_value_get_enum (value);
+      bse_gen_osc_update_vars (gosc);
       bse_object_param_changed (BSE_OBJECT (gosc), "sine_table");
       bse_object_param_changed (BSE_OBJECT (gosc), "gsaw_table");
       bse_object_param_changed (BSE_OBJECT (gosc), "ssaw_table");
@@ -426,10 +372,10 @@ bse_gen_osc_set_param (BseGenOsc   *gosc,
       /* fall through */
     case PARAM_SINE:
       wave++;
-      if (b_value_get_bool (value))
+      if (g_value_get_boolean (value))
 	{
 	  gosc->wave = wave;
-	  bse_gen_osc_update_locals (gosc);
+	  bse_gen_osc_update_vars (gosc);
 	  bse_object_param_changed (BSE_OBJECT (gosc), "wave_form");
 	  bse_object_param_changed (BSE_OBJECT (gosc), "sine_table");
 	  bse_object_param_changed (BSE_OBJECT (gosc), "gsaw_table");
@@ -439,197 +385,264 @@ bse_gen_osc_set_param (BseGenOsc   *gosc,
 	}
       break;
     case PARAM_PHASE:
-      gosc->phase = b_value_get_float (value);
-      bse_gen_osc_update_locals (gosc);
+      gosc->phase = g_value_get_float (value);
+      bse_gen_osc_update_vars (gosc);
       break;
     case PARAM_BASE_NOTE:
-      gosc->base_freq = bse_note_to_freq (b_value_get_note (value));
+      gosc->base_freq = bse_note_to_freq (bse_value_get_note (value));
       gosc->base_freq = MAX (gosc->base_freq, BSE_MIN_OSC_FREQ_d);
-      bse_gen_osc_update_locals (gosc);
+      bse_gen_osc_update_vars (gosc);
       bse_object_param_changed (BSE_OBJECT (gosc), "base_freq");
-      if (bse_note_from_freq (gosc->base_freq) != b_value_get_note (value))
+      if (bse_note_from_freq (gosc->base_freq) != bse_value_get_note (value))
 	bse_object_param_changed (BSE_OBJECT (gosc), "base_note");
       break;
     case PARAM_BASE_FREQ:
-      gosc->base_freq = b_value_get_float (value);
-      bse_gen_osc_update_locals (gosc);
+      gosc->base_freq = g_value_get_float (value);
+      bse_gen_osc_update_vars (gosc);
       bse_object_param_changed (BSE_OBJECT (gosc), "base_note");
       break;
     case PARAM_FM_PERC:
-      gosc->fm_perc = b_value_get_float (value);
-      bse_gen_osc_update_locals (gosc);
+      gosc->fm_perc = g_value_get_float (value);
+      bse_gen_osc_update_vars (gosc);
       break;
     case PARAM_SELF_MODULATION:
-      gosc->self_modulation = b_value_get_bool (value);
+      gosc->self_modulation = g_value_get_boolean (value);
+      bse_gen_osc_update_vars (gosc);
       break;
     case PARAM_SELF_PERC:
-      gosc->self_perc = b_value_get_float (value);
-      bse_gen_osc_update_locals (gosc);
+      gosc->self_perc = g_value_get_float (value);
+      bse_gen_osc_update_vars (gosc);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (gosc, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (gosc, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_gen_osc_get_param (BseGenOsc   *gosc,
-		       guint        param_id,
-		       GValue      *value,
-		       GParamSpec  *pspec,
-		       const gchar *trailer)
+bse_gen_osc_get_property (BseGenOsc   *gosc,
+			  guint        param_id,
+			  GValue      *value,
+			  GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_WAVE_FORM:
-      b_value_set_enum (value, gosc->wave);
+      g_value_set_enum (value, gosc->wave);
       break;
     case PARAM_SINE:
-      b_value_set_bool (value, gosc->wave == BSE_GEN_OSC_SINE);
+      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_SINE);
       break;
     case PARAM_GSAW:
-      b_value_set_bool (value, gosc->wave == BSE_GEN_OSC_GSAW);
+      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_GSAW);
       break;
     case PARAM_SSAW:
-      b_value_set_bool (value, gosc->wave == BSE_GEN_OSC_SSAW);
+      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_SSAW);
       break;
     case PARAM_PULSE:
-      b_value_set_bool (value, gosc->wave == BSE_GEN_OSC_PULSE);
+      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_PULSE);
       break;
     case PARAM_TRIANGLE:
-      b_value_set_bool (value, gosc->wave == BSE_GEN_OSC_TRIANGLE);
+      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_TRIANGLE);
       break;
     case PARAM_BASE_NOTE:
-      b_value_set_note (value, bse_note_from_freq (gosc->base_freq));
+      bse_value_set_note (value, bse_note_from_freq (gosc->base_freq));
       break;
     case PARAM_BASE_FREQ:
-      b_value_set_float (value, gosc->base_freq);
+      g_value_set_float (value, gosc->base_freq);
       break;
     case PARAM_PHASE:
-      b_value_set_float (value, gosc->phase);
+      g_value_set_float (value, gosc->phase);
       break;
     case PARAM_FM_PERC:
-      b_value_set_float (value, gosc->fm_perc);
+      g_value_set_float (value, gosc->fm_perc);
       break;
     case PARAM_SELF_MODULATION:
-      b_value_set_bool (value, gosc->self_modulation);
+      g_value_set_boolean (value, gosc->self_modulation);
       break;
     case PARAM_SELF_PERC:
-      b_value_set_float (value, gosc->self_perc);
+      g_value_set_float (value, gosc->self_perc);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (gosc, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (gosc, param_id, pspec);
       break;
     }
 }
 
-void
-bse_gen_osc_sync (BseGenOsc *gosc)
+static void
+bse_gen_osc_update_vars (BseGenOsc *gosc)
 {
-  g_return_if_fail (BSE_IS_GEN_OSC (gosc));
+  BseGenOscClass *class = BSE_GEN_OSC_GET_CLASS (gosc);
+  gdouble d;
   
-  gosc->rate_pos = 0x8000;
-  bse_gen_osc_update_locals (gosc);
+  switch (BSE_SOURCE_PREPARED (gosc) ? gosc->wave : BSE_GEN_OSC_NOWAVE)
+    {
+    case BSE_GEN_OSC_SINE:
+      gosc->vars.table = class->sine_table;
+      break;
+    case BSE_GEN_OSC_GSAW:
+      gosc->vars.table = class->gsaw_table;
+      break;
+    case BSE_GEN_OSC_SSAW:
+      gosc->vars.table = class->ssaw_table;
+      break;
+    case BSE_GEN_OSC_PULSE:
+      gosc->vars.table = class->pulse_table;
+      break;
+    case BSE_GEN_OSC_TRIANGLE:
+      gosc->vars.table = class->triangle_table;
+      break;
+    default:
+      gosc->vars.table = NULL;
+      break;
+    }
+  
+  gosc->vars.sync_pos = (gosc->phase + 360.0) / 360.0 * TABLE_SIZE * ((double) FRAC_BIT_MASK);
+  d = TABLE_SIZE;
+  d /= BSE_MIX_FREQ_f;
+  d *= gosc->base_freq;
+  gosc->vars.pos_inc = d * ((double) FRAC_BIT_MASK);
+  gosc->vars.fm_strength = gosc->vars.pos_inc * (gosc->fm_perc / 100.0);
+  gosc->vars.with_fm_mod = BSE_EPSILON_CMP (gosc->fm_perc, 0) != 0;
+  gosc->vars.self_strength = gosc->vars.pos_inc * (gosc->self_perc / 100.0);
+  gosc->vars.with_self_mod = gosc->self_modulation && BSE_EPSILON_CMP (gosc->self_perc, 0) != 0;
+  if (!gosc->vars.with_self_mod)
+    gosc->vars.self_strength = 0.0;
+  if (!gosc->vars.with_fm_mod)
+    gosc->vars.fm_strength = 0.0;
+
+  /* update modules in all contexts with the new vars */
+  bse_gen_osc_update_modules (gosc);
 }
 
 static void
-bse_gen_osc_prepare (BseSource *source,
-		     BseIndex	index)
+bse_gen_osc_prepare (BseSource *source)
 {
-  BseGenOsc *gosc = BSE_GEN_OSC (source);
+  BseGenOsc *gen_osc = BSE_GEN_OSC (source);
   
-  bse_gen_osc_class_ref_tables (BSE_GEN_OSC_GET_CLASS (gosc));
-  
-  bse_gen_osc_sync (gosc);
+  bse_gen_osc_class_ref_tables (gen_osc);
+  bse_gen_osc_update_vars (gen_osc);
   
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
-static BseChunk*
-bse_gen_osc_calc_chunk (BseSource *source,
-			guint	   ochannel_id)
+typedef struct
 {
-  BseGenOsc *gosc = BSE_GEN_OSC (source);
-  BseSampleValue *table = gosc->table;
-  BseChunk *fmchunk = NULL;
-  BseSampleValue *hunk, *fmhunk = NULL;
-  gfloat fm_strength = gosc->fm_strength;
-  gfloat self_strength = gosc->self_strength;
-  BseSourceInput *freq_mod;
-  guint32 table_size, rate_pos, rate;
-  guint i;
+  BseGenOscVars vars;
+  guint32       last_pos;
+  guint32       cur_pos;
+} GenOsc;
+
+static void
+bse_gen_osc_update_modules (BseGenOsc *gen_osc)
+{
+  if (BSE_SOURCE_PREPARED (gen_osc))
+    bse_source_update_imodules (BSE_SOURCE (gen_osc),
+				BSE_GEN_OSC_ICHANNEL_FREQ_MOD,
+				G_STRUCT_OFFSET (GenOsc, vars),
+				&gen_osc->vars,
+				sizeof (gen_osc->vars),
+				NULL);
+}
+
+static void
+gen_osc_process (GslModule *module,
+		 guint      n_values)
+{
+  GenOsc *gosc = module->user_data;
+  BseGenOscVars *vars = &gosc->vars;
+  // const BseSampleValue *wave_in = module->istreams[0].connected ? GSL_MODULE_IBUFFER (module, 0) : NULL;
+  // const BseSampleValue *sync_in = module->istreams[1].connected ? GSL_MODULE_IBUFFER (module, 1) : NULL;
+  const BseSampleValue *wave_in = GSL_MODULE_IBUFFER (module, 0);
+  const BseSampleValue *sync_in = GSL_MODULE_IBUFFER (module, 1);
+  gboolean with_fm_mod = vars->with_fm_mod && module->istreams[0].connected;
+  gboolean with_sync = module->istreams[1].connected;
+  gboolean with_self_mod = vars->with_self_mod;
+  // BseSampleValue *wave_out = module->ostreams[0].connected ? GSL_MODULE_OBUFFER (module, 0) : NULL;
+  BseSampleValue *wave_out = GSL_MODULE_OBUFFER (module, 0);
+  BseSampleValue *wave_bound = wave_out + n_values;
+  // BseSampleValue *sync_out = module->ostreams[1].connected ? GSL_MODULE_OBUFFER (module, 1) : NULL;
+  BseSampleValue *sync_out = GSL_MODULE_OBUFFER (module, 1);
+  BseSampleValue *table = vars->table;
+  gfloat fm_strength = vars->fm_strength;
+  gfloat self_strength = vars->self_strength;
+  guint32 last_pos = gosc->last_pos;
+  guint32 cur_pos = gosc->cur_pos;
+  guint32 pos_inc = vars->pos_inc;
+  guint32 sync_pos = vars->sync_pos;
+  gfloat sync_level = 0;
   
-  g_return_val_if_fail (ochannel_id == BSE_GEN_OSC_OCHANNEL_MONO, NULL);
+  /* do the mixing */
+  do
+    {
+      gfloat v, ffrac, sync = *sync_in++;
+      guint32 tpos, frac;
+      
+      if (sync > sync_level) /* honour input sync */
+	{ cur_pos = sync_pos; *sync_out++ = 1.0; }
+      else /* check for output sync */
+	{
+	  guint is_sync = (sync_pos <= cur_pos) + (last_pos < sync_pos) + (cur_pos < last_pos);
+	  *sync_out++ = is_sync >= 2 ? 1.0 : 0.0;
+	}
+      sync_level = sync;
+      last_pos = cur_pos;
+
+      /* pos determination, linear ipol */
+      tpos = cur_pos >> FRAC_N_BITS; frac = cur_pos & FRAC_BIT_MASK;
+      ffrac = frac;
+      ffrac *= 1.0 / (gfloat) FRAC_BIT_MASK;
+      v = table[tpos] * (1.0 - ffrac) + table[tpos + 1] * ffrac;
+      *wave_out++ = v;
+      /* pos inc for next value */
+      cur_pos += pos_inc + fm_strength * *wave_in++ + self_strength * v;
+    }
+  while (wave_out < wave_bound);
   
-  freq_mod = bse_source_get_input (source, BSE_GEN_OSC_ICHANNEL_FREQ_MOD); /* mono */
-  if (freq_mod)
-    fmchunk = bse_source_ref_chunk (freq_mod->osource, freq_mod->ochannel_id, source->index);
-  
-  hunk = bse_hunk_alloc (1);
-  
-  table_size = gosc->table_size << 16;
-  rate_pos = gosc->rate_pos % table_size;
-  rate = gosc->rate % table_size;
-  
-  if (fmchunk && fmchunk->state_filled)
-    rate += fm_strength * fmchunk->state[0];
-  else if (fmchunk && fmchunk->hunk_filled)
-    fmhunk = fmchunk->hunk;
-  
-  if (fmhunk && gosc->self_modulation)
-    for (i = 0; i < BSE_TRACK_LENGTH; i++)
-      {
-	BseSampleValue v = table[rate_pos >> 16];
-	
-	hunk[i] = v;
-	rate_pos += rate + fm_strength * fmhunk[i] + self_strength * v;
-	while (rate_pos >= table_size)
-	  rate_pos -= table_size;
-      }
-  else if (fmhunk)
-    for (i = 0; i < BSE_TRACK_LENGTH; i++)
-      {
-	hunk[i] = table[rate_pos >> 16];
-	rate_pos += rate + fm_strength * fmhunk[i];
-	while (rate_pos >= table_size)
-	  rate_pos -= table_size;
-      }
-  else if (gosc->self_modulation)
-    for (i = 0; i < BSE_TRACK_LENGTH; i++)
-      {
-	BseSampleValue v = table[rate_pos >> 16];
-	
-	hunk[i] = v;
-	rate_pos += rate + self_strength * v;
-	while (rate_pos >= table_size)
-	  rate_pos -= table_size;
-      }
-  else
-    for (i = 0; i < BSE_TRACK_LENGTH; i++)
-      {
-	hunk[i] = table[rate_pos >> 16];
-	rate_pos += rate;
-	while (rate_pos >= table_size)
-	  rate_pos -= table_size;
-      }
-  gosc->rate_pos = rate_pos;
-  
-  if (fmchunk)
-    bse_chunk_unref (fmchunk);
-  
-  return bse_chunk_new_orphan (1, hunk);
+  /* preserve current position */
+  gosc->cur_pos = cur_pos;
+}
+
+static void
+bse_gen_osc_context_create   (BseSource *source,
+			      guint      context_handle,
+			      GslTrans  *trans)
+{
+  static const GslClass gosc_class = {
+    3,				/* n_istreams */
+    0,                          /* n_jstreams */
+    2,				/* n_ostreams */
+    gen_osc_process,		/* process */
+    (GslModuleFreeFunc) g_free,	/* free */
+    GSL_COST_CHEAP,		/* cost */
+  };
+  BseGenOsc *gen_osc = BSE_GEN_OSC (source);
+  GenOsc *gosc = g_new (GenOsc, 1);
+  GslModule *module;
+
+  gosc->cur_pos = gen_osc->vars.sync_pos;
+  gosc->last_pos = gosc->cur_pos;
+  gosc->vars = gen_osc->vars;
+  module = gsl_module_new (&gosc_class, gosc);
+
+  /* setup module i/o streams with BseSource i/o channels */
+  bse_source_set_context_module (source, context_handle, module);
+
+  /* commit module to engine */
+  gsl_trans_add (trans, gsl_job_integrate (module));
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
 
 static void
 bse_gen_osc_reset (BseSource *source)
 {
-  BseGenOsc *gosc = BSE_GEN_OSC (source);
+  BseGenOsc *gen_osc = BSE_GEN_OSC (source);
   
-  gosc->rate_pos = 0;
-  gosc->table_size = 1;
-  gosc->table = NULL;
-  bse_gen_osc_class_unref_tables (BSE_GEN_OSC_GET_CLASS (gosc));
+  gen_osc->vars.table = NULL;
+  bse_gen_osc_class_unref_tables (gen_osc);
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
@@ -637,16 +650,16 @@ bse_gen_osc_reset (BseSource *source)
 
 
 /* --- Export to BSE --- */
-#include "./icons/sine.c"
+#include "./icons/genosc.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_gen_osc, "BseGenOsc", "BseSource",
     "BseGenOsc is a generic oscillator source",
     &type_info_gen_osc,
-    "/Source/GenOsc",
-    { SINE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      SINE_WIDTH, SINE_HEIGHT,
-      SINE_RLE_PIXEL_DATA, },
+    "/Source/Oscillators/Generic Oscillator",
+    { GEN_OSC_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      GEN_OSC_IMAGE_WIDTH, GEN_OSC_IMAGE_HEIGHT,
+      GEN_OSC_IMAGE_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };

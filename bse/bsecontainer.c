@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,26 @@
 #include	"bsesource.h"
 #include	"bseproject.h"
 #include	"bsestorage.h"
-#include	"bseheart.h"
+#include	"bsemarshal.h"
+#include	"bsemain.h"
+#include	"gslengine.h"
 #include	<stdlib.h>
 #include	<string.h>
 
 
 
+enum
+{
+  SIGNAL_ITEM_ADDED,
+  SIGNAL_ITEM_REMOVED,
+  SIGNAL_LAST
+};
+
+
 /* --- prototypes --- */
 static void	    bse_container_class_init		(BseContainerClass	*class);
 static void	    bse_container_init			(BseContainer		*container);
-static void	    bse_container_shutdown		(GObject		*object);
+static void	    bse_container_dispose		(GObject		*object);
 static void	    bse_container_finalize		(GObject		*object);
 static void	    bse_container_destroy		(BseObject		*object);
 static void	    bse_container_store_after		(BseObject		*object,
@@ -40,8 +50,16 @@ static void	    bse_container_do_add_item		(BseContainer		*container,
 							 BseItem		*item);
 static void	    bse_container_do_remove_item	(BseContainer		*container,
 							 BseItem		*item);
-static void         bse_container_prepare               (BseSource              *source,
-							 BseIndex                index);
+static void         bse_container_prepare               (BseSource              *source);
+static void	    bse_container_context_create	(BseSource		*source,
+							 guint			  context_handle,
+							 GslTrans		*trans);
+static void	    bse_container_context_connect	(BseSource		*source,
+							 guint			 context_handle,
+							 GslTrans		*trans);
+static void	    bse_container_context_dismiss	(BseSource		*source,
+							 guint			 context_handle,
+							 GslTrans		*trans);
 static void         bse_container_reset                 (BseSource              *source);
 
 
@@ -50,6 +68,7 @@ static GTypeClass	*parent_class = NULL;
 static GQuark		 quark_cross_refs = 0;
 static GSList           *containers_cross_changes = NULL;
 static guint             containers_cross_changes_handler = 0;
+static guint		 container_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
@@ -83,16 +102,15 @@ bse_container_class_init (BseContainerClass *class)
   BseItemClass *item_class;
   BseSourceClass *source_class;
   
-  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek_parent (class);
   gobject_class = G_OBJECT_CLASS (class);
   object_class = BSE_OBJECT_CLASS (class);
   item_class = BSE_ITEM_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 
-  if (!quark_cross_refs)
-    quark_cross_refs = g_quark_from_static_string ("BseContainerCrossRefs");
+  quark_cross_refs = g_quark_from_static_string ("BseContainerCrossRefs");
   
-  gobject_class->shutdown = bse_container_shutdown;
+  gobject_class->dispose = bse_container_dispose;
   gobject_class->finalize = bse_container_finalize;
 
   object_class->store_after = bse_container_store_after;
@@ -100,6 +118,9 @@ bse_container_class_init (BseContainerClass *class)
   object_class->destroy = bse_container_destroy;
 
   source_class->prepare = bse_container_prepare;
+  source_class->context_create = bse_container_context_create;
+  source_class->context_connect = bse_container_context_connect;
+  source_class->context_dismiss = bse_container_context_dismiss;
   source_class->reset = bse_container_reset;
   
   class->add_item = bse_container_do_add_item;
@@ -107,6 +128,13 @@ bse_container_class_init (BseContainerClass *class)
   class->forall_items = NULL;
   class->item_seqid = NULL;
   class->get_item = NULL;
+  
+  container_signals[SIGNAL_ITEM_ADDED] = bse_object_class_add_signal (object_class, "item_added",
+								      bse_marshal_VOID__OBJECT,
+								      G_TYPE_NONE, 1, BSE_TYPE_ITEM);
+  container_signals[SIGNAL_ITEM_REMOVED] = bse_object_class_add_signal (object_class, "item_removed",
+									bse_marshal_VOID__OBJECT,
+									G_TYPE_NONE, 1, BSE_TYPE_ITEM);
 }
 
 static void
@@ -116,15 +144,15 @@ bse_container_init (BseContainer *container)
 }
 
 static void
-bse_container_shutdown (GObject *gobject)
+bse_container_dispose (GObject *gobject)
 {
   BseContainer *container = BSE_CONTAINER (gobject);
 
   /* remove any existing cross-references (with notification) */
   bse_object_set_qdata (container, quark_cross_refs, NULL);
 
-  /* chain parent class' shutdown handler */
-  G_OBJECT_CLASS (parent_class)->shutdown (gobject);
+  /* chain parent class' dispose handler */
+  G_OBJECT_CLASS (parent_class)->dispose (gobject);
 }
 
 static void
@@ -153,7 +181,7 @@ bse_container_finalize (GObject *gobject)
    * cleared. though gobject is an invalid pointer at this time,
    * we can still use it for list removal.
    */
-  containers_cross_changes = g_slist_remove_any (containers_cross_changes, gobject);
+  containers_cross_changes = g_slist_remove_all (containers_cross_changes, gobject);
 }
 
 static void
@@ -167,10 +195,22 @@ bse_container_do_add_item (BseContainer *container,
 
   if (BSE_IS_SOURCE (item) && BSE_SOURCE_PREPARED (container))
     {
+      GslTrans *trans = gsl_trans_open ();
+      guint c;
+
       g_return_if_fail (BSE_SOURCE_PREPARED (item) == FALSE);
 
-      BSE_OBJECT_SET_FLAGS (item, BSE_SOURCE_FLAG_PREPARED);
-      BSE_SOURCE_GET_CLASS (item)->prepare (BSE_SOURCE (item), bse_heart_get_beat_index ());
+      bse_source_prepare (BSE_SOURCE (item));
+
+      /* create item contexts */
+      for (c = 0; c < BSE_SOURCE (container)->n_contexts; c++)
+	{
+	  guint context = bse_source_create_context (BSE_SOURCE (item), trans);
+
+	  g_assert (context == c);	/* better not fail here */
+	  bse_source_connect_context (BSE_SOURCE (item), context, trans);
+	}
+      gsl_trans_commit (trans);
     }
 }
 
@@ -180,7 +220,9 @@ container_add_item (BseContainer *container,
 {
   bse_object_ref (BSE_OBJECT (container));
   bse_object_ref (BSE_OBJECT (item));
-
+  g_object_freeze_notify (G_OBJECT (container));
+  g_object_freeze_notify (G_OBJECT (item));
+  
   /* ensure that item names per container are unique
    */
   if (!BSE_OBJECT_NAME (item) || bse_container_lookup_item (container, BSE_OBJECT_NAME (item)))
@@ -205,8 +247,10 @@ container_add_item (BseContainer *container,
     }
 
   BSE_CONTAINER_GET_CLASS (container)->add_item (container, item);
-  BSE_NOTIFY (container, item_added, NOTIFY (OBJECT, item, DATA));
+  g_signal_emit (container, container_signals[SIGNAL_ITEM_ADDED], 0, item);
 
+  g_object_thaw_notify (G_OBJECT (item));
+  g_object_thaw_notify (G_OBJECT (container));
   bse_object_unref (BSE_OBJECT (item));
   bse_object_unref (BSE_OBJECT (container));
 }
@@ -282,17 +326,15 @@ bse_container_do_remove_item (BseContainer *container,
 
   if (BSE_IS_SOURCE (item))
     {
+      /* detach item from rest of the world */
+      _bse_source_clear_ichannels (BSE_SOURCE (item));
+      _bse_source_clear_ochannels (BSE_SOURCE (item));
+      /* before mudling with its state */
       if (BSE_SOURCE_PREPARED (container))
 	{
 	  g_return_if_fail (BSE_SOURCE_PREPARED (item) == TRUE);
 
 	  bse_source_reset (BSE_SOURCE (item));
-	}
-
-      if (!BSE_IS_CONTAINER (item))
-	{
-	  bse_source_clear_ichannels (BSE_SOURCE (item));
-	  bse_source_clear_ochannels (BSE_SOURCE (item));
 	}
     }
 
@@ -321,8 +363,12 @@ bse_container_remove_item (BseContainer *container,
   bse_object_ref (BSE_OBJECT (item));
 
   BSE_CONTAINER_GET_CLASS (container)->remove_item (container, item);
-  BSE_NOTIFY (container, item_removed, NOTIFY (OBJECT, item, DATA));
-
+  g_object_freeze_notify (G_OBJECT (container));
+  g_object_freeze_notify (G_OBJECT (item));
+  g_signal_emit (container, container_signals[SIGNAL_ITEM_REMOVED], 0, item);
+  g_object_thaw_notify (G_OBJECT (item));
+  g_object_thaw_notify (G_OBJECT (container));
+  
   bse_object_unref (BSE_OBJECT (item));
   bse_object_unref (BSE_OBJECT (container));
 }
@@ -468,17 +514,20 @@ store_forall (BseItem *item,
   BseStorage *storage = data[1];
   gchar *path;
 
-  bse_storage_break (storage);
-  bse_storage_putc (storage, '(');
+  if (!BSE_ITEM_NEVER_STORE (item))
+    {
+      bse_storage_break (storage);
+      bse_storage_putc (storage, '(');
+      
+      path = bse_container_make_item_path (container, item, TRUE);
+      bse_storage_puts (storage, path);
+      g_free (path);
+      
+      bse_storage_push_level (storage);
+      bse_object_store (BSE_OBJECT (item), storage);
+      bse_storage_pop_level (storage);
+    }
 
-  path = bse_container_make_item_path (container, item, TRUE);
-  bse_storage_puts (storage, path);
-  g_free (path);
-
-  bse_storage_push_level (storage);
-  bse_object_store (BSE_OBJECT (item), storage);
-  bse_storage_pop_level (storage);
-  
   return TRUE;
 }
 
@@ -716,16 +765,19 @@ bse_container_make_item_path (BseContainer *container,
 static gboolean
 notify_cross_changes (gpointer data)
 {
+  BSE_THREADS_ENTER ();
+  
   while (containers_cross_changes)
     {
       BseContainer *container = BSE_CONTAINER (containers_cross_changes->data);
 
-      containers_cross_changes = g_slist_remove_any (containers_cross_changes, container);
-      BSE_NOTIFY (container, cross_changes, NOTIFY (OBJECT, DATA));
+      containers_cross_changes = g_slist_remove_all (containers_cross_changes, container);
+      // g_signal_emit (container, container_signals[SIGNAL_CROSS_CHANGES], 0);
     }
-
   containers_cross_changes_handler = 0;
 
+  BSE_THREADS_LEAVE ();
+  
   return FALSE;
 }
 
@@ -740,35 +792,34 @@ container_queue_cross_changes (BseContainer *container)
   containers_cross_changes = g_slist_prepend (containers_cross_changes, container);
 }
 
-typedef struct _BseContainerCrossRefs BseContainerCrossRefs;
 typedef struct
 {
-  BseItem         *owner;
-  BseItem         *ref_item;
-  BseItemCrossFunc destroy;
-  gpointer         data;
+  BseItem           *owner;
+  BseItem           *ref_item;
+  BseItemUncross     uncross;
+  // gpointer         data;
 } CrossRef;
-struct _BseContainerCrossRefs
+typedef struct
 {
   guint         n_cross_refs;
   BseContainer *container;
   CrossRef      cross_refs[1]; /* flexible array */
-};
+} BseContainerCrossRefs;
 
 static inline void
-destroy_cref (BseContainerCrossRefs *crefs,
-	      guint                  n)
+uncross_ref (BseContainerCrossRefs *crefs,
+	     guint                  n,
+	     gboolean		    notify)
 {
   BseItem *owner = crefs->cross_refs[n].owner;
   BseItem *ref_item = crefs->cross_refs[n].ref_item;
-  BseItemCrossFunc destroy = crefs->cross_refs[n].destroy;
-  gpointer data = crefs->cross_refs[n].data;
+  BseItemUncross uncross = crefs->cross_refs[n].uncross;
 
   crefs->n_cross_refs--;
   if (n < crefs->n_cross_refs)
     crefs->cross_refs[n] = crefs->cross_refs[crefs->n_cross_refs];
 
-  destroy (owner, ref_item, data);
+  uncross (owner, ref_item);
 }
 
 static void
@@ -780,7 +831,7 @@ destroy_crefs (gpointer data)
     container_queue_cross_changes (crefs->container);
 
   while (crefs->n_cross_refs)
-    destroy_cref (crefs, crefs->n_cross_refs - 1);
+    uncross_ref (crefs, crefs->n_cross_refs - 1, TRUE);
   g_free (crefs);
 }
 
@@ -802,8 +853,7 @@ void
 bse_container_cross_ref (BseContainer    *container,
 			 BseItem         *owner,
 			 BseItem         *ref_item,
-			 BseItemCrossFunc destroy_func,
-			 gpointer         data)
+			 BseItemUncross	  uncross)
 {
   BseContainerCrossRefs *crefs;
   guint i;
@@ -816,7 +866,7 @@ bse_container_cross_ref (BseContainer    *container,
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (owner));
   g_return_if_fail (BSE_IS_ITEM (ref_item));
-  g_return_if_fail (destroy_func != NULL);
+  g_return_if_fail (uncross != NULL);
 
   crefs = container_get_crefs (container);
   if (!crefs)
@@ -838,8 +888,8 @@ bse_container_cross_ref (BseContainer    *container,
     }
   crefs->cross_refs[i].owner = owner;
   crefs->cross_refs[i].ref_item = ref_item;
-  crefs->cross_refs[i].destroy = destroy_func;
-  crefs->cross_refs[i].data = data;
+  crefs->cross_refs[i].uncross = uncross;
+  // crefs->cross_refs[i].data = data;
 
   container_queue_cross_changes (container);
 }
@@ -856,9 +906,9 @@ bse_container_cross_unref (BseContainer *container,
   g_return_if_fail (BSE_IS_ITEM (owner));
   g_return_if_fail (BSE_IS_ITEM (ref_item));
 
-  bse_object_ref (BSE_OBJECT (container));
-  bse_object_ref (BSE_OBJECT (owner));
-  bse_object_ref (BSE_OBJECT (ref_item));
+  g_object_ref (container);
+  g_object_ref (owner);
+  g_object_ref (ref_item);
 
   crefs = container_get_crefs (container);
   if (crefs)
@@ -870,7 +920,7 @@ bse_container_cross_unref (BseContainer *container,
 	  if (crefs->cross_refs[i].owner == owner &&
 	      crefs->cross_refs[i].ref_item == ref_item)
 	    {
-	      destroy_cref (crefs, i);
+	      uncross_ref (crefs, i, FALSE);
 	      container_queue_cross_changes (container);
 	      found_one = TRUE;
 	      break;
@@ -881,13 +931,13 @@ bse_container_cross_unref (BseContainer *container,
 
   if (!found_one)
     g_warning (G_STRLOC ": unable to find cross ref from `%s' to `%s' on `%s'",
-	       BSE_OBJECT_TYPE_NAME (owner),
-	       BSE_OBJECT_TYPE_NAME (ref_item),
-	       BSE_OBJECT_TYPE_NAME (container));
+	       G_OBJECT_TYPE_NAME (owner),
+	       G_OBJECT_TYPE_NAME (ref_item),
+	       G_OBJECT_TYPE_NAME (container));
 
-  bse_object_unref (BSE_OBJECT (ref_item));
-  bse_object_unref (BSE_OBJECT (owner));
-  bse_object_unref (BSE_OBJECT (container));
+  g_object_unref (ref_item);
+  g_object_unref (owner);
+  g_object_unref (container);
 }
 
 /* we could in theory use bse_item_has_ancestor() here,
@@ -930,8 +980,8 @@ bse_container_uncross_item (BseContainer *container,
     {
       guint i = 0;
       
-      bse_object_ref (BSE_OBJECT (container));
-      bse_object_ref (BSE_OBJECT (item));
+      g_object_ref (container);
+      g_object_ref (item);
 
       /* suppress tree walks where possible
        */
@@ -941,7 +991,7 @@ bse_container_uncross_item (BseContainer *container,
 	    if (crefs->cross_refs[i].owner == item || crefs->cross_refs[i].ref_item == item)
 	      {
 		found_one = TRUE;
-		destroy_cref (crefs, i);
+		uncross_ref (crefs, i, TRUE);
 	      }
 	    else
 	      i++;
@@ -968,7 +1018,7 @@ bse_container_uncross_item (BseContainer *container,
 		  citem->parent = saved_parent;
 
 		  found_one = TRUE;
-		  destroy_cref (crefs, i);
+		  uncross_ref (crefs, i, TRUE);
 
 		  saved_parent = citem->parent;
 		  citem->parent = NULL;
@@ -982,8 +1032,8 @@ bse_container_uncross_item (BseContainer *container,
       if (found_one)
 	container_queue_cross_changes (container);
 
-      bse_object_unref (BSE_OBJECT (item));
-      bse_object_unref (BSE_OBJECT (container));
+      g_object_unref (item);
+      g_object_unref (container);
     }
 }
 
@@ -1009,39 +1059,157 @@ bse_container_cross_forall (BseContainer      *container,
 }
 
 static gboolean
-prepare_item (BseItem *item,
-	      gpointer data)
+forall_prepare (BseItem *item,
+		gpointer data)
 {
-  if (BSE_IS_SOURCE (item) && !BSE_SOURCE_PREPARED (item))
+  if (BSE_IS_SOURCE (item))
     {
-      BSE_OBJECT_SET_FLAGS (item, BSE_SOURCE_FLAG_PREPARED);
-      BSE_SOURCE_GET_CLASS (item)->prepare (BSE_SOURCE (item), bse_heart_get_beat_index ());
+      g_return_val_if_fail (!BSE_SOURCE_PREPARED (item), TRUE);
+
+      bse_source_prepare (BSE_SOURCE (item));
     }
 
   return TRUE;
 }
 
 static void
-bse_container_prepare (BseSource *source,
-		       BseIndex   index)
+bse_container_prepare (BseSource *source)
 {
   BseContainer *container = BSE_CONTAINER (source);
 
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 
   /* make sure all BseSource children are prepared as well */
   if (container->n_items)
     {
       g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
 
-      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, prepare_item, NULL);
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_prepare, NULL);
     }
 }
 
 static gboolean
-reset_item (BseItem *item,
-	    gpointer data)
+forall_context_create (BseItem *item,
+		       gpointer _data)
+{
+  gpointer *data = _data;
+
+  if (BSE_IS_SOURCE (item))
+    {
+      guint new_context_handle;
+
+      g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
+
+      new_context_handle = bse_source_create_context (BSE_SOURCE (item), data[1]);
+      g_return_val_if_fail (new_context_handle == GPOINTER_TO_UINT (data[0]), TRUE);
+    }
+
+  return TRUE;
+}
+
+static void
+bse_container_context_create (BseSource	*source,
+			      guint	 context_handle,
+			      GslTrans  *trans)
+{
+  BseContainer *container = BSE_CONTAINER (source);
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
+
+  /* handle children */
+  if (container->n_items)
+    {
+      gpointer data[2] = { GUINT_TO_POINTER (context_handle), trans };
+
+      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_context_create, data);
+    }
+}
+
+static gboolean
+forall_context_connect (BseItem *item,
+			gpointer _data)
+{
+  gpointer *data = _data;
+
+  if (BSE_IS_SOURCE (item))
+    {
+      g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
+
+      bse_source_connect_context (BSE_SOURCE (item),
+				  GPOINTER_TO_UINT (data[0]),
+				  data[1]);
+    }
+  
+  return TRUE;
+}
+
+static void
+bse_container_context_connect (BseSource *source,
+			       guint	  context_handle,
+			       GslTrans  *trans)
+{
+  BseContainer *container = BSE_CONTAINER (source);
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
+
+  /* handle children */
+  if (container->n_items)
+    {
+      gpointer data[2] = { GUINT_TO_POINTER (context_handle), trans };
+
+      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_context_connect, data);
+    }
+}
+
+static gboolean
+forall_context_dismiss (BseItem *item,
+			gpointer _data)
+{
+  gpointer *data = _data;
+
+  if (BSE_IS_SOURCE (item))
+    {
+      g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
+
+      bse_source_dismiss_context (BSE_SOURCE (item),
+				  GPOINTER_TO_UINT (data[0]),
+				  data[1]);
+    }
+  
+  return TRUE;
+}
+
+static void
+bse_container_context_dismiss (BseSource *source,
+			       guint	  context_handle,
+			       GslTrans  *trans)
+{
+  BseContainer *container = BSE_CONTAINER (source);
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
+
+  /* handle children */
+  if (container->n_items)
+    {
+      gpointer data[2] = { GUINT_TO_POINTER (context_handle), trans };
+
+      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_context_dismiss, data);
+    }
+}
+
+static gboolean
+forall_reset (BseItem *item,
+	      gpointer data)
 {
   if (BSE_IS_SOURCE (item))
     {
@@ -1063,7 +1231,7 @@ bse_container_reset (BseSource *source)
     {
       g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
 
-      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, reset_item, NULL);
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, forall_reset, NULL);
     }
 
   /* chain parent class' handler */

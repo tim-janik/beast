@@ -15,8 +15,8 @@ AC_PREREQ(2.13)
 #
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 BSE_MAJOR_VERSION=0
-BSE_MINOR_VERSION=3
-BSE_MICRO_VERSION=2
+BSE_MINOR_VERSION=4
+BSE_MICRO_VERSION=0
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
@@ -30,13 +30,7 @@ dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
 dnl# if backwards compatibility has been broken,
 dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
 dnl#
-# BLib and BEAST version numbers
-BLIB_MAJOR_VERSION=$BSE_MAJOR_VERSION
-BLIB_MINOR_VERSION=$BSE_MINOR_VERSION
-BLIB_MICRO_VERSION=$BSE_MICRO_VERSION
-BLIB_INTERFACE_AGE=$BSE_INTERFACE_AGE
-BLIB_BINARY_AGE=$BSE_BINARY_AGE
-BLIB_VERSION=$BSE_VERSION
+# BEAST version numbers
 BST_VERSION=$BSE_VERSION
 AC_SUBST(BSE_MAJOR_VERSION)
 AC_SUBST(BSE_MINOR_VERSION)
@@ -44,12 +38,6 @@ AC_SUBST(BSE_MICRO_VERSION)
 AC_SUBST(BSE_INTERFACE_AGE)
 AC_SUBST(BSE_BINARY_AGE)
 AC_SUBST(BSE_VERSION)
-AC_SUBST(BLIB_MAJOR_VERSION)
-AC_SUBST(BLIB_MINOR_VERSION)
-AC_SUBST(BLIB_MICRO_VERSION)
-AC_SUBST(BLIB_INTERFACE_AGE)
-AC_SUBST(BLIB_BINARY_AGE)
-AC_SUBST(BLIB_VERSION)
 AC_SUBST(BST_VERSION)
 
 # compute libtool versions
@@ -113,23 +101,15 @@ MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
 dnl
 dnl Define package requirements.
 dnl
-AC_DEFUN(AC_BLIB_REQUIREMENTS,
-[
-    AM_PATH_GLIB(1.2.6,
-	GLIB_VERSION=`$GLIB_CONFIG --version`,
-	    AC_MSG_ERROR(Cannot find GLib - glib-config missing from path?),
-		gmodule
-	)
-    BLIB_CFLAGS="$GLIB_CFLAGS"
-    BLIB_LIBS="$GLIB_LIBS"
-    AC_SUBST(BLIB_CFLAGS)
-    AC_SUBST(BLIB_LIBS)
-])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
-    # BSE depends on BLib
-    BSE_CFLAGS="$BLIB_CFLAGS"
-    BSE_LIBS="$BLIB_LIBS"
+    dnl Need pkg-config first
+    MC_ASSERT_PKG_CONFIG()
+
+    dnl Check for GLib and setup variables
+    MC_PKG_CONFIG_REQUIRE(glib-2.0 gobject-2.0 gmodule-2.0 gthread-2.0, 1.3.6, GLIB_CFLAGS, GLIB_LIBS)
+    BSE_CFLAGS="$GLIB_CFLAGS"
+    BSE_LIBS="$GLIB_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
 
@@ -138,43 +118,24 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     bseplugindir=$bselibdir/plugins
     AC_SUBST(bseplugindir)
 ])
-AC_DEFUN(AC_BEAST_PIXBUF_CHECK,
-[
-    dnl check for GkPixbuf
-    dnl this check assumes that gdk_pixbuf.la is installed in some
-    dnl standard path, e.g. /usr or /usr/local
-    AC_MSG_CHECKING(for GdkPixbuf Library in $1)
-    have_gdk_pixbuf=no
-    cflags=$CFLAGS
-    ldflags=$LDFLAGS
-    CFLAGS=$BEAST_CFLAGS
-    LDFLAGS="$1 $BEAST_LIBS"
-    AC_TRY_LINK([
-#include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gdk-pixbuf/gnome-canvas-pixbuf.h>
-    ],[{
-  gdk_pixbuf_new_from_art_pixbuf (NULL);
-  gnome_canvas_pixbuf_get_type ();
-    }],[
-	AC_MSG_RESULT([found it, great!])
-	AC_DEFINE_UNQUOTED(BST_WITH_GDK_PIXBUF)
-	BEAST_LIBS="$1 $BEAST_LIBS"
-	have_gdk_pixbuf=yes
-    ],[
-	AC_MSG_RESULT([failed - reverting to GnomeCanvasImage])
-    ])
-    CFLAGS=$cflags
-    LDFLAGS=$ldflags
-])
 AC_DEFUN(AC_BEAST_REQUIREMENTS,
 [
-    dnl Check for Gtk+
-    AM_PATH_GTK(1.2.6,
-	,
-	AC_MSG_ERROR(Cannot find GTK+ - gtk-config missing from path?)
-    )
-    BEAST_CFLAGS="$GTK_CFLAGS"
-    BEAST_LIBS="$GTK_LIBS"
+    dnl Need pkg-config first
+    MC_ASSERT_PKG_CONFIG()
+
+    dnl Check for Gtk+ + pangoft2
+    MC_PKG_CONFIG_REQUIRE(gtk+-2.0 pangoft2, 1.3.6, GTK_CFLAGS, GTK_LIBS)
+
+    dnl Check for libart-2.0
+    MC_PKG_CONFIG_REQUIRE(libart-2.0, 2.3.4, LIBART_CFLAGS, LIBART_LIBS)
+
+    dnl Check for gnomecanvas-2.0
+    MC_PKG_CONFIG_REQUIRE(libgnomecanvas-2.0, 1.96.0, CANVAS_CFLAGS, CANVAS_LIBS)
+
+    BEAST_CFLAGS="$CANVAS_CFLAGS $GTK_CFLAGS $LIBART_CFLAGS"
+    BEAST_LIBS="$CANVAS_LIBS $GTK_LIBS $LIBART_LIBS"
+    AC_SUBST(BEAST_CFLAGS)
+    AC_SUBST(BEAST_LIBS)
 
     dnl Feature XKB extension if present
     cflags=$CFLAGS
@@ -191,52 +152,11 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     )
     CFLAGS=$cflags
     LDFLAGS=$ldflags
-
-    dnl Check for GNOME, we override BEAST_CFLAGS and BEAST_LIBS here,
-    dnl because GNOME already takes care of Gtk+, and we already checked
-    dnl that the Gtk+ version is sufficient.
-    REQUIRED=1.0.16
-    AC_MSG_CHECKING(for GNOME - version >= $REQUIRED)
-    if gnome-config --version >/dev/null 2>&1; then
-	GNOME_VERSION=[`gnome-config --version | sed 's/^[^0-9]*//'`]
-	AC_MSG_RESULT([yes ($GNOME_VERSION)])
-	MC_CHECK_VERSION($GNOME_VERSION, $REQUIRED,
-	    ,
-	    AC_MSG_ERROR(BEAST requires at least GNOME v$REQUIRED)
-	)
-	BEAST_CFLAGS=`gnome-config --cflags gnomeui`
-	BEAST_LIBS=`gnome-config --libs gnomeui`
-    else
-	AC_MSG_RESULT(no)
-	AC_MSG_ERROR(Cannot find GNOME - gnome-config missing from path?)
-    fi
-
-    dnl check for GdkPixbuf (with -lgdk_pixbuf and -lgnomecanvaspixbuf)
-    if test "$have_gdk_pixbuf" != "yes" ; then
-	AC_BEAST_PIXBUF_CHECK(-lgdk_pixbuf)
-    fi
-    if test "$have_gdk_pixbuf" != "yes" ; then
-	AC_BEAST_PIXBUF_CHECK(-lgnomecanvaspixbuf -lgdk_pixbuf)
-    fi
-
-    dnl We need GLE also (and asume it is installed in the same
-    dnl prefix as Gtk+ or GNOME)
-    GLE_LIBS=
-#    AC_CHECK_LIB(gle, gle_init,
-#	BEAST_LIBS="-lgle $BEAST_LIBS"
-#	,
-#	AC_MSG_ERROR(Unable to find GLE - it is required to build BEAST),
-#	$BEAST_LIBS
-#    )
-    AC_SUBST(GLE_LIBS)
 	
     dnl Default keytable patch
     AC_MSG_CHECKING(what the fallback keytable should be)
     AC_DEFINE_UNQUOTED(BST_DFL_KEYTABLE, "us")
     AC_MSG_RESULT([\"us\", there are more americans than germans ;( ])
-
-    AC_SUBST(BEAST_CFLAGS)
-    AC_SUBST(BEAST_LIBS)
 
     # BEAST version
     AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION")
@@ -280,13 +200,21 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
     elif test -r /proc/asound/oss-devices && test -r /proc/asound/sndstat; then
 	have_oss_sndstat=yes
     fi
+    result=
     if test -c /dev/dsp && test "$have_oss_sndstat" = yes; then
 	bse_have_pcmdev=yes
         AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_OSS, "/dev/dsp")
-	AC_MSG_RESULT(/dev/dsp)
+        result="$result""PCM:/dev/dsp "
     else
-	AC_MSG_RESULT(none)
+        result="$result""PCM:none "
     fi
+    if test -c /dev/midi && test "$have_oss_sndstat" = yes; then
+        AC_DEFINE_UNQUOTED(BSE_MIDI_DEVICE_CONF_OSS, "/dev/midi")
+        result="$result""MIDI:/dev/midi "
+    else
+        result="$result""MIDI:none "
+    fi
+    AC_MSG_RESULT($result)
 
     dnl feature ALSA with a minimum version requirement -
     dnl the logic here is as follows, even if /proc support
@@ -389,8 +317,9 @@ AC_SUBST(STRIP_DUMMY)
 AC_SUBST(STRIP_BEGIN)
 AC_SUBST(STRIP_END)
 
-# BLib requirements
-AC_BLIB_REQUIREMENTS
+# get us pkg-config
+MC_ASSERT_PKG_CONFIG()
+
 # BSE requirements
 AC_BSE_REQUIREMENTS
 # check for sound devices
@@ -458,18 +387,19 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
+
 # create output files
 AC_OUTPUT([
 Makefile
-blib/Makefile
 bse/Makefile
 bse/icons/Makefile
 plugins/Makefile
 plugins/icons/Makefile
+bsw/Makefile
 beast-gtk/Makefile
 beast-gtk/icons/Makefile
 docs/Makefile
+docs/reference/Makefile
 test/Makefile
-blib/blibconfig.h
 bse/bseconfig.h
 ])

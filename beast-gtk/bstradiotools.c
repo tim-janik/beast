@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2000 Red Hat, Inc.
+ * Copyright (C) 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -74,26 +74,23 @@ bst_radio_tools_get_type (void)
 static void
 bst_radio_tools_class_init (BstRadioToolsClass *class)
 {
-  GtkObjectClass *object_class;
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   
-  parent_class = gtk_type_class (GTK_TYPE_OBJECT);
-  object_class = GTK_OBJECT_CLASS (class);
+  parent_class = g_type_class_peek_parent (class);
   bst_radio_tools_class = class;
   
   object_class->destroy = bst_radio_tools_destroy;
   
-  class->tooltips = NULL;
   class->set_tool = bst_radio_tools_do_set_tool;
 
   radio_tools_signals[SIGNAL_SET_TOOL] =
     gtk_signal_new ("set_tool",
 		    GTK_RUN_LAST | GTK_RUN_NO_RECURSE,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (BstRadioToolsClass, set_tool),
-		    gtk_marshal_NONE__UINT,
+		    bst_marshal_NONE__UINT,
 		    GTK_TYPE_NONE,
 		    1, GTK_TYPE_UINT);
-  gtk_object_class_add_signals (object_class, radio_tools_signals, SIGNAL_LAST);
 }
 
 static void
@@ -107,19 +104,6 @@ bst_radio_tools_init (BstRadioTools      *rtools,
   rtools->n_tools = 0;
   rtools->tools = NULL;
   rtools->widgets = NULL;
-  
-  if (!class->tooltips)
-    {
-      class->tooltips = gtk_tooltips_new ();
-      gtk_object_ref (GTK_OBJECT (class->tooltips));
-      gtk_object_sink (GTK_OBJECT (class->tooltips));
-      gtk_signal_connect (GTK_OBJECT (class->tooltips),
-			  "destroy",
-			  gtk_widget_destroyed,
-			  &class->tooltips);
-    }
-  else
-    gtk_object_ref (GTK_OBJECT (class->tooltips));
 }
 
 static void
@@ -131,8 +115,6 @@ bst_radio_tools_destroy (GtkObject *object)
 
   while (rtools->widgets)
     gtk_widget_destroy (rtools->widgets->data);
-
-  gtk_object_unref (GTK_OBJECT (BST_RADIO_TOOLS_GET_CLASS (rtools)->tooltips));
   
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -315,11 +297,13 @@ bst_radio_tools_build_toolbar (BstRadioTools *rtools,
 					   rtools->tools[i].tip, NULL,
 					   forest,
 					   NULL, NULL);
-      gtk_widget_set (button,
-		      "user_data", GUINT_TO_POINTER (rtools->tools[i].tool_id),
-		      "object_signal::toggled", rtools_toggle_toggled, rtools,
-		      "object_signal::destroy", rtools_widget_destroyed, rtools,
-		      NULL);
+      g_object_set (button,
+		    "user_data", GUINT_TO_POINTER (rtools->tools[i].tool_id),
+		    NULL);
+      g_object_connect (button,
+			"swapped_signal::toggled", rtools_toggle_toggled, rtools,
+			"swapped_signal::destroy", rtools_widget_destroyed, rtools,
+			NULL);
       rtools->widgets = g_slist_prepend (rtools->widgets, button);
     }
 
@@ -348,7 +332,7 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
 			       GtkReliefStyle relief)
 {
   GtkWidget *vbox, *table, *text = NULL;
-  guint i, n = 0, row = 4;
+  guint i, n = 0, column = 5;
   
   g_return_val_if_fail (BST_IS_RADIO_TOOLS (rtools), NULL);
   
@@ -377,23 +361,24 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
 	continue;
       
       forest = bst_forest_from_bse_icon (rtools->tools[i].icon, BST_PALETTE_ICON_WIDTH, BST_PALETTE_ICON_HEIGHT);
-      button = gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
-			       "visible", TRUE,
-			       "draw_indicator", FALSE,
-			       "relief", relief,
-			       "child", forest,
-			       "user_data", GUINT_TO_POINTER (rtools->tools[i].tool_id),
-			       "object_signal::toggled", rtools_toggle_toggled, rtools,
-			       "object_signal::destroy", rtools_widget_destroyed, rtools,
-			       text ? "signal::toggled" : NULL, toggle_apply_blurb, text,
-			       NULL);
-      gtk_tooltips_set_tip (BST_RADIO_TOOLS_GET_CLASS (rtools)->tooltips, button, rtools->tools[i].tip, NULL);
+      button = g_object_connect (gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
+						 "visible", TRUE,
+						 "draw_indicator", FALSE,
+						 "relief", relief,
+						 "child", forest,
+						 "user_data", GUINT_TO_POINTER (rtools->tools[i].tool_id),
+						 NULL),
+				 "swapped_signal::toggled", rtools_toggle_toggled, rtools,
+				 "swapped_signal::destroy", rtools_widget_destroyed, rtools,
+				 text ? "signal::toggled" : NULL, toggle_apply_blurb, text,
+				 NULL);
+      gtk_tooltips_set_tip (BST_TOOLTIPS, button, rtools->tools[i].tip, NULL);
       gtk_object_set_data_full (GTK_OBJECT (button), "blurb", g_strdup (rtools->tools[i].blurb), g_free);
       rtools->widgets = g_slist_prepend (rtools->widgets, button);
       gtk_table_attach (GTK_TABLE (table),
 			button,
-			n % row, n % row + 1,
-			n / 4, n / 4 + 1,
+			n % column, n % column + 1,
+			n / column, n / column + 1,
 			GTK_SHRINK, GTK_SHRINK, // GTK_EXPAND | GTK_SHRINK | GTK_FILL, GTK_EXPAND | GTK_SHRINK | GTK_FILL,
 			0, 0);
       n++;
@@ -414,8 +399,8 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
 		      "border_width", 5,
 		      "parent", vbox,
 		      "child", hbox,
-		      "width", 1,
-		      "height", 100,
+		      "width_request", 1,
+		      "height_request", 100,
 		      NULL);
     }
   if (text)

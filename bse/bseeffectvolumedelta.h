@@ -42,6 +42,7 @@ extern "C" {
 
 /* --- BseEffectVolumeDelta --- */
 typedef struct _BseEffectVolumeDelta BseEffectVolumeDelta;
+typedef struct _BseEffectClass       BseEffectVolumeDeltaClass;
 struct _BseEffectVolumeDelta
 {
   BseEffect parent_object;

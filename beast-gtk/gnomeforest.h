@@ -93,7 +93,7 @@ double art_vpath_area (const ArtVpath *vpath);
 #ifndef __GNOME_FOREST_H__
 #define __GNOME_FOREST_H__
 
-#include	<gnome.h>
+#include	<libart_lgpl/libart.h>
 
 
 #ifdef __cplusplus
@@ -108,7 +108,7 @@ extern "C" {
 #define	GNOME_FOREST_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), GNOME_TYPE_FOREST, GnomeForestClass))
 #define	GNOME_IS_FOREST(object)		(GTK_CHECK_TYPE ((object), GNOME_TYPE_FOREST))
 #define	GNOME_IS_FOREST_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), GNOME_TYPE_FOREST))
-#define GNOME_FOREST_GET_CLASS(obj)	((GnomeForestClass*) (((GtkObject*) (obj))->klass))
+#define GNOME_FOREST_GET_CLASS(obj)	(GTK_CHECK_GET_CLASS ((obj), GNOME_TYPE_FOREST, GnomeForestClass))
 
 #define GNOME_FOREST_PRIORITY	(GTK_PRIORITY_REDRAW)
 

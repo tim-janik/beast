@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,12 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  *
- * bsepcmdevice.h: pcm device base object
+ * bsepcmdevice.h: pcm device driver class
  */
 #ifndef __BSE_PCM_DEVICE_H__
 #define __BSE_PCM_DEVICE_H__
 
-#include        <bse/bsedevice.h>
+#include        <bse/bseobject.h>
+#include        <gsl/gsldefs.h>
 
 
 #ifdef __cplusplus
@@ -35,135 +36,111 @@ extern "C" {
 #define BSE_IS_PCM_DEVICE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PCM_DEVICE))
 #define BSE_IS_PCM_DEVICE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_DEVICE))
 #define BSE_PCM_DEVICE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_PCM_DEVICE, BsePcmDeviceClass))
+/* flag tests */
+#define BSE_PCM_DEVICE_OPEN(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_OPEN) != 0)
+#define BSE_PCM_DEVICE_READABLE(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_READABLE) != 0)
+#define BSE_PCM_DEVICE_WRITABLE(pdev)	 ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_WRITABLE) != 0)
 
 
-/* --- object member/convenience macros --- */
-#define BSE_PCM_DEVICE_HAS_CAPS(pdev)    ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_HAS_CAPS) != 0)
-#define BSE_PCM_DEVICE_STATE_SYNC(pdev)  ((BSE_OBJECT_FLAGS (pdev) & BSE_PCM_FLAG_STATE_SYNC) != 0)
-
-
-/* --- PcmDevice flags --- */
+/* --- capabilities --- */
 typedef enum
 {
-  BSE_PCM_FLAG_HAS_CAPS   = (1 << (BSE_DEVICE_FLAGS_USHIFT + 0)),
-  BSE_PCM_FLAG_STATE_SYNC = (1 << (BSE_DEVICE_FLAGS_USHIFT + 1))
-} BsePcmDeviceFlags;
-#define BSE_PCM_FLAGS_USHIFT     (BSE_DEVICE_FLAGS_USHIFT + 2)
-
-
-/* --- possible frequencies --- */
-typedef enum
-{
-#define BSE_PCM_FREQ_MIN	BSE_PCM_FREQ_8000
-  BSE_PCM_FREQ_8000     = (1 <<  1),	  /*   8000 Hz */
-  BSE_PCM_FREQ_11025    = (1 <<  2),	  /*  11025 Hz */
-  BSE_PCM_FREQ_16000    = (1 <<  3),      /*  16000 Hz */
-  BSE_PCM_FREQ_22050    = (1 <<  4),      /*  22050 Hz */
-  BSE_PCM_FREQ_32000    = (1 <<  5),      /*  32000 Hz */
-  BSE_PCM_FREQ_44100    = (1 <<  6),      /*  44100 Hz */
-  BSE_PCM_FREQ_48000    = (1 <<  7),      /*  48000 Hz */
-  BSE_PCM_FREQ_88200    = (1 <<  8),      /*  88200 Hz */
-  BSE_PCM_FREQ_96000    = (1 <<  9),      /*  96000 Hz */
-  BSE_PCM_FREQ_176400   = (1 << 10),      /* 176400 Hz */
-  BSE_PCM_FREQ_192000   = (1 << 11),      /* 192000 Hz */
+  BSE_PCM_FREQ_8000	= 1,
+  BSE_PCM_FREQ_11025,
+  BSE_PCM_FREQ_16000,
+  BSE_PCM_FREQ_22050,
+  BSE_PCM_FREQ_32000,
+  BSE_PCM_FREQ_44100,
+  BSE_PCM_FREQ_48000,
+  BSE_PCM_FREQ_88200,
+  BSE_PCM_FREQ_96000,
+  BSE_PCM_FREQ_176400,
+  BSE_PCM_FREQ_192000
+} BsePcmFreqMode;
+#define	BSE_PCM_FREQ_MIN	BSE_PCM_FREQ_8000
 #define	BSE_PCM_FREQ_MAX	BSE_PCM_FREQ_192000
-#define	BSE_PCM_FREQ_LAST_BIT	12
-} BsePcmFreqMask;
+typedef enum
+{
+  BSE_PCM_CMODE_MONO	= 1,
+  BSE_PCM_CMODE_STEREO
+} BsePcmChannelMode;
+typedef enum
+{
+  BSE_PCM_FLAG_OPEN	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
+  BSE_PCM_FLAG_READABLE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
+  BSE_PCM_FLAG_WRITABLE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
+} BsePcmFlags;
+#define	BSE_PCM_FLAGS_USHIFT	(BSE_OBJECT_FLAGS_USHIFT + 3)
 
 
 /* --- BsePcmDevice structs --- */
-typedef struct _BsePcmCapabilities BsePcmCapabilities;
-typedef struct _BsePcmDevice       BsePcmDevice;
-typedef struct _BsePcmDeviceClass  BsePcmDeviceClass;
-struct _BsePcmCapabilities
+typedef struct _BsePcmStatus		BsePcmStatus;
+typedef struct _BsePcmHandle		BsePcmHandle;
+typedef struct _BsePcmDevice		BsePcmDevice;
+typedef struct _BsePcmDeviceClass	BsePcmDeviceClass;
+struct _BsePcmStatus
 {
-  guint		 writable : 1;
-  guint		 readable : 1;
-  guint		 duplex : 1;
-  guint          max_n_channels;
-  BsePcmFreqMask playback_freq_mask;
-  BsePcmFreqMask capture_freq_mask;
-  guint          max_fragment_size;
+  guint	total_playback_values;
+  guint	n_playback_values_left;
+  guint	total_capture_values;
+  guint	n_capture_values_left;
+};
+struct _BsePcmHandle
+{
+  guint			 writable : 1;
+  guint			 readable : 1;
+  guint			 n_channels;
+  gfloat		 mix_freq;
+  guint			 playback_watermark;
+  GslMutex		 mutex;
+  void	(*read)		(BsePcmHandle		*handle,
+			 gsize			 n_values,
+			 BseSampleValue		*values);
+  void	(*write)	(BsePcmHandle		*handle,
+			 gsize			 n_values,
+			 const BseSampleValue	*values);
+  void	(*status)	(BsePcmHandle		*handle,
+			 BsePcmStatus		*status);
 };
 struct _BsePcmDevice
 {
-  BseDevice	     parent_object;
+  BseObject		parent_object;
 
-  BsePcmCapabilities caps;
+  /* requested caps */
+  BsePcmFreqMode	req_freq_mode;
+  guint			req_n_channels;
 
-  /* current state */
-  guint              n_channels;
-  gdouble            sample_freq;
-
-  /* state */
-  guint              playback_buffer_size;
-  guint		     n_playback_bytes;	/* left to write */
-  guint              capture_buffer_size;
-  guint		     n_capture_bytes;	/* left to read */
-
-  GSList	    *iqueue;	/* of type BseChunk* */
-  GSList	    *oqueue;	/* of type BseChunk* */
+  /* operational handle */
+  BsePcmHandle	       *handle;
 };
 struct _BsePcmDeviceClass
 {
-  BseDeviceClass parent_class;
+  BseObjectClass	parent_class;
 
-  BseErrorType	(*update_caps)	(BsePcmDevice	*pdev);
-  BseErrorType	(*open)		(BsePcmDevice	*pdev,
-				 gboolean	 readable,
-				 gboolean	 writable,
-				 guint           n_channels,
-				 BsePcmFreqMask  rate,
-				 guint           fragment_size);
-  void		(*update_state)	(BsePcmDevice	*pdev);
-  void		(*retrigger)	(BsePcmDevice	*pdev);
+  guint			driver_rating;
+  BseErrorType	(*open)		(BsePcmDevice	*pdev);
+  void		(*suspend)	(BsePcmDevice	*pdev);
 };
 
 
 /* --- prototypes --- */
-BseErrorType 	bse_pcm_device_update_caps	 (BsePcmDevice	 *pdev);
-void	 	bse_pcm_device_invalidate_caps	 (BsePcmDevice	 *pdev);
-BseErrorType 	bse_pcm_device_open		 (BsePcmDevice	 *pdev,
-						  gboolean	  readable,
-						  gboolean	  writable,
-						  guint           n_channels,
-						  gdouble         sample_freq);
-void	     	bse_pcm_device_retrigger	 (BsePcmDevice	 *pdev);
-void	     	bse_pcm_device_read		 (BsePcmDevice	 *pdev,
-						  guint		  n_values,
-						  BseSampleValue *values);
-void	     	bse_pcm_device_write		 (BsePcmDevice	 *pdev,
-						  guint           n_values,
-						  BseSampleValue *values);
-void		bse_pcm_device_time_warp	 (BsePcmDevice	 *pdev);
-void		bse_pcm_device_update_state	 (BsePcmDevice	 *pdev);
-gulong		bse_pcm_device_n_values_to_msecs (BsePcmDevice	 *pdev,
-						  gulong	  n_values);
-gulong		bse_pcm_device_msecs_to_n_values (BsePcmDevice	 *pdev,
-						  gulong	  msecs);
+BseErrorType	bse_pcm_device_open		(BsePcmDevice		*pdev);
+void		bse_pcm_device_suspend		(BsePcmDevice		*pdev);
+BsePcmHandle*	bse_pcm_device_get_handle	(BsePcmDevice		*pdev);
+void		bse_pcm_handle_read		(BsePcmHandle		*handle,
+						 gsize			 n_values,
+						 BseSampleValue		*values);
+void		bse_pcm_handle_write		(BsePcmHandle		*handle,
+						 gsize			 n_values,
+						 const BseSampleValue	*values);
+void		bse_pcm_handle_status		(BsePcmHandle		*handle,
+						 BsePcmStatus		*status);
 
 
-/* --- queue/process API --- */
-void		bse_pcm_device_iqueue_push	 (BsePcmDevice	 *pdev,
-						  BseChunk	 *chunk);
-BseChunk*	bse_pcm_device_iqueue_peek	 (BsePcmDevice	 *pdev);
-void		bse_pcm_device_iqueue_pop	 (BsePcmDevice	 *pdev);
-void		bse_pcm_device_oqueue_push	 (BsePcmDevice	 *pdev,
-						  BseChunk	 *chunk);
-BseChunk*	bse_pcm_device_oqueue_peek	 (BsePcmDevice	 *pdev);
-void		bse_pcm_device_oqueue_pop	 (BsePcmDevice	 *pdev);
-gulong		bse_pcm_device_need_processing	 (BsePcmDevice	 *pdev,
-						  gulong	  latency);
-gboolean	bse_pcm_device_process		 (BsePcmDevice	 *pdev,
-						  gulong          latency);
-
-
-/* --- frequency utilities --- */
-gdouble	       bse_pcm_freq_to_freq		 (BsePcmFreqMask  pcm_freq);
-BsePcmFreqMask bse_pcm_freq_from_freq		 (gdouble	  freq);
-
-
-
+/* --- misc utils --- */
+gfloat		bse_pcm_freq_from_freq_mode	(BsePcmFreqMode	freq_mode);
+BsePcmFreqMode	bse_pcm_freq_mode_from_freq	(gfloat		freq);
+     
 
 #ifdef __cplusplus
 }

@@ -21,7 +21,7 @@
 
 #include <fcntl.h>
 #include <errno.h>
-
+#include <unistd.h>
 
 /* --- prototypes --- */
 static GSList*	list_files_rec		(GSList		*slist,
@@ -136,7 +136,7 @@ bst_sample_repo_load_sample (BstSampleLoc *loc,
     }
   else
     {
-      BseProject *tmp_project = bse_project_new ("Bst-TmpPrj");
+      BseProject *tmp_project = bse_server_create_project (bse_server_get (), "Bst-TmpPrj");
 
       error = bse_project_restore (tmp_project, storage);
       if (error)

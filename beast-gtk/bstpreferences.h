@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ extern "C" {
 #define	BST_PREFERENCES_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PREFERENCES, BstPreferencesClass))
 #define	BST_IS_PREFERENCES(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_PREFERENCES))
 #define	BST_IS_PREFERENCES_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PREFERENCES))
-#define BST_PREFERENCES_GET_CLASS(obj)  ((BstPreferencesClass*) (((GtkObject*) (obj))->klass))
+#define BST_PREFERENCES_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PREFERENCES, BstPreferencesClass))
 
 
 /* --- structures & typedefs --- */

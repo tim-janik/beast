@@ -1,3 +1,19 @@
+Thu Sep 27 13:23:21 2001  Tim Janik  <timj@gtk.org>
+
+	* lots of project shuffeling. blib got removed. we're
+	depending on just glib-2.0, gtk+-2.0 and libart_lgpl+libgnomecanvas
+	now.
+
+	* beast-gtk/*: lots of adaptions to new gtk code. many new canvas
+	workarounds <urgl>.
+	new widgets got added as views to new BSE core objects.
+	also, there're starts at sample editing and preview GUIs.
+
+Sun Jun 18 21:14:18 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bststatusbar.c (bst_status_bar_ensure): provide status bar
+	border.
+
 Mon May 29 02:42:41 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterneditor.[hc]: added signal for focus changes.

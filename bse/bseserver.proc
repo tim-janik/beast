@@ -1,0 +1,142 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2000-2001 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * bseserver.proc: BSE Server procedures
+ */
+#include        <bse/bseplugin.h>
+#include        <bse/bseprocedure.h>
+#include        <bse/bseserver.h>
+#include        <bse/bseproject.h>
+
+
+AUTHOR	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik <timj@gtk.org>";
+DATE	= "2001";
+
+
+METHOD (BseServer, use-new-project) {
+  HELP	= "Create a new project, owned by the caller";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("name", "Project Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server     = (BseServer*) g_value_get_object (in_values++);
+  gchar *name           = g_value_get_string (in_values++);
+  BseProject *project;
+  
+  /* check parameters */
+  if (!BSE_IS_SERVER (server) || !name || bse_server_find_project (server, name))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* create project */
+  project = bse_server_create_project (server, name);
+  bse_item_exec_void_proc (project, "use");
+  bse_object_unref (project);
+  
+  /* set output parameters */
+  g_value_set_object (out_values++, G_OBJECT (project));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, run-project) {
+  HELP	= "Process a project to generate sound";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server	= (BseServer*) g_value_get_object (in_values++);
+  BseProject *project	= (BseProject*) g_value_get_object (in_values++);
+  BseErrorType error = 0;
+  
+  /* check parameters */
+  if (!BSE_IS_SERVER (server) || !BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* check that we have running MIDI/PCM devices */
+  if (!server->dev_use_count)
+    error = bse_server_activate_devices (server);
+  
+  /* if project is currently playing, halt it */
+  if (!error && BSE_SOURCE_PREPARED (project))
+    {
+      bse_project_stop_playback (project);
+      g_return_val_if_fail (server->dev_use_count > 0, BSE_ERROR_INTERNAL);
+      server->dev_use_count--;
+    }
+
+  /* (re-)start project playback */
+  if (!error)
+    {
+      bse_project_start_playback (project);
+      server->dev_use_count++;
+    }
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseServer, halt-project) {
+  HELP	= "Stop processing a project generating sound";
+  IN	= g_param_spec_object ("server", "Server", NULL,
+ 			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseServer *server	= (BseServer*) g_value_get_object (in_values++);
+  BseProject *project	= (BseProject*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_SERVER (server) || !BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* if project is currently playing, halt it */
+  if (BSE_SOURCE_PREPARED (project))
+    {
+      bse_project_stop_playback (project);
+      g_return_val_if_fail (server->dev_use_count > 0, BSE_ERROR_INTERNAL);
+      server->dev_use_count--;
+      if (!server->dev_use_count)
+	bse_server_suspend_devices (server);
+    }
+  
+  return BSE_ERROR_NONE;
+}

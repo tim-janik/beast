@@ -15,10 +15,305 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bseutils.h"
+#include "bseutils.h"
 
-#include	<string.h>
-#include	<stdlib.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <sys/stat.h>
+
+
+/* --- file utils --- */
+void
+bse_str_slist_free (GSList *slist)
+{
+  GSList *node;
+
+  for (node = slist; node; node = node->next)
+    g_free (node->data);
+  g_slist_free (slist);
+}
+
+static GSList*
+slist_prepend_uniq (GSList  *slist,
+		    gchar   *string,
+		    gboolean free_str)
+{
+  GSList *node;
+
+  for (node = slist; node; node = node->next)
+    if (strcmp (node->data, string) == 0)
+      {
+	if (free_str)
+	  g_free (string);
+	return slist;
+      }
+  
+  return g_slist_prepend (slist, string);
+}
+
+static GSList*
+slist_prepend_uniq_dedup (GSList *slist,
+			  gchar  *dupstr)
+{
+  return slist_prepend_uniq (slist, dupstr, TRUE);
+}
+
+GSList*
+bse_search_path_list_matches (const gchar *search_path,
+			      const gchar *cwd)
+{
+  GSList *entries, *slist, *node, *matches = NULL;
+  gchar *free_me = NULL;
+
+  g_return_val_if_fail (search_path != NULL, NULL);
+
+  if (!cwd)
+    {
+      free_me = g_get_current_dir ();
+      cwd = free_me;
+    }
+
+  entries = bse_search_path_list_entries (search_path);
+  for (slist = entries; slist; slist = slist->next)
+    {
+      GSList *pdirs = bse_path_pattern_list_matches (slist->data, cwd, G_FILE_TEST_IS_DIR);
+
+      for (node = pdirs; node; node = node->next)
+	matches = slist_prepend_uniq_dedup (matches, node->data);
+      g_slist_free (pdirs);
+    }
+  bse_str_slist_free (entries);
+  g_free (free_me);
+
+  return g_slist_reverse (matches);
+}
+
+GSList*
+bse_search_path_list_files (const gchar *search_path,
+			    const gchar *cwd)
+{
+  GSList *search_dirs, *slist, *node, *files = NULL;
+  GHashTable *fhash;
+  gchar *free_me = NULL;
+  
+  g_return_val_if_fail (search_path != NULL, NULL);
+
+  if (!cwd)
+    {
+      free_me = g_get_current_dir ();
+      cwd = free_me;
+    }
+
+  fhash = g_hash_table_new (g_str_hash, g_str_equal);
+  search_dirs = bse_search_path_list_matches (search_path, cwd);
+  for (slist = search_dirs; slist; slist = slist->next)
+    {
+      gchar *pattern = g_strconcat (slist->data, G_DIR_SEPARATOR_S, "*", NULL);
+      GSList *pfiles = bse_path_pattern_list_matches (pattern, cwd, G_FILE_TEST_IS_REGULAR);
+
+      g_free (pattern);
+      for (node = pfiles; node; node = node->next)
+	{
+	  gchar *file = node->data;
+
+	  if (g_hash_table_lookup (fhash, file))
+	    g_free (file);
+	  else
+	    {
+	      g_hash_table_insert (fhash, file, file);
+	      files = g_slist_prepend (files, file);
+	    }
+	}
+      g_slist_free (pfiles);
+    }
+  bse_str_slist_free (search_dirs);
+  g_hash_table_destroy (fhash);
+  
+  g_free (free_me);
+
+  return g_slist_reverse (files);
+}
+
+GSList*
+bse_search_path_list_entries (const gchar *search_path)
+{
+  const gchar *p, *sep;
+  GSList *slist = NULL;
+  
+  g_return_val_if_fail (search_path != NULL, NULL);
+
+  p = search_path;
+  sep = strchr (p, G_SEARCHPATH_SEPARATOR);
+  while (sep)
+    {
+      if (sep > p)
+	slist = slist_prepend_uniq_dedup (slist, g_strndup (p, sep - p));
+      p = sep + 1;
+      sep = strchr (p, G_SEARCHPATH_SEPARATOR);
+    }
+  if (*p)
+    slist = slist_prepend_uniq_dedup (slist, g_strdup (p));
+  return g_slist_reverse (slist);
+}
+
+static GSList*
+hashslist_prepend_uniq_dedup (GSList     *slist,
+			      GHashTable *listhash,
+			      gchar      *string)
+{
+  if (g_hash_table_lookup (listhash, string))
+    g_free (string);
+  else
+    {
+      g_hash_table_insert (listhash, string, string);
+      slist = g_slist_prepend (slist, string);
+    }
+  return slist;
+}
+
+static GSList*
+prepend_dir_entries (GSList     *slist,
+		     GHashTable *listhash,
+		     gchar      *dir,
+		     gchar      *file,
+		     GFileTest   file_test)
+{
+  g_return_val_if_fail (dir && file, NULL);
+
+  if (strchr (file, '?') || strchr (file, '*'))
+    {
+      GPatternSpec *pspec = g_pattern_spec_new (file);
+      gchar *dirpath = g_strconcat (dir, G_DIR_SEPARATOR_S, NULL);
+      DIR *dd = opendir (dirpath);
+
+      g_free (dirpath);
+      if (dd)
+	{
+	  struct dirent *d_entry = readdir (dd);
+
+	  while (d_entry)
+	    {
+	      if (!(d_entry->d_name[0] == '.' && d_entry->d_name[1] == 0) &&
+		  !(d_entry->d_name[0] == '.' && d_entry->d_name[1] == '.' && d_entry->d_name[2] == 0) &&
+		  g_pattern_match_string (pspec, d_entry->d_name))
+		{
+		  gchar *str = g_strconcat (dir, G_DIR_SEPARATOR_S, d_entry->d_name, NULL);
+
+		  if (file_test && !g_file_test (str, file_test))
+		    g_free (str);
+		  else
+		    slist = hashslist_prepend_uniq_dedup (slist, listhash, str);
+		}
+	      d_entry = readdir (dd);
+	    }
+	  closedir (dd);
+	}
+      g_pattern_spec_free (pspec);
+    }
+  else if (strcmp (file, ".") == 0)
+    slist = hashslist_prepend_uniq_dedup (slist, listhash, g_strdup (dir));
+  else if (strcmp (file, "..") == 0)
+    {
+      gchar *s = strrchr (dir, G_DIR_SEPARATOR);
+
+      if (s)
+	slist = hashslist_prepend_uniq_dedup (slist, listhash, g_strndup (dir, s - dir));
+    }
+  else
+    {
+      gchar *s = g_strconcat (dir, G_DIR_SEPARATOR_S, file, NULL);
+
+      if (!file_test)
+	file_test = G_FILE_TEST_EXISTS;
+      if (!g_file_test (s, file_test))
+	g_free (s);
+      else
+	slist = hashslist_prepend_uniq_dedup (slist, listhash, s);
+    }
+  return slist;
+}
+
+static GSList*
+match_abs_path (gchar    *p,
+		GFileTest file_test)
+{
+  GSList *slist, *node, *new_slist = NULL;
+  GHashTable *strhash = g_hash_table_new (g_str_hash, g_str_equal);
+  gchar *sep;
+  
+  g_return_val_if_fail (p != NULL, NULL);
+
+  sep = strchr (p, G_DIR_SEPARATOR);
+  g_return_val_if_fail (sep != NULL, NULL);
+
+  *sep++ = 0;
+  while (*sep == G_DIR_SEPARATOR)
+    *sep++ = 0;
+
+  /* get root into list */
+  slist = g_slist_prepend (NULL, g_strdup (p));
+
+  p = sep;
+  sep = strchr (p, G_DIR_SEPARATOR);
+  while (sep)
+    {
+      *sep++ = 0;
+      while (*sep == G_DIR_SEPARATOR)
+	*sep++ = 0;
+      for (node = slist; node; node = node->next)
+	new_slist = prepend_dir_entries (new_slist, strhash, node->data, p, G_FILE_TEST_IS_DIR);
+      bse_str_slist_free (slist);
+      slist = new_slist;
+      g_hash_table_destroy (strhash);
+      strhash = g_hash_table_new (g_str_hash, g_str_equal);
+      if (!slist)
+	return NULL;
+      new_slist = NULL;
+      p = sep;
+      sep = strchr (p, G_DIR_SEPARATOR);
+    }
+  for (node = slist; node; node = node->next)
+    new_slist = prepend_dir_entries (new_slist, strhash, node->data, p, file_test);
+  bse_str_slist_free (slist);
+  slist = new_slist;
+  g_hash_table_destroy (strhash);
+  
+  return slist;
+}
+
+GSList*
+bse_path_pattern_list_matches (const gchar *file_pattern,
+			       const gchar *cwd,
+			       GFileTest    file_test)
+{
+  gchar *tmp, *free_me = NULL, cwdbuf[16];
+  GSList *slist;
+
+  g_return_val_if_fail (file_pattern != NULL, NULL);
+
+  if (!cwd)
+    {
+      free_me = g_get_current_dir ();
+      cwd = free_me;
+    }
+  if (cwd[0] != G_DIR_SEPARATOR)	/* breaks on windows */
+    {
+      cwdbuf[0] = G_DIR_SEPARATOR;
+      cwdbuf[1] = 0;
+      cwd = cwdbuf;
+    }
+
+  if (file_pattern[0] == G_DIR_SEPARATOR)	/* breaks on windows */
+    tmp = g_strdup (file_pattern);
+  else
+    tmp = g_strconcat (cwd, G_DIR_SEPARATOR_S, file_pattern, NULL);
+  g_free (free_me);
+  slist = match_abs_path (tmp, file_test);
+  g_free (tmp);
+  return slist;
+}
 
 
 /* --- dates and times --- */
@@ -531,7 +826,7 @@ bse_note_from_string (const gchar *note_string)
   g_return_val_if_fail (note_string != NULL, BSE_NOTE_VOID);
   
   string = g_strdup (note_string);
-  g_strdown (string);
+  g_ascii_strdown (string, -1);
   
   note = BSE_NOTE_VOID;
   
@@ -668,6 +963,37 @@ bse_note_to_tuned_freq (gint note,
     return BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
   else
     return 0.0;
+}
+
+gboolean
+bse_value_arrays_match_freq (gfloat       match_freq,
+			     GValueArray *inclusive_set,
+			     GValueArray *exclusive_set)
+{
+  guint i;
+
+  if (exclusive_set)
+    for (i = 0; i < exclusive_set->n_values; i++)
+      {
+	GValue *value = exclusive_set->values + i;
+
+	if (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)) == G_TYPE_FLOAT &&
+	    fabs (value->data[0].v_float - match_freq) < BSE_EPSILON_FREQUENCY)
+	  return FALSE;
+      }
+
+  if (!inclusive_set)
+    return TRUE;
+
+  for (i = 0; i < inclusive_set->n_values; i++)
+    {
+      GValue *value = inclusive_set->values + i;
+      
+      if (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)) == G_TYPE_FLOAT &&
+	  fabs (value->data[0].v_float - match_freq) < BSE_EPSILON_FREQUENCY)
+	return TRUE;
+    }
+  return FALSE;
 }
 
 

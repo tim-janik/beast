@@ -33,7 +33,7 @@ extern "C" {
 #define BST_PATTERN_EDITOR_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PATTERN_EDITOR, BstPatternEditorClass))
 #define BST_IS_PATTERN_EDITOR(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_PATTERN_EDITOR))
 #define BST_IS_PATTERN_EDITOR_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PATTERN_EDITOR))
-#define BST_PATTERN_EDITOR_GET_CLASS(obj)  ((BstPatternEditorClass*) (((GtkObject*) (obj))->klass))
+#define BST_PATTERN_EDITOR_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PATTERN_EDITOR, BstPatternEditorClass))
 
 
 typedef enum
@@ -203,12 +203,12 @@ struct _BstPatternEditor
 {
   GtkContainer    parent_instance;
   
-  guint16         channel_grid;
-  guint16         row_grid;
+  guint           channel_grid;
+  guint           row_grid;
   
-  guint16         char_width;
-  guint16         char_height;
-  guint16         char_descent;
+  guint           char_width;
+  guint           char_height;
+  guint           char_descent;
   
   GdkWindow      *index_sa;
   GdkWindow      *index;

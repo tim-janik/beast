@@ -29,12 +29,12 @@ enum {
 /* --- prototypes --- */
 static void bse_effect_pattern_jump_class_init (BseEffectClass      *class);
 static void bse_effect_pattern_jump_init       (BseEffectPatternJump *effect);
-static void bse_effect_pattern_jump_set_param  (BseEffectPatternJump *effect,
+static void bse_effect_pattern_jump_set_property  (BseEffectPatternJump *effect,
 						guint                 param_id,
 						GValue               *value,
 						GParamSpec           *pspec,
 						const gchar          *trailer);
-static void bse_effect_pattern_jump_get_param  (BseEffectPatternJump *effect,
+static void bse_effect_pattern_jump_get_property  (BseEffectPatternJump *effect,
 						guint                 param_id,
 						GValue               *value,
 						GParamSpec           *pspec,
@@ -45,7 +45,7 @@ static void bse_effect_pattern_jump_get_param  (BseEffectPatternJump *effect,
 BSE_BUILTIN_TYPE (BseEffectPatternJump)
 {
   static const GTypeInfo effect_info = {
-    sizeof (BseEffectClass),
+    sizeof (BseEffectPatternJumpClass),
 
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
@@ -74,15 +74,15 @@ bse_effect_pattern_jump_class_init (BseEffectClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
-  gobject_class->set_param = (GObjectSetParamFunc) bse_effect_pattern_jump_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_effect_pattern_jump_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_effect_pattern_jump_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_effect_pattern_jump_get_property;
 
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_PATTERN_ID,
-			      b_param_spec_uint ("pattern_id", "Pattern Id", NULL,
+			      bse_param_spec_uint ("pattern_id", "Pattern Id", NULL,
 						 1, BSE_MAX_SEQ_ID,
 						 1, 1,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
 }
 
 static void
@@ -92,7 +92,7 @@ bse_effect_pattern_jump_init (BseEffectPatternJump *effect)
 }
 
 static void
-bse_effect_pattern_jump_set_param (BseEffectPatternJump *effect,
+bse_effect_pattern_jump_set_property (BseEffectPatternJump *effect,
 				   guint                 param_id,
 				   GValue               *value,
 				   GParamSpec           *pspec,
@@ -101,16 +101,16 @@ bse_effect_pattern_jump_set_param (BseEffectPatternJump *effect,
   switch (param_id)
     {
     case PARAM_PATTERN_ID:
-      effect->pattern_id = b_value_get_uint (value);
+      effect->pattern_id = g_value_get_uint (value);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (effect, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (effect, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_effect_pattern_jump_get_param (BseEffectPatternJump *effect,
+bse_effect_pattern_jump_get_property (BseEffectPatternJump *effect,
 				   guint                 param_id,
 				   GValue               *value,
 				   GParamSpec           *pspec,
@@ -119,10 +119,10 @@ bse_effect_pattern_jump_get_param (BseEffectPatternJump *effect,
   switch (param_id)
     {
     case PARAM_PATTERN_ID:
-      b_value_set_uint (value, effect->pattern_id);
+      g_value_set_uint (value, effect->pattern_id);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (effect, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (effect, param_id, pspec);
       break;
     }
 }

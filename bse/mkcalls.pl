@@ -47,7 +47,7 @@ if (length($head1)) {
     my $prod = $head1;
 
     $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
-    $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+    $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
     print "$prod\n";
 }
 
@@ -60,7 +60,7 @@ if (length($prod1)) {
 	$prod =~ s/\@value\@/$value/g;
 	$prod =~ s/\@n\@/$n/g;
 	$prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
-	$prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+	$prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
 	print "$prod\n";
 	$n++;
     }
@@ -70,7 +70,7 @@ if (length($tail1)) {
     my $prod = $tail1;
 
     $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
-    $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+    $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
     print "$prod\n";
 }
 
@@ -78,7 +78,7 @@ if (length($head2)) {
     my $prod = $head2;
 
     $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
-    $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+    $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
     print "$prod\n";
 }
 
@@ -91,7 +91,7 @@ if (length($prod2)) {
 	$prod =~ s/\@value\@/$value/g;
 	$prod =~ s/\@n\@/$n/g;
 	$prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
-	$prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+	$prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
 	print "$prod\n";
 	$n++;
     }
@@ -101,7 +101,7 @@ if (length($tail2)) {
     my $prod = $tail2;
 
     $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
-    $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+    $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
     print "$prod\n";
 }
 

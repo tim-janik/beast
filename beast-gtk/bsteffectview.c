@@ -25,7 +25,7 @@
 static void	bst_effect_view_class_init	(BstEffectViewClass	*klass);
 static void	bst_effect_view_init		(BstEffectView		*effect_view);
 static void     bst_effect_view_destroy         (GtkObject              *object);
-static void     bst_effect_view_finalize        (GtkObject              *object);
+static void     bst_effect_view_finalize        (GObject                *object);
 static void	bst_effect_view_note_changed    (BstEffectView		*effect_view,
 						 guint                   channel,
 						 guint                   row,
@@ -76,8 +76,9 @@ bst_effect_view_class_init (BstEffectViewClass *class)
   bst_effect_view_class = class;
   parent_class = gtk_type_class (GTK_TYPE_ALIGNMENT);
   
+  G_OBJECT_CLASS (class)->finalize = bst_effect_view_finalize;
+
   object_class->destroy = bst_effect_view_destroy;
-  object_class->finalize = bst_effect_view_finalize;
   
   class->default_param_view_height = 60;
 }
@@ -132,20 +133,21 @@ bst_effect_view_init (BstEffectView *effect_view)
 			   "vscrollbar_policy", GTK_POLICY_ALWAYS,
 			   NULL);
   gtk_box_pack_start (GTK_BOX (alist_box), sc_win, FALSE, TRUE, 0);
-  effect_view->clist_aeffects = gtk_widget_new (GTK_TYPE_CLIST,
-						"visible", TRUE,
-						"can_focus", FALSE,
-						"n_columns", 1,
-						"selection_mode", GTK_SELECTION_BROWSE,
-						"border_width", 0,
-						"height", 60,
-						"width", 150,
-						"shadow_type", GTK_SHADOW_ETCHED_OUT,
-						"object_signal::select_row", alist_selection_changed, effect_view,
-						"signal_after::size_allocate", gtk_clist_moveto_selection, NULL,
-						"signal_after::map", gtk_clist_moveto_selection, NULL,
-						"parent", sc_win,
-						NULL);
+  effect_view->clist_aeffects = g_object_connect (gtk_widget_new (GTK_TYPE_CLIST,
+								  "visible", TRUE,
+								  "can_focus", FALSE,
+								  "n_columns", 1,
+								  "selection_mode", GTK_SELECTION_BROWSE,
+								  "border_width", 0,
+								  "height_request", 60,
+								  "width_request", 150,
+								  "shadow_type", GTK_SHADOW_ETCHED_OUT,
+								  "parent", sc_win,
+								  NULL),
+						  "swapped_signal::select_row", alist_selection_changed, effect_view,
+						  "signal_after::size_allocate", gtk_clist_moveto_selection, NULL,
+						  "signal_after::map", gtk_clist_moveto_selection, NULL,
+						  NULL);
   clist = GTK_CLIST (effect_view->clist_aeffects);
   gtk_widget_ref (effect_view->clist_aeffects);
   gtk_clist_column_titles_hide (clist);
@@ -157,17 +159,18 @@ bst_effect_view_init (BstEffectView *effect_view)
 			   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 			   "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
 			   NULL);
-  effect_view->clist_peffects = gtk_widget_new (GTK_TYPE_CLIST,
-						"visible", TRUE,
-						"n_columns", 1,
-						"selection_mode", GTK_SELECTION_BROWSE,
-						"border_width", 0,
-						"width", 100,
-						"object_signal::select_row", plist_selection_changed, effect_view,
-						"signal_after::size_allocate", gtk_clist_moveto_selection, NULL,
-						"signal_after::map", gtk_clist_moveto_selection, NULL,
-						"parent", sc_win,
-						NULL);
+  effect_view->clist_peffects = g_object_connect (gtk_widget_new (GTK_TYPE_CLIST,
+								  "visible", TRUE,
+								  "n_columns", 1,
+								  "selection_mode", GTK_SELECTION_BROWSE,
+								  "border_width", 0,
+								  "width_request", 100,
+								  "parent", sc_win,
+								  NULL),
+						  "swapped_signal::select_row", plist_selection_changed, effect_view,
+						  "signal_after::size_allocate", gtk_clist_moveto_selection, NULL,
+						  "signal_after::map", gtk_clist_moveto_selection, NULL,
+						  NULL);
   gtk_paned_pack1 (GTK_PANED (effect_view->paned), sc_win, FALSE, FALSE);
   clist = GTK_CLIST (effect_view->clist_peffects);
   gtk_widget_ref (effect_view->clist_peffects);
@@ -183,27 +186,29 @@ bst_effect_view_init (BstEffectView *effect_view)
 		  "visible", TRUE,
 		  "parent", pbox,
 		  (BST_EFFECT_VIEW_GET_CLASS (effect_view)->default_param_view_height > 0 ?
-		   "height" : NULL), BST_EFFECT_VIEW_GET_CLASS (effect_view)->default_param_view_height,
+		   "height_request" : NULL), BST_EFFECT_VIEW_GET_CLASS (effect_view)->default_param_view_height,
 		  NULL);
   gtk_widget_ref (effect_view->param_view);
   bst_param_view_set_mask (BST_PARAM_VIEW (effect_view->param_view), BSE_TYPE_EFFECT, 0, NULL, NULL);
   
   /* setup buttons */
-  effect_view->add_button = gtk_widget_new (GTK_TYPE_BUTTON,
-					    "visible", TRUE,
-					    "label", "<< Add  ",
-					    "can_focus", FALSE,
-					    "object_signal::clicked", add_effect, effect_view,
-					    "parent", bbox,
-					    NULL);
+  effect_view->add_button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
+							      "visible", TRUE,
+							      "label", "<< Add  ",
+							      "can_focus", FALSE,
+							      "parent", bbox,
+							      NULL),
+					      "swapped_signal::clicked", add_effect, effect_view,
+					      NULL);
   gtk_widget_ref (effect_view->add_button);
-  effect_view->remove_button = gtk_widget_new (GTK_TYPE_BUTTON,
-					       "visible", TRUE,
-					       "label", ">> Remove",
-					       "can_focus", FALSE,
-					       "object_signal::clicked", remove_effect, effect_view,
-					       "parent", bbox,
-					       NULL);
+  effect_view->remove_button = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
+								 "visible", TRUE,
+								 "label", ">> Remove",
+								 "can_focus", FALSE,
+								 "parent", bbox,
+								 NULL),
+						 "swapped_signal::clicked", remove_effect, effect_view,
+						 NULL);
   gtk_widget_ref (effect_view->remove_button);
   
   effect_view->pattern = NULL;
@@ -222,7 +227,7 @@ bst_effect_view_destroy (GtkObject *object)
 }
 
 static void
-bst_effect_view_finalize (GtkObject *object)
+bst_effect_view_finalize (GObject *object)
 {
   BstEffectView *effect_view = BST_EFFECT_VIEW (object);
 
@@ -235,7 +240,7 @@ bst_effect_view_finalize (GtkObject *object)
   gtk_widget_unref (effect_view->add_button);
   gtk_widget_unref (effect_view->remove_button);
 
-  GTK_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 GtkWidget*
@@ -271,9 +276,9 @@ bst_effect_view_set_note (BstEffectView *effect_view,
 
   if (effect_view->pattern)
     {
-      bse_object_remove_notifiers_by_func (effect_view->pattern,
-					   bst_effect_view_note_changed,
-					   effect_view);
+      g_object_disconnect (effect_view->pattern,
+			   "any_signal", bst_effect_view_note_changed, effect_view,
+			   NULL);
       bse_object_unref (effect_view->pattern);
     }
   effect_view->pattern = pattern;
@@ -282,10 +287,9 @@ bst_effect_view_set_note (BstEffectView *effect_view,
   if (effect_view->pattern)
     {
       bse_object_ref (effect_view->pattern);
-      bse_object_add_data_notifier (effect_view->pattern,
-				    "note_changed",
-				    bst_effect_view_note_changed,
-				    effect_view);
+      g_object_connect (effect_view->pattern,
+			"swapped_signal::note_changed", bst_effect_view_note_changed, effect_view,
+			NULL);
     }
   update_effect_lists (effect_view);
 }

@@ -1,0 +1,251 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2000-2001 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * bseitem.proc: BSE Item procedures
+ */
+#include        <bse/bseplugin.h>
+#include        <bse/bseprocedure.h>
+#include        <bse/bseitem.h>
+
+
+AUTHOR	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik <timj@gtk.org>";
+DATE	= "2001";
+
+
+METHOD (BseItem, is-a) {
+  HELP	= "Check item type";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("type_name", "Type Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_boolean ("is_a_check", NULL, NULL,
+				FALSE, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item    = (BseItem*) g_value_get_object (in_values++);
+  gchar *type_name = g_value_get_string (in_values++);
+  
+  /* check parameters */
+  if (!type_name)  /* we do allow NULL items here, to comlpy with g_type_instance_is_a() semantics */
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_boolean (out_values++, G_TYPE_CHECK_INSTANCE_TYPE (item, g_type_from_name (type_name)));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, get-type) {
+  HELP	= "Retrive Type ID";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_uint ("type_id", "Type ID", NULL,
+			     0, G_MAXINT, 0,
+			     BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_uint (out_values++, G_OBJECT_TYPE (item));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, get-type-name) {
+  HELP	= "Retrive Type Name";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_string ("type_name", "Type Name", NULL,
+			       NULL,
+			       BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_string (out_values++, g_type_name (G_OBJECT_TYPE (item)));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, get-parent) {
+  HELP	= "Retrive item's parent";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("parent", "Parent", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_object (out_values++, item->parent);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, get-project) {
+  HELP	= "Retrive item's parent";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_object (out_values++, bse_item_get_project (item));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, use) {
+  HELP	= "Increment use count to keep the object alive";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (!item->use_count)
+    bse_object_ref (item);
+  item->use_count++;
+
+  /* set output parameters */
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, unuse) {
+  HELP	= "Decrement use count for when an object is not needed anymore";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (item->use_count < 1)
+    return BSE_ERROR_NOT_OWNER;
+
+  item->use_count--;
+  if (!item->use_count)
+    bse_object_unref (item);
+
+  /* set output parameters */
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, get-name) {
+  HELP	= "Get an item's name";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_string ("name", "Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, BSE_OBJECT_NAME (item));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, get-name-or-type) {
+  HELP	= "Get an item's name or type if it has no name";
+  IN	= g_param_spec_object ("item", "Item", NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_string ("name", "Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseItem *item = (BseItem*) g_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  if (BSE_OBJECT_NAME (item))
+    g_value_set_string (out_values++, BSE_OBJECT_NAME (item));
+  else
+    g_value_set_string (out_values++, BSE_OBJECT_TYPE_NAME (item));
+  
+  return BSE_ERROR_NONE;
+}

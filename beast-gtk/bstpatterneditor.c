@@ -103,8 +103,8 @@
 /* --- defines --- */
 #define PE(pe)				((BstPatternEditor*) (pe))
 #define	ALLOCATION(w)			(&((GtkWidget*) (w))->allocation)
-#define	X_THICK(w)			(((GtkWidget*) (w))->style->klass->xthickness)
-#define	Y_THICK(w)			(((GtkWidget*) (w))->style->klass->ythickness)
+#define	X_THICK(w)			(GTK_STYLE_THICKNESS (((GtkWidget*) (w))->style, x))
+#define	Y_THICK(w)			(GTK_STYLE_THICKNESS (((GtkWidget*) (w))->style, y))
 #define OUTER_X_BORDER(pe)		(((GtkContainer*) (pe))->border_width)
 #define OUTER_Y_BORDER(pe)		(((GtkContainer*) (pe))->border_width)
 #define INNER_X_BORDER(w)		(X_THICK(w) + 1)
@@ -205,9 +205,9 @@ typedef	void	(*SignalCellActivate)	(GtkObject	*object,
 /* --- prototypes --- */
 static void bst_pattern_editor_class_init	(BstPatternEditorClass	*klass);
 static void bst_pattern_editor_init		(BstPatternEditor	*pe);
-static void bst_pattern_editor_shutdown		(GtkObject		*object);
+static void bst_pattern_editor_dispose		(GObject		*object);
 static void bst_pattern_editor_destroy		(GtkObject		*object);
-static void bst_pattern_editor_finalize		(GtkObject		*object);
+static void bst_pattern_editor_finalize		(GObject		*object);
 static void bst_pattern_editor_set_scroll_adjustments (BstPatternEditor *pe,
 						       GtkAdjustment	*hadjustment,
 						       GtkAdjustment	*vadjustment);
@@ -283,7 +283,8 @@ static guint		      pe_signals[LAST_SIGNAL] = { 0 };
 static const gchar	     *class_rc_string =
 ( "style'BstPatternEditorClass-style'"
   "{"
-  "font='-misc-fixed-*-*-*-*-*-130-*-*-*-*-*-*'\n"
+  //  "font='-misc-fixed-*-*-*-*-*-130-*-*-*-*-*-*'\n"
+  "font_name='Monospace 12'\n"
   "fg[PRELIGHT]={1.,0.,0.}"
   "}"
   "widget_class'*BstPatternEditor'style'BstPatternEditorClass-style'"
@@ -363,18 +364,19 @@ bst_pattern_editor_class_init (BstPatternEditorClass *class)
   bst_pattern_editor_class = class;
   parent_class = gtk_type_class (GTK_TYPE_CONTAINER);
   
-  object_class->shutdown = bst_pattern_editor_shutdown;
+  G_OBJECT_CLASS (object_class)->dispose = bst_pattern_editor_dispose;
+  G_OBJECT_CLASS (object_class)->finalize = bst_pattern_editor_finalize;
+
   object_class->destroy = bst_pattern_editor_destroy;
-  object_class->finalize = bst_pattern_editor_finalize;
   
-  widget_class->draw_focus = bst_pattern_editor_draw_focus;
+  // widget_class->draw_focus = bst_pattern_editor_draw_focus;
   widget_class->size_request = bst_pattern_editor_size_request;
   widget_class->size_allocate = bst_pattern_editor_size_allocate;
   widget_class->realize = bst_pattern_editor_realize;
   widget_class->unrealize = bst_pattern_editor_unrealize;
   widget_class->style_set = bst_pattern_editor_style_set;
   widget_class->state_changed = bst_pattern_editor_state_changed;
-  widget_class->draw = bst_pattern_editor_draw;
+  // widget_class->draw = bst_pattern_editor_draw;
   widget_class->expose_event = bst_pattern_editor_expose;
   widget_class->focus_in_event = bst_pattern_editor_focus_in;
   widget_class->focus_out_event = bst_pattern_editor_focus_out;
@@ -395,25 +397,25 @@ bst_pattern_editor_class_init (BstPatternEditorClass *class)
   widget_class->set_scroll_adjustments_signal =
     gtk_signal_new ("set_scroll_adjustments",
 		    GTK_RUN_LAST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (BstPatternEditorClass, set_scroll_adjustments),
-		    gtk_marshal_NONE__POINTER_POINTER,
+		    bst_marshal_NONE__OBJECT_OBJECT,
 		    GTK_TYPE_NONE, 2, GTK_TYPE_ADJUSTMENT, GTK_TYPE_ADJUSTMENT);
   pe_signals[SIGNAL_PATTERN_STEP] =
     gtk_signal_new ("pattern_step",
 		    GTK_RUN_LAST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (BstPatternEditorClass, pattern_step),
-		    marshal_pattern_step,
+		    bst_marshal_NONE__UINT_INT,
 		    GTK_TYPE_NONE, 2,
 		    GTK_TYPE_UINT,
 		    GTK_TYPE_INT);
   pe_signals[SIGNAL_CELL_ACTIVATE] =
     gtk_signal_new ("cell_activate",
 		    GTK_RUN_LAST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (BstPatternEditorClass, cell_activate),
-		    marshal_cell_activate,
+		    bst_marshal_NONE__UINT_UINT_UINT_UINT_UINT_UINT_UINT,
 		    GTK_TYPE_NONE, 7,
 		    GTK_TYPE_UINT,
 		    GTK_TYPE_UINT,
@@ -425,13 +427,12 @@ bst_pattern_editor_class_init (BstPatternEditorClass *class)
   pe_signals[SIGNAL_FOCUS_CHANGED] =
     gtk_signal_new ("focus_changed",
 		    GTK_RUN_LAST | GTK_RUN_NO_RECURSE,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (BstPatternEditorClass, focus_changed),
-		    gtk_marshal_NONE__UINT_UINT,
+		    bst_marshal_NONE__UINT_UINT,
 		    GTK_TYPE_NONE, 2,
 		    GTK_TYPE_UINT,
 		    GTK_TYPE_UINT);
-  gtk_object_class_add_signals (object_class, pe_signals, LAST_SIGNAL);
   
   gtk_rc_parse_string (class_rc_string);
 }
@@ -439,12 +440,11 @@ bst_pattern_editor_class_init (BstPatternEditorClass *class)
 static void
 bst_pattern_editor_init (BstPatternEditor *pe)
 {
-  GtkWidget *widget;
-  
-  widget = GTK_WIDGET (pe);
+  GtkWidget *widget = GTK_WIDGET (pe);
   
   GTK_WIDGET_UNSET_FLAGS (pe, GTK_NO_WINDOW);
   GTK_WIDGET_SET_FLAGS (pe, GTK_CAN_FOCUS);
+  gtk_widget_set_double_buffered (widget, FALSE);
   
   pe->channel_grid = 1;
   pe->row_grid = 4;
@@ -495,16 +495,34 @@ bst_pattern_editor_init (BstPatternEditor *pe)
   pe->ea_draw = NULL;
   pe->ea_data = NULL;
   pe->ea_destroy = NULL;
+
+  { // FIXME
+    gchar **p, *names[] = {
+      "Sans 10", "Sans 8", "Sans 12", "Sans 14",
+      "Sans 16", "Sans 18", "Sans 20",
+      "Serif 1", "Serif 2", "Serif 3", "Serif 4", "Serif 5", "Serif 6", "Serif 7", "Serif 8", "Serif 9", "Serif 10",
+      "Serif 11", "Serif 12", "Serif 13", "Serif 14", "Serif 15", "Serif 16", "Serif 17", "Serif 18", "Serif 19", "Serif 20",
+      "Serif 31", "Serif 32", "Serif 33", "Serif 34", "Serif 35", "Serif 36", "Serif 37", "Serif 38", "Serif 39", "Serif 40",
+      "Monospace 1", "Monospace 2", "Monospace 3", "Monospace 4", "Monospace 5", "Monospace 6", "Monospace 7", "Monospace 8", "Monospace 9", "Monospace 10",
+      "Monospace 11", "Monospace 12", "Monospace 13", "Monospace 14", "Monospace 15", "Monospace 16", "Monospace 17", "Monospace 18", "Monospace 19", "Monospace 20",
+      "Monospace 31", "Monospace 32", "Monospace 33", "Monospace 34", "Monospace 35", "Monospace 36", "Monospace 37", "Monospace 38", "Monospace 39", "Monospace 40",
+      NULL,
+    };
+    
+    for (p = names; *p; p++)
+      {
+	PangoFontDescription *font_desc = pango_font_description_from_string (*p);
+	GdkFont *font = gdk_font_from_description (font_desc);
+	
+	g_print ("font \"%s\" = %p\n", *p, font);
+      }
+  }
 }
 
 static void
-bst_pattern_editor_shutdown (GtkObject *object)
+bst_pattern_editor_dispose (GObject *object)
 {
-  BstPatternEditor *pe;
-  
-  g_return_if_fail (BST_IS_PATTERN_EDITOR (object));
-  
-  pe = BST_PATTERN_EDITOR (object);
+  BstPatternEditor *pe = BST_PATTERN_EDITOR (object);
   
   if (pe->channel_popup)
     {
@@ -515,7 +533,7 @@ bst_pattern_editor_shutdown (GtkObject *object)
   if (pe->pattern)
     bst_pattern_editor_release_pattern (pe);
 
-  GTK_OBJECT_CLASS (parent_class)->shutdown (object);
+  G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
@@ -529,16 +547,11 @@ bst_pattern_editor_destroy (GtkObject *object)
   
   bst_pattern_editor_set_effect_hooks (pe, NULL, NULL, NULL, NULL);
   
-  if (pe->hadjustment)
-    gtk_signal_disconnect_by_data (GTK_OBJECT (pe->hadjustment), pe);
-  if (pe->vadjustment)
-    gtk_signal_disconnect_by_data (GTK_OBJECT (pe->vadjustment), pe);
-  
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
-bst_pattern_editor_finalize (GtkObject *object)
+bst_pattern_editor_finalize (GObject *object)
 {
   BstPatternEditor *pe;
   
@@ -546,7 +559,9 @@ bst_pattern_editor_finalize (GtkObject *object)
   
   pe = BST_PATTERN_EDITOR (object);
   
+  gtk_signal_disconnect_by_data (GTK_OBJECT (pe->hadjustment), pe);
   gtk_object_unref (GTK_OBJECT (pe->hadjustment));
+  gtk_signal_disconnect_by_data (GTK_OBJECT (pe->vadjustment), pe);
   gtk_object_unref (GTK_OBJECT (pe->vadjustment));
 
   if (pe->focus_changed_handler)
@@ -555,7 +570,7 @@ bst_pattern_editor_finalize (GtkObject *object)
       pe->focus_changed_handler = 0;
     }
   
-  GTK_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 void
@@ -585,11 +600,11 @@ bst_pattern_editor_set_hadjustment (BstPatternEditor *pe,
       
       gtk_signal_connect (GTK_OBJECT (adjustment),
 			  "changed",
-			  adjustments_value_changed,
+			  G_CALLBACK (adjustments_value_changed),
 			  pe);
       gtk_signal_connect (GTK_OBJECT (adjustment),
 			  "value_changed",
-			  adjustments_value_changed,
+			  G_CALLBACK (adjustments_value_changed),
 			  pe);
       
       bst_pattern_editor_adjust_sas (pe, TRUE);
@@ -623,11 +638,11 @@ bst_pattern_editor_set_vadjustment (BstPatternEditor *pe,
       
       gtk_signal_connect (GTK_OBJECT (adjustment),
 			  "changed",
-			  adjustments_value_changed,
+			  G_CALLBACK (adjustments_value_changed),
 			  pe);
       gtk_signal_connect (GTK_OBJECT (adjustment),
 			  "value_changed",
-			  adjustments_value_changed,
+			  G_CALLBACK (adjustments_value_changed),
 			  pe);
       
       bst_pattern_editor_adjust_sas (pe, TRUE);
@@ -650,23 +665,25 @@ bst_pattern_editor_style_set (GtkWidget *widget,
 			      GtkStyle	*previous_style)
 {
   BstPatternEditor *pe;
+  GdkFont *font;
   guint i;
   
   g_return_if_fail (widget != NULL);
   g_return_if_fail (BST_IS_PATTERN_EDITOR (widget));
   
   pe = BST_PATTERN_EDITOR (widget);
+  font = gtk_style_get_font (widget->style);
   
   pe->char_width = 0;
   for (i = 0; i < 256; i++)
     {
       register guint width;
       
-      width = gdk_char_width (widget->style->font, i);
+      width = gdk_char_width (font, i);
       pe->char_width = MAX (pe->char_width, width);
     }
-  pe->char_height = widget->style->font->ascent + widget->style->font->descent;
-  pe->char_descent = widget->style->font->descent;
+  pe->char_height = font->ascent + font->descent;
+  pe->char_descent = font->descent;
 }
 
 static void
@@ -798,21 +815,13 @@ bst_pattern_editor_release_pattern (BstPatternEditor *pe)
   if (pe->in_selection)
     bst_pattern_editor_selection_done (pe);
   
-  bse_object_remove_notifiers_by_func (pe->pattern,
-				       bst_pattern_editor_release_pattern,
-				       pe);
-  bse_object_remove_notifiers_by_func (pe->pattern,
-				       bst_pattern_editor_fetch_pattern_sibling,
-				       pe);
-  bse_object_remove_notifiers_by_func (pe->pattern,
-				       bst_pe_size_changed,
-				       pe);
-  bse_object_remove_notifiers_by_func (pe->pattern,
-				       bst_pe_note_changed,
-				       pe);
-  bse_object_remove_notifiers_by_func (pe->pattern,
-				       bst_pe_pattern_changed,
-				       pe);
+  g_object_disconnect (pe->pattern,
+		       "any_signal", bst_pattern_editor_release_pattern, pe,
+		       "any_signal", bst_pattern_editor_fetch_pattern_sibling, pe,
+		       "any_signal", bst_pe_size_changed, pe,
+		       "any_signal", bst_pe_note_changed, pe,
+		       "any_signal", bst_pe_pattern_changed, pe,
+		       NULL);
   pe->pattern = NULL;
   g_free (pe->instruments);
   pe->instruments = NULL;
@@ -831,38 +840,15 @@ bst_pattern_editor_set_pattern (BstPatternEditor *pe,
 	bst_pattern_editor_release_pattern (pe);
       
       pe->pattern = pattern;
-      bse_object_add_data_notifier (pattern,
-				    "destroy",
-				    bst_pattern_editor_release_pattern,
-				    pe);
-      bse_object_add_data_notifier (pattern,
-				    "set_parent",
-				    bst_pattern_editor_fetch_pattern_sibling,
-				    pe);
-      bse_object_add_data_notifier (pattern,
-				    "size_changed",
-				    bst_pe_size_changed,
-				    pe);
-      bse_object_add_data_notifier (pattern,
-				    "note_changed",
-				    bst_pe_note_changed,
-				    pe);
-      bse_object_add_data_notifier (pattern,
-				    "note_selection_changed",
-				    bst_pe_note_changed,
-				    pe);
-      bse_object_add_data_notifier (pattern,
-				    "seqid_changed",
-				    bst_pe_pattern_changed,
-				    pe);
-      bse_object_add_data_notifier (pattern,
-				    "name_set",
-				    bst_pe_pattern_changed,
-				    pe);
-      bse_object_add_data_notifier (pattern,
-				    "param_changed",
-				    bst_pe_pattern_changed,
-				    pe);
+      g_object_connect (pattern,
+			"swapped_signal::destroy", bst_pattern_editor_release_pattern, pe,
+			"swapped_signal::set_parent", bst_pattern_editor_fetch_pattern_sibling, pe,
+			"swapped_signal::size_changed", bst_pe_size_changed, pe,
+			"swapped_signal::note_changed", bst_pe_note_changed, pe,
+			"swapped_signal::note_selection_changed", bst_pe_note_changed, pe,
+			"swapped_signal::seqid_changed", bst_pe_pattern_changed, pe,
+			"swapped_signal::notify", bst_pe_pattern_changed, pe,
+			NULL);
       bst_pe_size_changed (pe);
     }
 }
@@ -1399,7 +1385,7 @@ bst_pattern_editor_focus_in (GtkWidget	   *widget,
   pe = BST_PATTERN_EDITOR (widget);
   GTK_WIDGET_SET_FLAGS (pe, GTK_HAS_FOCUS);
   
-  gtk_widget_draw_focus (widget);
+  bst_pattern_editor_draw_focus (widget);
   
   return TRUE;
 }
@@ -1417,7 +1403,7 @@ bst_pattern_editor_focus_out (GtkWidget	    *widget,
   pe = BST_PATTERN_EDITOR (widget);
   GTK_WIDGET_UNSET_FLAGS (pe, GTK_HAS_FOCUS);
   
-  gtk_widget_draw_focus (widget);
+  bst_pattern_editor_draw_focus (widget);
   
   return TRUE;
 }
@@ -1475,6 +1461,12 @@ bst_pattern_editor_expose (GtkWidget	  *widget,
 	}
       else if (event->window == widget->window)
 	bst_pattern_editor_draw_main (pe);
+      else if (event->window == pe->index_sa ||
+	       event->window == pe->headline_sa ||
+	       event->window == pe->panel_sa)
+	{
+	  /* ignore these */
+	}
       else
 	{
 	  g_warning ("BstPatternEditor: unknown expose event, window=%p, widget=%p (%s)",
@@ -1573,6 +1565,7 @@ bst_pattern_editor_draw_main (BstPatternEditor *pe)
   GtkWidget *widget = GTK_WIDGET (pe);
   guint x, y, width, height, offset;
   GdkGC *fg_gc, *bg_gc, *focus_gc, *unfocus_gc;
+  GdkFont *font;
   gchar buffer[64];
   
   if (GTK_WIDGET_IS_SENSITIVE (pe))
@@ -1627,9 +1620,10 @@ bst_pattern_editor_draw_main (BstPatternEditor *pe)
   width -= INDEX_X (pe);
   y += HEADLINE_Y (pe);
   height -= HEADLINE_Y (pe);
-  offset = MAX (0, (width - gdk_string_measure (widget->style->font, buffer))) / 2;
+  font = gtk_style_get_font (widget->style);
+  offset = MAX (0, (width - gdk_string_measure (font, buffer))) / 2;
   gdk_draw_string (widget->window,
-		   widget->style->font,
+		   font,
 		   fg_gc,
 		   x + offset,
 		   y,
@@ -1683,7 +1677,7 @@ bst_pattern_editor_draw_index (BstPatternEditor	*pe,
    */
   g_snprintf (buffer, 64, "%03u", row + 1);
   gdk_draw_string (pe->index,
-		   widget->style->font,
+		   gtk_style_get_font (widget->style),
 		   fg_gc,
 		   INDEX_X (pe),
 		   INDEX_Y (pe, row),
@@ -1737,7 +1731,7 @@ bst_pattern_editor_draw_headline (BstPatternEditor *pe,
    */
   g_snprintf (buffer, 64, "Chnl %u", channel + 1);
   gdk_draw_string (pe->headline,
-		   widget->style->font,
+		   gtk_style_get_font (widget->style),
 		   fg_gc,
 		   HEADLINE_X (pe, channel),
 		   HEADLINE_Y (pe),
@@ -1933,7 +1927,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
   else
     g_snprintf (buffer, 64, NOTE_EMPTY);
   gdk_draw_string (pe->panel,
-		   widget->style->font,
+		   gtk_style_get_font (widget->style),
 		   note->note != BSE_NOTE_VOID ? fg_gc : light_gc,
 		   tone_x + NOTE_X (pe),
 		   tone_y + NOTE_Y (pe),
@@ -1952,7 +1946,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
   while (*p == '0')
     *(p++) = '-';
   gdk_draw_string (pe->panel,
-		   widget->style->font,
+		   gtk_style_get_font (widget->style),
 		   note->instrument ? fg_gc : light_gc,
 		   tone_x + INSTRUMENT_X (pe),
 		   tone_y + INSTRUMENT_Y (pe),
@@ -1993,12 +1987,11 @@ bst_pattern_editor_set_octave (BstPatternEditor *pe,
 static gboolean
 focus_changed_notifier (gpointer data)
 {
-  BstPatternEditor *pe = BST_PATTERN_EDITOR (data);
+  BstPatternEditor *pe;
 
-  /* only notify if we're really idle */
-  if (g_main_pending ())
-    return TRUE;
-
+  GDK_THREADS_ENTER ();
+  pe = BST_PATTERN_EDITOR (data);
+  
   if (GTK_WIDGET_DRAWABLE (pe))
     gtk_signal_emit (GTK_OBJECT (pe),
 		     pe_signals[SIGNAL_FOCUS_CHANGED],
@@ -2006,7 +1999,8 @@ focus_changed_notifier (gpointer data)
 		     pe->focus_row);
   pe->focus_changed_handler = 0;
   gtk_widget_unref (data);
-
+  GDK_THREADS_LEAVE ();
+  
   return FALSE;
 }
 

@@ -33,7 +33,7 @@ extern "C" {
 #define	BST_INSTRUMENT_VIEW_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_INSTRUMENT_VIEW, BstInstrumentViewClass))
 #define	BST_IS_INSTRUMENT_VIEW(object)	    (GTK_CHECK_TYPE ((object), BST_TYPE_INSTRUMENT_VIEW))
 #define	BST_IS_INSTRUMENT_VIEW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_INSTRUMENT_VIEW))
-#define BST_INSTRUMENT_VIEW_GET_CLASS(obj)  ((BstInstrumentViewClass*) (((GtkObject*) (obj))->klass))
+#define BST_INSTRUMENT_VIEW_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_INSTRUMENT_VIEW, BstInstrumentViewClass))
 
 
 /* --- structures & typedefs --- */

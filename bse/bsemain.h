@@ -28,14 +28,31 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+/* --- bse global lock --- */
+typedef struct
+{
+  gpointer	  lock_data;
+  void		(*lock)		(gpointer lock_data);
+  void		(*unlock)	(gpointer lock_data);
+} BseLockFuncs;
+
+
 /* --- variables --- */
 extern BseDebugFlags bse_debug_flags;
 
 
 /* --- prototypes --- */
 gboolean	bse_initialized			(void);
-void		bse_init			(gint		*argc,
-						 gchar	      ***argv);
+void		bse_init			(gint		    *argc,
+						 gchar	          ***argv,
+						 const BseLockFuncs *lock_funcs);
+#define	BSE_THREADS_ENTER()			bse_main_lock ()
+#define	BSE_THREADS_LEAVE()			bse_main_unlock ()
+
+
+/* --- internal --- */
+void		bse_main_lock			(void);
+void		bse_main_unlock			(void);
 
 
 

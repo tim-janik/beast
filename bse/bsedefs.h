@@ -22,8 +22,8 @@
 
 #undef          G_DISABLE_ASSERT
 #undef          G_DISABLE_CHECKS
-#include        <blib/blib.h>
-#include        <math.h>
+#include	<bse/glib-extra.h>
+#include	<math.h>
 
 
 #ifdef __cplusplus
@@ -44,9 +44,15 @@ extern "C" {
 
 
 /* --- BSE basic typedefs --- */
+typedef struct _BseDot			BseDot;
 typedef gint64                          BseIndex;
+#ifdef	INT_SAMPLES
 typedef gint32                          BseMixValue;
 typedef gint16                          BseSampleValue;
+#else
+typedef gfloat                          BseMixValue;
+typedef gfloat                          BseSampleValue;
+#endif
 typedef gulong                          BseTime;
 typedef guint                           BseIndex2D;
 
@@ -66,6 +72,9 @@ typedef struct  _BseInstrument          BseInstrument;
 typedef struct  _BseInstrumentClass     BseInstrumentClass;
 typedef struct  _BseItem                BseItem;
 typedef struct  _BseItemClass           BseItemClass;
+typedef struct	_BseMidiDecoder		BseMidiDecoder;
+typedef struct  _BseMidiSynth           BseMidiSynth;
+typedef struct  _BseMidiSynthClass      BseMidiSynthClass;
 typedef struct  _BseObject              BseObject;
 typedef struct  _BseObjectClass         BseObjectClass;
 typedef struct  _BsePattern             BsePattern;
@@ -75,6 +84,8 @@ typedef struct  _BsePatternGroupClass   BsePatternGroupClass;
 typedef struct  _BseProcedureClass      BseProcedureClass;
 typedef struct  _BseProject             BseProject;
 typedef struct  _BseProjectClass        BseProjectClass;
+typedef struct  _BseServer              BseServer;
+typedef struct  _BseServerClass         BseServerClass;
 typedef struct  _BseSample              BseSample;
 typedef struct  _BseSampleClass         BseSampleClass;
 typedef struct  _BseSInstrument         BseSInstrument;
@@ -87,6 +98,9 @@ typedef struct  _BseSource              BseSource;
 typedef struct  _BseSourceClass         BseSourceClass;
 typedef struct  _BseSuper               BseSuper;
 typedef struct  _BseSuperClass          BseSuperClass;
+typedef struct  _BseWave                BseWave;
+typedef struct _BseWaveRepo             BseWaveRepo;
+typedef struct _BseWaveRepoClass        BseWaveRepoClass;
 
 
 /* --- BSE aux structures --- */
@@ -102,6 +116,7 @@ typedef struct  _BseMixRate             BseMixRate;
 typedef struct  _BseMunk                BseMunk;
 typedef struct  _BsePatternNote         BsePatternNote;
 typedef struct  _BsePlugin              BsePlugin;
+typedef struct  _BsePluginClass         BsePluginClass;
 typedef struct  _BseSongSequencer       BseSongSequencer;
 typedef struct  _BseStorage             BseStorage;
 typedef struct  _BseVoice               BseVoice;
@@ -111,7 +126,7 @@ typedef struct  _BseNotifyHook          BseNotifyHook;
 
 /* --- anticipated enums --- */
 typedef enum
-{ /* keep in sync with bsemain.c */
+{
   BSE_DEBUG_TABLES              = (1 << 0),
   BSE_DEBUG_CLASSES             = (1 << 1),
   BSE_DEBUG_OBJECTS             = (1 << 2),
@@ -119,7 +134,9 @@ typedef enum
   BSE_DEBUG_PLUGINS             = (1 << 4),
   BSE_DEBUG_CHUNKS              = (1 << 5),
   BSE_DEBUG_LOOP                = (1 << 6),
-  BSE_DEBUG_PCM                 = (1 << 7)
+  BSE_DEBUG_PCM                 = (1 << 7),
+  BSE_DEBUG_MIDI                = (1 << 8),
+  BSE_DEBUG_LEAKS               = (1 << 9)
 } BseDebugFlags;
 typedef enum                    /*< skip >*/
 {
@@ -136,15 +153,9 @@ typedef enum                    /*< skip >*/
 } BsePixdataType;
 
 
-/* --- float/double/math utilities and consts --- */
-#define BSE_EPSILON                       (1e-6 /* threshold, coined for 16 bit */)
-#define BSE_EPSILON_CMP(double1, double2) (_bse_epsilon_cmp ((double1), (double2)))
-#undef PI
-#if   defined (M_PIl)
-#  define PI    (M_PIl)
-#else /* !math.h M_PI */
-#  define PI    (3.1415926535897932384626433832795029)
-#endif
+/* --- FIXME --- */
+#define	BSE_STEREO_SHIFT	 (1)
+#define	BSE_SAMPLE_SHIFT	 (16)
 #define BSE_MAX_SAMPLE_VALUE_f   ((gfloat) BSE_MAX_SAMPLE_VALUE)
 #define BSE_MIN_SAMPLE_VALUE_f   ((gfloat) BSE_MIN_SAMPLE_VALUE)
 #define BSE_MAX_SAMPLE_VALUE_d   ((gdouble) BSE_MAX_SAMPLE_VALUE)
@@ -153,18 +164,6 @@ typedef enum                    /*< skip >*/
 #define BSE_MIN_SAMPLE_VALUE     (-32768) /* don't use this, assume
                                           * -BSE_MAX_SAMPLE_VALUE instead
                                           */
-
-
-/* --- implementation details --- */
-static inline gint
-_bse_epsilon_cmp (gdouble double1,
-                  gdouble double2)
-{
-  register gfloat diff = double1 - double2;
-
-  return diff > BSE_EPSILON ? 1 : diff < - BSE_EPSILON ? -1 : 0;
-}
-
 
 /* --- anticipated structures --- */
 struct _BsePixdata
@@ -188,10 +187,6 @@ struct _BseIcon
 extern BseDebugFlags bse_debug_flags;
 
 
-/* --- required globals --- */
-extern const gchar *bse_log_domain_bse;
-
-
 /* --- BSE function types --- */
 typedef void          (*BseFunc)              (void);
 typedef BseTokenType  (*BseTryStatement)     (gpointer           func_data,
@@ -207,76 +202,6 @@ typedef gboolean      (*BseProcedureShare)   (gpointer           func_data,
 typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
                                               GType              type,
                                               gpointer           user_data);
-
-
-/* --- notification (object callbacks) --- */
-/* notifier signatures, these will get postprocessed to generate
- * bsenotifier_array.c
- */
-typedef void   (*BseNotify_destroy)                (BseObject       *object,
-                                                    gpointer         data);
-typedef void   (*BseNotify_name_set)               (BseObject       *object,
-                                                    gpointer         data);
-typedef void   (*BseNotify_param_changed)          (BseObject       *object,
-                                                    GParamSpec      *pspec,
-                                                    gpointer         data);
-typedef void   (*BseNotify_store)                  (BseObject       *object,
-                                                    BseStorage      *storage,
-                                                    gpointer         data);
-typedef void   (*BseNotify_icon_changed)           (BseObject       *object,
-                                                    gpointer         data);
-typedef void   (*BseNotify_lock_changed)           (BseGConfig      *gconf,
-                                                    gpointer         data);
-typedef void   (*BseNotify_io_changed)             (BseSource       *source,
-                                                    gpointer         data);
-typedef void   (*BseNotify_item_added)             (BseContainer    *container,
-                                                    BseItem         *item,
-                                                    gpointer         data);
-typedef void   (*BseNotify_item_removed)           (BseContainer    *container,
-                                                    BseItem         *item,
-                                                    gpointer         data);
-typedef void   (*BseNotify_cross_changes)          (BseContainer    *container,
-                                                    gpointer         data);
-typedef void   (*BseNotify_seqid_changed)          (BseItem         *item,
-                                                    gpointer         data);
-typedef void   (*BseNotify_set_parent)             (BseItem         *item,
-                                                    BseItem         *container,
-                                                    gpointer         data);
-typedef void   (*BseNotify_size_changed)           (BsePattern      *pattern,
-                                                    gpointer         data);
-typedef void   (*BseNotify_note_changed)           (BsePattern      *pattern,
-                                                    guint            channel,
-                                                    guint            row,
-                                                    gpointer         data);
-typedef void   (*BseNotify_note_selection_changed) (BsePattern      *pattern,
-                                                    guint            channel,
-                                                    guint            row,
-                                                    gpointer         data);
-typedef void   (*BseNotify_pattern_inserted)       (BsePatternGroup *pgroup,
-                                                    BsePattern      *pattern,
-						    guint            position,
-                                                    gpointer         data);
-typedef void   (*BseNotify_pattern_removed)        (BsePatternGroup *pgroup,
-						    BsePattern      *pattern,
-						    guint            position,
-                                                    gpointer         data);
-typedef void   (*BseNotify_pattern_group_inserted) (BseSong         *song,
-                                                    BsePatternGroup *pgroup,
-						    guint            position,
-                                                    gpointer         data);
-typedef void   (*BseNotify_pattern_group_removed)  (BseSong         *song,
-                                                    BsePatternGroup *pgroup,
-						    guint            position,
-                                                    gpointer         data);
-typedef void   (*BseNotify_sequencer_step)         (BseSong         *song,
-                                                    gpointer         data);
-typedef void   (*BseNotify_complete_restore)       (BseProject      *project,
-                                                    BseStorage      *storage,
-                                                    gboolean         aborted,
-                                                    gpointer         data);
-
-
-
 
 
 

@@ -149,10 +149,9 @@ fetch_parasite (BseObject *object,
 	  if (olist)
 	    bse_object_steal_qdata (object, quark_parasite_list);
 	  else
-	    bse_object_add_notifier (object,
-				     "store",
-				     store_parasite_list,
-				     NULL);
+	    g_object_connect (object,
+			      "signal::store", store_parasite_list, NULL,
+			      NULL);
 	  bse_object_set_qdata_full (object, quark_parasite_list, list, parasite_list_free);
 	}
 
@@ -194,7 +193,9 @@ delete_parasite (BseObject *object,
     list->parasites[i] = list->parasites[list->n_parasites];
   else if (list->n_parasites == 0)
     {
-      bse_object_remove_notifiers_by_func (object, store_parasite_list, NULL);
+      g_object_disconnect (object,
+			   "any_signal", store_parasite_list, NULL,
+			   NULL);
       bse_object_set_qdata (object, quark_parasite_list, NULL);
     }
 }

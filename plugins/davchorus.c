@@ -34,16 +34,14 @@ enum
 static void	   dav_chorus_init		(DavChorus	 *chorus);
 static void	   dav_chorus_class_init	(DavChorusClass	 *class);
 static void	   dav_chorus_class_finalize	(DavChorusClass	 *class);
-static void	   dav_chorus_set_param	    	(DavChorus	 *chorus,
+static void	   dav_chorus_set_property	(DavChorus	 *chorus,
 						 guint            param_id,
 						 GValue          *value,
-						 GParamSpec      *pspec,
-						 const gchar     *trailer);
-static void	   dav_chorus_get_param	    	(DavChorus	 *chorus,
+						 GParamSpec      *pspec);
+static void	   dav_chorus_get_property	(DavChorus	 *chorus,
 						 guint            param_id,
 						 GValue          *value,
-						 GParamSpec      *pspec,
-						 const gchar     *trailer);
+						 GParamSpec      *pspec);
 static void	   dav_chorus_prepare	    	(BseSource	 *source,
 						 BseIndex	  index);
 static BseChunk*   dav_chorus_calc_chunk	(BseSource	 *source,
@@ -87,18 +85,18 @@ dav_chorus_class_init (DavChorusClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_param = (GObjectSetParamFunc) dav_chorus_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) dav_chorus_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) dav_chorus_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) dav_chorus_get_property;
   
   source_class->prepare = dav_chorus_prepare;
   source_class->calc_chunk = dav_chorus_calc_chunk;
   source_class->reset = dav_chorus_reset;
   
   bse_object_class_add_param (object_class, "Parameters", PARAM_WET_OUT,
-			      b_param_spec_float ("wet_out", "Wet out [%]",
+			      bse_param_spec_float ("wet_out", "Wet out [%]",
 						  "Set the amount of modified data to mix",
 						  0.0, 100.0, 50.0, 0.1,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "Chorus Output", 1);
   g_assert (ochannel_id == DAV_CHORUS_OCHANNEL_MONO);
@@ -126,39 +124,37 @@ dav_chorus_init (DavChorus *chorus)
 }
 
 static void
-dav_chorus_set_param (DavChorus   *chorus,
-		      guint        param_id,
-		      GValue      *value,
-		      GParamSpec  *pspec,
-		      const gchar *trailer)
+dav_chorus_set_property (DavChorus   *chorus,
+			 guint        param_id,
+			 GValue      *value,
+			 GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_WET_OUT:
-      chorus->wet_out = b_value_get_float (value) / 100.0;
+      chorus->wet_out = g_value_get_float (value) / 100.0;
       break;
       
     default:
-      G_WARN_INVALID_PARAM_ID (chorus, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (chorus, param_id, pspec);
       break;
     }
 }
 
 static void
-dav_chorus_get_param (DavChorus   *chorus,
-		      guint        param_id,
-		      GValue      *value,
-		      GParamSpec  *pspec,
-		      const gchar *trailer)
+dav_chorus_get_property (DavChorus   *chorus,
+			 guint        param_id,
+			 GValue      *value,
+			 GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_WET_OUT:
-      b_value_set_float (value, chorus->wet_out * 100.0);
+      g_value_set_float (value, chorus->wet_out * 100.0);
       break;
       
     default:
-      G_WARN_INVALID_PARAM_ID (chorus, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (chorus, param_id, pspec);
       break;
     }
 }
@@ -214,7 +210,7 @@ dav_chorus_calc_chunk (BseSource *source,
       inputs = NULL;
     }
   
-  wet_out_1024 = (BseMixValue) (chorus->wet_out * 1024.0);
+  wet_out_1024 = chorus->wet_out * 1024.0;
   
   for (i = 0; i < BSE_TRACK_LENGTH; i++)
     {
@@ -246,9 +242,14 @@ dav_chorus_calc_chunk (BseSource *source,
         hi_pos -= chorus->delay_length;
       
       wet += chorus->delay [hi_pos] * lo_pos;
-      
+
+#ifdef	INT_SAMPLES
       wet = ((wet >> 8) + chorus->delay [chorus->delay_pos]) >> 1;
       hunk[i] = (wet * wet_out_1024 + chorus->delay [chorus->delay_pos] * (1024 - wet_out_1024)) >> 10;
+#else
+      wet = ((wet / 256.0) + chorus->delay[chorus->delay_pos]) / 2;
+      hunk[i] = (wet * wet_out_1024 + chorus->delay [chorus->delay_pos] * (1024 - wet_out_1024)) / 1024.0;
+#endif
       
       chorus->delay_pos++;
       if (chorus->delay_pos >= chorus->delay_length)

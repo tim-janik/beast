@@ -34,7 +34,7 @@ extern "C" {
 #define	BST_ITEM_VIEW_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_ITEM_VIEW, BstItemViewClass))
 #define	BST_IS_ITEM_VIEW(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_ITEM_VIEW))
 #define	BST_IS_ITEM_VIEW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_ITEM_VIEW))
-#define BST_ITEM_VIEW_GET_CLASS(obj)  ((BstItemViewClass*) (((GtkObject*) (obj))->klass))
+#define BST_ITEM_VIEW_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_ITEM_VIEW, BstItemViewClass))
 
 
 /* --- structures & typedefs --- */

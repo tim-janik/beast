@@ -20,13 +20,22 @@
 #include        "bsesuper.h"
 #include        "bsestorage.h"
 #include        "bseprocedure.h"
+#include        "bsemarshal.h"
+#include	"bsemain.h"
 
+
+
+enum {
+  SIGNAL_SEQID_CHANGED,
+  SIGNAL_SET_PARENT,
+  SIGNAL_LAST
+};
 
 
 /* --- prototypes --- */
 static void	bse_item_class_init		(BseItemClass	*class);
 static void	bse_item_init			(BseItem		*item);
-static void	bse_item_do_shutdown		(GObject		*object);
+static void	bse_item_do_dispose		(GObject		*object);
 static void	bse_item_do_destroy		(BseObject		*object);
 static void	bse_item_do_set_name		(BseObject		*object,
 						 const gchar		*name);
@@ -37,8 +46,8 @@ static void	bse_item_do_set_parent		(BseItem                *item,
 
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
-static GSList       *item_seqid_changed_queue = NULL;
-
+static GSList     *item_seqid_changed_queue = NULL;
+static guint       item_signals[SIGNAL_LAST] = { 0, };
 
 
 /* --- functions --- */
@@ -72,15 +81,22 @@ bse_item_class_init (BseItemClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
-  parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
+  parent_class = g_type_class_peek_parent (class);
 
-  gobject_class->shutdown = bse_item_do_shutdown;
+  gobject_class->dispose = bse_item_do_dispose;
 
   object_class->set_name = bse_item_do_set_name;
   object_class->destroy = bse_item_do_destroy;
 
   class->set_parent = bse_item_do_set_parent;
   class->get_seqid = bse_item_do_get_seqid;
+
+  item_signals[SIGNAL_SEQID_CHANGED] = bse_object_class_add_signal (object_class, "seqid_changed",
+								    bse_marshal_VOID__NONE,
+								    G_TYPE_NONE, 0);
+  item_signals[SIGNAL_SET_PARENT] = bse_object_class_add_signal (object_class, "set_parent",
+								 bse_marshal_VOID__OBJECT,
+								 G_TYPE_NONE, 1, BSE_TYPE_CONTAINER);
 }
 
 static void
@@ -90,15 +106,17 @@ bse_item_init (BseItem *item)
 }
 
 static void
-bse_item_do_shutdown (GObject *gobject)
+bse_item_do_dispose (GObject *gobject)
 {
   BseItem *item = BSE_ITEM (gobject);
+
+  g_return_if_fail (item->use_count == 0);
 
   /* if parent could be != NULL here, we had to force removement */
   g_return_if_fail (item->parent == NULL);
 
-  /* chain parent class' shutdown handler */
-  G_OBJECT_CLASS (parent_class)->shutdown (gobject);
+  /* chain parent class' dispose handler */
+  G_OBJECT_CLASS (parent_class)->dispose (gobject);
 }
 
 static void
@@ -110,6 +128,8 @@ bse_item_do_destroy (BseObject *object)
 
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
+
+  g_return_if_fail (item->use_count == 0);
 }
 
 static void
@@ -153,7 +173,7 @@ bse_item_set_parent (BseItem *item,
   if (parent)
     bse_object_ref (BSE_OBJECT (parent));
 
-  BSE_NOTIFY (item, set_parent, NOTIFY (OBJECT, parent, DATA));
+  g_signal_emit (item, item_signals[SIGNAL_SET_PARENT], 0, parent);
 
   BSE_ITEM_GET_CLASS (item)->set_parent (item, parent);
 
@@ -174,6 +194,8 @@ bse_item_do_get_seqid (BseItem *item)
 static gboolean
 idle_handler_seqid_changed (gpointer data)
 {
+  BSE_THREADS_ENTER ();
+  
   while (item_seqid_changed_queue)
     {
       GSList *slist = item_seqid_changed_queue;
@@ -182,9 +204,11 @@ idle_handler_seqid_changed (gpointer data)
       item_seqid_changed_queue = slist->next;
       g_slist_free_1 (slist);
       if (item->parent)
-	BSE_NOTIFY (item, seqid_changed, NOTIFY (OBJECT, DATA));
+	g_signal_emit (item, item_signals[SIGNAL_SEQID_CHANGED], 0);
     }
 
+  BSE_THREADS_LEAVE ();
+  
   return FALSE;
 }
 
@@ -238,19 +262,18 @@ bse_item_common_ancestor (BseItem *item1,
 void
 bse_item_cross_ref (BseItem         *owner,
 		    BseItem         *ref_item,
-		    BseItemCrossFunc destroy_func,
-		    gpointer         data)
+		    BseItemUncross   uncross_func)
 {
   BseItem *container;
   
   g_return_if_fail (BSE_IS_ITEM (owner));
   g_return_if_fail (BSE_IS_ITEM (ref_item));
-  g_return_if_fail (destroy_func != NULL);
+  g_return_if_fail (uncross_func != NULL);
   
   container = bse_item_common_ancestor (owner, ref_item);
   
   if (container)
-    bse_container_cross_ref (BSE_CONTAINER (container), owner, ref_item, destroy_func, data);
+    bse_container_cross_ref (BSE_CONTAINER (container), owner, ref_item, uncross_func);
   else
     g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
 	       BSE_OBJECT_TYPE_NAME (owner),
@@ -443,10 +466,9 @@ bse_item_execva_i (BseItem     *item,
       gchar *p, *name, *type_name = g_type_name (type);
       guint l1 = strlen (type_name);
 
-      name = strcpy (g_new (gchar, l1 + 2 + l2 + 1), type_name);
+      name = strcpy (g_new (gchar, l1 + 1 + l2 + 1), type_name);
       p = name + l1;
-      *(p++) = ':';
-      *(p++) = ':';
+      *(p++) = '+';
       strcpy (p, procedure);
       
       proc = bse_procedure_find_ref (name);
@@ -471,10 +493,11 @@ bse_item_execva_i (BseItem     *item,
 }
 
 BseErrorType
-bse_item_exec_proc (BseItem        *item,
-		    const gchar    *procedure,
+bse_item_exec_proc (gpointer	 _item,
+		    const gchar *procedure,
 		    ...)
 {
+  BseItem *item = _item;
   va_list var_args;
   BseErrorType error;
   
@@ -489,10 +512,11 @@ bse_item_exec_proc (BseItem        *item,
 }
 
 BseErrorType
-bse_item_exec_void_proc (BseItem        *item,
-			 const gchar    *procedure,
+bse_item_exec_void_proc (gpointer     _item,
+			 const gchar *procedure,
 			 ...)
 {
+  BseItem *item = _item;
   va_list var_args;
   BseErrorType error;
   

@@ -17,6 +17,8 @@
  */
 #include "bstkeytables.h"
 
+#include <gdk/gdkkeysyms.h>
+
 
 /* --- structures --- */
 struct _BstKeyTableKey
@@ -156,7 +158,7 @@ bst_key_table_install_patch (BstKeyTablePatch *patch)
 
   g_return_if_fail (patch != NULL);
 
-  gtk_type_init ();
+  g_type_init ();
   class = gtk_type_class (BST_TYPE_PATTERN_EDITOR);
 
   while (patch)

@@ -28,12 +28,12 @@ extern "C" {
 
 
 /* --- Gtk+ type macros --- */
-#define	BST_TYPE_PATTERN_DIALOG		 (bst_pattern_dialog_get_type ())
-#define	BST_PATTERN_DIALOG(object)	 (GTK_CHECK_CAST ((object), BST_TYPE_PATTERN_DIALOG, BstPatternDialog))
-#define	BST_PATTERN_DIALOG_CLASS(klass)	 (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PATTERN_DIALOG, BstPatternDialogClass))
-#define	BST_IS_PATTERN_DIALOG(object)	 (GTK_CHECK_TYPE ((object), BST_TYPE_PATTERN_DIALOG))
+#define	BST_TYPE_PATTERN_DIALOG		   (bst_pattern_dialog_get_type ())
+#define	BST_PATTERN_DIALOG(object)	   (GTK_CHECK_CAST ((object), BST_TYPE_PATTERN_DIALOG, BstPatternDialog))
+#define	BST_PATTERN_DIALOG_CLASS(klass)	   (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PATTERN_DIALOG, BstPatternDialogClass))
+#define	BST_IS_PATTERN_DIALOG(object)	   (GTK_CHECK_TYPE ((object), BST_TYPE_PATTERN_DIALOG))
 #define	BST_IS_PATTERN_DIALOG_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PATTERN_DIALOG))
-#define BST_PATTERN_DIALOG_GET_CLASS(obj)	 ((BstPatternDialogClass*) (((GtkObject*) (obj))->klass))
+#define BST_PATTERN_DIALOG_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PATTERN_DIALOG, BstPatternDialogClass))
 
 
 /* --- structures & typedefs --- */

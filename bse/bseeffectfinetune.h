@@ -42,6 +42,7 @@ extern "C" {
 
 /* --- BseEffectFineTune --- */
 typedef struct _BseEffectFineTune BseEffectFineTune;
+typedef struct _BseEffectClass    BseEffectFineTuneClass;
 struct _BseEffectFineTune
 {
   BseEffect parent_object;

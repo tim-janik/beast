@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ extern "C" {
 #define	BST_PARAM_VIEW_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PARAM_VIEW, BstParamViewClass))
 #define	BST_IS_PARAM_VIEW(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_PARAM_VIEW))
 #define	BST_IS_PARAM_VIEW_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PARAM_VIEW))
-#define BST_PARAM_VIEW_GET_CLASS(obj)	((BstParamViewClass*) (((GtkObject*) (obj))->klass))
+#define BST_PARAM_VIEW_GET_CLASS(obj)	(GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PARAM_VIEW, BstParamViewClass))
 
 
 /* --- structures & typedefs --- */
@@ -52,8 +52,6 @@ struct _BstParamView
   GType  	 object_type;
   GPatternSpec  *reject_pattern;
   GPatternSpec  *match_pattern;
-
-  GtkTooltips	*tooltips;
 };
 struct _BstParamViewClass
 {

@@ -18,7 +18,6 @@
 #include	"bsecapture.h"
 
 #include	"bsechunk.h"
-#include	"bseheart.h"
 #include	"bsecategories.h"
 #include	"bsehunkmixer.h"
 #include	<stdlib.h>
@@ -83,17 +82,19 @@ bse_capture_class_init (BseCaptureClass *class)
   BseSourceClass *source_class;
   guint ochannel_id;
 
-  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek_parent (class);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 
   object_class->destroy = bse_capture_do_destroy;
 
+#if 0
   source_class->prepare = bse_capture_prepare;
   source_class->calc_chunk = bse_capture_calc_chunk;
   source_class->reset = bse_capture_reset;
+#endif
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "Capture", "Mono Capture Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Capture", "Mono Capture Output");
   g_assert (ochannel_id == BSE_CAPTURE_OCHANNEL_MONO);
 }
 
@@ -106,7 +107,7 @@ static void
 bse_capture_init (BseCapture *capture)
 {
   /* FIXME: idevice hack */
-  capture->idevice = g_strdup (bse_heart_get_default_idevice ());
+  // capture->idevice = g_strdup (bse_heart_default_idevice_name ());
   capture->pdev = NULL;
 }
 
@@ -131,11 +132,11 @@ bse_capture_prepare (BseSource *source,
   BseCapture *capture = BSE_CAPTURE (source);
 
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 
-  capture->pdev = bse_heart_get_device (capture->idevice);
-  if (capture->pdev)
-    bse_heart_source_add_idevice (source, capture->pdev);
+  // capture->pdev = bse_heart_get_device (capture->idevice);
+  // if (capture->pdev)
+  //   bse_heart_source_add_idevice (source, capture->pdev);
 }
 
 static BseChunk*
@@ -148,6 +149,7 @@ bse_capture_calc_chunk (BseSource *source,
   g_return_val_if_fail (ochannel_id == BSE_CAPTURE_OCHANNEL_MONO, NULL);
 
   hunk = bse_hunk_alloc (1);
+#if 0
   if (capture->pdev && BSE_DEVICE_READABLE (capture->pdev))
     {
       BseChunk *chunk = bse_pcm_device_iqueue_peek (capture->pdev);
@@ -155,6 +157,7 @@ bse_capture_calc_chunk (BseSource *source,
       bse_hunk_mix (1, hunk, NULL, chunk->n_tracks, chunk->hunk);
     }
   else
+#endif
     memset (hunk, 0, BSE_TRACK_LENGTH * sizeof (BseSampleValue));
 
   return bse_chunk_new_orphan (1, hunk);
@@ -165,8 +168,8 @@ bse_capture_reset (BseSource *source)
 {
   BseCapture *capture = BSE_CAPTURE (source);
 
-  if (capture->pdev)
-    bse_heart_source_remove_idevice (source, capture->pdev);
+  // if (capture->pdev)
+  //   bse_heart_source_remove_idevice (source, capture->pdev);
   capture->pdev = NULL;
 
   /* chain parent class' handler */

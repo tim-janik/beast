@@ -67,14 +67,11 @@ struct _BseSongClass
 
 /* --- ochannels --- */
 enum {
-  BSE_SONG_OCHANNEL_NONE,
   BSE_SONG_OCHANNEL_STEREO
 };
 
 
 /* --- prototypes --- */
-BseSong*         bse_song_new                        (BseProject      *project,
-						      guint            n_channels);
 void             bse_song_set_pattern_length         (BseSong         *song,
 						      guint            pattern_length);
 void             bse_song_set_bpm                    (BseSong         *song,

@@ -19,13 +19,13 @@
 
 #include	"bststatusbar.h"
 #include	"bstmenus.h"
+#include	<unistd.h>
 #include	<errno.h>
 
 
 /* --- prototypes --- */
 static void	bst_file_dialog_class_init	(BstFileDialogClass	*class);
 static void	bst_file_dialog_init		(BstFileDialog		*fd);
-static void	bst_file_dialog_destroy		(GtkObject		*object);
 
 
 /* --- variables --- */
@@ -76,45 +76,28 @@ bst_file_dialog_init (BstFileDialog *fd)
 }
 
 static void
-bst_file_dialog_destroy (GtkObject *object)
-{
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-static void
 bst_file_dialog_open (BstFileDialog *fd)
 {
   gchar *file_name;
-  BseStorage *storage;
+  BswProxy project;
   BseErrorType error;
-  BstApp *app = NULL;
 
   file_name = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (fd)));
 
-  storage = bse_storage_new ();
-  error = bse_storage_input_file (storage, file_name);
+  project = bsw_server_use_new_project (BSW_SERVER, file_name);
+  error = bsw_project_restore_from_file (project, file_name);
 
   if (error)
-    {
-      g_message ("failed to open `%s': %s", /* FIXME */
-		 file_name,
-		 bse_error_blurb (error));
-      bst_status_printf (0, bse_error_blurb (error), "Failed to open `%s'", file_name);
-    }
+    g_message ("failed to load project `%s': %s", /* FIXME */
+	       file_name,
+	       bse_error_blurb (error));
   else
     {
-      BseProject *project = bse_project_new (file_name);
+      BstApp *app;
 
-      bse_storage_set_path_resolver (storage, bse_project_path_resolver, project);
-      
-      error = bse_project_restore (project, storage);
-      if (error)
-	g_message ("failed to load project `%s': %s", /* FIXME */
-		   file_name,
-		   bse_error_blurb (error));
+      bsw_project_ensure_wave_repo (project);
       app = bst_app_new (project);
       bst_status_window_push (app);
-      bse_object_unref (BSE_OBJECT (project));
       bst_status_printf (error ? 0 : 100,
 			 error ? "Failed" : "Done",
 			 "Loading project `%s'",
@@ -122,8 +105,7 @@ bst_file_dialog_open (BstFileDialog *fd)
       bst_status_window_pop ();
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
-  
-  bse_storage_destroy (storage);
+  bsw_item_unuse (project);
 
   g_free (file_name);
   gtk_widget_destroy (GTK_WIDGET (fd));
@@ -149,16 +131,16 @@ bst_file_dialog_save (BstFileDialog *fd)
 
  retry_saving:
 
-  error = bse_project_store_bse (app->project, file_name);
+  error = bse_project_store_bse (BSE_PROJECT (bse_object_from_id (app->project)), file_name);
 
   /* offer retry if file exists
    */
   if (error == BSE_ERROR_FILE_EXISTS)
     {
       GtkWidget *choice;
-      gchar *title = g_strdup_printf ("Saving project `%s'", BSE_OBJECT_NAME (app->project));
+      gchar *title = g_strdup_printf ("Saving project `%s'", bsw_item_get_name (app->project));
       gchar *text = g_strdup_printf ("Failed to save\n`%s'\nto\n`%s':\n%s",
-				     BSE_OBJECT_NAME (app->project),
+				     bsw_item_get_name (app->project),
 				     file_name,
 				     bse_error_blurb (error));
       
@@ -215,7 +197,7 @@ bst_file_dialog_new_open (BstApp *app)
       gtk_object_set_data (GTK_OBJECT (dialog), "app", app);
       gtk_signal_connect_object_while_alive (GTK_OBJECT (app),
 					     "destroy",
-					     gtk_widget_destroy,
+					     G_CALLBACK (gtk_widget_destroy),
 					     GTK_OBJECT (dialog));
     }
 
@@ -234,7 +216,7 @@ bst_file_dialog_new_save (BstApp *app)
 
   g_return_val_if_fail (BST_IS_APP (app), NULL);
 
-  string = g_strconcat ("BEAST Save Project: ", BSE_OBJECT_NAME (app->project), NULL);
+  string = g_strconcat ("BEAST Save Project: ", bsw_item_get_name (app->project), NULL);
   dialog = gtk_widget_new (BST_TYPE_FILE_DIALOG,
 			   "title", string,
 			   NULL);
@@ -278,7 +260,7 @@ bst_file_dialog_new_save (BstApp *app)
   gtk_object_set_data (GTK_OBJECT (dialog), "app", app);
   gtk_signal_connect_object_while_alive (GTK_OBJECT (app),
 					 "destroy",
-					 gtk_widget_destroy,
+					 G_CALLBACK (gtk_widget_destroy),
 					 GTK_OBJECT (dialog));
 
   return dialog;

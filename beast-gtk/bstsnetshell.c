@@ -25,17 +25,12 @@
 /* --- prototypes --- */
 static void	bst_snet_shell_class_init	(BstSNetShellClass	*klass);
 static void	bst_snet_shell_init		(BstSNetShell		*pe);
-static void	bst_snet_shell_destroy		(GtkObject		*object);
 static void	bst_snet_shell_rebuild		(BstSuperShell		*super_shell);
 static void	bst_snet_shell_update		(BstSuperShell		*super_shell);
 static void	bst_snet_shell_operate		(BstSuperShell		*super_shell,
 						 BstOps			 sop);
 static gboolean	bst_snet_shell_can_operate	(BstSuperShell		*super_shell,
 						 BstOps			 sop);
-static void	bst_snet_shell_setup_super	(BstSuperShell		*super_shell,
-						 BseSuper		*super);
-static void	bst_snet_shell_release_super	(BstSuperShell		*super_shell,
-						 BseSuper		*super);
 
 
 /* --- static variables --- */
@@ -72,19 +67,11 @@ bst_snet_shell_get_type (void)
 static void
 bst_snet_shell_class_init (BstSNetShellClass *class)
 {
-  GtkObjectClass *object_class;
-  BstSuperShellClass *super_shell_class;
-
-  object_class = GTK_OBJECT_CLASS (class);
-  super_shell_class = BST_SUPER_SHELL_CLASS (class);
+  BstSuperShellClass *super_shell_class = BST_SUPER_SHELL_CLASS (class);
 
   bst_snet_shell_class = class;
-  parent_class = gtk_type_class (BST_TYPE_SUPER_SHELL);
+  parent_class = g_type_class_peek_parent (class);
 
-  object_class->destroy = bst_snet_shell_destroy;
-
-  super_shell_class->setup_super = bst_snet_shell_setup_super;
-  super_shell_class->release_super = bst_snet_shell_release_super;
   super_shell_class->operate = bst_snet_shell_operate;
   super_shell_class->can_operate = bst_snet_shell_can_operate;
   super_shell_class->rebuild = bst_snet_shell_rebuild;
@@ -98,40 +85,6 @@ bst_snet_shell_init (BstSNetShell *snet_shell)
 {
   snet_shell->param_view = NULL;
   snet_shell->snet_router = NULL;
-  snet_shell->tooltips = gtk_tooltips_new ();
-  gtk_object_ref (GTK_OBJECT (snet_shell->tooltips));
-  gtk_object_sink (GTK_OBJECT (snet_shell->tooltips));
-}
-
-static void
-bst_snet_shell_destroy (GtkObject *object)
-{
-  BstSNetShell *snet_shell = BST_SNET_SHELL (object);
-  BseSNet *snet = BSE_SNET (BST_SUPER_SHELL (snet_shell)->super);
-  
-  bse_source_clear_ochannels (BSE_SOURCE (snet));
-  
-  gtk_container_foreach (GTK_CONTAINER (snet_shell), (GtkCallback) gtk_widget_destroy, NULL);
-  
-  gtk_object_unref (GTK_OBJECT (snet_shell->tooltips));
-  snet_shell->tooltips = NULL;
-  
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
-}
-
-GtkWidget*
-bst_snet_shell_new (BseSNet *snet)
-{
-  GtkWidget *snet_shell;
-  
-  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
-  g_return_val_if_fail (bst_super_shell_from_super (BSE_SUPER (snet)) == NULL, NULL);
-  
-  snet_shell = gtk_widget_new (BST_TYPE_SNET_SHELL,
-			       "super", snet,
-			       NULL);
-  
-  return snet_shell;
 }
 
 static void
@@ -175,17 +128,22 @@ zoomed_add_xpm (BstZoomedWindow *zoomed)
 }
 
 static void
-bst_snet_shell_build (BstSNetShell *snet_shell)
+bst_snet_shell_rebuild (BstSuperShell *super_shell)
 {
+  BstSNetShell *snet_shell = BST_SNET_SHELL (super_shell);
+  BseSNet *snet = bse_object_from_id (super_shell->super);
   GtkWidget *notebook, *zoomed_window;
-  BseSNet *snet = BSE_SNET (BST_SUPER_SHELL (snet_shell)->super);
   GtkWidget *snet_router_box;
 
+  g_return_if_fail (snet_shell->param_view == NULL);
+
   snet_shell->param_view = (BstParamView*) bst_param_view_new (BSE_OBJECT (snet));
-  gtk_widget_set (GTK_WIDGET (snet_shell->param_view),
-		  "signal::destroy", gtk_widget_destroyed, &snet_shell->param_view,
-		  "visible", TRUE,
-		  NULL);
+  g_object_set (GTK_WIDGET (snet_shell->param_view),
+		"visible", TRUE,
+		NULL);
+  g_object_connect (GTK_WIDGET (snet_shell->param_view),
+		    "signal::destroy", gtk_widget_destroyed, &snet_shell->param_view,
+		    NULL);
 
   snet_router_box = gtk_widget_new (GTK_TYPE_VBOX,
 				    "visible", TRUE,
@@ -193,35 +151,40 @@ bst_snet_shell_build (BstSNetShell *snet_shell)
 				    "spacing", 3,
 				    "border_width", 5,
 				    NULL);
-  snet_shell->snet_router = (BstSNetRouter*) bst_snet_router_new (snet);
+  snet_shell->snet_router = (BstSNetRouter*) bst_snet_router_new (BSE_OBJECT_ID (snet));
   gtk_box_pack_start (GTK_BOX (snet_router_box), snet_shell->snet_router->toolbar, FALSE, TRUE, 0);
-  zoomed_window = gtk_widget_new (BST_TYPE_ZOOMED_WINDOW,
-				  "visible", TRUE,
-				  "hscrollbar_policy", GTK_POLICY_ALWAYS,
-				  "vscrollbar_policy", GTK_POLICY_ALWAYS,
-				  "parent", snet_router_box,
-				  "object_signal::zoom", bst_snet_router_adjust_region, snet_shell->snet_router,
-				  "object_signal::zoom", gtk_false, NULL,
-				  "signal::realize", zoomed_add_xpm, NULL,
-				  NULL);
-  gtk_widget_set (GTK_WIDGET (snet_shell->snet_router),
-		  "visible", TRUE,
-		  "signal::destroy", gtk_widget_destroyed, &snet_shell->snet_router,
-		  "parent", zoomed_window,
-		  NULL);
+  zoomed_window = g_object_connect (gtk_widget_new (BST_TYPE_ZOOMED_WINDOW,
+						    "visible", TRUE,
+						    "hscrollbar_policy", GTK_POLICY_ALWAYS,
+						    "vscrollbar_policy", GTK_POLICY_ALWAYS,
+						    "parent", snet_router_box,
+						    NULL),
+				    "swapped_signal::zoom", bst_snet_router_adjust_region, snet_shell->snet_router,
+				    "swapped_signal::zoom", gtk_false, NULL,
+				    "signal::realize", zoomed_add_xpm, NULL,
+				    NULL);
+  g_object_set (GTK_WIDGET (snet_shell->snet_router),
+		"visible", TRUE,
+		"parent", zoomed_window,
+		NULL);
+  g_object_connect (GTK_WIDGET (snet_shell->snet_router),
+		    "signal::destroy", gtk_widget_destroyed, &snet_shell->snet_router,
+		    NULL);
 
-  notebook = gtk_widget_new (GTK_TYPE_NOTEBOOK,
-			     "GtkNotebook::scrollable", FALSE,
-			     "GtkNotebook::tab_border", 0,
-			     "GtkNotebook::show_border", TRUE,
-			     "GtkNotebook::enable_popup", FALSE,
-			     "GtkNotebook::show_tabs", TRUE,
-			     "GtkNotebook::tab_pos", GTK_POS_LEFT,
-			     "GtkNotebook::tab_pos", GTK_POS_TOP,
-			     "border_width", 5,
-			     "parent", snet_shell,
-			     "visible", TRUE,
-			     NULL);
+  notebook = g_object_connect (g_object_new (GTK_TYPE_NOTEBOOK,
+					     "scrollable", FALSE,
+					     "tab_border", 0,
+					     "show_border", TRUE,
+					     "enable_popup", FALSE,
+					     "show_tabs", TRUE,
+					     "tab_pos", GTK_POS_LEFT,
+					     "tab_pos", GTK_POS_TOP,
+					     "border_width", 5,
+					     "parent", snet_shell,
+					     "visible", TRUE,
+					     NULL),
+			       "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+			       NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (snet_shell->param_view),
 			    gtk_widget_new (GTK_TYPE_LABEL,
 					    "label", "Parameters",
@@ -235,33 +198,6 @@ bst_snet_shell_build (BstSNetShell *snet_shell)
 }
 
 static void
-bst_snet_shell_setup_super (BstSuperShell *super_shell,
-			    BseSuper      *super)
-{
-  BstSNetShell *snet_shell;
-  
-  snet_shell = BST_SNET_SHELL (super_shell);
-  
-  BST_SUPER_SHELL_CLASS (parent_class)->setup_super (super_shell, super);
-
-  if (super)
-    bst_snet_shell_build (snet_shell);
-}
-
-static void
-bst_snet_shell_release_super (BstSuperShell *super_shell,
-			      BseSuper      *super)
-{
-  BstSNetShell *snet_shell;
-  
-  snet_shell = BST_SNET_SHELL (super_shell);
-  
-  gtk_container_foreach (GTK_CONTAINER (snet_shell), (GtkCallback) gtk_widget_destroy, NULL);
-  
-  BST_SUPER_SHELL_CLASS (parent_class)->release_super (super_shell, super);
-}
-
-static void
 bst_snet_shell_update (BstSuperShell *super_shell)
 {
   BstSNetShell *snet_shell;
@@ -270,17 +206,6 @@ bst_snet_shell_update (BstSuperShell *super_shell)
   
   bst_param_view_update (snet_shell->param_view);
   bst_snet_router_update (snet_shell->snet_router);
-}
-
-static void
-bst_snet_shell_rebuild (BstSuperShell *super_shell)
-{
-  BstSNetShell *snet_shell;
-  
-  snet_shell = BST_SNET_SHELL (super_shell);
-  
-  bst_param_view_rebuild (snet_shell->param_view);
-  bst_snet_router_rebuild (snet_shell->snet_router);
 }
 
 static void

@@ -25,6 +25,9 @@
 #include	"bstpreferences.h"
 #include	"bstpatterndialog.h"	// FIXME
 #include	"../PKG_config.h"
+#include	<unistd.h>
+#include	<stdio.h>
+#include	<string.h>
 
 
 
@@ -43,8 +46,8 @@ static void			bst_print_blurb		(FILE	     *fout,
 
 
 /* --- variables --- */
-static guint        args_changed_signal_id = 0;
 BstDebugFlags       bst_debug_flags = 0;
+GtkTooltips        *bst_global_tooltips = NULL;
 static GDebugKey    bst_debug_keys[] = { /* keep in sync with bstdefs.h */
   { "keytable",		BST_DEBUG_KEYTABLE, },
   { "samples",		BST_DEBUG_SAMPLES, },
@@ -61,32 +64,57 @@ static const gchar *bst_rc_string =
 
 
 /* --- functions --- */
+static void
+gtk_lock (gpointer null)
+{
+  GDK_THREADS_ENTER ();
+}
+static void
+gtk_unlock (gpointer null)
+{
+  GDK_THREADS_LEAVE ();
+}
+  
 int
 main (int   argc,
       char *argv[])
 {
-  BsePcmDevice *pdev = NULL;
+  BswLockFuncs lfuncs = { NULL, gtk_lock, gtk_unlock };
   BstApp *app = NULL;
   guint i;
   
   /* initialize BSE and preferences
    */
-  bse_init (&argc, &argv);
+  if (0)
+    g_mem_set_vtable (glib_mem_profiler_table);
+  g_thread_init (NULL);
+  g_type_init ();
+  bsw_init (&argc, &argv, &lfuncs);
   bst_globals_init ();
   
-  /* initialize GUI libraries and pre-parse args
+  /* pre-parse BEAST args
    */
   bst_parse_args (&argc, &argv);
-
   g_message ("BEAST: pid = %u", getpid ());
-  
+
+  /* initialize GUI libraries and patch them up ;)
+   */
   gtk_init (&argc, &argv);
+  gtk_post_init_patch_ups ();
+  gdk_rgb_init ();
+
+  GDK_THREADS_ENTER ();
+
+  /* BEAST initialization bits */
+  bst_init_gentypes ();
   bst_pattern_dialog_gtkfix_default_accels ();
   gtk_rc_parse_string (bst_rc_string);
-  gdk_rgb_init ();
-  gnome_type_init ();
-  // gnome_init (PROGRAM, VERSION, argc, argv);
-  bst_free_radio_button_get_type ();
+  {
+    g_type_name (bst_free_radio_button_get_type ());	/* urg, GCC_CONST */
+  }
+  bst_global_tooltips = gtk_tooltips_new ();
+  g_object_ref (bst_global_tooltips);
+  gtk_object_sink (GTK_OBJECT (bst_global_tooltips));
   
   /* parse rc file */
   if (1)
@@ -128,25 +156,16 @@ main (int   argc,
 	  g_message ("loading plugin \"%s\"...", string);
 	  error = bse_plugin_check_load (string);
 	  if (error)
-	    g_warning ("error encountered loading plugin \"%s\": %s", string, error);
+	    g_message ("error encountered loading plugin \"%s\": %s", string, error);
 	  g_free (string);
 	}
       g_list_free (free_list);
       if (!free_list)
-	g_warning ("strange, can't find any plugins, please check %s", BSE_PATH_PLUGINS);
+	g_message ("strange, can't find any plugins, please check %s", BSE_PATH_PLUGINS);
     }
   
   
-  /* hackery rulez!
-   */
-  args_changed_signal_id =
-    gtk_object_class_user_signal_new (gtk_type_class (GTK_TYPE_OBJECT),
-				      "args_changed",
-				      GTK_RUN_ACTION,
-				      gtk_signal_default_marshaller,
-				      GTK_TYPE_NONE, 0);
-  
-  
+#if 0
   /* setup PCM Devices
    */
   if (!pdev && BSE_TYPE_ID (BsePcmDeviceAlsa) && !BST_DISABLE_ALSA)
@@ -175,11 +194,35 @@ main (int   argc,
     }
   if (!pdev)
     g_error ("No PCM device driver known");
-  bse_heart_register_device ("Master", pdev);
+  else
+    {
+      BseErrorType error;
+
+      error = bse_pcm_device_open (pdev,
+				   FALSE, TRUE, 2,
+				   BSE_MIX_FREQ);
+      if (error)
+	g_error ("failed to open PCM Device \"%s\": %s",
+		 bse_device_get_device_name (BSE_DEVICE (pdev)),
+		 bse_error_blurb (error));
+      bse_pcm_device_retrigger (pdev);
+    }
+  bse_scard_out_hack_set_odevice (pdev);
+  // bse_heart_register_device ("Master", pdev);
   bse_object_unref (BSE_OBJECT (pdev));
-  bse_heart_set_default_odevice ("Master");
-  bse_heart_set_default_idevice ("Master");
-  
+  // bse_heart_set_default_odevice ("Master");
+  // bse_heart_set_default_idevice ("Master");
+#endif
+
+  /* make sure the server has a PCM Device
+   */
+#if 0
+  {
+    BswProxy pdev = bsw_server_default_pcm_device (BSW_SERVER);
+
+    g_assert (BSE_IS_PCM_DEVICE (bse_object_from_id (pdev)));
+  }
+#endif
   
   /* register sample repositories
    */
@@ -190,27 +233,22 @@ main (int   argc,
    */
   for (i = 1; i < argc; i++)
     {
-      BseStorage *storage = bse_storage_new ();
-      BseErrorType error;
+      BswErrorType error;
+      BswProxy project;
       
-      error = bse_storage_input_file (storage, argv[i]);
-      
+      project = bsw_server_use_new_project (BSW_SERVER, argv[i]);
+      error = bsw_project_restore_from_file (project, argv[i]);
+      bsw_project_ensure_wave_repo (project);
+
       if (!error)
 	{
-	  BseProject *project = bse_project_new (argv[i]);
-	  
-	  bse_storage_set_path_resolver (storage, bse_project_path_resolver, project);
-	  error = bse_project_restore (project, storage);
-	  if (!error)
-	    {
-	      app = bst_app_new (project);
-	      gtk_idle_show_widget (GTK_WIDGET (app));
-	    }
-	  bse_object_unref (BSE_OBJECT (project));
+	  app = bst_app_new (project);
+	  gtk_idle_show_widget (GTK_WIDGET (app));
 	}
-      bse_storage_destroy (storage);
+      bsw_item_unuse (project);
+
       if (error)
-	g_warning ("failed to load project `%s': %s", /* FIXME */
+	g_message ("failed to load project `%s': %s", /* FIXME */
 		   argv[i],
 		   bse_error_blurb (error));
     }
@@ -219,11 +257,11 @@ main (int   argc,
    */
   if (!app)
     {
-      BseProject *project = bse_project_new ("Untitled.bse");
-      
+      BswProxy project = bsw_server_use_new_project (BSW_SERVER, "Untitled.bse");
+
+      bsw_project_ensure_wave_repo (project);
       app = bst_app_new (project);
-      bse_object_unref (BSE_OBJECT (project));
-      /* bst_app_operate (app, BST_OP_PROJECT_NEW_SONG); */
+      bsw_item_unuse (project);
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
   
@@ -234,13 +272,15 @@ main (int   argc,
   gtk_main ();
   
   /* stop everything playing */
-  bse_heart_reset_all_attach ();
+  // bse_heart_reset_all_attach ();
   
   /* FXME: wrt cleanup cycles */
   
   /* perform necessary cleanup cycles */
+  GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     ;
+  GDK_THREADS_ENTER ();
   
   /* save rc file */
   if (1)
@@ -260,11 +300,14 @@ main (int   argc,
     }
   
   /* remove pcm devices */
-  bse_heart_unregister_all_devices ();
+  // bse_heart_unregister_all_devices ();
   
   /* perform necessary cleanup cycles */
+  GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     ;
+
+  bse_object_debug_leaks ();
   
   return 0;
 }
@@ -594,55 +637,4 @@ bst_update_can_operate (GtkWidget *widget)
   g_return_if_fail (BST_IS_APP (widget));
   
   bst_app_update_can_operate (BST_APP (widget));
-}
-
-/* read bstdefs.h on this */
-extern void
-bst_object_set (gpointer     object,
-		const gchar *first_arg_name,
-		...)
-{
-  va_list args;
-  
-  g_return_if_fail (GTK_IS_OBJECT (object));
-  
-  gtk_object_ref (object);
-  
-  va_start (args, first_arg_name);
-  
-  if (GNOME_IS_CANVAS_ITEM (object))
-    gnome_canvas_item_set_valist (object, first_arg_name, args);
-  else
-    {
-      GSList *arg_list = NULL;
-      GSList *info_list = NULL;
-      gchar *error;
-      
-      error = gtk_object_args_collect (GTK_OBJECT_TYPE (object),
-				       &arg_list,
-				       &info_list,
-				       first_arg_name,
-				       args);
-      
-      if (error)
-	{
-	  g_warning ("bst_object_set(): %s", error);
-	  g_free (error);
-	}
-      else if (arg_list)
-	{
-	  GSList *arg;
-	  GSList *info;
-	  
-	  for (arg = arg_list, info = info_list; arg; arg = arg->next, info = info->next)
-	    gtk_object_arg_set (object, arg->data, info->data);
-	  
-	  gtk_args_collect_cleanup (arg_list, info_list);
-	}
-    }
-  va_end (args);
-  
-  BST_OBJECT_ARGS_CHANGED (object);
-  
-  gtk_object_unref (object);
 }

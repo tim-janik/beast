@@ -1,5 +1,5 @@
 /* BseGenOsc - BSE Generic Oscillator
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999,2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -58,9 +58,18 @@ typedef enum
 /* --- BseGenOsc source --- */
 typedef struct _BseGenOsc      BseGenOsc;
 typedef struct _BseGenOscClass BseGenOscClass;
+typedef struct {
+  BseSampleValue *table;	/* [max_pos + 1] */
+  guint32	  sync_pos;	/* phase */
+  guint32	  pos_inc;
+  gboolean	  with_fm_mod;
+  gfloat	  fm_strength;
+  gboolean	  with_self_mod;
+  gfloat	  self_strength;
+} BseGenOscVars;
 struct _BseGenOsc
 {
-  BseSource       parent_object;
+  BseSource         parent_object;
 
   BseGenOscWaveType wave;
   gfloat            phase;
@@ -69,12 +78,7 @@ struct _BseGenOsc
   gboolean          self_modulation;
   gfloat            self_perc;
 
-  guint32 rate_pos;
-  guint32 rate;
-  gfloat  fm_strength;
-  gfloat  self_strength;
-  guint   table_size;
-  BseSampleValue *table;
+  BseGenOscVars	    vars;
 };
 struct _BseGenOscClass
 {
@@ -98,18 +102,14 @@ struct _BseGenOscClass
 /* --- channels --- */
 enum
 {
-  BSE_GEN_OSC_OCHANNEL_NONE,
-  BSE_GEN_OSC_OCHANNEL_MONO
+  BSE_GEN_OSC_ICHANNEL_FREQ_MOD,
+  BSE_GEN_OSC_ICHANNEL_SYNC
 };
 enum
 {
-  BSE_GEN_OSC_ICHANNEL_NONE,
-  BSE_GEN_OSC_ICHANNEL_FREQ_MOD
+  BSE_GEN_OSC_OCHANNEL_OSC,
+  BSE_GEN_OSC_OCHANNEL_SYNC
 };
-
-
-/* --- prototypes --- */
-void	bse_gen_osc_sync	(BseGenOsc	*gosc);
 
 
 

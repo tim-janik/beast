@@ -8,10 +8,12 @@ test -z "$1" && {
 }
 
 echo "## Generated data (by $0)"
-
 plugins=
 last=
-for file in `echo $@ | sort | uniq` ; do
+FILES="$@"
+LFILES=`echo $FILES | sort | uniq`
+for file in $LFILES ; do
+	echo "$file" | grep "\.c$" >/dev/null || continue
 	name="`echo $file | sed 's/.c$//'`"
 	_name=`echo $name | sed 's/[^A-Za-z0-9]/_/g'`
 	cfile="$name.c"
@@ -44,7 +46,7 @@ for file in `echo $@ | sort | uniq` ; do
 	echo "## Plugin $name"
 	echo "##"
 	test -n "$efile" && {
-	    echo "$efile: $hfile \$(mkenums)"
+	    echo "$efile: $hfile "
 	    echo "plugins_built_sources += $efile"
 	}
 	echo "$_name""_la_SOURCES = $cfile"

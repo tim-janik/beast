@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,8 @@
 #include "bstfreeradiobutton.h"
 
 static void bst_free_radio_button_class_init (BstFreeRadioButtonClass *klass);
+static void bst_free_radio_button_clicked    (GtkButton		      *button);
+
 
 GtkType
 bst_free_radio_button_get_type (void)
@@ -48,12 +50,26 @@ bst_free_radio_button_get_type (void)
 static void
 bst_free_radio_button_class_init (BstFreeRadioButtonClass *class)
 {
-  GtkButtonClass *button_class;
-  GtkButtonClass *radios_parent_class;
+  GtkButtonClass *button_class = GTK_BUTTON_CLASS (class);
 
-  button_class = GTK_BUTTON_CLASS (class);
+  button_class->clicked = bst_free_radio_button_clicked;
+}
 
-  radios_parent_class = gtk_type_class (gtk_type_parent (GTK_TYPE_RADIO_BUTTON));
+static void
+bst_free_radio_button_clicked (GtkButton *button)
+{
+  GtkToggleButton *toggle_button;
+  GtkStateType new_state;
+  
+  g_return_if_fail (BST_IS_FREE_RADIO_BUTTON (button));
 
-  button_class->clicked = radios_parent_class->clicked;
+  toggle_button = GTK_TOGGLE_BUTTON (button);
+  toggle_button->active = !toggle_button->active;
+  new_state = button->in_button ? GTK_STATE_PRELIGHT : toggle_button->active ? GTK_STATE_ACTIVE : GTK_STATE_NORMAL;
+
+  if (GTK_WIDGET_STATE (button) != new_state)
+    gtk_widget_set_state (GTK_WIDGET (button), new_state);
+  
+  gtk_toggle_button_toggled (toggle_button);
+  gtk_widget_queue_draw (GTK_WIDGET (button));
 }

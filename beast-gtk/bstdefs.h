@@ -43,6 +43,7 @@ typedef enum
   BST_OP_PROJECT_SAVE_AS,
   BST_OP_PROJECT_NEW_SONG,
   BST_OP_PROJECT_NEW_SNET,
+  BST_OP_PROJECT_NEW_MIDI_SYNTH,
   BST_OP_PROJECT_CLOSE,
   BST_OP_PROJECT_PLAY,
   BST_OP_PROJECT_STOP,
@@ -61,6 +62,9 @@ typedef enum
   BST_OP_PATTERN_ADD,
   BST_OP_PATTERN_DELETE,
   BST_OP_PATTERN_EDITOR,
+  BST_OP_WAVE_ADD,
+  BST_OP_WAVE_DELETE,
+  BST_OP_WAVE_EDITOR,
   BST_OP_INSTRUMENT_ADD,
   BST_OP_INSTRUMENT_DELETE,
   BST_OP_EFFECT_ADD,
@@ -123,18 +127,13 @@ extern BstDebugFlags bst_debug_flags;
 
 extern void bst_update_can_operate (GtkWidget   *some_widget);
 
-/* it's hackish to have these prototypes in here, but we need
- * 'em somewhere, implementations are in bstmain.c
- */
-extern void bst_object_set         (gpointer     object,
-				    const gchar *first_arg_name,
-				    ...); /* hackery rulez! */
-#define	BST_OBJECT_ARGS_CHANGED(object)	G_STMT_START { \
-    if (!GTK_OBJECT_DESTROYED (object)) \
-      gtk_signal_emit_by_name ((GtkObject*) (object), "args-changed"); \
+#define	GNOME_CANVAS_NOTIFY(object)	G_STMT_START { \
+    if (!GTK_IS_OBJECT (object) || !GTK_OBJECT_DESTROYED (object)) \
+      g_signal_emit_by_name (object, "notify::generic-change", NULL); \
 } G_STMT_END
 
-
+extern GtkTooltips *bst_global_tooltips;
+#define	BST_TOOLTIPS	(*&bst_global_tooltips)
 
 
 

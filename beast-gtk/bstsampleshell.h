@@ -35,7 +35,7 @@ extern "C" {
 #define	BST_SAMPLE_SHELL_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_SAMPLE_SHELL, BstSampleShellClass))
 #define	BST_IS_SAMPLE_SHELL(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_SAMPLE_SHELL))
 #define	BST_IS_SAMPLE_SHELL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_SAMPLE_SHELL))
-#define BST_SAMPLE_SHELL_GET_CLASS(obj)  ((BstSampleShellClass*) (((GtkObject*) (obj))->klass))
+#define BST_SAMPLE_SHELL_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_SAMPLE_SHELL, BstSampleShellClass))
 
 
 /* --- structures & typedefs --- */
@@ -46,8 +46,6 @@ struct _BstSampleShell
   BstSuperShell	parent_object;
 
   BstParamView   *param_view;
-
-  GtkTooltips	*tooltips;
 };
 struct _BstSampleShellClass
 {
@@ -60,7 +58,6 @@ struct _BstSampleShellClass
 
 /* --- prototypes --- */
 GtkType		bst_sample_shell_get_type	(void);
-GtkWidget*	bst_sample_shell_new		(BseSample	*sample);
 
 
 

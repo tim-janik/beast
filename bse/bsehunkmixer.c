@@ -99,7 +99,7 @@ _bse_hunk_mix_nv_2_1 (BseSampleValue       *d,
       BseMixValue v = *(s++);
 
       v += *(s++);
-      *(d++) = v >> 2;
+      *(d++) = v;
     }
   while (d < bound);
 }
@@ -148,7 +148,6 @@ _bse_hunk_mix_wv_2_1 (BseSampleValue       *d,
 
       v += *(s++);
       v *= f[0];
-      v >>= 2;
       *(d++) = BSE_CLIP_SAMPLE_VALUE (v);
     }
   while (d < bound);
@@ -264,19 +263,16 @@ bse_hunk_fill (guint	       n_tracks,
 	       BseSampleValue *hunk,
 	       BseSampleValue  value)
 {
+  BseSampleValue *bound;
+
   g_return_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS);
   g_return_if_fail (hunk != NULL);
 
-  if (value >> 8 == (value & 0xff))
-    memset (hunk, value, n_tracks * BSE_TRACK_LENGTH * sizeof (BseSampleValue));
-  else
-    {
-      BseSampleValue *bound = hunk + n_tracks * BSE_TRACK_LENGTH;
-
-      do
-	*(hunk++) = value;
-      while (hunk < bound);
-    }
+  bound = hunk + n_tracks * BSE_TRACK_LENGTH;
+  
+  do
+    *(hunk++) = value;
+  while (hunk < bound);
 }
 
 void

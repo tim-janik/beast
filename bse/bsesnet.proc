@@ -1,0 +1,142 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2000-2001 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include        <bse/bseplugin.h>
+#include        <bse/bseprocedure.h>
+#include        <bse/bsesnet.h>
+
+
+AUTHOR	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik <timj@gtk.org>";
+DATE	= "2001";
+
+
+METHOD (BseSNet, can_create_source) {
+  HELP	= "Check whether inserting a new module into a synthesis network is possible";
+  IN	= g_param_spec_object ("snet", "Synth Net", NULL,
+			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("source_type", "Module Type", NULL,
+			       "", BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, 0,
+			     BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSNet *snet = g_value_get_object (in_values++);
+  const gchar *type_name = g_value_get_string (in_values++);
+  GType type = g_type_from_name (type_name);
+  BseErrorType error = BSE_ERROR_NONE;
+
+  /* check parameters */
+  if (!BSE_IS_SNET (snet))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
+      g_type_is_a (type, BSE_TYPE_CONTAINER))
+    error = BSE_ERROR_SOURCE_TYPE_INVALID;
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSNet, create_source) {
+  HELP	= "Insert a new module into a synthesis network";
+  IN	= g_param_spec_object ("snet", "Synth Net", NULL,
+			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("source_type", "Module Type", NULL,
+			       "", BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_object ("source", "New Module", NULL,
+			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSNet *snet = g_value_get_object (in_values++);
+  const gchar *type_name = g_value_get_string (in_values++);
+  BseContainer *container;
+  BseSource *source;
+  BseErrorType error;
+
+  /* check parameters */
+  if (!BSE_IS_SNET (snet))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  if (bse_item_exec (snet, "can_create_source", type_name, &error) != 0 ||
+      error != 0)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  container = BSE_CONTAINER (snet);
+  source = g_object_new (g_type_from_name (type_name), NULL);
+  bse_container_add_item (container, BSE_ITEM (source));
+
+  /* set output parameters */
+  g_value_set_object (out_values++, source);
+  g_object_unref (source);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSNet, remove_source) {
+  HELP	= "Remove an existing module from its synthesis network";
+  IN	= g_param_spec_object ("snet", "Synth Net", NULL,
+			       BSE_TYPE_SNET, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_object ("source", "Module", NULL,
+			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, 0,
+			     BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSNet *snet = g_value_get_object (in_values++);
+  BseSource *source = g_value_get_object (in_values++);
+  BseErrorType error = BSE_ERROR_NONE;
+
+  /* check parameters */
+  if (!BSE_IS_SNET (snet) || !BSE_IS_SOURCE (source) || BSE_ITEM (source)->parent != BSE_ITEM (snet))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  if (0)	/* FIXME: deny to remove vport sources when locked */
+    {
+      guint i;
+
+      for (i = 0; i < snet->n_in_ports && !error; i++)
+	if (snet->in_ports[i].source == source)
+	  error = BSE_ERROR_SOURCE_BUSY;
+      for (i = 0; i < snet->n_out_ports && !error; i++)
+	if (snet->out_ports[i].source == source)
+	  error = BSE_ERROR_SOURCE_BUSY;
+    }
+  if (!error)
+    bse_container_remove_item (BSE_CONTAINER (snet), BSE_ITEM (source));
+  
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+
+  return BSE_ERROR_NONE;
+}

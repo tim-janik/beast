@@ -42,13 +42,13 @@ enum {
   ARG__gtkwrapbox_CHILD_LIMIT
 };
 enum {
-  CHILD_ARG_0,
-  CHILD_ARG_POSITION,
-  CHILD_ARG_HEXPAND,
-  CHILD_ARG_HFILL,
-  CHILD_ARG_VEXPAND,
-  CHILD_ARG_VFILL,
-  CHILD_ARG_WRAPPED
+  CHILD_PROP_0,
+  CHILD_PROP_POSITION,
+  CHILD_PROP_HEXPAND,
+  CHILD_PROP_HFILL,
+  CHILD_PROP_VEXPAND,
+  CHILD_PROP_VFILL,
+  CHILD_PROP_WRAPPED
 };
 
 
@@ -61,18 +61,18 @@ static void gtk_wrap_box_get_arg       (GtkObject          *object,
 static void gtk_wrap_box_set_arg       (GtkObject          *object,
 					GtkArg             *arg,
 					guint               arg_id);
-static void gtk_wrap_box_set_child_arg (GtkContainer       *container,
-					GtkWidget          *child,
-					GtkArg             *arg,
-					guint               arg_id);
-static void gtk_wrap_box_get_child_arg (GtkContainer       *container,
-					GtkWidget          *child,
-					GtkArg             *arg,
-					guint               arg_id);
+static void gtk_wrap_box_set_child_property (GtkContainer    *container,
+					     GtkWidget       *child,
+					     guint            property_id,
+					     const GValue    *value,
+					     GParamSpec      *pspec);
+static void gtk_wrap_box_get_child_property (GtkContainer    *container,
+					     GtkWidget       *child,
+					     guint            property_id,
+					     GValue          *value,
+					     GParamSpec      *pspec);
 static void gtk_wrap_box_map           (GtkWidget          *widget);
 static void gtk_wrap_box_unmap         (GtkWidget          *widget);
-static void gtk_wrap_box_draw          (GtkWidget          *widget,
-					GdkRectangle       *area);
 static gint gtk_wrap_box_expose        (GtkWidget          *widget,
 					GdkEventExpose     *event);
 static void gtk_wrap_box_add           (GtkContainer       *container,
@@ -127,22 +127,21 @@ gtk_wrap_box_class_init (GtkWrapBoxClass *class)
   widget_class = GTK_WIDGET_CLASS (class);
   container_class = GTK_CONTAINER_CLASS (class);
   
-  parent_gtkwrapbox_class = gtk_type_class (GTK_TYPE_CONTAINER);
+  parent_gtkwrapbox_class = g_type_class_peek_parent (class);
   
   object_class->set_arg = gtk_wrap_box_set_arg;
   object_class->get_arg = gtk_wrap_box_get_arg;
   
   widget_class->map = gtk_wrap_box_map;
   widget_class->unmap = gtk_wrap_box_unmap;
-  widget_class->draw = gtk_wrap_box_draw;
   widget_class->expose_event = gtk_wrap_box_expose;
   
   container_class->add = gtk_wrap_box_add;
   container_class->remove = gtk_wrap_box_remove;
   container_class->forall = gtk_wrap_box_forall;
   container_class->child_type = gtk_wrap_box_child_type;
-  container_class->set_child_arg = gtk_wrap_box_set_child_arg;
-  container_class->get_child_arg = gtk_wrap_box_get_child_arg;
+  container_class->set_child_property = gtk_wrap_box_set_child_property;
+  container_class->get_child_property = gtk_wrap_box_get_child_property;
 
   class->rlist_line_children = NULL;
   
@@ -162,18 +161,31 @@ gtk_wrap_box_class_init (GtkWrapBoxClass *class)
 			   GTK_TYPE_FLOAT, GTK_ARG_READABLE, ARG__gtkwrapbox_CURRENT_RATIO);
   gtk_object_add_arg_type ("GtkWrapBox::max_children_per_line",
 			   GTK_TYPE_UINT, GTK_ARG_READWRITE, ARG__gtkwrapbox_CHILD_LIMIT);
-  gtk_container_add_child_arg_type ("GtkWrapBox::position",
-				    GTK_TYPE_INT, GTK_ARG_READWRITE, CHILD_ARG_POSITION);
-  gtk_container_add_child_arg_type ("GtkWrapBox::hexpand",
-				    GTK_TYPE_BOOL, GTK_ARG_READWRITE, CHILD_ARG_HEXPAND);
-  gtk_container_add_child_arg_type ("GtkWrapBox::hfill",
-				    GTK_TYPE_BOOL, GTK_ARG_READWRITE, CHILD_ARG_HFILL);
-  gtk_container_add_child_arg_type ("GtkWrapBox::vexpand",
-				    GTK_TYPE_BOOL, GTK_ARG_READWRITE, CHILD_ARG_VEXPAND);
-  gtk_container_add_child_arg_type ("GtkWrapBox::vfill",
-				    GTK_TYPE_BOOL, GTK_ARG_READWRITE, CHILD_ARG_VFILL);
-  gtk_container_add_child_arg_type ("GtkWrapBox::wrapped",
-				    GTK_TYPE_BOOL, GTK_ARG_READWRITE, CHILD_ARG_WRAPPED);
+
+  gtk_container_class_install_child_property (container_class, CHILD_PROP_POSITION,
+					      g_param_spec_int ("position", NULL, NULL,
+								-1, G_MAXINT, 0,
+								G_PARAM_READWRITE));
+  gtk_container_class_install_child_property (container_class, CHILD_PROP_HEXPAND,
+					      g_param_spec_boolean ("hexpand", NULL, NULL,
+								    FALSE,
+								    G_PARAM_READWRITE));
+  gtk_container_class_install_child_property (container_class, CHILD_PROP_HFILL,
+					      g_param_spec_boolean ("hfill", NULL, NULL,
+								    FALSE,
+								    G_PARAM_READWRITE));
+  gtk_container_class_install_child_property (container_class, CHILD_PROP_VEXPAND,
+					      g_param_spec_boolean ("vexpand", NULL, NULL,
+								    FALSE,
+								    G_PARAM_READWRITE));
+  gtk_container_class_install_child_property (container_class, CHILD_PROP_VFILL,
+					      g_param_spec_boolean ("vfill", NULL, NULL,
+								    FALSE,
+								    G_PARAM_READWRITE));
+  gtk_container_class_install_child_property (container_class, CHILD_PROP_VFILL,
+					      g_param_spec_boolean ("wrapped", NULL, NULL,
+								    FALSE,
+								    G_PARAM_READWRITE));
 }
 
 static void
@@ -271,100 +283,103 @@ gtk_wrap_box_get_arg (GtkObject *object,
 }
 
 static void
-gtk_wrap_box_set_child_arg (GtkContainer *container,
-			    GtkWidget    *child,
-			    GtkArg       *arg,
-			    guint         arg_id)
+gtk_wrap_box_set_child_property (GtkContainer    *container,
+				 GtkWidget       *child,
+				 guint            property_id,
+				 const GValue    *value,
+				 GParamSpec      *pspec)
 {
   GtkWrapBox *wbox = GTK_WRAP_BOX (container);
   gboolean hexpand = FALSE, hfill = FALSE, vexpand = FALSE, vfill = FALSE, wrapped = FALSE;
   
-  if (arg_id != CHILD_ARG_POSITION)
+  if (property_id != CHILD_PROP_POSITION)
     gtk_wrap_box_query_child_packing (wbox, child, &hexpand, &hfill, &vexpand, &vfill, &wrapped);
   
-  switch (arg_id)
+  switch (property_id)
     {
-    case CHILD_ARG_POSITION:
-      gtk_wrap_box_reorder_child (wbox, child, GTK_VALUE_INT (*arg));
+    case CHILD_PROP_POSITION:
+      gtk_wrap_box_reorder_child (wbox, child, g_value_get_int (value));
       break;
-    case CHILD_ARG_HEXPAND:
+    case CHILD_PROP_HEXPAND:
       gtk_wrap_box_set_child_packing (wbox, child,
-				      GTK_VALUE_BOOL (*arg), hfill,
+				      g_value_get_boolean (value), hfill,
 				      vexpand, vfill,
 				      wrapped);
       break;
-    case CHILD_ARG_HFILL:
+    case CHILD_PROP_HFILL:
       gtk_wrap_box_set_child_packing (wbox, child,
-				      hexpand, GTK_VALUE_BOOL (*arg),
+				      hexpand, g_value_get_boolean (value),
 				      vexpand, vfill,
 				      wrapped);
       break;
-    case CHILD_ARG_VEXPAND:
+    case CHILD_PROP_VEXPAND:
       gtk_wrap_box_set_child_packing (wbox, child,
 				      hexpand, hfill,
-				      GTK_VALUE_BOOL (*arg), vfill,
+				      g_value_get_boolean (value), vfill,
 				      wrapped);
       break;
-    case CHILD_ARG_VFILL:
+    case CHILD_PROP_VFILL:
       gtk_wrap_box_set_child_packing (wbox, child,
 				      hexpand, hfill,
-				      vexpand, GTK_VALUE_BOOL (*arg),
+				      vexpand, g_value_get_boolean (value),
 				      wrapped);
       break;
-    case CHILD_ARG_WRAPPED:
+    case CHILD_PROP_WRAPPED:
       gtk_wrap_box_set_child_packing (wbox, child,
 				      hexpand, hfill,
 				      vexpand, vfill,
-				      GTK_VALUE_BOOL (*arg));
+				      g_value_get_boolean (value));
       break;
     default:
+      GTK_CONTAINER_WARN_INVALID_CHILD_PROPERTY_ID (container, property_id, pspec);
       break;
     }
 }
 
 static void
-gtk_wrap_box_get_child_arg (GtkContainer *container,
-			    GtkWidget    *child,
-			    GtkArg       *arg,
-			    guint         arg_id)
+gtk_wrap_box_get_child_property (GtkContainer    *container,
+				 GtkWidget       *child,
+				 guint            property_id,
+				 GValue 	 *value,
+				 GParamSpec      *pspec)
 {
   GtkWrapBox *wbox = GTK_WRAP_BOX (container);
   gboolean hexpand = FALSE, hfill = FALSE, vexpand = FALSE, vfill = FALSE, wrapped = FALSE;
   
-  if (arg_id != CHILD_ARG_POSITION)
+  if (property_id != CHILD_PROP_POSITION)
     gtk_wrap_box_query_child_packing (wbox, child, &hexpand, &hfill, &vexpand, &vfill, &wrapped);
   
-  switch (arg_id)
+  switch (property_id)
     {
       GtkWrapBoxChild *child_info;
-    case CHILD_ARG_POSITION:
-      GTK_VALUE_INT (*arg) = 0;
+      guint i;
+    case CHILD_PROP_POSITION:
+      i = 0;
       for (child_info = wbox->children; child_info; child_info = child_info->next)
 	{
 	  if (child_info->widget == child)
 	    break;
-	  GTK_VALUE_INT (*arg)++;
+	  i += 1;
 	}
-      if (!child_info)
-	GTK_VALUE_INT (*arg) = -1;
+      g_value_set_int (value, child_info ? i : -1);
       break;
-    case CHILD_ARG_HEXPAND:
-      GTK_VALUE_BOOL (*arg) = hexpand;
+    case CHILD_PROP_HEXPAND:
+      g_value_set_boolean (value, hexpand);
       break;
-    case CHILD_ARG_HFILL:
-      GTK_VALUE_BOOL (*arg) = hfill;
+    case CHILD_PROP_HFILL:
+      g_value_set_boolean (value, hfill);
       break;
-    case CHILD_ARG_VEXPAND:
-      GTK_VALUE_BOOL (*arg) = vexpand;
+    case CHILD_PROP_VEXPAND:
+      g_value_set_boolean (value, vexpand);
       break;
-    case CHILD_ARG_VFILL:
-      GTK_VALUE_BOOL (*arg) = vfill;
+    case CHILD_PROP_VFILL:
+      g_value_set_boolean (value, vfill);
       break;
-    case CHILD_ARG_WRAPPED:
-      GTK_VALUE_BOOL (*arg) = wrapped;
+    case CHILD_PROP_WRAPPED:
+      g_value_set_boolean (value, wrapped);
       break;
     default:
-      arg->type = GTK_TYPE_INVALID;
+      GTK_CONTAINER_WARN_INVALID_CHILD_PROPERTY_ID (container, property_id, pspec);
       break;
     }
 }
@@ -722,39 +737,11 @@ gtk_wrap_box_unmap (GtkWidget *widget)
       gtk_widget_unmap (child->widget);
 }
 
-static void
-gtk_wrap_box_draw (GtkWidget    *widget,
-		   GdkRectangle *area)
-{
-  GtkWrapBox *wbox = GTK_WRAP_BOX (widget);
-  GtkWrapBoxChild *child;
-  GdkRectangle child_area;
-  
-  if (GTK_WIDGET_DRAWABLE (widget))
-    for (child = wbox->children; child; child = child->next)
-      if (GTK_WIDGET_DRAWABLE (child->widget) &&
-	  gtk_widget_intersect (child->widget, area, &child_area))
-	gtk_widget_draw (child->widget, &child_area);
-}
-
 static gint
 gtk_wrap_box_expose (GtkWidget      *widget,
 		     GdkEventExpose *event)
 {
-  GtkWrapBox *wbox = GTK_WRAP_BOX (widget);
-  GtkWrapBoxChild *child;
-  GdkEventExpose child_event = *event;
-  
-  g_return_val_if_fail (event != NULL, FALSE);
-  
-  if (GTK_WIDGET_DRAWABLE (widget))
-    for (child = wbox->children; child; child = child->next)
-      if (GTK_WIDGET_DRAWABLE (child->widget) &&
-	  GTK_WIDGET_NO_WINDOW (child->widget) &&
-	  gtk_widget_intersect (child->widget, &event->area, &child_event.area))
-	gtk_widget_event (child->widget, (GdkEvent*) &child_event);
-  
-  return TRUE;
+  return GTK_WIDGET_CLASS (parent_gtkwrapbox_class)->expose_event (widget, event);
 }
 
 static void
@@ -840,6 +827,8 @@ gtk_wrap_box_forall (GtkContainer *container,
  * Boston, MA 02111-1307, USA.
  */
 /* #include	"gtkcluehunter.h" */
+
+/* #include	"glemarshal.h" */
 /* #include	<gdk/gdkkeysyms.h> */
 /* #include	<string.h> */
 
@@ -868,7 +857,7 @@ enum {
 static void	gtk_clue_hunter_class_init	(GtkClueHunterClass	*class);
 static void	gtk_clue_hunter_init		(GtkClueHunter		*clue_hunter);
 static void	gtk_clue_hunter_destroy		(GtkObject		*object);
-static void	gtk_clue_hunter_finalize	(GtkObject		*object);
+static void	gtk_clue_hunter_finalize	(GObject		*object);
 static void	gtk_clue_hunter_set_arg		(GtkObject      	*object,
 						 GtkArg         	*arg,
 						 guint          	 arg_id);
@@ -880,7 +869,7 @@ static gint	gtk_clue_hunter_entry_key_press	(GtkClueHunter		*clue_hunter,
 						 GdkEventKey		*event,
 						 GtkEntry		*entry);
 static gint	gtk_clue_hunter_clist_click	(GtkClueHunter		*clue_hunter,
-						 GdkEventButton		*event,
+						 GdkEvent		*event,
 						 GtkCList		*clist);
 static gint	gtk_clue_hunter_event           (GtkWidget		*widget,
 						 GdkEvent		*event);
@@ -929,22 +918,18 @@ gtk_clue_hunter_get_type (void)
 static void
 gtk_clue_hunter_class_init (GtkClueHunterClass *class)
 {
-  GtkObjectClass *object_class;
-  GtkWidgetClass *widget_class;
-  GtkContainerClass *container_class;
-  GtkWindowClass *window_class;
-  
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+
   gtk_clue_hunter_class = class;
-  parent_gtkcluehunter_class = gtk_type_class (GTK_TYPE_WINDOW);
-  object_class = (GtkObjectClass*) class;
-  widget_class = (GtkWidgetClass*) class;
-  container_class = (GtkContainerClass*) class;
-  window_class = (GtkWindowClass*) class;
+  parent_gtkcluehunter_class = g_type_class_peek_parent (class);
   
+  gobject_class->finalize = gtk_clue_hunter_finalize;
+
   object_class->set_arg = gtk_clue_hunter_set_arg;
   object_class->get_arg = gtk_clue_hunter_get_arg;
   object_class->destroy = gtk_clue_hunter_destroy;
-  object_class->finalize = gtk_clue_hunter_finalize;
   
   widget_class->event = gtk_clue_hunter_event;
   
@@ -952,7 +937,13 @@ gtk_clue_hunter_class_init (GtkClueHunterClass *class)
   class->popup = gtk_clue_hunter_do_popup;
   class->popdown = gtk_clue_hunter_do_popdown;
   class->select_on = gtk_clue_hunter_do_select_on;
-  
+
+  g_object_class_install_property (gobject_class,
+				   1024,
+				   g_param_spec_enum ("type", NULL, NULL,
+						      GTK_TYPE_WINDOW_TYPE,
+						      GTK_WINDOW_POPUP,
+						      0));
   gtk_object_add_arg_type ("GtkClueHunter::pattern_matching", GTK_TYPE_BOOL, GTK_ARG_READWRITE, ARG__gtkcluehunter_PATTERN_MATCHING);
   gtk_object_add_arg_type ("GtkClueHunter::keep_history", GTK_TYPE_BOOL, GTK_ARG_READWRITE, ARG__gtkcluehunter_KEEP_HISTORY);
   gtk_object_add_arg_type ("GtkClueHunter::align_width", GTK_TYPE_BOOL, GTK_ARG_READWRITE, ARG__gtkcluehunter_ALIGN_WIDTH);
@@ -961,30 +952,30 @@ gtk_clue_hunter_class_init (GtkClueHunterClass *class)
   clue_hunter_signals[SIGNAL_ACTIVATE] =
     gtk_signal_new ("activate",
 		    GTK_RUN_LAST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkClueHunterClass, activate),
 		    gtk_signal_default_marshaller,
 		    GTK_TYPE_NONE, 0);
   clue_hunter_signals[SIGNAL_POPUP] =
     gtk_signal_new ("popup",
 		    GTK_RUN_LAST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkClueHunterClass, popup),
 		    gtk_signal_default_marshaller,
 		    GTK_TYPE_NONE, 0);
   clue_hunter_signals[SIGNAL_POPDOWN] =
     gtk_signal_new ("popdown",
 		    GTK_RUN_FIRST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkClueHunterClass, popdown),
 		    gtk_signal_default_marshaller,
 		    GTK_TYPE_NONE, 0);
   clue_hunter_signals[SIGNAL_SELECT_ON] =
     gtk_signal_new ("select_on",
 		    GTK_RUN_LAST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkClueHunterClass, select_on),
-		    gtk_marshal_NONE__POINTER,
+		    g_cclosure_marshal_VOID__STRING,
 		    GTK_TYPE_NONE, 1,
 		    GTK_TYPE_STRING);
   widget_class->activate_signal = clue_hunter_signals[SIGNAL_ACTIVATE];
@@ -1061,9 +1052,9 @@ gtk_clue_hunter_init (GtkClueHunter *clue_hunter)
   clue_hunter->clist_column = 0;
   clue_hunter->cstring = NULL;
   
+  GTK_WINDOW (clue_hunter)->type = GTK_WINDOW_POPUP;
+
   gtk_widget_set (GTK_WIDGET (clue_hunter),
-		  "type", GTK_WINDOW_POPUP,
-		  "auto_shrink", TRUE,
 		  "allow_shrink", FALSE,
 		  "allow_grow", FALSE,
 		  NULL);
@@ -1118,13 +1109,13 @@ gtk_clue_hunter_destroy (GtkObject *object)
 
 static gint
 gtk_clue_hunter_clist_click (GtkClueHunter  *clue_hunter,
-			     GdkEventButton *event,
+			     GdkEvent	    *event,
 			     GtkCList	    *clist)
 {
   gboolean handled = FALSE;
 
   if (event->type == GDK_2BUTTON_PRESS &&
-      event->button == 1 && clist->selection)
+      event->button.button == 1 && clist->selection)
     {
       gchar *string;
 
@@ -1164,12 +1155,14 @@ gtk_clue_hunter_set_clist (GtkClueHunter *clue_hunter,
     }
   clue_hunter->clist = clist;
   gtk_widget_ref (clue_hunter->clist);
-  gtk_widget_set (clue_hunter->clist,
-		  "visible", TRUE,
-		  "selection_mode", GTK_SELECTION_EXTENDED,
-		  "parent", clue_hunter->scw,
-		  "object_signal_after::button_press_event", gtk_clue_hunter_clist_click, clue_hunter,
-		  NULL);
+  g_object_set (clue_hunter->clist,
+		"visible", TRUE,
+		"selection_mode", GTK_SELECTION_EXTENDED,
+		"parent", clue_hunter->scw,
+		NULL);
+  g_object_connect (clue_hunter->clist,
+		    "swapped_signal::event-after", gtk_clue_hunter_clist_click, clue_hunter,
+		    NULL);
   clue_hunter->clist_column = column;
 }
 
@@ -1184,7 +1177,7 @@ gtk_clue_hunter_popdown (GtkClueHunter *clue_hunter)
 }
 
 static void
-gtk_clue_hunter_finalize (GtkObject *object)
+gtk_clue_hunter_finalize (GObject *object)
 {
   GtkClueHunter *clue_hunter;
   
@@ -1195,7 +1188,7 @@ gtk_clue_hunter_finalize (GtkObject *object)
   
   g_free (clue_hunter->cstring);
   
-  GTK_OBJECT_CLASS (parent_gtkcluehunter_class)->finalize (object);
+  G_OBJECT_CLASS (parent_gtkcluehunter_class)->finalize (object);
 }
 
 void
@@ -1279,6 +1272,7 @@ gtk_clue_hunter_entry_key_press (GtkClueHunter *clue_hunter,
 	    {
 	      gtk_entry_set_text (GTK_ENTRY (clue_hunter->entry), cstring);
 	      clue_hunter->completion_tag = clue_hunter->popped_up;
+	      gtk_entry_set_position (GTK_ENTRY (entry), -1);
 	    }
 	  else
 	    {
@@ -1288,8 +1282,6 @@ gtk_clue_hunter_entry_key_press (GtkClueHunter *clue_hunter,
 		clue_hunter->completion_tag = TRUE;
 	    }
 	  g_free (cstring);
-	  
-	  gtk_signal_emit_stop_by_name (GTK_OBJECT (entry), "key-press-event");
 	}
     }
   
@@ -1414,7 +1406,7 @@ void
 gtk_clue_hunter_remove_matches (GtkClueHunter *clue_hunter,
 				const gchar   *pattern)
 {
-  GtkPatternSpec pspec;
+  GPatternSpec *pspec;
   GtkCList *clist;
   GList *list;
   guint n = 0;
@@ -1424,7 +1416,7 @@ gtk_clue_hunter_remove_matches (GtkClueHunter *clue_hunter,
   if (!pattern)
     pattern = "*";
   
-  gtk_pattern_spec_init (&pspec, pattern);
+  pspec = g_pattern_spec_new (pattern);
   
   clist = GTK_CLIST (clue_hunter->clist);
   
@@ -1437,7 +1429,7 @@ gtk_clue_hunter_remove_matches (GtkClueHunter *clue_hunter,
 
       list = list->next;
       
-      if (gtk_pattern_match_string (&pspec, clist_row->cell[clue_hunter->clist_column].u.text))
+      if (g_pattern_match_string (pspec, clist_row->cell[clue_hunter->clist_column].u.text))
 	gtk_clist_remove (clist, n);
       else
 	n++;
@@ -1445,7 +1437,7 @@ gtk_clue_hunter_remove_matches (GtkClueHunter *clue_hunter,
 
   gtk_clist_thaw (clist);
 
-  gtk_pattern_spec_free_segs (&pspec);
+  g_pattern_spec_free (pspec);
 }
 
 static gchar*
@@ -1720,20 +1712,20 @@ gtk_clue_hunter_do_select_on (GtkClueHunter *clue_hunter,
   
   if (len && clue_hunter->pattern_matching)
     {
-      GtkPatternSpec pspec = { 0, };
+      GPatternSpec *pspec;
       guint n = 0;
       gboolean check_visibility = TRUE;
       gchar *pattern;
       
       pattern = g_strconcat (cstring, "*", NULL);
-      gtk_pattern_spec_init (&pspec, pattern);
+      pspec = g_pattern_spec_new (pattern);
       g_free (pattern);
       
       for (list = clist->row_list; list; list = list->next)
 	{
 	  GtkCListRow *clist_row = list->data;
 	  
-	  if (gtk_pattern_match_string (&pspec, clist_row->cell[clue_hunter->clist_column].u.text))
+	  if (g_pattern_match_string (pspec, clist_row->cell[clue_hunter->clist_column].u.text))
 	    {
 	      gtk_clist_select_row (clist, n, 0);
 	      
@@ -1744,7 +1736,7 @@ gtk_clue_hunter_do_select_on (GtkClueHunter *clue_hunter,
 	    }
 	  n++;
 	}
-      gtk_pattern_spec_free_segs (&pspec);
+      g_pattern_spec_free (pspec);
     }
   else if (len)
     {

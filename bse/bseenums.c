@@ -105,11 +105,14 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_UNIMPLEMENTED:		return "Functionality not imlemented";
     case BSE_ERROR_IO:				return "Device/file I/O error";
     case BSE_ERROR_PERMS:			return "Insufficient permissions";
+    case BSE_ERROR_NOT_OWNER:			return "Ownership mismatch";
     case BSE_ERROR_FILE_EXISTS:			return "File exists";
     case BSE_ERROR_FILE_NOT_FOUND:		return "File not found";
     case BSE_ERROR_FILE_TOO_SHORT:		return "File too short";
     case BSE_ERROR_FILE_TOO_LONG:		return "File too long";
-    case BSE_ERROR_FORMAT_UNSUPPORTED:		return "Format not supported";
+    case BSE_ERROR_NO_LOADER:			return "No such loader";
+    case BSE_ERROR_FORMAT_UNKNOWN:		return "Unknown format";
+    case BSE_ERROR_FORMAT_MISMATCH:		return "Format mismatch";
     case BSE_ERROR_FORMAT_TOO_NEW:		return "Format too new";
     case BSE_ERROR_FORMAT_TOO_OLD:		return "Format too old";
     case BSE_ERROR_HEADER_CORRUPT:		return "Header corrupt";
@@ -127,11 +130,14 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_SOURCE_ICHANNEL_IN_USE:	return "Input channel already in use";
     case BSE_ERROR_SOURCE_TOO_MANY_ITRACKS:	return "Too many input tracks required";
     case BSE_ERROR_SOURCE_TOO_MANY_OTRACKS:	return "Too many output tracks supplied";
+    case BSE_ERROR_SOURCE_BUSY:			return "Synthesis module currently busy";
+    case BSE_ERROR_SOURCE_TYPE_INVALID:		return "Invalid synthsis module type";
     case BSE_ERROR_PROC_BUSY: /* recursion */	return "Procedure currently busy";
     case BSE_ERROR_PROC_PARAM_INVAL:		return "Procedure parameter invalid";
     case BSE_ERROR_PROC_EXECUTION:		return "Procedure execution failed";
-    case BSE_ERROR_PROC_NEEDLESS:		return "Procedure had nothing to do";
     case BSE_ERROR_PROC_ABORT:			return "Procedure execution aborted";
+    case BSE_ERROR_NO_PCM_DEVICE:		return "No active PCM device present";
+    case BSE_ERROR_PCM_DEVICE_ACTIVE:		return "PCM device is active";
     default:
       break;
     }

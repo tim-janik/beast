@@ -38,7 +38,7 @@ extern "C" {
 #define	BST_SONG_SHELL_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_SONG_SHELL, BstSongShellClass))
 #define	BST_IS_SONG_SHELL(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_SONG_SHELL))
 #define	BST_IS_SONG_SHELL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_SONG_SHELL))
-#define BST_SONG_SHELL_GET_CLASS(obj)  ((BstSongShellClass*) (((GtkObject*) (obj))->klass))
+#define BST_SONG_SHELL_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_SONG_SHELL, BstSongShellClass))
 
 
 /* --- structures & typedefs --- */
@@ -52,8 +52,6 @@ struct _BstSongShell
   BstItemView    *instrument_view;
   BstItemView    *pattern_view;
   GtkWidget      *play_list;
-
-  GtkTooltips	*tooltips;
 };
 struct _BstSongShellClass
 {
@@ -66,7 +64,6 @@ struct _BstSongShellClass
 
 /* --- prototypes --- */
 GtkType		bst_song_shell_get_type		(void);
-GtkWidget*	bst_song_shell_new		(BseSong	*song);
 
 
 

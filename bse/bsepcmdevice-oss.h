@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1996-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,9 +40,16 @@ extern "C" {
 /* --- BsePcmDeviceOSS object --- */
 typedef	struct _BsePcmDeviceOSS	     BsePcmDeviceOSS;
 typedef	struct _BsePcmDeviceOSSClass BsePcmDeviceOSSClass;
+struct _BsePcmDeviceOSS
+{
+  BsePcmDevice parent_object;
 
-
-
+  gchar       *device_name;
+};
+struct _BsePcmDeviceOSSClass
+{
+  BsePcmDeviceClass parent_class;
+};
 
 
 

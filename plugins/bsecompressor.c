@@ -1,5 +1,5 @@
 /* BseCompressor - BSE Compressor
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -18,8 +18,7 @@
  */
 #include "bsecompressor.h"
 
-#include <bse/bsechunk.h>
-#include <bse/bsehunkmixer.h>
+#include <bse/gslengine.h>
 #include <math.h>
 
 
@@ -34,23 +33,18 @@ enum
 /* --- prototypes --- */
 static void	 bse_compressor_init		      (BseCompressor		*compr);
 static void	 bse_compressor_class_init	      (BseCompressorClass	*class);
-static void	 bse_compressor_class_finalize	      (BseCompressorClass	*class);
-static void	 bse_compressor_set_param	      (BseCompressor		*compr,
+static void	 bse_compressor_set_property	      (GObject			*object,
+						       guint                     param_id,
+						       const GValue             *value,
+						       GParamSpec               *pspec);
+static void	 bse_compressor_get_property	      (GObject			*object,
 						       guint                     param_id,
 						       GValue                   *value,
-						       GParamSpec               *pspec,
-						       const gchar              *trailer);
-static void	 bse_compressor_get_param	      (BseCompressor		*compr,
-						       guint                     param_id,
-						       GValue                   *value,
-						       GParamSpec               *pspec,
-						       const gchar              *trailer);
-static void	 bse_compressor_do_destroy	      (BseObject		*object);
-static void	 bse_compressor_prepare		      (BseSource		*source,
-						       BseIndex			 index);
-static BseChunk* bse_compressor_calc_chunk	      (BseSource		*source,
-						       guint			 ochannel_id);
-static void	 bse_compressor_reset		      (BseSource		*source);
+						       GParamSpec               *pspec);
+static void	 bse_compressor_context_create	      (BseSource		*source,
+						       guint			 context_handle,
+						       GslTrans			*trans);
+static void	 bse_compressor_update_modules	      (BseCompressor		*comp);
 
 
 /* --- variables --- */
@@ -62,7 +56,7 @@ static const GTypeInfo type_info_compressor = {
   (GBaseInitFunc) NULL,
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) bse_compressor_class_init,
-  (GClassFinalizeFunc) bse_compressor_class_finalize,
+  (GClassFinalizeFunc) NULL,
   NULL /* class_data */,
   
   sizeof (BseCompressor),
@@ -82,158 +76,215 @@ bse_compressor_class_init (BseCompressorClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_compressor_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_compressor_get_param;
-
-  object_class->destroy = bse_compressor_do_destroy;
+  gobject_class->set_property = bse_compressor_set_property;
+  gobject_class->get_property = bse_compressor_get_property;
   
-  source_class->prepare = bse_compressor_prepare;
-  source_class->calc_chunk = bse_compressor_calc_chunk;
-  source_class->reset = bse_compressor_reset;
+  source_class->context_create = bse_compressor_context_create;
   
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_PI_EXP,
-			      b_param_spec_float ("pi_exp", "Strength",
+			      bse_param_spec_float ("pi_exp", "Strength",
 						  "The compressor strength allowes for fine grained "
 						  "adjustments from extenuated volume to maximum limiting",
 						  -1.0, 5.0, 0.0, 0.25,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in1", "Mono Input", 1, 1);
+  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_input1", "Input SIgnal");
   g_assert (ichannel_id == BSE_COMPRESSOR_ICHANNEL_MONO1);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out1", "Mono Output", 1);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_output1", "Mono Output");
   g_assert (ochannel_id == BSE_COMPRESSOR_OCHANNEL_MONO1);
-}
-
-static void
-bse_compressor_class_finalize (BseCompressorClass *class)
-{
 }
 
 static void
 bse_compressor_init (BseCompressor *compr)
 {
   compr->pi_fact = 1.0;
+  bse_compressor_update_modules (compr);
 }
 
 static void
-bse_compressor_do_destroy (BseObject *object)
+bse_compressor_set_property (GObject      *object,
+			     guint         param_id,
+			     const GValue *value,
+			     GParamSpec   *pspec)
 {
-  BseCompressor *compr;
-  
-  compr = BSE_COMPRESSOR (object);
-  
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
-}
+  BseCompressor *compr = BSE_COMPRESSOR (object);
 
-static void
-bse_compressor_set_param (BseCompressor *compr,
-			  guint          param_id,
-			  GValue        *value,
-			  GParamSpec    *pspec,
-			  const gchar   *trailer)
-{
   switch (param_id)
     {
     case PARAM_PI_EXP:
-      compr->pi_fact = pow (PI, b_value_get_float (value));
+      compr->pi_fact = pow (PI, g_value_get_float (value));
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (compr, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (compr, param_id, pspec);
+      break;
+    }
+  bse_compressor_update_modules (compr);
+}
+
+static void
+bse_compressor_get_property (GObject    *object,
+			     guint       param_id,
+			     GValue     *value,
+			     GParamSpec *pspec)
+{
+  BseCompressor *compr = BSE_COMPRESSOR (object);
+
+  switch (param_id)
+    {
+    case PARAM_PI_EXP:
+      g_value_set_float (value, log (compr->pi_fact) / log (PI));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (compr, param_id, pspec);
       break;
     }
 }
 
-static void
-bse_compressor_get_param (BseCompressor *compr,
-			  guint          param_id,
-			  GValue        *value,
-			  GParamSpec    *pspec,
-			  const gchar   *trailer)
+typedef struct
 {
-  switch (param_id)
+  BseCompressorVars vars;
+} CompressorModule;
+
+static void
+bse_compressor_update_modules (BseCompressor *comp)
+{
+  /* BseCompressor's settings changed, so we need to update
+   * the ->vars portion which is duplicated by CompressorModule
+   */
+  comp->vars.isample_factor = comp->pi_fact;
+  comp->vars.osample_factor = 2.0 / PI;
+
+  if (BSE_SOURCE_PREPARED (comp))
     {
-    case PARAM_PI_EXP:
-      b_value_set_float (value, log (compr->pi_fact) / log (PI));
-      break;
-    default:
-      G_WARN_INVALID_PARAM_ID (compr, param_id, pspec);
-      break;
+      /* we're prepared, that means we have engine modules currently
+       * processing data. now we need to let each of these modules
+       * know about the new settings. bse_source_update_omodules()
+       * will visit all modules that we created in context_create()
+       * and which are connected with their ostream to
+       * BSE_COMPRESSOR_OCHANNEL_MONO1.
+       * upon visiting each, it'll copy the contents of comp->vars into
+       * CompressorModule.vars when that module is not currently busy in
+       * compressor_process().
+       */
+      bse_source_update_omodules (BSE_SOURCE (comp),
+				  BSE_COMPRESSOR_OCHANNEL_MONO1,
+				  G_STRUCT_OFFSET (CompressorModule, vars),
+				  &comp->vars, sizeof (comp->vars),
+				  NULL);
     }
 }
 
 static void
-bse_compressor_prepare (BseSource *source,
-			BseIndex   index)
+compressor_process (GslModule *module,
+		    guint      n_values)
 {
-  BseCompressor *compr;
-  
-  compr = BSE_COMPRESSOR (source);
-  
-  /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
-}
+  CompressorModule *cmod = module->user_data;
+  BseCompressorVars *vars = &cmod->vars;
+  const gfloat *wave_in = module->istreams[BSE_COMPRESSOR_ICHANNEL_MONO1].values;
+  gfloat *wave_out = module->ostreams[BSE_COMPRESSOR_OCHANNEL_MONO1].values;
+  gfloat *wave_bound = wave_out + n_values;
+  gfloat isample_factor = vars->isample_factor;
+  gfloat osample_factor = vars->osample_factor;
 
-static BseChunk*
-bse_compressor_calc_chunk (BseSource *source,
-			   guint      ochannel_id)
-{
-  BseCompressor *compr = BSE_COMPRESSOR (source);
-  BseSourceInput *input;
-  BseChunk *chunk;
-  BseSampleValue *hunk, *ihunk;
-  gdouble isample_fact, osample_fact;
-  guint i;
-  
-  g_return_val_if_fail (ochannel_id == BSE_COMPRESSOR_OCHANNEL_MONO1, NULL);
-  
-  input = bse_source_get_input (source, BSE_COMPRESSOR_ICHANNEL_MONO1);
-  if (!input)
-    return bse_chunk_new_static_zero (1);
-  
-  chunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-  
-  ihunk = bse_chunk_complete_hunk (chunk);
-  hunk = bse_hunk_alloc (1);
-  
-  isample_fact = compr->pi_fact / BSE_MAX_SAMPLE_VALUE_f;
-  osample_fact = 2.0 / PI * BSE_MAX_SAMPLE_VALUE_f;
-  
-  for (i = 0; i < BSE_TRACK_LENGTH; i++)
-    hunk[i] = atan (ihunk[i] * isample_fact) * osample_fact;
-  
-  bse_chunk_unref (chunk);
-  
-  return bse_chunk_new_orphan (1, hunk);
+  /* we don't need to process any data if our input or
+   * output stream isn't connected
+   */
+  if (!module->istreams[BSE_COMPRESSOR_ICHANNEL_MONO1].connected ||
+      !module->ostreams[BSE_COMPRESSOR_OCHANNEL_MONO1].connected)
+    {
+      /* reset our output buffer to static-0s, this is faster
+       * than using memset()
+       */
+      module->ostreams[BSE_COMPRESSOR_OCHANNEL_MONO1].values = gsl_engine_const_values (0);
+      return;
+    }
+
+  /* do the mixing */
+  if (BSE_EPSILON_CMP (1.0, isample_factor))
+    {
+      if (BSE_EPSILON_CMP (1.0, osample_factor))
+	do
+	  *wave_out++ = atan (*wave_in++ * isample_factor) * osample_factor;
+	while (wave_out < wave_bound);
+      else /* osample_factor==1.0 */
+	do
+	  *wave_out++ = atan (*wave_in++ * isample_factor);
+	while (wave_out < wave_bound);
+    }
+  else /* isample_factor==1.0 */
+    {
+      if (BSE_EPSILON_CMP (1.0, osample_factor))
+	do
+	  *wave_out++ = atan (*wave_in++) * osample_factor;
+	while (wave_out < wave_bound);
+      else /* osample_factor==1.0 */
+	module->ostreams[BSE_COMPRESSOR_OCHANNEL_MONO1].values = (gfloat*)
+	  module->istreams[BSE_COMPRESSOR_ICHANNEL_MONO1].values;
+    }
 }
 
 static void
-bse_compressor_reset (BseSource *source)
+bse_compressor_context_create (BseSource *source,
+			       guint      context_handle,
+			       GslTrans  *trans)
 {
-  BseCompressor *compr;
-  
-  compr = BSE_COMPRESSOR (source);
-  
+  static const GslClass cmod_class = {
+    1,				/* n_istreams */
+    0,                          /* n_jstreams */
+    1,				/* n_ostreams */
+    compressor_process,		/* process */
+    (GslModuleFreeFunc) g_free,	/* free */
+    GSL_COST_NORMAL,		/* cost */
+  };
+  BseCompressor *comp = BSE_COMPRESSOR (source);
+  CompressorModule *cmod;
+  GslModule *module;
+
+  /* for each context that BseCompressor is used in, we create
+   * a GslModule with data portion CompressorModule, that runs
+   * in the synthesis engine
+   */
+  cmod = g_new0 (CompressorModule, 1);
+
+  /* initial setup of module parameters */
+  cmod->vars = comp->vars;
+
+  /* create a GslModule with CompressorModule user_data */
+  module = gsl_module_new (&cmod_class, cmod);
+
+  /* the istreams and ostreams of our GslModule map 1:1 to
+   * BseCompressor's input/output channels, so we can call
+   * bse_source_set_context_module() which does all the internal
+   * crap of mapping istreams/ostreams of the module to
+   * input/output channels of BseCompressor
+   */
+  bse_source_set_context_module (source, context_handle, module);
+
+  /* commit module to engine */
+  gsl_trans_add (trans, gsl_job_integrate (module));
+
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->reset (source);
+  BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
 
 
 /* --- Export to BSE --- */
 #include "./icons/atan.c"
-BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
-BSE_EXPORT_OBJECTS = {
-  { &type_id_compressor, "BseCompressor", "BseSource",
+BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);	/* macro magic start for BSE plugins */
+BSE_EXPORT_OBJECTS = {		/* our plugin implements an object */
+  { &type_id_compressor,	/* variable to store object type id in */
+    "BseCompressor",		/* name of our object */
+    "BseSource",		/* parent type */
     "BseCompressor compresses according to the current Strength setting using "
     "the formula: output = atan (input * (Pi ^ Strength)), which allowes for "
     "fine grained adjustments from extenuated volume to maximum limiting",
-    &type_info_compressor,
-    "/Source/Compressor",
+    &type_info_compressor,	/* type information */
+    "/Source/Compressor",	/* category (menu heirachy entry) */
     { ATAN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       ATAN_IMAGE_WIDTH, ATAN_IMAGE_HEIGHT,
       ATAN_IMAGE_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };
-BSE_EXPORTS_END;
+BSE_EXPORTS_END;			/* macro magic end for BSE plugins */

@@ -39,6 +39,7 @@ struct _CEntry
 
 /* --- variables --- */
 static CEntry      *cat_entries = NULL;
+static gboolean     cats_need_sort = FALSE;
 
 
 /* --- functions --- */
@@ -95,7 +96,7 @@ centry_new (const gchar *caller,
   quark = g_quark_try_string (category);
   if (quark && centry_find (quark))
     {
-      g_warning ("%s(): unable to re-add existing category `%s'", caller, category);
+      g_warning ("%s(): unable to add category duplicate `%s'", caller, category);
       return NULL;
     }
 
@@ -111,11 +112,12 @@ centry_new (const gchar *caller,
   else
     centry = g_trash_stack_pop (&free_entries);
 
-  /* FIXME: need sorting alphabetically */
   centry->next = cat_entries;
   cat_entries = centry;
   centry->mindex = mindex - 1;
   centry->category = g_quark_from_string (category);
+
+  cats_need_sort = TRUE;
 
   return centry;
 }
@@ -160,6 +162,43 @@ bse_categories_register_icon (const gchar      *category,
     }
 }
 
+static gint
+centries_compare (gconstpointer a,
+		  gconstpointer b)
+{
+  const CEntry *e1 = a;
+  const CEntry *e2 = b;
+  gchar *c1 = g_quark_to_string (e1->category);
+  gchar *c2 = g_quark_to_string (e2->category);
+
+  return strcmp (c2, c1);
+}
+
+static void
+cats_sort (void)
+{
+  GSList *slist, *clist = NULL;
+  CEntry *centry, *last;
+
+  if (!cats_need_sort)
+    return;
+
+  for (centry = cat_entries; centry; centry = centry->next)
+    clist = g_slist_prepend (clist, centry);
+  clist = g_slist_sort (clist, centries_compare);
+  last = NULL;
+  for (slist = clist; slist; slist = slist->next)
+    {
+      centry = slist->data;
+      centry->next = last;
+      last = centry;
+    }
+  cat_entries = centry;
+  g_slist_free (clist);
+
+  cats_need_sort = FALSE;
+}
+
 static inline BseCategory*
 categories_match (const gchar *pattern,
 		  GType        base_type,
@@ -177,7 +216,7 @@ categories_match (const gchar *pattern,
       gchar *category = g_quark_to_string (centry->category);
 
       if (g_pattern_match_string (pspec, category) &&
-	  (!base_type || g_type_conforms_to (centry->type, base_type)))
+	  (!base_type || g_type_is_a (centry->type, base_type)))
 	{
 	  guint i = n_cats;
 	  
@@ -206,6 +245,8 @@ bse_categories_match (const gchar *pattern,
     *n_matches = 0;
   g_return_val_if_fail (pattern != NULL, NULL);
 
+  cats_sort ();
+
   return categories_match (pattern, 0, n_matches);
 }
 
@@ -218,6 +259,8 @@ bse_categories_match_typed (const gchar *pattern,
     *n_matches = 0;
   g_return_val_if_fail (pattern != NULL, NULL);
   g_return_val_if_fail (base_type > G_TYPE_NONE, NULL);
+
+  cats_sort ();
 
   return categories_match (pattern, base_type, n_matches);
 }

@@ -32,25 +32,23 @@ enum {
 
 
 /* --- prototypes --- */
-static void	 bse_sinstrument_init		(BseSInstrument	     *sinstrument);
-static void	 bse_sinstrument_class_init	(BseSInstrumentClass *class);
-static void	 bse_sinstrument_class_finalize	(BseSInstrumentClass *class);
-static void	 bse_sinstrument_do_destroy	(BseObject     	     *object);
-static void      bse_sinstrument_set_param      (BseSInstrument      *sinstrument,
-						 guint                param_id,
-						 GValue              *value,
-						 GParamSpec          *pspec,
-						 const gchar         *trailer);
-static void      bse_sinstrument_get_param      (BseSInstrument      *sinstrument,
-						 guint                param_id,
-						 GValue              *value,
-						 GParamSpec          *pspec,
-						 const gchar         *trailer);
-static void      bse_sinstrument_prepare        (BseSource           *source,
-						 BseIndex             index);
-static BseChunk* bse_sinstrument_calc_chunk     (BseSource           *source,
-						 guint                ochannel_id);
-static void      bse_sinstrument_reset          (BseSource           *source);
+static void	 bse_sinstrument_init		   (BseSInstrument	*sinstrument);
+static void	 bse_sinstrument_class_init	   (BseSInstrumentClass *class);
+static void	 bse_sinstrument_class_finalize	   (BseSInstrumentClass *class);
+static void	 bse_sinstrument_do_destroy	   (BseObject     	*object);
+static void      bse_sinstrument_set_property      (BseSInstrument      *sinstrument,
+						    guint                param_id,
+						    GValue              *value,
+						    GParamSpec          *pspec);
+static void      bse_sinstrument_get_property      (BseSInstrument      *sinstrument,
+						    guint                param_id,
+						    GValue              *value,
+						    GParamSpec          *pspec);
+static void      bse_sinstrument_prepare           (BseSource           *source,
+						    BseIndex             index);
+static BseChunk* bse_sinstrument_calc_chunk        (BseSource           *source,
+						    guint                ochannel_id);
+static void      bse_sinstrument_reset             (BseSource           *source);
 
 
 /* --- variables --- */
@@ -98,10 +96,10 @@ bse_sinstrument_class_init (BseSInstrumentClass *class)
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   guint ichannel_id, ochannel_id;
 
-  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek_parent (class);
 
-  gobject_class->set_param = (GObjectSetParamFunc) bse_sinstrument_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_sinstrument_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_sinstrument_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_sinstrument_get_property;
 
   object_class->destroy = bse_sinstrument_do_destroy;
 
@@ -113,7 +111,7 @@ bse_sinstrument_class_init (BseSInstrumentClass *class)
 			      PARAM_INSTRUMENT,
 			      g_param_spec_object ("instrument", "Instrument", NULL,
 						   BSE_TYPE_INSTRUMENT,
-						   B_PARAM_GUI | B_PARAM_HINT_RDONLY));
+						   BSE_PARAM_GUI | BSE_PARAM_HINT_RDONLY));
   
   ichannel_id = bse_source_class_add_ichannel (source_class, "multi_in", "Multi Track Instrument Input", 1, 2);
   g_assert (ichannel_id == BSE_SINSTRUMENT_ICHANNEL_MULTI);
@@ -137,28 +135,26 @@ bse_sinstrument_init (BseSInstrument *sinstrument)
 }
 
 static void
-bse_sinstrument_set_param (BseSInstrument *sinstrument,
-			   guint           param_id,
-			   GValue         *value,
-			   GParamSpec     *pspec,
-			   const gchar    *trailer)
+bse_sinstrument_set_property (BseSInstrument *sinstrument,
+			      guint           param_id,
+			      GValue         *value,
+			      GParamSpec     *pspec)
 {
   switch (param_id)
     {
     case PARAM_INSTRUMENT:
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (sinstrument, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (sinstrument, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_sinstrument_get_param (BseSInstrument *sinstrument,
-			   guint           param_id,
-			   GValue         *value,
-			   GParamSpec     *pspec,
-			   const gchar    *trailer)
+bse_sinstrument_get_property (BseSInstrument *sinstrument,
+			      guint           param_id,
+			      GValue         *value,
+			      GParamSpec     *pspec)
 {
   switch (param_id)
     {
@@ -166,7 +162,7 @@ bse_sinstrument_get_param (BseSInstrument *sinstrument,
       g_value_set_object (value, (GObject*) sinstrument->instrument);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (sinstrument, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (sinstrument, param_id, pspec);
       break;
     }
 }
@@ -211,15 +207,14 @@ bse_sinstrument_poke_foreigns (BseSInstrument *sinstrument,
   if (sinstrument->instrument != instrument)
     {
       if (sinstrument->instrument)
-	bse_object_remove_notifiers_by_func (sinstrument->instrument,
-					     instrument_changed,
-					     sinstrument);
+	g_object_disconnect (sinstrument->instrument,
+			     "any_signal", instrument_changed, sinstrument,
+			     NULL);
       sinstrument->instrument = instrument;
       if (sinstrument->instrument)
-	bse_object_add_data_notifier (sinstrument->instrument,
-				      "name_set",
-				      instrument_changed,
-				      sinstrument);
+	g_object_connect (sinstrument->instrument,
+			  "swapped_signal::notify::name", instrument_changed, sinstrument,
+			  NULL);
       instrument_changed (sinstrument);
     }
 }

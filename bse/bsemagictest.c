@@ -34,7 +34,7 @@ int
 main (gint   argc,
       gchar *argv[])
 {
-  static const gchar *magic_presets[][2] = {
+  static gchar *magic_presets[][2] = {
     /* some test entries, order is important for some cases */
     { "Berkeley DB 2.X Hash/Little Endian",	"12 lelong 0x061561", },
     { "MS-DOS executable (EXE)",		"0 string MZ", },
@@ -44,20 +44,26 @@ main (gint   argc,
     { "Bourne shell script text",		"0,string,#!\\t/bin/sh", },
     { "GIF image data",				"0,string,GIF8", },
     { "X window image dump (v7)",		("# .xwd files\n"
-						 "4,belong,0x0000007"), },
+						 "0x04,ubelong,0x0000007"), },
     { "RIFF (little-endian), WAVE audio",	("0 string RIFF\n"
 						 "8 string WAVE"), },
     { "RIFF (little-endian) data",		"0 string RIFF", },
+    { "GslWave file",				"0 string #GslWave\n", },
   };
   static const guint n_magic_presets = sizeof (magic_presets) / sizeof (magic_presets[0]);
   guint i;
+  GSList *magic_list = NULL;
 
-  bse_init (&argc, &argv);
+  g_thread_init (NULL);
+  bse_init (&argc, &argv, NULL);
 
   for (i = 0; i < n_magic_presets; i++)
-    bse_magic_list_append (bse_magic_new (0, g_quark_from_static_string (magic_presets[i][0]),
-					  magic_presets[i][1]));
-  
+    magic_list = g_slist_append (magic_list,
+				 bse_magic_create (magic_presets[i][0],
+						   0,
+						   0,
+						   magic_presets[i][1]));
+
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
@@ -83,7 +89,7 @@ main (gint   argc,
 	}
       else
 	{
-	  BseMagic *magic = bse_magic_list_match_file (argv[i]);
+	  BseMagic *magic = bse_magic_list_match_file (magic_list, argv[i]);
 	  guint l = strlen (argv[i]);
 	  gchar *pad;
 
@@ -92,7 +98,7 @@ main (gint   argc,
 	  g_print (pad);
 	  g_free (pad);
 	  if (magic)
-	    g_print (" %s [%s]\n", g_quark_to_string (magic->qextension), g_type_name (magic->proc_type));
+	    g_print (" %s\n", (char*) magic->data);
 	  else
 	    g_print (" no match\n");
 	}

@@ -34,12 +34,12 @@ enum
 static void	bse_bin_data_class_init		(BseBinDataClass	*class);
 static void	bse_bin_data_init		(BseBinData		*bin_data);
 static void	bse_bin_data_destroy		(BseObject		*object);
-static void     bse_bin_data_set_param          (BseBinData		*bin_data,
+static void     bse_bin_data_set_property          (BseBinData		*bin_data,
 						 guint          	 param_id,
 						 GValue         	*value,
 						 GParamSpec     	*pspec,
 						 const gchar    	*trailer);
-static void     bse_bin_data_get_param 		(BseBinData        	*bin_data,
+static void     bse_bin_data_get_property 		(BseBinData        	*bin_data,
 						 guint          	 param_id,
 						 GValue         	*value,
 						 GParamSpec     	*pspec,
@@ -80,28 +80,28 @@ bse_bin_data_class_init (BseBinDataClass *class)
   GObjectClass *gobject_class;
   BseObjectClass *object_class;
   
-  parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
+  parent_class = g_type_class_peek_parent (class);
   gobject_class = G_OBJECT_CLASS (class);
   object_class = BSE_OBJECT_CLASS (class);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_bin_data_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_bin_data_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_bin_data_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_bin_data_get_property;
   
   object_class->destroy = bse_bin_data_destroy;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_N_BITS,
-			      b_param_spec_uint ("n_bits", "# Bits", "Value size in bits",
+			      bse_param_spec_uint ("n_bits", "# Bits", "Value size in bits",
 						 BSE_MIN_BIT_SIZE, BSE_MAX_BIT_SIZE,
 						 BSE_DFL_BIN_DATA_BITS, 8,
-						 B_PARAM_DEFAULT));
+						 BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_BYTE_SIZE,
-			      b_param_spec_uint ("byte_size", "Byte Size", "Value size in bytes",
+			      bse_param_spec_uint ("byte_size", "Byte Size", "Value size in bytes",
 						 BSE_MIN_BIT_SIZE / 8, BSE_MAX_BIT_SIZE / 8,
 						 BSE_DFL_BIN_DATA_BITS / 8, 1,
-						 B_PARAM_READWRITE |
-						 B_PARAM_SERVE_GUI));
+						 BSE_PARAM_READWRITE |
+						 BSE_PARAM_SERVE_GUI));
 }
 
 static void
@@ -128,7 +128,7 @@ bse_bin_data_destroy (BseObject *object)
 }
 
 static void
-bse_bin_data_set_param (BseBinData  *bin_data,
+bse_bin_data_set_property (BseBinData  *bin_data,
 			guint        param_id,
 			GValue      *value,
 			GParamSpec  *pspec,
@@ -139,19 +139,19 @@ bse_bin_data_set_param (BseBinData  *bin_data,
   switch (param_id)
     {
     case PARAM_N_BITS:
-      bin_data->bits_per_value = b_value_get_uint (value);
+      bin_data->bits_per_value = g_value_get_uint (value);
       break;
     case PARAM_BYTE_SIZE:
-      bin_data->bits_per_value = b_value_get_uint (value);
+      bin_data->bits_per_value = g_value_get_uint (value);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (bin_data, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (bin_data, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_bin_data_get_param (BseBinData  *bin_data,
+bse_bin_data_get_property (BseBinData  *bin_data,
                         guint        param_id,
 			GValue      *value,
 			GParamSpec  *pspec,
@@ -160,13 +160,13 @@ bse_bin_data_get_param (BseBinData  *bin_data,
   switch (param_id)
     {
     case PARAM_N_BITS:
-      b_value_set_uint (value, bin_data->bits_per_value);
+      g_value_set_uint (value, bin_data->bits_per_value);
       break;
     case PARAM_BYTE_SIZE:
-      b_value_set_uint (value, bin_data->bits_per_value * 8);
+      g_value_set_uint (value, bin_data->bits_per_value * 8);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (bin_data, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (bin_data, param_id, pspec);
       break;
     }
 }

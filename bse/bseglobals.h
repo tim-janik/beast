@@ -21,6 +21,7 @@
 #define __BSE_GLOBALS_H__
 
 #include	<bse/bsedefs.h>
+#include	<bse/bsemath.h>
 
 
 #ifdef __cplusplus
@@ -43,7 +44,7 @@ extern "C" {
 #define	BSE_KAMMER_FREQ			((gint) BSE_KAMMER_FREQ_f)
 #define	BSE_KAMMER_FREQ_d		((gdouble) BSE_KAMMER_FREQ_f)
 #define	BSE_MIN_NOTE			(0)
-#define	BSE_MAX_NOTE			(123)
+#define	BSE_MAX_NOTE			(127 /* 123 */)
 #define	BSE_NOTE_VOID			(1024)
 #define	BSE_NOTE_UNPARSABLE		(BSE_NOTE_VOID + 1)
 #define	BSE_KAMMER_NOTE			((gint) (57) /* A' */)
@@ -71,6 +72,35 @@ extern "C" {
 #define	BSE_NOTE_VALID(n)		((n) >= BSE_MIN_NOTE && (n) <= (BSE_MAX_NOTE))
 
 
+/* --- signal ranges --- */
+/* min..max sample value: -1.0 .. 1.0
+ * notes<->sample value: 0 .. 127 (BSE_VALUE_FROM_NOTE)
+ * freq<->sample value: 0 .. 24000 (BSE_FREQ_FROM_VALUE)
+ */
+#define	BSE_VALUE_FROM_BOUNDED_UINT(k, bound)	((gfloat) ((k) * (1.0 / ((gfloat) (bound)))))
+#define	BSE_VALUE_FROM_NOTE(note)	(BSE_VALUE_FROM_BOUNDED_UINT ((note), BSE_MAX_NOTE))
+#define	BSE_NOTE_FROM_VALUE(value)	((gint) (((gfloat) (value)) * BSE_MAX_NOTE))
+#define	BSE_MAX_FREQUENCY		(24000 /* don't change this, used for scaling to 0.0 .. 1.0 */)
+#define	BSE_MAX_FREQUENCY_f		((gfloat) BSE_MAX_FREQUENCY)
+#define	BSE_MAX_FREQUENCY_d		((gdouble) BSE_MAX_FREQUENCY)
+#define	BSE_FREQ_FROM_VALUE(value)	(((gfloat) (value)) * BSE_MAX_FREQUENCY_f)
+#define	BSE_VALUE_FROM_FREQ(freq)	((gfloat) ((freq) * (1.0 / BSE_MAX_FREQUENCY_f)))
+#define	BSE_EPSILON_FREQUENCY		((gdouble) 0.01)
+
+
+/* --- time ranges --- */
+typedef enum
+{
+  BSE_TIME_RANGE_SHORT	= 1,
+  BSE_TIME_RANGE_MEDIUM,
+  BSE_TIME_RANGE_LONG
+} BseTimeRangeType;
+#define	BSE_TIME_RANGE_SHORT_ms		(1000.0 *   0.5)
+#define	BSE_TIME_RANGE_MEDIUM_ms	(1000.0 *  10.0)
+#define	BSE_TIME_RANGE_LONG_ms		(1000.0 * 200.0)
+glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
+
+
 /* --- limits & defaults --- */
 #define	BSE_MIN_VOLUME_dB		(-40) /* theoretically: -48.165 */
 #define	BSE_MAX_VOLUME_dB		(+10)
@@ -89,6 +119,8 @@ extern "C" {
 #define	BSE_MAX_ENV_TIME		(10000) /* ms */
 #define	BSE_MIN_MIX_FREQ		(1378)
 #define	BSE_MAX_MIX_FREQ		(96000)
+#define	BSE_MIN_MIX_FREQ_d		((gdouble) BSE_MIN_MIX_FREQ)
+#define	BSE_MAX_MIX_FREQ_d		((gdouble) BSE_MAX_MIX_FREQ)
 #define	BSE_MIN_OSC_FREQ_d		((gdouble) 1.0 / BSE_MAX_OSC_FREQ_d)
 #define	BSE_MAX_OSC_FREQ_d		((gdouble) 20000)
 #define BSE_MIN_TIME			(631148400)	/* 1990-01-01 00:00:00 */
@@ -100,16 +132,16 @@ extern "C" {
 #define	BSE_MIN_N_VALUES		(1)
 #define	BSE_MAX_N_VALUES		(128 * 1024 * 1024)
 #define	BSE_MAX_SEQ_ID			(65535)
-#define	BSE_BBUFFER_SIZE		(128)
-#define BSE_DFL_OCHANNEL_ID		(1)
-#define	BSE_DFL_BIN_DATA_PADDING	(16 * sizeof (BseSampleValue))
+#define	BSE_BBUFFER_SIZE		(128)	// FIXME
+#define BSE_DFL_OCHANNEL_ID		(1)	// FIXME
+#define	BSE_DFL_BIN_DATA_PADDING	(16 * sizeof (BseSampleValue)) // FIXME
+#define	BSE_MAX_BLOCK_PADDING		(64) /* Gsl wave_chunk_padding */
 
 
 /* --- BseSource limits --- */
-#define	BSE_MAX_HISTORY			(128)
 #define	BSE_MAX_N_ICHANNELS		(128)
 #define	BSE_MAX_N_OCHANNELS		(128)
-#define	BSE_MAX_N_TRACKS		(8)
+#define	BSE_MAX_N_TRACKS		(8)	// FIXME
 
 
 /* --- hard defaults (used for saving) --- */
@@ -121,7 +153,7 @@ extern "C" {
 #define BSE_DFL_INSTRUMENT_BALANCE	(0)
 #define BSE_DFL_INSTRUMENT_TRANSPOSE	(0)
 #define BSE_DFL_INSTRUMENT_FINE_TUNE	(0)
-#define BSE_DFL_BIN_DATA_BITS		(16)
+#define BSE_DFL_BIN_DATA_BITS		(16)	// FIXME
 #define BSE_DFL_SAMPLE_REC_FREQ		(44100)
 #define BSE_DFL_SAMPLE_REC_NOTE		(BSE_KAMMER_NOTE)
 
@@ -141,8 +173,8 @@ extern "C" {
 	    /* 1112753441 0x42534521 */	 ('E' <<  8) | ('!' <<  0))
 #define BSE_FADE_OUT_TIME_ms            (30)
 #define BSE_VOICES_POLY_OVER_FIXED	(1)
-#define BSE_DEVICE_PRIORITY		(BSE_HEART_PRIORITY - 1)
-#define BSE_NOTIFY_PRIORITY		(BSE_HEART_PRIORITY)
+#define BSE_NOTIFY_PRIORITY		(G_PRIORITY_HIGH_IDLE + 20 /* object notify + cross changes */)
+#define BSE_MIX_VALUE_BYTES_EQUAL(val)	(BSE_UINT32_BYTES_EQUAL (val))
 
 
 /* --- BseGlobals - configurable defaults --- */
@@ -155,9 +187,9 @@ extern "C" {
 #define	BSE_STP_TRANSPOSE		(bse_globals->step_transpose)
 #define	BSE_STP_FINE_TUNE		(bse_globals->step_fine_tune)
 #define	BSE_STP_ENV_TIME		(bse_globals->step_env_time)
-#define	BSE_TRACK_LENGTH		(bse_globals->track_length)
+#define	BSE_TRACK_LENGTH		(bse_globals->track_length)	// FIXME
+#define	BSE_BLOCK_N_VALUES		(BSE_TRACK_LENGTH)
 #define	BSE_MIX_FREQ			(bse_globals->mixing_frequency)
-#define BSE_HEART_PRIORITY              (bse_globals->heart_priority)
 #define	BSE_TRACK_LENGTH_f		((gfloat) BSE_TRACK_LENGTH)
 #define	BSE_MIX_FREQ_f			((gfloat) BSE_MIX_FREQ)
 #define	BSE_TRACK_LENGTH_d		((gdouble) BSE_TRACK_LENGTH)
@@ -189,6 +221,7 @@ extern const gdouble* _bse_fine_tune_factor_table;
                                          (ft) < BSE_MIN_FINE_TUNE ? \
                                          _bse_fine_tune_factor_table[BSE_MIN_FINE_TUNE] : \
                                          _bse_fine_tune_factor_table[(ft)])
+#define	BSE_FREQ_FROM_LINEAR_VALUE(v)	(BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (BSE_NOTE_FROM_VALUE (v) - BSE_KAMMER_NOTE))
 
 
 /* --- BseGlobals --- */
@@ -209,7 +242,6 @@ struct _BseGlobals
    */
   guint	track_length;
   guint mixing_frequency;
-  gint  heart_priority;
 };
 extern const BseGlobals	* const bse_globals;
 
@@ -221,7 +253,6 @@ extern const guint   bse_micro_version;
 extern const guint   bse_interface_age;
 extern const guint   bse_binary_age;
 extern const gchar  *bse_version;
-extern const gchar  *bse_log_domain_bse;
 
 
 /* --- prototypes --- */

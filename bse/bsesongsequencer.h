@@ -33,19 +33,24 @@ extern "C" {
 struct _BseSongSequencer
 {
   BseLoopType	loop_type;
-  
-  guint next_pattern_row;
-  guint first_pattern_row;
-  guint last_pattern_row;
-  
-  /* pattern_list indices
-   */
-  guint	next_pattern;
+
+  /* play order setup */
   guint first_pattern;
   guint last_pattern;
-  
+  guint first_pattern_row;
+  guint last_pattern_row;
+
+  /* row fraction */
   guint step_counter;
   guint step_threshold;
+  
+  /* current row */
+  guint cur_pattern;
+  guint cur_row;
+
+  /* look ahead */
+  guint next_pattern;
+  guint next_row;
   
   /* mixer section
    */

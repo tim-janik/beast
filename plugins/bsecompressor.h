@@ -1,5 +1,5 @@
 /* BseCompressor - BSE Compressor
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -15,8 +15,6 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
- *
- * bsecompressor.h: BSE Compressor - compresses loud and boosts quit things
  */
 #ifndef __BSE_COMPRESSOR_H__
 #define __BSE_COMPRESSOR_H__
@@ -31,9 +29,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-
-
-
 /* --- object type macros --- */
 #define BSE_TYPE_COMPRESSOR              (type_id_compressor)
 #define BSE_COMPRESSOR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_COMPRESSOR, BseCompressor))
@@ -46,11 +41,16 @@ extern "C" {
 /* --- BseCompressor source --- */
 typedef struct _BseCompressor      BseCompressor;
 typedef struct _BseCompressorClass BseCompressorClass;
+typedef struct {
+  gfloat isample_factor;
+  gfloat osample_factor;
+} BseCompressorVars;
 struct _BseCompressor
 {
-  BseSource       parent_object;
+  BseSource         parent_object;
   
-  gfloat	  pi_fact;
+  gfloat	    pi_fact;
+  BseCompressorVars vars;
 };
 struct _BseCompressorClass
 {
@@ -61,16 +61,12 @@ struct _BseCompressorClass
 /* --- channels --- */
 enum
 {
-  BSE_COMPRESSOR_ICHANNEL_NONE,
   BSE_COMPRESSOR_ICHANNEL_MONO1
 };
 enum
 {
-  BSE_COMPRESSOR_OCHANNEL_NONE,
   BSE_COMPRESSOR_OCHANNEL_MONO1
 };
-
-
 
 
 

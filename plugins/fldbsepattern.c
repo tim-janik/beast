@@ -45,11 +45,11 @@ delete_note_setup (BseProcedureClass *proc,
   
   /* input parameters */
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
-					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
-  *(in_pspecs++) = b_param_spec_uint ("focus_channel", "Focus Channel", NULL,
-				      0, BSE_MAX_N_CHANNELS - 1, 0, BSE_STP_N_CHANNELS, B_PARAM_DEFAULT);
-  *(in_pspecs++) = b_param_spec_uint ("focus_row", "Focus Row", NULL,
-				      0, BSE_MAX_N_ROWS - 1, 0, BSE_STP_N_ROWS, B_PARAM_DEFAULT);
+					BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = bse_param_spec_uint ("focus_channel", "Focus Channel", NULL,
+				      0, BSE_MAX_N_CHANNELS - 1, 0, BSE_STP_N_CHANNELS, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = bse_param_spec_uint ("focus_row", "Focus Row", NULL,
+				      0, BSE_MAX_N_ROWS - 1, 0, BSE_STP_N_ROWS, BSE_PARAM_DEFAULT);
   /* output parameters */
 }
 
@@ -60,8 +60,8 @@ delete_note_exec (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BsePattern *pattern = (BsePattern*) g_value_get_object (in_values++);
-  guint c             = b_value_get_uint (in_values++);
-  guint r             = b_value_get_uint (in_values++);
+  guint c             = g_value_get_uint (in_values++);
+  guint r             = g_value_get_uint (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PATTERN (pattern))
@@ -107,11 +107,11 @@ insert_note_setup (BseProcedureClass *proc,
   
   /* input parameters */
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
-					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
-  *(in_pspecs++) = b_param_spec_uint ("focus_channel", "Focus Channel", NULL,
-				      0, BSE_MAX_N_CHANNELS - 1, 0, BSE_STP_N_CHANNELS, B_PARAM_DEFAULT);
-  *(in_pspecs++) = b_param_spec_uint ("focus_row", "Focus Row", NULL,
-				      0, BSE_MAX_N_ROWS - 1, 0, BSE_STP_N_ROWS, B_PARAM_DEFAULT);
+					BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = bse_param_spec_uint ("focus_channel", "Focus Channel", NULL,
+				      0, BSE_MAX_N_CHANNELS - 1, 0, BSE_STP_N_CHANNELS, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = bse_param_spec_uint ("focus_row", "Focus Row", NULL,
+				      0, BSE_MAX_N_ROWS - 1, 0, BSE_STP_N_ROWS, BSE_PARAM_DEFAULT);
   /* output parameters */
 }
 
@@ -122,8 +122,8 @@ insert_note_exec (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BsePattern *pattern       = (BsePattern*) g_value_get_object (in_values++);
-  guint cur_c               = b_value_get_uint (in_values++);
-  guint cur_r               = b_value_get_uint (in_values++);
+  guint cur_c               = g_value_get_uint (in_values++);
+  guint cur_r               = g_value_get_uint (in_values++);
   gint note_val	            = BSE_NOTE_VOID;
   BseInstrument* instrument = NULL;
   guint r;
@@ -167,7 +167,7 @@ clear_instrument_setup (BseProcedureClass *proc,
   
   /* input parameters */
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
-					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
+					BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
   /* output parameters */
 }
 
@@ -217,9 +217,9 @@ fill_instrument_setup (BseProcedureClass *proc,
   
   /* input parameters */
   *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
-					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
+					BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
   *(in_pspecs++) = g_param_spec_object ("instrument", "Instrument", "Instrument to use",
-					BSE_TYPE_INSTRUMENT, B_PARAM_DEFAULT);
+					BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
   /* output parameters */
 }
 

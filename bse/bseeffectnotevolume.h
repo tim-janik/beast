@@ -42,6 +42,7 @@ extern "C" {
 
 /* --- BseEffectNoteVolume --- */
 typedef struct _BseEffectNoteVolume BseEffectNoteVolume;
+typedef struct _BseEffectClass      BseEffectNoteVolumeClass;
 struct _BseEffectNoteVolume
 {
   BseEffect parent_object;

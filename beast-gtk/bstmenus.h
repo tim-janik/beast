@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -98,7 +98,7 @@ GSList* bst_menu_entries_add_bentries 	  (GSList		  *entry_slist,
 					   guint                   n_menu_entries,
                                            BstMenuEntry           *menu_entries);
 GSList* bst_menu_entries_sort		  (GSList		  *entry_slist);
-void    bst_menu_entries_create           (GtkItemFactory         *ifactory,
+void    bst_menu_entries_create_list      (GtkItemFactory         *ifactory,
 					   GSList                 *bst_menu_entries,
 					   gpointer                callback_data);
 GtkWidget* bst_choice_menu_createv        (BstChoice              *first_choice,
@@ -109,6 +109,7 @@ gboolean   bst_choice_selectable          (GtkWidget              *widget);
 guint      bst_choice_modal               (GtkWidget              *widget,
 					   guint                   mouse_button,
 					   guint32                 time);
+guint      bst_choice_get_last            (GtkWidget              *widget);
 void	   bst_choice_destroy		  (GtkWidget		  *choice);
      
 

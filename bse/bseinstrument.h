@@ -85,9 +85,10 @@ struct _BseInstrumentClass
 /* --- prototypes -- */
 void		bse_instrument_set_sample	(BseInstrument	*instrument,
 						 BseSample	*sample);
+#if 0
 void		bse_instrument_set_sinstrument	(BseInstrument	*instrument,
 						 BseSInstrument *sinstrument);
-
+#endif
 
 
 

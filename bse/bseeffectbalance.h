@@ -42,6 +42,7 @@ extern "C" {
 
 /* --- BseEffectBalance --- */
 typedef struct _BseEffectBalance BseEffectBalance;
+typedef struct _BseEffectClass   BseEffectBalanceClass;
 struct _BseEffectBalance
 {
   BseEffect parent_object;

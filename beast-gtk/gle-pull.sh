@@ -1,4 +1,5 @@
 #!/bin/bash
+set -v
 
 GLE=/usr/src/gle/gle
 SOURCES="gtkwrapbox gtkcluehunter gtkhwrapbox gtkvwrapbox"

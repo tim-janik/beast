@@ -1,0 +1,128 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2000-2001 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include        <bse/bseplugin.h>
+#include        <bse/bseprocedure.h>
+#include        <bse/bsewaverepo.h>
+#include        <gsl/gslwavedsc.h>
+
+#include        <bse/bsewave.h>
+
+
+AUTHOR	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik <timj@gtk.org>";
+DATE	= "2001";
+
+
+METHOD (BseWaveRepo, read-file) {
+  HELP	= "Read Wave from file";
+  IN    = g_param_spec_object ("wave_repo", "Wave Repo", NULL,
+			       BSE_TYPE_WAVE_REPO, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("file_name", "File Name", "The file to read waves from",
+ 			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseWaveRepo *wrepo    = (BseWaveRepo*) g_value_get_object (in_values++);
+  gchar *file_name      = g_value_get_string (in_values++);
+  BseErrorType error = BSE_ERROR_FORMAT_MISMATCH; // FIXME
+  GslWaveDsc *wdsc;
+
+  /* check parameters */
+  if (!BSE_IS_WAVE_REPO (wrepo) || !file_name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* FIXEM: this is hackish, need server support one day */
+  wdsc = gsl_wave_dsc_read (file_name);
+
+  if (wdsc)
+    {
+      if (wdsc->n_chunks)
+	{
+	  BseWave *wave = g_object_new (BSE_TYPE_WAVE, NULL);
+	  guint i;
+
+	  for (i = 0; i < wdsc->n_chunks; i++)
+	    {
+	      GslWaveChunk *wchunk = gsl_wave_chunk_from_dsc (wdsc, i);
+
+	      if (wchunk)
+		bse_wave_add_chunk (wave, wchunk);
+	    }
+	  bse_wave_set_locator (wave, file_name, wdsc->name);
+	  if (1) // FIXME: junk hack
+	    {
+	      GslWaveChunk *wchunk;
+
+	      wdsc->chunks[wdsc->n_chunks - 1].osc_freq = 20000;
+	      wchunk = gsl_wave_chunk_from_dsc (wdsc, wdsc->n_chunks - 1);
+	      if (wchunk)
+		bse_wave_add_chunk (wave, wchunk);
+
+	      wdsc->chunks[wdsc->n_chunks - 1].osc_freq = 21000;
+	      wchunk = gsl_wave_chunk_from_dsc (wdsc, wdsc->n_chunks - 1);
+	      if (wchunk)
+		bse_wave_add_chunk_with_locator (wave, wchunk, file_name, wdsc->name);
+	    }
+	  if (wave->n_wchunks)
+	    {
+	      bse_container_add_item (BSE_CONTAINER (wrepo), BSE_ITEM (wave));
+	      error = BSE_ERROR_NONE; // FIXME
+	    }
+	  g_object_unref (wave);
+	}
+      gsl_wave_dsc_free (wdsc);
+    }
+  
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseWaveRepo, remove-wave) {
+  HELP  = "Remove a wave from repository";
+  IN    = g_param_spec_object ("wave_repo", "Wave Repo", NULL,
+			       BSE_TYPE_WAVE_REPO, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_object ("wave", "Wave", NULL,
+			       BSE_TYPE_WAVE, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseWaveRepo *wrepo = (BseWaveRepo*) g_value_get_object (in_values++);
+  BseItem *wave      = (BseItem*) g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_WAVE_REPO (wrepo) || !BSE_IS_WAVE (wave) ||
+      wave->parent != BSE_ITEM (wrepo))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_container_remove_item (BSE_CONTAINER (wrepo), wave);
+
+  /* set output parameters */
+
+  return BSE_ERROR_NONE;
+}

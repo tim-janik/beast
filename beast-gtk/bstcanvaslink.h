@@ -34,7 +34,7 @@ extern "C" {
 #define BST_CANVAS_LINK_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_CANVAS_LINK, BstCanvasLinkClass))
 #define BST_IS_CANVAS_LINK(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_CANVAS_LINK))
 #define BST_IS_CANVAS_LINK_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_CANVAS_LINK))
-#define BST_CANVAS_LINK_GET_CLASS(obj)  ((BstCanvasLinkClass*) (((GtkObject*) (obj))->klass))
+#define BST_CANVAS_LINK_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_CANVAS_LINK, BstCanvasLinkClass))
 
 
 /* --- structures & typedefs --- */
@@ -49,11 +49,11 @@ struct _BstCanvasLink
   GnomeCanvasItem *tag_start, *tag_end;
 
   BstCanvasSource *ocsource;
-  guint            ochannel_id;
-  guint            oc_handler;
+  guint            ochannel;
+  gulong           oc_handler;
   BstCanvasSource *icsource;
-  guint            ichannel_id;
-  guint            ic_handler;
+  guint            ichannel;
+  gulong           ic_handler;
 
   guint		   in_move : 1;
   gdouble          start_move_dx, start_move_dy;
@@ -72,16 +72,16 @@ GtkType		 bst_canvas_link_get_type		(void);
 GnomeCanvasItem* bst_canvas_link_new			(GnomeCanvasGroup *group);
 void		 bst_canvas_link_set_ocsource		(BstCanvasLink    *clink,
 							 BstCanvasSource  *ocsource,
-							 guint             ochannel_id);
+							 guint             ochannel);
 void		 bst_canvas_link_set_icsource		(BstCanvasLink    *clink,
 							 BstCanvasSource  *icsource,
-							 guint             ichannel_id);
+							 guint             ichannel);
 void             bst_canvas_link_popup_view		(BstCanvasLink	  *clink);
 void             bst_canvas_link_toggle_view		(BstCanvasLink	  *clink);
 BstCanvasLink*	 bst_canvas_link_at			(GnomeCanvas      *canvas,
 							 gdouble           world_x,
 							 gdouble           world_y);
-BstCanvasSource* bst_canvas_link_has_canvas_source_at	(BstCanvasLink	  *clink,
+BstCanvasSource* bst_canvas_link_csource_at		(BstCanvasLink	  *clink,
 							 gdouble           world_x,
 							 gdouble           world_y);
 

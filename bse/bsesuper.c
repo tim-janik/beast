@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ enum
   PARAM_AUTHOR,
   PARAM_COPYRIGHT,
   PARAM_CREATION_TIME,
-  PARAM_MOD_TIME,
+  PARAM_MOD_TIME
 };
 
 
@@ -36,16 +36,14 @@ static void	bse_super_class_init	(BseSuperClass		*class);
 static void	bse_super_init		(BseSuper		*super,
 					 gpointer		 rclass);
 static void	bse_super_destroy	(BseObject		*object);
-static void	bse_super_set_param	(BseSuper		*super,
+static void	bse_super_set_property	(BseSuper		*super,
 					 guint                   param_id,
 					 GValue                 *value,
-					 GParamSpec             *pspec,
-					 const gchar            *trailer);
-static void	bse_super_get_param	(BseSuper		*super,
+					 GParamSpec             *pspec);
+static void	bse_super_get_property	(BseSuper		*super,
 					 guint                   param_id,
 					 GValue                 *value,
-					 GParamSpec             *pspec,
-					 const gchar            *trailer);
+					 GParamSpec             *pspec);
 static gboolean	bse_super_do_is_dirty	(BseSuper		*super);
 static void	bse_super_do_modified	(BseSuper		*super,
 					 BseTime		 stamp);
@@ -87,13 +85,13 @@ bse_super_class_init (BseSuperClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
-  parent_class = g_type_class_peek (BSE_TYPE_CONTAINER);
+  parent_class = g_type_class_peek_parent (class);
   
   quark_author = g_quark_from_static_string ("author");
   quark_copyright = g_quark_from_static_string ("copyright");
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_super_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_super_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_super_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_super_get_property;
 
   object_class->destroy = bse_super_destroy;
 
@@ -102,27 +100,27 @@ bse_super_class_init (BseSuperClass *class)
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,
-			      b_param_spec_string ("author", "Author", NULL,
+			      bse_param_spec_string ("author", "Author", NULL,
 						   NULL,
-						   B_PARAM_DEFAULT));
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_COPYRIGHT,
-			      b_param_spec_string ("copyright", "Copyright", NULL,
+			      bse_param_spec_string ("copyright", "Copyright", NULL,
 						   NULL,
-						   B_PARAM_DEFAULT));
+						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_CREATION_TIME,
-			      b_param_spec_time ("creation_time", "Creation Time", NULL,
+			      bse_param_spec_time ("creation_time", "Creation Time", NULL,
 						 0,
-						 B_PARAM_DEFAULT |
-						 B_PARAM_HINT_RDONLY));
+						 BSE_PARAM_DEFAULT |
+						 BSE_PARAM_HINT_RDONLY));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_MOD_TIME,
-			      b_param_spec_time ("modification_time", "Last modification time", NULL,
+			      bse_param_spec_time ("modification_time", "Last modification time", NULL,
 						 0,
-						 B_PARAM_READWRITE |
-						 B_PARAM_HINT_RDONLY |
-						 B_PARAM_SERVE_STORAGE));
+						 BSE_PARAM_READWRITE |
+						 BSE_PARAM_HINT_RDONLY |
+						   BSE_PARAM_SERVE_STORAGE));
 }
 
 static void
@@ -136,6 +134,8 @@ bse_super_init (BseSuper *super,
   super->mod_time = bse_time_current ();
   super->creation_time = super->mod_time;
   super->saved_mod_time = super->mod_time;
+  super->auto_activate = FALSE;
+  super->auto_activate_context_handle = ~0;
   
   bse_super_objects = g_slist_prepend (bse_super_objects, super);
 
@@ -157,31 +157,30 @@ bse_super_destroy (BseObject *object)
 }
 
 static void
-bse_super_set_param (BseSuper    *super,
-		     guint        param_id,
-		     GValue      *value,
-		     GParamSpec  *pspec,
-		     const gchar *trailer)
+bse_super_set_property (BseSuper    *super,
+			guint        param_id,
+			GValue      *value,
+			GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_AUTHOR:
       bse_object_set_qdata_full (BSE_OBJECT (super),
 				 quark_author,
-				 bse_strdup_stripped (b_value_get_string (value)),
+				 bse_strdup_stripped (g_value_get_string (value)),
 				 g_free);
       break;
     case PARAM_COPYRIGHT:
       bse_object_set_qdata_full (BSE_OBJECT (super),
 				 quark_copyright,
-				 bse_strdup_stripped (b_value_get_string (value)),
+				 bse_strdup_stripped (g_value_get_string (value)),
 				 g_free);
       break;
     case PARAM_MOD_TIME:
-      super->mod_time = MAX (super->creation_time, b_value_get_time (value));
+      super->mod_time = MAX (super->creation_time, bse_value_get_time (value));
       break;
     case PARAM_CREATION_TIME:
-      super->creation_time = b_value_get_time (value);
+      super->creation_time = bse_value_get_time (value);
       /* we have to ensure that mod_time is always >= creation_time */
       if (super->creation_time > super->mod_time)
 	{
@@ -190,34 +189,33 @@ bse_super_set_param (BseSuper    *super,
 	}
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (super, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (super, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_super_get_param (BseSuper    *super,
-		     guint        param_id,
-		     GValue      *value,
-		     GParamSpec  *pspec,
-		     const gchar *trailer)
+bse_super_get_property (BseSuper    *super,
+			guint        param_id,
+			GValue      *value,
+			GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_AUTHOR:
-      b_value_set_string (value, bse_object_get_qdata (BSE_OBJECT (super), quark_author));
+      g_value_set_string (value, bse_object_get_qdata (BSE_OBJECT (super), quark_author));
       break;
     case PARAM_COPYRIGHT:
-      b_value_set_string (value, bse_object_get_qdata (BSE_OBJECT (super), quark_copyright));
+      g_value_set_string (value, bse_object_get_qdata (BSE_OBJECT (super), quark_copyright));
       break;
     case PARAM_MOD_TIME:
-      b_value_set_time (value, super->mod_time);
+      bse_value_set_time (value, super->mod_time);
       break;
     case PARAM_CREATION_TIME:
-      b_value_set_time (value, super->creation_time);
+      bse_value_set_time (value, super->creation_time);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (super, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (super, param_id, pspec);
       break;
     }
 }
@@ -254,7 +252,7 @@ bse_super_set_creation_time (BseSuper       *super,
 {
   g_return_if_fail (BSE_IS_SUPER (super));
   
-  FIXME ("route set_creation_time() through set_param?");
+  FIXME ("route set_creation_time() through set_property?");
   
   if (super->mod_time < creation_time)
     {
@@ -270,7 +268,7 @@ bse_super_reset_mod_time (BseSuper *super,
 {
   g_return_if_fail (BSE_IS_SUPER (super));
   
-  FIXME ("route reset_mod_time() through set_param?");
+  FIXME ("route reset_mod_time() through set_property?");
   
   if (super->creation_time > mod_time)
     super->creation_time = mod_time;

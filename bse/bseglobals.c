@@ -18,7 +18,6 @@
 #include	"bseglobals.h"
 
 #include	"bseconfig.h"
-#include	<math.h>
 #include	"bsechunk.h"	/* for bse_chunks_nuke() */
 
 
@@ -76,7 +75,6 @@ const guint	     bse_micro_version = BSE_MICRO_VERSION;
 const guint	     bse_interface_age = BSE_INTERFACE_AGE;
 const guint	     bse_binary_age = BSE_BINARY_AGE;
 const gchar         *bse_version = BSE_VERSION;
-const gchar         *bse_log_domain_bse = "BSE";
 const gdouble*	_bse_halftone_factor_table = NULL;
 const guint*	_bse_halftone_factor_table_fixed = NULL;
 const gdouble*	_bse_fine_tune_factor_table = NULL;
@@ -98,7 +96,6 @@ static const BseGlobals	 bse_globals_defaults = {
   
   256		/* track_length (hunk_size) */,
   44100		/* mixing_frequency */,
-  G_PRIORITY_HIGH_IDLE + 20	/* heart_priority */,
 };
 
 
@@ -123,6 +120,23 @@ bse_check_version (guint required_major,
   return NULL;
 }
 
+static void
+newinit (void)
+{
+  gdouble k = BSE_KAMMER_NOTE, k2 = BSE_KAMMER_NOTE << 1;
+  gdouble f = BSE_KAMMER_FREQ_f;
+  gdouble a, b, c;
+
+  a = f / 576.;
+  b = f * (18. - k) / 288.;
+  c = f - (a * k + b) * k;
+
+  return;
+  
+  g_print ("(%10f*x + %10f)*x + %10f \n", a, b, c);
+  exit(0);
+}
+
 void
 bse_globals_init (void)
 {
@@ -132,6 +146,8 @@ bse_globals_init (void)
   gint i;
   
   g_return_if_fail (_bse_halftone_factor_table == NULL);
+
+  newinit();
   
   /* setup half tone factorization table
    */
@@ -258,4 +274,19 @@ bse_dB_from_factor (gdouble factor,
     }
   else
     return min_dB;
+}
+
+glong
+bse_time_range_to_ms (BseTimeRangeType time_range)
+{
+  g_return_val_if_fail (time_range >= BSE_TIME_RANGE_SHORT, 0);
+  g_return_val_if_fail (time_range <= BSE_TIME_RANGE_LONG, 0);
+
+  switch (time_range)
+    {
+    case BSE_TIME_RANGE_SHORT:		return BSE_TIME_RANGE_SHORT_ms;
+    case BSE_TIME_RANGE_MEDIUM:		return BSE_TIME_RANGE_MEDIUM_ms;
+    case BSE_TIME_RANGE_LONG:		return BSE_TIME_RANGE_LONG_ms;
+    }
+  return 0;	/* can't be triggered */
 }

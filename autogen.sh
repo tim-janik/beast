@@ -94,4 +94,5 @@ if $srcdir/configure "$@"; then
 else
 	echo
 	echo Configuration failed, correct above errors first.
+	exit 1
 fi

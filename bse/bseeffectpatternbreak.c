@@ -24,7 +24,7 @@
 /* --- prototypes --- */
 static void     bse_effect_pattern_break_class_init     (BseEffectClass        *class);
 static void     bse_effect_pattern_break_init           (BseEffectPatternBreak *effect);
-static gboolean bse_effect_pattern_break_jump_sequencer (BseEffect             *effect,
+static void     bse_effect_pattern_break_jump_sequencer (BseEffect             *effect,
 							 guint                 *current_pattern,
 							 guint                 *current_row);
 
@@ -33,7 +33,7 @@ static gboolean bse_effect_pattern_break_jump_sequencer (BseEffect             *
 BSE_BUILTIN_TYPE (BseEffectPatternBreak)
 {
   static const GTypeInfo effect_info = {
-    sizeof (BseEffectClass),
+    sizeof (BseEffectPatternBreakClass),
 
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
@@ -69,13 +69,11 @@ bse_effect_pattern_break_init (BseEffectPatternBreak *effect)
 {
 }
 
-static gboolean
+static void
 bse_effect_pattern_break_jump_sequencer (BseEffect *effect,
 					 guint     *current_pattern,
 					 guint     *current_row)
 {
   *current_pattern += 1;
   *current_row = 0;
-
-  return TRUE;
 }

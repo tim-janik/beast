@@ -140,8 +140,11 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		dnl MC_EVAR_ADD(CFLAGS, -Wbad-function-cast, -Wbad-function-cast)
 		dnl bogus: MC_EVAR_ADD(CFLAGS, -Wconversion, -Wconversion)
 		dnl bogus: MC_EVAR_ADD(CFLAGS, -Wsign-compare, -Wsign-compare)
-		MC_PROG_CC_SUPPORTS_OPTION(-Wmissing-noreturn,
-		    MC_EVAR_ADD(CFLAGS, -Wmissing-noreturn, -Wmissing-noreturn))
+		MC_STR_CONTAINS($CC $CFLAGS, -finstrument-functions,
+		                [mc_opt_warn_no_return=-Wno-missing-noreturn],
+		                [mc_opt_warn_no_return=-Wmissing-noreturn])
+  		MC_PROG_CC_SUPPORTS_OPTION($mc_opt_warn_no_return,
+		      MC_EVAR_ADD(CFLAGS, $mc_opt_warn_no_return, $mc_opt_warn_no_return))
 		dnl glibc breakage: MC_EVAR_ADD(CFLAGS, -Wredundant-decls, -Wredundant-decls)
 	
 		dnl Optimizations
@@ -152,7 +155,7 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions)
 		MC_EVAR_ADD(CFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
 		MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return)
-		MC_EVAR_ADD(CFLAGS, -funroll-loops, -funroll-loops)
+		dnl MC_EVAR_ADD(CFLAGS, -funroll-loops, -funroll-loops)
 		MC_PROG_CC_SUPPORTS_OPTION(-frerun-loop-opt,
 		    MC_EVAR_ADD(CFLAGS, -frerun-loop-opt, -frerun-loop-opt))
 		MC_EVAR_ADD(CFLAGS, -fgcse, -fgcse)
@@ -165,6 +168,35 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 	)
 ])
 
+dnl Find pkg-config
+AC_DEFUN(MC_ASSERT_PKG_CONFIG,[
+    AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+    case "x$PKG_CONFIG" in
+    xno) AC_MSG_ERROR([failed to find pkg-config which is required
+         for a functional build, grab it from
+	 http://www.freedesktop.org/software/pkgconfig/])
+	 ;;
+    esac
+])
+
+dnl MC_PKG_CONFIG_REQUIRE(package, version, clfgas-var, libs-var)
+dnl Find package through $PKG_CONFIG
+AC_DEFUN(MC_PKG_CONFIG_REQUIRE,[
+    mc_PACKAGE="[$1]"
+    mc_VERSION="[$2]"
+    AC_MSG_CHECKING([for $mc_PACKAGE - version >= $mc_VERSION])
+    if $PKG_CONFIG --atleast-version="$mc_VERSION" $mc_PACKAGE 2>/dev/null ; then
+      VSERION=`$PKG_CONFIG --modversion $mc_PACKAGE`
+      AC_MSG_RESULT([yes ($mc_VERSION)])
+    else
+      AC_MSG_RESULT([no])
+      AC_MSG_ERROR([pkg-config failed to find "$mc_PACKAGE" v"$mc_VERSION"])
+    fi
+    [$3]=`$PKG_CONFIG $mc_PACKAGE --cflags`
+    [$4]=`$PKG_CONFIG $mc_PACKAGE --libs`
+    unset mc_PACKAGE
+    unset mc_VERSION
+])
 
 dnl Setup CXX with default CXXFLAGS value.
 AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[

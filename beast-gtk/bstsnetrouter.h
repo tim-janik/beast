@@ -35,7 +35,7 @@ extern "C" {
 #define	BST_SNET_ROUTER_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_SNET_ROUTER, BstSNetRouterClass))
 #define	BST_IS_SNET_ROUTER(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_SNET_ROUTER))
 #define	BST_IS_SNET_ROUTER_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_SNET_ROUTER))
-#define BST_SNET_ROUTER_GET_CLASS(obj)	((BstSNetRouterClass*) (((GtkObject*) (obj))->klass))
+#define BST_SNET_ROUTER_GET_CLASS(obj)	(GTK_CHECK_GET_CLASS ((obj), BST_TYPE_SNET_ROUTER, BstSNetRouterClass))
 
 
 /* --- structures & typedefs --- */
@@ -49,34 +49,34 @@ struct _BstSNetRouter
   GtkWidget	   *palette;
   GtkAdjustment    *adjustment;
 
-  BseSNet	   *snet;
+  BswProxy	    snet;
 
   BstRadioTools    *rtools;
 
   gdouble           world_x, world_y;
-  guint             ochannel_id;
-  BstCanvasSource  *ocsource;
+  guint		    reshow_palette : 1;
+  guint		    drag_is_input : 1;
+  guint             drag_channel;
+  BstCanvasSource  *drag_csource;
   GnomeCanvasItem  *tmp_line;
   GSList           *link_list;
 };
 struct _BstSNetRouterClass
 {
   GnomeCanvasClass parent_class;
-
-  GtkTooltips     *tooltips;
 };
 
 
 /* --- prototypes --- */
 GtkType		 bst_snet_router_get_type	     (void);
-GtkWidget*	 bst_snet_router_new		     (BseSNet	    *snet);
+GtkWidget*	 bst_snet_router_new		     (BswProxy	     snet);
 void		 bst_snet_router_set_snet 	     (BstSNetRouter *router,
-						      BseSNet       *snet);
+						      BswProxy       snet);
 void		 bst_snet_router_update		     (BstSNetRouter *snet_router);
 void		 bst_snet_router_rebuild	     (BstSNetRouter *snet_router);
 void		 bst_snet_router_adjust_region	     (BstSNetRouter *snet_router);
 BstCanvasSource* bst_snet_router_csource_from_source (BstSNetRouter *snet_router,
-						      BseSource     *source);
+						      BswProxy       source);
 void		 bst_snet_router_toggle_palette	     (BstSNetRouter *snet_router);
 
 

@@ -1,5 +1,5 @@
 /* BseMult - BSE Mult
- * Copyright (C) 1999 Tim Janik
+ * Copyright (C) 1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -59,7 +59,6 @@ struct _BseMultClass
 /* --- channels --- */
 enum
 {
-  BSE_MULT_ICHANNEL_NONE,
   BSE_MULT_ICHANNEL_MONO1,
   BSE_MULT_ICHANNEL_MONO2,
   BSE_MULT_ICHANNEL_MONO3,
@@ -67,7 +66,6 @@ enum
 };
 enum
 {
-  BSE_MULT_OCHANNEL_NONE,
   BSE_MULT_OCHANNEL_MONO
 };
 

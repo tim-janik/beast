@@ -26,7 +26,7 @@ static void	bst_item_view_class_init	(BstItemViewClass	*klass);
 static void	bst_item_view_init		(BstItemView		*item_view,
 						 BstItemViewClass	*real_class);
 static void	bst_item_view_destroy		(GtkObject		*object);
-static void	bst_item_view_finalize		(GtkObject		*object);
+static void	bst_item_view_finalize		(GObject		*object);
 
 
 /* --- item clist --- */
@@ -84,8 +84,9 @@ bst_item_view_class_init (BstItemViewClass *class)
   bst_item_view_class = class;
   parent_class = gtk_type_class (GTK_TYPE_ALIGNMENT);
   
+  G_OBJECT_CLASS (object_class)->finalize = bst_item_view_finalize;
+
   object_class->destroy = bst_item_view_destroy;
-  object_class->finalize = bst_item_view_finalize;
   
   class->n_ops = 0;
   class->ops = NULL;
@@ -138,7 +139,7 @@ bst_item_view_destroy (GtkObject *object)
 }
 
 static void
-bst_item_view_finalize (GtkObject *object)
+bst_item_view_finalize (GObject *object)
 {
   BstItemView *item_view;
   
@@ -151,7 +152,7 @@ bst_item_view_finalize (GtkObject *object)
   
   gtk_widget_unref (item_view->paned);
 
-  GTK_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -203,16 +204,17 @@ bst_item_view_build_param_view (BstItemView *item_view)
       gint default_param_view_height = BST_ITEM_VIEW_GET_CLASS (item_view)->default_param_view_height;
 
       item_view->param_view = bst_param_view_new (BSE_OBJECT (item));
-      gtk_widget_set (item_view->param_view,
-		      "signal::destroy", gtk_widget_destroyed, &item_view->param_view,
-		      "visible", TRUE,
-		      default_param_view_height > 0 ? "height" : NULL, default_param_view_height,
-		      NULL);
+      g_object_set (item_view->param_view,
+		    "visible", TRUE,
+		    default_param_view_height > 0 ? "height_request" : NULL, default_param_view_height,
+		    NULL);
+      g_object_connect (item_view->param_view,
+			"signal::destroy", gtk_widget_destroyed, &item_view->param_view,
+			NULL);
       (item_view->item_list_pos ? gtk_paned_pack1 : gtk_paned_pack2) (GTK_PANED (item_view->paned),
 								      item_view->param_view,
 								      TRUE,
 								      TRUE);
-      
       bst_param_view_set_object (BST_PARAM_VIEW (item_view->param_view),
 				 (BseObject*) bst_item_view_get_current (item_view));
     }
@@ -229,15 +231,10 @@ bst_item_view_item_added (BstItemView  *item_view,
       gint row;
       GtkCList *clist = GTK_CLIST (item_view->item_clist);
       
-      bse_object_add_data_notifier (item,
-				    "seqid_changed",
-				    bst_item_view_item_changed,
-				    item_view);
-      bse_object_add_data_notifier (item,
-				    "param_changed",
-				    bst_item_view_item_param_changed,
-				    item_view);
-      
+      g_object_connect (item,
+			"swapped_signal::seqid_changed", bst_item_view_item_changed, item_view,
+			"swapped_signal::notify", bst_item_view_item_param_changed, item_view,
+			NULL);
       row = gtk_clist_insert (clist, -1, text);
       gtk_clist_set_row_data (clist, row, item);
       bst_item_view_item_changed (item_view, item);
@@ -259,12 +256,10 @@ bst_item_view_item_removed (BstItemView  *item_view,
       gint row;
       GtkCList *clist = GTK_CLIST (item_view->item_clist);
       
-      bse_object_remove_notifiers_by_func (item,
-					   bst_item_view_item_changed,
-					   item_view);
-      bse_object_remove_notifiers_by_func (item,
-					   bst_item_view_item_param_changed,
-					   item_view);
+      g_object_disconnect (item,
+			   "any_signal", bst_item_view_item_changed, item_view,
+			   "any_signal", bst_item_view_item_param_changed, item_view,
+			   NULL);
       
       row = gtk_clist_find_row_from_data (clist, item);
       if (row >= 0)
@@ -290,7 +285,7 @@ bst_item_view_set_container (BstItemView  *item_view,
   g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
   if (new_container)
     g_return_if_fail (BSE_IS_CONTAINER (new_container));
-  
+
   if (item_view->container)
     {
       GList *free_list;
@@ -303,25 +298,17 @@ bst_item_view_set_container (BstItemView  *item_view,
       free_list = bse_container_list_items (BSE_CONTAINER (container));
       for (list = free_list; list; list = list->next)
 	if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
-	  {
-	    bse_object_remove_notifiers_by_func (list->data,
-						 bst_item_view_item_changed,
-						 item_view);
-	    bse_object_remove_notifiers_by_func (list->data,
-						 bst_item_view_item_param_changed,
-						 item_view);
-	  }
+	  g_object_disconnect (list->data,
+			       "any_signal", bst_item_view_item_changed, item_view,
+			       "any_signal", bst_item_view_item_param_changed, item_view,
+			       NULL);
       g_list_free (free_list);
       
-      bse_object_remove_notifiers_by_func (container,
-					   bst_item_view_item_removed,
-					   item_view);
-      bse_object_remove_notifiers_by_func (container,
-					   bst_item_view_item_added,
-					   item_view);
-      bse_object_remove_notifiers_by_func (container,
-					   bst_item_view_release_container,
-					   item_view);
+      g_object_disconnect (container,
+			   "any_signal", bst_item_view_item_removed, item_view,
+			   "any_signal", bst_item_view_item_added, item_view,
+			   "any_signal", bst_item_view_release_container, item_view,
+			   NULL);
     }
 
   if (new_container)
@@ -335,34 +322,20 @@ bst_item_view_set_container (BstItemView  *item_view,
       
       container = item_view->container;
       
-      bse_object_add_data_notifier (container,
-				    "set_parent",
-				    bst_item_view_release_container,
-				    item_view);
-      bse_object_add_data_notifier (container,
-				    "item_added",
-				    bst_item_view_item_added,
-				    item_view);
-      bse_object_add_data_notifier (container,
-				    "item_removed",
-				    bst_item_view_item_removed,
-				    item_view);
-
+      g_object_connect (container,
+			"swapped_signal::set_parent", bst_item_view_release_container, item_view,
+			"swapped_signal::item_added", bst_item_view_item_added, item_view,
+			"swapped_signal::item_removed", bst_item_view_item_removed, item_view,
+			NULL);
       free_list = bse_container_list_items (BSE_CONTAINER (container));
       for (list = free_list; list; list = list->next)
 	if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
-	  {
-	    bse_object_add_data_notifier (list->data,
-					  "seqid_changed",
-					  bst_item_view_item_changed,
-					  item_view);
-	    bse_object_add_data_notifier (list->data,
-					  "param_changed",
-					  bst_item_view_item_param_changed,
-					  item_view);
-	  }
+	  g_object_connect (list->data,
+			    "swapped_signal::seqid_changed", bst_item_view_item_changed, item_view,
+			    "swapped_signal::notify", bst_item_view_item_param_changed, item_view,
+			    NULL);
       g_list_free (free_list);
-      
+
       bst_item_view_rebuild (item_view);
     }
 }
@@ -371,7 +344,7 @@ static void
 bst_item_view_selection_changed (BstItemView *item_view)
 {
   GtkCList *clist = GTK_CLIST (item_view->item_clist);
-  
+
   if (item_view->param_view)
     bst_param_view_set_object (BST_PARAM_VIEW (item_view->param_view),
 			       (BseObject*) bst_item_view_get_current (item_view));
@@ -439,12 +412,13 @@ bst_item_view_rebuild (BstItemView *item_view)
       BstItemViewOp *bop = BST_ITEM_VIEW_GET_CLASS (item_view)->ops + i;
       GtkWidget *label;
 
-      item_view->op_widgets[i] = gtk_widget_new (GTK_TYPE_BUTTON,
-						 "visible", TRUE,
-						 "signal::clicked", button_action, GUINT_TO_POINTER (bop->op),
-						 "signal::destroy", gtk_widget_destroyed, &item_view->op_widgets[i],
-						 "parent", vbox,
-						 NULL);
+      item_view->op_widgets[i] = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
+								   "visible", TRUE,
+								   "parent", vbox,
+								   NULL),
+						   "signal::clicked", button_action, GUINT_TO_POINTER (bop->op),
+						   "signal::destroy", gtk_widget_destroyed, &item_view->op_widgets[i],
+						   NULL);
       label = gtk_widget_new (GTK_TYPE_LABEL,
 			      "visible", TRUE,
 			      "label", bop->op_name,
@@ -466,24 +440,25 @@ bst_item_view_rebuild (BstItemView *item_view)
   /* item list
    */
   item_view->item_clist =
-    gtk_widget_new (GTK_TYPE_CLIST,
-		    "n_columns", CLIST_N_COLUMNS,
-		    "selection_mode", GTK_SELECTION_BROWSE,
-		    "titles_active", FALSE,
-		    "border_width", 0,
-		    "height", 60,
-		    "signal::destroy", gtk_widget_destroyed, &item_view->item_clist,
-		    "object_signal::select_row", bst_item_view_selection_changed, item_view,
-		    "signal_after::size_allocate", gtk_clist_moveto_selection, NULL,
-		    "signal_after::map", gtk_clist_moveto_selection, NULL,
-		    "visible", TRUE,
-		    "parent", gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
-					      "visible", TRUE,
-					      "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
-					      "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-					      "parent", list_box,
-					      NULL),
-		    NULL);
+    g_object_connect (gtk_widget_new (GTK_TYPE_CLIST,
+				      "n_columns", CLIST_N_COLUMNS,
+				      "selection_mode", GTK_SELECTION_BROWSE,
+				      "titles_active", FALSE,
+				      "border_width", 0,
+				      "height_request", 60,
+				      "visible", TRUE,
+				      "parent", gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
+								"visible", TRUE,
+								"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+								"vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+								"parent", list_box,
+								NULL),
+				      NULL),
+		      "signal::destroy", gtk_widget_destroyed, &item_view->item_clist,
+		      "swapped_signal::select_row", bst_item_view_selection_changed, item_view,
+		      "signal_after::size_allocate", gtk_clist_moveto_selection, NULL,
+		      "signal_after::map", gtk_clist_moveto_selection, NULL,
+		      NULL);
   clist = GTK_CLIST (item_view->item_clist);
   gtk_clist_set_column_title (clist, CLIST_SEQID, clist_titles[CLIST_SEQID]);
   gtk_clist_set_column_title (clist, CLIST_NAME, clist_titles[CLIST_NAME]);

@@ -33,7 +33,7 @@ extern "C" {
 #define	BST_EFFECT_VIEW_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_EFFECT_VIEW, BstEffectViewClass))
 #define	BST_IS_EFFECT_VIEW(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_EFFECT_VIEW))
 #define	BST_IS_EFFECT_VIEW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_EFFECT_VIEW))
-#define BST_EFFECT_VIEW_GET_CLASS(obj)  ((BstEffectViewClass*) (((GtkObject*) (obj))->klass))
+#define BST_EFFECT_VIEW_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_EFFECT_VIEW, BstEffectViewClass))
 
 
 /* --- structures & typedefs --- */

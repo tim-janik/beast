@@ -77,7 +77,13 @@ void		bse_sample_set_munk		(BseSample	*sample,
 						 guint		 loop_end,
 						 BseBinData	*bin_data);
 void		bse_sample_fillup_munks		(BseSample	*sample);
-
+void		bse_sample_setup_mix_source	(BseSample	*sample,
+						 gint		 note,
+						 BseMixSource	*source,
+						 gboolean	 reverse_direction,
+						 guint		 offset,
+						 gint		*recording_note);
+						 
 
 
 

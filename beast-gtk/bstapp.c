@@ -21,10 +21,10 @@
 
 #include	"bstsampleshell.h"
 #include	"bstsongshell.h"
+#include	"bstwavereposhell.h"
 #include	"bstsnetshell.h"
 #include	"bstfiledialog.h"
 #include	"bststatusbar.h"
-#include	"bstheartmonitor.h"
 #include	"bstgconfig.h"
 #include	"bstpreferences.h"
 #include	"bstpatterneditor.h"
@@ -64,7 +64,8 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Project/_Stop",			"",		BST_OP (PROJECT_STOP),		"<Item>" },
   { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Project/New Song",		NULL,		BST_OP (PROJECT_NEW_SONG),	"<Item>" },
-  { "/Project/New Source Net",		NULL,		BST_OP (PROJECT_NEW_SNET),	"<Item>" },
+  { "/Project/New Synthesizer Network",	NULL,		BST_OP (PROJECT_NEW_SNET),	"<Item>" },
+  { "/Project/New MIDI Synthesizer",	NULL,		BST_OP (PROJECT_NEW_MIDI_SYNTH),"<Item>" },
   { "/Project/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Project/Rebuild",			NULL,		BST_OP (REBUILD),		"<Item>" },
   { "/Project/Refresh",			NULL,		BST_OP (REFRESH),		"<Item>" },
@@ -78,6 +79,11 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Song/Delete Pattern",		NULL,		BST_OP (PATTERN_DELETE),	"<Item>" },
   { "/Song/_Edit Pattern...",		"<ctrl>E",	BST_OP (PATTERN_EDITOR),	"<Item>" },
   { "/Song/Add _Instrument",		"<ctrl>I",	BST_OP (INSTRUMENT_ADD),	"<Item>" },
+  { "/_Waves",				NULL,		NULL, 0,			"<Branch>" },
+  { "/Waves/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/Waves/_Add Wave...",		"",		BST_OP (WAVE_ADD),		"<Item>" },
+  { "/Waves/Delete Wave",		NULL,		BST_OP (WAVE_DELETE),		"<Item>" },
+  { "/Waves/_Edit Wave...",		"",		BST_OP (WAVE_EDITOR),		"<Item>" },
   // { "/S_Net",			NULL,		NULL, 0,			"<Branch>" },
   // { "/SNet/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   // { "/SNet/_Test",			"",		BST_OP (NONE),			"<Item>" },
@@ -144,24 +150,38 @@ bst_app_class_init (BstAppClass *class)
 }
 
 static void
+bst_app_register (BstApp *app)
+{
+  if (!g_slist_find (bst_app_class->apps, app))
+    bst_app_class->apps = g_slist_prepend (bst_app_class->apps, app);
+}
+static void
+bst_app_unregister (BstApp *app)
+{
+  bst_app_class->apps = g_slist_remove (bst_app_class->apps, app);
+}
+static void
 bst_app_init (BstApp *app)
 {
   GtkWidget *widget = GTK_WIDGET (app);
   GtkWindow *window = GTK_WINDOW (app);
   GtkItemFactory *factory;
 
-  bst_app_class->apps = g_slist_prepend (bst_app_class->apps, app);
-
+  g_object_connect (widget,
+		    "signal::map", bst_app_register, NULL,
+		    "signal::unrealize", bst_app_unregister, NULL,
+		    NULL);
+  bst_app_register (app);
   gtk_widget_set (widget,
-		  "auto_shrink", FALSE,
 		  "allow_shrink", TRUE,
 		  "allow_grow", TRUE,
 		  NULL);
-  app->main_vbox = gtk_widget_new (GTK_TYPE_VBOX,
-				   "visible", TRUE,
-				   "parent", app,
-				   "object_signal::destroy", bse_nullify_pointer, &app->main_vbox,
-				   NULL);
+  app->main_vbox = g_object_connect (gtk_widget_new (GTK_TYPE_VBOX,
+						     "visible", TRUE,
+						     "parent", app,
+						     NULL),
+				     "swapped_signal::destroy", bse_nullify_pointer, &app->main_vbox,
+				     NULL);
 
 
   /* setup the menu bar
@@ -169,11 +189,11 @@ bst_app_init (BstApp *app)
   factory = gtk_item_factory_new (GTK_TYPE_MENU_BAR, bst_app_factories_path, NULL);
   gtk_window_add_accel_group (window, factory->accel_group);
   gtk_item_factory_create_items (factory, n_menubar_entries, menubar_entries, app);
-  gtk_container_add_with_args (GTK_CONTAINER (app->main_vbox),
-			       factory->widget,
-			       "expand", FALSE,
-			       "position", 0,
-			       NULL);
+  gtk_container_add_with_properties (GTK_CONTAINER (app->main_vbox),
+				     factory->widget,
+				     "expand", FALSE,
+				     "position", 0,
+				     NULL);
   gtk_widget_show (factory->widget);
   gtk_object_set_data_full (GTK_OBJECT (app),
 			    bst_app_factories_path,
@@ -183,17 +203,17 @@ bst_app_init (BstApp *app)
 
   /* setup the main notebook
    */
-  app->notebook =
-    (GtkNotebook*) gtk_widget_new (GTK_TYPE_NOTEBOOK,
-				   "visible", TRUE,
-				   "parent", app->main_vbox,
-				   "tab_pos", GTK_POS_LEFT,
-				   "scrollable", TRUE,
-				   "can_focus", TRUE,
-				   "object_signal::destroy", bse_nullify_pointer, &app->notebook,
-				   "object_signal_after::switch-page", bst_update_can_operate, app,
-				   NULL);
-  
+  app->notebook = g_object_connect (gtk_widget_new (GTK_TYPE_NOTEBOOK,
+						    "visible", TRUE,
+						    "parent", app->main_vbox,
+						    "tab_pos", GTK_POS_LEFT,
+						    "scrollable", TRUE,
+						    "can_focus", TRUE,
+						    NULL),
+				    "swapped_signal::destroy", bse_nullify_pointer, &app->notebook,
+				    "swapped_signal_after::switch-page", bst_update_can_operate, app,
+				    "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
+				    NULL);
 }
 
 static void
@@ -202,30 +222,10 @@ app_set_title (BstApp *app)
   GtkWindow *window = GTK_WINDOW (app);
   gchar *title;
 
-  title = g_strconcat ("BEAST: ", BSE_OBJECT_NAME (app->project), NULL);
+  title = g_strconcat ("BEAST: ", bsw_item_get_name (app->project), NULL);
   gtk_window_set_title (window, title);
   g_free (title);
   gtk_window_set_wmclass (window, window->title, g_get_prgname ());
-}
-
-static void
-project_cross_changes (BseContainer *container,
-		       BstApp       *app)
-{
-  BseProject *project = BSE_PROJECT (container);
-  GSList *slist;
-
- restart:
-  for (slist = project->supers; slist; slist = slist->next)
-    {
-      BseItem *item = BSE_ITEM (slist->data);
-      
-      if (BSE_IS_SAMPLE (item) && BST_SAMPLE_SWEEP && !bse_item_has_cross_owners (item))
-	{
-	  bse_container_remove_item (container, item);
-	  goto restart;
-	}
-    }
 }
 
 static void
@@ -235,21 +235,14 @@ bst_app_destroy (GtkObject *object)
 
   if (app->project)
     {
-      bse_project_stop_playback (app->project);
-      bse_object_remove_notifiers_by_func (BSE_OBJECT (app->project),
-					   app_set_title,
-					   app);
-      bse_object_remove_notifiers_by_func (BSE_OBJECT (app->project),
-					   bst_app_reload_supers,
-					   app);
-      bse_object_remove_notifiers_by_func (BSE_OBJECT (app->project),
-					   project_cross_changes,
-					   app);
-      bse_object_unref (BSE_OBJECT (app->project));
-      app->project = NULL;
+      bsw_server_halt_project (BSW_SERVER, app->project);
+      g_object_disconnect (bse_object_from_id (app->project),
+			   "any_signal", app_set_title, app,
+			   "any_signal", bst_app_reload_supers, app,
+			   NULL);
+      bsw_item_unuse (app->project);
+      app->project = 0;
     }
-
-  bst_app_class->apps = g_slist_remove (bst_app_class->apps, app);
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 
@@ -258,13 +251,13 @@ bst_app_destroy (GtkObject *object)
 }
 
 BstApp*
-bst_app_new (BseProject *project)
+bst_app_new (BswProxy project)
 {
   GdkGeometry geometry;
   GtkWidget *widget;
   BstApp *app;
 
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  g_return_val_if_fail (BSW_IS_PROJECT (project), NULL);
 
   widget = gtk_widget_new (BST_TYPE_APP,
 			   "default_width", 640,
@@ -278,24 +271,13 @@ bst_app_new (BseProject *project)
 
   bst_status_bar_ensure (GTK_WINDOW (app));
 
-  bse_object_ref (BSE_OBJECT (project));
   app->project = project;
-  bse_object_add_data_notifier (BSE_OBJECT (project),
-				"name-set",
-				app_set_title,
-				app);
-  bse_object_add_data_notifier (BSE_OBJECT (project),
-				"item-added",
-				bst_app_reload_supers,
-				app);
-  bse_object_add_data_notifier (BSE_OBJECT (project),
-				"item-removed",
-				bst_app_reload_supers,
-				app);
-  bse_object_add_notifier (BSE_OBJECT (project),
-			   "cross-changes",
-			   project_cross_changes,
-			   app);
+  bsw_item_use (app->project);
+  g_object_connect (bse_object_from_id (app->project),
+		    "swapped_signal::notify::name", app_set_title, app,
+		    "swapped_signal::item-added", bst_app_reload_supers, app,
+		    "swapped_signal::item-removed", bst_app_reload_supers, app,
+		    NULL);
   app_set_title (app);
 
   bst_app_reload_supers (app);
@@ -314,9 +296,9 @@ bst_app_get_current_shell (BstApp *app)
 
   if (app->notebook && app->notebook->cur_page)
     {
-      g_return_val_if_fail (BST_IS_SUPER_SHELL (app->notebook->cur_page->child), NULL);
+      g_return_val_if_fail (BST_IS_SUPER_SHELL (gtk_notebook_current_widget (app->notebook)), NULL);
 
-      return app->notebook->cur_page->child;
+      return gtk_notebook_current_widget (app->notebook);
     }
 
   return NULL;
@@ -331,26 +313,30 @@ bst_app_menu_factory (BstApp *app)
 }
 
 static GtkWidget*
-bst_app_create_super_shell (BstApp   *app,
-			    BseSuper *super)
+bst_app_create_super_shell (BstApp  *app,
+			    BswProxy super)
 {
   GtkWidget *shell = NULL;
 
-  if (BSE_IS_SONG (super))
+  if (BSW_IS_SONG (super))
     shell = gtk_widget_new (BST_TYPE_SONG_SHELL,
 			    "visible", TRUE,
 			    NULL);
-  else if (BSE_IS_SNET (super))
+  else if (BSW_IS_SNET (super))
     shell = gtk_widget_new (BST_TYPE_SNET_SHELL,
 			    "visible", TRUE,
 			    NULL);
-  else if (BSE_IS_SAMPLE (super))
+  else if (BSW_IS_WAVE_REPO (super))
+    shell = gtk_widget_new (BST_TYPE_WAVE_REPO_SHELL,
+			    "visible", TRUE,
+			    NULL);
+  else if (bsw_item_is_a (super, "BseSample"))
     shell = gtk_widget_new (BST_TYPE_SAMPLE_SHELL,
 			    "visible", TRUE,
 			    NULL);
   else
     {
-      g_warning ("unknown super type `%s'", BSE_OBJECT_TYPE_NAME (super));
+      g_warning ("unknown super type `%s'", bsw_item_get_type_name (super));
       return NULL;
     }
 
@@ -373,36 +359,38 @@ bst_app_reload_supers (BstApp *app)
 
   // gtk_widget_hide (GTK_WIDGET (app->notebook));
 
+  g_print ("notebook: %p\n", app->notebook);
+
   old_focus = GTK_WINDOW (app)->focus_widget;
   if (old_focus)
     gtk_widget_ref (old_focus);
-  old_page = app->notebook->cur_page ? app->notebook->cur_page->child : NULL;
-  while (app->notebook->cur_page && app->notebook->cur_page->child)
+  old_page = app->notebook->cur_page ? gtk_notebook_current_widget (app->notebook) : NULL;
+  while (gtk_notebook_current_widget (app->notebook))
     {
-      gtk_object_ref (GTK_OBJECT (app->notebook->cur_page->child));
-      page_list = g_slist_prepend (page_list, app->notebook->cur_page->child);
+      g_object_ref (gtk_notebook_current_widget (app->notebook));
+      page_list = g_slist_prepend (page_list, gtk_notebook_current_widget (app->notebook));
       gtk_container_remove (GTK_CONTAINER (app->notebook), page_list->data);
     }
 
   // gtk_container_foreach (GTK_CONTAINER (app->notebook), (GtkCallback) gtk_widget_destroy, NULL);
 
-  for (slist = app->project->supers; slist; slist = slist->next)
+  for (slist = BSE_PROJECT (bse_object_from_id (app->project))->supers; slist; slist = slist->next)
     {
       GtkWidget *label, *page = NULL;
       GSList *node;
 
       for (node = page_list; node; node = node->next)
-	if (BST_SUPER_SHELL (node->data)->super == slist->data)
+	if (BST_SUPER_SHELL (node->data)->super == BSE_OBJECT_ID (slist->data))
 	  {
 	    page = node->data;
 	    page_list = g_slist_remove (page_list, page);
 	    break;
 	  }
       if (!page)
-	page = bst_app_create_super_shell (app, slist->data);
+	page = bst_app_create_super_shell (app, BSE_OBJECT_ID (slist->data));
       label = gtk_widget_new (GTK_TYPE_LABEL,
 			      "visible", TRUE,
-			      "width", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
+			      "width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
 			      NULL);
       gtk_notebook_append_page (app->notebook,
 				page,
@@ -412,9 +400,9 @@ bst_app_reload_supers (BstApp *app)
       gtk_widget_unref (page);
     }
   if (old_page && old_page->parent == GTK_WIDGET (app->notebook))
-    gtk_notebook_set_page (app->notebook,
-			   gtk_notebook_page_num (app->notebook,
-						  old_page));
+    gtk_notebook_set_current_page (app->notebook,
+				   gtk_notebook_page_num (app->notebook,
+							  old_page));
   if (old_focus)
     {
       if (old_page && gtk_widget_is_ancestor (old_focus, old_page) &&
@@ -450,22 +438,20 @@ bst_app_handle_delete_event (GtkWidget   *widget,
 void
 bst_app_update_can_operate (BstApp *app)
 {
-  GtkWidget *widget;
+  GtkWidget *widget, *shell;
   guint i;
 
   g_return_if_fail (BST_IS_APP (app));
-  if (GTK_OBJECT_DESTROYED (app))
+
+  /* check if the app (its widget tree) was already destroyed */
+  if (!GTK_BIN (app)->child)
     return;
 
+  shell = bst_app_get_current_shell (app);
   widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Song");
-  if (widget)
-    gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (bst_app_get_current_shell (app)));
-  else
-    g_warning ("can't find menu item \"/Song\" for <%p>", app);
-
-  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/EPNet");
-  if (widget)
-    gtk_widget_set_sensitive (widget, FALSE);
+  gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
+  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Waves");
+  gtk_widget_set_sensitive (widget, BST_IS_WAVE_REPO_SHELL (shell));
 
   for (i = BST_OP_NONE; i < BST_OP_LAST; i++)
     {
@@ -484,6 +470,20 @@ foreach_super_shell_operate (BstSuperShell *shell,
 {
   if (bst_super_shell_can_operate (shell, GPOINTER_TO_UINT (data)))
     bst_super_shell_operate (shell, GPOINTER_TO_UINT (data));
+}
+
+static void
+rebuild_super_shell (BstSuperShell *super_shell)
+{
+  BswProxy proxy;
+
+  g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
+
+  proxy = super_shell->super;
+  bsw_item_use (proxy);
+  bst_super_shell_set_super (super_shell, 0);
+  bst_super_shell_set_super (super_shell, proxy);
+  bsw_item_unuse (proxy);
 }
 
 void
@@ -511,20 +511,18 @@ bst_app_operate (BstApp *app,
   switch (op)
     {
       BstSuperShell *super_shell;
-      BseHeart *heart;
-      BseSong *song;
-      BseSNet *snet;
+      BswProxy proxy;
 
     case BST_OP_PROJECT_NEW:
       if (1)
 	{
-	  BseProject *project = bse_project_new ("Untitled.bse");
+	  BswProxy project = bsw_server_use_new_project (BSW_SERVER, "Untitled.bse");
 	  BstApp *new_app;
 
+	  bsw_project_ensure_wave_repo (project);
 	  new_app = bst_app_new (project);
-	  bse_object_unref (BSE_OBJECT (project));
-	  if (0) /* FIXME: config values */
-	    bst_app_operate (new_app, BST_OP_PROJECT_NEW_SONG);
+	  bsw_item_unuse (project);
+
 	  gtk_idle_show_widget (GTK_WIDGET (new_app));
 	}
       break;
@@ -532,10 +530,9 @@ bst_app_operate (BstApp *app,
       if (!bst_dialog_open)
 	{
 	  bst_dialog_open = bst_file_dialog_new_open (app);
-	  gtk_signal_connect (GTK_OBJECT (bst_dialog_open),
-			      "destroy",
-			      gtk_widget_destroyed,
-			      &bst_dialog_open);
+	  g_object_connect (bst_dialog_open,
+			    "signal::destroy", gtk_widget_destroyed, &bst_dialog_open,
+			    NULL);
 	}
       gtk_widget_showraise (bst_dialog_open);
       break;
@@ -543,10 +540,9 @@ bst_app_operate (BstApp *app,
       if (bst_dialog_save)
 	gtk_widget_destroy (bst_dialog_save);
       bst_dialog_save = bst_file_dialog_new_save (app);
-      gtk_signal_connect (GTK_OBJECT (bst_dialog_save),
-			  "destroy",
-			  gtk_widget_destroyed,
-			  &bst_dialog_save);
+      g_object_connect (bst_dialog_save,
+			"signal::destroy", gtk_widget_destroyed, &bst_dialog_save,
+			NULL);
       gtk_widget_showraise (bst_dialog_save);
       break;
     case BST_OP_PROJECT_CLOSE:
@@ -563,28 +559,34 @@ bst_app_operate (BstApp *app,
 	}
       break;
     case BST_OP_PROJECT_NEW_SONG:
-      song = bse_song_new (BST_APP_PROJECT (app), BSE_DFL_SONG_N_CHANNELS);
-      super_shell = bst_super_shell_from_super (BSE_SUPER (song));
+      proxy = bsw_project_create_song (app->project, BSE_DFL_SONG_N_CHANNELS);
+      super_shell = bst_super_shell_from_super (proxy);
       bst_super_shell_operate (super_shell, BST_OP_PATTERN_ADD);
-      bse_object_unref (BSE_OBJECT (song));
       break;
     case BST_OP_PROJECT_NEW_SNET:
-      snet = bse_snet_new (BST_APP_PROJECT (app), NULL);
-      super_shell = bst_super_shell_from_super (BSE_SUPER (snet));
-      bse_object_unref (BSE_OBJECT (snet));
+      proxy = bsw_project_create_snet (app->project);
+      super_shell = bst_super_shell_from_super (proxy);
+      break;
+    case BST_OP_PROJECT_NEW_MIDI_SYNTH:
+      proxy = bsw_project_create_midi_synth (app->project);
+      super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_PLAY:
-      if (BSE_SOURCE_PREPARED (app->project))
-	{
-	  bse_project_stop_playback (app->project);
-	  bst_status_set (0, "Restarting Playback", NULL);
-	}
-      else
-	bst_status_set (0, "Starting Playback", NULL);
-      bse_project_start_playback (app->project);
+      {
+	gchar *starting;
+	BseErrorType error;
+
+	if (bsw_project_is_playing (app->project))
+	  starting = "Restarting Playback";
+	else
+	  starting = "Starting Playback";
+
+	error = bsw_server_run_project (BSW_SERVER, app->project);
+	bst_status_printf (0, error ? bse_error_blurb (error) : NULL, starting);
+      }
       break;
     case BST_OP_PROJECT_STOP:
-      bse_project_stop_playback (app->project);
+      bsw_server_halt_project (BSW_SERVER, app->project);
       bst_status_set (0, "Stopping Playback", NULL);
       break;
     case BST_OP_DIALOG_PREFERENCES:
@@ -597,7 +599,7 @@ bst_app_operate (BstApp *app,
 	  bst_preferences = bst_preferences_new (gconf);
 	  bse_object_unref (BSE_OBJECT (gconf));
 	  gtk_widget_show (bst_preferences);
-	  deflt = BST_PREFERENCES (bst_preferences)->close; // apply;
+	  deflt = BST_PREFERENCES (bst_preferences)->apply;
 	  bst_preferences = bst_adialog_new (NULL,
 					     &bst_preferences, bst_preferences,
 					     0,
@@ -607,6 +609,7 @@ bst_app_operate (BstApp *app,
 	}
       gtk_widget_showraise (bst_preferences);
       break;
+#if 0	// FIXME
     case BST_OP_DIALOG_DEVICE_MONITOR:
       heart = bse_heart_get_global (FALSE);
       if (heart)
@@ -628,6 +631,7 @@ bst_app_operate (BstApp *app,
 	  gtk_widget_showraise (hmon);
 	}
       break;
+#endif
     case BST_OP_REFRESH:
       gtk_container_foreach (GTK_CONTAINER (app->notebook),
 			     (GtkCallback) bst_super_shell_update,
@@ -636,7 +640,7 @@ bst_app_operate (BstApp *app,
       break;
     case BST_OP_REBUILD:
       gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) bst_super_shell_rebuild,
+			     (GtkCallback) rebuild_super_shell,
 			     NULL);
       gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
       break;
@@ -738,13 +742,14 @@ bst_app_can_operate (BstApp *app,
     case BST_OP_PROJECT_SAVE_AS:
     case BST_OP_PROJECT_NEW_SONG:
     case BST_OP_PROJECT_NEW_SNET:
+    case BST_OP_PROJECT_NEW_MIDI_SYNTH:
     case BST_OP_PROJECT_CLOSE:
     case BST_OP_REFRESH:
     case BST_OP_REBUILD:
     case BST_OP_EXIT:
       return TRUE;
     case BST_OP_PROJECT_PLAY:
-      if (app->project && app->project->supers)
+      if (app->project && BSE_PROJECT (bse_object_from_id (app->project))->supers)
 	return TRUE;
       return FALSE;
     case BST_OP_PROJECT_STOP:
@@ -752,7 +757,7 @@ bst_app_can_operate (BstApp *app,
 	{
 	  GSList *slist;
 
-	  for (slist = app->project->supers; slist; slist = slist->next)
+	  for (slist = BSE_PROJECT (bse_object_from_id (app->project))->supers; slist; slist = slist->next)
 	    if (BSE_SOURCE_PREPARED (slist->data))
 	      return TRUE;
 	}

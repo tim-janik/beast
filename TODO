@@ -1,0 +1,16 @@
+* pattern copy
+* clippboard
+* fix file selection (open load) dialog
+* octave/note shift for pattern selection
+* fade in/out of samples (sample editor & sequencer)
+* left to pattern editor, show pattern list for pattern jump
+* highlight arranger patterns when played
+* need play-only-this-pattern mode
+* change default envelop to 0 attack
+* device monitor change 50ms
+* pattern-channel instrument selection should be persistent per pattern
+* arranger paned to 50%
+* arranger need sswitch to show pattern names instead of numbers
+* arranger menus need to provide "change name" as well (especially f. groups)
+* pattern play can fail! should reset play mode afterwards
+* add switch to set keytables directly, no-serverquery, works without rc file

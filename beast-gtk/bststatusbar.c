@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +18,8 @@
  */
 #include	"bststatusbar.h"
 
+#include	<gdk/gdkkeysyms.h>
+#include	<string.h>
 
 #define	STATUS_LASTS_ms		(7*1000)
 #define	STATUS_ERROR_LASTS_ms	(25*1000)
@@ -252,9 +254,13 @@ procedure_share (gpointer     func_data,
 						       GTK_SIGNAL_FUNC (filter_procedure_events),
 						       abort);
       gtk_grab_add (abort);
+
+      GDK_THREADS_LEAVE ();
       do
 	g_main_iteration (FALSE);
       while (g_main_pending ());
+      GDK_THREADS_ENTER ();
+
       gtk_grab_remove (abort);
       gtk_signal_disconnect (GTK_OBJECT (proc_window), event_signal_handler);
       
@@ -375,13 +381,20 @@ bst_status_bar_ensure (GtkWindow *window)
 			 "name", "BstStatusBar",
 			 "homogeneous", FALSE,
 			 "resize_mode", GTK_RESIZE_QUEUE,
-			 "width", 110, /* squeeze labels into available space */
+			 "width_request", 110, /* squeeze labels into available space */
 			 "spacing", 0,
 			 "visible", TRUE,
+			 "border_width", 1,
 			 NULL);
-  gtk_box_pack_end (GTK_BOX (vbox), sbar, FALSE, TRUE, 1);
+  gtk_box_pack_end (GTK_BOX (vbox),
+		    gtk_widget_new (GTK_TYPE_FRAME,
+				    "visible", TRUE,
+				    "shadow", GTK_SHADOW_OUT,
+				    "child", sbar,
+				    NULL),
+		    FALSE, TRUE, 1);
   prog = gtk_widget_new (GTK_TYPE_PROGRESS_BAR,
-			 "width", 100,
+			 "width_request", 100,
 			 "visible", TRUE,
 			 NULL);
   gtk_progress_bar_set_activity_step (GTK_PROGRESS_BAR (prog), 1);
@@ -405,23 +418,23 @@ bst_status_bar_ensure (GtkWindow *window)
 			"visible", TRUE,
 			"xalign", 0.0,
 			NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), msg, TRUE, TRUE, hbox->style->klass->ythickness);
+  gtk_box_pack_start (GTK_BOX (hbox), msg, TRUE, TRUE, GTK_STYLE_THICKNESS (hbox->style, y));
   status = gtk_widget_new (GTK_TYPE_LABEL,
 			   "xalign", 1.0,
 			   NULL);
-  gtk_box_pack_end (GTK_BOX (hbox), status, FALSE, TRUE, hbox->style->klass->ythickness);
+  gtk_box_pack_end (GTK_BOX (hbox), status, FALSE, TRUE, GTK_STYLE_THICKNESS (hbox->style, y));
   abort = gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
 			  "label", "Abort",
 			  "name", "AbortButton",
-			  "height", 1, /* squeeze into available space */
+			  "height_request", 1, /* squeeze into available space */
 			  "can_focus", FALSE,
 			  NULL);
   gtk_box_pack_end (GTK_BOX (hbox), abort, FALSE, TRUE, 0);
   
-  gtk_object_set_data (GTK_OBJECT (sbar), "bst-progress", prog);
-  gtk_object_set_data (GTK_OBJECT (sbar), "bst-msg", msg);
-  gtk_object_set_data (GTK_OBJECT (sbar), "bst-status", status);
-  gtk_object_set_data (GTK_OBJECT (sbar), "bst-abort", abort);
+  g_object_set_data_full (G_OBJECT (sbar), "bst-progress", g_object_ref (prog), (GDestroyNotify) g_object_unref);
+  g_object_set_data_full (G_OBJECT (sbar), "bst-msg", g_object_ref (msg), (GDestroyNotify) g_object_unref);
+  g_object_set_data_full (G_OBJECT (sbar), "bst-status", g_object_ref (status), (GDestroyNotify) g_object_unref);
+  g_object_set_data_full (G_OBJECT (sbar), "bst-abort", g_object_ref (abort), (GDestroyNotify) g_object_unref);
   
   if (child)
     {

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,8 +37,7 @@ struct _BstParam
   GValue      value;
   GParamSpec *pspec;
   gpointer    owner;
-  guint	      param_set_id;
-  GtkWidget  *group;
+  gpointer    group;
   guint	      locked : 24;
   guint	      editable : 1;
   guint	      is_object : 1;
@@ -59,7 +58,7 @@ BstParam*	bst_param_create		(gpointer	 owner,
 /* bst_param_get   - set the widget's value from the object
  * bst_param_set   - set the object's value from the widget (this implies
  *		     a succeding call to bst_param_get).
- * bst_param_reset - reset to default values
+ * bst_param_reset - reset to 0
  */
 void		bst_param_get			(BstParam	*bparam);
 void		bst_param_set			(BstParam	*bparam);

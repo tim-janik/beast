@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,7 @@ struct _BstChoice
 
 
 /* --- variables --- */
+static gboolean	main_quit_on_menu_item_activate = FALSE;
 
 
 /* --- functions --- */
@@ -164,8 +165,8 @@ create_icon_widget (BseIcon *icon)
     {
       widget = gtk_widget_new (GNOME_TYPE_FOREST,
 			       "visible", TRUE,
-			       "width", size,
-			       "height", size,
+			       "width_request", size,
+			       "height_request", size,
 			       NULL);
       gnome_forest_put_sprite (GNOME_FOREST (widget), 1,
 			       (icon->bytes_per_pixel > 3
@@ -180,16 +181,16 @@ create_icon_widget (BseIcon *icon)
   else
     widget = gtk_widget_new (GTK_TYPE_ALIGNMENT,
 			     "visible", TRUE,
-			     "width", size,
+			     "width_request", size,
 			     NULL);
   
   return widget;
 }
 
 void
-bst_menu_entries_create (GtkItemFactory *ifactory,
-			 GSList         *bst_menu_entries,
-			 gpointer        callback_data)
+bst_menu_entries_create_list (GtkItemFactory *ifactory,
+			      GSList         *bst_menu_entries,
+			      gpointer        callback_data)
 {
   GSList *slist;
 
@@ -218,12 +219,12 @@ bst_menu_entries_create (GtkItemFactory *ifactory,
 				 "parent", item,
 				 "child", child,
 				 NULL);
-	  gtk_container_add_with_args (GTK_CONTAINER (hbox),
-				       create_icon_widget (bitem->icon),
-				       "expand", FALSE,
-				       "fill", FALSE,
-				       "position", 0,
-				       NULL);
+	  gtk_container_add_with_properties (GTK_CONTAINER (hbox),
+					     create_icon_widget (bitem->icon),
+					     "expand", FALSE,
+					     "fill", FALSE,
+					     "position", 0,
+					     NULL);
 	  gtk_widget_unref (child);
 	}
     }
@@ -253,7 +254,8 @@ menu_choice_activate (GtkWidget *item,
 
   gtk_object_set_data (GTK_OBJECT (menu), "BstChoice", data);
 
-  gtk_main_quit ();
+  if (main_quit_on_menu_item_activate)
+    gtk_main_quit ();
 }
 
 static void
@@ -265,6 +267,13 @@ button_choice_activate (GtkWidget *item,
   gtk_object_set_data (GTK_OBJECT (window), "BstChoice", data);
 
   gtk_widget_hide (window);
+}
+
+static void
+check_main_quit (void)
+{
+  if (main_quit_on_menu_item_activate)
+    gtk_main_quit ();
 }
 
 GtkWidget*
@@ -279,9 +288,10 @@ bst_choice_menu_createv (BstChoice *first_choice,
 
   va_start (args, first_choice);
 
-  menu = gtk_widget_new (GTK_TYPE_MENU,
-			 "signal::selection-done", gtk_main_quit, NULL,
-			 NULL);
+  menu = g_object_connect (gtk_widget_new (GTK_TYPE_MENU,
+					   NULL),
+			   "signal::selection-done", check_main_quit, NULL,
+			   NULL);
   gtk_widget_ref (menu);
   gtk_object_sink (GTK_OBJECT (menu));
 
@@ -292,13 +302,14 @@ bst_choice_menu_createv (BstChoice *first_choice,
       guint choice_type = choice->type_and_flags & BST_CHOICE_TYPE_MASK;
       guint choice_flags = choice->type_and_flags & BST_CHOICE_FLAG_MASK;
 
-      item = gtk_widget_new (GTK_TYPE_MENU_ITEM,
-			     "visible", TRUE,
-			     "sensitive", !((choice_flags & BST_CHOICE_FLAG_INSENSITIVE) ||
-					    choice_type != BST_CHOICE_TYPE_ITEM),
-			     "parent", menu,
-			     "signal::activate", menu_choice_activate, GUINT_TO_POINTER (choice->id),
-			     NULL);
+      item = g_object_connect (gtk_widget_new (GTK_TYPE_MENU_ITEM,
+					       "visible", TRUE,
+					       "sensitive", !((choice_flags & BST_CHOICE_FLAG_INSENSITIVE) ||
+							      choice_type != BST_CHOICE_TYPE_ITEM),
+					       "parent", menu,
+					       NULL),
+			       "signal::activate", menu_choice_activate, GUINT_TO_POINTER (choice->id),
+			       NULL);
       gtk_widget_lock_accelerators (item);
       if (choice->name)
 	{
@@ -309,16 +320,16 @@ bst_choice_menu_createv (BstChoice *first_choice,
 				 "spacing", MENU_ITEM_PADDING,
 				 "parent", item,
 				 NULL);
-	  gtk_container_add_with_args (GTK_CONTAINER (hbox),
-				       create_icon_widget (choice->icon),
-				       "expand", FALSE,
-				       "fill", FALSE,
-				       NULL);
+	  gtk_container_add_with_properties (GTK_CONTAINER (hbox),
+					     create_icon_widget (choice->icon),
+					     "expand", FALSE,
+					     "fill", FALSE,
+					     NULL);
 	  any = gtk_widget_new (GTK_TYPE_ACCEL_LABEL,
 				"visible", TRUE,
 				"label", choice->name,
 				"parent", hbox,
-				"accel_widget", item,
+				"accel_object", item,
 				"xalign", 0.0,
 				NULL);
 	  if (choice_type == BST_CHOICE_TYPE_TITLE)
@@ -422,25 +433,26 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 				 "spacing", MENU_ITEM_PADDING,
 				 NULL);
 	  if (choice->icon)
-	    gtk_container_add_with_args (GTK_CONTAINER (hbox),
-					 create_icon_widget (choice->icon),
-					 "expand", FALSE,
-					 "fill", FALSE,
-					 NULL);
+	    gtk_container_add_with_properties (GTK_CONTAINER (hbox),
+					       create_icon_widget (choice->icon),
+					       "expand", FALSE,
+					       "fill", FALSE,
+					       NULL);
 	  any = gtk_widget_new (GTK_TYPE_LABEL,
 				"visible", TRUE,
 				"label", choice->name,
 				"parent", hbox,
 				"xalign", 0.5,
 				NULL);
-	  any = gtk_widget_new (GTK_TYPE_BUTTON,
-				"visible", TRUE,
-				"can_default", TRUE,
-				"sensitive", !(choice_flags & BST_CHOICE_FLAG_INSENSITIVE),
-				"parent", adialog->hbox,
-				"child", hbox,
-				"signal::clicked", button_choice_activate, GUINT_TO_POINTER (choice->id),
-				NULL);
+	  any = g_object_connect (gtk_widget_new (GTK_TYPE_BUTTON,
+						  "visible", TRUE,
+						  "can_default", TRUE,
+						  "sensitive", !(choice_flags & BST_CHOICE_FLAG_INSENSITIVE),
+						  "parent", adialog->hbox,
+						  "child", hbox,
+						  NULL),
+				  "signal::clicked", button_choice_activate, GUINT_TO_POINTER (choice->id),
+				  NULL);
 	  if (choice_flags & BST_CHOICE_FLAG_DEFAULT)
 	    adialog->default_widget = any;
 	  break;
@@ -525,9 +537,10 @@ bst_choice_modal (GtkWidget *choice,
 
       if (bst_choice_selectable (choice))
 	{
+	  main_quit_on_menu_item_activate = TRUE;
 	  gtk_menu_popup (menu, NULL, NULL, NULL, NULL, mouse_button, time);
-      
 	  gtk_main ();
+	  main_quit_on_menu_item_activate = FALSE;
 	}
       
       data = gtk_object_get_data (GTK_OBJECT (menu), "BstChoice");
@@ -543,13 +556,25 @@ bst_choice_modal (GtkWidget *choice,
 	  gtk_widget_show (choice);
 
 	  do
-	    g_main_iteration (TRUE);
+	    {
+	      GDK_THREADS_LEAVE ();
+	      g_main_iteration (TRUE);
+	      GDK_THREADS_ENTER ();
+	    }
 	  while (GTK_WIDGET_VISIBLE (choice));
 	}
 
       data = gtk_object_get_data (GTK_OBJECT (adialog), "BstChoice");
     }
   
+  return GPOINTER_TO_UINT (data);
+}
+
+guint
+bst_choice_get_last (GtkWidget *widget)
+{
+  gpointer data = gtk_object_get_data (GTK_OBJECT (widget), "BstChoice");
+
   return GPOINTER_TO_UINT (data);
 }
 

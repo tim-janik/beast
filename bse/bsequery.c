@@ -87,8 +87,8 @@ show_nodes (GType        type,
 
       sprintf (buffer,
 	       "\t(ichannels %u) (ochannels %u)",
-	       class->n_ichannels,
-	       class->n_ochannels);
+	       class->channel_defs.n_ichannels,
+	       class->channel_defs.n_ochannels);
       fputs (buffer, f_out);
       g_type_class_unref (class);
     }
@@ -128,6 +128,43 @@ show_cats (void)
   g_free (cats);
 }
 
+static void
+show_procdoc (void)
+{
+  BseCategory *cats;
+  guint i, n_cats;
+  const gchar *nullstr = ""; // "???";
+
+  cats = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE, &n_cats);
+  for (i = 0; i < n_cats; i++)
+    {
+      BseProcedureClass *class = g_type_class_ref (cats[i].type);
+      guint j;
+
+      fprintf (f_out, "/**\n * %s\n", g_type_name (cats[i].type));
+      for (j = 0; j < class->n_in_params; j++)
+	{
+	  GParamSpec *pspec = G_PARAM_SPEC (class->in_param_specs[j]);
+
+	  fprintf (f_out, " * @%s: %s\n",
+		   pspec->name,
+		   g_param_get_blurb (pspec) ? g_param_get_blurb (pspec) : nullstr);
+	}
+      for (j = 0; j < class->n_out_params; j++)
+	{
+	  GParamSpec *pspec = G_PARAM_SPEC (class->out_param_specs[j]);
+
+	  fprintf (f_out, " * @Returns: %s\n",
+		   g_param_get_blurb (pspec) ? g_param_get_blurb (pspec) : nullstr);
+	}
+      if (class->help)
+	fprintf (f_out, " * %s\n", class->help);
+      fprintf (f_out, " **/\n");
+      g_type_class_unref (class);
+    }
+  g_free (cats);
+}
+
 static gint
 help (gchar *arg)
 {
@@ -145,6 +182,7 @@ help (gchar *arg)
   fprintf (stderr, "       froots   iterate over fundamental roots\n");
   fprintf (stderr, "       tree     print BSE type tree\n");
   fprintf (stderr, "       cats     print categories\n");
+  fprintf (stderr, "       procdoc  print procedure documentation\n");
 
   return arg != NULL;
 }
@@ -156,12 +194,15 @@ main (gint   argc,
   gboolean gen_froots = 0;
   gboolean gen_tree = 0;
   gboolean gen_cats = 0;
+  gboolean gen_procdoc = 0;
   guint i;
   gchar *iindent = "";
   
   f_out = stdout;
 
-  bse_init (&argc, &argv);
+  g_thread_init (NULL);
+
+  bse_init (&argc, &argv, NULL);
 
   root = BSE_TYPE_OBJECT;
 
@@ -230,6 +271,10 @@ main (gint   argc,
 	{
 	  gen_cats = 1;
 	}
+      else if (strcmp ("procdoc", argv[i]) == 0)
+	{
+	  gen_procdoc = 1;
+	}
       else if (strcmp ("-p", argv[i]) == 0)
 	{
 	  GList *free_list, *list;
@@ -258,7 +303,7 @@ main (gint   argc,
       else
 	return help (argv[i]);
     }
-  if (!gen_froots && !gen_tree && !gen_cats)
+  if (!gen_froots && !gen_tree && !gen_cats && !gen_procdoc)
     return help (argv[i-1]);
 
   if (!indent_inc)
@@ -285,6 +330,8 @@ main (gint   argc,
     }
   if (gen_cats)
     show_cats ();
+  if (gen_procdoc)
+    show_procdoc ();
   
   return 0;
 }

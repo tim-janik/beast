@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2000 Red Hat, Inc.
+ * Copyright (C) 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ extern "C" {
 #define	BST_RADIO_TOOLS_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_RADIO_TOOLS, BstRadioToolsClass))
 #define	BST_IS_RADIO_TOOLS(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_RADIO_TOOLS))
 #define	BST_IS_RADIO_TOOLS_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_RADIO_TOOLS))
-#define BST_RADIO_TOOLS_GET_CLASS(obj)	((BstRadioToolsClass*) (((GtkObject*) (obj))->klass))
+#define BST_RADIO_TOOLS_GET_CLASS(obj)	(GTK_CHECK_GET_CLASS ((obj), BST_TYPE_RADIO_TOOLS, BstRadioToolsClass))
 
 
 /* --- structures & typedefs --- */
@@ -73,8 +73,6 @@ struct _BstRadioTools
 struct _BstRadioToolsClass
 {
   GtkObjectClass parent_class;
-
-  GtkTooltips   *tooltips;
 
   void         (*set_tool)	(BstRadioTools*	rtools,
 				 guint          tool_id);

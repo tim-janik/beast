@@ -29,12 +29,12 @@ enum {
 /* --- prototypes --- */
 static void bse_effect_volume_delta_class_init (BseEffectClass      *class);
 static void bse_effect_volume_delta_init       (BseEffectVolumeDelta *effect);
-static void bse_effect_volume_delta_set_param  (BseEffectVolumeDelta *effect,
+static void bse_effect_volume_delta_set_property  (BseEffectVolumeDelta *effect,
 						guint                 param_id,
 						GValue               *value,
 						GParamSpec           *pspec,
 						const gchar          *trailer);
-static void bse_effect_volume_delta_get_param  (BseEffectVolumeDelta *effect,
+static void bse_effect_volume_delta_get_property  (BseEffectVolumeDelta *effect,
 						guint                 param_id,
 						GValue               *value,
 						GParamSpec           *pspec,
@@ -45,7 +45,7 @@ static void bse_effect_volume_delta_get_param  (BseEffectVolumeDelta *effect,
 BSE_BUILTIN_TYPE (BseEffectVolumeDelta)
 {
   static const GTypeInfo effect_info = {
-    sizeof (BseEffectClass),
+    sizeof (BseEffectVolumeDeltaClass),
 
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
@@ -74,17 +74,17 @@ bse_effect_volume_delta_class_init (BseEffectClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
-  gobject_class->set_param = (GObjectSetParamFunc) bse_effect_volume_delta_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_effect_volume_delta_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_effect_volume_delta_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_effect_volume_delta_get_property;
 
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_DELTA_PERC,
-			      b_param_spec_int ("delta_perc", "Delta [%]", NULL,
+			      bse_param_spec_int ("delta_perc", "Delta [%]", NULL,
 						bse_dB_to_factor (BSE_MAX_VOLUME_dB) * -100,
 						bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 						0, 1,
-						B_PARAM_DEFAULT |
-						B_PARAM_HINT_DIAL));
+						BSE_PARAM_DEFAULT |
+						BSE_PARAM_HINT_DIAL));
 }
 
 static void
@@ -94,7 +94,7 @@ bse_effect_volume_delta_init (BseEffectVolumeDelta *effect)
 }
 
 static void
-bse_effect_volume_delta_set_param (BseEffectVolumeDelta *effect,
+bse_effect_volume_delta_set_property (BseEffectVolumeDelta *effect,
 				   guint                 param_id,
 				   GValue               *value,
 				   GParamSpec           *pspec,
@@ -103,16 +103,16 @@ bse_effect_volume_delta_set_param (BseEffectVolumeDelta *effect,
   switch (param_id)
     {
     case PARAM_DELTA_PERC:
-      effect->volume_delta = b_value_get_int (value) / 100.0;
+      effect->volume_delta = g_value_get_int (value) / 100.0;
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (effect, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (effect, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_effect_volume_delta_get_param (BseEffectVolumeDelta *effect,
+bse_effect_volume_delta_get_property (BseEffectVolumeDelta *effect,
 				   guint                 param_id,
 				   GValue               *value,
 				   GParamSpec           *pspec,
@@ -121,10 +121,10 @@ bse_effect_volume_delta_get_param (BseEffectVolumeDelta *effect,
   switch (param_id)
     {
     case PARAM_DELTA_PERC:
-      b_value_set_int (value, effect->volume_delta * 100.0 + 0.5);
+      g_value_set_int (value, effect->volume_delta * 100.0 + 0.5);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (effect, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (effect, param_id, pspec);
       break;
     }
 }

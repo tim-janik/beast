@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998, 1999, 2000, 2001 Tim Janik and Red Hat, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,12 @@
 #include        "bstmenus.h"
 #include        <fcntl.h>
 #include        <errno.h>
+#include        <unistd.h>
+#include        <string.h>
+
+
+/* compile marshallers */
+#include        "bstmarshal.c"
 
 
 /* --- Pixmap Stock --- */
@@ -117,6 +123,119 @@ bst_icon_from_stock (BstIconId _id)
 
 
 /* --- Gtk+ Utilities --- */
+static gulong viewable_changed_id = 0;
+
+void
+gtk_widget_viewable_changed (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  g_signal_emit (widget, viewable_changed_id, 0);
+}
+
+static void
+traverse_viewable_changed (GtkWidget *widget,
+			   gpointer   data)
+{
+  if (GTK_IS_CONTAINER (widget))
+    gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) gtk_widget_viewable_changed, NULL);
+}
+
+guint
+gtk_tree_view_add_column (GtkTreeView       *tree_view,
+			  gint               position,
+			  GtkTreeViewColumn *column,
+			  GtkCellRenderer   *cell,
+			  const gchar       *attrib_name,
+			  ...)
+{
+  guint n_cols;
+  va_list var_args;
+
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), 0);
+  g_return_val_if_fail (GTK_IS_TREE_VIEW_COLUMN (column), 0);
+  g_return_val_if_fail (column->tree_view == NULL, 0);
+  g_return_val_if_fail (GTK_IS_CELL_RENDERER (cell), 0);
+
+  g_object_ref (column);
+  g_object_ref (cell);
+  gtk_object_sink (GTK_OBJECT (column));
+  gtk_object_sink (GTK_OBJECT (cell));
+  gtk_tree_view_column_pack_start (column, cell, TRUE);
+
+  va_start (var_args, attrib_name);
+  while (attrib_name)
+    {
+      guint col = va_arg (var_args, guint);
+
+      gtk_tree_view_column_add_attribute (column, cell, attrib_name, col);
+      attrib_name = va_arg (var_args, const gchar*);
+    }
+  va_end (var_args);
+
+  n_cols = gtk_tree_view_insert_column (tree_view, column, position);
+
+  g_object_unref (column);
+  g_object_unref (cell);
+
+  return n_cols;
+}
+
+void
+gtk_tree_selection_select_spath (GtkTreeSelection *tree_selection,
+				 const gchar      *str_path)
+{
+  GtkTreePath *path;
+
+  g_return_if_fail (GTK_IS_TREE_SELECTION (tree_selection));
+  g_return_if_fail (str_path != NULL);
+
+  path = gtk_tree_path_new_from_string (str_path);
+  gtk_tree_selection_select_path (tree_selection, path);
+  gtk_tree_path_free (path);
+}
+
+void
+gtk_tree_selection_unselect_spath (GtkTreeSelection *tree_selection,
+				   const gchar      *str_path)
+{
+  GtkTreePath *path;
+
+  g_return_if_fail (GTK_IS_TREE_SELECTION (tree_selection));
+  g_return_if_fail (str_path != NULL);
+
+  path = gtk_tree_path_new_from_string (str_path);
+  gtk_tree_selection_unselect_path (tree_selection, path);
+  gtk_tree_path_free (path);
+}
+
+void
+gtk_post_init_patch_ups (void)
+{
+  viewable_changed_id =
+    g_signal_newv ("viewable-changed",
+		   G_TYPE_FROM_CLASS (gtk_type_class (GTK_TYPE_WIDGET)),
+		   G_SIGNAL_RUN_LAST,
+		   g_cclosure_new (G_CALLBACK (traverse_viewable_changed), NULL, NULL),
+		   NULL, NULL,
+		   gtk_marshal_VOID__VOID,
+		   G_TYPE_NONE, 0, NULL);
+}
+
+gboolean
+gtk_widget_viewable (GtkWidget *widget)
+{
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+
+  while (widget)
+    {
+      if (!GTK_WIDGET_MAPPED (widget))
+	return FALSE;
+      widget = widget->parent;
+    }
+  return TRUE;
+}
+
 void
 gtk_widget_showraise (GtkWidget *widget)
 {
@@ -200,8 +319,8 @@ gtk_file_selection_heal (GtkFileSelection *fs)
   gtk_widget_reparent (fs->ok_button, hbox);
   gtk_widget_reparent (fs->cancel_button, hbox);
   gtk_widget_grab_default (fs->ok_button);
-  gtk_label_set_text (GTK_LABEL (GTK_BIN (fs->ok_button)->child), "Ok");
-  gtk_label_set_text (GTK_LABEL (GTK_BIN (fs->cancel_button)->child), "Cancel");
+  // gtk_label_set_text (GTK_LABEL (GTK_BIN (fs->ok_button)->child), "Ok");
+  // gtk_label_set_text (GTK_LABEL (GTK_BIN (fs->cancel_button)->child), "Cancel");
   
   /* heal the action_area packing so we can customize children
    */
@@ -477,6 +596,8 @@ kennel_idle_sizer (gpointer data)
 {
   GtkKennel *kennel = data;
 
+  GDK_THREADS_ENTER ();
+  
   kennel->resize_handler = 0;
 
   if (kennel->width_constraint == GTK_KENNEL_TO_MINIMUM ||
@@ -492,7 +613,7 @@ kennel_idle_sizer (gpointer data)
 	  KennelChild *child = slist->data;
 	  GtkRequisition *requisition;
 
-	  gtk_signal_handler_block_by_func (GTK_OBJECT (child->widget), kennel_widget_size_request, kennel);
+	  gtk_signal_handler_block_by_func (GTK_OBJECT (child->widget), G_CALLBACK (kennel_widget_size_request), kennel);
 	  /* FIXME: GTKFIX - grrr, buggy GtkLabel code caches requisition */
 	  if (GTK_IS_LABEL (child->widget))
 	    {
@@ -503,7 +624,7 @@ kennel_idle_sizer (gpointer data)
 	      g_free (string);
 	    }
 	  gtk_widget_size_request (child->widget, NULL);
-	  gtk_signal_handler_unblock_by_func (GTK_OBJECT (child->widget), kennel_widget_size_request, kennel);
+	  gtk_signal_handler_unblock_by_func (GTK_OBJECT (child->widget), G_CALLBACK (kennel_widget_size_request), kennel);
 	  requisition = &child->widget->requisition;
 	  child->real_requisition = *requisition;
 	  width = (kennel->width_constraint == GTK_KENNEL_TO_MINIMUM
@@ -523,7 +644,8 @@ kennel_idle_sizer (gpointer data)
 
       gtk_kennel_resize (kennel, width, height);
     }
-
+  GDK_THREADS_LEAVE ();
+  
   return FALSE;
 }
 
@@ -608,10 +730,10 @@ gtk_kennel_add (GtkKennel *kennel,
   gtk_object_set_data (GTK_OBJECT (widget), "GtkKennelChild", child);
   child->widget = widget;
   kennel->children = g_slist_prepend (kennel->children, child);
-  gtk_widget_set (widget,
-		  "signal_after::size_request", kennel_widget_size_request, kennel,
-		  "object_signal::destroy",  gtk_kennel_remove, kennel,
-		  NULL);
+  g_object_connect (widget,
+		    "signal_after::size_request", kennel_widget_size_request, kennel,
+		    "swapped_signal::destroy",  gtk_kennel_remove, kennel,
+		    NULL);
   gtk_widget_queue_resize (widget);
 }
 
@@ -628,10 +750,10 @@ gtk_kennel_remove (GtkKennel *kennel,
 
   gtk_object_set_data (GTK_OBJECT (widget), "GtkKennelChild", NULL);
   gtk_signal_disconnect_by_func (GTK_OBJECT (widget),
-				 kennel_widget_size_request,
+				 G_CALLBACK (kennel_widget_size_request),
 				 kennel);
   gtk_signal_disconnect_by_func (GTK_OBJECT (widget),
-				 gtk_kennel_remove,
+				 G_CALLBACK (gtk_kennel_remove),
 				 kennel);
   for (slist = kennel->children; slist; last = slist, slist = last->next)
     {
@@ -651,6 +773,551 @@ gtk_kennel_remove (GtkKennel *kennel,
     gtk_widget_queue_resize (widget);
   gtk_kennel_unref (kennel);
 }
+
+
+/* --- field mask --- */
+static GQuark gmask_quark = 0;
+typedef struct {
+  GtkTooltips *tooltips;
+  GtkWidget   *parent;
+  GtkWidget   *prompt;
+  GtkWidget   *aux1;
+  GtkWidget   *aux2;		/* auto-expand */
+  GtkWidget   *aux3;
+  GtkWidget   *ahead;
+  GtkWidget   *action;
+  GtkWidget   *atail;
+  gchar       *tip;
+  guint	       column : 16;
+  guint        expandable : 1;	/* expand action? */
+  guint	       big : 1;		/* extend to left */
+} GMask;
+#define	GMASK_GET(o)	((GMask*) g_object_get_qdata (G_OBJECT (o), gmask_quark))
+
+static void
+gmask_destroy (gpointer data)
+{
+  GMask *gmask = data;
+
+  if (gmask->tooltips)
+    g_object_unref (gmask->tooltips);
+  if (gmask->parent)
+    g_object_unref (gmask->parent);
+  if (gmask->prompt)
+    g_object_unref (gmask->prompt);
+  if (gmask->aux1)
+    g_object_unref (gmask->aux1);
+  if (gmask->aux2)
+    g_object_unref (gmask->aux2);
+  if (gmask->aux3)
+    g_object_unref (gmask->aux3);
+  if (gmask->ahead)
+    g_object_unref (gmask->ahead);
+  if (gmask->atail)
+    g_object_unref (gmask->atail);
+  g_free (gmask->tip);
+  g_free (gmask);
+}
+
+static gpointer
+gmask_form (GtkWidget *parent,
+	    GtkWidget *action,
+	    gboolean   expandable,
+	    gboolean   big)
+{
+  GMask *gmask;
+
+  g_return_val_if_fail (GTK_IS_TABLE (parent), NULL);
+  g_return_val_if_fail (GTK_IS_WIDGET (action), NULL);
+
+  if (!gmask_quark)
+    gmask_quark = g_quark_from_static_string ("GMask");
+
+  gmask = GMASK_GET (action);
+  g_return_val_if_fail (gmask == NULL, NULL);
+
+  gmask = g_new0 (GMask, 1);
+  g_object_set_qdata_full (G_OBJECT (action), gmask_quark, gmask, gmask_destroy);
+  gmask->parent = g_object_ref (parent);
+  gtk_object_sink (GTK_OBJECT (parent));
+  gmask->action = action;
+  gmask->expandable = expandable != FALSE;
+  gmask->big = big != FALSE;
+  gmask->tooltips = g_object_get_data (G_OBJECT (parent), "GMask-tooltips");
+  if (gmask->tooltips)
+    g_object_ref (gmask->tooltips);
+
+  return action;
+}
+
+GtkWidget*
+bst_gmask_parent_create (gpointer tooltips,
+			 guint    border_width)
+{
+  GtkWidget *container = gtk_widget_new (GTK_TYPE_TABLE,
+					 "visible", TRUE,
+					 "homogeneous", FALSE,
+					 "n_columns", 2,
+					 "border_width", border_width,
+					 NULL);
+  if (tooltips)
+    {
+      g_return_val_if_fail (GTK_IS_TOOLTIPS (tooltips), container);
+
+      g_object_set_data_full (G_OBJECT (container), "GMask-tooltips", g_object_ref (tooltips), g_object_unref);
+    }
+
+  return container;
+}
+
+gpointer
+bst_gmask_form (GtkWidget *gmask_parent,
+		GtkWidget *action,
+		gboolean   expandable)
+{
+  return gmask_form (gmask_parent, action, expandable, FALSE);
+}
+
+gpointer
+bst_gmask_form_big (GtkWidget *gmask_parent,
+		    GtkWidget *action)
+{
+  return gmask_form (gmask_parent, action, TRUE, TRUE);
+}
+
+void
+bst_gmask_set_tip (gpointer     mask,
+		   const gchar *tip_text)
+{
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+
+  g_free (gmask->tip);
+  gmask->tip = g_strdup (tip_text);
+}
+
+void
+bst_gmask_set_prompt (gpointer mask,
+		      gpointer widget)
+{
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (gmask->prompt)
+    g_object_unref (gmask->prompt);
+  gmask->prompt = g_object_ref (widget);
+  gtk_object_sink (GTK_OBJECT (widget));
+}
+
+void
+bst_gmask_set_aux1 (gpointer mask,
+		    gpointer widget)
+{
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (gmask->aux1)
+    g_object_unref (gmask->aux1);
+  gmask->aux1 = g_object_ref (widget);
+  gtk_object_sink (GTK_OBJECT (widget));
+}
+
+void
+bst_gmask_set_aux2 (gpointer mask,
+		    gpointer widget)
+{
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (gmask->aux2)
+    g_object_unref (gmask->aux2);
+  gmask->aux2 = g_object_ref (widget);
+  gtk_object_sink (GTK_OBJECT (widget));
+}
+
+void
+bst_gmask_set_aux3 (gpointer mask,
+		    gpointer widget)
+{
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (gmask->aux3)
+    g_object_unref (gmask->aux3);
+  gmask->aux3 = g_object_ref (widget);
+  gtk_object_sink (GTK_OBJECT (widget));
+}
+
+void
+bst_gmask_set_ahead (gpointer mask,
+		     gpointer widget)
+{
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (gmask->ahead)
+    g_object_unref (gmask->ahead);
+  gmask->ahead = g_object_ref (widget);
+  gtk_object_sink (GTK_OBJECT (widget));
+}
+
+void
+bst_gmask_set_atail (gpointer mask,
+		     gpointer widget)
+{
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (gmask->atail)
+    g_object_unref (gmask->atail);
+  gmask->atail = g_object_ref (widget);
+  gtk_object_sink (GTK_OBJECT (widget));
+}
+
+void
+bst_gmask_set_column (gpointer mask,
+		      guint    column)
+{
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+
+  gmask->column = column;
+}
+
+GtkWidget*
+bst_gmask_get_prompt (gpointer mask)
+{
+  GMask *gmask;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  gmask = GMASK_GET (mask);
+  g_return_val_if_fail (gmask != NULL, NULL);
+
+  return gmask->prompt;
+}
+
+GtkWidget*
+bst_gmask_get_aux1 (gpointer mask)
+{
+  GMask *gmask;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  gmask = GMASK_GET (mask);
+  g_return_val_if_fail (gmask != NULL, NULL);
+
+  return gmask->aux1;
+}
+
+GtkWidget*
+bst_gmask_get_aux2 (gpointer mask)
+{
+  GMask *gmask;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  gmask = GMASK_GET (mask);
+  g_return_val_if_fail (gmask != NULL, NULL);
+
+  return gmask->aux2;
+}
+
+GtkWidget*
+bst_gmask_get_aux3 (gpointer mask)
+{
+  GMask *gmask;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  gmask = GMASK_GET (mask);
+  g_return_val_if_fail (gmask != NULL, NULL);
+
+  return gmask->aux3;
+}
+
+GtkWidget*
+bst_gmask_get_ahead (gpointer mask)
+{
+  GMask *gmask;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  gmask = GMASK_GET (mask);
+  g_return_val_if_fail (gmask != NULL, NULL);
+
+  return gmask->ahead;
+}
+
+GtkWidget*
+bst_gmask_get_action (gpointer mask)
+{
+  GMask *gmask;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  gmask = GMASK_GET (mask);
+  g_return_val_if_fail (gmask != NULL, NULL);
+
+  return gmask->action;
+}
+
+GtkWidget*
+bst_gmask_get_atail (gpointer mask)
+{
+  GMask *gmask;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (mask), NULL);
+  gmask = GMASK_GET (mask);
+  g_return_val_if_fail (gmask != NULL, NULL);
+
+  return gmask->atail;
+}
+
+void
+bst_gmask_foreach (gpointer mask,
+		   gpointer func,
+		   gpointer data)
+{
+  GMask *gmask;
+  GtkCallback callback = func;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+  g_return_if_fail (func != NULL);
+
+  if (gmask->prompt)
+    callback (gmask->prompt, data);
+  if (gmask->aux1)
+    callback (gmask->aux1, data);
+  if (gmask->aux2)
+    callback (gmask->aux2, data);
+  if (gmask->aux3)
+    callback (gmask->aux3, data);
+  if (gmask->ahead)
+    callback (gmask->ahead, data);
+  if (gmask->atail)
+    callback (gmask->atail, data);
+  if (gmask->action)
+    callback (gmask->action, data);
+}
+
+static GtkWidget*
+get_toplevel_and_set_tip (GtkWidget   *widget,
+			  GtkTooltips *tooltips,
+			  const gchar *tip)
+{
+  GtkWidget *last;
+
+  if (!widget)
+    return NULL;
+  else if (!tooltips || !tip)
+    return gtk_widget_get_toplevel (widget);
+  do
+    {
+      if (!GTK_WIDGET_NO_WINDOW (widget))
+	{
+	  gtk_tooltips_set_tip (tooltips, widget, tip, NULL);
+	  return gtk_widget_get_toplevel (widget);
+	}
+      last = widget;
+      widget = last->parent;
+    }
+  while (widget);
+  /* need to create a tooltips sensitive parent */
+  widget = gtk_widget_new (GTK_TYPE_EVENT_BOX,
+			   "visible", TRUE,
+			   "child", last,
+			   NULL);
+  gtk_tooltips_set_tip (tooltips, widget, tip, NULL);
+  return widget;
+}
+
+static guint
+table_max_bottom_row (GtkTable *table,
+		      guint     min_col,
+		      guint	max_col)
+{
+  guint max_bottom = 0;
+  GList *list;
+
+  for (list = table->children; list; list = list->next)
+    {
+      GtkTableChild *child = list->data;
+
+      if (child->left_attach >= min_col && child->right_attach <= max_col)
+	max_bottom = MAX (max_bottom, child->bottom_attach);
+    }
+  return max_bottom;
+}
+
+/* GUI mask layout:
+ * row: |Prompt|Aux1| Aux2 |Aux3| PreAction#Action#PostAction|
+ * expandable: expand Action to left, up to Aux3
+ * big row: expand Action to left as far as possible (if Prompt/Aux? are omitted)
+ * Aux2 expands automatically
+ */
+void
+bst_gmask_pack (gpointer mask)
+{
+  GtkWidget *prompt, *aux1, *aux2, *aux3, *ahead, *action, *atail;
+  GtkTable *table;
+  gboolean dummy_aux2 = FALSE;
+  guint row, n, c;
+  GMask *gmask;
+
+  g_return_if_fail (GTK_IS_WIDGET (mask));
+  gmask = GMASK_GET (mask);
+  g_return_if_fail (gmask != NULL);
+
+  /* retrive children and set tips */
+  prompt = get_toplevel_and_set_tip (gmask->prompt, gmask->tooltips, gmask->tip);
+  aux1 = get_toplevel_and_set_tip (gmask->aux1, gmask->tooltips, gmask->tip);
+  aux2 = get_toplevel_and_set_tip (gmask->aux2, gmask->tooltips, gmask->tip);
+  aux3 = get_toplevel_and_set_tip (gmask->aux3, gmask->tooltips, gmask->tip);
+  ahead = get_toplevel_and_set_tip (gmask->ahead, gmask->tooltips, gmask->tip);
+  action = get_toplevel_and_set_tip (gmask->action, gmask->tooltips, gmask->tip);
+  atail = get_toplevel_and_set_tip (gmask->atail, gmask->tooltips, gmask->tip);
+
+  /* pack children, options: GTK_EXPAND, GTK_SHRINK, GTK_FILL */
+  table = GTK_TABLE (gmask->parent);
+  c = 5 * gmask->column;
+  row = table_max_bottom_row (table, c, c + 5);
+  if (prompt)
+    {
+      gtk_table_attach (table, prompt, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
+      gtk_table_set_col_spacing (table, c, 2); /* seperate prompt from rest */
+    }
+  c++;
+  if (aux1)
+    gtk_table_attach (table, aux1, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
+  c++;
+  if (!aux2)
+    {
+      gchar *dummy_name = g_strdup_printf ("GMask-dummy-aux2-%u", gmask->column);
+
+      aux2 = g_object_get_data (G_OBJECT (table), dummy_name);
+
+      /* need to have at least 1 (dummy) aux2-child per table to eat up expanding space
+       */
+      if (!aux2)
+	{
+	  aux2 = gtk_widget_new (GTK_TYPE_ALIGNMENT, "visible", TRUE, NULL);
+	  g_object_set_data_full (G_OBJECT (table), dummy_name, g_object_ref (aux2), g_object_unref);
+	}
+      else
+	aux2 = NULL;
+      g_free (dummy_name);
+      dummy_aux2 = TRUE;
+    }
+  if (aux2)
+    {
+      gtk_table_attach (table, aux2,
+			c, c + 1,
+			row, row + 1, GTK_EXPAND | GTK_FILL, 0, 0, 0);
+      if (dummy_aux2)
+	aux2 = NULL;
+    }
+  c++;
+  if (aux3)
+    gtk_table_attach (table, aux3, c, c + 1, row, row + 1, GTK_FILL, GTK_FILL, 0, 0);
+  c++;
+  /* pack action with head and tail widgets closely together */
+  if (ahead || atail)
+    {
+      action = gtk_widget_new (GTK_TYPE_HBOX,
+			       "visible", TRUE,
+			       "child", action,
+			       NULL);
+      if (ahead)
+        gtk_container_add_with_properties (GTK_CONTAINER (action), ahead,
+					   "position", 0,
+					   "expand", FALSE,
+					   NULL);
+      if (atail)
+	gtk_box_pack_end (GTK_BOX (action), atail, FALSE, TRUE, 0);
+    }
+  n = c;
+  if (gmask->big && !aux3) /* extend action to the left when possible */
+    {
+      n--;
+      if (!aux2)
+	{
+	  n--;
+	  if (!aux1)
+	    {
+	      n--;
+	      if (!prompt)
+		n--;
+	    }
+	}
+    }
+  if (!gmask->expandable) /* align to right without expansion if desired */
+    action = gtk_widget_new (GTK_TYPE_ALIGNMENT,
+			     "visible", TRUE,
+			     "child", action,
+			     "xalign", 1.0,
+			     "xscale", 0.0,
+			     "yscale", 0.0,
+			     NULL);
+  gtk_table_attach (table, action,
+		    n, c + 1, row, row + 1,
+		    GTK_SHRINK | GTK_FILL | (gmask->expandable ? 0 /* GTK_EXPAND */ : 0),
+		    GTK_FILL,
+		    0, 0);
+  gtk_table_set_col_spacing (table, c - 1, 2); /* seperate action from rest */
+  c = 5 * gmask->column;
+  if (c)
+    gtk_table_set_col_spacing (table, c - 1, 5); /* spacing between columns */
+}
+
+gpointer
+bst_gmask_quick (GtkWidget   *gmask_parent,
+		 guint	      column,
+		 const gchar *prompt,
+		 gpointer     action_widget,
+		 const gchar *tip_text)
+{
+  gpointer mask = bst_gmask_form (gmask_parent, action_widget, TRUE);
+  
+  if (prompt)
+    bst_gmask_set_prompt (mask, g_object_new (GTK_TYPE_LABEL,
+					      "visible", TRUE,
+					      "label", prompt,
+					      NULL));
+  if (tip_text)
+    bst_gmask_set_tip (mask, tip_text);
+  bst_gmask_set_column (mask, column);
+  bst_gmask_pack (mask);
+
+  return mask;
+}
+
 
 /* --- BEAST utilities --- */
 static void
@@ -735,8 +1402,8 @@ bst_forest_from_bse_icon (BseIcon *bse_icon,
   icon = bse_icon_ref (bse_icon);
   forest = gtk_widget_new (GNOME_TYPE_FOREST,
 			   "visible", TRUE,
-			   "width", icon_width,
-			   "height", icon_height,
+			   "width_request", icon_width,
+			   "height_request", icon_height,
 			   "expand_forest", FALSE,
 			   NULL);
   gtk_object_set_data_full (GTK_OBJECT (forest), "BseIcon", icon, (GDestroyNotify) bse_icon_unref);
@@ -760,7 +1427,6 @@ bst_text_view_from (GString     *gstring,
 		    const gchar *font_fallback) /* FIXME: should go into misc.c or utils.c */
 {
   GtkWidget *hbox, *text, *sb;
-  GdkFont *font;
   
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
 			 "visible", TRUE,
@@ -777,11 +1443,12 @@ bst_text_view_from (GString     *gstring,
 			 "editable", FALSE,
 			 "word_wrap", TRUE,
 			 "line_wrap", FALSE,
-			 "width", 500,
-			 "height", 500,
+			 "width_request", 500,
+			 "height_request", 500,
 			 "parent", hbox,
 			 NULL);
   
+#if !GTK_CHECK_VERSION (1, 3, 1)
   font = font_name ? gdk_font_load (font_name) : NULL;
   if (!font && font_fallback)
     font = gdk_font_load (font_fallback);
@@ -795,6 +1462,7 @@ bst_text_view_from (GString     *gstring,
       
       gtk_widget_modify_style (text, rc_style);
     }
+#endif
   
   if (gstring)
     gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
@@ -868,16 +1536,17 @@ bst_wrap_text_create (const gchar *string,
 {
   GtkWidget *text;
   
-  text = gtk_widget_new (GTK_TYPE_TEXT,
-			 "visible", TRUE,
-			 "editable", FALSE,
-			 "word_wrap", TRUE,
-			 "line_wrap", TRUE,
-			 "can_focus", FALSE,
-			 "signal_after::realize", style_modify_base_as_bg, NULL, // FIXME
-			 "signal_after::realize", tweak_text_resize, NULL, // FIXME
-			 "signal_after::size_allocate", tweak_text_resize, NULL, // FIXME
-			 NULL);
+  text = g_object_connect (gtk_widget_new (GTK_TYPE_TEXT,
+					   "visible", TRUE,
+					   "editable", FALSE,
+					   "word_wrap", TRUE,
+					   "line_wrap", TRUE,
+					   "can_focus", FALSE,
+					   NULL),
+			   "signal_after::realize", style_modify_base_as_bg, NULL, // FIXME
+			   "signal_after::realize", tweak_text_resize, NULL, // FIXME
+			   "signal_after::size_allocate", tweak_text_resize, NULL, // FIXME
+			   NULL);
   bst_wrap_text_set (text, string, double_newlines, user_data);
   
   return text;
@@ -942,7 +1611,7 @@ bst_drag_window_from_icon (BseIcon *icon)
   forest = bst_forest_from_bse_icon (icon,
 				     BST_DRAG_ICON_WIDTH,
 				     BST_DRAG_ICON_HEIGHT);
-  gtk_signal_connect_after (GTK_OBJECT (forest), "realize", style_modify_bg_as_black, NULL);
+  gtk_signal_connect_after (GTK_OBJECT (forest), "realize", G_CALLBACK (style_modify_bg_as_black), NULL);
   drag_window = gtk_widget_new (GTK_TYPE_WINDOW,
 				"type", GTK_WINDOW_POPUP,
 				"child", forest,
@@ -1004,6 +1673,84 @@ bst_container_get_insertion_position (GtkContainer   *container,
 }
 
 
+/* --- named children --- */
+static GQuark quark_container_named_children = 0;
+typedef struct {
+  GData *qdata;
+} NChildren;
+static void
+nchildren_free (gpointer data)
+{
+  NChildren *children = data;
+  
+  g_datalist_clear (&children->qdata);
+  g_free (children);
+}
+static void
+destroy_nchildren (GtkWidget *container)
+{
+  g_object_set_qdata (G_OBJECT (container), quark_container_named_children, NULL);
+}
+void
+bst_container_set_named_child (GtkWidget *container,
+			       GQuark     qname,
+			       GtkWidget *child)
+{
+  NChildren *children;
+
+  g_return_if_fail (GTK_IS_CONTAINER (container));
+  g_return_if_fail (qname > 0);
+  g_return_if_fail (GTK_IS_WIDGET (child));
+  g_return_if_fail (!GTK_OBJECT_DESTROYED (child));
+  if (child)
+    {
+      g_return_if_fail (!GTK_OBJECT_DESTROYED (container));
+      g_return_if_fail (gtk_widget_is_ancestor (child, container));
+    }
+
+  if (!quark_container_named_children)
+    quark_container_named_children = g_quark_from_static_string ("BstContainer-named_children");
+
+  children = g_object_get_qdata (G_OBJECT (container), quark_container_named_children);
+  if (!children)
+    {
+      children = g_new (NChildren, 1);
+      g_datalist_init (&children->qdata);
+      g_object_set_qdata_full (G_OBJECT (container), quark_container_named_children, children, nchildren_free);
+      g_object_connect (container,
+			"signal::destroy", destroy_nchildren, NULL,
+			NULL);
+    }
+  g_object_ref (child);
+  g_datalist_id_set_data_full (&children->qdata, qname, child, g_object_unref);
+}
+
+GtkWidget*
+bst_container_get_named_child (GtkWidget *container,
+			       GQuark     qname)
+{
+  NChildren *children;
+  
+  g_return_val_if_fail (GTK_IS_CONTAINER (container), NULL);
+  g_return_val_if_fail (qname > 0, NULL);
+
+  children = quark_container_named_children ? g_object_get_qdata (G_OBJECT (container), quark_container_named_children) : NULL;
+  if (children)
+    {
+      GtkWidget *child = g_datalist_id_get_data (&children->qdata, qname);
+
+      if (child && !gtk_widget_is_ancestor (child, container))
+	{
+	  /* got removed meanwhile */
+	  g_datalist_id_set_data (&children->qdata, qname, NULL);
+	  child = NULL;
+	}
+      return child;
+    }
+  return NULL;
+}
+
+
 /* --- Canvas Utilities & Workarounds --- */
 GnomeCanvasPoints*
 gnome_canvas_points_new0 (guint num_points)
@@ -1040,31 +1787,6 @@ gnome_canvas_points_newv (guint num_points,
   va_end (args);
   
   return points;
-}
-
-static void
-item_request_update_recurse (GnomeCanvasItem *item)
-{
-  g_return_if_fail (GNOME_IS_CANVAS_ITEM (item));
-  
-  gnome_canvas_item_request_update (item);
-  
-  if (GNOME_IS_CANVAS_GROUP (item))
-    {
-      GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (item);
-      GList *list;
-      
-      for (list = group->item_list; list; list = list->next)
-	item_request_update_recurse (list->data);
-    }
-}
-
-void
-gnome_canvas_request_full_update (GnomeCanvas *canvas)
-{
-  g_return_if_fail (GNOME_IS_CANVAS (canvas));
-  
-  item_request_update_recurse (canvas->root);
 }
 
 GnomeCanvasItem*
@@ -1164,6 +1886,21 @@ gnome_canvas_item_keep_above (GnomeCanvasItem *above,
     }
 }
 
+void
+gnome_canvas_FIXME_hard_update (GnomeCanvas *canvas)
+{
+  g_return_if_fail (GNOME_IS_CANVAS (canvas));
+
+  /* _first_ recalc bounds of already queued items */
+  gnome_canvas_update_now (canvas);
+
+  /* just requeueing an update doesn't suffice for rect-ellipses,
+   * re-translating the root-item is good enough though.
+   */
+  gnome_canvas_item_move (canvas->root, 0, 0);
+}
+
+
 /* --- Auxillary Dialogs --- */
 static gpointer adialog_parent_class = NULL;
 
@@ -1187,17 +1924,17 @@ bst_adialog_show (GtkWidget *widget)
 static void
 bst_adialog_init (BstADialog *adialog)
 {
-  adialog->vbox = gtk_widget_new (GTK_TYPE_VBOX,
-				  "visible", TRUE,
-				  "border_width", 0,
-				  "object_signal::destroy", bse_nullify_pointer, &adialog->vbox,
-				  "parent", adialog,
-				  NULL);
+  adialog->vbox = g_object_connect (gtk_widget_new (GTK_TYPE_VBOX,
+						    "visible", TRUE,
+						    "border_width", 0,
+						    "parent", adialog,
+						    NULL),
+				    "swapped_signal::destroy", bse_nullify_pointer, &adialog->vbox,
+				    NULL);
   adialog->hbox = NULL;
   adialog->default_widget = NULL;
   adialog->child = NULL;
   gtk_widget_set (GTK_WIDGET (adialog),
-		  "auto_shrink", FALSE,
 		  "allow_shrink", FALSE,
 		  "allow_grow", TRUE,
 		  "events", GDK_BUTTON_PRESS_MASK,
@@ -1205,10 +1942,7 @@ bst_adialog_init (BstADialog *adialog)
 }
 
 enum {
-  ARG_NONE,
-  ARG_CHOICE,
-  ARG_DATA_CHOICE,
-  ARG_DEFAULT_CHOICE
+  ARG_NONE
 };
 
 static void
@@ -1216,12 +1950,13 @@ bst_adialog_force_hbox (BstADialog *adialog)
 {
   if (!adialog->hbox)
     {
-      adialog->hbox = gtk_widget_new (GTK_TYPE_HBOX,
-				      "visible", TRUE,
-				      "border_width", 5,
-				      "object_signal::destroy", bse_nullify_pointer, &adialog->hbox,
-				      "spacing", 5,
-				      NULL);
+      adialog->hbox = g_object_connect (gtk_widget_new (GTK_TYPE_HBOX,
+							"visible", TRUE,
+							"border_width", 5,
+							"spacing", 5,
+							NULL),
+					"swapped_signal::destroy", bse_nullify_pointer, &adialog->hbox,
+					NULL);
       gtk_box_pack_end (GTK_BOX (adialog->vbox), adialog->hbox, FALSE, TRUE, 0);
       gtk_box_pack_end (GTK_BOX (adialog->vbox),
 			gtk_widget_new (GTK_TYPE_HSEPARATOR,
@@ -1236,27 +1971,52 @@ bst_adialog_set_arg (GtkObject *object,
 		     GtkArg    *arg,
 		     guint      arg_id)
 {
-  BstADialog *adialog = BST_ADIALOG (object);
-  guint n = 0;
+  // BstADialog *adialog = BST_ADIALOG (object);
   
   switch (arg_id)
     {
+    default:
+      break;
+    }
+}
+
+void
+bst_adialog_setup_choices (GtkWidget *_dialog,
+			   ...)
+{
+  BstADialog *adialog = (gpointer) _dialog;
+  gchar *name;
+  va_list var_args;
+
+  g_return_if_fail (BST_IS_ADIALOG (adialog));
+  
+  va_start (var_args, _dialog);
+  name = va_arg (var_args, gchar*);
+  while (name)
+    {
+      gpointer func = va_arg (var_args, gpointer);
+      gpointer data = va_arg (var_args, gpointer);
       gchar *arg_name;
-      
-    case ARG_DEFAULT_CHOICE:
-      n += 3;
-    case ARG_DATA_CHOICE:
-      n += 5;
-    case ARG_CHOICE:
-      n += 6;
-      arg_name = gtk_arg_name_strip_type (arg->name);
-      if (arg_name && arg_name[n] == ':' && arg_name[n + 1] == ':' && arg_name[n + 2])
+      guint aid;
+
+      if (strncmp (name, "default_choice::", 16) == 0)
+	aid = 16;
+      else if (strncmp (name, "swapped_choice::", 16) == 0)
+	aid = 16;
+      else if (strncmp (name, "choice::", 8) == 0)
+	aid = 8;
+      else
+	{
+	  g_warning (G_STRLOC ": invalid choice \"%s\"", name);
+	  break;
+	}
+      arg_name = name + aid;
+      if (arg_name[0])
 	{
 	  GtkWidget *choice;
 	  
 	  bst_adialog_force_hbox (adialog);
 	  
-	  arg_name += n + 2;
 	  choice = gtk_object_get_data (GTK_OBJECT (adialog->hbox), arg_name);
 	  if (!choice)
 	    {
@@ -1269,25 +2029,20 @@ bst_adialog_set_arg (GtkObject *object,
 				       NULL);
 	      gtk_object_set_data (GTK_OBJECT (adialog->hbox), arg_name, choice);
 	    }
-	  if (arg_id == ARG_DEFAULT_CHOICE)
+	  if (name[0] == 'd' /* default_choice */)
 	    {
 	      adialog->default_widget = choice;
 	      gtk_widget_grab_default (adialog->default_widget);
 	    }
-	  if (GTK_VALUE_SIGNAL (*arg).f)
-	    gtk_signal_connect_full (GTK_OBJECT (choice),
-				     "clicked",
-				     GTK_VALUE_SIGNAL (*arg).f, NULL,
-				     GTK_VALUE_SIGNAL (*arg).d, NULL,
-				     arg_id == ARG_DATA_CHOICE,
+	  if (func)
+	    gtk_signal_connect_full (GTK_OBJECT (choice), "clicked",
+				     func, NULL, data, NULL,
+				     name[0] == 's' /* swapped_choice */,
 				     FALSE);
 	}
-      else
-	g_warning (G_STRLOC ": invalid choice argument: \"%s\"\n", arg->name);
-      break;
-    default:
-      break;
+      name = va_arg (var_args, gchar*);
     }
+  va_end (var_args);
 }
 
 static void
@@ -1303,9 +2058,11 @@ bst_adialog_class_init (BstADialogClass *class)
   widget_class->show = bst_adialog_show;
   widget_class->delete_event = (gint (*) (GtkWidget*, GdkEventAny*)) gtk_widget_hide_on_delete;
   
-  gtk_object_add_arg_type ("BstADialog::choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_CHOICE);
-  gtk_object_add_arg_type ("BstADialog::data_choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_DATA_CHOICE);
-  gtk_object_add_arg_type ("BstADialog::default_choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_DEFAULT_CHOICE);
+  /*
+    gtk_object_add_arg_type ("BstADialog::choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_CHOICE);
+    gtk_object_add_arg_type ("BstADialog::data_choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_DATA_CHOICE);
+    gtk_object_add_arg_type ("BstADialog::default_choice", GTK_TYPE_SIGNAL, GTK_ARG_WRITABLE, ARG_DEFAULT_CHOICE);
+  */
 }
 
 GtkType
@@ -1333,6 +2090,13 @@ bst_adialog_get_type (void)
   return adialog_type;
 }
 
+static gboolean
+destroy_on_event (GtkWidget *widget)
+{
+  gtk_widget_destroy (widget);
+  return TRUE;
+}
+
 GtkWidget*
 bst_adialog_new (GtkObject      *alive_host,
 		 GtkWidget     **adialog_p,
@@ -1350,17 +2114,20 @@ bst_adialog_new (GtkObject      *alive_host,
   if (adialog_p)
     g_return_val_if_fail (adialog_p != NULL, NULL);
   
-  adialog = gtk_widget_new (BST_TYPE_ADIALOG,
-			    "modal", flags & BST_ADIALOG_MODAL,
-			    adialog_p ? "object_signal::destroy" : NULL, bse_nullify_pointer, adialog_p,
-			    NULL);
+  adialog = g_object_connect (gtk_widget_new (BST_TYPE_ADIALOG,
+					      "modal", (flags & BST_ADIALOG_MODAL) != FALSE,
+					      NULL),
+			      adialog_p ? "swapped_signal::destroy" : NULL, bse_nullify_pointer, adialog_p,
+			      NULL);
   if (flags & BST_ADIALOG_POPUP_POS)
     gtk_widget_set (adialog, "window_position", GTK_WIN_POS_MOUSE, NULL);
   BST_ADIALOG (adialog)->child = child;
-  gtk_widget_set (GTK_WIDGET (child),
-		  "object_signal::destroy", bse_nullify_pointer, &BST_ADIALOG (adialog)->child,
-		  "parent", BST_ADIALOG (adialog)->vbox,
-		  NULL);
+  g_object_set (GTK_WIDGET (child),
+		"parent", BST_ADIALOG (adialog)->vbox,
+		NULL);
+  g_object_connect (GTK_WIDGET (child),
+		    "swapped_signal::destroy", bse_nullify_pointer, &BST_ADIALOG (adialog)->child,
+		    NULL);
   if (alive_host)
     gtk_signal_connect_object_while_alive (alive_host,
 					   "destroy",
@@ -1374,40 +2141,14 @@ bst_adialog_new (GtkObject      *alive_host,
 
   if (first_arg_name)
     {
-      GtkObject *object = GTK_OBJECT (adialog);
+      GObject *object = G_OBJECT (adialog);
       va_list var_args;
-      GSList *arg_list = NULL;
-      GSList *info_list = NULL;
-      gchar *error;
-      
+
+      g_return_val_if_fail (G_IS_OBJECT (object), NULL);
+
       va_start (var_args, first_arg_name);
-      error = gtk_object_args_collect (GTK_OBJECT_TYPE (object),
-				       &arg_list,
-				       &info_list,
-				       first_arg_name,
-				       var_args);
+      g_object_set_valist (object, first_arg_name, var_args);
       va_end (var_args);
-      
-      if (error)
-	{
-	  g_warning (G_STRLOC ": %s", error);
-	  g_free (error);
-	}
-      else
-	{
-	  GSList *slist_arg;
-	  GSList *slist_info;
-	  
-	  slist_arg = arg_list;
-	  slist_info = info_list;
-	  while (slist_arg)
-	    {
-	      gtk_object_arg_set (object, slist_arg->data, slist_info->data);
-	      slist_arg = slist_arg->next;
-	      slist_info = slist_info->next;
-	    }
-	  gtk_args_collect_cleanup (arg_list, info_list);
-	}
     }
   
   if (flags & BST_ADIALOG_DESTROY_ON_HIDE)
@@ -1415,6 +2156,11 @@ bst_adialog_new (GtkObject      *alive_host,
 			      "hide",
 			      GTK_SIGNAL_FUNC (gtk_widget_destroy),
 			      NULL);
+  else if (flags & BST_ADIALOG_DESTROY_ON_DELETE)
+    gtk_signal_connect (GTK_OBJECT (adialog),
+			"delete_event",
+			GTK_SIGNAL_FUNC (destroy_on_event),
+			NULL);
   
   return adialog;
 }
@@ -1437,11 +2183,12 @@ gdk_window_translate (GdkWindow *src_window,
 		      gint      *x,
 		      gint      *y)
 {
-  GdkWindowPrivate *src_private;
-  GdkWindowPrivate *dest_private;
-  Window child;
   gint tx = 0, ty = 0;
   gboolean success = FALSE;
+#if !GTK_CHECK_VERSION (1, 3, 1)
+  Window child;
+  GdkWindowPrivate *src_private;
+  GdkWindowPrivate *dest_private;
 
   src_private = src_window ? (GdkWindowPrivate*) src_window : &gdk_root_parent;
   dest_private = dest_window ? (GdkWindowPrivate*) dest_window : &gdk_root_parent;
@@ -1452,10 +2199,49 @@ gdk_window_translate (GdkWindow *src_window,
 				     dest_private->xwindow,
 				     x ? *x : 0, y ? *y : 0, &tx, &ty,
 				     &child);
+#endif
+
   if (x)
     *x = tx;
   if (y)
     *y = ty;
 
   return success;
+}
+
+
+/* --- generated types --- */
+#include "bstgentypes.c"	/* type id defs */
+#include "bstenum_arrays.c"	/* enum string value arrays plus include directives */
+void
+bst_init_gentypes (void)
+{
+  static gboolean initialized = FALSE;
+
+  if (!initialized)
+    {
+      static struct {
+	gchar            *type_name;
+	GType             parent;
+	GType            *type_id;
+	gconstpointer     pointer1;
+      } builtin_info[] = {
+#include "bstenum_list.c"	/* type entries */
+      };
+      guint i;
+
+      for (i = 0; i < sizeof (builtin_info) / sizeof (builtin_info[0]); i++)
+	{
+	  GType type_id = 0;
+
+	  if (builtin_info[i].parent == G_TYPE_ENUM)
+	    type_id = g_enum_register_static (builtin_info[i].type_name, builtin_info[i].pointer1);
+	  else if (builtin_info[i].parent == G_TYPE_FLAGS)
+	    type_id = g_flags_register_static (builtin_info[i].type_name, builtin_info[i].pointer1);
+	  else
+	    g_assert_not_reached ();
+	  g_assert (g_type_name (type_id) != NULL);
+	  *builtin_info[i].type_id = type_id;
+	}
+    }
 }

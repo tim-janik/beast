@@ -33,7 +33,7 @@ extern "C" {
 #define	BST_PATTERN_VIEW_CLASS(klass)	 (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PATTERN_VIEW, BstPatternViewClass))
 #define	BST_IS_PATTERN_VIEW(object)	 (GTK_CHECK_TYPE ((object), BST_TYPE_PATTERN_VIEW))
 #define	BST_IS_PATTERN_VIEW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PATTERN_VIEW))
-#define BST_PATTERN_VIEW_GET_CLASS(obj)	 ((BstPatternViewClass*) (((GtkObject*) (obj))->klass))
+#define BST_PATTERN_VIEW_GET_CLASS(obj)	 (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PATTERN_VIEW, BstPatternViewClass))
 
 
 /* --- structures & typedefs --- */

@@ -1,3 +1,5 @@
+SUBDIRS = reference
+
 public_docs = $(strip \
 	bse-heart.txt \
 	bse-networks.txt \

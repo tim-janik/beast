@@ -1,3 +1,4 @@
+#include "bstutils.h"
 #include "gnomeforest.h"
 
 
@@ -404,7 +405,7 @@ static void	gnome_forest_set_arg		(GtkObject	   	*object,
 static void	gnome_forest_get_arg		(GtkObject		*object,
 						 GtkArg	   		*arg,
 						 guint	   		 arg_id);
-static void	gnome_forest_finalize		(GtkObject		*object);
+static void	gnome_forest_finalize		(GObject		*object);
 static void	gnome_forest_size_request	(GtkWidget		*widget,
 						 GtkRequisition		*requisition);
 static void	gnome_forest_size_allocate	(GtkWidget		*widget,
@@ -492,9 +493,10 @@ gnome_forest_class_init (GnomeForestClass *class)
   
   quark_animators = g_quark_from_static_string ("gnome-forest-animators");
   
+  G_OBJECT_CLASS (object_class)->finalize = gnome_forest_finalize;
+
   object_class->set_arg = gnome_forest_set_arg;
   object_class->get_arg = gnome_forest_get_arg;
-  object_class->finalize = gnome_forest_finalize;
   
   widget_class->size_request = gnome_forest_size_request;
   widget_class->size_allocate = gnome_forest_size_allocate;
@@ -510,11 +512,10 @@ gnome_forest_class_init (GnomeForestClass *class)
   forest_signals[SIGNAL_COLLISION] =
     gtk_signal_new ("collision",
 		    GTK_RUN_LAST,
-		    object_class->type,
+		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GnomeForestClass, collision),
-		    gnome_forest_marshal_collision,
+		    bst_marshal_NONE__UINT_POINTER,
 		    GTK_TYPE_NONE, 2, GTK_TYPE_UINT, GTK_TYPE_POINTER);
-  gtk_object_class_add_signals (object_class, forest_signals, SIGNAL_LAST);
 }
 
 static void
@@ -529,6 +530,7 @@ gnome_forest_init (GnomeForest *forest)
   forest->render_uta = NULL;
   forest->paint_uta = NULL;
   g_datalist_init (&forest->animdata);
+  gtk_widget_set_double_buffered (GTK_WIDGET (forest), FALSE);
 }
 
 static void
@@ -570,7 +572,7 @@ gnome_forest_get_arg (GtkObject	  *object,
 }
 
 static void
-gnome_forest_finalize (GtkObject *object)
+gnome_forest_finalize (GObject *object)
 {
   GnomeForest *forest = GNOME_FOREST (object);
   guint i;
@@ -597,7 +599,7 @@ gnome_forest_finalize (GtkObject *object)
   if (forest->paint_uta)
     art_uta_free (forest->paint_uta);
   
-  GTK_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -1364,10 +1366,14 @@ gnome_forest_paint (GnomeForest *forest,
 }
 
 static gboolean
-gnome_forest_idle_update (gpointer func_data)
+forest_idle_update (gpointer func_data)
 {
-  GnomeForest *forest = GNOME_FOREST (func_data);
-  
+  GnomeForest *forest;
+
+  GDK_THREADS_ENTER ();
+
+  forest = GNOME_FOREST (func_data);
+
   forest->update_queued = 0;
   
   if (GTK_WIDGET_VISIBLE (forest) && forest->buffer && !GTK_OBJECT_DESTROYED (forest))
@@ -1405,7 +1411,8 @@ gnome_forest_idle_update (gpointer func_data)
 	}
       /*FIXME*/ gnome_forest_collisions (forest);
     }
-  
+  GDK_THREADS_LEAVE ();
+
   return FALSE;
 }
 
@@ -1418,7 +1425,7 @@ gnome_forest_queue_update (GnomeForest *forest)
     {
       gtk_object_ref (GTK_OBJECT (forest));
       forest->update_queued = g_idle_add_full (GNOME_FOREST_PRIORITY - 1,
-					       gnome_forest_idle_update,
+					       forest_idle_update,
 					       forest,
 					       (GDestroyNotify) gtk_object_unref);
     }
@@ -1435,10 +1442,12 @@ gnome_forest_render_now (GnomeForest *forest)
 
   if (forest->update_queued)
     {
-      guint handler_id = forest->update_queued;
+      g_source_remove (forest->update_queued);
+      forest->update_queued = 0;
 
-      gnome_forest_idle_update (forest);
-      g_source_remove (handler_id);
+      GDK_THREADS_LEAVE ();
+      forest_idle_update (forest);
+      GDK_THREADS_ENTER ();
     }
 }
 
@@ -1856,10 +1865,17 @@ static gboolean
 sprite_animator (gpointer data)
 {
   gpointer *sa_data = data;
-  GnomeForest *forest = GNOME_FOREST (sa_data[0]);
-  AnimCtrl *actrl = sa_data[1];
-  GnomeSprite *sprite = gnome_forest_peek_sprite (forest, actrl->sprite_id);
-  AnimData *adata = nth_animdata (actrl, actrl->nth_adata);
+  GnomeForest *forest;
+  AnimCtrl *actrl;
+  GnomeSprite *sprite;
+  AnimData *adata;
+
+  GDK_THREADS_ENTER ();
+
+  forest = GNOME_FOREST (sa_data[0]);
+  actrl = sa_data[1];
+  sprite = gnome_forest_peek_sprite (forest, actrl->sprite_id);
+  adata = nth_animdata (actrl, actrl->nth_adata);
   
   if (sprite && adata)
     {
@@ -1880,6 +1896,8 @@ sprite_animator (gpointer data)
 	  queue_animator (forest, actrl);
 	}
     }
+
+  GDK_THREADS_LEAVE ();
   
   return FALSE;
 }

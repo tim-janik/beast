@@ -21,6 +21,7 @@
 #define	__BSE_STORAGE_H__
 
 #include	<bse/bseobject.h>
+#include	<gsl/gsldefs.h>
 
 
 #ifdef __cplusplus
@@ -61,7 +62,6 @@ struct _BseStorage
   GScanner		*scanner;
   gint			 fd;
   glong			 bin_offset;
-  BseStorageBBlock	*rblocks;	/* keeps ref */
   gpointer		 resolver_fd;
   BsePathResolver	 resolver;
   gpointer		 resolver_data;
@@ -70,13 +70,6 @@ struct _BseStorage
   GSList		*indent;
   BseStorageBBlock	*wblocks;	/* keeps ref */
   GString		*gstring;
-};
-struct _BseStorageBBlock
-{
-  BseBinData	   *bdata;
-  BseStorageBBlock *next;
-  guint		    offset;
-  guint		    length;
 };
 
 
@@ -107,8 +100,11 @@ void		bse_storage_needs_break		(BseStorage	*storage);
 void		bse_storage_put_param		(BseStorage	*storage,
 						 GValue		*value,
 						 GParamSpec	*pspec);
-void		bse_storage_put_bin_data	(BseStorage	*storage,
-						 BseBinData	*bdata);
+void		bse_storage_put_wave_handle	(BseStorage	*storage,
+						 guint		 significant_bits,
+						 GslDataHandle	*handle,
+						 GslLong	 voffset,
+						 GslLong	 vlength);
 void		bse_storage_flush_fd		(BseStorage	*storage,
 						 gint		 fd);
      
@@ -137,8 +133,8 @@ GTokenType	bse_storage_parse_rest		(BseStorage     *storage,
 GTokenType	bse_storage_parse_note		(BseStorage	*storage,
 						 gint		*note,
 						 gchar           bbuffer[BSE_BBUFFER_SIZE]);
-GTokenType	bse_storage_parse_bin_data	(BseStorage	*storage,
-						 BseBinData    **bdata_p);
+GTokenType	bse_storage_parse_wave_handle	(BseStorage	*storage,
+						 GslDataHandle **data_handle_p);
 GTokenType	bse_storage_parse_param_value	(BseStorage	*storage,
 						 GValue		*value,
 						 GParamSpec	*pspec);

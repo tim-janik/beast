@@ -68,16 +68,14 @@ static void	   dav_guitar_init	       (DavGuitar	*guitar);
 static void	   dav_guitar_class_init       (DavGuitarClass	*guitar);
 static void	   dav_guitar_class_finalize   (DavGuitarClass	*guitar);
 static void	   dav_guitar_do_destroy       (BseObject       *object);
-static void	   dav_guitar_set_param	       (DavGuitar	*guitar,
+static void	   dav_guitar_set_property     (DavGuitar	*guitar,
 						guint            param_id,
 						GValue          *value,
-						GParamSpec      *pspec,
-						const gchar     *trailer);
-static void	   dav_guitar_get_param	       (DavGuitar	*guitar,
+						GParamSpec      *pspec);
+static void	   dav_guitar_get_property     (DavGuitar	*guitar,
 						guint            param_id,
 						GValue          *value,
-						GParamSpec      *pspec,
-						const gchar     *trailer);
+						GParamSpec      *pspec);
 static void	   dav_guitar_prepare	       (BseSource	*source,
 						BseIndex	  index);
 static BseChunk*   dav_guitar_calc_chunk       (BseSource	*source,
@@ -224,20 +222,20 @@ add_string_param (BseObjectClass *object_class,
 		  gint		  trigger_enum)
 {
   bse_object_class_add_param (object_class, name, freq_enum,
-			      b_param_spec_float (freq_param, "Frequency", NULL,
+			      bse_param_spec_float (freq_param, "Frequency", NULL,
 						  50.0, 2000.0,
 						  freq_value, 0.1,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_DIAL));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
   
   bse_object_class_add_param (object_class, name, note_enum,
-			      b_param_spec_note (note_param, "Note", NULL,
+			      bse_param_spec_note (note_param, "Note", NULL,
 						 BSE_NOTE_G (-2), BSE_NOTE_B (3),
 						 note_value, 1, FALSE,
-						 B_PARAM_GUI));
+						 BSE_PARAM_GUI));
   
   bse_object_class_add_param (object_class, name, trigger_enum,
-			      b_param_spec_bool (trigger_param, "Trigger Hit", "Pluck the string",
-						 FALSE, B_PARAM_GUI));
+			      bse_param_spec_bool (trigger_param, "Trigger Hit", "Pluck the string",
+						 FALSE, BSE_PARAM_GUI));
 }
 
 static inline void
@@ -255,8 +253,8 @@ dav_guitar_class_init (DavGuitarClass *class)
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   
-  gobject_class->set_param = (GObjectSetParamFunc) dav_guitar_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) dav_guitar_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) dav_guitar_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) dav_guitar_get_property;
 
   object_class->destroy = dav_guitar_do_destroy;
   
@@ -278,30 +276,30 @@ dav_guitar_class_init (DavGuitarClass *class)
 		    "freq_6", PARAM_FREQ_6, 391.995436, "note_6", PARAM_NOTE_6, BSE_NOTE_G (1),	 "trigger_6", PARAM_TRIGGER_6);
   
   bse_object_class_add_param (object_class, "Global Control", PARAM_TRIGGER_VEL,
-			      b_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
+			      bse_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
 						  "Set the velocity of the string pluck",
 						  0.0, 100.0, 100.0, 10.0,
-						  B_PARAM_GUI | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_GUI | BSE_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Global Control", PARAM_TRIGGER_ALL,
-			      b_param_spec_bool ("trigger_all", "Trigger Hit All", "Strum guitar",
-						 FALSE, B_PARAM_GUI));
+			      bse_param_spec_bool ("trigger_all", "Trigger Hit All", "Strum guitar",
+						 FALSE, BSE_PARAM_GUI));
   
   bse_object_class_add_param (object_class, "Global Control", PARAM_STOP_ALL,
-			      b_param_spec_bool ("stop_all", "Stop All", "Stop all the strings from vibrating",
-						 FALSE, B_PARAM_GUI));
+			      bse_param_spec_bool ("stop_all", "Stop All", "Stop all the strings from vibrating",
+						 FALSE, BSE_PARAM_GUI));
   
   bse_object_class_add_param (object_class, "Flavour", PARAM_METALLIC_FACTOR,
-			      b_param_spec_float ("metallic_factor", "Metallic Factor [%]",
+			      bse_param_spec_float ("metallic_factor", "Metallic Factor [%]",
 						  "Set the metallicness of the string",
 						  0.0, 100.0, 16.0, 0.25,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   bse_object_class_add_param (object_class, "Flavour", PARAM_SNAP_FACTOR,
-			      b_param_spec_float ("snap_factor", "Snap Factor [%]",
+			      bse_param_spec_float ("snap_factor", "Snap Factor [%]",
 						  "Set the snappiness of the string",
 						  0.0, 100.0, 34.0, 0.25,
-						  B_PARAM_DEFAULT | B_PARAM_HINT_SCALE));
+						  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", "GuitarOutput", 1);
   g_assert (ochannel_id == DAV_GUITAR_OCHANNEL_MONO);
@@ -381,82 +379,81 @@ dav_guitar_stop (DavGuitar *guitar)
 }
 
 static void
-dav_guitar_set_param (DavGuitar   *guitar,
-		      guint        param_id,
-		      GValue      *value,
-		      GParamSpec  *pspec,
-		      const gchar *trailer)
+dav_guitar_set_property (DavGuitar   *guitar,
+			 guint        param_id,
+			 GValue      *value,
+			 GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_FREQ_1:
-      wave_guide_set_freq (&guitar->strings[0], b_value_get_float (value));
+      wave_guide_set_freq (&guitar->strings[0], g_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (guitar), "note_1");
       break;
     case PARAM_NOTE_1:
-      wave_guide_set_freq (&guitar->strings[0], bse_note_to_freq (b_value_get_note (value)));
+      wave_guide_set_freq (&guitar->strings[0], bse_note_to_freq (bse_value_get_note (value)));
       bse_object_param_changed (BSE_OBJECT (guitar), "freq_1");
       break;
     case PARAM_TRIGGER_1:
       dav_guitar_trigger_string (guitar, 0);
       break;
     case PARAM_FREQ_2:
-      wave_guide_set_freq (&guitar->strings[1], b_value_get_float (value));
+      wave_guide_set_freq (&guitar->strings[1], g_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (guitar), "note_2");
       break;
     case PARAM_NOTE_2:
-      wave_guide_set_freq (&guitar->strings[1], bse_note_to_freq (b_value_get_note (value)));
+      wave_guide_set_freq (&guitar->strings[1], bse_note_to_freq (bse_value_get_note (value)));
       bse_object_param_changed (BSE_OBJECT (guitar), "freq_2");
       break;
     case PARAM_TRIGGER_2:
       dav_guitar_trigger_string (guitar, 1);
       break;
     case PARAM_FREQ_3:
-      wave_guide_set_freq (&guitar->strings[2], b_value_get_float (value));
+      wave_guide_set_freq (&guitar->strings[2], g_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (guitar), "note_3");
       break;
     case PARAM_NOTE_3:
-      wave_guide_set_freq (&guitar->strings[2], bse_note_to_freq (b_value_get_note (value)));
+      wave_guide_set_freq (&guitar->strings[2], bse_note_to_freq (bse_value_get_note (value)));
       bse_object_param_changed (BSE_OBJECT (guitar), "freq_3");
       break;
     case PARAM_TRIGGER_3:
       dav_guitar_trigger_string (guitar, 2);
       break;
     case PARAM_FREQ_4:
-      wave_guide_set_freq (&guitar->strings[3], b_value_get_float (value));
+      wave_guide_set_freq (&guitar->strings[3], g_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (guitar), "note_4");
       break;
     case PARAM_NOTE_4:
-      wave_guide_set_freq (&guitar->strings[3], bse_note_to_freq (b_value_get_note (value)));
+      wave_guide_set_freq (&guitar->strings[3], bse_note_to_freq (bse_value_get_note (value)));
       bse_object_param_changed (BSE_OBJECT (guitar), "freq_4");
       break;
     case PARAM_TRIGGER_4:
       dav_guitar_trigger_string (guitar, 3);
       break;
     case PARAM_FREQ_5:
-      wave_guide_set_freq (&guitar->strings[4], b_value_get_float (value));
+      wave_guide_set_freq (&guitar->strings[4], g_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (guitar), "note_5");
       break;
     case PARAM_NOTE_5:
-      wave_guide_set_freq (&guitar->strings[4], bse_note_to_freq (b_value_get_note (value)));
+      wave_guide_set_freq (&guitar->strings[4], bse_note_to_freq (bse_value_get_note (value)));
       bse_object_param_changed (BSE_OBJECT (guitar), "freq_5");
       break;
     case PARAM_TRIGGER_5:
       dav_guitar_trigger_string (guitar, 4);
       break;
     case PARAM_FREQ_6:
-      wave_guide_set_freq (&guitar->strings[5], b_value_get_float (value));
+      wave_guide_set_freq (&guitar->strings[5], g_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (guitar), "note_6");
       break;
     case PARAM_NOTE_6:
-      wave_guide_set_freq (&guitar->strings[5], bse_note_to_freq (b_value_get_note (value)));
+      wave_guide_set_freq (&guitar->strings[5], bse_note_to_freq (bse_value_get_note (value)));
       bse_object_param_changed (BSE_OBJECT (guitar), "freq_6");
       break;
     case PARAM_TRIGGER_6:
       dav_guitar_trigger_string (guitar, 5);
       break;
     case PARAM_TRIGGER_VEL:
-      guitar->trigger_vel = b_value_get_float (value) / 100.0;
+      guitar->trigger_vel = g_value_get_float (value) / 100.0;
       break;
     case PARAM_TRIGGER_ALL:
       dav_guitar_trigger (guitar);
@@ -465,99 +462,98 @@ dav_guitar_set_param (DavGuitar   *guitar,
       dav_guitar_stop (guitar);
       break;
     case PARAM_METALLIC_FACTOR:
-      guitar->metallic_factor = b_value_get_float (value) / 100.0;
+      guitar->metallic_factor = g_value_get_float (value) / 100.0;
       break;
     case PARAM_SNAP_FACTOR:
-      guitar->snap_factor = b_value_get_float (value) / 100.0;
+      guitar->snap_factor = g_value_get_float (value) / 100.0;
       break;
       
     default:
-      G_WARN_INVALID_PARAM_ID (guitar, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (guitar, param_id, pspec);
       break;
     }
 }
 
 static void
-dav_guitar_get_param (DavGuitar   *guitar,
-		      guint        param_id,
-		      GValue      *value,
-		      GParamSpec  *pspec,
-		      const gchar *trailer)
+dav_guitar_get_property (DavGuitar   *guitar,
+			 guint        param_id,
+			 GValue      *value,
+			 GParamSpec  *pspec)
 {
   switch (param_id)
     {
     case PARAM_FREQ_1:
-      b_value_set_float (value, guitar->strings[0].freq);
+      g_value_set_float (value, guitar->strings[0].freq);
       break;
     case PARAM_NOTE_1:
-      b_value_set_note (value, bse_note_from_freq (guitar->strings[0].freq));
+      bse_value_set_note (value, bse_note_from_freq (guitar->strings[0].freq));
       break;
     case PARAM_TRIGGER_1:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_FREQ_2:
-      b_value_set_float (value, guitar->strings[1].freq);
+      g_value_set_float (value, guitar->strings[1].freq);
       break;
     case PARAM_NOTE_2:
-      b_value_set_note (value, bse_note_from_freq (guitar->strings[1].freq));
+      bse_value_set_note (value, bse_note_from_freq (guitar->strings[1].freq));
       break;
     case PARAM_TRIGGER_2:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_FREQ_3:
-      b_value_set_float (value, guitar->strings[2].freq);
+      g_value_set_float (value, guitar->strings[2].freq);
       break;
     case PARAM_NOTE_3:
-      b_value_set_note (value, bse_note_from_freq (guitar->strings[2].freq));
+      bse_value_set_note (value, bse_note_from_freq (guitar->strings[2].freq));
       break;
     case PARAM_TRIGGER_3:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_FREQ_4:
-      b_value_set_float (value, guitar->strings[3].freq);
+      g_value_set_float (value, guitar->strings[3].freq);
       break;
     case PARAM_NOTE_4:
-      b_value_set_note (value, bse_note_from_freq (guitar->strings[3].freq));
+      bse_value_set_note (value, bse_note_from_freq (guitar->strings[3].freq));
       break;
     case PARAM_TRIGGER_4:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_FREQ_5:
-      b_value_set_float (value, guitar->strings[4].freq);
+      g_value_set_float (value, guitar->strings[4].freq);
       break;
     case PARAM_NOTE_5:
-      b_value_set_note (value, bse_note_from_freq (guitar->strings[4].freq));
+      bse_value_set_note (value, bse_note_from_freq (guitar->strings[4].freq));
       break;
     case PARAM_TRIGGER_5:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_FREQ_6:
-      b_value_set_float (value, guitar->strings[5].freq);
+      g_value_set_float (value, guitar->strings[5].freq);
       break;
     case PARAM_NOTE_6:
-      b_value_set_note (value, bse_note_from_freq (guitar->strings[5].freq));
+      bse_value_set_note (value, bse_note_from_freq (guitar->strings[5].freq));
       break;
     case PARAM_TRIGGER_6:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_TRIGGER_VEL:
-      b_value_set_float (value, guitar->trigger_vel * 100.0);
+      g_value_set_float (value, guitar->trigger_vel * 100.0);
       break;
     case PARAM_TRIGGER_ALL:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_STOP_ALL:
-      b_value_set_bool (value, FALSE);
+      g_value_set_boolean (value, FALSE);
       break;
     case PARAM_METALLIC_FACTOR:
-      b_value_set_float (value, guitar->metallic_factor * 100.0);
+      g_value_set_float (value, guitar->metallic_factor * 100.0);
       break;
     case PARAM_SNAP_FACTOR:
-      b_value_set_float (value, guitar->snap_factor * 100.0);
+      g_value_set_float (value, guitar->snap_factor * 100.0);
       break;
       
     default:
-      G_WARN_INVALID_PARAM_ID (guitar, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (guitar, param_id, pspec);
       break;
     }
 }

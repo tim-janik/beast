@@ -33,7 +33,7 @@ extern "C" {
 #define BST_PROCEDURE_SHELL_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PROCEDURE_SHELL, BstProcedureShellClass))
 #define BST_IS_PROCEDURE_SHELL(object)	    (GTK_CHECK_TYPE ((object), BST_TYPE_PROCEDURE_SHELL))
 #define BST_IS_PROCEDURE_SHELL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PROCEDURE_SHELL))
-#define BST_PROCEDURE_SHELL_GET_CLASS(obj)  ((BstProcedureShellClass*) (((GtkObject*) (obj))->klass))
+#define BST_PROCEDURE_SHELL_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PROCEDURE_SHELL, BstProcedureShellClass))
 
 
 /* --- structures & typedefs --- */
@@ -54,8 +54,6 @@ struct _BstProcedureShell
   guint		     in_modal_selection : 1;
   guint		     in_execution : 1;
   guint		     hide_dialog_on_exec : 1;
-  
-  GtkTooltips	    *tooltips;
 };
 struct _BstProcedureShellClass
 {
@@ -84,6 +82,11 @@ GtkWidget*	   bst_procedure_dialog_from_shell (BstProcedureShell *shell,
 BstProcedureShell* bst_procedure_dialog_get_shell  (GtkWidget	      *dialog);
 void		   bst_procedure_dialog_exec_modal (GtkWidget	      *dialog,
 						    gboolean	       force_display);
+
+
+/* --- convenience --- */
+void		   bst_procedure_user_exec_method  (const gchar	      *proc_path,
+						    BswProxy	       preset_proxy);
 
 
 

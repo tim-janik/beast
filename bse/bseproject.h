@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@ struct _BseProjectClass
 
 
 /* --- prototypes --- */
-BseProject*	bse_project_new			(const gchar	*name);
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
 void		bse_project_add_super		(BseProject	*project,
@@ -67,7 +66,6 @@ BseObject*	bse_project_path_resolver	(gpointer        project /* func_data */,
 						 BseStorage     *storage,
 						 GType           required_type,
 						 const gchar    *path);
-     
 
 #ifdef __cplusplus
 }

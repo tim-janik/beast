@@ -1,0 +1,68 @@
+TOYPRF - Poor man's profiling toy
+=================================
+
+toyprof is a fast hack profiler which provides reasonably accurate
+profiling results in comparatively small and supposedly easy to
+modify code.
+in order to get this profiler going quickly, it has a number of
+dependancies:
+* you should be using gcc 2.95 or above, so -finstrument-functions is
+  supported
+* you need to be running a recent glibc (i've got 2.2.3 here) so elf
+  symbols can be looked up via elf.h and link.h.
+* you need binutils installed which provides you with a command line
+  tool addr2line. addr2line can extract symbol names and file/line
+  information from programs/libraries compiled with debugging enabled.
+* in case you want to use the pentium cpu clock cycle for timings, you
+  need to have /proc/cpuinfo in place (usually that means you're running
+  a not too old linux kernel). beware, this will only work on non SMP
+  systems.
+* you need perl to interpret the resulting profiler dumps
+
+Quick running instructions:
+1) compile every library and the program that you want profiling statistics
+   for with: CC="gcc -finstrument-functions -D__NO_INLINE__ -g"
+   usually, putting CC= in front of a package's ./configure is good enough:
+   sh<~>$ cd package
+   sh<package>$ CC="gcc -finstrument-functions -D__NO_INLINE__ -g" configure
+   sh<package>$ make
+   sh<package>$ make install
+2) look for "configuration" in toyprof.c and adjust things if required
+3) compile toyprof.[hc] and link toyprof.o (or .lo) into one of the
+   libraries or into the resulting program.
+4) start your program with full qualifying path to the executable (don't
+   make use of automatic $PATH lookups or libtool shell script wrappers),
+   and redirect standard error output into a file, e.g.:
+   sh</tmp>$ ~/binaries/myprofilingtarget 2>prof.raw
+   or, if you want to still see standard error output:
+   sh</tmp>$ ~/binaries/myprofilingtarget 2>&1 | tee prof.raw
+5) invoke toyprof.pl on the resulting profiler dump:
+   sh</tmp>$ toyprof.pl prof.raw | less -S
+   usually a single function has many different callers and thus multiple
+   profiling lines will appear for that function. to accumulate all
+   profiling information for a single function, invoke toyprof.pl with
+   the --merge option, giving it the column that functions appear in:
+   sh</tmp>$ toyprof.pl --merge 4 prof.raw | less -S
+
+note, that some lines in the unmerged profiling output may contain the
+same (function,caller) combination. this occours if the caller invoked
+function from different places.
+
+Technical notes:
+toyprof.c hooks into every function call by supplying the symbols
+__cyg_profile_func_enter and __cyg_profile_func_ecit which gcc generates
+calls to if used with the -finstrument-functions option.
+it then keeps a sorted array of profiling statistics for each (function,
+caller) pair, and updates that upon re-entering.
+it's probably a good idea to convert to a hash table at some point, as
+the number of triggered (function,caller) pairs gets pretty large with
+moderately sized programs/libraries already, and every insertion is an
+O(pairs) performance hit (at least, that doesn't show up in the profiles ;).
+the code is hopefully sufficiently self-explanatory and should be pretty
+easy to modify by changing the contents of toyprof_func_enter() and
+toyprof_func_exit() (the two functions being called upon a target function's
+entry and exit). basically anything could be collected there, that doesn't
+hurt the target's reentrancy too badly, e.g. sizes if you have a function
+like size_t malloc_allocated_size (void).
+
+comments, beer, phrases of wisdom and no flames can be send to timj@gtk.org.

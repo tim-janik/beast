@@ -1,5 +1,5 @@
 /* BseMixer - BSE Mixer
- * Copyright (C) 1999, 2000 Tim Janik
+ * Copyright (C) 1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -42,6 +42,8 @@ extern "C" {
 #define BSE_IS_MIXER_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_MIXER))
 #define BSE_MIXER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_MIXER, BseMixerClass))
 
+#define	BSE_MIXER_N_INPUTS	(4)
+
 
 /* --- BseMixer source --- */
 typedef struct _BseMixer      BseMixer;
@@ -50,9 +52,8 @@ struct _BseMixer
 {
   BseSource       parent_object;
 
-  gfloat          volume_factor[5];
-
-  BseMixValue    *mix_buffer;
+  gfloat	  master_volume_factor;
+  gfloat          volume_factors[BSE_MIXER_N_INPUTS];
 };
 struct _BseMixerClass
 {
@@ -63,15 +64,6 @@ struct _BseMixerClass
 /* --- channels --- */
 enum
 {
-  BSE_MIXER_ICHANNEL_NONE,
-  BSE_MIXER_ICHANNEL_MONO1,
-  BSE_MIXER_ICHANNEL_MONO2,
-  BSE_MIXER_ICHANNEL_MONO3,
-  BSE_MIXER_ICHANNEL_MONO4
-};
-enum
-{
-  BSE_MIXER_OCHANNEL_NONE,
   BSE_MIXER_OCHANNEL_MONO
 };
 

@@ -1,5 +1,5 @@
 /* DavXtalStrings - DAV Physical Modelling String Synthesizer
- * Copyright (c) 2000 David A. Bartold
+ * Copyright (c) 2000 David A. Bartold, 2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -39,28 +39,19 @@ extern "C" {
 /* --- DavXtalStrings source --- */
 typedef struct _DavXtalStrings	    DavXtalStrings;
 typedef struct _DavXtalStringsClass DavXtalStringsClass;
-
-struct _DavXtalStrings
-{
-  BseSource parent_object;
-  
+typedef struct {
   gfloat      freq;
   gfloat      trigger_vel;
   gfloat      note_decay;
   gfloat      tension_decay;
   gfloat      metallic_factor;
   gfloat      snap_factor;
-  
-  gfloat      a;
-  gfloat      damping_factor;
-  
-  gfloat      d;
-  gfloat      *string;
-  gint	      size;
-  gint	      pos;
-  guint	      count;
-  
-  guint	      input_trigger_state : 1;
+} DavXtalStringsParams;
+struct _DavXtalStrings
+{
+  BseSource parent_object;
+
+  DavXtalStringsParams params;
 };
 
 struct _DavXtalStringsClass
@@ -72,13 +63,8 @@ struct _DavXtalStringsClass
 /* --- channels --- */
 enum
 {
-  DAV_XTAL_STRINGS_OCHANNEL_NONE,
   DAV_XTAL_STRINGS_OCHANNEL_MONO
 };
-
-
-/* --- prototypes --- */
-void	dav_xtal_strings_trigger	(DavXtalStrings *strings);
 
 
 

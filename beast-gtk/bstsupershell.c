@@ -28,6 +28,7 @@ enum {
 static void	bst_super_shell_class_init	(BstSuperShellClass	*klass);
 static void	bst_super_shell_init		(BstSuperShell		*super_shell);
 static void	bst_super_shell_destroy		(GtkObject		*object);
+static void	bst_super_shell_finalize	(GObject		*object);
 static void	bst_super_shell_set_arg		(GtkObject		*object,
 						 GtkArg			*arg,
 						 guint		         arg_id);
@@ -35,9 +36,9 @@ static void	bst_super_shell_get_arg		(GtkObject		*object,
 						 GtkArg			*arg,
 						 guint		         arg_id);
 static void	bst_super_shell_setup_super	(BstSuperShell		*super_shell,
-						 BseSuper      		*super);
+						 BswProxy     		 super);
 static void	bst_super_shell_release_super	(BstSuperShell		*super_shell,
-						 BseSuper		*super);
+						 BswProxy		 super);
 
 
 /* --- static variables --- */
@@ -75,19 +76,15 @@ bst_super_shell_get_type (void)
 static void
 bst_super_shell_class_init (BstSuperShellClass *class)
 {
-  GtkObjectClass *object_class;
-  GtkWidgetClass *widget_class;
-  GtkContainerClass *container_class;
-
-  object_class = GTK_OBJECT_CLASS (class);
-  widget_class = GTK_WIDGET_CLASS (class);
-  container_class = GTK_CONTAINER_CLASS (class);
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
 
   bst_super_shell_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_VBOX);
+  parent_class = g_type_class_peek_parent (class);
 
   quark_super_shell = g_quark_from_static_string ("BstSuperShell");
 
+  gobject_class->finalize = bst_super_shell_finalize;
   object_class->set_arg = bst_super_shell_set_arg;
   object_class->get_arg = bst_super_shell_get_arg;
   object_class->destroy = bst_super_shell_destroy;
@@ -99,14 +96,14 @@ bst_super_shell_class_init (BstSuperShellClass *class)
   class->rebuild = NULL;
   class->update = NULL;
 
-  gtk_object_add_arg_type ("BstSuperShell::super", GTK_TYPE_POINTER, GTK_ARG_READWRITE | GTK_ARG_CONSTRUCT, ARG_SUPER);
+  gtk_object_add_arg_type ("BstSuperShell::super", GTK_TYPE_UINT, GTK_ARG_READWRITE | GTK_ARG_CONSTRUCT, ARG_SUPER);
 }
 
 static void
 bst_super_shell_init (BstSuperShell *super_shell)
 {
   super_shell->accel_group = gtk_accel_group_new ();
-  super_shell->super = NULL;
+  super_shell->super = 0;
   super_shell->name_set_id = 0;
   
   gtk_widget_set (GTK_WIDGET (super_shell),
@@ -119,17 +116,26 @@ bst_super_shell_init (BstSuperShell *super_shell)
 static void
 bst_super_shell_destroy (GtkObject *object)
 {
-  BstSuperShell *super_shell;
-
-  super_shell = BST_SUPER_SHELL (object);
+  BstSuperShell *super_shell = BST_SUPER_SHELL (object);
 
   if (super_shell->super)
-    bst_super_shell_set_super (super_shell, NULL);
+    {
+      bsw_source_clear_outputs (super_shell->super);
+      bst_super_shell_set_super (super_shell, 0);
+    }
+  
+  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+}
+
+static void
+bst_super_shell_finalize (GObject *object)
+{
+  BstSuperShell *super_shell = BST_SUPER_SHELL (object);
 
   gtk_accel_group_unref (super_shell->accel_group);
   super_shell->accel_group = NULL;
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -144,7 +150,7 @@ bst_super_shell_set_arg (GtkObject *object,
   switch (arg_id)
     {
     case ARG_SUPER:
-      bst_super_shell_set_super (super_shell, GTK_VALUE_POINTER (*arg));
+      bst_super_shell_set_super (super_shell, GTK_VALUE_UINT (*arg));
       break;
     default:
       break;
@@ -163,7 +169,7 @@ bst_super_shell_get_arg (GtkObject *object,
   switch (arg_id)
     {
     case ARG_SUPER:
-      GTK_VALUE_POINTER (*arg) = super_shell->super;
+      GTK_VALUE_UINT (*arg) = super_shell->super;
       break;
     default:
       arg->type = GTK_TYPE_INVALID;
@@ -173,6 +179,7 @@ bst_super_shell_get_arg (GtkObject *object,
 
 static void
 bst_super_shell_name_set (BstSuperShell *super_shell,
+			  GParamSpec	*pspec,
 			  BseSuper	*super)
 {
   GtkWidget *widget;
@@ -197,33 +204,34 @@ bst_super_shell_name_set (BstSuperShell *super_shell,
 
 static void
 bst_super_shell_setup_super (BstSuperShell *super_shell,
-			     BseSuper      *super)
+			     BswProxy       super)
 {
-  bse_object_set_qdata (BSE_OBJECT (super), quark_super_shell, super_shell);
-  super_shell->name_set_id = bse_object_add_data_notifier (super,
-							   "name_set",
-							   bst_super_shell_name_set,
-							   super_shell);
+  bse_object_set_qdata (bse_object_from_id (super), quark_super_shell, super_shell);
+  super_shell->name_set_id = g_signal_connect_data (bse_object_from_id (super), "notify::name",
+						    G_CALLBACK (bst_super_shell_name_set), super_shell, NULL,
+						    G_CONNECT_SWAPPED);
+  BST_SUPER_SHELL_GET_CLASS (super_shell)->rebuild (super_shell);
 }
 
 static void
 bst_super_shell_release_super (BstSuperShell *super_shell,
-			       BseSuper      *super)
+			       BswProxy       super)
 {
-  bse_object_remove_notifier (super, super_shell->name_set_id);
+  g_signal_handler_disconnect (bse_object_from_id (super), super_shell->name_set_id);
   super_shell->name_set_id = 0;
-  bse_object_set_qdata (BSE_OBJECT (super), quark_super_shell, NULL);
+  bse_object_set_qdata (bse_object_from_id (super), quark_super_shell, NULL);
+  gtk_container_foreach (GTK_CONTAINER (super_shell), (GtkCallback) gtk_widget_destroy, NULL);
 }
 
 void
 bst_super_shell_set_super (BstSuperShell *super_shell,
-			   BseSuper      *super)
+			   BswProxy       super)
 {
   g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
   if (super)
     {
-      g_return_if_fail (BSE_IS_SUPER (super));
-      g_return_if_fail (bst_super_shell_from_super (super) == NULL);
+      g_return_if_fail (BSW_IS_SUPER (super));
+      g_return_if_fail (bst_super_shell_from_super (super) == 0);
     }
   
   if (super != super_shell->super)
@@ -231,25 +239,16 @@ bst_super_shell_set_super (BstSuperShell *super_shell,
       if (super_shell->super)
 	{
 	  BST_SUPER_SHELL_GET_CLASS (super_shell)->release_super (super_shell, super_shell->super);
-	  bse_object_unref (BSE_OBJECT (super_shell->super));
+	  bsw_item_unuse (super_shell->super);
 	}
       super_shell->super = super;
       if (super_shell->super)
 	{
-	  bse_object_ref (BSE_OBJECT (super_shell->super));
+	  bsw_item_use (super_shell->super);
 	  BST_SUPER_SHELL_GET_CLASS (super_shell)->setup_super (super_shell, super_shell->super);
-	  bst_super_shell_name_set (super_shell, super);
+	  bst_super_shell_name_set (super_shell, NULL, bse_object_from_id (super));
 	}
     }
-}
-
-void
-bst_super_shell_rebuild (BstSuperShell *super_shell)
-{
-  g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
-  
-  if (BST_SUPER_SHELL_GET_CLASS (super_shell)->rebuild)
-    BST_SUPER_SHELL_GET_CLASS (super_shell)->rebuild (super_shell);
 }
 
 void
@@ -257,7 +256,7 @@ bst_super_shell_update (BstSuperShell *super_shell)
 {
   g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
 
-  bst_super_shell_name_set (super_shell, super_shell->super);
+  bst_super_shell_name_set (super_shell, NULL, bse_object_from_id (super_shell->super));
       
   if (BST_SUPER_SHELL_GET_CLASS (super_shell)->update)
     BST_SUPER_SHELL_GET_CLASS (super_shell)->update (super_shell);
@@ -268,17 +267,17 @@ bst_super_shell_update_parent (BstSuperShell *super_shell)
 {
   g_return_if_fail (BST_IS_SUPER_SHELL (super_shell));
 
-  bst_super_shell_name_set (super_shell, super_shell->super);
+  bst_super_shell_name_set (super_shell, NULL, bse_object_from_id (super_shell->super));
 }
 
 BstSuperShell*
-bst_super_shell_from_super (BseSuper *super)
+bst_super_shell_from_super (BswProxy super)
 {
   BstSuperShell *super_shell;
 
-  g_return_val_if_fail (BSE_IS_SUPER (super), NULL);
+  g_return_val_if_fail (BSW_IS_SUPER (super), NULL);
 
-  super_shell = bse_object_get_qdata (BSE_OBJECT (super), quark_super_shell);
+  super_shell = bse_object_get_qdata (bse_object_from_id (super), quark_super_shell);
   if (super_shell)
     g_return_val_if_fail (BST_IS_SUPER_SHELL (super_shell), NULL);
 

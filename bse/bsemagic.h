@@ -45,11 +45,11 @@ typedef struct _BseMagic BseMagic;
 /* --- structures --- */
 struct _BseMagic
 {
-  GType    proc_type;
-  GQuark   prefix;
+  gpointer data;
   GQuark   qextension;
 
   /*< private >*/
+  gint     priority;
   gpointer match_list;
 };
 
@@ -70,13 +70,12 @@ struct _BseMagic
 
 
 /* --- prototypes --- */
-BseMagic*	bse_magic_new			(GType		 proc_type,
+BseMagic*	bse_magic_create		(gpointer	 data,
+						 gint		 priority,
 						 GQuark          qextension,
 						 const gchar	*magic_spec);
-BseMagic*	bse_magic_match_file		(const gchar	*file_name,
-						 GSList         *magic_list);
-void		bse_magic_list_append		(BseMagic	*magic);
-BseMagic*	bse_magic_list_match_file	(const gchar    *file_name);
+BseMagic*	bse_magic_list_match_file	(GSList		*magic_list,
+						 const gchar    *file_name);
 
 
 

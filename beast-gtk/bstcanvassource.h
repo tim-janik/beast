@@ -19,7 +19,6 @@
 #define __BST_CANVAS_SOURCE_H__
 
 #include	"bstdefs.h"
-#include	<libgnomeui/gnome-canvas.h>
 
 
 #ifdef __cplusplus
@@ -34,7 +33,7 @@ extern "C" {
 #define BST_CANVAS_SOURCE_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_CANVAS_SOURCE, BstCanvasSourceClass))
 #define BST_IS_CANVAS_SOURCE(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_CANVAS_SOURCE))
 #define BST_IS_CANVAS_SOURCE_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_CANVAS_SOURCE))
-#define BST_CANVAS_SOURCE_GET_CLASS(obj)  ((BstCanvasSourceClass*) (((GtkObject*) (obj))->klass))
+#define BST_CANVAS_SOURCE_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_CANVAS_SOURCE, BstCanvasSourceClass))
 
 
 /* --- structures & typedefs --- */
@@ -44,9 +43,10 @@ struct _BstCanvasSource
 {
   GnomeCanvasGroup parent_object;
 
-  BseSource       *source;
+  BswProxy	   source;
 
   GtkWidget	  *source_view;
+  GtkWidget	  *source_info;
 
   GnomeCanvasItem *icon_item;
   GnomeCanvasItem *text;
@@ -67,16 +67,16 @@ struct _BstCanvasSourceClass
 /* --- prototypes --- */
 GtkType		 bst_canvas_source_get_type	(void);
 GnomeCanvasItem* bst_canvas_source_new		(GnomeCanvasGroup *group,
-						 BseSource	  *source,
+						 BswProxy	   source,
 						 gdouble           world_x,
 						 gdouble           world_y);
 void		 bst_canvas_source_update_links	(BstCanvasSource  *csource);
 void		 bst_canvas_source_ochannel_pos	(BstCanvasSource  *csource,
-						 guint             ochannel_id,
+						 guint             ochannel,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
 void		 bst_canvas_source_ichannel_pos	(BstCanvasSource  *csource,
-						 guint             ichannel_id,
+						 guint             ichannel,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
 guint		 bst_canvas_source_ichannel_at  (BstCanvasSource  *csource,
@@ -90,6 +90,8 @@ BstCanvasSource* bst_canvas_source_at  		(GnomeCanvas      *csource,
 						 gdouble           world_y);
 void		 bst_canvas_source_popup_view	(BstCanvasSource  *csource);
 void		 bst_canvas_source_toggle_view	(BstCanvasSource  *canvas);
+void		 bst_canvas_source_popup_info	(BstCanvasSource  *csource);
+void		 bst_canvas_source_toggle_info	(BstCanvasSource  *canvas);
 
      
      

@@ -1,0 +1,303 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2000-2001 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * bseserver.proc: BSE Server procedures
+ */
+#include        <bse/bseplugin.h>
+#include        <bse/bseprocedure.h>
+#include        <bse/bsesource.h>
+
+
+AUTHOR	= "Tim Janik <timj@gtk.org>";
+CRIGHTS	= "Tim Janik <timj@gtk.org>";
+DATE	= "2001";
+
+
+METHOD (BseSource, set-input) {
+  HELP	= "Connect a source input to another source's output";
+  IN	= g_param_spec_object ("input-source", "Input Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_object ("output-source", "Output Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("output-channel", "Output Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *isource = g_value_get_object (in_values++);
+  guint ichannel     = g_value_get_uint (in_values++);
+  BseSource *osource = g_value_get_object (in_values++);
+  guint ochannel     = g_value_get_uint (in_values++);
+  BseErrorType error;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
+      BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* connect */
+  error = _bse_source_set_input (isource, ichannel, osource, ochannel);
+  
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, unset-input) {
+  HELP	= "Disconnect a source input";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *isource = g_value_get_object (in_values++);
+  guint ichannel     = g_value_get_uint (in_values++);
+  BseErrorType error = BSE_ERROR_NONE;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (isource))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* disconnect */
+  if (ichannel >= BSE_SOURCE_N_ICHANNELS (isource))
+    error = BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
+  else
+    _bse_source_unset_input (isource, ichannel);
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, clear-inputs) {
+  HELP	= "Disconnect all source inputs";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *isource = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (isource))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* disconnect */
+  _bse_source_clear_ichannels (isource);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, clear-outputs) {
+  HELP	= "Disconnect all source outputs";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *isource = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (isource))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* disconnect */
+  _bse_source_clear_ochannels (isource);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, n-ochannels) {
+  HELP	= "Get the number of output channels of a source";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_uint (out_values++, BSE_SOURCE_N_OCHANNELS (source));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, n-ichannels) {
+  HELP	= "Get the number of input channels of a source";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_uint (out_values++, BSE_SOURCE_N_ICHANNELS (source));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, ichannel-name) {
+  HELP	= "Get input channel name";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_string ("channel_name", "Channel Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ichannel    = g_value_get_uint (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_NAME (source, ichannel));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, ichannel-blurb) {
+  HELP	= "Get input channel description";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_string ("channel_blurb", "Channel Blurb", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ichannel    = g_value_get_uint (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_BLURB (source, ichannel));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, ochannel-name) {
+  HELP	= "Get output channel name";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_string ("channel_name", "Channel Name", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ochannel    = g_value_get_uint (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_NAME (source, ochannel));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, ochannel-blurb) {
+  HELP	= "Get output channel description";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_string ("channel_blurb", "Channel Blurb", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ochannel    = g_value_get_uint (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ochannel >= BSE_SOURCE_N_OCHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_string (out_values++, BSE_SOURCE_OCHANNEL_BLURB (source, ochannel));
+  
+  return BSE_ERROR_NONE;
+}

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,13 +39,23 @@ extern "C" {
 
 
 /* --- BseSNet object --- */
+typedef struct
+{
+  gchar     *name;
+  BseSource *source;
+  guint      channel;
+  guint	     module_stream;
+} BseSNetVPort;
 struct _BseSNet
 {
   BseSuper	 parent_object;
 
   GList		*sources;	/* of type BseSource* */
 
-  gfloat         volume_factor;         /* 1-based factor */
+  guint		 n_in_ports;
+  BseSNetVPort	*in_ports;
+  guint		 n_out_ports;
+  BseSNetVPort	*out_ports;
 };
 struct _BseSNetClass
 {
@@ -55,32 +65,31 @@ struct _BseSNetClass
 };
 
 
-/* --- channels --- */
-enum {
-  BSE_SNET_OCHANNEL_NONE,
-  BSE_SNET_OCHANNEL_STEREO
-};
-enum {
-  BSE_SNET_ICHANNEL_NONE,
-  BSE_SNET_ICHANNEL_MULTI
-};
-
-
 /* --- prototypes --- */
-BseSNet*	bse_snet_new		(BseProject	*project,
-					 const gchar    *first_param_name,
-					 ...);
-BseSNet*	bse_snet_lookup		(BseProject	*project,
-					 const gchar	*name);
-BseSource*	bse_snet_new_source	(BseSNet        *snet,
-					 GType           source_type,
-					 const gchar    *first_param_name,
-					 ...);
-void		bse_snet_remove_source	(BseSNet        *snet,
-					 BseSource	*source);
-     
-
-
+BseSNet*	bse_snet_lookup		 	(BseProject	*project,
+						 const gchar	*name);
+const gchar*	bse_snet_add_in_port	 	(BseSNet	*snet,
+						 const gchar	*tmpl_name,
+						 BseSource	*source,
+						 guint		 ochannel,
+						 guint		 module_istream);
+void		bse_snet_remove_in_port	 	(BseSNet	*snet,
+						 const gchar	*name);
+const gchar*	bse_snet_add_out_port	 	(BseSNet	*snet,
+						 const gchar	*tmpl_name,
+						 BseSource	*source,
+						 guint		 ichannel,
+						 guint		 module_ostream);
+void		bse_snet_remove_out_port 	(BseSNet	*snet,
+						 const gchar	*name);
+GslModule*	bse_snet_get_in_port_module	(BseSNet	*snet,
+						 const gchar	*name,
+						 guint		 context_handle,
+						 guint		*module_istream_p);
+GslModule*	bse_snet_get_out_port_module	(BseSNet	*snet,
+						 const gchar	*name,
+						 guint		 context_handle,
+						 guint		*module_istream_p);
 
 #ifdef __cplusplus
 }

@@ -57,7 +57,7 @@ struct _BseEffectClass
 {
   BseObjectClass parent_class;
 
-  gboolean	(*jump_sequencer)	(BseEffect	*effect,
+  void		(*jump_sequencer)	(BseEffect	*effect,
 					 guint		*current_pattern,
 					 guint		*current_row);
   void		(*setup_voice)		(BseEffect	*effect,
@@ -66,7 +66,7 @@ struct _BseEffectClass
 
 
 /* --- prototypes --- */
-gboolean	bse_effect_jump_sequencer	(BseEffect	*effect,
+void		bse_effect_jump_sequencer	(BseEffect	*effect,
 						 guint		*current_pattern,
 						 guint		*current_row);
 void		bse_effect_setup_voice		(BseEffect	*effect,

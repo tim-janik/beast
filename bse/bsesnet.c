@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1997-1999, 2000-2001 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #include        "bsecategories.h"
 #include        "bsehunkmixer.h"
 #include        "bsestorage.h"
-#include        "bseheart.h"
 #include        <string.h>
 #include        <time.h>
 #include        <fcntl.h>
@@ -33,27 +32,22 @@
 enum
 {
   PARAM_0,
-  PARAM_VOLUME_f,
-  PARAM_VOLUME_dB,
-  PARAM_VOLUME_PERC
+  PARAM_AUTO_ACTIVATE
 };
 
 
 /* --- prototypes --- */
 static void      bse_snet_class_init             (BseSNetClass   *class);
 static void      bse_snet_init                   (BseSNet        *snet);
-static BseIcon*  bse_snet_do_get_icon            (BseObject      *object);
 static void      bse_snet_do_destroy             (BseObject      *object);
-static void      bse_snet_set_param              (BseSNet        *snet,
+static void      bse_snet_set_property           (BseSNet        *snet,
 						  guint           param_id,
 						  GValue         *value,
-						  GParamSpec     *pspec,
-						  const gchar    *trailer);
-static void      bse_snet_get_param              (BseSNet        *snet,
+						  GParamSpec     *pspec);
+static void      bse_snet_get_property           (BseSNet        *snet,
 						  guint           param_id,
 						  GValue         *value,
-						  GParamSpec     *pspec,
-						  const gchar    *trailer);
+						  GParamSpec     *pspec);
 static void      bse_snet_add_item               (BseContainer   *container,
 						  BseItem        *item);
 static void      bse_snet_forall_items           (BseContainer   *container,
@@ -61,10 +55,7 @@ static void      bse_snet_forall_items           (BseContainer   *container,
 						  gpointer        data);
 static void      bse_snet_remove_item            (BseContainer   *container,
 						  BseItem        *item);
-static void      bse_snet_prepare                (BseSource      *source,
-						  BseIndex        index);
-static BseChunk* bse_snet_calc_chunk             (BseSource      *source,
-						  guint           ochannel_id);
+static void      bse_snet_prepare                (BseSource      *source);
 static void      bse_snet_reset                  (BseSource      *source);
 
 
@@ -95,7 +86,6 @@ BSE_BUILTIN_TYPE (BseSNet)
                                         "BseSNet",
                                         "BSE Synthesis (Filter) Network",
                                         &snet_info);
-  // bse_categories_register_icon ("/Source/Projects/SNet", snet_type, &snet_pixdata);
 
   return snet_type;
 }
@@ -103,67 +93,38 @@ BSE_BUILTIN_TYPE (BseSNet)
 static void
 bse_snet_class_init (BseSNetClass *class)
 {
-  static const BsePixdata snet_pixdata = {
-    SNET_PIXDATA_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    SNET_PIXDATA_WIDTH, SNET_PIXDATA_HEIGHT,
-    SNET_PIXDATA_RLE_PIXEL_DATA,
-  };
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
-  guint ichannel_id, ochannel_id;
   
-  parent_class = g_type_class_peek (BSE_TYPE_SUPER);
+  parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_param = (GObjectSetParamFunc) bse_snet_set_param;
-  gobject_class->get_param = (GObjectGetParamFunc) bse_snet_get_param;
+  gobject_class->set_property = (GObjectSetPropertyFunc) bse_snet_set_property;
+  gobject_class->get_property = (GObjectGetPropertyFunc) bse_snet_get_property;
 
-  object_class->get_icon = bse_snet_do_get_icon;
   object_class->destroy = bse_snet_do_destroy;
   
   source_class->prepare = bse_snet_prepare;
-  source_class->calc_chunk = bse_snet_calc_chunk;
   source_class->reset = bse_snet_reset;
 
   container_class->add_item = bse_snet_add_item;
   container_class->remove_item = bse_snet_remove_item;
   container_class->forall_items = bse_snet_forall_items;
   
-  class->icon = bse_icon_ref_static (bse_icon_from_pixdata (&snet_pixdata));
-  
-  bse_object_class_add_param (object_class, "Adjustments",
-			      PARAM_VOLUME_f,
-			      b_param_spec_float ("volume_f", "Master [float]", NULL,
-						  0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
-						  bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB), 0.1,
-						  B_PARAM_STORAGE));
-  bse_object_class_add_param (object_class, "Adjustments",
-			      PARAM_VOLUME_dB,
-			      b_param_spec_float ("volume_dB", "Master [dB]", NULL,
-						  BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-						  BSE_DFL_MASTER_VOLUME_dB, BSE_STP_VOLUME_dB,
-						  B_PARAM_GUI |
-						  B_PARAM_HINT_DIAL));
-  bse_object_class_add_param (object_class, "Adjustments",
-			      PARAM_VOLUME_PERC,
-			      b_param_spec_uint ("volume_perc", "Master [%]", NULL,
-						 0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-						 bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100, 1,
-						 B_PARAM_GUI |
-						 B_PARAM_HINT_DIAL));
-
-  ichannel_id = bse_source_class_add_ichannel (source_class, "multi_in", "Multi Track In", 1, 2);
-  g_assert (ichannel_id == BSE_SNET_ICHANNEL_MULTI);
-  ochannel_id = bse_source_class_add_ochannel (source_class, "stereo_out", "Stereo Out", 2);
-  g_assert (ochannel_id == BSE_SNET_OCHANNEL_STEREO);
+  bse_object_class_add_param (object_class, "Playback Settings",
+			      PARAM_AUTO_ACTIVATE,
+			      g_param_spec_boolean ("auto_activate", "Auto Activate",
+						    "Automatic activation only needs to be enabled for synthesis networks "
+						    "that don't use virtual ports for their input or output",
+						    FALSE, BSE_PARAM_DEFAULT));
 }
 
 static void
 bse_snet_init (BseSNet *snet)
 {
+  BSE_SUPER (snet)->auto_activate = FALSE;
   snet->sources = NULL;
-  snet->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
 }
 
 static void
@@ -178,87 +139,38 @@ bse_snet_do_destroy (BseObject *object)
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
-static BseIcon*
-bse_snet_do_get_icon (BseObject *object)
-{
-  BseSNet *snet = BSE_SNET (object);
-
-  return BSE_SNET_GET_CLASS (snet)->icon;
-}
-
 static void
-bse_snet_set_param (BseSNet     *snet,
-		    guint        param_id,
-		    GValue      *value,
-		    GParamSpec  *pspec,
-		    const gchar *trailer)
+bse_snet_set_property (BseSNet     *snet,
+		       guint        param_id,
+		       GValue      *value,
+		       GParamSpec  *pspec)
 {
   switch (param_id)
     {
-    case PARAM_VOLUME_f:
-      snet->volume_factor = b_value_get_float (value);
-      bse_object_param_changed (BSE_OBJECT (snet), "volume_dB");
-      bse_object_param_changed (BSE_OBJECT (snet), "volume_perc");
-      break;
-    case PARAM_VOLUME_dB:
-      snet->volume_factor = bse_dB_to_factor (b_value_get_float (value));
-      bse_object_param_changed (BSE_OBJECT (snet), "volume_f");
-      bse_object_param_changed (BSE_OBJECT (snet), "volume_perc");
-      break;
-    case PARAM_VOLUME_PERC:
-      snet->volume_factor = b_value_get_uint (value) / 100.0;
-      bse_object_param_changed (BSE_OBJECT (snet), "volume_f");
-      bse_object_param_changed (BSE_OBJECT (snet), "volume_dB");
+    case PARAM_AUTO_ACTIVATE:
+      BSE_SUPER (snet)->auto_activate = g_value_get_boolean (value);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (snet, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (snet, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_snet_get_param (BseSNet     *snet,
-		    guint        param_id,
-		    GValue      *value,
-		    GParamSpec  *pspec,
-		    const gchar *trailer)
+bse_snet_get_property (BseSNet     *snet,
+		       guint        param_id,
+		       GValue      *value,
+		       GParamSpec  *pspec)
 {
   switch (param_id)
     {
-    case PARAM_VOLUME_f:
-      b_value_set_float (value, snet->volume_factor);
-      break;
-    case PARAM_VOLUME_dB:
-      b_value_set_float (value, bse_dB_from_factor (snet->volume_factor, BSE_MIN_VOLUME_dB));
-      break;
-    case PARAM_VOLUME_PERC:
-      b_value_set_uint (value, snet->volume_factor * 100.0 + 0.5);
+    case PARAM_AUTO_ACTIVATE:
+      g_value_set_boolean (value, BSE_SUPER (snet)->auto_activate);
       break;
     default:
-      G_WARN_INVALID_PARAM_ID (snet, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (snet, param_id, pspec);
       break;
     }
-}
-
-BseSNet*
-bse_snet_new (BseProject  *project,
-              const gchar *first_param_name,
-              ...)
-{
-  BseObject *object;
-  va_list var_args;
-  
-  if (project)
-    g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-
-  va_start (var_args, first_param_name);
-  object = bse_object_new_valist (BSE_TYPE_SNET, first_param_name, var_args);
-  va_end (var_args);
-
-  if (project)
-    bse_project_add_super (project, BSE_SUPER (object));
-  
-  return BSE_SNET (object);
 }
 
 BseSNet*
@@ -284,7 +196,7 @@ bse_snet_add_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = g_list_append (snet->sources, item);
   else
-    g_warning ("BseSNet: cannot add non-source item type `%s'",
+    g_warning ("BseSNet: cannot hold non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' add_item handler */
@@ -322,98 +234,214 @@ bse_snet_remove_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = g_list_remove (snet->sources, item);
   else
-    g_warning ("BseSNet: cannot remove non-source item type `%s'",
+    g_warning ("BseSNet: cannot hold non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
 }
 
-BseSource*
-bse_snet_new_source (BseSNet     *snet,
-                     GType        source_type,
-                     const gchar *first_param_name,
-                     ...)
+static BseSNetVPort*
+snet_find_port (BseSNet     *snet,
+		const gchar *name,
+		gboolean     in_port)
 {
-  BseContainer *container;
-  BseSource *source;
-  va_list var_args;
+  guint i;
 
+  if (!in_port)
+    for (i = 0; i < snet->n_out_ports; i++)
+      if (strcmp (name, snet->out_ports[i].name) == 0)
+	return snet->out_ports + i;
+  if (in_port)
+    for (i = 0; i < snet->n_in_ports; i++)
+      if (strcmp (name, snet->in_ports[i].name) == 0)
+	return snet->in_ports + i;
+  return NULL;
+}
+
+const gchar*
+bse_snet_add_in_port (BseSNet     *snet,
+		      const gchar *tmpl_name,
+		      BseSource   *source,
+		      guint        ochannel,
+		      guint	   module_istream)
+{
+  BseSNetVPort *vport;
+  gchar *name;
+  guint i;
+  
   g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
-  g_return_val_if_fail (g_type_is_a (source_type, BSE_TYPE_SOURCE), NULL);
-
-  container = BSE_CONTAINER (snet);
-  va_start (var_args, first_param_name);
-  source = bse_object_new_valist (source_type, first_param_name, var_args);
-  va_end (var_args);
-  bse_container_add_item (container, BSE_ITEM (source));
-  bse_object_unref (BSE_OBJECT (source));
-
-  return source;
+  g_return_val_if_fail (tmpl_name != NULL, NULL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  g_return_val_if_fail (ochannel < BSE_SOURCE_N_OCHANNELS (source), NULL);
+  g_return_val_if_fail (BSE_ITEM (source)->parent == BSE_ITEM (snet), NULL);
+  
+  vport = snet_find_port (snet, tmpl_name, TRUE);
+  name = NULL;
+  i = 1;
+  while (vport)
+    {
+      g_free (name);
+      name = g_strdup_printf ("%s-%u", tmpl_name, i++);
+      vport = snet_find_port (snet, name, TRUE);
+    }
+  if (!name)
+    name = g_strdup (tmpl_name);
+  i = snet->n_in_ports++;
+  snet->in_ports = g_renew (BseSNetVPort, snet->in_ports, snet->n_in_ports);
+  snet->in_ports[i].name = name;
+  snet->in_ports[i].source = source;
+  snet->in_ports[i].channel = ochannel;
+  snet->in_ports[i].module_stream = module_istream;
+  
+  return name;
 }
 
 void
-bse_snet_remove_source (BseSNet   *snet,
-                        BseSource *source)
+bse_snet_remove_in_port (BseSNet     *snet,
+			 const gchar *name)
 {
-  BseContainer *container;
-  BseItem *item;
+  BseSNetVPort *vport;
   
   g_return_if_fail (BSE_IS_SNET (snet));
-  g_return_if_fail (BSE_IS_SOURCE (source));
-
-  container = BSE_CONTAINER (snet);
-  item = BSE_ITEM (source);
+  g_return_if_fail (name != NULL);
   
-  g_return_if_fail (item->parent == (BseItem*) container);
+  vport = snet_find_port (snet, name, TRUE);
+  if (vport)
+    {
+      guint i = vport - snet->in_ports;
+      
+      g_free (vport->name);
+      snet->n_in_ports -= 1;
+      g_memmove (snet->in_ports + i, snet->in_ports + i + 1, sizeof (snet->in_ports[0]) * (snet->n_in_ports - i));
+    }
+  else
+    g_return_if_fail (snet_find_port (snet, name, TRUE)  != NULL);
+}
 
-  bse_container_remove_item (container, item);
+const gchar*
+bse_snet_add_out_port (BseSNet     *snet,
+		       const gchar *tmpl_name,
+		       BseSource   *source,
+		       guint        ichannel,
+		       guint	    module_ostream)
+{
+  BseSNetVPort *vport;
+  gchar *name;
+  guint i;
+
+  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
+  g_return_val_if_fail (tmpl_name != NULL, NULL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  g_return_val_if_fail (ichannel < BSE_SOURCE_N_ICHANNELS (source), NULL);
+  g_return_val_if_fail (BSE_ITEM (source)->parent == BSE_ITEM (snet), NULL);
+
+  vport = snet_find_port (snet, tmpl_name, FALSE);
+  name = NULL;
+  i = 1;
+  while (vport)
+    {
+      g_free (name);
+      name = g_strdup_printf ("%s-%u", tmpl_name, i++);
+      vport = snet_find_port (snet, name, FALSE);
+    }
+  if (!name)
+    name = g_strdup (tmpl_name);
+  i = snet->n_out_ports++;
+  snet->out_ports = g_renew (BseSNetVPort, snet->out_ports, snet->n_out_ports);
+  snet->out_ports[i].name = name;
+  snet->out_ports[i].source = source;
+  snet->out_ports[i].channel = ichannel;
+  snet->out_ports[i].module_stream = module_ostream;
+
+  return name;
+}
+
+void
+bse_snet_remove_out_port (BseSNet     *snet,
+			  const gchar *name)
+{
+  BseSNetVPort *vport;
+
+  g_return_if_fail (BSE_IS_SNET (snet));
+  g_return_if_fail (name != NULL);
+
+  vport = snet_find_port (snet, name, FALSE);
+  if (vport)
+    {
+      guint i = vport - snet->out_ports;
+
+      g_free (vport->name);
+      snet->n_out_ports -= 1;
+      g_memmove (snet->out_ports + i, snet->out_ports + i + 1, sizeof (snet->out_ports[0]) * (snet->n_out_ports - i));
+    }
+  else
+    g_return_if_fail (snet_find_port (snet, name, FALSE)  != NULL);
+}
+
+GslModule*
+bse_snet_get_in_port_module (BseSNet     *snet,
+			     const gchar *name,
+			     guint        context_handle,
+			     guint       *module_istream_p)
+{
+  BseSNetVPort *vport;
+  GslModule *module;
+
+  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
+  g_return_val_if_fail (name != NULL, NULL);
+  g_return_val_if_fail (context_handle < BSE_SOURCE (snet)->n_contexts, NULL);
+
+  vport = snet_find_port (snet, name, TRUE);
+  if (vport)
+    {
+      module = bse_source_get_ochannel_module (vport->source, vport->channel, context_handle, NULL);
+      *module_istream_p = vport->module_stream;
+    }
+  else
+    {
+      module = NULL;
+      *module_istream_p = ~0;
+    }
+  return module;
+}
+
+GslModule*
+bse_snet_get_out_port_module (BseSNet     *snet,
+			      const gchar *name,
+			      guint        context_handle,
+			      guint       *module_ostream_p)
+{
+  BseSNetVPort *vport;
+  GslModule *module;
+
+  g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
+  g_return_val_if_fail (name != NULL, NULL);
+  g_return_val_if_fail (context_handle < BSE_SOURCE (snet)->n_contexts, NULL);
+
+  vport = snet_find_port (snet, name, FALSE);
+  if (vport)
+    {
+      module = bse_source_get_ichannel_module (vport->source, vport->channel, context_handle, NULL);
+      *module_ostream_p = vport->module_stream;
+    }
+  else
+    {
+      module = NULL;
+      *module_ostream_p = ~0;
+    }
+  return module;
 }
 
 static void
-bse_snet_prepare (BseSource *source,
-		  BseIndex   index)
+bse_snet_prepare (BseSource *source)
 {
   BseSNet *snet = BSE_SNET (source);
 
   bse_object_lock (BSE_OBJECT (snet));
 
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
-
-  /* FIXME: odevice hack */
-  bse_heart_source_add_odevice (source, bse_heart_get_device (bse_heart_get_default_odevice ()));
-}
-
-static BseChunk*
-bse_snet_calc_chunk (BseSource *source,
-		     guint      ochannel_id)
-{
-  BseSNet *snet = BSE_SNET (source);
-  BseSourceInput *input;
-  BseChunk *ichunk;
-  BseSampleValue *hunk;
-  gfloat stereo_volumes[2];
-
-  g_return_val_if_fail (ochannel_id == BSE_SNET_OCHANNEL_STEREO, NULL);
-
-  input = bse_source_get_input (source, BSE_SNET_ICHANNEL_MULTI);
-  if (!input) /* silence */
-    return bse_chunk_new_static_zero (2);
-
-  ichunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-  if (ichunk->n_tracks == 2 &&
-      BSE_EPSILON_CMP (1.0, snet->volume_factor) == 0) /* stereo already, no volume */
-    return ichunk;
-
-  /* ok, mix input (mono or stereo) to stereo with volume */
-  stereo_volumes[0] = snet->volume_factor;
-  stereo_volumes[1] = snet->volume_factor;
-  hunk = bse_hunk_alloc (2);
-  bse_hunk_mix (2, hunk, stereo_volumes, ichunk->n_tracks, ichunk->hunk);
-  bse_chunk_unref (ichunk);
-
-  return bse_chunk_new_orphan (2, hunk);
+  BSE_SOURCE_CLASS (parent_class)->prepare (source);
 }
 
 static void
@@ -421,19 +449,6 @@ bse_snet_reset (BseSource *source)
 {
   BseSNet *snet = BSE_SNET (source);
 
-#if 0 // FIXME 
-  GList *list;
-
-  /* reset all children */
-  for (list = snet->sources; list; list = list->next)
-    {
-      BseSource *source = list->data;
-
-      if (BSE_SOURCE_PREPARED (source))
-	bse_source_reset (source);
-    }
-#endif
-  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 

@@ -18,6 +18,7 @@
 #include        "bstprocedure.h"
 
 #include        "bststatusbar.h"
+#include        <string.h>
 
 
 /* --- prototypes --- */
@@ -27,9 +28,10 @@ static void     bst_procedure_shell_destroy    (GtkObject              *object);
 
 
 /* --- static variables --- */
-static gpointer parent_class = NULL;
-static GQuark   quark_input_params = 0;
-static GQuark   quark_output_params = 0;
+static GtkWidget *global_proc_dialog = NULL;
+static gpointer   parent_class = NULL;
+static GQuark     quark_input_params = 0;
+static GQuark     quark_output_params = 0;
 
 
 /* --- functions --- */
@@ -62,7 +64,7 @@ static void
 bst_procedure_shell_class_init (BstProcedureShellClass *class)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-
+  
   quark_output_params = g_quark_from_static_string ("Output Parameters");
   quark_input_params = g_quark_from_static_string ("Input Parameters");
   
@@ -83,9 +85,6 @@ bst_procedure_shell_init (BstProcedureShell *procedure_shell)
   procedure_shell->in_modal_selection = FALSE;
   procedure_shell->in_execution = FALSE;
   procedure_shell->hide_dialog_on_exec = FALSE;
-  procedure_shell->tooltips = gtk_tooltips_new ();
-  gtk_object_ref (GTK_OBJECT (procedure_shell->tooltips));
-  gtk_object_sink (GTK_OBJECT (procedure_shell->tooltips));
 }
 
 static void
@@ -109,14 +108,11 @@ bst_procedure_shell_destroy (GtkObject *object)
   g_return_if_fail (object != NULL);
   
   shell = BST_PROCEDURE_SHELL (object);
-
+  
   if (shell->in_execution)
     g_warning (G_STRLOC ": destroying procedure shell during execution");
   
   bst_procedure_shell_set_proc (shell, NULL);
-  
-  gtk_object_unref (GTK_OBJECT (shell->tooltips));
-  shell->tooltips = NULL;
   
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -139,7 +135,7 @@ bst_procedure_shell_set_proc (BstProcedureShell *procedure_shell,
   g_return_if_fail (BST_IS_PROCEDURE_SHELL (procedure_shell));
   if (proc)
     g_return_if_fail (BSE_IS_PROCEDURE_CLASS (proc));
-
+  
   if (proc != procedure_shell->proc)
     {
       bst_procedure_shell_destroy_contents (procedure_shell);
@@ -169,10 +165,8 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
   if (!shell->proc)
     return;
   
-  g_return_if_fail (shell->tooltips != NULL);
-
   proc = shell->proc;
-
+  
   /* main container
    */
   param_box = GTK_WIDGET (shell);
@@ -212,8 +206,8 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
                       "visible", TRUE,
                       "label", "Description",
                       "label_xalign", 0.0,
-                      "width", 1,
-                      "height", 50,
+                      "width_request", 1,
+                      "height_request", 50,
                       "child", hbox,
                       "parent", param_box,
                       NULL);
@@ -231,8 +225,8 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
       if (pspec_p)
         while (*pspec_p)
           {
-            if ((*pspec_p)->flags & B_PARAM_SERVE_GUI &&
-                (*pspec_p)->flags & B_PARAM_READABLE)
+            if ((*pspec_p)->flags & BSE_PARAM_SERVE_GUI &&
+                (*pspec_p)->flags & BSE_PARAM_READABLE)
               {
                 BstParam *bparam;
                 
@@ -243,7 +237,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
 					    ? g_quark_to_string (quark_input_params)
 					    : g_quark_to_string (quark_output_params)),
                                            param_box,
-                                           GTK_TOOLTIPS (shell->tooltips));
+                                           BST_TOOLTIPS);
                 shell->bparams = g_slist_append (shell->bparams, bparam);
                 (is_out_param ? shell->n_out_params : shell->n_in_params) += 1;
                 if (is_out_param && !shell->first_out_bparam)
@@ -254,7 +248,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
       is_out_param++;
     }
   g_slist_free (pspec_array_list);
-
+  
   /* initialize parameter values
    */
   bst_procedure_shell_reset (shell);
@@ -278,9 +272,11 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
   /* process any pending GUI updates
    */
   gdk_flush ();
+  GDK_THREADS_LEAVE ();
   do
     g_main_iteration (FALSE);
   while (g_main_pending ());
+  GDK_THREADS_ENTER ();
   
   for (slist = shell->first_out_bparam; slist; slist = slist->next)
     bst_param_reset (slist->data);
@@ -289,7 +285,7 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
   if (!GTK_OBJECT_DESTROYED (widget))
     {
       BseErrorType error;
-
+      
       shell->in_execution = TRUE;
       error = bse_procedure_execvl (shell->proc,
                                     shell->bparams,
@@ -302,6 +298,20 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
         gdk_beep ();
       
       bst_procedure_shell_update (shell);
+      /* feature procedures with error out parameter */
+      if (!error && shell->n_out_params)
+	{
+	  BstParam *bparam = shell->first_out_bparam->data;
+
+	  /* the execvl error return was set automatically,
+	   * so only act on out_param errors
+	   */
+	  if (g_type_is_a (G_VALUE_TYPE (&bparam->value), BSE_TYPE_ERROR_TYPE))
+	    {
+	      error = g_value_get_enum (&bparam->value);
+	      bst_status_set (error ? 0 : 100, shell->proc->name, bse_error_blurb (error));
+	    }
+	}
     }
   
   gtk_widget_unref (widget);
@@ -330,7 +340,7 @@ bst_procedure_shell_reset (BstProcedureShell *shell)
   for (slist = shell->bparams; slist; slist = slist->next)
     {
       BstParam *bparam = slist->data;
-
+      
       (n > 0 ? bst_param_set_default : bst_param_reset) (bparam);
       bst_param_set_editable (bparam, n-- > 0);
     }
@@ -342,13 +352,13 @@ bst_procedure_shell_unpreset (BstProcedureShell *shell)
 {
   GSList *slist;
   gint n;
-
+  
   g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
-
+  
   for (n = shell->n_in_params, slist = shell->bparams; slist && n; n--, slist = slist->next)
     {
       BstParam *bparam = slist->data;
-
+      
       if (!bparam->editable)
 	{
 	  bst_param_set_default (bparam);
@@ -381,7 +391,7 @@ bst_procedure_shell_preset (BstProcedureShell *shell,
    * is sucessfull, the procedure gets invoked with a
    * predefined parameter.
    */
-
+  
   for (slist = shell->bparams, n = shell->n_in_params; n; slist = slist->next, n--)
     {
       BstParam *bparam = slist->data;
@@ -398,13 +408,14 @@ bst_procedure_shell_preset (BstProcedureShell *shell,
 	      return TRUE;
 	    }
 	  else
-	    g_warning (G_STRLOC ": can't convert preset parameter `%s' from `%s' to `%s'",
-		       name,
+	    g_warning (G_STRLOC ": cannot convert `%s' value to `%s' for `%s' parameter `%s'",
+		       g_type_name (G_VALUE_TYPE (value)),
+		       g_type_name (G_PARAM_SPEC_VALUE_TYPE (bparam->pspec)),
 		       g_type_name (G_PARAM_SPEC_TYPE (bparam->pspec)),
-		       g_type_name (G_VALUE_TYPE (value)));
+		       name);
 	}
     }
-
+  
   return FALSE;
 }
 
@@ -412,7 +423,7 @@ static void
 shell_modal_selection_done (GtkWidget *widget)
 {
   BstProcedureShell *shell = BST_PROCEDURE_SHELL (widget);
-
+  
   shell->in_modal_selection = FALSE;
 }
 
@@ -420,7 +431,7 @@ static void
 shell_hide_on_demand (GtkWidget *widget)
 {
   BstProcedureShell *shell = BST_PROCEDURE_SHELL (widget);
-
+  
   if (shell->hide_dialog_on_exec)
     gtk_toplevel_hide (widget);
 }
@@ -430,23 +441,27 @@ bst_procedure_dialog_from_shell (BstProcedureShell *shell,
 				 GtkWidget        **dialog_p)
 {
   GtkWidget *adialog;
-
+  
   g_return_val_if_fail (BST_IS_PROCEDURE_SHELL (shell), NULL);
   g_return_val_if_fail (GTK_OBJECT_DESTROYED (shell) == FALSE, NULL);
   g_return_val_if_fail (GTK_WIDGET (shell)->parent == NULL, NULL);
   
   gtk_widget_show (GTK_WIDGET (shell));
   
-  adialog = bst_adialog_new (NULL, dialog_p, GTK_WIDGET (shell),
-			     BST_ADIALOG_POPUP_POS | BST_ADIALOG_MODAL,
-			     "title", "BEAST: Procedure",
-			     "object_signal_after::hide", shell_modal_selection_done, shell,
-			     "data_choice::Execute", shell_hide_on_demand, shell,
-			     "data_choice::Execute", bst_procedure_shell_execute, shell,
+  adialog = g_object_connect (bst_adialog_new (NULL, dialog_p, GTK_WIDGET (shell),
+					       BST_ADIALOG_POPUP_POS | BST_ADIALOG_MODAL,
+					       "title", "BEAST: Procedure",
+					       "default_width", 200,
+					       NULL),
+			      "swapped_signal_after::hide", shell_modal_selection_done, shell,
+			      NULL);
+  bst_adialog_setup_choices (adialog,
+			     "swapped_choice::Execute", shell_hide_on_demand, shell,
+			     "swapped_choice::Execute", bst_procedure_shell_execute, shell,
 			     "default_choice::Execute", NULL, NULL,
 			     "choice::Close", gtk_toplevel_hide, NULL,
 			     NULL);
-
+  
   return adialog;
 }
 
@@ -454,11 +469,11 @@ BstProcedureShell*
 bst_procedure_dialog_get_shell (GtkWidget *dialog)
 {
   GtkWidget *child;
-
+  
   g_return_val_if_fail (BST_IS_ADIALOG (dialog), NULL);
-
+  
   child = bst_adialog_get_child (dialog);
-
+  
   return BST_IS_PROCEDURE_SHELL (child) ? BST_PROCEDURE_SHELL (child) : NULL;
 }
 
@@ -472,13 +487,13 @@ bst_procedure_dialog_exec_modal (GtkWidget *dialog,
   g_return_if_fail (BST_IS_ADIALOG (dialog));
   g_return_if_fail (GTK_WIDGET_VISIBLE (dialog) == FALSE);
   g_return_if_fail (GTK_WINDOW (dialog)->modal == TRUE);
-
+  
   shell = bst_procedure_dialog_get_shell (dialog);
   g_return_if_fail (BST_IS_PROCEDURE_SHELL (shell));
   g_return_if_fail (shell->in_modal_selection == FALSE);
-
+  
   widget = GTK_WIDGET (shell);
-
+  
   gtk_widget_ref (widget);
   
   if (!force_display && shell->n_preset_params == shell->n_in_params && shell->n_out_params == 0)
@@ -488,32 +503,89 @@ bst_procedure_dialog_exec_modal (GtkWidget *dialog,
       if (shell->n_out_params)
 	{
 	  GtkWidget *sbar = bst_status_bar_ensure (GTK_WINDOW (dialog));
-
+	  
 	  shell->hide_dialog_on_exec = FALSE;
-
+	  
 	  gtk_widget_show (sbar);
 	}
       else
 	{
 	  GtkWidget *sbar = bst_status_bar_from_window (GTK_WINDOW (dialog));
-
+	  
 	  shell->hide_dialog_on_exec = TRUE;
-
+	  
 	  if (sbar)
 	    gtk_widget_hide (sbar);
 	}
       
       shell->in_modal_selection = TRUE;
       gtk_widget_show (dialog);
-
+      
       /* hand control over to user
        */
       bst_status_window_push (dialog);
       do
-        g_main_iteration (TRUE);
+	{
+	  GDK_THREADS_LEAVE ();
+	  g_main_iteration (TRUE);
+	  GDK_THREADS_ENTER ();
+	}
       while (shell->in_modal_selection);
       bst_status_window_pop ();
     }
   
   gtk_widget_unref (widget);
+}
+
+void
+bst_procedure_user_exec_method (const gchar *proc_path,
+				BswProxy     preset_proxy)
+{
+  BseProcedureClass *procedure;
+  BstProcedureShell *pshell;
+  GType type;
+
+  g_return_if_fail (proc_path != NULL);
+
+  if (!global_proc_dialog)
+    {
+      pshell = BST_PROCEDURE_SHELL (bst_procedure_shell_new (NULL));
+      global_proc_dialog = bst_procedure_dialog_from_shell (BST_PROCEDURE_SHELL (bst_procedure_shell_new (NULL)),
+							    &global_proc_dialog);
+    }
+  pshell = bst_procedure_dialog_get_shell (global_proc_dialog);
+
+  type = g_type_from_name (proc_path);
+  if (!BSE_TYPE_IS_PROCEDURE (type))
+    {
+      g_warning ("procedure type \"%s\" is not registered", proc_path);
+      return;
+    }
+
+  procedure = g_type_class_ref (type);
+  bst_procedure_shell_set_proc (pshell, procedure);
+  g_type_class_unref (procedure);
+  bst_procedure_shell_unpreset (pshell);
+
+  if (preset_proxy)
+    {
+      GValue value = { 0, };
+
+      if (!procedure->n_in_params ||
+	  !g_type_is_a (G_OBJECT_TYPE (bse_object_from_id (preset_proxy)),
+			G_PARAM_SPEC_VALUE_TYPE (procedure->in_param_specs[0])))
+	{
+	  g_warning ("proxy %u invalid as preset parameter for procedure type \"%s\"",
+		     preset_proxy, proc_path);
+	  return;
+	}
+      g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (procedure->in_param_specs[0]));
+      g_value_set_object (&value, bse_object_from_id (preset_proxy));
+      bst_procedure_shell_preset (pshell, procedure->in_param_specs[0]->name, &value, TRUE);
+      g_value_unset (&value);
+    }
+
+  bst_status_window_push (GTK_WIDGET (global_proc_dialog));
+  bst_procedure_dialog_exec_modal (global_proc_dialog, FALSE);
+  bst_status_window_pop ();
 }

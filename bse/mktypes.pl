@@ -74,15 +74,14 @@ while (<>) {
     }
 
     # read lines until comment end is matched
-    while (m@/\*([^*]|\*[^/])*$@x) {
+    while (m@/\*([^*]|\*[^/*])*\**$@x) {
         my $new = <>;
 
-        (defined ($new) && ($file eq $ARGV)) or die "Unmatched comment in $file\n";
+        (defined ($new) && ($file eq $ARGV)) or die "$0: $file:$.: Unmatched comment\n";
         $_ .= $new;
     }
-
     # strip comments
-    s@/\*([^*]|\*[^/])*\*/@@gx;
+    s@/\*([^*]|\*[^/*])*\**\*/@@gx;
 
     # discard non BSE_BUILTIN_TYPE lines
     if (!m@^BSE_BUILTIN_TYPE@x) {
@@ -93,7 +92,7 @@ while (<>) {
     while (!m@\)@) {
 	my $new = <>;
 
-        (defined ($new) && ($file eq $ARGV)) or die "Unmatched argument brace in $file\n";
+        (defined ($new) && ($file eq $ARGV)) or die "$0: Unmatched argument brace in $file\n";
 	$_ .= $new;
     }
 
@@ -101,7 +100,7 @@ while (<>) {
     if (/\(\s*(\w+)\s*\)/) {
 	$type = $1;
     } else {
-	die "can't figure type name from BSE_BUILTIN_TYPE() in $file\n";
+	die "$0: can't figure type name from BSE_BUILTIN_TYPE() in $file\n";
     }
 
 
@@ -114,7 +113,7 @@ while (<>) {
 	while (!m@\{@) {
 	    my $new = <>;
 
-	    (defined ($new) && ($file eq $ARGV)) or die "Unmatched curly brace in $file\n";
+	    (defined ($new) && ($file eq $ARGV)) or die "$0: Unmatched curly brace in $file\n";
 	    $_ .= $new;
 	}
 	
@@ -122,16 +121,16 @@ while (<>) {
 	while (brace_level ($_) != 0) {
 	    my $new = <>;
 
-	    (defined ($new) && ($file eq $ARGV)) or die "Unmatched block braces in $file\n";
+	    (defined ($new) && ($file eq $ARGV)) or die "$0: Unmatched block braces in $file\n";
 	    $_ .= $new;
 	}
 	# ok! we now have the complete function body in $_
 
 	# parse parent type
-	if (/bse_type_register_static\s*\(\s*(\w+)\s*,/) {
+	if (/_type_register_static\s*\(\s*(\w+)\s*,/) {
 	    $uc_parent = $1;
 	} else {
-	    die "can't figure parent type of $type from $file\n";
+	    die "$0: can't figure parent type of $type from $file\n";
 	}
 
 	# parse parent type
@@ -139,7 +138,7 @@ while (<>) {
 	    if (/bse_type_add_interface\s*\([^\),]*,\s*(\w+)\s*,/) {
 		$uc_iface = $1;
 	    } else {
-		die "can't figure parent type of $type from $file\n";
+		die "$0: can't figure parent type of $type from $file\n";
 	    }
 	}
 

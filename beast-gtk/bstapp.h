@@ -36,7 +36,7 @@ extern "C" {
 
 
 /* --- object & class member/convenience macros --- */
-#define	BST_APP_PROJECT(app)	(BST_APP (app)->project)
+// #define	BST_APP_PROJECT(app)	(BST_APP (app)->project)
 
 
 /* --- typedefs --- */
@@ -49,7 +49,7 @@ struct _BstApp
 {
   GtkWindow      window;
 
-  BseProject	*project;
+  BswProxy	 project;
 
   GtkWidget	*main_vbox;
   GtkNotebook	*notebook;
@@ -66,7 +66,7 @@ struct _BstAppClass
 
 /* --- prototypes --- */
 GtkType		bst_app_get_type		(void);
-BstApp*		bst_app_new			(BseProject	*project);
+BstApp*		bst_app_new			(BswProxy	 project);
 gboolean	bst_app_can_operate		(BstApp         *app,
 						 BstOps		 op);
 void		bst_app_operate			(BstApp         *app,
