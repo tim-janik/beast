@@ -2,7 +2,6 @@ FIXMES:
 - rename gslwave files appropriately
 - need detailed "ladspa" info/debug messages which tell when what plugin file is being loaded
 - add option to disable ladspa plugin loading
-- add vorbis cutter test
 - don't always rebuild lib-list [Rebuild]-button
 - nuke BSE file crawling functions
 - fix API for file matching in SFI
