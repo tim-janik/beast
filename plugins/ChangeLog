@@ -1,3 +1,11 @@
+Tue Oct  7 15:05:22 2003  Tim Janik  <timj@gtk.org>
+
+	* icons/balance.*: colorized icon.
+
+	* davsyndrum.c (dmod_process): 
+	* davxtalstrings.c (xmod_process): fix trigger edge detection,
+	reported by stefan westerfeld.
+
 Sun Oct  5 08:12:51 2003  Tim Janik  <timj@gtk.org>
 
 	* icons/balance.xcf:

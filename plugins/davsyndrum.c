@@ -253,7 +253,7 @@ dmod_process (GslModule *module,
       gfloat cur_freq;
 
       /* check input triggers */
-      if_reject (GSL_SIGNAL_RAISING_EDGE (trigger_in[i], last_trigger_level))
+      if_reject (GSL_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i]))
         {
           /* trigger drum */
           dmod_trigger (dmod,
