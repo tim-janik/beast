@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-27 18:37+0100\n"
-"PO-Revision-Date: 2004-11-27 20:01+0100\n"
+"POT-Creation-Date: 2004-12-11 18:37+0100\n"
+"PO-Revision-Date: 2004-12-11 21:54+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -380,7 +380,7 @@ msgstr "Přidat"
 #: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
 #: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:712 beast-gtk/bstsnetrouter.c:766
+#: beast-gtk/bstsnetrouter.c:712 beast-gtk/bstsnetrouter.c:760
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
 #: beast-gtk/bstwaveview.c:45
 msgid "Delete"
@@ -403,7 +403,7 @@ msgstr "Odstranit momentálně vybranou sběrnici"
 msgid "Module Link: "
 msgstr "Spojení modulů: "
 
-#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:762
+#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:756
 msgid "Module link"
 msgstr "Spojení modulů"
 
@@ -411,11 +411,11 @@ msgstr "Spojení modulů"
 msgid "Module Info"
 msgstr "Informace o modulu"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1099
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1093
 msgid "Input"
 msgstr "Vstup"
 
-#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1096
+#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1090
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Výstup"
@@ -817,16 +817,16 @@ msgstr "Načítám \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Načítám projekt \"%s\""
 
-#: beast-gtk/bstmain.c:793
+#: beast-gtk/bstmain.c:811
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.c:794
+#: beast-gtk/bstmain.c:812
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: beast-gtk/bstmain.c:795
+#: beast-gtk/bstmain.c:813
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -874,19 +874,19 @@ msgstr "%s: automatizace z ovládacího prvku MIDI: %s"
 msgid "Control Automation"
 msgstr "Automatizace ovládacích prvků"
 
-#: beast-gtk/bstparam-choice.c:143
+#: beast-gtk/bstparam-choice.c:144
 msgid "Drop Down Combo"
 msgstr "Rozbalovací pole"
 
-#: beast-gtk/bstparam-choice.c:149
+#: beast-gtk/bstparam-choice.c:150
 msgid "Drop Down Button"
 msgstr "Tlačítko rozbalení"
 
-#: beast-gtk/bstparam-choice.c:155
+#: beast-gtk/bstparam-choice.c:156
 msgid "Popup Options"
 msgstr "Možnosti kontextového menu"
 
-#: beast-gtk/bstparam-choice.c:161
+#: beast-gtk/bstparam-choice.c:162
 msgid "Standard Option Menu"
 msgstr "Standardní menu možností"
 
@@ -1185,7 +1185,7 @@ msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "Počet buněk, o které se posunout po každé úpravě události nebo noty"
 
-#: beast-gtk/bstpatternctrl.c:128
+#: beast-gtk/bstpatternctrl.c:128 beast-gtk/bstscrollgraph.c:515
 msgid "Direction"
 msgstr "Směr"
 
@@ -1714,368 +1714,506 @@ msgstr "Dolů"
 msgid "Move downwards"
 msgstr "Posunout dolů"
 
+#: beast-gtk/bstrecords.idl:42
+msgid "2 Value FFT Window"
+msgstr "Okno FFT s 2 hodnotami"
+
+#: beast-gtk/bstrecords.idl:42
+msgid "A 2 value FFT window corresponds to a spectrum with 2 frequency peaks"
+msgstr "Okno FFT s 2 hodnotami odpovídá spektru s 2 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:43
+msgid "4 Value FFT Window"
+msgstr "Okno FFT s 4 hodnotami"
+
+#: beast-gtk/bstrecords.idl:43
+msgid "A 4 value FFT window corresponds to a spectrum with 3 frequency peaks"
+msgstr "Okno FFT s 4 hodnotami odpovídá spektru s 3 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:44
+msgid "8 Value FFT Window"
+msgstr "Okno FFT s 8 hodnotami"
+
+#: beast-gtk/bstrecords.idl:44
+msgid "A 8 value FFT window corresponds to a spectrum with 5 frequency peaks"
+msgstr "Okno FFT s 8 hodnotami odpovídá spektru s 5 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:45
+msgid "16 Value FFT Window"
+msgstr "Okno FFT s 16 hodnotami"
+
+#: beast-gtk/bstrecords.idl:45
+msgid "A 16 value FFT window corresponds to a spectrum with 9 frequency peaks"
+msgstr "Okno FFT s 16 hodnotami odpovídá spektru s 9 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:46
+msgid "32 Value FFT Window"
+msgstr "Okno FFT s 32 hodnotami"
+
+#: beast-gtk/bstrecords.idl:46
+msgid "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
+msgstr "Okno FFT s 32 hodnotami odpovídá spektru s 17 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:47
+msgid "64 Value FFT Window"
+msgstr "Okno FFT s 64 hodnotami"
+
+#: beast-gtk/bstrecords.idl:47
+msgid "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
+msgstr "Okno FFT s 64 hodnotami odpovídá spektru s 33 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:48
+msgid "128 Value FFT Window"
+msgstr "Okno FFT s 128 hodnotami"
+
+#: beast-gtk/bstrecords.idl:48
+msgid ""
+"A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
+msgstr "Okno FFT s 128 hodnotami odpovídá spektru s 65 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:49
+msgid "256 Value FFT Window"
+msgstr "Okno FFT s 256 hodnotami"
+
+#: beast-gtk/bstrecords.idl:49
+msgid ""
+"A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
+msgstr "Okno FFT s 256 hodnotami odpovídá spektru s 129 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:50
+msgid "512 Value FFT Window"
+msgstr "Okno FFT s 512 hodnotami"
+
+#: beast-gtk/bstrecords.idl:50
+msgid ""
+"A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
+msgstr "Okno FFT s 512 hodnotami odpovídá spektru s 257 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:51
+msgid "1024 Value FFT Window"
+msgstr "Okno FFT s 1024 hodnotami"
+
+#: beast-gtk/bstrecords.idl:51
+msgid ""
+"A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
+msgstr "Okno FFT s 1024 hodnotami odpovídá spektru s 513 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:52
+msgid "2048 Value FFT Window"
+msgstr "Okno FFT s 2048 hodnotami"
+
+#: beast-gtk/bstrecords.idl:52
+msgid ""
+"A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
+msgstr "Okno FFT s 2048 hodnotami odpovídá spektru s 1025 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:53
+msgid "4096 Value FFT Window"
+msgstr "Okno FFT s 4096 hodnotami"
+
+#: beast-gtk/bstrecords.idl:53
+msgid ""
+"A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
+msgstr "Okno FFT s 4096 hodnotami odpovídá spektru s 2049 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:54
+msgid "8192 Value FFT Window"
+msgstr "Okno FFT s 8192 hodnotami"
+
+#: beast-gtk/bstrecords.idl:54
+msgid ""
+"A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
+msgstr "Okno FFT s 8192 hodnotami odpovídá spektru s 4097 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:55
+msgid "16384 Value FFT Window"
+msgstr "Okno FFT s 16384 hodnotami"
+
+#: beast-gtk/bstrecords.idl:55
+msgid ""
+"A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
+msgstr "Okno FFT s 16384 hodnotami odpovídá spektru s 8193 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:56
+msgid "32768 Value FFT Window"
+msgstr "Okno FFT s 32768 hodnotami"
+
+#: beast-gtk/bstrecords.idl:56
+msgid ""
+"A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
+msgstr "Okno FFT s 32768 hodnotami odpovídá spektru s 16385 vrcholy frekvence"
+
+#: beast-gtk/bstrecords.idl:57
+msgid "65536 Value FFT Window"
+msgstr "Okno FFT s 65536 hodnotami"
+
+#: beast-gtk/bstrecords.idl:57
+msgid ""
+"A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
+msgstr "Okno FFT s 65536 hodnotami odpovídá spektru s 32769 vrcholy frekvence"
+
 #. special cased signals
-#: beast-gtk/bstrecords.idl:42 beast-gtk/bstrecords.idl:70 bse/bsecore.idl:244
+#: beast-gtk/bstrecords.idl:61 beast-gtk/bstrecords.idl:89 bse/bsecore.idl:244
 msgid "None"
 msgstr "Žádné"
 
-#: beast-gtk/bstrecords.idl:42
+#: beast-gtk/bstrecords.idl:61
 msgid "Unspecified length"
 msgstr "Neurčená délka"
 
-#: beast-gtk/bstrecords.idl:43
+#: beast-gtk/bstrecords.idl:62
 msgid "1/1"
 msgstr "1/1"
 
-#: beast-gtk/bstrecords.idl:43
+#: beast-gtk/bstrecords.idl:62
 msgid "Whole note"
 msgstr "Celá nota"
 
-#: beast-gtk/bstrecords.idl:44
+#: beast-gtk/bstrecords.idl:63
 msgid "1/2"
 msgstr "1/2"
 
-#: beast-gtk/bstrecords.idl:44
+#: beast-gtk/bstrecords.idl:63
 msgid "Half note"
 msgstr "Půlová nota"
 
-#: beast-gtk/bstrecords.idl:45
+#: beast-gtk/bstrecords.idl:64
 msgid "1/4"
 msgstr "1/4"
 
-#: beast-gtk/bstrecords.idl:45
+#: beast-gtk/bstrecords.idl:64
 msgid "Quarter note"
 msgstr "Čtvrťová nota"
 
-#: beast-gtk/bstrecords.idl:46
+#: beast-gtk/bstrecords.idl:65
 msgid "1/8"
 msgstr "1/8"
 
-#: beast-gtk/bstrecords.idl:46
+#: beast-gtk/bstrecords.idl:65
 msgid "Eighths note"
 msgstr "Osminová nota"
 
-#: beast-gtk/bstrecords.idl:47
+#: beast-gtk/bstrecords.idl:66
 msgid "1/16"
 msgstr "1/16"
 
-#: beast-gtk/bstrecords.idl:47
+#: beast-gtk/bstrecords.idl:66
 msgid "Sixteenth note"
 msgstr "Šestnáctinová nota"
 
-#: beast-gtk/bstrecords.idl:48
+#: beast-gtk/bstrecords.idl:67
 msgid "1/32"
 msgstr "1/32"
 
-#: beast-gtk/bstrecords.idl:48
+#: beast-gtk/bstrecords.idl:67
 msgid "Thirty-secondth note"
 msgstr "Dvaatřicetinová nota"
 
-#: beast-gtk/bstrecords.idl:49
+#: beast-gtk/bstrecords.idl:68
 msgid "1/64"
 msgstr "1/64"
 
-#: beast-gtk/bstrecords.idl:49
+#: beast-gtk/bstrecords.idl:68
 msgid "Sixty-fourth note"
 msgstr "Čtyřiašedesátinová nota"
 
-#: beast-gtk/bstrecords.idl:50
+#: beast-gtk/bstrecords.idl:69
 msgid "1/128"
 msgstr "1/128"
 
-#: beast-gtk/bstrecords.idl:50
+#: beast-gtk/bstrecords.idl:69
 msgid "Hundred twenty-eighth note"
 msgstr "Stovacetiosminová nota"
 
-#: beast-gtk/bstrecords.idl:51
+#: beast-gtk/bstrecords.idl:70
 msgid "1/1."
 msgstr "1/1."
 
-#: beast-gtk/bstrecords.idl:51
+#: beast-gtk/bstrecords.idl:70
 msgid "Dotted whole note"
 msgstr "Celá nota s tečkou"
 
-#: beast-gtk/bstrecords.idl:52
+#: beast-gtk/bstrecords.idl:71
 msgid "1/2."
 msgstr "1/2."
 
-#: beast-gtk/bstrecords.idl:52
+#: beast-gtk/bstrecords.idl:71
 msgid "Dotted half note"
 msgstr "Půlová nota s tečkou"
 
-#: beast-gtk/bstrecords.idl:53
+#: beast-gtk/bstrecords.idl:72
 msgid "1/4."
 msgstr "1/4."
 
-#: beast-gtk/bstrecords.idl:53
+#: beast-gtk/bstrecords.idl:72
 msgid "Dotted quarter note"
 msgstr "Čtvrťová nota s tečkou"
 
-#: beast-gtk/bstrecords.idl:54
+#: beast-gtk/bstrecords.idl:73
 msgid "1/8."
 msgstr "1/8."
 
-#: beast-gtk/bstrecords.idl:54
+#: beast-gtk/bstrecords.idl:73
 msgid "Dotted eighths note"
 msgstr "Osminová nota s tečkou"
 
-#: beast-gtk/bstrecords.idl:55
+#: beast-gtk/bstrecords.idl:74
 msgid "1/16."
 msgstr "1/16."
 
-#: beast-gtk/bstrecords.idl:55
+#: beast-gtk/bstrecords.idl:74
 msgid "Dotted sixteenth note"
 msgstr "Šestnáctinová nota s tečkou"
 
-#: beast-gtk/bstrecords.idl:56
+#: beast-gtk/bstrecords.idl:75
 msgid "1/32."
 msgstr "1/32."
 
-#: beast-gtk/bstrecords.idl:56
+#: beast-gtk/bstrecords.idl:75
 msgid "Dotted thirty-secondth note"
 msgstr "Dvaatřicetinová nota s tečkou"
 
-#: beast-gtk/bstrecords.idl:57
+#: beast-gtk/bstrecords.idl:76
 msgid "1/64."
 msgstr "1/64."
 
-#: beast-gtk/bstrecords.idl:57
+#: beast-gtk/bstrecords.idl:76
 msgid "Dotted sixty-fourth note"
 msgstr "Čtyřiašedesátinová nota s tečkou"
 
-#: beast-gtk/bstrecords.idl:58
+#: beast-gtk/bstrecords.idl:77
 msgid "1/128."
 msgstr "1/128."
 
-#: beast-gtk/bstrecords.idl:58
+#: beast-gtk/bstrecords.idl:77
 msgid "Dotted hundred twenty-eighth note"
 msgstr "Stodvacetiosminová nota s tečkou"
 
-#: beast-gtk/bstrecords.idl:59
+#: beast-gtk/bstrecords.idl:78
 msgid "1/1T"
 msgstr "1/1T"
 
-#: beast-gtk/bstrecords.idl:59
+#: beast-gtk/bstrecords.idl:78
 msgid "Triplet whole note"
 msgstr "Celá nota v triole"
 
-#: beast-gtk/bstrecords.idl:60
+#: beast-gtk/bstrecords.idl:79
 msgid "1/2T"
 msgstr "1/2T"
 
-#: beast-gtk/bstrecords.idl:60
+#: beast-gtk/bstrecords.idl:79
 msgid "Triplet half note"
 msgstr "Půlová nota v triole"
 
-#: beast-gtk/bstrecords.idl:61
+#: beast-gtk/bstrecords.idl:80
 msgid "1/4T"
 msgstr "1/4T"
 
-#: beast-gtk/bstrecords.idl:61
+#: beast-gtk/bstrecords.idl:80
 msgid "Triplet quarter note"
 msgstr "Čtvrťová nota v triole"
 
-#: beast-gtk/bstrecords.idl:62
+#: beast-gtk/bstrecords.idl:81
 msgid "1/8T"
 msgstr "1/8T"
 
-#: beast-gtk/bstrecords.idl:62
+#: beast-gtk/bstrecords.idl:81
 msgid "Triplet eighths note"
 msgstr "Osminová nota v triole"
 
-#: beast-gtk/bstrecords.idl:63
+#: beast-gtk/bstrecords.idl:82
 msgid "1/16T"
 msgstr "1/16T"
 
-#: beast-gtk/bstrecords.idl:63
+#: beast-gtk/bstrecords.idl:82
 msgid "Triplet sixteenth note"
 msgstr "Šestnáctinová nota v triole"
 
-#: beast-gtk/bstrecords.idl:64
+#: beast-gtk/bstrecords.idl:83
 msgid "1/32T"
 msgstr "1/32T"
 
-#: beast-gtk/bstrecords.idl:64
+#: beast-gtk/bstrecords.idl:83
 msgid "Triplet thirty-secondth note"
 msgstr "Dvaatřicetinová nota v triole"
 
-#: beast-gtk/bstrecords.idl:65
+#: beast-gtk/bstrecords.idl:84
 msgid "1/64T"
 msgstr "1/64T"
 
-#: beast-gtk/bstrecords.idl:65
+#: beast-gtk/bstrecords.idl:84
 msgid "Triplet sixty-fourth note"
 msgstr "Čtyřiašedesátinová nota v triole"
 
-#: beast-gtk/bstrecords.idl:66
+#: beast-gtk/bstrecords.idl:85
 msgid "1/128T"
 msgstr "1/128T"
 
-#: beast-gtk/bstrecords.idl:66
+#: beast-gtk/bstrecords.idl:85
 msgid "Triplet hundred twenty-eighth note"
 msgstr "Stodvacetiosminová nota v triole"
 
-#: beast-gtk/bstrecords.idl:71
+#: beast-gtk/bstrecords.idl:90
 msgid "2"
 msgstr "2"
 
-#: beast-gtk/bstrecords.idl:71
+#: beast-gtk/bstrecords.idl:90
 msgid "Every second row"
 msgstr "Každý druhý řádek"
 
-#: beast-gtk/bstrecords.idl:72
+#: beast-gtk/bstrecords.idl:91
 msgid "4"
 msgstr "4"
 
-#: beast-gtk/bstrecords.idl:72
+#: beast-gtk/bstrecords.idl:91
 msgid "Every fourth row"
 msgstr "Každý čtvrtý řádek"
 
-#: beast-gtk/bstrecords.idl:73
+#: beast-gtk/bstrecords.idl:92
 msgid "8"
 msgstr "8"
 
-#: beast-gtk/bstrecords.idl:73
+#: beast-gtk/bstrecords.idl:92
 msgid "Every eighth row"
 msgstr "Každý osmý řádek"
 
-#: beast-gtk/bstrecords.idl:74
+#: beast-gtk/bstrecords.idl:93
 msgid "16"
 msgstr "16"
 
-#: beast-gtk/bstrecords.idl:74
+#: beast-gtk/bstrecords.idl:93
 msgid "Every sixteenth row"
 msgstr "Každý šestnáctý řádek"
 
-#: beast-gtk/bstrecords.idl:75
+#: beast-gtk/bstrecords.idl:94
 msgid "2 & 4"
 msgstr "2 a 4"
 
-#: beast-gtk/bstrecords.idl:75
+#: beast-gtk/bstrecords.idl:94
 msgid "Every second and fourth row"
 msgstr "Každý druhý a čtvrtý řádek"
 
-#: beast-gtk/bstrecords.idl:76
+#: beast-gtk/bstrecords.idl:95
 msgid "4 & 8"
 msgstr "4 a 8"
 
-#: beast-gtk/bstrecords.idl:76
+#: beast-gtk/bstrecords.idl:95
 msgid "Every fourth and eighth row"
 msgstr "Každý čtvrtý a osmý řádek"
 
-#: beast-gtk/bstrecords.idl:77
+#: beast-gtk/bstrecords.idl:96
 msgid "4 & 12"
 msgstr "4 a 12"
 
-#: beast-gtk/bstrecords.idl:77
+#: beast-gtk/bstrecords.idl:96
 msgid "Every fourth and twelfth row"
 msgstr "Každý čtvrtý a dvanáctý řádek"
 
-#: beast-gtk/bstrecords.idl:78
+#: beast-gtk/bstrecords.idl:97
 msgid "4 & 16"
 msgstr "4 a 16"
 
-#: beast-gtk/bstrecords.idl:78
+#: beast-gtk/bstrecords.idl:97
 msgid "Every fourth and sixteenth row"
 msgstr "Každý čtvrtý a šestnáctý řádek"
 
-#: beast-gtk/bstrecords.idl:79
+#: beast-gtk/bstrecords.idl:98
 msgid "8 & 16"
 msgstr "8 a 16"
 
-#: beast-gtk/bstrecords.idl:79
+#: beast-gtk/bstrecords.idl:98
 msgid "Every eighth and sixteenth row"
 msgstr "Každý osmý a šestnáctý řádek"
 
-#: beast-gtk/bstrecords.idl:80
+#: beast-gtk/bstrecords.idl:99
 msgid "3"
 msgstr "3"
 
-#: beast-gtk/bstrecords.idl:80
+#: beast-gtk/bstrecords.idl:99
 msgid "Every third row"
 msgstr "Každý třetí řádek"
 
-#: beast-gtk/bstrecords.idl:81
+#: beast-gtk/bstrecords.idl:100
 msgid "6"
 msgstr "6"
 
-#: beast-gtk/bstrecords.idl:81
+#: beast-gtk/bstrecords.idl:100
 msgid "Every sixth row"
 msgstr "Každý šestý řádek"
 
-#: beast-gtk/bstrecords.idl:82
+#: beast-gtk/bstrecords.idl:101
 msgid "12"
 msgstr "12"
 
-#: beast-gtk/bstrecords.idl:82
+#: beast-gtk/bstrecords.idl:101
 msgid "Every twelfth row"
 msgstr "Každý dvanáctý řádek"
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstrecords.idl:102
 msgid "3 & 6"
 msgstr "3 a 6"
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstrecords.idl:102
 msgid "Every third and sixth row"
 msgstr "Každý třetí a šestý řádek"
 
-#: beast-gtk/bstrecords.idl:84
+#: beast-gtk/bstrecords.idl:103
 msgid "3 & 12"
 msgstr "3 a 12"
 
-#: beast-gtk/bstrecords.idl:84
+#: beast-gtk/bstrecords.idl:103
 msgid "Every third and twelfth row"
 msgstr "Každý třetí a dvanáctý řádek"
 
-#: beast-gtk/bstrecords.idl:85
+#: beast-gtk/bstrecords.idl:104
 msgid "6 & 12"
 msgstr "6 a 12"
 
-#: beast-gtk/bstrecords.idl:85
+#: beast-gtk/bstrecords.idl:104
 msgid "Every sixth and twelfth row"
 msgstr "Každý šestý a dvanáctý řádek"
 
-#: beast-gtk/bstrecords.idl:90
+#: beast-gtk/bstrecords.idl:109
 msgid "Release counter"
 msgstr "Uvolnit čítač"
 
-#: beast-gtk/bstrecords.idl:92
+#: beast-gtk/bstrecords.idl:111
 msgid "Font Size"
 msgstr "Velikost písma"
 
-#: beast-gtk/bstrecords.idl:92
+#: beast-gtk/bstrecords.idl:111
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "Velikost písma v pixelech pro popisky zobrazované v sítích syntézy"
 
-#: beast-gtk/bstrecords.idl:94
+#: beast-gtk/bstrecords.idl:113
 msgid "Anti-Alias"
 msgstr "Vyhlazovat"
 
-#: beast-gtk/bstrecords.idl:94
+#: beast-gtk/bstrecords.idl:113
 msgid "Draw synthesis networks anti-aliased?"
 msgstr "Kreslit sítě syntézy vyhlazované?"
 
-#: beast-gtk/bstrecords.idl:96
+#: beast-gtk/bstrecords.idl:115
 msgid "Single Edit"
 msgstr "Upravit jediné"
 
-#: beast-gtk/bstrecords.idl:96
+#: beast-gtk/bstrecords.idl:115
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr "Vrátit se do režimu úprav po vytvoření modulů syntézy?"
 
-#: beast-gtk/bstrecords.idl:98
+#: beast-gtk/bstrecords.idl:117
 msgid "Swap IO"
 msgstr "Přehodit IO"
 
-#: beast-gtk/bstrecords.idl:98
+#: beast-gtk/bstrecords.idl:117
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr "Přehodit při zobrazování modulů syntézy vstupní a výstupní kanály?"
 
-#: beast-gtk/bstrecords.idl:102
+#: beast-gtk/bstrecords.idl:121
 msgid "Homogeneous Input Fields"
 msgstr "Homogenní vstupní pole"
 
-#: beast-gtk/bstrecords.idl:103
+#: beast-gtk/bstrecords.idl:122
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -2083,106 +2221,106 @@ msgstr ""
 "Povolit homogenní velikosti většiny (číselných a textových) vstupních polí. "
 "Na některé pole bude mít vliv až po restartu."
 
-#: beast-gtk/bstrecords.idl:106
+#: beast-gtk/bstrecords.idl:125
 msgid "Enable scopes"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:107 beast-gtk/bstrecords.idl:111
+#: beast-gtk/bstrecords.idl:126 beast-gtk/bstrecords.idl:130
 msgid ""
 "Enables or prevents BEAST from periodically updating the scopes. Disabling "
 "may be desirable especially on slow machines."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:110
+#: beast-gtk/bstrecords.idl:129
 #, fuzzy
 msgid "Enable meters"
 msgstr "Parametry"
 
-#: beast-gtk/bstrecords.idl:119
+#: beast-gtk/bstrecords.idl:138
 msgid "Skin Name"
 msgstr "Název skinu"
 
-#: beast-gtk/bstrecords.idl:119
+#: beast-gtk/bstrecords.idl:138
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Název aktuálního nastavení skinu (používané pro výběry skinu)."
 
-#: beast-gtk/bstrecords.idl:121 beast-gtk/bstrecords.idl:131
-#: beast-gtk/bstrecords.idl:141
+#: beast-gtk/bstrecords.idl:140 beast-gtk/bstrecords.idl:150
+#: beast-gtk/bstrecords.idl:160
 msgid "Background Image"
 msgstr "Obrázek na pozadí"
 
-#: beast-gtk/bstrecords.idl:121
+#: beast-gtk/bstrecords.idl:140
 msgid "Background image used by the pattern editor."
 msgstr "Obrázek na pozadí používaný editorem vzorků."
 
-#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:132
-#: beast-gtk/bstrecords.idl:142
+#: beast-gtk/bstrecords.idl:141 beast-gtk/bstrecords.idl:151
+#: beast-gtk/bstrecords.idl:161
 msgid "Image shade"
 msgstr "Stínování obrázku"
 
-#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:132
-#: beast-gtk/bstrecords.idl:142
+#: beast-gtk/bstrecords.idl:141 beast-gtk/bstrecords.idl:151
+#: beast-gtk/bstrecords.idl:161
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Procento pixelů obrázku na pozadí, které sloučit s barvou pozadí."
 
-#: beast-gtk/bstrecords.idl:123 beast-gtk/bstrecords.idl:133
-#: beast-gtk/bstrecords.idl:143
+#: beast-gtk/bstrecords.idl:142 beast-gtk/bstrecords.idl:152
+#: beast-gtk/bstrecords.idl:162
 msgid "Background Color"
 msgstr "Barva pozadí"
 
-#: beast-gtk/bstrecords.idl:124
+#: beast-gtk/bstrecords.idl:143
 msgid "Background Shade 1"
 msgstr "Stín pozadí 1"
 
-#: beast-gtk/bstrecords.idl:125
+#: beast-gtk/bstrecords.idl:144
 msgid "Background Shade 2"
 msgstr "Stín pozadí 2"
 
-#: beast-gtk/bstrecords.idl:126
+#: beast-gtk/bstrecords.idl:145
 msgid "Empty Field Color"
 msgstr "Barva prázdného pole"
 
-#: beast-gtk/bstrecords.idl:127
+#: beast-gtk/bstrecords.idl:146
 msgid "Text Color"
 msgstr "Barva textu"
 
-#: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:135
+#: beast-gtk/bstrecords.idl:147 beast-gtk/bstrecords.idl:154
 msgid "Vertical Bar Color"
 msgstr "Barva svislého pruhu"
 
-#: beast-gtk/bstrecords.idl:131
+#: beast-gtk/bstrecords.idl:150
 msgid "Background image used by the piano-roll editor."
 msgstr "Obrázek na pozadí používaný editorem svitku klavíru."
 
-#: beast-gtk/bstrecords.idl:134 beast-gtk/bstrecords.idl:144
+#: beast-gtk/bstrecords.idl:153 beast-gtk/bstrecords.idl:163
 msgid "Horizontal Bar Color"
 msgstr "Barva vodorovného pruhu"
 
-#: beast-gtk/bstrecords.idl:136
+#: beast-gtk/bstrecords.idl:155
 msgid "Horizontal Grid Color"
 msgstr "Barva vodorovné mřížky"
 
-#: beast-gtk/bstrecords.idl:137
+#: beast-gtk/bstrecords.idl:156
 msgid "Vertical Grid Color"
 msgstr "Barva svislé mřížky"
 
-#: beast-gtk/bstrecords.idl:138 beast-gtk/bstrecords.idl:145
+#: beast-gtk/bstrecords.idl:157 beast-gtk/bstrecords.idl:164
 msgid "Middle Bar Color"
 msgstr "Barva prostředního pruhu"
 
-#: beast-gtk/bstrecords.idl:141
+#: beast-gtk/bstrecords.idl:160
 msgid "Background image used by the control events editor."
 msgstr "Obrázek na pozadí používaný editorem řídicích událostí."
 
-#: beast-gtk/bstrecords.idl:146
+#: beast-gtk/bstrecords.idl:165
 msgid "Positive Value Color"
 msgstr "Barva kladné hodnoty"
 
-#: beast-gtk/bstrecords.idl:147
+#: beast-gtk/bstrecords.idl:166
 msgid "Zero Value Color"
 msgstr "Barva nulové hodnoty"
 
-#: beast-gtk/bstrecords.idl:148
+#: beast-gtk/bstrecords.idl:167
 msgid "Negative Value Color"
 msgstr "Barva záporné hodnoty"
 
@@ -2241,6 +2379,39 @@ msgstr "Maximum návrhu"
 msgid "Preview"
 msgstr "Náslech"
 
+#: beast-gtk/bstscrollgraph.c:511 beast-gtk/bstscrollgraph.c:514
+#: beast-gtk/bstscrollgraph.c:517 beast-gtk/bstscrollgraph.c:520
+msgid "Spectrograph"
+msgstr "Spektrograf"
+
+#: beast-gtk/bstscrollgraph.c:512
+msgid "Flip Spectrum"
+msgstr "Obrátit spektrum"
+
+#: beast-gtk/bstscrollgraph.c:512
+msgid "Flip Spectrum display,  interchaging low and high frequencies"
+msgstr "Obrátit zobrazení spektra, prohodit nízké a vysoké frekvence"
+
+#: beast-gtk/bstscrollgraph.c:515
+msgid "Choose display scrolling direction"
+msgstr "Zvolte směr posunu displeje"
+
+#: beast-gtk/bstscrollgraph.c:518
+msgid "Boost"
+msgstr ""
+
+#: beast-gtk/bstscrollgraph.c:518
+msgid "Adjust frequency level threshold"
+msgstr "Upravit úroveň prahu frekvence"
+
+#: beast-gtk/bstscrollgraph.c:521
+msgid "Window Size"
+msgstr "Velikost okna"
+
+#: beast-gtk/bstscrollgraph.c:521
+msgid "Adjust FFT window size"
+msgstr "Upravit velikost okna FFT"
+
 #: beast-gtk/bstsnetrouter.c:43
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
@@ -2259,7 +2430,7 @@ msgstr "Upravit"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Upravit/přesunout/menu (tlačítka myši 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:52 beast-gtk/bstsnetrouter.c:938
+#: beast-gtk/bstsnetrouter.c:52 beast-gtk/bstsnetrouter.c:932
 msgid "Palette"
 msgstr "Paleta"
 
@@ -2301,7 +2472,7 @@ msgstr "Odstranit vstupy"
 msgid "Delete Outputs"
 msgstr "Odstranit výstupy"
 
-#: beast-gtk/bstsnetrouter.c:709 beast-gtk/bstsnetrouter.c:764
+#: beast-gtk/bstsnetrouter.c:709 beast-gtk/bstsnetrouter.c:758
 msgid "Show Info"
 msgstr "Zobrazit informace"
 
@@ -2313,48 +2484,43 @@ msgstr "Sledovat výstupní signál"
 msgid "Remove Module"
 msgstr "Odstranit modul"
 
-#: beast-gtk/bstsnetrouter.c:745
-#, fuzzy
-msgid "Scrollgraph"
-msgstr "Posouvat pravý"
-
-#: beast-gtk/bstsnetrouter.c:775
+#: beast-gtk/bstsnetrouter.c:769
 msgid "Delete Link"
 msgstr "Odstranit spojení"
 
-#: beast-gtk/bstsnetrouter.c:829
+#: beast-gtk/bstsnetrouter.c:823
 msgid "Insert Module"
 msgstr "Vložit modul"
 
-#: beast-gtk/bstsnetrouter.c:1096
+#: beast-gtk/bstsnetrouter.c:1090
 msgid "PCM Output module"
 msgstr "Modul výstupu PCM"
 
-#: beast-gtk/bstsnetrouter.c:1097
+#: beast-gtk/bstsnetrouter.c:1091
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:1097
+#: beast-gtk/bstsnetrouter.c:1091
 msgid "Standard amplifier module"
 msgstr "Standardní modul zesilovače"
 
-#: beast-gtk/bstsnetrouter.c:1098
+#: beast-gtk/bstsnetrouter.c:1092
 msgid "Snooper"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:1098
+#: beast-gtk/bstsnetrouter.c:1092
 msgid "Signal debugging module"
 msgstr "Modul ladění signálu"
 
-#: beast-gtk/bstsnetrouter.c:1099
+#: beast-gtk/bstsnetrouter.c:1093
 msgid "PCM Input module"
 msgstr "Modul vstupu PCM"
 
-#: beast-gtk/bstsnetrouter.c:1147
+#: beast-gtk/bstsnetrouter.c:1141
 msgid "Channel Hints"
 msgstr "Nápovědy kanálů"
 
-#: beast-gtk/bstsnetrouter.c:1147
+#: beast-gtk/bstsnetrouter.c:1141
 msgid "Toggle channel name hints"
 msgstr "Přepnout nápovědy názvů kanálů"
 
@@ -3260,49 +3426,54 @@ msgstr "Hlavní hlasitost"
 msgid "Output stage amplification in decibel"
 msgstr "Zesílení ve výstupní fázi v decibelech"
 
-#: bse/bseautodoc.c:360 bse/bseautodoc.c:422
+#: bse/bseautodoc.c:360 bse/bseautodoc.c:397
 msgid "Authors:"
 msgstr "Autoři:"
 
-#: bse/bseautodoc.c:365 bse/bseautodoc.c:425
+#: bse/bseautodoc.c:365 bse/bseautodoc.c:400
 msgid "License:"
 msgstr "Licence:"
 
-#: bse/bseautodoc.c:408 bse/bseautodoc.c:410
-msgid "BSE-Objects"
-msgstr "BSE-Objekty"
-
-#: bse/bseautodoc.c:410
-msgid " Object Reference"
-msgstr " Odkaz na objekt"
-
-#: bse/bseautodoc.c:429
+#: bse/bseautodoc.c:404
 msgid "Properties:"
 msgstr "Vlastnosti:"
 
-#: bse/bseautodoc.c:455 bse/bseautodoc.c:488 bse/bseautodoc.c:505
+#: bse/bseautodoc.c:431 bse/bseautodoc.c:500 bse/bseautodoc.c:518
 msgid "Identifier:"
 msgstr "Identifikátor:"
 
-#: bse/bseautodoc.c:460 bse/bseautodoc.c:466
+#: bse/bseautodoc.c:436 bse/bseautodoc.c:442
 msgid "Range:"
 msgstr "Rozsah:"
 
-#: bse/bseautodoc.c:470 bse/bseautodoc.c:491 bse/bseautodoc.c:508
+#: bse/bseautodoc.c:446 bse/bseautodoc.c:503 bse/bseautodoc.c:521
 msgid "Description:"
 msgstr "Popis:"
 
-#: bse/bseautodoc.c:480
+#: bse/bseautodoc.c:460
+msgid "Signals:"
+msgstr "Signály:"
+
+#: bse/bseautodoc.c:492
 msgid "Input Channels:"
 msgstr "Vstupní kanály:"
 
-#: bse/bseautodoc.c:487
+#: bse/bseautodoc.c:499
 msgid "(Joint Input)"
 msgstr "(Společný vstup)"
 
-#: bse/bseautodoc.c:498
+#: bse/bseautodoc.c:511
 msgid "Output Channels:"
 msgstr "Výstupní kanály:"
+
+#: bse/bseautodoc.c:565 bse/bseautodoc.c:567 bse/bseautodoc.c:592
+#: bse/bseautodoc.c:594
+msgid "BSE-Objects"
+msgstr "BSE-Objekty"
+
+#: bse/bseautodoc.c:567 bse/bseautodoc.c:594
+msgid " Object Reference"
+msgstr " Odkaz na objekt"
 
 #: bse/bsebiquadfilter.c:105
 msgid "/Filters/Biquad Types"
@@ -4943,6 +5114,7 @@ msgstr ""
 "Tento ovladač není na seznamu automatického výběru zařízení PCM."
 
 #: bse/bsepcmdevice-oss.c:651
+#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:352
 msgid "DEVICE,MODE"
 msgstr "ZAŘÍZENÍ,REŽIM"
 
@@ -5513,6 +5685,19 @@ msgstr ""
 "  KARTA  - číslo karty pro moduly jako 'hw'\n"
 "  ZAŘ    - číslo zařízení pro moduly jako 'hw'\n"
 "  PODZAŘ - číslo podzařízení pro moduly jako 'hw'\n"
+
+#. TRANSLATORS: keep this text to 70 chars in width
+#: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:354
+#, c-format
+msgid ""
+"PortAudio PCM driver, using %s.\n"
+"  DEVICE - the PortAudio device to use, 'default' selects a default device\n"
+"  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
+msgstr ""
+"Ovladač PCM PortAudio, používá %s.\n"
+"  ZAŘÍZENÍ - zařízení PortAudio, které používat, 'default' vybere\n"
+"             implicitní zařízení\n"
+"  REŽIM    - rw = čtení i zápis, ro = jen čtení, wo = jen zápis\n"
 
 #: plugins/artscompressor.idl:28 plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
