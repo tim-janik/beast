@@ -6,3 +6,11 @@ Makefile
 Makefile.in
 beast
 bstconfigpaths.h
+bstenum_arrays.c
+bstenum_arrays.stamp
+bstenum_list.c
+bstgentypes.c
+bstgentypes.h
+bstmarshal.c
+bstmarshal.h
+bststest

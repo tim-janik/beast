@@ -1,0 +1,9 @@
+.deps
+.libs
+Makefile
+Makefile.in
+bswgenapi.c
+bswgenapi.h
+mkapi
+stamp-bswgenapi.h
+testbsw
