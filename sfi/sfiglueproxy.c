@@ -28,6 +28,7 @@
 
 /* --- macros --- */
 #define	sfi_proxy_warn_inval(where,proxy)	sfi_warn ("%s: invalid proxy id (%lu)", (where), (proxy))
+#define SIG_INFO				sfi_info_keyfunc ("signal")
 
 
 /* --- structures --- */
@@ -276,10 +277,10 @@ sfi_glue_proxy_signal (SfiGlueContext *context,
 	    }
 	}
       else
-	sfi_warn ("spurious unknown signal \"%s\" on proxy (%lu)", signal, proxy);
+	SIG_INFO ("spurious unknown signal \"%s\" on proxy (%lu)", signal, proxy);
     }
   else
-    sfi_warn ("spurious signal \"%s\" on non existing proxy (%lu)", signal, proxy);
+    SIG_INFO ("spurious signal \"%s\" on non existing proxy (%lu)", signal, proxy);
 }
 
 static void
@@ -351,7 +352,7 @@ sfi_glue_signal_connect_closure (SfiProxy       proxy,
 	}
       else
 	{
-	  g_message ("no such signal \"%s\" on proxy (%lu) to connect to", signal, proxy);
+	  sfi_warn ("no such signal \"%s\" on proxy (%lu) to connect to", signal, proxy);
 	  sfi_glue_gc_add (closure, g_closure_unref);
 	}
     }
@@ -411,8 +412,8 @@ sfi_glue_signal_disconnect (SfiProxy     proxy,
 	    }
 	}
     }
-  g_message ("proxy (%lu) has no signal connection (%lu) to disconnect",
-	     proxy, connection_id);
+  SIG_INFO ("%s: proxy (%lu) has no signal connection (%lu) to disconnect",
+	    G_STRLOC, proxy, connection_id);
 }
 
 static GSList*
@@ -757,7 +758,7 @@ sfi_glue_proxy_weak_unref (SfiProxy        proxy,
 	      }
 	}
       if (!found_one)
-	sfi_warn (G_STRLOC ": proxy (%lu) has no weak ref %p(%p)", proxy, weak_notify, data);
+	sfi_warn ("%s: proxy (%lu) has no weak ref %p(%p)", G_STRLOC, proxy, weak_notify, data);
     }
 }
 

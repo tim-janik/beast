@@ -1518,7 +1518,7 @@ sfi_ring_remove (SfiRing *head,
     if (walk->data == data)
       return sfi_ring_remove_node (head, walk);
   
-  g_warning (G_STRLOC ": couldn't find data item (%p) to remove from ring (%p)", data, head);
+  /* g_warning (G_STRLOC ": couldn't find data item (%p) to remove from ring (%p)", data, head); */
   
   return head;
 }

@@ -27,6 +27,9 @@
 #include <errno.h>
 
 
+#define SER_INFO	sfi_info_keyfunc ("serialization")
+
+
 /* --- structures --- */
 typedef struct {
   SfiStoreReadBin reader;
@@ -179,12 +182,12 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
       if (g_param_value_validate (spspec, &svalue))
 	{
 	  if (G_VALUE_TYPE (&svalue) != G_VALUE_TYPE (value))
-	    g_message ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
-		       pspec->name, g_type_name (G_VALUE_TYPE (&svalue)),
-		       g_type_name (G_VALUE_TYPE (value)));
+	    SER_INFO ("fixing up value for \"%s\" of type `%s' (converted from `%s')",
+		      pspec->name, g_type_name (G_VALUE_TYPE (&svalue)),
+		      g_type_name (G_VALUE_TYPE (value)));
 	  else
-	    g_message ("fixing up value for \"%s\" of type `%s'",
-		       pspec->name, g_type_name (G_VALUE_TYPE (&svalue)));
+	    SER_INFO ("fixing up value for \"%s\" of type `%s'",
+		      pspec->name, g_type_name (G_VALUE_TYPE (&svalue)));
 	}
       sfi_value_store_param (&svalue, gstring, spspec, wstore->indent);
       sfi_wstore_break (wstore);

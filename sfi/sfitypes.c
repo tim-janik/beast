@@ -20,6 +20,7 @@
 #include "sfivalues.h"
 #include "sfiparams.h"
 #include "sfiprimitives.h"
+#include "sfilog.h"
 #include "sfitime.h"
 #include "sfiglue.h"
 #include "sfithreads.h"
@@ -46,6 +47,7 @@ sfi_init (void)
       g_type_init ();
       quark_boxed_sequence = g_quark_from_static_string ("sfi-boxed-sequence-info");
       quark_boxed_record = g_quark_from_static_string ("sfi-boxed-record-info");
+      _sfi_init_log ();
       _sfi_init_values ();
       _sfi_init_params ();
       _sfi_init_time ();

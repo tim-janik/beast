@@ -182,9 +182,9 @@ encoder_process_message (SfiGlueEncoder *encoder,
 	  break;
 	case SFI_GLUE_CODEC_ASYNC_MESSAGE:
 	  if (seq->n_elements >= 4)
-	    sfi_log_message (sfi_seq_get_string (seq, 1),
-			     sfi_seq_get_int (seq, 2),
-			     sfi_seq_get_string (seq, 3));
+	    sfi_log (sfi_seq_get_string (seq, 1),
+		     sfi_seq_get_int (seq, 2),
+		     sfi_seq_get_string (seq, 3));
 	  else
 	    sfi_warn ("Encoder: ignoring message with invalid message contents");
 	  break;

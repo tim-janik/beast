@@ -21,30 +21,13 @@
 #include "sfitime.h"
 #include <unistd.h>
 #include <stdio.h>
-
-
-/* --- variables --- */
-static SfiLogVerbosity log_verbosity = SFI_LOG_VERBOSITY_NORMAL;
+#include <string.h>
+#include <errno.h>
 
 
 /* --- functions --- */
-void
-sfi_log_set_verbosity (SfiLogVerbosity verbosity)
-{
-  switch (verbosity)
-    {
-    case SFI_LOG_VERBOSITY_DETAILED:
-    case SFI_LOG_VERBOSITY_DEVELOPMENT:
-      log_verbosity = verbosity;
-      break;
-    default:
-      log_verbosity = SFI_LOG_VERBOSITY_NORMAL;
-      break;
-    }
-}
-
-static const gchar*
-_sfi_log_pop_key (const gchar *fallback)
+static inline const gchar*
+sfi_log_pop_key (const gchar *fallback)
 {
   const gchar *key = sfi_thread_get_data ("SFI-log-key");
   if (key)
@@ -58,13 +41,12 @@ sfi_log_push_key (const gchar *static_key)
   sfi_thread_set_data ("SFI-log-key", (gchar*) static_key);
 }
 
-void
+static void
 sfi_log_message (const gchar *log_domain,
+		 const gchar *key,
 		 guint        level,
 		 const gchar *message)
 {
-  const gchar *key = _sfi_log_pop_key ("misc");
-
   g_return_if_fail (message != NULL);
   
   switch (level)
@@ -75,13 +57,7 @@ sfi_log_message (const gchar *log_domain,
     case SFI_LOG_WARN:
     case SFI_LOG_ERROR:
       pname = g_get_prgname ();
-      if (log_verbosity == SFI_LOG_VERBOSITY_DEVELOPMENT)
-	g_printerr ("%s[%u]:%s%s: %s\n",
-		    pname ? pname : "process", getpid (),
-		    log_domain ? log_domain : "",
-		    level == SFI_LOG_WARN ? "-WARNING" : "-ERROR",
-		    message);
-      else if (pname)
+      if (pname)
 	g_printerr ("%s:%s%s: %s\n",
 		    pname,
 		    log_domain ? log_domain : "",
@@ -94,25 +70,10 @@ sfi_log_message (const gchar *log_domain,
 		    message);
       break;
     case SFI_LOG_INFO:
-      switch (log_verbosity)
-	{
-	case SFI_LOG_VERBOSITY_NORMAL:
-	  g_printerr ("%s\n", message);
-	  break;
-	case SFI_LOG_VERBOSITY_DETAILED:
-	  g_printerr ("%s(%s): %s\n",
-		      log_domain ? log_domain : "",
-		      key,
-		      message);
-	  break;
-	case SFI_LOG_VERBOSITY_DEVELOPMENT:
-	  g_printerr ("%s(%s)[%u]: %s\n",
-		      log_domain ? log_domain : "",
-		      key,
-		      getpid (),
-		      message);
-	  break;
-	}
+      g_printerr ("%s(%s): %s\n",
+		  log_domain ? log_domain : "",
+		  key,
+		  message);
       break;
     case SFI_LOG_DEBUG:
       t = sfi_time_from_utc (sfi_time_system ());
@@ -122,7 +83,7 @@ sfi_log_message (const gchar *log_domain,
       tm = t % 60;
       t /= 60;
       th = t % 24;
-      fprintf (stderr, "##%02u:%02u:%02u#%s(%s)[%u]# %s\n",
+      fprintf (stderr, "=%02u:%02u:%02u %s(%s)[%u]: %s\n",
 	       th, tm, ts,
 	       log_domain ? log_domain : "",
 	       key,
@@ -141,17 +102,226 @@ sfi_log_message (const gchar *log_domain,
     }
 }
 
+typedef struct {
+  gchar  **keys;
+  guint    n_keys;
+  gboolean match_all;
+} KeyList;
+
+static inline gboolean
+key_list_test (KeyList     *self,
+	       const gchar *key)
+{
+  gint offs = 0, n = self->n_keys;
+  while (offs < n)
+    {
+      gint i = (offs + n) >> 1;
+      gint cmp = strcmp (key, self->keys[i]);
+      if (cmp < 0)
+	n = i;
+      else if (cmp > 0)
+	offs = i + 1;
+      else
+	return TRUE;
+    }
+  return FALSE;
+}
+
+static void
+key_list_reset (KeyList *self)
+{
+  guint i = self->n_keys;
+  self->n_keys = 0;
+  while (i--)
+    g_free (self->keys[i]);
+  g_free (self->keys);
+  self->keys = NULL;
+  self->match_all = FALSE;
+}
+
+static void
+key_list_add (KeyList     *self,
+	      const gchar *string)
+{
+  gchar *s, *k, *p;
+  GSList *slist = NULL;
+  guint i, l;
+
+  s = g_strconcat (":", string, ":", NULL);
+  if (strstr (s, ":all:"))
+    {
+      g_free (s);
+      self->match_all = TRUE;
+      i = self->n_keys;
+      self->n_keys = 0;
+      while (i--)
+	g_free (self->keys[i]);
+      g_free (self->keys);
+      self->keys = NULL;
+      return;
+    }
+
+  k = s + 1;
+  for (l = 0; l < self->n_keys; l++)
+    slist = g_slist_prepend (slist, self->keys[l]);
+  p = strchr (k, ':');
+  while (p)
+    {
+      if (k < p)
+	{
+	  *p = 0;
+	  slist = g_slist_prepend (slist, g_strdup (k));
+	  l++;
+	}
+      k = p + 1;
+      p = strchr (k, ':');
+    }
+  g_free (s);
+
+  slist = g_slist_sort (slist, (GCompareFunc) strcmp);
+  self->keys = g_renew (gchar*, self->keys, l);
+  for (i = 0; slist; i++)
+    {
+      k = g_slist_pop_head (&slist);
+      if (i && strcmp (k, self->keys[i - 1]) == 0)
+	{
+	  l--;
+	  g_free (k);
+	  i--;
+	}
+      else
+	self->keys[i] = k;
+    }
+  self->keys = g_renew (gchar*, self->keys, l);
+  self->n_keys = l;
+}
+
+static SfiMutex key_mutex = { 0, };
+static KeyList debug_klist = { 0, };
+static KeyList info_klist = { 0, };
+
+void
+_sfi_init_log (void)
+{
+  sfi_mutex_init (&key_mutex);
+  sfi_log_reset_info ();
+  sfi_log_reset_debug ();
+}
+
+void
+sfi_log_allow_info (const gchar *string)
+{
+  g_return_if_fail (string != NULL);
+
+  SFI_SPIN_LOCK (&key_mutex);
+  key_list_add (&info_klist, string);
+  SFI_SPIN_UNLOCK (&key_mutex);
+}
+
+void
+sfi_log_reset_info (void)
+{
+  SFI_SPIN_LOCK (&key_mutex);
+  key_list_reset (&info_klist);
+  key_list_add (&info_klist, "misc");
+  SFI_SPIN_UNLOCK (&key_mutex);
+}
+
+void
+sfi_log_allow_debug (const gchar *string)
+{
+  g_return_if_fail (string != NULL);
+
+  SFI_SPIN_LOCK (&key_mutex);
+  key_list_add (&debug_klist, string);
+  SFI_SPIN_UNLOCK (&key_mutex);
+}
+
+void
+sfi_log_reset_debug (void)
+{
+  SFI_SPIN_LOCK (&key_mutex);
+  key_list_reset (&debug_klist);
+  SFI_SPIN_UNLOCK (&key_mutex);
+}
+
+gboolean
+sfi_debug_test_key (const gchar *key)
+{
+  gboolean match;
+
+  g_return_val_if_fail (key != NULL, FALSE);
+
+  if (debug_klist.match_all)
+    match = TRUE;
+  else
+    {
+      SFI_SPIN_LOCK (&key_mutex);
+      match = key_list_test (&debug_klist, key);
+      SFI_SPIN_UNLOCK (&key_mutex);
+    }
+
+  return match;
+}
+
 void
 sfi_log_valist (const gchar *log_domain,
 		guint        level,
 		const gchar *format,
 		va_list      args)
 {
-  gchar *buffer;
+  gint saved_errno = errno;
+  const gchar *key = sfi_log_pop_key ("misc");
+  gboolean match;
 
   g_return_if_fail (format != NULL);
 
-  buffer = g_strdup_vprintf (format, args);
-  sfi_log_message (log_domain, level, buffer);
-  g_free (buffer);
+  if (level == SFI_LOG_DEBUG && !debug_klist.match_all)
+    {
+      SFI_SPIN_LOCK (&key_mutex);
+      match = key_list_test (&debug_klist, key);
+      SFI_SPIN_UNLOCK (&key_mutex);
+    }
+  else if (level == SFI_LOG_INFO && !info_klist.match_all)
+    {
+      SFI_SPIN_LOCK (&key_mutex);
+      match = key_list_test (&info_klist, key);
+      SFI_SPIN_UNLOCK (&key_mutex);
+    }
+  else
+    match = TRUE;
+  if (match)
+    {
+      gchar *buffer = g_strdup_vprintf (format, args);
+      sfi_log_message (log_domain, key, level, buffer);
+      g_free (buffer);
+    }
+  errno = saved_errno;
+}
+
+/**
+ * sfi_log
+ * @log_domain: log domain
+ * @level:      one of %SFI_LOG_ERROR, %SFI_LOG_WARN, %SFI_LOG_INFO or %SFI_LOG_DEBUG
+ * @format:     printf()-like format string
+ * @...:        message args
+ *
+ * Log a message through SFIs logging mechanism. The current
+ * value of errno is preserved around calls to this function.
+ * Usually this function isn't used directly, but through one
+ * of sfi_debug(), sfi_warn(), sfi_info() or sfi_error().
+ * The @log_domain indicates the calling module and relates to
+ * %G_LOG_DOMAIN as used by g_log().
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+sfi_log (const gchar *log_domain,
+	 guint        level,
+	 const gchar *format,
+	 ...)
+{
+  va_list args;
+  va_start (args, format);
+  sfi_log_valist (log_domain, level, format, args);
+  va_end (args);
 }

@@ -24,46 +24,47 @@
 G_BEGIN_DECLS
 
 
-typedef enum /*< skip >*/
-{
-  SFI_LOG_VERBOSITY_NORMAL,
-  SFI_LOG_VERBOSITY_DETAILED,
-  SFI_LOG_VERBOSITY_DEVELOPMENT,
-} SfiLogVerbosity;
-
-
 /* --- logging --- */
+static void	sfi_error		(const gchar		*format,
+					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+static void	sfi_warn		(const gchar		*format,
+					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+static void	sfi_info		(const gchar		*format,
+					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+static void	sfi_debug		(const gchar		*format,
+					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+static void	sfi_nodebug		(const gchar		*format,
+					 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+void		sfi_log_allow_info	(const gchar		*key_list);
+void		sfi_log_reset_info	(void);
+void		sfi_log_allow_debug	(const gchar		*key_list);
+void		sfi_log_reset_debug	(void);
+gboolean	sfi_debug_test_key	(const gchar		*key);
+#define	        sfi_debug_keyfunc(key)	   _sfi_debug_kfi (key)
+#define	        sfi_info_keyfunc(key)	   _sfi_info_kfi (key)
+#define	        sfi_nodebug_keyfunc(key)   sfi_nodebug
+
+
+/* --- internal --- */
 #define	SFI_LOG_ERROR	('E')
 #define	SFI_LOG_WARN	('W')
 #define	SFI_LOG_INFO	('I')
 #define	SFI_LOG_DEBUG	('D')
-static void	sfi_error	 (const gchar *format,
-				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_warn	 (const gchar *format,
-				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_info	 (const gchar *format,
-				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_debug	 (const gchar *format,
-				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_nodebug	 (const gchar *format,
-				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-void		sfi_log_set_verbosity	(SfiLogVerbosity	 verbosity);
-void		sfi_log_valist		 (const gchar		*log_domain,
-					  guint			 level,
-					  const gchar		*format,
-					  va_list		 args);
-void		sfi_log_message		 (const gchar		*log_domain,
-					  guint			 level,
-					  const gchar		*message);
-void		sfi_log_push_key	 (const gchar		*static_key);
-#ifndef	SFI_LOG_PROTECT_KEY_VARIANTS
-#define	sfi_debug_with_key(key)	  (sfi_log_push_key (key), sfi_debug)
-#define	sfi_info_with_key(key)	  (sfi_log_push_key (key), sfi_info)
-#define	sfi_nodebug_with_key(key)  sfi_nodebug
-#endif
+void		sfi_log			  (const gchar		*log_domain,
+					   guint		 level,
+					   const gchar		*format,
+					   ...) G_GNUC_PRINTF (3,4);
+void		sfi_log_valist		  (const gchar		*log_domain,
+					   guint		 level,
+					   const gchar		*format,
+					   va_list		 args);
+void		sfi_log_push_key	  (const gchar		*static_key);
+#define	_sfi_debug_kfi(key)		  (sfi_log_push_key (key), sfi_debug)
+#define	_sfi_info_kfi(key)		  (sfi_log_push_key (key), sfi_info)
 
 
 /* --- implementation --- */
+void		_sfi_init_log		(void);
 static void
 sfi_error (const gchar *format,
 	   ...)

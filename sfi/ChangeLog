@@ -1,3 +1,10 @@
+Fri Mar  7 14:50:16 2003  Tim Janik  <timj@gtk.org>
+
+	* sfilog.[hc]: cleaned things up, added key based debugging
+	and info filter.
+	
+	* sfi*.c: use SFI for debugging.
+
 Fri Mar  7 03:45:12 2003  Tim Janik  <timj@gtk.org>
 
 	* sfitime.c (sfi_time_to_string): clamp argument into sfi's
