@@ -57,6 +57,8 @@ struct _BseBusClass
 /* --- API --- */
 BseErrorType    bse_bus_connect                 (BseBus         *self,
                                                  BseItem        *item);
+BseErrorType    bse_bus_connect_unchecked       (BseBus         *self,
+                                                 BseItem        *item);
 BseErrorType    bse_bus_disconnect              (BseBus         *self,
                                                  BseItem        *item);
 SfiRing*        bse_bus_list_inputs             (BseBus         *self);

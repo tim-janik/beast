@@ -25,6 +25,11 @@
 #include "bsesubiport.h"
 #include "bsesuboport.h"
 #include "bseproject.h"
+#include "bsestorage.h"
+
+
+#define parse_or_return         bse_storage_scanner_parse_or_return
+#define peek_or_return          bse_storage_scanner_peek_or_return
 
 
 /* --- parameters --- */
@@ -243,7 +248,7 @@ bse_bus_set_property (GObject      *object,
       /* add new inputs */
       ring = sfi_ring_difference (inputs, self->inputs, sfi_compare_pointers, NULL);
       while (ring)
-        bse_bus_connect (self, sfi_ring_pop_head (&ring));
+        bse_bus_connect_unchecked (self, sfi_ring_pop_head (&ring));
       sfi_ring_free (inputs);
       /* restore user provided order */
       self->inputs = sfi_ring_reorder (self->inputs, saved_inputs);
@@ -534,6 +539,30 @@ BseErrorType
 bse_bus_connect (BseBus  *self,
                  BseItem *trackbus)
 {
+  /* get all input candidates */
+  BseItemSeq *iseq = bse_item_seq_new();
+  bus_list_candidates (self, iseq);
+  /* find trackbus */
+  gboolean found_candidate = FALSE;
+  guint i;
+  for (i = 0; i < iseq->n_items; i++)
+    if (iseq->items[i] == trackbus)
+      {
+        found_candidate = TRUE;
+        break;
+      }
+  bse_item_seq_free (iseq);
+  /* add trackbus if valid */
+  if (found_candidate)
+    return bse_bus_connect_unchecked (self, trackbus);
+  else
+    return BSE_ERROR_SOURCE_CONNECTION_INVALID;
+}
+
+BseErrorType
+bse_bus_connect_unchecked (BseBus  *self,
+                           BseItem *trackbus)
+{
   BseSource *osource;
   if (BSE_IS_TRACK (trackbus))
     osource = bse_track_get_output (BSE_TRACK (trackbus));
@@ -603,6 +632,78 @@ bse_bus_list_outputs (BseBus *self)
 }
 
 static void
+bus_restore_add_input (gpointer     data,
+                       BseStorage  *storage,
+                       BseItem     *from_item,
+                       BseItem     *to_item,
+                       const gchar *error)
+{
+  BseBus *self = BSE_BUS (from_item);
+  BseSource *osource = to_item ? BSE_SOURCE (to_item) : NULL;
+
+  if (error)
+    bse_storage_warn (storage, "failed to add input to mixer bus \"%s\": %s", BSE_OBJECT_UNAME (self), error);
+  else
+    {
+      BseErrorType cerror;
+      if (osource)
+        cerror = bse_bus_connect (self, BSE_ITEM (osource));
+      else
+        cerror = BSE_ERROR_SOURCE_NO_SUCH_MODULE;
+      if (cerror)
+        bse_storage_warn (storage,
+                          "failed to add input \"%s\" to mixer bus \"%s\": %s",
+                          osource ? BSE_OBJECT_UNAME (osource) : ":<NULL>:",
+                          BSE_OBJECT_UNAME (self),
+                          bse_error_blurb (cerror));
+    }
+}
+
+static SfiTokenType
+bus_restore_private (BseObject  *object,
+                     BseStorage *storage,
+                     GScanner   *scanner)
+{
+  BseBus *self = BSE_BUS (object);
+
+  if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+      bse_string_equals ("bus-input", scanner->next_value.v_identifier))
+    {
+      parse_or_return (scanner, G_TOKEN_IDENTIFIER);    /* eat identifier */
+      /* parse osource upath and queue handler */
+      GTokenType token = bse_storage_parse_item_link (storage, BSE_ITEM (self), bus_restore_add_input, NULL);
+      if (token != G_TOKEN_NONE)
+        return token;
+      /* close statement */
+      parse_or_return (scanner, ')');
+      return G_TOKEN_NONE;
+    }
+  else /* chain parent class' handler */
+    return BSE_OBJECT_CLASS (bus_parent_class)->restore_private (object, storage, scanner);
+}
+
+static void
+bus_store_private (BseObject  *object,
+                   BseStorage *storage)
+{
+  BseBus *self = BSE_BUS (object);
+
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (bus_parent_class)->store_private)
+    BSE_OBJECT_CLASS (bus_parent_class)->store_private (object, storage);
+
+  SfiRing *inputs = bse_bus_list_inputs (self);
+  while (inputs)
+    {
+      BseSource *osource = sfi_ring_pop_head (&inputs);
+      bse_storage_break (storage);
+      bse_storage_printf (storage, "(bus-input ");
+      bse_storage_put_item_link (storage, BSE_ITEM (self), BSE_ITEM (osource));
+      bse_storage_printf (storage, ")");
+    }
+}
+
+static void
 bse_bus_class_init (BseBusClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
@@ -619,6 +720,8 @@ bse_bus_class_init (BseBusClass *class)
   gobject_class->finalize = bse_bus_finalize;
   
   object_class->editable_property = bse_bus_editable_property;
+  object_class->store_private = bus_store_private;
+  object_class->restore_private = bus_restore_private;
 
   item_class->set_parent = bse_bus_set_parent;
   item_class->get_candidates = bse_bus_get_candidates;
@@ -650,7 +753,7 @@ bse_bus_class_init (BseBusClass *class)
                                                      * to be preserved to match the GUI order of displayed objects.
                                                      */
                                                     _("Synthesis signals (from tracks and busses) used as bus input"),
-                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD ":item-sequence"));
+                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_GUI ":item-sequence"));
   bse_object_class_add_param (object_class, NULL, PROP_SNET, bse_param_spec_object ("snet", NULL, NULL, BSE_TYPE_CSYNTH, SFI_PARAM_READWRITE ":skip-undo"));
   bse_object_class_add_param (object_class, _("Internals"),
 			      PROP_MASTER_OUTPUT,

@@ -1,3 +1,13 @@
+Fri Sep  3 14:30:34 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.[hc]: added store/restore support for ::inputs. made
+	::inputs a GUI-only property.
+	bse_bus_connect(): check the input object against our candidate list.
+	bse_bus_connect_unchecked(): connect without checking against candidate
+	list.
+
+	* bsestorage.c: process item links in the order they were parsed in.
+
 Fri Sep  3 03:12:49 2004  Tim Janik  <timj@gtk.org>
 
 	* zintern/mono-wave.bse: remove useless wave-repo. fixed synth name.

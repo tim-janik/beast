@@ -76,7 +76,7 @@ struct _BseStorage
   guint               minor_version;
   guint               micro_version;
   GHashTable         *path_table;
-  BseStorageItemLink *item_links;
+  SfiRing            *item_links;
   /* internal data */
   guint               n_dblocks;
   BseStorageDBlock   *dblocks;

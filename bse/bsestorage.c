@@ -45,7 +45,6 @@ struct _BseStorageDBlock
 };
 struct _BseStorageItemLink
 {
-  BseStorageItemLink   *next;
   BseItem              *from_item;
   BseStorageRestoreLink restore_link;
   gpointer              data;
@@ -360,9 +359,7 @@ storage_add_item_link (BseStorage           *self,
                        gchar                *error)
 {
   BseStorageItemLink *ilink = g_new0 (BseStorageItemLink, 1);
-
-  ilink->next = self->item_links;
-  self->item_links = ilink;
+  self->item_links = sfi_ring_append (self->item_links, ilink);
   ilink->from_item = g_object_ref (from_item);
   ilink->restore_link = restore_link;
   ilink->data = data;
@@ -379,9 +376,7 @@ bse_storage_resolve_item_links (BseStorage *self)
 
   while (self->item_links)
     {
-      BseStorageItemLink *ilink = self->item_links;
-
-      self->item_links = ilink->next;
+      BseStorageItemLink *ilink = sfi_ring_pop_head (&self->item_links);
 
       if (ilink->error)
         {

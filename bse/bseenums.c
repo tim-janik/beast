@@ -111,6 +111,7 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_SOURCE_PRIVATE_ICHANNEL:	return _("Input channel is private");
     case BSE_ERROR_SOURCE_ICHANNEL_IN_USE:	return _("Input channel already in use");
     case BSE_ERROR_SOURCE_CHANNELS_CONNECTED:	return _("Input/Output channels already connected");
+    case BSE_ERROR_SOURCE_CONNECTION_INVALID:	return _("Invalid synthesis module connection");
     case BSE_ERROR_SOURCE_PARENT_MISMATCH:	return _("Parent mismatch");
     case BSE_ERROR_SOURCE_BAD_LOOPBACK:		return _("Bad loopback");
     case BSE_ERROR_SOURCE_BUSY:			return _("Synthesis module currently busy");
