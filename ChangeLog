@@ -1,3 +1,10 @@
+Fri Oct  8 14:30:33 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-download.texi: added a note about the srcdir==builddir 
+	requirement when building from CVS.
+
+	* docs/site-links-related.texi: added freedesktop.org.
+
 Thu Oct  7 02:51:46 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkdialog.[hc]: flag split up, gxk_dialog_new() has the
