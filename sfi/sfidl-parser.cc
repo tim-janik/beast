@@ -308,7 +308,8 @@ void Parser::preprocess (const string& input_filename)
   enum
     {
       lineStart, idlCode, commentC, commentCxx,
-      filenameFind, filenameIn1, filenameIn2
+      filenameFind, filenameIn1, filenameIn2,
+      inString, inStringEscape
     } state = lineStart;
   static int incdepth = 0;
 
@@ -324,17 +325,7 @@ void Parser::preprocess (const string& input_filename)
   vector<char>::iterator i = input.begin();
   while(i != input.end())
     {
-      if(state != commentCxx && state != commentC && match (i, "//")) // C++ style comment?
-	{
-	  state = commentCxx;
-	  i += 2;
-	}
-      else if(state != commentCxx && state != commentC && match(i,"/*")) // C style comment
-	{
-	  state = commentC;
-	  i += 2;
-	}
-      else if(state == commentCxx) // eat C++ style comments
+      if(state == commentCxx) // eat C++ style comments
 	{
 	  if(*i == '\n')
 	    {
@@ -362,6 +353,27 @@ void Parser::preprocess (const string& input_filename)
 		}
 	      i++;
 	    }
+	}
+      else if(state == inString)
+	{
+	  if (*i == '\"') state = idlCode;
+	  if (*i == '\\') state = inStringEscape;
+	  scannerInputData.push_back(*i++);
+	}
+      else if(state == inStringEscape)
+	{
+	  state = inString;
+	  scannerInputData.push_back(*i++);
+	}
+      else if(match (i, "//"))	// C++ style comment start?
+	{
+	  state = commentCxx;
+	  i += 2;
+	}
+      else if(match(i,"/*"))	// C style comment start?
+	{
+	  state = commentC;
+	  i += 2;
 	}
       else if(state == filenameFind)
 	{
@@ -423,6 +435,11 @@ void Parser::preprocess (const string& input_filename)
       else if(state == filenameIn1 || state == filenameIn2)
 	{
 	  filename += *i++;
+	}
+      else if(*i == '"') // string start?
+	{
+	  state = inString;
+	  scannerInputData.push_back(*i++);
 	}
       else if(state == lineStart) // check if we're on lineStart
 	{

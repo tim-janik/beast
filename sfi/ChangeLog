@@ -1,3 +1,10 @@
+Sun Oct 26 09:33:46 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: Take notice of strings within preprocessor and
+	ignore comments within them.
+
+	* testidl.idl: Added test code for new string handling code.
+
 Sat Oct 25 17:28:02 2003  Tim Janik  <timj@gtk.org>
 
 	* sfistore.[hc]: implement sfi_rstore_quick_scan() to scan lisp syntax

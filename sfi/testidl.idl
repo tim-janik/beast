@@ -36,5 +36,10 @@ sequence PositionSeq {
   Position positions = ("Position", "", ":readwrite");
 };
 
+/* test that C++ style commments are properly ignored within strings */
+Const CXX_COMMENT_TEST_1 = "Foo // bar";
+Const CXX_COMMENT_TEST_2 = "Foo \" // bar";
+Const CXX_COMMENT_TEST_3 = "Foo \\";//bar
+
 };
 /* vim:set ts=8 sts=2 sw=2: */
