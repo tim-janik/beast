@@ -49,6 +49,7 @@ enum {
   COL_MUTE,
   COL_VOICES,
   COL_SYNTH,
+  COL_MIDI_CHANNEL,
   COL_POST_SYNTH,
   COL_BLURB,
   N_COLS
@@ -191,6 +192,11 @@ track_view_fill_value (BstItemView *iview,
       snet = 0;
       bse_proxy_get (item, "snet", &snet, "wave", &wave, NULL);
       g_value_set_string (value, snet || wave ? bse_item_get_name (snet ? snet : wave) : "");
+      break;
+    case COL_MIDI_CHANNEL:
+      item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
+      bse_proxy_get (item, "midi-channel", &vint, NULL);
+      sfi_value_take_string (value, g_strdup_printf ("%2d", vint));
       break;
     case COL_POST_SYNTH:
       item = bse_container_get_item (iview->container, BST_ITEM_VIEW_GET_CLASS (self)->item_type, seqid);
@@ -343,9 +349,9 @@ track_view_mute_toggled (BstTrackView          *self,
 }
 
 static void
-track_view_voices_edited (BstTrackView *self,
-			  const gchar  *strpath,
-			  const gchar  *text)
+track_view_voice_edited (BstTrackView *self,
+                         const gchar  *strpath,
+                         const gchar  *text)
 {
   g_return_if_fail (BST_IS_TRACK_VIEW (self));
 
@@ -358,6 +364,26 @@ track_view_voices_edited (BstTrackView *self,
 	  int i = strtol (text, NULL, 10);
 	  if (i > 0)
 	    bse_proxy_set (item, "n_voices", i, NULL);
+	}
+    }
+}
+
+static void
+track_view_midi_channel_edited (BstTrackView *self,
+                                const gchar  *strpath,
+                                const gchar  *text)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
+      if (item)
+	{
+	  int i = strtol (text, NULL, 10);
+	  if (i >= 0)
+	    bse_proxy_set (item, "midi-channel", i, NULL);
 	}
     }
 }
@@ -436,6 +462,7 @@ bst_track_view_create_tree (BstItemView *iview)
 				   G_TYPE_BOOLEAN,	/* COL_MUTE */
 				   G_TYPE_STRING,	/* COL_VOICES */
 				   G_TYPE_STRING,	/* COL_SYNTH */
+				   G_TYPE_STRING,	/* COL_MIDI_CHANNEL */
 				   G_TYPE_STRING,	/* COL_POST_SYNTH */
 				   G_TYPE_STRING	/* COL_BLURB */
 				   );
@@ -599,10 +626,13 @@ bst_track_view_create_tree (BstItemView *iview)
 				   track_view_mute_toggled, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_VOICES, "",
 				 0.5, "V", "Maximum number of voices for simultaneous playback",
-				 track_view_voices_edited, self, G_CONNECT_SWAPPED);
+				 track_view_voice_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree, COL_SYNTH, "#",
 				  0.5, "Synth", "Synthesizer network or wave to be used as voice by this track",
 				  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_text_column (iview->tree, COL_MIDI_CHANNEL, "",
+                                 0.5, "Ch", "Midi channel assigned to this track, 0 indicates private dynamic allocation",
+                                 track_view_midi_channel_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree, COL_POST_SYNTH, "#",
 				  0.5, "Post", "Postprocessing Synthesizer network for this track",
 				  track_view_post_synth_edited, track_view_post_synth_popup, self, G_CONNECT_SWAPPED);
@@ -679,8 +709,9 @@ track_view_listen_on (BstItemView *iview,
                      /* COL_SEQID handled by GxkListWrapper */
                      /* COL_NAME handled by GxkListWrapper */
                      "signal::property-notify::muted", track_property_changed, iview, /* COL_MUTE */
-                     "signal::property-notify::n_voices", track_property_changed, iview, /* COL_VOICES */
+                     "signal::property-notify::n-voices", track_property_changed, iview, /* COL_VOICES */
                      "signal::property-notify::snet", track_property_changed, iview, /* COL_SYNTH */
+                     "signal::property-notify::midi-channel", track_property_changed, iview, /* COL_MIDI_CHANNEL */
                      "signal::property-notify::pnet", track_property_changed, iview, /* COL_POST_SYNTH */
                      /* COL_BLURB handled by GxkListWrapper */
                      NULL);

@@ -1,3 +1,7 @@
+Sat Jul 26 04:42:09 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackview.c: added midi channel to track roll.
+
 Tue Jul 22 14:02:03 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: announce release.
