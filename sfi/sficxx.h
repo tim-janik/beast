@@ -214,7 +214,21 @@ public:
   }
   Type& operator* ()
   {
-    return *operator-> ();
+    return *record;
+  }
+  Type& operator[] (unsigned int index)
+  {
+    if (index)
+      g_critical ("%s: invalid array subscript: %u", G_STRFUNC, index);
+    return *(index ? NULL : record);
+  }
+  bool is_null()
+  {
+    return !record;
+  }
+  operator bool ()
+  {
+    return !is_null();
   }
 };
 

@@ -1,3 +1,8 @@
+Tue Jan 20 01:57:47 2004  Tim Janik  <timj@gtk.org>
+
+	* sficxx.h: implement bool operator, is_null() and operator[]
+	for RecordHandle.
+
 Tue Jan 20 01:35:01 2004  Tim Janik  <timj@gtk.org>
 
 	* sficxx.h: moved GValue get/set functions for strings into class String.

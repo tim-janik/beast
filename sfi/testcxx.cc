@@ -33,6 +33,10 @@ struct Bar {
 };
 typedef Sequence<Bar> BarSeq;
 typedef Sequence<Int> IntSeq;
+typedef struct {
+  guint n_elements;
+  Int  *elements;
+} CIntSeq;
 
 int
 main (int   argc,
@@ -56,6 +60,8 @@ main (int   argc,
   ASSERT (sizeof (RecordHandle<Bar>) == sizeof (void*));
   RecordHandle<Bar> b1;
   ASSERT (b1.c_ptr() == NULL);
+  ASSERT (b1.is_null());
+  ASSERT (!b1);
   RecordHandle<Bar> b2 (INIT_DEFAULT);
   ASSERT (b2->i == 0);
   RecordHandle<Bar> b3 (INIT_EMPTY);
@@ -63,6 +69,7 @@ main (int   argc,
   b.i = 5;
   RecordHandle<Bar> b4 = b;
   ASSERT (b4->i == 5);
+  ASSERT (b2[0].i == 0);
   DONE();
 
   MSG ("Test IntSeq:");
@@ -72,14 +79,21 @@ main (int   argc,
     is[i] = i;
   for (int i = 0; i < 9; i++)
     ASSERT (is[i] == i);
+  is.resize (0);
+  ASSERT (is.length() == 0);
   is.resize (12);
   ASSERT (is.length() == 12);
   for (guint i = 0; i < 12; i++)
     is[i] = 2147483600 + i;
   for (int i = 0; i < 12; i++)
     ASSERT (is[i] == 2147483600 + i);
-  is.resize (0);
-  ASSERT (is.length() == 0);
+  DONE();
+
+  MSG ("Test IntSeq in C:");
+  CIntSeq *cis = *(CIntSeq**) &is;
+  ASSERT (cis->n_elements == 12);
+  for (int i = 0; i < 12; i++)
+    ASSERT (cis->elements[i] == 2147483600 + i);
   DONE();
 
   MSG ("Test BarSeq:");
