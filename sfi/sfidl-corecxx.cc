@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfidl-module.h"
+#include "sfidl-namespace.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -313,6 +314,15 @@ func_param_free (const Param &param)
     }
 }
 
+static string
+escape (const string& str)
+{
+  char *x = g_strescape (str.c_str(), 0);
+  string result = x;
+  g_free (x);
+  return result;
+}
+
 struct Image {
   string file;
   string method;
@@ -381,6 +391,64 @@ CodeGeneratorModule::run ()
       printf ("                      );\n");
     }
 
+  printf ("\n}; /* namespace %s */\n", nspace.c_str()); /* XXX */
+
+  /* records and sequences */
+
+  /*
+   * FIXME: we follow the declaration order of the idl file for generating records and sequences.
+   * This is quite good, as if no prototypes are used, we won't refer to undefined types.
+   * However, this breaks with prototypes.
+   */
+  NamespaceHelper nsh(stdout);
+  printf ("\n/* record/sequence types */\n");
+  bool first = true;
+  for(vector<string>::const_iterator ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
+    {
+      if (parser.fromInclude (*ti)) continue;
+
+      if (parser.isRecord (*ti) || parser.isSequence (*ti))
+	{
+	  if(!first) printf("\n");
+	  first = false;
+	}
+
+      if (parser.isRecord (*ti))
+	{
+	  const Record& rdef = parser.findRecord (*ti);
+
+	  nsh.setFromSymbol(rdef.name);
+	  string name = nsh.printableForm (rdef.name);
+
+	  printf("class %s {\n", name.c_str());
+
+	  for (vector<Param>::const_iterator pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++)
+	    {
+	      string name = the_cgc->createTypeCode(pi->type,pi->name,MODEL_MEMBER);
+	      printf("\t%s;\n",name.c_str());
+	    }
+	  printf("};");
+	}
+      if (parser.isSequence (*ti))
+	{
+	  const Sequence& sdef = parser.findSequence (*ti);
+
+	  printf("//%s\n", sdef.name.c_str());
+#if 0
+	  string name = makeLowerName (sdef.name);
+	  // int f = 0;
+
+	  if (options.generateIdlLineNumbers)
+	    printf("#line %u \"%s\"\n", sdef.content.line, parser.fileName().c_str());
+	  printf("  %s_content = %s;\n", name.c_str(), makeParamSpec (sdef.content).c_str());
+#endif
+	}
+    }
+
+  nsh.leaveAll();
+
+  printf ("\nnamespace %s {\n", nspace.c_str()); /* XXX */
+
   /* class definitions */
   printf ("\n/* classes */\n");
   for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
@@ -416,8 +484,8 @@ CodeGeneratorModule::run ()
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* category  () { return \"%s\"; }\n", ci->infos.get("category").c_str());
-      printf ("  static inline const char* blurb     () { return \"%s\"; }\n", ci->infos.get("blurb").c_str());
+      printf ("  static inline const char* category  () { return \"%s\"; }\n", escape(ci->infos.get("category")).c_str());
+      printf ("  static inline const char* blurb     () { return \"%s\"; }\n", escape(ci->infos.get("blurb")).c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", ctFullName.c_str());
       
       /* i/j/o channel names */
@@ -563,13 +631,13 @@ CodeGeneratorModule::run ()
         printf ("    klass->add (PROP_%s, %s);\n", cUC_NAME (pi->name), pspec_constructor (*pi).c_str());
       for (vector<Stream>::const_iterator si = ci->istreams.begin(); si != ci->istreams.end(); si++)
         printf ("    klass->add_ichannel (\"%s\", \"%s\", ICHANNEL_%s);\n",
-                si->name.c_str(), si->blurb.c_str(), cUC_NAME (si->ident));
+                escape(si->name).c_str(), escape(si->blurb).c_str(), cUC_NAME (si->ident));
       for (vector<Stream>::const_iterator si = ci->jstreams.begin(); si != ci->jstreams.end(); si++)
         printf ("    klass->add_jchannel (\"%s\", \"%s\", JCHANNEL_%s);\n",
-                si->name.c_str(), si->blurb.c_str(), cUC_NAME (si->ident));
+                escape(si->name).c_str(), escape(si->blurb).c_str(), cUC_NAME (si->ident));
       for (vector<Stream>::const_iterator si = ci->ostreams.begin(); si != ci->ostreams.end(); si++)
         printf ("    klass->add_ochannel (\"%s\", \"%s\", OCHANNEL_%s);\n",
-                si->name.c_str(), si->blurb.c_str(), cUC_NAME (si->ident));
+                escape(si->name).c_str(), escape(si->blurb).c_str(), cUC_NAME (si->ident));
       printf ("  }\n");
 
       /* done */
@@ -615,8 +683,8 @@ CodeGeneratorModule::run ()
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* category  () { return \"%s\"; }\n", infos.get("category").c_str());
-      printf ("  static inline const char* blurb     () { return \"%s\"; }\n", infos.get("blurb").c_str());
+      printf ("  static inline const char* category  () { return \"%s\"; }\n", escape(infos.get("category")).c_str());
+      printf ("  static inline const char* blurb     () { return \"%s\"; }\n", escape(infos.get("blurb")).c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", ptFullName.c_str());
       
       /* return type */
@@ -663,9 +731,9 @@ CodeGeneratorModule::run ()
               "                    GParamSpec       **in_pspecs,\n"
               "                    GParamSpec       **out_pspecs)");
       printf ("  {\n");
-      printf ("    proc->help = \"%s\";\n", infos.get("help").c_str());
-      printf ("    proc->authors = \"%s\";\n", infos.get("authors").c_str());
-      printf ("    proc->license = \"%s\";\n", infos.get("license").c_str());
+      printf ("    proc->help = \"%s\";\n", escape(infos.get("help")).c_str());
+      printf ("    proc->authors = \"%s\";\n", escape(infos.get("authors")).c_str());
+      printf ("    proc->license = \"%s\";\n", escape(infos.get("license")).c_str());
       for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
         printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
           if (!is_void)
