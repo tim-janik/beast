@@ -29,6 +29,7 @@ typedef enum /*< skip >*/
   BST_TRACK_ROLL_TOOL_NONE,
   /* choose IDs that are unlikely to clash with category IDs */
   BST_TRACK_ROLL_TOOL_INSERT		= G_MAXINT - 1000,
+  BST_TRACK_ROLL_TOOL_LINK,
   BST_TRACK_ROLL_TOOL_EDIT_NAME,
   BST_TRACK_ROLL_TOOL_EDITOR_ONCE,
   BST_TRACK_ROLL_TOOL_MOVE,
@@ -49,7 +50,9 @@ typedef struct {
   guint		    obj_tick, obj_duration;
   guint		    xoffset;
   guint		    tick_bound;
+  /* tool data */
   BstTrackRollUtil *current_tool;
+  guint		    skip_deletion : 1;
   /* tool selections */
   BstRadioTools    *canvas_rtools;
   BstRadioTools    *hpanel_rtools;

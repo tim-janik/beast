@@ -1,0 +1,75 @@
+Modifiers
+=========
+
+There seems to be a lot of inconsistency in the behaviour of modifiers
+(shift and/or control) with regards to GUI operations like selections
+and drag and drop behaviour.
+According to the Gtk+ implementation, modifiers relate to DND operations
+according to the following list:
+
+none		-> copy (else move (else link))
+SHIFT		-> move	(GDK_FLEUR)
+CTRL		-> copy	(GDK_PLUS, GDK_CROSS)
+SHIFT+CTRL	-> link	(GDK_UL_ANGLE)
+
+Regarding selections, the following email provides a short summary:
+
+From: Tim Janik <timj@gtk.org>
+To: Hacking Gnomes <Gnome-Hackers@gnome.org>
+Subject: modifiers for the second selection
+Message-ID: <Pine.LNX.4.21.0207111747190.12292-100000@rabbit.birnet.private>
+Date: Thu, 11 Jul 2002 18:10:52 +0200 (CEST)
+
+hi all,
+
+in the course of reimplementing drag-selection for a widget,
+i did a small survey of modifier behaviour in other (gnome/
+gtk) programs and had to figure that there's no current
+standard behaviour to adhere to:
+
+for all applications, the first selection works as
+expected, i.e. press-drag-release selects the region
+(box) the mouse was draged over. also, starting a new
+selection without pressing any modifiers simply replaces
+the first one. differences occour when holding a modifier
+(shift or ctrl) when starting the second selection.
+
+Gimp:
+Shift upon button press:	the new seleciton is added to the existing one
+Ctrl upon button press:		the new selection is subtracted from the
+				existing one
+Shift during drag:		the selection area (box or circle) has fixed
+				aspect ratio
+Ctrl during drag:		the position of the initial button press
+				serves as center of the selected box/circle,
+				rather than the upper left corner
+
+Gnumeric:
+Shift upon button press:	the first selection is resized
+Ctrl upon button press:		the new seleciton is added to the existing one
+
+Abiword (selecting text regions):
+Shift upon button press:	the first selection is resized
+Ctrl upon button press:		triggers a compound (word) selection that
+				replaces the first selection
+
+Mozilla (selecting text regions):
+Shift upon button press:	the first selection is resized
+
+Nautilus:
+Shift or Ctrl upon buttn press:	the new selection is added to or subtracted
+				from the first selection, depending on whether
+				the newly selected region was selected before.
+				i.e. implementing XOR integration of the newly
+				selected area into the first.
+
+i'm not pointing this out to start a flame war over what selection style
+is good or bad and i do realize that different applications have
+different needs (i.e. abiword does need compound selection, and
+the aspect-ratio/centering style for gimp wouldn't make too much
+sense for text), but i think for the benfit of the (new) users,
+there should me more consistency regarding modifier association
+with adding/subtracting/resizing/xoring to/from existing selections.
+
+---
+ciaoTJ

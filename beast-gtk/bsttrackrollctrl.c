@@ -66,6 +66,7 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
   {
     BstTool radio_tools[] = {
       { CKEY ("TrackRoll/Insert"),	BST_TRACK_ROLL_TOOL_INSERT,	BST_RADIO_TOOLS_DEFAULT },
+      { CKEY ("TrackRoll/Link"),	BST_TRACK_ROLL_TOOL_LINK,	BST_RADIO_TOOLS_DEFAULT },
       { CKEY ("TrackRoll/Delete"),	BST_TRACK_ROLL_TOOL_DELETE,	BST_RADIO_TOOLS_DEFAULT },
       { CKEY ("TrackRoll/Editor"),	BST_TRACK_ROLL_TOOL_EDITOR_ONCE, BST_RADIO_TOOLS_DEFAULT },
     };
@@ -155,6 +156,20 @@ canvas_button_tool (BstTrackRollController *self,
       switch (button)
 	{
 	case 1:  return BST_TRACK_ROLL_TOOL_INSERT;
+	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;	/* error */
+	default: return BST_TRACK_ROLL_TOOL_NONE;
+	}
+    case BST_TRACK_ROLL_TOOL_LINK | HAVE_OBJECT:
+      switch (button)
+	{
+	case 1:  return BST_TRACK_ROLL_TOOL_LINK;
+	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;
+	default: return BST_TRACK_ROLL_TOOL_NONE;
+	}
+    case BST_TRACK_ROLL_TOOL_LINK:
+      switch (button)
+	{
+	case 1:  return BST_TRACK_ROLL_TOOL_LINK;
 	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;	/* error */
 	default: return BST_TRACK_ROLL_TOOL_NONE;
 	}
@@ -328,6 +343,9 @@ controller_update_canvas_cursor (BstTrackRollController *self,
     case BST_TRACK_ROLL_TOOL_INSERT:
       bst_track_roll_set_canvas_cursor (self->troll, GDK_PENCIL);
       break;
+    case BST_TRACK_ROLL_TOOL_LINK:
+      bst_track_roll_set_canvas_cursor (self->troll, GDK_DIAMOND_CROSS);
+      break;
     case BST_TRACK_ROLL_TOOL_EDIT_NAME:
       bst_track_roll_set_canvas_cursor (self->troll, GXK_DEFAULT_CURSOR);
       break;
@@ -430,21 +448,38 @@ delete_start (BstTrackRollController *self,
 }
 
 static void
-move_start (BstTrackRollController *self,
-	    BstTrackRollDrag       *drag)
+move_link_start (BstTrackRollController *self,
+		 BstTrackRollDrag       *drag,
+		 gboolean		 link_pending)
 {
+  const gchar *action = link_pending ? "Link Part" : "Move Part";
   if (self->obj_part)	/* got part to move */
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
-      controller_update_canvas_cursor (self, BST_TRACK_ROLL_TOOL_MOVE);
-      gxk_status_set (GXK_STATUS_WAIT, "Move Part", NULL);
+      controller_update_canvas_cursor (self, link_pending ? BST_TRACK_ROLL_TOOL_LINK : BST_TRACK_ROLL_TOOL_MOVE);
+      gxk_status_set (GXK_STATUS_WAIT, action, NULL);
       drag->state = BST_DRAG_CONTINUE;
+      self->skip_deletion = link_pending;
     }
   else
     {
-      gxk_status_set (GXK_STATUS_ERROR, "Move Part", "No target");
+      gxk_status_set (GXK_STATUS_ERROR, action, "No target");
       drag->state = BST_DRAG_HANDLED;
     }
+}
+
+static void
+move_start (BstTrackRollController *self,
+	    BstTrackRollDrag       *drag)
+{
+  move_link_start (self, drag, FALSE);
+}
+
+static void
+link_start (BstTrackRollController *self,
+	    BstTrackRollDrag       *drag)
+{
+  move_link_start (self, drag, TRUE);
 }
 
 static void
@@ -462,7 +497,13 @@ move_motion (BstTrackRollController *self,
       BseErrorType error = bse_track_insert_part (drag->current_track, new_tick, self->obj_part);
       if (error == BSE_ERROR_NONE)
 	{
-	  bse_track_remove_tick (self->obj_track, self->obj_tick);
+	  if (!self->skip_deletion)
+	    bse_track_remove_tick (self->obj_track, self->obj_tick);
+	  else
+	    {
+	      self->skip_deletion = FALSE;
+	      controller_update_canvas_cursor (self, BST_TRACK_ROLL_TOOL_MOVE);
+	    }
 	  self->obj_track = drag->current_track;
 	  self->obj_tick = new_tick;
 	}
@@ -547,6 +588,7 @@ controller_drag (BstTrackRollController *self,
   static const BstTrackRollUtil canvas_tool_table[] = {
     { BST_TRACK_ROLL_TOOL_INSERT,	insert_start,		NULL,		NULL,		},
     { BST_TRACK_ROLL_TOOL_MOVE,		move_start,		move_motion,	move_abort,	},
+    { BST_TRACK_ROLL_TOOL_LINK,		link_start,		move_motion,	move_abort,	},
     { BST_TRACK_ROLL_TOOL_DELETE,	delete_start,		NULL,		NULL,		},
     { BST_TRACK_ROLL_TOOL_EDIT_NAME,	edit_name_start,	NULL,		NULL,		},
     { BST_TRACK_ROLL_TOOL_EDITOR_ONCE,	editor_once,		NULL,		NULL,		},

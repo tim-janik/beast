@@ -70,6 +70,10 @@ static const BstCatalogTool tools_en[] = {
     BST_STOCK_PART,			"I",
     "Insert/rename/move parts (mouse button 1 and 2)", NULL,
   },
+  { CKEY ("TrackRoll/Link"),		"Lin_k",
+    BST_STOCK_PART_COPY,		"K",
+    "Link or move parts (mouse button 1 and 2)", NULL,
+  },
 #if 0
 #endif
 };

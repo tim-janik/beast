@@ -1,3 +1,19 @@
+Wed Mar  5 23:19:28 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/catalog-en.c (tools_en): document part-link tool.
+
+	* beast-gtk/bsttrackrollctrl.c (controller_update_canvas_cursor):
+	support linking of parts.
+
+	* beast-gtk/icons/part-copy.xcf: 
+	* beast-gtk/icons/part-copy.c: part copying/linking image.
+
+	* beast-gtk/Makefile.am (beast_DEPENDENCIES): fix key scanning
+	build rule.
+
+	* docs/modifiers.txt: new file, holding comments about modifiers
+	affecting selections and dnd.
+
 Wed Mar  5 01:51:40 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackview.[hc]: removed tool selections,

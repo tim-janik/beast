@@ -77,7 +77,7 @@ beast_extra_sources = $(strip \
 	bstparam-entry.c \
 )
 beast_extra_files = $(strip \
-	catalog-en.c	bstmarshal.list		bstenum_arrays.stamp	\
+	catalog-en.c	bstmarshal.list		bstenum_arrays.stamp	stamp-ckeycheck \
 )
 # BEAST built sources that don't get installed
 beast_built_sources = @STRIP_BEGIN@ \
@@ -146,12 +146,15 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 	&& rm -f xgen-bmc
 
 SCANKEYS=$(top_builddir)/beast-gtk/scankeys
-bstutils.o bstutils.lo: scankeys $(beast_sources) $(beast_extra_sources)
+stamp-ckeycheck: scankeys $(beast_sources) $(beast_extra_sources)
 	cd $(srcdir) \
 	&& $(SCANKEYS) --key CKEY --skipkeys catalog-en.c \
 	     --tmplstart '#error MISSING DOC KEYS:\n' \
 	     --tmplkey '  { CKEY (%s),\t\t"Name",\n  BST_STOCK_,\t\t\t\t"",\n    "tip", NULL,\n  },\n' \
 	     --needkeys $(beast_sources) $(beast_extra_sources)
+	touch $@
+
+beast_DEPENDENCIES += stamp-ckeycheck
 
 #
 # setup BEAST sources and their dependancies
