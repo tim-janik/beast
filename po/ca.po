@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-25 15:27+0100\n"
-"PO-Revision-Date: 2004-02-17 14:21+0100\n"
+"POT-Creation-Date: 2004-02-27 03:08+0100\n"
+"PO-Revision-Date: 2004-02-28 14:21+0100\n"
 "Last-Translator: Xavier Conde Rueda <xaviconde@eresmas.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
@@ -166,9 +166,9 @@ msgid "Opening project `%s'"
 msgstr "S'està obrint el projecte '%s'"
 
 #: beast-gtk/bstapp.c:597
-#, fuzzy, c-format
+#, c-format
 msgid "Loading skin `%s'"
-msgstr "S'està carregant l'ona '%s'"
+msgstr "S'està carregant l'aparença '%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #: beast-gtk/bstapp.c:759
@@ -196,11 +196,11 @@ msgstr "Notes quant al BEAST-%s"
 #: beast-gtk/bstauxdialogs.c:389
 #, c-format
 msgid "Please press the keyboard shortcut to be installed for function: %s"
-msgstr ""
+msgstr "Premeu la drecera de teclat que s'instal·larà per a la funció: %s"
 
 #: beast-gtk/bstauxdialogs.c:394
 msgid "Please press the keyboard shortcut to be installed..."
-msgstr ""
+msgstr "Premeu la drecera de teclat que s'instal·larà..."
 
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
@@ -290,9 +290,8 @@ msgid "Open Project"
 msgstr "Obre un projecte"
 
 #: beast-gtk/bstfiledialog.c:396
-#, fuzzy
 msgid "Select File"
-msgstr "Selecciona"
+msgstr "Selecciona un fitxer"
 
 #: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
@@ -441,75 +440,68 @@ msgid "Type"
 msgstr "Tipus"
 
 #: beast-gtk/bstkeybindings.c:48
-#, fuzzy
 msgid "Add..."
-msgstr "Afegeix"
+msgstr "Afegeix..."
 
 #: beast-gtk/bstkeybindings.c:48
 msgid "Bind a new key combination to a program function"
-msgstr ""
+msgstr "Relaciona una combinació de tecles amb una funció del programa"
 
 #: beast-gtk/bstkeybindings.c:50
-#, fuzzy
 msgid "Change..."
-msgstr "S'està carregant..."
+msgstr "Canvia..."
 
 #: beast-gtk/bstkeybindings.c:50
-#, fuzzy
 msgid "Change the currently selected key binding"
-msgstr "Esborra l'ona seleccionada actualment"
+msgstr "Canvia la relació de tecles seleccionada"
 
 #: beast-gtk/bstkeybindings.c:52
-#, fuzzy
 msgid "Raise"
-msgstr "Relació"
+msgstr "Puja"
 
 #: beast-gtk/bstkeybindings.c:52
 msgid "Raise the currently selected key binding, relative to its neighbours"
-msgstr ""
+msgstr "Puja la relació de tecles seleccionada, en relació amb el seus veïns"
 
 #: beast-gtk/bstkeybindings.c:54
 msgid "Lower"
-msgstr ""
+msgstr "Baixa"
 
 #: beast-gtk/bstkeybindings.c:54
 msgid "Lower the currently selected key binding, relative to its neighbours"
-msgstr ""
+msgstr "Baixa la relació de tecles seleccionada, en relació amb el seus veïns"
 
 #: beast-gtk/bstkeybindings.c:56
-#, fuzzy
 msgid "Delete the currently selected key binding"
-msgstr "Esborra l'ona seleccionada actualment"
+msgstr "Suprimeix la relació de tecles seleccionada"
 
 #: beast-gtk/bstkeybindings.c:395
 msgid "Key Binding"
-msgstr ""
+msgstr "Relació de tecles"
 
 #: beast-gtk/bstkeybindings.c:396
 msgid "Key combinations used to activate a function"
-msgstr ""
+msgstr "Combinació de tecles que es faran servir per activar una funció"
 
 #: beast-gtk/bstkeybindings.c:398 beast-gtk/bstkeybindings.c:422
-#, fuzzy
 msgid "Function"
-msgstr "Pregunta"
+msgstr "Funció"
 
 #: beast-gtk/bstkeybindings.c:399
 msgid "Functions to be activated for a key binding"
-msgstr ""
+msgstr "Funció que s'activarà per a una relació de tecles"
 
 #: beast-gtk/bstkeybindings.c:401
-#, fuzzy
 msgid "Parameter"
 msgstr "Paràmetres"
 
 #: beast-gtk/bstkeybindings.c:402
 msgid "Parameter to pass to functions upon activation"
-msgstr ""
+msgstr "Paràmetres que es pasaran a les funcions després de l'activació"
 
 #: beast-gtk/bstkeybindings.c:423
 msgid "Function used to create new key bindings"
-msgstr ""
+msgstr "Funció usada per crear noves relacions de tecles"
 
 #: beast-gtk/bstkeybindings.c:425 beast-gtk/bstprocedure.c:206
 msgid "Description"
@@ -525,15 +517,13 @@ msgstr "Inici"
 
 #. BEAST initialization
 #: beast-gtk/bstmain.c:140
-#, fuzzy
 msgid "Initializers"
-msgstr "Identificador:"
+msgstr "Inicialitzadors"
 
 #. parse rc file
 #: beast-gtk/bstmain.c:147
-#, fuzzy
 msgid "RC Files"
-msgstr "Fitxer RC"
+msgstr "Fitxers RC"
 
 #. show splash images
 #: beast-gtk/bstmain.c:151
@@ -599,14 +589,12 @@ msgid "Drop Down Button"
 msgstr "Botó desplegable"
 
 #: beast-gtk/bstparam-color-spinner.c:67
-#, fuzzy
 msgid "Select Color"
-msgstr "Selecciona"
+msgstr "Selecciona un color"
 
 #: beast-gtk/bstparam-color-spinner.c:116
-#, fuzzy
 msgid "Color Entry"
-msgstr "Entrada de nota"
+msgstr "Entrada de color"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -645,9 +633,8 @@ msgid "Searchpath Text Entry"
 msgstr "Entrada de text del camí de cerca"
 
 #: beast-gtk/bstparam-searchpath.c:154
-#, fuzzy
 msgid "Filename Text Entry"
-msgstr "Entrada de text"
+msgstr "Entrada de text del nom de fitxer"
 
 #: beast-gtk/bstparam-time.c:55
 msgid "Time Entry"
@@ -710,170 +697,172 @@ msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
 msgstr ""
+"La disposició de columnes de l'editor de patrons s'especifica listant els "
+"tipus de columnes amb els possibles modificadors en ordre de visualització."
 
 #: beast-gtk/bstpatterncolumns.c:655
 msgid "COLUMN TYPES:"
-msgstr ""
+msgstr "Tipus de columnes:"
 
 #. !!! LEAVE UNTRANSLATED !!!
+# DONCS NO HO MARQUIS PER TRADUIR, COLL... !!!
 #: beast-gtk/bstpatterncolumns.c:657
 msgid "note-1, note-2, ..."
-msgstr ""
+msgstr "note-1, note-2, ..."
 
 #: beast-gtk/bstpatterncolumns.c:658
 msgid "  display notes of the first, second, ... channel"
-msgstr ""
+msgstr "  visualitza les notes del primer, segon, ... canals"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:660
 msgid "offset-1, length-2, velocity-3, ..."
-msgstr ""
+msgstr "offset-1, length-2, velocity-3, ..."
 
 #: beast-gtk/bstpatterncolumns.c:661
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
 msgstr ""
-
-#. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:663
-msgid "control-0, ..., control-63, cc-0, cc-31"
-msgstr ""
+"  visualitza el desplaçament, la longitud o la velocitat de les notes en "
+"el primer, segon... canals"
 
 #: beast-gtk/bstpatterncolumns.c:664
 msgid "  select various event types (controls, continuous controllers)"
-msgstr ""
+msgstr "  selecciona diferents tipus d'esdeveniments (controls, controladors "
+"continus)"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:666
 msgid "bar, |"
-msgstr ""
+msgstr "bar, |"
 
 #: beast-gtk/bstpatterncolumns.c:667
 msgid "  display solid vertical bar"
-msgstr ""
+msgstr "  visualitza una barra vertical"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:669
 msgid "dbar, :"
-msgstr ""
+msgstr "dbar, :"
 
 #: beast-gtk/bstpatterncolumns.c:670
 msgid "  display dotted vertical bar"
-msgstr ""
+msgstr "  visualitza una barra vertical de punts"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:672
 msgid "space, _"
-msgstr ""
+msgstr "space, _"
 
 #: beast-gtk/bstpatterncolumns.c:673
 msgid "  insert vertical space"
-msgstr ""
+msgstr " insereix un espai vertical"
 
 #: beast-gtk/bstpatterncolumns.c:674
 msgid "EVENTS:"
-msgstr ""
+msgstr "Esdeveniments:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:676
 msgid "  balance, volume, cc-8, ..."
-msgstr ""
+msgstr "  balance, volume, cc-8, ..."
 
 #: beast-gtk/bstpatterncolumns.c:677
 msgid "MODIFIERS:"
-msgstr ""
+msgstr "Modificadors:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:679
 msgid "hex2, hex4"
-msgstr ""
+msgstr "hex2, hex4"
 
 #: beast-gtk/bstpatterncolumns.c:680
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
-msgstr ""
+msgstr "  visualitza les xifres hexadecimals amb 2 (00..FF) o 4 (0000..FFFF) nombres"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:682
 msgid "shex2, shex4"
-msgstr ""
+msgstr "shex2, shex4"
 
 #: beast-gtk/bstpatterncolumns.c:683
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
-msgstr ""
+msgstr "  visualitza les xifres hexadecimals amb signe amb 2 (00..FF) o 4 (0000..FFFF) nombres"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:685
 msgid "dec2, dec3"
-msgstr ""
+msgstr "dec2, dec3"
 
 #: beast-gtk/bstpatterncolumns.c:686
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
-msgstr ""
+msgstr "  visualitza les xifres decimals amb 2 (00..99) o 3 (000..999) nombres"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:688
 msgid "sdec2, sdec3"
-msgstr ""
+msgstr "sdec2, sdec3"
 
 #: beast-gtk/bstpatterncolumns.c:689
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
-msgstr ""
+msgstr "  visualitza les xifres decimals amb (-99..+99) o 3 (-999..+999) nombres"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:691
 msgid "col1, col2, col3"
-msgstr ""
+msgstr "col1, col2, col3"
 
 #: beast-gtk/bstpatterncolumns.c:692
 msgid "  selects one of 3 predefined colors"
-msgstr ""
+msgstr "  selecciona un dels 3 colors predefinits"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:694
 msgid "lfold, rfold"
-msgstr ""
+msgstr "lfold, rfold"
 
 #: beast-gtk/bstpatterncolumns.c:695
 msgid "  allow folding the column into left/right neighbour"
-msgstr ""
+msgstr "  permet ajustar la columna al veí esquerre/dret"
 
 #: beast-gtk/bstpatterncolumns.c:696
 msgid "EXAMPLE:"
-msgstr ""
+msgstr "Exemple:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:698
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-msgstr ""
+msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 
 #. GXK_DIALOG_MODAL
 #: beast-gtk/bstpatterncolumns.c:708
 msgid "Pattern Editor Layout"
-msgstr ""
+msgstr "Disposició de l'editor de patrons"
 
 #: beast-gtk/bstpatternctrl.c:39
-#, fuzzy
 msgid "Steps"
-msgstr "A_tura"
+msgstr "Pases"
 
 #: beast-gtk/bstpatternctrl.c:40
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
+"El nombre de cel·les que es creuaran cada vegada que es va editar un esdeveniment "
+"o una nota"
 
 #: beast-gtk/bstpatternctrl.c:44
-#, fuzzy
 msgid "Direction"
-msgstr "_Distorsió"
+msgstr "Sentit"
 
 #: beast-gtk/bstpatternctrl.c:45
 msgid "The direction of cell movement each time an event or note was edited"
-msgstr ""
+msgstr "El sentit del moviment de la cel·la cada vegada que es va editar un "
+"esdeveniment o una nota"
 
 #: beast-gtk/bstpatternctrl.c:49
 msgid "HWrap"
-msgstr ""
+msgstr "Volta horitzontal"
 
 #: beast-gtk/bstpatternctrl.c:50
 msgid ""
@@ -885,87 +874,88 @@ msgstr ""
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
+"Mou el focus a la següent cel·la (amunt/esquerra/dreta/abaix segons la configuració)"
 
 #: beast-gtk/bstpatternctrl.c:193
 msgid "Move focus cell upwards"
-msgstr ""
+msgstr "Mou el focus de la cel·la amunt"
 
 #: beast-gtk/bstpatternctrl.c:194
 msgid "Move focus cell to the left"
-msgstr ""
+msgstr "Mou el focus de la cel·la a l'esquerra"
 
 #: beast-gtk/bstpatternctrl.c:195
 msgid "Move focus cell to the right"
-msgstr ""
+msgstr "Mou el focus de la cel·la a la dreta"
 
 #: beast-gtk/bstpatternctrl.c:196
 msgid "Move focus cell downwards"
-msgstr ""
+msgstr "Mou el focus de la cel·la abaix"
 
 #: beast-gtk/bstpatternctrl.c:197
 msgid "Move focus cell upwards page-wise"
-msgstr ""
+msgstr "Mou el focus de la cel·la amunt segons la pàgina"
 
 #: beast-gtk/bstpatternctrl.c:198
 msgid "Move focus cell to the left page-wise"
-msgstr ""
+msgstr "Mou el focus de la cel·la a l'esquerra segons la pàgina"
 
 #: beast-gtk/bstpatternctrl.c:199
 msgid "Move focus cell to the right page-wise"
-msgstr ""
+msgstr "Mou el focus de la cel·la a la dreta segons la pàgina"
 
 #: beast-gtk/bstpatternctrl.c:200
 msgid "Move focus cell downwards page-wise"
-msgstr ""
+msgstr "Mou el focus de la cel·la abaix segons la pàgina"
 
 #: beast-gtk/bstpatternctrl.c:201
 msgid "Set the focus cell to the topmost position possible"
-msgstr ""
+msgstr "Mou el focus de la cel·la el més amunt possible"
 
 #: beast-gtk/bstpatternctrl.c:202
 msgid "Set the focus cell to the leftmost position possible"
-msgstr ""
+msgstr "Mou el focus de la cel·la el més a l'esquerre possible"
 
 #: beast-gtk/bstpatternctrl.c:203
 msgid "Set the focus cell to the rightmost position possible"
-msgstr ""
+msgstr "Mou el focus de la cel·la el més a la dreta possible"
 
 #: beast-gtk/bstpatternctrl.c:204
 msgid "Set the focus cell to the bottommost position possible"
-msgstr ""
+msgstr "Mou el focus de la cel·la el més abaix possible"
 
 #: beast-gtk/bstpatternctrl.c:207
 msgid "Set the number of steps to make when moving to the next cell"
-msgstr ""
+msgstr "Defineix el nombre de passes que es faran quan es mogui a la següent cel·la"
 
 #: beast-gtk/bstpatternctrl.c:211
 msgid "Set the base octave"
-msgstr ""
+msgstr "Defineix la octava base"
 
 #: beast-gtk/bstpatternctrl.c:214
 msgid "Change the base octave by a given amount"
-msgstr ""
+msgstr "Canvia la octava base en una quantitat donada"
 
 #: beast-gtk/bstpatternctrl.c:218
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
-msgstr ""
+msgstr "Canvia el contingut numèric de la cel·la del focus (octava) en una "
+"quantitat donada"
 
 #: beast-gtk/bstpatternctrl.c:222
 msgid "Set the focus cell octave"
-msgstr ""
+msgstr "Defineix la octava de la cel·la del focus"
 
 #: beast-gtk/bstpatternctrl.c:226 beast-gtk/bstpatternctrl.c:240
 msgid "Remove any events in the focus cell"
-msgstr ""
+msgstr "Suprimeix els esdeveniments a la cel·la del focus"
 
 #: beast-gtk/bstpatternctrl.c:230 beast-gtk/bstpatternctrl.c:244
-#, fuzzy
 msgid "Set the focus cell note"
-msgstr "Insereix rodones"
+msgstr "Defineix la nota de la cel·la del focus"
 
 #: beast-gtk/bstpatternctrl.c:234 beast-gtk/bstpatternctrl.c:248
 msgid "Sets the value of the focus digit"
-msgstr ""
+msgstr "Defineix el valor del digit del focus"
 
 #: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert"
@@ -1134,17 +1124,16 @@ msgid "Playback"
 msgstr "Reproducció"
 
 #: beast-gtk/bstpreferences.c:76
-#, fuzzy
 msgid "Piano Keys"
-msgstr "Notes de piano"
+msgstr "Tecles de piano"
 
 #: beast-gtk/bstpreferences.c:83
 msgid "Generic Keys"
-msgstr ""
+msgstr "Tecles genèriques"
 
 #: beast-gtk/bstpreferences.c:88
 msgid "Skin"
-msgstr ""
+msgstr "Aparença"
 
 #: beast-gtk/bstprocedure.c:296
 #, c-format
@@ -1219,163 +1208,160 @@ msgstr "Etiqueta"
 
 #: beast-gtk/bstrecords.idl:35
 msgid "Up"
-msgstr ""
+msgstr "Amunt"
 
 #: beast-gtk/bstrecords.idl:35
-#, fuzzy
 msgid "Move upwards"
-msgstr "Mou una part"
+msgstr "Mou cap amunt"
 
 #: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
 msgid "Left"
 msgstr "Esquerra"
 
 #: beast-gtk/bstrecords.idl:36
-#, fuzzy
 msgid "Move to the left"
-msgstr "Mou una nota"
+msgstr "Mou cap a l'esquerra"
 
 #: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
 msgid "Right"
 msgstr "Dreta"
 
 #: beast-gtk/bstrecords.idl:37
-#, fuzzy
 msgid "Move to the right"
-msgstr "Mou una nota"
+msgstr "Mou cap a la dreta"
 
 #: beast-gtk/bstrecords.idl:38
 msgid "Down"
-msgstr ""
+msgstr "Abaix"
 
 #: beast-gtk/bstrecords.idl:38
 msgid "Step downwards"
-msgstr ""
+msgstr "Un pas abaix"
 
 #: beast-gtk/bstrecords.idl:43
-#, fuzzy
 msgid "Release counter"
-msgstr "Info_rmació de la versió..."
+msgstr "Contador de l'alliberament"
 
 #: beast-gtk/bstrecords.idl:45
 msgid "Font Size"
-msgstr ""
+msgstr "Mida del tipus de lletra"
 
 #: beast-gtk/bstrecords.idl:45
 msgid "Font size in pixels for labels displayed in synthesis networks"
-msgstr ""
+msgstr "Mida de la font en píxels de les etiquetes visualitzades en les xarxes "
+"de síntesi"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "Anti-Alias"
-msgstr ""
+msgstr "Suavitzat"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "Draw synthesis networks anti-aliased?"
-msgstr ""
+msgstr "Voleu dibuixar les xarxes de síntesi suavitzades?"
 
 #: beast-gtk/bstrecords.idl:49
 msgid "Single Edit"
-msgstr ""
+msgstr "Edició sencilla"
 
 #: beast-gtk/bstrecords.idl:49
 msgid "Fallback into Edit mode after creating synthesis modules?"
-msgstr ""
+msgstr "Vés al mode d'edició de manera predeterminada, després de crear els "
+"mòduls de síntesi?"
 
 #: beast-gtk/bstrecords.idl:51
 msgid "Swap IO"
-msgstr ""
+msgstr "Intercanvia E/S"
 
 #: beast-gtk/bstrecords.idl:51
 msgid "Swap input with output channels when displaying synthesis modules?"
-msgstr ""
+msgstr "Intercanvia els canals d'entrada amb els de sortida quna es visualitzin "
+"els mòduls de síntesi?"
 
 #: beast-gtk/bstrecords.idl:55
-#, fuzzy
 msgid "Tab Width"
-msgstr "Amplada del pols"
+msgstr "Amplada de la pestanya"
 
 #: beast-gtk/bstrecords.idl:55
 msgid "Specify project tab width in pixels"
-msgstr ""
+msgstr "Especifiqueu la mida de la pestanya del projecte, en píxels"
 
 #: beast-gtk/bstrecords.idl:57
 msgid "Homogeneous Input Fields"
-msgstr ""
+msgstr "Camps d'entrada homogenis"
 
 #: beast-gtk/bstrecords.idl:58
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
 msgstr ""
+"Habilita les mides homogènies per a la majoria dels camps d'entrada (numèrics "
+"i de text. A alguns camps només els afectarà quan es reiniciï."
 
 #: beast-gtk/bstrecords.idl:66
-#, fuzzy
 msgid "Skin Name"
-msgstr "Nom"
+msgstr "Nom de l'aparença"
 
 #: beast-gtk/bstrecords.idl:66
 msgid "Name for the current skin configuration (used for skin selections)."
-msgstr ""
+msgstr "Nom de la configuració de l'aparença actual (s'usa en la selecció "
+"d'aparences)."
 
 #: beast-gtk/bstrecords.idl:68 beast-gtk/bstrecords.idl:78
 msgid "Background Image"
-msgstr ""
+msgstr "Imatge de fons"
 
 #: beast-gtk/bstrecords.idl:68
 msgid "Background image used by the piano-roll widget."
-msgstr ""
+msgstr "Imatge de fons que es farà servir a la interfície gràfica del piano-roll."
 
 #: beast-gtk/bstrecords.idl:69 beast-gtk/bstrecords.idl:79
 msgid "Image shade"
-msgstr ""
+msgstr "Mescla de la imatge"
 
 #: beast-gtk/bstrecords.idl:69 beast-gtk/bstrecords.idl:79
 msgid "Percentage of background image pixel to blend over background color."
-msgstr ""
+msgstr "Percentatge de píxel de la imatge de fons que es mesclarà sobre el fons "
+"de color."
 
 #: beast-gtk/bstrecords.idl:70 beast-gtk/bstrecords.idl:80
 msgid "Background Color"
-msgstr ""
+msgstr "Color de fons"
 
 #: beast-gtk/bstrecords.idl:71 beast-gtk/bstrecords.idl:81
-#, fuzzy
 msgid "Horizontal Bar Color"
-msgstr "Ampliació horitzontal de la pista"
+msgstr "Color de la barra horitzontal"
 
 #: beast-gtk/bstrecords.idl:72
-#, fuzzy
 msgid "Vertical Bar Color"
-msgstr "Ampliació vertical del piano"
+msgstr "Color de la barra vertical"
 
 #: beast-gtk/bstrecords.idl:73
-#, fuzzy
 msgid "Horizontal Grid Color"
-msgstr "Ampliació horitzontal del piano"
+msgstr "Color de la graella horitzontal"
 
 #: beast-gtk/bstrecords.idl:74
-#, fuzzy
 msgid "Vertical Grid Color"
-msgstr "Ampliació vertical del piano"
+msgstr "Color de la graella vertical"
 
 #: beast-gtk/bstrecords.idl:75 beast-gtk/bstrecords.idl:82
 msgid "Middle Bar Color"
-msgstr ""
+msgstr "Color de la graella central"
 
 #: beast-gtk/bstrecords.idl:78
 msgid "Background image used by the control events widget."
-msgstr ""
+msgstr "Imatge de fons usada en la interfície d'esdeveniments de control."
 
 #: beast-gtk/bstrecords.idl:83
 msgid "Positive Value Color"
-msgstr ""
+msgstr "Color del valor positiu"
 
 #: beast-gtk/bstrecords.idl:84
 msgid "Zero Value Color"
-msgstr ""
+msgstr "Color del valor zero"
 
 #: beast-gtk/bstrecords.idl:85
 msgid "Negative Value Color"
-msgstr ""
+msgstr "Color del valor negatiu"
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
@@ -1765,7 +1751,7 @@ msgstr "Esborra l'ona seleccionada actualment"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
 msgid "Adjust right view boundary"
-msgstr ""
+msgstr "Ajusta la profunditat de visualització esquerre"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Adjust the zoom factor of the router display"
@@ -1773,15 +1759,15 @@ msgstr "Ajusta el factor d'ampliació de la visualització de l'encaminador"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:3
 msgid "Aplly configuration changes to the pattern editor layout"
-msgstr ""
+msgstr "Aplica els canvis de configuració a la disposició de l'editor de patrons"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:4
 msgid "Configure"
-msgstr ""
+msgstr "Configura"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:5
 msgid "Configure the column layout of the pattern editor"
-msgstr ""
+msgstr "Configura la disposició de les columnes de l'editor de patrons"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:6
 msgid "Control Type:"
@@ -1793,7 +1779,7 @@ msgstr "Desenvolupament"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:8
 msgid "Discard changes and close dialog"
-msgstr ""
+msgstr "Ignora els canvis i tanca el diàleg"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:9
 msgid "E_xamples"
@@ -1817,7 +1803,7 @@ msgstr "Ampliació horitzontal de la pista"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:14
 msgid "Layout:"
-msgstr ""
+msgstr "Disposició:"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:15
 msgid "Note _Length"
@@ -1860,18 +1846,16 @@ msgid "Zoom"
 msgstr "Ampliació"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:25
-#, fuzzy
 msgid "_Apply"
-msgstr "Aplica un bucle"
+msgstr "_Aplica"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:26
 msgid "_Audio Sources"
 msgstr "_Fonts de so"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:27
-#, fuzzy
 msgid "_Cancel"
-msgstr "_Millora"
+msgstr "_Cancel·la"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:28
 msgid "_Demo"
@@ -1927,7 +1911,7 @@ msgstr "Encaminamen_t"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:42
 msgid "_Skins"
-msgstr ""
+msgstr "Aparence_s"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:43
 msgid "_Song"
@@ -2026,9 +2010,8 @@ msgid "Text Entry"
 msgstr "Entrada de text"
 
 #: beast-gtk/gxk/gxkparam-label.c:66
-#, fuzzy
 msgid "Property Identifier"
-msgstr "Identificador:"
+msgstr "Identificador de la propietat:"
 
 #: beast-gtk/gxk/gxkparam-label.c:72
 msgid "Property Name"
@@ -2134,9 +2117,8 @@ msgstr ""
 #. * of a clipped label if it does not fit its assigned width.
 #.
 #: beast-gtk/gxk/gxksimplelabel.c:575
-#, fuzzy
 msgid "..."
-msgstr "Biblioteca..."
+msgstr "..."
 
 #: bse/bseamplifier.idl:32 plugins/bsebalance.idl:26
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
@@ -2162,7 +2144,7 @@ msgstr ""
 "L'amplificador BseAmplifier propociona una amplificació o atenuació "
 "controlada del senyal d'entrada. Se suporten dues entrades de control i dues "
 "entrades de so que es mesclen conjuntament després dels ajustaments del "
-"balanç i el nivell. La configuració del guany controla la preamplificació "
+"balanç i del nivell. La configuració del guany controla la preamplificació "
 "del senyal de so mesclat. El senyal de control mesclat, amb el pes relatiu "
 "d'un paràmetre de potència, determina l'amplificació addicional, i permet "
 "que les fonts externes puguin modular el volum en conjunt (tremolo). El "
@@ -2581,7 +2563,7 @@ msgstr "BEAST"
 
 #: data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
-msgstr ""
+msgstr "Una aplicació de pistes MIDI, composició musical i síntesi modular"
 
 #: data/beast.desktop.in.h:3
 msgid "Music Composer"
