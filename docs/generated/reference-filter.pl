@@ -8,31 +8,31 @@
 use strict;
 
 sub make_xref {
-  my $index   = shift;
-  my $item    = shift;
-  my $prefix  = shift;
-  my $postfix = shift;
+    my $index   = shift;
+    my $item    = shift;
+    my $prefix  = shift;
+    my $postfix = shift;
 
-  unless (ref $index eq 'HASH') {
-    print STDERR "WARNING: item index unusable\n";
-    return $prefix . $item . $postfix;
-  }
+    unless (ref $index eq 'HASH') {
+	print STDERR "WARNING: item index unusable\n";
+	return $prefix . $item . $postfix;
+    }
 
-  my $item_tmp = $item;
-  $item_tmp =~ s/\(\)$//;
-  $item_tmp =~ s/\**$//;
+    # Get rid of unwanted characters (non-alphanumeric)
+    my $item_tmp = $item;
+    $item_tmp =~ y/A-Za-z0-9_-//cd;
 
-  my $url = $index->{$item_tmp};
+    my $url = $index->{$item_tmp};
 
-  unless (defined $url) {
-    return $prefix . $item . $postfix;
-  }
+    unless (defined $url) {
+	return $prefix . $item . $postfix;
+    }
 
-  return 
-    "<uref><urefurl>$url</urefurl><urefreplacement>$prefix$item$postfix</urefreplacement></uref>";
+    return 
+	"<uref><urefurl>$url</urefurl><urefreplacement>$prefix$item$postfix</urefreplacement></uref>";
 }
 
-my @index_files = 0;
+my @index_files;
 my %item_index;
 
 while ($_ = $ARGV[0], defined $_ && /^-/) {
@@ -42,8 +42,7 @@ while ($_ = $ARGV[0], defined $_ && /^-/) {
 }
 
 # Read the index files into a hash table
-for (my $i = 1; $i < @index_files; $i++) {
-    my $index_file = $index_files[$i];
+foreach my $index_file (@index_files) {
     die "Failed to read $index_file" unless -r $index_file;
     open(INDEX, "<$index_file");
     while (<INDEX>) {
@@ -55,17 +54,19 @@ for (my $i = 1; $i < @index_files; $i++) {
 }
 
 while (<>) {
-  # Match functions
-  s{(<reference-function>)([^<]+)(</reference-function>)}
-   {make_xref(\%item_index, $2, $1, $3)}ge;
+    # Match functions
+    s{(<reference-function>)([^<]+)(</reference-function>)}
+    {make_xref(\%item_index, $2, $1, $3)}ge;
 
-  # Match structs
-  s{(<reference-type>)([^<]+)(</reference-type>)}
-   {make_xref(\%item_index, $2, $1, $3)}ge;
+    # Match structs
+    s{(<reference-type>)([^<]+)(</reference-type>)}
+    {make_xref(\%item_index, $2, $1, $3)}ge;
 
-  # Move no-link functions to normal ones
-  s{<(/?)reference-function-nolink>}
-   {<$1reference-function>}g;
+    # Move no-link functions to normal ones
+    s{<(/?)reference-function-nolink>}
+    {<$1reference-function>}g;
 
-  print;
+    print;
 }
+
+# vim: ts=8 sw=4

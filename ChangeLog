@@ -1,3 +1,11 @@
+Thu Feb 27 05:21:47 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/generated/reference-filter.pl: remove all non-alphanumeric
+	characters from function and type names instead of just parentheses,
+	asterisks and whitespaces at the end. made the loop that iterates over
+	index_files array more Perl-ish. changed indentation to be on par with
+	docs/generated/scandocs.pl.
+
 Thu Feb 27 00:02:09 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: add news blurb about LinuxForum 2003.
