@@ -67,6 +67,7 @@ static GQuark quark_param_group = 0;
 static GQuark quark_param_owner = 0;
 static GQuark quark_tmp_choice_values = 0;
 static GQuark quark_tmp_record_fields = 0;
+static GQuark quark_boxed_fields = 0;
 
 
 /* --- functions --- */
@@ -95,7 +96,8 @@ _sfi_init_params (void)
   quark_param_owner = g_quark_from_static_string ("sfi-pspec-owner");
   quark_tmp_choice_values = g_quark_from_static_string ("sfi-tmp-choice-values");
   quark_tmp_record_fields = g_quark_from_static_string ("sfi-tmp-choice-values");
-  
+  quark_boxed_fields = g_quark_from_static_string ("sfi-boxed-fields");
+
   /* pspec types */
   info.instance_size = sizeof (SfiParamSpecProxy);
   SFI_TYPE_PARAM_PROXY = g_type_register_static (G_TYPE_PARAM_POINTER, "SfiParamSpecProxy", &info, 0);
@@ -955,6 +957,22 @@ sfi_pspec_proxy_from_object (GParamSpec *object_pspec)
   return pspec;
 }
 
+void
+sfi_boxed_type_set_fields (GType                 boxed_type,
+                           const SfiBoxedFields *bfields)
+{
+  g_return_if_fail (G_TYPE_IS_BOXED (boxed_type) && !G_TYPE_IS_ABSTRACT (boxed_type));
+  if (bfields != NULL)
+    g_return_if_fail (bfields->fields.n_fields && (bfields->is_rec || bfields->is_seq));
+  g_type_set_qdata (boxed_type, quark_boxed_fields, (SfiBoxedFields*) bfields);
+}
+
+const SfiBoxedFields*
+sfi_boxed_type_get_fields (GType boxed_type)
+{
+  return g_type_get_qdata (boxed_type, quark_boxed_fields);
+}
+
 GParamSpec*
 sfi_pspec_to_serializable (GParamSpec *xpspec)
 {
@@ -968,7 +986,7 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
     {
       const SfiBoxedRecordInfo *rinfo = sfi_boxed_get_record_info (G_PARAM_SPEC_VALUE_TYPE (xpspec));
       const SfiBoxedSequenceInfo *sinfo = sfi_boxed_get_sequence_info (G_PARAM_SPEC_VALUE_TYPE (xpspec));
-      
+      const SfiBoxedFields *bfields = sfi_boxed_type_get_fields (G_PARAM_SPEC_VALUE_TYPE (xpspec));
       if (rinfo)
         {
           pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, rinfo->fields, NULL);
@@ -977,6 +995,16 @@ sfi_pspec_to_serializable (GParamSpec *xpspec)
       else if (sinfo)
         {
           pspec = sfi_pspec_seq (xpspec->name, xpspec->_nick, xpspec->_blurb, sinfo->element, NULL);
+          sfi_pspec_copy_commons (xpspec, pspec);
+        }
+      else if (bfields && bfields->is_rec)
+        {
+          pspec = sfi_pspec_rec (xpspec->name, xpspec->_nick, xpspec->_blurb, bfields->fields, NULL);
+          sfi_pspec_copy_commons (xpspec, pspec);
+        }
+      else if (bfields && bfields->is_seq)
+        {
+          pspec = sfi_pspec_seq (xpspec->name, xpspec->_nick, xpspec->_blurb, bfields->fields.fields[0], NULL);
           sfi_pspec_copy_commons (xpspec, pspec);
         }
     }

@@ -1,3 +1,11 @@
+Tue Jan 20 15:35:46 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.[hc]: added sfi_boxed_type_set_fields() and
+	sfi_boxed_type_get_fields() since sfi_boxed_get_record_info()
+	and sfi_boxed_get_sequence_info() are scheduled for removal.
+
+	* sfivalues.c: fixed up sfi_value_dup_rec().
+
 Tue Jan 20 05:49:22 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: simplified type speical casing by moving
