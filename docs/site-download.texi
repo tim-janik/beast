@@ -83,7 +83,7 @@ on using, getting, and building GNOME projects from CVS.
 
 Building from CVS requires additional tools than building the
 release tarballs. The reason for this is due to building documentation
-and auto-generating code that are included into releases. In particular,
+and auto-generating code that are included in releases. In particular,
 building @beast from CVS now requires the texitheque module hosted in
 @uref{http://www.freedesktop.org/,, freedesktop.org} CVS. Anonymous
 CVS access to freedesktop.org is described on their
@@ -91,7 +91,7 @@ CVS access to freedesktop.org is described on their
 page, however to just get texitheque, you do:
 
 @lisp
-$ export CVSROOT=':pserver:anonymous@@freedom.codefactory.se:/freedesktop'
+$ export CVSROOT=':pserver:anoncvs@@pdx.freedesktop.org:/cvs'
 $ cvs login # there is no password, just hit return
 $ cvs -z3 checkout texitheque
 @end lisp

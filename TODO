@@ -1,4 +1,7 @@
 FIXMES:
+- fix syndrum parameter scale
+- adapt BseBalance audio-in-balance for BseAmplifier
+- nuke frequency fine-tune for biquad filter
 - add toplevel menu /Synthesizers/:
   /Synthesizers/Load from Effect Library
   /Synthesizers/Load from Instrument Library

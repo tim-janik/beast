@@ -1,3 +1,7 @@
+Thu Oct  9 16:08:58 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-download.texi: reflect freedesktop.org CVS move.
+
 2003-10-08  Christian Neumair  <chris@gnome-de.org>
 
 	* beast-gtk/gtkdefs.h:
