@@ -1,3 +1,8 @@
+2003-10-15  Christian Rose  <menthos@menthos.com>
+
+	* .cvsignore: Added more entries.
+	* sv.po: Added Swedish translation.
+
 Wed Oct 15 02:36:02 2003  Tim Janik  <timj@gtk.org>
 
 	* update.sh: figure versioned gettext domain (GETTEXT_PACKAGE)
@@ -6,3 +11,4 @@ Wed Oct 15 02:36:02 2003  Tim Janik  <timj@gtk.org>
 Tue Oct 14 21:55:38 2003  Tim Janik  <timj@gtk.org>
 
 	* initial setup.
+
