@@ -1,4 +1,5 @@
 FIXMES:
+- fix newsong/newtrack
 - remove BseBinData
 - fix undo for: BseWave, BsePart, BseDataPocket
 - get rid of bse_procedure_execvl

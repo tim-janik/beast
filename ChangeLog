@@ -1,3 +1,8 @@
+Wed Jun  4 21:58:05 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianorollctrl.c (controller_piano_drag): lengthen
+	playback time for test notes.
+
 Sat May 31 02:11:31 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstactivatable.c: fix idle handler prio.

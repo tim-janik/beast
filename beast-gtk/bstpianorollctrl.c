@@ -680,7 +680,7 @@ controller_piano_drag (BstPianoRollController *self,
 	  error = bse_project_activate (project);
 	  self->obj_note = drag->current_note;
 	  if (error == BSE_ERROR_NONE)
-	    bse_song_synthesize_note (song, track, 384, self->obj_note, 0, 1.0);
+	    bse_song_synthesize_note (song, track, 384 * 4, self->obj_note, 0, 1.0);
 	  bst_status_eprintf (error, "Play note");
 	  drag->state = BST_DRAG_CONTINUE;
 	}
