@@ -1,3 +1,9 @@
+Wed Jul 14 00:14:29 2004  Tim Janik  <timj@gtk.org>
+
+	* bsesongbus.h:
+	* bsesongbus.c:
+	* bsesongbus.proc: removed in favour of bsebus.*.
+
 Tue Jul 13 23:12:52 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.proc: copied from bsesongbus.proc.

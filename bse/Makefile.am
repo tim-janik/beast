@@ -41,7 +41,7 @@ libbse_la_LIBADD = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 bse_public_h_sources = $(strip \
 	bse.h	bsedefs.h	bseexports.h	bseconfig.h	bsegenclosures.h \
 	bseincluder.h	ladspa.h	\
-	bsesongbus.h		            		bsebiquadfilter.h		bsecategories.h \
+	bsebus.h		            		bsebiquadfilter.h		bsecategories.h \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
 	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
 	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
@@ -68,7 +68,7 @@ bse_private_h_sources = $(strip \
 # BSE C sources to build the library from
 bse_c_sources = $(strip \
 	$(GSL_C_SRC) \
-	bsesongbus.c		            		bsebiquadfilter.c		bsecategories.c \
+	bsebus.c		            		bsebiquadfilter.c		bsecategories.c \
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
@@ -128,7 +128,7 @@ bse_proc_sources = $(strip \
 	bsescripthelper.proc \
 	bseserver.proc \
 	bsesong.proc \
-	bsesongbus.proc \
+	bsebus.proc \
 	bsesource.proc \
 	bsecsynth.proc \
 	bsesnet.proc \
@@ -153,7 +153,7 @@ bse_proc_gen_sources = $(strip \
 	bsescripthelper.gen-proc.c \
 	bseserver.gen-proc.c \
 	bsesong.gen-proc.c \
-	bsesongbus.gen-proc.c \
+	bsebus.gen-proc.c \
 	bsesource.gen-proc.c \
 	bsecsynth.gen-proc.c \
 	bsesnet.gen-proc.c \

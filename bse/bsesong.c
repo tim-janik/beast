@@ -19,7 +19,7 @@
 
 #include "bsetrack.h"
 #include "bsepart.h"
-#include "bsesongbus.h"
+#include "bsebus.h"
 #include "bsepcmoutput.h"
 #include "bseproject.h"
 #include "bsemidireceiver.h"

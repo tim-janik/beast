@@ -18,7 +18,7 @@
  */
 #include <bse/bseplugin.h>
 #include <bse/bseprocedure.h>
-#include <bse/bsesongbus.h>
+#include <bse/bsebus.h>
 #include <bse/bsetrack.h>
 #include <bse/bsesong.h>
 #include <bse/bseundostack.h>
