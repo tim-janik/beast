@@ -11,6 +11,30 @@
 @unnumbered What's New?
 
 
+@newsTitle{Sunday 28 Dec 2003, BEAST Realease ``Popcorn''}
+
+BEAST/BSE version 0.5.6 is available from the
+@uref{beast-doc://download,,download section}.
+@c here is the
+@c @uref{http://gnomedesktop.org/article.php?sid=1422,,FootNotes announcement}.
+
+Tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.6.tar.gz,, beast-0.5.6.tar.gz}
+and patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.5-0.5.6.bz2,, patch-beast-0.5.5-0.5.6.bz2}.
+
+Newly added features in this release involve a TB-303 style Bass Filter, major GUI
+improvements, MIDI file import abilities, a new C++ language binding, new language
+translations and finally an About box.
+As always, the @uref{beast-doc://release-news,,NEWS section} has all the glory details.
+
+In other news, we're looking for a graphics artist to improve plugin icons and
+help us develop fancier widgets like sliders, knobs, etc...
+Please @uref{mailto://beast@@gnome.org,, drop us a line} at our
+@uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list} if you're willing
+to contribute.
+
+
 @newsTitle{Monday 27 Oct 2003, BEAST Realease & LinuxUser Article}
 
 The german
