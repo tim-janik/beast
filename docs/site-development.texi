@@ -30,21 +30,22 @@ translations can be obtained from the following pages.
 @uref{http://l10n-status.gnome.org/gnome-2.8/el/extras/index.html,, el},
 @uref{http://l10n-status.gnome.org/gnome-2.8/en_CA/extras/index.html,, en_CA},
 @uref{http://l10n-status.gnome.org/gnome-2.8/en_GB/extras/index.html,, en_GB},
-@uref{http://l10n-status.gnome.org/gnome-2.8/es/extras/index.html,, es},
 @uref{http://l10n-status.gnome.org/gnome-2.8/eo/extras/index.html,, eo},
+@uref{http://l10n-status.gnome.org/gnome-2.8/es/extras/index.html,, es},
 @uref{http://l10n-status.gnome.org/gnome-2.8/fr/extras/index.html,, fr},
 @uref{http://l10n-status.gnome.org/gnome-2.8/hr/extras/index.html,, hr},
 @uref{http://l10n-status.gnome.org/gnome-2.8/it/extras/index.html,, it},
 @uref{http://l10n-status.gnome.org/gnome-2.8/ja/extras/index.html,, ja},
 @uref{http://l10n-status.gnome.org/gnome-2.8/mn/extras/index.html,, mn},
 @uref{http://l10n-status.gnome.org/gnome-2.8/nl/extras/index.html,, nl},
+@uref{http://l10n-status.gnome.org/gnome-2.8/pa/extras/index.html,, pa},
 @uref{http://l10n-status.gnome.org/gnome-2.8/pt/extras/index.html,, pt},
 @uref{http://l10n-status.gnome.org/gnome-2.8/pt_BR/extras/index.html,, pt_BR},
+@uref{http://l10n-status.gnome.org/gnome-2.8/ru/extras/index.html,, ru},
 @uref{http://l10n-status.gnome.org/gnome-2.8/sq/extras/index.html,, sq},
 @uref{http://l10n-status.gnome.org/gnome-2.8/sr/extras/index.html,, sr},
 @uref{http://l10n-status.gnome.org/gnome-2.8/sr/extras/index.html,, sr@@Latn},
-@uref{http://l10n-status.gnome.org/gnome-2.8/sv/extras/index.html,, sv},
-@uref{http://l10n-status.gnome.org/gnome-2.8/ru/extras/index.html,, ru}
+@uref{http://l10n-status.gnome.org/gnome-2.8/sv/extras/index.html,, sv}.
 
 
 @unnumbered Web Site Development

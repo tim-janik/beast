@@ -77,8 +77,7 @@ Tue Oct  5 19:12:31 2004  Tim Janik  <timj@gtk.org>
 
 Tue Sep  5 2004  Amanpreet Singh Alam <amanpreetalam@yahoo.com>
 
-	* configure.inB add pa(Punjabi) to ALL_LINGUAS
-
+	* configure.in: add pa (Punjabi) to ALL_LINGUAS.
 
 Mon Oct  4 23:27:29 2004  Tim Janik  <timj@gtk.org>
 
