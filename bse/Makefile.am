@@ -5,10 +5,11 @@
 
 SUBDIRS = icons zintern . tests
 
-# need -I$(top_srcdir) for <bse/gsldefs.h>
+# need -I$(top_srcdir) for <bse/bsedefs.h>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
 # need -I$(srcdir) for "bseserver.h" in .gen-proc.c
-INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+# need -I. (builddir) for "bseamplifier.gen-idl.h" in bseamplifier.cc
+INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #
 # libraries to compile and install
