@@ -44,18 +44,18 @@ enum
 {
   PROP_0,
   PROP_GAIN_f,
-  PROP_GAIN_dB,
   PROP_GAIN_PERC,
+  PROP_GAIN_dB,
   PROP_AUDIO_BALANCE,
   PROP_CTRL_STRENGTH_f,
-  PROP_CTRL_STRENGTH_dB,
   PROP_CTRL_STRENGTH_PERC,
+  PROP_CTRL_STRENGTH_dB,
   PROP_CTRL_EXPONENTIAL,
   PROP_CTRL_BALANCE,
   PROP_CTRL_MUL,
   PROP_MASTER_f,
-  PROP_MASTER_dB,
-  PROP_MASTER_PERC
+  PROP_MASTER_PERC,
+  PROP_MASTER_dB
 };
 
 
@@ -153,24 +153,24 @@ bse_amplifier_class_init (BseAmplifierClass *class)
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_STRENGTH_f,
 			      sfi_pspec_real ("ctrl_strength_f", "Control Strength [float]", NULL,
-					      0.5, 0, 1.0, 0.01,
+					      1.0, 0, 1.0, 0.01,
 					      SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_STRENGTH_dB,
 			      sfi_pspec_real ("ctrl_strength_dB", "Strength [dB]", "Amount of impact of the control inputs",
-					      bse_dB_from_factor (0.5, BSE_MIN_VOLUME_dB),
+					      bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
 					      bse_dB_from_factor (0, BSE_MIN_VOLUME_dB),
 					      bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
 					      0.1, SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_STRENGTH_PERC,
 			      sfi_pspec_real ("ctrl_strength_perc", "Strength [%]", "Amount of impact of the control inputs",
-					      50.0, 0, 100, 1,
+					      100.0, 0, 100, 1,
 					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Control Input",
 			      PROP_CTRL_EXPONENTIAL,
 			      sfi_pspec_bool ("ctrl_exp", "Exponential Control", "Toggle exponential and linear control response",
-					      TRUE, SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      FALSE, SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_AUDIO_BALANCE,
 			      sfi_pspec_real ("audio_balance", "Audio Balance", "Determine balance of the two audio inputs",
@@ -179,19 +179,19 @@ bse_amplifier_class_init (BseAmplifierClass *class)
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_GAIN_f,
 			      sfi_pspec_real ("audio_gain_f", "Gain [float]", NULL,
-					      0.5, 0, 1.0, 0.01,
+					      0.0, 0, 1.0, 0.01,
 					      SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_GAIN_dB,
 			      sfi_pspec_real ("audio_gain_dB", "Gain [dB]", "Base amplification (the control signal adds up to this)",
-					      bse_dB_from_factor (0.5, BSE_MIN_VOLUME_dB),
+					      bse_dB_from_factor (0.0, BSE_MIN_VOLUME_dB),
 					      bse_dB_from_factor (0, BSE_MIN_VOLUME_dB),
 					      bse_dB_from_factor (1.0, BSE_MIN_VOLUME_dB),
 					      0.1, SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Audio Input",
 			      PROP_GAIN_PERC,
 			      sfi_pspec_real ("audio_gain_perc", "Gain [%]", "Base amplification (the control signal adds up to this)",
-					      50.0, 0, 100, 1,
+					      0.0, 0, 100, 1,
 					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Output",
 			      PROP_MASTER_f,
@@ -221,13 +221,13 @@ bse_amplifier_class_init (BseAmplifierClass *class)
 static void
 bse_amplifier_init (BseAmplifier *self)
 {
-  self->config.ctrl_balance = 0.5;
-  self->config.ctrl_strength = 0.5;
+  self->config.audio_gain = 0;
   self->config.audio_balance = 0.5;
-  self->config.audio_gain = 0.5;
+  self->config.ctrl_strength = 1.0;
+  self->config.ctrl_balance = 0.5;
   self->config.master_gain = 1.0;
   self->config.ctrl_mul = FALSE;
-  self->config.exp_ctrl = TRUE;
+  self->config.exp_ctrl = FALSE;
 }
 
 static void
