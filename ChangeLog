@@ -1,3 +1,11 @@
+Mon Dec  8 13:40:16 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-note.c: CVS-copied from bstparam-strnum.c.
+
+	* beast-gtk/bstparam-time.c: CVS-copied from bstparam-strnum.c.
+
+	* beast-gtk/bstparam-searchpath.c: CVS-copied from bstparam-entry.c.
+
 Fri Dec  5 11:50:46 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxklogadjustment.[hc]: namespace rename and
