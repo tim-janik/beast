@@ -63,6 +63,8 @@ typedef struct {
   guint   tooltip_visible : 1;
   guint   mute_events : 1;
   guint   lower_windows : 1;
+  gdouble resize_hsteps, resize_vsteps;
+  gdouble resize_hunits, resize_vunits;
   gdouble width_from_height;
   gdouble height_from_width;
 } GxkWidgetPatcher;
@@ -85,9 +87,11 @@ typedef struct {
   GtkMenu   *menu;
   GtkWidget *menu_item;
   GtkWidget *image;
+  GtkWidget *child;
   gint       icon_size, old_icon_size;
   gint       width, height;
-  GtkWidget *child;
+  guint      show_selection : 1;
+  guint      combo_arrow : 1;
 } GxkMenuButton;
 typedef GtkButtonClass GxkMenuButtonClass;
 GType   gxk_menu_button_get_type          (void);

@@ -92,19 +92,46 @@ void            gxk_window_add_action_factory   (GtkWindow              *window,
                                                  GxkActionFactory       *afactory);
 void            gxk_window_remove_action_factory(GtkWindow              *window,
                                                  GxkActionFactory       *afactory);
-void            gxk_widget_publish_action_list  (gpointer                widget,
+void      gxk_widget_publish_action_list        (gpointer                widget,
                                                  const gchar            *prefix,
                                                  GxkActionList          *alist);
-void            gxk_widget_publish_actions      (gpointer                widget,
+void      gxk_widget_publish_actions            (gpointer                widget,
                                                  const gchar            *prefix,
                                                  guint                   n_actions,
                                                  const GxkStockAction   *actions,
                                                  const gchar            *i18n_domain,
                                                  GxkActionCheck          acheck,
                                                  GxkActionExec           aexec);
-void            gxk_widget_update_actions_upwards       (gpointer        widget);
-void            gxk_widget_update_actions_downwards     (gpointer        widget);
-void            gxk_widget_update_actions               (gpointer        widget);
+void      gxk_widget_publish_actions_grouped    (gpointer                widget,
+                                                 GxkActionGroup         *group,
+                                                 const gchar            *prefix,
+                                                 guint                   n_actions,
+                                                 const GxkStockAction   *actions,
+                                                 const gchar            *i18n_domain,
+                                                 GxkActionCheck          acheck,
+                                                 GxkActionExec           aexec);
+void      gxk_widget_publish_translated         (gpointer                widget,
+                                                 const gchar            *prefix,
+                                                 const gchar            *name,          /* translated (part of key) */
+                                                 const gchar            *accelerator,
+                                                 const gchar            *tooltip,       /* translated */
+                                                 gulong                  action_id,
+                                                 const gchar            *stock_icon,
+                                                 GxkActionCheck          acheck,
+                                                 GxkActionExec           aexec);
+void      gxk_widget_publish_grouped_translated (gpointer                widget,
+                                                 GxkActionGroup         *group,
+                                                 const gchar            *prefix,
+                                                 const gchar            *name,          /* translated (part of key) */
+                                                 const gchar            *accelerator,
+                                                 const gchar            *tooltip,       /* translated */
+                                                 gulong                  action_id,
+                                                 const gchar            *stock_icon,
+                                                 GxkActionCheck          acheck,
+                                                 GxkActionExec           aexec);
+void      gxk_widget_update_actions_upwards     (gpointer                widget);
+void      gxk_widget_update_actions_downwards   (gpointer                widget);
+void      gxk_widget_update_actions             (gpointer                widget);
 
 
 /* --- action groups --- */
@@ -117,7 +144,8 @@ void            gxk_widget_update_actions               (gpointer        widget)
 struct GxkActionGroup {
   GObject parent_instance;
   gulong  action_id;
-  gulong  lock_count;
+  guint   lock_count;
+  guint   invert_dups : 1;
 };
 typedef struct {
   GObjectClass parent_class;
@@ -130,6 +158,7 @@ void            gxk_action_group_select         (GxkActionGroup        *agroup,
 void            gxk_action_group_lock           (GxkActionGroup        *agroup);
 void            gxk_action_group_unlock         (GxkActionGroup        *agroup);
 void            gxk_action_group_dispose        (GxkActionGroup        *agroup);
+GxkActionGroup* gxk_action_toggle_new           (void);
 
 
 /* --- action factory --- */

@@ -7,11 +7,12 @@
   <!-- frame, alignment -->
   <xdef:alignment             inherit="GtkAlignment"        />
   <xdef:event-box             inherit="GtkEventBox"         />
+  <xdef:arrow                 inherit="GtkArrow"            prop:shadow-type="$shadow" prop:arrow-type="$arrow" />
   <xdef:frame                 inherit="GtkFrame"            />
-  <xdef:frame-shadow-in       inherit="frame"               prop:shadow="shadow-in" />
-  <xdef:frame-shadow-out      inherit="frame"               prop:shadow="shadow-out" />
-  <xdef:frame-etched-in       inherit="frame"               prop:shadow="etched-in" />
-  <xdef:frame-etched-out      inherit="frame"               prop:shadow="etched-out" />
+  <xdef:frame-shadow-in       inherit="frame"               prop:shadow-type="shadow-in" />
+  <xdef:frame-shadow-out      inherit="frame"               prop:shadow-type="shadow-out" />
+  <xdef:frame-etched-in       inherit="frame"               prop:shadow-type="etched-in" />
+  <xdef:frame-etched-out      inherit="frame"               prop:shadow-type="etched-out" />
   <xdef:hseparator            inherit="GtkHSeparator"       />
   <xdef:vseparator            inherit="GtkVSeparator"       />
   <!-- boxes: expand= fill= spacing= -->
@@ -29,6 +30,15 @@
     prop:border-width="3" />
   <xdef:outer-vbox            inherit="vbox"
     prop:border-width="3" />
+  <!-- wrap boxes -->
+  <xdef:hwrap                 inherit="GtkHWrapBox"
+    default-pack:hexpand="$(ifdef,hexpand,$hexpand,$expand)"
+    default-pack:vexpand="$(ifdef,vexpand,$vexpand,$expand)"
+    default-pack:hfill="$(ifdef,hfill,$hfill,$(ifdef,fill,$fill,1))"
+    default-pack:vfill="$(ifdef,vfill,$vfill,$(ifdef,fill,$fill,1))"
+    default-pack:wrapped="$(ifdef,wrapped,$wrapped,0)"
+    />
+  <xdef:vwrap                 inherit="GtkVWrapBox" />
   <!-- menubar -->
   <xdef:menubar               inherit="GtkMenuBar" />
   <xdef:popup-menu            inherit="GtkMenu" />
@@ -142,20 +152,19 @@
   <xdef:tooltip inherit="widget-patcher"
     prop:tooltip="$(null-collapse,$text)"
     prop:tooltip-visible="$(ifdef,latent-tooltip,$(not,$latent-tooltip),1)" />
-  <!-- gadget-factory: actions= action-root= activatable= regulate= per-list= per-action= -->
+  <!-- gadget-factory: actions= action-root= per-list= per-action= -->
   <xdef:gadget-factory        inherit="GxkGadgetFactory"
     prop:action-root="$(ifdef,action-root,$action-root,:xdef)"
     prop:action-list="$actions"
-    prop:activatable="$activatable" prop:regulate="$regulate"
     prop:per-list="$(null-collapse,$per-list)"
-    prop:per-action="$(null-collapse,$per-action)" />
+    prop:per-action="$(null-collapse,$per-action)"
+    prop:activatable="$(null-collapse,$per-action)" prop:regulate="$(null-collapse,$per-action)" />
   <!-- menu-factory: actions= separator= -->
   <xdef:menu-factory inherit="gadget-factory"
+    prop:per-branch="menu-factory-branch"
     per-list="$(if,$separator,menu-factory-per-list,)"
-    per-action="menu-factory-per-action"
-    activatable="menu-factory-per-action"
-    regulate="menu-factory-per-action" >
-  </xdef:menu-factory>
+    per-action="menu-factory-per-action" />
+  <xdef:menu-factory-branch inherit="submenu" label="$action-name" />
   <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
   <xdef:menu-factory-per-action inherit="menu-item"
     label="$action-name"
@@ -164,7 +173,7 @@
     stock-image="$action-stock" >
     <tooltip text="$action-tooltip" latent-tooltip="1" />
   </xdef:menu-factory-per-action>
-
+  
   <!-- separator: hseparator= vseparator= -->
   <xdef:separator inherit="alignment"
     prop:yscale="0.4" prop:xscale="0.4"  >
@@ -182,44 +191,83 @@
     </hbox>
   </xdef:separator>
   <!-- button factories: button-args, gadget-factory-args -->
-  <xdef:button-factory inherit="gadget-factory"
-    per-action="action-button"
-    activatable="action-button"
-    regulate="action-button" />
-  <xdef:toggle-factory inherit="gadget-factory"
-    per-action="action-toggle"
-    activatable="action-toggle"
-    regulate="action-toggle" />
+  <xdef:button-factory  inherit="gadget-factory" per-action="action-button" width-from-height="1.25" />
+  <xdef:toggle-factory  inherit="gadget-factory" per-action="action-toggle" width-from-height="1.25" />
   <!-- action buttons: button-args, image-size= action-*= -->
-  <xdef:action-button inherit="button"
-    focus="0" >
+  <xdef:action-image-button inherit="button" focus="0" default-area="vbox" >
     <tooltip text="$action-tooltip" />
-    <widget-patcher prop:width-from-height="1.25" />
+    <widget-patcher
+      prop:width-from-height="$width-from-height"
+      prop:height-from-width="$height-from-width"
+      prop:force-resize-hsteps="$force-resize-hsteps"
+      prop:force-resize-vsteps="$force-resize-vsteps"
+      prop:min-resize-hunits="$min-resize-hunits"
+      prop:min-resize-vunits="$min-resize-vunits" />
     <vbox>
       <image
 	expand="1"
 	stock-image="$action-stock"
 	visible="$(ifdef,action-stock,1,0)"
 	stock-size="$image-size" />
-      <label label="$action-name" />
     </vbox>
+  </xdef:action-image-button>
+  <xdef:action-button inherit="action-image-button" >
+    <label label="$action-name" />
   </xdef:action-button>
-  <xdef:action-toggle inherit="toggle-button"
-    focus="0" >
+  <xdef:action-image-toggle inherit="toggle-button" focus="0" default-area="vbox" >
     <tooltip text="$action-tooltip" />
-    <widget-patcher prop:width-from-height="1.25" />
+    <widget-patcher
+      prop:width-from-height="$width-from-height"
+      prop:height-from-width="$height-from-width"
+      prop:force-resize-hsteps="$force-resize-hsteps"
+      prop:force-resize-vsteps="$force-resize-vsteps"
+      prop:min-resize-hunits="$min-resize-hunits"
+      prop:min-resize-vunits="$min-resize-vunits" />
     <vbox>
       <image
 	expand="1"
 	stock-image="$action-stock"
 	visible="$(ifdef,action-stock,1,0)"
 	stock-size="$image-size" />
-      <label label="$action-name" />
     </vbox>
+  </xdef:action-image-toggle>
+  <xdef:action-toggle inherit="action-image-toggle" >
+    <label label="$action-name" />
   </xdef:action-toggle>
   <!-- muted-button: button-args -->
   <xdef:muted-button inherit="button" focus="0" >
     <widget-patcher prop:mute-events="1" prop:lower-windows="1" />
   </xdef:muted-button>
-
+  
+  <xdef:big-button-factory  inherit="button-factory" image-size="big-button" />
+  <!-- toolbar factories -->
+  <xdef:tool-button-factory inherit="button-factory" image-size="big-button" relief="none" width-from-height="1.2" />
+  <xdef:tool-toggle-factory inherit="toggle-factory" image-size="big-button" relief="none" width-from-height="1.2" />
+  <!-- palette factories -->
+  <xdef:palette-button-factory inherit="button-factory" per-action="action-image-button" image-size="big-button" />
+  <xdef:palette-toggle-factory inherit="toggle-factory" per-action="action-image-toggle" image-size="big-button" />
+  <!-- toolbar items -->
+  <xdef:tool-separator      inherit="separator" hseparator="0" vseparator="1" />
+  <xdef:tool-space          inherit="separator" hseparator="0" vseparator="0" />
+  <xdef:tool-area           inherit="muted-button"
+    hseparator="0" vseparator="0" relief="none" default-area="image-area" >
+    <tooltip text="$(null-collapse,$tooltip)" />
+    <vbox>
+      <vbox name="image-area" expand="1" />
+      <vbox name="label-area" pack:pack-type="end" />
+    </vbox>
+  </xdef:tool-area>
+  
+  <xdef:text-toggle-factory inherit="gadget-factory"
+    per-action="action-text-toggle" />
+  <xdef:action-text-toggle inherit="toggle-button"
+    focus="0" >
+    <tooltip text="$action-tooltip" />
+    <widget-patcher />
+    <alignment prop:yalign="$(ifdef,y-align,$y-align,0.5)" >
+      <label label="$action-name" prop:wrap="1" prop:justify="center" prop:use-underline="1" />
+    </alignment>
+  </xdef:action-text-toggle>
+  <xdef:tool-text-toggle-factory   inherit="text-toggle-factory" image-size="big-button" relief="none" />
+  
 </gxk-gadget-definitions>

@@ -43,14 +43,15 @@ typedef struct {
   guint            cslot;
   gulong           timer;
   gchar           *action_root;
-  gchar           *per_action;
   gchar           *per_list;
+  gchar           *per_branch;
+  gchar           *per_action;
   gchar           *name;
   gchar           *action_list;
   gchar           *activatable;
   gchar           *regulate;
   GxkGadgetOpt    *pass_options;
-  guint foo;
+  GData           *branches;
 } GxkGadgetFactory;
 typedef GxkActionFactoryClass GxkGadgetFactoryClass;
 

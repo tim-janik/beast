@@ -40,17 +40,19 @@ struct _BstSNetRouter
 {
   GnomeCanvas	    parent_object;
 
-  GxkToolbar	   *toolbar;
+  GtkMenu          *canvas_popup;
   GtkWidget	   *palette;
+  GtkWidget	   *palette_text;
   GtkAdjustment    *adjustment;
 
   SfiProxy	    snet;
 
-  BstRadioTools    *rtools;
+  GxkActionGroup   *canvas_tool;
+  GxkActionGroup   *channel_toggle;
+  GxkActionList    *palette_modules;
 
   gdouble           world_x, world_y;
   guint		    reshow_palette : 1;
-  guint		    channel_hints : 1;
   guint		    drag_is_input : 1;
   guint             drag_channel;
   BstCanvasSource  *drag_csource;
@@ -75,8 +77,6 @@ void		 bst_snet_router_rebuild	      (BstSNetRouter *snet_router);
 void		 bst_snet_router_adjust_region	      (BstSNetRouter *snet_router);
 BstCanvasSource* bst_snet_router_csource_from_source  (BstSNetRouter *snet_router,
 						       SfiProxy       source);
-void		 bst_snet_router_toggle_channel_hints (BstSNetRouter *router);
-void		 bst_snet_router_toggle_palette	      (BstSNetRouter *snet_router);
 BstSNetRouter*	 bst_snet_router_build_page	      (SfiProxy	     snet);
 
 

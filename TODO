@@ -1,4 +1,10 @@
 FIXMES:
+- queue action updates upon grouped action execution 
+- introduce gxk_action_group_select()-freeze/thaw to surround select/exec pair
+- bst_action_list_from_cats() / bst_action_list_add_cat(): move check+exec+data at the end of arg list
+- auto-connect viewable-changed to gadget notebooks
+- /Tools/Waves is empty
+- /Tools/Synth/ is active for songs
 - fix accel activation of menu items in popups on invisible notebook pages
 - rename _atools
 - add one-shot property to factories

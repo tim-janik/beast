@@ -1,27 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
 <gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
   
-  <xdef:big-button-factory  inherit="button-factory" image-size="big-button" />
-  <!-- toolbar items -->
-  <xdef:tool-button-factory inherit="button-factory" image-size="big-button" relief="none" />
-  <xdef:tool-toggle-factory inherit="toggle-factory" image-size="big-button" relief="none" />
-  <xdef:tool-separator      inherit="separator" hseparator="0" vseparator="1" />
-  <xdef:tool-space          inherit="separator" hseparator="0" vseparator="0" />
-  <xdef:tool-area           inherit="muted-button"
-    hseparator="0" vseparator="0" relief="none" default-area="image-area" >
-    <tooltip text="$(null-collapse,$tooltip)" />
-    <vbox>
-      <vbox name="image-area" expand="1" />
-      <vbox name="label-area" pack:pack-type="end" />
-    </vbox>
-  </xdef:tool-area>
-  
   <!-- misc BEAST widgets -->
   <xdef:piano-roll inherit="BstPianoRoll" />
+  <xdef:zoomed-window inherit="BstZoomedWindow" />
   <xdef:event-roll inherit="BstEventRoll" />
   
   <!-- track view -->
-  <xdef:track-view inherit="BstTrackView" prop:visible="1" prop:border-width="3" >
+  <xdef:track-view inherit="BstTrackView" prop:border-width="3" >
     <hbox spacing="3" >
       <hpaned prop:height-request="120" prop:position="240" pack:expand="1" >
 	<vbox spacing="3" >
@@ -77,8 +63,61 @@
     </hbox>
   </xdef:track-view>
   
+  <!-- snet view -->
+  <xdef:snet-view inherit="vbox" prop:border-width="3" >
+    <vbox spacing="3" expand="1" >
+      <frame-shadow-out name="toolbar-area" size:vgroup="toolbar-size" >
+	<hbox name="toolbar" >
+	  <tool-toggle-factory actions="router-toolbar-tools" relief="none" />
+	  <tool-toggle-factory actions="router-toolbar-modules" relief="none" />
+	  <tool-separator pack:padding="2" />
+	  <tool-button-factory actions="router-toolbar-actions" relief="none" />
+	  <tool-separator pack:padding="2" />
+          <tool-text-toggle-factory actions="router-channel-toggle" relief="none" y-align="1" />
+	</hbox>
+      </frame-shadow-out>
+      <zoomed-window expand="1" >
+	<popup-menu name="snet-popup" >
+	  <menu-title _label="Utilities" />
+	  <menu-factory action-root="" actions="router-util-actions" />
+	  <menu-separator />
+	  <menu-title _label="Module" />
+	  <menu-factory action-root="" actions="router-module-actions" >
+	    <!--submenu _label="Audio Sources" />
+	    <submenu _label="Other Sources" /-->
+	  </menu-factory>
+	</popup-menu>
+      </zoomed-window>
+    </vbox>
+  </xdef:snet-view>
+
+  <!-- snet-palette -->
+  <xdef:snet-palette inherit="vbox" >
+    <hwrap expand="1" prop:aspect-ratio="0.5" >
+      <palette-toggle-factory action-root="" actions="router-palette-actions"
+	force-resize-hsteps="1"
+	force-resize-vsteps="1"
+	min-resize-hunits="2"
+	min-resize-vunits="3" />
+      <vbox wrapped="1" expand="1" >
+	<hbox>
+	  <menu-button prop:show-selection="0" focus="0" >
+	    <arrow arrow="right" />
+	    <popup-menu>
+	      <menu-factory action-root="" actions="router-palette-actions" />
+	    </popup-menu>
+	  </menu-button>
+	  <label name="type-label" expand="1" />
+	</hbox>
+	<frame-etched-in expand="1" prop:border_width="3" >
+	  <alignment name="text-area" prop:border_width="2" />
+	</frame-etched-in>
+      </vbox>
+    </hwrap>
+  </xdef:snet-palette>
+
   <!-- wave view -->
-  <xdef:wave-view inherit="BstWaveView" prop:visible="1" prop:border-width="3" >
+  <xdef:wave-view inherit="BstWaveView" prop:border-width="3" >
     <hbox spacing="3" >
       <scrolled-window name="tree-area" prop:shadow-type="shadow-in" pack:expand="1" >
 	<tree-view name="tree-view" prop:rules-hint="1" prop:height-request="120" prop:width-request="200" />
@@ -92,7 +131,7 @@
   </xdef:wave-view>
   
   <!-- part view -->
-  <xdef:part-view inherit="BstPartView" prop:visible="1" prop:border-width="3" >
+  <xdef:part-view inherit="BstPartView" prop:border-width="3" >
     <vpaned>
       <hbox spacing="3" >
 	<scrolled-window name="tree-area" prop:shadow-type="shadow-in" pack:expand="1" >

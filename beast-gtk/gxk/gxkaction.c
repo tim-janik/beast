@@ -161,6 +161,15 @@ action_entry_free (ActionEntry *entry)
   g_free (entry);
 }
 
+static ActionEntry*
+action_entry_copy (const ActionEntry *source)
+{
+  ActionEntry *entry = g_memdup (source, sizeof (source[0]));
+  action_class_ref (entry->klass);
+  entry->widgets = NULL;
+  return entry;
+}
+
 GxkActionList*
 gxk_action_list_create (void)
 {
@@ -209,7 +218,9 @@ gxk_action_list_add_translated (GxkActionList          *alist,
 {
   ActionClass *klass = action_class_ref_new (acheck, aexec, user_data, alist->agroup, 0);
   GxkStockAction a = { 0, };
-  g_return_if_fail (key && name);
+  g_return_if_fail (name);
+  if (!key)
+    key = name;
   a.name = name;
   a.accelerator = accelerator;
   a.tooltip = tooltip;
@@ -260,9 +271,11 @@ GxkActionList*
 gxk_action_list_copy (GxkActionList *alist)
 {
   GxkActionList *al = gxk_action_list_create_grouped (alist->agroup);
+  guint i;
   al->n_entries = alist->n_entries;
   al->entries = g_renew (ActionEntry*, al->entries, al->n_entries);
-  memcpy (al->entries, alist->entries, sizeof (alist->entries[0]) * alist->n_entries);
+  for (i = 0; i < al->n_entries; i++)
+    al->entries[i] = action_entry_copy (alist->entries[i]);
   return al;
 }
 
@@ -296,9 +309,13 @@ widget_set_active (GxkActionGroup *agroup,
 {
   ActionEntry *e = g_object_get_qdata (widget, quark_action_entry);
   if (e)
-    gxk_widget_regulate (widget,
-                         GTK_WIDGET_SENSITIVE (widget), /* preserves sensitivity */
-                         agroup->action_id == e->action.action_id);
+    {
+      gxk_action_group_lock (agroup);
+      gxk_widget_regulate (widget,
+                           GTK_WIDGET_SENSITIVE (widget), /* preserves sensitivity */
+                           agroup->action_id == e->action.action_id);
+      gxk_action_group_unlock (agroup);
+    }
 }
 
 void
@@ -346,8 +363,12 @@ gxk_action_activate_callback (gconstpointer action_data)
           gboolean sensitive = FALSE;
           gboolean active = e->klass->agroup && e->klass->agroup->action_id == e->action.action_id;
           GSList *wnode;
+          if (e->klass->agroup)
+            gxk_action_group_lock (e->klass->agroup);
           for (wnode = e->widgets; wnode; wnode = wnode->next)
             gxk_widget_regulate (wnode->data, sensitive, active);
+          if (e->klass->agroup)
+            gxk_action_group_unlock (e->klass->agroup);
         }
     }
 }
@@ -514,8 +535,12 @@ window_action_update_timer (gpointer data)
                 continue;
               sensitive = !e->klass->acheck || e->klass->acheck (e->klass->user_data, e->action.action_id);
               active = e->klass->agroup && e->klass->agroup->action_id == e->action.action_id;
+              if (e->klass->agroup)
+                gxk_action_group_lock (e->klass->agroup);
               for (wnode = e->widgets; wnode; wnode = wnode->next)
                 gxk_widget_regulate (wnode->data, sensitive, active);
+              if (e->klass->agroup)
+                gxk_action_group_unlock (e->klass->agroup);
             }
         }
       free_widget_slist (upwards);
@@ -647,6 +672,22 @@ gxk_widget_publish_action_list (gpointer       widget,
 }
 
 void
+gxk_widget_publish_actions_grouped (gpointer                widget,
+                                    GxkActionGroup         *group,
+                                    const gchar            *prefix,
+                                    guint                   n_actions,
+                                    const GxkStockAction   *actions,
+                                    const gchar            *i18n_domain,
+                                    GxkActionCheck          acheck,
+                                    GxkActionExec           aexec)
+{
+  GxkActionList *alist = gxk_action_list_create_grouped (group);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  gxk_action_list_add_actions (alist, n_actions, actions, i18n_domain, acheck, aexec, widget);
+  gxk_widget_publish_action_list (widget, prefix, alist);
+}
+
+void
 gxk_widget_publish_actions (gpointer                widget,
                             const gchar            *prefix,
                             guint                   n_actions,
@@ -655,10 +696,43 @@ gxk_widget_publish_actions (gpointer                widget,
                             GxkActionCheck          acheck,
                             GxkActionExec           aexec)
 {
-  GxkActionList *alist = gxk_action_list_create ();
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  gxk_action_list_add_actions (alist, n_actions, actions, i18n_domain, acheck, aexec, widget);
+  gxk_widget_publish_actions_grouped (widget, NULL, prefix, n_actions, actions, i18n_domain, acheck, aexec);
+}
+
+void
+gxk_widget_publish_grouped_translated (gpointer                widget,
+                                       GxkActionGroup         *group,
+                                       const gchar            *prefix,
+                                       const gchar            *name,          /* translated (part of key) */
+                                       const gchar            *accelerator,
+                                       const gchar            *tooltip,       /* translated */
+                                       gulong                  action_id,
+                                       const gchar            *stock_icon,
+                                       GxkActionCheck          acheck,
+                                       GxkActionExec           aexec)
+{
+  GxkActionList *alist = gxk_action_list_create_grouped (group);
+  gchar *key = g_strconcat (prefix, "/", name, NULL);
+  gxk_action_list_add_translated (alist, g_intern_string (key), name,
+                                  accelerator, tooltip, action_id, stock_icon,
+                                  acheck, aexec, widget);
+  g_free (key);
   gxk_widget_publish_action_list (widget, prefix, alist);
+}
+
+void
+gxk_widget_publish_translated (gpointer                widget,
+                               const gchar            *prefix,
+                               const gchar            *name,          /* translated (part of key) */
+                               const gchar            *accelerator,
+                               const gchar            *tooltip,       /* translated */
+                               gulong                  action_id,
+                               const gchar            *stock_icon,
+                               GxkActionCheck          acheck,
+                               GxkActionExec           aexec)
+{
+  gxk_widget_publish_grouped_translated (widget, NULL, prefix, name, accelerator,
+                                         tooltip, action_id, stock_icon, acheck, aexec);
 }
 
 void
@@ -725,6 +799,14 @@ gxk_action_group_get_type (void)
 }
 
 GxkActionGroup*
+gxk_action_toggle_new (void)
+{
+  GxkActionGroup *group = gxk_action_group_new ();
+  group->invert_dups = TRUE;
+  return group;
+}
+
+GxkActionGroup*
 gxk_action_group_new (void)
 {
   return g_object_new (GXK_TYPE_ACTION_GROUP, NULL);
@@ -735,9 +817,12 @@ gxk_action_group_select (GxkActionGroup *self,
                          gulong          action_id)
 {
   g_return_if_fail (GXK_IS_ACTION_GROUP (self));
-  if (!self->lock_count && action_id != self->action_id)
+  if (!self->lock_count && (action_id != self->action_id || self->invert_dups))
     {
-      self->action_id = action_id;
+      if (action_id == self->action_id)
+        self->action_id = !self->action_id;
+      else
+        self->action_id = action_id;
       self->lock_count++;
       g_signal_emit (self, action_group_signal_changed, 0);
       self->lock_count--;

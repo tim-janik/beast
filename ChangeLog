@@ -1,3 +1,36 @@
+Sun Nov 16 21:49:39 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdefs.h: added T_() as a short hand for text translations.
+
+	* beast-gtk/bstsnetrouter.[hc]: moved to gadget GUI generation. publish
+	categories and tools as actions. use GxkActionGroup rather than
+	BstRadioTools. 
+
+	* beast-gtk/dialogs/gadgets-beast.xml: defined snet-view and snet-palette.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: added more standard widgets,
+	arrow, wrap boxes, simplyfied factory usage. extended widget patcher
+	facilities. added tool factory definitions.
+
+	* beast-gtk/gxk/gxkaction.[hc]: fix action-list copies. lock groups
+	when regulating widgets. added publishing convenience variants.
+	implemented gxk_action_toggle_new(), a special group that allows
+	only two values.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: added window-geometry
+	support to widget-patcher. added support for regular (non-selection)
+	menus to menu-button.
+
+	* beast-gtk/gxk/gxkgadget.[hc]: allow NULL areas for gxk_gadget_find_area().
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: added branching support for
+	menu paths via ::per-branch property.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_factory_path_get_leaf(),
+	gxk_idle_showraise() and suport functions for window-geometry.
+
+	* beast-gtk/gxk/glewidgets.c: ::wrapped property bug-fix.
+
 Sun Nov 16 18:03:48 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* configure.in: Added plugins/evaluator/Makefile.am.

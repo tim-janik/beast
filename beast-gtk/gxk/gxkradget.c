@@ -1427,7 +1427,7 @@ gxk_gadget_find_area (GxkGadget      *gadget,
                       const gchar    *area)
 {
   Node *node;
-  gadget = gxk_gadget_find (gadget, area);
+  gadget = area ? gxk_gadget_find (gadget, area) : gadget;
   if (!GTK_IS_WIDGET (gadget))
     return NULL;
   node = g_object_get_qdata (gadget, quark_gadget_node);

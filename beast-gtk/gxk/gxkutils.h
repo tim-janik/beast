@@ -65,6 +65,14 @@ GtkWidget*      gxk_widget_find_level_ordered      (GtkWidget       *toplevel,
                                                     const gchar     *name);
 GtkWidget*      gxk_widget_get_attach_toplevel     (GtkWidget       *widget);
 GtkAccelGroup*  gxk_window_get_menu_accel_group    (GtkWindow       *window);
+void            gxk_window_set_geometry_min_width  (GtkWindow       *window,
+                                                    guint            min_width);
+void            gxk_window_set_geometry_min_height (GtkWindow       *window,
+                                                    guint            min_height);
+void            gxk_window_set_geometry_width_inc  (GtkWindow       *window,
+                                                    guint            width_increment);
+void            gxk_window_set_geometry_height_inc (GtkWindow       *window,
+                                                    guint            height_increment);
 guint           gxk_container_get_insertion_slot   (GtkContainer    *container);
 void            gxk_container_slot_reorder_child   (GtkContainer    *container,
                                                     GtkWidget       *widget,
@@ -101,8 +109,9 @@ glong	g_object_get_long		(gpointer		 object,
 
 
 /* --- UTF8 helpers --- */
-gchar*	gxk_convert_latin1_to_utf8	(const gchar	*string);
-gchar*	gxk_filename_to_utf8		(const gchar	*string);
+gchar*	     gxk_convert_latin1_to_utf8	(const gchar	*string);
+gchar*	     gxk_filename_to_utf8	(const gchar	*string);
+const gchar* gxk_factory_path_get_leaf  (const gchar    *path);
 
 
 /* --- Gtk+ Utilities --- */
@@ -125,6 +134,7 @@ void	gxk_color_alloc			(GdkColormap		*colormap,
 void	gxk_widget_make_insensitive	(GtkWidget	*widget);
 void	gxk_widget_make_sensitive	(GtkWidget	*widget);
 void	gxk_widget_showraise		(GtkWidget	*widget);
+void	gxk_idle_showraise		(GtkWidget	*widget);
 void	gxk_idle_show_widget		(GtkWidget	*widget);
 void	gxk_idle_unrealize_widget	(GtkWidget	*widget);
 void    gxk_notebook_add_page		(GtkNotebook	*notebook,

@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxkutils.h"
+#include "glewidgets.h"
 #include "gxkauxwidgets.h"
 #include "gxkcellrendererpopup.h"
 #include <string.h>
@@ -215,6 +216,22 @@ gxk_filename_to_utf8 (const gchar *filename)
   return NULL;
 }
 
+const gchar*
+gxk_factory_path_get_leaf (const gchar *path)
+{
+  const gchar *last = NULL, *p = path;
+  while (*p)
+    {
+      if (*p == '\\' && p[1])
+        p += 1;
+      else if (*p == '/')
+        last = p + 1;
+      p++;
+    }
+  return last ? last : path;
+}
+
+
 /* --- Gtk+ Utilities --- */
 /**
  * gxk_widget_viewable_changed
@@ -385,6 +402,49 @@ gxk_widget_make_sensitive (GtkWidget *widget)
 
   if (!GTK_WIDGET_IS_SENSITIVE (widget))
     gtk_widget_set_sensitive (widget, TRUE);
+}
+
+static gboolean
+idle_showraiser (gpointer data)
+{
+  GtkWidget **widget_p = data;
+  GDK_THREADS_ENTER ();
+  if (GTK_IS_WIDGET (*widget_p))
+    {
+      GtkWidget *widget = *widget_p;
+      gtk_signal_disconnect_by_func (GTK_OBJECT (widget),
+				     GTK_SIGNAL_FUNC (gtk_widget_destroyed),
+				     widget_p);
+      gtk_widget_show (widget);
+      if (GTK_WIDGET_REALIZED (widget) && !widget->parent)
+        gdk_window_raise (widget->window);
+    }
+  g_free (widget_p);
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+/**
+ * gxk_idle_showraise
+ * @widget: a valid #GtkWidget
+ *
+ * Defers showing and raising this widget like gxk_widget_showraise()
+ * until the next idle handler is run. This is usefull if other things
+ * are pending which need to be processed first, for instance hiding
+ * other toplevels or constructing remaining parts of the widget hierarchy.
+ */
+void
+gxk_idle_showraise (GtkWidget *widget)
+{
+  GtkWidget **widget_p;
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  widget_p = g_new (GtkWidget*, 1);
+
+  *widget_p = widget;
+  g_object_connect (widget, "signal::destroy", gtk_widget_destroyed, widget_p, NULL);
+  gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, idle_showraiser, widget_p);
 }
 
 static gint
@@ -2173,6 +2233,68 @@ gxk_window_get_menu_accel_group (GtkWindow *window)
   return agroup;
 }
 
+static GdkGeometry*
+window_get_geometry (GtkWindow *window)
+{
+  GdkGeometry *geometry = g_object_get_data (window, "gxk-GdkGeometry");
+  if (!geometry)
+    {
+      geometry = g_new0 (GdkGeometry, 1);
+      geometry->width_inc = 1;
+      geometry->height_inc = 1;
+      g_object_set_data_full (window, "gxk-GdkGeometry", geometry, g_free);
+    }
+  return geometry;
+}
+
+void
+gxk_window_set_geometry_min_width (GtkWindow       *window,
+                                   guint            min_width)
+{
+  GdkGeometry *geometry = window_get_geometry (window);
+  if (geometry->min_width != min_width)
+    {
+      geometry->min_width = min_width;
+      gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
+    }
+}
+
+void
+gxk_window_set_geometry_min_height (GtkWindow       *window,
+                                    guint            min_height)
+{
+  GdkGeometry *geometry = window_get_geometry (window);
+  if (geometry->min_height != min_height)
+    {
+      geometry->min_height = min_height;
+      gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
+    }
+}
+
+void
+gxk_window_set_geometry_width_inc (GtkWindow       *window,
+                                   guint            width_increment)
+{
+  GdkGeometry *geometry = window_get_geometry (window);
+  if (geometry->width_inc != width_increment)
+    {
+      geometry->width_inc = width_increment;
+      gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
+    }
+}
+
+void
+gxk_window_set_geometry_height_inc (GtkWindow       *window,
+                                    guint            height_increment)
+{
+  GdkGeometry *geometry = window_get_geometry (window);
+  if (geometry->height_inc != height_increment)
+    {
+      geometry->height_inc = height_increment;
+      gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
+    }
+}
+
 guint
 gxk_container_get_insertion_slot (GtkContainer *container)
 {
@@ -2207,6 +2329,8 @@ gxk_container_slot_reorder_child (GtkContainer    *container,
         gtk_menu_reorder_child ((GtkMenu*) container, widget, slots[sloti]);
       else if (GTK_IS_BOX (container))
         gtk_box_reorder_child ((GtkBox*) container, widget, slots[sloti]);
+      else if (GTK_IS_WRAP_BOX (container))
+        gtk_wrap_box_reorder_child ((GtkWrapBox*) container, widget, slots[sloti]);
       else
         return;
       for (i = sloti; i <= n_slots; i++)
