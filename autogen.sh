@@ -29,12 +29,12 @@ test $TEST_TYPE $FILE || {
 }
 
 # check for automake
-if $AUTOMAKE --version 2>/dev/null | grep -q " $AUTOMAKE_VERSION\b" ; then
+if $AUTOMAKE --version 2>/dev/null | grep >/dev/null " $AUTOMAKE_VERSION\b" ; then
 	:	# all fine
-elif $AUTOMAKE$AUTOMAKE_VERSION --version 2>/dev/null | grep -q " $AUTOMAKE_VERSION\b" ; then
+elif $AUTOMAKE$AUTOMAKE_VERSION --version 2>/dev/null | grep >/dev/null " $AUTOMAKE_VERSION\b" ; then
 	AUTOMAKE=$AUTOMAKE$AUTOMAKE_VERSION
 	ACLOCAL=$ACLOCAL$AUTOMAKE_VERSION
-elif $AUTOMAKE-$AUTOMAKE_VERSION --version 2>/dev/null | grep -q " $AUTOMAKE_VERSION\b" ; then
+elif $AUTOMAKE-$AUTOMAKE_VERSION --version 2>/dev/null | grep >/dev/null " $AUTOMAKE_VERSION\b" ; then
 	AUTOMAKE=$AUTOMAKE-$AUTOMAKE_VERSION
 	ACLOCAL=$ACLOCAL-$AUTOMAKE_VERSION
 else
@@ -46,12 +46,12 @@ else
 fi
 
 # check for autoconf
-if $AUTOCONF --version 2>/dev/null | grep -q " $AUTOCONF_VERSION\b" ; then
+if $AUTOCONF --version 2>/dev/null | grep >/dev/null " $AUTOCONF_VERSION\b" ; then
 	:	# all fine
-elif $AUTOCONF$AUTOCONF_VERSION --version 2>/dev/null | grep -q "GNU Autoconf\b" ; then
+elif $AUTOCONF$AUTOCONF_VERSION --version 2>/dev/null | grep >/dev/null "GNU Autoconf\b" ; then
 	AUTOCONF=$AUTOCONF$AUTOCONF_VERSION
 	AUTOHEADER=$AUTOHEADER$AUTOCONF_VERSION
-elif $AUTOCONF-$AUTOCONF_VERSION --version 2>/dev/null | grep -q "GNU Autoconf\b" ; then
+elif $AUTOCONF-$AUTOCONF_VERSION --version 2>/dev/null | grep >/dev/null "GNU Autoconf\b" ; then
 	AUTOCONF=$AUTOCONF-$AUTOCONF_VERSION
 	AUTOHEADER=$AUTOHEADER-$AUTOCONF_VERSION
 else
