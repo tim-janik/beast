@@ -27,6 +27,12 @@
 #include <gxk/gxkutils.h>
 
 
+/* --- prototypes --- */
+static gboolean draw_grow_sign   (GtkWidget *widget, GdkEventExpose *event, BstGrowBar *self);
+static gboolean draw_shrink_sign (GtkWidget *widget, GdkEventExpose *event, BstGrowBar *self);
+static void     grow_range       (GtkWidget *widget, BstGrowBar *self);
+static void     shrink_range     (GtkWidget *widget, BstGrowBar *self);
+
 /* --- BstGrowBar --- */
 G_DEFINE_DATA_TYPE (BstGrowBar, bst_grow_bar, GTK_TYPE_ALIGNMENT);
 
@@ -34,10 +40,6 @@ static void
 bst_grow_bar_init (BstGrowBar      *self,
                    BstGrowBarClass *class)
 {
-  static gboolean draw_grow_sign   (GtkWidget *widget, GdkEventExpose *event, BstGrowBar *self);
-  static gboolean draw_shrink_sign (GtkWidget *widget, GdkEventExpose *event, BstGrowBar *self);
-  static void     grow_range       (GtkWidget *widget, BstGrowBar *self);
-  static void     shrink_range     (GtkWidget *widget, BstGrowBar *self);
   g_object_set (self,
                 "visible", 1,
                 "xscale", 1.0,
