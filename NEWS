@@ -1,3 +1,12 @@
+Overview of Changes in BEAST/BSE 0.5.5:
+
+* Implemented ability to use sequencer as modulation source
+* Added monophonic MIDI keyboard module
+* Added support for external MIDI events in song tracks
+* Added prototype support to IDL compiler [Stefan Westerfeld]
+* Work around PTH poll() bug on NetBSD [Ben Collver, Tim Janik]
+* Lots of small MIDI handling fixes
+
 Overview of Changes in BEAST/BSE 0.5.4:
 
 * Ported and improved synthesis module from David A. Bartold:
