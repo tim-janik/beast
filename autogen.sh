@@ -85,7 +85,7 @@ $AUTOMAKE --add-missing $am_opt
 autoconf
 cd $ORIGDIR
 
-if $srcdir/configure "$@"; then
+if $srcdir/configure --enable-devel-rules=yes "$@"; then
 	echo 
 	echo "Now type 'make' to compile $PROJECT."
 else

@@ -9,7 +9,7 @@
 
 @docfont{tech}
 
-@unnumbered RELEASE-NOTES
+@unnumbered @center RELEASE-NOTES
 
 Much has changed in the new development series (v0.4) of BEAST.
 In brief (specifics can be found in the

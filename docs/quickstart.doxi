@@ -8,6 +8,8 @@
 
 @doctitle @beastbse Quick Start Guide
 @docauthor Tim Janik
+
+@node Top,,,
 @center @revision{Document revised:}
 
 This guide attempts to give a few brief hints for new users,
@@ -16,6 +18,12 @@ accomplished with @beast{}.
 
 @contents
 
+@menu
+* First Start::
+* Setting Up Songs::
+@end menu
+
+@node First Start, Setting Up Songs, Top, Top
 @chapter First Start At Synthesis
 
 The most basic task @beast is able to accomplish is the creation
@@ -24,6 +32,13 @@ producers, called "Modules". Forming a network of multiple modules
 to create a new sound is most generally being refered to
 as "Synthesis".
 
+@menu
+* Creating A Network::
+* Creating Modules::
+* Playback::
+@end menu
+
+@node Creating A Network, Creating Modules,, First Start
 @section Creating A Synthesizer Network
 @enumerate
 @item Select @menupath{/Project/New Synthesizer Network} from the menu to
@@ -34,6 +49,7 @@ as "Synthesis".
 @item Select the @pagepath{Routing} notebook page.
 @end enumerate
 
+@node Creating Modules, Playback, Creating A Network, First Start
 @section Creating And Connecting Synthesis Modules
 The synthesis network router editor allowes for creation of
 synthesis modules, establishing connections between module
@@ -51,11 +67,13 @@ Here's how to setup a very simple test case:
 	@channel{Right Audio In} of the output module.
 @end enumerate
 
+@node Playback,, Creating Modules, First Start
 @section Starting And Stopping Playback
 Playback of a @beast project can be started or
 restarted by selecting the menu item @menupath{/Project/Play}.
 Similarly, playback is halted by selecting @menupath{/Project/Stop}.
 
+@node Setting Up Songs,, First Start, Top
 @chapter Setting Up Songs
 
 To be able to playback songs with @beast{}, synthesis instruments have to
@@ -63,6 +81,13 @@ be created which are used to playback the notes contained in the parts
 of a song. Songs are created through the menu by selecting
 @menupath{/Project/New Song}.
 
+@menu
+* What Is An Instrument::
+* Creating An Instrument::
+* Parts And Tracks::
+@end menu
+
+@node What Is An Instrument, Creating An Instrument,, Setting Up Songs
 @section What Is A Synthesis Instrument?
 A synthesis instrument is a special kind of synthesizer network,
 it has particular properties:
@@ -78,6 +103,7 @@ it has particular properties:
 	instruments being used.
 @end itemize
 
+@node Creating An Instrument, Parts And Tracks, What Is An Instrument, Setting Up Songs
 @section Creating A Synthesis Instrument
 Here is how to create a simple synthesis instrument with one oscillator
 producing the basic tone, an envelope to control a note's volume, and
@@ -130,6 +156,7 @@ used or tested directly, but has to be deployed in a song or @object{MidiSynth}
 (offered by the main menu under @menupath{/Project/New MIDI Synthesizer}) which
 leads us to the next Topic.
 
+@node Parts And Tracks,, Creating An Instrument, Setting Up Songs
 @section Setting Up Parts And Tracks
 Songs basically consist of notes kept in @object{Part}s which are arranged in
 @object{Track}s. The tracks control the order in which parts are played and

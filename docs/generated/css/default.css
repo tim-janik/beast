@@ -64,40 +64,39 @@
 /* {{{ real content layout */
 #content {
   font-size: 90%;
-  max-width: 76em;
-  right: 1em;
+  /* Disabled in favor of CSS1 */
+  /* max-width: 76em; */
+  padding-right: 1em;
 }
 
-#content[class~="with_banner_nav"] {
+#content.with_banner_nav {
   position: absolute;
-  margin-left: 0;
+  margin-top: 148px;
+  margin-left: 230px;
   padding-left: 1em;
   padding-right: 1em;
-  top: 148px;
-  left: 230px;
   z-index: 4;
 }
 
-#content[class~="with_banner_nonav"] {
+#content.with_banner_nonav {
   position: absolute;
   margin-left: 1em;
-  top: 148px;
+  margin-top: 148px;
   z-index: 4;
 }
 
-#content[class~="with_nobanner_nav"] {
+#content.with_nobanner_nav {
   position: absolute;
-  margin: 0;
+  margin-left: 230px;
+  margin-top: 76px;
   padding-right: 1.5em;
-  padding-top: 76px;
-  left: 230px;
   background-image: url(images/horizontal-dots.png);
   background-position: 0 56px;
   background-repeat: repeat-x;
   z-index: 4;
 }
 
-#content[class~="with_nobanner_nonav"] {
+#content.with_nobanner_nonav {
   margin: 1em;
   padding-top: 76px;
   background-image: url(images/horizontal-dots.png);
@@ -114,12 +113,12 @@
   width: 200px;
   font-size: 85%;
   float: left;
-  top: 148px;
+  margin: 0;
+  margin-top: 148px;
   /* bottom: 10px; */
   padding: 0;
   padding-left: 6px;
   padding-right: 1em;
-  margin: 0;
   list-style-type: none;
   background-image: url(images/vertical-dots.png);
   background-position: top right;
@@ -129,12 +128,12 @@
   z-index: 5;
 }
 
-#navigation[class~="with_nobanner"] {
+#navigation.with_nobanner {
   top: 10px;
   padding-top: 56px;
 }
 
-#navigation span[class~="subtree"] {
+#navigation span.subtree {
   display: block;
   list-style-type: none;
   padding: 0;
@@ -155,7 +154,7 @@
 /*  background-color: #b0b0de; */
 }
 
-#navigation a[class~="closed_tree"] {
+#navigation a.closed_tree {
   display: block;
   font-weight: bold;
   background-image: url(images/triangle-right-blue.png);
@@ -163,11 +162,11 @@
   background-repeat: no-repeat;
 }
 
-#navigation a[class~="closed_tree"]:hover {
+#navigation a.closed_tree:hover {
   background-image: url(images/gradient-with-triangle.png);
 }
 
-#navigation a[class~="open_tree"] {
+#navigation a.open_tree {
   display: block;
   font-weight: bold;
   background-image: url(images/triangle-down-blue.png);
@@ -175,7 +174,7 @@
   background-repeat: no-repeat;
 }
 
-#navigation a[class~="open_tree"]:hover {
+#navigation a.open_tree:hover {
   background-image: url(images/gradient-with-triangle.png);
 }
 
@@ -185,7 +184,7 @@
   padding-left: 14px;
 }
 
-#navigation span[class~="nolink-tree"] {
+#navigation span.nolink-tree {
   font-weight: bold;
   color: #aaa;
   background-image: url(images/triangle-down-gray.png);
@@ -193,12 +192,12 @@
   background-repeat: no-repeat;
 }
 
-#navigation span[class~="nolink"] {
+#navigation span.nolink {
   font-weight: bold;
   color: #aaa;
 }
 
-#navigation span[class~="current"] {
+#navigation span.current {
   display: block;
   /* padding-left: 2em; */
   font-weight: bold;
@@ -209,7 +208,7 @@
   background-color: #cfcfeb;
 }
 
-#navigation span[class~="current-tree"] {
+#navigation span.current-tree {
   font-weight: bold;
   color: #535353;
   background-image: url(images/gradient-light-with-triangle.png);
@@ -218,11 +217,11 @@
   background-color: #cfcfeb;
 }
 
-#navigation [class~="hidden"] {
+#navigation .hidden {
   display: none;
 }
 
-a[class~="homelink"] {
+a.homelink {
   display: block;
   min-height: 19px;
   margin-bottom: 1em;
@@ -240,7 +239,7 @@ a[class~="homelink"] {
   color: black;
 }
 
-a[class~="homelink"]:hover {
+a.homelink:hover {
   background-color: #8383cc;
   color: white;
 }
@@ -265,13 +264,13 @@ h1 {
   font-weight: normal;
 }
 
-h1[class~="banner"] {
+h1.banner {
   margin: 0;
   font-size: 140%;
   font-weight: normal;
 }
 
-div[class~="banner"] {
+div.banner {
   letter-spacing: 0.4em;
   background-image: url(images/arrow-right.png);
   background-position: center left;
@@ -319,14 +318,14 @@ ul, ol {
   padding-top: 0;
 }
 
-h1[class~="document_title"] {
+h1.document_title {
   font-size: 160%;
   color: #005a9c;
   background-color: inherit;
   text-align: center;
 }
 
-div[class~="document_author"] {
+div.document_author {
   font-size: 140%;
   margin-bottom: 1em;
   text-align: center;
@@ -339,54 +338,57 @@ thead td {
   padding-left: 4px;
 }
 
-div[class~="index"] {
+div.index {
 }
 
-span[class~="toc_chapter"] {
+span.toc_chapter {
 }
 
-span[class~="toc_section"] {
+span.toc_section {
+  padding-left: 2em;
 }
 
-span[class~="toc_subsection"] {
+span.toc_subsection {
+  padding-left: 4em;
 }
 
-span[class~="toc_subsubsection"] {
+span.toc_subsubsection {
+  padding-left: 6em;
 }
 
-code[class~="code"] {
+code.code {
 }
 
-code[class~="url"] {
+code.url {
 }
 
-code[class~="email"] {
+code.email {
 }
 
-code[class~="key"] {
+code.key {
 }
 
-code[class~="env"] {
+code.env {
 }
 
-code[class~="file"] {
+code.file {
   font-weight: bold;
 }
 
 /* A bit more colorful file names in ChangeLogs */
-code[class~="logentry"] {
+code.logentry {
   color: #b08000;
   background-color: inherit;
   font-weight: bold;
 }
 
-code[class~="command"] {
+code.command {
 }
 
-code[class~="option"] {
+code.option {
 }
 
-code[class~="menupath"] {
+code.menupath {
   font-weight: bold;
   /* FIXME italic monospace fonts look so ugly! :\ */
   /* font-style: italic; */
@@ -394,18 +396,18 @@ code[class~="menupath"] {
   color: inherit;
 }
 
-code[class~="pagepath"] {
+code.pagepath {
   font-weight: bold;
   background-color: #f0f0f0;
   color: inherit;
 }
 
-code[class~="object"] {
+code.object {
   /* FIXME italic monospace fonts look so ugly! :\ */
   /* font-style: italic; */
 }
 
-code[class~="channel"] {
+code.channel {
   /* FIXME italic monospace fonts look so ugly! :\ */
   /* font-style: italic; */
 }
@@ -414,7 +416,7 @@ acronym {
   text-transform: uppercase;
 }
 
-strong[class~="important"] {
+strong.important {
   color: #df5fdf;
   font-weight: bold;
   text-decoration: underline;
@@ -422,7 +424,7 @@ strong[class~="important"] {
 }
 
 /* {{{ api reference  */
-code[class~="reference-function"] {
+code.reference-function {
   color: #5555cc;
   background-color: inherit;
   font-weight: bold;
@@ -430,7 +432,7 @@ code[class~="reference-function"] {
   font-family: sans-serif;
 }
 
-code[class~="reference-parameter"] {
+code.reference-parameter {
   color: #555555;
   background-color: inherit;
   font-weight: normal;
@@ -438,13 +440,13 @@ code[class~="reference-parameter"] {
   font-family: sans-serif;
 }
 
-code[class~="reference-constant"] {
+code.reference-constant {
   color: #00b0b0;
   background-color: inherit;
   font-family: sans-serif;
 }
 
-code[class~="reference-returns"] {
+code.reference-returns {
   color: #00c000;
   background-color: inherit;
   margin-left: -1em;
@@ -452,7 +454,7 @@ code[class~="reference-returns"] {
   font-family: sans-serif;
 }
 
-code[class~="reference-type"] {
+code.reference-type {
   color: #00c000;
   background-color: inherit;
   font-weight: normal;
@@ -460,13 +462,13 @@ code[class~="reference-type"] {
   font-family: sans-serif;
 }
 
-code[class~="reference-blurb"] {
+code.reference-blurb {
   background-color: inherit;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
 }
 
-code[class~="reference-struct-type"] {
+code.reference-struct-type {
   color: #682407;
   background-color: inherit;
   /* FIXME This is here because monospace looks ugly :\ */
@@ -474,7 +476,7 @@ code[class~="reference-struct-type"] {
   font-weight: normal;
 }
 
-code[class~="reference-struct-name"] {
+code.reference-struct-name {
   color: #00c000;
   background-color: inherit;
   /* FIXME This is here because monospace looks ugly :\ */
@@ -482,13 +484,13 @@ code[class~="reference-struct-name"] {
   font-weight: normal;
 }
 
-code[class~="reference-struct"] {
+code.reference-struct {
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
   font-weight: normal;
 }
 
-code[class~="reference-struct-close"] {
+code.reference-struct-close {
   margin-left: -2em;
   /* FIXME This is here because monospace looks ugly :\ */
   font-family: sans-serif;
@@ -502,76 +504,76 @@ blockquote {
   text-indent: 2em;
 }
 
-div[class~="indented-block"] {
+div.indented-block {
   margin-top: -1em;
   margin-left: 4em;
 }
 
-pre[class~="example"] {
+pre.example {
 }
 
-pre[class~="smallexample"] {
+pre.smallexample {
   font-size: 90%;
 }
 
-pre[class~="lisp"] {
+pre.lisp {
   color: #000040;
   background-color: inherit;
 }
 
-pre[class~="smalllisp"] {
+pre.smalllisp {
   color: #000040;
   background-color: inherit;
   font-size: 90%;
 }
 
-pre[class~="display"] {
+pre.display {
   font-family: inherit;
 }
 
-pre[class~="smalldisplay"] {
+pre.smalldisplay {
   font-family: inherit;
   font-size: 90%;
 }
 
-pre[class~="format"] {
+pre.format {
   font-family: inherit;
 }
 
-pre[class~="smallformat"] {
+pre.smallformat {
   font-family: inherit;
   font-size: 90%;
 }
 /* }}} */
 
-div[class~="toc"] {
+div.toc {
 }
 
-div[class~="chapter"] {
+div.chapter {
 }
 
-div[class~="unnumbered"] {
+div.unnumbered {
 }
 
-div[class~="appendix"] {
+div.appendix {
 }
 
-div[class~="chapheading"] {
+div.chapheading {
 }
 
-div[class~="center"] {
+div.center {
   text-align: center;
 }
 
-table[class~="multitable"] {
+table.multitable {
 }
 
-table[class~="indented"] {
+table.indented {
   margin-left: 2em;
 }
 
 /* {{{ news items */
-span[class~="news-date"] {
+span.news-date {
   display: block;
   border: none;
   border-top: 1px dashed #dadada;
@@ -584,7 +586,7 @@ span[class~="news-date"] {
   background-position: center left;
 }
 
-span[class~="news-heading"] {
+span.news-heading {
   font-weight: bold;
   color: #4d4daa;
   background-color: inherit;
@@ -592,11 +594,11 @@ span[class~="news-heading"] {
 /* }}} */
 
 /* {{{ image gallery */
-div[class~="gallery_info"] {
+div.gallery_info {
   margin-bottom: 1em;
 }
 
-div[class~="paginate"] {
+div.paginate {
   font-size: 75%;
   background-color: #f6f6f6;
   color: inherit;
@@ -605,47 +607,47 @@ div[class~="paginate"] {
   text-align: center;
 }
 
-table[class~="images"] {
+table.images {
   width: 80%;
 }
 
-table[class~="images"] td {
+table.images td {
   background-color: #f6f6f6;
   color: inherit;
   padding: 1em;
 }
 
-img[class~="gallery-zoom"] {
+img.gallery-zoom {
   margin-top: 1em;
   margin-bottom: 1em;
 }
 
-span[class~="paginate"] {
+span.paginate {
 }
 
-span[class~="paginate-disabled"] {
+span.paginate-disabled {
   font-weight: bold;
   color: #a0a0a0;
   background-color: inherit;
 }
 
-span[class~="paginate-title"] {
+span.paginate-title {
   font-weight: bold;
   color: #4d4daa;
   background-color: inherit;
 }
 
-span[class~="image_info"] {
+span.image_info {
   font-size: 80%;
   color: #666666;
   background-color: inherit;
 }
 
-span[class~="image_text"] {
+span.image_text {
   font-size: 90%;
 }
 
-a[class~="image-link"]:hover {
+a.image-link:hover {
   text-decoration: none;
 }
 /* }}} */

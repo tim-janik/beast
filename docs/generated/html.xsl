@@ -16,6 +16,8 @@
   <meta http-equiv="Default-Style" content="Default"/>
   <style type="text/css" media="all">
     body { background-color: White; color: Black; <xsl:call-template name="document-font"/> }
+    <!-- This is here because 'inherit' is not a valid CSS1 value -->
+    span.default { <xsl:call-template name="document-font"/> }
   </style>
   <style type="text/css" media="all" title="Default">
     @import 'css/default.css';
@@ -72,11 +74,10 @@
 <xsl:template name="document-font">
   <xsl:variable name="font" select="string(/texinfo/para/document-font)"/>
   <xsl:choose>
-    <xsl:when test="$font=''"/>
     <xsl:when test="$font='tech' or $font='techstyle' or $font='sans' or $font='sans-serif'">
       <xsl:text>font-family: sans-serif;</xsl:text>
     </xsl:when>
-    <xsl:when test="$font='story' or $font='storystyle' or $font='serif'">
+    <xsl:when test="$font='' or $font='story' or $font='storystyle' or $font='serif'">
       <xsl:text>font-family: serif;</xsl:text>
     </xsl:when>
     <xsl:otherwise>
@@ -140,22 +141,38 @@
 
 <!-- {{{ table of contents related stuff -->
 <xsl:template name="node_number">
-  <xsl:text>node-</xsl:text><xsl:number level="multiple" count="chapter|section|subsection|subsubsection|appendix|appendixsec|appendixsubsec|appendixsubsubsec|unnumbered|unnumberedsec|unnumberedsubsec|unnumberedsubsubsec" format="1-1-1-1"/>
+  <xsl:text>node-</xsl:text>
+  <xsl:number level="any" count="chapter|appendix|unnumbered" />
+  <xsl:text>-</xsl:text>
+  <xsl:number level="any" count="section|appendixsec|unnumberedsec" from="chapter|appendix|unnumbered" />
+  <xsl:text>-</xsl:text>
+  <xsl:number level="any" count="subsection|appendixsubsec|unnumberedsubsec" from="section|appendixsec|unnumberedsec" />
+  <xsl:text>-</xsl:text>
+  <xsl:number level="any" count="subsubsection|appendixsubsubsec|unnumberedsubsubsec" from="subsection|appendixsubsec|unnumberedsubsec" />
 </xsl:template>
 
 <!-- Alper: fix this template by removing para tags when makeinfo is fixed -->
 <xsl:template match="para/table-of-contents">
   <div class="toc">
-    <xsl:for-each select="/texinfo/chapter|/texinfo/unnumbered|/texinfo/appendix">
+    <xsl:for-each select="//chapter|//section|//subsection|//subsubsection|//appendix|//appendixsec|//appendixsubsec|//appendixsubsubsec|//unnumbered|//unnumberedsec|//unnumberedsubsec|//unnumberedsubsubsec">
+      <!-- easy access to local-name() -->
+      <xsl:variable name="n" select="local-name()" />
       <xsl:choose>
-	<xsl:when test="local-name() = 'chapter'">
+        <!-- chapter/appendix/unnumbered -->
+	<xsl:when test="$n='chapter' or $n='appendix' or $n='unnumbered'">
 	  <xsl:call-template name="toc_chapter"/>
 	</xsl:when>
-	<xsl:when test="local-name() = 'unnumbered'">
-	  <xsl:call-template name="toc_unnumbered"/>
+        <!-- section/appendixsec/unnumberedsec -->
+	<xsl:when test="$n='section' or $n='appendixsec' or $n='unnumberedsec'">
+	  <xsl:call-template name="toc_section"/>
 	</xsl:when>
-	<xsl:when test="local-name() = 'appendix'">
-	  <xsl:call-template name="toc_appendix"/>
+        <!-- subsection/appendixsubsec/unnumberedsubsec -->
+	<xsl:when test="$n='subsection' or $n='appendixsubsec' or $n='unnumberedsubsec'">
+	  <xsl:call-template name="toc_subsection"/>
+	</xsl:when>
+        <!-- subsubsection/appendixsubsubsec/unnumberedsubsubsec -->
+	<xsl:when test="$n='subsubsection' or $n='appendixsubsubsec' or $n='unnumberedsubsubsec'">
+	  <xsl:call-template name="toc_subsubsection"/>
 	</xsl:when>
       </xsl:choose>
     </xsl:for-each>
@@ -179,13 +196,6 @@
       <xsl:with-param name="toc" select="1"/>
     </xsl:apply-templates>
   </a><br/>
-  <xsl:if test="count(./section) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./section">
-	<xsl:call-template name="toc_section"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
 </xsl:template>
 
 <xsl:template name="toc_section">
@@ -197,13 +207,6 @@
       <xsl:with-param name="toc" select="1"/>
     </xsl:apply-templates>
   </a><br/>
-  <xsl:if test="count(./subsection) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./subsection">
-	<xsl:call-template name="toc_subsection"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
 </xsl:template>
 
 <xsl:template name="toc_subsection">
@@ -215,13 +218,6 @@
       <xsl:with-param name="toc" select="1"/>
     </xsl:apply-templates>
   </a><br/>
-  <xsl:if test="count(./subsubsection) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./subsubsection">
-	<xsl:call-template name="toc_subsubsection"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
 </xsl:template>
 
 <xsl:template name="toc_subsubsection">
@@ -235,135 +231,6 @@
   </a><br/>
 </xsl:template>
 
-<xsl:template name="toc_appendix">
-  <a>
-    <xsl:attribute name="href">
-      <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="title">
-      <xsl:with-param name="toc" select="1"/>
-    </xsl:apply-templates>
-  </a><br/>
-  <xsl:if test="count(./appendixsec) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./appendixsec">
-	<xsl:call-template name="toc_appendixsec"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
-</xsl:template>
-
-<xsl:template name="toc_appendixsec">
-  <a>
-    <xsl:attribute name="href">
-      <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="title">
-      <xsl:with-param name="toc" select="1"/>
-    </xsl:apply-templates>
-  </a><br/>
-  <xsl:if test="count(./appendixsubsec) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./appendixsubsec">
-	<xsl:call-template name="toc_appendixsubsec"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
-</xsl:template>
-
-<xsl:template name="toc_appendixsubsec">
-  <a>
-    <xsl:attribute name="href">
-      <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="title">
-      <xsl:with-param name="toc" select="1"/>
-    </xsl:apply-templates>
-  </a><br/>
-  <xsl:if test="count(./appendixsubsubsec) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./appendixsubsubsec">
-	<xsl:call-template name="toc_appendixsubsubsec"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
-</xsl:template>
-
-<xsl:template name="toc_appendixsubsubsec">
-  <a>
-    <xsl:attribute name="href">
-      <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="title">
-      <xsl:with-param name="toc" select="1"/>
-    </xsl:apply-templates>
-  </a><br/>
-</xsl:template>
-
-<xsl:template name="toc_unnumbered">
-  <a>
-    <xsl:attribute name="href">
-      <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="title">
-      <xsl:with-param name="toc" select="1"/>
-    </xsl:apply-templates>
-  </a><br/>
-  <xsl:if test="count(./unnumberedsec) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./unnumberedsec">
-	<xsl:call-template name="toc_unnumberedsec"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
-</xsl:template>
-
-<xsl:template name="toc_unnumberedsec">
-  <a>
-    <xsl:attribute name="href">
-      <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="title">
-      <xsl:with-param name="toc" select="1"/>
-    </xsl:apply-templates>
-  </a><br/>
-  <xsl:if test="count(./unnumberedsubsec) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./unnumberedsubsec">
-	<xsl:call-template name="toc_unnumberedsubsec"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
-</xsl:template>
-
-<xsl:template name="toc_unnumberedsubsec">
-  <a>
-    <xsl:attribute name="href">
-      <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="title">
-      <xsl:with-param name="toc" select="1"/>
-    </xsl:apply-templates>
-  </a><br/>
-  <xsl:if test="count(./unnumberedsubsubsec) > 0">
-    <div style="padding-left: 1em;">
-      <xsl:for-each select="./unnumberedsubsubsec">
-	<xsl:call-template name="toc_unnumberedsubsubsec"/>
-      </xsl:for-each>
-    </div>
-  </xsl:if>
-</xsl:template>
-
-<xsl:template name="toc_unnumberedsubsubsec">
-  <a>
-    <xsl:attribute name="href">
-      <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-    </xsl:attribute>
-    <xsl:apply-templates select="title">
-      <xsl:with-param name="toc" select="1"/>
-    </xsl:apply-templates>
-  </a><br/>
-</xsl:template>
 <!-- }}} -->
 
 <!-- {{{ navigation -->
@@ -391,9 +258,59 @@
 </xsl:template>
 <!-- }}} -->
 
+  <!-- {{{ section numbering -->
+  <xsl:template name="title_chapter_number">
+    <xsl:number level="any" count="chapter"/>
+  </xsl:template>
+
+  <xsl:template name="title_section_number">
+    <xsl:call-template name="title_chapter_number"/>
+    <xsl:text>.</xsl:text>
+    <xsl:number level="any" count="section" from="chapter"/>
+  </xsl:template>
+
+  <xsl:template name="title_subsection_number">
+    <xsl:call-template name="title_section_number"/>
+    <xsl:text>.</xsl:text>
+    <xsl:number level="any" count="subsection" from="section"/>
+  </xsl:template>
+
+  <xsl:template name="title_subsubsection_number">
+    <xsl:call-template name="title_subsection_number"/>
+    <xsl:text>.</xsl:text>
+    <xsl:number level="any" count="subsubsection" from="subsection"/>
+  </xsl:template>
+
+  <xsl:template name="title_appendix_number">
+    <xsl:text>Appendix </xsl:text><xsl:number level="any" count="appendix" format="A"/>
+  </xsl:template>
+
+  <xsl:template name="title_appendixsec_number">
+    <!-- don't call title_appendix_number, because it also prepends Appendix
+	 to title -->
+    <xsl:number level="any" count="appendix" format="A"/>
+    <xsl:text>.</xsl:text>
+    <xsl:number level="any" count="appendixsec" from="appendix"/>
+  </xsl:template>
+
+  <xsl:template name="title_appendixsubsec_number">
+    <xsl:call-template name="title_appendixsec_number"/>
+    <xsl:text>.</xsl:text>
+    <xsl:number level="any" count="appendixsubsec" from="appendixsec"/>
+  </xsl:template>
+
+  <xsl:template name="title_appendixsubsubsec_number">
+    <xsl:call-template name="title_appendixsubsec_number"/>
+    <xsl:text>.</xsl:text>
+    <xsl:number level="any" count="appendixsubsubsec" from="appendixsubsec"/>
+  </xsl:template>
+
+  <!-- }}} -->
+
 <!-- {{{ highest level titles, ie. chapter, unnumbered, etc. -->
 <xsl:template name="big_title">
-  <xsl:param name="node"></xsl:param>
+  <xsl:param name="node"/>
+  <xsl:param name="title"/>
   <div class="banner">
     <xsl:if test="string-length($node) > 0">
       <a>
@@ -410,18 +327,20 @@
 <!-- }}} -->
 
 <!-- {{{ section titles stuff -->
+
+<!-- {{{ chapters -->
 <xsl:template match="chapter/title">
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
       <span class="toc_chapter">
-	<xsl:number count="chapter" format="1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_chapter_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="big_title">
 	<xsl:with-param name="title">
-	  <xsl:number count="chapter" format="1 - "/><xsl:apply-templates/>
+	  <xsl:call-template name="title_chapter_number"/> - <xsl:apply-templates/>
 	</xsl:with-param>
 	<xsl:with-param name="node">
 	  <xsl:call-template name="node_number"/>
@@ -436,13 +355,13 @@
   <xsl:choose>
     <xsl:when test="$toc">
       <span class="toc_section">
-	<xsl:number level="multiple" count="chapter|section" format="1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_section_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
       <h2>
-	<xsl:number level="multiple" count="chapter|section" format="1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_section_number"/> - <xsl:apply-templates/>
       </h2>
     </xsl:otherwise>
   </xsl:choose>
@@ -453,13 +372,13 @@
   <xsl:choose>
     <xsl:when test="$toc">
       <span class="toc_subsection">
-	<xsl:number level="multiple" count="chapter|section|subsection" format="1.1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_subsection_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
       <h3>
-	<xsl:number level="multiple" count="chapter|section|subsection" format="1.1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_subsection_number"/> - <xsl:apply-templates/>
       </h3>
     </xsl:otherwise>
   </xsl:choose>
@@ -470,31 +389,32 @@
   <xsl:choose>
     <xsl:when test="$toc">
       <span class="toc_subsubsection">
-	<xsl:number level="multiple" count="chapter|section|subsection|subsubsection" format="1.1.1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_subsubsection_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
       <h4>
-	<xsl:number level="multiple" count="chapter|section|subsection|subsubsection" format="1.1.1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_subsubsection_number"/> - <xsl:apply-templates/>
       </h4>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+<!-- }}} -->
 
+<!-- {{{ appendices -->
 <xsl:template match="appendix/title">
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
       <span class="toc_chapter">
-	<xsl:text>Appendix </xsl:text>
-	<xsl:number count="appendix" format="A - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_appendix_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="big_title">
 	<xsl:with-param name="title">
-	  <xsl:number count="appendix" format="A - "/><xsl:apply-templates/>
+	  <xsl:call-template name="title_appendix_number"/> - <xsl:apply-templates/>
 	</xsl:with-param>
 	<xsl:with-param name="node">
 	  <xsl:call-template name="node_number"/>
@@ -509,13 +429,13 @@
   <xsl:choose>
     <xsl:when test="$toc">
       <span class="toc_section">
-	<xsl:number level="multiple" count="appendix|appendixsec" format="A.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_appendixsec_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
       <h2>
-	<xsl:number level="multiple" count="appendix|appendixsec" format="A.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_appendixsec_number"/> - <xsl:apply-templates/>
       </h2>
     </xsl:otherwise>
   </xsl:choose>
@@ -526,13 +446,13 @@
   <xsl:choose>
     <xsl:when test="$toc">
       <span class="toc_subsection">
-	<xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec" format="A.1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_appendixsubsec_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
       <h3>
-	<xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec" format="A.1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_appendixsubsec_number"/> - <xsl:apply-templates/>
       </h3>
     </xsl:otherwise>
   </xsl:choose>
@@ -543,18 +463,20 @@
   <xsl:choose>
     <xsl:when test="$toc">
       <span class="toc_subsubsection">
-	<xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec|appendixsubsubsec" format="A.1.1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_appendixsubsubsec_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
     <xsl:otherwise>
       <xsl:call-template name="node_name"/>
       <h4>
-	<xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec|appendixsubsubsec" format="A.1.1.1 - "/><xsl:apply-templates/>
+	<xsl:call-template name="title_appendixsubsubsec_number"/> - <xsl:apply-templates/>
       </h4>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+<!-- }}} -->
 
+<!-- {{{ unnumbered -->
 <xsl:template match="unnumbered/title">
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
@@ -626,7 +548,9 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+<!-- }}} -->
 
+<!-- {{{ other -->
 <xsl:template match="chapheading/title|majorheading/title">
   <xsl:call-template name="big_title">
     <xsl:with-param name="title">
@@ -652,6 +576,8 @@
     <xsl:apply-templates/>
   </h4>
 </xsl:template>
+<!-- }}} -->
+
 <!-- }}} -->
 
 <!-- {{{ reference generation -->
@@ -747,6 +673,36 @@
       <xsl:apply-templates/>
     </pre>
   </div>
+</xsl:template>
+<!-- }}} -->
+
+<!-- {{{ font specification commands -->
+
+<!-- note that these commands are here for the sake of completeness
+     their use is not recommended in the texinfo manual -->
+
+<xsl:template match="b">
+  <!-- we map this to 'strong'. -->
+  <span class="strong"><xsl:apply-templates/></span>
+</xsl:template>
+
+<xsl:template match="i">
+  <!-- we map this to 'emph'. -->
+  <span class="emph"><xsl:apply-templates/></span>
+</xsl:template>
+
+<xsl:template match="r">
+  <!-- this should use the document font.  unfortunately 'inherit'
+       is not a supported value in CSS1, so we map this to 'default'.
+       'span.default' is created in the way body font is created. -->
+  <span class="default"><xsl:apply-templates/></span>
+</xsl:template>
+
+<xsl:template match="tt">
+  <!-- we map this to 'code'.
+       (note that code tag has no CSS properties set, so we get
+       typewriter font only.) -->
+  <code><xsl:apply-templates/></code>
 </xsl:template>
 <!-- }}} -->
 
@@ -937,6 +893,64 @@
       </xsl:choose>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
+<!-- }}} -->
+
+  <!-- {{{ menus -->
+
+  <!-- TODO should we handle menus? -->
+  <xsl:template match="menu"/>
+
+  <!-- }}} -->
+
+<!-- {{{ anchors, nodes and references -->
+<xsl:template match="anchor">
+  <a>
+    <xsl:attribute name="name">
+      <xsl:value-of select="@name"/>
+    </xsl:attribute>
+  </a>
+</xsl:template>
+
+<!-- we don't make use of up, next and previous nodes -->
+<xsl:template match="nodeup|nodenext|nodeprev|nodename"/>
+
+<xsl:template match="node">
+  <a>
+    <xsl:attribute name="name">
+      <xsl:value-of select="nodename"/>
+    </xsl:attribute>
+  </a>
+  <xsl:apply-templates/>
+</xsl:template>
+
+<!-- makeinfo creates an xref node for also ref and pxref -->
+<xsl:template match="xref">
+  <a>
+    <xsl:attribute name="href">
+      <xsl:if test="string-length(./xrefinfofile)">
+	<xsl:choose>
+	  <xsl:when test="string-length(substring-before(xrefinfofile, '.info'))">
+	    <xsl:value-of select="concat(substring-before(xrefinfofile, '.info'), '.html')"/>
+	  </xsl:when>
+	  <xsl:otherwise>
+	    <xsl:value-of select="concat(xrefinfofile, '.html')"/>
+	  </xsl:otherwise>
+	</xsl:choose>
+      </xsl:if>
+      <xsl:text>#</xsl:text><xsl:value-of select="./xrefnodename"/>
+    </xsl:attribute>
+    <!-- it's quite useless to make the file name visible -->
+    <!--
+    <xsl:if test="string-length(./xrefinfofile)">
+      <xsl:text>(</xsl:text><xsl:apply-templates select="./xrefinfofile"/><xsl:text>.html) </xsl:text>
+    </xsl:if>
+    -->
+    <xsl:if test="string-length(./xrefinfoname)">
+      <xsl:apply-templates select="./xrefinfoname"/><xsl:text>: </xsl:text>
+    </xsl:if>
+    <xsl:apply-templates select="./xrefnodename"/>
+  </a>
 </xsl:template>
 <!-- }}} -->
 

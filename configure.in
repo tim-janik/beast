@@ -82,7 +82,9 @@ AC_PROG_MAKE_SET
 AC_CANONICAL_HOST
 
 # declare --enable-* args and collect ac_help strings
-AC_ARG_ENABLE(debug, [  --enable-debug=[no/minimum/yes] turn on debugging [default=$debug_default]],,enable_debug=$debug_default)
+AC_ARG_ENABLE(debug,       [  --enable-debug=[no/minimum/yes] turn on debugging [default=$debug_default]],,enable_debug=$debug_default)
+AC_ARG_ENABLE(devel-rules, [  --enable-devel-rules=[no/yes]   turn on developer build rules],,)
+# $enable_devel_rules
 
 dnl setup DEBUG defaults
 if test "x$enable_debug" = "xyes"; then
@@ -101,13 +103,6 @@ fi
 dnl Foreign defaults:
 MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
 MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
-
-dnl basic environment
-if test -d CVS -a -x autogen.sh ; then
-    DEVEL_BUILD_TEST="-n CVS"
-else
-    DEVEL_BUILD_TEST="-z CVS"
-fi
 
 
 dnl
@@ -366,9 +361,12 @@ AC_DEFUN(AC_DOC_REQUIREMENTS,
     )
     AC_SUBST(XMLMAKEINFO)
     AC_CHECK_PROGS(XSLTPROC,xsltproc,)
-    AM_CONDITIONAL(HAVE_XMLMAKEINFO_AND_XSLTPROC, test -n "$XSLTPROC" && test -n "$XMLMAKEINFO")
-    if test $DEVEL_BUILD_TEST -a -z "$HAVE_XMLMAKEINFO_AND_XSLTPROC_FALSE" ; then
-	AC_MSG_ERROR("required program makeinfo or xsltproc is missing")
+    AC_CHECK_PROGS(GROFF,groff,)
+    AC_CHECK_PROGS(SOELIM,soelim,)
+    AM_CONDITIONAL(HAVE_DOC_TOOLS, test -n "$XSLTPROC" -a -n "$XMLMAKEINFO" -a \
+                                        -n "$GROFF" -a -n "$SOELIM")
+    if test "x$enable_devel_rules" = "xyes" -a -z "$HAVE_DOC_TOOLS_FALSE" ; then
+	AC_MSG_ERROR([one of the devel tools (makeinfo, xsltproc, groff, soelim) is missing])
     fi
 ])
 

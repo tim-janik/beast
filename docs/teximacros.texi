@@ -127,8 +127,11 @@
 
 
 @c --- revision bit ---
+@c -- WORKAROUND:
+@c -- If `@*' doesn't exist at the end of the line, makeinfo
+@c -- misfills the first following paragraph.
 @rmacro revision{TEXT}
-@emph{\TEXT\} @value{TexiStamp}
+@emph{\TEXT\} @value{TexiStamp}@*
 @end rmacro
 
 

@@ -273,7 +273,7 @@ print <<END_HEADER;
 \@unnumbered NAME
 $pname - $pblurb
 
-\@revision{Document Revised:}\@*
+\@revision{Document Revised:}
 
 \@unnumbered SYNOPSIS
 \@printplainindex fn
@@ -303,7 +303,6 @@ if (@seealso) {
 }
 
 print <<FOOTER;
-
 \@*
 \@revision{Document Revised:}
 \@bye

@@ -111,7 +111,7 @@ temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
 # texi/xml/target rules
 #
 XMLANTISPACE=$(top_builddir)/docs/utils/xmlantispace
-if HAVE_XMLMAKEINFO_AND_XSLTPROC
+if HAVE_DOC_TOOLS
 # generate *.xml from *.texi with makeinfo
 %.xml: %.texi			$(srcdir)/../teximacros.texi $(XMLANTISPACE)
 	$(XMLMAKEINFO)  -D "TexiStamp `date -r $<`" \
@@ -122,7 +122,12 @@ if HAVE_XMLMAKEINFO_AND_XSLTPROC
 	$(XSLTPROC) $(srcdir)/markup.xsl $< >$@
 # man from xml (installed)
 %.3: %.3.xml			$(srcdir)/man.xsl $(srcdir)/texinfo.dtd
-	$(XSLTPROC) --param man_section 3 $(srcdir)/man.xsl $< >$@
+	$(XSLTPROC) --param man_section 3 $(srcdir)/man.xsl $< \
+	| sed 's/@XR@/.so $@.xrf/g' >$@
+	$(GROFF) -man -t $@ >/dev/null 2>$@.err
+	-grep '^XR: ' $@.err | cut -c5- >$@.xrf
+	$(SOELIM) <$@ >$@.tmp && mv -f $@.tmp $@
+	rm -f $@.err $@.xrf
 # html from xml (website)
 %.html: %.xml	texinfo.dtd html.xsl navigation.xsl navigation.xml
 	$(XSLTPROC) --stringparam this_file "$@" \
@@ -130,11 +135,16 @@ if HAVE_XMLMAKEINFO_AND_XSLTPROC
 	            $(srcdir)/html.xsl $< >$@
 # postscript rules
 %.nroff: %.xml man.xsl
-	$(XSLTPROC) $(srcdir)/man.xsl $< >$@
+	$(XSLTPROC) $(srcdir)/man.xsl $< \
+	| sed 's/@XR@/.so $@.xrf/g' >$@
+	$(GROFF) -man -t $@ >/dev/null 2>$@.err
+	-grep '^XR: ' $@.err | cut -c5- >$@.xrf
+	$(SOELIM) <$@ >$@.tmp && mv -f $@.tmp $@
+	rm -f $@.err $@.xrf
 %.ps: %.nroff
-	groff -man -t $< >$@
+	$(GROFF) -man -t $< >$@
 %.ps: %.3
-	groff -man -t $< >$@
+	$(GROFF) -man -t $< >$@
 %.pdf: %.ps
 	ps2pdf13 $< $@
 # where to get *.texi docs from

@@ -1,3 +1,67 @@
+Thu Jan 23 09:36:14 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/beast-index.texi: s/BEAST Release Notice/BEAST Release Notes/.
+
+	* docs/release-notes.texi: keep the title centered.
+
+	* docs/generated/Makefile.am: use $GROFF and $SOELIM instead of
+	plain program names. fixed am-conditional HAVE_DOC_TOOLS.
+
+	* configure.in: don't try to detect whether this is a CVS build.
+	instead, require the caller to supply --enable-devel-rules=yes if
+	extra development rules should be enabled.
+	added checks for doc generation tools groff and soelim.
+	supply an am-conditional HAVE_DOC_TOOLS based on availability of
+	the doc tools.
+
+	* autogen.sh: supply --enable-devel-rules=yes to ./configure.
+
+Thu Jan 23 01:40:09 2003  Alper Ersoy <dirt@gtk.org>
+
+	* docs/teximacros.texi: added an artificial linebreak at the end of
+	the revision line to avoid a bug with makeinfo that would lead to
+	misfilled paragraphs in info targets.
+
+	* docs/generated/scandocs.pl: adjusted linebreaks around revision
+	lines.
+
+	* docs/WRITING.3.texi: completely restructured, added examples for
+	@xref command.
+
+	* docs/WRITING.3.texi:
+	* docs/quickstart.texi: added @node and @menu commands to make these
+	documents generate more usable info files.
+
+	* docs/site-navigation.xml:
+	* docs/generated/navigation.xsl: renamed all <node> tags to
+	<navigation-node> to avoid mixing with tags generated via
+	@node commands.
+
+	* docs/generated/html.xsl:
+	* docs/generated/man.xsl:
+	* docs/generated/markup.xsl: added support for @r, @b, @i, @t, @node,
+	@menu and @xref commands. document font is explicitly set to serif
+	even if it is not defined in the document. changed the way titles are
+	counted and numbered so that they are not affected by the change in
+	the XML structure upon the introduction of @node commands.
+
+	* docs/generated/markup.xsl: removed center justification from chapter
+	titles in favor of better consistency among different targets.
+
+	* docs/generated/man.xsl: improved toc and index handling via macros
+	to generate page numbers along with the titles, etc. included the
+	paragraph creation conditionals from other xsl files. added support
+	for block enclosing commands such as @blockquote and @example.
+	adjusted indentation of enumerated and itemized lists.
+
+	* docs/generated/Makefile.am: modified %.nroff and %.3 rules to take
+	advantage of node and anchor feedback coming from groff.
+
+	* docs/generated/css/default.css: substituted CSS2 type selectors with
+	HTML-only selectors to please CSS2-unaware browsers. substituted
+	CSS2-only properties with CSS1 properties where possible. added
+	indentation settings for titles in toc sections.
+
 Wed Jan 22 23:19:58 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstitemview.[hc]: general code cleanup, switched this
