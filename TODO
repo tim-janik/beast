@@ -1,4 +1,5 @@
 FIXMES:
+- delte+undo on tracks kills connections? (busses?)
 - rename bsesnifferscop.* to bsescope.*
 - check sfi_debug_check ("sched") in --debug-list
 - rename gslopmaster to bseenginemaster
