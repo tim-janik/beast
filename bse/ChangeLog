@@ -1,3 +1,8 @@
+Wed Nov 17 01:19:53 2004  Tim Janik  <timj@gtk.org>
+
+	* bseengine.c (bse_engine_constrain): don't align block sizes to
+	powers of 2, but simply to 4 to utilize CPU better.
+
 Mon Nov 15 18:11:10 2004  Tim Janik  <timj@gtk.org>
 
 	* bseengine.c (bse_job_integrate): set a flag to indicate node ownership

@@ -1335,7 +1335,6 @@ bse_engine_constrain (guint            latency_ms,
                       guint           *block_size_p,
                       guint           *control_raster_p)
 {
-  guint tmp, block_size, control_raster;
   g_return_if_fail (sample_freq >= 100);
 
   /* depending on how stable the overall system (cpu, kernel scheduler, etc.)
@@ -1344,7 +1343,7 @@ bse_engine_constrain (guint            latency_ms,
    * block calculation scenario, lasting 1.5 * block-playback-time, we choose
    * a suitable upper bound of 2 as ratio for block-calculation-time per
    * block-playback-time. if heavier jitter is to be expected, this value
-   * should be increased (short of increasing overall latency of course).
+   * should be increased (short of increasing overall latency, that is).
    */
   const guint block_jitter = 2; 
   /* constrain latency to avoid overflow */
@@ -1354,22 +1353,27 @@ bse_engine_constrain (guint            latency_ms,
    * at most last latency/2 time. in practice, we need extra padding blocks,
    * which are accounted for by block_jitter.
    */
-  block_size = latency_ms * sample_freq / 1000 / (1 + block_jitter);
+  guint block_size = latency_ms * sample_freq / 1000 / (1 + block_jitter);
   /* constrain block size */
   block_size = CLAMP (block_size, 8, MIN (BSE_STREAM_MAX_VALUES / 2, sample_freq / (2 * 3)));
-  /* shrink block size to a 2^n boundary */
-  tmp = sfi_alloc_upper_power2 (block_size);
-  block_size = block_size < tmp ? tmp >> 1 : tmp;
+  /* adjust block_size */
+  if (0) /* shrink block size to a 2^n boundary */
+    {
+      guint tmp = sfi_alloc_upper_power2 (block_size);
+      block_size = block_size < tmp ? tmp >> 1 : tmp;
+    }
+  else /* align block_size to 4 */
+    block_size &= ~3;
   /* constrain control_freq */
   control_freq = MIN (control_freq, sample_freq);
   if (!control_freq)
     control_freq = (sample_freq + block_size - 1) / block_size;
   /* calc control stepping */
-  control_raster = (sample_freq + control_freq - 1) / control_freq;
+  guint control_raster = (sample_freq + control_freq - 1) / control_freq;
   /* control_raster > block_size doesn't make much sense */
   control_raster = CLAMP (control_raster, 1, block_size);
   /* shrink control_raster to a 2^n boundary */
-  tmp = sfi_alloc_upper_power2 (control_raster);
+  guint tmp = sfi_alloc_upper_power2 (control_raster);
   control_raster = control_raster < tmp ? tmp >> 1 : tmp;
   /* return values */
   if (block_size_p)
@@ -1402,8 +1406,8 @@ bse_engine_configure (guint            latency_ms,
   BseJob *job;
   g_return_val_if_fail (bse_engine_initialized == TRUE, FALSE);
   
-  /* optimize */
   bse_engine_constrain (latency_ms, sample_freq, control_freq, &block_size, &control_raster);
+  /* optimize */
   if (0 && block_size == bse_engine_block_size() && control_raster == bse_engine_control_raster())
     return TRUE;
   
