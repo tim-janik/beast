@@ -43,11 +43,13 @@ main (int   argc,
   a5.token();
   // tokenize_gtype (0);
 
+#if 0   // need non-abstract C++ object in the core for this test
   GObject *o = (GObject*) g_object_new (BSE_TYPE_CXX_BASE, NULL);
   CxxBase *b = cast (o);
   Foo f;
   b->connect ("notify", Closure (&f, &Foo::bar));
   b->connect ("notify", Closure (&f, &Foo::baz));
-
+#endif
+  
   return 0;
 }

@@ -18,7 +18,7 @@ testfft_LDADD = $(progs_ldadd)
 testcxx_SOURCES = testcxx.cc
 testcxx_LDADD = $(progs_ldadd)
 
-noinst_PROGRAMS = cutvorbis magictest mathtests $(TESTS) # testwavechunk
+noinst_PROGRAMS = cutvorbis magictest mathtests $(TESTS) #testwavechunk
 cutvorbis_SOURCES = cutvorbis.c cxxdummy.cc
 cutvorbis_LDADD = $(progs_ldadd)
 magictest_SOURCES = magictest.c cxxdummy.cc
