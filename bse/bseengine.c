@@ -1185,7 +1185,7 @@ gsl_engine_constrain (guint            latency_ms,
    */
   block_size = latency_ms * sample_freq / 1000 / 3;
   /* constrain block size */
-  block_size = CLAMP (block_size, 8, MIN (GSL_STREAM_MAX_VALUES, sample_freq / 3));
+  block_size = CLAMP (block_size, 8, MIN (GSL_STREAM_MAX_VALUES / 2, sample_freq / 3));
   /* shrink block size to a 2^n boundary */
   tmp = sfi_alloc_upper_power2 (block_size);
   block_size = block_size < tmp ? tmp >> 1 : tmp;
