@@ -30,8 +30,8 @@
 @newsTitle{Wednesday 07 Jul 2004, The ``small but steady steps'' Release}
 
 BEAST/BSE version 0.6.2 is available from the
-@uref{beast-doc://download,,download section}.
-@c here is the @uref{http://www.gnomedesktop.org/article.php?sid=1708,,FootNotes announcement}.
+@uref{beast-doc://download,,download section},
+here is the @uref{http://www.gnomedesktop.org/article.php?sid=1870,,FootNotes announcement}.
 
 Tarball:
 @uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.2.tar.gz,, beast-0.6.2.tar.gz}

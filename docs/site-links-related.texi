@@ -42,6 +42,7 @@
 @c login for GNOME Admin Repo: http://www.gnome.org/account/login.php
 @item @uref{http://cvs.gnome.org/viewcvs/beast/,, BEAST in the GNOME CVS repository}
 @item @uref{http://cia.navi.cx/stats/project/gnome/beast,, BEAST at the CIA Open Source Notification System}
+@item @uref{http://linuxaudioblog.jawebada.de/software/synthesis/,, Linux Audio Blog - SYNTHESIS}
 @end itemize
 
 
