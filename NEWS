@@ -5,7 +5,7 @@ Overview of Changes in BEAST/BSE 0.4.1:
 * Added sample/wave display and preview facilities
 * Added GSL - a common sound backend for BSE and aRts
 * New threaded sound engine which can share synthesis
-  module calculation between processors and process cycles
+  module calculations between processors and process cycles
 * New synthesis modules:
   FreeVerb	  - a reverb based on code by Jeremy Wakefield
   ResonanceFilter - IIR resonance filter

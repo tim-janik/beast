@@ -3,26 +3,38 @@ General Information
 
 This is an ALPHA version of BEAST/BSE, the bedevilled audio system and
 the bedevilled sound engine.
-BEAST is in very early development stage, the GUI is still pretty rough
-in some places and the BSE API has not really stabelized yet.
+BEAST is still in development stage, the BSW (BSE wrapper) API has
+not really stabelized yet.
 The rough goal of this project is to get an audio system that supports
-multiple song and sample formats (besides the newly introduced .bse
+multiple song and sample formats (besides the project specific .bse
 format) as well as synthesis networks and allowes full fledged editing
-and manipultation of them.
-Sample manipulation includes generation of new sounds from module
-networks, based on subtractive synthesis.
+and manipultation of them. Sample manipulation includes generation of new
+sounds from module networks, based on various kinds of synthesis.
 More information on the fundamental principles can be found in the
 ./docs subdirectory.
 Some *.bse files used for testing are also included in the ./test
 subdirectory.
 
-To get a basic start, you'll also need the beast-data-*.tar.gz package,
-which comes with a set of default samples, songs, etc...
+To get a basic start, you'll also need Gtk+-2.0, a recent version
+of the Gtk+-2.0 based GnomeCanvas and the Ogg/Vorbis Codec libraries.
+Though optional, it is a good idea to also have libmad (MPEG audio
+decoder library) around when compiling BEAST. Most distributions
+already ship these packages or will soon, their sources can be
+found at:
 
-The official ftp site is:
+GnomeCanvas (GNOME-2.0):
+	ftp://ftp.gnome.org/pub/GNOME/earthquake/sources/libgnomecanvas/
+Gtk+-2.0:
+	ftp://ftp.gtk.org/pub/gtk/v2.0/
+Ogg/Vorbis (1.0rc3 as of this writing):
+	http://www.xiph.org/ogg/vorbis/download/
+MAD (BSE was developed against libmad-0.14.2):
+	ftp://ftp.mars.org/pub/mpeg/
+
+The official ftp site for BEAST/BSE is:
   ftp://beast.gtk.org/pub/beast
 
-The official web site is:
+The official web site for BEAST/BSE is:
   http://beast.gtk.org/
 
 And finally there's a mailing list (pretty low volume) as well:
