@@ -1,3 +1,8 @@
+Wed Dec 10 09:20:33 2003  Tim Janik  <timj@gtk.org>
+
+	* sfinote.c: support parsing upper and lower case notes.
+	for string conversions, switched to uppercase note names.
+
 Mon Dec  8 16:38:32 2003  Tim Janik  <timj@gtk.org>
 
 	* sfinote.c (sfi_note_from_string_err): error handling fixup.

@@ -20,6 +20,12 @@
 #include <string.h>
 #include "sfinote.h"
 
+#define to_lower(c)                             ( \
+        (guchar) (                                                      \
+          ( (((guchar)(c))>='A' && ((guchar)(c))<='Z') * ('a'-'A') ) |  \
+          ((guchar)(c))                                                 \
+        )                                                               \
+)
 
 /* --- variables --- */
 static const struct {
@@ -50,8 +56,8 @@ static const struct {
   // { "h",	SFI_KAMMER_NOTE +  2 - SFI_KAMMER_OCTAVE * 12 }, /* german alias */
 };
 static const gchar *sfi_note_name_table[12] = {
-  "c", "cis", "d", "dis", "e", "f",
-  "fis", "g", "gis", "a", "ais", "b",
+  "C", "Cis", "D", "Dis", "E", "F",
+  "Fis", "G", "Gis", "A", "Ais", "B",
 };
 
 
@@ -90,7 +96,7 @@ sfi_note_from_string_err (const gchar *note_string,
     {
       guint p = 0;
       do
-	fits = sfi_note_table[i].name[p] == string[p];
+	fits = to_lower (sfi_note_table[i].name[p]) == to_lower (string[p]);
       while (sfi_note_table[i].name[++p] && fits);
       if (fits)
 	break;
