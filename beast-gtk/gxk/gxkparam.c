@@ -998,7 +998,7 @@ dots_area_expose_event (GtkWidget      *widget,
   maxx = width - 1;
   maxy = height - 1;
 
-  /* draw background
+  /* clear background
    */
   gdk_draw_rectangle (drawable, bg_gc,
 		      TRUE,
@@ -1007,6 +1007,8 @@ dots_area_expose_event (GtkWidget      *widget,
 		      width,
 		      height);
 
+  /* draw lines
+   */
   for (i = 0; i < n_dots - 1; i++)
     gdk_draw_line (drawable, fg_gc,
 		   maxx * dots[i].x,
@@ -1014,6 +1016,9 @@ dots_area_expose_event (GtkWidget      *widget,
 		   maxx * dots[i + 1].x,
 		   maxy * (1.0 - dots[i + 1].y));
   
+
+  /* draw circles
+   */
   if (data->entered || data->cdot >= 0)
     for (i = 0; i < n_dots; i++)
       gdk_draw_arc (drawable, hl_gc, FALSE,

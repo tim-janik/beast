@@ -131,7 +131,7 @@ bse_song_class_init (BseSongClass *class)
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_PATTERN_LENGTH,
-			      bse_param_spec_uint ("pattern_length", "Pattern lenght",
+			      bse_param_spec_uint ("pattern_length", "Pattern length",
 						   BSE_MIN_PATTERN_LENGTH, BSE_MAX_PATTERN_LENGTH,
 						   BSE_STP_PATTERN_LENGTH,
 						   BSE_DFL_SONG_PATTERN_LENGTH,
