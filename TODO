@@ -1,5 +1,5 @@
 FIXMES:	(release-critical)
-- queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
+- commit newly mixed demo song
 - adjust engine block size (Subject: blocksize vs. cpu)
 TODO:
 - midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
