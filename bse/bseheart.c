@@ -18,7 +18,7 @@
 #include "bseheart.h"
 
 #include "bsechunk.h"
-
+#include "bsehunkmixer.h"
 
 /* --- parameters --- */
 enum
@@ -727,7 +727,7 @@ bse_heart_mix_chunks (BseHeart *heart,
 		      GSList   *chunk_list, /* auto frees list and unrefs chunks */
 		      guint     n_tracks)
 {
-  BseMixValue *mb, *mbe, *mv;
+  BseMixValue *mix_buffer, *bound, *mv;
   BseChunk *chunk;
   BseSampleValue *sv;
   GSList *slist;
@@ -735,9 +735,9 @@ bse_heart_mix_chunks (BseHeart *heart,
 
   g_return_val_if_fail (BSE_IS_HEART (heart), NULL);
 
-  mb = heart->mix_buffer;
-  memset (mb, 0, sizeof (BseMixValue) * n_tracks * track_length);
-  mbe = mb + track_length * n_tracks;
+  mix_buffer = heart->mix_buffer;
+  memset (mix_buffer, 0, sizeof (BseMixValue) * n_tracks * track_length);
+  bound = mix_buffer + track_length * n_tracks;
 
   for (slist = chunk_list; slist; slist = slist->next)
     {
@@ -745,10 +745,10 @@ bse_heart_mix_chunks (BseHeart *heart,
 
       sv = chunk->hunk;
       if (n_tracks == chunk->n_tracks)
-	for (mv = mb; mv < mbe; mv++)
+	for (mv = mix_buffer; mv < bound; mv++)
 	  *mv += *(sv++);
       else if (n_tracks == chunk->n_tracks * 2)
-	for (mv = mb; mv < mbe; mv++)
+	for (mv = mix_buffer; mv < bound; mv++)
 	  {
 	    register BseMixValue v = *(sv++);
 
@@ -756,7 +756,7 @@ bse_heart_mix_chunks (BseHeart *heart,
 	    *mv += v >> 2;
 	  }
       else if (n_tracks * 2 == chunk->n_tracks)
-	for (mv = mb; mv < mbe; mv++)
+	for (mv = mix_buffer; mv < bound; mv++)
 	  {
 	    *(mv++) += *sv;
 	    *mv += *(sv++);
@@ -768,17 +768,7 @@ bse_heart_mix_chunks (BseHeart *heart,
   g_slist_free (chunk_list);
 
   chunk = bse_chunk_new (n_tracks);
-  sv = chunk->hunk;
-  for (mv = mb; mv < mbe; mv++)
-    {
-      register BseMixValue v = *mv;
-
-      if (v > 32767)
-	v = 32767;
-      else if (v < -32768)
-	v = -32768;
-      *(sv++) = v;
-    }
+  bse_hunk_clip_mix_buffer (n_tracks, chunk->hunk, 1.0, mix_buffer);
   chunk->hunk_filled = TRUE;
 
   return chunk;

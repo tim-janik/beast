@@ -170,8 +170,14 @@ typedef enum                    /*< skip >*/
 #else /* !math.h M_PI */
 #  define PI	(3.1415926535897932384626433832795029)
 #endif
+#define BSE_MAX_SAMPLE_VALUE_f	((gfloat) BSE_MAX_SAMPLE_VALUE)
+#define BSE_MIN_SAMPLE_VALUE_f	((gfloat) BSE_MIN_SAMPLE_VALUE)
+#define BSE_MAX_SAMPLE_VALUE_d	((gdouble) BSE_MAX_SAMPLE_VALUE)
+#define BSE_MIN_SAMPLE_VALUE_d	((gdouble) BSE_MIN_SAMPLE_VALUE)
 #define BSE_MAX_SAMPLE_VALUE	(32767)
-#define BSE_MIN_SAMPLE_VALUE	(-32768)
+#define BSE_MIN_SAMPLE_VALUE	(-32768) /* don't use this, assume
+					  * -BSE_MAX_SAMPLE_VALUE instead
+					  */
 
 
 /* --- implementation details --- */

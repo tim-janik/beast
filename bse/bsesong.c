@@ -142,14 +142,14 @@ bse_song_class_init (BseSongClass *class)
 			      bse_param_spec_float ("volume_f", "Master [float]", NULL,
 						    0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
 						    0.1,
-						    bse_dB_to_factor (BSE_DFL_SONG_VOLUME_dB),
+						    bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
 						    BSE_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_dB,
 			      bse_param_spec_float ("volume_dB", "Master [dB]", NULL,
 						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 						    BSE_STP_VOLUME_dB,
-						    BSE_DFL_SONG_VOLUME_dB,
+						    BSE_DFL_MASTER_VOLUME_dB,
 						    BSE_PARAM_GUI |
 						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
@@ -157,7 +157,7 @@ bse_song_class_init (BseSongClass *class)
 			      bse_param_spec_uint ("volume_perc", "Master [%]", NULL,
 						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 						   1,
-						   bse_dB_to_factor (BSE_DFL_SONG_VOLUME_dB) * 100,
+						   bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 						   BSE_PARAM_GUI |
 						   BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
@@ -178,7 +178,7 @@ static void
 bse_song_init (BseSong *song)
 {
   song->bpm = BSE_DFL_SONG_BPM;
-  song->volume_factor = bse_dB_to_factor (BSE_DFL_SONG_VOLUME_dB);
+  song->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   song->pattern_length = BSE_DFL_SONG_PATTERN_LENGTH;
   song->n_channels = BSE_DFL_SONG_N_CHANNELS;
   
@@ -256,7 +256,7 @@ bse_song_set_param (BseSong  *song,
       bse_object_param_changed (BSE_OBJECT (song), "volume_perc");
       break;
     case PARAM_VOLUME_PERC:
-      song->volume_factor = ((gfloat) param->value.v_uint) / 100;
+      song->volume_factor = param->value.v_uint / 100.0;
       if (song->sequencer)
 	bse_song_sequencer_recalc (song);
       bse_object_param_changed (BSE_OBJECT (song), "volume_f");
@@ -297,7 +297,7 @@ bse_song_get_param (BseSong  *song,
       param->value.v_float = bse_dB_from_factor (song->volume_factor, BSE_MIN_VOLUME_dB);
       break;
     case PARAM_VOLUME_PERC:
-      param->value.v_uint = song->volume_factor * ((gfloat) 100) + 0.5;
+      param->value.v_uint = song->volume_factor * 100.0 + 0.5;
       break;
     case PARAM_BPM:
       param->value.v_uint = song->bpm;

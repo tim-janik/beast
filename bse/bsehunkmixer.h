@@ -17,8 +17,8 @@
  *
  * bsemixer.h: BSE chunk mixing functions
  */
-#ifndef __BSE_MIXER_H__
-#define __BSE_MIXER_H__
+#ifndef __BSE_HUNK_MIXER_H__
+#define __BSE_HUNK_MIXER_H__
 
 #include        <bse/bsechunk.h>
 
@@ -30,19 +30,25 @@ extern "C" {
 
 
 /* --- prototypes --- */
-void	bse_hunk_mix		(guint                 n_dest_tracks,
-				 BseSampleValue       *dest_hunk,
-				 const gfloat         *dest_volumes,
-				 guint                 n_src_tracks,
-				 const BseSampleValue *src_hunk);
-void	bse_hunk_fill		(guint		       n_tracks,
-				 BseSampleValue	      *hunk,
-				 BseSampleValue	       value);
-       
+void	bse_hunk_mix			(guint                 n_dest_tracks,
+					 BseSampleValue       *dest_hunk,
+					 const gfloat         *dest_volumes,
+					 guint                 n_src_tracks,
+					 const BseSampleValue *src_hunk);
+void	bse_hunk_fill			(guint		       n_tracks,
+					 BseSampleValue	      *hunk,
+					 BseSampleValue	       value);
+void	bse_hunk_clip_mix_buffer	(guint		       n_tracks,
+					 BseSampleValue	      *dest_hunk,
+					 gfloat                master_volume,
+					 BseMixValue	      *src_mix_buffer);
+void	bse_mix_buffer_fill		(guint		       n_tracks,
+					 BseMixValue	      *mix_buffer,
+					 BseSampleValue	       value);
 
        
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __BSE_MIXER_H__ */
+#endif /* __BSE_HUNK_MIXER_H__ */

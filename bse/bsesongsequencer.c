@@ -19,6 +19,7 @@
 #include	"bsesong.h"
 #include	"bsepattern.h"
 #include	"bsevoice.h"
+#include	"bsehunkmixer.h"
 #include	<math.h>
 
 
@@ -141,10 +142,6 @@ bse_song_sequencer_fill_hunk (BseSong	     *song,
 			      BseSampleValue *hunk)
 {
   BseSongSequencer *sequencer;
-  guint hunk_size;
-  BseMixValue *buffer;
-  gfloat vol_fac;
-  guint i;
   
   g_return_if_fail (BSE_IS_SONG (song));
   g_return_if_fail (song->sequencer != NULL);
@@ -157,24 +154,7 @@ bse_song_sequencer_fill_hunk (BseSong	     *song,
   
   /* fill the hunk and clip the values
    */
-  hunk_size = sequencer->mix_buffer_size;
-  buffer = sequencer->mix_buffer;
-  vol_fac = song->volume_factor;
-  /* FIXME: optimize vol_fac multiplication */
-  for (i = 0; i < hunk_size; i++)
-    {
-      register BseMixValue mix_v;
-      
-      mix_v = buffer[i];
-      mix_v *= vol_fac;
-      /* clipping */
-      if (mix_v > 32767)
-	mix_v = 0x7fff;
-      else if (mix_v < -32768)
-	mix_v = 0x8000;
-      
-      hunk[i] = mix_v;
-    }
+  bse_hunk_clip_mix_buffer (sequencer->n_tracks, hunk, song->volume_factor, sequencer->mix_buffer);
 }
 
 void

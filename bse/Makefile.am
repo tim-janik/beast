@@ -70,7 +70,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseitem.h \
 	bsemagic.h \
 	bsemain.h \
-	bsemixer.h \
+	bsehunkmixer.h \
 	bseobject.h \
 	bseparam.h \
 	bseparasite.h \
@@ -117,7 +117,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseitem.c \
 	bsemagic.c \
 	bsemain.c \
-	bsemixer.c \
+	bsehunkmixer.c \
 	bseobject.c \
 	bseparam.c \
 	bseparasite.c \

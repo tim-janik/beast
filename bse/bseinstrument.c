@@ -162,7 +162,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
 			      bse_param_spec_uint ("volume_perc", "Volume [%]", NULL,
 						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 						   1,
-						   bse_dB_to_factor (BSE_DFL_SONG_VOLUME_dB) * 100,
+						   bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB) * 100,
 						   BSE_PARAM_GUI |
 						   BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",

@@ -49,7 +49,7 @@
 #include        <bse/bseitem.h>
 #include        <bse/bsemagic.h>
 #include        <bse/bsemain.h>
-#include        <bse/bsemixer.h>
+#include        <bse/bsehunkmixer.h>
 #include        <bse/bseobject.h>
 #include        <bse/bseparam.h>
 #include        <bse/bseparasite.h>

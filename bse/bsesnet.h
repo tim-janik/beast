@@ -43,6 +43,8 @@ struct _BseSNet
   BseSuper	 parent_object;
 
   GList		*sources;	/* of type BseSource* */
+
+  gfloat         volume_factor;         /* 1-based factor */
 };
 struct _BseSNetClass
 {

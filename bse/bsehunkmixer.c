@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bsemixer.h"
+#include        "bsehunkmixer.h"
 
 
 
@@ -104,10 +104,10 @@ _bse_hunk_mix_nv_2_1 (BseSampleValue       *d,
   while (d < bound);
 }
 #define ASSIGN_CLIPPED(dest, value) { \
-  if ((value) > 32767) \
-    (dest) = 32767; \
-  else if ((value) < -32767) \
-    (dest) = -32767; \
+  if ((value) > BSE_MAX_SAMPLE_VALUE) \
+    (dest) = BSE_MAX_SAMPLE_VALUE; \
+  else if ((value) < -BSE_MAX_SAMPLE_VALUE) \
+    (dest) = -BSE_MAX_SAMPLE_VALUE; \
   else \
     (dest) = (value); \
 }
@@ -284,4 +284,65 @@ bse_hunk_fill (guint	       n_tracks,
 	*(hunk++) = value;
       while (hunk < bound);
     }
+}
+
+void
+bse_mix_buffer_fill (guint          n_tracks,
+		     BseMixValue   *mix_buffer,
+		     BseSampleValue value)
+{
+  g_return_if_fail (n_tracks >= 1 && n_tracks <= MAX_N_MIX_TRACKS);
+  g_return_if_fail (mix_buffer != NULL);
+
+  if (value == 0)
+    memset (mix_buffer, value, n_tracks * BSE_TRACK_LENGTH * sizeof (BseMixValue));
+  else
+    {
+      BseMixValue *bound = mix_buffer + n_tracks * BSE_TRACK_LENGTH;
+
+      do
+	*(mix_buffer++) = value;
+      while (mix_buffer < bound);
+    }
+}
+
+void
+bse_hunk_clip_mix_buffer (guint           n_tracks,
+			  BseSampleValue *dest_hunk,
+			  gfloat          master_volume,
+			  BseMixValue    *src_mix_buffer)
+{
+  BseMixValue *bound;
+  
+  g_return_if_fail (n_tracks >= 1 && n_tracks <= MAX_N_MIX_TRACKS);
+  g_return_if_fail (dest_hunk != NULL);
+  g_return_if_fail (src_mix_buffer != NULL);
+
+  bound = src_mix_buffer + n_tracks * BSE_TRACK_LENGTH;
+  if (BSE_EPSILON_CMP (1.0, master_volume) != 0)
+    do
+      {
+	register BseMixValue mix_value = *src_mix_buffer * master_volume;
+	
+	if (mix_value > BSE_MAX_SAMPLE_VALUE)
+	  *(dest_hunk++) = BSE_MAX_SAMPLE_VALUE;
+	else if (mix_value < -BSE_MAX_SAMPLE_VALUE)
+	  *(dest_hunk++) = -BSE_MAX_SAMPLE_VALUE;
+	else
+	  *(dest_hunk++) = mix_value;
+      }
+    while (++src_mix_buffer < bound);
+  else
+    do
+      {
+	register BseMixValue mix_value = *src_mix_buffer;
+	
+	if (mix_value > BSE_MAX_SAMPLE_VALUE)
+	  *(dest_hunk++) = BSE_MAX_SAMPLE_VALUE;
+	else if (mix_value < -BSE_MAX_SAMPLE_VALUE)
+	  *(dest_hunk++) = -BSE_MAX_SAMPLE_VALUE;
+	else
+	  *(dest_hunk++) = mix_value;
+      }
+    while (++src_mix_buffer < bound);
 }

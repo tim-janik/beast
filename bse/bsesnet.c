@@ -19,7 +19,7 @@
 
 #include        "bseproject.h"
 #include        "bsecategories.h"
-#include        "bsemixer.h"
+#include        "bsehunkmixer.h"
 #include        "bsestorage.h"
 #include        "bseheart.h"
 #include        <string.h>
@@ -32,7 +32,10 @@
 /* --- parameters --- */
 enum
 {
-  PARAM_0
+  PARAM_0,
+  PARAM_VOLUME_f,
+  PARAM_VOLUME_dB,
+  PARAM_VOLUME_PERC
 };
 
 
@@ -123,6 +126,30 @@ bse_snet_class_init (BseSNetClass *class)
   container_class->remove_item = bse_snet_remove_item;
   container_class->forall_items = bse_snet_forall_items;
   
+  bse_object_class_add_param (object_class, "Adjustments",
+			      PARAM_VOLUME_f,
+			      bse_param_spec_float ("volume_f", "Master [float]", NULL,
+						    0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
+						    0.1,
+						    bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+						    BSE_PARAM_STORAGE));
+  bse_object_class_add_param (object_class, "Adjustments",
+			      PARAM_VOLUME_dB,
+			      bse_param_spec_float ("volume_dB", "Master [dB]", NULL,
+						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+						    BSE_STP_VOLUME_dB,
+						    BSE_DFL_MASTER_VOLUME_dB,
+						    BSE_PARAM_GUI |
+						    BSE_PARAM_HINT_DIAL));
+  bse_object_class_add_param (object_class, "Adjustments",
+			      PARAM_VOLUME_PERC,
+			      bse_param_spec_uint ("volume_perc", "Master [%]", NULL,
+						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
+						   1,
+						   bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+						   BSE_PARAM_GUI |
+						   BSE_PARAM_HINT_DIAL));
+
   ichannel_id = bse_source_class_add_ichannel (source_class,
 					       "multi_in", "Multi Track In",
 					       1, 2); /* FIXME: BSE_MAX_N_TRACKS */
@@ -137,6 +164,7 @@ static void
 bse_snet_init (BseSNet *snet)
 {
   snet->sources = NULL;
+  snet->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
 }
 
 static void
@@ -157,6 +185,21 @@ bse_snet_set_param (BseSNet  *snet,
 {
   switch (param->pspec->any.param_id)
     {
+    case PARAM_VOLUME_f:
+      snet->volume_factor = param->value.v_float;
+      bse_object_param_changed (BSE_OBJECT (snet), "volume_dB");
+      bse_object_param_changed (BSE_OBJECT (snet), "volume_perc");
+      break;
+    case PARAM_VOLUME_dB:
+      snet->volume_factor = bse_dB_to_factor (param->value.v_float);
+      bse_object_param_changed (BSE_OBJECT (snet), "volume_f");
+      bse_object_param_changed (BSE_OBJECT (snet), "volume_perc");
+      break;
+    case PARAM_VOLUME_PERC:
+      snet->volume_factor = param->value.v_uint / 100.0;
+      bse_object_param_changed (BSE_OBJECT (snet), "volume_f");
+      bse_object_param_changed (BSE_OBJECT (snet), "volume_dB");
+      break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
                  BSE_OBJECT_TYPE_NAME (snet),
@@ -173,6 +216,15 @@ bse_snet_get_param (BseSNet  *snet,
 {
   switch (param->pspec->any.param_id)
     {
+    case PARAM_VOLUME_f:
+      param->value.v_float = snet->volume_factor;
+      break;
+    case PARAM_VOLUME_dB:
+      param->value.v_float = bse_dB_from_factor (snet->volume_factor, BSE_MIN_VOLUME_dB);
+      break;
+    case PARAM_VOLUME_PERC:
+      param->value.v_uint = snet->volume_factor * 100.0 + 0.5;
+      break;
     default:
       g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
                  BSE_OBJECT_TYPE_NAME (snet),
@@ -340,10 +392,11 @@ static BseChunk*
 bse_snet_calc_chunk (BseSource *source,
 		     guint      ochannel_id)
 {
-  // BseSNet *snet = BSE_SNET (source);
+  BseSNet *snet = BSE_SNET (source);
   BseSourceInput *input;
   BseChunk *ichunk;
   BseSampleValue *hunk;
+  gfloat stereo_volumes[2];
 
   g_return_val_if_fail (ochannel_id == BSE_SNET_OCHANNEL_STEREO, NULL);
 
@@ -352,14 +405,15 @@ bse_snet_calc_chunk (BseSource *source,
     return bse_chunk_new_static_zero (2);
 
   ichunk = bse_source_ref_chunk (input->osource, input->ochannel_id, source->index);
-  if (ichunk->n_tracks == 2) /* stereo already */
+  if (ichunk->n_tracks == 2 &&
+      BSE_EPSILON_CMP (1.0, snet->volume_factor) == 0) /* stereo already, no volume */
     return ichunk;
 
-  g_assert (ichunk->n_tracks == 1); /* FIXME: paranoid */
-
-  /* ok, mix mono to stereo, no volume */
+  /* ok, mix input (mono or stereo) to stereo with volume */
+  stereo_volumes[0] = snet->volume_factor;
+  stereo_volumes[1] = snet->volume_factor;
   hunk = bse_hunk_alloc (2);
-  bse_hunk_mix (2, hunk, NULL, 1, ichunk->hunk);
+  bse_hunk_mix (2, hunk, stereo_volumes, ichunk->n_tracks, ichunk->hunk);
   bse_chunk_unref (ichunk);
 
   return bse_chunk_new_orphan (2, hunk);

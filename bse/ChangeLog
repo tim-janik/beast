@@ -1,3 +1,14 @@
+Sat Jan 15 18:42:28 2000  Tim Janik  <timj@gtk.org>
+
+	* bsemixer.[hc]: 
+	* bsehunkmixer.[hc]: renamed bsemixer.[hc] to bsehunkmixer.[hc].
+	added bse_hunk_clip_mix_buffer() and bse_mix_buffer_fill().
+
+	* bseheart.c (bse_heart_mix_chunks): use bse_hunk_clip_mix_buffer().
+	* bsesongsequencer.c (bse_song_sequencer_fill_hunk): same here.
+
+	* bsesnet.[hc]: added master volume (finally!).
+
 Fri Jan 14 01:11:47 2000  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-alsa.c: added compatibility defines for ALSA lib < 0.5.0

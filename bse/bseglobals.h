@@ -109,7 +109,7 @@ extern "C" {
 
 
 /* --- hard defaults (used for saving) --- */
-#define	BSE_DFL_SONG_VOLUME_dB		(0)
+#define	BSE_DFL_MASTER_VOLUME_dB	(0.0)
 #define	BSE_DFL_SONG_BPM		(160)
 #define	BSE_DFL_SONG_N_CHANNELS		(16)
 #define	BSE_DFL_SONG_PATTERN_LENGTH	(64)
