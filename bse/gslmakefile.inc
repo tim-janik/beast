@@ -28,7 +28,7 @@ GSL_C_SRC     =	gsldatacache.c gsldatahandle.c gslwavechunk.c gsldatahandle-vorb
 		gslconvert.c gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
 		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c gsldatahandle-mad.c \
 		gslosctable.c gsloscillator.c gslglue.c gslgluecodec.c
-GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h \
+GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h gslgluesignal.c \
 		gslopschedule.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
 GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header gslglib.c gslglib.h gsl-fftgen.pl
 EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT)
