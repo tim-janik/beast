@@ -160,8 +160,8 @@ class LatencyTest : public LatencyTestBase {
 	      double end_time = gettime();
 
 	      if (logfile)
-                fprintf (stdout, "%f # latency in ms between note-on and signal-start; (block-offset=%u)\n",
-                         end_time + delta_time - start_time, i);
+                fprintf (stdout, "%12.6f # latency in ms between note-on and signal-start; (block-offset=%u)\n",
+                         1000.0 * (end_time + delta_time - start_time), i);
 	      start_time = 0.0;
 	    }
 	}

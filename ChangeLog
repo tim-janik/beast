@@ -1,3 +1,7 @@
+Tue Sep 28 23:17:44 2004  Tim Janik  <timj@gtk.org>
+
+	* tests/latency/bselatencytest.cc: really print out milli seconds.
+
 Tue Sep 28 23:08:23 2004  Tim Janik  <timj@gtk.org>
 
 	* tests/latency/bselatencytest.idl:
