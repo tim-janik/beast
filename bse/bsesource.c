@@ -150,6 +150,7 @@ bse_source_class_base_init (BseSourceClass *class)
   class->channel_defs.ochannel_idents = NULL;
   class->channel_defs.ochannel_names = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
+  class->gsl_class = NULL;
 }
 
 static void
@@ -186,6 +187,8 @@ bse_source_class_base_finalize (BseSourceClass *class)
   class->channel_defs.ochannel_idents = NULL;
   class->channel_defs.ochannel_names = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
+  g_free (class->gsl_class);
+  class->gsl_class = NULL;
 }
 
 static void
@@ -476,6 +479,16 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
 			       const gchar    *blurb)
 {
   return bse_source_class_add_ochannel_ident (source_class, name, name, blurb);
+}
+
+void
+bse_source_class_cache_gsl_class (BseSourceClass *source_class,
+                                  const GslClass *gsl_class)
+{
+  g_return_if_fail (source_class->gsl_class == NULL);
+  g_return_if_fail (gsl_class != NULL);
+
+  source_class->gsl_class = g_memdup (gsl_class, sizeof (*gsl_class));
 }
 
 guint

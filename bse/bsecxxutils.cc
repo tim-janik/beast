@@ -22,7 +22,8 @@
 #include <list>
 using namespace std;
 
-namespace Bse {
+namespace {
+using namespace Bse;
 
 /* --- functions --- */
 struct TypeEntry {
@@ -113,14 +114,43 @@ TypeRegistry::init_types()
   type_entries = NULL;
 }
 
-} // Bse
+static void
+bse_terminate_handler ()
+{
+  try {
+    throw;      // rethrow
+  }
+  catch (Exception &e) {
+    sfi_error ("aborting due to exception: %s [in %s]", e.what(), e.where());
+    abort ();
+  }
+  catch (std::exception &e) {
+    sfi_error ("aborting due to exception: %s", e.what());
+    abort ();
+  }
+  catch (...) {
+    sfi_error ("aborting due to unknown exception");
+    abort ();
+  }
+}
 
-extern "C" {
+static void
+init_exception_handler ()
+{
+#if 0
+  unexpected_handler former = set_unexpected (bse_unexpected_handler);
+  if (former != std::unexpected)
+    set_unexpected (former);
+#else
+  set_terminate (bse_terminate_handler);
+#endif
+}
 
-void
+extern "C" void
 bse_cxx_init (void)  // prototyped in bseutils.h
 {
+  init_exception_handler ();
   Bse::TypeRegistry::init_types();
 }
 
-} // "C"
+} // namespace

@@ -26,9 +26,7 @@
 /* configure checks */
 #include <bse/gslconfig.h>
 
-
 G_BEGIN_DECLS
-
 
 /* --- forward decls --- */
 typedef struct _GslMagic		GslMagic;

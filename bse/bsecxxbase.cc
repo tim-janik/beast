@@ -16,13 +16,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsecxxbase.h"
-#include <new>
 
-namespace Bse {
+namespace {
+using namespace Bse;
 
 static void     bse_cxx_base_class_base_init (gpointer g_class);
 
-BSE_CXX_TYPE_REGISTER_INTERN (CxxBase, "BseSource", NULL, bse_cxx_base_class_base_init, TypeRegistry::ABSTRACT);
+BSE_CXX_TYPE_REGISTER_INITIALIZED (CxxBase, "BseSource", NULL, bse_cxx_base_class_base_init, TypeRegistry::ABSTRACT);
 
 static gpointer bse_cxx_base_parent_class = NULL;
 
@@ -68,6 +68,62 @@ CxxBase::get_property (guint       prop_id,
                        Value      &value,
                        GParamSpec *pspec)
 {
+}
+
+gulong
+CxxBase::connect (const gchar   *signal,
+                  CxxClosure    *closure,
+                  bool           after)
+{
+  GClosure *gclosure = closure->gclosure();
+  g_closure_ref (gclosure);
+  g_closure_sink (gclosure);
+  String sid = tokenize_signal (signal), cid = closure->signature();
+  gulong id = 0;
+  if (sid == cid)
+    id = g_signal_connect_closure (gobject(), signal, gclosure, after != 0);
+  else
+    g_warning ("%s: ignoring invalid signal connection (\"%s\" != \"%s\")", G_STRLOC, sid.c_str(), cid.c_str());
+  g_closure_unref (gclosure);
+  return id;
+}
+
+#if 0
+gulong
+CxxBase::connect (const gchar   *signal,
+                  GClosure      *closure,
+                  bool           after)
+{
+  g_closure_ref (closure);
+  g_closure_sink (closure);
+  gulong id = g_signal_connect_closure (gobject(), signal, closure, after != 0);
+  g_closure_unref (closure);
+  return id;
+}
+#endif
+
+const String
+CxxBase::tokenize_signal (const gchar *signal)
+{
+  GSignalQuery query;
+  GType t;
+  String s;
+  g_signal_query (g_signal_lookup (signal, type()), &query);
+  if (!query.signal_id)
+    return "";
+  t = query.return_type & ~G_SIGNAL_TYPE_STATIC_SCOPE;
+  if (t && t != G_TYPE_NONE) /* void check */
+    s += tokenize_gtype (t);
+  s += '|';
+  for (guint i = 0; i < query.n_params; i++)
+    s += tokenize_gtype (query.param_types[i] & ~G_SIGNAL_TYPE_STATIC_SCOPE);
+  return s;
+}
+
+GType
+CxxBase::type ()
+{
+  return G_OBJECT_TYPE (gobject());
 }
 
 CxxBase*
@@ -156,92 +212,47 @@ CxxBase::item ()
   return (BseItem*) cast_to_gobject ();
 }
 
-SfiNum
-Value::get_num () const
+void
+CxxBaseClass::add (const char *group,
+                   guint       prop_id,
+                   GParamSpec *pspec)
 {
-  GValue *v = gvalue();
-  if (SFI_VALUE_HOLDS_BOOL (v))
-    return sfi_value_get_bool (v);
-  else if (SFI_VALUE_HOLDS_INT (v))
-    return sfi_value_get_int (v);
-  else if (G_VALUE_HOLDS_ENUM (v))
-    return g_value_get_enum (v);
-  else if (SFI_VALUE_HOLDS_REAL (v))
-    return (SfiNum) sfi_value_get_real (v);
-  else if (SFI_VALUE_HOLDS_NUM (v))
-    return sfi_value_get_num (v);
-  else
-    std::unexpected ();
-}
-
-SfiReal
-Value::get_real () const
-{
-  GValue *v = gvalue();
-  if (SFI_VALUE_HOLDS_INT (v))
-    return sfi_value_get_int (v);
-  else if (SFI_VALUE_HOLDS_REAL (v))
-    return sfi_value_get_real (v);
-  else if (SFI_VALUE_HOLDS_NUM (v))
-    return sfi_value_get_num (v);
-  else
-    std::unexpected ();
-}
-
-const SfiString
-Value::get_string () const
-{
-  GValue *v = gvalue();
-  if (SFI_VALUE_HOLDS_STRING (v))
-    return sfi_value_get_string (v);
-  else if (SFI_VALUE_HOLDS_CHOICE (v))
-    return sfi_value_get_choice (v);
-  else
-    std::unexpected ();
+  g_return_if_fail (pspec->owner_type == 0);
+  pspec->flags = (GParamFlags) (pspec->flags | G_PARAM_CONSTRUCT);
+  bse_object_class_add_param ((BseObjectClass*) this, group, prop_id, pspec);
 }
 
 void
-Value::set_num (SfiNum n)
+CxxBaseClass::add_ochannel (const char *name,
+                            const char *blurb,
+                            int         assert_id)
 {
-  GValue *v = gvalue();
-  if (SFI_VALUE_HOLDS_BOOL (v))
-    sfi_value_set_bool (v, n);
-  else if (SFI_VALUE_HOLDS_INT (v))
-    sfi_value_set_int (v, n);
-  else if (G_VALUE_HOLDS_ENUM (v))
-    g_value_set_enum (v, n);
-  else if (SFI_VALUE_HOLDS_REAL (v))
-    sfi_value_set_real (v, n);
-  else if (SFI_VALUE_HOLDS_NUM (v))
-    sfi_value_set_num (v, n);
-  else
-    std::unexpected ();
+  int channel_id = bse_source_class_add_ochannel ((BseSourceClass*) this,
+                                                  name, blurb);
+  if (assert_id >= 0)
+    g_assert (assert_id == channel_id);
 }
 
 void
-Value::set_real (SfiReal r)
+CxxBaseClass::add_ichannel (const char *name,
+                            const char *blurb,
+                            int         assert_id)
 {
-  GValue *v = gvalue();
-  if (SFI_VALUE_HOLDS_INT (v))
-    sfi_value_set_int (v, (SfiInt) r);
-  else if (SFI_VALUE_HOLDS_REAL (v))
-    sfi_value_set_real (v, r);
-  else if (SFI_VALUE_HOLDS_NUM (v))
-    sfi_value_set_num (v, (SfiNum) r);
-  else
-    std::unexpected ();
+  int channel_id = bse_source_class_add_ichannel ((BseSourceClass*) this,
+                                                  name, blurb);
+  if (assert_id >= 0)
+    g_assert (assert_id == channel_id);
 }
 
 void
-Value::set_string (const char      *s)
+CxxBaseClass::add_jchannel (const char *name,
+                            const char *blurb,
+                            int         assert_id)
 {
-  GValue *v = gvalue();
-  if (SFI_VALUE_HOLDS_STRING (v))
-    sfi_value_set_string (v, s);
-  else if (SFI_VALUE_HOLDS_CHOICE (v))
-    sfi_value_set_choice (v, s);
-  else
-    std::unexpected ();
+  int channel_id = bse_source_class_add_jchannel ((BseSourceClass*) this,
+                                                  name, blurb);
+  if (assert_id >= 0)
+    g_assert (assert_id == channel_id);
 }
 
-} // Bse
+} // namespace

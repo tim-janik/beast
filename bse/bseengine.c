@@ -365,6 +365,33 @@ gsl_job_set_consumer (GslModule *module,
 }
 
 /**
+ * gsl_job_force_reset
+ * @module: The module to be reset
+ * @Returns: New job suitable for gsl_trans_add()
+ *
+ * Forces an immediate reset of @module if its class
+ * provides a reset() implementation. This is usually
+ * not a good idea, as forcing an immediate reset can
+ * lead to multiple unnecessary reset() invocations.
+ * The logic used to invoke reset() automatically is
+ * usually good enough to cover all required cases.
+ * This function is MT-safe and may be called from any thread.
+ */
+GslJob*
+gsl_job_force_reset (GslModule *module)
+{
+  GslJob *job;
+  
+  g_return_val_if_fail (module != NULL, NULL);
+  
+  job = sfi_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_FORCE_RESET;
+  job->data.node = ENGINE_NODE (module);
+  
+  return job;
+}
+
+/**
  * GslAccessFunc
  * @module:	Module to operate on
  * @data:	Accessor data

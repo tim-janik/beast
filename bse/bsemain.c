@@ -188,6 +188,7 @@ bse_init_core (void)
   _bse_init_categories ();
   bse_type_init ();
   bse_cxx_init ();
+  bse_cxx_checks ();
   
   /* FIXME: global spawn dir is evil */
   {

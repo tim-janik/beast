@@ -19,15 +19,66 @@
 #define __BSE_CXX_UTILS_H__
 
 #include <bse/bseutils.h>
+#include <string>
 #include <new>
 
 namespace Bse {
 
+/* --- type alias frequently used standard lib things --- */
+typedef std::string String;
+
+
+/* --- template errors --- */
+namespace TEMPLATE_ERROR {
+template<typename What, typename Reason> void invalid_type () { TEMPLATE_ERROR::abort; }
+template<typename TYPE> void invalid_argument_type () { TEMPLATE_ERROR::abort; }
+}
+
+/* --- generally usefull templates --- */
+template<class Data> static void
+delete_this (Data *d)
+{
+  delete d;
+}
+template<class Derived, class Parent> inline void
+assert_derivation()
+{
+  register Derived *_derived = 0;
+  register Parent *_parent;
+  /* this generates a compiler error if Derived is not derived from Parent */
+  _parent = _derived;
+}
+
+
+/* --- exceptions --- */
+struct Exception : std::exception {
+  explicit Exception (const char *_where) : loc (_where) {};
+  virtual const char* where() { return loc; }
+private:
+  const char *loc;
+};
+struct InvalidArgument : Exception {
+  InvalidArgument (const char *where) : Exception (where) {};
+  const char* what() const throw() { return "invalid argument"; }
+};
+struct WrongTypeGValue : Exception {
+  WrongTypeGValue (const char *where) : Exception (where) {};
+  const char* what() const throw() { return "GValue contains wrong type for this kind of use"; }
+};
+struct DontReach : Exception {
+  DontReach (const char *where) : Exception (where) {};
+  const char* what() const throw() { return "Code section should not be reached"; }
+};
+struct InvalidConnection : Exception {
+  InvalidConnection (const char *where) : Exception (where) {};
+  const char* what() const throw() { return "Function to be connected has invalid signature"; }
+};
+
 /* --- class registration --- */
 #define BSE_CXX_TYPE_REGISTER(ObjectType, parent, class_info)          \
-          BSE_CXX_TYPE_REGISTER_INTERN (ObjectType, parent, class_info, NULL, TypeRegistry::NONE)
+          BSE_CXX_TYPE_REGISTER_INITIALIZED (ObjectType, parent, class_info, NULL, TypeRegistry::NONE)
 #define BSE_CXX_TYPE_REGISTER_ABSTRACT(ObjectType, parent, class_info) \
-          BSE_CXX_TYPE_REGISTER_INTERN (ObjectType, parent, class_info, NULL, TypeRegistry::ABSTRACT)
+          BSE_CXX_TYPE_REGISTER_INTERN (ObjectType, parent, class_info, NULL, NULL, TypeRegistry::ABSTRACT)
 
 /* --- class information --- */
 struct ClassInfo
@@ -68,14 +119,17 @@ public:
   static void   init_types ();
 };
 
-#define BSE_CXX_TYPE_REGISTER_INTERN(ObjectType, parent, cinfo, binit, flags)      \
-  extern "C" {                                                                     \
-  static void bse_cxx_ ## ObjectType ## _instance_init (GTypeInstance *instance,   \
-                                                        gpointer       g_class)    \
+#define BSE_CXX_TYPE_REGISTER_INITIALIZED(ObjectType, parent, cinfo, binit, flags) \
+  static void                                                                      \
+  bse_cxx_ ## ObjectType ## _instance_init (GTypeInstance *instance,               \
+                                            gpointer       g_class)                \
   { /* invoke constructor upon _init of destination type */                        \
     if (G_TYPE_FROM_INSTANCE (instance) == G_TYPE_FROM_CLASS (g_class))            \
       new (BSE_CXX_INSTANCE_OFFSET + (char*) instance) ObjectType ();              \
   }                                                                                \
+  BSE_CXX_TYPE_REGISTER_INTERN (ObjectType, parent, cinfo, binit,                  \
+                                bse_cxx_ ## ObjectType ## _instance_init, flags)
+#define BSE_CXX_TYPE_REGISTER_INTERN(ObjectType, parent, cinfo, binit, iinit, flags) \
   static void bse_cxx_ ## ObjectType ## _set_property (GObject *o, guint prop_id,  \
                                            const GValue *value, GParamSpec *pspec) \
   {                                                                                \
@@ -95,12 +149,11 @@ public:
     gobject_class->get_property = bse_cxx_ ## ObjectType ## _get_property;         \
     ObjectType::class_init (klass);                                                \
   }                                                                                \
-  } /* "C" */                                                                      \
   static Bse::TypeRegistry                                                         \
     ObjectType ## _type_keeper (sizeof (ObjectType), "Bse" #ObjectType, parent,    \
                                 cinfo, binit,                                      \
                                 bse_cxx_ ## ObjectType ## _class_init,             \
-                                bse_cxx_ ## ObjectType ## _instance_init, flags);  \
+                                iinit, flags);                                     \
   GType ObjectType::get_type ()                                                    \
   {                                                                                \
     return ObjectType ## _type_keeper . get_type ();                               \

@@ -42,7 +42,7 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 #
 # BSE header files for public installation (non-generated)
 bse_public_h_sources = $(strip \
-	bse.h	bsedefs.h	bseexports.h	bseconfig.h	ladspa.h \
+	bse.h	bsedefs.h	bseexports.h	bseconfig.h	ladspa.h	bsegenclosures.h \
 	\
 	bseamplifier.h		            		bsebiquadfilter.h		bsecategories.h \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
@@ -61,7 +61,8 @@ bse_public_h_sources = $(strip \
 	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
 	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
 	bsecompat.h		bseundostack.h		bsemonokeyboard.c		bsemididecoder.h \
-	bsecxxutils.h		bsecxxbase.h		bseexample.h			\
+	bsecxxvalue.h		bsecxxutils.h		bsecxxbase.h			bsecxxclosure.h \
+	bsecxxarg.h		bsecxxmodule.h		examplepeakfilter.h \
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -86,7 +87,8 @@ bse_c_sources = $(strip \
 	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
 	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
 	bsecompat.c		bseundostack.c		bsemonokeyboard.c		bsemididecoder.c \
-	bsecxxutils.cc		bsecxxbase.cc		bseexample.cc			\
+	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
+	bsecxxarg.cc		bsecxxmodule.cc		examplepeakfilter.cc \
 )
 # procedure sources
 bse_proc_sources = $(strip \

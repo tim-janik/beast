@@ -141,6 +141,7 @@ struct _BseSourceClass
 			 guint		 ichannel,
 			 BseSource	*osource,
 			 guint		 ochannel);
+  GslClass *gsl_class;
 };
 
 
@@ -231,6 +232,8 @@ guint		bse_source_class_add_jchannel	(BseSourceClass	*source_class,
 guint		bse_source_class_add_ochannel	(BseSourceClass	*source_class,
 						 const gchar	*name,
 						 const gchar	*blurb);
+void    	bse_source_class_cache_gsl_class(BseSourceClass	*source_class,
+						 const GslClass *gsl_class);
 void		bse_source_set_context_module	(BseSource	*source,
 						 guint		 context_handle,
 						 GslModule	*module);

@@ -18,47 +18,29 @@
 #ifndef __BSE_CXX_BASE_H__
 #define __BSE_CXX_BASE_H__
 
-#include <bse/bsecxxutils.h>
 #include <bse/bsesource.h>
-#include <string>
-#include <stdexcept>
+#include <bse/bsecxxvalue.h>
+#include <bse/bsecxxclosure.h>
 
 namespace Bse {
 #define BSE_CXX_INSTANCE_OFFSET    BSE_CXX_SIZEOF (BseSource)
 
 #define BSE_TYPE_CXX_BASE        (CxxBase::get_type ())
 
-struct Value : GValue {
-  bool                  get_bool    () const { return get_num(); }
-  SfiInt                get_int     () const { return get_num(); }
-  SfiInt                get_enum    () const { return get_num(); }
-  SfiNum                get_num     () const;
-  SfiReal               get_real    () const;
-  const SfiString       get_string  () const;
-  const SfiString       get_choice  () const { return get_string(); }
-  GValue*               gvalue  () const { return (GValue*) this; }
-  void set_bool    (bool             b) { set_num (b); }
-  void set_int     (SfiInt           i) { set_num (i); }
-  void set_enum    (SfiInt           e) { set_num (e); }
-  void set_num     (SfiNum           n);
-  void set_real    (SfiReal          r);
-  void set_string  (const char      *s);
-  void set_choice  (const char      *c) { set_string (c); }
-  void operator= (bool               b) { set_bool (b); }
-  void operator= (SfiInt             i) { set_int (i); }
-  void operator= (SfiNum             n) { set_num (n); }
-  void operator= (SfiReal            r) { set_real (r); }
-  void operator= (const std::string &s) { set_string (s.c_str()); }
-};
-
 class CxxBaseClass : public BseSourceClass {
 public:
-  void add (const char *group,
-            guint       prop_id,
-            GParamSpec *pspec)
-  {
-    bse_object_class_add_param ((BseObjectClass*) this, group, prop_id, pspec);
-  }
+  void add          (const char *group,
+                     guint       prop_id,
+                     GParamSpec *pspec);
+  void add_ochannel (const char *name,
+                     const char *blurb,
+                     int         assert_id = -1);
+  void add_ichannel (const char *name,
+                     const char *blurb,
+                     int         assert_id = -1);
+  void add_jchannel (const char *name,
+                     const char *blurb,
+                     int         assert_id = -1);
 };
 class CxxBase {
   void*           cast_to_gobject   ();
@@ -83,6 +65,20 @@ public:
   void            get_property      (guint          prop_id,
                                      Value         &value,
                                      GParamSpec    *pspec);
+#if 0
+  gulong          connect           (const gchar   *signal,
+                                     GClosure      *closure,
+                                     bool           after);
+  gulong          connect           (const gchar   *signal,
+                                     GClosure      *closure) { return connect (signal, closure, false); }
+#endif
+  gulong          connect           (const gchar   *signal,
+                                     CxxClosure    *closure,
+                                     bool           after);
+  gulong          connect           (const gchar   *signal,
+                                     CxxClosure    *closure) { return connect (signal, closure, false); }
+  const String    tokenize_signal   (const gchar   *signal);
+  GType           type              ();
   virtual         ~CxxBase          ();
 
   static void     class_init        (CxxBaseClass *klass);
@@ -91,13 +87,15 @@ public:
   class Pointer {
     CxxBase *p;
   public:
-    Pointer (CxxBase *t) { p = t; }
+    Pointer (CxxBase *t)       { p = t; }
     /* second part of to-GObject* casts: */
     operator GObject*   () { return (GObject*)   p->cast_to_gobject (); }
     operator BseObject* () { return (BseObject*) p->cast_to_gobject (); }
     operator BseItem*   () { return (BseItem*)   p->cast_to_gobject (); }
     operator BseSource* () { return (BseSource*) p->cast_to_gobject (); }
   };
+  /* first part of to-GObject* casts: */
+  static inline CxxBase::Pointer cast (CxxBase *c) { return CxxBase::Pointer (c); }
   /* from-GObject* casts: */
   static CxxBase* cast (GObject   *o) { return cast_from_gobject (o); }
   static CxxBase* cast (BseSource *o) { return cast_from_gobject (o); }

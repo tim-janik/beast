@@ -392,6 +392,14 @@ master_process_job (GslJob *job)
       else
 	g_warning ("jdisconnect(dest:%p,%u,src:%p,%u): no such connection", node, jstream, src_node, ostream);
       break;
+    case ENGINE_JOB_FORCE_RESET:
+      node = job->data.node;
+      JOB_DEBUG ("reset(%p)", node);
+      g_return_if_fail (node->integrated == TRUE);
+      if (node->module.klass->reset)
+        node->module.klass->reset (&node->module);
+      node->needs_reset = FALSE;
+      break;
     case ENGINE_JOB_ACCESS:
       node = job->data.access.node;
       JOB_DEBUG ("access node(%p): %p(%p)", node, job->data.access.access_func, job->data.access.data);

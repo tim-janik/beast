@@ -20,11 +20,7 @@
 
 #include <bse/gsldefs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-
+G_BEGIN_DECLS
 
 /* --- constants --- */
 #define	GSL_STREAM_MAX_VALUES		        (2048 /* power of 2, <= 16384 */)	/* FIXME */
@@ -135,6 +131,7 @@ GslJob*		gsl_job_kill_inputs	(GslModule	 *module);
 GslJob*		gsl_job_kill_outputs	(GslModule	 *module);
 GslJob*		gsl_job_integrate	(GslModule	 *module);
 GslJob*		gsl_job_discard		(GslModule	 *module);
+GslJob*		gsl_job_force_reset	(GslModule	 *module);
 GslJob*		gsl_job_access		(GslModule	 *module,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
@@ -214,8 +211,6 @@ extern guint	gsl_externvar_sample_freq;
 extern guint	gsl_externvar_sub_sample_mask;
 extern guint	gsl_externvar_sub_sample_steps;
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_ENGINE_H__ */

@@ -1,3 +1,45 @@
+Fri Aug 22 05:01:14 2003  Tim Janik  <timj@gtk.org>
+
+	* examplepeakfilter.[hc]*: implementation of a peak filter, and example
+	effect implemented in C++.
+
+        * bsecxxmodule.[hc]*: implement Module, the C++ base class for engine
+        modules. implement Bse::Effect, mostly a wrapper around BseSource
+        functionality to allow effect implementations in C++.
+        
+	* bsecxxvalue.[hc]*: C++ GValue wrapper.
+
+	* bsegenclosures.h: generated closure templates to allow signal
+	connections in C++ code with many different signatures.
+
+	* bsecxxclosure.[hc]*: implement base signal handler closure,
+	and generation code for bsegenclosures.h.
+
+	* bsecxxarg.[hc]*: implement function argument templates to be
+	used by signal handler closures.
+
+	* tests/testcxx.cc: new test program to perform cxx tests.
+
+	* bsecxxbase.[hc]*: implement signal connections with type checking.
+	implemented class functions to add i/o channels.
+
+	* bsecxxutils.[hc]*: put out a message upon uncaught exceptions.
+	added template and exception utilities. allow for better
+	parameterization upon type registration.
+
+	* bsesource.[hc]: allow GslClass caching in BseSourceClass.
+
+	* bseexample.[hc]*: removed bad test code, there's a better example
+	module now.
+
+	* *.cc: use an anonymous namespace for local (static)
+	functions/variables.
+
+	* gslengine.[hc]: implement force-reset jobs to allow forcing
+	reset of a module.
+
+	* gslopmaster.[hc]: implement forced resetting of modules.
+
 Thu Jul 31 18:08:28 2003  Tim Janik  <timj@gtk.org>
 
 	* added BSE gruntwork to get C++ plugins going.
