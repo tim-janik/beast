@@ -66,9 +66,9 @@ indent (guint n_spaces)
 static void
 add_type_wrapper (GType type)
 {
-  if (g_type_is_a (type, BSE_TYPE_ITEM) && !g_hash_table_lookup (type_wrapper_ht, GUINT_TO_POINTER (type)))
+  if (g_type_is_a (type, BSE_TYPE_ITEM) && !g_hash_table_lookup (type_wrapper_ht, (gpointer) type))
     {
-      g_hash_table_insert (type_wrapper_ht, GUINT_TO_POINTER (type), GUINT_TO_POINTER (TRUE));
+      g_hash_table_insert (type_wrapper_ht, (gpointer) type, GUINT_TO_POINTER (TRUE));
       add_type_wrapper (g_type_parent (type));
     }
 }
@@ -78,7 +78,7 @@ type_wrapper_foreach (gpointer key,
 		      gpointer value,
 		      gpointer user_data)
 {
-  GType type = GPOINTER_TO_UINT (key);
+  GType type = (GType) key;
   gchar *macro = tmacro_from_type (type);
   gchar *delim = strchr (macro, '_'); /* skip namespace prefix */
 
