@@ -1,3 +1,10 @@
+Wed Oct 15 02:35:15 2003  Tim Janik  <timj@gtk.org>
+
+	* update.sh: figure versioned gettext domain (GETTEXT_PACKAGE)
+	from ../po-helper.sh.
+
+	* POTFILES.in: added more i18n makred up files.
+
 2003-10-08  Christian Neumair  <chris@gnome-de.org>
 
 	* .cvsignore:
