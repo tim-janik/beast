@@ -8,5 +8,6 @@ libsfi.la
 testidl.[hc]
 sfidl
 testsfi
+testcxx
 sficonfig.h
 bse-plugin-generator

@@ -21,6 +21,7 @@ bsegentype_array.c
 bsequery
 bseautodoc
 bseprocidl
+bsehack.idl
 
 *.gen-proc.c
 *.gen-idl.h
