@@ -142,7 +142,7 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 #define sfidl_pspec_LogScale(group, name, nick, blurb, dflt, min, max, step, center, base, n_steps, options) \
   sfi_pspec_set_group (sfi_pspec_log_scale (name, nick, blurb, dflt, min, max, step, center, base, n_steps, "scale:" options), group)
 #define sfidl_pspec_Choice(group, name, nick, blurb, dval, options, cvalues) \
-  sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, dval, cvalues, SFI_PARAM_STANDARD), group)
+  sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, #dval, cvalues, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_Choice_default(group, name, cvalues) \
   sfidl_pspec_Choice (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
 #define sfidl_pspec_GEnum(group, name, nick, blurb, dval, options, etype) \

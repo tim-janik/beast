@@ -1,3 +1,16 @@
+Fri Jun 11 04:35:46 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl:
+	* bsecore.cc: added API to report CPU usage statistics.
+
+	* bsessequencer.[hc]: export bse_ssequencer_thread handle.
+
+	* bsetype.h: fixed sfidl_pspec_Choice().
+
+	* gslengine.[hc]: renamed threads. provide gsl_engine_get_threads().
+
+	* gslopmaster.c: do thread accounting.
+
 Thu May 20 13:36:35 2004  Tim Janik  <timj@gtk.org>
 
 	* bsedefs.h: got rid of BsePixdata.

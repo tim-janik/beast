@@ -207,6 +207,7 @@ typedef struct
 gboolean        gsl_engine_prepare	(GslEngineLoop		*loop);
 gboolean        gsl_engine_check	(const GslEngineLoop	*loop);
 void	        gsl_engine_dispatch	(void);
+SfiThread**     gsl_engine_get_threads	(guint                  *n_threads);
 
 
 /* --- miscellaneous --- */

@@ -1076,8 +1076,6 @@ _engine_master_dispatch (void)
 void
 _engine_master_thread (EngineMasterData *mdata)
 {
-  gboolean run = TRUE;
-
   /* assert sane configuration checks, since we're simply casting structures */
   g_assert (sizeof (struct pollfd) == sizeof (GPollFD) &&
 	    G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd) &&
@@ -1094,7 +1092,7 @@ _engine_master_thread (EngineMasterData *mdata)
 
   toyprof_stampinit ();
 
-  while (run)
+  while (!sfi_thread_aborted ())        /* also updates accounting information */
     {
       GslEngineLoop loop;
       gboolean need_dispatch;

@@ -28,12 +28,13 @@
 
 
 /* --- prototypes --- */
-static void	bse_ssequencer_thread		(gpointer	 data);
+static void	bse_ssequencer_thread_main	(gpointer	 data);
 static void	bse_ssequencer_process_song_SL	(BseSong	*song,
 						 guint		 n_ticks);
 
 
 /* --- variables --- */
+SfiThread            *bse_ssequencer_thread = NULL;
 static BseSSequencer *self = NULL;
 static SfiThread     *seq_thread = NULL;
 
@@ -50,7 +51,7 @@ bse_ssequencer_init_thread (void)
   self->stamp = gsl_tick_stamp ();
   g_assert (self->stamp > 0);
 
-  seq_thread = sfi_thread_run ("BseSSequencer", bse_ssequencer_thread, NULL);
+  seq_thread = sfi_thread_run ("BseSSequencer", bse_ssequencer_thread_main, NULL);
   if (!seq_thread)
     g_error ("failed to create sequencer thread");
 }
@@ -218,8 +219,9 @@ bse_ssequencer_handle_jobs (SfiRing *jobs)
 }
 
 static void
-bse_ssequencer_thread (gpointer data)
+bse_ssequencer_thread_main (gpointer data)
 {
+  bse_ssequencer_thread = sfi_thread_self ();
   DEBUG ("SST: start\n");
   do
     {

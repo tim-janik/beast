@@ -363,6 +363,43 @@ record SampleFileInfo {
   Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_STANDARD); // FIXME: use BseErrorType here
 };
 
+/* thread info */
+choice ThreadState {
+  THREAD_STATE_UNKNOWN,
+  THREAD_STATE_RUNNING,
+  THREAD_STATE_SLEEPING,
+  THREAD_STATE_DISKWAIT,
+  THREAD_STATE_TRACED,
+  THREAD_STATE_PAGING,
+  THREAD_STATE_ZOMBIE,
+  THREAD_STATE_DEAD,
+};
+record ThreadInfo {
+  String      name      = (_("Thread Name"), NULL, NULL, STANDARD);
+  ThreadState state     = (_("State"), _("The execution state of the thread"), THREAD_STATE_UNKNOWN, STANDARD);
+  Int         priority  = (_("Priority"), _("The nice value of a thread, -20 indicates a high priority thread and "
+                                            "+19 a low priority one that is 'nice' to others"),
+                           0, -20, 19, 1, STANDARD);
+  Int         processor = (_("Processor"), _("The processor that this thread is currently being executed on"),
+                           0, 0, MAXINT, 1, STANDARD);
+  Int         utime     = (_("User Time"), _("The CPU time spent executing instructions of this thread"),
+                           0, 0, MAXINT, 1, STANDARD);
+  Int         stime     = (_("System Time"), _("The CPU time spent in the system for this thread"),
+                           0, 0, MAXINT, 1, STANDARD);
+  Int         cutime    = (_("Child User Time"), _("The CPU time spent executing instructions of children of this thread"),
+                           0, 0, MAXINT, 1, STANDARD);
+  Int         cstime    = (_("Child System Time"), _("The CPU time spent in the system for children of this thread"),
+                           0, 0, MAXINT, 1, STANDARD);
+};
+sequence ThreadInfoSeq {
+  ThreadInfo thread_infos;
+};
+record ThreadTotals {
+  ThreadInfo    main;
+  ThreadInfo    sequencer;
+  ThreadInfoSeq synthesis;
+};
+ThreadTotals    collect_thread_totals ();
 
 /* BSE Global Config */
 record GConfig {

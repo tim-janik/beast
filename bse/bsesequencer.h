@@ -44,6 +44,7 @@ typedef struct {
   SfiRing		*supers;
 } BseSSequencer;
 
+extern SfiThread       *bse_ssequencer_thread;
 
 void			bse_ssequencer_init_thread	(void);
 void			bse_ssequencer_start_supers	(SfiRing	*supers,
