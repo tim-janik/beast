@@ -25,6 +25,7 @@
 #include <bse/bsecsynth.h>
 #include <bse/bsemidisynth.h>
 #include <bse/bsedatapocket.h>
+#include <bse/bsemidifile.h>
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
@@ -77,6 +78,56 @@ METHOD (BseProject, is-active) {
   
   /* set output parameters */
   sfi_value_set_bool (out_values++, project->state != BSE_PROJECT_INACTIVE);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, import-midi-file, "File/Import MIDI") {
+  HELP  = "Import a song from a MIDI file.";
+  IN    = bse_param_spec_object ("project", "Project", "The project",
+                                 BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_string ("file-name", "MIDI File", "MIDI file name",
+                            NULL, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_enum ("error", "Error", "Error indicating possible failures",
+                               BSE_ERROR_NONE, BSE_TYPE_ERROR_TYPE,
+                               SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = bse_value_get_object (in_values++);
+  gchar *file_name = sfi_value_get_string (in_values++);
+  BseMidiFile *smf;
+  BseErrorType error;
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !file_name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  smf = bse_midi_file_load (file_name, &error);
+  if (!error)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (project, "import-midi-file");
+      gchar *basename = g_path_get_basename (file_name);
+      BseSong *song;
+      bse_item_exec (project, "create-song", basename, &song);
+      g_free (basename);
+      bse_midi_file_setup_song (smf, song);
+      bse_item_undo_close (ustack);
+#if 1
+      bse_undo_stack_clear (project->undo_stack);
+      bse_undo_stack_clear (project->redo_stack);
+      g_object_notify (project, "dirty");
+#endif
+    }
+  if (smf)
+    bse_midi_file_free (smf);
+  g_printerr ("error: %u\n", error);
+  
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
   
   return BSE_ERROR_NONE;
 }

@@ -46,7 +46,7 @@ enum {
   PROP_SYNTH_NET,
   PROP_WAVE,
   PROP_MIDI_CHANNEL,
-  PROP_N_SYNTH_VOICES,
+  PROP_N_VOICES,
   PROP_POST_NET
 };
 
@@ -136,7 +136,7 @@ bse_track_class_init (BseTrackClass *class)
 						     BSE_TYPE_WAVE,
 						     SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Synth Input",
-			      PROP_N_SYNTH_VOICES,
+			      PROP_N_VOICES,
 			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
 					     8, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
@@ -477,7 +477,7 @@ bse_track_set_property (GObject      *object,
 	    }
 	}
       break;
-    case PROP_N_SYNTH_VOICES:
+    case PROP_N_VOICES:
       if (!self->postprocess || !BSE_SOURCE_PREPARED (self->postprocess))
         self->max_voices = sfi_value_get_int (value);
       break;
@@ -539,7 +539,7 @@ bse_track_get_property (GObject    *object,
     case PROP_WAVE:
       bse_value_set_object (value, self->wave);
       break;
-    case PROP_N_SYNTH_VOICES:
+    case PROP_N_VOICES:
       sfi_value_set_int (value, self->max_voices);
       break;
     case PROP_MIDI_CHANNEL:

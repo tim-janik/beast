@@ -100,9 +100,9 @@ struct MidiChannel {
                          gfloat           velocity,
                          gboolean         sustain_note,
                          GslTrans        *trans);
-  void  kill_notes      (guint64       tick_stamp,
-                         gboolean      sustained_only,
-                         GslTrans     *trans);
+  void  kill_notes      (guint64          tick_stamp,
+                         gboolean         sustained_only,
+                         GslTrans        *trans);
   void  debug_notes     (guint64          tick_stamp,
                          GslTrans        *trans);
 };
@@ -604,7 +604,7 @@ create_voice_input (VoiceInputTable *table,
   vinput->next = NULL;
   vinput->iter = table->end();
   gsl_trans_add (trans, gsl_job_integrate (vinput->fmodule));
-
+  
   return vinput;
 }
 
@@ -614,7 +614,7 @@ destroy_voice_input (VoiceInput      *vinput,
                      GslTrans        *trans)
 {
   g_return_if_fail (vinput->ref_count == 0);
-
+  
   if (vinput->iter != table->end())
     {
       voice_input_table_iter_remove (vinput->iter, vinput);
@@ -810,7 +810,7 @@ MidiChannel::start_note (guint64         tick_stamp,
   /* grab voice to override */
   if (!voice)
     ; // FIXME: voice = override_candidate;
-
+  
   if (voice && voice->n_vinputs)
     {
       /* start note */
@@ -848,7 +848,7 @@ MidiChannel::adjust_note (guint64         tick_stamp,
   
   /* find corresponding vinput */
   vinput = mchannel->voice_input_table[freq_val];
-
+  
   /* adjust note */
   if (vinput)
     change_voice_input (vinput, &mchannel->voice_input_table, tick_stamp, vctype, freq_val, velocity, trans);
@@ -946,7 +946,7 @@ events_cmp (gconstpointer a,
   const BseMidiEvent *e1 = (const BseMidiEvent *) a;
   const BseMidiEvent *e2 = (const BseMidiEvent *) b;
   
-  return e1->tick_stamp < e2->tick_stamp ? -1 : e1->tick_stamp != e2->tick_stamp;
+  return e1->delta_time < e2->delta_time ? -1 : e1->delta_time != e2->delta_time;
 }
 
 void
@@ -991,7 +991,7 @@ bse_midi_receiver_leave_farm (BseMidiReceiver *self)
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (find (farm_residents.begin(), farm_residents.end(), self) != farm_residents.end());
-
+  
   BSE_MIDI_RECEIVER_LOCK (self);
   farm_residents.erase (find (farm_residents.begin(), farm_residents.end(), self));
   BSE_MIDI_RECEIVER_UNLOCK (self);
@@ -1033,7 +1033,7 @@ bse_midi_receiver_new (const gchar *receiver_name)  // FIXME
   BseMidiReceiver *self;
   
   self = new BseMidiReceiver ();
-
+  
   return self;
 }
 
@@ -1064,7 +1064,7 @@ bse_midi_receiver_unref (BseMidiReceiver *self)
   leave_farm = need_destroy && find (farm_residents.begin(),
                                      farm_residents.end(), self) != farm_residents.end();
   BSE_MIDI_RECEIVER_UNLOCK (self);
-
+  
   if (need_destroy)
     {
       if (leave_farm)
@@ -1634,7 +1634,7 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
     return FALSE;
   
   event = (BseMidiEvent *) self->events->data;
-  if (event->tick_stamp <= max_tick_stamp)
+  if (event->delta_time <= max_tick_stamp)
     {
       GslTrans *trans = gsl_trans_open ();
       self->events = sfi_ring_remove_node (self->events, self->events);
@@ -1644,9 +1644,9 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
         case BSE_MIDI_NOTE_ON:
           mchannel = self->peek_channel (event->channel);
 	  DEBUG_EVENTS ("MidiChannel[%u]: NoteOn  %fHz Velo=%f (stamp:%llu)", event->channel,
-                        event->data.note.frequency, event->data.note.velocity, event->tick_stamp);
+                        event->data.note.frequency, event->data.note.velocity, event->delta_time);
 	  if (mchannel)
-            mchannel->start_note (event->tick_stamp,
+            mchannel->start_note (event->delta_time,
                                   event->data.note.frequency,
                                   event->data.note.velocity,
                                   trans);
@@ -1658,57 +1658,57 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
           mchannel = self->peek_channel (event->channel);
           DEBUG_EVENTS ("MidiChannel[%u]: %s %fHz (stamp:%llu)", event->channel,
                         event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
-                        event->data.note.frequency, event->tick_stamp);
+                        event->data.note.frequency, event->delta_time);
           if (mchannel)
             {
               gboolean sustained_note = event->status == BSE_MIDI_NOTE_OFF &&
                                         (BSE_GCONFIG (invert_sustain) ^
                                          (self->get_control (event->channel, BSE_MIDI_SIGNAL_CONTROL_64) >= 0.5));
-              mchannel->adjust_note (event->tick_stamp,
+              mchannel->adjust_note (event->delta_time,
                                      event->data.note.frequency, event->status,
                                      event->data.note.velocity, sustained_note, trans);
             }
 	  break;
 	case BSE_MIDI_CONTROL_CHANGE:
 	  DEBUG_EVENTS ("MidiChannel[%u]: Control %2u Value=%f (stamp:%llu)", event->channel,
-                        event->data.control.control, event->data.control.value, event->tick_stamp);
-	  process_midi_control_L (self, event->channel, event->tick_stamp,
+                        event->data.control.control, event->data.control.value, event->delta_time);
+	  process_midi_control_L (self, event->channel, event->delta_time,
 				  event->data.control.control, event->data.control.value,
 				  FALSE,
                                   trans);
 	  break;
 	case BSE_MIDI_X_CONTINUOUS_CHANGE:
 	  DEBUG_EVENTS ("MidiChannel[%u]: X Continuous Control %2u Value=%f (stamp:%llu)", event->channel,
-                        event->data.control.control, event->data.control.value, event->tick_stamp);
-	  process_midi_control_L (self, event->channel, event->tick_stamp,
+                        event->data.control.control, event->data.control.value, event->delta_time);
+	  process_midi_control_L (self, event->channel, event->delta_time,
 				  event->data.control.control, event->data.control.value,
                                   TRUE,
 				  trans);
 	  break;
 	case BSE_MIDI_PROGRAM_CHANGE:
 	  DEBUG_EVENTS ("MidiChannel[%u]: Program %u (Value=%f) (stamp:%llu)", event->channel,
-                        event->data.program, event->data.program / (gfloat) 0x7f, event->tick_stamp);
-	  update_midi_signal_L (self, event->channel, event->tick_stamp,
+                        event->data.program, event->data.program / (gfloat) 0x7f, event->delta_time);
+	  update_midi_signal_L (self, event->channel, event->delta_time,
 				BSE_MIDI_SIGNAL_PROGRAM, event->data.program / (gfloat) 0x7f,
 				trans);
 	  break;
 	case BSE_MIDI_CHANNEL_PRESSURE:
 	  DEBUG_EVENTS ("MidiChannel[%u]: Channel Pressure Value=%f (stamp:%llu)", event->channel,
-                        event->data.intensity, event->tick_stamp);
-	  update_midi_signal_L (self, event->channel, event->tick_stamp,
+                        event->data.intensity, event->delta_time);
+	  update_midi_signal_L (self, event->channel, event->delta_time,
 				BSE_MIDI_SIGNAL_PRESSURE, event->data.intensity,
 				trans);
 	  break;
 	case BSE_MIDI_PITCH_BEND:
 	  DEBUG_EVENTS ("MidiChannel[%u]: Pitch Bend Value=%f (stamp:%llu)", event->channel,
-                        event->data.pitch_bend, event->tick_stamp);
-	  update_midi_signal_L (self, event->channel, event->tick_stamp,
+                        event->data.pitch_bend, event->delta_time);
+	  update_midi_signal_L (self, event->channel, event->delta_time,
 				BSE_MIDI_SIGNAL_PITCH_BEND, event->data.pitch_bend,
 				trans);
 	  break;
 	default:
 	  DEBUG_EVENTS ("MidiChannel[%u]: Ignoring Event %u (stamp:%llu)", event->channel,
-                        event->status, event->tick_stamp);
+                        event->status, event->delta_time);
 	  break;
 	}
       if (self->notifier)

@@ -79,7 +79,7 @@ bse_midi_device_init (BseMidiDevice *self)
   BSE_OBJECT_UNSET_FLAGS (self, (BSE_MIDI_FLAG_OPEN |
 				 BSE_MIDI_FLAG_READABLE |
 				 BSE_MIDI_FLAG_WRITABLE));
-  self->midi_decoder = bse_midi_decoder_new (TRUE);
+  self->midi_decoder = bse_midi_decoder_new (TRUE, FALSE);
   self->handle = NULL;
 }
 

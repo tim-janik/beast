@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-2002 Tim Janik
+ * Copyright (C) 1996-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,18 +42,22 @@ bse_midi_signal_default (BseMidiSignalType type)
   switch (type)
     {
     case BSE_MIDI_SIGNAL_PITCH_BEND:	return 0.0;
-    case BSE_MIDI_SIGNAL_CONTINUOUS_7:	return 0.8;	/* Volume */
-    case BSE_MIDI_SIGNAL_CONTINUOUS_8:	return 0.5;	/* Balance */
-    case BSE_MIDI_SIGNAL_CONTROL_7:	return 0.8;	/* Volume MSB */
-    case BSE_MIDI_SIGNAL_CONTROL_8:	return 0.5;	/* Balance MSB */
+    case BSE_MIDI_SIGNAL_CONTINUOUS_7:	return 100.0 / 127.0;   /* Volume */
+    case BSE_MIDI_SIGNAL_CONTINUOUS_8:	return 0.5;	        /* Balance */
+    case BSE_MIDI_SIGNAL_CONTINUOUS_10:	return 0.5;	        /* Panorama */
+    case BSE_MIDI_SIGNAL_CONTINUOUS_11:	return 0x3fff / (gfloat) 0x3f80; /* Expression */
+    case BSE_MIDI_SIGNAL_CONTROL_7:	return 100.0 / 127.0;	/* Volume MSB */
+    case BSE_MIDI_SIGNAL_CONTROL_8:	return 0.5;	        /* Balance MSB */
+    case BSE_MIDI_SIGNAL_CONTROL_10:	return 0.5;	        /* Panorama MSB */
+    case BSE_MIDI_SIGNAL_CONTROL_11:	return 1.0;	        /* Expression MSB */
     case BSE_MIDI_SIGNAL_CONTROL_64:
-      return BSE_GCONFIG (invert_sustain) ? 1.0 : 0.0;	/* Damper Pedal Switch */
-    case BSE_MIDI_SIGNAL_CONTROL_120:	return 1.0;	/* All Sound Off ITrigger */
-    case BSE_MIDI_SIGNAL_CONTROL_121:	return 1.0;	/* All Controllers Off ITrigger */
-    case BSE_MIDI_SIGNAL_CONTROL_123:	return 1.0;	/* All Notes Off ITrigger */
-    case BSE_MIDI_SIGNAL_CONTROL_124:	return 1.0;	/* Omni Mode Off ITrigger */
-    case BSE_MIDI_SIGNAL_CONTROL_125:	return 1.0;	/* Omni Mode On ITrigger */
-    case BSE_MIDI_SIGNAL_CONTROL_127:	return 1.0;	/* Polyphonic Mode On ITrigger */
+      return BSE_GCONFIG (invert_sustain) ? 1.0 : 0.0;	        /* Damper Pedal Switch */
+    case BSE_MIDI_SIGNAL_CONTROL_120:	return 1.0;	        /* All Sound Off ITrigger */
+    case BSE_MIDI_SIGNAL_CONTROL_121:	return 1.0;	        /* All Controllers Off ITrigger */
+    case BSE_MIDI_SIGNAL_CONTROL_123:	return 1.0;	        /* All Notes Off ITrigger */
+    case BSE_MIDI_SIGNAL_CONTROL_124:	return 1.0;	        /* Omni Mode Off ITrigger */
+    case BSE_MIDI_SIGNAL_CONTROL_125:	return 1.0;	        /* Omni Mode On ITrigger */
+    case BSE_MIDI_SIGNAL_CONTROL_127:	return 1.0;	        /* Polyphonic Mode On ITrigger */
     case BSE_MIDI_SIGNAL_CONSTANT_HIGH:			return 1.0;
     case BSE_MIDI_SIGNAL_CONSTANT_CENTER:		return 0.5;
     case BSE_MIDI_SIGNAL_CONSTANT_LOW:			return 0.0;
@@ -102,8 +106,33 @@ bse_midi_free_event (BseMidiEvent *event)
   g_return_if_fail (event != NULL);
   g_return_if_fail (event->status != 0);
   
-  if (event->status == BSE_MIDI_SYS_EX)
-    g_free (event->data.sys_ex.bytes);
+  switch (event->status)
+    {
+    case BSE_MIDI_MULTI_SYS_EX_START:
+    case BSE_MIDI_MULTI_SYS_EX_NEXT:
+    case BSE_MIDI_SYS_EX:
+    case BSE_MIDI_SEQUENCER_SPECIFIC:
+      g_free (event->data.sys_ex.bytes);
+      break;
+    case BSE_MIDI_TEXT_EVENT:
+    case BSE_MIDI_COPYRIGHT_NOTICE:
+    case BSE_MIDI_TRACK_NAME:
+    case BSE_MIDI_INSTRUMENT_NAME:
+    case BSE_MIDI_LYRIC:
+    case BSE_MIDI_MARKER:
+    case BSE_MIDI_CUE_POINT:
+    case BSE_MIDI_TEXT_EVENT_08:
+    case BSE_MIDI_TEXT_EVENT_09:
+    case BSE_MIDI_TEXT_EVENT_0A:
+    case BSE_MIDI_TEXT_EVENT_0B:
+    case BSE_MIDI_TEXT_EVENT_0C:
+    case BSE_MIDI_TEXT_EVENT_0D:
+    case BSE_MIDI_TEXT_EVENT_0E:
+    case BSE_MIDI_TEXT_EVENT_0F:
+      g_free (event->data.text);
+      break;
+    default: ;
+    }
   sfi_delete_struct (BseMidiEvent, event);
 }
 
@@ -129,7 +158,7 @@ bse_midi_alloc_event (void)
 
 BseMidiEvent*
 bse_midi_event_note_on (guint   midi_channel,
-			guint64 tick_stamp,
+			guint64 delta_time,
 			gfloat  frequency,
 			gfloat  velocity)
 {
@@ -142,7 +171,7 @@ bse_midi_event_note_on (guint   midi_channel,
   event = bse_midi_alloc_event ();
   event->status = BSE_MIDI_NOTE_ON;
   event->channel = midi_channel;
-  event->tick_stamp = tick_stamp;
+  event->delta_time = delta_time;
   event->data.note.frequency = frequency;
   event->data.note.velocity = velocity;
   
@@ -151,7 +180,7 @@ bse_midi_event_note_on (guint   midi_channel,
 
 BseMidiEvent*
 bse_midi_event_note_off (guint   midi_channel,
-			 guint64 tick_stamp,
+			 guint64 delta_time,
 			 gfloat  frequency)
 {
   BseMidiEvent *event;
@@ -162,7 +191,7 @@ bse_midi_event_note_off (guint   midi_channel,
   event = bse_midi_alloc_event ();
   event->status = BSE_MIDI_NOTE_OFF;
   event->channel = midi_channel;
-  event->tick_stamp = tick_stamp;
+  event->delta_time = delta_time;
   event->data.note.frequency = frequency;
   event->data.note.velocity = 0.0;
   
@@ -171,7 +200,7 @@ bse_midi_event_note_off (guint   midi_channel,
 
 BseMidiEvent*
 bse_midi_event_signal (guint             midi_channel,
-                       guint64           tick_stamp,
+                       guint64           delta_time,
                        BseMidiSignalType signal_type,
                        gfloat            value)
 {
@@ -221,7 +250,7 @@ bse_midi_event_signal (guint             midi_channel,
       break;
     }
   event->channel = midi_channel;
-  event->tick_stamp = tick_stamp;
+  event->delta_time = delta_time;
   return event;
 }
 
@@ -229,14 +258,7 @@ static gpointer
 boxed_copy_midi_event (gpointer boxed)
 {
   BseMidiEvent *src = boxed;
-  BseMidiEvent *dest = g_new (BseMidiEvent, 1);
-  
-  *dest = *src;
-  if (dest->status == BSE_MIDI_SYS_EX)
-    {
-      dest->data.sys_ex.n_bytes = 0;
-      dest->data.sys_ex.bytes = NULL;
-    }
+  BseMidiEvent *dest = bse_midi_copy_event (src);
   return dest;
 }
 
@@ -244,7 +266,6 @@ static void
 boxed_free_midi_event (gpointer boxed)
 {
   BseMidiEvent *event = boxed;
-  
   bse_midi_free_event (event);
 }
 

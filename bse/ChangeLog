@@ -1,3 +1,25 @@
+Thu Dec 25 07:25:51 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidievent.[hc]: comment fixups. added SMF meta event types.
+	renamed event tick_stamp field to delta_time. added global macros
+	to check for channel-voice, system-common and system-realtime
+	messages.
+	(bse_midi_signal_default): adjusted #7 (volume) default and added
+	defaults for #10 (Panorama) and #11 (Expression).
+	(boxed_copy_midi_event): fix bogus allocation and copying.
+	(bse_midi_free_event): properly free the new event types.
+
+	* bsemididecoder.[hc]: lots of fixes, added SMF delta time and meta
+	event parsing. turned the decoder into a proper state machine.
+
+	* bsessequencer.c:
+	* bsemidireceiver.cc: cosmetic fixups, adapt to renames.
+
+	* bseproject.proc: added import-midi-file() procedure.
+	
+	* bsemidievent.h:
+	* bserecords.idl: fixed midi signal type names, added some.
+
 Tue Dec 23 05:24:53 2003  Tim Janik  <timj@gtk.org>
 
 	* bseplugin.[hc] (bse_plugin_check_load): disabled .la loading, expect

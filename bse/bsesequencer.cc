@@ -401,7 +401,7 @@ bse_ssequencer_process_part_SL (BsePart         *part,
 	    bse_midi_receiver_push_event (midi_receiver, eon);
 	    bse_midi_receiver_push_event (midi_receiver, eoff);
 	    DEBUG ("note: %llu till %llu freq=%f (note=%d velocity=%f)",
-		   eon->tick_stamp, eoff->tick_stamp, BSE_PART_NOTE_EVENT_FREQ (&ev->note),
+		   eon->delta_time, eoff->delta_time, BSE_PART_NOTE_EVENT_FREQ (&ev->note),
                    ev->note.note, ev->note.velocity);
 	  }
         else if (ev && ev->type == BSE_PART_EVENT_CONTROL)
@@ -410,7 +410,7 @@ bse_ssequencer_process_part_SL (BsePart         *part,
                                                          ev->control.ctype, ev->control.value);
             bse_midi_receiver_push_event (midi_receiver, event);
             DEBUG ("control: %llu signal=%d (value=%f)",
-                   event->tick_stamp, ev->control.ctype, ev->control.value);
+                   event->delta_time, ev->control.ctype, ev->control.value);
           }
       i = bse_part_node_lookup_SL (part, part->nodes[i].tick + 1);
     }

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-2002 Tim Janik
+ * Copyright (C) 1996-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,45 +18,70 @@
 #ifndef __BSE_MIDI_EVENT_H__
 #define __BSE_MIDI_EVENT_H__
 
-#include        <bse/bseobject.h>
+#include <bse/bseobject.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-
+G_BEGIN_DECLS
 
 /* --- MIDI constants --- */
 #define	BSE_MIDI_MAX_CHANNELS		(99)
 
 
 /* --- MIDI event types --- */
+#define BSE_MIDI_CHANNEL_VOICE_MESSAGE(s)       ((s) < 0x0F0)
+#define BSE_MIDI_SYSTEM_COMMON_MESSAGE(s)       (((s) & 0x0F8) == 0x0F0)
+#define BSE_MIDI_SYSTEM_REALTIME_MESSAGE(s)     (((s) & 0x0F8) == 0x0F8)
 typedef enum
 {
   /* channel voice messages */
-  BSE_MIDI_NOTE_OFF             = 0x80,         /* note, velocity */
-  BSE_MIDI_NOTE_ON              = 0x90,         /* note, velocity */
-  BSE_MIDI_KEY_PRESSURE         = 0xA0,         /* note, intensity */
-  BSE_MIDI_CONTROL_CHANGE       = 0xB0,         /* ctl-nr, value */
-  BSE_MIDI_PROGRAM_CHANGE       = 0xC0,         /* prg-nr */
-  BSE_MIDI_CHANNEL_PRESSURE     = 0xD0,         /* intensity */
-  BSE_MIDI_PITCH_BEND           = 0xE0,         /* 7lsb, 7msb */
+  BSE_MIDI_NOTE_OFF             = 0x080,        /* 7bit note, 7bit velocity */
+  BSE_MIDI_NOTE_ON              = 0x090,        /* 7bit note, 7bit velocity */
+  BSE_MIDI_KEY_PRESSURE         = 0x0A0,        /* 7bit note, 7bit intensity */
+  BSE_MIDI_CONTROL_CHANGE       = 0x0B0,        /* 7bit ctl-nr, 7bit value */
+  BSE_MIDI_PROGRAM_CHANGE       = 0x0C0,        /* 7bit prg-nr */
+  BSE_MIDI_CHANNEL_PRESSURE     = 0x0D0,        /* 7bit intensity */
+  BSE_MIDI_PITCH_BEND           = 0x0E0,        /* 14bit signed: 7lsb, 7msb */
   /* system common messages */
-  BSE_MIDI_SYS_EX               = 0xF0,         /* data... */
-  BSE_MIDI_SONG_POINTER         = 0xF2,         /* p1, p2 */
-  BSE_MIDI_SONG_SELECT          = 0xF3,         /* song-nr */
-  BSE_MIDI_TUNE                 = 0xF6,
-  BSE_MIDI_END_EX               = 0xF7,
+  BSE_MIDI_SYS_EX               = 0x0F0,        /* data... (without final 0x7F) */
+  BSE_MIDI_SONG_POINTER         = 0x0F2,        /* 14bit pointer: 7lsb, 7msb */
+  BSE_MIDI_SONG_SELECT          = 0x0F3,        /* 7bit song-nr */
+  BSE_MIDI_TUNE                 = 0x0F6,
+  BSE_MIDI_END_EX               = 0x0F7,
   /* system realtime messages */
-  BSE_MIDI_TIMING_CLOCK         = 0xF8,
-  BSE_MIDI_SONG_START           = 0xFA,
-  BSE_MIDI_SONG_CONTINUE        = 0xFB,
-  BSE_MIDI_SONG_STOP            = 0xFC,
-  BSE_MIDI_ACTIVE_SENSING       = 0xFE,
-  BSE_MIDI_SYSTEM_RESET         = 0xFF,
-  /* internally used extra events */
-  BSE_MIDI_X_CONTINUOUS_CHANGE  = 512
+  BSE_MIDI_TIMING_CLOCK         = 0x0F8,
+  BSE_MIDI_SONG_START           = 0x0FA,
+  BSE_MIDI_SONG_CONTINUE        = 0x0FB,
+  BSE_MIDI_SONG_STOP            = 0x0FC,
+  BSE_MIDI_ACTIVE_SENSING       = 0x0FE,
+  BSE_MIDI_SYSTEM_RESET         = 0x0FF,
+  /* midi file meta events */
+  BSE_MIDI_SEQUENCE_NUMBER      = 0x100,        /* 16bit sequence number (msb, lsb) */
+  BSE_MIDI_TEXT_EVENT           = 0x101,        /* 8bit text */
+  BSE_MIDI_COPYRIGHT_NOTICE     = 0x102,        /* 8bit text */
+  BSE_MIDI_TRACK_NAME           = 0x103,        /* 8bit text */
+  BSE_MIDI_INSTRUMENT_NAME      = 0x104,        /* 8bit text */
+  BSE_MIDI_LYRIC                = 0x105,        /* 8bit text */
+  BSE_MIDI_MARKER               = 0x106,        /* 8bit text */
+  BSE_MIDI_CUE_POINT            = 0x107,        /* 8bit text */
+  BSE_MIDI_TEXT_EVENT_08        = 0x108,        /* 8bit text */
+  BSE_MIDI_TEXT_EVENT_09        = 0x109,        /* 8bit text */
+  BSE_MIDI_TEXT_EVENT_0A        = 0x10A,        /* 8bit text */
+  BSE_MIDI_TEXT_EVENT_0B        = 0x10B,        /* 8bit text */
+  BSE_MIDI_TEXT_EVENT_0C        = 0x10C,        /* 8bit text */
+  BSE_MIDI_TEXT_EVENT_0D        = 0x10D,        /* 8bit text */
+  BSE_MIDI_TEXT_EVENT_0E        = 0x10E,        /* 8bit text */
+  BSE_MIDI_TEXT_EVENT_0F        = 0x10F,        /* 8bit text */
+  BSE_MIDI_CHANNEL_PREFIX       = 0x120,        /* 8bit channel number (0..15) */
+  BSE_MIDI_END_OF_TRACK         = 0x12F,
+  BSE_MIDI_SET_TEMPO            = 0x151,        /* 24bit usecs-per-quarter-note (msb first) */
+  BSE_MIDI_SMPTE_OFFSET         = 0x154,        /* 8bit hour, minute, second, frame, 100th-frame-fraction */
+  BSE_MIDI_TIME_SIGNATURE       = 0x158,        /* 8bit numerator, -ld(1/denominator), metro-clocks, 32nd-npq */
+  BSE_MIDI_KEY_SIGNATURE        = 0x159,        /* 8bit sharpsflats, majorminor */
+  BSE_MIDI_SEQUENCER_SPECIFIC   = 0x17F,        /* manufacturer specific sequencing data */
+  /* implementation specific add-ons */
+  BSE_MIDI_MULTI_SYS_EX_START   = 0x201,        /* BSE_MIDI_SYS_EX split across multiple events */
+  BSE_MIDI_MULTI_SYS_EX_NEXT    = 0x202,        /* continuation, last data byte of final packet is 0xF7 */
+  /* BSE specific extra events */
+  BSE_MIDI_X_CONTINUOUS_CHANGE  = 0x400
 } BseMidiEventType;
 
 
@@ -65,8 +90,8 @@ typedef enum
 typedef struct
 {
   BseMidiEventType status;
-  guint            channel;     /* 0 .. 15 if valid */
-  guint64          tick_stamp;  /* GSL tick stamp */
+  guint            channel;     /* 1 .. 16 for standard events */
+  guint64          delta_time;  /* GSL tick stamp, SMF tpqn or SMTPE */
   union {
     struct {
       gfloat  frequency;
@@ -79,12 +104,34 @@ typedef struct
     guint   program;            /* 0..0x7f */
     gfloat  intensity;          /* 0..+1 */
     gfloat  pitch_bend;         /* -1..+1 */
-    struct {
-      guint   n_bytes;
-      guint8 *bytes;
-    }       sys_ex;
     guint   song_pointer;       /* 0..0x3fff */
     guint   song_number;        /* 0..0x7f */
+    /* meta event data */
+    struct {
+      guint8 *bytes;
+      guint   n_bytes;
+    }       sys_ex;             /* sys-ex variants and sequencer-specific */
+    guint   sequence_number;    /* 0..0xffff */
+    gchar  *text;
+    guint   usecs_pqn;          /* micro seconds per quarter note */
+    struct {
+      guint8  hour, minute, second;
+      guint8  frame, fraction;   /* fraction is always 100th of a frame */
+    }       smpte_offset;
+    struct {
+      guint   denominator;
+      guint8  numerator;
+      guint8  metro_clocks;     /* # MIDI clocks in a metronome click */
+      guint8  notated_32nd;     /* # of notated 32nd notes per quarter note */
+    }       time_signature;
+    struct {
+      guint16 n_flats;          /* there's not n_sharps and n_flats at the same time */
+      guint16 n_sharps;
+      guint   major_key : 1;    /* dur */
+      guint   minor_key : 1;    /* moll */
+    }       key_signature;
+    /* implementation specific */
+    guint   zprefix;
   } data;
 } BseMidiEvent;
 
@@ -95,14 +142,14 @@ BseMidiEvent* bse_midi_alloc_event    (void);
 BseMidiEvent* bse_midi_copy_event     (const BseMidiEvent *src);
 void          bse_midi_free_event     (BseMidiEvent       *event);
 BseMidiEvent* bse_midi_event_note_on  (guint               midi_channel,
-                                       guint64             tick_stamp,
+                                       guint64             delta_time,
                                        gfloat              frequency,
                                        gfloat              velocity);
 BseMidiEvent* bse_midi_event_note_off (guint               midi_channel,
-                                       guint64             tick_stamp,
+                                       guint64             delta_time,
                                        gfloat              frequency);
 BseMidiEvent* bse_midi_event_signal   (guint               midi_channel,
-                                       guint64             tick_stamp,
+                                       guint64             delta_time,
                                        BseMidiSignalType   signal_type,
                                        gfloat              value);
 
@@ -119,7 +166,7 @@ typeNOTdef enum	/*< prefix=BSE_MIDI_SIGNAL >*/  /* FIXME: sync to bserecords.sfi
   BSE_MIDI_SIGNAL_FINE_TUNE,            /*< nick=Note Fine Tune >*/
   /* 14bit, continuous controls */
   BSE_MIDI_SIGNAL_CONTINUOUS_0	= 64,	/*< nick=Bank Select >*/
-  BSE_MIDI_SIGNAL_CONTINUOUS_1,		/*< nick=Modulation Wheel >*/
+  BSE_MIDI_SIGNAL_CONTINUOUS_1,		/*< nick=Modulation Depth >*/
   BSE_MIDI_SIGNAL_CONTINUOUS_2,		/*< nick=Breath Control >*/
   BSE_MIDI_SIGNAL_CONTINUOUS_3,		/*< nick=Continuous 3 >*/
   BSE_MIDI_SIGNAL_CONTINUOUS_4,		/*< nick=Foot Controller >*/
@@ -160,7 +207,7 @@ typeNOTdef enum	/*< prefix=BSE_MIDI_SIGNAL >*/  /* FIXME: sync to bserecords.sfi
   BSE_MIDI_SIGNAL_NON_PARAMETER,		/*< nick=Non-Registered Parameter >*/
   /* 7bit, literal channel controls, MSB values */
   BSE_MIDI_SIGNAL_CONTROL_0	= 128,	/*< nick=Control 0 Bank Select MSB >*/
-  BSE_MIDI_SIGNAL_CONTROL_1,		/*< nick=Control 1 Modulation Wheel MSB >*/
+  BSE_MIDI_SIGNAL_CONTROL_1,		/*< nick=Control 1 Modulation Depth MSB >*/
   BSE_MIDI_SIGNAL_CONTROL_2,		/*< nick=Control 2 Breath Control MSB >*/
   BSE_MIDI_SIGNAL_CONTROL_3,
   BSE_MIDI_SIGNAL_CONTROL_4,		/*< nick=Control 4 Foot Controller MSB >*/
@@ -193,7 +240,7 @@ typeNOTdef enum	/*< prefix=BSE_MIDI_SIGNAL >*/  /* FIXME: sync to bserecords.sfi
   BSE_MIDI_SIGNAL_CONTROL_31,
   /* 7bit, literal channel controls, LSB values */
   BSE_MIDI_SIGNAL_CONTROL_32,		/*< nick=Control 32 Bank Select LSB >*/
-  BSE_MIDI_SIGNAL_CONTROL_33,		/*< nick=Control 33 Modulation Wheel LSB >*/
+  BSE_MIDI_SIGNAL_CONTROL_33,		/*< nick=Control 33 Modulation Depth LSB >*/
   BSE_MIDI_SIGNAL_CONTROL_34,		/*< nick=Control 34 Breath Control LSB >*/
   BSE_MIDI_SIGNAL_CONTROL_35,
   BSE_MIDI_SIGNAL_CONTROL_36,		/*< nick=Control 36 Foot Controller LSB >*/
@@ -232,14 +279,14 @@ typeNOTdef enum	/*< prefix=BSE_MIDI_SIGNAL >*/  /* FIXME: sync to bserecords.sfi
   BSE_MIDI_SIGNAL_CONTROL_68,		/*< nick=Control 68 Legato Pedal Switch >*/
   BSE_MIDI_SIGNAL_CONTROL_69,		/*< nick=Control 69 Hold Pedal Switch >*/
   BSE_MIDI_SIGNAL_CONTROL_70,		/*< nick=Control 70 Sound Variation >*/
-  BSE_MIDI_SIGNAL_CONTROL_71,		/*< nick=Control 71 Sound Timbre >*/
+  BSE_MIDI_SIGNAL_CONTROL_71,		/*< nick=Control 71 Filter Resonance (Timbre) >*/
   BSE_MIDI_SIGNAL_CONTROL_72,		/*< nick=Control 72 Sound Release Time >*/
   BSE_MIDI_SIGNAL_CONTROL_73,		/*< nick=Control 73 Sound Attack Time >*/
   BSE_MIDI_SIGNAL_CONTROL_74,		/*< nick=Control 74 Sound Brightness >*/
-  BSE_MIDI_SIGNAL_CONTROL_75,		/*< nick=Control 75 Sound Control 6 >*/
-  BSE_MIDI_SIGNAL_CONTROL_76,		/*< nick=Control 76 Sound Control 7 >*/
-  BSE_MIDI_SIGNAL_CONTROL_77,		/*< nick=Control 77 Sound Control 8 >*/
-  BSE_MIDI_SIGNAL_CONTROL_78,		/*< nick=Control 78 Sound Control 9 >*/
+  BSE_MIDI_SIGNAL_CONTROL_75,		/*< nick=Control 75 Sound Decay Time >*/
+  BSE_MIDI_SIGNAL_CONTROL_76,		/*< nick=Control 76 Vibrato Rate >*/
+  BSE_MIDI_SIGNAL_CONTROL_77,		/*< nick=Control 77 Vibrato Depth >*/
+  BSE_MIDI_SIGNAL_CONTROL_78,		/*< nick=Control 78 Vibrato Delay >*/
   BSE_MIDI_SIGNAL_CONTROL_79,		/*< nick=Control 79 Sound Control 10 >*/
   BSE_MIDI_SIGNAL_CONTROL_80,		/*< nick=Control 80 General Purpose Switch 5 >*/
   BSE_MIDI_SIGNAL_CONTROL_81,		/*< nick=Control 81 General Purpose Switch 6 >*/
@@ -296,9 +343,6 @@ gfloat		bse_midi_signal_default	(BseMidiSignalType signal);
 const gchar*	bse_midi_signal_name	(BseMidiSignalType signal);
 const gchar*	bse_midi_signal_nick	(BseMidiSignalType signal);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_MIDI_EVENT_H__ */
