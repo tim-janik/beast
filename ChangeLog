@@ -1,3 +1,9 @@
+Mon Mar 17 07:05:04 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (main): use the new toyprof leak logger API.
+
+	* beast-gtk/bstapp.c (bst_app_operate): remove toyprofiling hook.
+
 Thu Mar 13 22:38:28 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: announced release.

@@ -88,9 +88,9 @@ main (int   argc,
   GSource *source;
   guint i;
 
-  /* nitialize GLib guts */
-  if (toyprof_mem_table && 0)
-    g_mem_set_vtable (toyprof_mem_table);
+  /* initialize GLib guts */
+  if (0)
+    toyprof_init_glib_memtable ("/tmp/beast-leak.debug", 10 /* SIGUSR1 */);
   g_thread_init (NULL);
   g_type_init ();
 

@@ -31,7 +31,6 @@
 #include "bstmenus.h"
 #include "bstprocedure.h"
 #include "bstprojectctrl.h"
-#include "sfi/toyprof-mem.h"
 
 
 /* --- prototypes --- */
@@ -731,7 +730,6 @@ bst_app_operate (BstApp *app,
 			    any);
       gtk_widget_show (any);
       sfi_alloc_report ();
-      toyprof_report_mem ();
 #if 0 // FIXME
       {
 	GSList *slist, *olist = g_object_debug_list();

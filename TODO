@@ -1,4 +1,7 @@
 FIXMES:
+- update QuickStart to match 0.5 behaviour
+- fix BSE mime logo to say BSE instead of BEAST
+- install bsw/* into bse/.
 - add demo song
 - fix plugins in bsesh
 - fix engine deinitialization assertions in bseserver.c
