@@ -65,17 +65,13 @@ BSE_BUILTIN_TYPE (BseSubInstrument)
     INSTRUMENT_IMAGE_WIDTH, INSTRUMENT_IMAGE_HEIGHT,
     INSTRUMENT_IMAGE_RLE_PIXEL_DATA,
   };
-  guint type_id;
-  
-  type_id = bse_type_register_static (BSE_TYPE_SUB_OPORT,
-				      "BseSubInstrument",
-				      "Virtual output module for synthesis networks which "
-				      "implement instruments",
-				      &type_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Instrument Output",
-				type_id,
-				&pixdata);
-  return type_id;
+  GType type = bse_type_register_static (BSE_TYPE_SUB_OPORT,
+                                         "BseSubInstrument",
+                                         "Virtual output module for synthesis networks which "
+                                         "implement instruments",
+                                         &type_info);
+  bse_categories_register_icon ("/Modules/Virtualization/Instrument Output", type, &pixdata);
+  return type;
 }
 
 static void

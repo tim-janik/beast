@@ -83,17 +83,13 @@ BSE_BUILTIN_TYPE (BseMidiIController)
     MIDIICTRL_IMAGE_WIDTH, MIDIICTRL_IMAGE_HEIGHT,
     MIDIICTRL_IMAGE_RLE_PIXEL_DATA,
   };
-  guint midi_icontroller_type_id;
-  
-  midi_icontroller_type_id = bse_type_register_static (BSE_TYPE_SOURCE,
-						       "BseMidiIController",
-						       "MIDI controller input module. With this module, "
-						       "MIDI control signals can be used in synthesis networks.",
-						       &midi_icontroller_info);
-  bse_categories_register_icon ("/Modules/MIDI/Control Input",
-				midi_icontroller_type_id,
-				&pixdata);
-  return midi_icontroller_type_id;
+  GType type = bse_type_register_static (BSE_TYPE_SOURCE,
+                                         "BseMidiIController",
+                                         "MIDI controller input module. With this module, "
+                                         "MIDI control signals can be used in synthesis networks.",
+                                         &midi_icontroller_info);
+  bse_categories_register_icon ("/Modules/MIDI/Control Input", type, &pixdata);
+  return type;
 }
 
 static void

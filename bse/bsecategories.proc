@@ -121,8 +121,6 @@ categories_check_method (BseCategory *cat,
           g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0]), *type_p))
         match = TRUE;
       g_type_class_unref (proc);
-      if (match==TRUE)
-        g_print ("method: %s\n", cat->type);
     }
   return match;
 }

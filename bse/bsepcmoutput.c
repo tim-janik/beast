@@ -82,17 +82,13 @@ BSE_BUILTIN_TYPE (BsePcmOutput)
     SPEAKER_WIDTH, SPEAKER_HEIGHT,
     SPEAKER_RLE_PIXEL_DATA,
   };
-  guint pcm_output_type_id;
-  
-  pcm_output_type_id = bse_type_register_static (BSE_TYPE_SOURCE,
-						 "BsePcmOutput",
-						 "Stereo PCM sound output module, per default, signals routed into "
-						 "this module are played back on the standard soundcard",
-						 &pcm_output_info);
-  bse_categories_register_icon ("/Modules/Input & Output/PCM Output",
-				pcm_output_type_id,
-				&pixdata);
-  return pcm_output_type_id;
+  GType type = bse_type_register_static (BSE_TYPE_SOURCE,
+                                         "BsePcmOutput",
+                                         "Stereo PCM sound output module, per default, signals routed into "
+                                         "this module are played back on the standard soundcard",
+                                         &pcm_output_info);
+  bse_categories_register_icon ("/Modules/Input & Output/PCM Output", type, &pixdata);
+  return type;
 }
 
 static void

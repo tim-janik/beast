@@ -87,17 +87,13 @@ BSE_BUILTIN_TYPE (BseSubOPort)
     OUTPORT_IMAGE_WIDTH, OUTPORT_IMAGE_HEIGHT,
     OUTPORT_IMAGE_RLE_PIXEL_DATA,
   };
-  guint type_id;
-  
-  type_id = bse_type_register_static (BSE_TYPE_SOURCE,
-                                      "BseSubOPort",
-                                      "Virtual output port connector, used to provide a synthesis network "
-                                      "with output signals from other synthesis networks",
-                                      &type_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Virtual Output",
-                                type_id,
-                                &pixdata);
-  return type_id;
+  GType type = bse_type_register_static (BSE_TYPE_SOURCE,
+                                         "BseSubOPort",
+                                         "Virtual output port connector, used to provide a synthesis network "
+                                         "with output signals from other synthesis networks",
+                                         &type_info);
+  bse_categories_register_icon ("/Modules/Virtualization/Virtual Output", type, &pixdata);
+  return type;
 }
 
 static void

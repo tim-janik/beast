@@ -200,7 +200,7 @@ bse_parasite_restore (BseObject  *object,
 {
   GScanner *scanner = bse_storage_get_scanner (storage);
   GQuark quark;
-  guint type;
+  GTokenType ttype;
   guint n_values;
   gpointer data;
   
@@ -216,14 +216,14 @@ bse_parasite_restore (BseObject  *object,
   g_scanner_get_next_token (scanner);
   if (!(scanner->token >= 'a' && scanner->token <= 'z'))
     return G_TOKEN_CHAR;
-  type = scanner->token;
+  ttype = scanner->token;
 
   /* parse parasite name */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
     return G_TOKEN_STRING;
   quark = g_quark_from_string (scanner->value.v_string);
   
-  switch (type)
+  switch (ttype)
     {
       guint i;
       gfloat *floats;
@@ -262,13 +262,13 @@ bse_parasite_restore (BseObject  *object,
       /* unmatched parasite type */
       return bse_storage_warn_skip (storage,
 				    "invalid parasite type specification `%c' for \"%s\"",
-				    type,
+				    ttype,
 				    g_quark_to_string (quark));
     }
   
   if (g_scanner_peek_next_token (scanner) == ')')
     {
-      Parasite *parasite = fetch_parasite (object, quark, type, TRUE);
+      Parasite *parasite = fetch_parasite (object, quark, ttype, TRUE);
       
       if (parasite->n_values)
 	g_free (parasite->data);

@@ -65,17 +65,13 @@ BSE_BUILTIN_TYPE (BseSubKeyboard)
     KEYBOARD_IMAGE_WIDTH, KEYBOARD_IMAGE_HEIGHT,
     KEYBOARD_IMAGE_RLE_PIXEL_DATA,
   };
-  guint type_id;
-  
-  type_id = bse_type_register_static (BSE_TYPE_SUB_IPORT,
-				      "BseSubKeyboard",
-				      "Virtual input module for synthesis networks which "
-				      "implement instruments",
-				      &type_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Keyboard Input",
-				type_id,
-				&pixdata);
-  return type_id;
+  GType type = bse_type_register_static (BSE_TYPE_SUB_IPORT,
+                                         "BseSubKeyboard",
+                                         "Virtual input module for synthesis networks which "
+                                         "implement instruments",
+                                         &type_info);
+  bse_categories_register_icon ("/Modules/Virtualization/Keyboard Input", type, &pixdata);
+  return type;
 }
 
 static void

@@ -570,7 +570,7 @@ parse_set_data (BseDataPocket *pocket,
   BseDataPocketValue value;
   ObjectEntry *oentry = NULL;
   GQuark quark;
-  guint type;
+  guint ttype;
   gboolean char_2_token;
   
   parse_or_return (scanner, G_TOKEN_STRING);
@@ -582,9 +582,9 @@ parse_set_data (BseDataPocket *pocket,
   scanner->config->char_2_token = char_2_token;
   if (scanner->token != G_TOKEN_CHAR)
     return G_TOKEN_CHAR;
-  type = scanner->value.v_char;
+  ttype = scanner->value.v_char;
   
-  switch (type)
+  switch (ttype)
     {
       GTokenType token;
       gboolean negate;
@@ -628,14 +628,14 @@ parse_set_data (BseDataPocket *pocket,
       /* unmatched data type */
       return bse_storage_warn_skip (storage,
 				    "invalid data type specification `%c' for \"%s\"",
-				    type,
+				    ttype,
 				    g_quark_to_string (quark));
     }
   peek_or_return (scanner, ')');
   
   /* caution, value might still point to scanner->value.v_string */
   if (!oentry)
-    _bse_data_pocket_entry_set (pocket, id, quark, type, value);
+    _bse_data_pocket_entry_set (pocket, id, quark, ttype, value);
   
   g_scanner_get_next_token (scanner); /* eat ')' */
   

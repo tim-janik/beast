@@ -94,17 +94,13 @@ BSE_BUILTIN_TYPE (BseSubSynth)
     INOUTPORT_IMAGE_WIDTH, INOUTPORT_IMAGE_HEIGHT,
     INOUTPORT_IMAGE_RLE_PIXEL_DATA,
   };
-  guint sub_synth_type_id;
-  
-  sub_synth_type_id = bse_type_register_static (BSE_TYPE_SOURCE,
-						"BseSubSynth",
-						"This module encapsulates whole synthesizer networks, by "
-						"interfacing to/from their virtual input and output ports",
-						&sub_synth_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Virtual Sub Synth",
-				sub_synth_type_id,
-				&pixdata);
-  return sub_synth_type_id;
+  GType type = bse_type_register_static (BSE_TYPE_SOURCE,
+                                         "BseSubSynth",
+                                         "This module encapsulates whole synthesizer networks, by "
+                                         "interfacing to/from their virtual input and output ports",
+                                         &sub_synth_info);
+  bse_categories_register_icon ("/Modules/Virtualization/Virtual Sub Synth", type, &pixdata);
+  return type;
 }
 
 static void

@@ -87,17 +87,13 @@ BSE_BUILTIN_TYPE (BseSubIPort)
     INPORT_IMAGE_WIDTH, INPORT_IMAGE_HEIGHT,
     INPORT_IMAGE_RLE_PIXEL_DATA,
   };
-  guint type_id;
-  
-  type_id = bse_type_register_static (BSE_TYPE_SOURCE,
-                                      "BseSubIPort",
-                                      "Virtual input port connector, used to provide a synthesis network "
-                                      "with input signals from other synthesis networks",
-                                      &type_info);
-  bse_categories_register_icon ("/Modules/Virtualization/Virtual Input",
-                                type_id,
-                                &pixdata);
-  return type_id;
+  GType type = bse_type_register_static (BSE_TYPE_SOURCE,
+                                         "BseSubIPort",
+                                         "Virtual input port connector, used to provide a synthesis network "
+                                         "with input signals from other synthesis networks",
+                                         &type_info);
+  bse_categories_register_icon ("/Modules/Virtualization/Virtual Input", type, &pixdata);
+  return type;
 }
 
 static void
