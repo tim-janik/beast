@@ -41,6 +41,7 @@ static void     wavetool_parse_args     (int    *argc_p,
 static void     wavetool_print_blurb    (void);
 
 /* --- variables --- */
+static bool   continue_on_error = false;
 static string command_name;
 static string input_file;
 static string output_file;
@@ -136,12 +137,16 @@ main (int   argc,
                   GslDataHandle *dhandle = gsl_wave_handle_create (wdsc, i, &error);
                   if (!dhandle)
                     {
-                      sfi_warning ("failed to load wave chunk of wave \"%s\" in file \"%s\": %s (loader: %s)",
-                                   wdsc->name, input_file.c_str(), bse_error_blurb (error), gsl_wave_file_info_loader (winfo));
-                      delete wave;
-                      wave = NULL;
-                      break;
-                      error = BSE_ERROR_NONE;
+                      sfi_warning ("failed to load wave chunk (%.3f) of wave \"%s\" in file \"%s\": %s (loader: %s)",
+                                   wdsc->chunks[i].osc_freq, wdsc->name, input_file.c_str(), bse_error_blurb (error), gsl_wave_file_info_loader (winfo));
+                      if (continue_on_error)
+                        error = BSE_ERROR_NONE;
+                      else
+                        {
+                          delete wave;
+                          wave = NULL;
+                          break;
+                        }
                     }
                   else
                     {
@@ -160,11 +165,11 @@ main (int   argc,
           gsl_wave_file_info_unref (winfo);
         }
     }
+  if (!wave && !error)
+    error = BSE_ERROR_IO;       /* unknown */
   if (error)
-    sfi_warning ("failed to load wave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
-  if (!wave)
     {
-      sfi_error ("problems encountered loading bsewave file, aborting...");
+      sfi_error ("problems encountered loading bsewave file \"%s\": %s", input_file.c_str(), bse_error_blurb (error));
       exit (1);
     }
 
@@ -208,6 +213,8 @@ wavetool_print_blurb (void)
   g_print ("Usage: bsewavetool [options] command <file.bsewave> {command-arguments}\n");
   g_print ("Options:\n");
   g_print ("  -o <output.bsewave>   name of the destination file (default: <file.bsewave>)\n");
+  g_print ("  -k                    continue on errors (may overwrite bsewave files after\n");
+  g_print ("                        load errors occoured for part of its contents)\n");
   g_print ("  -h, --help            show this help message\n");
   g_print ("  -v, --version         print version information\n");
   /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
@@ -289,6 +296,11 @@ wavetool_parse_args (int    *argc_p,
           wavetool_print_version ();
           argv[i] = NULL;
           exit (0);
+        }
+      else if (strcmp ("-k", argv[i]) == 0)
+        {
+          continue_on_error = true;
+          argv[i] = NULL;
         }
       else if (strcmp ("-o", argv[i]) == 0 ||
                strncmp ("-o", argv[i], 2) == 0)
