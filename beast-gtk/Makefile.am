@@ -35,7 +35,7 @@ progs_LDADD = $(strip 			\
 beast_headers = $(strip \
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	    \
 	bstpatterncolumns.h	bstxkb.h	bstpatternview.h	bstpatternctrl.h    \
-	bstkeybindings.h	bstprofiler.h	bstgrowbar.h		bstsongbusview.h    \
+	bstkeybindings.h	bstprofiler.h	bstgrowbar.h		bstbusview.h        \
 	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	    \
 	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	    \
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	    \
@@ -54,7 +54,7 @@ beast_headers = $(strip \
 beast_sources = $(strip \
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	    \
 	bstpatterncolumns.c	bstxkb.c	bstpatternview.c	bstpatternctrl.c    \
-	bstkeybindings.c	bstprofiler.c	bstgrowbar.c		bstsongbusview.c    \
+	bstkeybindings.c	bstprofiler.c	bstgrowbar.c		bstbusview.c        \
 	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	    \
 	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	    \
 	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	    \

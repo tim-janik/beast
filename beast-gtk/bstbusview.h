@@ -15,39 +15,39 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef __BST_SONG_BUS_VIEW_H__
-#define __BST_SONG_BUS_VIEW_H__
+#ifndef __BST_BUS_VIEW_H__
+#define __BST_BUS_VIEW_H__
 
 #include	"bstitemview.h"
 
 G_BEGIN_DECLS
 
 /* --- type macros --- */
-#define BST_TYPE_SONG_BUS_VIEW              (bst_song_bus_view_get_type ())
-#define BST_SONG_BUS_VIEW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_SONG_BUS_VIEW, BstSongBusView))
-#define BST_SONG_BUS_VIEW_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_SONG_BUS_VIEW, BstSongBusViewClass))
-#define BST_IS_SONG_BUS_VIEW(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_SONG_BUS_VIEW))
-#define BST_IS_SONG_BUS_VIEW_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_SONG_BUS_VIEW))
-#define BST_SONG_BUS_VIEW_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_SONG_BUS_VIEW, BstSongBusViewClass))
+#define BST_TYPE_BUS_VIEW              (bst_bus_view_get_type ())
+#define BST_BUS_VIEW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_BUS_VIEW, BstBusView))
+#define BST_BUS_VIEW_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_BUS_VIEW, BstBusViewClass))
+#define BST_IS_BUS_VIEW(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_BUS_VIEW))
+#define BST_IS_BUS_VIEW_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_BUS_VIEW))
+#define BST_BUS_VIEW_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_BUS_VIEW, BstBusViewClass))
 
 
 /* --- structures & typedefs --- */
-typedef	struct	_BstSongBusView		BstSongBusView;
-typedef	struct	_BstSongBusViewClass	BstSongBusViewClass;
-struct _BstSongBusView
+typedef	struct	_BstBusView		BstBusView;
+typedef	struct	_BstBusViewClass	BstBusViewClass;
+struct _BstBusView
 {
   BstItemView	 parent_object;
 };
-struct _BstSongBusViewClass
+struct _BstBusViewClass
 {
   BstItemViewClass parent_class;
 };
 
 
 /* --- prototypes --- */
-GType		bst_song_bus_view_get_type  (void);
-GtkWidget*      bst_song_bus_view_new       (SfiProxy song);
+GType		bst_bus_view_get_type  (void);
+GtkWidget*      bst_bus_view_new       (SfiProxy song);
 
 G_END_DECLS
 
-#endif /* __BST_SONG_BUS_VIEW_H__ */
+#endif /* __BST_BUS_VIEW_H__ */

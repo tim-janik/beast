@@ -1,3 +1,12 @@
+Wed Jul 14 00:15:49 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbusview.h:
+	* beast-gtk/bstbusview.c:
+	* beast-gtk/dialogs/radgets-beast.xml: s/SongBus/Bus/.
+
+	* beast-gtk/bstsongbusview.c:
+	* beast-gtk/bstsongbusview.h: removed in favour of bstbusview.*.
+
 Tue Jul 13 22:59:21 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbusview.c:
