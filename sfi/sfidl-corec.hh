@@ -34,13 +34,19 @@ namespace Sfidl {
   
   class CodeGeneratorCoreC : public CodeGeneratorCBase {
   protected:
+    std::string generateInitFunction;
+
     void printInfoStrings (const std::string& name, const Map<std::string,IString>& infos);
     bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
     
   public:
     CodeGeneratorCoreC(const Parser& parser) : CodeGeneratorCBase (parser) {
     }
-    bool run ();
+    void help();
+    bool run();
+
+    OptionVector getOptions();
+    void setOption (const std::string& option, const std::string& value);
   };
 
 };

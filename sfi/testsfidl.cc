@@ -39,9 +39,9 @@ public:
   TestCG(const Parser& parser) : CodeGenerator (parser)
   {
   }
-  vector< pair<string,bool> > getOptions()
+  OptionVector getOptions()
   {
-    vector< pair<string,bool> > opts;
+    OptionVector opts;
 
     opts.push_back (make_pair ("--one", true));
     opts.push_back (make_pair ("--two", true));
@@ -99,15 +99,6 @@ class TestCGFactory : public Factory {
 public:
   string option() const	      { return "--test"; }
   string description() const  { return "test code generator"; }
-  
-  void init (Options& options) const
-  {
-    options.doImplementation = true;
-    options.doInterface = false;
-    options.doHeader = true;
-    options.doSource = false;
-    options.generateBoxedTypes = true;
-  }
   
   CodeGenerator *create (const Parser& parser) const
   {

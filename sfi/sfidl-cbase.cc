@@ -347,7 +347,7 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 	break;
       case CHOICE:
 	{
-	  if (options.generateBoxedTypes)
+	  if (generateBoxedTypes)
 	    {
 	      if (model == MODEL_TO_VALUE)
 		return "sfi_value_choice_genum ("+name+", "+makeGTypeName(type)+")";

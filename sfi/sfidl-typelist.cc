@@ -30,14 +30,6 @@ public:
   string option() const	      { return "--list-types"; }
   string description() const  { return "print all types defined in the idlfile"; }
   
-  void init (Options& options) const
-  {
-    options.doImplementation = true;
-    options.doInterface = false;
-    options.doHeader = true;
-    options.doSource = false;
-  }
-  
   CodeGenerator *create (const Parser& parser) const
   {
     return new CodeGeneratorTypeList (parser);

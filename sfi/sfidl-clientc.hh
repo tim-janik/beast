@@ -35,16 +35,21 @@ namespace Sfidl {
   
   class CodeGeneratorClientC : public CodeGeneratorCBase {
   protected:
-    void printClassMacros();
+    std::string prefix;
 
     Method methodWithObject (const Class& cd, const Method& md);
     void printProcedurePrototypes (PrefixSymbolMode mode);
+    void printClassMacros();
     void printProcedureImpl ();
     
   public:
     CodeGeneratorClientC(const Parser& parser) : CodeGeneratorCBase (parser) {
     }
+    void help ();
     bool run ();
+
+    OptionVector getOptions();
+    void setOption (const std::string& option, const std::string& value);
   };
 
 };

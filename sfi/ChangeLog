@@ -1,3 +1,20 @@
+Mon Feb 23 23:34:28 CET 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cbase.*
+	* sfidl-clientc.*:
+	* sfidl-clientcxx.*:
+	* sfidl-corec.*:
+	* sfidl-corecxx.*:
+	* sfidl-factory.*:
+	* sfidl-generator.*:
+	* sfidl-hostc.*:
+	* sfidl-typelist.*:
+	* testsfidl.cc:
+	* sfidl-options.*: Don't parse language specific options in the Option
+	class - let the code generators parse them themselves. Print help for
+	bindings in the CodeGenerators with the new virtual
+	CodeGenerator::help() function.
+
 Mon Feb 23 19:38:35 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.*: Report filename/line for missing include files.

@@ -36,14 +36,16 @@ namespace Sfidl {
   protected:
     const Parser& parser;
     const Options& options;
+
+    bool generateHeader;
+    bool generateSource;
+    bool generateIdlLineNumbers;
     
     std::vector<std::string> splitName (const std::string& name);
-    std::string makeNamespaceSubst (const std::string& name);
     std::string makeLowerName (const std::string& name, char seperator = '_');
     std::string makeUpperName (const std::string& name);
     std::string makeMixedName (const std::string& name);
     std::string makeLMixedName (const std::string& name);
-    std::string makeStyleName (const std::string& name);
 
     enum WordCase {
       lower,
@@ -98,7 +100,11 @@ namespace Sfidl {
 	    const std::string& namespace_join, const std::vector<std::string>& namespace_append,
 	    WordCase typename_wc, const std::string& typename_join);
     
-    CodeGenerator(const Parser& parser) : parser (parser), options (*Options::the()) {
+    CodeGenerator(const Parser& parser)
+      : parser (parser), options (*Options::the()),
+        generateHeader (true), generateSource (false),
+	generateIdlLineNumbers (true)
+    {
     }
    
   public:
@@ -108,7 +114,7 @@ namespace Sfidl {
      * the second element of the pair is true when the option should be followed by a
      *   user argument (as in "--prefix beast"), false otherwise (i.e. "--source")
      */
-    virtual std::vector< std::pair<std::string,bool> > getOptions();
+    virtual OptionVector getOptions();
 
     /*
      * called by the option parser when an option is set
@@ -116,6 +122,11 @@ namespace Sfidl {
      * value is the value (i.e. "beast"), and "1" for options without user argument
      */
     virtual void setOption (const std::string& option, const std::string& value);
+
+    /*
+     * prints help for the options supported by this code generator
+     */
+    virtual void help();
 
     /*
      * run generates the code, and should return true if successful, false otherwise

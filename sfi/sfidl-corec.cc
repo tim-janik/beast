@@ -52,68 +52,32 @@ bool CodeGeneratorCoreC::run ()
   vector<Param>::const_iterator pi;
   vector<Class>::const_iterator ci;
   vector<Method>::const_iterator mi;
- 
+
+  bool options_doInterface = false;
+  bool options_generateBoxedTypes = true;
+  bool options_generateExtern = false;
+  bool options_generateData = false;
+  bool options_generateTypeH = false;
+  bool options_generateTypeC = false;
+
+  /* implications of header/source options */
+  if (generateHeader)
+    {
+      options_generateExtern = true;
+      options_generateTypeH = true;
+    }
+  if (generateSource)
+    {
+      options_generateData = true;
+      options_generateTypeC = true;
+    }
+
   printf("\n/*-------- begin %s generated code --------*/\n\n\n", options.sfidlName.c_str());
 
-  if (options.generateTypeC)
+  if (options_generateTypeC)
     printf("#include <string.h>\n");
-  if (options.generateTypeH)
+  if (options_generateTypeH)
     {
-      if (options.prefixC != "")
-	{
-	  vector<string> todo;
-	  /* namespace prefixing */
-	  for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
-	    {
-	      if (parser.fromInclude (si->name)) continue;
-
-	      string lname = makeLowerName (si->name.c_str());
-	      todo.push_back (lname + "_new");
-	      todo.push_back (lname + "_append");
-	      todo.push_back (lname + "_copy_shallow");
-	      todo.push_back (lname + "_from_seq");
-	      todo.push_back (lname + "_to_seq");
-	      todo.push_back (lname + "_resize");
-	      todo.push_back (lname + "_free");
-	    }
-	  for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
-	    {
-	      if (parser.fromInclude (ri->name)) continue;
-
-	      string lname = makeLowerName (ri->name.c_str());
-	      todo.push_back (lname + "_new");
-	      todo.push_back (lname + "_copy_shallow");
-	      todo.push_back (lname + "_from_rec");
-	      todo.push_back (lname + "_to_rec");
-	      todo.push_back (lname + "_free");
-	    }
-	  for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
-	    {
-	      if (parser.fromInclude (ei->name)) continue;
-
-	      string lname = makeLowerName (ei->name);
-	      todo.push_back (lname + "_to_choice");
-	      todo.push_back (lname + "_from_choice");
-	    }
-
-	  for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
-	    {
-	      if (parser.fromInclude (ci->name)) continue;
-
-	      for (mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
-		todo.push_back (makeLowerName (ci->name + "_" + mi->name));
-	    }
-	  for (mi = parser.getProcedures().begin(); mi != parser.getProcedures().end(); mi++)
-	    {
-	      if (parser.fromInclude (mi->name)) continue;
-	      todo.push_back (makeLowerName (mi->name));
-	    }
-
-	  for (vector<string>::const_iterator ti = todo.begin(); ti != todo.end(); ti++)
-	    printf("#define %s %s_%s\n", ti->c_str(), options.prefixC.c_str(), ti->c_str());
-	  printf("\n");
-	}
-
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
 	  if (parser.fromInclude (si->name)) continue;
@@ -138,7 +102,7 @@ bool CodeGeneratorCoreC::run ()
 	  for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
 	    {
 	      /* don't export server side assigned choice values to the client */
-	      gint value = options.doInterface || !options.generateBoxedTypes ? ci->sequentialValue : ci->value;
+	      gint value = options_doInterface || !options_generateBoxedTypes ? ci->sequentialValue : ci->value;
               // FIXME: the above condition is really hairy, basically we just want value for BSE and GType
 	      string ename = makeUpperName (ci->name);
 	      printf("  %s = %d,\n", ename.c_str(), value);
@@ -216,14 +180,14 @@ bool CodeGeneratorCoreC::run ()
       printf("\n");
     }
   
-  if (options.generateExtern)
+  if (options_generateExtern)
     {
       for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
 	{
 	  if (parser.fromInclude (ei->name)) continue;
 
           printf("const SfiChoiceValues %s_get_values (void);\n", makeLowerName (ei->name).c_str());
-	  if (options.generateBoxedTypes)
+	  if (options_generateBoxedTypes)
 	    printf("extern GType %s;\n", makeGTypeName (ei->name).c_str());
 	}
       
@@ -232,11 +196,11 @@ bool CodeGeneratorCoreC::run ()
 	if (parser.fromInclude (ri->name)) continue;
 
 	printf("extern SfiRecFields %s_fields;\n",makeLowerName (ri->name).c_str());
-        if (options.generateBoxedTypes)
+        if (options_generateBoxedTypes)
 	  printf("extern GType %s;\n", makeGTypeName (ri->name).c_str());
       }
 
-      if (options.generateBoxedTypes)
+      if (options_generateBoxedTypes)
       {
 	for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	  {
@@ -247,7 +211,7 @@ bool CodeGeneratorCoreC::run ()
       printf("\n");
     }
   
-  if (options.generateTypeC)
+  if (options_generateTypeC)
     {
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
@@ -507,7 +471,7 @@ bool CodeGeneratorCoreC::run ()
 	}
     }
   
-  if (options.generateData)
+  if (options_generateData)
     {
       int enumCount = 0;
 
@@ -518,7 +482,7 @@ bool CodeGeneratorCoreC::run ()
 
 	  string name = makeLowerName (ei->name);
 
-          if (options.generateBoxedTypes)
+          if (options_generateBoxedTypes)
             {
               printf("static const GEnumValue %s_value[%d] = {\n", name.c_str(), ei->contents.size() + 1); // FIXME: i18n
               for (vector<ChoiceValue>::const_iterator ci = ei->contents.begin(); ci != ei->contents.end(); ci++)
@@ -548,14 +512,14 @@ bool CodeGeneratorCoreC::run ()
           printf ("  return choice_values;\n");
           printf ("}\n");
           
-	  if (options.generateBoxedTypes)
+	  if (options_generateBoxedTypes)
 	    printf("GType %s = 0;\n", makeGTypeName (ei->name).c_str());
 	  printf("\n");
 
 	  enumCount++;
 	}
 
-      if (options.generateBoxedTypes && enumCount)
+      if (options_generateBoxedTypes && enumCount)
 	{
 	  printf("static void\n");
 	  printf("choice2enum (const GValue *src_value,\n");
@@ -574,7 +538,7 @@ bool CodeGeneratorCoreC::run ()
 	  printf("static GParamSpec *%s_field[%d];\n", name.c_str(), ri->contents.size());
 	  printf("SfiRecFields %s_fields = { %d, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
 
-	  if (options.generateBoxedTypes)
+	  if (options_generateBoxedTypes)
 	    {
 	      string mname = makeMixedName (ri->name);
 
@@ -615,7 +579,7 @@ bool CodeGeneratorCoreC::run ()
 	  
 	  printf("static GParamSpec *%s_content;\n", name.c_str());
 
-	  if (options.generateBoxedTypes)
+	  if (options_generateBoxedTypes)
 	    {
 	      string mname = makeMixedName (si->name);
 	      
@@ -650,14 +614,13 @@ bool CodeGeneratorCoreC::run ()
 	}
     }
 
-  // if (options.doInterface && options.doSource)
-  if (options.doSource) //  && !options.generateBoxedTypes)
+  if (generateSource)
     printChoiceConverters();
 
-  if (options.initFunction != "")
+  if (generateInitFunction != "")
     {
       bool first = true;
-      printf("static void\n%s (void)\n", options.initFunction.c_str());
+      printf("static void\n%s (void)\n", generateInitFunction.c_str());
       printf("{\n");
 
       /*
@@ -686,7 +649,7 @@ bool CodeGeneratorCoreC::run ()
 
 	      for (pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++, f++)
 		{
-		  if (options.generateIdlLineNumbers)
+		  if (generateIdlLineNumbers)
 		    printf("#line %u \"%s\"\n", pi->line, parser.fileName().c_str());
 		  printf("  %s_field[%d] = %s;\n", name.c_str(), f, makeParamSpec (*pi).c_str());
 		}
@@ -696,54 +659,53 @@ bool CodeGeneratorCoreC::run ()
 	      const Sequence& sdef = parser.findSequence (*ti);
 
 	      string name = makeLowerName (sdef.name);
-	      // int f = 0;
 
-	      if (options.generateIdlLineNumbers)
+	      if (generateIdlLineNumbers)
 		printf("#line %u \"%s\"\n", sdef.content.line, parser.fileName().c_str());
 	      printf("  %s_content = %s;\n", name.c_str(), makeParamSpec (sdef.content).c_str());
 	    }
 	}
-      if (options.generateBoxedTypes)
-      {
-	for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
-	  {
-	    if (parser.fromInclude (ei->name)) continue;
+      if (options_generateBoxedTypes)
+	{
+	  for(ei = parser.getChoices().begin(); ei != parser.getChoices().end(); ei++)
+	    {
+	      if (parser.fromInclude (ei->name)) continue;
 
-	    string gname = makeGTypeName(ei->name);
-	    string name = makeLowerName(ei->name);
-	    string mname = makeMixedName(ei->name);
+	      string gname = makeGTypeName(ei->name);
+	      string name = makeLowerName(ei->name);
+	      string mname = makeMixedName(ei->name);
 
-	    printf("  %s = g_enum_register_static (\"%s\", %s_value);\n", gname.c_str(),
-						      mname.c_str(), name.c_str());
-	    printf("  g_value_register_transform_func (SFI_TYPE_CHOICE, %s, choice2enum);\n",
-						      gname.c_str());
-	    printf("  g_value_register_transform_func (%s, SFI_TYPE_CHOICE,"
-		   " sfi_value_enum2choice);\n", gname.c_str());
-	  }
-	for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
-	  {
-	    if (parser.fromInclude (ri->name)) continue;
+	      printf("  %s = g_enum_register_static (\"%s\", %s_value);\n", gname.c_str(),
+		  mname.c_str(), name.c_str());
+	      printf("  g_value_register_transform_func (SFI_TYPE_CHOICE, %s, choice2enum);\n",
+		  gname.c_str());
+	      printf("  g_value_register_transform_func (%s, SFI_TYPE_CHOICE,"
+		  " sfi_value_enum2choice);\n", gname.c_str());
+	    }
+	  for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+	    {
+	      if (parser.fromInclude (ri->name)) continue;
 
-	    string gname = makeGTypeName(ri->name);
-	    string name = makeLowerName(ri->name);
+	      string gname = makeGTypeName(ri->name);
+	      string name = makeLowerName(ri->name);
 
-	    printf("  %s = sfi_boxed_make_record (&%s_boxed_info,\n", gname.c_str(), name.c_str());
-	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
-	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
-	  }
-      	for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
-	  {
-	    if (parser.fromInclude (si->name)) continue;
+	      printf("  %s = sfi_boxed_make_record (&%s_boxed_info,\n", gname.c_str(), name.c_str());
+	      printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
+	      printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
+	    }
+	  for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+	    {
+	      if (parser.fromInclude (si->name)) continue;
 
-	    string gname = makeGTypeName(si->name);
-	    string name = makeLowerName(si->name);
+	      string gname = makeGTypeName(si->name);
+	      string name = makeLowerName(si->name);
 
-	    printf("  %s_boxed_info.element = %s_content;\n", name.c_str(), name.c_str());
-	    printf("  %s = sfi_boxed_make_sequence (&%s_boxed_info,\n", gname.c_str(), name.c_str());
-	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
-	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
-	  }
-}
+	      printf("  %s_boxed_info.element = %s_content;\n", name.c_str(), name.c_str());
+	      printf("  %s = sfi_boxed_make_sequence (&%s_boxed_info,\n", gname.c_str(), name.c_str());
+	      printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
+	      printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
+	    }
+	}
       printf("}\n");
     }
 
@@ -751,19 +713,43 @@ bool CodeGeneratorCoreC::run ()
   return true;
 }
 
+OptionVector
+CodeGeneratorCoreC::getOptions()
+{
+  OptionVector opts = CodeGeneratorCBase::getOptions();
+
+  opts.push_back (make_pair ("--init", true));
+
+  return opts;
+}
+
+void
+CodeGeneratorCoreC::setOption (const string& option, const string& value)
+{
+  if (option == "--init")
+    {
+      generateInitFunction = value;
+    }
+  else
+    {
+      CodeGeneratorCBase::setOption (option, value);
+    }
+}
+
+void
+CodeGeneratorCoreC::help()
+{
+  CodeGeneratorCBase::help();
+  fprintf (stderr, " --init <name>               set the name of the init function\n");
+}
+
+
 namespace {
 
 class CoreCFactory : public Factory {
 public:
   string option() const	      { return "--core-c"; }
   string description() const  { return "generate core C language binding"; }
-  
-  void init (Options& options) const
-  {
-    options.doImplementation = true;
-    options.doInterface = false;
-    options.generateBoxedTypes = true;
-  }
   
   CodeGenerator *create (const Parser& parser) const
   {

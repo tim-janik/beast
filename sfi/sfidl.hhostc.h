@@ -31,6 +31,9 @@ namespace Sfidl {
   
   class CodeGeneratorHostC : public CodeGeneratorCBase {
   protected:
+    std::string prefix;
+    std::string generateInitFunction;
+
     void printChoiceMethodPrototypes (PrefixSymbolMode mode);
     void printChoiceMethodImpl();
     void printRecordFieldDeclarations();
@@ -39,7 +42,11 @@ namespace Sfidl {
   public:
     CodeGeneratorHostC (const Parser& parser) : CodeGeneratorCBase (parser) {
     }
-    bool run ();
+    void help();
+    bool run();
+
+    OptionVector getOptions();
+    void setOption (const std::string& option, const std::string& value);
   };
 
 };

@@ -37,6 +37,8 @@ namespace Sfidl {
    */
   class CodeGeneratorCBase : public CodeGenerator {
   protected:
+    bool generateBoxedTypes;
+
     enum TypeCodeModel {
       MODEL_FROM_VALUE, MODEL_TO_VALUE,
       MODEL_VCALL, MODEL_VCALL_ARG, 
@@ -122,6 +124,7 @@ namespace Sfidl {
 				        TypeCodeModel model);
 
     CodeGeneratorCBase (const Parser& parser) : CodeGenerator (parser) {
+      generateBoxedTypes = false;
     }
   };
 

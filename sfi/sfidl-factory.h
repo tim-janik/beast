@@ -35,11 +35,6 @@ protected:
 
 public:
   /*
-   * initialization routine, called to adjust options accordingly
-   */
-  virtual void init (Options& options) const = 0;
-
-  /*
    * creation routine - should create a code generator
    */
   virtual CodeGenerator *create (const Parser& parser) const = 0;

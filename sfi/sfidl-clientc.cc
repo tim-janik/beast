@@ -111,7 +111,7 @@ bool CodeGeneratorClientC::run()
 {
   printf("\n/*-------- begin %s generated code --------*/\n\n\n", options.sfidlName.c_str());
 
-  if (options.doHeader)
+  if (generateHeader)
     {
       /* namespace prefixing for symbols defined by the client */
 
@@ -122,10 +122,10 @@ bool CodeGeneratorClientC::run()
       printClientSequenceMethodPrototypes (generatePrefixSymbols);
       printProcedurePrototypes (generatePrefixSymbols);
 
-      if (options.prefixC != "")
+      if (prefix != "")
 	{
 	  for (vector<string>::const_iterator pi = prefix_symbols.begin(); pi != prefix_symbols.end(); pi++)
-	    printf("#define %s %s_%s\n", pi->c_str(), options.prefixC.c_str(), pi->c_str());
+	    printf("#define %s %s_%s\n", pi->c_str(), prefix.c_str(), pi->c_str());
 	  printf("\n");
 	}
 
@@ -146,7 +146,7 @@ bool CodeGeneratorClientC::run()
       printClassMacros();
     }
 
-  if (options.doSource)
+  if (generateSource)
     {
       printf("#include <string.h>\n");
 
@@ -160,18 +160,42 @@ bool CodeGeneratorClientC::run()
   return true;
 }
 
+OptionVector
+CodeGeneratorClientC::getOptions()
+{
+  OptionVector opts = CodeGeneratorCBase::getOptions();
+
+  opts.push_back (make_pair ("--prefix", true));
+
+  return opts;
+}
+
+void
+CodeGeneratorClientC::setOption (const string& option, const string& value)
+{
+  if (option == "--prefix")
+    {
+      prefix = value;
+    }
+  else
+    {
+      CodeGeneratorCBase::setOption (option, value);
+    }
+}
+
+void
+CodeGeneratorClientC::help ()
+{
+  CodeGeneratorCBase::help();
+  fprintf (stderr, " --prefix <prefix>           set the prefix for C functions\n");
+}
+
 namespace {
 
 class ClientCFactory : public Factory {
 public:
   string option() const	      { return "--client-c"; }
   string description() const  { return "generate client C language binding"; }
-  
-  void init (Options& options) const
-  {
-    options.doImplementation = false;
-    options.doInterface = true;
-  }
   
   CodeGenerator *create (const Parser& parser) const
   {

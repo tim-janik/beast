@@ -33,19 +33,10 @@ using namespace std;
 
 /*--- common functions ---*/
 
-string CodeGenerator::makeNamespaceSubst (const string& name)
-{
-  if(name.substr (0, options.namespaceCut.length ()) == options.namespaceCut)
-    return options.namespaceAdd + name.substr (options.namespaceCut.length ());
-  else
-    return name; /* pattern not matched */
-}
-
 vector<string> CodeGenerator::splitName (const string& name)
 {
   bool lastupper = true, upper = true, lastunder = true, remove_caps = false;
   string::const_iterator i;
-  string sname = makeNamespaceSubst (name);
   vector<string> words;
   string word;
 
@@ -56,13 +47,13 @@ vector<string> CodeGenerator::splitName (const string& name)
    * if our input is BseSNet, it is vital to keep the caps
    * if our input is IO_ERROR, we need to remove it
    */
-  for(i = sname.begin(); i != sname.end(); i++)
+  for(i = name.begin(); i != name.end(); i++)
     {
       if (*i == '_')
 	remove_caps = true;
     }
 
-  for(i = sname.begin(); i != sname.end(); i++)
+  for(i = name.begin(); i != name.end(); i++)
     {
       lastupper = upper;
       upper = isupper(*i);
@@ -155,13 +146,6 @@ string CodeGenerator::makeLMixedName (const string& name)
   return result;
 }
 
-string CodeGenerator::makeStyleName (const string& name)
-{
-  if (options.style == Options::STYLE_MIXED)
-    return makeLMixedName (name);
-  return makeLowerName (name);
-}
-
 string CodeGenerator::toWordCase (const string& word, WordCase wc)
 {
   string result;
@@ -245,16 +229,37 @@ CodeGenerator::rename (NamespaceHelper& nsh, const string& name, WordCase namesp
   return pform;
 }
 
-vector< pair<string,bool> >
+OptionVector
 CodeGenerator::getOptions()
 {
-  return vector< pair<string,bool> >();
+  OptionVector opts;
+
+  opts.push_back (make_pair ("--header", false));
+  opts.push_back (make_pair ("--source", false));
+
+  return opts;
 }
 
 void
 CodeGenerator::setOption (const string& option, const string& value)
 {
-  // no options, no setOption (override me!)
+  if (option == "--header")
+    {
+      generateHeader = true;
+      generateSource = false;
+    }
+  else if (option == "--source")
+    {
+      generateSource = true;
+      generateHeader = false;
+    }
+}
+
+void
+CodeGenerator::help()
+{
+  fprintf (stderr, " --header                    generate header file (default)\n");
+  fprintf (stderr, " --source                    generate source file\n");
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

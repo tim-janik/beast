@@ -45,15 +45,23 @@ namespace Sfidl {
     void printRecSeqDefinition (NamespaceHelper& nspace);
     void printRecSeqImpl (NamespaceHelper& nspace);
 
+    enum Style { STYLE_LOWER, STYLE_MIXED };
+    Style style;
+
+    std::string makeStyleName (const std::string& name);
     std::string makeProcName (const std::string& className, const std::string& procName);
 
     void printMethods (const Class& cdef);
     void printProperties (const Class& cdef);
 
   public:
-    CodeGeneratorClientCxx (const Parser& parser) : CodeGeneratorCxxBase (parser), nspace (stdout) {
+    CodeGeneratorClientCxx (const Parser& parser) : CodeGeneratorCxxBase (parser), nspace (stdout), style (STYLE_LOWER) {
     }
+    void help ();
     bool run ();
+
+    OptionVector getOptions();
+    void setOption (const std::string& option, const std::string& value);
   };
 };
 

@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace Sfidl {
 
@@ -28,27 +29,13 @@ class Factory;
 class Parser;
 class CodeGenerator;
 
+typedef std::vector< std::pair <std::string, bool> > OptionVector;
+
 struct Options {
-  enum Style     { STYLE_DEFAULT, STYLE_LOWER, STYLE_MIXED };
-  bool           generateExtern;
-  bool           generateData;
-  bool           generateTypeH;
-  bool           generateTypeC;
-  bool           generateBoxedTypes;
-  bool           generateIdlLineNumbers;
   CodeGenerator *codeGenerator;
-  Style          style;
-  bool           doHeader;
-  bool           doSource;
-  bool           doInterface;
-  bool           doImplementation;
+  std::string    codeGeneratorName;
   bool           doHelp;
   bool	         doExit;
-  std::string    prefixC;
-  std::string    initFunction;
-  std::string    namespaceQt;
-  std::string    namespaceCut;
-  std::string    namespaceAdd;
   std::string    sfidlName;
 
   std::vector<std::string> includePath; // path to search for includes
