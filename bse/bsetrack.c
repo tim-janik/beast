@@ -766,7 +766,7 @@ bse_track_context_create (BseSource      *source,
 {
   BseTrack *self = BSE_TRACK (source);
   BseMidiContext mcontext = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (self)), context_handle);
-  if (self->snet)
+  if (self->snet || self->wave)
     bse_midi_receiver_channel_enable_poly (mcontext.midi_receiver, self->midi_channel_SL);
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
@@ -779,7 +779,7 @@ bse_track_context_dismiss (BseSource      *source,
 {
   BseTrack *self = BSE_TRACK (source);
   BseMidiContext mcontext = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (self)), context_handle);
-  if (self->snet)
+  if (self->snet || self->wave)
     bse_midi_receiver_channel_disable_poly (mcontext.midi_receiver, self->midi_channel_SL);
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_dismiss (source, context_handle, trans);
