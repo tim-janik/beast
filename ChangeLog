@@ -1,3 +1,29 @@
+Sun Oct 12 15:49:22 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: i18n-markup menu entries. create the item
+	factory via bst_item_factory_new().
+
+	* beast-gtk/bstmain.c: use versioned i18n domain, and bind gettext
+	charset to UTF-8.
+
+	* beast-gtk/bstutils.[hc]: for a start, implemented simple version of a
+	translating item factory. this isn't good enough though, the translating
+	text domain and whether translation is required, needs to be transported
+	with the menu entries.
+
+Sun Oct 12 13:55:20 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: give images/ the same prefix as docs/, i.e.
+	add micro version number to v$major.$minor/.
+	added versioning for beast and bse gettext domains, defined
+	as BSE_GETTEXT_DOMAIN and BST_GETTEXT_DOMAIN.
+
+	* Makefile.am: provide BST_GETTEXT_DOMAIN and BSE_GETTEXT_DOMAIN
+	in make-paths.h.
+
+	* bstdefs.h:
+	* bstmain.c: use BST_GETTEXT_DOMAIN instead of unversioned "beast".
+
 Sun Oct 12 01:14:21 2003  Tim Janik  <timj@gtk.org>
 
         * fixes according to pspec hints->options change.

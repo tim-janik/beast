@@ -92,8 +92,9 @@ main (int   argc,
   guint i;
 
   /* initialize i18n */
-  bindtextdomain ("beast", BST_PATH_LOCALE);
-  textdomain ("beast");
+  bindtextdomain (BST_GETTEXT_DOMAIN, BST_PATH_LOCALE);
+  bind_textdomain_codeset (BST_GETTEXT_DOMAIN, "UTF-8");
+  textdomain (BST_GETTEXT_DOMAIN);
   setlocale (LC_ALL, "");
 
   /* initialize GLib guts */

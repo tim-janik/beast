@@ -34,7 +34,7 @@ BST_RELEASE_CANDIDATE=rc2
 
 # version number setup
 BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
-BST_VERSION=$BSE_VERSION
+BST_VERSION=$BSE_VERSION # -rcZ to be appended...
 if test -n "$BST_RELEASE_CANDIDATE" ; then
     BST_VERSION=$BST_VERSION-$BST_RELEASE_CANDIDATE
 fi
@@ -108,12 +108,19 @@ dnl Define package requirements.
 dnl
 AC_DEFUN(AC_I18N_REQUIREMENTS,
 [
+    dnl supported translations:
     ALL_LINGUAS="de"
     AC_SUBST(ALL_LINGUAS)
-    dnl gettext domain for po/
-    GETTEXT_PACKAGE=beast
+
+    dnl versioned BSE gettext domain (po-bse/)
+    BSE_GETTEXT_DOMAIN=bse-v$BSE_VERSION
+    AC_SUBST(BSE_GETTEXT_DOMAIN)
+    dnl versioned BEAST gettext domain (po/)
+    BST_GETTEXT_DOMAIN=beast-v$BSE_VERSION    # version without -rcZ
+    AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
+    GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
     AC_SUBST(GETTEXT_PACKAGE)
-    
+
     dnl locale directory for all domains
     dnl (AM_GLIB_DEFINE_LOCALEDIR() could do this if it would do AC_SUBST())
     saved_prefix="$prefix"
@@ -354,7 +361,7 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     # BEAST resource paths
     beastbasedir=\${datadir}/beast
     beastdocsdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION/docs
-    beastimagesdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION/images
+    beastimagesdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION/images
     # beast-data package path
     beastdatadir=$beastbasedir/data-v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
     beastsampledatadir=$beastdatadir/samples

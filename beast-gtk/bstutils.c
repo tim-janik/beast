@@ -1215,6 +1215,22 @@ bst_xpm_view_create (const gchar **xpm,
   return pix;
 }
 
+static gchar*
+item_factory_translate (const gchar *path,
+                        gpointer     func_data)
+{
+  return gettext (path);
+}
+
+GtkItemFactory*
+bst_item_factory_new (GType          container_type,
+                      const gchar   *path)
+{
+  GtkItemFactory *ifac = gtk_item_factory_new (container_type, path, NULL);
+  gtk_item_factory_set_translate_func (ifac, item_factory_translate, NULL, NULL);
+  return ifac;
+}
+
 
 /* --- source file key scans --- */
 #include "bstdebugkeys.defs"

@@ -207,6 +207,8 @@ GtkWidget*	bst_container_get_named_child	(GtkWidget	*container,
 						 GQuark		 qname);
 GtkWidget*	bst_xpm_view_create		(const gchar   **xpm,
 						 GtkWidget	*colormap_widget);
+GtkItemFactory* bst_item_factory_new            (GType          container_type,
+                                                 const gchar   *path);
 
 
 /* --- internal --- */
