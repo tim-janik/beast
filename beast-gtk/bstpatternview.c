@@ -191,6 +191,18 @@ bst_pattern_view_set_proxy (BstPatternView *self,
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
 
+static PangoLayout*
+pattern_view_column_pango_layout (BstPatternView   *self,
+                                  BstPatternColumn *col)
+{
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
+  gint i;
+  for (i = 0; i < self->n_cols; i++)
+    if (self->cols[i] == col)
+      break;
+  return gxk_scroll_canvas_peek_pango_layout (scc, COLUMN_PLAYOUT_INDEX (i));
+}
+
 static void
 pattern_view_get_layout (GxkScrollCanvas        *scc,
                          GxkScrollCanvasLayout  *layout)
@@ -208,7 +220,7 @@ pattern_view_get_layout (GxkScrollCanvas        *scc,
   /* vpanel numbers */
   fdesc = pango_font_description_new ();
   pango_font_description_set_family_static (fdesc, "monospace");
-  pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
+  // pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
   pango_font_description_merge (fdesc, STYLE (self)->font_desc, FALSE);
   pango_layout_set_font_description (PLAYOUT_VPANEL (self), fdesc);
   pango_font_description_free (fdesc);
@@ -288,6 +300,53 @@ row_to_coords (BstPatternView *self,
   if (height_p)
     *height_p = self->row_height;
   return row_to_ticks (self, row, NULL, NULL);
+}
+
+static gint
+coord_to_focus_col (BstPatternView *self,
+                    gint            x,
+                    gboolean       *is_valid)
+{
+  gint i, vwidth = 0, valid = 0, focus_col = G_MAXINT, dist = G_MAXINT;
+  for (i = 0; i < self->n_focus_cols; i++)
+    {
+      gint ldist = x - self->focus_cols[i]->x;
+      gint rdist = x - self->focus_cols[i]->x - self->focus_cols[i]->width;
+      if (ABS (ldist) < dist || ABS (rdist) < dist)
+        {
+          focus_col = i;
+          dist = MIN (ABS (ldist), ABS (rdist));
+        }
+      vwidth += self->focus_cols[i]->width;
+    }
+  if (focus_col < self->n_focus_cols)
+    valid = x >= self->focus_cols[focus_col]->x && x < self->focus_cols[focus_col]->x + self->focus_cols[focus_col]->width;
+  else if (x < 0 && self->n_focus_cols)
+    focus_col = x / (vwidth / self->n_focus_cols);
+  if (valid && self->focus_cols[focus_col]->n_focus_positions > 1)
+    {
+      BstPatternColumn *col = self->focus_cols[focus_col];
+      GdkRectangle rect;
+      gint tick, duration, fx, fw, cx = x - col->x;
+      row_to_ticks (self, self->focus_row, &tick, &duration);
+      row_to_coords (self, self->focus_row, &rect.y, &rect.height);
+      rect.x = col->x;
+      rect.width = col->width;
+      for (i = 0; i < col->n_focus_positions; i++)
+        {
+          col->klass->get_focus_pos (col, self, CANVAS (self),
+                                     pattern_view_column_pango_layout (self, col),
+                                     tick, duration, &rect, i, &fx, &fw);
+          if (cx >= fx && cx < fx + fw)
+            {
+              focus_col += i;
+              break;
+            }
+        }
+    }
+  if (is_valid)
+    *is_valid = valid;
+  return focus_col;
 }
 
 #if 0
@@ -695,19 +754,20 @@ pattern_view_handle_drag (GxkScrollCanvas     *scc,
 {
   BstPatternView *self = BST_PATTERN_VIEW (scc);
   BstPatternViewDrag drag_mem = { 0 }, *drag = &drag_mem;
-  gint hdrag = scc_drag->canvas_drag || scc_drag->top_panel_drag;
-  gint vdrag = scc_drag->canvas_drag || scc_drag->left_panel_drag;
+  gint hvalid = 1, hdrag = scc_drag->canvas_drag || scc_drag->top_panel_drag;
+  gint vvalid = 1, vdrag = scc_drag->canvas_drag || scc_drag->left_panel_drag;
   /* copy over drag setup */
   memcpy (drag, scc_drag, sizeof (*scc_drag));  /* sizeof (*scc_drag) < sizeof (*drag) */
   drag->pview = self;
   /* calculate widget specific drag data */
   if (hdrag)
-    drag->current_col = drag->current_x;
+    drag->current_col = coord_to_focus_col (self, drag->current_x, &hvalid);
   if (vdrag)
     {
-      drag->current_row = coord_to_row (self, drag->current_y, &drag->current_valid);
+      drag->current_row = coord_to_row (self, drag->current_y, &vvalid);
       row_to_ticks (self, drag->current_row, &drag->current_tick, &drag->current_duration);
     }
+  drag->current_valid = hvalid && vvalid;
   /* sync start-position fields and select row */
   if (drag->type == GXK_DRAG_START)
     {
@@ -725,6 +785,7 @@ pattern_view_handle_drag (GxkScrollCanvas     *scc,
       drag->start_duration = self->start_duration;
       drag->start_valid = self->start_valid;
     }
+  bst_pattern_view_set_focus (self, drag->current_col, drag->current_row);
   /* handle drag */
   g_signal_emit (self, signal_drag, 0, drag);
   /* copy over drag reply */
@@ -784,18 +845,6 @@ bst_pattern_view_get_focus_cell (BstPatternView            *self,
   if (focus_col < self->n_focus_cols && row_to_ticks (self, focus_row, tick_p, duration_p))
     return self->focus_cols[focus_col];
   return NULL;
-}
-
-static PangoLayout*
-pattern_view_column_pango_layout (BstPatternView   *self,
-                                  BstPatternColumn *col)
-{
-  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
-  gint i;
-  for (i = 0; i < self->n_cols; i++)
-    if (self->cols[i] == col)
-      break;
-  return gxk_scroll_canvas_peek_pango_layout (scc, COLUMN_PLAYOUT_INDEX (i));
 }
 
 gboolean

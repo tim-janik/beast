@@ -265,7 +265,7 @@ pattern_column_event_create_font_desc (BstPatternColumn *self)
 {
   PangoFontDescription *fdesc = pango_font_description_new ();
   pango_font_description_set_family_static (fdesc, "monospace");
-  // pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
+  pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
   return fdesc;
 }
 
@@ -436,7 +436,7 @@ pattern_column_event_draw_cell (BstPatternColumn       *column,
   BsePartControl *pctrl = pattern_column_event_lookup (column, pview, tick, duration, NULL, &placeholder);
   gchar buffer[64] = { 0, };
   guint n = pattern_column_event_to_string (column, buffer, pctrl, placeholder, NULL);
-  GdkGC *draw_gc = pctrl ? black_gc : dark_gc;
+  GdkGC *draw_gc = placeholder == '-' ? dark_gc : black_gc;
   gint i, yline, accu = crect->x + FOCUS_WIDTH (pview) + 1;
 
   for (i = 0; i < n; i++)

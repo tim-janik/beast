@@ -1,3 +1,12 @@
+Tue Mar  2 16:36:37 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterncolumns.c: draw event values bold, similar
+	to notes. choose a dark_gc for events only if none is present,
+	this makes event values look like notes in font and color.
+
+	* beast-gtk/bstpatternview.c: draw tick positions non-bold.
+	auto-focus cells upon mouse clicks (drag start).
+
 Tue Mar  2 12:47:45 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatternctrl.[hc]: implemented base_octave parameter.
