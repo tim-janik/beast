@@ -28,8 +28,8 @@
 @newsTitle{Wednesday 11 Feb 2004, BEAST Realease ``Silver Vein''}
 
 BEAST/BSE version 0.6.0 is available from the
-@uref{beast-doc://download,,download section}.
-@c here is the @uref{http://gnomedesktop.org/article.php?sid=1551,,FootNotes announcement}.
+@uref{beast-doc://download,,download section},
+here is the @uref{http://www.gnomedesktop.org/article.php?sid=1648,,FootNotes announcement}.
 
 Tarball:
 @uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.0.tar.gz,, beast-0.6.0.tar.gz}
