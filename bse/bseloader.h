@@ -84,6 +84,7 @@ GslWaveChunk*	      gsl_wave_chunk_create	(GslWaveDsc	 *wave_dsc,
 /* --- loader impl --- */
 typedef enum /*< skip >*/
 {
+  GSL_LOADER_NO_FLAGS              = 0,
   GSL_LOADER_SKIP_PRECEEDING_NULLS = 1 << 0
 } GslLoaderFlags;
 struct _GslLoader

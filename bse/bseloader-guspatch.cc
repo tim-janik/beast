@@ -22,6 +22,8 @@
 #include <errno.h>
 #include <vector>
 
+#define GUS_PATCH_DEBUG(...)         sfi_debug ("guspatch", __VA_ARGS__)
+
 using std::vector;
 
 /*
@@ -36,74 +38,85 @@ namespace
   typedef short int sword;
   typedef int sdword;
 
-  static int pos = 0;
-  static int apos = 0;
+  /*
+   * executes read_me (which should be a function call to read something from the file),
+   * and returns from the calling function if that fails
+   */
+  #define read_or_return_error(read_me) G_STMT_START{ BseErrorType _error = read_me; if (_error) return _error; }G_STMT_END
 
-  inline void xRead(FILE *file, int len, void *data)
+  inline BseErrorType xRead (FILE *file, int len, void *data)
   {
-    //	printf("(0x%2x) - 0x%02x  ... reading %d bytes\n",apos,pos,len);
-    pos += len;
-    apos += len;
-    if(fread(data, len, 1, file) != 1)
-      fprintf(stdout, "short read\n");
+    if (fread (data, len, 1, file) != 1)
+      if (feof (file))
+        return BSE_ERROR_FILE_EOF;
+      else
+        return gsl_error_from_errno (errno, BSE_ERROR_IO);
+
+    return BSE_ERROR_NONE;
   }
 
-  inline void skip(FILE *file, int len)
+  inline BseErrorType skip (FILE *file, int len)
   {
-    //	printf("(0x%2x) - 0x%02x  ... skipping %d bytes\n",apos,pos,len);
-    pos += len;
-    apos += len;
-    while(len > 0)
+    while (len > 0)
       {
 	char junk;
-	if(fread(&junk, 1, 1, file) != 1)
-	  fprintf(stdout, "short read\n");
+	read_or_return_error (xRead (file, 1, &junk));
 	len--;
       }
+    return BSE_ERROR_NONE;
   }
 
 
-  inline void readBytes(FILE *file, unsigned char *bytes, int len)
+  inline BseErrorType readBytes (FILE *file, unsigned char *bytes, int len)
   {
-    xRead(file, len, bytes);
+    return xRead (file, len, bytes);
   }
 
-  inline void readString(FILE *file, char *str, int len)
+  inline BseErrorType readString (FILE *file, char *str, int len)
   {
-    xRead(file, len, str);
+    return xRead (file, len, str);
   }
 
   /* readXXX with sizeof(xxx) == 1 */
-  inline void readByte(FILE *file, byte& b)
+  inline BseErrorType readByte (FILE *file, byte& b)
   {
-    xRead(file, 1, &b);
+    return xRead (file, 1, &b);
   }
 
   /* readXXX with sizeof(xxx) == 2 */
-  inline void readWord(FILE *file, word& w)
+  inline BseErrorType readWord (FILE *file, word& w)
   {
     byte h, l;
-    xRead(file, 1, &l);
-    xRead(file, 1, &h);
+
+    read_or_return_error (xRead (file, 1, &l));
+    read_or_return_error (xRead (file, 1, &h));
     w = (h << 8) + l;
+
+    return BSE_ERROR_NONE;
   }
 
-  inline void readSWord(FILE *file, sword& sw)
+  inline BseErrorType readSWord (FILE *file, sword& sw)
   {
     word w;
-    readWord(file, w);
+
+    read_or_return_error (readWord(file, w));
     sw = (sword)w;
+
+    return BSE_ERROR_NONE;
   }
 
   /* readXXX with sizeof(xxx) == 4 */
-  inline void readDWord(FILE *file, dword& dw)
+  inline BseErrorType readDWord (FILE *file, dword& dw)
   {
     byte h, l, hh, hl;
-    xRead(file, 1, &l);
-    xRead(file, 1, &h);
-    xRead(file, 1, &hl);
-    xRead(file, 1, &hh);
+
+    read_or_return_error (xRead(file, 1, &l));
+    read_or_return_error (xRead(file, 1, &h));
+    read_or_return_error (xRead(file, 1, &hl));
+    read_or_return_error (xRead(file, 1, &hh));
     dw = (hh << 24) + (hl << 16) + (h << 8) + l;
+
+    return BSE_ERROR_NONE;
   }
 
   struct PatHeader
@@ -121,22 +134,28 @@ namespace
     dword size;			  /* Size of the following data */
     char reserved[36];		  /* reserved */
 
-    PatHeader(FILE *file)
+    PatHeader()
     {
-      readString(file, id, 12);
-      readString(file, manufacturer_id, 10);
-      readString(file, description, 60);
+    }
+
+    BseErrorType load (FILE *file)
+    {
+      read_or_return_error (readString (file, id, 12));
+      read_or_return_error (readString (file, manufacturer_id, 10));
+      read_or_return_error (readString (file, description, 60));
       /*		skip(file, 2);*/
 
-      readByte(file, instruments);
-      readByte(file, voices);
-      readByte(file, channels);
+      read_or_return_error (readByte (file, instruments));
+      read_or_return_error (readByte (file, voices));
+      read_or_return_error (readByte (file, channels));
 
-      readWord(file, waveforms);
-      readWord(file, mastervolume);
-      readDWord(file, size);
+      read_or_return_error (readWord (file, waveforms));
+      read_or_return_error (readWord (file, mastervolume));
+      read_or_return_error (readDWord (file, size));
 
-      readString(file, reserved, 36);
+      read_or_return_error (readString (file, reserved, 36));
+
+      return BSE_ERROR_NONE;
     }
   };
 
@@ -154,23 +173,30 @@ namespace
     byte	sampleCount;	  /* number of samples in this layer (?) */
     char	layerReserved[40];
 
-    PatInstrument(FILE *file)
+    PatInstrument()
     {
-      readWord(file, number);
-      readString(file, name, 16);
-      readDWord(file, size);
-      readByte(file, layers);
-      readString(file, reserved, 40);
+    }
+
+    BseErrorType load (FILE *file)
+    {
+      read_or_return_error (readWord (file, number));
+      read_or_return_error (readString (file, name, 16));
+      read_or_return_error (readDWord (file, size));
+      read_or_return_error (readByte (file, layers));
+      read_or_return_error (readString (file, reserved, 40));
 
       /* layer: (?) */
-      readWord(file, layerUnknown);
-      readDWord(file, layerSize);
-      readByte(file, sampleCount);
-      readString(file, reserved, 40);
+      read_or_return_error (readWord (file, layerUnknown));
+      read_or_return_error (readDWord (file, layerSize));
+      read_or_return_error (readByte (file, sampleCount));
+      read_or_return_error (readString (file, reserved, 40));
+
+      return BSE_ERROR_NONE;
     }
   };
 
-  enum {
+  enum
+  {
     PAT_FORMAT_16BIT = (1 << 0),
     PAT_FORMAT_UNSIGNED = (1 << 1),
     PAT_FORMAT_LOOPED = (1 << 2),
@@ -207,33 +233,40 @@ namespace
     word	freqScaleFactor;
     char	reserved[36];
 
-    PatPatch(FILE *file)
+    PatPatch()
     {
-      readString(file, filename, 7);
-      readByte(file, fractions);
-      readDWord(file, wavesize);
-      readDWord(file, loopStart);
-      readDWord(file, loopEnd);
-      readWord(file, sampleRate);
-      readDWord(file, minFreq);
-      readDWord(file, maxFreq);
-      readDWord(file, origFreq);
-      readSWord(file, fineTune);
-      readByte(file, balance);
-      readBytes(file, filterRate, 6);
-      readBytes(file, filterOffset, 6);
-      readByte(file, tremoloSweep);
-      readByte(file, tremoloRate);
-      readByte(file, tremoloDepth);
-      readByte(file, vibratoSweep);
-      readByte(file, vibratoRate);
-      readByte(file, vibratoDepth);
-      readByte(file, waveFormat);
-      readSWord(file, freqScale);
-      readWord(file, freqScaleFactor);
-      readString(file, reserved, 36);
+    }
+
+    BseErrorType load (FILE *file)
+    {
+      read_or_return_error (readString (file, filename, 7));
+      read_or_return_error (readByte (file, fractions));
+      read_or_return_error (readDWord (file, wavesize));
+      read_or_return_error (readDWord (file, loopStart));
+      read_or_return_error (readDWord (file, loopEnd));
+      read_or_return_error (readWord (file, sampleRate));
+      read_or_return_error (readDWord (file, minFreq));
+      read_or_return_error (readDWord (file, maxFreq));
+      read_or_return_error (readDWord (file, origFreq));
+      read_or_return_error (readSWord (file, fineTune));
+      read_or_return_error (readByte (file, balance));
+      read_or_return_error (readBytes (file, filterRate, 6));
+      read_or_return_error (readBytes (file, filterOffset, 6));
+      read_or_return_error (readByte (file, tremoloSweep));
+      read_or_return_error (readByte (file, tremoloRate));
+      read_or_return_error (readByte (file, tremoloDepth));
+      read_or_return_error (readByte (file, vibratoSweep));
+      read_or_return_error (readByte (file, vibratoRate));
+      read_or_return_error (readByte (file, vibratoDepth));
+      read_or_return_error (readByte (file, waveFormat));
+      read_or_return_error (readSWord (file, freqScale));
+      read_or_return_error (readWord (file, freqScaleFactor));
+      read_or_return_error (readString (file, reserved, 36));
+
+      return BSE_ERROR_NONE;
     }
   };
+  #undef read_or_return_error
 };
 
 namespace {
@@ -249,7 +282,6 @@ struct FileInfo
   PatHeader          *header;
   PatInstrument      *instrument;
   vector<PatPatch *>  patches;
-  vector<long>        data_offsets;
 
   GslWaveLoopType loop_type (int wave_format)
   {
@@ -260,7 +292,7 @@ struct FileInfo
 	  {
 	    if (wave_format & (PAT_FORMAT_LOOP_BACKWARDS))
 	      {
-		printf ("pat loader: unsupported loop type (backwards-pingpong)\n");
+		GUS_PATCH_DEBUG ("unsupported loop type (backwards-pingpong)");
 		return GSL_WAVE_LOOP_PINGPONG;
 	      }
 	    else
@@ -272,7 +304,7 @@ struct FileInfo
 	  {
 	    if (wave_format & (PAT_FORMAT_LOOP_BACKWARDS))
 	      {
-		printf ("pat loader: unsupported loop type (backwards-jump)\n");
+		GUS_PATCH_DEBUG ("unsupported loop type (backwards-jump)");
 		return GSL_WAVE_LOOP_JUMP;
 	      }
 	    else
@@ -320,21 +352,47 @@ struct FileInfo
       }
 
     /* parse contents of patfile into Pat* data structurs */
-    header = new PatHeader (patfile);
+    header = new PatHeader();
+
+    *error_p = header->load (patfile);
+    if (*error_p)
+      {
+	fclose (patfile);
+	return;
+      }
+
     if (header->channels == 0) /* fixup channels setting */
       header->channels = 1;
 
-    instrument = new PatInstrument (patfile);
+    instrument = new PatInstrument();
+
+    *error_p = instrument->load (patfile);
+    if (*error_p)
+      {
+	fclose (patfile);
+        return;
+      }
+
+    vector<long> data_offsets;
     for (int i = 0; i<instrument->sampleCount; i++)
       {
-	PatPatch *patch = new PatPatch (patfile);
-	data_offsets.push_back (ftell (patfile));
-	skip (patfile, patch->wavesize);
+	PatPatch *patch = new PatPatch();
 	patches.push_back (patch);
 
-	printf (" - read patch, srate = %d (%d bytes)\n", patch->sampleRate, patch->wavesize);
+        *error_p = patch->load (patfile);
+        if (*error_p)
+          return;
+
+	data_offsets.push_back (ftell (patfile));
+
+	*error_p = skip (patfile, patch->wavesize);
+        if (*error_p)
+	  {
+	    fclose (patfile);
+	    return;
+	  }
+	GUS_PATCH_DEBUG (" - read patch, srate = %d (%d bytes)", patch->sampleRate, patch->wavesize);
       }
-    *error_p = BSE_ERROR_NONE; /* FIXME: more error handling might be useful */
     fclose (patfile);
 
     /* allocate and fill appropriate Gsl* data structures */
@@ -350,18 +408,19 @@ struct FileInfo
     wdsc.chunks = (typeof (wdsc.chunks)) g_malloc0 (sizeof (wdsc.chunks[0]) * wdsc.n_chunks);
     wdsc.n_channels = header->channels;
 
-    for (int i = 0; i < instrument->sampleCount; i++)
+    for (guint i = 0; i < wdsc.n_chunks; i++)
       {
 	/* fill GslWaveChunk */
 	wdsc.chunks[i].mix_freq = patches[i]->sampleRate;
 	wdsc.chunks[i].osc_freq = patches[i]->origFreq / 1000.0;
+	wdsc.chunks[i].loader_offset = data_offsets[i];
 
-	printf ("orig_freq = %f (%d) \n", patches[i]->origFreq / 1000.0, patches[i]->origFreq);
-	printf ("min_freq = %f\n", patches[i]->minFreq / 1000.0);
-	printf ("max_freq = %f\n", patches[i]->maxFreq / 1000.0);
-	printf ("fine_tune = %d\n", patches[i]->fineTune);
-	printf ("scale_freq = %d\n", patches[i]->freqScale);
-	printf ("scale_factor = %d\n", patches[i]->freqScaleFactor);
+	GUS_PATCH_DEBUG ("orig_freq = %f (%d)", patches[i]->origFreq / 1000.0, patches[i]->origFreq);
+	GUS_PATCH_DEBUG ("min_freq = %f", patches[i]->minFreq / 1000.0);
+	GUS_PATCH_DEBUG ("max_freq = %f", patches[i]->maxFreq / 1000.0);
+	GUS_PATCH_DEBUG ("fine_tune = %d", patches[i]->fineTune);
+	GUS_PATCH_DEBUG ("scale_freq = %d", patches[i]->freqScale);
+	GUS_PATCH_DEBUG ("scale_factor = %d", patches[i]->freqScaleFactor);
 
 	int frame_size = bytes_per_frame (patches[i]->waveFormat);
         if (loop_type (patches[i]->waveFormat))
@@ -386,6 +445,11 @@ struct FileInfo
     delete header;
 
     /* free GslWaveDsc */
+    for (guint i = 0; i < wdsc.n_chunks; i++)
+      {
+        g_strfreev (wdsc.chunks[i].xinfos); // FIXME: double free with gslloader.c
+        wdsc.chunks[i].xinfos = NULL;
+      }
     g_free (wdsc.name);
     g_free (wdsc.chunks);
 
@@ -449,7 +513,7 @@ pat_create_chunk_handle (gpointer      data,
   const PatPatch *patch = file_info->patches[nth_chunk];
   const GslWaveChunkDsc *chunk = &wave_dsc->chunks[nth_chunk];
 
-  printf ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %ld %d\n",
+  GUS_PATCH_DEBUG ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %ld %d",
           nth_chunk,
 	  file_info->wfi.file_name,
 	  wave_dsc->n_channels,
@@ -457,7 +521,7 @@ pat_create_chunk_handle (gpointer      data,
 	  G_LITTLE_ENDIAN,
 	  chunk->mix_freq,
 	  chunk->osc_freq,
-	  file_info->data_offsets[nth_chunk],
+	  chunk->loader_offset,
 	  patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
 
   GslDataHandle *dhandle;
@@ -467,7 +531,7 @@ pat_create_chunk_handle (gpointer      data,
 				 G_LITTLE_ENDIAN,
 				 chunk->mix_freq,
 				 chunk->osc_freq,
-				 file_info->data_offsets[nth_chunk],
+				 chunk->loader_offset,
 				 patch->wavesize / file_info->bytes_per_frame (patch->waveFormat),
                                  chunk->xinfos);
   return dhandle;
@@ -497,7 +561,7 @@ _gsl_init_loader_pat()
     "GUS Patch",
     file_exts,
     mime_types,
-    static_cast<GslLoaderFlags> (0),	/* flags */
+    GSL_LOADER_NO_FLAGS,
     magics,
     0,  /* priority */
     NULL,
