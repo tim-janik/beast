@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-01 03:14+0200\n"
-"PO-Revision-Date: 2004-07-01 11:15-0300\n"
+"POT-Creation-Date: 2004-07-14 11:55-0400\n"
+"PO-Revision-Date: 2004-07-10 14:11-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -160,31 +160,35 @@ msgstr "_FAQ..."
 msgid "GSL Engine..."
 msgstr "Mecanismo GSL..."
 
-#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:280
+msgid "Export Audio"
+msgstr "Exportar Áudio"
+
+#: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Abrindo projeto '%s'"
 
-#: beast-gtk/bstapp.c:630
+#: beast-gtk/bstapp.c:636
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Carregando skin '%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:791
+#: beast-gtk/bstapp.c:797
 msgid "Rack editor"
 msgstr "Editor de pilha"
 
-#: beast-gtk/bstapp.c:805
+#: beast-gtk/bstapp.c:811
 msgid "Preferences"
 msgstr "Preferências"
 
-#: beast-gtk/bstapp.c:832
+#: beast-gtk/bstapp.c:838
 msgid "Procedure Browser"
 msgstr "Navegador de procedimentos"
 
-#: beast-gtk/bstapp.c:889
+#: beast-gtk/bstapp.c:895
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Notas da Versão"
@@ -202,7 +206,7 @@ msgstr "Por favor, aperte o atalho de teclado para usar..."
 msgid "Module Link: "
 msgstr "Ligação do módulo:"
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:901
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:747
 msgid "Module link"
 msgstr "Ligação do módulo"
 
@@ -210,11 +214,11 @@ msgstr "Ligação do módulo"
 msgid "Module Info"
 msgstr "Informações do módulo"
 
-#: beast-gtk/bstcanvassource.c:962 beast-gtk/bstsnetrouter.c:184
+#: beast-gtk/bstcanvassource.c:962 beast-gtk/bstsnetrouter.c:1084
 msgid "Input"
 msgstr "Entrada"
 
-#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:1081
 #: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
 #: plugins/artscompressor.idl:58
 msgid "Output"
@@ -406,16 +410,25 @@ msgstr "Carregar som"
 msgid "Loading wave `%s'"
 msgstr "Carregando som '%s'"
 
+#: beast-gtk/bstgrowbar.c:91
+msgid "Shrink the scrollable area"
+msgstr "Diminuir a área de rolagem"
+
+#: beast-gtk/bstgrowbar.c:93
+msgid "Grow the scrollable area"
+msgstr "Aumentar a área de rolagem"
+
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bstbusview.c:34 beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Adicionar"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
-#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
-#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
+#: beast-gtk/bstsnetrouter.c:751 beast-gtk/bstbusview.c:35
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:64
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Excluir"
 
@@ -579,16 +592,16 @@ msgstr "Carregando \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Carregando projeto \"%s\""
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:722
 msgid "BEAST About"
 msgstr "Sobre o BEAST"
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:723
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versão %s"
 
-#: beast-gtk/bstmain.c:722
+#: beast-gtk/bstmain.c:724
 msgid "Contributions made by:"
 msgstr "Contribuições feitas por:"
 
@@ -712,7 +725,7 @@ msgstr "Refaz o último passo de edição desfeito"
 msgid "Editor"
 msgstr "Editor"
 
-#: beast-gtk/bstpatterncolumns.c:683
+#: beast-gtk/bstpatterncolumns.c:686
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -720,25 +733,25 @@ msgstr ""
 "A disposição das colunas do editor de padrões é especificada pela lista de "
 "tipos de colunas, com possíveis modificadores, na ordem de exibição."
 
-#: beast-gtk/bstpatterncolumns.c:685
+#: beast-gtk/bstpatterncolumns.c:688
 msgid "COLUMN TYPES:"
 msgstr "TIPOS DE COLUNAS:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:687
+#: beast-gtk/bstpatterncolumns.c:690
 msgid "note-1, note-2, ..."
 msgstr "note-1, note-2, ..."
 
-#: beast-gtk/bstpatterncolumns.c:688
+#: beast-gtk/bstpatterncolumns.c:691
 msgid "  display notes of the first, second, ... channel"
 msgstr "  mostra notas do primeiro, segundo, ... canal"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:690
+#: beast-gtk/bstpatterncolumns.c:693
 msgid "offset-1, length-2, velocity-3, ..."
 msgstr "offset-1, length-2, velocity-3, ..."
 
-#: beast-gtk/bstpatterncolumns.c:691
+#: beast-gtk/bstpatterncolumns.c:694
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
@@ -747,259 +760,267 @@ msgstr ""
 "segundo, ... canal"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:693
+#: beast-gtk/bstpatterncolumns.c:696
 msgid "control-0, ..., control-63, cc-0, cc-31"
 msgstr "control-0, ..., control-63, cc-0, cc-31"
 
-#: beast-gtk/bstpatterncolumns.c:694
+#: beast-gtk/bstpatterncolumns.c:697
 msgid "  select various event types (controls, continuous controllers)"
 msgstr ""
 "  seleciona diversos tipos de eventos (controles, controladores contínuos)"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:696
+#: beast-gtk/bstpatterncolumns.c:699
 msgid "bar, |"
 msgstr "bar, |"
 
-#: beast-gtk/bstpatterncolumns.c:697
+#: beast-gtk/bstpatterncolumns.c:700
 msgid "  display solid vertical bar"
 msgstr "  mostra uma barra vertical sólida"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:699
+#: beast-gtk/bstpatterncolumns.c:702
 msgid "dbar, :"
 msgstr "dbar, :"
 
-#: beast-gtk/bstpatterncolumns.c:700
+#: beast-gtk/bstpatterncolumns.c:703
 msgid "  display dotted vertical bar"
 msgstr "  mostra uma barra vertical com pontos"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:702
+#: beast-gtk/bstpatterncolumns.c:705
 msgid "space, _"
 msgstr "space, _"
 
-#: beast-gtk/bstpatterncolumns.c:703
+#: beast-gtk/bstpatterncolumns.c:706
 msgid "  insert vertical space"
 msgstr "  insere um espaço vertical"
 
-#: beast-gtk/bstpatterncolumns.c:704
+#: beast-gtk/bstpatterncolumns.c:707
 msgid "EVENTS:"
 msgstr "EVENTOS:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:706
+#: beast-gtk/bstpatterncolumns.c:709
 msgid "  balance, volume, cc-8, ..."
 msgstr "  balance, volume, cc-8, ..."
 
-#: beast-gtk/bstpatterncolumns.c:707
+#: beast-gtk/bstpatterncolumns.c:710
 msgid "MODIFIERS:"
 msgstr "MODIFICADORES:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:709
+#: beast-gtk/bstpatterncolumns.c:712
 msgid "hex2, hex4"
 msgstr "hex2, hex4"
 
-#: beast-gtk/bstpatterncolumns.c:710
+#: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr "  mostra números hexa de 2 (00..FF) ou 4 (0000..FFFF) dígitos"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:712
+#: beast-gtk/bstpatterncolumns.c:715
 msgid "shex2, shex4"
 msgstr "shex2, shex4"
 
-#: beast-gtk/bstpatterncolumns.c:713
+#: beast-gtk/bstpatterncolumns.c:716
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 "  mostra números hexa com sinal de 2 (-FF..+FF) ou 4 (-FFFF..+FFFF) dígitos"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:715
+#: beast-gtk/bstpatterncolumns.c:718
 msgid "dec2, dec3"
 msgstr "dec2, dec3"
 
-#: beast-gtk/bstpatterncolumns.c:716
+#: beast-gtk/bstpatterncolumns.c:719
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr "  mostra números decimais de 2 (00..99) ou 3 (000..999) dígitos"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:718
+#: beast-gtk/bstpatterncolumns.c:721
 msgid "sdec2, sdec3"
 msgstr "sdec2, sdec3"
 
-#: beast-gtk/bstpatterncolumns.c:719
+#: beast-gtk/bstpatterncolumns.c:722
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 "  mostra números decimais com sinal de 2 (-99..+99) ou 3 (-999..+999) dígitos"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:721
+#: beast-gtk/bstpatterncolumns.c:724
 msgid "col1, col2, col3"
 msgstr "col1, col2, col3"
 
-#: beast-gtk/bstpatterncolumns.c:722
+#: beast-gtk/bstpatterncolumns.c:725
 msgid "  selects one of 3 predefined colors"
 msgstr "  seleciona uma cor de 3 pré-definidas"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:724
+#: beast-gtk/bstpatterncolumns.c:727
 msgid "lfold, rfold"
 msgstr "lfold, rfold"
 
-#: beast-gtk/bstpatterncolumns.c:725
+#: beast-gtk/bstpatterncolumns.c:728
 msgid "  allow folding the column into left/right neighbour"
 msgstr "  permite recolher a coluna para dentro da vizinha à esquerda/direita"
 
-#: beast-gtk/bstpatterncolumns.c:726
+#: beast-gtk/bstpatterncolumns.c:729
 msgid "EXAMPLE:"
 msgstr "EXEMPLO:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:728
+#: beast-gtk/bstpatterncolumns.c:731
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.c:738
+#: beast-gtk/bstpatterncolumns.c:741
 msgid "Pattern Editor Layout"
 msgstr "Disposição do editor de padrões"
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "VZoom"
 msgstr "ZoomV"
 
-#: beast-gtk/bstpatternctrl.c:83
+#: beast-gtk/bstpatternctrl.c:120
 msgid "The tick/note length per line"
 msgstr "O comprimento por linha da marca/nota"
 
-#: beast-gtk/bstpatternctrl.c:86
+#: beast-gtk/bstpatternctrl.c:123
 msgid "Steps"
 msgstr "Passos"
 
-#: beast-gtk/bstpatternctrl.c:87
+#: beast-gtk/bstpatternctrl.c:124
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
 "O número de células pelas quais mover a cada vez que um evento ou nota for "
 "editada"
 
-#: beast-gtk/bstpatternctrl.c:91
+#: beast-gtk/bstpatternctrl.c:128
 msgid "Direction"
 msgstr "Direção"
 
-#: beast-gtk/bstpatternctrl.c:92
+#: beast-gtk/bstpatternctrl.c:129
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr ""
 "A direção de movimento da célula a cada vez que um evento ou nota for editada"
 
-#: beast-gtk/bstpatternctrl.c:96
+#: beast-gtk/bstpatternctrl.c:133
 msgid "HWrap"
 msgstr "QuebraH"
 
-#: beast-gtk/bstpatternctrl.c:97
+#: beast-gtk/bstpatternctrl.c:134
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
 "Alterna se o movimento horizontal da célula com foco quebrará próximo às "
 "bordas"
 
-#: beast-gtk/bstpatternctrl.c:100
+#: beast-gtk/bstpatternctrl.c:137
 msgid "Base Octave"
 msgstr "Oitava base"
 
-#: beast-gtk/bstpatternctrl.c:101
+#: beast-gtk/bstpatternctrl.c:138
 msgid "Controls the octave relative to which notes are entered"
 msgstr "Controla a oitava relativa às notas digitadas"
 
+#: beast-gtk/bstpatternctrl.c:141
+msgid "Row Shading"
+msgstr "Sombreamento da linha"
+
+#: beast-gtk/bstpatternctrl.c:142
+msgid "Adjust the number of rows between each shaded row"
+msgstr "Ajusta o número de linhas entre cada linha sombreada"
+
 #. movement
-#: beast-gtk/bstpatternctrl.c:271
+#: beast-gtk/bstpatternctrl.c:313
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 "Move o foco para a próxima célula (cima/baixo/direita/esquerda de acordo com "
 "a configuração)"
 
-#: beast-gtk/bstpatternctrl.c:272
+#: beast-gtk/bstpatternctrl.c:314
 msgid "Move focus cell upwards"
 msgstr "Move o foco para cima"
 
-#: beast-gtk/bstpatternctrl.c:273
+#: beast-gtk/bstpatternctrl.c:315
 msgid "Move focus cell to the left"
 msgstr "Move o foco para a esquerda"
 
-#: beast-gtk/bstpatternctrl.c:274
+#: beast-gtk/bstpatternctrl.c:316
 msgid "Move focus cell to the right"
 msgstr "Move o foco para a direita"
 
-#: beast-gtk/bstpatternctrl.c:275
+#: beast-gtk/bstpatternctrl.c:317
 msgid "Move focus cell downwards"
 msgstr "Move o foco para baixo"
 
-#: beast-gtk/bstpatternctrl.c:276
+#: beast-gtk/bstpatternctrl.c:318
 msgid "Move focus cell upwards page-wise"
 msgstr "Move o foco para a página de cima"
 
-#: beast-gtk/bstpatternctrl.c:277
+#: beast-gtk/bstpatternctrl.c:319
 msgid "Move focus cell to the left page-wise"
 msgstr "Move o foco para a página à esquerda"
 
-#: beast-gtk/bstpatternctrl.c:278
+#: beast-gtk/bstpatternctrl.c:320
 msgid "Move focus cell to the right page-wise"
 msgstr "Move o foco para a página à direita"
 
-#: beast-gtk/bstpatternctrl.c:279
+#: beast-gtk/bstpatternctrl.c:321
 msgid "Move focus cell downwards page-wise"
 msgstr "Move o foco para a página abaixo"
 
-#: beast-gtk/bstpatternctrl.c:280
+#: beast-gtk/bstpatternctrl.c:322
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Define o foco para a posição mais ao alto possível"
 
-#: beast-gtk/bstpatternctrl.c:281
+#: beast-gtk/bstpatternctrl.c:323
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Define o foco para a posição mais à esquerda possível"
 
-#: beast-gtk/bstpatternctrl.c:282
+#: beast-gtk/bstpatternctrl.c:324
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Define o foco para a posição mais à direita possível"
 
-#: beast-gtk/bstpatternctrl.c:283
+#: beast-gtk/bstpatternctrl.c:325
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Define o foco para a posição mais abaixo possível"
 
-#: beast-gtk/bstpatternctrl.c:286
+#: beast-gtk/bstpatternctrl.c:328
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr "Define o número de passos a dar ao mover para a próxima célula"
 
-#: beast-gtk/bstpatternctrl.c:290
+#: beast-gtk/bstpatternctrl.c:332
 msgid "Set the base octave"
 msgstr "Define a oitava base"
 
-#: beast-gtk/bstpatternctrl.c:293
+#: beast-gtk/bstpatternctrl.c:335
 msgid "Change the base octave by a given amount"
 msgstr "Altera a oitava base em uma determinada quantidade"
 
-#: beast-gtk/bstpatternctrl.c:297
+#: beast-gtk/bstpatternctrl.c:339
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 "Altera o conteúdo da célula em foco (p.ex. a oitava) em uma determinada "
 "quantidade"
 
-#: beast-gtk/bstpatternctrl.c:301
+#: beast-gtk/bstpatternctrl.c:343
 msgid "Set the focus cell octave"
 msgstr "Define a oitava da célula em foco"
 
-#: beast-gtk/bstpatternctrl.c:305 beast-gtk/bstpatternctrl.c:319
+#: beast-gtk/bstpatternctrl.c:347 beast-gtk/bstpatternctrl.c:361
 msgid "Remove any events in the focus cell"
 msgstr "Remove quaisquer eventos na célula em foco"
 
-#: beast-gtk/bstpatternctrl.c:309 beast-gtk/bstpatternctrl.c:323
+#: beast-gtk/bstpatternctrl.c:351 beast-gtk/bstpatternctrl.c:365
 msgid "Set the focus cell note"
 msgstr "Define a nota da célula em foco"
 
-#: beast-gtk/bstpatternctrl.c:313 beast-gtk/bstpatternctrl.c:327
+#: beast-gtk/bstpatternctrl.c:355 beast-gtk/bstpatternctrl.c:369
 msgid "Sets the value of the focus digit"
 msgstr "Define o valor do dígito em foco"
 
@@ -1109,7 +1130,7 @@ msgstr "Q: Tato"
 
 #: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
-msgstr "Quantiza até os limites de tato"
+msgstr "Quantifica até os limites de tato"
 
 #: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "Q: None"
@@ -1117,7 +1138,7 @@ msgstr "Q: Nenhum"
 
 #: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "No quantization selected"
-msgstr "Nenhuma quantização selecionada"
+msgstr "Nenhuma quantificação selecionada"
 
 #: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
 msgid "Q: 1\\/1"
@@ -1125,7 +1146,7 @@ msgstr "Q: 1\\/1"
 
 #: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
 msgid "Quantize to whole note boundaries"
-msgstr "Quantiza para os limites de notas de tempo inteiro"
+msgstr "Quantifica até os limites de notas de tempo inteiro"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
@@ -1133,7 +1154,7 @@ msgstr "Q: 1\\/2"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
-msgstr "Quantiza para os limites de notas de meio tempo"
+msgstr "Quantifica até os limites de notas de meio tempo"
 
 #: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Q: 1\\/4"
@@ -1141,7 +1162,7 @@ msgstr "Q: 1\\/4"
 
 #: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
-msgstr "Quantiza para os limites de notas de quarto de tempo"
+msgstr "Quantifica até os limites de notas de quarto de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Q: 1\\/8"
@@ -1149,7 +1170,7 @@ msgstr "Q: 1\\/8"
 
 #: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
-msgstr "Quantiza para os limites de notas de oitavo de tempo"
+msgstr "Quantifica até os limites de notas de oitavo de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Q: 1\\/16"
@@ -1157,7 +1178,7 @@ msgstr "Q: 1\\/16"
 
 #: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
-msgstr "Quantiza para os limites de notas de dezesseis avos de tempo"
+msgstr "Quantifica até os limites de notas de dezesseis avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
 msgid "Q: 1\\/32"
@@ -1165,7 +1186,7 @@ msgstr "Q: 1\\/32"
 
 #: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
 msgid "Quantize to thirty-second note boundaries"
-msgstr "Quantiza para os limites de notas de trinta e dois avos de tempo"
+msgstr "Quantifica até os limites de notas de trinta e dois avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
 msgid "Q: 1\\/64"
@@ -1173,7 +1194,7 @@ msgstr "Q: 1\\/64"
 
 #: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
 msgid "Quantize to sixty-fourth note boundaries"
-msgstr "Quantiza para os limites de notas de sessenta e quatro avos de tempo"
+msgstr "Quantifica até os limites de notas de sessenta e quatro avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
 msgid "Q: 1\\/128"
@@ -1182,7 +1203,7 @@ msgstr "Q: 1\\/128"
 #: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
 msgid "Quantize to hundred twenty-eighth note boundaries"
 msgstr ""
-"Quantiza para os limites de notas de cento e vinte e oito avos de tempo"
+"Quantifica até os limites de notas de cento e vinte e oito avos de tempo"
 
 #: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:573
@@ -1239,38 +1260,47 @@ msgstr "Executando '%s'"
 msgid "Procedure"
 msgstr "Procedimento"
 
-#: beast-gtk/bstprofiler.c:167
+#: beast-gtk/bstprofiler.c:166
 msgid "Totals"
 msgstr "Totais"
 
-#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:378
 msgid "Thread Name"
 msgstr "Nome da thread"
 
-#: beast-gtk/bstprofiler.c:246
+#: beast-gtk/bstprofiler.c:248
+#, fuzzy
+msgid "TID"
+msgstr "ID"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Thread ID (on some systems the process ID)"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:249
 msgid "CPU%"
 msgstr "CPU%"
 
-#: beast-gtk/bstprofiler.c:246
+#: beast-gtk/bstprofiler.c:249
 msgid "Percentage of CPU usage"
 msgstr "Porcentagem de uso da CPU"
 
-#: beast-gtk/bstprofiler.c:247
+#: beast-gtk/bstprofiler.c:250
 msgid "UTime"
 msgstr "TempoU"
 
-#: beast-gtk/bstprofiler.c:247
+#: beast-gtk/bstprofiler.c:250
 msgid ""
 "Average number of milliseconds per second of user CPU time used by thread"
 msgstr ""
 "Número médio de milissegundos a cada segundo do tempo de usuário da CPU que "
 "serão usados pela thread"
 
-#: beast-gtk/bstprofiler.c:248
+#: beast-gtk/bstprofiler.c:251
 msgid "STime"
 msgstr "TempoS"
 
-#: beast-gtk/bstprofiler.c:248
+#: beast-gtk/bstprofiler.c:251
 msgid ""
 "Average number of milliseconds per second of system CPU time used by thread"
 msgstr ""
@@ -1290,19 +1320,19 @@ msgstr ""
 #. "'X' - thread exited"),
 #. NULL, NULL, 0);
 #.
-#: beast-gtk/bstprofiler.c:262
+#: beast-gtk/bstprofiler.c:265
 msgid "Nice"
 msgstr "Ótimo"
 
-#: beast-gtk/bstprofiler.c:262
+#: beast-gtk/bstprofiler.c:265
 msgid "Thread priority from -20 (high) to +19 (low)"
 msgstr "Prioridade da thread, de -20 (alta) a +19 (baixa)"
 
-#: beast-gtk/bstprofiler.c:263
+#: beast-gtk/bstprofiler.c:266
 msgid "#CPU"
 msgstr "Nº CPU"
 
-#: beast-gtk/bstprofiler.c:263
+#: beast-gtk/bstprofiler.c:266
 msgid "CPU the thread is currently running on"
 msgstr "CPU em que a thread está executando atualmente"
 
@@ -1400,7 +1430,7 @@ msgstr "Para baixo"
 msgid "Step downwards"
 msgstr "Move para baixo"
 
-#: beast-gtk/bstrecords.idl:42
+#: beast-gtk/bstrecords.idl:42 beast-gtk/bstrecords.idl:70
 msgid "None"
 msgstr "Nenhum"
 
@@ -1603,54 +1633,174 @@ msgid "Triplet hundred twenty-eighth note"
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:71
+msgid "2"
+msgstr "2"
+
+#: beast-gtk/bstrecords.idl:71
+msgid "Every second row"
+msgstr "A cada segunda linha"
+
+#: beast-gtk/bstrecords.idl:72
+msgid "4"
+msgstr "4"
+
+#: beast-gtk/bstrecords.idl:72
+msgid "Every fourth row"
+msgstr "A cada quarta linha"
+
+#: beast-gtk/bstrecords.idl:73
+msgid "8"
+msgstr "8"
+
+#: beast-gtk/bstrecords.idl:73
+msgid "Every eighth row"
+msgstr "A cada oitava linha"
+
+#: beast-gtk/bstrecords.idl:74
+msgid "16"
+msgstr "16"
+
+#: beast-gtk/bstrecords.idl:74
+msgid "Every sixteenth row"
+msgstr "A cada décima sexta linha"
+
+#: beast-gtk/bstrecords.idl:75
+msgid "2 & 4"
+msgstr "2 e 4"
+
+#: beast-gtk/bstrecords.idl:75
+msgid "Every second and fourth row"
+msgstr "A cada segunda e quarta linhas"
+
+#: beast-gtk/bstrecords.idl:76
+msgid "4 & 8"
+msgstr "4 e 8"
+
+#: beast-gtk/bstrecords.idl:76
+msgid "Every fourth and eighth row"
+msgstr "A cada quarta e oitava linhas"
+
+#: beast-gtk/bstrecords.idl:77
+msgid "4 & 12"
+msgstr "4 e 12"
+
+#: beast-gtk/bstrecords.idl:77
+msgid "Every fourth and twelfth row"
+msgstr "A cada quarta e décima segunda linhas"
+
+#: beast-gtk/bstrecords.idl:78
+msgid "4 & 16"
+msgstr "4 e 16"
+
+#: beast-gtk/bstrecords.idl:78
+msgid "Every fourth and sixteenth row"
+msgstr "A cada quarta e décima sexta linhas"
+
+#: beast-gtk/bstrecords.idl:79
+msgid "8 & 16"
+msgstr "8 e 16"
+
+#: beast-gtk/bstrecords.idl:79
+msgid "Every eighth and sixteenth row"
+msgstr "A cada oitava e décima sexta linhas"
+
+#: beast-gtk/bstrecords.idl:80
+msgid "3"
+msgstr "3"
+
+#: beast-gtk/bstrecords.idl:80
+msgid "Every third row"
+msgstr "A cada terceira linha"
+
+#: beast-gtk/bstrecords.idl:81
+msgid "6"
+msgstr "6"
+
+#: beast-gtk/bstrecords.idl:81
+msgid "Every sixth row"
+msgstr "A cada sexta linha"
+
+#: beast-gtk/bstrecords.idl:82
+msgid "12"
+msgstr "12"
+
+#: beast-gtk/bstrecords.idl:82
+msgid "Every twelfth row"
+msgstr "A cada décima segunda linha"
+
+#: beast-gtk/bstrecords.idl:83
+msgid "3 & 6"
+msgstr "3 e 6"
+
+#: beast-gtk/bstrecords.idl:83
+msgid "Every third and sixth row"
+msgstr "A cada terceira e sexta linhas"
+
+#: beast-gtk/bstrecords.idl:84
+msgid "3 & 12"
+msgstr "3 e 12"
+
+#: beast-gtk/bstrecords.idl:84
+msgid "Every third and twelfth row"
+msgstr "A cada terceira e décima segunda linhas"
+
+#: beast-gtk/bstrecords.idl:85
+msgid "6 & 12"
+msgstr "6 e 12"
+
+#: beast-gtk/bstrecords.idl:85
+msgid "Every sixth and twelfth row"
+msgstr "A cada sexta e décima segunda linhas"
+
+#: beast-gtk/bstrecords.idl:90
 msgid "Release counter"
 msgstr "Liberar contador"
 
-#: beast-gtk/bstrecords.idl:73
+#: beast-gtk/bstrecords.idl:92
 msgid "Font Size"
 msgstr "Tamanho da fonte"
 
-#: beast-gtk/bstrecords.idl:73
+#: beast-gtk/bstrecords.idl:92
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr "Tamanho da fonte em pixels para rótulos exibidos em redes de síntese"
 
-#: beast-gtk/bstrecords.idl:75
+#: beast-gtk/bstrecords.idl:94
 msgid "Anti-Alias"
 msgstr "Anti-Alias"
 
-#: beast-gtk/bstrecords.idl:75
+#: beast-gtk/bstrecords.idl:94
 msgid "Draw synthesis networks anti-aliased?"
 msgstr "Desenhar redes de síntese com anti-alias?"
 
-#: beast-gtk/bstrecords.idl:77
+#: beast-gtk/bstrecords.idl:96
 msgid "Single Edit"
 msgstr "Edição única"
 
-#: beast-gtk/bstrecords.idl:77
+#: beast-gtk/bstrecords.idl:96
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr "Voltar para o modo de edição após criar módulos de síntese?"
 
-#: beast-gtk/bstrecords.idl:79
+#: beast-gtk/bstrecords.idl:98
 msgid "Swap IO"
 msgstr "Trocar E/S"
 
-#: beast-gtk/bstrecords.idl:79
+#: beast-gtk/bstrecords.idl:98
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr "Trocar canais de entrada com os de saída ao exibir módulos de síntese?"
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstrecords.idl:102
 msgid "Tab Width"
 msgstr "Largura da aba"
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstrecords.idl:102
 msgid "Specify project tab width in pixels"
 msgstr "Especifica a largura da aba do projeto, em pixels"
 
-#: beast-gtk/bstrecords.idl:85
+#: beast-gtk/bstrecords.idl:104
 msgid "Homogeneous Input Fields"
 msgstr "Campos de entrada homogêneos"
 
-#: beast-gtk/bstrecords.idl:86
+#: beast-gtk/bstrecords.idl:105
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -1658,70 +1808,92 @@ msgstr ""
 "Habilita tamanhos homogêneos para a maioria dos campos de entrada (numéricos "
 "e texto). Para alguns campos, isso só terá efeito depois de reiniciar."
 
-#: beast-gtk/bstrecords.idl:94
+#: beast-gtk/bstrecords.idl:113
 msgid "Skin Name"
 msgstr "Nome da skin"
 
-#: beast-gtk/bstrecords.idl:94
+#: beast-gtk/bstrecords.idl:113
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Nome para a configuração de skin atual (usado para seleções de skin)."
 
-#: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
+#: beast-gtk/bstrecords.idl:115 beast-gtk/bstrecords.idl:125
+#: beast-gtk/bstrecords.idl:135
 msgid "Background Image"
 msgstr "Imagem de fundo"
 
-#: beast-gtk/bstrecords.idl:96
-#, fuzzy
-msgid "Background image used by the piano-roll widget."
-msgstr "Imagem de fundo usada pelo componente de teclado de piano."
+#: beast-gtk/bstrecords.idl:115
+msgid "Background image used by the pattern editor."
+msgstr "Imagem de fundo usada pelo editor de padrões."
 
-#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
+#: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
+#: beast-gtk/bstrecords.idl:136
 msgid "Image shade"
 msgstr "Sombreado da imagem"
 
-#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
+#: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
+#: beast-gtk/bstrecords.idl:136
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 "Porcentagem dos pixels da imagem de fundo para misturar com a cor de fundo."
 
-#: beast-gtk/bstrecords.idl:98 beast-gtk/bstrecords.idl:108
+#: beast-gtk/bstrecords.idl:117 beast-gtk/bstrecords.idl:127
+#: beast-gtk/bstrecords.idl:137
 msgid "Background Color"
 msgstr "Cor de fundo"
 
-#: beast-gtk/bstrecords.idl:99 beast-gtk/bstrecords.idl:109
-msgid "Horizontal Bar Color"
-msgstr "Cor da barra horizontal"
+#: beast-gtk/bstrecords.idl:118
+msgid "Background Shade 1"
+msgstr "Sombreado de fundo 1"
 
-#: beast-gtk/bstrecords.idl:100
+#: beast-gtk/bstrecords.idl:119
+msgid "Background Shade 2"
+msgstr "Sombreado de fundo 2"
+
+#: beast-gtk/bstrecords.idl:120
+msgid "Empty Field Color"
+msgstr "Cor de campo vazio"
+
+#: beast-gtk/bstrecords.idl:121
+msgid "Text Color"
+msgstr "Cor do texto"
+
+#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:129
 msgid "Vertical Bar Color"
 msgstr "Cor da barra vertical"
 
-#: beast-gtk/bstrecords.idl:101
+#: beast-gtk/bstrecords.idl:125
+msgid "Background image used by the piano-roll editor."
+msgstr "Imagem de fundo usada pelo editor de teclado de piano."
+
+#: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:138
+msgid "Horizontal Bar Color"
+msgstr "Cor da barra horizontal"
+
+#: beast-gtk/bstrecords.idl:130
 msgid "Horizontal Grid Color"
 msgstr "Cor da grade horizontal"
 
-#: beast-gtk/bstrecords.idl:102
+#: beast-gtk/bstrecords.idl:131
 msgid "Vertical Grid Color"
 msgstr "Cor da grade vertical"
 
-#: beast-gtk/bstrecords.idl:103 beast-gtk/bstrecords.idl:110
+#: beast-gtk/bstrecords.idl:132 beast-gtk/bstrecords.idl:139
 msgid "Middle Bar Color"
 msgstr "Cor da barra do meio"
 
-#: beast-gtk/bstrecords.idl:106
-#, fuzzy
-msgid "Background image used by the control events widget."
-msgstr "Imagem de fundo usada pelo componente de controle de eventos."
+#: beast-gtk/bstrecords.idl:135
+msgid "Background image used by the control events editor."
+msgstr "Imagem de fundo usada pelo editor de controle de eventos."
 
-#: beast-gtk/bstrecords.idl:111
+#: beast-gtk/bstrecords.idl:140
 msgid "Positive Value Color"
 msgstr "Cor de valor positivo"
 
-#: beast-gtk/bstrecords.idl:112
+#: beast-gtk/bstrecords.idl:141
 msgid "Zero Value Color"
 msgstr "Cor de valor zero"
 
-#: beast-gtk/bstrecords.idl:113
+#: beast-gtk/bstrecords.idl:142
 msgid "Negative Value Color"
 msgstr "Cor de valor negativo"
 
@@ -1780,7 +1952,7 @@ msgstr "Máximo do esboço"
 msgid "Preview"
 msgstr "Pre-ouvir"
 
-#: beast-gtk/bstsnetrouter.c:69
+#: beast-gtk/bstsnetrouter.c:42
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
 "Use button1 to create links, button2 for movement and button3 to change "
@@ -1790,102 +1962,102 @@ msgstr ""
 "Use o botão 1 para criar ligaduras, o botão 2 para movimento e o botão 3 "
 "para alterar propriedades"
 
-#: beast-gtk/bstsnetrouter.c:74
+#: beast-gtk/bstsnetrouter.c:47
 msgid "Edit"
 msgstr "Editar"
 
-#: beast-gtk/bstsnetrouter.c:74
+#: beast-gtk/bstsnetrouter.c:47
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Editar/Mover/Menu (botões do mouse 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1077
+#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:923
 msgid "Palette"
 msgstr "Paleta"
 
-#: beast-gtk/bstsnetrouter.c:78
+#: beast-gtk/bstsnetrouter.c:51
 msgid "Toggle visibility of the tool palette"
 msgstr "Alterna a visibilidade da paleta"
 
-#: beast-gtk/bstsnetrouter.c:181
-msgid "PCM Output module"
-msgstr "Módulo de saída PCM"
-
-#: beast-gtk/bstsnetrouter.c:182
-msgid "DCA"
-msgstr "DCA"
-
-#: beast-gtk/bstsnetrouter.c:182
-msgid "Standard amplifier module"
-msgstr "Módulo de amplificação padrão"
-
-#: beast-gtk/bstsnetrouter.c:183
-msgid "Snooper"
-msgstr "Snooper"
-
-#: beast-gtk/bstsnetrouter.c:183
-msgid "Signal debugging module"
-msgstr "Módulo de depuração de sinais"
-
-#: beast-gtk/bstsnetrouter.c:184
-msgid "PCM Input module"
-msgstr "Módulo de entrada PCM"
-
-#: beast-gtk/bstsnetrouter.c:232
-msgid "Channel Hints"
-msgstr "Dicas de canais"
-
-#: beast-gtk/bstsnetrouter.c:232
-msgid "Toggle channel name hints"
-msgstr "Alterna as dicas de nomes de canais"
-
-#: beast-gtk/bstsnetrouter.c:772
+#: beast-gtk/bstsnetrouter.c:618
 msgid "Input channel in use"
 msgstr "Canal de entrada em uso"
 
-#: beast-gtk/bstsnetrouter.c:799 beast-gtk/bstsnetrouter.c:801
-#: beast-gtk/bstsnetrouter.c:837
+#: beast-gtk/bstsnetrouter.c:645 beast-gtk/bstsnetrouter.c:647
+#: beast-gtk/bstsnetrouter.c:683
 msgid "Create Link"
 msgstr "Criar ligadura"
 
-#: beast-gtk/bstsnetrouter.c:799
+#: beast-gtk/bstsnetrouter.c:645
 msgid "Select output module"
 msgstr "Selecione o módulo de saída"
 
-#: beast-gtk/bstsnetrouter.c:801
+#: beast-gtk/bstsnetrouter.c:647
 msgid "Select input module"
 msgstr "Selecione o módulo de entrada"
 
-#: beast-gtk/bstsnetrouter.c:857
+#: beast-gtk/bstsnetrouter.c:703
 msgid "Properties"
 msgstr "Propriedades"
 
-#: beast-gtk/bstsnetrouter.c:858
+#: beast-gtk/bstsnetrouter.c:704
 msgid "Reset Properties"
 msgstr "Redefinir propriedades"
 
-#: beast-gtk/bstsnetrouter.c:859
+#: beast-gtk/bstsnetrouter.c:705
 msgid "Delete Inputs"
 msgstr "Excluir entradas"
 
-#: beast-gtk/bstsnetrouter.c:860
+#: beast-gtk/bstsnetrouter.c:706
 msgid "Delete Outputs"
 msgstr "Excluir saídas"
 
-#: beast-gtk/bstsnetrouter.c:861 beast-gtk/bstsnetrouter.c:903
+#: beast-gtk/bstsnetrouter.c:707 beast-gtk/bstsnetrouter.c:749
 msgid "Show Info"
 msgstr "Mostrar informações"
 
-#: beast-gtk/bstsnetrouter.c:887
+#: beast-gtk/bstsnetrouter.c:733
 msgid "Remove Module"
 msgstr "Remover módulo"
 
-#: beast-gtk/bstsnetrouter.c:914
+#: beast-gtk/bstsnetrouter.c:760
 msgid "Delete Link"
 msgstr "Excluir ligadura"
 
-#: beast-gtk/bstsnetrouter.c:968
+#: beast-gtk/bstsnetrouter.c:814
 msgid "Insert Module"
 msgstr "Inserir módulo"
+
+#: beast-gtk/bstsnetrouter.c:1081
+msgid "PCM Output module"
+msgstr "Módulo de saída PCM"
+
+#: beast-gtk/bstsnetrouter.c:1082
+msgid "DCA"
+msgstr "DCA"
+
+#: beast-gtk/bstsnetrouter.c:1082
+msgid "Standard amplifier module"
+msgstr "Módulo de amplificação padrão"
+
+#: beast-gtk/bstsnetrouter.c:1083
+msgid "Snooper"
+msgstr "Snooper"
+
+#: beast-gtk/bstsnetrouter.c:1083
+msgid "Signal debugging module"
+msgstr "Módulo de depuração de sinais"
+
+#: beast-gtk/bstsnetrouter.c:1084
+msgid "PCM Input module"
+msgstr "Módulo de entrada PCM"
+
+#: beast-gtk/bstsnetrouter.c:1132
+msgid "Channel Hints"
+msgstr "Dicas de canais"
+
+#: beast-gtk/bstsnetrouter.c:1132
+msgid "Toggle channel name hints"
+msgstr "Alterna as dicas de nomes de canais"
 
 #: beast-gtk/bststest.c:550
 msgid "Selection to Loop"
@@ -1923,30 +2095,34 @@ msgstr "Marcar sinal (início)"
 msgid "Mark Signal (Tail)"
 msgstr "Marcar sinal (fim)"
 
-#: beast-gtk/bstsupershell.c:149 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:150 beast-gtk/bstsupershell.c:273
 msgid "Waves"
 msgstr "Sons"
 
-#: beast-gtk/bstsupershell.c:212
+#: beast-gtk/bstsupershell.c:213
 msgid "Tracks"
 msgstr "Faixas"
 
-#: beast-gtk/bstsupershell.c:217 beast-gtk/bstsupershell.c:253
-#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:34
+#: beast-gtk/bstsupershell.c:218 beast-gtk/bstsupershell.c:260
+#: beast-gtk/bstsupershell.c:278 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parâmetros"
 
-#: beast-gtk/bstsupershell.c:222
+#: beast-gtk/bstsupershell.c:223
 msgid "Parts"
 msgstr "Partes"
 
-#: beast-gtk/bstsupershell.c:228 beast-gtk/bstsupershell.c:247
+#: beast-gtk/bstsupershell.c:229
+msgid "Busses"
+msgstr "Barramentos"
+
+#: beast-gtk/bstsupershell.c:235 beast-gtk/bstsupershell.c:254
 msgid "Routing"
 msgstr "Roteamento"
 
-#: beast-gtk/bstsupershell.c:242
+#: beast-gtk/bstsupershell.c:249
 msgid "Rack"
 msgstr "Pilha"
 
@@ -2260,7 +2436,7 @@ msgstr "_Projeto"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Quantization"
-msgstr "_Quantização"
+msgstr "_Quantificação"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Routing"
@@ -2844,10 +3020,19 @@ msgid "The execution state of the thread"
 msgstr "O estado de execução da thread"
 
 #: bse/bsecore.idl:380
+#, fuzzy
+msgid "Thread ID"
+msgstr "Nome da thread"
+
+#: bse/bsecore.idl:380
+msgid "A unique number identifying this thread"
+msgstr ""
+
+#: bse/bsecore.idl:382
 msgid "Priority"
 msgstr "Prioridade"
 
-#: bse/bsecore.idl:380
+#: bse/bsecore.idl:382
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -2855,51 +3040,51 @@ msgstr ""
 "O valor ótimo de uma thread, -20 indica uma thread de alta prioridade e +19 "
 "uma de baixa prioridade que é 'ótimo' para outras"
 
-#: bse/bsecore.idl:383
+#: bse/bsecore.idl:385
 msgid "Processor"
 msgstr "Processador"
 
-#: bse/bsecore.idl:383
+#: bse/bsecore.idl:385
 msgid "The processor that this thread is currently being executed on"
 msgstr "O processador em que essa thread está sendo executada atualmente"
 
-#: bse/bsecore.idl:385
+#: bse/bsecore.idl:387
 msgid "User Time"
 msgstr "Tempo do usuário"
 
-#: bse/bsecore.idl:385
+#: bse/bsecore.idl:387
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "O tempo da CPU utilizado executando instruções dessa thread"
 
-#: bse/bsecore.idl:387
+#: bse/bsecore.idl:389
 msgid "System Time"
 msgstr "Tempo do sistema"
 
-#: bse/bsecore.idl:387
+#: bse/bsecore.idl:389
 msgid "The CPU time spent in the system for this thread"
 msgstr "O tempo da CPU utilizado no sistema para essa thread"
 
-#: bse/bsecore.idl:389
+#: bse/bsecore.idl:391
 msgid "Child User Time"
 msgstr "Tempo filho do usuário"
 
-#: bse/bsecore.idl:389
+#: bse/bsecore.idl:391
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "O tempo da CPU utilizado executando instruções de filhos dessa thread"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:393
 msgid "Child System Time"
 msgstr "Tempo filho do sistema"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:393
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "O tempo da CPU utilizado no sistema para filhos dessa thread"
 
-#: bse/bsecore.idl:432
+#: bse/bsecore.idl:434
 msgid "Latency [ms]"
 msgstr "Latência [ms]"
 
-#: bse/bsecore.idl:433
+#: bse/bsecore.idl:435
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -2907,20 +3092,20 @@ msgstr ""
 "Duração do processamento entre entrada e saída de uma única amostra, valores "
 "menores aumentam a carga da CPU"
 
-#: bse/bsecore.idl:436
+#: bse/bsecore.idl:438
 msgid "Synth Mixing Frequency"
 msgstr "Freqüência de mixagem de síntese"
 
-#: bse/bsecore.idl:437
+#: bse/bsecore.idl:439
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 "Freqüência de mixagem de síntese, valores comuns são: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:439
+#: bse/bsecore.idl:441
 msgid "Synth Control Frequency"
 msgstr "Freqüência de controle de síntese"
 
-#: bse/bsecore.idl:440
+#: bse/bsecore.idl:442
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3074,25 +3259,45 @@ msgstr "Saída direita"
 msgid "Disconnect Out"
 msgstr "Desconectar saída"
 
+#: bse/bseparasite.proc:28 bse/bseparasite.proc:52 bse/bseparasite.proc:70
+#: bse/bseparasite.proc:89
+msgid "Item"
+msgstr ""
+
+#: bse/bseparasite.proc:29 bse/bseparasite.proc:53 bse/bseparasite.proc:71
+#: bse/bseparasite.proc:90
+#, fuzzy
+msgid "Path"
+msgstr "Partes"
+
+#: bse/bseparasite.proc:30
+msgid "Parasite Paths"
+msgstr ""
+
+#: bse/bseparasite.proc:54 bse/bseparasite.proc:72 bse/bseparasite.proc:91
+#, fuzzy
+msgid "Parasite"
+msgstr "Colar"
+
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
 msgstr "/Entrada & Saída/Entrada PCM"
 
-#: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsepcminput.c:128 bse/bsebus.c:273 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Saída esquerda de áudio"
 
-#: bse/bsepcminput.c:128
+#: bse/bsepcminput.c:128 bse/bsebus.c:273
 msgid "Left channel output"
 msgstr "Canal esquerdo de saída"
 
-#: bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsepcminput.c:130 bse/bsebus.c:275 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Saída direita de áudio"
 
-#: bse/bsepcminput.c:130
+#: bse/bsepcminput.c:130 bse/bsebus.c:275
 msgid "Right channel output"
 msgstr "Canal direito de saída"
 
@@ -3100,16 +3305,16 @@ msgstr "Canal direito de saída"
 msgid "/Input & Output/PCM Output"
 msgstr "/Entrada & Saída/Saída PCM"
 
-#: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsepcmoutput.c:128 bse/bsebus.c:269 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Entrada esquerda de áudio"
 
-#: bse/bsepcmoutput.c:128
+#: bse/bsepcmoutput.c:128 bse/bsebus.c:269
 msgid "Left channel input"
 msgstr "Canal esquerdo de entrada"
 
-#: bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsepcmoutput.c:130 bse/bsebus.c:271 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Entrada direita de áudio"
@@ -3156,6 +3361,66 @@ msgstr "Sinal de entrada"
 #: bse/bsesnooper.c:108
 msgid "Snoop Signal"
 msgstr "Observar sinal"
+
+#: bse/bsesong.proc:37
+msgid "Create a new mixer bus for a Song."
+msgstr ""
+
+#: bse/bsesong.proc:68
+msgid "Delete a mixer bus from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:106
+msgid "Retrieve master output bus of a song."
+msgstr ""
+
+#: bse/bsesong.proc:133
+msgid "Ensure that each part in a song is inserted into at least one track."
+msgstr ""
+
+#: bse/bsesong.proc:154
+msgid "Ensure that each track in a song is connected to an output bus."
+msgstr ""
+
+#: bse/bsesong.proc:194
+msgid "Create a new Part in a Song."
+msgstr ""
+
+#: bse/bsesong.proc:225
+msgid "Delete a Part from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:263
+#, fuzzy
+msgid "Create a new Track for a Song."
+msgstr "Adiciona uma nova faixa para essa música"
+
+#: bse/bsesong.proc:299
+msgid "Delete a Track from a Song."
+msgstr ""
+
+#: bse/bsesong.proc:338
+msgid "Find a track suitable for playing notes of a given part."
+msgstr ""
+
+#: bse/bsesong.proc:381
+msgid "Synthesize a note on a song of an active project."
+msgstr ""
+
+#: bse/bsesong.proc:431
+msgid "Retrieve song timing information at a specific tick."
+msgstr ""
+
+#: bse/bsebus.c:271
+#, fuzzy
+msgid "Right channel input"
+msgstr "Canal direito de entrada"
+
+#: bse/bsebus.c:294
+msgid ""
+"Bus implementation for songs, used to to route track audio signals to the "
+"master output."
+msgstr ""
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -3934,44 +4199,8 @@ msgstr "Saída esquerda"
 msgid "Right Output"
 msgstr "Saída direita"
 
-msgid "Insert full notes"
-msgstr "Insere notas de tempo inteiro"
+#~ msgid "Insert full notes"
+#~ msgstr "Insere notas de tempo inteiro"
 
-msgid "Quantize to full note boundaries"
-msgstr "Quantiza até os limites de notas de tempo inteiro"
-
-#, fuzzy
-#~ msgid "Export Audio"
-#~ msgstr "Áudio esquerdo"
-
-#, fuzzy
-#~ msgid "Every eighth row"
-#~ msgstr "Insere notas de oitavo tempo"
-
-#, fuzzy
-#~ msgid "16"
-#~ msgstr "1/64"
-
-#, fuzzy
-#~ msgid "Every sixteenth row"
-#~ msgstr "Insere notas de dezesseis avos de tempo"
-
-#, fuzzy
-#~ msgid "12"
-#~ msgstr "1/2"
-
-#, fuzzy
-#~ msgid "Background image used by the pattern editor."
-#~ msgstr "Imagem de fundo usada pelo componente de teclado de piano."
-
-#, fuzzy
-#~ msgid "Background Shade 1"
-#~ msgstr "Imagem de fundo"
-
-#, fuzzy
-#~ msgid "Background Shade 2"
-#~ msgstr "Imagem de fundo"
-
-#, fuzzy
-#~ msgid "Text Color"
-#~ msgstr "Selecionar cor"
+#~ msgid "Quantize to full note boundaries"
+#~ msgstr "Quantiza até os limites de notas de tempo inteiro"
