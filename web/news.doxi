@@ -14,7 +14,7 @@
 
 @multitable {IRC Channel:} {}
 @item IRC Channel:
-@tab	#beast on @uref{http://beast.gtk.org/wiki.php?id=GimpNet,,GimpNet}
+@tab	@code{#beast} on @uref{http://beast.gtk.org/wiki.php?id=GimpNet,,GimpNet}
 @item Email:
 @tab	@uref{http://mail.gnome.org/mailman/listinfo/beast/,, Mailing List} and @uref{http://mail.gnome.org/archives/beast/,, Archive}
 @item Feedback:
