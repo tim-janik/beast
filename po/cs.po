@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-09 19:13+0200\n"
-"PO-Revision-Date: 2004-07-09 23:31+0200\n"
+"POT-Creation-Date: 2004-07-11 03:12+0200\n"
+"PO-Revision-Date: 2004-07-11 15:53+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -420,15 +420,16 @@ msgid "Grow the scrollable area"
 msgstr "Zvětšit posunovatelnou oblast"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bstsongbusview.c:34 beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Přidat"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
-#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bstsongbusview.c:35
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:64
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Odstranit"
 
@@ -2092,7 +2093,7 @@ msgstr "Části"
 
 #: beast-gtk/bstsupershell.c:229
 msgid "Busses"
-msgstr ""
+msgstr "Sběrnice"
 
 #: beast-gtk/bstsupershell.c:235 beast-gtk/bstsupershell.c:254
 msgid "Routing"
@@ -2841,9 +2842,8 @@ msgid "Output Channels:"
 msgstr "Výstupní kanály:"
 
 #: bse/bsebiquadfilter.c:105
-#, fuzzy
 msgid "/Filters/Biquad Types"
-msgstr "Typ filtru"
+msgstr "/Filtry/Bikvadratické typy"
 
 #: bse/bsebiquadfilter.c:124
 msgid "Filter"
@@ -3219,25 +3219,43 @@ msgstr "Pravé Out"
 msgid "Disconnect Out"
 msgstr "Odpojení Out"
 
+#: bse/bseparasite.proc:28 bse/bseparasite.proc:52 bse/bseparasite.proc:70
+#: bse/bseparasite.proc:89
+msgid "Item"
+msgstr "Položka"
+
+#: bse/bseparasite.proc:29 bse/bseparasite.proc:53 bse/bseparasite.proc:71
+#: bse/bseparasite.proc:90
+msgid "Path"
+msgstr "Cesta"
+
+#: bse/bseparasite.proc:30
+msgid "Parasite Paths"
+msgstr "Parazitující cesty"
+
+#: bse/bseparasite.proc:54 bse/bseparasite.proc:72 bse/bseparasite.proc:91
+msgid "Parasite"
+msgstr "Parazit"
+
 #: bse/bsepcminput.c:85
 msgid "/Input & Output/PCM Input"
 msgstr "/Vstup a výstup/Vstup PCM"
 
-#: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsepcminput.c:128 bse/bsesongbus.c:146 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Levý zvuk Out"
 
-#: bse/bsepcminput.c:128
+#: bse/bsepcminput.c:128 bse/bsesongbus.c:146
 msgid "Left channel output"
 msgstr "Výstup levého kanálu"
 
-#: bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsepcminput.c:130 bse/bsesongbus.c:148 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Pravý zvuk Out"
 
-#: bse/bsepcminput.c:130
+#: bse/bsepcminput.c:130 bse/bsesongbus.c:148
 msgid "Right channel output"
 msgstr "Výstup pravého kanálu"
 
@@ -3245,16 +3263,16 @@ msgstr "Výstup pravého kanálu"
 msgid "/Input & Output/PCM Output"
 msgstr "/Vstup a výstup/Výstup PCM"
 
-#: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsepcmoutput.c:128 bse/bsesongbus.c:142 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Levý zvuk In"
 
-#: bse/bsepcmoutput.c:128
+#: bse/bsepcmoutput.c:128 bse/bsesongbus.c:142
 msgid "Left channel input"
 msgstr "Vstup levého kanálu"
 
-#: bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsepcmoutput.c:130 bse/bsesongbus.c:144 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Pravý zvuk In"
@@ -3300,6 +3318,16 @@ msgstr "Signál In"
 #: bse/bsesnooper.c:108
 msgid "Snoop Signal"
 msgstr ""
+
+#: bse/bsesongbus.c:144
+msgid "Right channel input"
+msgstr "Vstup pravého kanálu"
+
+#: bse/bsesongbus.c:167
+msgid ""
+"Bus implementation for songs, used to to route track audio signals to the "
+"master output."
+msgstr "Implementace sběrnice pro skladby používaná pro směrování signálů stop zvuku na hlavní výstup."
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -3508,9 +3536,8 @@ msgid "Last modification time"
 msgstr "Čas poslední změny"
 
 #: bse/bsewaveosc.c:97
-#, fuzzy
 msgid "/Audio Sources/Wave Oscillator"
-msgstr "/Zdroje zvuku/Standardní oscilátor"
+msgstr "/Zdroje zvuku/Oscilátor vln"
 
 #: bse/bsewaveosc.c:123
 msgid "Wave to play"
