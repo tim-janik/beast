@@ -63,6 +63,7 @@ SfiWStore*      sfi_wstore_new                (void);
 void            sfi_wstore_destroy            (SfiWStore      *wstore);
 void            sfi_wstore_push_level         (SfiWStore      *wstore);
 void            sfi_wstore_pop_level          (SfiWStore      *wstore);
+void            sfi_wstore_break              (SfiWStore      *wstore);
 void            sfi_wstore_puts               (SfiWStore      *wstore,
                                                const gchar    *string);
 void            sfi_wstore_putc               (SfiWStore      *wstore,
@@ -70,7 +71,10 @@ void            sfi_wstore_putc               (SfiWStore      *wstore,
 void            sfi_wstore_printf             (SfiWStore      *wstore,
                                                const gchar    *format,
                                                ...) G_GNUC_PRINTF (2, 3);
-void            sfi_wstore_break              (SfiWStore      *wstore);
+void            sfi_wstore_putf               (SfiWStore      *wstore,
+                                               gfloat          vfloat);
+void            sfi_wstore_putd               (SfiWStore      *wstore,
+                                               gdouble         vdouble);
 void            sfi_wstore_put_value          (SfiWStore      *wstore,
                                                const GValue   *value);
 void            sfi_wstore_put_param          (SfiWStore      *wstore,

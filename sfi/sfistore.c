@@ -141,7 +141,11 @@ sfi_wstore_printf (SfiWStore   *wstore,
   va_list args;
   
   g_return_if_fail (wstore != NULL);
-  
+
+  const gchar *ldir = g_printf_find_localised_directive (format);
+  if (ldir)
+    g_warning ("%s: encountered localised directive \"%s\" in format string: \"%s\"", G_STRFUNC, ldir, format);
+
   va_start (args, format);
   buffer = g_strdup_vprintf (format, args);
   va_end (args);
@@ -150,6 +154,32 @@ sfi_wstore_printf (SfiWStore   *wstore,
   if (buffer[0])
     sfi_wstore_text_changed (wstore);
   g_free (buffer);
+}
+
+void
+sfi_wstore_putf (SfiWStore      *wstore,
+                 gfloat          vfloat)
+{
+  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+
+  g_return_if_fail (wstore != NULL);
+
+  g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.7g", vfloat);
+
+  sfi_wstore_puts (wstore, numbuf);
+}
+
+void
+sfi_wstore_putd (SfiWStore      *wstore,
+                 gdouble         vdouble)
+{
+  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
+
+  g_return_if_fail (wstore != NULL);
+
+  g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.17g", vdouble);
+
+  sfi_wstore_puts (wstore, numbuf);
 }
 
 void

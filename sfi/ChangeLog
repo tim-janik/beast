@@ -1,3 +1,11 @@
+Thu Jan 20 17:15:06 2005  Tim Janik  <timj@gtk.org>
+
+	* sfistore.[hc]:
+	sfi_wstore_putf(): store floats locale independent.
+	sfi_wstore_putd(): store doubles locale independent.
+	sfi_wstore_printf(): issue warnings if the format string contains
+	localised directives.
+
 Thu Jan 20 15:18:11 2005  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc] (g_printf_find_localised_directive): detect 
