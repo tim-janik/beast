@@ -1,5 +1,9 @@
 Mon Jan 26 02:36:07 2004  Tim Janik  <timj@gtk.org>
 
+	* bsecxxmodule.idl: new idl file to define Bse::Effect.
+
+	* bsecxxbase.idl: new idl file to define Bse::CxxBase.
+
 	* bseeffectbalance.[hc]:
 	* bseeffectfinetune.[hc]:
 	* bseeffectnotevolume.[hc]:
