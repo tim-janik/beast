@@ -121,35 +121,35 @@ bse_track_class_init (BseTrackClass *class)
   
   item_class->list_items = bse_track_list_items;
   
-  bse_object_class_add_param (object_class, "Adjustments",
+  bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_MUTED,
-			      sfi_pspec_bool ("muted", "Muted", NULL,
+			      sfi_pspec_bool ("muted", _("Muted"), NULL,
 					      FALSE, SFI_PARAM_STANDARD ":skip-default"));
-  bse_object_class_add_param (object_class, "Synth Input",
+  bse_object_class_add_param (object_class, _("Synth Input"),
 			      PROP_SYNTH_NET,
-			      bse_param_spec_object ("snet", "Custom Synth Net", "Synthesis network to be used as instrument",
+			      bse_param_spec_object ("snet", _("Custom Synth Net"), _("Synthesis network to be used as instrument"),
 						     BSE_TYPE_CSYNTH,
 						     SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Synth Input",
+  bse_object_class_add_param (object_class, _("Synth Input"),
 			      PROP_WAVE,
-			      bse_param_spec_object ("wave", "Custom Wave", "Wave to be used as instrument",
+			      bse_param_spec_object ("wave", _("Custom Wave"), _("Wave to be used as instrument"),
 						     BSE_TYPE_WAVE,
 						     SFI_PARAM_STANDARD));
-  bse_object_class_add_param (object_class, "Synth Input",
+  bse_object_class_add_param (object_class, _("Synth Input"),
 			      PROP_N_VOICES,
-			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
+			      sfi_pspec_int ("n_voices", _("Max Voixes"), _("Maximum number of voices for simultaneous playback"),
 					     16, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
-  bse_object_class_add_param (object_class, "MIDI Instrument",
+  bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_MIDI_CHANNEL,
-                              sfi_pspec_int ("midi_channel", "MIDI Channel",
-                                             "Midi channel assigned to this track, 0 uses private per-track channel",
+                              sfi_pspec_int ("midi_channel", _("MIDI Channel"),
+                                             _("Midi channel assigned to this track, 0 uses private per-track channel"),
                                              0, 0, BSE_MIDI_MAX_CHANNELS, 1,
                                              SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
-  bse_object_class_add_param (object_class, "Synth Postprocess",
+  bse_object_class_add_param (object_class, _("Synth Postprocess"),
 			      PROP_POST_NET,
-			      bse_param_spec_object ("pnet", "Custom Postprocess Net",
-                                                     "Synthesis network to postprocess track sound",
+			      bse_param_spec_object ("pnet", _("Custom Postprocess Net"),
+                                                     _("Synthesis network to postprocess track sound"),
 						     BSE_TYPE_CSYNTH,
 						     SFI_PARAM_STANDARD));
   signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);

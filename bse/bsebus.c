@@ -27,6 +27,7 @@
 enum
 {
   PROP_0,
+  PROP_INPUTS,
   PROP_MVOLUME_f,
   PROP_MVOLUME_dB,
   PROP_MVOLUME_PERC
@@ -64,6 +65,25 @@ bse_bus_finalize (GObject *object)
   G_OBJECT_CLASS (bus_parent_class)->finalize (object);
 }
 
+static BseItemSeq*
+bse_bus_list_items (BseItem    *item,
+                    guint       param_id,
+                    GParamSpec *pspec)
+{
+  BseBus *self = BSE_BUS (item);
+  BseItemSeq *iseq = bse_item_seq_new ();
+  switch (param_id)
+    {
+    case PROP_INPUTS:
+      bse_item_gather_items_typed (item, iseq, BSE_TYPE_BUS, BSE_TYPE_SONG, FALSE);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+  return iseq;
+}
+
 static void
 bse_bus_set_property (GObject      *object,
                       guint         param_id,
@@ -73,6 +93,8 @@ bse_bus_set_property (GObject      *object,
   // BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
+    case PROP_INPUTS:
+      break;
     case PROP_MVOLUME_f:
       // self->volume_factor = sfi_value_get_real (value);
       break;
@@ -91,6 +113,9 @@ bse_bus_get_property (GObject    *object,
   // BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
+    case PROP_INPUTS:
+      g_value_set_boxed (value, NULL);
+      break;
     case PROP_MVOLUME_f:
       // sfi_value_set_real (value, self->volume_factor);
       break;
@@ -252,15 +277,20 @@ bse_bus_class_init (BseBusClass *class)
   gobject_class->finalize = bse_bus_finalize;
   
   item_class->set_parent = bse_bus_set_parent;
+  item_class->list_items = bse_bus_list_items;
   
   source_class->prepare = bse_bus_prepare;
   source_class->context_create = bse_bus_context_create;
   source_class->context_connect = bse_bus_context_connect;
   source_class->reset = bse_bus_reset;
   
-  bse_object_class_add_param (object_class, "Adjustments",
+  bse_object_class_add_param (object_class, _("Signal Inputs"),
+                              PROP_INPUTS,
+                              bse_param_spec_boxed ("snet", _("Custom Synth Net"), _("Synthesis network to be used as instrument"),
+                                                    BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("Adjustments"),
 			      PROP_MVOLUME_f,
-			      sfi_pspec_real ("gain_volume_f", "Bus Gain [float]", NULL,
+			      sfi_pspec_real ("gain_volume_f", _("Bus Gain [float]"), NULL,
 					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
 					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
 					      0.1,

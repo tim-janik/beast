@@ -1,3 +1,11 @@
+Tue Aug 17 17:38:39 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.c: prototyped ::inputs property. i18n fixups.
+
+	* bseitem.c: docu fixups.
+
+	* bsetrack.c: i18n fixups.
+
 Sun Jul 25 16:43:52 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsemidireceiver.cc: Properly NULL initialize the module list in the

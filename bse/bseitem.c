@@ -404,12 +404,12 @@ gather_typed_acheck (BseItem  *proxy,
  * @items:          sequence of items to append to
  * @proxy_type:     base type of the items to gather
  * @container_type: base type of the containers to check for items
- * @allow_ancestor: if %FALSE, direct ancestors of @item are omitted
+ * @allow_ancestor: if %FALSE, ancestors of @item are omitted
  * @RETURNS:   returns @items
  *
  * Variant of bse_item_gather_items(), the containers and items
  * are simply filtered by checking derivation from @container_type
- * and @proxy_type respectively. Items may not be direct ancestors
+ * and @proxy_type respectively. Gathered items may not be ancestors
  * of @item if @allow_ancestor is %FALSE.
  */
 BseItemSeq*
