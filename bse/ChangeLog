@@ -1,3 +1,50 @@
+Tue Aug  6 18:48:13 2002  Tim Janik  <timj@gtk.org>
+
+	* bsepart.h:
+	* bseinfo.c:
+	* bseconstvalues.h:
+	* bseserver.proc:
+	* bseutils.[hc]:
+	* bswcommon.[hc]:
+	* bseglobals.[hc]:
+	* gslmath.[hc]: s/halftone/semitone/
+
+	* bsemain.c: adjust dcache node size to 4000 so the node's data plus
+	padding will normally fit into a page.
+
+	* gsldatacache.c: wow, gross buggyness in caching logic detected. we
+	badly miscalculated the current cache size and thus triggered lots of
+	sensless cache sweeps. fixed updating of aged nodes in case of
+	GSL_DATA_CACHE_PEEK, introduced AGE_EPSILON which prevents sensless
+	aging when frequently accessing the same block, added low_persistency
+	flag for dcaches that don't really need to cache data (figured through
+	gsl_data_handle_needs_cache()). altered caching logic so we do a
+	moderately good job at distributed node sweeping around the upper
+	cache memory mark. fixed documentation.
+
+	* gsldatahandle-mad.c: 
+	* gsldatahandle-vorbis.c: 
+	* gsldatahandle.[hc]: introduce recurse() method on data handles which
+	has to be implemented for all data handles that use other data handles
+	by invoking a user supplied callback on them. introduce ojob() method
+	which can be implemented by data handles to support certain optimization
+	jobs. remove coarse_seek() method, if this is really required, it can
+	be implemented as an optimization job.
+
+	* gsldatahandle.[hc]: introduce gsl_data_handle_needs_cache() which
+	figures whether a data handle will actually benefit from caching (not
+	true for data handles which don't do IO themselves, e.g. because they
+	are using static memory, a dcache or other data handles).
+
+	* gsldatahandle-mad.c: 
+	* gsldatahandle-vorbis.c: 
+	* gsldatahandle.c (wave_handle_ojob): return TRUE for the
+	GSL_DATA_HANDLE_NEEDS_CACHE ojob query.
+
+	* bseconstant.c (bse_constant_class_init): plug string leakage.
+
+	* bsewaveosc.c (pcm_pos_access_free): plug leakage of position struct.
+
 Sun Aug  4 21:01:56 2002  Tim Janik  <timj@gtk.org>
 
 	* gslloader-mad.c (_gsl_init_loader_mad): flag this loader with

@@ -647,9 +647,9 @@ note_description_to_glue_rec (gpointer crecord)
   /* fine_tune */
   val = gsl_glue_value_int (info->fine_tune);
   gsl_glue_rec_take (rec, "fine_tune", &val);
-  /* half_tone */
-  val = gsl_glue_value_int (info->half_tone);
-  gsl_glue_rec_take (rec, "half_tone", &val);
+  /* semitone */
+  val = gsl_glue_value_int (info->semitone);
+  gsl_glue_rec_take (rec, "semitone", &val);
   /* upshift */
   val = gsl_glue_value_bool (info->upshift);
   gsl_glue_rec_take (rec, "upshift", &val);
@@ -692,7 +692,7 @@ bsw_note_description (guint note,
       info->note = note;
       bse_note_examine (info->note,
 			&info->octave,
-			&info->half_tone,
+			&info->semitone,
 			&info->upshift,
 			&info->letter);
       info->fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);

@@ -115,26 +115,26 @@ guint	bse_idle_background	(GSourceFunc    function,
 #define	BSE_MIX_FREQ_d			((gdouble) BSE_MIX_FREQ)
 
 
-/* halftone factorization tables, i.e.
+/* semitone factorization tables, i.e.
  * Index                     Factor
  * (BSE_KAMMER_NOTE - 12) -> 0.5
  * BSE_KAMMER_NOTE	  -> 1.0
  * (BSE_KAMMER_NOTE + 12) -> 2.0
  * etc...
  */
-extern const gdouble* _bse_halftone_factor_table;
-#define	BSE_HALFTONE_FACTOR(ht)		((ht) > BSE_MAX_NOTE ? \
-				         _bse_halftone_factor_table[BSE_MAX_NOTE] : \
+extern const gdouble* _bse_semitone_factor_table;
+#define	BSE_SEMITONE_FACTOR(ht)		((ht) > BSE_MAX_NOTE ? \
+				         _bse_semitone_factor_table[BSE_MAX_NOTE] : \
 				         (ht) < BSE_MIN_NOTE ? \
-				         _bse_halftone_factor_table[BSE_MIN_NOTE] : \
-				         _bse_halftone_factor_table[(ht)])
+				         _bse_semitone_factor_table[BSE_MIN_NOTE] : \
+				         _bse_semitone_factor_table[(ht)])
 extern const gdouble* _bse_fine_tune_factor_table;
 #define	BSE_FINE_TUNE_FACTOR(ft)	((ft) > BSE_MAX_FINE_TUNE ? \
                                          _bse_fine_tune_factor_table[BSE_MAX_FINE_TUNE] : \
                                          (ft) < BSE_MIN_FINE_TUNE ? \
                                          _bse_fine_tune_factor_table[BSE_MIN_FINE_TUNE] : \
                                          _bse_fine_tune_factor_table[(ft)])
-#define	BSE_FREQ_FROM_LINEAR_VALUE(v)	(BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (BSE_NOTE_FROM_VALUE (v) - BSE_KAMMER_NOTE))
+#define	BSE_FREQ_FROM_LINEAR_VALUE(v)	(BSE_KAMMER_FREQ_d * BSE_SEMITONE_FACTOR (BSE_NOTE_FROM_VALUE (v) - BSE_KAMMER_NOTE))
 
 
 /* --- BseGlobals --- */

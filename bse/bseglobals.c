@@ -34,7 +34,7 @@ const guint	     bse_micro_version = BSE_MICRO_VERSION;
 const guint	     bse_interface_age = BSE_INTERFACE_AGE;
 const guint	     bse_binary_age = BSE_BINARY_AGE;
 const gchar         *bse_version = BSE_VERSION;
-const gdouble*	_bse_halftone_factor_table = NULL;
+const gdouble*	_bse_semitone_factor_table = NULL;
 const gdouble*	_bse_fine_tune_factor_table = NULL;
 
 
@@ -56,7 +56,7 @@ static const BseGlobals	 bse_globals_defaults = {
 
 
 /* --- note factors --- */
-static const gdouble halftone_factor_table201[] = {
+static const gdouble semitone_factor_table201[] = {
   0.00310039267962538960, /* 2^(1/12*-100) */
   0.00328475162208482243, /* 2^(1/12*-99) */
   0.00348007311773570041, /* 2^(1/12*-98) */
@@ -491,14 +491,14 @@ bse_check_version (guint required_major,
 void
 bse_globals_init (void)
 {
-  g_return_if_fail (_bse_halftone_factor_table == NULL);
+  g_return_if_fail (_bse_semitone_factor_table == NULL);
 
-  /* setup half tone factorization table
+  /* setup semitone factorization table
    * table based on 2^(1/12*semitone)
    */
   g_assert (BSE_KAMMER_NOTE - BSE_MIN_NOTE <= 100);
   g_assert (BSE_MAX_NOTE - BSE_KAMMER_NOTE <= 100);
-  _bse_halftone_factor_table = halftone_factor_table201 + 100 - BSE_KAMMER_NOTE;
+  _bse_semitone_factor_table = semitone_factor_table201 + 100 - BSE_KAMMER_NOTE;
   
   /* setup fine tune factorization table
    * table based on 2^(1/1200*cent)

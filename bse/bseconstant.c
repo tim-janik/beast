@@ -139,6 +139,7 @@ bse_constant_class_init (BseConstantClass *class)
       g_assert (ochannel == i - 1);
       g_free (string);
       g_free (name);
+      g_free (group);
     }
 }
 

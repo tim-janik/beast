@@ -225,8 +225,9 @@ dh_vorbis_coarse_seek (GslDataHandle *dhandle,
 	vhandle->pcm_pos = 0;
       vhandle->pcm_length = 0;
     }
-  g_printerr ("OggS-SEEK: at %lu want %lu got %lu (diff-requested %ld)\n",
-	      opos, pos, vhandle->pcm_pos, pos - opos);
+  if (0)
+    g_printerr ("OggS-SEEK: at %lu want %lu got %lu (diff-requested %ld)\n",
+		opos, pos, vhandle->pcm_pos, pos - opos);
 
   return vhandle->pcm_pos * dhandle->setup.n_channels;
 }
@@ -324,12 +325,30 @@ dh_vorbis_destroy (GslDataHandle *data_handle)
   gsl_delete_struct (VorbisHandle, vhandle);
 }
 
+static gboolean
+dh_vorbis_ojob (GslDataHandle    *dhandle,
+		GslDataHandleOJob ojob,
+		gpointer          data)
+{
+  switch (ojob)
+    {
+      gboolean *needs_cache;
+    case GSL_DATA_HANDLE_NEEDS_CACHE:
+      needs_cache = data;
+      *needs_cache = TRUE;
+      return TRUE;      /* case implemented */
+    default:
+      return FALSE;     /* unimplemented cases */
+    }
+}
+
 static GslDataHandleFuncs dh_vorbis_vtable = {
   dh_vorbis_open,
   dh_vorbis_read,
   dh_vorbis_close,
+  NULL,
   dh_vorbis_destroy,
-  dh_vorbis_coarse_seek,
+  dh_vorbis_ojob,
 };
 
 GslDataHandle*

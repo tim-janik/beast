@@ -215,7 +215,7 @@ bse_init (int	             *argc_p,
     static const GslConfigValue gslconfig[] = {
       { "wave_chunk_padding",		BSE_MAX_BLOCK_PADDING, },
       { "wave_chunk_big_pad",		256, },
-      { "dcache_block_size",		8192, },
+      { "dcache_block_size",		4000, },
       { "dcache_cache_memory",		10 * 1024 * 1024, },
       { "midi_kammer_note",		BSE_KAMMER_NOTE, },
       { "kammer_freq",			BSE_KAMMER_FREQUENCY_f, },

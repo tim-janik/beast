@@ -52,7 +52,7 @@ BseTime		bse_time_from_string	(const gchar   *time_string,
 /* --- notes & frequencies --- */
 void	bse_note_examine	(gint		 note,
 				 gint		*octave_p,
-				 guint		*half_tone_p,
+				 guint		*semitone_p,
 				 gboolean	*ht_up_p,
 				 gchar		*letter_p);
 /* return a newly allocated string which describes `note' literally */

@@ -278,6 +278,63 @@ gsl_data_handle_name (GslDataHandle *dhandle)
   return dhandle->name;
 }
 
+typedef struct {
+  GslDataHandleRecurse ufunc;
+  gpointer             udata;
+} RecurseData;
+
+static void
+data_handle_recurse_func (GslDataHandle *dhandle,
+			  gpointer       data)
+{
+  RecurseData *rdata = data;
+
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  rdata->ufunc (dhandle, rdata->udata);
+  if (dhandle->vtable->recurse)
+    dhandle->vtable->recurse (dhandle, data_handle_recurse_func, data);
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+}
+
+static void
+data_handle_recurse (GslDataHandle       *dhandle,
+		     GslDataHandleRecurse ufunc,
+		     gpointer             udata)
+{
+  RecurseData rdata;
+  rdata.ufunc = ufunc;
+  rdata.udata = udata;
+  data_handle_recurse_func (dhandle, &rdata);
+}
+
+static void
+query_needs_cache (GslDataHandle *dhandle,
+		   gpointer       data)
+{
+  gboolean *needs_cache = data;
+
+  if (dhandle->vtable->ojob)
+    {
+      gboolean implemented, dhandle_needs_cache = FALSE;
+      implemented = dhandle->vtable->ojob (dhandle, GSL_DATA_HANDLE_NEEDS_CACHE, &dhandle_needs_cache);
+      if (implemented)
+	*needs_cache |= dhandle_needs_cache;
+    }
+}
+
+gboolean
+gsl_data_handle_needs_cache (GslDataHandle *dhandle)
+{
+  gboolean needs_cache = FALSE;
+
+  g_return_val_if_fail (dhandle != NULL, FALSE);
+  g_return_val_if_fail (dhandle->ref_count > 0, FALSE);
+
+  data_handle_recurse (dhandle, query_needs_cache, &needs_cache);
+
+  return needs_cache;
+}
+
 
 /* --- const memory handle --- */
 static GslErrorType
@@ -341,6 +398,7 @@ gsl_data_handle_new_mem (guint         n_channels,
     mem_handle_open,
     mem_handle_read,
     mem_handle_close,
+    NULL,
     mem_handle_destroy,
   };
   MemHandle *mhandle;
@@ -388,6 +446,16 @@ chain_handle_open (GslDataHandle      *dhandle,
   *setup = chandle->src_handle->setup;
 
   return GSL_ERROR_NONE;
+}
+
+static void
+chain_handle_recurse (GslDataHandle       *dhandle,
+		      GslDataHandleRecurse recurse,
+		      gpointer		   data)
+{
+  ChainHandle *chandle = (ChainHandle*) dhandle;
+
+  recurse (chandle->src_handle, data);
 }
 
 static void
@@ -456,6 +524,7 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
     chain_handle_open,
     reverse_handle_read,
     chain_handle_close,
+    chain_handle_recurse,
     reverse_handle_destroy,
   };
   ReversedHandle *rhandle;
@@ -555,6 +624,7 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
     cut_handle_open,
     cut_handle_read,
     chain_handle_close,
+    chain_handle_recurse,
     cut_handle_destroy,
   };
   CutHandle *chandle;
@@ -725,6 +795,7 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
     insert_handle_open,
     insert_handle_read,
     chain_handle_close,
+    chain_handle_recurse,
     insert_handle_destroy,
   };
   InsertHandle *ihandle;
@@ -831,6 +902,7 @@ gsl_data_handle_new_looped (GslDataHandle *src_handle,
     loop_handle_open,
     loop_handle_read,
     chain_handle_close,
+    chain_handle_recurse,
     loop_handle_destroy,
   };
   LoopHandle *lhandle;
@@ -874,20 +946,30 @@ dcache_handle_destroy (GslDataHandle *data_handle)
 }
 
 static GslErrorType
-dcache_handle_open (GslDataHandle      *dhandle,
+dcache_handle_open (GslDataHandle      *data_handle,
 		    GslDataHandleSetup *setup)
 {
-  DCacheHandle *chandle = (DCacheHandle*) dhandle;
+  DCacheHandle *dhandle = (DCacheHandle*) dhandle;
   GslErrorType error;
 
-  error = gsl_data_handle_open (chandle->dcache->dhandle);
+  error = gsl_data_handle_open (dhandle->dcache->dhandle);
   if (error != GSL_ERROR_NONE)
     return error;
-  gsl_data_cache_open (chandle->dcache);
-  *setup = chandle->dcache->dhandle->setup;
-  gsl_data_handle_close (chandle->dcache->dhandle);
+  gsl_data_cache_open (dhandle->dcache);
+  *setup = dhandle->dcache->dhandle->setup;
+  gsl_data_handle_close (dhandle->dcache->dhandle);
 
   return GSL_ERROR_NONE;
+}
+
+static void
+dcache_handle_recurse (GslDataHandle       *data_handle,
+		       GslDataHandleRecurse recurse,
+		       gpointer             data)
+{
+  DCacheHandle *dhandle = (DCacheHandle*) data_handle;
+
+  recurse (dhandle->dcache->dhandle, data);
 }
 
 static void
@@ -922,6 +1004,7 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
     dcache_handle_open,
     dcache_handle_read,
     dcache_handle_close,
+    dcache_handle_recurse,
     dcache_handle_destroy,
   };
   DCacheHandle *dhandle;
@@ -1017,6 +1100,23 @@ wave_handle_close (GslDataHandle *dhandle)
   
   gsl_hfile_close (whandle->hfile);
   whandle->hfile = NULL;
+}
+
+static gboolean
+wave_handle_ojob (GslDataHandle    *dhandle,
+		  GslDataHandleOJob ojob,
+		  gpointer          data)
+{
+  switch (ojob)
+    {
+      gboolean *needs_cache;
+    case GSL_DATA_HANDLE_NEEDS_CACHE:
+      needs_cache = data;
+      *needs_cache = TRUE;
+      return TRUE;	/* case implemented */
+    default:
+      return FALSE;	/* unimplemented cases */
+    }
 }
 
 static GslLong
@@ -1155,7 +1255,9 @@ gsl_wave_handle_new (const gchar      *file_name,
     wave_handle_open,
     wave_handle_read,
     wave_handle_close,
+    NULL,
     wave_handle_destroy,
+    wave_handle_ojob,
   };
   WaveHandle *whandle;
 

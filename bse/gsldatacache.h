@@ -42,6 +42,7 @@ struct _GslDataCache
   guint			node_size;	/* power of 2, const for all dcaches */
   guint			padding;	/* n_values around blocks */
   guint			max_age;
+  gboolean		low_persistency;
   guint			n_nodes;
   GslDataCacheNode    **nodes;
 };

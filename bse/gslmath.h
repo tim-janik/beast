@@ -165,7 +165,7 @@ char*		       gsl_poly_str1		(unsigned int	degree,
 
 /* --- transformations --- */
 double			 gsl_temp_freq		(double		kammer_freq,
-						 int		halftone_delta);
+						 int		semitone_delta);
 
 
 /* --- miscellaneous --- */

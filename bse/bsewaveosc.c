@@ -558,6 +558,7 @@ pcm_pos_access_free (gpointer data)
   g_signal_emit (self, signal_notify_pcm_position, 0, self->module_pcm_position);
   
   g_object_unref (self);
+  g_free (pos);
 }
 
 void

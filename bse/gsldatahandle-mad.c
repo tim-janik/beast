@@ -600,12 +600,30 @@ dh_mad_destroy (GslDataHandle *data_handle)
   gsl_delete_struct (MadHandle, handle);
 }
 
+static gboolean
+dh_mad_ojob (GslDataHandle    *dhandle,
+	     GslDataHandleOJob ojob,
+	     gpointer          data)
+{
+  switch (ojob)
+    {
+      gboolean *needs_cache;
+    case GSL_DATA_HANDLE_NEEDS_CACHE:
+      needs_cache = data;
+      *needs_cache = TRUE;
+      return TRUE;      /* case implemented */
+    default:
+      return FALSE;     /* unimplemented cases */
+    }
+}
+
 static GslDataHandleFuncs dh_mad_vtable = {
   dh_mad_open,
   dh_mad_read,
   dh_mad_close,
+  NULL,
   dh_mad_destroy,
-  dh_mad_coarse_seek,
+  dh_mad_ojob,
 };
 
 static GslDataHandle*

@@ -43,18 +43,15 @@ NEW:
 - fix fine-tune settings (from gsl)
 - _SL functions have to be revisited and thoroughly implemented
 - track_step_SL() needs bpm_tick => stamp_tick translation
-- fix context creation recursion in subsynth
 - fix snet propety changes in sub synth and instrument
 - replace gsl_signal_exp2() with gsl_approx_exp2() and audio test result
 - check for non-xref object links which should be turned into xrefs
-
-NEW:
 - re-eval balance defines, provide just MAX_BALANCE
 - provide proper dB functions in GSL
 - implement BSE_PARAM_FORCE_DIRTY (never skip save due to value==default)
 - adjust stepping and type for all percentage settings
 - get rid of BseSampleValue
-- get rid of parasites by means of using data pocket
+- get rid of parasites by means of using data pocket and BseSource.x/y
 - alive keeping for waves which are removed, but whose index is in use?
 - loading (restore) may only work when not playing (to keep consistency
   and avoid lock contentions during playback)
@@ -66,7 +63,6 @@ OLD:
 general:
 -	delay class destruction and plugin unloading through timeout handlers
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
--	optimize cross-reference removal
 -	param_changed(): update modified stamp and record undo
 
 Balance

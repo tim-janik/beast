@@ -50,6 +50,12 @@ struct _GslDataHandle
   /* opened data handle setup (open_count > 0) */
   GslDataHandleSetup  setup;
 };
+typedef void (*GslDataHandleRecurse)	(GslDataHandle		*data_handle,
+					 gpointer		 data);
+typedef enum	/*< skip >*/
+{
+  GSL_DATA_HANDLE_NEEDS_CACHE	= 1,	/* gboolean *needs_cache; */
+} GslDataHandleOJob;
 struct _GslDataHandleFuncs
 {
   GslErrorType	(*open)			(GslDataHandle		*data_handle,
@@ -59,10 +65,14 @@ struct _GslDataHandleFuncs
 					 GslLong		 n_values,
 					 gfloat			*values);
   void		(*close)		(GslDataHandle		*data_handle);
+  void		(*recurse)		(GslDataHandle		*data_handle,
+					 GslDataHandleRecurse	 recurse,
+					 gpointer		 data);
   void          (*destroy)		(GslDataHandle		*data_handle);
-  /* optional (for codecs) */
-  GslLong	(*coarse_seek)		(GslDataHandle		*data_handle,
-					 GslLong		 position);
+  /* optional (for optimizations) */
+  gboolean	(*ojob)			(GslDataHandle		*data_handle,
+					 GslDataHandleOJob	 ojob,
+					 gpointer		 data);
 };
 
 
@@ -131,10 +141,14 @@ GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 						 GslLong	   n_values);
 
 
+/* --- data handle optimization jobs --- */
+gboolean	gsl_data_handle_needs_cache	(GslDataHandle	*data_handle);
+
+
 /* --- auxillary functions --- */
-gboolean	  gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
+gboolean	gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
 						 const gchar	  *file_name);
-void		  gsl_data_handle_common_free	(GslDataHandle	  *dhandle);
+void		gsl_data_handle_common_free	(GslDataHandle	  *dhandle);
 
 #ifdef __cplusplus
 }

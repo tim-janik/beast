@@ -223,7 +223,7 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseServer, describe-note) {
-  HELP	= "Describe a note, providing information about its octave, half tone, frequency, etc.";
+  HELP	= "Describe a note, providing information about its octave, semitone, frequency, etc.";
   IN	= g_param_spec_object ("server", "Server", NULL,
  			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
   IN    = bse_param_spec_uint ("note", "Note", NULL,
@@ -328,10 +328,10 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BseServer, construct-note) {
-  HELP	= "Describe a note, given its half tone, octave and fine tune.";
+  HELP	= "Describe a note, given its semitone, octave and fine tune.";
   IN	= g_param_spec_object ("server", "Server", NULL,
  			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_uint ("half-tone", NULL, NULL,
+  IN    = bse_param_spec_uint ("semitone", NULL, NULL,
 			       0, 11,
 			       9, 1, BSE_PARAM_DEFAULT);
   IN    = bse_param_spec_int ("octave", NULL, NULL,
@@ -349,7 +349,7 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BseServer *server	= g_value_get_object (in_values++);
-  guint      half_tone	= g_value_get_uint (in_values++);
+  guint      semitone	= g_value_get_uint (in_values++);
   gint       octave	= g_value_get_int (in_values++);
   gint       fine_tune	= g_value_get_int (in_values++);
   BswNoteDescription *info;
@@ -360,7 +360,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* describe note */
-  note = BSE_NOTE_GENERIC (octave, half_tone);
+  note = BSE_NOTE_GENERIC (octave, semitone);
   info = bsw_note_description (note, fine_tune);
 
   /* set output parameters */

@@ -236,11 +236,11 @@ gsl_complex_gnuplot (const char  *file_name,
 
 double
 gsl_temp_freq (double kammer_freq,
-	       int    halftone_delta)
+	       int    semitone_delta)
 {
   double factor;
   
-  factor = pow (GSL_2_POW_1_DIV_12, halftone_delta);
+  factor = pow (GSL_2_POW_1_DIV_12, semitone_delta);
   
   return kammer_freq * factor;
 }

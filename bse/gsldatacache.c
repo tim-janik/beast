@@ -33,24 +33,26 @@
 #define	NODEP_INDEX(dcache, node_p)	((node_p) - (dcache)->nodes)
 #define	UPPER_POWER2(n)			(gsl_alloc_upper_power2 (MAX (n, 4)))
 #define	CONFIG_NODE_SIZE()		(gsl_get_config ()->dcache_block_size)
-#define	DFL_SWEEP			(32 * 1024 * 1024)
+#define	AGE_EPSILON			(3)	/* must be < smallest sweep */
+#define	LOW_PERSISTENCY_SWEEP		(5)
 
-
-/* we use one global lock to protect the dcache_ht hash table and
- * closed_dcaches ring. also, each dcache has its own mutext
- * to protect updates in the reference count, nodes or node
- * data blocks. in order to avoid deadlocks, if both locks need
+/* we use one global lock to protect the dcache list, the list
+ * count (length) and the number of aged (unused) nodes.
+ * also, each dcache has its own mutext to protect updates in
+ * the reference count, nodes or node data blocks.
+ * in order to avoid deadlocks, if both locks need
  * to be held, they always have to be acquired in the order
  * 1) global lock, 2) dcache lock.
- * parallel data block filling for a new node occours without
- * the dcache lock being held (as all calls to GslDataReader
- * functions). however, assignment of the newly acquired data
- * is again protected by the dcache lock. concurrent API entries
- * which require demand loading of such data will wait on a global
- * condition which is always signaled once a new data block read
- * has been completed. using one global condition should be
- * sufficient as there shouldn't normaly be more than one user-thread
- * waiting for demand load completion.
+ * asyncronous data block filling for a new node occours without
+ * the dcache lock being held (as most calls to GslDataHandle
+ * functions).
+ * however, assignment of the newly acquired data is again
+ * protected by the dcache lock. concurrent API entries
+ * which require demand loading of such data will wait on
+ * a global condition which is always signaled once a new data
+ * block read has been completed. using one global condition
+ * is considered sufficient until shown otherwise by further
+ * profiling/debugging measures.
  */
 
 
@@ -63,10 +65,11 @@ static GslDataCacheNode*	data_cache_new_node_L	(GslDataCache	*dcache,
 
 
 /* --- variables --- */
-static GslMutex	   dcache_global = { 0, };
-static GslCond	   dcache_cond_node_filled = { 0, };
-static GslRing	  *dcache_list = NULL;
-static guint       n_aged_nodes = 0;
+static GslMutex	   global_dcache_mutex = { 0, };
+static GslCond	   global_dcache_cond_node_filled = { 0, };
+static GslRing	  *global_dcache_list = NULL;
+static guint	   global_dcache_count = 0;
+static guint       global_dcache_n_aged_nodes = 0;
 
 
 /* --- functions --- */
@@ -78,8 +81,9 @@ _gsl_init_data_caches (void)
   g_assert (initialized == FALSE);
   initialized++;
 
-  gsl_cond_init (&dcache_cond_node_filled);
-  gsl_mutex_init (&dcache_global);
+  g_assert (AGE_EPSILON < LOW_PERSISTENCY_SWEEP);
+  gsl_cond_init (&global_dcache_cond_node_filled);
+  gsl_mutex_init (&global_dcache_mutex);
 }
 
 GslDataCache*
@@ -104,12 +108,14 @@ gsl_data_cache_new (GslDataHandle *dhandle,
   dcache->node_size = node_size;
   dcache->padding = padding;
   dcache->max_age = 0;
+  dcache->low_persistency = !gsl_data_handle_needs_cache (dcache->dhandle);
   dcache->n_nodes = 0;
   dcache->nodes = g_renew (GslDataCacheNode*, NULL, UPPER_POWER2 (dcache->n_nodes));
 
-  GSL_SPIN_LOCK (&dcache_global);
-  dcache_list = gsl_ring_append (dcache_list, dcache);
-  GSL_SPIN_UNLOCK (&dcache_global);
+  GSL_SPIN_LOCK (&global_dcache_mutex);
+  global_dcache_list = gsl_ring_append (global_dcache_list, dcache);
+  global_dcache_count++;
+  GSL_SPIN_UNLOCK (&global_dcache_mutex);
 
   return dcache;
 }
@@ -171,7 +177,7 @@ gsl_data_cache_ref (GslDataCache *dcache)
   g_return_val_if_fail (dcache != NULL, NULL);
   g_return_val_if_fail (dcache->ref_count > 0, NULL);
 
-  /* we might get invoked with dcache_global locked */
+  /* we might get invoked with global_dcache_mutex locked */
   GSL_SPIN_LOCK (&dcache->mutex);
   dcache->ref_count++;
   GSL_SPIN_UNLOCK (&dcache->mutex);
@@ -213,20 +219,21 @@ gsl_data_cache_unref (GslDataCache *dcache)
     {
       g_return_if_fail (dcache->open_count == 0);
 
-      GSL_SPIN_LOCK (&dcache_global);
+      GSL_SPIN_LOCK (&global_dcache_mutex);
       GSL_SPIN_LOCK (&dcache->mutex);
       if (dcache->ref_count != 1)
 	{
 	  /* damn, some other thread trapped in, restart */
 	  GSL_SPIN_UNLOCK (&dcache->mutex);
-	  GSL_SPIN_UNLOCK (&dcache_global);
+	  GSL_SPIN_UNLOCK (&global_dcache_mutex);
 	  goto restart;
 	}
       dcache->ref_count = 0;
-      dcache_list = gsl_ring_remove (dcache_list, dcache);
+      global_dcache_list = gsl_ring_remove (global_dcache_list, dcache);
       GSL_SPIN_UNLOCK (&dcache->mutex);
-      n_aged_nodes -= dcache->n_nodes;
-      GSL_SPIN_UNLOCK (&dcache_global);
+      global_dcache_count--;
+      global_dcache_n_aged_nodes -= dcache->n_nodes;
+      GSL_SPIN_UNLOCK (&global_dcache_mutex);
       dcache_free (dcache);
     }
   else
@@ -349,7 +356,7 @@ data_cache_new_node_L (GslDataCache *dcache,
 
   GSL_SPIN_LOCK (&dcache->mutex);
   dnode->data = node_data;
-  gsl_cond_broadcast (&dcache_cond_node_filled);
+  gsl_cond_broadcast (&global_dcache_cond_node_filled);
   
   return dnode;
 }
@@ -383,21 +390,27 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
 	      else
 		node = NULL;
 	      GSL_SPIN_UNLOCK (&dcache->mutex);
+	      if (node && rejuvenate_node)
+		{
+		  GSL_SPIN_LOCK (&global_dcache_mutex); /* different lock */
+		  global_dcache_n_aged_nodes--;
+		  GSL_SPIN_UNLOCK (&global_dcache_mutex);
+		}
 	      return node;
 	    }
 
 	  node->ref_count++;
 	  if (load_request == GSL_DATA_CACHE_DEMAND_LOAD)
 	    while (!node->data)
-	      gsl_cond_wait (&dcache_cond_node_filled, &dcache->mutex);
+	      gsl_cond_wait (&global_dcache_cond_node_filled, &dcache->mutex);
 	  GSL_SPIN_UNLOCK (&dcache->mutex);
 	  /* g_printerr ("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
 
 	  if (rejuvenate_node)
 	    {
-	      GSL_SPIN_LOCK (&dcache_global); /* different lock */
-	      n_aged_nodes--;
-	      GSL_SPIN_UNLOCK (&dcache_global);
+	      GSL_SPIN_LOCK (&global_dcache_mutex); /* different lock */
+	      global_dcache_n_aged_nodes--;
+	      GSL_SPIN_UNLOCK (&global_dcache_mutex);
 	    }
 	  
 	  return node;					/* exact match */
@@ -420,27 +433,34 @@ gsl_data_cache_ref_node (GslDataCache       *dcache,
   return node;
 }
 
-static void
-data_cache_free_olders_LL (GslDataCache *dcache,
-			   guint         oldest)
+static gboolean /* still locked */
+data_cache_free_olders_Lunlock (GslDataCache *dcache,
+				guint         max_lru)	/* how many lru nodes to keep */
 {
   GslDataCacheNode **slot_p;
   guint i, rejuvenate, size;
   guint n_freed = 0;
 
-  g_return_if_fail (dcache != NULL);
+  g_return_val_if_fail (dcache != NULL, TRUE);
 
-  if (oldest >= dcache->max_age)
-    return;
+  /* it doesn't make sense to free nodes below the jitter that
+   * AGE_EPSILON attempts to prevent.
+   */
+  max_lru = MAX (AGE_EPSILON, max_lru);
+  if (max_lru >= dcache->max_age)
+    return TRUE;
 
-  rejuvenate = dcache->max_age - oldest;
+  rejuvenate = dcache->max_age - max_lru;
+  if (0)
+    g_print ("start sweep: dcache (%p) with %u nodes, max_age: %u, rejuvenate: %u (max_lru: %u)\n",
+	     dcache, dcache->n_nodes, dcache->max_age, rejuvenate, max_lru);
   size = dcache->node_size + (dcache->padding << 1);
   slot_p = NULL;
   for (i = 0; i < dcache->n_nodes; i++)
     {
       GslDataCacheNode *node = dcache->nodes[i];
 
-      if (!node->ref_count && node->age + oldest <= dcache->max_age)
+      if (!node->ref_count && node->age <= rejuvenate)
 	{
 	  gsl_delete_structs (GslDataType, size, node->data - dcache->padding);
 	  gsl_delete_struct (GslDataCacheNode, node);
@@ -450,7 +470,7 @@ data_cache_free_olders_LL (GslDataCache *dcache,
 	}
       else
 	{
-	  node->age -= rejuvenate;
+	  node->age -= MIN (rejuvenate, node->age);
 	  if (slot_p)
 	    {
 	      *slot_p = node;
@@ -458,14 +478,23 @@ data_cache_free_olders_LL (GslDataCache *dcache,
 	    }
 	}
     }
-  dcache->max_age -= rejuvenate;
+  dcache->max_age = max_lru;
   if (slot_p)
     dcache->n_nodes = NODEP_INDEX (dcache, slot_p);
-  n_aged_nodes -= n_freed;
+  GSL_SPIN_UNLOCK (&dcache->mutex);
+
+  if (n_freed)
+    {
+      GSL_SPIN_LOCK (&global_dcache_mutex);
+      global_dcache_n_aged_nodes -= n_freed;
+      GSL_SPIN_UNLOCK (&global_dcache_mutex);
+    }
   if (0)
-    g_printerr ("freed %u nodes (%u bytes) remaining %u bytes\n",
+    g_printerr ("freed %u nodes (%u bytes) remaining %u bytes (this dcache: n_nodes=%u)\n",
 		n_freed, n_freed * CONFIG_NODE_SIZE (),
-		n_aged_nodes * CONFIG_NODE_SIZE ());
+		global_dcache_n_aged_nodes * CONFIG_NODE_SIZE (),
+		dcache->n_nodes);
+  return FALSE;
 }
 
 void
@@ -484,40 +513,67 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
   g_assert (node_p && *node_p == node);	/* paranoid check lookup, yeah! */
   node->ref_count -= 1;
   check_cache = !node->ref_count;
-  if (!node->ref_count)
+  if (!node->ref_count &&
+      (node->age + AGE_EPSILON <= dcache->max_age ||
+       dcache->max_age < AGE_EPSILON))
     node->age = ++dcache->max_age;
   GSL_SPIN_UNLOCK (&dcache->mutex);
 
   if (check_cache)
     {
       guint node_size = CONFIG_NODE_SIZE ();
-      
-      /* FIXME: cache sweeping should note be done from _unref */
-      GSL_SPIN_LOCK (&dcache_global);
-      n_aged_nodes++;
-      if (node_size * n_aged_nodes > gsl_get_config ()->dcache_cache_memory)
+      guint cache_mem = gsl_get_config ()->dcache_cache_memory;
+      guint current_mem;
+
+      /* FIXME: cache sweeping should not be done from _unref_node for high persistency caches */
+      GSL_SPIN_LOCK (&global_dcache_mutex);
+      global_dcache_n_aged_nodes++;
+      current_mem = node_size * global_dcache_n_aged_nodes;
+      if (current_mem > cache_mem)
 	{
-	  dcache = gsl_ring_pop_head (&dcache_list);
+	  guint dcache_count, needs_unlock;
+	  dcache = gsl_ring_pop_head (&global_dcache_list);
 	  GSL_SPIN_LOCK (&dcache->mutex);
-	  dcache_list = gsl_ring_append (dcache_list, dcache);
-	  data_cache_free_olders_LL (dcache, MAX (dcache->max_age, DFL_SWEEP) - DFL_SWEEP);
-	  GSL_SPIN_UNLOCK (&dcache->mutex);
+	  dcache->ref_count++;
+	  global_dcache_list = gsl_ring_append (global_dcache_list, dcache);
+	  dcache_count = global_dcache_count;
+	  GSL_SPIN_UNLOCK (&global_dcache_mutex);
+	  if (dcache->low_persistency)
+	    needs_unlock = data_cache_free_olders_Lunlock (dcache, LOW_PERSISTENCY_SWEEP);
+	  else
+	    {
+	      guint max_lru;
+	      /* try to free the actual cache overflow from the
+	       * dcache we just picked, but don't free more than
+	       * 75% of its nodes yet.
+	       * overflow is actual overhang + ~6% of cache size,
+	       * so cache sweeps are triggered less frequently.
+	       */
+	      current_mem -= cache_mem;		/* overhang */
+	      current_mem += cache_mem >> 4;	/* overflow = overhang + 6% */
+	      current_mem /= node_size;		/* n_nodes to free */
+	      current_mem = MIN (current_mem, dcache->n_nodes);
+	      max_lru = dcache->n_nodes >> 1;
+	      max_lru += max_lru >> 1;		/* 75% of n_nodes */
+	      max_lru = MAX (max_lru, dcache->n_nodes - current_mem);
+	      needs_unlock = data_cache_free_olders_Lunlock (dcache, MAX (max_lru, LOW_PERSISTENCY_SWEEP));
+	    }
+	  if (needs_unlock)
+	    GSL_SPIN_UNLOCK (&dcache->mutex);
 	}
-      GSL_SPIN_UNLOCK (&dcache_global);
+      else
+	GSL_SPIN_UNLOCK (&global_dcache_mutex);
     }
 }
 
 void
 gsl_data_cache_free_olders (GslDataCache *dcache,
-			    guint         oldest)
+			    guint         max_age)
 {
   g_return_if_fail (dcache != NULL);
 
-  GSL_SPIN_LOCK (&dcache_global);
   GSL_SPIN_LOCK (&dcache->mutex);
-  data_cache_free_olders_LL (dcache, oldest);
-  GSL_SPIN_UNLOCK (&dcache->mutex);
-  GSL_SPIN_UNLOCK (&dcache_global);
+  data_cache_free_olders_Lunlock (dcache, max_age);
 }
 
 GslDataCache*
@@ -528,19 +584,19 @@ gsl_data_cache_from_dhandle (GslDataHandle *dhandle,
 
   g_return_val_if_fail (dhandle != NULL, NULL);
 
-  GSL_SPIN_LOCK (&dcache_global);
-  for (ring = dcache_list; ring; ring = gsl_ring_walk (dcache_list, ring->next))
+  GSL_SPIN_LOCK (&global_dcache_mutex);
+  for (ring = global_dcache_list; ring; ring = gsl_ring_walk (global_dcache_list, ring->next))
     {
       GslDataCache *dcache = ring->data;
 
       if (dcache->dhandle == dhandle && dcache->padding >= min_padding)
 	{
 	  gsl_data_cache_ref (dcache);
-	  GSL_SPIN_UNLOCK (&dcache_global);
+	  GSL_SPIN_UNLOCK (&global_dcache_mutex);
 	  return dcache;
 	}
     }
-  GSL_SPIN_UNLOCK (&dcache_global);
+  GSL_SPIN_UNLOCK (&global_dcache_mutex);
 
   return gsl_data_cache_new (dhandle, min_padding);
 }

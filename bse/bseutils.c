@@ -941,30 +941,30 @@ bse_note_to_string (gint note)
 void
 bse_note_examine (gint      note,
 		  gint     *octave_p,
-		  guint    *half_tone_p,
+		  guint    *semitone_p,
 		  gboolean *ht_up_p,
 		  gchar	   *letter_p)
 {
   static const gint8 ht_flags[12] = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0 };
-  register guint half_tone;
+  register guint semitone;
   register gint octave;
   
   g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
   
-  half_tone = note % 12 + (9 - (BSE_KAMMER_NOTE % 12));
+  semitone = note % 12 + (9 - (BSE_KAMMER_NOTE % 12));
   
-  note -= half_tone;
+  note -= semitone;
   octave = note - (BSE_KAMMER_NOTE - 9);
   octave = octave / 12 + BSE_KAMMER_OCTAVE;
   
   if (octave_p)
     *octave_p = octave;
-  if (half_tone_p)
-    *half_tone_p = half_tone;
+  if (semitone_p)
+    *semitone_p = semitone;
   if (ht_up_p)
-    *ht_up_p = ht_flags[half_tone];
+    *ht_up_p = ht_flags[semitone];
   if (letter_p)
-    *letter_p = bse_note_name_table[half_tone][0];
+    *letter_p = bse_note_name_table[semitone][0];
 }
 
 gint
@@ -987,7 +987,7 @@ bse_note_fine_tune_from_note_freq (gint    note,
   gdouble d;
   gint fine_tune;
   
-  freq /= BSE_KAMMER_FREQUENCY_f * BSE_HALFTONE_FACTOR (note);
+  freq /= BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note);
   d = log (freq) / BSE_LN_2_POW_1_DIV_1200_d;
   fine_tune = gsl_ftoi (d);
 
@@ -998,7 +998,7 @@ gdouble
 bse_note_to_freq (gint note)
 {
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    return BSE_KAMMER_FREQUENCY_f * BSE_HALFTONE_FACTOR (note);
+    return BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note);
   else
     return 0.0;
 }
@@ -1008,7 +1008,7 @@ bse_note_to_tuned_freq (gint note,
 			gint fine_tune)
 {
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    return BSE_KAMMER_FREQUENCY_f * BSE_HALFTONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
+    return BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
   else
     return 0.0;
 }

@@ -87,9 +87,9 @@ extern "C" {
 #define	BSE_NOTE_CLAMP(n)	(CLAMP (((gint) (n)), BSE_MIN_NOTE, BSE_MAX_NOTE))
 
 
-/* macros to compose and decompose note values into half tones and octaves */
-#define	BSE_NOTE_OCTAVE(n)		((((gint) (n)) - BSE_NOTE_HALF_TONE (n) - (BSE_KAMMER_NOTE - 9)) / 12 + BSE_KAMMER_OCTAVE)
-#define	BSE_NOTE_HALF_TONE(n)		(((gint) (n)) % 12 + (9 - (BSE_KAMMER_NOTE % 12)))
+/* macros to compose and decompose note values into semitones and octaves */
+#define	BSE_NOTE_OCTAVE(n)		((((gint) (n)) - BSE_NOTE_SEMITONE (n) - (BSE_KAMMER_NOTE - 9)) / 12 + BSE_KAMMER_OCTAVE)
+#define	BSE_NOTE_SEMITONE(n)		(((gint) (n)) % 12 + (9 - (BSE_KAMMER_NOTE % 12)))
 #define	BSE_NOTE_GENERIC(o,ht_i)	(BSE_KAMMER_NOTE - 9 + ((gint) (ht_i)) + (((gint) (o)) - BSE_KAMMER_OCTAVE) * 12)
 #define	BSE_NOTE_C(o)			(BSE_NOTE_GENERIC ((o), 0))
 #define	BSE_NOTE_Cis(o)			(BSE_NOTE_GENERIC ((o), 1))
@@ -115,7 +115,7 @@ extern "C" {
 
 
 /* --- fine tune --- */
-/* fine tune in cents of a half tone */
+/* fine tune in cents of a semitone */
 #define	BSE_MIN_FINE_TUNE		(-100)
 #define	BSE_MAX_FINE_TUNE		(+100)
 #define BSE_FINE_TUNE_IS_VALID(n)	((n) >= BSE_MIN_FINE_TUNE && (n) <= BSE_MAX_FINE_TUNE)

@@ -131,7 +131,7 @@ typedef enum	/*< skip >*/
 #define	BSE_PART_MAX_TICK		(0x7fffffff)
 #define	BSE_PART_INVAL_TICK_FLAG	(0x80000000)
 #define	BSE_PART_NOTE_EVENT_FREQ(nev)	(BSE_KAMMER_FREQUENCY_f * \
-                                         BSE_HALFTONE_FACTOR ((nev)->note) * \
+                                         BSE_SEMITONE_FACTOR ((nev)->note) * \
                                          BSE_FINE_TUNE_FACTOR ((nev)->fine_tune))
 typedef union  _BsePartEvent BsePartEvent;
 typedef struct

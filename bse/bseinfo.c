@@ -29,7 +29,7 @@ print_note (const gchar *note_name,
   string = bse_note_to_string (note);
   g_print ("%s =%-4d \tfactor=%"FLF"f [%-5s] (freq=%"FLF"f)\n",
 	   note_name, note,
-	   BSE_HALFTONE_FACTOR (note),
+	   BSE_SEMITONE_FACTOR (note),
 	   string, bse_note_to_freq (note));
   g_free (string);
 }
