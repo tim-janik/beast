@@ -117,7 +117,7 @@ Tue Dec 21 06:54:26 1999  Tim Janik  <timj@gtk.org>
 Fri Dec 17 16:57:59 1999  Tim Janik  <timj@gtk.org>
 
 	* bseparam.[hc]: added parameter nick name for GUI uses.
-	* *.c: bunch of adaptions to bse_param_spec_* () calls to supply nick names.
+	* *.c: bunch of adaptions to bse_param_spec_*() calls to supply nick names.
 
 Fri Dec 17 08:48:29 1999  Tim Janik  <timj@gtk.org>
 
