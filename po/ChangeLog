@@ -1,3 +1,7 @@
+2003-12-15  Danilo Šegan  <dsegan@gmx.net>
+
+	* sr.po, sr@Latn.po: Updated Serbian translation.
+
 Mon Dec 15 16:12:36 2003  Tim Janik  <timj@gtk.org>
 
 	* POTFILES.in: added idl files.

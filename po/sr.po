@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-15 16:21+0100\n"
-"PO-Revision-Date: 2003-12-11 19:13+0100\n"
+"POT-Creation-Date: 2003-12-15 18:29+0100\n"
+"PO-Revision-Date: 2003-12-15 18:57+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -1405,15 +1405,15 @@ msgstr "Ос_вежи"
 
 #: beast-gtk/gxk/gxklistwrapper.c:101
 msgid "Number of Columns"
-msgstr ""
+msgstr "Број колона"
 
 #: beast-gtk/gxk/gxklistwrapper.c:105
 msgid "Array of column types"
-msgstr ""
+msgstr "Низ врста колона"
 
 #: beast-gtk/gxk/gxklistwrapper.c:109
 msgid "Number of Rows"
-msgstr ""
+msgstr "Број редова"
 
 #: beast-gtk/gxk/gxkparam-entry.c:56
 msgid "Text Entry"
@@ -1520,11 +1520,11 @@ msgstr "Елемент који се активира када се притис
 
 #: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26 plugins/davchorus.idl:27
 msgid "GNU Lesser General Public License"
-msgstr ""
+msgstr "ГНУ-ова слабија општа јавна лиценца (LGPL)"
 
 #: bse/bseamplifier.idl:32
 msgid "/Routing/Amplifier"
-msgstr ""
+msgstr "/Усмеравање/Појачивач"
 
 #: bse/bseamplifier.idl:33
 msgid ""
@@ -1537,147 +1537,137 @@ msgid ""
 "mixed control signal can influence the amplification linearly (to amplify "
 "other control signals) or exponentially (to amplify audio signals). Finally, "
 "the master volume controls amplification of the resulting output signal."
-msgstr ""
+msgstr "BseAmplifier обезбеђује контролу појачања и наглашавања преко улазног сигнала. Подржава два контролна улаза и два звучна улаза који се мешају заједно према прилагођивању равнотеже и нивоа. Добитак контролише препојачање мешаног звучног сингала. Мешани контролни сигнал, уз тежински коефицијент, одређује појачање програма, дозвољавајући да спољашњи извори програма разделе општи промет (тремоло). Мешани контролни сигнал не може да утиче линеарно на појачивање (осталих контролних сигнала) или експоненцијално (за појачање звучних зигнала). Коначно, главна јачина управља појачање излазног сигнала."
 
 #: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
-#, fuzzy
 msgid "Audio In1"
-msgstr "Звук"
+msgstr "Улаз звука 1"
 
 #: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
 msgid "First audio input"
-msgstr ""
+msgstr "Први улаз за звук"
 
 #: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
-#, fuzzy
 msgid "Audio In2"
-msgstr "Звук"
+msgstr "Улаз звука 2"
 
 #: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
 msgid "Second audio input"
-msgstr ""
+msgstr "Други улаз за звук"
 
 #: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
 msgid "Ctrl In1"
-msgstr ""
+msgstr "Контролни улаз 1"
 
 #: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
-#, fuzzy
 msgid "First control input"
-msgstr "Уметни контролни догађај"
+msgstr "Први контролни улаз"
 
 #: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
 msgid "Ctrl In2"
-msgstr ""
+msgstr "Контролни улаз 2"
 
 #: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
 msgid "Second control input"
-msgstr ""
+msgstr "Други контролни улаз"
 
 #: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
 #: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
-#, fuzzy
 msgid "Audio Out"
-msgstr "Звук"
+msgstr "Излаз звука"
 
 #: bse/bseamplifier.idl:50
 msgid "Amplified audio output"
-msgstr ""
+msgstr "Појачани излаз звука"
 
 #: bse/bseamplifier.idl:51 plugins/bsebalance.idl:43
-#, fuzzy
 msgid "Audio Input"
-msgstr "Само-исеци"
+msgstr "Улаз звука"
 
 #: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:44
 #: plugins/bsebalance.idl:49
-#, fuzzy
 msgid "Input 1 [%]"
-msgstr "Улаз"
+msgstr "Улаз 1 [%]"
 
 #: bse/bseamplifier.idl:52 plugins/bsebalance.idl:44
 msgid "Attenuate the level of audio input 1"
-msgstr ""
+msgstr "Ослаби ниво улаза звука 1"
 
 #: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:45
 #: plugins/bsebalance.idl:50
-#, fuzzy
 msgid "Input 2 [%]"
-msgstr "Улаз"
+msgstr "Улаз 2 [%]"
 
 #: bse/bseamplifier.idl:53 plugins/bsebalance.idl:45
 msgid "Attenuate the level of audio input 2"
-msgstr ""
+msgstr "Ослаби ниво улаза звука 2"
 
 #: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:46
 #: plugins/bsebalance.idl:51
 msgid "Balance"
-msgstr ""
+msgstr "Уравнотежи"
 
 #: bse/bseamplifier.idl:54 plugins/bsebalance.idl:46
 msgid "Balance audio input levels"
-msgstr ""
+msgstr "Уравнотежи нивое улаза звука"
 
 #: bse/bseamplifier.idl:56 plugins/bsebalance.idl:48
-#, fuzzy
 msgid "Control Input"
-msgstr "Врста контроле:"
+msgstr "Контролни улаз"
 
 #: bse/bseamplifier.idl:57 plugins/bsebalance.idl:49
 msgid "Attenuate the level of control input 1"
-msgstr ""
+msgstr "Ослаби ниво контролног улаза 1"
 
 #: bse/bseamplifier.idl:58 plugins/bsebalance.idl:50
 msgid "Attenuate the level of control input 2"
-msgstr ""
+msgstr "Ослаби ниво контролног улаза 2"
 
 #: bse/bseamplifier.idl:59 plugins/bsebalance.idl:51
 msgid "Balance control input levels"
-msgstr ""
+msgstr "Уравнотежи нивое контролних улаза"
 
 #: bse/bseamplifier.idl:60
 msgid "Multiply Controls"
-msgstr ""
+msgstr "Умножи контролне"
 
 #: bse/bseamplifier.idl:61
 msgid ""
 "Multiply the two control inputs with each other, rather than weighting them "
 "by balance"
-msgstr ""
+msgstr "Умножи два контролна улаза један са другим, уместо тежинске употребе"
 
 #: bse/bseamplifier.idl:64
 msgid "Exponential Control"
-msgstr ""
+msgstr "Експоненцијални контролни"
 
 #: bse/bseamplifier.idl:64
 msgid "Toggle exponential and linear control response"
-msgstr ""
+msgstr "Измени експоненцијални и линеарни контролни одговор"
 
 #: bse/bseamplifier.idl:67 plugins/bsebalance.idl:54
-#, fuzzy
 msgid "Control Strength"
-msgstr "Премести контролни догађај"
+msgstr "Контролна снага"
 
 #: bse/bseamplifier.idl:67
 msgid "Adjust how much the control signals affect the output volume"
-msgstr ""
+msgstr "Прилагоди колико контролни сигнали утичу на излазну јачину звука"
 
 #: bse/bseamplifier.idl:68
 msgid "Base Volume"
-msgstr ""
+msgstr "Основна јачина"
 
 #: bse/bseamplifier.idl:68
 msgid "Base amplification (the control signal adds up to this)"
-msgstr ""
+msgstr "Основно појачање (контролни сигнал придодаје овоме)"
 
 #: bse/bseamplifier.idl:69
 msgid "Master Volume"
-msgstr ""
+msgstr "Главна јачина"
 
 #: bse/bseamplifier.idl:69
-#, fuzzy
 msgid "Output stage amplification"
-msgstr "Поравнавање"
+msgstr "Појачање излазне сцене"
 
 #: bse/bsebiquadfilter.c:130
 msgid "Filter"
@@ -1772,28 +1762,27 @@ msgstr "Филтрирани звучни сигнал"
 
 #: bse/bsesuper.c:101
 msgid "Author"
-msgstr ""
+msgstr "Аутор"
 
 #: bse/bsesuper.c:101
 msgid "Person changing or creating this object"
-msgstr ""
+msgstr "Особа која је мењала или правила овај објекат"
 
 #: bse/bsesuper.c:106
 msgid "License"
-msgstr ""
+msgstr "Лиценца"
 
 #: bse/bsesuper.c:106
 msgid "Copyright license applying to this object"
-msgstr ""
+msgstr "Лиценца ауторских права која важи за овај објекат"
 
 #: bse/bsesuper.c:114
 msgid "Creation Time"
-msgstr ""
+msgstr "Време стварања"
 
 #: bse/bsesuper.c:118
-#, fuzzy
 msgid "Last modification time"
-msgstr "Поравнавање"
+msgstr "Време последње измене"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -1822,113 +1811,109 @@ msgstr "BSE датотека за синтезу"
 #: plugins/artscompressor.idl:28 plugins/artscompressor.idl:45
 #: plugins/evaluator/bseevaluator.idl:26
 msgid "GNU General Public License"
-msgstr ""
+msgstr "ГНУ-ова општа јавна лиценца (GPL)"
 
 #: plugins/artscompressor.idl:29
 msgid "/Enhance/ArtsCompressor"
-msgstr ""
+msgstr "/Побољшање/АртцКомпресор"
 
 #: plugins/artscompressor.idl:30
 msgid "ArtsCompressor compresses the sound."
-msgstr ""
+msgstr "ArtsCompressor компресује звук."
 
 #: plugins/artscompressor.idl:31 plugins/davchorus.idl:30
 #: plugins/evaluator/bseevaluator.idl:31
-#, fuzzy
 msgid "Audio In"
-msgstr "Звук"
+msgstr "Улаз звука"
 
 #: plugins/artscompressor.idl:31 plugins/davchorus.idl:30
 #: plugins/evaluator/bseevaluator.idl:31
-#, fuzzy
 msgid "Audio input"
-msgstr "Само-исеци"
+msgstr "Улаз звука"
 
 #: plugins/artscompressor.idl:32
 msgid "Compressed audio output"
-msgstr ""
+msgstr "Компресовани улаз звука"
 
 #: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
 msgid "Attack [ms]"
-msgstr ""
+msgstr "Напад [ms]"
 
 #: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
 msgid "Set the attack time in milli seconds"
-msgstr ""
+msgstr "Постави време напада у милисекундама"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
-#, fuzzy
 msgid "Release [ms]"
-msgstr "_Објава издања..."
+msgstr "Ослобађање [ms]"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Set the release time in milli seconds"
-msgstr ""
+msgstr "Постави време ослобађања у милисекундама"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Threshold"
-msgstr ""
+msgstr "Праг"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Set the threshold"
-msgstr ""
+msgstr "Постави праг"
 
 #: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
-#, fuzzy
 msgid "Ratio"
-msgstr "Путања"
+msgstr "Однос"
 
 #: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Set the compression ratio"
-msgstr ""
+msgstr "Постави однос компресије"
 
 #: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Set the output amplification"
-msgstr ""
+msgstr "Постави појачивање излаза"
 
 #: plugins/artscompressor.idl:46
 msgid "/Enhance/ArtsStereoCompressor"
-msgstr ""
+msgstr "/Побољшање/АртсСтереоКомпресор"
 
 #: plugins/artscompressor.idl:47
 msgid "ArtsStereoCompressor compresses the sound."
-msgstr ""
+msgstr "ArtsStereoCompressor компресује звук."
 
 #: plugins/artscompressor.idl:48
 msgid "Left Audio In"
-msgstr ""
+msgstr "Леви улаз звука"
 
 #: plugins/artscompressor.idl:48
 msgid "Left audio input"
-msgstr ""
+msgstr "Леви улаз звука"
 
 #: plugins/artscompressor.idl:49
 msgid "Right Audio In"
-msgstr ""
+msgstr "Десни улаз звука"
 
 #: plugins/artscompressor.idl:49
 msgid "Right audio input"
-msgstr ""
+msgstr "Десни улаз звука"
 
 #: plugins/artscompressor.idl:50
 msgid "Left Audio Out"
-msgstr ""
+msgstr "Леви излаз звука"
 
 #: plugins/artscompressor.idl:50
 msgid "Compressed left audio output"
-msgstr ""
+msgstr "Копресовани леви излаз звука"
 
 #: plugins/artscompressor.idl:51
 msgid "Right Audio Out"
-msgstr ""
+msgstr "Десни излаз звука"
 
 #: plugins/artscompressor.idl:51
 msgid "Compressed right audio output"
-msgstr ""
+msgstr "Копресовани десни излаз звука"
 
 #: plugins/bsebalance.idl:27
 msgid "/Spatial/Balance"
-msgstr ""
+msgstr "/Просторно/Равнотежа"
 
 #: plugins/bsebalance.idl:28
 msgid ""
@@ -1937,137 +1922,127 @@ msgid ""
 "is controlled by a balance adjustment and the sum of the control inputs. To "
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
-msgstr ""
+msgstr "BseBalance је модуо за стерео равнање са два звучна и два контролна улаза, и на сваком се може одвојено прилагодити ниво. Излазна равнотежа се контролише равнотежом прилагођења и збиром контролних улаза. Ради избегавања шума за брзу измену равнотеже, контролни сигнал се предобрађује једноставним нископролазним филтером са прилагодљивом фреквенцијом одсецања."
 
 #: plugins/bsebalance.idl:40
-#, fuzzy
 msgid "Left Out"
-msgstr "Лево"
+msgstr "Леви излаз"
 
 #: plugins/bsebalance.idl:40
 msgid "Left audio output"
-msgstr ""
+msgstr "Леви излаз звука"
 
 #: plugins/bsebalance.idl:41
 msgid "Mix Out"
-msgstr ""
+msgstr "Мешани излаз"
 
 #: plugins/bsebalance.idl:41
 msgid "Mixed audio output"
-msgstr ""
+msgstr "Мешани излаз звука"
 
 #: plugins/bsebalance.idl:42
-#, fuzzy
 msgid "Right Out"
-msgstr "Десно"
+msgstr "Десни излаз"
 
 #: plugins/bsebalance.idl:42
 msgid "Right audio output"
-msgstr ""
+msgstr "Десни излаз звука"
 
 #: plugins/bsebalance.idl:53
-#, fuzzy
 msgid "Output Panning"
-msgstr "Излаз"
+msgstr "Равнање излаза"
 
 #: plugins/bsebalance.idl:54
 msgid "Adjust how much the control signals affect the output balance"
-msgstr ""
+msgstr "Прилагоди колико контролни сигнали утичу на равнотежу излаза"
 
 #: plugins/bsebalance.idl:55
 msgid "Lowpass [Hz]"
-msgstr ""
+msgstr "Нископролазна [Hz]"
 
 #: plugins/bsebalance.idl:55
 msgid "Lowpass filter frequency for the control signal"
-msgstr ""
+msgstr "Нископролазна учестаност филтера за контролни сигнал"
 
 #: plugins/bsebalance.idl:56
-#, fuzzy
 msgid "Output Balance"
-msgstr "Излаз"
+msgstr "Равнотежа излаза"
 
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
-msgstr ""
+msgstr "Прилагодите равнотежу излаза лево и десно"
 
 #: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
-#, fuzzy
 msgid "Filter Choice"
-msgstr "Врста филтера"
+msgstr "Избор филтера"
 
 #: plugins/bseiirfilter.c:118
 msgid "Filter Algorithm"
-msgstr ""
+msgstr "Алгоритам филтера"
 
 #: plugins/bseiirfilter.c:124
-#, fuzzy
 msgid "The type of filter to use"
-msgstr "Текст ознаке"
+msgstr "Врста филтера који се користи"
 
 #: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
-#, fuzzy
 msgid "Filter Specification"
-msgstr "Избор датотека"
+msgstr "Спецификација филтера"
 
 #: plugins/bseiirfilter.c:130
 msgid "Order"
-msgstr ""
+msgstr "Редослед"
 
 #: plugins/bseiirfilter.c:130
 msgid "Order of Filter"
-msgstr ""
+msgstr "Ред филтера"
 
 #: plugins/bseiirfilter.c:135
 msgid "Epsilon"
-msgstr ""
+msgstr "Епсилон"
 
 #: plugins/bseiirfilter.c:135
 msgid "Passband falloff at cutoff frequency"
-msgstr ""
+msgstr "Пролаз опсега отпада на учестаности одсецања"
 
 #: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
 msgid "Cutoff Frequency (All Filters)"
-msgstr ""
+msgstr "Учестаност одсецања (сви филтери)"
 
 #: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
-msgstr ""
+msgstr "Учестаност одсецања 2 (пролаз опсега/заустављање)"
 
 #: plugins/bseiirfilter.c:159
-#, fuzzy
 msgid "Unfiltered Input"
-msgstr "Уклони улазе"
+msgstr "Нефилтриран улаз"
 
 #: plugins/bseiirfilter.c:161
-#, fuzzy
 msgid "Filtered Output"
-msgstr "Уклони излазе"
+msgstr "Филтриран улаз"
 
 #: plugins/davchorus.idl:28
-#, fuzzy
 msgid "/Enhance/Chorus"
-msgstr "По_бољшање"
+msgstr "/Побољшање/Хорски"
 
 #: plugins/davchorus.idl:29
 msgid "DavChorus adds more depth to sounds"
-msgstr ""
+msgstr "ДавХорски додаје већу дубину звуку"
 
 #: plugins/davchorus.idl:31
 msgid "Chorus audio output"
-msgstr ""
+msgstr "Хорски излаз звука"
 
 #: plugins/davchorus.idl:33
 msgid "Wet out [%]"
-msgstr ""
+msgstr "Излаз влажног [%]"
 
 #: plugins/davchorus.idl:33
 msgid "Set the amount of modified data to mix"
-msgstr ""
+msgstr "Постави количину измењених података за мешање"
 
 #: plugins/evaluator/bseevaluator.idl:27
 msgid "/Misc/Evaluator"
-msgstr ""
+msgstr "/Разно/Вредновање"
 
 #: plugins/evaluator/bseevaluator.idl:28
 msgid ""
@@ -2075,26 +2050,24 @@ msgid ""
 "language. The audio input signal is called input, the audio output signal is "
 "called output. Simple examples for programs would be \"output = input * 5\" "
 "or \"output = 2 * input + 1\"."
-msgstr ""
+msgstr "BseEvaluator је модуо који може да израчунава аритметичке операције у малом језику. Улаз звучног сингала се назива улаз, а излаз звучног сигнала се назива излаз. Једноставни примери за програме треба да буде „output = input * 5“ или „output = 2 * input +1“."
 
 #: plugins/evaluator/bseevaluator.idl:32
-#, fuzzy
 msgid "Audio output"
-msgstr "Само-исеци"
+msgstr "Звучни излаз"
 
 #: plugins/evaluator/bseevaluator.idl:34
 msgid "Source code"
-msgstr ""
+msgstr "Изворни код"
 
 #: plugins/evaluator/bseevaluator.idl:34
 msgid "The source code"
-msgstr ""
+msgstr "Изворни код"
 
 #: plugins/evaluator/bseevaluator.idl:35
-#, fuzzy
 msgid "Status"
-msgstr "Покретање"
+msgstr "Стање"
 
 #: plugins/evaluator/bseevaluator.idl:35
 msgid "Status used to output error messages"
-msgstr ""
+msgstr "Стање које се користи за испит порука о грешкама"
