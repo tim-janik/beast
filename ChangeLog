@@ -1,7 +1,7 @@
 Wed Dec 29 03:45:52 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/scripts/Makefile.am:
-	* library/scripts/mixer-splitup-by-tracks.scm: Added a script which
+	* library/scripts/mixer-splitup-by-track.scm: Added a script which
 	assigns all tracks to new mixer busses.
 
 Mon Dec 27 23:58:48 2004  Tim Janik  <timj@gtk.org>
