@@ -529,9 +529,12 @@ pcm_stream_oss_set_dsp (BsePcmStreamOSS	      *pcm_stream_oss,
 	{
 	  /* failed to set audio format
 	   */
-	  return BSE_ERROR_STREAM_SET_ATTRIB;
+	  /* blatantly ignore this case
+	   * return BSE_ERROR_STREAM_SET_ATTRIB;
+	   */
 	}
-      pcm_stream->attribs.fragment_size = 1 << (d_int & 0xffff);
+      else
+	pcm_stream->attribs.fragment_size = 1 << (d_int & 0xffff);
     }
   
   d_long = fcntl (pcm_stream_oss->fd, F_GETFL);
@@ -541,3 +544,6 @@ pcm_stream_oss_set_dsp (BsePcmStreamOSS	      *pcm_stream_oss,
   
   return BSE_ERROR_NONE;
 }
+
+
+

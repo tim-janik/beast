@@ -1,3 +1,8 @@
+1999-05-31    <timj@dhcpd7.redhat.com>
+
+	* bsepcmstream-oss.c (pcm_stream_oss_set_dsp): ignore failing fragment
+	size settigns for now, so we work with the OSS driver.
+	
 1999-05-28  Tim Janik  <timj@couch.wilmington.net>
 
 	* bsepattern.c (save_note): don't prefix seq ids with an 0, which
