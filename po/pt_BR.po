@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-29 14:13+0200\n"
-"PO-Revision-Date: 2004-06-30 13:14-0300\n"
+"POT-Creation-Date: 2004-07-01 03:14+0200\n"
+"PO-Revision-Date: 2004-07-01 11:15-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -97,9 +97,8 @@ msgid "Rack Editor"
 msgstr "Editor de pilha"
 
 #: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
-#, fuzzy
 msgid "Profiler"
-msgstr "Ordem de filtro"
+msgstr "Traçar perfil"
 
 #: beast-gtk/bstapp.c:115
 msgid "New View"
@@ -902,7 +901,9 @@ msgstr "QuebraH"
 #: beast-gtk/bstpatternctrl.c:97
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
-msgstr "Alterna se o movimento horizontal da célula com foco quebrará próximo às bordas"
+msgstr ""
+"Alterna se o movimento horizontal da célula com foco quebrará próximo às "
+"bordas"
 
 #: beast-gtk/bstpatternctrl.c:100
 msgid "Base Octave"
@@ -1261,7 +1262,9 @@ msgstr "TempoU"
 #: beast-gtk/bstprofiler.c:247
 msgid ""
 "Average number of milliseconds per second of user CPU time used by thread"
-msgstr "Número médio de milissegundos a cada segundo do tempo de usuário da CPU que serão usados pela thread"
+msgstr ""
+"Número médio de milissegundos a cada segundo do tempo de usuário da CPU que "
+"serão usados pela thread"
 
 #: beast-gtk/bstprofiler.c:248
 msgid "STime"
@@ -1270,7 +1273,9 @@ msgstr "TempoS"
 #: beast-gtk/bstprofiler.c:248
 msgid ""
 "Average number of milliseconds per second of system CPU time used by thread"
-msgstr "Número médio de milissegundos a cada segundo do tempo de sistema da CPU que serão usados pela thread"
+msgstr ""
+"Número médio de milissegundos a cada segundo do tempo de sistema da CPU que "
+"serão usados pela thread"
 
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
@@ -1319,7 +1324,11 @@ msgid ""
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
-msgstr "O editor de pilha ainda é tem código extremamente experimental e é garantido que terá falhas nas versões futuras. Então não espere que o editor de pilha continue o mesmo em versões futuras e se prepare para lidar com possíveis instabilidades no código (p.ex. salve seus projetos regularmente)."
+msgstr ""
+"O editor de pilha ainda é tem código extremamente experimental e é garantido "
+"que terá falhas nas versões futuras. Então não espere que o editor de pilha "
+"continue o mesmo em versões futuras e se prepare para lidar com possíveis "
+"instabilidades no código (p.ex. salve seus projetos regularmente)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/radgets-beast.xml.h:29
@@ -1607,11 +1616,11 @@ msgstr "Tamanho da fonte em pixels para rótulos exibidos em redes de síntese"
 
 #: beast-gtk/bstrecords.idl:75
 msgid "Anti-Alias"
-msgstr "Anti-apelido"
+msgstr "Anti-Alias"
 
 #: beast-gtk/bstrecords.idl:75
 msgid "Draw synthesis networks anti-aliased?"
-msgstr "Desenhar redes de síntese anti-apelidadas?"
+msgstr "Desenhar redes de síntese com anti-alias?"
 
 #: beast-gtk/bstrecords.idl:77
 msgid "Single Edit"
@@ -1619,7 +1628,7 @@ msgstr "Edição única"
 
 #: beast-gtk/bstrecords.idl:77
 msgid "Fallback into Edit mode after creating synthesis modules?"
-msgstr "Cair no modo de edição após criar módulos de síntese?"
+msgstr "Voltar para o modo de edição após criar módulos de síntese?"
 
 #: beast-gtk/bstrecords.idl:79
 msgid "Swap IO"
@@ -1635,7 +1644,7 @@ msgstr "Largura da aba"
 
 #: beast-gtk/bstrecords.idl:83
 msgid "Specify project tab width in pixels"
-msgstr "Especifica a largura da aba do projeto (em pixels)"
+msgstr "Especifica a largura da aba do projeto, em pixels"
 
 #: beast-gtk/bstrecords.idl:85
 msgid "Homogeneous Input Fields"
@@ -1973,7 +1982,8 @@ msgstr "Posição"
 
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Use the horizontal ruler to adjust the play position pointer"
-msgstr "Use a régua horizontal para ajustar o ponteiro da posição de reprodução"
+msgstr ""
+"Use a régua horizontal para ajustar o ponteiro da posição de reprodução"
 
 #: beast-gtk/bsttrackrollctrl.c:68
 msgid "Use the horizontal ruler to adjust the right loop pointer"
@@ -2402,7 +2412,9 @@ msgstr "Usar sublinhado"
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
-msgstr "Se marcado, um sublinhado no texto indica que o próximo caractere deve ser usado como tecla de atalho"
+msgstr ""
+"Se marcado, um sublinhado no texto indica que o próximo caractere deve ser "
+"usado como tecla de atalho"
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
@@ -2411,7 +2423,9 @@ msgstr "Cortar automaticamente"
 #: beast-gtk/gxk/gxksimplelabel.c:143
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
-msgstr "Se marcado, o texto além do limite é eliminado e reticências \"...\" são exibidas no seu lugar"
+msgstr ""
+"Se marcado, o texto além do limite é eliminado e reticências \"...\" são "
+"exibidas no seu lugar"
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
@@ -2421,7 +2435,9 @@ msgstr "Justificação"
 msgid ""
 "The alignment of the lines in the text of the label relative to each other. "
 "This does NOT affect the alignment of the label within its allocation."
-msgstr "O alinhamento das linhas no texto do rótulo relativo a cada um dos outros. Isto NÃO afeta o alinhamento do rótulo na sua localização."
+msgstr ""
+"O alinhamento das linhas no texto do rótulo relativo a cada um dos outros. "
+"Isto NÃO afeta o alinhamento do rótulo na sua localização."
 
 #: beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
@@ -2431,7 +2447,9 @@ msgstr "Padrão"
 msgid ""
 "A string with _ characters in positions correspond to characters in the text "
 "to underline"
-msgstr "Uma string com caracteres _ nas posições correspondentes aos caracteres para sublinhar no texto"
+msgstr ""
+"Uma string com caracteres _ nas posições correspondentes aos caracteres para "
+"sublinhar no texto"
 
 #: beast-gtk/gxk/gxksimplelabel.c:157
 msgid "Mnemonic key"
@@ -2447,7 +2465,9 @@ msgstr "Componente alvo"
 
 #: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
-msgstr "O componente que será ativado quando a tecla de atalho do rótulo for pressionada"
+msgstr ""
+"O componente que será ativado quando a tecla de atalho do rótulo for "
+"pressionada"
 
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
@@ -2476,7 +2496,17 @@ msgid ""
 "mixed control signal can influence the amplification linearly (to amplify "
 "other control signals) or exponentially (to amplify audio signals). Finally, "
 "the master volume controls amplification of the resulting output signal."
-msgstr "BseAmplifier disponibiliza amplificação ou atenuação controlada do sinal de entrada. Ele suporta duas entradas de controle e duas entradas áudio que são mixadas após ajustes de balanço e nível. A configuração de ganho controla a pré-amplificação do sinal de áudio mixado. O sinal de controle mixado, ponderado por uma configuração de peso, determina a amplificação adicional, permitindo que fontes externas modulem o volume global (trêmolo). O sinal de controle de mixado pode influenciar linearmente (para amplificar outros sinais de controle) ou exponencialmente (para amplificar sinais áudio) a amplificação. Finalmente, o volume mestre controla a amplificação do sinal de saída resultante."
+msgstr ""
+"BseAmplifier disponibiliza amplificação ou atenuação controlada do sinal de "
+"entrada. Ele suporta duas entradas de controle e duas entradas áudio que são "
+"mixadas após ajustes de balanço e nível. A configuração de ganho controla a "
+"pré-amplificação do sinal de áudio mixado. O sinal de controle mixado, "
+"ponderado por uma configuração de peso, determina a amplificação adicional, "
+"permitindo que fontes externas modulem o volume global (trêmolo). O sinal de "
+"controle de mixado pode influenciar linearmente (para amplificar outros "
+"sinais de controle) ou exponencialmente (para amplificar sinais áudio) a "
+"amplificação. Finalmente, o volume mestre controla a amplificação do sinal "
+"de saída resultante."
 
 #: bse/bseamplifier.idl:45 plugins/bseadder.c:97 plugins/bsebalance.idl:36
 #: plugins/bsemult.c:60
@@ -2580,7 +2610,9 @@ msgstr "Controles de multiplicação"
 msgid ""
 "Switch the two control inputs to work like a chain of gain controls, rather "
 "than mixing them together, weighted by balance."
-msgstr "Faz com que os controles de entrada funcionem como um conjunto de controles de ganho, em vez de mixá-los, reforçados pelo balanço."
+msgstr ""
+"Faz com que os controles de entrada funcionem como um conjunto de controles "
+"de ganho, em vez de mixá-los, reforçados pelo balanço."
 
 #: bse/bseamplifier.idl:63
 msgid "Exponential Control"
@@ -2703,7 +2735,9 @@ msgstr "Tipo de norma"
 #: bse/bsebiquadfilter.c:153
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
-msgstr "O tipo de normalização de ganho do filtro (suportado apenas por passa-alta e passa-baixa)"
+msgstr ""
+"O tipo de normalização de ganho do filtro (suportado apenas por passa-alta e "
+"passa-baixa)"
 
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
@@ -2723,7 +2757,8 @@ msgstr "Executa uma modulação de freqüência exponencial em vez de linear"
 
 #: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:140
 msgid "Number of octaves to be affected by exponential frequency modulation"
-msgstr "Número de oitavas que serão afetadas pela modulação exponencial de freqüência"
+msgstr ""
+"Número de oitavas que serão afetadas pela modulação exponencial de freqüência"
 
 #: bse/bsebiquadfilter.c:179
 #, no-c-format
@@ -2814,7 +2849,9 @@ msgstr "Prioridade"
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
-msgstr "O valor ótimo de uma thread, -20 indica uma thread de alta prioridade e +19 uma de baixa prioridade que é 'ótimo' para outras"
+msgstr ""
+"O valor ótimo de uma thread, -20 indica uma thread de alta prioridade e +19 "
+"uma de baixa prioridade que é 'ótimo' para outras"
 
 #: bse/bsecore.idl:383
 msgid "Processor"
@@ -2864,7 +2901,9 @@ msgstr "Latência [ms]"
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
-msgstr "Duração do processamento entre entrada e saída de uma única amostra, valores menores aumentam a carga da CPU"
+msgstr ""
+"Duração do processamento entre entrada e saída de uma única amostra, valores "
+"menores aumentam a carga da CPU"
 
 #: bse/bsecore.idl:436
 msgid "Synth Mixing Frequency"
@@ -2883,7 +2922,9 @@ msgstr "Freqüência de controle de síntese"
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
-msgstr "Freqüência na qual os valores de controle são testados, devem ser bem menores que a Freqüência de mixagem de síntese para reduzir a carga da CPU"
+msgstr ""
+"Freqüência na qual os valores de controle são testados, devem ser bem "
+"menores que a Freqüência de mixagem de síntese para reduzir a carga da CPU"
 
 #: bse/bseinstrumentinput.c:68
 msgid "/Input & Output/Instrument Voice Input"
@@ -3094,7 +3135,8 @@ msgstr "Alerte-me sobre seleções de dispositivos MIDI"
 #: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr "falha ao abrir o dispositivo MIDI %s (revertendo para dispositivo nulo): %s"
+msgstr ""
+"falha ao abrir o dispositivo MIDI %s (revertendo para dispositivo nulo): %s"
 
 #: bse/bseserver.c:548
 #, c-format
@@ -3117,7 +3159,9 @@ msgstr "Observar sinal"
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
-msgstr "StandardOsc é o oscilador de base do BSE que suporta diversos tipos de formas de onda e entradas de modulação."
+msgstr ""
+"StandardOsc é o oscilador de base do BSE que suporta diversos tipos de "
+"formas de onda e entradas de modulação."
 
 #: bse/bsestandardosc.c:109
 msgid "/Audio Sources/Standard Oscillator"
@@ -3179,7 +3223,9 @@ msgstr "Largura do pulso"
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
-msgstr "Proporção da duração da componente positiva da forma de onda do pulso (o Pulso tem que ser selecionado como forma de onda para que isso tenha efeito)"
+msgstr ""
+"Proporção da duração da componente positiva da forma de onda do pulso (o "
+"Pulso tem que ser selecionado como forma de onda para que isso tenha efeito)"
 
 #: bse/bsestandardosc.c:186
 msgid "Pulse Modulation [%]"
@@ -3187,9 +3233,11 @@ msgstr "Modulação do pulso [%]"
 
 #: bse/bsestandardosc.c:187
 msgid ""
-"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
-msgstr "Peso da entrada de modulação de largura de pulso (o Pulso tem que ser selecionado como forma de onda para que isso tenha efeito)"
+msgstr ""
+"Peso da entrada de modulação de largura de pulso (o Pulso tem que ser "
+"selecionado como forma de onda para que isso tenha efeito)"
 
 #: bse/bsestandardosc.c:192
 msgid "Oscillating Frequency Input"
@@ -3239,7 +3287,9 @@ msgstr "Atribuições"
 #: bse/bsesubiport.c:126 bse/bsesuboport.c:126
 msgid ""
 "The port name is a unique name to establish input<->output port relationships"
-msgstr "O nome da porta é um nome único para estabelecer relacionamentos com portas entrada<->saída"
+msgstr ""
+"O nome da porta é um nome único para estabelecer relacionamentos com portas "
+"entrada<->saída"
 
 #: bse/bsesubiport.c:134 bse/bsesubsynth.c:152
 #, c-format
@@ -3463,7 +3513,7 @@ msgid "Audio Output"
 msgstr "Saída de áudio"
 
 #: plugins/bseatandistort.c:90
-msgid "Audio Input SIgnal"
+msgid "Audio Input Signal"
 msgstr "Sinal de entrada de áudio"
 
 #: plugins/bseatandistort.c:92
@@ -3481,7 +3531,13 @@ msgid ""
 "is controlled by a balance adjustment and the sum of the control inputs. To "
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
-msgstr "BseBalance é um módulo de ajuste stereo com duas entradas áudio e duas de controle, cada uma delas pode ter seu nível ajustado separadamente. O balanço de saída resultante é controlado por um ajustamento de balanço e a soma das entradas de controle. Para evitar distorções devido a alterações rápidas de balanço, o sinal de controle é pré-processado por um filtro passa-baixa simples com freqüência de corte ajustável."
+msgstr ""
+"BseBalance é um módulo de ajuste stereo com duas entradas áudio e duas de "
+"controle, cada uma delas pode ter seu nível ajustado separadamente. O "
+"balanço de saída resultante é controlado por um ajustamento de balanço e a "
+"soma das entradas de controle. Para evitar distorções devido a alterações "
+"rápidas de balanço, o sinal de controle é pré-processado por um filtro passa-"
+"baixa simples com freqüência de corte ajustável."
 
 #: plugins/bsebalance.idl:40
 msgid "Left audio output"
@@ -3698,7 +3754,10 @@ msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
-msgstr "DavBassFilter é um filtro passa-baixa ressonante do tipo TB-303 baseado nas porções VCF303 do gsyn v0.2. O algoritmo de filtro é parcialmente baseado no descrito em \"Musical Applications of Microprocessors\" de Hal Chamberlin."
+msgstr ""
+"DavBassFilter é um filtro passa-baixa ressonante do tipo TB-303 baseado nas "
+"porções VCF303 do gsyn v0.2. O algoritmo de filtro é parcialmente baseado no "
+"descrito em \"Musical Applications of Microprocessors\" de Hal Chamberlin."
 
 #: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
