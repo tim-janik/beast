@@ -395,26 +395,24 @@ span.news-heading {
 }
 /* }}} */
 
-/* {{{ sample list */
+/* {{{ file list */
 table.browse {
   text-align: left;
   border: 0;
-  /* width: 90%; */
+  white-space: nowrap;
 }
 
-table.browse tr.gallery-info {
+table.browse thead td {
+  font-weight: bold;
+  color: #dddddd;
+  background-color: #5f5f89;
+}
+
+table.browse thead td.browser-name {
   font-weight: bold;
   color: #dddddd;
   background-color: #555577;
   text-align: center;
-}
-
-table.browse tr.odd {
-  background-color: #dadada;
-}
-
-table.browse tr.even {
-  background-color: #eeeeee;
 }
 
 table.browse td {
@@ -422,7 +420,7 @@ table.browse td {
   margin: 0.4em;
 }
 
-table.browse td.paginate {
+table.browse tr.paginate {
   font-size: 80%;
   background-color: #f6f6f6;
   color: inherit;
@@ -432,72 +430,51 @@ table.browse td.paginate {
   border-bottom: 1px #555577 solid;
 }
 
-table.browse td.mode-switcher {
+table.browse tr.switcher {
   font-size: 80%;
   background-color: #f9f9f9;
   color: #666666;
   text-align: right;
 }
 
+table.browse tr.legend {
+  font-size: 80%;
+  background-color: #f3f3f3;
+  color: #555555;
+}
+
 /* {{{ directory stack */
 
 /* {{{ standard mode */
-
-/* {{{ root directory */
-
-table.browse tr.root-directory {
-  font-weight: bold;
-  color: #444455;
-  background-color: #bcddbc;
-}
-
-table.browse td.root-dir-info {
-  font-weight: bold;
-}
-
-table.browse span.root-dir-size {
-  font-size: 90%;
-  font-family: monospace;
-  font-weight: bold;
-}
-
-table.browse span.root-dir-name {
-  font-family: monospace;
-}
-
-table.browse a.root-dir-link {
-  font-family: monospace;
-  text-decoration: none;
-  border-bottom: 1px dashed black;
-}
-
-table.browse a.root-dir-link:hover {
-  border-bottom: 1px solid #0000ff;
-  background-color: inherit;
-}
-
-/* }}} */
 
 /* {{{ dot directory */
 
 table.browse tr.dot-directory {
   font-weight: bold;
-  color: #444455;
-  background-color: #9cd49c;
+  color: #dddddd;
+  background-color: #66667f;
 }
 
-table.browse td.dot-dir-info {
+table.browse td.dot-directory td.icon {
+}
+
+table.browse td.dot-directory td.name {
+  font-family: monospace;
+}
+
+table.browse tr.dot-directory td.info {
   font-weight: bold;
+  white-space: normal;
 }
 
-table.browse span.dot-dir-size {
-  font-size: 90%;
+table.browse tr.dot-directory td.size {
   font-family: monospace;
   font-weight: bold;
 }
 
-table.browse span.dot-dir-name {
-  font-family: monospace;
+table.browse tr.dot-directory td.date {
+  font-style: italic;
+  font-weight: normal;
 }
 
 /* }}} */
@@ -506,33 +483,30 @@ table.browse span.dot-dir-name {
 
 table.browse tr.dotdot-directory {
   font-weight: bold;
-  color: #444455;
-  background-color: #7cd07c;
+  color: #555555;
+  background-color: #dadaf4;
 }
 
-table.browse td.dotdot-dir-info {
+table.browse tr.dotdot-directory td.icon {
+}
+
+table.browse tr.dotdot-directory td.name {
+  font-family: monospace;
+}
+
+table.browse tr.dotdot-directory td.info {
+  font-weight: bold;
+  white-space: normal;
+}
+
+table.browse tr.dotdot-directory td.size {
+  font-family: monospace;
   font-weight: bold;
 }
 
-table.browse span.dotdot-dir-size {
-  font-size: 90%;
-  font-family: monospace;
-  font-weight: bold;
-}
-
-table.browse span.dotdot-dir-name {
-  font-family: monospace;
-}
-
-table.browse a.dotdot-dir-link {
-  font-family: monospace;
-  text-decoration: none;
-  border-bottom: 1px dashed black;
-}
-
-table.browse a.dotdot-dir-link:hover {
-  border-bottom: 1px solid #0000ff;
-  background-color: inherit;
+table.browse tr.dotdot-directory td.date {
+  font-style: italic;
+  font-weight: normal;
 }
 
 /* }}} */
@@ -549,18 +523,26 @@ table.browse tr.current-directory {
   background-color: #66667f;
 }
 
-table.browse td.current-dir-info {
-  font-weight: bold;
+table.browse tr.current-directory td.icon {
 }
 
-table.browse span.current-dir-size {
-  font-size: 90%;
+table.browse tr.current-directory td.name {
+  font-family: monospace;
+}
+
+table.browse tr.current-directory td.info {
+  font-weight: bold;
+  white-space: normal;
+}
+
+table.browse tr.current-directory td.size {
   font-family: monospace;
   font-weight: bold;
 }
 
-table.browse span.current-dir-name {
-  font-family: monospace;
+table.browse tr.current-directory td.date {
+  font-style: italic;
+  font-weight: normal;
 }
 
 /* }}} */
@@ -568,37 +550,43 @@ table.browse span.current-dir-name {
 /* {{{ upper directories */
 
 table.browse tr.upper-directory-odd {
-  font-weight: bold;
-  color: #555555;
   background-color: #dadaf4;
 }
 
 table.browse tr.upper-directory-even {
-  font-weight: bold;
-  color: #555555;
   background-color: #eeeeff;
 }
 
-table.browse td.upper-dir-info {
+table.browse tr.upper-directory-odd,
+table.browse tr.upper-directory-even {
   font-weight: bold;
+  color: #555555;
+}
+
+table.browse tr.upper-directory-odd td.icon,
+table.browse tr.upper-directory-even td.icon {
+}
+
+table.browse tr.upper-directory-odd td.name,
+table.browse tr.upper-directory-even td.name {
+  font-family: monospace;
+}
+
+table.browse tr.upper-directory-odd td.info,
+table.browse tr.upper-directory-even td.info {
   color: #555577;
+  white-space: normal;
 }
 
-table.browse span.upper-dir-size {
-  font-size: 90%;
+table.browse tr.upper-directory-odd td.size,
+table.browse tr.upper-directory-even td.size {
   font-family: monospace;
-  font-weight: bold;
 }
 
-table.browse a.upper-dir-link {
-  font-family: monospace;
-  text-decoration: none;
-  border-bottom: 1px dashed black;
-}
-
-table.browse a.upper-dir-link:hover {
-  border-bottom: 1px solid #0000ff;
-  background-color: inherit;
+table.browse tr.upper-directory-odd td.date,
+table.browse tr.upper-directory-even td.date {
+  font-style: italic;
+  font-weight: normal;
 }
 
 /* }}} */
@@ -609,50 +597,76 @@ table.browse a.upper-dir-link:hover {
 
 /* {{{ dirs */
 
-table.browse td.dir-info {
-  font-weight: bold;
+table.browse tr.dir-odd {
+  background-color: #dadada;
+}
+
+table.browse tr.dir-even {
+  background-color: #eeeeee;
+}
+
+table.browse tr.dir-even td.icon,
+table.browse tr.dir-odd td.icon {
+}
+
+table.browse tr.dir-even td.name,
+table.browse tr.dir-odd td.name {
+  font-family: monospace;
+}
+
+table.browse tr.dir-even td.info,
+table.browse tr.dir-odd td.info {
   color: #555577;
+  white-space: normal;
 }
 
-table.browse span.dir-size {
-  font-size: 90%;
+table.browse tr.dir-even td.size,
+table.browse tr.dir-odd td.size {
   font-family: monospace;
 }
 
-table.browse a.dir-link {
-  font-family: monospace;
-  text-decoration: none;
-  border-bottom: 1px dashed black;
-}
-
-table.browse a.dir-link:hover {
-  border-bottom: 1px solid #0000ff;
-  background-color: inherit;
+table.browse tr.dir-even td.date,
+table.browse tr.dir-odd td.date {
+  font-style: italic;
+  font-weight: normal;
 }
 
 /* }}} */
 
 /* {{{ files */
 
-table.browse td.file-info {
-  font-weight: bold;
+table.browse tr.file-odd {
+  background-color: #dadada;
+}
+
+table.browse tr.file-even {
+  background-color: #eeeeee;
+}
+
+table.browse tr.file-even td.icon,
+table.browse tr.file-odd td.icon {
+}
+
+table.browse tr.file-even td.name,
+table.browse tr.file-odd td.name {
+  font-family: monospace;
+}
+
+table.browse tr.file-even td.info,
+table.browse tr.file-odd td.info {
   color: #555577;
+  white-space: normal;
 }
 
-table.browse span.file-size {
-  font-size: 90%;
+table.browse tr.file-even td.size,
+table.browse tr.file-odd td.size {
   font-family: monospace;
 }
 
-table.browse a.file-link {
-  font-family: monospace;
-  text-decoration: none;
-  border-bottom: 1px dashed black;
-}
-
-table.browse a.file-link:hover {
-  border-bottom: 1px solid #0000ff;
-  background-color: inherit;
+table.browse tr.file-even td.date,
+table.browse tr.file-odd td.date {
+  font-style: italic;
+  font-weight: normal;
 }
 
 /* }}} */
