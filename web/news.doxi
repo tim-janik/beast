@@ -26,11 +26,20 @@
 @unnumbered What's New?
 
 
+@newsTitle{Thursday 01 Jul 2004, New Release Candidate}
+
+A new release candidate
+@uref{http://beast.gtk.org/beast-ftp/v0.6/testing/beast-0.6.2-rc2.tar.gz,, beast-0.6.2-rc2.tar.gz}
+is up in the download area. The mailing list is currently non-functional so please send
+problems and success stories about the candidate to
+@uref{mailto://timj@@beast.gtk.org,,email}.
+
+
 @newsTitle{Sunday 07 Mar 2004, The low latency BEAST Release}
 
 BEAST/BSE version 0.6.1 is available from the
-@uref{beast-doc://download,,download section}.
-@c here is the @uref{http://www.gnomedesktop.org/article.php?sid=1648,,FootNotes announcement}.
+@uref{beast-doc://download,,download section},
+here is the @uref{http://www.gnomedesktop.org/article.php?sid=1708,,FootNotes announcement}.
 
 Tarball:
 @uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.1.tar.gz,, beast-0.6.1.tar.gz}
@@ -62,51 +71,6 @@ The
 @uref{http://beast.gtk.org/wiki:FeatureRequests,, FeatureRequests} pages
 and the 
 @uref{beast-doc://links-synthesis,, synthesis links section} was updated.
-
-
-@newsTitle{Wednesday 11 Feb 2004, BEAST Release ``Silver Vein''}
-
-BEAST/BSE version 0.6.0 is available from the
-@uref{beast-doc://download,,download section},
-here is the @uref{http://www.gnomedesktop.org/article.php?sid=1648,,FootNotes announcement}.
-
-Tarball:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.0.tar.gz,, beast-0.6.0.tar.gz}
-and patch:
-@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.5.6-0.6.0.bz2,, patch-beast-0.5.6-0.6.0.bz2}.
-
-Besides loads of bug fixes in this release, newly added features involve
-per-track scopes, skins for the event and piano roll widgets, major speedups,
-an AIFF file loader and four new language translations.
-As always, the @uref{beast-doc://release-news,,NEWS section} has all the glory details.
-
-
-@newsTitle{Thursday 22 Jan 2004, Wiki openings}
-
-The @beast website has a
-@uref{http://beast.gtk.org/wiki.php,, Wiki Area} now, all users and
-visitors are invited to @uref{http://beast.gtk.org/wiki:Discussion,, discuss}
-various topics or to sign the
-@uref{http://beast.gtk.org/wiki:GuestBook,, GuestBook}.
-
-
-@newsTitle{Saturday 10 Jan 2004, BSE Sound Archive}
-
-We just opened up the
-@uref{beast-doc://browse-bse-files,,BSE Sound Archive}.
-Here, users can
-@uref{beast-doc://upload-bse-files,, contribute and exchange}
-BSE songs, samples or instrument and effect files.
-For demonstration purposes, we will also take
-@uref{http://www.xiph.org/ogg/vorbis/,, Ogg/Vorbis}
-files alongside a BSE Song to ease previews.
-For instance, here is the
-@uref{http://beast.gtk.org/beast-ftp/bse-files/partymonster.ogg,, Ogg/Vorbis version}
-of the BEAST demo song
-@uref{http://beast.gtk.org/beast-ftp/bse-files/partymonster.bse,, Party Monster}.
-
-Have fun and
-@uref{beast-doc://upload-bse-files,, start contributing}! ;-)
 
 
 @bye
