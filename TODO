@@ -20,6 +20,7 @@ FIXMES:	(release-critical)
   or disable "/dev/midi": no such device dialog
 - update gtk/glib dependency to 2.4 in README and configure.in
 TODO:
+- add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - davsyndrum needs gate-out (or done)
 - beast --debug=all --no-debug=comport doesn't disable comport messages
 - revisit bse_object_lock()
