@@ -10,8 +10,8 @@
 
 @unnumbered What are @beast{} and @bse{}?
 
-Beast is a powerful music composition and modular synthesis application released as free software
-under the
+Beast is a powerful music composition and modular synthesis application
+released as free software under the
 @uref{http://www.gnu.org/copyleft/gpl.html,, GNU GPL}
 and
 @uref{http://www.gnu.org/copyleft/lesser.html,, GNU LGPL}, that runs under unix.
@@ -23,8 +23,8 @@ modules.
 It has excellent technical abilities like multitrack editing, unlimited
 undo/redo support, real-time synthesis support, 32bit audio rendering,
 full duplex support, multiprocessor support, precise timing down to sample
-granularity, on demand loading of partial wave files, on the fly decoding
-and full scriptability in scheme.
+granularity, on demand and partial loading of wave files, on the fly decoding,
+stereo mixing, MIDI automation and full scriptability in scheme.
 The plugins, synthesis core and the user interface are actively being developed
 and translated into a variety of languages, regularly assimilating user feedback
 such as from our

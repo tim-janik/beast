@@ -27,7 +27,6 @@ Overview of Changes in BEAST/BSE 0.6.3:
 * Consistent support for dialog closing with Escape 
 * Dialog size and resizing adaptions for 800x600 screens
 * Lots of miscellaneous bug fixes and refactoring
-- Punjabi
 * Updated Brazilian Portuguese translation [Raphael Higino]
 * Updated Czech translation [Miloslav Trmac]
 * Updated Dutch translation [Tino Meinen]
@@ -37,6 +36,7 @@ Overview of Changes in BEAST/BSE 0.6.3:
 * Updated Spanish translation [Francisco Javier F. Serrador, Jorge Gonzalez]
 * Updated German translation [Dirk Janik, Moritz Mekelburger]
 * Updated Russian translation [Artem Popov]
+* Added Punjabi translation [Amanpreet Singh Alam]
 * Added Japanese translation [Satoru SATOH]
 * Added Esperanto translation [Artem Popov]
 * Added Italian translation [Petrecca Michele]
