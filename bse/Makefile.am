@@ -188,7 +188,7 @@ $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
 libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl
 libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
-MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources) $(idl_built_sources)
+MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
 EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
@@ -268,7 +268,7 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 # setup generation of C++ objects from idl files
 BSEPGEN = ../sfi/bse-plugin-generator
-%.gen-idl.h: %.idl $(BSEPGEN)
+%.gen-idl.h: $(srcdir)/%.idl $(BSEPGEN)
 	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 
@@ -290,8 +290,8 @@ noinst_DATA = bse.idl
 # convenience targets for the builtsources
 #
 .PHONY: builtsources clean-builtsources
-clean-builtsources:
-	rm -f $(bse_built_c_sources) $(bse_built_h_sources) $(idl_built_sources) stamp-*
+clean-builtsources: clean
+	rm -f $(bse_built_c_sources) $(bse_built_h_sources) stamp-*
 builtsources: clean-builtsources $(bse_built_h_sources) $(bse_built_c_sources) $(idl_built_sources)
 
 
