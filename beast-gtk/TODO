@@ -1,3 +1,17 @@
+URGENT:
+- router neds category menu
+- sampleview needs to be completed (view chunks)
+- piano roll: disable selection tools until they are implemented
+- put a WARNING somewhere about file format changes in future versions
+- subsynth cycle search algorithm
+- bsw_item_check_value(item,name,value) to filter non-valid objects property settings
+- terminology: s/pulse/square/, s/growing/rising/, s/shrinking/falling/ (saw)
+- remove GenOsc category after standard osc works ok
+
+GENERAL:
+- pulse: width% for positive pulse width in relation to whole period + boundary safety wrappers
+- BLIT, band-limited impulse train
+
 * load wave dialog
 * pattern copy
 * clippboard

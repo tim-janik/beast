@@ -399,16 +399,6 @@ wmod_access (GslModule *module,
 }
 
 static void
-wmod_free (gpointer        data,
-	   const GslClass *klass)
-{
-  GslWaveOscData *wmod = data;
-
-  gsl_wave_osc_shutdown (wmod);
-  g_free (wmod);
-}
-
-static void
 bse_wave_osc_update_modules (BseWaveOsc *wosc)
 {
   if (BSE_SOURCE_PREPARED (wosc))
@@ -420,12 +410,23 @@ bse_wave_osc_update_modules (BseWaveOsc *wosc)
 }
 
 static void
+wmod_free (gpointer        data,
+	   const GslClass *klass)
+{
+  GslWaveOscData *wmod = data;
+
+  gsl_wave_osc_shutdown (wmod);
+  g_free (wmod);
+}
+
+static void
 wmod_process (GslModule *module,
 	      guint      n_values)
 {
   GslWaveOscData *wmod = module->user_data;
   gfloat gate;
 
+  // FIXME: pass NULL for non-connected inputs
   gsl_wave_osc_process (wmod,
 			n_values,
 			GSL_MODULE_IBUFFER (module, BSE_WAVE_OSC_ICHANNEL_FREQ),

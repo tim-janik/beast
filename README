@@ -7,8 +7,8 @@ BEAST is still in development stage, the BSW (BSE wrapper) API has
 not really stabelized yet.
 The rough goal of this project is to get an audio system that supports
 multiple song and sample formats (besides the project specific .bse
-format) as well as synthesis networks and allowes full fledged editing
-and manipultation of them. Sample manipulation includes generation of new
+format) as well as synthesis networks and allows full fledged editing
+and manipulation of them. Sample manipulation includes generation of new
 sounds from module networks, based on various kinds of synthesis.
 More information on the fundamental principles can be found in the
 ./docs subdirectory.
