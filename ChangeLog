@@ -1,3 +1,9 @@
+Tue Oct  5 21:58:32 2004  Tim Janik  <timj@gtk.org>
+
+	* site-download.texi:
+	* configure.in: 
+	* README: dependency upgrade for pango and libgnomecanvas.
+
 Tue Oct  5 19:38:39 2004  Tim Janik  <timj@gtk.org>
 
 	* site-download.texi:

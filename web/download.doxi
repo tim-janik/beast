@@ -26,7 +26,7 @@ decoder library) around when compiling BEAST. Most distributions
 already ship these packages, their sources can be found at:
 
 @itemize
-@item @uref{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/,, GnomeCanvas} (GNOME-2.0)
+@item @uref{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/,, GnomeCanvas} (use >= 2.4)
 @item @uref{ftp://ftp.gtk.org/pub/gtk/v2.4/,, Gtk+-2.4}
 @item @uref{http://www.gnu.org/software/guile/guile.html,, Guile-1.6}
 @item @uref{http://www.xiph.org/ogg/vorbis/download/,, Ogg/Vorbis} (at least version 1.0)

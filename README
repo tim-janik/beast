@@ -16,7 +16,7 @@ decoder library) around when compiling BEAST.
 Most distributions already ship with these packages,
 the sources can be found at:
 
-GnomeCanvas (GNOME-2.0):
+GnomeCanvas (use >= 2.4):
   ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
 Gtk+-2.4:
   ftp://ftp.gtk.org/pub/gtk/v2.4/
