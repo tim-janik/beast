@@ -1,4 +1,5 @@
 FIXMES:	(release-critical)
+- invoke bsemidireceiver.cc::extra_free through engine GC. (MIDI LOCK is currently held!)
 - how are nodes scheduled that have different depth (levels) due to different consumers?
 - implement solo for master
 - ensure there always is a master
@@ -14,6 +15,7 @@ FIXMES:	(release-critical)
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
+- rename cast() to convert()
 - close piano roll on Escape
 - when starting to record events in automation, make sure an event at stamp=0 exists for default setup
 - add controller dialog popup for tracks to alter sliders corresponding to midi controls

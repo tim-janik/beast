@@ -3,7 +3,7 @@
 @settitle BSE Plugin Development
 @footnotestyle end
 @c %**end of header
-@c revision-date: $Id: plugin-devel.texi,v 1.4 2004/09/05 12:53:37 timj Exp $
+@c revision-date: $Id: plugin-devel.texi,v 1.5 2004/09/19 23:20:17 timj Exp $
 
 @include texiutils.texi
 
@@ -180,7 +180,8 @@ and @option{:skip-undo:}.
 	This is a boolean property that's practically always @const{FALSE}. It may be
 	set to @const{TRUE} in a trigger attempt though, so certain actions may be
 	started in response. GUIs would usually display this option via a clickable
-	button.
+	button. All plugin's set_property() methods automatically reset trigger
+        property values to %FALSE after invoking the property_changed() method.
 @end itemize
 
 

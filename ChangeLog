@@ -1,3 +1,7 @@
+Mon Sep 20 01:09:35 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/plugin-devel.texi: updated Trigger() property docu.
+
 Wed Sep 15 17:02:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Added --min-max-peak feature, which figures
