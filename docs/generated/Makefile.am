@@ -298,7 +298,12 @@ site-update-nav: site
 	   && rm ${XPREFIX}-beast-site-nav.tar.gz \
 	   && echo Rebuilding... \
 	   && (cd /web/beast/dyn && make)"
-site-update: site-update-con # site-update-img site-update-nav
+BEAST_PREVIEW=~/private_html/beast-preview/.
+site-preview:	site	$(BEAST_PREVIEW)
+	tar jxmpf beast-site-con.tar.bz2 -C $(BEAST_PREVIEW)
+	tar zxmpf beast-site-img.tar.gz  -C $(BEAST_PREVIEW)
+	tar zxpf  beast-site-nav.tar.gz  -C $(BEAST_PREVIEW)
+site-update: site-update-con
 site-upgrade: site-update-con site-update-img site-update-nav
 CLEANFILES += beast-site-*.tar.gz beast-site-*.tar.bz2 index.html
 

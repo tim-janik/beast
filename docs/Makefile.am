@@ -10,5 +10,5 @@ extra_docs = $(strip					\
 
 EXTRA_DIST = ${texi_docs} ${extra_docs}
 
-site site-upgrade site-update site-update-con site-update-img site-update-nav:
+site site-upgrade site-update site-preview site-update-con site-update-img site-update-nav:
 	$(MAKE) -C generated/ $(AM_MAKEFLAGS) $@
