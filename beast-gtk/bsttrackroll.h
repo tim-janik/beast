@@ -51,7 +51,7 @@ typedef SfiProxy (*BstTrackRollTrackFunc)   (gpointer proxy_data,
 
 /* --- structures & typedefs --- */
 typedef struct {
-  BstTrackRoll *proll;
+  BstTrackRoll *troll;
   BstDragStatus type : 16;		/* emission type: start/motion/done/abort */
   guint		canvas_drag : 1;
   guint		vpanel_drag : 1;

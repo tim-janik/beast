@@ -1,8 +1,6 @@
 FIXMES:
 - change default zoom factor in sample view
-- switch h/v zoom spinner in piano roll
 - add Solo propety to tracks
-- play notes when inserted into piano roll
 - add frequency splitter/multiplier (plus cent-wise detune?)
 - add frequency output, offering bpm, 1/1 1/4 1/3 notes frequencies
 - fix BseAmplifier: defaults: gain=0, exponential-control=false
@@ -19,7 +17,6 @@ FIXMES:
 - fix initial_granule in gslvorbis-cutter.c wrg page flushing
 - rename gsl_strerror()
 - fix 64bit v_int usage of GScanner in BSE?
-- popdown piano roll when parts are removed
 - get rid of bse_procedure_execvl
 - get rid of super->mod_time
 - add BEAST_SAMPLE_DIRS, describe env variables in man page
@@ -46,7 +43,6 @@ FIXMES:
 - make bst_catalog_get_action() always return an action, so callers don't need to check
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
 - create modules via category identifier, not type name
-- fix piano roll [VH]PANEL_BG_GC() usage and GDK_Escape (ala trackroll)
 - add IDs to part links in tracks
 - allow .bse files to start out with #bsesh ?
 - update /Help index to cover new docs
@@ -70,7 +66,6 @@ FIXMES:
 - RackEditor covers are broken for rack-items close to right table boundary
 - delay class destruction and plugin unloading through async handlers (slight timeout)
 - fix the word "tact" vs. measure
-- clenup piano roll code
 - need tact number entry widget
 - object clippboard
 - fade in/out of samples (sample editor)
@@ -110,7 +105,6 @@ Random:
   - ::release on containers removes children
 - implement remote use-count collection
 - complete and intergrate piano-script
-- portamento-to-note in piano roll? probably need special effects
 * move mix_freq and recording_freq into datahandle
 * fix reversed data handle wrg n_channels
 : propagate mtime changes through cascaded data handles (e.g. for dcache)
@@ -203,6 +197,12 @@ TrackView:
 - context menu with delete, move, insert (double click inserts?)
 
 PianoRoll:
+- swap h/v zoom spinner in piano roll
+- play notes when inserted into piano roll
+- popdown piano roll when parts are removed
+- fix piano roll [VH]PANEL_BG_GC() usage and GDK_Escape (ala trackroll)
+- clenup piano tick bar
+- portamento-to-note in piano roll? probably need special effects
 - add to piano roll dialog:
   part-link properties:
   - loop-count

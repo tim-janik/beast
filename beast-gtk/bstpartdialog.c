@@ -185,6 +185,7 @@ bst_part_dialog_init (BstPartDialog *self)
 					"visible", TRUE,
 					"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 					"vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+                                        "shadow_type", GTK_SHADOW_IN,
 					"parent", main_vbox,
 					"border_width", 5,
 					NULL);

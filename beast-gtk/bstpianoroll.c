@@ -24,6 +24,9 @@
 /* --- defines --- */
 /* helpers */
 #define	STYLE(self)		(GTK_WIDGET (self)->style)
+#define STATE(self)             (GTK_WIDGET (self)->state)
+#define XTHICKNESS(self)        (STYLE (self)->xthickness)
+#define YTHICKNESS(self)        (STYLE (self)->ythickness)
 #define	ALLOCATION(self)	(&GTK_WIDGET (self)->allocation)
 #define	N_OCTAVES(self)		(MAX_OCTAVE (self) - MIN_OCTAVE (self) + 1)
 #define	MAX_OCTAVE(self)	(SFI_NOTE_OCTAVE ((self)->max_note))
@@ -34,17 +37,19 @@
 /* layout (requisition) */
 #define	NOTE_HEIGHT(self)	((gint) ((self)->vzoom * 1.2))		/* factor must be between 1 .. 2 */
 #define	OCTAVE_HEIGHT(self)	(14 * (self)->vzoom + 7 * NOTE_HEIGHT (self))	/* coord_to_note() */
-#define	VPANEL_WIDTH(self)	(35)		/* (self)->vpanel_width) */
-#define	VPANEL_RATIO(self)	(2.9 / 5.)	/* black/white key ratio */
+#define KEYBOARD_X(self)        (XTHICKNESS (self))
+#define KEYBOARD_WIDTH(self)    (35)
+#define	KEYBOARD_RATIO(self)	(2.9 / 5.)	/* black/white key ratio */
+#define	VPANEL_WIDTH(self)	(KEYBOARD_X (self) + KEYBOARD_WIDTH (self) + XTHICKNESS (self))
 #define	HPANEL_HEIGHT(self)	((self)->hpanel_height)
-#define	VPANEL_X(self)		(STYLE (self)->xthickness)
-#define	HPANEL_Y(self)		(STYLE (self)->ythickness)
+#define	VPANEL_X(self)		(0)
+#define	HPANEL_Y(self)		(0)
 #define	CANVAS_X(self)		(VPANEL_X (self) + VPANEL_WIDTH (self))
 #define	CANVAS_Y(self)		(HPANEL_Y (self) + HPANEL_HEIGHT (self))
 
 /* layout (allocation) */
-#define	CANVAS_WIDTH(self)	(ALLOCATION (self)->width - CANVAS_X (self) - STYLE (self)->xthickness)
-#define	CANVAS_HEIGHT(self)	(ALLOCATION (self)->height - CANVAS_Y (self) - STYLE (self)->ythickness)
+#define	CANVAS_WIDTH(self)	(ALLOCATION (self)->width - CANVAS_X (self))
+#define	CANVAS_HEIGHT(self)	(ALLOCATION (self)->height - CANVAS_Y (self))
 
 /* aliases */
 #define	VPANEL_HEIGHT(self)	(CANVAS_HEIGHT (self))
@@ -53,9 +58,9 @@
 #define	HPANEL_X(self)		(CANVAS_X (self))
 
 /* appearance */
-#define	VPANEL_BG_GC(self)	(&STYLE (self)->bg[GTK_STATE_INSENSITIVE])
-#define	HPANEL_BG_GC(self)	(&STYLE (self)->bg[GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_SELECTED : GTK_STATE_INSENSITIVE])
-#define	CANVAS_BG_GC(self)	(&STYLE (self)->base[GTK_WIDGET_STATE (self)])
+#define VPANEL_BG_COLOR(self)   (&STYLE (self)->bg[GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE])
+#define HPANEL_BG_COLOR(self)   (&STYLE (self)->bg[GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_NORMAL : GTK_STATE_INSENSITIVE])
+#define CANVAS_BG_COLOR(self)   (&STYLE (self)->base[GTK_WIDGET_STATE (self)])
 #define	KEY_DEFAULT_VPIXELS	(4)
 #define	QNOTE_HPIXELS		(30)	/* guideline */
 
@@ -89,7 +94,6 @@ static gboolean	bst_piano_roll_focus_out		(GtkWidget		*widget,
 							 GdkEventFocus		*event);
 static gboolean	bst_piano_roll_expose			(GtkWidget		*widget,
 							 GdkEventExpose		*event);
-static void	bst_piano_roll_draw_focus		(BstPianoRoll		*self);
 static gboolean	bst_piano_roll_key_press		(GtkWidget		*widget,
 							 GdkEventKey		*event);
 static gboolean	bst_piano_roll_key_release		(GtkWidget		*widget,
@@ -416,15 +420,9 @@ piano_roll_reset_backgrounds (BstPianoRoll *self)
 	gdk_gc_set_rgb_fg_color (self->color_gc[i], colors + i);
 
       gtk_style_set_background (widget->style, widget->window, GTK_WIDGET_STATE (self));
-      gdk_window_set_background (self->vpanel,
-				 (GTK_WIDGET_IS_SENSITIVE (self)
-				  ? &STYLE (self)->bg[GTK_STATE_NORMAL]
-				  : &STYLE (self)->bg[GTK_STATE_INSENSITIVE]));
-      gdk_window_set_background (self->hpanel,
-				 (GTK_WIDGET_IS_SENSITIVE (self)
-				  ? &STYLE (self)->bg[GTK_STATE_SELECTED]
-				  : &STYLE (self)->bg[GTK_STATE_INSENSITIVE]));
-      gdk_window_set_background (self->canvas, &STYLE (self)->base[GTK_WIDGET_STATE (self)]);
+      gdk_window_set_background (self->vpanel, VPANEL_BG_COLOR (self));
+      gdk_window_set_background (self->hpanel, HPANEL_BG_COLOR (self));
+      gdk_window_set_background (self->canvas, CANVAS_BG_COLOR (self));
       gdk_window_clear (widget->window);
       gdk_window_clear (self->vpanel);
       gdk_window_clear (self->hpanel);
@@ -458,8 +456,8 @@ bst_piano_roll_size_request (GtkWidget	    *widget,
 {
   BstPianoRoll *self = BST_PIANO_ROLL (widget);
 
-  requisition->width = CANVAS_X (self) + 500 + STYLE (self)->xthickness;
-  requisition->height = CANVAS_Y (self) + N_OCTAVES (self) * OCTAVE_HEIGHT (self) + STYLE (self)->ythickness;
+  requisition->width = CANVAS_X (self) + 500 + XTHICKNESS (self);
+  requisition->height = CANVAS_Y (self) + N_OCTAVES (self) * OCTAVE_HEIGHT (self) + YTHICKNESS (self);
 }
 
 static void
@@ -470,9 +468,9 @@ bst_piano_roll_size_allocate (GtkWidget	    *widget,
 
   widget->allocation.x = allocation->x;
   widget->allocation.y = allocation->y;
-  widget->allocation.width = MAX (CANVAS_X (self) + 1 + STYLE (self)->xthickness, allocation->width);
-  widget->allocation.height = MAX (CANVAS_Y (self) + 1 + STYLE (self)->ythickness, allocation->height);
-  widget->allocation.height = MIN (CANVAS_Y (self) + N_OCTAVES (self) * OCTAVE_HEIGHT (self) + STYLE (self)->ythickness,
+  widget->allocation.width = MAX (CANVAS_X (self) + 1 + XTHICKNESS (self), allocation->width);
+  widget->allocation.height = MAX (CANVAS_Y (self) + 1 + YTHICKNESS (self), allocation->height);
+  widget->allocation.height = MIN (CANVAS_Y (self) + N_OCTAVES (self) * OCTAVE_HEIGHT (self) + YTHICKNESS (self),
 				   widget->allocation.height);
 
   if (GTK_WIDGET_REALIZED (widget))
@@ -899,16 +897,26 @@ bst_piano_roll_draw_vpanel (BstPianoRoll *self,
 			    gint	  y,
 			    gint	  ybound)
 {
-  GdkWindow *window = self->vpanel;
+  GdkWindow *drawable = self->vpanel;
   GdkGC *black_gc = STYLE (self)->fg_gc[GTK_STATE_NORMAL];
   GdkGC *dark_gc = STYLE (self)->dark_gc[GTK_STATE_NORMAL];
   GdkGC *light_gc = STYLE (self)->light_gc[GTK_STATE_NORMAL];
-  gint i, white_x = VPANEL_WIDTH (self) - 1, black_x = white_x * VPANEL_RATIO (self);
+  gint i, start_x = KEYBOARD_X (self), white_x = KEYBOARD_WIDTH (self) - 1, black_x = white_x * KEYBOARD_RATIO (self);
 
   y = MAX (y, 0);
 
   /* draw vertical frame lines */
-  gdk_draw_line (window, dark_gc, white_x, y, white_x, ybound - 1);
+  gdk_draw_line (drawable, dark_gc, start_x + white_x, y, start_x + white_x, ybound - 1);
+
+  /* outer vpanel shadow */
+  gtk_paint_shadow (STYLE (self), drawable,
+                    STATE (self), GTK_SHADOW_OUT,
+                    NULL, NULL, NULL,
+                    0, -YTHICKNESS (self),
+                    VPANEL_WIDTH (self), VPANEL_HEIGHT (self) + 2 * YTHICKNESS (self));
+
+  /* kludge, draw keys into right-hand shadow to make it look less dark */
+  white_x += 1;
 
   /* draw horizontal lines */
   for (i = y; i < ybound; i++)
@@ -920,14 +928,14 @@ bst_piano_roll_draw_vpanel (BstPianoRoll *self,
       switch (info.bstate)
 	{
 	case DRAW_START:
-	  gdk_draw_line (window, dark_gc, 0, i, black_x, i);
+	  gdk_draw_line (drawable, dark_gc, start_x + 0, i, start_x + black_x, i);
 	  break;
 	case DRAW_MIDDLE:
-	  gdk_draw_line (window, black_gc, 0, i, black_x - 1, i);
-	  gdk_draw_line (window, dark_gc, black_x, i, black_x, i);
+	  gdk_draw_line (drawable, black_gc, start_x + 0, i, start_x + black_x - 1, i);
+	  gdk_draw_line (drawable, dark_gc, start_x + black_x, i, start_x + black_x, i);
 	  break;
 	case DRAW_END:
-	  gdk_draw_line (window, light_gc, 0, i, black_x, i);
+	  gdk_draw_line (drawable, light_gc, start_x + 0, i, start_x + black_x, i);
 	  break;
 	default:
 	  x = 0;
@@ -935,7 +943,7 @@ bst_piano_roll_draw_vpanel (BstPianoRoll *self,
       switch (info.wstate)
 	{
 	case DRAW_START:
-	  gdk_draw_line (window, dark_gc, x, i, white_x, i);
+	  gdk_draw_line (drawable, dark_gc, start_x + x, i, start_x + white_x, i);
 	  if (info.semitone == 0)	/* C */
 	    {
 	      gint pbheight, ypos, ythickness = 1, overlap = 1;
@@ -946,8 +954,8 @@ bst_piano_roll_draw_vpanel (BstPianoRoll *self,
 	      pbwidth /= 2;
 	      ypos = i - pbheight + ythickness;
 	      pixbuf = bst_ascii_pixbuf_new ('C', pbwidth, pbheight);
-	      gdk_pixbuf_render_to_drawable (pixbuf, window, light_gc, 0, 0,
-					     black_x, ypos, -1, -1,
+	      gdk_pixbuf_render_to_drawable (pixbuf, drawable, light_gc, 0, 0,
+					     start_x + black_x, ypos, -1, -1,
 					     GDK_RGB_DITHER_MAX, 0, 0);
 	      g_object_unref (pixbuf);
 	      if (info.octave < 0)
@@ -956,23 +964,23 @@ bst_piano_roll_draw_vpanel (BstPianoRoll *self,
 
 		  /* render a minus '-' for negative octaves into the 'C' */
 		  pixbuf = bst_ascii_pixbuf_new ('-', pbwidth - indent, pbheight - 1);
-		  gdk_pixbuf_render_to_drawable (pixbuf, window, light_gc, 0, 0,
-						 black_x + indent, ypos, -1, -1,
+		  gdk_pixbuf_render_to_drawable (pixbuf, drawable, light_gc, 0, 0,
+						 start_x + black_x + indent, ypos, -1, -1,
 						 GDK_RGB_DITHER_MAX, 0, 0);
 		  g_object_unref (pixbuf);
 		}
 	      pixbuf = bst_ascii_pixbuf_new (ABS (info.octave) + '0', pbwidth, pbheight);
-	      gdk_pixbuf_render_to_drawable (pixbuf, window, light_gc, 0, 0,
-					     black_x + pbwidth - overlap, ypos, -1, -1,
+	      gdk_pixbuf_render_to_drawable (pixbuf, drawable, light_gc, 0, 0,
+					     start_x + black_x + pbwidth - overlap, ypos, -1, -1,
 					     GDK_RGB_DITHER_MAX, 0, 0);
 	      g_object_unref (pixbuf);
 	    }
 	  break;
 	case DRAW_MIDDLE:
-	  // gdk_draw_line (window, white_gc, x, i, white_x, i);
+	  // gdk_draw_line (drawable, white_gc, start_x + x, i, start_x + white_x, i);
 	  break;
 	case DRAW_END:
-	  gdk_draw_line (window, light_gc, x, i, white_x, i);
+	  gdk_draw_line (drawable, light_gc, start_x + x, i, start_x + white_x, i);
 	  break;
 	}
     }
@@ -1148,12 +1156,14 @@ bst_piano_roll_draw_hpanel (BstPianoRoll *self,
 			    gint	  x,
 			    gint	  xbound)
 {
+  GdkWindow *drawable = self->hpanel;
   GdkFont *font = gtk_style_get_font (STYLE (self));
-  GdkGC *fg_gc = STYLE (self)->fg_gc[GTK_WIDGET_IS_SENSITIVE (self) ? GTK_STATE_SELECTED : GTK_STATE_INSENSITIVE];
+  GdkGC *fg_gc = STYLE (self)->fg_gc[STATE (self)];
   gint text_y = HPANEL_HEIGHT (self) - (HPANEL_HEIGHT (self) - gdk_string_height (font, "0123456789:")) / 2;
   gchar buffer[64];
   gint i;
 
+  /* draw tact/note numbers */
   for (i = x; i < xbound; i++)
     {
       guint next_pixel, width;
@@ -1196,14 +1206,48 @@ bst_piano_roll_draw_hpanel (BstPianoRoll *self,
 			     buffer);
 	}
     }
+
+  /* draw outer hpanel shadow */
+  gtk_paint_shadow (STYLE (self), drawable,
+                    STATE (self), GTK_SHADOW_OUT,
+                    NULL, NULL, NULL,
+                    -XTHICKNESS (self), 0,
+                    HPANEL_WIDTH (self) + 2 * XTHICKNESS (self), HPANEL_HEIGHT (self));
 }
 
 static void
-bst_piano_roll_draw_focus (BstPianoRoll *self)
+bst_piano_roll_draw_window (BstPianoRoll *self,
+                            gint          x,
+                            gint          y,
+                            gint          xbound,
+                            gint          ybound)
 {
-  if (GTK_WIDGET_DRAWABLE (self))
-    {
-    }
+  GdkWindow *drawable = GTK_WIDGET (self)->window;
+  GtkWidget *widget = GTK_WIDGET (self);
+  GdkGC *bg_gc = STYLE (self)->bg_gc[GTK_WIDGET_STATE (self)];
+  gint width = HPANEL_X (self);
+  gint height = VPANEL_Y (self);
+
+  gdk_draw_rectangle (drawable, bg_gc, TRUE,
+                      0, 0, width, height);
+
+  /* draw hpanel and vpanel scrolling boundaries */
+  gtk_paint_shadow (widget->style, drawable,
+                    widget->state, GTK_SHADOW_ETCHED_IN,
+                    NULL, NULL, NULL,
+                    - XTHICKNESS (self), - YTHICKNESS (self),
+                    width + XTHICKNESS (self), height + YTHICKNESS (self));
+  /* draw outer scrollpanel shadow */
+  gtk_paint_shadow (widget->style, drawable,
+                    widget->state, GTK_SHADOW_OUT,
+                    NULL, NULL, NULL,
+                    0, 0, width + XTHICKNESS (self), height + YTHICKNESS (self));
+  /* draw inner scrollpanel corner */
+  gtk_paint_shadow (widget->style, drawable,
+                    widget->state, GTK_SHADOW_IN,
+                    NULL, NULL, NULL,
+                    width - XTHICKNESS (self), height - YTHICKNESS (self),
+                    2 * XTHICKNESS (self), 2 * YTHICKNESS (self));
 }
 
 static gboolean
@@ -1221,12 +1265,7 @@ bst_piano_roll_expose (GtkWidget      *widget,
   if (event->window == widget->window)
     {
       gdk_window_begin_paint_rect (event->window, &area);
-      // gdk_window_clear_area (widget->window, area.x, area.y, area.width, area.height);
-      gtk_draw_shadow (widget->style, widget->window,
-		       GTK_WIDGET_STATE (self), GTK_SHADOW_IN,
-		       0, 0,
-		       widget->allocation.width,
-		       widget->allocation.height);
+      bst_piano_roll_draw_window (self, area.x, area.y, area.x + area.width, area.y + area.height);
       gdk_window_end_paint (event->window);
     }
   else if (event->window == self->vpanel)
@@ -1480,7 +1519,7 @@ bst_piano_roll_focus_in (GtkWidget     *widget,
   BstPianoRoll *self = BST_PIANO_ROLL (widget);
 
   GTK_WIDGET_SET_FLAGS (self, GTK_HAS_FOCUS);
-  bst_piano_roll_draw_focus (self);
+  // bst_piano_roll_draw_focus (self);
   return TRUE;
 }
 
@@ -1491,7 +1530,7 @@ bst_piano_roll_focus_out (GtkWidget	*widget,
   BstPianoRoll *self = BST_PIANO_ROLL (widget);
 
   GTK_WIDGET_UNSET_FLAGS (self, GTK_HAS_FOCUS);
-  bst_piano_roll_draw_focus (self);
+  // bst_piano_roll_draw_focus (self);
   return TRUE;
 }
 

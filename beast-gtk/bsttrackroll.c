@@ -814,6 +814,7 @@ bst_track_roll_draw_hpanel (BstTrackRoll *self,
   gchar buffer[64];
   gint i;
 
+  /* clear background */
   gdk_draw_rectangle (drawable, bg_gc, TRUE,
 		      0, 0, HPANEL_WIDTH (self), HPANEL_HEIGHT (self));
 
@@ -859,6 +860,8 @@ bst_track_roll_draw_hpanel (BstTrackRoll *self,
 			     buffer);
 	}
     }
+
+  /* draw outer hpanel shadow */
   gtk_paint_shadow (widget->style, drawable,
 		    widget->state, GTK_SHADOW_OUT,
 		    NULL, NULL, NULL,
@@ -1281,7 +1284,7 @@ bst_track_roll_button_press (GtkWidget	    *widget,
   if (event->window == self->canvas)
     {
       handled = TRUE;
-      self->drag.proll = self;
+      self->drag.troll = self;
       self->drag.type = BST_DRAG_START;
       self->drag.mode = bst_drag_modifier_start (event->state);
       self->drag.button = event->button;
@@ -1304,7 +1307,7 @@ bst_track_roll_button_press (GtkWidget	    *widget,
   else if (event->window == self->hpanel)
     {
       handled = TRUE;
-      self->drag.proll = self;
+      self->drag.troll = self;
       self->drag.type = BST_DRAG_START;
       self->drag.mode = bst_drag_modifier_start (event->state);
       self->drag.button = event->button;
