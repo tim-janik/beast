@@ -1,4 +1,5 @@
 FIXMES:	(release-critical)
+- add BseMidiDecoder *midi_decoder to midi handles
 - midi synthesizer does not work anymore (anable multi-voices like in tracks?)
 - pcmmodule input->reset() should queue a server check for !pcm-handle->readable which then throws a warning (dialog)
 - a single CSynth with auto-activate and without a song dosn't keep playback

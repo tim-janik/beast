@@ -18,7 +18,8 @@
  */
 #include "configure.h"
 #include "bsemididevice-alsa.h"
-#include <bse/gsldatautils.h>
+#include <bse/bseserver.h>      // FIXME
+#include <bse/bsemididecoder.h>
 #include <alsa/asoundlib.h>
 #include <string.h>
 #include <errno.h>
@@ -29,14 +30,17 @@
 /* --- structs --- */
 typedef struct
 {
-  BseMidiHandle handle;
-  snd_rawmidi_t *read_handle;
-  snd_rawmidi_t *write_handle;
+  BseMidiHandle   handle;
+  snd_rawmidi_t  *read_handle;
+  snd_rawmidi_t  *write_handle;
+  BseMidiDecoder *midi_decoder;
 } AlsaMidiHandle;
 
 /* --- prototypes --- */
-static void             bse_midi_device_alsa_class_init  (BseMidiDeviceALSAClass  *class);
-static void             bse_midi_device_alsa_init        (BseMidiDeviceALSA       *self);
+static void bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *class);
+static void bse_midi_device_alsa_init       (BseMidiDeviceALSA      *self);
+static void alsa_midi_io_handler            (AlsaMidiHandle         *alsa,
+                                             GPollFD                *pfd);
 
 /* --- define object type and export to BSE --- */
 BSE_REGISTER_OBJECT (BseMidiDeviceALSA, BseMidiDevice, NULL, NULL, NULL, bse_midi_device_alsa_class_init, NULL, bse_midi_device_alsa_init);
@@ -145,6 +149,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
   /* setup request */
   handle->readable = require_readable;
   handle->writable = require_writable;
+  alsa->midi_decoder = BSE_MIDI_DEVICE (device)->midi_decoder;
   /* try open */
   gchar *dname = n_args ? g_strjoinv (",", (gchar**) args) : g_strdup ("default");
   if (!aerror)
@@ -174,7 +179,9 @@ bse_midi_device_alsa_open (BseDevice     *device,
                     !snd_rawmidi_params_get_no_active_sensing (mparams),
                     snd_rawmidi_params_get_avail_min (mparams));
     }
-  
+  if (!error && alsa->read_handle && snd_rawmidi_poll_descriptors_count (alsa->read_handle) != 1)
+    error = BSE_ERROR_FILE_OPEN_FAILED; // FIXME
+
   /* setup MIDI handle or shutdown */
   if (!error)
     {
@@ -184,8 +191,14 @@ bse_midi_device_alsa_open (BseDevice     *device,
       if (alsa->write_handle)
         BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
       BSE_MIDI_DEVICE (device)->handle = handle;
-      // bse_server_add_io_watch (bse_server_get (), oss->fd, G_IO_IN, (BseIOWatch) io_handler, device);
       BSE_MIDI_DEVICE (device)->handle = handle;
+      if (alsa->read_handle) // FIXME
+        {
+          struct pollfd pfd;
+          snd_rawmidi_nonblock (alsa->read_handle, 1);
+          if (snd_rawmidi_poll_descriptors (alsa->read_handle, &pfd, 1) >= 0)
+            bse_server_add_io_watch (bse_server_get (), pfd.fd, pfd.events, (BseIOWatch) alsa_midi_io_handler, alsa);
+        }
     }
   else
     {
@@ -224,6 +237,24 @@ bse_midi_device_alsa_finalize (GObject *object)
   /* BseMidiDeviceALSA *self = BSE_MIDI_DEVICE_ALSA (object); */
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static void
+alsa_midi_io_handler (AlsaMidiHandle *alsa,
+                      GPollFD        *pfd)
+{
+  // BseMidiHandle *handle = &alsa->handle;
+  const gsize buf_size = 8192;
+  guint8 buffer[buf_size];
+  gssize l;
+
+  guint64 systime = sfi_time_system ();
+  do
+    l = snd_rawmidi_read (alsa->read_handle, buffer, buf_size);
+  while (l < 0 && errno == EINTR);      /* don't mind signals */
+
+  if (l > 0)
+    bse_midi_decoder_push_data (alsa->midi_decoder, l, buffer, systime);
 }
 
 static void
