@@ -1,3 +1,8 @@
+Sat May 10 18:08:18 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: disable texitheque checks if --enable-devel-rules
+	is set to "no" (non autogen.sh builds).
+
 Sat May 10 15:50:04 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: use new file selection code.

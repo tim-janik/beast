@@ -360,10 +360,13 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 ])
 AC_DEFUN(AC_DOC_REQUIREMENTS,
 [
-    PKG_CHECK_MODULES(TEXITHEQUE, texitheque >= 0.3)
-    AC_CHECK_PROGS(TEXITHEQUE, texitheque)
+    TEXITHEQUE=""
+    if test "x$enable_devel_rules" = "xyes" ; then
+	AC_CHECK_PROGS(TEXITHEQUE, texitheque)
+	PKG_CHECK_MODULES(TEXITHEQUE, texitheque >= 0.3)
+    fi
     AM_CONDITIONAL(IF_BUILDDOCS, test -n "$TEXITHEQUE" -a -z "$DVLBUILD")
-    if test "x$enable_devel_rules" = "xyes" -a -z "$IF_BUILDDOCS_FALSE" ; then
+    if test x"$enable_devel_rules" = xyes -a -z "$IF_BUILDDOCS_FALSE" ; then
        AC_MSG_ERROR([texitheque is required to build documentation])
     fi
 ])
@@ -414,18 +417,27 @@ AC_SUBST(STRIP_END)
 # require pkg-config
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
 
-# check whether development build rules can be used
-AC_CHECK_PROGS(PERL, perl5 perl)
-AC_MSG_CHECKING(whether develoment build rules can be used)
-TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
-TEST_BUILDDIR=$(cd . ; /bin/pwd)
-if test "$TEST_SRCDIR" = "$TEST_BUILDDIR" -a -n "$PERL" \
-   && $PERL -e 'exit !($] >= 5.002)' > /dev/null ; then
-    DVLBUILD=
+# check for development build rules (autogen.sh based builds from CVS)
+AC_MSG_CHECKING(whether develoment build rules are to be used)
+if test x"$enable_devel_rules" = xyes ; then
     AC_MSG_RESULT(yes)
+    TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
+    TEST_BUILDDIR=$(cd . ; /bin/pwd)
+    AC_MSG_CHECKING(whether source dir equals build dir)
+    if test "$TEST_SRCDIR" == "$TEST_BUILDDIR" ; then
+	AC_MSG_RESULT(yes)
+    else
+	AC_MSG_RESULT(no)
+	AC_MSG_ERROR([source dir must be the same as build dir for development build rules])
+    fi
+    AC_CHECK_PROGS(PERL, perl5 perl)
+    if test -z "$PERL" || $PERL -e 'exit !($] < 5.002)' > /dev/null ; then
+	AC_MSG_ERROR([failed to detect correct perl version (>= 5.002)])
+    fi
+    DVLBUILD=""
 else
-    DVLBUILD=#
     AC_MSG_RESULT(no)
+    DVLBUILD=#
 fi
 AC_SUBST(DVLBUILD)
 AM_CONDITIONAL(IF_DVLBUILD, test -z "$DVLBUILD")
