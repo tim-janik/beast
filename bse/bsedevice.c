@@ -27,9 +27,21 @@ bse_device_init (BseDevice *self)
 				 BSE_DEVICE_FLAG_WRITABLE));
 }
 
-gchar**
-bse_device_split_args (const gchar *arg_string,
-                       guint       *n)
+SfiRing*
+bse_device_list (BseDevice    *self)
+{
+  g_return_val_if_fail (BSE_IS_DEVICE (self), NULL);
+  SfiRing *ring = NULL;
+  if (BSE_DEVICE_GET_CLASS (self)->list_devices)
+    ring = BSE_DEVICE_GET_CLASS (self)->list_devices (self);
+  if (!ring)
+    ring = sfi_ring_append (ring, bse_device_error_new (self, g_strdup_printf ("Driver not implemented")));
+  return ring;
+}
+
+static gchar**
+device_split_args (const gchar *arg_string,
+                   guint       *n)
 {
   *n = 0;
   if (!arg_string || !arg_string[0])
@@ -45,31 +57,15 @@ bse_device_split_args (const gchar *arg_string,
   return strv;
 }
 
-SfiRing*
-bse_device_list (BseDevice    *self)
-{
-  g_return_val_if_fail (BSE_IS_DEVICE (self), NULL);
-  SfiRing *ring = NULL;
-  if (BSE_DEVICE_GET_CLASS (self)->list_devices)
-    ring = BSE_DEVICE_GET_CLASS (self)->list_devices (self);
-  if (!ring)
-    ring = sfi_ring_append (ring, bse_device_error_new (self, g_strdup_printf ("Driver not implemented")));
-  return ring;
-}
-
-BseErrorType
-bse_device_open (BseDevice      *self,
-                 gboolean        need_readable,
-                 gboolean        need_writable,
-                 const gchar    *arg_string)
+static BseErrorType
+device_open_args (BseDevice      *self,
+                  gboolean        need_readable,
+                  gboolean        need_writable,
+                  const gchar    *arg_string)
 {
   BseErrorType error;
-  
-  g_return_val_if_fail (BSE_IS_DEVICE (self), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_DEVICE_OPEN (self), BSE_ERROR_INTERNAL);
-  
   guint n;
-  gchar **args = bse_device_split_args (arg_string, &n);
+  gchar **args = device_split_args (arg_string, &n);
   error = BSE_DEVICE_GET_CLASS (self)->open (self,
                                              need_readable != FALSE,
                                              need_writable != FALSE,
@@ -92,6 +88,35 @@ bse_device_open (BseDevice      *self,
       error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
     }
 
+  return error;
+}
+
+BseErrorType
+bse_device_open (BseDevice      *self,
+                 gboolean        need_readable,
+                 gboolean        need_writable,
+                 const gchar    *arg_string)
+{
+  g_return_val_if_fail (BSE_IS_DEVICE (self), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (!BSE_DEVICE_OPEN (self), BSE_ERROR_INTERNAL);
+  BseErrorType error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+  if (arg_string)
+    error = device_open_args (self, need_readable, need_writable, arg_string);
+  else
+    {
+      SfiRing *node, *entries = bse_device_list (self);
+      for (node = entries; node; node = sfi_ring_walk (node, entries))
+        {
+          BseDeviceEntry *entry = node->data;
+          if (!entry->device_error)
+            {
+              error = device_open_args (self, need_readable, need_writable, entry->device_args);
+              if (!error)
+                break;
+            }
+        }
+      bse_device_entry_list_free (entries);
+    }
   return error;
 }
 
@@ -351,20 +376,9 @@ bse_device_open_auto (GType           base_type,
       device = g_object_new (G_OBJECT_CLASS_TYPE (class), NULL);
       if (request_callback)
         request_callback (device, data);
-      SfiRing *node, *entries = bse_device_list (device);
-      for (node = entries; node; node = sfi_ring_walk (node, entries))
-        {
-          BseDeviceEntry *entry = node->data;
-          if (!entry->device_error)
-            {
-              BseErrorType error = bse_device_open (device, need_readable, need_writable, entry->device_args);
-              if (errorp)
-                *errorp = error;
-              if (!error)
-                break;
-            }
-        }
-      bse_device_entry_list_free (entries);
+      BseErrorType error = bse_device_open (device, need_readable, need_writable, NULL);
+      if (errorp)
+        *errorp = error;
       if (BSE_DEVICE_OPEN (device))
         break;
       g_object_unref (device);

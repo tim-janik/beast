@@ -40,9 +40,8 @@ typedef struct _BseMidiDevice		BseMidiDevice;
 typedef struct _BseMidiDeviceClass	BseMidiDeviceClass;
 struct _BseMidiHandle	/* this should be nuked, it's useless */
 {
-  gint			 midi_fd;
-  guint			 writable : 1;
   guint			 readable : 1;
+  guint			 writable : 1;
   guint			 running_thread : 1;
 };
 struct _BseMidiDevice

@@ -40,6 +40,8 @@ BSE_DUMMY_TYPE (BseMidiDeviceOSS);
 #include	<string.h>
 #include	<fcntl.h>
 
+#define MIDI_DEBUG(...) sfi_debug ("midi", __VA_ARGS__)
+
 
 /* --- structs --- */
 typedef struct
@@ -172,7 +174,7 @@ bse_midi_device_oss_open (BseDevice     *device,
   else
     error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
   
-  /* setup mdev or shutdown */
+  /* setup MIDI handle or shutdown */
   if (!error)
     {
       BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
@@ -181,8 +183,7 @@ bse_midi_device_oss_open (BseDevice     *device,
       if (handle->writable)
 	BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
       BSE_MIDI_DEVICE (device)->handle = handle;
-      handle->midi_fd = oss->fd;
-      bse_server_add_io_watch (bse_server_get (), handle->midi_fd, G_IO_IN, (BseIOWatch) io_handler, device);
+      bse_server_add_io_watch (bse_server_get (), oss->fd, G_IO_IN, (BseIOWatch) io_handler, device);
     }
   else
     {
@@ -190,6 +191,7 @@ bse_midi_device_oss_open (BseDevice     *device,
 	close (oss->fd);
       g_free (oss);
     }
+  MIDI_DEBUG ("OSS: opening \"%s\" readable=%d writable=%d: %s", dname, require_readable, require_writable, bse_error_blurb (error));
   
   return error;
 }
@@ -287,7 +289,7 @@ BSE_BUILTIN_TYPE (BseMidiDeviceOSS)
   
   midi_device_oss_type = bse_type_register_static (BSE_TYPE_MIDI_DEVICE,
 						   "BseMidiDeviceOSS",
-						   "MIDI device implementation for OSS Lite /dev/dsp",
+						   "MIDI device implementation for OSS Lite /dev/midi*",
 						   &midi_device_oss_info);
   return midi_device_oss_type;
 }

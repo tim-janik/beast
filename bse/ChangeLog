@@ -1,3 +1,12 @@
+Mon Sep 27 20:36:55 2004  Tim Janik  <timj@gtk.org>
+
+	* bsedevice.[hc]:
+	bse_device_open(): if no arguments are specified, try opening the device
+	with the arguments povided by its listed device entries.
+	made bse_device_split_args() non-public.
+
+	* bsemididevice.h: removed public midi_fd from handle, fixed users.
+
 Mon Sep 27 18:26:56 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.cc (bse_midi_receiver_voices_pending): don't try to 

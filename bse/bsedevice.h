@@ -101,8 +101,6 @@ BseDeviceEntry* bse_device_error_new       (BseDevice      *device,
                                             gchar          *orphan_error);
 void            bse_device_entry_free      (BseDeviceEntry *entry);
 void            bse_device_entry_list_free (SfiRing        *list);
-gchar**         bse_device_split_args      (const gchar    *arg_string,
-                                            guint          *n);
 SfiRing*        bse_device_class_list      (GType           type,
                                             void          (*request_callback) (BseDevice *device,
                                                                                gpointer   data),

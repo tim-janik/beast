@@ -61,7 +61,6 @@ bse_midi_device_null_open (BseDevice     *device,
   if (handle->writable)
     BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
   BSE_MIDI_DEVICE (device)->handle = handle;
-  handle->midi_fd = -1;
   
   return BSE_ERROR_NONE;
 }

@@ -203,7 +203,7 @@ bse_pcm_device_oss_open (BseDevice     *device,
   else
     error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 
-  /* setup pdev or shutdown */
+  /* setup PCM handle or shutdown */
   if (!error)
     {
       oss->frag_buf = g_malloc (FRAG_BUF_SIZE (oss));
