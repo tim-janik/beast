@@ -734,37 +734,71 @@ skip_ascii_at (GScanner *scanner)
 
 GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value)
 {
-  /* MASTER @= (25, "Master Volume"), */
+  /*
+    YES,
+    YES = 1,
+    YES = "Yes",
+    YES = (1, "Yes"),
+    YES = Neutral,
+    YES = (Neutral, "Yes"),
+  */
   
   parse_or_return (G_TOKEN_IDENTIFIER);
   comp.name = scanner->value.v_identifier;
   comp.neutral = false;
-
+  
   /* the hints are optional */
-  skip_ascii_at (scanner);
-  if (g_scanner_peek_next_token (scanner) == '=')
+  if (g_scanner_peek_next_token (scanner) == GTokenType('='))
     {
-      g_scanner_get_next_token (scanner);
+      int args = 1;
+      parse_or_return ('=');
       
-      if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
+      if (g_scanner_peek_next_token (scanner) == GTokenType('('))
 	{
-	  g_scanner_get_next_token (scanner);
-	  if (strcmp (scanner->value.v_string, "Neutral") == 0)
-	    {
-	      comp.neutral = true;
-	    }
-	  else
-	    {
-	      printError("expected 'Neutral' or nothing as choice value type");
-	      return GTokenType('(');
-	    }
+	  parse_or_return ('(');
+	  args = 2;
 	}
-      parse_or_return ('(');
-      parse_or_return (G_TOKEN_INT);
-      value = scanner->value.v_int;
-      parse_or_return (',');
-      parse_string_or_return (comp.text);
-      parse_or_return (')');
+      
+      switch (g_scanner_peek_next_token (scanner))
+	{
+        case G_TOKEN_IDENTIFIER:
+          {
+            parse_or_return (G_TOKEN_IDENTIFIER);
+            if (strcmp (scanner->value.v_string, "Neutral") == 0)
+              {
+                comp.neutral = true;
+              }
+            else
+              {
+                printError("expected 'Neutral' or nothing as choice value type");
+                return GTokenType('(');
+              }
+          }
+          break;
+        case G_TOKEN_INT:
+          {
+            parse_or_return (G_TOKEN_INT);
+            value = scanner->value.v_int;
+          }
+          break;
+        case G_TOKEN_STRING:
+          {
+            if (args == 1)
+              parse_string_or_return (comp.text);
+            else
+              return G_TOKEN_INT;
+          }
+          break;
+        default:
+          return G_TOKEN_INT;
+	}
+      
+      if (args == 2)
+	{
+	  parse_or_return (',');
+	  parse_string_or_return (comp.text);
+	  parse_or_return (')');
+	}
     }
   
   comp.value = value;

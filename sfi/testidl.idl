@@ -7,15 +7,15 @@ Const ANSWER_B = 42;
 Const ULTIMATE_ANSWER = (ANSWER_A " is " ANSWER_B);
 
 choice YesNoUndecided {
-  Undecided @= Neutral(0, "Undecided"),
-        Yes @= (1, "Yes"),
-         No @= (2, "No")
+  Undecided = (Neutral, "Undecided"),
+        Yes = (1, "Yes"),
+         No = (2, "No")
 };
 
 record Position {
-  Real x @= ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
-  Real y @= ("Y", "", 3.0, -10.0, 10.0, 1, ":readwrite");
-  YesNoUndecided relevant @= ("Relevant", "", "test-yes", ":readwrite");
+  Real x = ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
+  Real y = ("Y", "", 3.0, -10.0, 10.0, 1, ":readwrite");
+  YesNoUndecided relevant = ("Relevant", "", "test-yes", ":readwrite");
 };
 
 record SickGenericThings {
@@ -33,7 +33,7 @@ class Blub {
 };
 
 sequence PositionSeq {
-  Position positions @= ("Position", "", ":readwrite");
+  Position positions = ("Position", "", ":readwrite");
 };
 
 };
