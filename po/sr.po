@@ -1,5 +1,5 @@
 # Serbian translation of beast
-# Courtesy of Prevod.org team (http://www.prevod.org/) -- 2003, 2004.
+# Courtesy of Prevod.org team (http://prevod.org/) -- 2003, 2004.
 #
 # This file is distributed under the same license as the beast package.
 #
@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-11 09:34+0100\n"
-"PO-Revision-Date: 2004-01-23 12:07+0100\n"
+"POT-Creation-Date: 2004-02-12 05:54+0100\n"
+"PO-Revision-Date: 2004-02-12 05:55+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -168,9 +168,9 @@ msgid "Opening project `%s'"
 msgstr "Отвара пројекат „%s“"
 
 #: beast-gtk/bstapp.c:597
-#, fuzzy, c-format
+#, c-format
 msgid "Loading skin `%s'"
-msgstr "Учитавам талас „%s“"
+msgstr "Учитавам мотив „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #: beast-gtk/bstapp.c:759
@@ -283,9 +283,8 @@ msgid "Open Project"
 msgstr "Отвори пројекат"
 
 #: beast-gtk/bstfiledialog.c:396
-#, fuzzy
 msgid "Select File"
-msgstr "Изабери"
+msgstr "Изабери датотеку"
 
 #: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
@@ -457,7 +456,7 @@ msgstr "RC датотека"
 
 #: beast-gtk/bstmain.c:157
 msgid "Skin RC"
-msgstr ""
+msgstr "RC мотива"
 
 #. show splash images
 #.
@@ -524,14 +523,12 @@ msgid "Drop Down Button"
 msgstr "Падајуће дугме"
 
 #: beast-gtk/bstparam-color-spinner.c:67
-#, fuzzy
 msgid "Select Color"
-msgstr "Изабери"
+msgstr "Изабери боју"
 
 #: beast-gtk/bstparam-color-spinner.c:116
-#, fuzzy
 msgid "Color Entry"
-msgstr "Унос ноте"
+msgstr "Унос боје"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -572,9 +569,8 @@ msgid "Searchpath Text Entry"
 msgstr "Унос путање претраге"
 
 #: beast-gtk/bstparam-searchpath.c:154
-#, fuzzy
 msgid "Filename Text Entry"
-msgstr "Унос текста"
+msgstr "Унос имена датотеке"
 
 #: beast-gtk/bstparam-time.c:55
 msgid "Time Entry"
@@ -800,7 +796,7 @@ msgstr "Пуштање"
 
 #: beast-gtk/bstpreferences.c:69
 msgid "Skin"
-msgstr ""
+msgstr "Мотив"
 
 #: beast-gtk/bstprocedure.c:206
 msgid "Description"
@@ -1400,7 +1396,7 @@ msgstr "Ус_меравање"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:34
 msgid "_Skins"
-msgstr ""
+msgstr "_Мотиви"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Song"
