@@ -1,3 +1,10 @@
+Mon Oct 27 00:25:00 2003  Tim Janik  <timj@gtk.org>
+
+	* moved config-paths.h to data/.
+
+	* data/: added rules to install .desktop, .applications, .mime
+	and .keys files as well as corresponding images.
+
 Sun Oct 26 18:13:16 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: generate files in data/.

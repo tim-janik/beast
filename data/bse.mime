@@ -1,0 +1,5 @@
+audio/x-bse
+	ext: bse
+
+audio/x-bsewave
+	ext: bsewave

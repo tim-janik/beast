@@ -1,0 +1,18 @@
+beast
+        command=beast
+        name=BEAST
+        can_open_multiple_files=true
+        expects_uris=false
+        uses_gnomevfs=false
+        requires_terminal=false
+        mime_types=audio/x-bse,audio/x-bsewave,audio/wav,audio/x-wav,application/ogg,application/x-ogg,audio/x-vorbis,audio/x-ogg
+        XXXXX_libmad_mime_types=audio/mp3,audio/x-mp3,audio/mpg3,audio/x-mpg3,audio/mpeg3,audio/x-mpeg3,audio/mp2,audio/x-mp2,audio/mpg2,audio/x-mpg2,audio/mpeg2,audio/x-mpeg2,audio/mp1,audio/x-mp1,audio/mpg1,audio/x-mpg1,audio/mpeg1,audio/x-mpeg1,audio/mpeg,audio/x-mpeg
+bsesh
+        command=bsesh
+        name=BSE Shell
+        can_open_multiple_files=false
+        expects_uris=false
+        uses_gnomevfs=false
+        requires_terminal=true
+        mime_types=audio/x-bse
+             

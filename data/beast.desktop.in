@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+_Name=BEAST
+_GenericName=Music Composer
+_Comment=Music Synthesis Tool, MIDI Tracker and Song Composer
+Icon=beast.png
+TryExec=beast
+Exec=beast
+Terminal=false
+Categories=GTK;GNOME;Application;AudioVideo;AudioVideoEditing;Music;Player;

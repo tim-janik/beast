@@ -1,5 +1,9 @@
 Makefile
 Makefile.in
-beast-images.h
 sfi.pc
 bse.pc
+beast-images.h
+config-paths.h
+beast.desktop
+bse.keys
+beast-audio-x-bse.png
