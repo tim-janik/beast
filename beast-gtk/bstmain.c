@@ -467,15 +467,33 @@ bst_parse_args (int    *argc_p,
       else if (strcmp ("-h", argv[i]) == 0 ||
 	       strcmp ("--help", argv[i]) == 0)
 	{
-	  bst_print_blurb (stderr, TRUE);
+	  bst_print_blurb (stdout, TRUE);
           argv[i] = NULL;
 	  exit (0);
 	}
       else if (strcmp ("-v", argv[i]) == 0 ||
 	       strcmp ("--version", argv[i]) == 0)
 	{
-	  bst_print_blurb (stderr, FALSE);
+	  bst_print_blurb (stdout, FALSE);
 	  argv[i] = NULL;
+	  exit (0);
+	}
+      else if (strcmp ("--print-path", argv[i]) == 0 ||
+	       strncmp ("--print-path=", argv[i], 13) == 0)
+	{
+	  gchar *arg = argv[i][13 - 1] == '=' ? argv[i] + 13 : (argv[i + 1] ? argv[i + 1] : "");
+	  if (strcmp (arg, "docs") == 0)
+	    fprintf (stdout, "%s\n", BST_PATH_DOCS);
+	  else if (strcmp (arg, "images") == 0)
+	    fprintf (stdout, "%s\n", BST_PATH_IMAGES);
+	  else if (strcmp (arg, "plugins") == 0)
+	    fprintf (stdout, "%s\n", BSE_PATH_PLUGINS);
+	  else if (strcmp (arg, "scripts") == 0)
+	    fprintf (stdout, "%s\n", BSW_PATH_SCRIPTS);
+	  else if (strcmp (arg, "samples") == 0)
+	    fprintf (stdout, "%s\n", BST_PATH_DATA_SAMPLES);
+	  else
+	    g_message ("no such resource path: %s", arg);
 	  exit (0);
 	}
     }
@@ -540,6 +558,7 @@ bst_print_blurb (FILE    *fout,
       fprintf (fout, "  --beast-no-debug=keys           disable certain BEAST debug stages\n");
       fprintf (fout, "  --bse-debug=keys                enable certain BSE debug stages\n");
       fprintf (fout, "  --bse-no-debug=keys             disable certain BSE debug stages\n");
+      fprintf (fout, "  --print-path=resource           print the file path for a specific resource\n");
       fprintf (fout, "  -h, --help                      show this help message\n");
       fprintf (fout, "  -v, --version                   print version and file paths\n");
       fprintf (fout, "  --display=DISPLAY               X server for the GUI; see X(1)\n");

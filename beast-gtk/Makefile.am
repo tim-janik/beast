@@ -8,7 +8,6 @@ SUBDIRS = icons images
 INCLUDES = -I$(top_srcdir) $(BEAST_CFLAGS) -I. \
            -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 
-
 #
 # programs to compile and install
 #

@@ -269,15 +269,13 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT")
     AC_DEFINE_UNQUOTED(BST_VERSION_STABLE, $BST_VERSION_STABLE)
 
-
-    # BEAST data from beast-data package
+    # BEAST resource paths
     beastbasedir=\${datadir}/beast
-    beastdatadir=$beastbasedir/data-v$BEAST_DATA_VERSION
-    beastsampledatadir=$beastdatadir/samples
-
-    # MINOR version specific data
     beastdocsdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION/docs
     beastimagesdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION/images
+    # beast-data package path
+    beastdatadir=$beastbasedir/data-v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
+    beastsampledatadir=$beastdatadir/samples
 
     AC_SUBST(beastsampledatadir)
     AC_SUBST(beastdocsdir)

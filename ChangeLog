@@ -1,4 +1,8 @@
-Sat Jul 27 13:01:44 2002  Tim Janik  <timj@gtk.org>
+Sat Jul 27 13:30:39 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (bst_parse_args): add --print-path option
+	to print a path to stdout on demand, print help and version to
+	stdout (not stderr).
 
 	* beast-gtk/images/: new directory containing images.
 	added excellent images (logo, splash, mime-type, etc.) from
