@@ -1,3 +1,7 @@
+Tue Dec 31 03:03:39 2002  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am, toyprof.*: remove toyprof code.
+
 Mon Dec 30 00:42:19 2002  Tim Janik  <timj@gtk.org>
 
 	* bseglue.c:

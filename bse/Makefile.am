@@ -106,7 +106,6 @@ bse_public_h_sources = $(strip \
 	bsewave.h \
 	bsewaveosc.h \
 	bsewaverepo.h \
-	$(TOYPROF_H_SOURCES) \
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -174,7 +173,6 @@ bse_c_sources = $(strip \
 	bsewave.c \
 	bsewaveosc.c \
 	bsewaverepo.c \
-	$(TOYPROF_C_SOURCES) \
 )
 # procedure sources
 bse_proc_sources = $(strip \
@@ -374,12 +372,6 @@ builtsources: $(bse_built_h_sources) $(bse_built_c_sources)
 # private (birnet) dependancy to make TAGS file after each build
 #
 all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
-
-
-# TOYPROF: poor man's profiling toy
-TOYPROF_H_SOURCES = toyprof.h
-TOYPROF_C_SOURCES = toyprof.c
-EXTRA_DIST += toyprof.pl toyprof.README
 
 
 # --- GSL targets ---

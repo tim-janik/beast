@@ -257,8 +257,8 @@ bse_item_list_proxies (BseItem     *item,
 BseItem*
 bse_item_use (BseItem *item)
 {
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (G_OBJECT (item)->ref_count > 0);
+  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  g_return_val_if_fail (G_OBJECT (item)->ref_count > 0, NULL);
   
   if (!item->use_count)
     g_object_ref (item);
