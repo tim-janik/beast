@@ -685,6 +685,8 @@ bse_item_store_property (BseObject  *object,
     {
       BseItem *item = BSE_ITEM (object);
 
+      bse_storage_break (storage);
+
       bse_storage_handle_break (storage);
       bse_storage_putc (storage, '(');
       bse_storage_puts (storage, pspec->name);

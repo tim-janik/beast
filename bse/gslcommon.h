@@ -100,11 +100,16 @@ GslRing*	gsl_ring_nth		(GslRing	*head,
 					 guint           n);
 gpointer	gsl_ring_nth_data	(GslRing	*head,
 					 guint           n);
+GslRing*	gsl_ring_split		(GslRing	*head1,
+					 GslRing	*head2);
+GslRing*	gsl_ring_sort		(GslRing	*head,
+					 GCompareFunc	 func);
 gpointer	gsl_ring_pop_head	(GslRing       **head);
 gpointer	gsl_ring_pop_tail	(GslRing       **head);
 #define		gsl_ring_push_head	gsl_ring_prepend
 #define		gsl_ring_push_tail	gsl_ring_append
 void		gsl_ring_free		(GslRing	*head);
+#define gsl_ring_tail(head)		((head) ? (head)->prev : NULL)
 #define gsl_ring_walk(head,node)	((node) != (head)->prev ? (node)->next : NULL)
 
 

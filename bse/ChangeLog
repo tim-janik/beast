@@ -1,3 +1,18 @@
+Mon Sep  2 06:17:55 2002  Tim Janik  <timj@gtk.org>
+
+	* bseitem.c (bse_item_store_property): fix missing newline in
+	output.
+
+Fri Aug 30 10:29:33 2002  Tim Janik  <timj@gtk.org>
+
+	* gslmagic.[hc]: added gsl_magic_list_brute_match() to facilitate
+	exhaustive matches.
+
+	* gsltests.c: add ring sorting test.
+
+	* gslcommon.[hc]: provide gsl_ring_split(), gsl_ring_sort() and
+	gsl_ring_tail().
+
 Fri Aug 30 03:18:09 2002  Tim Janik  <timj@gtk.org>
 
 	* *.[hc]: update copyrights and license headers.

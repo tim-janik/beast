@@ -65,6 +65,70 @@ static guint	bfile_get_size		(BFile		*bfile);
 
 
 /* --- functions --- */
+static gint
+magic_cmp (gconstpointer p1,
+	   gconstpointer p2)
+{
+  const GslMagic *m1 = p1;
+  const GslMagic *m2 = p2;
+  /* smaller values are higher priority */
+  return m2->priority - m1->priority;
+}
+
+void
+gsl_magic_list_brute_match (GslRing     *magic_list,
+			    const gchar *file_name,
+			    guint        skip_bytes,
+			    GslMagic    *skip_magic,
+			    GslRing    **ext_matches,
+			    GslRing    **other_matches)
+{
+  BFile bfile = { -1, };
+  
+  g_return_if_fail (file_name != NULL);
+  if (ext_matches)
+    g_return_if_fail (*ext_matches == NULL);
+  if (other_matches)
+    g_return_if_fail (*other_matches == NULL);
+
+  if (!ext_matches && !other_matches)
+    return;
+
+  if (bfile_open (&bfile, file_name, skip_bytes))
+    {
+      gchar *extension = strrchr (file_name, '.');
+      GslRing *node;
+      
+      /* match by extension */
+      if (ext_matches && extension)
+	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
+	  {
+	    GslMagic *magic = node->data;
+	    
+	    if (!magic->extension || strcmp (magic->extension, extension) != 0)
+	      continue;
+	    if (magic != skip_magic && magic_match_file (&bfile, magic->match_list))
+	      *ext_matches = gsl_ring_append (*ext_matches, magic);
+	  }
+      /* match excluding/without extension */
+      if (other_matches)
+	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
+	  {
+	    GslMagic *magic = node->data;
+	    
+	    if (extension && magic->extension && strcmp (magic->extension, extension) == 0)
+	      continue;
+	    if (magic != skip_magic && magic_match_file (&bfile, magic->match_list))
+              *other_matches = gsl_ring_append (*other_matches, magic);
+	  }
+      bfile_close (&bfile);
+    }
+  if (ext_matches)
+    *ext_matches = gsl_ring_sort (*ext_matches, magic_cmp);
+  if (other_matches)
+    *other_matches = gsl_ring_sort (*other_matches, magic_cmp);
+}
+
 GslMagic*
 gsl_magic_list_match_file_skip (GslRing     *magic_list,
 				const gchar *file_name,

@@ -65,8 +65,12 @@ GslMagic*	gsl_magic_list_match_file	(GslRing	*magic_list,
 GslMagic*	gsl_magic_list_match_file_skip	(GslRing	*magic_list,
 						 const gchar    *file_name,
 						 guint           skip_bytes);
-
-
+void		gsl_magic_list_brute_match	(GslRing	*magic_list,
+						 const gchar	*file_name,
+						 guint		 skip_bytes,
+						 GslMagic	*skip_magic,
+						 GslRing       **ext_matches,
+						 GslRing       **other_matches);
 
 #ifdef __cplusplus
 }

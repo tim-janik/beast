@@ -29,6 +29,7 @@
 
 static void	usage (void)	G_GNUC_NORETURN;
 
+static void  ring_test (void);
 
 static guint         shift_argc = 0;
 static const gchar **shift_argv = NULL;
@@ -119,6 +120,10 @@ main (int   argc,
       g_print ("  is file       : %s\n", gsl_strerror (gsl_check_file (file, "f")));
       g_print ("  is directory  : %s\n", gsl_strerror (gsl_check_file (file, "d")));
       g_print ("  is link       : %s\n", gsl_strerror (gsl_check_file (file, "l")));
+    }
+  else if (strcmp (arg, "ring-test") == 0)
+    {
+      ring_test ();
     }
   else if (strcmp (arg, "rf") == 0)
     {
@@ -612,6 +617,7 @@ usage (void)
   g_print ("tests:\n");
   g_print ("  wave-scan <file>          scan a wave file for waves\n");
   g_print ("  file-test <file>          test file properties\n");
+  g_print ("  ring-test                 test ring implementation\n");
   g_print ("  rf <x> <y> <z>            Carlson's elliptic integral of the first kind\n");
   g_print ("  F <phi> <ak>              Legendre elliptic integral of the 1st kind\n");
   g_print ("  sn <u> <emmc>             Jacobian elliptic function sn()\n");
@@ -644,6 +650,64 @@ usage (void)
   exit (1);
 }
 
+static void
+print_int_ring (GslRing *ring)
+{
+  GslRing *node;
+  g_print ("{");
+  for (node = ring; node; node = gsl_ring_walk (ring, node))
+    g_print ("%c", (gint) node->data);
+  g_print ("}");
+}
+
+static gint
+ints_cmp (gconstpointer d1,
+	  gconstpointer d2)
+{
+  gint i1 = (gint) d1;
+  gint i2 = (gint) d2;
+  return i1 - i2;
+}
+
+static void
+ring_test (void)
+{
+  gint data_array[][64] = {
+    { 0, },
+    { 1, 'a', },
+    { 2, 'a', 'a', },
+    { 2, 'a', 'b', },
+    { 2, 'z', 'a', },
+    { 3, 'a', 'c', 'z' },
+    { 3, 'a', 'z', 'c' },
+    { 3, 'c', 'a', 'z' },
+    { 3, 'z', 'c', 'a' },
+    { 3, 'a', 'a', 'a' },
+    { 3, 'a', 'a', 'z' },
+    { 3, 'a', 'z', 'a' },
+    { 3, 'z', 'a', 'a' },
+    { 10, 'g', 's', 't', 'y', 'x', 'q', 'i', 'n', 'j', 'a' },
+    { 15, 'w', 'k', 't', 'o', 'c', 's', 'j', 'd', 'd', 'q', 'p', 'v', 'q', 'r', 'a' },
+    { 26, 'z', 'y', 'x', 'w', 'v', 'u', 't', 's', 'r', 'q', 'p', 'o', 'n', 'm'
+      ,   'l', 'k', 'j', 'i', 'h', 'g', 'f', 'e', 'd', 'c', 'b', 'a', },
+  };
+  gint n;
+
+  for (n = 0; n < G_N_ELEMENTS (data_array); n++)
+    {
+      gint i, l = data_array[n][0];
+      GslRing *ring = NULL;
+      for (i = 1; i <= l; i++)
+	ring = gsl_ring_append (ring, (gpointer) (data_array[n][i]));
+      g_print ("source: ");
+      print_int_ring (ring);
+      ring = gsl_ring_sort (ring, ints_cmp);
+      g_print (" sorted: ");
+      print_int_ring (ring);
+      g_print ("\n");
+      gsl_ring_free (ring);
+    }
+}
 
 
 /* vim:set ts=8 sts=2 sw=2: */

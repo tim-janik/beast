@@ -221,12 +221,9 @@ gsl_free_node_list (gpointer mem,
 
 /* --- ring (circular-list) --- */
 static inline GslRing*
-gsl_ring_prepend_i (GslRing  *head,
-		    gpointer data)
+gsl_ring_prepend_link_i (GslRing *head,
+			 GslRing *ring)
 {
-  GslRing *ring = gsl_new_struct (GslRing, 1);
-  
-  ring->data = data;
   if (!head)
     {
       ring->prev = ring;
@@ -240,6 +237,24 @@ gsl_ring_prepend_i (GslRing  *head,
       head->prev = ring;
     }
   return ring;
+}
+
+static inline GslRing*
+gsl_ring_prepend_i (GslRing *head,
+		    gpointer data)
+{
+  GslRing *ring = gsl_new_struct (GslRing, 1);
+  
+  ring->data = data;
+  return gsl_ring_prepend_link_i (head, ring);
+}
+
+static inline GslRing*
+gsl_ring_append_link_i (GslRing *head,
+			GslRing *ring)
+{
+  gsl_ring_prepend_link_i (head, ring);
+  return head ? head : ring;
 }
 
 GslRing*
@@ -292,6 +307,34 @@ gsl_ring_concat (GslRing *head1,
   return head1;
 }
 
+/**
+ * gsl_ring_split
+ * @head1:   a non-empty ring
+ * @head2:   a ring node different from @head1 contained in @head1
+ * @returns: @head2 for convenience
+ * Split a ring into two parts, starting the second ring with @head2.
+ * @head2 must therefore be non-NULL and must be contained in the ring
+ * formed by @head1.
+ */
+GslRing*
+gsl_ring_split (GslRing *head1,
+		GslRing *head2)
+{
+  GslRing *tail1, *tail2;
+
+  g_return_val_if_fail (head1 != NULL, NULL);
+  g_return_val_if_fail (head2 != NULL, NULL);
+  g_return_val_if_fail (head1 != head2, NULL);
+
+  tail1 = head2->prev;
+  tail2 = head1->prev;
+  head2->prev = tail2;
+  tail2->next = head2;
+  head1->prev = tail1;
+  tail1->next = head1;
+  return head2;
+}
+
 GslRing*
 gsl_ring_remove_node (GslRing *head,
 		      GslRing *node)
@@ -317,6 +360,77 @@ gsl_ring_remove_node (GslRing *head,
     head = node->next;
   gsl_delete_struct (GslRing, node);
   
+  return head;
+}
+
+static inline GslRing*
+gsl_ring_merge_sorted (GslRing     *head1,
+		       GslRing     *head2,
+		       GCompareFunc func)
+{
+  if (head1 && head2)
+    {
+      GslRing *tail1 = head1->prev;
+      GslRing *tail2 = head2->prev;
+      GslRing *tmp, *ring = NULL;
+      /* NULL terminate rings */
+      tail1->next = NULL;
+      tail2->next = NULL;
+      while (head1 && head2)
+	{
+	  gint cmp = func (head1->data, head2->data);
+	  if (cmp <= 0)
+	    {
+	      tmp = head1;
+	      head1 = head1->next;
+	    }
+	  else
+	    {
+	      tmp = head2;
+	      head2 = head2->next;
+	    }
+	  ring = gsl_ring_append_link_i (ring, tmp);
+	}
+      /* reform valid rings, concat sorted rest */
+      if (head1)
+	{
+	  tail1->next = head1;
+	  head1->prev = tail1;
+	  return gsl_ring_concat (ring, head1);
+	}
+      if (head2)
+	{
+	  tail2->next = head2;
+	  head2->prev = tail2;
+	  return gsl_ring_concat (ring, head2);
+	}
+      return ring;
+    }
+  else
+    return gsl_ring_concat (head1, head2);
+}
+
+GslRing*
+gsl_ring_sort (GslRing     *head,
+	       GCompareFunc func)
+{
+  g_return_val_if_fail (func != NULL, head);
+
+  if (head && head->next != head)
+    {
+      GslRing *ring, *tmp, *tail = head->prev;
+      /* find middle node to get log2 recursion depth */
+      ring = tmp = head->next;
+      while (tmp != tail && tmp->next != tail)
+	{
+	  ring = ring->next;
+	  tmp = tmp->next->next;
+	}
+      gsl_ring_split (head, ring);
+      return gsl_ring_merge_sorted (gsl_ring_sort (head, func),
+				    gsl_ring_sort (ring, func),
+				    func);
+    }
   return head;
 }
 
