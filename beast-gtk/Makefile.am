@@ -167,11 +167,11 @@ bstutils.c: bstdebugkeys.defs
 #
 # setup BEAST sources and their dependancies
 #
-bin_PROGRAMS = @BEAST_BINARY@			# this expands to beast-$BST_VERSION
-EXTRA_PROGRAMS = beast-\$(BST_VERSION)		# make automake-1.4 eat beast____BST_VERSION_ variables
-beast____BST_VERSION__SOURCES = bstmain.c $(beast_sources)
-beast____BST_VERSION__LDADD = $(progs_LDADD)
-beast_objects = $(beast____BST_VERSION__OBJECTS)
+bin_PROGRAMS = @BEAST_BINARY@			# this expands to beast-$BIN_VERSION
+EXTRA_PROGRAMS = beast-\$(BIN_VERSION)		# make automake-1.4 eat beast____BIN_VERSION_ variables
+beast____BIN_VERSION__SOURCES = bstmain.c $(beast_sources)
+beast____BIN_VERSION__LDADD = $(progs_LDADD)
+beast_objects = $(beast____BIN_VERSION__OBJECTS)
 noinst_PROGRAMS = tsmview testgui # bststest
 tsmview_SOURCES = tsmview.c cxxdummy.cc
 tsmview_LDADD = $(progs_LDADD)

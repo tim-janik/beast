@@ -10,7 +10,7 @@ CPPFLAGS += $(EXTRA_CXXFLAGS)
 # IDL Compiler
 SFIDL     = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
-BSESH     = $(top_builddir)/shell/bsesh-$(BSE_VERSION)
+BSESH     = $(top_builddir)/shell/bsesh-$(BIN_VERSION)
 
 # IDL generation rule for plugins
 %.gen-idl.h: %.idl $(BSEPGEN) $(SFIDL)

@@ -157,7 +157,7 @@ bse_script_procedure_exec (BseProcedureClass *proc,
 						     "(apply %s (bse-script-fetch-args))",
 						     sdata->script_file,
 						     sdata->name));
-  shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsesh", BSE_VERSION);
+  shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsesh", BIN_VERSION);
   error = bse_server_run_remote (server, shellpath,
 				 params, sdata->script_file, BSE_PROCEDURE_NAME (proc), &janitor);
   g_free (shellpath);
@@ -265,7 +265,7 @@ bse_script_file_register (const gchar *file_name,
   params = sfi_ring_append (params, g_strdup ("--bse-enable-register"));
   params = sfi_ring_append (params, g_strdup ("--bse-eval"));
   params = sfi_ring_append (params, g_strdup_printf ("(load \"%s\")", file_name));
-  shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsesh", BSE_VERSION);
+  shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsesh", BIN_VERSION);
   *janitor_p = NULL;
   error = bse_server_run_remote (server, shellpath,
 				 params, file_name, proc_name, janitor_p);

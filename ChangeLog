@@ -1,3 +1,8 @@
+Fri Oct 15 01:55:39 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: define BIN_VERSION to be used for version snippets in
+	path names and binaries. adapted depending sources.
+
 Fri Oct 15 00:55:08 2004  Tim Janik  <timj@gtk.org>
 
 	* tests/audio/Makefile.am: cleanups.

@@ -27,7 +27,7 @@ custom_find_executable (int    *argc_p,
 {
   const char *bindir = BINDIR;
   const char *name = "beast";
-  const char *version = BST_VERSION;
+  const char *version = BIN_VERSION;
   int l = strlen (bindir) + 1 + strlen (name) + 1 + strlen (version);
   char *string = malloc (l);
   if (!string)

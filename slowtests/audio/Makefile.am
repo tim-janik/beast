@@ -7,7 +7,7 @@ beastconf.sh: Makefile
 	cd . \
 	&& echo "# Generated data from $< (by make $@)" > xgen-bp \
 	&& echo >> xgen-bp \
-	&& echo "BSE_VERSION=$(BSE_VERSION)" >> xgen-bp \
+	&& echo "BIN_VERSION=$(BIN_VERSION)" >> xgen-bp \
 	&& echo "top_builddir=$(top_builddir)" >> xgen-bp \
 	&& chmod 755 xgen-bp \
 	&& (cp xgen-bp $@) \

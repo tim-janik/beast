@@ -38,6 +38,7 @@ BST_VERSION=$BSE_VERSION # -rcZ to be appended...
 if test -n "$BST_RELEASE_CANDIDATE" ; then
     BST_VERSION=$BST_VERSION-$BST_RELEASE_CANDIDATE
 fi
+BIN_VERSION=$BSE_VERSION    # binary version, used for binaries and paths
 AC_SUBST(BSE_MAJOR_VERSION)
 AC_SUBST(BSE_MINOR_VERSION)
 AC_SUBST(BSE_MICRO_VERSION)
@@ -45,6 +46,8 @@ AC_SUBST(BSE_INTERFACE_AGE)
 AC_SUBST(BSE_BINARY_AGE)
 AC_SUBST(BSE_VERSION)
 AC_SUBST(BST_VERSION)
+AC_SUBST(BIN_VERSION)
+AC_DEFINE_UNQUOTED(BIN_VERSION, "$BIN_VERSION", [Binary Version])
 
 # compute libtool versions
 LT_RELEASE=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
@@ -117,7 +120,7 @@ AC_DEFUN(AC_I18N_REQUIREMENTS,
     AC_SUBST(ALL_LINGUAS)
 
     dnl versioned BEAST gettext domain (po/)
-    BST_GETTEXT_DOMAIN=beast-v$BST_VERSION    # version without -rcZ
+    BST_GETTEXT_DOMAIN=beast-v$BIN_VERSION    # version without -rcZ
     AC_SUBST(BST_GETTEXT_DOMAIN)
     AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
     GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
@@ -274,15 +277,15 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
 
     dnl --- setup BSE search/install paths ---
-    bseplugindir=\${libdir}/bse/v$BSE_VERSION/plugins
+    bseplugindir=\${libdir}/bse/v$BIN_VERSION/plugins
     AC_SUBST(bseplugindir)
-    bsedriverdir=\${libdir}/bse/v$BSE_VERSION/drivers
+    bsedriverdir=\${libdir}/bse/v$BIN_VERSION/drivers
     AC_SUBST(bsedriverdir)
     bseladspapath=${libdir}/ladspa
     AC_SUBST(bseladspapath)
     bsesampledir=\${datadir}/bse/samples
     AC_SUBST(bsesampledir)
-    bsedatadir=\${datadir}/bse/v$BSE_VERSION
+    bsedatadir=\${datadir}/bse/v$BIN_VERSION
     bseeffectdir=$bsedatadir/effects
     AC_SUBST(bseeffectdir)
     bseinstrumentdir=$bsedatadir/instruments
@@ -299,7 +302,7 @@ AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
     BSE_SHELL_CFLAGS="$BSE_CFLAGS"
     BSE_SHELL_LIBS="$BSE_LIBS"
 
-    BSESH_BINARY="bsesh-$BSE_VERSION"
+    BSESH_BINARY="bsesh-$BIN_VERSION"
     AC_SUBST(BSESH_BINARY)
 
     dnl --- libguile check ---
@@ -345,7 +348,7 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     AC_SUBST(BEAST_CFLAGS)
     AC_SUBST(BEAST_LIBS)
 
-    BEAST_BINARY="beast-$BST_VERSION"
+    BEAST_BINARY="beast-$BIN_VERSION"
     AC_SUBST(BEAST_BINARY)
 
     dnl Feature XKB extension if present
@@ -369,9 +372,6 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     BST_VERSION_STABLE=0
     case "$BST_VERSION" in
     0.99.*)     BST_VERSION_HINT=BETA ;;
-    0.1*)       BST_VERSION_HINT="Pre-ALPHA" ;;
-    0.2*)       BST_VERSION_HINT="Pre-ALPHA" ;;
-    0.3*)       BST_VERSION_HINT="Pre-ALPHA" ;;
     0.*)        BST_VERSION_HINT="ALPHA" ;;
     *)          if test `expr $BSE_MINOR_VERSION \% 2` = 1 ; then
                   BST_VERSION_HINT="Development Branch"
@@ -385,13 +385,13 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 
     # --- BEAST paths ---
     beastbasedir=\${datadir}/beast
-    beastdocsdir=$beastbasedir/v$BST_VERSION/docs
+    beastdocsdir=$beastbasedir/v$BIN_VERSION/docs
     AC_SUBST(beastdocsdir)
-    beastimagesdir=$beastbasedir/v$BST_VERSION/images
+    beastimagesdir=$beastbasedir/v$BIN_VERSION/images
     AC_SUBST(beastimagesdir)
-    beastkeysdir=$beastbasedir/v$BST_VERSION/keys
+    beastkeysdir=$beastbasedir/v$BIN_VERSION/keys
     AC_SUBST(beastkeysdir)
-    beastskinsdir=$beastbasedir/v$BST_VERSION/skins
+    beastskinsdir=$beastbasedir/v$BIN_VERSION/skins
     AC_SUBST(beastskinsdir)
 ])
 AC_DEFUN(AC_SUIDMAIN_REQUIREMENTS,

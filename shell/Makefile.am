@@ -23,10 +23,10 @@ CLEANFILES += $(gen_sources)
 #
 # programs to build
 #
-bin_PROGRAMS = @BSESH_BINARY@			# this expands to bsesh-$BSE_VERSION
-EXTRA_PROGRAMS = bsesh-\$(BSE_VERSION)		# make automake-1.4 eat bsesh____BSE_VERSION_ variables
-bsesh____BSE_VERSION__SOURCES = bsesh.c bsescminterp.c cxxdummy.cc
-bsesh____BSE_VERSION__LDADD = $(programs_ldadd) $(BSE_SHELL_LIBS)
+bin_PROGRAMS = @BSESH_BINARY@			# this expands to bsesh-$BIN_VERSION
+EXTRA_PROGRAMS = bsesh-\$(BIN_VERSION)		# make automake-1.4 eat bsesh____BIN_VERSION_ variables
+bsesh____BIN_VERSION__SOURCES = bsesh.c bsescminterp.c cxxdummy.cc
+bsesh____BIN_VERSION__LDADD = $(programs_ldadd) $(BSE_SHELL_LIBS)
 # libraries to link programs against
 programs_ldadd = $(top_builddir)/bsw/libbsw.la $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
 # source setups
