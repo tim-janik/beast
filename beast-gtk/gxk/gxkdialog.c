@@ -650,10 +650,10 @@ gxk_dialog_action_multi (GxkDialog          *self,
     gtk_widget_show (self->sep);
   if (self->hbox)
     {
-      GtkWidget *alignment, *hbox, *image = icon_stock_id ? gxk_stock_image (icon_stock_id, GXK_SIZE_BUTTON) : NULL;
+      GtkWidget *alignment, *hbox, *image = icon_stock_id ? gxk_stock_image (icon_stock_id, GXK_ICON_SIZE_BUTTON) : NULL;
 
       if (!image)
-	image = gxk_stock_image (action, GXK_SIZE_BUTTON);
+	image = gxk_stock_image (action, GXK_ICON_SIZE_BUTTON);
 
       /* catch installation of a Close button */
       if (strcmp (action, GTK_STOCK_CLOSE) == 0)

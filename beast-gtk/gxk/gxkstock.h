@@ -24,15 +24,15 @@
 G_BEGIN_DECLS
 
 /* --- icon sizes --- */
-#define GXK_SIZE_BUTTON		(gxk_size_button)
-#define GXK_SIZE_BIG_BUTTON	(gxk_size_big_button)
-#define GXK_SIZE_CANVAS		(gxk_size_canvas)
-#define GXK_SIZE_TOOLBAR	(gxk_size_toolbar)
-#define GXK_SIZE_MENU		(gxk_size_menu)
-#define GXK_SIZE_INFO_SIGN	(gxk_size_info_sign)
-#define GXK_SIZE_PALETTE	(gxk_size_palette)
-guint	gxk_size_width		(GtkIconSize	 icon_size);
-guint	gxk_size_height		(GtkIconSize	 icon_size);
+#define GXK_ICON_SIZE_BUTTON	  (gxk_size_button)
+#define GXK_ICON_SIZE_BIG_BUTTON  (gxk_size_big_button)
+#define GXK_ICON_SIZE_CANVAS	  (gxk_size_canvas)
+#define GXK_ICON_SIZE_TOOLBAR	  (gxk_size_toolbar)
+#define GXK_ICON_SIZE_MENU	  (gxk_size_menu)
+#define GXK_ICON_SIZE_INFO_SIGN	  (gxk_size_info_sign)
+#define GXK_ICON_SIZE_PALETTE	  (gxk_size_palette)
+guint	gxk_size_width		  (GtkIconSize	 icon_size);
+guint	gxk_size_height		  (GtkIconSize	 icon_size);
 
 
 /* --- functions --- */

@@ -39,6 +39,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_NOTE_ICON			$(srcdir)/binote.png		\
 	STOCK_EDIT_TOOL			$(srcdir)/editor.png		\
 	STOCK_EVENT_CONTROL		$(srcdir)/event-control.png	\
+	STOCK_FOLDER			$(srcdir)/folder.png		\
 	STOCK_INFO			$(srcdir)/bulb.png		\
 	STOCK_INSTRUMENT		$(srcdir)/aguitar.png		\
 	STOCK_KNOB			$(srcdir)/knob.png		\

@@ -1,3 +1,31 @@
+Mon Nov 17 23:18:34 2003  Tim Janik  <timj@gtk.org>
+	
+	* beast-gtk/bstutils.[hc]: removed BST_SIZE_*, there are GXK_ICON_SIZE_*
+	sizes, fixed callers. fixed signature of bst_action_list_from_cats() and
+	bst_action_list_add_cat(), changed callers.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: use folder icon for submenus.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hd]: added ::menubar-image boolean toggle
+	to auto-hide the menu item image as child of a menubar.
+
+	* beast-gtk/gxk/gxkgadget.[hc]: added special guards to
+	gxk_gadget_sensitize() to not make submenus items with empty menu
+	sensitive.
+
+	* beast-gtk/gxk/gxkstock.[hc]: made menu item images 24x24 pixels.
+	properly renamed sizes to GXK_ICON_SIZE_*.
+
+	* beast-gtk/icons/binote.png: higher resolution mockup.
+
+	* beast-gtk/icons/folder.png: added folder icon from Tuomas Kuosmanen
+	<tigert@gimp.org>.
+
+	* beast-gtk/bsteventrollctrl.[hc]:
+	* beast-gtk/bstpianorollctrl.[hc]: s/_atools/_rtools/.
+
+	* beast-gtk/bstdefs.h: cleanups.
+	
 Mon Nov 17 18:05:54 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: re-added zoom spinner.

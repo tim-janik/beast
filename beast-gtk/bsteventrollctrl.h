@@ -34,15 +34,15 @@ typedef struct {
   /* tool data */
   guint		     tool_index;
   /* tool selections */
-  GxkActionGroup  *quant_atools;
-  GxkActionGroup  *canvas_atools;
+  GxkActionGroup  *quant_rtools;
+  GxkActionGroup  *canvas_rtools;
 } BstEventRollController;
 
 
 /* --- API --- */
 BstEventRollController*	bst_event_roll_controller_new		(BstEventRoll		*eroll,
-                                                                 GxkActionGroup         *quant_atools,
-                                                                 GxkActionGroup         *canvas_atools);
+                                                                 GxkActionGroup         *quant_rtools,
+                                                                 GxkActionGroup         *canvas_rtools);
 BstEventRollController*	bst_event_roll_controller_ref		(BstEventRollController	*self);
 void			bst_event_roll_controller_unref		(BstEventRollController	*self);
 guint                   bst_event_roll_controller_quantize      (BstEventRollController *self,

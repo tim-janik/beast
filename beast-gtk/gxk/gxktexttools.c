@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxktexttools.h"
+#include "gxkstock.h"
 #include "gxkgadget.h"
 #include <gdk/gdkkeysyms.h>
 #include <unistd.h>
@@ -619,7 +620,7 @@ tsm_start_element  (GMarkupParseContext *context,
     {
       GdkPixbuf *pixbuf = NULL;
       GtkIconSet *iset = NULL;
-      GtkIconSize isize = GTK_ICON_SIZE_MENU;
+      GtkIconSize isize = GXK_ICON_SIZE_MENU;
       gint i, c, l;
       for (i = 0; attribute_names[i]; i++)
         if (!pixbuf && strcmp (attribute_names[i], "file") == 0)

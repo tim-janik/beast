@@ -1394,7 +1394,16 @@ gxk_gadget_sensitize (GxkGadget      *gadget,
 {
   GtkWidget *widget = gxk_gadget_find (gadget, name);
   if (GTK_IS_WIDGET (widget))
-    gtk_widget_set_sensitive (widget, sensitive);
+    {
+      /* special guard for menu items */
+      if (sensitive && GTK_IS_MENU_ITEM (widget))
+        {
+          GtkMenuItem *mitem = GTK_MENU_ITEM (widget);
+          if (mitem && mitem->submenu)
+            sensitive = gxk_menu_check_sensitive (GTK_MENU (mitem->submenu));
+        }
+      gtk_widget_set_sensitive (widget, sensitive);
+    }
 }
 
 gpointer

@@ -141,7 +141,7 @@ bst_stock_icon_button (const gchar *stock_id)
 {
   GtkWidget *w = g_object_new (GTK_TYPE_BUTTON,
                                "visible", TRUE,
-                               "child", gtk_image_new_from_stock (stock_id, GTK_ICON_SIZE_BUTTON),
+                               "child", gtk_image_new_from_stock (stock_id, GXK_ICON_SIZE_BUTTON),
                                "can-focus", FALSE,
                                NULL);
   gtk_widget_show_all (w);
@@ -397,11 +397,11 @@ bst_hpack0 (const gchar *first_location,
 void
 bst_action_list_add_cat (GxkActionList          *alist,
                          BseCategory            *cat,
+                         guint                   skip_levels,
+                         const gchar            *stock_fallback,
                          GxkActionCheck          acheck,
                          GxkActionExec           aexec,
-                         gpointer                user_data,
-                         guint                   skip_levels,
-                         const gchar            *stock_fallback)
+                         gpointer                user_data)
 {
   const gchar *p, *stock_id;
 
@@ -430,11 +430,11 @@ bst_action_list_add_cat (GxkActionList          *alist,
 
 GxkActionList*
 bst_action_list_from_cats (BseCategorySeq         *cseq,
+                           guint                   skip_levels,
+                           const gchar            *stock_fallback,
                            GxkActionCheck          acheck,
                            GxkActionExec           aexec,
-                           gpointer                user_data,
-                           guint                   skip_levels,
-                           const gchar            *stock_fallback)
+                           gpointer                user_data)
 {
   GxkActionList *alist = gxk_action_list_create ();
   guint i;
@@ -442,7 +442,7 @@ bst_action_list_from_cats (BseCategorySeq         *cseq,
   g_return_val_if_fail (cseq != NULL, alist);
 
   for (i = 0; i < cseq->n_cats; i++)
-    bst_action_list_add_cat (alist, cseq->cats[i], acheck, aexec, user_data, skip_levels, stock_fallback);
+    bst_action_list_add_cat (alist, cseq->cats[i], skip_levels, stock_fallback, acheck, aexec, user_data);
   return alist;
 }
 

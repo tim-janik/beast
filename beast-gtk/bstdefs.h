@@ -26,16 +26,7 @@
 G_BEGIN_DECLS
 
 
-/* --- BEAST mainmenu operations --- */
-typedef enum
-{
-  BST_ACTION_NONE,
-  /* app actions */
-  BST_ACTION_APP_FIRST          = 0x0001 << 16,
-  /* wave view actions */
-  BST_ACTION_WAVE_FIRST         = 0x0002 << 16,
-} BstActionRegions;
-
+/* --- generic constants --- */
 typedef enum {
   BST_QUANTIZE_NONE		= 0,
   BST_QUANTIZE_NOTE_1		= 1,

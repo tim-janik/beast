@@ -64,7 +64,8 @@
   <xdef:submenu               inherit="GxkMenuItem"
     default-area="menu"
     prop:uline-label="$label"
-    prop:stock-image="$stock-image"
+    prop:stock-image="$(ifdef,stock-image,$stock-image,BST_STOCK_FOLDER)"
+    prop:menubar-image="0"
     prop:right-justify="$(ifdef,last,$last,0)" >
     <widget-patcher prop:hide-insensitive="$hide-insensitive" />
     <GtkMenu name="menu" tearoff-title="$label" />

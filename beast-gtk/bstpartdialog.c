@@ -195,7 +195,7 @@ bst_part_dialog_init (BstPartDialog *self)
   self->eroll = gxk_gadget_find (gadget, "event-roll");
   gxk_nullify_on_destroy (self->eroll, &self->eroll);
   g_signal_connect (self->eroll, "canvas-clicked", G_CALLBACK (event_canvas_clicked), self);
-  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_atools, self->pctrl->canvas_atools);
+  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, self->pctrl->canvas_rtools);
   bst_event_roll_set_hadjustment (self->eroll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
 
@@ -227,7 +227,7 @@ bst_part_dialog_init (BstPartDialog *self)
                                 "visible", TRUE,
                                 "adjustment", adjustment,
                                 "digits", 1,
-                                "width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+                                "width_request", 2 * gxk_size_width (GXK_ICON_SIZE_TOOLBAR),
                                 NULL));
   /* vzoom */
   adjustment = gtk_adjustment_new (4, 1, 16, 1, 4, 0);
@@ -239,7 +239,7 @@ bst_part_dialog_init (BstPartDialog *self)
                                 "visible", TRUE,
                                 "adjustment", adjustment,
                                 "digits", 0,
-                                "width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+                                "width_request", 2 * gxk_size_width (GXK_ICON_SIZE_TOOLBAR),
                                 NULL));
 }
 

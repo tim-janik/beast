@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxkauxwidgets.h"
+#include "gxkstock.h"
 #include <gdk/gdkkeysyms.h>
 
 /* --- GxkMenuItem --- */
@@ -24,6 +25,7 @@ enum {
   MENU_ITEM_PROP_0,
   MENU_ITEM_PROP_ULINE_LABEL,
   MENU_ITEM_PROP_STOCK_IMAGE,
+  MENU_ITEM_PROP_MENUBAR_IMAGE,
   MENU_ITEM_PROP_ACCEL_PATH,
   MENU_ITEM_PROP_ACCEL,
   MENU_ITEM_PROP_TITLE_STYLE,
@@ -41,6 +43,17 @@ static void     gxk_menu_item_get_property         (GObject             *object,
                                                     GParamSpec          *pspec);
 
 static void
+menu_item_show_image (GtkImageMenuItem *imitem)
+{
+  if (imitem->image)
+    {
+      if (GTK_IS_MENU_BAR (GTK_WIDGET (imitem)->parent))
+        gtk_widget_hide (imitem->image);
+      else
+        gtk_widget_show (imitem->image);
+    }
+}
+static void
 gxk_menu_item_set_property (GObject      *object,
                             guint         param_id,
                             const GValue *value,
@@ -53,6 +66,7 @@ gxk_menu_item_set_property (GObject      *object,
     {
       const gchar *string, *path;
       gchar *accel;
+      gboolean vbool, pending;
     case MENU_ITEM_PROP_ULINE_LABEL:
       if (bin->child)
         gtk_container_remove (GTK_CONTAINER (self), bin->child);
@@ -75,13 +89,21 @@ gxk_menu_item_set_property (GObject      *object,
       string = g_value_get_string (value);
       if (string)
         {
-          GtkWidget *image = gtk_image_new_from_stock (string, GTK_ICON_SIZE_MENU);
+          GtkWidget *image = gtk_image_new_from_stock (string, GXK_ICON_SIZE_MENU);
           if (image)
             {
               gtk_widget_show (image);
               gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (self), image);
             }
         }
+      break;
+    case MENU_ITEM_PROP_MENUBAR_IMAGE:
+      vbool = g_value_get_boolean (value);
+      pending = gxk_signal_handler_pending (self, "parent-set", G_CALLBACK (menu_item_show_image), NULL);
+      if (vbool && pending)
+        g_signal_handlers_disconnect_by_func (self, menu_item_show_image, NULL);
+      else if (!vbool && !pending)
+        g_signal_connect (self, "parent-set", G_CALLBACK (menu_item_show_image), NULL);
       break;
     case MENU_ITEM_PROP_RIGHT_JUSTIFY:
       gtk_menu_item_set_right_justified (mitem, g_value_get_boolean (value));
@@ -146,6 +168,8 @@ gxk_menu_item_class_init (GxkMenuItemClass *class)
                                    g_param_spec_string ("uline-label", NULL, NULL, NULL, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, MENU_ITEM_PROP_STOCK_IMAGE,
                                    g_param_spec_string ("stock-image", NULL, NULL, NULL, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, MENU_ITEM_PROP_MENUBAR_IMAGE,
+                                   g_param_spec_boolean ("menubar-image", NULL, NULL, TRUE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, MENU_ITEM_PROP_ACCEL,
                                    g_param_spec_string ("accel", NULL, NULL, NULL, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, MENU_ITEM_PROP_ACCEL_PATH,

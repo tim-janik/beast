@@ -235,26 +235,26 @@ bst_app_init (BstApp *app)
                               NULL, app_action_check, app_action_exec);
   /* Project utilities */
   cseq = bse_categories_match ("/Project/*");
-  al1 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-project", al1);
   /* Song scripts */
   cseq = bse_categories_match ("/Song/*");
-  al1 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-song", al1);
   /* CSynth & SNet utilities */
   cseq = bse_categories_match ("/CSynth/*");
-  al1 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
   gxk_action_list_sort (al1);
   cseq = bse_categories_match ("/SNet/*");
-  al2 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
   gxk_action_list_sort (al2);
   al1 = gxk_action_list_merge (al1, al2);
   gxk_widget_publish_action_list (widget, "tools-synth", al1);
   /* WaveRepo utilities */
   cseq = bse_categories_match ("/WaveRepo/*");
-  al1 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_app_run_script_proc, app);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "tools-wave-repo", al1);
   /* add demo songs */
@@ -907,7 +907,7 @@ app_action_check (gpointer data,
       /* abuse generic "Exit" update to sync Tools menu items */
       super = bst_app_get_current_super (self);
       gxk_gadget_sensitize (self, "song-submenu", BSE_IS_SONG (super));
-      gxk_gadget_sensitize (self, "synth-submenu", BSE_IS_SNET (super));
+      gxk_gadget_sensitize (self, "synth-submenu", BSE_IS_SNET (super) && !BSE_IS_SONG (super));
       gxk_gadget_sensitize (self, "waves-submenu", BSE_IS_WAVE_REPO (super));
       return TRUE;
     case BST_ACTION_HELP_ABOUT:

@@ -60,8 +60,9 @@ struct _BstAppClass
 
 /* --- actions --- */
 enum {
+  BST_ACTION_APP_NONE,
   /* dialogs */
-  BST_ACTION_SHOW_PREFERENCES   = BST_ACTION_APP_FIRST,
+  BST_ACTION_SHOW_PREFERENCES,
   BST_ACTION_SHOW_PROC_BROWSER,
   BST_ACTION_SHOW_DEVICE_MONITOR,
   /* help dialogs */

@@ -50,17 +50,17 @@ GtkWidget*     bst_hpack0                     (const gchar     *first_location,
                                                ...);
 void           bst_action_list_add_cat        (GxkActionList   *alist,
                                                BseCategory     *cat,
+                                               guint            skip_levels,
+                                               const gchar     *stock_fallback,
                                                GxkActionCheck   acheck,
                                                GxkActionExec    aexec,
-                                               gpointer         user_data,
-                                               guint            skip_levels,
-                                               const gchar     *stock_fallback);
+                                               gpointer         user_data);
 GxkActionList* bst_action_list_from_cats      (BseCategorySeq  *cseq,
+                                               guint            skip_levels,
+                                               const gchar     *stock_fallback,
                                                GxkActionCheck   acheck,
                                                GxkActionExec    aexec,
-                                               gpointer         user_data,
-                                               guint            skip_levels,
-                                               const gchar     *stock_fallback);
+                                               gpointer         user_data);
 
 
 /* --- stock utilities --- */
@@ -189,16 +189,6 @@ BstGMask*       bst_gmask_quick         (GtkWidget     *gmask_container,
 #define BST_STOCK_ZOOM_FIT              GTK_STOCK_ZOOM_FIT
 #define BST_STOCK_ZOOM_IN               GTK_STOCK_ZOOM_IN
 #define BST_STOCK_ZOOM_OUT              GTK_STOCK_ZOOM_OUT
-
-
-/* --- stock icon sizes --- */
-#define BST_SIZE_BUTTON                 GXK_SIZE_BUTTON
-#define BST_SIZE_BIG_BUTTON             GXK_SIZE_BIG_BUTTON
-#define BST_SIZE_CANVAS                 GXK_SIZE_CANVAS
-#define BST_SIZE_TOOLBAR                GXK_SIZE_TOOLBAR
-#define BST_SIZE_MENU                   GXK_SIZE_MENU
-#define BST_SIZE_INFO_SIGN              GXK_SIZE_INFO_SIGN
-#define BST_SIZE_PALETTE                GXK_SIZE_PALETTE
 
 
 /* --- generated includes --- */

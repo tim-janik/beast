@@ -170,10 +170,10 @@ bst_snet_router_init (BstSNetRouter      *self,
 
   /* CSynth & SNet utilities */
   cseq = bse_categories_match ("/CSynth/*");
-  al1 = bst_action_list_from_cats (cseq, NULL, bst_router_run_method, self, 1, BST_STOCK_EXECUTE);
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
   gxk_action_list_sort (al1);
   cseq = bse_categories_match ("/SNet/*");
-  al2 = bst_action_list_from_cats (cseq, NULL, bst_router_run_method, self, 1, BST_STOCK_EXECUTE);
+  al2 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, bst_router_run_method, self);
   gxk_action_list_sort (al2);
   al1 = gxk_action_list_merge (al1, al2);
   gxk_widget_publish_action_list (GTK_WIDGET (self), "router-util-actions", al1);
@@ -204,10 +204,10 @@ bst_snet_router_init (BstSNetRouter      *self,
       /* provide module as canvas tool */
       if (strncmp (cat->type, "BseLadspaModule_", 16) == 0)
         stock_fallback = BST_STOCK_LADSPA;
-      bst_action_list_add_cat (canvas_modules, cat, NULL, bst_router_popup_select, self, 1, stock_fallback);
+      bst_action_list_add_cat (canvas_modules, cat, 1, stock_fallback, NULL, bst_router_popup_select, self);
       /* provide selected modules in the palette */
       if (cat->icon && (cat->icon->width + cat->icon->height) > 0)
-        bst_action_list_add_cat (palette_modules, cat, NULL, bst_router_popup_select, self, 1, stock_fallback);
+        bst_action_list_add_cat (palette_modules, cat, 1, stock_fallback, NULL, bst_router_popup_select, self);
       /* provide certain variants in the toolbar */
       for (n = 0; n < G_N_ELEMENTS (toolbar_types); n++)
 	if (strcmp (toolbar_types[n].type, cat->type) == 0)
@@ -1156,7 +1156,7 @@ bst_snet_router_build_page (SfiProxy snet)
                                 "visible", TRUE,
                                 "adjustment", self->adjustment,
                                 "digits", 2,
-                                "width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+                                "width_request", 2 * gxk_size_width (GXK_ICON_SIZE_TOOLBAR),
                                 NULL));
 
   return self;

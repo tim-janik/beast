@@ -20,7 +20,7 @@
 
 
 #define CONTROL_TYPE(erctrl)    ((erctrl)->eroll->control_type)
-#define QUANTIZATION(self)      ((self)->quant_atools->action_id)
+#define QUANTIZATION(self)      ((self)->quant_rtools->action_id)
 #define HAVE_OBJECT             (1 << 31)
 
 
@@ -57,18 +57,18 @@ bst_event_roll_controller_get_clipboard (void)
 static void
 controller_reset_canvas_cursor (BstEventRollController *self)
 {
-  controller_update_canvas_cursor (self, self->canvas_atools->action_id);
+  controller_update_canvas_cursor (self, self->canvas_rtools->action_id);
 }
 
 BstEventRollController*
 bst_event_roll_controller_new (BstEventRoll   *eroll,
-                               GxkActionGroup *quant_atools,
-                               GxkActionGroup *canvas_atools)
+                               GxkActionGroup *quant_rtools,
+                               GxkActionGroup *canvas_rtools)
 {
   BstEventRollController *self;
   
   g_return_val_if_fail (BST_IS_EVENT_ROLL (eroll), NULL);
-  g_return_val_if_fail (quant_atools && canvas_atools, NULL);
+  g_return_val_if_fail (quant_rtools && canvas_rtools, NULL);
 
   self = g_new0 (BstEventRollController, 1);
   self->eroll = eroll;
@@ -83,10 +83,10 @@ bst_event_roll_controller_new (BstEventRoll   *eroll,
 			 G_CALLBACK (controller_vpanel_drag),
 			 self, NULL,
 			 G_CONNECT_SWAPPED);
-  self->quant_atools = g_object_ref (quant_atools);
-  self->canvas_atools = g_object_ref (canvas_atools);
+  self->quant_rtools = g_object_ref (quant_rtools);
+  self->canvas_rtools = g_object_ref (canvas_rtools);
   /* update from atools */
-  g_object_connect (self->canvas_atools,
+  g_object_connect (self->canvas_rtools,
                     "swapped_signal::changed", controller_reset_canvas_cursor, self,
                     NULL);
   controller_reset_canvas_cursor (self);
@@ -114,10 +114,10 @@ bst_event_roll_controller_unref (BstEventRollController *self)
   self->ref_count--;
   if (!self->ref_count)
     {
-      gxk_action_group_dispose (self->canvas_atools);
-      g_object_unref (self->canvas_atools);
-      gxk_action_group_dispose (self->quant_atools);
-      g_object_unref (self->quant_atools);
+      gxk_action_group_dispose (self->canvas_rtools);
+      g_object_unref (self->canvas_rtools);
+      gxk_action_group_dispose (self->quant_rtools);
+      g_object_unref (self->quant_rtools);
       g_free (self);
     }
 }
@@ -127,7 +127,7 @@ event_canvas_button_tool (BstEventRollController *self,
                           guint                   button,
                           guint                   have_object)
 {
-  switch (self->canvas_atools->action_id | /* user selected tool */
+  switch (self->canvas_rtools->action_id | /* user selected tool */
           (have_object ? HAVE_OBJECT : 0))
     {
     case BST_GENERIC_ROLL_TOOL_INSERT: /* background */

@@ -542,7 +542,7 @@ bst_track_view_init (BstTrackView *self)
                                 "visible", TRUE,
                                 "adjustment", adjustment,
                                 "digits", 0,
-                                "width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+                                "width_request", 2 * gxk_size_width (GXK_ICON_SIZE_TOOLBAR),
                                 NULL));
 
   /* add list view columns */

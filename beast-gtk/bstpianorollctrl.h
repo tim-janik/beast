@@ -36,9 +36,9 @@ typedef struct {
   /* tool data */
   guint		   tool_index;
   /* tool selections */
-  GxkActionGroup  *note_atools;
-  GxkActionGroup  *quant_atools;
-  GxkActionGroup  *canvas_atools;
+  GxkActionGroup  *note_rtools;
+  GxkActionGroup  *quant_rtools;
+  GxkActionGroup  *canvas_rtools;
 } BstPianoRollController;
 
 

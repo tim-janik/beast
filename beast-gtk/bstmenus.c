@@ -157,7 +157,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
       
       if (choice->icon_stock_id)
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (item),
-				       gxk_stock_image (choice->icon_stock_id, BST_SIZE_MENU));
+				       gxk_stock_image (choice->icon_stock_id, GXK_ICON_SIZE_MENU));
       any = gtk_widget_new (GTK_TYPE_ACCEL_LABEL,
 			    "visible", TRUE,
 			    "label", choice->name,

@@ -42,17 +42,17 @@ _gxk_init_stock (void)
   gxk_size_button = GTK_ICON_SIZE_BUTTON;       /* 20x20 */
   gxk_size_big_button = GTK_ICON_SIZE_DND;      /* 32x32 */
   gxk_size_info_sign = GTK_ICON_SIZE_DIALOG;    /* 48x48 */
-  gxk_size_menu = GTK_ICON_SIZE_MENU;           /* 16x16 */
+  gxk_size_menu = gtk_icon_size_register ("GxkIconSizeMenu", 24, 24); /* GTK_ICON_SIZE_MENU is 16x16 */
   gxk_size_toolbar = gxk_size_big_button;
   gxk_size_canvas = gtk_icon_size_register ("GxkIconSizeCanvas", 64, 64);
   gxk_size_palette = gxk_size_toolbar;
-  gtk_icon_size_register_alias ("button", GXK_SIZE_BUTTON);
-  gtk_icon_size_register_alias ("big-button", GXK_SIZE_BIG_BUTTON);
-  gtk_icon_size_register_alias ("canvas", GXK_SIZE_CANVAS);
-  gtk_icon_size_register_alias ("toolbar", GXK_SIZE_TOOLBAR);
-  gtk_icon_size_register_alias ("menu", GXK_SIZE_MENU);
-  gtk_icon_size_register_alias ("info-sign", GXK_SIZE_INFO_SIGN);
-  gtk_icon_size_register_alias ("palette", GXK_SIZE_PALETTE);
+  gtk_icon_size_register_alias ("button", GXK_ICON_SIZE_BUTTON);
+  gtk_icon_size_register_alias ("big-button", GXK_ICON_SIZE_BIG_BUTTON);
+  gtk_icon_size_register_alias ("canvas", GXK_ICON_SIZE_CANVAS);
+  gtk_icon_size_register_alias ("toolbar", GXK_ICON_SIZE_TOOLBAR);
+  gtk_icon_size_register_alias ("menu", GXK_ICON_SIZE_MENU);
+  gtk_icon_size_register_alias ("info-sign", GXK_ICON_SIZE_INFO_SIGN);
+  gtk_icon_size_register_alias ("palette", GXK_ICON_SIZE_PALETTE);
 }
 
 /**
@@ -158,7 +158,7 @@ gxk_stock_button_child (const gchar *stock_id,
   alignment = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
   hbox = gtk_hbox_new (FALSE, 2);
   gtk_container_add (GTK_CONTAINER (alignment), hbox);
-  image = gxk_stock_image (stock_id, GXK_SIZE_BUTTON);
+  image = gxk_stock_image (stock_id, GXK_ICON_SIZE_BUTTON);
   if (image)
     gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (hbox),
