@@ -1,7 +1,6 @@
 FIXME(urgent):
 - test xinfo saving and parsing for raw-links in bse and bsewave files for chunks
 - copy xinfos in set_dhandle_from_temporary
-- nuke data handle qdata
 - fix serialno generation for ogg/vorbis encoder and cutter
 - fix bsewavetool oggenc saving osc_freq, not midi_note
 - install bsewavetool, bsewavetool.1
