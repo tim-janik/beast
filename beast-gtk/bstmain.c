@@ -17,7 +17,6 @@
  */
 #include        "bstdefs.h"
 
-#include        "bstconfigpaths.h"
 #include        "bstapp.h"
 #include        "bstsamplerepo.h"
 #include        "bstprocedure.h"

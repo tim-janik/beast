@@ -57,6 +57,8 @@ GtkType		bst_file_dialog_get_type	(void);
 GtkWidget*	bst_file_dialog_new_open	(BstApp		*app);
 GtkWidget*	bst_file_dialog_new_save	(BstApp		*app);
 
+GtkWidget*	bst_text_view_from_file		(const gchar	*file_name);
+
 
 
 #ifdef __cplusplus

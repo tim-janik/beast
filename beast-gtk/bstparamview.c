@@ -72,9 +72,14 @@ bst_param_view_class_init (BstParamViewClass *class)
 static void
 bst_param_view_init (BstParamView *param_view)
 {
-  param_view->base_type = BSE_TYPE_OBJECT;
   param_view->object = NULL;
   param_view->bparams = NULL;
+
+  param_view->base_type = BSE_TYPE_OBJECT;
+  param_view->object_type = 0;
+  param_view->reject_pattern = NULL;
+  param_view->match_pattern = NULL;
+
   param_view->tooltips = gtk_tooltips_new ();
   gtk_object_ref (GTK_OBJECT (param_view->tooltips));
   gtk_object_sink (GTK_OBJECT (param_view->tooltips));
@@ -101,6 +106,17 @@ bst_param_view_destroy (GtkObject *object)
 
   bst_param_view_set_object (param_view, NULL);
 
+  if (param_view->reject_pattern)
+    {
+      g_pattern_spec_free (param_view->reject_pattern);
+      param_view->reject_pattern = NULL;
+    }
+  if (param_view->match_pattern)
+    {
+      g_pattern_spec_free (param_view->match_pattern);
+      param_view->match_pattern = NULL;
+    }
+
   gtk_object_unref (GTK_OBJECT (param_view->tooltips));
   param_view->tooltips = NULL;
 
@@ -112,26 +128,12 @@ bst_param_view_new (BseObject *object)
 {
   GtkWidget *param_view;
 
-  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+  if (object)
+    g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
 
   param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
-  bst_param_view_set_object (BST_PARAM_VIEW (param_view), object);
-
-  return param_view;
-}
-
-GtkWidget*
-bst_param_view_new_with_base (BseObject *object,
-			      BseType    base_type)
-{
-  GtkWidget *param_view;
-
-  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
-  g_return_val_if_fail (bse_type_is_a (BSE_OBJECT_TYPE (object), base_type), NULL);
-
-  param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
-  BST_PARAM_VIEW (param_view)->base_type = base_type;
-  bst_param_view_set_object (BST_PARAM_VIEW (param_view), object);
+  if (object)
+    bst_param_view_set_object (BST_PARAM_VIEW (param_view), object);
 
   return param_view;
 }
@@ -158,20 +160,41 @@ bst_param_view_set_object (BstParamView *param_view,
 					   param_view_reset_object,
 					   param_view);
       param_view->object = NULL;
-    }
-  param_view->object = object;
-  if (param_view->object)
-    {
-      bse_object_add_data_notifier (param_view->object,
-				    "destroy",
-				    param_view_reset_object,
-				    param_view);
+      
+      for (slist = param_view->bparams; slist; slist = slist->next)
+	bst_param_set_object (slist->data, NULL);
     }
 
-  for (slist = param_view->bparams; slist; slist = slist->next)
-    bst_param_set_object (slist->data, object);
+  param_view->object = object;
+
+  if (param_view->object)
+    bse_object_add_data_notifier (param_view->object,
+				  "destroy",
+				  param_view_reset_object,
+				  param_view);
 
   bst_param_view_rebuild (param_view);
+}
+
+void
+bst_param_view_set_mask (BstParamView   *param_view,
+			 BseType         base_type,
+			 BseType         param_object_type,
+			 const gchar    *reject_pattern,
+			 const gchar    *match_pattern)
+{
+  g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
+
+  if (param_view->reject_pattern)
+    g_pattern_spec_free (param_view->reject_pattern);
+  param_view->reject_pattern = reject_pattern ? g_pattern_spec_new (reject_pattern) : NULL;
+
+  if (param_view->match_pattern)
+    g_pattern_spec_free (param_view->match_pattern);
+  param_view->match_pattern = match_pattern ? g_pattern_spec_new (match_pattern) : NULL;
+
+  param_view->base_type = base_type;
+  param_view->object_type = param_object_type;
 }
 
 void
@@ -207,7 +230,8 @@ bst_param_view_rebuild (BstParamView *param_view)
    */
   while (class && bse_type_is_a (BSE_CLASS_TYPE (class), param_view->base_type))
     {
-      class_list = g_slist_prepend (class_list, class);
+      if (!param_view->object_type || bse_type_is_a (param_view->object_type, BSE_CLASS_TYPE (class)))
+	class_list = g_slist_prepend (class_list, class);
       class = bse_type_class_peek_parent (class);
     }
   
@@ -222,7 +246,11 @@ bst_param_view_rebuild (BstParamView *param_view)
 	while (*pspec_p)
 	  {
 	    if ((*pspec_p)->any.flags & BSE_PARAM_SERVE_GUI &&
-		(*pspec_p)->any.flags & BSE_PARAM_READABLE)
+		(*pspec_p)->any.flags & BSE_PARAM_READABLE &&
+		(!param_view->reject_pattern ||
+		 !g_pattern_match_string (param_view->reject_pattern, (*pspec_p)->any.name)) &&
+		(!param_view->match_pattern ||
+		 g_pattern_match_string (param_view->match_pattern, (*pspec_p)->any.name)))
 	      {
 		BstParam *bparam;
 		

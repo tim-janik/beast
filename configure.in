@@ -15,7 +15,7 @@ AC_PREREQ(2.13)
 #
 BSE_MAJOR_VERSION=0
 BSE_MINOR_VERSION=3
-BSE_MICRO_VERSION=0
+BSE_MICRO_VERSION=1
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
@@ -98,11 +98,11 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     BSE_LIBS="$GLIB_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
-	
-    bsedatadir=$datadir/bse
-    bselibdir=$libdir/bse/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
-    AC_SUBST(bsedatadir)
-    AC_SUBST(bselibdir)
+
+    # setup BSE install paths
+    bselibdir=\${libdir}/bse/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
+    bseplugindir=$bselibdir/plugins
+    AC_SUBST(bseplugindir)
 ])
 AC_DEFUN(AC_BEAST_REQUIREMENTS,
 [
@@ -196,8 +196,18 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION")
 
     # BEAST data from beast-data package
-    beastdatadir=$datadir/beast/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
-    AC_SUBST(beastdatadir)
+    beastbasedir=\${datadir}/beast
+    beastdatadir=$beastbasedir/data-v$BEAST_DATA_VERSION
+    beastsampledatadir=$beastdatadir/samples
+    dnl FIXME: remove the next two lines for 0.4:
+    beastdatadir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
+    beastsampledatadir=$beastdatadir
+
+    # MINOR version specific data
+    beastdocsdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION/docs
+
+    AC_SUBST(beastsampledatadir)
+    AC_SUBST(beastdocsdir)
 ])
 AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 [

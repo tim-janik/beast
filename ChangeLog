@@ -1,3 +1,41 @@
+Sat Jan  8 02:02:03 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_operate): view faq.txt, bse-heart.txt and
+	bse-networks.txt from the docs dir as help screens.
+
+	* beast-gtk/bstfiledialog.[hc] (bst_text_view_from_file): new function
+	to view text files.
+
+Tue Jan  4 20:43:19 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstheartmonitor.c (bst_heart_monitor_init): don't poketypoke
+	values into foreign objects, use bst_param_view_set_mask() instead.
+	* beast-gtk/bstpreferences.c (bst_preferences_set_gconfig): dito.
+
+	* beast-gtk/bstparamview.[hc]:
+	(bst_param_view_set_object): small bug fix.
+	(bst_param_view_new_with_base): nuked.
+	(bst_param_view_new): allow NULL objects.
+	(bst_param_view_set_mask): new function to allow setting of specifc
+	type/pattern masks to determine parameters to build from (does not
+	do automatic rebuilds).
+
+Mon Jan  3 17:27:07 2000  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: rebuild a PKG_paths.h file everytime the Makefile
+	changed, here we provide C defines for all the relevant Makefile
+	paths.
+
+	* acconfig.h: make PKG_config.h include PKG_paths.h.
+
+	* configure.in: compose and export bsesampledatadir, beastdocsdir and
+	bseplugindir.
+
+	* beast-gtk/Makefile.am: removed building of bstconfigpaths.h,
+	dropped TAGS rule for now.
+
+	* docs/Makfile.am: install selected text files.
+
 Mon Jan  3 06:47:50 2000  Tim Janik  <timj@gtk.org>
 
 	* docs/faq.txt: new file.

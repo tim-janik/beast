@@ -17,6 +17,7 @@
  */
 #include	"bstapp.h"
 
+#include	"../PKG_config.h"
 
 #include	"bstsongshell.h"
 #include	"bstsnetshell.h"
@@ -49,8 +50,8 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/File/_Dialogs",			NULL,		NULL, 0,			"<Branch>" },
   { "/File/Dialogs/<<<<<<",		NULL,		NULL, 0,			"<Tearoff>" },
-  { "/File/Dialogs/_Preferences", 	NULL,		BST_OP (DIALOG_PREFERENCES),	"<Item>" },
-  { "/File/Dialogs/Device _Monitor", 	NULL,		BST_OP (DIALOG_DEVICE_MONITOR),	"<Item>" },
+  { "/File/Dialogs/_Preferences...", 	NULL,		BST_OP (DIALOG_PREFERENCES),	"<Item>" },
+  { "/File/Dialogs/Device _Monitor...",	NULL,		BST_OP (DIALOG_DEVICE_MONITOR),	"<Item>" },
   { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/File/_Close",			"<ctrl>W",	BST_OP (PROJECT_CLOSE),		"<Item>" },
   { "/File/_Exit",			"<ctrl>Q",	BST_OP (EXIT),			"<Item>" },
@@ -74,11 +75,15 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Song/Delete Pattern",		NULL,		BST_OP (PATTERN_DELETE),	"<Item>" },
   { "/Song/_Edit Pattern...",		"<ctrl>E",	BST_OP (PATTERN_EDITOR),	"<Item>" },
   { "/Song/Add _Instrument",		"<ctrl>A",	BST_OP (INSTRUMENT_ADD),	"<Item>" },
-  { "/S_Net",				NULL,		NULL, 0,			"<Branch>" },
-  { "/SNet/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
-  { "/SNet/_Test",			"",		BST_OP (NONE),			"<Item>" },
+  // { "/S_Net",				NULL,		NULL, 0,			"<Branch>" },
+  // { "/SNet/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  // { "/SNet/_Test",			"",		BST_OP (NONE),			"<Item>" },
   { "/_Help",				NULL,		NULL, 0,			"<LastBranch>" },
   { "/Help/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/Help/_FAQ...",			NULL,		BST_OP (HELP_FAQ),		"<Item>" },
+  { "/Help/_Heart...",			NULL,		BST_OP (HELP_HEART),		"<Item>" },
+  { "/Help/Synthesis _Networks...",	NULL,		BST_OP (HELP_NETWORKS),		"<Item>" },
+  { "/Help/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Help/_About...",			NULL,		BST_OP (HELP_ABOUT),		"<Item>" },
 #undef	BST_OP
 };
@@ -379,10 +384,12 @@ void
 bst_app_operate (BstApp *app,
 		 BstOps	 op)
 {
+  static GtkWidget *bst_help_dialogs[BST_OP_HELP_LAST - BST_OP_HELP_FIRST + 1] = { NULL, };
   static GtkWidget *bst_dialog_open = NULL;
   static GtkWidget *bst_dialog_save = NULL;
   static GtkWidget *bst_preferences = NULL;
   GtkWidget *widget, *shell;
+  gchar *help_file;
 
   g_return_if_fail (BST_IS_APP (app));
   g_return_if_fail (bst_app_can_operate (app, op));
@@ -508,6 +515,33 @@ bst_app_operate (BstApp *app,
 			     NULL);
       gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
       break;
+    case BST_OP_HELP_FAQ:
+      help_file = "faq.txt";
+      goto case_help_dialog;
+    case BST_OP_HELP_HEART:
+      help_file = "bse-heart.txt";
+      goto case_help_dialog;
+    case BST_OP_HELP_NETWORKS:
+      help_file = "bse-networks.txt1";
+      goto case_help_dialog;
+    case BST_OP_HELP_ABOUT:
+      break;
+    case_help_dialog:
+      if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
+	{
+	  gchar *string;
+
+	  string = g_strconcat (BST_PATH_DOCS, "/", help_file, NULL);
+	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_subwindow_new (NULL,
+									&bst_help_dialogs[op - BST_OP_HELP_FIRST],
+									bst_text_view_from_file (string));
+	  g_free (string);
+	  string = g_strconcat ("BEAST: ", help_file, NULL);
+	  gtk_window_set_title (GTK_WINDOW (bst_help_dialogs[op - BST_OP_HELP_FIRST]), string);
+	  g_free (string);
+	}
+      gtk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
+      break;
     default:
       if (shell)
 	bst_super_shell_operate (BST_SUPER_SHELL (shell), op);
@@ -585,6 +619,11 @@ bst_app_can_operate (BstApp *app,
       return FALSE;
     case BST_OP_DIALOG_PREFERENCES:
     case BST_OP_DIALOG_DEVICE_MONITOR:
+      return TRUE;
+      // case BST_OP_HELP_ABOUT:
+    case BST_OP_HELP_FAQ:
+    case BST_OP_HELP_NETWORKS:
+    case BST_OP_HELP_HEART:
       return TRUE;
     default:
       return shell ? bst_super_shell_can_operate (BST_SUPER_SHELL (shell), bst_op) : FALSE;

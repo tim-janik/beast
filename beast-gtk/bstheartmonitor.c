@@ -73,10 +73,10 @@ static void
 bst_heart_monitor_init (BstHeartMonitor *hmon)
 {
   hmon->heart = NULL;
-  hmon->param_box = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
-  BST_PARAM_VIEW (hmon->param_box)->base_type = BSE_TYPE_HEART;
-  gtk_widget_show (hmon->param_box);
-  gtk_container_add (GTK_CONTAINER (hmon), hmon->param_box);
+  hmon->param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
+  bst_param_view_set_mask (BST_PARAM_VIEW (hmon->param_view), BSE_TYPE_HEART, 0, NULL, NULL);
+  gtk_widget_show (hmon->param_view);
+  gtk_container_add (GTK_CONTAINER (hmon), hmon->param_view);
 }
 
 static void
@@ -122,7 +122,7 @@ bst_heart_monitor_set_heart (BstHeartMonitor *hmon,
   if (hmon->heart)
     {
       bse_object_set_data (BSE_OBJECT (hmon->heart), "BstHeartMonitor", NULL);
-      bst_param_view_set_object (BST_PARAM_VIEW (hmon->param_box), NULL);
+      bst_param_view_set_object (BST_PARAM_VIEW (hmon->param_view), NULL);
       bse_object_remove_notifiers_by_func (hmon->heart,
 					   heart_monitor_reset_object,
 					   hmon);
@@ -136,7 +136,7 @@ bst_heart_monitor_set_heart (BstHeartMonitor *hmon,
 				    "destroy",
 				    heart_monitor_reset_object,
 				    hmon);
-      bst_param_view_set_object (BST_PARAM_VIEW (hmon->param_box), BSE_OBJECT (hmon->heart));
+      bst_param_view_set_object (BST_PARAM_VIEW (hmon->param_view), BSE_OBJECT (hmon->heart));
     }
 }
 
@@ -174,5 +174,5 @@ bst_heart_monitor_update (BstHeartMonitor *hmon)
 {
   g_return_if_fail (BST_IS_HEART_MONITOR (hmon));
 
-  bst_param_view_update (BST_PARAM_VIEW (hmon->param_box));
+  bst_param_view_update (BST_PARAM_VIEW (hmon->param_view));
 }

@@ -96,7 +96,6 @@ beast_extra_sources = $(strip \
 )
 # BEAST built sources that don't get installed
 beast_built_sources = $(strip \
-	bstconfigpaths.h \
 )
 
 #
@@ -114,20 +113,12 @@ gen_source = gen-source.tmp
 CLEANFILES += $(gen_source)
 COPYING: $(beast_built_sources)
 $(OBJECTS): COPYING # this is our oldest-source-stamp
-bstconfigpaths.h: $(top_srcdir)/configure Makefile
-	cd $(srcdir) \
-	&& echo "/* Generated data from $< (by make $@) */" > $(gen_source) \
-	&& echo >> $(gen_source) \
-	&& echo "#define BST_DATA_DIR \"${beastdatadir}\"" >> $(gen_source) \
-	&& echo >> $(gen_source) \
-	&& echo "/* Generated data ends here */" >> $(gen_source) \
-	&& mv $(gen_source) $@
 
 
 #
 # private (birnet) dependancy to make TAGS file after each build
 #
-all: @MISSING_ETAGS@ @BIRNET_Y@ TAGS
+all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
 
 
 #

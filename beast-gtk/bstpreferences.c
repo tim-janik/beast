@@ -75,10 +75,10 @@ bst_preferences_init (BstPreferences *prefs)
   GtkWidget *any, *hbox, *button;
 
   prefs->gconf = NULL;
-  prefs->param_box = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
-  BST_PARAM_VIEW (prefs->param_box)->base_type = BSE_TYPE_GCONFIG;
-  gtk_widget_show (prefs->param_box);
-  gtk_container_add (GTK_CONTAINER (prefs), prefs->param_box);
+  prefs->param_view = gtk_widget_new (BST_TYPE_PARAM_VIEW, NULL);
+  bst_param_view_set_mask (BST_PARAM_VIEW (prefs->param_view), BSE_TYPE_GCONFIG, 0, NULL, NULL);
+  gtk_widget_show (prefs->param_view);
+  gtk_container_add (GTK_CONTAINER (prefs), prefs->param_view);
 
   /* dialog bits
    */
@@ -101,7 +101,7 @@ bst_preferences_init (BstPreferences *prefs)
 			   "object_signal::clicked", bst_preferences_apply, prefs,
 			   "object_signal::destroy", bse_nullify_pointer, &prefs->apply,
 			   NULL);
-  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->param_box)->tooltips, button,
+  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->param_view)->tooltips, button,
 			"Apply the preference values. Some values may only take effect after"
 			"a restart. The preference values are locked against modifcation during"
 			"playback.",
@@ -116,7 +116,7 @@ bst_preferences_init (BstPreferences *prefs)
 			   //"object_signal::clicked", bst_preferences_apply, prefs,
 			   "object_signal::destroy", bse_nullify_pointer, &prefs->save,
 			   NULL);
-  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->param_box)->tooltips, button,
+  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->param_view)->tooltips, button,
 			"Save the preference values (does not apply them to the running program).",
 			NULL);
   prefs->save = button;
@@ -127,7 +127,7 @@ bst_preferences_init (BstPreferences *prefs)
 			   "can_default", TRUE,
 			   "object_signal::clicked", bst_preferences_revert, prefs,
 			   NULL);
-  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->param_box)->tooltips, button,
+  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->param_view)->tooltips, button,
 			"Revert the preference values to the current internal values.",
 			NULL);
   button = gtk_widget_new (GTK_TYPE_BUTTON,
@@ -137,7 +137,7 @@ bst_preferences_init (BstPreferences *prefs)
 			   "can_default", TRUE,
 			   "object_signal::clicked", bst_preferences_default_revert, prefs,
 			   NULL);
-  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->param_box)->tooltips, button,
+  gtk_tooltips_set_tip (BST_PARAM_VIEW (prefs->param_view)->tooltips, button,
 			"Revert to hardcoded default values (factory settings ;).",
 			NULL);
 }
@@ -181,7 +181,7 @@ bst_preferences_set_gconfig (BstPreferences *prefs,
 
   if (prefs->gconf)
     {
-      bst_param_view_set_object (BST_PARAM_VIEW (prefs->param_box), NULL);
+      bst_param_view_set_object (BST_PARAM_VIEW (prefs->param_view), NULL);
       bse_object_remove_notifiers_by_func (prefs->gconf,
 					   preferences_lock_changed,
 					   prefs);
@@ -196,7 +196,7 @@ bst_preferences_set_gconfig (BstPreferences *prefs,
 				    "lock_changed",
 				    preferences_lock_changed,
 				    prefs);
-      bst_param_view_set_object (BST_PARAM_VIEW (prefs->param_box), BSE_OBJECT (prefs->gconf));
+      bst_param_view_set_object (BST_PARAM_VIEW (prefs->param_view), BSE_OBJECT (prefs->gconf));
     }
   preferences_lock_changed (prefs);
 }

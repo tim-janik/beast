@@ -45,7 +45,7 @@ struct _BstPreferences
 
   BseGConfig	*gconf;
 
-  GtkWidget	*param_box;
+  GtkWidget	*param_view;
   GtkWidget	*apply;
   GtkWidget	*save;
 };

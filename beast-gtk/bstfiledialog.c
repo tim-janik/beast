@@ -18,6 +18,8 @@
 #include	"bstfiledialog.h"
 
 #include	<stdio.h>
+#include	<fcntl.h>
+#include	<errno.h>
 
 
 /* --- prototypes --- */
@@ -237,4 +239,64 @@ bst_file_dialog_new_save (BstApp *app)
 					 GTK_OBJECT (dialog));
 
   return dialog;
+}
+
+GtkWidget*
+bst_text_view_from_file (const gchar *file_name) /* FIXME: should go into misc.c or utils.c */
+{
+  gint fd;
+  GtkWidget *hbox, *text, *sb;
+  
+  g_return_val_if_fail (file_name != NULL, NULL);
+  
+  hbox = gtk_widget_new (GTK_TYPE_HBOX,
+			 "visible", TRUE,
+			 "homogeneous", FALSE,
+			 "spacing", 0,
+			 "border_width", 5,
+			 NULL);
+  sb = gtk_vscrollbar_new (NULL);
+  gtk_widget_show (sb);
+  gtk_box_pack_end (GTK_BOX (hbox), sb, FALSE, TRUE, 0);
+  text = gtk_widget_new (GTK_TYPE_TEXT,
+			 "visible", TRUE,
+			 "vadjustment", GTK_RANGE (sb)->adjustment,
+			 "editable", FALSE,
+			 "word_wrap", TRUE,
+			 "line_wrap", TRUE,
+			 "width", 500,
+			 "height", 500,
+			 "parent", hbox,
+			 NULL);
+  
+  fd = open (file_name, O_RDONLY, 0);
+  if (fd >= 0)
+    {
+      gchar buffer[512];
+      guint n;
+      
+      do
+	{
+	  do
+	    n = read (fd, buffer, 512);
+	  while (n < 0 && errno == EINTR); /* don't mind signals */
+	  
+	  gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, buffer, n);
+	}
+      while (n > 0);
+      close (fd);
+
+      if (n < 0)
+	fd = -1;
+    }
+  if (fd < 0)
+    {
+      gchar *error;
+
+      error = g_strconcat ("Failed to load \"", file_name, "\":\n", g_strerror (errno), NULL);
+      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, error, strlen (error));
+      g_free (error);
+    }
+
+  return hbox;
 }

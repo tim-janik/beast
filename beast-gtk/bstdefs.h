@@ -73,7 +73,15 @@ typedef enum
   /* application wide
    */
   BST_OP_EXIT,
+
+  /* help dialogs
+   */
+#define BST_OP_HELP_FIRST	BST_OP_HELP_ABOUT
   BST_OP_HELP_ABOUT,
+  BST_OP_HELP_FAQ,
+  BST_OP_HELP_HEART,
+  BST_OP_HELP_NETWORKS,
+#define	BST_OP_HELP_LAST	BST_OP_HELP_NETWORKS
 
   BST_OP_LAST
 } BstOps;

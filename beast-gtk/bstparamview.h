@@ -43,11 +43,14 @@ struct _BstParamView
 {
   GtkVBox	 parent_object;
 
-  BseType	 base_type;
-
   BseObject	*object;
 
   GSList	*bparams;
+
+  BseType	 base_type;
+  BseType	 object_type;
+  GPatternSpec  *reject_pattern;
+  GPatternSpec  *match_pattern;
 
   GtkTooltips	*tooltips;
 };
@@ -60,12 +63,15 @@ struct _BstParamViewClass
 /* --- prototypes --- */
 GtkType		bst_param_view_get_type		(void);
 GtkWidget*	bst_param_view_new		(BseObject	*object);
-GtkWidget*	bst_param_view_new_with_base	(BseObject	*object,
-						 BseType	 base_type);
 void		bst_param_view_update		(BstParamView	*param_view);
 void		bst_param_view_rebuild		(BstParamView	*param_view);
 void		bst_param_view_set_object	(BstParamView	*param_view,
 						 BseObject	*object);
+void		bst_param_view_set_mask		(BstParamView	*param_view,
+						 BseType	 base_type,
+						 BseType	 param_object_type,
+						 const gchar	*reject_pattern,
+						 const gchar	*match_pattern);
 
 
 

@@ -45,7 +45,7 @@ struct _BstHeartMonitor
 
   BseHeart	*heart;
 
-  GtkWidget	*param_box;
+  GtkWidget	*param_view;
 };
 struct _BstHeartMonitorClass
 {
