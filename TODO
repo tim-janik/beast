@@ -1,10 +1,15 @@
 FIXMES:
+- fix undo for: BseDataPocket
 - BseCategories need to provide an untranslated version (for menu paths)
 - get rid of root_category in idl files once BseCategories has an untranslated version
 - get rid of hardcoded server id (1) by means of an object-less procedure
 - closing an app window stops playing songs, even if alternative views exist
 - bsedefs.h should define _() only for BSE_COMPILATION
+- fix procbrowser
+- fix BseSong::denominator SpinButton arrows not working
 - apply editable and sensitive to params
+- implement (GUI for) locked properties
+- insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
 - destroy piano roll dialog if part is released
 - remove hpack and vpack
 - remove bstrack*.[hc] cruft, old parasites and data pocket
@@ -13,7 +18,6 @@ FIXMES:
 - introduce gxk_action_group_select()-freeze/thaw to surround select/exec pair
 - auto-connect viewable-changed to gadget notebooks
 - add one-shot property to gxk-gadget-factories
-- make the plugin loader match on *.so and not *.la files
 - remove/rename test-string.bse
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
@@ -24,10 +28,7 @@ FIXMES:
 - registering the same procedure twice triggers a g_warning()
 - add new test song containing a wave track so the internal wave csynth is properly testet
 - File/Open should merge if issued on an empty project
-- fix non-NULL icons at 0x0, GUI breaks in lots of places for them
 - move non-infrastructure synthesis modules out of the core into plugins/
-- freeverb bypass toggle
-- add "bypass" option to audio output channels
 - if Track::Synth is NULL, disconnect post-process-subsynth from track-context-merger
 - add Solo propety to tracks
 - add Volume property to tracks
@@ -38,33 +39,23 @@ FIXMES:
 - add sfisclock.h to sfi.h
 - <mg> quick rfe based on 0.5.3: implement multiple selection in the wave loader file selector and have an add button that does not close the dialog
 - fixup filemenu/dialog for WAVE recording
-- fix undo for: BseDataPocket
 - fix initial_granule in gslvorbis-cutter.c wrg page flushing
 - rename gsl_strerror()
-- fix 64bit v_int usage of GScanner in BSE?
 - get rid of bse_procedure_execvl
 - get rid of super->mod_time
-- rename *.gslwave files appropriately
 - don't always rebuild lib-list [Rebuild]-button
 - fix name of BSE_SNET_FLAG_USER_SYNTH
 - fix BST_OP_PROJECT_SAVE
-- implement (GUI for) locked properties
 - register drivers with categories
 - fix gsl wave osc
-- install bsw/* into bse/.
 - nuke SFI memblocks, malloc() is good enough
-- GslModuleClass.free should be renamed free_user_data
 - fix engine deinitialization warning in bseserver.c
 - match enum names on word boundaries only
 - master tune slider in preferences (kammer ton)
 - bsemididevice-oss throws warnings when compiled without midi support
 - MidiEvent (serialization)
-- gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
-- create modules via category identifier, not type name
 - add IDs to part links in tracks
-- insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
 - registering the same script function twice triggers GType assertion
-- fix procbrowser
 - fix uses of gsl_engine_tick_stamp_from_systime() in bstwaveeditor.c
 - cleanup helper/util code in sfitype.h
 - song->master volume doesn't affect anything
@@ -74,10 +65,8 @@ FIXMES:
 - RackEditor covers are broken for rack-items close to right table boundary
 - fix the word "tact" vs. measure
 - need tact number entry widget
-- object clippboard
 - fade in/out of samples in sample editor
 - wave editor: provide transpose spinner for wave preview
-- fix BseSong::denominator SpinButton arrows not working
 - collect flow jobs from unscheduled nodes, i.e. call
   collect_trash_timed_jobs_L() not only from _engine_push_processed_node()
 
@@ -109,7 +98,10 @@ Stefan Gui TODOs (priorities: 9=high, 0=low):
 4 - implement selection and copy and paste of parts in the strack roll
 
 TODO:
+- implement an object clippboard
 - add script to re-quantize piano-roll selections
+- freeverb bypass toggle
+- add "bypass" option to audio output channels
 - virtual MIDI keyboard
 - fix tracks used only as modulation input (party-monster.bse)
 - delay class destruction and plugin unloading through async handlers (slight timeout)
