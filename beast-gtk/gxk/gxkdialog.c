@@ -574,24 +574,34 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
       return TRUE;
     }
 
-#if defined (__linux__)         // FIXME: use gtk_window_activate_key() once exposed
   /* we're overriding the GtkWindow implementation here to give
    * the focus widget precedence over unmodified accelerators
    * before the accelerator activation scheme.
    */
-
+#if     GTK_CHECK_VERSION (2, 3, 4)
   /* invoke control/alt accelerators */
   if (!handled && event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))
-    handled = _gtk_window_activate_key (window, event);
+    handled = gtk_window_activate_key (window, event);
+  /* invoke focus widget handlers */
+  if (!handled)
+    handled = gtk_window_propagate_key_event (window, event);
+  /* invoke non-(control/alt) accelerators */
+  if (!handled && !(event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
+    handled = gtk_window_activate_key (window, event);
+  /* chain up, bypassing gtk_window_key_press(), to invoke binding set */
+  if (!handled)
+    handled = GTK_WIDGET_CLASS (g_type_class_peek (g_type_parent (GTK_TYPE_WINDOW)))->key_press_event (widget, event);
+#elif   defined (__linux__)     /* on linux we can circumvent gtk+-2.2 also */
+  /* invoke control/alt accelerators */
+  if (!handled && event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))
+    handled = _gtk_window_activate_key (window, event); /* available due to broken libtool */
   /* invoke focus widget handlers */
   if (!handled)
     {
       GtkWidget *focus = window->focus_widget;
       if (focus)
         g_object_ref (focus);
-      while (!handled &&
-             focus && focus != widget &&
-             gtk_widget_get_toplevel (focus) == widget)
+      while (!handled && focus && focus != widget && gtk_widget_get_toplevel (focus) == widget)
         {
           GtkWidget *parent;
           if (GTK_WIDGET_IS_SENSITIVE (focus))
@@ -611,7 +621,7 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
   /* chain up, bypassing gtk_window_key_press(), to invoke binding set */
   if (!handled)
     handled = GTK_WIDGET_CLASS (g_type_class_peek (g_type_parent (GTK_TYPE_WINDOW)))->key_press_event (widget, event);
-#else
+#else   /* gtk+ <= 2.2, non-linux */
   handled = GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
 #endif
 

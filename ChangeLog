@@ -1,3 +1,10 @@
+Tue Mar  2 01:07:55 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkdialog.c:
+	(gxk_dialog_key_press_event): when building against gtk+-2.3.5, use
+	gtk_window_activate_key() and gtk_window_propagate_key_event() to
+	implement proper accelerator vs. focus widget handling.
+
 Fri Feb 27 08:38:09 2004  Tim Janik  <timj@gtk.org>
 
 	* library/keys/: new directory.
