@@ -47,7 +47,7 @@ _engine_schedule_new (void)
   sched->cur_node = NULL;
   sched->cur_cycle = NULL;
   sched->vnodes = NULL;
-
+  
   return sched;
 }
 
@@ -57,7 +57,7 @@ unschedule_virtual (EngineSchedule *sched,
 {
   g_return_if_fail (ENGINE_NODE_IS_SCHEDULED (vnode) == TRUE);
   g_return_if_fail (sched->n_items > 0);
-
+  
   /* SCHED_DEBUG ("unschedule_virtual(%p)", vnode); */
   sched->vnodes = sfi_ring_remove (sched->vnodes, vnode);
   vnode->sched_tag = FALSE;
@@ -664,11 +664,11 @@ subschedule_child (EngineSchedule *schedule,
 		   guint           child_ostream)
 {
   g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
-
+  
   /* flag connected ostream */
   clean_ostreams (child);
   child->module.ostreams[child_ostream].connected = TRUE;
-
+  
   /* schedule away if necessary */
   if (ENGINE_NODE_IS_SCHEDULED (child))
     query->leaf_level = MAX (query->leaf_level, child->sched_leaf_level + 1);
@@ -707,7 +707,7 @@ subschedule_query_node (EngineSchedule *schedule,
   g_return_if_fail (ENGINE_NODE_IS_VIRTUAL (node) == FALSE);
   g_return_if_fail (node->sched_recurse_tag == FALSE);
   g_return_if_fail (query->leaf_level == 0);
-
+  
   /* update suspension state if necessary */
   update_suspension_state (node);
   /* reset ostream[].connected flags */
@@ -738,7 +738,7 @@ subschedule_query_node (EngineSchedule *schedule,
   for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
     {
       BseJStream *jstream = node->module.jstreams + j;
-
+      
       /* we check this jstream's connections for virtual dead-ends.
        * valid connections stay at (are moved to) the array front and
        * are counted in n_connections, while dead-ends are moved

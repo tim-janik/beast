@@ -184,35 +184,35 @@ typedef struct
 struct _EngineNode		/* fields sorted by order of processing access */
 {
   BseModule	 module;
-
+  
   SfiRecMutex	 rec_mutex;	/* processing lock */
   guint64	 counter;	/* <= GSL_TICK_STAMP */
   EngineInput	*inputs;	/* [ENGINE_NODE_N_ISTREAMS()] */
   EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()][jstream->jcount] */
   EngineOutput	*outputs;	/* [ENGINE_NODE_N_OSTREAMS()] */
-
+  
   /* timed jobs */
   EngineTimedJob *flow_jobs;			/* active jobs */
   EngineProbeJob *probe_jobs;		        /* probe requests */
   EngineTimedJob *boundary_jobs;		/* active jobs */
   EngineUserJob  *ujob_first, *ujob_last;	/* trash list */
-
+  
   /* suspend/activation time */
   guint64        next_active;           /* result of suspend state updates */
-
+  
   /* master-node-list */
   EngineNode	*mnl_next;
   EngineNode	*mnl_prev;
   guint		 integrated : 1;
   guint		 virtual_node : 1;
-
+  
   guint		 is_consumer : 1;
-
+  
   /* suspension */
   guint		 update_suspend : 1;	/* whether suspend state needs updating */
   guint		 in_suspend_call : 1;	/* recursion barrier during suspend state updates */
   guint		 needs_reset : 1;	/* flagged at resumption */
-
+  
   /* scheduler */
   guint		 cleared_ostreams : 1;	/* whether ostream[].connected was cleared already */
   guint		 sched_tag : 1;		/* whether this node is contained in the schedule */

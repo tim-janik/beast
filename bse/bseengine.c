@@ -58,7 +58,7 @@ bse_module_new (const BseModuleClass *klass,
 {
   EngineNode *node;
   guint i;
-
+  
   g_return_val_if_fail (klass != NULL, NULL);
   g_return_val_if_fail (klass->process != NULL || klass->process_defer != NULL, NULL);
   if (klass->process_defer)
@@ -198,11 +198,11 @@ bse_job_kill_inputs (BseModule *module)
   BseJob *job;
   
   g_return_val_if_fail (module != NULL, NULL);
-
+  
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_KILL_INPUTS;
   job->data.node = ENGINE_NODE (module);
-
+  
   return job;
 }
 
@@ -221,11 +221,11 @@ bse_job_kill_outputs (BseModule *module)
   BseJob *job;
   
   g_return_val_if_fail (module != NULL, NULL);
-
+  
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_KILL_OUTPUTS;
   job->data.node = ENGINE_NODE (module);
-
+  
   return job;
 }
 
@@ -510,10 +510,10 @@ bse_job_probe_request (BseModule    *module,
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (probe_func != NULL, NULL);
   g_return_val_if_fail (ochannel_bytemask != NULL, NULL);
-
+  
   guint i, n_oblocks = module->klass->n_ostreams;
   EngineProbeJob *pjob = g_malloc0 (sizeof (*pjob) +  sizeof (pjob->oblocks[0]) * n_oblocks);
-
+  
   pjob->job_type = ENGINE_JOB_PROBE_JOB;
   pjob->probe_func = probe_func;
   pjob->data = data;
@@ -523,7 +523,7 @@ bse_job_probe_request (BseModule    *module,
   for (i = 0; i < n_oblocks; i++)
     if (ochannel_bytemask[i])
       pjob->oblocks[i] = g_new0 (gfloat, bse_engine_block_size());
-
+  
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;
   job->data.probe_job.node = ENGINE_NODE (module);
@@ -558,7 +558,7 @@ bse_job_flow_access (BseModule    *module,
 {
   BseJob *job;
   EngineTimedJob *tjob;
-
+  
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
@@ -570,7 +570,7 @@ bse_job_flow_access (BseModule    *module,
   tjob->data = data;
   tjob->tick_stamp = tick_stamp;
   tjob->access_func = access_func;
-
+  
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_FLOW_JOB;
   job->data.timed_job.node = ENGINE_NODE (module);
@@ -604,7 +604,7 @@ bse_job_boundary_access (BseModule    *module,
 {
   BseJob *job;
   EngineTimedJob *tjob;
-
+  
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   g_return_val_if_fail (tick_stamp < GSL_MAX_TICK_STAMP, NULL);
@@ -616,7 +616,7 @@ bse_job_boundary_access (BseModule    *module,
   tjob->data = data;
   tjob->tick_stamp = tick_stamp;
   tjob->access_func = access_func;
-
+  
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_BOUNDARY_JOB;
   job->data.timed_job.node = ENGINE_NODE (module);
@@ -641,7 +641,7 @@ BseJob*
 bse_job_suspend_now (BseModule *module)
 {
   BseJob *job;
-
+  
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (ENGINE_MODULE_IS_VIRTUAL (module) == FALSE, NULL);
   
@@ -649,7 +649,7 @@ bse_job_suspend_now (BseModule *module)
   job->job_id = ENGINE_JOB_SUSPEND;
   job->data.tick.node = ENGINE_NODE (module);
   job->data.tick.stamp = GSL_MAX_TICK_STAMP;
-
+  
   return job;
 }
 
@@ -683,7 +683,7 @@ bse_job_resume_at (BseModule *module,
   job->job_id = ENGINE_JOB_RESUME;
   job->data.tick.node = ENGINE_NODE (module);
   job->data.tick.stamp = tick_stamp;
-
+  
   return job;
 }
 
@@ -794,15 +794,15 @@ bse_job_add_timer (BseEngineTimerFunc timer_func,
 		   BseFreeFunc        free_func)
 {
   BseJob *job;
-
+  
   g_return_val_if_fail (timer_func != NULL, NULL);
-
+  
   job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_ADD_TIMER;
   job->data.timer.timer_func = timer_func;
   job->data.timer.data = data;
   job->data.timer.free_func = free_func;
-
+  
   return job;
 }
 
@@ -844,7 +844,7 @@ BseTrans*
 bse_trans_open (void)
 {
   BseTrans *trans;
-
+  
   trans = sfi_new_struct0 (BseTrans, 1);
   
   trans->jobs_head = NULL;
@@ -897,7 +897,7 @@ bse_trans_merge (BseTrans *trans1,
   g_return_val_if_fail (trans1->comitted == FALSE, trans2);
   g_return_val_if_fail (trans2 != NULL, trans1);
   g_return_val_if_fail (trans2->comitted == FALSE, trans1);
-
+  
   if (!trans1->jobs_head)
     {
       trans1->jobs_head = trans2->jobs_head;
@@ -991,7 +991,7 @@ bse_trans_commit_delayed (BseTrans *trans,
 {
   g_return_if_fail (trans != NULL);
   g_return_if_fail (trans->comitted == FALSE);
-
+  
   if (tick_stamp <= gsl_tick_stamp ())
     bse_trans_commit (trans);
   else
@@ -1064,7 +1064,7 @@ virtual_module_process (BseModule *module,
 			guint      n_values)
 {
   guint i;
-
+  
   /* dumb pass-through task (FIXME: virtualization works without _process()) */
   for (i = 0; i < BSE_MODULE_N_OSTREAMS (module); i++)
     if (module->ostreams[i].connected)
@@ -1081,7 +1081,7 @@ virtual_module_free (gpointer        data,
 		     const BseModuleClass *klass)
 {
   VirtualModuleClass *vclass = (VirtualModuleClass*) klass;
-
+  
   if (vclass->free_data)
     vclass->free_data (data);
   g_free (vclass);
@@ -1137,16 +1137,16 @@ bse_module_new_virtual (guint       n_iostreams,
   };
   VirtualModuleClass *vclass;
   BseModule *module;
-
+  
   g_return_val_if_fail (n_iostreams > 0, NULL);
-
+  
   vclass = g_memdup (&virtual_module_class, sizeof (virtual_module_class));
   vclass->klass.n_istreams = n_iostreams;
   vclass->klass.n_ostreams = n_iostreams;
   vclass->free_data = free_data;
   module = bse_module_new (&vclass->klass, user_data);
   ENGINE_NODE (module)->virtual_node = TRUE;
-
+  
   return module;
 }
 
@@ -1210,7 +1210,7 @@ bse_engine_constrain (guint            latency_ms,
 {
   guint tmp, block_size, control_raster;
   g_return_if_fail (sample_freq >= 100);
-
+  
   /* constrain latency to avoid overflow */
   latency_ms = CLAMP (latency_ms, 1, 10000);
   /* derive block size from latency and sample frequency,
@@ -1263,18 +1263,18 @@ bse_engine_configure (guint            latency_ms,
   BseTrans *trans;
   BseJob *job;
   g_return_val_if_fail (bse_engine_initialized == TRUE, FALSE);
-
+  
   /* optimize */
   bse_engine_constrain (latency_ms, sample_freq, control_freq, &block_size, &control_raster);
   if (0 && block_size == bse_engine_block_size() && control_raster == bse_engine_control_raster())
     return TRUE;
-
+  
   /* pseudo-sync first */
   bse_engine_wait_on_trans();
   /* paranoia checks */
   if (_engine_mnl_head() || sync_lock)
     return FALSE;
-
+  
   /* block master */
   GSL_SPIN_LOCK (&sync_mutex);
   job = sfi_new_struct0 (BseJob, 1);
@@ -1296,7 +1296,7 @@ bse_engine_configure (guint            latency_ms,
   while (!sync_lock)
     sfi_cond_wait (&sync_cond, &sync_mutex);
   GSL_SPIN_UNLOCK (&sync_mutex);
-
+  
   if (!_engine_mnl_head())
     {
       /* cleanup */
@@ -1311,13 +1311,13 @@ bse_engine_configure (guint            latency_ms,
       _gsl_tick_stamp_inc ();   /* ensure stamp validity (>0 and systime mark) */
       success = TRUE;
     }
-
+  
   /* unblock master */
   GSL_SPIN_LOCK (&sync_mutex);
   sync_lock = FALSE;
   sfi_cond_signal (&sync_cond);
   GSL_SPIN_UNLOCK (&sync_mutex);
-
+  
   if (success)
     DEBUG ("configured%s: mixfreq=%uHz bsize=%uvals craster=%u (cfreq=%f)",
            bse_engine_threaded ? "(threaded)" : "",
@@ -1338,15 +1338,15 @@ void
 bse_engine_init (gboolean run_threaded)
 {
   g_return_if_fail (bse_engine_initialized == FALSE);
-
+  
   bse_engine_initialized = TRUE;
   bse_engine_reinit_utils();
   /* first configure */
   bse_engine_configure (50, 44100, 50);
-
+  
   /* then setup threading */
   bse_engine_threaded = run_threaded;
-
+  
   if (bse_engine_threaded)
     {
       gint err = pipe (master_data.wakeup_pipe);
@@ -1393,7 +1393,7 @@ bse_engine_prepare (BseEngineLoop *loop)
 {
   g_return_val_if_fail (loop != NULL, FALSE);
   g_return_val_if_fail (bse_engine_initialized == TRUE, FALSE);
-
+  
   if (!bse_engine_threaded)
     return _engine_master_prepare (loop) || bse_engine_has_garbage ();
   else
@@ -1434,10 +1434,10 @@ void
 bse_engine_dispatch (void)
 {
   g_return_if_fail (bse_engine_initialized == TRUE);
-
+  
   if (!bse_engine_threaded)
     _engine_master_dispatch ();
-
+  
   if (bse_engine_has_garbage ())	/* prevent extra mutex locking */
     bse_engine_garbage_collect ();
 }
@@ -1472,11 +1472,11 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
 {
   GslTickStampUpdate ustamp = gsl_tick_stamp_last ();
   guint64 tick_stamp;
-
+  
   /* FIXME: we should add special guards here
    * for sfi_time_system() - ustamp.system_time ~> (44100 / bse_engine_block_size ())
    */
-
+  
   if (systime > ustamp.system_time)
     {
       tick_stamp = systime - ustamp.system_time;
@@ -1489,7 +1489,7 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
       tick_stamp = tick_stamp * bse_engine_sample_freq () / 1000000;
       tick_stamp = ustamp.tick_stamp - MIN (tick_stamp, ustamp.tick_stamp);
     }
-
+  
 #if 0
   if (tick_stamp > 158760000)
     g_error ("tick_stamp conversion problem:\n"
@@ -1504,7 +1504,7 @@ bse_engine_tick_stamp_from_systime (guint64 systime)
 	     ustamp.system_time, ustamp.tick_stamp,
 	     bse_engine_sample_freq ());
 #endif
-
+  
   return tick_stamp;
 }
 
@@ -1525,10 +1525,10 @@ bse_engine_wait_on_trans (void)
   /* non-threaded */
   if (!bse_engine_threaded)
     _engine_master_dispatch_jobs ();
-
+  
   /* threaded */
   _engine_wait_on_trans ();
-
+  
   /* call all free() functions */
   bse_engine_garbage_collect ();
 }

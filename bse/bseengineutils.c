@@ -39,7 +39,7 @@ _engine_alloc_ostreams (guint n)
       guint i = sizeof (BseOStream) * n + sizeof (gfloat) * bse_engine_block_size () * n;
       BseOStream *streams = g_malloc0 (i);
       gfloat *buffers = (gfloat*) (streams + n);
-
+      
       for (i = 0; i < n; i++)
 	{
 	  streams[i].values = buffers;
@@ -87,21 +87,21 @@ free_node (EngineNode *node)
   const BseModuleClass *klass;
   gpointer user_data;
   guint j;
-
+  
   g_return_if_fail (node != NULL);
   g_return_if_fail (node->output_nodes == NULL);
   g_return_if_fail (node->integrated == FALSE);
   g_return_if_fail (node->sched_tag == FALSE);
   g_return_if_fail (node->sched_recurse_tag == FALSE);
   g_return_if_fail (node->flow_jobs == NULL && node->boundary_jobs == NULL && node->ujob_first == NULL);
-
+  
   while (node->probe_jobs)
     {
       EngineProbeJob *ujob = node->probe_jobs;
       node->probe_jobs = ujob->next;
       free_user_job ((EngineUserJob*) ujob);
     }
-
+  
   sfi_rec_mutex_destroy (&node->rec_mutex);
   if (node->module.ostreams)
     {
@@ -126,7 +126,7 @@ free_node (EngineNode *node)
   klass = node->module.klass;
   user_data = node->module.user_data;
   sfi_delete_struct (EngineNode, node);
-
+  
   /* allow the free function to free the klass as well */
   if (klass->free)
     klass->free (user_data, klass);
@@ -258,7 +258,7 @@ _engine_free_trans (BseTrans *trans)
   g_return_if_fail (trans->comitted == FALSE);
   if (trans->jobs_tail)
     g_return_if_fail (trans->jobs_tail->next == NULL);  /* paranoid */
-
+  
   GSL_SPIN_LOCK (&cqueue_trans);
   trans->cqt_next = cqueue_trans_trash;
   cqueue_trans_trash = trans;
@@ -334,14 +334,14 @@ bse_engine_garbage_collect (void)
 {
   BseTrans *trans;
   EngineUserJob *jlist;
-
+  
   GSL_SPIN_LOCK (&cqueue_trans);
   trans = cqueue_trans_trash;
   cqueue_trans_trash = NULL;
   jlist = cqueue_trash_ujobs;
   cqueue_trash_ujobs = NULL;
   GSL_SPIN_UNLOCK (&cqueue_trans);
-
+  
   while (jlist)
     {
       EngineUserJob *ujob = jlist;
@@ -349,7 +349,7 @@ bse_engine_garbage_collect (void)
       ujob->next = NULL;
       free_user_job (ujob);
     }
-
+  
   while (trans)
     {
       BseTrans *t = trans;
@@ -387,11 +387,11 @@ _engine_set_schedule (EngineSchedule *sched)
   
   GSL_SPIN_LOCK (&pqueue_mutex);
   if_reject (pqueue_schedule != NULL)
-    {
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
-      g_warning (G_STRLOC ": schedule already set");
-      return;
-    }
+                                {
+                                  GSL_SPIN_UNLOCK (&pqueue_mutex);
+                                  g_warning (G_STRLOC ": schedule already set");
+                                  return;
+                                }
   pqueue_schedule = sched;
   sched->in_pqueue = TRUE;
   GSL_SPIN_UNLOCK (&pqueue_mutex);
@@ -401,16 +401,16 @@ void
 _engine_unset_schedule (EngineSchedule *sched)
 {
   EngineUserJob *trash_ujobs_first, *trash_ujobs_last;
-
+  
   g_return_if_fail (sched != NULL);
   
   GSL_SPIN_LOCK (&pqueue_mutex);
   if_reject (pqueue_schedule != sched)
-    {
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
-      g_warning (G_STRLOC ": schedule(%p) not currently set", sched);
-      return;
-    }
+                                {
+                                  GSL_SPIN_UNLOCK (&pqueue_mutex);
+                                  g_warning (G_STRLOC ": schedule(%p) not currently set", sched);
+                                  return;
+                                }
   if_reject (pqueue_n_nodes || pqueue_n_cycles)
     g_warning (G_STRLOC ": schedule(%p) still busy", sched);
   sched->in_pqueue = FALSE;
@@ -420,7 +420,7 @@ _engine_unset_schedule (EngineSchedule *sched)
   pqueue_trash_ujobs_first = NULL;
   pqueue_trash_ujobs_last = NULL;
   GSL_SPIN_UNLOCK (&pqueue_mutex);
-
+  
   if (trash_ujobs_first)	/* move trash timed jobs */
     {
       GSL_SPIN_LOCK (&cqueue_trans);
@@ -451,22 +451,22 @@ static inline void
 collect_user_jobs_L (EngineNode *node)
 {
   if_reject (node->ujob_first != NULL)
-    {
-      /* move into timed jobs trash queue */
-      node->ujob_last->next = pqueue_trash_ujobs_first;
-      pqueue_trash_ujobs_first = node->ujob_first;
-      if (!pqueue_trash_ujobs_last)
-	pqueue_trash_ujobs_last = node->ujob_last;
-      node->ujob_first = NULL;
-      node->ujob_last = NULL;
-    }
+                                 {
+                                   /* move into timed jobs trash queue */
+                                   node->ujob_last->next = pqueue_trash_ujobs_first;
+                                   pqueue_trash_ujobs_first = node->ujob_first;
+                                   if (!pqueue_trash_ujobs_last)
+                                     pqueue_trash_ujobs_last = node->ujob_last;
+                                   node->ujob_first = NULL;
+                                   node->ujob_last = NULL;
+                                 }
 }
 
 void
 _engine_node_collect_jobs (EngineNode *node)
 {
   g_return_if_fail (node != NULL);
-
+  
   GSL_SPIN_LOCK (&pqueue_mutex);
   collect_user_jobs_L (node);
   GSL_SPIN_UNLOCK (&pqueue_mutex);
@@ -527,7 +527,7 @@ void
 _engine_mnl_remove (EngineNode *node)
 {
   g_return_if_fail (node->integrated == TRUE);
-
+  
   node->integrated = FALSE;
   /* remove */
   if (node->mnl_prev)
@@ -548,7 +548,7 @@ _engine_mnl_integrate (EngineNode *node)
   g_return_if_fail (node->integrated == FALSE);
   g_return_if_fail (node->flow_jobs == NULL);
   g_return_if_fail (node->boundary_jobs == NULL);
-
+  
   node->integrated = TRUE;
   /* append */
   if (master_node_list_tail)
@@ -564,48 +564,48 @@ void
 _engine_mnl_node_changed (EngineNode *node)
 {
   EngineNode *sibling;
-
+  
   g_return_if_fail (node->integrated == TRUE);
-
+  
   /* the master node list is partially sorted. that is, all
    * nodes which are not scheduled and have pending user jobs
    * are agglomerated at the head.
    */
   sibling = node->mnl_prev ? node->mnl_prev : node->mnl_next;
   if_reject (sibling && BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node) != BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (sibling))
-    {
-      /* remove */
-      if (node->mnl_prev)
-	node->mnl_prev->mnl_next = node->mnl_next;
-      else
-	master_node_list_head = node->mnl_next;
-      if (node->mnl_next)
-	node->mnl_next->mnl_prev = node->mnl_prev;
-      else
-	master_node_list_tail = node->mnl_prev;
-      if (BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node))	/* move towards head */
-	{
-	  /* prepend to non-NULL list */
-	  master_node_list_head->mnl_prev = node;
-	  node->mnl_next = master_node_list_head;
-	  master_node_list_head = node;
-	  node->mnl_prev = NULL;
-	}
-      else				/* move towards tail */
-	{
-	  /* append to non-NULL list */
-	  master_node_list_tail->mnl_next = node;
-	  node->mnl_prev = master_node_list_tail;
-	  master_node_list_tail = node;
-	  node->mnl_next = NULL;
-	}
-    }
+                                                                       {
+                                                                         /* remove */
+                                                                         if (node->mnl_prev)
+                                                                           node->mnl_prev->mnl_next = node->mnl_next;
+                                                                         else
+                                                                           master_node_list_head = node->mnl_next;
+                                                                         if (node->mnl_next)
+                                                                           node->mnl_next->mnl_prev = node->mnl_prev;
+                                                                         else
+                                                                           master_node_list_tail = node->mnl_prev;
+                                                                         if (BSE_ENGINE_MNL_UNSCHEDULED_UJOB_NODE (node))	/* move towards head */
+                                                                           {
+                                                                             /* prepend to non-NULL list */
+                                                                             master_node_list_head->mnl_prev = node;
+                                                                             node->mnl_next = master_node_list_head;
+                                                                             master_node_list_head = node;
+                                                                             node->mnl_prev = NULL;
+                                                                           }
+                                                                         else				/* move towards tail */
+                                                                           {
+                                                                             /* append to non-NULL list */
+                                                                             master_node_list_tail->mnl_next = node;
+                                                                             node->mnl_prev = master_node_list_tail;
+                                                                             master_node_list_tail = node;
+                                                                             node->mnl_next = NULL;
+                                                                           }
+                                                                       }
   if_reject (node->ujob_first != NULL)
-    {
-      GSL_SPIN_LOCK (&pqueue_mutex);
-      collect_user_jobs_L (node);
-      GSL_SPIN_UNLOCK (&pqueue_mutex);
-    }
+                                 {
+                                   GSL_SPIN_LOCK (&pqueue_mutex);
+                                   collect_user_jobs_L (node);
+                                   GSL_SPIN_UNLOCK (&pqueue_mutex);
+                                 }
 }
 
 
@@ -650,7 +650,7 @@ const_values_lookup_nextmost (ConstValuesArray *array,
 	    return check;   /* matched */
 	}
       while (n_nodes);
-
+      
       return check;  /* nextmost */
     }
   
@@ -675,13 +675,13 @@ const_values_insert (ConstValuesArray *array,
       array->nodes = g_realloc (array->nodes, new_size);
       array->nodes_used = g_realloc (array->nodes_used, new_size / sizeof (gfloat*));
       array->n_nodes = 1;
-
+      
       g_assert (index == 0);
     }
   else
     {
       guint n_nodes = array->n_nodes++;
-
+      
       if (*array->nodes[index] < *value_block)
 	index++;
       
@@ -699,7 +699,7 @@ const_values_insert (ConstValuesArray *array,
       g_memmove (array->nodes + index + 1, array->nodes + index, (n_nodes - index) * sizeof (array->nodes[0]));
       g_memmove (array->nodes_used + index + 1, array->nodes_used + index, (n_nodes - index) * sizeof (array->nodes_used[0]));
     }
-
+  
   array->nodes[index] = value_block;
   array->nodes_used[index] = CONST_VALUES_EXPIRE;
 }
@@ -714,9 +714,9 @@ bse_engine_const_values (gfloat value)
   
   if (fabs (value) < GSL_SIGNAL_EPSILON)
     return (gfloat*) bse_engine_master_zero_block;
-
+  
   block = const_values_lookup_nextmost (&cvalue_array, value);
-
+  
   /* found correct match? */
   if (block && fabs (**block - value) < GSL_SIGNAL_EPSILON)
     {
@@ -728,15 +728,15 @@ bse_engine_const_values (gfloat value)
       /* create new value block */
       gfloat *values = g_new (gfloat, bse_engine_block_size ());
       guint i;
-
+      
       for (i = 0; i < bse_engine_block_size (); i++)
 	values[i] = value;
-     
+      
       if (block)
 	const_values_insert (&cvalue_array, block - cvalue_array.nodes, values);
       else
 	const_values_insert (&cvalue_array, 0, values);
-
+      
       return values;
     }
 }
@@ -754,7 +754,7 @@ _engine_recycle_const_values (gboolean nuke_all)
         used[i] = 0;
       else
         used[i]--;      /* invariant: use counts are never 0 */
-
+      
       if (used[i] == 0)
 	g_free (nodes[i]);
       else /* preserve node */
