@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 1998, 2000, 2001 Tim Janik
+ * Copyright (C) 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

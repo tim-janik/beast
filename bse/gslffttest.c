@@ -1,5 +1,5 @@
 /* GSL-GENFFT - Power2 FFT C Code Generator
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

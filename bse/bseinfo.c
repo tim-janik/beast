@@ -105,7 +105,7 @@ main (gint   argc,
     for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 1)
       {
 	gint octave = BSE_NOTE_OCTAVE (j);
-	gint semitone = BSE_NOTE_HALF_TONE (j);
+	gint semitone = BSE_NOTE_SEMITONE (j);
 	gint note = BSE_NOTE_GENERIC (octave, semitone);
 	gchar *name = bse_note_to_string (j);
 

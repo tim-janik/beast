@@ -1,5 +1,5 @@
 # BSE - Bedevilled Sound Engine
-# Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+# Copyright (C) 1998-2002 Tim Janik
 #
 ## Makefile.am for BSE
 
