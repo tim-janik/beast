@@ -83,8 +83,8 @@ bst_sniffer_scope_expose (GtkWidget      *widget,
   // BstSnifferScope *self = BST_SNIFFER_SCOPE (widget);
   GdkWindow *window = event->window;
   GdkRectangle area = event->area;
-  GdkGC *dark_gc = widget->style->dark_gc[widget->state];
-  GtkAllocation *allocation = &widget->allocation;
+  // GdkGC *dark_gc = widget->style->dark_gc[widget->state];
+  // GtkAllocation *allocation = &widget->allocation;
   if (window != widget->window)
     return FALSE;
 
@@ -118,15 +118,14 @@ bst_sniffer_scope_class_init (BstSnifferScopeClass *class)
 }
 
 static void
-sniffer_notify_pcm_data (SfiProxy   proxy,
-                         SfiNum     tick_stamp,
-                         SfiFBlock *left_samples,
-                         SfiFBlock *right_samples,
-                         gpointer   data)
+scope_probes_notify (SfiProxy     proxy,
+                     BseProbeSeq *pseq,
+                     gpointer     data)
 {
   BstSnifferScope *self = BST_SNIFFER_SCOPE (data);
+  g_print ("scope data\n");
+#if 0
   GtkWidget *widget = GTK_WIDGET (self);
-
   if (left_samples->n_values >= widget->allocation.width / 2)
     {
       GdkWindow *window = widget->window;
@@ -160,9 +159,8 @@ sniffer_notify_pcm_data (SfiProxy   proxy,
                          allocation->y + allocation->height);
         }
     }
-  bse_sniffer_idle_request_samples (self->proxy,
-                                    BSE_SNIFFER_TIME_RELATIVE_USECS, 100000,
-                                    widget->allocation.width / 2, BSE_SNIFFER_PICK_FIRST_INPUT);
+#endif
+  bse_source_queue_probe_request (self->proxy, 0, 0, 0, 1, 0);
 }
 
 void
@@ -170,56 +168,62 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
                                SfiProxy         proxy)
 {
   if (proxy)
-    g_return_if_fail (BSE_IS_SNIFFER (proxy));
+    g_return_if_fail (BSE_IS_SOURCE (proxy));
+  if (!bse_source_has_outputs (proxy))
+    proxy = 0;
   if (self->proxy)
     {
       bse_proxy_disconnect (self->proxy,
-                            "any_signal::notify_pcm_data", sniffer_notify_pcm_data, self,
+                            "any_signal::probes", scope_probes_notify, self,
                             NULL);
     }
   self->proxy = proxy;
   if (self->proxy)
     {
       bse_proxy_connect (self->proxy,
-                         "signal::notify_pcm_data", sniffer_notify_pcm_data, self,
+                         "signal::probes", scope_probes_notify, self,
                          NULL);
-      if (1)
-        bse_sniffer_request_samples (self->proxy, 0, 128, BSE_SNIFFER_PICK_FIRST_INPUT);
+      bse_source_queue_probe_request (self->proxy, 0, 0, 0, 1, 0);
     }
 }
 
-static BseSnifferRequestSeq *sniffer_request_seq = NULL;
+static BseProbeRequestSeq *probe_request_seq = NULL;
 static gboolean
-sniffer_idle_request (gpointer data)
+source_probe_idle_request (gpointer data)
 {
-  BseSnifferRequestSeq *srs;
   GDK_THREADS_ENTER ();
-  srs = sniffer_request_seq;
-  sniffer_request_seq = NULL;
-  if (srs)
-    bse_sniffer_request_combined (srs);
+  BseProbeRequestSeq *prs = probe_request_seq;
+  probe_request_seq = NULL;
+  if (prs)
+    {
+      bse_source_mass_request (prs);
+      bse_probe_request_seq_free (prs);
+    }
   GDK_THREADS_LEAVE ();
   return FALSE;
 }
 
 void
-bse_sniffer_idle_request_samples (SfiProxy           sniffer,
-                                  BseSnifferTimeType ttype,
-                                  SfiNum             tick_stamp,
-                                  SfiInt             n_samples,
-                                  BseSnifferType     stype)
+bse_source_queue_probe_request (SfiProxy            source,
+                                guint               ochannel_id,
+                                gboolean            probe_range,
+                                gboolean            probe_energie,
+                                gboolean            probe_samples,
+                                gboolean            probe_fft)
 {
-  BseSnifferRequest sr = { 0, };
-  g_return_if_fail (BSE_IS_SNIFFER (sniffer));
-  if (!sniffer_request_seq)
+  BseProbeFeatures features = { 0, };
+  features.probe_range = probe_range;
+  features.probe_energie = probe_energie;
+  features.probe_samples = probe_samples;
+  features.probe_fft = probe_fft;
+  BseProbeRequest request = { 0, };
+  request.source = source;
+  request.channel_id = ochannel_id;
+  request.probe_features = &features;
+  if (!probe_request_seq)
     {
-      g_idle_add_full (G_PRIORITY_HIGH, sniffer_idle_request, NULL, NULL);
-      sniffer_request_seq = bse_sniffer_request_seq_new();
+      g_idle_add_full (G_PRIORITY_HIGH, source_probe_idle_request, NULL, NULL);
+      probe_request_seq = bse_probe_request_seq_new();
     }
-  sr.sniffer = sniffer;
-  sr.time_type = ttype;
-  sr.variable_time = tick_stamp;
-  sr.n_samples = n_samples;
-  sr.sniffer_type = stype;
-  bse_sniffer_request_seq_append (sniffer_request_seq, &sr);
+  bse_probe_request_seq_append (probe_request_seq, &request);
 }

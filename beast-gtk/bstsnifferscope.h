@@ -40,11 +40,12 @@ GType      bst_sniffer_scope_get_type       (void);
 GtkWidget* bst_sniffer_scope_new            (void);
 void       bst_sniffer_scope_set_sniffer    (BstSnifferScope    *scope,
                                              SfiProxy            proxy);
-void       bse_sniffer_idle_request_samples (SfiProxy            sniffer,
-                                             BseSnifferTimeType  ttype,
-                                             SfiNum              tick_stamp,
-                                             SfiInt              n_samples,
-                                             BseSnifferType      stype);
+void       bse_source_queue_probe_request   (SfiProxy            source,
+                                             guint               ochannel_id,
+                                             gboolean            probe_range,
+                                             gboolean            probe_energie,
+                                             gboolean            probe_samples,
+                                             gboolean            probe_fft);
 
 G_END_DECLS
 

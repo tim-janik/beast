@@ -1,4 +1,9 @@
 FIXMES:
+- rename bsesnifferscop.* to bsescope.*
+- check sfi_debug_check ("sched") in --debug-list
+- rename gslopmaster to bseenginemaster
+- move ProbeFeatures into bseprobe.idl (requires BseSource as C++ object)
+- remove Reply jobs from engine
 - implement ensure-track-links
 - master bus creation + making the bus master needs to go to undo
 - get rid of sniffers entirely (which we're currently leaking per each track+view combination)

@@ -457,7 +457,7 @@ scope_set_track (GtkWidget *scope,
   g_object_set_long (scope, "BstTrackRoll-Track", track);
   if (BST_SNIFFER_SCOPE (scope))
     bst_sniffer_scope_set_sniffer (BST_SNIFFER_SCOPE (scope),
-                                   bse_track_create_sniffer (track));
+                                   bse_track_get_output_source (track));
 }
 
 static SfiProxy
