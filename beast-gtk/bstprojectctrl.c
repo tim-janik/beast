@@ -69,7 +69,7 @@ bst_project_ctrl_init (BstProjectCtrl *self)
 			NULL);
   gxk_led_set_border_width (self->led, 1);
   gtk_box_pack_start (GTK_BOX (box), frame, FALSE, FALSE, spaceing);
-  gxk_nullify_on_destroy (self->led, &self->led);
+  gxk_nullify_in_object (self, &self->led);
 
   /* Stop */
   self->stop = g_object_new (GTK_TYPE_BUTTON,
@@ -78,7 +78,7 @@ bst_project_ctrl_init (BstProjectCtrl *self)
 			     NULL);
   g_object_connect (self->stop, "swapped_signal::clicked", bst_project_ctrl_stop, self, NULL);
   gtk_box_pack_start (GTK_BOX (box), self->stop, FALSE, FALSE, spaceing);
-  gxk_nullify_on_destroy (self->stop, &self->stop);
+  gxk_nullify_in_object (self, &self->stop);
 
   /* size-group Led's frame and Stop */
   gxk_size_group (GTK_SIZE_GROUP_BOTH, frame, self->stop, NULL);
@@ -90,7 +90,7 @@ bst_project_ctrl_init (BstProjectCtrl *self)
 			    "sensitive", FALSE,
 			    NULL);
   gtk_box_pack_start (GTK_BOX (box), self->rew, FALSE, FALSE, spaceing);
-  gxk_nullify_on_destroy (self->rew, &self->rew);
+  gxk_nullify_in_object (self, &self->rew);
   
   /* Play */
   self->play = g_object_new (GTK_TYPE_BUTTON,
@@ -99,7 +99,7 @@ bst_project_ctrl_init (BstProjectCtrl *self)
 			     NULL);
   g_object_connect (self->play, "swapped_signal::clicked", bst_project_ctrl_play, self, NULL);
   gtk_box_pack_start (GTK_BOX (box), self->play, FALSE, FALSE, spaceing);
-  gxk_nullify_on_destroy (self->play, &self->play);
+  gxk_nullify_in_object (self, &self->play);
   
   /* Pause */
   self->pause = g_object_new (GTK_TYPE_BUTTON,
@@ -108,7 +108,7 @@ bst_project_ctrl_init (BstProjectCtrl *self)
 			      "sensitive", FALSE,
 			      NULL);
   gtk_box_pack_start (GTK_BOX (box), self->pause, FALSE, FALSE, spaceing);
-  gxk_nullify_on_destroy (self->pause, &self->pause);
+  gxk_nullify_in_object (self, &self->pause);
   
   /* Forward */
   self->fwd = g_object_new (GTK_TYPE_BUTTON,
@@ -117,7 +117,7 @@ bst_project_ctrl_init (BstProjectCtrl *self)
 			    "sensitive", FALSE,
 			    NULL);
   gtk_box_pack_start (GTK_BOX (box), self->fwd, FALSE, FALSE, spaceing);
-  gxk_nullify_on_destroy (self->fwd, &self->fwd);
+  gxk_nullify_in_object (self, &self->fwd);
   
   gtk_widget_show_all (box);
 }

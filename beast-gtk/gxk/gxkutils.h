@@ -186,6 +186,9 @@ void	gxk_size_group			(GtkSizeGroupMode sgmode,
 
 /* tree view convenience */
 gint	 gxk_tree_spath_index0			(const gchar		*strpath);
+gboolean gxk_tree_model_get_iter                (GtkTreeModel           *tree_model,
+                                                 GtkTreeIter            *iter,
+                                                 GtkTreePath            *path);
 gboolean gxk_tree_path_prev			(GtkTreePath		*path);
 guint	 gxk_tree_view_add_column		(GtkTreeView		*tree_view,
 						 gint			 position,

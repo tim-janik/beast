@@ -107,7 +107,7 @@ rack_view_init (BstRackView *self)
   GtkWidget *toggle;
   self->rack_table = gxk_gadget_find (gadget, "rack-table");
   gtk_table_resize (GTK_TABLE (self->rack_table), 20, 80);
-  gxk_nullify_in_object (self->rack_table, &self->rack_table, self);
+  gxk_nullify_in_object (self, &self->rack_table);
   g_object_connect (self->rack_table, "swapped_signal_after::button_press_event", rack_view_button_press_event, self, NULL);
   g_object_connect (gxk_gadget_find (gadget, "rack-table-event-box"),
                     "swapped_signal_after::button_press_event", rack_view_button_press_event, self, NULL);

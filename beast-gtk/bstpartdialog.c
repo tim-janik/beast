@@ -189,7 +189,7 @@ bst_part_dialog_init (BstPartDialog *self)
   
   /* piano roll */
   self->proll = gxk_gadget_find (gadget, "piano-roll");
-  gxk_nullify_on_destroy (self->proll, &self->proll);
+  gxk_nullify_in_object (self, &self->proll);
   g_signal_connect (self->proll, "canvas-clicked", G_CALLBACK (piano_canvas_clicked), self);
   bst_piano_roll_set_hadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_piano_roll_set_vadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
@@ -200,7 +200,7 @@ bst_part_dialog_init (BstPartDialog *self)
 
   /* event roll */
   self->eroll = gxk_gadget_find (gadget, "event-roll");
-  gxk_nullify_on_destroy (self->eroll, &self->eroll);
+  gxk_nullify_in_object (self, &self->eroll);
   g_signal_connect (self->eroll, "canvas-clicked", G_CALLBACK (event_canvas_clicked), self);
   self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, self->pctrl->canvas_rtools);
   bst_event_roll_set_hadjustment (self->eroll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));

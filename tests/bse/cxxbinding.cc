@@ -84,6 +84,7 @@ int main(int argc, char **argv)
   else
     g_error ("failed.");
 
+  /* --- test procedures --- */
   g_print ("--- calling procedure test_exception() ---\n");
   g_print ("invoking as: result = test_exception (21, %ld, 42, \"moderately-funky\");\n", to._proxy());
   SfiSeq *pseq = sfi_seq_new ();
@@ -91,7 +92,7 @@ int main(int argc, char **argv)
   sfi_seq_append_proxy (pseq, to._proxy());
   sfi_seq_append_int (pseq, 42);
   sfi_seq_append_choice (pseq, "moderately-funky");
-  GValue *rvalue = sfi_glue_call_seq ("NamespaceProcedure-test-exception", pseq);
+  GValue *rvalue = sfi_glue_call_seq ("namespace-test-exception", pseq);
   sfi_seq_unref (pseq);
   if (!rvalue || !SFI_VALUE_HOLDS_INT (rvalue))
     g_error ("failed (no result).");
@@ -101,14 +102,14 @@ int main(int argc, char **argv)
     g_error ("wrong result.");
   g_print ("invoking to trigger exception: result = test_exception ();\n");
   pseq = sfi_seq_new ();
-  rvalue = sfi_glue_call_seq ("NamespaceProcedure-test-exception", pseq);
+  rvalue = sfi_glue_call_seq ("namespace-test-exception", pseq);
   sfi_seq_unref (pseq);
   if (!rvalue || !SFI_VALUE_HOLDS_INT (rvalue))
     g_error ("failed (no result).");
   result = sfi_value_get_int (rvalue);
   g_print ("result=%d\n", result);
 
-  /* ... */
+  /* --- test playback --- */
   file_name = "../test/test-song.bse";
   g_print ("--- playing %s... ---\n", file_name);
   Project project = server.use_new_project ("foo");

@@ -488,7 +488,7 @@ bst_track_view_init (BstTrackView *self)
                               "visible", TRUE,
 			      "parent", gxk_gadget_find (gadget, "track-area"),
 			      NULL);
-  gxk_nullify_on_destroy (self->troll, &self->troll);
+  gxk_nullify_in_object (self, &self->troll);
   bst_track_roll_set_hadjustment (self->troll, gtk_range_get_adjustment (GTK_RANGE (trackhs)));
   bst_track_roll_set_vadjustment (self->troll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   bst_track_roll_set_track_callback (self->troll, self, get_track);
@@ -528,7 +528,7 @@ bst_track_view_init (BstTrackView *self)
   
   /* add repeat toggle */
   self->repeat_toggle = gxk_gadget_find (gadget, "repeat-toggle");
-  gxk_nullify_on_destroy (self->repeat_toggle, &self->repeat_toggle);
+  gxk_nullify_in_object (self, &self->repeat_toggle);
   g_object_connect (self->repeat_toggle, "swapped_signal::toggled", track_view_repeat_toggled, self, NULL);
   track_view_repeat_changed (self);
 

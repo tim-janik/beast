@@ -195,7 +195,7 @@ bst_item_view_set_tree (BstItemView *self,
   g_return_if_fail (self->tree == NULL);
 
   self->tree = tree;
-  gxk_nullify_on_destroy (self->tree, &self->tree);
+  gxk_nullify_in_object (self, &self->tree);
 
   /* keep property editor updated */
   g_object_connect (gtk_tree_view_get_selection (self->tree),
@@ -377,13 +377,15 @@ bst_item_view_get_proxy (BstItemView *self,
       GtkTreeIter siter, witer;
       GtkTreeModel *smodel = gtk_tree_view_get_model (self->tree);
       GtkTreePath *path = gtk_tree_path_new_from_indices (row, -1);
-      gtk_tree_model_get_iter (smodel, &siter, path);
+      if (gxk_tree_model_get_iter (smodel, &siter, path))
+        {
+          if (GTK_IS_TREE_MODEL_SORT (smodel))
+            gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (smodel), &witer, &siter);
+          else
+            witer = siter;
+          item = bst_child_list_wrapper_get_from_iter (self->wlist, &witer);
+        }
       gtk_tree_path_free (path);
-      if (GTK_IS_TREE_MODEL_SORT (smodel))
-	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (smodel), &witer, &siter);
-      else
-	witer = siter;
-      item = bst_child_list_wrapper_get_from_iter (self->wlist, &witer);
     }
   if (item)
     g_return_val_if_fail (BSE_IS_ITEM (item), 0);
@@ -423,7 +425,7 @@ bst_item_view_build_param_view (BstItemView  *self,
 
   /* property view */
   self->pview = bst_param_view_new (0);
-  gxk_nullify_on_destroy (self->pview, &self->pview);
+  gxk_nullify_in_object (self, &self->pview);
   bst_param_view_set_mask (BST_PARAM_VIEW (self->pview), "BseItem", 0, NULL, NULL);
   gtk_widget_show (self->pview);
   gtk_container_add (container, self->pview);

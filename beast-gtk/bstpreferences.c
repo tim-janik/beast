@@ -85,7 +85,7 @@ bst_preferences_init (BstPreferences *prefs)
 				  "can_focus", TRUE,
 				  "border_width", 5,
 				  NULL);
-  gxk_nullify_on_destroy (prefs->notebook, &prefs->notebook);
+  gxk_nullify_in_object (prefs, &prefs->notebook);
   g_object_connect (prefs->notebook,
 		    "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
 		    NULL);

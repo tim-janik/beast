@@ -1,3 +1,26 @@
+Tue Dec 30 23:41:03 2003  Tim Janik  <timj@gtk.org>
+
+	* *.c: adapted gxk_nullify_in_object() callers and switched
+	gxk_nullify_on_destroy() usages over.
+
+	* bstitemview.c: use gxk_tree_model_get_iter() instead of
+	gtk_tree_model_get_iter().
+
+	* beast-gtk/gxk/gxkglobals.[hc]: made gxk_nullify_in_object() take
+	only the hosting object and the object pointer location within the
+	hosting object as arguments. the pointer is assumed to be filled
+	out, pointing to a valid object. this is a much more natural argument
+	order, and a hrdly noticable restriction.
+	removed gxk_nullify_on_destroy() as gxk_nullify_in_object() can be
+	used instead (for all cases gxk_nullify_on_destroy() is used inside
+	beast at least).
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_tree_model_get_iter() to work
+	around a bug in sorted tree models.
+
+	* tests/cxxbinding.cc:
+	* tests/testplugin.cc: adapt to new procedure writing conventions.
+
 Mon Dec 29 20:58:04 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.c (bst_action_list_add_cat): fix oversized pixel

@@ -149,7 +149,7 @@ gxk_dialog_init (GxkDialog *self)
                              "spacing", 0,
                              "parent", window,
                              NULL);
-  gxk_nullify_in_object (self->mbox, &self->mbox, self);
+  gxk_nullify_in_object (self, &self->mbox);
   
   /* user vbox */
   self->vbox = g_object_new (GTK_TYPE_VBOX,
@@ -158,11 +158,11 @@ gxk_dialog_init (GxkDialog *self)
                              "spacing", 0,
                              "parent", self->mbox,
                              NULL);
-  gxk_nullify_in_object (self->vbox, &self->vbox, self);
+  gxk_nullify_in_object (self, &self->vbox);
   
   /* status bar */
   self->status_bar = gxk_status_bar_create ();
-  gxk_nullify_in_object (self->status_bar, &self->status_bar, self);
+  gxk_nullify_in_object (self, &self->status_bar);
   gtk_box_pack_end (GTK_BOX (self->mbox), self->status_bar, FALSE, FALSE, 0);
   
   /* button box */
@@ -172,14 +172,14 @@ gxk_dialog_init (GxkDialog *self)
                              "spacing", GXK_INNER_PADDING,
                              "border_width", GXK_INNER_PADDING,
                              NULL);
-  gxk_nullify_in_object (self->hbox, &self->hbox, self);
+  gxk_nullify_in_object (self, &self->hbox);
   gtk_box_pack_end (GTK_BOX (self->mbox), self->hbox, FALSE, TRUE, GXK_INNER_PADDING);
   
   /* separator */
   self->sep = g_object_new (GTK_TYPE_HSEPARATOR,
                             "visible", FALSE,
                             NULL);
-  gxk_nullify_in_object (self->sep, &self->sep, self);
+  gxk_nullify_in_object (self, &self->sep);
   gtk_box_pack_end (GTK_BOX (self->mbox), self->sep, FALSE, FALSE, GXK_INNER_PADDING);
 }
 

@@ -46,10 +46,10 @@ public:
 };
 
 SfiInt
-Procedure_test_exception::exec (SfiInt        i,
-                                TestObject*   o,
-                                SfiInt        bar,
-                                FunkynessType ft)
+Procedure::test_exception::exec (SfiInt        i,
+                                 TestObject*   o,
+                                 SfiInt        bar,
+                                 FunkynessType ft)
 {
   g_print ("testplugin.cc: test_exception: i=%d obj=%p bar=%d ft=%d (MODERATELY_FUNKY=%d)\n",
            i, o, bar, ft, (int) MODERATELY_FUNKY);
@@ -63,7 +63,7 @@ Procedure_test_exception::exec (SfiInt        i,
 BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_ENUM (FunkynessType);
 BSE_CXX_REGISTER_EFFECT (TestObject);
-BSE_CXX_REGISTER_PROC (test_exception);
+BSE_CXX_REGISTER_PROCEDURE (test_exception);
 
 } // Test
 

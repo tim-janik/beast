@@ -905,6 +905,32 @@ gxk_tree_spath_index0 (const gchar *strpath)
 }
 
 /**
+ * gxk_tree_model_get_iter
+ *
+ * This function is a replacement for gtk_tree_model_get_iter()
+ * for Gtk+-2.4. For sort models, gtk_tree_model_get_iter() can
+ * erroneously return %TRUE which is corrected by calling this
+ * function instead.
+ */
+gboolean
+gxk_tree_model_get_iter (GtkTreeModel          *tree_model,
+                         GtkTreeIter           *iter,
+                         GtkTreePath           *path)
+{
+  if (!gtk_tree_model_get_iter (tree_model, iter, path))
+    return FALSE;
+  while (GTK_IS_TREE_MODEL_SORT (tree_model))
+    {
+      GtkTreeIter dummy;
+      tree_model = gtk_tree_model_sort_get_model (GTK_TREE_MODEL_SORT (tree_model));
+      if (!gtk_tree_model_get_iter (tree_model, &dummy, path))
+        return FALSE;
+    }
+  return TRUE;
+}
+
+
+/**
  * gxk_tree_path_prev
  * @path: valid #GtkTreePath
  *

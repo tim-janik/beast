@@ -52,10 +52,7 @@ typedef struct
 
 /* --- convenience --- */
 gulong  gxk_nullify_in_object (gpointer object,
-                               gpointer location,
-                               gpointer location_object);
-#define gxk_nullify_on_destroy(object, location) \
-  gxk_nullify_in_object ((object), (location), NULL)
+                               gpointer location);
 
 
 /* --- variables --- */
