@@ -24,28 +24,43 @@
 G_BEGIN_DECLS
 
 
+typedef enum /*< skip >*/
+{
+  SFI_LOG_VERBOSITY_NORMAL,
+  SFI_LOG_VERBOSITY_DETAILED,
+  SFI_LOG_VERBOSITY_DEVELOPMENT,
+} SfiLogVerbosity;
+
+
 /* --- logging --- */
 #define	SFI_LOG_ERROR	('E')
 #define	SFI_LOG_WARN	('W')
 #define	SFI_LOG_INFO	('I')
 #define	SFI_LOG_DEBUG	('D')
-static void	sfi_error	(const gchar *format,
-				 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_warn	(const gchar *format,
-				 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_info	(const gchar *format,
-				 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_debug	(const gchar *format,
-				 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-static void	sfi_nodebug	(const gchar *format,
-				 ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
-void		sfi_log_valist	(const gchar *log_domain,
-				 guint        level,
-				 const gchar *format,
-				 va_list      args);
-void		sfi_log_message	(const gchar *log_domain,
-				 guint        level,
-				 const gchar *message);
+static void	sfi_error	 (const gchar *format,
+				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+static void	sfi_warn	 (const gchar *format,
+				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+static void	sfi_info	 (const gchar *format,
+				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+static void	sfi_debug	 (const gchar *format,
+				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+static void	sfi_nodebug	 (const gchar *format,
+				  ...) G_GNUC_PRINTF (1,2) G_GNUC_UNUSED;
+void		sfi_log_set_verbosity	(SfiLogVerbosity	 verbosity);
+void		sfi_log_valist		 (const gchar		*log_domain,
+					  guint			 level,
+					  const gchar		*format,
+					  va_list		 args);
+void		sfi_log_message		 (const gchar		*log_domain,
+					  guint			 level,
+					  const gchar		*message);
+void		sfi_log_push_key	 (const gchar		*static_key);
+#ifndef	SFI_LOG_PROTECT_KEY_VARIANTS
+#define	sfi_debug_with_key(key)	  (sfi_log_push_key (key), sfi_debug)
+#define	sfi_info_with_key(key)	  (sfi_log_push_key (key), sfi_info)
+#define	sfi_nodebug_with_key(key)  sfi_nodebug
+#endif
 
 
 /* --- implementation --- */
@@ -91,7 +106,7 @@ sfi_nodebug (const gchar *format,
 {
 }
 #define	sfi_nodebug	while (0) sfi_nodebug
-#if SFI_DISABLE_DEBUG
+#ifdef SFI_DISABLE_DEBUG
 #define	sfi_debug	sfi_nodebug
 #endif
 

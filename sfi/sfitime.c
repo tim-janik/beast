@@ -39,7 +39,7 @@ enum {
 
 
 /* --- variables --- */
-static gint64	 gmt_diff = 0;
+static SfiTime	 gmt_diff = 0;
 static gchar	*time_zones[2] = { NULL, NULL };
 
 
@@ -70,7 +70,9 @@ _sfi_init_time (void)
  * Subsequent calls to this function do not necessarily
  * return greater values. In fact, a second call may return
  * a value smaller than the first call under certain system
- * conditions.
+ * conditions. The time returned is UTC, refer to
+ * sfi_time_from_utc() in order to retrieve the local
+ * standard time.
  * This function is MT-safe and may be called from any thread.
  */
 SfiTime

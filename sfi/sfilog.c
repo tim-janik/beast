@@ -17,34 +17,126 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfilog.h"
+#include "sfithreads.h"
+#include "sfitime.h"
+#include <unistd.h>
 #include <stdio.h>
 
 
+/* --- variables --- */
+static SfiLogVerbosity log_verbosity = SFI_LOG_VERBOSITY_NORMAL;
+
+
 /* --- functions --- */
+void
+sfi_log_set_verbosity (SfiLogVerbosity verbosity)
+{
+  switch (verbosity)
+    {
+    case SFI_LOG_VERBOSITY_DETAILED:
+    case SFI_LOG_VERBOSITY_DEVELOPMENT:
+      log_verbosity = verbosity;
+      break;
+    default:
+      log_verbosity = SFI_LOG_VERBOSITY_NORMAL;
+      break;
+    }
+}
+
+static const gchar*
+_sfi_log_pop_key (const gchar *fallback)
+{
+  const gchar *key = sfi_thread_get_data ("SFI-log-key");
+  if (key)
+    sfi_thread_set_data ("SFI-log-key", NULL);
+  return key ? key : fallback;
+}
+
+void
+sfi_log_push_key (const gchar *static_key)
+{
+  sfi_thread_set_data ("SFI-log-key", (gchar*) static_key);
+}
+
 void
 sfi_log_message (const gchar *log_domain,
 		 guint        level,
 		 const gchar *message)
 {
+  const gchar *key = _sfi_log_pop_key ("misc");
+
   g_return_if_fail (message != NULL);
   
   switch (level)
     {
-    case SFI_LOG_INFO:
+      const gchar *pname;
+      SfiTime t;
+      guint ts, tm, th;
     case SFI_LOG_WARN:
     case SFI_LOG_ERROR:
-      g_printerr ("%s%s%s: %s\n",
-		  log_domain ? log_domain : "",
-		  log_domain ? "-" : "",
-		  level == SFI_LOG_INFO ? "INFO" : level == SFI_LOG_WARN ? "WARNING" : "ERROR",
-		  message);
+      pname = g_get_prgname ();
+      if (log_verbosity == SFI_LOG_VERBOSITY_DEVELOPMENT)
+	g_printerr ("%s[%u]:%s%s: %s\n",
+		    pname ? pname : "process", getpid (),
+		    log_domain ? log_domain : "",
+		    level == SFI_LOG_WARN ? "-WARNING" : "-ERROR",
+		    message);
+      else if (pname)
+	g_printerr ("%s:%s%s: %s\n",
+		    pname,
+		    log_domain ? log_domain : "",
+		    level == SFI_LOG_WARN ? "-WARNING" : "-ERROR",
+		    message);
+      else
+	g_printerr ("%s%s: %s\n",
+		    log_domain ? log_domain : "",
+		    level == SFI_LOG_WARN ? "-WARNING" : "-ERROR",
+		    message);
+      break;
+    case SFI_LOG_INFO:
+      switch (log_verbosity)
+	{
+	case SFI_LOG_VERBOSITY_NORMAL:
+	  g_printerr ("%s\n", message);
+	  break;
+	case SFI_LOG_VERBOSITY_DETAILED:
+	  g_printerr ("%s(%s): %s\n",
+		      log_domain ? log_domain : "",
+		      key,
+		      message);
+	  break;
+	case SFI_LOG_VERBOSITY_DEVELOPMENT:
+	  g_printerr ("%s(%s)[%u]: %s\n",
+		      log_domain ? log_domain : "",
+		      key,
+		      getpid (),
+		      message);
+	  break;
+	}
+      break;
+    case SFI_LOG_DEBUG:
+      t = sfi_time_from_utc (sfi_time_system ());
+      t /= SFI_USEC_FACTOR;
+      ts = t % 60;
+      t /= 60;
+      tm = t % 60;
+      t /= 60;
+      th = t % 24;
+      fprintf (stderr, "%02u:%02u:%02u|%s(%s)[%u]: %s\n",
+	       th, tm, ts,
+	       log_domain ? log_domain : "",
+	       key,
+	       getpid (),
+	       message);
       break;
     default:
-      if (log_domain)
-	fprintf (stderr, "%s-DEBUG: %s\n", log_domain, message);
-      else
-	fprintf (stderr, "DEBUG: %s\n", message);
-      // g_log (log_domain, G_LOG_LEVEL_DEBUG, "%s", message);
+      pname = g_get_prgname ();
+      g_printerr ("%s[%u]:%s(%s)<%d>: %s\n",
+		  pname ? pname : "process", getpid (),
+		  log_domain ? log_domain : "",
+		  key,
+		  level,
+		  message);
       break;
     }
 }

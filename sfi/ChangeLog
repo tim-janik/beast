@@ -1,3 +1,15 @@
+Sat Jan 18 05:15:46 2003  Tim Janik  <timj@gtk.org>
+
+	* sfilog.[hc]: improved logging output, add with_key() variants
+	for sfi_debug(), sfi_nodebug() and sfi_info() to support detailed
+	(de-)activation of certain messages (filtering mechanism not yet
+	in place though).
+
+Thu Jan 16 23:26:25 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.h: added SFI_PARAM_GUI_READABLE and SFI_PARAM_GUI_WRITABLE
+	which are pspec hints that really are just readable or writable.
+
 Fri Jan  3 19:16:49 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.[hc]: export functionality to merge two

@@ -60,6 +60,11 @@ gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
      
 
+/* --- list extensions --- */
+gpointer	g_slist_pop_head  (GSList	**slist_p);
+gpointer	g_list_pop_head	  (GList	**list_p);
+
+
 /* --- name conversions --- */
 gchar*  g_type_name_to_cname            (const gchar    *type_name);
 gchar*  g_type_name_to_sname            (const gchar    *type_name);

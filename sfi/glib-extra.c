@@ -127,6 +127,36 @@ g_strdup_lstrip (const gchar *string)
 }
 
 
+/* --- list extensions --- */
+gpointer
+g_slist_pop_head (GSList **slist_p)
+{
+  gpointer data;
+
+  g_return_val_if_fail (slist_p != NULL, NULL);
+
+  if (!*slist_p)
+    return NULL;
+  data = (*slist_p)->data;
+  *slist_p = g_slist_delete_link (*slist_p, *slist_p);
+  return data;
+}
+
+gpointer
+g_list_pop_head (GList **list_p)
+{
+  gpointer data;
+
+  g_return_val_if_fail (list_p != NULL, NULL);
+
+  if (!*list_p)
+    return NULL;
+  data = (*list_p)->data;
+  *list_p = g_list_delete_link (*list_p, *list_p);
+  return data;
+}
+
+
 /* --- name conversions --- */
 static inline gchar
 check_lower (gchar c)
