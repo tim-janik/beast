@@ -183,6 +183,16 @@
   <xdef:vscale                inherit="GtkVScale" prop:draw_value="$(first-occupied,$draw-value,0)" focus="0" />
   <xdef:hscrollbar            inherit="GtkHScrollbar" focus="0" />
   <xdef:vscrollbar            inherit="GtkVScrollbar" focus="0" />
+  <xdef:hruler                inherit="GtkHRuler"
+    prop:lower="$(first-occupied,$lower,1.0)"
+    prop:upper="$(first-occupied,$upper,1.0)"
+    prop:position="$(first-occupied,$position,0.5"
+    prop:max-size="$(first-occupied,$max-size,10.0)" />
+  <xdef:vruler                inherit="GtkVRuler"
+    prop:lower="$(first-occupied,$lower,1.0)"
+    prop:upper="$(first-occupied,$upper,1.0)"
+    prop:position="$(first-occupied,$position,0.5"
+    prop:max-size="$(first-occupied,$max-size,10.0)" />
   <!-- misc containers -->
   <xdef:viewport              inherit="GtkViewport"
     prop:shadow-type="$(first-occupied,$shadow-type,shadow-none)"

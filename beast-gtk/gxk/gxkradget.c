@@ -1797,7 +1797,7 @@ _gxk_init_radget_types (void)
   standard_domain->domain = g_intern_string ("standard");
   g_datalist_set_data (&domains, standard_domain->domain, standard_domain);
   *t++ = GTK_TYPE_WINDOW;       *t++ = GTK_TYPE_ARROW;          *t++ = GTK_TYPE_SCROLLED_WINDOW;
-  *t++ = GTK_TYPE_VIEWPORT;
+  *t++ = GTK_TYPE_VIEWPORT;     *t++ = GTK_TYPE_HRULER;         *t++ = GTK_TYPE_VRULER;
   *t++ = GTK_TYPE_TABLE;        *t++ = GTK_TYPE_FRAME;          *t++ = GTK_TYPE_ALIGNMENT;
   *t++ = GTK_TYPE_NOTEBOOK;     *t++ = GTK_TYPE_BUTTON;         *t++ = GTK_TYPE_MENU_BAR;
   *t++ = GTK_TYPE_TREE_VIEW;    *t++ = GTK_TYPE_LABEL;          *t++ = GTK_TYPE_PROGRESS_BAR;

@@ -26,7 +26,7 @@
 #define HORIZONTAL(scg) ((scg)->direction == BST_RIGHT || (scg)->direction == BST_LEFT)
 #define VERTICAL(scg)   ((scg)->direction == BST_UP || (scg)->direction == BST_DOWN)
 #define FLIP(scg)       ((scg)->flip ^ HORIZONTAL (scg))
-#define FFT_SIZE 1024
+#define FFT_SIZE 2048
 
 enum {
   PROP_0,
