@@ -94,5 +94,10 @@ has written a small
 @uref{http://linux.waluga.de/beast/BEAST-installation under-SuSE 82.txt,,HOWTO in english and german}
 about installing @beast{} and created the related RPMs.
 
+@uref{mailto://collver1@@comcast.net,,Ben Collver}
+is working on a
+@uref{http://www.netbsd.org,,NetBSD}
+package of @beast{}, it's current development stage can be tracked at
+@uref{http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/pkgsrc-wip/wip/beast/}.
 
 @bye

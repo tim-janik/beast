@@ -1,3 +1,10 @@
+Mon Jul 28 12:56:40 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: rewrote OSS pcm and midi device checks for
+	clarity, renamed OSS pcm/midi device options.
+	applied changes by Ben Collver <collver1@comcast.net>, to
+	check for NetBSD sound devices.
+
 Mon Jul 28 05:25:03 2003  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4 (ac_vm): enable warning options for C++ code.
