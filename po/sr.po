@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-19 18:26+0100\n"
-"PO-Revision-Date: 2003-12-19 18:29+0100\n"
+"POT-Creation-Date: 2003-12-22 08:40+0100\n"
+"PO-Revision-Date: 2003-12-22 08:43+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -190,21 +190,21 @@ msgstr "Веза са модулом:"
 msgid "Module link"
 msgstr "Веза са модулом"
 
-#: beast-gtk/bstcanvassource.c:492
+#: beast-gtk/bstcanvassource.c:488
 msgid "Module Info"
 msgstr "Подаци о модулу"
 
-#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:200
+#: beast-gtk/bstcanvassource.c:986 beast-gtk/bstsnetrouter.c:200
 msgid "Input"
 msgstr "Улаз"
 
-#: beast-gtk/bstcanvassource.c:989 beast-gtk/bstsnetrouter.c:197
+#: beast-gtk/bstcanvassource.c:995 beast-gtk/bstsnetrouter.c:197
 #: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
 #: plugins/artscompressor.idl:57
 msgid "Output"
 msgstr "Излаз"
 
-#: beast-gtk/bstcanvassource.c:993
+#: beast-gtk/bstcanvassource.c:999
 msgid "(Hint)"
 msgstr "(савет)"
 
@@ -304,11 +304,11 @@ msgstr "Сачувај: %s"
 #. setup radio buttons
 #: beast-gtk/bstfiledialog.c:530
 msgid "Fully include wave files"
-msgstr "У потпуности укључи Wave датотеке"
+msgstr "У потпуности укључи таласне датотеке"
 
 #: beast-gtk/bstfiledialog.c:531
 msgid "Store references to wave files"
-msgstr "Смести референце у Wave датотеке"
+msgstr "Смести референце у таласне датотеке"
 
 #: beast-gtk/bstfiledialog.c:552 beast-gtk/bstfiledialog.c:562
 #, c-format
@@ -369,12 +369,12 @@ msgstr "Снима инструмент „%s“"
 
 #: beast-gtk/bstfiledialog.c:730
 msgid "Load Wave"
-msgstr "Учитај Wave"
+msgstr "Учитај талас"
 
 #: beast-gtk/bstfiledialog.c:742 beast-gtk/bstfiledialog.c:744
 #, c-format
 msgid "Loading wave `%s'"
-msgstr "Учитавам Wave „%s“"
+msgstr "Учитавам талас „%s“"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:41
 #: beast-gtk/bsttrackview.c:62
@@ -385,7 +385,7 @@ msgstr "Додај"
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
 #: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
-#: beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstwaveview.c:47
 msgid "Delete"
 msgstr "Обриши"
 
@@ -581,7 +581,7 @@ msgstr "Понови"
 msgid "Redo the last undone editing step"
 msgstr "Понови последњу опозвану измену"
 
-#: beast-gtk/bstpartview.c:43 beast-gtk/bstwaveview.c:46
+#: beast-gtk/bstpartview.c:43 beast-gtk/bstwaveview.c:49
 msgid "Editor"
 msgstr "Уређивач"
 
@@ -1196,9 +1196,25 @@ msgstr "Клизај десно"
 msgid "Load..."
 msgstr "Учитај..."
 
-#: beast-gtk/bstwaveview.c:44
+#: beast-gtk/bstwaveview.c:43
+msgid "Load a new wave file from disk"
+msgstr "Учитај нову таласну датотеку са диска"
+
+#: beast-gtk/bstwaveview.c:45
 msgid "Lib..."
 msgstr "Библиотека..."
+
+#: beast-gtk/bstwaveview.c:45
+msgid "Load a new wave file from library paths"
+msgstr "Учитај нову таласну датотеку из путања библиотека"
+
+#: beast-gtk/bstwaveview.c:47
+msgid "Delete the currently selected wave"
+msgstr "Обриши тренутно изабрани талас"
+
+#: beast-gtk/bstwaveview.c:49
+msgid "Edit the currently selected wave"
+msgstr "Уреди тренутно изабрани талас"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
 msgid "Adjust the zoom factor of the router display"
@@ -1364,46 +1380,50 @@ msgid "_Virtualization"
 msgstr "_Виртуелизација"
 
 #: beast-gtk/dialogs/gadgets-standard.xml.h:1
+msgid "Enter document or file location"
+msgstr "Унесите положај документа или датотеке"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:2
 msgid "Find in current document"
 msgstr "Нађи у текућем документу"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+#: beast-gtk/dialogs/gadgets-standard.xml.h:3
 msgid "Go back one page"
 msgstr "Иди једну страну уназад"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+#: beast-gtk/dialogs/gadgets-standard.xml.h:4
 msgid "Go forward one page"
 msgstr "Иди једну страну унапред"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+#: beast-gtk/dialogs/gadgets-standard.xml.h:5
 msgid "Go to browser index"
 msgstr "Иди у индекс читача"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+#: beast-gtk/dialogs/gadgets-standard.xml.h:6
 msgid "Location"
 msgstr "Путања"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+#: beast-gtk/dialogs/gadgets-standard.xml.h:7
 msgid "Reload current page"
 msgstr "Освежи текућу страницу"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+#: beast-gtk/dialogs/gadgets-standard.xml.h:8
 msgid "_Back"
 msgstr "На_зад"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+#: beast-gtk/dialogs/gadgets-standard.xml.h:9
 msgid "_Find"
 msgstr "Про_нађи"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+#: beast-gtk/dialogs/gadgets-standard.xml.h:10
 msgid "_Forward"
 msgstr "На_пред"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+#: beast-gtk/dialogs/gadgets-standard.xml.h:11
 msgid "_Index"
 msgstr "_Индекс"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+#: beast-gtk/dialogs/gadgets-standard.xml.h:12
 msgid "_Reload"
 msgstr "Ос_вежи"
 
@@ -1817,7 +1837,7 @@ msgstr "Звук"
 
 #: data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
-msgstr "BSE вишеделна Wave датотека"
+msgstr "BSE вишеделна таласна датотека"
 
 #: data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
@@ -2049,7 +2069,11 @@ msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
-msgstr "DavBassFilter је нископролазни резонантни филтер TB-303 стила заснован на VCF303 деловима gsyn-а v0.2. Алгоритам филтера је делимично заснован на оном описаном у „Музичке примене микропроцесора“ („Musical Applications of Microprocessors“) од Хала Чемберлина (Hal Chamberlin)."
+msgstr ""
+"DavBassFilter је нископролазни резонантни филтер TB-303 стила заснован на "
+"VCF303 деловима gsyn-а v0.2. Алгоритам филтера је делимично заснован на оном "
+"описаном у „Музичке примене микропроцесора“ („Musical Applications of "
+"Microprocessors“) од Хала Чемберлина (Hal Chamberlin)."
 
 #: plugins/davbassfilter.idl:34
 msgid "Filtered audio output"
