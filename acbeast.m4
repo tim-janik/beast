@@ -231,7 +231,6 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
 		MC_EVAR_ADD(CFLAGS, -O, -O2)
 		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
-		MC_EVAR_ADD(CFLAGS, -frename-registers, -frename-registers) dnl -O3 stuff as of gcc-3.3
 		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
 		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
 		dnl MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return) dnl buggy with gcc-3.2
@@ -279,7 +278,6 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
 		MC_EVAR_ADD(CFLAGS, -O, -O2)
 		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions) dnl -O3 stuff as of gcc-3.3
-		MC_EVAR_ADD(CFLAGS, -frename-registers, -frename-registers) dnl -O3 stuff as of gcc-3.3
 		MC_PROG_CC_SUPPORTS_OPTION(-fno-keep-static-consts,
 		    MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts))
 		dnl MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return) dnl buggy with gcc-3.2

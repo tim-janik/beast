@@ -1,3 +1,9 @@
+Fri Jun 13 19:37:08 2003  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4 (ac_vm): remove GCC option -frename-registers which is
+	automatically selected by 3.3 and not supported by earlier gcc
+	versions.
+	
 Tue Jun 10 22:08:18 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.c: added undo/redo/clear-undo menu items,
