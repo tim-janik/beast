@@ -206,9 +206,3 @@ $(beast_sources): $(beast_built_sources)
 #
 all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
 
-
-#
-# auxillary files
-#
-EXTRA_DIST += \
-	TODO

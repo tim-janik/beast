@@ -405,10 +405,3 @@ bseautodoc_LDADD = $(progs_LDADD)
 bsemagic_LDADD = $(progs_LDADD)
 bseinfo_LDADD = $(progs_LDADD)
 
-
-#
-# auxillary files
-#
-EXTRA_DIST += \
-	raw2bse \
-	TODO
