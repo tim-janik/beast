@@ -1,3 +1,8 @@
+Wed Jan 21 03:36:21 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cxx.cc: Added FIXME for indicating where function computing
+	fields in the server binding should be added.
+
 Wed Jan 21 03:21:00 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-module.cc: More work on records: really call type
