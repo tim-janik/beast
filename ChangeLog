@@ -1,3 +1,28 @@
+Sat Jul 27 13:01:44 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/images/: new directory containing images.
+	added excellent images (logo, splash, mime-type, etc.) from
+	Jakub Steiner.
+
+	* NEWS: updates.
+
+	* configure.in: provide BST_VERSION_STABLE and BST_PATH_IMAGES,
+	fix BST_PATH_SAMPLES. upgrade version hint from Pre-ALPHA to ALPHA.
+
+	* beast-gtk/bstsplash.[hc]: splash dialog implementation.
+
+	* beast-gtk/bstdialog.c: add to status bar stack upon show if it's
+	empty.
+
+	* beast-gtk/bstmain.c: fire up splash screen. show dialogs as
+	early as possible. special case development command line options.
+
+	* docs/generated/release-notes.dat: updates.
+
+	* beast-gtk/bstparamview.c (bst_param_view_rebuild): properly honour
+	type ranges as set by bst_param_view_set_mask() (fixes the BSE
+	options in the preferences dialog).
+
 Sat Jul 27 07:49:48 2002  Tim Janik  <timj@gtk.org>
 
 	* bststest.c: adapt to new GSL data handle API.

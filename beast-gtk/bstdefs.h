@@ -138,6 +138,9 @@ extern void bst_update_can_operate (GtkWidget   *some_widget);
       g_signal_emit_by_name (object, "notify::generic-change", NULL); \
 } G_STMT_END
 
+#define bst_nullify_on_destroy(obj, location) \
+  g_signal_connect_swapped ((obj), "destroy", G_CALLBACK (g_nullify_pointer), (location))
+
 extern GtkTooltips *bst_global_tooltips;
 #define	BST_TOOLTIPS	(*&bst_global_tooltips)
 

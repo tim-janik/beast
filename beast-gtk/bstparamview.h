@@ -46,8 +46,8 @@ struct _BstParamView
 
   GSList	*bparams;
 
-  GType  	 base_type;
-  GType  	 object_type;
+  GType  	 first_base_type;
+  GType  	 last_base_type;
   GPatternSpec  *reject_pattern;
   GPatternSpec  *match_pattern;
   GtkWidget	*nil_container;	/* null group */
@@ -67,8 +67,8 @@ void		bst_param_view_rebuild		(BstParamView	*param_view);
 void		bst_param_view_set_object	(BstParamView	*param_view,
 						 BswProxy	 object);
 void		bst_param_view_set_mask		(BstParamView	*param_view,
-						 GType  	 base_type,
-						 GType  	 param_object_type,
+						 GType  	 first_base_type,
+						 GType  	 last_base_type,
 						 const gchar	*reject_pattern,
 						 const gchar	*match_pattern);
 

@@ -18,6 +18,7 @@
 #include        "bstdefs.h"
 
 #include        "bstapp.h"
+#include        "bstsplash.h"
 #include	"bstxkb.h"
 #include	"bstkeytables.h"
 #include	"bstgconfig.h"
@@ -25,16 +26,10 @@
 #include	"bststatusbar.h"
 #include	"bstpreferences.h"
 #include	"../PKG_config.h"
+#include	"images/beast-images.h"
 #include	<unistd.h>
 #include	<stdio.h>
 #include	<string.h>
-
-
-
-
-#define	PROGRAM	"BEAST"
-#define	TITLE	"Beast"
-#define	VERSION	"Pre-Alpha"
 
 
 /* --- prototypes --- */
@@ -76,14 +71,23 @@ gtk_unlock (gpointer null)
 {
   GDK_THREADS_LEAVE ();
 }
-  
+
+static void
+splash_update_item (gpointer     data,
+		    const gchar *item)
+{
+  bst_splash_update_item (data, "%s", item);
+}
+
 int
 main (int   argc,
       char *argv[])
 {
   BswLockFuncs lfuncs = { NULL, gtk_lock, gtk_unlock };
+  GdkPixbufAnimation *anim;
+  GtkWidget *splash;
   BstApp *app = NULL;
-  gchar *env_str;
+  gchar *string;
   guint i, this_rc_version;
   
   /* initialize BSE, BSW and preferences
@@ -109,8 +113,20 @@ main (int   argc,
 
   GDK_THREADS_ENTER ();
 
+  /* first, popup splash screen
+   */
+  splash = bst_splash_new ("BEAST startup", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
+  bst_splash_set_text (splash,
+		       "<b><big>BEAST</big></b>\n"
+		       "<b>The Bedevilled Audio System</b>\n"
+		       "<b>Version %s (%s)</b>\n",
+		       BST_VERSION, BST_VERSION_HINT);
+  bst_splash_update_entity (splash, "Startup");
+  bst_splash_show_now (splash);
+
   /* BEAST initialization
    */
+  bst_splash_update_item (splash, "Objects");
   bst_init_gentypes ();
   gtk_rc_parse_string (bst_rc_string);
   g_type_name (bst_free_radio_button_get_type ());	/* urg, GCC_CONST */
@@ -126,6 +142,7 @@ main (int   argc,
       BseErrorType error;
       gchar *file_name;
       
+      bst_splash_update_item (splash, "Rc File");
       file_name = BST_STRDUP_RC_FILE ();
       gconf = bse_object_new (BST_TYPE_GCONFIG, NULL);
       bse_gconfig_revert (gconf);
@@ -142,15 +159,29 @@ main (int   argc,
       g_free (file_name);
     }
 
+  /* show splash images
+   */
+  bst_splash_update_item (splash, "Splash Image");
+  string = g_strconcat (BST_PATH_IMAGES, G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
+  anim = gdk_pixbuf_animation_new_from_file (string, NULL);
+  g_free (string);
+  bst_splash_update ();
+  if (anim)
+    {
+      bst_splash_set_animation (splash, anim);
+      g_object_unref (anim);
+    }
+
   /* register dynamic types and modules (plugins)
    */
+  bst_splash_update_entity (splash, "Plugins");
   if (bst_load_plugins)
-    bsw_register_plugins (NULL, TRUE, NULL);
+    bsw_register_plugins (NULL, TRUE, NULL, splash_update_item, splash);
 
   /* debugging hook
    */
-  env_str = g_getenv ("BEAST_SLEEP4GDB");
-  if (env_str && atoi (env_str) > 0)
+  string = g_getenv ("BEAST_SLEEP4GDB");
+  if (string && atoi (string) > 0)
     {
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
@@ -162,11 +193,13 @@ main (int   argc,
     {
       guint n_scripts;
 
+      bst_splash_update_entity (splash, "Scripts");
+
       /* script registration, this is done asyncronously,
        * so we wait until all are done
        */
       n_scripts = bsw_server_n_scripts (BSW_SERVER);
-      bsw_register_scripts (NULL, TRUE, NULL);
+      bsw_register_scripts (NULL, TRUE, NULL, splash_update_item, splash);
       while (bsw_server_n_scripts (BSW_SERVER) > n_scripts)
 	{
 	  GDK_THREADS_LEAVE ();
@@ -174,13 +207,33 @@ main (int   argc,
 	  GDK_THREADS_ENTER ();
 	}
     }
-  
+
+  bst_splash_update_entity (splash, "Misc");
+
+  /* listen to BseServer notification
+   */
+  bst_splash_update_entity (splash, "Dialogs");
+  bst_user_messages_listen ();
+  bst_status_bar_listen_exec_status ();
+
+  /* setup default keytable for pattern editor class
+   */
+  bst_splash_update_entity (splash, "Keytable");
+  bst_key_table_install_patch (bst_key_table_from_xkb (gdk_get_display ()));
+
+  /* hide splash screen, but grav events until we're done
+   */
+  gtk_widget_hide (splash);
+  gtk_grab_add (splash);
+
   /* open files given on command line
    */
   for (i = 1; i < argc; i++)
     {
       BswProxy project, wrepo;
       BswErrorType error;
+
+      bst_splash_update ();
 
       /* load waves into the last project */
       if (bsw_server_can_load (BSW_SERVER, argv[i]))
@@ -203,7 +256,9 @@ main (int   argc,
 	    {
 	      BswProxy wrepo = bsw_project_ensure_wave_repo (app->project);
 	      
+	      bst_status_printf (BST_STATUS_WAIT, NULL, "Loading \"%s\"", argv[i]);
 	      error = bsw_wave_repo_load_file (wrepo, argv[i]);
+	      bst_status_eprintf (error, "Loading \"%s\"", argv[i]);
 	      if (!error)
 		continue;
 	    }
@@ -219,11 +274,8 @@ main (int   argc,
       bsw_item_unuse (project);
       
       if (error)
-	g_message ("failed to load project `%s': %s", /* FIXME */
-		   argv[i],
-		   bse_error_blurb (error));
+	bst_status_eprintf (error, "Loading project \"%s\"", argv[i]);
     }
-
 
   /* open default app window
    */
@@ -236,16 +288,7 @@ main (int   argc,
       bsw_item_unuse (project);
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
-
-  /* listen to BseServer notification
-   */
-  bst_user_messages_listen ();
-  bst_status_bar_listen_exec_status ();
-
-  /* setup default keytable for pattern editor class
-   */
-  bst_key_table_install_patch (bst_key_table_from_xkb (gdk_get_display ()));
-
+  
   /* fire up release notes dialog
    */
   this_rc_version = 1;	/* <- increment to trigger greeting dialog */
@@ -254,9 +297,11 @@ main (int   argc,
       bst_app_operate (app, BST_OP_HELP_RELEASE_NOTES);
       bst_globals_set_rc_version (this_rc_version);
     }
-  
-  /* and away into the main loop
+
+  /* destroy splash to release grabs,
+   * away into the main loop
    */
+  gtk_widget_destroy (splash);
   gtk_main ();
   
   /* stop everything playing
@@ -473,10 +518,11 @@ bst_print_blurb (FILE    *fout,
       fprintf (fout, "\n");
       fprintf (fout, "Compiled for: %s\n", BST_ARCH_NAME);
       fprintf (fout, "\n");
-      fprintf (fout, "Doc-path:    %s\n", BST_PATH_DOCS);
-      fprintf (fout, "Plugin-path: %s\n", BSE_PATH_PLUGINS);
-      fprintf (fout, "Script-path: %s\n", BSW_PATH_SCRIPTS);
-      fprintf (fout, "Sample-path: %s\n", BST_PATH_DATA_SAMPLES);
+      fprintf (fout, "Doc Path:    %s\n", BST_PATH_DOCS);
+      fprintf (fout, "Image Path:  %s\n", BST_PATH_IMAGES);
+      fprintf (fout, "Plugin Path: %s\n", BSE_PATH_PLUGINS);
+      fprintf (fout, "Script Path: %s\n", BSW_PATH_SCRIPTS);
+      fprintf (fout, "Sample Path: %s\n", BST_PATH_DATA_SAMPLES);
       fprintf (fout, "\n");
       fprintf (fout, "BEAST comes with ABSOLUTELY NO WARRANTY.\n");
       fprintf (fout, "You may redistribute copies of BEAST under the terms of\n");
@@ -487,24 +533,26 @@ bst_print_blurb (FILE    *fout,
   else
     {
       fprintf (fout, "Usage: beast [options] [files...]\n");
-      fprintf (fout, "  --hints 			enrich the GUI with hints usefull for (script) developers\n");
-      fprintf (fout, "  --no-plugins			disable plugins (debug usage only)\n");
-      fprintf (fout, "  --force-xkb			force XKB keytable queries\n");
-      fprintf (fout, "  --beast-debug=keys		enable certain BEAST debug stages\n");
-      fprintf (fout, "  --beast-no-debug=keys		disable certain BEAST debug stages\n");
-      fprintf (fout, "  --bse-debug=keys		enable certain BSE debug stages\n");
-      fprintf (fout, "  --bse-no-debug=keys		disable certain BSE debug stages\n");
-      fprintf (fout, "  -h, --help			show this help message\n");
-      fprintf (fout, "  -v, --version			print version informations\n");
-      fprintf (fout, "  --display=DISPLAY		X server for the GUI; see X(1)\n");
-      fprintf (fout, "  --no-xshm			disable use of X shared memory extension\n");
-      fprintf (fout, "  --gtk-debug=FLAGS		Gtk+ debugging flags to enable\n");
-      fprintf (fout, "  --gtk-no-debug=FLAGS		Gtk+ debugging flags to disable\n");
-      fprintf (fout, "  --gtk-module=MODULE		load additional Gtk+ modules\n");
-      fprintf (fout, "  --gdk-debug=FLAGS		Gdk debugging flags to enable\n");
-      fprintf (fout, "  --gdk-no-debug=FLAGS		Gdk debugging flags to disable\n");
-      fprintf (fout, "  --g-fatal-warnings		make warnings fatal (abort)\n");
-      fprintf (fout, "  --sync   			do all X calls synchronously\n");
+      fprintf (fout, "  --hints                         enrich the GUI with hints usefull for (script) developers\n");
+      fprintf (fout, "  --no-plugins                    disable plugins (debug usage only)\n");
+      fprintf (fout, "  --force-xkb                     force XKB keytable queries\n");
+      fprintf (fout, "  --beast-debug=keys              enable certain BEAST debug stages\n");
+      fprintf (fout, "  --beast-no-debug=keys           disable certain BEAST debug stages\n");
+      fprintf (fout, "  --bse-debug=keys                enable certain BSE debug stages\n");
+      fprintf (fout, "  --bse-no-debug=keys             disable certain BSE debug stages\n");
+      fprintf (fout, "  -h, --help                      show this help message\n");
+      fprintf (fout, "  -v, --version                   print version and file paths\n");
+      fprintf (fout, "  --display=DISPLAY               X server for the GUI; see X(1)\n");
+      if (!BST_VERSION_STABLE)
+        {
+          fprintf (fout, "  --gtk-debug=FLAGS               Gtk+ debugging flags to enable\n");
+          fprintf (fout, "  --gtk-no-debug=FLAGS            Gtk+ debugging flags to disable\n");
+          fprintf (fout, "  --gtk-module=MODULE             load additional Gtk+ modules\n");
+          fprintf (fout, "  --gdk-debug=FLAGS               Gdk debugging flags to enable\n");
+          fprintf (fout, "  --gdk-no-debug=FLAGS            Gdk debugging flags to disable\n");
+          fprintf (fout, "  --g-fatal-warnings              make warnings fatal (abort)\n");
+          fprintf (fout, "  --sync                          do all X calls synchronously\n");
+        }
     }
 }
 

@@ -252,31 +252,36 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 
     # BEAST version
     AC_DEFINE_UNQUOTED(BST_VERSION, "$BST_VERSION")
+    BST_VERSION_STABLE=0
     case "$BST_VERSION" in
     0.99.*)     BST_VERSION_HINT=BETA ;;
-    0.*)        BST_VERSION_HINT="Pre-ALPHA" ;;
+    0.1*)       BST_VERSION_HINT="Pre-ALPHA" ;;
+    0.2*)       BST_VERSION_HINT="Pre-ALPHA" ;;
+    0.3*)       BST_VERSION_HINT="Pre-ALPHA" ;;
+    0.*)        BST_VERSION_HINT="ALPHA" ;;
     *)          if test `expr $BSE_MINOR_VERSION \% 2` = 1 ; then
                   BST_VERSION_HINT="Development Branch"
                 else
+		  BST_VERSION_STABLE=1
 	 	  BST_VERSION_HINT="Stable Branch"
 	        fi ;;
     esac
     AC_DEFINE_UNQUOTED(BST_VERSION_HINT, "$BST_VERSION_HINT")
+    AC_DEFINE_UNQUOTED(BST_VERSION_STABLE, $BST_VERSION_STABLE)
 
 
     # BEAST data from beast-data package
     beastbasedir=\${datadir}/beast
     beastdatadir=$beastbasedir/data-v$BEAST_DATA_VERSION
     beastsampledatadir=$beastdatadir/samples
-    dnl FIXME: remove the next two lines for 0.4:
-    beastdatadir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
-    beastsampledatadir=$beastdatadir
 
     # MINOR version specific data
     beastdocsdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION/docs
+    beastimagesdir=$beastbasedir/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION/images
 
     AC_SUBST(beastsampledatadir)
     AC_SUBST(beastdocsdir)
+    AC_SUBST(beastimagesdir)
 ])
 AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 [
@@ -439,6 +444,7 @@ bsw/Makefile
 bsw-shell/Makefile
 beast-gtk/Makefile
 beast-gtk/icons/Makefile
+beast-gtk/images/Makefile
 docs/Makefile
 docs/reference/Makefile
 docs/generated/Makefile

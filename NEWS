@@ -1,14 +1,14 @@
 Overview of Changes in BEAST/BSE 0.4.1:
 
+* Added GSL - a common sound backend for BSE and aRts
 * Added part support for songs with piano roll editor
 * A Guile based scheme shell for BSE has been added: bswshell
-* BEAST supports execution of Scheme scripts now
+* Added support for execution of scheme scripts
 * Added MIDI synthesis support
 * Added sample/wave display and preview facilities
-* Added sample loaders for .wav, .ogg and .mp3 files
-* Added GSL - a common sound backend for BSE and aRts
+* Added sample loaders for .wav, .ogg, .mp3 and .gslwave files
 * New threaded sound engine which can share synthesis
-  module calculations between processors and process cycles
+  module calculations between processors
 * New synthesis modules:
   FreeVerb	  - a reverb based on code by Jeremy Wakefield
   BiquadFilter    - various basic IIR (resonance) filter types
@@ -27,9 +27,8 @@ Overview of Changes in BEAST/BSE 0.4.1:
   connections per channel on some modules
 * New file caching layer
 * Major GUI cleanups and improvements
-* External Wave file support for WAVE, MPEG and Ogg/Vorbis
 * Ported BEAST/BSE to Gtk+2.0 and GLib-2.0
-* Moved BSEs type system into GLib-2.0
+* Moved the BSE type system into GLib-2.0 as GObject
 * A huge amount of bug fixes
 
 Overview of Changes in BEAST/BSE 0.4.0:

@@ -76,8 +76,8 @@ bst_param_view_init (BstParamView *param_view)
   param_view->object = 0;
   param_view->bparams = NULL;
 
-  param_view->base_type = BSE_TYPE_OBJECT;
-  param_view->object_type = 0;
+  param_view->first_base_type = BSE_TYPE_OBJECT;
+  param_view->last_base_type = 0;
   param_view->reject_pattern = NULL;
   param_view->match_pattern = NULL;
 }
@@ -171,8 +171,8 @@ bst_param_view_set_object (BstParamView *param_view,
 
 void
 bst_param_view_set_mask (BstParamView   *param_view,
-			 GType           base_type,
-			 GType           param_object_type,
+			 GType           first_base_type,
+			 GType           last_base_type,
 			 const gchar    *reject_pattern,
 			 const gchar    *match_pattern)
 {
@@ -186,8 +186,8 @@ bst_param_view_set_mask (BstParamView   *param_view,
     g_pattern_spec_free (param_view->match_pattern);
   param_view->match_pattern = match_pattern ? g_pattern_spec_new (match_pattern) : NULL;
 
-  param_view->base_type = base_type;
-  param_view->object_type = param_object_type;
+  param_view->first_base_type = first_base_type;
+  param_view->last_base_type = last_base_type;
 }
 
 void
@@ -273,7 +273,8 @@ bst_param_view_rebuild (BstParamView *param_view)
       GParamSpec *pspec = pspecs[i];
       gchar *param_group = bse_param_spec_get_group (pspec);
       
-      if (!g_type_is_a (pspec->owner_type, param_view->base_type))
+      if ((param_view->first_base_type && !g_type_is_a (pspec->owner_type, param_view->first_base_type)) ||
+	  (param_view->last_base_type && !g_type_is_a (param_view->last_base_type, pspec->owner_type)))
 	continue;
       
       if ((pspec->flags & BSE_PARAM_SERVE_GUI) &&

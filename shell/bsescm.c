@@ -129,7 +129,7 @@ shell_parse_args (gint    *argc_p,
 	  if (!registered_plugins)
 	    {
 	      registered_plugins = TRUE;
-	      bsw_register_plugins (NULL, TRUE, NULL);
+	      bsw_register_plugins (NULL, TRUE, NULL, NULL, NULL);
 	    }
 	  argv[i] = NULL;
 	}

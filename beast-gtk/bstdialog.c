@@ -398,6 +398,11 @@ bst_dialog_show (GtkWidget *widget)
   if (dialog->default_widget)
     gtk_widget_grab_default (dialog->default_widget);
 
+  if (dialog->status_bar &&
+      bst_dialog_get_status_window () == NULL &&
+      !g_slist_find (enter_stack, dialog))
+    enter_stack = g_slist_prepend (enter_stack, dialog);
+
   GTK_WIDGET_CLASS (parent_class)->show (widget);
 }
 

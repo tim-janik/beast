@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BEAST
  
-SUBDIRS = icons
+SUBDIRS = icons images
 
 INCLUDES = -I$(top_srcdir) $(BEAST_CFLAGS) -I. \
            -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
@@ -76,6 +76,7 @@ beast_headers = $(strip \
 	bstsnetshell.h \
 	bstsnetrouter.h \
 	bstsongshell.h \
+	bstsplash.h \
 	bststatusbar.h \
 	bsttoolbar.h \
 	bsttrackview.h \
@@ -132,6 +133,7 @@ beast_sources = $(strip \
 	bstsnetshell.c \
 	bstsnetrouter.c \
 	bstsongshell.c \
+	bstsplash.c \
 	bststatusbar.c \
 	bsttoolbar.c \
 	bsttrackview.c \

@@ -28,9 +28,6 @@
 
 
 
-#define	bst_nullify_on_destroy(obj, location) \
-  g_object_connect (G_OBJECT (obj), "swapped_signal::destroy", g_nullify_pointer, (location), NULL)
-
 enum {
   SCROLL_NONE  = 0,
   SCROLL_BOTH  = 3,

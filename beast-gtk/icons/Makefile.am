@@ -1,5 +1,5 @@
-# BSE-Plugins - Bedevilled Sound Engine dynamic Plugins
-# Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+# BEAST - Bedevilled Audio System
+# Copyright (C) 1998-2002 Tim Janik
 #
 ## Makefile.am for BEAST icons
 
