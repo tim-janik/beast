@@ -15,9 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bsttrackroll.h"
-
-#include	<gdk/gdkkeysyms.h>
+#include "bsttrackroll.h"
+#include "bstsnifferscope.h"
+#include <gdk/gdkkeysyms.h>
 
 
 /* --- defines --- */
@@ -35,7 +35,7 @@
 #define	HPANEL_Y(self)		(0)
 #define	HPANEL_HEIGHT(self)	(self->area_offset)
 #define VPANEL_X(self)		(0)
-#define	VPANEL_WIDTH(self)	(30)
+#define	VPANEL_WIDTH(self)	(HPANEL_HEIGHT (self))
 #define	CANVAS_X(self)		(VPANEL_WIDTH (self))
 #define	CANVAS_Y(self)		(HPANEL_HEIGHT (self))
 
@@ -117,6 +117,13 @@ static void	bst_track_roll_hsetup			(BstTrackRoll		*self,
 							 guint			 max_ticks,
 							 gdouble		 hzoom);
 static void	bst_track_roll_allocate_ecell		(BstTrackRoll		*self);
+static void     bst_track_roll_allocate_scope           (BstTrackRoll           *self,
+                                                         GtkWidget              *child,
+                                                         guint                   row);
+static void     track_roll_forall                       (GtkContainer    *container,
+                                                         gboolean         include_internals,
+                                                         GtkCallback      callback,   
+                                                         gpointer         callback_data);
 
 
 /* --- static variables --- */
@@ -161,6 +168,7 @@ bst_track_roll_class_init (BstTrackRollClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  GtkContainerClass *container_class = GTK_CONTAINER_CLASS (class);
 
   parent_class = g_type_class_peek_parent (class);
 
@@ -180,6 +188,8 @@ bst_track_roll_class_init (BstTrackRollClass *class)
   widget_class->button_press_event = bst_track_roll_button_press;
   widget_class->motion_notify_event = bst_track_roll_motion;
   widget_class->button_release_event = bst_track_roll_button_release;
+
+  container_class->forall = track_roll_forall;
 
   class->set_scroll_adjustments = bst_track_roll_set_scroll_adjustments;
   class->drag = NULL;
@@ -223,7 +233,8 @@ bst_track_roll_init (BstTrackRoll *self)
 
   GTK_WIDGET_UNSET_FLAGS (self, GTK_NO_WINDOW);
   gtk_widget_set_double_buffered (widget, FALSE);
-
+  gtk_widget_set_redraw_on_allocate (widget, TRUE);
+  
   self->tpt = 384 * 4;
   self->max_ticks = 1;
   self->hzoom = 1;
@@ -242,8 +253,6 @@ bst_track_roll_init (BstTrackRoll *self)
   self->vadjustment = NULL;
   self->scroll_timer = 0;
   self->area_offset = 20;
-  self->size_data = NULL;
-  self->get_area_pos = NULL;
   bst_marker_init_vertical (&self->vmarker);
   self->in_drag = FALSE;
   bst_track_roll_hsetup (self, 384 * 4, 800 * 384, 100);
@@ -255,9 +264,20 @@ static void
 bst_track_roll_destroy (GtkObject *object)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (object);
+  guint i;
 
+  if (self->scope_update)
+    {
+      g_source_remove (self->scope_update);
+      self->scope_update = 0;
+    }
   bst_track_roll_set_hadjustment (self, NULL);
   bst_track_roll_set_vadjustment (self, NULL);
+  for (i = 0; i < self->n_scopes; i++)
+    gtk_widget_unparent (GTK_WIDGET (self->scopes[i]));
+  g_free (self->scopes);
+  self->scopes = NULL;
+  self->n_scopes = 0;
   
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -266,7 +286,15 @@ static void
 bst_track_roll_finalize (GObject *object)
 {
   BstTrackRoll *self = BST_TRACK_ROLL (object);
+  guint i;
+  
+  bst_track_roll_setup (self, NULL, 0);
 
+  if (self->scope_update)
+    {
+      g_source_remove (self->scope_update);
+      self->scope_update = 0;
+    }
   g_object_unref (self->hadjustment);
   self->hadjustment = NULL;
   g_object_unref (self->vadjustment);
@@ -278,7 +306,10 @@ bst_track_roll_finalize (GObject *object)
       self->scroll_timer = 0;
     }
   bst_marker_finalize (&self->vmarker);
-
+  for (i = 0; i < self->n_scopes; i++)
+    gtk_widget_unparent (GTK_WIDGET (self->scopes[i]));
+  g_free (self->scopes);
+  
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -352,6 +383,21 @@ bst_track_roll_set_scroll_adjustments (BstTrackRoll  *self,
 }
 
 static void
+track_roll_forall (GtkContainer    *container,
+                   gboolean         include_internals,
+                   GtkCallback      callback,
+                   gpointer         callback_data)
+{
+  BstTrackRoll *self = BST_TRACK_ROLL (container);
+  guint i;
+  for (i = 0; i < self->n_scopes; i++)
+    if (include_internals)
+      callback (GTK_WIDGET (self->scopes[i]), callback_data);
+  if (self->ecell && include_internals)
+    callback ((GtkWidget*) self->ecell, callback_data);
+}
+
+static void
 track_roll_reset_backgrounds (BstTrackRoll *self)
 {
   GtkWidget *widget = GTK_WIDGET (self);
@@ -397,13 +443,62 @@ track_roll_update_layout (BstTrackRoll *self,
 
   old_area_offset = self->area_offset;
 
-  if (self->get_area_pos)
-    self->get_area_pos (self->size_data, &dummy, &self->area_offset);
+  if (self->tree)
+    gxk_tree_view_get_bin_window_pos (self->tree, &dummy, &self->area_offset);
   else
     self->area_offset = 20;
 
   if (old_area_offset != self->area_offset && queue_resize)
     gtk_widget_queue_resize (GTK_WIDGET (self));
+}
+
+static void
+track_roll_release_proxy (BstTrackRoll *self)
+{
+  bse_proxy_disconnect (self->proxy,
+                        "any_signal", track_roll_release_proxy, self,
+                        NULL);
+  bse_item_unuse (self->proxy);
+  self->proxy = 0;
+}
+
+void
+bst_track_roll_setup (BstTrackRoll   *self,
+                      GtkTreeView    *tree,
+                      SfiProxy        song)
+{
+  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+  if (tree)
+    g_return_if_fail (GTK_IS_TREE_VIEW (tree));
+  if (song)
+    g_return_if_fail (BSE_IS_SONG (song));
+
+  if (self->tree)
+    {
+      g_object_disconnect_any (self->tree, bst_track_roll_reallocate, self);
+      g_object_unref (self->tree);
+    }
+  self->tree = tree;
+  if (self->tree)
+    {
+      g_object_ref (tree);
+      g_object_connect (self->tree,
+                        "swapped_object_signal_after::size_allocate", bst_track_roll_reallocate, self,
+                        NULL);
+    }
+
+  if (self->proxy)
+    track_roll_release_proxy (self);
+  self->proxy = song;
+  if (self->proxy)
+    {
+      bse_item_use (self->proxy);
+      bse_proxy_connect (self->proxy,
+                         "swapped_signal::release", track_roll_release_proxy, self,
+                         NULL);
+    }
+  track_roll_update_layout (self, TRUE);
+  gtk_widget_queue_resize (GTK_WIDGET (self));
 }
 
 static void
@@ -431,8 +526,34 @@ bst_track_roll_size_allocate (GtkWidget	    *widget,
   widget->allocation.height = MAX (1, allocation->height);
 
   bst_track_roll_reallocate (self);
+}
+
+void
+bst_track_roll_reselect (BstTrackRoll *self)
+{
+  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
+  if (self->tree)
+    {
+      bst_track_roll_set_prelight_row (self, gxk_tree_view_get_selected_row (self->tree));
+      if (GTK_WIDGET_DRAWABLE (self))
+        gxk_window_process_next (GTK_WIDGET (self)->window, TRUE);
+    }
+  else
+    bst_track_roll_set_prelight_row (self, 0xffffffff);
+}
+
+static void
+track_roll_reallocate_children (BstTrackRoll *self)
+{
+  guint i;
+
   bst_track_roll_allocate_ecell (self);
   bst_marker_resize (&self->vmarker);
+  for (i = 0; i < self->n_scopes; i++)
+    bst_track_roll_allocate_scope (self, GTK_WIDGET (self->scopes[i]), i);
+  bst_track_roll_check_update_scopes (self);
+  bst_track_roll_reselect (self);
 }
 
 void
@@ -458,6 +579,104 @@ bst_track_roll_reallocate (BstTrackRoll *self)
 			      CANVAS_WIDTH (self), CANVAS_HEIGHT (self));
     }
   track_roll_update_adjustments (self, TRUE, TRUE);
+  track_roll_reallocate_children (self);
+}
+
+static gboolean
+track_roll_idle_update_scopes (gpointer data)
+{
+  BstTrackRoll *self = BST_TRACK_ROLL (data);
+  GSList *scope_list = NULL;
+  guint i;
+
+  GDK_THREADS_ENTER ();
+  self->scope_update = 0;
+  
+  /* save existing scopes */
+  for (i = 0; i < self->n_scopes; i++)
+    scope_list = g_slist_prepend (scope_list, self->scopes[i]);
+
+  /* reset scope list */
+  self->n_scopes = 0;
+
+  /* match or create needed scopes */
+  if (self->get_track && GTK_WIDGET_REALIZED (self))
+    for (i = 0; ; i++)
+      {
+        SfiProxy track = self->get_track (self->proxy_data, i);
+        BstSnifferScope *scope = NULL;
+        GSList *slist;
+        if (!track)
+          break;
+        for (slist = scope_list; slist; slist = slist->next)
+          {
+            scope = slist->data;
+            if (scope->track == track)  /* match existing */
+              {
+                scope_list = g_slist_remove (scope_list, scope);
+                break;
+              }
+          }
+        if (!slist)     /* create new if not matched */
+          {
+            scope = (BstSnifferScope*) bst_sniffer_scope_new (track);
+            gtk_widget_set_parent_window (GTK_WIDGET (scope), self->vpanel);
+            gtk_widget_set_parent (GTK_WIDGET (scope), GTK_WIDGET (self));
+          }
+        /* add to scope list */
+        self->n_scopes++;
+        self->scopes = g_renew (BstSnifferScope*, self->scopes, self->n_scopes);
+        self->scopes[i] = scope;
+      }
+
+  /* get rid of unneeded scopes */
+  while (scope_list)
+    {
+      GtkWidget *child = g_slist_pop_head (&scope_list);
+      gtk_widget_unparent (GTK_WIDGET (child));
+    }
+  
+  /* allocate scopes 'n stuff */
+  bst_track_roll_reallocate (self);
+
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+static void
+queue_scope_update (BstTrackRoll *self)
+{
+  if (!self->scope_update)
+    self->scope_update = g_idle_add_full (GTK_PRIORITY_RESIZE - 1, track_roll_idle_update_scopes, self, NULL);
+}
+
+void
+bst_track_roll_check_update_scopes (BstTrackRoll *self)
+{
+  guint i;
+  g_return_if_fail (BST_IS_TRACK_ROLL (self));
+
+  /* check whether scope update is necessary and schedule one */
+  if (!GTK_WIDGET_REALIZED (self) || !self->get_track)
+    {
+      if (self->n_scopes)
+        queue_scope_update (self);
+      return;
+    }
+  for (i = 0; i < self->n_scopes; i++)
+    {
+      SfiProxy track = self->get_track (self->proxy_data, i);
+      if (self->scopes[i]->track != track)
+        {
+          queue_scope_update (self);
+          return;
+        }
+    }
+  if (self->get_track (self->proxy_data, i)) /* one off, shouldn't exist */
+    {
+      queue_scope_update (self);
+      return;
+    }
 }
 
 static void
@@ -663,10 +882,10 @@ coord_to_row (BstTrackRoll *self,
 	      gboolean     *is_valid)
 {
   gint row;
-  if (self->get_pos_row && is_valid)
-    *is_valid = self->get_pos_row (self->size_data, y, &row);
-  else if (self->get_pos_row)
-    self->get_pos_row (self->size_data, y, &row);
+  if (self->tree && is_valid)
+    *is_valid = gxk_tree_view_get_row_from_coord (self->tree, y, &row);
+  else if (self->tree)
+    gxk_tree_view_get_row_from_coord (self->tree, y, &row);
   else
     row = y / 15; /* uneducated guess */
   return row;
@@ -678,8 +897,8 @@ row_to_coords (BstTrackRoll *self,
 	       gint         *y_p,
 	       gint         *height_p)
 {
-  if (self->get_row_area)
-    return self->get_row_area (self->size_data, row, y_p, height_p);
+  if (self->tree)
+    return gxk_tree_view_get_row_area (self->tree, row, y_p, height_p);
   else
     {
       if (y_p)
@@ -912,6 +1131,30 @@ bst_track_roll_expose_mark (BstTrackRoll *self,
 }
 
 static void
+bst_track_roll_allocate_scope (BstTrackRoll *self,
+                               GtkWidget    *child,
+                               guint         row)
+{
+  GtkAllocation allocation;
+  gint ry, rheight, validrow;
+  gtk_widget_size_request (child, NULL);
+  validrow = GTK_WIDGET_REALIZED (self) ? row_to_coords (self, row, &ry, &rheight) : FALSE;
+  if (!validrow)
+    {
+      allocation.x = allocation.y = -10;
+      allocation.width = allocation.height = 1;
+    }
+  else
+    {
+      allocation.x = 2 * XTHICKNESS (self) + 1;
+      allocation.y = ry + YTHICKNESS (self) + 1;
+      allocation.width = VPANEL_WIDTH (self) - 4 * XTHICKNESS (self) - 2;
+      allocation.height = rheight - 2 * YTHICKNESS (self) - 2;
+    }
+  gtk_widget_size_allocate (child, &allocation);
+}
+
+static void
 bst_track_roll_draw_vpanel (BstTrackRoll *self,
 			    gint	  y,
 			    gint	  ybound)
@@ -1001,12 +1244,14 @@ bst_track_roll_expose (GtkWidget      *widget,
     {
       gdk_window_begin_paint_rect (event->window, &area);
       bst_track_roll_draw_window (self, area.x, area.y, area.x + area.width, area.y + area.height);
+      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
       gdk_window_end_paint (event->window);
     }
   else if (event->window == self->vpanel)
     {
       gdk_window_begin_paint_rect (event->window, &area);
       bst_track_roll_draw_vpanel (self, area.y, area.y + area.height);
+      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
       gdk_window_end_paint (event->window);
     }
   else if (event->window == self->hpanel)
@@ -1015,6 +1260,7 @@ bst_track_roll_expose (GtkWidget      *widget,
       gdk_window_begin_paint_rect (event->window, &area);
       bst_track_roll_overlap_grow_hpanel_area (self, &area);
       bst_track_roll_draw_hpanel (self, area.x, area.x + area.width);
+      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
       gdk_window_end_paint (event->window);
     }
   else if (event->window == self->canvas)
@@ -1024,8 +1270,11 @@ bst_track_roll_expose (GtkWidget      *widget,
       bst_track_roll_draw_canvas (self, area.x, area.y, area.x + area.width, area.y + area.height);
       bst_marker_save_backing (&self->vmarker, &area);
       bst_marker_expose (&self->vmarker, &area);
+      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
       gdk_window_end_paint (event->window);
     }
+  else
+    GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
   return FALSE;
 }
 
@@ -1039,6 +1288,7 @@ static void
 track_roll_adjustment_value_changed (BstTrackRoll  *self,
 				     GtkAdjustment *adjustment)
 {
+  gboolean need_realloc = FALSE;
   if (adjustment == self->hadjustment)
     {
       gint x = self->x_offset, diff;
@@ -1061,6 +1311,7 @@ track_roll_adjustment_value_changed (BstTrackRoll  *self,
 	  area.width = ABS (diff);
 	  area.height = HPANEL_HEIGHT (self);
 	  gdk_window_invalidate_rect (self->hpanel, &area, TRUE);
+          need_realloc = TRUE;
 	}
     }
   if (adjustment == self->vadjustment)
@@ -1085,8 +1336,11 @@ track_roll_adjustment_value_changed (BstTrackRoll  *self,
 	  area.width = CANVAS_WIDTH (self);
 	  area.height = ABS (diff);
 	  gdk_window_invalidate_rect (self->canvas, &area, TRUE);
+          need_realloc = TRUE;
 	}
     }
+  if (need_realloc)
+    track_roll_reallocate_children (self);
 }
 
 static void
@@ -1558,23 +1812,6 @@ bst_track_roll_set_track_callback (BstTrackRoll   *self,
 
   self->proxy_data = data;
   self->get_track = get_track;
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-}
-
-void
-bst_track_roll_set_size_callbacks (BstTrackRoll   *self,
-				   gpointer        data,
-				   BstTrackRollAreaPosFunc get_area_pos,
-				   BstTrackRollRowAreaFunc get_row_area,
-				   BstTrackRollPosRowFunc  get_pos_row)
-{
-  g_return_if_fail (BST_IS_TRACK_ROLL (self));
-  
-  self->size_data = data;
-  self->get_area_pos = get_area_pos;
-  self->get_row_area = get_row_area;
-  self->get_pos_row = get_pos_row;
-  track_roll_update_layout (self, TRUE);
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 

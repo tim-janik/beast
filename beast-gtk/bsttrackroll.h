@@ -19,6 +19,7 @@
 #define __BST_TRACK_ROLL_H__
 
 #include "bstdragutils.h"
+#include "bstsnifferscope.h"
 #include "bstmarker.h"
 
 G_BEGIN_DECLS
@@ -35,16 +36,6 @@ G_BEGIN_DECLS
 /* --- typedefs & enums --- */
 typedef struct _BstTrackRoll              BstTrackRoll;
 typedef struct _BstTrackRollClass         BstTrackRollClass;
-typedef void     (*BstTrackRollAreaPosFunc) (gpointer size_data,
-					     gint    *x,
-					     gint    *y);
-typedef gboolean (*BstTrackRollRowAreaFunc) (gpointer size_data,
-					     gint     row,
-					     gint    *y_p,
-					     gint    *height_p);
-typedef gboolean (*BstTrackRollPosRowFunc)  (gpointer size_data,
-					     gint     y,
-					     gint    *row_p);
 typedef SfiProxy (*BstTrackRollTrackFunc)   (gpointer proxy_data,
 					     gint     row);
 
@@ -73,6 +64,12 @@ struct _BstTrackRoll
 {
   GtkContainer	 parent_instance;
 
+  SfiProxy          proxy;
+  GtkTreeView      *tree;
+  guint             n_scopes;   /* does not always reflect number of rows */
+  BstSnifferScope **scopes;
+  guint             scope_update;
+  
   /* horizontal layout */
   guint		 tpt;		/* ticks (parts) per tact */
   guint		 max_ticks;
@@ -98,10 +95,6 @@ struct _BstTrackRoll
 
   /* size queries */
   gint			  area_offset;
-  gpointer                size_data;
-  BstTrackRollAreaPosFunc get_area_pos;
-  BstTrackRollRowAreaFunc get_row_area;
-  BstTrackRollPosRowFunc  get_pos_row;
 
   /* BseTrack retrieval */
   gpointer              proxy_data;
@@ -118,14 +111,14 @@ struct _BstTrackRollClass
 {
   GtkContainerClass parent_class;
 
-  void		(*set_scroll_adjustments)	(BstTrackRoll	  *proll,
+  void		(*set_scroll_adjustments)	(BstTrackRoll	  *troll,
 						 GtkAdjustment	  *hadjustment,
 						 GtkAdjustment	  *vadjustment);
-  void		(*select_row)			(BstTrackRoll	  *proll,
+  void		(*select_row)			(BstTrackRoll	  *troll,
 						 gint		   row);
   void		(*drag)				(BstTrackRoll	  *self,
 						 BstTrackRollDrag *drag);
-  void		(*clicked)			(BstTrackRoll	  *proll,
+  void		(*clicked)			(BstTrackRoll	  *troll,
 						 guint		   button,
 						 guint             row,
 						 guint		   tick_position,
@@ -138,27 +131,27 @@ struct _BstTrackRollClass
 
 /* --- prototypes --- */
 GType	bst_track_roll_get_type			(void);
-void	bst_track_roll_set_hadjustment		(BstTrackRoll	*proll,
+void    bst_track_roll_setup                    (BstTrackRoll   *troll,
+                                                 GtkTreeView    *tree,
+                                                 SfiProxy        song);
+void	bst_track_roll_set_hadjustment		(BstTrackRoll	*troll,
 						 GtkAdjustment	*adjustment);
-void	bst_track_roll_set_vadjustment		(BstTrackRoll	*proll,
+void	bst_track_roll_set_vadjustment		(BstTrackRoll	*troll,
 						 GtkAdjustment	*adjustment);
-gdouble	bst_track_roll_set_hzoom		(BstTrackRoll	*proll,
+gdouble	bst_track_roll_set_hzoom		(BstTrackRoll	*troll,
 						 gdouble	 hzoom);
-void	bst_track_roll_set_canvas_cursor	(BstTrackRoll	*proll,
+void	bst_track_roll_set_canvas_cursor	(BstTrackRoll	*troll,
 						 GdkCursorType	 cursor);
-void	bst_track_roll_set_hpanel_cursor	(BstTrackRoll	*proll,
+void	bst_track_roll_set_hpanel_cursor	(BstTrackRoll	*troll,
 						 GdkCursorType	 cursor);
-void	bst_track_roll_set_vpanel_cursor	(BstTrackRoll	*proll,
+void	bst_track_roll_set_vpanel_cursor	(BstTrackRoll	*troll,
 						 GdkCursorType	 cursor);
 void	bst_track_roll_set_track_callback	(BstTrackRoll   *self,
 						 gpointer        data,
 						 BstTrackRollTrackFunc get_track);
-void	bst_track_roll_set_size_callbacks	(BstTrackRoll	*proll,
-						 gpointer	 data,
-						 BstTrackRollAreaPosFunc get_area_pos,
-						 BstTrackRollRowAreaFunc get_row_area,
-						 BstTrackRollPosRowFunc  get_pos_row);
 void	bst_track_roll_reallocate		(BstTrackRoll	*self);
+void	bst_track_roll_check_update_scopes	(BstTrackRoll	*self);
+void	bst_track_roll_reselect 		(BstTrackRoll	*self);
 void	bst_track_roll_queue_draw_row		(BstTrackRoll	*self,
 						 guint		 row);
 void	bst_track_roll_set_prelight_row		(BstTrackRoll	*self,

@@ -1,3 +1,19 @@
+Wed Dec 31 16:42:56 2003  Tim Janik  <timj@gtk.org>
+
+	* bstsnifferscope.[hc]: new widget, used internally by bsttrackroll.[hc]
+	to display per-track scopes.
+
+	* bsttrackroll.[hc]: make vpanel exactly as wide as hpanel is heigh.
+	create, delete and adjust per-track scope widgets on demand, this
+	uses an idle handler to update the required amount of widgets.
+	got rid of bst_track_roll_set_size_callbacks() and provided
+	bst_track_roll_setup() instead, so the track roll knows about its
+	tree and song directly now.
+
+	* bsttrackview.[hc]: adapt to BstTrackRoll changes.
+	removed extra tree => trackrool updates that the trackroll handles
+	itself now.
+
 Wed Dec 31 01:15:19 2003  Nedko Arnaudov  <nedko@users.sourceforge.net>
 
         * configure.in: Detect getpwnam_r and

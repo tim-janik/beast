@@ -384,19 +384,6 @@ get_track (gpointer data,
 }
 
 static void
-update_selection (BstTrackView     *self)
-{
-  BstItemView *iview = BST_ITEM_VIEW (self);
-  if (self->troll && iview->tree)
-    {
-      bst_track_roll_set_prelight_row (self->troll,
-				       gxk_tree_view_get_selected_row (iview->tree));
-      if (GTK_WIDGET_DRAWABLE (self->troll))
-	gxk_window_process_next (GTK_WIDGET (self->troll)->window, TRUE);
-    }
-}
-
-static void
 track_view_marks_changed (BstTrackView *self)
 {
   SfiProxy song = BST_ITEM_VIEW (self)->container;
@@ -496,19 +483,8 @@ bst_track_view_init (BstTrackView *self)
 
   /* link track roll to tree view and list model */
   g_signal_connect_object (tsel, "changed",
-			   G_CALLBACK (update_selection),
-			   self, G_CONNECT_SWAPPED | G_CONNECT_AFTER);
-  bst_track_roll_set_size_callbacks (self->troll,
-				     iview->tree,
-				     gxk_tree_view_get_bin_window_pos,
-				     gxk_tree_view_get_row_area,
-				     gxk_tree_view_get_row_from_coord);
-  g_signal_connect_object (iview->tree, "size_allocate",
-			   G_CALLBACK (bst_track_roll_reallocate),
+			   G_CALLBACK (bst_track_roll_reselect),
 			   self->troll, G_CONNECT_SWAPPED | G_CONNECT_AFTER);
-  g_signal_connect_object (iview->tree, "size_allocate",
-			   G_CALLBACK (update_selection),
-			   self, G_CONNECT_SWAPPED | G_CONNECT_AFTER);
   g_signal_connect_object (self->troll, "select-row",
 			   G_CALLBACK (gxk_tree_view_focus_row),
 			   iview->tree, G_CONNECT_SWAPPED);
@@ -604,6 +580,8 @@ track_view_set_container (BstItemView *iview,
 			  "any_signal", track_view_repeat_changed, self,
 			  NULL);
   BST_ITEM_VIEW_CLASS (parent_class)->set_container (iview, new_container);
+  if (self->troll)
+    bst_track_roll_setup (self->troll, iview->container ? iview->tree : NULL, iview->container);
   if (BSE_IS_SONG (iview->container))
     {
       bst_track_roll_controller_set_song (self->tctrl, iview->container);
