@@ -1,5 +1,6 @@
 Makefile
 Makefile.in
+aclocal.m4
 config.log
 stamp-h
 libtool
