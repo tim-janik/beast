@@ -3,6 +3,7 @@ RELEASE:
 - provide a sample song
 
 URGENT:
+- nuke OPEN_FAILED and similar errors in favour of real descriptions
 - track volume
 
 FEATURES:
