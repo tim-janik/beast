@@ -227,7 +227,7 @@ stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.idl $(SFIDL)
 	  --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	    $(bse_public_h_sources) > xgen-sbgth \
 	&& $(PERL) mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
-	&& $(SFIDL) $(SFIDL_INC) --header --implementation --boxed $(srcdir)/bserecords.idl >> xgen-sbgth \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bserecords.idl >> xgen-sbgth \
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
@@ -237,7 +237,7 @@ bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bserecords.idl $(SF
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
 	    $(bse_public_h_sources) >> xgen-bgtc \
 	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
-	&& $(SFIDL) $(SFIDL_INC) --source --implementation --boxed --init _sfidl_types_init bserecords.idl >> xgen-bgtc \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init _sfidl_types_init bserecords.idl >> xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
 	&& rm -f xgen-bgtc
 bsegentype_array.c: @DVLBUILD@ bsegentypes.c

@@ -1,3 +1,7 @@
+Sun Feb 22 02:03:51 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* Makefile.am: Use new sfidl options.
+
 Tue Feb 17 01:48:50 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepart.[hc]:
