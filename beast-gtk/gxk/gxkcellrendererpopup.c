@@ -80,7 +80,7 @@ static gpointer parent_class = NULL;
 /* --- functions --- */
 /**
  * gxk_cell_renderer_popup_get_type
- * RETURNS: GXK_TYPE_CELL_RENDERER_POPUP
+ * @RETURNS: %GXK_TYPE_CELL_RENDERER_POPUP
  *
  * #GxkCellRendererPopup is an editable text cell renderer which
  * supports popping up an auxillary window.
@@ -386,7 +386,7 @@ gxk_proxy_editable_init_cell_editable (GtkCellEditableIface *iface)
 
 /**
  * gxk_proxy_editable_get_type
- * RETURNS: GXK_TYPE_PROXY_EDITABLE
+ * @RETURNS: %GXK_TYPE_PROXY_EDITABLE
  *
  * #GxkProxyEditable is a #GtkEventBox which proxies
  * the #GtkCellEditable interface onto a backend
