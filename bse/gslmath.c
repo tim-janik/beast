@@ -19,7 +19,6 @@
 #include "gslmath.h"
 
 #include <string.h>
-#include <malloc.h>
 #include <stdio.h>
 
 
@@ -33,28 +32,28 @@
  #include <stl.h>
  #include <complex.h>
  typedef long double ld;
-
+ 
  int main (void)
  {
  ld r, l;
-
+ 
  cout.precision(256);
-
+ 
  r = pow ((ld) 2, (ld) 1 / (ld) 12);
  cout << "2^(1/12) =\n";
  cout << "2^" << (ld) 1 / (ld) 12 << " =\n";
  cout << r << "\n";
-
+ 
  l = log (r);
  cout << "ln(2^(1/12)) =\n";
  cout << "ln(" << r << ") =\n";
  cout << l << "\n";
-
+ 
  r = pow ((ld) 2, (ld) 1 / (ld) 72);
  cout << "2^(1/72) =\n";
  cout << "2^" << (ld) 1 / (ld) 72 << " =\n";
  cout << r << "\n";
-
+ 
  return 0;
  }
 */
@@ -76,7 +75,7 @@ pretty_print_double (char  *str,
 		     double d)
 {
   char *s= str;
-
+  
   sprintf (s, "%."PRINTF_DIGITS"f", d);
   while (*s) s++;
   while (s[-1] == '0' && s[-2] != '.')
@@ -92,12 +91,12 @@ gsl_complex_list (unsigned int n_points,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_alloca ((FLOAT_STRING_SIZE * 2 * n_points) * sizeof (char));
+  char *s, *tbuffer = g_newa (char, (FLOAT_STRING_SIZE * 2 * n_points));
   unsigned int i;
-
+  
   rbi++; if (rbi >= RING_BUFFER_LENGTH) rbi -= RING_BUFFER_LENGTH;
   if (rbuffer[rbi] != NULL)
-    free (rbuffer[rbi]);
+    g_free (rbuffer[rbi]);
   s = tbuffer;
   for (i = 0; i < n_points; i++)
     {
@@ -111,7 +110,7 @@ gsl_complex_list (unsigned int n_points,
       *s++ = '\n';
     }
   *s++ = 0;
-  rbuffer[rbi] = strdup (tbuffer);
+  rbuffer[rbi] = g_strdup (tbuffer);
   return rbuffer[rbi];
 }
 
@@ -121,10 +120,10 @@ gsl_complex_str (GslComplex c)
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
   char *s, tbuffer[FLOAT_STRING_SIZE * 2];
-
+  
   rbi++; if (rbi >= RING_BUFFER_LENGTH) rbi -= RING_BUFFER_LENGTH;
   if (rbuffer[rbi] != NULL)
-    free (rbuffer[rbi]);
+    g_free (rbuffer[rbi]);
   s = tbuffer;
   *s++ = '{';
   s = pretty_print_double (s, c.re);
@@ -133,7 +132,7 @@ gsl_complex_str (GslComplex c)
   s = pretty_print_double (s, c.im);
   *s++ = '}';
   *s++ = 0;
-  rbuffer[rbi] = strdup (tbuffer);
+  rbuffer[rbi] = g_strdup (tbuffer);
   return rbuffer[rbi];
 }
 
@@ -144,14 +143,14 @@ gsl_poly_str (unsigned int degree,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_alloca ((degree * FLOAT_STRING_SIZE) * sizeof (char));
+  char *s, *tbuffer = g_newa (char, degree * FLOAT_STRING_SIZE);
   unsigned int i;
-
+  
   if (!var)
     var = "x";
   rbi++; if (rbi >= RING_BUFFER_LENGTH) rbi -= RING_BUFFER_LENGTH;
   if (rbuffer[rbi] != NULL)
-    free (rbuffer[rbi]);
+    g_free (rbuffer[rbi]);
   s = tbuffer;
   *s++ = '(';
   s = pretty_print_double (s, a[0]);
@@ -166,7 +165,7 @@ gsl_poly_str (unsigned int degree,
   while (i--)
     *s++ = ')';
   *s++ = 0;
-  rbuffer[rbi] = strdup (tbuffer);
+  rbuffer[rbi] = g_strdup (tbuffer);
   return rbuffer[rbi];
 }
 
@@ -177,14 +176,14 @@ gsl_poly_str1 (unsigned int degree,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, *tbuffer = g_alloca ((degree * FLOAT_STRING_SIZE) * sizeof (char));
+  char *s, *tbuffer = g_newa (char, degree * FLOAT_STRING_SIZE);
   unsigned int i, need_plus = 0;
-
+  
   if (!var)
     var = "x";
   rbi++; if (rbi >= RING_BUFFER_LENGTH) rbi -= RING_BUFFER_LENGTH;
   if (rbuffer[rbi] != NULL)
-    free (rbuffer[rbi]);
+    g_free (rbuffer[rbi]);
   s = tbuffer;
   *s++ = '(';
   if (a[0] != 0.0)
@@ -221,7 +220,7 @@ gsl_poly_str1 (unsigned int degree,
     }
   *s++ = ')';
   *s++ = 0;
-  rbuffer[rbi] = strdup (tbuffer);
+  rbuffer[rbi] = g_strdup (tbuffer);
   return rbuffer[rbi];
 }
 
@@ -231,7 +230,7 @@ gsl_complex_gnuplot (const char  *file_name,
 		     GslComplex  *points)
 {
   FILE *fout = fopen (file_name, "w");
-
+  
   fputs (gsl_complex_list (n_points, points, ""), fout);
   fclose (fout);
 }
@@ -241,9 +240,9 @@ gsl_temp_freq (double kammer_freq,
 	       int    halftone_delta)
 {
   double factor;
-
+  
   factor = pow (GSL_2_RAISED_TO_1_OVER_12_d, halftone_delta);
-
+  
   return kammer_freq * factor;
 }
 
@@ -253,7 +252,7 @@ gsl_poly_from_re_roots (unsigned int degree,
 			GslComplex  *roots)
 {
   unsigned int i;
-
+  
   /* initialize polynomial */
   a[1] = 1;
   a[0] = -roots[0].re;
@@ -261,7 +260,7 @@ gsl_poly_from_re_roots (unsigned int degree,
   for (i = 1; i < degree; i++)
     {
       unsigned int j;
-
+      
       a[i + 1] = a[i];
       for (j = i; j >= 1; j--)
 	a[j] = a[j - 1] - a[j] * roots[i].re;
@@ -275,7 +274,7 @@ gsl_cpoly_from_roots (unsigned int degree,
 		      GslComplex  *roots)
 {
   unsigned int i;
-
+  
   /* initialize polynomial */
   c[1].re = 1;
   c[1].im = 0;
@@ -286,7 +285,7 @@ gsl_cpoly_from_roots (unsigned int degree,
     {
       GslComplex r = gsl_complex (-roots[i].re, -roots[i].im);
       unsigned int j;
-
+      
       c[i + 1] = c[i];
       for (j = i; j >= 1; j--)
 	c[j] = gsl_complex_add (c[j - 1], gsl_complex_mul (c[j], r));
@@ -299,10 +298,10 @@ gsl_poly_complex_roots (unsigned int degree,
 			double      *a,		/* [0..degree] (degree+1 elements) */
 			GslComplex  *roots)	/* [degree] */
 {
-  double *roots_re = g_alloca ((1 + degree) * sizeof (double));
-  double *roots_im = g_alloca ((1 + degree) * sizeof (double));
+  double *roots_re = g_newa (double, 1 + degree);
+  double *roots_im = g_newa (double, 1 + degree);
   unsigned int i;
-
+  
   zrhqr (a, degree, roots_re, roots_im);
   for (i = 0; i < degree; i++)
     {
@@ -331,7 +330,7 @@ gsl_ellip_sn (double u,
 	      double emmc)
 {
   double sn;
-
+  
   sncndn (u, emmc, &sn, NULL, NULL);
   return sn;
 }
@@ -361,7 +360,7 @@ gsl_complex_ellip_sn (GslComplex u,
 		      GslComplex emmc)
 {
   GslComplex sn;
-
+  
   sncndnC (u, emmc, &sn, NULL, NULL);
   return sn;
 }
@@ -379,24 +378,21 @@ static inline double DSQR (double d) { return d == 0.0 ? 0.0 : d * d; }
 static inline double* vector (long nl, long nh)
      /* allocate a vector with subscript range v[nl..nh] */
 {
-  double *v = malloc ((nh - nl + 1 + 1) * sizeof (*v));
-  if (!v) nrerror ("vector allocation failed");
+  double *v = g_new (double, nh - nl + 1 + 1);
   return v - nl + 1;
 }
 static inline void free_vector (double *v, long nl, long nh)
 {
-  free (v + nl - 1);
+  g_free (v + nl - 1);
 }
 static inline double** matrix (long nrl, long nrh, long ncl, long nch)
      /* allocate a matrix with subscript range m[nrl..nrh][ncl..nch] */
 {
   long i, nrow = nrh - nrl + 1, ncol = nch - ncl + 1;
-  double **m = malloc ((nrow + 1) * sizeof (*m));
-  if (!m) nrerror ("matrix allocation failed");
+  double **m = g_new (double*, nrow + 1);
   m += 1;
   m -= nrl;
-  m[nrl] = malloc ((nrow * ncol + 1) * sizeof (**m));
-  if (!m[nrl]) nrerror ("matrix allocation failed");
+  m[nrl] = g_new (double, nrow * ncol + 1);
   m[nrl] += 1;
   m[nrl] -= ncl;
   for (i = nrl + 1; i <= nrh; i++)
@@ -405,8 +401,8 @@ static inline double** matrix (long nrl, long nrh, long ncl, long nch)
 }
 static inline void free_matrix (double **m, long nrl, long nrh, long ncl, long nch)
 {
-  free (m[nrl] + ncl - 1);
-  free (m + nrl - 1);
+  g_free (m[nrl] + ncl - 1);
+  g_free (m + nrl - 1);
 }
 
 static void
@@ -568,7 +564,7 @@ balanc (double **a, int n)
 {
   int last,j,i;
   double s,r,g,f,c,sqrdx;
-
+  
   sqrdx=RADIX*RADIX;
   last=0;
   while (last == 0) {
@@ -959,7 +955,7 @@ rf (double x, double y, double z)
 	RF_BIG at most one fifth the machine overflow limit. */
 {
   double alamb,ave,delx,dely,delz,e2,e3,sqrtx,sqrty,sqrtz,xt,yt,zt;
-
+  
   if (1 /* TIMJ: add verbose checks */)
     {
       if (DMIN (DMIN (x, y), z) < 0.0)

@@ -606,3 +606,5 @@ gsl_engine_wait_on_trans (void)
   /* call all free() functions */
   _op_collect_trans ();
 }
+
+/* vim:set ts=8 sts=2 sw=2: */

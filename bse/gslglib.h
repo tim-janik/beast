@@ -172,11 +172,14 @@ char *alloca ();
 # endif /* !_MSC_VER */
 #endif /* !__GNUC__ && !GLIB_HAVE_ALLOCA_H */
 
-#define g_alloca (size) alloca (size)
+#define g_alloca(size) alloca (size)
 #define g_newa(struct_type, n_structs)  ((struct_type*) g_alloca (sizeof (struct_type) * (gsize) (n_structs)))
 
-#ifdef __GNUC__
+/* needs inline configure check */
+#if defined(__GNUC__)
 #define inline __inline__
+#else
+#define inline /* no inline */
 #endif
 
 
@@ -314,7 +317,6 @@ g_trash_stack_height (GTrashStack **stack_p)
 
 
 /* --- sick defines --- */
-#define	g_threads_init(arg)	/* */
 typedef struct { int fd; short events, revents; } GPollFD;
 
 
@@ -725,6 +727,11 @@ void		g_scanner_warn			(GScanner	*scanner,
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
+
+#ifdef GSL_WANT_ARTS_THREADS
+#include "gslartsthreads.h"
+#endif
+
 
 #endif /* __GSL_GLIB_H__ */ /* vim: set ts=8 sw=2 sts=2: */
 

@@ -1,12 +1,12 @@
-#include "gslglib.h"
+#include "gsl/gslglib.h"
+#include "gsl/gsldefs.h"
 
 #include <locale.h>
 #include <string.h>
 #include <errno.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <stdint.h>
 
 #define	GLIB_SIZEOF_INTMAX	GSL_SIZEOF_INTMAX
 

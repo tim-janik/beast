@@ -106,4 +106,4 @@ struct _GslRecMutex
 #endif /* __cplusplus */
 
 #endif /* __GSL_DEFS_H__ */
-/* vim:ts=8:sw=2:sts=2 */
+/* vim:set ts=8 sw=2 sts=2: */

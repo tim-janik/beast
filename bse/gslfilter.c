@@ -256,7 +256,7 @@ tschebyscheff_poly (unsigned int degree,
     }
   else
     {
-      double *u = g_alloca ((1 + degree) * sizeof (double));
+      double *u = g_newa (double, 1 + degree);
       
       u[degree] = 0; u[degree - 1] = 0;
       tschebyscheff_poly (degree - 2, u);
@@ -276,10 +276,10 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
 			 double      *a,    /* [0..iorder] */
 			 double      *b)
 {
-  GslComplex *roots = g_alloca ((iorder * 2) * sizeof (GslComplex)), *r;
-  GslComplex *zf = g_alloca ((1 + iorder) * sizeof (GslComplex));
-  double *vk = g_alloca ((1 + iorder) * sizeof (double)), norm;
-  double *q = g_alloca ((2 * (1 + iorder)) * sizeof (double));
+  GslComplex *roots = g_newa (GslComplex, iorder * 2), *r;
+  GslComplex *zf = g_newa (GslComplex, 1 + iorder);
+  double *vk = g_newa (double, 1 + iorder), norm;
+  double *q = g_newa (double, 2 * (1 + iorder));
   double O = gsl_trans_freq2s (zomega);
   unsigned int i;
   

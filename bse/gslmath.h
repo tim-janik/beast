@@ -217,7 +217,7 @@ gsl_complex_mul3 (GslComplex c1,
   double bce = c1.im * c2.re * c3.re;
   double acf = c1.re * c2.re * c3.im;
   double bdf = c1.im * c2.im * c3.im;
-
+  
   return gsl_complex (aec - bde - adf - bcf, ade + bce + acf - bdf);
 }
 static inline GslComplex
@@ -346,7 +346,7 @@ gsl_poly_sub (unsigned int degree,
 	      double      *b)
 {
   unsigned int i;
-
+  
   for (i = 0; i <= degree; i++)
     a[i] -= b[i];
 }
@@ -357,7 +357,7 @@ gsl_poly_mul (unsigned int  order,
 	      const double *b)
 {
   unsigned int i, j;
-
+  
   for (i = 0; i <= 2 * order; i++)
     {
       p[i] = 0;
@@ -371,7 +371,7 @@ gsl_cpoly_mul_monomial (unsigned int degree,
 			GslComplex   root)
 {
   unsigned int j;
-
+  
   c[degree] = c[degree - 1];
   for (j = degree - 1; j >= 1; j--)
     c[j] = gsl_complex_sub (c[j - 1], gsl_complex_mul (c[j], root));
@@ -383,7 +383,7 @@ gsl_cpoly_mul_reciprocal (unsigned int degree,
 			  GslComplex   root)
 {
   unsigned int j;
-
+  
   c[degree] = gsl_complex_mul (c[degree - 1], gsl_complex_inv (root));
   for (j = degree - 1; j >= 1; j--)
     c[j] = gsl_complex_sub (c[j], gsl_complex_mul (c[j - 1], root));
@@ -419,7 +419,7 @@ gsl_poly_eval (unsigned int degree,
 	       double	    x)
 {
   double sum = a[degree];
-
+  
   while (degree--)
     sum = sum * x + a[degree];
   return sum;
