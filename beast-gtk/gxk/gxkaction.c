@@ -133,8 +133,7 @@ action_list_add (GxkActionList        *alist,
                  const GxkStockAction *action,
                  const gchar          *i18n_domain)
 {
-  ActionEntry *entry = g_new (ActionEntry, 1);
-  guint j;
+  ActionEntry *entry = g_new0 (ActionEntry, 1);
   entry->klass = action_class_ref (klass);
   entry->key = g_intern_string (key);
   entry->action = *action;
@@ -143,7 +142,7 @@ action_list_add (GxkActionList        *alist,
   entry->action.tooltip = intern_i18n_string (i18n_domain, action->tooltip, sconst);
   entry->action.stock_icon = intern_null_string (action->stock_icon, sconst);
   entry->widgets = NULL;
-  j = alist->n_entries++;
+  guint j = alist->n_entries++;
   alist->entries = g_renew (ActionEntry*, alist->entries, alist->n_entries);
   alist->entries[j] = entry;
 }
