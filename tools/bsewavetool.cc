@@ -1035,22 +1035,23 @@ public:
   }
 } cmd_xinfo ("xinfo");
 
-/* FIXME: TODO items:
+/* TODO commands:
+ * bsewavetool.1 # need manual page
+ * bsewavetool merge <file.bsewave> <second.bsewave>
+ * bsewavetool clip <file.bsewave> [-c clip-config] ...
+ * bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
+ * bsewavetool omit <file.bsewave> [-a remove-algorithm] ...
  * bsewavetool del-wave <file.bsewave> {-m midi-note|-f osc-freq} ...
- * bsewavetool config-gus-patch <file.bsewave> {--chunk=<freq>|--all-chunks}
- *   --chunk=<freq>             select chunk to modify by frequency
+ * bsewavetool config-gus-patch <file.bsewave> {-f=<f>|-m=<m>|--all-chunks}
+ *   -f osc-freq                select chunk to modify by frequency
+ *   -m midi-note               alternative to -f
  *   --all-chunks               select all chunks for modifications
+ *   --sustain-envelope=<a,d,s,r>
  *   --envelope=<a,d,s,r>       set envelope
- *   --sustain-envelope=<a,d,s,r> set envelope
- *   --reset-envelope           set envelope
+ *   --reset-envelope           unset envelope
  *   --panning=<p>              set output panning
  *   --tremolo=<s,r,d>          tremolo, s.., r..., d...
  *   --vibrato=<s,r,d>          vibrato, s.., r..., d...
- * bsewavetool merge <file.bsewave> <second.bsewave>
- * bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
- * bsewavetool clip <file.bsewave> [-c clip-config] ...
- * bsewavetool omit <file.bsewave> [-a remove-algorithm] ...
- * bsewavetool.1 # need manual page
  */
 
 } // BseWaveTool
