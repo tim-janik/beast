@@ -35,6 +35,9 @@ void	bse_hunk_mix		(guint                 n_dest_tracks,
 				 const gfloat         *dest_volumes,
 				 guint                 n_src_tracks,
 				 const BseSampleValue *src_hunk);
+void	bse_hunk_fill		(guint		       n_tracks,
+				 BseSampleValue	      *hunk,
+				 BseSampleValue	       value);
        
 
        

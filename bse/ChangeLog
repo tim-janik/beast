@@ -1,3 +1,8 @@
+Fri Dec 17 08:48:29 1999  Tim Janik  <timj@gtk.org>
+
+	* bsemixer.[hc] (bse_hunk_fill): new function to fill a hunk with a
+	value.
+
 Thu Dec 16 10:08:25 1999  Tim Janik  <timj@gtk.org>
 
 	* bseplugin.c (bse_plugin_dir_list_files): return a sorted list of

@@ -25,22 +25,22 @@
  * we'd have the following basic cases to cover:
  * [concatenation operator for two words a, b is (a + b) / 2]
  *
- * + 1->1 := (a) -> (a)                   !v=memcpy
- * + 1->2 := (a) -> (a,a)
+ * i 1->1 := (a) -> (a)                   !v=memcpy
+ * i 1->2 := (a) -> (a,a)
  * - 1->3 := (a) -> (0,0,a)
  * - 1->4 := (a) -> (a,a,0,0)
- * + 2->1 := (a,b) -> (ab)
- * + 2->2 := (a,b) -> (a,b)               !v=memcpy
+ * i 2->1 := (a,b) -> (ab)
+ * i 2->2 := (a,b) -> (a,b)               !v=memcpy
  * - 2->3 := (a,b) -> (a,b,0)
  * - 2->4 := (a,b) -> (a,b,0,0)
  *   3->1 := (a,b,c) -> (abc)
  * - 3->2 := (a,b,c) -> (ac,bc)
- * . 3->3 := (a,b,c) -> (a,b,c)           !v=memcpy
+ * o 3->3 := (a,b,c) -> (a,b,c)           !v=memcpy
  * - 3->4 := (a,b,c) -> (a,b,c,c)
  *   4->1 := (a,b,c,d) -> (abcd)
  *   4->2 := (a,b,c,d) -> (ac,bd)
  * - 4->3 := (a,b,c,d) -> (a,b,cd)
- * . 4->4 := (a,b,c,d) -> (a,b,c,d)       !v=memcpy
+ * o 4->4 := (a,b,c,d) -> (a,b,c,d)       !v=memcpy
  *
  * and each one would need a distinction for v (volume) being 1.0 or different
  * from 1.0, which makes up 32 cases total (the ones marked with "!v" can be
@@ -51,11 +51,11 @@
  *
  * so instead of implementing a half-baked all-doing monster table of mixing
  * functions (32 functions for BSE_MAX_N_TRACKS=4, 64 for BSE_MAX_N_TRACKS=8
- * and so on), we will currently just provide the variants marked with a '+'
+ * and so on), we will currently just provide the variants marked with a 'i'
  * and maybe implement a more generic function to cover track mixing in
  * combination with a track mapping table at a later point (or provide certain
  * variants of the above as the need arises).
- * (we do also feature the '.' functions for 1.0 volumes.)
+ * (we do also feature the 'o' functions for 1.0 volumes.)
  */
 
 
@@ -75,7 +75,7 @@ _bse_hunk_mix_nv_memcpy (BseSampleValue       *hunk,
 			 BseSampleValue       *bound,
 			 const BseSampleValue *src_hunk)
 {
-  memcpy (hunk, src_hunk, bound - hunk);
+  memcpy (hunk, src_hunk, (bound - hunk) * sizeof (BseSampleValue));
 }
 static void
 _bse_hunk_mix_nv_1_2 (BseSampleValue       *d,
@@ -106,8 +106,8 @@ _bse_hunk_mix_nv_2_1 (BseSampleValue       *d,
 #define ASSIGN_CLIPPED(dest, value) { \
   if ((value) > 32767) \
     (dest) = 32767; \
-  else if ((value) < -32768) \
-    (dest) = -32768; \
+  else if ((value) < -32767) \
+    (dest) = -32767; \
   else \
     (dest) = (value); \
 }
@@ -264,4 +264,24 @@ bse_hunk_mix (guint                 n_dest_tracks,
 	       "%u destination tracks is not imlemented (probably underspecified)",
 	       n_src_tracks,
 	       n_dest_tracks);
+}
+
+void
+bse_hunk_fill (guint	       n_tracks,
+	       BseSampleValue *hunk,
+	       BseSampleValue  value)
+{
+  g_return_if_fail (n_tracks >= 1 && n_tracks <= MAX_N_MIX_TRACKS);
+  g_return_if_fail (hunk != NULL);
+
+  if (value >> 8 == (value & 0xff))
+    memset (hunk, value, n_tracks * BSE_TRACK_LENGTH * sizeof (BseSampleValue));
+  else
+    {
+      BseSampleValue *bound = hunk + n_tracks * BSE_TRACK_LENGTH;
+
+      do
+	*(hunk++) = value;
+      while (hunk < bound);
+    }
 }
