@@ -1,3 +1,8 @@
+Sun Oct  5 06:06:38 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-download.texi: reordered sections,
+	fixed freedesktop.org link.
+
 Fri Oct  3 19:55:53 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* TODO: removed fixed items.

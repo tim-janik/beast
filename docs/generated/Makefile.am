@@ -185,6 +185,7 @@ conditional_clean = $(strip \
 	gsl-mplan.texi		release-news.texi	\
 	$(temp_ref_docu)	$(temp_log2texi)	\
 	$(distdocs)		texiutils.texi		\
+	$(REFERENCE_XMLS)				\
 )
 endif
 CLEANFILES += $(conditional_clean)
@@ -279,7 +280,7 @@ MAINTAINERCLEANFILES +=
 .INTERMEDIATE: $(strip \
 	release-news.texi gsl-mplan.texi navigation.xml index.html	\
 	log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi	\
-	$(REFERENCE_XMLS) \
+	$(REFERENCE_XMLS)						\
 )
 
 # non-file rules

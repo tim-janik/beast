@@ -10,9 +10,9 @@
 
 @unnumbered Where Can I Get @beastbse{}?
 
-Publically consumable releases can be found at the official ftp location:
+Publically consumable releases can be found via ftp:
 @uref{ftp://beast.gtk.org/pub/beast/}.
-Or alternatively via http:
+@* Or alternatively via http:
 @uref{http://beast.gtk.org/beast-ftp/}.
 
 @unnumbered Requirements
@@ -40,41 +40,6 @@ A collection of links to LADSPA plugins is kept at
 BEAST will look for LADSPA plugins under @file{lib/ladspa/} of it's own
 installation prefix, and in the directories listed in @code{$LADSPA_PATH}.
 
-
-@unnumbered Bleeding Edge
-
-The @beastbse source code tree is hosted on the
-@uref{http://www.gnome.org,, GNOME project}'s CVS server.
-The module name is @code{beast}. You can get it like this:
-
-@lisp
-$ export CVSROOT=':pserver:anonymous@@anoncvs.gnome.org:/cvs/gnome'
-$ cvs login # there is no password, just hit return
-$ cvs -z3 checkout beast
-@end lisp
-
-We recommend that you read the @uref{http://developer.gnome.org/tools/cvs.html,, tutorial}
-on using, getting, and building GNOME projects from CVS.
-
-Building from CVS requires additional tools than building the
-release tarballs. The reason for this is due to building documentation
-and auto-generating code that are included into releases. In particular,
-building @beast from CVS now requires the texitheque module hosted in
-@uref{http://www.freedesktop.org/,, freedesktop.org} CVS. Anonymous
-CVS access to freedesktop.org is described on their
-@uref{http://www.freedesktop.org/about/involved.html,, getting involved}
-page, however to just get texitheque, you do:
-
-@lisp
-$ export CVSROOT=':pserver:anonymous@@freedom.codefactory.se:/freedesktop'
-$ cvs login # there is no password, just hit return
-$ cvs -z3 checkout texitheque
-@end lisp
-
-Beware though, CVS versions may behave way less stable than release tarballs,
-and on occasions may produce invalid @file{.bse} files.
-
-
 @unnumbered Packages
 
 Stock
@@ -99,5 +64,40 @@ is working on a
 @uref{http://www.netbsd.org,,NetBSD}
 package of @beast{}, it's current development stage can be tracked at
 @uref{http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/pkgsrc-wip/wip/beast/}.
+
+
+@unnumbered Bleeding Edge
+
+The @beastbse source code tree is hosted on the
+@uref{http://www.gnome.org,, GNOME project}'s CVS server.
+The module name is @code{beast}. You can get it like this:
+
+@lisp
+$ export CVSROOT=':pserver:anonymous@@anoncvs.gnome.org:/cvs/gnome'
+$ cvs login # there is no password, just hit return
+$ cvs -z3 checkout beast
+@end lisp
+
+We recommend that you read the @uref{http://developer.gnome.org/tools/cvs.html,, tutorial}
+on using, getting, and building GNOME projects from CVS.
+
+Building from CVS requires additional tools than building the
+release tarballs. The reason for this is due to building documentation
+and auto-generating code that are included into releases. In particular,
+building @beast from CVS now requires the texitheque module hosted in
+@uref{http://www.freedesktop.org/,, freedesktop.org} CVS. Anonymous
+CVS access to freedesktop.org is described on their
+@uref{http://www.freedesktop.org/Main/GettingInvolved,, getting involved}
+page, however to just get texitheque, you do:
+
+@lisp
+$ export CVSROOT=':pserver:anonymous@@freedom.codefactory.se:/freedesktop'
+$ cvs login # there is no password, just hit return
+$ cvs -z3 checkout texitheque
+@end lisp
+
+Beware though, CVS versions may behave way less stable than release tarballs,
+and on occasions may produce invalid @file{.bse} files.
+
 
 @bye
