@@ -8,25 +8,25 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bsesnet.h"
+#include        "bsesnet.h"
 
-#include	"bseproject.h"
-#include	"bsecategories.h"
-#include	"bsechunk.h"
-#include	"bsestorage.h"
-#include	<string.h>
-#include	<time.h>
-#include	<fcntl.h>
-#include	<unistd.h>
+#include        "bseproject.h"
+#include        "bsecategories.h"
+#include        "bsechunk.h"
+#include        "bsestorage.h"
+#include        <string.h>
+#include        <time.h>
+#include        <fcntl.h>
+#include        <unistd.h>
 
-#include	"./icons/snet.c"
+#include        "./icons/snet.c"
 
 /* --- parameters --- */
 enum
@@ -36,24 +36,29 @@ enum
 
 
 /* --- prototypes --- */
-static void	bse_snet_class_init		(BseSNetClass	*class);
-static void	bse_snet_init			(BseSNet	*snet);
-static void	bse_snet_do_shutdown		(BseObject	*object);
-static void	bse_snet_set_param		(BseSNet	*snet,
-						 BseParam	*param);
-static void	bse_snet_get_param		(BseSNet	*snet,
-						 BseParam	*param);
-static void	bse_snet_add_item               (BseContainer   *container,
-						 BseItem        *item);
-static void     bse_snet_forall_items           (BseContainer   *container,
-						 BseForallItemsFunc func,
-						 gpointer        data);
-static void     bse_snet_remove_item            (BseContainer   *container,
-						 BseItem        *item);
+static void      bse_snet_class_init             (BseSNetClass   *class);
+static void      bse_snet_init                   (BseSNet        *snet);
+static void      bse_snet_do_shutdown            (BseObject      *object);
+static void      bse_snet_set_param              (BseSNet        *snet,
+						  BseParam       *param);
+static void      bse_snet_get_param              (BseSNet        *snet,
+						  BseParam       *param);
+static void      bse_snet_add_item               (BseContainer   *container,
+						  BseItem        *item);
+static void      bse_snet_forall_items           (BseContainer   *container,
+						  BseForallItemsFunc func,
+						  gpointer        data);
+static void      bse_snet_remove_item            (BseContainer   *container,
+						  BseItem        *item);
+static void      bse_snet_prepare                (BseSource      *source,
+						  BseIndex        index);
+static BseChunk* bse_snet_calc_chunk             (BseSource      *source,
+						  guint           ochannel_id);
+static void      bse_snet_reset                  (BseSource      *source);
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static BseTypeClass     *parent_class = NULL;
 
 
 /* --- functions --- */
@@ -81,10 +86,10 @@ BSE_BUILTIN_TYPE (BseSNet)
   };
   
   snet_type = bse_type_register_static (BSE_TYPE_SUPER,
-					"BseSNet",
-					"Project container for administration "
-					"of Source networks",
-					&snet_info);
+                                        "BseSNet",
+                                        "Project container for administration "
+                                        "of Source networks",
+                                        &snet_info);
   bse_categories_register_icon ("/Source/Projects/SNet", snet_type, &snet_pixdata);
 
   return snet_type;
@@ -94,11 +99,14 @@ static void
 bse_snet_class_init (BseSNetClass *class)
 {
   BseObjectClass *object_class;
+  BseSourceClass *source_class;
   BseContainerClass *container_class;
   BseSuperClass *super_class;
+  guint ochannel_id;
   
   parent_class = bse_type_class_peek (BSE_TYPE_SUPER);
   object_class = BSE_OBJECT_CLASS (class);
+  source_class = BSE_SOURCE_CLASS (class);
   container_class = BSE_CONTAINER_CLASS (class);
   super_class = BSE_SUPER_CLASS (class);
   
@@ -106,17 +114,26 @@ bse_snet_class_init (BseSNetClass *class)
   object_class->get_param = (BseObjectGetParamFunc) bse_snet_get_param;
   object_class->shutdown = bse_snet_do_shutdown;
   
+  source_class->prepare = bse_snet_prepare;
+  source_class->calc_chunk = bse_snet_calc_chunk;
+  source_class->reset = bse_snet_reset;
+
   container_class->add_item = bse_snet_add_item;
   container_class->remove_item = bse_snet_remove_item;
   container_class->forall_items = bse_snet_forall_items;
 
   /* add BseSNet memebers as class parameters */
+  ochannel_id = bse_source_class_add_ochannel (source_class,
+					       "Stereo Out", "Stereo Output",
+					       2);
+  g_assert (ochannel_id == BSE_SNET_OCHANNEL_STEREO);
 }
 
 static void
 bse_snet_init (BseSNet *snet)
 {
   snet->sources = NULL;
+  snet->junk = NULL;
 }
 
 static void
@@ -133,40 +150,40 @@ bse_snet_do_shutdown (BseObject *object)
 
 static void
 bse_snet_set_param (BseSNet  *snet,
-		    BseParam *param)
+                    BseParam *param)
 {
   switch (param->pspec->any.param_id)
     {
     default:
       g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (snet),
-		 BSE_OBJECT_NAME (snet),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+                 BSE_OBJECT_TYPE_NAME (snet),
+                 BSE_OBJECT_NAME (snet),
+                 param->pspec->any.name,
+                 bse_type_name (param->pspec->type));
       break;
     }
 }
 
 static void
 bse_snet_get_param (BseSNet  *snet,
-		    BseParam *param)
+                    BseParam *param)
 {
   switch (param->pspec->any.param_id)
     {
     default:
       g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (snet),
-		 BSE_OBJECT_NAME (snet),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+                 BSE_OBJECT_TYPE_NAME (snet),
+                 BSE_OBJECT_NAME (snet),
+                 param->pspec->any.name,
+                 bse_type_name (param->pspec->type));
       break;
     }
 }
 
 BseSNet*
 bse_snet_new (BseProject  *project,
-	      const gchar *first_param_name,
-	      ...)
+              const gchar *first_param_name,
+              ...)
 {
   BseObject *object;
   va_list var_args;
@@ -186,7 +203,7 @@ bse_snet_new (BseProject  *project,
 
 BseSNet*
 bse_snet_lookup (BseProject  *project,
-		 const gchar *name)
+                 const gchar *name)
 {
   BseItem *item;
 
@@ -200,7 +217,7 @@ bse_snet_lookup (BseProject  *project,
 
 static void
 bse_snet_add_item (BseContainer *container,
-		   BseItem     	*item)
+                   BseItem      *item)
 {
   BseSNet *snet = BSE_SNET (container);
 
@@ -208,7 +225,7 @@ bse_snet_add_item (BseContainer *container,
     snet->sources = g_list_append (snet->sources, item);
   else
     g_warning ("BseSNet: cannot add non-source item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+               BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' add_item handler */
   BSE_CONTAINER_CLASS (parent_class)->add_item (container, item);
@@ -216,8 +233,8 @@ bse_snet_add_item (BseContainer *container,
 
 static void
 bse_snet_forall_items (BseContainer      *container,
-		       BseForallItemsFunc func,
-		       gpointer           data)
+                       BseForallItemsFunc func,
+                       gpointer           data)
 {
   BseSNet *snet = BSE_SNET (container);
   GList *list;
@@ -230,13 +247,13 @@ bse_snet_forall_items (BseContainer      *container,
       item = list->data;
       list = list->next;
       if (!func (item, data))
-	return;
+        return;
     }
 }
 
 static void
 bse_snet_remove_item (BseContainer *container,
-		      BseItem      *item)
+                      BseItem      *item)
 {
   BseSNet *snet;
 
@@ -252,7 +269,7 @@ bse_snet_remove_item (BseContainer *container,
     }
   else
     g_warning ("BseSNet: cannot remove non-source item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
+               BSE_OBJECT_TYPE_NAME (item));
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
@@ -260,9 +277,9 @@ bse_snet_remove_item (BseContainer *container,
 
 BseSource*
 bse_snet_new_source (BseSNet     *snet,
-		     BseType      source_type,
-		     const gchar *first_param_name,
-		     ...)
+                     BseType      source_type,
+                     const gchar *first_param_name,
+                     ...)
 {
   BseContainer *container;
   BseSource *source;
@@ -283,7 +300,7 @@ bse_snet_new_source (BseSNet     *snet,
 
 void
 bse_snet_remove_source (BseSNet   *snet,
-			BseSource *source)
+                        BseSource *source)
 {
   BseContainer *container;
   BseItem *item;
@@ -297,4 +314,53 @@ bse_snet_remove_source (BseSNet   *snet,
   g_return_if_fail (item->container == (BseItem*) container);
 
   bse_container_remove_item (container, item);
+}
+
+#define N_RAND_BLOCKS 4
+
+static void
+bse_snet_prepare (BseSource *source,
+		  BseIndex   index)
+{
+  BseSNet *snet = BSE_SNET (source);
+  guint i;
+
+  snet->junk = g_new (BseSampleValue, 2 * BSE_TRACK_LENGTH * N_RAND_BLOCKS);
+
+  for (i = 0; i < 2 * BSE_TRACK_LENGTH * N_RAND_BLOCKS; i++)
+    snet->junk[i] = rand ();
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+}
+
+static BseChunk*
+bse_snet_calc_chunk (BseSource *source,
+		     guint      ochannel_id)
+{
+  BseSNet *snet = BSE_SNET (source);
+  BseSampleValue *hunk;
+
+  g_return_val_if_fail (ochannel_id == BSE_SNET_OCHANNEL_STEREO, NULL);
+
+  /* FIXME: we need some kinda notification mechanism on sources when
+   * the source stopped playing
+   */
+
+  hunk = bse_hunk_copy (snet->junk + (2 * BSE_TRACK_LENGTH * (source->index % N_RAND_BLOCKS)),
+			2);
+
+  return bse_chunk_new_orphan (2, hunk);
+}
+
+static void
+bse_snet_reset (BseSource *source)
+{
+  BseSNet *snet = BSE_SNET (source);
+
+  g_free (snet->junk);
+  snet->junk = NULL;
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->reset (source);
 }

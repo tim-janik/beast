@@ -1,3 +1,25 @@
+Sat Nov  6 05:55:59 1999  Tim Janik  <timj@gtk.org>
+
+	* icons/snet.xcf: 
+	* icons/snet.c: slight color change.
+
+Fri Nov  5 04:49:05 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.[hc]: added necessary bits to serve as output source.
+
+	* bsechunk.[hc] (bse_hunk_copy): new function to alloc a new hunk filled
+	with sample data.
+
+	* bsesource.h:
+	renamed BSE_SOURCE_ICHANNEL() to BSE_SOURCE_ICHANNEL_DEF() and
+	renamed BSE_SOURCE_OCHANNEL() to BSE_SOURCE_OCHANNEL_DEF().
+	introduced BSE_SOURCE_OCHANNEL() to return a pointer to the source's
+	output channel connection.
+
+	* bsesource.c: pass normal ochannel_ids to calc_history as well,
+	instead of hackery 0-starting indices. use BSE_SOURCE_OCHANNEL() over
+	the place, instead of direct strcuture member adressing.
+
 Wed Nov  3 21:50:38 1999  Tim Janik  <timj@gtk.org>
 
 	* bseenums.[hc]: don't return const strings, this is extremely annoying.

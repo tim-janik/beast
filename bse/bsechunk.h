@@ -64,6 +64,8 @@ void		bse_chunk_complete_state 	(BseChunk	*chunk);
 void		bse_chunk_complete_hunk 	(BseChunk	*chunk);
 
 BseSampleValue*	bse_hunk_alloc			(guint		 n_tracks);
+BseSampleValue*	bse_hunk_copy			(BseSampleValue *src_hunk,
+						 guint		 n_tracks);
 BseSampleValue*	bse_hunk_alloc0			(guint		 n_tracks);
 void		bse_hunk_free			(BseSampleValue	*hunk,
 						 guint		 n_tracks);

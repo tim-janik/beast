@@ -28,7 +28,7 @@ static void     bse_source_init			(BseSource	*source,
 						 BseSourceClass	*class);
 static void     bse_source_do_shutdown		(BseObject	*object);
 static void     bse_source_calc_history		(BseSource	*source,
-						 guint		 oc_index);
+						 guint		 ochannel_id);
 static void     bse_source_do_prepare		(BseSource	*source,
 						 BseIndex	 index);
 static void     bse_source_do_reset		(BseSource	*source);
@@ -144,7 +144,7 @@ bse_source_init (BseSource      *source,
     source->ochannels[i].chunks = NULL;
 
   //  for (i = 0; i < class->n_ochannels; i++)
-  //    bse_source_calc_history (source, i);
+  //    bse_source_calc_history (source, i + 1);
 }
 
 static void
@@ -166,7 +166,7 @@ bse_source_do_shutdown (BseObject *object)
   
   for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
     {
-      BseSourceOChannel *oc = source->ochannels + i;
+      BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
       guint n;
 
       for (n = 0; n < oc->history; n++)
@@ -234,10 +234,9 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
 
 static void
 bse_source_calc_history (BseSource *source,
-			 guint      oc_index)
+			 guint      ochannel_id)
 {
-  BseSourceOChannel *oc = source->ochannels + oc_index;
-  guint ochannel_id = oc_index + 1;
+  BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, ochannel_id);
   guint history = 0;
   BseChunk **chunks;
   GSList *slist;
@@ -302,8 +301,8 @@ bse_source_ref_chunk (BseSource *source,
   g_return_val_if_fail (ochannel_id >= 1 && ochannel_id <= BSE_SOURCE_N_OCHANNELS (source), NULL);
   g_return_val_if_fail (index <= source->index, NULL);
 
-  n_tracks = BSE_SOURCE_OCHANNEL (source, ochannel_id).n_tracks;
-  oc = source->ochannels + ochannel_id - 1;
+  n_tracks = BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id).n_tracks;
+  oc = BSE_SOURCE_OCHANNEL (source, ochannel_id);
   index = source->index - index;
   if (index > oc->history)
     {
@@ -354,8 +353,8 @@ bse_source_ref_state_chunk (BseSource *source,
   g_return_val_if_fail (ochannel_id >= 1 && ochannel_id <= BSE_SOURCE_N_OCHANNELS (source), NULL);
   g_return_val_if_fail (index <= source->index, NULL);
 
-  n_tracks = BSE_SOURCE_OCHANNEL (source, ochannel_id).n_tracks;
-  oc = source->ochannels + ochannel_id - 1;
+  n_tracks = BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id).n_tracks;
+  oc = BSE_SOURCE_OCHANNEL (source, ochannel_id);
   index = source->index - index;
   if (index > oc->history)
     {
@@ -425,7 +424,7 @@ bse_source_do_cycle (BseSource *source)
   
   for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
     {
-      BseSourceOChannel *oc = source->ochannels + i;
+      BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
       
       if (oc->history)
 	{
@@ -456,7 +455,7 @@ bse_source_do_cycle (BseSource *source)
 
       for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
 	{
-	  BseSourceOChannel *oc = source->ochannels + i;
+	  BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
 	  
 	  if (oc->history && !oc->chunks[oc->ring_offset])
 	    {
@@ -509,7 +508,7 @@ bse_source_set_input (BseSource *source,
   BSE_SOURCE_GET_CLASS (source)->add_input (source, ichannel_id,
 					    input, ochannel_id, history);
   
-  bse_source_calc_history (input, ochannel_id - 1);
+  bse_source_calc_history (input, ochannel_id);
 
   bse_object_unref (BSE_OBJECT (input));
   bse_object_unref (BSE_OBJECT (source));
@@ -662,7 +661,7 @@ bse_source_do_reset (BseSource *source)
   
   for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
     {
-      BseSourceOChannel *oc = source->ochannels + i;
+      BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
       guint n;
 
       if (oc->in_calc)

@@ -100,7 +100,7 @@ bse_song_class_init (BseSongClass *class)
   BseSourceClass *source_class;
   BseContainerClass *container_class;
   BseSuperClass *super_class;
-  guint oc_id;
+  guint ochannel_id;
   
   parent_class = bse_type_class_peek (BSE_TYPE_SUPER);
   object_class = BSE_OBJECT_CLASS (class);
@@ -167,10 +167,10 @@ bse_song_class_init (BseSongClass *class)
 						   BSE_DFL_SONG_BPM,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
-  oc_id = bse_source_class_add_ochannel (source_class,
-					 "Stereo Out", "Stereo Output",
-					 2);
-  g_assert (oc_id == BSE_SONG_OCHANNEL_STEREO);
+  ochannel_id = bse_source_class_add_ochannel (source_class,
+					       "Stereo Out", "Stereo Output",
+					       2);
+  g_assert (ochannel_id == BSE_SONG_OCHANNEL_STEREO);
 }
 
 static void

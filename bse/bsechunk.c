@@ -153,6 +153,21 @@ bse_hunk_alloc (guint n_tracks)
   return hunk;
 }
 
+BseSampleValue*
+bse_hunk_copy (BseSampleValue *src_hunk,
+	       guint           n_tracks)
+{
+  BseSampleValue *hunk;
+
+  g_return_val_if_fail (src_hunk != NULL, NULL);
+  g_return_val_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS, NULL);
+
+  hunk = bse_hunk_alloc (n_tracks);
+  memcpy (hunk, src_hunk, n_tracks * BSE_TRACK_LENGTH * sizeof (BseSampleValue));
+
+  return hunk;
+}
+
 void
 bse_hunk_free (BseSampleValue *hunk,
 	       guint           n_tracks)
