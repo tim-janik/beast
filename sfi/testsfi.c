@@ -79,6 +79,9 @@ test_time (void)
   ASSERT (sfi_time_from_string_err (str, &error) == t);
   ASSERT (error == NULL);
   g_free (str);
+  /* test hard boundaries */
+  ASSERT (sfi_time_from_string ("1990-01-01 00:00:00") == SFI_MIN_TIME);
+  ASSERT (sfi_time_from_string ("2038-01-19 03:14:07") == SFI_MAX_TIME);
   /* test error returns */
   ASSERT (sfi_time_from_string_err ("foo 22", &error) == 0);
   ASSERT (error != NULL);

@@ -40,7 +40,6 @@ enum {
 
 /* --- variables --- */
 static SfiTime	 gmt_diff = 0;
-static gchar	*time_zones[2] = { NULL, NULL };
 
 
 /* --- functions --- */
@@ -48,18 +47,20 @@ void
 _sfi_init_time (void)
 {
   static gboolean initialized = FALSE;
-  SfiTime ustime;
+  struct timeval tv = { 0, };
   time_t t;
+  gint error;
 
   g_assert (initialized++ == FALSE);
 
-  ustime = sfi_time_system ();
-  t = ustime / SFI_USEC_FACTOR;
+  tzset ();
+  error = gettimeofday (&tv, NULL);
+  if (error)
+    sfi_info ("gettimeofday() failed: %s", g_strerror (errno));
+  t = tv.tv_sec + tv.tv_usec / 1000000;
   localtime (&t);
   gmt_diff = timezone;
   gmt_diff *= SFI_USEC_FACTOR;
-  time_zones[0] = g_strdup (tzname[0]);
-  time_zones[1] = g_strdup (tzname[1]);
 }
 
 /**
@@ -80,10 +81,8 @@ sfi_time_system (void)
 {
   struct timeval tv;
   SfiTime ustime;
-  gint error = gettimeofday (&tv, NULL);
 
-  if (error)
-    sfi_info ("gettimeofday() failed: %s", g_strerror (errno));
+  gettimeofday (&tv, NULL);
   ustime = tv.tv_sec;
   ustime = ustime * SFI_USEC_FACTOR + tv.tv_usec;
 
@@ -126,8 +125,8 @@ sfi_time_from_utc (SfiTime ustime)
  * @RETURNS: newly allocated string
  *
  * Retrieve the time @ustime in human readable form.
- * The returned time string contains no time zone
- * or UTC offset information.
+ * The returned time string describes UTC time and
+ * thus contains no time zone or UTC offset information.
  */
 gchar*
 sfi_time_to_string (SfiTime ustime)
@@ -135,7 +134,7 @@ sfi_time_to_string (SfiTime ustime)
   time_t t = CLAMP (ustime, SFI_MIN_TIME, SFI_MAX_TIME) / SFI_USEC_FACTOR;
   struct tm bt;
   
-  bt = *localtime (&t);	/* not thread safe */
+  bt = *gmtime (&t);	/* FIXME: not thread safe */
   
   return g_strdup_printf ("%04d-%02d-%02d %02d:%02d:%02d",
 			  bt.tm_year + 1900,
@@ -163,11 +162,12 @@ sfi_time_from_string (const gchar *time_string)
  * sfi_time_from_string_err
  * @time_string: string containing human readable date and time
  * @error_p:     location for newly allocated string containing conversion errors
- * @RETURNS:     parsed time in micro seconds or 0 on error
+ * @RETURNS:     parsed time in micro seconds, may be 0 on error
  *
- * Parse time from a string of characters and indicate possible errors.
- * Several attempts are made to reconstruct a valid time despite possible
- * errors. However, if all attempts fail, the returned time is 0.
+ * Parse date and time from a string of characters and indicate possible errors.
+ * Several attempts are made to reconstruct a valid date and time despite possible
+ * errors. However, if all attempts fail, the returned time is 0. The time returned
+ * is UTC, refer to sfi_time_from_utc() in order to retrieve the local standard time.
  */
 SfiTime
 sfi_time_from_string_err (const gchar *time_string,
@@ -450,7 +450,7 @@ sfi_time_from_string_err (const gchar *time_string,
   else
     {
       struct tm tm_data = { 0 };
-      time_t ttime = 0;
+      time_t ttime;
 
       if (garbage[i])
 	warnings = sfi_ring_append (warnings, g_strdup ("junk characters at end of date"));
@@ -484,7 +484,7 @@ sfi_time_from_string_err (const gchar *time_string,
 	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "second"));
 	  second[i] = CLAMP (second[i], 0, 61);
 	}
-
+      
       tm_data.tm_sec = second[i];
       tm_data.tm_min = minute[i];
       tm_data.tm_hour = hour[i];
@@ -493,30 +493,29 @@ sfi_time_from_string_err (const gchar *time_string,
       tm_data.tm_year = year[i] - 1900;
       tm_data.tm_wday = 0;
       tm_data.tm_yday = 0;
-      tm_data.tm_isdst = -1;
+      tm_data.tm_isdst = 0;
       
-      ttime = mktime (&tm_data);	/* returns -1 on error */
-
-      /* g_print ("DEBUG: year(%u) month(%u) day(%u) hour(%u) minute(%u) second(%u)\n",
-       * year[i], month[i], day[i], hour[i], minute[i], second[i]);
-       *
-       * g_print ("timeparser: (%s) secs=%lu, <%s>\n",
-       * string, ttime == -1 ? 0 : ttime, ctime (&ttime));
+      /* mktime() wants localtime */
+      tm_data.tm_sec -= gmt_diff / SFI_USEC_FACTOR;
+      /* UTC = mktime (LOCALTIME) */
+      ttime = mktime (&tm_data);			/* returns -1 on error */
+      
+      ustime = ttime;
+      ustime *= SFI_USEC_FACTOR;
+      ustime = MAX (ustime, 0);
+      
+      /* g_print ("mktime(): year(%u) month(%u) day(%u) hour(%u) minute(%u) second(%u)\n",
+       *           year[i], month[i], day[i], hour[i], minute[i], second[i]);
        */
-
-      if (ttime < SFI_MIN_TIME / SFI_USEC_FACTOR) /* limit ttime to 1.1.1990 */
+      
+      if (ustime < SFI_MIN_TIME)	/* limit ustime to 1.1.1990 */
 	{
-	  warnings = sfi_ring_append (warnings, g_strdup_printf ("invalid date specification (%lld < %lld, gmt-diff: %lld)",
-								 SFI_USEC_FACTOR * ttime, SFI_MIN_TIME, gmt_diff));
-	  ustime = 0;
-	}
-      else
-	{
-	  ustime = ttime;
-	  ustime *= SFI_USEC_FACTOR;
+	  warnings = sfi_ring_append (warnings, g_strdup_printf ("invalid date specification (%lld < %lld, gmt-diff=%lld)",
+								 ustime, SFI_MIN_TIME, gmt_diff));
+	  ustime = SFI_MIN_TIME;
 	}
     }
-
+  
   /* general cleanup and error return */
   g_free (string);
   if (error_p && warnings)

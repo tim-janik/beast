@@ -1,3 +1,18 @@
+Mon Apr 21 03:02:01 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.c: use SFI_MIN_TIME and SFI_MAX_TIME constants.
+
+	* sfitime.c:
+	(_sfi_init_time): use tzset() to initialize timezone.
+	(sfi_time_system): no need for paranoid error checking.
+	(sfi_time_to_string): properly convert from/to UTC times.
+	(sfi_time_from_string): converts from/to UTC, work around
+	mktime() insisting on localtime argument and fix daylight
+	saving bug.
+
+	* sfitime.h, sfitypes.h: urg, fix SfiTime to be signed 64bit,
+	adjust MIN/MAX constants to UTC.
+
 Sun Apr 20 21:46:20 2003  Tim Janik  <timj@gtk.org>
 
 	* sfitime.c (sfi_time_from_string_err): make <1990 time check more verbose.

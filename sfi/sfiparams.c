@@ -20,6 +20,7 @@
 #include "sfiparams.h"
 #include "sfiprimitives.h"
 #include "sfinote.h"
+#include "sfitime.h"
 
 
 #define NULL_CHECKED(x)         ((x) && (x)[0] ? x : NULL)
@@ -1557,11 +1558,8 @@ sfi_pspec_time (const gchar *name,
 		const gchar *blurb,
 		const gchar *hints)
 {
-  GParamSpec *pspec = sfi_pspec_num (name, nick, blurb,
-				     631148400 * (SfiNum) 1000000,	/* 1990-01-01 00:00:00 */
-				     631148400 * (SfiNum) 1000000,
-				     2147483647 * (SfiNum) 1000000,	/* 2038-01-19 04:14:07 */
-				     3600 * (SfiNum) 1000000,
+  GParamSpec *pspec = sfi_pspec_num (name, nick, blurb, SFI_MIN_TIME, SFI_MIN_TIME, SFI_MAX_TIME,
+				     3600 * (SfiNum) 1000000, /* one hour */
 				     NULL);
   gchar *thints = g_strconcat ("time:", hints, NULL);
   sfi_pspec_set_hints (pspec, thints);
