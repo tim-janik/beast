@@ -39,6 +39,16 @@
 #define IO_BOTTLE_NECK  (1024 * 1024)
 
 
+/* some systems don't have ERESTART (which is what linux returns for system
+ * calls on pipes which are being interrupted). most probably just use EINTR,
+ * and maybe some can return both. so we check for both in the below code,
+ * and alias ERESTART to EINTR if it's not present.
+ */
+#ifndef ERESTART
+#define ERESTART        EINTR
+#endif
+
+
 /* --- functions --- */
 static gint
 nonblock_fd (gint fd)
