@@ -636,24 +636,27 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
       printf ("  ::Sfi::cxx_value_set_record< %s> (value, self);\n", nname.c_str());
       printf ("}\n\n");
 
-      printf ("SfiBoxedFields\n");
-      printf ("%s::get_fields()\n", nname.c_str());
-      printf ("{\n");
-      printf ("  static SfiBoxedFields bfields = { 0, NULL, TRUE, 0 };\n");
-      printf ("  if (!bfields.n_fields)\n");
-      printf ("    {\n");
-      printf ("      static GParamSpec *fields[%u + 1];\n", ri->contents.size());
-      printf ("      bfields.n_fields = %u;\n", ri->contents.size());
-      guint j = 0;
-      for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
-        {
-          // printf("#line %u \"%s\"\n", pi->line, parser.fileName().c_str());
-          printf("      fields[%u] = %s;\n", j++, untyped_pspec_constructor (*pi).c_str());
-        }
-      printf ("      bfields.fields = fields;\n");
-      printf ("    }\n");
-      printf ("  return bfields;\n");
-      printf ("}\n\n");
+      if (options.doImplementation)
+	{
+	  printf ("SfiBoxedFields\n");
+	  printf ("%s::get_fields()\n", nname.c_str());
+	  printf ("{\n");
+	  printf ("  static SfiBoxedFields bfields = { 0, NULL, TRUE, 0 };\n");
+	  printf ("  if (!bfields.n_fields)\n");
+	  printf ("    {\n");
+	  printf ("      static GParamSpec *fields[%u + 1];\n", ri->contents.size());
+	  printf ("      bfields.n_fields = %u;\n", ri->contents.size());
+	  guint j = 0;
+	  for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+	    {
+	      // printf("#line %u \"%s\"\n", pi->line, parser.fileName().c_str());
+	      printf("      fields[%u] = %s;\n", j++, untyped_pspec_constructor (*pi).c_str());
+	    }
+	  printf ("      bfields.fields = fields;\n");
+	  printf ("    }\n");
+	  printf ("  return bfields;\n");
+	  printf ("}\n\n");
+	}
     }
 }
 
@@ -855,20 +858,10 @@ void CodeGeneratorCxx::printProperties (const Class& cdef)
 	printf ("%s::%s (%s %s)\n", cdef.name.c_str(), setProperty.c_str(),
 				    cTypeArg (pi->type), newName.c_str());
 	printf ("{\n");
-	string conv = createTypeCode (pi->type, newName.c_str(), MODEL_VCALL_CONV);
-	if (conv != "")
-	  {
-	    string carg = createTypeCode(pi->type, MODEL_VCALL_CARG);
-	    newName += "__c"; // use the converted name new_x__c now, instead of new_x
-	    printf("  %s %s = %s;\n", carg.c_str(), newName.c_str(), conv.c_str());
-	  }
 	string to_val = createTypeCode (pi->type, newName, MODEL_TO_VALUE).c_str();
 	printf ("  GValue *val = %s;\n", to_val.c_str());
 	printf ("  sfi_glue_proxy_set_property (_proxy(), \"%s\", val);\n", propName.c_str());
 	printf ("  sfi_value_free (val);\n");
-	string free = createTypeCode (pi->type, newName.c_str(), MODEL_VCALL_CFREE);
-	if (free != "")
-	  printf("  %s;\n", free.c_str());
 	printf ("}\n");
 	printf ("\n");
       }

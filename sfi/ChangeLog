@@ -1,3 +1,10 @@
+Fri Jan 23 19:27:10 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cxx.cc: CodeGeneratorCxxBase::printRecSeqImpl: generate
+	get_fields method only when used for the server binding.
+	Fixed bug in the property setter generation - record and sequence
+	properties in the C++ client binding should be fine now.
+
 Fri Jan 23 02:59:28 2004  Tim Janik  <timj@gtk.org>
 
 	* sficxx.h: added class GNewable which supplies new/delete operators
