@@ -196,7 +196,7 @@ bst_snet_router_init (BstSNetRouter      *self,
       static struct { gchar *type, *name, *tip; } toolbar_types[] = {
 	{ "BsePcmOutput",       N_("Output"),   N_("PCM Output module") },
 	{ "BseAmplifier",       N_("DCA"),      N_("Standard amplifier module") },
-	{ "BseSnooper",         N_("Snoop"),    N_("Signal debugging module") },
+	{ "BseSnooper",         N_("Snooper"),  N_("Signal debugging module") },
 	{ "BsePcmInput",        N_("Input"),    N_("PCM Input module") },
       };
       const gchar *stock_fallback = NULL;

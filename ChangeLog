@@ -1,3 +1,19 @@
+Fri Nov 21 01:48:34 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-standard.xml: use GxkSimpleLabel for <label/>,
+	configured to use underlines and auto-cut.
+
+	* beast-gtk/gxk/gxksimplelabel.[hc]: new widget, deduced from GtkLabel
+	code. Changes relative to GtkLabel:
+	- lots of code got stripped (basically for selecting text and handling events)
+	- simple-label derives from GtkWidget instead of GtkMisc
+	- mnemonic activation works on activatable parents even if group cycling
+	- setting ::pattern properly unsets ::use-underline
+	- if ::auto-cut is TRUE, overfull text is cut-off
+
+	* po-bse/POTFILES.in: removed encoding: UTF-8, which breaks the Makefiel due to
+	intl-tools only handling po/ correctly ;(
+
 Thu Nov 20 17:13:49 2003  Tim Janik  <timj@gtk.org>
 
 	* po/POTFILES.in:

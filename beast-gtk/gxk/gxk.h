@@ -34,6 +34,7 @@
 #include <gxk/gxkled.h>
 #include <gxk/gxklistwrapper.h>
 #include <gxk/gxkpolygon.h>
+#include <gxk/gxksimplelabel.h>
 #include <gxk/gxkstatusbar.h>
 #include <gxk/gxkstock.h>
 #include <gxk/gxktexttools.h>

@@ -20,6 +20,7 @@
 #include "gxkgadgetfactory.h"
 #include "gxkauxwidgets.h"
 #include "glewidgets.h"
+#include "gxksimplelabel.h"
 #include <libintl.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -1509,7 +1510,7 @@ _gxk_init_gadget_types (void)
   *t++ = GTK_TYPE_CHECK_BUTTON; *t++ = GTK_TYPE_ENTRY;  *t++ = GXK_TYPE_MENU_ITEM;
   *t++ = GTK_TYPE_HSCROLLBAR;   *t++ = GTK_TYPE_HSCALE; *t++ = GTK_TYPE_TEAROFF_MENU_ITEM;
   *t++ = GTK_TYPE_VSCROLLBAR;   *t++ = GTK_TYPE_VSCALE; *t++ = GXK_TYPE_IMAGE;
-  *t++ = GTK_TYPE_VSEPARATOR;   *t++ = GTK_TYPE_HSEPARATOR;
+  *t++ = GTK_TYPE_VSEPARATOR;   *t++ = GXK_TYPE_SIMPLE_LABEL;  *t++ = GTK_TYPE_HSEPARATOR;
   *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;
   while (t-- > types)
     gxk_gadget_define_widget_type (*t);

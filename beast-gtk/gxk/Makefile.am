@@ -20,7 +20,7 @@ gxk_headers = $(strip \
 	gxkstatusbar.h	gxkstock.h	gxktexttools.h	gxklistwrapper.h \
 			gxkutils.h	gxkpolygon.h	gxkcellrendererpopup.h \
 	gxkgadget.h	gxkaction.h	gxkglobals.h	gxkgadgetfactory.h \
-	glewidgets.h	\
+	glewidgets.h					gxksimplelabel.h \
 	gxk.h \
 )
 gxk_c_sources = $(strip \
@@ -28,7 +28,7 @@ gxk_c_sources = $(strip \
 	gxkstatusbar.c	gxkstock.c	gxktexttools.c	gxklistwrapper.c \
 			gxkutils.c	gxkpolygon.c	gxkcellrendererpopup.c \
 	gxkgadget.c	gxkaction.c	gxkglobals.c	gxkgadgetfactory.c \
-	glewidgets.c	\
+	glewidgets.c					gxksimplelabel.c \
 )
 gxk_extra_sources = $(strip \
 	gxkmarshal.list \

@@ -105,8 +105,8 @@
   <xdef:toggle-button         inherit="check-button"
     prop:draw-indicator="0" />
   <!-- label: label= -->
-  <xdef:label                 inherit="GtkLabel"
-    prop:label="$label" prop:use-underline="$use-underline" />
+  <xdef:label                 inherit="GxkSimpleLabel"
+    prop:label="$label" prop:use-underline="1" prop:auto-cut="1" />
   <!-- decks (notebook) -->
   <xdef:notebook              inherit="GtkNotebook"         />
   <xdef:deck                  inherit="notebook"
@@ -278,7 +278,7 @@
       <vbox name="image-area" expand="1" />
       <vbox name="label-area" pack:pack-type="end" >
 	<label area="label-area"
-	  prop:label="$label" use-underline="1" />
+	  prop:label="$label" />
       </vbox>
     </vbox>
   </xdef:labeled-tool-area>
@@ -290,7 +290,7 @@
     <tooltip text="$action-tooltip" />
     <widget-patcher />
     <alignment prop:yalign="$(ifdef,y-align,$y-align,0.5)" >
-      <label label="$action-name" prop:wrap="1" prop:justify="center" prop:use-underline="1" />
+      <label label="$action-name" prop:justify="center" />
     </alignment>
   </xdef:action-text-toggle>
   <xdef:tool-text-toggle-factory   inherit="text-toggle-factory" image-size="big-button" relief="none" />
@@ -307,7 +307,7 @@
   </xdef:image-button>
   <!-- label-image-button: image-button, label= -->
   <xdef:label-image-button inherit="image-button" >
-    <label prop:label="$label" use-underline="1" />
+    <label prop:label="$label" />
   </xdef:label-image-button>
   <!-- big-button: label-image-button -->
   <xdef:big-button inherit="label-image-button" image-size="big-button" />
