@@ -1,3 +1,14 @@
+Sun Jul 27 02:11:21 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidiicontroller.[hc]: fix midi channel handling.
+
+	* bsemonokeyboard.[hc]: new module. monophonic midi keyboard input
+	module with selectable midi channel.
+
+	* bsemidireceiver.[hc]: implemented monophonic synth (keyboard) module.
+
+	* bseproject.c: fix default midi channel.
+
 Sat Jul 26 04:33:03 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemididecoder.c (bse_midi_decoder_construct_event): count

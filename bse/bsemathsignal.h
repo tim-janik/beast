@@ -46,6 +46,7 @@ extern "C" {
 /* value changes in signals which represent frequencies
  */
 #define GSL_SIGNAL_FREQ_CHANGED(v1,v2)	(fabs ((v1) - (v2)) > 1e-7)
+#define GSL_SIGNAL_FREQ_EQUALS(v1,v2)	(!GSL_SIGNAL_FREQ_CHANGED (v1, v2))
 
 /* value changes in signals which represent modulation
  */

@@ -631,7 +631,7 @@ bst_track_view_create_tree (BstItemView *iview)
 				  0.5, "Synth", "Synthesizer network or wave to be used as voice by this track",
 				  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_MIDI_CHANNEL, "",
-                                 0.5, "Ch", "Midi channel assigned to this track, 0 indicates private dynamic allocation",
+                                 0.5, "Ch", "Midi channel assigned to this track, 0 uses private per-track channel",
                                  track_view_midi_channel_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree, COL_POST_SYNTH, "#",
 				  0.5, "Post", "Postprocessing Synthesizer network for this track",

@@ -28,7 +28,8 @@ extern "C" {
 
 
 /* --- BSE MIDI structs --- */
-typedef struct _BseMidiVoice BseMidiVoice;
+typedef struct _BseMidiMonoSynth BseMidiMonoSynth;
+typedef struct _BseMidiVoice     BseMidiVoice;
 typedef struct {
   BseMidiSignalType	 type;
   guint			 midi_channel;
@@ -37,21 +38,24 @@ typedef struct {
 } BseMidiControlSlot;
 struct _BseMidiReceiver
 {
-  gchar		  *receiver_name;
-  
-  guint		   n_voices;
-  BseMidiVoice	 **voices;
-  
-  guint		   n_cmodules;
-  GslModule	 **cmodules;
-  
-  gpointer	   ctrl_slot_array;	/* BSA of BseMidiControlSlot* */
+  gchar		    *receiver_name;
+
+  guint              n_msynths;
+  BseMidiMonoSynth **msynths;           /* monophonic voices */
+
+  guint		     n_pvoices;
+  BseMidiVoice	   **pvoices;           /* polyphonic voices */
+
+  guint		     n_cmodules;
+  GslModule	   **cmodules;          /* control signals */
+
+  gpointer	     ctrl_slot_array;	/* BSA of BseMidiControlSlot* */
   
   /*< private >*/
-  SfiRing	  *events;	/* BseMidiEvent* */
-  guint		   ref_count;
-  BseMidiNotifier *notifier;
-  SfiRing	  *notifier_events;
+  SfiRing	    *events;            /* contains BseMidiEvent* */
+  guint		     ref_count;
+  BseMidiNotifier   *notifier;
+  SfiRing	    *notifier_events;
 };
 
 
@@ -68,18 +72,24 @@ void             bse_midi_receiver_push_event    	  (BseMidiReceiver	*self,
 							   BseMidiEvent		*event);
 void		 bse_midi_receiver_process_events	  (BseMidiReceiver	*self,
 							   guint64		 max_tick_stamp);
-guint		 bse_midi_receiver_create_voice		  (BseMidiReceiver	*self,
-							   guint		 midi_channel,
-							   GslTrans		*trans);
-void		 bse_midi_receiver_discard_voice	  (BseMidiReceiver	*self,
-							   guint		 voice_id,
-							   GslTrans		*trans);
 GslModule*	 bse_midi_receiver_retrieve_control_module (BseMidiReceiver	*self,
 							    guint		 midi_channel,
 							    BseMidiSignalType	 signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS],
 							    GslTrans		*trans);
 void		 bse_midi_receiver_discard_control_module (BseMidiReceiver	*self,
 							   GslModule		*cmodule,
+							   GslTrans		*trans);
+GslModule*	 bse_midi_receiver_retrieve_mono_synth    (BseMidiReceiver	*self,
+							    guint		 midi_channel,
+							    GslTrans		*trans);
+void		 bse_midi_receiver_discard_mono_synth     (BseMidiReceiver	*self,
+							   GslModule		*fmodule,
+							   GslTrans		*trans);
+guint		 bse_midi_receiver_create_voice		  (BseMidiReceiver	*self,
+							   guint		 midi_channel,
+							   GslTrans		*trans);
+void		 bse_midi_receiver_discard_voice	  (BseMidiReceiver	*self,
+							   guint		 voice_id,
 							   GslTrans		*trans);
 GslModule*	 bse_midi_receiver_get_note_module	  (BseMidiReceiver	*self,
 							   guint		 voice_id);

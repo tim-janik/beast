@@ -694,7 +694,7 @@ bse_project_activate (BseProject *self)
       if (BSE_SUPER_NEEDS_CONTEXT (super))
 	{
 	  BseSNet *snet = BSE_SNET (super);	// FIXME: merge this snet functionality into super
-	  super->context_handle = bse_snet_create_context (snet, self->midi_receiver, 0, trans);
+	  super->context_handle = bse_snet_create_context (snet, self->midi_receiver, 1, trans);
 	  bse_source_connect_context (BSE_SOURCE (snet), super->context_handle, trans);
 	}
       else
@@ -728,7 +728,7 @@ bse_project_start_playback (BseProject *self)
 	  super->context_handle == ~0)
 	{
 	  BseSNet *snet = BSE_SNET (super);	// FIXME: merge this snet functionality into super
-	  super->context_handle = bse_snet_create_context (snet, self->midi_receiver, 0, trans);
+	  super->context_handle = bse_snet_create_context (snet, self->midi_receiver, 1, trans);
 	  bse_source_connect_context (BSE_SOURCE (snet), super->context_handle, trans);
 	  seen_synth++;
 	}

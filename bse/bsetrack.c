@@ -143,7 +143,7 @@ bse_track_class_init (BseTrackClass *class)
   bse_object_class_add_param (object_class, "MIDI Instrument",
                               PROP_MIDI_CHANNEL,
                               sfi_pspec_int ("midi_channel", "MIDI Channel",
-                                             "Midi channel assigned to this track, 0 indicates private dynamic allocation",
+                                             "Midi channel assigned to this track, 0 uses private per-track channel",
                                              0, 0, BSE_MIDI_MAX_CHANNELS, 1,
                                              SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Synth Postprocess",

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1999, 2000-2002 Tim Janik
+ * Copyright (C) 1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -108,13 +108,12 @@ bse_midi_icontroller_class_init (BseMidiIControllerClass *class)
   source_class->context_create = bse_midi_icontroller_context_create;
   source_class->context_connect = bse_midi_icontroller_context_connect;
   
-#if 0	// FIXME
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_MIDI_CHANNEL,
-			      sfi_pspec_int ("midi_channel", "MIDI Channel", NULL,
-					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
+                              sfi_pspec_int ("midi_channel", "MIDI Channel",
+                                             "Input MIDI channel, 0 uses network's default channel",
+                                             0, 0, BSE_MIDI_MAX_CHANNELS, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
-#endif
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_1,
 			      bse_param_spec_genum ("control_1", "Signal 1", NULL,
@@ -153,7 +152,7 @@ bse_midi_icontroller_class_init (BseMidiIControllerClass *class)
 static void
 bse_midi_icontroller_init (BseMidiIController *self)
 {
-  self->midi_channel = 1;
+  self->midi_channel = 0;
   self->controls[0] = BSE_MIDI_SIGNAL_PITCH_BEND;
   self->controls[1] = BSE_MIDI_SIGNAL_CONTINUOUS_1;
   self->controls[2] = BSE_MIDI_SIGNAL_CONTINUOUS_7;
@@ -230,6 +229,7 @@ bse_midi_icontroller_get_property (GObject    *object,
 typedef struct {
   BseMidiReceiver *midi_receiver;
   guint            midi_channel;
+  guint            default_channel;
   GslModule       *control_module;
 } ModuleData;
 
@@ -255,7 +255,8 @@ bse_midi_icontroller_context_create (BseSource *source,
   BseItem *parent = BSE_ITEM (self)->parent;
   
   /* setup module data */
-  mdata->midi_receiver = bse_snet_get_midi_receiver (BSE_SNET (parent), context_handle, &mdata->midi_channel);
+  mdata->midi_receiver = bse_snet_get_midi_receiver (BSE_SNET (parent), context_handle, &mdata->default_channel);
+  mdata->midi_channel = self->midi_channel > 0 ? self->midi_channel : mdata->default_channel;
   mdata->control_module = bse_midi_receiver_retrieve_control_module (mdata->midi_receiver,
 								     mdata->midi_channel,
 								     self->controls,
@@ -316,7 +317,10 @@ bse_midi_icontroller_update_modules (BseMidiIController *self)
 	  /* discard old module */
 	  bse_midi_receiver_discard_control_module (mdata->midi_receiver, mdata->control_module, trans);
 	  
-	  /* fetch new module */
+          /* update midi channel */
+          mdata->midi_channel = self->midi_channel > 0 ? self->midi_channel : mdata->default_channel;
+
+          /* fetch new module */
 	  mdata->control_module = bse_midi_receiver_retrieve_control_module (mdata->midi_receiver,
 									     mdata->midi_channel,
 									     self->controls,
