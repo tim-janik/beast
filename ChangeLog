@@ -1,3 +1,7 @@
+Sat Mar  6 15:32:21 2004  Tim Janik  <timj@gtk.org>
+
+	* released 0.6.1, binary age 0, interface age 0.
+
 Sat Mar  6 13:50:42 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpreferences.c: load fallback keytable if ~/.beast

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-06 13:59+0100\n"
+"POT-Creation-Date: 2004-03-06 15:33+0100\n"
 "PO-Revision-Date: 2004-02-27 22:42+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -572,16 +572,16 @@ msgstr "Учитавам „%s“"
 msgid "Loading project \"%s\""
 msgstr "Учитавам пројекат „%s“"
 
-#: beast-gtk/bstmain.c:710
+#: beast-gtk/bstmain.c:711
 msgid "BEAST About"
 msgstr "О Звери"
 
-#: beast-gtk/bstmain.c:711
+#: beast-gtk/bstmain.c:712
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ЗВЕР, издање %s"
 
-#: beast-gtk/bstmain.c:712
+#: beast-gtk/bstmain.c:713
 msgid "Contributions made by:"
 msgstr "Такође допринели:"
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-06 13:59+0100\n"
+"POT-Creation-Date: 2004-03-06 15:33+0100\n"
 "PO-Revision-Date: 2004-01-18 18:05+0100\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
@@ -583,16 +583,16 @@ msgstr "Cargando  «%s»"
 msgid "Loading project \"%s\""
 msgstr "Cargando el proyecto «%s»"
 
-#: beast-gtk/bstmain.c:710
+#: beast-gtk/bstmain.c:711
 msgid "BEAST About"
 msgstr "Acerca de Beast"
 
-#: beast-gtk/bstmain.c:711
+#: beast-gtk/bstmain.c:712
 #, c-format
 msgid "BEAST Version %s"
 msgstr "Versión %s de Beast"
 
-#: beast-gtk/bstmain.c:712
+#: beast-gtk/bstmain.c:713
 msgid "Contributions made by:"
 msgstr "Contribuciones hechas por:"
 

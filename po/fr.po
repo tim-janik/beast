@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-06 13:59+0100\n"
+"POT-Creation-Date: 2004-03-06 15:33+0100\n"
 "PO-Revision-Date: 2004-01-17 23:28+0100\n"
 "Last-Translator: Christophe Merlet (RedFox) <redfox@redfoxcenter.org>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -598,16 +598,16 @@ msgstr "Chargement de « %s »"
 msgid "Loading project \"%s\""
 msgstr "Chargement du projet « %s »"
 
-#: beast-gtk/bstmain.c:710
+#: beast-gtk/bstmain.c:711
 msgid "BEAST About"
 msgstr "À propos de BEAST"
 
-#: beast-gtk/bstmain.c:711
+#: beast-gtk/bstmain.c:712
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST version %s"
 
-#: beast-gtk/bstmain.c:712
+#: beast-gtk/bstmain.c:713
 #, fuzzy
 msgid "Contributions made by:"
 msgstr "Contributeurs :"

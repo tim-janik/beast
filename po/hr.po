@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-06 13:59+0100\n"
+"POT-Creation-Date: 2004-03-06 15:33+0100\n"
 "PO-Revision-Date: 2004-02-01 16:49+CET\n"
 "Last-Translator: auto\n"
 "Language-Team: Croatian <lokalizacija@linux.hr>\n"
@@ -568,16 +568,16 @@ msgstr ""
 msgid "Loading project \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:710
+#: beast-gtk/bstmain.c:711
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.c:711
+#: beast-gtk/bstmain.c:712
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:712
+#: beast-gtk/bstmain.c:713
 msgid "Contributions made by:"
 msgstr ""
 
