@@ -10,10 +10,10 @@
 #ifdef	TOYPROF_GNUC_NO_INSTRUMENT	/* only have this if toyprof is enabled */
 
 /* --- configuration --- */
-/* TOYPROF_PENTIUM	- define this if you're going to run the compiled program
- *			  on an Intel Pentium(R) uni-processor machine. it will
- *			  use the pentium's RDTSC intruction to read out the
- *			  processor's clock cycle counter which usually produces
+/* TOYPROF_PENTIUM	- define this to 1 if you're going to run the compiled
+ *			  program on an Intel Pentium(R) uni-processor machine.
+ *			  it will use the pentium's RDTSC intruction to read out
+ *			  the processor's clock cycle counter which usually produces
  *			  more accurate results and runs faster than using
  *			  gettimeofday(2) to obtain timing results.
  * TOYPROF_AUTOSTART	- collect function timing statistics by default (without
@@ -77,7 +77,7 @@
 
 
 /* --- time stamping --- */
-#ifdef	TOYPROF_PENTIUM
+#if defined (TOYPROF_PENTIUM) && TOYPROF_PENTIUM == 1
 
 #define ToyprofStamp 		unsigned long long int
 

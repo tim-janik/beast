@@ -1,3 +1,8 @@
+Mon Jul 28 05:21:01 2003  Tim Janik  <timj@gtk.org>
+
+	* toyprof.c: fix evaluation of config macro TOYPROF_PENTIUM, reported
+	by Sam Hocevar <sam@zoy.org>.
+
 Fri Jul 25 17:17:52 2003  Stefan Westerfeld <stefan@space.twc.de>
 
 	* sfidl-parser.*: adapted prototyping to work in cases where the full
