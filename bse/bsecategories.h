@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include        <bse/bsetype.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- prototypes --- */
 void		bse_categories_register      (const gchar      *category,
@@ -41,9 +38,6 @@ BseCategory*	bse_category_from_id	     (guint		 id);
 /* --- internal --- */
 void		_bse_init_categories	     (void);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_CATEGORIES_H__ */
