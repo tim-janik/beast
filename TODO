@@ -11,7 +11,6 @@ FIXMES:	(release-critical)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - BUG: premature aborts accour while playing long files in the sample editor 
 - binary names: beast-0.6.3-rc1 and bsesh-0.6.3
-- (pos-x/pos-y) need :float:
 TODO:
 - add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - add executable versioning to sfidl 

@@ -2009,12 +2009,12 @@ bse_source_class_init (BseSourceClass *class)
 			      PROP_POS_X,
 			      sfi_pspec_real ("pos_x", "Position X", NULL,
 					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
-					      SFI_PARAM_STORAGE ":skip-default"));
+					      SFI_PARAM_STORAGE ":skip-default:f:"));
   bse_object_class_add_param (object_class, "Position",
 			      PROP_POS_Y,
 			      sfi_pspec_real ("pos_y", "Position Y", NULL,
 					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
-					      SFI_PARAM_STORAGE ":skip-default"));
+					      SFI_PARAM_STORAGE ":skip-default:f:"));
 
   signal_io_changed = bse_object_class_add_signal (object_class, "io-changed", G_TYPE_NONE, 0);
   bse_source_class_add_probe_signals (class);

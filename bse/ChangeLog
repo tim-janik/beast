@@ -1,3 +1,9 @@
+Fri Oct 15 01:27:52 2004  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.c: don't serialize auto-activate=#f property value.
+
+	* bsesource.c: reduce serialization precision for pos-x/y to float.
+
 Fri Oct 15 01:13:56 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemidisynth.c: request polyphonic voice processing for the 
