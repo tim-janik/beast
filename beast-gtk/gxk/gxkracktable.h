@@ -44,6 +44,7 @@ struct _GxkRackTable
   guint          cell_request_height;
   guint          cell_width;
   guint          cell_height;
+  GSList        *covers;
   GxkRackEditor *editor;
 };
 struct _GxkRackTableClass
@@ -80,7 +81,15 @@ GtkWidget* gxk_rack_table_find_child           (GxkRackTable *self,
                                                 gint          y);
 void       gxk_rack_table_update_child_map     (GxkRackTable *self);
 void       gxk_rack_table_invalidate_child_map (GxkRackTable *self);
-
+void       gxk_rack_table_attach               (GxkRackTable *self,
+                                                GtkWidget    *child,
+                                                guint         col,
+                                                guint         row,
+                                                guint         hspan,
+                                                guint         vspan);
+void       gxk_rack_table_cover_up             (GxkRackTable *self);
+void       gxk_rack_table_uncover              (GxkRackTable *self);
+                                                
 
 G_END_DECLS
 

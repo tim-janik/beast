@@ -1,11 +1,22 @@
+Sun Nov 30 12:51:05 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkracktable.[hc]:
+	(gxk_rack_table_style_set): set a lower boundary of 8 pixels to cell size
+	requests.
+	(gxk_rack_table_attach): new function to allow direct placement of
+	non rack-items.
+	(gxk_rack_table_cover_up): new function to add covers to empty regions.
+	(gxk_rack_table_uncover): remove covers from empty regions.
+
+	* beast-gtk/gxk/gxkrackcovers.c: changed license to LGPL.
+	adapted code to GxkRackTable API, added comments.
+
+	* beast-gtk/gxk/gxkrackeditor.[hc]: added gxk_rack_table_destroy_editor()
+	for proper shutdown.
+
 Sun Nov 30 16:15:40 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkrackcovers.c: CVS copied here.
-
-Sun Nov 30 12:51:05 2003  Tim Janik  <timj@gtk.org>
-
-	* beast-gtk/gxk/gxkracktable.c (gxk_rack_table_style_set): set a lower
-	boundary of 8 pixels to cell size requests.
 
 Sun Nov 30 02:44:27 2003  Tim Janik  <timj@gtk.org>
 

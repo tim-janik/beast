@@ -59,6 +59,7 @@ gboolean gxk_rack_table_expand_rect           (GxkRackTable     *self,
 
 
 /* --- implementation details --- */
+void     gxk_rack_table_destroy_editor        (GxkRackTable     *self);
 gboolean gxk_rack_table_handle_enter_notify   (GxkRackTable     *self,
                                                GdkEventCrossing *event);
 gboolean gxk_rack_table_handle_button_press   (GxkRackTable     *self,

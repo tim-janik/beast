@@ -32,6 +32,7 @@ gxk_c_sources = $(strip \
 )
 gxk_extra_sources = $(strip \
 	gxkmarshal.list \
+	gxkrackcovers.c	\
 )
 gxk_built_sources = $(strip \
 	gxkmarshal.h	gxkmarshal.c	gxkgentypes.h	gxkgentypes.c \

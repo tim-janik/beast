@@ -537,6 +537,17 @@ gxk_rack_table_handle_button_release (GxkRackTable   *self,
 }
 
 void
+gxk_rack_table_destroy_editor (GxkRackTable *self)
+{
+  g_return_if_fail (GXK_IS_RACK_TABLE (self));
+  g_return_if_fail (self->editor);
+  rack_table_abort_drag (self, GDK_CURRENT_TIME);
+  rack_table_editor_unrealize (self);
+  g_free (self->editor);
+  self->editor = NULL;
+}
+
+void
 gxk_rack_table_set_edit_mode (GxkRackTable *self,
                               gboolean      enable_editing)
 {
@@ -545,6 +556,7 @@ gxk_rack_table_set_edit_mode (GxkRackTable *self,
   enable_editing = enable_editing && GTK_WIDGET_DRAWABLE (self);
   if (!self->editor && enable_editing)
     {
+      gxk_rack_table_uncover (self);
       self->editor = g_new0 (GxkRackEditor, 1);
       self->editor->rfx = self->editor->rfy = -1;
       rack_table_realize_rframe (self);
@@ -552,10 +564,8 @@ gxk_rack_table_set_edit_mode (GxkRackTable *self,
     }
   else if (self->editor && !enable_editing)
     {
-      rack_table_abort_drag (self, GDK_CURRENT_TIME);
-      rack_table_editor_unrealize (self);
-      g_free (self->editor);
-      self->editor = NULL;
+      gxk_rack_table_destroy_editor (self);
+      gxk_rack_table_cover_up (self);
     }
   else
     return;
