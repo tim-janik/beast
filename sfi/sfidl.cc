@@ -122,6 +122,8 @@ namespace Conf {
   bool        generateData = false;
   bool        generateTypeH = false;
   bool        generateTypeC = false;
+  bool        generateBoxedTypes = false;
+  bool        generateIdlLineNumbers = false;
   string      namespaceCut = "";
   string      namespaceAdd = "";
 };
@@ -329,7 +331,7 @@ void IdlParser::parse()
   ModuleHelper::define("Num");
   ModuleHelper::define("Real");
   ModuleHelper::define("String");
-  ModuleHelper::define("Proxy");
+  ModuleHelper::define("Proxy"); /* FIXME: remove this as soon as "real" interface types exist */
   ModuleHelper::define("BBlock");
   ModuleHelper::define("FBlock");
   
@@ -756,6 +758,7 @@ protected:
   string makeLowerName (const string& name);
   string makeUpperName (const string& name);
   string makeMixedName (const string& name);
+  string makeGTypeName (const string& name);
   string createTypeCode (const string& type, const string& name, int model);
   
 public:
@@ -848,6 +851,12 @@ string CodeGeneratorC::makeMixedName (const string& name)
 	}
     }
   return result;
+}
+
+string CodeGeneratorC::makeGTypeName(const string& name)
+{
+  return makeUpperName (NamespaceHelper::namespaceOf (name)
+                      + "::Type" + NamespaceHelper::nameOf(name));
 }
 
 string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
@@ -1102,7 +1111,18 @@ void CodeGeneratorC::run (string srcname)
 	printf("extern SfiEnumValues %s_values;\n", makeLowerName (ei->name).c_str());
       
       for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+      {
 	printf("extern SfiRecFields %s_fields;\n",makeLowerName (ri->name).c_str());
+        if (Conf::generateBoxedTypes)
+	  printf("extern GType %s;\n", makeGTypeName (ri->name).c_str());
+      }
+
+      if (Conf::generateBoxedTypes)
+      {
+	for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+	  printf("extern GType %s;\n", makeGTypeName (si->name).c_str());
+      }
+      printf("\n");
     }
   
   if (Conf::generateData)
@@ -1127,6 +1147,38 @@ void CodeGeneratorC::run (string srcname)
 	  
 	  printf("static GParamSpec *%s_field[%d];\n", name.c_str(), ri->contents.size());
 	  printf("SfiRecFields %s_fields = { %d, %s_field };\n", name.c_str(), ri->contents.size(), name.c_str());
+
+	  if (Conf::generateBoxedTypes)
+	  {
+	    string mname = makeMixedName (ri->name);
+
+	    printf("static SfiBoxedRecordInfo %s_boxed_info = {\n", name.c_str());
+	    printf("  \"%s\",\n", mname.c_str());
+	    printf("  { %d, %s_field },\n", ri->contents.size(), name.c_str());
+	    printf("  (SfiBoxedToRec) %s_to_rec,\n", name.c_str());
+	    printf("  (SfiBoxedFromRec) %s_from_rec\n", name.c_str());
+	    printf("};\n");
+	    printf("GType %s = 0;\n", makeGTypeName (ri->name).c_str());
+	  }
+	  printf("\n");
+	}
+      for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+	{
+	  string name = makeLowerName (si->name);
+	  
+	  if (Conf::generateBoxedTypes)
+	  {
+	    string mname = makeMixedName (si->name);
+
+	    printf("static SfiBoxedSequenceInfo %s_boxed_info = {\n", name.c_str());
+	    printf("  \"%s\",\n", mname.c_str());
+	    /* FIXME: introduce new typedefs for sequences with defaults (as records have) */
+	    printf("  NULL, /* GParamSpec *element */\n");
+	    printf("  (SfiBoxedToSeq) %s_to_seq,\n", name.c_str());
+	    printf("  (SfiBoxedFromSeq) %s_from_seq\n", name.c_str());
+	    printf("};\n");
+	    printf("GType %s = 0;\n", makeGTypeName (si->name).c_str());
+	  }
 	  printf("\n");
 	}
     }
@@ -1337,10 +1389,32 @@ void CodeGeneratorC::run (string srcname)
 	  
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++, f++)
 	    {
-	      printf("#line %u \"%s\"\n", pi->line, srcname.c_str());
+	      if (Conf::generateIdlLineNumbers)
+	        printf("#line %u \"%s\"\n", pi->line, srcname.c_str());
 	      printf("  %s_field[%d] = %s;\n", name.c_str(), f, makeParamSpec (*pi).c_str());
 	    }
 	}
+      if (Conf::generateBoxedTypes)
+      {
+	for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+	  {
+	    string gname = makeGTypeName(ri->name);
+	    string name = makeLowerName(ri->name);
+
+	    printf("  %s = sfi_boxed_make_record (&%s_boxed_info,\n", gname.c_str(), name.c_str());
+	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
+	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
+	  }
+      	for(si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+	  {
+	    string gname = makeGTypeName(si->name);
+	    string name = makeLowerName(si->name);
+
+	    printf("  %s = sfi_boxed_make_sequence (&%s_boxed_info,\n", gname.c_str(), name.c_str());
+	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
+	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
+	  }
+}
       printf("}\n");
     }
 }
@@ -1357,6 +1431,8 @@ void exitUsage(char *name)
   fprintf(stderr, " -T           generate c code for types (impl)\n");
   fprintf(stderr, " -n <subst>   specify target namespace, either directly\n");
   fprintf(stderr, "              (-n Brahms) or as substitution (-n Bse/Bsw)\n");
+  fprintf(stderr, " -b           generate boxed types registration code\n");
+  fprintf(stderr, " -l           generate #line directives relative to .sfidl file\n");
   exit(1);
 }
 
@@ -1368,7 +1444,7 @@ int main (int argc, char **argv)
    * parse command line options
    */
   int c;
-  while((c = getopt(argc, argv, "xdi:tTn:")) != -1)
+  while((c = getopt(argc, argv, "xdi:tTn:b")) != -1)
     {
       switch(c)
 	{
@@ -1396,6 +1472,10 @@ int main (int argc, char **argv)
 		      Conf::namespaceAdd = sub;
 		    }
 		  }
+	  break;
+	case 'b': Conf::generateBoxedTypes = true;
+	  break;
+	case 'l': Conf::generateIdlLineNumbers = true;
 	  break;
 	default:  exitUsage(argv[0]);
 	  break;

@@ -1,3 +1,8 @@
+Tue Oct  8 19:25:24 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: support registering boxed types for each record and
+	each sequence type (-b), make #line number directives optional (-l)
+
 Sun Oct  6 08:04:55 2002  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.[hc]: add sfi_seq_clear().
