@@ -363,9 +363,9 @@ track_view_marks_changed (BstTrackView *self)
     {
       SfiInt lleft, lright, pointer;
       bse_proxy_get (song, "loop_left", &lleft, "loop_right", &lright, "tick_pointer", &pointer, NULL);
-      bst_track_roll_set_mark (self->troll, 1, lleft, lleft >= 0 ? BST_MARKER_GREEN : 0);
-      bst_track_roll_set_mark (self->troll, 2, lright, lright >= 0 ? BST_MARKER_BLUE : 0);
-      bst_track_roll_set_mark (self->troll, 3, pointer, pointer >= 0 ? BST_MARKER_RED : 0);
+      bst_track_roll_set_marker (self->troll, 1, lleft, lleft >= 0 ? BST_TRACK_ROLL_MARKER_LOOP : 0);
+      bst_track_roll_set_marker (self->troll, 2, lright, lright >= 0 ? BST_TRACK_ROLL_MARKER_LOOP : 0);
+      bst_track_roll_set_marker (self->troll, 3, pointer, pointer >= 0 ? BST_TRACK_ROLL_MARKER_POS : 0);
     }
 }
 
@@ -448,8 +448,8 @@ bst_track_view_init (BstTrackView *self)
 			      "parent", gxk_gadget_find (gadget, "track-area"),
 			      NULL);
   gxk_nullify_in_object (self, &self->troll);
-  bst_track_roll_set_hadjustment (self->troll, gtk_range_get_adjustment (GTK_RANGE (trackhs)));
-  bst_track_roll_set_vadjustment (self->troll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
+  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->troll), gtk_range_get_adjustment (GTK_RANGE (trackhs)));
+  gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->troll), gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   bst_track_roll_set_track_callback (self->troll, self, get_track);
   track_view_marks_changed (self);
 
@@ -537,7 +537,7 @@ track_view_pointer_changed (BstTrackView *self,
 			    SfiInt        position)
 {
   if (self->troll)
-    bst_track_roll_set_mark (self->troll, 3, position, position >= 0 ? BST_MARKER_RED : 0);
+    bst_track_roll_set_marker (self->troll, 3, position, position >= 0 ? BST_TRACK_ROLL_MARKER_POS : 0);
 }
 
 static void

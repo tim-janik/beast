@@ -19,6 +19,7 @@
 #include "gxkscrollcanvas.h"
 #include "gxkimagecache.h"
 #include <gdk/gdkkeysyms.h>
+#include <string.h>
 
 
 /* --- defines --- */
@@ -181,7 +182,11 @@ scroll_canvas_finalize (GObject *object)
   if (self->scroll_timer)
     g_source_remove (self->scroll_timer);
   self->scroll_timer = 0;
-  
+
+  g_free (self->markers);
+  self->markers = NULL;
+  self->n_markers = 0;
+
   G_OBJECT_CLASS (gxk_scroll_canvas_parent_class)->finalize (object);
 }
 
@@ -437,7 +442,9 @@ gxk_scroll_canvas_reallocate (GxkScrollCanvas *self)
   GxkScrollCanvasClass *class;
   g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
   class = GXK_SCROLL_CANVAS_GET_CLASS (self);
-  
+
+  /* one reason we could be called is simply that self->layout has changed */
+  gxk_scroll_canvas_get_layout (self, &self->layout);
   if (GTK_WIDGET_REALIZED (self))
     {
       GtkWidget *widget = GTK_WIDGET (self);
@@ -469,6 +476,20 @@ gxk_scroll_canvas_reallocate (GxkScrollCanvas *self)
   if (class->reallocate_children)
     class->reallocate_children (self, 0, 0);
   gxk_scroll_canvas_update_adjustments (self, TRUE, TRUE);
+}
+
+static void
+scroll_canvas_realize_marker (GxkScrollCanvas *self,
+                              GxkScrollMarker *marker)
+{
+  if (GTK_WIDGET_DRAWABLE (self) && !marker->pixmap && marker->windowp &&
+      *marker->windowp && marker->extends.width && marker->extends.height)
+    {
+      marker->pixmap = gdk_pixmap_new (*marker->windowp,
+                                       marker->extends.width,
+                                       marker->extends.height, -1);
+      gdk_window_invalidate_rect (*marker->windowp, &marker->extends, TRUE);
+    }
 }
 
 static void
@@ -581,6 +602,23 @@ scroll_canvas_realize (GtkWidget *widget)
 
   /* setup backgrounds, colors and pango layouts */
   scroll_canvas_reset_skin_and_style (self);
+
+  /* realize markers */
+  for (i = 0; i < self->n_markers; i++)
+    scroll_canvas_realize_marker (self, self->markers + i);
+}
+
+static void
+scroll_canvas_unrealize_marker (GxkScrollCanvas *self,
+                                GxkScrollMarker *marker)
+{
+  if (marker->pixmap)
+    {
+      if (*marker->windowp)
+        gdk_window_invalidate_rect (*marker->windowp, &marker->extends, TRUE);
+      g_object_unref (marker->pixmap);
+      marker->pixmap = NULL;
+    }
 }
 
 static void
@@ -604,6 +642,10 @@ scroll_canvas_unrealize (GtkWidget *widget)
     g_object_unref (self->pango_layout[i]);
   g_free (self->pango_layout);
   self->pango_layout = NULL;
+
+  /* unrealize markers */
+  for (i = 0; i < self->n_markers; i++)
+    scroll_canvas_unrealize_marker (self, self->markers + i);
 
   /* destroy windows */
   gdk_window_set_user_data (self->canvas, NULL);
@@ -755,6 +797,44 @@ scroll_canvas_draw_panel (GxkScrollCanvas        *self,
     }
 }
 
+static void
+scroll_canvas_update_markers (GxkScrollCanvas *self,
+                              GdkWindow       *drawable,
+                              GdkRectangle     area)
+{
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
+  guint i;
+  /* save backing */
+  for (i = 0; i < self->n_markers; i++)
+    {
+      GxkScrollMarker *marker = self->markers + i;
+      if (marker->pixmap && *marker->windowp == drawable)
+        {
+          GdkRectangle isec;
+          if (gdk_rectangle_intersect (&area, &marker->extends, &isec))
+            {
+              GdkGC *draw_gc = STYLE (self)->bg_gc[STATE (self)];
+              gdk_draw_drawable (marker->pixmap, draw_gc, drawable,
+                                 isec.x, isec.y,
+                                 isec.x - marker->extends.x,
+                                 isec.y - marker->extends.y,
+                                 isec.width, isec.height);
+            }
+        }
+    }
+  /* draw markers */
+  for (i = 0; i < self->n_markers; i++)
+    {
+      GxkScrollMarker *marker = self->markers + i;
+      if (marker->pixmap && *marker->windowp == drawable)
+        {
+          GdkRectangle isec;
+          if (gdk_rectangle_intersect (&area, &marker->extends, &isec))
+            class->draw_marker (self, drawable, &isec, marker);
+        }
+    }
+}
+
 static gboolean
 scroll_canvas_expose (GtkWidget      *widget,
                       GdkEventExpose *event)
@@ -767,7 +847,7 @@ scroll_canvas_expose (GtkWidget      *widget,
   if (!GTK_WIDGET_DRAWABLE (widget))
     return FALSE;
   
-  if (!event->region)
+  if (event->region)
     gdk_region_get_rectangles (event->region, &areas, &n_areas);
   else
     {
@@ -791,6 +871,7 @@ scroll_canvas_expose (GtkWidget      *widget,
             gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
           class->draw_window (self, event->window, &area);
           GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          scroll_canvas_update_markers (self, event->window, areas[j]);
           if (class->double_buffer_window)
             gdk_window_end_paint (event->window);
         }
@@ -802,6 +883,7 @@ scroll_canvas_expose (GtkWidget      *widget,
             gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
           class->draw_canvas (self, event->window, &area);
           GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          scroll_canvas_update_markers (self, event->window, areas[j]);
           if (class->double_buffer_canvas)
             gdk_window_end_paint (event->window);
         }
@@ -813,6 +895,7 @@ scroll_canvas_expose (GtkWidget      *widget,
             gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
           class->draw_top_panel (self, event->window, &area);
           GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          scroll_canvas_update_markers (self, event->window, areas[j]);
           if (class->double_buffer_top_panel)
             gdk_window_end_paint (event->window);
         }
@@ -824,6 +907,7 @@ scroll_canvas_expose (GtkWidget      *widget,
             gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
           class->draw_left_panel (self, event->window, &area);
           GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          scroll_canvas_update_markers (self, event->window, areas[j]);
           if (class->double_buffer_left_panel)
             gdk_window_end_paint (event->window);
         }
@@ -835,6 +919,7 @@ scroll_canvas_expose (GtkWidget      *widget,
             gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
           class->draw_right_panel (self, event->window, &area);
           GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          scroll_canvas_update_markers (self, event->window, areas[j]);
           if (class->double_buffer_right_panel)
             gdk_window_end_paint (event->window);
         }
@@ -846,6 +931,7 @@ scroll_canvas_expose (GtkWidget      *widget,
             gdk_window_clear_area (event->window, area.x, area.y, area.width, area.height);
           class->draw_bottom_panel (self, event->window, &area);
           GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          scroll_canvas_update_markers (self, event->window, areas[j]);
           if (class->double_buffer_bottom_panel)
             gdk_window_end_paint (event->window);
         }
@@ -853,6 +939,7 @@ scroll_canvas_expose (GtkWidget      *widget,
         {
           gdk_window_begin_paint_rect (event->window, &area);
           GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->expose_event (widget, event);
+          scroll_canvas_update_markers (self, event->window, areas[j]);
           gdk_window_end_paint (event->window);
         }
     }
@@ -983,74 +1070,46 @@ scroll_canvas_adjustment_value_changed (GxkScrollCanvas *self,
 {
   GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
   gint xdiff = 0, ydiff = 0;
-  if (adjustment == self->hadjustment && class->hscrollable)
+  if (class->hscrollable)
     {
       gint x = self->x_offset;
-      self->x_offset = adjustment->value;
+      self->x_offset = self->hadjustment->value;
       xdiff = x - self->x_offset;
-      if (xdiff && GTK_WIDGET_DRAWABLE (self))
-        {
-          GdkRectangle area = { 0, };
-          if (self->top_panel)
-            gdk_window_scroll (self->top_panel, xdiff, 0);
-          gdk_window_scroll (self->canvas, xdiff, 0);
-          if (self->bottom_panel)
-            gdk_window_scroll (self->bottom_panel, xdiff, 0);
-          area.x = xdiff < 0 ? CANVAS_WIDTH (self) + xdiff : 0;
-          area.y = 0;
-          area.width = ABS (xdiff);
-          area.height = CANVAS_HEIGHT (self);
-          gdk_window_invalidate_rect (self->canvas, &area, TRUE);
-          if (self->top_panel)
-            {
-              area.height = TOP_PANEL_HEIGHT (self);
-              gdk_window_invalidate_rect (self->top_panel, &area, TRUE);
-            }
-          if (self->bottom_panel)
-            {
-              area.height = BOTTOM_PANEL_HEIGHT (self);
-              gdk_window_invalidate_rect (self->bottom_panel, &area, TRUE);
-            }
-        }
     }
-  if (adjustment == self->vadjustment && class->vscrollable)
+  if (class->vscrollable)
     {
       gint y = self->y_offset;
-      self->y_offset = adjustment->value;
+      self->y_offset = self->vadjustment->value;
       ydiff = y - self->y_offset;
-      if (ydiff && GTK_WIDGET_DRAWABLE (self))
-        {
-          GdkRectangle area = { 0, };
-          if (self->left_panel)
-            gdk_window_scroll (self->left_panel, 0, ydiff);
-          gdk_window_scroll (self->canvas, 0, ydiff);
-          if (self->right_panel)
-            gdk_window_scroll (self->right_panel, 0, ydiff);
-          area.x = 0;
-          area.y = ydiff < 0 ? CANVAS_HEIGHT (self) + ydiff : 0;
-          area.width = CANVAS_WIDTH (self);
-          area.height = ABS (ydiff);
-          gdk_window_invalidate_rect (self->canvas, &area, TRUE);
-          if (self->left_panel)
-            {
-              area.width = LEFT_PANEL_WIDTH (self);
-              gdk_window_invalidate_rect (self->left_panel, &area, TRUE);
-            }
-          if (self->right_panel)
-            {
-              area.width = RIGHT_PANEL_WIDTH (self);
-              gdk_window_invalidate_rect (self->right_panel, &area, TRUE);
-            }
-        }
+    }
+  if ((xdiff || ydiff) && GTK_WIDGET_DRAWABLE (self))
+    {
+      if (self->top_panel)
+        gdk_window_scroll (self->top_panel, xdiff, 0);
+      if (self->left_panel)
+        gdk_window_scroll (self->left_panel, 0, ydiff);
+      gdk_window_scroll (self->canvas, xdiff, ydiff);
+      if (self->right_panel)
+        gdk_window_scroll (self->right_panel, 0, ydiff);
+      if (self->bottom_panel)
+        gdk_window_scroll (self->bottom_panel, xdiff, 0);
     }
   if (xdiff || ydiff)
     {
-      /* we want the canvas to be updated immediately, to avoid
-       * big expose rectangles later on, due to rectangle-joins
-       * of L-shaped regions.
-       */
-      if (self->canvas)
-        gdk_window_process_updates (self->canvas, TRUE);
+      gint i;
+      /* adjust marker coordinates */
+      for (i = 0; i < self->n_markers; i++)
+        {
+          GxkScrollMarker *marker = self->markers + i;
+          if (xdiff && (marker->windowp == &self->canvas ||
+                        marker->windowp == &self->top_panel ||
+                        marker->windowp == &self->bottom_panel))
+            marker->extends.x += xdiff;
+          if (ydiff && (marker->windowp == &self->canvas ||
+                        marker->windowp == &self->left_panel ||
+                        marker->windowp == &self->right_panel))
+            marker->extends.y += ydiff;
+        }
       if (class->reallocate_children)
         class->reallocate_children (self, xdiff, ydiff);
     }
@@ -1139,8 +1198,6 @@ scroll_canvas_scroll_adjustments (GxkScrollCanvas *self,
   gint xdiff, ydiff;
 
   xdiff = x_pixel * AUTO_SCROLL_SCALE;
-  ydiff = y_pixel * AUTO_SCROLL_SCALE;
-
   if (x_pixel > 0)
     xdiff = MAX (xdiff, 1);
   else if (x_pixel < 0)
@@ -1152,6 +1209,7 @@ scroll_canvas_scroll_adjustments (GxkScrollCanvas *self,
                                         self->hadjustment->lower,
                                         self->hadjustment->upper - self->hadjustment->page_size);
     }
+  ydiff = y_pixel * AUTO_SCROLL_SCALE;
   if (y_pixel > 0)
     ydiff = MAX (ydiff, 1);
   else if (y_pixel < 0)
@@ -1388,6 +1446,185 @@ scroll_canvas_key_press (GtkWidget   *widget,
       handled = TRUE;
     }
   return handled;
+}
+
+GxkScrollMarker*
+gxk_scroll_canvas_lookup_marker (GxkScrollCanvas *self,
+                                 guint            index,
+                                 guint           *countp)
+{
+  guint i;
+  g_return_val_if_fail (GXK_IS_SCROLL_CANVAS (self), NULL);
+
+  if (countp)
+    *countp = 0;
+  for (i = 0; i < self->n_markers; i++)
+    if (self->markers[i].index == index)
+      {
+        if (countp)
+          {
+            GxkScrollMarker *marker = self->markers + i;
+            while (marker < self->markers + self->n_markers &&
+                   marker->index == index)
+              (*countp)++, marker++;
+          }
+        return self->markers + i;
+      }
+  return NULL;
+}
+
+GxkScrollMarker*
+gxk_scroll_canvas_add_marker (GxkScrollCanvas *self,
+                              guint            index)
+{
+  GxkScrollMarker *marker;
+  guint i;
+  g_return_val_if_fail (GXK_IS_SCROLL_CANVAS (self), NULL);
+  g_return_val_if_fail (index > 0, NULL);
+
+  for (i = 0; i < self->n_markers; i++)
+    if (index < self->markers[i].index)
+      break;
+  self->markers = g_renew (GxkScrollMarker, self->markers, self->n_markers + 1);
+  g_memmove (self->markers + i + 1, self->markers + i, sizeof (marker[0]) * (self->n_markers - i));
+  self->n_markers += 1;
+  marker = self->markers + i;
+  memset (marker, 0, sizeof (marker[0]));
+  marker->index = index;
+  return marker;
+}
+
+void
+gxk_scroll_canvas_remove_marker (GxkScrollCanvas *self,
+                                 GxkScrollMarker *marker)
+{
+  guint i;
+  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  g_return_if_fail (marker != NULL);
+
+  i = marker - self->markers;
+  gxk_scroll_canvas_setup_marker (self, marker, NULL, 0, 0, 0, 0);
+  self->n_markers -= 1;
+  g_memmove (self->markers + i, self->markers + i + 1, sizeof (marker[0]) * (self->n_markers - i));
+}
+
+void
+gxk_scroll_canvas_setup_marker (GxkScrollCanvas *self,
+                                GxkScrollMarker *marker,
+                                GdkWindow      **windowp,
+                                guint            x,
+                                guint            y,
+                                guint            width,
+                                guint            height)
+{
+  GtkWidget *widget;
+  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  g_return_if_fail (marker != NULL);
+  widget = GTK_WIDGET (self);
+  if (windowp)
+    g_return_if_fail (windowp == &widget->window || windowp == &self->canvas ||
+                      windowp == &self->top_panel || windowp == &self->left_panel ||
+                      windowp == &self->right_panel || windowp == &self->bottom_panel);
+
+  scroll_canvas_unrealize_marker (self, marker);
+  marker->windowp = windowp;
+  marker->extends.x = x;
+  marker->extends.y = y;
+  marker->extends.width = width;
+  marker->extends.height = height;
+  scroll_canvas_realize_marker (self, marker);
+}
+
+void
+gxk_scroll_canvas_move_marker (GxkScrollCanvas        *self,
+                               GxkScrollMarker        *marker,
+                               guint                   x,
+                               guint                   y)
+{
+  GxkScrollCanvasClass *class;
+  GdkGC *draw_gc;
+  gint i, ox, oy;
+  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  g_return_if_fail (marker != NULL);
+  class = GXK_SCROLL_CANVAS_GET_CLASS (self);
+
+  ox = marker->extends.x;
+  oy = marker->extends.y;
+  if (x == ox && y == oy)
+    return;
+  if (!GTK_WIDGET_DRAWABLE (self) || !marker->pixmap || !*marker->windowp)
+    {
+      marker->extends.x = x;
+      marker->extends.y = y;
+      return;
+    }
+
+  /* restore backing under marker */
+  draw_gc = STYLE (self)->bg_gc[STATE (self)];
+  gdk_window_begin_paint_rect (*marker->windowp, &marker->extends);
+  gdk_draw_drawable (*marker->windowp, draw_gc, marker->pixmap,
+                     0, 0, marker->extends.x, marker->extends.y,
+                     marker->extends.width, marker->extends.height);
+  /* restore overlapping markers */
+  for (i = 0; i < self->n_markers; i++)
+    {
+      GxkScrollMarker *marker2 = self->markers + i;
+      if (marker2 != marker && marker2->windowp == marker->windowp && marker2->pixmap)
+        {
+          GdkRectangle isec, nsec = marker->extends;
+          if (gdk_rectangle_intersect (&marker->extends, &marker2->extends, &isec))
+            class->draw_marker (self, *marker2->windowp, &isec, marker2);
+          nsec.x = x, nsec.y = y;       /* check against new region */
+          if (gdk_rectangle_intersect (&nsec, &marker2->extends, &isec))
+            class->draw_marker (self, *marker2->windowp, &isec, marker2);
+        }
+    }
+
+  /* move */
+  marker->extends.x = x;
+  marker->extends.y = y;
+
+  /* save new backing */
+  gdk_draw_drawable (marker->pixmap, draw_gc, *marker->windowp,
+                     marker->extends.x, marker->extends.y, 0, 0,
+                     marker->extends.width, marker->extends.height);
+  /* save backing from overlapping markers */
+  for (i = 0; i < self->n_markers; i++)
+    {
+      GxkScrollMarker *marker2 = self->markers + i;
+      if (marker2 != marker && marker2->windowp == marker->windowp && marker2->pixmap)
+        {
+          GdkRectangle isec = marker->extends;
+          if (gdk_rectangle_intersect (&isec, &marker2->extends, &isec))
+            gdk_draw_drawable (marker->pixmap, draw_gc, marker2->pixmap,
+                               isec.x - marker2->extends.x, isec.y - marker2->extends.y,
+                               isec.x - marker->extends.x, isec.y - marker->extends.y,
+                               isec.width, isec.height);
+        }
+    }
+
+  /* redraw new marker area */
+  gdk_window_begin_paint_rect (*marker->windowp, &marker->extends);
+  gdk_draw_drawable (*marker->windowp, draw_gc, marker->pixmap,
+                     0, 0, marker->extends.x, marker->extends.y,
+                     marker->extends.width, marker->extends.height);
+  for (i = 0; i < self->n_markers; i++)
+    {
+      GxkScrollMarker *marker2 = self->markers + i;
+      if (marker2->windowp == marker->windowp && marker2->pixmap)
+        {
+          GdkRectangle isec, osec = marker->extends;
+          if (gdk_rectangle_intersect (&marker->extends, &marker2->extends, &isec))
+            class->draw_marker (self, *marker2->windowp, &isec, marker2);
+          osec.x = ox, osec.y = oy;     /* check against old region */
+          if (gdk_rectangle_intersect (&osec, &marker2->extends, &isec))
+            class->draw_marker (self, *marker2->windowp, &isec, marker2);
+        }
+    }
+
+  /* update onscreen */
+  gdk_window_end_paint (*marker->windowp);
+  gdk_window_end_paint (*marker->windowp);
 }
 
 static void

@@ -1,3 +1,33 @@
+Tue Feb 10 10:22:00 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsteventroll.c: confine selection rectangle to 16bit
+	coordinates to avoid drawing artefacts.
+
+	* beast-gtk/bstpianoroll.c: overhaul of the keyboard drawing code.
+	fix black key section identification. confine selection rectangle
+	to 16bit coordinates to avoid drawing artefacts.
+	properly center text drawn in hpanel.
+
+	* beast-gtk/bsttrackroll.[hc]: ported BstTrackRoll to derive from
+	GxkScrollCanvas. lots of fixups, cleanups and changes.
+	use pango to draw part names. properly align text with GtkEntry
+	allocation for renames. moved marker logic into GxkScrollCanvas.
+
+	* beast-gtk/bsttrackrollctrl.c:
+	* beast-gtk/bsttrackview.c: adapted to BstTrackRoll API changes.
+
+	* beast-gtk/gxk/gxkscrollcanvas.[hc]: implemented markers. these
+	are free positionable drawing entities with backing store, on
+	any of the widget's windows, which can be moved without exposure
+	event generation. improved scrolling behaviour once more, due
+	to a fix in the expose region handling code, windows can now
+	scroll horizontally and vertically simultaneously. removed useless
+	left-overs.
+
+	* beast-gtk/gxk/gxkutils.[hc] (gxk_tree_view_get_row_area): added
+	content_area boolean switch to restrict row area to the region
+	actually used for cells in a GtkTreeView.
+
 Mon Feb  9 05:15:52 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkscrollcanvas.[hc]: merge skin reset code with

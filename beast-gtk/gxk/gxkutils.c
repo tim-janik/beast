@@ -1674,10 +1674,11 @@ gxk_tree_view_get_bin_window_pos (GtkTreeView *tree,
 
 /**
  * gxk_tree_view_get_row_area
- * @tree:     valid #GtkTreeView
- * @row:      row to retrieve area coordinates for
- * @y_p:      y position of @row
- * @height_p: height of @row
+ * @tree:         valid #GtkTreeView
+ * @row:          row to retrieve area coordinates for
+ * @y_p:          y position of @row
+ * @height_p:     height of @row
+ * @content_area: whether the cell background area or content area is returned
  *
  * Retrieve the position and height of a row of a
  * #GtkTreeView widget within its bin window.
@@ -1686,7 +1687,8 @@ gboolean
 gxk_tree_view_get_row_area (GtkTreeView *tree,
                             gint         row,
                             gint        *y_p,
-                            gint        *height_p)
+                            gint        *height_p,
+                            gboolean     content_area)
 {
   GdkRectangle rect = { 0, 0, 0, 0 };
 
@@ -1696,7 +1698,10 @@ gxk_tree_view_get_row_area (GtkTreeView *tree,
     {
       GtkTreePath *path = gtk_tree_path_new ();
       gtk_tree_path_append_index (path, row);
-      gtk_tree_view_get_background_area (tree, path, NULL, &rect);
+      if (content_area)
+        gtk_tree_view_get_cell_area (tree, path, NULL, &rect);
+      else
+        gtk_tree_view_get_background_area (tree, path, NULL, &rect);
       gtk_tree_path_free (path);
     }
   if (y_p)

@@ -1,4 +1,6 @@
 FIXMES:
+- delete bstmarker.[hc]
+- fix repeat not working if left/right exchanged
 - create one canonical place for supported sample formats and keep that updated
 - remove bse-plugin-generator
 - document options: :filename, :rgb, :hex

@@ -256,7 +256,8 @@ void   gxk_tree_view_get_bin_window_pos	 (GtkTreeView		*tree,
 gboolean gxk_tree_view_get_row_area	 (GtkTreeView		*tree,
 					  gint			 row,
 					  gint			*y_p,
-					  gint			*height_p);
+					  gint			*height_p,
+                                          gboolean               content_area);
 gboolean gxk_tree_view_get_row_from_coord(GtkTreeView		*tree,
 					  gint			 y,
 					  gint			*row_p);

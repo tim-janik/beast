@@ -356,13 +356,13 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
   gint i, dlen, line_width = 0; /* line widths != 0 interfere with dash-settings on some X servers */
   BsePartControlSeq *cseq;
   gint range, mid = event_roll_scale_range (self, &range);
-  gint x, xbound, height;
+  gint x, xbound, width, height;
   GXK_SCROLL_CANVAS_CLASS (bst_event_roll_parent_class)->draw_canvas (scc, drawable, area);
+  gdk_window_get_size (drawable, &width, &height);
 
   bst_event_roll_overlap_grow_canvas_area (self, area);
   x = area->x;
   xbound = x + area->width;
-  gdk_window_get_size (CANVAS (self), NULL, &height);
 
   /* draw selection */
   if (self->selection_duration)
@@ -370,6 +370,9 @@ event_roll_draw_canvas (GxkScrollCanvas *scc,
       gint x1, x2;
       x1 = tick_to_coord (self, self->selection_tick);
       x2 = tick_to_coord (self, self->selection_tick + self->selection_duration);
+      /* confine to 16bit coordinates for gdk to handle correctly */
+      x1 = MAX (x1, 0);
+      x2 = MIN (x2, width);
       gdk_draw_rectangle (drawable, GTK_WIDGET (self)->style->bg_gc[GTK_STATE_SELECTED], TRUE,
 			  x1, 0, MAX (x2 - x1, 0), height);
     }

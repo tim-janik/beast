@@ -33,10 +33,10 @@ progs_LDADD = $(strip 			\
 # BEAST header files that don't get installed
 beast_headers = $(strip \
 	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
+	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	\
 	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
 	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	\
-	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	\
 	bstsnifferscope.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
 	bstlogadjustment.h	bstitemview.h	bstmarker.h		bstknob.h	\
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
@@ -52,10 +52,10 @@ beast_headers = $(strip \
 # BEAST c sources to build the program from
 beast_sources = $(strip \
 	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	\
+	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	\
 	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
 	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	\
-	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	\
 	bstsnifferscope.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
 	bstlogadjustment.c	bstitemview.c	bstmarker.c		bstknob.c	\
 	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\

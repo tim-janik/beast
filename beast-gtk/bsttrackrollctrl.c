@@ -337,19 +337,20 @@ static void
 controller_update_hpanel_cursor (BstTrackRollController *self,
 				 guint                  tool_id)
 {
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self->troll);
   switch (tool_id)
     {
     case BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER:
-      bst_track_roll_set_hpanel_cursor (self->troll, GDK_SB_DOWN_ARROW);
+      gxk_scroll_canvas_set_top_panel_cursor (scc, GDK_SB_DOWN_ARROW);
       break;
     case BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT:
-      bst_track_roll_set_hpanel_cursor (self->troll, GDK_LEFT_SIDE);
+      gxk_scroll_canvas_set_top_panel_cursor (scc, GDK_LEFT_SIDE);
       break;
     case BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT:
-      bst_track_roll_set_hpanel_cursor (self->troll, GDK_RIGHT_SIDE);
+      gxk_scroll_canvas_set_top_panel_cursor (scc, GDK_RIGHT_SIDE);
       break;
     default:
-      bst_track_roll_set_hpanel_cursor (self->troll, GXK_DEFAULT_CURSOR);
+      gxk_scroll_canvas_set_top_panel_cursor (scc, GXK_DEFAULT_CURSOR);
       break;
     }
 }
@@ -358,28 +359,29 @@ static void
 controller_update_canvas_cursor (BstTrackRollController *self,
 				 guint                  tool_id)
 {
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self->troll);
   switch (tool_id)
     {
     case BST_GENERIC_ROLL_TOOL_INSERT:
-      bst_track_roll_set_canvas_cursor (self->troll, GDK_PENCIL);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_PENCIL);
       break;
     case BST_GENERIC_ROLL_TOOL_LINK:
-      bst_track_roll_set_canvas_cursor (self->troll, GDK_DIAMOND_CROSS);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_DIAMOND_CROSS);
       break;
     case BST_GENERIC_ROLL_TOOL_RENAME:
-      bst_track_roll_set_canvas_cursor (self->troll, GXK_DEFAULT_CURSOR);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GXK_DEFAULT_CURSOR);
       break;
     case BST_GENERIC_ROLL_TOOL_MOVE:
-      bst_track_roll_set_canvas_cursor (self->troll, GDK_FLEUR);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_FLEUR);
       break;
     case BST_GENERIC_ROLL_TOOL_DELETE:
-      bst_track_roll_set_canvas_cursor (self->troll, GDK_TARGET);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_TARGET);
       break;
     case BST_GENERIC_ROLL_TOOL_EDITOR:
-      bst_track_roll_set_canvas_cursor (self->troll, GDK_HAND2);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_HAND2);
       break;
     default:
-      bst_track_roll_set_canvas_cursor (self->troll, GXK_DEFAULT_CURSOR);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GXK_DEFAULT_CURSOR);
       break;
     }
 }
@@ -643,7 +645,7 @@ controller_drag (BstTrackRollController *self,
 	  obj_tool = canvas_button_tool (self, drag->button, HAVE_OBJECT);
 	  tool = canvas_button_tool (self, drag->button, 0);
 	}
-      else if (drag->hpanel_drag)
+      else if (drag->top_panel_drag)
 	{
 	  tool_table = hpanel_tool_table;
 	  n_tools = G_N_ELEMENTS (hpanel_tool_table);
