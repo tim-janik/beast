@@ -180,8 +180,12 @@ class Sniffer : public SnifferBase {
                  gboolean processed)
   {
     SnifferData *data = static_cast<SnifferData*> (cdata);
-    if (processed)
-      data->sniffer->emit_notify_pcm_data (data->tick_stamp, *data->fblock1, *data->fblock2);
+    if (!processed)
+      {
+        data->fblock1->n_values = 0;
+        data->fblock2->n_values = 0;
+      }
+    data->sniffer->emit_notify_pcm_data (data->tick_stamp, *data->fblock1, *data->fblock2);
     sfi_fblock_unref (data->fblock1);
     sfi_fblock_unref (data->fblock2);
     delete data;

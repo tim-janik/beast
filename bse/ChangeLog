@@ -1,3 +1,9 @@
+Wed Jan 28 11:10:18 2004  Tim Janik  <timj@gtk.org>
+
+	* bsesniffer.cc: don't swallow requests while inactive, send replies
+	with 0-length fblocks instead (fixes GUI loosing track of sniffer
+	data after stopping the synth).
+
 Tue Jan 27 16:41:45 2004  Tim Janik  <timj@gtk.org>
 
 	* bsetrack.c (bse_track_class_init): increased default number of voices
