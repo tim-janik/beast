@@ -1,3 +1,9 @@
+Fri Oct  8 06:49:42 2004  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: removed g_strconcat_with_null() which used to work 
+	around a GLib-2.4 bug.
+	added g_static_assert() to perform compile time assertions.
+
 Tue Oct  5 22:48:52 2004  Tim Janik  <timj@gtk.org>
 
 	* sficxx.h: 

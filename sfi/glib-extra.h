@@ -26,6 +26,10 @@
 G_BEGIN_DECLS
 
 /* --- macros --- */
+#define G_CPP_PASTE2(a,b)       a ## b
+#define G_CPP_PASTE(a,b)        G_CPP_PASTE2 (a, b)
+#define g_static_assert(expr)   typedef struct { char assertion_failed : ((expr) ? 1 : 0); } G_CPP_PASTE (GLibStaticAssertion_LINE, __LINE__)
+
 #if (GLIB_SIZEOF_LONG > 4)
 #define G_HASH_LONG(l)	((l) + ((l) >> 32))
 #else
@@ -91,9 +95,6 @@ const gchar*    g_intern_strconcat      (const gchar   *first_string,
                                          ...);
 const gchar*    g_intern_printf         (const gchar   *format,
                                          ...) G_GNUC_PRINTF (1,2);
-
-gchar*          g_strconcat_with_null  (const gchar   *string1, ...);
-#define         g_strconcat             g_strconcat_with_null
 
 gchar*          g_path_concat     (const gchar   *first_path,
                                    ...);
