@@ -32,6 +32,9 @@ COPYING: $(plugins_built_sources)
 $(OBJECTS): COPYING # this is our oldest-source-stamp
 
 # *.enums generation rule
+missing_perl = @MISSING_PERL5@ yes
+
+if IF_HAVE_PERL5
 %.enums: %.h
 	cd $(srcdir) \
 	&& $(PERL) $(mkenums) \
@@ -53,7 +56,7 @@ $(OBJECTS): COPYING # this is our oldest-source-stamp
 	    $< >> xgen-enums \
 	&& cp xgen-enums $(@F) \
 	&& rm -f xgen-enums
-
+endif
 
 ## include generated plugin Makefile
 include Makefile.plugins
