@@ -1,3 +1,19 @@
+Wed Mar  8 14:57:50 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepatterngroup.c: implemented bse_pattern_group_store_private()
+	and bse_pattern_group_restore_private() to store tha pattern list.
+
+	* bsesong.c: implemented bse_song_restore_private(),
+	bse_song_store_after() and bse_song_restore() to save and load
+	the pattern group list.
+
+	* bseobject.[hc]: semantic change, substituted store_termination()
+	method with store_after(), so second stage saving can be used
+	in the same way as store_private() (derived widgets can store
+	stuff even after chaining the parent handler).
+	(bse_object_store): after invoking store_after(), store
+	the actual termination.
+
 Wed Mar  8 12:28:19 2000  Tim Janik  <timj@gtk.org>
 
 	* bsesong.c (bse_song_remove_item): remove references to

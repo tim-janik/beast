@@ -831,7 +831,8 @@ bse_pattern_restore (BseObject	*object,
   
   /* chain parent class' handler */
   expected_token = BSE_OBJECT_CLASS (parent_class)->restore (object, storage);
-  
+
+  /* clean up, parsing is done */
   pattern->current_channel = current_channel;
   pattern->current_row = current_row;
   

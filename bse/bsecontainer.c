@@ -31,7 +31,7 @@ static void	    bse_container_class_init		(BseContainerClass	*class);
 static void	    bse_container_init			(BseContainer		*container);
 static void	    bse_container_shutdown		(BseObject		*object);
 static void	    bse_container_destroy		(BseObject		*object);
-static void	    bse_container_store_termination	(BseObject		*object,
+static void	    bse_container_store_after		(BseObject		*object,
 							 BseStorage		*storage);
 static BseTokenType bse_container_try_statement		(BseObject		*object,
 							 BseStorage		*storage);
@@ -89,7 +89,7 @@ bse_container_class_init (BseContainerClass *class)
   if (!quark_cross_refs)
     quark_cross_refs = g_quark_from_static_string ("BseContainerCrossRefs");
   
-  object_class->store_termination = bse_container_store_termination;
+  object_class->store_after = bse_container_store_after;
   object_class->try_statement = bse_container_try_statement;
   object_class->shutdown = bse_container_shutdown;
   object_class->destroy = bse_container_destroy;
@@ -482,18 +482,18 @@ bse_container_store_items (BseContainer *container,
 }
 
 static void
-bse_container_store_termination (BseObject  *object,
-				 BseStorage *storage)
+bse_container_store_after (BseObject  *object,
+			   BseStorage *storage)
 {
-  /* we *append* items to our normal container stuff,
-   * so they even come *after* private stuff, stored by derived containers
-   * (which store their stuff through store_private())
+  /* we *append* items to our normal container stuff, so they
+   * come _after_ private stuff, stored by derived containers
+   * (which usually store their stuff through store_private())
    */
   bse_container_store_items (BSE_CONTAINER (object), storage);
 
   /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->store_termination)
-    BSE_OBJECT_CLASS (parent_class)->store_termination (object, storage);
+  if (BSE_OBJECT_CLASS (parent_class)->store_after)
+    BSE_OBJECT_CLASS (parent_class)->store_after (object, storage);
 }
 
 static BseTokenType

@@ -71,7 +71,7 @@ static gint		bse_ospec_equals		(gconstpointer	 key_spec_1,
 							 gconstpointer	 key_spec_2);
 static void		bse_object_do_store_private	(BseObject      *object,
 							 BseStorage     *storage);
-static void		bse_object_do_store_termination	(BseObject      *object,
+static void		bse_object_do_store_after	(BseObject      *object,
 							 BseStorage     *storage);
 static BseTokenType	bse_object_do_restore_private	(BseObject     *object,
 							 BseStorage    *storage);
@@ -249,7 +249,7 @@ bse_object_class_init (BseObjectClass *class)
   bse_object_names_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
   bse_ospec_ht = g_hash_table_new (bse_ospec_hash, bse_ospec_equals);
 
-  class->store_termination = bse_object_do_store_termination;
+  class->store_after = bse_object_do_store_after;
   class->try_statement = bse_object_do_try_statement;
   class->restore = bse_object_do_restore;
 
@@ -1519,18 +1519,19 @@ bse_object_store (BseObject  *object,
 
   BSE_NOTIFY (object, store, NOTIFY (OBJECT, storage, DATA));
 
-  if (BSE_OBJECT_GET_CLASS (object)->store_termination)
-    BSE_OBJECT_GET_CLASS (object)->store_termination (object, storage);
+  if (BSE_OBJECT_GET_CLASS (object)->store_after)
+    BSE_OBJECT_GET_CLASS (object)->store_after (object, storage);
+
+  bse_storage_handle_break (storage);
+  bse_storage_putc (storage, ')');
 
   bse_object_unref (object);
 }
 
 static void
-bse_object_do_store_termination (BseObject  *object,
-				 BseStorage *storage)
+bse_object_do_store_after (BseObject  *object,
+			   BseStorage *storage)
 {
-  bse_storage_handle_break (storage);
-  bse_storage_putc (storage, ')');
 }
 
 static void
@@ -1624,7 +1625,7 @@ bse_object_do_try_statement (BseObject  *object,
    * G_TOKEN_NONE)        statement got parsed, advance
    *                      to next statement
    * BSE_TOKEN_UNMATCHED) couldn't parse statement, try further
-   * everything else)     encountered (syntax) error during parsing,
+   * everything else)     encountered (syntax/semantic) error during parsing,
    *                      bail out
    */
   
@@ -1643,7 +1644,7 @@ bse_object_do_try_statement (BseObject  *object,
 					scanner->next_value.v_identifier);
   if (parser)
     {
-      g_scanner_get_next_token (scanner); /* read in the identifier */
+      g_scanner_get_next_token (scanner); /* eat up the identifier */
       
       return parser->parser (object, storage, parser->user_data);
     }

@@ -122,7 +122,7 @@ struct _BseObjectClass
   GQuark                *notifiers;
   guint                  n_parsers;
   BseObjectParser       *parsers;
-  void                  (*store_termination)    (BseObject      *object,
+  void                  (*store_after)		(BseObject      *object,
                                                  BseStorage     *storage);
   BseTokenType          (*try_statement)        (BseObject      *object,
                                                  BseStorage     *storage);

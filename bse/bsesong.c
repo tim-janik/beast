@@ -25,6 +25,7 @@
 #include	"bseproject.h"
 #include	"bsechunk.h"
 #include	"bseheart.h"
+#include	"bsestorage.h"
 #include	<string.h>
 #include	<math.h>
 
@@ -66,6 +67,12 @@ static BseItem*	 bse_song_get_item		(BseContainer	   *container,
 						 guint		    seqid);
 static void	 bse_song_remove_pgroup_links	(BseSong           *song,
 						 BsePatternGroup   *pgroup);
+static BseTokenType bse_song_restore_private    (BseObject         *object,
+						 BseStorage        *storage);
+static void      bse_song_store_after		(BseObject         *object,
+						 BseStorage        *storage);
+static GTokenType bse_song_restore              (BseObject         *object,
+						 BseStorage        *storage);
 static void	 bse_song_prepare		(BseSource	   *source,
 						 BseIndex	    index);
 static BseChunk* bse_song_calc_chunk		(BseSource	   *source,
@@ -117,6 +124,9 @@ bse_song_class_init (BseSongClass *class)
   
   object_class->set_param = (BseObjectSetParamFunc) bse_song_set_param;
   object_class->get_param = (BseObjectGetParamFunc) bse_song_get_param;
+  object_class->store_after = bse_song_store_after;
+  object_class->restore = bse_song_restore;
+  object_class->restore_private = bse_song_restore_private;
   object_class->shutdown = bse_song_do_shutdown;
   
   source_class->prepare = bse_song_prepare;
@@ -752,6 +762,117 @@ bse_song_ht_foreach (gpointer key,
   
   list_p = user_data;
   *list_p = g_list_prepend (*list_p, value);
+}
+
+static void
+bse_song_store_after (BseObject  *object,
+		      BseStorage *storage)
+{
+  BseSong *song = BSE_SONG (object);
+  BseProject *project = bse_item_get_project (BSE_ITEM (song));
+  guint i;
+
+  /* we store the pattern groups after the store_after() handler,
+   * which is used by BseContainer to store all children.
+   * that way we can use non-persistant references to pattern groups.
+   */
+
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->store_after)
+    BSE_OBJECT_CLASS (parent_class)->store_after (object, storage);
+
+  for (i = 0; i < song->n_pgroups; i++)
+    {
+      gchar *path = bse_container_make_item_path (BSE_CONTAINER (project),
+						  BSE_ITEM (song->pgroups[i]),
+						  FALSE);
+
+      bse_storage_break (storage);
+
+      bse_storage_putc (storage, '(');
+      bse_storage_puts (storage, "add-pattern-group");
+      bse_storage_printf (storage, " %s", path);
+      bse_storage_handle_break (storage);
+      bse_storage_putc (storage, ')');
+      g_free (path);
+    }
+}
+
+static BseTokenType
+bse_song_restore_private (BseObject  *object,
+			  BseStorage *storage)
+{
+  BseSong *song = BSE_SONG (object);
+  BseProject *project = bse_item_get_project (BSE_ITEM (song));
+  GScanner *scanner = storage->scanner;
+  GTokenType expected_token;
+  gchar *pgroup_path;
+  BseItem *item;
+  
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
+    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+  else
+    expected_token = BSE_TOKEN_UNMATCHED;
+
+  if (expected_token != BSE_TOKEN_UNMATCHED ||
+      g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
+      !bse_string_equals ("add-pattern-group", scanner->next_value.v_identifier))
+    return expected_token;
+
+  /* eat "add-pattern-group" */
+  g_scanner_get_next_token (scanner);
+
+  /* parse pgroup path */
+  if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
+    return G_TOKEN_IDENTIFIER;
+  pgroup_path = g_strdup (scanner->value.v_identifier);
+
+  /* ok, resolve and add pgroup */
+  item = bse_container_item_from_path (BSE_CONTAINER (project), pgroup_path);
+  if (!item || !BSE_IS_PATTERN_GROUP (item))
+    bse_storage_warn (storage,
+		      "%s: unable to determine pattern group from \"%s\"",
+		      BSE_OBJECT_NAME (song),
+		      pgroup_path);
+  else
+    bse_song_insert_pattern_group_link (song, BSE_PATTERN_GROUP (item), song->n_pgroups);
+  g_free (pgroup_path);
+
+  /* read closing brace */
+  return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
+}
+
+static GTokenType
+bse_song_restore (BseObject  *object,
+		  BseStorage *storage)
+{
+  BseSong *song = BSE_SONG (object);
+  GTokenType expected_token;
+  GList *list;
+  
+  /* chain parent class' handler */
+  expected_token = BSE_OBJECT_CLASS (parent_class)->restore (object, storage);
+
+  /* ok, parsing is done, now we just want to make
+   * usre that all pattern_groups of this song are actually
+   * listed in the pgroups list
+   */
+  for (list = song->pattern_groups; list; list = list->next)
+    {
+      BsePatternGroup *pgroup = list->data;
+      guint i;
+
+      for (i = 0; i < song->n_pgroups; i++)
+	if (song->pgroups[i] == pgroup)
+	  break;
+
+      /* if not, default-add to pgroup list end */
+      if (i >= song->n_pgroups)
+	bse_song_insert_pattern_group_link (song, pgroup, song->n_pgroups);
+    }
+
+  return expected_token;
 }
 
 #if 0
