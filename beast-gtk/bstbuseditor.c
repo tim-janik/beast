@@ -107,8 +107,11 @@ bus_probes_notify (SfiProxy     bus,
     bst_db_beam_set_value (self->lbeam, lprobe->energie);
   if (self->rbeam && rprobe && rprobe->probe_features->probe_energie)
     bst_db_beam_set_value (self->rbeam, rprobe->energie);
-  bse_source_queue_probe_request (self->item, 0, 1, 1, 0, 0);
-  bse_source_queue_probe_request (self->item, 1, 1, 1, 0, 0);
+  if (BST_GCONFIG (enable_meters))
+    {
+      bse_source_queue_probe_request (self->item, 0, 1, 1, 0, 0);
+      bse_source_queue_probe_request (self->item, 1, 1, 1, 0, 0);
+    }
 }
 
 static GtkWidget*
@@ -200,8 +203,11 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       bse_proxy_connect (self->item,
                          "signal::probes", bus_probes_notify, self,
                          NULL);
-      bse_source_queue_probe_request (self->item, 0, 1, 1, 0, 0);
-      bse_source_queue_probe_request (self->item, 1, 1, 1, 0, 0);
+      if (BST_GCONFIG (enable_meters))
+        {
+          bse_source_queue_probe_request (self->item, 0, 1, 1, 0, 0);
+          bse_source_queue_probe_request (self->item, 1, 1, 1, 0, 0);
+        }
     }
 }
 

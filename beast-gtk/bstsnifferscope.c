@@ -253,8 +253,11 @@ scope_probes_notify (SfiProxy     proxy,
         }
       bse_probe_seq_free (pseq);
     }
-  bse_source_queue_probe_request (self->proxy, 0, 1, 0, 0, 0);
-  bse_source_queue_probe_request (self->proxy, 1, 1, 0, 0, 0);
+  if (BST_GCONFIG (enable_scopes))
+    {
+      bse_source_queue_probe_request (self->proxy, 0, 1, 0, 0, 0);
+      bse_source_queue_probe_request (self->proxy, 1, 1, 0, 0, 0);
+    }
 }
 
 static void
@@ -295,8 +298,11 @@ bst_sniffer_scope_set_sniffer (BstSnifferScope *self,
       bse_proxy_connect (self->proxy,
                          "signal::probes", scope_probes_notify, self,
                          NULL);
-      bse_source_queue_probe_request (self->proxy, 0, 1, 0, 0, 0);
-      bse_source_queue_probe_request (self->proxy, 1, 1, 0, 0, 0);
+      if (BST_GCONFIG (enable_scopes))
+        {
+          bse_source_queue_probe_request (self->proxy, 0, 1, 0, 0, 0);
+          bse_source_queue_probe_request (self->proxy, 1, 1, 0, 0, 0);
+        }
     }
 }
 
