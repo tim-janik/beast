@@ -1,4 +1,5 @@
 FIXMES:
+- closing an app window stops playing songs, even if alternative views exist
 - bsedefs.h should define _() only for BSE_COMPILATION
 - apply editable and sensitive to params
 - destroy piano roll dialog if part is released
