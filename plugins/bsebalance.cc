@@ -114,6 +114,6 @@ public:
 };
 
 BSE_CXX_DEFINE_EXPORTS();
-BSE_CXX_REGISTER_EFFECT (Bse, Balance);
+BSE_CXX_REGISTER_EFFECT (Balance);
 
 } // Bse

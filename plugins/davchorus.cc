@@ -102,6 +102,6 @@ public:
 };
 
 BSE_CXX_DEFINE_EXPORTS();
-BSE_CXX_REGISTER_EFFECT (Dav, Chorus);
+BSE_CXX_REGISTER_EFFECT (Chorus);
 
 } // Dav
