@@ -173,7 +173,7 @@ track_roll_get_layout (GxkScrollCanvas        *scc,
   BstTrackRoll *self = BST_TRACK_ROLL (scc);
   track_roll_update_layout (self, FALSE);
   layout->top_panel_height = MAX (1, self->area_offset - 2 * YTHICKNESS (self));
-  layout->left_panel_width = 32 + 4 * XTHICKNESS (self);
+  layout->left_panel_width = 40 + 4 * XTHICKNESS (self);
   layout->right_panel_width = 0;
   layout->bottom_panel_height = 0;
   layout->canvas_width = 1 + 2 * XTHICKNESS (self) + 1;
@@ -765,9 +765,9 @@ bst_track_roll_allocate_scope (BstTrackRoll *self,
     {
       gint width, height;
       gdk_window_get_size (VPANEL (self), &width, &height);
-      allocation.x = 2 * XTHICKNESS (self) + 1;
+      allocation.x = 2 * XTHICKNESS (self);
       allocation.y = ry + YTHICKNESS (self) + 1;
-      allocation.width = width - 4 * XTHICKNESS (self) - 2;
+      allocation.width = width - 4 * XTHICKNESS (self);
       allocation.height = rheight - 2 * YTHICKNESS (self) - 2;
     }
   gtk_widget_size_allocate (child, &allocation);

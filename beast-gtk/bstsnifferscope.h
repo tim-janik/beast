@@ -34,6 +34,10 @@ G_BEGIN_DECLS
 typedef struct {
   GtkWidget parent_instance;
   SfiProxy  proxy;
+  guint     n_values;
+  float    *lvalues;
+  float    *rvalues;
+  GdkGC    *oshoot_gc;
 } BstSnifferScope;
 typedef GtkWidgetClass BstSnifferScopeClass;
 GType      bst_sniffer_scope_get_type       (void);

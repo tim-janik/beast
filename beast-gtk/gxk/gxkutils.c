@@ -471,6 +471,28 @@ gdk_color_from_rgba (guint rgb_value)
   return c;
 }
 
+void
+gdk_draw_hline (GdkDrawable            *drawable,
+                GdkGC                  *gc,
+                gint                    x,
+                gint                    y,
+                gint                    width)
+{
+  if (width > 0)
+    gdk_draw_line (drawable, gc, x, y, x + width - 1, y);
+}
+
+void
+gdk_draw_vline (GdkDrawable            *drawable,
+                GdkGC                  *gc,
+                gint                    x,
+                gint                    y,
+                gint                    height)
+{
+  if (height > 0)
+    gdk_draw_line (drawable, gc, x, y, x, y + height - 1);
+}
+
 /**
  * gxk_widget_make_insensitive
  * @widget: a valid GtkWidget

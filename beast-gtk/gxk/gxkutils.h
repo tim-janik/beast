@@ -157,7 +157,16 @@ void	 gxk_color_alloc		(GdkColormap		*colormap,
 GdkColor gdk_color_from_rgb             (guint                   rgb_value);
 GdkColor gdk_color_from_argb            (guint                   rgb_value);
 GdkColor gdk_color_from_rgba            (guint                   rgb_value);
-
+void     gdk_draw_hline                 (GdkDrawable            *drawable,
+                                         GdkGC                  *gc,
+                                         gint                    x,
+                                         gint                    y,
+                                         gint                    width);
+void     gdk_draw_vline                 (GdkDrawable            *drawable,
+                                         GdkGC                  *gc,
+                                         gint                    x,
+                                         gint                    y,
+                                         gint                    height);
 
 /* --- Gtk convenience --- */
 #define GTK_STYLE_THICKNESS(s,xy)	((s)-> xy##thickness)
