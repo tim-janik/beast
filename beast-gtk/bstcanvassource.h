@@ -44,6 +44,8 @@ struct _BstCanvasSource
 {
   GnomeCanvasGroup parent_object;
 
+  BseSource       *source;
+
   GnomeCanvasItem *rect;
   GnomeCanvasItem *text;
 

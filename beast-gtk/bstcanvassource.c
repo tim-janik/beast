@@ -99,12 +99,18 @@ bst_canvas_source_init (BstCanvasSource *csource)
 static void
 bst_canvas_source_destroy (GtkObject *object)
 {
-  // BstCanvasSource *csource = BST_CANVAS_SOURCE (object);
+  BstCanvasSource *csource = BST_CANVAS_SOURCE (object);
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (object);
   
   while (group->item_list)
     gtk_object_destroy (group->item_list->data);
-  
+
+  if (csource->source) /* FIXME */
+    bse_object_remove_notifiers_by_func (BSE_OBJECT (csource->source),
+					 bse_nullify_pointer,
+					 &csource->source);
+  csource->source = NULL;
+
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
@@ -112,13 +118,24 @@ GnomeCanvasItem*
 bst_canvas_source_new (GnomeCanvasGroup *group,
 		       BseSource        *source)
 {
+  BstCanvasSource *csource;
   GnomeCanvasItem *item;
   
   g_return_val_if_fail (GNOME_IS_CANVAS_GROUP (group), NULL);
-  
+  if (source) /* FIXME */
+    g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+
   item = gnome_canvas_item_new (group,
 				BST_TYPE_CANVAS_SOURCE,
 				NULL);
+  csource = BST_CANVAS_SOURCE (item);
+  csource->source = source;
+  if (csource->source) /* FIXME */
+    bse_object_add_data_notifier (BSE_OBJECT (csource->source),
+				  "destroy",
+				  bse_nullify_pointer,
+				  &csource->source);
+  
   bst_canvas_source_build (BST_CANVAS_SOURCE (item));
   
   return item;
@@ -165,6 +182,7 @@ bst_canvas_source_build (BstCanvasSource *csource)
 {
   GnomeCanvasItem *item;
   GnomeCanvasPoints *gpoints;
+  BseIcon *icon;
   gdouble tmp_x2;
   
   item = GNOME_CANVAS_ITEM (csource);
@@ -180,36 +198,26 @@ bst_canvas_source_build (BstCanvasSource *csource)
 					 "object_signal::event", bst_canvas_source_child_event, csource,
 					 NULL);
   
-  {
-#include "./icons/noicon.c"
-    static const BsePixdata noicon_pixdata = {
-      NOICON_PIXDATA_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_PIXDATA_WIDTH, NOICON_PIXDATA_HEIGHT,
-      NOICON_PIXDATA_RLE_PIXEL_DATA,
-    };
-    BseIcon *icon;
-
-    icon = bse_icon_from_pixdata (&noicon_pixdata);
-    
-    gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
-			   GNOME_TYPE_CANVAS_IMAGE,
-			   "x", (gdouble) CONNECTOR_WIDTH + 1,
-			   "y", 0.0 + 1,
-			   "width", (gdouble) 64,
-			   "height", (gdouble) 64,
-			   // "width", (gdouble) GIMP_IMAGE_WIDTH,
-			   // "height", (gdouble) GIMP_IMAGE_HEIGHT,
-			   "anchor", GTK_ANCHOR_NORTH_WEST,
-			   "pixbuf", (icon->bytes_per_pixel > 3
-				      ? art_pixbuf_new_const_rgba
-				      : art_pixbuf_new_const_rgb) (icon->pixels,
-								   icon->width,
-								   icon->height,
-								   icon->width *
-								   icon->bytes_per_pixel),
-			   "object_signal::event", bst_canvas_source_child_event, csource,
-			   NULL);
-  }
+  icon = bst_icon_from_stock (BST_ICON_NOICON);
+  
+  gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
+			 GNOME_TYPE_CANVAS_IMAGE,
+			 "x", (gdouble) CONNECTOR_WIDTH + 1,
+			 "y", 0.0 + 1,
+			 "width", (gdouble) 64,
+			 "height", (gdouble) 64,
+			 // "width", (gdouble) GIMP_IMAGE_WIDTH,
+			 // "height", (gdouble) GIMP_IMAGE_HEIGHT,
+			 "anchor", GTK_ANCHOR_NORTH_WEST,
+			 "pixbuf", (icon->bytes_per_pixel > 3
+				    ? art_pixbuf_new_const_rgba
+				    : art_pixbuf_new_const_rgb) (icon->pixels,
+								 icon->width,
+								 icon->height,
+								 icon->width *
+								 icon->bytes_per_pixel),
+			 "object_signal::event", bst_canvas_source_child_event, csource,
+			 NULL);
   csource->text = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
 					 GNOME_TYPE_CANVAS_TEXT,
 					 "fill_color", "black",
@@ -222,7 +230,7 @@ bst_canvas_source_build (BstCanvasSource *csource)
 					 "signal::destroy", gtk_widget_destroyed, &csource->text,
 					 NULL);
   gpoints = gnome_canvas_points_new (2);
-
+  
   gpoints->coords[0] = 0.0;
   gpoints->coords[1] = 0.0;
   gpoints->coords[2] = CONNECTOR_WIDTH;
@@ -242,7 +250,7 @@ bst_canvas_source_build (BstCanvasSource *csource)
 			 "fill_color", "black",
 			 "points", gpoints,
 			 NULL);
-
+  
   gpoints->coords[0] += ICON_WIDTH;
   gpoints->coords[2] += ICON_WIDTH;
   gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),

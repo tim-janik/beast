@@ -1,3 +1,17 @@
+Sat Oct 30 16:16:55 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_build_toolbar): hum,
+	reverted wrapbox layout, used horizontal toolbar instead. added
+	Zoom spinner.
+
+	* beast-gtk/gnomeforest.[hc]: updated gnome-forest version from my
+	local tree.
+
+Fri Oct 29 22:33:07 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdefs.h: added bst_icon_from_stock() for global icon
+	retrival.
+
 Fri Oct 29 11:28:21 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.[hc]: use a wrap box for now (far from
@@ -83,13 +97,6 @@ Tue Sep 14 00:18:57 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstzoomedwindow.[hc]: new widget, basically a scrolled
 	window that features a toggle button in the scrollbar corner.
-
-Mon Sep 13 15:58:42 1999  Tim Janik  <timj@gtk.org>
-
-	* beast-gtk/gnomeforest.c:
-	(gnome_forest_state_changed):
-	(gnome_forest_style_set): new functions, we need to rerender the buffer
-	here so the window's background settings take effect.
 
 Mon Sep 13 05:22:37 1999  Tim Janik  <timj@gtk.org>
 

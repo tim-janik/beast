@@ -247,6 +247,7 @@ guint		bse_object_add_data_notifier_full   (gpointer	    object,
 void		bse_object_remove_notifiers_by_func (gpointer	    object,
 						     gpointer       func,
 						     gpointer       data);
+void		bse_nullify_pointer		    (gpointer      *pointer_loc);
 
 
 /* --- implementation details --- */

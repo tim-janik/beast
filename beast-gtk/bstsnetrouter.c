@@ -30,7 +30,8 @@ static void	  bst_snet_router_init		(BstSNetRouter		*router,
 static void	  bst_snet_router_destroy	(GtkObject		*object);
 static GtkWidget* bst_snet_router_build_toolbar	(BstSNetRouter		*router);
 static gboolean   bst_snet_router_adjust_region	(BstSNetRouter		*router,
-						 gboolean                zoom_in);
+						 gboolean                zoom_in,
+						 GtkScrolledWindow      *zoomed_window);
 
 
 /* --- static variables --- */
@@ -87,6 +88,7 @@ bst_snet_router_init (BstSNetRouter      *router,
   widget = GTK_WIDGET (router);
   
   router->snet = NULL;
+  router->radio_action = 0;
   router->canvas = NULL;
   router->root = NULL;
   
@@ -173,7 +175,7 @@ zoomed_add_xpm (BstZoomedWindow *zoomed)
       pixmap = gdk_pixmap_create_from_xpm_d (widget->window,
 					     &mask,
 					     NULL,
-					     (gchar*) zoom_xpm);
+					     (gchar**) zoom_xpm);
       pix = gtk_pixmap_new (pixmap, mask);
       gdk_pixmap_unref (pixmap);
       gdk_pixmap_unref (mask);
@@ -197,15 +199,15 @@ bst_snet_router_rebuild (BstSNetRouter *router)
   
   bst_snet_router_destroy_contents (router);
 
-  toolbar = bst_snet_router_build_toolbar (router);
-  gtk_box_pack_start (GTK_BOX (router), toolbar, FALSE, TRUE, 0);
-  
   router->canvas = (GnomeCanvas*) gnome_canvas_new_aa ();
   router->root = gnome_canvas_root (router->canvas);
   bst_object_set (GTK_OBJECT (router->root),
 		  "signal::destroy", gtk_widget_destroyed, &router->root,
 		  NULL);
 
+  toolbar = bst_snet_router_build_toolbar (router);
+  gtk_box_pack_start (GTK_BOX (router), toolbar, FALSE, TRUE, 0);
+  
   gtk_widget_set (GTK_WIDGET (router->canvas),
 		  "visible", TRUE,
 		  "signal::destroy", gtk_widget_destroyed, &router->canvas,
@@ -238,7 +240,7 @@ bst_snet_router_rebuild (BstSNetRouter *router)
   bst_canvas_link_set_end (BST_CANVAS_LINK (link),
 			   bst_canvas_source_new (router->root, NULL));
 
-  bst_snet_router_adjust_region (router, TRUE);
+  bst_snet_router_adjust_region (router, TRUE, NULL);
 }
 
 void
@@ -247,28 +249,76 @@ bst_snet_router_update (BstSNetRouter *router)
   g_return_if_fail (BST_IS_SNET_ROUTER (router));
 }
 
+static void
+toolbar_radio_toggle (GtkWidget *radio,
+		      guint     *radio_active)
+{
+  if (GTK_TOGGLE_BUTTON (radio)->active)
+    *radio_active = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (radio)));
+  if (GTK_TOGGLE_BUTTON (radio)->active)
+    g_print ("radio active: %d\n", *radio_active);
+}
+
+#define EPSILON 1e-6
+
+static gboolean
+idle_zoom (gpointer data)
+{
+  GnomeCanvas *canvas = GNOME_CANVAS (data);
+  gdouble *d = gtk_object_get_data (GTK_OBJECT (canvas), "zoom_d");
+
+  if (!GTK_OBJECT_DESTROYED (canvas) &&
+      EPSILON < fabs (canvas->pixels_per_unit - *d))
+    gnome_canvas_set_pixels_per_unit (canvas, *d);
+
+  gtk_object_remove_data (GTK_OBJECT (canvas), "zoom_d");
+  
+  return FALSE;
+}
+
+static void
+toolbar_set_zoom (GtkAdjustment *adjustment,
+		  BstSNetRouter *router)
+{
+  GtkObject *object = GTK_OBJECT (router->canvas);
+  gdouble *d = gtk_object_get_data (object, "zoom_d");
+
+  if (!d)
+    {
+      d = g_new (gdouble, 1);
+      gtk_object_set_data_full (object, "zoom_d", d, g_free);
+      gtk_object_ref (object);
+      g_timeout_add_full (G_PRIORITY_LOW, 250,
+			  idle_zoom,
+			  object,
+			  (GDestroyNotify) gtk_object_unref);
+    }
+  *d = adjustment->value;
+}
+
 static GtkWidget*
-add_icon_button (GtkWidget     *parent,
-		 const BseIcon *icon,
-		 GtkWidget     *last_button)
+toolbar_add_radio (GtkWidget	 *parent,
+		   GtkWidget     *last_radio,
+		   guint          activation_id,
+		   const gchar   *name,
+		   const gchar   *tip,
+		   const BseIcon *icon,
+		   GtkTooltips   *tooltips,
+		   guint         *radio_active)
 {
   GtkWidget *button, *forest;
 
-  button = gtk_widget_new (GTK_TYPE_RADIO_BUTTON,
-			   "visible", TRUE,
-			   "group", last_button,
-			   "can_focus", FALSE,
-			   "draw_indicator", FALSE,
-			   "relief", GTK_RELIEF_NONE,
-			   NULL);
-  gtk_container_add_with_args (GTK_CONTAINER (parent), button,
-			       "hexpand", FALSE,
-			       NULL);
+  if (!icon)
+    icon = bst_icon_from_stock (BST_ICON_NOICON);
+
+  if (name[0] == 'B' && name[1] == 's' && name[2] == 'e')
+    name += 3;
+
   forest = gtk_widget_new (GNOME_TYPE_FOREST,
 			   "visible", TRUE,
-			   "parent", button,
 			   "width", 32,
 			   "height", 32,
+			   "expand_forest", FALSE,
 			   NULL);
   gnome_forest_put_sprite (GNOME_FOREST (forest), 1,
 			   (icon->bytes_per_pixel > 3
@@ -279,45 +329,32 @@ add_icon_button (GtkWidget     *parent,
 							 icon->width *
 							 icon->bytes_per_pixel));
   gnome_forest_set_sprite_size (GNOME_FOREST (forest), 1, 32, 32);
+
+  button = gtk_toolbar_append_element (GTK_TOOLBAR (parent),
+				       GTK_TOOLBAR_CHILD_RADIOBUTTON, NULL,
+				       name,
+				       tip, NULL,
+				       forest,
+				       NULL, NULL);
+  gtk_widget_set (button,
+		  "group", last_radio,
+		  "user_data", GUINT_TO_POINTER (activation_id),
+		  "signal::toggled", toolbar_radio_toggle, radio_active,
+		  NULL);
+  toolbar_radio_toggle (button, radio_active);
 
   return button;
 }
 
 static GtkWidget*
-add_category_button (GtkWidget	   *parent,
-		     GtkTooltips   *tooltips,
-		     BseCategory   *category,
-		     const BseIcon *icon,
-		     GtkWidget     *last_button)
+toolbar_add_category (GtkWidget	  *parent,
+		      GtkWidget   *last_radio,
+		      BseCategory *category,
+		      GtkTooltips *tooltips,
+		      guint       *radio_active)
 {
-  GtkWidget *button, *forest;
+  GtkWidget *radio;
   gchar *tip;
-
-  button = gtk_widget_new (GTK_TYPE_RADIO_BUTTON,
-			   "visible", TRUE,
-			   "group", last_button,
-			   "can_focus", FALSE,
-			   "draw_indicator", FALSE,
-			   "relief", GTK_RELIEF_NONE,
-			   NULL);
-  gtk_container_add_with_args (GTK_CONTAINER (parent), button,
-			       "hexpand", FALSE,
-			       NULL);
-  forest = gtk_widget_new (GNOME_TYPE_FOREST,
-			   "visible", TRUE,
-			   "parent", button,
-			   "width", 32,
-			   "height", 32,
-			   NULL);
-  gnome_forest_put_sprite (GNOME_FOREST (forest), 1,
-			   (icon->bytes_per_pixel > 3
-			    ? art_pixbuf_new_const_rgba
-			    : art_pixbuf_new_const_rgb) (icon->pixels,
-							 icon->width,
-							 icon->height,
-							 icon->width *
-							 icon->bytes_per_pixel));
-  gnome_forest_set_sprite_size (GNOME_FOREST (forest), 1, 32, 32);
 
   tip = g_strconcat (bse_type_name (category->type),
 		     " [",
@@ -325,86 +362,101 @@ add_category_button (GtkWidget	   *parent,
 		     "]\n",
 		     bse_type_blurb (category->type),
 		     NULL);
-  gtk_tooltips_set_tip (tooltips, button, tip, NULL);
+  radio = toolbar_add_radio (parent, last_radio,
+			     category->type,
+			     bse_type_name (category->type),
+			     tip,
+			     category->icon,
+			     tooltips,
+			     radio_active);
   g_free (tip);
 
-  return button;
+  return radio;
 }
 
 static GtkWidget*
 bst_snet_router_build_toolbar (BstSNetRouter *router)
 {
-  static BseIcon *fallback_icon = NULL;
   GtkWidget *bar;
   GtkWidget *radio = NULL;
+  GtkAdjustment *adjustment;
   guint i;
   BseCategory *cats;
   guint n_cats;
   
   g_return_val_if_fail (BST_IS_SNET_ROUTER (router), NULL);
 
-  if (!fallback_icon)
-    {
-#include "./icons/noicon.c"
-      static const BsePixdata noicon_pixdata = {
-	NOICON_PIXDATA_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-	NOICON_PIXDATA_WIDTH, NOICON_PIXDATA_HEIGHT,
-	NOICON_PIXDATA_RLE_PIXEL_DATA,
-      };
-
-      fallback_icon = bse_icon_from_pixdata (&noicon_pixdata);
-    }
-
-  bar = gtk_widget_new (GTK_TYPE_HWRAP_BOX,
+  bar = gtk_widget_new (GTK_TYPE_TOOLBAR,
 			"visible", TRUE,
-			"homogeneous", FALSE,
-			//			"spacing", 5,
+			"orientation", GTK_ORIENTATION_HORIZONTAL,
+			"toolbar_style", GTK_TOOLBAR_BOTH,
 			NULL);
 
-  if (1)
-    {
-#include "./icons/mouse_tool.c"
-      BsePixdata pd = {
-	MOUSE_TOOL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-	MOUSE_TOOL_IMAGE_WIDTH,
-	MOUSE_TOOL_IMAGE_HEIGHT,
-	MOUSE_TOOL_IMAGE_RLE_PIXEL_DATA,
-      };
-      
-      radio = add_icon_button (bar, bse_icon_from_pixdata (&pd), radio);
-    }
+  /* add link/move/property tool
+   */
+  radio = toolbar_add_radio (bar,
+			     radio,
+			     0,
+			     "Edit",
+			     "Edit\n"
+			     "Use button1 to create links, "
+			     "button2 for movement and "
+			     "button3 to change properties",
+			     bst_icon_from_stock (BST_ICON_MOUSE_TOOL),
+			     BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
+			     &router->radio_action);
 
+  /* add BseSource types
+   */
   cats = bse_categories_match ("/Source/*", &n_cats);
   for (i = 0; i < n_cats; i++)
-    radio = add_category_button (bar,
-				 BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
-				 cats + i,
-				 cats[i].icon ? cats[i].icon : fallback_icon,
-				 radio);
+    radio = toolbar_add_category (bar,
+				  radio,
+				  cats + i,
+				  BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
+				  &router->radio_action);
   g_free (cats);
 
-
-#define X(i) BseIcon icon = { i.bytes_per_pixel, i.width, i.height, (void*) i.pixel_data };
+  /* FIXME: test hackery
+   */
   if (1)
     {
 #include "../bse/icons/song.c"
-      X (gimp_image); radio = add_icon_button (bar, &icon, radio);
+      BseIcon icon = { gimp_image.bytes_per_pixel,
+		       gimp_image.width, gimp_image.height,
+		       (void*) gimp_image.pixel_data };
+      radio = toolbar_add_radio (bar,
+				 radio,
+				 0,
+				 "Song",
+				 NULL,
+				 &icon,
+				 BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
+				 &router->radio_action);
     }
 
-  return gtk_widget_new (GTK_TYPE_FRAME,
-			 "label", NULL,
-			 "visible", TRUE,
-			 "child", bar,
-			 "shadow", GTK_SHADOW_OUT,
-			 NULL);
+  /* add Zoom: spinner */
+  adjustment = (GtkAdjustment*) gtk_adjustment_new (1.00, 0.20, 5.00, 0.05, 0.50, 0.50);
+  gtk_signal_connect (GTK_OBJECT (adjustment),
+		      "value_changed",
+		      toolbar_set_zoom,
+		      router);
+  radio = gtk_spin_button_new (adjustment, 0.0, 2);
+  gtk_widget_set_usize (radio, 50, 0);
+  gtk_widget_show (radio);
+  gtk_toolbar_append_widget (GTK_TOOLBAR (bar), radio, "Zoom Factor", NULL);
+
+  return bar;
 }
 
 static gboolean
-bst_snet_router_adjust_region (BstSNetRouter *router,
-			       gboolean       zoom_in)
+bst_snet_router_adjust_region (BstSNetRouter     *router,
+			       gboolean           zoom_in,
+			       GtkScrolledWindow *zoomed_window)
 {
   GnomeCanvasItem *root = GNOME_CANVAS_ITEM (router->root);
   gdouble x1, y1, x2, y2;
+
 
   gnome_canvas_request_full_update (router->canvas);
   gnome_canvas_update_now (router->canvas);
@@ -416,5 +468,19 @@ bst_snet_router_adjust_region (BstSNetRouter *router,
   gnome_canvas_set_scroll_region (router->canvas, x1, y1, x2, y2);
   gnome_canvas_request_full_update (router->canvas);
   
+  if (zoomed_window)
+    {
+      GtkAdjustment *adjustment;
+      
+      adjustment = gtk_scrolled_window_get_hadjustment (zoomed_window);
+      gtk_adjustment_set_value (adjustment,
+				(adjustment->upper - adjustment->lower) / 2 -
+				adjustment->page_size / 2);
+      adjustment = gtk_scrolled_window_get_vadjustment (zoomed_window);
+      gtk_adjustment_set_value (adjustment,
+				(adjustment->upper - adjustment->lower) / 2 -
+				adjustment->page_size / 2);
+    }
+
   return FALSE;
 }

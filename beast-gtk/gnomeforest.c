@@ -1,3 +1,11 @@
+#include "gnomeforest.h"
+
+
+
+
+
+
+
 /* Libart_LGPL - library of basic graphic primitives
  * Copyright (C) 1998 Raph Levien
  *
@@ -17,7 +25,6 @@
  * Boston, MA 02111-1307, USA.
  */
 #include	<libart_lgpl/art_misc.h>
-#include "gnomeforest.h"
 #include	<libart_lgpl/art_svp.h>
 #include	<libart_lgpl/art_svp_vpath.h>
 #include	<libart_lgpl/art_svp_point.h>
@@ -331,23 +338,31 @@ art_vpath_area (const ArtVpath *vpath)
   return area * 0.5;
 }
 
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+
+
+
+
+
+
+
+/* GnomeForest - Gnome Sprite Engine
+ * Copyright (C) 1999 Tim Janik
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Library General Public
- * License along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include "gnomeforest.h"
 
 #include <libart_lgpl/art_rgb_pixbuf_affine.h>
 #include <libart_lgpl/art_rgb.h>
@@ -365,8 +380,7 @@ art_vpath_area (const ArtVpath *vpath)
 
 enum {
   ARG_0,
-  ARG_X_OFFSET,
-  ARG_Y_OFFSET
+  ARG_EXPAND_FOREST,
 };
 
 /* --- signals --- */
@@ -376,50 +390,53 @@ enum
   SIGNAL_LAST
 };
 typedef void (*SignalCollision) (GnomeForest          *forest,
-				 guint               n_collisions,
+				 guint                 n_collisions,
 				 GnomeSpriteCollision *collisions,
-				 gpointer            func_data);
+				 gpointer              func_data);
 
 
 /* --- prototypes --- */
-static void	gnome_forest_class_init	(GnomeForestClass		*class);
+static void	gnome_forest_class_init		(GnomeForestClass	*class);
 static void	gnome_forest_init		(GnomeForest		*forest);
-static void	gnome_forest_set_arg	(GtkObject	   	*object,
-					 GtkArg	   		*arg,
-					 guint	   		 arg_id);
-static void	gnome_forest_get_arg	(GtkObject		*object,
-					 GtkArg	   		*arg,
-					 guint	   		 arg_id);
-static void	gnome_forest_finalize	(GtkObject		*object);
+static void	gnome_forest_set_arg		(GtkObject	   	*object,
+						 GtkArg	   		*arg,
+						 guint	   		 arg_id);
+static void	gnome_forest_get_arg		(GtkObject		*object,
+						 GtkArg	   		*arg,
+						 guint	   		 arg_id);
+static void	gnome_forest_finalize		(GtkObject		*object);
 static void	gnome_forest_size_request	(GtkWidget		*widget,
 						 GtkRequisition		*requisition);
-static void	gnome_forest_size_allocate(GtkWidget		*widget,
-					   GtkAllocation		*allocation);
-static void	gnome_forest_realize	(GtkWidget		*widget);
-static void	gnome_forest_state_changed (GtkWidget		*widget,
-					    GtkStateType         previous_state);
-static void	gnome_forest_style_set  (GtkWidget		*widget,
-					 GtkStyle		*previous_style);
-static gboolean	gnome_forest_expose	(GtkWidget		*widget,
-					 GdkEventExpose		*event);
+static void	gnome_forest_size_allocate	(GtkWidget		*widget,
+						 GtkAllocation		*allocation);
+static void     gnome_forest_state_changed      (GtkWidget              *widget,
+						 GtkStateType            previous_state);
+static void     gnome_forest_style_set          (GtkWidget              *widget,
+						 GtkStyle               *previous_style);
+
+static void	gnome_forest_realize		(GtkWidget		*widget);
+static gboolean	gnome_forest_expose		(GtkWidget		*widget,
+						 GdkEventExpose		*event);
 static void     gnome_forest_queue_update	(GnomeForest 		*forest);
 static void	gnome_forest_queue_vpath	(GnomeForest		*forest,
 						 const ArtVpath		*vpath);
-static void	gnome_forest_queue_area	(GnomeForest		*forest,
-					 gboolean  		 rerender,
-					 gint      		 x,
-					 gint      		 y,
-					 gint      		 width,
-					 gint      		 height);
-static gboolean gnome_forest_collisions	(GnomeForest		*forest);
-static gboolean gnome_sprite_check_update (GnomeForest		*forest,
-					   GnomeSprite		*sprite);
+static void	gnome_forest_queue_area		(GnomeForest		*forest,
+						 gboolean  		 rerender,
+						 gint      		 x,
+						 gint      		 y,
+						 gint      		 width,
+						 gint      		 height);
+static gboolean gnome_forest_collisions		(GnomeForest		*forest);
+static gboolean gnome_sprite_check_update 	(GnomeForest		*forest,
+						 GnomeSprite		*sprite);
+static gboolean sprite_ensure_vpath		(GnomeForest		*forest,
+						 GnomeSprite		*sprite);
 
 
 /* --- variables --- */
-static gpointer		parent_class = NULL;
-static guint		forest_signals[SIGNAL_LAST] = { 0 };
-static GQuark		quark_animators = 0;
+static gpointer parent_class = NULL;
+static guint	forest_signals[SIGNAL_LAST] = { 0 };
+static GQuark	quark_animators = 0;
 
 
 /* --- prototypes --- */
@@ -488,8 +505,7 @@ gnome_forest_class_init (GnomeForestClass *class)
   
   class->collision = NULL;
   
-  gtk_object_add_arg_type ("GnomeForest::x_offset", GTK_TYPE_UINT, GTK_ARG_READWRITE, ARG_X_OFFSET);
-  gtk_object_add_arg_type ("GnomeForest::y_offset", GTK_TYPE_UINT, GTK_ARG_READWRITE, ARG_Y_OFFSET);
+  gtk_object_add_arg_type ("GnomeForest::expand_forest", GTK_TYPE_BOOL, GTK_ARG_READWRITE, ARG_EXPAND_FOREST);
   
   forest_signals[SIGNAL_COLLISION] =
     gtk_signal_new ("collision",
@@ -506,6 +522,7 @@ gnome_forest_init (GnomeForest *forest)
 {
   forest->n_sprites = 0;
   forest->sprites = NULL;
+  forest->expand_forest = TRUE;
   forest->update_queued = FALSE;
   forest->buffer_size = 0;
   forest->buffer = NULL;
@@ -523,13 +540,9 @@ gnome_forest_set_arg (GtkObject	  *object,
   
   switch (arg_id)
     {
-    case ARG_X_OFFSET:
-      forest->x_offset = GTK_VALUE_UINT (*arg);
-      // queue_area (forest, 0, 0, widget->allocation.width, widget->allocation.height);
-      break;
-    case ARG_Y_OFFSET:
-      forest->y_offset = GTK_VALUE_UINT (*arg);
-      // queue_area (forest, 0, 0, widget->allocation.width, widget->allocation.height);
+    case ARG_EXPAND_FOREST:
+      forest->expand_forest = GTK_VALUE_BOOL (*arg);
+      gtk_widget_queue_resize (GTK_WIDGET (forest));
       break;
     default:
       break;
@@ -547,11 +560,8 @@ gnome_forest_get_arg (GtkObject	  *object,
   
   switch (arg_id)
     {
-    case ARG_X_OFFSET:
-      GTK_VALUE_UINT (*arg) = forest->x_offset;
-      break;
-    case ARG_Y_OFFSET:
-      GTK_VALUE_UINT (*arg) = forest->y_offset;
+    case ARG_EXPAND_FOREST:
+      GTK_VALUE_BOOL (*arg) = forest->expand_forest;
       break;
     default:
       arg->type = GTK_TYPE_INVALID;
@@ -595,16 +605,46 @@ gnome_forest_size_request (GtkWidget      *widget,
 			   GtkRequisition *requisition)
 {
   GnomeForest *forest;
+  guint i;
   
   g_return_if_fail (requisition != NULL);
   
   forest = GNOME_FOREST (widget);
   
-  requisition->width = 0;
-  requisition->height = 0;
-  
-  requisition->width += 400;
-  requisition->height += 400;
+  requisition->width = 1;
+  requisition->height = 1;
+
+  /* walk all visible sprites and request a region that is
+   * big enough to fit them all in
+   */
+  for (i = 0; i < forest->n_sprites; i++)
+    {
+      GnomeSprite *sprite = forest->sprites + i;
+      ArtVpath *vpath;
+
+      /* ignore invisible sprites */
+      if (!sprite->visible)
+	continue;
+      sprite_ensure_vpath (forest, sprite);
+      vpath = sprite->vpath;
+      while (vpath->code != ART_END)
+	{
+	  /* ignore dimensions that get scaled to allocation */
+	  if (sprite->width > 0)
+	    {
+	      guint c = ceil (vpath->x);
+
+	      requisition->width = MAX (requisition->width, MIN (32766, c));
+	    }
+	  if (sprite->height > 0)
+	    {
+	      guint c = ceil (vpath->y);
+
+	      requisition->height = MAX (requisition->height, MIN (32766, c));
+	    }
+	  vpath++;
+	}
+    }
 }
 
 static void
@@ -612,12 +652,29 @@ gnome_forest_size_allocate (GtkWidget     *widget,
 			    GtkAllocation *allocation)
 {
   GnomeForest *forest = GNOME_FOREST (widget);
+  GtkRequisition requisition;
   guint i;
-  
+
   g_return_if_fail (allocation != NULL);
-  
+
+  gtk_widget_get_child_requisition (widget, &requisition);
+
   /* assign new allocation */
   widget->allocation = *allocation;
+  if (!forest->expand_forest)
+    {
+      if (widget->allocation.width > requisition.width)
+	{
+	  widget->allocation.x += (widget->allocation.width - requisition.width) / 2;
+	  widget->allocation.width = requisition.width;
+	}
+      if (widget->allocation.height > requisition.height)
+	{
+	  widget->allocation.y += (widget->allocation.height - requisition.height) / 2;
+	  widget->allocation.height = requisition.height;
+	}
+    }
+  allocation = &widget->allocation;
   
   /* adjust gdk window */
   if (GTK_WIDGET_REALIZED (widget))
@@ -635,8 +692,8 @@ gnome_forest_size_allocate (GtkWidget     *widget,
   /* rerender complete buffer */
   gnome_forest_queue_area (forest, TRUE,
 			   0, 0,
-			   widget->allocation.width,
-			   widget->allocation.height);
+			   allocation->width,
+			   allocation->height);
   
   /* update sprite layouts (some are widget->allocation dependant) */
   for (i = 0; i < forest->n_sprites; i++)
@@ -670,28 +727,28 @@ gnome_forest_realize (GtkWidget *widget)
 
 static void
 gnome_forest_state_changed (GtkWidget   *widget,
-			    GtkStateType previous_state)
+                            GtkStateType previous_state)
 {
   /* rerender complete buffer */
   gnome_forest_queue_area (GNOME_FOREST (widget), TRUE,
-			   0, 0,
-			   widget->allocation.width,
-			   widget->allocation.height);
-
+                           0, 0,
+                           widget->allocation.width,
+                           widget->allocation.height);
+  
   if (GTK_WIDGET_CLASS (parent_class)->state_changed)
     GTK_WIDGET_CLASS (parent_class)->state_changed (widget, previous_state);
 }
 
 static void
 gnome_forest_style_set (GtkWidget *widget,
-			GtkStyle  *previous_style)
+                        GtkStyle  *previous_style)
 {
   /* rerender complete buffer */
   gnome_forest_queue_area (GNOME_FOREST (widget), TRUE,
-			   0, 0,
-			   widget->allocation.width,
-			   widget->allocation.height);
-
+                           0, 0,
+                           widget->allocation.width,
+                           widget->allocation.height);
+  
   if (GTK_WIDGET_CLASS (parent_class)->style_set)
     GTK_WIDGET_CLASS (parent_class)->style_set (widget, previous_style);
 }
@@ -719,9 +776,25 @@ gnome_forest_new (void)
   return gtk_widget_new (GNOME_TYPE_FOREST, NULL);
 }
 
+void
+gnome_forest_rerender (GnomeForest *forest)
+{
+  GtkWidget *widget;
+
+  g_return_if_fail (GNOME_IS_FOREST (forest));
+
+  widget = GTK_WIDGET (forest);
+
+  /* rerender complete buffer */
+  gnome_forest_queue_area (forest, TRUE,
+			   0, 0,
+			   widget->allocation.width,
+			   widget->allocation.height);
+}
+
 GnomeSprite*
 gnome_forest_peek_sprite (GnomeForest *forest,
-			  guint      id)
+			  guint        id)
 {
   guint i;
   
@@ -736,8 +809,8 @@ gnome_forest_peek_sprite (GnomeForest *forest,
 
 guint
 gnome_forest_put_sprite (GnomeForest *forest,
-			 guint      id,
-			 ArtPixBuf *image)
+			 guint        id,
+			 ArtPixBuf   *image)
 {
   GnomeSprite *sprite = NULL;
   gboolean visible;
@@ -802,7 +875,7 @@ gnome_forest_put_sprite (GnomeForest *forest,
 
 void
 gnome_forest_show_sprite (GnomeForest *forest,
-			  guint      id)
+			  guint        id)
 {
   GnomeSprite *sprite;
   
@@ -838,9 +911,9 @@ gnome_forest_hide_sprite (GnomeForest *forest,
 
 void
 gnome_forest_set_sprite_pos (GnomeForest *forest,
-			     guint      id,
-			     gint       x,
-			     gint       y)
+			     guint        id,
+			     gint         x,
+			     gint         y)
 {
   GnomeSprite *sprite;
   
@@ -859,9 +932,9 @@ gnome_forest_set_sprite_pos (GnomeForest *forest,
 
 void
 gnome_forest_move_sprite (GnomeForest *forest,
-			  guint      id,
-			  gint       hdelta,
-			  gint       vdelta)
+			  guint        id,
+			  gint         hdelta,
+			  gint         vdelta)
 {
   GnomeSprite *sprite;
   
@@ -880,9 +953,9 @@ gnome_forest_move_sprite (GnomeForest *forest,
 
 void
 gnome_forest_set_sprite_size (GnomeForest *forest,
-			      guint      id,
-			      guint      width,
-			      guint      height)
+			      guint        id,
+			      guint        width,
+			      guint        height)
 {
   GnomeSprite *sprite;
   
@@ -901,8 +974,8 @@ gnome_forest_set_sprite_size (GnomeForest *forest,
 
 void
 gnome_forest_set_sprite_rot (GnomeForest *forest,
-			     guint      id,
-			     gfloat     angle)
+			     guint        id,
+			     gfloat       angle)
 {
   GnomeSprite *sprite;
   
@@ -920,8 +993,8 @@ gnome_forest_set_sprite_rot (GnomeForest *forest,
 
 void
 gnome_forest_set_sprite_shear (GnomeForest *forest,
-			       guint      id,
-			       gfloat     angle)
+			       guint        id,
+			       gfloat       angle)
 {
   GnomeSprite *sprite;
   
@@ -939,8 +1012,8 @@ gnome_forest_set_sprite_shear (GnomeForest *forest,
 
 void
 gnome_forest_set_sprite_hflip (GnomeForest *forest,
-			       guint      id,
-			       gboolean   hflip)
+			       guint        id,
+			       gboolean     hflip)
 {
   GnomeSprite *sprite;
   
@@ -958,8 +1031,8 @@ gnome_forest_set_sprite_hflip (GnomeForest *forest,
 
 void
 gnome_forest_set_sprite_vflip (GnomeForest *forest,
-			       guint      id,
-			       gboolean   vflip)
+			       guint        id,
+			       gboolean     vflip)
 {
   GnomeSprite *sprite;
   
@@ -1131,7 +1204,7 @@ sprite_ensure_svp (GnomeForest *forest,
 
 static void
 gnome_forest_render (GnomeForest *forest,
-		     GdkColor  *bg_color)
+		     GdkColor    *bg_color)
 {
   GtkWidget *widget = GTK_WIDGET (forest);
   GtkAllocation *allocation = &widget->allocation;
@@ -1199,6 +1272,16 @@ gnome_forest_render (GnomeForest *forest,
 				       sprite->affine,
 				       ART_FILTER_NEAREST,
 				       NULL);
+	      if (forest->shade_svps && sprite->visible)
+		{
+		  sprite_ensure_svp (forest, sprite);
+		  art_rgb_svp_alpha (sprite->svp,
+				     irect->x0, irect->y0, irect->x1, irect->y1,
+				     0xffffff80,
+				     forest->buffer + irect->y0 * rowstride + irect->x0 * 3,
+				     rowstride,
+				     NULL);
+		}
 	    }
 	}
       if (n_rects)
@@ -1208,7 +1291,7 @@ gnome_forest_render (GnomeForest *forest,
 
 static void
 gnome_forest_paint (GnomeForest *forest,
-		    GdkColor  *bg_color)
+		    GdkColor    *bg_color)
 {
   GtkWidget *widget = GTK_WIDGET (forest);
   GtkAllocation *allocation = &widget->allocation;
@@ -1252,6 +1335,25 @@ gnome_forest_paint (GnomeForest *forest,
 			  GDK_RGB_DITHER_NONE,
 			  forest->buffer + irect->y0 * rowstride + irect->x0 * 3,
 			  rowstride);
+      if (forest->show_utas)
+	{
+	  gdk_draw_line (widget->window, widget->style->white_gc,
+			 irect->x0, irect->y0, irect->x1 - 1, irect->y0);
+	  gdk_draw_line (widget->window, widget->style->white_gc,
+			 irect->x1 - 1, irect->y0, irect->x1 - 1, irect->y1 - 1);
+	  gdk_draw_line (widget->window, widget->style->white_gc,
+			 irect->x1 - 1, irect->y1 - 1, irect->x0, irect->y1 - 1);
+	  gdk_draw_line (widget->window, widget->style->white_gc,
+			 irect->x0, irect->y1 - 1, irect->x0, irect->y0);
+	  gdk_draw_line (widget->window,
+			 widget->style->black_gc,
+			 irect->x0, irect->y0,
+			 irect->x1 - 1, irect->y1 - 1);
+	  gdk_draw_line (widget->window,
+			 widget->style->black_gc,
+			 irect->x1, irect->y0,
+			 irect->x0 - 1, irect->y1 - 1);
+	}
     }
   
   if (n_rects)
@@ -1319,7 +1421,7 @@ gnome_forest_queue_update (GnomeForest *forest)
 }
 
 static void
-gnome_forest_queue_vpath (GnomeForest      *forest,
+gnome_forest_queue_vpath (GnomeForest    *forest,
 			  const ArtVpath *vpath)
 {
   if (vpath && vpath[0].code == ART_MOVETO)
@@ -1392,6 +1494,8 @@ gnome_forest_collisions (GnomeForest *forest)
       
       if (!sprite->can_collide || !sprite->visible)
 	continue;
+      if (forest->disable_cd)
+	continue;
       
       sprite_ensure_svp (forest, sprite);
       for (u = v + 1; u < forest->n_sprites; u++)
@@ -1409,16 +1513,19 @@ gnome_forest_collisions (GnomeForest *forest)
 	  svp = art_svp_intersect (sprite->svp, collidor->svp);
 	  vpath = art_vpath_from_svp (svp);
 	  art_svp_free (svp);
-	  
-	  for (i = 0; vpath[i].code != ART_END; i++)
-	    gdk_draw_arc (GTK_WIDGET (forest)->window,
-			  GTK_WIDGET (forest)->style->white_gc,
-			  FALSE,
-			  vpath[i].x, vpath[i].y,
-			  10, 10,
-			  0, 360);
-	  printf ("%d<->%d: %d points, area %f\n",
-		  sprite->id, collidor->id, i, art_vpath_area (vpath));
+
+	  if (forest->debug_cd)
+	    {
+	      for (i = 0; vpath[i].code != ART_END; i++)
+		gdk_draw_arc (GTK_WIDGET (forest)->window,
+			      GTK_WIDGET (forest)->style->white_gc,
+			      FALSE,
+			      vpath[i].x, vpath[i].y,
+			      10, 10,
+			      0, 360);
+	      g_print ("%d<->%d: %d points, area %f\n",
+		       sprite->id, collidor->id, i, art_vpath_area (vpath));
+	    }
 	  
 	  art_free (vpath);
 	}
@@ -1484,8 +1591,8 @@ animctrl_destroy (gpointer data)
 
 static AnimCtrl*
 sprite_animctrl (GnomeForest *forest,
-		 guint      sprite_id,
-		 gboolean   force_actrl)
+		 guint        sprite_id,
+		 gboolean     force_actrl)
 {
   AnimCtrl *actrl = g_datalist_id_get_data (&forest->animdata, sprite_id);
   
@@ -1554,10 +1661,10 @@ new_animdata (AnimCtrl *actrl)
 
 static void
 animdata_step (GnomeForest *forest,
-	       AnimData  *adata,
+	       AnimData    *adata,
 	       GnomeSprite *sprite,
-	       gdouble    a_step_f,
-	       gdouble    r_step_f)
+	       gdouble      a_step_f,
+	       gdouble      r_step_f)
 {
   gdouble dx = 0, dy = 0, dwidth = 0, dheight = 0, drotation = 0, dshear = 0;
   
@@ -1575,8 +1682,10 @@ animdata_step (GnomeForest *forest,
     }
   if (adata->absolute_size)
     {
-      dwidth = adata->width - sprite->width;
-      dheight = adata->height - sprite->height;
+      dwidth = adata->width < 0 ? sprite->pixbuf->width : adata->width;
+      dheight = adata->height < 0 ? sprite->pixbuf->height : adata->height;
+      dwidth -= sprite->width;
+      dheight -= sprite->height;
       dwidth *= a_step_f;
       dheight *= a_step_f;
     }
@@ -1623,7 +1732,7 @@ static gboolean sprite_animator (gpointer data);
 
 static inline void
 queue_animator (GnomeForest *forest,
-		AnimCtrl  *actrl)
+		AnimCtrl    *actrl)
 {
   g_return_if_fail (actrl->handler_id == 0);
   
@@ -1697,9 +1806,9 @@ sprite_animator (gpointer data)
 
 guint
 gnome_forest_animate_sprite (GnomeForest        *forest,
-			     guint             sprite_id,
-			     guint             step_delay,
-			     guint             n_steps,
+			     guint               sprite_id,
+			     guint               step_delay,
+			     guint               n_steps,
 			     GnomeSpriteAnimType a_type,
 			     ...)
 {
@@ -1772,7 +1881,7 @@ gnome_forest_animate_sprite (GnomeForest        *forest,
 
 void
 gnome_forest_restart_sprite_animations (GnomeForest *forest,
-					guint      sprite_id)
+					guint        sprite_id)
 {
   AnimCtrl *actrl;
   
@@ -1791,8 +1900,21 @@ gnome_forest_restart_sprite_animations (GnomeForest *forest,
 }
 
 void
+gnome_forest_continue_sprite_animations (GnomeForest *forest,
+					 guint        sprite_id)
+{
+  AnimCtrl *actrl;
+  
+  g_return_if_fail (GNOME_IS_FOREST (forest));
+  
+  actrl = sprite_animctrl (forest, sprite_id, FALSE);
+  if (actrl && !actrl->handler_id)
+    queue_animator (forest, actrl);
+}
+
+void
 gnome_forest_stop_sprite_animations (GnomeForest *forest,
-				     guint      sprite_id)
+				     guint        sprite_id)
 {
   AnimCtrl *actrl;
   
@@ -1804,5 +1926,23 @@ gnome_forest_stop_sprite_animations (GnomeForest *forest,
       if (actrl->handler_id)
 	g_source_remove (actrl->handler_id);
       actrl->handler_id = 0;
+    }
+}
+
+void
+gnome_forest_kill_sprite_animations (GnomeForest *forest,
+				     guint        sprite_id)
+{
+  AnimCtrl *actrl;
+  
+  g_return_if_fail (GNOME_IS_FOREST (forest));
+  
+  actrl = sprite_animctrl (forest, sprite_id, FALSE);
+  if (actrl)
+    {
+      if (actrl->handler_id)
+	g_source_remove (actrl->handler_id);
+      actrl->handler_id = 0;
+      g_datalist_id_set_data (&forest->animdata, sprite_id, NULL);
     }
 }

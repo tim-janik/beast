@@ -1558,3 +1558,10 @@ bse_object_do_restore_private (BseObject  *object,
 
   return G_TOKEN_NONE;
 }
+
+void
+bse_nullify_pointer (gpointer *pointer_loc)
+{
+  if (pointer_loc)
+    *pointer_loc = NULL;
+}

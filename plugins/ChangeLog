@@ -1,3 +1,7 @@
+Sat Oct 30 07:54:26 1999  Tim Janik  <timj@gtk.org>
+
+	* testos.c: correctly prefix all obejct type names with "Bse".
+
 Fri Oct 15 00:25:44 1999  Tim Janik  <timj@gtk.org>
 
 	* icons/Makefile.am: 

@@ -392,6 +392,34 @@ bst_parse_args (int    *argc_p,
     *argc_p = e;
 }
 
+BseIcon*
+bst_icon_from_stock (BstIconId _id)
+{
+#include "./icons/noicon.c"
+#include "./icons/mouse_tool.c"
+  static const BsePixdata pixdatas[] = {
+    /* BST_ICON_NOICON */
+    { NOICON_PIXDATA_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      NOICON_PIXDATA_WIDTH, NOICON_PIXDATA_HEIGHT,
+      NOICON_PIXDATA_RLE_PIXEL_DATA, },
+    /* BST_ICON_MOUSE_TOOL */
+    { MOUSE_TOOL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      MOUSE_TOOL_IMAGE_WIDTH, MOUSE_TOOL_IMAGE_HEIGHT,
+      MOUSE_TOOL_IMAGE_RLE_PIXEL_DATA, },
+  };
+  static const guint n_stock_icons = sizeof (pixdatas) / sizeof (pixdatas[0]);
+  static BseIcon *icons[sizeof (pixdatas) / sizeof (pixdatas[0])] = { NULL, };
+  guint icon_id = _id;
+
+  g_assert (n_stock_icons == BST_ICON_LAST);
+  g_return_val_if_fail (icon_id < n_stock_icons, NULL);
+
+  if (!icons[icon_id])
+    icons[icon_id] = bse_icon_from_pixdata (pixdatas + icon_id);
+
+  return icons[icon_id];
+}
+
 /* read bstdefs.h on this */
 void
 bst_update_can_operate (GtkWidget *widget)

@@ -77,6 +77,17 @@ typedef enum
 #define	BST_TAG_DIAMETER	(20)
 
 
+
+/* --- pixmap stock --- */
+typedef enum
+{
+  BST_ICON_NOICON,
+  BST_ICON_MOUSE_TOOL,
+  BST_ICON_LAST
+} BstIconId;
+BseIcon* bst_icon_from_stock (BstIconId icon_id);
+
+
 /* --- debug stuff --- */
 typedef enum                    /* <skip> */
 { /* keep in sync with bstmain.c */

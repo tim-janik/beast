@@ -41,9 +41,11 @@ typedef	struct	_BstSNetRouter		BstSNetRouter;
 typedef	struct	_BstSNetRouterClass	BstSNetRouterClass;
 struct _BstSNetRouter
 {
-  GtkVBox	 parent_object;
+  GtkVBox	    parent_object;
 
-  BseSNet	*snet;
+  BseSNet	   *snet;
+
+  guint		    radio_action; /* radio_active ;) */
 
   GnomeCanvas	   *canvas;
   GnomeCanvasGroup *root;
