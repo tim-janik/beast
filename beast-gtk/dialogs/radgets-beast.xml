@@ -98,6 +98,10 @@
 	  <tool-separator pack:padding="2" />
 	  <tool-button-factory actions="router-toolbar-actions" relief="none" />
 	  <tool-separator pack:padding="2" />
+	  <tool-area name="zoom-area" _tooltip="Adjust the zoom factor of the router display" >
+	    <label area="label-area" _label="Zoom" />
+	  </tool-area>
+	  <tool-separator pack:padding="2" />
           <tool-text-toggle-factory actions="router-channel-toggle" relief="none" y-align="1" />
 	</hbox>
       </frame-shadow-out>

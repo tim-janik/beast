@@ -1,3 +1,7 @@
+Mon Nov 17 18:05:54 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: re-added zoom spinner.
+
 Mon Nov 17 17:24:13 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackrollctrl.c:

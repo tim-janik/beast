@@ -245,17 +245,6 @@ bst_snet_router_init (BstSNetRouter      *self,
                                          _("Channel Hints"), NULL, _("Toggle channel name hints"),
                                          ROUTER_TOOL_CHANNEL_HINTS, NULL,
                                          NULL, snet_router_action_exec);
-
-#if 0
-  /* add Zoom spinner */
-  button = gtk_spin_button_new (self->adjustment, 0.0, 2);
-  gtk_widget_set_usize (button, 50, 0);
-  gtk_widget_show (button);
-  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
-		      "Zoom", "Adjust the zoom factor of the router display",
-		      button);
-#endif
-
   /* set default tool */
   gxk_action_group_select (self->canvas_tool, ROUTER_TOOL_EDIT);
 }
@@ -1160,6 +1149,15 @@ bst_snet_router_build_page (SfiProxy snet)
 		  "visible", TRUE,
 		  "parent", BST_ZOOMED_WINDOW (zoomed_window)->toggle_button,
 		  NULL);
+
+  /* add Zoom spinner */
+  gxk_gadget_add (gadget, "zoom-area",
+                  g_object_new (GTK_TYPE_SPIN_BUTTON,
+                                "visible", TRUE,
+                                "adjustment", self->adjustment,
+                                "digits", 2,
+                                "width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+                                NULL));
 
   return self;
 }
