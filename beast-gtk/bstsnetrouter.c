@@ -102,7 +102,6 @@ bst_snet_router_init (BstSNetRouter      *router,
 {
   GnomeCanvas *canvas = GNOME_CANVAS (router);
   
-  canvas->aa = BST_SNET_ANTI_ALIASED;
   router->toolbar = NULL;
   router->palette = NULL;
   router->adjustment = NULL;
@@ -225,7 +224,9 @@ bst_snet_router_new (BswProxy snet)
   
   g_return_val_if_fail (BSE_IS_SNET (bse_object_from_id (snet)), NULL);
   
-  router = gtk_widget_new (BST_TYPE_SNET_ROUTER, NULL);
+  router = gtk_widget_new (BST_TYPE_SNET_ROUTER,
+			   "aa", BST_SNET_ANTI_ALIASED,
+			   NULL);
   bst_snet_router_set_snet (BST_SNET_ROUTER (router), snet);
   
   return router;

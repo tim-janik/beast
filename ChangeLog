@@ -1,3 +1,8 @@
+Wed Dec 12 21:57:04 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_new): use gnome canvas
+	"aa" property for setting aa-nes.
+
 Mon Nov 26 10:16:54 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/*.c: various pointer/GType casting cleanups.
