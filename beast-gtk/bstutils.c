@@ -22,6 +22,8 @@
 #include "bsttrackview.h"
 #include "bstwaveview.h"
 #include "bstpartview.h"
+#include "bstbusmixer.h"
+#include "bstbuseditor.h"
 #include "bstbusview.h"
 #include "bstpianoroll.h"
 #include "bstpatternview.h"
@@ -114,6 +116,8 @@ _bst_init_radgets (void)
   gxk_radget_define_widget_type (BST_TYPE_VGROW_BAR);
   gxk_radget_define_widget_type (BST_TYPE_WAVE_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_PART_VIEW);
+  gxk_radget_define_widget_type (BST_TYPE_BUS_EDITOR);
+  gxk_radget_define_widget_type (BST_TYPE_BUS_MIXER);
   gxk_radget_define_widget_type (BST_TYPE_BUS_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_PIANO_ROLL);
   gxk_radget_define_widget_type (BST_TYPE_EVENT_ROLL);

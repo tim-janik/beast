@@ -33,6 +33,7 @@ progs_LDADD = $(strip 			\
 #
 # BEAST header files that don't get installed
 beast_headers = $(strip \
+	bstdbmeter.h		bstbusmixer.h	bstbuseditor.h		\
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	    \
 	bstpatterncolumns.h	bstxkb.h	bstpatternview.h	bstpatternctrl.h    \
 	bstkeybindings.h	bstprofiler.h	bstgrowbar.h		bstbusview.h        \
@@ -52,6 +53,7 @@ beast_headers = $(strip \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
+	bstdbmeter.c		bstbusmixer.c	bstbuseditor.c		\
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	    \
 	bstpatterncolumns.c	bstxkb.c	bstpatternview.c	bstpatternctrl.c    \
 	bstkeybindings.c	bstprofiler.c	bstgrowbar.c		bstbusview.c        \
@@ -169,11 +171,13 @@ EXTRA_PROGRAMS = beast-\$(BST_VERSION)		# make automake-1.4 eat beast____BST_VER
 beast____BST_VERSION__SOURCES = bstmain.c $(beast_sources)
 beast____BST_VERSION__LDADD = $(progs_LDADD)
 beast_objects = $(beast____BST_VERSION__OBJECTS)
-noinst_PROGRAMS = tsmview # bststest
+noinst_PROGRAMS = tsmview testgui # bststest
 # bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
 # bststest_LDADD = $(progs_LDADD)
 tsmview_SOURCES = tsmview.c cxxdummy.cc
 tsmview_LDADD = $(progs_LDADD)
+testgui_SOURCES = testgui.c $(beast_sources)
+testgui_LDADD = $(progs_LDADD)
 
 
 #

@@ -19,6 +19,7 @@
 #include "bstparamview.h"
 #include "bsttrackview.h"
 #include "bstpartview.h"
+#include "bstbusmixer.h"
 #include "bstbusview.h"
 #include "bstwaveview.h"
 #include "bstrackview.h"
@@ -211,6 +212,11 @@ super_shell_build_song (BstSuperShell *self,
                             bst_track_view_new (song),
 			    g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
                                           "label", _("Tracks"),
+                                          NULL));
+  gtk_notebook_append_page (notebook,
+                            bst_bus_mixer_new (song),
+                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                          "label", _("Mixer"),
                                           NULL));
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (song),

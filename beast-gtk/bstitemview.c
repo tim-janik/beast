@@ -371,8 +371,8 @@ bst_item_view_get_current (BstItemView *self)
 
   g_return_val_if_fail (BST_IS_ITEM_VIEW (self), 0);
 
-  if (self->tree && gtk_tree_selection_get_selected (gtk_tree_view_get_selection (self->tree),
-						     &smodel, &siter))
+  if (self->tree &&
+      gtk_tree_selection_get_selected (gtk_tree_view_get_selection (self->tree), &smodel, &siter))
     {
       GtkTreeIter witer;
       if (GTK_IS_TREE_MODEL_SORT (smodel))

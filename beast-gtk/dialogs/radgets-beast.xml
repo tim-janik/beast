@@ -156,7 +156,7 @@
   <xdef:profiler inherit="vbox">
     <alignment border-width="5" expand="1" >
       <vbox>
-	<scrolled-window name="tree-area" shadow-type="shadow-in" pack:expand="1"
+	<scrolled-window name="tree-area" pack:expand="1"
 	  hscrollbar-policy="never" vscrollbar-policy="never" >
 	  <tree-view name="tree-view" />
 	</scrolled-window>
@@ -167,7 +167,7 @@
   <!-- wave view -->
   <xdef:wave-view inherit="BstWaveView" border-width="3" >
     <hbox spacing="3" >
-      <scrolled-window name="tree-area" shadow-type="shadow-in" pack:expand="1" >
+      <scrolled-window name="tree-area" pack:expand="1" >
 	<tree-view name="tree-view" height="120" width="200" />
       </scrolled-window>
       <alignment yscale="0" yalign="0" >
@@ -182,7 +182,7 @@
   <xdef:part-view inherit="BstPartView" border-width="3" >
     <vpaned>
       <hbox spacing="3" >
-	<scrolled-window name="tree-area" shadow-type="shadow-in" pack:expand="1" >
+	<scrolled-window name="tree-area" pack:expand="1" >
 	  <tree-view name="tree-view" height="120" width="200" />
 	</scrolled-window>
 	<alignment yscale="0" yalign="0" >
@@ -194,12 +194,63 @@
       <alignment name="property-area" />
     </vpaned>
   </xdef:part-view>
+  
+  <!-- bus editor -->
+  <xdef:bus-editor inherit="BstBusEditor" border-width="3" >
+    <event-box>
+      <frame shadow-type="shadow-out" >
+	<vbox>
+	  <label _label="BUS"/>
+	  <entry text="Name" width="10" />
+	  <hbox>
+	    <label label="(O)"/>
+	    <hbox expand="1">
+	      <button label="M"/>
+	      <button label="S"/>
+	    </hbox>
+	    <label label="(#)"/>
+	  </hbox>
+	  <button label="Reset"/>
+	  <label label="[ EFX ]"/>
+	  <label label="[ EFX ]"/>
+	  <label label="[ EFX ]"/>
+	  <button label="Bypass"/>
+	  <hbox expand="1" >
+	    <vscale expand="1" />
+	  </hbox>
+	  <entry text="Volume" width="10" />
+	  <label label="Sender"/>
+	</vbox>
+      </frame>
+    </event-box>
+  </xdef:bus-editor>
+
+  <!-- bus mixer -->
+  <xdef:bus-mixer inherit="BstBusMixer" border-width="3" default-area="bus-area" >
+    <hbox spacing="3" >
+      <alignment yscale="0" yalign="0" >
+	<vbox homogeneous="1" spacing="3" >
+	  <big-button-factory actions="bus-mixer-actions" />
+	</vbox>
+      </alignment>
+      <scrolled-window pack:expand="1" >
+	<viewport name="mixer-area" >
+	  <widget-patcher bg-as-base="1" />
+	  <alignment xalign="0" xscale="0" > <!-- open non-expanding container -->
+	    <hbox name="bus-area" expand="0" spacing="0" >
+	      <!-- FIXME: children packed here via gxk_radget_add() are still expanded -->
+	    </hbox>
+	  </alignment>
+	</viewport>
+      </scrolled-window>
+    </hbox>
+  </xdef:bus-mixer>
 
   <!-- bus view -->
   <xdef:bus-view inherit="BstBusView" border-width="3" >
     <vpaned>
       <hbox spacing="3" >
-	<scrolled-window name="tree-area" shadow-type="shadow-in" pack:expand="1" >
+	<scrolled-window name="tree-area" pack:expand="1" >
 	  <tree-view name="tree-view" height="120" width="200" />
 	</scrolled-window>
 	<alignment yscale="0" yalign="0" >
@@ -363,7 +414,7 @@
   <!-- pattern editor keybinding dialog -->
   <xdef:key-bindings-box inherit="vbox" >
     <vbox spacing="3" expand="1" >
-      <scrolled-window shadow-type="shadow-in" pack:expand="1"
+      <scrolled-window pack:expand="1"
 	hscrollbar-policy="automatic" >
 	<tree-view name="binding-tree-view" />
       </scrolled-window>
@@ -372,7 +423,7 @@
 	  <big-button-factory actions="key-bindings-actions" can-focus="1" />
 	</hbox>
       </alignment>
-      <scrolled-window shadow-type="shadow-in" pack:expand="1"
+      <scrolled-window pack:expand="1"
 	hscrollbar-policy="automatic" >
 	<tree-view name="function-tree-view" />
       </scrolled-window>

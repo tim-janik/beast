@@ -1,3 +1,25 @@
+Mon Aug 16 11:11:19 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbusmixer.[hc]: new container to display mixer GUI
+	for songs.
+
+	* beast-gtk/bstbuseditor.[hc]: new widget prototype for busses of
+	the song mixer.
+
+	* beast-gtk/dialogs/radgets-beast.xml: got rid of redundant shadow-type
+	specifications for scrolled windows.
+	bus-editor: new widget definition, containing simple GUI mockup.
+	bus-mixer: new container definition for mixer GUI.
+
+	* beast-gtk/bstmain.c: provide application name.
+
+	* beast-gtk/bstsupershell.c: added "Mixer" notebook page to songs.
+
+	* beast-gtk/bstutils.c: register busmixer and buseditor as radget types.
+
+	* beast-gtk/testgui.c: added GUI test program.
+	used to test BstDbMeter in its first incarnation.
+
 Sun Aug 15 13:57:56 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/radgets-standard.xml:
