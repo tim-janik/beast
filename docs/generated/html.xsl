@@ -48,19 +48,19 @@
   <xsl:choose>
     <!-- the banner is large and there is no navigation stuff on the left -->
     <xsl:when test="string(/texinfo/para/document-hasbanner) = 'large' and string(/texinfo/para/document-navigation) = ''">
-      <xsl:attribute name="class">with_banner_nonav</xsl:attribute>
+      <xsl:attribute name="class">with-banner-nonav</xsl:attribute>
     </xsl:when>
     <!-- the banner is large and there is also navigation stuff -->
     <xsl:when test="string(/texinfo/para/document-hasbanner) = 'large' and string(/texinfo/para/document-navigation) != ''">
-      <xsl:attribute name="class">with_banner_nav</xsl:attribute>
+      <xsl:attribute name="class">with-banner-nav</xsl:attribute>
     </xsl:when>
     <!-- the banner is small and there is navigation on the left -->
     <xsl:when test="string(/texinfo/para/document-hasbanner) != 'large' and string(/texinfo/para/document-navigation) != ''">
-      <xsl:attribute name="class">with_nobanner_nav</xsl:attribute>
+      <xsl:attribute name="class">with-nobanner-nav</xsl:attribute>
     </xsl:when>
     <!-- Otherwise: banner is small and no navigation. largest content size -->
     <xsl:otherwise>
-      <xsl:attribute name="class">with_nobanner_nonav</xsl:attribute>
+      <xsl:attribute name="class">with-nobanner-nonav</xsl:attribute>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
@@ -91,12 +91,12 @@
 <xsl:template name="title_page">
   <!-- We put a document title only if it does not have large banner -->
   <xsl:if test="string(/texinfo/para/document-hasbanner) != 'large' and count(/texinfo/para/document-title) > 0">
-    <h1 class="document_title">
+    <h1 class="document-title">
       <xsl:call-template name="document-title"/>
     </h1>
   </xsl:if>
   <xsl:if test="count(/texinfo/para/document-author) > 0">
-    <div class="document_author">
+    <div class="document-author">
       <xsl:for-each select="/texinfo/para/document-author">
 	<xsl:apply-templates/>
 	<xsl:if test="position()!=last()"><br/></xsl:if>
@@ -333,7 +333,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_chapter">
+      <span class="toc-chapter">
 	<xsl:call-template name="title_chapter_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -354,7 +354,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_section">
+      <span class="toc-section">
 	<xsl:call-template name="title_section_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -371,7 +371,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_subsection">
+      <span class="toc-subsection">
 	<xsl:call-template name="title_subsection_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -388,7 +388,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_subsubsection">
+      <span class="toc-subsubsection">
 	<xsl:call-template name="title_subsubsection_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -407,7 +407,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_chapter">
+      <span class="toc-chapter">
 	<xsl:call-template name="title_appendix_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -428,7 +428,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_section">
+      <span class="toc-section">
 	<xsl:call-template name="title_appendixsec_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -445,7 +445,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_subsection">
+      <span class="toc-subsection">
 	<xsl:call-template name="title_appendixsubsec_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -462,7 +462,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_subsubsection">
+      <span class="toc-subsubsection">
 	<xsl:call-template name="title_appendixsubsubsec_number"/> - <xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -481,7 +481,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_chapter">
+      <span class="toc-chapter">
 	<xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -502,7 +502,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_section">
+      <span class="toc-section">
 	<xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -519,7 +519,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_subsection">
+      <span class="toc-subsection">
 	<xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -536,7 +536,7 @@
   <xsl:param name="toc" select="0"/>
   <xsl:choose>
     <xsl:when test="$toc">
-      <span class="toc_subsubsection">
+      <span class="toc-subsubsection">
 	<xsl:apply-templates/>
       </span>
     </xsl:when>
@@ -631,7 +631,7 @@
   <em><xsl:apply-templates/></em>
 </xsl:template>
 
-<xsl:template match="code|url|email|key|env|file|command|option|menupath|pagepath|object|channel|logentry">
+<xsl:template match="code|url|email|key|env|file|command|option|menupath|pagepath|object|channel|changelog-entry|changelog-item">
   <code>
     <xsl:attribute name="class">
       <xsl:value-of select="local-name()"/>

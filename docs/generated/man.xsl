@@ -511,7 +511,11 @@
 <xsl:template match="center">.ce
 <xsl:apply-templates/></xsl:template>
 
-<xsl:template match="acronym|cite|dfn|kbd|samp|var|url|email|key|env|file|command|option|code|logentry">\f5<xsl:apply-templates/>\f1</xsl:template>
+<xsl:template match="acronym|cite|dfn|kbd|samp|var|url|email|key|env|file|command|option|code|changelog-entry|changelog-item">
+  <xsl:text>\f5</xsl:text>
+  <xsl:apply-templates/>
+  <xsl:text>\f1</xsl:text>
+</xsl:template>
 
 <xsl:template match="menupath">\f7<xsl:apply-templates/>\f1</xsl:template>
 

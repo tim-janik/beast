@@ -184,9 +184,14 @@
 @ifxmlelse{,reference-struct-close,nop}
 @end rmacro
 
-@c --- file highlighting in ChangeLogs ---
-@rmacro logentry{TEXT}
-@ifxmlelse{\TEXT\,logentry,file}
+@c --- highlighting in ChangeLogs ---
+@c --- date, time and author lines in titles
+@rmacro clogentry{TEXT}
+@ifxmlelse{\TEXT\,changelog-entry,code}
+@end rmacro
+@c --- this is for filenames that appear just next to the asterisks
+@rmacro clogitem{TEXT}
+@ifxmlelse{\TEXT\,changelog-item,file}
 @end rmacro
 
 @c --- document heading ---

@@ -28,7 +28,7 @@ function ChangeLog2texi ()
 	-e 's/[{}@]/@&/g' \
         -e '/^[ 	]\+\* [^:]\+:/ { ' \
           -e ':NextFile;' \
-          -e 's/^\([^:]*\*[^:]*\) \([-!-&+.-9;-?A-z|~*][-!-&+.-9;-?A-z|~*]*\)/\1 @logentry{\2}/;' \
+          -e 's/^\([^:]*\*[^:]*\) \([-!-&+.-9;-?A-z|~*][-!-&+.-9;-?A-z|~*]*\)/\1 @clogitem{\2}/;' \
           -e 'tNextFile;' \
         -e '}' \
 	-e 's/<\([^@]*@[^>]*\)>/mailto:\1:end-mailto/g' \
@@ -39,8 +39,8 @@ function ChangeLog2texi ()
 	-e 's/\(http:\/\/[^ 	]*[^.;,]\)/@uref{\1}/g' \
 	-e '/^[ 	]\+[^*]/s/^[ 	]\+/  /' \
 	-e '/^[		]\+\* [^:]\+$/s/^[ 	]\+//' \
-	-e '/^[12][-0-9]\{9\}/s/^\(.*\)$/@unnumberedsec @code{\1}/' \
-	-e '/^[A-z]\{3\}/s/^\(.*\)$/@unnumberedsec @code{\1}/' \
+	-e '/^[12][-0-9]\{9\}/s/^\(.*\)$/@unnumberedsec @clogentry{\1}/' \
+	-e '/^[A-z]\{3\}/s/^\(.*\)$/@unnumberedsec @clogentry{\1}/' \
 	-e 's/\(\b'"$SYMBOL_PREFIX"''"$SYMBOL_PATTERN"'\)/@reference_type{\1}/g' \
 	-e 's/\(\b'"$SYMBOL_GLIB"'\)/@reference_type{\1}/g' \
 	-e 's/\(\b'"$FUNC_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_function{\1}/g' \
@@ -69,6 +69,8 @@ function print_template ()
 @c %**end of header
 
 @include teximacros.texi
+
+@docfont{tech}
 
 @unnumbered @@TITLE@@
 

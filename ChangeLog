@@ -1,3 +1,23 @@
+Fri Jan 24 00:42:20 2003  Alper Ersoy <dirt@gtk.org>
+
+	* docs/generated/html.xsl:
+	* docs/generated/navigation.xsl:
+	* docs/generated/css/default.css: substituted underscores (_) in
+	class names with dashes (-), so that they are valid now.
+
+	* docs/teximacros.texi: changed the name of logentry macro to clogentry
+	for more clarification and added a clogitem macro.
+
+	* docs/generated/html.xsl:
+	* docs/generated/man.xsl:
+	* docs/generated/markup.xsl:
+	* docs/generated/css/default.css:
+	* docs/generated/log2texi.sh: added support for clogentry and clogitem
+	macros.
+
+	* docs/generates/log2texi.sh: added a @docfont{tech} command to the
+	template.
+
 Thu Jan 23 09:36:14 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/beast-index.texi: s/BEAST Release Notice/BEAST Release Notes/.

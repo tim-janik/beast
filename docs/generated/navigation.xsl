@@ -10,7 +10,7 @@
   <xsl:if test="string-length(/texinfo/para/document-navigation) > 0">
     <div id="navigation">
       <xsl:if test="string(/texinfo/para/document-hasbanner) != 'large'">
-        <xsl:attribute name="class">with_nobanner</xsl:attribute>
+        <xsl:attribute name="class">with-nobanner</xsl:attribute>
       </xsl:if>
       <xsl:apply-templates select="document(string(/texinfo/para/document-navigation))"/>
     </div>
@@ -21,10 +21,12 @@
   <xsl:call-template name="dash"/>
   <a>
     <xsl:call-template name="navigation-href"/>
-    <xsl:choose>
-      <xsl:when test="count(.//navigation-node[@target=$this_file]) > 0"><xsl:attribute name="class">open_tree</xsl:attribute></xsl:when>
-      <xsl:when test="count(./navigation-node) > 0"><xsl:attribute name="class">closed_tree</xsl:attribute></xsl:when>
-    </xsl:choose>
+    <xsl:attribute name="class">
+      <xsl:choose>
+	<xsl:when test="count(.//navigation-node[@target=$this_file]) > 0">open-tree</xsl:when>
+	<xsl:when test="count(./navigation-node) > 0">closed-tree</xsl:when>
+      </xsl:choose>
+    </xsl:attribute>
     <xsl:call-template name="navigation-image"/>
   </a>
   <xsl:if test="count(.//navigation-node[@target=$this_file]) > 0">

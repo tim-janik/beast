@@ -69,7 +69,7 @@
   padding-right: 1em;
 }
 
-#content.with_banner_nav {
+#content.with-banner-nav {
   position: absolute;
   margin-top: 148px;
   margin-left: 230px;
@@ -78,14 +78,14 @@
   z-index: 4;
 }
 
-#content.with_banner_nonav {
+#content.with-banner-nonav {
   position: absolute;
   margin-left: 1em;
   margin-top: 148px;
   z-index: 4;
 }
 
-#content.with_nobanner_nav {
+#content.with-nobanner-nav {
   position: absolute;
   margin-left: 230px;
   margin-top: 76px;
@@ -96,7 +96,7 @@
   z-index: 4;
 }
 
-#content.with_nobanner_nonav {
+#content.with-nobanner-nonav {
   margin: 1em;
   padding-top: 76px;
   background-image: url(images/horizontal-dots.png);
@@ -128,7 +128,7 @@
   z-index: 5;
 }
 
-#navigation.with_nobanner {
+#navigation.with-nobanner {
   top: 10px;
   padding-top: 56px;
 }
@@ -154,7 +154,7 @@
 /*  background-color: #b0b0de; */
 }
 
-#navigation a.closed_tree {
+#navigation a.closed-tree {
   display: block;
   font-weight: bold;
   background-image: url(images/triangle-right-blue.png);
@@ -162,11 +162,11 @@
   background-repeat: no-repeat;
 }
 
-#navigation a.closed_tree:hover {
+#navigation a.closed-tree:hover {
   background-image: url(images/gradient-with-triangle.png);
 }
 
-#navigation a.open_tree {
+#navigation a.open-tree {
   display: block;
   font-weight: bold;
   background-image: url(images/triangle-down-blue.png);
@@ -174,7 +174,7 @@
   background-repeat: no-repeat;
 }
 
-#navigation a.open_tree:hover {
+#navigation a.open-tree:hover {
   background-image: url(images/gradient-with-triangle.png);
 }
 
@@ -318,14 +318,14 @@ ul, ol {
   padding-top: 0;
 }
 
-h1.document_title {
+h1.document-title {
   font-size: 160%;
   color: #005a9c;
   background-color: inherit;
   text-align: center;
 }
 
-div.document_author {
+div.document-author {
   font-size: 140%;
   margin-bottom: 1em;
   text-align: center;
@@ -341,18 +341,18 @@ thead td {
 div.index {
 }
 
-span.toc_chapter {
+span.toc-chapter {
 }
 
-span.toc_section {
+span.toc-section {
   padding-left: 2em;
 }
 
-span.toc_subsection {
+span.toc-subsection {
   padding-left: 4em;
 }
 
-span.toc_subsubsection {
+span.toc-subsubsection {
   padding-left: 6em;
 }
 
@@ -376,10 +376,16 @@ code.file {
 }
 
 /* A bit more colorful file names in ChangeLogs */
-code.logentry {
+code.changelog-item {
   color: #b08000;
   background-color: inherit;
   font-weight: bold;
+}
+
+/* Date, time and author lines in titles */
+code.changelog-entry {
+  color: #888888;
+  background-color: inherit;
 }
 
 code.command {
@@ -594,7 +600,7 @@ span.news-heading {
 /* }}} */
 
 /* {{{ image gallery */
-div.gallery_info {
+div.gallery-info {
   margin-bottom: 1em;
 }
 
@@ -637,13 +643,13 @@ span.paginate-title {
   background-color: inherit;
 }
 
-span.image_info {
+span.image-info {
   font-size: 80%;
   color: #666666;
   background-color: inherit;
 }
 
-span.image_text {
+span.image-text {
   font-size: 90%;
 }
 
