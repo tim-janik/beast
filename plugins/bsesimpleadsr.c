@@ -1,5 +1,5 @@
-/* BseSimpleADSR - BSE Simpl ADSR Envelope Generator
- * Copyright (C) 2001-2002 Tim Janik
+/* BseSimpleADSR - BSE Simple ADSR Envelope Generator
+ * Copyright (C) 2001-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library Simpleeral Public License as
@@ -297,7 +297,8 @@ simple_adsr_process (GslModule *module,
 	  ramp->level_border = vars->attack_level;
 	  state = (have_gate ? ramp_mix_gate_inc : ramp_mix_inc) (ramp);
 	  /* update last trigger val because we mixed without it */
-	  ramp->last_trigger = trig_in[ramp->wave_out - wave_out - 1];
+          gint n_written = ramp->wave_out - wave_out;
+	  ramp->last_trigger = trig_in[MAX (1, n_written) - 1];
 	  switch (state)
 	    {
 	    case BSE_MIX_RAMP_REACHED_BORDER:	env->phase = DECAY;	break;
@@ -374,24 +375,19 @@ bse_simple_adsr_update_modules (BseSimpleADSR *adsr,
 				GslTrans      *trans)
 {
   BseSimpleADSRVars vars;
-  gfloat ms = bse_time_range_to_ms (adsr->time_range);
+  double ms = bse_time_range_to_ms (adsr->time_range);
   
   ms *= gsl_engine_sample_freq () / 1000.0;
+  vars.attack_level = 1.0;
   if (adsr->attack_time < TIME_EPSILON)
-    {
-      vars.attack_level = adsr->sustain_level;
-      vars.attack_inc = 1.0;
-    }
+    vars.attack_inc = 1.0;
   else
-    {
-      vars.attack_level = 1.0;
-      vars.attack_inc = 1.0 / (ms * adsr->attack_time);
-    }
+    vars.attack_inc = 1.0 / (ms * adsr->attack_time);
   vars.sustain_level = adsr->sustain_level;
   if (adsr->decay_time < TIME_EPSILON)
     vars.decay_dec = 1.0;
   else
-    vars.decay_dec = (1.0 - vars.sustain_level) / (ms * adsr->decay_time);
+    vars.decay_dec = (vars.attack_level - vars.sustain_level) / (ms * adsr->decay_time);
   if (adsr->release_time < TIME_EPSILON)
     vars.release_dec = 1.0;
   else

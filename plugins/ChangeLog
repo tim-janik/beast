@@ -1,3 +1,11 @@
+Fri Jul  2 01:30:05 2004  Tim Janik  <timj@gtk.org>
+
+	* bsesimpleadsr.c (simple_adsr_process): guard last_trigger updates in
+	ATTACK case.
+	bse_simple_adsr_update_modules(): run through the decay phase as usual,
+	even if attack time amounts to 0. calculate decay time attack-level
+	relative.
+
 Thu May 20 14:09:39 2004  Tim Janik  <timj@gtk.org>
 
 	* icons/sub.c: save pixstream instead of pixdata parts.

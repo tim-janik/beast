@@ -1,5 +1,5 @@
-/* BseSimpleADSR - BSE Simpl ADSR Envelope Generator
- * Copyright (C) 2001-2002 Tim Janik
+/* BseSimpleADSR - BSE Simple ADSR Envelope Generator
+ * Copyright (C) 2001-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library Simpleeral Public License as
