@@ -276,6 +276,8 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     dnl --- setup BSE search/install paths ---
     bseplugindir=\${libdir}/bse/v$BSE_VERSION/plugins
     AC_SUBST(bseplugindir)
+    bsedriverdir=\${libdir}/bse/v$BSE_VERSION/drivers
+    AC_SUBST(bsedriverdir)
     bseladspapath=${libdir}/ladspa
     AC_SUBST(bseladspapath)
     bsesampledir=\${datadir}/bse/samples

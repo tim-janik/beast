@@ -17,6 +17,7 @@ FIXMES:	(release-critical)
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
+- beast --debug=all --no-debug=comport doesn't disable comport messages
 - revisit bse_object_lock()
 - rename cast() to convert()
 - close piano roll on Escape

@@ -17,15 +17,15 @@ Most distributions already ship these packages,
 the sources can be found at:
 
 GnomeCanvas (GNOME-2.0):
-	ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
+  ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
 Gtk+-2.2:
-	ftp://ftp.gtk.org/pub/gtk/v2.2/
+  ftp://ftp.gtk.org/pub/gtk/v2.2/
 Guile-1.6:
-	http://www.gnu.org/software/guile/guile.html
+  http://www.gnu.org/software/guile/guile.html
 Ogg/Vorbis (at least version 1.0):
-	http://www.xiph.org/ogg/vorbis/download/
+  http://www.xiph.org/ogg/vorbis/download/
 MAD (BSE was developed against libmad-0.14.2):
-	http://www.mars.org/home/rob/proj/mpeg/
+  http://www.mars.org/home/rob/proj/mpeg/
 
 The official ftp site for BEAST/BSE is:
   ftp://beast.gtk.org/pub/beast

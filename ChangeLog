@@ -1,3 +1,12 @@
+Fri Sep 24 09:12:48 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: provide $bsedriverdir.
+
+	* data/Makefile.am: define BSE_PATH_DRIVERS.
+
+	* data/bse.pc.in: define various pkg-config variables to provide
+	the sfidl executable and various other paths.
+
 Thu Sep 23 18:11:25 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/beast.1.texi:

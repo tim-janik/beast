@@ -1,9 +1,17 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
+datadir=@datadir@
 includedir=@includedir@
 
-# sfidl=@exec_prefix@/sfidl
+sfidl=@exec_prefix@/sfidl
+demodir=@bsedemodir@
+sampledir=@bsesampledir@
+scriptdir=@bsescriptdir@
+plugindir=@bseplugindir@
+driverdir=@bsedriverdir@
+effectdir=@bseeffectdir@
+instrumentdir=@bseinstrumentdir@
 
 Name: BSE
 Description: Bedevilled Sound Engine (Synthesis Core)
