@@ -1,4 +1,6 @@
 FIXME(urgent):
+- disable StandardOsc->selfmod
+- provide config-parameter (by engine) which provides 16kHz limit listening-threshold used implicitely in osc-code etc. (important for 48K,84K)
 - skip and retrigger updates for scope visibility changes
 - add midi control numbers to midi control enum values as tooltips
 - implement display of Note properties next to frequency properties (and nuke note properties from plugins)
@@ -23,6 +25,7 @@ FIXME(urgent):
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
 - close pianoroll window in response to part::release  
 TODO:
+- provide a color/dB reference scale, next to the fft-scope view
 - add "..." to new dialog items in View/
 - show note and timing position of current mouse pointer in piano roll status bar
 - store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
