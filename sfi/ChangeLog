@@ -1,3 +1,16 @@
+Mon Jun 23 20:38:13 2003  Tim Janik  <timj@gtk.org>
+
+	* sficomport.[hc]: added sfi_com_port_reap_child() and fields holding
+	the exit states of the reaped child, implemented child reaping and
+	SIGKILL fallback.
+	fixed write buffer allocation and write buffer queueing.
+	implemented >blocking< in receive routine which was simply missing
+	since never triggered on fast machines. IO_BOTTLE_NECK can be defined
+	to a small value now to trigger the code on fast machines.
+
+	* sficomwire.c (sfi_com_spawn_async): don't auto-reap children, if
+	we need auto-reaping again, we can add a function variant.
+
 Sun Jun  8 19:56:11 2003  Tim Janik  <timj@gtk.org>
 
 	* sfistore.[hc]: error cosmetics.

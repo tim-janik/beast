@@ -35,7 +35,11 @@ struct _SfiComPort {
   guint     ref_count;
   GPollFD   pfd[2];	/* 0 = remote in, 1 = remote out */
   guint	    connected : 1;
-  gint	    remote_pid;
+  guint	    reaped : 1;
+  guint	    sigterm_sent : 1;
+  guint	    sigkill_sent : 1;
+  guint	    exit_signal_sent : 1;
+  guint	    dumped_core : 1;
   SfiComPortLink *link;
   struct {
     guint   n;
@@ -54,6 +58,9 @@ struct _SfiComPort {
   GScanner *scanner;
   SfiComPortClosedFunc close_func;
   gpointer	       close_data;
+  gint	    remote_pid;
+  gint	    exit_code;
+  gint	    exit_signal;
 };
 struct _SfiComPortLink
 {
@@ -106,7 +113,9 @@ void		sfi_com_port_set_close_func	(SfiComPort	*port,
 						 SfiComPortClosedFunc func,
 						 gpointer	 close_data);
 void		sfi_com_port_close_remote	(SfiComPort	*port,
-						 gboolean	 terminate);
+						 gboolean	 terminate_child);
+void		sfi_com_port_reap_child 	(SfiComPort	*port,
+						 gboolean	 kill_child);
 
 
 G_END_DECLS

@@ -1002,7 +1002,9 @@ sfi_com_spawn_async (const gchar *executable,
   *argp = NULL;
   
   if (!g_spawn_async_with_pipes (spawn_current_dir, argv, NULL,
-				 G_SPAWN_FILE_AND_ARGV_ZERO, /* G_SPAWN_CHILD_INHERITS_STDIN */
+                                 G_SPAWN_DO_NOT_REAP_CHILD |
+                                 /* G_SPAWN_CHILD_INHERITS_STDIN | */
+				 G_SPAWN_FILE_AND_ARGV_ZERO,
 				 pre_exec_child_setup, &setup_data,
 				 child_pid,
 				 standard_input,

@@ -27,9 +27,16 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <fcntl.h>
-
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define	DEBUG	sfi_debug_keyfunc ("comport")
+
+/* define the io bottle neck (for writes) to a small value
+ * (e.g. 20) to trigger and test blocking IO on fast systems
+ */
+#define IO_BOTTLE_NECK  (1024 * 1024)
 
 
 /* --- functions --- */
@@ -74,7 +81,22 @@ sfi_com_port_from_child (const gchar *ident,
   port->pfd[1].fd = nonblock_fd (remote_output);
   port->pfd[1].events = G_IO_OUT;
   port->pfd[1].revents = 0;
-  port->remote_pid = remote_pid > 1 ? remote_pid : -1;
+  if (remote_pid > 1)
+    {
+      port->remote_pid = remote_pid;
+      port->reaped = FALSE;
+    }
+  else
+    {
+      port->remote_pid = -1;
+      port->reaped = TRUE;
+    }
+  port->sigterm_sent = FALSE;
+  port->sigkill_sent = FALSE;
+  port->exit_signal_sent = FALSE;
+  port->dumped_core = FALSE;
+  port->exit_code = 0;
+  port->exit_signal = 0;
   port->link = NULL;
   port->connected = ((remote_input < 0 || port->pfd[0].fd >= 0) &&
 		     (remote_output < 0 || port->pfd[1].fd >= 0));
@@ -163,9 +185,33 @@ sfi_com_port_set_close_func (SfiComPort          *port,
     sfi_com_port_close_remote (port, FALSE);
 }
 
+static void
+com_port_try_reap (SfiComPort *port,
+                   gboolean    mayblock)
+{
+  if (port->remote_pid && !port->reaped)
+    {
+      int status = 0;
+      gint ret = waitpid (port->remote_pid, &status, mayblock ? 0 : WNOHANG);
+      if (ret > 0)
+        {
+          port->reaped = TRUE;
+          port->exit_code = WEXITSTATUS (status);
+          port->exit_signal = WIFSIGNALED (status) ? WTERMSIG (status) : 0;
+#ifdef WCOREDUMP
+          port->dumped_core = WCOREDUMP (status) != 0;
+#endif
+          port->exit_signal_sent = (port->exit_signal == SIGTERM && port->sigterm_sent) ||
+                                   (port->exit_signal == SIGKILL && port->sigkill_sent);
+        }
+      else if (ret < 0 && errno == EINTR && mayblock)
+        com_port_try_reap (port, mayblock);
+    }
+}
+
 void
 sfi_com_port_close_remote (SfiComPort *port,
-			   gboolean    terminate)
+			   gboolean    terminate_child)
 {
   g_return_if_fail (port != NULL);
 
@@ -180,10 +226,15 @@ sfi_com_port_close_remote (SfiComPort *port,
       close (port->pfd[1].fd);
       port->pfd[1].fd = -1;
     }
-  if (port->remote_pid > 1 && terminate)
+  com_port_try_reap (port, FALSE);
+  if (terminate_child &&
+      port->remote_pid > 1 &&
+      !port->reaped &&
+      !port->sigterm_sent)
     {
-      kill (port->remote_pid, SIGTERM);
-      port->remote_pid = -1;
+      if (kill (port->remote_pid, SIGTERM) >= 0)
+        port->sigterm_sent = TRUE;
+      com_port_try_reap (port, FALSE);
     }
   if (port->link)
     {
@@ -244,7 +295,7 @@ static void
 com_port_grow_wbuffer (SfiComPort *port,
 		       guint       delta)
 {
-  if (port->wbuffer.n + delta < port->wbuffer.allocated)
+  if (port->wbuffer.n + delta > port->wbuffer.allocated)
     {
       port->wbuffer.allocated = port->wbuffer.n + delta;
       port->wbuffer.data = g_renew (guint8, port->wbuffer.data, port->wbuffer.allocated);
@@ -260,10 +311,10 @@ com_port_write_queued (SfiComPort *port)
     {
       gint n;
       do
-	n = write (fd, port->wbuffer.data, port->wbuffer.n);
+	n = write (fd, port->wbuffer.data, MIN (port->wbuffer.n, IO_BOTTLE_NECK));
       while (n < 0 && errno == EINTR);
       if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN && errno != ERESTART))
-	return FALSE;
+	return FALSE; /* connection broke */
       if (n > 0)
 	{
 	  port->wbuffer.n -= n;
@@ -280,12 +331,12 @@ com_port_write (SfiComPort   *port,
 {
   gint fd = port->pfd[1].fd;
   if (!com_port_write_queued (port))
-    return FALSE;
+    return FALSE; /* connection broke */
   if (fd >= 0 && !port->wbuffer.n)
     {
       gint n;
       do
-	n = write (fd, bytes, n_bytes);
+	n = write (fd, bytes, MIN (n_bytes, IO_BOTTLE_NECK));
       while (n < 0 && errno == EINTR);
       if (n == 0 || (n < 0 && errno != EINTR && errno != EAGAIN && errno != ERESTART))
 	return FALSE;
@@ -297,7 +348,7 @@ com_port_write (SfiComPort   *port,
     {
       /* append to queued data */
       com_port_grow_wbuffer (port, n_bytes);
-      memcpy (port->wbuffer.data, bytes, n_bytes);
+      memcpy (port->wbuffer.data + port->wbuffer.n, bytes, n_bytes);
       port->wbuffer.n += n_bytes;
     }
   return TRUE;  /* connection remains valid */
@@ -510,12 +561,44 @@ sfi_com_port_recv_intern (SfiComPort *port,
     }
   else
     {
+    loop_blocking:
+      if (blocking &&   /* flush output buffer if data is pending */
+          !com_port_write_queued (port))
+        sfi_com_port_close_remote (port, FALSE);
+      
       if (!port->rvalues)
-	{
+        {
 	  if (!com_port_read_pending (port))
-	    sfi_com_port_close_remote (port, FALSE);
-	  sfi_com_port_deserialize (port);
-	}
+            sfi_com_port_close_remote (port, FALSE);
+          sfi_com_port_deserialize (port);
+        }
+      
+      if (blocking && !port->rvalues && port->pfd[0].fd >= 0)
+        {
+          struct timeval tv = { 60, 0, };
+          fd_set in_fds, out_fds, exp_fds;
+          gint xfd;
+          
+          FD_ZERO (&in_fds);
+          FD_ZERO (&out_fds);
+          FD_ZERO (&exp_fds);
+          FD_SET (port->pfd[0].fd, &in_fds);      /* select for read() */
+          FD_SET (port->pfd[0].fd, &exp_fds);
+          xfd = port->pfd[0].fd;
+          if (port->wbuffer.n &&                  /* if data is pending... */
+              port->pfd[1].fd >= 0)
+            {
+              FD_SET (port->pfd[1].fd, &out_fds); /* select for write() */
+              FD_SET (port->pfd[1].fd, &exp_fds);
+              xfd = MAX (xfd, port->pfd[1].fd);
+            }
+          /* do the actual blocking */
+          select (xfd + 1, &in_fds, &out_fds, &exp_fds, &tv);
+          /* block only once so higher layers may handle signals */
+          blocking = FALSE;
+          goto loop_blocking;
+        }
+      
       value = port->connected ? sfi_ring_pop_head (&port->rvalues) : NULL;
     }
   DEBUG ("[%s: DONE receiving: ((GValue*)%p) ]", port->ident, value);
@@ -607,4 +690,22 @@ sfi_com_port_process_io (SfiComPort *port)
     sfi_com_port_close_remote (port, FALSE);
   if (port->connected)
     sfi_com_port_deserialize (port);
+}
+
+void
+sfi_com_port_reap_child (SfiComPort *port,
+                         gboolean    kill_child)
+{
+  g_return_if_fail (port != NULL);
+
+  com_port_try_reap (port, !kill_child);
+  if (kill_child &&
+      port->remote_pid > 1 &&
+      !port->reaped &&
+      !port->sigkill_sent)
+    {
+      if (kill (port->remote_pid, SIGKILL) >= 0)
+        port->sigkill_sent = TRUE;
+    }
+  com_port_try_reap (port, TRUE);
 }
