@@ -1,3 +1,7 @@
+Fri Aug 20 18:35:57 2004  Tim Janik  <timj@gtk.org>
+
+	* sfigluecodec.c (decoder_proxy_get_pspec): don't try to free NULL pspecs.
+
 Sun Aug 15 11:53:05 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiglueproxy.c (sfi_glue_proxy_disconnect): acdept any_signal as

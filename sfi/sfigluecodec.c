@@ -628,7 +628,8 @@ decoder_proxy_get_pspec (SfiGlueDecoder *decoder,
 						sfi_seq_get_string (seq, 2));
   GValue *rvalue = NULL;
   rvalue = sfi_value_pspec (pspec);
-  sfi_glue_gc_free_now (pspec, g_param_spec_unref);
+  if (pspec)
+    sfi_glue_gc_free_now (pspec, g_param_spec_unref);
   return rvalue;
 }
 
