@@ -24,6 +24,7 @@
 #undef          G_DISABLE_CHECKS
 #include        <bse/glib-gtype.h>	/* FIXME: <glib.h> */
 #include        <bse/glib-genums.h>	/* FIXME: <glib.h> */
+#include        <bse/glib-gobject.h>	/* FIXME: <glib.h> */
 #include        <math.h>
 
 

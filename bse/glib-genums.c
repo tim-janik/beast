@@ -33,37 +33,35 @@ void
 g_enums_init (void)
 {
   static gboolean initialized = FALSE;
-  
-  if (!initialized)
-    {
-      static const GTypeFundamentalInfo finfo = {
-	G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_DERIVABLE,
-	0	/* n_collect_bytes */,
-	NULL	/* GTypeParamCollector */,
-      };
-      static GTypeInfo info = {
-	0	/* class_size */,
-	NULL	/* base_init */,
-	NULL	/* base_destroy */,
-	NULL	/* class_init */,
-	NULL	/* class_destroy */,
-	NULL	/* class_data */,
-      };
+  static const GTypeFundamentalInfo finfo = {
+    G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_DERIVABLE,
+    0	/* n_collect_bytes */,
+    NULL	/* GTypeParamCollector */,
+  };
+  static GTypeInfo info = {
+    0	/* class_size */,
+    NULL	/* base_init */,
+    NULL	/* base_destroy */,
+    NULL	/* class_init */,
+    NULL	/* class_destroy */,
+    NULL	/* class_data */,
+  };
+  GType type;
 
-      initialized = TRUE;
-      
-      /* G_TYPE_ENUM
-       */
-      info.class_size = sizeof (GEnumClass);
-      g_type_register_fundamental (G_TYPE_ENUM, "GEnum", &finfo, &info);
-      g_assert (G_TYPE_ENUM == g_type_from_name ("GEnum"));
-      
-      /* G_TYPE_FLAGS
-       */
-      info.class_size = sizeof (GFlagsClass);
-      g_type_register_fundamental (G_TYPE_FLAGS, "GFlags", &finfo, &info);
-      g_assert (G_TYPE_FLAGS == g_type_from_name ("GFlags"));
-    }
+  g_return_if_fail (initialized == FALSE);
+  initialized = TRUE;
+  
+  /* G_TYPE_ENUM
+   */
+  info.class_size = sizeof (GEnumClass);
+  type = g_type_register_fundamental (G_TYPE_ENUM, "GEnum", &finfo, &info);
+  g_assert (type == G_TYPE_ENUM);
+  
+  /* G_TYPE_FLAGS
+   */
+  info.class_size = sizeof (GFlagsClass);
+  type = g_type_register_fundamental (G_TYPE_FLAGS, "GFlags", &finfo, &info);
+  g_assert (type == G_TYPE_FLAGS);
 }
 
 GType

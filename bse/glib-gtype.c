@@ -21,6 +21,7 @@
 #include	"glib-gtype.h"
 
 #include	"glib-genums.h"
+#include	"glib-gobject.h"
 #include	<string.h>
 
 #define FIXME_DISABLE_PREALLOCATIONS
@@ -1806,4 +1807,6 @@ g_type_init (void)
   g_assert (type == G_TYPE_INTERFACE);
 
   g_enums_init ();
+
+  g_object_init ();
 }

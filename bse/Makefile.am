@@ -96,6 +96,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseutils.h \
 	glib-extra.h \
 	glib-genums.h \
+	glib-gobject.h \
 	glib-gtype.h \
 @STRIP_END@
 # BSE header files that don't get installed
@@ -150,6 +151,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsevoice.c \
 	glib-extra.c \
 	glib-genums.c \
+	glib-gobject.c \
 	glib-gtype.c \
 @STRIP_END@
 # we use our own built_sources variable rules instead of BUILT_SOURCES,

@@ -88,7 +88,7 @@ typedef GTokenType (*BseObjectParseStatement) (BseObject     *object,
 					       gpointer       user_data);
 struct _BseObject
 {
-  GTypeInstance          bse_struct;
+  GTypeInstance          g_type_instance;
   
   /* pack into one guint */
   guint16                flags;
@@ -112,7 +112,7 @@ struct _BseObjectParamSpec
 };
 struct _BseObjectClass
 {
-  GTypeClass           bse_class;
+  GTypeClass             g_type_class;
 
   guint                  n_param_specs;
   BseObjectParamSpec   **param_specs;

@@ -28,7 +28,7 @@ extern "C" {
 
 /* Predefined Fundamentals And Type Flags
  */
-typedef enum
+typedef enum	/*< skip >*/
 {
   /* standard types, introduced by g_type_init() */
   G_TYPE_INVALID,
@@ -174,7 +174,7 @@ struct _GTypePluginVTable
   GTypePluginFillTypeInfo	complete_type_info;
   GTypePluginFillInterfaceInfo	complete_interface_info;
 };
-typedef enum
+typedef enum	/*< skip >*/
 {
   G_TYPE_FLAG_CLASSED		= (1 << 0),
   G_TYPE_FLAG_INSTANTIATABLE	= (1 << 1),

@@ -237,7 +237,7 @@ BSE_EXPORT_PROCEDURES = {
   { &type_id_random_fill, "BsePattern+random-fill",
     "Fill the selection with random notes", 0,
     random_fill_setup, random_fill_exec, NULL,
-    "/Method/BsePattern/Tools/Fill random",
+    "/Method/BsePattern/Tools/Fill Random",
   },
   { &type_id_select_invert, "BsePattern+select-invert",
     "Invert the selection", SELECT_INVERT,

@@ -47,7 +47,7 @@ typedef struct _GEnumValue  GEnumValue;
 typedef struct _GFlagsValue GFlagsValue;
 struct	_GEnumClass
 {
-  GTypeClass  g_class;
+  GTypeClass  g_type_class;
   
   gint	      minimum;
   gint	      maximum;
@@ -56,7 +56,7 @@ struct	_GEnumClass
 };
 struct	_GFlagsClass
 {
-  GTypeClass   g_class;
+  GTypeClass   g_type_class;
   
   guint	       mask;
   guint	       n_values;
@@ -77,7 +77,6 @@ struct _GFlagsValue
 
 
 /* --- prototypes --- */
-void		g_enums_init			(void);
 GEnumValue*	g_enum_get_value		(GEnumClass	*enum_class,
 						 gint		 value);
 GEnumValue*	g_enum_get_value_by_name	(GEnumClass	*enum_class,
@@ -110,6 +109,9 @@ void	g_flags_complete_type_info (GType	       g_flags_type,
 				    GTypeInfo	      *info,
 				    const GFlagsValue *const_values);
 
+
+/* --- implementation details --- */
+void	g_enums_init		   (void);
 
 
 #ifdef __cplusplus
