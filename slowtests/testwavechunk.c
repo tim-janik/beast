@@ -57,7 +57,8 @@ run_tests (GslWaveLoopType loop_type,
 	   gint		   loop_last,
 	   gint		   loop_count)
 {
-  gfloat tmpstorage[DEBUG_SIZE], *cmpblock = tmpstorage + DEBUG_SIZE / 2;
+  gfloat *tmpstorage = g_new (gfloat, DEBUG_SIZE);
+  gfloat *cmpblock = tmpstorage + DEBUG_SIZE / 2;
   GslDataHandle *myhandle;
   GslDataCache *dcache;
   GslWaveChunkBlock block = { 0, };
@@ -129,6 +130,8 @@ run_tests (GslWaveLoopType loop_type,
     }
   gsl_wave_chunk_close (wchunk);
   gsl_data_cache_unref (dcache);
+
+  g_free (tmpstorage);
 }
 
 static void
