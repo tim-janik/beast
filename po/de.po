@@ -335,7 +335,7 @@ msgstr ""
 
 #: beast-gtk/bstapp.c:180
 msgid "Online Demos..."
-msgstr ""
+msgstr "Online Demos..."
 
 #: beast-gtk/bstapp.c:180
 msgid "Start a web browser pointing to online demo songs"
@@ -3151,7 +3151,7 @@ msgstr "Auf_bessern"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Demo"
-msgstr "_Demo"
+msgstr "D_emo"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Distortion"
