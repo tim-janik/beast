@@ -333,6 +333,8 @@ SfiRing* sfi_ring_merge_sorted          (SfiRing        *head1,
 SfiRing* sfi_ring_sort                  (SfiRing        *head,
                                          SfiCompareFunc  cmp,
                                          gpointer        data);
+SfiRing* sfi_ring_reorder               (SfiRing        *unordered_ring,
+                                         const SfiRing  *new_ring_order);
 /* ring-copying cmp-based operations */
 SfiRing* sfi_ring_uniq                  (const SfiRing  *sorted_ring1,
                                          SfiCompareFunc  cmp,
@@ -351,10 +353,6 @@ SfiRing* sfi_ring_difference            (const SfiRing  *sorted_set1,
                                          gpointer        data);
 SfiRing* sfi_ring_symmetric_difference  (const SfiRing  *sorted_set1,
                                          const SfiRing  *sorted_set2,
-                                         SfiCompareFunc  cmp,
-                                         gpointer        data);
-SfiRing* sfi_ring_reorder               (const SfiRing  *sorted_ring,
-                                         const SfiRing  *new_ring_order,
                                          SfiCompareFunc  cmp,
                                          gpointer        data);
 /* const-result cmp-based operations */

@@ -1978,23 +1978,28 @@ sfi_ring_symmetric_difference (const SfiRing  *sorted_set1,
   return sfi_ring_concat (d, sfi_ring_copy_rest (r1 ? r1 : r2, r1 ? sorted_set1 : sorted_set2));
 }
 
+static inline int
+pointercmp (const void *p1,
+            const void *p2)
+{
+  return p1 < p2 ? -1 : p1 != p2;
+}
+
 static inline gboolean
 ring_reorder_lookup (guint          n_items,
                      gpointer      *items,
                      gpointer       key,
-                     SfiCompareFunc cmpfunc,
-                     gpointer       data,
                      guint         *indexp)
 {
   guint offset = 0, n = n_items;
   while (offset < n)
     {
       guint i = (offset + n) >> 1;
-      gint cmp = cmpfunc (key, items[i], data);
+      gint cmp = pointercmp (key, items[i]);
       if (cmp < 0)
         n = i;
       else if (cmp > 0)
-        offset = i;
+        offset = i + 1;
       else /* match */
         {
           *indexp = i;
@@ -2004,21 +2009,18 @@ ring_reorder_lookup (guint          n_items,
   return FALSE;
 }
 
-SfiRing* /* reproduce all elements from sorted_ring in the order new_ring_order */
-sfi_ring_reorder (const SfiRing  *sorted_ring,
-                  const SfiRing  *new_ring_order,
-                  SfiCompareFunc  cmp,
-                  gpointer        data)
+SfiRing* /* reproduce all elements from unordered_ring in the order new_ring_order */
+sfi_ring_reorder (SfiRing        *unordered_ring,
+                  const SfiRing  *new_ring_order)
 {
-  if (!sorted_ring || !new_ring_order)
-    return sfi_ring_copy (sorted_ring);
+  if (!unordered_ring || !new_ring_order)
+    return unordered_ring;
   const SfiRing *ring;
-  SfiRing *result = NULL;
 
   /* construct a sorted array for faster lookups */
-  guint i, n_items = 0, n_alloced = 0;
   gpointer *items = NULL;
-  for (ring = sorted_ring; ring; ring = sfi_ring_walk (ring, sorted_ring))
+  guint i, n_items = 0, n_alloced = 0;
+  for (ring = unordered_ring; ring; ring = sfi_ring_walk (ring, unordered_ring))
     {
       i = n_items++;
       if (n_items > n_alloced)
@@ -2028,24 +2030,39 @@ sfi_ring_reorder (const SfiRing  *sorted_ring,
         }
       items[i] = ring->data;
     }
-  guint8 *flags = g_new0 (guint8, n_items);
+  sfi_ring_free (unordered_ring);
+  unordered_ring = NULL;
+  qsort (items, n_items, sizeof (items[0]), pointercmp);
 
-  /* pick sorted_ring members in the order given by new_ring_order */
-  for (ring = new_ring_order; ring; ring = sfi_ring_walk (ring, new_ring_order))
-    if (ring_reorder_lookup (n_items, items, ring->data, cmp, data, &i) && !flags[i])
+  /* collapse duplicates */
+  guint j = 0, *counts = g_new0 (guint, n_items);
+  for (i = 0; i < n_items; i++)
+    if (items[j] != items[i])
       {
-        flags[i] = TRUE;
-        result = sfi_ring_append (result, ring->data);
+        if (++j != i)
+          items[j] = items[i];
+        counts[j] = 1;
+      }
+    else /* catch dups */
+      counts[j]++;
+  n_items = j + 1;      /* shrink to number of different items */
+
+  /* pick unordered_ring members in the order given by new_ring_order */
+  for (ring = new_ring_order; ring; ring = sfi_ring_walk (ring, new_ring_order))
+    if (ring_reorder_lookup (n_items, items, ring->data, &i) && counts[i])
+      {
+        counts[i]--;
+        unordered_ring = sfi_ring_append (unordered_ring, ring->data);
       }
 
   /* append left-over members from sorted_ring */
   for (i = 0; i < n_items; i++)
-    if (!flags[i])
-      result = sfi_ring_append (result, items[i]);
+    while (counts[i]--)
+      unordered_ring = sfi_ring_append (unordered_ring, items[i]);
 
   g_free (items);
-  g_free (flags);
-  return result;
+  g_free (counts);
+  return unordered_ring;
 }
 
 gboolean

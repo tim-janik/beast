@@ -1,3 +1,14 @@
+Wed Sep  1 01:45:40 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]:
+	sfi_ring_reorder(): changed this into a ring modifying function without
+	the need of a custom cmp function.
+	properly handle duplicates in the unordered list.
+	ring_reorder_lookup(): fixed off-by-one error when adjusting offset,
+	got rid of calling compare function by using pointer comparisons.
+
+	* testsfi.c: more sfi_ring_reorder() tests.
+
 Sun Aug 29 04:14:19 2004  Tim Janik  <timj@gtk.org>
 
 	* sficomport.c (sfi_com_port_send_bulk): in case the comport got
