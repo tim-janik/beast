@@ -169,7 +169,7 @@ pe_effect_area_draw (BstPatternEditor *pe,
   BstPatternDialog *pattern_dialog = BST_PATTERN_DIALOG (data);
   GtkWidget *pe_widget = GTK_WIDGET (pe);
   BsePattern *pattern = pe->pattern;
-  BseNote *note = bse_pattern_peek_note (pattern, channel, row);
+  BsePatternNote *note = bse_pattern_peek_note (pattern, channel, row);
   guint n = note->n_effects;
   
   gdk_draw_string (window,

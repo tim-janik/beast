@@ -735,6 +735,18 @@ gtk_widget_showraise (GtkWidget *widget)
 }
 
 void
+gtk_widget_make_sensitive (GtkWidget *widget)
+{
+  gtk_widget_set_sensitive (widget, TRUE);
+}
+
+void
+gtk_widget_make_insensitive (GtkWidget *widget)
+{
+  gtk_widget_set_sensitive (widget, FALSE);
+}
+
+void
 gtk_toplevel_hide (GtkWidget *widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));

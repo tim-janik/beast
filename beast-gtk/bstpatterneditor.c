@@ -751,26 +751,25 @@ bst_pattern_editor_fetch_pattern_sibling (BstPatternEditor *pe,
 					  BseItem	   *container,
 					  BsePattern	   *pattern)
 {
+  BseItem *item;
   guint seqid;
   
   g_return_if_fail (BST_IS_PATTERN_EDITOR (pe));
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (pe->pattern == pattern);
-  
+
   seqid = bse_item_get_seqid (BSE_ITEM (pattern));
-  container = BSE_ITEM (pattern)->container;
-  if (container && seqid)
-    {
-      BseItem *item;
-      
-      item = bse_container_get_item (BSE_CONTAINER (container), BSE_TYPE_PATTERN, seqid + 1);
-      if (!item && seqid > 1)
-	item = bse_container_get_item (BSE_CONTAINER (container), BSE_TYPE_PATTERN, seqid - 1);
-      if (!item)
-	bst_pattern_editor_release_pattern (pe);
-      else
-	bst_pattern_editor_set_pattern (pe, BSE_PATTERN (item));
-    }
+  container = BSE_ITEM (pattern)->parent;
+
+  g_return_if_fail (container != NULL);
+
+  item = bse_container_get_item (BSE_CONTAINER (container), BSE_TYPE_PATTERN, seqid + 1);
+  if (!item && seqid > 1)
+    item = bse_container_get_item (BSE_CONTAINER (container), BSE_TYPE_PATTERN, seqid - 1);
+  if (!item)
+    bst_pattern_editor_release_pattern (pe);
+  else
+    bst_pattern_editor_set_pattern (pe, BSE_PATTERN (item));
 }
 
 static void
@@ -820,7 +819,7 @@ bst_pattern_editor_set_pattern (BstPatternEditor *pe,
 				    bst_pattern_editor_release_pattern,
 				    pe);
       bse_object_add_data_notifier (pattern,
-				    "set_container",
+				    "set_parent",
 				    bst_pattern_editor_fetch_pattern_sibling,
 				    pe);
       bse_object_add_data_notifier (pattern,
@@ -1859,7 +1858,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
 			      guint		row)
 {
   GtkWidget *widget = GTK_WIDGET (pe);
-  BseNote *note;
+  BsePatternNote *note;
   guint tone_x, tone_y, tone_width, tone_height;
   GdkGC *fg_gc, *bg_gc;
   gchar buffer[64], *p;
@@ -2024,7 +2023,7 @@ save_selection (BstPatternEditor *pe,
       for (c = 0; c < N_CHANNELS (pe); c++)
 	for (r = 0; r < N_ROWS (pe); r++)
 	  {
-	    BseNote *note = bse_pattern_peek_note (pe->pattern, c, r);
+	    BsePatternNote *note = bse_pattern_peek_note (pe->pattern, c, r);
 	    
 	    if (note->selected)
 	      {
@@ -2120,7 +2119,7 @@ bst_pattern_editor_selection_update (BstPatternEditor *pe,
       for (c = b_c; c <= e_c; c++)
 	for (r = b_r; r <= e_r; r++)
 	  {
-	    BseNote *note = bse_pattern_peek_note (pe->pattern, c, r);
+	    BsePatternNote *note = bse_pattern_peek_note (pe->pattern, c, r);
 	    gboolean want_selection;
 	    gboolean in_selection = (c >= MIN (pe->focus_channel, pe->selection_channel) &&
 				     c <= MAX (pe->focus_channel, pe->selection_channel) &&
@@ -2360,11 +2359,11 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
   };
   guint n_masks = sizeof (masks) / sizeof (masks[0]);
   guint i;
-  BseNote *bnote;
+  BsePatternNote *pnote;
   BseInstrument *instrument;
   gint focus_channel;
   gint focus_row;
-  guint note;
+  gint note;
   gint difference;
   guint new_focus_channel;
   guint new_focus_row;
@@ -2386,9 +2385,9 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
   
   focus_channel = pe->focus_channel;
   focus_row = pe->focus_row;
-  bnote = bse_pattern_peek_note (pe->pattern, focus_channel, focus_row);
-  note = bnote->note;
-  instrument = bnote->instrument;
+  pnote = bse_pattern_peek_note (pe->pattern, focus_channel, focus_row);
+  note = pnote->note;
+  instrument = pnote->instrument;
   
   difference = 0;
   new_focus_channel = 0;
@@ -2568,12 +2567,12 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
 	}
     }
   
-  if (note != bnote->note)
+  if (note != pnote->note)
     bse_pattern_set_note (pe->pattern,
 			  pe->focus_channel,
 			  pe->focus_row,
 			  note);
-  if (instrument != bnote->instrument)
+  if (instrument != pnote->instrument)
     bse_pattern_set_instrument (pe->pattern,
 				pe->focus_channel,
 				pe->focus_row,
@@ -2694,7 +2693,7 @@ bst_pattern_editor_channel_popup (BstPatternEditor *pe,
       g_snprintf (buffer, 64, INSTRUMENT_FMT, bse_item_get_seqid (BSE_ITEM (instrument)));
       string = BSE_OBJECT_NAME (instrument);
       if (!string || *string == 0)
-	string = BSE_OBJECT_NAME (instrument->sample);
+	string = BSE_OBJECT_NAME (instrument->input);
       string = g_strconcat (buffer, ") ", string, NULL);
       item = gtk_menu_item_new_with_label (string);
       gtk_widget_set (item,

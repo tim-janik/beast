@@ -237,6 +237,7 @@ void	   gtk_clue_hunter_select_on	        (GtkClueHunter	*clue_hunter,
 						 const gchar	*string);
 gchar*	   gtk_clue_hunter_try_complete	        (GtkClueHunter	*clue_hunter);
 GtkWidget* gtk_clue_hunter_create_arrow		(GtkClueHunter	*clue_hunter);
+GtkClueHunter* gtk_clue_hunter_from_entry	(GtkWidget	*entry);
 
 
 

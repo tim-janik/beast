@@ -80,7 +80,6 @@ _GROUP_CALL (GtkWidget *group,
 	     gpointer   d)
 {
   static const gchar *names[] = {
-    "group_container",
     "group_prompt",
     "group_dial",
     "group_scale",
@@ -136,6 +135,7 @@ GROUP_FORM_BIG (GtkWidget *parent,
 #define GROUP_ADD_SCALE(g, w)             (_GROUP_ADD_NAMED_OBJECT ((g), "group_scale", (w)))
 #define GROUP_GET_ACTION(g)	          (GTK_WIDGET (g))
 #define GROUP_GET_PRE_ACTION(g)	          (_GROUP_GET_NAMED_WIDGET ((g), "group_pre_action"))
+#define GROUP_GET_PROMPT(g)	          (_GROUP_GET_NAMED_WIDGET ((g), "group_prompt"))
 static void
 GROUP_SET_TIP (GtkWidget   *group,
 	       const gchar *tip_text,
@@ -293,8 +293,9 @@ GROUP_DONE (GtkWidget *group)
 
   return group;
 }
-#define GROUP_DESTROY(g)       (_GROUP_CALL ((g), gtk_widget_destroy, NULL))
-#define GROUP_ENSURE_STYLES(g) (_GROUP_CALL ((g), gtk_widget_ensure_style, NULL))
+#define GROUP_DESTROY(g)          (_GROUP_CALL ((g), gtk_widget_destroy, NULL))
+#define GROUP_ENSURE_STYLES(g)    (_GROUP_CALL ((g), gtk_widget_ensure_style, NULL))
+#define GROUP_SET_SENSITIVE(g, s) (_GROUP_CALL ((g), (s) ? gtk_widget_make_sensitive : gtk_widget_make_insensitive, NULL))
 
 
 /* --- functions --- */
@@ -356,6 +357,52 @@ bst_entry_key_press (GtkWidget   *entry,
     gtk_signal_emit_stop_by_name (GTK_OBJECT (entry), "key_press_event");
 
   return FALSE;
+}
+
+static void
+bst_param_update_clue_hunter (BstParam *bparam)
+{
+  GtkWidget *group = bparam->group;
+  BseParam *param = &bparam->param;
+  BseParamSpec *pspec = param->pspec;
+  GtkWidget *action = GROUP_GET_ACTION (group);
+  GtkClueHunter *ch = gtk_object_get_user_data (GTK_OBJECT (action));
+
+  g_return_if_fail (pspec->type == BSE_TYPE_PARAM_ITEM && GTK_IS_CLUE_HUNTER (ch));
+  
+  if (bse_type_is_a (pspec->s_item.item_type, BSE_TYPE_SAMPLE))
+    {
+      GList *free_list = bst_sample_repo_list_sample_locs (), *list;
+      
+      gtk_clue_hunter_remove_matches (ch, "*");
+      
+      for (list = free_list; list; list = list->next)
+	{
+	  BstSampleLoc *loc = list->data;
+	  
+	  /* FIXME: showing the repo as well would be nice */
+	  gtk_clue_hunter_add_string (ch, loc->name);
+	}
+      g_list_free (free_list);
+    }
+  else if (bparam->is_object && BSE_IS_ITEM (bparam->owner) &&
+	   bse_type_is_a (pspec->s_item.item_type, BSE_TYPE_ITEM))
+    {
+      BseItem *item = BSE_ITEM (bparam->owner);
+      BseProject *project = bse_item_get_project (item);
+      GList *nick_list, *list;
+      
+      gtk_clue_hunter_remove_matches (ch, "*");
+
+      nick_list = bse_project_list_nick_paths (project, pspec->s_item.item_type);
+      
+      for (list = nick_list; list; list = list->next)
+	{
+	  gtk_clue_hunter_add_string (ch, list->data);
+	  g_free (list->data);
+	}
+      g_list_free (nick_list);
+    }
 }
 
 static void
@@ -641,7 +688,6 @@ bst_param_create (gpointer      owner,
       action = gtk_widget_new (radio ? BST_TYPE_FREE_RADIO_BUTTON : GTK_TYPE_CHECK_BUTTON,
 			       "visible", TRUE,
 			       "label", name,
-			       "sensitive", !read_only,
 			       "object_signal::clicked", bst_param_gtk_changed, bparam,
 			       NULL);
       gtk_misc_set_alignment (GTK_MISC (GTK_BIN (action)->child), 0, 0.5);
@@ -684,14 +730,12 @@ bst_param_create (gpointer      owner,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "sensitive", !read_only,
 			       NULL);
       action = spinner ? spinner : gtk_entry_new ();
       gtk_widget_set (action,
 		      "visible", TRUE,
 		      "width", width,
 		      "object_signal::activate", bst_param_gtk_changed, bparam,
-		      "sensitive", !read_only,
 		      "signal::key_press_event", bst_entry_key_press, bparam,
 		      NULL);
       if (!spinner)
@@ -703,13 +747,11 @@ bst_param_create (gpointer      owner,
       if (scale)
 	{
 	  gtk_widget_show (scale);
-	  gtk_widget_set_sensitive (scale, !read_only);
 	  GROUP_ADD_SCALE (group, scale);
 	}
       if (dial)
 	{
 	  gtk_widget_show (dial);
-	  gtk_widget_set_sensitive (dial, !read_only);
 	  GROUP_ADD_DIAL (group, dial);
 	}
       GROUP_SET_TIP (group, tooltip, NULL);
@@ -727,7 +769,6 @@ bst_param_create (gpointer      owner,
       action = gtk_option_menu_new ();
       gtk_widget_set (action,
 		      "visible", TRUE,
-		      "sensitive", !read_only && ev,
 		      NULL);
       if (ev)
 	{
@@ -781,14 +822,12 @@ bst_param_create (gpointer      owner,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "sensitive", !read_only,
 			       NULL);
       action = gtk_widget_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
 			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
 			       "object_signal::activate", bst_param_gtk_changed, bparam,
 			       "signal::key_press_event", bst_entry_key_press, bparam,
-			       "sensitive", !read_only,
 			       NULL);
       group = GROUP_FORM (parent_container, action, TRUE);
       GROUP_ADD_PROMPT (group, prompt);
@@ -800,7 +839,6 @@ bst_param_create (gpointer      owner,
 				       "width", 10,
 				       "height", 10,
 				       "parent", gtk_widget_new (GTK_TYPE_ALIGNMENT,
-								 "visible", !read_only,
 								 "xscale", 0.0,
 								 "yscale", 0.0,
 								 "xalign", 0.0,
@@ -821,7 +859,6 @@ bst_param_create (gpointer      owner,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "sensitive", !read_only,
 			       NULL);
       frame = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
@@ -862,7 +899,6 @@ bst_param_create (gpointer      owner,
 			       "label", name,
 			       "justify", GTK_JUSTIFY_LEFT,
 			       "xalign", 0.0,
-			       "sensitive", !read_only,
 			       NULL);
       action = gtk_widget_new (GTK_TYPE_ENTRY,
 			       "visible", TRUE,
@@ -870,7 +906,7 @@ bst_param_create (gpointer      owner,
 			       "object_signal::focus_out_event", bst_param_gtk_update, bparam,
 			       "object_signal::activate", bst_param_gtk_changed, bparam,
 			       "signal::key_press_event", bst_entry_key_press, bparam,
-			       "sensitive", !read_only,
+			       "object_signal::grab_focus", bst_param_update_clue_hunter, bparam,
 			       NULL);
       group = GROUP_FORM (parent_container, action, TRUE);
       GROUP_ADD_PROMPT (group, prompt);
@@ -912,10 +948,13 @@ bst_param_update (BstParam *bparam)
   GtkWidget *group = bparam->group;
   BseParam *param = &bparam->param;
   BseParamSpec *pspec = param->pspec;
+  gboolean read_only = (pspec->any.flags & BSE_PARAM_HINT_RDONLY) != 0;
+
+  GROUP_SET_SENSITIVE (group, !read_only);
   
   switch (pspec->type)
     {
-      GtkWidget *action, *pre_action, *any;
+      GtkWidget *action, *prompt, *pre_action, *any;
       gchar *string;
       
     case BSE_TYPE_PARAM_BOOL:
@@ -975,37 +1014,21 @@ bst_param_update (BstParam *bparam)
       break;
     case BSE_TYPE_PARAM_ITEM:
       action = GROUP_GET_ACTION (group);
-      string = param->value.v_item ? BSE_OBJECT_NAME (param->value.v_item) : NULL;
+      string = param->value.v_item ? bse_item_make_nick_path (param->value.v_item) : NULL;
       if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	{
 	  gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
 	  // gtk_entry_set_position (GTK_ENTRY (action), 0);
 	}
       any = gtk_object_get_user_data (GTK_OBJECT (action));
-      if (any)
-	{
-	  GtkClueHunter *ch = GTK_CLUE_HUNTER (any);
-	  
-	  if (pspec->s_item.item_type == BSE_TYPE_SAMPLE)
-	    {
-	      GList *free_list = bst_sample_repo_list_sample_locs (), *list;
-	      
-	      gtk_clue_hunter_remove_matches (ch, "*");
-	      
-	      for (list = free_list; list; list = list->next)
-		{
-		  BstSampleLoc *loc = list->data;
-		  
-		  /* FIXME: showing the repo as well would be nice */
-		  gtk_clue_hunter_add_string (ch, loc->name);
-		}
-	      g_list_free (free_list);
-	    }
-	}
+      if (any && 0) // FIXME: remove
+	bst_param_update_clue_hunter (bparam);
       break;
     case BSE_TYPE_PARAM_ENUM:
       action = GROUP_GET_ACTION (group);
       any = gtk_option_menu_get_menu (GTK_OPTION_MENU (action));
+      prompt = GROUP_GET_PROMPT (group);
+      gtk_widget_set_sensitive (prompt, GTK_WIDGET_IS_SENSITIVE (prompt) && pspec->s_enum.enum_class->values);
       if (any)
 	{
 	  GList *list;
@@ -1054,7 +1077,7 @@ bst_param_apply (BstParam *bparam,
       gchar *string;
       BseTime time_data;
       guint base;
-      guint note_data;
+      gint note_data;
 
     case BSE_TYPE_PARAM_BOOL:
       action = GROUP_GET_ACTION (group);
@@ -1141,43 +1164,51 @@ bst_param_apply (BstParam *bparam,
     case BSE_TYPE_PARAM_ITEM:
       action = GROUP_GET_ACTION (group);
       string = bse_strdup_stripped (gtk_entry_get_text (GTK_ENTRY (action)));
-      if (string && bparam->is_object)
+      if (string && bparam->is_object && BSE_IS_ITEM (bparam->owner))
 	{
-	  GList *list, *free_list;
-	  gboolean try_further = TRUE;
+	  BseProject *project = bse_item_get_project (BSE_ITEM (bparam->owner));
+	  BseItem *item = NULL;
 
-	  free_list = bse_objects_list_by_name (pspec->s_item.item_type, string);
-	  for (list = free_list; list; list = list->next)
+	  /* check whether this is a nick path */
+	  if (!item && strchr (string, '.'))
 	    {
-	      BseSuper *super = list->data;
+	      item = bse_project_item_from_nick_path (project, string);
 
-	      if (bse_super_get_project (super) == bse_item_get_project (BSE_ITEM (bparam->owner)))
-		{
-		  dirty += bse_param_set_item (param, BSE_ITEM (super));
-		  try_further = FALSE;
-		  break;
-		}
+	      if (item && !bse_type_is_a (BSE_OBJECT_TYPE (item), pspec->s_item.item_type))
+		item = NULL;
 	    }
-	  g_list_free (free_list);
+	  else if (!item) /* try generic lookup for pure name (brute force actually) */
+	    {
+	      GList *list, *free_list = bse_objects_list_by_name (pspec->s_item.item_type, string);
+	      
+	      for (list = free_list; list; list = list->next)
+		if (bse_item_get_project (list->data) == project)
+		  {
+		    item = BSE_ITEM (list->data);
+		    break;
+		  }
+	      g_list_free (free_list);
+	    }
 
-	  if (try_further && pspec->s_item.item_type == BSE_TYPE_SAMPLE)
+	  /* check whether this refers to an on-disk sample that we can demand load */
+	  if (!item && pspec->s_item.item_type == BSE_TYPE_SAMPLE)
 	    {
 	      BstSampleLoc *loc = bst_sample_repo_find_sample_loc (string);
-
+	      
 	      if (loc)
 		{
-		  BseSample *sample;
-
-		  g_message ("demand load: %s (%s)", loc->name, loc->repo->name);
-
-		  sample = bst_sample_repo_load_sample (loc,
-							bse_item_get_project (BSE_ITEM (bparam->owner)));
-		  dirty += bse_param_set_item (param, BSE_ITEM (sample));
+		  g_message ("demand loading: %s (%s)", loc->name, loc->repo->name);
+		  
+		  item = (BseItem*) bst_sample_repo_load_sample (loc, project);
 		}
 	    }
 
-	  dirty += 1;
+	  /* ok, found one or giving up */
+	  dirty += bse_param_set_item (param, item);
 	  g_free (string);
+
+	  /* enforce redisplay of the entry's string with the correct name */
+	  dirty += 1;
 	}
       else
 	dirty += bse_param_set_item (param, NULL);

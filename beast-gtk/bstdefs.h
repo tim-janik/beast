@@ -152,7 +152,8 @@ GtkWidget* bst_subwindow_new       (GtkObject	     *alive_host,
 GtkWidget* bst_subwindow_get_child (GtkWidget	 *subwindow);
 void	   gtk_widget_showraise    (GtkWidget	 *widget);
 void	   gtk_toplevel_hide       (GtkWidget    *widget);
-
+void	   gtk_widget_make_sensitive   (GtkWidget  *widget);
+void	   gtk_widget_make_insensitive (GtkWidget  *widget);
 
 /* --- canvas utils/workarounds --- */
 extern GnomeCanvasPoints* gnome_canvas_points_new0 (guint num_points);

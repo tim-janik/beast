@@ -500,7 +500,7 @@ bst_item_view_select (BstItemView *item_view,
   
   g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
   g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (BSE_ITEM (item)->container == BSE_ITEM (item_view->container));
+  g_return_if_fail (BSE_ITEM (item)->parent == BSE_ITEM (item_view->container));
   
   clist = GTK_CLIST (item_view->item_clist);
   row = gtk_clist_find_row_from_data (clist, item);

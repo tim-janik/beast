@@ -1221,8 +1221,8 @@ gtk_clue_hunter_entry_key_press (GtkClueHunter *clue_hunter,
 {
   gboolean handled = FALSE;
   
-  if (!(event->state == GDK_CONTROL_MASK || event->state == GDK_MOD1_MASK) &&
-      (event->keyval == GDK_Tab || event->keyval == GDK_ISO_Left_Tab))
+  if ((event->keyval == GDK_Tab || event->keyval == GDK_ISO_Left_Tab) &&
+      !(event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK)))
     {
       handled = TRUE;
       
@@ -1531,11 +1531,11 @@ gtk_clue_hunter_do_popup (GtkClueHunter *clue_hunter)
   
   widget = GTK_WIDGET (clue_hunter);
   
+  gtk_widget_grab_focus (clue_hunter->entry);
+
   if (!clue_hunter->cstring)
     clue_hunter->cstring = g_strdup ("");
   
-  gtk_widget_grab_focus (clue_hunter->entry);
-
   gtk_clist_columns_autosize (GTK_CLIST (clue_hunter->clist));
   gtk_widget_size_request (clue_hunter->clist, NULL);
   gtk_widget_set_usize (clue_hunter->clist,

@@ -1,3 +1,11 @@
+Mon Jan 31 19:05:40 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterneditor.c:
+	(bst_pattern_editor_fetch_pattern_sibling): fixed bug wrt pattern
+	deletion.
+	* beast-gtk/bstparams.[hc]: handle BseItem params better (search for
+	candidates within project).
+
 Fri Jan 21 02:45:14 2000  Tim Janik  <timj@gtk.org>
 
 	* configure.in: altered GdkPixbuf check to feature -lgdk_pixbuf and
