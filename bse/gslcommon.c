@@ -151,7 +151,7 @@ gsl_strerror (GslErrorType error)
     case GSL_ERROR_BUSY:		return "Device or resource busy";
     case GSL_ERROR_EXISTS:		return "File exists already";
     case GSL_ERROR_EOF:			return "File empty or premature EOF";
-    case GSL_ERROR_NOT_FOUND:		return "No such file (or directory)";
+    case GSL_ERROR_NOT_FOUND:		return "No such file, device or directory";
     case GSL_ERROR_IS_DIR:		return "Is a directory";
     case GSL_ERROR_OPEN_FAILED:		return "Open failed";
     case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
@@ -257,6 +257,7 @@ gsl_error_from_errno (gint         sys_errno,
     {
     case ELOOP:
     case ENAMETOOLONG:
+    case ENODEV:
     case ENOTDIR:
     case ENOENT:        return GSL_ERROR_NOT_FOUND;
     case EISDIR:        return GSL_ERROR_IS_DIR;
@@ -281,6 +282,59 @@ gsl_error_from_errno (gint         sys_errno,
     default:            return fallback;
     }
 }
+
+static guint
+score_error (GslErrorType error)
+{
+  /* errors are sorted by increasing descriptiveness */
+  static const GslErrorType error_score[] = {
+    GSL_ERROR_NONE /* least descriptive, indicates 0-initialized error variable */,
+    GSL_ERROR_UNKNOWN, GSL_ERROR_INTERNAL, GSL_ERROR_TEMP,
+    GSL_ERROR_OPEN_FAILED, GSL_ERROR_SEEK_FAILED, GSL_ERROR_READ_FAILED, GSL_ERROR_WRITE_FAILED,
+    GSL_ERROR_NOT_FOUND, GSL_ERROR_WAVE_NOT_FOUND, GSL_ERROR_IO, GSL_ERROR_EOF,
+  };
+  guint i;
+  for (i = 0; i < G_N_ELEMENTS (error_score); i++)
+    if (error_score[i] == error)
+      return i;
+  return i;
+}
+
+GslErrorType
+gsl_error_select (guint           n_errors,
+                  GslErrorType    first_error,
+                  ...)
+{
+  GslErrorType *errors = g_new (GslErrorType, MAX (1, n_errors));
+  va_list args;
+  guint i, e, score;
+  /* function used to select a descriptive error in
+   * multi-error scenarios
+   */
+  va_start (args, first_error);
+  for (i = 0; i < n_errors; i++)
+    {
+      if (i)
+        first_error = va_arg (args, GslErrorType);
+      errors[i] = first_error;
+    }
+  va_end (args);
+  /* grab first error, unless followed by an error with higher score */
+  e = errors[0];
+  score = score_error (e);
+  for (i = 1; i < n_errors; i++)
+    {
+      guint s = score_error (errors[i]);
+      if (s > score)
+        {
+          score = s;
+          e = errors[i];
+        }
+    }
+  g_free (errors);
+  return e;
+}
+
 
 /* --- progress notification --- */
 GslProgressState

@@ -390,7 +390,8 @@ bse_async_parse_args (gint    *argc_p,
     if (argv[i])
       {
         argv[e++] = argv[i];
-        argv[i] = NULL;
+        if (i >= e)
+          argv[i] = NULL;
       }
   *argc_p = e;
 

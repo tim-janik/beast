@@ -125,7 +125,6 @@ bse_midi_device_oss_open (BseMidiDevice *mdev)
   if (!error)
     {
       gint fd, extra_id = -1;
-      BseErrorType first_error = 0;
       do
 	{
 	  gint omode = (handle->readable && handle->writable ? O_RDWR
@@ -137,7 +136,7 @@ bse_midi_device_oss_open (BseMidiDevice *mdev)
 	  else
 	    dname = g_strdup (BSE_MIDI_DEVICE_OSS (mdev)->device_name);
 
-	  /* need to open explicitely non-blocking or we'll have to wait untill someone else closes the device */
+	  /* need to open explicitely non-blocking or we'll have to wait until someone else closes the device */
 	  fd = open (dname, omode | O_NONBLOCK, 0);
 	  if (fd >= 0)
 	    {
@@ -146,15 +145,12 @@ bse_midi_device_oss_open (BseMidiDevice *mdev)
 	    }
 	  else
 	    {
-	      // g_printerr ("open(\"%s\") failed: %s\n", dname, g_strerror (errno));
-	      error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
-	      if (!first_error)
-		first_error = error;
+              sfi_debug ("midi", "open(\"%s\") failed: %s", dname, g_strerror (errno));
+              error = gsl_error_select (2, error, bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED));
 	    }
 	  g_free (dname);
 	}
       while (error && extra_id++ < 3);
-      error = error && first_error ? first_error : error;
     }
 
   /* setup mdev or shutdown */

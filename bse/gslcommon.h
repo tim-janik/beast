@@ -72,6 +72,9 @@ const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
 GslErrorType gsl_error_from_errno	(gint		 sys_errno,
 					 GslErrorType	 fallback);
+GslErrorType gsl_error_select           (guint           n_errors,
+                                         GslErrorType    first_error,
+                                         ...);
 GslErrorType gsl_check_file		(const gchar	*file_name,
 					 const gchar	*mode);
 

@@ -1,3 +1,16 @@
+Wed May  5 18:17:31 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemain.c (bse_async_parse_args): fixed parsing bug.
+
+	* gslcommon.c (gsl_error_from_errno): made ENODEV a
+	GSL_ERROR_NOT_FOUND error.
+	(gsl_error_select): new function to select the most descriptive
+	error in multi error scenarios.
+
+	* bsemididevice-oss.c (bse_midi_device_oss_open): debugging fixes.
+	use gsl_error_select() to select error messages from multiple
+	devices.
+
 Wed May  5 15:27:08 2004  Tim Janik  <timj@gtk.org>
 
 	* *.c: adapted log, error, warning and debugging messages.
