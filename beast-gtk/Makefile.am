@@ -35,6 +35,7 @@ beast_headers = $(strip \
 	bstfiledialog.h \
 	bstinstrumentview.h \
 	bstitemview.h \
+	bstkeytables.h \
 	bstmaster.h \
 	bstmenus.h \
 	bstparam.h \
@@ -48,6 +49,7 @@ beast_headers = $(strip \
 	bstsongrouter.h \
 	bststatusbar.h \
 	bstsupershell.h \
+	bstxkb.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
@@ -55,6 +57,7 @@ beast_sources = $(strip \
 	bstfiledialog.c \
 	bstinstrumentview.c \
 	bstitemview.c \
+	bstkeytables.c \
 	bstmain.c \
 	bstmaster.c \
 	bstmenus.c \
@@ -69,12 +72,13 @@ beast_sources = $(strip \
 	bstsongrouter.c \
 	bststatusbar.c \
 	bstsupershell.c \
+	bstxkb.c \
 )
 # BEAST c sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
-	bstkeytables.c \
-	bstkeytable-de.c \
+	bstkeytable-base.c \
 	bstkeytable-us.c \
+	bstkeytable-de.c \
 )
 # BEAST program data files
 beast_pdata_DATA = $(strip \

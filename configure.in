@@ -94,6 +94,18 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 	BEAST_CFLAGS="$GTK_CFLAGS"
 	BEAST_LIBS="$GTK_LIBS"
 
+	dnl Feature XKB extension if present
+	CFLAGS=$BEAST_CFLAGS
+	LDFLAGS=$BEAST_LIBS
+	have_xkb=
+	AC_CHECK_LIB(X11, XkbOpenDisplay, have_xkb=1$have_xkb)
+	AC_CHECK_LIB(X11, XkbGetKeyboard, have_xkb=2$have_xkb)
+	AC_CHECK_HEADER(X11/XKBlib.h, have_xkb=3$have_xkb)
+	AC_CHECK_HEADER(X11/extensions/XKBgeom.h, have_xkb=4$have_xkb)
+	MC_IF_VAR_EQ(have_xkb, 4321,
+		AC_DEFINE_UNQUOTED(BST_WITH_XKB),
+	)
+
 	dnl Check for GNOME, we override BEAST_CFLAGS and BEAST_LIBS here,
 	dnl because GNOME already takes care of Gtk+, and we already checked
 	dnl that the Gtk+ version is sufficient.
@@ -124,10 +136,9 @@ $BEAST_LIBS
 	AC_SUBST(GLE_LIBS)
 	
 	dnl Default keytable patch
-	dnl we need a clever check here...
-	AC_MSG_CHECKING(what the default keytable looks like)
-	AC_DEFINE_UNQUOTED(BST_DFL_KEYTABLE, "de")
-	AC_MSG_RESULT(QWERTZ)
+	AC_MSG_CHECKING(what the fallback keytable should be)
+	AC_DEFINE_UNQUOTED(BST_DFL_KEYTABLE, "us")
+	AC_MSG_RESULT([\"us\", there are more americans than germans ;( ])
 
 	AC_SUBST(BEAST_CFLAGS)
 	AC_SUBST(BEAST_LIBS)

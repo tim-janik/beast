@@ -284,6 +284,7 @@ void	   bst_pattern_editor_adjust_sas      (BstPatternEditor		*pe,
 					       gboolean			 check_bounds);
 void	   bst_pattern_editor_set_octave      (BstPatternEditor		*pe,
 					       gint			 octave);
+void	   bst_pattern_editor_class_clear_keys(BstPatternEditorClass	*pe_class);
 void	   bst_pattern_editor_class_set_key   (BstPatternEditorClass	*pe_class,
 					       guint16			 keyval,
 					       guint16			 modifier,

@@ -19,8 +19,11 @@
 
 #include "bstconfigpaths.h"
 
-#include <fcntl.h>
+// #include <fcntl.h>
 #include <errno.h>
+#define XXX fcntl
+#define YYY <XXX.h>
+#include YYY
 
 
 

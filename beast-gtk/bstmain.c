@@ -21,8 +21,9 @@
 #include        "bstapp.h"
 #include        "bstsamplerepo.h"
 #include        "bstprocedure.h"
-#include        <gnome.h>
-#include        <unistd.h>
+#include	"bstxkb.h"
+#include	"bstkeytables.h"
+#include	<BEASTconfig.h>
 
 
 
@@ -30,9 +31,6 @@
 #define	PROGRAM	"BEAST"
 #define	TITLE	"Beast"
 #define	VERSION	"Pre-Alpha"
-
-/* --- keytables --- */
-#include	"bstkeytables.c"
 
 
 /* --- variables --- */
@@ -107,12 +105,100 @@ main (int   argc,
 
   /* setup default keytable for pattern editor class
    */
-  for (i = 0; i < bst_pea_ktab_de_n_entries; i++)
-    bst_pattern_editor_class_set_key (gtk_type_class (BST_TYPE_PATTERN_EDITOR),
-				      bst_pea_ktab_de[i].keyval,
-				      bst_pea_ktab_de[i].modifier,
-				      bst_pea_ktab_de[i].pe_action);
+  {
+    gchar *encoding, *layout, *model, *variant, *name = NULL;
+    GSList *slist, *name_list = NULL;
+    BstKeyTablePatch *patch = NULL;
 
+    if (bst_xkb_open (gdk_get_display (), TRUE))
+      {
+	name = g_strdup (bst_xkb_get_symbol (TRUE));
+	if (!name)
+	  name = g_strdup (bst_xkb_get_symbol (FALSE));
+	bst_xkb_close ();
+      }
+    
+    bst_xkb_parse_symbol (name, &encoding, &layout, &model, &variant);
+    BST_DEBUG (KEYTABLE, {
+      g_message ("keytable %s: encoding(%s) layout(%s) model(%s) variant(%s)",
+		 name, encoding, layout, model, variant);
+    });
+    g_free (name);
+
+    /* strip number of keys (if present) */
+    if (layout)
+      {
+	gchar *n, *l = layout;
+
+	while (*l && (*l < '0' || *l > '9'))
+	  l++;
+	n = l;
+	while (*n >= '0' && *n <= '9')
+	  n++;
+	*n = 0;
+	n = layout;
+	layout = *l ? g_strdup (l) : NULL;
+	g_free (n);
+      }
+
+    /* list guesses */
+    if (encoding)
+      {
+	name_list = g_slist_prepend (name_list, g_strdup (encoding));
+	if (layout)
+	  name_list = g_slist_prepend (name_list,
+				       g_strdup_printf ("%s-%s",
+							encoding,
+							layout));
+      }
+    if (model)
+      {
+	name_list = g_slist_prepend (name_list, g_strdup (model));
+	if (layout)
+	  name_list = g_slist_prepend (name_list,
+				       g_strdup_printf ("%s-%s",
+							model,
+							layout));
+      }
+    g_free (encoding);
+    g_free (layout);
+    g_free (model);
+    g_free (variant);
+
+    for (slist = name_list; slist; slist = slist->next)
+      {
+	name = slist->data;
+
+	if (!patch)
+	  {
+	    patch = bst_key_table_patch_find (name);
+	    BST_DEBUG (KEYTABLE, {
+	      g_message ("Guessing keytable, %s \"%s\"",
+			 patch ? "found" : "failed to get",
+			 name);
+	    });
+	  }
+	else
+	  BST_DEBUG (KEYTABLE, {
+	    g_message ("Guessing keytable, discarding \"%s\"", name);
+	  });
+	g_free (name);
+      }
+    g_slist_free (name_list);
+
+    if (!patch)
+      {
+	name = BST_DFL_KEYTABLE;	/* default keyboard */
+	BST_DEBUG (KEYTABLE, {
+	  g_message ("Guessing keytable failed, reverting to \"%s\"", name);
+	});
+	patch = bst_key_table_patch_find (name);
+      }
+
+    bst_key_table_install_patch (patch);
+  }
+    
+  
   /* open files given on command line
    */
   for (i = 1; i < argc; i++)

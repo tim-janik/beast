@@ -2352,12 +2352,29 @@ bst_pattern_editor_class_set_key (BstPatternEditorClass	*pe_class,
 				  guint16		 modifier,
 				  BstPEActionType	 pe_action)
 {
-  g_return_if_fail (pe_class != NULL);
-  g_return_if_fail (BST_PATTERN_EDITOR_CLASS (pe_class) != NULL);
+  g_return_if_fail (BST_IS_PATTERN_EDITOR_CLASS (pe_class));
   
   g_hash_table_insert (pe_class->pea_ktab,
 		       (gpointer) (keyval | ((modifier & BST_MOD_SCA) << 16)),
 		       (gpointer) (pe_action | BST_PEA_TAG));
+}
+
+static gboolean
+bst_clear_keys (gpointer key,
+		gpointer value,
+		gpointer user_data)
+{
+  return TRUE;
+}
+
+void
+bst_pattern_editor_class_clear_keys (BstPatternEditorClass *pe_class)
+{
+  g_return_if_fail (BST_IS_PATTERN_EDITOR_CLASS (pe_class));
+  
+  g_hash_table_foreach_remove (pe_class->pea_ktab,
+			       bst_clear_keys,
+			       NULL);
 }
 
 static gint

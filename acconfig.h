@@ -4,3 +4,4 @@
 
 
 #undef  BST_DFL_KEYTABLE
+#undef  BST_WITH_XKB

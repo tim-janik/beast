@@ -71,6 +71,7 @@ typedef enum
 } BstOps;
 
 #define	BST_TAG_DIAMETER	(20)
+#define BST_DEBUG(y,x)		G_STMT_START { x ; } G_STMT_END
 
 /* it's hackish to have these prototypes in here, but we need
  * 'em somewhere, implementations are in bstmain.c
