@@ -1,3 +1,13 @@
+Mon Oct  6 02:55:49 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecategories.c: adapt to new documented toplevel category set.
+	check category fundamental types.
+
+	* bse/bsecxxplugin.h: remove namespace prefix from effect and procedure
+	registration macros.
+
+	* bse/bseitem.c: make seqid a non-gui property.
+
 Sun Oct  5 10:51:06 2003  Tim Janik  <timj@gtk.org>
 
 	* bseamplifier.c: fix property defaults.

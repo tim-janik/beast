@@ -299,7 +299,7 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-PROCEDURE (bse-janitor-get-specific, "Script Utils/Specific Janitor") {
+PROCEDURE (bse-janitor-get-specific, "Janitor/Get Specific") {
   HELP  = "Retrieve the connection dependant janitor object.";
   OUT   = bse_param_spec_object ("janitor", "Janitor", NULL,
 				 BSE_TYPE_JANITOR, SFI_PARAM_DEFAULT);

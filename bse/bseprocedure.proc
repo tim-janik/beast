@@ -28,7 +28,7 @@
 AUTHORS = "Tim Janik <timj@gtk.org>";
 CRIGHTS = "Copyright (C) 2002 Tim Janik";
 
-PROCEDURE (bse-note-to-freq, "Utils/Notes/Note to Freq") {
+PROCEDURE (bse-note-to-freq, "Note to Freq") {
   HELP  = "Retrieve the frequency of a certain note.";
   IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_DEFAULT);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
@@ -59,7 +59,7 @@ PROCEDURE (bse-note-to-freq, "Utils/Notes/Note to Freq") {
   return BSE_ERROR_NONE;
 }
 
-PROCEDURE (bse-note-from-freq, "Utils/Notes/Note from Freq") {
+PROCEDURE (bse-note-from-freq, "Note from Freq") {
   HELP  = "Retrieve the note of a certain frequency.";
   IN    = sfi_pspec_real ("frequency", "Frequency", NULL,
 			  BSE_KAMMER_FREQUENCY_f, 0, BSE_MAX_FREQUENCY_f, 0.1,
@@ -78,7 +78,7 @@ PROCEDURE (bse-note-from-freq, "Utils/Notes/Note from Freq") {
   return BSE_ERROR_NONE;
 }
 
-PROCEDURE (bse-type-blurb, "Utils/Types/Get Blurb") {
+PROCEDURE (bse-type-blurb, "Type Blurb") {
   HELP  = "Retrieve the blurb for a specific type.";
   IN    = sfi_pspec_string ("type", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
   OUT   = sfi_pspec_string ("blurb", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
@@ -125,7 +125,7 @@ str2num (const gchar *str,
   return 0; /* no number */
 }
 
-PROCEDURE (bse-string-extract-number, "Utils/Strings/Extract Number") {
+PROCEDURE (bse-string-extract-number, "String Extract Number") {
   HELP  = "Retrieve numbers from a string.";
   IN    = sfi_pspec_string ("string", NULL, NULL, NULL, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("format", NULL, NULL, NULL, SFI_PARAM_DEFAULT);

@@ -69,26 +69,46 @@ centry_find (GQuark quark)
 }
 
 static inline guint
-category_strip_toplevels (const gchar *category)
+category_strip_toplevels (const gchar *category,
+                          GType        type)
 {
+  static const struct { guint length; const gchar *prefix; } scripts[] = {
+    {  9, "/Project/", },
+    {  6, "/SNet/", },
+    {  6, "/Song/", },
+    {  6, "/Part/", },
+    {  8, "/CSynth/", },
+    {  6, "/Wave/", },
+    { 10, "/WaveRepo/", },
+    {  6, "/Proc/", },
+  };
   guint l = strlen (category);
   
-  if (l > 10 && strncmp (category, "/Method/", 8) == 0)
+  if (l > 10 && strncmp (category, "/Methods/", 8) == 0)
     {
       const gchar *p = category + 8;
-      
+
+      if (!BSE_TYPE_IS_PROCEDURE (type))
+        return 0;
       p = strchr (p, '/');
       if (p && p[1])
 	return p - category + 1;
     }
   else if (l > 8 && strncmp (category, "/Modules/", 9) == 0)
-    return 9;
-  else if (l > 8 && strncmp (category, "/Scripts/", 9) == 0)
-    return 9;
-  else if (l > 8 && strncmp (category, "/Effect/", 8) == 0)
-    return 8;
-  else if (l > 6 && strncmp (category, "/Proc/", 6) == 0)
-    return 6;
+    {
+      if (!G_TYPE_IS_OBJECT (type))
+        return 0;
+      return 9;
+    }
+
+  if (BSE_TYPE_IS_PROCEDURE (type))
+    {
+      guint i;
+      for (i = 0; i < G_N_ELEMENTS (scripts); i++)
+        if (l > scripts[i].length &&
+            strncmp (category, scripts[i].prefix, scripts[i].length) == 0)
+          return scripts[i].length;
+    }
   
   return 0;
 }
@@ -112,14 +132,15 @@ leaf_index (const gchar *string)
 
 static inline CEntry*
 centry_new (const gchar *caller,
-	    const gchar *category)
+	    const gchar *category,
+            GType        type)
 {
   static GTrashStack *free_entries = NULL;
   CEntry *centry;
   GQuark quark;
   guint mindex;
   
-  mindex = category_strip_toplevels (category);
+  mindex = category_strip_toplevels (category, type);
   if (!mindex)
     {
       g_warning ("%s(): refusing to add non-conforming category `%s'", caller, category);
@@ -180,7 +201,7 @@ bse_categories_register (const gchar  *category,
   
   g_return_if_fail (category != NULL);
   
-  centry = centry_new (G_GNUC_PRETTY_FUNCTION, category);
+  centry = centry_new (G_GNUC_PRETTY_FUNCTION, category, type);
   check_type (type);
   if (centry)
     {
@@ -202,7 +223,7 @@ bse_categories_register_icon (const gchar      *category,
   g_return_if_fail (category != NULL);
   g_return_if_fail (pixdata != NULL);
   
-  centry = centry_new (G_GNUC_PRETTY_FUNCTION, category);
+  centry = centry_new (G_GNUC_PRETTY_FUNCTION, category, type);
   check_type (type);
   if (centry)
     {

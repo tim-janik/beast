@@ -168,7 +168,7 @@ while (<>) {
 		$subcat = "General/" . $subcat;
 	    }
 	    $proc_method = "\"" . $type . "+" . $proc_name . "\"";
-	    $proc_category = "\"" . "/Method/" . $type . "/" . $subcat . "\"";
+	    $proc_category = "\"" . "/Methods/" . $type . "/" . $subcat . "\"";
 	} else {
 	    die "$file:$.: Invalid METHOD/PROCEDURE directive\n";
 	}

@@ -606,7 +606,7 @@ bglue_list_method_names (SfiGlueContext *context,
   prefix = g_strdup_printf ("%s+", g_type_name (type));
   l = strlen (prefix);
   
-  cseq = bse_categories_match_typed ("/Method/" "*", BSE_TYPE_PROCEDURE);
+  cseq = bse_categories_match_typed ("/Methods/" "*", BSE_TYPE_PROCEDURE);
   p = g_new (gchar*, cseq->n_cats + 1);
   n_procs = 0;
   for (i = 0; i < cseq->n_cats; i++)

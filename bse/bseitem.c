@@ -126,7 +126,7 @@ bse_item_class_init (BseItemClass *class)
   bse_object_class_add_param (object_class, NULL,
                               PROP_SEQID,
                               sfi_pspec_int ("seqid", "Sequential ID", NULL,
-                                             0, 0, SFI_MAXINT, 1, SFI_PARAM_GUI_READABLE));
+                                             0, 0, SFI_MAXINT, 1, SFI_PARAM_READABLE));
 }
 
 static void

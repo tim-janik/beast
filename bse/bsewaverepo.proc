@@ -161,7 +161,7 @@ METHOD (BseWaveRepo, remove-wave) {
   return BSE_ERROR_NONE;
 }
 
-PROCEDURE (bse-sample-file-info, "Utils/Sample File Info") {
+PROCEDURE (bse-sample-file-info, "Sample File Info") {
   HELP	= "Load sample file info from file";
   IN	= sfi_pspec_string ("file_name", "File Name", "The file to load info from",
 			    NULL, SFI_PARAM_DEFAULT);

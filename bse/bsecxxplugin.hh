@@ -96,16 +96,17 @@ EnumValue (int         int_value,
   (bse_type_keeper__9##ProcType.get_type ())
 #define BSE_CXX_DECLARE_PROC(ProcType)                                  \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__9##ProcType;
-#define BSE_CXX_REGISTER_PROC(NameSpace, ProcType)                              \
+#define BSE_CXX_REGISTER_PROC(ProcType)                                         \
   template<class C> static ::BseExportNode* bse_export_node ();                 \
   template<> static ::BseExportNode*                                            \
   bse_export_node<Procedure_##ProcType> ()                                      \
   {                                                                             \
     static ::BseExportNodeProc pnode = {                                        \
-      { NULL, ::BSE_EXPORT_NODE_PROC, #NameSpace #ProcType, },                  \
+      { NULL, ::BSE_EXPORT_NODE_PROC, NULL, },                                  \
       0, Procedure_##ProcType::init, Procedure_##ProcType::marshal,             \
     };                                                                          \
-    if (!pnode.node.category && !pnode.node.pixstream && !pnode.node.blurb) {   \
+    if (!pnode.node.name) {                                                     \
+      pnode.node.name = Procedure_##ProcType::type_name();                      \
       pnode.node.category = Procedure_##ProcType::category();                   \
       pnode.node.pixstream = Procedure_##ProcType::pixstream();                 \
       pnode.node.blurb = Procedure_##ProcType::blurb();                         \
@@ -127,7 +128,7 @@ EnumValue (int         int_value,
   (bse_type_keeper__0##ClassType.get_type ())
 #define BSE_CXX_DECLARE_CLASS(ClassType)                                \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__0##ClassType;
-#define BSE_CXX_REGISTER_EFFECT(NameSpace, Effect)                              \
+#define BSE_CXX_REGISTER_EFFECT(Effect)                                         \
   BSE_CXX_DEFINE_SET_PROPERTY (Effect ## Base);                                 \
   BSE_CXX_DEFINE_GET_PROPERTY (Effect ## Base);                                 \
   BSE_CXX_DEFINE_CLASS_INIT (Effect,                                            \
@@ -140,13 +141,14 @@ EnumValue (int         int_value,
   bse_export_node<Effect> ()                                                    \
   {                                                                             \
     static ::BseExportNodeClass cnode = {                                       \
-      { NULL, ::BSE_EXPORT_NODE_CLASS, #NameSpace #Effect, },                   \
+      { NULL, ::BSE_EXPORT_NODE_CLASS, NULL, },                                 \
       "BseEffect", BSE_CXX_COMMON_CLASS_SIZE,                                   \
       (GClassInitFunc) BSE_CXX_SYM (Effect, class_init), NULL,                  \
       BSE_CXX_INSTANCE_OFFSET + sizeof (Effect),                                \
       BSE_CXX_SYM (Effect, instance_init),                                      \
     };                                                                          \
-    if (!cnode.node.category && !cnode.node.pixstream && !cnode.node.blurb) {   \
+    if (!cnode.node.name) {                                                     \
+      cnode.node.name = Effect::type_name();                                    \
       cnode.node.category = Effect::category();                                 \
       cnode.node.pixstream = Effect::pixstream();                               \
       cnode.node.blurb = Effect::blurb();                                       \

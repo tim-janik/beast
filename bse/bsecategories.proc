@@ -24,7 +24,7 @@ AUTHORS	= "Tim Janik <timj@gtk.org>";
 CRIGHTS	= "Copyright (C) 2002 Tim Janik";
 
 
-PROCEDURE (bse-categories-match-typed, "Utils/Categories/Match Typed") {
+PROCEDURE (bse-categories-match-typed, "Categories/Match Typed") {
   HELP  = "List BSE categories according to a pattern and type match.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
 			    "*", SFI_PARAM_DEFAULT);
@@ -57,7 +57,7 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-PROCEDURE (bse-categories-match, "Utils/Categories/Match") {
+PROCEDURE (bse-categories-match, "Categories/Match") {
   HELP  = "List BSE categories according to a pattern match.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
 			    "*", SFI_PARAM_DEFAULT);
@@ -85,7 +85,7 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-PROCEDURE (bse-category-from-id, "Utils/Categories/From ID") {
+PROCEDURE (bse-category-from-id, "Categories/From ID") {
   HELP  = "Find a BSE category from it's unique ID.";
   IN	= sfi_pspec_int ("category_id", "Category ID", NULL,
 			 1, 1, G_MAXINT, 1, SFI_PARAM_DEFAULT);
@@ -125,7 +125,7 @@ categories_check_method (BseCategory *cat,
   return match;
 }
 
-PROCEDURE (bse-categories-match-method, "Utils/Categories/Match Method") {
+PROCEDURE (bse-categories-match-method, "Categories/Match Method") {
   HELP  = "List BSE categories according to a pattern, of type procedure and applying to a certain object type.";
   IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
 			    "*", SFI_PARAM_DEFAULT);

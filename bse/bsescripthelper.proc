@@ -25,7 +25,7 @@ AUTHORS	= "Tim Janik <timj@gtk.org>";
 CRIGHTS = "Copyright (C) 2002 Tim Janik";
 
 
-PROCEDURE (bse-proxy-check, "Utils/Glue/Check") {
+PROCEDURE (bse-proxy-check, "Proxy Check") {
   BLURB	= "Check whether a proxy has a certain type.";
   IN	= bse_param_spec_object ("item", "Item", "The Item",
 				 BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
