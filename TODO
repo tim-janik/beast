@@ -1,4 +1,5 @@
 FIXMES:
+- implement auto-save feature
 - undo across midi file import is broken
 - implement (GUI for) locked properties
 - add clone tool for csynths

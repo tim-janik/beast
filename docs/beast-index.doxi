@@ -19,9 +19,10 @@
 @unnumbered Reference
 
 @itemize
-@item @uref{beast-man://1/bse-plugin-generator,, BSE Plugin Generator Manual Page}
-@item @uref{beast-man://3/bse-procs,,   	 BSE Procedures}
+@item @uref{beast-doc://objdoc,, 	 	 BSE Objects and Plugins}
 @item @uref{beast-man://3/bse-structs,, 	 BSE Structures}
+@item @uref{beast-man://3/bse-procs,,   	 BSE Procedures}
+@item @uref{beast-man://1/bse-plugin-generator,, BSE Plugin Generator Manual Page}
 @item @uref{beast-man://3/sfi,,         	 Synthesis Fusion Kit Interface}
 @item @uref{beast-man://3/bse,,         	 Bedevilled Sound Engine}
 @item @uref{beast-man://3/beast-gxk,,   	 BEAST's Gtk+ Extension Kit}

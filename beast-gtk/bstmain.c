@@ -49,13 +49,6 @@ static gboolean     arg_force_xkb = FALSE;
 static gboolean     register_core_plugins = TRUE;
 static gboolean     register_ladspa_plugins = TRUE;
 static gboolean     register_scripts = TRUE;
-static const gchar *bst_rc_string =
-( "style'BstTooltips-style'"
-  "{"
-  "bg[NORMAL]={.94,.88,0.}"
-  "}"
-  "widget'gtk-tooltips'style'BstTooltips-style'"
-  "\n");
 
 
 /* --- functions --- */
@@ -148,10 +141,6 @@ main (int   argc,
   _bst_init_params ();
   _bst_gconfig_init ();
   bst_splash_update_item (beast_splash, _("Language"));
-
-  /* GUI patchups
-   */
-  gtk_rc_parse_string (bst_rc_string);
 
   /* parse rc file
    */

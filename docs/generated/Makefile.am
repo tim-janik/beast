@@ -21,6 +21,7 @@ markup_targets = $(strip		\
 	engine-mplan.markup		\
 	quickstart.markup		\
 	beast-index.markup		\
+	objdoc.markup			\
 	$(man1_MANS:.1=.1.markup)	\
 	$(man3_MANS:.3=.3.markup)	\
 )
@@ -44,6 +45,7 @@ html_targets = $(strip		\
 	log-bse.html		\
 	log-plugins.html	\
 	log-sfi.html		\
+	objdoc.html		\
 	release-news.html	\
 	$(man1_MANS:.1=.1.html)	\
 	$(man3_MANS:.3=.3.html)	\
@@ -84,7 +86,9 @@ bse-procs.3.texi: $(AUTODOC) texiutils.texi $(top_builddir)/config.status
 bse-structs.3.texi: $(AUTODOC) texiutils.texi $(top_builddir)/config.status
 	$(AUTODOC)  --seealso "beast-man://3/bse-procs,BSE Procedures" \
 		    structs >$@
-temp_ref_docu = sfi.3.texi bse.3.texi beast-gxk.3.texi bse-procs.3.texi bse-structs.3.texi
+objdoc.texi: $(AUTODOC) texiutils.texi $(top_builddir)/config.status
+	$(AUTODOC)  -p objects >$@
+temp_ref_docu = sfi.3.texi bse.3.texi beast-gxk.3.texi bse-procs.3.texi bse-structs.3.texi objdoc.texi
 
 
 #

@@ -27,8 +27,9 @@
       <navigation-node title="bsesh(1)"            target="bsesh.1.html"   />
     </navigation-node>
     <navigation-node title="API Reference">
-      <navigation-node title="BSE Procedures"      target="bse-procs.3.html"   />
+      <navigation-node title="BSE Objects"         target="objdoc.html" />
       <navigation-node title="BSE Structs"         target="bse-structs.3.html" />
+      <navigation-node title="BSE Procedures"      target="bse-procs.3.html"   />
       <navigation-node title="SFI Functions"       target="sfi.3.html"         />
     </navigation-node>
   </navigation-node>

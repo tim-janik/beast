@@ -1,3 +1,10 @@
+Sun Jan  4 19:47:38 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (main): removed rc parsing code for yellow
+	tooltips.
+
+	* docs/generated/Makefile.am: added objdoc.* generation rules.
+
 Fri Jan  2 14:39:05 2004  Tim Janik  <timj@gtk.org>
 
 	* ltconfig: more libtool file removal.
