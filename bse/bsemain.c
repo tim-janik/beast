@@ -204,6 +204,7 @@ bse_init_core (void)
       { "dcache_cache_memory",		10 * 1024 * 1024, },
       { "midi_kammer_note",		BSE_KAMMER_NOTE, },
       { "kammer_freq",			BSE_KAMMER_FREQUENCY_f, },
+      { NULL, },
     };
     gsl_init (gslconfig);
   }

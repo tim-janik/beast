@@ -507,7 +507,7 @@ bst_track_view_create_tree (BstItemView *iview)
 				 COL_VOICES, 0.5, "V", "Maximum number of voices for simultaneous playback",
 				 track_view_voices_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree,
-				  COL_SYNTH, 0.5, "Test", "Test column with popup",
+				  COL_SYNTH, 0.5, "Synth", "Synthesizer network to be used by this track",
 				  track_view_synth_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree,
 				 COL_BLURB, 0.0, "Comment", NULL,

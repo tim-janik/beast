@@ -771,9 +771,7 @@ bst_app_operate (BstApp *app,
     HELP_DIALOG:
       if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
 	{
-	  GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG |
-						      GXK_SCROLL_TEXT_NAVIGATABLE |
-						      GXK_SCROLL_TEXT_MONO_SPACED, NULL);
+	  GtkWidget *sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_NAVIGATABLE, NULL);
 	  gchar *index = g_strconcat ("file://", BST_PATH_DOCS, "/beast-index.markup", NULL);
 	  gxk_scroll_text_set_index (sctext, index);
 	  g_free (index);
@@ -797,8 +795,7 @@ bst_app_operate (BstApp *app,
 	  GtkWidget *sctext;
 	  help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
 	  help_title = help_file;
-	  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG |
-					   GXK_SCROLL_TEXT_MONO_SPACED, NULL);
+	  sctext = gxk_scroll_text_create (0, NULL);
 	  gxk_scroll_text_append_file_tsm (sctext, help_file);
 	  help_file = g_strconcat (BST_PATH_DOCS, "/release-news.markup", NULL);
 	  gxk_scroll_text_append_file_tsm (sctext, help_file);

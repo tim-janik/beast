@@ -337,14 +337,22 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
     dnl OSS-Lite driver check
     AC_CHECK_HEADER(sys/soundcard.h, have_oss_header=yes, have_oss_header=no)
     result=
-    if test -c /dev/dsp ; then
+    AC_ARG_ENABLE([devdsp],
+	          [  --enable-devdsp         force enable /dev/dsp],
+                  [force_devdsp=yes; AC_MSG_WARN([Ignoring detection of /dev/dsp])],
+                  [force_devdsp=no])
+    if test x"${force_devdsp}" = "xyes" || test -c /dev/dsp ; then
 	bse_have_pcmdev=yes
         AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_OSS, "/dev/dsp")
         result="$result""PCM:/dev/dsp "
     else
         result="$result""PCM:none "
     fi
-    if test $have_oss_header = yes && test -c /dev/midi ; then
+    AC_ARG_ENABLE([devmidi],
+	          [  --enable-devmidi        force enable /dev/midi],
+                  [force_midi=yes; AC_MSG_WARN([Ignoring detection of /dev/midi])],
+                  [force_midi=no])
+    if test $have_oss_header = yes && ( test x"${force_midi}" = "xyes" || test -c /dev/midi ) ; then
         AC_DEFINE_UNQUOTED(BSE_MIDI_DEVICE_CONF_OSS, "/dev/midi")
         result="$result""MIDI:/dev/midi "
     else

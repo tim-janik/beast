@@ -429,7 +429,7 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 							     "visible", TRUE,
 							     "border_width", 5,
 							     "label", "Module Info",
-							     "child", gxk_scroll_text_create (0, NULL),
+							     "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL),
 							     NULL));
     }
   csource_info_update (csource);

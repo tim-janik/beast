@@ -59,9 +59,7 @@ main (int   argc,
   gxk_text_add_tsm_path (".");
   gxk_text_add_tsm_path (BST_PATH_DOCS);
   gxk_text_add_tsm_path (BST_PATH_IMAGES);
-  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_SHEET_BG |
-				   GXK_SCROLL_TEXT_NAVIGATABLE | flags |
-				   GXK_SCROLL_TEXT_MONO_SPACED, NULL);
+  sctext = gxk_scroll_text_create (GXK_SCROLL_TEXT_NAVIGATABLE | flags, NULL);
   gxk_scroll_text_enter (sctext, title);
   for (i = 1; i < argc; i++)
     if (argv[i])

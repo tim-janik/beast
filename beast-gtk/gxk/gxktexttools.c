@@ -1151,17 +1151,22 @@ scroll_text_patchup_size_request (GtkWidget      *scwin,
  * @flags:  scroll text flags
  * @string: default contents
  *
- * Create a scrollable text view. Behaviour
- * and apperance can be tweaked by specifying various
- * @flags combinations out of:
- * GXK_SCROLL_TEXT_MONO_SPACED - use a fixed width font;
- * GXK_SCROLL_TEXT_CENTER - center @string;
- * GXK_SCROLL_TEXT_NO_WRAP - disallow word wrapping of @string;
- * GXK_SCROLL_TEXT_SHEET_BG - use white as default background
- * (similar to lists, trees and text widgets) instead of the
- * normal grey widget background;
- * GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow
- * the user to navigate through clickable links.
+ * Create a scrollable text view. Behaviour and apperance can
+ * be tweaked by specifying various @flags:
+ @* GXK_SCROLL_TEXT_MONO - use a fixed width font;
+ @* GXK_SCROLL_TEXT_SANS - use a sans serif font;
+ @* GXK_SCROLL_TEXT_SERIF - use a serif font;
+ @* GXK_SCROLL_TEXT_WRAP - allow word wrapping of @string;
+ @* GXK_SCROLL_TEXT_CENTER - center @string;
+ @* GXK_SCROLL_TEXT_WIDGET_BG - do not use white as background,
+ * but keep the usual (grey) widget background;
+ @* GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow
+ * the user to navigate through clickable links;
+ @* GXK_SCROLL_TEXT_EDITABLE - permit modifications of the text;
+ @* GXK_SCROLL_TEXT_WIDGET_LOOK - this is a combination of flags
+ * to adjust the scroll text to look like an ordinary #GtkLabel,
+ * which amounts to using a sans serif font, normal widget
+ * background and allowing word wrapping.
  */
 GtkWidget*
 gxk_scroll_text_create (GxkScrollTextFlags flags,
@@ -1250,17 +1255,26 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
 		  NULL);
   g_signal_connect_swapped (widget, "key_press_event", G_CALLBACK (scroll_text_key_event), sctext);
   gxk_text_view_enter_browse_mode (GTK_TEXT_VIEW (widget));
-  if (flags & GXK_SCROLL_TEXT_NO_WRAP)
-    g_object_set (widget, "wrap_mode", GTK_WRAP_NONE, NULL);
-  else
+  if (flags & GXK_SCROLL_TEXT_WRAP)
     g_object_set (widget, "wrap_mode", GTK_WRAP_WORD, NULL);
+  else
+    g_object_set (widget, "wrap_mode", GTK_WRAP_NONE, NULL);
   if (flags & GXK_SCROLL_TEXT_CENTER)
     g_object_set (widget, "justification", GTK_JUSTIFY_CENTER, NULL);
-  if (flags & GXK_SCROLL_TEXT_MONO_SPACED)
-    g_object_set_data ((GObject*) tbuffer, "family", "monospace");
-  else
-    g_object_set_data ((GObject*) tbuffer, "family", "serif");
-  if (!(flags & GXK_SCROLL_TEXT_SHEET_BG))
+  switch (flags & (GXK_SCROLL_TEXT_MONO | GXK_SCROLL_TEXT_SANS | GXK_SCROLL_TEXT_SERIF))
+    {
+    case GXK_SCROLL_TEXT_SANS:
+      g_object_set_data ((GObject*) tbuffer, "family", "sans");
+      break;
+    case GXK_SCROLL_TEXT_SERIF:
+      g_object_set_data ((GObject*) tbuffer, "family", "serif");
+      break;
+    default:
+    case GXK_SCROLL_TEXT_MONO:
+      g_object_set_data ((GObject*) tbuffer, "family", "monospace");
+      break;
+    }
+  if (flags & GXK_SCROLL_TEXT_WIDGET_BG)
     gxk_widget_modify_base_as_bg (widget);
 
   gxk_scroll_text_append (sctext, string);

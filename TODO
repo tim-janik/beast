@@ -2,19 +2,14 @@ FIXMES:
 - update release notes
 - add demo song
 - fix all test files
-- add configure option for devices
-- fix .bse file version number
+- fix plugins in bsesh
 - fix engine deinitialization assertions in bseserver.c
+- default saving (SFI_PARAM_SKIP_DEFAULT)
 - match enum names on word boundaries only
 - master tune slider in preferences (kammer ton)
 - bst_gmask should use typedef struct _BstGMask BstGMask; instead of gpointer
-- fix usage of serif fonts in sans-serif dialogs
 - bsemididevice-oss throws warnings when compiled without midi support
-- typed record serialization needs to honour indent for sfi_value_store_param()
-- serialization of homogeneous sequences could store the field type code only once
-- storage: data pocket: use typed serialization instead of #-hack for generic values
 - MidiEvent (serialization)
-- fix "Test column with popup"
 - make bst_catalog_get_action() always return an action, so callers don't need to check
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
 - open() may return -EINVAL (e.g. for non-readable cards),
@@ -47,6 +42,11 @@ FIXMES:
 - sample chunk display should show note names not only midi notes
 - bstusermessage.c:user_message() signal handler takes choice argument, fix connections
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
+- RackEditor covers are broken for rack-items close to right table boundary
+- delay class destruction and plugin unloading through async handlers (slight timeout)
+- replace Balance settings with 3d room position?
+- check for non-xref object links which should be turned into xrefs
+* eliminate everything that fgrep -i fixme/hack reveals
 
 DOCS:
 - try implementing some kind of table layout for tsmview [timj]
@@ -60,6 +60,43 @@ DOCS:
   apropriate functions [alper]
 - the beast site is unusable under IE [alper]
 - nroff files need another build step to get final page numbers [alper]
+
+General BSE:
+- level-o-meter visualizer at links (adjustable?)
+  needs linear (red >1) and logarithmic display
+- frequency shifter/multiplier (*2 etc.)
+- fix fine-tune settings (from gsl)
+- fix snet property changes in sub synth and instrument
+- replace gsl_signal_exp2() with gsl_approx_exp2() and audio test result
+- provide proper dB functions in GSL
+- adjust stepping and type for all percentage settings
+- alive keeping for waves which are removed, but whose index is in use?
+- loading (restore) may only work when not playing (to keep consistency
+  and avoid lock contentions during playback)
+- during playback the instrument set needs to be fixed on a song  
+- BSE_SOURCE_GET_CLASS (source)->remove_input() add GslTrans* so clear_input removes really in batches
+- add pre-amplification (0..1) to freeverb for clip prevention
+- fix scanner error messages for deferred channel resolution to include the *correct* line number
+- fix update_suspension_state() recursion for ordinary cycles
+- BseSubinstrument contains pixel artefact
+BseWaveChunk:
+  if (pos > wchunk->tail.end)                                   /* outside wave boundaries */
+    {
+      iter->lbound = 0;
+      iter->rel_pos = wchunk->n_pad_values;
+      iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, pos - wchunk->tail.end);
+      if (PRINT_DEBUG_INFO)
+        g_print ("PHASE_UNDEF, post-tail %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
+      return PHASE_UNDEF (wchunk);
+    }
+  the "pos - wchunk->tail.end" is wrong for direction=+1, should be checked only for direction=-1 and
+  then affect lbound
+* wavechunk, fill-block:
+  wpos.loop_count = loop_count;
+  dnode = gsl_data_cache_ref_node (wchunk->dcache, 0, TRUE);
+  s/0/wpos.pos/ or offset
+- notifier wakeup is disabled in bsemidireceiver.c
+  ('cause gsl_thread_main needs to be replaced by bse_main_thred() or somesuch)
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq
@@ -121,9 +158,6 @@ PianoRoll:
 - fix hscrollbar  (BsePart end position implementation)
 - select loop for playback during editing
 
-RackEditor:
-- covers are broken for rack-items close to right table boundary
-
 GUI features:
 - entry focus watcher: for property editing entries, do:
   ::focus_in   - set changed_flag=0
@@ -148,60 +182,6 @@ General BEAST:
 * get File/Save to work
 * quit/close needs to feature mod-time vs. creation-time handling
 * wave editor: provide transpose spinner for wave preview
-
-BseWaveChunk:
-  if (pos > wchunk->tail.end)                                   /* outside wave boundaries */
-    {
-      iter->lbound = 0;
-      iter->rel_pos = wchunk->n_pad_values;
-      iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, pos - wchunk->tail.end);
-      if (PRINT_DEBUG_INFO)
-        g_print ("PHASE_UNDEF, post-tail %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
-      return PHASE_UNDEF (wchunk);
-    }
-  the "pos - wchunk->tail.end" is wrong for direction=+1, should be checked only for direction=-1 and
-  then affect lbound
-* wavechunk, fill-block:
-  wpos.loop_count = loop_count;
-  dnode = gsl_data_cache_ref_node (wchunk->dcache, 0, TRUE);
-  s/0/wpos.pos/ or offset
-- notifier wakeup is disabled in bsemidireceiver.c
-  ('cause gsl_thread_main needs to be replaced by bse_main_thred() or somesuch)
-
-General BSE:
-- level-o-meter visualizer at links (adjustable?)
-  needs linear (red >1) and logarithmic display
-- frequency shifter/multiplier (*2 etc.)
-- fix fine-tune settings (from gsl)
-- _SL functions have to be revisited and thoroughly implemented
-- track_step_SL() needs bpm_tick => stamp_tick translation
-- fix snet property changes in sub synth and instrument
-- replace gsl_signal_exp2() with gsl_approx_exp2() and audio test result
-- check for non-xref object links which should be turned into xrefs
-- re-eval balance defines, provide just MAX_BALANCE
-- provide proper dB functions in GSL
-- implement ":force-dirty" hint (never skip save due to value==default)
-- adjust stepping and type for all percentage settings
-- get rid of BseSampleValue
-- get rid of parasites by means of using data pocket and BseSource.x/y
-- alive keeping for waves which are removed, but whose index is in use?
-- loading (restore) may only work when not playing (to keep consistency
-  and avoid lock contentions during playback)
-- during playback the instrument set needs to be fixed on a song  
-- BSE_SOURCE_GET_CLASS (source)->remove_input() add GslTrans* so clear_input removes really in batches
-- add pre-amplification (0..1) to freeverb for clip prevention
-- fix scanner error messages for deferred channel resolution to include the *correct* line number
-- fix update_suspension_state() recursion for ordinary cycles
-- BseSubinstrument contains pixel artefact
-  
-Old BSE:
-general:
--	delay class destruction and plugin unloading through async handlers (slight timeout)
-*	eliminate everything that fgrep -i fixme/hack reveals ;)
--	param_changed(): update modified stamp and record undo
-Balance
--	replace with 3d room position?
-
 
 sfidl:
   fixes:

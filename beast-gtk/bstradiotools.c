@@ -559,7 +559,7 @@ bst_radio_tools_build_palette (BstRadioTools *self,
   gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, TRUE, 0);
   if (show_descriptions)
     {
-      text = gxk_scroll_text_create (0, NULL);
+      text = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL);
       g_object_set_data (G_OBJECT (text), "user_data", GUINT_TO_POINTER (~0));
       gtk_widget_ref (text);
       gtk_object_sink (GTK_OBJECT (text));

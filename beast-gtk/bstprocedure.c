@@ -202,7 +202,7 @@ bst_procedure_shell_rebuild (BstProcedureShell *self)
    */
   if (proc->blurb)
     {
-      GtkWidget *hbox, *text = gxk_scroll_text_create (GXK_SCROLL_TEXT_CENTER, proc->blurb);
+      GtkWidget *hbox, *text = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK | GXK_SCROLL_TEXT_CENTER, proc->blurb);
 
       hbox = gtk_widget_new (GTK_TYPE_HBOX,
                              "visible", TRUE,
