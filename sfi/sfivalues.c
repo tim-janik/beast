@@ -744,7 +744,7 @@ gboolean
 sfi_value_type_transformable (GType           src_type,
 			      GType           dest_type)
 {
-  if (sfi_value_type_transformable (src_type, dest_type))
+  if (g_value_type_transformable (src_type, dest_type))
     return TRUE;
   if (src_type == SFI_TYPE_CHOICE && G_TYPE_IS_ENUM (dest_type) && dest_type != G_TYPE_ENUM)
     return TRUE;

@@ -1,3 +1,8 @@
+Tue Feb 18 16:29:19 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfivalues.c: make sfi_value_type_transformable actually call
+	g_value_type_transformable, which makes it actually work.
+
 Mon Feb 17 19:07:13 2003  Tim Janik  <timj@gtk.org>
 
 	* sfivalues.[hc]: <sigh>, added sfi_value_transform(),
