@@ -1,4 +1,5 @@
 FIXMES:
+- fix "Test column with popup"
 - make bst_catalog_get_action() always return an action, so callers don't need to check
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
 - open() may return -EINVAL (e.g. for non-readable cards),
