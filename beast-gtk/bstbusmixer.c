@@ -153,7 +153,8 @@ bus_mixer_action_exec (gpointer data,
       SfiProxy item;
     case ACTION_ADD_BUS:
       item = bse_song_create_bus (song);
-      bst_item_view_select (iview, item);
+      if (item)
+        bst_item_view_select (iview, item);
       break;
     }
   gxk_widget_update_actions_downwards (self);
