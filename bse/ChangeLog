@@ -1,3 +1,16 @@
+Sat Oct  4 03:00:03 2003  Tim Janik  <timj@gtk.org>
+
+	* copied files in CVS repository for object renames:
+	BseMonoKeyboard    -> BseMidiInput
+	BseMidiIController -> BseMidiController
+	BseSubKeyboard     -> BseInstrumentInput
+	BseSubInstrument   -> BseInstrumentOutput
+
+	* bsemidiinput.[hc]: copy of bsemonokeyboard.[hc].
+	* bsemidicontroller.[hc]: copy of bsemidiicontroller.[hc].
+	* bseinstrumentinput.[hc]: copy of bsesubkeyboard.[hc].
+	* bseinstrumentoutput.[hc]: copy of bsesubinstrument.[hc].
+
 Fri Oct  3 13:34:53 2003  Tim Janik  <timj@gtk.org>
 
 	* bseproject.c (bse_project_dispose): stop and deactivate playing

@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BSE_MONO_KEYBOARD_H__
-#define __BSE_MONO_KEYBOARD_H__
+#ifndef __BSE_MIDI_INPUT_H__
+#define __BSE_MIDI_INPUT_H__
 
 #include <bse/bsesource.h>
 #include <bse/bsemidievent.h>
@@ -62,4 +62,4 @@ enum
 
 G_END_DECLS
 
-#endif /* __BSE_MONO_KEYBOARD_H__ */
+#endif /* __BSE_MIDI_INPUT_H__ */

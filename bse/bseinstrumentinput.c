@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1999, 2000-2002 Tim Janik
+ * Copyright (C) 1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "bsesubkeyboard.h"
+#include "bseinstrumentinput.h"
 
 #include "bsecategories.h"
 #include "bsesnet.h"

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1999, 2000-2002 Tim Janik
+ * Copyright (C) 1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,15 +16,12 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BSE_SUB_INSTRUMENT_H__
-#define __BSE_SUB_INSTRUMENT_H__
+#ifndef __BSE_INSTRUMENT_OUTPUT_H__
+#define __BSE_INSTRUMENT_OUTPUT_H__
 
 #include <bse/bsesuboport.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_SUB_INSTRUMENT		     (BSE_TYPE_ID (BseSubInstrument))
@@ -57,10 +54,6 @@ enum
   BSE_SUB_INSTRUMENT_ICHANNEL_DONE
 };
 
+G_END_DECLS
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#endif /* __BSE_SUB_INSTRUMENT_H__ */
+#endif /* __BSE_INSTRUMENT_OUTPUT_H__ */

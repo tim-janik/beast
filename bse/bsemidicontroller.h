@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BSE_MIDI_ICONTROLLER_H__
-#define __BSE_MIDI_ICONTROLLER_H__
+#ifndef __BSE_MIDI_CONTROLLER_H__
+#define __BSE_MIDI_CONTROLLER_H__
 
 #include <bse/bsesource.h>
 #include <bse/bsemidievent.h>
@@ -63,4 +63,4 @@ enum
 
 G_END_DECLS
 
-#endif /* __BSE_MIDI_ICONTROLLER_H__ */
+#endif /* __BSE_MIDI_CONTROLLER_H__ */
