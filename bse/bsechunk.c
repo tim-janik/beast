@@ -129,6 +129,12 @@ bse_hunk_alloc (guint n_tracks)
 
   g_return_val_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS, NULL);
 
+  /* UTSL? probably because you want to know how long a hunk is? ;)
+   * it is exactly sizeof (BseSampleValue) * n_tracks * BSE_TRACK_LENGTH bytes long.
+   * so, suppose you want to fill a mono hunk with usefull stuff, you'd do
+   * for (i = 0; i < BSE_TRACK_LENGTH; i++) hunk[i] = rand ();
+   */
+
   n_tracks--;
   for (i = n_tracks; i < BSE_MAX_N_TRACKS; i++)
     if (hunk_heap[i])

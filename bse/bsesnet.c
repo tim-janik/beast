@@ -319,7 +319,7 @@ bse_snet_remove_source (BseSNet   *snet,
   bse_container_remove_item (container, item);
 }
 
-#define N_RAND_BLOCKS 4
+#define N_RAND_BLOCKS 17
 
 static void
 bse_snet_prepare (BseSource *source,
@@ -350,8 +350,17 @@ bse_snet_calc_chunk (BseSource *source,
    * the source stopped playing
    */
 
-  hunk = bse_hunk_copy (snet->junk + (2 * BSE_TRACK_LENGTH * (source->index % N_RAND_BLOCKS)),
-			2);
+  if (1)
+    hunk = bse_hunk_copy (snet->junk + (2 * BSE_TRACK_LENGTH * (rand () % N_RAND_BLOCKS)),
+			  2);
+  else
+    {
+      guint i, n_tracks = 2;
+
+      hunk = bse_hunk_alloc (n_tracks);
+      for (i = 0; i < BSE_TRACK_LENGTH * n_tracks; i++)
+	hunk[i] = rand ();
+    }
 
   return bse_chunk_new_orphan (2, hunk);
 }
