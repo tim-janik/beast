@@ -252,7 +252,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
   g_return_val_if_fail (dhandle != NULL, -1);
   g_return_val_if_fail (direction == -1 || direction == +1, -1);
 
-  if (start_offset >= dhandle->n_values || gsl_data_handle_open (dhandle) != 0)
+  if (start_offset >= dhandle->n_values || gsl_data_handle_open (dhandle) != GSL_ERROR_NONE)
     return -1;
 
   if (start_offset < 0)

@@ -654,7 +654,6 @@ gslwave_create_chunk_handle (gpointer      data,
 	  return NULL;
 	}
       dhandle = gsl_wave_handle_new (string,	/* file_name */
-				     0,
 				     dsc->format,
 				     dsc->byte_order,
 				     chunk->loader_offset,	/* byte_offset */

@@ -1049,7 +1049,7 @@ bse_storage_parse_wave_handle (BseStorage     *storage,
     }
 
   if (data_handle_p)
-    *data_handle_p = gsl_wave_handle_new (storage->scanner->input_name, 0,
+    *data_handle_p = gsl_wave_handle_new (storage->scanner->input_name,
 					  bblock.bytes_per_value == 1 ? GSL_WAVE_FORMAT_SIGNED_8 :
 					  bblock.bytes_per_value == 2 ? GSL_WAVE_FORMAT_SIGNED_16 :
 					  GSL_WAVE_FORMAT_FLOAT,

@@ -18,6 +18,7 @@
  */
 #include <gsl/gsldatahandle-mad.h>
 
+#include "gslfilehash.h"
 #include <gsl/gsldatautils.h>
 #include <assert.h>
 #include <stdio.h>
@@ -61,7 +62,7 @@ typedef struct
 
   /* file IO */
   guint         eof : 1;
-  gint          fd;
+  GslHFile     *hfile;
   guint		file_pos;
   const gchar  *error;
 
@@ -107,9 +108,7 @@ stream_read (MadHandle *handle)
     }
 
   /* fill buffer */
-  do
-    l = read (handle->fd, handle->buffer + handle->bfill, FILE_BUFFER_SIZE - handle->bfill);
-  while (l < 0 && errno == EINTR);
+  l = gsl_hfile_pread (handle->hfile, handle->file_pos, FILE_BUFFER_SIZE - handle->bfill, handle->buffer + handle->bfill);
   if (l > 0)
     {
       handle->bfill += l;
@@ -245,9 +244,7 @@ create_seek_table (MadHandle *handle,
   mad_stream_options (&handle->stream, handle->stream_options);
 
   offs = 0;
-  if (lseek (handle->fd, offs, SEEK_SET) != offs &&
-      lseek (handle->fd, offs, SEEK_SET) != offs) /* retry */
-    return NULL;	/* FIXME: errno */
+  /* lseek (handle->hfile, offs, SEEK_SET) */
   handle->eof = FALSE;
   handle->bfill = 0;
   handle->file_pos = 0;
@@ -301,11 +298,7 @@ create_seek_table (MadHandle *handle,
       
   /* reset file offset */
   offs = 0;
-  if (lseek (handle->fd, offs, SEEK_SET) != offs)
-    {
-      g_free (seeks);
-      return NULL;
-    }
+  /* lseek (handle->hfile, offs, SEEK_SET) */
   handle->eof = FALSE;
   handle->file_pos = 0;
   handle->bfill = 0;
@@ -317,21 +310,18 @@ create_seek_table (MadHandle *handle,
   return seeks;
 }
 
-static gint
+static GslErrorType
 dh_mad_open (GslDataHandle *data_handle)
 {
   MadHandle *handle = (MadHandle*) data_handle;
+  GslHFile *hfile;
   GslLong n;
-  gint fd;
 
-  if (!handle->initial_setup && !gsl_check_file_mtime (handle->dhandle.name, handle->dhandle.mtime))
-    return EBADFD;
+  hfile = gsl_hfile_open (handle->dhandle.name);
+  if (!hfile)
+    return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
 
-  fd = open (handle->dhandle.name, O_RDONLY);
-  if (fd < 0)
-    return errno ? errno : EIO;
-
-  handle->fd = fd;
+  handle->hfile = hfile;
   handle->bfill = 0;
   handle->eof = FALSE;
   handle->pcm_pos = 0;
@@ -397,7 +387,7 @@ dh_mad_open (GslDataHandle *data_handle)
   if (dh_mad_coarse_seek (&handle->dhandle, 0) != 0)
     goto OPEN_FAILED;
 
-  return 0;
+  return GSL_ERROR_NONE;
 
  OPEN_FAILED:
   if (handle->initial_setup)
@@ -415,10 +405,10 @@ dh_mad_open (GslDataHandle *data_handle)
   mad_synth_finish (&handle->synth);
   mad_frame_finish (&handle->frame);
   mad_stream_finish (&handle->stream);
-  close (handle->fd);
-  handle->fd = -1;
+  gsl_hfile_close (handle->hfile);
+  handle->hfile = NULL;
 
-  return EIO;
+  return GSL_ERROR_OPEN_FAILED;
 }
 
 static GslLong
@@ -546,18 +536,7 @@ dh_mad_coarse_seek (GslDataHandle *data_handle,
       file_pos = handle->seeks[i];
 
       /* perform file seek and adjust positions */
-      if (lseek (handle->fd, file_pos, SEEK_SET) != file_pos)
-	{
-	  /* retry */
-	  if (lseek (handle->fd, file_pos, SEEK_SET) != file_pos)
-	    {
-	      /* this is baaaad */
-	      MAD_MSG (GSL_ERROR_IO,
-		       "file \"%s\" seek failed: %s",
-		       handle->dhandle.name, g_strerror (errno));
-	      lseek (handle->fd, 0, SEEK_SET);
-	    }
-	}
+      /* lseek (handle->hfile, file_pos, SEEK_SET) */
       handle->eof = FALSE;
       handle->bfill = 0;
       handle->file_pos = file_pos;
@@ -607,8 +586,8 @@ dh_mad_close (GslDataHandle *data_handle)
   mad_synth_finish (&handle->synth);
   mad_frame_finish (&handle->frame);
   mad_stream_finish (&handle->stream);
-  close (handle->fd);
-  handle->fd = -1;
+  gsl_hfile_close (handle->hfile);
+  handle->hfile = NULL;
 }
 
 static void
@@ -642,7 +621,7 @@ dh_mad_new (const gchar *file_name,
   success = gsl_data_handle_common_init (&handle->dhandle, file_name, 24);
   if (success)
     {
-      gint err;
+      GslErrorType error;
 
       handle->dhandle.vtable = &dh_mad_vtable;
       handle->dhandle.n_values = 0;
@@ -652,7 +631,7 @@ dh_mad_new (const gchar *file_name,
       handle->stream_options = MAD_OPTION_IGNORECRC;
       handle->accumulate_state_frames = 0;
       handle->eof = FALSE;
-      handle->fd = -1;
+      handle->hfile = NULL;
       handle->file_pos = 0;
       handle->error = NULL;
       handle->n_seeks = 0;
@@ -665,13 +644,13 @@ dh_mad_new (const gchar *file_name,
        */
       handle->initial_setup = TRUE;
       handle->test_setup = !need_seek_table;
-      err = gsl_data_handle_open (&handle->dhandle);
+      error = gsl_data_handle_open (&handle->dhandle);
       handle->initial_setup = FALSE;
       handle->test_setup = FALSE;
 
       /* check setup
        */
-      if (!err &&
+      if (!error &&
 	  handle->dhandle.n_values &&
 	  handle->sample_rate > 0 &&
 	  handle->n_channels > 0 &&
@@ -684,7 +663,7 @@ dh_mad_new (const gchar *file_name,
 	}
 
       /* failed to create handle properly, clean up */
-      if (!err)
+      if (!error)
 	gsl_data_handle_close (&handle->dhandle);
       gsl_data_handle_unref (&handle->dhandle);
       return NULL;

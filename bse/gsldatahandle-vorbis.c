@@ -18,6 +18,7 @@
  */
 #include "gsldatahandle-vorbis.h"
 
+#include "gslfilehash.h"
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 #include <errno.h>
@@ -53,23 +54,116 @@ typedef struct {
 
 
 /* --- functions --- */
-static gint
+static GslErrorType
+ov_errno_to_error (gint         ov_errno,
+		   GslErrorType fallback)
+{
+  switch (ov_errno)
+    {
+    case OV_EOF:	return GSL_ERROR_EOF;
+    case OV_EBADLINK:
+    case OV_EBADPACKET:
+    case OV_HOLE:	return GSL_ERROR_DATA_CORRUPT;
+    case OV_EREAD:	return GSL_ERROR_READ_FAILED;
+    case OV_ENOSEEK:	return GSL_ERROR_SEEK_FAILED;
+    case OV_EFAULT:
+    case OV_EIMPL:	return GSL_ERROR_CODEC_FAILURE;
+    case OV_EINVAL:	return GSL_ERROR_INTERNAL;
+    case OV_ENOTAUDIO:
+    case OV_EVERSION:
+    case OV_EBADHEADER:
+    case OV_ENOTVORBIS:	return GSL_ERROR_FORMAT_INVALID;
+    case OV_FALSE:
+    default:		return fallback;
+    }
+}
+
+static size_t
+rfile_read (void  *ptr,
+	    size_t size,
+	    size_t nmemb,
+	    void  *datasource)
+{
+  GslRFile *rfile = datasource;
+  return gsl_rfile_read (rfile, size * nmemb, ptr);
+}
+
+static int
+rfile_seek (void       *datasource,
+	    ogg_int64_t offset,
+	    int         whence)
+{
+  GslRFile *rfile = datasource;
+  GslLong l;
+  switch (whence)
+    {
+    default:
+    case SEEK_SET:
+      l = gsl_rfile_seek_set (rfile, offset);
+      break;
+    case SEEK_CUR:
+      l = gsl_rfile_position (rfile);
+      l = gsl_rfile_seek_set (rfile, l + offset);
+      break;
+    case SEEK_END:
+      l = gsl_rfile_length (rfile);
+      l = gsl_rfile_seek_set (rfile, l + offset);
+      break;
+    }
+  return l;
+}
+
+static int
+rfile_close (void *datasource)
+{
+  GslRFile *rfile = datasource;
+  gsl_rfile_close (rfile);
+  return 0;
+}
+
+static long
+rfile_tell (void *datasource)
+{
+  GslRFile *rfile = datasource;
+  return gsl_rfile_position (rfile);
+}
+
+static ov_callbacks rfile_ov_callbacks = {
+  rfile_read,
+  rfile_seek,
+  rfile_close,
+  rfile_tell,
+};
+
+static GslErrorType
 dh_vorbis_open (GslDataHandle *data_handle)
 {
   VorbisHandle *vhandle = (VorbisHandle*) data_handle;
-  FILE *file = fopen (vhandle->dhandle.name, "r");
+  GslRFile *rfile;
   vorbis_info *vi;
   GslLong n, i;
   gint err;
   
+#if 0
+  file = fopen (vhandle->dhandle.name, "r");
   if (!file)
-    return errno ? errno : EIO;
-
+    return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
   err = ov_open (file, &vhandle->ofile, NULL, 0);
   if (err < 0)
     {
       fclose (file);
-      return EIO;
+      return ov_errno_to_error (err, GSL_ERROR_OPEN_FAILED);
+    }
+#endif
+
+  rfile = gsl_rfile_open (vhandle->dhandle.name);
+  if (!rfile)
+    return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+  err = ov_open_callbacks (rfile, &vhandle->ofile, NULL, 0, rfile_ov_callbacks);
+  if (err < 0)
+    {
+      gsl_rfile_close (rfile);
+      return ov_errno_to_error (err, GSL_ERROR_OPEN_FAILED);
     }
 
   n = ov_streams (&vhandle->ofile);
@@ -81,7 +175,7 @@ dh_vorbis_open (GslDataHandle *data_handle)
   else if (n != vhandle->n_streams)
     {
       ov_clear (&vhandle->ofile); /* closes file */
-      return EIO;
+      return GSL_ERROR_OPEN_FAILED;
     }
 
   vhandle->soffset = 0;
@@ -101,7 +195,7 @@ dh_vorbis_open (GslDataHandle *data_handle)
       ov_pcm_seek (&vhandle->ofile, vhandle->soffset) < 0)
     {
       ov_clear (&vhandle->ofile); /* closes file */
-      return EIO;
+      return GSL_ERROR_OPEN_FAILED;
     }
 
   vhandle->max_block_size = vorbis_info_blocksize (vi, 0);
@@ -110,7 +204,7 @@ dh_vorbis_open (GslDataHandle *data_handle)
   vhandle->pcm_pos = 0;
   vhandle->pcm_length = 0;
   
-  return 0;
+  return GSL_ERROR_NONE;
 }
 
 static GslLong
@@ -252,7 +346,7 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
   success = gsl_data_handle_common_init (&vhandle->dhandle, file_name, 16);
   if (success)
     {
-      gint err;
+      GslErrorType error;
 
       vhandle->dhandle.vtable = &dh_vorbis_vtable;
       vhandle->dhandle.n_values = 0;
@@ -263,9 +357,9 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
        * actually open the handle
        */
       vhandle->setup_validation = TRUE;
-      err = gsl_data_handle_open (&vhandle->dhandle);
+      error = gsl_data_handle_open (&vhandle->dhandle);
       vhandle->setup_validation = FALSE;
-      if (!err && vhandle->soffset + vhandle->dhandle.n_values &&
+      if (!error && vhandle->soffset + vhandle->dhandle.n_values &&
 	  vhandle->n_streams && lbitstream < vhandle->n_streams)
 	{
 	  vorbis_info *vi = ov_info (&vhandle->ofile, lbitstream);
@@ -285,7 +379,7 @@ gsl_data_handle_new_ogg_vorbis (const gchar *file_name,
 	      return &vhandle->dhandle;
 	    }
 	}
-      if (!err)
+      if (!error)
 	gsl_data_handle_close (&vhandle->dhandle);
       gsl_data_handle_unref (&vhandle->dhandle);
       return NULL;

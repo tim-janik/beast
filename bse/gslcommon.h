@@ -229,10 +229,10 @@ struct _GslMutexTable
 /* --- misc --- */
 const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
+GslErrorType gsl_error_from_errno	(gint		 sys_errno,
+					 GslErrorType	 fallback);
 GslErrorType gsl_check_file		(const gchar	*file_name,
 					 const gchar	*mode);
-gboolean     gsl_check_file_mtime	(const gchar	*file_name,
-					 GTime		 mtime);
 
 
 /* --- implementation details --- */
@@ -245,7 +245,7 @@ const guint	gsl_alloc_upper_power2	(const gulong	 number);
 void	       _gsl_tick_stamp_inc	(void);
 void	       _gsl_tick_stamp_set_leap (guint		 ticks);
 void	_gsl_init_signal		(void);
-void	_gsl_init_data_handles		(void);
+void	_gsl_init_fd_pool		(void);
 void	_gsl_init_data_caches		(void);
 void	_gsl_init_engine_utils		(void);
 void	_gsl_init_loader_gslwave	(void);

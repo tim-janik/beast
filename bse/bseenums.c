@@ -108,7 +108,6 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_USER_QUESTION:		return "Ask User";
     case BSE_ERROR_USER_WARNING:		return "Warn User";
     case BSE_ERROR_USER_ERROR:			return "User Error";
-    case BSE_ERROR_FILE_EXISTS:			return "File exists";
     case BSE_ERROR_FILE_TOO_SHORT:		return "File too short";
     case BSE_ERROR_FILE_TOO_LONG:		return "File too long";
     case BSE_ERROR_HEADER_CORRUPT:		return "Header corrupt";
@@ -127,7 +126,7 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_SOURCE_BAD_LOOPBACK:		return "Bad loopback";
     case BSE_ERROR_SOURCE_BUSY:			return "Synthesis module currently busy";
     case BSE_ERROR_SOURCE_TYPE_INVALID:		return "Invalid synthsis module type";
-    case BSE_ERROR_PROC_BUSY: /* recursion */	return "Procedure currently busy";
+    case BSE_ERROR_PROC_BUSY:			return "Procedure currently busy"; /* recursion */
     case BSE_ERROR_PROC_PARAM_INVAL:		return "Procedure parameter invalid";
     case BSE_ERROR_PROC_EXECUTION:		return "Procedure execution failed";
     case BSE_ERROR_PROC_ABORT:			return "Procedure execution aborted";
@@ -151,18 +150,5 @@ BseErrorType
 bse_error_from_errno (gint            v_errno,
 		      BseErrorType    fallback)
 {
-  switch (v_errno)
-    {
-    case EBUSY:		return BSE_ERROR_DEVICE_BUSY;
-    case EISDIR:
-    case EACCES:
-    case EPERM:
-    case EROFS:		return BSE_ERROR_DEVICE_PERMS;
-    case ELOOP:
-    case ENOENT:	return BSE_ERROR_FILE_NOT_FOUND;
-    case EEXIST:	return BSE_ERROR_FILE_EXISTS;
-    case EIO:		return BSE_ERROR_FILE_IO;
-    case EBADF:		return BSE_ERROR_INTERNAL;
-    default:		return fallback;
-    }      
+  return gsl_error_from_errno (v_errno, fallback);
 }

@@ -92,7 +92,6 @@ gsl_data_cache_new (GslDataHandle *dhandle,
   g_return_val_if_fail (dhandle != NULL, NULL);
   g_return_val_if_fail (padding > 0, NULL);
   g_return_val_if_fail (dhandle->name != NULL, NULL);
-  g_return_val_if_fail (dhandle->mtime > 0, NULL);
   g_return_val_if_fail (dhandle->n_values > 0, NULL);
   g_assert (node_size == gsl_alloc_upper_power2 (node_size));
   g_return_val_if_fail (padding < node_size / 2, NULL);
@@ -125,17 +124,17 @@ gsl_data_cache_open (GslDataCache *dcache)
   GSL_SPIN_LOCK (&dcache->mutex);
   if (!dcache->open_count)
     {
-      gint error;
+      GslErrorType error;
 
       error = gsl_data_handle_open (dcache->dhandle);
       if (error)
 	{
 	  /* FIXME: this is pretty fatal, throw out zero blocks now? */
 	  gsl_message_send (GSL_MSG_DATA_CACHE, "Open",
-			    GSL_ERROR_IO,
+			    error,
 			    "failed to open \"%s\": %s",
 			    dcache->dhandle->name,
-			    g_strerror (error));
+			    gsl_strerror (error));
 	}
       else
 	{

@@ -71,6 +71,9 @@ typedef enum    /*< skip >*/
   /* I/O errors */
   GSL_ERROR_IO,
   GSL_ERROR_PERMS,
+  GSL_ERROR_BUSY,
+  GSL_ERROR_EXISTS,
+  GSL_ERROR_TEMP,
   GSL_ERROR_EOF,
 #define GSL_ERROR_FILE_EMPTY	GSL_ERROR_EOF
   GSL_ERROR_NOT_FOUND,
@@ -84,6 +87,7 @@ typedef enum    /*< skip >*/
   GSL_ERROR_DATA_CORRUPT,
   GSL_ERROR_CONTENT_GLITCH,
   /* miscellaneous errors */
+  GSL_ERROR_NO_RESOURCE,
   GSL_ERROR_CODEC_FAILURE,
   GSL_ERROR_LAST        /* administrative */
 } GslErrorType;

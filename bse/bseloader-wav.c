@@ -397,7 +397,7 @@ wav_create_chunk_handle (gpointer      data,
   
   g_return_val_if_fail (nth_chunk == 0, NULL);
   
-  dhandle = gsl_wave_handle_new (dsc->wdsc.file_info->file_name, 0,
+  dhandle = gsl_wave_handle_new (dsc->wdsc.file_info->file_name,
 				 dsc->format, G_LITTLE_ENDIAN,
 				 dsc->data_offset, dsc->n_values);
   return dhandle;

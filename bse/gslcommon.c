@@ -1225,20 +1225,23 @@ gsl_strerror (GslErrorType error)
     {
     case GSL_ERROR_NONE:		return "Everything went well";
     case GSL_ERROR_INTERNAL:		return "Internal error (please report)";
-    case GSL_ERROR_LAST:
     case GSL_ERROR_UNKNOWN:		return "Unknown error";
     case GSL_ERROR_IO:			return "I/O error";
     case GSL_ERROR_PERMS:		return "Insufficient permission";
-    case GSL_ERROR_NOT_FOUND:		return "Not found";
+    case GSL_ERROR_BUSY:		return "Resource currently busy";
+    case GSL_ERROR_EXISTS:		return "Resource exists already";
+    case GSL_ERROR_TEMP:		return "Temporary error";
+    case GSL_ERROR_EOF:			return "File empty or premature EOF";
+    case GSL_ERROR_NOT_FOUND:		return "Resource not found";
     case GSL_ERROR_OPEN_FAILED:		return "Open failed";
     case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
     case GSL_ERROR_READ_FAILED:		return "Read failed";
     case GSL_ERROR_WRITE_FAILED:	return "Write failed";
-    case GSL_ERROR_EOF:			return "File empty or premature EOF";
     case GSL_ERROR_FORMAT_INVALID:	return "Invalid format";
     case GSL_ERROR_FORMAT_UNKNOWN:	return "Unknown format";
-    case GSL_ERROR_DATA_CORRUPT:        return "data corrupt";
-    case GSL_ERROR_CONTENT_GLITCH:      return "data glitch (junk) detected";
+    case GSL_ERROR_DATA_CORRUPT:        return "Data corrupt";
+    case GSL_ERROR_CONTENT_GLITCH:      return "Data glitch (junk) detected";
+    case GSL_ERROR_NO_RESOURCE:		return "Out of memory, disk space or similar resource";
     case GSL_ERROR_CODEC_FAILURE:	return "CODEC failure";
     default:				return NULL;
     }
@@ -1509,31 +1512,40 @@ gsl_check_file (const gchar *file_name,
   return GSL_ERROR_NONE;
   
  have_errno:
-  switch (errno)
+  return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
+}
+
+GslErrorType
+gsl_error_from_errno (gint         sys_errno,
+		      GslErrorType fallback)
+{
+  switch (sys_errno)
     {
     case ELOOP:
     case ENAMETOOLONG:
-    case ENOENT:	return GSL_ERROR_NOT_FOUND;
+    case ENOTDIR:
+    case ENOENT:        return GSL_ERROR_NOT_FOUND;
     case EROFS:
     case EPERM:
-    case EACCES:	return GSL_ERROR_PERMS;
-    case EIO:		return GSL_ERROR_IO;
-    default:		return GSL_ERROR_OPEN_FAILED;
+    case EACCES:        return GSL_ERROR_PERMS;
+    case ENOMEM:
+    case ENOSPC:
+    case EFBIG:
+    case ENFILE:
+    case EMFILE:	return GSL_ERROR_NO_RESOURCE;
+    case EISDIR:
+    case ESPIPE:
+    case EIO:           return GSL_ERROR_IO;
+    case EEXIST:        return GSL_ERROR_EXISTS;
+    case ETXTBSY:
+    case EBUSY:         return GSL_ERROR_BUSY;
+    case EAGAIN:
+    case EINTR:		return GSL_ERROR_TEMP;
+    case EINVAL:
+    case EFAULT:
+    case EBADF:         return GSL_ERROR_INTERNAL;
+    default:            return fallback;
     }
-}
-
-gboolean
-gsl_check_file_mtime (const gchar *file_name,
-		      GTime        mtime)
-{
-  struct stat statbuf = { 0, };
-
-  g_return_val_if_fail (file_name != NULL, FALSE);
-
-  if (stat (file_name, &statbuf) < 0)
-    return FALSE;
-
-  return statbuf.st_mtime == mtime;
 }
 
 
@@ -1627,7 +1639,7 @@ gsl_init (const GslConfigValue values[],
   main_thread = gsl_thread_self ();
   global_thread_list = gsl_ring_prepend (global_thread_list, main_thread);
   _gsl_init_signal ();
-  _gsl_init_data_handles ();
+  _gsl_init_fd_pool ();
   _gsl_init_data_caches ();
   _gsl_init_engine_utils ();
   _gsl_init_loader_gslwave ();

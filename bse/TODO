@@ -20,21 +20,15 @@
     unuse (item);
   }
 
+NEW:
 - get rid of ulongs (for types), make all types strings
 - fix fine-tune settings (from gsl)
-- partial context creation for non-modifiable snets (songs):
-  gsl-module: BseContextBus 4in<->4out
-  BseSource: BseContextIBus (owns ContextBus) 4in, BseContextOBus 4out
-- BseDisconnectSource with two engine modules
-(- fixed amount of contexts (notes) per instrument as song property?)
-- user process collection of done modules + state reset
-Problems:
 - _SL functions have to be revisited and thoroughly implemented
 - track_step_SL() needs bpm_tick => stamp_tick translation
-- multi-channel/note/instantiation???
 - fix context creation recursion in subsynth
 - fix snet propety changes in sub synth and instrument
 - replace gsl_signal_exp2() with gsl_approx_exp2() and audio test result
+- check for non-xref object links which should be turned into xrefs
 
 NEW:
 - re-eval balance defines, provide just MAX_BALANCE
@@ -56,26 +50,6 @@ general:
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
 -	optimize cross-reference removal
 -	param_changed(): update modified stamp and record undo
--	rework undo, gotta decide on what hirarchy and function level undo
-	should be implemented.
-
--	to enable source grouping:
-	sources need to disconnect their links ala xrefs, and need to notify of
-	that *before* destroy is invoked.
-	effectively, this has to work like:
-	channels installed on a source need to be xref-linked if the i/o sources
-	don't have the same parent. if their parents are the same, we can simply
-	have bsecontainer.c care about destructing those channels (as an optimization
-	to keep xref-links low).
-
-Instrument
--	smooth up the dot array behaviour, editing is somewhat sluggish
--	need to put envelope logic into a sperate file anyways
-
-Song/Pattern
--	removal of instruments needs to scratch instrument references from all patterns
--	mutable channels! (make them silent)
-	use procedure types for this
 
 Balance
 -	replace with 3d room position?

@@ -1,3 +1,34 @@
+Thu Jul 25 01:12:51 2002  Tim Janik  <timj@gtk.org>
+
+	* gslfilehash.[hc]: new files, implementing GslHFile, an MT-safe
+	pread() wrapper FILE type which shares unix file descriptors (to
+	reduce usage thereof), and GslRFile, piggyback implementation
+	on top of GslHFile that supports the more common read()+seek() API.
+
+	* gsldatahandle.[hc]: use GslHFile for raw wave handles.
+	nuke data handle caching code. remove mtime from data handles.
+	make gsl_data_handle_open() and associated method return GslErrorType
+	instead of errno.
+
+	* gsldatahandle-vorbis.c: translate ogg/vorbis error codes into
+	GSL error codes. use GslRFile instead of unix FILE*.
+
+	* gsldatahandle-mad.c: use GslHFile instead of unix file descriptors.
+
+	* gslcommon.[hc]: provide gsl_error_from_errno(), get rid of
+	gsl_check_file_mtime(). sync gsl_strerror() with new error codes.
+
+	* *.c: adaptions due to gsl_wave_handle_new() changes.
+
+	* bseenums.[hc]: sync errors with new GSL errors.
+	use gsl_error_from_errno() from bse_error_from_errno().
+
+	* gslmultiwave.[hc]: remove unused code.
+
+	* gsldatahandle.[hc]: instead of gsl_data_handle_new_translate() with
+	mildly inconvenient parameters, offer gsl_data_handle_new_crop() and
+	gsl_data_handle_new_cut() with intuitive arguments.
+
 Tue Jul 23 07:47:55 2002  Tim Janik  <timj@gtk.org>
 
 	* bse.h:

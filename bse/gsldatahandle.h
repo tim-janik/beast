@@ -38,8 +38,7 @@ struct _GslDataHandle
   /* constant members */
   GslDataHandleFuncs *vtable;
   gchar		     *name;
-  GTime		      mtime;
-  GslLong	      n_values;		/* length in floats */
+  GslLong	      n_values;	/* length in floats */
   /* common members */
   guint		      bit_depth;	/* number of significant bits */
   GslMutex	      mutex;
@@ -48,7 +47,7 @@ struct _GslDataHandle
 };
 struct _GslDataHandleFuncs
 {
-  gint		(*open)			(GslDataHandle		*data_handle);
+  GslErrorType	(*open)			(GslDataHandle		*data_handle);
   GslLong	(*read)			(GslDataHandle		*data_handle,
 					 GslLong		 voffset, /* in values */
 					 GslLong		 n_values,
@@ -65,16 +64,19 @@ struct _GslDataHandleFuncs
 /* --- standard functions --- */
 GslDataHandle*	  gsl_data_handle_ref		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_unref		(GslDataHandle	  *dhandle);
-gint /*errno*/	  gsl_data_handle_open		(GslDataHandle	  *dhandle);
+GslErrorType	  gsl_data_handle_open		(GslDataHandle	  *dhandle);
 void		  gsl_data_handle_close		(GslDataHandle	  *dhandle);
+GslLong		  gsl_data_handle_get_n_values	(GslDataHandle	  *data_handle);
 GslLong		  gsl_data_handle_read		(GslDataHandle	  *data_handle,
 						 GslLong	   value_offset,
 						 GslLong	   n_values,
 						 gfloat		  *values);
-GslDataHandle*	  gsl_data_handle_new_translate	(GslDataHandle	  *src_handle,
+GslDataHandle*	  gsl_data_handle_new_cut	(GslDataHandle	  *src_handle,
 						 GslLong	   cut_offset,
-						 GslLong	   n_cut_values,
-						 GslLong	   tail_cut);
+						 GslLong	   n_cut_values);
+GslDataHandle*	  gsl_data_handle_new_crop	(GslDataHandle	  *src_handle,
+						 GslLong	   n_head_cut,
+						 GslLong	   n_tail_cut);
 GslDataHandle*	  gsl_data_handle_new_reverse	(GslDataHandle	  *src_handle);
 GslDataHandle*	  gsl_data_handle_new_insert	(GslDataHandle	  *src_handle,
 						 guint             paste_bit_depth,
@@ -111,7 +113,6 @@ typedef enum    /*< skip >*/
 const gchar*      gsl_wave_format_to_string     (GslWaveFormatType format);
 GslWaveFormatType gsl_wave_format_from_string   (const gchar      *string);
 GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
-						 GTime		   mtime, /* may be 0 */
 						 GslWaveFormatType format,
 						 guint		   byte_order,
 						 GslLong	   byte_offset,
@@ -123,20 +124,6 @@ gboolean	  gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
 						 const gchar	  *file_name,
 						 guint		   bit_depth);
 void		  gsl_data_handle_common_free	(GslDataHandle	  *dhandle);
-typedef struct
-{
-  GslDataHandleFuncs *fpointer;
-  gchar *strings[4];
-  union {
-    gpointer v_pointer;
-    GslLong  v_long;
-    gfloat   v_float;
-  } data[4];
-} GslDataHandleHash;
-void		  gsl_data_handle_enter_cache	(GslDataHandle	  *dhandle,
-						 GslDataHandleHash hash);
-void		  gsl_data_handle_leave_cache	(GslDataHandle	  *dhandle);
-GslDataHandle*	  gsl_data_handle_cached	(GslDataHandleHash hash);
 
 #ifdef __cplusplus
 }
