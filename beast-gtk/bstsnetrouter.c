@@ -1084,14 +1084,17 @@ bst_snet_router_init (BstSNetRouter      *self)
   palette_modules = gxk_action_list_create_grouped (self->canvas_tool);
   toolbar_modules = gxk_action_list_create_grouped (self->canvas_tool);
   cseq = bse_categories_match ("/Modules/*");
+  /* toolbar module types */
+  static struct { gchar *type, *name, *tip; } toolbar_types[] = {
+    { "BsePcmInput",        N_("Input"),      N_("PCM Input module") },
+    { "BseStandardOsc",     N_("Oscillator"), N_("Standard oscillator module") },
+    { "BseSimpleADSR",      N_("ADSR"),       N_("ADSR Envelope Generator") },
+    { "BseAmplifier",       N_("DCA"),        N_("Standard amplifier module") },
+    { "BsePcmOutput",       N_("Output"),     N_("PCM Output module") },
+  };
+  BseCategory *tbcats[G_N_ELEMENTS (toolbar_types)] = { 0, };
   for (i = 0; i < cseq->n_cats; i++)
     {
-      static struct { gchar *type, *name, *tip; } toolbar_types[] = {
-        { "BsePcmOutput",       N_("Output"),   N_("PCM Output module") },
-        { "BseAmplifier",       N_("DCA"),      N_("Standard amplifier module") },
-        { "BseSnooper",         N_("Snooper"),  N_("Signal debugging module") },
-        { "BsePcmInput",        N_("Input"),    N_("PCM Input module") },
-      };
       const gchar *stock_fallback = NULL;
       BseCategory *cat = cseq->cats[i];
       /* filter inappropriate modules */
@@ -1104,30 +1107,39 @@ bst_snet_router_init (BstSNetRouter      *self)
       /* provide selected modules in the palette */
       if (cat->icon && (cat->icon->width + cat->icon->height) > 0)
         bst_action_list_add_cat (palette_modules, cat, 1, stock_fallback, NULL, bst_router_popup_select, self);
-      /* provide certain variants in the toolbar */
+      /* remember toolbar types */
       for (n = 0; n < G_N_ELEMENTS (toolbar_types); n++)
         if (strcmp (toolbar_types[n].type, cat->type) == 0)
-          {
-            const gchar *stock_id;
-            if (cat->icon)
-              {
-                bst_stock_register_icon (cat->category, cat->icon->bytes_per_pixel,
-                                         cat->icon->width, cat->icon->height,
-                                         cat->icon->width * cat->icon->bytes_per_pixel,
-                                         cat->icon->pixels->bytes);
-                stock_id = cat->category;
-              }
-            else
-              stock_id = stock_fallback;
-            gxk_action_list_add_translated (toolbar_modules, cat->type,
-                                            _(toolbar_types[n].name), NULL,
-                                            _(toolbar_types[n].tip),
-                                            cat->category_id,
-                                            stock_id,
-                                            NULL, bst_router_popup_select, self);
-            break;
-          }
+          tbcats[n] = cat;
     }
+  /* provide certain variants in the toolbar */
+  for (n = 0; n < G_N_ELEMENTS (toolbar_types); n++)
+    if (tbcats[n])
+      {
+        BseCategory *cat = tbcats[n];
+        const gchar *stock_fallback = NULL;
+        if (strncmp (cat->type, "BseLadspaModule_", 16) == 0)
+          stock_fallback = BST_STOCK_LADSPA;
+        const gchar *stock_id;
+        
+        if (cat->icon)
+          {
+            bst_stock_register_icon (cat->category, cat->icon->bytes_per_pixel,
+                                     cat->icon->width, cat->icon->height,
+                                     cat->icon->width * cat->icon->bytes_per_pixel,
+                                     cat->icon->pixels->bytes);
+            stock_id = cat->category;
+          }
+        else
+          stock_id = stock_fallback;
+        gxk_action_list_add_translated (toolbar_modules, cat->type,
+                                        _(toolbar_types[n].name), NULL,
+                                        _(toolbar_types[n].tip),
+                                        cat->category_id,
+                                        stock_id,
+                                        NULL, bst_router_popup_select, self);
+      }
+  /* polish and publish */
   gxk_action_list_sort (canvas_modules);
   gxk_widget_publish_action_list (self, "router-module-actions", canvas_modules);
   gxk_action_list_sort (palette_modules);
