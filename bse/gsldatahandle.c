@@ -162,6 +162,7 @@ gsl_data_handle_override (GslDataHandle    *dhandle,
 
   g_return_if_fail (dhandle != NULL);
 
+  GSL_SPIN_LOCK (&dhandle->mutex);
   if (bit_depth <= 0)
     g_datalist_set_data (&dhandle->qdata, "bse-bit-depth", NULL);
   else
@@ -184,6 +185,7 @@ gsl_data_handle_override (GslDataHandle    *dhandle,
       *fp = osc_freq;
       g_datalist_set_data_full (&dhandle->qdata, "bse-osc-freq", fp, g_free);
     }
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
 }
 
 GslErrorType

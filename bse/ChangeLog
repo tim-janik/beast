@@ -1,3 +1,7 @@
+Fri Jul 18 07:09:01 2003  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle.c (gsl_data_handle_override): fix locking.
+
 Fri Jul 18 06:41:08 2003  Tim Janik  <timj@gtk.org>
 
 	* gslloader-gslwave.c: override osc_freq of external data handles.
