@@ -327,6 +327,30 @@ METHOD (BseProject, create-midi-synth) {
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseProject, remove-snet) {
+  BLURB	= "Remove an existing synthesizer network from this project.";
+  IN	= bse_param_spec_object ("project", "Project", "The project",
+				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
+  IN	= bse_param_spec_object ("snet", "SNet", "Synthesizer Network",
+				 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseContainer *project = bse_value_get_object (in_values++);
+  BseItem      *snet    = bse_value_get_object (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !BSE_IS_SNET (snet) || snet->parent != (BseItem*) project)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_container_remove_item (project, snet);
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseProject, list-uname-paths) {
   HELP  = ("List uname paths for all items of a specified type within this project. "
 	   "By their uname paths, items are uniquely identifyable within a project.");

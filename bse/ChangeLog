@@ -1,3 +1,7 @@
+Tue May 27 02:22:37 2003  Tim Janik  <timj@gtk.org>
+
+	* bseproject.proc: added bse-project-remove-snet.
+
 Tue May 27 01:36:56 2003  Tim Janik  <timj@gtk.org>
 
 	* bseglue.c (bglue_proxy_set_property): warning cosmetics.
