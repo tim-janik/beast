@@ -39,10 +39,7 @@ typedef struct _BstEventRollClass   BstEventRollClass;
 
 /* --- structures & typedefs --- */
 typedef struct {
-  BstEventRoll *eroll;
-  BstDragStatus type;		        /* emission type: start/motion/done/abort */
-  BstDragMode   mode;
-  guint	        button;
+  GXK_SCROLL_CANVAS_DRAG_FIELDS;
   gint          tick_width;
   guint	        start_tick;
   gfloat        start_value;
@@ -51,12 +48,12 @@ typedef struct {
   gfloat        current_value;          /* between -1 and +1 if valid */
   gfloat        current_value_raw;
   guint		current_valid : 1;	/* value out of range */
-  /* user data */
-  BstDragStatus state;		        /* request type: unhandled/continue/handled/error */
+  /* convenience: */
+  BstEventRoll *eroll;
 } BstEventRollDrag;
 struct _BstEventRoll
 {
-  GtkContainer	 parent_instance;
+  GxkScrollCanvas parent_instance;
 
   SfiProxy	 proxy;
   guint          control_type;
@@ -70,40 +67,28 @@ struct _BstEventRoll
   guint		 draw_qn_grid : 1;
   guint		 draw_qqn_grid : 1;
 
-  /* scroll offset */
-  gint		 x_offset, y_offset;
+  /* drag data */
+  guint		start_valid : 1;
+  guint	        start_tick;
+  gfloat        start_value;
 
+  /* vpanel width sync */
   gint         (*fetch_vpanel_width) (gpointer data);
   gpointer       fetch_vpanel_width_data;
-  guint		 vpanel_width;
-  GdkWindow	*vpanel, *canvas;
-  GdkCursorType	 canvas_cursor, vpanel_cursor;
-#define BST_EVENT_ROLL_N_COLORS (2)
-  GdkGC		*color_gc[BST_EVENT_ROLL_N_COLORS];
 
+  /* line drawing */
   BstSegment     segment;
-
-  GtkAdjustment	*hadjustment;
-  guint		 scroll_timer;
 
   /* selection rectangle */
   guint		 selection_tick;
   guint		 selection_duration;
   gint		 selection_min_note;
   gint		 selection_max_note;
-
-  /* drag operations */
-  guint		   canvas_drag : 1;
-  guint		   vpanel_drag : 1;
-  BstEventRollDrag drag;
 };
 struct _BstEventRollClass
 {
-  GtkContainerClass parent_class;
+  GxkScrollCanvasClass parent_class;
 
-  void		(*set_scroll_adjustments)	(BstEventRoll	  *eroll,
-						 GtkAdjustment	  *hadjustment,
-						 GtkAdjustment	  *vadjustment);
   void		(*canvas_drag)			(BstEventRoll	  *self,
 						 BstEventRollDrag *drag);
   void		(*canvas_clicked)		(BstEventRoll	  *eroll,
@@ -124,14 +109,8 @@ struct _BstEventRollClass
 GType       bst_event_roll_get_type              (void);
 void        bst_event_roll_set_proxy             (BstEventRoll   *self,
                                                   SfiProxy        proxy);
-void        bst_event_roll_set_hadjustment       (BstEventRoll   *self,
-                                                  GtkAdjustment  *adjustment);
 gfloat      bst_event_roll_set_hzoom             (BstEventRoll   *self,
                                                   gfloat          hzoom);
-void        bst_event_roll_set_canvas_cursor     (BstEventRoll   *self,
-                                                  GdkCursorType   cursor);
-void        bst_event_roll_set_vpanel_cursor     (BstEventRoll   *self,
-                                                  GdkCursorType   cursor);
 void        bst_event_roll_set_view_selection    (BstEventRoll   *self,
                                                   guint           tick,
                                                   guint           duration);

@@ -1,3 +1,30 @@
+Mon Feb  9 00:23:14 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsteventroll.[hc]: ported to derive from GxkScrollCanvas.
+	added skin support, similar to piano roll.
+
+	* beast-gtk/bsteventrollctrl.c:
+	* beast-gtk/bstpartdialog.c: call GxkScrollCanvas functions where necessary.
+	enable h/v scrolling for canvas.
+
+	* beast-gtk/bstpianoroll.c: removed focus handlers.
+
+	* beast-gtk/bstrecords.idl: added control event roll fields to Skin record.
+
+	* beast-gtk/gxk/gxkscrollcanvas.c: profive default focus-in/focus-out
+	handlers. properly default initialize window cursors. export
+	gxk_scroll_canvas_get_layout(). size request all children. added
+	gxk_scroll_canvas_get_canvas_size(). added reallocate_children() method.
+	request expose events for widget->window, fixes redrawing bugs.
+	auto-unset parent-window on children from unrealize().
+	draw panel frames in scroll_canvas_draw_window().
+	added hscrollable and vscrollable variables to class to control
+	canvas scrolling behaviour.
+
+	* beast-gtk/gxk/gxktest.c: fixed up GxkScrollCanvas test code.
+
+	* library/skins/*.skin: adapt to event roll skinning ability.
+
 Sun Feb  8 05:53:14 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-about.texi: improved About section.

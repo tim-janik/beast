@@ -171,11 +171,11 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_nullify_in_object (self, &self->eroll);
   g_signal_connect (self->eroll, "canvas-clicked", G_CALLBACK (event_canvas_clicked), self);
   self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, self->pctrl->canvas_rtools);
-  bst_event_roll_set_hadjustment (self->eroll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
+  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->eroll), gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
 
   /* event roll children */
-  g_object_new (GTK_TYPE_LABEL, "label", "C", "parent", self->eroll, NULL);
+  g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);
 
   /* event roll control type */
   eb = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);

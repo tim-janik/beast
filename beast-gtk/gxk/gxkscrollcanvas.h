@@ -121,6 +121,8 @@ typedef struct
   guint                 double_buffer_right_panel : 1, double_buffer_bottom_panel : 1;
   guint                 auto_clear : 1; /* automatically clear non-double-buffered areas */
   guint                 grab_focus : 1; /* automatically grab focus on button-press */
+  guint                 hscrollable : 1;
+  guint                 vscrollable : 1;
   /* skin config */
   guint                 n_colors;       /* must be const across skin changes */
   const GdkColor       *colors;
@@ -137,6 +139,9 @@ typedef struct
   void          (*update_adjustments)           (GxkScrollCanvas        *self,
                                                  gboolean                hadj,
                                                  gboolean                vadj);
+  void          (*reallocate_children)          (GxkScrollCanvas        *self,
+                                                 gint                    xdiff,
+                                                 gint                    ydiff);
   void          (*draw_window)                  (GxkScrollCanvas        *self,
                                                  GdkWindow              *drawable,
                                                  GdkRectangle           *area);
@@ -163,28 +168,33 @@ typedef struct
 
 /* --- prototypes --- */
 GType    gxk_scroll_canvas_get_type                (void);
-void     gxk_scroll_canvas_set_hadjustment         (GxkScrollCanvas *self,
-                                                    GtkAdjustment   *adjustment);
-void     gxk_scroll_canvas_set_vadjustment         (GxkScrollCanvas *self,
-                                                    GtkAdjustment   *adjustment);
-void     gxk_scroll_canvas_update_adjustments      (GxkScrollCanvas *self,
-                                                    gboolean         hadj,
-                                                    gboolean         vadj);
-void     gxk_scroll_canvas_reallocate              (GxkScrollCanvas *self);
-gboolean gxk_scroll_canvas_dragging                (GxkScrollCanvas *self);
-void     gxk_scroll_canvas_drag_abort              (GxkScrollCanvas *self);
-void     gxk_scroll_canvas_set_window_cursor       (GxkScrollCanvas *self,
-                                                    GdkCursorType    cursor);
-void     gxk_scroll_canvas_set_canvas_cursor       (GxkScrollCanvas *self,
-                                                    GdkCursorType    cursor);
-void     gxk_scroll_canvas_set_top_panel_cursor    (GxkScrollCanvas *self,
-                                                    GdkCursorType    cursor);
-void     gxk_scroll_canvas_set_left_panel_cursor   (GxkScrollCanvas *self,
-                                                    GdkCursorType    cursor);
-void     gxk_scroll_canvas_set_right_panel_cursor  (GxkScrollCanvas *self,
-                                                    GdkCursorType    cursor);
-void     gxk_scroll_canvas_set_bottom_panel_cursor (GxkScrollCanvas *self,
-                                                    GdkCursorType    cursor);
+void     gxk_scroll_canvas_get_layout              (GxkScrollCanvas       *self,
+                                                    GxkScrollCanvasLayout *layout);
+void     gxk_scroll_canvas_get_canvas_size         (GxkScrollCanvas       *self,
+                                                    gint                  *width,
+                                                    gint                  *height);
+void     gxk_scroll_canvas_set_hadjustment         (GxkScrollCanvas       *self,
+                                                    GtkAdjustment         *adjustment);
+void     gxk_scroll_canvas_set_vadjustment         (GxkScrollCanvas       *self,
+                                                    GtkAdjustment         *adjustment);
+void     gxk_scroll_canvas_update_adjustments      (GxkScrollCanvas       *self,
+                                                    gboolean               hadj,
+                                                    gboolean               vadj);
+void     gxk_scroll_canvas_reallocate              (GxkScrollCanvas       *self);
+gboolean gxk_scroll_canvas_dragging                (GxkScrollCanvas       *self);
+void     gxk_scroll_canvas_drag_abort              (GxkScrollCanvas       *self);
+void     gxk_scroll_canvas_set_window_cursor       (GxkScrollCanvas       *self,
+                                                    GdkCursorType          cursor);
+void     gxk_scroll_canvas_set_canvas_cursor       (GxkScrollCanvas       *self,
+                                                    GdkCursorType          cursor);
+void     gxk_scroll_canvas_set_top_panel_cursor    (GxkScrollCanvas       *self,
+                                                    GdkCursorType          cursor);
+void     gxk_scroll_canvas_set_left_panel_cursor   (GxkScrollCanvas       *self,
+                                                    GdkCursorType          cursor);
+void     gxk_scroll_canvas_set_right_panel_cursor  (GxkScrollCanvas       *self,
+                                                    GdkCursorType          cursor);
+void     gxk_scroll_canvas_set_bottom_panel_cursor (GxkScrollCanvas       *self,
+                                                    GdkCursorType          cursor);
 void     gxk_scroll_canvas_class_skin_changed      (GxkScrollCanvasClass*);
 
 G_END_DECLS

@@ -144,12 +144,13 @@ gxk_scroll_canvas_init (GxkScrollCanvas *self)
   gxk_scroll_canvas_set_hadjustment (self, NULL);
   gxk_scroll_canvas_set_vadjustment (self, NULL);
 
-  self->layout.top_panel_height = 10;
-  self->layout.left_panel_width = 10;
-  self->layout.right_panel_width = 10;
-  self->layout.bottom_panel_height = 10;
-  self->layout.max_canvas_width = G_MAXINT;
-  self->layout.max_canvas_height = G_MAXINT;
+  gxk_scroll_canvas_get_layout (self, &self->layout);
+  gxk_scroll_canvas_set_window_cursor (self, GXK_DEFAULT_CURSOR);
+  gxk_scroll_canvas_set_canvas_cursor (self, GXK_DEFAULT_CURSOR);
+  gxk_scroll_canvas_set_top_panel_cursor (self, GXK_DEFAULT_CURSOR);
+  gxk_scroll_canvas_set_left_panel_cursor (self, GXK_DEFAULT_CURSOR);
+  gxk_scroll_canvas_set_right_panel_cursor (self, GXK_DEFAULT_CURSOR);
+  gxk_scroll_canvas_set_bottom_panel_cursor (self, GXK_DEFAULT_CURSOR);
 }
 
 static void
@@ -312,26 +313,42 @@ scroll_canvas_state_changed (GtkWidget *widget,
   GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->state_changed (widget, previous_state);
 }
 
-static void
-scroll_canvas_update_layout (GxkScrollCanvas *self)
+void
+gxk_scroll_canvas_get_layout (GxkScrollCanvas       *self,
+                              GxkScrollCanvasLayout *layout)
 {
   GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
+  GxkScrollCanvasLayout tlayout;
+  tlayout.top_panel_height = 10;
+  tlayout.left_panel_width = 10;
+  tlayout.right_panel_width = 10;
+  tlayout.bottom_panel_height = 10;
+  tlayout.canvas_width = 20;
+  tlayout.canvas_height = 20;
+  tlayout.max_canvas_width = G_MAXINT;
+  tlayout.max_canvas_height = G_MAXINT;
   if (class->get_layout)
     {
-      GxkScrollCanvasLayout layout = self->layout;
-      class->get_layout (self, &layout);
-      layout.top_panel_height = MAX (0, layout.top_panel_height);
-      layout.left_panel_width = MAX (0, layout.left_panel_width);
-      layout.right_panel_width = MAX (0, layout.right_panel_width);
-      layout.bottom_panel_height = MAX (0, layout.bottom_panel_height);
-      layout.canvas_width = MAX (1, layout.canvas_width);
-      layout.canvas_height = MAX (1, layout.canvas_height);
-      if (layout.canvas_width < 1)
-        layout.canvas_width = G_MAXINT;
-      if (layout.canvas_height < 1)
-        layout.canvas_height = G_MAXINT;
-      self->layout = layout;
+      class->get_layout (self, &tlayout);
+      tlayout.top_panel_height = MAX (0, tlayout.top_panel_height);
+      tlayout.left_panel_width = MAX (0, tlayout.left_panel_width);
+      tlayout.right_panel_width = MAX (0, tlayout.right_panel_width);
+      tlayout.bottom_panel_height = MAX (0, tlayout.bottom_panel_height);
+      tlayout.canvas_width = MAX (1, tlayout.canvas_width);
+      tlayout.canvas_height = MAX (1, tlayout.canvas_height);
+      if (tlayout.max_canvas_width < 1)
+        tlayout.max_canvas_width = G_MAXINT;
+      if (tlayout.max_canvas_height < 1)
+        tlayout.max_canvas_height = G_MAXINT;
     }
+  *layout = tlayout;
+}
+
+static void
+child_request_size (GtkWidget *child,
+                    gpointer   data)
+{
+  gtk_widget_size_request (child, NULL);
 }
 
 static void
@@ -339,7 +356,8 @@ scroll_canvas_size_request (GtkWidget      *widget,
                             GtkRequisition *requisition)
 {
   GxkScrollCanvas *self = GXK_SCROLL_CANVAS (widget);
-  scroll_canvas_update_layout (self);
+  gtk_container_forall (GTK_CONTAINER (self), child_request_size, NULL);
+  gxk_scroll_canvas_get_layout (self, &self->layout);
   requisition->width = 2 * BORDER_WIDTH (self) + WINDOW_WIDTH (self, LAYOUT (self)->canvas_width);
   requisition->height = 2 * BORDER_WIDTH (self) + WINDOW_HEIGHT (self, LAYOUT (self)->canvas_height);
 }
@@ -363,9 +381,35 @@ scroll_canvas_size_allocate (GtkWidget     *widget,
 }
 
 void
+gxk_scroll_canvas_get_canvas_size (GxkScrollCanvas       *self,
+                                   gint                  *width,
+                                   gint                  *height)
+{
+  if (self->canvas)                     /* realized */
+    gdk_window_get_size (self->canvas, width, height);
+  if (ALLOCATION (self)->width > 1 ||
+      ALLOCATION (self)->height > 1)    /* allocated */
+    {
+      if (width)
+        *width = CANVAS_WIDTH (self);
+      if (height)
+        *height = CANVAS_HEIGHT (self);
+    }
+  else                  /* all we have is a requisition */
+    {
+      if (width)
+        *width = self->layout.canvas_width;
+      if (height)
+        *height = self->layout.canvas_height;
+    }
+}
+
+void
 gxk_scroll_canvas_reallocate (GxkScrollCanvas *self)
 {
+  GxkScrollCanvasClass *class;
   g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  class = GXK_SCROLL_CANVAS_GET_CLASS (self);
   
   if (GTK_WIDGET_REALIZED (self))
     {
@@ -395,6 +439,8 @@ gxk_scroll_canvas_reallocate (GxkScrollCanvas *self)
                               CANVAS_X (self), CANVAS_Y (self),
                               CANVAS_WIDTH (self), CANVAS_HEIGHT (self));
     }
+  if (class->reallocate_children)
+    class->reallocate_children (self, 0, 0);
   gxk_scroll_canvas_update_adjustments (self, TRUE, TRUE);
 }
 
@@ -425,7 +471,7 @@ scroll_canvas_realize (GtkWidget *widget)
   attributes.y = widget->allocation.y + BORDER_WIDTH (self);
   attributes.width = widget->allocation.width - 2 * BORDER_WIDTH (self);
   attributes.height = widget->allocation.height - 2 * BORDER_WIDTH (self);
-  attributes.event_mask = gtk_widget_get_events (widget) | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
+  attributes.event_mask = gtk_widget_get_events (widget) | GDK_EXPOSURE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK;
   widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), &attributes, attributes_mask);
   gdk_window_set_user_data (widget->window, self);
   gxk_window_set_cursor_type (widget->window, g_object_get_long (self, "window_cursor"));
@@ -529,6 +575,13 @@ scroll_canvas_skin_changed (GxkScrollCanvas *self)
 }
 
 static void
+child_unset_parent_window (GtkWidget *child,
+                           gpointer   data)
+{
+  gtk_widget_set_parent_window (child, NULL);
+}
+
+static void
 scroll_canvas_unrealize (GtkWidget *widget)
 {
   GxkScrollCanvas *self = GXK_SCROLL_CANVAS (widget);
@@ -576,6 +629,10 @@ scroll_canvas_unrealize (GtkWidget *widget)
       gxk_image_cache_unuse_pixmap (self->canvas_pixmap);
       self->canvas_pixmap = NULL;
     }
+
+  /* unset parent windows of children */
+  gtk_container_forall (GTK_CONTAINER (self), child_unset_parent_window, NULL);
+
   GTK_WIDGET_CLASS (gxk_scroll_canvas_parent_class)->unrealize (widget);
 }
 
@@ -588,7 +645,6 @@ scroll_canvas_draw_window (GxkScrollCanvas        *self,
   // GdkGC *fg_gc = STYLE (self)->fg_gc[STATE (self)];
   gint x, y, width, height, xb, yb;
 
-#if 0
   /* frame: upper-left */
   x = 0, y = 0, xb = CANVAS_X (self), yb = CANVAS_Y (self);
   gtk_paint_shadow (widget->style, drawable, widget->state, GTK_SHADOW_ETCHED_IN,
@@ -622,7 +678,6 @@ scroll_canvas_draw_window (GxkScrollCanvas        *self,
   x = BOTTOM_PANEL_X (self), y = BOTTOM_PANEL_Y (self), width = BOTTOM_PANEL_WIDTH (self), height = BOTTOM_PANEL_HEIGHT (self);
   gtk_paint_shadow (widget->style, drawable, widget->state, GTK_SHADOW_OUT,
                     NULL, NULL, NULL, x, y - YTHICKNESS (self), width, height + 2 * YTHICKNESS (self));
-#endif
   /* frame */
   x = CANVAS_X (self) - XTHICKNESS (self), y = CANVAS_Y (self) - YTHICKNESS (self);
   width = CANVAS_WIDTH (self) + 2 * XTHICKNESS (self), height = CANVAS_HEIGHT (self) + 2 * YTHICKNESS (self);
@@ -796,6 +851,26 @@ scroll_canvas_expose (GtkWidget      *widget,
   return FALSE;
 }
 
+static gboolean
+scroll_canvas_focus_in (GtkWidget     *widget,
+                        GdkEventFocus *event)
+{
+  GxkScrollCanvas *self = GXK_SCROLL_CANVAS (widget);
+  GTK_WIDGET_SET_FLAGS (self, GTK_HAS_FOCUS);
+  // scroll_canvas_draw_focus (self);
+  return TRUE;
+}
+
+static gboolean
+scroll_canvas_focus_out (GtkWidget     *widget,
+                         GdkEventFocus *event)
+{
+  GxkScrollCanvas *self = GXK_SCROLL_CANVAS (widget);
+  GTK_WIDGET_UNSET_FLAGS (self, GTK_HAS_FOCUS);
+  // scroll_canvas_draw_focus (self);
+  return TRUE;
+}
+
 void
 gxk_scroll_canvas_set_window_cursor (GxkScrollCanvas *self,
                                      GdkCursorType    cursor)
@@ -897,23 +972,24 @@ static void
 scroll_canvas_adjustment_value_changed (GxkScrollCanvas *self,
                                         GtkAdjustment   *adjustment)
 {
-  gboolean need_realloc = FALSE;
-  if (adjustment == self->hadjustment)
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
+  gint xdiff = 0, ydiff = 0;
+  if (adjustment == self->hadjustment && class->hscrollable)
     {
-      gint x = self->x_offset, diff;
+      gint x = self->x_offset;
       self->x_offset = adjustment->value;
-      diff = x - self->x_offset;
-      if (diff && GTK_WIDGET_DRAWABLE (self))
+      xdiff = x - self->x_offset;
+      if (xdiff && GTK_WIDGET_DRAWABLE (self))
         {
           GdkRectangle area = { 0, };
           if (self->top_panel)
-            gdk_window_scroll (self->top_panel, diff, 0);
-          gdk_window_scroll (self->canvas, diff, 0);
+            gdk_window_scroll (self->top_panel, xdiff, 0);
+          gdk_window_scroll (self->canvas, xdiff, 0);
           if (self->bottom_panel)
-            gdk_window_scroll (self->bottom_panel, diff, 0);
-          area.x = diff < 0 ? CANVAS_WIDTH (self) + diff : 0;
+            gdk_window_scroll (self->bottom_panel, xdiff, 0);
+          area.x = xdiff < 0 ? CANVAS_WIDTH (self) + xdiff : 0;
           area.y = 0;
-          area.width = ABS (diff);
+          area.width = ABS (xdiff);
           area.height = CANVAS_HEIGHT (self);
           gdk_window_invalidate_rect (self->canvas, &area, TRUE);
           if (self->top_panel)
@@ -926,26 +1002,25 @@ scroll_canvas_adjustment_value_changed (GxkScrollCanvas *self,
               area.height = BOTTOM_PANEL_HEIGHT (self);
               gdk_window_invalidate_rect (self->bottom_panel, &area, TRUE);
             }
-          need_realloc = TRUE;
         }
     }
-  if (adjustment == self->vadjustment)
+  if (adjustment == self->vadjustment && class->vscrollable)
     {
-      gint y = self->y_offset, diff;
+      gint y = self->y_offset;
       self->y_offset = adjustment->value;
-      diff = y - self->y_offset;
-      if (diff && GTK_WIDGET_DRAWABLE (self))
+      ydiff = y - self->y_offset;
+      if (ydiff && GTK_WIDGET_DRAWABLE (self))
         {
           GdkRectangle area = { 0, };
           if (self->left_panel)
-            gdk_window_scroll (self->left_panel, 0, diff);
-          gdk_window_scroll (self->canvas, 0, diff);
+            gdk_window_scroll (self->left_panel, 0, ydiff);
+          gdk_window_scroll (self->canvas, 0, ydiff);
           if (self->right_panel)
-            gdk_window_scroll (self->right_panel, 0, diff);
+            gdk_window_scroll (self->right_panel, 0, ydiff);
           area.x = 0;
-          area.y = diff < 0 ? CANVAS_HEIGHT (self) + diff : 0;
+          area.y = ydiff < 0 ? CANVAS_HEIGHT (self) + ydiff : 0;
           area.width = CANVAS_WIDTH (self);
-          area.height = ABS (diff);
+          area.height = ABS (ydiff);
           gdk_window_invalidate_rect (self->canvas, &area, TRUE);
           if (self->left_panel)
             {
@@ -957,17 +1032,18 @@ scroll_canvas_adjustment_value_changed (GxkScrollCanvas *self,
               area.width = RIGHT_PANEL_WIDTH (self);
               gdk_window_invalidate_rect (self->right_panel, &area, TRUE);
             }
-          need_realloc = TRUE;
         }
     }
-  if (need_realloc)
+  if (xdiff || ydiff)
     {
       /* we want the canvas to be updated immediately, to avoid
        * big expose rectangles later on, due to rectangle-joins
        * of L-shaped regions.
        */
-      gdk_window_process_updates (self->canvas, TRUE);
-      // FIXME: scroll_canvas_reallocate_children (self);
+      if (self->canvas)
+        gdk_window_process_updates (self->canvas, TRUE);
+      if (class->reallocate_children)
+        class->reallocate_children (self, xdiff, ydiff);
     }
 }
 
@@ -976,7 +1052,8 @@ gxk_scroll_canvas_update_adjustments (GxkScrollCanvas *self,
                                       gboolean         hadj,
                                       gboolean         vadj)
 {
-  if (hadj)
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
+  if (hadj && class->hscrollable)
     {
       self->hadjustment->lower = MAX (self->hadjustment->lower, 0);
       self->hadjustment->upper = MIN (self->hadjustment->upper, G_MAXINT);
@@ -984,7 +1061,7 @@ gxk_scroll_canvas_update_adjustments (GxkScrollCanvas *self,
       self->hadjustment->page_increment = self->hadjustment->page_size / 2;
       self->hadjustment->step_increment = CLAMP (self->hadjustment->step_increment, 0, self->hadjustment->page_increment);
     }
-  if (vadj)
+  if (vadj && class->vscrollable)
     {
       self->vadjustment->lower = MAX (self->vadjustment->lower, 0);
       self->vadjustment->upper = MIN (self->vadjustment->upper, G_MAXINT);
@@ -1000,10 +1077,11 @@ scroll_canvas_update_adjustments (GxkScrollCanvas *self,
                                   gboolean         hadj,
                                   gboolean         vadj)
 {
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
   gdouble hv = self->hadjustment->value;
   gdouble vv = self->vadjustment->value;
   
-  if (hadj)
+  if (hadj && class->hscrollable)
     {
       self->hadjustment->lower = MAX (self->hadjustment->lower, 0);
       self->hadjustment->upper = MIN (self->hadjustment->upper, G_MAXINT);
@@ -1013,10 +1091,11 @@ scroll_canvas_update_adjustments (GxkScrollCanvas *self,
         self->hadjustment->page_increment = self->hadjustment->page_size / 2;
       self->hadjustment->step_increment = CLAMP (self->hadjustment->step_increment, 0, self->hadjustment->page_increment);
     }
-  self->hadjustment->value = CLAMP (self->hadjustment->value,
-                                    self->hadjustment->lower,
-                                    self->hadjustment->upper - self->hadjustment->page_size);
-  if (vadj)
+  if (class->hscrollable)
+    self->hadjustment->value = CLAMP (self->hadjustment->value,
+                                      self->hadjustment->lower,
+                                      self->hadjustment->upper - self->hadjustment->page_size);
+  if (vadj && class->vscrollable)
     {
       self->vadjustment->lower = MAX (self->vadjustment->lower, 0);
       self->vadjustment->upper = MIN (self->vadjustment->upper, G_MAXINT);
@@ -1026,16 +1105,17 @@ scroll_canvas_update_adjustments (GxkScrollCanvas *self,
         self->vadjustment->page_increment = self->vadjustment->page_size / 2;
       self->vadjustment->step_increment = CLAMP (self->vadjustment->step_increment, 0, self->vadjustment->page_increment);
     }
-  self->vadjustment->value = CLAMP (self->vadjustment->value,
-                                    self->vadjustment->lower,
-                                    self->vadjustment->upper - self->vadjustment->page_size);
-  if (hadj)
+  if (class->vscrollable)
+    self->vadjustment->value = CLAMP (self->vadjustment->value,
+                                      self->vadjustment->lower,
+                                      self->vadjustment->upper - self->vadjustment->page_size);
+  if (hadj && class->hscrollable)
     gtk_adjustment_changed (self->hadjustment);
-  if (vadj)
+  if (vadj && class->vscrollable)
     gtk_adjustment_changed (self->vadjustment);
-  if (hv != self->hadjustment->value)
+  if (hv != self->hadjustment->value && class->hscrollable)
     gtk_adjustment_value_changed (self->hadjustment);
-  if (vv != self->vadjustment->value)
+  if (vv != self->vadjustment->value && class->vscrollable)
     gtk_adjustment_value_changed (self->vadjustment);
 }
 
@@ -1044,6 +1124,7 @@ scroll_canvas_scroll_adjustments (GxkScrollCanvas *self,
                                   gint             x_pixel,
                                   gint             y_pixel)
 {
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
   gdouble hv = self->hadjustment->value;
   gdouble vv = self->vadjustment->value;
   gint xdiff, ydiff;
@@ -1055,21 +1136,27 @@ scroll_canvas_scroll_adjustments (GxkScrollCanvas *self,
     xdiff = MAX (xdiff, 1);
   else if (x_pixel < 0)
     xdiff = MIN (-1, xdiff);
-  self->hadjustment->value += xdiff;
-  self->hadjustment->value = CLAMP (self->hadjustment->value,
-                                    self->hadjustment->lower,
-                                    self->hadjustment->upper - self->hadjustment->page_size);
+  if (class->hscrollable)
+    {
+      self->hadjustment->value += xdiff;
+      self->hadjustment->value = CLAMP (self->hadjustment->value,
+                                        self->hadjustment->lower,
+                                        self->hadjustment->upper - self->hadjustment->page_size);
+    }
   if (y_pixel > 0)
     ydiff = MAX (ydiff, 1);
   else if (y_pixel < 0)
     ydiff = MIN (-1, ydiff);
-  self->vadjustment->value += ydiff;
-  self->vadjustment->value = CLAMP (self->vadjustment->value,
-                                    self->vadjustment->lower,
-                                    self->vadjustment->upper - self->vadjustment->page_size);
-  if (hv != self->hadjustment->value)
+  if (class->vscrollable)
+    {
+      self->vadjustment->value += ydiff;
+      self->vadjustment->value = CLAMP (self->vadjustment->value,
+                                        self->vadjustment->lower,
+                                        self->vadjustment->upper - self->vadjustment->page_size);
+    }
+  if (class->hscrollable && hv != self->hadjustment->value)
     gtk_adjustment_value_changed (self->hadjustment);
-  if (vv != self->vadjustment->value)
+  if (class->vscrollable && vv != self->vadjustment->value)
     gtk_adjustment_value_changed (self->vadjustment);
 }
 
@@ -1181,17 +1268,17 @@ scroll_canvas_button_press (GtkWidget      *widget,
 static gboolean
 scroll_canvas_auto_scroller (gpointer data)
 {
-  GxkScrollCanvas *self;
+  GxkScrollCanvas *self = GXK_SCROLL_CANVAS (data);
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
   GxkScrollCanvasDrag *drag;
   guint remain = 1;
 
   GDK_THREADS_ENTER ();
-  self = GXK_SCROLL_CANVAS (data);
   drag = DRAG (self);
   if (drag && GTK_WIDGET_DRAWABLE (self))
     {
-      gboolean hdrag = drag->canvas_drag || drag->top_panel_drag || drag->bottom_panel_drag;
-      gboolean vdrag = drag->canvas_drag || drag->left_panel_drag || drag->right_panel_drag;
+      gboolean hdrag = class->hscrollable && (drag->canvas_drag || drag->top_panel_drag || drag->bottom_panel_drag);
+      gboolean vdrag = class->vscrollable && (drag->canvas_drag || drag->left_panel_drag || drag->right_panel_drag);
       gint x, y, width, height, xdiff = 0, ydiff = 0;
       GdkModifierType modifiers;
       gdk_window_get_size (drag->drawable, &width, &height);
@@ -1322,7 +1409,9 @@ gxk_scroll_canvas_class_init (GxkScrollCanvasClass *class)
   widget_class->motion_notify_event = scroll_canvas_motion;
   widget_class->button_release_event = scroll_canvas_button_release;
   widget_class->key_press_event = scroll_canvas_key_press;
-  
+  widget_class->focus_in_event = scroll_canvas_focus_in;
+  widget_class->focus_out_event = scroll_canvas_focus_out;
+
   /* widget config */
   class->double_buffer_top_panel = TRUE;
   class->double_buffer_left_panel = TRUE;
@@ -1332,6 +1421,8 @@ gxk_scroll_canvas_class_init (GxkScrollCanvasClass *class)
   class->double_buffer_window = TRUE;
   class->auto_clear = TRUE;
   class->grab_focus = TRUE;
+  class->hscrollable = FALSE;
+  class->vscrollable = FALSE;
   /* skin config */
   class->image_file_name = NULL;
   class->image_tint.red = 0xff00;

@@ -32,13 +32,14 @@ progs_LDADD = $(strip 			\
 #
 # BEAST header files that don't get installed
 beast_headers = $(strip \
+	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
+	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
 	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
 	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	\
 	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	\
 	bstsnifferscope.h	bstdragutils.h	bstfiledialog.h		bstgconfig.h	\
 	bstlogadjustment.h	bstitemview.h	bstmarker.h		bstknob.h	\
 	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
-	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
 	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
 	bstrackeditor.h		bstrackitem.h	bstracktable.h		\
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	\
@@ -46,18 +47,18 @@ beast_headers = $(strip \
 				bstwaveview.h				bstxkb.h	\
 	bstzoomedwindow.h	bstskinconfig.h	bsttrackrollctrl.h	bstxframe.h	\
 				bstrackview.h	bsttreestores.h		bstutils.h	\
-	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
 	bstmarshal.h bstdefs.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
+	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	\
+	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\
 	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
 	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	\
 	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	\
 	bstsnifferscope.c	bstdragutils.c	bstfiledialog.c		bstgconfig.c	\
 	bstlogadjustment.c	bstitemview.c	bstmarker.c		bstknob.c	\
 	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
-	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	\
 	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	\
 	bstrackeditor.c		bstrackitem.c	bstracktable.c		\
 	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	\
@@ -65,7 +66,6 @@ beast_sources = $(strip \
 				bstwaveview.c				bstxkb.c	\
 	bstzoomedwindow.c	bstskinconfig.c	bsttrackrollctrl.c	bstxframe.c	\
 				bstrackview.c	bsttreestores.c		bstutils.c	\
-	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\
 	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)

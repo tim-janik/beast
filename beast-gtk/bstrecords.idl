@@ -56,16 +56,26 @@ record GConfig {
 
 /* skin config */
 record SkinConfig {
+  String         skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), NULL, STANDARD);
   group "Piano Roll" {
-    String      skin_name   = (_("Skin Name"), _("Name for the current skin configuration (used for skin selections)."), NULL, STANDARD);
-    String      piano_image = (_("Background Image"), _("Background image used by the piano-roll widget."), NULL, STANDARD ":filename:image");
-    Real        piano_shade = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 10, 0, 100, 5, STANDARD ":scale");
-    Int         piano_color = (_("Background Color"),      NULL, 0xffffff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int         piano_hbar  = (_("Horizontal Bar Color"),  NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int         piano_vbar  = (_("Vertical Bar Color"),    NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int         piano_hgrid = (_("Horizontal Grid Color"), NULL, 0xbfbfbf, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int         piano_vgrid = (_("Vertical Grid Color"),   NULL, 0xbfbfbf, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
-    Int         piano_mbar  = (_("Middle Bar Color"),      NULL, 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    String       piano_image = (_("Background Image"), _("Background image used by the piano-roll widget."), NULL, STANDARD ":filename:image");
+    Real         piano_shade = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 10, 0, 100, 5, STANDARD ":scale");
+    Int          piano_color = (_("Background Color"),      NULL, 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_hbar  = (_("Horizontal Bar Color"),  NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_vbar  = (_("Vertical Bar Color"),    NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_hgrid = (_("Horizontal Grid Color"), NULL, 0xbfbfbf, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_vgrid = (_("Vertical Grid Color"),   NULL, 0xbfbfbf, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int          piano_mbar  = (_("Middle Bar Color"),      NULL, 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+  };
+  group "Control Events" {
+    String controls_image    = (_("Background Image"), _("Background image used by the control events widget."), NULL, STANDARD ":filename:image");
+    Real   controls_shade    = (_("Image shade"), _("Percentage of background image pixel to blend over background color."), 10, 0, 100, 5, STANDARD ":scale");
+    Int    controls_color    = (_("Background Color"),      NULL, 0xf5f3ed, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_hbar     = (_("Horizontal Bar Color"),  NULL, 0x7f7f7f, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_mbar     = (_("Middle Bar Color"),      NULL, 0xa0a0a0, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_positive = (_("Positive Value Color"),  NULL, 0x0000ff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_zero     = (_("Zero Value Color"),      NULL, 0xff0000, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
+    Int    controls_negative = (_("Negative Value Color"),  NULL, 0x0000ff, 0, 0xffffff, 0x010101, STANDARD ":rgb:hex");
   };
 };
 

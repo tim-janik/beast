@@ -59,13 +59,6 @@
 
 
 /* --- prototypes --- */
-static void	bst_piano_roll_dispose			(GObject		*object);
-static void	bst_piano_roll_destroy			(GtkObject		*object);
-static void	bst_piano_roll_finalize			(GObject		*object);
-static gboolean	bst_piano_roll_focus_in			(GtkWidget		*widget,
-							 GdkEventFocus		*event);
-static gboolean	bst_piano_roll_focus_out		(GtkWidget		*widget,
-							 GdkEventFocus		*event);
 static void	bst_piano_roll_hsetup			(BstPianoRoll		*self,
 							 guint			 ppqn,
 							 guint			 qnpt,
@@ -951,35 +944,13 @@ bst_piano_roll_set_hzoom (BstPianoRoll *self,
   return self->hzoom;
 }
 
-static gboolean
-bst_piano_roll_focus_in (GtkWidget     *widget,
-			 GdkEventFocus *event)
-{
-  BstPianoRoll *self = BST_PIANO_ROLL (widget);
-  
-  GTK_WIDGET_SET_FLAGS (self, GTK_HAS_FOCUS);
-  // bst_piano_roll_draw_focus (self);
-  return TRUE;
-}
-
-static gboolean
-bst_piano_roll_focus_out (GtkWidget	*widget,
-			  GdkEventFocus *event)
-{
-  BstPianoRoll *self = BST_PIANO_ROLL (widget);
-  
-  GTK_WIDGET_UNSET_FLAGS (self, GTK_HAS_FOCUS);
-  // bst_piano_roll_draw_focus (self);
-  return TRUE;
-}
-
 static void
 piano_roll_handle_drag (GxkScrollCanvas     *scc,
                         GxkScrollCanvasDrag *scc_drag,
                         GdkEvent            *event)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
-  BstPianoRollDrag drag_mem, *drag = &drag_mem;
+  BstPianoRollDrag drag_mem = { 0 }, *drag = &drag_mem;
   gint hdrag = scc_drag->canvas_drag || scc_drag->top_panel_drag;
   gint vdrag = scc_drag->canvas_drag || scc_drag->left_panel_drag;
   /* copy over drag setup */
@@ -1180,6 +1151,8 @@ bst_piano_roll_get_vpanel_width (BstPianoRoll *self)
   g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
   if (VPANEL (self))
     gdk_window_get_size (VPANEL (self), &width, NULL);
+  else
+    width = GXK_SCROLL_CANVAS (self)->layout.left_panel_width;
   return width;
 }
 
@@ -1227,7 +1200,7 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  // GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (class);
   
   gobject_class->dispose = bst_piano_roll_dispose;
@@ -1235,9 +1208,8 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
   
   object_class->destroy = bst_piano_roll_destroy;
   
-  widget_class->focus_in_event = bst_piano_roll_focus_in;
-  widget_class->focus_out_event = bst_piano_roll_focus_out;
-  
+  scroll_canvas_class->hscrollable = TRUE;
+  scroll_canvas_class->vscrollable = TRUE;
   scroll_canvas_class->get_layout = piano_roll_get_layout;
   scroll_canvas_class->draw_canvas = bst_piano_roll_draw_canvas;
   scroll_canvas_class->draw_top_panel = bst_piano_roll_draw_hpanel;

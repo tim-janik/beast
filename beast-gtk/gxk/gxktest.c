@@ -263,12 +263,14 @@ rack_test (void)
   gtk_main ();
 }
 
+static GxkScrollCanvasLayout faked_layout = { 10, 10, 10, 10, 32, 320, 20, 200 };
+
 static void
 toggle_panel_sizes (GtkToggleButton *tb,
                     GxkScrollCanvas *scc)
 {
   gint sz = tb->active ? 10 : 0;
-  GxkScrollCanvasLayout *layout = &scc->layout;
+  GxkScrollCanvasLayout *layout = &faked_layout; // scc->layout;
   glong l = g_object_get_long (tb, "user_data");
   switch (l)
     {
@@ -281,6 +283,13 @@ toggle_panel_sizes (GtkToggleButton *tb,
       break;
     }
   gtk_widget_queue_resize ((GtkWidget*) scc);
+}
+
+static void
+faked_scroll_canvas_get_layout (GxkScrollCanvas        *self,
+                                GxkScrollCanvasLayout  *layout)
+{
+  *layout = faked_layout;
 }
 
 static void
@@ -331,6 +340,9 @@ scroll_canvas_test (void)
                                        "border-width", 10,
                                        "parent", frame,
                                        NULL);
+  /* patch up scroll-canvas class to have a layout */
+  g_type_class_unref (g_type_class_ref (GXK_TYPE_SCROLL_CANVAS)); // ensure class exists
+  GXK_SCROLL_CANVAS_CLASS (g_type_class_peek (GXK_TYPE_SCROLL_CANVAS))->get_layout = faked_scroll_canvas_get_layout;
   gtk_box_pack_start (GTK_BOX (box), btn1, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (box), btn2, FALSE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (box), btn3, FALSE, TRUE, 0);
