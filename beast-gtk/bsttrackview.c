@@ -154,7 +154,7 @@ bst_track_view_can_operate (BstItemView *item_view,
     {
       BswProxy item;
     case BST_OP_TRACK_ADD:
-      return bse_container_get_item (bse_object_from_id (song), BSE_TYPE_TRACK, 1) == NULL;  // FIXME: remove this hack
+      return TRUE;
     case BST_OP_TRACK_DELETE:
       item = bst_item_view_get_current (item_view);
       return item != 0;

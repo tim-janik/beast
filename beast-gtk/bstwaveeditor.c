@@ -122,7 +122,7 @@ static void
 bst_wave_editor_init (BstWaveEditor *self)
 {
   GtkTreeSelection *tsel;
-  GtkWidget *any;
+  GtkWidget *any, *paned;
   gpointer gmask;
   
   /* setup main container */
@@ -140,16 +140,22 @@ bst_wave_editor_init (BstWaveEditor *self)
 			   G_CALLBACK (wave_chunk_fill_value),
 			   self, G_CONNECT_SWAPPED);
 
-  /* chunk list widgets */
-  any = gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
+  /* chunk list / qsampler paned container */
+  paned = g_object_new (GTK_TYPE_VPANED,
 			"visible", TRUE,
-			"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
-			"vscrollbar_policy", GTK_POLICY_ALWAYS,
-			"height_request", 120,
-			"border_width", 5,
-			"shadow_type", GTK_SHADOW_IN,
+			"parent", self->main_vbox,
 			NULL);
-  gtk_box_pack_start (GTK_BOX (self->main_vbox), any, FALSE, TRUE, 0);
+
+  /* chunk list widgets */
+  any = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+		      "visible", TRUE,
+		      "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+		      "vscrollbar_policy", GTK_POLICY_ALWAYS,
+		      "height_request", 120,
+		      "border_width", 5,
+		      "shadow_type", GTK_SHADOW_IN,
+		      NULL);
+  gtk_paned_pack1 (GTK_PANED (paned), any, TRUE, TRUE);
   self->tree = g_object_new (GTK_TYPE_TREE_VIEW,
 			     "visible", TRUE,
 			     "can_focus", TRUE, /* FALSE, */
@@ -172,13 +178,13 @@ bst_wave_editor_init (BstWaveEditor *self)
 				     COL_FILE_NAME, 0.0, "FileName");
 
   /* qsampler container */
-  self->qsampler_parent = gtk_widget_new (GTK_TYPE_VBOX,
-					  "visible", TRUE,
-					  "spacing", 1,
-					  "parent", self->main_vbox,
-					  "border_width", 0,
-					  NULL);
+  self->qsampler_parent = g_object_new (GTK_TYPE_VBOX,
+					"visible", TRUE,
+					"spacing", 1,
+					"border_width", 0,
+					NULL);
   bst_nullify_on_destroy (self->qsampler_parent, &self->qsampler_parent);
+  gtk_paned_pack2 (GTK_PANED (paned), self->qsampler_parent, TRUE, TRUE);
 
   /* GUI mask container */
   self->gmask_parent = bst_gmask_container_create (BST_TOOLTIPS, 5, TRUE);

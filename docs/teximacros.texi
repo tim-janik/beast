@@ -93,15 +93,24 @@
 @end rmacro
 
 
-@c --- table of contents
+@c --- table of contents ---
 @rmacro toc{}
 @ifxmlelse{,table-of-contents,nop}
 @end rmacro
 
 
-@c --- revision bit
+@c --- revision bit ---
 @rmacro revision{}
 @ifxmlelse{,revision,nop}
+@end rmacro
+
+
+@c --- document heading ---
+@rmacro doctitle{}
+@ifxmlelse{,document-title,nop}
+@end rmacro
+@rmacro docauthor{}
+@ifxmlelse{,document-author,nop}
 @end rmacro
 
 

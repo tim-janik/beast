@@ -25,6 +25,7 @@
 #include	"bstusermessage.h"
 #include	"bststatusbar.h"
 #include	"bstpreferences.h"
+#include	"bsttexttools.h"
 #include	"../PKG_config.h"
 #include	"images/beast-images.h"
 #include	<unistd.h>

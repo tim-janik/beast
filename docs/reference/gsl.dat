@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.1-rc3
-date    = 16 Aug 2002
+date    = 21 Aug 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 16 Aug 2002 BEAST-0.4.1-rc3
+GSL-Functions 21 Aug 2002 BEAST-0.4.1-rc3
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference

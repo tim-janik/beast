@@ -1,3 +1,13 @@
+Fri Aug 23 11:27:42 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstwaveeditor.c (bst_wave_editor_init): put the chunk list
+	and the qsampler scrolled window into a vpaned so the user can alter
+	their layout.
+
+	* beast-gtk/bsttrackview.c: remove single track hack.
+	
+	* docs/teximacros.texi: add @doctitle and @docauthor macros.
+
 Tue Aug 20 17:32:35 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c: fix va_start() invocations.

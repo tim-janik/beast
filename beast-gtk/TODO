@@ -3,6 +3,9 @@ RELEASE:
 - help: QuickStart-Samples, QuickStart-Synthesis, QuickStart-Songs
 - provide a sample song
 
+URGENT:
+- track volume
+
 FEATURES:
 - Module Menu: add EDIT
 - part editor needs play position
