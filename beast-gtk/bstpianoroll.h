@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 #ifndef __BST_PIANO_ROLL_H__
 #define __BST_PIANO_ROLL_H__
 
-#include	"bstdragutils.h"
+#include        "bstutils.h"
 
 G_BEGIN_DECLS
 
@@ -38,22 +38,19 @@ typedef struct _BstPianoRollClass   BstPianoRollClass;
 
 /* --- structures & typedefs --- */
 typedef struct {
-  BstPianoRoll *proll;
-  BstDragStatus type;		/* emission type: start/motion/done/abort */
-  BstDragMode   mode;
-  guint	        button;
+  GXK_SCROLL_CANVAS_DRAG_FIELDS;
   guint	        start_tick;
   gint          start_note;
-  guint		start_valid : 1;
+  guint		start_valid : 1;        /* note out of range or non-existant black key */
   guint         current_tick;
   gint          current_note;
   guint		current_valid : 1;	/* note out of range or non-existant black key */
-  /* user data */
-  BstDragStatus state;		/* request type: unhandled/continue/handled/error */
+  /* convenience: */
+  BstPianoRoll *proll;
 } BstPianoRollDrag;
 struct _BstPianoRoll
 {
-  GtkContainer	 parent_instance;
+  GxkScrollCanvas parent_instance;
 
   SfiProxy	 proxy;
   gint		 min_note;
@@ -65,6 +62,12 @@ struct _BstPianoRoll
   guint		 qnpt;		/* quarter notes per tact */
   guint		 max_ticks;	/* in ticks */
   gfloat	 hzoom;
+
+  /* last drag state */
+  guint          start_tick;
+  gint           start_note;
+  guint          start_valid : 1;
+
   guint		 draw_qn_grid : 1;
   guint		 draw_qqn_grid : 1;
 
@@ -73,15 +76,7 @@ struct _BstPianoRoll
 
   /* scroll offset */
   guint		 init_vpos : 1;
-  gint		 x_offset, y_offset;
 
-  guint		 hpanel_height;
-  GdkWindow	*vpanel, *hpanel, *canvas;
-  GdkCursorType	 canvas_cursor, vpanel_cursor, hpanel_cursor;
-#define BST_PIANO_ROLL_N_COLORS (12)
-  GdkGC		*color_gc[BST_PIANO_ROLL_N_COLORS];
-
-  GtkAdjustment	*hadjustment, *vadjustment;
   guint		 scroll_timer;
 
   /* selection rectangle */
@@ -89,19 +84,11 @@ struct _BstPianoRoll
   guint		 selection_duration;
   gint		 selection_min_note;
   gint		 selection_max_note;
-
-  /* drag operations */
-  guint		   canvas_drag : 1;
-  guint		   piano_drag : 1;
-  BstPianoRollDrag drag;
 };
 struct _BstPianoRollClass
 {
-  GtkContainerClass parent_class;
+  GxkScrollCanvasClass parent_class;
 
-  void		(*set_scroll_adjustments)	(BstPianoRoll	  *proll,
-						 GtkAdjustment	  *hadjustment,
-						 GtkAdjustment	  *vadjustment);
   void		(*canvas_drag)			(BstPianoRoll	  *self,
 						 BstPianoRollDrag *drag);
   void		(*canvas_clicked)		(BstPianoRoll	  *proll,
@@ -122,20 +109,10 @@ struct _BstPianoRollClass
 GType	bst_piano_roll_get_type			(void);
 void	bst_piano_roll_set_proxy		(BstPianoRoll	*self,
 						 SfiProxy	 proxy);
-void	bst_piano_roll_set_hadjustment		(BstPianoRoll	*self,
-						 GtkAdjustment	*adjustment);
-void	bst_piano_roll_set_vadjustment		(BstPianoRoll	*self,
-						 GtkAdjustment	*adjustment);
 gfloat	bst_piano_roll_set_hzoom		(BstPianoRoll	*self,
 						 gfloat		 hzoom);
 gfloat	bst_piano_roll_set_vzoom		(BstPianoRoll	*self,
 						 gfloat		 vzoom);
-void	bst_piano_roll_set_canvas_cursor	(BstPianoRoll	*self,
-						 GdkCursorType	 cursor);
-void	bst_piano_roll_set_vpanel_cursor	(BstPianoRoll	*self,
-						 GdkCursorType	 cursor);
-void	bst_piano_roll_set_hpanel_cursor	(BstPianoRoll	*self,
-						 GdkCursorType	 cursor);
 void	bst_piano_roll_set_view_selection	(BstPianoRoll	*self,
 						 guint		 tick,
 						 guint		 duration,

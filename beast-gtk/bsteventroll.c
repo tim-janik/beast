@@ -820,7 +820,8 @@ event_roll_adjustment_value_changed (BstEventRoll  *self,
     {
       gint x = self->x_offset, diff;
 
-      self->x_offset = ticks_to_pixels (self, adjustment->value);
+      // self->x_offset = ticks_to_pixels (self, adjustment->value);
+      self->x_offset = adjustment->value;
       diff = x - self->x_offset;
       if (diff && GTK_WIDGET_DRAWABLE (self))
 	{
@@ -849,7 +850,8 @@ event_roll_update_adjustments (BstEventRoll *self,
     {
       self->hadjustment->lower = 0;
       self->hadjustment->upper = self->max_ticks;
-      self->hadjustment->page_size = pixels_to_ticks (self, CANVAS_WIDTH (self));
+      // self->hadjustment->page_size = pixels_to_ticks (self, CANVAS_WIDTH (self));
+      self->hadjustment->page_size = CANVAS_WIDTH (self);
       self->hadjustment->step_increment = self->ppqn;
       self->hadjustment->page_increment = self->ppqn * self->qnpt;
       self->hadjustment->value = CLAMP (self->hadjustment->value,
@@ -873,12 +875,19 @@ event_roll_scroll_adjustments (BstEventRoll *self,
   xdiff = x_pixel * AUTO_SCROLL_SCALE;
   ydiff = y_pixel * AUTO_SCROLL_SCALE;
 
+#if 0
   ticks = pixels_to_ticks (self, ABS (xdiff));
   if (x_pixel > 0)
     ticks = MAX (ticks, 1);
   else if (x_pixel < 0)
     ticks = MIN (-1, -ticks);
   self->hadjustment->value += ticks;
+#endif
+  if (x_pixel > 0)
+    xdiff = MAX (xdiff, 1);
+  else if (x_pixel < 0)
+    xdiff = MIN (-1, xdiff);
+  self->hadjustment->value += xdiff;
   self->hadjustment->value = CLAMP (self->hadjustment->value,
 				    self->hadjustment->lower,
 				    self->hadjustment->upper - self->hadjustment->page_size);
@@ -919,7 +928,8 @@ bst_event_roll_hsetup (BstEventRoll *self,
     {
       if (self->hadjustment)
 	{
-	  self->x_offset = ticks_to_pixels (self, self->hadjustment->value);
+	  // self->x_offset = ticks_to_pixels (self, self->hadjustment->value);
+	  self->x_offset = self->hadjustment->value;
 	  event_roll_update_adjustments (self, TRUE, FALSE);
 	}
       self->draw_qn_grid = ticks_to_pixels (self, self->ppqn) >= 3;

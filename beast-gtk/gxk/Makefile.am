@@ -17,21 +17,21 @@ DEFS += $(strip \
 noinst_LIBRARIES = libgxk.a
 
 gxk_headers = $(strip \
-	gxkled.h	gxkcanvas.h	gxkdialog.h	gxkauxwidgets.h \
-	gxkstatusbar.h	gxkstock.h	gxktexttools.h	gxklistwrapper.h \
-	gxkrackeditor.h	gxkutils.h	gxkpolygon.h	gxkcellrendererpopup.h \
-	gxkgadget.h	gxkaction.h	gxkglobals.h	gxkgadgetfactory.h \
-	glewidgets.h	gxkracktable.h	gxkrackitem.h	gxksimplelabel.h \
-	gxkparam.h					gxklogadjustment.h \
+	gxkled.h	gxkcanvas.h		gxkdialog.h	gxkauxwidgets.h \
+	gxkstatusbar.h	gxkstock.h		gxktexttools.h	gxklistwrapper.h \
+	gxkrackeditor.h	gxkutils.h		gxkpolygon.h	gxkcellrendererpopup.h \
+	gxkgadget.h	gxkaction.h		gxkglobals.h	gxkgadgetfactory.h \
+	glewidgets.h	gxkracktable.h		gxkrackitem.h	gxksimplelabel.h \
+	gxkparam.h	gxkscrollcanvas.h			gxklogadjustment.h \
 	gxk.h \
 )
 gxk_c_sources = $(strip \
-	gxkled.c	gxkcanvas.c	gxkdialog.c	gxkauxwidgets.c \
-	gxkstatusbar.c	gxkstock.c	gxktexttools.c	gxklistwrapper.c \
-	gxkrackeditor.c	gxkutils.c	gxkpolygon.c	gxkcellrendererpopup.c \
-	gxkgadget.c	gxkaction.c	gxkglobals.c	gxkgadgetfactory.c \
-	glewidgets.c	gxkracktable.c	gxkrackitem.c	gxksimplelabel.c \
-	gxkparam.c					gxklogadjustment.c \
+	gxkled.c	gxkcanvas.c		gxkdialog.c	gxkauxwidgets.c \
+	gxkstatusbar.c	gxkstock.c		gxktexttools.c	gxklistwrapper.c \
+	gxkrackeditor.c	gxkutils.c		gxkpolygon.c	gxkcellrendererpopup.c \
+	gxkgadget.c	gxkaction.c		gxkglobals.c	gxkgadgetfactory.c \
+	glewidgets.c	gxkracktable.c		gxkrackitem.c	gxksimplelabel.c \
+	gxkparam.c	gxkscrollcanvas.c			gxklogadjustment.c \
 )
 gxk_extra_sources = $(strip \
 	gxkparam-entry.c	gxkparam-label.c	\

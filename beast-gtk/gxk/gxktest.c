@@ -17,7 +17,9 @@
  */
 #include "gxk/gxk.h"
 #include "gxkracktable.h"
+#include "gxkrackeditor.h"
 #include "gxkrackitem.h"
+#include "gxkscrollcanvas.h"
 
 
 /* --- prototype --- */
@@ -39,6 +41,10 @@ static guint led_colors[] = {
   GXK_LED_OFF,
   GXK_LED_BLUE,
 };
+
+
+/* --- prototypes --- */
+static void scroll_canvas_test (void);
 
 
 /* --- functions --- */
@@ -76,6 +82,7 @@ main (int   argc,
   /* initialize Gtk+ Extension Kit */
   gxk_init ();
 
+  scroll_canvas_test ();
   rack_test ();
 
   /* test polygons */
@@ -203,7 +210,7 @@ toggle_edit_mode (GtkToggleButton *tb,
     gxk_rack_table_cover_up (rtable);
 }
 
-static void
+static void G_GNUC_NORETURN
 exit_program ()
 {
   exit (0);
@@ -246,6 +253,101 @@ rack_test (void)
                       "border_width", 20,
                       "child", box,
                       "sensitive", TRUE,
+                      "visible", TRUE,
+                      NULL);
+  g_object_connect (win,
+                    "signal::hide", exit_program, NULL,
+                    "signal::delete-event", gtk_widget_hide_on_delete, NULL,
+                    NULL);
+  /* start main loop */
+  gtk_main ();
+}
+
+static void
+toggle_panel_sizes (GtkToggleButton *tb,
+                    GxkScrollCanvas *scc)
+{
+  gint sz = tb->active ? 10 : 0;
+  GxkScrollCanvasLayout *layout = &scc->layout;
+  glong l = g_object_get_long (tb, "user_data");
+  switch (l)
+    {
+    case 1:     layout->top_panel_height = sz; break;
+    case 2:     layout->left_panel_width = sz; break;
+    case 3:     layout->right_panel_width = sz; break;
+    case 4:     layout->bottom_panel_height = sz; break;
+    case 5:
+      gtk_container_set_border_width ((GtkContainer*) scc, sz);
+      break;
+    }
+  gtk_widget_queue_resize ((GtkWidget*) scc);
+}
+
+static void
+scroll_canvas_test (void)
+{
+  GtkWidget *win, *box = g_object_new (GTK_TYPE_VBOX, "visible", TRUE, NULL);
+  GtkWidget *btn1 = g_object_new (GTK_TYPE_TOGGLE_BUTTON,
+                                  "visible", TRUE,
+                                  "use_underline", TRUE,
+                                  "label", "_Top",
+                                  "active", 1,
+                                  "user_data", 1,
+                                  NULL);
+  GtkWidget *btn2 = g_object_new (GTK_TYPE_TOGGLE_BUTTON,
+                                  "visible", TRUE,
+                                  "use_underline", TRUE,
+                                  "label", "_Left",
+                                  "active", 1,
+                                  "user_data", 2,
+                                  NULL);
+  GtkWidget *btn3 = g_object_new (GTK_TYPE_TOGGLE_BUTTON,
+                                  "visible", TRUE,
+                                  "use_underline", TRUE,
+                                  "label", "_Right",
+                                  "active", 1,
+                                  "user_data", 3,
+                                  NULL);
+  GtkWidget *btn4 = g_object_new (GTK_TYPE_TOGGLE_BUTTON,
+                                  "visible", TRUE,
+                                  "use_underline", TRUE,
+                                  "label", "_Bottom",
+                                  "active", 1,
+                                  "user_data", 4,
+                                  NULL);
+  GtkWidget *btn5 = g_object_new (GTK_TYPE_TOGGLE_BUTTON,
+                                  "visible", TRUE,
+                                  "use_underline", TRUE,
+                                  "label", "Border _Width",
+                                  "active", 1,
+                                  "user_data", 5,
+                                  NULL);
+  GtkWidget *frame = g_object_new (GTK_TYPE_FRAME,
+                                   "visible", TRUE,
+                                   "shadow_type", GTK_SHADOW_IN,
+                                   "border_width", 5,
+                                   NULL);
+  GxkScrollCanvas *scc = g_object_new (GXK_TYPE_SCROLL_CANVAS,
+                                       "border-width", 10,
+                                       "parent", frame,
+                                       NULL);
+  gtk_box_pack_start (GTK_BOX (box), btn1, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), btn2, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), btn3, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), btn4, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), btn5, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), frame, TRUE, TRUE, 0);
+  g_object_connect (btn1, "signal::clicked", toggle_panel_sizes, scc, NULL);
+  g_object_connect (btn2, "signal::clicked", toggle_panel_sizes, scc, NULL);
+  g_object_connect (btn3, "signal::clicked", toggle_panel_sizes, scc, NULL);
+  g_object_connect (btn4, "signal::clicked", toggle_panel_sizes, scc, NULL);
+  g_object_connect (btn5, "signal::clicked", toggle_panel_sizes, scc, NULL);
+  win = g_object_new (GTK_TYPE_WINDOW,
+                      "border_width", 20,
+                      "child", box,
+                      "sensitive", TRUE,
+                      "default-height", 320,
+                      "default-width", 400,
                       "visible", TRUE,
                       NULL);
   g_object_connect (win,

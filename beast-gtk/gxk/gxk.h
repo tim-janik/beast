@@ -38,6 +38,7 @@
 #include <gxk/gxkpolygon.h>
 #include <gxk/gxkracktable.h>
 #include <gxk/gxkrackitem.h>
+#include <gxk/gxkscrollcanvas.h>
 #include <gxk/gxksimplelabel.h>
 #include <gxk/gxkstatusbar.h>
 #include <gxk/gxkstock.h>

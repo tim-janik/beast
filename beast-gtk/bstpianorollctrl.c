@@ -402,28 +402,29 @@ static void
 controller_update_canvas_cursor (BstPianoRollController *self,
                                  BstGenericRollTool      tool)
 {
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self->proll);
   switch (tool)
     {
     case BST_GENERIC_ROLL_TOOL_INSERT:
-      bst_piano_roll_set_canvas_cursor (self->proll, GDK_PENCIL);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_PENCIL);
       break;
     case BST_GENERIC_ROLL_TOOL_RESIZE:
-      bst_piano_roll_set_canvas_cursor (self->proll, GDK_SB_H_DOUBLE_ARROW);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_SB_H_DOUBLE_ARROW);
       break;
     case BST_GENERIC_ROLL_TOOL_MOVE:
-      bst_piano_roll_set_canvas_cursor (self->proll, GDK_FLEUR);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_FLEUR);
       break;
     case BST_GENERIC_ROLL_TOOL_DELETE:
-      bst_piano_roll_set_canvas_cursor (self->proll, GDK_TARGET);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_TARGET);
       break;
     case BST_GENERIC_ROLL_TOOL_SELECT:
-      bst_piano_roll_set_canvas_cursor (self->proll, GDK_CROSSHAIR);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_CROSSHAIR);
       break;
     case BST_GENERIC_ROLL_TOOL_VSELECT:
-      bst_piano_roll_set_canvas_cursor (self->proll, GDK_LEFT_SIDE);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GDK_LEFT_SIDE);
       break;
     default:
-      bst_piano_roll_set_canvas_cursor (self->proll, GXK_DEFAULT_CURSOR);
+      gxk_scroll_canvas_set_canvas_cursor (scc, GXK_DEFAULT_CURSOR);
       break;
     }
 }

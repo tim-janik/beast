@@ -1,3 +1,23 @@
+Fri Jan 30 23:56:11 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkscrollcanvas.[hc]: refactored and generalized
+	scrolling, h/v panel layout and drawing logic from bstpianoroll
+	into a new widget. GxkScrollCanvas supports panels on all four
+	sides of a canvas, and dragging in each window.
+
+	* beast-gtk/bstpartdialog.c: fixed callers.
+
+	* beast-gtk/bstpianoroll.[hc]: derive from GxkScrollCanvas,
+	adapted to use GxkScrollCanvas code, threw out every
+	functionality that GxkScrollCanvas now implements.
+
+	* beast-gtk/bstpianorollctrl.c: fixed callers.
+
+	* beast-gtk/bsteventroll.c: disable tick<->pixel transformation for
+	the hadjustment, so it always contains pixel values.
+
+	* beast-gtk/gxk/gxktest.c: added scroll_canvas_test().
+
 Thu Jan 29 03:36:24 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/sfidl-manual.texi: cvs copied from sfidl.texi.

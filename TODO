@@ -1,4 +1,7 @@
 FIXMES:
+- remove bstdragutils.[hc]
+- cause gxkscrollcanvas to center itself if max_canvas_height is exceeded
+- make sample editor play stereo
 - rename sfidl.texi to sfidl-manual.texi
 - complete sfidl.1 manual page
 - bseautodoc.c: use bse_type_get_license() instead of sfi_info_string_find()

@@ -159,8 +159,8 @@ bst_part_dialog_init (BstPartDialog *self)
   self->proll = gxk_gadget_find (gadget, "piano-roll");
   gxk_nullify_in_object (self, &self->proll);
   g_signal_connect (self->proll, "canvas-clicked", G_CALLBACK (piano_canvas_clicked), self);
-  bst_piano_roll_set_hadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
-  bst_piano_roll_set_vadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
+  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (GTK_RANGE (hscroll)));
+  gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   self->pctrl = bst_piano_roll_controller_new (self->proll);
   gxk_widget_publish_action_list (self, "pctrl-canvas-tools", bst_piano_roll_controller_canvas_actions (self->pctrl));
   gxk_widget_publish_action_list (self, "pctrl-note-tools", bst_piano_roll_controller_note_actions (self->pctrl));
