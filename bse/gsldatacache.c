@@ -545,7 +545,7 @@ gsl_data_cache_unref_node (GslDataCache     *dcache,
 	      guint max_lru;
 	      /* try to free the actual cache overflow from the
 	       * dcache we just picked, but don't free more than
-	       * 75% of its nodes yet.
+	       * 25% of its nodes yet.
 	       * overflow is actual overhang + ~6% of cache size,
 	       * so cache sweeps are triggered less frequently.
 	       */

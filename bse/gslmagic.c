@@ -407,7 +407,7 @@ magic_create (gchar       *magic_string,
 	      const gchar *original)
 {
 #define SKIP_CLEAN(s)	{ while (*s && !strchr (magic_field_delims, *s)) s++; \
-                          do *(s++) = 0; while (strchr (magic_field_delims, *s)); }
+                          if (*s) do *(s++) = 0; while (strchr (magic_field_delims, *s)); }
   Magic *magics = NULL;
   gchar *p = magic_string;
   
