@@ -1,0 +1,27 @@
+;BseProjectV0
+
+
+(BseSNet::Unnamed
+  (creation-time "2000-01-15 22:23:37")
+  (modification-time "2000-01-15 22:23:37")
+  (source-input "multi_in" BseSNet:1.BseMixer:1 "Mixer")
+  (parasite f "BstRouterCoords" 2 -233.000000 35.000000)
+  (BseMixer::BseMixer-1
+    (master-volume-f 0.630957)
+    (source-input "mono_in1" BseSNet:1.DavOrgan:2 "OrganOut")
+    (source-input "mono_in2" BseSNet:1.DavOrgan:3 "OrganOut")
+    (source-input "mono_in3" BseSNet:1.DavOrgan:4 "OrganOut")
+    (source-input "mono_in4" BseSNet:1.DavOrgan:5 "OrganOut")
+    (parasite f "BstRouterCoords" 2 -109.000000 46.000000))
+  (DavOrgan::DavOrgan-1
+    (brass 't)
+    (parasite f "BstRouterCoords" 2 124.000000 164.000000))
+  (DavOrgan::DavOrgan-2
+    (brass 't)
+    (parasite f "BstRouterCoords" 2 231.000000 57.000000))
+  (DavOrgan::DavOrgan-3
+    (brass 't)
+    (parasite f "BstRouterCoords" 2 184.000000 -88.000000))
+  (DavOrgan::DavOrgan-4
+    (brass 't)
+    (parasite f "BstRouterCoords" 2 62.000000 -173.000000)))
