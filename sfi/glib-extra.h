@@ -27,6 +27,14 @@
 G_BEGIN_DECLS
 
 
+/* --- macros --- */
+#if (GLIB_SIZEOF_LONG > 4)
+#define G_HASH_LONG(l)	((l) + ((l) >> 32))
+#else
+#define G_HASH_LONG(l)	(l)
+#endif
+
+
 /* --- provide (historic) aliases --- */
 #define	g_string_printfa	g_string_append_printf
 #define	g_string_aprintf	g_string_append_printf

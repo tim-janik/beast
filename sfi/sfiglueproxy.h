@@ -44,6 +44,10 @@ void		sfi_glue_proxy_connect		(SfiProxy	 proxy,
 void		sfi_glue_proxy_disconnect	(SfiProxy	 proxy,
 						 const gchar	*signal,
 						 ...);
+gboolean	sfi_glue_proxy_pending		(SfiProxy	 proxy,
+						 const gchar	*signal,
+						 GCallback	 callback,
+						 gpointer	 data);
 void		sfi_glue_proxy_set_qdata_full	(SfiProxy	 proxy,
 						 GQuark		 quark,
 						 gpointer	 data,

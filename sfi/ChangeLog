@@ -1,3 +1,8 @@
+Tue Feb 11 03:16:51 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiglueproxy.[hc]: added sfi_glue_proxy_pending() to test for
+	existing signal connections on a proxy.
+
 Sun Feb  9 17:56:07 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfiglue.c: using promoted type as argument for va_arg fixes

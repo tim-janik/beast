@@ -43,11 +43,6 @@ typedef struct {
 
 
 /* --- prototypes --- */
-static GSList*	_sfi_glue_signal_find_closures	(SfiGlueContext *context,
-						 SfiProxy	 proxy,
-						 const gchar	*signal,
-						 gpointer	 closure_data,
-						 gpointer	 search_data);
 static Proxy*	fetch_proxy	(SfiGlueContext	*context,
 				 SfiProxy	 proxy);
 static gint	signals_compare	(gconstpointer	 bsearch_node1, /* key */
@@ -425,7 +420,8 @@ _sfi_glue_signal_find_closures (SfiGlueContext *context,
 				SfiProxy        proxy,
 				const gchar    *signal,
 				gpointer	closure_data,
-				gpointer        search_data)
+				gpointer        search_data,
+				gboolean	find_all)
 {
   GSList *ids = NULL;
   Proxy *p;
@@ -440,7 +436,7 @@ _sfi_glue_signal_find_closures (SfiGlueContext *context,
       if (sig)
 	{
 	  GHook *hook = sig->hlist->hooks;
-	  while (hook)
+	  while (hook && (find_all || ids))
 	    {
 	      if (G_HOOK_IS_VALID (hook) && /* test only non-destroyed hooks */
 		  hook->func == search_data &&
@@ -457,7 +453,7 @@ _sfi_glue_signal_find_closures (SfiGlueContext *context,
 	{
 	  GlueSignal *sig = g_bsearch_array_get_nth (p->signals, &signals_config, i);
 	  GHook *hook = sig->hlist->hooks;
-	  while (hook)
+	  while (hook && (find_all || ids))
 	    {
 	      if (G_HOOK_IS_VALID (hook) && /* test only non-destroyed hooks */
 		  hook->func == search_data &&
@@ -467,7 +463,6 @@ _sfi_glue_signal_find_closures (SfiGlueContext *context,
 	    }
 	}
     }
-
   return ids;
 }
 
@@ -531,14 +526,14 @@ sfi_glue_proxy_disconnect (SfiProxy     proxy,
       if (strncmp (signal, "any_signal::", 12) == 0)
 	{
 	  signal += 12;
-	  slist = _sfi_glue_signal_find_closures (context, proxy, signal, data, callback);
+	  slist = _sfi_glue_signal_find_closures (context, proxy, signal, data, callback, TRUE);
 	  for (node = slist; node; node = node->next)
 	    sfi_glue_signal_disconnect (proxy, (gulong) node->data);
 	  g_slist_free (slist);
 	}
       else if (strcmp (signal, "any_signal") == 0)
 	{
-	  slist = _sfi_glue_signal_find_closures (context, proxy, NULL, data, callback);
+	  slist = _sfi_glue_signal_find_closures (context, proxy, NULL, data, callback, TRUE);
 	  for (node = slist; node; node = node->next)
 	    sfi_glue_signal_disconnect (proxy, (gulong) node->data);
 	  g_slist_free (slist);
@@ -554,6 +549,23 @@ sfi_glue_proxy_disconnect (SfiProxy     proxy,
       signal = va_arg (var_args, gchar*);
     }
   va_end (var_args);
+}
+
+gboolean
+sfi_glue_proxy_pending (SfiProxy     proxy,
+			const gchar *signal,
+			GCallback    callback,
+			gpointer     data)
+{
+  SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
+  GSList *slist;
+
+  g_return_val_if_fail (proxy > 0, FALSE);
+  g_return_val_if_fail (callback != NULL, FALSE);
+  
+  slist = _sfi_glue_signal_find_closures (context, proxy, signal, data, callback, FALSE);
+  g_slist_free (slist);
+  return slist != NULL;
 }
 
 gboolean
