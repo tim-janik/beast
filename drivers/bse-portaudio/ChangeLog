@@ -1,3 +1,11 @@
+Fri Dec 17 22:41:28 2004  Tim Janik  <timj@gtk.org>
+
+	* released 0.6.4.
+
+	* configure.in: version 0.6.4, interface 0, binary 0.
+	depend on BSE >= 0.6.4. CFLAGS and CXXFLAGS fixes.
+	wrote portaudio.h check.
+
 Thu Dec 16 16:28:56 2004  Tim Janik  <timj@gtk.org>
 
 	* README: rewordeed the "Known Issues" section for clarity and to
