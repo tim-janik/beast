@@ -45,7 +45,7 @@ int main (int argc, char **argv)
       return 0;
     }
 
-  if((argc-optind) != 1)
+  if (argc != 2)
     {
       options.printUsage ();
       return 1;
