@@ -39,7 +39,7 @@ enum
 /* --- prototypes --- */
 static void	    bse_sample_class_init		(BseSampleClass *class);
 static void	    bse_sample_init			(BseSample	*sample);
-static void	    bse_sample_destroy			(BseObject	*object);
+static void	    bse_sample_do_shutdown		(BseObject	*object);
 static void	    bse_sample_set_param		(BseSample	*sample,
 							 BseParam	*param);
 static void	    bse_sample_get_param		(BseSample	*sample,
@@ -62,8 +62,8 @@ BSE_BUILTIN_TYPE (BseSample)
   static const BseTypeInfo sample_info = {
     sizeof (BseSampleClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_sample_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -96,7 +96,7 @@ bse_sample_class_init (BseSampleClass *class)
   object_class->store_private = bse_sample_do_store_private;
   object_class->restore = bse_sample_do_restore;
   object_class->restore_private = bse_sample_do_restore_private;
-  object_class->destroy = bse_sample_destroy;
+  object_class->shutdown = bse_sample_do_shutdown;
   
   /* add BseSample memebers as class parameters, we use the structure
    * offset of the fields as parameter identifiers.
@@ -135,7 +135,7 @@ bse_sample_init (BseSample *sample)
 }
 
 static void
-bse_sample_destroy (BseObject *object)
+bse_sample_do_shutdown (BseObject *object)
 {
   BseSample *sample;
   guint i;
@@ -154,8 +154,8 @@ bse_sample_destroy (BseObject *object)
 	}
     }
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' shutdown handler */
+  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
 static void

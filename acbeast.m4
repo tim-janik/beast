@@ -26,9 +26,13 @@ AC_DEFUN(MC_STR_CONTAINS,[
 	esac
 ])
 
-dnl MC_ADD_TO_VAR(environment-variable, check-string, add-string)
-AC_DEFUN(MC_ADD_TO_VAR,[
+dnl MC_EVAR_ADD(environment-variable, check-string, add-string)
+AC_DEFUN(MC_EVAR_ADD,[
 	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1]", [$1]="$[$1] [$3]")
+])
+dnl MC_EVAR_SUPPLEMENT(environment-variable, check-string, add-string)
+AC_DEFUN(MC_EVAR_SUPPLEMENT,[
+	MC_STR_CONTAINS($[$1], [$2], [$1]="$[$1] [$3]", [$1]="$[$1]")
 ])
 
 
@@ -76,41 +80,65 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 	dnl Setup CFLAGS for debugging.
 	MC_IF_VAR_EQ(enable_debug, yes,
 		MC_IF_VAR_EQ(CFLAGS_include_g, yes,
-			MC_ADD_TO_VAR(CFLAGS, -g, -g)
+			MC_EVAR_ADD(CFLAGS, -g, -g)
 		)
 	
 		MC_IF_VAR_EQ(GCC, yes,
-			dnl MC_ADD_TO_VAR(CFLAGS, -fvolatile-global, -fvolatile-global)
-			dnl MC_ADD_TO_VAR(CFLAGS, -fverbose-asm, -fverbose-asm)
+			dnl MC_EVAR_ADD(CFLAGS, -fvolatile-global, -fvolatile-global)
+			dnl MC_EVAR_ADD(CFLAGS, -fverbose-asm, -fverbose-asm)
 		)
 	)
 
 	dnl Further setup CFLAGS for GCC.
 	MC_IF_VAR_EQ(GCC, yes,
+
+		dnl Debugging
+		MC_EVAR_SUPPLEMENT(CFLAGS, -g, -ggdb3)
+
+		dnl Sane Behaviour
+		dnl dflt: MC_EVAR_ADD(CFLAGS, -fsigned-char, -fsigned-char)
+		dnl dflt: MC_EVAR_ADD(CFLAGS, -fsigned-bitfields, -fsigned-bitfields)
+		dnl dflt: MC_EVAR_ADD(CFLAGS, -fno-writable-strings, -fno-writable-strings)
+		MC_EVAR_ADD(CFLAGS, -fno-strict-aliasing, -fno-strict-aliasing)
+		MC_EVAR_ADD(CFLAGS, -fno-cond-mismatch, -fno-cond-mismatch)
+		MC_EVAR_ADD(CFLAGS, -ffor-scope, -ffor-scope)
+		MC_EVAR_ADD(CFLAGS, -Wno-cast-qual, -Wno-cast-qual)
         	
 		dnl Warnings.
-		MC_ADD_TO_VAR(CFLAGS, -Wall, -Wall)
-		MC_ADD_TO_VAR(CFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
-		dnl MC_ADD_TO_VAR(CFLAGS, -Wstrict-prototypes, -Wstrict-prototypes)
-		MC_ADD_TO_VAR(CFLAGS, -Winline, -Winline)
-		MC_ADD_TO_VAR(CFLAGS, -Wpointer-arith, -Wpointer-arith)
+		MC_EVAR_ADD(CFLAGS, -Wall, -Wall)
+		MC_EVAR_ADD(CFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
+		dnl MC_EVAR_ADD(CFLAGS, -Wstrict-prototypes, -Wstrict-prototypes)
+		MC_EVAR_ADD(CFLAGS, -Winline, -Winline)
+		dnl glibc breakage: MC_EVAR_ADD(CFLAGS, -Wpointer-arith, -Wpointer-arith)
 		MC_IF_VAR_EQ(enable_pedantic_ansi, yes,
-			MC_ADD_TO_VAR(CFLAGS, -ansi, -ansi)
-			MC_ADD_TO_VAR(CFLAGS, -pedantic, -pedantic)
+			MC_EVAR_ADD(CFLAGS, -ansi, -ansi)
+			MC_EVAR_ADD(CFLAGS, -pedantic, -pedantic)
 		)
+		dnl junk, warns on prototype arguments:
+		dnl MC_EVAR_ADD(CFLAGS, -Wshadow, -Wshadow)
+		dnl junk, warns on pure returntype casts as well:
+		dnl MC_EVAR_ADD(CFLAGS, -Wbad-function-cast, -Wbad-function-cast)
+		dnl bogus: MC_EVAR_ADD(CFLAGS, -Wconversion, -Wconversion)
+		dnl bogus: MC_EVAR_ADD(CFLAGS, -Wsign-compare, -Wsign-compare)
+		MC_EVAR_ADD(CFLAGS, -Wmissing-noreturn, -Wmissing-noreturn)
+		dnl glibc breakage: MC_EVAR_ADD(CFLAGS, -Wredundant-decls, -Wredundant-decls)
+		
 	
 		dnl Optimizations
-		MC_ADD_TO_VAR(CFLAGS, -O, -O6)
-		MC_ADD_TO_VAR(CFLAGS, -pipe, -pipe)
-		MC_ADD_TO_VAR(CFLAGS, -fstrength-reduce, -fstrength-reduce)
-		MC_ADD_TO_VAR(CFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
-		MC_ADD_TO_VAR(CFLAGS, -finline-functions, -finline-functions)
-		MC_ADD_TO_VAR(CFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
-		MC_ADD_TO_VAR(CFLAGS, -freg-struct-return, -freg-struct-return)
-		dnl MC_ADD_TO_VAR(CFLAGS, -funroll-loops, -funroll-loops)
+		MC_EVAR_ADD(CFLAGS, -O, -O6)
+		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
+		MC_EVAR_ADD(CFLAGS, -fstrength-reduce, -fstrength-reduce)
+		MC_EVAR_ADD(CFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
+		MC_EVAR_ADD(CFLAGS, -finline-functions, -finline-functions)
+		MC_EVAR_ADD(CFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
+		MC_EVAR_ADD(CFLAGS, -freg-struct-return, -freg-struct-return)
+		MC_EVAR_ADD(CFLAGS, -funroll-loops, -funroll-loops)
+		MC_EVAR_ADD(CFLAGS, -frerun-loop-opt, -frerun-loop-opt)
+		MC_EVAR_ADD(CFLAGS, -fgcse, -fgcse)
+		MC_EVAR_ADD(CFLAGS, -fno-keep-static-consts, -fno-keep-static-consts)
 	,	
 		MC_IF_VAR_EQ(CFLAGS_include_O, yes,
-			MC_ADD_TO_VAR(CFLAGS, -O, -O2)
+			MC_EVAR_ADD(CFLAGS, -O, -O2)
 		)
 	)
 ])
@@ -130,12 +158,12 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 	dnl Setup CXXFLAGS for debugging.
 	MC_IF_VAR_EQ(enable_debug, yes,
 		MC_IF_VAR_EQ(CXXFLAGS_include_g, yes,
-			MC_ADD_TO_VAR(CXXFLAGS, -g, -g)
+			MC_EVAR_ADD(CXXFLAGS, -g, -g)
 		)
 	
 		MC_IF_VAR_EQ(GCC, yes,
-			dnl MC_ADD_TO_VAR(CXXFLAGS, -fvolatile-global, -fvolatile-global)
-			dnl MC_ADD_TO_VAR(CXXFLAGS, -fverbose-asm, -fverbose-asm)
+			dnl MC_EVAR_ADD(CXXFLAGS, -fvolatile-global, -fvolatile-global)
+			dnl MC_EVAR_ADD(CXXFLAGS, -fverbose-asm, -fverbose-asm)
 		)
 	)
 
@@ -143,33 +171,20 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 	MC_IF_VAR_EQ(GXX, yes,
         	
 		dnl Warnings.
-		MC_ADD_TO_VAR(CXXFLAGS, -Wall, -Wall)
-		MC_ADD_TO_VAR(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
-		MC_ADD_TO_VAR(CXXFLAGS, -Wstrict-prototypes, -Wstrict-prototypes)
-		MC_ADD_TO_VAR(CXXFLAGS, -Winline, -Winline)
-		MC_ADD_TO_VAR(CXXFLAGS, -Wpointer-arith, -Wpointer-arith)
-		MC_IF_VAR_EQ(enable_pedantic_ansi, yes,
-			MC_ADD_TO_VAR(CXXFLAGS, -ansi, -ansi)
-			MC_ADD_TO_VAR(CXXFLAGS, -pedantic, -pedantic)
-		)
+		MC_EVAR_ADD(CXXFLAGS, -Wctor-dtor-privacy, -Wctor-dtor-privacy)
+		MC_EVAR_ADD(CXXFLAGS, -Wreorder, -Wreorder)
+		MC_EVAR_ADD(CXXFLAGS, -Wdeprecated, -Wdeprecated)
 	
 		dnl Optimizations
-		MC_ADD_TO_VAR(CXXFLAGS, -O, -O6)
-		MC_ADD_TO_VAR(CXXFLAGS, -pipe, -pipe)
-		MC_ADD_TO_VAR(CXXFLAGS, -fstrength-reduce, -fstrength-reduce)
-		MC_ADD_TO_VAR(CXXFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
-		MC_ADD_TO_VAR(CXXFLAGS, -finline-functions, -finline-functions)
-		MC_ADD_TO_VAR(CXXFLAGS, -frerun-cse-after-loop, -frerun-cse-after-loop)
-		MC_ADD_TO_VAR(CXXFLAGS, -freg-struct-return, -freg-struct-return)
-		MC_ADD_TO_VAR(CXXFLAGS, -fnonnull-objects, -fnonnull-objects)
+		MC_EVAR_ADD(CXXFLAGS, -fnonnull-objects, -fnonnull-objects)
 		dnl -funroll-loops gives problems with -O and templates (see Rep-CppBug_1.C)
-		dnl MC_ADD_TO_VAR(CXXFLAGS, -funroll-loops, -funroll-loops)
-		MC_ADD_TO_VAR(CXXFLAGS, -fhandle-signatures, -fhandle-signatures)
-		dnl MC_ADD_TO_VAR(CXXFLAGS, -fhandle-exceptions, -fhandle-exceptions)
-		dnl MC_ADD_TO_VAR(CXXFLAGS, -frtti, -frtti)
+		dnl MC_EVAR_ADD(CXXFLAGS, -funroll-loops, -funroll-loops)
+		dnl MC_EVAR_ADD(CXXFLAGS, -fhandle-signatures, -fhandle-signatures)
+		dnl MC_EVAR_ADD(CXXFLAGS, -fhandle-exceptions, -fhandle-exceptions)
+		dnl MC_EVAR_ADD(CXXFLAGS, -frtti, -frtti)
 	,	
 		MC_IF_VAR_EQ(CXXFLAGS_include_O, yes,
-			MC_ADD_TO_VAR(CXXFLAGS, -O, -O2)
+			MC_EVAR_ADD(CXXFLAGS, -O, -O2)
 		)
 	)
 ])

@@ -12,5 +12,8 @@ SUBDIRS = $(SRC_SUBDIRS) docs
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4
 
+# extra dependancies
+configure: acbeast.m4
+
 EXTRA_DIST += \
 	TODO

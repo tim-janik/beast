@@ -33,7 +33,7 @@
 static void	bse_project_class_init	(BseProjectClass	*class);
 static void	bse_project_init	(BseProject		*project,
 					 gpointer		 rclass);
-static void	bse_project_destroy	(BseObject		*object);
+static void	bse_project_do_shutdown	(BseObject		*object);
 static void	bse_project_add_item	(BseContainer		*container,
 					 BseItem		*item);
 static void	bse_project_remove_item	(BseContainer		*container,
@@ -58,8 +58,8 @@ BSE_BUILTIN_TYPE (BseProject)
   static const BseTypeInfo project_info = {
     sizeof (BseProjectClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_project_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -85,7 +85,7 @@ bse_project_class_init (BseProjectClass *class)
   object_class = BSE_OBJECT_CLASS (class);
   container_class = BSE_CONTAINER_CLASS (class);
   
-  object_class->destroy = bse_project_destroy;
+  object_class->shutdown = bse_project_do_shutdown;
 
   container_class->add_item = bse_project_add_item;
   container_class->remove_item = bse_project_remove_item;
@@ -106,7 +106,7 @@ bse_project_init (BseProject *project,
 }
 
 static void
-bse_project_destroy (BseObject *object)
+bse_project_do_shutdown (BseObject *object)
 {
   BseProject *project;
   
@@ -115,8 +115,8 @@ bse_project_destroy (BseObject *object)
   while (project->supers)
     bse_container_remove_item (BSE_CONTAINER (project), project->supers->data);
 
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' shutdown handler */
+  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
 BseProject*

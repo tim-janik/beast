@@ -478,6 +478,8 @@ bse_time_from_string (const gchar *time_string,
   return ttime;
 }
 
+
+/* --- notes --- */
 static const struct {
   gchar *s;
   guint v;
@@ -629,7 +631,94 @@ bse_note_examine (guint     note,
 }
 
 
-/* --- functions --- */
+/* --- icons --- */
+BseIcon*
+bse_icon_from_pixdata (const BsePixdata *pixdata)
+{
+  BseIcon *icon;
+  guint bpp, encoding;
+
+  g_return_val_if_fail (pixdata != NULL, NULL);
+
+  if (pixdata->width < 1 || pixdata->width > 128 ||
+      pixdata->height < 1 || pixdata->height > 128)
+    {
+      g_warning (G_GNUC_PRETTY_FUNCTION "(): `pixdata' exceeds dimension limits (%ux%u)",
+		 pixdata->width, pixdata->height);
+      return NULL;
+    }
+  bpp = pixdata->type & BSE_PIXDATA_RGB_MASK;
+  encoding = pixdata->type & BSE_PIXDATA_ENCODING_MASK;
+  if ((bpp != BSE_PIXDATA_RGB && bpp != BSE_PIXDATA_RGBA) ||
+      (encoding && encoding != BSE_PIXDATA_1BYTE_RLE))
+    {
+      g_warning (G_GNUC_PRETTY_FUNCTION "(): `pixdata' format/encoding unrecognized");
+      return NULL;
+    }
+  if (!pixdata->encoded_pix_data)
+    return NULL;
+
+  icon = g_new0 (BseIcon, 1);
+  icon->bytes_per_pixel = bpp;
+  icon->width = pixdata->width;
+  icon->height = pixdata->height;
+  icon->pixels = g_new (guint8, icon->width * icon->height * icon->bytes_per_pixel);
+
+  if (encoding == BSE_PIXDATA_1BYTE_RLE)
+    {
+      const guint8 *rle_buffer = pixdata->encoded_pix_data;
+      guint8 *image_buffer = icon->pixels;
+      guint8 *image_limit = image_buffer + icon->width * icon->height * bpp;
+      gboolean check_overrun = FALSE;
+      
+      while (image_buffer < image_limit)
+	{
+	  guint length = *(rle_buffer++);
+	  
+	  if (length & 128)
+	    {
+	      length = length - 128;
+	      check_overrun = image_buffer + length * bpp > image_limit;
+	      if (check_overrun)
+		length = (image_limit - image_buffer) / bpp;
+	      if (bpp < 4)
+		do
+		  {
+		    memcpy (image_buffer, rle_buffer, 3);
+		    image_buffer += 3;
+		  }
+		while (--length);
+	      else
+		do
+		  {
+		    memcpy (image_buffer, rle_buffer, 4);
+		    image_buffer += 4;
+		  }
+		while (--length);
+	      rle_buffer += bpp;
+	    }
+	  else
+	    {
+	      length *= bpp;
+	      check_overrun = image_buffer + length > image_limit;
+	      if (check_overrun)
+		length = image_limit - image_buffer;
+	      memcpy (image_buffer, rle_buffer, length);
+	      image_buffer += length;
+	      rle_buffer += length;
+	    }
+	}
+      if (check_overrun)
+	g_warning (G_GNUC_PRETTY_FUNCTION "(): `pixdata' encoding screwed");
+    }
+  else
+    memcpy (icon->pixels, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
+  
+  return icon;
+}
+
+
+/* --- miscellaeous --- */
 gchar*
 bse_sample_name_make_valid (gchar *string)
 {

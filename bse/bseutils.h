@@ -63,6 +63,10 @@ gchar*	bse_note_to_string	(guint		 note);
 guint	bse_note_from_string	(const gchar	*note_string);
 
 
+/* --- icons --- */
+BseIcon* bse_icon_from_pixdata (const BsePixdata *pixdata);
+
+
 /* --- miscellaeous --- */
 /* these functions mutate special characters to conform to
  * internal rules about sample names. operation is performed

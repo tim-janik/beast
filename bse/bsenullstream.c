@@ -51,8 +51,8 @@ BSE_BUILTIN_TYPE (BseNullStream)
   BseTypeInfo null_stream_info = {
     sizeof (BseNullStreamClass),
 
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_null_stream_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

@@ -149,7 +149,7 @@ progressor_exec (BseProcedureClass *proc,
   gfloat total = n_iter;
 
   /* check parameters */
-  // return BSE_ERROR_PROC_PARAM_INVAL;
+  /* return BSE_ERROR_PROC_PARAM_INVAL; */
 
   /* perform our duty */
   while (n_iter--)
@@ -182,19 +182,22 @@ progressor_exec (BseProcedureClass *proc,
 
 
 /* --- Export to BSE --- */
-BSE_EXPORTS_BEGIN (hello_world);
+BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_PROCEDURES = {
-  { &type_id_hello_world, "hello-world", NULL,
+  { &type_id_hello_world, "hello-world",
     "Hello World - First Plugin ever executed by BSE",
     hello_world_setup, hello_world_exec, NULL,
+    "/Proc/Test/Hello World",
   },
-  { &type_id_randomizer, "randomizer", NULL,
+  { &type_id_randomizer, "randomizer",
     "Randomizer takes a seed value and returns a random string",
     randomizer_setup, randomizer_exec, NULL,
+    "/Proc/Test/Randomizer",
   },
-  { &type_id_progressor, "progressor", NULL,
+  { &type_id_progressor, "progressor",
     "Progressor takes two seed values and then starts progressing",
     progressor_setup, progressor_exec, NULL,
+    "/Proc/Test/Progressor",
   },
   { NULL, },
 };

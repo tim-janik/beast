@@ -83,8 +83,8 @@ BSE_BUILTIN_TYPE (BsePcmStreamOSS)
   static const BseTypeInfo pcm_stream_oss_info = {
     sizeof (BsePcmStreamOSSClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_pcm_stream_oss_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -401,6 +401,8 @@ pcm_stream_oss_open_dsp (BsePcmStreamOSS *pcm_stream_oss)
   gint fd;
   guint block_size;
   gint d_int;
+
+//  G_BREAKPOINT ();
   
   stream = BSE_STREAM (pcm_stream_oss);
   pcm_stream = BSE_PCM_STREAM (pcm_stream_oss);
@@ -544,6 +546,3 @@ pcm_stream_oss_set_dsp (BsePcmStreamOSS	      *pcm_stream_oss,
   
   return BSE_ERROR_NONE;
 }
-
-
-

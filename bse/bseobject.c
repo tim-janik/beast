@@ -17,6 +17,7 @@
  */
 #include	"bseobject.h"
 
+#include	"bseexports.h"
 #include	"bseparamcol.c" /* FIXME */
 #include	"bsestorage.h"
 
@@ -45,7 +46,8 @@ static void	bse_object_class_base_init	(BseObjectClass	*class);
 static void	bse_object_class_base_destroy	(BseObjectClass	*class);
 static void	bse_object_class_init		(BseObjectClass	*class);
 static void	bse_object_init			(BseObject	*object);
-static void	bse_object_destroy		(BseObject	*object);
+static void	bse_object_do_shutdown		(BseObject	*object);
+static void	bse_object_do_destroy		(BseObject	*object);
 static void     bse_object_do_set_param		(BseObject      *object,
 						 BseParam       *param);
 static void     bse_object_do_get_param		(BseObject      *object,
@@ -111,8 +113,8 @@ bse_type_register_object_info (BseTypeInfo *info)
   static const BseTypeInfo object_info = {
     sizeof (BseObjectClass),
 
-    (BseClassInitBaseFunc) bse_object_class_base_init,
-    (BseClassDestroyBaseFunc) bse_object_class_base_destroy,
+    (BseBaseInitFunc) bse_object_class_base_init,
+    (BseBaseDestroyFunc) bse_object_class_base_destroy,
     (BseClassInitFunc) bse_object_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -127,14 +129,55 @@ bse_type_register_object_info (BseTypeInfo *info)
   g_atexit (bse_object_debug);
 }
 
+void
+bse_object_complete_info (const BseExportSpec *spec,
+			  BseTypeInfo         *info)
+{
+  const BseExportObject *ospec = &spec->s_object;
+
+  *info = *ospec->object_info;
+}
+
+const gchar*
+bse_object_type_register (const gchar *name,
+			  const gchar *parent_name,
+			  const gchar *blurb,
+			  BsePlugin   *plugin,
+			  BseType     *ret_type)
+{
+  BseType type;
+
+  g_return_val_if_fail (ret_type != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
+  *ret_type = 0;
+  g_return_val_if_fail (name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
+  g_return_val_if_fail (parent_name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
+  g_return_val_if_fail (plugin != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
+
+  type = bse_type_from_name (name);
+  if (type)
+    return "Object already registered";
+  type = bse_type_from_name (parent_name);
+  if (!type)
+    return "Parent type unknown";
+  if (!BSE_TYPE_IS_OBJECT (type))
+    return "Parent type is non-object type";
+
+  type = bse_type_register_dynamic (type,
+				    name,
+				    blurb,
+				    plugin);
+  *ret_type = type;
+
+  return NULL;
+}
+
 static void
 bse_object_class_base_init (BseObjectClass *class)
 {
   guint i;
   
-  class->set_param = NULL;
-  class->get_param = NULL;
-  
+  class->icon = NULL;
+
   class->n_params = 0;
   class->param_specs = NULL;
   
@@ -156,12 +199,17 @@ bse_object_class_base_init (BseObjectClass *class)
   
   class->n_parse_hooks = 0;
   class->parse_hooks = NULL;
+  
+  class->set_param = NULL;
+  class->get_param = NULL;
 }
 
 static void
 bse_object_class_base_destroy (BseObjectClass *class)
 {
   guint i;
+
+  g_free (class->icon);
 
   for (i = 0; i < class->n_params; i++)
     {
@@ -197,7 +245,8 @@ bse_object_class_init (BseObjectClass *class)
   class->store_private = bse_object_do_store_private;
   class->restore_private = bse_object_do_restore_private;
   class->unlocked = NULL;
-  class->destroy = bse_object_destroy;
+  class->shutdown = bse_object_do_shutdown;
+  class->destroy = bse_object_do_destroy;
 
   quark_hook_list = g_quark_from_static_string ("bse-hook-list");
 
@@ -216,7 +265,8 @@ bse_object_class_init (BseObjectClass *class)
 			      PARAM_BLURB,
 			      bse_param_spec_fstring ("blurb", "Short description",
 						      NULL,
-						      BSE_PARAM_DEFAULT));
+						      BSE_PARAM_DEFAULT |
+						      BSE_PARAM_HINT_CHECK_NULL));
 
   /* perform neccessary checks for assumptions we make over generated sources
    */
@@ -285,14 +335,6 @@ bse_object_names_ht_remove (BseObject *object)
 }
 
 static void
-bse_object_destroy (BseObject *object)
-{
-  g_datalist_clear (&object->datalist);
-
-  bse_object_names_ht_remove (object);
-}
-
-static void
 bse_object_do_set_name (BseObject   *object,
 			const gchar *name)
 {
@@ -319,6 +361,8 @@ bse_object_do_set_param (BseObject *object,
       if (!quark_blurb)
 	quark_blurb = g_quark_from_static_string ("bse-blurb");
       string = bse_strdup_stripped (param->value.v_string);
+      if (param->value.v_string && !string)
+	string = g_strdup ("");
       bse_object_set_qdata_full (object, quark_blurb, string, g_free);
       break;
     default:
@@ -438,19 +482,19 @@ void
 bse_object_unlock (BseObject *object)
 {
   g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (object->ref_count > 0);
   g_return_if_fail (object->lock_count > 0);
+  g_return_if_fail (object->ref_count > 0); /* paranoid */
 
   object->lock_count -= 1;
 
   if (!object->lock_count)
     {
-      /* release global lock */
-      bse_globals_unlock ();
-      
       if (BSE_OBJECT_GET_CLASS (object)->unlocked)
 	BSE_OBJECT_GET_CLASS (object)->unlocked (object);
 	  
+      /* release global lock */
+      bse_globals_unlock ();
+      
       bse_object_unref (object);
     }
 }
@@ -466,6 +510,21 @@ bse_object_ref (BseObject *object)
   object->ref_count += 1;
 }
 
+static void
+bse_object_do_shutdown (BseObject *object)
+{
+  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DESTROYED);
+  BSE_NOTIFY (object, destroy, NOTIFY (OBJECT, DATA));
+}
+
+static void
+bse_object_do_destroy (BseObject *object)
+{
+  g_datalist_clear (&object->datalist);
+
+  bse_object_names_ht_remove (object);
+}
+
 void
 bse_object_unref (BseObject *object)
 {
@@ -474,28 +533,32 @@ bse_object_unref (BseObject *object)
   
   /* NOTE: bse_object_lock/bse_object_unlock modify ->ref_count as well */
 
-  if (object->ref_count == 1)
+  /* "offical" object destruction */
+  if (object->ref_count == 1 && !BSE_OBJECT_DESTROYED (object))
     {
-      BseObjectClass *class;
-
-      g_return_if_fail (BSE_OBJECT_DESTROYED (object) == FALSE);
-      
-      class = BSE_OBJECT_GET_CLASS (object);
+      BseObjectClass *class = BSE_OBJECT_GET_CLASS (object);
 
       if (BSE_OBJECT_IN_PARAM_CHANGED (object))
 	g_warning ("object destructed while in param_changed(), probably ref_count mess");
 
-      BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_DESTROYED);
-      
-      object->ref_count = 42;
-      BSE_NOTIFY (object, destroy, NOTIFY (OBJECT, DATA));
-      class->destroy (object);
-      if (object->ref_count != 42 || object->lock_count)
-	g_warning ("type `%s' object destroy handlers leak references",
-		   BSE_CLASS_NAME (class));
-      object->ref_count = 0;
+      /* amongst other things, invoke destroy notifiers and set destroyed flag */
+      class->shutdown (object);
 
-      { /* FIXME DEBUG stuff */
+      g_return_if_fail (object->ref_count > 0);
+    }
+  
+  object->ref_count -= 1;
+
+  /* finish it off, i.e. internal destruction */
+  if (object->ref_count == 0)
+    {
+      BseObjectClass *class = BSE_OBJECT_GET_CLASS (object);
+
+      class->destroy (object);
+
+      g_return_if_fail (object->ref_count == 0);
+
+      { /* FIXME: DEBUG stuff */
 	g_assert (g_hash_table_lookup (debug_objects_ht, object) == object);
 	
 	g_hash_table_remove (debug_objects_ht, object);
@@ -504,8 +567,6 @@ bse_object_unref (BseObject *object)
 
       bse_type_free_object (object);
     }
-  else
-    object->ref_count -= 1;
 }
 
 GList*
@@ -900,7 +961,7 @@ bse_object_class_get_parser (BseObjectClass *class,
 	     !strcmp (class->parse_hooks[i].token, token)))
 	  return class->parse_hooks[i].parser;
 
-      class = bse_type_class_parent (class);
+      class = bse_type_class_peek_parent (class);
     }
   while (class);
 
@@ -941,30 +1002,30 @@ iface_slist_destroy (gpointer data)
   GSList *slist;
 
   for (slist = iface_list; slist; slist = slist->next)
-    bse_type_interface_class_unref (slist->data);
+    bse_type_interface_unref (slist->data);
 
   g_slist_free (iface_list);
 }
 
 gpointer
-bse_object_get_interface_class (BseObject *object,
-				BseType    interface_type)
+bse_object_get_interface (BseObject *object,
+			  BseType    interface_type)
 {
   static GQuark iface_slist_quark = 0;
   GSList *slist;
-  BseTypeInterfaceClass *iface_class;
+  BseTypeInterface *iface_table;
 
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
   g_return_val_if_fail (BSE_TYPE_IS_INTERFACE (interface_type), NULL);
   
   /* try a fast lookup */
-  iface_class = bse_type_interface_class_peek (BSE_OBJECT_GET_CLASS (object), interface_type);
-  if (iface_class)
-    return iface_class;
+  iface_table = bse_type_interface_peek (BSE_OBJECT_GET_CLASS (object), interface_type);
+  if (iface_table)
+    return iface_table;
 
   g_return_val_if_fail (bse_type_conforms_to (BSE_OBJECT_TYPE (object), interface_type), NULL);
 
-  iface_class = bse_type_interface_class_ref (BSE_OBJECT_GET_CLASS (object), interface_type);
+  iface_table = bse_type_interface_ref (BSE_OBJECT_GET_CLASS (object), interface_type);
 
   if (!iface_slist_quark)
     iface_slist_quark = g_quark_from_string ("bse-interface-list");
@@ -974,19 +1035,52 @@ bse_object_get_interface_class (BseObject *object,
   if (!slist)
     g_datalist_id_set_data_full (&object->datalist,
 				 iface_slist_quark,
-				 g_slist_prepend (NULL, iface_class),
+				 g_slist_prepend (NULL, iface_table),
 				 iface_slist_destroy);
   else
     {
       GSList *tmp;
 
       tmp = g_slist_alloc ();
-      tmp->data = iface_class;
+      tmp->data = iface_table;
       tmp->next = slist->next;
       slist->next = tmp;
     }
 
-  return iface_class;
+  return iface_table;
+}
+
+void
+bse_object_class_set_icon (BseObjectClass *class,
+			   guint	   width,
+			   guint	   height,
+			   gboolean	   has_alpha,
+			   const guint8	  *pixel_data)
+{
+  g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
+  g_return_if_fail (width < 16384 && height < 16384);
+  if (!width || !height)
+    g_return_if_fail (pixel_data == NULL);
+  else
+    g_return_if_fail (pixel_data != NULL);
+
+  FIXME (broken);
+
+  if (class->icon && !pixel_data)
+    {
+      g_free (class->icon);
+      class->icon = NULL;
+    }
+
+  if (pixel_data)
+    {
+      if (!class->icon)
+	class->icon = g_new (BseIcon, 1);
+      class->icon->width = width;
+      class->icon->height = height;
+      class->icon->bytes_per_pixel = has_alpha ? 4 : 3;
+      // class->icon->pixel_data = pixel_data;
+    }
 }
 
 void
@@ -1178,6 +1272,7 @@ bse_object_set_valist (BseObject   *object,
   gboolean in_param_changed;
   
   g_return_if_fail (BSE_IS_OBJECT (object));
+  g_return_if_fail (!BSE_OBJECT_DESTROYED (object));
   
   bse_object_ref (object);
 
@@ -1236,6 +1331,7 @@ bse_object_set_param (BseObject	*object,
   g_return_if_fail (BSE_IS_PARAM (param));
   g_return_if_fail (param->pspec->any.flags & BSE_PARAM_WRITABLE);
   g_return_if_fail (bse_type_is_a (BSE_OBJECT_TYPE (object), param->pspec->any.parent_type));
+  g_return_if_fail (!BSE_OBJECT_DESTROYED (object));
   
   class = bse_type_class_peek (param->pspec->any.parent_type);
   g_return_if_fail (class != NULL); /* paranoid */
@@ -1316,7 +1412,7 @@ bse_object_do_store_private (BseObject  *object,
   while (class)
     {
       class_list = g_slist_prepend (class_list, class);
-      class = bse_type_class_parent (class);
+      class = bse_type_class_peek_parent (class);
     }
   for (slist = class_list; slist; slist = slist->next)
     {

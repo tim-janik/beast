@@ -35,7 +35,7 @@ static void     bse_master_do_add_input         (BseSource      *source,
 						 guint           ochannel_id,
 						 guint           history);
 static void     bse_master_do_remove_input      (BseSource      *source,
-						 guint           ichannel_id);
+						 guint           input_index);
 
 
 /* --- variables --- */
@@ -50,8 +50,8 @@ BSE_BUILTIN_TYPE (BseMaster)
   static const BseTypeInfo master_info = {
     sizeof (BseMasterClass),
 
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_master_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -209,44 +209,63 @@ bse_master_do_cycle (BseSource *source)
     {
       guint i;
 
+      /* retrive hunk-completed chunks from input sources */
       for (i = 0; i < source->n_inputs; i++)
 	master->chunks[i] = bse_source_ref_chunk (source->inputs[i].source,
 						  source->inputs[i].ochannel_id,
 						  source->index);
 
       /* check if we really need source + track mixing */
-      if (source->n_inputs == 1 &&
-	  master->chunks[0]->n_tracks == master->n_tracks)
-	bse_stream_write_sv (master->stream,
-			     BSE_TRACK_LENGTH * master->n_tracks,
-			     master->chunks[0]->hunk);
+      if (source->n_inputs == 1)
+	{
+	  if (master->chunks[0]->n_tracks == master->n_tracks)
+	    bse_stream_write_sv (master->stream,
+				 BSE_TRACK_LENGTH * master->n_tracks,
+				 master->chunks[0]->hunk);
+	  else
+	    FIXME (need buffer mixing - 3 cases (mono, stereo, n-channel));
+	}
       else
 	{
 	  BseMixValue *buffer;
 	  BseSampleValue *sbuffer;
-	  guint n_values;
-
-	  n_values = BSE_TRACK_LENGTH * master->n_tracks;
-
+	  guint n_values, track_length = BSE_TRACK_LENGTH;
+	  
+	  n_values = track_length * master->n_tracks;
+	  
 	  /* FIXME: we should use bse_mix_buffer_alloc() here */
-	  buffer = g_new (BseMixValue, n_values);
+	  buffer = g_new0 (BseMixValue, n_values);
 	  sbuffer = (BseSampleValue*) buffer;
-
-	  FIXME (need buffer mixing - 3 cases (mono, stereo, n-channel));
-
+	  
+	  for (i = 0; i < source->n_inputs; i++)
+	    {
+	      BseChunk *chunk = master->chunks[i];
+	      
+	      if (chunk->n_tracks == master->n_tracks)
+		{
+		  BseMixValue *mbuf_end, *mbuf = buffer;
+		  BseSampleValue *hunk = chunk->hunk;
+		  
+		  for (mbuf_end = mbuf + n_values; mbuf < mbuf_end; mbuf++)
+		    *mbuf += *(hunk++);
+		}
+	      else
+		FIXME (need buffer mixing - 3 cases (mono, stereo, n-channel));
+	    }
+	  
 	  for (i = 0; i < n_values; i++)
 	    {
 	      register BseMixValue value;
-
+	      
 	      value = buffer[i];
-
+	      
 	      if (value > 32767)
 		value = 32767;
 	      else if (value < -32768)
 		value = -32768;
 	      sbuffer[i] = value;
 	    }
-
+	  
 	  bse_stream_write_sv (master->stream, n_values, sbuffer);
 
 	  g_free (buffer);
@@ -331,7 +350,8 @@ bse_master_do_add_input (BseSource *source,
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->add_input (source, ichannel_id,
-					      input, ochannel_id, history);
+					      input, ochannel_id,
+					      history);
   
   master->chunks = g_renew (BseChunk*, master->chunks, source->n_inputs);
   master->chunks[source->n_inputs - 1] = NULL;
@@ -339,16 +359,15 @@ bse_master_do_add_input (BseSource *source,
 
 static void
 bse_master_do_remove_input (BseSource *source,
-			    guint      ichannel_id)
+			    guint      input_index)
 {
   BseMaster *master;
-  guint i = ichannel_id - 1;
   
   master = BSE_MASTER (source);
   
   /* chain parent class' handler */
-  BSE_SOURCE_CLASS (parent_class)->remove_input (source, ichannel_id);
+  BSE_SOURCE_CLASS (parent_class)->remove_input (source, input_index);
   
-  if (i < source->n_inputs)
-    master->chunks[i] = master->chunks[source->n_inputs];
+  if (input_index < source->n_inputs)
+    master->chunks[input_index] = master->chunks[source->n_inputs];
 }

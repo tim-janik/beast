@@ -15,6 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "GLibExtra"
 #include	"glib-extra.h"
 
 
@@ -308,13 +310,13 @@ g_pattern_ph_match (const gchar *match_pattern,
     {
       switch (ch)
         {
-        case  '?':
+        case '?':
           if (!*string)
             return FALSE;
           string++;
           break;
           
-        case  '*':
+        case '*':
           do
             {
               ch = *pattern;
@@ -371,13 +373,13 @@ g_pattern_match (GPatternSpec *pspec,
   
   switch (pspec->match_type)
     {
-    case  G_MATCH_ALL:
+    case G_MATCH_ALL:
       return g_pattern_ph_match (pspec->pattern, string);
       
-    case  G_MATCH_ALL_TAIL:
+    case G_MATCH_ALL_TAIL:
       return g_pattern_ph_match (pspec->pattern_reversed, string_reversed);
       
-    case  G_MATCH_HEAD:
+    case G_MATCH_HEAD:
       if (pspec->pattern_length > string_length)
         return FALSE;
       else if (pspec->pattern_length == string_length)
@@ -387,7 +389,7 @@ g_pattern_match (GPatternSpec *pspec,
       else
         return TRUE;
       
-    case  G_MATCH_TAIL:
+    case G_MATCH_TAIL:
       if (pspec->pattern_length > string_length)
         return FALSE;
       else if (pspec->pattern_length == string_length)
@@ -399,7 +401,7 @@ g_pattern_match (GPatternSpec *pspec,
       else
         return TRUE;
       
-    case  G_MATCH_EXACT:
+    case G_MATCH_EXACT:
       if (pspec->pattern_length != string_length)
         return FALSE;
       else
@@ -411,20 +413,17 @@ g_pattern_match (GPatternSpec *pspec,
     }
 }
 
-void
-g_pattern_spec_init (GPatternSpec *pspec,
-                     const gchar  *pattern)
+GPatternSpec*
+g_pattern_spec_new (const gchar *pattern)
 {
+  GPatternSpec *pspec;
   gchar *p, *t;
   const gchar *h;
+  guint hw = 0, tw = 0, hj = 0, tj = 0;
   
-  g_return_if_fail (pspec != NULL);
-  
-  pspec->match_type = G_MATCH_ALL;
-  
-  if (!pattern)
-    pattern = "";
-  
+  g_return_val_if_fail (pattern != NULL, NULL);
+
+  pspec = g_new (GPatternSpec, 1);
   pspec->pattern_length = strlen (pattern);
   pspec->pattern = strcpy (g_new (gchar, pspec->pattern_length + 1), pattern);
   pspec->pattern_reversed = g_new (gchar, pspec->pattern_length + 1);
@@ -432,62 +431,87 @@ g_pattern_spec_init (GPatternSpec *pspec,
   *(t--) = 0;
   h = pattern;
   while (t >= pspec->pattern_reversed)
-    *(t--) = *(h++);
+    {
+      register gchar c = *(h++);
 
-  if (pspec->pattern_reversed[0] != '*')
-    pspec->match_type = G_MATCH_ALL_TAIL;
+      if (c == '*')
+	{
+	  if (t < h)
+	    hw++;
+	  else
+	    tw++;
+	}
+      else if (c == '?')
+	{
+	  if (t < h)
+	    hj++;
+	  else
+	    tj++;
+	}
+
+      *(t--) = c;
+    }
+  pspec->match_type = hw > tw || (hw == tw && hj > tj) ? G_MATCH_ALL_TAIL : G_MATCH_ALL;
   
-  if (strchr (pspec->pattern, '?'))
-    return;
+  if (hj || tj)
+    return pspec;
   
-  if (!strchr (pspec->pattern, '*'))
+  if (hw == 0 && tw == 0)
     {
       pspec->match_type = G_MATCH_EXACT;
-      return;
+      return pspec;
     }
-  
-  p = pspec->pattern;
-  while (*p == '*')
-    p++;
-  if (p > pspec->pattern && !strchr (p, '*'))
+
+  if (hw)
     {
-      gchar *tmp;
-      
-      pspec->match_type = G_MATCH_TAIL;
-      pspec->pattern_length = strlen (p);
-      tmp = pspec->pattern;
-      pspec->pattern = strcpy (g_new (gchar, pspec->pattern_length + 1), p);
-      g_free (tmp);
-      g_free (pspec->pattern_reversed);
-      pspec->pattern_reversed = g_new (gchar, pspec->pattern_length + 1);
-      t = pspec->pattern_reversed + pspec->pattern_length;
-      *(t--) = 0;
-      h = pspec->pattern;
-      while (t >= pspec->pattern_reversed)
-	*(t--) = *(h++);
-      return;
+      p = pspec->pattern;
+      while (*p == '*')
+	p++;
+      if (p > pspec->pattern && !strchr (p, '*'))
+	{
+	  gchar *tmp;
+	  
+	  pspec->match_type = G_MATCH_TAIL;
+	  pspec->pattern_length = strlen (p);
+	  tmp = pspec->pattern;
+	  pspec->pattern = strcpy (g_new (gchar, pspec->pattern_length + 1), p);
+	  g_free (tmp);
+	  g_free (pspec->pattern_reversed);
+	  pspec->pattern_reversed = g_new (gchar, pspec->pattern_length + 1);
+	  t = pspec->pattern_reversed + pspec->pattern_length;
+	  *(t--) = 0;
+	  h = pspec->pattern;
+	  while (t >= pspec->pattern_reversed)
+	    *(t--) = *(h++);
+	  return pspec;
+	}
     }
-  
-  p = pspec->pattern_reversed;
-  while (*p == '*')
-    p++;
-  if (p > pspec->pattern_reversed && !strchr (p, '*'))
+
+  if (tw)
     {
-      gchar *tmp;
-      
-      pspec->match_type = G_MATCH_HEAD;
-      pspec->pattern_length = strlen (p);
-      tmp = pspec->pattern_reversed;
-      pspec->pattern_reversed = strcpy (g_new (gchar, pspec->pattern_length + 1), p);
-      g_free (tmp);
-      g_free (pspec->pattern);
-      pspec->pattern = g_new (gchar, pspec->pattern_length + 1);
-      t = pspec->pattern + pspec->pattern_length;
-      *(t--) = 0;
-      h = pspec->pattern_reversed;
-      while (t >= pspec->pattern)
-	*(t--) = *(h++);
+      p = pspec->pattern_reversed;
+      while (*p == '*')
+	p++;
+      if (p > pspec->pattern_reversed && !strchr (p, '*'))
+	{
+	  gchar *tmp;
+	  
+	  pspec->match_type = G_MATCH_HEAD;
+	  pspec->pattern_length = strlen (p);
+	  tmp = pspec->pattern_reversed;
+	  pspec->pattern_reversed = strcpy (g_new (gchar, pspec->pattern_length + 1), p);
+	  g_free (tmp);
+	  g_free (pspec->pattern);
+	  pspec->pattern = g_new (gchar, pspec->pattern_length + 1);
+	  t = pspec->pattern + pspec->pattern_length;
+	  *(t--) = 0;
+	  h = pspec->pattern_reversed;
+	  while (t >= pspec->pattern)
+	    *(t--) = *(h++);
+	}
     }
+
+  return pspec;
 }
 
 gboolean
@@ -520,21 +544,21 @@ gboolean
 g_pattern_match_simple (const gchar *pattern,
                         const gchar *string)
 {
-  GPatternSpec pspec;
+  GPatternSpec *pspec;
   gboolean ergo;
   
   g_return_val_if_fail (pattern != NULL, FALSE);
   g_return_val_if_fail (string != NULL, FALSE);
   
-  g_pattern_spec_init (&pspec, pattern);
-  ergo = g_pattern_match_string (&pspec, string);
-  g_pattern_spec_free_segs (&pspec);
+  pspec = g_pattern_spec_new (pattern);
+  ergo = g_pattern_match_string (pspec, string);
+  g_pattern_spec_free (pspec);
   
   return ergo;
 }
 
 void
-g_pattern_spec_free_segs (GPatternSpec *pspec)
+g_pattern_spec_free (GPatternSpec *pspec)
 {
   g_return_if_fail (pspec != NULL);
   
@@ -542,4 +566,5 @@ g_pattern_spec_free_segs (GPatternSpec *pspec)
   pspec->pattern = NULL;
   g_free (pspec->pattern_reversed);
   pspec->pattern_reversed = NULL;
+  g_free (pspec);
 }

@@ -24,8 +24,8 @@ BSE_BUILTIN_TYPE (BseText)
   BseTypeInfo text_info = {
     sizeof (BseTextInterface),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     
     /* non interface type stuff */
     NULL, NULL, NULL, 0, 0, NULL,

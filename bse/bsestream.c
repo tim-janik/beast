@@ -50,8 +50,8 @@ BSE_BUILTIN_TYPE (BseStream)
   static const BseTypeInfo stream_info = {
     sizeof (BseStreamClass),
 
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_stream_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

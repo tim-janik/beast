@@ -71,15 +71,17 @@ greeting_exec (BseProcedureClass *proc,
 
 
 /* --- Export to BSE --- */
-BSE_EXPORTS_BEGIN (greeting);
+BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_PROCEDURES = {
-  { &type_id_greeting, "greeting", "/Test/Greeting",
+  { &type_id_greeting, "greeting",
     "Greeting greets the outside world",
     greeting_setup, greeting_exec, NULL,
+    "/Proc/Test/Greeting",
   },
-  { &type_id_greeting_again, "greeting-again", "/Test/Greeting again",
+  { &type_id_greeting_again, "greeting-again",
     "Greeting greets the outside world",
     greeting_setup, greeting_exec, NULL,
+    "/Proc/Test/Greeting again",
   },
   { NULL, },
 };

@@ -19,6 +19,7 @@
 
 
 #include	"bstsongshell.h"
+#include	"bstsnetshell.h"
 #include	"bstfiledialog.h"
 #include	"bststatusbar.h"
 
@@ -37,33 +38,37 @@ static gchar	   *bst_app_factories_path = "<BstApp>";
 static GtkItemFactoryEntry menubar_entries[] =
 {
 #define BST_OP(bst_op) (bst_app_operate), (BST_OP_ ## bst_op)
-  { "/_File",			NULL,		NULL, 0,		"<Branch>" },
-  { "/File/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  { "/File/_New",		"<ctrl>N",	BST_OP (PROJECT_NEW),	"<Item>" },
-  { "/File/_Open...",		"<ctrl>O",	BST_OP (PROJECT_OPEN),	"<Item>" },
-  { "/File/_Save",		"<ctrl>S",	BST_OP (PROJECT_SAVE),	"<Item>" },
-  { "/File/Save _As...",	NULL,		BST_OP (PROJECT_SAVE_AS),"<Item>" },
-  { "/File/-----",		NULL,		NULL, 0,		"<Separator>" },
-  { "/File/Rebuild",		NULL,		BST_OP (REBUILD),	"<Item>" },
-  { "/File/Refresh",		NULL,		BST_OP (REFRESH),	"<Item>" },
-  { "/File/-----",		NULL,		NULL, 0,		"<Separator>" },
-  { "/File/_Close",		"<ctrl>W",	BST_OP (CLOSE),		"<Item>" },
-  { "/File/_Exit",		"<ctrl>Q",	BST_OP (EXIT),		"<Item>" },
+  { "/_Project",		NULL,		NULL, 0,		"<Branch>" },
+  { "/Project/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
+  { "/Project/_New",		"<ctrl>N",	BST_OP (PROJECT_NEW),	"<Item>" },
+  { "/Project/_Open...",	"<ctrl>O",	BST_OP (PROJECT_OPEN),	"<Item>" },
+  { "/Project/_Save",		"<ctrl>S",	BST_OP (PROJECT_SAVE),	"<Item>" },
+  { "/Project/Save _As...",	NULL,		BST_OP (PROJECT_SAVE_AS),"<Item>" },
+  { "/Project/-----",		NULL,		NULL, 0,		"<Separator>" },
+  { "/Project/New Song",	NULL,		BST_OP (PROJECT_NEW_SONG), "<Item>" },
+  { "/Project/New SNet",	NULL,		BST_OP (PROJECT_NEW_SNET), "<Item>" },
+  { "/Project/-----",		NULL,		NULL, 0,		"<Separator>" },
+  { "/Project/Rebuild",		NULL,		BST_OP (REBUILD),	"<Item>" },
+  { "/Project/Refresh",		NULL,		BST_OP (REFRESH),	"<Item>" },
+  { "/Project/-----",		NULL,		NULL, 0,		"<Separator>" },
+  { "/Project/_Close",		"<ctrl>W",	BST_OP (PROJECT_CLOSE),	"<Item>" },
+  { "/Project/_Exit",		"<ctrl>Q",	BST_OP (EXIT),		"<Item>" },
   { "/_Edit",			NULL,		NULL, 0,		"<Branch>" },
   { "/Edit/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
   { "/Edit/_Undo",		"<ctrl>U",	BST_OP (UNDO_LAST),	"<Item>" },
   { "/Edit/_Redo",		"<ctrl>R",	BST_OP (REDO_LAST),	"<Item>" },
   { "/_Song",			NULL,		NULL, 0,		"<Branch>" },
   { "/Song/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
-  //  { "/Song/_New",		"<ctrl>N",	BST_OP (SONG_NEW),	"<Item>" },
   { "/Song/_Add Pattern",	"<ctrl>A",	BST_OP (PATTERN_ADD),	"<Item>" },
   { "/Song/Delete Pattern",	NULL,		BST_OP (PATTERN_DELETE),"<Item>" },
   { "/Song/_Edit Pattern...",	"<ctrl>E",	BST_OP (PATTERN_EDITOR),"<Item>" },
   { "/Song/Add _Instrument",	"<ctrl>A",	BST_OP (INSTRUMENT_ADD),"<Item>" },
   { "/Song/_Play",		"",		BST_OP (PLAY),		"<Item>" },
   { "/Song/_Stop",		"",		BST_OP (STOP),		"<Item>" },
-  { "/EP_Net",			NULL,		NULL, 0,		"<Branch>" },
-  { "/EPNet/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
+  { "/S_Net",			NULL,		NULL, 0,		"<Branch>" },
+  { "/SNet/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
+  { "/SNet/_Play",		"",		BST_OP (PLAY),		"<Item>" },
+  { "/SNet/_Stop",		"",		BST_OP (STOP),		"<Item>" },
   { "/_Help",			NULL,		NULL, 0,		"<LastBranch>" },
   { "/Help/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
   { "/Help/_About...",		NULL,		BST_OP (HELP_ABOUT),	"<Item>" },
@@ -282,6 +287,11 @@ bst_app_add_super (BstApp   *app,
 			    "super", super,
 			    "visible", TRUE,
 			    NULL);
+  else if (BSE_IS_SNET (super))
+    shell = gtk_widget_new (BST_TYPE_SNET_SHELL,
+			    "super", super,
+			    "visible", TRUE,
+			    NULL);
   else
     {
       g_message ("FIXME: skipping dialog for %s", BSE_OBJECT_TYPE_NAME (super));
@@ -379,25 +389,22 @@ bst_app_operate (BstApp *app,
     {
       BstSuperShell *super_shell;
       BseSong *song;
+      BseSNet *snet;
 
-    case BST_OP_SONG_NEW:
+    case BST_OP_PROJECT_NEW_SONG:
       song = bse_song_new (BST_APP_PROJECT (app), BSE_DFL_SONG_N_CHANNELS);
       bst_app_reload_supers (app);
       super_shell = bst_super_shell_from_super (BSE_SUPER (song));
       bst_super_shell_operate (super_shell, BST_OP_PATTERN_ADD);
       bse_object_unref (BSE_OBJECT (song));
       break;
-    case BST_OP_REFRESH:
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) bst_super_shell_update,
-			     NULL);
+    case BST_OP_PROJECT_NEW_SNET:
+      snet = bse_snet_new (BST_APP_PROJECT (app), NULL);
+      bst_app_reload_supers (app);
+      super_shell = bst_super_shell_from_super (BSE_SUPER (snet));
+      bse_object_unref (BSE_OBJECT (snet));
       break;
-    case BST_OP_REBUILD:
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) bst_super_shell_rebuild,
-			     NULL);
-      break;
-    case BST_OP_CLOSE:
+    case BST_OP_PROJECT_CLOSE:
       bst_app_handle_delete_event (widget);
       break;
     case BST_OP_PROJECT_NEW:
@@ -407,7 +414,7 @@ bst_app_operate (BstApp *app,
 	  BstApp *napp = bst_app_new (project);
 
 	  bse_object_unref (BSE_OBJECT (project));
-	  bst_app_operate (napp, BST_OP_SONG_NEW);
+	  bst_app_operate (napp, BST_OP_PROJECT_NEW_SONG);
 	  gtk_idle_show_widget (GTK_WIDGET (napp));
 	}
       break;
@@ -434,13 +441,23 @@ bst_app_operate (BstApp *app,
       gtk_widget_show (bst_dialog_save);
       gdk_window_raise (bst_dialog_save->window);
       break;
+    case BST_OP_REFRESH:
+      gtk_container_foreach (GTK_CONTAINER (app->notebook),
+			     (GtkCallback) bst_super_shell_update,
+			     NULL);
+      break;
+    case BST_OP_REBUILD:
+      gtk_container_foreach (GTK_CONTAINER (app->notebook),
+			     (GtkCallback) bst_super_shell_rebuild,
+			     NULL);
+      break;
     case BST_OP_EXIT:
       if (bst_app_class)
 	{
 	  GSList *slist, *free_slist = g_slist_copy (bst_app_class->apps);
 
 	  for (slist = free_slist; slist; slist = slist->next)
-	    bst_app_operate (slist->data, BST_OP_CLOSE);
+	    bst_app_operate (slist->data, BST_OP_PROJECT_CLOSE);
 	  g_slist_free (free_slist);
 	}
       break;
@@ -471,10 +488,11 @@ bst_app_can_operate (BstApp *app,
     case BST_OP_PROJECT_NEW:
     case BST_OP_PROJECT_OPEN:
     case BST_OP_PROJECT_SAVE_AS:
-    case BST_OP_SONG_NEW:
+    case BST_OP_PROJECT_NEW_SONG:
+    case BST_OP_PROJECT_NEW_SNET:
+    case BST_OP_PROJECT_CLOSE:
     case BST_OP_REFRESH:
     case BST_OP_REBUILD:
-    case BST_OP_CLOSE:
     case BST_OP_EXIT:
       return TRUE;
     default:

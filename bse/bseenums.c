@@ -47,8 +47,8 @@ bse_type_register_enums (void)
   BseTypeInfo info = {
     0 /* class_size */,
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) NULL /* class_init */,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

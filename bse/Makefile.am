@@ -3,6 +3,7 @@
 #
 ## Makefile.am for BSE
 
+SUBDIRS = icons
 
 INCLUDES = -I$(top_srcdir) $(BSE_CFLAGS)
 
@@ -14,20 +15,22 @@ lib_LTLIBRARIES = libbse.la
 # due to automake-1.3 not featuring target specific defines,
 # the G_LOG_DOMAIN needs to be special cased, depending on
 # the source file sets ;(
-DEFS += $(strip \
-	$(patsubst %, -DBSE_COMPILATION -DG_LOG_DOMAIN=\"BSE\", \
-	              $(filter $(notdir $<), $(bse_c_sources))) \
-	$(patsubst %, -DBSE_COMPILATION -DG_LOG_DOMAIN=\"BSE-BUILTIN\", \
-	              $(filter $(notdir $<), $(bse_builtin_c_sources))) \
-)
+DEFS += @STRIP_BEGIN@ \
+	$(patsubst %, -DG_LOG_DOMAIN=bse_log_domain_bse -DBSE_COMPILATION, \
+	              $(filter $(<F), $(bse_c_sources))) \
+	$(patsubst %, -DBSE_BUILTIN_NAME=$(strip $(subst -,_,$(basename $(<F)))) \
+                      -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\"" \
+	              -DG_LOG_DOMAIN=BSE_PLUGIN_NAME -DBSE_COMPILATION, \
+	              $(filter $(<F), $(bse_builtin_c_sources))) \
+@STRIP_END@
 
-# libtool stuff, set version, and export symbols for resolving
+# libtool stuff: set version and export symbols for resolving
 libbseincludedir = $(includedir)/bse
-libbse_la_LDFLAGS = $(strp \
+libbse_la_LDFLAGS = @STRIP_BEGIN@ \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-release $(LT_RELEASE) \
 	-export-dynamic \
-)
+@STRIP_END@
 libbse_la_LIBADD = $(BSE_LIBS) -lm
 
 
@@ -35,17 +38,18 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 # setup source file variables
 #
 # header files for builtin plugins
-bse_builtin_h_sources = $(strip \
-)
+bse_builtin_h_sources = @STRIP_BEGIN@ \
+@STRIP_END@
 # c sources for builtin plugins
-bse_builtin_c_sources = $(strip \
+bse_builtin_c_sources = @STRIP_BEGIN@ \
 	builtin_bsepattern.c \
 	builtin_helloworld.c \
-)
-# BSE header files for public installation
-bse_public_h_sources = $(strip \
+@STRIP_END@
+# BSE header files for public installation (non-generated)
+bse_public_h_sources = @STRIP_BEGIN@ \
 	bse.h \
 	bsebindata.h \
+	bsecategories.h \
 	bsechunk.h \
 	bseconfig.h \
 	bsecontainer.h \
@@ -75,6 +79,7 @@ bse_public_h_sources = $(strip \
 	bseprocedure.h \
 	bseproject.h \
 	bsesample.h \
+	bsesnet.h \
 	bsesong.h \
 	bsesongsequencer.h \
 	bsesource.h \
@@ -85,14 +90,15 @@ bse_public_h_sources = $(strip \
 	bsetype.h \
 	bseutils.h \
 	glib-extra.h \
-)
+@STRIP_END@
 # BSE header files that don't get installed
-bse_private_h_sources = $(strip \
+bse_private_h_sources = @STRIP_BEGIN@ \
 	bsevoice.h \
-)
-# BSE c sources to build the library from
-bse_c_sources = $(strip \
+@STRIP_END@
+# BSE C sources to build the library from
+bse_c_sources = @STRIP_BEGIN@ \
 	bsebindata.c \
+	bsecategories.c \
 	bsechunk.c \
 	bsecontainer.c \
 	bseeffect.c \
@@ -120,6 +126,7 @@ bse_c_sources = $(strip \
 	bseprocedure.c \
 	bseproject.c \
 	bsesample.c \
+	bsesnet.c \
 	bsesong.c \
 	bsesongsequencer.c \
 	bsesource.c \
@@ -131,16 +138,16 @@ bse_c_sources = $(strip \
 	bseutils.c \
 	bsevoice.c \
 	glib-extra.c \
-)
+@STRIP_END@
 # we use our own built_sources variable rules instead of BUILT_SOURCES,
-# since automake-1.3 handles BUILT_SOURCES strange and wrong on some
-# occasions (mostly wrt dependancies)
+# since handles BUILT_SOURCES strange and wrong on some occasions (mostly
+# wrt dependancies)
 # we generate frequently rebuild files piggyback on a stamp file, so sources
 # depending on them only get rebuild when the built source actually changed
 # content
 #
 # built sources that don't get installed
-bse_built_sources = $(strip \
+bse_built_sources = @STRIP_BEGIN@ \
 	stamp-bsegentypes.h \
 	stamp-bseenum_arrays.c \
 	bseenum_arrays.c \
@@ -150,22 +157,22 @@ bse_built_sources = $(strip \
 	bsebuiltin_array.c \
 	bsegentypes.c \
 	bsegentype_array.c \
-)
+@STRIP_END@
 # built sources that get installed with the header files
-bse_built_public_sources = $(strip \
+bse_built_public_sources = @STRIP_BEGIN@ \
 	bsegentypes.h \
 	bseconfigpaths.h \
-)
+@STRIP_END@
 # non-header sources (headers should be specified in the above variables)
 # that don't serve as direct make target sources, i.e. they don't have
 # their own .lo rules and don't get publically installed
-bse_extra_sources = $(strip \
+bse_extra_sources = @STRIP_BEGIN@ \
 	mkbuiltinlist.pl \
 	mkenums.pl \
 	mktypes.pl \
 	bseconfig.h.in \
 	bsesongmixer.c \
-)
+@STRIP_END@
 
 #
 # setup BSE sources and their dependancies
@@ -174,96 +181,107 @@ bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_pub
 libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_public_sources)
 libbse_la_SOURCES = $(bse_c_sources) $(bse_builtin_c_sources)
 MAINTAINERCLEANFILES += $(bse_built_public_sources) $(bse_built_sources)
+EXTRA_HEADERS +=
 EXTRA_DIST += $(bse_builtin_h_sources) $(bse_private_h_sources)
 EXTRA_DIST += $(bse_built_sources) $(bse_built_public_sources) $(bse_extra_sources)
 
 #
 # rules to generate built sources
 #
-gen_source = gen-source.tmp
-CLEANFILES += $(gen_source)
+# setup autogeneration dependancies
+gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac xgen-bnac xgen-bcph
+CLEANFILES += $(gen_sources)
 COPYING: $(bse_built_public_sources) $(bse_built_sources)
 $(OBJECTS): COPYING # this is our oldest-source-stamp
-bsegentypes.h: @MISSING_PERL5@ # stamp-bsegentypes.h
-	-test -e "$@" || touch "$@"
+# initial creation of the real stamp-* files
+bsegentypes.h: @MISSING_PERL5@		# never add deps here
+	-test -f "$@" || touch "$@"
+# normal autogeneration rules
 stamp-bsegentypes.h: @MISSING_PERL5@ $(srcdir)/mkenums.pl $(srcdir)/mktypes.pl
 stamp-bsegentypes.h: @MISSING_PERL5@ @BIRNET_N@ $(bse_c_sources)
 stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_h_sources)
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkenums.pl --externs $(bse_h_sources) > $(gen_source) \
-	&& $(PERL) $(srcdir)/mktypes.pl --externs $(bse_c_sources) >> $(gen_source) \
-	&& (cmp -s $(gen_source) bsegentypes.h || mv $(gen_source) bsegentypes.h) \
-	&& rm -f $(gen_source) \
+	&& $(PERL) $(srcdir)/mkenums.pl --externs $(bse_h_sources) > xgen-sbgth \
+	&& $(PERL) $(srcdir)/mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
+	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
+	&& rm -f xgen-sbgth \
 	&& echo timestamp > $@
 bsegentypes.c: @MISSING_PERL5@ bsegentypes.h
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkenums.pl --interns $(bse_h_sources) > $(gen_source) \
-	&& $(PERL) $(srcdir)/mktypes.pl --interns --export-proto $(bse_c_sources) >> $(gen_source) \
-	&& mv $(gen_source) $@
+	&& $(PERL) $(srcdir)/mkenums.pl --interns $(bse_h_sources) > xgen-bgtc \
+	&& $(PERL) $(srcdir)/mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
+	&& cp xgen-bgtc $@ \
+	&& rm -f xgen-bgtc
 bsegentype_array.c: @MISSING_PERL5@ bsegentypes.c
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mktypes.pl --array $(bse_c_sources) > $(gen_source) \
-	&& mv $(gen_source) $@
+	&& $(PERL) $(srcdir)/mktypes.pl --array $(bse_c_sources) > xgen-bgtac \
+	&& cp xgen-bgtac $@ \
+	&& rm -f xgen-bgtac
 stamp-bseenum_arrays.c: @MISSING_PERL5@ $(bse_h_sources) $(srcdir)/mkenums.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkenums.pl --arrays --includes $(bse_h_sources) > $(gen_source) \
-	&& (cmp -s $(gen_source) bseenum_arrays.c || mv $(gen_source) bseenum_arrays.c) \
-	&& rm -f $(gen_source) \
+	&& $(PERL) $(srcdir)/mkenums.pl --arrays --includes $(bse_h_sources) > xgen-sbeac \
+	&& (cmp -s xgen-sbeac bseenum_arrays.c || cp xgen-sbeac bseenum_arrays.c) \
+	&& rm -f xgen-sbeac \
 	&& echo timestamp > $@
 bseenum_list.c: @MISSING_PERL5@ bseenum_arrays.c $(srcdir)/mkenums.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkenums.pl --list $(bse_h_sources) > $(gen_source) \
-	&& mv $(gen_source) $@
+	&& $(PERL) $(srcdir)/mkenums.pl --list $(bse_h_sources) > xgen-belc \
+	&& cp xgen-belc $@ \
+	&& rm -f xgen-belc
 bsebuiltin_externs.c: @MISSING_PERL5@ $(bse_builtin_c_sources) $(srcdir)/mkbuiltinlist.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkbuiltinlist.pl --externs $(bse_builtin_c_sources) > $(gen_source) \
-	&& mv $(gen_source) $@
+	&& $(PERL) $(srcdir)/mkbuiltinlist.pl --externs $(bse_builtin_c_sources) > xgen-bbec \
+	&& cp xgen-bbec $@ \
+	&& rm -f xgen-bbec
 bsebuiltin_array.c: @MISSING_PERL5@ $(bse_builtin_c_sources) $(srcdir)/mkbuiltinlist.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkbuiltinlist.pl --array $(bse_builtin_c_sources) > $(gen_source) \
-	&& mv $(gen_source) $@
+	&& $(PERL) $(srcdir)/mkbuiltinlist.pl --array $(bse_builtin_c_sources) > xgen-bbac \
+	&& cp xgen-bbac $@ \
+	&& rm -f xgen-bbac
 bsenotifier_array.c: bsedefs.h
 	cd $(srcdir) \
-	&& echo "/* Generated data from $< (by make $@) */" > $(gen_source) \
-	&& echo >> $(gen_source) \
+	&& echo "/* Generated data from $< (by make $@) */" > xgen-bnac \
+	&& echo >> xgen-bnac \
 	&& $(CPP) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \
 	          $(AM_CFLAGS) $(CFLAGS) -c $< \
 	| sed -e'/BseNotify_/{' \
 	  -e's/\(.*\)BseNotify_\([^)]*\).*(\([^	 ]*\).*/  { "\2", "\3", },/' \
-	  -ep -e'}' -ed   >> $(gen_source) \
-	&& echo >> $(gen_source) \
-	&& echo "/* Generated data ends here */" >> $(gen_source) \
-	&& mv $(gen_source) $@
+	  -ep -e'}' -ed   >> xgen-bnac \
+	&& echo >> xgen-bnac \
+	&& echo "/* Generated data ends here */" >> xgen-bnac \
+	&& cp xgen-bnac $@ \
+	&& rm -f xgen-bnac
 bseconfigpaths.h: $(top_srcdir)/configure bseconfig.h Makefile
 	cd $(srcdir) \
-	&& echo "/* Generated data from $< (by make $@) */" > $(gen_source) \
-	&& echo >> $(gen_source) \
-	&& echo "#define BSE_PATH_INCLUDES \"${libbseincludedir}\"" >> $(gen_source) \
-	&& echo "#define BSE_PATH_DATA     \"${bsedatadir}\"" >> $(gen_source) \
-	&& echo "#define BSE_PATH_LIB      \"${bselibdir}\"" >> $(gen_source) \
-	&& echo "#define BSE_PATH_PLUGINS  (BSE_PATH_LIB \"/plugins\")" >> $(gen_source) \
+	&& echo "/* Generated data from $< (by make $@) */" > xgen-bcph \
+	&& echo >> xgen-bcph \
+	&& echo "#define BSE_PATH_INCLUDES \"${libbseincludedir}\"" >> xgen-bcph \
+	&& echo "#define BSE_PATH_DATA     \"${bsedatadir}\"" >> xgen-bcph \
+	&& echo "#define BSE_PATH_LIB      \"${bselibdir}\"" >> xgen-bcph \
+	&& echo "#define BSE_PATH_PLUGINS  (BSE_PATH_LIB \"/plugins\")" >> xgen-bcph \
 	&& if test -z '$(bseossdevice)' ; then \
-	     echo '#undef BSE_PATH_DEVICE_OSS' >> $(gen_source) ; \
+	     echo '#undef BSE_PATH_DEVICE_OSS' >> xgen-bcph ; \
 	   else \
-	     echo '#define BSE_PATH_DEVICE_OSS $(bseossdevice)' >> $(gen_source) ; \
+	     echo '#define BSE_PATH_DEVICE_OSS $(bseossdevice)' >> xgen-bcph ; \
 	   fi \
 	&& if test -z '$(bsealsadevices)' ; then \
-	     echo '#undef BSE_PATH_DEVICE_LIST_ALSA' >> $(gen_source) ; \
+	     echo '#undef BSE_PATH_DEVICE_LIST_ALSA' >> xgen-bcph ; \
 	   else \
-	     echo '#define BSE_PATH_DEVICE_LIST_ALSA $(bsealsadevices)' >> $(gen_source) ; \
+	     echo '#define BSE_PATH_DEVICE_LIST_ALSA $(bsealsadevices)' >> xgen-bcph ; \
 	   fi \
-	&& echo >> $(gen_source) \
-	&& echo "/* Generated data ends here */" >> $(gen_source) \
-	&& mv $(gen_source) $@
+	&& echo >> xgen-bcph \
+	&& echo "/* Generated data ends here */" >> xgen-bcph \
+	&& (cmp -s xgen-bcph $@ || cp xgen-bcph $@) \
+	&& rm -f xgen-bcph
 
 
 #
 # convenience targets for the builtsources
 #
-#.PHONY: builtsources clean-builtsources
-#clean-builtsources:
-#	rm -f $(bse_built_public_sources) $(bse_built_sources)
-#builtsources:		$(bse_built_public_sources) $(bse_built_sources)
+.PHONY: builtsources clean-builtsources
+clean-builtsources:
+	rm -f $(bse_built_public_sources) $(bse_built_sources)
+builtsources:		$(bse_built_public_sources) $(bse_built_sources)
 
 
 #

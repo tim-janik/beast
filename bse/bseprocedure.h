@@ -69,10 +69,6 @@ typedef gboolean (*BseProcedureNotify) (gpointer     func_data,
 BseProcedureClass* bse_procedure_find_ref (const gchar		*name);
 void		   bse_procedure_ref	  (BseProcedureClass	*proc);
 void		   bse_procedure_unref	  (BseProcedureClass	*proc);
-const gchar*   bse_procedure_get_category (BseType		 proc_type);
-BseType* /*fr*/	   bse_procedure_types	  (const gchar		*pattern,
-					   BseType		 base_type,
-					   guint		 *n_types);
 /* execute procedure, passing n_in_params param values for in
  * values and n_out_params param value locations for out values
  */
@@ -112,7 +108,6 @@ BseErrorType bse_procedure_execva_item	(BseProcedureClass	*proc,
 const gchar* bse_procedure_type_register (const gchar		*name,
 					  const gchar		*blurb,
 					  BsePlugin		*plugin,
-					  const gchar		*category,
 					  BseType		*ret_type);
 
 

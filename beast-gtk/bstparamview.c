@@ -178,7 +178,7 @@ bst_param_view_rebuild (BstParamView *param_view)
   while (class)
     {
       class_list = g_slist_prepend (class_list, class);
-      class = bse_type_class_parent (class);
+      class = bse_type_class_peek_parent (class);
     }
   
   for (slist = class_list; slist; slist = slist->next)

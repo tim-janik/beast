@@ -52,8 +52,8 @@ BSE_BUILTIN_TYPE (BseFileStream)
   BseTypeInfo file_stream_info = {
     sizeof (BseFileStreamClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_file_stream_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

@@ -31,7 +31,7 @@ while (<>) {
     while (m@/\*([^*]|\*[^/])*$@x) {
         my $new = <>;
 
-        (defined ($new) && ($file eq $ARGV)) or die "$file:$.: Unmatched comment (line $line)\n";
+        (defined ($new) && ($file eq $ARGV)) or die "$0: $file:$.: Unmatched comment (line $line)\n";
         $_ .= $new;
     }
     
@@ -48,23 +48,28 @@ while (<>) {
     while (!m@\)@) {
 	my $new = <>;
 	
-	(defined ($new) && ($file eq $ARGV)) or die "$file:$.: Unmatched argument brace (line $line)\n";
+	(defined ($new) && ($file eq $ARGV)) or die "$0: $file:$.: Unmatched argument brace (line $line)\n";
 	$_ .= $new;
     }
     
     # parse builtin name
-    if (/\(\s*(\w+)\s*\)/) {
-	$name = $1;
-    } else {
-	die "$file:$.: Plugin name unrecognized, invalid syntax?\n";
-    }
+#    if (/\(\s*(\w+)\s*\)/) {
+#	$name = $1;
+#    } else {
+#	die "$0: $file:$.: Plugin name unrecognized, invalid syntax?\n";
+#    }
     
     # check for doubles
-    if (defined $bdefs{$name}) {
-	my ($name, $ofile, $oline) = @{$bdefs{$name}};
-	
-	die "$file:$.: Plugin name `$name' already used in $ofile:$oline\n";
-    }
+#    if (defined $bdefs{$name}) {
+#	my ($name, $ofile, $oline) = @{$bdefs{$name}};
+#	
+#	die "$0: $file:$.: Plugin name `$name' already used in $ofile:$oline\n";
+#    }
+
+    # set name from file name
+    $name = $file;
+    $name =~ s/\.[^.]+$//;
+    $name =~ s/[-_.]/_/g;
     
     $bdefs{$name} = [ $name, $file, $line ];
     

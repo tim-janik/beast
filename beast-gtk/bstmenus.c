@@ -40,31 +40,33 @@ menu_entries_compare (gconstpointer a,
 GSList*
 bst_menu_entries_compose (guint                  n_menu_entries,
 			  GtkItemFactoryEntry   *menu_entries,
-			  guint                  n_procs,
-			  BseType               *proc_types,
-			  GtkItemFactoryCallback proc_activate)
+			  guint                  n_cats,
+			  BseCategory           *cats,
+			  GtkItemFactoryCallback cat_activate)
 {
-  GtkItemFactoryEntry *entry, *last_entry;
+  BstMenuEntry *bentry, *last_bentry;
+  GtkItemFactoryEntry *last_entry;
   GSList *branch_slist = NULL, *entry_slist = NULL;
 
   if (n_menu_entries)
     g_return_val_if_fail (menu_entries != NULL, NULL);
-  if (n_procs)
+  if (n_cats)
     {
-      g_return_val_if_fail (proc_types != NULL, NULL);
-      g_return_val_if_fail (proc_activate != NULL, NULL);
+      g_return_val_if_fail (cats != NULL, NULL);
+      g_return_val_if_fail (cat_activate != NULL, NULL);
     }
 
-  entry = g_new0 (GtkItemFactoryEntry, n_procs);
-  last_entry = entry + n_procs;
-  while (entry < last_entry)
+  bentry = g_new0 (BstMenuEntry, n_cats);
+  last_bentry = bentry + n_cats;
+  while (bentry < last_bentry)
     {
-      entry_slist = g_slist_prepend (entry_slist, entry);
-      entry->path = (gchar*) bse_procedure_get_category (*proc_types);
-      entry->callback = proc_activate;
-      entry->callback_action = *proc_types;
-      proc_types++;
-      entry++;
+      entry_slist = g_slist_prepend (entry_slist, bentry);
+      bentry->entry.path = cats->category + cats->mindex;
+      bentry->entry.callback = cat_activate;
+      bentry->entry.callback_action = cats->type;
+      bentry->icon = cats->icon;
+      cats++;
+      bentry++;
     }
 
   last_entry = menu_entries + n_menu_entries;
@@ -79,4 +81,76 @@ bst_menu_entries_compose (guint                  n_menu_entries,
 
   return g_slist_concat (g_slist_reverse (branch_slist),
 			 g_slist_sort (entry_slist, menu_entries_compare));
+}
+
+static GtkWidget*
+create_icon_widget (BseIcon *icon)
+{
+  GtkWidget *widget;
+  const guint size = 16;
+
+  if (icon)
+    {
+      widget = gtk_widget_new (GNOME_TYPE_FOREST,
+			       "visible", TRUE,
+			       "width", size,
+			       "height", size,
+			       NULL);
+      gnome_forest_put_sprite (GNOME_FOREST (widget), 1,
+			       (icon->bytes_per_pixel > 3
+				? art_pixbuf_new_const_rgba
+				: art_pixbuf_new_const_rgb) (icon->pixels,
+							     icon->width,
+							     icon->height,
+							     icon->width *
+							     icon->bytes_per_pixel));
+      gnome_forest_set_sprite_size (GNOME_FOREST (widget), 1, size, size);
+    }
+  else
+    widget = gtk_widget_new (GTK_TYPE_ALIGNMENT,
+			     "visible", TRUE,
+			     "width", size,
+			     NULL);
+  
+  return widget;
+}
+
+void
+bst_menu_entries_create (GtkItemFactory *ifactory,
+			 GSList         *bst_menu_entries,
+			 gpointer        callback_data)
+{
+  GSList *slist;
+
+  g_return_if_fail (GTK_IS_ITEM_FACTORY (ifactory));
+
+  for (slist = bst_menu_entries; slist; slist = slist->next)
+    {
+      BstMenuEntry *entry = slist->data;
+      GtkWidget *item, *child = NULL;
+
+      gtk_item_factory_create_items (ifactory, 1, &entry->entry, callback_data);
+      item = gtk_item_factory_get_item (ifactory, entry->entry.path);
+      if (GTK_IS_MENU_ITEM (item))
+	child = GTK_BIN (item)->child;
+      if (child)
+	{
+	  GtkWidget *hbox;
+
+	  gtk_widget_ref (child);
+	  gtk_container_remove (GTK_CONTAINER (item), child);
+	  hbox = gtk_widget_new (GTK_TYPE_HBOX,
+				 "parent", item,
+				 "visible", TRUE,
+				 "child", child,
+				 NULL);
+	  gtk_container_add_with_args (GTK_CONTAINER (hbox),
+				       create_icon_widget (entry->icon),
+				       "expand", FALSE,
+				       "fill", FALSE,
+				       "position", 0,
+				       NULL);
+	  gtk_widget_unref (child);
+	}
+    }
 }

@@ -26,7 +26,7 @@ static void     bse_source_class_base_destroy	(BseSourceClass	*class);
 static void     bse_source_class_init		(BseSourceClass	*class);
 static void     bse_source_init			(BseSource	*source,
 						 BseSourceClass	*class);
-static void     bse_source_destroy		(BseObject	*object);
+static void     bse_source_do_shutdown		(BseObject	*object);
 static void     bse_source_calc_history		(BseSource	*source,
 						 guint		 oc_index);
 static void     bse_source_do_prepare		(BseSource	*source,
@@ -39,7 +39,7 @@ static void	bse_source_do_add_input		(BseSource	*source,
 						 guint     	 ochannel_id,
 						 guint     	 history);
 static void	bse_source_do_remove_input	(BseSource	*source,
-						 guint		 ichannel_id);
+						 guint		 input_index);
 
 
 /* --- variables --- */
@@ -52,8 +52,8 @@ BSE_BUILTIN_TYPE (BseSource)
   static const BseTypeInfo source_info = {
     sizeof (BseSourceClass),
     
-    (BseClassInitBaseFunc) bse_source_class_base_init,
-    (BseClassDestroyBaseFunc) bse_source_class_base_destroy,
+    (BseBaseInitFunc) bse_source_class_base_init,
+    (BseBaseDestroyFunc) bse_source_class_base_destroy,
     (BseClassInitFunc) bse_source_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -110,7 +110,7 @@ bse_source_class_init (BseSourceClass *class)
   parent_class = bse_type_class_peek (BSE_TYPE_ITEM);
   object_class = BSE_OBJECT_CLASS (class);
   
-  object_class->destroy = bse_source_destroy;
+  object_class->shutdown = bse_source_do_shutdown;
 
   class->prepare = bse_source_do_prepare;
   class->calc_chunk = NULL;
@@ -148,7 +148,7 @@ bse_source_init (BseSource      *source,
 }
 
 static void
-bse_source_destroy (BseObject *object)
+bse_source_do_shutdown (BseObject *object)
 {
   BseSource *source;
   guint i;
@@ -160,7 +160,7 @@ bse_source_destroy (BseObject *object)
   g_return_if_fail (!BSE_SOURCE_PREPARED (source));
 
   while (source->n_inputs)
-    BSE_SOURCE_GET_CLASS (source)->remove_input (source, 1);
+    BSE_SOURCE_GET_CLASS (source)->remove_input (source, source->n_inputs - 1);
 
   g_free (source->inputs);
   
@@ -176,8 +176,8 @@ bse_source_destroy (BseObject *object)
     }
   g_free (source->ochannels);
 
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' shutdown handler */
+  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
 guint
@@ -411,6 +411,7 @@ bse_source_cycle (BseSource *source)
 {
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
+  g_return_if_fail (!BSE_OBJECT_DESTROYED (source));
   
   bse_object_ref (BSE_OBJECT (source));
   BSE_SOURCE_GET_CLASS (source)->cycle (source);
@@ -482,6 +483,8 @@ bse_source_set_input (BseSource *source,
   g_return_val_if_fail (BSE_SOURCE_HAS_INPUT (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_SOURCE (input), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_SOURCE_HAS_OUTPUT (input), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (!BSE_OBJECT_DESTROYED (source), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (!BSE_OBJECT_DESTROYED (input), BSE_ERROR_INTERNAL);
   
   class = BSE_SOURCE_GET_CLASS (source);
   input_class = BSE_SOURCE_GET_CLASS (input);
@@ -521,12 +524,14 @@ bse_source_do_add_input (BseSource *source,
 			 guint      ochannel_id,
 			 guint      history)
 {
-  source->inputs = g_renew (BseSourceInput, source->inputs, source->n_inputs + 1);
-  source->inputs[source->n_inputs].ichannel_id = ichannel_id;
-  source->inputs[source->n_inputs].history = history;
-  source->inputs[source->n_inputs].source = input;
-  source->inputs[source->n_inputs].ochannel_id = ochannel_id;
-  source->n_inputs++;
+  guint i = source->n_inputs;
+
+  source->n_inputs += 1;
+  source->inputs = g_renew (BseSourceInput, source->inputs, source->n_inputs);
+  source->inputs[i].ichannel_id = ichannel_id;
+  source->inputs[i].history = history;
+  source->inputs[i].source = input;
+  source->inputs[i].ochannel_id = ochannel_id;
   
   input->outputs = g_slist_prepend (input->outputs, source);
 
@@ -550,7 +555,7 @@ bse_source_remove_input (BseSource *source,
     if (source->inputs[i].source == input)
       {
 	bse_object_ref (BSE_OBJECT (source));
-        BSE_SOURCE_GET_CLASS (source)->remove_input (source, i + 1);
+        BSE_SOURCE_GET_CLASS (source)->remove_input (source, i);
 	bse_object_unref (BSE_OBJECT (source));
 
 	return TRUE;
@@ -561,16 +566,15 @@ bse_source_remove_input (BseSource *source,
 
 static void
 bse_source_do_remove_input (BseSource *source,
-			    guint      ichannel_id)
+			    guint      input_index)
 {
   BseSource *input;
-  guint i = ichannel_id - 1;
 
-  input = source->inputs[i].source;
+  input = source->inputs[input_index].source;
 
   source->n_inputs--;
-  if (i < source->n_inputs)
-    source->inputs[i] = source->inputs[source->n_inputs];
+  if (input_index < source->n_inputs)
+    source->inputs[input_index] = source->inputs[source->n_inputs];
 
   input->outputs = g_slist_remove (input->outputs, source);
 
@@ -597,9 +601,22 @@ bse_source_clear_ichannel (BseSource *source,
   for (i = 0; i < source->n_inputs; i++)
     if (source->inputs[i].ichannel_id == ichannel_id)
       {
-	BSE_SOURCE_GET_CLASS (source)->remove_input (source, i + 1);
+	BSE_SOURCE_GET_CLASS (source)->remove_input (source, i);
 	break;
       }
+
+  bse_object_unref (BSE_OBJECT (source));
+}
+
+void
+bse_source_clear_ichannels (BseSource *source)
+{
+  g_return_if_fail (BSE_IS_SOURCE (source));
+
+  bse_object_ref (BSE_OBJECT (source));
+
+  while (source->n_inputs)
+    BSE_SOURCE_GET_CLASS (source)->remove_input (source, source->n_inputs - 1);
 
   bse_object_unref (BSE_OBJECT (source));
 }

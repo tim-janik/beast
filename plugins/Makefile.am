@@ -3,7 +3,10 @@
 #
 ## Makefile.am for BSE Plugins
 
-INCLUDES = -I$(top_srcdir) $(BSE_CFLAGS)
+SUBDIRS = icons
+
+INCLUDES += -I$(top_srcdir) $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
+INCLUDES += -DBSE_PLUGIN_FALLBACK="\"$(strip $(basename $(<F)))\""
 
 # install plugins under:
 plugindir = $(bselibdir)/plugins
@@ -12,7 +15,7 @@ plugindir = $(bselibdir)/plugins
 plugin_libs = $(BSE_LIBS) -lm
 
 # create plugin list
-Makefile.plugins: $(srcdir)/listplugins.sh *.c
+Makefile.plugins: $(srcdir)/listplugins.sh *.c Makefile.am
 	$(srcdir)/listplugins.sh *.c >$@
 
 EXTRA_DIST += $(strip \

@@ -58,8 +58,8 @@ BSE_BUILTIN_TYPE (BseSuper)
   static const BseTypeInfo super_info = {
     sizeof (BseSuperClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_super_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

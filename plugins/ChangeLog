@@ -1,5 +1,31 @@
+Fri Oct 15 00:25:44 1999  Tim Janik  <timj@gtk.org>
+
+	* icons/Makefile.am: 
+	* icons/Makefile.icons: setup ./icons subdirectory.
+
+Thu Oct 14 23:14:16 1999  Tim Janik  <timj@gtk.org>
+
+	(over the last few days):
+
+	* Makefile.am: specify a logging domain and a fallback plugin
+	name through preprocessor macros upon compilation.
+
+	* added a test-object plugin to prove object-type imports are
+	actually possible.
+
+	* added ability to type registration to specify pixdata buffers
+	to create icons from.
+
+	* shuffled initialization fields for procedures so categories
+	go along with (newly) specified pixdata to create icons from.
+	the prefered pixdata format is actually run-length-encoded
+	macro-ized output of the gimp's c-source file export.
+
+	* testos.c: added some more testobjects, all sources. test expose
+	new categories and icons.
+
 Sun Jun 27 10:11:37 1999  Tim Janik  <timj@gtk.org>
 
 	* Makefile.plugins: ugh, oh. all the time this file was empty and
 	wouldn't get remade because of CVS stamps. now it has contents and
-	actually compiles (and installs) the plugins.
+	actually compiles (and installs) the (test) procedure plugins.

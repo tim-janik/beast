@@ -38,8 +38,8 @@ BSE_BUILTIN_TYPE (BseEffectFineTune)
   static const BseTypeInfo effect_info = {
     sizeof (BseEffectClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_effect_fine_tune_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

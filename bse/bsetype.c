@@ -15,141 +15,161 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bsetype.h"
+#include        "bsetype.h"
 
-#include	"bseenums.h"
-#include	"bseplugin.h"
-#include	<string.h>
+#include        "bseenums.h"
+#include        "bseplugin.h"
+#include        <string.h>
 
-/* WARNING: some functions (*_inv variants and non-static ones) invalidate
- * all TypeNode* pointers, if external functions/callbacks are called, _all_
- * type nodes have to be looked up again.
- * this also affects most of the struct TypeNode fields, e.g. ->supers,
- * ->children or ->ifaces, as all those memory portions can get realloc()ed
- * during callback invokation.
+/* FIXME: don't worry about ref_count in destructors, the ref_count is
+ * zero already and thus _ref and _unref functions will fail anyways
+ * FIXME: interface should be called tables
+ * FIXME: s/object/tstruct/ inside type system (maybe use tobject, but not BseObject)
  */
 
-#define TYPE_NODES_BLOCK_SIZE	(1)	/* FIXME: 16 */
+/* WARNING: some functions (some internal variants and non-static ones)
+ * invalidate data potions of the TypeNodes. if external functions/callbacks
+ * are called, pointers to memory maintained by TypeNodes have to be looked up
+ * again. this affects most of the struct TypeNode fields, e.g. ->children or
+ * ->ifaces (not ->supers[] as of recently), as all those memory portions can
+ * get realloc()ed during callback invocation.
+ */
 
-#define	IFACE_PARENT_INFO	((BseInterfaceInfo*) 42)
+#define TYPE_NODES_BLOCK_SIZE   (1)     /* FIXME: 16 */
 
-typedef struct _TypeNode	TypeNode;
-typedef struct _IFaceData	IFaceData;
-typedef struct _ClassedData	ClassedData;
-typedef struct _ObjectData	ObjectData;
-typedef union  _TypeData	TypeData;
-typedef struct _IFaceEntry	IFaceEntry;
+#define IFACE_PARENT_INFO       ((BseInterfaceInfo*) 41)
+
+typedef struct _TypeNode        TypeNode;
+typedef struct _CommonData      CommonData;
+typedef struct _IFaceData       IFaceData;
+typedef struct _ClassedData     ClassedData;
+typedef struct _ObjectData      ObjectData;
+typedef union  _TypeData        TypeData;
+typedef struct _IFaceEntry      IFaceEntry;
 
 struct _TypeNode
 {
   BsePlugin  *plugin;
-  GQuark      qname;
   guint       n_supers : 7;
   guint       n_children : 12;
   guint       n_ifaces : 9;
-  guint	      is_procedure_type : 1;
-  guint	      is_iface : 1;
-  guint	      is_classed : 1;
-  guint	      is_object : 1;
-  BseType    *supers;
-  BseType    *children;	/* for ifaces, these are the conforming objects */
+  guint       is_procedure_type : 1;
+  guint       is_iface : 1;
+  guint       is_classed : 1;
+  guint       is_object : 1;
+  BseType    *children; /* for ifaces, these are the conforming objects */
   IFaceEntry *ifaces;
+  GQuark      qname;
   GQuark      qblurb;
   TypeData   *data;
+  BseType     supers[1]; /* flexible array */
 };
-#define	MAX_N_SUPERS	127
-#define	MAX_N_CHILDREN	4095
-#define	MAX_N_IFACES	511
+#define SIZEOF_BASE_TYPE_NODE()    (G_STRUCT_OFFSET (TypeNode, supers))
+
+#define MAX_N_SUPERS    127
+#define MAX_N_CHILDREN  4095
+#define MAX_N_IFACES    511
+
+struct _CommonData
+{
+  guint                   ref_count;
+  guint                   last_ref_handler;
+};
 struct _IFaceData
 {
-  guint			  ref_count;
-  guint			  class_size;
-  BseClassInitBaseFunc	  class_init_base;
-  BseClassDestroyBaseFunc class_destroy_base;
+  CommonData         common_data;
+  guint              vtable_size;
+  BseBaseInitFunc    vtable_init_base;
+  BseBaseDestroyFunc vtable_destroy_base;
 };
 struct _ClassedData
 {
-  guint			  ref_count;
-  guint			  class_size;
-  BseClassInitBaseFunc    class_init_base;
-  BseClassDestroyBaseFunc class_destroy_base;
-  BseClassInitFunc        class_init;
-  BseClassDestroyFunc     class_destroy;
-  gpointer                class_data;
+  CommonData          common_data;
+  guint               class_size;
+  BseBaseInitFunc     class_init_base;
+  BseBaseDestroyFunc  class_destroy_base;
+  BseClassInitFunc    class_init;
+  BseClassDestroyFunc class_destroy;
+  gconstpointer       class_data;
   
-  gpointer		  class;
+  gpointer                class;
 };
 struct _ObjectData
 {
-  guint			  ref_count;
-  guint			  class_size;
-  BseClassInitBaseFunc    class_init_base;
-  BseClassDestroyBaseFunc class_destroy_base;
-  BseClassInitFunc        class_init;
-  BseClassDestroyFunc     class_destroy;
-  gpointer                class_data;
+  CommonData          common_data;
+  guint               class_size;
+  BseBaseInitFunc     class_init_base;
+  BseBaseDestroyFunc  class_destroy_base;
+  BseClassInitFunc    class_init;
+  BseClassDestroyFunc class_destroy;
+  gconstpointer       class_data;
   
-  gpointer		  class;
+  gpointer            class;
   
-  guint16                 object_size;
-  guint16                 n_preallocs;
-  BseObjectInitFunc       object_init;
+  guint16             object_size;
+  guint16             n_preallocs;
+  BseObjectInitFunc   object_init;
   
-  GMemChunk		 *mem_chunk;
+  GMemChunk          *mem_chunk;
 };
 union _TypeData
 {
-  guint			 ref_count;
-  ObjectData		 object;
-  ClassedData		 classed;
-  IFaceData		 iface;
+  guint                  ref_count;
+  CommonData             common;
+  ObjectData             object;
+  ClassedData            classed;
+  IFaceData              iface;
 };
 struct _IFaceEntry
 {
   BseType iface;
   BseInterfaceInfo *info;
-  BseTypeInterfaceClass *class;
+  BseTypeInterface *vtable;
 };
 
 
 /* --- prototypes --- */
-static inline gchar*	type_descriptive_name		(BseType	 type);
-static inline IFaceEntry* type_lookup_iface_entry	(TypeNode	*node,
-							 TypeNode	*iface);
-static TypeNode*	type_node_new_inv		(BseType	 parent_type,
-							 const gchar	*name,
-							 const gchar	*blurb,
-							 BsePlugin	*plugin);
-static void		type_class_init_inv		(BseType	 type,
-							 BseTypeClass	*pclass);
-static void		type_class_destroy_inv		(TypeNode	*node);
-static void		type_iface_class_init_inv	(BseType	 object_type,
-							 BseType	 interface_type);
-static void		type_iface_class_destroy_inv	(TypeNode	*node,
-							 IFaceEntry	*entry);
-static void		type_data_make_inv		(TypeNode	*node,
-							 const BseTypeInfo *info);
-static void		type_data_blow_inv		(BseType	 type);
-static void		type_iface_entry_info_make_inv	(TypeNode	*node,
-							 IFaceEntry	*entry,
-							 BseInterfaceInfo *info);
-static void		type_iface_entry_info_blow_inv	(BseType	 object_type,
-							 BseType	 iface_type);
+static inline gchar*    type_descriptive_name           (BseType         type);
+static inline IFaceEntry* type_lookup_iface_entry       (TypeNode       *node,
+                                                         TypeNode       *iface);
+static TypeNode*        type_node_new                   (BseType         parent_type,
+                                                         const gchar    *name,
+                                                         const gchar    *blurb,
+                                                         BsePlugin      *plugin);
+static void             type_class_init                 (BseType         type,
+                                                         BseTypeClass   *pclass);
+static void             type_class_destroy              (TypeNode       *node);
+static void             type_iface_vtable_init          (BseType         object_type,
+                                                         BseType         interface_type);
+static void             type_iface_vtable_destroy       (TypeNode       *node,
+                                                         IFaceEntry     *entry);
+static void             type_data_make                  (TypeNode       *node,
+                                                         const BseTypeInfo *info);
+static void             type_data_blow                  (BseType         type);
+static void             type_iface_entry_info_make      (TypeNode       *node,
+                                                         IFaceEntry     *entry,
+                                                         BseInterfaceInfo *info);
+static void             type_iface_entry_info_blow      (BseType         object_type,
+                                                         BseType         iface_type);
+static void             bse_type_class_lastref          (gpointer        bse_class);
 
 
 /* --- type nodes --- */
-static GHashTable	*type_nodes_ht = NULL;
-static TypeNode		*type_nodes = NULL;
-static guint		 n_type_nodes = 0;
+static GHashTable       *type_nodes_ht = NULL;
 static GSList           *bse_classes = NULL;
+static TypeNode        **bse_type_nodes = NULL;
+static guint             bse_n_type_nodes = 0;
 
-#define LOOKUP_TYPE_NODE(__n, type)	{ \
-  BseType __t = BSE_TYPE_SEQNO (type); \
-  __n = __t && __t <= n_type_nodes ? type_nodes + __t - 1 : (TypeNode*) 0; \
+static inline TypeNode*
+LOOKUP_TYPE_NODE (register BseType utype)
+{
+  register BseType type = BSE_TYPE_SEQNO (utype);
+
+  return type < bse_n_type_nodes ? bse_type_nodes[type] : (TypeNode*) NULL;
 }
-#define NODE_PARENT_TYPE(node)	(node->supers[1])
-#define	NODE_TYPE(node)		(node->supers[0])
-#define	NODE_NAME(node)		(g_quark_to_string (node->qname))
+#define NODE_PARENT_TYPE(node)  (node->supers[1])
+#define NODE_TYPE(node)         (node->supers[0])
+#define NODE_NAME(node)         (g_quark_to_string (node->qname))
 
 
 /* --- functions --- */
@@ -161,7 +181,7 @@ bse_type_debug (void)
       GSList *slist;
 
       for (slist = bse_classes; slist; slist = slist->next)
-	g_print ("BSE: stale class: `%s'\n", BSE_CLASS_NAME (slist->data));
+        g_print ("BSE: stale class: `%s'\n", BSE_CLASS_NAME (slist->data));
     }
 }
 
@@ -174,7 +194,7 @@ type_descriptive_name (BseType type)
     {
       name = bse_type_name (type);
       if (!name)
-	name = "(unknown)";
+        name = "(unknown)";
     }
   else
     name = "(invalid)";
@@ -183,8 +203,8 @@ type_descriptive_name (BseType type)
 }
 
 static inline IFaceEntry*
-type_lookup_iface_entry (TypeNode	*node,
-			 TypeNode	*iface)
+type_lookup_iface_entry (TypeNode       *node,
+                         TypeNode       *iface)
 {
   if (iface->is_iface && node->n_ifaces)
     {
@@ -197,137 +217,118 @@ type_lookup_iface_entry (TypeNode	*node,
       iface_type = NODE_TYPE (iface);
       
       do
-	{
-	  guint i;
-	  IFaceEntry *check;
-	  
-	  i = (n_ifaces + 1) / 2;
-	  check = ifaces + i;
-	  if (iface_type == check->iface)
-	    return check;
-	  else if (iface_type > check->iface)
-	    {
-	      n_ifaces -= i;
-	      ifaces = check;
-	    }
-	  else if (iface_type < check->iface)
-	    n_ifaces = i - 1;
-	}
+        {
+          guint i;
+          IFaceEntry *check;
+          
+          i = (n_ifaces + 1) / 2;
+          check = ifaces + i;
+          if (iface_type == check->iface)
+            return check;
+          else if (iface_type > check->iface)
+            {
+              n_ifaces -= i;
+              ifaces = check;
+            }
+          else if (iface_type < check->iface)
+            n_ifaces = i - 1;
+        }
       while (n_ifaces);
     }
   
   return NULL;
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static TypeNode*
-type_node_new_inv (BseType	parent_type,
-		   const gchar *name,
-		   const gchar *blurb,
-		   BsePlugin   *plugin)
+type_node_new (BseType      parent_type,
+	       const gchar *name,
+	       const gchar *blurb,
+	       BsePlugin   *plugin)
 {
-  static guint n_free_type_nodes = 0;
+  static guint n_type_slots = 0;
+  TypeNode *pnode;
   TypeNode *node;
-  
-  if (!n_free_type_nodes)
+  guint n_supers;
+  BseType type;
+
+  while (n_type_slots <= bse_n_type_nodes)
     {
-      guint size;
-      
-      size = n_type_nodes + TYPE_NODES_BLOCK_SIZE;
-      size *= sizeof (TypeNode);
-      if (0)
-	{
-	  guint i;
-	  
-	  /* nearest pow */
-	  while (i < size)
-	    i <<= 1;
-	  size = i;
-	}
-      
-      type_nodes = g_realloc (type_nodes, size);
-      
-      n_free_type_nodes = size / sizeof (TypeNode) - n_type_nodes;
-      
-      memset (type_nodes + n_type_nodes, 0, n_free_type_nodes * sizeof (TypeNode));
+      n_type_slots += TYPE_NODES_BLOCK_SIZE;
+      bse_type_nodes = g_renew (TypeNode*, bse_type_nodes, n_type_slots);
     }
   
-  node = type_nodes + n_type_nodes;
-  n_type_nodes++;
-  n_free_type_nodes--;
-  
-  node->plugin = plugin;
-  node->qname = g_quark_from_string (name);
-  node->data = NULL;
-  node->n_children = 0;
-  node->children = NULL;
-  node->qblurb = blurb ? g_quark_from_string (blurb) : 0;
-  if (!parent_type)
+  if (parent_type)
     {
-      node->n_supers = 0;
-      node->supers = g_new0 (BseType, 2);
-      node->supers[0] = n_type_nodes;
+      pnode = LOOKUP_TYPE_NODE (parent_type);
+      g_assert (pnode->n_supers < MAX_N_SUPERS);
+      g_assert (pnode->n_children < MAX_N_CHILDREN);
+      n_supers = pnode->n_supers + 1;
+    }
+  else
+    {
+      pnode = NULL;
+      n_supers = 0;
+    }
+
+  node = g_malloc0 (SIZEOF_BASE_TYPE_NODE () + sizeof (BseType[1 + n_supers + 1]));
+  node->n_supers = n_supers;
+
+  type = bse_n_type_nodes;
+  bse_type_nodes[bse_n_type_nodes++] = node;
+
+  if (!pnode)
+    {
+      node->supers[0] = type;
       node->supers[1] = 0;
       node->n_ifaces = 0;
-      node->is_procedure_type = BSE_TYPE_IS_PROCEDURE (NODE_TYPE (node));
-      node->is_iface = NODE_TYPE (node) == BSE_TYPE_INTERFACE;
-      node->is_classed = BSE_TYPE_IS_CLASSED (NODE_TYPE (node));
-      node->is_object = NODE_TYPE (node) == BSE_TYPE_OBJECT;
+      node->is_procedure_type = BSE_TYPE_IS_PROCEDURE (type);
+      node->is_iface = type == BSE_TYPE_INTERFACE;
+      node->is_classed = BSE_TYPE_IS_CLASSED (type);
+      node->is_object = type == BSE_TYPE_OBJECT;
       node->ifaces = NULL;
     }
   else
     {
-      BseType type;
-      BseType *type_p;
-      TypeNode *pnode;
       guint i;
       
-      LOOKUP_TYPE_NODE (pnode, parent_type);
-      g_assert (pnode->n_supers < MAX_N_SUPERS);
-      node->n_supers = pnode->n_supers + 1;
-      node->supers = g_new0 (BseType, node->n_supers + 1); /* FIXME, allocate these from one block */
-      node->supers[0] = BSE_FUNDAMENTAL_TYPE (NODE_TYPE (pnode)) | n_type_nodes << 8;
+      type = BSE_FUNDAMENTAL_TYPE (NODE_TYPE (pnode)) | type << 8;
+      node->supers[0] = type;
       node->n_ifaces = pnode->n_ifaces;
       node->is_procedure_type = pnode->is_procedure_type;
       node->is_classed = pnode->is_classed;
       node->is_iface = pnode->is_iface;
       node->is_object = pnode->is_object;
-      
-      type_p = node->supers + 1;
-      type = parent_type;
-      while (type)
-	{
-	  TypeNode *tnode;
-	  
-	  *(type_p++) = type;
-	  
-	  LOOKUP_TYPE_NODE (tnode, type);
-	  type = NODE_PARENT_TYPE (tnode);
-	}
+
+      memcpy (node->supers + 1, pnode->supers, sizeof (BseType[1 + pnode->n_supers + 1]));
       
       node->ifaces = g_memdup (pnode->ifaces, sizeof (pnode->ifaces[0]) * node->n_ifaces); /* FIXME */
       for (i = 0; i < node->n_ifaces; i++)
-	node->ifaces[i].info = IFACE_PARENT_INFO;
+        node->ifaces[i].info = IFACE_PARENT_INFO;
       
-      g_assert (pnode->n_children < MAX_N_CHILDREN);
       pnode->n_children++;
       pnode->children = g_renew (BseType, pnode->children, pnode->n_children);
-      pnode->children[pnode->n_children - 1] = NODE_TYPE (node);
+      pnode->children[pnode->n_children - 1] = type;
     }
   
-  g_hash_table_insert (type_nodes_ht,
-		       GUINT_TO_POINTER (node->qname),
-		       GUINT_TO_POINTER (NODE_TYPE (node)));
+  node->plugin = plugin;
+  node->qname = g_quark_from_string (name);
+  node->n_children = 0;
+  node->children = NULL;
+  node->qblurb = blurb ? g_quark_from_string (blurb) : 0;
+  node->data = NULL;
   
+  g_hash_table_insert (type_nodes_ht,
+                       GUINT_TO_POINTER (node->qname),
+                       GUINT_TO_POINTER (type));
+
   return node;
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 BseType
 bse_type_register_static (BseType            parent_type,
-			  const gchar       *type_name,
-			  const gchar       *type_blurb,
-			  const BseTypeInfo *info)
+                          const gchar       *type_name,
+                          const gchar       *type_blurb,
+                          const BseTypeInfo *info)
 {
   TypeNode *pnode;
   BseType type;
@@ -341,78 +342,77 @@ bse_type_register_static (BseType            parent_type,
       g_warning ("cannot register existing type `%s'", type_name);
       return 0;
     }
-  LOOKUP_TYPE_NODE (pnode, parent_type);
+  pnode = LOOKUP_TYPE_NODE (parent_type);
   if (!pnode)
     {
       g_warning ("cannot derive type `%s' from invalid parent type `%s'",
-		 type_name,
-		 type_descriptive_name (parent_type));
+                 type_name,
+                 type_descriptive_name (parent_type));
       return 0;
     }
   if (!pnode->is_object &&
       (info->object_size || info->n_preallocs || info->object_init))
     {
       g_warning ("cannot derive object type `%s' from non-object parent type `%s'",
-		 type_name,
-		 type_descriptive_name (parent_type));
+                 type_name,
+                 type_descriptive_name (parent_type));
       return 0;
     }
   if (!pnode->is_classed &&
       (info->class_init || info->class_destroy || info->class_data ||
-       (!pnode->is_iface && (info->class_init_base || info->class_destroy_base))))
+       (!pnode->is_iface && (info->base_init || info->base_destroy))))
     {
       g_warning ("cannot derive classed type `%s' from non-classed parent type `%s'",
-		 type_name,
-		 type_descriptive_name (parent_type));
+                 type_name,
+                 type_descriptive_name (parent_type));
       return 0;
     }
   if (pnode->is_classed)
     {
       if ((info->class_size < sizeof (BseTypeClass)) ||
-	  (pnode->data && info->class_size < pnode->data->classed.class_size))
-	{
-	  g_warning ("specified class size for type `%s' is smaller "
-		     "than the parent's type `%s' class size",
-		     type_name,
-		     type_descriptive_name (parent_type));
-	  return 0;
-	}
-      if (!pnode->is_object &&
-	  BSE_FUNDAMENTAL_TYPE (parent_type) != parent_type)
-	{
-	  g_warning ("parent type `%s' for type `%s' is not a fundamental type, "
-		     "expected `%s'",
-		     type_descriptive_name (parent_type),
-		     type_name,
-		     type_descriptive_name (BSE_FUNDAMENTAL_TYPE (parent_type)));
-	  return 0;
-	}
+          (pnode->data && info->class_size < pnode->data->classed.class_size))
+        {
+          g_warning ("specified class size for type `%s' is smaller "
+                     "than the parent type's `%s' class size",
+                     type_name,
+                     type_descriptive_name (parent_type));
+          return 0;
+        }
+      if (!pnode->is_object && BSE_FUNDAMENTAL_TYPE (parent_type) != parent_type)
+        {
+          g_warning ("parent type `%s' for type `%s' is not a fundamental type, "
+                     "expected `%s'",
+                     type_descriptive_name (parent_type),
+                     type_name,
+                     type_descriptive_name (BSE_FUNDAMENTAL_TYPE (parent_type)));
+          return 0;
+        }
     }
   else if (!pnode->is_iface)
     {
       g_warning ("cannot derive type `%s' from unclassed parent type `%s'",
-		 type_name,
-		 type_descriptive_name (parent_type));
+                 type_name,
+                 type_descriptive_name (parent_type));
       return 0;
     }
   else if (parent_type != BSE_TYPE_INTERFACE)
     {
       g_warning ("cannot derive from interface types (`%s' from `%s')",
-		 type_name,
-		 NODE_NAME (pnode));
+                 type_name,
+                 NODE_NAME (pnode));
       return 0;
     }
-  else if (info->class_size < sizeof (BseTypeInterfaceClass))
+  else if (info->class_size < sizeof (BseTypeInterface))
     {
       g_warning ("specified class size for type `%s' is smaller "
-		 "than the parent's `BseTypeInterfaceClass' class size",
-		 type_name);
+                 "than the parent's `BseTypeInterface' size",
+                 type_name);
       return 0;
     }
   
-  pnode = type_node_new_inv (parent_type, type_name, type_blurb, NULL);
+  pnode = type_node_new (parent_type, type_name, type_blurb, NULL);
   type = NODE_TYPE (pnode);
-  type_data_make_inv (pnode, info);
+  type_data_make (pnode, info);
   
   return type;
 }
@@ -422,24 +422,24 @@ bse_type_class_peek (BseType type)
 {
   TypeNode *node;
   
-  LOOKUP_TYPE_NODE (node, type);
-  if (node && node->data && node->is_classed)
+  node = LOOKUP_TYPE_NODE (type);
+  if (node && node->is_classed && node->data)
     return node->data->classed.class;
   else
     return NULL;
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 gpointer
 bse_type_class_ref (BseType type)
 {
   TypeNode *node;
   
-  /* attempt a fast, successfull lookup first to optimize
-   * for the common code path
+  /* attempt a fast, successfull lookup first,
+   * to optimize for the common code path
    */
-  LOOKUP_TYPE_NODE (node, type);
-  if (node && node->data && node->data->classed.class)
+  node = LOOKUP_TYPE_NODE (type);
+  if (node && node->is_classed && node->data && node->data->classed.class &&
+      !node->data->common.last_ref_handler)
     {
       node->data->ref_count++;
       
@@ -451,52 +451,55 @@ bse_type_class_ref (BseType type)
   if (!node || !node->is_classed)
     {
       g_warning ("cannot retrive class for invalid (unclassed) type `%s'",
-		 type_descriptive_name (type));
+                 type_descriptive_name (type));
       return NULL;
     }
-  
+
   if (!node->data)
     {
-      type_data_make_inv (node, NULL);
-      LOOKUP_TYPE_NODE (node, type);
+      type_data_make (node, NULL);
       g_assert (node->data != NULL);
     }
-  
-  node->data->ref_count++;
+
+  if (node->data->classed.class)
+    {
+      g_return_val_if_fail (node->data->ref_count > 0, NULL);
+      
+      /* FIXME: last_ref_handler */
+    }
   
   if (!node->data->classed.class)
     {
       BseType ptype;
       BseTypeClass *pclass;
       
+      g_assert (node->data->ref_count == 0);
+
       ptype = NODE_PARENT_TYPE (node);
-      if (ptype)
-	pclass = bse_type_class_ref (ptype); /* _inv! */
-      else
-	pclass = NULL;
+      pclass = ptype ? bse_type_class_ref (ptype) : NULL;
       
-      type_class_init_inv (type, pclass);
-      LOOKUP_TYPE_NODE (node, type);
+      type_class_init (type, pclass);
     }
   
+  node->data->ref_count++;
+
   return node->data->classed.class;
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static void
-type_class_init_inv (BseType       type,
-		     BseTypeClass *pclass)
+type_class_init (BseType       type,
+		 BseTypeClass *pclass)
 {
   TypeNode *node;
   BseTypeClass *class;
   TypeNode *bnode;
   GSList *slist;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   
   g_assert (node->is_classed && node->data &&
-	    node->data->classed.class_size &&
-	    !node->data->classed.class);
+            node->data->classed.class_size &&
+            !node->data->classed.class);
   
   class = g_malloc0 (node->data->classed.class_size);
   node->data->classed.class = class;
@@ -507,14 +510,12 @@ type_class_init_inv (BseType       type,
     {
       TypeNode *pnode;
       
-      LOOKUP_TYPE_NODE (pnode, pclass->bse_type);
+      pnode = LOOKUP_TYPE_NODE (pclass->bse_type);
       
       if (node->data->classed.class_size < pnode->data->classed.class_size)
-	{
-	  g_error ("specified class size for type `%s' is smaller "
-		   "than the parent's type `%s' class size",
-		   NODE_NAME (node), NODE_NAME (pnode));
-	}
+        g_error ("specified class size for type `%s' is smaller "
+                 "than the parent's type `%s' class size",
+                 NODE_NAME (node), NODE_NAME (pnode));
       
       memcpy (class, pclass, pnode->data->classed.class_size);
     }
@@ -529,56 +530,47 @@ type_class_init_inv (BseType       type,
   while (bnode)
     {
       if (bnode->data->classed.class_init_base)
-	slist = g_slist_prepend (slist, bnode->data->classed.class_init_base);
-      LOOKUP_TYPE_NODE (bnode, NODE_PARENT_TYPE (bnode));
+        slist = g_slist_prepend (slist, bnode->data->classed.class_init_base);
+      bnode = LOOKUP_TYPE_NODE (NODE_PARENT_TYPE (bnode));
     }
   if (slist)
     {
       GSList *walk;
       
       for (walk = slist; walk; walk = walk->next)
-	{
-	  BseClassInitBaseFunc class_init_base;
-	  
-	  class_init_base = walk->data;
-	  class_init_base (class);
-	}
-      LOOKUP_TYPE_NODE (node, type);
+        {
+          BseBaseInitFunc class_init_base;
+          
+          class_init_base = walk->data;
+          class_init_base (class);
+        }
       g_slist_free (slist);
     }
   
   if (node->data->classed.class_init)
-    node->data->classed.class_init (class, node->data->classed.class_data);
+    node->data->classed.class_init (class, (gpointer) node->data->classed.class_data);
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static void
-type_class_destroy_inv (TypeNode *node)
+type_class_destroy (TypeNode *node)
 {
   BseType type;
   BseTypeClass *class;
   TypeNode *bnode;
-  guint ref_count;
   
-  g_assert (node->is_classed && node->data && node->data->classed.class);
+  g_assert (node->is_classed && node->data && node->data->classed.class &&
+            node->data->ref_count == 0);
   
   type = NODE_TYPE (node);
-  
   class = node->data->classed.class;
-  
-  ref_count = node->data->ref_count;
-  
+
   bse_classes = g_slist_remove (bse_classes, class);
   g_print ("BSE: destroying %sClass `%s'\n",
-	   type_descriptive_name (BSE_FUNDAMENTAL_TYPE (type)),
-	   type_descriptive_name (type));
+           type_descriptive_name (BSE_FUNDAMENTAL_TYPE (type)),
+           type_descriptive_name (type));
   
-  LOOKUP_TYPE_NODE (node, type);
   if (node->data->classed.class_destroy)
-    {
-      node->data->classed.class_destroy (class, node->data->classed.class_data);
-      LOOKUP_TYPE_NODE (node, type);
-    }
+    node->data->classed.class_destroy (class, (gpointer) node->data->classed.class_data);
 
   /* call all base class destruction functions in descending order
    */
@@ -586,24 +578,18 @@ type_class_destroy_inv (TypeNode *node)
   while (bnode)
     {
       if (bnode->data->classed.class_destroy_base)
-	bnode->data->classed.class_destroy_base (class);
-      LOOKUP_TYPE_NODE (bnode, NODE_PARENT_TYPE (bnode));
+        bnode->data->classed.class_destroy_base (class);
+      bnode = LOOKUP_TYPE_NODE (NODE_PARENT_TYPE (bnode));
     }
   
   node->data->classed.class = NULL;
   
-  if (ref_count != node->data->ref_count)
-    {
-      g_warning ("class destructors for `%s' leak references",
-		 NODE_NAME (node));
-      node->data->ref_count = ref_count;
-    }
+  g_return_if_fail (node->data->ref_count == 0);
   
   class->bse_type = 0;
   g_free (class);
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 void
 bse_type_class_unref (gpointer bse_class)
 {
@@ -614,22 +600,13 @@ bse_type_class_unref (gpointer bse_class)
   
   /* optimize for common code path
    */
-  LOOKUP_TYPE_NODE (node, class->bse_type);
-  if (node)
+  node = LOOKUP_TYPE_NODE (class->bse_type);
+  if (node && node->is_classed && node->data && node->data->ref_count > 1 &&
+      !node->data->common.last_ref_handler)
     {
-      /* forward interface classes */
-      if (node->is_iface)
-	{
-	  bse_type_interface_class_unref (bse_class);
-	  
-	  return;
-	}
-      else if (node->data && node->data->ref_count > 1)
-	{
-	  node->data->ref_count--;
-	  
-	  return;
-	}
+      node->data->ref_count--;
+      
+      return;
     }
   
   /* now do the moron checks
@@ -637,7 +614,7 @@ bse_type_class_unref (gpointer bse_class)
   if (!node || !node->is_classed || !node->data || node->data->classed.class != class)
     {
       g_warning ("cannot unreference class of invalid (unclassed) type `%s'",
-		 type_descriptive_name (class->bse_type));
+                 type_descriptive_name (class->bse_type));
       return;
     }
   g_return_if_fail (node->data->ref_count > 0);
@@ -646,36 +623,64 @@ bse_type_class_unref (gpointer bse_class)
   
   if (!node->data->ref_count)
     {
-      BseType type;
+      node->data->ref_count++;
+
+      /* FIXME: last_ref_handler */
+      bse_type_class_lastref (class);
+    }
+}
+
+static void
+bse_type_class_lastref (gpointer bse_class)
+{
+  TypeNode *node;
+  BseTypeClass *class = bse_class;
+  
+  g_return_if_fail (bse_class != NULL);
+  
+  /* first, do the moron checks
+   */
+  node = LOOKUP_TYPE_NODE (class->bse_type);
+  if (!node || !node->is_classed || !node->data || node->data->classed.class != class)
+    {
+      g_warning ("cannot unreference class of invalid (unclassed) type `%s'",
+                 type_descriptive_name (class->bse_type));
+      return;
+    }
+  g_return_if_fail (node->data->ref_count > 0);
+
+  node->data->ref_count--;
+  if (!node->data->ref_count)
+    {
       BseType ptype;
 
+      /* FIXME: last_ref_handler */
+      
       if (node->is_object && node->data->object.mem_chunk)
-	{
-	  g_mem_chunk_destroy (node->data->object.mem_chunk);
-	  node->data->object.mem_chunk = NULL;
-	}
+        {
+          g_mem_chunk_destroy (node->data->object.mem_chunk);
+          node->data->object.mem_chunk = NULL;
+        }
       
-      type = NODE_TYPE (node);
       ptype = NODE_PARENT_TYPE (node);
-      
-      type_class_destroy_inv (node);
-      type_data_blow_inv (type);
+
+      type_class_destroy (node);
+      type_data_blow (NODE_TYPE (node));
       
       /* unreference parent class
        */
       if (ptype)
-	{
-	  LOOKUP_TYPE_NODE (node, ptype);
-	  bse_type_class_unref (node->data->classed.class);
-	}
+        {
+          node = LOOKUP_TYPE_NODE (ptype);
+          bse_type_class_unref (node->data->classed.class);
+        }
     }
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 void
 bse_type_add_interface (BseType           object_type,
-			BseType           interface_type,
-			BseInterfaceInfo *info)
+                        BseType           interface_type,
+                        BseInterfaceInfo *info)
 {
   BseType parent_type;
   TypeNode *node;
@@ -684,21 +689,21 @@ bse_type_add_interface (BseType           object_type,
   g_return_if_fail (BSE_TYPE_IS_OBJECT (object_type));
   g_return_if_fail (bse_type_parent (interface_type) == BSE_TYPE_INTERFACE);
   
-  LOOKUP_TYPE_NODE (node, object_type);
+  node = LOOKUP_TYPE_NODE (object_type);
   if (!node || !node->is_object)
     {
-      g_warning ("cannot add interfaces to invalid object type `%s'",
-		 type_descriptive_name (object_type));
+      g_warning ("cannot add interfaces to invalid (non-object) type `%s'",
+                 type_descriptive_name (object_type));
       return;
     }
   parent_type = NODE_PARENT_TYPE (node);
   
-  LOOKUP_TYPE_NODE (iface, interface_type);
+  iface = LOOKUP_TYPE_NODE (interface_type);
   if (!iface || !iface->is_iface || !iface->data)
     {
       g_warning ("cannot add invalid interface `%s' to type `%s'",
-		 type_descriptive_name (interface_type),
-		 NODE_NAME (node));
+                 type_descriptive_name (interface_type),
+                 NODE_NAME (node));
       return;
     }
   
@@ -707,16 +712,16 @@ bse_type_add_interface (BseType           object_type,
   else
     {
       if (iface->plugin)
-	g_return_if_fail (info == NULL);
+        g_return_if_fail (info == NULL);
       else
-	g_return_if_fail (info != NULL);
+        g_return_if_fail (info != NULL);
     }
   
   if (bse_type_conforms_to (object_type, interface_type))
     {
       g_warning ("type `%s' already conforms to interface `%s'",
-		 NODE_NAME (node),
-		 type_descriptive_name (interface_type));
+                 NODE_NAME (node),
+                 type_descriptive_name (interface_type));
     }
   else
     {
@@ -739,29 +744,29 @@ bse_type_add_interface (BseType           object_type,
       
       ifaces = node->ifaces;
       for (i = 0; i < node->n_ifaces - 1; i++)
-	if (ifaces[i].iface > interface_type)
-	  break;
+        if (ifaces[i].iface > interface_type)
+          break;
       
       g_memmove (ifaces + i, ifaces + i + 1, sizeof (IFaceEntry) * (node->n_ifaces - i - 1));
       ifaces[i].iface = interface_type;
-      ifaces[i].class = NULL;
+      ifaces[i].vtable = NULL;
       
-      if (info && info != IFACE_PARENT_INFO)
-	{
-	  ifaces[i].info = NULL;
-	  type_iface_entry_info_make_inv (node, ifaces + i, info);
-	}
+      if (!info || info == IFACE_PARENT_INFO)
+        ifaces[i].info = info;
       else
-	ifaces[i].info = IFACE_PARENT_INFO;
+        {
+          ifaces[i].info = NULL;
+          type_iface_entry_info_make (node, ifaces + i, info);
+        }
       
       for (i = 0; i < node->n_children; i++)
-	bse_type_add_interface (node->children[i], interface_type, IFACE_PARENT_INFO);
+        bse_type_add_interface (node->children[i], interface_type, IFACE_PARENT_INFO);
     }
 }
 
 gpointer
-bse_type_interface_class_peek (gpointer object_class,
-			       BseType  iface_type)
+bse_type_interface_peek (gpointer object_class,
+                         BseType  iface_type)
 {
   TypeNode *node;
   TypeNode *iface;
@@ -769,24 +774,23 @@ bse_type_interface_class_peek (gpointer object_class,
   
   g_return_val_if_fail (object_class != NULL, NULL);
   
-  LOOKUP_TYPE_NODE (node, class->bse_type);
-  LOOKUP_TYPE_NODE (iface, iface_type);
+  node = LOOKUP_TYPE_NODE (class->bse_type);
+  iface = LOOKUP_TYPE_NODE (iface_type);
   if (node && iface)
     {
       IFaceEntry *entry;
       
       entry = type_lookup_iface_entry (node, iface);
-      if (entry && entry->class)
-	return entry->class;
+      if (entry && entry->vtable)
+        return entry->vtable;
     }
   
   return NULL;
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 gpointer
-bse_type_interface_class_ref (gpointer object_class,
-			      BseType  iface_type)
+bse_type_interface_ref (gpointer object_class,
+                        BseType  iface_type)
 {
   TypeNode *node;
   TypeNode *iface;
@@ -798,273 +802,262 @@ bse_type_interface_class_ref (gpointer object_class,
   /* attempt a fast, successfull lookup first to optimize
    * for the common code path
    */
-  LOOKUP_TYPE_NODE (node, class->bse_type);
-  LOOKUP_TYPE_NODE (iface, iface_type);
+  node = LOOKUP_TYPE_NODE (class->bse_type);
+  iface = LOOKUP_TYPE_NODE (iface_type);
   if (node && iface)
     {
       entry = type_lookup_iface_entry (node, iface);
-      if (entry && entry->class)
-	{
-	  entry->class->ref_count++;
-	  
-	  return entry->class;
-	}
+      if (entry && entry->vtable && entry->vtable->ref_count) /* FIXME: last_ref_handler */
+        {
+          entry->vtable->ref_count++;
+          
+          return entry->vtable;
+        }
     }
   else
     entry = NULL;
   
-  /* now do all the moron checks, node, iface and entries are already setup
+  /* now do all the moron checks, node, iface and entry are already setup
    */
   if (!node || !node->is_object || !node->data || node->data->classed.class != object_class)
     {
-      g_warning ("cannot retrive interface class for invalid (unclassed) type `%s'",
-		 type_descriptive_name (class->bse_type));
+      g_warning ("cannot retrive interface for invalid (unclassed) type `%s'",
+                 type_descriptive_name (class->bse_type));
       return NULL;
     }
   if (!iface || !iface->is_iface)
     {
-      g_warning ("cannot retrive interface class for type `%s' from invalid interface type `%s'",
-		 type_descriptive_name (class->bse_type),
-		 type_descriptive_name (iface_type));
-      
+      g_warning ("cannot retrive interface for type `%s' from invalid interface type `%s'",
+                 type_descriptive_name (class->bse_type),
+                 type_descriptive_name (iface_type));
       return NULL;
     }
   if (!entry)
     {
-      g_warning ("cannot retrive interface class `%s' for non conforming type `%s'",
-		 type_descriptive_name (iface_type),
-		 type_descriptive_name (class->bse_type));
+      g_warning ("cannot retrive interface `%s' for non conforming type `%s'",
+                 type_descriptive_name (iface_type),
+                 type_descriptive_name (class->bse_type));
       
       return NULL;
     }
   
-  /* ok, we got no interface class, make us one
-   */
-  if (!entry->class)
+  if (entry->vtable)
+    g_return_val_if_fail (entry->vtable->ref_count > 0, NULL);
+  else
     {
       /* lookup the interface conforming node, might be a perent
        */
       while (entry->info == IFACE_PARENT_INFO)
-	{
-	  LOOKUP_TYPE_NODE (node, NODE_PARENT_TYPE (node));
-	  entry = type_lookup_iface_entry (node, iface);
-	}
-      
-      node->data->ref_count++;
+        {
+          node = LOOKUP_TYPE_NODE (NODE_PARENT_TYPE (node));
+          entry = type_lookup_iface_entry (node, iface);
+        }
+
+      /* reference class of conforming type */
+      bse_type_class_ref (NODE_TYPE (node));
       
       if (!iface->data)
-	{
-	  type_data_make_inv (iface, NULL);
-	  LOOKUP_TYPE_NODE (node, class->bse_type);
-	  LOOKUP_TYPE_NODE (iface, iface_type);
-	  g_assert (iface->data != NULL);
+        {
+          type_data_make (iface, NULL);
+          g_assert (iface->data != NULL);
           entry = type_lookup_iface_entry (node, iface);
-	}
+        }
       
       iface->data->ref_count++;
+      /* FIXME: last_ref_handler */
       
       if (!entry->info)
-	type_iface_entry_info_make_inv (node, entry, NULL);
+        type_iface_entry_info_make (node, entry, NULL);
       
-      type_iface_class_init_inv (class->bse_type, iface_type);
+      type_iface_vtable_init (class->bse_type, iface_type);
       
-      LOOKUP_TYPE_NODE (node, class->bse_type);
-      LOOKUP_TYPE_NODE (iface, iface_type);
+      node = LOOKUP_TYPE_NODE (class->bse_type);
       entry = type_lookup_iface_entry (node, iface);
     }
   
-  entry->class->ref_count++;
+  entry->vtable->ref_count++;
+  /* FIXME: last_ref_handler */
   
-  return entry->class;
+  return entry->vtable;
 }
 
 static void
-type_propagate_iface_class (TypeNode              *pnode,
-			    TypeNode              *iface,
-			    BseTypeInterfaceClass *class)
+type_propagate_iface_vtable (TypeNode         *pnode,
+                             TypeNode         *iface,
+                             BseTypeInterface *vtable)
 {
   IFaceEntry *entry;
   guint i;
   
   entry = type_lookup_iface_entry (pnode, iface);
-  entry->class = class;
+  entry->vtable = vtable;
   
   for (i = 0; i < pnode->n_children; i++)
     {
       TypeNode *node;
       
-      LOOKUP_TYPE_NODE (node, pnode->children[i]);
-      type_propagate_iface_class (node, iface, class);
+      node = LOOKUP_TYPE_NODE (pnode->children[i]);
+      type_propagate_iface_vtable (node, iface, vtable);
     }
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static void
-type_iface_class_init_inv (BseType type,
-			   BseType iface_type)
+type_iface_vtable_init (BseType type,
+			BseType iface_type)
 {
   TypeNode *node;
   TypeNode *iface;
   IFaceEntry *entry;
-  BseTypeInterfaceClass *class;
+  BseTypeInterface *vtable;
   
-  LOOKUP_TYPE_NODE (iface, iface_type);
-  LOOKUP_TYPE_NODE (node, type);
+  iface = LOOKUP_TYPE_NODE (iface_type);
+  node = LOOKUP_TYPE_NODE (type);
   entry = type_lookup_iface_entry (node, iface);
   
-  g_assert (entry && entry->class == NULL && entry->info && entry->info != IFACE_PARENT_INFO);
+  g_assert (entry && entry->vtable == NULL && entry->info && entry->info != IFACE_PARENT_INFO);
   
-  class = g_malloc0 (iface->data->iface.class_size);
-  class->bse_type = iface_type;
-  class->object_type = type;
-  class->ref_count = 0;
+  vtable = g_malloc0 (iface->data->iface.vtable_size);
+  vtable->bse_type = iface_type;
+  vtable->object_type = type;
+  vtable->ref_count = 0;
   
-  type_propagate_iface_class (node, iface, class);
+  type_propagate_iface_vtable (node, iface, vtable);
   
-  if (iface->data->iface.class_init_base)
+  if (iface->data->iface.vtable_init_base)
     {
-      iface->data->iface.class_init_base (class);
-      LOOKUP_TYPE_NODE (iface, iface_type);
-      LOOKUP_TYPE_NODE (node, type);
-      entry = type_lookup_iface_entry (node, iface);
+      iface->data->iface.vtable_init_base (vtable);
+      entry = type_lookup_iface_entry (node, iface); /* FIXME: do we need this line? */
     }
   
-  if (entry->info->iface_init)
-    entry->info->iface_init (class, entry->info->iface_data);
+  if (entry->info->interface_init)
+    entry->info->interface_init (vtable, entry->info->interface_data);
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static void
-type_iface_class_destroy_inv (TypeNode   *node,
-			      IFaceEntry *entry)
+type_iface_vtable_destroy (TypeNode   *node,
+			   IFaceEntry *entry)
 {
   BseType type;
   BseType iface_type;
   TypeNode *iface;
-  BseTypeInterfaceClass *class;
+  BseTypeInterface *vtable;
   
   type = NODE_TYPE (node);
   iface_type = entry->iface;
-  class = entry->class;
+  vtable = entry->vtable;
+  iface = LOOKUP_TYPE_NODE (iface_type);
+
+  /* FIXME: propagate NULL class *before* or *after* actuall destruction? */
+  type_propagate_iface_vtable (node, iface, NULL);
   
-  if (entry->info->iface_destroy)
+  if (entry->info->interface_destroy)
+    entry->info->interface_destroy (vtable, entry->info->interface_data);
+  
+  if (iface->data->iface.vtable_destroy_base)
+    iface->data->iface.vtable_destroy_base (vtable);
+  
+  if (vtable->ref_count != 0)
     {
-      entry->info->iface_destroy (class, entry->info->iface_data);
-      LOOKUP_TYPE_NODE (node, type);
+      g_warning ("interface `%s' destructors for `%s' leak references",
+                 NODE_NAME (iface),
+                 NODE_NAME (node));
+      vtable->ref_count = 0;
     }
   
-  LOOKUP_TYPE_NODE (iface, iface_type);
-  
-  if (iface->data->iface.class_destroy_base)
-    {
-      iface->data->iface.class_destroy_base (class);
-      LOOKUP_TYPE_NODE (node, type);
-      LOOKUP_TYPE_NODE (iface, iface_type);
-    }
-  
-  type_propagate_iface_class (node, iface, NULL);
-  
-  if (class->ref_count != 0)
-    {
-      g_warning ("interface class `%s' destructors for `%s' leak references",
-		 NODE_NAME (iface),
-		 NODE_NAME (node));
-      class->ref_count = 0;
-    }
-  
-  class->bse_type = 0;
-  class->object_type = 0;
-  g_free (class);
+  vtable->bse_type = 0;
+  vtable->object_type = 0;
+  g_free (vtable);
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 void
-bse_type_interface_class_unref (gpointer interface_class)
+bse_type_interface_unref (gpointer interface)
 {
-  BseTypeInterfaceClass *class = interface_class;
+  BseTypeInterface *vtable = interface;
   TypeNode *iface;
   TypeNode *node;
   IFaceEntry *entry;
   BseType iface_type;
   BseType type;
   
-  g_return_if_fail (interface_class != NULL);
+  g_return_if_fail (interface != NULL);
+  g_return_if_fail (vtable->ref_count > 0);
   
   /* optimize for common code path
    */
-  LOOKUP_TYPE_NODE (iface, class->bse_type);
-  if (iface && iface->is_iface && class->ref_count > 1)
+  iface = LOOKUP_TYPE_NODE (vtable->bse_type);
+  if (iface && iface->is_iface && vtable->ref_count > 1)
     {
-      class->ref_count--;
+      vtable->ref_count--;
       return;
     }
   
   /* finish lookups
    */
-  LOOKUP_TYPE_NODE (node, class->object_type);
+  node = LOOKUP_TYPE_NODE (vtable->object_type);
   if (node && iface)
     entry = type_lookup_iface_entry (node, iface);
   else
     entry = NULL;
-  iface_type = class->bse_type;
-  type = class->object_type;
+  iface_type = vtable->bse_type;
+  type = vtable->object_type;
   
   /* now do the moron checks, lookups are already performed
    */
   if (!iface || !iface->is_iface || !iface->data)
     {
       g_warning ("cannot unreference class of invalid (non-interface) type `%s'",
-		 type_descriptive_name (iface_type));
+                 type_descriptive_name (iface_type));
       return;
     }
   if (!node || !node->is_object || !node->data)
     {
-      g_warning ("cannot unreference interface class `%s' which "
-		 "contains invalid object type `%s'",
-		 type_descriptive_name (iface_type),
-		 type_descriptive_name (type));
+      g_warning ("cannot unreference interface `%s' which "
+                 "contains invalid object type `%s'",
+                 type_descriptive_name (iface_type),
+                 type_descriptive_name (type));
       return;
     }
-  if (!entry || entry->class != class ||
+  if (!entry || entry->vtable != vtable ||
       !entry->info || entry->info == IFACE_PARENT_INFO)
     {
+      /* FIXME: probably need to handle IFACE_PARENT_INFO here */
       g_warning ("cannot unreference interface class `%s' which "
-		 "is not recognized by object type `%s'",
-		 type_descriptive_name (iface_type),
-		 type_descriptive_name (type));
+                 "is not recognized by object type `%s'",
+                 type_descriptive_name (iface_type),
+                 type_descriptive_name (type));
       return;
     }
   
-  g_return_if_fail (class->ref_count > 0);
+  g_return_if_fail (vtable->ref_count > 0);
   
-  class->ref_count--;
+  vtable->ref_count--;
+
+  /* FIXME: last_ref_handler */
   
-  if (!class->ref_count)
+  if (!vtable->ref_count)
     {
       BseTypeClass *object_class;
       
       object_class = node->data->classed.class;
       
-      type_iface_class_destroy_inv (node, entry);
+      type_iface_vtable_destroy (node, entry);
       
-      type_iface_entry_info_blow_inv (type, iface_type);
-      
-      LOOKUP_TYPE_NODE (iface, iface_type);
+      type_iface_entry_info_blow (type, iface_type);
       
       iface->data->ref_count--;
       if (!iface->data->ref_count)
-	type_data_blow_inv (iface_type);
+        type_data_blow (iface_type);
       
+      /* unreference class of conforming type */
       bse_type_class_unref (object_class);
     }
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 BseType
-bse_type_register_dynamic (BseType	parent_type,
-			   const gchar *type_name,
-			   const gchar *type_blurb,
-			   BsePlugin   *plugin)
+bse_type_register_dynamic (BseType      parent_type,
+                           const gchar *type_name,
+                           const gchar *type_blurb,
+                           BsePlugin   *plugin)
 {
   TypeNode *pnode;
   BseType type;
@@ -1078,12 +1071,12 @@ bse_type_register_dynamic (BseType	parent_type,
       g_warning ("cannot register existing type `%s'", type_name);
       return 0;
     }
-  LOOKUP_TYPE_NODE (pnode, parent_type);
+  pnode = LOOKUP_TYPE_NODE (parent_type);
   if (!pnode)
     {
       g_warning ("cannot derive type `%s' from invalid parent type `%s'",
-		 type_name,
-		 type_descriptive_name (parent_type));
+                 type_name,
+                 type_descriptive_name (parent_type));
       return 0;
     }
   
@@ -1091,10 +1084,10 @@ bse_type_register_dynamic (BseType	parent_type,
       BSE_FUNDAMENTAL_TYPE (parent_type) != parent_type)
     {
       g_warning ("parent type `%s' for type `%s' is not a fundamental type, "
-		 "expected `%s'",
-		 type_descriptive_name (parent_type),
-		 type_name,
-		 type_descriptive_name (BSE_FUNDAMENTAL_TYPE (parent_type)));
+                 "expected `%s'",
+                 type_descriptive_name (parent_type),
+                 type_name,
+                 type_descriptive_name (BSE_FUNDAMENTAL_TYPE (parent_type)));
       return 0;
     }
   
@@ -1103,17 +1096,17 @@ bse_type_register_dynamic (BseType	parent_type,
       (info->object_size || info->n_preallocs || info->object_init))
     {
       g_warning ("cannot derive object type `%s' from non-object parent type `%s'",
-		 type_name,
-		 type_descriptive_name (parent_type));
+                 type_name,
+                 type_descriptive_name (parent_type));
       return 0;
     }
   if (!pnode->is_classed &&
       (info->class_init || info->class_destroy || info->class_data ||
-       (!pnode->is_iface && (info->class_init_base || info->class_destroy_base))))
+       (!pnode->is_iface && (info->base_init || info->base_destroy))))
     {
       g_warning ("cannot derive classed type `%s' from non-classed parent type `%s'",
-		 type_name,
-		 type_descriptive_name (parent_type));
+                 type_name,
+                 type_descriptive_name (parent_type));
       return 0;
     }
 #endif
@@ -1121,54 +1114,53 @@ bse_type_register_dynamic (BseType	parent_type,
     {
 #ifdef __FIXME  // need to adjust these checks
       if ((info->class_size < sizeof (BseTypeClass)) ||
-	  (pnode->data && info->class_size < pnode->data->classed.class_size))
-	{
-	  g_warning ("specified class size for type `%s' is smaller "
-		     "than the parent's type `%s' class size",
-		     type_name,
-		     type_descriptive_name (parent_type));
-	  return 0;
-	}
+          (pnode->data && info->class_size < pnode->data->classed.class_size))
+        {
+          g_warning ("specified class size for type `%s' is smaller "
+                     "than the parent's type `%s' class size",
+                     type_name,
+                     type_descriptive_name (parent_type));
+          return 0;
+        }
 #endif
     }
   else if (!pnode->is_iface)
     {
       g_warning ("cannot derive type `%s' from unclassed parent type `%s'",
-		 type_name,
-		 type_descriptive_name (parent_type));
+                 type_name,
+                 type_descriptive_name (parent_type));
       return 0;
     }
   else if (parent_type != BSE_TYPE_INTERFACE)
     {
       g_warning ("cannot derive from interface types (`%s' from `%s')",
-		 type_name,
-		 NODE_NAME (pnode));
+                 type_name,
+                 NODE_NAME (pnode));
       return 0;
     }
 #ifdef __FIXME  // need to adjust these checks
   else if (info->class_size < sizeof (BseTypeInterfaceClass))
     {
       g_warning ("specified class size for type `%s' is smaller "
-		 "than the parent's `BseTypeInterfaceClass' class size",
-		 type_name);
+                 "than the parent's `BseTypeInterfaceClass' class size",
+                 type_name);
       return 0;
     }
 #endif
   
-  pnode = type_node_new_inv (parent_type, type_name, type_blurb, plugin);
+  pnode = type_node_new (parent_type, type_name, type_blurb, plugin);
   type = NODE_TYPE (pnode);
   
   /* if (node->is_iface)
-   *   type_data_make_inv (node, NULL);
+   *   type_data_make (node, NULL);
    */
   
   return type;
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static void
-type_data_make_inv (TypeNode          *node,
-		    const BseTypeInfo *info)
+type_data_make (TypeNode          *node,
+		const BseTypeInfo *info)
 {
   BseTypeInfo tmpinfo;
   TypeData *data;
@@ -1191,18 +1183,20 @@ type_data_make_inv (TypeNode          *node,
     case BSE_TYPE_INTERFACE:
       data = g_malloc0 (sizeof (IFaceData));
       data->ref_count = 0;
-      data->iface.class_size = info->class_size;
-      data->iface.class_init_base = info->class_init_base;
-      data->iface.class_destroy_base = info->class_destroy_base;
+      data->common.last_ref_handler = 0;
+      data->iface.vtable_size = info->class_size;
+      data->iface.vtable_init_base = info->base_init;
+      data->iface.vtable_destroy_base = info->base_destroy;
       break;
     case BSE_TYPE_PROCEDURE:
     case BSE_TYPE_ENUM:
     case BSE_TYPE_FLAGS:
       data = g_malloc0 (sizeof (ClassedData));
       data->ref_count = 0;
+      data->common.last_ref_handler = 0;
       data->classed.class_size = info->class_size;
-      data->classed.class_init_base = info->class_init_base;
-      data->classed.class_destroy_base = info->class_destroy_base;
+      data->classed.class_init_base = info->base_init;
+      data->classed.class_destroy_base = info->base_destroy;
       data->classed.class_init = info->class_init;
       data->classed.class_destroy = info->class_destroy;
       data->classed.class_data = info->class_data;
@@ -1211,9 +1205,10 @@ type_data_make_inv (TypeNode          *node,
     case BSE_TYPE_OBJECT:
       data = g_malloc0 (sizeof (ObjectData));
       data->ref_count = 0;
+      data->common.last_ref_handler = 0;
       data->object.class_size = info->class_size;
-      data->object.class_init_base = info->class_init_base;
-      data->object.class_destroy_base = info->class_destroy_base;
+      data->object.class_init_base = info->base_init;
+      data->object.class_destroy_base = info->base_destroy;
       data->object.class_init = info->class_init;
       data->object.class_destroy = info->class_destroy;
       data->object.class_data = info->class_data;
@@ -1230,15 +1225,14 @@ type_data_make_inv (TypeNode          *node,
   node->data = data;
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static void
-type_data_blow_inv (BseType type)
+type_data_blow (BseType type)
 {
   TypeNode *node;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   
-  g_assert (node && node->data && !node->data->ref_count);
+  g_assert (node && node->data && !node->data->ref_count && !node->data->common.last_ref_handler);
   g_assert (!node->is_classed || node->data->classed.class == NULL);
   g_assert (!node->is_object || node->data->object.mem_chunk == NULL);
 
@@ -1250,15 +1244,14 @@ type_data_blow_inv (BseType type)
     }
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static void
-type_iface_entry_info_make_inv (TypeNode         *node,
-				IFaceEntry       *entry,
-				BseInterfaceInfo *info)
+type_iface_entry_info_make (TypeNode         *node,
+			    IFaceEntry       *entry,
+			    BseInterfaceInfo *info)
 {
   TypeNode *iface;
   
-  LOOKUP_TYPE_NODE (iface, entry->iface);
+  iface = LOOKUP_TYPE_NODE (entry->iface);
   g_assert (iface && entry->info == NULL && info != IFACE_PARENT_INFO);
   if (iface->plugin)
     g_assert (info == NULL);
@@ -1278,20 +1271,19 @@ type_iface_entry_info_make_inv (TypeNode         *node,
   entry->info = g_memdup (info, sizeof (BseInterfaceInfo));
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 static void
-type_iface_entry_info_blow_inv (BseType type,
-				BseType iface_type)
+type_iface_entry_info_blow (BseType type,
+			    BseType iface_type)
 {
   TypeNode *node;
   TypeNode *iface;
   IFaceEntry *entry;
   
-  LOOKUP_TYPE_NODE (node, type);
-  LOOKUP_TYPE_NODE (iface, iface_type);
+  node = LOOKUP_TYPE_NODE (type);
+  iface = LOOKUP_TYPE_NODE (iface_type);
   entry = type_lookup_iface_entry (node, iface);
   
-  g_assert (entry && entry->info && entry->info != IFACE_PARENT_INFO && entry->class == NULL);
+  g_assert (entry && entry->info && entry->info != IFACE_PARENT_INFO && entry->vtable == NULL);
 
   if (iface->plugin)
     {
@@ -1304,17 +1296,17 @@ type_iface_entry_info_blow_inv (BseType type,
 
 BseType* /* free result */
 bse_type_children (BseType type,
-		   guint  *n_children)
+                   guint  *n_children)
 {
   TypeNode *node;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   if (node)
     {
       BseType *children;
 
       if (n_children)
-	*n_children = node->n_children;
+        *n_children = node->n_children;
       
       children = g_new (BseType, node->n_children + 1);
       memcpy (children, node->children, sizeof (BseType) * node->n_children);
@@ -1325,7 +1317,7 @@ bse_type_children (BseType type,
   else
     {
       if (n_children)
-	*n_children = 0;
+        *n_children = 0;
       
       return NULL;
     }
@@ -1333,22 +1325,22 @@ bse_type_children (BseType type,
 
 BseType* /* free result */
 bse_type_interfaces (BseType type,
-		     guint  *n_interfaces)
+                     guint  *n_interfaces)
 {
   TypeNode *node;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   if (node)
     {
       BseType *ifaces;
       guint i;
 
       if (n_interfaces)
-	*n_interfaces = node->n_ifaces;
+        *n_interfaces = node->n_ifaces;
 
       ifaces = g_new (BseType, node->n_ifaces + 1);
       for (i = 0; i < node->n_ifaces; i++)
-	ifaces[i] = node->ifaces[i].iface;
+        ifaces[i] = node->ifaces[i].iface;
       ifaces[i] = 0;
       
       return ifaces;
@@ -1356,13 +1348,12 @@ bse_type_interfaces (BseType type,
   else
     {
       if (n_interfaces)
-	*n_interfaces = 0;
+        *n_interfaces = 0;
       
       return NULL;
     }
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 BseObject*
 bse_type_create_object (BseType type)
 {
@@ -1370,38 +1361,37 @@ bse_type_create_object (BseType type)
   BseTypeStruct *tstruct;
   BseTypeClass *class;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   if (!node || !node->is_object)
     {
       g_warning ("cannot create new object for non-object type `%s'",
-		 type_descriptive_name (type));
+                 type_descriptive_name (type));
       return NULL;
     }
   
   class = bse_type_class_ref (type);
-  LOOKUP_TYPE_NODE (node, type);
   
   if (node->n_supers)
     {
       TypeNode *pnode;
       
-      LOOKUP_TYPE_NODE (pnode, NODE_PARENT_TYPE (node));
+      pnode = LOOKUP_TYPE_NODE (NODE_PARENT_TYPE (node));
       if (node->data->object.object_size < pnode->data->object.object_size)
-	{
-	  g_error ("specified object size for type `%s' is smaller "
-		   "than the parent's type `%s' object size",
-		   NODE_NAME (node), NODE_NAME (pnode));
-	}
+        {
+          g_error ("specified object size for type `%s' is smaller "
+                   "than the parent's type `%s' object size",
+                   NODE_NAME (node), NODE_NAME (pnode));
+        }
     }
   
   if (node->data->object.n_preallocs)
     {
       if (!node->data->object.mem_chunk)
-	node->data->object.mem_chunk = g_mem_chunk_new (NODE_NAME (node),
-							node->data->object.object_size,
-							(node->data->object.object_size *
-							 node->data->object.n_preallocs),
-							G_ALLOC_AND_FREE);
+        node->data->object.mem_chunk = g_mem_chunk_new (NODE_NAME (node),
+                                                        node->data->object.object_size,
+                                                        (node->data->object.object_size *
+                                                         node->data->object.n_preallocs),
+                                                        G_ALLOC_AND_FREE);
       tstruct = g_chunk_new0 (BseTypeStruct, node->data->object.mem_chunk);
     }
   else
@@ -1409,22 +1399,20 @@ bse_type_create_object (BseType type)
   
   if (node->n_supers)
     {
-      BseType *supers;
       guint i;
       
-      supers = node->supers;
       for (i = node->n_supers; i > 0; i--)
-	{
-	  TypeNode *pnode;
-	  
-	  LOOKUP_TYPE_NODE (pnode, supers[i]);
-	  if (pnode->data->object.object_init)
-	    {
-	      tstruct->bse_class = pnode->data->object.class;
-	      pnode->data->object.object_init ((BseObject*) tstruct, class);
-	    }
-	}
-      LOOKUP_TYPE_NODE (node, type);
+        {
+          TypeNode *pnode;
+          
+          pnode = LOOKUP_TYPE_NODE (node->supers[i]);
+          if (pnode->data->object.object_init)
+            {
+              tstruct->bse_class = pnode->data->object.class;
+              pnode->data->object.object_init ((BseObject*) tstruct, class);
+            }
+        }
+      node = LOOKUP_TYPE_NODE (type);
     }
   tstruct->bse_class = class;
   if (node->data->object.object_init)
@@ -1433,7 +1421,6 @@ bse_type_create_object (BseType type)
   return (BseObject*) tstruct;
 }
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 void
 bse_type_free_object (BseObject *object)
 {
@@ -1446,11 +1433,11 @@ bse_type_free_object (BseObject *object)
   class = tstruct->bse_class;
   tstruct->bse_class = NULL;
   
-  LOOKUP_TYPE_NODE (node, class->bse_type);
+  node = LOOKUP_TYPE_NODE (class->bse_type);
   if (!node || !node->is_object)
     {
       g_warning ("cannot free object of non-object type `%s'",
-		 type_descriptive_name (class->bse_type));
+                 type_descriptive_name (class->bse_type));
       return;
     }
   
@@ -1476,7 +1463,7 @@ bse_type_from_name (const gchar *name)
       TypeNode *node;
       
       type = GPOINTER_TO_UINT (g_hash_table_lookup (type_nodes_ht, GUINT_TO_POINTER (quark)));
-      LOOKUP_TYPE_NODE (node, type);
+      node = LOOKUP_TYPE_NODE (type);
       
       return node ? NODE_TYPE (node) : 0;
     }
@@ -1489,7 +1476,7 @@ bse_type_name (BseType type)
 {
   TypeNode *node;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   
   return node ? NODE_NAME (node) : NULL;
 }
@@ -1499,7 +1486,7 @@ bse_type_plugin (BseType type)
 {
   TypeNode *node;
 
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
 
   return node ? node->plugin : NULL;
 }
@@ -1509,7 +1496,7 @@ bse_type_quark (BseType type)
 {
   TypeNode *node;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   
   return node ? node->qname : 0;
 }
@@ -1519,7 +1506,7 @@ bse_type_blurb (BseType type)
 {
   TypeNode *node;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   
   return node && node->qblurb ? g_quark_to_string (node->qblurb) : "";
 }
@@ -1529,22 +1516,22 @@ bse_type_parent (BseType type)
 {
   TypeNode *node;
   
-  LOOKUP_TYPE_NODE (node, type);
+  node = LOOKUP_TYPE_NODE (type);
   
   return node ? NODE_PARENT_TYPE (node) : 0;
 }
 
 gpointer
-bse_type_class_parent (gpointer type_class)
+bse_type_class_peek_parent (gpointer type_class)
 {
   TypeNode *node;
   
   g_return_val_if_fail (type_class != NULL, NULL);
   
-  LOOKUP_TYPE_NODE (node, BSE_CLASS_TYPE (type_class));
+  node = LOOKUP_TYPE_NODE (BSE_CLASS_TYPE (type_class));
   if (node && NODE_PARENT_TYPE (node))
     {
-      LOOKUP_TYPE_NODE (node, NODE_PARENT_TYPE (node));
+      node = LOOKUP_TYPE_NODE (NODE_PARENT_TYPE (node));
       
       return node->data->classed.class;
     }
@@ -1554,102 +1541,104 @@ bse_type_class_parent (gpointer type_class)
 
 gboolean
 bse_type_is_a (BseType type,
-	       BseType is_a_type)
+               BseType is_a_type)
 {
   if (type != is_a_type)
     {
       TypeNode *node;
       
-      LOOKUP_TYPE_NODE (node, type);
+      node = LOOKUP_TYPE_NODE (type);
       if (node)
-	{
-	  TypeNode *a_node;
-	  
-	  LOOKUP_TYPE_NODE (a_node, is_a_type);
-	  if (a_node && a_node->n_supers <= node->n_supers)
-	    return node->supers[node->n_supers - a_node->n_supers] == is_a_type;
-	}
+        {
+          TypeNode *a_node;
+          
+          a_node = LOOKUP_TYPE_NODE (is_a_type);
+          if (a_node && a_node->n_supers <= node->n_supers)
+            return node->supers[node->n_supers - a_node->n_supers] == is_a_type;
+        }
     }
   else
-    return TRUE;
+    return LOOKUP_TYPE_NODE (type) != NULL;
   
   return FALSE;
 }
 
 gboolean
 bse_type_conforms_to (BseType type,
-		      BseType iface_type)
+                      BseType iface_type)
 {
   if (type != iface_type)
     {
       TypeNode *node;
       
-      LOOKUP_TYPE_NODE (node, type);
+      node = LOOKUP_TYPE_NODE (type);
       if (node)
-	{
-	  TypeNode *check_node;
-	  
-	  LOOKUP_TYPE_NODE (check_node, iface_type);
-	  if (check_node)
-	    {
-	      if (check_node->is_iface && node->is_object)
-		return type_lookup_iface_entry (node, check_node) != NULL;
-	      else if (node->is_iface && iface_type == BSE_TYPE_OBJECT)
-		return TRUE;
-	      else if (check_node->n_supers <= node->n_supers)
-		return node->supers[node->n_supers - check_node->n_supers] == iface_type;
-	    }
-	}
+        {
+          TypeNode *check_node;
+          
+          check_node = LOOKUP_TYPE_NODE (iface_type);
+          if (check_node)
+            {
+              if (check_node->is_iface && node->is_object)
+                return type_lookup_iface_entry (node, check_node) != NULL;
+              else if (node->is_iface && iface_type == BSE_TYPE_OBJECT)
+                return TRUE;
+              else if (check_node->n_supers <= node->n_supers)
+                return node->supers[node->n_supers - check_node->n_supers] == iface_type;
+            }
+        }
     }
   else
-    return TRUE;
+    return ((BSE_TYPE_IS_INTERFACE (type) ||
+	     BSE_TYPE_IS_OBJECT (type)) &&
+	    LOOKUP_TYPE_NODE (type));
   
   return FALSE;
 }
 
 gboolean
 bse_type_struct_conforms_to (BseTypeStruct *type_struct,
-			     BseType	    iface_type)
+                             BseType        iface_type)
 {
   return (type_struct && type_struct->bse_class &&
-	  bse_type_conforms_to (type_struct->bse_class->bse_type, iface_type));
+          bse_type_conforms_to (type_struct->bse_class->bse_type, iface_type));
 }
 
 gboolean
 bse_type_class_is_a (BseTypeClass *type_class,
-		     BseType	   is_a_type)
+                     BseType       is_a_type)
 {
   return (type_class && bse_type_is_a (type_class->bse_type, is_a_type));
 }
 
 BseTypeStruct*
 bse_type_check_struct_cast (BseTypeStruct *bse_struct,
-			    BseType	   iface_type)
+                            BseType        iface_type)
 {
   if (!bse_struct)
     {
       g_warning ("invalid cast from (NULL) pointer to `%s'",
-		 type_descriptive_name (iface_type));
+                 type_descriptive_name (iface_type));
       return bse_struct;
     }
   if (!bse_struct->bse_class)
     {
       g_warning ("invalid unclassed pointer in cast to `%s'",
-		 type_descriptive_name (iface_type));
+                 type_descriptive_name (iface_type));
       return bse_struct;
     }
   if (!BSE_TYPE_IS_CLASSED (bse_struct->bse_class->bse_type))
     {
       g_warning ("invalid unclassed type `%s' in cast to `%s'",
-		 type_descriptive_name (bse_struct->bse_class->bse_type),
-		 type_descriptive_name (iface_type));
+                 type_descriptive_name (bse_struct->bse_class->bse_type),
+                 type_descriptive_name (iface_type));
       return bse_struct;
     }
   if (!bse_type_conforms_to (bse_struct->bse_class->bse_type, iface_type))
     {
       g_warning ("invalid cast from `%s' to `%s'",
-		 type_descriptive_name (bse_struct->bse_class->bse_type),
-		 type_descriptive_name (iface_type));
+                 type_descriptive_name (bse_struct->bse_class->bse_type),
+                 type_descriptive_name (iface_type));
       return bse_struct;
     }
   
@@ -1658,26 +1647,26 @@ bse_type_check_struct_cast (BseTypeStruct *bse_struct,
 
 BseTypeClass*
 bse_type_check_class_cast (BseTypeClass *bse_class,
-			   BseType	 is_a_type)
+                           BseType       is_a_type)
 {
   if (!bse_class)
     {
       g_warning ("invalid class cast from (NULL) pointer to `%s'",
-		 type_descriptive_name (is_a_type));
+                 type_descriptive_name (is_a_type));
       return bse_class;
     }
   if (!BSE_TYPE_IS_CLASSED (bse_class->bse_type))
     {
       g_warning ("invalid unclassed type `%s' in class cast to `%s'",
-		 type_descriptive_name (bse_class->bse_type),
-		 type_descriptive_name (is_a_type));
+                 type_descriptive_name (bse_class->bse_type),
+                 type_descriptive_name (is_a_type));
       return bse_class;
     }
   if (!bse_type_is_a (bse_class->bse_type, is_a_type))
     {
       g_warning ("invalid class cast from `%s' to `%s'",
-		 type_descriptive_name (bse_class->bse_type),
-		 type_descriptive_name (is_a_type));
+                 type_descriptive_name (bse_class->bse_type),
+                 type_descriptive_name (is_a_type));
       return bse_class;
     }
   
@@ -1689,8 +1678,8 @@ static inline void
 reset_info (BseTypeInfo *info)
 {
   memset (info, 0, sizeof (BseTypeInfo));
-  info->class_init_base = (BseClassInitBaseFunc) NULL;
-  info->class_destroy_base = (BseClassDestroyBaseFunc) NULL;
+  info->base_init = (BseBaseInitFunc) NULL;
+  info->base_destroy = (BseBaseDestroyFunc) NULL;
   info->class_init = (BseClassInitFunc) NULL;
   info->class_destroy = (BseClassDestroyFunc) NULL;
   info->class_data = NULL;
@@ -1698,14 +1687,13 @@ reset_info (BseTypeInfo *info)
 }
 
 /* include type id builtin variable declarations */
-#include	"bsegentypes.c"
+#include        "bsegentypes.c"
 
 /* extern decls for other *.h files that implement fundamentals */
 extern void     bse_type_register_procedure_info        (BseTypeInfo    *info);
-extern void     bse_type_register_object_info		(BseTypeInfo    *info);
-extern void	bse_type_register_enums			(void);
+extern void     bse_type_register_object_info           (BseTypeInfo    *info);
+extern void     bse_type_register_enums                 (void);
 
-/* WARNING: this function invalidates any TypeNode* pointers */
 void
 bse_type_init (void)
 {
@@ -1717,19 +1705,19 @@ bse_type_init (void)
     const gchar *name;
     const gchar *blurb;
   } param_types[] = {
-    { BSE_TYPE_PARAM_BOOL,	"BseParamSpecBool",	"Boolean parameter", },
-    { BSE_TYPE_PARAM_INT,	"BseParamSpecInt",	"Integer parameter", },
-    { BSE_TYPE_PARAM_UINT,	"BseParamSpecUInt",	"Unsigned integer parameter", },
-    { BSE_TYPE_PARAM_ENUM,	"BseParamSpecEnum",	"Enumeration parameter", },
-    { BSE_TYPE_PARAM_FLAGS,	"BseParamSpecFlags",	"Flag enumeration parameter", },
-    { BSE_TYPE_PARAM_FLOAT,	"BseParamSpecFloat",	"Floating point parameter", },
-    { BSE_TYPE_PARAM_DOUBLE,	"BseParamSpecDouble",	"Double precision floating point parameter", },
-    { BSE_TYPE_PARAM_TIME,	"BseParamSpecTime",	"Time parameter", },
-    { BSE_TYPE_PARAM_NOTE,	"BseParamSpecNote",	"Note parameter", },
-    { BSE_TYPE_PARAM_INDEX_2D,	"BseParamSpecIndex2D",	"Packed 2D index parameter", },
-    { BSE_TYPE_PARAM_STRING,	"BseParamSpecString",	"String parameter", },
-    { BSE_TYPE_PARAM_DOTS,	"BseParamSpecDots",	"Line graph parameter", },
-    { BSE_TYPE_PARAM_ITEM,	"BseParamSpecItem",	"Item object reference", },
+    { BSE_TYPE_PARAM_BOOL,      "BseParamSpecBool",     "Boolean parameter", },
+    { BSE_TYPE_PARAM_INT,       "BseParamSpecInt",      "Integer parameter", },
+    { BSE_TYPE_PARAM_UINT,      "BseParamSpecUInt",     "Unsigned integer parameter", },
+    { BSE_TYPE_PARAM_ENUM,      "BseParamSpecEnum",     "Enumeration parameter", },
+    { BSE_TYPE_PARAM_FLAGS,     "BseParamSpecFlags",    "Flag enumeration parameter", },
+    { BSE_TYPE_PARAM_FLOAT,     "BseParamSpecFloat",    "Floating point parameter", },
+    { BSE_TYPE_PARAM_DOUBLE,    "BseParamSpecDouble",   "Double precision floating point parameter", },
+    { BSE_TYPE_PARAM_TIME,      "BseParamSpecTime",     "Time parameter", },
+    { BSE_TYPE_PARAM_NOTE,      "BseParamSpecNote",     "Note parameter", },
+    { BSE_TYPE_PARAM_INDEX_2D,  "BseParamSpecIndex2D",  "Packed 2D index parameter", },
+    { BSE_TYPE_PARAM_STRING,    "BseParamSpecString",   "String parameter", },
+    { BSE_TYPE_PARAM_DOTS,      "BseParamSpecDots",     "Line graph parameter", },
+    { BSE_TYPE_PARAM_ITEM,      "BseParamSpecItem",     "Item object reference", },
   };
   const guint n_param_types = sizeof (param_types) / sizeof (param_types[0]);
   static const struct {
@@ -1742,62 +1730,68 @@ bse_type_init (void)
   const guint n_builtin_types = sizeof (builtin_types) / sizeof (builtin_types[0]);
   guint i;
 
-  g_return_if_fail (type_nodes_ht == NULL);
+  g_return_if_fail (bse_n_type_nodes == 0);
   
   type_nodes_ht = g_hash_table_new (g_direct_hash, g_direct_equal);
   g_atexit (bse_type_debug);
+
+  /* invalid type (0)
+   */
+  bse_n_type_nodes = 1;
+  bse_type_nodes = g_renew (TypeNode*, NULL, 1);
+  bse_type_nodes[0] = NULL;
   
   /* internal types
    */
   reset_info (&info);
-  node = type_node_new_inv (0, "BseNone", "", NULL);
+  node = type_node_new (0, "BseNone", "", NULL);
   type = NODE_TYPE (node);
-  type_data_make_inv (node, &info);
+  type_data_make (node, &info);
   g_assert (type == BSE_TYPE_NONE);
   
   for (i = 0; i < n_param_types; i++)
     {
       reset_info (&info);
-      node = type_node_new_inv (0, param_types[i].name, param_types[i].blurb, NULL);
+      node = type_node_new (0, param_types[i].name, param_types[i].blurb, NULL);
       type = NODE_TYPE (node);
-      type_data_make_inv (node, &info);
+      type_data_make (node, &info);
       g_assert (type == param_types[i].type);
     }
   
   reset_info (&info);
-  node = type_node_new_inv (0, "BseInterface", "BSE Interface base type", NULL);
+  node = type_node_new (0, "BseInterface", "BSE Interface base type", NULL);
   type = NODE_TYPE (node);
-  type_data_make_inv (node, &info);
+  type_data_make (node, &info);
   g_assert (type == BSE_TYPE_INTERFACE);
   
   reset_info (&info);
   bse_type_register_procedure_info (&info);
-  node = type_node_new_inv (0, "BseProcedure", "BSE Procedure base type", NULL);
+  node = type_node_new (0, "BseProcedure", "BSE Procedure base type", NULL);
   type = NODE_TYPE (node);
-  type_data_make_inv (node, &info);
+  type_data_make (node, &info);
   g_assert (type == BSE_TYPE_PROCEDURE);
 
   reset_info (&info);
   info.class_size = sizeof (BseEnumClass);
   info.class_init = (BseClassInitFunc) NULL;
-  node = type_node_new_inv (0, "BseEnum", "Enumeration base type", NULL);
+  node = type_node_new (0, "BseEnum", "Enumeration base type", NULL);
   type = NODE_TYPE (node);
-  type_data_make_inv (node, &info);
+  type_data_make (node, &info);
   g_assert (type == BSE_TYPE_ENUM);
   
   reset_info (&info);
   info.class_size = sizeof (BseFlagsClass);
   info.class_init = (BseClassInitFunc) NULL;
-  node = type_node_new_inv (0, "BseFlags", "Flag enumeration base type", NULL);
+  node = type_node_new (0, "BseFlags", "Flag enumeration base type", NULL);
   type = NODE_TYPE (node);
-  type_data_make_inv (node, &info);
+  type_data_make (node, &info);
   g_assert (type == BSE_TYPE_FLAGS);
   
   reset_info (&info);
   bse_type_register_object_info (&info);
-  node = type_node_new_inv (0, "BseObject", "BSE Object Hierarchy base type", NULL);
+  node = type_node_new (0, "BseObject", "BSE Object Hierarchy base type", NULL);
   type = NODE_TYPE (node);
-  type_data_make_inv (node, &info);
+  type_data_make (node, &info);
   g_assert (type == BSE_TYPE_OBJECT);
 
   /* initialize assistant fundamentals */

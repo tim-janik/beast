@@ -42,7 +42,7 @@ enum
 /* --- prototypes --- */
 static void	bse_song_class_init		(BseSongClass	*class);
 static void	bse_song_init			(BseSong	*song);
-static void	bse_song_destroy		(BseObject	*object);
+static void	bse_song_do_shutdown		(BseObject	*object);
 static void	bse_song_set_param		(BseSong	*song,
 						 BseParam	*param);
 static void	bse_song_get_param		(BseSong	*song,
@@ -76,8 +76,8 @@ BSE_BUILTIN_TYPE (BseSong)
   static const BseTypeInfo song_info = {
     sizeof (BseSongClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_song_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -110,7 +110,7 @@ bse_song_class_init (BseSongClass *class)
   
   object_class->set_param = (BseObjectSetParamFunc) bse_song_set_param;
   object_class->get_param = (BseObjectGetParamFunc) bse_song_get_param;
-  object_class->destroy = bse_song_destroy;
+  object_class->shutdown = bse_song_do_shutdown;
   
   source_class->prepare = bse_song_prepare;
   source_class->calc_chunk = bse_song_calc_chunk;
@@ -193,7 +193,7 @@ bse_song_init (BseSong *song)
 }
 
 static void
-bse_song_destroy (BseObject *object)
+bse_song_do_shutdown (BseObject *object)
 {
   BseSong *song;
   
@@ -209,8 +209,8 @@ bse_song_destroy (BseObject *object)
   
   /* FIXME: free effect_processors, lfos */
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' shutdown handler */
+  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
 
@@ -378,26 +378,6 @@ bse_song_add_item (BseContainer *container,
 }
 
 static void
-bse_song_remove_item (BseContainer *container,
-		      BseItem	   *item)
-{
-  BseSong *song;
-  
-  song = BSE_SONG (container);
-  
-  /* chain parent class' remove_item handler */
-  BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
-  
-  if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
-    song->patterns = g_list_remove (song->patterns, item);
-  else if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
-    song->instruments = g_list_remove (song->instruments, item);
-  else
-    g_warning ("BseSong: cannot remove unknown item type `%s'",
-	       BSE_OBJECT_TYPE_NAME (item));
-}
-
-static void
 bse_song_forall_items (BseContainer	 *container,
 		       BseForallItemsFunc func,
 		       gpointer		  data)
@@ -428,6 +408,26 @@ bse_song_forall_items (BseContainer	 *container,
       if (!func (item, data))
 	return;
     }
+}
+
+static void
+bse_song_remove_item (BseContainer *container,
+		      BseItem	   *item)
+{
+  BseSong *song;
+  
+  song = BSE_SONG (container);
+  
+  if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PATTERN))
+    song->patterns = g_list_remove (song->patterns, item);
+  else if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_INSTRUMENT))
+    song->instruments = g_list_remove (song->instruments, item);
+  else
+    g_warning ("BseSong: cannot remove unknown item type `%s'",
+	       BSE_OBJECT_TYPE_NAME (item));
+
+  /* chain parent class' remove_item handler */
+  BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);
 }
 
 static guint

@@ -77,7 +77,7 @@ static BseDot env_dots[ENV_N_DOTS] = {
 /* --- prototypes --- */
 static void	bse_instrument_class_init	(BseInstrumentClass	*class);
 static void	bse_instrument_init		(BseInstrument		*instrument);
-static void	bse_instrument_destroy		(BseObject		*object);
+static void	bse_instrument_do_shutdown	(BseObject		*object);
 static void	bse_instrument_set_param	(BseInstrument		*instrument,
 						 BseParam		*param);
 static void	bse_instrument_get_param	(BseInstrument		*instrument,
@@ -95,8 +95,8 @@ BSE_BUILTIN_TYPE (BseInstrument)
   static const BseTypeInfo instrument_info = {
     sizeof (BseInstrumentClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_instrument_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -125,7 +125,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
   object_class->set_param = (BseObjectSetParamFunc) bse_instrument_set_param;
   object_class->get_param = (BseObjectGetParamFunc) bse_instrument_get_param;
   object_class->unlocked = bse_instrument_unlocked;
-  object_class->destroy = bse_instrument_destroy;
+  object_class->shutdown = bse_instrument_do_shutdown;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_SAMPLE,
@@ -288,7 +288,7 @@ bse_instrument_init (BseInstrument *instrument)
 }
 
 static void
-bse_instrument_destroy (BseObject *object)
+bse_instrument_do_shutdown (BseObject *object)
 {
   BseInstrument *instrument = BSE_INSTRUMENT (object);
   
@@ -303,8 +303,8 @@ bse_instrument_destroy (BseObject *object)
       instrument->locked_sample = NULL;
     }
   
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' shutdown handler */
+  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
 static void

@@ -26,7 +26,7 @@
 /* --- prototypes --- */
 static void	bse_item_class_init		(BseItemClass	*class);
 static void	bse_item_init			(BseItem		*item);
-static void	bse_item_destroy		(BseObject		*object);
+static void	bse_item_do_shutdown		(BseObject		*object);
 static void	bse_item_do_set_name		(BseObject		*object,
 						 const gchar		*name);
 static guint	bse_item_do_get_seqid		(BseItem		*item);
@@ -44,8 +44,8 @@ BSE_BUILTIN_TYPE (BseItem)
   static const BseTypeInfo item_info = {
     sizeof (BseItemClass),
 
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_item_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -69,7 +69,7 @@ bse_item_class_init (BseItemClass *class)
   parent_class = bse_type_class_peek (BSE_TYPE_OBJECT);
 
   object_class->set_name = bse_item_do_set_name;
-  object_class->destroy = bse_item_destroy;
+  object_class->shutdown = bse_item_do_shutdown;
 
   class->set_container = bse_item_do_set_container;
   class->get_seqid = bse_item_do_get_seqid;
@@ -83,7 +83,7 @@ bse_item_init (BseItem *item)
 }
 
 static void
-bse_item_destroy (BseObject *object)
+bse_item_do_shutdown (BseObject *object)
 {
   BseItem *item;
 
@@ -92,8 +92,8 @@ bse_item_destroy (BseObject *object)
   if (item->container)
     bse_container_remove_item (BSE_CONTAINER (item->container), item);
 
-  /* chain parent class' destroy handler */
-  BSE_OBJECT_CLASS (parent_class)->destroy (object);
+  /* chain parent class' shutdown handler */
+  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
 static void

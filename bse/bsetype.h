@@ -120,7 +120,7 @@ struct _BseTypeClass
 {
   BseType	bse_type;
 };
-struct _BseTypeInterfaceClass
+struct _BseTypeInterface
 {
   BseType	bse_type;
   BseType	object_type;
@@ -134,8 +134,8 @@ struct _BseTypeStruct
 
 /* type informations
  */
-typedef void (*BseClassInitBaseFunc)	(gpointer	 bse_class);
-typedef void (*BseClassDestroyBaseFunc)	(gpointer	 bse_class);
+typedef void (*BseBaseInitFunc)		(gpointer	 bse_class);
+typedef void (*BseBaseDestroyFunc)	(gpointer	 bse_class);
 typedef void (*BseClassInitFunc)	(gpointer	 bse_class,
 					 gpointer	 class_data);
 typedef void (*BseClassDestroyFunc)	(gpointer	 bse_class,
@@ -151,13 +151,13 @@ struct _BseTypeInfo
   /* interface types, classed types, object types */
   guint			  class_size;
   
-  BseClassInitBaseFunc	  class_init_base;
-  BseClassDestroyBaseFunc class_destroy_base;
+  BseBaseInitFunc	  base_init;
+  BseBaseDestroyFunc	  base_destroy;
   
   /* classed types, object types */
   BseClassInitFunc	  class_init;
   BseClassDestroyFunc	  class_destroy;
-  gpointer		  class_data;
+  gconstpointer		  class_data;
   
   /* object types */
   guint16		  object_size;
@@ -166,9 +166,9 @@ struct _BseTypeInfo
 };
 struct _BseInterfaceInfo
 {
-  BseInterfaceInitFunc	  iface_init;
-  BseInterfaceDestroyFunc iface_destroy;
-  gpointer		  iface_data;
+  BseInterfaceInitFunc	  interface_init;
+  BseInterfaceDestroyFunc interface_destroy;
+  gpointer		  interface_data;
 };
 
 
@@ -176,17 +176,17 @@ struct _BseInterfaceInfo
 gpointer	bse_type_class_ref		(BseType	 type);
 gpointer	bse_type_class_peek		(BseType	 type);
 void		bse_type_class_unref		(gpointer	 bse_class);
-gpointer	bse_type_interface_class_ref	(gpointer	 object_class,
+gpointer	bse_type_interface_ref		(gpointer	 object_class,
 						 BseType	 iface_type);
-gpointer	bse_type_interface_class_peek	(gpointer	 object_class,
+gpointer	bse_type_interface_peek		(gpointer	 object_class,
 						 BseType	 iface_type);
-void		bse_type_interface_class_unref	(gpointer	 interface_class);
+void		bse_type_interface_unref	(gpointer	 interface);
 gchar*		bse_type_name			(BseType	 type);
 GQuark		bse_type_quark			(BseType	 type);
 gchar*		bse_type_blurb			(BseType	 type);
 BseType		bse_type_from_name		(const gchar	*name);
 BseType		bse_type_parent			(BseType	 type);
-gpointer	bse_type_class_parent		(gpointer	 type_class);
+gpointer	bse_type_class_peek_parent	(gpointer	 type_class);
 BseType		bse_type_register_static	(BseType	 parent_type,
 						 const gchar	*type_name,
 						 const gchar	*type_blurb,

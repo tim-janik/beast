@@ -28,6 +28,7 @@
  */
 #include        <bse/bseglobals.h>
 #include        <bse/bsebindata.h>
+#include        <bse/bsecategories.h>
 #include        <bse/bsechunk.h>
 #include        <bse/bseconfig.h>
 #include        <bse/bsecontainer.h>
@@ -57,6 +58,7 @@
 #include        <bse/bseprocedure.h>
 #include        <bse/bseproject.h>
 #include        <bse/bsesample.h>
+#include        <bse/bsesnet.h>
 #include        <bse/bsesong.h>
 #include        <bse/bsesource.h>
 #include	<bse/bsestorage.h>

@@ -34,8 +34,8 @@ BSE_BUILTIN_TYPE (BsePcmStream)
   BseTypeInfo pcm_stream_info = {
     sizeof (BsePcmStreamClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_pcm_stream_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

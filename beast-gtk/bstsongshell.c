@@ -20,7 +20,7 @@
 #include "bstparamview.h"
 #include "bstapp.h"
 
-
+#define WANT_ROUTER 0
 
 /* --- prototypes --- */
 static void	bst_song_shell_class_init	(BstSongShellClass	*klass);
@@ -158,12 +158,15 @@ bst_song_shell_build (BstSongShell *song_shell)
 		  "signal::destroy", gtk_widget_destroyed, &song_shell->instrument_view,
 		  "visible", TRUE,
 		  NULL);
-  song_shell->song_router = (BstSongRouter*) bst_song_router_new (song);
-  gtk_widget_set (GTK_WIDGET (song_shell->song_router),
-		  "signal::destroy", gtk_widget_destroyed, &song_shell->song_router,
-		  "visible", TRUE,
-		  NULL);
-
+  if (WANT_ROUTER)
+    {
+      song_shell->song_router = (BstSongRouter*) bst_song_router_new (song);
+      gtk_widget_set (GTK_WIDGET (song_shell->song_router),
+		      "signal::destroy", gtk_widget_destroyed, &song_shell->song_router,
+		      "visible", TRUE,
+		      NULL);
+    }
+  
   notebook = gtk_widget_new (GTK_TYPE_NOTEBOOK,
 			     "GtkNotebook::scrollable", FALSE,
 			     "GtkNotebook::tab_border", 0,
@@ -191,11 +194,12 @@ bst_song_shell_build (BstSongShell *song_shell)
 					    "label", "Instruments",
 					    "visible", TRUE,
 					    NULL));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->song_router),
-			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Routing",
-					    "visible", TRUE,
-					    NULL));
+  if (WANT_ROUTER)
+    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->song_router),
+			      gtk_widget_new (GTK_TYPE_LABEL,
+					      "label", "Routing",
+					      "visible", TRUE,
+					      NULL));
 }
 
 static void
@@ -235,7 +239,8 @@ bst_song_shell_update (BstSuperShell *super_shell)
   bst_param_view_update (song_shell->param_view);
   bst_item_view_update (song_shell->pattern_view);
   bst_item_view_update (song_shell->instrument_view);
-  bst_song_router_update (song_shell->song_router);
+  if (WANT_ROUTER)
+    bst_song_router_update (song_shell->song_router);
 }
 
 static void
@@ -248,7 +253,8 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
   bst_param_view_rebuild (song_shell->param_view);
   bst_item_view_rebuild (song_shell->pattern_view);
   bst_item_view_rebuild (song_shell->instrument_view);
-  bst_song_router_rebuild (song_shell->song_router);
+  if (WANT_ROUTER)
+    bst_song_router_rebuild (song_shell->song_router);
 }
 
 static void

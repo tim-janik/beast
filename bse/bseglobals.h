@@ -202,6 +202,7 @@ extern	const guint	 bse_micro_version;
 extern	const guint	 bse_interface_age;
 extern	const guint	 bse_binary_age;
 extern	const gchar	*bse_version;
+extern  const gchar     *bse_log_domain_bse;
 
 
 /* --- prototypes --- */

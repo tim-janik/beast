@@ -26,86 +26,38 @@
 
 
 /* --- structures --- */
-typedef struct _ProcEntry ProcEntry;
-struct _ProcEntry
+typedef struct _ShareNode ShareNode;
+struct _ShareNode
 {
-  ProcEntry *next;
-  BseType    type;
-  BseType    base_type;
-  GQuark     qcategory;
+  GTrashStack       trash_stack_dummy;
+  BseProcedureShare share_func;
+  gpointer          func_data;
 };
 
 
 /* --- prototypes --- */
-extern void	bse_type_register_procedure_info  (BseTypeInfo		*info);
-static void     bse_procedure_base_init		  (BseProcedureClass	*proc);
-static void     bse_procedure_base_destroy	  (BseProcedureClass	*proc);
-static void     bse_procedure_init		  (BseProcedureClass	*proc,
-						   BseExportProcedure	*pspec);
+extern void	bse_type_register_procedure_info  (BseTypeInfo		    *info);
+static void     bse_procedure_base_init		  (BseProcedureClass	    *proc);
+static void     bse_procedure_base_destroy	  (BseProcedureClass	    *proc);
+static void     bse_procedure_init		  (BseProcedureClass	    *proc,
+						   const BseExportProcedure *pspec);
 
 
 /* --- variables --- */
 static GSList      *called_procs = NULL;
 static GTrashStack *share_stack = NULL;
-static ProcEntry   *proc_entries = NULL;
-static GTrashStack *free_proc_entries = NULL;
 static GHookList    proc_notifiers = { 0, };
 
 
 /* --- functions --- */
-static void
-proc_entry_new (BseType      proc_type,
-		BseType      base_type,
-		const gchar *category)
-{
-  ProcEntry *entry;
-
-  if (!g_trash_stack_peek (&free_proc_entries))
-    {
-      ProcEntry *entries, *l;
-
-      entries = g_new (ProcEntry, PROC_ENTRIES_PRE_ALLOC);
-      l = entries + PROC_ENTRIES_PRE_ALLOC;
-      while (entries < l)
-	g_trash_stack_push (&free_proc_entries, entries++);
-    }
-
-  entry = g_trash_stack_pop (&free_proc_entries);
-  entry->next = proc_entries;
-  proc_entries = entry;
-  entry->type = proc_type;
-  entry->base_type = base_type;
-  entry->qcategory = (category
-		      ? g_quark_from_string (category)
-		      : g_quark_from_static_string (g_strconcat ("/Misc/",
-								 bse_type_name (entry->type),
-								 NULL)));
-}
-
-const gchar*
-bse_procedure_get_category (BseType proc_type)
-{
-  ProcEntry *entry;
-  
-  g_return_val_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type), NULL);
-
-  for (entry = proc_entries; entry; entry = entry->next)
-    {
-      if (entry->type == proc_type)
-	return g_quark_to_string (entry->qcategory);
-    }
-
-  return NULL;
-}
-
 extern void
 bse_type_register_procedure_info (BseTypeInfo *info)
 {
   static const BseTypeInfo proc_info = {
     sizeof (BseProcedureClass),
 
-    (BseClassInitBaseFunc) bse_procedure_base_init,
-    (BseClassDestroyBaseFunc) bse_procedure_base_destroy,
+    (BseBaseInitFunc) bse_procedure_base_init,
+    (BseBaseDestroyFunc) bse_procedure_base_destroy,
     (BseClassInitFunc) NULL,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -160,8 +112,8 @@ bse_procedure_base_destroy (BseProcedureClass *proc)
 }
 
 static void
-bse_procedure_init (BseProcedureClass  *proc,
-		    BseExportProcedure *pspec)
+bse_procedure_init (BseProcedureClass        *proc,
+		    const BseExportProcedure *pspec)
 {
   BseParamSpec *in_param_specs[BSE_PROCEDURE_MAX_IN_PARAMS + 1];
   BseParamSpec *out_param_specs[BSE_PROCEDURE_MAX_OUT_PARAMS + 1];
@@ -250,10 +202,10 @@ bse_procedure_init (BseProcedureClass  *proc,
 }
 
 void
-bse_procedure_complete_info (BseExportSpec *spec,
-			     BseTypeInfo   *info)
+bse_procedure_complete_info (const BseExportSpec *spec,
+			     BseTypeInfo         *info)
 {
-  BseExportProcedure *pspec = &spec->s_proc;
+  const BseExportProcedure *pspec = &spec->s_proc;
 
   info->class_size = sizeof (BseProcedureClass);
   info->class_init = (BseClassInitFunc) bse_procedure_init;
@@ -289,58 +241,6 @@ bse_procedure_unref (BseProcedureClass *proc)
   g_return_if_fail (BSE_IS_PROCEDURE_CLASS (proc));
 
   bse_type_class_unref (proc);
-}
-
-BseType* /* free result */
-bse_procedure_types (const gchar *pattern,
-		     BseType      base_type,
-		     guint       *n_types)
-{
-  GPatternSpec pspec;
-  ProcEntry *entry;
-  GSList *slist, *proc_list = NULL;
-  BseType *types, *t;
-  guint n = 0;
-
-  if (n_types)
-    *n_types = 0;
-  g_return_val_if_fail (pattern != NULL, NULL);
-
-  g_pattern_spec_init (&pspec, pattern);
-
-  for (entry = proc_entries; entry; entry = entry->next)
-    {
-      gchar *category;
-
-      if (base_type && !bse_type_is_a (entry->base_type, base_type))
-	continue;
-
-      category = g_quark_to_string (entry->qcategory);
-
-      if (g_pattern_match_string (&pspec, category))
-	{
-	  proc_list = g_slist_prepend (proc_list, entry);
-	  n++;
-	}
-    }
-
-  g_pattern_spec_free_segs (&pspec);
-
-  types = g_new (BseType, n);
-  t = types + n;
-  slist = proc_list;
-  while (t > types)
-    {
-      entry = slist->data;
-      *(--t) = entry->type;
-      slist = slist->next;
-    }
-  g_slist_free (proc_list);
-
-  if (n_types)
-    *n_types = n;
-
-  return types;
 }
 
 static gboolean
@@ -626,21 +526,15 @@ bse_procedure_notifier_remove (guint notifier_id)
     g_warning ("Unable to remove procedure notifier (%u)", notifier_id);
 }
 
-typedef struct {
-  gpointer trash_stack_dummy;
-  BseProcedureShare share_func;
-  gpointer          func_data;
-} BseShareNode;
-
 void
 bse_procedure_push_share_hook (BseProcedureShare share_func,
 			       gpointer          func_data)
 {
-  BseShareNode *node;
+  ShareNode *node;
 
   g_return_if_fail (share_func != NULL);
 
-  node = g_new (BseShareNode, 1);
+  node = g_new (ShareNode, 1);
   node->share_func = share_func;
   node->func_data = func_data;
   g_trash_stack_push (&share_stack, node);
@@ -655,7 +549,7 @@ bse_procedure_pop_share_hook (void)
 gboolean
 bse_procedure_share (BseProcedureClass *proc)
 {
-  BseShareNode *node = g_trash_stack_peek (&share_stack);
+  ShareNode *node = g_trash_stack_peek (&share_stack);
 
   g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), TRUE);
 
@@ -670,7 +564,7 @@ gboolean
 bse_procedure_update (BseProcedureClass *proc,
 		      gfloat             progress)
 {
-  BseShareNode *node = g_trash_stack_peek (&share_stack);
+  ShareNode *node = g_trash_stack_peek (&share_stack);
 
   g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), TRUE);
 
@@ -685,7 +579,6 @@ const gchar*
 bse_procedure_type_register (const gchar *name,
 			     const gchar *blurb,
 			     BsePlugin   *plugin,
-			     const gchar *category,
 			     BseType     *ret_type)
 {
   BseType type, base_type = 0;
@@ -713,14 +606,11 @@ bse_procedure_type_register (const gchar *name,
       if (!bse_type_is_a (base_type, BSE_TYPE_ITEM))
 	return "Procedure base type invalid";
     }
-  if (category && category[0] != '/')
-    return "Procedure category invalid";
   
   type = bse_type_register_dynamic (BSE_TYPE_PROCEDURE,
 				    name,
 				    blurb,
 				    plugin);
-  proc_entry_new (type, base_type, category);
 
   *ret_type = type;
 

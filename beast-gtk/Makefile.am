@@ -3,6 +3,7 @@
 #
 ## Makefile.am for BEAST
  
+SUBDIRS = icons
 
 INCLUDES = -I$(top_srcdir) $(BEAST_CFLAGS) -DGTK_DISABLE_COMPAT_H
 
@@ -31,6 +32,8 @@ beast_LDADD = $(progs_LDADD)
 # BEAST header files that don't get installed
 beast_headers = $(strip \
 	bstapp.h \
+	bstcanvaslink.h \
+	bstcanvassource.h \
 	bstdefs.h \
 	bstfiledialog.h \
 	bstinstrumentview.h \
@@ -45,15 +48,21 @@ beast_headers = $(strip \
 	bstpatternview.h \
 	bstprocedure.h \
 	bstsamplerepo.h \
+	bstsnetshell.h \
+	bstsnetrouter.h \
 	bstsongshell.h \
 	bstsongrouter.h \
 	bststatusbar.h \
 	bstsupershell.h \
 	bstxkb.h \
+	bstzoomedwindow.h \
+	gnomeforest.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
 	bstapp.c \
+	bstcanvaslink.c \
+	bstcanvassource.c \
 	bstfiledialog.c \
 	bstinstrumentview.c \
 	bstitemview.c \
@@ -68,11 +77,15 @@ beast_sources = $(strip \
 	bstpatternview.c \
 	bstprocedure.c \
 	bstsamplerepo.c \
+	bstsnetshell.c \
+	bstsnetrouter.c \
 	bstsongshell.c \
 	bstsongrouter.c \
 	bststatusbar.c \
 	bstsupershell.c \
 	bstxkb.c \
+	bstzoomedwindow.c \
+	gnomeforest.c \
 )
 # BEAST c sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \

@@ -88,8 +88,8 @@ bst_pattern_dialog_class_init (BstPatternDialogClass *class)
 {
   GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
-  BseType *proc_types;
-  guint n_proc_types;
+  BseCategory *cats;
+  guint n_cats;
   
   object_class = GTK_OBJECT_CLASS (class);
   widget_class = GTK_WIDGET_CLASS (class);
@@ -97,13 +97,14 @@ bst_pattern_dialog_class_init (BstPatternDialogClass *class)
   bst_pattern_dialog_class = class;
   parent_class = gtk_type_class (GTK_TYPE_WINDOW);
 
-  proc_types = bse_procedure_types ("*", /* BSE_TYPE_PATTERN */ 0, &n_proc_types);
+  cats = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE, &n_cats);
+  g_free (cats); cats = bse_categories_match ("*", &n_cats);
   class->popup_entries = bst_menu_entries_compose (n_popup_entries,
 						   popup_entries,
-						   n_proc_types,
-						   proc_types,
+						   n_cats,
+						   cats,
 						   pattern_dialog_exec_proc);
-  g_free (proc_types);
+  g_free (cats);
 }
 
 static void
@@ -111,7 +112,6 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
 {
   BstPatternDialogClass *class = BST_PATTERN_DIALOG_GET_CLASS (pattern_dialog);
   GtkItemFactory *factory;
-  GSList *slist;
 
   bst_status_bar_ensure (GTK_WINDOW (pattern_dialog));
   pattern_dialog->main_vbox = GTK_BIN (pattern_dialog)->child;
@@ -133,8 +133,7 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
    */
   factory = gtk_item_factory_new (GTK_TYPE_MENU, bst_pattern_dialog_factories_path, NULL);
   gtk_window_add_accel_group (GTK_WINDOW (pattern_dialog), factory->accel_group);
-  for (slist = class->popup_entries; slist; slist = slist->next)
-    gtk_item_factory_create_items (factory, 1, slist->data, pattern_dialog);
+  bst_menu_entries_create (factory, class->popup_entries, pattern_dialog);
   pattern_dialog->popup = factory->widget;
   gtk_object_set_data_full (GTK_OBJECT (pattern_dialog),
 			    bst_pattern_dialog_factories_path,

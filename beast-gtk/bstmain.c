@@ -34,7 +34,14 @@
 
 
 /* --- variables --- */
-static guint args_changed_signal_id = 0;
+static guint        args_changed_signal_id = 0;
+static const gchar *beast_rc_string =
+( "style'BstTooltips-style'"
+  "{"
+  "bg[NORMAL]={.94,.88,0.}"
+  "}"
+  "widget'gtk-tooltips'style'BstTooltips-style'"
+  "\n");
 
 
 /* --- functions --- */
@@ -50,13 +57,40 @@ main (int   argc,
   guint i;
 
   g_message ("BEAST: pid = %u", getpid ());
-  
-  /* initialize libraries
+
+  /* initialize BSE
    */
   bse_init (&argc, &argv);
-  gtk_init (&argc, &argv);
-  gle_init (&argc, &argv);
 
+  /* initialize GUI libraries
+   */
+  gtk_init (&argc, &argv);
+  gtk_rc_parse_string (beast_rc_string);
+  gdk_rgb_init ();
+  gle_init (&argc, &argv);
+  gnome_type_init ();
+  // gnome_init (PROGRAM, VERSION, argc, argv);
+
+  /* check load BSE plugins to register types
+   */
+  if (1)
+    {
+      GList *free_list, *list;
+      
+      free_list = bse_plugin_dir_list_files ("/usr/src/beast/plugins/.libs"); // BSE_PATH_PLUGINS);
+      for (list = free_list; list; list = list->next)
+	{
+	  gchar *error, *string = list->data;
+	  
+	  g_message ("loading plugin \"%s\"...", string);
+	  error = bse_plugin_check_load (string);
+	  if (error)
+	    g_message ("error encountered loading plugin \"%s\": %s", string, error);
+	  g_free (string);
+	}
+      g_list_free (free_list);
+    }
+  
 
   /* hackery rulez!
    */
@@ -82,25 +116,6 @@ main (int   argc,
   /* register neccessary GLE components
    */
   bst_app_register ();
-
-  /* register sample repositories
-   */
-  bst_sample_repo_init ();
-
-  /* parse GLE (GUI) resources
-   */
-  pdata = gle_parser_data_from_file (resource_file);
-  if (!pdata)
-    {
-      g_message ("Can't retrive neccessary resources from \"%s\"", resource_file);
-      return 1;
-    }
-  for (slist = pdata->gtoplevels; slist; slist = slist->next)
-    {
-      gle_gobject_ref (slist->data);
-      gle_gwidget_set_visible (slist->data, FALSE);
-    }
-  gle_parser_data_destroy (pdata);
 
 
   /* setup default keytable for pattern editor class
@@ -199,6 +214,27 @@ main (int   argc,
   }
     
   
+  /* parse GLE (GUI) resources
+   */
+  pdata = gle_parser_data_from_file (resource_file);
+  if (!pdata)
+    {
+      g_message ("Can't retrive neccessary resources from \"%s\"", resource_file);
+      return 1;
+    }
+  for (slist = pdata->gtoplevels; slist; slist = slist->next)
+    {
+      gle_gobject_ref (slist->data);
+      gle_gwidget_set_visible (slist->data, FALSE);
+    }
+  gle_parser_data_destroy (pdata);
+
+
+  /* register sample repositories
+   */
+  bst_sample_repo_init ();
+
+
   /* open files given on command line
    */
   for (i = 1; i < argc; i++)
@@ -246,28 +282,10 @@ main (int   argc,
 
       app = bst_app_new (project);
       bse_object_unref (BSE_OBJECT (project));
-      bst_app_operate (app, BST_OP_SONG_NEW);
+      bst_app_operate (app, BST_OP_PROJECT_NEW_SONG);
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
   
-  
-  /* pre load plugin types
-   */
-  {
-    GList *free_list, *list;
-
-    free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
-    for (list = free_list; list; list = list->next)
-      {
-	gchar *string = list->data;
-
-	g_message ("load \"%s\": %s",
-		   string,
-		   bse_plugin_check_load (string));
-	g_free (string);
-      }
-    g_list_free (free_list);
-  }
   
   
 /* and away into the main loop
@@ -317,7 +335,7 @@ bst_object_set (gpointer     object,
   va_list args;
 
   g_return_if_fail (GTK_IS_OBJECT (object));
-  
+
   gtk_object_ref (object);
   
   va_start (args, first_arg_name);
@@ -354,11 +372,12 @@ bst_object_set (gpointer     object,
     }
   va_end (args);
 
-  gtk_signal_emit (object, args_changed_signal_id);
+  BST_OBJECT_ARGS_CHANGED (object);
   
   gtk_object_unref (object);
 }
 
+/* read bstdefs.h on this */
 GnomeCanvasPoints*
 gnome_canvas_points_new0 (guint num_points)
 {
@@ -377,30 +396,73 @@ gnome_canvas_points_new0 (guint num_points)
   return points;
 }
 
-/*
-  static void
-  about_cb (GtkWidget *widget,
-  gpointer   data)
-  {
-  static const gchar *authors[] = { "Olaf Hoehmann", "Tim Janik", NULL };
-  static GtkWidget *about;
-  
-  if (!about)
-  {
-  about = gnome_about_new (TITLE, VERSION,
-  "Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik",
-  authors,
-  "Beast commentary",
-  NULL);
-  gtk_quit_add_destroy (1, GTK_OBJECT (about));
-  gtk_window_set_position (GTK_WINDOW (about), GTK_WIN_POS_CENTER);
-  gnome_dialog_close_hides (GNOME_DIALOG (about), TRUE);
-  gnome_dialog_append_button ( GNOME_DIALOG(about),
-  GNOME_STOCK_BUTTON_OK);
-  gnome_dialog_append_button ( GNOME_DIALOG(about),
-  GNOME_STOCK_BUTTON_OK);
-  gtk_signal_connect (GTK_OBJECT (about), "destroy", printf, "destruction");
-  }
-  gtk_widget_show (about);
-  }
-*/
+static void
+item_request_update_recurse (GnomeCanvasItem *item)
+{
+  g_return_if_fail (GNOME_IS_CANVAS_ITEM (item));
+
+  gnome_canvas_item_request_update (item);
+
+  if (GNOME_IS_CANVAS_GROUP (item))
+    {
+      GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (item);
+      GList *list;
+
+      for (list = group->item_list; list; list = list->next)
+	item_request_update_recurse (list->data);
+    }
+}
+
+void
+gnome_canvas_request_full_update (GnomeCanvas *canvas)
+{
+  g_return_if_fail (GNOME_IS_CANVAS (canvas));
+
+  item_request_update_recurse (canvas->root);
+}
+
+guint
+gnome_canvas_item_get_stacking (GnomeCanvasItem *item)
+{
+  g_return_val_if_fail (GNOME_IS_CANVAS_ITEM (item), 0);
+
+  if (item->parent)
+    {
+      GnomeCanvasGroup *parent = GNOME_CANVAS_GROUP (item->parent);
+      GList *list;
+      guint pos = 0;
+
+      for (list = parent->item_list; list; list = list->next)
+	{
+	  if (list->data == item)
+	    return pos;
+	  pos++;
+	}
+    }
+
+  return 0;
+}
+
+extern void
+gnome_canvas_item_keep_between (GnomeCanvasItem *between,
+				GnomeCanvasItem *item1,
+				GnomeCanvasItem *item2)
+{
+  g_return_if_fail (GNOME_IS_CANVAS_ITEM (between));
+  g_return_if_fail (GNOME_IS_CANVAS_ITEM (item1));
+  g_return_if_fail (GNOME_IS_CANVAS_ITEM (item2));
+
+  if (between->parent && item1->parent == between->parent && item2->parent == between->parent)
+    {
+      guint n, i, z;
+
+      n = gnome_canvas_item_get_stacking (item1);
+      i = gnome_canvas_item_get_stacking (item2);
+      z = gnome_canvas_item_get_stacking (between);
+      n = (n + i + (z > MIN (n, i))) / 2;
+      if (z < n)
+	gnome_canvas_item_raise (between, n - z);
+      else if (n < z)
+	gnome_canvas_item_lower (between, z - n);
+    }
+}

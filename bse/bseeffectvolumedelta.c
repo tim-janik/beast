@@ -38,8 +38,8 @@ BSE_BUILTIN_TYPE (BseEffectVolumeDelta)
   static const BseTypeInfo effect_info = {
     sizeof (BseEffectClass),
 
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_effect_volume_delta_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

@@ -51,8 +51,8 @@ BSE_BUILTIN_TYPE (BseBinData)
   static const BseTypeInfo bin_data_info = {
     sizeof (BseBinDataClass),
     
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_bin_data_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

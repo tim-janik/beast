@@ -54,7 +54,7 @@ typedef enum
 /* --- BseText interface --- */
 struct _BseTextInterface
 {
-  BseTypeInterfaceClass	interface;
+  BseTypeInterface     	interface;
 
   void	(*write_chars)	(BseText     *text,
 			 guint        n_chars,

@@ -24,12 +24,24 @@
 
 
 /* --- object type macros --- */
-#define	BSE_TYPE_ITEM		   (BSE_TYPE_ID (BseItem))
-#define BSE_ITEM(object)	   (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_ITEM, BseItem))
-#define BSE_ITEM_CLASS(class)	   (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_ITEM, BseItemClass))
-#define BSE_IS_ITEM(object)	   (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_ITEM))
-#define BSE_IS_ITEM_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ITEM))
-#define BSE_ITEM_GET_CLASS(object) ((BseItemClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define	BSE_TYPE_ITEM		    (BSE_TYPE_ID (BseItem))
+#define BSE_ITEM(object)	    (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_ITEM, BseItem))
+#define BSE_ITEM_CLASS(class)	    (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_ITEM, BseItemClass))
+#define BSE_IS_ITEM(object)	    (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_ITEM))
+#define BSE_IS_ITEM_CLASS(class)    (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ITEM))
+#define BSE_ITEM_GET_CLASS(object)  ((BseItemClass*) (((BseObject*) (object))->bse_struct.bse_class))
+
+
+/* --- BseItem member macros --- */
+#define BSE_ITEM_PARENT_REF(object) ((BSE_OBJECT_FLAGS (object) & BSE_ITEM_FLAG_PARENT_REF) != 0)
+
+
+/* --- bse item flags --- */
+typedef enum                            /* <skip> */
+{
+  BSE_ITEM_FLAG_PARENT_REF	= 1 << BSE_OBJECT_FLAGS_USER_SHIFT
+} BseItemFlags;
+#define BSE_ITEM_FLAGS_USER_SHIFT	(BSE_OBJECT_FLAGS_USER_SHIFT + 1)
 
 
 /* --- BseItem object --- */

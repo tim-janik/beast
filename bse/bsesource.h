@@ -52,12 +52,12 @@ extern "C" {
 /* --- BseSource flags --- */
 typedef enum
 {
-  BSE_SOURCE_FLAG_PREPARED	= 1 << BSE_OBJECT_FLAGS_USER_SHIFT,
-  BSE_SOURCE_FLAG_PAUSED	= 1 << (BSE_OBJECT_FLAGS_USER_SHIFT + 1),
-  BSE_SOURCE_FLAG_HAS_INPUT	= 1 << (BSE_OBJECT_FLAGS_USER_SHIFT + 2),
-  BSE_SOURCE_FLAG_HAS_OUTPUT	= 1 << (BSE_OBJECT_FLAGS_USER_SHIFT + 3)
+  BSE_SOURCE_FLAG_PREPARED	= 1 << BSE_ITEM_FLAGS_USER_SHIFT,
+  BSE_SOURCE_FLAG_PAUSED	= 1 << (BSE_ITEM_FLAGS_USER_SHIFT + 1),
+  BSE_SOURCE_FLAG_HAS_INPUT	= 1 << (BSE_ITEM_FLAGS_USER_SHIFT + 2),
+  BSE_SOURCE_FLAG_HAS_OUTPUT	= 1 << (BSE_ITEM_FLAGS_USER_SHIFT + 3)
 } BseSourceFlags;
-#define BSE_SOURCE_FLAGS_USER_SHIFT     (BSE_OBJECT_FLAGS_USER_SHIFT + 4)
+#define BSE_SOURCE_FLAGS_USER_SHIFT     (BSE_ITEM_FLAGS_USER_SHIFT + 4)
 
 
 /* --- structures --- */
@@ -76,8 +76,8 @@ struct _BseSourceOChannel
 {
   guint	      ring_offset;
   guint       history;
-  guint	      muted /*FIXME : 1*/;
-  guint	      in_calc /*FIXME : 1*/;
+  guint	      muted : 1;
+  guint	      in_calc : 1;
   BseChunk  **chunks;
 };
 struct _BseSource
@@ -130,7 +130,7 @@ struct _BseSourceClass
 			 guint		 ochannel_id,
 			 guint		 history);
   void	(*remove_input)	(BseSource	*source,
-			 guint		 ichannel_id);
+			 guint		 input_index);
 };
 
 
@@ -144,6 +144,7 @@ gboolean	bse_source_remove_input		(BseSource	*source,
 						 BseSource	*input);
 void		bse_source_clear_ichannel	(BseSource	*source,
 						 guint		 ichannel_id);
+void		bse_source_clear_ichannels	(BseSource	*source);
 void		bse_source_clear_ochannels	(BseSource	*source);
 void		bse_source_prepare		(BseSource	*source,
 						 BseIndex	 index);

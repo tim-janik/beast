@@ -264,14 +264,31 @@ void
 bst_status_bar_ensure (GtkWindow *window)
 {
   GtkWidget *child, *vbox, *sbar, *hbox, *prog, *msg, *status, *abort;
+  static const gchar *status_bar_rc_string =
+    ( "style'BstStatusBar-Abort-style'"
+      "{"
+      "#font='-misc-fixed-*-*-*-*-*-130-*-*-*-*-*-*'\n"
+      "fg[NORMAL]={1.,0.,0.}"
+      "fg[ACTIVE]={1.,0.,0.}"
+      "fg[PRELIGHT]={1.,0.,0.}"
+      "bg[NORMAL]={.7,.7,.7}"
+      "}"
+      "widget'*.BstStatusBar.*.AbortButton*'style'BstStatusBar-Abort-style'"
+      "\n");
   
   g_return_if_fail (GTK_IS_WINDOW (window));
   
   if (GTK_OBJECT_DESTROYED (window) ||
       bst_status_bar_from_window (window))
     return;
-  
-  child = GTK_BIN (window)->child;
+
+  if (status_bar_rc_string)
+    {
+      gtk_rc_parse_string (status_bar_rc_string);
+      status_bar_rc_string = NULL;
+    }
+
+ child = GTK_BIN (window)->child;
   if (child)
     {
       gtk_widget_ref (child);
@@ -284,6 +301,7 @@ bst_status_bar_ensure (GtkWindow *window)
 			 "parent", window,
 			 NULL);
   sbar = gtk_widget_new (GTK_TYPE_HBOX,
+			 "name", "BstStatusBar",
 			 "homogeneous", FALSE,
 			 "resize_mode", GTK_RESIZE_QUEUE,
 			 "width", 110, /* squeeze labels into available space */
@@ -323,6 +341,7 @@ bst_status_bar_ensure (GtkWindow *window)
   gtk_box_pack_end (GTK_BOX (hbox), status, FALSE, TRUE, hbox->style->klass->ythickness);
   abort = gtk_widget_new (GTK_TYPE_TOGGLE_BUTTON,
 			  "label", "Abort",
+			  "name", "AbortButton",
 			  "height", 1, /* squeeze into available space */
 			  "can_focus", FALSE,
 			  NULL);

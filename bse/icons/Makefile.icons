@@ -1,0 +1,9 @@
+## Generated data (by make Makefile.icons)
+icon_list += ball.c
+icon_list += snet.c
+icon_list += song.c
+icon_list += ball.xcf
+icon_list += sheet.xcf
+icon_list += snet.xcf
+icon_list += song.xcf
+## Generated data ends here

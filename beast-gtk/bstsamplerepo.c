@@ -180,13 +180,13 @@ bst_sample_repo_init (void)
 {
   GScanner *scanner;
   GSList *slist, *sample_names = NULL;
-  GPatternSpec pspec;
+  GPatternSpec *pspec;
 
   g_message ("Scanning sample repositories...");
 
-  g_pattern_spec_init (&pspec, "*.bse");
-  sample_names = list_files_rec (sample_names, BST_DATA_DIR, &pspec);
-  g_pattern_spec_free_segs (&pspec);
+  pspec = g_pattern_spec_new ("*.bse");
+  sample_names = list_files_rec (sample_names, BST_DATA_DIR, pspec);
+  g_pattern_spec_free (pspec);
   sample_names = g_slist_reverse (sample_names);
 
   scanner = g_scanner_new (NULL);

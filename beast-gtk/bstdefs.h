@@ -25,6 +25,7 @@
 #include        <gle/gtkhwrapbox.h>
 #include        <gle/gtkvwrapbox.h>
 #include	<gnome.h>
+#include	"gnomeforest.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,12 +43,16 @@ typedef enum
   BST_OP_PROJECT_OPEN,
   BST_OP_PROJECT_SAVE,
   BST_OP_PROJECT_SAVE_AS,
+  BST_OP_PROJECT_NEW_SONG,
+  BST_OP_PROJECT_NEW_SNET,
+  BST_OP_PROJECT_CLOSE,
+
+  /* debugging */
   BST_OP_REBUILD,
   BST_OP_REFRESH,
 
   /* song operations
    */
-  BST_OP_SONG_NEW,
   BST_OP_PATTERN_ADD,
   BST_OP_PATTERN_DELETE,
   BST_OP_PATTERN_EDITOR,
@@ -63,7 +68,6 @@ typedef enum
 
   /* application wide
    */
-  BST_OP_CLOSE,
   BST_OP_EXIT,
   BST_OP_HELP_ABOUT,
 
@@ -80,8 +84,18 @@ extern void bst_update_can_operate (GtkWidget   *some_widget);
 extern void bst_object_set         (gpointer     object,
 				    const gchar *first_arg_name,
 				    ...); /* hackery rulez! */
+#define	BST_OBJECT_ARGS_CHANGED(object)	G_STMT_START { \
+    if (!GTK_OBJECT_DESTROYED (object)) \
+      gtk_signal_emit_by_name ((GtkObject*) (object), "args-changed"); \
+} G_STMT_END
 
 extern GnomeCanvasPoints* gnome_canvas_points_new0 (guint num_points);
+extern void gnome_canvas_request_full_update (GnomeCanvas *canvas);
+extern guint gnome_canvas_item_get_stacking (GnomeCanvasItem *item);
+extern void gnome_canvas_item_keep_between (GnomeCanvasItem *between,
+					    GnomeCanvasItem *item1,
+					    GnomeCanvasItem *item2);
+     
 
 
      

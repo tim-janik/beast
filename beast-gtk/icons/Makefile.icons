@@ -1,0 +1,4 @@
+## Generated data (by make Makefile.icons)
+icon_list += noicon.c
+icon_list += noicon.xcf
+## Generated data ends here

@@ -48,8 +48,8 @@ BSE_BUILTIN_TYPE (BseContainer)
   static const BseTypeInfo container_info = {
     sizeof (BseContainerClass),
 
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_container_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,
@@ -100,7 +100,7 @@ bse_container_destroy (BseObject *object)
   container = BSE_CONTAINER (object);
 
   if (container->n_items)
-    g_warning ("%s: destroy handlers missed to remove %u items",
+    g_warning ("%s: shutdown handlers missed to remove %u items",
 	       BSE_OBJECT_TYPE_NAME (container),
 	       container->n_items);
   
@@ -112,20 +112,16 @@ static void
 bse_container_do_add_item (BseContainer *container,
 			   BseItem	*item)
 {
-  bse_object_ref (BSE_OBJECT (item));
+  if (BSE_ITEM_PARENT_REF (item))
+    bse_object_ref (BSE_OBJECT (item));
   container->n_items += 1;
   bse_item_set_container (item, BSE_ITEM (container));
 }
 
-void
-bse_container_add_item (BseContainer *container,
-			BseItem      *item)
+static inline void
+container_add_item (BseContainer *container,
+		    BseItem      *item)
 {
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (item->container == NULL);
-  g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
-
   bse_object_ref (BSE_OBJECT (container));
   bse_object_ref (BSE_OBJECT (item));
 
@@ -159,6 +155,39 @@ bse_container_add_item (BseContainer *container,
   bse_object_unref (BSE_OBJECT (container));
 }
 
+void
+bse_container_add_item (BseContainer *container,
+			BseItem      *item)
+{
+  g_return_if_fail (BSE_IS_CONTAINER (container));
+  g_return_if_fail (!BSE_OBJECT_DESTROYED (container));
+  g_return_if_fail (BSE_IS_ITEM (item));
+  g_return_if_fail (item->container == NULL);
+  g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
+
+  BSE_OBJECT_SET_FLAGS (item, BSE_ITEM_FLAG_PARENT_REF);
+  container_add_item (container, item);
+}
+
+void
+bse_container_add_item_unrefed (BseContainer *container,
+				BseItem      *item)
+{
+  g_return_if_fail (BSE_IS_CONTAINER (container));
+  g_return_if_fail (!BSE_OBJECT_DESTROYED (container));
+  g_return_if_fail (BSE_IS_ITEM (item));
+  g_return_if_fail (item->container == NULL);
+  g_return_if_fail (!BSE_OBJECT_DESTROYED (item));
+  g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
+
+  /* we don't want the item to stay around, due to *our* ref count,
+   * we get notified about item destruction through item's shutdown method
+   */
+
+  BSE_OBJECT_UNSET_FLAGS (item, BSE_ITEM_FLAG_PARENT_REF);
+  container_add_item (container, item);
+}
+
 BseItem*
 bse_container_new_item (BseContainer *container,
 			BseType       item_type,
@@ -186,7 +215,11 @@ bse_container_do_remove_item (BseContainer *container,
 {
   container->n_items -= 1;
   bse_item_set_container (item, NULL);
-  bse_object_unref (BSE_OBJECT (item));
+  if (BSE_ITEM_PARENT_REF (item))
+    {
+      bse_object_unref (BSE_OBJECT (item));
+      BSE_OBJECT_UNSET_FLAGS (item, BSE_ITEM_FLAG_PARENT_REF);
+    }
 }
 
 void
@@ -216,8 +249,12 @@ bse_container_forall_items (BseContainer      *container,
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (func != NULL);
 
-  if (container->n_items && BSE_CONTAINER_GET_CLASS (container)->forall_items)
-    BSE_CONTAINER_GET_CLASS (container)->forall_items (container, func, data);
+  if (container->n_items)
+    {
+      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, func, data);
+    }
 }
 
 static gboolean
@@ -235,11 +272,12 @@ GList*
 bse_container_list_items (BseContainer *container)
 {
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
 
   if (container->n_items)
     {
       GList *list = NULL;
+
+      g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
 
       BSE_CONTAINER_GET_CLASS (container)->forall_items (container, list_items, &list);
 
@@ -249,6 +287,17 @@ bse_container_list_items (BseContainer *container)
     return NULL;
 }
 
+static gboolean
+count_item_seqid (BseItem *item,
+		  gpointer data_p)
+{
+  gpointer *data = data_p;
+  
+  data[1] = GUINT_TO_POINTER (GPOINTER_TO_UINT (data[1]) + 1);
+  
+  return item != data[0];
+}
+
 guint
 bse_container_get_item_seqid (BseContainer *container,
 			      BseItem      *item)
@@ -256,9 +305,44 @@ bse_container_get_item_seqid (BseContainer *container,
   g_return_val_if_fail (BSE_IS_CONTAINER (container), 0);
   g_return_val_if_fail (BSE_IS_ITEM (item), 0);
   g_return_val_if_fail (item->container == BSE_ITEM (container), 0);
-  g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->item_seqid != NULL, 0); /* paranoid */
+  
+  if (BSE_CONTAINER_GET_CLASS (container)->item_seqid)
+    return BSE_CONTAINER_GET_CLASS (container)->item_seqid (container, item);
+  else if (container->n_items)
+    {
+      gpointer data[2];
+      
+      g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, 0); /* paranoid */
+      
+      data[0] = item;
+      data[1] = GUINT_TO_POINTER (0);
+      
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, count_item_seqid, data);
 
-  return BSE_CONTAINER_GET_CLASS (container)->item_seqid (container, item);
+      return GPOINTER_TO_UINT (data[1]);
+    }
+  else
+    return 0;
+}
+
+static gboolean
+find_nth_item (BseItem *item,
+	       gpointer data_p)
+{
+  gpointer *data = data_p;
+  guint n = GPOINTER_TO_UINT (data[1]);
+
+  n -= 1;
+  data[1] = GUINT_TO_POINTER (n);
+
+  if (!n)
+    {
+      data[0] = item;
+
+      return FALSE;
+    }
+  else
+    return TRUE;
 }
 
 BseItem*
@@ -269,9 +353,24 @@ bse_container_get_item (BseContainer *container,
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
   g_return_val_if_fail (seqid > 0, NULL);
   g_return_val_if_fail (bse_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
-  g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->get_item != NULL, NULL); /* paranoid */
 
-  return BSE_CONTAINER_GET_CLASS (container)->get_item (container, item_type, seqid);
+  if (BSE_CONTAINER_GET_CLASS (container)->get_item)
+    return BSE_CONTAINER_GET_CLASS (container)->get_item (container, item_type, seqid);
+  else if (container->n_items)
+    {
+      gpointer data[2];
+
+      g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
+
+      data[0] = NULL;
+      data[1] = GUINT_TO_POINTER (seqid);
+
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, find_nth_item, data);
+
+      return data[0];
+    }
+  else
+    return NULL;
 }
 
 static gboolean

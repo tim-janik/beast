@@ -63,6 +63,7 @@ const guint	bse_micro_version = BSE_MICRO_VERSION;
 const guint	bse_interface_age = BSE_INTERFACE_AGE;
 const guint	bse_binary_age = BSE_BINARY_AGE;
 const gchar    *bse_version = BSE_VERSION;
+const gchar    *bse_log_domain_bse = "BSE";
 const gdouble*	_bse_halftone_factor_table = NULL;
 const guint*	_bse_halftone_factor_table_fixed = NULL;
 const gdouble*	_bse_fine_tune_factor_table = NULL;

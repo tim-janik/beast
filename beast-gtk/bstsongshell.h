@@ -33,12 +33,12 @@ extern "C" {
 
 
 /* --- Gtk+ type macros --- */
-#define	BST_TYPE_SONG_SHELL		(bst_song_shell_get_type ())
-#define	BST_SONG_SHELL(object)		(GTK_CHECK_CAST ((object), BST_TYPE_SONG_SHELL, BstSongShell))
-#define	BST_SONG_SHELL_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_SONG_SHELL, BstSongShellClass))
-#define	BST_IS_SONG_SHELL(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_SONG_SHELL))
-#define	BST_IS_SONG_SHELL_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_SONG_SHELL))
-#define BST_SONG_SHELL_GET_CLASS(obj)	((BstSongShellClass*) (((GtkObject*) (obj))->klass))
+#define	BST_TYPE_SONG_SHELL	       (bst_song_shell_get_type ())
+#define	BST_SONG_SHELL(object)	       (GTK_CHECK_CAST ((object), BST_TYPE_SONG_SHELL, BstSongShell))
+#define	BST_SONG_SHELL_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_SONG_SHELL, BstSongShellClass))
+#define	BST_IS_SONG_SHELL(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_SONG_SHELL))
+#define	BST_IS_SONG_SHELL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_SONG_SHELL))
+#define BST_SONG_SHELL_GET_CLASS(obj)  ((BstSongShellClass*) (((GtkObject*) (obj))->klass))
 
 
 /* --- structures & typedefs --- */

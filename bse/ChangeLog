@@ -1,3 +1,123 @@
+Fri Oct 15 00:20:30 1999  Tim Janik  <timj@gtk.org>
+
+	* icons/Makefile.am: 
+	* icons/Makefile.icons: setup ./icons subdirectory.
+
+Fri Oct 15 00:00:41 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.c: add category with ugly test-icon for an internal object.
+
+Thu Oct 14 23:28:27 1999  Tim Janik  <timj@gtk.org>
+
+	* bseutils.[hc]: added bse_icon_from_pixdata() to create a new icon
+	structure from a pixdata buffer (and decode the run-length encoding).
+
+Wed Oct 13 06:05:55 1999  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: adapted some stuff so loging domains and fallback
+	plugin names are featured for builtin plugins as well.
+
+Tue Oct 12 20:15:34 1999  Tim Janik  <timj@gtk.org>
+
+	* bseplugin.[hc]: recognize predefined plugin names, only evaluate
+	plugin-name specification for strings for builtin_* plugins, create
+	their symbols from their underscored file name.
+	removed some export stuff.
+	added object type support for plugins.
+
+	* bseexports.h: moved lots of new stuff here, fixed up object types.
+
+	* mkbuiltinlist.pl: output the actuall file name of builtin plugins
+	as symbol part (with non-identifier chars converted into '_').
+
+Fri Oct 8 15:04:40 1999  Tim Janik  <timj@gtk.org>
+
+	* bseprocedure.[hc]: removed proecedure category implementation,
+	adapted code to work with bsecategories.[hc].
+
+Thu Oct  7 00:17:38 1999  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]:
+	nuked g_pattern_spec_init() and g_pattern_spec_free_segs() in favour of
+	g_pattern_spec_new() and g_pattern_spec_free() which create and free a
+	newly allocated structure. also cleverly optimized g_pattern_spec_new()
+	by counting tail and head wildcards and jokers. from these numbers, we
+	can make better judgement whether to match from tail or head and also
+	got rid of a bunch of strchr() calls.
+
+Wed Oct  6 23:53:07 1999  Tim Janik  <timj@gtk.org>
+
+	* bsecategories.[hc]: new files, implementing a more general
+	categorization approach. intended to take over the procedure category
+	administration and feature object categories as well (see also
+	docs/bse-categories.txt on this topic).
+
+Tue Oct  5 13:49:57 1999  Tim Janik  <timj@gtk.org>
+
+	* bseexports.h: added export structure for objects.
+	* bseplugin.h: extended macro magic to feature object types.
+	* bseplugin.c: register, reinit, unload and complete exported
+	and builtin object types.
+
+Fri Oct  1 07:29:32 1999  Tim Janik  <timj@gtk.org>
+
+	* bsemaster.c (bse_master_do_cycle): added ability to mix multiple
+	stereo songs together.
+
+	* some const corrections.
+
+Thu Sep 30 09:18:58 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesample.c (bse_sample_do_shutdown): 
+	* bsepattern.c (bse_pattern_do_shutdown): 
+	* bseinstrument.c (bse_instrument_do_shutdown): 
+	* bsesong.c (bse_song_do_shutdown): 
+	* bseproject.c (bse_project_do_shutdown):
+	remove/release items/objects in shutdown handler, rather than destroy.
+
+	* bseobject.c (bse_object_unlock): release global lock *after* the
+	->unlocked class method has been invoked.
+
+	* bseobject.[hc]: changed destruction mechanism to using an intermediate
+	->shutdown method. this eases class destruction, shutdown is invoked
+	prior to the object's destroy notification and one ref_count is at least
+	being held. once the final reference count dropps, the ->destroy method
+	is actually invoked.
+	(bse_object_set_valist): 
+	(bse_object_set_param): check for non-destroyed object first.
+
+	* bsecontainer.[hc] (bse_container_add_item_unrefed): new function for
+	containers to manage (non-destroyed) items, without holding and extra
+	ref count on them, we use destroy notification from BseItem for cleanup.
+
+	* bseitem.c (bse_item_do_shutdown): remove item from container in
+	->shutdown instead of ->destroy.
+
+	* bsesource.c: added some !destroyed checks.
+	(bse_source_do_shutdown): use ->shutdown instead of ->destroy.
+
+Sat Sep 27 12:30:02 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.[hc]: new super type to manage source networks (skeleton
+	only).
+
+Wed Sep 22 06:24:00 1999  Tim Janik  <timj@gtk.org>
+
+	* bsetype.[hc]: lots of code cleanups and bug fixes over the last few
+	days. significantly changed allocation system, so TypeNodes are not
+	themselves relocatable anymore (certain structure parts are though).
+	nodes get allocated with their supers list in one peace now.
+
+Thu Sep 16 09:14:19 1999  Tim Janik  <timj@gtk.org>
+
+	* bsetype.[hc]: started out on bse_type_class_lastref() as a
+	preparation for delayed destruction.
+	we need to catch FIXMEs.
+
+Mon Sep 13 05:19:17 1999  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: minor autogeneration fixups, use cp instead of mv.
+
 1999-06-03    <timj@dhcpd7.redhat.com>
 
 	* bsesong.c: fix typo.

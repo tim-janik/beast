@@ -36,7 +36,7 @@ extern "C" {
 				     __FILE__, __LINE__, G_GNUC_PRETTY_FUNCTION)
 
 
-/* --- basic BSE typedefs --- */
+/* --- BSE basic typedefs --- */
 typedef gint64				BseIndex;
 typedef	gint32				BseMixValue;
 typedef	gint16				BseSampleValue;
@@ -44,10 +44,8 @@ typedef gulong				BseTime;
 typedef guint				BseIndex2D;
 typedef guint				BseType;
 typedef struct  _BseTypeClass		BseTypeClass;
-typedef struct  _BseTypeInterfaceClass	BseTypeInterfaceClass;
+typedef struct  _BseTypeInterface     	BseTypeInterface;
 typedef struct  _BseTypeStruct		BseTypeStruct;
-typedef const gchar*                    BseExportBegin;
-typedef guint                           BseExportEnd;
 
 
 /* --- BSE parameters (and values) --- */
@@ -100,6 +98,8 @@ typedef	struct	_BseProject		BseProject;
 typedef	struct	_BseProjectClass	BseProjectClass;
 typedef struct	_BseSample		BseSample;
 typedef struct	_BseSampleClass		BseSampleClass;
+typedef struct	_BseSNet		BseSNet;
+typedef struct	_BseSNetClass		BseSNetClass;
 typedef struct	_BseSong		BseSong;
 typedef struct	_BseSongClass		BseSongClass;
 typedef struct	_BseSource		BseSource;
@@ -113,14 +113,14 @@ typedef struct	_BseTextInterface	BseTextInterface;
 
 
 /* --- BSE aux structures --- */
+typedef struct	_BseCategory		BseCategory;
 typedef struct	_BseChunk		BseChunk;
 typedef struct	_BseDot			BseDot;
-typedef union	_BseExportSpec		BseExportSpec;
-typedef struct  _BseExportAny		BseExportAny;
-typedef struct  _BseExportProcedure     BseExportProcedure;
 typedef struct	_BseGlobals		BseGlobals;
+typedef struct	_BseIcon		BseIcon;
 typedef struct	_BseLfo			BseLfo;
 typedef struct	_BseParserData		BseParserData;
+typedef struct  _BsePixdata             BsePixdata;
 typedef struct	_BseMunk		BseMunk;
 typedef struct	_BseNote		BseNote;
 typedef struct	_BsePcmConfig		BsePcmConfig;
@@ -138,9 +138,39 @@ typedef struct	_BseNotifyHook		BseNotifyHook;
 /* --- anticipated enums --- */
 typedef enum                            /* <skip> */
 {
-  BSE_TOKEN_UNMATCHED           =       G_TOKEN_LAST + 1,
-  BSE_TOKEN_NIL			=	G_TOKEN_LAST + 2
+  BSE_TOKEN_UNMATCHED           = G_TOKEN_LAST + 1,
+  BSE_TOKEN_NIL			= G_TOKEN_LAST + 2
 } BseTokenType;
+typedef enum                    /* <skip> */
+{
+  BSE_PIXDATA_RGB               = 3,
+  BSE_PIXDATA_RGBA              = 4,
+  BSE_PIXDATA_RGB_MASK          = 0x07,
+  BSE_PIXDATA_1BYTE_RLE         = (1 << 3),
+  BSE_PIXDATA_ENCODING_MASK     = 0x08
+} BsePixdataType;
+
+
+/* --- anticipated structures --- */
+struct _BsePixdata
+{
+  BsePixdataType type : 8;
+  guint          width : 12;
+  guint          height : 12;
+  const guint8  *encoded_pix_data;
+};
+struct _BseIcon
+{
+  guint   bytes_per_pixel; /* 3:RGB, 4:RGBA */
+  guint   width;
+  guint   height;
+  guint8 *pixels;
+};
+
+
+/* --- required globals --- */
+extern const gchar *bse_log_domain_bse;
+
 
 /* --- BSE function types --- */
 typedef	void		(*BseFunc)		(void);

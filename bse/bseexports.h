@@ -29,7 +29,30 @@ extern "C" {
 
 
 
+/* --- plugin export macros --- */
+/* (implementations reside in bseplugin.h) */
+/* start export section,
+ * provide a unique plugin here
+ */
+#define BSE_EXPORTS_BEGIN(UniqueName)   BSE_EXPORT_IMPL_B (UniqueName)
+/* list procedure types as BseExportProcedure(bseexports.h) array
+ */
+#define BSE_EXPORT_PROCEDURES           BSE_EXPORT_IMPL_A (Procedure)
+/* list object types as BseExportObject(bseexports.h) array
+ */
+#define BSE_EXPORT_OBJECTS              BSE_EXPORT_IMPL_A (Object)
+/* end export section
+ */
+#define BSE_EXPORTS_END                 BSE_EXPORT_IMPL_E
+
+
 /* --- typedefs --- */
+typedef const gchar*                        BseExportBegin;
+typedef union  _BseExportSpec               BseExportSpec;
+typedef struct _BseExportAny                BseExportAny;
+typedef struct _BseExportObject             BseExportObject;
+typedef struct _BseExportProcedure     	    BseExportProcedure;
+typedef guint                               BseExportEnd;
 typedef void         (*BseProcedureInit)   (BseProcedureClass *proc,
 					    BseParamSpec     **ipspecs,
 					    BseParamSpec     **opspecs);
@@ -40,9 +63,10 @@ typedef void         (*BseProcedureUnload) (BseProcedureClass *procedure);
 
 
 /* --- export types --- */
-typedef enum		/* <skip> */
+typedef enum			/* <skip> */
 {
-  BSE_EXPORT_TYPE_PROCS = 1,
+  BSE_EXPORT_TYPE_PROCS		= 1,
+  BSE_EXPORT_TYPE_OBJECTS	= 2
 } BseExportType;
 
 
@@ -51,19 +75,31 @@ struct _BseExportAny
 {
   BseType            *type_p;
   const gchar  	     *name;
-  const gchar  	     *category;
-  const gchar  	     *blurb;
 };
 struct _BseExportProcedure
 {
-  BseType            *type_p;	  /* obligatory */
-  const gchar  	     *name;	  /* obligatory */
-  const gchar  	     *category;	  /* recommended */
-  const gchar  	     *blurb;	  /* optional */
+  BseType            *type_p;	   /* obligatory */
+  const gchar  	     *name;	   /* obligatory */
+  const gchar  	     *blurb;	   /* optional */
 
-  BseProcedureInit    init;	  /* obligatory */
-  BseProcedureExec    exec;	  /* obligatory */
-  BseProcedureUnload  unload;	  /* optional */
+  BseProcedureInit    init;	   /* obligatory */
+  BseProcedureExec    exec;	   /* obligatory */
+  BseProcedureUnload  unload;	   /* optional */
+  
+  const gchar  	     *category;	   /* recommended */
+  const BsePixdata    pixdata;     /* optional */
+};
+struct _BseExportObject
+{
+  BseType            *type_p;	   /* obligatory */
+  const gchar  	     *name;	   /* obligatory */
+  const gchar  	     *parent_type; /* obligatory */
+  const gchar  	     *blurb;	   /* optional */
+
+  const BseTypeInfo  *object_info; /* obligatory */
+
+  const gchar  	     *category;	   /* recommended */
+  const BsePixdata    pixdata;     /* optional */
 };
 
 
@@ -72,13 +108,16 @@ union _BseExportSpec
 {
   BseType		 *type_p; /* common to all members */
   BseExportAny		  any;
-  BseExportProcedure	 s_proc;
+  BseExportProcedure	  s_proc;
+  BseExportObject	  s_object;
 };
 
 
 /* --- internal prototypes --- */
-void	bse_procedure_complete_info	(BseExportSpec  *spec,
-					 BseTypeInfo    *info);
+void	bse_procedure_complete_info	(const BseExportSpec *spec,
+					 BseTypeInfo         *info);
+void	bse_object_complete_info	(const BseExportSpec *spec,
+					 BseTypeInfo         *info);
 
 
 

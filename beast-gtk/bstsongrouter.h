@@ -19,8 +19,6 @@
 #define __BST_SONG_ROUTER_H__
 
 #include	"bstdefs.h"
-#include	<gtk/gtk.h>
-#include	<gnome.h>
 
 
 #ifdef __cplusplus
@@ -43,19 +41,16 @@ typedef	struct	_BstSongRouter		BstSongRouter;
 typedef	struct	_BstSongRouterClass	BstSongRouterClass;
 struct _BstSongRouter
 {
-  GtkVBox	 parent_object;
+  GtkHBox	 parent_object;
 
   BseSong	*song;
 
   GnomeCanvas	   *canvas;
   GnomeCanvasGroup *root;
-  GnomeCanvasItem  *line;
-  GnomeCanvasItem  *rect;
-  GnomeCanvasItem  *tag;
 };
 struct _BstSongRouterClass
 {
-  GtkVBoxClass		parent_class;
+  GtkHBoxClass		parent_class;
 };
 
 
@@ -64,7 +59,7 @@ GtkType		bst_song_router_get_type	(void);
 GtkWidget*	bst_song_router_new		(BseSong	*song);
 void		bst_song_router_update		(BstSongRouter	*song_router);
 void		bst_song_router_rebuild		(BstSongRouter	*song_router);
-
+     
 
 
 

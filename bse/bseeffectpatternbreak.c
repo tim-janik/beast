@@ -29,8 +29,8 @@ BSE_BUILTIN_TYPE (BseEffectPatternBreak)
   static const BseTypeInfo effect_info = {
     sizeof (BseEffectClass),
 
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_effect_pattern_break_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

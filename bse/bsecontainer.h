@@ -68,6 +68,8 @@ BseItem*        bse_container_new_item          (BseContainer   *container,
 						 ...);
 void		bse_container_remove_item	(BseContainer	*container,
 						 BseItem	*item);
+void		bse_container_add_item_unrefed	(BseContainer	*container,
+						 BseItem	*item);
 void		bse_container_forall_items	(BseContainer	*container,
 						 BseForallItemsFunc func,
 						 gpointer	 data);

@@ -76,19 +76,20 @@ struct _GPatternSpec
   gchar     *pattern;
   gchar     *pattern_reversed;
 };
-void     g_pattern_spec_init      (GPatternSpec *pspec,
-				   const gchar  *pattern);
-void     g_pattern_spec_free_segs (GPatternSpec *pspec);
-gboolean g_pattern_match          (GPatternSpec *pspec,
-				   guint         string_length,
-				   const gchar  *string,
-				   const gchar  *string_reversed);
-gboolean g_pattern_match_string   (GPatternSpec *pspec,
-				   const gchar  *string);
-gboolean g_pattern_match_simple   (const gchar  *pattern,
-				   const gchar  *string);
+GPatternSpec* g_pattern_spec_new       (const gchar  *pattern);
+void          g_pattern_spec_free      (GPatternSpec *pspec);
+gboolean      g_pattern_match          (GPatternSpec *pspec,
+					guint         string_length,
+					const gchar  *string,
+					const gchar  *string_reversed);
+gboolean      g_pattern_match_string   (GPatternSpec *pspec,
+					const gchar  *string);
+gboolean      g_pattern_match_simple   (const gchar  *pattern,
+					const gchar  *string);
 
-
+#if !GLIB_CHECK_VERSION (1, 3, 1)
+#define G_STRINGIFY(macro_or_string)    _G_STRINGIFY_INTERNAL (macro_or_string)
+#define _G_STRINGIFY_INTERNAL(contents) #contents
 /* --- trash stacks --- */
 /* elements need to be >= sizeof (gpointer)
  */
@@ -140,6 +141,7 @@ g_trash_stack_height (GTrashStack **stack_p)
 
   return i;
 }
+#endif /* !GLIB_CHECK_VERSION (1, 3, 1) */
 
 
 

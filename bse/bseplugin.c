@@ -17,7 +17,9 @@
  */
 #include	"bseplugin.h"
 
+#include	"bsecategories.h"
 #include	"bseprocedure.h"
+#include	"bseobject.h"
 #include	<gmodule.h>
 #include	<string.h>
 #include	<fcntl.h>
@@ -35,8 +37,9 @@ static const gchar* bse_plugin_register_types	(BsePlugin      *plugin,
 
 
 /* --- variables --- */
-gconstpointer     BSE_EXPORT_IMPL_S (Procedure) = NULL;
-                  BSE_EXPORT_IMPL_C = NULL;
+gconstpointer BSE_EXPORT_IMPL_S (Procedure) = NULL;
+gconstpointer BSE_EXPORT_IMPL_S (Object) = NULL;
+BSE_EXPORT_IMPL_C = NULL;
 static GSList    *bse_plugins = NULL;
 
 /* --- functions --- */
@@ -72,6 +75,10 @@ bse_plugin_init (void)
 	  plugin->gmodule = NULL;
 	  plugin->module_refs = 42;
 
+	  BSE_DEBUG (PLUGINS, {
+	    g_message ("register-builtin-plugin: \"%s\"", plugin->name);
+	  });
+
 	  name = plugin->name;
 	  error = builtin_inits[i] (plugin);
 	  if (error)
@@ -80,9 +87,6 @@ bse_plugin_init (void)
 	    g_warning ("builtin plugin initializer (%p) doesn't assign plugin name",
 		       builtin_inits[i]);
 
-	  BSE_DEBUG (PLUGINS, {
-	    g_message ("register-builtin-plugin: \"%s\"", plugin->name);
-	  });
 	}
       bse_plugin_builtin_init = NULL;
     }
@@ -93,22 +97,22 @@ bse_plugin_register_types (BsePlugin    *plugin,
 			   gconstpointer array_p,
 			   BseExportType exp_type)
 {
-  const BseExportProcedure *pspecs = array_p;
-  guint have_defs = 0;
+  const BseExportSpec *especs = array_p;
 
   switch (plugin && array_p ? exp_type : 0)
     {
       const BseExportProcedure *pspec;
+      const BseExportObject *ospec;
 
     case BSE_EXPORT_TYPE_PROCS:
-      for (pspec = pspecs; pspec->type_p; pspec++)
+      for (pspec = &especs->s_proc; pspec->type_p; pspec++)
 	{
 	  if (pspec->name &&
 	      pspec->init &&
 	      pspec->exec)
 	    {
 	      BseType type;
-	      guint o = plugin->n_proc_types;
+	      guint on = plugin->n_proc_types;
 	      const gchar *error;
 	      
 	      type = bse_type_from_name (pspec->name);
@@ -118,19 +122,20 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      error = bse_procedure_type_register (pspec->name,
 						   pspec->blurb,
 						   plugin,
-						   pspec->category,
 						   &type);
 	      if (error)
 		return error;
 
+	      if (pspec->category)
+		bse_categories_register_icon (pspec->category, type, &pspec->pixdata);
+	      
 	      plugin->n_proc_types++;
 	      plugin->proc_types = g_renew (BseType,
 					    plugin->proc_types,
 					    plugin->n_proc_types);
-	      plugin->proc_types[o] = type;
+	      plugin->proc_types[on] = type;
 
 	      plugin->exports_procedures = TRUE;
-	      have_defs++;
 	      *(pspec->type_p) = type;
 	      
 	      BSE_DEBUG (PROCS, {
@@ -138,8 +143,50 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      });
 	    }
 	}
-      plugin->e_procs = (gpointer) pspecs;
+      plugin->e_procs = especs;
+      return NULL;
 
+    case BSE_EXPORT_TYPE_OBJECTS:
+      for (ospec = &especs->s_object; ospec->type_p; ospec++)
+	{
+	  if (ospec->name &&
+	      ospec->object_info)
+	    {
+	      BseType type;
+	      guint on = plugin->n_object_types;
+	      const gchar *error;
+	      
+	      type = bse_type_from_name (ospec->name);
+	      if (type)
+		return "Attempt to register known symbol";
+
+	      error = bse_object_type_register (ospec->name,
+						ospec->parent_type,
+						ospec->blurb,
+						plugin,
+						&type);
+
+	      if (error)
+		return error;
+
+	      if (ospec->category)
+		bse_categories_register_icon (ospec->category, type, &ospec->pixdata);
+
+	      plugin->n_object_types++;
+	      plugin->object_types = g_renew (BseType,
+					      plugin->object_types,
+					      plugin->n_object_types);
+	      plugin->object_types[on] = type;
+
+	      plugin->exports_objects = TRUE;
+	      *(ospec->type_p) = type;
+	      
+	      BSE_DEBUG (OBJECTS, {
+		g_message ("register-object: \"%s\"", ospec->name);
+	      });
+	    }
+	}
+      plugin->e_objects = especs;
       return NULL;
     }
 
@@ -149,14 +196,15 @@ bse_plugin_register_types (BsePlugin    *plugin,
 static const gchar*
 bse_plugin_reinit_type_ids (BsePlugin *plugin)
 {
-  BseExportProcedure *pspecs = plugin->e_procs;
+  const BseExportProcedure *pspecs = plugin->e_procs;
+  const BseExportObject *ospecs = plugin->e_objects;
   gchar *error = NULL;
   
   /* procedure types
    */
   if (pspecs)
     {
-      BseExportProcedure *pspec;
+      const BseExportProcedure *pspec;
       BseType *exp_types = plugin->proc_types;
       BseType *exp_last = plugin->proc_types + plugin->n_proc_types;
       
@@ -176,12 +224,36 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
 	error = "Unable to rematch procedure types from previous initialization";
     }
 
+  /* object types
+   */
+  if (ospecs)
+    {
+      const BseExportObject *ospec;
+      BseType *exp_types = plugin->object_types;
+      BseType *exp_last = plugin->object_types + plugin->n_object_types;
+      
+      for (ospec = ospecs; ospec->type_p && exp_types < exp_last; ospec++)
+	if (ospec->object_info &&
+	    bse_type_from_name (ospec->name) == *exp_types)
+	  {
+	    if (*ospec->type_p)
+	      g_warning ("while reinitializing \"%s\", type id for `%s' already assigned?",
+			 plugin->name,
+			 ospec->name);
+	    *ospec->type_p = *(exp_types++);
+	  }
+      if (exp_types < exp_last)
+	error = "Unable to rematch object types from previous initialization";
+    }
+
   return error;
 }
 
 void
 bse_plugin_ref (BsePlugin *plugin)
 {
+  gboolean need_reinit = FALSE;
+
   g_return_if_fail (plugin != NULL);
   
   if (!plugin->module_refs)
@@ -200,12 +272,29 @@ bse_plugin_ref (BsePlugin *plugin)
 			       (gpointer) &sym_array))
 	    {
 	      plugin->e_procs = sym_array;
-	      error = bse_plugin_reinit_type_ids (plugin);
+	      need_reinit |= TRUE;
 	    }
 	  else
 	    error = g_module_error ();
 	}
-      
+      if (!error && plugin->exports_objects)
+	{
+	  gpointer *sym_array;
+
+	  if (g_module_symbol (plugin->gmodule,
+			       BSE_EXPORT_SYMBOL (Object),
+			       (gpointer) &sym_array))
+	    {
+	      plugin->e_objects = sym_array;
+	      need_reinit |= TRUE;
+	    }
+	  else
+	    error = g_module_error ();
+	}
+
+      if (!error)
+	error = bse_plugin_reinit_type_ids (plugin);
+
       if (error)
 	g_error ("Fatal plugin error, failed to reinitialize plugin: %s", error);
       
@@ -226,6 +315,7 @@ bse_plugin_unload (BsePlugin *plugin)
   
   /* reset plugin pointers */
   plugin->e_procs = NULL;
+  plugin->e_objects = NULL;
 
   BSE_DEBUG (PLUGINS, {
     g_message ("plugin-unloaded: \"%s\"", plugin->name);
@@ -244,14 +334,14 @@ bse_plugin_unref (BsePlugin *plugin)
     bse_plugin_unload (plugin);
 }
 
-static inline BseExportSpec*
-bse_plugin_get_export_specs (BsePlugin *plugin,
-			     BseType    type,
-			     gpointer   export_specs)
+static inline const BseExportSpec*
+bse_plugin_get_export_specs (BsePlugin    *plugin,
+			     BseType       type,
+			     gconstpointer export_specs)
 {
   if (export_specs)
     {
-      BseExportSpec* spec;
+      const BseExportSpec* spec;
 
       for (spec = export_specs; spec->type_p; spec++)
 	if (*(spec->type_p) == type)
@@ -266,15 +356,15 @@ bse_plugin_complete_info (BsePlugin   *plugin,
 			  BseType      type,
 			  BseTypeInfo *type_info)
 {
-  BseExportSpec *export_spec = NULL;
-  gpointer specs_p = NULL;
-  void (*complete_info) (BseExportSpec *, BseTypeInfo *) = NULL;
+  const BseExportSpec *export_spec = NULL;
+  gconstpointer specs_p = NULL;
+  void (*complete_info) (const BseExportSpec *, BseTypeInfo *) = NULL;
   
   g_return_if_fail (plugin != NULL);
   g_return_if_fail (plugin->module_refs > 0);
 
-  /* we are an internal function, and thusly behave pretty conservative,
-   * so in effect we guarrantee to always fill the type_info
+  /* we are an internal function, and thusly need to behave pretty conservative,
+   * so in effect we only guarrantee to always fill the type_info
    */
   
   switch (BSE_FUNDAMENTAL_TYPE (type))
@@ -282,6 +372,10 @@ bse_plugin_complete_info (BsePlugin   *plugin,
     case BSE_TYPE_PROCEDURE:
       specs_p = plugin->e_procs;
       complete_info = bse_procedure_complete_info;
+      break;
+    case BSE_TYPE_OBJECT:
+      specs_p = plugin->e_objects;
+      complete_info = bse_object_complete_info;
       break;
     default:
       g_assert_not_reached ();
@@ -418,6 +512,8 @@ bse_plugin_check_load (const gchar *_file_name)
 
   if (g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (Procedure), (gpointer) &sym_array))
     error = bse_plugin_register_types (plugin, sym_array, BSE_EXPORT_TYPE_PROCS);
+  if (!error && g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (Object), (gpointer) &sym_array))
+    error = bse_plugin_register_types (plugin, sym_array, BSE_EXPORT_TYPE_OBJECTS);
 
   bse_plugins = g_slist_prepend (bse_plugins, plugin);
 

@@ -53,7 +53,7 @@ struct _BstPatternDialogClass
 {
   GtkWindowClass parent_class;
 
-  GSList *popup_entries;
+  GSList *popup_entries; /* of type BstMenuEntry* */
 };
 
 typedef enum

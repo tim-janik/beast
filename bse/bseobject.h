@@ -21,6 +21,7 @@
  * - to set generic keyed data
  * - to set/get certain parameters, i.e. object members or properties
  * - to aid basic parsing/dumping facilities
+ * - for notification upon certain object related events
  */
 #ifndef __BSE_OBJECT_H__
 #define __BSE_OBJECT_H__
@@ -102,6 +103,8 @@ struct _BseObject
 struct _BseObjectClass
 {
   BseTypeClass		 bse_class;
+
+  BseIcon		*icon;
   
   guint			 n_params;
   BseParamSpec	       **param_specs;
@@ -130,6 +133,7 @@ struct _BseObjectClass
   BseTokenType		(*restore_private)	(BseObject	*object,
 						 BseStorage	*storage);
   void			(*unlocked)		(BseObject	*object);
+  void			(*shutdown)		(BseObject	*object);
   void			(*destroy)		(BseObject	*object);
 };
 struct _BseParseHook
@@ -140,6 +144,11 @@ struct _BseParseHook
 
 
 /* --- object class prototypes ---*/
+void		bse_object_class_set_icon	(BseObjectClass	*oclass,
+						 guint		 width,
+						 guint		 height,
+						 gboolean	 has_alpha,
+						 const guint8	*pixel_data);
 void		bse_object_class_add_param	(BseObjectClass	*oclass,
 						 const gchar	*param_group,
 						 guint		 param_id,
@@ -202,7 +211,7 @@ gpointer	bse_object_ensure_interface_data(BseObject	*object,
 						 GDestroyNotify	 destroy_func);
 gpointer	bse_object_get_interface_data	(BseObject	*object,
 						 BseType	 interface_type);
-gpointer	bse_object_get_interface_class	(BseObject	*object,
+gpointer	bse_object_get_interface	(BseObject	*object,
 						 BseType	 interface_type);
 void		bse_object_get_param		(BseObject	*object,
 						 BseParam	*param);
@@ -241,9 +250,14 @@ void		bse_object_remove_notifiers_by_func (gpointer	    object,
 
 
 /* --- implementation details --- */
+const gchar*	bse_object_type_register	(const gchar *name,
+						 const gchar *parent_name,
+						 const gchar *blurb,
+						 BsePlugin   *plugin,
+						 BseType     *ret_type);
 extern GQuark _bse_quark_name;
 #define	BSE_OBJECT_GET_INTERFACE(op, type_id, type) \
-    ((type*) bse_object_get_interface_class ((BseObject*) (op), (type_id)))
+    ((type*) bse_object_get_interface ((BseObject*) (op), (type_id)))
 GHookList*	bse_object_get_hook_list	(BseObject	*object);
 struct _BseNotifyHook
 {
@@ -258,9 +272,9 @@ struct _BseNotifyHook
 G_STMT_START { \
   BseObject *__object = (BseObject*) (__obj); GHook *__hook; \
   BseNotify_ ## __method NOTIFY; GHookList *__hook_list; \
-  GQuark __hook_quark = g_quark_try_string (g_string (__method)); \
-  __hook_list = bse_object_get_hook_list (__object); \
+  GQuark __hook_quark = g_quark_try_string (G_STRINGIFY (__method)); \
   bse_object_ref (__object); \
+  __hook_list = bse_object_get_hook_list (__object); \
   __hook = __hook_list ? g_hook_first_valid (__hook_list, TRUE) : NULL; \
   while (__hook) \
     { \
@@ -273,7 +287,8 @@ G_STMT_START { \
             { OBJECT = __hook->data; DATA = __object; } \
           else \
             { OBJECT = __object; DATA = __hook->data; } \
-          NOTIFY = __hook->func; __CALL; \
+          NOTIFY = __hook->func; \
+          { __CALL ; } \
           if (!__hook_in_call) \
             __hook->flags &= ~G_HOOK_FLAG_IN_CALL; \
         } \

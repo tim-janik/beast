@@ -27,12 +27,24 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+typedef struct _BstMenuEntry BstMenuEntry;
+struct _BstMenuEntry
+{
+  GtkItemFactoryEntry entry;
+  BseIcon            *icon;
+};
+
+
 /* --- prototypes --- */
 GSList*	bst_menu_entries_compose	(guint			 n_menu_entries,
 					 GtkItemFactoryEntry	*menu_entries,
-					 guint			 n_procs,
-					 BseType		*proc_types,
-					 GtkItemFactoryCallback  proc_activate);
+					 guint			 n_cats,
+					 BseCategory		*cats,
+					 GtkItemFactoryCallback  cat_activate);
+void    bst_menu_entries_create         (GtkItemFactory         *ifactory,
+					 GSList                 *bst_menu_entries,
+					 gpointer                callback_data);
+
 
 
 

@@ -36,7 +36,7 @@ struct _BstParam
   BseParam   param;
   gpointer   owner;
   guint	     param_set_id;
-  GtkWidget *widget;
+  GtkWidget *group;
   guint	     locked : 24;
   guint	     is_object : 1;
   guint	     is_procedure : 1;

@@ -165,15 +165,17 @@ set_instrument_exec (BseProcedureClass *proc,
 
 
 /* --- Export to BSE --- */
-BSE_EXPORTS_BEGIN (bsepattern);
+BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_PROCEDURES = {
-  { &type_id_set_note, "BsePattern::set-note", "/Basic/Set Note",
+  { &type_id_set_note, "BsePattern::set-note",
     "Set a specific note to play",
     set_note_setup, set_note_exec, NULL,
+    "/Method/BsePattern/Set Note",
   },
-  { &type_id_set_instrument, "BsePattern::set-instrument", "/Basic/Set Instrument",
+  { &type_id_set_instrument, "BsePattern::set-instrument",
     "Set a specific instrument to play",
     set_instrument_setup, set_instrument_exec, NULL,
+    "/Method/BsePattern/Set Instrument",
   },
   { NULL, },
 };

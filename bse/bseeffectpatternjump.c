@@ -38,8 +38,8 @@ BSE_BUILTIN_TYPE (BseEffectPatternJump)
   static const BseTypeInfo effect_info = {
     sizeof (BseEffectClass),
 
-    (BseClassInitBaseFunc) NULL,
-    (BseClassDestroyBaseFunc) NULL,
+    (BseBaseInitFunc) NULL,
+    (BseBaseDestroyFunc) NULL,
     (BseClassInitFunc) bse_effect_pattern_jump_class_init,
     (BseClassDestroyFunc) NULL,
     NULL /* class_data */,

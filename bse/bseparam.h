@@ -69,6 +69,14 @@ struct _BseDot
   gfloat y;
 };
 
+struct _BseImage
+{
+  guint          width;
+  guint          height;
+  guint          bytes_per_pixel; /* 3:RGB, 4:RGBA */
+  guint8         pixel_data[521 * 208 * 4];
+};
+
 union _BseParamValue
 {
   gboolean	 v_bool;
