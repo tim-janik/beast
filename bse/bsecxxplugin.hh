@@ -105,13 +105,13 @@ EnumValue (int         int_value,
  */
 #define BSE_CXX_DECLARED_RECORD_TYPE(RecordType)                        \
   (bse_type_keeper__1##RecordType.get_type ())
-#define BSE_CXX_DECLARE_RECORD(RecordType,RecordName)                   \
+#define BSE_CXX_DECLARE_RECORD(RecordType)                              \
   template<class E> static BseExportNode* bse_export_node ();           \
   template<> static BseExportNode*                                      \
   bse_export_node<RecordType> ()                                        \
   {                                                                     \
     static BseExportNodeBoxed bnode = {                                 \
-      { NULL, BSE_EXPORT_NODE_RECORD, RecordName, },                    \
+      { NULL, BSE_EXPORT_NODE_RECORD, NULL, },                          \
     };                                                                  \
     if (!bnode.node.name) {                                             \
       bnode.node.name = RecordType::type_name();                        \
@@ -140,13 +140,13 @@ EnumValue (int         int_value,
 /* sequence registration works similar to record registration */
 #define BSE_CXX_DECLARED_SEQUENCE_TYPE(SequenceType)                            \
   (bse_type_keeper__1##SequenceType.get_type ())
-#define BSE_CXX_DECLARE_SEQUENCE(SequenceType,SequenceName)                     \
+#define BSE_CXX_DECLARE_SEQUENCE(SequenceType)                                  \
   template<class E> static BseExportNode* bse_export_node ();                   \
   template<> static BseExportNode*                                              \
   bse_export_node<SequenceType> ()                                              \
   {                                                                             \
     static BseExportNodeBoxed bnode = {                                         \
-      { NULL, BSE_EXPORT_NODE_SEQUENCE, SequenceName, },                        \
+      { NULL, BSE_EXPORT_NODE_SEQUENCE, NULL, },                                \
     };                                                                          \
     if (!bnode.node.name) {                                                     \
       bnode.node.name = SequenceType::type_name();                              \
