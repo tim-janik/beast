@@ -1,3 +1,7 @@
+Fri Apr  5 09:15:18 2002  Tim Janik  <timj@gtk.org>
+
+	* bsegenosc.[hc]: fix istream count.
+
 Sun Mar 31 19:47:57 2002  Tim Janik  <timj@gtk.org>
 
 	* bsewaveosc.c (bse_wave_osc_set_property): use bse_item_uncross() to

@@ -100,15 +100,17 @@ struct _BseGenOscClass
 
 
 /* --- channels --- */
-enum
+enum /*< skip >*/
 {
   BSE_GEN_OSC_ICHANNEL_FREQ_MOD,
-  BSE_GEN_OSC_ICHANNEL_SYNC
+  BSE_GEN_OSC_ICHANNEL_SYNC,
+  BSE_GEN_OSC_N_ICHANNELS
 };
-enum
+enum /*< skip >*/
 {
   BSE_GEN_OSC_OCHANNEL_OSC,
-  BSE_GEN_OSC_OCHANNEL_SYNC
+  BSE_GEN_OSC_OCHANNEL_SYNC,
+  BSE_GEN_OSC_N_OCHANNELS
 };
 
 

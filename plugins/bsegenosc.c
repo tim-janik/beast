@@ -54,11 +54,11 @@ static void	bse_gen_osc_init		(BseGenOsc	*gen_osc);
 static void	bse_gen_osc_class_init		(BseGenOscClass	*class);
 static void	bse_gen_osc_class_finalize	(BseGenOscClass	*class);
 static void	bse_gen_osc_do_destroy		(BseObject	*object);
-static void	bse_gen_osc_set_property	(BseGenOsc	*gen_osc,
+static void	bse_gen_osc_set_property	(GObject	*object,
 						 guint           param_id,
-						 GValue         *value,
+						 const GValue   *value,
 						 GParamSpec     *pspec);
-static void	bse_gen_osc_get_property	(BseGenOsc	*gen_osc,
+static void	bse_gen_osc_get_property	(GObject        *object,
 						 guint           param_id,
 						 GValue         *value,
 						 GParamSpec     *pspec);
@@ -100,8 +100,8 @@ bse_gen_osc_class_init (BseGenOscClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  gobject_class->set_property = (GObjectSetPropertyFunc) bse_gen_osc_set_property;
-  gobject_class->get_property = (GObjectGetPropertyFunc) bse_gen_osc_get_property;
+  gobject_class->set_property = bse_gen_osc_set_property;
+  gobject_class->get_property = bse_gen_osc_get_property;
   
   object_class->destroy = bse_gen_osc_do_destroy;
   
@@ -341,23 +341,24 @@ bse_gen_osc_do_destroy (BseObject *object)
 }
 
 static void
-bse_gen_osc_set_property (BseGenOsc   *gosc,
-			  guint        param_id,
-			  GValue      *value,
-			  GParamSpec  *pspec)
+bse_gen_osc_set_property (GObject      *object,
+			  guint         param_id,
+			  const GValue *value,
+			  GParamSpec   *pspec)
 {
+  BseGenOsc *self = BSE_GEN_OSC (object);
   guint wave = 0;
   
   switch (param_id)
     {
     case PARAM_WAVE_FORM:
-      gosc->wave = g_value_get_enum (value);
-      bse_gen_osc_update_vars (gosc);
-      bse_object_param_changed (BSE_OBJECT (gosc), "sine_table");
-      bse_object_param_changed (BSE_OBJECT (gosc), "gsaw_table");
-      bse_object_param_changed (BSE_OBJECT (gosc), "ssaw_table");
-      bse_object_param_changed (BSE_OBJECT (gosc), "pulse_table");
-      bse_object_param_changed (BSE_OBJECT (gosc), "triangle_table");
+      self->wave = g_value_get_enum (value);
+      bse_gen_osc_update_vars (self);
+      bse_object_param_changed (BSE_OBJECT (self), "sine_table");
+      bse_object_param_changed (BSE_OBJECT (self), "gsaw_table");
+      bse_object_param_changed (BSE_OBJECT (self), "ssaw_table");
+      bse_object_param_changed (BSE_OBJECT (self), "pulse_table");
+      bse_object_param_changed (BSE_OBJECT (self), "triangle_table");
       break;
     case PARAM_TRIANGLE:
       wave++;
@@ -375,97 +376,99 @@ bse_gen_osc_set_property (BseGenOsc   *gosc,
       wave++;
       if (g_value_get_boolean (value))
 	{
-	  gosc->wave = wave;
-	  bse_gen_osc_update_vars (gosc);
-	  bse_object_param_changed (BSE_OBJECT (gosc), "wave_form");
-	  bse_object_param_changed (BSE_OBJECT (gosc), "sine_table");
-	  bse_object_param_changed (BSE_OBJECT (gosc), "gsaw_table");
-	  bse_object_param_changed (BSE_OBJECT (gosc), "ssaw_table");
-	  bse_object_param_changed (BSE_OBJECT (gosc), "pulse_table");
-	  bse_object_param_changed (BSE_OBJECT (gosc), "triangle_table");
+	  self->wave = wave;
+	  bse_gen_osc_update_vars (self);
+	  bse_object_param_changed (BSE_OBJECT (self), "wave_form");
+	  bse_object_param_changed (BSE_OBJECT (self), "sine_table");
+	  bse_object_param_changed (BSE_OBJECT (self), "gsaw_table");
+	  bse_object_param_changed (BSE_OBJECT (self), "ssaw_table");
+	  bse_object_param_changed (BSE_OBJECT (self), "pulse_table");
+	  bse_object_param_changed (BSE_OBJECT (self), "triangle_table");
 	}
       break;
     case PARAM_PHASE:
-      gosc->phase = g_value_get_float (value);
-      bse_gen_osc_update_vars (gosc);
+      self->phase = g_value_get_float (value);
+      bse_gen_osc_update_vars (self);
       break;
     case PARAM_BASE_NOTE:
-      gosc->base_freq = bse_note_to_freq (bse_value_get_note (value));
-      gosc->base_freq = MAX (gosc->base_freq, BSE_MIN_OSC_FREQ_d);
-      bse_gen_osc_update_vars (gosc);
-      bse_object_param_changed (BSE_OBJECT (gosc), "base_freq");
-      if (bse_note_from_freq (gosc->base_freq) != bse_value_get_note (value))
-	bse_object_param_changed (BSE_OBJECT (gosc), "base_note");
+      self->base_freq = bse_note_to_freq (bse_value_get_note (value));
+      self->base_freq = MAX (self->base_freq, BSE_MIN_OSC_FREQ_d);
+      bse_gen_osc_update_vars (self);
+      bse_object_param_changed (BSE_OBJECT (self), "base_freq");
+      if (bse_note_from_freq (self->base_freq) != bse_value_get_note (value))
+	bse_object_param_changed (BSE_OBJECT (self), "base_note");
       break;
     case PARAM_BASE_FREQ:
-      gosc->base_freq = g_value_get_float (value);
-      bse_gen_osc_update_vars (gosc);
-      bse_object_param_changed (BSE_OBJECT (gosc), "base_note");
+      self->base_freq = g_value_get_float (value);
+      bse_gen_osc_update_vars (self);
+      bse_object_param_changed (BSE_OBJECT (self), "base_note");
       break;
     case PARAM_FM_PERC:
-      gosc->fm_perc = g_value_get_float (value);
-      bse_gen_osc_update_vars (gosc);
+      self->fm_perc = g_value_get_float (value);
+      bse_gen_osc_update_vars (self);
       break;
     case PARAM_SELF_MODULATION:
-      gosc->self_modulation = g_value_get_boolean (value);
-      bse_gen_osc_update_vars (gosc);
+      self->self_modulation = g_value_get_boolean (value);
+      bse_gen_osc_update_vars (self);
       break;
     case PARAM_SELF_PERC:
-      gosc->self_perc = g_value_get_float (value);
-      bse_gen_osc_update_vars (gosc);
+      self->self_perc = g_value_get_float (value);
+      bse_gen_osc_update_vars (self);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (gosc, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_gen_osc_get_property (BseGenOsc   *gosc,
-			  guint        param_id,
-			  GValue      *value,
-			  GParamSpec  *pspec)
+bse_gen_osc_get_property (GObject    *object,
+			  guint       param_id,
+			  GValue     *value,
+			  GParamSpec *pspec)
 {
+  BseGenOsc *self = BSE_GEN_OSC (object);
+
   switch (param_id)
     {
     case PARAM_WAVE_FORM:
-      g_value_set_enum (value, gosc->wave);
+      g_value_set_enum (value, self->wave);
       break;
     case PARAM_SINE:
-      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_SINE);
+      g_value_set_boolean (value, self->wave == BSE_GEN_OSC_SINE);
       break;
     case PARAM_GSAW:
-      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_GSAW);
+      g_value_set_boolean (value, self->wave == BSE_GEN_OSC_GSAW);
       break;
     case PARAM_SSAW:
-      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_SSAW);
+      g_value_set_boolean (value, self->wave == BSE_GEN_OSC_SSAW);
       break;
     case PARAM_PULSE:
-      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_PULSE);
+      g_value_set_boolean (value, self->wave == BSE_GEN_OSC_PULSE);
       break;
     case PARAM_TRIANGLE:
-      g_value_set_boolean (value, gosc->wave == BSE_GEN_OSC_TRIANGLE);
+      g_value_set_boolean (value, self->wave == BSE_GEN_OSC_TRIANGLE);
       break;
     case PARAM_BASE_NOTE:
-      bse_value_set_note (value, bse_note_from_freq (gosc->base_freq));
+      bse_value_set_note (value, bse_note_from_freq (self->base_freq));
       break;
     case PARAM_BASE_FREQ:
-      g_value_set_float (value, gosc->base_freq);
+      g_value_set_float (value, self->base_freq);
       break;
     case PARAM_PHASE:
-      g_value_set_float (value, gosc->phase);
+      g_value_set_float (value, self->phase);
       break;
     case PARAM_FM_PERC:
-      g_value_set_float (value, gosc->fm_perc);
+      g_value_set_float (value, self->fm_perc);
       break;
     case PARAM_SELF_MODULATION:
-      g_value_set_boolean (value, gosc->self_modulation);
+      g_value_set_boolean (value, self->self_modulation);
       break;
     case PARAM_SELF_PERC:
-      g_value_set_float (value, gosc->self_perc);
+      g_value_set_float (value, self->self_perc);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (gosc, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
@@ -552,18 +555,14 @@ gen_osc_process (GslModule *module,
 {
   GenOsc *gosc = module->user_data;
   BseGenOscVars *vars = &gosc->vars;
-  // const BseSampleValue *wave_in = module->istreams[0].connected ? GSL_MODULE_IBUFFER (module, 0) : NULL;
-  // const BseSampleValue *sync_in = module->istreams[1].connected ? GSL_MODULE_IBUFFER (module, 1) : NULL;
-  const BseSampleValue *wave_in = GSL_MODULE_IBUFFER (module, 0);
-  const BseSampleValue *sync_in = GSL_MODULE_IBUFFER (module, 1);
-  gboolean with_fm_mod = vars->with_fm_mod && module->istreams[0].connected;
-  gboolean with_sync = module->istreams[1].connected;
-  gboolean with_self_mod = vars->with_self_mod;
-  // BseSampleValue *wave_out = module->ostreams[0].connected ? GSL_MODULE_OBUFFER (module, 0) : NULL;
-  BseSampleValue *wave_out = GSL_MODULE_OBUFFER (module, 0);
+  const BseSampleValue *wave_in = GSL_MODULE_IBUFFER (module, BSE_GEN_OSC_ICHANNEL_FREQ_MOD);
+  const BseSampleValue *sync_in = GSL_MODULE_IBUFFER (module, BSE_GEN_OSC_ICHANNEL_SYNC);
+  // gboolean with_fm_mod = vars->with_fm_mod && module->istreams[0].connected;
+  // gboolean with_sync = module->istreams[1].connected;
+  // gboolean with_self_mod = vars->with_self_mod;
+  BseSampleValue *wave_out = GSL_MODULE_OBUFFER (module, BSE_GEN_OSC_OCHANNEL_OSC);
   BseSampleValue *wave_bound = wave_out + n_values;
-  // BseSampleValue *sync_out = module->ostreams[1].connected ? GSL_MODULE_OBUFFER (module, 1) : NULL;
-  BseSampleValue *sync_out = GSL_MODULE_OBUFFER (module, 1);
+  BseSampleValue *sync_out = GSL_MODULE_OBUFFER (module, BSE_GEN_OSC_OCHANNEL_SYNC);
   BseSampleValue *table = vars->table;
   gfloat fm_strength = vars->fm_strength;
   gfloat self_strength = vars->self_strength;
@@ -610,9 +609,9 @@ bse_gen_osc_context_create   (BseSource *source,
 			      GslTrans  *trans)
 {
   static const GslClass gosc_class = {
-    3,				/* n_istreams */
+    BSE_GEN_OSC_N_ICHANNELS,	/* n_istreams */
     0,                          /* n_jstreams */
-    2,				/* n_ostreams */
+    BSE_GEN_OSC_N_OCHANNELS,	/* n_ostreams */
     gen_osc_process,		/* process */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
