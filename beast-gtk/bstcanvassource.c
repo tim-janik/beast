@@ -801,8 +801,30 @@ bst_canvas_source_build_async (gpointer data)
       BstCanvasSource *csource = BST_CANVAS_SOURCE (item);
       GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (csource);
       
-      /* order of creation is important to enforce stacking */
-      
+      /* keep in mind, that creation order affects stacking */
+
+      /* add input and output channel items */
+      if (!csource->built_ichannels)
+        {
+          csource->built_ichannels = TRUE;
+          bst_canvas_source_build_channels (csource,
+                                            TRUE,               /* input channels */
+                                            0xffff00, 0x808000,	/* ichannels */
+                                            0x00afff, 0x005880, /* jchannels */
+                                            TRUE, FALSE);
+          return TRUE;
+        }
+      if (!csource->built_ochannels)
+        {
+          csource->built_ochannels = TRUE;
+          bst_canvas_source_build_channels (csource,
+                                            FALSE,              /* output channels */
+                                            0xff0000, 0x800000, /* ochannels */
+                                            0, 0,               /* unused */
+                                            TRUE, FALSE);
+          return TRUE;
+        }
+
       /* add icon to group */
       if (!csource->icon_item)
         {
@@ -839,28 +861,6 @@ bst_canvas_source_build_async (gpointer data)
                             NULL);
           gnome_canvas_text_set_zoom_size (GNOME_CANVAS_TEXT (csource->text), FONT_HEIGHT);
           source_name_changed (csource);
-          return TRUE;
-        }
-
-      /* add input and output channel items */
-      if (!csource->built_ichannels)
-        {
-          csource->built_ichannels = TRUE;
-          bst_canvas_source_build_channels (csource,
-                                            TRUE,               /* input channels */
-                                            0xffff00, 0x808000,	/* ichannels */
-                                            0x00afff, 0x005880, /* jchannels */
-                                            TRUE, FALSE);
-          return TRUE;
-        }
-      if (!csource->built_ochannels)
-        {
-          csource->built_ochannels = TRUE;
-          bst_canvas_source_build_channels (csource,
-                                            FALSE,              /* output channels */
-                                            0xff0000, 0x800000, /* ochannels */
-                                            0, 0,               /* unused */
-                                            TRUE, FALSE);
           return TRUE;
         }
 
