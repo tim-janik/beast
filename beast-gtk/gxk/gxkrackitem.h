@@ -39,7 +39,7 @@ struct _GxkRackItem
 {
   GtkFrame         parent_instance;
   /* maintained by GxkRackTable */
-  GxkRackChildInfo rack_child_info;
+  gint             col, row, hspan, vspan;
   guint            empty_frame : 1;
 };
 struct _GxkRackItemClass
@@ -54,6 +54,11 @@ struct _GxkRackItemClass
 /* --- prototypes --- */
 GtkType         gxk_rack_item_get_type          (void);
 void            gxk_rack_item_gui_changed       (GxkRackItem    *self);
+gboolean        gxk_rack_item_set_area          (GxkRackItem    *self,
+                                                 gint            col,
+                                                 gint            row,
+                                                 gint            hspan,
+                                                 gint            vspan);
 
 G_END_DECLS
 

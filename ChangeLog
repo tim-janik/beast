@@ -1,3 +1,24 @@
+Sat Nov 29 06:13:27 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkrackeditor.[hc]: new files containing editing
+	functionality of GxkRackTable. started implementing rack item
+	resizing. switched to using gxk_grab_pointer_and_keyboard() for
+	pointer grabs. moved editing fields out of GxkRackTable into
+	a seperate GxkRackEditor structure.
+
+	* beast-gtk/gxk/gxkrackitem.[hc]: added gxk_rack_item_set_area()
+	which updates the attachment coordinates of a GxkRackItem. made
+	coordinates original gints in the GxkRackItem structure.
+
+	* beast-gtk/gxk/gxkracktable.[ch]: removed non-editing parts.
+	hooked up GxkRackEditor functions. switched to using GBitMatrix
+	for the child map. switched to lazy child-map updates.
+	exposed a couple static functions. changed add-child logic
+	to properly honour child requisition if possible.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_grab_pointer_and_keyboard()
+	and gxk_ungrab_pointer_and_keyboard().
+
 Sat Nov 29 06:59:18 2003  Tim Janik  <timj@gtk.org>
 
 	* tests/Makefile.am: revert last change which broke compilation again.

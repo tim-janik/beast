@@ -79,6 +79,14 @@ guint           gxk_container_get_insertion_slot   (GtkContainer    *container);
 void            gxk_container_slot_reorder_child   (GtkContainer    *container,
                                                     GtkWidget       *widget,
                                                     guint            slot);
+gboolean        gxk_grab_pointer_and_keyboard      (GdkWindow    *window,
+                                                    gboolean      owner_events,
+                                                    GdkEventMask  event_mask,
+                                                    GdkWindow    *confine_to,
+                                                    GdkCursor    *cursor,
+                                                    guint32       time);
+void            gxk_ungrab_pointer_and_keyboard    (GdkWindow    *window,
+                                                    guint32       time);
 
 
 /* --- GtkFileSelection workarounds --- */

@@ -90,10 +90,8 @@ gxk_rack_item_init (GxkRackItem *self)
   g_object_set (self,
                 "visible", TRUE,
                 NULL);
-  self->rack_child_info.col = -1;
-  self->rack_child_info.row = -1;
-  self->rack_child_info.hspan = -1;
-  self->rack_child_info.vspan = -1;
+  self->col = self->row = -1;
+  self->hspan = self->vspan = 0;
   self->empty_frame = FALSE;
 }
 
@@ -113,7 +111,7 @@ update_frame (GxkRackItem *self)
   GxkRackTable *rtable = GXK_RACK_TABLE (widget->parent);
   
   g_object_set (self,
-                "shadow_type", rtable->edit_mode ? GTK_SHADOW_ETCHED_OUT : GTK_SHADOW_NONE,
+                "shadow_type", rtable->editor ? GTK_SHADOW_ETCHED_OUT : GTK_SHADOW_NONE,
                 NULL);
 }
 
@@ -124,7 +122,7 @@ gxk_rack_item_parent_set (GtkWidget *widget,
   GxkRackItem *self = GXK_RACK_ITEM (widget);
   if (GXK_IS_RACK_TABLE (widget->parent))
     {
-      g_object_connect (widget->parent, "swapped_signal::edit_mode_changed", update_frame, self, NULL);
+      g_object_connect (widget->parent, "swapped_signal::edit-mode-changed", update_frame, self, NULL);
       update_frame (self);
     }
   else if (GXK_IS_RACK_TABLE (previous_parent))
@@ -149,4 +147,58 @@ void
 gxk_rack_item_gui_changed (GxkRackItem *self)
 {
   g_return_if_fail (GXK_IS_RACK_ITEM (self));
+}
+
+gboolean
+gxk_rack_item_set_area (GxkRackItem    *self,
+                        gint            col,
+                        gint            row,
+                        gint            hspan,
+                        gint            vspan)
+{
+  GtkWidget *widget = GTK_WIDGET (self);
+  GtkContainer *table;
+  gboolean hchanged = FALSE, vchanged = FALSE;
+  table = GXK_IS_RACK_TABLE (widget->parent) ? GTK_CONTAINER (widget->parent) : NULL;
+  if (col != self->col && col >= 0)
+    {
+      self->col = col;
+      if (table)
+        gtk_container_child_set (table, widget, "left-attach", self->col, NULL);
+      hchanged = TRUE;
+    }
+  if (row != self->row && row >= 0)
+    {
+      self->row = row;
+      if (table)
+        gtk_container_child_set (table, widget, "top-attach", self->row, NULL);
+      vchanged = TRUE;
+    }
+  if ((hchanged || hspan != self->hspan) && hspan > 0)
+    {
+      self->hspan = hspan;
+      if (table)
+        {
+          gint base = self->col;
+          if (base < 0)
+            gtk_container_child_get (table, widget, "left-attach", &base, NULL);
+          gtk_container_child_set (table, widget, "right-attach", base + self->hspan, NULL);
+        }
+      hchanged = TRUE;
+    }
+  if ((vchanged || vspan != self->vspan) && vspan > 0)
+    {
+      self->vspan = vspan;
+      if (table)
+        {
+          gint base = self->row;
+          if (base < 0)
+            gtk_container_child_get (table, widget, "top-attach", &base, NULL);
+          gtk_container_child_set (table, widget, "bottom-attach", base + self->vspan, NULL);
+        }
+      vchanged = TRUE;
+    }
+  if ((hchanged || vchanged) && table)
+    gxk_rack_table_invalidate_child_map (GXK_RACK_TABLE (table));
+  return hchanged || vchanged;
 }

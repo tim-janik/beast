@@ -2355,6 +2355,59 @@ gxk_container_slot_reorder_child (GtkContainer    *container,
 }
 
 /**
+ * gxk_grab_pointer_and_keyboard
+ * @window:       the window receiving the grab
+ * @owner_events: if %TRUE, events will be reported relative to @window
+ * @event_mask:   mask of interesting events
+ * @confine_to:   limits the pointer to the specified window
+ * @cursor:       cursor to use for the duration of the grab
+ * @time:         event time when grab is requested
+ * @RETURNS:      %TRUE if pointer and keyboard could successfully be grabbed
+ *
+ * This function grabs the pointer and keyboard simultaneously.
+ * This is recommended over plain pointer grabs, to reduce the
+ * risk of other applications (for instance the window manager)
+ * aborting the current grab and leaving the application in an
+ * invalid state.
+ */
+gboolean
+gxk_grab_pointer_and_keyboard (GdkWindow    *window,
+                               gboolean      owner_events,
+                               GdkEventMask  event_mask,
+                               GdkWindow    *confine_to,
+                               GdkCursor    *cursor,
+                               guint32       time)
+{
+  if (gdk_pointer_grab (window, owner_events, event_mask, confine_to, cursor, time) == GDK_GRAB_SUCCESS)
+    {
+      if (gdk_keyboard_grab (window, TRUE, time) == GDK_GRAB_SUCCESS)
+        return TRUE;
+      else
+        gdk_display_pointer_ungrab (gdk_drawable_get_display (window), time);
+    }
+  return FALSE;
+}
+
+/**
+ * gxk_ungrab_pointer_and_keyboard
+ * @window: window pointer was previously grabed on
+ *
+ * This function releases a pointer and keyboard grab
+ * acquired through gxk_grab_pointer_and_keyboard().
+ * The @window is used to release grabs on the correct
+ * display, see gdk_display_pointer_ungrab() and
+ * gdk_display_keyboard_ungrab() on this.
+ */
+void
+gxk_ungrab_pointer_and_keyboard (GdkWindow *window,
+                                 guint32    time)
+{
+  GdkDisplay *display = window ? gdk_drawable_get_display (window) : gdk_display_get_default();
+  gdk_display_pointer_ungrab (display, time);
+  gdk_display_keyboard_ungrab (display, time);
+}
+
+/**
  * gxk_menu_check_sensitive
  * @menu:    valid #GtkMenu
  * @RETURNS: TRUE if @menu contains selectable items

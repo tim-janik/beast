@@ -222,11 +222,10 @@ rack_test (void)
   gtk_table_attach_defaults (GTK_TABLE (rtable),
                              g_object_new (GTK_TYPE_BUTTON, "visible", 1, "label", "Huhu", NULL),
                              3, 20, 3, 5);
-  gtk_table_attach_defaults (GTK_TABLE (rtable),
-                             g_object_new (GXK_TYPE_RACK_ITEM,
-                                           "child", g_object_new (GTK_TYPE_LABEL, "visible", 1, "label", "RackItem", NULL),
-                                           NULL),
-                             3, 20, 7, 9);
+  gtk_container_add (GTK_CONTAINER (rtable),
+                     g_object_new (GXK_TYPE_RACK_ITEM,
+                                   "child", g_object_new (GTK_TYPE_LABEL, "visible", 1, "label", "RackItem", NULL),
+                                   NULL));
   win = g_object_new (GTK_TYPE_WINDOW,
                       "border_width", 20,
                       "child", box,
