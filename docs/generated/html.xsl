@@ -1,20 +1,18 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-<xsl:output method="html"/>
+<xsl:output method="html" indent="no" charset="UTF-8" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"/>
 
-<xsl:param name="revision"></xsl:param>
-<xsl:param name="banner"></xsl:param>
-<xsl:param name="navigation"></xsl:param>
-<xsl:param name="base_href"></xsl:param>
-<xsl:param name="toc"></xsl:param>
+<xsl:param name="revision"/>
+<xsl:param name="banner"/>
+<xsl:param name="navigation"/>
+<xsl:param name="base_href"/>
 
 <xsl:template match="texinfo">
 <html>
  <head>
-  <title><xsl:value-of select="settitle"/></title>
-  <meta http-equiv="Content-Type"  content="text/html; charset=UTF-8"/>
   <meta http-equiv="Default-Style" content="Default"/>
   <link href="default.css" title="Default" rel="stylesheet" type="text/css"/>
+  <title><xsl:value-of select="settitle"/></title>
   <style type="text/css">
 body {
   background-color: White;
@@ -144,6 +142,10 @@ span.important {
   text-decoration: underline;
 }
 
+span.revision {
+  font-style: italic;
+}
+
 span.tableterm {
 }
 
@@ -181,15 +183,14 @@ div.center {
 div.table {
 }
 
+table.multitable {
+}
+
 p.tableitem {
   margin: 0px;
   margin-bottom: 1em;
   padding: 0px;
   padding-left: 4em;
-}
-
-p.revision {
-  font-style: italic;
 }
    </style>
    <xsl:call-template name="base_href"/>
@@ -211,11 +212,9 @@ p.revision {
 
       <xsl:apply-templates select="titlepage"/>
 
-      <xsl:call-template name="revision"/>
-
-      <xsl:call-template name="toc"/>
-
       <xsl:apply-templates/>
+
+      <xsl:call-template name="revision"/>
 
     <!-- content ends -->
     </td>
@@ -226,7 +225,7 @@ p.revision {
 </html>
 </xsl:template>
 
-<xsl:template match="setfilename|settitle"/>
+<xsl:template match="setfilename|settitle|itemfunction|columnfraction"/>
 
 <xsl:template name="base_href">
   <xsl:if test="string-length($base_href) > 0">
@@ -286,7 +285,7 @@ p.revision {
 
 <xsl:template name="revision">
   <xsl:if test="string-length($revision) > 0">
-    <p class="revision"><em><xsl:text>Document revised: </xsl:text><xsl:value-of select="$revision"/></em></p>
+    <p><em><span class="revision"><xsl:text>Document revised: </xsl:text><xsl:value-of select="$revision"/></span></em></p>
   </xsl:if>
 </xsl:template>
 
@@ -294,28 +293,25 @@ p.revision {
   <xsl:text>node-</xsl:text><xsl:number level="multiple" count="chapter|section|subsection|subsubsection|appendix|appendixsec|appendixsubsec|appendixsubsubsec|unnumbered|unnumberedsec|unnumberedsubsec|unnumberedsubsubsec" format="1-1-1-1"/>
 </xsl:template>
 
-<xsl:template name="toc">
-  <xsl:if test="string-length($toc) > 0">
-    <xsl:call-template name="big_title">
-      <xsl:with-param name="title">Table of Contents</xsl:with-param>
-      <xsl:with-param name="node">toc</xsl:with-param>
-    </xsl:call-template>
+<xsl:template match="table-of-contents">
+  <xsl:call-template name="big_title">
+    <xsl:with-param name="title">Table of Contents</xsl:with-param>
+    <xsl:with-param name="node">toc</xsl:with-param>
+  </xsl:call-template>
 
-    <div class="toc">
-      <xsl:for-each select="chapter|unnumbered|appendix">
-	<xsl:if test="local-name() = 'chapter'">
-	  <xsl:call-template name="toc_chapter"/>
-	</xsl:if>
-	<xsl:if test="local-name() = 'unnumbered'">
-	  <xsl:call-template name="toc_unnumbered"/>
-	</xsl:if>
-	<xsl:if test="local-name() = 'appendix'">
-	  <xsl:call-template name="toc_appendix"/>
-	</xsl:if>
-      </xsl:for-each>
-    </div>
-
-  </xsl:if>
+  <div class="toc">
+    <xsl:for-each select="/texinfo/chapter|/texinfo/unnumbered|/texinfo/appendix">
+      <xsl:if test="local-name() = 'chapter'">
+	<xsl:call-template name="toc_chapter"/>
+      </xsl:if>
+      <xsl:if test="local-name() = 'unnumbered'">
+	<xsl:call-template name="toc_unnumbered"/>
+      </xsl:if>
+      <xsl:if test="local-name() = 'appendix'">
+	<xsl:call-template name="toc_appendix"/>
+      </xsl:if>
+    </xsl:for-each>
+  </div>
 </xsl:template>
 
 <xsl:template name="node_name">
@@ -652,10 +648,8 @@ p.revision {
   </li>
 </xsl:template>
 
-<xsl:template match="itemfunction|columnfraction"/>
-
 <xsl:template match="multitable">
-  <table summary="">
+  <table class="multitable" summary="">
     <xsl:apply-templates/>
   </table>
 </xsl:template>
@@ -802,19 +796,36 @@ p.revision {
 
 <xsl:template match="image">
   <img>
-    <xsl:attribute name="alt">
-      <xsl:value-of select="@alttext"/>
-    </xsl:attribute>
-    <xsl:attribute name="width">
-      <xsl:value-of select="@width"/>
-    </xsl:attribute>
-    <xsl:attribute name="height">
-      <xsl:value-of select="@height"/>
-    </xsl:attribute>
+    <xsl:if test="string-length(@alttext) > 0">
+      <xsl:attribute name="alt">
+	<xsl:value-of select="@alttext"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="string-length(@width) > 0">
+      <xsl:attribute name="width">
+	<xsl:value-of select="@width"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="string-length(@height) > 0">
+      <xsl:attribute name="height">
+	<xsl:value-of select="@height"/>
+      </xsl:attribute>
+    </xsl:if>
     <xsl:attribute name="src">
       <xsl:value-of select="."/><xsl:text>.</xsl:text><xsl:value-of select="@extension"/>
     </xsl:attribute>
   </img>
+</xsl:template>
+
+<xsl:template match="indexterm">
+  <a>
+    <xsl:attribute name="name">
+      <xsl:value-of select="@index"/><xsl:text>index-</xsl:text><xsl:number/>
+    </xsl:attribute>
+  </a>
+</xsl:template>
+
+<xsl:template match="printindex">
 </xsl:template>
 
 </xsl:stylesheet>

@@ -1,3 +1,16 @@
+Fri Aug 16 13:02:10 2002  Tim Janik  <timj@gtk.org>
+
+	* incorporate docs changes from Alper Ersoy <dirt@gtk.org>:
+
+	* docs/faq.texi: add @toc.
+	* docs/quickstart.texi: add @toc, put title as majorheading.
+	* docs/teximacros.texi: add nop macro (does nothing, throws
+	it's argument away) and @toc definition.
+
+	* generated/html.xsl: updated.
+	
+	* generated/markup.xsl: yai! alper gave this some loving ;)
+
 Fri Aug 16 03:17:26 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/Makefile.am: add new .texi doc files, cleanups.

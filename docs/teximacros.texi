@@ -25,6 +25,9 @@
 "\TEXT\"
 @end rmacro
 
+@macro nop{TEXT}
+@end macro
+
 
 @c --- accentuate phrases ---
 @rmacro emphasize{TEXT}
@@ -87,6 +90,12 @@
 
 @rmacro module{TEXT}
 @object{\TEXT\}
+@end rmacro
+
+
+@c --- table of contents
+@rmacro toc{}
+@ifxmlelse{,table-of-contents,nop}
 @end rmacro
 
 
