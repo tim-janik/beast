@@ -1,6 +1,11 @@
 Overview of Changes in BEAST/BSE 0.5.4:
 
+* Ported and improved synthesis module from David A. Bartold:
+  DavSynDrum - Synthetic drum generator
+* Added support for control event editing
+* Added per-note velocity and fine-tune editing
 * Added support for per-track and per-song special effects
+* Some GUI polishing
 * Fixes to compile on NetBSD
 * Miscellaneous bug fixes
 

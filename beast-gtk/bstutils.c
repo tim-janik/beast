@@ -281,7 +281,7 @@ gmask_form (GtkWidget   *parent,
   gmask->parent = g_object_ref (parent);
   gtk_object_sink (GTK_OBJECT (parent));
   gmask->action = action;
-  gpack = CLAMP (gpack, BST_GMASK_FIT, BST_GMASK_BIG);
+  gpack = CLAMP (gpack, BST_GMASK_FIT, BST_GMASK_CENTER);
   gmask->gpack = gpack;
 
   return action;
@@ -340,6 +340,8 @@ bst_gmask_container_create (guint    border_width,
  @* %BST_GMASK_INTERLEAVE - allow the action widget to expand across auxillary
  * columns if it requests that much space,
  @* %BST_GMASK_BIG - force expansion of the action widget across all possible
+ * columns up to the prompt,
+ @* %BST_GMASK_CENTER - center the action widget within space across all possible
  * columns up to the prompt.
  */
 BstGMask*
@@ -874,7 +876,7 @@ bst_gmask_pack (BstGMask *mask)
 	gtk_box_pack_end (GTK_BOX (action), atail, FALSE, TRUE, 0);
     }
   n = c;
-  if (gmask->gpack == BST_GMASK_BIG ||
+  if (gmask->gpack == BST_GMASK_BIG || gmask->gpack == BST_GMASK_CENTER ||
       gmask->gpack == BST_GMASK_INTERLEAVE)	/* extend action to the left when possible */
     {
       if (!aux3)
@@ -883,7 +885,8 @@ bst_gmask_pack (BstGMask *mask)
 	  if (!aux2)
 	    {
 	      n--;
-	      if (gmask->gpack == BST_GMASK_BIG && !aux1)
+	      if (!aux1 && (gmask->gpack == BST_GMASK_BIG ||
+                            gmask->gpack == BST_GMASK_CENTER))
 		{
 		  n--;
 		  if (!prompt)
@@ -901,6 +904,15 @@ bst_gmask_pack (BstGMask *mask)
 			     "xscale", 0.0,
 			     "yscale", 0.0,
 			     NULL);
+  else if (gmask->gpack == BST_GMASK_CENTER)
+    action = gtk_widget_new (GTK_TYPE_ALIGNMENT,
+                             "visible", TRUE,
+                             "child", action,
+                             "xalign", 0.5,
+                             "yalign", 0.5,
+                             "xscale", 0.0,
+                             "yscale", 0.0,
+                             NULL);
   gtk_table_attach (table, action,
 		    n, c + 1, row, row + 1,
 		    GTK_SHRINK | GTK_FILL,

@@ -1,4 +1,5 @@
 FIXMES:
+- fix forcing unique names for children of a project 
 - fix glue gc assertion after sfi_glue_describe_proc("")
 - change default zoom factor in sample view
 - add Solo propety to tracks

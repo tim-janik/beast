@@ -43,8 +43,11 @@ param_toggle_create_gmask (BstParam    *bparam,
   GtkWidget *action, *prompt, *xframe;
   BstGMask *gmask;
   gboolean radio = sfi_pspec_test_hint (bparam->pspec, SFI_PARAM_HINT_RADIO);
+  gboolean trigger = sfi_pspec_test_hint (bparam->pspec, SFI_PARAM_HINT_TRIGGER);
 
-  action = g_object_new (radio ? BST_TYPE_FREE_RADIO_BUTTON : GTK_TYPE_CHECK_BUTTON,
+  action = g_object_new (radio ? BST_TYPE_FREE_RADIO_BUTTON :
+                         trigger ? GTK_TYPE_TOGGLE_BUTTON :
+                         GTK_TYPE_CHECK_BUTTON,
 			 "visible", TRUE,
 			 NULL);
   g_object_connect (action,
@@ -65,7 +68,7 @@ param_toggle_create_gmask (BstParam    *bparam,
 			 "parent", xframe,
 			 NULL);
   gtk_misc_set_alignment (GTK_MISC (prompt), 0, 0.5);
-  gmask = bst_gmask_form_big (gmask_parent, action);
+  gmask = bst_gmask_form (gmask_parent, action, trigger ? BST_GMASK_CENTER : BST_GMASK_BIG);
   bst_gmask_set_tip (gmask, tooltip);
 
   return gmask;

@@ -110,7 +110,8 @@ typedef enum /*< skip >*/
   BST_GMASK_FIT,
   BST_GMASK_FILL,
   BST_GMASK_INTERLEAVE, /* stretch */
-  BST_GMASK_BIG
+  BST_GMASK_BIG,
+  BST_GMASK_CENTER
 } BstGMaskPack;
 BstGMask*	bst_gmask_form		(GtkWidget     *gmask_container,
 					 GtkWidget     *action,

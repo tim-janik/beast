@@ -1,3 +1,13 @@
+Fri Jul 18 18:45:44 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in (BST_RELEASE_CANDIDATE): up version number to 0.5.4,
+	interface 0, binary 0.
+
+	* beast-gtk/bstparam-toggle.c: support SFI_PARAM_HINT_TRIGGER
+	with centered toggle button.
+
+	* beast-gtk/bstutils.[hc]: allow centered action widget in gmasks.
+
 Fri Jul 18 05:42:06 2003  Tim Janik  <timj@gtk.org>
 
 	* test/velocity-test.bse: added test for velocity sequencing functionality.
