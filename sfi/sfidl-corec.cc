@@ -154,6 +154,13 @@ string CodeGenerator::makeLMixedName (const string& name)
   return result;
 }
 
+string CodeGenerator::makeStyleName (const string& name)
+{
+  if (options.style == Options::STYLE_MIXED)
+    return makeLMixedName (name);
+  return makeLowerName (name);
+}
+
 /*--- functions for "C and C++"-like languages ---*/
 
 string CodeGeneratorCBase::makeGTypeName(const string& name)
@@ -238,7 +245,7 @@ void CodeGeneratorC::printInfoStrings (const string& name, const map<string,stri
   printf("};\n");
 }
 
-static string scatId (SfiSCategory c)
+string CodeGeneratorCBase::scatId (SfiSCategory c)
 {
   string s; s += (char) c;
   return s;
@@ -511,19 +518,26 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 
 /*--- the C language binding ---*/
 
-void CodeGeneratorC::printProcedure (const Method& mdef, bool proto, const string& className)
+std::string CodeGeneratorCBase::makeProcName (const std::string& className,
+	                                      const std::string& procName)
+{
+  if (className == "")
+    return makeLowerName(procName);
+  else
+    return makeLowerName(className) + "_" + makeLowerName(procName);
+}
+
+void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const string& className)
 {
   vector<Param>::const_iterator pi;
-  string mname, dname;
+  string dname, mname = makeProcName (className, mdef.name);
   
   if (className == "")
     {
-      mname = makeLowerName(mdef.name);
       dname = makeLowerName(mdef.name, '-');
     }
   else
     {
-      mname = makeLowerName(className) + "_" + makeLowerName(mdef.name);
       dname = makeMixedName(className) + "+" + makeLowerName(mdef.name, '-');
     }
 
@@ -1404,7 +1418,7 @@ void CodeGeneratorC::run ()
       printf("\n");
     }
 
-  bool protoProcedures = (options.targetC && options.doHeader);
+  bool protoProcedures = options.doHeader;
   if (options.generateProcedures || protoProcedures)
     {
       for (ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
@@ -1435,15 +1449,6 @@ void CodeGeneratorC::run ()
 	}
     }
 }
-
-/*--- the Qt language binding ---*/
-
-class CodeGeneratorQt : public CodeGenerator {
-public:
-  CodeGeneratorQt(Parser& parser) : CodeGenerator(parser) {
-  }
-  void run ();
-};
 
 void CodeGeneratorQt::run ()
 {

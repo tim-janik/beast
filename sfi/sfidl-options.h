@@ -25,6 +25,8 @@
 namespace Sfidl {
 
 struct Options {
+  enum Target { TARGET_C, TARGET_QT, TARGET_MODULE, TARGET_CXX };
+  enum Style  { STYLE_DEFAULT, STYLE_LOWER, STYLE_MIXED };
   bool        generateExtern;
   bool        generateData;
   bool        generateConstant;
@@ -34,9 +36,8 @@ struct Options {
   bool        generateIdlLineNumbers;
   bool        generateSignalStuff;
   bool        generateProcedures;
-  bool        targetC;
-  bool        targetQt;
-  bool        targetModule;
+  Target      target;
+  Style       style;
   bool        doHeader;
   bool        doSource;
   bool        doInterface;

@@ -41,7 +41,8 @@ Options::Options ()
   generateTypeH = generateTypeC = false;
   generateBoxedTypes = generateProcedures = generateSignalStuff = false;
   generateIdlLineNumbers = false;
-  targetC = targetQt = targetModule = false;
+  target = TARGET_C;
+  style = STYLE_DEFAULT;
   doHeader = doSource = doImplementation = doInterface = doHelp = doExit = false;
   sfidlName = "sfidl";
 
@@ -115,18 +116,39 @@ bool Options::parse (int *argc_p, char **argv_p[])
 	}
       else if (strcmp ("--qt", argv[i]) == 0)
 	{
-	  targetQt = true;
+	  target = TARGET_QT;
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--module", argv[i]) == 0)
 	{
-	  targetModule = true;
+	  target = TARGET_MODULE;
           /* configure for module generation */
           doImplementation = true;
           doInterface = false;
           doHeader = true;
           doSource = false;
 	  argv[i] = NULL;
+	}
+      else if (strcmp ("--cxx", argv[i]) == 0)
+	{
+	  target = TARGET_CXX;
+	  /*
+	   * we will probably extend this to support both:
+	   * interface and implementation
+	   */
+          doImplementation = false;
+          doInterface = true;
+	  argv[i] = 0;
+	}
+      else if (strcmp ("--lower", argv[i]) == 0)
+	{
+	  style = STYLE_LOWER;
+	  argv[i] = 0;
+	}
+      else if (strcmp ("--mixed", argv[i]) == 0)
+	{
+	  style = STYLE_MIXED;
+	  argv[i] = 0;
 	}
       else if (strcmp ("--help", argv[i]) == 0)
 	{
@@ -287,21 +309,27 @@ bool Options::parse (int *argc_p, char **argv_p[])
       return false;
     }
 
+  // style
+
+  if (style == STYLE_DEFAULT && target == TARGET_QT)
+    style = STYLE_MIXED;
+
+  if (style == STYLE_DEFAULT)
+    style = STYLE_LOWER;
+
   // --qt
-  if (targetQt && doImplementation)
+  if (target == TARGET_QT && doImplementation)
     {
       fprintf (stderr, "%s: --implementation is not supported for Qt\n", sfidlName.c_str());
       return false;
     }
-  targetC = !targetQt;
 
   // --module
-  if (targetModule && doInterface)
+  if (target == TARGET_MODULE && doInterface)
     {
       fprintf (stderr, "%s: --interface is not supported for Module\n", sfidlName.c_str());
       return false;
     }
-  targetC = !targetModule;
 
   /* implications of header/source options */
   if (doHeader)
@@ -350,8 +378,11 @@ void Options::printUsage ()
   fprintf (stderr, "\n");
   fprintf (stderr, "options for the C++ language binding:\n");
   fprintf (stderr, " --qt                        use Qt language binding\n");
+  fprintf (stderr, " --cxx                       use C++ language binding\n");
   fprintf (stderr, " --module                    generate skeleton Module implementation\n");
   fprintf (stderr, " --namespace <namespace>     set the namespace to use for the code\n");
+  fprintf (stderr, " --mixed                     mixed case identifiers (createMidiSynth)\n");
+  fprintf (stderr, " --lower                     lower case identifiers (create_midi_synth)\n");
   fprintf (stderr, "\n");
   fprintf (stderr, " --help                      this help\n");
   fprintf (stderr, " --version                   print version\n");

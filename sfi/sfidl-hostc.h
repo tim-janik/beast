@@ -28,6 +28,7 @@
 #include "sfidl-namespace.h"
 #include "sfidl-options.h"
 #include "sfidl-parser.h"
+#include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
 namespace Sfidl {
   
@@ -42,13 +43,16 @@ namespace Sfidl {
     std::string makeUpperName (const std::string& name);
     std::string makeMixedName (const std::string& name);
     std::string makeLMixedName (const std::string& name);
+    std::string makeStyleName (const std::string& name);
     
     CodeGenerator(const Parser& parser) : parser (parser), options (*Options::the()) {
     }
-    
+   
   public:
     virtual void run () = 0;
-  };
+    virtual ~CodeGenerator() {
+    }
+   };
 
   /*
    * Base class for C and C++-like CodeGenerators
@@ -62,11 +66,15 @@ namespace Sfidl {
       MODEL_VCALL_RET, MODEL_VCALL_RCONV, MODEL_VCALL_RFREE
     };
 
+    std::string scatId (SfiSCategory c);
+    void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
+    virtual std::string makeProcName (const std::string& className, const std::string& procName);
+
     std::string makeGTypeName (const std::string& name);
     std::string makeParamSpec (const Param& pdef);
     std::string createTypeCode (const std::string& type, TypeCodeModel model);
-    std::string createTypeCode (const std::string& type, const std::string& name, 
-				TypeCodeModel model);
+    virtual std::string createTypeCode (const std::string& type, const std::string& name, 
+				        TypeCodeModel model);
 
     CodeGeneratorCBase (const Parser& parser) : CodeGenerator (parser) {
     }
@@ -75,14 +83,19 @@ namespace Sfidl {
   class CodeGeneratorC : public CodeGeneratorCBase {
   protected:
     void printInfoStrings (const std::string& name, const std::map<std::string,std::string>& infos);
-    void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
-    
     bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
     
   public:
     CodeGeneratorC(const Parser& parser) : CodeGeneratorCBase (parser) {
     }
     void run ();
+  };
+
+  class CodeGeneratorQt : public CodeGenerator {
+    public:
+      CodeGeneratorQt(Parser& parser) : CodeGenerator(parser) {
+      }
+      void run ();
   };
 };
 

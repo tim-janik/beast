@@ -21,6 +21,7 @@
 #include "sfidl-options.h"
 #include "sfidl-parser.h"
 #include "sfidl-module.h"
+#include "sfidl-cxx.h"
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 #include <fcntl.h>
 #include <stdio.h>
@@ -67,17 +68,21 @@ int main (int argc, char **argv)
     }
 
   CodeGenerator *codeGenerator = 0;
-  if (options.targetC)
-    codeGenerator = new CodeGeneratorC (parser);
-
-#if 0   // FIXME: code generator not yet implemented
-  if (options.targetQt)
-    codeGenerator = new CodeGeneratorQt (parser);
-#endif
-  
-  if (options.targetModule)
-    codeGenerator = new CodeGeneratorModule (parser);
-
+  switch (options.target)
+    {
+      case Options::TARGET_C:
+	codeGenerator = new CodeGeneratorC (parser);
+	break;
+      case Options::TARGET_QT:
+	codeGenerator = new CodeGeneratorQt (parser);
+	break;
+      case Options::TARGET_CXX:
+	codeGenerator = new CodeGeneratorCxx (parser);
+	break;
+      case Options::TARGET_MODULE:
+	codeGenerator = new CodeGeneratorModule (parser);
+	break;
+    }
   if (!codeGenerator)
     {
       fprintf(stderr, "no target given\n");

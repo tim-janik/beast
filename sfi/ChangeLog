@@ -1,3 +1,16 @@
+Thu Nov 27 00:55:40 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cxx.*: New files: initial check-in of the C++ language binding.
+
+	* Makefile.am: Added sfidl-cxx.*.
+
+	* sfidl-generator.*: Moved more functionality to the base class, so
+	that the C++ language binding can use it. Qt binding available again.
+
+	* sfidl-options.* sfidl.cc: The target is now an enum. New --mixed and
+	--lower options to specify the style of the identifiers used in the
+	binding.
+
 Wed Nov 26 22:07:49 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-generator.*: Moved common functionality of all C / C++
