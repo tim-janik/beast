@@ -1,0 +1,103 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-10-26 17:31+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: bse/bsebiquadfilter.c:130
+msgid "Filter"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:132
+msgid "Filter Type"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:132
+msgid "The filter design type"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
+msgid "Center Frequency"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:138
+msgid "Cutoff [Hz]"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:146
+msgid "Note"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
+msgid "Emphasis"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:153
+msgid "Gain [dB]"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:158
+msgid "Norm Type"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:159
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
+#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+msgid "Modulation"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:167
+msgid "Strength of linear frequency modulation"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:173
+msgid "Perform exponential frequency modulation instead of linear"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:179
+msgid "Number of octaves to be affected by exponential frequency modulation"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:184
+msgid "Gain Modulation [%]"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:185
+msgid "Strength of gain modulation"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:189
+msgid "Unfiltered Audio Signal"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:191
+msgid "Center Frequency Input"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:193
+msgid "Frequency Modulation Input"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:195
+msgid "Gain Modulation Input"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:197
+msgid "Filtered Audio Signal"
+msgstr ""
