@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-28 19:09+0200\n"
-"PO-Revision-Date: 2004-05-29 01:14+0200\n"
+"POT-Creation-Date: 2004-05-30 19:13+0200\n"
+"PO-Revision-Date: 2004-05-31 03:14+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -3215,9 +3215,8 @@ msgid "Last modification time"
 msgstr "Laatste modificatietijd"
 
 #: bse/bsewaveosc.c:97
-#, fuzzy
 msgid "/Audio Sources/Wave Oscillator"
-msgstr "/Modules/Geluidsbronnen/Standaard oscillator"
+msgstr "/Geluidsbronnen/Wave oscillator"
 
 #: bse/bsewaveosc.c:123
 msgid "Wave to play"
