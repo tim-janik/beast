@@ -1,4 +1,6 @@
 FIXME(release-critical):
+- (beast:29238): BEAST-CRITICAL **: file bstutils.c: line 802 (bst_gmask_set_aux2): assertion `GTK_IS_WIDGET (widget)' failed
+- menu-button should keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
 - bseprocidl: generate "Info blurb" not "Info BLURB"
 - play + play doesn't reset wave oscillator state
 - implement Monitor Output Signal dialogs:
@@ -17,6 +19,7 @@ FIXME(release-critical):
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 - add: /demo/simple/stereo pipe
        /demo/simple/MIDI piano
+- test fft on 2, 3, 4 etc channels       
 TODO:
 - support various fft windows for fft probes
 - implement float-ffts
