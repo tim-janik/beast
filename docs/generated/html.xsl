@@ -50,6 +50,10 @@ h4 {
   font-size: 110%;
 }
 
+dt {
+  text-decoration: underline;
+}
+
 div.banner {
   background-color: #005d5d;
   padding: 3px 5px;
@@ -72,6 +76,22 @@ div.title_author {
   font-size: 140%;
   font-weight: bold;
   margin: 2em;
+}
+
+span.index {
+}
+
+thead td {
+  background-color: #005d5d;
+  color: #d0e4d0;
+  font-weight: bold;
+  padding-left: 4px;
+}
+
+div.index {
+}
+
+span.index {
 }
 
 span.toc_chapter {
@@ -167,9 +187,6 @@ span.revision {
   font-style: italic;
 }
 
-span.tableterm {
-}
-
 pre.programlisting {
 }
 
@@ -201,18 +218,9 @@ div.center {
   text-align: center;
 }
 
-div.table {
-}
-
 table.multitable {
 }
 
-p.tableitem {
-  margin: 0px;
-  margin-bottom: 1em;
-  padding: 0px;
-  padding-left: 4em;
-}
    </style>
    <xsl:call-template name="base_href"/>
  </head>
@@ -711,17 +719,21 @@ p.tableitem {
 </xsl:template>
 
 <xsl:template match="table">
-  <div class="table">
+  <dl>
     <xsl:apply-templates/>
-  </div>
+  </dl>
 </xsl:template>
 
 <xsl:template match="tableterm">
-  <span class="tableterm"><xsl:apply-templates/></span><br/>
+  <dt>
+    <xsl:apply-templates/>
+  </dt>
 </xsl:template>
 
 <xsl:template match="tableitem/item/para">
-  <p class="tableitem"><xsl:apply-templates/></p>
+  <dd>
+    <xsl:apply-templates/>
+  </dd>
 </xsl:template>
 
 <xsl:template match="para">
@@ -753,8 +765,6 @@ p.tableitem {
     </xsl:choose>
   </a>
 </xsl:template>
-
-<!-- Untested ftuff -->
 
 <xsl:template match="code">
   <code><xsl:apply-templates/></code>
@@ -872,15 +882,46 @@ p.tableitem {
   </img>
 </xsl:template>
 
-<xsl:template match="indexterm">
+<xsl:template match="para/indexterm">
   <a>
     <xsl:attribute name="name">
-      <xsl:value-of select="@index"/><xsl:text>index-</xsl:text><xsl:number/>
+      <xsl:value-of select="@index"/><xsl:text>index-</xsl:text><xsl:number level="any"/>
     </xsl:attribute>
   </a>
 </xsl:template>
 
 <xsl:template match="printindex">
+  <xsl:variable name="type" select="."/>
+  <div class="index">
+    <table summary="index" width="80%" border="0">
+      <thead>
+        <tr>
+	  <td><strong>Name</strong></td>
+	  <td><strong>Section</strong></td>
+	</tr>
+      </thead>
+      <tbody>
+	<xsl:for-each select="//para/indexterm[@index=$type]">
+	  <xsl:sort/>
+	  <tr>
+	    <td width="40%">
+	      <a>
+		<xsl:attribute name="href">
+		  <xsl:text>#</xsl:text><xsl:value-of select="$type"/><xsl:text>index-</xsl:text><xsl:number level="any"/>
+		</xsl:attribute>
+		<span class="index">
+		  <xsl:apply-templates/>
+		</span>
+	      </a>
+	    </td>
+	    <td>
+	      <xsl:value-of select="../../title"/>
+	    </td>
+	  </tr>
+	</xsl:for-each>
+      </tbody>
+    </table>
+  </div>
 </xsl:template>
 
 </xsl:stylesheet>

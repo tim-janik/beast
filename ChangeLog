@@ -1,3 +1,9 @@
+Sun Sep 15 07:23:39 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/html.xsl:
+	* docs/generated/markup.xsl: update these with new versions from
+	Alper Ersoy which can generate indices.
+
 Sun Sep 15 06:30:06 2002  Tim Janik  <timj@gtk.org>
 
 	* bsw-shell/bswscminterp.[hc]: integrate with glue layer garbage

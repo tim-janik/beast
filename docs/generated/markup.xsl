@@ -708,10 +708,6 @@
     <!-- </xlink> -->
   </xsl:template>
 
-  <!-- omit indices for a while -->
-  <xsl:template match="indexterm|printindex">
-  </xsl:template>
-
   <xsl:template match="tableterm">
     <span tag="tableterm">
       <xsl:apply-templates/>
@@ -736,6 +732,31 @@
   <xsl:template match="multitable/row">
     <xsl:apply-templates/>
     <breakline/>
+  </xsl:template>
+
+  <xsl:template match="para/indexterm">
+    <anchor>
+      <xsl:attribute name="name">
+	<xsl:value-of select="@index"/><xsl:text>index-</xsl:text><xsl:number level="any"/>
+      </xsl:attribute>
+    </anchor>
+  </xsl:template>
+
+  <xsl:template match="printindex">
+    <xsl:variable name="type" select="."/>
+    <xsl:for-each select="//para/indexterm[@index=$type]">
+      <xsl:sort/>
+      <span tag="hyperlink">
+	<xlink>
+	  <xsl:attribute name="ref">
+	    <xsl:text>file:#</xsl:text><xsl:value-of select="$type"/><xsl:text>index-</xsl:text><xsl:number level="any"/>
+	  </xsl:attribute>
+	  <xsl:apply-templates/>
+	</xlink>
+      </span>
+      <xsl:text> (</xsl:text><xsl:value-of select="../../title"/><xsl:text>)</xsl:text>
+      <breakline/>
+    </xsl:for-each>
   </xsl:template>
 
 </xsl:stylesheet>
