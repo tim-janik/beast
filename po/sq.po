@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-05 03:13+0200\n"
+"POT-Creation-Date: 2004-07-07 19:59+0200\n"
 "PO-Revision-Date: 2004-01-12 15:14+0100\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -159,31 +159,36 @@ msgstr ""
 msgid "GSL Engine..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:280
+#, fuzzy
+msgid "Export Audio"
+msgstr "Audio"
+
+#: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr ""
 
-#: beast-gtk/bstapp.c:630
+#: beast-gtk/bstapp.c:636
 #, c-format
 msgid "Loading skin `%s'"
 msgstr ""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:791
+#: beast-gtk/bstapp.c:797
 msgid "Rack editor"
 msgstr ""
 
-#: beast-gtk/bstapp.c:805
+#: beast-gtk/bstapp.c:811
 msgid "Preferences"
 msgstr "Preferimet"
 
-#: beast-gtk/bstapp.c:832
+#: beast-gtk/bstapp.c:838
 msgid "Procedure Browser"
 msgstr ""
 
-#: beast-gtk/bstapp.c:889
+#: beast-gtk/bstapp.c:895
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr ""
@@ -394,6 +399,14 @@ msgstr ""
 #: beast-gtk/bstfiledialog.c:752 beast-gtk/bstfiledialog.c:754
 #, c-format
 msgid "Loading wave `%s'"
+msgstr ""
+
+#: beast-gtk/bstgrowbar.c:91
+msgid "Shrink the scrollable area"
+msgstr ""
+
+#: beast-gtk/bstgrowbar.c:93
+msgid "Grow the scrollable area"
 msgstr ""
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
@@ -1573,7 +1586,6 @@ msgstr ""
 msgid "Triplet hundred twenty-eighth note"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:71
 msgid "2"
 msgstr "2"
@@ -1582,7 +1594,6 @@ msgstr "2"
 msgid "Every second row"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:72
 msgid "4"
 msgstr "4"
@@ -1591,7 +1602,6 @@ msgstr "4"
 msgid "Every fourth row"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:73
 msgid "8"
 msgstr "8"
@@ -1600,7 +1610,6 @@ msgstr "8"
 msgid "Every eighth row"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:74
 msgid "16"
 msgstr "16"
@@ -1649,7 +1658,6 @@ msgstr ""
 msgid "Every eighth and sixteenth row"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:80
 msgid "3"
 msgstr "3"
@@ -1658,7 +1666,6 @@ msgstr "3"
 msgid "Every third row"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:81
 msgid "6"
 msgstr "6"
@@ -1667,7 +1674,6 @@ msgstr "6"
 msgid "Every sixth row"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:82
 msgid "12"
 msgstr "12"
@@ -1801,7 +1807,6 @@ msgstr "Ngjyra e Sfondit"
 msgid "Empty Field Color"
 msgstr ""
 
-#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:121
 msgid "Text Color"
 msgstr "Ngjyra e tekstit"
@@ -2042,30 +2047,34 @@ msgstr ""
 msgid "Mark Signal (Tail)"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:149 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:150 beast-gtk/bstsupershell.c:273
 msgid "Waves"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:212
+#: beast-gtk/bstsupershell.c:213
 msgid "Tracks"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:217 beast-gtk/bstsupershell.c:253
-#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:34
+#: beast-gtk/bstsupershell.c:218 beast-gtk/bstsupershell.c:260
+#: beast-gtk/bstsupershell.c:278 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:222
+#: beast-gtk/bstsupershell.c:223
 msgid "Parts"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:228 beast-gtk/bstsupershell.c:247
+#: beast-gtk/bstsupershell.c:229
+msgid "Busses"
+msgstr ""
+
+#: beast-gtk/bstsupershell.c:235 beast-gtk/bstsupershell.c:254
 msgid "Routing"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:242
+#: beast-gtk/bstsupershell.c:249
 msgid "Rack"
 msgstr ""
 

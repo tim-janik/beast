@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-06 03:13+0200\n"
+"POT-Creation-Date: 2004-07-07 19:59+0200\n"
 "PO-Revision-Date: 2004-07-06 13:00+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -160,31 +160,36 @@ msgstr "_FAQ..."
 msgid "GSL Engine..."
 msgstr "Engine GSL..."
 
-#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:280
+#, fuzzy
+msgid "Export Audio"
+msgstr "Levý zvuk"
+
+#: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otevírám projekt `%s'"
 
-#: beast-gtk/bstapp.c:630
+#: beast-gtk/bstapp.c:636
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Načítám skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:791
+#: beast-gtk/bstapp.c:797
 msgid "Rack editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:805
+#: beast-gtk/bstapp.c:811
 msgid "Preferences"
 msgstr "Nastavení"
 
-#: beast-gtk/bstapp.c:832
+#: beast-gtk/bstapp.c:838
 msgid "Procedure Browser"
 msgstr "Procházeč procedur"
 
-#: beast-gtk/bstapp.c:889
+#: beast-gtk/bstapp.c:895
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Poznámky o vydání BEAST-%s"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-30 20:06+0200\n"
+"POT-Creation-Date: 2004-07-07 19:59+0200\n"
 "PO-Revision-Date: 2004-01-17 23:28+0100\n"
 "Last-Translator: Christophe Merlet (RedFox) <redfox@redfoxcenter.org>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
@@ -165,33 +165,38 @@ msgstr "_FAQ..."
 msgid "GSL Engine..."
 msgstr "Moteur GSL..."
 
-#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:280
+#, fuzzy
+msgid "Export Audio"
+msgstr "Test Audio"
+
+#: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Ouverture du projet « %s »"
 
-#: beast-gtk/bstapp.c:630
+#: beast-gtk/bstapp.c:636
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "Chargement de l'image : %s"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:791
+#: beast-gtk/bstapp.c:797
 #, fuzzy
 msgid "Rack editor"
 msgstr "Éditeur de piste"
 
-#: beast-gtk/bstapp.c:805
+#: beast-gtk/bstapp.c:811
 msgid "Preferences"
 msgstr "Préférences"
 
-#: beast-gtk/bstapp.c:832
+#: beast-gtk/bstapp.c:838
 #, fuzzy
 msgid "Procedure Browser"
 msgstr "Retour de procédure"
 
-#: beast-gtk/bstapp.c:889
+#: beast-gtk/bstapp.c:895
 #, fuzzy, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "_Notes de version de Nautilus"
@@ -421,6 +426,14 @@ msgstr "Charge moyenne"
 #, fuzzy, c-format
 msgid "Loading wave `%s'"
 msgstr "Chargement de l'image : %s"
+
+#: beast-gtk/bstgrowbar.c:91
+msgid "Shrink the scrollable area"
+msgstr ""
+
+#: beast-gtk/bstgrowbar.c:93
+msgid "Grow the scrollable area"
+msgstr ""
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
 #: beast-gtk/bsttrackview.c:61
@@ -756,282 +769,290 @@ msgstr "Refait la dernière action annulée"
 msgid "Editor"
 msgstr "Éditeur"
 
-#: beast-gtk/bstpatterncolumns.c:683
+#: beast-gtk/bstpatterncolumns.c:686
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:685
+#: beast-gtk/bstpatterncolumns.c:688
 msgid "COLUMN TYPES:"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:687
+#: beast-gtk/bstpatterncolumns.c:690
 msgid "note-1, note-2, ..."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:688
+#: beast-gtk/bstpatterncolumns.c:691
 msgid "  display notes of the first, second, ... channel"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:690
+#: beast-gtk/bstpatterncolumns.c:693
 msgid "offset-1, length-2, velocity-3, ..."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:691
+#: beast-gtk/bstpatterncolumns.c:694
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:693
+#: beast-gtk/bstpatterncolumns.c:696
 msgid "control-0, ..., control-63, cc-0, cc-31"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:694
+#: beast-gtk/bstpatterncolumns.c:697
 msgid "  select various event types (controls, continuous controllers)"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:696
+#: beast-gtk/bstpatterncolumns.c:699
 msgid "bar, |"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:697
+#: beast-gtk/bstpatterncolumns.c:700
 msgid "  display solid vertical bar"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:699
+#: beast-gtk/bstpatterncolumns.c:702
 msgid "dbar, :"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:700
+#: beast-gtk/bstpatterncolumns.c:703
 msgid "  display dotted vertical bar"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:702
+#: beast-gtk/bstpatterncolumns.c:705
 msgid "space, _"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:703
+#: beast-gtk/bstpatterncolumns.c:706
 msgid "  insert vertical space"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:704
+#: beast-gtk/bstpatterncolumns.c:707
 msgid "EVENTS:"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:706
+#: beast-gtk/bstpatterncolumns.c:709
 msgid "  balance, volume, cc-8, ..."
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:707
+#: beast-gtk/bstpatterncolumns.c:710
 msgid "MODIFIERS:"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:709
+#: beast-gtk/bstpatterncolumns.c:712
 msgid "hex2, hex4"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:710
+#: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:712
+#: beast-gtk/bstpatterncolumns.c:715
 msgid "shex2, shex4"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:713
+#: beast-gtk/bstpatterncolumns.c:716
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:715
+#: beast-gtk/bstpatterncolumns.c:718
 msgid "dec2, dec3"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:716
+#: beast-gtk/bstpatterncolumns.c:719
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:718
+#: beast-gtk/bstpatterncolumns.c:721
 msgid "sdec2, sdec3"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:719
+#: beast-gtk/bstpatterncolumns.c:722
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:721
+#: beast-gtk/bstpatterncolumns.c:724
 msgid "col1, col2, col3"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:722
+#: beast-gtk/bstpatterncolumns.c:725
 msgid "  selects one of 3 predefined colors"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:724
+#: beast-gtk/bstpatterncolumns.c:727
 msgid "lfold, rfold"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:725
+#: beast-gtk/bstpatterncolumns.c:728
 msgid "  allow folding the column into left/right neighbour"
 msgstr ""
 
-#: beast-gtk/bstpatterncolumns.c:726
+#: beast-gtk/bstpatterncolumns.c:729
 msgid "EXAMPLE:"
 msgstr ""
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:728
+#: beast-gtk/bstpatterncolumns.c:731
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgstr ""
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.c:738
+#: beast-gtk/bstpatterncolumns.c:741
 msgid "Pattern Editor Layout"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "VZoom"
 msgstr "VZoom"
 
-#: beast-gtk/bstpatternctrl.c:83
+#: beast-gtk/bstpatternctrl.c:120
 msgid "The tick/note length per line"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:86
+#: beast-gtk/bstpatternctrl.c:123
 #, fuzzy
 msgid "Steps"
 msgstr "_Arrêter"
 
-#: beast-gtk/bstpatternctrl.c:87
+#: beast-gtk/bstpatternctrl.c:124
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:91
+#: beast-gtk/bstpatternctrl.c:128
 #, fuzzy
 msgid "Direction"
 msgstr "_Distortion"
 
-#: beast-gtk/bstpatternctrl.c:92
+#: beast-gtk/bstpatternctrl.c:129
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:96
+#: beast-gtk/bstpatternctrl.c:133
 msgid "HWrap"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:97
+#: beast-gtk/bstpatternctrl.c:134
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:100
+#: beast-gtk/bstpatternctrl.c:137
 #, fuzzy
 msgid "Base Octave"
 msgstr "Octaves"
 
-#: beast-gtk/bstpatternctrl.c:101
+#: beast-gtk/bstpatternctrl.c:138
 msgid "Controls the octave relative to which notes are entered"
 msgstr ""
 
+#: beast-gtk/bstpatternctrl.c:141
+msgid "Row Shading"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:142
+msgid "Adjust the number of rows between each shaded row"
+msgstr ""
+
 #. movement
-#: beast-gtk/bstpatternctrl.c:271
+#: beast-gtk/bstpatternctrl.c:313
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:272
+#: beast-gtk/bstpatternctrl.c:314
 msgid "Move focus cell upwards"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:273
+#: beast-gtk/bstpatternctrl.c:315
 msgid "Move focus cell to the left"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:274
+#: beast-gtk/bstpatternctrl.c:316
 msgid "Move focus cell to the right"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:275
+#: beast-gtk/bstpatternctrl.c:317
 msgid "Move focus cell downwards"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:276
+#: beast-gtk/bstpatternctrl.c:318
 msgid "Move focus cell upwards page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:277
+#: beast-gtk/bstpatternctrl.c:319
 msgid "Move focus cell to the left page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:278
+#: beast-gtk/bstpatternctrl.c:320
 msgid "Move focus cell to the right page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:279
+#: beast-gtk/bstpatternctrl.c:321
 msgid "Move focus cell downwards page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:280
+#: beast-gtk/bstpatternctrl.c:322
 msgid "Set the focus cell to the topmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:281
+#: beast-gtk/bstpatternctrl.c:323
 msgid "Set the focus cell to the leftmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:282
+#: beast-gtk/bstpatternctrl.c:324
 msgid "Set the focus cell to the rightmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:283
+#: beast-gtk/bstpatternctrl.c:325
 msgid "Set the focus cell to the bottommost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:286
+#: beast-gtk/bstpatternctrl.c:328
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:290
+#: beast-gtk/bstpatternctrl.c:332
 msgid "Set the base octave"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:293
+#: beast-gtk/bstpatternctrl.c:335
 msgid "Change the base octave by a given amount"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:297
+#: beast-gtk/bstpatternctrl.c:339
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:301
+#: beast-gtk/bstpatternctrl.c:343
 msgid "Set the focus cell octave"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:305 beast-gtk/bstpatternctrl.c:319
+#: beast-gtk/bstpatternctrl.c:347 beast-gtk/bstpatternctrl.c:361
 msgid "Remove any events in the focus cell"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:309 beast-gtk/bstpatternctrl.c:323
+#: beast-gtk/bstpatternctrl.c:351 beast-gtk/bstpatternctrl.c:365
 #, fuzzy
 msgid "Set the focus cell note"
 msgstr "Insérer après"
 
-#: beast-gtk/bstpatternctrl.c:313 beast-gtk/bstpatternctrl.c:327
+#: beast-gtk/bstpatternctrl.c:355 beast-gtk/bstpatternctrl.c:369
 msgid "Sets the value of the focus digit"
 msgstr ""
 
@@ -1472,7 +1493,7 @@ msgstr ""
 msgid "Step downwards"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:42
+#: beast-gtk/bstrecords.idl:42 beast-gtk/bstrecords.idl:70
 #, fuzzy
 msgid "None"
 msgstr "Note"
@@ -1720,128 +1741,277 @@ msgid "Triplet hundred twenty-eighth note"
 msgstr "Insérer un noeud suivant"
 
 #: beast-gtk/bstrecords.idl:71
+msgid "2"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:71
+msgid "Every second row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:72
+msgid "4"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:72
+msgid "Every fourth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:73
+msgid "8"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:73
+#, fuzzy
+msgid "Every eighth row"
+msgstr "Insérer un noeud suivant"
+
+#: beast-gtk/bstrecords.idl:74
+#, fuzzy
+msgid "16"
+msgstr "1\\/4"
+
+#: beast-gtk/bstrecords.idl:74
+#, fuzzy
+msgid "Every sixteenth row"
+msgstr "Insérer un noeud suivant"
+
+#: beast-gtk/bstrecords.idl:75
+msgid "2 & 4"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:75
+msgid "Every second and fourth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:76
+msgid "4 & 8"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:76
+msgid "Every fourth and eighth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:77
+msgid "4 & 12"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:77
+msgid "Every fourth and twelfth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:78
+msgid "4 & 16"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:78
+msgid "Every fourth and sixteenth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:79
+msgid "8 & 16"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:79
+msgid "Every eighth and sixteenth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:80
+msgid "3"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:80
+msgid "Every third row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:81
+msgid "6"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:81
+msgid "Every sixth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:82
+#, fuzzy
+msgid "12"
+msgstr "1\\/2"
+
+#: beast-gtk/bstrecords.idl:82
+msgid "Every twelfth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:83
+msgid "3 & 6"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:83
+msgid "Every third and sixth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:84
+msgid "3 & 12"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:84
+msgid "Every third and twelfth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:85
+msgid "6 & 12"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:85
+msgid "Every sixth and twelfth row"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:90
 #, fuzzy
 msgid "Release counter"
 msgstr "_Notes de version..."
 
-#: beast-gtk/bstrecords.idl:73
+#: beast-gtk/bstrecords.idl:92
 msgid "Font Size"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:73
+#: beast-gtk/bstrecords.idl:92
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:75
+#: beast-gtk/bstrecords.idl:94
 msgid "Anti-Alias"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:75
+#: beast-gtk/bstrecords.idl:94
 msgid "Draw synthesis networks anti-aliased?"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:77
+#: beast-gtk/bstrecords.idl:96
 msgid "Single Edit"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:77
+#: beast-gtk/bstrecords.idl:96
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:79
+#: beast-gtk/bstrecords.idl:98
 msgid "Swap IO"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:79
+#: beast-gtk/bstrecords.idl:98
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstrecords.idl:102
 #, fuzzy
 msgid "Tab Width"
 msgstr "Largeur de touche"
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstrecords.idl:102
 msgid "Specify project tab width in pixels"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:85
+#: beast-gtk/bstrecords.idl:104
 msgid "Homogeneous Input Fields"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:86
+#: beast-gtk/bstrecords.idl:105
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:94
+#: beast-gtk/bstrecords.idl:113
 #, fuzzy
 msgid "Skin Name"
 msgstr "Nom"
 
-#: beast-gtk/bstrecords.idl:94
+#: beast-gtk/bstrecords.idl:113
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
+#: beast-gtk/bstrecords.idl:115 beast-gtk/bstrecords.idl:125
+#: beast-gtk/bstrecords.idl:135
 msgid "Background Image"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:96
-msgid "Background image used by the piano-roll widget."
+#: beast-gtk/bstrecords.idl:115
+msgid "Background image used by the pattern editor."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
+#: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
+#: beast-gtk/bstrecords.idl:136
 msgid "Image shade"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
+#: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
+#: beast-gtk/bstrecords.idl:136
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:98 beast-gtk/bstrecords.idl:108
+#: beast-gtk/bstrecords.idl:117 beast-gtk/bstrecords.idl:127
+#: beast-gtk/bstrecords.idl:137
 msgid "Background Color"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:99 beast-gtk/bstrecords.idl:109
-#, fuzzy
-msgid "Horizontal Bar Color"
-msgstr "Couleur des horizontales"
+#: beast-gtk/bstrecords.idl:118
+msgid "Background Shade 1"
+msgstr ""
 
-#: beast-gtk/bstrecords.idl:100
+#: beast-gtk/bstrecords.idl:119
+msgid "Background Shade 2"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:120
+msgid "Empty Field Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:121
+#, fuzzy
+msgid "Text Color"
+msgstr "Sélectionner"
+
+#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:129
 #, fuzzy
 msgid "Vertical Bar Color"
 msgstr "Options verticales"
 
-#: beast-gtk/bstrecords.idl:101
+#: beast-gtk/bstrecords.idl:125
+msgid "Background image used by the piano-roll editor."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:138
+#, fuzzy
+msgid "Horizontal Bar Color"
+msgstr "Couleur des horizontales"
+
+#: beast-gtk/bstrecords.idl:130
 #, fuzzy
 msgid "Horizontal Grid Color"
 msgstr "Options horizontales"
 
-#: beast-gtk/bstrecords.idl:102
+#: beast-gtk/bstrecords.idl:131
 #, fuzzy
 msgid "Vertical Grid Color"
 msgstr "Options verticales"
 
-#: beast-gtk/bstrecords.idl:103 beast-gtk/bstrecords.idl:110
+#: beast-gtk/bstrecords.idl:132 beast-gtk/bstrecords.idl:139
 msgid "Middle Bar Color"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:106
-msgid "Background image used by the control events widget."
+#: beast-gtk/bstrecords.idl:135
+msgid "Background image used by the control events editor."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:111
+#: beast-gtk/bstrecords.idl:140
 msgid "Positive Value Color"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:112
+#: beast-gtk/bstrecords.idl:141
 #, fuzzy
 msgid "Zero Value Color"
 msgstr "Sélectionner"
 
-#: beast-gtk/bstrecords.idl:113
+#: beast-gtk/bstrecords.idl:142
 msgid "Negative Value Color"
 msgstr ""
 
@@ -2073,31 +2243,35 @@ msgstr "Marquer comme _lu"
 msgid "Mark Signal (Tail)"
 msgstr "Tout marquer"
 
-#: beast-gtk/bstsupershell.c:149 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:150 beast-gtk/bstsupershell.c:273
 msgid "Waves"
 msgstr "Vagues"
 
-#: beast-gtk/bstsupershell.c:212
+#: beast-gtk/bstsupershell.c:213
 msgid "Tracks"
 msgstr "Pistes"
 
-#: beast-gtk/bstsupershell.c:217 beast-gtk/bstsupershell.c:253
-#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:34
+#: beast-gtk/bstsupershell.c:218 beast-gtk/bstsupershell.c:260
+#: beast-gtk/bstsupershell.c:278 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Paramètres"
 
-#: beast-gtk/bstsupershell.c:222
+#: beast-gtk/bstsupershell.c:223
 msgid "Parts"
 msgstr "Parties"
 
-#: beast-gtk/bstsupershell.c:228 beast-gtk/bstsupershell.c:247
+#: beast-gtk/bstsupershell.c:229
+msgid "Busses"
+msgstr ""
+
+#: beast-gtk/bstsupershell.c:235 beast-gtk/bstsupershell.c:254
 #, fuzzy
 msgid "Routing"
 msgstr "sortant"
 
-#: beast-gtk/bstsupershell.c:242
+#: beast-gtk/bstsupershell.c:249
 msgid "Rack"
 msgstr ""
 
