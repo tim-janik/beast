@@ -313,8 +313,6 @@ sfidl:
   - sfidl-parser.cc: property keyword should be nuked
   - clean up enum code to use ChoiceValue value or sequentialValue, without
     doing computations
-  - sfidl-parser.cc: should report file/line with the error message of missing
-    includes instead of include file 'bse/bsecxxmodule.idl' not found
   extensions:
 20- signals should be specified in idl files (and have to be documentable)
   - sfidl --output=foo.cc should be implemented
