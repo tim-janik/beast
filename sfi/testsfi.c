@@ -982,6 +982,31 @@ test_sfi_ring (void)
   ASSERT (r2 == NULL);
   sfi_ring_free (r1);
 
+  r1 = NULL;
+  r1 = sfi_ring_append (r1, (void*) 0x11);
+  r1 = sfi_ring_append (r1, (void*) 0x16);
+  r1 = sfi_ring_append (r1, (void*) 0x15);
+  r1 = sfi_ring_append (r1, (void*) 0x14);
+  r1 = sfi_ring_append (r1, (void*) 0x13);
+  r1 = sfi_ring_append (r1, (void*) 0x12);
+  r1 = sfi_ring_append (r1, (void*) 0x03);
+  r1 = sfi_ring_append (r1, (void*) 0x02);
+  r1 = sfi_ring_append (r1, (void*) 0x01);
+  r2 = NULL;
+  r2 = sfi_ring_append (r2, (void*) 0x16);
+  r2 = sfi_ring_append (r2, (void*) 0x15);
+  r2 = sfi_ring_append (r2, (void*) 0x14);
+  r2 = sfi_ring_append (r2, (void*) 0x13);
+  r2 = sfi_ring_append (r2, (void*) 0x12);
+  r2 = sfi_ring_append (r2, (void*) 0x11);
+  r2 = sfi_ring_append (r2, (void*) 0x01);
+  r2 = sfi_ring_append (r2, (void*) 0x02);
+  r2 = sfi_ring_append (r2, (void*) 0x03);
+  r1 = sfi_ring_reorder (r1, r2);
+  ASSERT (sfi_ring_equals (r1, r2, sfi_compare_pointers, NULL));
+  sfi_ring_free (r1);
+  sfi_ring_free (r2);
+
   DONE ();
 }
 

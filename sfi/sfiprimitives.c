@@ -1979,10 +1979,12 @@ sfi_ring_symmetric_difference (const SfiRing  *sorted_set1,
 }
 
 static inline int
-pointercmp (const void *p1,
-            const void *p2)
+pointerloccmp (const void *pp1,
+               const void *pp2)
 {
-  return p1 < p2 ? -1 : p1 != p2;
+  const gpointer *p1 = pp1;
+  const gpointer *p2 = pp2;
+  return *p1 < *p2 ? -1 : *p1 != *p2;
 }
 
 static inline gboolean
@@ -1995,7 +1997,7 @@ ring_reorder_lookup (guint          n_items,
   while (offset < n)
     {
       guint i = (offset + n) >> 1;
-      gint cmp = pointercmp (key, items[i]);
+      gint cmp = key < items[i] ? -1 : key != items[i];
       if (cmp < 0)
         n = i;
       else if (cmp > 0)
@@ -2032,7 +2034,7 @@ sfi_ring_reorder (SfiRing        *unordered_ring,
     }
   sfi_ring_free (unordered_ring);
   unordered_ring = NULL;
-  qsort (items, n_items, sizeof (items[0]), pointercmp);
+  qsort (items, n_items, sizeof (items[0]), pointerloccmp);
 
   /* collapse duplicates */
   guint j = 0, *counts = g_new0 (guint, n_items);
