@@ -3,7 +3,9 @@ BSE Driver Package
 
 This is a BSE (Bedevilled Sound Engine) plugin/driver package.
 In order to build this package, you need recent versions
-of BSE (>=0.6.3) and ALSA (>=1.0).
+of BSE (>=0.6.3) and ALSA (>=1.0). Read the "Installation"
+section about the non standard installation path detection
+of this driver package.
 
 ALSA:
   http://www.alsa-project.org/
@@ -23,4 +25,12 @@ And a related IRC channel:
 Installation
 ============
 
-See the file `INSTALL'.
+This package is a driver package and may install files under
+a prefix different from the prefix specified at configure time.
+In particular, the BSE drivers build from this package will
+be installed under the drivers/. subdirectory of an existing
+libbse installtion. The exact installation location can be
+found out via pkg-config with:
+  pkg-config --variable=driverdir bse	
+
+For general installation instructions, see the file `INSTALL'.

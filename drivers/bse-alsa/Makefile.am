@@ -6,7 +6,7 @@
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4
 
-INCLUDES = -I$(srcdir) -I$(builddir) $(BSE_CFLAGS)
+INCLUDES = -I$(srcdir) -I$(top_builddir) $(BSE_CFLAGS)
 # we specify the logging domain here
 DEFS += $(strip -DG_LOG_DOMAIN=\"BSE-ALSA\")
 
@@ -38,5 +38,6 @@ EXTRA_HEADERS                += bsemididevice-alsa.h
 
 
 EXTRA_DIST += $(strip		\
+	${EXTRA_HEADERS}	\
 	acbeast.m4		\
 )

@@ -1,3 +1,11 @@
+Tue Sep 28 04:25:21 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: fixed up package name.
+
+	* README: describe installation path handling of this package.
+
+	* Makefile.am: fix include paths.
+
 Tue Sep 28 01:45:21 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-alsa.c: preliminary implementation of read handler.
