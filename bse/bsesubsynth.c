@@ -288,10 +288,14 @@ bse_sub_synth_get_property (GObject    *object,
 	case PARAM_IPORT_NAME:
           if (n < BSE_SOURCE_N_ICHANNELS (self))
             g_value_set_string (value, self->input_ports[n]);
+          else
+            g_value_take_string (value, g_strdup_printf ("synth_in_%u", n + 1)); /* return default */
 	  break;
 	case PARAM_OPORT_NAME:
           if (n < BSE_SOURCE_N_OCHANNELS (self))
             g_value_set_string (value, self->output_ports[n]);
+          else
+            g_value_take_string (value, g_strdup_printf ("synth_out_%u", n + 1)); /* return default */
 	  break;
 	default:
 	  G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
