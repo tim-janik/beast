@@ -116,6 +116,29 @@ TypeRef (const string &type)
 }
 #define cTypeRef(s)    TypeRef (s).c_str()
 
+static string
+createTypeCode (const string& type, const string& name, CodeGeneratorC::TypeCodeModel model)
+{
+  // FIXME: argument validation
+
+  if (the_parser->isRecord (type))
+    {
+      switch (model)
+      {
+	case CodeGeneratorC::MODEL_MEMBER: return type + "Ptr";
+	default: ;
+      }
+    }
+  return the_cgc->createTypeCode (type, name, model);
+}
+
+static string
+TypeMember (const string& type)
+{
+  return createTypeCode (type, "", CodeGeneratorC::MODEL_MEMBER);
+}
+#define cTypeMember(s)  TypeMember(s).c_str()
+
 static vector<string>
 split_string (const string &ctype)
 {
@@ -298,7 +321,7 @@ func_param_return_free (const Param &param)
     case FBLOCK:        return "sfi_fblock_unref";
     case PSPEC:         return "g_param_spec_unref";
     case SEQUENCE:      return "sfi_seq_unref";
-    case RECORD:        return "sfi_rec_unref";
+    case RECORD:        return "";
     case OBJECT:        return "";
     default:            return "*** ERROR ***";
     }
@@ -345,6 +368,7 @@ CodeGeneratorModule::run ()
   
   /* standard includes */
   printf ("\n#include <bse/bsecxxplugin.h>\n");
+  printf ("#include <bse/bsecxxsmart.h>\n");
   
   /* sigh, we can't query things by namespace from the parser. // FIXME
    * so here's a gross hack, figure the namespace from the
@@ -420,14 +444,18 @@ CodeGeneratorModule::run ()
 	  nsh.setFromSymbol(rdef.name);
 	  string name = nsh.printableForm (rdef.name);
 
-	  printf("class %s {\n", name.c_str());
-
+	  printf("class %s : public RefCountable {\n", name.c_str());
+	  printf("public:\n");
 	  for (vector<Param>::const_iterator pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++)
 	    {
-	      string name = the_cgc->createTypeCode(pi->type,pi->name,MODEL_MEMBER);
-	      printf("\t%s;\n",name.c_str());
+	      printf("  %s %s;\n", cTypeMember(pi->type), pi->name.c_str());
 	    }
-	  printf("};");
+	  printf("};\n");
+	  printf("\n");
+	  printf("typedef Bse::SmartPtr<%s,CountablePointer<RefCountable> > %sPtr;\n",
+	      name.c_str(), name.c_str());
+	  printf("typedef Bse::SmartPtr<const %s,CountablePointer<const RefCountable> > %sCPtr;\n",
+	      name.c_str(), name.c_str());
 	}
       if (parser.isSequence (*ti))
 	{
@@ -526,7 +554,7 @@ CodeGeneratorModule::run ()
           printf ("  /* \"transport\" structure to configure synthesis modules from properties */\n");
           printf ("  struct %s {\n", ctProperties.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-            printf ("    %s %s;\n", cTypeName (pi->type), pi->name.c_str());
+            printf ("    %s %s;\n", cTypeMember (pi->type), pi->name.c_str());
           printf ("    explicit %s (%s *p) ", ctProperties.c_str(), ctNameBase.c_str());
           for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
             printf ("%c\n      %s (p->%s)", pi == ci->properties.begin() ? ':' : ',', pi->name.c_str(), pi->name.c_str());
@@ -538,7 +566,7 @@ CodeGeneratorModule::run ()
       /* property members */
       printf ("protected:\n");
       for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
-        printf ("  %s %s;\n", cTypeRef (pi->type), pi->name.c_str());
+        printf ("  %s %s;\n", cTypeMember (pi->type), pi->name.c_str());
       
       /* property IDs */
       if (ci->properties.begin() != ci->properties.end())
@@ -776,3 +804,5 @@ CodeGeneratorModule::run ()
   /* close namespace */
   printf ("\n}; /* %s */\n", nspace.c_str());
 }
+
+/* vim:set ts=8 sts=2 sw=2: */

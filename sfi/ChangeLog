@@ -1,3 +1,10 @@
+Wed Nov 26 13:37:17 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.*: Cleanups.
+	
+	* sfidl-module.cc: More work on the language binding for records (use
+	SmartPtr now).
+
 Mon Nov 17 00:49:34 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: added g_strconcat_with_null() and defined

@@ -60,32 +60,23 @@ namespace Sfidl {
     bool choiceReverseSort(const ChoiceValue& e1, const ChoiceValue& e2);
     std::string makeGTypeName (const std::string& name);
   public:
+    enum TypeCodeModel {
+      MODEL_ARG, MODEL_MEMBER, MODEL_RET, MODEL_ARRAY,
+      MODEL_FREE, MODEL_COPY, MODEL_NEW, MODEL_FROM_VALUE, MODEL_TO_VALUE,
+      MODEL_VCALL, MODEL_VCALL_ARG, MODEL_VCALL_CONV, MODEL_VCALL_CFREE,
+      MODEL_VCALL_RET, MODEL_VCALL_RCONV, MODEL_VCALL_RFREE
+    };
+
     std::string makeParamSpec (const Param& pdef);
-    std::string createTypeCode (const std::string& type, const std::string& name, int model);
+    std::string createTypeCode (const std::string& type, TypeCodeModel model);
+    std::string createTypeCode (const std::string& type, const std::string& name, 
+				TypeCodeModel model);
     
   public:
     CodeGeneratorC(const Parser& parser) : CodeGenerator(parser) {
     }
     void run ();
   };
-#define MODEL_ARG         0
-#define MODEL_MEMBER      1
-#define MODEL_RET         2
-#define MODEL_ARRAY       3
-#define MODEL_FREE        4
-#define MODEL_COPY        5
-#define MODEL_NEW         6
-#define MODEL_FROM_VALUE  7
-#define MODEL_TO_VALUE    8
-#define MODEL_VCALL       9
-#define MODEL_VCALL_ARG   10
-#define MODEL_VCALL_CONV  11
-#define MODEL_VCALL_CFREE 12
-#define MODEL_VCALL_RET   13
-#define MODEL_VCALL_RCONV 14
-#define MODEL_VCALL_RFREE 15
-
-  
 };
 
 #endif  /* __SFIDL_GENERATOR_H__ */

@@ -226,12 +226,33 @@ static string scatId (SfiSCategory c)
   return s;
 }
 
-string CodeGeneratorC::createTypeCode(const string& type, const string &name, int model)
+string CodeGeneratorC::createTypeCode (const std::string& type, TypeCodeModel model)
 {
-  g_return_val_if_fail (model != MODEL_ARG || model != MODEL_RET ||
-                        model != MODEL_ARRAY || name == "", "bad");
-  g_return_val_if_fail (model != MODEL_FREE || model != MODEL_COPY || model != MODEL_NEW ||
-                        model != MODEL_FROM_VALUE || model != MODEL_TO_VALUE || name != "", "bad");
+  return createTypeCode (type, "", model);
+}
+
+string CodeGeneratorC::createTypeCode (const string& type, const string &name,
+                                       TypeCodeModel model)
+{
+  switch (model)
+    {
+      case MODEL_ARG:	      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_RET:	      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_MEMBER:      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_ARRAY:	      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_FREE:	      g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_COPY:	      g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_NEW:	      g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_FROM_VALUE:  g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_TO_VALUE:    g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL:	      g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_VCALL_ARG:   g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_CONV:  g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_CFREE: g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_RET:   g_return_val_if_fail (name == "", "bad"); break;
+      case MODEL_VCALL_RCONV: g_return_val_if_fail (name != "", "bad"); break;
+      case MODEL_VCALL_RFREE: g_return_val_if_fail (name != "", "bad"); break;
+    }
 
   if (parser.isRecord (type) || parser.isSequence (type))
     {
@@ -341,23 +362,25 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
     }
   else if (type == "String")
     {
-      if (model == MODEL_ARG)         return "const gchar*";
-      if (model == MODEL_MEMBER)      return "gchar*";
-      if (model == MODEL_RET)         return "const gchar*";
-      if (model == MODEL_ARRAY)       return "gchar**";
-      if (model == MODEL_FREE)        return "g_free (" + name + ")";
-      if (model == MODEL_COPY)        return "g_strdup (" + name + ")";;
-      if (model == MODEL_NEW)         return "";
-      if (model == MODEL_TO_VALUE)    return "sfi_value_string ("+name+")";
-      // FIXME: do we want sfi_value_dup_string?
-      if (model == MODEL_FROM_VALUE)  return "g_strdup (sfi_value_get_string ("+name+"))";
-      if (model == MODEL_VCALL)       return "sfi_glue_vcall_string";
-      if (model == MODEL_VCALL_ARG)   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+",";
-      if (model == MODEL_VCALL_CONV)  return "";
-      if (model == MODEL_VCALL_CFREE) return "";
-      if (model == MODEL_VCALL_RET)   return "const gchar*";
-      if (model == MODEL_VCALL_RCONV) return name;
-      if (model == MODEL_VCALL_RFREE) return "";
+      switch (model)
+	{
+	  case MODEL_ARG:         return "const gchar*";
+	  case MODEL_MEMBER:      return "gchar*";
+	  case MODEL_RET:         return "const gchar*";
+	  case MODEL_ARRAY:       return "gchar**";
+	  case MODEL_FREE:        return "g_free (" + name + ")";
+	  case MODEL_COPY:        return "g_strdup (" + name + ")";;
+	  case MODEL_NEW:         return "";
+	  case MODEL_TO_VALUE:    return "sfi_value_string ("+name+")";
+	  case MODEL_FROM_VALUE:  return "sfi_value_dup_string ("+name+")";
+	  case MODEL_VCALL:       return "sfi_glue_vcall_string";
+	  case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+",";
+	  case MODEL_VCALL_CONV:  return "";
+	  case MODEL_VCALL_CFREE: return "";
+	  case MODEL_VCALL_RET:   return "const gchar*";
+	  case MODEL_VCALL_RCONV: return name;
+	  case MODEL_VCALL_RFREE: return "";
+	}
     }
   else if (type == "BBlock")
     {
