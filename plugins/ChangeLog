@@ -1,3 +1,12 @@
+Tue Feb 22 07:26:26 2000  Tim Janik  <timj@gtk.org>
+
+	* fldbsepattern.c: removed my test cruft from this file to leave room
+	for a couple of procedure implementations from Dave Seidel
+	<dave@superluminal.com>:
+	Edit/Delete note,
+	Edit/Clear instrument and
+	Edit/Fill instrument.
+
 Wed Feb 16 01:07:48 2000  Tim Janik  <timj@gtk.org>
 
 	* icons/drum.c: 

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2000 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 2000 Dave Seidel
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -16,59 +16,180 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * fldbsepattern.c: test implementation of BsePattern procedures
+ * fldbsepattern.c: BsePattern procedures from feldspar
  */
-#include        <bse/bseplugin.h>
 
+#include        <bse/bseplugin.h>
 #include	<bse/bseprocedure.h>
 #include        <bse/bsepattern.h>
 #include        <bse/bseinstrument.h>
-#include	<stdlib.h> /* for rand() */
 
 
 /* --- BSE types --- */
-static BseType type_id_test_content = 0;
+static BseType type_id_delete_note = 0;
+static BseType type_id_insert_note = 0;
+static BseType type_id_clear_instrument = 0;
+static BseType type_id_fill_instrument = 0;
 
 
-/* --- test-content --- */
+/* --- delete-note --- */
 static void
-test_content_setup (BseProcedureClass *proc,
-		    BseParamSpec     **ipspecs,
-		    BseParamSpec     **opspecs)
+delete_note_setup (BseProcedureClass *proc,
+		   BseParamSpec     **ipspecs,
+		   BseParamSpec     **opspecs)
 {
-  proc->help      = ("Reset note and instrument contents of the selection"
-		     "to none");
-  proc->author    = "Tim Janik <timj@gtk.org>";
-  proc->copyright = "Tim Janik <timj@gtk.org>";
+  proc->help      = ("Delete current note and shift remaining notes up");
+  proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->copyright = "Dave Seidel <feldspar@beast.gtk.org>";
   proc->date      = "2000";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern", NULL,
+  *(ipspecs++) = bse_param_spec_item ("pattern", NULL, NULL,
 				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_int ("seed_value", "Random Seed Value",
-				     "Enter any number here, it will be used "
-				     "as seed value for the note generator",
-				     0, 1000, 1, 1,
-				     BSE_PARAM_DEFAULT);
+  *(ipspecs++) = bse_param_spec_uint ("focus_channel", NULL, NULL,
+				      0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
+  *(ipspecs++) = bse_param_spec_uint ("focus_row", NULL, NULL,
+				      0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
   /* output parameters */
 }
 
 static BseErrorType
-test_content_exec (BseProcedureClass *proc,
-		   BseParam          *iparams,
-		   BseParam          *oparams)
+delete_note_exec (BseProcedureClass *proc,
+		  BseParam          *iparams,
+		  BseParam          *oparams)
 {
   /* extract parameter values */
-  BsePattern *pattern	    = (BsePattern*) (iparams++)->value.v_item;
-  gint        seed_value    = (iparams++)->value.v_int;
+  BsePattern *pattern = (BsePattern*) (iparams++)->value.v_item;
+  guint c             = (iparams++)->value.v_uint;
+  guint r             = (iparams++)->value.v_uint;
+  
+  /* check parameters */
+  if (!pattern)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* FIXME: start undo */
+  
+  /* if it's the last note in the channel, just clear it */
+  if (r == pattern->n_rows - 1)
+    bse_pattern_modify_note (pattern, c, r, BSE_NOTE_VOID, NULL);
+  else
+    {
+      /* iterate over the current channel starting with the current note,
+	 replacing each note with the contents of the following note */
+      for (; r+1 < pattern->n_rows; r++)
+	{
+	  BsePatternNote *note = bse_pattern_peek_note (pattern, c, r + 1);
+	  
+	  bse_pattern_modify_note (pattern, c, r, note->note, note->instrument);
+	}
+      /* clear the last note in the channel */
+      bse_pattern_modify_note (pattern, c, r, BSE_NOTE_VOID, NULL);
+    }
+  
+  /* FIXME: end undo */
+  
+  /* set output parameters */
+  
+  return BSE_ERROR_NONE;
+}
+
+
+/* --- insert-note --- */
+static void
+insert_note_setup (BseProcedureClass *proc,
+		   BseParamSpec     **ipspecs,
+		   BseParamSpec     **opspecs)
+{
+  proc->help      = ("Insert new note and shift remaining notes down");
+  proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->copyright = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->date      = "2000";
+  
+  /* input parameters */
+  *(ipspecs++) = bse_param_spec_item ("pattern", NULL, NULL,
+				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  *(ipspecs++) = bse_param_spec_uint ("focus_channel", NULL, NULL,
+				      0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
+  *(ipspecs++) = bse_param_spec_uint ("focus_row", NULL, NULL,
+				      0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
+  *(ipspecs++) = bse_param_spec_note ("note", "Note", "Note to play",
+                                      BSE_MIN_NOTE, BSE_MAX_NOTE,
+				      1, BSE_NOTE_VOID, TRUE,
+				      BSE_PARAM_DEFAULT);
+  *(ipspecs++) = bse_param_spec_item ("instrument", "Instrument", "Instrument to use",
+                                      BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
+  /* output parameters */
+}
+
+static BseErrorType
+insert_note_exec (BseProcedureClass *proc,
+		  BseParam          *iparams,
+		  BseParam          *oparams)
+{
+  /* extract parameter values */
+  BsePattern *pattern       = (BsePattern*) (iparams++)->value.v_item;
+  guint cur_c               = (iparams++)->value.v_uint;
+  guint cur_r               = (iparams++)->value.v_uint;
+  gint note_val	            = (iparams++)->value.v_note;
+  BseInstrument* instrument = (BseInstrument*) (iparams++)->value.v_item;
+  
+  guint r;
+  
+  /* check parameters */
+  if (!pattern)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* FIXME: start undo */
+  
+  /* start at the end of the channel and work back, */
+  /* replacing each note with its predecessor until */
+  /* we get to the current row                      */
+  for (r = pattern->n_rows - 1; r > cur_r; r--)
+    {
+      BsePatternNote *note = bse_pattern_peek_note (pattern, cur_c, r-1);
+      
+      bse_pattern_modify_note (pattern, cur_c, r, note->note, note->instrument);
+    }
+  /* now insert the user-specified note in the current row */
+  bse_pattern_modify_note (pattern, cur_c, cur_r, note_val, instrument);
+  
+  /* FIXME: end undo */
+  
+  /* set output parameters */
+  
+  return BSE_ERROR_NONE;
+}
+
+
+/* --- clear-instrument --- */
+static void
+clear_instrument_setup (BseProcedureClass *proc,
+			BseParamSpec     **ipspecs,
+			BseParamSpec     **opspecs)
+{
+  proc->help      = ("Reset instrument for selected notes");
+  proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->copyright = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->date      = "2000";
+  
+  /* input parameters */
+  *(ipspecs++) = bse_param_spec_item ("pattern", NULL, NULL,
+				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  /* output parameters */
+}
+
+static BseErrorType
+clear_instrument_exec (BseProcedureClass *proc,
+		       BseParam          *iparams,
+		       BseParam          *oparams)
+{
+  /* extract parameter values */
+  BsePattern *pattern       = (BsePattern*) (iparams++)->value.v_item;
   guint c, r;
   
   /* check parameters */
   if (!pattern)
     return BSE_ERROR_PROC_PARAM_INVAL;
-
-  /* initialize from seed value */
-  srand (seed_value);
   
   /* FIXME: start undo */
   
@@ -79,10 +200,60 @@ test_content_exec (BseProcedureClass *proc,
 	BsePatternNote *note = bse_pattern_peek_note (pattern, c, r);
 	
 	if (note->selected)
-	  bse_pattern_modify_note (pattern,
-				   c, r,
-				   BSE_MIN_NOTE + rand () % (BSE_MAX_NOTE - BSE_MIN_NOTE + 1),
-				   note->instrument);
+	  bse_pattern_set_instrument (pattern, c, r, NULL);
+      }
+  
+  /* FIXME: end undo */
+  
+  /* set output parameters */
+  
+  return BSE_ERROR_NONE;
+}
+
+
+/* --- fill-instrument --- */
+static void
+fill_instrument_setup (BseProcedureClass *proc,
+		       BseParamSpec     **ipspecs,
+		       BseParamSpec     **opspecs)
+{
+  proc->help      = ("Reset instrument for selected notes");
+  proc->author    = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->copyright = "Dave Seidel <feldspar@beast.gtk.org>";
+  proc->date      = "2000";
+  
+  /* input parameters */
+  *(ipspecs++) = bse_param_spec_item ("pattern", NULL, NULL,
+				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  *(ipspecs++) = bse_param_spec_item ("instrument", "Instrument", "Instrument to use",
+                                      BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
+  /* output parameters */
+}
+
+static BseErrorType
+fill_instrument_exec (BseProcedureClass *proc,
+		      BseParam          *iparams,
+		      BseParam          *oparams)
+{
+  /* extract parameter values */
+  BsePattern *pattern       = (BsePattern*) (iparams++)->value.v_item;
+  BseInstrument* instrument = (BseInstrument*) (iparams++)->value.v_item;
+  guint c, r;
+  
+  /* check parameters */
+  if (!pattern)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* FIXME: start undo */
+  
+  /* iterate over the whole pattern, affecting only selected notes */
+  for (c = 0; c < pattern->n_channels; c++)
+    for (r = 0; r < pattern->n_rows; r++)
+      {
+	BsePatternNote *note = bse_pattern_peek_note (pattern, c, r);
+	
+	if (note->selected)
+	  bse_pattern_set_instrument (pattern, c, r, instrument);
       }
   
   /* FIXME: end undo */
@@ -96,10 +267,25 @@ test_content_exec (BseProcedureClass *proc,
 /* --- Export to BSE --- */
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_PROCEDURES = {
-  { &type_id_test_content, "BsePattern::test-content",
-    "Random fill notes", 0,
-    test_content_setup, test_content_exec, NULL,
-    "/Method/BsePattern/Test Content",
+  { &type_id_delete_note, "BsePattern::delete-note",
+    "Delete the current note", 0,
+    delete_note_setup, delete_note_exec, NULL,
+    "/Method/BsePattern/Edit/Delete note",
+  },
+  { &type_id_insert_note, "BsePattern::insert-note",
+    "Insert new note at current cell", 0,
+    insert_note_setup, insert_note_exec, NULL,
+    "/Method/BsePattern/Edit/Insert note",
+  },
+  { &type_id_clear_instrument, "BsePattern::clear-instrument",
+    "Reset the instrument for the selected notes", 0,
+    clear_instrument_setup, clear_instrument_exec, NULL,
+    "/Method/BsePattern/Edit/Clear instrument",
+  },
+  { &type_id_fill_instrument, "BsePattern::fill-instrument",
+    "Set the instrument for the selected notes", 0,
+    fill_instrument_setup, fill_instrument_exec, NULL,
+    "/Method/BsePattern/Edit/Fill instrument",
   },
   { NULL, },
 };
