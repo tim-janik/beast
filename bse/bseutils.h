@@ -27,6 +27,10 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+/* --- C++ helper declaration --- */
+void    bse_cxx_init      (void);
+
+
 /* --- record utils --- */
 BseNoteDescription* bse_note_description             (SfiInt             note,
                                                       gint               fine_tune);

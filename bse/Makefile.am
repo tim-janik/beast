@@ -61,6 +61,7 @@ bse_public_h_sources = $(strip \
 	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
 	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
 	bsecompat.h		bseundostack.h		bsemonokeyboard.c		bsemididecoder.h \
+	bsecxxutils.h		bsecxxbase.h		bseexample.h			\
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -85,6 +86,7 @@ bse_c_sources = $(strip \
 	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
 	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
 	bsecompat.c		bseundostack.c		bsemonokeyboard.c		bsemididecoder.c \
+	bsecxxutils.cc		bsecxxbase.cc		bseexample.cc			\
 )
 # procedure sources
 bse_proc_sources = $(strip \
@@ -304,9 +306,9 @@ include gslmakefile.inc
 noinst_PROGRAMS = bsequery bseautodoc bseinfo bseprocidl
 # source files
 bseprocidl_SOURCES = bseprocidl.cc
-bsequery_SOURCES = bsequery.c
-bseautodoc_SOURCES = bseautodoc.c
-bseinfo_SOURCES = bseinfo.c
+bsequery_SOURCES = bsequery.c cxxdummy.cc
+bseautodoc_SOURCES = bseautodoc.c cxxdummy.cc
+bseinfo_SOURCES = bseinfo.c cxxdummy.cc
 # link programs against BSE
 progs_LDADD = libbse.la $(top_builddir)/sfi/libsfi.la
 bseprocidl_LDADD = $(progs_LDADD)

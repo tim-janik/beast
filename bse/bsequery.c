@@ -356,6 +356,6 @@ main (gint   argc,
       g_print ("%s", text);
       g_free (text);
     }
-  
+
   return 0;
 }

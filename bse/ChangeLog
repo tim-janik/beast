@@ -1,3 +1,15 @@
+Thu Jul 31 18:08:28 2003  Tim Janik  <timj@gtk.org>
+
+	* added BSE gruntwork to get C++ plugins going.
+
+	* bsemain.c: initialize Cxx stuff.
+
+	* bse/bseexample.[hc]*: two C++ example classes.
+
+	* bse/bsecxxbase.[hc]*: base class for C++ objects.
+
+	* bse/bsecxxutils.[hc]*: BSE C++ utilities, type registration etc.
+
 Wed Jul 30 05:08:54 2003  Tim Janik  <timj@gtk.org>
 
 	* bseexports.h (struct _BseExportEnum): fix constantness.

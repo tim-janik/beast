@@ -12,17 +12,17 @@ DEFS += -DG_LOG_DOMAIN=\"BSE-TEST\" # -DG_DISABLE_CONST_RETURNS
 
 TESTS = testwavechunk testfft
 progs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
-testwavechunk_SOURCES = testwavechunk.c
+testwavechunk_SOURCES = testwavechunk.c cxxdummy.cc
 testwavechunk_LDADD = $(progs_ldadd)
-testfft_SOURCES = testfft.c
+testfft_SOURCES = testfft.c cxxdummy.cc
 testfft_LDADD = $(progs_ldadd)
 
 noinst_PROGRAMS = cutvorbis magictest mathtests $(TESTS)
-cutvorbis_SOURCES = cutvorbis.c
+cutvorbis_SOURCES = cutvorbis.c cxxdummy.cc
 cutvorbis_LDADD = $(progs_ldadd)
-magictest_SOURCES = magictest.c
+magictest_SOURCES = magictest.c cxxdummy.cc
 magictest_LDADD = $(progs_ldadd)
-mathtests_SOURCES = mathtests.c
+mathtests_SOURCES = mathtests.c cxxdummy.cc
 mathtests_LDADD = $(progs_ldadd)
 
 
