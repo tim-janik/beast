@@ -238,7 +238,11 @@ read_packet (VorbisHandle *vhandle)
   gint stream_id, i;
   
   vhandle->pcm_pos = ov_pcm_tell (&vhandle->ofile) - vhandle->soffset;
+#if GSL_OV_READ_FLOAT_ARGS == 4
+  vhandle->pcm_length = ov_read_float (&vhandle->ofile, &pcm, G_MAXINT, &stream_id);
+#else
   vhandle->pcm_length = ov_read_float (&vhandle->ofile, &pcm, &stream_id);
+#endif
   if (vhandle->pcm_pos < 0 || vhandle->pcm_length < 0 || stream_id != vhandle->stream)
     {
       /* urg, this is bad! */

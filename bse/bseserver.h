@@ -55,6 +55,7 @@ struct _BseServer
   GslModule       *pcm_omodule;
   guint		   dev_use_count;
   BseMidiDevice	  *midi_device;
+  BseMidiDevice	  *midi_fallback;
   BseMidiReceiver *midi_receiver;
 
   GSList	  *watch_list;

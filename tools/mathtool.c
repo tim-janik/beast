@@ -70,7 +70,7 @@ main (int   argc,
   guint order = 0;
   
   shift_argc = argc;
-  shift_argv = argv;
+  shift_argv = (const gchar**) argv;
   
   g_thread_init (NULL);
   gsl_init (NULL, NULL);

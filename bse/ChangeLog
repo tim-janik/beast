@@ -1,3 +1,17 @@
+Sat Aug  3 17:16:13 2002  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-oss.c (bse_pcm_device_oss_open):
+	* bsemididevice-oss.c (bse_midi_device_oss_open): translate errno
+	via bse_error_from_errno().
+
+	* bseserver.[hc]: fallback to null midi device if the real
+	midi device can't be opened.
+
+	* gsl-mplan.txt: fix typos.
+
+	* gsldatahandle-vorbis.c: adapt to changes in ov_read_float() in
+	libvrobis v1.0.0.
+
 Fri Aug  2 18:21:19 2002  Tim Janik  <timj@gtk.org>
 
 	* bseitem.[hc]: add per-class list_proxies() method to retrive a list

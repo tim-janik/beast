@@ -28,6 +28,7 @@
 #include "bsemain.h"		/* threads enter/leave */
 #include "bsecomwire.h"
 #include "bsemidireceiver.h"
+#include "bsemididevice-null.h"
 #include "bsescriptcontrol.h"
 
 
@@ -161,6 +162,7 @@ bse_server_init (BseServer *server)
   server->pcm_omodule = NULL;
   server->pcm_ref_count = 0;
   server->midi_device = NULL;
+  server->midi_fallback = NULL;
   server->main_context = g_main_context_default ();
   g_main_context_ref (server->main_context);
   BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
@@ -345,6 +347,7 @@ bse_server_pick_default_devices (BseServer *server)
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (server->pcm_device == NULL);
   g_return_if_fail (server->midi_device == NULL);
+  g_return_if_fail (server->midi_fallback == NULL);
 
   /* pcm device driver implementations all derive from BsePcmDevice */
   children = g_type_children (BSE_TYPE_PCM_DEVICE, &n);
@@ -381,12 +384,15 @@ bse_server_pick_default_devices (BseServer *server)
       g_type_class_unref (class);
     }
   g_free (children);
-  if (rating)
-    {
-      server->midi_device = g_object_new (choice,
+  if (!rating)
+    choice = BSE_TYPE_MIDI_DEVICE_NULL;
+  server->midi_device = g_object_new (choice,
+				      "midi_receiver", bse_server_get_midi_receiver (server, "default"),
+				      NULL);
+  if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
+    server->midi_fallback = g_object_new (BSE_TYPE_MIDI_DEVICE_NULL,
 					  "midi_receiver", bse_server_get_midi_receiver (server, "default"),
 					  NULL);
-    }
 }
 
 BseErrorType
@@ -398,16 +404,22 @@ bse_server_activate_devices (BseServer *server)
 
   if (!server->pcm_device || !server->midi_device)
     bse_server_pick_default_devices (server);
-  if (!server->pcm_device || !server->midi_device)
+  if (!server->pcm_device)
     return BSE_ERROR_INTERNAL;	/* shouldn't happen */
   
   if (!error)
     error = bse_pcm_device_open (server->pcm_device);
   if (!error)
     {
-      error = bse_midi_device_open (server->midi_device);
-      if (error)
-	bse_pcm_device_suspend (server->pcm_device);
+      BseErrorType midi_error;
+      midi_error = bse_midi_device_open (server->midi_device);
+      if (midi_error)
+	{
+	  g_message ("failed to open midi device %s (reverting to null device): %s",
+		     bse_object_debug_name (server->midi_device), bse_error_blurb (midi_error));
+	  midi_error = bse_midi_device_open (server->midi_fallback);
+	  g_assert (midi_error == BSE_ERROR_NONE);
+	}
     }
   if (!error)
     {
@@ -450,7 +462,10 @@ bse_server_suspend_devices (BseServer *server)
   gsl_engine_wait_on_trans ();
   
   bse_pcm_device_suspend (server->pcm_device);
-  bse_midi_device_suspend (server->midi_device);
+  if (BSE_MIDI_DEVICE_OPEN (server->midi_device))
+    bse_midi_device_suspend (server->midi_device);
+  else
+    bse_midi_device_suspend (server->midi_fallback);
 
   engine_shutdown (server);
 }

@@ -22,7 +22,7 @@ Node Model:
 -----------
 * a node has n_istreams input streams
 * a node has n_jstreams joint input streams facilities, that is,
-  an unlimited number of ouput streams can be connected to each
+  an unlimited number of output streams can be connected to each
   "joint" input stream
 * a node has n_ostreams output streams
 * all streams are equally value quantized as IEEE754 floats,
@@ -56,7 +56,7 @@ Node Methods:
   less output values than requested.
 ->reset()
   The purpose of this method is to reset local state kept in
-  a node to the initial state it possed before the first call
+  a node to the initial state it possessed before the first call
   to process() or process_deferred().
 
 Node Relationships:
@@ -154,7 +154,7 @@ from the suspension state of the nodes connected to its outputs
 (which may first need updating themselves).
 Various optimizations are possible during the two recursion passes,
 e.g. by allowing suspension only at block boundaries, by integrating
-one recusion pass with other recursive tasks on the graph
+one recursion pass with other recursive tasks on the graph
 (scheduling), and by doing various flag tests during the passes.
 
 Virtual modules
@@ -162,7 +162,7 @@ Virtual modules
 In order to ease implementations of object networks which facilitate
 the engine for actual calculation, virtual modules are supported.
 Virtual modules are not scheduled and thus don't consume processor
-cycles durign calculation phase. Their input/output streams are
+cycles during calculation phase. Their input/output streams are
 mere reconnection points for streams of real processing modules.
 As virtual modules are not part of the active calculation schedule,
 flow and suspension jobs may not be queued on them, but input recursive
@@ -176,7 +176,7 @@ Deferred Node Implementation Considerations:
 --------------------------------------------
 For deferred nodes, the number n specifying the amount of output
 values that are produced ahead of input can be considered
-mostly-fixed. that is, it's unlikely to change often and will do
+mostly-fixed. That is, it's unlikely to change often and will do
 so only at block boundaries.
 Supporting n to be completely variable or considering it mostly
 fixed has certain implications. Here're the considerations that
@@ -217,11 +217,11 @@ Thread types:
   - processes single modules when required
   - processes module cycles when required
   - passes back processed transactions and flow jobs to the
-    UserThread for garbage collection
+    UserThread for garbage collection.
 * SlaveThread; the engine can be configured to spawn slave threads which,
   in addition to the master thread
   - process single modules when required
-  - process module cycles when required
+  - process module cycles when required.
 
 Communication at thread boundaries:
 * Job transaction queue; the UserThread constructs job transactions and

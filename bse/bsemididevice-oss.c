@@ -132,14 +132,7 @@ bse_midi_device_oss_open (BseMidiDevice *mdev)
       if (fd >= 0)
 	oss->fd = fd;
       else
-	{
-	  if (errno == EBUSY)
-	    error = BSE_ERROR_DEVICE_BUSY;
-	  else if (errno == EISDIR || errno == EACCES || errno == EROFS)
-	    error = BSE_ERROR_DEVICE_PERMS;
-	  else
-	    error = BSE_ERROR_DEVICE_IO;
-	}
+	error = bse_error_from_errno (errno, BSE_ERROR_OPEN_FAILED);
     }
 
   /* setup mdev or shutdown */
