@@ -339,68 +339,99 @@ bse_pattern_set_instrument (BsePattern    *pattern,
 			   instrument);
 }
 
-void
-bse_pattern_select_note (BsePattern *pattern,
-			 guint       channel,
-			 guint       row)
+guint32*
+bse_pattern_selection_new (guint n_channels,
+			   guint n_rows)
 {
-  BsePatternNote *note;
+  guint32 *selection;
 
-  g_return_if_fail (BSE_IS_PATTERN (pattern));
-  g_return_if_fail (channel < pattern->n_channels);
-  g_return_if_fail (row < pattern->n_rows);
+  g_return_val_if_fail (n_channels >= 1 && n_channels <= BSE_MAX_N_CHANNELS, NULL);
+  g_return_val_if_fail (n_rows >= 1 && n_rows <= BSE_MAX_N_ROWS, NULL);
 
-  bse_object_lock (BSE_OBJECT (pattern));
+  selection = g_new0 (guint32, (n_channels * n_rows + 31) / 32 + 2);
+  BSE_PATTERN_SELECTION_N_CHANNELS (selection) = n_channels;
+  BSE_PATTERN_SELECTION_N_ROWS (selection) = n_rows;
 
-  note = &PNOTE (pattern, channel, row);
-  if (!note->selected)
-    {
-      note->selected = TRUE;
-      BSE_NOTIFY (pattern, note_selected, NOTIFY (OBJECT, channel, row, DATA));
-    }
+  return selection;
+}
 
-  bse_object_unlock (BSE_OBJECT (pattern));
+guint32*
+bse_pattern_selection_copy (guint32 *src_selection)
+{
+  guint32 *selection;
+  guint n_channels, n_rows, s;
+  
+  g_return_val_if_fail (src_selection != NULL, NULL);
+
+  n_channels = BSE_PATTERN_SELECTION_N_CHANNELS (src_selection);
+  n_rows = BSE_PATTERN_SELECTION_N_ROWS (src_selection);
+  s = (n_channels * n_rows + 31) / 32 + 2;
+  selection = g_new (guint32, s);
+  memcpy (selection, src_selection, sizeof (guint32) * s);
+
+  return selection;
 }
 
 void
-bse_pattern_unselect_note (BsePattern *pattern,
-			   guint       channel,
-			   guint       row)
+bse_pattern_selection_free (guint32 *selection)
 {
-  BsePatternNote *note;
+  g_return_if_fail (selection != NULL);
 
-  g_return_if_fail (BSE_IS_PATTERN (pattern));
-  g_return_if_fail (channel < pattern->n_channels);
-  g_return_if_fail (row < pattern->n_rows);
-
-  bse_object_lock (BSE_OBJECT (pattern));
-
-  note = &PNOTE (pattern, channel, row);
-  if (note->selected)
-    {
-      note->selected = FALSE;
-      BSE_NOTIFY (pattern, note_unselected, NOTIFY (OBJECT, channel, row, DATA));
-    }
-
-  bse_object_unlock (BSE_OBJECT (pattern));
+  g_free (selection);
 }
 
 void
-bse_pattern_unselect_except (BsePattern *pattern,
-			     guint       channel,
-			     guint       row)
+bse_pattern_selection_fill (guint32 *selection,
+			    gboolean selected)
+{
+  guint n;
+
+  g_return_if_fail (selection != NULL);
+
+  n = BSE_PATTERN_SELECTION_N_CHANNELS (selection) * BSE_PATTERN_SELECTION_N_ROWS (selection);
+  memset (selection + 2, selected ? 0xff : 0, (n / 32) * sizeof (guint32));
+}
+
+void
+bse_pattern_save_selection (BsePattern *pattern,
+			    guint32    *selection)
 {
   guint c, r;
-  
+
   g_return_if_fail (BSE_IS_PATTERN (pattern));
-  
+  g_return_if_fail (selection != NULL);
+  g_return_if_fail (BSE_PATTERN_SELECTION_N_CHANNELS (selection) == pattern->n_channels);
+  g_return_if_fail (BSE_PATTERN_SELECTION_N_ROWS (selection) == pattern->n_rows);
+
   for (c = 0; c < pattern->n_channels; c++)
     for (r = 0; r < pattern->n_rows; r++)
       {
 	BsePatternNote *note = &PNOTE (pattern, c, r);
-	
-	if (note->selected && channel != c && row != r)
-	  bse_pattern_unselect_note (pattern, c, r);
+
+	if (note->selected)
+	  BSE_PATTERN_SELECTION_MARK (selection, c, r);
+	else
+	  BSE_PATTERN_SELECTION_UNMARK (selection, c, r);
+      }
+}
+
+void
+bse_pattern_restore_selection (BsePattern *pattern,
+			       guint32    *selection)
+{
+  guint c, r;
+
+  g_return_if_fail (BSE_IS_PATTERN (pattern));
+  g_return_if_fail (selection != NULL);
+  g_return_if_fail (BSE_PATTERN_SELECTION_N_CHANNELS (selection) == pattern->n_channels);
+  g_return_if_fail (BSE_PATTERN_SELECTION_N_ROWS (selection) == pattern->n_rows);
+
+  for (c = 0; c < pattern->n_channels; c++)
+    for (r = 0; r < pattern->n_rows; r++)
+      {
+	BsePatternNote *note = &PNOTE (pattern, c, r);
+
+	note->selected = BSE_PATTERN_SELECTION_TEST (selection, c, r);
       }
 }
 

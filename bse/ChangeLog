@@ -1,3 +1,15 @@
+Wed Feb  2 23:59:48 2000  Tim Janik  <timj@gtk.org>
+
+	* builtin_bsepattern.c (multi_select_exec): added Select/All,
+	Select/None and Select/Invert procedures.
+
+	* bsepattern.[hc]: revamped selection API, we only store the
+	selection for procedure invokations now.
+
+	* bseexports.h: 
+	* bseprocedure.[hc]: added private_id field to procedure class and
+	export type for multipurpose procedures.
+
 Wed Feb  2 05:37:02 2000  Tim Janik  <timj@gtk.org>
 
 	* bsepattern.[hc]:

@@ -410,9 +410,10 @@ static void
 bse_snet_reset (BseSource *source)
 {
   BseSNet *snet = BSE_SNET (source);
-  GList *list;
 
 #if 0 // FIXME 
+  GList *list;
+
   /* reset all children */
   for (list = snet->sources; list; list = list->next)
     {

@@ -48,6 +48,7 @@ struct _BseProcedureClass
   BseTypeClass    bse_class;
   gchar          *name;
   gchar          *blurb;
+  guint           private_id;
 
   /* setup upon init */
   gchar          *help;

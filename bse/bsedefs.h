@@ -277,14 +277,6 @@ typedef void	(*BseNotify_note_changed)	(BsePattern	*pattern,
 						 guint		 channel,
 						 guint		 row,
 						 gpointer	 data);
-typedef void	(*BseNotify_note_selected)	(BsePattern	*pattern,
-						 guint		 channel,
-						 guint		 row,
-						 gpointer	 data);
-typedef void	(*BseNotify_note_unselected)	(BsePattern	*pattern,
-						 guint		 channel,
-						 guint		 row,
-						 gpointer	 data);
 typedef void	(*BseNotify_sequencer_step)	(BseSong	*song,
 						 gpointer	 data);
 typedef void	(*BseNotify_complete_restore)	(BseProject	*project,

@@ -79,6 +79,7 @@ bse_procedure_base_init (BseProcedureClass *proc)
 {
   proc->name = NULL;
   proc->blurb = NULL;
+  proc->private_id = 0;
   proc->help = NULL;
   proc->author = NULL;
   proc->copyright = NULL;
@@ -126,6 +127,7 @@ bse_procedure_init (BseProcedureClass        *proc,
 
   proc->name = bse_type_name (BSE_PROCEDURE_TYPE (proc));
   proc->blurb = bse_type_blurb (BSE_PROCEDURE_TYPE (proc));
+  proc->private_id = pspec->private_id;
 
   /* init procedure class from plugin,
    * paranoia check certain class members

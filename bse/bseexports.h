@@ -86,6 +86,7 @@ struct _BseExportProcedure
   BseType            *type_p;	   /* obligatory */
   const gchar  	     *name;	   /* obligatory */
   const gchar  	     *blurb;	   /* optional */
+  const guint  	      private_id;  /* optional */
 
   BseProcedureInit    init;	   /* obligatory */
   BseProcedureExec    exec;	   /* obligatory */

@@ -55,7 +55,7 @@ struct _BsePattern
   
   guint	current_channel;
   guint current_row;
-  
+
   BsePatternNote *notes		/* ->notes [ row * n_channels + channel] */;
 };
 struct _BsePatternClass
@@ -83,12 +83,6 @@ void		bse_pattern_set_instrument  (BsePattern		*pattern,
 					     guint               channel,
 					     guint               row,
 					     BseInstrument	*instrument);
-void		bse_pattern_select_note	    (BsePattern		*pattern,
-					     guint               channel,
-					     guint               row);
-void		bse_pattern_unselect_note   (BsePattern		*pattern,
-					     guint               channel,
-					     guint               row);
 
 
 /* --- internal --- */
@@ -101,10 +95,63 @@ void		bse_pattern_modify_note	    (BsePattern		*pattern,
 					     guint		 row,
 					     gint		 note,
 					     BseInstrument	*instrument);
-void		bse_pattern_unselect_except (BsePattern		*pattern,
-					     guint               channel,
-					     guint               row);
 
+/* --- selections --- */
+/* selections within a BsePattern are supplied for procedure invocation
+ * from a pattern editor only, they don't actually affect core BSE
+ * behaviour. thus we provide functions to keep an external selection
+ * mask updated and functions to sync that with a pattern's inetrnal
+ * selection.
+ */
+void     bse_pattern_save_selection       (BsePattern  *pattern,
+					   guint32     *selection);
+void     bse_pattern_restore_selection    (BsePattern  *pattern,
+					   guint32     *selection);
+guint32* bse_pattern_selection_new	  (guint        n_channels,
+					   guint        n_rows);
+guint32* bse_pattern_selection_copy       (guint32     *src_selection);
+void     bse_pattern_selection_free       (guint32     *selection);
+void     bse_pattern_selection_fill       (guint32     *selection,
+					   gboolean     selected);
+#define  BSE_PATTERN_SELECTION_N_CHANNELS(selection)  (selection[0])
+#define  BSE_PATTERN_SELECTION_N_ROWS(selection)      (selection[1])
+#define  BSE_PATTERN_SELECTION_MARK(selection, channel, row)	\
+  _bse_pattern_selection_mark ((selection), (channel), (row))
+#define  BSE_PATTERN_SELECTION_UNMARK(selection, channel, row)	\
+  _bse_pattern_selection_unmark ((selection), (channel), (row))
+#define  BSE_PATTERN_SELECTION_TEST(selection, channel, row)	\
+  _bse_pattern_selection_test ((selection), (channel), (row))
+
+
+/* --- implementation details --- */
+static inline gboolean
+_bse_pattern_selection_test (guint32 *selection,
+			     guint    channel,
+			     guint    row)
+{
+  guint n = BSE_PATTERN_SELECTION_N_CHANNELS (selection) * row + channel;
+
+  /* return (selection[n / 32 + 2] & (1 << n % 32)) != 0; */
+  return (selection[(n >> 5) + 2] & (1 << (n & 0x1f))) != 0;
+}
+static inline void
+_bse_pattern_selection_mark (guint32 *selection,
+			     guint    channel,
+			     guint    row)
+{
+  guint n = BSE_PATTERN_SELECTION_N_CHANNELS (selection) * row + channel;
+
+  selection[(n >> 5) + 2] |= 1 << (n & 0x1f);
+}
+static inline void
+_bse_pattern_selection_unmark (guint32 *selection,
+			       guint    channel,
+			       guint    row)
+{
+  guint n = BSE_PATTERN_SELECTION_N_CHANNELS (selection) * row + channel;
+
+  selection[(n >> 5) + 2] &= ~(1 << (n & 0x1f));
+}
 
 
 #ifdef __cplusplus
