@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 2.6\n"
-"Report-Msgid-Bugs-To: Duarte Loreto <happyguy_pt@hotmail.com>\n"
-"POT-Creation-Date: 2003-12-11 23:53+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-15 14:12+0100\n"
 "PO-Revision-Date: 2003-12-11 23:59+0000\n"
 "Last-Translator: Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Language-Team: Portuguese <gnome_pt@yahoogroups.com>\n"
@@ -193,6 +193,7 @@ msgid "Input"
 msgstr "Entrada"
 
 #: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
 msgid "Output"
 msgstr "Saida"
 
@@ -1395,6 +1396,10 @@ msgstr "Í_ndice"
 msgid "_Reload"
 msgstr "_Reler"
 
+#: beast-gtk/gxk/gxkparam-entry.c:56
+msgid "Text Entry"
+msgstr "Entrada de Texto"
+
 #: beast-gtk/gxk/gxkparam-label.c:49
 msgid "Property Name"
 msgstr "Nome da Propriedade"
@@ -1427,10 +1432,6 @@ msgstr "Botão Giratório (Logarítmica)"
 msgid "Toggle Button"
 msgstr "Botão de Alternar"
 
-#: beast-gtk/gxk/gxkparam-entry.c:56
-msgid "Text Entry"
-msgstr "Entrada de Texto"
-
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "The text of the label"
 msgstr "O texto da etiqueta"
@@ -1444,8 +1445,8 @@ msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
 msgstr ""
-"Se definido, um sublinhado no texto indica que o caracter seguinte deverá ser "
-"utilizado para a tecla de atalho"
+"Se definido, um sublinhado no texto indica que o caracter seguinte deverá "
+"ser utilizado para a tecla de atalho"
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
@@ -1497,6 +1498,119 @@ msgstr "Widged de atalho"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "O widget a ser activado quando a tecla de atalho da etiqueta é primida"
 
+#: bse/bsebiquadfilter.c:130
+msgid "Filter"
+msgstr "Filtro"
+
+#: bse/bsebiquadfilter.c:132
+msgid "Filter Type"
+msgstr "Tipo Filtro"
+
+#: bse/bsebiquadfilter.c:132
+msgid "The filter design type"
+msgstr "O tipo de desenho do filtro"
+
+#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
+msgid "Center Frequency"
+msgstr "Frequência Central"
+
+#: bse/bsebiquadfilter.c:138
+msgid "Cutoff [Hz]"
+msgstr "Corte [Hz]"
+
+#: bse/bsebiquadfilter.c:146
+msgid "Note"
+msgstr "Nota"
+
+#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
+msgid "Emphasis"
+msgstr "Enfase"
+
+#: bse/bsebiquadfilter.c:153
+msgid "Gain [dB]"
+msgstr "Ganho [dB]"
+
+#: bse/bsebiquadfilter.c:158
+msgid "Norm Type"
+msgstr "Tipo Norma"
+
+#: bse/bsebiquadfilter.c:159
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr ""
+"O tipo de normalização do filtro de ganho (apenas suportado por passagem "
+"alta e baixa)"
+
+#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
+#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+msgid "Modulation"
+msgstr "Modulação"
+
+#: bse/bsebiquadfilter.c:167
+msgid "Strength of linear frequency modulation"
+msgstr "Força da modulação da frequência linear"
+
+#: bse/bsebiquadfilter.c:173
+msgid "Perform exponential frequency modulation instead of linear"
+msgstr "Executar modulação de frequência exponencial em vez de linear"
+
+#: bse/bsebiquadfilter.c:179
+msgid "Number of octaves to be affected by exponential frequency modulation"
+msgstr "Número de oitavas a afectar pela modulação de frequência exponencial"
+
+#: bse/bsebiquadfilter.c:185
+#, no-c-format
+msgid "Gain Modulation [%]"
+msgstr "Modulação de Ganho [%]"
+
+#: bse/bsebiquadfilter.c:186
+msgid "Strength of gain modulation"
+msgstr "Força da modulação de ganho"
+
+#: bse/bsebiquadfilter.c:190
+msgid "Unfiltered Audio Signal"
+msgstr "Sinal Audio Sem Filtro"
+
+#: bse/bsebiquadfilter.c:192
+msgid "Center Frequency Input"
+msgstr "Entrada de Frequência Central"
+
+#: bse/bsebiquadfilter.c:194
+msgid "Frequency Modulation Input"
+msgstr "Entrada de Modulação de Frequência"
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Modulation Input"
+msgstr "Entrada de Modulação de Ganho"
+
+#: bse/bsebiquadfilter.c:198
+msgid "Filtered Audio Signal"
+msgstr "Sinal Audio Filtrado"
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr "Autor"
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr "Pessoa que alterou ou criou este objecto"
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr "Licença"
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr "Licença de copyright aplicável a este objecto"
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr "Data Criação"
+
+#: bse/bsesuper.c:118
+msgid "Last modification time"
+msgstr "Data da última alteração"
+
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
@@ -1521,5 +1635,40 @@ msgstr "Ficheiro Wave BSE Multi-Parte"
 msgid "BSE Synthesis File"
 msgstr "Ficheiro Sintetizador BSE"
 
-#~ msgid "Pos"
-#~ msgstr "Pos"
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Attack [ms]"
+msgstr ""
+
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Set the attack time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+#, fuzzy
+msgid "Release [ms]"
+msgstr "Notas _Distribuição..."
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+msgid "Set the release time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+msgid "Threshold"
+msgstr ""
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+msgid "Set the threshold"
+msgstr ""
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+#, fuzzy
+msgid "Ratio"
+msgstr "Localização"
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+msgid "Set the compression ratio"
+msgstr ""
+
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
+msgid "Set the output amplification"
+msgstr ""

@@ -1,6 +1,4 @@
 # List of source files that should *not* be translated.
 # Please keep this file sorted alphabetically
 beast-gtk/gxk/gxklistwrapper.c
-bse/bsebiquadfilter.c
-bse/bsesuper.c
 plugins/bseiirfilter.c

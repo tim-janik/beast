@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-14 13:00+0100\n"
+"POT-Creation-Date: 2003-12-15 14:12+0100\n"
 "PO-Revision-Date: 2003-12-13 20:32+0100\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
@@ -196,6 +196,7 @@ msgid "Input"
 msgstr "Entrada"
 
 #: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
 msgid "Output"
 msgstr "Salida"
 
@@ -1441,6 +1442,10 @@ msgstr "_Insertar"
 msgid "_Reload"
 msgstr ""
 
+#: beast-gtk/gxk/gxkparam-entry.c:56
+msgid "Text Entry"
+msgstr ""
+
 #: beast-gtk/gxk/gxkparam-label.c:49
 #, fuzzy
 msgid "Property Name"
@@ -1475,10 +1480,6 @@ msgstr ""
 
 #: beast-gtk/gxk/gxkparam-toggle.c:69
 msgid "Toggle Button"
-msgstr ""
-
-#: beast-gtk/gxk/gxkparam-entry.c:56
-msgid "Text Entry"
 msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.c:133
@@ -1541,6 +1542,120 @@ msgstr ""
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 
+#: bse/bsebiquadfilter.c:130
+msgid "Filter"
+msgstr "Filtro"
+
+#: bse/bsebiquadfilter.c:132
+msgid "Filter Type"
+msgstr "Tipo de filtro"
+
+#: bse/bsebiquadfilter.c:132
+msgid "The filter design type"
+msgstr "El tipo de diseño del filtro"
+
+#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
+msgid "Center Frequency"
+msgstr "Frecuancia central"
+
+#: bse/bsebiquadfilter.c:138
+msgid "Cutoff [Hz]"
+msgstr "Corte [Hz]"
+
+#: bse/bsebiquadfilter.c:146
+msgid "Note"
+msgstr "Nota"
+
+#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
+msgid "Emphasis"
+msgstr "Énfasis"
+
+#: bse/bsebiquadfilter.c:153
+msgid "Gain [dB]"
+msgstr "Ganancia [dB]"
+
+#: bse/bsebiquadfilter.c:158
+msgid "Norm Type"
+msgstr "Tipo normal"
+
+#: bse/bsebiquadfilter.c:159
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr ""
+"El filtro de tipo de ganancia normal (soportado sólo por paso alto y paso "
+"bajo)"
+
+#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
+#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+msgid "Modulation"
+msgstr "Modulación"
+
+#: bse/bsebiquadfilter.c:167
+msgid "Strength of linear frequency modulation"
+msgstr "Fuerza de modulación de frecuencia lineal"
+
+#: bse/bsebiquadfilter.c:173
+msgid "Perform exponential frequency modulation instead of linear"
+msgstr "Realizar modulación de frecuencia exponencial en vez de linel"
+
+#: bse/bsebiquadfilter.c:179
+msgid "Number of octaves to be affected by exponential frequency modulation"
+msgstr ""
+"Número de octavas a ser afectadas por la modulación exponencial de frecuencia"
+
+#: bse/bsebiquadfilter.c:185
+#, no-c-format
+msgid "Gain Modulation [%]"
+msgstr "Modulación de ganancia [%]"
+
+#: bse/bsebiquadfilter.c:186
+msgid "Strength of gain modulation"
+msgstr "Fuerza de modulación de ganancia"
+
+#: bse/bsebiquadfilter.c:190
+msgid "Unfiltered Audio Signal"
+msgstr "Señal de sonido sin filtrar"
+
+#: bse/bsebiquadfilter.c:192
+msgid "Center Frequency Input"
+msgstr "Entrada de frecuancia central"
+
+#: bse/bsebiquadfilter.c:194
+msgid "Frequency Modulation Input"
+msgstr "Entrada de modulación de frecuencia"
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Modulation Input"
+msgstr "Entrada de modulación de ganancia"
+
+#: bse/bsebiquadfilter.c:198
+msgid "Filtered Audio Signal"
+msgstr "Señal de sonido filtrada"
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr "Autor"
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr "Persona que cambia o crea este objeto"
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr "Licencia"
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr "Licencia de derechos de copia aplicable a este objeto"
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr "Tiempo de creación"
+
+#: bse/bsesuper.c:118
+msgid "Last modification time"
+msgstr "Tiempo de última modificación"
+
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
@@ -1566,119 +1681,38 @@ msgstr "Archivo de ondas BSE Multi-Parte"
 msgid "BSE Synthesis File"
 msgstr "Archivo de síntesis BSE"
 
-#~ msgid "/File/_New"
-#~ msgstr "/Archivo/_Nuevo"
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Attack [ms]"
+msgstr "Ataque [ms]"
 
-#~ msgid "/File/Preferences..."
-#~ msgstr "/Archivo/Preferencias..."
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Set the attack time in milli seconds"
+msgstr "Establecer el tiempo de ataque en milisegundos"
 
-#~ msgid "/_Edit"
-#~ msgstr "/_Editar"
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+msgid "Release [ms]"
+msgstr "Liberación [ms]"
 
-#~ msgid "/Edit/Preferences..."
-#~ msgstr "/Editar/Preferencias..."
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+msgid "Set the release time in milli seconds"
+msgstr "Establecer el tiempo de liberación en milisegundos"
 
-#~ msgid "/View/Procedure _Browser"
-#~ msgstr "/Ver/_Examinador de procedimientos"
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+msgid "Threshold"
+msgstr "Umbral"
 
-#~ msgid "/View/Rack Editor"
-#~ msgstr "/Ver/Editor de rack"
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+msgid "Set the threshold"
+msgstr "Establecer el umbral"
 
-#~ msgid "/View/Device _Monitor"
-#~ msgstr "/Ver/Dispositivo _monitor"
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+msgid "Ratio"
+msgstr "Ratio"
 
-#~ msgid "/View/Preferences"
-#~ msgstr "/Ver/Preferencias"
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+msgid "Set the compression ratio"
+msgstr "Establecer el ratio de compresión"
 
-#~ msgid "/Project/_Play"
-#~ msgstr "/Proyecto/_Reproducir"
-
-#~ msgid "/Project/_Stop"
-#~ msgstr "/Proyecto/_Detener"
-
-#~ msgid "/Song/Add _Part"
-#~ msgstr "/Canción/Añadir _parte"
-
-#~ msgid "/Song/Delete _Part"
-#~ msgstr "/Canción/Borrar _parte"
-
-#~ msgid "/Song/Add _Track"
-#~ msgstr "/Canción/Añadir _pista"
-
-#~ msgid "/Song/_Delete Track"
-#~ msgstr "/Song/_Borrar pista"
-
-#~ msgid "/Synth/_Test"
-#~ msgstr "/Sintetizador/_Prueba"
-
-#~ msgid "/Waves/_Load Wave..."
-#~ msgstr "/Ondas/_Cargar onda..."
-
-#~ msgid "/Waves/Delete Wave"
-#~ msgstr "/Waves/Borrar onda"
-
-#~ msgid "/Waves/_Edit Wave..."
-#~ msgstr "/Ondas/_Editar onda..."
-
-#~ msgid "/Synthesizers/Load _Effect"
-#~ msgstr "/Sintetizadores/Cargar _efecto"
-
-#~ msgid "/Synthesizers/Load _Instrument"
-#~ msgstr "/Sintetizadores/Cargar _instrumento"
-
-#~ msgid "/Synthesizers/Save As Effect"
-#~ msgstr "/Sintetizadores/Guardar como efecto"
-
-#~ msgid "/Synthesizers/Save As Instrument"
-#~ msgstr "/Sintetizadores/Guardar como instrumento"
-
-#~ msgid "/Tools/_Song"
-#~ msgstr "/Herramientas/_Canción"
-
-#~ msgid "/Tools/_Synth"
-#~ msgstr "/Herramientas/_Sintetizador"
-
-#~ msgid "/Tools/Wave_s"
-#~ msgstr "/Herramientras/Onda_s"
-
-#~ msgid "/Help/Development/GSL Engine..."
-#~ msgstr "/Ayuda/Desarrollo/Motor GSL..."
-
-#~ msgid "Pos"
-#~ msgstr "Pos"
-
-#~ msgid "_Delete"
-#~ msgstr "_Borrar"
-
-#~ msgid "Align"
-#~ msgstr "Alinear"
-
-#~ msgid "VSelect"
-#~ msgstr "VSelect"
-
-#~ msgid "/Tools/Insert"
-#~ msgstr "/Herramientas/Insertar"
-
-#~ msgid "/Tools/Delete"
-#~ msgstr "/Herramientas/Borrar"
-
-#~ msgid "/Tools/Select"
-#~ msgstr "/Herramientas/Seleccionar"
-
-#~ msgid "/Tools/Vertical Select"
-#~ msgstr "/Herramientas/Selección vertical"
-
-#~ msgid "/Edit/Cut"
-#~ msgstr "/Editar/Cortar"
-
-#~ msgid "/Edit/Copy"
-#~ msgstr "/Editar/Copiar"
-
-#~ msgid "/Edit/Paste"
-#~ msgstr "/Editar/Pegar"
-
-#~ msgid "/Edit/Undo"
-#~ msgstr "/Editar/Deshacer"
-
-#~ msgid "/Edit/Redo"
-#~ msgstr "/Editar/Rehacer"
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
+msgid "Set the output amplification"
+msgstr "Establecer la amplificación de salida"

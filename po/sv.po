@@ -2,262 +2,204 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.9 2003/11/02 00:50:14 menthos Exp $
+# $Id: sv.po,v 1.10 2003/12/15 14:06:45 timj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
-"POT-Creation-Date: 2003-11-02 01:49+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-12-15 14:12+0100\n"
 "PO-Revision-Date: 2003-11-02 01:49+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 
-#: beast-gtk/bstapp.c:65
-msgid "/_File"
-msgstr "/_Arkiv"
-
-#: beast-gtk/bstapp.c:67
-msgid "/File/_New"
-msgstr "/Arkiv/_Ny"
-
-#: beast-gtk/bstapp.c:68
-msgid "/File/_Open..."
-msgstr "/Arkiv/_Öppna..."
-
-#: beast-gtk/bstapp.c:69
-msgid "/File/_Merge..."
-msgstr "/Arkiv/Samman_foga..."
-
-#: beast-gtk/bstapp.c:70
-msgid "/File/_Close"
-msgstr "/Arkiv/S_täng"
-
-#: beast-gtk/bstapp.c:72
-msgid "/File/_Save"
-msgstr "/Arkiv/_Spara"
-
-#: beast-gtk/bstapp.c:73
-msgid "/File/Save _As..."
-msgstr "/Arkiv/Spara so_m..."
-
-#: beast-gtk/bstapp.c:75
-msgid "/File/Preferences..."
-msgstr "/Arkiv/Inställningar..."
-
-#: beast-gtk/bstapp.c:77
-msgid "/File/_Quit"
-msgstr "/Arkiv/_Avsluta"
-
-#: beast-gtk/bstapp.c:78 beast-gtk/bstpartdialog.c:73
-msgid "/_Edit"
-msgstr "/_Redigera"
-
-#: beast-gtk/bstapp.c:80
-msgid "/Edit/_Undo"
-msgstr "/Redigera/_Ångra"
-
-#: beast-gtk/bstapp.c:81
-msgid "/Edit/_Redo"
-msgstr "/Redigera/_Gör om"
-
-#: beast-gtk/bstapp.c:82
-msgid "/Edit/_Clear Undo"
-msgstr "/Redigera/_Töm ångra"
-
-#: beast-gtk/bstapp.c:84
-msgid "/Edit/Preferences..."
-msgstr "/Redigera/Inställningar..."
-
-#: beast-gtk/bstapp.c:85
-msgid "/_View"
+#: beast-gtk/bstapp.c:51
+#, fuzzy
+msgid "_New"
 msgstr "/_Visa"
 
-#: beast-gtk/bstapp.c:87
-msgid "/View/Procedure _Browser"
-msgstr "/Visa/Procedur_bläddrare"
+#: beast-gtk/bstapp.c:51
+#, fuzzy
+msgid "Create new project"
+msgstr "Öppna projekt"
 
-#: beast-gtk/bstapp.c:88
-msgid "/View/Rack Editor"
-msgstr "/Visa/Rackredigerare"
+#: beast-gtk/bstapp.c:53
+msgid "_Open..."
+msgstr "_Öppna..."
 
-#: beast-gtk/bstapp.c:89
-msgid "/View/Device _Monitor"
-msgstr "/Visa/Enhets_övervakare"
+#: beast-gtk/bstapp.c:53
+#, fuzzy
+msgid "Open existing project"
+msgstr "Öppnar projektet \"%s\""
 
-#: beast-gtk/bstapp.c:91
-msgid "/View/Preferences"
-msgstr "/Visa/Inställningar"
+#: beast-gtk/bstapp.c:55
+#, fuzzy
+msgid "_Merge..."
+msgstr "/Arkiv/Samman_foga..."
 
-#: beast-gtk/bstapp.c:93
-msgid "/View/Rebuild"
+#: beast-gtk/bstapp.c:55
+msgid "Merge an existing project into the current project"
+msgstr ""
+
+#: beast-gtk/bstapp.c:57
+#, fuzzy
+msgid "_Close"
+msgstr "Stäng"
+
+#: beast-gtk/bstapp.c:61
+#, fuzzy
+msgid "_Save"
+msgstr "Spara"
+
+#: beast-gtk/bstapp.c:63
+#, fuzzy
+msgid "Save _As..."
+msgstr "Spara so_m..."
+
+#: beast-gtk/bstapp.c:67
+msgid "_Quit"
+msgstr "A_vsluta"
+
+#: beast-gtk/bstapp.c:71
+#, fuzzy
+msgid "_Preferences..."
+msgstr "Inställningar..."
+
+#: beast-gtk/bstapp.c:74
+#, fuzzy
+msgid "Rebuild"
 msgstr "/Visa/Bygg om"
 
+#: beast-gtk/bstapp.c:77
+msgid "_About..."
+msgstr "_Om..."
+
+#: beast-gtk/bstapp.c:80
+#, fuzzy
+msgid "_Undo"
+msgstr "/Redigera/_Ångra"
+
+#: beast-gtk/bstapp.c:82
+#, fuzzy
+msgid "_Redo"
+msgstr "/Redigera/_Gör om"
+
+#: beast-gtk/bstapp.c:86
+#, fuzzy
+msgid "_Clear Undo"
+msgstr "/Redigera/_Töm ångra"
+
+#: beast-gtk/bstapp.c:90
+#, fuzzy
+msgid "Procedure _Browser"
+msgstr "Procedurbläddrare"
+
+#: beast-gtk/bstapp.c:92
+#, fuzzy
+msgid "Rack Editor"
+msgstr "Rackredigerare"
+
 #: beast-gtk/bstapp.c:94
-msgid "/_Project"
-msgstr "/_Projekt"
+#, fuzzy
+msgid "Device _Monitor"
+msgstr "Enhetsövervakare"
 
-#: beast-gtk/bstapp.c:96
-msgid "/Project/_Play"
-msgstr "/Projekt/_Spela"
-
-#: beast-gtk/bstapp.c:97
-msgid "/Project/_Stop"
-msgstr "/Projekt/_Stopp"
-
-#: beast-gtk/bstapp.c:99
-msgid "/Project/New Song"
-msgstr "/Projekt/Ny låt"
+#: beast-gtk/bstapp.c:98
+#, fuzzy
+msgid "_Play"
+msgstr "Uppspelning"
 
 #: beast-gtk/bstapp.c:100
-msgid "/Project/New Custom Synthesizer"
-msgstr "/Projekt/Ny anpassad synthesizer"
-
-#: beast-gtk/bstapp.c:101
-msgid "/Project/New MIDI Synthesizer"
-msgstr "/Projekt/Ny MIDI-synthesizer"
-
-#: beast-gtk/bstapp.c:102
-msgid "/Project/Remove Song or Synthesizer"
-msgstr "/Projekt/Ta bort låt eller synthesizer"
+#, fuzzy
+msgid "_Stop"
+msgstr "Stoppa"
 
 #: beast-gtk/bstapp.c:104
-msgid "/_Song"
-msgstr "/_Låt"
+#, fuzzy
+msgid "New Song"
+msgstr "Spara låt"
 
 #: beast-gtk/bstapp.c:106
-msgid "/Song/Add _Part"
-msgstr "/Låt/Lägg till _del"
-
-#: beast-gtk/bstapp.c:107
-msgid "/Song/Delete _Part"
-msgstr "/Låt/Ta bort _del"
+#, fuzzy
+msgid "New Custom Synthesizer"
+msgstr "/Projekt/Ny anpassad synthesizer"
 
 #: beast-gtk/bstapp.c:108
-msgid "/Song/Add _Track"
-msgstr "/Låt/Lägg till _spår"
-
-#: beast-gtk/bstapp.c:109
-msgid "/Song/_Delete Track"
-msgstr "/Låt/_Ta bort spår"
+#, fuzzy
+msgid "New MIDI Synthesizer"
+msgstr "/Projekt/Ny MIDI-synthesizer"
 
 #: beast-gtk/bstapp.c:110
-msgid "/_Synth"
-msgstr "/_Synth"
+#, fuzzy
+msgid "Remove Song or Synthesizer"
+msgstr "/Projekt/Ta bort låt eller synthesizer"
 
-#: beast-gtk/bstapp.c:112
-msgid "/Synth/_Test"
-msgstr "/Synth/_Test"
-
-#: beast-gtk/bstapp.c:113
-msgid "/Wave_s"
-msgstr "/V_ågor"
-
-#: beast-gtk/bstapp.c:115
-msgid "/Waves/_Load Wave..."
-msgstr "/Vågor/_Läs in våg..."
+#: beast-gtk/bstapp.c:114
+#, fuzzy
+msgid "Load _Effect"
+msgstr "Läs in effekt"
 
 #: beast-gtk/bstapp.c:116
-msgid "/Waves/Delete Wave"
-msgstr "/Vågor/Ta bort våg"
+msgid "Load _Instrument"
+msgstr "Läs in _instrument"
 
-#: beast-gtk/bstapp.c:117
-msgid "/Waves/_Edit Wave..."
-msgstr "/Vågor/_Redigera våg..."
+#: beast-gtk/bstapp.c:118
+#, fuzzy
+msgid "Save As Effect"
+msgstr "Spara effekt"
 
-# "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
-#: beast-gtk/bstapp.c:119
-msgid "/_Synthesizers"
-msgstr "/_Synthesizers"
-
-#: beast-gtk/bstapp.c:121
-msgid "/Synthesizers/Load _Effect"
-msgstr "/Synthesizers/Läs in _effekt"
-
-#: beast-gtk/bstapp.c:122
-msgid "/Synthesizers/Load _Instrument"
-msgstr "/Synthesizers/Läs in _instrument"
-
-#: beast-gtk/bstapp.c:123
-msgid "/Synthesizers/Save As Effect"
-msgstr "/Synthesizers/Spara som effekt"
+#: beast-gtk/bstapp.c:120
+#, fuzzy
+msgid "Save As Instrument"
+msgstr "Spara instrument"
 
 #: beast-gtk/bstapp.c:124
-msgid "/Synthesizers/Save As Instrument"
-msgstr "/Synthesizers/Spara som instrument"
+#, fuzzy
+msgid "_Release Notes..."
+msgstr "_Utgåvenoteringar"
 
-#: beast-gtk/bstapp.c:125 beast-gtk/bstpartdialog.c:67
-msgid "/_Tools"
-msgstr "/_Verktyg"
-
-#: beast-gtk/bstapp.c:126
-msgid "/Tools/_Song"
-msgstr "/Verktyg/_Låt"
-
-#: beast-gtk/bstapp.c:127
-msgid "/Tools/_Synth"
-msgstr "/Verktyg/_Synth"
-
-#: beast-gtk/bstapp.c:128
-msgid "/Tools/Wave_s"
-msgstr "/Verktyg/V_ågor"
-
-#: beast-gtk/bstapp.c:129
-msgid "/_Demo"
-msgstr "/_Demo"
-
-#: beast-gtk/bstapp.c:133
-msgid "/_Help"
-msgstr "/_Hjälp"
-
-#: beast-gtk/bstapp.c:135
-msgid "/Help/_Release Notes..."
-msgstr "/Hjälp/_Utgåvenoteringar..."
-
-#: beast-gtk/bstapp.c:136
-msgid "/Help/Quick Start..."
+#: beast-gtk/bstapp.c:125
+#, fuzzy
+msgid "Quick Start..."
 msgstr "/Hjälp/Snabbstart..."
 
-#: beast-gtk/bstapp.c:137
-msgid "/Help/_FAQ..."
+#: beast-gtk/bstapp.c:126
+#, fuzzy
+msgid "_FAQ..."
 msgstr "/Hjälp/_Frågor och svar..."
 
-#: beast-gtk/bstapp.c:138
-msgid "/Help/Development/GSL Engine..."
-msgstr "/Hjälp/Utveckling/GSL-motor..."
+#: beast-gtk/bstapp.c:129
+msgid "GSL Engine..."
+msgstr ""
 
-#: beast-gtk/bstapp.c:140
-msgid "/Help/_About..."
-msgstr "/Hjälp/_Om..."
-
-#: beast-gtk/bstapp.c:604 beast-gtk/bstapp.c:611 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:545 beast-gtk/bstapp.c:552 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Öppnar projektet \"%s\""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:783
+#: beast-gtk/bstapp.c:715
 msgid "Rack editor"
 msgstr "Rackredigerare"
 
-#: beast-gtk/bstapp.c:797
+#: beast-gtk/bstapp.c:729
 msgid "Preferences"
 msgstr "Inställningar"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:811
+#: beast-gtk/bstapp.c:743
 msgid "Device Monitor"
 msgstr "Enhetsövervakare"
 
-#: beast-gtk/bstapp.c:826
+#: beast-gtk/bstapp.c:758
 msgid "Procedure Browser"
 msgstr "Procedurbläddrare"
 
-#: beast-gtk/bstapp.c:883
+#: beast-gtk/bstapp.c:815
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Utgåvenoteringar för BEAST-%s"
@@ -266,7 +208,7 @@ msgstr "Utgåvenoteringar för BEAST-%s"
 msgid "Module Link: "
 msgstr "Modullänk: "
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:1055
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:914
 msgid "Module link"
 msgstr "Modullänk"
 
@@ -274,11 +216,12 @@ msgstr "Modullänk"
 msgid "Module Info"
 msgstr "Modulinformation"
 
-#: beast-gtk/bstcanvassource.c:971
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:200
 msgid "Input"
 msgstr "Inmatning"
 
-#: beast-gtk/bstcanvassource.c:980
+#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
 msgid "Output"
 msgstr "Utmatning"
 
@@ -286,51 +229,51 @@ msgstr "Utmatning"
 msgid "(Hint)"
 msgstr "(Tips)"
 
-#: beast-gtk/bsteventrollctrl.c:344 beast-gtk/bsteventrollctrl.c:351
-#: beast-gtk/bsteventrollctrl.c:415
+#: beast-gtk/bsteventrollctrl.c:350 beast-gtk/bsteventrollctrl.c:357
+#: beast-gtk/bsteventrollctrl.c:421
 msgid "Move Control Event"
 msgstr "Flytta kontrollhändelse"
 
-#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:500
-#: beast-gtk/bsteventrollctrl.c:550 beast-gtk/bstpianorollctrl.c:428
-#: beast-gtk/bstpianorollctrl.c:538 beast-gtk/bstpianorollctrl.c:601
-#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:468
-#: beast-gtk/bsttrackrollctrl.c:540
+#: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
+#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:472
+#: beast-gtk/bstpianorollctrl.c:582 beast-gtk/bstpianorollctrl.c:645
+#: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
+#: beast-gtk/bsttrackrollctrl.c:560
 msgid "No target"
 msgstr "Inget mål"
 
-#: beast-gtk/bsteventrollctrl.c:415 beast-gtk/bsteventrollctrl.c:536
+#: beast-gtk/bsteventrollctrl.c:421 beast-gtk/bsteventrollctrl.c:542
 msgid "Lost Event"
 msgstr "Borttappad händelse"
 
-#: beast-gtk/bsteventrollctrl.c:425 beast-gtk/bsteventrollctrl.c:458
+#: beast-gtk/bsteventrollctrl.c:431 beast-gtk/bsteventrollctrl.c:464
 msgid "Align Control Events"
 msgstr "Justera kontrollhändelser"
 
-#: beast-gtk/bsteventrollctrl.c:458 beast-gtk/bsteventrollctrl.c:584
-#: beast-gtk/bstpianorollctrl.c:659 beast-gtk/bstpianorollctrl.c:695
+#: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bstpianorollctrl.c:703 beast-gtk/bstpianorollctrl.c:739
 msgid "Aborted"
 msgstr "Avbruten"
 
-#: beast-gtk/bsteventrollctrl.c:484
+#: beast-gtk/bsteventrollctrl.c:490
 msgid "Insert Control Event"
 msgstr "Infoga kontrollhändelse"
 
-#: beast-gtk/bsteventrollctrl.c:495 beast-gtk/bsteventrollctrl.c:500
-#: beast-gtk/bsteventrollctrl.c:536
+#: beast-gtk/bsteventrollctrl.c:501 beast-gtk/bsteventrollctrl.c:506
+#: beast-gtk/bsteventrollctrl.c:542
 msgid "Resize Control Event"
 msgstr "Ändra storlek på kontrollhändelse"
 
-#: beast-gtk/bsteventrollctrl.c:547 beast-gtk/bsteventrollctrl.c:550
+#: beast-gtk/bsteventrollctrl.c:553 beast-gtk/bsteventrollctrl.c:556
 msgid "Delete Control Event"
 msgstr "Ta bort kontrollhändelse"
 
-#: beast-gtk/bsteventrollctrl.c:560 beast-gtk/bsteventrollctrl.c:584
-#: beast-gtk/bstpianorollctrl.c:633 beast-gtk/bstpianorollctrl.c:659
+#: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bstpianorollctrl.c:677 beast-gtk/bstpianorollctrl.c:703
 msgid "Select Region"
 msgstr "Markera område"
 
-#: beast-gtk/bsteventrollctrl.c:593 beast-gtk/bstpianorollctrl.c:704
+#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:748
 msgid "Abortion"
 msgstr "Avbrytande"
 
@@ -454,381 +397,392 @@ msgstr "Läs in våg"
 msgid "Loading wave `%s'"
 msgstr "Läser in vågen \"%s\""
 
-#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:41
+#: beast-gtk/bsttrackview.c:62
 msgid "Add"
 msgstr "Lägg till"
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstmessages.c:81
-#: beast-gtk/bstpartview.c:38 beast-gtk/bstrackitem.c:182
-#: beast-gtk/bstsnetrouter.c:1017 beast-gtk/bstsnetrouter.c:1059
-#: beast-gtk/bsttrackview.c:62
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
+#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
+#: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Ta bort"
 
-#: beast-gtk/bstitemview.c:267
+#: beast-gtk/bstitemview.c:235
 msgid "ID"
 msgstr "ID"
 
-#: beast-gtk/bstitemview.c:270
+#: beast-gtk/bstitemview.c:238
 msgid "Name"
 msgstr "Namn"
 
-#: beast-gtk/bstitemview.c:273 beast-gtk/bsttrackview.c:589
+#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:572
 msgid "Comment"
 msgstr "Kommentar"
 
-#: beast-gtk/bstitemview.c:277
+#: beast-gtk/bstitemview.c:245
 msgid "Type"
 msgstr "Typ"
 
-#. now, we can popup the splash screen
-#.
-#: beast-gtk/bstmain.c:135
+#: beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "Uppstart av BEAST"
 
-#: beast-gtk/bstmain.c:142
+#: beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "Uppstart"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:147
+#: beast-gtk/bstmain.c:146
 msgid "Objects"
 msgstr "Objekt"
 
-#: beast-gtk/bstmain.c:151
+#: beast-gtk/bstmain.c:150
 msgid "Language"
 msgstr "Språk"
 
-#: beast-gtk/bstmain.c:164
+#: beast-gtk/bstmain.c:161
 msgid "RC File"
 msgstr "RC-fil"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:171
+#: beast-gtk/bstmain.c:168
 msgid "Splash Image"
 msgstr "Startbild"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:183
+#: beast-gtk/bstmain.c:180
 msgid "BSE Core"
 msgstr "BSE-kärna"
 
-#: beast-gtk/bstmain.c:202
+#: beast-gtk/bstmain.c:199
 msgid "Plugins"
 msgstr "Insticksmoduler"
 
-#: beast-gtk/bstmain.c:221
+#: beast-gtk/bstmain.c:218
 msgid "LADSPA Plugins"
 msgstr "LADSPA-insticksmoduler"
 
-#: beast-gtk/bstmain.c:249
+#: beast-gtk/bstmain.c:246
 msgid "Scripts"
 msgstr "Skript"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:267
+#: beast-gtk/bstmain.c:264
 msgid "Dialogs"
 msgstr "Dialoger"
 
-#: beast-gtk/bstmain.c:280
+#: beast-gtk/bstmain.c:271
 msgid "Loading..."
 msgstr "Läser in..."
 
-#: beast-gtk/bstmain.c:310 beast-gtk/bstmain.c:312
+#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Läser in \"%s\""
 
-#: beast-gtk/bstmain.c:329
+#: beast-gtk/bstmain.c:320
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Läser in projektet \"%s\""
 
-#. catalog_key, name, stock_id, accelerator, tooltip, blurb
-#: beast-gtk/bstmessages.c:21
-msgid "Left"
-msgstr "Vänster"
+#: beast-gtk/bstmain.c:694
+#, fuzzy
+msgid "BEAST About"
+msgstr "BEAST"
 
-#: beast-gtk/bstmessages.c:23
-msgid "Use the horizontal ruler to adjust the left loop pointer"
+#: beast-gtk/bstmain.c:695
+#, c-format
+msgid "BEAST Version %s"
 msgstr ""
-"Använd den horisontella linjalen för att justera den vänstra slingpekaren"
 
-#: beast-gtk/bstmessages.c:25
-msgid "Pos"
-msgstr "Pos."
-
-#: beast-gtk/bstmessages.c:27
-msgid "Use the horizontal ruler to adjust the play position pointer"
-msgstr "Använd den horisontella linjalen för att justera spelpositionspekaren"
-
-#: beast-gtk/bstmessages.c:29
-msgid "Right"
-msgstr "Höger"
-
-#: beast-gtk/bstmessages.c:31
-msgid "Use the horizontal ruler to adjust the right loop pointer"
+#: beast-gtk/bstmain.c:696
+msgid "Contributions made by:"
 msgstr ""
-"Använd den horisontella linjalen för att justera den högra slingpekaren"
 
-# Antar att "Q" här är kort för "Quantize"
-#: beast-gtk/bstmessages.c:33
-msgid "Q: Tact"
-msgstr "K: Takt"
+#: beast-gtk/bstparam-choice.c:144
+msgid "Drop Down Box (Option Menu)"
+msgstr ""
 
-#: beast-gtk/bstmessages.c:35
-msgid "Quantize to tact boundaries"
-msgstr "Kvantisera till taktgränser"
+#: beast-gtk/bstparam-choice.c:150
+msgid "Drop Down Button"
+msgstr ""
 
-#: beast-gtk/bstmessages.c:37
-msgid "Q: None"
-msgstr "K: Ingen"
+#: beast-gtk/bstparam-note-sequence.c:61
+msgid "Note Sequence Grid Editor"
+msgstr ""
 
-#: beast-gtk/bstmessages.c:39
-msgid "No quantization selected"
-msgstr "Ingen kvantisering vald"
+#: beast-gtk/bstparam-note-spinner.c:66
+#, fuzzy
+msgid "Note Entry"
+msgstr "Noturklipp"
 
-#: beast-gtk/bstmessages.c:41
-msgid "Q: 1/1"
-msgstr "K: 1/1"
+#: beast-gtk/bstparam-proxy.c:289
+msgid "Object Drop Down Box"
+msgstr ""
 
-#: beast-gtk/bstmessages.c:43
-msgid "Quantize to full note boundaries"
-msgstr "Kvantisera till helnotsgränser"
+#: beast-gtk/bstparam-scale.c:60
+msgid "Knob"
+msgstr ""
 
-#: beast-gtk/bstmessages.c:45
-msgid "Q: 1/2"
-msgstr "K: ½"
+#: beast-gtk/bstparam-scale.c:66
+msgid "Knob (Logarithmic"
+msgstr ""
 
-#: beast-gtk/bstmessages.c:47
-msgid "Quantize to half note boundaries"
-msgstr "Kvantisera till halvnotsgränser"
+#: beast-gtk/bstparam-scale.c:78
+#, fuzzy
+msgid "Dial"
+msgstr "Dialoger"
 
-#: beast-gtk/bstmessages.c:49
-msgid "Q: 1/4"
-msgstr "K: 1/4"
+#: beast-gtk/bstparam-scale.c:84
+msgid "Dial (Logarithmic"
+msgstr ""
 
-#: beast-gtk/bstmessages.c:51
-msgid "Quantize to quarter note boundaries"
-msgstr "Kvantisera till fjärdedelsnotsgränser"
-
-#: beast-gtk/bstmessages.c:53
-msgid "Q: 1/8"
-msgstr "K: 1/8"
-
-#: beast-gtk/bstmessages.c:55
-msgid "Quantize to eighths note boundaries"
-msgstr "Kvantisera till åttondelsnotsgränser"
-
-#: beast-gtk/bstmessages.c:57
-msgid "Q: 1/16"
-msgstr "K: 1/16"
-
-#: beast-gtk/bstmessages.c:59
-msgid "Quantize to sixteenth note boundaries"
-msgstr "Kvantisera till sextondelsnotsgränser"
-
-#: beast-gtk/bstmessages.c:61
-msgid "_Insert"
-msgstr "_Infoga"
-
-#: beast-gtk/bstmessages.c:63
-msgid "Insert/edit/move parts (mouse button 1 and 2)"
-msgstr "Infoga/redigera/flytta delar (musknapp 1 och 2)"
-
-#: beast-gtk/bstmessages.c:65
-msgid "Lin_k"
-msgstr "Län_ka"
-
-#: beast-gtk/bstmessages.c:67
-msgid "Link or move parts (mouse button 1 and 2)"
-msgstr "Lnka eller flytta delar (musknapp 1 och 2)"
-
-#: beast-gtk/bstmessages.c:69
-msgid "_Rename"
-msgstr "_Byt namn"
-
-#: beast-gtk/bstmessages.c:71
-msgid "Rename parts"
-msgstr "Byt namn på delar"
-
-#: beast-gtk/bstmessages.c:73
-msgid "_Delete"
-msgstr "_Ta bort"
-
-#: beast-gtk/bstmessages.c:75
-msgid "Delete parts"
-msgstr "Ta bort delar"
-
-#: beast-gtk/bstmessages.c:77
-msgid "Insert"
-msgstr "Infoga"
-
-#: beast-gtk/bstmessages.c:79
-msgid "Insert/resize/move notes (mouse button 1 and 2)"
-msgstr "Infoga/redigera/flytta noter (musknapp 1 och 2)"
-
-#: beast-gtk/bstmessages.c:83
-msgid "Delete note (mouse button 1)"
-msgstr "Ta bort not (musknapp 1)"
-
-#: beast-gtk/bstmessages.c:85
-msgid "Align"
-msgstr "Justera"
-
-#: beast-gtk/bstmessages.c:87
-msgid "Draw a line to align events to"
-msgstr "Rita en linje som händelser kan justeras till"
-
-#: beast-gtk/bstmessages.c:89
-msgid "Select"
-msgstr "Markera"
-
-#: beast-gtk/bstmessages.c:91
-msgid "Rectangle select notes"
-msgstr "Rektangelmarkera noter"
-
-#: beast-gtk/bstmessages.c:93
-msgid "VSelect"
-msgstr "Vmarkera"
-
-# Hur ska "tick" översättas?
-#: beast-gtk/bstmessages.c:95
-msgid "Select tick range vertically"
-msgstr "Markera tickintervall vertikalt"
-
-#: beast-gtk/bstmessages.c:97
-msgid "1/1"
-msgstr "1/1"
-
-#: beast-gtk/bstmessages.c:99
-msgid "Insert full notes"
-msgstr "Infoga helnoter"
-
-#: beast-gtk/bstmessages.c:101
-msgid "1/2"
-msgstr "½"
-
-#: beast-gtk/bstmessages.c:103
-msgid "Insert half notes"
-msgstr "Infoga halvnoter"
-
-#: beast-gtk/bstmessages.c:105
-msgid "1/4"
-msgstr "1/4"
-
-#: beast-gtk/bstmessages.c:107
-msgid "Insert quarter notes"
-msgstr "Infoga fjärdedelsnoter"
-
-#: beast-gtk/bstmessages.c:109
-msgid "1/8"
-msgstr "1/8"
-
-#: beast-gtk/bstmessages.c:111
-msgid "Insert eighths note"
-msgstr "Infoga åttondelsnot"
-
-#: beast-gtk/bstmessages.c:113
-msgid "1/16"
-msgstr "1/16"
-
-#: beast-gtk/bstmessages.c:115
-msgid "Insert sixteenth note"
-msgstr "Infoga sextondelsnot"
-
-#: beast-gtk/bstparam-entry.c:61
+#: beast-gtk/bstparam-searchpath.c:52
 msgid "Remove Paths"
 msgstr "Ta bort sökvägar"
 
-#: beast-gtk/bstpartdialog.c:68
-msgid "/Tools/Insert"
-msgstr "/Verktyg/Infoga"
+#: beast-gtk/bstparam-searchpath.c:105
+msgid "Searchpath Text Entry"
+msgstr ""
 
-#: beast-gtk/bstpartdialog.c:69
-msgid "/Tools/Delete"
-msgstr "/Verktyg/Ta bort"
+#: beast-gtk/bstparam-time.c:55
+msgid "Time Entry"
+msgstr ""
 
-#: beast-gtk/bstpartdialog.c:70
-msgid "/Tools/Align Events"
-msgstr "/Verktyg/Justera händelser"
+#: beast-gtk/bstpartdialog.c:59
+#, fuzzy
+msgid "Clear"
+msgstr "Töm _alla"
 
-#: beast-gtk/bstpartdialog.c:71
-msgid "/Tools/Select"
-msgstr "/Verktyg/Markera"
+#: beast-gtk/bstpartdialog.c:59
+#, fuzzy
+msgid "Clear the current selection"
+msgstr "Ta bort det för tillfället markerade spåret"
 
-#: beast-gtk/bstpartdialog.c:72
-msgid "/Tools/Vertical Select"
-msgstr "/Verktyg/Vertikalmarkering"
+#: beast-gtk/bstpartdialog.c:60
+msgid "Cut"
+msgstr "Klipp ut"
 
-#: beast-gtk/bstpartdialog.c:74
-msgid "/Edit/Cut"
-msgstr "/Redigera/Klipp ut"
+#: beast-gtk/bstpartdialog.c:60
+#, fuzzy
+msgid "Move the current selection into clipboard"
+msgstr "Ta bort det för tillfället markerade spåret"
 
-#: beast-gtk/bstpartdialog.c:75
-msgid "/Edit/Copy"
-msgstr "/Redigera/Kopiera"
+#: beast-gtk/bstpartdialog.c:61
+msgid "Copy"
+msgstr "Kopiera"
 
-#: beast-gtk/bstpartdialog.c:76
-msgid "/Edit/Paste"
-msgstr "/Redigera/Klistra in"
+#: beast-gtk/bstpartdialog.c:61
+msgid "Copy the current selection into clipboard"
+msgstr ""
 
-#: beast-gtk/bstpartdialog.c:77
-msgid "/Edit/Clear"
-msgstr "/Redigera/Töm"
+#: beast-gtk/bstpartdialog.c:62
+msgid "Paste"
+msgstr "Klistra in"
 
-#: beast-gtk/bstpartdialog.c:79
-msgid "/Edit/Undo"
-msgstr "/Redigera/Ångra"
+#: beast-gtk/bstpartdialog.c:62
+msgid "Insert clipboard contents as current selection"
+msgstr ""
 
-#: beast-gtk/bstpartdialog.c:80
-msgid "/Edit/Redo"
-msgstr "/Redigera/Gör om"
+#: beast-gtk/bstpartdialog.c:65
+msgid "Undo"
+msgstr ""
 
-#: beast-gtk/bstpartdialog.c:255
-msgid "Control Type: "
-msgstr "Kontrolltyp: "
+#: beast-gtk/bstpartdialog.c:65
+msgid "Undo last editing step"
+msgstr ""
 
-#: beast-gtk/bstpartview.c:39
+#: beast-gtk/bstpartdialog.c:66
+#, fuzzy
+msgid "Redo"
+msgstr "Ta bort"
+
+#: beast-gtk/bstpartdialog.c:66
+msgid "Redo the last undone editing step"
+msgstr ""
+
+#: beast-gtk/bstpartview.c:43 beast-gtk/bstwaveview.c:46
 msgid "Editor"
 msgstr "Redigerare"
 
-#: beast-gtk/bstpianorollctrl.c:421 beast-gtk/bstpianorollctrl.c:428
-#: beast-gtk/bstpianorollctrl.c:516
-msgid "Move Note"
-msgstr "Flytta not"
+#: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert"
+msgstr "Infoga"
 
-#: beast-gtk/bstpianorollctrl.c:516 beast-gtk/bstpianorollctrl.c:587
-msgid "Lost Note"
-msgstr "Borttappad not"
+#: beast-gtk/bstpianorollctrl.c:46
+msgid "Insert/resize/move notes (mouse button 1 and 2)"
+msgstr "Infoga/redigera/flytta noter (musknapp 1 och 2)"
 
-#: beast-gtk/bstpianorollctrl.c:533 beast-gtk/bstpianorollctrl.c:538
-#: beast-gtk/bstpianorollctrl.c:587
-msgid "Resize Note"
-msgstr "Ändra storlek på not"
+#: beast-gtk/bstpianorollctrl.c:48
+msgid "Delete note (mouse button 1)"
+msgstr "Ta bort not (musknapp 1)"
 
-#: beast-gtk/bstpianorollctrl.c:598 beast-gtk/bstpianorollctrl.c:601
-msgid "Delete Note"
-msgstr "Ta bort not"
+#: beast-gtk/bstpianorollctrl.c:50
+#, fuzzy
+msgid "Align Events"
+msgstr "/Verktyg/Justera händelser"
 
-#: beast-gtk/bstpianorollctrl.c:623
-msgid "Insert Note"
-msgstr "Infoga not"
+#: beast-gtk/bstpianorollctrl.c:50
+msgid "Draw a line to align events to"
+msgstr "Rita en linje som händelser kan justeras till"
 
-#: beast-gtk/bstpianorollctrl.c:669
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Select"
+msgstr "Markera"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Rectangle select notes"
+msgstr "Rektangelmarkera noter"
+
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:713
 msgid "Vertical Select"
 msgstr "Vertikalmarkering"
 
-#: beast-gtk/bstpianorollctrl.c:695
+# Hur ska "tick" översättas?
+#: beast-gtk/bstpianorollctrl.c:54
+msgid "Select tick range vertically"
+msgstr "Markera tickintervall vertikalt"
+
+#: beast-gtk/bstpianorollctrl.c:67
+#, fuzzy
+msgid "1\\/1"
+msgstr "1/1"
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "Insert full notes"
+msgstr "Infoga helnoter"
+
+#: beast-gtk/bstpianorollctrl.c:69
+#, fuzzy
+msgid "1\\/2"
+msgstr "½"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "Insert half notes"
+msgstr "Infoga halvnoter"
+
+#: beast-gtk/bstpianorollctrl.c:71
+#, fuzzy
+msgid "1\\/4"
+msgstr "1/4"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "Insert quarter notes"
+msgstr "Infoga fjärdedelsnoter"
+
+#: beast-gtk/bstpianorollctrl.c:73
+#, fuzzy
+msgid "1\\/8"
+msgstr "1/8"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "Insert eighths note"
+msgstr "Infoga åttondelsnot"
+
+#: beast-gtk/bstpianorollctrl.c:75
+#, fuzzy
+msgid "1\\/16"
+msgstr "1/16"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "Insert sixteenth note"
+msgstr "Infoga sextondelsnot"
+
+# Antar att "Q" här är kort för "Quantize"
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Q: Tact"
+msgstr "K: Takt"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Quantize to tact boundaries"
+msgstr "Kvantisera till taktgränser"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "Q: None"
+msgstr "K: Ingen"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "No quantization selected"
+msgstr "Ingen kvantisering vald"
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+#, fuzzy
+msgid "Q: 1\\/1"
+msgstr "K: 1/1"
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+msgid "Quantize to full note boundaries"
+msgstr "Kvantisera till helnotsgränser"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#, fuzzy
+msgid "Q: 1\\/2"
+msgstr "K: ½"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+msgid "Quantize to half note boundaries"
+msgstr "Kvantisera till halvnotsgränser"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#, fuzzy
+msgid "Q: 1\\/4"
+msgstr "K: 1/4"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+msgid "Quantize to quarter note boundaries"
+msgstr "Kvantisera till fjärdedelsnotsgränser"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#, fuzzy
+msgid "Q: 1\\/8"
+msgstr "K: 1/8"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+msgid "Quantize to eighths note boundaries"
+msgstr "Kvantisera till åttondelsnotsgränser"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#, fuzzy
+msgid "Q: 1\\/16"
+msgstr "K: 1/16"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+msgid "Quantize to sixteenth note boundaries"
+msgstr "Kvantisera till sextondelsnotsgränser"
+
+#: beast-gtk/bstpianorollctrl.c:465 beast-gtk/bstpianorollctrl.c:472
+#: beast-gtk/bstpianorollctrl.c:560
+msgid "Move Note"
+msgstr "Flytta not"
+
+#: beast-gtk/bstpianorollctrl.c:560 beast-gtk/bstpianorollctrl.c:631
+msgid "Lost Note"
+msgstr "Borttappad not"
+
+#: beast-gtk/bstpianorollctrl.c:577 beast-gtk/bstpianorollctrl.c:582
+#: beast-gtk/bstpianorollctrl.c:631
+msgid "Resize Note"
+msgstr "Ändra storlek på not"
+
+#: beast-gtk/bstpianorollctrl.c:642 beast-gtk/bstpianorollctrl.c:645
+msgid "Delete Note"
+msgstr "Ta bort not"
+
+#: beast-gtk/bstpianorollctrl.c:667
+msgid "Insert Note"
+msgstr "Infoga not"
+
+#: beast-gtk/bstpianorollctrl.c:739
 msgid "Vertical Region"
 msgstr "Vertikalt område"
 
-#: beast-gtk/bstpianorollctrl.c:816
+#: beast-gtk/bstpianorollctrl.c:860
 msgid "Play note"
 msgstr "Spela not"
 
@@ -836,16 +790,16 @@ msgstr "Spela not"
 msgid "Playback"
 msgstr "Uppspelning"
 
-#: beast-gtk/bstprocedure.c:213 beast-gtk/bstradiotools.c:625
+#: beast-gtk/bstprocedure.c:212
 msgid "Description"
 msgstr "Beskrivning"
 
-#: beast-gtk/bstprocedure.c:297
+#: beast-gtk/bstprocedure.c:296
 #, c-format
 msgid "Executing `%s'"
 msgstr "Kör \"%s\""
 
-#: beast-gtk/bstprocedure.c:447
+#: beast-gtk/bstprocedure.c:446
 msgid "Procedure"
 msgstr "Procedur"
 
@@ -874,37 +828,43 @@ msgstr ""
 "förberedd på att behöva kringgå instabilitet i koden (dvs spara dina projekt "
 "regelbundet)."
 
-#: beast-gtk/bstrackeditor.c:109
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
 msgid "_Edit"
 msgstr "_Redigera"
 
-#: beast-gtk/bstrackitem.c:172
+#: beast-gtk/bstrackitem.c:206
 msgid "Edit Rack Item"
 msgstr "Redigera rackobjekt"
 
-#: beast-gtk/bstrackitem.c:174
+#: beast-gtk/bstrackitem.c:208
 msgid "Controller"
 msgstr "Styrenhet"
 
-#: beast-gtk/bstrackitem.c:175
+#: beast-gtk/bstrackitem.c:209
 msgid "Duplicate"
 msgstr "Duplicera"
 
-#: beast-gtk/bstrackitem.c:177
+#: beast-gtk/bstrackitem.c:211
 msgid "Grow Horizontally"
 msgstr "Väx horisontellt"
 
-#: beast-gtk/bstrackitem.c:178
+#: beast-gtk/bstrackitem.c:212
 msgid "Grow Vertically"
 msgstr "Väx vertikalt"
 
-#: beast-gtk/bstrackitem.c:179
+#: beast-gtk/bstrackitem.c:213
 msgid "Shrink Horizontally"
 msgstr "Krymp horisontellt"
 
-#: beast-gtk/bstrackitem.c:180
+#: beast-gtk/bstrackitem.c:214
 msgid "Shrink Vertically"
 msgstr "Krymp vertikalt"
+
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:55
+#: beast-gtk/gxk/gxksimplelabel.c:133
+msgid "Label"
+msgstr ""
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
@@ -961,75 +921,115 @@ msgstr "Skissmaximum"
 msgid "Preview"
 msgstr "Förhandsgranska"
 
-#: beast-gtk/bstsnetrouter.c:407
+#: beast-gtk/bstsnetrouter.c:72
+msgid ""
+"Edit tool (mouse buttons 1-3)\n"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:77
+#, fuzzy
+msgid "Edit"
+msgstr "_Redigera"
+
+#: beast-gtk/bstsnetrouter.c:77
+#, fuzzy
+msgid "Edit/Move/Menu (mouse buttons 1-3)"
+msgstr "Ta bort not (musknapp 1)"
+
+#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1069
 msgid "Palette"
 msgstr "Palett"
 
-#: beast-gtk/bstsnetrouter.c:926
+#: beast-gtk/bstsnetrouter.c:81
+msgid "Toggle visibility of the tool palette"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:197
+#, fuzzy
+msgid "PCM Output module"
+msgstr "Välj utmatningsmodul"
+
+#: beast-gtk/bstsnetrouter.c:198
+msgid "DCA"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:198
+msgid "Standard amplifier module"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:199
+msgid "Snooper"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:199
+#, fuzzy
+msgid "Signal debugging module"
+msgstr "Sparar modul..."
+
+#: beast-gtk/bstsnetrouter.c:200
+#, fuzzy
+msgid "PCM Input module"
+msgstr "Välj inmatningsmodul"
+
+#: beast-gtk/bstsnetrouter.c:245
+#, fuzzy
+msgid "Channel Hints"
+msgstr "Kanaler"
+
+#: beast-gtk/bstsnetrouter.c:245
+msgid "Toggle channel name hints"
+msgstr ""
+
+#: beast-gtk/bstsnetrouter.c:785
 msgid "Input channel in use"
 msgstr "Inmatningskanal att använda"
 
-#: beast-gtk/bstsnetrouter.c:953 beast-gtk/bstsnetrouter.c:955
-#: beast-gtk/bstsnetrouter.c:991
+#: beast-gtk/bstsnetrouter.c:812 beast-gtk/bstsnetrouter.c:814
+#: beast-gtk/bstsnetrouter.c:850
 msgid "Create Link"
 msgstr "Skapa länk"
 
-#: beast-gtk/bstsnetrouter.c:953
+#: beast-gtk/bstsnetrouter.c:812
 msgid "Select output module"
 msgstr "Välj utmatningsmodul"
 
-#: beast-gtk/bstsnetrouter.c:955
+#: beast-gtk/bstsnetrouter.c:814
 msgid "Select input module"
 msgstr "Välj inmatningsmodul"
 
-#: beast-gtk/bstsnetrouter.c:1011
+#: beast-gtk/bstsnetrouter.c:870
 msgid "Properties"
 msgstr "Egenskaper"
 
-#: beast-gtk/bstsnetrouter.c:1012
+#: beast-gtk/bstsnetrouter.c:871
 msgid "Reset Properties"
 msgstr "Återställ egenskaper"
 
-#: beast-gtk/bstsnetrouter.c:1013
+#: beast-gtk/bstsnetrouter.c:872
 msgid "Delete Inputs"
 msgstr "Ta bort inmatningar"
 
-#: beast-gtk/bstsnetrouter.c:1014
+#: beast-gtk/bstsnetrouter.c:873
 msgid "Delete Outputs"
 msgstr "Ta bort utmatningar"
 
-#: beast-gtk/bstsnetrouter.c:1015 beast-gtk/bstsnetrouter.c:1057
+#: beast-gtk/bstsnetrouter.c:874 beast-gtk/bstsnetrouter.c:916
 msgid "Show Info"
 msgstr "Visa information"
 
-#: beast-gtk/bstsnetrouter.c:1041
+#: beast-gtk/bstsnetrouter.c:900
 msgid "Remove Module"
 msgstr "Ta bort modul"
 
-#: beast-gtk/bstsnetrouter.c:1068
+#: beast-gtk/bstsnetrouter.c:927
 msgid "Delete Link"
 msgstr "Ta bort länk"
 
-#: beast-gtk/bstsnetrouter.c:1122
+#: beast-gtk/bstsnetrouter.c:981
 msgid "Insert Module"
 msgstr "Infoga modul"
-
-#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:165
-msgid "Routing"
-msgstr "Vägval"
-
-#: beast-gtk/bstsnetshell.c:128 beast-gtk/bstsongshell.c:149
-#: beast-gtk/bstwavereposhell.c:143
-msgid "Parameters"
-msgstr "Parametrar"
-
-#: beast-gtk/bstsongshell.c:144
-msgid "Tracks"
-msgstr "Spår"
-
-#: beast-gtk/bstsongshell.c:154
-msgid "Parts"
-msgstr "Delar"
 
 #: beast-gtk/bststest.c:550
 msgid "Selection to Loop"
@@ -1067,75 +1067,136 @@ msgstr "Markera signal (topp)"
 msgid "Mark Signal (Tail)"
 msgstr "Markera signal (dal)"
 
-#: beast-gtk/bsttrackrollctrl.c:388 beast-gtk/bsttrackrollctrl.c:400
+#: beast-gtk/bstsupershell.c:173 beast-gtk/bstsupershell.c:290
+msgid "Waves"
+msgstr "Vågor"
+
+#: beast-gtk/bstsupershell.c:236
+msgid "Tracks"
+msgstr "Spår"
+
+#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
+#: beast-gtk/bstsupershell.c:295
+msgid "Parameters"
+msgstr "Parametrar"
+
+#: beast-gtk/bstsupershell.c:246
+msgid "Parts"
+msgstr "Delar"
+
+#: beast-gtk/bstsupershell.c:252 beast-gtk/bstsupershell.c:271
+msgid "Routing"
+msgstr "Vägval"
+
+#: beast-gtk/bstsupershell.c:266
+#, fuzzy
+msgid "Rack"
+msgstr "Spår"
+
+#: beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "Infoga/redigera/flytta delar (musknapp 1 och 2)"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link"
+msgstr "Länka"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "Lnka eller flytta delar (musknapp 1 och 2)"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+#, fuzzy
+msgid "Rename"
+msgstr "_Byt namn"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename parts"
+msgstr "Byt namn på delar"
+
+#: beast-gtk/bsttrackrollctrl.c:51
+msgid "Delete parts"
+msgstr "Ta bort delar"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "Vänster"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr ""
+"Använd den horisontella linjalen för att justera den vänstra slingpekaren"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Position"
+msgstr "Position"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr "Använd den horisontella linjalen för att justera spelpositionspekaren"
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "Höger"
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr ""
+"Använd den horisontella linjalen för att justera den högra slingpekaren"
+
+#: beast-gtk/bsttrackrollctrl.c:408 beast-gtk/bsttrackrollctrl.c:420
 msgid "Edit Part"
 msgstr "Redigera del"
 
-#: beast-gtk/bsttrackrollctrl.c:388
+#: beast-gtk/bsttrackrollctrl.c:408
 msgid "No Part"
 msgstr "Ingen del"
 
-#: beast-gtk/bsttrackrollctrl.c:419 beast-gtk/bsttrackrollctrl.c:421
-#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+#: beast-gtk/bsttrackrollctrl.c:439 beast-gtk/bsttrackrollctrl.c:441
+#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
 msgid "Insert Part"
 msgstr "Infoga del"
 
-#: beast-gtk/bsttrackrollctrl.c:421 beast-gtk/bsttrackrollctrl.c:523
+#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:543
 msgid "Lost Part"
 msgstr "Borttappad del"
 
-#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
 msgid "Position taken"
 msgstr "Position tagen"
 
-#: beast-gtk/bsttrackrollctrl.c:433
+#: beast-gtk/bsttrackrollctrl.c:453
 msgid "Insert part"
 msgstr "Infoga del"
 
-#: beast-gtk/bsttrackrollctrl.c:433
+#: beast-gtk/bsttrackrollctrl.c:453
 msgid "No Track"
 msgstr "Inget spår"
 
-#: beast-gtk/bsttrackrollctrl.c:445 beast-gtk/bsttrackrollctrl.c:448
+#: beast-gtk/bsttrackrollctrl.c:465 beast-gtk/bsttrackrollctrl.c:468
 msgid "Delete Part"
 msgstr "Ta bort del"
 
-#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
 msgid "Link Part"
 msgstr "Länka del"
 
-#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
-#: beast-gtk/bsttrackrollctrl.c:523
+#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
+#: beast-gtk/bsttrackrollctrl.c:543
 msgid "Move Part"
 msgstr "Flytta del"
 
-#: beast-gtk/bsttrackrollctrl.c:535 beast-gtk/bsttrackrollctrl.c:540
+#: beast-gtk/bsttrackrollctrl.c:555 beast-gtk/bsttrackrollctrl.c:560
 msgid "Start Editor"
 msgstr "Starta redigerare"
 
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bsttrackview.c:62
 msgid "Add a new track to this song"
 msgstr "Lägg till ett nytt spår till denna låt"
 
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:65
 msgid "Delete the currently selected track"
 msgstr "Ta bort det för tillfället markerade spåret"
-
-#: beast-gtk/bsttrackview.c:538
-msgid "Repeat"
-msgstr "Upprepa"
-
-#: beast-gtk/bsttrackview.c:538
-msgid "Repeat playback within loop points"
-msgstr "Upprepa uppspelning inom slingpunkterna"
-
-#: beast-gtk/bsttrackview.c:558
-msgid "Zoom"
-msgstr "Zoom"
-
-#: beast-gtk/bsttrackview.c:558
-msgid "Horizontal Zoom"
-msgstr "Horisontell zoom"
 
 #: beast-gtk/bstusermessage.c:91
 msgid "Notice"
@@ -1177,10 +1238,460 @@ msgstr "Rulla vänster"
 msgid "Scroll Right"
 msgstr "Rulla höger"
 
-#. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
-#: beast-gtk/bstwavereposhell.c:138 beast-gtk/bstwavereposhell.c:153
-msgid "Waves"
-msgstr "Vågor"
+#: beast-gtk/bstwaveview.c:43
+#, fuzzy
+msgid "Load..."
+msgstr "Läs in XM..."
+
+#: beast-gtk/bstwaveview.c:44
+#, fuzzy
+msgid "Lib..."
+msgstr "Läser in..."
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:1
+msgid "Adjust the zoom factor of the router display"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+msgid "Control Type:"
+msgstr "Kontrolltyp:"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#, fuzzy
+msgid "Development"
+msgstr "För framtida utveckling"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#, fuzzy
+msgid "E_xamples"
+msgstr "Sampling"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#, fuzzy
+msgid "Events"
+msgstr "Borttappad händelse"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#, fuzzy
+msgid "HZoom"
+msgstr "Zoom"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+#, fuzzy
+msgid "Horizontal piano zoom"
+msgstr "Horisontell zoom"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#, fuzzy
+msgid "Horizontal track zoom"
+msgstr "Horisontell zoom"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#, fuzzy
+msgid "Note _Length"
+msgstr "Mönsterlängd"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#, fuzzy
+msgid "Piano Notes"
+msgstr "Spela not"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+msgid "Repeat"
+msgstr "Upprepa"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+msgid "Repeat playback within loop points"
+msgstr "Upprepa uppspelning inom slingpunkterna"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#, fuzzy
+msgid "Synthesis Modules"
+msgstr "Syntesfil"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#, fuzzy
+msgid "VZoom"
+msgstr "Zoom"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+#, fuzzy
+msgid "Vertical piano zoom"
+msgstr "Vertikalt område"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+msgid "Virtual Rack"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+msgid "Wave_s"
+msgstr "V_ågor"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+msgid "Zoom"
+msgstr "Zoom"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+msgid "_Audio Sources"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+msgid "_Demo"
+msgstr "_Demo"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:21
+#, fuzzy
+msgid "_Distortion"
+msgstr "Beskrivning"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+msgid "_Enhance"
+msgstr ""
+
+# Arkiv Arkiv Arkiv Arkiv Arkiv Arkiv Arkiv och inget annat än Arkiv!
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+msgid "_File"
+msgstr "_Arkiv"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#, fuzzy
+msgid "_Filters"
+msgstr "Filter"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+msgid "_Help"
+msgstr "_Hjälp"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+msgid "_Input & Output"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+msgid "_LADSPA"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#, fuzzy
+msgid "_Misc"
+msgstr "Div."
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+msgid "_Other Sources"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+msgid "_Project"
+msgstr "_Projekt"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#, fuzzy
+msgid "_Quantization"
+msgstr "Kvantisera"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#, fuzzy
+msgid "_Routing"
+msgstr "Vägval"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+msgid "_Song"
+msgstr "_Låt"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+msgid "_Spatial"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+msgid "_Synth"
+msgstr "_Synth"
+
+# "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+msgid "_Synthesizers"
+msgstr "_Synthesizers"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+msgid "_Tools"
+msgstr "_Verktyg"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+msgid "_Utilities"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#, fuzzy
+msgid "_View"
+msgstr "/_Visa"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+msgid "_Virtualization"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+msgid "Find in current document"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+msgid "Go back one page"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+msgid "Go forward one page"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+msgid "Go to browser index"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+#, fuzzy
+msgid "Location"
+msgstr "Modulation"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+#, fuzzy
+msgid "Reload current page"
+msgstr "Läs in aktuellt mönster..."
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+#, fuzzy
+msgid "_Back"
+msgstr "_Tracker"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+#, fuzzy
+msgid "_Find"
+msgstr "Sök"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+msgid "_Forward"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+#, fuzzy
+msgid "_Index"
+msgstr "_Infoga"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+#, fuzzy
+msgid "_Reload"
+msgstr "Redo."
+
+#: beast-gtk/gxk/gxkparam-entry.c:56
+#, fuzzy
+msgid "Text Entry"
+msgstr "_Nästa typsnitt"
+
+#: beast-gtk/gxk/gxkparam-label.c:49
+#, fuzzy
+msgid "Property Name"
+msgstr "Egenskaper"
+
+#: beast-gtk/gxk/gxkparam-scale.c:82
+#, fuzzy
+msgid "Horizontal Scale"
+msgstr "Horisontell zoom"
+
+#: beast-gtk/gxk/gxkparam-scale.c:88
+#, fuzzy
+msgid "Vertical Scale"
+msgstr "Vertikalmarkering"
+
+#: beast-gtk/gxk/gxkparam-scale.c:94
+msgid "Horizontal Scale (Logarithmic)"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-scale.c:100
+#, fuzzy
+msgid "Vertical Scale (Logarithmic)"
+msgstr "Vertikalmarkering"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:66
+msgid "Spin Button"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-spinner.c:72
+msgid "Spin Button (Logarithmic)"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-toggle.c:69
+msgid "Toggle Button"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:133
+#, fuzzy
+msgid "The text of the label"
+msgstr "Typen av filter att använda"
+
+#: beast-gtk/gxk/gxksimplelabel.c:137
+msgid "Use underline"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:138
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:142
+#, fuzzy
+msgid "Auto cut"
+msgstr "Anslut automatiskt"
+
+#: beast-gtk/gxk/gxksimplelabel.c:143
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:147
+#, fuzzy
+msgid "Justification"
+msgstr "Tid för senaste ändring"
+
+#: beast-gtk/gxk/gxksimplelabel.c:148
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:152
+msgid "Pattern"
+msgstr "Mönster"
+
+#: beast-gtk/gxk/gxksimplelabel.c:153
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:157
+msgid "Mnemonic key"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:158
+msgid "The mnemonic accelerator key for this label"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:162
+msgid "Mnemonic widget"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:163
+msgid "The widget to be activated when the label's mnemonic key is pressed"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:130
+msgid "Filter"
+msgstr "Filter"
+
+#: bse/bsebiquadfilter.c:132
+msgid "Filter Type"
+msgstr "Filtertyp"
+
+#: bse/bsebiquadfilter.c:132
+msgid "The filter design type"
+msgstr "Filterdesigntypen"
+
+#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
+msgid "Center Frequency"
+msgstr "Centerfrekvens"
+
+#: bse/bsebiquadfilter.c:138
+msgid "Cutoff [Hz]"
+msgstr "Avskärning [Hz]"
+
+#: bse/bsebiquadfilter.c:146
+msgid "Note"
+msgstr "Not"
+
+#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
+msgid "Emphasis"
+msgstr "Betoning"
+
+#: bse/bsebiquadfilter.c:153
+msgid "Gain [dB]"
+msgstr "Förstärkning [dB]"
+
+#: bse/bsebiquadfilter.c:158
+msgid "Norm Type"
+msgstr "Normtyp"
+
+#: bse/bsebiquadfilter.c:159
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr ""
+"Typen av normalisering för filterförstärkning (stöds endast av högpass och "
+"lågpass)"
+
+#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
+#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+msgid "Modulation"
+msgstr "Modulation"
+
+#: bse/bsebiquadfilter.c:167
+msgid "Strength of linear frequency modulation"
+msgstr "Styrka på linjär frekvensmodulation"
+
+#: bse/bsebiquadfilter.c:173
+msgid "Perform exponential frequency modulation instead of linear"
+msgstr "Utför exponentiell frekvensmodulation istället för linjär"
+
+#: bse/bsebiquadfilter.c:179
+msgid "Number of octaves to be affected by exponential frequency modulation"
+msgstr "Antal oktaver att påverkas av exponentiell frekvensmodulation"
+
+#: bse/bsebiquadfilter.c:185
+#, no-c-format
+msgid "Gain Modulation [%]"
+msgstr "Förstärkningsmodulation [%]"
+
+#: bse/bsebiquadfilter.c:186
+msgid "Strength of gain modulation"
+msgstr "Styrka på förstärkningsmodulation"
+
+#: bse/bsebiquadfilter.c:190
+msgid "Unfiltered Audio Signal"
+msgstr "Ofiltrerad ljudsignal"
+
+#: bse/bsebiquadfilter.c:192
+msgid "Center Frequency Input"
+msgstr "Centrera frekvensinmatning"
+
+#: bse/bsebiquadfilter.c:194
+msgid "Frequency Modulation Input"
+msgstr "Frekvensmodulationsinmatning"
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Modulation Input"
+msgstr "Förstärkningsmodulationsinmatning"
+
+#: bse/bsebiquadfilter.c:198
+msgid "Filtered Audio Signal"
+msgstr "Filtrerad ljudsignal"
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr "Författare"
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr "Person som ändrar eller skapar detta objekt"
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr "Licens"
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr "Upphovsrättslicens som är tillämplig på detta objekt"
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr "Tid för skapande"
+
+#: bse/bsesuper.c:118
+msgid "Last modification time"
+msgstr "Tid för senaste ändring"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -1206,1766 +1717,42 @@ msgstr "Flerdelars BSE-vågfil"
 msgid "BSE Synthesis File"
 msgstr "BSE-syntesfil"
 
-#~ msgid "/Scripts"
-#~ msgstr "/Skript"
-
-#~ msgid "/Test"
-#~ msgstr "/Test"
-
-#~ msgid "Insert full note"
-#~ msgstr "Infoga helnot"
-
-#~ msgid "Insert half note"
-#~ msgstr "Infoga halvnot"
-
-#~ msgid "Insert quarter note"
-#~ msgstr "Infoga fjärdedelsnot"
-
-#~ msgid "Insert eighths notes"
-#~ msgstr "Infoga åttondelsnoter"
-
-#~ msgid "Insert sixteenth notes"
-#~ msgstr "Infoga sextondelsnoter"
-
-#~ msgid ""
-#~ "The rack editor is still highly experimental code and guaranteed to be "
-#~ "broken by future releases. So don't rely on rack editor contents to look "
-#~ "similarly in future versions and be prepared to work around possible "
-#~ "instabilities in the code (i.e. save your projects regularly)."
-#~ msgstr ""
-#~ "Rackredigeraren är fortfarande i allra högsta grad experimentell kod och "
-#~ "är garanterad att vara trasig i framtida utgåvor. Lita alltså inte på att "
-#~ "innehåll i rackredigeraren ser likadant ut i framtida versioner och var "
-#~ "förberedd på att behöva kringgå instabilitet i koden (dvs spara dina "
-#~ "projekt regelbundet)."
-
-#~ msgid "Synthesis File"
-#~ msgstr "Syntesfil"
-
-#~ msgid "/Project/Remove Synthesizer"
-#~ msgstr "/Projekt/Ta bort synthesizer"
-
-# "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
-#~ msgid "_Synthesizers"
-#~ msgstr "_Synthesizers"
-
-# "Synthesizer" kan heta antingen "synthesizer" eller "synthesizers" i plural
-#~ msgid "Synthesizers"
-#~ msgstr "Synthesizers"
-
-#~ msgid "/Synthesizers/Load Effect"
-#~ msgstr "/Synthesizers/Läs in effekt"
-
-#~ msgid "Load _Instrument"
-#~ msgstr "Läs in _instrument"
-
-#~ msgid "_Demo"
-#~ msgstr "_Demo"
-
-#~ msgid "Demo"
-#~ msgstr "Demo"
-
-#~ msgid "Effect"
-#~ msgstr "Effekt"
-
-#~ msgid "Effects"
-#~ msgstr "Effekter"
-
-#~ msgid "Instrument"
-#~ msgstr "Instrument"
-
-#~ msgid "Instruments"
-#~ msgstr "Instrument"
-
-#~ msgid "Test"
-#~ msgstr "Test"
-
-#~ msgid "Deleting file `%s'"
-#~ msgstr "Tar bort filen \"%s\""
-
-#~ msgid "Number of Columns"
-#~ msgstr "Antal kolumner"
-
-#~ msgid "Array of column types"
-#~ msgstr "Vektor med kolumntyper"
-
-#~ msgid "Number of Rows"
-#~ msgstr "Antal rader"
-
-#~ msgid "Filter Choice"
-#~ msgstr "Filterval"
-
-#~ msgid "Filter Algorithm"
-#~ msgstr "Filteralgoritm"
-
-#~ msgid "The filter design type"
-#~ msgstr "Filterdesigntypen"
-
-#~ msgid "Filter Type"
-#~ msgstr "Filtertyp"
-
-#~ msgid "The type of filter to use"
-#~ msgstr "Typen av filter att använda"
-
-#~ msgid "Filter Specification"
-#~ msgstr "Filterspecifikation"
-
-#~ msgid "Order"
-#~ msgstr "Ordning"
-
-#~ msgid "Order of Filter"
-#~ msgstr "Filtrets ordning"
-
-#~ msgid "Epsilon"
-#~ msgstr "Epsilon"
-
-#~ msgid "Passband falloff at cutoff frequency"
-#~ msgstr "Passbandsavskärning vid avskärningsfrekvens"
-
-#~ msgid "Cutoff Frequency (All Filters)"
-#~ msgstr "Avskärningsfrekvens (alla filter)"
-
-#~ msgid "Cutoff [Hz]"
-#~ msgstr "Avskärning [Hz]"
-
-#~ msgid "Note"
-#~ msgstr "Not"
-
-#~ msgid "Cutoff Frequency 2 (Band Pass/Stop)"
-#~ msgstr "Avskärningsfrekvens 2 (bandpass/-stopp)"
-
-#~ msgid "Unfiltered Input"
-#~ msgstr "Ofiltrerad inmatning"
-
-#~ msgid "Filtered Output"
-#~ msgstr "Filtrerad utmatning"
-
-#~ msgid "/File/_New..."
-#~ msgstr "/Arkiv/_Ny..."
-
-#~ msgid "/File/_Preferences..."
-#~ msgstr "/Arkiv/_Inställningar..."
-
-#~ msgid "Preferences..."
-#~ msgstr "Inställningar..."
-
-#~ msgid "/Edit/_Preferences..."
-#~ msgstr "/Redigera/_Inställningar..."
-
-#~ msgid "/View/_Preferences"
-#~ msgstr "/Visa/_Inställningar"
-
-#~ msgid "_Project"
-#~ msgstr "_Projekt"
-
-#~ msgid "Project"
-#~ msgstr "Projekt"
-
-#~ msgid "/Project/_New Song"
-#~ msgstr "/Projekt/_Ny låt"
-
-#~ msgid "_Song"
-#~ msgstr "_Låt"
-
-#~ msgid "Song"
-#~ msgstr "Låt"
-
-#~ msgid "Songs"
-#~ msgstr "Låtar"
-
-#~ msgid "_Delete Track"
-#~ msgstr "_Ta bort spår"
-
-#~ msgid "_Synth"
-#~ msgstr "_Synth"
-
-#~ msgid "Synth"
-#~ msgstr "Synth"
-
-#~ msgid "Wave_s"
-#~ msgstr "V_ågor"
-
-#~ msgid "Wave"
-#~ msgstr "Våg"
-
-#~ msgid "_Tools"
-#~ msgstr "_Verktyg"
-
-#~ msgid "Tools"
-#~ msgstr "Verktyg"
-
-#~ msgid "Help"
-#~ msgstr "Hjälp"
-
-#~ msgid "_Release Notes"
-#~ msgstr "_Utgåvenoteringar"
-
-#~ msgid "Module Link:"
-#~ msgstr "Modullänk:"
-
-#~ msgid "Module Link"
-#~ msgstr "Modullänk"
-
-#~ msgid "Module Information"
-#~ msgstr "Modulinformation"
-
-#~ msgid "Hint"
-#~ msgstr "Tips"
-
-#~ msgid "_Contents"
-#~ msgstr "_Innehåll"
-
-#~ msgid "Save"
-#~ msgstr "Spara"
-
-#~ msgid "Start"
-#~ msgstr "Start"
-
-#~ msgid "Object"
-#~ msgstr "Objekt"
-
-#~ msgid "Languages"
-#~ msgstr "Språk"
-
-#~ msgid "File"
-#~ msgstr "Fil"
-
-#~ msgid "Plugin"
-#~ msgstr "Insticksmodul"
-
-#~ msgid "Script"
-#~ msgstr "Skript"
-
-#~ msgid "Pos."
-#~ msgstr "Pos."
-
-#~ msgid "Position"
-#~ msgstr "Position"
-
-#~ msgid "Tact"
-#~ msgstr "Takt"
-
-#~ msgid "Quantize"
-#~ msgstr "Kvantisera"
-
-#~ msgid "None"
-#~ msgstr "Ingen"
-
-#~ msgid "Link"
-#~ msgstr "Länka"
-
-#~ msgid "Control Type:"
-#~ msgstr "Kontrolltyp:"
-
-#~ msgid "VScale"
-#~ msgstr "VSkala"
-
-#~ msgid "Scale"
-#~ msgstr "Skala"
-
-#~ msgid "End"
-#~ msgstr "Slut"
-
-#~ msgid "Show Information"
-#~ msgstr "Visa information"
-
-#~ msgid "Parameter"
-#~ msgstr "Parameter"
-
-#~ msgid "Track"
-#~ msgstr "Spår"
-
-#~ msgid "Part"
-#~ msgstr "Del"
-
-#~ msgid "Comments"
-#~ msgstr "Kommentarer"
-
-#~ msgid "Playback Output"
-#~ msgstr "Uppspelningsutmatning"
-
-#~ msgid "Editing Output"
-#~ msgstr "Redigeringsutmatning"
-
-#~ msgid "Sampling"
-#~ msgstr "Sampling"
-
-#~ msgid "Driver Module"
-#~ msgstr "Drivrutinsmodul"
-
-#~ msgid "Audio Configuration"
-#~ msgstr "Ljudkonfiguration"
-
-#~ msgid "Drivers"
-#~ msgstr "Drivrutiner"
-
-#~ msgid "Mixers"
-#~ msgstr "Mixrar"
-
-#~ msgid "Close"
-#~ msgstr "Stäng"
-
-#~ msgid "(%d bytes)"
-#~ msgstr "(%d byte)"
-
-#~ msgid "Estimated audio delay: %f microseconds"
-#~ msgstr "Beräknad ljudfördröjning: %f µs"
-
-#~ msgid "These changes won't take effect until you restart playing."
-#~ msgstr ""
-#~ "Dessa ändringar kommer inte att börja gälla förrän du börjar om att spela."
-
-#~ msgid "Resolution:"
-#~ msgstr "Upplösning:"
-
-#~ msgid "Channels:"
-#~ msgstr "Kanaler:"
-
-#~ msgid "Frequency [Hz]:"
-#~ msgstr "Frekvens [Hz]:"
-
-#~ msgid "Buffer Size:"
-#~ msgstr "Buffertstorlek:"
-
-#~ msgid "ALSA card number:"
-#~ msgstr "ALSA-kortnummer:"
-
-#~ msgid "ALSA device number:"
-#~ msgstr "ALSA-enhetsnummer:"
-
-#~ msgid ""
-#~ "Couldn't open ALSA device for sound input (card:%d, device:%d):\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Kunde inte öppna ALSA-enhet för ljudinläsning (kort: %d, enhet: %d):\n"
-#~ "%s"
-
-#~ msgid "Required sound output format not supported.\n"
-#~ msgstr "Det ljuduppspelningsformat som krävs stöds inte.\n"
-
-#~ msgid "Required sound output parameters not supported.\n"
-#~ msgstr "De ljuduppspelningsparametrar som krävs stöds inte.\n"
-
-#~ msgid "Estimated audio delay: %f milliseconds"
-#~ msgstr "Beräknad ljudfördröjning: %f ms"
-
-#~ msgid ""
-#~ "Couldn't open ALSA device for sound output (card:%d, device:%d):\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Kunde inte öppna ALSA-enhet för ljuduppspelning (kort: %d, enhet: %d):\n"
-#~ "%s"
-
-#~ msgid "Required output-channel parameters not supported.\n"
-#~ msgstr "Utmatningskanalparametrar som krävs stöds inte.\n"
-
-#~ msgid "Unable to prepare ALSA channel.\n"
-#~ msgstr "Kan inte förbereda ALSA-kanal.\n"
-
-#~ msgid "Alsa setup error.\n"
-#~ msgstr "Alsa-konfigurationsfel.\n"
-
-#~ msgid ""
-#~ "Note that the ESD output is unusable in\n"
-#~ "interactive mode because of the latency added\n"
-#~ "by ESD. Use the OSS or ALSA output plug-ins\n"
-#~ "for serious work."
-#~ msgstr ""
-#~ "Observera att ESD-utmatning är oanvändbart i\n"
-#~ "interaktivt läge på grund av den latens som\n"
-#~ "tillkommer genom ESD. Använd OSS- eller ALSA-\n"
-#~ "utmatningsinsticksmodulerna för seriöst arbete."
-
-#~ msgid ""
-#~ "Couldn't connect to ESD for sound output:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Kunde inte ansluta till ESD för ljuduppspelning:\n"
-#~ "%s"
-
-#~ msgid "no settings (yet), sorry!"
-#~ msgstr "inga inställningar (än), tyvärr!"
-
-#~ msgid "Can't open file for writing."
-#~ msgstr "Kan inte öppna fil för skrivning."
-
-#~ msgid "These changes won't take effect until you restart sampling."
-#~ msgstr ""
-#~ "Dessa ändringar kommer inte att börja gälla förrän du börjar om att "
-#~ "sampla."
-
-#~ msgid "Input device (e.g. '/dev/dsp'):"
-#~ msgstr "Inmatningsenhet (t.ex. \"/dev/dsp\"):"
-
-#~ msgid ""
-#~ "Couldn't open %s for sampling:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Kunde inte öppna %s för sampling:\n"
-#~ "%s"
-
-#~ msgid "(%d samples)"
-#~ msgstr "(%d samplingsvärden)"
-
-#~ msgid "Output device (e.g. '/dev/dsp'):"
-#~ msgstr "Utmatningsenhet (t.ex. \"/dev/dsp\"):"
-
-#~ msgid ""
-#~ "Couldn't open %s for sound output:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Kunde inte öppna %s för ljuduppspelning:\n"
-#~ "%s"
-
-#~ msgid "declick"
-#~ msgstr "avklicka"
-
-#~ msgid "Running at %d Hz with %d frames"
-#~ msgstr "Kör med %d Hz med %d ramar"
-
-#~ msgid "Jack server not running?"
-#~ msgstr "Jack-servern kör inte?"
-
-#~ msgid "out_1"
-#~ msgstr "ut_1"
-
-#~ msgid "out_2"
-#~ msgstr "ut_2"
-
-#~ msgid "Output device (e.g. '/dev/audio'):"
-#~ msgstr "Utmatningsenhet (t.ex. \"/dev/audio\"):"
-
-#~ msgid "%s: %s"
-#~ msgstr "%s: %s"
-
-#~ msgid "%s: Cannot play (%s)"
-#~ msgstr "%s: Kan inte spela (%s)"
-
-#~ msgid "%s: Cannot handle %dHz (%s)"
-#~ msgstr "%s: Kan inte hantera %d Hz (%s)"
-
-#~ msgid "%s: Cannot handle %d Hz (%s)"
-#~ msgstr "%s: Kan inte hantera %d Hz (%s)"
-
-#~ msgid "%s: Required sound encoding not supported.\n"
-#~ msgstr "%s: Ljudkodning som krävs stöds inte.\n"
-
-#~ msgid "%s: Cannot set block size (%s)"
-#~ msgstr "%s: Kan inte ställa in blockstorlek (%s)"
-
-#~ msgid "Input device (e.g. '/dev/audio'):"
-#~ msgstr "Inmatningsenhet (t.ex. \"/dev/audio\"):"
-
-#~ msgid "%s: Cannot record (%s)"
-#~ msgstr "%s: Kan inte spela in (%s)"
-
-#~ msgid "Length"
-#~ msgstr "Längd"
-
-#~ msgid "Current"
-#~ msgstr "Aktuell"
-
-#~ msgid "Offset"
-#~ msgstr "Förskjutning"
-
-#~ msgid "Value"
-#~ msgstr "Värde"
-
-#~ msgid "Sustain"
-#~ msgstr "Utklangning"
-
-#~ msgid "Point"
-#~ msgstr "Punkt"
-
-#~ msgid "Loop"
-#~ msgstr "Slinga"
-
-#~ msgid "Load Module"
-#~ msgstr "Läs in modul"
-
-#~ msgid "Render WAV"
-#~ msgstr "Rendera WAV"
-
-#~ msgid "Save Song"
-#~ msgstr "Spara låt"
-
-#~ msgid "Load Sample"
-#~ msgstr "Läs in sampling"
-
-#~ msgid "Save Sample"
-#~ msgstr "Spara sampling"
-
-#~ msgid "Operation not supported."
-#~ msgstr "Åtgärden stöds inte."
-
-#~ msgid "Scopes Frequency"
-#~ msgstr "Oscilloskopfrekvens"
-
-#~ msgid "Tracker Frequency"
-#~ msgstr "Trackerfrekvens"
-
-#~ msgid "GUI Configuration"
-#~ msgstr "Konfiguration av användargränssnitt"
-
-#~ msgid "Hexadecimal row numbers"
-#~ msgstr "Hexadecimala radnummer"
-
-#~ msgid "Use upper case letters for hex numbers"
-#~ msgstr "Använd stora bokstäver i hexadecimala tal"
-
-#~ msgid "Horizontal effect column editing"
-#~ msgstr "Horisontell rörelse vid effektredigering"
-
-#~ msgid "Asynchronous (IT-style) pattern editing"
-#~ msgstr "Asynkron mönsterredigering (IT-metoden)"
-
-#~ msgid "Fxx command updates Tempo/BPM sliders"
-#~ msgstr "Fxx-kommando uppdaterar reglage för tempo/BPM"
-
-#~ msgid "Switch to tracker after loading/saving"
-#~ msgstr "Växla till tracker efter inläsning/sparande"
-
-#~ msgid "Save window geometry on exit"
-#~ msgstr "Spara fönstergeometri vid avslut"
-
-#~ msgid "Use note name B instead of H"
-#~ msgstr "Använd notnamn B istället för H"
-
-#~ msgid "Scopes buffer size [MB]"
-#~ msgstr "Oscilloskopbuffertstorlek [MB]"
-
-#~ msgid "Highlight rows:"
-#~ msgstr "Markera rader:"
-
-#~ msgid "Track line format:"
-#~ msgstr "Radformat för spår:"
-
-#~ msgid "Ready."
-#~ msgstr "Redo."
-
-#~ msgid "Playing song..."
-#~ msgstr "Spelar låt..."
-
-#~ msgid "Playing pattern..."
-#~ msgstr "Spelar mönster..."
-
-#~ msgid "Loading module..."
-#~ msgstr "Läser in modul..."
-
-#~ msgid "Module loaded."
-#~ msgstr "Modul inläst."
-
-#~ msgid "Saving module..."
-#~ msgstr "Sparar modul..."
-
-#~ msgid "Module saved."
-#~ msgstr "Modul sparad."
-
-#~ msgid "Loading sample..."
-#~ msgstr "Läser in sampling..."
-
-#~ msgid "Sample loaded."
-#~ msgstr "Sampling inläst."
-
-#~ msgid "Saving sample..."
-#~ msgstr "Sparar sampling..."
-
-#~ msgid "Sample saved."
-#~ msgstr "Sampling sparad."
-
-#~ msgid "Loading instrument..."
-#~ msgstr "Läser in instrument..."
-
-#~ msgid "Instrument loaded."
-#~ msgstr "Instrument inläst."
-
-#~ msgid "Instrument saved."
-#~ msgstr "Instrument sparat."
-
-#~ msgid "Saving song..."
-#~ msgstr "Sparar låt..."
-
-#~ msgid "Song saved."
-#~ msgstr "Låt sparad."
-
-#~ msgid "Yes"
-#~ msgstr "Ja"
-
-#~ msgid "No"
-#~ msgstr "Nej"
-
-#~ msgid "Cancel"
-#~ msgstr "Avbryt"
-
-#~ msgid "Error!"
-#~ msgstr "Fel!"
-
-#~ msgid "Tempo"
-#~ msgstr "Tempo"
-
-#~ msgid "No file selected."
-#~ msgstr "Ingen fil vald."
-
-#~ msgid ""
-#~ "Are you sure you want to free the current project?\n"
-#~ "All changes will be lost!"
-#~ msgstr ""
-#~ "Är du säker på att du vill frigöra det aktuella projektet?\n"
-#~ "Alla ändringar kommer att gå förlorade!"
-
-#~ msgid "Are you sure you want to overwrite the file?"
-#~ msgstr "Är du säker på att du vill skriva över filen?"
-
-#~ msgid "Error when opening pattern file!"
-#~ msgstr "Fel vid öppnande av mönsterfil!"
-
-#~ msgid ""
-#~ "The length of the pattern being loaded doesn't match with that of current "
-#~ "pattern in module.\n"
-#~ "Do you want to change the current pattern length?"
-#~ msgstr ""
-#~ "Längden på det mönster som lästes in stämmer inte överens med den för det "
-#~ "aktuella mönstret i modulen.\n"
-#~ "Vill du ändra längden för det aktuella mönstret?"
-
-#~ msgid "Load XM..."
-#~ msgstr "Läs in XM..."
-
-#~ msgid "Save XM..."
-#~ msgstr "Spara XM..."
-
-#~ msgid "Render module as WAV..."
-#~ msgstr "Rendera modul som WAV..."
-
-#~ msgid "Save song as XM..."
-#~ msgstr "Spara låt som XM..."
-
-#~ msgid "Load current pattern..."
-#~ msgstr "Läs in aktuellt mönster..."
-
-#~ msgid "Save current pattern..."
-#~ msgstr "Spara aktuellt mönster..."
-
-#~ msgid "Play Song"
-#~ msgstr "Spela låt"
-
-#~ msgid "Play Pattern"
-#~ msgstr "Spela mönster"
-
-#~ msgid "Stop"
-#~ msgstr "Stoppa"
-
-#~ msgid "Pattern"
-#~ msgstr "Mönster"
-
-#~ msgid "PatLength"
-#~ msgstr "Mönsterlängd"
-
-#~ msgid "Editing"
-#~ msgstr "Redigering"
-
-#~ msgid "Octave"
-#~ msgstr "Oktav"
-
-#~ msgid "Jump"
-#~ msgstr "Hopp"
-
-#~ msgid "Instr"
-#~ msgstr "Instrument"
-
-#~ msgid "Sample"
-#~ msgstr "Sampling"
-
-#~ msgid "%M:%S"
-#~ msgstr "%M:%S"
-
-#~ msgid "VolFade"
-#~ msgstr "Volymborttoning"
-
-#~ msgid "VibSpeed"
-#~ msgstr "Vib.hast."
-
-#~ msgid "VibDepth"
-#~ msgstr "Vib.djup"
-
-#~ msgid "VibSweep"
-#~ msgstr "Vib.svep"
-
-#~ msgid "Can't open file."
-#~ msgstr "Kan inte öppna fil."
-
-#~ msgid "Sine"
-#~ msgstr "Sinus"
-
-#~ msgid "Square"
-#~ msgstr "Fyrkant"
-
-#~ msgid "Saw Down"
-#~ msgstr "Sågtand ner"
-
-#~ msgid "Saw Up"
-#~ msgstr "Sågtand upp"
-
-#~ msgid "Instrument Editor"
-#~ msgstr "Instrumentredigerare"
-
-#~ msgid "Volume envelope"
-#~ msgstr "Volymenvelop"
-
-#~ msgid "Panning envelope"
-#~ msgstr "Panoreringsenvelop"
-
-#~ msgid "Load Instrument..."
-#~ msgstr "Läs in instrument..."
-
-#~ msgid "Save Instrument..."
-#~ msgstr "Spara instrument..."
-
-#~ msgid "Load XI"
-#~ msgstr "Läs in XI"
-
-# src/menus.c:280
-#~ msgid "Save XI"
-#~ msgstr "Spara XI"
-
-#~ msgid "Vibrato Type:"
-#~ msgstr "Vibratotyp:"
-
-#~ msgid "Initialize"
-#~ msgstr "Initiera"
-
-#~ msgid "<none>"
-#~ msgstr "<ingen>"
-
-#~ msgid ""
-#~ "The key that inserts the special keyoff note for FastTracker modules."
-#~ msgstr ""
-#~ "Tangenten som infogar den speciella avtangentnoten för FastTracker-"
-#~ "moduler."
-
-#~ msgid "The key that increases \"jump\" value."
-#~ msgstr "Tangenten som ökar \"hopp\"-värdet."
-
-#~ msgid "The key that decreases \"jump\" value."
-#~ msgstr "Tangenten som minskar \"hopp\"-värdet."
-
-#~ msgid "Upper Octave Keys..."
-#~ msgstr "Tangenter för övre oktav..."
-
-#~ msgid ""
-#~ "These are the keys on the upper half of the keyboard. The c key is "
-#~ "normally the key to the right of the TAB key. The rest of the keys should "
-#~ "be ordered in a piano keyboard fashion, including the number keys row "
-#~ "above."
-#~ msgstr ""
-#~ "Detta är tangenterna på den övre delen av tangentbordet. C-tangenten är "
-#~ "normalt tangenten till höger om tabulatorsteget. Resten av tangenterna, "
-#~ "inklusive taltangenterna ovanför, är arrangerade på pianoklaviatursvis."
-
-#~ msgid "Lower Octave Keys..."
-#~ msgstr "Tangenter för lägre oktav..."
-
-#~ msgid ""
-#~ "These are the keys on the lower half of the keyboard. The c key is "
-#~ "normally the first character key to the right of the left Shift key. The "
-#~ "rest of the keys should be ordered in a piano keyboard fashion, including "
-#~ "the row above."
-#~ msgstr ""
-#~ "Detta är tangenterna på den nedre delen av tangentbordet. C-tangenten är "
-#~ "normalt tangenten till vänster om skifttangenten. Resten av tangenterna, "
-#~ "inklusive raden ovanför, är arrangerade på pianoklaviatursvis."
-
-#~ msgid "Other Keys..."
-#~ msgstr "Andra tangenter..."
-
-#~ msgid "Various other keys"
-#~ msgstr "Diverse andra tangenter"
-
-#~ msgid "Function"
-#~ msgstr "Funktion"
-
-#~ msgid "Assignment"
-#~ msgstr "Tilldelning"
-
-#~ msgid "Keyboard Configuration"
-#~ msgstr "Tangentbordskonfiguration"
-
-#~ msgid "Key Group Explanation"
-#~ msgstr "Tangentgruppsförklaring"
-
-#~ msgid "Key Explanation"
-#~ msgstr "Tangentförklaring"
-
-#~ msgid "Modifiers:"
-#~ msgstr "Modifierare:"
-
-#~ msgid "Learn selected key"
-#~ msgstr "Lär vald tangent"
-
-#~ msgid "Learn all keys"
-#~ msgstr "Lär alla tangenter"
-
-#~ msgid ""
-#~ "Please press the desired key combination!\n"
-#~ "Click into left list to cancel"
-#~ msgstr ""
-#~ "Tryck den önskade tangentkombinationen!\n"
-#~ "Klicka i den vänstra listan för att avbryta"
-
-#~ msgid "Ok"
-#~ msgstr "OK"
-
-#~ msgid "Apply"
-#~ msgstr "Verkställ"
-
-#~ msgid ""
-#~ "The keyboard configuration file is defective.\n"
-#~ "Please use the Keyboard Configuration dialog."
-#~ msgstr ""
-#~ "Tangentbordkonfigurationsfilen är trasig.\n"
-#~ "Använd tangentbordskonfigurationsdialogen."
-
-#~ msgid "CH%02d"
-#~ msgstr "KA%02d"
-
-#~ msgid "Fast jump to channel %d"
-#~ msgstr "Snabbhoppa till kanal %d"
-
-#~ msgid ""
-#~ "Automatic key configuration unsuccessful.\n"
-#~ "Please use the Keyboard Configuration dialog\n"
-#~ "in the Settings menu."
-#~ msgstr ""
-#~ "Automatisk tangentbordskonfiguration misslyckades.\n"
-#~ "Välj tangentbordskonfigurationsdialogen i\n"
-#~ "Inställningar-menyn."
-
-#~ msgid ""
-#~ "Are you sure you want to do this?\n"
-#~ "All changes will be lost!"
-#~ msgstr ""
-#~ "Är du säker på att du vill göra detta?\n"
-#~ "Alla ändringar kommer att gå förlorade!"
-
-#~ msgid ""
-#~ "Are you sure you want to quit?\n"
-#~ "All changes will be lost!"
-#~ msgstr ""
-#~ "Är du säker på att du vill avsluta?\n"
-#~ "Alla ändringar kommer att gå förlorade!"
-
-#~ msgid "_Open..."
-#~ msgstr "_Öppna..."
-
-#~ msgid "Save _as..."
-#~ msgstr "Spara so_m..."
-
-#~ msgid "Save Module as _WAV..."
-#~ msgstr "Spara modul som _WAV..."
-
-#~ msgid "Save XM without samples..."
-#~ msgstr "Spara XM utan samplingar..."
-
-#~ msgid "_Quit"
-#~ msgstr "A_vsluta"
-
-#~ msgid "Clear _All"
-#~ msgstr "Töm _alla"
-
-#~ msgid "Clear _Patterns Only"
-#~ msgstr "Töm endast _mönster"
-
-#~ msgid "_Optimize Module"
-#~ msgstr "_Optimera modul"
-
-#~ msgid "C_ut"
-#~ msgstr "Klipp _ut"
-
-#~ msgid "_Copy"
-#~ msgstr "_Kopiera"
-
-#~ msgid "_Paste"
-#~ msgstr "Klistra _in"
-
-#~ msgid "_Kill notes"
-#~ msgstr "_Döda noter"
-
-#~ msgid "_Insert track"
-#~ msgstr "_Infoga spår"
-
-#~ msgid "Increment cmd value"
-#~ msgstr "Öka kommandovärde"
-
-#~ msgid "Decrement cmd value"
-#~ msgstr "Minska kommandovärde"
-
-#~ msgid "_Mark mode"
-#~ msgstr "_Markeringsläge"
-
-#~ msgid "C_lear block marks"
-#~ msgstr "T_öm blockmärken"
-
-#~ msgid "_Interpolate effects"
-#~ msgstr "_Interpolera effekter"
-
-#~ msgid "Transpose half-note up"
-#~ msgstr "Transponera halvt tonsteg uppåt"
-
-#~ msgid "Transpose half-note down"
-#~ msgstr "Transponera halvt tonsteg nedåt"
-
-#~ msgid "Transpose octave up"
-#~ msgstr "Transponera oktav uppåt"
-
-#~ msgid "Transpose octave down"
-#~ msgstr "Transponera oktav nedåt"
-
-#~ msgid "_Jazz Edit Mode"
-#~ msgstr "_Jazzredigeringsläge"
-
-#~ msgid "Transp_osition..."
-#~ msgstr "Transp_onering..."
-
-#~ msgid "_Pattern"
-#~ msgstr "M_önster"
-
-#~ msgid "_Find Unused Pattern"
-#~ msgstr "_Sök oanvänt mönster"
-
-#~ msgid "_Copy Current to Unused Pattern"
-#~ msgstr "_Kopiera från aktuellt till oanvänt mönster"
-
-#~ msgid "C_lear Unused Patterns"
-#~ msgstr "T_öm oanvända mönster"
-
-#~ msgid "_Pack Patterns"
-#~ msgstr "_Packa mönster"
-
-#~ msgid "_Save Current Pattern"
-#~ msgstr "_Spara aktuellt mönster"
-
-#~ msgid "L_oad Pattern"
-#~ msgstr "L_äs in mönster"
-
-#~ msgid "_Load XI..."
-#~ msgstr "_Läs in XI..."
-
-#~ msgid "_Save XI..."
-#~ msgstr "_Spara XI..."
-
-#~ msgid "_Clear Current"
-#~ msgstr "_Töm aktuell"
-
-#~ msgid "_Delete Unused Instruments"
-#~ msgstr "_Ta bort oanvända instrument"
-
-#~ msgid "_Flicker-free scrolling"
-#~ msgstr "_Flimmerfri rullning"
-
-#~ msgid "_Previous font"
-#~ msgstr "_Föregående typsnitt"
-
-#~ msgid "_Next font"
-#~ msgstr "_Nästa typsnitt"
-
-#~ msgid "Display _Oscilloscopes"
-#~ msgstr "Visa _oscilloskop"
-
-#~ msgid "_Tracker"
-#~ msgstr "_Tracker"
-
-#~ msgid "_Keyboard Configuration..."
-#~ msgstr "_Tangentbordskonfiguration..."
-
-#~ msgid "_Audio Configuration..."
-#~ msgstr "_Ljudkonfiguration..."
-
-#~ msgid "_GUI Configuration..."
-#~ msgstr "Konfiguration av användar_gränssnitt..."
-
-#~ msgid "_MIDI Configuration..."
-#~ msgstr "_MIDI-konfiguration..."
-
-#~ msgid "Disable splash screen"
-#~ msgstr "Inaktivera startbild"
-
-#~ msgid "_Save Settings now"
-#~ msgstr "_Spara inställningar nu"
-
-#~ msgid "Save Settings on _Exit"
-#~ msgstr "Spara inställningar vid a_vslut"
-
-#~ msgid "_About..."
-#~ msgstr "_Om..."
-
-#~ msgid "Show _Tips..."
-#~ msgstr "Visa _tips..."
-
-#~ msgid "_XM Effects..."
-#~ msgstr "_XM-effekter..."
-
-# Arkiv Arkiv Arkiv Arkiv Arkiv Arkiv Arkiv och inget annat än Arkiv!
-#~ msgid "_File"
-#~ msgstr "_Arkiv"
-
-#~ msgid "_Module"
-#~ msgstr "_Modul"
-
-#~ msgid "_Instrument"
-#~ msgstr "_Instrument"
-
-#~ msgid "_Settings"
-#~ msgstr "_Inställningar"
-
-#~ msgid "_Help"
-#~ msgstr "_Hjälp"
-
-#~ msgid ""
-#~ "Integers mixer, no interpolation, no filters, maximum sample length 1M"
-#~ msgstr ""
-#~ "Heltalsmixer, ingen interpolation, inga filter, maximal samplingslängd 1 "
-#~ "MB"
-
-#~ msgid "Instrument Name"
-#~ msgstr "Instrumentnamn"
-
-#~ msgid "#smpl"
-#~ msgstr "#smpl"
-
-#~ msgid "Sample Name"
-#~ msgstr "Samplingsnamn"
-
-#~ msgid "Linear"
-#~ msgstr "Linjär"
-
-#~ msgid "Songname:"
-#~ msgstr "Låtnamn:"
-
-#~ msgid "Frequencies:"
-#~ msgstr "Frekvenser:"
-
-#~ msgid "ProTracker Mode"
-#~ msgstr "ProTracker-läge"
-
-#~ msgid ""
-#~ "Unused patterns: %d (used: %d)\n"
-#~ "Unused instruments: %d (used: %d)\n"
-#~ "\n"
-#~ "Clear unused and reorder playlist?\n"
-#~ msgstr ""
-#~ "Oanvända mönster: %d (använda: %d)\n"
-#~ "Oanvända instrument: %d (använda: %d)\n"
-#~ "\n"
-#~ "Töm oanvända och sortera om spellistan?\n"
-
-#~ msgid "Insert pattern that is being edited"
-#~ msgstr "Infoga det mönster som redigeras"
-
-#~ msgid "Remove current playlist entry"
-#~ msgstr "Ta bort den aktuella spellisteposten"
-
-#~ msgid "Add + Cpy"
-#~ msgstr "Lägg till + Kopiera"
-
-#~ msgid ""
-#~ "Add a free pattern behind current position, and copy current pattern to it"
-#~ msgstr ""
-#~ "Lägg till ett ledigt mönster efter den aktuella positionen, och kopiera "
-#~ "det aktuella mönstret till det"
-
-#~ msgid "Add Free"
-#~ msgstr "Lägg till ledigt"
-
-#~ msgid "Add a free pattern behind current position"
-#~ msgstr "Lägg till ett ledigt mönster efter den aktuella positionen"
-
-#~ msgid "Song length"
-#~ msgstr "Låtlängd"
-
-#~ msgid "Song restart position"
-#~ msgstr "Låtomstartsposition"
-
-#~ msgid "No loop"
-#~ msgstr "Ingen slinga"
-
-#~ msgid "PingPong"
-#~ msgstr "PingPong"
-
-#~ msgid "8 bits"
-#~ msgstr "8-bitars"
-
-#~ msgid "16 bits"
-#~ msgstr "16-bitars"
-
-#~ msgid "Volume"
-#~ msgstr "Volym"
-
-#~ msgid "Panning"
-#~ msgstr "Panorering"
-
-#~ msgid "Finetune"
-#~ msgstr "Finjustera"
-
-#~ msgid "Selection:"
-#~ msgstr "Markering:"
-
-#~ msgid "All"
-#~ msgstr "Alla"
-
-#~ msgid "Length:"
-#~ msgstr "Längd:"
-
-#~ msgid "Set as loop"
-#~ msgstr "Ställ in som slinga"
-
-#~ msgid "RelNote"
-#~ msgstr "Rel.not"
-
-#~ msgid "Load Sample..."
-#~ msgstr "Läs in sampling..."
-
-#~ msgid "Save WAV..."
-#~ msgstr "Spara WAV..."
-
-#~ msgid "Save region as WAV..."
-#~ msgstr "Spara område som WAV..."
-
-#~ msgid "Save WAV"
-#~ msgstr "Spara WAV"
-
-#~ msgid "Save Region"
-#~ msgstr "Spara område"
-
-#~ msgid "Monitor"
-#~ msgstr "Monitor"
-
-#~ msgid "Volume Ramp"
-#~ msgstr "Volymramp"
-
-#~ msgid "Show all"
-#~ msgstr "Visa alla"
-
-#~ msgid "Zoom in (+50%)"
-#~ msgstr "Zooma in (+50%)"
-
-#~ msgid "Zoom out (-50%)"
-#~ msgstr "Zooma ut (-50%)"
-
-#~ msgid "Reverse"
-#~ msgstr "Baklänges"
-
-#~ msgid "Cut"
-#~ msgstr "Klipp ut"
-
-#~ msgid "Remove"
-#~ msgstr "Ta bort"
-
-#~ msgid "Copy"
-#~ msgstr "Kopiera"
-
-#~ msgid "Paste"
-#~ msgstr "Klistra in"
-
-#~ msgid "Clear Sample"
-#~ msgstr "Töm sampling"
-
-#~ msgid "(no selection)"
-#~ msgstr "(ingen markering)"
-
-#~ msgid "Out of memory for copybuffer.\n"
-#~ msgstr "Slut på minne för kopieringsbuffert.\n"
-
-#~ msgid "Out of memory for copybuffer."
-#~ msgstr "Slut på minne för kopieringsbuffert."
-
-#~ msgid "<just pasted>"
-#~ msgstr "<nyss inklippt>"
-
-#~ msgid "Out of memory for sample data."
-#~ msgstr "Slut på minne för samplingsdata."
-
-#~ msgid "Read error."
-#~ msgstr "Läsfel."
-
-#~ msgid "Load stereo sample"
-#~ msgstr "Läs in stereosampling"
-
-#~ msgid "Mix"
-#~ msgstr "Mixa"
-
-#~ msgid "Load raw sample"
-#~ msgstr "Läs in rå sampling"
-
-#~ msgid ""
-#~ "You have selected a sample that is not\n"
-#~ "in a known format. You can load the raw data now.\n"
-#~ "\n"
-#~ "Please choose a format:"
-#~ msgstr ""
-#~ "Du har valt en sampling som inte är i ett känt\n"
-#~ "format. Du kan läsa in den råa datan nu.\n"
-#~ "\n"
-#~ "Välj ett format:"
-
-#~ msgid "Word format:"
-#~ msgstr "Ordformat:"
-
-#~ msgid "OK"
-#~ msgstr "OK"
-
-#~ msgid "Can't read sample"
-#~ msgstr "Kan inte läsa sampling"
-
-#~ msgid "Sample is too long for current mixer module. Loading anyway."
-#~ msgstr ""
-#~ "Samplingen är för lång för den aktuella mixermodulen. Läser in ändå."
-
-#~ msgid "Can only handle 8 and 16 bit samples with up to 2 channels"
-#~ msgstr ""
-#~ "Kan bara hantera 8- och 16-bitarssamplingar med upp till två kanaler"
-
-#~ msgid "Please select region first."
-#~ msgstr "Välj region först."
-
-#~ msgid "Signed"
-#~ msgstr "Med tecken"
-
-#~ msgid "Unsigned"
-#~ msgstr "Utan tecken"
-
-#~ msgid "Little-Endian"
-#~ msgstr "Little-Endian"
-
-#~ msgid "Big-Endian"
-#~ msgstr "Big-Endian"
-
-#~ msgid "Mono"
-#~ msgstr "Mono"
-
-#~ msgid "Stereo"
-#~ msgstr "Stereo"
-
-#~ msgid "Sampling Rate:"
-#~ msgstr "Samplingsfrekvens:"
-
-#~ msgid "Sampling Rate"
-#~ msgstr "Samplingsfrekvens"
-
-# Varför ska detta översättas?
-#~ msgid "8363"
-#~ msgstr "8363"
-
-#~ msgid "Start sampling"
-#~ msgstr "Påbörja sampling"
-
-#~ msgid "No sampling driver available"
-#~ msgstr "Ingen samplingsdrivrutin tillgänglig"
-
-#~ msgid "Sampling Window"
-#~ msgstr "Samplingsfönster"
-
-#~ msgid "Out of memory while sampling!"
-#~ msgstr "Slut på minne vid sampling!"
-
-#~ msgid "<just sampled>"
-#~ msgstr "<nyss samplat>"
-
-#~ msgid ""
-#~ "Recorded sample is too long for current mixer module. Using it anyway."
-#~ msgstr ""
-#~ "Inlästa samplingen är för lång för den aktuella mixermodulen. Använder "
-#~ "den ändå."
-
-#~ msgid "Normalize"
-#~ msgstr "Normalisera"
-
-#~ msgid "Execute"
-#~ msgstr "Kör"
-
-#~ msgid "Volume Ramping"
-#~ msgstr "Volymrampning"
-
-#~ msgid "Perform linear volume fade on Selection"
-#~ msgstr "Utför linjär volymborttoning på markering"
-
-#~ msgid "Left [%]:"
-#~ msgstr "Vänster [%]:"
-
-#~ msgid "H"
-#~ msgstr "H"
-
-#~ msgid "Right [%]:"
-#~ msgstr "Höger [%]:"
-
-#~ msgid "Previous Tip"
-#~ msgstr "Föregående tips"
-
-#~ msgid "Next Tip"
-#~ msgstr "Nästa tips"
-
-#~ msgid "Show tip next time"
-#~ msgstr "Visa tips nästa gång"
-
-#~ msgid "Arpeggio"
-#~ msgstr "Arpeggio"
-
-#~ msgid "Porta up"
-#~ msgstr "Porta upp"
-
-#~ msgid "Porta down"
-#~ msgstr "Porta ned"
-
-#~ msgid "Tone porta"
-#~ msgstr "Tonporta"
-
-#~ msgid "Vibrato"
-#~ msgstr "Vibrato"
-
-#~ msgid "Tone porta + Volume slide"
-#~ msgstr "Tonporta + volymglidning"
-
-#~ msgid "Vibrato + Volume slide"
-#~ msgstr "Vibrato + volymglidning"
-
-#~ msgid "Tremolo"
-#~ msgstr "Tremolo"
-
-#~ msgid "Set panning"
-#~ msgstr "Ställ in panorering"
-
-#~ msgid "Position jump"
-#~ msgstr "Positionshoppa"
-
-#~ msgid "Set volume"
-#~ msgstr "Ställ in volym"
-
-#~ msgid "Pattern break"
-#~ msgstr "Mönsterbrytning"
-
-#~ msgid "Set tempo/bpm"
-#~ msgstr "Ställ in tempo/taktslag per minut"
-
-#~ msgid "Set global volume"
-#~ msgstr "Ställ in global volym"
-
-#~ msgid "Global volume slide"
-#~ msgstr "Global volymglidning"
-
-#~ msgid "Key off"
-#~ msgstr "Tangent av"
-
-#~ msgid "Set envelop position"
-#~ msgstr "Ställ in envelopposition"
-
-#~ msgid "Panning slide"
-#~ msgstr "Panoreringsglidning"
-
-# src/header_stuff.c:479
-#~ msgid "LP filter resonance"
-#~ msgstr "LP-filterresonans"
-
-#~ msgid "Multi retrig note"
-#~ msgstr "Fleromtriggningsnot"
-
-#~ msgid "Tremor"
-#~ msgstr "Tremor"
-
-#~ msgid "LP filter cutoff"
-#~ msgstr "LP-filterflank"
-
-#~ msgid "Fine porta up"
-#~ msgstr "Finporta upp"
-
-#~ msgid "Fine porta down"
-#~ msgstr "Finporta ned"
-
-#~ msgid "Set gliss control"
-#~ msgstr "Ställ in glisskontroll"
-
-#~ msgid "Set vibrato control"
-#~ msgstr "Ställ in vibratokontroll"
-
-#~ msgid "Set finetune"
-#~ msgstr "Ställ in finjustering"
-
-#~ msgid "Set loop begin/loop"
-#~ msgstr "Ställ in slingbörjan/slingslut"
-
-#~ msgid "Set tremolo control"
-#~ msgstr "Ställ in tremolokontroll"
-
-#~ msgid "Retrig note"
-#~ msgstr "Omtriggningsnot"
-
-#~ msgid "Fine volume slide up"
-#~ msgstr "Fin volymglidning upp"
-
-#~ msgid "Fine volume slide down"
-#~ msgstr "Fin volymglidning ned"
-
-#~ msgid "Note cut"
-#~ msgstr "Noturklipp"
-
-#~ msgid "Note delay"
-#~ msgstr "Notfördöjning"
-
-#~ msgid "Pattern delay"
-#~ msgstr "Mönsterfördröjning"
-
-#~ msgid "Volume slide down"
-#~ msgstr "Volymglidning ned"
-
-#~ msgid "Volume slide up"
-#~ msgstr "Volymglidning upp"
-
-#~ msgid "Set vibrato speed"
-#~ msgstr "Ställ in vibratohastighet"
-
-#~ msgid "Panning slide left"
-#~ msgstr "Panoreringsglidning vänster"
-
-#~ msgid "Panning slide right"
-#~ msgstr "Panoreringsglidning höger"
-
-#~ msgid "sine"
-#~ msgstr "sinus"
-
-#~ msgid "ramp down"
-#~ msgstr "ramp ned"
-
-#~ msgid "square"
-#~ msgstr "fyrkant"
-
-#~ msgid "None ]"
-#~ msgstr "Ingen ]"
-
-#~ msgid "Jazz Edit:"
-#~ msgstr "Jazzredigering:"
-
-#~ msgid "Tracker"
-#~ msgstr "Tracker"
-
-#~ msgid "Font list"
-#~ msgstr "Typsnittslista"
-
-#~ msgid "Add font"
-#~ msgstr "Lägg till typsnitt"
-
-#~ msgid "Up"
-#~ msgstr "Upp"
-
-#~ msgid "Down"
-#~ msgstr "Ner"
-
-#~ msgid "Select font..."
-#~ msgstr "Välj typsnitt..."
-
-#~ msgid "Whole Song"
-#~ msgstr "Hel låt"
-
-#~ msgid "All Patterns"
-#~ msgstr "Alla mönster"
-
-#~ msgid "Current Pattern"
-#~ msgstr "Aktuellt mönster"
-
-#~ msgid "Current Track"
-#~ msgstr "Aktuellt spår"
-
-#~ msgid "Current Instrument"
-#~ msgstr "Aktuellt instrument"
-
-#~ msgid "All Instruments"
-#~ msgstr "Alla instrument"
-
-#~ msgid "Half note up"
-#~ msgstr "Halvnot upp"
-
-#~ msgid "Half note down"
-#~ msgstr "Halvnot ned"
-
-#~ msgid "Octave up"
-#~ msgstr "Oktav upp"
-
-#~ msgid "Octave down"
-#~ msgstr "Oktav ned"
-
-#~ msgid "Exchange 1 <-> 2"
-#~ msgstr "Byt 1 <-> 2"
-
-#~ msgid "Change 1 -> 2"
-#~ msgstr "Ändra 1 -> 2"
-
-#~ msgid "Transposition Tools"
-#~ msgstr "Transponeringsverktyg"
-
-#~ msgid "Scope of the operation:"
-#~ msgstr "Område för åtgärden:"
-
-#~ msgid "Note Transposition"
-#~ msgstr "Nottransponering"
-
-#~ msgid "Instrument Changing"
-#~ msgstr "Instrumentbyte"
-
-#~ msgid "Instrument 1:"
-#~ msgstr "Instrument 1:"
-
-#~ msgid "Current instrument"
-#~ msgstr "Aktuellt instrument"
-
-#~ msgid "Instrument 2:"
-#~ msgstr "Instrument 2:"
-
-#~ msgid "Pattern length out of range: %d.\n"
-#~ msgstr "Mönsterlängd utanför intervallet: %d.\n"
-
-#~ msgid "File is no XI instrument."
-#~ msgstr "Filen är inget XI-instrument."
-
-#~ msgid "Unknown XI version 0x%x\n"
-#~ msgstr "Okänd XI-version 0x%x\n"
-
-#~ msgid "Invalid vibtype %d, using Sine.\n"
-#~ msgstr "Ogiltig vibratotyp %d, använder sinus.\n"
-
-#~ msgid "Error while loading patterns."
-#~ msgstr "Fel vid inläsning av mönster."
-
-#~ msgid "Can't open file"
-#~ msgstr "Kan inte öppna fil"
-
-#~ msgid "Error while loading instruments."
-#~ msgstr "Fel vid inläsning av instrument."
-
-#~ msgid ""
-#~ "Module contains sample(s) that are too long for the current mixer.\n"
-#~ "Maximum sample length is %d."
-#~ msgstr ""
-#~ "Modulen innehåller samplingar som är för långa för den aktuella mixern.\n"
-#~ "Största samplingslängden är %d."
-
-#~ msgid "Error when file reading or unexpected end of file"
-#~ msgstr "Fel vid filläsning eller oväntat slut på filen"
-
-#~ msgid "Incorrect or unsupported version of pattern file!"
-#~ msgstr "Ogiltig version eller version som inte stöds av mönsterfil!"
-
-#~ msgid "Incorrect pattern length!"
-#~ msgstr "Ogiltig mönsterlängd!"
-
-#~ msgid "Error during saving pattern!"
-#~ msgstr "Fel vid sparande av mönster!"
-
-#~ msgid "Auto connect"
-#~ msgstr "Anslut automatiskt"
-
-#~ msgid "Channel"
-#~ msgstr "Kanal"
-
-#~ msgid "Channels"
-#~ msgstr "Kanaler"
-
-#~ msgid "Client number"
-#~ msgstr "Klientnummer"
-
-#~ msgid "Port number"
-#~ msgstr "Portnummer"
-
-#~ msgid "For future development"
-#~ msgstr "För framtida utveckling"
-
-#~ msgid "Debug level"
-#~ msgstr "Felsökningsnivå"
-
-#~ msgid "Misc"
-#~ msgstr "Div."
-
-#~ msgid "Misc."
-#~ msgstr "Div."
-
-#~ msgid "MIDI Configuration"
-#~ msgstr "MIDI-konfiguration"
-
-#~ msgid "`Save XM' saves all non-empty patterns"
-#~ msgstr "\"Spara XM\" sparar alla mönster som inte är tomma"
-
-#~ msgid "Current pos"
-#~ msgstr "Aktuell position"
-
-#~ msgid "Advance cursor horizontally in effect columns"
-#~ msgstr "Flytta fram markören horisontellt i effektkolumner"
-
-#~ msgid "Tempo and BPM update"
-#~ msgstr "Tempo och BPM-uppdatering"
-
-#~ msgid "Auto switch"
-#~ msgstr "Växla automatiskt"
-
-#~ msgid "Use anti-aliased envelope editor"
-#~ msgstr "Använd envelopredigerare med kantutjämning"
-
-#~ msgid "Idle."
-#~ msgstr "Inaktiv."
-
-#~ msgid "/File/Save _as..."
-#~ msgstr "/Arkiv/Spara so_m..."
-
-#~ msgid "/File/-"
-#~ msgstr "/Arkiv/-"
-
-#~ msgid "/File/Save Module as _WAV..."
-#~ msgstr "/Arkiv/Spara modul som _WAV..."
-
-#~ msgid "/File/Save XM without samples..."
-#~ msgstr "/Arkiv/Spara XM utan samplingar..."
-
-#~ msgid "/_Module"
-#~ msgstr "/_Modul"
-
-#~ msgid "/Module/Clear _All"
-#~ msgstr "/modul/Töm _alla"
-
-#~ msgid "/Module/Clear _Patterns Only"
-#~ msgstr "/Modul/Töm endast _mönster"
-
-#~ msgid "/Module/_Optimize Module"
-#~ msgstr "/Modul/_Optimera modul"
-
-#~ msgid "/Edit/_Jazz Edit Mode"
-#~ msgstr "/Redigera/_Jazzredigeringsläge"
-
-#~ msgid "/Edit/_Transposition..."
-#~ msgstr "/Redigera/_Transponering..."
-
-#~ msgid "/Edit/Pattern/C_ut"
-#~ msgstr "/Redigera/Mönster/Klipp _ut"
-
-#~ msgid "/Edit/Pattern/_Copy"
-#~ msgstr "/Redigera/Mönster/_Kopiera"
-
-#~ msgid "/Edit/Pattern/_Paste"
-#~ msgstr "/Redigera/Mönster/Klistra _in"
-
-#~ msgid "/Edit/_Track"
-#~ msgstr "/Redigera/_Spår"
-
-#~ msgid "/Edit/Track/C_ut"
-#~ msgstr "/Redigera/Spår/Klipp _ut"
-
-#~ msgid "/Edit/Track/_Paste"
-#~ msgstr "/Redigera/Spår/Klistra _in"
-
-#~ msgid "/Edit/Track/_Kill notes"
-#~ msgstr "/Redigera/Spår/_Döda noter"
-
-#~ msgid "/Edit/Track/_Insert"
-#~ msgstr "/Redigera/Spår/In_foga"
-
-#~ msgid "/Edit/Track/_Delete"
-#~ msgstr "/Redigera/Spår/_Ta bort"
-
-#~ msgid "/Edit/_Selection"
-#~ msgstr "/Redigera/_Markering"
-
-#~ msgid "/Edit/Selection/_Mark mode"
-#~ msgstr "/Redigera/Markering/_Markeringsläge"
-
-#~ msgid "/Edit/Selection/C_lear block marks"
-#~ msgstr "/Redigera/Markering/T_öm blockmarkörer"
-
-#~ msgid "/Edit/Selection/C_ut"
-#~ msgstr "/Redigera/Markering/Klipp _ut"
-
-#~ msgid "/Edit/Selection/_Copy"
-#~ msgstr "/Redigera/Markering/_Kopiera"
-
-#~ msgid "/Edit/Selection/_Paste"
-#~ msgstr "/Redigera/Markering/Klistra _in"
-
-#~ msgid "/Edit/Selection/_Interpolate effects"
-#~ msgstr "/Redigera/Markering/_Interpoleringseffekter"
-
-#~ msgid "/Edit/Track/Increment cmd value"
-#~ msgstr "/Redigera/Spår/Öka kommandovärde"
-
-#~ msgid "/Edit/Track/Decrement cmd value"
-#~ msgstr "/Redigera/Spår/Minska kommandovärde"
-
-#~ msgid "/_Pattern"
-#~ msgstr "/_Mönster"
-
-#~ msgid "/Pattern/_Find Unused Pattern"
-#~ msgstr "/Mönster/_Sök oanvänt mönster"
-
-#~ msgid "/Pattern/_Copy Current to Unused Pattern"
-#~ msgstr "/Mönster/_Kopiera från aktuellt till oanvänt mönster"
-
-#~ msgid "/Pattern/C_lear Unused Patterns"
-#~ msgstr "/Mönster/T_öm oanvänt mönster"
-
-#~ msgid "/Pattern/_Pack Patterns"
-#~ msgstr "/Mönster/_Packa mönster"
-
-#~ msgid "/_Instrument"
-#~ msgstr "/_Instrument"
-
-#~ msgid "/Instrument/_Load XI..."
-#~ msgstr "/Instrument/_Läs in XI..."
-
-#~ msgid "/Instrument/_Save XI..."
-#~ msgstr "/Instrument/_Spara XI..."
-
-#~ msgid "/Instrument/-"
-#~ msgstr "/Instrument/-"
-
-#~ msgid "/Instrument/_Clear Current"
-#~ msgstr "/Instrument/_Töm aktuell"
-
-#~ msgid "/Instrument/_Delete Unused Instruments"
-#~ msgstr "/Instrument/_Ta bort oanvända instrument"
-
-#~ msgid "/Settings/Display _Oscilloscopes"
-#~ msgstr "/Inställningar/Visa _oscilloskop"
-
-#~ msgid "/Settings/Tracker/Use _Backing Store"
-#~ msgstr "/Inställningar/Tracker/Använd st_ödlager"
-
-#~ msgid "/Settings/Tracker/_Previous font"
-#~ msgstr "/Inställningar/Tracker/_Föregående typsnitt"
-
-#~ msgid "/Settings/Tracker/_Next font"
-#~ msgstr "/Inställningar/Tracker/_Nästa typsnitt"
-
-#~ msgid "/Settings/-"
-#~ msgstr "/Inställningar/-"
-
-#~ msgid "/Settings/_Keyboard Configuration..."
-#~ msgstr "/Inställningar/_Tangentbordskonfiguration..."
-
-#~ msgid "/Settings/_Audio Configuration..."
-#~ msgstr "/Inställningar/_Ljudkonfiguration..."
-
-#~ msgid "/Settings/_GUI Configuration..."
-#~ msgstr "/Inställningar/Konfiguration av användargränssnitt..."
-
-#~ msgid "/Settings/_MIDI Configuration..."
-#~ msgstr "/Inställningar/MIDI-konfiguration..."
-
-#~ msgid "/Settings/_Save Settings now"
-#~ msgstr "/Inställningar/_Spara inställningar nu"
-
-#~ msgid "/Settings/Save Settings on _Exit"
-#~ msgstr "/Inställningar/Spara inställningar vid a_vslut"
-
-#~ msgid "/Help/-"
-#~ msgstr "/Hjälp/-"
-
-#~ msgid "/Help/Show _Tips..."
-#~ msgstr "/Hjälp/Visa _tips..."
-
-#~ msgid "/Help/_XM Effects..."
-#~ msgstr "/Hjälp/_XM-effekter..."
-
-#~ msgid "Nothing to save."
-#~ msgstr "Inget att spara."
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Attack [ms]"
+msgstr ""
+
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Set the attack time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+#, fuzzy
+msgid "Release [ms]"
+msgstr "Utgåvenoteringar"
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+msgid "Set the release time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+#, fuzzy
+msgid "Threshold"
+msgstr "Tremolo"
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+#, fuzzy
+msgid "Set the threshold"
+msgstr "Ställ in tremolokontroll"
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+msgid "Ratio"
+msgstr ""
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+#, fuzzy
+msgid "Set the compression ratio"
+msgstr "Område för åtgärden:"
+
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
+msgid "Set the output amplification"
+msgstr ""

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.55\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-22 13:47+0100\n"
+"POT-Creation-Date: 2003-12-15 14:12+0100\n"
 "PO-Revision-Date: 2003-11-22 13:47+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -152,31 +152,31 @@ msgstr "_FAQ..."
 msgid "GSL Engine..."
 msgstr "GSL-Engine..."
 
-#: beast-gtk/bstapp.c:544 beast-gtk/bstapp.c:551 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:545 beast-gtk/bstapp.c:552 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Projekt »%s« wird geöffnet"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:714
+#: beast-gtk/bstapp.c:715
 msgid "Rack editor"
 msgstr "Ablageeditor"
 
-#: beast-gtk/bstapp.c:728
+#: beast-gtk/bstapp.c:729
 msgid "Preferences"
 msgstr "Einstellungen"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:742
+#: beast-gtk/bstapp.c:743
 msgid "Device Monitor"
 msgstr "Geräte überwachen"
 
-#: beast-gtk/bstapp.c:757
+#: beast-gtk/bstapp.c:758
 msgid "Procedure Browser"
 msgstr "Prozedur-Browser"
 
-#: beast-gtk/bstapp.c:814
+#: beast-gtk/bstapp.c:815
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release-Hinweise"
@@ -198,6 +198,7 @@ msgid "Input"
 msgstr "Eingabe"
 
 #: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
 msgid "Output"
 msgstr "Ausgabe"
 
@@ -377,7 +378,7 @@ msgid "Add"
 msgstr "Hinzufügen"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
-#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:182
+#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
 #: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
 #: beast-gtk/bstwaveview.c:45
@@ -418,49 +419,49 @@ msgstr "Objekte"
 msgid "Language"
 msgstr "Sprache"
 
-#: beast-gtk/bstmain.c:162
+#: beast-gtk/bstmain.c:161
 msgid "RC File"
 msgstr "RC-Datei"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:169
+#: beast-gtk/bstmain.c:168
 msgid "Splash Image"
 msgstr "Begrüßungsbildschirm"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:181
+#: beast-gtk/bstmain.c:180
 msgid "BSE Core"
 msgstr "BSE-Kern"
 
-#: beast-gtk/bstmain.c:200
+#: beast-gtk/bstmain.c:199
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:219
+#: beast-gtk/bstmain.c:218
 msgid "LADSPA Plugins"
 msgstr "LADSPA-Plugins"
 
-#: beast-gtk/bstmain.c:247
+#: beast-gtk/bstmain.c:246
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:265
+#: beast-gtk/bstmain.c:264
 msgid "Dialogs"
 msgstr "Dialoge"
 
-#: beast-gtk/bstmain.c:272
+#: beast-gtk/bstmain.c:271
 msgid "Loading..."
 msgstr "Ladevorgang..."
 
-#: beast-gtk/bstmain.c:302 beast-gtk/bstmain.c:304
+#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
 #, c-format
 msgid "Loading \"%s\""
 msgstr "»%s« wird geladen"
 
-#: beast-gtk/bstmain.c:321
+#: beast-gtk/bstmain.c:320
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Projekt »%s« wird geladen"
@@ -478,9 +479,55 @@ msgstr "BEAST-Version %s"
 msgid "Contributions made by:"
 msgstr "Mitwirkende:"
 
-#: beast-gtk/bstparam-entry.c:61
+#: beast-gtk/bstparam-choice.c:144
+msgid "Drop Down Box (Option Menu)"
+msgstr ""
+
+#: beast-gtk/bstparam-choice.c:150
+msgid "Drop Down Button"
+msgstr ""
+
+#: beast-gtk/bstparam-note-sequence.c:61
+msgid "Note Sequence Grid Editor"
+msgstr ""
+
+#: beast-gtk/bstparam-note-spinner.c:66
+#, fuzzy
+msgid "Note Entry"
+msgstr "Noten_länge"
+
+#: beast-gtk/bstparam-proxy.c:289
+msgid "Object Drop Down Box"
+msgstr ""
+
+#: beast-gtk/bstparam-scale.c:60
+msgid "Knob"
+msgstr ""
+
+#: beast-gtk/bstparam-scale.c:66
+msgid "Knob (Logarithmic"
+msgstr ""
+
+#: beast-gtk/bstparam-scale.c:78
+#, fuzzy
+msgid "Dial"
+msgstr "Dialoge"
+
+#: beast-gtk/bstparam-scale.c:84
+msgid "Dial (Logarithmic"
+msgstr ""
+
+#: beast-gtk/bstparam-searchpath.c:52
 msgid "Remove Paths"
 msgstr "Pfade entfernen"
+
+#: beast-gtk/bstparam-searchpath.c:105
+msgid "Searchpath Text Entry"
+msgstr ""
+
+#: beast-gtk/bstparam-time.c:55
+msgid "Time Entry"
+msgstr ""
 
 # CHECK
 #: beast-gtk/bstpartdialog.c:59
@@ -705,16 +752,16 @@ msgstr "Note wiedergeben"
 msgid "Playback"
 msgstr "Wiedergabe"
 
-#: beast-gtk/bstprocedure.c:213
+#: beast-gtk/bstprocedure.c:212
 msgid "Description"
 msgstr "Beschreibung"
 
-#: beast-gtk/bstprocedure.c:297
+#: beast-gtk/bstprocedure.c:296
 #, c-format
 msgid "Executing `%s'"
 msgstr "»%s« wird ausgeführt"
 
-#: beast-gtk/bstprocedure.c:447
+#: beast-gtk/bstprocedure.c:446
 msgid "Procedure"
 msgstr "Prozedur"
 
@@ -743,38 +790,44 @@ msgstr ""
 "Machen Sie Sich außerdem darauf gefasst, mögliche Instabilitäten zu umgehen "
 "(sprich: Projekte regelmäßig speichern)"
 
-#: beast-gtk/bstrackeditor.c:109 beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
 msgid "_Edit"
 msgstr "_Bearbeiten"
 
-#: beast-gtk/bstrackitem.c:172
+#: beast-gtk/bstrackitem.c:206
 msgid "Edit Rack Item"
 msgstr "Ablageobjekt bearbeiten"
 
 # CHECK
-#: beast-gtk/bstrackitem.c:174
+#: beast-gtk/bstrackitem.c:208
 msgid "Controller"
 msgstr "Controller"
 
-#: beast-gtk/bstrackitem.c:175
+#: beast-gtk/bstrackitem.c:209
 msgid "Duplicate"
 msgstr "Duplizieren"
 
-#: beast-gtk/bstrackitem.c:177
+#: beast-gtk/bstrackitem.c:211
 msgid "Grow Horizontally"
 msgstr "Horizontal ausdehnen"
 
-#: beast-gtk/bstrackitem.c:178
+#: beast-gtk/bstrackitem.c:212
 msgid "Grow Vertically"
 msgstr "Vertikal ausdehnen"
 
-#: beast-gtk/bstrackitem.c:179
+#: beast-gtk/bstrackitem.c:213
 msgid "Shrink Horizontally"
 msgstr "Horizontal schrumpfen"
 
-#: beast-gtk/bstrackitem.c:180
+#: beast-gtk/bstrackitem.c:214
 msgid "Shrink Vertically"
 msgstr "Vertikal schrumpfen"
+
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:55
+#: beast-gtk/gxk/gxksimplelabel.c:133
+msgid "Label"
+msgstr "Beschriftung"
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
@@ -988,26 +1041,31 @@ msgstr "Signal markieren (Kopf)"
 msgid "Mark Signal (Tail)"
 msgstr "Signal markieren (Schweif)"
 
-#: beast-gtk/bstsupershell.c:172 beast-gtk/bstsupershell.c:285
+#: beast-gtk/bstsupershell.c:173 beast-gtk/bstsupershell.c:290
 msgid "Waves"
 msgstr "Waves"
 
-#: beast-gtk/bstsupershell.c:235
+#: beast-gtk/bstsupershell.c:236
 msgid "Tracks"
 msgstr "Spuren"
 
-#: beast-gtk/bstsupershell.c:240 beast-gtk/bstsupershell.c:272
-#: beast-gtk/bstsupershell.c:290
+#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
+#: beast-gtk/bstsupershell.c:295
 msgid "Parameters"
 msgstr "Parameter"
 
-#: beast-gtk/bstsupershell.c:245
+#: beast-gtk/bstsupershell.c:246
 msgid "Parts"
 msgstr "Parts"
 
-#: beast-gtk/bstsupershell.c:251 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:252 beast-gtk/bstsupershell.c:271
 msgid "Routing"
 msgstr "Routing"
+
+#: beast-gtk/bstsupershell.c:266
+#, fuzzy
+msgid "Rack"
+msgstr "_Zurück"
 
 #: beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert/edit/move parts (mouse button 1 and 2)"
@@ -1229,101 +1287,105 @@ msgid "Vertical piano zoom"
 msgstr "Vertikale Klavier-Ansichtsgröße"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:16
+msgid "Virtual Rack"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
 msgid "Wave_s"
 msgstr "_Waves"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
 msgid "Zoom"
 msgstr "Größe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
 msgid "_Audio Sources"
 msgstr "_Audio-Quellen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "_Distortion"
 msgstr "_Verzerren"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "_Enhance"
 msgstr "Auf_bessern"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
 msgid "_File"
 msgstr "_Datei"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
 msgid "_Filters"
 msgstr "_Filter"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
 msgid "_Help"
 msgstr "_Hilfe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
 msgid "_Input & Output"
 msgstr "_Ein- und Ausgabe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
 msgid "_Misc"
 msgstr "_Verschiedenes"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
 msgid "_Other Sources"
 msgstr "_Weitere Quellen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Project"
 msgstr "_Projekt"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
 msgid "_Quantization"
 msgstr "_Quantisierung"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_Routing"
 msgstr "_Routing"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
 msgid "_Song"
 msgstr "_Titel"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Spatial"
 msgstr "_Raumklang"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Synthesizers"
 msgstr "_Synthesizer"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Tools"
 msgstr "_Werkzeuge"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Utilities"
 msgstr "_Werkzeuge"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_View"
 msgstr "_Ansicht"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_Virtualization"
 msgstr "_Virtualisierung"
 
@@ -1372,19 +1434,55 @@ msgstr "_Index"
 msgid "_Reload"
 msgstr "A_ktualisieren"
 
-#: beast-gtk/gxk/gxksimplelabel.c:132
-msgid "Label"
-msgstr "Beschriftung"
+#: beast-gtk/gxk/gxkparam-entry.c:56
+msgid "Text Entry"
+msgstr ""
 
-#: beast-gtk/gxk/gxksimplelabel.c:132
+#: beast-gtk/gxk/gxkparam-label.c:49
+#, fuzzy
+msgid "Property Name"
+msgstr "Eigenschaften"
+
+#: beast-gtk/gxk/gxkparam-scale.c:82
+#, fuzzy
+msgid "Horizontal Scale"
+msgstr "Horizontal ausdehnen"
+
+#: beast-gtk/gxk/gxkparam-scale.c:88
+#, fuzzy
+msgid "Vertical Scale"
+msgstr "Vertikale Auswahl"
+
+#: beast-gtk/gxk/gxkparam-scale.c:94
+msgid "Horizontal Scale (Logarithmic)"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-scale.c:100
+#, fuzzy
+msgid "Vertical Scale (Logarithmic)"
+msgstr "Vertikale Auswahl"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:66
+msgid "Spin Button"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-spinner.c:72
+msgid "Spin Button (Logarithmic)"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-toggle.c:69
+msgid "Toggle Button"
+msgstr ""
+
+#: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "The text of the label"
 msgstr "Der Beschriftungstext"
 
-#: beast-gtk/gxk/gxksimplelabel.c:136
+#: beast-gtk/gxk/gxksimplelabel.c:137
 msgid "Use underline"
 msgstr "Unterstrich verwenden"
 
-#: beast-gtk/gxk/gxksimplelabel.c:137
+#: beast-gtk/gxk/gxksimplelabel.c:138
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
@@ -1392,23 +1490,23 @@ msgstr ""
 "Legt fest, ob ein Unterstrich im Text das folgende Zeichen zum "
 "Kürzelbuchstaben machen soll"
 
-#: beast-gtk/gxk/gxksimplelabel.c:141
+#: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
 msgstr "Auto-Kürzen"
 
-#: beast-gtk/gxk/gxksimplelabel.c:142
+#: beast-gtk/gxk/gxksimplelabel.c:143
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
 "Legt fest, ob überlanger Text abgeschnitten wird und stattdessen eine "
 "Ellipse (»...«) angezeigt werden soll"
 
-#: beast-gtk/gxk/gxksimplelabel.c:146
+#: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
 msgstr "Ausrichtung"
 
 # CHECK
-#: beast-gtk/gxk/gxksimplelabel.c:147
+#: beast-gtk/gxk/gxksimplelabel.c:148
 msgid ""
 "The alignment of the lines in the text of the label relative to each other. "
 "This does NOT affect the alignment of the label within its allocation."
@@ -1416,12 +1514,12 @@ msgstr ""
 "Die interne, relative Zeilenausrichtung des Beschriftungstexts. Dies "
 "betrifft NICHT die Ausrichtung der Beschriftung innerhalb ihrer Alloziierung"
 
-#: beast-gtk/gxk/gxksimplelabel.c:151
+#: beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
 msgstr "Muster"
 
 # CHECK
-#: beast-gtk/gxk/gxksimplelabel.c:152
+#: beast-gtk/gxk/gxksimplelabel.c:153
 msgid ""
 "A string with _ characters in positions correspond to characters in the text "
 "to underline"
@@ -1429,24 +1527,142 @@ msgstr ""
 "Eine Zeichenkette mit _-Zeichen an bestimmten Positionen entspricht den im "
 "Text zu unterstrichenden Zeichen"
 
-#: beast-gtk/gxk/gxksimplelabel.c:156
+#: beast-gtk/gxk/gxksimplelabel.c:157
 msgid "Mnemonic key"
 msgstr "Kürzelbuchstabe"
 
-#: beast-gtk/gxk/gxksimplelabel.c:157
+#: beast-gtk/gxk/gxksimplelabel.c:158
 msgid "The mnemonic accelerator key for this label"
 msgstr "Der Kürzelbuchstabe dieser Beschriftung"
 
-#: beast-gtk/gxk/gxksimplelabel.c:161
+#: beast-gtk/gxk/gxksimplelabel.c:162
 msgid "Mnemonic widget"
 msgstr "Kürzel-Widget"
 
 # CHECK
-#: beast-gtk/gxk/gxksimplelabel.c:162
+#: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 "Das Widget, das aktiviert werden soll, wenn die dem Kürzelbuchstaben der "
 "Beschriftung entsprechende Taste gedrückt wird"
+
+#: bse/bsebiquadfilter.c:130
+msgid "Filter"
+msgstr "Filter"
+
+#: bse/bsebiquadfilter.c:132
+msgid "Filter Type"
+msgstr "Filtertyp"
+
+#: bse/bsebiquadfilter.c:132
+msgid "The filter design type"
+msgstr "Der Filtertyp"
+
+#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
+msgid "Center Frequency"
+msgstr "Frequenz zentrieren"
+
+# CHECK
+#: bse/bsebiquadfilter.c:138
+msgid "Cutoff [Hz]"
+msgstr "Abfall [Hz]"
+
+#: bse/bsebiquadfilter.c:146
+msgid "Note"
+msgstr "Note"
+
+# CHECK
+#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
+msgid "Emphasis"
+msgstr "Gewichtung"
+
+# CHECK
+#: bse/bsebiquadfilter.c:153
+msgid "Gain [dB]"
+msgstr "Zuwachs [dB]"
+
+#: bse/bsebiquadfilter.c:158
+msgid "Norm Type"
+msgstr "Norm.-Typ"
+
+#: bse/bsebiquadfilter.c:159
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr ""
+"Der Filterzuwachs-Normalisierungstyp (nur von Hoch- und Tiefpass unterstützt)"
+
+#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
+#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+msgid "Modulation"
+msgstr "Modulation"
+
+#: bse/bsebiquadfilter.c:167
+msgid "Strength of linear frequency modulation"
+msgstr "Ausprägung der linearen Frequenzmodulation"
+
+#: bse/bsebiquadfilter.c:173
+msgid "Perform exponential frequency modulation instead of linear"
+msgstr "Exponentielle Frequenzmodulation statt linearer durchführen"
+
+#: bse/bsebiquadfilter.c:179
+msgid "Number of octaves to be affected by exponential frequency modulation"
+msgstr ""
+"Anzahl der von der exponentiellen Frequenzmodulation betroffenen Oktaven"
+
+# CHECK
+#: bse/bsebiquadfilter.c:185
+#, no-c-format
+msgid "Gain Modulation [%]"
+msgstr "Modulationszuwachs [%]"
+
+# CHECK
+#: bse/bsebiquadfilter.c:186
+msgid "Strength of gain modulation"
+msgstr "Ausprägung des Modulationszuwachses"
+
+#: bse/bsebiquadfilter.c:190
+msgid "Unfiltered Audio Signal"
+msgstr "Ungefiltertes Audio-Signal"
+
+#: bse/bsebiquadfilter.c:192
+msgid "Center Frequency Input"
+msgstr "Frequenzeingabe zentrieren"
+
+#: bse/bsebiquadfilter.c:194
+msgid "Frequency Modulation Input"
+msgstr "Frequenzmodulationseingabe"
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Modulation Input"
+msgstr "Modulationszuwachseingabe"
+
+#: bse/bsebiquadfilter.c:198
+msgid "Filtered Audio Signal"
+msgstr "Gefiltertes Audio-Signal"
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr "Autor"
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr "Person, die dieses Objekt erstellt oder verändert"
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr "Lizenz"
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr "Copyright-Lizenz, die auf dieses Objekt angewandt wird"
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr "Erstellungsdatum"
+
+#: bse/bsesuper.c:118
+msgid "Last modification time"
+msgstr "Datum der letzten Änderung"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -1472,3 +1688,41 @@ msgstr "BSE-Multi-Part-Wave-Datei"
 #: data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "BSE-Synthesedatei"
+
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Attack [ms]"
+msgstr ""
+
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Set the attack time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+#, fuzzy
+msgid "Release [ms]"
+msgstr "_Release-Hinweise..."
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+msgid "Set the release time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+msgid "Threshold"
+msgstr ""
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+msgid "Set the threshold"
+msgstr ""
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+#, fuzzy
+msgid "Ratio"
+msgstr "Ort"
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+msgid "Set the compression ratio"
+msgstr ""
+
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
+msgid "Set the output amplification"
+msgstr ""

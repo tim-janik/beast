@@ -1,3 +1,9 @@
+Mon Dec 15 15:05:15 2003  Tim Janik  <timj@gtk.org>
+
+	* POTFILES.in: added files from po-bse/.
+
+	* *.po: merged with .po file from po-bse/.
+
 2003-12-14  Francisco Javier F. Serrador  <serrador@cvs.gnome.org>
 
 	* es.po Updated Spanish translation.

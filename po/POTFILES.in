@@ -35,11 +35,14 @@ beast-gtk/bstwaveeditor.c
 beast-gtk/bstwaveview.c
 beast-gtk/dialogs/gadgets-beast.xml
 beast-gtk/dialogs/gadgets-standard.xml
+beast-gtk/gxk/gxkparam-entry.c
 beast-gtk/gxk/gxkparam-label.c
 beast-gtk/gxk/gxkparam-scale.c
 beast-gtk/gxk/gxkparam-spinner.c
 beast-gtk/gxk/gxkparam-toggle.c
-beast-gtk/gxk/gxkparam-entry.c
 beast-gtk/gxk/gxksimplelabel.c
+bse/bsebiquadfilter.c
+bse/bsesuper.c
 data/beast.desktop.in
 data/bse.keys.in
+plugins/artscompressor.idl

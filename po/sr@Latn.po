@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-11 19:08+0100\n"
+"POT-Creation-Date: 2003-12-15 14:12+0100\n"
 "PO-Revision-Date: 2003-12-11 19:13+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -195,6 +195,7 @@ msgid "Input"
 msgstr "Ulaz"
 
 #: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
 msgid "Output"
 msgstr "Izlaz"
 
@@ -777,9 +778,10 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih izdanja. "
-"Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
-"budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
+"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih "
+"izdanja. Znači, ne pouzdajte se da će izgled uređivača ostati isti u "
+"budućnosti, i budite spremni na nestabilnost u kodu (tj. redovno snimajte "
+"vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/gadgets-beast.xml.h:22
@@ -1399,6 +1401,10 @@ msgstr "_Indeks"
 msgid "_Reload"
 msgstr "Os_veži"
 
+#: beast-gtk/gxk/gxkparam-entry.c:56
+msgid "Text Entry"
+msgstr "Unos teksta"
+
 #: beast-gtk/gxk/gxkparam-label.c:49
 msgid "Property Name"
 msgstr "Ime osobine"
@@ -1431,10 +1437,6 @@ msgstr "Vrteće dugme (logaritamsko)"
 msgid "Toggle Button"
 msgstr "Prekidačko dugme"
 
-#: beast-gtk/gxk/gxkparam-entry.c:56
-msgid "Text Entry"
-msgstr "Unos teksta"
-
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "The text of the label"
 msgstr "Tekst oznake"
@@ -1448,8 +1450,8 @@ msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
 msgstr ""
-"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak predstavlja "
-"prečicu"
+"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak "
+"predstavlja prečicu"
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
@@ -1459,8 +1461,8 @@ msgstr "Samo-iseci"
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
-"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju tri "
-"tačke „...“"
+"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju "
+"tri tačke „...“"
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
@@ -1502,6 +1504,120 @@ msgstr "Element prečice"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Element koji se aktivira kada se pritisne prečica oznake"
 
+#: bse/bsebiquadfilter.c:130
+msgid "Filter"
+msgstr "Filter"
+
+#: bse/bsebiquadfilter.c:132
+msgid "Filter Type"
+msgstr "Vrsta filtera"
+
+#: bse/bsebiquadfilter.c:132
+msgid "The filter design type"
+msgstr "Vrsta izrade filtera"
+
+#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
+msgid "Center Frequency"
+msgstr "Središnja učestanost"
+
+#: bse/bsebiquadfilter.c:138
+msgid "Cutoff [Hz]"
+msgstr "Isecanje [Hz]"
+
+#: bse/bsebiquadfilter.c:146
+msgid "Note"
+msgstr "Napomena"
+
+#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
+msgid "Emphasis"
+msgstr "Naglasak"
+
+#: bse/bsebiquadfilter.c:153
+msgid "Gain [dB]"
+msgstr "Pojačanje [dB]"
+
+#: bse/bsebiquadfilter.c:158
+msgid "Norm Type"
+msgstr "Vrsta normalizacije"
+
+#: bse/bsebiquadfilter.c:159
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
+msgstr ""
+"Vrsta normalizacije pojačavanja filtera (podržano jedino u visokom i niskom "
+"prolazu)"
+
+#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
+#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+msgid "Modulation"
+msgstr "Modulacija"
+
+#: bse/bsebiquadfilter.c:167
+msgid "Strength of linear frequency modulation"
+msgstr "Snaga linearne modulacije frekvencije"
+
+#: bse/bsebiquadfilter.c:173
+msgid "Perform exponential frequency modulation instead of linear"
+msgstr "Izvedi eksponencijalnu modulaciju frekvencije umesto lienarne"
+
+#: bse/bsebiquadfilter.c:179
+msgid "Number of octaves to be affected by exponential frequency modulation"
+msgstr "Broj oktava na koje utiče eksponencijalna modulacija frekvencija"
+
+#: bse/bsebiquadfilter.c:185
+#, no-c-format
+msgid "Gain Modulation [%]"
+msgstr "Pojačanje modulacijom [%]"
+
+#: bse/bsebiquadfilter.c:186
+msgid "Strength of gain modulation"
+msgstr "Snaga pojačanja modulacijom"
+
+#: bse/bsebiquadfilter.c:190
+msgid "Unfiltered Audio Signal"
+msgstr "Nefiltrirani zvučni signal"
+
+#: bse/bsebiquadfilter.c:192
+msgid "Center Frequency Input"
+msgstr "Središnji frekventni ulaz"
+
+#: bse/bsebiquadfilter.c:194
+msgid "Frequency Modulation Input"
+msgstr "Ulaz modulacije frekvencije"
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Modulation Input"
+msgstr "Ulaz za pojačanje modulacijom"
+
+#: bse/bsebiquadfilter.c:198
+msgid "Filtered Audio Signal"
+msgstr "Filtrirani zvučni signal"
+
+#: bse/bsesuper.c:101
+msgid "Author"
+msgstr ""
+
+#: bse/bsesuper.c:101
+msgid "Person changing or creating this object"
+msgstr ""
+
+#: bse/bsesuper.c:106
+msgid "License"
+msgstr ""
+
+#: bse/bsesuper.c:106
+msgid "Copyright license applying to this object"
+msgstr ""
+
+#: bse/bsesuper.c:114
+msgid "Creation Time"
+msgstr ""
+
+#: bse/bsesuper.c:118
+#, fuzzy
+msgid "Last modification time"
+msgstr "Poravnavanje"
+
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "ZVER"
@@ -1526,248 +1642,40 @@ msgstr "BSE višedelna Wave datoteka"
 msgid "BSE Synthesis File"
 msgstr "BSE datoteka za sintezu"
 
-#~ msgid "Pos"
-#~ msgstr "Položaj"
-
-#~ msgid "Cyria Arweiler"
-#~ msgstr "Sirija Arvajler (Cyria Arweiler)"
-
-#~ msgid "Tuomas Kuosmanen"
-#~ msgstr "Tomas Kosmanen (Tuomas Kuosmanen)"
-
-#~ msgid "Jakub Steiner"
-#~ msgstr "Jakub Štajner (Jakub Steiner)"
-
-# nesigurno
-#~ msgid "Ville Pätsi"
-#~ msgstr "Vilje Petsi (Ville Pätsi)"
-
-#~ msgid "Christian Neumair"
-#~ msgstr "Kristijan Nojmar (Christian Neumair)"
-
-#~ msgid "Sam Hocevar"
-#~ msgstr "Sam Hočevar (Sam Hocevar)"
-
-#~ msgid "Alper Ersoy"
-#~ msgstr "Alper Ersoj (Alper Ersoy)"
-
-#~ msgid "Ben Collver"
-#~ msgstr "Ben Kolver (Ben Collver)"
-
-#~ msgid "Tim Janik"
-#~ msgstr "Tim Janik (Tim Janik)"
-
-#~ msgid "Stefan Westerfeld"
-#~ msgstr "Štefan Vesterfeld (Stefan Westerfeld)"
-
-#~ msgid "David A. Bartold"
-#~ msgstr "Dejvid A. Bartold (David A. Bartold)"
-
-#~ msgid "Metin Amiroff"
-#~ msgstr "Metin Amirof (Metin Amiroff)"
-
-#~ msgid "Alexandre Prokoudine"
-#~ msgstr "Aleksandar Prokoudin"
-
-#~ msgid "Danilo Segan"
-#~ msgstr "Danilo Šegan"
-
-#~ msgid "Christian Rose"
-#~ msgstr "Kristijan Rouz (Christian Rose)"
-
-#~ msgid "Miloslav Trmac"
-#~ msgstr "Miloslav Trmac"
-
-#~ msgid "Duarte Loreto"
-#~ msgstr "Duarte Loreto"
-
-#~ msgid "Vincent van Adrighem"
-#~ msgstr "Vinsent van Adrigem (Vincent van Adrighem)"
-
-#~ msgid "Xavier Conde Rueda"
-#~ msgstr "Ksavijer Konde Rueda (Xavier Conde Rueda)"
-
-#~ msgid "Kostas Papadimas"
-#~ msgstr "Kostas Papadimas"
-
-#~ msgid "_Delete"
-#~ msgstr "_Obriši"
-
-#~ msgid "Align"
-#~ msgstr "Poravnaj"
-
-#~ msgid "VSelect"
-#~ msgstr "Uspravan izbor"
-
-# bug: should this be translated?
-#~ msgid "$action-name"
-#~ msgstr "$action-name"
-
-#~ msgid "/File/_New"
-#~ msgstr "/Datoteka/_Nova"
-
-#~ msgid "/File/Preferences..."
-#~ msgstr "/Datoteka/_Postavke"
-
-#~ msgid "/_Edit"
-#~ msgstr "/_Uređivanje"
-
-#~ msgid "/Edit/Preferences..."
-#~ msgstr "/Uređivanje/_Postavke"
-
-#~ msgid "/View/Procedure _Browser"
-#~ msgstr "/Pregled/Raz_gledač procedura"
-
-#~ msgid "/View/Rack Editor"
-#~ msgstr "/Pregled/Uređivač polica"
-
-#~ msgid "/View/Device _Monitor"
-#~ msgstr "/Pregled/Praćenje _uređaja"
-
-#~ msgid "/View/Preferences"
-#~ msgstr "/Pregled/Postavke"
-
-#~ msgid "/Project/_Play"
-#~ msgstr "/Projekat/_Pusti"
-
-#~ msgid "/Project/_Stop"
-#~ msgstr "/Projekat/_Zaustavi"
-
-#~ msgid "/Song/Add _Part"
-#~ msgstr "/Pesma/Dodaj d_eo"
-
-#~ msgid "/Song/Delete _Part"
-#~ msgstr "/Pesma/_Obriši deo"
-
-#~ msgid "/Song/Add _Track"
-#~ msgstr "/Pesma/_Dodaj pesmu"
-
-#~ msgid "/Song/_Delete Track"
-#~ msgstr "/Pesma/_Ukloni pesmu"
-
-#~ msgid "/Synth/_Test"
-#~ msgstr "/Sintetizator/_Proba"
-
-#~ msgid "/Waves/_Load Wave..."
-#~ msgstr "/Talasi/_Učitaj talas..."
-
-#~ msgid "/Waves/Delete Wave"
-#~ msgstr "/Talasi/Obriši talas"
-
-#~ msgid "/Waves/_Edit Wave..."
-#~ msgstr "/Talasi/_Uredi talas..."
-
-#~ msgid "/Synthesizers/Load _Effect"
-#~ msgstr "/Sintetizatori/Učitaj _efekat"
-
-#~ msgid "/Synthesizers/Load _Instrument"
-#~ msgstr "/Sintetizatori/Učitaj _instrument"
-
-#~ msgid "/Synthesizers/Save As Effect"
-#~ msgstr "/Sintetizatori/Sačuvaj kao efekat"
-
-#~ msgid "/Synthesizers/Save As Instrument"
-#~ msgstr "/Sintetizatori/Sačuvaj kao instrument"
-
-#~ msgid "/Tools/_Song"
-#~ msgstr "/Alati/_Pesma"
-
-#~ msgid "/Tools/_Synth"
-#~ msgstr "/Alati/_Sintetizator"
-
-#~ msgid "/Tools/Wave_s"
-#~ msgstr "/Alati/_Talasi"
-
-#~ msgid "/Help/Development/GSL Engine..."
-#~ msgstr "/Pomoć/Razvoj/GSL struktura..."
-
-#~ msgid "/Tools/Insert"
-#~ msgstr "/Alati/Umetni"
-
-#~ msgid "/Tools/Delete"
-#~ msgstr "/Alati/Obriši"
-
-#~ msgid "/Tools/Select"
-#~ msgstr "/Alati/Izaberi"
-
-#~ msgid "/Tools/Vertical Select"
-#~ msgstr "/Alati/Uspravan izbor"
-
-#~ msgid "/Edit/Cut"
-#~ msgstr "/Uređivanje/Iseci"
-
-#~ msgid "/Edit/Copy"
-#~ msgstr "/Uređivanje/Umnoži"
-
-#~ msgid "/Edit/Paste"
-#~ msgstr "/Uređivanje/Ubaci"
-
-#~ msgid "/Edit/Undo"
-#~ msgstr "/Uređivanje/Opozovi"
-
-#~ msgid "/Edit/Redo"
-#~ msgstr "/Uređivanje/Ponovi"
-
-#~ msgid "/Scripts"
-#~ msgstr "/Skripte"
-
-#~ msgid "/Test"
-#~ msgstr "/Proba"
-
-#~ msgid "Deleting file `%s'"
-#~ msgstr "Briše datoteku „%s“"
-
-#~ msgid "Number of Columns"
-#~ msgstr "Broj kolona"
-
-#~ msgid "Array of column types"
-#~ msgstr "Niz vrsta kolona"
-
-#~ msgid "Number of Rows"
-#~ msgstr "Broj redova"
-
-#~ msgid "Filter Choice"
-#~ msgstr "Izbor filtera"
-
-#~ msgid "Filter Algorithm"
-#~ msgstr "Algoritam filtriranja"
-
-#~ msgid "The filter design type"
-#~ msgstr "Vrsta izrade filtera"
-
-#~ msgid "Filter Type"
-#~ msgstr "Vrsta filtera"
-
-#~ msgid "Filter Specification"
-#~ msgstr "Navod filtera"
-
-#~ msgid "Order"
-#~ msgstr "Redosled"
-
-#~ msgid "Order of Filter"
-#~ msgstr "Redosled filtera"
-
-#~ msgid "Epsilon"
-#~ msgstr "Epsilon"
-
-# šta god :-)
-#~ msgid "Passband falloff at cutoff frequency"
-#~ msgstr "Pad prolazne trake na učestanosti isecanja"
-
-#~ msgid "Cutoff Frequency (All Filters)"
-#~ msgstr "Učestanost isecanja (svi filteri)"
-
-#~ msgid "Cutoff [Hz]"
-#~ msgstr "Isecanje [Hz]"
-
-#~ msgid "Note"
-#~ msgstr "Napomena"
-
-#~ msgid "Cutoff Frequency 2 (Band Pass/Stop)"
-#~ msgstr "Učestanost isecanja 2 (prolaz/zaustavljanje trake)"
-
-#~ msgid "Unfiltered Input"
-#~ msgstr "Nefiltrirani ulaz"
-
-#~ msgid "Filtered Output"
-#~ msgstr "Filtrirani ulaz"
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Attack [ms]"
+msgstr ""
+
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:52
+msgid "Set the attack time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+#, fuzzy
+msgid "Release [ms]"
+msgstr "_Objava izdanja..."
+
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:53
+msgid "Set the release time in milli seconds"
+msgstr ""
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+msgid "Threshold"
+msgstr ""
+
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:54
+msgid "Set the threshold"
+msgstr ""
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+#, fuzzy
+msgid "Ratio"
+msgstr "Putanja"
+
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:55
+msgid "Set the compression ratio"
+msgstr ""
+
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:56
+msgid "Set the output amplification"
+msgstr ""
