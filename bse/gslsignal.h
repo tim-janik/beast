@@ -72,6 +72,72 @@ extern "C" {
  */
 static inline float	gsl_signal_exp2 (float x)  G_GNUC_CONST;
 
+/**
+ * gsl_approx_atan1
+ * Fast atan(x)/(PI/2) approximation, with maximum error < 0.01 and
+ * gsl_approx_atan1(0)==0, according to the formula:
+ * n1 = -0.41156875521951602506487246309908;
+ * n2 = -1.0091272542790025586079663559158;
+ * d1 = 0.81901156857081841441890603235599;
+ * d2 = 1.0091272542790025586079663559158;
+ * positive_atan1(x) = 1 + (n1 * x + n2) / ((1 + d1 * x) * x + d2);
+ */
+static inline double	gsl_approx_atan1 	  (register double x)  G_GNUC_CONST;
+
+/**
+ * gsl_approx_atan1_prescale
+ * @boost_amount: boost amount between [0..1]
+ * @RETURNS:      prescale factor for gsl_approx_atan1()
+ * Calculate the prescale factor for gsl_approx_atan1(x*prescale) from
+ * a linear boost factor, where 0.5 amounts to prescale=1.0, 1.0 results
+ * in maximum boost and 0.0 results in maximum attenuation.
+ */
+double			gsl_approx_atan1_prescale (double	   boost_amount);
+
+/**
+ * gsl_approx_qcircle1
+ * @x:       x within [0..1]
+ * @RETURNS: y for circle approximation within [0..1]
+ * Fast approximation of the upper right quadrant of a circle.
+ * Errors at x=0 and x=1 are zero, for the rest of the curve, the error
+ * wasn't minimized, but distributed to best fit the curverture of a
+ * quarter circle. The maximum error is below 0.092.
+ */
+static inline double	gsl_approx_qcircle1	  (register double x)  G_GNUC_CONST;
+
+/**
+ * gsl_approx_qcircle2
+ * @x:       x within [0..1]
+ * @RETURNS: y for circle approximation within [0..1]
+ * Fast approximation of the upper left quadrant of a circle.
+ * Errors at x=0 and x=1 are zero, for the rest of the curve, the error
+ * wasn't minimized, but distributed to best fit the curverture of a
+ * quarter circle. The maximum error is below 0.092.
+ */
+static inline double	gsl_approx_qcircle2	  (register double x)  G_GNUC_CONST;
+
+/**
+ * gsl_approx_qcircle3
+ * @x:       x within [0..1]
+ * @RETURNS: y for circle approximation within [0..1]
+ * Fast approximation of the lower left quadrant of a circle.
+ * Errors at x=0 and x=1 are zero, for the rest of the curve, the error
+ * wasn't minimized, but distributed to best fit the curverture of a
+ * quarter circle. The maximum error is below 0.092.
+ */
+static inline double	gsl_approx_qcircle3	  (register double x)  G_GNUC_CONST;
+
+/**
+ * gsl_approx_qcircle4
+ * @x:       x within [0..1]
+ * @RETURNS: y for circle approximation within [0..1]
+ * Fast approximation of the lower right quadrant of a circle.
+ * Errors at x=0 and x=1 are zero, for the rest of the curve, the error
+ * wasn't minimized, but distributed to best fit the curverture of a
+ * quarter circle. The maximum error is below 0.092.
+ */
+static inline double	gsl_approx_qcircle4	  (register double x)  G_GNUC_CONST;
+
 
 /* --- windows --- */
 double	gsl_window_bartlett	(double x);	/* narrowest */
@@ -88,6 +154,71 @@ extern const gdouble *gsl_cent_table;
 
 
 /* --- implementation details --- */
+static inline double  G_GNUC_CONST
+gsl_approx_atan1 (register double x)
+{
+  if (x < 0)	/* make use of -atan(-x)==atan(x) */
+    {
+      register double numerator, denominator = -1.0;
+
+      denominator += x * 0.81901156857081841441890603235599; /* d1 */
+      numerator = x * 0.41156875521951602506487246309908; /* -n1 */
+      denominator *= x;
+      numerator += -1.0091272542790025586079663559158; /* n2 */
+      denominator += 1.0091272542790025586079663559158; /* d2 */
+
+      return -1.0 - numerator / denominator;
+    }
+  else
+    {
+      register double numerator, denominator = 1.0;
+
+      denominator += x * 0.81901156857081841441890603235599; /* d1 */
+      numerator = x * -0.41156875521951602506487246309908; /* n1 */
+      denominator *= x;
+      numerator += -1.0091272542790025586079663559158; /* n2 */
+      denominator += 1.0091272542790025586079663559158; /* d2 */
+
+      return 1.0 + numerator / denominator;
+    }
+}
+
+static inline double	G_GNUC_CONST
+gsl_approx_qcircle1 (register double x)
+{
+  double numerator = 1.20460124790369468987715633298929 * x - 1.20460124790369468987715633298929;
+  double denominator = x - 1.20460124790369468987715633298929;
+  /* R1(x)=(1.2046012479036946898771563 * x - 1.2046012479036946898771563) / (x - 1.2046012479036946898771563) */
+  return numerator / denominator;
+}
+
+static inline double	G_GNUC_CONST
+gsl_approx_qcircle2 (register double x)
+{
+  double numerator = 1.20460124790369468987715633298929*x;
+  double denominator = x + 0.20460124790369468987715633298929;
+  /* R2(x)=1.2046012479036946898771563*x/(x + 0.2046012479036946898771563) */
+  return numerator / denominator;
+}
+
+static inline double	G_GNUC_CONST
+gsl_approx_qcircle3 (register double x)
+{
+  double numerator = 0.20460124790369468987715633298929 - 0.20460124790369468987715633298929 * x;
+  double denominator = x + 0.20460124790369468987715633298929;
+  /* R3(x)=(0.2046012479036946898771563 - 0.2046012479036946898771563 * x) / (x + 0.2046012479036946898771563) */
+  return numerator / denominator;
+}
+
+static inline double	G_GNUC_CONST
+gsl_approx_qcircle4 (register double x)
+{
+  double numerator = -0.20460124790369468987715633298929 * x;
+  double denominator = x - 1.20460124790369468987715633298929;
+  /* R4(x)=-0.2046012479036946898771563 * x / (x - 1.2046012479036946898771563) */
+  return numerator / denominator;
+}
+
 static inline float  G_GNUC_CONST
 _gsl_signal_exp2_fraction (float x)	/* 2^x, -0.5 <= x <= 0.5 */
 {

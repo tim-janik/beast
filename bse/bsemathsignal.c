@@ -89,10 +89,32 @@ _gsl_init_signal (void)
   static gdouble cent_table_space[201];
   gint i;
 
-  /* allow negative indexing within [-100..+100] */
+  /* cent table initialization,
+   * allow negative indexing within [-100..+100]
+   */
   gsl_cent_table = cent_table_space + 100;
   for (i = -100; i <= 100; i++)
     cent_table_space[100 + i] = pow (GSL_2_RAISED_TO_1_OVER_1200_d, i);
+}
+
+
+/* --- gsl_approx_atan1() --- */
+double
+gsl_approx_atan1_prescale (double boost_amount)
+{
+  double max_boost_factor = 100;	/* atan1(x*100) gets pretty close to 1 for x=1 */
+  double recip_tan_1_div_0_75 = 0.24202942695518667705824990442766; /* 1/tan(1/0.75) */
+  double scale;
+
+  g_return_val_if_fail (boost_amount >= 0 && boost_amount <= 1.0, 1.0);
+
+  /* scale boost_amount from [0..1] to -1..1 */
+  boost_amount = boost_amount * 2 - 1.0;
+
+  /* prescale factor for atan1(x*prescale), ranges from 1/max_boost_factor..max_boost_factor */
+  scale = pow (max_boost_factor, tan (boost_amount / 0.75) * recip_tan_1_div_0_75);
+
+  return scale;
 }
 
 

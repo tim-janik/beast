@@ -1,4 +1,5 @@
 ## Generated data (by make Makefile.icons)
+icon_list += ampctrl.c
 icon_list += ball.c
 icon_list += const.c
 icon_list += inoutport.c
@@ -15,6 +16,8 @@ icon_list += snet.c
 icon_list += snooper.c
 icon_list += song.c
 icon_list += speaker.c
+icon_list += waveosc.c
+icon_list += ampctrl.xcf
 icon_list += ball.xcf
 icon_list += const.xcf
 icon_list += inoutport.xcf
@@ -30,4 +33,5 @@ icon_list += snet.xcf
 icon_list += snooper.xcf
 icon_list += song.xcf
 icon_list += speaker.xcf
+icon_list += waveosc.xcf
 ## Generated data ends here

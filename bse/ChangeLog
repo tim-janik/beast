@@ -1,3 +1,24 @@
+Sun May  5 20:31:57 2002  Tim Janik  <timj@gtk.org>
+
+	* bsewaveosc.[hcp]*: moved this here from ../plugins/ because
+	it introduces procedures and otehr core components rely on it.
+
+Sun May  5 08:07:39 2002  Tim Janik  <timj@gtk.org>
+
+	* bsemidievent.[hc]: provide initialization values other than 0
+	for pitch_bend, voume and balance on all MIDI channels.
+	allocate the channel controls with the decoder.
+
+Sun May  5 06:18:17 2002  Tim Janik  <timj@gtk.org>
+
+	* bseamplifier.[hc], bseamplifier-aux.c: new amplifier module, BSE's
+	VCA equivalent.
+
+	* gslincluder.c: add facility to reject certain cases with GSL_INCLUDER_REJECT().
+
+	* gslsignal.[hc]: add approximation functions for atan1(), and all
+	four quadrants of a circle.
+
 Wed Apr 24 08:13:26 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesource.c (bse_source_reset): before invoking the ->reset() method,

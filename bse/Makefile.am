@@ -40,6 +40,7 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 # BSE header files for public installation (non-generated)
 bse_public_h_sources = @STRIP_BEGIN@ \
 	bse.h \
+	bseamplifier.h \
 	bsebindata.h \
 	bsecategories.h \
 	bseconfig.h \
@@ -103,6 +104,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsetype.h \
 	bseutils.h \
 	bsewave.h \
+	bsewaveosc.h \
 	bsewaverepo.h \
 	bswcommon.h \
 	bswprivate.h \
@@ -114,6 +116,7 @@ bse_private_h_sources = @STRIP_BEGIN@ \
 @STRIP_END@
 # BSE C sources to build the library from
 bse_c_sources = @STRIP_BEGIN@ \
+	bseamplifier.c \
 	bsebindata.c \
 	bsecategories.c \
 	bseconstant.c \
@@ -174,6 +177,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsetype.c \
 	bseutils.c \
 	bsewave.c \
+	bsewaveosc.c \
 	bsewaverepo.c \
 	bswcommon.c \
 	glib-extra.c \
@@ -196,6 +200,7 @@ bse_proc_sources = @STRIP_BEGIN@ \
 	bsesnet.proc \
 	bseitem.proc \
 	bsewave.proc \
+	bsewaveosc.proc \
 	bsewaverepo.proc \
 @STRIP_END@
 bse_proc_gen_sources = @STRIP_BEGIN@ \
@@ -213,6 +218,7 @@ bse_proc_gen_sources = @STRIP_BEGIN@ \
 	bsesnet.gen-proc.c \
 	bseitem.gen-proc.c \
 	bsewave.gen-proc.c \
+	bsewaveosc.gen-proc.c \
 	bsewaverepo.gen-proc.c \
 @STRIP_END@
 # c sources for builtin plugins
@@ -225,6 +231,7 @@ bse_extra_sources = @STRIP_BEGIN@ \
 	mkbuiltinlist.pl \
 	mktypes.pl \
 	mkcalls.pl \
+	bseamplifier-aux.c \
 	bseconfig.h.in \
 	bsepcmmodule.c \
 	bsemidimodule.c \

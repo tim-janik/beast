@@ -105,9 +105,9 @@ struct _BseMidiChannel
   guint		 program;		/* 0..127 */
   guint 	 pressure;		/* intensity: 0..127 */
   guint 	 pitch_bend;		/* 0..0x2000..0x4000 */
-  guint		*control_values;	/* [128] */
   guint		 n_notes;
   BseMidiNote	*notes;
+  guint		 control_values[128];	/* 0..127 for each */
   /*< private >*/
   guint		 n_alloced_notes;
   guint		 use_count;

@@ -108,8 +108,8 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 #define	BSE_MIN_BPM			(1)
 #define	BSE_MAX_BPM			(1024)
 #define	BSE_MAX_N_TRACKS		(256)
-#define	BSE_MIN_BALANCE			(- BSE_MAX_BALANCE)
-#define	BSE_MAX_BALANCE			(50.0)
+#define	BSE_MIN_BALANCE_f		(-BSE_MAX_BALANCE_f)
+#define	BSE_MAX_BALANCE_f		(100.0)
 #define	BSE_MIN_TRANSPOSE		(-12)
 #define	BSE_MAX_TRANSPOSE		(12)	/* 1 octave */
 #define	BSE_MIN_FINE_TUNE		(- BSE_MAX_FINE_TUNE)
@@ -172,7 +172,7 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 /* --- BseGlobals - configurable defaults --- */
 #define	BSE_STP_VOLUME_dB		(bse_globals->step_volume_dB)
 #define	BSE_STP_BPM			(bse_globals->step_bpm)
-#define	BSE_STP_BALANCE			(bse_globals->step_balance)
+#define	BSE_STP_BALANCE_f		(bse_globals->step_balance)
 #define	BSE_STP_TRANSPOSE		(bse_globals->step_transpose)
 #define	BSE_STP_FINE_TUNE		(bse_globals->step_fine_tune)
 #define	BSE_STP_ENV_TIME		(bse_globals->step_env_time)

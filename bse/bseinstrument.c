@@ -181,8 +181,8 @@ bse_instrument_class_init (BseInstrumentClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_BALANCE,
 			      bse_param_spec_int ("balance", "Balance", NULL,
-						  BSE_MIN_BALANCE, BSE_MAX_BALANCE,
-						  BSE_DFL_INSTRUMENT_BALANCE, BSE_STP_BALANCE,
+						  BSE_MIN_BALANCE_f, BSE_MAX_BALANCE_f,
+						  BSE_DFL_INSTRUMENT_BALANCE, BSE_STP_BALANCE_f,
 						  BSE_PARAM_DEFAULT |
 						  BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Adjustments",

@@ -38,8 +38,15 @@ BseMidiDecoder*
 bse_midi_decoder_new (void)
 {
   BseMidiDecoder *decoder = g_new0 (BseMidiDecoder, 1);
+  guint i;
 
   decoder->n_channels = BSE_MIDI_MAX_CHANNELS;
+  for (i = 0; i < decoder->n_channels; i++)
+    {
+      decoder->channels[i].pitch_bend = 0x2000;
+      decoder->channels[i].control_values[7 /* Volume */] = 102; /* 80% */
+      decoder->channels[i].control_values[8 /* Balance */] = 64; /* 50% */
+    }
 
   return decoder;
 }
@@ -53,10 +60,7 @@ bse_midi_decoder_destroy (BseMidiDecoder *decoder)
   g_return_if_fail (decoder != NULL);
 
   for (i = 0; i < decoder->n_channels; i++)
-    {
-      g_free (decoder->channels[i].control_values);
-      g_free (decoder->channels[i].notes);
-    }
+    g_free (decoder->channels[i].notes);
   for (event = decoder->events; event; event = event->next)
     bse_midi_free_event (event);
   g_free (decoder->bytes);
@@ -486,7 +490,6 @@ _bse_midi_decoder_use_channel (BseMidiDecoder *decoder,
     {
       channel->n_alloced_notes = 16;
       channel->notes = g_new0 (BseMidiNote, channel->n_alloced_notes);
-      channel->control_values = g_new0 (guint, 128);
     }
   channel->use_count++;
   _bse_midi_decoder_unlock_channel (decoder, channel);
@@ -509,8 +512,6 @@ _bse_midi_decoder_unuse_channel (BseMidiDecoder *decoder,
       channel->use_count--;
       if (!channel->use_count)
 	{
-	  g_free (channel->control_values);
-	  channel->control_values = NULL;
 	  g_free (channel->notes);
 	  channel->notes = NULL;
 	  channel->n_alloced_notes = 0;
