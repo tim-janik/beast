@@ -29,6 +29,11 @@ param_update_flags (GxkParam *param)
   gboolean was_sensitive = param->sensitive;
   GSList *slist;
   param->editable = !param->constant;
+  if (!param->constant && param->ueditable &&
+      param->binding && param->binding->check_writable)
+    param->treadonly = !param->binding->check_writable (param);
+  else
+    param->treadonly = FALSE;
   param->sensitive = param->constant || (!param->treadonly && param->ueditable);
   if (was_sensitive != param->sensitive)
     for (slist = param->objects; slist; slist = slist->next)
@@ -52,14 +57,14 @@ param_new (GParamSpec      *pspec,
                     !(pspec->flags & G_PARAM_WRITABLE) ||
                     g_param_spec_check_option (pspec, "ro");
   param->ueditable = TRUE;
+  param_update_flags (param);
   param->binding = binding;
   if (param->binding->setup)
     {
-      param_update_flags (param);
       param->binding->setup (param, user_data);
       /* setup may change param->constant */
+      param_update_flags (param);
     }
-  param_update_flags (param);
   return param;
 }
 
@@ -520,8 +525,10 @@ param_lookup_editor (const gchar *editor_name,
             }
         }
     }
+#if 0
   if (!best)                    /* if editor_name!=NULL, best might be NULL */
     best = param_lookup_editor (NULL, pspec);
+#endif
   return best;
 }
 
@@ -580,6 +587,8 @@ gxk_param_create_editor (GxkParam               *param,
                          const gchar            *editor_name)
 {
   GxkParamEditor *editor = param_lookup_editor (editor_name, param->pspec);
+  if (!editor)
+    return NULL;
   gchar *tooltip = gxk_param_dup_tooltip (param);
   GtkWidget *widget, *toplevel;
   gboolean updating = param->updating;
@@ -688,6 +697,7 @@ _gxk_init_params (void)
   gxk_param_register_editor (&param_spinner1, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_spinner2, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_toggle, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_toggle_empty, GXK_I18N_DOMAIN);
 }
 
 /* --- param implementation utils --- */

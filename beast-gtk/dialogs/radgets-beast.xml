@@ -272,10 +272,6 @@
 	  <frame shadow-type="etched-in" size:window-vgroup="bus-inputs" >
 	    <label _label="Inputs" />
 	  </frame>
-	  <!-- Leds & Mute+Solo -->
-	  <frame shadow-type="etched-in" size:window-vgroup="bus-levels" >
-	    <label _label="Level" />
-	  </frame>
 	  <!-- Reset -->
 	  <arrow arrow-type="down" size:window-vgroup="bus-reset" />
 	  <!-- Effects -->
@@ -284,6 +280,10 @@
 	  </frame>
 	  <!-- Bypass -->
 	  <arrow arrow-type="down" size:window-vgroup="bus-bypass" />
+	  <!-- Volume toggles -->
+	  <frame shadow-type="etched-in" size:window-vgroup="bus-toggles" >
+	    <label _label="Switches" />
+	  </frame>
 	  <!-- Volume -->
 	  <frame shadow-type="etched-in" expand="1" >
 	    <label label="Volume" />
@@ -308,17 +308,8 @@
 	  <alignment id="name-box" size:window-vgroup="bus-name"/>
 	  <!-- Inputs -->
 	  <alignment id="inputs-box" size:window-vgroup="bus-inputs" width="10"/>
-	  <!-- Leds & Mute+Solo -->
-	  <hbox size:window-vgroup="bus-levels" >
-	    <label label="(O)"/>
-	    <hbox expand="1" homogeneous="1" >
-	      <toggle-button label="M" size:hgroup="bus-editor-toggles" can-focus="0" />
-	      <toggle-button label="S" size:hgroup="bus-editor-toggles" can-focus="0" />
-	    </hbox>
-	    <label label="(#)"/>
-	  </hbox>
 	  <!-- Reset -->
-	  <button label="Reset" size:window-vgroup="bus-reset" />
+	  <button label="Reset" size:window-vgroup="bus-reset" sensitive="0"/>
 	  <!-- Effects -->
           <frame shadow-type="none" size:window-vgroup="bus-effects" >
 	    <vbox>
@@ -328,7 +319,13 @@
 	    </vbox>
 	  </frame>
 	  <!-- Bypass -->
-	  <button label="Bypass" size:window-vgroup="bus-bypass"/>
+	  <button label="Bypass" size:window-vgroup="bus-bypass" sensitive="0"/>
+	  <!-- Volume toggles -->
+	  <hbox xscale="0" size:window-vgroup="bus-toggles">
+	    <alignment xscale="0" expand="1">
+	      <hbox id="toggle-box" spacing="2" homogeneous="1" />
+	    </alignment>
+	  </hbox>
 	  <!-- Volume -->
 	  <hbox expand="1" >
 	    <db-meter id="db-meter" n-channels="2" />
@@ -336,14 +333,14 @@
 	  <!-- VolumeSpinners -->
 	  <hbox id="spinner-box" homogeneous="1" width="1" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
-	  <button id="bus-outputs" can-focus="0" size:window-vgroup="bus-outputs" >
+	  <button id="bus-outputs" can-focus="0" size:window-vgroup="bus-outputs" sensitive="0">
 	    <tooltip text="Signal destinations going out of this bus" />
 	    <hbox>
 	      <frame shadow-type="shadow-in" border-width="3" expand="1" >
 		<widget-patcher normal-bg-as-base="1" />
 		<event-box>
 		  <widget-patcher normal-bg-as-base="1" />
-		  <label label="Master" pack-type="start" />
+		  <label label="Outputs" pack-type="start" />
 		</event-box>
 	      </frame>
 	      <label label="..." />

@@ -143,6 +143,22 @@ bus_probes_notify (SfiProxy     bus,
   bse_source_queue_probe_request (self->item, 1, 1, 1, 0, 0);
 }
 
+static GtkWidget*
+bus_build_param (BstBusEditor *self,
+                 const gchar  *property,
+                 const gchar  *area,
+                 const gchar  *editor,
+                 const gchar  *label)
+{
+  GParamSpec *pspec = bse_proxy_get_pspec (self->item, property);
+  self->params = sfi_ring_prepend (self->params, bst_param_new_proxy (pspec, self->item));
+  GtkWidget *ewidget = gxk_param_create_editor (self->params->data, editor);
+  gxk_radget_add (self, area, ewidget);
+  if (label)
+    g_object_set (gxk_parent_find_descendant (ewidget, GTK_TYPE_LABEL), "label", label, NULL);
+  return ewidget;
+}
+
 void
 bst_bus_editor_set_bus (BstBusEditor *self,
                         SfiProxy      item)
@@ -192,12 +208,11 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       self->params = sfi_ring_prepend (self->params, lvolume);
       self->params = sfi_ring_prepend (self->params, rvolume);
       /* create remaining params */
-      pspec = bse_proxy_get_pspec (self->item, "uname");
-      self->params = sfi_ring_prepend (self->params, bst_param_new_proxy (pspec, self->item));
-      gxk_radget_add (self, "name-box", gxk_param_create_editor (self->params->data, NULL));
-      pspec = bse_proxy_get_pspec (self->item, "inputs");
-      self->params = sfi_ring_prepend (self->params, bst_param_new_proxy (pspec, self->item));
-      gxk_radget_add (self, "inputs-box", gxk_param_create_editor (self->params->data, NULL));
+      bus_build_param (self, "uname", "name-box", NULL, NULL);
+      bus_build_param (self, "inputs", "inputs-box", NULL, NULL);
+      bus_build_param (self, "mute", "toggle-box", "toggle+label", "M");
+      bus_build_param (self, "sync", "toggle-box", "toggle+label", "Y");
+      bus_build_param (self, "solo", "toggle-box", "toggle+label", "S");
       /* update params */
       for (ring = self->params; ring; ring = sfi_ring_walk (ring, self->params))
         gxk_param_update (ring->data);

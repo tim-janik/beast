@@ -1,3 +1,28 @@
+Thu Sep  2 05:00:14 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbuseditor.c: added ::mute, ::sync and ::solo properties.
+
+	* beast-gtk/bstparam.c: guard pointer access. check proxy property
+	editability based on bse_item_editable_property().
+
+	* beast-gtk/bsttrackview.c: check property editability on popups.
+
+	* beast-gtk/dialogs/radgets-beast.xml: made mockup-widgets insensitive.
+	clenups for mute/sync/solo widgets in busses. 
+
+	* beast-gtk/gxk/gxkparam.c: properly support check_writable() callback
+	of parameter binding. don't return default editors which mismatch the
+	passed in editor names for editor creation or lookups.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_parent_find_descendant().
+
+	* beast-gtk/gxk/gxkparam-toggle.c: added toggle-+label variant which
+	guarantees to produce a toggle button with a label. use GxkSimpleLabel
+	with auto-cutting enabled otherwise.
+
+	* beast-gtk/gxk/gxkparam-spinner.c: make logarithmic spinners
+	really logarithmic.
+
 Wed Sep  1 14:23:47 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxksimplelabel.c (get_layout_location): take actual text

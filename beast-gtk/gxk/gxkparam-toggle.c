@@ -20,6 +20,11 @@
 #include "gxkauxwidgets.h"
 
 /* --- toggle/check button editors --- */
+enum {
+  PARAM_TOGGLE_CHECKER,
+  PARAM_TOGGLE_WITH_LABEL,
+};
+
 static void
 param_toggle_change_value (GtkWidget *toggle,
 			   GxkParam  *param)
@@ -38,23 +43,31 @@ param_toggle_create (GxkParam    *param,
 {
   GtkWidget *widget;
   GType type = GTK_TYPE_CHECK_BUTTON;
-  if (g_param_spec_check_option (param->pspec, "trigger"))
+  if (variant == PARAM_TOGGLE_WITH_LABEL ||
+      g_param_spec_check_option (param->pspec, "trigger"))
     type = GTK_TYPE_TOGGLE_BUTTON;
-  if (g_param_spec_check_option (param->pspec, "radio"))
+  else if (g_param_spec_check_option (param->pspec, "radio"))
     type = GXK_TYPE_FREE_RADIO_BUTTON;
-  widget = g_object_new (type,
-                         "visible", TRUE,
-                         NULL);
+  widget = g_object_new (type, "visible", TRUE, NULL);
   g_object_connect (widget,
 		    "signal::clicked", param_toggle_change_value, param,
 		    NULL);
   gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
-  g_object_new (GXK_TYPE_SIMPLE_LABEL,
-                "visible", TRUE,
-                "use-underline", FALSE,
-                "label", g_param_spec_get_nick (param->pspec),
-                "parent", widget,
-                NULL);
+  if (variant == PARAM_TOGGLE_WITH_LABEL)
+    g_object_new (GTK_TYPE_LABEL,
+                  "visible", TRUE,
+                  "use-underline", FALSE,
+                  "label", g_param_spec_get_nick (param->pspec),
+                  "parent", widget,
+                  NULL);
+  else
+    g_object_new (GXK_TYPE_SIMPLE_LABEL,
+                  "visible", TRUE,
+                  "use-underline", FALSE,
+                  "label", g_param_spec_get_nick (param->pspec),
+                  "parent", widget,
+                  "auto-cut", TRUE,
+                  NULL);
   return widget;
 }
 
@@ -66,8 +79,15 @@ param_toggle_update (GxkParam  *param,
 }
 
 static GxkParamEditor param_toggle = {
-  { "toggle",           N_("Toggle Button"), },
+  { "toggle",           N_("Check/ToggleRadio Button"), },
   { G_TYPE_BOOLEAN, },
   { NULL,         +5,   TRUE, },        /* options, rating, editing */
-  param_toggle_create, param_toggle_update,
+  param_toggle_create, param_toggle_update, PARAM_TOGGLE_CHECKER,
+};
+
+static GxkParamEditor param_toggle_empty = {
+  { "toggle+label",     N_("Toggle Button"), },
+  { G_TYPE_BOOLEAN, },
+  { NULL,         +4,   TRUE, },        /* options, rating, editing */
+  param_toggle_create, param_toggle_update, PARAM_TOGGLE_WITH_LABEL,
 };

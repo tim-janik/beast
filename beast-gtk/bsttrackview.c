@@ -262,12 +262,17 @@ track_view_synth_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
-      GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
-                                                        pc->items,
-                                                        bse_project_get_wave_repo (bse_item_get_project (item)),
-                                                        track_view_synth_popup_cb, pcell);
-      gxk_cell_renderer_popup_dialog (pcell, dialog);
+      if (bse_item_editable_property (item, "snet"))
+        {
+          BsePropertyCandidates *pc = bse_item_get_property_candidates (item, "snet");
+          GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
+                                                            pc->items,
+                                                            bse_project_get_wave_repo (bse_item_get_project (item)),
+                                                            track_view_synth_popup_cb, pcell);
+          gxk_cell_renderer_popup_dialog (pcell, dialog);
+        }
+      else
+        gdk_beep();
     }
 }
 

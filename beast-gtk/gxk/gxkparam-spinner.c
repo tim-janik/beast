@@ -88,5 +88,5 @@ static GxkParamEditor param_spinner2 = {
   { "spinner-log",      N_("Spin Button (Logarithmic)"), },
   { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
   { "log-scale",  +4,   TRUE, },        /* options, rating, editing */
-  param_spinner_create, param_spinner_update, PARAM_SPINNER_LINEAR,
+  param_spinner_create, param_spinner_update, PARAM_SPINNER_LOGARITHMIC,
 };

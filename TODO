@@ -15,7 +15,11 @@ FIXMES:	(release-critical)
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
+- overshoot LED: ___ 
+                 \ |  overshoot: fill triangle
+                  \|  fill level shrinks with time
 - delete track + undo doesn't preserve track order
+- derive track from context-merger and fix track property editing in tree view while prepared
 - rename bse_bus_get_stack() which is the only valid hook to setup song modules atm
 - evaluate typedef gpointer SfiProxy; instead of GType, this should get rid of a lot of casts
 - the skin editor should offer loading skins, just like View/Skins
@@ -36,6 +40,7 @@ TODO:
 - skip no-voice found for snet==NULL tracks
 - the "Synth Selection" dialog popped up from the track view should preselect a track's existing Synth object
 - check sfi_debug_check ("sched") in --debug-list
+- bseautodoc should set plugin loading path to build path (via option?) to avoid loading installed plugins (which may be even binary incompatible)
 - rename gslopmaster to bseenginemaster
 - move ProbeFeatures into bseprobe.idl (requires BseSource as C++ object)
 - remove Reply jobs from engine
@@ -125,7 +130,6 @@ TODO:
 - add frequency output module, offering bpm, 1/1 1/4 1/3 notes frequencies
 - add sfisclock.h to sfi.h
 - <mg> quick rfe based on 0.5.3: implement multiple selection in the wave loader file selector and have an add button that does not close the dialog
-- fixup filemenu/dialog for WAVE recording
 - fix initial_granule in gslvorbis-cutter.c wrg page flushing
 - rename gsl_strerror()
 - get rid of bse_procedure_execvl

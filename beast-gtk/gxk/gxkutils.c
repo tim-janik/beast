@@ -917,6 +917,36 @@ gxk_toplevel_hide (GtkWidget *widget)
   gtk_widget_hide (widget);
 }
 
+typedef struct {
+  GtkWidget *child;
+  GType      type;
+} DescendantSearch;
+
+static void
+find_descendant_callback (GtkWidget *child,
+                          gpointer   data)
+{
+  DescendantSearch *dsearch = data;
+  if (!dsearch->child)
+    {
+      if (g_type_is_a (G_OBJECT_TYPE (child), dsearch->type))
+        dsearch->child = child;
+      else if (GTK_IS_CONTAINER (child))
+        gtk_container_foreach (GTK_CONTAINER (child), find_descendant_callback, dsearch);
+    }
+}
+
+GtkWidget*
+gxk_parent_find_descendant (GtkWidget        *parent,
+                            GType             descendant_type)
+{
+  DescendantSearch dsearch = { NULL, };
+  dsearch.type = descendant_type;
+  if (GTK_IS_CONTAINER (parent))
+    gtk_container_foreach (GTK_CONTAINER (parent), find_descendant_callback, &dsearch);
+  return dsearch.child;
+}
+
 enum {
   STYLE_MODIFY_FG_AS_SENSITIVE,
   STYLE_MODIFY_BASE_AS_BG,

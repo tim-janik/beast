@@ -190,13 +190,14 @@ GtkWidget*   gxk_notebook_descendant_get_tab      (GtkWidget        *widget);
 GtkWidget*   gtk_box_get_nth_child                (GtkBox           *box,
                                                    gint              pos);
 
-
 /* functions to affect a widget tree's toplevel */
 void         gxk_toplevel_delete                  (GtkWidget        *widget);
 void         gxk_toplevel_hide                    (GtkWidget        *widget);
 void         gxk_toplevel_activate_default        (GtkWidget        *widget);
 
 /* widget utilities */
+GtkWidget*   gxk_parent_find_descendant           (GtkWidget        *parent,
+                                                   GType             descendant_type);
 void         gxk_widget_modify_as_title           (GtkWidget        *widget);
 void         gxk_widget_modify_normal_bg_as_base  (GtkWidget        *widget);
 void         gxk_widget_modify_bg_as_base         (GtkWidget        *widget);

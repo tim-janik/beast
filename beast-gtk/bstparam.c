@@ -105,9 +105,12 @@ bst_param_create_gmask (GxkParam    *param,
   
   if (GTK_IS_TOGGLE_BUTTON (action))
     {
-      /* there's a prompt widget inside the button already, sneak in xframe */
-      gtk_widget_reparent (GTK_BIN (action)->child, xframe);
-      g_object_set (xframe, "parent", action, "steal_button", TRUE, NULL);
+      /* if there's a prompt widget inside the button already, sneak in xframe */
+      if (GTK_BIN (action)->child)
+        {
+          gtk_widget_reparent (GTK_BIN (action)->child, xframe);
+          g_object_set (xframe, "parent", action, "steal_button", TRUE, NULL);
+        }
     }
   else
     {
@@ -195,12 +198,22 @@ proxy_binding_destroy (GxkParam *param)
     }
 }
 
+static gboolean
+proxy_binding_check_writable (GxkParam *param)
+{
+  SfiProxy proxy = param->bdata[0].v_long;
+  if (proxy)
+    return bse_item_editable_property (proxy, param->pspec->name);
+  else
+    return FALSE;
+}
+
 static GxkParamBinding proxy_binding = {
   2, NULL,
   proxy_binding_set_value,
   proxy_binding_get_value,
   proxy_binding_destroy,
-  NULL,	/* check_writable */
+  proxy_binding_check_writable,
 };
 
 GxkParam*
