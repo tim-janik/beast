@@ -744,7 +744,7 @@ master_take_probes (EngineNode   *node,
         if (pjob->oblocks[i])
           {
             EngineInput *input = node->inputs + i;
-            if (node->inputs->real_node)
+            if (input->real_node)
               memcpy (pjob->oblocks[i] + pjob->n_values,
                       input->real_node->module.ostreams[input->real_stream].values + offset, n);
           }

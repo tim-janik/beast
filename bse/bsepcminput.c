@@ -107,8 +107,8 @@ bse_pcm_input_class_init (BsePcmInputClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_f,
 			      sfi_pspec_real ("gain_volume_f", "Input Gain [float]", NULL,
-					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
-					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
+					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB),
 					      0.1,
 					      SFI_PARAM_STORAGE ":skip-default")); // FIXME: don't skip-default
   bse_object_class_add_param (object_class, "Adjustments",
@@ -121,8 +121,8 @@ bse_pcm_input_class_init (BsePcmInputClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_PERC,
 			      sfi_pspec_int ("gain_volume_perc", "input Gain [%]", NULL,
-					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
-					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
+					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100,
 					     1, SFI_PARAM_GUI ":dial"));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "left-audio-out", _("Left Audio Out"), _("Left channel output"));
@@ -139,7 +139,7 @@ bse_pcm_input_class_finalize (BsePcmInputClass *class)
 static void
 bse_pcm_input_init (BsePcmInput *iput)
 {
-  iput->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
+  iput->volume_factor = bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB);
 }
 
 static void
@@ -157,7 +157,7 @@ bse_pcm_input_set_property (GObject      *object,
       g_object_notify (self, "gain_volume_perc");
       break;
     case PARAM_MVOLUME_dB:
-      self->volume_factor = bse_dB_to_factor (sfi_value_get_real (value));
+      self->volume_factor = bse_db_to_factor (sfi_value_get_real (value));
       g_object_notify (self, "gain_volume_f");
       g_object_notify (self, "gain_volume_perc");
       break;
@@ -185,7 +185,7 @@ bse_pcm_input_get_property (GObject    *object,
       sfi_value_set_real (value, self->volume_factor);
       break;
     case PARAM_MVOLUME_dB:
-      sfi_value_set_real (value, bse_dB_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
+      sfi_value_set_real (value, bse_db_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
       break;
     case PARAM_MVOLUME_PERC:
       sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);

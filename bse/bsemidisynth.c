@@ -139,8 +139,8 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_VOLUME_f,
 			      sfi_pspec_real ("volume_f", "Master [float]", NULL,
-					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
-					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB), 0.1,
+					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB), 0.1,
 					      SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_VOLUME_dB,
@@ -152,8 +152,8 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_VOLUME_PERC,
 			      sfi_pspec_int ("volume_perc", "Master [%]", NULL,
-					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
-					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
+					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
 					     SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Playback Settings",
 			      PROP_AUTO_ACTIVATE,
@@ -171,7 +171,7 @@ bse_midi_synth_init (BseMidiSynth *self)
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT | BSE_SUPER_FLAG_NEEDS_SEQUENCER);
   self->midi_channel_id = 1;
   self->n_voices = 16;
-  self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
+  self->volume_factor = bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
   /* midi voice modules */
   self->voice_input = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_MIDI_VOICE_INPUT, NULL);
@@ -388,7 +388,7 @@ bse_midi_synth_set_property (GObject      *object,
       g_object_notify (self, "volume_perc");
       break;
     case PROP_VOLUME_dB:
-      self->volume_factor = bse_dB_to_factor (sfi_value_get_real (value));
+      self->volume_factor = bse_db_to_factor (sfi_value_get_real (value));
       g_object_set (self->output, /* no undo */
                     "master_volume_f", self->volume_factor,
                     NULL);
@@ -434,7 +434,7 @@ bse_midi_synth_get_property (GObject    *object,
       sfi_value_set_real (value, self->volume_factor);
       break;
     case PROP_VOLUME_dB:
-      sfi_value_set_real (value, bse_dB_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
+      sfi_value_set_real (value, bse_db_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
       break;
     case PROP_VOLUME_PERC:
       sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);

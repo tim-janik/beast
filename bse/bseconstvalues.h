@@ -75,8 +75,8 @@ extern "C" {
 
 
 /* --- volume --- */
-#define	BSE_MIN_VOLUME_dB		(-40) /* theoretically: -48.165 */
-#define	BSE_MAX_VOLUME_dB		(+10)
+#define	BSE_MIN_VOLUME_dB		(-144) /* theoretically: -48.165 */
+#define	BSE_MAX_VOLUME_dB		(+24)
 
 
 /* --- balance (left/right volume) --- */

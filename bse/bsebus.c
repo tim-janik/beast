@@ -28,9 +28,8 @@ enum
 {
   PROP_0,
   PROP_INPUTS,
-  PROP_MVOLUME_f,
-  PROP_MVOLUME_dB,
-  PROP_MVOLUME_PERC
+  PROP_LEFT_VOLUME_dB,
+  PROP_RIGHT_VOLUME_dB,
 };
 
 
@@ -42,7 +41,9 @@ static gpointer		 bus_parent_class = NULL;
 static void
 bse_bus_init (BseBus *self)
 {
-  bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self), TRUE); // FIXME
+  self->left_volume = 1.0;
+  self->right_volume = 1.0;
+  bse_sub_synth_set_null_shortcut (BSE_SUB_SYNTH (self), TRUE);
 }
 
 static void
@@ -90,14 +91,17 @@ bse_bus_set_property (GObject      *object,
                       const GValue *value,
                       GParamSpec   *pspec)
 {
-  // BseBus *self = BSE_BUS (object);
+  BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
     case PROP_INPUTS:
       break;
-    case PROP_MVOLUME_f:
-      // self->volume_factor = sfi_value_get_real (value);
+    case PROP_LEFT_VOLUME_dB:
+      self->left_volume = bse_db_to_factor (sfi_value_get_real (value));
       break;
+    case PROP_RIGHT_VOLUME_dB:
+      self->right_volume = bse_db_to_factor (sfi_value_get_real (value));
+     break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -110,14 +114,17 @@ bse_bus_get_property (GObject    *object,
                       GValue     *value,
                       GParamSpec *pspec)
 {
-  // BseBus *self = BSE_BUS (object);
+  BseBus *self = BSE_BUS (object);
   switch (param_id)
     {
     case PROP_INPUTS:
       g_value_set_boxed (value, NULL);
       break;
-    case PROP_MVOLUME_f:
-      // sfi_value_set_real (value, self->volume_factor);
+    case PROP_LEFT_VOLUME_dB:
+      sfi_value_set_real (value, bse_db_from_factor (self->left_volume, BSE_MIN_VOLUME_dB));
+      break;
+    case PROP_RIGHT_VOLUME_dB:
+      sfi_value_set_real (value, bse_db_from_factor (self->right_volume, BSE_MIN_VOLUME_dB));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -289,12 +296,15 @@ bse_bus_class_init (BseBusClass *class)
                               bse_param_spec_boxed ("snet", _("Custom Synth Net"), _("Synthesis network to be used as instrument"),
                                                     BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_MVOLUME_f,
-			      sfi_pspec_real ("gain_volume_f", _("Bus Gain [float]"), NULL,
-					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
-					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
-					      0.1,
-					      SFI_PARAM_GUI ":dial"));
+			      PROP_LEFT_VOLUME_dB,
+			      sfi_pspec_real ("left-volume-db", _("Left Volume [dB]"), _("Volume adjustment of left bus channel"),
+                                              0, BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+					      0.1, SFI_PARAM_GUI ":dial"));
+  bse_object_class_add_param (object_class, _("Adjustments"),
+			      PROP_RIGHT_VOLUME_dB,
+			      sfi_pspec_real ("right-volume-db", _("Right Volume [dB]"), _("Volume adjustment of right bus channel"),
+                                              0, BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+					      0.1, SFI_PARAM_GUI ":dial"));
   
   channel_id = bse_source_class_add_ichannel (source_class, "left-audio-in", _("Left Audio In"), _("Left channel input"));
   g_assert (channel_id == BSE_BUS_ICHANNEL_LEFT);

@@ -1,3 +1,15 @@
+Fri Aug 20 18:31:59 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.[hc]: added left/right db-volume properties.
+
+	* bseconstvalues.h: increased min/max db constants.
+
+	* bseenginemaster.c: fixed NULL-pointer check.
+
+	* bseglobals.[hc]: renamed bse_db_to_factor() and bse_db_from_factor().
+	fixed up calculated dB values (use a factor of 20 not 10 for peaks).
+	adapted callers.
+
 Tue Aug 17 17:38:39 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c: prototyped ::inputs property. i18n fixups.

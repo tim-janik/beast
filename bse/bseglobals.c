@@ -458,27 +458,20 @@ bse_globals_init (void)
 }
 
 gdouble
-bse_dB_to_factor (gfloat dB)
+bse_db_to_factor (gdouble dB)
 {
-  gdouble factor;
-  
-  factor = dB / 10; /* Bell */
-  factor = pow (10, factor);
-  
-  return factor;
+  gdouble factor = dB / 20; /* Bell */
+  return pow (10, factor);
 }
 
-gfloat
-bse_dB_from_factor (gdouble factor,
-		    gfloat  min_dB)
+gdouble
+bse_db_from_factor (gdouble factor,
+		    gdouble min_dB)
 {
   if (factor > 0)
     {
-      gfloat dB;
-      
-      dB = log10 (factor); /* Bell */
-      dB *= 10;
-      
+      gdouble dB = log10 (factor); /* Bell */
+      dB *= 20;
       return dB;
     }
   else

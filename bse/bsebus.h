@@ -40,6 +40,8 @@ struct _BseBus
   BseSubSynth   parent_object;
   BseSource    *summation;
   SfiRing      *inputs;
+  double        left_volume;
+  double        right_volume;
 };
 struct _BseBusClass
 {

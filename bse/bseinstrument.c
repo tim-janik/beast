@@ -161,8 +161,8 @@ bse_instrument_class_init (BseInstrumentClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
 			      sfi_pspec_real ("volume_f", "Volume [float]", NULL,
-					      bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB),
-					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB), 0.1,
+					      bse_db_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB),
+					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB), 0.1,
 					      SFI_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_dB,
@@ -174,8 +174,8 @@ bse_instrument_class_init (BseInstrumentClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_PERC,
 			      bse_param_spec_uint ("volume_perc", "Volume [%]", NULL,
-						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-						   bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB) * 100, 1,
+						   0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100,
+						   bse_db_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB) * 100, 1,
 						   SFI_PARAM_GUI |
 						   SFI_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
@@ -281,7 +281,7 @@ bse_instrument_init (BseInstrument *instrument)
   instrument->user_snet = NULL;
   instrument->seq_snet = NULL;
   
-  instrument->volume_factor = bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB);
+  instrument->volume_factor = bse_db_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB);
   instrument->balance = BSE_DFL_INSTRUMENT_BALANCE;
   instrument->transpose = BSE_DFL_INSTRUMENT_TRANSPOSE;
   instrument->fine_tune = BSE_DFL_INSTRUMENT_FINE_TUNE;
@@ -407,7 +407,7 @@ bse_instrument_set_property (GObject      *object,
       g_object_notify (instrument, "volume_perc");
       break;
     case PARAM_VOLUME_dB:
-      instrument->volume_factor = bse_dB_to_factor (sfi_value_get_real (value));
+      instrument->volume_factor = bse_db_to_factor (sfi_value_get_real (value));
       g_object_notify (instrument, "volume_f");
       g_object_notify (instrument, "volume_perc");
       break;
@@ -563,7 +563,7 @@ bse_instrument_get_property (GObject    *object,
       sfi_value_set_real (value, instrument->volume_factor);
       break;
     case PARAM_VOLUME_dB:
-      sfi_value_set_real (value, bse_dB_from_factor (instrument->volume_factor, BSE_MIN_VOLUME_dB));
+      sfi_value_set_real (value, bse_db_from_factor (instrument->volume_factor, BSE_MIN_VOLUME_dB));
       break;
     case PARAM_VOLUME_PERC:
       sfi_value_set_int (value, instrument->volume_factor * ((gfloat) 100) + 0.5);

@@ -134,9 +134,9 @@ extern const gdouble* _bse_fine_tune_factor_table;
 void		bse_globals_init	(void);
 
 /* conversion */
-gdouble		bse_dB_to_factor	(gfloat		dB);
-gfloat		bse_dB_from_factor	(gdouble	factor,
-					 gfloat		min_dB);
+gdouble		bse_db_to_factor	(gdouble	dB);
+gdouble		bse_db_from_factor	(gdouble	factor,
+					 gdouble	min_dB);
 
 
 
