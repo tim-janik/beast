@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-22 14:28+0200\n"
-"PO-Revision-Date: 2004-06-15 16:57-0300\n"
+"POT-Creation-Date: 2004-06-29 14:13+0200\n"
+"PO-Revision-Date: 2004-06-30 13:14-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -86,7 +86,7 @@ msgstr "_Refazer"
 
 #: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
-msgstr "_Limpar desfazer"
+msgstr "_Limpar o Desfazer"
 
 #: beast-gtk/bstapp.c:109
 msgid "Procedure _Browser"
@@ -94,7 +94,7 @@ msgstr "_Navegador de procedimentos"
 
 #: beast-gtk/bstapp.c:111
 msgid "Rack Editor"
-msgstr ""
+msgstr "Editor de pilha"
 
 #: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
 #, fuzzy
@@ -175,7 +175,7 @@ msgstr "Carregando skin '%s'"
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #: beast-gtk/bstapp.c:791
 msgid "Rack editor"
-msgstr ""
+msgstr "Editor de pilha"
 
 #: beast-gtk/bstapp.c:805
 msgid "Preferences"
@@ -408,7 +408,7 @@ msgid "Loading wave `%s'"
 msgstr "Carregando som '%s'"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr "Adicionar"
 
@@ -416,7 +416,7 @@ msgstr "Adicionar"
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
 #: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
 #: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:63 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Excluir"
 
@@ -428,7 +428,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Nome"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:520
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:521
 msgid "Comment"
 msgstr "Comentário"
 
@@ -541,7 +541,7 @@ msgstr "Arquivos RC"
 #. show splash images
 #: beast-gtk/bstmain.c:151
 msgid "Splash Image"
-msgstr ""
+msgstr "Imagem de Inicialização"
 
 #. start BSE core and connect
 #: beast-gtk/bstmain.c:163
@@ -639,11 +639,11 @@ msgstr "Botão (Logarítmico"
 
 #: beast-gtk/bstparam-scale.c:78
 msgid "Dial"
-msgstr ""
+msgstr "Disco"
 
 #: beast-gtk/bstparam-scale.c:84
 msgid "Dial (Logarithmic"
-msgstr ""
+msgstr "Disco (Logarítmico"
 
 #: beast-gtk/bstparam-searchpath.c:55
 msgid "Remove Paths"
@@ -867,7 +867,7 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Disposição do editor de padrões"
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "VZoom"
 msgstr "ZoomV"
 
@@ -897,14 +897,12 @@ msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:96
 msgid "HWrap"
-msgstr ""
+msgstr "QuebraH"
 
 #: beast-gtk/bstpatternctrl.c:97
-#, fuzzy
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
-msgstr ""
-"Alterna se o movimento horizontal da célula com foco ultrapassará as bordas"
+msgstr "Alterna se o movimento horizontal da célula com foco quebrará próximo às bordas"
 
 #: beast-gtk/bstpatternctrl.c:100
 msgid "Base Octave"
@@ -1242,7 +1240,7 @@ msgstr "Procedimento"
 
 #: beast-gtk/bstprofiler.c:167
 msgid "Totals"
-msgstr ""
+msgstr "Totais"
 
 #: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
 msgid "Thread Name"
@@ -1250,29 +1248,29 @@ msgstr "Nome da thread"
 
 #: beast-gtk/bstprofiler.c:246
 msgid "CPU%"
-msgstr ""
+msgstr "CPU%"
 
 #: beast-gtk/bstprofiler.c:246
 msgid "Percentage of CPU usage"
-msgstr ""
+msgstr "Porcentagem de uso da CPU"
 
 #: beast-gtk/bstprofiler.c:247
-#, fuzzy
 msgid "UTime"
-msgstr "Tempo do usuário"
+msgstr "TempoU"
 
 #: beast-gtk/bstprofiler.c:247
-msgid "Milliseconds of user CPU time used by thread"
-msgstr ""
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
+msgstr "Número médio de milissegundos a cada segundo do tempo de usuário da CPU que serão usados pela thread"
 
 #: beast-gtk/bstprofiler.c:248
-#, fuzzy
 msgid "STime"
-msgstr "Tempo do sistema"
+msgstr "TempoS"
 
 #: beast-gtk/bstprofiler.c:248
-msgid "Milliseconds of system CPU time used by thread"
-msgstr ""
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
+msgstr "Número médio de milissegundos a cada segundo do tempo de sistema da CPU que serão usados pela thread"
 
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
@@ -1288,22 +1286,20 @@ msgstr ""
 #. NULL, NULL, 0);
 #.
 #: beast-gtk/bstprofiler.c:262
-#, fuzzy
 msgid "Nice"
-msgstr "Nota"
+msgstr "Ótimo"
 
 #: beast-gtk/bstprofiler.c:262
 msgid "Thread priority from -20 (high) to +19 (low)"
-msgstr ""
+msgstr "Prioridade da thread, de -20 (alta) a +19 (baixa)"
 
 #: beast-gtk/bstprofiler.c:263
 msgid "#CPU"
-msgstr ""
+msgstr "Nº CPU"
 
 #: beast-gtk/bstprofiler.c:263
-#, fuzzy
 msgid "CPU the thread is currently running on"
-msgstr "O processador em que essa thread está sendo executada atualmente"
+msgstr "CPU em que a thread está executando atualmente"
 
 #: beast-gtk/bstprojectctrl.c:38
 msgid "Restarting Playback"
@@ -1323,16 +1319,16 @@ msgid ""
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
-msgstr ""
+msgstr "O editor de pilha ainda é tem código extremamente experimental e é garantido que terá falhas nas versões futuras. Então não espere que o editor de pilha continue o mesmo em versões futuras e se prepare para lidar com possíveis instabilidades no código (p.ex. salve seus projetos regularmente)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Edit"
 msgstr "_Editar"
 
 #: beast-gtk/bstrackitem.c:206
 msgid "Edit Rack Item"
-msgstr ""
+msgstr "Editar item da pilha"
 
 #: beast-gtk/bstrackitem.c:208
 msgid "Controller"
@@ -1736,42 +1732,42 @@ msgstr "Fim:"
 
 #: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
 msgid "Shape Range"
-msgstr "Gama de figuras"
+msgstr "Área das formas"
 
 #: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
 msgid "Shape Average"
-msgstr "Figura média"
+msgstr "Média da forma"
 
 #: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
 msgid "Shape Minimum"
-msgstr "Figura mínima"
+msgstr "Mínimo da forma"
 
 #: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
 msgid "Shape Maximum"
-msgstr "Figura máxima"
+msgstr "Máximo da forma"
 
 #: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
 msgid "Sketch Range"
-msgstr ""
+msgstr "Área de esboço"
 
 #: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
 msgid "Sketch Average"
-msgstr ""
+msgstr "Média do esboço"
 
 #: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
 msgid "Sketch Minimum"
-msgstr ""
+msgstr "Mínimo do esboço"
 
 #: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
 msgid "Sketch Maximum"
-msgstr ""
+msgstr "Máximo do esboço"
 
 #. TRANSLATORS: here "Preview" is meant audible, i.e. to
 #. * playback the current sample version and listen to it.
 #.
 #: beast-gtk/bstsampleeditor.c:539
 msgid "Preview"
-msgstr "Prever"
+msgstr "Pre-ouvir"
 
 #: beast-gtk/bstsnetrouter.c:69
 msgid ""
@@ -1809,11 +1805,11 @@ msgstr "DCA"
 
 #: beast-gtk/bstsnetrouter.c:182
 msgid "Standard amplifier module"
-msgstr "Módulo padrão de amplificação"
+msgstr "Módulo de amplificação padrão"
 
 #: beast-gtk/bstsnetrouter.c:183
 msgid "Snooper"
-msgstr ""
+msgstr "Snooper"
 
 #: beast-gtk/bstsnetrouter.c:183
 msgid "Signal debugging module"
@@ -1874,7 +1870,7 @@ msgstr "Remover módulo"
 
 #: beast-gtk/bstsnetrouter.c:914
 msgid "Delete Link"
-msgstr "Excluir Ligadura"
+msgstr "Excluir ligadura"
 
 #: beast-gtk/bstsnetrouter.c:968
 msgid "Insert Module"
@@ -1882,11 +1878,11 @@ msgstr "Inserir módulo"
 
 #: beast-gtk/bststest.c:550
 msgid "Selection to Loop"
-msgstr ""
+msgstr "Seleção para repetição"
 
 #: beast-gtk/bststest.c:558
 msgid "Loop to Selection"
-msgstr ""
+msgstr "Repetição para seleção"
 
 #: beast-gtk/bststest.c:566
 msgid "Zoom Selection"
@@ -1894,15 +1890,15 @@ msgstr "Zoom na seleção"
 
 #: beast-gtk/bststest.c:574
 msgid "Apply Loop"
-msgstr "Aplicar laço"
+msgstr "Aplicar repetição"
 
 #: beast-gtk/bststest.c:582
 msgid "Reset Loop"
-msgstr "Redefinir laço"
+msgstr "Redefinir repetição"
 
 #: beast-gtk/bststest.c:590
 msgid "Score"
-msgstr ""
+msgstr "Marcação"
 
 #: beast-gtk/bststest.c:598
 msgid "Find"
@@ -1937,11 +1933,11 @@ msgstr "Partes"
 
 #: beast-gtk/bstsupershell.c:228 beast-gtk/bstsupershell.c:247
 msgid "Routing"
-msgstr ""
+msgstr "Roteamento"
 
 #: beast-gtk/bstsupershell.c:242
 msgid "Rack"
-msgstr ""
+msgstr "Pilha"
 
 #: beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert/edit/move parts (mouse button 1 and 2)"
@@ -1969,7 +1965,7 @@ msgstr "Excluir peças"
 
 #: beast-gtk/bsttrackrollctrl.c:64
 msgid "Use the horizontal ruler to adjust the left loop pointer"
-msgstr ""
+msgstr "Use a régua horizontal para ajustar o ponteiro esquerdo da repetição"
 
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Position"
@@ -1977,11 +1973,11 @@ msgstr "Posição"
 
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Use the horizontal ruler to adjust the play position pointer"
-msgstr ""
+msgstr "Use a régua horizontal para ajustar o ponteiro da posição de reprodução"
 
 #: beast-gtk/bsttrackrollctrl.c:68
 msgid "Use the horizontal ruler to adjust the right loop pointer"
-msgstr ""
+msgstr "Use a régua horizontal para ajustar o ponteiro direito da repetição"
 
 #: beast-gtk/bsttrackrollctrl.c:416 beast-gtk/bsttrackrollctrl.c:428
 msgid "Edit Part"
@@ -2029,11 +2025,11 @@ msgstr "Mover parte"
 msgid "Start Editor"
 msgstr "Iniciar Editor"
 
-#: beast-gtk/bsttrackview.c:60
+#: beast-gtk/bsttrackview.c:61
 msgid "Add a new track to this song"
 msgstr "Adiciona uma nova faixa para essa música"
 
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:64
 msgid "Delete the currently selected track"
 msgstr "Exclui a faixa selecionada atualmente"
 
@@ -2096,370 +2092,362 @@ msgstr "Biblioteca..."
 
 #: beast-gtk/bstwaveview.c:43
 msgid "Load a new wave file from library paths"
-msgstr "Carrega um novo arquivo de som dos caminhos de biblioteca"
+msgstr "Carrega um novo som dos caminhos de biblioteca"
 
 #: beast-gtk/bstwaveview.c:45
 msgid "Delete the currently selected wave"
-msgstr ""
+msgstr "Exclui o som atualmente selecionado"
 
 #: beast-gtk/bstwaveview.c:47
 msgid "Edit the currently selected wave"
-msgstr ""
+msgstr "Edita o som atualmente selecionado"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:1
-msgid "Adjust pattern length"
-msgstr ""
+msgid "Adjust the zoom factor of the router display"
+msgstr "Ajusta o fator de zoom da exibição do roteador"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:2
-msgid "Adjust right view boundary"
-msgstr ""
+msgid "Aplly configuration changes to the pattern editor layout"
+msgstr "Aplica as alterações de configuração no editor de padrões"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:3
-msgid "Adjust the zoom factor of the router display"
-msgstr ""
+msgid "Configure"
+msgstr "Configurar"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:4
-msgid "Aplly configuration changes to the pattern editor layout"
-msgstr ""
+msgid "Configure the column layout of the pattern editor"
+msgstr "Configura a disposição das colunas do editor de padrões"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:5
-msgid "Configure"
-msgstr ""
+msgid "Control Type:"
+msgstr "Tipo de controle:"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:6
-msgid "Configure the column layout of the pattern editor"
-msgstr ""
+msgid "Development"
+msgstr "Desenvolvimento"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:7
-msgid "Control Type:"
-msgstr ""
+msgid "Discard changes and close dialog"
+msgstr "Descarta as altereções e fecha a caixa de diálogo"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:8
-msgid "Development"
-msgstr ""
+msgid "E_xamples"
+msgstr "E_xemplos"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:9
-msgid "Discard changes and close dialog"
-msgstr ""
+msgid "Events"
+msgstr "Eventos"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:10
-msgid "E_xamples"
-msgstr ""
+msgid "HZoom"
+msgstr "ZoomH"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:11
-msgid "Events"
-msgstr ""
+msgid "Horizontal piano zoom"
+msgstr "Zoom horizontal do piano"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:12
-msgid "HZoom"
-msgstr ""
+msgid "Horizontal track zoom"
+msgstr "Zoom horizontal da faixa"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:13
-msgid "Horizontal piano zoom"
-msgstr ""
+msgid "Layout:"
+msgstr "Disposição:"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:14
-msgid "Horizontal track zoom"
-msgstr ""
+msgid "Note _Length"
+msgstr "_Duração da nota"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:15
-msgid "Layout:"
-msgstr ""
+msgid "Piano Notes"
+msgstr "Notas de piano"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:16
-msgid "Note _Length"
-msgstr ""
+msgid "Repeat"
+msgstr "Repetir"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:17
-msgid "Piano Notes"
-msgstr ""
+msgid "Repeat playback within loop points"
+msgstr "Repete a reprodução dentro dos pontos de repetição"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:18
-msgid "Repeat"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:19
-msgid "Repeat playback within loop points"
-msgstr ""
+msgid "Synthesis Modules"
+msgstr "Módulos de síntese"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:20
-msgid "Synthesis Modules"
-msgstr ""
+msgid "Vertical piano zoom"
+msgstr "Zoom vertical do piano"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
+msgid "Virtual Rack"
+msgstr "Pilha virtual"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:22
-msgid "Vertical piano zoom"
-msgstr ""
+msgid "Wave_s"
+msgstr "_Sons"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:23
-msgid "Virtual Rack"
-msgstr ""
+msgid "Zoom"
+msgstr "Zoom"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:24
-msgid "Wave_s"
-msgstr ""
+msgid "_Apply"
+msgstr "_Aplicar"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:25
-msgid "Zoom"
-msgstr ""
+msgid "_Audio Sources"
+msgstr "_Fontes de áudio"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:26
-msgid "_Apply"
-msgstr ""
+msgid "_Cancel"
+msgstr "_Cancelar"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:27
-msgid "_Audio Sources"
-msgstr ""
+msgid "_Demo"
+msgstr "_Demo"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:28
-msgid "_Cancel"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:29
-msgid "_Demo"
-msgstr ""
+msgid "_Distortion"
+msgstr "_Distorção"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:30
-msgid "_Distortion"
-msgstr ""
+msgid "_Enhance"
+msgstr "_Melhorar"
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
+msgid "_File"
+msgstr "_Arquivo"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:32
-msgid "_Enhance"
-msgstr ""
+msgid "_Filters"
+msgstr "_Filtros"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:33
-msgid "_File"
-msgstr ""
+msgid "_Help"
+msgstr "Aj_uda"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:34
-msgid "_Filters"
-msgstr ""
+msgid "_Input & Output"
+msgstr "Entrada e _Saída"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:35
-msgid "_Help"
-msgstr ""
+msgid "_LADSPA"
+msgstr "_LADSPA"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:36
-msgid "_Input & Output"
-msgstr ""
+msgid "_Misc"
+msgstr "_Miscelânea"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:37
-msgid "_LADSPA"
-msgstr ""
+msgid "_Other Sources"
+msgstr "_Outras Fontes"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:38
-msgid "_Misc"
-msgstr ""
+msgid "_Project"
+msgstr "_Projeto"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:39
-msgid "_Other Sources"
-msgstr ""
+msgid "_Quantization"
+msgstr "_Quantização"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:40
-msgid "_Project"
-msgstr ""
+msgid "_Routing"
+msgstr "_Roteamento"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:41
-msgid "_Quantization"
-msgstr ""
+msgid "_Skins"
+msgstr "_Skins"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:42
-msgid "_Routing"
-msgstr ""
+msgid "_Song"
+msgstr "_Música"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:43
-msgid "_Skins"
-msgstr ""
+msgid "_Spatial"
+msgstr "_Espacial"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:44
-msgid "_Song"
-msgstr ""
+msgid "_Synth"
+msgstr "_Sintetizar"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:45
-msgid "_Spatial"
-msgstr ""
+msgid "_Synthesizers"
+msgstr "_Sintetizadores"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:46
-msgid "_Synth"
-msgstr ""
+msgid "_Tools"
+msgstr "_Ferramentas"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:47
-msgid "_Synthesizers"
-msgstr ""
+msgid "_Utilities"
+msgstr "_Utilitários"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:48
-msgid "_Tools"
-msgstr ""
+msgid "_View"
+msgstr "_Ver"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:49
-msgid "_Utilities"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:50
-msgid "_View"
-msgstr ""
-
-#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Virtualization"
-msgstr ""
+msgstr "_Virtualização"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:1
 msgid "Enter document or file location"
-msgstr ""
+msgstr "Digite a localização do documento ou arquivo"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:2
 msgid "Find in current document"
-msgstr ""
+msgstr "Procura no documento atual"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:3
 msgid "Go back one page"
-msgstr ""
+msgstr "Volta uma página"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:4
 msgid "Go forward one page"
-msgstr ""
+msgstr "Avança uma página"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:5
 msgid "Go to browser index"
-msgstr ""
+msgstr "Vai para o índice do navegador"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:6
 msgid "Location"
-msgstr ""
+msgstr "Localização"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:7
 msgid "Reload current page"
-msgstr ""
+msgstr "Recarrega a página atual"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:8
 msgid "_Back"
-msgstr ""
+msgstr "_Voltar"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:9
 msgid "_Find"
-msgstr ""
+msgstr "_Localizar"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:10
 msgid "_Forward"
-msgstr ""
+msgstr "_Avançar"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:11
 msgid "_Index"
-msgstr ""
+msgstr "Índ_ice"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:12
 msgid "_Reload"
-msgstr ""
+msgstr "_Recarregar"
 
 #: beast-gtk/gxk/gxklistwrapper.c:101
 msgid "Number of Columns"
-msgstr ""
+msgstr "Número de colunas"
 
 #: beast-gtk/gxk/gxklistwrapper.c:105
 msgid "Array of column types"
-msgstr ""
+msgstr "Matriz de tipos de colunas"
 
 #: beast-gtk/gxk/gxklistwrapper.c:109
 msgid "Number of Rows"
-msgstr ""
+msgstr "Número de linhas"
 
 #: beast-gtk/gxk/gxkparam-entry.c:56
 msgid "Text Entry"
-msgstr ""
+msgstr "Entrada de texto"
 
 #: beast-gtk/gxk/gxkparam-label.c:66
 msgid "Property Identifier"
-msgstr ""
+msgstr "Identificador da propriedade"
 
 #: beast-gtk/gxk/gxkparam-label.c:72
 msgid "Property Name"
-msgstr ""
+msgstr "Nome da propriedade"
 
 #: beast-gtk/gxk/gxkparam-scale.c:82
 msgid "Horizontal Scale"
-msgstr ""
+msgstr "Escala horizontal"
 
 #: beast-gtk/gxk/gxkparam-scale.c:88
 msgid "Vertical Scale"
-msgstr ""
+msgstr "Escala vertical"
 
 #: beast-gtk/gxk/gxkparam-scale.c:94
 msgid "Horizontal Scale (Logarithmic)"
-msgstr ""
+msgstr "Escala horizontal (Logarítmica)"
 
 #: beast-gtk/gxk/gxkparam-scale.c:100
 msgid "Vertical Scale (Logarithmic)"
-msgstr ""
+msgstr "Escala vertical (Logarítmica)"
 
 #: beast-gtk/gxk/gxkparam-spinner.c:82
 msgid "Spin Button"
-msgstr ""
+msgstr "Botão giratório"
 
 #: beast-gtk/gxk/gxkparam-spinner.c:88
 msgid "Spin Button (Logarithmic)"
-msgstr ""
+msgstr "Botão giratório (Logarítmico)"
 
 #: beast-gtk/gxk/gxkparam-toggle.c:69
 msgid "Toggle Button"
-msgstr ""
+msgstr "Botão de alternância"
 
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "The text of the label"
-msgstr ""
+msgstr "O texto do rótulo"
 
 #: beast-gtk/gxk/gxksimplelabel.c:137
 msgid "Use underline"
-msgstr ""
+msgstr "Usar sublinhado"
 
 #: beast-gtk/gxk/gxksimplelabel.c:138
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
-msgstr ""
+msgstr "Se marcado, um sublinhado no texto indica que o próximo caractere deve ser usado como tecla de atalho"
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
-msgstr ""
+msgstr "Cortar automaticamente"
 
 #: beast-gtk/gxk/gxksimplelabel.c:143
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
-msgstr ""
+msgstr "Se marcado, o texto além do limite é eliminado e reticências \"...\" são exibidas no seu lugar"
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
-msgstr ""
+msgstr "Justificação"
 
 #: beast-gtk/gxk/gxksimplelabel.c:148
 msgid ""
 "The alignment of the lines in the text of the label relative to each other. "
 "This does NOT affect the alignment of the label within its allocation."
-msgstr ""
+msgstr "O alinhamento das linhas no texto do rótulo relativo a cada um dos outros. Isto NÃO afeta o alinhamento do rótulo na sua localização."
 
 #: beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
-msgstr ""
+msgstr "Padrão"
 
 #: beast-gtk/gxk/gxksimplelabel.c:153
 msgid ""
 "A string with _ characters in positions correspond to characters in the text "
 "to underline"
-msgstr ""
+msgstr "Uma string com caracteres _ nas posições correspondentes aos caracteres para sublinhar no texto"
 
 #: beast-gtk/gxk/gxksimplelabel.c:157
 msgid "Mnemonic key"
-msgstr ""
+msgstr "Tecla de atalho"
 
 #: beast-gtk/gxk/gxksimplelabel.c:158
 msgid "The mnemonic accelerator key for this label"
-msgstr ""
+msgstr "A tecla de atalho para esse rótulo"
 
 #: beast-gtk/gxk/gxksimplelabel.c:162
 msgid "Mnemonic widget"
-msgstr ""
+msgstr "Componente alvo"
 
 #: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
-msgstr ""
+msgstr "O componente que será ativado quando a tecla de atalho do rótulo for pressionada"
 
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
@@ -2471,11 +2459,11 @@ msgstr "..."
 #: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
 msgid "GNU Lesser General Public License"
-msgstr "Licensa Pública Geral Menor GNU (LGPL)"
+msgstr "Licença Pública Geral Menor GNU (LGPL)"
 
 #: bse/bseamplifier.idl:31
 msgid "/Routing/Amplifier"
-msgstr ""
+msgstr "/Roteamento/Amplificador"
 
 #: bse/bseamplifier.idl:32
 msgid ""
@@ -2488,41 +2476,41 @@ msgid ""
 "mixed control signal can influence the amplification linearly (to amplify "
 "other control signals) or exponentially (to amplify audio signals). Finally, "
 "the master volume controls amplification of the resulting output signal."
-msgstr ""
+msgstr "BseAmplifier disponibiliza amplificação ou atenuação controlada do sinal de entrada. Ele suporta duas entradas de controle e duas entradas áudio que são mixadas após ajustes de balanço e nível. A configuração de ganho controla a pré-amplificação do sinal de áudio mixado. O sinal de controle mixado, ponderado por uma configuração de peso, determina a amplificação adicional, permitindo que fontes externas modulem o volume global (trêmolo). O sinal de controle de mixado pode influenciar linearmente (para amplificar outros sinais de controle) ou exponencialmente (para amplificar sinais áudio) a amplificação. Finalmente, o volume mestre controla a amplificação do sinal de saída resultante."
 
 #: bse/bseamplifier.idl:45 plugins/bseadder.c:97 plugins/bsebalance.idl:36
 #: plugins/bsemult.c:60
 msgid "Audio In1"
-msgstr ""
+msgstr "Entrada de áudio1"
 
 #: bse/bseamplifier.idl:45 plugins/bsebalance.idl:36
 msgid "First audio input"
-msgstr ""
+msgstr "Primeira entrada de áudio"
 
 #: bse/bseamplifier.idl:46 plugins/bseadder.c:99 plugins/bsebalance.idl:37
 #: plugins/bsemult.c:62
 msgid "Audio In2"
-msgstr ""
+msgstr "Entrada de áudio2"
 
 #: bse/bseamplifier.idl:46 plugins/bsebalance.idl:37
 msgid "Second audio input"
-msgstr ""
+msgstr "Segunda entrada de áudio"
 
 #: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
 msgid "Ctrl In1"
-msgstr ""
+msgstr "Entrada de controle1"
 
 #: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
 msgid "First control input"
-msgstr ""
+msgstr "Primeira entrada de controle"
 
 #: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
 msgid "Ctrl In2"
-msgstr ""
+msgstr "Entrada de controle2"
 
 #: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
 msgid "Second control input"
-msgstr ""
+msgstr "Segunda entrada de controle"
 
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
 #: bse/bsewaveosc.c:155 plugins/artscompressor.idl:33 plugins/bseadder.c:101
@@ -2535,7 +2523,7 @@ msgstr "Saída de áudio"
 
 #: bse/bseamplifier.idl:49
 msgid "Amplified audio output"
-msgstr ""
+msgstr "Saída de áudio amplificada"
 
 #: bse/bseamplifier.idl:50 plugins/bsebalance.idl:43
 msgid "Audio Input"
@@ -2544,20 +2532,20 @@ msgstr "Entrada de áudio"
 #: bse/bseamplifier.idl:51 bse/bseamplifier.idl:56 plugins/bsebalance.idl:44
 #: plugins/bsebalance.idl:49
 msgid "Input 1 [%]"
-msgstr ""
+msgstr "Entrada 1 [%]"
 
 #: bse/bseamplifier.idl:51 plugins/bsebalance.idl:44
 msgid "Attenuate the level of audio input 1"
-msgstr ""
+msgstr "Atenua o nível da entrada de áudio 1"
 
 #: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:45
 #: plugins/bsebalance.idl:50
 msgid "Input 2 [%]"
-msgstr ""
+msgstr "Entrada 2 [%]"
 
 #: bse/bseamplifier.idl:52 plugins/bsebalance.idl:45
 msgid "Attenuate the level of audio input 2"
-msgstr ""
+msgstr "Atenua o nível da entrada de áudio 2"
 
 #: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:46
 #: plugins/bsebalance.idl:51
@@ -2570,29 +2558,29 @@ msgstr "Balanceia os níveis das entradas de áudio"
 
 #: bse/bseamplifier.idl:55 plugins/bsebalance.idl:48
 msgid "Control Input"
-msgstr ""
+msgstr "Entrada de controle"
 
 #: bse/bseamplifier.idl:56 plugins/bsebalance.idl:49
 msgid "Attenuate the level of control input 1"
-msgstr ""
+msgstr "Atenua o nível da entrada de controle 1"
 
 #: bse/bseamplifier.idl:57 plugins/bsebalance.idl:50
 msgid "Attenuate the level of control input 2"
-msgstr ""
+msgstr "Atenua o nível da entrada de controle 2"
 
 #: bse/bseamplifier.idl:58 plugins/bsebalance.idl:51
 msgid "Balance control input levels"
-msgstr ""
+msgstr "Balanceia os níveis das entradas de controle"
 
 #: bse/bseamplifier.idl:59
 msgid "Multiply Controls"
-msgstr ""
+msgstr "Controles de multiplicação"
 
 #: bse/bseamplifier.idl:60
 msgid ""
 "Switch the two control inputs to work like a chain of gain controls, rather "
 "than mixing them together, weighted by balance."
-msgstr ""
+msgstr "Faz com que os controles de entrada funcionem como um conjunto de controles de ganho, em vez de mixá-los, reforçados pelo balanço."
 
 #: bse/bseamplifier.idl:63
 msgid "Exponential Control"
@@ -2600,15 +2588,15 @@ msgstr "Controle exponencial"
 
 #: bse/bseamplifier.idl:63
 msgid "Toggle exponential and linear control response"
-msgstr ""
+msgstr "Alterna a resposta dos controles entre exponencial e linear"
 
 #: bse/bseamplifier.idl:66 plugins/bsebalance.idl:54
 msgid "Control Strength"
-msgstr ""
+msgstr "Peso do controle"
 
 #: bse/bseamplifier.idl:66
 msgid "Adjust how much the control signals affect the output volume"
-msgstr ""
+msgstr "Ajusta o quanto os sinais do controle afetam o volume de saída"
 
 #: bse/bseamplifier.idl:67
 msgid "Base Volume"
@@ -2616,7 +2604,7 @@ msgstr "Volume base"
 
 #: bse/bseamplifier.idl:67
 msgid "Base amplification (the control signal adds up to this)"
-msgstr ""
+msgstr "Base de amplificação (o sinal de controle adiciona até esse valor)"
 
 #: bse/bseamplifier.idl:68
 msgid "Master Volume"
@@ -2624,7 +2612,7 @@ msgstr "Volume mestre"
 
 #: bse/bseamplifier.idl:68
 msgid "Output stage amplification"
-msgstr ""
+msgstr "Amplificação do estágio de saída"
 
 #: bse/bseautodoc.c:360 bse/bseautodoc.c:422
 msgid "Authors:"
@@ -2632,7 +2620,7 @@ msgstr "Autores:"
 
 #: bse/bseautodoc.c:365 bse/bseautodoc.c:425
 msgid "License:"
-msgstr "Licensa:"
+msgstr "Licença:"
 
 #: bse/bseautodoc.c:408 bse/bseautodoc.c:410
 msgid "BSE-Objects"
@@ -2644,7 +2632,7 @@ msgstr " Referências do objeto"
 
 #: bse/bseautodoc.c:429
 msgid "Properties:"
-msgstr "Propriedades"
+msgstr "Propriedades:"
 
 #: bse/bseautodoc.c:455 bse/bseautodoc.c:488 bse/bseautodoc.c:505
 msgid "Identifier:"
@@ -2684,7 +2672,7 @@ msgstr "Tipo de filtro"
 
 #: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:119
 msgid "The filter design type"
-msgstr ""
+msgstr "O tipo de desenho do filtro"
 
 #: bse/bsebiquadfilter.c:130 bse/bsebiquadfilter.c:138
 msgid "Center Frequency"
@@ -2693,7 +2681,7 @@ msgstr "Freqüência central"
 #: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:141
 #: plugins/bseiirfilter.c:151
 msgid "Cutoff [Hz]"
-msgstr ""
+msgstr "Corte [Hz]"
 
 #: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:147
 #: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
@@ -2710,12 +2698,12 @@ msgstr "Ganho [dB]"
 
 #: bse/bsebiquadfilter.c:152
 msgid "Norm Type"
-msgstr ""
+msgstr "Tipo de norma"
 
 #: bse/bsebiquadfilter.c:153
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
-msgstr ""
+msgstr "O tipo de normalização de ganho do filtro (suportado apenas por passa-alta e passa-baixa)"
 
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
 #: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
@@ -2727,78 +2715,78 @@ msgstr "Modulação"
 
 #: bse/bsebiquadfilter.c:161 bse/bsestandardosc.c:156
 msgid "Strength of linear frequency modulation"
-msgstr ""
+msgstr "Peso da modulação de freqüência linear"
 
 #: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:162 bse/bsewaveosc.c:134
 msgid "Perform exponential frequency modulation instead of linear"
-msgstr ""
+msgstr "Executa uma modulação de freqüência exponencial em vez de linear"
 
 #: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:140
 msgid "Number of octaves to be affected by exponential frequency modulation"
-msgstr ""
+msgstr "Número de oitavas que serão afetadas pela modulação exponencial de freqüência"
 
 #: bse/bsebiquadfilter.c:179
 #, no-c-format
 msgid "Gain Modulation [%]"
-msgstr ""
+msgstr "Modulação de ganho [%]"
 
 #: bse/bsebiquadfilter.c:180
 msgid "Strength of gain modulation"
-msgstr ""
+msgstr "Peso da modulação de ganho"
 
 #: bse/bsebiquadfilter.c:184 plugins/artscompressor.idl:32
 #: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:160
 #: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
 #: plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
-msgstr "Entrada de áudio"
+msgstr "Ent áudio"
 
 #: bse/bsebiquadfilter.c:184
 msgid "Unfiltered Audio Signal"
-msgstr ""
+msgstr "Sinal de áudio não filtrado"
 
 #: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:192 bse/bsewaveosc.c:149
 #: plugins/davorgan.c:132 plugins/davsyndrum.c:116
 #: plugins/davxtalstrings.c:141
 msgid "Freq In"
-msgstr ""
+msgstr "Ent Freq"
 
 #: bse/bsebiquadfilter.c:186
 msgid "Center Frequency Input"
-msgstr ""
+msgstr "Entrada de freqüência central"
 
 #: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
 msgid "Freq Mod In"
-msgstr ""
+msgstr "Ent Mod Freq"
 
 #: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
 msgid "Frequency Modulation Input"
-msgstr ""
+msgstr "Entrada de modulação de freqüência"
 
 #: bse/bsebiquadfilter.c:190
 msgid "Gain Mod In"
-msgstr ""
+msgstr "Ent Mod Ganho"
 
 #: bse/bsebiquadfilter.c:190
 msgid "Gain Modulation Input"
-msgstr ""
+msgstr "Entrada de modulação de ganho"
 
 #: bse/bsebiquadfilter.c:192
 msgid "Filtered Audio Signal"
-msgstr ""
+msgstr "Sinal de áudio filtrado"
 
 #: bse/bseconstant.c:84
 msgid "/Other Sources/Constant"
-msgstr ""
+msgstr "/Outras Fontes/Constante"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
 #, c-format
 msgid "Constant Output %u"
-msgstr ""
+msgstr "Saída constante %u"
 
 #: bse/bseconstant.c:109
 msgid "Value [float]"
-msgstr "Valor [real]"
+msgstr "Valor [flutuante]"
 
 #: bse/bseconstant.c:117 bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 #: bse/bsestandardosc.c:143
@@ -2808,7 +2796,7 @@ msgstr "Freqüência"
 #: bse/bseconstant.c:136
 #, c-format
 msgid "Const Out%u"
-msgstr ""
+msgstr "Saída constante%u"
 
 #: bse/bsecore.idl:379
 msgid "State"
@@ -2826,7 +2814,7 @@ msgstr "Prioridade"
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
-msgstr ""
+msgstr "O valor ótimo de uma thread, -20 indica uma thread de alta prioridade e +19 uma de baixa prioridade que é 'ótimo' para outras"
 
 #: bse/bsecore.idl:383
 msgid "Processor"
@@ -2876,7 +2864,7 @@ msgstr "Latência [ms]"
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
-msgstr ""
+msgstr "Duração do processamento entre entrada e saída de uma única amostra, valores menores aumentam a carga da CPU"
 
 #: bse/bsecore.idl:436
 msgid "Synth Mixing Frequency"
@@ -2895,11 +2883,11 @@ msgstr "Freqüência de controle de síntese"
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
-msgstr ""
+msgstr "Freqüência na qual os valores de controle são testados, devem ser bem menores que a Freqüência de mixagem de síntese para reduzir a carga da CPU"
 
 #: bse/bseinstrumentinput.c:68
 msgid "/Input & Output/Instrument Voice Input"
-msgstr ""
+msgstr "/Entrada e Saída/Entrada de voz do instrumento"
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 msgid "Note Frequency"
@@ -2907,11 +2895,11 @@ msgstr "Freqüência da nota"
 
 #: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
 msgid "Gate"
-msgstr ""
+msgstr "Gate"
 
 #: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
 msgid "High if the note is currently being pressed"
-msgstr ""
+msgstr "Alto se a nota está sendo pressionada atualmente"
 
 #: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
 msgid "Velocity"
@@ -2927,11 +2915,11 @@ msgstr ""
 
 #: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
 msgid "Velocity while the note is pressed"
-msgstr ""
+msgstr "Velocidade enquanto a nota é pressionada"
 
 #: bse/bseinstrumentoutput.c:68
 msgid "/Input & Output/Instrument Output"
-msgstr "/Entrada & Saída/Saída do instrumento"
+msgstr "/Entrada e Saída/Saída do instrumento"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2955,19 +2943,19 @@ msgstr "Não usado"
 
 #: bse/bseinstrumentoutput.c:107
 msgid "Synth Done"
-msgstr ""
+msgstr "Síntese pronta"
 
 #: bse/bseinstrumentoutput.c:107
 msgid "High indicates the instrument is done synthesizing"
-msgstr ""
+msgstr "Alto indica que a síntese do instrumento está pronta"
 
 #: bse/bsemidicontroller.c:86
 msgid "/Input & Output/MIDI Control Input"
-msgstr ""
+msgstr "/Entrada e Saída/Entrada de controle MIDI"
 
 #: bse/bsemidicontroller.c:137
 msgid "Ctrl Out1"
-msgstr ""
+msgstr "Saída de controle1"
 
 #: bse/bsemidicontroller.c:137
 msgid "MIDI Signal 1"
@@ -2975,7 +2963,7 @@ msgstr "Sinal MIDI 1"
 
 #: bse/bsemidicontroller.c:139
 msgid "Ctrl Out2"
-msgstr ""
+msgstr "Saída de controle2"
 
 #: bse/bsemidicontroller.c:139
 msgid "MIDI Signal 2"
@@ -2983,7 +2971,7 @@ msgstr "Sinal MIDI 2"
 
 #: bse/bsemidicontroller.c:141
 msgid "Ctrl Out3"
-msgstr ""
+msgstr "Saída de controle3"
 
 #: bse/bsemidicontroller.c:141
 msgid "MIDI Signal 3"
@@ -2991,7 +2979,7 @@ msgstr "Sinal MIDI 3"
 
 #: bse/bsemidicontroller.c:143
 msgid "Ctrl Out4"
-msgstr ""
+msgstr "Saída de controle4"
 
 #: bse/bsemidicontroller.c:143
 msgid "MIDI Signal 4"
@@ -2999,19 +2987,19 @@ msgstr "Sinal MIDI 4"
 
 #: bse/bsemidiinput.c:82
 msgid "/Input & Output/MIDI Voice Input"
-msgstr ""
+msgstr "/Entrada e Saída/Entrada de voz MIDI"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
 msgid "Freq Out"
-msgstr ""
+msgstr "Freqüência de saída"
 
 #: bse/bsemidivoice.c:111 bse/bsewaveosc.c:157
 msgid "Gate Out"
-msgstr ""
+msgstr "Saída de gate"
 
 #: bse/bsemidivoice.c:113
 msgid "Velocity Out"
-msgstr ""
+msgstr "Velocidade de saída"
 
 #: bse/bsemidivoice.c:115
 msgid "Aftertouch Out"
@@ -3093,20 +3081,20 @@ msgstr "Arquivo WAVE"
 
 #: bse/bseserver.c:144
 msgid "Name of the WAVE file used for recording BSE sound output"
-msgstr "Nome do WAVE usado para gravar a saída de som do BSE"
+msgstr "Nome do arquivo WAVE usado para gravar a saída de som do BSE"
 
 #: bse/bseserver.c:504
 msgid "Advice about MIDI device selections"
-msgstr ""
+msgstr "Avisar sobre seleções de dispositivos MIDI"
 
 #: bse/bseserver.c:505
 msgid "Alert me about MIDI device selections"
-msgstr ""
+msgstr "Alerte-me sobre seleções de dispositivos MIDI"
 
 #: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr ""
+msgstr "falha ao abrir o dispositivo MIDI %s (revertendo para dispositivo nulo): %s"
 
 #: bse/bseserver.c:548
 #, c-format
@@ -3115,37 +3103,37 @@ msgstr "falha ao abrir o arquivo de saída \"%s\": %s"
 
 #: bse/bsesnooper.c:77
 msgid "/Misc/Snooper"
-msgstr ""
+msgstr "/Miscelânea/Snooper"
 
 #: bse/bsesnooper.c:108
 msgid "Signal In"
-msgstr "Entrada de sinal"
+msgstr "Sinal de entrada"
 
 #: bse/bsesnooper.c:108
 msgid "Snoop Signal"
-msgstr ""
+msgstr "Observar sinal"
 
 #: bse/bsestandardosc.c:106
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
-msgstr ""
+msgstr "StandardOsc é o oscilador de base do BSE que suporta diversos tipos de formas de onda e entradas de modulação."
 
 #: bse/bsestandardosc.c:109
 msgid "/Audio Sources/Standard Oscillator"
-msgstr ""
+msgstr "/Fontes de áudio/Oscilador padrão"
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
 msgid "Wave Form"
-msgstr ""
+msgstr "Forma de onda"
 
 #: bse/bsestandardosc.c:132 bse/bsewaveosc.c:121 bse/bsewaveosc.c:123
 msgid "Wave"
-msgstr "Wave"
+msgstr "Onda"
 
 #: bse/bsestandardosc.c:132
 msgid "Oscillator wave form"
-msgstr ""
+msgstr "Forma de onda do oscilador"
 
 #: bse/bsestandardosc.c:138
 msgid "Phase"
@@ -3161,7 +3149,7 @@ msgstr "Ajuste fino"
 
 #: bse/bsestandardosc.c:155 bse/bsewaveosc.c:127
 msgid "Input Modulation [%]"
-msgstr ""
+msgstr "Modulação de entrada [%]"
 
 #: bse/bsestandardosc.c:161 bse/bsewaveosc.c:133
 msgid "Exponential FM"
@@ -3173,76 +3161,76 @@ msgstr "Oitavas"
 
 #: bse/bsestandardosc.c:173
 msgid "Self Modulation [%]"
-msgstr ""
+msgstr "Auto-modulação [%]"
 
 #: bse/bsestandardosc.c:174
 msgid "Strength of self modulation"
-msgstr ""
+msgstr "Peso da auto-modulação"
 
 #: bse/bsestandardosc.c:177 bse/bsestandardosc.c:184
 msgid "Pulse Modulation"
-msgstr ""
+msgstr "Modulação do pulso"
 
 #: bse/bsestandardosc.c:179
 msgid "Pulse Width"
-msgstr ""
+msgstr "Largura do pulso"
 
 #: bse/bsestandardosc.c:180
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
-msgstr ""
+msgstr "Proporção da duração da componente positiva da forma de onda do pulso (o Pulso tem que ser selecionado como forma de onda para que isso tenha efeito)"
 
 #: bse/bsestandardosc.c:186
 msgid "Pulse Modulation [%]"
-msgstr ""
+msgstr "Modulação do pulso [%]"
 
 #: bse/bsestandardosc.c:187
 msgid ""
 "Strength of pulse wisth modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
-msgstr ""
+msgstr "Peso da entrada de modulação de largura de pulso (o Pulso tem que ser selecionado como forma de onda para que isso tenha efeito)"
 
 #: bse/bsestandardosc.c:192
 msgid "Oscillating Frequency Input"
-msgstr ""
+msgstr "Entrada de freqüência de oscilação"
 
 #: bse/bsestandardosc.c:196
 msgid "PWM In"
-msgstr ""
+msgstr "Entrada de MLP"
 
 #: bse/bsestandardosc.c:196
 msgid "Pulse Width Modulation Input"
-msgstr ""
+msgstr "Entrada de Modulação de Largura de Pulso"
 
 #: bse/bsestandardosc.c:198 bse/bsewaveosc.c:151
 msgid "Sync In"
-msgstr ""
+msgstr "Ent Sinc"
 
 #: bse/bsestandardosc.c:198 bse/bsewaveosc.c:151
 msgid "Syncronization Input"
-msgstr ""
+msgstr "Entrada de sincronização"
 
 #: bse/bsestandardosc.c:200
 msgid "Oscillated Output"
-msgstr ""
+msgstr "Saída oscilada"
 
 #: bse/bsestandardosc.c:202
 msgid "Sync Out"
-msgstr ""
+msgstr "Saída Sinc"
 
 #: bse/bsestandardosc.c:202
 msgid "Syncronization Output"
-msgstr ""
+msgstr "Saída de sincronização"
 
 #: bse/bsesubiport.c:90
 msgid "/Virtualization/Virtual Input"
-msgstr ""
+msgstr "/Virtualização/Entrada virtual"
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
 #, c-format
 msgid "Input Port %u"
-msgstr ""
+msgstr "Porta de entrada %u"
 
 #: bse/bsesubiport.c:124 bse/bsesuboport.c:124 bse/bsesubsynth.c:122
 msgid "Assignments"
@@ -3251,54 +3239,54 @@ msgstr "Atribuições"
 #: bse/bsesubiport.c:126 bse/bsesuboport.c:126
 msgid ""
 "The port name is a unique name to establish input<->output port relationships"
-msgstr ""
+msgstr "O nome da porta é um nome único para estabelecer relacionamentos com portas entrada<->saída"
 
 #: bse/bsesubiport.c:134 bse/bsesubsynth.c:152
 #, c-format
 msgid "Virtual input %u"
-msgstr ""
+msgstr "Entrada virtual %u"
 
 #: bse/bsesuboport.c:90
 msgid "/Virtualization/Virtual Output"
-msgstr ""
+msgstr "/Virtualização/Saída virtual"
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
 #, c-format
 msgid "Output Port %u"
-msgstr ""
+msgstr "Porta de saída %u"
 
 #: bse/bsesuboport.c:134 bse/bsesubsynth.c:159
 #, c-format
 msgid "Virtual output %u"
-msgstr ""
+msgstr "Saída virtual %u"
 
 #: bse/bsesubsynth.c:97
 msgid "/Virtualization/Virtual Sub Synth"
-msgstr ""
+msgstr "/Virtualização/Sub-síntese virtual"
 
 #: bse/bsesubsynth.c:124
 msgid "Synthesis Network"
-msgstr ""
+msgstr "Rede de síntese"
 
 #: bse/bsesubsynth.c:125
 msgid "The synthesis network to interface to"
-msgstr ""
+msgstr "A rede de síntese com a qual deve ser feita interface"
 
 #: bse/bsesubsynth.c:134
 msgid "Input Assignments"
-msgstr ""
+msgstr "Atribuições de entrada"
 
 #: bse/bsesubsynth.c:135
 msgid "Output port name to interface from"
-msgstr ""
+msgstr "Porta de saída com a qual deve ser feita interface"
 
 #: bse/bsesubsynth.c:144
 msgid "Output Assignments"
-msgstr ""
+msgstr "Atribuições de saída"
 
 #: bse/bsesubsynth.c:145
 msgid "Input port name to interface to"
-msgstr ""
+msgstr "Porta de entrada com a qual deve ser feita interface"
 
 #: bse/bsesuper.c:101
 msgid "Author"
@@ -3310,11 +3298,11 @@ msgstr "Pessoa que alterou ou criou esse objeto"
 
 #: bse/bsesuper.c:106
 msgid "License"
-msgstr "Licensa"
+msgstr "Licença"
 
 #: bse/bsesuper.c:106
 msgid "Copyright license applying to this object"
-msgstr "Licensa de copyright aplicável a esse objeto"
+msgstr "Licença de copyright aplicável a esse objeto"
 
 #: bse/bsesuper.c:114
 msgid "Creation Time"
@@ -3326,35 +3314,35 @@ msgstr "Hora da última modificação"
 
 #: bse/bsewaveosc.c:97
 msgid "/Audio Sources/Wave Oscillator"
-msgstr ""
+msgstr "/Fontes de áudio/Oscilador de onda"
 
 #: bse/bsewaveosc.c:123
 msgid "Wave to play"
-msgstr ""
+msgstr "Onda para reproduzir"
 
 #: bse/bsewaveosc.c:128
 msgid "Modulation Strength for linear frequency modulation"
-msgstr ""
+msgstr "Peso da Modulação para a modulação linear de freqüência"
 
 #: bse/bsewaveosc.c:149 plugins/davorgan.c:132
 msgid "Frequency Input"
-msgstr ""
+msgstr "Entrada de freqüência"
 
 #: bse/bsewaveosc.c:153
 msgid "Mod In"
-msgstr ""
+msgstr "Ent Mod"
 
 #: bse/bsewaveosc.c:153
 msgid "Modulation Input"
-msgstr ""
+msgstr "Entrada de modulação"
 
 #: bse/bsewaveosc.c:155
 msgid "Wave Output"
-msgstr "Saída Wave"
+msgstr "Saída de onda"
 
 #: bse/bsewaveosc.c:157
 msgid "Gate Output"
-msgstr ""
+msgstr "Saída de gate"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -3362,7 +3350,7 @@ msgstr "BEAST"
 
 #: data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
-msgstr ""
+msgstr "Aplicação de Faixas MIDI, de Composição Musical e de Síntese Modular"
 
 #: data/beast.desktop.in.h:3
 msgid "Music Composer"
@@ -3374,49 +3362,49 @@ msgstr "Áudio"
 
 #: data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
-msgstr ""
+msgstr "Arquivo wave multi-parte do BSE"
 
 #: data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
-msgstr ""
+msgstr "Arquivo de síntese do BSE"
 
 #: plugins/artscompressor.idl:29 plugins/artscompressor.idl:46
 #: plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
-msgstr ""
+msgstr "Licença Pública Geral GNU (GPL)"
 
 #: plugins/artscompressor.idl:30
 msgid "/Enhance/ArtsCompressor"
-msgstr ""
+msgstr "/Melhorar/ArtsCompressor"
 
 #: plugins/artscompressor.idl:31
 msgid "ArtsCompressor compresses the sound."
-msgstr ""
+msgstr "ArtsCompressor compacta o som."
 
 #: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
 #: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
-msgstr ""
+msgstr "Entrada de áudio"
 
 #: plugins/artscompressor.idl:33
 msgid "Compressed audio output"
-msgstr ""
+msgstr "Saída de áudio compactado"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Attack [ms]"
-msgstr ""
+msgstr "Ataque [ms]"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Set the attack time in milliseconds"
-msgstr ""
+msgstr "Defina o tempo de ataque, em milissegundos"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Release [ms]"
-msgstr ""
+msgstr "Soltar [ms]"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Set the release time in milliseconds"
-msgstr ""
+msgstr "Defina o tempo de liberação, em milissegundos"
 
 #: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Threshold"
@@ -3432,7 +3420,7 @@ msgstr "Taxa"
 
 #: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Set the compression ratio"
-msgstr "Define a taxa de compressão"
+msgstr "Define a taxa de compactação"
 
 #: plugins/artscompressor.idl:39 plugins/artscompressor.idl:58
 msgid "Set the output amplification"
@@ -3440,51 +3428,51 @@ msgstr "Define a amplificação de saída"
 
 #: plugins/artscompressor.idl:47
 msgid "/Enhance/ArtsStereoCompressor"
-msgstr ""
+msgstr "/Melhorar/ArtsStereoCompressor"
 
 #: plugins/artscompressor.idl:48
 msgid "ArtsStereoCompressor compresses the sound."
-msgstr ""
+msgstr "ArtsStereoCompressor compacta o som."
 
 #: plugins/artscompressor.idl:49
 msgid "Left audio input"
-msgstr ""
+msgstr "Entrada esquerda de áudio"
 
 #: plugins/artscompressor.idl:50
 msgid "Right audio input"
-msgstr ""
+msgstr "Entrada direita de áudio"
 
 #: plugins/artscompressor.idl:51
 msgid "Compressed left audio output"
-msgstr ""
+msgstr "Saída esquerda de áudio compactado"
 
 #: plugins/artscompressor.idl:52
 msgid "Compressed right audio output"
-msgstr ""
+msgstr "Saída direita de áudio compactado"
 
 #: plugins/bseadder.c:97 plugins/bsemult.c:60
 msgid "Audio Input 1"
-msgstr ""
+msgstr "Entrada de áudio 1"
 
 #: plugins/bseadder.c:99 plugins/bsemult.c:62
 msgid "Audio Input 2"
-msgstr ""
+msgstr "Entrada de áudio 2"
 
 #: plugins/bseadder.c:101 plugins/bsemult.c:68
 msgid "Audio Output"
-msgstr ""
+msgstr "Saída de áudio"
 
 #: plugins/bseatandistort.c:90
 msgid "Audio Input SIgnal"
-msgstr ""
+msgstr "Sinal de entrada de áudio"
 
 #: plugins/bseatandistort.c:92
 msgid "Distorted Audio Output"
-msgstr ""
+msgstr "Saída de áudio distorcido"
 
 #: plugins/bsebalance.idl:27
 msgid "/Spatial/Balance"
-msgstr ""
+msgstr "/Espacial/Balanço"
 
 #: plugins/bsebalance.idl:28
 msgid ""
@@ -3493,47 +3481,47 @@ msgid ""
 "is controlled by a balance adjustment and the sum of the control inputs. To "
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
-msgstr ""
+msgstr "BseBalance é um módulo de ajuste stereo com duas entradas áudio e duas de controle, cada uma delas pode ter seu nível ajustado separadamente. O balanço de saída resultante é controlado por um ajustamento de balanço e a soma das entradas de controle. Para evitar distorções devido a alterações rápidas de balanço, o sinal de controle é pré-processado por um filtro passa-baixa simples com freqüência de corte ajustável."
 
 #: plugins/bsebalance.idl:40
 msgid "Left audio output"
-msgstr ""
+msgstr "Saída esquerda de áudio"
 
 #: plugins/bsebalance.idl:41
 msgid "Mix Out"
-msgstr ""
+msgstr "Saída Mix"
 
 #: plugins/bsebalance.idl:41
 msgid "Mixed audio output"
-msgstr ""
+msgstr "Saída de áudio mixado"
 
 #: plugins/bsebalance.idl:42
 msgid "Right audio output"
-msgstr ""
+msgstr "Saída direita de áudio"
 
 #: plugins/bsebalance.idl:53
 msgid "Output Panning"
-msgstr ""
+msgstr "Ajuste de saída"
 
 #: plugins/bsebalance.idl:54
 msgid "Adjust how much the control signals affect the output balance"
-msgstr ""
+msgstr "Ajusta o quanto os sinais de controle afetam o balanço de saída"
 
 #: plugins/bsebalance.idl:55
 msgid "Lowpass [Hz]"
-msgstr ""
+msgstr "Passa-baixa [Hz]"
 
 #: plugins/bsebalance.idl:55
 msgid "Lowpass filter frequency for the control signal"
-msgstr ""
+msgstr "Freqüência do filtro passa-baixa para o sinal de controle"
 
 #: plugins/bsebalance.idl:56
 msgid "Output Balance"
-msgstr ""
+msgstr "Balanço de saída"
 
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
-msgstr ""
+msgstr "Ajusta o balanço de saída entre esquerda e direita"
 
 #: plugins/bsefirfilter.c:143
 msgid "Mono Out"
@@ -3541,7 +3529,7 @@ msgstr "Saída mono"
 
 #: plugins/bsefirfilter.c:143
 msgid "Mono Filtered Output"
-msgstr ""
+msgstr "Saída filtrada mono"
 
 #: plugins/bsefirfilter.c:145
 msgid "Mono In"
@@ -3549,23 +3537,23 @@ msgstr "Entrada mono"
 
 #: plugins/bsefirfilter.c:145
 msgid "Mono Signal Input"
-msgstr ""
+msgstr "Entrada de sinal mono"
 
 #: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
 msgid "Filter Choice"
-msgstr ""
+msgstr "Escolha do filtro"
 
 #: plugins/bseiirfilter.c:119
 msgid "Filter Algorithm"
-msgstr ""
+msgstr "Algoritmo de filtro"
 
 #: plugins/bseiirfilter.c:125
 msgid "The type of filter to use"
-msgstr ""
+msgstr "O tipo de filtro para usar"
 
 #: plugins/bseiirfilter.c:129 plugins/bseiirfilter.c:134
 msgid "Filter Specification"
-msgstr ""
+msgstr "Especificação do filtro"
 
 #: plugins/bseiirfilter.c:131
 msgid "Order"
@@ -3577,101 +3565,101 @@ msgstr "Ordem de filtro"
 
 #: plugins/bseiirfilter.c:136
 msgid "Epsilon"
-msgstr ""
+msgstr "Ípsilon"
 
 #: plugins/bseiirfilter.c:136
 msgid "Passband falloff at cutoff frequency"
-msgstr ""
+msgstr "Queda do passa-faixa na freqüência de corte"
 
 #: plugins/bseiirfilter.c:139 plugins/bseiirfilter.c:144
 msgid "Cutoff Frequency (All Filters)"
-msgstr ""
+msgstr "Freqüência de corte (Todos os filtros)"
 
 #: plugins/bseiirfilter.c:149 plugins/bseiirfilter.c:154
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
-msgstr ""
+msgstr "Freqüência de corte 2 (Passagem de faixa/Parada)"
 
 #: plugins/bseiirfilter.c:160
 msgid "Unfiltered Input"
-msgstr ""
+msgstr "Entrada não filtrada"
 
 #: plugins/bseiirfilter.c:162
 msgid "Filtered Output"
-msgstr ""
+msgstr "Saída filtrada"
 
 #: plugins/bsemixer.c:109
 msgid "Sole Output"
-msgstr ""
+msgstr "Saída solo"
 
 #: plugins/bsemixer.c:115
 #, c-format
 msgid "Channel%u"
-msgstr ""
+msgstr "Canal%u"
 
 #: plugins/bsemixer.c:117
 #, c-format
 msgid "Channel%u [float]"
-msgstr ""
+msgstr "Canal%u [flutuante]"
 
 #: plugins/bsemixer.c:127
 #, c-format
 msgid "Channel%u [dB]"
-msgstr ""
+msgstr "Canal%u [dB]"
 
 #: plugins/bsemixer.c:138
 #, c-format
 msgid "Channel%u [%%]"
-msgstr ""
+msgstr "Canal%u [%%]"
 
 #: plugins/bsemixer.c:149
 #, c-format
 msgid "Audio In%u"
-msgstr ""
+msgstr "Ent áudio%u"
 
 #: plugins/bsemixer.c:150
 #, c-format
 msgid "Input Channel %u"
-msgstr ""
+msgstr "Canal de entrada %u"
 
 #: plugins/bsemult.c:64
 msgid "Audio In3"
-msgstr ""
+msgstr "Ent áudio3"
 
 #: plugins/bsemult.c:64
 msgid "Audio Input 3"
-msgstr ""
+msgstr "Entrada de áudio 3"
 
 #: plugins/bsemult.c:66
 msgid "Audio In4"
-msgstr ""
+msgstr "Ent áudio4"
 
 #: plugins/bsemult.c:66
 msgid "Audio Input 4"
-msgstr ""
+msgstr "Entrada de áudio 4"
 
 #: plugins/bsenoise.c:64
 msgid "Noise Out"
-msgstr ""
+msgstr "Saída ruído"
 
 #: plugins/bsenoise.c:64
 msgid "Noise Output"
-msgstr ""
+msgstr "Saída de ruído"
 
 #: plugins/bsesequencer.c:107
 msgid "Frequency Signal"
-msgstr ""
+msgstr "Sinal de freqüência"
 
 #: plugins/bsesequencer.c:109
 msgid "Note Sync"
-msgstr ""
+msgstr "Sinc nota"
 
 #: plugins/bsesequencer.c:109
 msgid "Note Sync Signal"
-msgstr ""
+msgstr "Sinal de sincronia da nota"
 
 #: plugins/bsesimpleadsr.c:118
 msgid "Gate In"
-msgstr ""
+msgstr "Ent gate"
 
 #: plugins/bsesimpleadsr.c:118
 msgid "Gate input (activates/deactivates envelope)"
@@ -3687,7 +3675,7 @@ msgstr ""
 
 #: plugins/bsesimpleadsr.c:122
 msgid "Ctrl Out"
-msgstr ""
+msgstr "Saída de controle"
 
 #: plugins/bsesimpleadsr.c:122
 msgid "Attack-Decay-Sustain-Release envelope output"
@@ -3695,26 +3683,26 @@ msgstr ""
 
 #: plugins/bsesimpleadsr.c:124
 msgid "Done Out"
-msgstr ""
+msgstr "Saída pronta"
 
 #: plugins/bsesimpleadsr.c:124
 msgid "This signal goes high after the release phase has completed"
-msgstr ""
+msgstr "Esse sinal sobe depois que a fase de liberação terminou"
 
 #: plugins/davbassfilter.idl:29
 msgid "/Filters/Bass Filter"
-msgstr ""
+msgstr "/Filtros/Filtro de grave"
 
 #: plugins/davbassfilter.idl:30
 msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
-msgstr ""
+msgstr "DavBassFilter é um filtro passa-baixa ressonante do tipo TB-303 baseado nas porções VCF303 do gsyn v0.2. O algoritmo de filtro é parcialmente baseado no descrito em \"Musical Applications of Microprocessors\" de Hal Chamberlin."
 
 #: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
-msgstr "Saída de áudio filtrada"
+msgstr "Saída de áudio filtrado"
 
 #: plugins/davbassfilter.idl:37
 msgid "Cutoff [%]"
@@ -3770,7 +3758,7 @@ msgstr "Saída direita de áudio"
 
 #: plugins/davchorus.idl:29
 msgid "/Enhance/Chorus"
-msgstr "/Melhorar/Refrão"
+msgstr "/Melhorar/Chorus"
 
 #: plugins/davchorus.idl:30
 msgid "DavChorus adds more depth to sounds"
@@ -3782,7 +3770,7 @@ msgstr "Saída de áudio de refrão"
 
 #: plugins/davchorus.idl:34
 msgid "Wet out [%]"
-msgstr ""
+msgstr "Saída com efeito [%]"
 
 #: plugins/davchorus.idl:34
 msgid "Set the amount of modified data to mix"
@@ -3811,7 +3799,7 @@ msgstr ""
 
 #: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
 msgid "Trigger In"
-msgstr "Gatilho de entrada"
+msgstr ""
 
 #: plugins/davsyndrum.c:120
 msgid "Hit the drum on raising edges"
@@ -3819,19 +3807,19 @@ msgstr "Bate na bateria nas bordas ascendentes"
 
 #: plugins/davsyndrum.c:122
 msgid "SynDrum Output"
-msgstr ""
+msgstr "Saída SynDrum"
 
 #: plugins/davxtalstrings.c:141
 msgid "Pluck frequency input"
-msgstr ""
+msgstr "Entrada de freqüência de toque"
 
 #: plugins/davxtalstrings.c:143
 msgid "Pluck strings on raising edge"
-msgstr ""
+msgstr "Toca as cordas nas bordas ascendentes"
 
 #: plugins/davxtalstrings.c:145
 msgid "XtalStrings Output"
-msgstr ""
+msgstr "Saída XtalStrings"
 
 #: plugins/evaluator/bseevaluator.idl:28
 msgid "/Misc/Evaluator"
