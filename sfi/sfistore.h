@@ -50,9 +50,9 @@ typedef SfiTokenType (*SfiStoreParser)  (gpointer        context_data,
                                          gpointer        user_data);
 struct _SfiRStore
 {
-  gint           fd;
   GScanner      *scanner;
   gchar         *fname;
+  gint           close_fd;
   gpointer       parser_this;
   SfiNum         bin_offset;
 };
@@ -88,6 +88,7 @@ const gchar*    sfi_wstore_peek_text          (SfiWStore      *wstore,
 
 /* --- readable store --- */
 SfiRStore*      sfi_rstore_new                (void);
+SfiRStore*      sfi_rstore_new_open           (const gchar    *fname);
 void            sfi_rstore_destroy            (SfiRStore      *rstore);
 void            sfi_rstore_input_fd           (SfiRStore      *rstore,
                                                gint            fd,

@@ -22,6 +22,8 @@
 #include "sfiparams.h"
 #include "sfilog.h"
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
@@ -346,13 +348,31 @@ sfi_rstore_new (void)
   SfiRStore *rstore;
 
   rstore = g_new0 (SfiRStore, 1);
-  rstore->fd = -1;
   rstore->scanner = g_scanner_new (sfi_storage_scanner_config);
   rstore->scanner->max_parse_errors = 1;
   rstore->fname = NULL;
   rstore->parser_this = rstore;
+  rstore->close_fd = -1;
   rstore->bin_offset = -1;
 
+  return rstore;
+}
+
+SfiRStore*
+sfi_rstore_new_open (const gchar *fname)
+{
+  SfiRStore *rstore = NULL;
+  if (fname)
+    {
+      gint fd = open (fname, O_RDONLY);
+      if (fd >= 0)
+        {
+          rstore = sfi_rstore_new ();
+          rstore->close_fd = fd;
+          sfi_rstore_input_fd (rstore, fd, fname);
+        }
+    }
+  /* preserve errno for NULL */
   return rstore;
 }
 
@@ -361,6 +381,8 @@ sfi_rstore_destroy (SfiRStore *rstore)
 {
   g_return_if_fail (rstore != NULL);
 
+  if (rstore->close_fd >= 0)
+    close (rstore->close_fd);
   g_scanner_destroy (rstore->scanner);
   g_free (rstore->fname);
   g_free (rstore);
@@ -378,7 +400,6 @@ sfi_rstore_input_fd (SfiRStore   *rstore,
   rstore->fname = g_strdup (fname ? fname : "<anon-fd>");
   rstore->scanner->input_name = rstore->fname;
   rstore->scanner->parse_errors = 0;
-  rstore->fd = fd;
   g_scanner_input_file (rstore->scanner, fd);
 }
 
@@ -578,12 +599,13 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
       off_t sc_offset, zero_offset;
       ssize_t l;
       gboolean seen_zero = FALSE;
+      gint fd = rstore->scanner->input_fd;
 
       /* save current scanning offset */
       g_scanner_sync_file_offset (rstore->scanner);
       g_scanner_sync_file_offset (rstore->scanner);
       do
-	sc_offset = lseek (rstore->fd, 0, SEEK_CUR);
+	sc_offset = lseek (fd, 0, SEEK_CUR);
       while (sc_offset < 0 && errno == EINTR);
       if (sc_offset < 0)
 	return FALSE;
@@ -593,7 +615,7 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
       do
 	{
 	  do
-	    l = read (rstore->fd, sdata, sizeof (sdata));
+	    l = read (fd, sdata, sizeof (sdata));
 	  while (l < 0 && errno == EINTR);
 	  if (l < 0)
 	    return FALSE;
@@ -609,7 +631,7 @@ rstore_ensure_bin_offset (SfiRStore *rstore)
       /* restore scanning offset */
       rstore->bin_offset = zero_offset + 1;
       do
-	l = lseek (rstore->fd, sc_offset, SEEK_SET);
+	l = lseek (fd, sc_offset, SEEK_SET);
       while (l < 0 && errno == EINTR);
       if (l != sc_offset)
 	return FALSE;

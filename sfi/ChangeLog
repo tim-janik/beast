@@ -1,3 +1,7 @@
+Fri Oct  3 13:52:57 2003  Tim Janik  <timj@gtk.org>
+
+	* sfistore.[hc]: added sfi_rstore_new_open().
+
 Sun Sep 21 04:23:18 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bse-plugin-generator.cc: Renamed pdef to idl.
