@@ -30,7 +30,7 @@ G_BEGIN_DECLS
 
 
 /* --- functions --- */
-SfiTime	sfi_time_system		 (void);
+SfiTime	sfi_time_system		 (void);	/* utc */
 SfiTime	sfi_time_to_utc		 (SfiTime	 ustime);
 SfiTime	sfi_time_from_utc	 (SfiTime	 ustime);
 gchar*	sfi_time_to_string	 (SfiTime	 ustime);

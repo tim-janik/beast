@@ -132,7 +132,7 @@ sfi_time_from_utc (SfiTime ustime)
 gchar*
 sfi_time_to_string (SfiTime ustime)
 {
-  time_t t = ustime / SFI_USEC_FACTOR;
+  time_t t = CLAMP (ustime, SFI_MIN_TIME, SFI_MAX_TIME) / SFI_USEC_FACTOR;
   struct tm bt;
   
   bt = *localtime (&t);	/* not thread safe */

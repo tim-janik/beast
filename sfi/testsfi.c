@@ -51,6 +51,56 @@ test_misc (void)
 }
 
 static void
+test_time (void)
+{
+  SfiTime t;
+  gchar *error = NULL;
+  gchar *str;
+  const gchar *time_strings[] = {
+    "1990-01-01 00:00:00",
+    "1999-03-12 23:41:00",
+    "2037-12-31 23:59:59",
+  };
+  gint i;
+  MSG ("Time:");
+  ASSERT (SFI_USEC_FACTOR == 1000000);
+  ASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
+  t = sfi_time_system ();
+  if (t < SFI_MIN_TIME || t > SFI_MAX_TIME)
+    {
+      XTICK ();
+      t = SFI_MIN_TIME / 2 + SFI_MAX_TIME / 2;
+    }
+  else
+    TICK ();
+  t /= SFI_USEC_FACTOR;
+  t *= SFI_USEC_FACTOR;
+  str = sfi_time_to_string (t);
+  ASSERT (sfi_time_from_string_err (str, &error) == t);
+  ASSERT (error == NULL);
+  g_free (str);
+  /* test error returns */
+  ASSERT (sfi_time_from_string_err ("foo 22", &error) == 0);
+  ASSERT (error != NULL);
+  // g_print ("{%s}", error);
+  g_free (error);
+  for (i = 0; i < G_N_ELEMENTS (time_strings); i++)
+    {
+      t = sfi_time_from_string_err (time_strings[i], &error);
+      if (!error)
+	TICK ();
+      else
+	g_print ("{failed to parse \"%s\": %s\n}", time_strings[i], error);
+      g_free (error);
+      str = sfi_time_to_string (t);
+      ASSERT (sfi_time_from_string_err (str, &error) == t);
+      ASSERT (error == NULL);
+      g_free (str);
+    }
+  DONE ();
+}
+
+static void
 test_com_ports (void)
 {
   gint afds[2], pipe_error;
@@ -476,38 +526,6 @@ test_notes (void)
       ASSERT (SFI_NOTE_GENERIC (octave, semitone) == i);
     }
   sfi_note_from_string_err ("NeverNote", &error);
-  ASSERT (error != NULL);
-  // g_print ("{%s}", error);
-  g_free (error);
-  DONE ();
-}
-
-static void
-test_time (void)
-{
-  SfiTime t;
-  gchar *error = NULL;
-  gchar *str;
-  
-  MSG ("Time:");
-  ASSERT (SFI_USEC_FACTOR == 1000000);
-  ASSERT (SFI_MIN_TIME + 1000000 < SFI_MAX_TIME);
-  t = sfi_time_system ();
-  if (t < SFI_MIN_TIME || t > SFI_MAX_TIME)
-    {
-      XTICK ();
-      t = SFI_MIN_TIME / 2 + SFI_MAX_TIME / 2;
-    }
-  else
-    TICK ();
-  t /= SFI_USEC_FACTOR;
-  t *= SFI_USEC_FACTOR;
-  str = sfi_time_to_string (t);
-  ASSERT (sfi_time_from_string_err (str, &error) == t);
-  ASSERT (error == NULL);
-  g_free (str);
-  /* test error returns */
-  ASSERT (sfi_time_from_string_err ("foo 22", &error) == 0);
   ASSERT (error != NULL);
   // g_print ("{%s}", error);
   g_free (error);
