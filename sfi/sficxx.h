@@ -26,6 +26,15 @@ namespace Sfi {
 
 class String {
   char *cstring;
+  int cmp (const char *ostring) const
+  {
+    if (cstring && ostring)
+      return strcmp (cstring, ostring);
+    else if (cstring)
+      return +SFI_MAXINT;
+    else
+      return ostring ? SFI_MININT : 0;
+  }
 public:
   String()
   {
@@ -86,6 +95,24 @@ public:
     g_free (old);
     return *this;
   }
+  bool operator<  (const char *src) const { return cmp (src) < 0; }
+  bool operator<= (const char *src) const { return cmp (src) <= 0; }
+  bool operator>  (const char *src) const { return cmp (src) > 0; }
+  bool operator>= (const char *src) const { return cmp (src) >= 0; }
+  bool operator!= (const char *src) const { return cmp (src) != 0; }
+  bool operator== (const char *src) const { return cmp (src) == 0; }
+  bool operator<  (const String &s) const { return cmp (s.cstring) < 0; }
+  bool operator<= (const String &s) const { return cmp (s.cstring) <= 0; }
+  bool operator>  (const String &s) const { return cmp (s.cstring) > 0; }
+  bool operator>= (const String &s) const { return cmp (s.cstring) >= 0; }
+  bool operator!= (const String &s) const { return cmp (s.cstring) != 0; }
+  bool operator== (const String &s) const { return cmp (s.cstring) == 0; }
+  bool operator<  (const std::string &s) const { return cmp (s.c_str()) < 0; }
+  bool operator<= (const std::string &s) const { return cmp (s.c_str()) <= 0; }
+  bool operator>  (const std::string &s) const { return cmp (s.c_str()) > 0; }
+  bool operator>= (const std::string &s) const { return cmp (s.c_str()) >= 0; }
+  bool operator!= (const std::string &s) const { return cmp (s.c_str()) != 0; }
+  bool operator== (const std::string &s) const { return cmp (s.c_str()) == 0; }
   unsigned int length()
   {
     return strlen (cstring);
@@ -153,6 +180,10 @@ public:
   Type* operator-> () const
   {
     return record;
+  }
+  Type& operator* ()
+  {
+    return *operator-> ();
   }
 };
 
