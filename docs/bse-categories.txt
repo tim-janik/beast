@@ -45,7 +45,7 @@ assigned to them.
 Examples to show the above schemata
 -----------------------------------
 
-{S|P}[A] Source, Procedure and Aliasing tag
+{S|P}[A] Source, Procedure, Effect or Aliasing tag
 |  Name					Category
 -------------------------------------------------------------------------------
 S  BseSine				/Source/Generators/Sine
@@ -61,3 +61,8 @@ P  BsePattern+set-instrument		/Method/BsePattern/Basic/Set Instrument
 P  BsePattern+set-note			/Method/BsePattern/Basic/Set Note
 P  BsePattern+select-all		/Method/BsePattern/Select/All
 P  BsePattern+cut-selection		/Method/BsePattern/Edit/Cut
+
+E  BseEffectFineTune			/Effect/Fine Tune
+E  BseEffectNoteVolume			/Effect/Note Volume
+E  BseEffectPatternBreak		/Effect/Pattern Break
+E  BseEffectVolumeDelta			/Effect/Volume Delta

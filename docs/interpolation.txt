@@ -39,8 +39,8 @@ i.e. h), we obtain w1. With w0 and w1, we can solve the
 linear equation system formed by c) -> a) and e) -> j)
 to obtain w2 and w3.
 
-c)->a)	  w3 +   w2 +   (V2-V0) / 2 + V1 = V2
-e)->j)	3*w3 + 2*w2 + + (V2-V0) / 2      = (V3-V1) / 2
+c)->a)	  w3 +   w2 + (V2-V0) / 2 + V1 = V2
+e)->j)	3*w3 + 2*w2 + (V2-V0) / 2      = (V3-V1) / 2
 
 With the resulting coefficients:
 
@@ -84,10 +84,10 @@ m)	g(i) = V3 * W3[i] + V2 * W2[i] + V1 * W1[i] + V0 * W0[i]
 and using n precalculated coefficients W[0-3] according to:
 
 	m = i / n
-	W3[i] = 0.5*m^3 - 0.5*m^2
-	W2[i] = -1.5*m^3 + 2*m^2 + 0.5*m
-	W1[i] = 1.5*m^3 - 2.5*m^2 + 1
-	W0[i] = -0.5*m^3 + m^2 - 0.5*m
+	W3[i] =  0.5*m^3 - 0.5*m^2
+	W2[i] = -1.5*m^3 +   2*m^2 + 0.5*m
+	W1[i] =  1.5*m^3 - 2.5*m^2         + 1
+	W0[i] = -0.5*m^3 +     m^2 - 0.5*m
 
 We now need to setup W[0-3][0-n] only once, and are then able to
 obtain up to n approximation values of the curve segment between
