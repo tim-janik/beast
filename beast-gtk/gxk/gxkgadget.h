@@ -27,23 +27,23 @@ G_BEGIN_DECLS
 #define GXK_GADGET    G_OBJECT
 #define GXK_IS_GADGET G_IS_OBJECT
 typedef void          GxkGadget;
-typedef struct _GxkGadgetOpt GxkGadgetOpt;
+typedef struct _GxkGadgetArgs GxkGadgetArgs;
 
 
-/* --- gadget options (aggregation of (name, value) pairs) --- */
-GxkGadgetOpt* gxk_gadget_options        (const gchar        *name1,
+/* --- gadget args (aggregation of (name, value) pairs) --- */
+GxkGadgetArgs* gxk_gadget_args          (const gchar         *name1,
                                          ...);
-GxkGadgetOpt* gxk_gadget_options_valist (const gchar        *name1,
-                                         va_list             var_args);
-GxkGadgetOpt* gxk_gadget_const_options  (void); /* based on intern_string */
-GxkGadgetOpt* gxk_gadget_options_set    (GxkGadgetOpt       *opt,
-                                         const gchar        *name,
-                                         const gchar        *value);
-const gchar*  gxk_gadget_options_get    (const GxkGadgetOpt *opt,
-                                         const gchar        *name);
-GxkGadgetOpt* gxk_gadget_options_merge  (GxkGadgetOpt       *dest,
-                                         const GxkGadgetOpt *source);
-void          gxk_gadget_free_options   (GxkGadgetOpt       *opt);
+GxkGadgetArgs* gxk_gadget_args_valist   (const gchar         *name1,
+                                         va_list              var_args);
+GxkGadgetArgs* gxk_gadget_const_args    (void); /* based on intern_string values */
+GxkGadgetArgs* gxk_gadget_args_set      (GxkGadgetArgs       *args,
+                                         const gchar         *name,
+                                         const gchar         *value);
+const gchar*   gxk_gadget_args_get      (const GxkGadgetArgs *args,
+                                         const gchar         *name);
+GxkGadgetArgs* gxk_gadget_args_merge    (GxkGadgetArgs       *dest,
+                                         const GxkGadgetArgs *source);
+void           gxk_gadget_free_args     (GxkGadgetArgs       *args);
 
 
 /* --- gadget functions --- */
@@ -60,8 +60,8 @@ GxkGadget*    gxk_gadget_creator        (GxkGadget          *gadget,
                                          const gchar        *domain_name,
                                          const gchar        *name,
                                          GxkGadget          *parent,
-                                         GSList             *call_options, /* const GxkGadgetOpt* */
-                                         GSList             *env_options); /* const GxkGadgetOpt* */
+                                         GSList             *call_args, /* const GxkGadgetArgs* */
+                                         GSList             *env_args); /* const GxkGadgetArgs* */
 const gchar*  gxk_gadget_get_domain     (GxkGadget          *gadget);
 void          gxk_gadget_parse          (const gchar        *domain_name,
                                          const gchar        *file_name,
@@ -104,13 +104,13 @@ typedef struct {
                             const gchar        *pack_name,
                             const GValue       *value);
 } GxkGadgetType;
-void      gxk_gadget_define_widget_type   (GType                type);
-void      gxk_gadget_define_type          (GType                type,
-                                           const GxkGadgetType *ggtype);
-gboolean  gxk_gadget_type_lookup          (GType                type,
-                                           GxkGadgetType       *ggtype);
-GxkGadgetOpt* gxk_gadget_data_copy_call_options  (GxkGadgetData *gdgdata);
-GxkGadget*    gxk_gadget_data_get_scope_gadget   (GxkGadgetData *gdgdata);
+void           gxk_gadget_define_widget_type     (GType                type);
+void           gxk_gadget_define_type            (GType                type,
+                                                  const GxkGadgetType *ggtype);
+gboolean       gxk_gadget_type_lookup            (GType                type,
+                                                  GxkGadgetType       *ggtype);
+GxkGadgetArgs* gxk_gadget_data_copy_call_args    (GxkGadgetData       *gdgdata);
+GxkGadget*     gxk_gadget_data_get_scope_gadget  (GxkGadgetData       *gdgdata);
 
 G_END_DECLS
 

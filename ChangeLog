@@ -1,3 +1,8 @@
+Mon Dec 22 19:52:16 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkgadget.[hc]: 
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: s/GxkGadgetOpt/GxkGadgetArgs/.
+
 Mon Dec 22 00:49:05 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstwaveview.c: added missing tooltips.
