@@ -471,6 +471,7 @@ sfi/Makefile
 bse/Makefile
 bse/icons/Makefile
 bse/zintern/Makefile
+bse/tests/Makefile
 plugins/Makefile
 plugins/icons/Makefile
 plugins/freeverb/Makefile

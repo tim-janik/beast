@@ -1,3 +1,9 @@
+Tue May 20 17:46:12 2003  Tim Janik  <timj@gtk.org>
+
+	* tests/cutvorbis.c: added test program for ogg/vorbis file cutting.
+
+	* tests/: new directory to accumulate BSE related test programs.
+
 Tue May 20 15:08:01 2003  Tim Janik  <timj@gtk.org>
 
 	* port code to gcc-3.3.

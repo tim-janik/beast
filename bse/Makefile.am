@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BSE
 
-SUBDIRS = icons zintern
+SUBDIRS = icons zintern . tests
 
 # need -I$(top_srcdir) for <bse/gsldefs.h>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
