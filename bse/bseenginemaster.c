@@ -29,6 +29,9 @@
 #include <errno.h>
 
 
+#define DEBUG        sfi_debug_keyfunc ("engine")
+#define JOB_DEBUG    sfi_debug_keyfunc ("job")
+#define FJOB_DEBUG   sfi_debug_keyfunc ("fjob")
 
 #define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = (node)->module.klass->reset != NULL*/; } G_STMT_END
 
@@ -693,7 +696,7 @@ master_process_flow (void)
   
   g_assert (gsl_fpu_okround () == TRUE);
   
-  MAS_DEBUG ("process_flow");
+  DEBUG ("process_flow");
   if (master_schedule)
     {
       EngineNode *node;
@@ -769,7 +772,7 @@ master_reschedule_flow (void)
   
   g_return_if_fail (master_need_reflow == TRUE);
   
-  MAS_DEBUG ("flow_reschedule");
+  DEBUG ("flow_reschedule");
   if (!master_schedule)
     master_schedule = _engine_schedule_new ();
   else
@@ -830,9 +833,9 @@ _engine_master_prepare (GslEngineLoop *loop)
   if (need_dispatch)
     loop->timeout = 0;
   
-  MAS_DEBUG ("PREPARE: need_dispatch=%u timeout=%6ld n_fds=%u",
-	     need_dispatch,
-	     loop->timeout, loop->n_fds);
+  DEBUG ("PREPARE: need_dispatch=%u timeout=%6ld n_fds=%u",
+	 need_dispatch,
+	 loop->timeout, loop->n_fds);
   
   return need_dispatch;
 }
@@ -862,7 +865,7 @@ _engine_master_check (const GslEngineLoop *loop)
       need_dispatch = master_need_process;
     }
   
-  MAS_DEBUG ("CHECK: need_dispatch=%u", need_dispatch);
+  DEBUG ("CHECK: need_dispatch=%u", need_dispatch);
   
   return need_dispatch;
 }

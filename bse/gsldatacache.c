@@ -135,11 +135,7 @@ gsl_data_cache_open (GslDataCache *dcache)
       if (error)
 	{
 	  /* FIXME: this is pretty fatal, throw out zero blocks now? */
-	  gsl_message_send (GSL_MSG_DATA_CACHE, "Open",
-			    error,
-			    "failed to open \"%s\": %s",
-			    dcache->dhandle->name,
-			    gsl_strerror (error));
+	  sfi_info ("%s: failed to open \"%s\": %s", G_STRLOC, dcache->dhandle->name, gsl_strerror (error));
 	}
       else
 	{
@@ -339,9 +335,7 @@ data_cache_new_node_L (GslDataCache *dcache,
       result = gsl_data_handle_read (dcache->dhandle, offset, size, data);
       if (result < 0)
 	{
-	  gsl_message_send (GSL_MSG_DATA_CACHE, "ReadAhead",
-			    GSL_ERROR_READ_FAILED,
-			    "reading from \"%s\"", dcache->dhandle->name);
+          sfi_info ("ReadAhead: failed to read from \"%s\"", dcache->dhandle->name);
 	  break;
 	}
       else

@@ -25,7 +25,7 @@
 #include "gslfft.h"
 
 
-#define OSC_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_OSC, G_STRLOC)
+#define OSC_DEBUG		sfi_debug_keyfunc ("osc")
 
 #define	OSC_FREQ_EPSILON	(1e-3)	/* range within which frequencies are "equal" */
 

@@ -33,6 +33,8 @@ BSE_DUMMY_TYPE (BsePcmDeviceCSL);
 #include	<errno.h>
 #include	<fcntl.h>
 
+#define	DEBUG	sfi_debug_keyfunc ("pcm")
+
 /* --- CSL PCM handle --- */
 typedef struct
 {
@@ -374,15 +376,14 @@ csl_device_setup (CSLHandle *csl)
       csl->n_frags = n_packets;
     }
   
-  BSE_IF_DEBUG (PCM)
-    g_message ("CSL-SETUP: w=%d r=%d n_channels=%d sample_freq=%.0f fsize=%u nfrags=%u bufsz=%u\n",
-	       handle->writable,
-	       handle->readable,
-	       handle->n_channels,
-	       handle->mix_freq,
-	       csl->frag_size,
-	       csl->n_frags,
-	       csl->n_frags * csl->frag_size);
+  DEBUG ("CSL-SETUP: w=%d r=%d n_channels=%d sample_freq=%.0f fsize=%u nfrags=%u bufsz=%u\n",
+	 handle->writable,
+	 handle->readable,
+	 handle->n_channels,
+	 handle->mix_freq,
+	 csl->frag_size,
+	 csl->n_frags,
+	 csl->n_frags * csl->frag_size);
   
   return BSE_ERROR_NONE;
 }
@@ -415,10 +416,9 @@ csl_device_status (BsePcmHandle *handle,
       status->n_capture_values_available =
 	MIN (status->total_capture_values, status->n_capture_values_available);
 
-      BSE_IF_DEBUG (PCM)
-	g_message ("CSL-ISPACE: total=%d size=%d\n",
-		   status->n_capture_values_available,
-		   status->total_capture_values);
+      DEBUG ("CSL-ISPACE: total=%d size=%d\n",
+	     status->n_capture_values_available,
+	     status->total_capture_values);
     }
   else
     {
@@ -439,10 +439,9 @@ csl_device_status (BsePcmHandle *handle,
       status->n_playback_values_available =
 	MIN (status->total_playback_values, status->n_playback_values_available);
 
-      BSE_IF_DEBUG (PCM)
-	g_message ("CSL-OSPACE: total=%d size=%d\n",
-		   status->n_playback_values_available,
-		   status->total_playback_values);
+      DEBUG ("CSL-OSPACE: total=%d size=%d\n",
+	     status->n_playback_values_available,
+	     status->total_playback_values);
     }
   else
     {

@@ -34,7 +34,6 @@
 volatile guint64     gsl_externvar_tick_stamp = 0;
 static guint64	     tick_stamp_system_time = 0;
 static guint         global_tick_stamp_leaps = 0;
-static GslDebugFlags gsl_debug_flags = 0;
 
 
 /* --- tick stamps --- */
@@ -137,7 +136,7 @@ gsl_thread_awake_before (guint64 tick_stamp)
 }
 
 
-/* --- GslMessage --- */
+/* --- misc --- */
 const gchar*
 gsl_strerror (GslErrorType error)
 {
@@ -173,189 +172,6 @@ gsl_strerror (GslErrorType error)
     }
 }
 
-static const GDebugKey gsl_static_debug_keys[] = {
-  { "notify",         GSL_MSG_NOTIFY },
-  { "dcache",         GSL_MSG_DATA_CACHE },
-  { "dhandle",        GSL_MSG_DATA_HANDLE },
-  { "loader",         GSL_MSG_LOADER },
-  { "osc",	      GSL_MSG_OSC },
-  { "engine",         GSL_MSG_ENGINE },
-  { "jobs",           GSL_MSG_JOBS },
-  { "fjobs",          GSL_MSG_FJOBS },
-  { "sched",          GSL_MSG_SCHED },
-  { "master",         GSL_MSG_MASTER },
-  { "slave",          GSL_MSG_SLAVE },
-};
-
-static const gchar*
-reporter_name (GslDebugFlags reporter)
-{
-  switch (reporter)
-    {
-    case GSL_MSG_NOTIFY:	return "Notify";
-    case GSL_MSG_DATA_CACHE:	return "DataCache";
-    case GSL_MSG_DATA_HANDLE:	return "DataHandle";
-    case GSL_MSG_LOADER:	return "Loader";
-    case GSL_MSG_OSC:		return "Oscillator";
-    case GSL_MSG_ENGINE:	return "Engine";	/* Engine */
-    case GSL_MSG_JOBS:		return "Jobs";		/* Engine */
-    case GSL_MSG_FJOBS:		return "FlowJobs";	/* Engine */
-    case GSL_MSG_SCHED:		return "Sched";		/* Engine */
-    case GSL_MSG_MASTER:	return "Master";	/* Engine */
-    case GSL_MSG_SLAVE:		return "Slave";		/* Engine */
-    default:			return "Custom";
-    }
-}
-
-const GDebugKey *gsl_debug_keys = gsl_static_debug_keys;
-const guint      gsl_n_debug_keys = G_N_ELEMENTS (gsl_static_debug_keys);
-
-void
-gsl_message_send (GslDebugFlags reporter,
-		  const gchar  *section,
-		  GslErrorType  error,
-		  const gchar  *messagef,
-		  ...)
-{
-  struct {
-    GslDebugFlags reporter;
-    gchar         reporter_name[64];
-    gchar         section[64];	/* auxillary information about reporter code portion */
-    GslErrorType  error;
-    const gchar	 *error_str;	/* gsl_strerror() of error */
-    gchar	  message[1024];
-  } tmsg, *msg = &tmsg;
-  gchar *string;
-  va_list args;
-    
-  g_return_if_fail (messagef != NULL);
-
-  /* create message */
-  memset (msg, 0, sizeof (*msg));
-  msg->reporter = reporter;
-  strncpy (msg->reporter_name, reporter_name (msg->reporter), 63);
-  if (section)
-    strncpy (msg->section, section, 63);
-  msg->error = error;
-  msg->error_str = error ? gsl_strerror (msg->error) : NULL;
-
-  /* vsnprintf() replacement */
-  va_start (args, messagef);
-  string = g_strdup_vprintf (messagef, args);
-  va_end (args);
-  strncpy (msg->message, string, 1023);
-  g_free (string);
-
-  /* in current lack of a decent message queue, puke the message to stderr */
-  g_printerr ("GSL-%s%s%s: %s%s%s\n",
-	      msg->reporter_name,
-	      msg->section ? ":" : "",
-	      msg->section ? msg->section : "",
-	      msg->message,
-	      msg->error_str ? ": " : "",
-	      msg->error_str ? msg->error_str : "");
-}
-
-void
-gsl_debug_enable (GslDebugFlags dbg_flags)
-{
-  gsl_debug_flags |= dbg_flags;
-}
-
-void
-gsl_debug_disable (GslDebugFlags dbg_flags)
-{
-  gsl_debug_flags &= dbg_flags;
-}
-
-gboolean
-gsl_debug_check (GslDebugFlags dbg_flags)
-{
-  return (gsl_debug_flags & dbg_flags) != 0;
-}
-
-void
-gsl_debug (GslDebugFlags reporter,
-	   const gchar  *section,
-	   const gchar  *format,
-	   ...)
-{
-  g_return_if_fail (format != NULL);
-
-  if (reporter & gsl_debug_flags)
-    {
-      va_list args;
-      gchar *string;
-
-      va_start (args, format);
-      string = g_strdup_vprintf (format, args);
-      va_end (args);
-      g_printerr ("DEBUG:GSL-%s%s%s: %s\n",
-		  reporter_name (reporter),
-		  section ? ":" : "",
-		  section ? section : "",
-		  string);
-      g_free (string);
-    }
-}
-
-void
-gsl_auxlog_push (GslDebugFlags reporter,
-		 const gchar  *section)
-{
-  sfi_thread_set_data ("auxlog_reporter", (gpointer) reporter);
-  sfi_thread_set_data ("auxlog_section", (char*) section);
-}
-
-void
-gsl_auxlog_debug (const gchar *format,
-		  ...)
-{
-  GslDebugFlags reporter = (guint) sfi_thread_get_data ("auxlog_reporter");
-  const gchar *section = sfi_thread_get_data ("auxlog_section");
-  va_list args;
-  gchar *string;
-
-  if (!reporter)
-    reporter = GSL_MSG_NOTIFY;
-  sfi_thread_set_data ("auxlog_reporter", 0);
-  sfi_thread_set_data ("auxlog_section", NULL);
-
-  g_return_if_fail (format != NULL);
-
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
-  gsl_debug (reporter, section, "%s", string);
-  g_free (string);
-}
-
-void
-gsl_auxlog_message (GslErrorType error,
-		    const gchar *format,
-		    ...)
-{
-  GslDebugFlags reporter = (guint) sfi_thread_get_data ("auxlog_reporter");
-  const gchar *section = sfi_thread_get_data ("auxlog_section");
-  va_list args;
-  gchar *string;
-
-  if (!reporter)
-    reporter = GSL_MSG_NOTIFY;
-  sfi_thread_set_data ("auxlog_reporter", 0);
-  sfi_thread_set_data ("auxlog_section", NULL);
-
-  g_return_if_fail (format != NULL);
-
-  va_start (args, format);
-  string = g_strdup_vprintf (format, args);
-  va_end (args);
-  gsl_message_send (reporter, section, error, "%s", string);
-  g_free (string);
-}
-
-
-/* --- misc --- */
 const gchar*
 gsl_byte_order_to_string (guint byte_order)
 {

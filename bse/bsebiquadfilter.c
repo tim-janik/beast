@@ -21,8 +21,8 @@
 #include <bse/gslengine.h>
 #include <bse/gslsignal.h>
 
-#define  FREQ_DELTA      0.1
-#define	_(x)		x
+#define FREQ_DELTA      0.1
+#define	INFO		sfi_info_keyfunc ("biquadfilter")
 
 /* --- parameters --- */
 enum
@@ -382,19 +382,19 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
 	  gsl_biquad_config_init (&c, self->filter_type, self->norm_type);
 	  gsl_biquad_config_setup (&c, self->freq / nyquist_freq, self->gain, 0);
 	  gsl_biquad_filter_config (&biquad, &c, TRUE);
-	  g_printerr ("Bxx(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
-		      biquad.xc0, biquad.xc1, biquad.xc2, biquad.yc1, biquad.yc2);
+	  INFO ("Bxx(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
+		biquad.xc0, biquad.xc1, biquad.xc2, biquad.yc1, biquad.yc2);
 	  
 	  gsl_biquad_config_approx_gain (&c, self->gain);
 	  gsl_biquad_filter_config (&approx, &c, TRUE);
-	  g_printerr ("Byy(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
-		      approx.xc0, approx.xc1, approx.xc2, approx.yc1, approx.yc2);
-	  g_printerr ("Bdd(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
-		      biquad.xc0 - approx.xc0,
-		      biquad.xc1 - approx.xc1,
-		      biquad.xc2 - approx.xc2,
-		      biquad.yc1 - approx.yc1,
-		      biquad.yc2 - approx.yc2);
+	  INFO ("Byy(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
+		approx.xc0, approx.xc1, approx.xc2, approx.yc1, approx.yc2);
+	  INFO ("Bdd(z) = (%.14g + (%.14g + %.14g * z) * z) / (1 + (%.14g + %.14g * z) * z)\n",
+		biquad.xc0 - approx.xc0,
+		biquad.xc1 - approx.xc1,
+		biquad.xc2 - approx.xc2,
+		biquad.yc1 - approx.yc1,
+		biquad.yc2 - approx.yc2);
 	}
     }
 }

@@ -34,15 +34,8 @@ extern "C" {
 
 
 /* --- some globally used defines --- */
-#define FIXME(msg)  g_message ("%s:%d:FIXME(%s): " # msg, __FILE__, __LINE__, \
-                               G_GNUC_PRETTY_FUNCTION)
-#define FIXME_SKIP(code)  g_message ("%s:%d:FIXME(%s): code portion skipped", \
-                                     __FILE__, __LINE__, G_GNUC_PRETTY_FUNCTION)
-#ifdef G_ENABLE_DEBUG
-#  define BSE_IF_DEBUG(type)    if (!(bse_main_debug_flags & BSE_DEBUG_ ## type)) { } else
-#else  /* !G_ENABLE_DEBUG */
-#  define BSE_IF_DEBUG(type)    while (0) /* don't exec */
-#endif /* !G_ENABLE_DEBUG */
+#define	_(x)	(x)
+#define	N_(x)	(x)
 
 
 /* --- BSE objects, classes & interfaces --- */
@@ -106,19 +99,6 @@ typedef struct  _BsePluginClass         BsePluginClass;
 
 
 /* --- anticipated enums --- */
-typedef enum
-{
-  BSE_DEBUG_TABLES              = (1 << 0),
-  BSE_DEBUG_CLASSES             = (1 << 1),
-  BSE_DEBUG_OBJECTS             = (1 << 2),
-  BSE_DEBUG_NOTIFY              = (1 << 3),
-  BSE_DEBUG_PLUGINS             = (1 << 4),
-  BSE_DEBUG_CHUNKS              = (1 << 5),
-  BSE_DEBUG_LOOP                = (1 << 6),
-  BSE_DEBUG_PCM                 = (1 << 7),
-  BSE_DEBUG_MIDI                = (1 << 8),
-  BSE_DEBUG_LEAKS               = (1 << 9)
-} BseDebugFlags;
 typedef enum                    /*< skip >*/
 {
   BSE_TOKEN_UNMATCHED           = G_TOKEN_LAST + 1
@@ -153,10 +133,6 @@ struct _BsePixdata
   guint          height : 12;
   const guint8  *encoded_pix_data;
 };
-
-
-/* --- anticipated variables --- */
-extern BseDebugFlags bse_main_debug_flags;
 
 
 /* --- BSE function types --- */

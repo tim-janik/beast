@@ -24,7 +24,7 @@
 #include "bsemain.h"
 
 
-#define DEBUG	sfi_nodebug_with_key ("sequencer")
+#define DEBUG	sfi_debug_keyfunc ("sequencer")
 
 
 /* --- prototypes --- */

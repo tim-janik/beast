@@ -45,14 +45,6 @@ extern "C" {
 #define	ENGINE_MODULE_IS_VIRTUAL(mod)	(ENGINE_NODE_IS_VIRTUAL (ENGINE_NODE (mod)))
 
 
-/* --- debugging and messages --- */
-#define ENG_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_ENGINE, NULL)
-#define MAS_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_MASTER, NULL)
-#define JOB_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_JOBS, NULL)
-#define FJOB_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_FJOBS, NULL)
-#define SCHED_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_SCHED, NULL)
-
-
 /* --- transactions --- */
 typedef union _EngineFlowJob EngineFlowJob;
 typedef enum {

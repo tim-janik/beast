@@ -42,6 +42,8 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
 
+#define DEBUG   sfi_debug_keyfunc ("pcm")
+
 
 /* --- OSS PCM handle --- */
 typedef struct
@@ -292,15 +294,14 @@ oss_device_setup (OSSHandle *oss)
       oss->n_frags = info.fragstotal;
     }
   
-  BSE_IF_DEBUG (PCM)
-    g_message ("OSS-SETUP: w=%d r=%d n_channels=%d sample_freq=%.0f fsize=%u nfrags=%u bufsz=%u\n",
-	       handle->writable,
-	       handle->readable,
-	       handle->n_channels,
-	       handle->mix_freq,
-	       oss->frag_size,
-	       oss->n_frags,
-	       oss->n_frags * oss->frag_size);
+  DEBUG ("OSS-SETUP: w=%d r=%d n_channels=%d sample_freq=%.0f fsize=%u nfrags=%u bufsz=%u\n",
+	 handle->writable,
+	 handle->readable,
+	 handle->n_channels,
+	 handle->mix_freq,
+	 oss->frag_size,
+	 oss->n_frags,
+	 oss->n_frags * oss->frag_size);
   
   return BSE_ERROR_NONE;
 }
@@ -371,14 +372,13 @@ oss_device_status (BsePcmHandle *handle,
       status->n_capture_values_available = info.bytes / oss->bytes_per_value;
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
       status->n_capture_values_available = MIN (status->total_capture_values, status->n_capture_values_available);
-      BSE_IF_DEBUG (PCM)
-	g_message ("OSS-ISPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
-		   status->n_capture_values_available,
-		   status->total_capture_values,
-		   info.fragstotal,
-		   info.fragsize,
-		   info.fragments,
-		   info.bytes);
+      DEBUG ("OSS-ISPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
+	     status->n_capture_values_available,
+	     status->total_capture_values,
+	     info.fragstotal,
+	     info.fragsize,
+	     info.fragments,
+	     info.bytes);
     }
   else
     {
@@ -395,14 +395,13 @@ oss_device_status (BsePcmHandle *handle,
       status->n_playback_values_available = info.bytes / oss->bytes_per_value;
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
       status->n_playback_values_available = MIN (status->total_playback_values, status->n_playback_values_available);
-      BSE_IF_DEBUG (PCM)
-	g_message ("OSS-OSPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
-		   status->n_playback_values_available,
-		   status->total_playback_values,
-		   info.fragstotal,
-		   info.fragsize,
-		   info.fragments,
-		   info.bytes);
+      DEBUG ("OSS-OSPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
+	     status->n_playback_values_available,
+	     status->total_playback_values,
+	     info.fragstotal,
+	     info.fragsize,
+	     info.fragments,
+	     info.bytes);
     }
   else
     {

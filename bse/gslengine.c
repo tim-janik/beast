@@ -25,6 +25,8 @@
 #include <unistd.h>
 
 
+#define	DEBUG	sfi_debug_keyfunc ("engine")
+
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most probably just use EINTR,
  * and maybe some can return both. so we check for both in the below code,
@@ -1053,7 +1055,7 @@ gsl_engine_init (gboolean run_threaded,
   _gsl_tick_stamp_set_leap (block_size);
   _gsl_tick_stamp_inc ();	/* ensure stamp validity (>0 and systime mark) */
   
-  ENG_DEBUG ("initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
+  DEBUG ("initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
   
   if (gsl_engine_threaded)
     {

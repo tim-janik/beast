@@ -31,9 +31,6 @@ extern GMainContext *bse_main_context;
 extern SfiMutex	     bse_main_sequencer_mutex;
 extern gboolean      bse_main_developer_extensions;
 extern SfiThread    *bse_main_thread;
-#if 0	// prototyped in bsedefs.h
-extern BseDebugFlags bse_main_debug_flags;
-#endif
 
 
 /* --- initialization --- */

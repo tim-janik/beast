@@ -40,8 +40,8 @@ typedef guint16 Word;
 
 
 /* --- debugging and errors --- */
-#define WAV_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_DATA_HANDLE, "WAV")
-#define WAV_MSG			GSL_MESSAGE_FUNCTION (GSL_MSG_DATA_HANDLE, "WAV")
+#define WAV_DEBUG	sfi_debug_keyfunc ("wav")
+#define WAV_MSG		sfi_info_keyfunc ("wav")
 
 
 /* --- functions --- */
@@ -188,7 +188,7 @@ wav_read_fmt_header (gint       fd,
 	  n -= l;
 	}
       
-      WAV_MSG (GSL_ERROR_DATA_CORRUPT, "skipping %u bytes of junk in WAVE header", header->length - 16);
+      WAV_MSG ("skipping %u bytes of overlong WAVE header", header->length - 16);
     }
   
   return GSL_ERROR_NONE;

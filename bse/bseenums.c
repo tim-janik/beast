@@ -28,14 +28,6 @@ extern void	bse_type_register_enums		(void);
 /* include generated enum value arrays and *.h files the enums steam from */
 #include "bseenum_arrays.c"
 
-/* special hooks for bse_init() */
-extern GFlagsValue *bse_debug_key_flag_values;
-extern guint        bse_debug_key_n_flag_values;
-GFlagsValue        *bse_debug_key_flag_values = bse_debug_flags_values;
-guint               bse_debug_key_n_flag_values = (sizeof (bse_debug_flags_values) /
-						   sizeof (bse_debug_flags_values[0]));
-
-
 /* --- functions --- */
 void
 bse_type_register_enums (void)

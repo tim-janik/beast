@@ -24,6 +24,7 @@
 #include <string.h>
 #include <sfi/gbsearcharray.h>
 
+#define	DEBUG	sfi_debug_keyfunc ("midi")
 
 #define BSE_MIDI_CHANNEL_VOICE_MESSAGE(s)       ((s) < 0xf0)
 #define BSE_MIDI_SYSTEM_COMMON_MESSAGE(s)       (((s) & 0xf8) == 0xf0)
@@ -1109,8 +1110,7 @@ activate_voice_L (BseMidiReceiver *self,
     }
   if (i >= self->n_voices)
     {
-      BSE_IF_DEBUG (MIDI)
-	g_printerr ("MIDI<%s:%u>: no voice available for note-on (%fHz)\n", self->receiver_name, midi_channel, freq);
+      DEBUG ("Receiver<%s:%u>: no voice available for note-on (%fHz)\n", self->receiver_name, midi_channel, freq);
       return;
     }
   /* setup voice */
@@ -1145,10 +1145,9 @@ adjust_voice_L (BseMidiReceiver *self,
     }
   if (i >= self->n_voices)
     {
-      BSE_IF_DEBUG (MIDI)
-	g_printerr ("MIDI<%s:%u>: no voice available for %s (%fHz)\n", self->receiver_name, midi_channel,
-		    note_off ? "note-off" : "aftertouch",
-		    freq);
+      DEBUG ("Receiver<%s:%u>: no voice available for %s (%fHz)\n", self->receiver_name, midi_channel,
+	     note_off ? "note-off" : "aftertouch",
+	     freq);
       return;
     }
   /* set voice outputs */
@@ -1188,11 +1187,7 @@ kill_voices_L (BseMidiReceiver *self,
 	}
     }
   if (count)
-    {
-      BSE_IF_DEBUG (MIDI)
-	g_printerr ("MIDI<%s:%u>: Voices Killed: %u\n", self->receiver_name, midi_channel,
-		    count);
-    }
+    DEBUG ("Receiver<%s:%u>: Voices Killed: %u\n", self->receiver_name, midi_channel, count);
 }
 
 static void
@@ -1204,14 +1199,14 @@ debug_voices_L (BseMidiReceiver *self,
   BseMidiVoice *voice;
   guint i;
   
-  BSE_IF_DEBUG (MIDI)
+  if (sfi_debug_test_key ("midi"))
     for (i = 0; i < self->n_voices; i++)
       {
 	voice = self->voices[i];
 	if (voice)
-	  g_printerr ("MIDI<%s>: Voice: Channel=%u SynthActive=%u Playing=%u Sustained=%u Freq=%fHz\n", self->receiver_name,
-		      voice->midi_channel, voice->active, voice->note_playing, voice->sustained,
-		      BSE_FREQ_FROM_VALUE (voice->freq_value));
+	  DEBUG ("Receiver<%s>: Voice: Channel=%u SynthActive=%u Playing=%u Sustained=%u Freq=%fHz\n", self->receiver_name,
+		 voice->midi_channel, voice->active, voice->note_playing, voice->sustained,
+		 BSE_FREQ_FROM_VALUE (voice->freq_value));
       }
 }
 
@@ -1232,9 +1227,8 @@ update_midi_signal_L (BseMidiReceiver  *self,
                                value,
                                trans);
 #if 0
-  BSE_IF_DEBUG (MIDI)
-    g_printerr ("MIDI<%s:%u>: Signal %3u Value=%f (%s)\n", self->receiver_name, channel,
-		signal, value, bse_midi_signal_name (signal));
+  DEBUG ("Receiver<%s:%u>: Signal %3u Value=%f (%s)\n", self->receiver_name, channel,
+	 signal, value, bse_midi_signal_name (signal));
 #endif
 }
 
@@ -1366,9 +1360,8 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
       switch (event->status)
 	{
 	case BSE_MIDI_NOTE_ON:
-	  BSE_IF_DEBUG (MIDI)
-	    g_printerr ("MIDI<%s:%u>: NoteOn  %fHz Velo=%f (stamp:%llu)\n", self->receiver_name, event->channel,
-			event->data.note.frequency, event->data.note.velocity, event->tick_stamp);
+	  DEBUG ("Receiver<%s:%u>: NoteOn  %fHz Velo=%f (stamp:%llu)\n", self->receiver_name, event->channel,
+		 event->data.note.frequency, event->data.note.velocity, event->tick_stamp);
 	  activate_voice_L (self, event->channel, event->tick_stamp,
 			    event->data.note.frequency,
 			    event->data.note.velocity,
@@ -1376,51 +1369,45 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
 	  break;
 	case BSE_MIDI_KEY_PRESSURE:
 	case BSE_MIDI_NOTE_OFF:
-	  BSE_IF_DEBUG (MIDI)
-	    g_printerr ("MIDI<%s:%u>: %s %fHz (stamp:%llu)\n", self->receiver_name, event->channel,
-			event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
-			event->data.note.frequency, event->tick_stamp);
+	  DEBUG ("Receiver<%s:%u>: %s %fHz (stamp:%llu)\n", self->receiver_name, event->channel,
+		 event->status == BSE_MIDI_NOTE_OFF ? "NoteOff" : "NotePressure",
+		 event->data.note.frequency, event->tick_stamp);
 	  adjust_voice_L (self, event->channel, event->tick_stamp,
 			  event->data.note.frequency,
 			  event->data.note.velocity, event->status == BSE_MIDI_NOTE_OFF,
 			  trans);
 	  break;
 	case BSE_MIDI_CONTROL_CHANGE:
-	  BSE_IF_DEBUG (MIDI)
-	    g_printerr ("MIDI<%s:%u>: Control %2u Value=%f (stamp:%llu)\n", self->receiver_name, event->channel,
-			event->data.control.control, event->data.control.value, event->tick_stamp);
+	  DEBUG ("Receiver<%s:%u>: Control %2u Value=%f (stamp:%llu)\n", self->receiver_name, event->channel,
+		 event->data.control.control, event->data.control.value, event->tick_stamp);
 	  process_midi_control_L (self, event->channel, event->tick_stamp,
 				  event->data.control.control, event->data.control.value,
 				  trans);
 	  break;
 	case BSE_MIDI_PROGRAM_CHANGE:
-	  BSE_IF_DEBUG (MIDI)
-	    g_printerr ("MIDI<%s:%u>: Program %u (Value=%f) (stamp:%llu)\n", self->receiver_name, event->channel,
-			event->data.program, event->data.program / (gfloat) 0x7f, event->tick_stamp);
+	  DEBUG ("Receiver<%s:%u>: Program %u (Value=%f) (stamp:%llu)\n", self->receiver_name, event->channel,
+		 event->data.program, event->data.program / (gfloat) 0x7f, event->tick_stamp);
 	  update_midi_signal_L (self, event->channel, event->tick_stamp,
 				BSE_MIDI_SIGNAL_PROGRAM, event->data.program / (gfloat) 0x7f,
 				trans);
 	  break;
 	case BSE_MIDI_CHANNEL_PRESSURE:
-	  BSE_IF_DEBUG (MIDI)
-	    g_printerr ("MIDI<%s:%u>: Channel Pressure Value=%f (stamp:%llu)\n", self->receiver_name, event->channel,
-			event->data.intensity, event->tick_stamp);
+	  DEBUG ("Receiver<%s:%u>: Channel Pressure Value=%f (stamp:%llu)\n", self->receiver_name, event->channel,
+		 event->data.intensity, event->tick_stamp);
 	  update_midi_signal_L (self, event->channel, event->tick_stamp,
 				BSE_MIDI_SIGNAL_PRESSURE, event->data.intensity,
 				trans);
 	  break;
 	case BSE_MIDI_PITCH_BEND:
-	  BSE_IF_DEBUG (MIDI)
-	    g_printerr ("MIDI<%s:%u>: Pitch Bend Value=%f (stamp:%llu)\n", self->receiver_name, event->channel,
-			event->data.pitch_bend, event->tick_stamp);
+	  DEBUG ("Receiver<%s:%u>: Pitch Bend Value=%f (stamp:%llu)\n", self->receiver_name, event->channel,
+		 event->data.pitch_bend, event->tick_stamp);
 	  update_midi_signal_L (self, event->channel, event->tick_stamp,
 				BSE_MIDI_SIGNAL_PITCH_BEND, event->data.pitch_bend,
 				trans);
 	  break;
 	default:
-	  BSE_IF_DEBUG (MIDI)
-	    g_printerr ("MIDI<%s:%u>: Ignoring Event %u (stamp:%llu)\n", self->receiver_name, event->channel,
-			event->status, event->tick_stamp);
+	  DEBUG ("Receiver<%s:%u>: Ignoring Event %u (stamp:%llu)\n", self->receiver_name, event->channel,
+		 event->status, event->tick_stamp);
 	  break;
 	}
       if (self->notifier)

@@ -279,8 +279,6 @@ GLIB_MKENUMS = glib-mkenums
 SFIDL = ../sfi/sfidl	# FIXME: cd $(srcdir) && $(SFIDL) doesn't work for builddir
 PPROCESS = $(CPP) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)  # analogous to $COMPILE
 # don't $(strip) the next two commands
-GREP_DEBUG_KEYS = sed -n '/sfi_debug_with_key[ 	]*("[^")]\+")/{ s/.*sfi_debug_with_key[  ]*(\("[^")]\+"\)).*/\1,/; p; }' | sort | uniq
-GREP_INFO_KEYS  = sed -n '/sfi_info_with_key[ 	]*("[^")]\+")/{ s/.*sfi_info_with_key[  ]*(\("[^")]\+"\)).*/\1,/; p; }' | sort | uniq
 
 
 #
@@ -288,7 +286,7 @@ GREP_INFO_KEYS  = sed -n '/sfi_info_with_key[ 	]*("[^")]\+")/{ s/.*sfi_info_with
 #
 # setup autogeneration dependancies
 gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
-	      xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi xgen-dbk.c
+	      xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi
 CLEANFILES += $(gen_sources) @MISSING_PERL5@ $(bse_proc_gen_sources)
 $(OBJECTS): $(bse_built_h_sources)
 # piggyback generation through sideeffects, needs NOP-rule for dep-tracking, must be in srcdir
@@ -309,24 +307,14 @@ stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_public_h_sources) bserecords.sfidl $(
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
 bsegentypes.c: @MISSING_PERL5@ bsegentypes.h mktypes.pl bserecords.sfidl $(SFIDL) $(bse_builtin_c_sources) # $(bse_c_sources)
-	cat $(bse_builtin_c_sources)	 > $(srcdir)/xgen-dbk.c \
-	&& cd $(srcdir) \
+	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
 	    $(bse_public_h_sources) >> xgen-bgtc \
 	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
-	&& cat $(bse_c_sources)		>> xgen-dbk.c \
-	&& echo "static const gchar *bse_gen_debug_keys[] = {" >> xgen-bgtc \
-	&& $(PPROCESS) 2>/dev/null -DSFI_LOG_PROTECT_KEY_VARIANTS xgen-dbk.c \
-	| $(GREP_DEBUG_KEYS) >> xgen-bgtc \
-	&& echo "  NULL };" >> xgen-bgtc \
-	&& echo "static const gchar *bse_gen_info_keys[] = {" >> xgen-bgtc \
-	&& $(PPROCESS) 2>/dev/null -DSFI_LOG_PROTECT_KEY_VARIANTS xgen-dbk.c \
-	| $(GREP_INFO_KEYS) >> xgen-bgtc \
-	&& echo "  NULL };" >> xgen-bgtc \
 	&& $(SFIDL) --source --implementation --boxed --init _sfidl_types_init bserecords.sfidl >> xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
-	&& rm -f xgen-bgtc xgen-dbk.c
+	&& rm -f xgen-bgtc
 bsegentype_array.c: @MISSING_PERL5@ bsegentypes.c
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-bgtac \

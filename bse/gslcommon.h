@@ -52,46 +52,6 @@ const GslConfig*	gsl_get_config	(void) G_GNUC_CONST;
 #define	GSL_CONFIG(value)	((gsl_get_config () [0]) . value)
 
 
-/* --- GslMessage and debugging --- */
-typedef enum /*< skip >*/
-{
-  GSL_MSG_NOTIFY	= 1 << 0,
-  GSL_MSG_DATA_CACHE	= 1 << 1,
-  GSL_MSG_DATA_HANDLE	= 1 << 2,
-  GSL_MSG_LOADER	= 1 << 3,
-  GSL_MSG_OSC		= 1 << 4,
-  GSL_MSG_ENGINE	= 1 << 5,
-  GSL_MSG_JOBS		= 1 << 6,
-  GSL_MSG_FJOBS		= 1 << 7,
-  GSL_MSG_SCHED		= 1 << 8,
-  GSL_MSG_MASTER	= 1 << 9,
-  GSL_MSG_SLAVE		= 1 << 10
-} GslDebugFlags;
-extern const GDebugKey *gsl_debug_keys;
-extern const guint      gsl_n_debug_keys;
-void		gsl_debug		(GslDebugFlags  reporter,
-					 const gchar   *section,
-					 const gchar   *format,
-					 ...)	G_GNUC_PRINTF (3, 4);
-void		gsl_debug_enable	(GslDebugFlags	dbg_flags);
-void		gsl_debug_disable	(GslDebugFlags	dbg_flags);
-gboolean	gsl_debug_check		(GslDebugFlags	dbg_flags);
-void		gsl_message_send	(GslDebugFlags  reporter,
-					 const gchar   *section,  /* maybe NULL */
-					 GslErrorType	error,	  /* maybe 0 */
-					 const gchar   *messagef,
-					 ...)	G_GNUC_PRINTF (4, 5);
-const gchar*	gsl_strerror		(GslErrorType	error);
-
-/* provide message/debugging macro templates, so custom messages
- * are done as:
- * #define FOO_DEBUG	GSL_DEBUG_FUNCTION (GSL_MSG_LOADER, "FOO")
- * FOO_DEBUG ("some debug message and number: %d", 5);
- */
-#define GSL_DEBUG_FUNCTION(reporter, section)	_GSL_DEBUG_MACRO_IMPL((reporter), (section))
-#define GSL_MESSAGE_FUNCTION(reporter, section)	_GSL_MESSAGE_MACRO_IMPL((reporter), (section))
-
-
 /* --- tick stamps --- */
 typedef struct {
   guint64 tick_stamp;
@@ -110,6 +70,7 @@ void		gsl_thread_awake_before	(guint64	 tick_stamp);
 
 
 /* --- misc --- */
+const gchar* gsl_strerror		(GslErrorType	error);
 const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
 GslErrorType gsl_error_from_errno	(gint		 sys_errno,
@@ -132,34 +93,6 @@ void	_gsl_init_loader_mad		(void);
 #define		GSL_N_IO_RETRIES	(5)
 #define		_GSL_TICK_STAMP_VAL()	(gsl_externvar_tick_stamp + 0)
 extern volatile guint64	gsl_externvar_tick_stamp;
-
-/* we need to provide a REPORTER and SECTION string for the debugging
- * and message generation functions. for GCC, we also want to make use
- * of printf style format checking with G_GNUC_PRINTF(). for the non GCC
- * case, we push REPORTER and SECTION as thread specific data before
- * invoking the debugging/message generation function. for the GCC case
- * we use GNUC varargs. (using ISO varargs wouldn't provide any benefit,
- * for one, ISO vararg support is broken with gcc-2.95 and ansi/c++, and
- * we only need the macro magic for GCC in the first place to make use
- * of G_GNUC_PRINTF()).
- */
-#if     __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
-#define _GSL_DEBUG_MACRO_IMPL(reporter, section)	gsl_debug ((reporter), (section), _GSL_DEBUG_GCCTAIL
-#define _GSL_DEBUG_GCCTAIL(GCCARGS...)			GCCARGS )
-#define _GSL_MESSAGE_MACRO_IMPL(reporter, section)	gsl_message_send ((reporter), (section), _GSL_MESSGAE_GCCTAIL
-#define _GSL_MESSGAE_GCCTAIL(GCCARGS...)		GCCARGS )
-#else   /* non GCC, push data and invoke function */
-#define _GSL_DEBUG_MACRO_IMPL(reporter, section)	(gsl_auxlog_push ((reporter), (section)), gsl_auxlog_debug)
-#define _GSL_MESSAGE_MACRO_IMPL(reporter, section)	(gsl_auxlog_push ((reporter), (section)), gsl_auxlog_message)
-#endif
-/* non-GCC message helpers */
-void		gsl_auxlog_push		(GslDebugFlags   reporter,
-					 const gchar	*section);
-void		gsl_auxlog_debug	(const gchar	*format,
-					 ...);
-void		gsl_auxlog_message	(GslErrorType	 error,
-					 const gchar	*format,
-					 ...);
 
 
 #ifdef __cplusplus

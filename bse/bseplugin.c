@@ -29,6 +29,7 @@
 
 
 #define	BUILTIN_USE_COUNT	(1)
+#define DEBUG   sfi_debug_keyfunc ("plugins")
 
 
 /* --- prototypes --- */
@@ -166,8 +167,7 @@ bse_plugins_init (void)
 	    g_object_ref (G_OBJECT (plugin));
 	  plugin->use_count = BUILTIN_USE_COUNT;
 	  
-	  BSE_IF_DEBUG (PLUGINS)
-	    g_message ("register-builtin-plugin \"%s\"", plugin->name);
+	  DEBUG ("register-builtin-plugin \"%s\"", plugin->name);
 	  
 	  name = plugin->name;
 	  error = builtin_inits[i] (plugin);
@@ -204,8 +204,7 @@ bse_plugin_register_exports (BsePlugin    *plugin,
 	      guint on = plugin->n_proc_types;
 	      const gchar *error;
 	      
-	      BSE_IF_DEBUG (PLUGINS)
-		g_message ("register-procedure: \"%s\"", pspec->name);
+	      DEBUG ("register-procedure: \"%s\"", pspec->name);
 	      
 	      type = g_type_from_name (pspec->name);
 	      if (type)
@@ -244,8 +243,7 @@ bse_plugin_register_exports (BsePlugin    *plugin,
 	      guint on = plugin->n_object_types;
 	      const gchar *error;
 	      
-	      BSE_IF_DEBUG (PLUGINS)
-		g_message ("register-object: \"%s\"", ospec->name);
+	      DEBUG ("register-object: \"%s\"", ospec->name);
 	      
 	      type = g_type_from_name (ospec->name);
 	      if (type)
@@ -286,8 +284,7 @@ bse_plugin_register_exports (BsePlugin    *plugin,
 	      GType   type;
 	      guint on = plugin->n_enum_types;
 	      
-	      BSE_IF_DEBUG (PLUGINS)
-		g_message ("register-enum: \"%s\"", espec->name);
+	      DEBUG ("register-enum: \"%s\"", espec->name);
 	      
 	      type = g_type_from_name (espec->name);
 	      if (type)
@@ -421,8 +418,7 @@ bse_plugin_use (GTypePlugin *gplugin)
       
       plugin->use_count++;
       
-      BSE_IF_DEBUG (PLUGINS)
-	g_message ("reloading-plugin \"%s\" (\"%s\")", plugin->name, plugin->fname ? plugin->fname : "???NULL???");
+      DEBUG ("reloading-plugin \"%s\" (\"%s\")", plugin->name, plugin->fname ? plugin->fname : "???NULL???");
       
       plugin->gmodule = g_module_open (plugin->fname, 0);
       if (!plugin->gmodule)
@@ -518,8 +514,7 @@ bse_plugin_unload (BsePlugin *plugin)
   plugin->e_enums = NULL;
   plugin->e_file_handlers = NULL;
   
-  BSE_IF_DEBUG (PLUGINS)
-    g_message ("unloaded-plugin \"%s\"", plugin->name);
+  DEBUG ("unloaded-plugin \"%s\"", plugin->name);
 }
 
 static void

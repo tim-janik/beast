@@ -204,7 +204,7 @@ bse_object_class_init (BseObjectClass *class)
 void
 bse_object_debug_leaks (void)
 {
-  BSE_IF_DEBUG (LEAKS)
+  if (sfi_debug_test_key ("leaks"))
     {
       GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
       

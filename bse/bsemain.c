@@ -41,7 +41,6 @@ GMainContext            *bse_main_context = NULL;
 SfiMutex	         bse_main_sequencer_mutex = { 0, };
 gboolean	         bse_main_developer_extensions = FALSE;
 SfiThread               *bse_main_thread = NULL;
-BseDebugFlags            bse_main_debug_flags = 0;
 static volatile gboolean bse_initialization_stage = 0;
 /* from bse.h */
 const guint		 bse_major_version = BSE_MAJOR_VERSION;
@@ -270,10 +269,6 @@ static void
 bse_async_parse_args (gint    *argc_p,
 		      gchar ***argv_p)
 {
-  extern GFlagsValue *bse_debug_key_flag_values;	/* bseenums.c feature */
-  extern guint        bse_debug_key_n_flag_values;	/* bseenums.c feature */
-  GDebugKey *debug_keys;
-  guint n_debug_keys;
   guint argc = *argc_p;
   gchar **argv = *argv_p;
   gchar *envar;
@@ -283,33 +278,13 @@ bse_async_parse_args (gint    *argc_p,
    * so we can not use pretty much everything of BSE.
    */
   
-  debug_keys = g_new (GDebugKey, bse_debug_key_n_flag_values);
-  for (i = 0; i < bse_debug_key_n_flag_values && bse_debug_key_flag_values[i].value_nick; i++)
-    {
-      debug_keys[i].key = bse_debug_key_flag_values[i].value_nick;
-      debug_keys[i].value = bse_debug_key_flag_values[i].value;
-    }
-  n_debug_keys = i;
-  
   envar = getenv ("BSE_DEBUG");
   if (envar)
     {
-      guint op_lvl;
-      
-      bse_main_debug_flags |= g_parse_debug_string (envar, debug_keys, n_debug_keys);
-      op_lvl = g_parse_debug_string (envar, gsl_debug_keys, gsl_n_debug_keys);
-      gsl_debug_enable (op_lvl);
+      sfi_log_allow_debug (envar);
+      sfi_log_allow_debug (envar);
     }
-  envar = getenv ("BSE_NO_DEBUG");
-  if (envar)
-    {
-      guint op_lvl;
-      
-      bse_main_debug_flags &= ~g_parse_debug_string (envar, debug_keys, n_debug_keys);
-      op_lvl = g_parse_debug_string (envar, gsl_debug_keys, gsl_n_debug_keys);
-      gsl_debug_disable (op_lvl);
-    }
-  
+
   for (i = 1; i < argc; i++)
     {
       if (strcmp (argv[i], "--g-fatal-warnings") == 0)
@@ -326,50 +301,21 @@ bse_async_parse_args (gint    *argc_p,
 	       strncmp ("--bse-debug=", argv[i], 12) == 0)
 	{
 	  gchar *equal = argv[i] + 11;
-	  guint op_lvl = 0;
 	  
 	  if (*equal == '=')
 	    {
-	      bse_main_debug_flags |= g_parse_debug_string (equal + 1, debug_keys, n_debug_keys);
-	      op_lvl = g_parse_debug_string (equal + 1, gsl_debug_keys, gsl_n_debug_keys);
+	      sfi_log_allow_debug (equal + 1);
+	      sfi_log_allow_info (equal + 1);
 	    }
 	  else if (i + 1 < argc)
 	    {
-	      bse_main_debug_flags |= g_parse_debug_string (argv[i + 1],
-							    debug_keys,
-							    n_debug_keys);
-	      op_lvl = g_parse_debug_string (argv[i + 1], gsl_debug_keys, gsl_n_debug_keys);
-	      argv[i] = NULL;
-	      i += 1;
+	      argv[i++] = NULL;
+	      sfi_log_allow_debug (argv[i]);
+	      sfi_log_allow_info (argv[i]);
 	    }
-	  gsl_debug_enable (op_lvl);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bse-no-debug", argv[i]) == 0 ||
-	       strncmp ("--bse-no-debug=", argv[i], 15) == 0)
-	{
-	  gchar *equal = argv[i] + 14;
-	  guint op_lvl = 0;
-	  
-	  if (*equal == '=')
-	    {
-	      bse_main_debug_flags &= ~g_parse_debug_string (equal + 1, debug_keys, n_debug_keys);
-	      op_lvl = g_parse_debug_string (equal + 1, gsl_debug_keys, gsl_n_debug_keys);
-	    }
-	  else if (i + 1 < argc)
-	    {
-	      bse_main_debug_flags &= ~g_parse_debug_string (argv[i + 1],
-							     debug_keys,
-							     n_debug_keys);
-	      op_lvl = g_parse_debug_string (argv[i + 1], gsl_debug_keys, gsl_n_debug_keys);
-	      argv[i] = NULL;
-	      i += 1;
-	    }
-	  gsl_debug_disable (op_lvl);
 	  argv[i] = NULL;
 	}
     }
-  g_free (debug_keys);
   
   e = 0;
   for (i = 1; i < argc; i++)

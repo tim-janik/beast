@@ -36,8 +36,8 @@
 
 
 /* --- debugging and errors --- */
-#define	MAD_DEBUG		GSL_DEBUG_FUNCTION (GSL_MSG_DATA_HANDLE, "MAD")
-#define	MAD_MSG			GSL_MESSAGE_FUNCTION (GSL_MSG_DATA_HANDLE, "MAD")
+#define	MAD_DEBUG	sfi_debug_keyfunc ("mad")
+#define	MAD_MSG		sfi_info_keyfunc ("mad")
 
 
 /* --- defines --- */
@@ -509,8 +509,7 @@ dh_mad_read (GslDataHandle *dhandle,
     }
   else /* something went wrong here, _badly_ */
     {
-      MAD_MSG (GSL_ERROR_SEEK_FAILED,
-	       "pcm position screwed (pos: %lu, handle-pos: %lu), aborting read",
+      MAD_MSG ("during init: pcm position screwed (pos: %lu, handle-pos: %lu), aborting read",
 	       pos, handle->pcm_pos);	
       return -1;
     }

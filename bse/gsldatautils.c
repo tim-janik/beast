@@ -52,8 +52,7 @@ gsl_data_peek_value_f (GslDataHandle     *dhandle,
 	    {   /* pathologic */
 	      peekbuf->data[k - peekbuf->start] = 0;
 	      inc = 1;
-	      gsl_message_send (GSL_MSG_DATA_HANDLE, "PeekBuffer",
-				GSL_ERROR_READ_FAILED, "unable to read from data handle (%p)", dhandle);
+	      sfi_info ("%s: failed to read from data handle (%p)", G_STRLOC, dhandle);
 	    }
 	}
     }
