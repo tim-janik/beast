@@ -260,7 +260,10 @@ TODO:
 - self-input cycles need to be resolved in parent as well
 - needs description of pollfd/callback jobs
 - load control for slave threads
-
+- the suspension state update logic breaks (and with that proper
+  invokation of ->reset()) for cycles across more than one node and
+  for inputs of unconnected non-consumer nodes which have only
+  suspended inputs besides the dead output branch.
 
 Jul 15 2002	Tim Janik
 	* describe virtual modules

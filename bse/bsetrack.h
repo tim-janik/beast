@@ -40,8 +40,9 @@ struct _BseTrack
 {
   BseItem	   parent_instance;
 
-  BseSNet	  *snet;
   BsePart	  *part_SL;
+  BseSNet	  *snet;
+  guint		   max_voices;
 
   BseMidiReceiver *midi_receiver_SL;
 

@@ -402,6 +402,7 @@ update_suspension_state (EngineNode *node)
 {
   GslRing *ring;
   guint seen_suspended = 0, seen_active = 0;
+  gboolean outputs_suspended;
 
   node->suspension_update = FALSE;
   for (ring = node->output_nodes; ring && !seen_active; ring = gsl_ring_walk (node->output_nodes, ring))
@@ -417,7 +418,13 @@ update_suspension_state (EngineNode *node)
 	    seen_active++;
 	}
     }
-  node->outputs_suspended = seen_suspended && !seen_active;
+  outputs_suspended = seen_suspended && !seen_active;
+  if (outputs_suspended != node->outputs_suspended)
+    {
+      node->outputs_suspended = outputs_suspended;
+      node->needs_reset = node->module.klass->reset != NULL;
+    }
+  /* FIXME: suspension state updates need back propagation within cycles */
 }
 
 static GslRing*

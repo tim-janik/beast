@@ -131,6 +131,7 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
   if (wosc->config.exponential_fm)
     mode |= WOSC_MIX_WITH_EXP_FM;
 
+  /* adapt to mode changes */
   if_reject (mode != wosc->last_mode)
     {
       guint mask = wosc->last_mode ^ mode;
@@ -154,6 +155,13 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
 	    wave_osc_transform_filter (wosc, wosc->config.cfreq);
 	}
       wosc->last_mode = mode;
+    }
+
+  /* auto-trigger after reset */
+  if (!sync_in && wosc->last_sync_level < 0.5)
+    {
+      gsl_wave_osc_retrigger (wosc, freq_in ? GSL_SIGNAL_TO_FREQ (*freq_in) : wosc->config.cfreq);
+      wosc->last_sync_level = 1.0;
     }
 
   switch (mode)
@@ -269,7 +277,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 	  wosc->b[GSL_WAVE_OSC_FILTER_ORDER - i] = wosc->b[i];
 	  wosc->b[i] = t;
 	}
-      g_printerr ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/GSL_PI*2, freq_r/GSL_PI*2, step, wosc->istep);
+      g_printerr ("WaveOsc-filter: fc=%f fr=%f st=%f is=%u\n", freq_c/GSL_PI*2, freq_r/GSL_PI*2, step, wosc->istep);
     }
 
   if (clear_state)
@@ -337,6 +345,7 @@ gsl_wave_osc_config (GslWaveOscData   *wosc,
       wosc->wchunk = NULL;
       wosc->config = *config;
       gsl_wave_osc_retrigger (wosc, wosc->config.cfreq);
+      wosc->last_sync_level = MIN (wosc->last_sync_level, 0.0);
     }
   else
     {
@@ -348,8 +357,22 @@ gsl_wave_osc_config (GslWaveOscData   *wosc,
 	  wosc->config.start_offset = config->start_offset;
 	  wosc->config.cfreq = config->cfreq;
 	  gsl_wave_osc_retrigger (wosc, wosc->config.cfreq);
+	  wosc->last_sync_level = MIN (wosc->last_sync_level, 0.0);
 	}
     }
+}
+
+void
+gsl_wave_osc_reset (GslWaveOscData *wosc)
+{
+  g_return_if_fail (wosc != NULL);
+
+  gsl_wave_osc_set_filter (wosc, wosc->config.cfreq, TRUE);
+  wosc->last_mode = 0;
+  wosc->last_sync_level = 0;
+  wosc->last_freq_level = SIGNAL_LEVEL_INVAL;
+  wosc->last_mod_level = 0;
+  wosc->done = FALSE;
 }
 
 void

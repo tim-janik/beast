@@ -292,6 +292,7 @@ master_process_job (GslJob *job)
 	   */
 	  recurse_flag_suspension_update (node);
 	  node->local_suspend = TRUE;
+	  node->needs_reset = node->module.klass->reset != NULL;
 	  master_need_reflow |= TRUE;
 	}
       break;

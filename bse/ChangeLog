@@ -1,3 +1,23 @@
+Fri Aug 23 13:39:59 2002  Tim Janik  <timj@gtk.org>
+
+	* gslopschedule.c (update_suspension_state): 
+	* gslopmaster.c: suspension update and reset() invokation fixes.
+	whenever we change node->local_suspend or node->outputs_suspended,
+	update node->needs_reset.
+	* gsl-mplan.txt: keep a note about remaining suspension bugs.
+
+	* gslwaveosc.c (gsl_wave_osc_process): auto-trigger oscillator
+	if no sync input is present.
+	(gsl_wave_osc_config): reset sync level if the new config caused
+	a retrigger.
+	(gsl_wave_osc_reset): new function to reset filter state and
+	saved signal levels.
+
+	* bsewaveosc.c: slight rename, implement wosc_reset() function
+	to retrigger the oscillator.
+
+	* bsetrack.[hc]: support user setting for number of voices.
+
 Thu Aug 22 04:24:58 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesongthread.c: support multiple tracks per song.

@@ -33,8 +33,9 @@
 
 enum {
   PARAM_0,
+  PARAM_PART,
   PARAM_SYNTH_NET,
-  PARAM_PART
+  PARAM_N_SYNTH_VOICES
 };
 
 
@@ -98,16 +99,22 @@ bse_track_class_init (BseTrackClass *class)
   
   item_class->list_proxies = bse_track_list_proxies;
   
-  bse_object_class_add_param (object_class, "Synth Input",
-			      PARAM_SYNTH_NET,
-			      g_param_spec_object ("snet", "Custom Synth Net", "Synthesis network to be used as instrument",
-						   BSE_TYPE_SNET,
-						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Play List",
 			      PARAM_PART,
 			      g_param_spec_object ("part", "Part", NULL,
 						   BSE_TYPE_PART,
 						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Synth Input",
+			      PARAM_SYNTH_NET,
+			      g_param_spec_object ("snet", "Custom Synth Net", "Synthesis network to be used as instrument",
+						   BSE_TYPE_SNET,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Synth Input",
+			      PARAM_N_SYNTH_VOICES,
+			      bse_param_spec_uint ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
+						   1, 256,
+						   8, 1,
+						   BSE_PARAM_GUI | BSE_PARAM_STORAGE | BSE_PARAM_HINT_SCALE));
 }
 
 static void
@@ -115,6 +122,7 @@ bse_track_init (BseTrack *self)
 {
   self->snet = NULL;
   self->part_SL = NULL;
+  self->max_voices = 8;
   self->midi_receiver_SL = bse_midi_receiver_new ("intern");
 }
 
@@ -170,16 +178,16 @@ bse_track_list_proxies (BseItem    *item,
   BswIterProxy *iter = bsw_iter_create (BSW_TYPE_ITER_PROXY, 0);
   switch (param_id)
     {
-    case PARAM_SYNTH_NET:
-      bse_item_gather_proxies (item, iter, BSE_TYPE_SNET,
-			       (BseItemCheckContainer) check_project,
-			       (BseItemCheckProxy) check_synth,
-			       NULL);
-      break;
     case PARAM_PART:
       bse_item_gather_proxies (item, iter, BSE_TYPE_PART,
 			       (BseItemCheckContainer) check_song,
 			       (BseItemCheckProxy) NULL,
+			       NULL);
+      break;
+    case PARAM_SYNTH_NET:
+      bse_item_gather_proxies (item, iter, BSE_TYPE_SNET,
+			       (BseItemCheckContainer) check_project,
+			       (BseItemCheckProxy) check_synth,
 			       NULL);
       break;
     default:
@@ -239,6 +247,23 @@ bse_track_set_property (GObject      *object,
 
   switch (param_id)
     {
+    case PARAM_PART:
+      if (self->part_SL)
+	{
+	  bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->part_SL));
+	  g_assert (self->part_SL == NULL);
+	}
+      BSE_SEQUENCER_LOCK ();
+      self->part_SL = g_value_get_object (value);
+      BSE_SEQUENCER_UNLOCK ();
+      if (self->part_SL)
+	{
+	  bse_item_cross_ref (BSE_ITEM (self), BSE_ITEM (self->part_SL), part_uncross);
+	  g_object_connect (self->part_SL,
+			    "swapped_signal::notify::name", notify_part_changed, self,
+			    NULL);
+	}
+      break;
     case PARAM_SYNTH_NET:
       if (self->snet)
 	{
@@ -258,22 +283,8 @@ bse_track_set_property (GObject      *object,
 		      "snet", self->snet,
 		      NULL);
       break;
-    case PARAM_PART:
-      if (self->part_SL)
-	{
-	  bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->part_SL));
-	  g_assert (self->part_SL == NULL);
-	}
-      BSE_SEQUENCER_LOCK ();
-      self->part_SL = g_value_get_object (value);
-      BSE_SEQUENCER_UNLOCK ();
-      if (self->part_SL)
-	{
-	  bse_item_cross_ref (BSE_ITEM (self), BSE_ITEM (self->part_SL), part_uncross);
-	  g_object_connect (self->part_SL,
-			    "swapped_signal::notify::name", notify_part_changed, self,
-			    NULL);
-	}
+    case PARAM_N_SYNTH_VOICES:
+      self->max_voices = g_value_get_uint (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -291,11 +302,14 @@ bse_track_get_property (GObject    *object,
   
   switch (param_id)
     {
+    case PARAM_PART:
+      g_value_set_object (value, self->part_SL);
+      break;
     case PARAM_SYNTH_NET:
       g_value_set_object (value, self->snet);
       break;
-    case PARAM_PART:
-      g_value_set_object (value, self->part_SL);
+    case PARAM_N_SYNTH_VOICES:
+      g_value_set_uint (value, self->max_voices);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -403,6 +417,6 @@ bse_track_clone_voices (BseTrack *self,
   g_return_if_fail (BSE_IS_SNET (snet));
   g_return_if_fail (trans != NULL);
 
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < self->max_voices - 1; i++)
     bse_snet_context_clone_branch (snet, context, self->context_merger, self->midi_receiver_SL, 0, trans);
 }

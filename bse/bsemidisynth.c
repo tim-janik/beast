@@ -124,7 +124,7 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
 						   BSE_PARAM_GUI | BSE_PARAM_STORAGE | BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "MIDI Instrument",
 			      PARAM_N_VOICES,
-			      bse_param_spec_uint ("n_voices", "Max # Voixes", NULL,
+			      bse_param_spec_uint ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
 						   1, 256,
 						   1, 1,
 						   BSE_PARAM_GUI | BSE_PARAM_STORAGE | BSE_PARAM_HINT_SCALE));

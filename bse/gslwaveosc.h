@@ -67,6 +67,7 @@ typedef struct
 
 void		gsl_wave_osc_config	(GslWaveOscData	*wosc,
 					 GslWaveOscConfig *config);
+void		gsl_wave_osc_reset	(GslWaveOscData *wosc);
 gboolean	gsl_wave_osc_process	(GslWaveOscData	*wosc,
 					 guint		 n_values,
 					 const gfloat	*ifreq,
