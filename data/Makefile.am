@@ -61,6 +61,7 @@ sharedmimepackagedir = $(sharedmimedir)/packages
 sharedmimepackage_in_files = beast.xml.in
 sharedmimepackage_DATA = $(sharedmimepackage_in_files:.xml.in=.xml)
 CLEANFILES += beast.xml
+beast.xml: beast.xml.in
 
 # generate and install .mime and .keys files
 @INTLTOOL_KEYS_RULE@
@@ -68,6 +69,7 @@ mimedir = $(datadir)/mime-info
 mime_in_file = bse.keys.in bse.mime
 mime_DATA = $(mime_in_file:.keys.in=.keys)
 CLEANFILES += bse.keys
+bse.keys: bse.keys.in
 
 # update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
 install-data-hook:
