@@ -1,3 +1,10 @@
+Mon Mar 10 11:22:48 2003  Tim Janik  <timj@gtk.org>
+
+	* freeverb/bsefreeverb.c: 
+	* bsesequencer.c:
+	* davorgan.c: fix includes, we don't have a toplevel
+	gsl/ dir anymore.
+
 Tue Feb 18 17:51:11 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseadder.c bseiirfilter.c bsemixer.c bsemult.c davxtalstrings.c:

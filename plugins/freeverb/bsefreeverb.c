@@ -18,7 +18,7 @@
  */
 #include "bsefreeverb.h"
 
-#include <gsl/gslengine.h>
+#include <bse/gslengine.h>
 
 
 /* --- properties --- */

@@ -18,7 +18,7 @@
  */
 #include "davorgan.h"
 
-#include <gsl/gslengine.h>
+#include <bse/gslengine.h>
 
 #include <stdio.h>
 #include <stdlib.h>
