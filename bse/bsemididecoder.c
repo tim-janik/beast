@@ -542,7 +542,6 @@ bse_midi_decoder_construct_event (BseMidiDecoder *self)
   event->channel = 1 + self->zchannel;
   event->delta_time = self->delta_time;
   /* specific event portion */
-  memset (&event->data, 0, sizeof (event->data));
   if (midi_decoder_extract_specific (self, event))
     {
       if (event->status == BSE_MIDI_CHANNEL_PREFIX)

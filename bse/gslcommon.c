@@ -452,4 +452,5 @@ gsl_init (const GslConfigValue values[])
   _gsl_init_loader_wav ();
   _gsl_init_loader_oggvorbis ();
   _gsl_init_loader_mad ();
+  bse_init_loader_gus_patch ();
 }

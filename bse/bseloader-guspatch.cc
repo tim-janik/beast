@@ -592,7 +592,7 @@ pat_create_chunk_handle (gpointer      data,
 } // namespace
 
 extern "C" void
-_gsl_init_loader_pat()
+bse_init_loader_gus_patch (void)
 {
   static const gchar *file_exts[] = { "pat", NULL, };
   static const gchar *mime_types[] = { "audio/x-pat", NULL, }; // FIXME: correct?

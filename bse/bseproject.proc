@@ -26,6 +26,8 @@
 #include <bse/bsemidisynth.h>
 #include <bse/bsedatapocket.h>
 #include <bse/bsemidifile.h>
+#include <bse/bsemidireceiver.h>
+#include <bse/bseengine.h>
 
 
 AUTHORS = "Tim Janik <timj@gtk.org>";
@@ -773,6 +775,44 @@ METHOD (BseProject, auto-deactivate) {
 
   self->deactivate_usecs = msecs < 0 ? -1 : msecs * 1000;
 
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, inject-midi-control) {
+  HELP  = "Inject a MIDI control event into the project's MIDI receiver.";
+  IN    = bse_param_spec_object ("project", NULL, NULL, BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_int ("midi_channel", NULL, NULL, 1, 1, BSE_MIDI_MAX_CHANNELS, 1, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_int ("midi_control", NULL, NULL, 7, 0, 127, 1, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_real ("control_value", NULL, NULL, 0, -1, +1, 0.1, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project   = bse_value_get_object (in_values++);
+  int midi_channel      = g_value_get_int (in_values++);
+  int midi_control      = g_value_get_int (in_values++);
+  SfiReal control_value = sfi_value_get_real (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  if (BSE_SOURCE_PREPARED (project))
+    {
+      /* construct event */
+      BseMidiEvent *event = bse_midi_alloc_event ();
+      event->status = BSE_MIDI_CONTROL_CHANGE;
+      event->channel = midi_channel;
+      event->delta_time = bse_engine_tick_stamp_from_systime (sfi_time_system ());
+      /* midi control data portion */
+      event->data.control.control = midi_control;
+      event->data.control.value = control_value;
+      /* send event */
+      bse_midi_receiver_push_event (project->midi_receiver, event);
+      bse_midi_receiver_process_events (project->midi_receiver, event->delta_time);
+    }
+  
   return BSE_ERROR_NONE;
 }
 

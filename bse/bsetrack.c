@@ -1015,7 +1015,7 @@ bse_track_class_init (BseTrackClass *class)
   bse_object_class_add_param (object_class, _("MIDI Instrument"),
                               PROP_MIDI_CHANNEL,
                               sfi_pspec_int ("midi_channel", _("MIDI Channel"),
-                                             _("Midi channel assigned to this track, 0 uses private per-track channel"),
+                                             _("Midi channel assigned to this track, 0 uses internal per-track channel"),
                                              0, 0, BSE_MIDI_MAX_CHANNELS, 1,
                                              SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default:unprepared"));
   bse_object_class_add_param (object_class, _("MIDI Instrument"),

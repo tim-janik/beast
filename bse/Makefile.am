@@ -92,6 +92,7 @@ bse_c_sources = $(strip \
 	bsenote.c		bsemidifile.c		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			\
+	bseloader-guspatch.cc	\
 )
 # Synthesis Modules
 bse_idl_sources = $(strip \

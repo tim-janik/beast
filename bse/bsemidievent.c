@@ -153,7 +153,7 @@ bse_midi_copy_event (const BseMidiEvent *src)
 BseMidiEvent*
 bse_midi_alloc_event (void)
 {
-  return sfi_new_struct (BseMidiEvent, 1);
+  return sfi_new_struct0 (BseMidiEvent, 1);
 }
 
 BseMidiEvent*

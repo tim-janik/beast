@@ -1,3 +1,19 @@
+Mon Jan 24 22:38:21 2005  Tim Janik  <timj@gtk.org>
+
+	* bseproject.proc: implemented bse_project_inject_midi_control() to 
+	submit extra midi events into a playing project.
+
+	* Makefile.am: added bseloader-guspatch.cc.
+
+	* bseloader-guspatch.cc: 
+	* gslcommon.[hc]: initialize guspatch loader with 
+	bse_init_loader_gus_patch().
+
+	* bsemididecoder.c: 
+	* bsemidievent.c: zero initialize newly allocated midi events.
+
+	* bsetrack.c: wording fixup.
+
 Fri Jan 21 00:48:43 2005  Tim Janik  <timj@gtk.org>
 
 	* bsepart.proc: added bse-part-select-controls().
