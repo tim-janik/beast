@@ -746,6 +746,9 @@ bse_heart_prepare (gpointer  source_data,
 	}
     }
 
+  BSE_IF_DEBUG (LOOP)
+    g_message ("prepare, can_dispatch=%d", can_dispatch);
+
   return can_dispatch;
 }
 
@@ -787,6 +790,9 @@ bse_heart_check (gpointer  source_data,
 	}
     }
   
+  BSE_IF_DEBUG (LOOP)
+    g_message ("check, can_dispatch=%d", can_dispatch);
+
   return can_dispatch;
 }
 
@@ -797,6 +803,9 @@ bse_heart_dispatch (gpointer  source_data,
 {
   BseHeart *heart = BSE_HEART (source_data);
   guint i;
+
+  BSE_IF_DEBUG (LOOP)
+    g_message ("dispatching");
 
   for (i = 0; i < heart->n_devices; i++)
     {

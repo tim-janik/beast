@@ -1,3 +1,9 @@
+Wed Dec 22 18:57:10 1999  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-oss.c (bse_pcm_device_oss_open): 
+	(bse_pcm_device_oss_setup): open() the device always non-blocking, since newer
+	kernels apparently don't return EBUSY upon opening anymore.
+
 Tue Dec 21 06:54:26 1999  Tim Janik  <timj@gtk.org>
 
 	* bseobject.[hc] (bse_object_get_name_or_type): added convenience function.

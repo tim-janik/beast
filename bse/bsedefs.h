@@ -142,7 +142,7 @@ typedef enum
   BSE_DEBUG_PLUGINS		= (1 << 4),
   BSE_DEBUG_REGS		= (1 << 5),
   BSE_DEBUG_CHUNKS		= (1 << 6),
-  BSE_DEBUG_HEART		= (1 << 7),
+  BSE_DEBUG_LOOP		= (1 << 7),
   BSE_DEBUG_PCM			= (1 << 8)
 } BseDebugFlags;
 typedef enum			/* <skip> */

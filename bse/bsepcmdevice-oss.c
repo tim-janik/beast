@@ -30,7 +30,6 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #include	<errno.h>
 #include	<fcntl.h>
 
-#define OSS_DEBUG
 
 /* --- BsePcmDeviceOSS structs --- */
 struct _BsePcmDeviceOSS
@@ -171,7 +170,7 @@ bse_pcm_device_oss_open (BsePcmDevice  *pdev,
   else if (writable)
     omode = O_WRONLY;
   
-  fd = open (oss->device_name, omode, 0);
+  fd = open (oss->device_name, omode | O_NONBLOCK, 0);
   if (fd < 0)
     {
       if (errno == EBUSY)
@@ -221,7 +220,7 @@ bse_pcm_device_oss_open (BsePcmDevice  *pdev,
       if (writable)
 	while (bse_pcm_device_oready (pdev, 32))
 	  write (pdev->pfd.fd, zero_buffer, 32);
-      if (!writable)
+      if (readable)
 	read (pdev->pfd.fd, zero_buffer, 32);
     }
 
@@ -348,7 +347,7 @@ bse_pcm_device_oss_update_caps (BsePcmDevice *pdev)
   gint d_int;
   guint i;
   
-  fd = open (oss->device_name, O_RDONLY, 0);
+  fd = open (oss->device_name, O_RDONLY | O_NONBLOCK, 0);
   if (fd >= 0)
     {
       omode = O_RDONLY;
@@ -357,14 +356,14 @@ bse_pcm_device_oss_update_caps (BsePcmDevice *pdev)
     }
   else if (errno == EBUSY)
     return BSE_ERROR_DEVICE_BUSY;
-  fd = open (oss->device_name, O_WRONLY, 0);
+  fd = open (oss->device_name, O_WRONLY | O_NONBLOCK, 0);
   if (fd >= 0)
     {
       omode = O_WRONLY;
       pdev->caps.writable = TRUE;
       close (fd);
     }
-  fd = open (oss->device_name, O_RDWR, 0);
+  fd = open (oss->device_name, O_RDWR | O_NONBLOCK, 0);
   if (fd >= 0)
     {
       omode = O_RDWR;
@@ -373,7 +372,7 @@ bse_pcm_device_oss_update_caps (BsePcmDevice *pdev)
   
   fd = -1;
   if (omode > 0)
-    fd = open (oss->device_name, omode, 0);
+    fd = open (oss->device_name, omode | O_NONBLOCK, 0);
   if (fd < 0)
     {
       if (errno == EBUSY)
