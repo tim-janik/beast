@@ -40,7 +40,7 @@ do
       exit 1
     fi
     echo -n "$test_indentation"
-    $top_builddir/shell/bsesh-$BSE_VERSION -s bsetowav.scm $filename $filename.wav || exit 1
+    $top_builddir/shell/bsesh-$BSE_VERSION --bse-mixing-freq=48000 --bse-control-freq=1000 -p null -m null -s bsetowav.scm $filename $filename.wav || exit 1
     echo "${test_indentation}extracting features: $features"
     $top_builddir/tools/bsefextract --cut-zeros $features $filename.wav > $test_file.current || exit 1
     rm $filename.wav
