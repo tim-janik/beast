@@ -66,10 +66,3 @@ EXTRA_DIST += TODO $(beast_headers) $(beast_extra)
 
 # dependancy for TAGS file from etags
 all: @MISSING_ETAGS@ @BIRNET_Y@ TAGS
-
-
-
-noinst_PROGRAMS = wrapper
-
-wrapper_LDADD = $(progs_LDADD)
-wrapper_SOURCES = wrapper.c
