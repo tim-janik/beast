@@ -71,7 +71,7 @@ band_filter_common (unsigned int iorder,
   if ((iorder2 & 1) == 0)      /* norm is fluctuation minimum */
     norm *= sqrt (1.0 / (1.0 + epsilon * epsilon));
   
-  /* z nominator polynomial */
+  /* z numerator polynomial */
   poly[0] = gsl_complex (norm, 0);
   for (i = 0; i < iorder2; i++)
     {
@@ -112,7 +112,7 @@ filter_rp_to_z (unsigned int iorder,
   GslComplex *poly = g_newa (GslComplex, iorder + 1);
   guint i;
   
-  /* z nominator polynomial */
+  /* z numerator polynomial */
   poly[0] = gsl_complex (1, 0);
   for (i = 0; i < iorder; i++)
     gsl_cpoly_mul_reciprocal (i + 1, poly, roots[i]);
@@ -171,7 +171,7 @@ gsl_filter_butter_rp (unsigned int iorder,
       poles[i - 1] = gsl_trans_s2z (root);
     }
 
-  /* z nominator polynomial */
+  /* z numerator polynomial */
   for (i = 0; i < iorder; i++)
     roots[i] = gsl_complex (-1, 0);
 }
@@ -236,7 +236,7 @@ gsl_filter_tscheb1_rp (unsigned int iorder,
       poles[i - 1] = gsl_trans_s2z (root);
     }
 
-  /* z nominator polynomial */
+  /* z numerator polynomial */
   for (i = 0; i < iorder; i++)
     roots[i] = gsl_complex (-1, 0);
 }
@@ -821,7 +821,7 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
   for (i = 0; i <= iorder; i++)
     b[i] = zf[i].re;
   
-  /* z nominator polynomial */
+  /* z numerator polynomial */
   for (i = 0; i < iorder; i++)
     {
       roots[i].re = -1;

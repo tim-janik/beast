@@ -43,7 +43,7 @@ struct _BseSong
   BseSNet           parent_instance;
   
   guint		    tpqn;		/* ticks per querter note */
-  guint		    nominator;
+  guint		    numerator;
   guint		    denominator;
   gfloat            bpm;
   gfloat            volume_factor;      /* 1-based factor */

@@ -1,6 +1,6 @@
 FIXMES:
+- add clone tool for csynths
 - undo across midi file import is broken
-- s/nominator/numerator/
 - fix undo for: BseDataPocket
 - BseCategories need to provide an untranslated version (for menu paths)
 - get rid of root_category in idl files once BseCategories has an untranslated version

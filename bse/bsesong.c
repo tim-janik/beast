@@ -39,7 +39,7 @@ enum
   PROP_VOLUME_dB,
   PROP_VOLUME_PERC,
   PROP_TPQN,
-  PROP_NOMINATOR,
+  PROP_NUMERATOR,
   PROP_DENOMINATOR,
   PROP_BPM,
   PROP_POST_NET,
@@ -124,10 +124,10 @@ bse_song_timing_get_default (BseSongTiming *timing)
 
   timing->tick = 0;
   timing->bpm = 120;
-  timing->nominator = 4;
+  timing->numerator = 4;
   timing->denominator = 4;
   timing->tpqn = 384;
-  timing->tpt = timing->tpqn * 4 * timing->nominator / timing->denominator;
+  timing->tpt = timing->tpqn * 4 * timing->numerator / timing->denominator;
 }
 
 static void
@@ -184,9 +184,9 @@ bse_song_class_init (BseSongClass *class)
 			      sfi_pspec_int ("tpqn", "Ticks", "Number of ticks per quarter note",
 					     timing.tpqn, 384, 384, 0, SFI_PARAM_STANDARD_RDONLY));
   bse_object_class_add_param (object_class, "Timing",
-			      PROP_NOMINATOR,
-			      sfi_pspec_int ("nominator", "Nominator", "Measure nominator",
-					     timing.nominator, 1, 256, 1, SFI_PARAM_STANDARD));
+			      PROP_NUMERATOR,
+			      sfi_pspec_int ("numerator", "Numerator", "Measure numerator",
+					     timing.numerator, 1, 256, 1, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, "Timing",
 			      PROP_DENOMINATOR,
 			      sfi_pspec_int ("denominator", "Denominator", "Measure denominator, must be a power of 2",
@@ -245,7 +245,7 @@ bse_song_init (BseSong *self)
   BSE_OBJECT_SET_FLAGS (self, BSE_SUPER_FLAG_NEEDS_CONTEXT | BSE_SUPER_FLAG_NEEDS_SEQUENCER);
 
   self->tpqn = timing.tpqn;
-  self->nominator = timing.nominator;
+  self->numerator = timing.numerator;
   self->denominator = timing.denominator;
   self->bpm = timing.bpm;
   self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
@@ -410,8 +410,8 @@ bse_song_set_property (GObject      *object,
                           NULL);
         }
       break;
-    case PROP_NOMINATOR:
-      self->nominator = sfi_value_get_int (value);
+    case PROP_NUMERATOR:
+      self->numerator = sfi_value_get_int (value);
       bse_song_update_tpsi_SL (self);
       break;
     case PROP_DENOMINATOR:
@@ -507,8 +507,8 @@ bse_song_get_property (GObject     *object,
     case PROP_POST_NET:
       bse_value_set_object (value, self->pnet);
       break;
-    case PROP_NOMINATOR:
-      sfi_value_set_int (value, self->nominator);
+    case PROP_NUMERATOR:
+      sfi_value_set_int (value, self->numerator);
       break;
     case PROP_DENOMINATOR:
       sfi_value_set_int (value, self->denominator);
@@ -544,10 +544,10 @@ bse_song_get_timing (BseSong       *self,
 
   timing->tick = 0;
   timing->bpm = self->bpm;
-  timing->nominator = self->nominator;
+  timing->numerator = self->numerator;
   timing->denominator = self->denominator;
   timing->tpqn = self->tpqn;
-  timing->tpt = timing->tpqn * 4 * timing->nominator / timing->denominator;
+  timing->tpt = timing->tpqn * 4 * timing->numerator / timing->denominator;
 }
 
 BseSong*
