@@ -701,6 +701,7 @@ interop:
     - provide midi output
     - provide midi recording
     - Bse::MidiEvent: should be wire-passable
+    - maybe also add osc support
 
 design instruments:
   pat support:
