@@ -123,12 +123,12 @@ PROCEDURE (bse-progressor, "Toys/Progressor") {
 
       if (progress)
 	{
-	  if (bse_procedure_update (proc, 1.0 - ((gfloat) n_iter) / total))
+	  if (bse_procedure_status (proc, 1.0 - ((gfloat) n_iter) / total))
 	    return BSE_ERROR_PROC_ABORT;
 	}
       else
 	{
-	  if (bse_procedure_share (proc))
+	  if (bse_procedure_status (proc, -1))
 	    return BSE_ERROR_PROC_ABORT;
 	}
     }

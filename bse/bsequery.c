@@ -142,17 +142,17 @@ show_procdoc (void)
       guint j;
 
       fprintf (f_out, "/**\n * %s\n", g_type_name (cats[i].type));
-      for (j = 0; j < class->n_in_params; j++)
+      for (j = 0; j < class->n_in_pspecs; j++)
 	{
-	  GParamSpec *pspec = G_PARAM_SPEC (class->in_param_specs[j]);
+	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
 
 	  fprintf (f_out, " * @%s: %s\n",
 		   pspec->name,
 		   g_param_spec_get_blurb (pspec) ? g_param_spec_get_blurb (pspec) : nullstr);
 	}
-      for (j = 0; j < class->n_out_params; j++)
+      for (j = 0; j < class->n_out_pspecs; j++)
 	{
-	  GParamSpec *pspec = G_PARAM_SPEC (class->out_param_specs[j]);
+	  GParamSpec *pspec = G_PARAM_SPEC (class->out_pspecs[j]);
 
 	  fprintf (f_out, " * @Returns: %s: %s\n",
 		   pspec->name,

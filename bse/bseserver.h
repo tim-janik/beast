@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2001 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,12 @@ struct _BseServer
 struct _BseServerClass
 {
   BseItemClass parent_class;
+
+  void		(*script_status)	(BseServer	*server,
+					 BseScriptStatus status,
+					 const gchar	*script_name,
+					 gfloat		 progress,
+					 BseErrorType	 error);
 };
 
 
@@ -105,6 +111,14 @@ void		bse_server_add_io_watch			(BseServer	*server,
 void		bse_server_remove_io_watch		(BseServer	*server,
 							 BseIOWatch	 watch_func,
 							 gpointer	 data);
+
+/* --- internal --- */
+gboolean	bse_server_script_status		(BseServer	*server,
+							 BseScriptStatus status,
+							 const gchar	*script_name,
+							 gfloat		 progress,
+							 BseErrorType	 error);
+
 
 #ifdef __cplusplus
 }

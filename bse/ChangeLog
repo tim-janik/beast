@@ -1,3 +1,13 @@
+Thu May 16 23:15:33 2002  Tim Janik  <timj@gtk.org>
+
+	* bseserver.h: introduced ::script_status signal for GUI notification,
+	(not that we could currently execute scripts ;) this is currently used
+	to notify about procedure exit codes via BSE_SCRIPT_STATUS_PROC_END.
+
+	* bseprocedure.[hc]: procedure API and implementation cleanups.
+	
+	* *.c: misc fixes due to procedure changes.
+
 Tue May 14 21:36:51 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesource.c: defer resolution of the input

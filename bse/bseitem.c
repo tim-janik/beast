@@ -512,9 +512,9 @@ bse_item_execva_i (BseItem     *item,
 		   va_list      var_args,
 		   gboolean     skip_oparams)
 {
-  BseProcedureClass *proc;
+  GType type, proc_type;
   BseErrorType error;
-  GType   type;
+  GValue obj_value;
   guint l2;
 
   /* FIXME: we could need faster lookups here */
@@ -530,24 +530,25 @@ bse_item_execva_i (BseItem     *item,
       *(p++) = '+';
       strcpy (p, procedure);
       
-      proc = bse_procedure_find_ref (name);
+      proc_type = bse_procedure_lookup (name);
       g_free (name);
       type = g_type_parent (type);
     }
-  while (!proc && g_type_is_a (type, BSE_TYPE_ITEM));
+  while (!proc_type && g_type_is_a (type, BSE_TYPE_ITEM));
 
-  if (!BSE_IS_PROCEDURE_CLASS (proc))
+  if (!proc_type)
     {
-      g_warning ("Unable to find procedure \"%s\" for `%s'",
+      g_warning ("No such procedure \"%s\" for item `%s'",
 		 procedure,
 		 BSE_OBJECT_TYPE_NAME (item));
       return BSE_ERROR_INTERNAL;
     }
 
-  error = bse_procedure_execva_object (proc, BSE_OBJECT (item), var_args, FALSE);
-
-  bse_procedure_unref (proc);
-
+  obj_value.g_type = 0;
+  g_value_init (&obj_value, BSE_TYPE_ITEM);
+  g_value_set_object (&obj_value, item);
+  error = bse_procedure_marshal_valist (proc_type, &obj_value, NULL, NULL, skip_oparams, var_args);
+  g_value_unset (&obj_value);
   return error;
 }
 

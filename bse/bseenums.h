@@ -57,6 +57,13 @@ typedef enum
 } BseMagicFlags;
 typedef enum
 {
+  BSE_SCRIPT_STATUS_START	= 1,
+  BSE_SCRIPT_STATUS_PROGRESS	= 2,
+  BSE_SCRIPT_STATUS_END		= 3,
+  BSE_SCRIPT_STATUS_PROC_END	= 4	/* script was a single procedure call */
+} BseScriptStatus;
+typedef enum
+{
   /* GSL errors are mirrored into BSE */
   BSE_ERROR_NONE		= GSL_ERROR_NONE,	/* 0 */
   BSE_ERROR_INTERNAL		= GSL_ERROR_INTERNAL,

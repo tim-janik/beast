@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bseprocedure.h: dynamic procedure implementation
  */
 #ifndef __BSE_PROCEDURE_H__
 #define __BSE_PROCEDURE_H__
@@ -30,7 +28,7 @@ extern "C" {
 
 
 /* --- BSE type macros --- */
-#define	BSE_PROCEDURE_TYPE(proc)	(BSE_CLASS_TYPE (proc))
+#define	BSE_PROCEDURE_TYPE(proc)	(G_TYPE_FROM_CLASS (proc))
 #define	BSE_IS_PROCEDURE_CLASS(proc)	(G_TYPE_CHECK_CLASS_TYPE ((proc), BSE_TYPE_PROCEDURE))
 
 
@@ -57,10 +55,10 @@ struct _BseProcedureClass
   gchar          *date; /* copyright date */
   
   /* implementation */
-  guint           n_in_params;
-  GParamSpec	**in_param_specs;
-  guint           n_out_params;
-  GParamSpec	**out_param_specs;
+  guint           n_in_pspecs;
+  GParamSpec	**in_pspecs;
+  guint           n_out_pspecs;
+  GParamSpec	**out_pspecs;
 
   BseProcedureExec execute;
 };
@@ -70,48 +68,47 @@ struct _BseProcedureClass
 typedef gboolean (*BseProcedureNotify) (gpointer     func_data,
 					const gchar *proc_name,
 					BseErrorType exit_status);
+typedef BseErrorType (*BseProcedureMarshal) (BseProcedureClass *proc,
+					     const GValue      *ivalues,
+					     GValue	       *ovalues,
+					     gpointer	        marshal_data);
 
 
 /* --- prototypes --- */
-BseProcedureClass* bse_procedure_find_ref (const gchar		*name);
-void		   bse_procedure_ref	  (BseProcedureClass	*proc);
-void		   bse_procedure_unref	  (BseProcedureClass	*proc);
-/* execute procedure, passing n_in_params param values for in
- * values and n_out_params param value locations for out values
+/* execute procedure, passing n_in_pspecs param values for in
+ * values and n_out_pspecs param value locations for out values
  */
-BseErrorType	bse_procedure_exec	  (const gchar		*name,
+BseErrorType bse_procedure_exec	  	  (const gchar		*proc_name,
 					   ...);
-BseErrorType	bse_procedure_void_exec	  (const gchar		*name,
-					   ...);
-BseErrorType	bse_procedure_execvl	  (BseProcedureClass	*proc,
+GType	     bse_procedure_lookup	  (const gchar		*proc_name);
+BseErrorType bse_procedure_marshal_valist (GType		 proc_type,
+					   const GValue		*first_value,
+					   BseProcedureMarshal	 marshal,
+					   gpointer		 marshal_data,
+					   gboolean		 skip_ovalues,
+					   va_list		 var_args);
+BseErrorType bse_procedure_marshal        (GType		 proc_type,
+					   const GValue		*ivalues,
+					   GValue		*ovalues,
+					   BseProcedureMarshal	 marshal,
+					   gpointer		 marshal_data);
+BseErrorType bse_procedure_execvl	  (BseProcedureClass	*proc,
 					   GSList		*in_value_list,
 					   GSList		*out_value_list);
 /* functions to call from very time consuming procedures to keep the
  * main program (and playback) alive.
  * "progress"    - value in the range from 0...1 to indicate how far
- *                 the procedure has proceeded yet (*100 = %)
+ *                 the procedure has proceeded yet (*100 = %).
+ *		   values <0 indidicate progress of unknown amount.
  * return value  - if the return value is TRUE, the procedure is requested
  *                 to abort, and should return BSE_ERROR_PROC_ABORT
- * (a procedure should not intermix calls to both functions during
- *  its execution).
+ * FIXME: bse_procedure_status() has to become bse_server_script_status()
  */
-gboolean bse_procedure_share		(BseProcedureClass	*proc);
-gboolean bse_procedure_update		(BseProcedureClass	*proc,
+gboolean bse_procedure_status		(BseProcedureClass	*proc,
 					 gfloat			 progress);
-void	 bse_procedure_push_share_hook	(BseProcedureShare 	 share_func,
-					 gpointer	   	 func_data);
-void	 bse_procedure_pop_share_hook	(void);
-/* procedure notifiers, executed after a procedure finished execution */
-guint	bse_procedure_notifier_add	(BseProcedureNotify	 notifier,
-					 gpointer		 func_data);
-void	bse_procedure_notifier_remove	(guint			 notifier_id);
 
 
 /* --- internal --- */
-BseErrorType bse_procedure_execva_object (BseProcedureClass	*proc,
-					  BseObject	        *object,
-					  va_list		 var_args,
-					  gboolean		 skip_oparams);
 const gchar* bse_procedure_type_register (const gchar		*name,
 					  const gchar		*blurb,
 					  BsePlugin		*plugin,

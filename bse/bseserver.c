@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2001 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include "bseproject.h"
 #include "gslengine.h"
 #include "gslcommon.h"
+#include "bsemarshal.h"
 #include "bsemidimodule.h"
 #include "bsemain.h"		/* threads enter/leave */
 
@@ -63,7 +64,8 @@ static void	 iowatch_add			(BseServer	   *server,
 
 
 /* --- variables --- */
-static GTypeClass	*parent_class = NULL;
+static GTypeClass *parent_class = NULL;
+static guint       signal_script_status = 0;
 
 
 /* --- functions --- */
@@ -107,6 +109,12 @@ bse_server_class_init (BseServerClass *class)
 						   1, 2000,
 						   50, 5,
 						   BSE_PARAM_DEFAULT | G_PARAM_CONSTRUCT));
+
+  signal_script_status = bse_object_class_add_signal (object_class, "script-status",
+						      bse_marshal_VOID__ENUM_STRING_FLOAT_ENUM, NULL,
+						      G_TYPE_NONE, 4,
+						      BSE_TYPE_SCRIPT_STATUS, G_TYPE_STRING,
+						      G_TYPE_FLOAT, BSE_TYPE_ERROR_TYPE);
 }
 
 static void
@@ -468,6 +476,23 @@ bse_server_discard_midi_input_module (BseServer   *server,
   g_return_if_fail (g_slist_find (server->midi_modules, module));	/* paranoid */
 
   server->midi_ref_count -= 1;
+}
+
+gboolean
+bse_server_script_status (BseServer      *server,
+			  BseScriptStatus status,
+			  const gchar    *script_name,
+			  gfloat          progress,
+			  BseErrorType    error)
+{
+  gboolean abort = FALSE;
+
+  g_return_val_if_fail (BSE_IS_SERVER (server), TRUE);
+  g_return_val_if_fail (script_name != NULL, TRUE);
+
+  g_signal_emit (server, signal_script_status, 0,
+		 status, script_name, progress, error, &abort);
+  return abort;
 }
 
 void
