@@ -326,7 +326,7 @@ sfi_glue_call_valist (const gchar *proc_name,
 	  sfi_seq_unref (seq);
 	  return NULL;
 	}
-      arg_type = va_arg (var_args, guint8);
+      arg_type = va_arg (var_args, guint);
     }
   if (seq)
     {

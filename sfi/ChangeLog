@@ -1,3 +1,8 @@
+Sun Feb  9 17:56:07 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfiglue.c: using promoted type as argument for va_arg fixes
+	crashes with gcc-3.2
+
 Thu Feb  6 19:31:55 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.* sfidl.cc: necessary #includes and std
