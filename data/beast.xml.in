@@ -11,7 +11,7 @@
   <mime-type type="audio/x-bsewave">
     <glob pattern="*.bsewave"/>
     <magic priority="80">
-      <match type="string" value="#BseWave" offset="0:64"/>
+      <match type="string" value="#BseWave1" offset="0:64"/>
     </magic>
     <_comment>BSE Multi-Part Wave File</_comment>
   </mime-type>

@@ -301,7 +301,7 @@ Wave::store (const string file_name)
   /* dump wave header */
   SfiWStore *wstore = sfi_wstore_new ();
   wstore->comment_start = '#';
-  sfi_wstore_puts (wstore, "#BseWave\n\n");
+  sfi_wstore_puts (wstore, "#BseWave1\n\n");
   sfi_wstore_puts (wstore, "wave {\n");
   gchar *str = g_strescape (name.c_str(), NULL);
   sfi_wstore_printf (wstore, "  name = \"%s\"\n", str);

@@ -1,3 +1,7 @@
+Thu Jan 20 00:30:50 2005  Tim Janik  <timj@gtk.org>
+
+	* bse/gslloader-bsewave.c: changed BseWave magic to "#BseWave1".
+
 Thu Jan 13 21:35:38 2005  Tim Janik  <timj@gtk.org>
 
 	* gsldatautils.[hc]: added gsl_data_make_fade_ramp() and

@@ -1,7 +1,7 @@
-#BseWave
+#BseWave1
 
 # BseWave file sample header. all bsewave files should contain
-# "#BseWave" as their initial bytes, to allow magic(5) identification.
+# "#BseWave1" as their initial bytes, to allow magic(5) identification.
 
 # single line comments are enclosed in '#' and newlines.
 # newlines (also consecutive), tabs and spaces are all treated as
