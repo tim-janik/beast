@@ -7,6 +7,7 @@ FIXMES:
 - i18n: for _label="" define label and _label after translation
 - for menu factory branches, translate submenus *after* using the path as key
 
+- beast --devel misses "clear undo" in partdialog
 - extend module info dialog to cover author license etc.
 - remove/rename test-string.bse
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m

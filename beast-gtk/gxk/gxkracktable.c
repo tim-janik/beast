@@ -1,26 +1,23 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 2001-2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 2001-2003 Tim Janik
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
-#include "bstracktable.h"
-
-#include "bstrackitem.h"
-#include "bstutils.h"
-#include <gtk/gtkalignment.h>
-#include <gtk/gtklabel.h>
+#include "gxkracktable.h"
+#include "gxkrackitem.h"
 
 typedef enum
 {
@@ -32,89 +29,89 @@ typedef enum
 
 
 /* --- prototypes --- */
-static void		bst_rack_table_class_init	(BstRackTableClass	*klass);
-static void		bst_rack_table_init		(BstRackTable		*rtable);
-static void		bst_rack_table_destroy		(GtkObject		*object);
-static void		bst_rack_table_finalize		(GObject		*object);
-static void		bst_rack_table_style_set	(GtkWidget		*widget,
-							 GtkStyle		*previous_style);
-static void     	bst_rack_table_size_request	(GtkWidget              *widget,
-							 GtkRequisition         *requisition);
-static void     	bst_rack_table_size_allocate	(GtkWidget              *widget,
-							 GtkAllocation          *allocation);
-static void		bst_rack_table_realize		(GtkWidget		*widget);
-static void		bst_rack_table_unrealize	(GtkWidget		*widget);
-static void		bst_rack_table_map		(GtkWidget		*widget);
-static void		bst_rack_table_unmap		(GtkWidget		*widget);
-static gint     	bst_rack_table_button_press     (GtkWidget		*widget,
-							 GdkEventButton		*event);
-static gint     	bst_rack_table_button_release   (GtkWidget		*widget,
-							 GdkEventButton		*event);
-static gint		bst_rack_table_motion_notify	(GtkWidget		*widget,
-							 GdkEventMotion		*event);
-static gint		bst_rack_table_expose		(GtkWidget		*widget,
-							 GdkEventExpose		*event);
-static void		bst_rack_table_add		(GtkContainer		*container,
-							 GtkWidget		*child);
-static void		bst_rack_table_remove		(GtkContainer		*container,
-							 GtkWidget		*child);
-static gboolean		bst_rack_table_iwindow_translate(BstRackTable		*rtable,
-							 gint			 x,
-							 gint			 y,
-							 guint			*hcell,
-							 guint			*vcell);
-static GtkWidget*	bst_rack_table_find_child	(BstRackTable		*rtable,
-							 guint			 hcell,
-							 guint			 vcell);
-static void		bst_rack_table_on_area		(BstRackTable		*rtable,
-							 AreaAction		 action,
-							 guint			 hcell1,
-							 guint			 vcell1,
-							 guint			 hspan,
-							 guint			 vspan);
-static void		bst_rtable_update_child_map	(BstRackTable		*rtable);
-static void		widget_reparent			(GtkWidget		*child,
-							 GtkWidget		*parent);
-static void		rtable_abort_drag		(BstRackTable		*rtable,
-							 guint32		 etime);
+static void             gxk_rack_table_class_init       (GxkRackTableClass      *klass);
+static void             gxk_rack_table_init             (GxkRackTable           *self);
+static void             gxk_rack_table_destroy          (GtkObject              *object);
+static void             gxk_rack_table_finalize         (GObject                *object);
+static void             gxk_rack_table_style_set        (GtkWidget              *widget,
+                                                         GtkStyle               *previous_style);
+static void             gxk_rack_table_size_request     (GtkWidget              *widget,
+                                                         GtkRequisition         *requisition);
+static void             gxk_rack_table_size_allocate    (GtkWidget              *widget,
+                                                         GtkAllocation          *allocation);
+static void             gxk_rack_table_realize          (GtkWidget              *widget);
+static void             gxk_rack_table_unrealize        (GtkWidget              *widget);
+static void             gxk_rack_table_map              (GtkWidget              *widget);
+static void             gxk_rack_table_unmap            (GtkWidget              *widget);
+static gint             gxk_rack_table_button_press     (GtkWidget              *widget,
+                                                         GdkEventButton         *event);
+static gint             gxk_rack_table_button_release   (GtkWidget              *widget,
+                                                         GdkEventButton         *event);
+static gint             gxk_rack_table_motion_notify    (GtkWidget              *widget,
+                                                         GdkEventMotion         *event);
+static gint             gxk_rack_table_expose           (GtkWidget              *widget,
+                                                         GdkEventExpose         *event);
+static void             gxk_rack_table_add              (GtkContainer           *container,
+                                                         GtkWidget              *child);
+static void             gxk_rack_table_remove           (GtkContainer           *container,
+                                                         GtkWidget              *child);
+static gboolean         gxk_rack_table_iwindow_translate(GxkRackTable           *self,
+                                                         gint                    x,
+                                                         gint                    y,
+                                                         guint                  *hcell,
+                                                         guint                  *vcell);
+static GtkWidget*       gxk_rack_table_find_child       (GxkRackTable           *self,
+                                                         guint                   hcell,
+                                                         guint                   vcell);
+static void             gxk_rack_table_on_area          (GxkRackTable           *self,
+                                                         AreaAction              action,
+                                                         guint                   hcell1,
+                                                         guint                   vcell1,
+                                                         guint                   hspan,
+                                                         guint                   vspan);
+static void             gxk_rtable_update_child_map     (GxkRackTable           *self);
+static void             widget_reparent                 (GtkWidget              *child,
+                                                         GtkWidget              *parent);
+static void             rtable_abort_drag               (GxkRackTable           *self,
+                                                         guint32                 etime);
 
 
 /* --- static variables --- */
-static gpointer	parent_class = NULL;
+static gpointer parent_class = NULL;
 static GQuark   quark_rack_info = 0;
-static guint	signal_edit_mode_changed = 0;
+static guint    signal_edit_mode_changed = 0;
 
 
 /* --- functions --- */
 GtkType
-bst_rack_table_get_type (void)
+gxk_rack_table_get_type (void)
 {
   static GType object_type = 0;
-
+  
   if (!object_type)
     {
       static const GTypeInfo object_info = {
-	sizeof (BstRackTableClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_rack_table_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstRackTable),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_rack_table_init,
+        sizeof (GxkRackTableClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) gxk_rack_table_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (GxkRackTable),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) gxk_rack_table_init,
       };
-
+      
       object_type = g_type_register_static (GTK_TYPE_TABLE,
-					    "BstRackTable",
-					    &object_info, 0);
+                                            "GxkRackTable",
+                                            &object_info, 0);
     }
-
+  
   return object_type;
 }
 
 static void
-bst_rack_table_class_init (BstRackTableClass *class)
+gxk_rack_table_class_init (GxkRackTableClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
@@ -122,94 +119,94 @@ bst_rack_table_class_init (BstRackTableClass *class)
   GtkContainerClass *container_class = GTK_CONTAINER_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
-
-  quark_rack_info = g_quark_from_static_string ("BstRackChildInfo");
   
-  gobject_class->finalize = bst_rack_table_finalize;
-
-  object_class->destroy = bst_rack_table_destroy;
+  quark_rack_info = g_quark_from_static_string ("GxkRackChildInfo");
   
-  widget_class->style_set = bst_rack_table_style_set;
-  widget_class->size_request = bst_rack_table_size_request;
-  widget_class->size_allocate = bst_rack_table_size_allocate;
-  widget_class->realize = bst_rack_table_realize;
-  widget_class->unrealize = bst_rack_table_unrealize;
-  widget_class->map = bst_rack_table_map;
-  widget_class->unmap = bst_rack_table_unmap;
-  widget_class->button_press_event = bst_rack_table_button_press;
-  widget_class->button_release_event = bst_rack_table_button_release;
-  widget_class->motion_notify_event = bst_rack_table_motion_notify;
-  widget_class->expose_event = bst_rack_table_expose;
-
-  container_class->add = bst_rack_table_add;
-  container_class->remove = bst_rack_table_remove;
-
+  gobject_class->finalize = gxk_rack_table_finalize;
+  
+  object_class->destroy = gxk_rack_table_destroy;
+  
+  widget_class->style_set = gxk_rack_table_style_set;
+  widget_class->size_request = gxk_rack_table_size_request;
+  widget_class->size_allocate = gxk_rack_table_size_allocate;
+  widget_class->realize = gxk_rack_table_realize;
+  widget_class->unrealize = gxk_rack_table_unrealize;
+  widget_class->map = gxk_rack_table_map;
+  widget_class->unmap = gxk_rack_table_unmap;
+  widget_class->button_press_event = gxk_rack_table_button_press;
+  widget_class->button_release_event = gxk_rack_table_button_release;
+  widget_class->motion_notify_event = gxk_rack_table_motion_notify;
+  widget_class->expose_event = gxk_rack_table_expose;
+  
+  container_class->add = gxk_rack_table_add;
+  container_class->remove = gxk_rack_table_remove;
+  
   signal_edit_mode_changed = g_signal_new ("edit-mode-changed",
-					   G_OBJECT_CLASS_TYPE (class),
-					   G_SIGNAL_RUN_FIRST,
-					   G_STRUCT_OFFSET (BstRackTableClass, edit_mode_changed),
-					   NULL, NULL,
-					   bst_marshal_NONE__BOOLEAN,
-					   G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
+                                           G_OBJECT_CLASS_TYPE (class),
+                                           G_SIGNAL_RUN_FIRST,
+                                           G_STRUCT_OFFSET (GxkRackTableClass, edit_mode_changed),
+                                           NULL, NULL,
+                                           gxk_marshal_NONE__BOOLEAN,
+                                           G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
 }
 
 static void
-bst_rack_table_init (BstRackTable *rtable)
+gxk_rack_table_init (GxkRackTable *self)
 {
-  gtk_widget_set_redraw_on_allocate (GTK_WIDGET (rtable), TRUE);
-  gtk_container_set_reallocate_redraws (GTK_CONTAINER (rtable), TRUE);
-  rtable->iwindow = NULL;
-  g_object_set (rtable,
-		"homogeneous", TRUE,
-		"column_spacing", 0,
-		"row_spacing", 0,
-		NULL);
-  rtable->cell_request_width = 0;
-  rtable->cell_request_height = 0;
-
-  rtable->drag_window = g_object_new (GTK_TYPE_WINDOW,
-				      "type", GTK_WINDOW_POPUP,
-				      "width_request", rtable->cell_request_width,
-				      "height_request", rtable->cell_request_height,
-				      NULL);
+  gtk_widget_set_redraw_on_allocate (GTK_WIDGET (self), TRUE);
+  gtk_container_set_reallocate_redraws (GTK_CONTAINER (self), TRUE);
+  self->iwindow = NULL;
+  g_object_set (self,
+                "homogeneous", TRUE,
+                "column_spacing", 0,
+                "row_spacing", 0,
+                NULL);
+  self->cell_request_width = 0;
+  self->cell_request_height = 0;
+  
+  self->drag_window = g_object_new (GTK_TYPE_WINDOW,
+                                    "type", GTK_WINDOW_POPUP,
+                                    "width_request", self->cell_request_width,
+                                    "height_request", self->cell_request_height,
+                                    NULL);
   if (0)
     g_object_new (GTK_TYPE_LABEL,
-		"parent", rtable->drag_window,
-		"label", "foo",
-		"visible", TRUE,
-		NULL);
+                  "parent", self->drag_window,
+                  "label", "foo",
+                  "visible", TRUE,
+                  NULL);
 }
 
 static void
-bst_rack_table_destroy (GtkObject *object)
+gxk_rack_table_destroy (GtkObject *object)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (object);
-
-  rtable_abort_drag (rtable, GDK_CURRENT_TIME);
-
-  if (rtable->drag_window)
+  GxkRackTable *self = GXK_RACK_TABLE (object);
+  
+  rtable_abort_drag (self, GDK_CURRENT_TIME);
+  
+  if (self->drag_window)
     {
-      gtk_widget_destroy (rtable->drag_window);
-      rtable->drag_window = NULL;
+      gtk_widget_destroy (self->drag_window);
+      self->drag_window = NULL;
     }
-
+  
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
-bst_rack_table_finalize (GObject *object)
+gxk_rack_table_finalize (GObject *object)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (object);
-
-  g_free (rtable->child_map);
-
+  GxkRackTable *self = GXK_RACK_TABLE (object);
+  
+  g_free (self->child_map);
+  
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
-bst_rack_table_realize (GtkWidget *widget)
+gxk_rack_table_realize (GtkWidget *widget)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
   
@@ -223,129 +220,129 @@ bst_rack_table_realize (GtkWidget *widget)
   attributes.wclass = GDK_INPUT_ONLY;
   attributes.event_mask = gtk_widget_get_events (widget);
   attributes.event_mask |= (GDK_EXPOSURE_MASK |
-			    GDK_BUTTON_PRESS_MASK |
-			    GDK_BUTTON_RELEASE_MASK |
-			    GDK_ENTER_NOTIFY_MASK |
-			    GDK_LEAVE_NOTIFY_MASK |
-			    GDK_POINTER_MOTION_MASK |
-			    GDK_POINTER_MOTION_HINT_MASK);
+                            GDK_BUTTON_PRESS_MASK |
+                            GDK_BUTTON_RELEASE_MASK |
+                            GDK_ENTER_NOTIFY_MASK |
+                            GDK_LEAVE_NOTIFY_MASK |
+                            GDK_POINTER_MOTION_MASK |
+                            GDK_POINTER_MOTION_HINT_MASK);
   attributes_mask = GDK_WA_X | GDK_WA_Y;
-
-  rtable->iwindow = gdk_window_new (gtk_widget_get_parent_window (widget),
-				    &attributes, attributes_mask);
-  gdk_window_set_user_data (rtable->iwindow, rtable);
+  
+  self->iwindow = gdk_window_new (gtk_widget_get_parent_window (widget),
+                                  &attributes, attributes_mask);
+  gdk_window_set_user_data (self->iwindow, self);
 }
 
 static void
-bst_rack_table_style_set (GtkWidget *widget,
-			  GtkStyle  *previous_style)
+gxk_rack_table_style_set (GtkWidget *widget,
+                          GtkStyle  *previous_style)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
   GdkFont *font = gtk_style_get_font (widget->style);
   guint i, x = 0;
-
+  
   for (i = 0; i < 256; i++)
     {
       guint width = gdk_char_width (font, i);
-
+      
       x = MAX (x, width);
     }
-  rtable->cell_request_width = x;
-  rtable->cell_request_height = font->ascent + font->descent;
+  self->cell_request_width = x;
+  self->cell_request_height = font->ascent + font->descent;
 }
 
 static void
-bst_rack_table_size_request (GtkWidget      *widget,
-			     GtkRequisition *requisition)
+gxk_rack_table_size_request (GtkWidget      *widget,
+                             GtkRequisition *requisition)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
-  GtkTable *table = GTK_TABLE (rtable);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
+  GtkTable *table = GTK_TABLE (self);
   GList *list;
   guint i, j;
   
   for (list = table->children; list; list = list->next)
     {
       GtkTableChild *child = list->data;
-
+      
       if (GTK_WIDGET_VISIBLE (child->widget))
-	gtk_widget_size_request (child->widget, NULL);
+        gtk_widget_size_request (child->widget, NULL);
     }
-
-  requisition->width = GTK_CONTAINER (rtable)->border_width * 2;
-  requisition->height = GTK_CONTAINER (rtable)->border_width * 2;
+  
+  requisition->width = GTK_CONTAINER (self)->border_width * 2;
+  requisition->height = GTK_CONTAINER (self)->border_width * 2;
   for (i = 0; i < table->ncols; i++)
     {
-      table->cols[i].requisition = rtable->cell_request_width + table->cols[i].spacing;
+      table->cols[i].requisition = self->cell_request_width + table->cols[i].spacing;
       requisition->width += table->cols[i].requisition;
     }
   for (j = 0; j < table->nrows; j++)
     {
-      table->rows[j].requisition = rtable->cell_request_height + table->rows[j].spacing;
+      table->rows[j].requisition = self->cell_request_height + table->rows[j].spacing;
       requisition->height += table->rows[j].requisition;
     }
 }
 
 static void
-bst_rack_table_size_allocate (GtkWidget     *widget,
-			      GtkAllocation *allocation)
+gxk_rack_table_size_allocate (GtkWidget     *widget,
+                              GtkAllocation *allocation)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
-  GtkTable *table = GTK_TABLE (rtable);
-
-  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
-
-  bst_rtable_update_child_map (rtable);
-
-  rtable->cell_width = table->cols[0].allocation;
-  rtable->cell_height = table->rows[0].allocation;
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
+  GtkTable *table = GTK_TABLE (self);
   
-  if (GTK_WIDGET_REALIZED (rtable))
+  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+  
+  gxk_rtable_update_child_map (self);
+  
+  self->cell_width = table->cols[0].allocation;
+  self->cell_height = table->rows[0].allocation;
+  
+  if (GTK_WIDGET_REALIZED (self))
     {
-      gdk_window_move_resize (rtable->iwindow,
-			      widget->allocation.x, widget->allocation.y,
-			      widget->allocation.width, widget->allocation.height);
-      gdk_window_raise (rtable->iwindow);
+      gdk_window_move_resize (self->iwindow,
+                              widget->allocation.x, widget->allocation.y,
+                              widget->allocation.width, widget->allocation.height);
+      gdk_window_raise (self->iwindow);
     }
 }
 
 static void
-bst_rack_table_unrealize (GtkWidget *widget)
+gxk_rack_table_unrealize (GtkWidget *widget)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
   
-  gdk_window_set_user_data (rtable->iwindow, NULL);
-  gdk_window_destroy (rtable->iwindow);
-  rtable->iwindow = NULL;
-
+  gdk_window_set_user_data (self->iwindow, NULL);
+  gdk_window_destroy (self->iwindow);
+  self->iwindow = NULL;
+  
   GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
 }
 
 static void
-bst_rack_table_map (GtkWidget *widget)
+gxk_rack_table_map (GtkWidget *widget)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
   
   GTK_WIDGET_CLASS (parent_class)->map (widget);
   
-  if (rtable->edit_mode)
-    gdk_window_show (rtable->iwindow);
+  if (self->edit_mode)
+    gdk_window_show (self->iwindow);
 }
 
 static void
-bst_rack_table_unmap (GtkWidget *widget)
+gxk_rack_table_unmap (GtkWidget *widget)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
   
-  rtable_abort_drag (rtable, GDK_CURRENT_TIME);
-
+  rtable_abort_drag (self, GDK_CURRENT_TIME);
+  
   GTK_WIDGET_CLASS (parent_class)->unmap (widget);
   
-  gdk_window_hide (rtable->iwindow);
+  gdk_window_hide (self->iwindow);
 }
 
 static void
 widget_reparent (GtkWidget *child,
-		 GtkWidget *parent)
+                 GtkWidget *parent)
 {
   g_object_ref (child);
   gtk_container_remove (GTK_CONTAINER (child->parent), child);
@@ -354,207 +351,207 @@ widget_reparent (GtkWidget *child,
 }
 
 static gint
-bst_rack_table_button_press (GtkWidget      *widget,
-			     GdkEventButton *event)
+gxk_rack_table_button_press (GtkWidget      *widget,
+                             GdkEventButton *event)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
-  GtkTable *table = GTK_TABLE (rtable);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
+  GtkTable *table = GTK_TABLE (self);
   
-  if (!rtable->edit_mode)
+  if (!self->edit_mode)
     return FALSE;
-
+  
   if (event->type == GDK_BUTTON_PRESS && event->button == 2)
     {
-      gboolean was_dragging = rtable->in_drag;
+      gboolean was_dragging = self->in_drag;
       guint h, v;
-
-      if (bst_rack_table_iwindow_translate (rtable, event->x, event->y, &h, &v))
-	rtable->child = bst_rack_table_find_child (rtable, h, v);
-      rtable->in_drag = rtable->child != NULL;
-      if (rtable->in_drag)
-	{
-	  if (!was_dragging)
-	    {
-	      GdkCursor *cursor = gdk_cursor_new (GDK_FLEUR);
-
-	      rtable->in_drag_and_grabbing = gdk_pointer_grab (rtable->iwindow, FALSE,
-							       (GDK_BUTTON_PRESS_MASK |
-								GDK_BUTTON_RELEASE_MASK |
-								GDK_ENTER_NOTIFY_MASK |
-								GDK_LEAVE_NOTIFY_MASK |
-								GDK_POINTER_MOTION_MASK |
-								GDK_POINTER_MOTION_HINT_MASK),
-							       NULL, cursor, event->time) == GDK_GRAB_SUCCESS;
-	      gdk_cursor_destroy (cursor);
-	    }
-	  bst_rack_child_get_info (rtable->child, &rtable->drag_info);
-	  rtable->xofs = event->x - GTK_CONTAINER (rtable)->border_width;
-	  rtable->yofs = event->y - GTK_CONTAINER (rtable)->border_width;
-	  for (h = 0; h < rtable->drag_info.col; h++)
-	    rtable->xofs -= table->cols[h].allocation + table->cols[h].spacing;
-	  for (h = 0; h < rtable->drag_info.row; h++)
-	    rtable->yofs -= table->rows[h].allocation + table->rows[h].spacing;
-	  widget_reparent (rtable->child, rtable->drag_window);
-	  rtable->drag_col = rtable->drag_info.col;
-	  rtable->drag_row = rtable->drag_info.row;
-	  h = table->cols[0].allocation + table->cols[0].spacing;
-	  v = table->rows[0].allocation + table->rows[0].spacing;
-	  h *= rtable->drag_info.hspan - 1;
-	  v *= rtable->drag_info.vspan - 1;
-	  h += table->cols[0].allocation;
-	  v += table->rows[0].allocation;
-	  gtk_window_resize (GTK_WINDOW (rtable->drag_window), h, v);
-	  h = event->x_root - rtable->xofs;
-	  v = event->y_root - rtable->yofs;
-	  gtk_window_move (GTK_WINDOW (rtable->drag_window), h, v);
-	  gtk_widget_show (rtable->drag_window);
-	  bst_rack_table_on_area (rtable, EXPOSE_AREA,
-				  rtable->drag_info.col,
-				  rtable->drag_info.row,
-				  rtable->drag_info.hspan,
-				  rtable->drag_info.vspan);
-	}
+      
+      if (gxk_rack_table_iwindow_translate (self, event->x, event->y, &h, &v))
+        self->child = gxk_rack_table_find_child (self, h, v);
+      self->in_drag = self->child != NULL;
+      if (self->in_drag)
+        {
+          if (!was_dragging)
+            {
+              GdkCursor *cursor = gdk_cursor_new (GDK_FLEUR);
+              
+              self->in_drag_and_grabbing = gdk_pointer_grab (self->iwindow, FALSE,
+                                                             (GDK_BUTTON_PRESS_MASK |
+                                                              GDK_BUTTON_RELEASE_MASK |
+                                                              GDK_ENTER_NOTIFY_MASK |
+                                                              GDK_LEAVE_NOTIFY_MASK |
+                                                              GDK_POINTER_MOTION_MASK |
+                                                              GDK_POINTER_MOTION_HINT_MASK),
+                                                             NULL, cursor, event->time) == GDK_GRAB_SUCCESS;
+              gdk_cursor_destroy (cursor);
+            }
+          gxk_rack_child_get_info (self->child, &self->drag_info);
+          self->xofs = event->x - GTK_CONTAINER (self)->border_width;
+          self->yofs = event->y - GTK_CONTAINER (self)->border_width;
+          for (h = 0; h < self->drag_info.col; h++)
+            self->xofs -= table->cols[h].allocation + table->cols[h].spacing;
+          for (h = 0; h < self->drag_info.row; h++)
+            self->yofs -= table->rows[h].allocation + table->rows[h].spacing;
+          widget_reparent (self->child, self->drag_window);
+          self->drag_col = self->drag_info.col;
+          self->drag_row = self->drag_info.row;
+          h = table->cols[0].allocation + table->cols[0].spacing;
+          v = table->rows[0].allocation + table->rows[0].spacing;
+          h *= self->drag_info.hspan - 1;
+          v *= self->drag_info.vspan - 1;
+          h += table->cols[0].allocation;
+          v += table->rows[0].allocation;
+          gtk_window_resize (GTK_WINDOW (self->drag_window), h, v);
+          h = event->x_root - self->xofs;
+          v = event->y_root - self->yofs;
+          gtk_window_move (GTK_WINDOW (self->drag_window), h, v);
+          gtk_widget_show (self->drag_window);
+          gxk_rack_table_on_area (self, EXPOSE_AREA,
+                                  self->drag_info.col,
+                                  self->drag_info.row,
+                                  self->drag_info.hspan,
+                                  self->drag_info.vspan);
+        }
     }
-  else if (event->type == GDK_BUTTON_PRESS && event->button == 3 && !rtable->in_drag)
+  else if (event->type == GDK_BUTTON_PRESS && event->button == 3 && !self->in_drag)
     {
       GtkWidget *child = NULL;
       guint h, v;
-
-      if (bst_rack_table_iwindow_translate (rtable, event->x, event->y, &h, &v))
-	child = bst_rack_table_find_child (rtable, h, v);
-      if (BST_IS_RACK_ITEM (child))
-	{
-	  /* proxy button presses */
-	  g_signal_emit_by_name (child, "button_press", event);
-	}
+      
+      if (gxk_rack_table_iwindow_translate (self, event->x, event->y, &h, &v))
+        child = gxk_rack_table_find_child (self, h, v);
+      if (GXK_IS_RACK_ITEM (child))
+        {
+          /* proxy button presses */
+          g_signal_emit_by_name (child, "button_press", event);
+        }
     }
-
+  
   return TRUE;
 }
 
 static gint
-bst_rack_table_motion_notify (GtkWidget      *widget,
-			      GdkEventMotion *event)
+gxk_rack_table_motion_notify (GtkWidget      *widget,
+                              GdkEventMotion *event)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
-  GtkTable *table = GTK_TABLE (rtable);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
+  GtkTable *table = GTK_TABLE (self);
   
-  if (rtable->in_drag)
+  if (self->in_drag)
     {
       guint h, v;
       gint x, y;
-
-      gtk_window_move (GTK_WINDOW (rtable->drag_window), event->x_root - rtable->xofs, event->y_root - rtable->yofs);
       
-      if (event->is_hint)	/* trigger new events */
-	gdk_window_get_pointer (widget->window, NULL, NULL, NULL);
-
+      gtk_window_move (GTK_WINDOW (self->drag_window), event->x_root - self->xofs, event->y_root - self->yofs);
+      
+      if (event->is_hint)       /* trigger new events */
+        gdk_window_get_pointer (widget->window, NULL, NULL, NULL);
+      
       /* translate x/y to first cell mid-point */
-      x = event->x - rtable->xofs;
-      y = event->y - rtable->yofs;
-      x += rtable->cell_width / 2;
-      y += rtable->cell_height / 2;
-
-      if (!bst_rack_table_iwindow_translate (rtable, x, y, &h, &v) ||
-	  h >= table->ncols || v >= table->nrows ||
-	  h + rtable->drag_info.hspan > table->ncols ||
-	  v + rtable->drag_info.vspan > table->nrows ||
-	  bst_rack_table_check_area (rtable, h, v, rtable->drag_info.hspan, rtable->drag_info.vspan))
-	{
-	  h = rtable->drag_col;
-	  v = rtable->drag_row;
-	}
-      if (h != rtable->drag_info.col || v != rtable->drag_info.row)
-	{
-	  bst_rack_table_on_area (rtable, EXPOSE_AREA,
-				  rtable->drag_info.col,
-				  rtable->drag_info.row,
-				  rtable->drag_info.hspan,
-				  rtable->drag_info.vspan);
-	  rtable->drag_info.col = h;
-	  rtable->drag_info.row = v;
-          bst_rack_table_on_area (rtable, EXPOSE_AREA,
-				  rtable->drag_info.col,
-				  rtable->drag_info.row,
-                                  rtable->drag_info.hspan,
-				  rtable->drag_info.vspan);
-	}
+      x = event->x - self->xofs;
+      y = event->y - self->yofs;
+      x += self->cell_width / 2;
+      y += self->cell_height / 2;
+      
+      if (!gxk_rack_table_iwindow_translate (self, x, y, &h, &v) ||
+          h >= table->ncols || v >= table->nrows ||
+          h + self->drag_info.hspan > table->ncols ||
+          v + self->drag_info.vspan > table->nrows ||
+          gxk_rack_table_check_area (self, h, v, self->drag_info.hspan, self->drag_info.vspan))
+        {
+          h = self->drag_col;
+          v = self->drag_row;
+        }
+      if (h != self->drag_info.col || v != self->drag_info.row)
+        {
+          gxk_rack_table_on_area (self, EXPOSE_AREA,
+                                  self->drag_info.col,
+                                  self->drag_info.row,
+                                  self->drag_info.hspan,
+                                  self->drag_info.vspan);
+          self->drag_info.col = h;
+          self->drag_info.row = v;
+          gxk_rack_table_on_area (self, EXPOSE_AREA,
+                                  self->drag_info.col,
+                                  self->drag_info.row,
+                                  self->drag_info.hspan,
+                                  self->drag_info.vspan);
+        }
     }
   
   return TRUE;
 }
 
 static void
-rtable_abort_drag (BstRackTable *rtable,
-		   guint32       etime)
+rtable_abort_drag (GxkRackTable *self,
+                   guint32       etime)
 {
-  if (rtable->in_drag)
+  if (self->in_drag)
     {
-      if (rtable->in_drag_and_grabbing && rtable->iwindow)
-	gdk_pointer_ungrab (etime);
-      rtable->in_drag = FALSE;
-      rtable->in_drag_and_grabbing = FALSE;
-      gtk_widget_hide (rtable->drag_window);
-      bst_rack_child_set_info (rtable->child,
-			       rtable->drag_info.col,
-			       rtable->drag_info.row,
-			       rtable->drag_info.hspan,
-			       rtable->drag_info.vspan);
-      widget_reparent (rtable->child, GTK_WIDGET (rtable));
-      rtable->child = NULL;
+      if (self->in_drag_and_grabbing && self->iwindow)
+        gdk_pointer_ungrab (etime);
+      self->in_drag = FALSE;
+      self->in_drag_and_grabbing = FALSE;
+      gtk_widget_hide (self->drag_window);
+      gxk_rack_child_set_info (self->child,
+                               self->drag_info.col,
+                               self->drag_info.row,
+                               self->drag_info.hspan,
+                               self->drag_info.vspan);
+      widget_reparent (self->child, GTK_WIDGET (self));
+      self->child = NULL;
     }
 }
 
 static gint
-bst_rack_table_button_release (GtkWidget      *widget,
-			       GdkEventButton *event)
+gxk_rack_table_button_release (GtkWidget      *widget,
+                               GdkEventButton *event)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
-
-  if (rtable->in_drag && event->button == 2)
-    rtable_abort_drag (rtable, event->time);
-
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
+  
+  if (self->in_drag && event->button == 2)
+    rtable_abort_drag (self, event->time);
+  
   return TRUE;
 }
 
 static void
-bst_rack_table_on_area (BstRackTable *rtable,
-			AreaAction    action,
-			guint	      hcell1,
-			guint	      vcell1,
-			guint	      hspan,
-			guint	      vspan)
+gxk_rack_table_on_area (GxkRackTable *self,
+                        AreaAction    action,
+                        guint         hcell1,
+                        guint         vcell1,
+                        guint         hspan,
+                        guint         vspan)
 {
-  GtkWidget *widget = GTK_WIDGET (rtable);
-  GtkTable *table = GTK_TABLE (rtable);
+  GtkWidget *widget = GTK_WIDGET (self);
+  GtkTable *table = GTK_TABLE (self);
   guint i, x, y, width, height, hcell2 = hcell1 + hspan, vcell2 = vcell1 + vspan;
-
+  
   g_return_if_fail (hspan > 0 && hcell2 <= table->ncols);
   g_return_if_fail (vspan > 0 && vcell2 <= table->nrows);
-
+  
   x = GTK_CONTAINER (widget)->border_width + widget->allocation.x;
   width = 0;
   for (i = 0; i < hcell2; i++)
     {
       guint bound = table->cols[i].allocation + table->cols[i].spacing;
-
+      
       if (i < hcell1)
-	x += bound;
+        x += bound;
       else
-	width += bound;
+        width += bound;
     }
   y = GTK_CONTAINER (widget)->border_width + widget->allocation.y;
   height = 0;
   for (i = 0; i < vcell2; i++)
     {
       guint bound = table->rows[i].allocation + table->rows[i].spacing;
-
+      
       if (i < vcell1)
-	y += bound;
+        y += bound;
       else
-	height += bound;
+        height += bound;
     }
-
+  
   switch (action)
     {
       GdkGC *bg_gc, *dark_gc, *light_gc;
@@ -565,109 +562,109 @@ bst_rack_table_on_area (BstRackTable *rtable,
     case DRAW_INACTIVE:
     case DRAW_ACTIVE:
       if (action == DRAW_INACTIVE)
-	{
-	  bg_gc = widget->style->bg_gc[GTK_STATE_ACTIVE];
-	  light_gc = widget->style->light_gc[widget->state];
-	  dark_gc = widget->style->dark_gc[widget->state];
-	}
+        {
+          bg_gc = widget->style->bg_gc[GTK_STATE_ACTIVE];
+          light_gc = widget->style->light_gc[widget->state];
+          dark_gc = widget->style->dark_gc[widget->state];
+        }
       else
-	{
-	  bg_gc = widget->style->bg_gc[GTK_STATE_PRELIGHT];
-	  dark_gc = widget->style->light_gc[widget->state];
-	  light_gc = widget->style->dark_gc[widget->state];
-	}
+        {
+          bg_gc = widget->style->bg_gc[GTK_STATE_PRELIGHT];
+          dark_gc = widget->style->light_gc[widget->state];
+          light_gc = widget->style->dark_gc[widget->state];
+        }
       r = MIN (width, height);
       if (width > height)
-	x += (width - height) / 2;
+        x += (width - height) / 2;
       if (height > width)
-	y += (height - width) / 2;
+        y += (height - width) / 2;
       gdk_draw_arc (widget->window,
-		    bg_gc,
-		    TRUE,
-		    x + r / 4, y + r / 4, r / 2, r / 2,
-		    0. * 64, 360. * 64);
+                    bg_gc,
+                    TRUE,
+                    x + r / 4, y + r / 4, r / 2, r / 2,
+                    0. * 64, 360. * 64);
       gdk_draw_arc (widget->window,
-		    light_gc,
-		    FALSE,
-		    x + r / 4, y + r / 4, r / 2, r / 2,
-		    225. * 64, 180. * 64);
+                    light_gc,
+                    FALSE,
+                    x + r / 4, y + r / 4, r / 2, r / 2,
+                    225. * 64, 180. * 64);
       gdk_draw_arc (widget->window,
-		    dark_gc,
-		    FALSE,
-		    x + r / 4, y + r / 4, r / 2, r / 2,
-		    45. * 64, 180. * 64);
+                    dark_gc,
+                    FALSE,
+                    x + r / 4, y + r / 4, r / 2, r / 2,
+                    45. * 64, 180. * 64);
       break;
     case FOCUS_AREA:
       gdk_draw_rectangle (widget->window,
-			  widget->style->black_gc,
-			  FALSE,
-			  x, y, width, height);
+                          widget->style->black_gc,
+                          FALSE,
+                          x, y, width, height);
       break;
     }
 }
 
 static gint
-bst_rack_table_expose (GtkWidget      *widget,
-		       GdkEventExpose *event)
+gxk_rack_table_expose (GtkWidget      *widget,
+                       GdkEventExpose *event)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (widget);
-  GtkTable *table = GTK_TABLE (rtable);
+  GxkRackTable *self = GXK_RACK_TABLE (widget);
+  GtkTable *table = GTK_TABLE (self);
   
-  if (rtable->edit_mode)
+  if (self->edit_mode)
     {
-      guint h1 = rtable->drag_info.col, h2 = h1 + rtable->drag_info.hspan;
-      guint v1 = rtable->drag_info.row, v2 = v1 + rtable->drag_info.vspan;
-      guint x = GTK_CONTAINER (rtable)->border_width + GTK_WIDGET (rtable)->allocation.x, bx = 0;
+      guint h1 = self->drag_info.col, h2 = h1 + self->drag_info.hspan;
+      guint v1 = self->drag_info.row, v2 = v1 + self->drag_info.vspan;
+      guint x = GTK_CONTAINER (self)->border_width + GTK_WIDGET (self)->allocation.x, bx = 0;
       guint i, j;
-
+      
       for (i = 0; i < table->ncols; i++)
-	{
-	  guint y = GTK_CONTAINER (rtable)->border_width + GTK_WIDGET (rtable)->allocation.y, by = 0;
-
-	  bx = table->cols[i].allocation + table->cols[i].spacing;
-	  if (x > event->area.x + event->area.width || x + bx < event->area.x)
-	    {
-	      x += bx;
-	      bst_rack_table_on_area (rtable, FOCUS_AREA, i, 0, 1, table->nrows);
-	      continue;
-	    }
-	  for (j = 0; j < table->nrows; j++)
-	    {
-	      by = table->rows[j].allocation + table->rows[j].spacing;
-	      if (y > event->area.y + event->area.height || y + by < event->area.y)
-		{
-		  y += by;
-		  bst_rack_table_on_area (rtable, FOCUS_AREA, i, j, 1, 1);
-		  continue;
-		}
-	      if (bst_rack_table_check_cell (rtable, i, j))
-		continue;
-	      if (rtable->in_drag &&
-		  i >= h1 && i < h2 &&
-		  j >= v1 && j < v2)
-		bst_rack_table_on_area (rtable, DRAW_ACTIVE, i, j, 1, 1);
-	      else
-		bst_rack_table_on_area (rtable, DRAW_INACTIVE, i, j, 1, 1);
-	      y += by;
-	    }
-	  x += bx;
-	}
+        {
+          guint y = GTK_CONTAINER (self)->border_width + GTK_WIDGET (self)->allocation.y, by = 0;
+          
+          bx = table->cols[i].allocation + table->cols[i].spacing;
+          if (x > event->area.x + event->area.width || x + bx < event->area.x)
+            {
+              x += bx;
+              gxk_rack_table_on_area (self, FOCUS_AREA, i, 0, 1, table->nrows);
+              continue;
+            }
+          for (j = 0; j < table->nrows; j++)
+            {
+              by = table->rows[j].allocation + table->rows[j].spacing;
+              if (y > event->area.y + event->area.height || y + by < event->area.y)
+                {
+                  y += by;
+                  gxk_rack_table_on_area (self, FOCUS_AREA, i, j, 1, 1);
+                  continue;
+                }
+              if (gxk_rack_table_check_cell (self, i, j))
+                continue;
+              if (self->in_drag &&
+                  i >= h1 && i < h2 &&
+                  j >= v1 && j < v2)
+                gxk_rack_table_on_area (self, DRAW_ACTIVE, i, j, 1, 1);
+              else
+                gxk_rack_table_on_area (self, DRAW_INACTIVE, i, j, 1, 1);
+              y += by;
+            }
+          x += bx;
+        }
     }
-
+  
   GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
   
   return FALSE;
 }
 
 static void
-bst_rack_table_add (GtkContainer *container,
-		    GtkWidget    *child)
+gxk_rack_table_add (GtkContainer *container,
+                    GtkWidget    *child)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (container);
-  GtkTable *table = GTK_TABLE (rtable);
-  BstRackChildInfo rinfo;
-
-  bst_rack_child_get_info (child, &rinfo);
+  GxkRackTable *self = GXK_RACK_TABLE (container);
+  GtkTable *table = GTK_TABLE (self);
+  GxkRackChildInfo rinfo;
+  
+  gxk_rack_child_get_info (child, &rinfo);
   if (rinfo.hspan < 1)
     rinfo.hspan = 4;
   rinfo.hspan = CLAMP (rinfo.hspan, 1, table->ncols);
@@ -675,151 +672,151 @@ bst_rack_table_add (GtkContainer *container,
     rinfo.vspan = 4;
   rinfo.vspan = CLAMP (rinfo.vspan, 1, table->nrows);
   if (rinfo.col < 0 || rinfo.row < 0 ||
-      bst_rack_table_check_area (rtable, rinfo.col, rinfo.row, rinfo.hspan, rinfo.vspan))
+      gxk_rack_table_check_area (self, rinfo.col, rinfo.row, rinfo.hspan, rinfo.vspan))
     {
       guint row, col = 0; /* silence compiler */
-
+      
       for (row = 0; row < table->nrows; row++)
-	for (col = 0; col + rinfo.hspan <= table->ncols; col++)
-	  if (!bst_rack_table_check_area (rtable, col, row, rinfo.hspan, rinfo.vspan))
-	    goto found_position;
+        for (col = 0; col + rinfo.hspan <= table->ncols; col++)
+          if (!gxk_rack_table_check_area (self, col, row, rinfo.hspan, rinfo.vspan))
+            goto found_position;
       if (row >= table->nrows)
-	col = 0;
+        col = 0;
     found_position:
       rinfo.col = col;
       rinfo.row = row;
     }
-  bst_rack_child_set_info (child, rinfo.col, rinfo.row, rinfo.hspan, rinfo.vspan);
+  gxk_rack_child_set_info (child, rinfo.col, rinfo.row, rinfo.hspan, rinfo.vspan);
   gtk_table_attach (table, child,
-		    rinfo.col, rinfo.col + rinfo.hspan,
-		    rinfo.row, rinfo.row + rinfo.vspan,
-		    GTK_EXPAND | GTK_SHRINK | GTK_FILL,
-		    GTK_EXPAND | GTK_SHRINK | GTK_FILL,
-		    0, 0);
-  bst_rtable_update_child_map (rtable);
-  if (BST_IS_RACK_ITEM (child))
-    bst_rack_item_gui_changed (BST_RACK_ITEM (child));
+                    rinfo.col, rinfo.col + rinfo.hspan,
+                    rinfo.row, rinfo.row + rinfo.vspan,
+                    GTK_EXPAND | GTK_SHRINK | GTK_FILL,
+                    GTK_EXPAND | GTK_SHRINK | GTK_FILL,
+                    0, 0);
+  gxk_rtable_update_child_map (self);
+  if (GXK_IS_RACK_ITEM (child))
+    gxk_rack_item_gui_changed (GXK_RACK_ITEM (child));
 }
 
 static void
-bst_rack_table_remove (GtkContainer *container,
-		       GtkWidget    *child)
+gxk_rack_table_remove (GtkContainer *container,
+                       GtkWidget    *child)
 {
-  BstRackTable *rtable = BST_RACK_TABLE (container);
-
+  GxkRackTable *self = GXK_RACK_TABLE (container);
+  
   /* cause a map-update */
-  rtable->map_cols = 0;
-  rtable->map_rows = 0;
-
+  self->map_cols = 0;
+  self->map_rows = 0;
+  
   /* chain parent class' handler */
   GTK_CONTAINER_CLASS (parent_class)->remove (container, child);
 }
 
 static gboolean
-bst_rack_table_iwindow_translate (BstRackTable		*rtable,
-				  gint			 x,
-				  gint			 y,
-				  guint			*hcell,
-				  guint			*vcell)
+gxk_rack_table_iwindow_translate (GxkRackTable          *self,
+                                  gint                   x,
+                                  gint                   y,
+                                  guint                 *hcell,
+                                  guint                 *vcell)
 {
-  GtkTable *table = GTK_TABLE (rtable);
+  GtkTable *table = GTK_TABLE (self);
   guint i;
-
-  x -= GTK_CONTAINER (rtable)->border_width;
+  
+  x -= GTK_CONTAINER (self)->border_width;
   *hcell = 0;
   for (i = 0; i < table->ncols; i++)
     {
       guint bound = table->cols[i].allocation + table->cols[i].spacing;
-
+      
       if (x < bound)
-	{
-	  *hcell = i;
-	  break;
-	}
+        {
+          *hcell = i;
+          break;
+        }
       x -= bound;
     }
   if (i >= table->ncols)
     *hcell = table->ncols;
-
-  y -= GTK_CONTAINER (rtable)->border_width;
+  
+  y -= GTK_CONTAINER (self)->border_width;
   *vcell = 0;
   for (i = 0; i < table->nrows; i++)
     {
       guint bound = table->rows[i].allocation + table->rows[i].spacing;
-
+      
       if (y < bound)
-	{
-	  *vcell = i;
-	  break;
-	}
+        {
+          *vcell = i;
+          break;
+        }
       y -= bound;
     }
   if (i >= table->nrows)
     *vcell = table->nrows;
-
+  
   return x >= 0 && *hcell < table->ncols && y >= 0 && *vcell < table->nrows;
 }
 
 static GtkWidget*
-bst_rack_table_find_child (BstRackTable *rtable,
-			   guint         hcell,
-			   guint         vcell)
+gxk_rack_table_find_child (GxkRackTable *self,
+                           guint         hcell,
+                           guint         vcell)
 {
-  GtkTable *table = GTK_TABLE (rtable);
+  GtkTable *table = GTK_TABLE (self);
   GList *list;
-
+  
   for (list = table->children; list; list = list->next)
     {
       GtkTableChild *child = list->data;
-
+      
       if (hcell >= child->left_attach && hcell < child->right_attach &&
-	  vcell >= child->top_attach && vcell < child->bottom_attach)
-	{
-	  if (rtable->edit_mode &&
-	      BST_IS_RACK_ITEM (child->widget) &&
-	      BST_RACK_ITEM (child->widget)->empty_frame &&
-	      hcell > child->left_attach && hcell + 1 < child->right_attach &&
-	      vcell > child->top_attach && vcell + 1 < child->bottom_attach)
-	    continue;
-	  return child->widget;
-	}
+          vcell >= child->top_attach && vcell < child->bottom_attach)
+        {
+          if (self->edit_mode &&
+              GXK_IS_RACK_ITEM (child->widget) &&
+              GXK_RACK_ITEM (child->widget)->empty_frame &&
+              hcell > child->left_attach && hcell + 1 < child->right_attach &&
+              vcell > child->top_attach && vcell + 1 < child->bottom_attach)
+            continue;
+          return child->widget;
+        }
     }
   
   return NULL;
 }
 
 static void
-bst_rtable_update_child_map (BstRackTable *rtable)
+gxk_rtable_update_child_map (GxkRackTable *self)
 {
-  GtkTable *table = GTK_TABLE (rtable);
+  GtkTable *table = GTK_TABLE (self);
   guint32 *bits;
   guint i, j, n = 0;
   
-  rtable->map_cols = table->ncols;
-  rtable->map_rows = table->nrows;
-  g_free (rtable->child_map);
-  rtable->child_map = g_new0 (guint32, rtable->map_cols * rtable->map_rows);
-  bits = rtable->child_map;
+  self->map_cols = table->ncols;
+  self->map_rows = table->nrows;
+  g_free (self->child_map);
+  self->child_map = g_new0 (guint32, self->map_cols * self->map_rows);
+  bits = self->child_map;
   for (j = 0; j < table->nrows; j++)
     for (i = 0; i < table->ncols; i++)
       {
-	if (bst_rack_table_find_child (rtable, i, j))
-	  *bits |= 1 << n;
-	if (++n == 32)
-	  {
-	    n = 0;
-	    bits++;
-	  }
+        if (gxk_rack_table_find_child (self, i, j))
+          *bits |= 1 << n;
+        if (++n == 32)
+          {
+            n = 0;
+            bits++;
+          }
       }
 }
 
 static inline guint
 test_cell (guint32 *bits,
-	   guint    col,
-	   guint    row_offset)
+           guint    col,
+           guint    row_offset)
 {
   guint i, n;
-
+  
   i = row_offset + col;
   n = i >> 5;
   bits += n;
@@ -828,63 +825,63 @@ test_cell (guint32 *bits,
 }
 
 gboolean
-bst_rack_table_check_cell (BstRackTable *rtable,
-			   guint         col,
-			   guint         row)
+gxk_rack_table_check_cell (GxkRackTable *self,
+                           guint         col,
+                           guint         row)
 {
   GtkTable *table;
   
-  g_return_val_if_fail (BST_IS_RACK_TABLE (rtable), FALSE);
-
-  table = GTK_TABLE (rtable);
+  g_return_val_if_fail (GXK_IS_RACK_TABLE (self), FALSE);
+  
+  table = GTK_TABLE (self);
   if (col >= table->ncols || row >= table->nrows)
     return FALSE;
-
-  if (table->ncols != rtable->map_cols || table->nrows != rtable->map_rows)
-    bst_rtable_update_child_map (rtable);
-
-  return test_cell (rtable->child_map, col, row * table->ncols) > 0;
+  
+  if (table->ncols != self->map_cols || table->nrows != self->map_rows)
+    gxk_rtable_update_child_map (self);
+  
+  return test_cell (self->child_map, col, row * table->ncols) > 0;
 }
 
 gboolean
-bst_rack_table_expand_rect (BstRackTable *rtable,
-			    guint	  col,
-			    guint	  row,
-			    guint        *hspan,
-			    guint        *vspan)
+gxk_rack_table_expand_rect (GxkRackTable *self,
+                            guint         col,
+                            guint         row,
+                            guint        *hspan,
+                            guint        *vspan)
 {
   GtkTable *table;
   guint i, j, f;
   
-  g_return_val_if_fail (BST_IS_RACK_TABLE (rtable), FALSE);
-
-  table = GTK_TABLE (rtable);
+  g_return_val_if_fail (GXK_IS_RACK_TABLE (self), FALSE);
+  
+  table = GTK_TABLE (self);
   if (col + 1 >= table->ncols || row + 1 >= table->nrows ||
-      bst_rack_table_check_cell (rtable, col, row))
+      gxk_rack_table_check_cell (self, col, row))
     return FALSE;
-
+  
   /* h/v expand */
   for (i = 1; col + i < table->ncols; i++)
-    if (test_cell (rtable->child_map, col + i, row * table->ncols))
+    if (test_cell (self->child_map, col + i, row * table->ncols))
       break;
   for (j = 1; row + j < table->nrows; j++)
     for (f = 0; f < i; f++)
-      if (test_cell (rtable->child_map, col + f, (row + j) * table->ncols))
-	goto last_row_break;
+      if (test_cell (self->child_map, col + f, (row + j) * table->ncols))
+        goto last_row_break;
  last_row_break:
   *hspan = i;
   *vspan = j;
-
+  
   /* v/h expand */
   for (j = j; row + j < table->nrows; j++)
-    if (test_cell (rtable->child_map, col, (row + j) * table->ncols))
+    if (test_cell (self->child_map, col, (row + j) * table->ncols))
       break;
   if (j == *vspan)
     return TRUE;
   for (i = 1; col + i < table->ncols; i++)
     for (f = 0; f < j; f++)
-      if (test_cell (rtable->child_map, col + i, (row + f) * table->ncols))
-	goto last_col_break;
+      if (test_cell (self->child_map, col + i, (row + f) * table->ncols))
+        goto last_col_break;
  last_col_break:
   if (i * j >= *hspan * *vspan)
     {
@@ -895,108 +892,108 @@ bst_rack_table_expand_rect (BstRackTable *rtable,
 }
 
 gboolean
-bst_rack_table_check_area (BstRackTable *rtable,
-			   guint         col,
-			   guint         row,
-			   guint         hspan,
-			   guint         vspan)
+gxk_rack_table_check_area (GxkRackTable *self,
+                           guint         col,
+                           guint         row,
+                           guint         hspan,
+                           guint         vspan)
 {
   GtkTable *table;
   guint i, j;
-
-  g_return_val_if_fail (BST_IS_RACK_TABLE (rtable), FALSE);
-
-  table = GTK_TABLE (rtable);
+  
+  g_return_val_if_fail (GXK_IS_RACK_TABLE (self), FALSE);
+  
+  table = GTK_TABLE (self);
   if (col >= table->ncols || row >= table->nrows)
     return FALSE;
-
+  
   for (i = 0; i < hspan; i++)
     for (j = 0; j < vspan; j++)
-      if (bst_rack_table_check_cell (rtable, col + i, row + j))
-	return TRUE;
+      if (gxk_rack_table_check_cell (self, col + i, row + j))
+        return TRUE;
   return FALSE;
 }
 
 void
-bst_rack_table_set_edit_mode (BstRackTable *rtable,
-			      gboolean      enable_editing)
+gxk_rack_table_set_edit_mode (GxkRackTable *self,
+                              gboolean      enable_editing)
 {
-  g_return_if_fail (BST_IS_RACK_TABLE (rtable));
-
-  rtable->edit_mode = enable_editing != FALSE;
-  if (GTK_WIDGET_REALIZED (rtable))
+  g_return_if_fail (GXK_IS_RACK_TABLE (self));
+  
+  self->edit_mode = enable_editing != FALSE;
+  if (GTK_WIDGET_REALIZED (self))
     {
-      if (rtable->edit_mode)
-	gdk_window_show (rtable->iwindow);
+      if (self->edit_mode)
+        gdk_window_show (self->iwindow);
       else
-	{
-	  rtable_abort_drag (rtable, GDK_CURRENT_TIME);
-	  gdk_window_hide (rtable->iwindow);
-	}
-      gtk_widget_queue_draw (GTK_WIDGET (rtable));
+        {
+          rtable_abort_drag (self, GDK_CURRENT_TIME);
+          gdk_window_hide (self->iwindow);
+        }
+      gtk_widget_queue_draw (GTK_WIDGET (self));
     }
-  g_signal_emit (rtable, signal_edit_mode_changed, 0, rtable->edit_mode);
+  g_signal_emit (self, signal_edit_mode_changed, 0, self->edit_mode);
 }
 
 void
-bst_rack_child_get_info (GtkWidget         *widget,
-			 BstRackChildInfo *info)
+gxk_rack_child_get_info (GtkWidget         *widget,
+                         GxkRackChildInfo *info)
 {
-  BstRackChildInfo *rinfo;
-
+  GxkRackChildInfo *rinfo;
+  
   g_return_if_fail (GTK_IS_WIDGET (widget));
   g_return_if_fail (info != NULL);
-
-  if (BST_IS_RACK_ITEM (widget))
-    *info = BST_RACK_ITEM (widget)->rack_child_info;
+  
+  if (GXK_IS_RACK_ITEM (widget))
+    *info = GXK_RACK_ITEM (widget)->rack_child_info;
   else
     {
       rinfo = g_object_get_qdata (G_OBJECT (widget), quark_rack_info);
       if (!rinfo)
-	{
-	  info->col = -1;
-	  info->row = -1;
-	  info->hspan = -1;
-	  info->vspan = -1;
-	}
+        {
+          info->col = -1;
+          info->row = -1;
+          info->hspan = -1;
+          info->vspan = -1;
+        }
       else
-	*info = *rinfo;
+        *info = *rinfo;
     }
 }
 
 void
-bst_rack_child_set_info (GtkWidget *widget,
-			 gint       col,
-			 gint       row,
-			 gint       hspan,
-			 gint       vspan)
+gxk_rack_child_set_info (GtkWidget *widget,
+                         gint       col,
+                         gint       row,
+                         gint       hspan,
+                         gint       vspan)
 {
-  BstRackChildInfo *rinfo;
+  GxkRackChildInfo *rinfo;
   GtkWidget *parent = NULL;
   
   g_return_if_fail (GTK_IS_WIDGET (widget));
-
+  
   g_object_ref (widget);
-  if (BST_IS_RACK_TABLE (widget->parent))
+  if (GXK_IS_RACK_TABLE (widget->parent))
     {
       parent = widget->parent;
       gtk_container_remove (GTK_CONTAINER (parent), widget);
     }
-
-  if (BST_IS_RACK_ITEM (widget))
-    rinfo = &BST_RACK_ITEM (widget)->rack_child_info;
+  
+  if (GXK_IS_RACK_ITEM (widget))
+    rinfo = &GXK_RACK_ITEM (widget)->rack_child_info;
   else
     {
       rinfo = g_object_get_qdata (G_OBJECT (widget), quark_rack_info);
       if (!rinfo)
-	{
-	  rinfo = g_new (BstRackChildInfo, 1);
-	  g_object_set_qdata_full (G_OBJECT (widget), quark_rack_info, rinfo, g_free);
-	  rinfo->col = -1;
-	  rinfo->row = -1;
-	  rinfo->hspan = 1;
-	  rinfo->vspan = 1;
-	}
+        {
+          rinfo = g_new (GxkRackChildInfo, 1);
+          g_object_set_qdata_full (G_OBJECT (widget), quark_rack_info, rinfo, g_free);
+          rinfo->col = -1;
+          rinfo->row = -1;
+          rinfo->hspan = 1;
+          rinfo->vspan = 1;
+        }
     }
   rinfo->col = col >= 0 ? col : rinfo->col;
   rinfo->row = row >= 0 ? row : rinfo->row;

@@ -1,3 +1,12 @@
+Sat Nov 22 16:27:24 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkrackitem.[hc]: new files, containing a GxkRackItem,
+	a special child of GxkRackTable. based in parts on BstRackItem.
+	changed license to LGPL.
+
+	* beast-gtk/gxk/gxkracktable.[hc]: s/bst/gxk/ rename. renamed rtable
+	variables to self. license LGPL.
+
 Sat Nov 22 16:18:12 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkracktable.[hc]: CVS-copied here
