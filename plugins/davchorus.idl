@@ -18,9 +18,8 @@
  */
 #include <bse/bse.idl>
 
+namespace Bse {
 namespace Dav {
-
-using namespace Bse;
 
 class Chorus : Effect {
   Info    icon      = "icons/chorus.png";
@@ -35,4 +34,5 @@ class Chorus : Effect {
   };
 };
 
-}; // Dav
+} // Dav
+} // Bse

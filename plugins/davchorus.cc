@@ -18,8 +18,8 @@
  */
 #include "davchorus.gen-idl.h"
 
+namespace Bse {
 namespace Dav {
-using namespace Bse;
 
 class Chorus : public ChorusBase {
   /* synthesis module: */
@@ -105,3 +105,4 @@ BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (Chorus);
 
 } // Dav
+} // Bse

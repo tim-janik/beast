@@ -24,8 +24,8 @@
  */
 #include "davbassfilter.gen-idl.h"
 
+namespace Bse {
 namespace Dav {
-using namespace Bse;
 
 class BassFilter : public BassFilterBase {
   class Module : public SynthesisModule {
@@ -187,3 +187,4 @@ BSE_CXX_DEFINE_EXPORTS();
 BSE_CXX_REGISTER_EFFECT (BassFilter);
 
 } // Dav
+} // Bse

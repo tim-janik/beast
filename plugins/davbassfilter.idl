@@ -18,9 +18,8 @@
  */
 #include <bse/bse.idl>
 
+namespace Bse {
 namespace Dav {
-
-using namespace Bse;
 
 class BassFilter : Effect {
   Info    icon      = "icons/davbassfilter.png";
@@ -43,6 +42,7 @@ class BassFilter : Effect {
   };
 };
 
-}; // Dav
+} // Dav
+} // Bse
 
 /* vim:set ts=8 sw=2 sts=2 syntax=cpp: */
