@@ -280,6 +280,7 @@ Effects:
 sfidl:
   - error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
     indicate where the previous definition was
+  - #include "/absolute/path" is handled as relative path
   - support records and sequences in bse-plugin-generator and bseprocidl
   - reenable signals in bseprocidl
   fixes:
