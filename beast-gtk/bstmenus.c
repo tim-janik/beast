@@ -148,7 +148,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
 			 "user_data", choice->p_id,
 			 NULL);
   if (choice_type == BST_CHOICE_TYPE_SUBMENU)
-    gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), GTK_WIDGET (choice->p_id));
+    gxk_menu_attach_as_submenu (GTK_MENU (choice->p_id), GTK_MENU_ITEM (item));
   else
     menu_item_add_activator (item, menu_choice_activate);
   if (choice->name)
@@ -202,8 +202,6 @@ bst_choice_menu_createv (const gchar *menu_path,
   GtkWidget *menu;
   va_list args;
   
-  g_return_val_if_fail (first_choice != NULL, NULL);
-  
   va_start (args, first_choice);
   
   menu = g_object_connect (gtk_widget_new (GTK_TYPE_MENU,
@@ -215,12 +213,11 @@ bst_choice_menu_createv (const gchar *menu_path,
   gtk_object_sink (GTK_OBJECT (menu));
   
   choice = first_choice;
-  do
+  while (choice)
     {
       bst_choice_menu_add_choice_and_free (menu, choice);
       choice = va_arg (args, BstChoice*);
     }
-  while (choice);
   
   va_end (args);
   

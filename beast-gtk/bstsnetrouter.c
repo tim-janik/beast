@@ -685,8 +685,16 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                                                 ": ",
                                                 bse_item_get_name (csource->source),
                                                 NULL);
-              guint i, has_inputs = 0;
-              
+              /* create popup sumenu */
+              guint i, has_inputs = 0, monitor_ids = 1000000;
+              choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModuleChannelPopup", NULL);
+              for (i = 0; i < bse_source_n_ochannels (csource->source); i++)
+                {
+                  gchar *name = g_strdup_printf ("%d: %s", i + 1, bse_source_ochannel_label (csource->source, i));
+                  bst_choice_menu_add_choice_and_free (choice, BST_CHOICE (monitor_ids + i, name, NONE));
+                  g_free (name);
+                }
+              /* create popup */
               for (i = 0; has_inputs == 0 && i < bse_source_n_ichannels (csource->source); i++)
                 has_inputs += bse_source_ichannel_get_n_joints (csource->source, i);
               choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
@@ -696,7 +704,9 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                                                 BST_CHOICE (6, _("Reset Properties"), PROPERTIES_RESET),
                                                 BST_CHOICE_S (3, _("Delete Inputs"), NO_ILINK, has_inputs),
                                                 BST_CHOICE_S (4, _("Delete Outputs"), NO_OLINK, bse_source_has_outputs (csource->source)),
+                                                BST_CHOICE_SEPERATOR,
                                                 BST_CHOICE (5, _("Show Info"), INFO),
+                                                BST_CHOICE_SUBMENU (_("Monitor Output Signal"), choice, SIGNAL),
                                                 BST_CHOICE_SEPERATOR,
                                                 BST_CHOICE_S (1, _("Delete"), DELETE, csource->source != self->snet),
                                                 BST_CHOICE_END);
@@ -723,6 +733,10 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                 case 1:
                   error = bse_snet_remove_source (self->snet, csource->source);
                   bst_status_eprintf (error, _("Remove Module"));
+                  break;
+                case 0: break;
+                default:
+                  g_printerr ("Monitor Ouput: %d\n", 1 + i - monitor_ids);
                   break;
                 }
               bst_choice_destroy (choice);

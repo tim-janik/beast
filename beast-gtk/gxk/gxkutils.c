@@ -3133,8 +3133,8 @@ menu_item_propagate_hierarchy_changed (GtkMenuItem *menu_item)
  * the necessary hooks on the @menu to automatically
  * update sensitivity of @menu_item in response
  * to children being deleted or added to the @menu.
- * The rationale behind this is to avoid empty menus
- * being presented to the user.
+ * The rationale behind this is to avoid empty
+ * submenus popups.
  * Also, a propagation mechanism is set up, so @menu
  * and submenus thereof automatically fetch their
  * accelerator groups via gxk_window_get_menu_accel_group()

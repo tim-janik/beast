@@ -60,8 +60,8 @@ void	   bst_choice_destroy		  (GtkWidget		  *choice);
 							    ((s) ? 0 : BST_CHOICE_FLAG_INSENSITIVE), \
                                                             (name), (gpointer) (id), \
 							    BST_STOCK_ ## icon, 0))
-#define BST_CHOICE_SUBMENU(name,menu)    (bst_choice_alloc (BST_CHOICE_TYPE_SUBMENU, \
-							    (name), (menu), BST_STOCK_NONE, 0))
+#define BST_CHOICE_SUBMENU(nam,menu,icn) (bst_choice_alloc (BST_CHOICE_TYPE_SUBMENU, \
+							    (nam), (menu), BST_STOCK_ ## icn, 0))
 #define BST_CHOICE_TEXT(name)            (bst_choice_alloc (BST_CHOICE_TYPE_TEXT, \
 							    (name), 0, BST_STOCK_NONE, 0))
 #define BST_CHOICE_SEPERATOR             (bst_choice_alloc (BST_CHOICE_TYPE_SEPARATOR, \

@@ -34,6 +34,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	railway.xcf		\
 	repeat.xcf		\
 	rect-select.xcf		\
+	signal.xcf		\
 	target.xcf		\
 	text.xcf		\
 	tracks-add.xcf		\
@@ -114,6 +115,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_QNOTE_128			$(srcdir)/qnote-128.png		\
 	STOCK_RECT_SELECT		$(srcdir)/rect-select.png	\
 	STOCK_REPEAT			$(srcdir)/repeat.png		\
+	STOCK_SIGNAL			$(srcdir)/signal.png		\
 	STOCK_TARGET			$(srcdir)/target.png		\
 	STOCK_TEXT			$(srcdir)/text.png		\
 	STOCK_TICK_LOOP_LEFT		$(srcdir)/loopleft.png		\
