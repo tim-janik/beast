@@ -54,7 +54,7 @@ static void dav_syn_drum_update_modules (DavSynDrum      *self,
 
 /* --- Export to DAV --- */
 #include "./icons/drum.c"
-BSE_REGISTER_OBJECT (DavSynDrum, BseSource, "/Modules/Audio Sources/SynDrum", drum_icon,
+BSE_REGISTER_OBJECT (DavSynDrum, BseSource, "/Modules/Audio Sources/Synthetic Drum", drum_icon,
                      "DavSynDrum produces synthesized drums. It accepts the drum frequency as "
                      "input channel or parameter setting. Drums are triggered through a trigger "
                      "parameter or via a trigger input channel which detects raising edges. "
