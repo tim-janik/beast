@@ -16,11 +16,12 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sfitime.h"
 #include <sys/time.h>
 #include <time.h>
 #include <errno.h>
 #include <stdio.h>
+#include "sfitime.h"
+#include "sfiprimitives.h"
 
 
 #define	SFI_ERROR_DOMAIN	g_quark_from_static_string ("sfi-error-domain")
@@ -142,10 +143,16 @@ sfi_time_to_string (SfiTime ustime)
 			  bt.tm_sec);
 }
 
+SfiTime
+sfi_time_from_string (const gchar *time_string)
+{
+  return sfi_time_from_string_err (time_string, NULL);
+}
+
 /**
  * sfi_time_from_string
- * @time_string: string containing human readable time
- * @errorp:      error pointer or %NULL
+ * @time_string: string containing human readable date and time
+ * @error_p:     location for newly allocated string with warnings
  * @RETURNS:     parsed time in micro seconds or 0 on error
  *
  * Parse time from a string of characters and indicate possible errors.
@@ -153,8 +160,8 @@ sfi_time_to_string (SfiTime ustime)
  * errors. However, if all attempts fail, the returned time is 0.
  */
 SfiTime
-sfi_time_from_string (const gchar *time_string,
-		      GError     **errorp)
+sfi_time_from_string_err (const gchar *time_string,
+			  gchar      **error_p)
 {
   const guint n_formats = 12;
   guint year[n_formats];
@@ -167,8 +174,8 @@ sfi_time_from_string (const gchar *time_string,
   gboolean garbage[n_formats];
   gboolean finished;
   gchar *string;
-  time_t ttime = 0;
   SfiTime ustime;
+  SfiRing *ring, *warnings = NULL;
   guint i;
   
   g_return_val_if_fail (time_string != NULL, 0);
@@ -427,43 +434,44 @@ sfi_time_from_string (const gchar *time_string,
   
   if (!success[i])
     {
-      sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_INVALID, "invalid date specification: %s", time_string);
-      ttime = 0;
+      warnings = sfi_ring_append (warnings, g_strdup ("invalid date specification"));
+      ustime = 0;
     }
   else
     {
       struct tm tm_data = { 0 };
-      
+      time_t ttime = 0;
+
       if (garbage[i])
-	sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_CLUTTERED, "junk characters at end of date: %s", time_string);
+	warnings = sfi_ring_append (warnings, g_strdup ("junk characters at end of date"));
       if (year[i] < 1990)
 	{
-	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_YEAR_BOUNDS, "%s out of bounds in date: %s", "year", time_string);
+	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "year"));
 	  year[i] = 1990;
 	}
       if (month[i] < 1 || month[i] > 12)
 	{
-	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_MONTH_BOUNDS, "%s out of bounds in date: %s", "month", time_string);
+	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "month"));
 	  month[i] = CLAMP (month[i], 1, 12);
 	}
       if (day[i] < 1 || day[i] > 31)
 	{
-	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_DAY_BOUNDS, "%s out of bounds in date: %s", "day", time_string);
+	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "day"));
 	  month[i] = CLAMP (day[i], 1, 31);
 	}
       if (hour[i] < 0 || hour[i] > 23)
 	{
-	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_HOUR_BOUNDS, "%s out of bounds in date: %s", "hour", time_string);
+	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "hour"));
 	  hour[i] = CLAMP (hour[i], 0, 23);
 	}
       if (minute[i] < 0 || minute[i] > 59)
 	{
-	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_MINUTE_BOUNDS, "%s out of bounds in date: %s", "minute", time_string);
+	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "minute"));
 	  minute[i] = CLAMP (minute[i], 0, 59);
 	}
       if (second[i] < 0 || second[i] > 61)
 	{
-	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_SECOND_BOUNDS, "%s out of bounds in date: %s", "second", time_string);
+	  warnings = sfi_ring_append (warnings, g_strdup_printf ("%s out of bounds", "second"));
 	  second[i] = CLAMP (second[i], 0, 61);
 	}
 
@@ -485,16 +493,37 @@ sfi_time_from_string (const gchar *time_string,
        * g_print ("timeparser: (%s) secs=%lu, <%s>\n",
        * string, ttime == -1 ? 0 : ttime, ctime (&ttime));
        */
-      
-      if (ttime < 631148400) /* limit ttime to 1.1.1990 */
+
+      if (ttime < SFI_MIN_TIME / SFI_USEC_FACTOR) /* limit ttime to 1.1.1990 */
 	{
-	  sfi_set_error (errorp, SFI_ERROR_DOMAIN, ERROR_DATE_INVALID, "invalid date specification: %s", time_string);
-	  ttime = 631148400;
+	  warnings = sfi_ring_append (warnings, g_strdup ("invalid date specification"));
+	  ustime = 0;
+	}
+      else
+	{
+	  ustime = ttime;
+	  ustime *= SFI_USEC_FACTOR;
 	}
     }
 
+  /* general cleanup and error return */
   g_free (string);
-  ustime = ttime;
-  ustime *= SFI_USEC_FACTOR;
+  if (error_p && warnings)
+    {
+      GString *gstring = g_string_new (NULL);
+      for (ring = warnings; ring; ring = sfi_ring_walk (warnings, ring))
+	{
+	  if (gstring->len)
+	    g_string_append (gstring, ", ");
+	  g_string_append (gstring, ring->data);
+	}
+      g_string_aprintf (gstring, " in date: %s", time_string);
+      *error_p = g_string_free (gstring, FALSE);
+    }
+  else if (error_p)
+    *error_p = NULL;
+  for (ring = warnings; ring; ring = sfi_ring_walk (warnings, ring))
+    g_free (ring->data);
+  sfi_ring_free (warnings);
   return ustime;
 }

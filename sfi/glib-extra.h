@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 
 /* --- provide (historic) aliases --- */
 #define	g_string_printfa	g_string_append_printf
+#define	g_string_aprintf	g_string_append_printf
 #define	g_scanner_add_symbol( scanner, symbol, value )	G_STMT_START { \
   g_scanner_scope_add_symbol ((scanner), 0, (symbol), (value)); \
 } G_STMT_END

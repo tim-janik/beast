@@ -30,12 +30,13 @@ G_BEGIN_DECLS
 
 
 /* --- functions --- */
-SfiTime	sfi_time_system		(void);
-SfiTime	sfi_time_to_utc		(SfiTime	 ustime);
-SfiTime	sfi_time_from_utc	(SfiTime	 ustime);
-gchar*	sfi_time_to_string	(SfiTime	 ustime);
-SfiTime	sfi_time_from_string	(const gchar	*time_string,
-				 GError	       **errp);
+SfiTime	sfi_time_system		 (void);
+SfiTime	sfi_time_to_utc		 (SfiTime	 ustime);
+SfiTime	sfi_time_from_utc	 (SfiTime	 ustime);
+gchar*	sfi_time_to_string	 (SfiTime	 ustime);
+SfiTime	sfi_time_from_string	 (const gchar	*time_string);
+SfiTime	sfi_time_from_string_err (const gchar	*time_string,
+				  gchar	       **error_p);
 
 
 /* --- internal --- */

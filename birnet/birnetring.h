@@ -95,24 +95,26 @@ gboolean   sfi_seq_check	(SfiSeq		 *seq,
 struct _SfiRec {
   guint    ref_count;
   guint    n_fields;
+  guint	   sorted : 1;
   GValue  *fields;
   gchar  **field_names;
 };
 SfiRec*	   sfi_rec_new		(void);
 SfiRec*	   sfi_rec_ref		(SfiRec		 *rec);
 void	   sfi_rec_unref	(SfiRec          *rec);
-SfiRec*	   sfi_rec_copy_deep	(const SfiRec	 *rec);
+SfiRec*	   sfi_rec_copy_deep	(SfiRec		 *rec);
 #define	   sfi_rec_copy_shallow	sfi_rec_ref
 void       sfi_rec_set          (SfiRec          *rec,
 				 const gchar     *field_name,
 				 const GValue    *value);
-GValue*    sfi_rec_get          (const SfiRec    *rec,
+GValue*    sfi_rec_get          (SfiRec          *rec,
 				 const gchar     *field_name);
 guint      sfi_rec_n_fields     (const SfiRec    *rec);
 GValue*    sfi_rec_field        (const SfiRec    *rec,
 				 guint            index);
 gboolean   sfi_rec_check	(SfiRec		 *rec,
 				 SfiRecFields	  rfields);
+void	   sfi_rec_sort		(SfiRec          *rec);
 
 
 /* --- ring (circular-list) --- */

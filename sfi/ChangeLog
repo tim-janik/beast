@@ -1,3 +1,22 @@
+Sat Oct 12 01:03:24 2002  Tim Janik  <timj@gtk.org>
+
+	* sfinote.[hc]: fixup error handling when parsing notes.
+
+	* sfiparams.[hc]: add cmp/validate implementations for bblock,
+	fblock, seq and rec.
+
+	* sfiprimitives.[hc]: support sorting of record fields and use binary
+	lookups for field access.
+
+	* sfiserial.[hc]: implement sfi_value_store_typed() and
+	sfi_value_parse_typed() for all SFI types.
+
+	* sfitime.[hc]: fixup error handling when parsing date/time.
+
+	* sfitypes.h: add type specific constants.
+
+	* testsfi.c: check serialization facilities.
+
 Thu Oct 10 18:25:40 2002  Tim Janik  <timj@gtk.org>
 
 	* sfidl.cc (parseParamDefHints): stringify unsigned longs with %lu (not

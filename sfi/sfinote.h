@@ -83,15 +83,17 @@ G_BEGIN_DECLS
 
 
 /* --- functions --- */
-void	sfi_note_examine	(SfiInt		 note,
-				 gint           *octave_p,
-				 guint          *semitone_p,
-				 gboolean       *black_semitone_p,
-				 gchar          *letter_p);
+void	sfi_note_examine	 (SfiInt	 note,
+				  gint          *octave_p,
+				  guint         *semitone_p,
+				  gboolean	*black_semitone_p,
+				  gchar         *letter_p);
 /* return a newly allocated string which describes `note' literally */
-gchar*	sfi_note_to_string	(SfiInt		 note);
+gchar*	sfi_note_to_string	 (SfiInt	 note);
 /* return the numeric value of the note in `note_string' */
-SfiInt	sfi_note_from_string	(const gchar	*note_string);
+SfiInt	sfi_note_from_string	 (const gchar	*note_string);
+SfiInt	sfi_note_from_string_err (const gchar	*note_string,
+				  gchar        **error_p);
 
 
 G_END_DECLS

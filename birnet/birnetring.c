@@ -16,6 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include <stdlib.h>
 #include "sfiprimitives.h"
 
 
@@ -403,12 +404,13 @@ sfi_seq_check (SfiSeq *seq,
 SfiRec*
 sfi_rec_new (void)
 {
-  SfiRec *r = g_new (SfiRec, 1);
-  r->n_fields = 0;
-  r->ref_count = 1;
-  r->fields = NULL;
-  r->field_names = NULL;
-  return r;
+  SfiRec *rec = g_new (SfiRec, 1);
+  rec->ref_count = 1;
+  rec->n_fields = 0;
+  rec->sorted = TRUE;
+  rec->fields = NULL;
+  rec->field_names = NULL;
+  return rec;
 }
 
 SfiRec*
@@ -443,12 +445,60 @@ sfi_rec_unref (SfiRec *rec)
     }
 }
 
+guint
+sfi_rec_n_fields (const SfiRec *rec)
+{
+  g_return_val_if_fail (rec != NULL, 0);
+  return rec ? rec->n_fields : 0;
+}
+
+GValue*
+sfi_rec_field (const SfiRec *rec,
+	       guint         index)
+{
+  g_return_val_if_fail (rec != NULL, NULL);
+  g_return_val_if_fail (index < rec->n_fields, NULL);
+  
+  return rec->fields + index;
+}
+
 static inline gchar*
 dupcanon (const gchar *field_name)
 {
   return g_strcanon (g_strdup (field_name),
 		     G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS,
 		     '-');
+}
+
+static inline guint
+sfi_rec_lookup (SfiRec      *rec,
+		const gchar *field_name)
+{
+  if (rec->sorted)
+    {
+      gchar **nodes = rec->field_names;
+      guint n_nodes = rec->n_fields, offs = 0;
+      gint cmp = 0;
+      while (offs < n_nodes)
+	{
+	  guint i = (offs + n_nodes) >> 1;
+	  cmp = strcmp (field_name, nodes[i]);
+	  if (cmp == 0)
+	    return i;
+	  else if (cmp < 0)
+	    n_nodes = i;
+	  else /* (cmp > 0) */
+	    offs = i + 1;
+	}
+    }
+  else
+    {
+      guint i;
+      for (i = 0; i < rec->n_fields; i++)
+	if (strcmp (field_name, rec->field_names[i]) == 0)
+	  return i;
+    }
+  return rec->n_fields; /* no match */
 }
 
 static void
@@ -461,9 +511,7 @@ sfi_rec_set_copy (SfiRec       *rec,
   guint i;
   
   name = dupcanon (field_name);
-  for (i = 0; i < rec->n_fields; i++)
-    if (strcmp (name, rec->field_names[i]) == 0)
-      break;
+  i = sfi_rec_lookup (rec, name);
   if (i >= rec->n_fields)
     {
       i = rec->n_fields++;
@@ -471,6 +519,8 @@ sfi_rec_set_copy (SfiRec       *rec,
       memset (rec->fields + i, 0, sizeof (rec->fields[0]));
       rec->field_names = g_realloc (rec->field_names, rec->n_fields * sizeof (rec->field_names[0]));
       rec->field_names[i] = name;
+      /* we don't sort upon insertion to speed up record creation */
+      rec->sorted = FALSE;
     }
   else
     {
@@ -496,36 +546,20 @@ sfi_rec_set (SfiRec       *rec,
   sfi_rec_set_copy (rec, field_name, value, FALSE);
 }
 
-guint
-sfi_rec_n_fields (const SfiRec *rec)
-{
-  return rec ? rec->n_fields : 0;
-}
-
 GValue*
-sfi_rec_field (const SfiRec *rec,
-	       guint         index)
-{
-  g_return_val_if_fail (rec != NULL, NULL);
-  g_return_val_if_fail (index < rec->n_fields, NULL);
-  
-  return rec->fields + index;
-}
-
-GValue*
-sfi_rec_get (const SfiRec *rec,
-	     const gchar  *field_name)
+sfi_rec_get (SfiRec      *rec,
+	     const gchar *field_name)
 {
   gchar *name;
   guint i;
   
   g_return_val_if_fail (rec != NULL, NULL);
   g_return_val_if_fail (field_name != NULL, NULL);
-  
+
+  if (!rec->sorted)
+    sfi_rec_sort (rec);
   name = dupcanon (field_name);
-  for (i = 0; i < rec->n_fields; i++)
-    if (strcmp (name, rec->field_names[i]) == 0)
-      break;
+  i = sfi_rec_lookup (rec, name);
   g_free (name);
   if (i < rec->n_fields)
     return rec->fields + i;
@@ -533,17 +567,19 @@ sfi_rec_get (const SfiRec *rec,
 }
 
 SfiRec*
-sfi_rec_copy_deep (const SfiRec *rec)
+sfi_rec_copy_deep (SfiRec *rec)
 {
   SfiRec *r;
   guint i;
   
   g_return_val_if_fail (rec != NULL, NULL);
   g_return_val_if_fail (rec->ref_count > 0, NULL);
-  
+
+  sfi_rec_sort (rec);
   r = sfi_rec_new ();
   for (i = 0; i < rec->n_fields; i++)
     sfi_rec_set_copy (r, rec->field_names[i], &rec->fields[i], TRUE);
+  r->sorted = TRUE;
   return r;
 }
 
@@ -556,13 +592,55 @@ sfi_rec_check (SfiRec      *rec,
   g_return_val_if_fail (rec != NULL, FALSE);
   g_return_val_if_fail (rfields.n_fields > 0, FALSE);
 
+  if (!rec->sorted)
+    sfi_rec_sort (rec);
   for (i = 0; i < rfields.n_fields; i++)
     {
-      GValue *value = sfi_rec_get (rec, rfields.fields[i]->name);
+      guint n = sfi_rec_lookup (rec, rfields.fields[i]->name);
+      GValue *value = n < rec->n_fields ? rec->fields + n : NULL;
       if (!value || !G_VALUE_HOLDS (value, G_PARAM_SPEC_VALUE_TYPE (rfields.fields[i])))
 	return FALSE;
     }
   return TRUE;
+}
+
+static int
+strpointercmp (const void *p1,
+	       const void *p2)
+{
+  gchar *const *s1 = p1;
+  gchar *const *s2 = p2;
+  return strcmp (*s1, *s2);
+}
+
+void
+sfi_rec_sort (SfiRec *rec)
+{
+  g_return_if_fail (rec != NULL);
+  
+  if (!rec->sorted && rec->n_fields > 1)
+    {
+      gchar **fnames = g_memdup (rec->field_names, rec->n_fields * sizeof (rec->field_names[0]));
+      GValue *fields = g_new (GValue, rec->n_fields);
+      guint i;
+      /* sort field names */
+      qsort (fnames, rec->n_fields, sizeof (fnames[0]), strpointercmp);
+      /* sort fields */
+      for (i = 0; i < rec->n_fields; i++)
+	{
+	  guint n = 0;
+	  /* find corresponding field */
+	  while (rec->field_names[n] != fnames[i])
+	    n++;
+	  /* relocate field */
+	  memcpy (fields + i, rec->fields + n, sizeof (fields[0]));
+	}
+      g_free (rec->field_names);
+      rec->field_names = fnames;
+      g_free (rec->fields);
+      rec->fields = fields;
+    }
+  rec->sorted = TRUE;
 }
 
 

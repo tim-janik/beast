@@ -48,7 +48,7 @@ static const struct {
   { "b",	SFI_KAMMER_NOTE +  2 - SFI_KAMMER_OCTAVE * 12 },
   // { "h",	SFI_KAMMER_NOTE +  2 - SFI_KAMMER_OCTAVE * 12 }, /* german alias */
 };
-static gchar *sfi_note_name_table[12] = {
+static const gchar *sfi_note_name_table[12] = {
   "c", "cis", "d", "dis", "e", "f",
   "fis", "g", "gis", "a", "ais", "b",
 };
@@ -57,6 +57,13 @@ static gchar *sfi_note_name_table[12] = {
 /* --- functions --- */
 SfiInt
 sfi_note_from_string (const gchar *note_string)
+{
+  return sfi_note_from_string_err (note_string, NULL);
+}
+
+SfiInt
+sfi_note_from_string_err (const gchar *note_string,
+			  gchar      **error_p)
 {
   gchar *string;
   gint note;
@@ -106,7 +113,10 @@ sfi_note_from_string (const gchar *note_string)
     }
   
   g_free (string);
-  
+
+  if (!fits && error_p)
+    *error_p = g_strdup_printf ("invalid note specification: %s", note_string);
+
   return note;
 }
 

@@ -16,11 +16,42 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sfiparams.h"
-
 #include <string.h>
+#include "sfiparams.h"
+#include "sfiprimitives.h"
+
 
 #define	NULL_CHECKED(x)		((x) && (x)[0] ? x : NULL)
+
+
+typedef struct {
+  gint          (*values_cmp)           (GParamSpec   *pspec,
+					 const GValue *value1,
+					 const GValue *value2);
+  gboolean      (*value_validate)       (GParamSpec   *pspec,
+					 GValue       *value);
+} PSpecClassData;
+
+
+/* --- prototypes --- */
+static gint	param_bblock_values_cmp	(GParamSpec   *pspec,
+					 const GValue *value1,
+					 const GValue *value2);
+static gint	param_fblock_values_cmp	(GParamSpec   *pspec,
+					 const GValue *value1,
+					 const GValue *value2);
+static gint	param_seq_values_cmp	(GParamSpec   *pspec,
+					 const GValue *value1,
+					 const GValue *value2);
+static gint	param_rec_values_cmp	(GParamSpec   *pspec,
+					 const GValue *value1,
+					 const GValue *value2);
+static gboolean	param_seq_validate	(GParamSpec   *pspec,
+					 GValue       *value);
+static gboolean	param_rec_validate	(GParamSpec   *pspec,
+					 GValue       *value);
+static void	param_class_init	(gpointer      class,
+					 gpointer      class_data);
 
 
 /* --- variables --- */
@@ -38,7 +69,7 @@ _sfi_init_params (void)
     sizeof (GParamSpecClass),	/* class_size */
     NULL,			/* base_init */
     NULL,			/* base_destroy */
-    NULL,			/* class_init */
+    param_class_init,		/* class_init */
     NULL,			/* class_destroy */
     NULL,			/* class_data */
     0,				/* instance_size */
@@ -56,22 +87,311 @@ _sfi_init_params (void)
   quark_param_group = g_quark_from_static_string ("sfi-param-group");
   
   /* pspec types */
-  info.instance_size = sizeof (SfiParamSpecChoice);
-  SFI_TYPE_PARAM_CHOICE = g_type_register_static (G_TYPE_PARAM_STRING, "SfiParamSpecChoice", &info, 0);
-  info.instance_size = sizeof (SfiParamSpecBBlock);
-  SFI_TYPE_PARAM_BBLOCK = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecBBlock", &info, 0);
-  info.instance_size = sizeof (SfiParamSpecFBlock);
-  SFI_TYPE_PARAM_FBLOCK = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecFBlock", &info, 0);
-  info.instance_size = sizeof (SfiParamSpecSeq);
-  SFI_TYPE_PARAM_SEQ = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecSeq", &info, 0);
-  info.instance_size = sizeof (SfiParamSpecRec);
-  SFI_TYPE_PARAM_REC = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecRec", &info, 0);
   info.instance_size = sizeof (SfiParamSpecProxy);
   SFI_TYPE_PARAM_PROXY = g_type_register_static (G_TYPE_PARAM_POINTER, "SfiParamSpecProxy", &info, 0);
+  info.instance_size = sizeof (SfiParamSpecChoice);
+  SFI_TYPE_PARAM_CHOICE = g_type_register_static (G_TYPE_PARAM_STRING, "SfiParamSpecChoice", &info, 0);
+  {
+    static const PSpecClassData cdata = {
+      param_bblock_values_cmp, NULL,
+    };
+    info.class_data = &cdata;
+    info.instance_size = sizeof (SfiParamSpecBBlock);
+    SFI_TYPE_PARAM_BBLOCK = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecBBlock", &info, 0);
+  }
+  {
+    static const PSpecClassData cdata = {
+      param_fblock_values_cmp, NULL,
+    };
+    info.class_data = &cdata;
+    info.instance_size = sizeof (SfiParamSpecFBlock);
+    SFI_TYPE_PARAM_FBLOCK = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecFBlock", &info, 0);
+  }
+  {
+    static const PSpecClassData cdata = {
+      param_seq_values_cmp,
+      param_seq_validate,
+    };
+    info.class_data = &cdata;
+    info.instance_size = sizeof (SfiParamSpecSeq);
+    SFI_TYPE_PARAM_SEQ = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecSeq", &info, 0);
+  }
+  {
+    static const PSpecClassData cdata = {
+      param_rec_values_cmp,
+      param_rec_validate,
+    };
+    info.class_data = &cdata;
+    info.instance_size = sizeof (SfiParamSpecRec);
+    SFI_TYPE_PARAM_REC = g_type_register_static (G_TYPE_PARAM_BOXED, "SfiParamSpecRec", &info, 0);
+  }
+}
+
+static void
+param_class_init (gpointer class,
+		  gpointer class_data)
+{
+  PSpecClassData *cdata = class_data;
+  if (cdata)
+    {
+      GParamSpecClass *pclass = G_PARAM_SPEC_CLASS (class);
+      if (cdata->values_cmp)
+	pclass->values_cmp = cdata->values_cmp;
+      if (cdata->value_validate)
+	pclass->value_validate = cdata->value_validate;
+    }
 }
 
 
-/* --- Sfi GParamSpec  constructors --- */
+/* --- Sfi GParamSpec implementations --- */
+static gint
+param_bblock_values_cmp (GParamSpec   *pspec,
+			 const GValue *value1,
+			 const GValue *value2)
+{
+  // SfiParamSpecBBlock *bspec = SFI_PARAM_SPEC_BBLOCK (pspec);
+  SfiBBlock *bblock1 = sfi_value_get_bblock (value1);
+  SfiBBlock *bblock2 = sfi_value_get_bblock (value2);
+
+  if (!bblock1 || !bblock2)
+    return bblock2 ? -1 : bblock1 != bblock2;
+
+  if (bblock1->n_bytes != bblock2->n_bytes)
+    return bblock1->n_bytes < bblock2->n_bytes ? -1 : 1;
+  else /* bblock1->n_bytes == bblock2->n_bytes */
+    {
+      guint i;
+      for (i = 0; i < bblock1->n_bytes; i++)
+	if (bblock1->bytes[i] != bblock2->bytes[i])
+	  return bblock1->bytes[i] < bblock2->bytes[i] ? -1 : 1;
+      return 0; /* all values equal */
+    }
+}
+
+static gint
+param_fblock_values_cmp (GParamSpec   *pspec,
+			 const GValue *value1,
+			 const GValue *value2)
+{
+  // SfiParamSpecFBlock *fspec = SFI_PARAM_SPEC_FBLOCK (pspec);
+  SfiFBlock *fblock1 = sfi_value_get_fblock (value1);
+  SfiFBlock *fblock2 = sfi_value_get_fblock (value2);
+
+  if (!fblock1 || !fblock2)
+    return fblock2 ? -1 : fblock1 != fblock2;
+
+  if (fblock1->n_values != fblock2->n_values)
+    return fblock1->n_values < fblock2->n_values ? -1 : 1;
+  else /* fblock1->n_values == fblock2->n_values */
+    {
+      guint i;
+      for (i = 0; i < fblock1->n_values; i++)
+	if (fblock1->values[i] != fblock2->values[i])
+	  return fblock1->values[i] < fblock2->values[i] ? -1 : 1;
+      return 0; /* all values equal */
+    }
+}
+
+static gint
+param_seq_values_cmp (GParamSpec   *pspec,
+		      const GValue *value1,
+		      const GValue *value2)
+{
+  SfiParamSpecSeq *sspec = SFI_PARAM_SPEC_SEQ (pspec);
+  SfiSeq *seq1 = sfi_value_get_seq (value1);
+  SfiSeq *seq2 = sfi_value_get_seq (value2);
+
+  if (!seq1 || !seq2)
+    return seq2 ? -1 : seq1 != seq2;
+
+  if (seq1->n_elements != seq2->n_elements)
+    return seq1->n_elements < seq2->n_elements ? -1 : 1;
+  else if (!sspec->element)
+    {
+      /* we need an element specification for comparisons, so there's not much
+       * to compare here, try to at least provide stable lesser/greater result
+       */
+      return seq1->n_elements < seq2->n_elements ? -1 : seq1->n_elements > seq2->n_elements;
+    }
+  else /* seq1->n_elements == seq2->n_elements */
+    {
+      guint i;
+
+      for (i = 0; i < seq1->n_elements; i++)
+	{
+	  GValue *element1 = seq1->elements + i;
+	  GValue *element2 = seq2->elements + i;
+	  gint cmp;
+
+	  /* need corresponding element types, provide stable result otherwise */
+	  if (G_VALUE_TYPE (element1) != G_VALUE_TYPE (element2))
+	    return G_VALUE_TYPE (element1) < G_VALUE_TYPE (element2) ? -1 : 1;
+	  /* ignore non conforming elements */
+	  if (!G_VALUE_HOLDS (element1, G_PARAM_SPEC_VALUE_TYPE (sspec->element)))
+	    continue;
+	  cmp = g_param_values_cmp (sspec->element, element1, element2);
+	  if (cmp)
+	    return cmp;
+	}
+      return 0;
+    }
+}
+
+static gint
+param_rec_values_cmp (GParamSpec   *pspec,
+		      const GValue *value1,
+		      const GValue *value2)
+{
+  // SfiParamSpecRec *rspec = SFI_PARAM_SPEC_REC (pspec);
+  SfiRec *rec1 = sfi_value_get_rec (value1);
+  SfiRec *rec2 = sfi_value_get_rec (value2);
+
+  if (!rec1 || !rec2)
+    return rec2 ? -1 : rec1 != rec2;
+  // if (rec1->n_fields) return -1;
+
+  if (rec1->n_fields != rec2->n_fields)
+    return rec1->n_fields < rec2->n_fields ? -1 : 1;
+  else /* rec1->n_fields == rec2->n_fields */
+    {
+      guint i;
+
+      sfi_rec_sort (rec1);
+      sfi_rec_sort (rec2);
+      for (i = 0; i < rec1->n_fields; i++)
+	{
+	  const gchar *field_name1 = rec1->field_names[i];
+	  const gchar *field_name2 = rec1->field_names[i];
+	  GValue *field1 = rec1->fields + i;
+	  GValue *field2 = rec2->fields + i;
+	  GParamSpec *fspec;
+	  gint cmp;
+
+	  cmp = strcmp (field_name1, field_name2);
+	  if (cmp)
+	    return cmp;
+
+	  /* need corresponding field types, provide stable result otherwise */
+	  if (G_VALUE_TYPE (field1) != G_VALUE_TYPE (field2))
+	    return G_VALUE_TYPE (field1) < G_VALUE_TYPE (field2) ? -1 : 1;
+
+	  fspec = sfi_pspec_get_rec_field (pspec, field_name1);
+	  if (fspec)	/* ignore fields without param specs */
+	    {
+	      cmp = g_param_values_cmp (fspec, field1, field2);
+	      if (cmp)
+		return cmp;
+	    }
+	}
+      return 0;
+    }
+}
+
+static gboolean
+param_seq_validate (GParamSpec *pspec,
+		    GValue     *value)
+{
+  SfiParamSpecSeq *sspec = SFI_PARAM_SPEC_SEQ (pspec);
+  SfiSeq *seq = sfi_value_get_seq (value);
+  guint changed = 0;
+
+  if (seq && sspec->element)
+    {
+      GParamSpec *element_spec = sspec->element;
+      guint i;
+
+      for (i = 0; i < seq->n_elements; i++)
+	{
+	  GValue *element = seq->elements + i;
+
+	  /* support conversion of wrongly typed elements */
+	  if (G_VALUE_TYPE (element) != G_PARAM_SPEC_VALUE_TYPE (element_spec) &&
+	      g_value_type_transformable (G_VALUE_TYPE (element), G_PARAM_SPEC_VALUE_TYPE (element_spec)))
+	    {
+	      GValue dummy = { 0, };
+	      g_value_init (&dummy, G_PARAM_SPEC_VALUE_TYPE (element_spec));
+	      g_value_transform (element, &dummy);
+	      g_value_unset (element);
+	      memcpy (element, &dummy, sizeof (dummy)); /* relocate value */
+	      changed++;
+	    }
+
+	  /* need to fixup value type, or ensure that the element is initialized at all */
+	  if (!g_value_type_compatible (G_VALUE_TYPE (element), G_PARAM_SPEC_VALUE_TYPE (element_spec)))
+	    {
+	      if (G_VALUE_TYPE (element) != 0)
+		g_value_unset (element);
+	      g_value_init (element, G_PARAM_SPEC_VALUE_TYPE (element_spec));
+	      g_param_value_set_default (element_spec, element);
+	      changed++;
+	    }
+
+	  /* validate element against element_spec */
+	  changed += g_param_value_validate (element_spec, element);
+	}
+    }
+  return changed;
+}
+
+static gboolean
+param_rec_validate (GParamSpec *pspec,
+		    GValue     *value)
+{
+  SfiRec *rec = sfi_value_get_rec (value);
+  guint changed = 0;
+
+  if (rec)
+    {
+      SfiRecFields fspecs = sfi_pspec_get_rec_fields (pspec);
+      guint i;
+
+      for (i = 0; i < fspecs.n_fields; i++)
+	{
+	  GParamSpec *fspec = fspecs.fields[i];
+	  GValue *field = sfi_rec_get (rec, fspec->name);
+
+	  /* ensure field presence */
+	  if (!field)
+	    {
+	      GValue dummy = { 0, };
+	      g_value_init (&dummy, G_PARAM_SPEC_VALUE_TYPE (fspec));
+	      g_param_value_set_default (fspec, &dummy);
+	      sfi_rec_set (rec, fspec->name, &dummy);
+	      g_value_unset (&dummy);
+	      changed++;
+	    }
+
+	  /* support conversion of wrongly typed fields */
+	  if (G_VALUE_TYPE (field) != G_PARAM_SPEC_VALUE_TYPE (fspec) &&
+	      g_value_type_transformable (G_VALUE_TYPE (field), G_PARAM_SPEC_VALUE_TYPE (fspec)))
+	    {
+	      GValue dummy = { 0, };
+	      g_value_init (&dummy, G_PARAM_SPEC_VALUE_TYPE (fspec));
+	      g_value_transform (field, &dummy);
+	      g_value_unset (field);
+	      memcpy (field, &dummy, sizeof (dummy)); /* relocate value */
+	      changed++;
+	    }
+
+	  /* need to fixup value type, or ensure that the field is initialized at all */
+	  if (!g_value_type_compatible (G_VALUE_TYPE (field), G_PARAM_SPEC_VALUE_TYPE (fspec)))
+	    {
+	      if (G_VALUE_TYPE (field) != 0)
+		g_value_unset (field);
+	      g_value_init (field, G_PARAM_SPEC_VALUE_TYPE (fspec));
+	      g_param_value_set_default (fspec, field);
+	      changed++;
+	    }
+
+	  /* validate field against field_spec */
+	  changed += g_param_value_validate (fspec, field);
+	}
+    }
+  return changed;
+}
+
+
+/* --- Sfi GParamSpec constructors --- */
 static guint
 pspec_flags (const gchar *hints)
 {
@@ -281,8 +601,6 @@ sfi_param_spec_rec (const gchar    *name,
 {
   GParamSpec *pspec;
   SfiParamSpecRec *rspec;
-  
-  g_return_val_if_fail (static_const_fields.n_fields >= 1, NULL);
   
   pspec = g_param_spec_internal (SFI_TYPE_PARAM_REC, name, NULL_CHECKED (nick), NULL_CHECKED (blurb), pspec_flags (hints));
   sfi_pspec_set_static_hints (pspec, hints);
