@@ -423,13 +423,6 @@ bse_note_description (SfiInt note,
   return info;
 }
 
-BseNoteSequence*
-bse_note_sequence_copy_deep (BseNoteSequence *rec)
-{
-  // FIXME: stefan, we need deep copies for records and sequences
-  return bse_note_sequence_copy_shallow (rec);
-}
-
 void
 bse_note_sequence_resize (BseNoteSequence *rec,
 			  guint            length)

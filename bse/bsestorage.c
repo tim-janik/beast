@@ -463,7 +463,7 @@ restore_container_child (BseContainer *container,
   /* create container child */
   item = bse_container_retrieve_child (container, scanner->value.v_string);
   if (!item)
-    return bse_storage_warn_skip (storage, "failed to create object from (invalid) handle: \"%s\"",
+    return bse_storage_warn_skip (storage, "failed to create object from (invalid?) handle: \"%s\"",
 				  scanner->value.v_string);
 
   storage_path_table_insert (storage, container, uname, item);
@@ -1046,7 +1046,7 @@ bse_storage_resolve_item_links (BseStorage *storage)
 	    }
 	  if (!parent)
 	    error = g_strdup_printf ("failed to find ancestor of item `%s' (branch depth: -%u, "
-				     "number of parents: %u) while resolving link path: %s",
+				     "number of parents: %u) while resolving link path \"%s\"",
 				     BSE_OBJECT_UNAME (ilink->from_item),
 				     ilink->pbackup,
 				     ilink->pbackup - pbackup + 1,
@@ -1055,10 +1055,9 @@ bse_storage_resolve_item_links (BseStorage *storage)
 	    {
 	      child = storage_path_table_resolve_upath (storage, BSE_CONTAINER (parent), ilink->upath);
 	      if (!child)
-		error = g_strdup_printf ("failed to find object for item `%s' while resolving link path from ancestor `%s': %s",
+		error = g_strdup_printf ("failed to find object for item `%s' while resolving link path \"%s\" from ancestor `%s'",
 					 BSE_OBJECT_UNAME (ilink->from_item),
-					 BSE_OBJECT_UNAME (parent),
-					 ilink->upath);
+					 ilink->upath, BSE_OBJECT_UNAME (parent));
 	    }
 	  ilink->restore_link (ilink->data, storage, ilink->from_item, child, error);
 	  g_free (error);

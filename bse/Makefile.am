@@ -80,7 +80,6 @@ bse_public_h_sources = $(strip \
 	bseparasite.h \
 	bsepcmdevice.h \
 	bsepcmdevice-oss.h \
-	bsepcmdevice-csl.h \
 	bseplugin.h \
 	bseprocedure.h \
 	bseproject.h \
@@ -148,7 +147,6 @@ bse_c_sources = $(strip \
 	bseparasite.c \
 	bsepcmdevice.c \
 	bsepcmdevice-oss.c \
-	bsepcmdevice-csl.c \
 	bseplugin.c \
 	bseprocedure.c \
 	bseproject.c \

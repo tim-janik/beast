@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,8 @@
 /* --- prototypes --- */
 static void	bse_main_loop		(gpointer	data);
 static void	bse_async_parse_args	(gint	       *argc_p,
-					 gchar	     ***argv_p);
+					 gchar	     ***argv_p,
+					 SfiRec        *config);
 
 
 /* --- variables --- */
@@ -76,7 +77,7 @@ bse_init_async (gint    *argc,
     {
       if (*argc)
 	g_set_prgname (**argv);
-      bse_async_parse_args (argc, argv);
+      bse_async_parse_args (argc, argv, config);
     }
   
   /* start main BSE thread */
@@ -234,7 +235,7 @@ bse_init_intern (gint    *argc,
     {
       if (*argc)
 	g_set_prgname (**argv);
-      bse_async_parse_args (argc, argv);
+      bse_async_parse_args (argc, argv, config);
     }
   
   bse_init_core ();
@@ -267,7 +268,8 @@ bse_main_loop (gpointer data)
 
 static void
 bse_async_parse_args (gint    *argc_p,
-		      gchar ***argv_p)
+		      gchar ***argv_p,
+		      SfiRec  *config)
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
@@ -275,9 +277,9 @@ bse_async_parse_args (gint    *argc_p,
   guint i, e;
   
   /* this function is called before the main BSE thread is started,
-   * so we can not use pretty much everything of BSE.
+   * so we can't use any BSE functions yet.
    */
-  
+
   envar = getenv ("BSE_DEBUG");
   if (envar)
     {
@@ -333,4 +335,7 @@ bse_async_parse_args (gint    *argc_p,
     }
   if (e)
     *argc_p = e;
+
+  if (config && sfi_rec_get_bool (config, "developer-extensions"))
+    bse_main_developer_extensions = TRUE;
 }

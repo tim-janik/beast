@@ -1,3 +1,17 @@
+Sun Mar  9 09:53:41 2003  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c (bse_storage_resolve_item_links): 
+	* bsesource.c (resolve_osource_input): fix link resolution messages.
+
+	* bsepcmdevice-csl.[hc]: removed CSL driver code (in
+	accordance with stefan).
+	
+	* bserecords.sfidl: added pspec groups to preferences.
+
+	* bsemain.c (bse_async_parse_args): allow enabling of BSE
+	developer extensions via developer-extensions field in
+	the config record passed in.
+
 Fri Mar  7 21:44:24 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsetype.c: adapted sfidl_xxx macros to pspec group support

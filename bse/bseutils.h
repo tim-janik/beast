@@ -39,7 +39,6 @@ BsePartNote*		bse_part_note		(guint    id,
 						 gboolean selected);
 void			bse_part_note_seq_take_append	(BsePartNoteSeq *seq,
 							 BsePartNote    *element);
-BseNoteSequence* bse_note_sequence_copy_deep	(BseNoteSequence *rec);
 void             bse_note_sequence_resize	(BseNoteSequence *rec,
 						 guint            length);
 guint            bse_note_sequence_length	(BseNoteSequence *rec);

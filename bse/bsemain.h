@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- global variables --- */
-extern GMainContext *bse_main_context;
-extern SfiMutex	     bse_main_sequencer_mutex;
-extern gboolean      bse_main_developer_extensions;
-extern SfiThread    *bse_main_thread;
-
-
 /* --- initialization --- */
 #if 0	// prototyped in bse.h */
 void		bse_init_async		(gint		*argc,
@@ -55,6 +48,13 @@ void		bse_init_intern		(gint		*argc,
 #define	BSE_SEQUENCER_LOCK()			SFI_SYNC_LOCK (&bse_main_sequencer_mutex)
 #define	BSE_SEQUENCER_UNLOCK()			SFI_SYNC_UNLOCK (&bse_main_sequencer_mutex)
 #define	BSE_DVL_EXT				(bse_main_developer_extensions != FALSE)
+
+
+/* --- internal --- */
+extern GMainContext *bse_main_context;
+extern SfiMutex	     bse_main_sequencer_mutex;
+extern gboolean      bse_main_developer_extensions;
+extern SfiThread    *bse_main_thread;
 
 
 #ifdef __cplusplus

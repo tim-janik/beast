@@ -1514,16 +1514,12 @@ resolve_osource_input (gpointer     data,
   BseSource *source = BSE_SOURCE (from_item);
   BseSource *osource = to_item ? BSE_SOURCE (to_item) : NULL;
 
-  if (!osource && dinput->osource_path)		/* deprecated compat hack */
-    osource = (BseSource*) bse_container_resolve_upath ((BseContainer*) bse_item_get_project (from_item), dinput->osource_path);
-
   if (error)
     bse_storage_warn (storage,
-		      "failed to connect input \"%s\" of `%s' to output \"%s\" of `%s': %s",
+		      "failed to connect input \"%s\" of `%s' to output \"%s\" of unknown object: %s",
 		      dinput->ichannel_name ? dinput->ichannel_name : "???",
 		      BSE_OBJECT_UNAME (source),
 		      dinput->ochannel_name ? dinput->ochannel_name : "???",
-		      osource ? BSE_OBJECT_UNAME (osource) : "???",
 		      error);
   else
     {
@@ -1546,7 +1542,7 @@ resolve_osource_input (gpointer     data,
 			  dinput->ichannel_name ? dinput->ichannel_name : "???",
 			  BSE_OBJECT_UNAME (source),
 			  dinput->ochannel_name ? dinput->ochannel_name : "???",
-			  osource ? BSE_OBJECT_UNAME (osource) : "???",
+			  osource ? BSE_OBJECT_UNAME (osource) : ":<NULL>:",
 			  bse_error_blurb (cerror));
     }
 

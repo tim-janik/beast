@@ -28,6 +28,7 @@
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
+#define	DEBUG			sfi_debug_keyfunc ("procs")
 
 
 /* --- prototypes --- */
@@ -298,6 +299,14 @@ call_proc (BseProcedureClass  *proc,
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     {
+      if (sfi_debug_test_key ("procs"))
+	{
+	  if (proc->n_in_pspecs && G_TYPE_IS_OBJECT (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0])))
+	    DEBUG ("executing procedure \"%s\" on object %s",
+		   proc->name, bse_object_debug_name (g_value_get_object (ivalues + 0)));
+	  else
+	    DEBUG ("executing procedure \"%s\"", proc->name);
+	}
       if (marshal)
 	error = marshal (marshal_data, proc, ivalues, ovalues);
       else
