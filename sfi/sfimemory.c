@@ -40,6 +40,7 @@ sfi_alloc_upper_power2 (const gulong number)
   return number ? 1 << g_bit_storage (number - 1) : 0;
 }
 
+#if 1
 static inline gpointer
 low_alloc (gsize mem_size)
 {
@@ -102,6 +103,19 @@ low_free (gsize    mem_size,
       SFI_SPIN_UNLOCK (&global_memory_mutex);
     }
 }
+#else
+static inline gpointer
+low_alloc (gsize mem_size)
+{
+  return g_malloc (mem_size);
+}
+static inline void
+low_free (gsize    mem_size,
+          gpointer mem)
+{
+  g_free (mem);
+}
+#endif
 
 gpointer
 sfi_alloc_memblock (gsize block_size)

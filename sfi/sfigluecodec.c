@@ -375,6 +375,15 @@ decoder_describe_proc (SfiGlueDecoder *decoder,
   return rvalue;
 }
 
+static inline GValue*
+seq_value_from_strv (const gchar **strv)
+{
+  SfiSeq *seq = sfi_seq_from_cstrv (strv);
+  GValue *rvalue = sfi_value_seq (seq);
+  sfi_seq_unref (seq);
+  return rvalue;
+}
+
 static gchar**
 encoder_list_proc_names (SfiGlueContext *context)
 {
@@ -393,10 +402,8 @@ static GValue*
 decoder_list_proc_names (SfiGlueDecoder *decoder,
 			 SfiSeq         *seq)
 {
-  gchar **names = sfi_glue_list_proc_names ();
-  GValue *rvalue = NULL;
-  seq = sfi_seq_from_strv (names);
-  rvalue = sfi_value_seq (seq);
+  const gchar **names = sfi_glue_list_proc_names ();
+  GValue *rvalue = seq_value_from_strv (names);
   sfi_glue_gc_free_now (names, g_strfreev);
   return rvalue;
 }
@@ -421,10 +428,8 @@ static GValue*
 decoder_list_method_names (SfiGlueDecoder *decoder,
 			   SfiSeq         *seq)
 {
-  gchar **names = sfi_glue_list_method_names (sfi_seq_get_string (seq, 1));
-  GValue *rvalue = NULL;
-  seq = sfi_seq_from_strv (names);
-  rvalue = sfi_value_seq (seq);
+  const gchar **names = sfi_glue_list_method_names (sfi_seq_get_string (seq, 1));
+  GValue *rvalue = seq_value_from_strv (names);
   sfi_glue_gc_free_now (names, g_strfreev);
   return rvalue;
 }
@@ -474,10 +479,8 @@ static GValue*
 decoder_iface_children (SfiGlueDecoder *decoder,
 			SfiSeq         *seq)
 {
-  gchar **names = sfi_glue_iface_children (sfi_seq_get_string (seq, 1));
-  GValue *rvalue = NULL;
-  seq = sfi_seq_from_strv (names);
-  rvalue = sfi_value_seq (seq);
+  const gchar **names = sfi_glue_iface_children (sfi_seq_get_string (seq, 1));
+  GValue *rvalue = seq_value_from_strv (names);
   sfi_glue_gc_free_now (names, g_strfreev);
   return rvalue;
 }
@@ -594,9 +597,7 @@ decoder_proxy_list_properties (SfiGlueDecoder *decoder,
 							sfi_seq_get_string (seq, 2),
 							sfi_seq_get_string (seq, 3),
 							NULL);
-  GValue *rvalue = NULL;
-  seq = sfi_seq_from_strv ((gchar**) names);
-  rvalue = sfi_value_seq (seq);
+  GValue *rvalue = seq_value_from_strv (names);
   sfi_glue_gc_free_now (names, g_strfreev);
   return rvalue;
 }

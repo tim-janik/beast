@@ -1,3 +1,22 @@
+Mon Jul 14 16:43:20 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: added sfi_seq_from_cstrv(), a variant of
+	sfi_seq_from_strv() for const gchar**.
+
+	* sfiglue.[hc]: changed gchar** returns to const gchar** returns
+	where apropriate.
+
+	* sfigluecodec.c: fixed sequence reference count leak.
+
+	* sfithreads.c: sched_yield() is not available on NetBSD, reported
+	by collver1@comcast.net.
+
+	* toyprof-mem.c:
+	* toyprof.c: fix pointless gcc warnings.
+
+	* toyprof.h: special case toyprof code for GLIBC >= 2.2, since we
+	use _r_debug.
+
 Tue Jun 24 23:22:58 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl.cc: allocate structures with g_new0() in shallow_copy(),

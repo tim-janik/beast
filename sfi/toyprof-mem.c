@@ -209,7 +209,7 @@ toyprof_dump_leaks_U (guint leak_logger_stamp,
 	    for (i = 0; i < STACK_TRACE_DEPTH; i++)
 	      {
 		SymEntry *e = symtab_lookup (h->traces[i]);
-		dprintf (fd, "%s:%p ", e->sname, h->traces[i] - e->sbase);
+		dprintf (fd, "%s:%u ", e->sname, ((char*) h->traces[i]) - ((char*) e->sbase));
 	      }
 	    dprintf (fd, "\n");
 	  }

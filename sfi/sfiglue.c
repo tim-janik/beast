@@ -221,7 +221,7 @@ sfi_glue_describe_proc (const gchar *proc_name)
   return proc;
 }
 
-gchar**
+const gchar**
 sfi_glue_list_proc_names (void)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
@@ -231,10 +231,10 @@ sfi_glue_list_proc_names (void)
   if (!names)
     names = g_new0 (gchar*, 1);
   sfi_glue_gc_add (names, g_strfreev);
-  return names;
+  return (const gchar**) names;
 }
 
-gchar**
+const gchar**
 sfi_glue_list_method_names (const gchar *iface_name)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
@@ -246,7 +246,7 @@ sfi_glue_list_method_names (const gchar *iface_name)
   if (!names)
     names = g_new0 (gchar*, 1);
   sfi_glue_gc_add (names, g_strfreev);
-  return names;
+  return (const gchar**) names;
 }
 
 gchar*
@@ -260,7 +260,7 @@ sfi_glue_base_iface (void)
   return biface;
 }
 
-gchar**
+const gchar**
 sfi_glue_iface_children (const gchar *iface_name)
 {
   SfiGlueContext *context = sfi_glue_fetch_context (G_STRLOC);
@@ -272,7 +272,7 @@ sfi_glue_iface_children (const gchar *iface_name)
   if (!names)
     names = g_new0 (gchar*, 1);
   sfi_glue_gc_add (names, g_strfreev);
-  return names;
+  return (const gchar**) names;
 }
 
 SfiGlueIFace*

@@ -37,7 +37,7 @@ typedef struct {
 } SfiGlueIFace;
 
 gchar*		sfi_glue_base_iface	(void);
-gchar**		sfi_glue_iface_children	(const gchar	*iface_name);
+const gchar**	sfi_glue_iface_children	(const gchar	*iface_name);
 SfiGlueIFace*	sfi_glue_describe_iface	(const gchar	*iface_name);
 SfiGlueIFace*	sfi_glue_iface_ref	(SfiGlueIFace	*iface);
 void		sfi_glue_iface_unref	(SfiGlueIFace	*iface);
@@ -61,8 +61,8 @@ typedef struct {
 SfiGlueProc*	sfi_glue_describe_proc		(const gchar	*proc_name);
 SfiGlueProc*	sfi_glue_proc_ref		(SfiGlueProc	*proc);
 void		sfi_glue_proc_unref		(SfiGlueProc	*proc);
-gchar**		sfi_glue_list_proc_names	(void);
-gchar**		sfi_glue_list_method_names	(const gchar	*iface_name);
+const gchar**	sfi_glue_list_proc_names	(void);
+const gchar**	sfi_glue_list_method_names	(const gchar	*iface_name);
 
 GValue*		sfi_glue_call_seq		(const gchar	*proc_name,
 						 SfiSeq		*params);

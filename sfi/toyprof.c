@@ -7,7 +7,7 @@
  */
 #include "toyprof.h"
 
-#ifdef	TOYPROF_GNUC_NO_INSTRUMENT	/* only have this with GNU GCC */
+#ifdef	TOYPROF_GNUC_NO_INSTRUMENT	/* only have this if toyprof is enabled */
 
 /* --- configuration --- */
 /* TOYPROF_PENTIUM	- define this if you're going to run the compiled program
@@ -468,12 +468,12 @@ toyprof_dlname (void *addr,
 	asprintf (&name, "%s%c0x%x",
 		  dlinfo.dli_sname,
 		  addr > dlinfo.dli_saddr ? '+' : '-',
-		  MAX (addr, dlinfo.dli_saddr) - MIN (addr, dlinfo.dli_saddr));
+		  ((char*) MAX (addr, dlinfo.dli_saddr)) - ((char*) MIN (addr, dlinfo.dli_saddr)));
       else
 	{
 	  asprintf (&name, "%s:%p",	/* needs addr2line lookup */
 		    dlinfo.dli_fname,
-		    (void*) (addr - dlinfo.dli_fbase));
+		    (void*) (((char*) addr) - ((char*) dlinfo.dli_fbase)));
 	  resolved = FALSE;
 	}
     }
@@ -584,7 +584,7 @@ toyprof_dladdr (const void *sym_address,
 	  dlinfo->dli_fbase = (void*) mlink->l_addr;
 	}
       dlinfo->dli_sname = mstrtab + msym->st_name;
-      dlinfo->dli_saddr = dlinfo->dli_fbase + msym->st_value;
+      dlinfo->dli_saddr = ((char*) dlinfo->dli_fbase) + msym->st_value;
     }
   return 1;
 }
@@ -594,4 +594,4 @@ TOYPROF_SYMBOL_ALIAS (__cyg_profile_func_enter, toyprof_func_enter);
 TOYPROF_SYMBOL_ALIAS (__cyg_profile_func_exit, toyprof_func_exit);
 #endif
 
-#endif	/* TOYPROF_GNUC_NO_INSTRUMENT, GNU GCC check */
+#endif	/* TOYPROF_GNUC_NO_INSTRUMENT, enable toyprof check */

@@ -8,12 +8,19 @@
 #ifndef	__TOYPROF_H__
 #define __TOYPROF_H__
 
+#define _GNU_SOURCE
+#include <stdlib.h>	/* to define __GLIBC__ and __GLIBC_MINOR__ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 
-#if	defined (__GNUC__) && __GNUC__ >= 2 && __GNUC_MINOR__ >= 95
+#if     defined (__GNUC__) && defined (__GLIBC__) &&	/* have GCC && GLIBC */	\
+        ((__GNUC__ == 2 && __GNUC_MINOR__ >= 95) ||	/* GCC >= 2.95 */	\
+         __GNUC__ > 2) &&               		/* GCC >= 3.0.0 */	\
+        ((__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2) ||    /* GLIBC >= 2.2 */	\
+         __GLIBC__ > 2)					/* GLIBC > 2 */
 
 /* function flagging */
 #define	TOYPROF_GNUC_NO_INSTRUMENT	__attribute__((no_instrument_function))
@@ -33,7 +40,7 @@ typedef enum	/*< skip >*/
 /* enable/disable profiling and optionally trace functions */
 void toyprof_set_profiling (ToyprofBehaviour behav) TOYPROF_GNUC_NO_INSTRUMENT;
 
-#endif	/* GCC-2.95 */
+#endif	/* >= GCC-2.95 */
 
 
 #ifdef __cplusplus

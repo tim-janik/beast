@@ -532,7 +532,7 @@ fallback_mutex_lock (SfiMutex *mutex)
       /* on uni processor systems, there's no point in busy spinning */
       do
 	{
-	  sched_yield ();
+	  g_thread_yield ();
 	  if (g_mutex_trylock (mutex->mutex_pointer))
 	    return;
 	}

@@ -705,6 +705,20 @@ sfi_seq_from_strv (gchar **strv)
   return seq;
 }
 
+SfiSeq*
+sfi_seq_from_cstrv (const gchar **strv)
+{
+  SfiSeq *seq;
+  guint i;
+  if (!strv)
+    return NULL;
+
+  seq = sfi_seq_new ();
+  for (i = 0; strv[i]; i++)
+    sfi_seq_append_string (seq, strv[i]);
+  return seq;
+}
+
 
 /* --- SfiRec primitive type --- */
 SfiRec*
