@@ -1,4 +1,5 @@
 FIXMES:
+- get compilation with guile-1.6 to work (scm_i_long_long2big)
 - rename gslwave files appropriately
 - need detailed "ladspa" info/debug messages which tell when what plugin file is being loaded
 - add option to disable ladspa plugin loading
@@ -18,7 +19,6 @@ FIXMES:
 - bse_item_gather_proxies() could simply have container and child type (no callbacks) once midi/song don't derive from BseSNet
 - never gather INTERNAL items in bse_item_gather_proxies()
 - fix BST_OP_PROJECT_SAVE
-- get compilation with guile-1.6 to work
 - add new test song containing a wave track
 - fix saving of internal objects
 - implement (GUI for) locked properties
