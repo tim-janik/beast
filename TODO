@@ -1,4 +1,5 @@
 FIXMES:
+- rename sfidl.texi to sfidl-manual.texi
 - make sfidl/bse-plugin-generator manual pages match new/changed options
 - rc setting for canvas font sizes
 - bseautodoc.c: use bse_type_get_license() instead of sfi_info_string_find()
@@ -327,8 +328,7 @@ sfidl:
     - serialization: can we _really_ only use a template thing?
       => reorganization of the createTypeCode function
     - should objects _really_ be values?
-    - bse-plugin-generator as extra binary?
-      => should be sfidl --module
+    - eliminate bse-plugin-generator as extra binary? (use sfidl --plugin)
     - bindings miss testing.
     - set bse-preferences BSE::GConfig property.
     - records in bseprocidl: how can we figure out the type?

@@ -1,6 +1,6 @@
 \input texinfo
 @c %**start of header
-@settitle BSE Plugin Generator
+@settitle SFIDL - SFI IDL Compiler
 @footnotestyle end
 @c %**end of header
 
@@ -9,20 +9,20 @@
 @docpackage{BEAST-@value{BST_VERSION}}
 
 @unnumbered NAME
-BSE Plugin Generator - Code Generator for @bse Plugins
+SFIDL - SFI IDL Compiler
 
 @unnumbered SYNOPSIS
-	@command{bse-plugin-generator} [@var{options}] <@var{plugin.idl}>
+	@command{sfidl} [@var{options}] <@var{input.idl}>
 
 @unnumbered DESCRIPTION
 
-	@command{bse-plugin-generator} generates glue code for @bse plugins from
-	@bse interface definition language files.
+	@command{sfidl} generates glue code for @bse objects from
+	interface definition language files.
 
 @unnumbered OPTIONS
 
 @table @option
-@item -h, ---help
+@item ---help
 	print usage information
 
 @item -I <@var{DIRECTORY}>
