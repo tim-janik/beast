@@ -1272,6 +1272,7 @@ gtk_clue_hunter_set_entry (GtkClueHunter *clue_hunter,
     {
       g_return_if_fail (GTK_IS_ENTRY (entry));
       g_return_if_fail (GTK_OBJECT_DESTROYED (entry) == FALSE);
+      g_return_if_fail (gtk_clue_hunter_from_entry (entry) == NULL);
     }
   
   if (clue_hunter->entry)
@@ -1288,12 +1289,14 @@ gtk_clue_hunter_set_entry (GtkClueHunter *clue_hunter,
 					 GTK_SIGNAL_FUNC (gtk_clue_hunter_entry_destroyed),
 					 clue_hunter);
 	}
+      gtk_object_set_data (GTK_OBJECT (clue_hunter->entry), "GtkClueHunter", NULL);
       gtk_widget_unref (clue_hunter->entry);
     }
   clue_hunter->entry = entry;
   if (clue_hunter->entry)
     {
       gtk_widget_ref (clue_hunter->entry);
+      gtk_object_set_data (GTK_OBJECT (clue_hunter->entry), "GtkClueHunter", clue_hunter);
       gtk_signal_connect_object (GTK_OBJECT (clue_hunter->entry),
 				 "destroy",
 				 GTK_SIGNAL_FUNC (gtk_clue_hunter_entry_destroyed),
@@ -1310,6 +1313,14 @@ gtk_clue_hunter_set_entry (GtkClueHunter *clue_hunter,
   clue_hunter->completion_tag = FALSE;
 }
 
+GtkClueHunter*
+gtk_clue_hunter_from_entry (GtkWidget *entry)
+{
+  g_return_val_if_fail (GTK_IS_ENTRY (entry), NULL);
+
+  return gtk_object_get_data (GTK_OBJECT (entry), "GtkClueHunter");
+}
+
 void
 gtk_clue_hunter_add_string (GtkClueHunter *clue_hunter,
 			    const gchar   *string)
@@ -1324,7 +1335,7 @@ gtk_clue_hunter_add_string (GtkClueHunter *clue_hunter,
   clist = GTK_CLIST (clue_hunter->clist);
   
   text = g_new0 (gchar*, clist->columns);
-  text[clue_hunter->clist_column] = string;
+  text[clue_hunter->clist_column] = (gchar*) string;
 
   gtk_clist_insert (clist, 0, text);
   g_free (text);

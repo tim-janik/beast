@@ -1,3 +1,10 @@
+Mon Dec  6 03:43:08 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_entry_key_press): even more fixes to
+	the clue hunter case.
+	
+	* beast-gtk/glewidgets.[hc]: pulled new sources.
+
 Mon Dec  6 03:21:54 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_entry_key_press): fixed minor bug.

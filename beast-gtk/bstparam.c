@@ -232,17 +232,26 @@ bst_entry_key_press (GtkWidget   *entry,
 		     GdkEventKey *event,
 		     BstParam    *bparam)
 {
+  gboolean is_tab = FALSE;
+
   if (!gtk_type_is_a (GTK_OBJECT_TYPE (entry), GTK_TYPE_SPIN_BUTTON))
     switch (event->keyval)
       {
       case GDK_Tab:
       case GDK_ISO_Left_Tab:
+	is_tab = TRUE;
+	/* fall through */
       case GDK_Up:
       case GDK_KP_Up:
       case GDK_Down:
       case GDK_KP_Down:
-	/* bst_param_gtk_update (bparam); */
-	if (!gtk_grab_get_current ())	/* don't confuse clue hunter */
+	/* special case clue hunter entries */
+	if (gtk_clue_hunter_from_entry (entry))
+	  {
+	    if (!is_tab && !gtk_grab_get_current ())
+	      bst_param_gtk_changed (bparam);
+	  }
+	else
 	  bst_param_gtk_changed (bparam);
 	break;
       default:
