@@ -1392,7 +1392,7 @@ gxk_tree_model_get_iter (GtkTreeModel          *tree_model,
  * @path: valid #GtkTreePath
  *
  * Workaround for gtk_tree_path_prev() which corrupts memory
- * if called on empty paths (up to version 2.2 at least).
+ * if called on empty paths (up to version Gtk+-2.4 at least).
  */
 gboolean
 gxk_tree_path_prev (GtkTreePath *path)
@@ -1984,43 +1984,61 @@ browse_selection_handler (gpointer data)
 		   !gtk_tree_selection_get_selected (selection, NULL, &iter));
       if (needs_sel)
 	{
-	  GtkTreePath *path = g_object_get_data (selection, "GxkTreeSelection-last");
+          /* in the following code, we need to do some extra path copying, because
+           * browse_selection_changed() changes the "GxkTreeSelection-last" path
+           * upon selection changes.
+           */
+	  const GtkTreePath *cpath = g_object_get_data (selection, "GxkTreeSelection-last");
 	  g_object_ref (selection);
 	  browse_selection_ignore = selection;
-	  if (path)
+	  if (cpath)
 	    {
-	      gtk_tree_selection_select_path (selection, path);
-	      path = g_object_get_data (selection, "GxkTreeSelection-last");
+              GtkTreePath *p = gtk_tree_path_copy (cpath);
+	      gtk_tree_selection_select_path (selection, p);
+              gtk_tree_path_free (p);
+	      cpath = g_object_get_data (selection, "GxkTreeSelection-last");
 	      needs_sel = !gtk_tree_selection_get_selected (selection, NULL, NULL);
-	      if (needs_sel && path && gxk_tree_path_prev (path))
-		{
-		  gtk_tree_selection_select_path (selection, path);
-		  path = g_object_get_data (selection, "GxkTreeSelection-last");
-		  needs_sel = !gtk_tree_selection_get_selected (selection, NULL, NULL);
-		}
-	      if (needs_sel && path && gtk_tree_path_up (path))
-		{
-		  gtk_tree_selection_select_path (selection, path);
-		  path = g_object_get_data (selection, "GxkTreeSelection-last");
-		  needs_sel = !gtk_tree_selection_get_selected (selection, NULL, NULL);
-		}
-	    }
+            }
+          if (needs_sel && cpath)
+            {
+              GtkTreePath *p = gtk_tree_path_copy (cpath);
+              if (gxk_tree_path_prev (p))
+                gtk_tree_selection_select_path (selection, p);
+              gtk_tree_path_free (p);
+              cpath = g_object_get_data (selection, "GxkTreeSelection-last");
+              needs_sel = !gtk_tree_selection_get_selected (selection, NULL, NULL);
+            }
+          if (needs_sel && cpath)
+            {
+              GtkTreePath *p = gtk_tree_path_copy (cpath);
+              if (gtk_tree_path_up (p))
+                gtk_tree_selection_select_path (selection, p);
+              gtk_tree_path_free (p);
+              cpath = g_object_get_data (selection, "GxkTreeSelection-last");
+              needs_sel = !gtk_tree_selection_get_selected (selection, NULL, NULL);
+            }
 	  if (needs_sel)
 	    {
-	      path = gtk_tree_path_new ();
-	      gtk_tree_path_append_index (path, 0);
-	      gtk_tree_selection_select_path (selection, path);
-	      if (gtk_tree_selection_path_is_selected (selection, path))
+	      GtkTreePath *p = gtk_tree_path_new ();
+	      gtk_tree_path_append_index (p, 0);
+	      gtk_tree_selection_select_path (selection, p);
+              if (gtk_tree_selection_path_is_selected (selection, p))
 		{
 		  /* GTKFIX: this triggeres an assertion on empty sort models */
 		  gtk_tree_view_set_cursor (gtk_tree_selection_get_tree_view (selection),
-					    path, NULL, FALSE);
+					    p, NULL, FALSE);
 		}
-	      gtk_tree_path_free (path);
+	      gtk_tree_path_free (p);
+              /* cpath invalid */
 	    }
 	  else
-	    gtk_tree_view_set_cursor (gtk_tree_selection_get_tree_view (selection),
-				      path, NULL, FALSE);
+            {
+              GtkTreePath *p = gtk_tree_path_copy (cpath);
+              gtk_tree_view_set_cursor (gtk_tree_selection_get_tree_view (selection),
+                                        p, NULL, FALSE);
+              gtk_tree_path_free (p);
+              /* cpath invalid */
+            }
 	  browse_selection_ignore = NULL;
 	  g_object_unref (selection);
 	}

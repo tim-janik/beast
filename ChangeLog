@@ -1,3 +1,9 @@
+Mon Nov 15 16:48:40 2004    <timj@birnet.org>
+
+	* beast-gtk/gxk/gxkutils.c (browse_selection_handler): create extra path
+	copies to account for callback-based path changes from 
+	browse_selection_changed(). fixes invalid memory accesses.
+
 Sun Nov 14 20:12:03 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c: improve responseness under load by handling glue
