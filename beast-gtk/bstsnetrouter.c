@@ -279,18 +279,16 @@ bst_snet_router_set_snet (BstSNetRouter *router,
   if (router->snet)
     {
       bst_snet_router_destroy_contents (router);
-      
       bse_proxy_disconnect (router->snet,
 			    "any_signal", bst_snet_router_item_added, router,
 			    NULL);
-      bse_item_use (router->snet);	// FIXME: should we hold a use-count on the snet?
+      bse_item_unuse (router->snet);
       router->snet = 0;
     }
-  if (snet)
+  router->snet = snet;
+  if (router->snet)
     {
-      router->snet = snet;
-      bse_item_unuse (router->snet);
-      
+      bse_item_use (router->snet);	// FIXME: should we hold a use-count on the snet?
       bse_proxy_connect (router->snet,
 			 "swapped_signal::item_added", bst_snet_router_item_added, router,
 			 NULL);

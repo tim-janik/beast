@@ -1,3 +1,8 @@
+Mon May  5 04:02:49 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_set_snet): fix proxy snet
+	usage counting.
+
 Tue Apr 29 01:31:41 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkcellrendererpopup.c:
