@@ -1,12 +1,9 @@
-* Various effects are supported for sequencer notes now
-* Sequencer and mixer cleanups and speedups
-* Added support for Cubic Interpolation
-* Complete reimplementation of the type and parameter systems
-  for integration with upcomming GLib 1.4 facilities.
-* New synthesis modules:
-  DavXTalString	- string synthesizer
-  DavGuitar     - physical modelling acoustic guitar
-  DavChorus	- chorusing filter
+Overview of Changes in BEAST/BSE 0.3.3:
+
+* Fixed font specification in pattern editor
+* GNOME Canvas redrawing workarounds
+* Libart hang workaround
+* Libtool update
 
 Overview of Changes in BEAST/BSE 0.3.2:
 
