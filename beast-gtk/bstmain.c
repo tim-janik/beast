@@ -248,14 +248,15 @@ main (int   argc,
 	}
     }
 
-  /* listen to BseServer notification
-   */
+  /* listen to BseServer notification */
   bst_splash_update_entity (beast_splash, _("Dialogs"));
   bst_catch_scripts_and_msgs ();
   _bst_init_radgets ();
 
-  /* open files given on command line
-   */
+  /* install message dialog handler */
+  sfi_log_set_thread_handler (bst_user_message_log_handler);
+
+  /* open files given on command line */
   if (argc > 1)
     bst_splash_update_entity (beast_splash, _("Loading..."));
   for (i = 1; i < argc; i++)
@@ -306,7 +307,7 @@ main (int   argc,
       bse_item_unuse (project);
       
       if (error)
-	bst_status_eprintf (error, _("Loading project \"%s\""), argv[i]);
+        sfi_error (_("Failed to load project \"%s\": %s"), argv[i], bse_error_blurb (error));
     }
 
   /* open default app window
@@ -333,10 +334,9 @@ main (int   argc,
       bst_gconfig_set_rc_version (BST_VERSION);
     }
 
-  /* release splash grab, install message dialog handler */
+  /* release splash grab */
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
-  sfi_log_set_thread_handler (bst_user_message_log_handler);
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -345,9 +345,9 @@ main (int   argc,
       g_main_iteration (TRUE);
       GDK_THREADS_ENTER ();
     }
-  sfi_log_set_thread_handler (NULL);
   
-  /* take down GUI leftovers */
+  /* take down GUI */
+  sfi_log_set_thread_handler (NULL);
   bst_user_messages_kill ();
   
   /* perform necessary cleanup cycles */
