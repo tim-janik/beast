@@ -1,8 +1,9 @@
 SUBDIRS = generated
 
-texi_docs = $(strip							\
-	WRITING.3.texi		beast-index.texi	faq.texi	\
-	quickstart.texi		release-notes.texi			\
+texi_docs = $(strip								\
+	WRITING.3.texi			beast-index.texi	faq.texi	\
+	quickstart.texi			release-notes.texi			\
+	bse-plugin-generator.1.texi						\
 )
 extra_docs = $(strip					\
 	bse-categories.txt	interpolation.txt	\

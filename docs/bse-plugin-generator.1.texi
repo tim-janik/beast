@@ -1,0 +1,34 @@
+\input texinfo
+@c %**start of header
+@settitle BSE Plugin Generator
+@footnotestyle end
+@c %**end of header
+
+@include teximacros.texi
+
+@docpackage{BEAST-0.5.5}	@c FIXME: use BST_VERSION here
+@docfont{tech}
+
+@unnumbered NAME
+BSE Plugin Generator - Code Generator for BSE Plugins
+
+@unnumbered SYNOPSIS
+	@emph{bse-plugin-generator} [@emph{options}] <@emph{plugin.idl}>
+
+@unnumbered DESCRIPTION
+
+	@emph{bse-plugin-generator} generates glue code for BSE plugins from
+	BSE interface definition language files.
+
+@unnumbered OPTIONS
+	@emph{-h, --help}
+@*		print usage information
+@*	@emph{-I <directory>}
+@*		add this directory to the include path
+
+@unnumbered SEE ALSO
+@uref{beast-man://3/bse-procs,BSE Procedures}
+@uref{beast-man://3/bse-structs,BSE Structures}
+@*
+@revision{Document Revised:}
+@bye

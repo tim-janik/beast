@@ -1,3 +1,11 @@
+Sun Sep 21 02:34:26 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: get section 1 manual pages to
+	install and build properly.
+
+	* docs/bse-plugin-generator.1.texi: started manual page for
+	the bse plugin generator.
+
 Mon Sep  8 14:23:50 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvassource.c (bst_canvas_source_build_channels): catch

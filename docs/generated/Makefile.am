@@ -9,17 +9,20 @@ docsdir = ${beastdocsdir}
 docs_DATA = ${markup_targets}
 
 # install man pages
-man_MANS = sfi.3 bse.3 beast-gxk.3 bse-procs.3 bse-structs.3
+man1_MANS = bse-plugin-generator.1
+man3_MANS = sfi.3 bse.3 beast-gxk.3 bse-procs.3 bse-structs.3
+man_MANS = $(man1_MANS) $(man3_MANS)
 
 # installed docs
-markup_targets = $(strip	\
-	faq.markup		\
-	release-notes.markup	\
-	release-news.markup	\
-	gsl-mplan.markup	\
-	quickstart.markup	\
-	beast-index.markup	\
-	$(patsubst %.3, %.3.markup, $(man_MANS)) \
+markup_targets = $(strip		\
+	faq.markup			\
+	release-notes.markup		\
+	release-news.markup		\
+	gsl-mplan.markup		\
+	quickstart.markup		\
+	beast-index.markup		\
+	$(man1_MANS:.1=.1.markup)	\
+	$(man3_MANS:.3=.3.markup)	\
 )
 
 # website html targets
@@ -40,7 +43,8 @@ html_targets = $(strip		\
 	log-plugins.html	\
 	log-sfi.html		\
 	release-news.html	\
-	$(patsubst %.3, %.3.html, $(man_MANS)) \
+	$(man1_MANS:.1=.1.html)	\
+	$(man3_MANS:.3=.3.html)	\
 	faq.html		\
 	quickstart.html		\
 	overview-de.html	\
@@ -102,14 +106,14 @@ temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
 #
 # texi/xml/target rules
 #
-REFERENCE_XMLS = $(patsubst %.3, %.3.crossfix.xml, $(man_MANS))
+REFERENCE_XMLS = $(man3_MANS:.3=.3.crossfix.xml)
 TEXI2XML       = $(TEXITHEQUE) texi2xml
 XML2INDEX      = $(TEXITHEQUE) xml2index
 XML2MARKUP     = $(TEXITHEQUE) xml2markup
 XML2HTML       = $(TEXITHEQUE) xml2html
 XML2NROFF      = $(TEXITHEQUE) xml2nroff
 # docs to be distributed
-distdocs = $(markup_targets) $(man_MANS)
+distdocs = $(markup_targets) $(man1_MANS) $(man3_MANS)
 # conditional build rules
 if IF_BUILDDOCS
 gnome-index.lst.gz: # default-generate if not present to avoid build breakage
@@ -129,6 +133,8 @@ index.lst: $(REFERENCE_XMLS)
 %.markup: %.xml
 	$(XML2MARKUP) --output=$@ $<
 # man from xml (installed)
+%.1: %.1.nroff
+	cp -f $< $@
 %.3: %.3.nroff
 	cp -f $< $@
 # html from xml (website)
@@ -240,8 +246,8 @@ CLEANFILES += beast-site-*.tar.gz beast-site-*.tar.bz2 index.html
 clean-all-targets:	# clean targets that aren't shipped with tarballs
 	rm -f *.xml *.ps *.pdf *.html index.lst
 # postscript and pdf variants
-ps-targets:	$(patsubst %.3, %.ps, $(man_MANS))
-pdf-targets:	$(patsubst %.3, %.pdf, $(man_MANS))
+ps-targets:	$(man1_MANS:.1=.1.ps) $(man1_MANS:.3=.3.ps)
+pdf-targets:	$(man1_MANS:.1=.1.pdf) $(man1_MANS:.3=.3.pdf)
 # xml linting
 lint: $(markup_targets)
 	@for i in $^ ; do \
