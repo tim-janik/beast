@@ -27,6 +27,8 @@ TODO:
 - TrackRoll: add Lower and Raise buttons to move tracks relative to each other
 - PianoRoll: Ctrl+scrollwheel change hzoom
 - PianoRoll: interpret scrollwheel events for h/v scrolling (according to a toggle menu item)
+- FreeVerb: implement downsampling at in-/outputs to correctly apply the 44100Hz based coefficients
+- FreeVerb: fix parameter interpretation of freeverb
 - driver interface: support multilpe MIDI devices
 - add more menu tooltips
 - add editable text fields to snet router
