@@ -307,14 +307,115 @@ CodeGeneratorModule::func_param_free (const Param &param)
     }
 }
 
-struct Image {
-  string file;
-  string method;
-  Image (const string &f,
-         const string &m)
-    : file (f), method (m)
-  {}
-};
+void
+CodeGeneratorModule::generate_procedures (const std::string          &outer_nspace,
+                                          std::vector<const Method*> &procs,
+                                          std::vector<Image>         &images)
+{
+  /* generate procedures */
+  printf ("\n/* procedure classes */\n");
+  printf ("namespace Procedure {\n");
+  for (vector<const Method*>::const_iterator ppi = procs.begin(); ppi != procs.end(); ppi++)
+    {
+      printf ("\n");
+      const Method *mi = *ppi;  // FIXME: things containing maps shouldn't be constant
+      const Map<std::string, IString> &infos = mi->infos;
+      string ptName = string ("") + TypeName (mi->name);
+      string ptFullName = g_type_name_to_sname ((outer_nspace + "-" + ptName).c_str());
+      bool is_void = mi->result.type == "void";
+      if (parser.fromInclude (mi->name))
+        continue;
+      
+      /* skeleton class declaration + type macro */
+      printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_PROC_TYPE (%s))\n",
+              cUC_NAME (outer_nspace), cUC_NAME (TypeName (mi->name)), ptName.c_str());
+      printf ("BSE_CXX_DECLARE_PROC (%s);\n", ptName.c_str());
+      printf ("class %s {\n", ptName.c_str());
+      
+      /* class Info strings */
+      /* pixstream(), this is a bit of a hack, we make it a template rather than
+       * a normal inline method to avoid huge images in debugging code
+       */
+      string icon = infos.get("icon");
+      string pstream = "NULL";
+      if (icon != "")
+        {
+          printf ("  template<bool> static inline const unsigned char* pixstream();\n");
+          images.push_back (Image (include_relative (icon, mi->file),
+                                   "template<bool> const unsigned char*\n" +
+                                   ptName +
+                                   "::pixstream()"));
+          pstream = "pixstream<true>()";
+        }
+      printf ("public:\n");
+      printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
+      printf ("  static inline const char* options   () { return %s; }\n", infos.get("options").escaped().c_str());
+      printf ("  static inline const char* category  () { static const char *c = NULL; \n");
+      printf ("    const char *root_category = %s, *category = %s;\n",
+              infos.get("root_category").escaped().c_str(), infos.get("category").escaped().c_str());
+      printf ("    if (!c && category[0]) c = g_intern_strconcat (root_category && root_category[0] ? root_category : \"/Proc\",\n");
+      printf ("                                    category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
+      printf ("    return c; }\n");
+      printf ("  static inline const char* blurb     () { return %s; }\n", infos.get("blurb").escaped().c_str());
+      printf ("  static inline const char* authors   () { return %s; }\n", infos.get("authors").escaped().c_str());
+      printf ("  static inline const char* license   () { return %s; }\n", infos.get("license").escaped().c_str());
+      printf ("  static inline const char* type_name () { return \"%s\"; }\n", ptFullName.c_str());
+      
+      /* return type */
+      printf ("  static %s exec (", TypeRef (mi->result.type));
+      /* args */
+      for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
+        {
+          if (ai != mi->params.begin())
+            printf (", ");
+          printf ("%s %s", TypeRef (ai->type), ai->name.c_str());
+        }
+      printf (");\n");
+      
+      /* marshal */
+      printf ("  static BseErrorType marshal (BseProcedureClass *procedure,\n"
+              "                               const GValue      *in_values,\n"
+              "                               GValue            *out_values)\n");
+      printf ("  {\n");
+      printf ("    try {\n");
+      if (!is_void)
+        printf ("      %s __return_value =\n", TypeRef (mi->result.type));
+      printf ("        exec (\n");
+      int i = 0;
+      for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
+        printf ("              %s (in_values + %u)%c\n", func_value_get_param (*pi, TypeRef (pi->type)).c_str(), i++,
+                &(*pi) == &(mi->params.back()) ? ' ' : ',');
+      printf ("             );\n");
+      if (!is_void)
+        printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result));
+      if (!is_void && func_param_return_free (mi->result) != "")
+        printf ("      if (__return_value) %s (__return_value);\n", func_param_return_free (mi->result).c_str());
+      printf ("    } catch (std::exception &e) {\n");
+      printf ("      sfi_debug (\"%%s: %%s\", \"%s\", e.what());\n", ptName.c_str());
+      printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
+      printf ("    } catch (...) {\n");
+      printf ("      sfi_debug (\"%%s: %%s\", \"%s\", \"unknown exception\");\n", ptName.c_str());
+      printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
+      printf ("    }\n");
+      printf ("    return BSE_ERROR_NONE;\n");
+      printf ("  }\n");
+      
+      /* init */
+      printf ("  static void init (BseProcedureClass *proc,\n"
+              "                    GParamSpec       **in_pspecs,\n"
+              "                    GParamSpec       **out_pspecs)\n");
+      printf ("  {\n");
+      for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
+        printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
+      if (!is_void)
+        printf ("    *(out_pspecs++) = %s;\n", pspec_constructor (mi->result).c_str());
+      printf ("  }\n");
+      
+      /* done */
+      printf ("};\n"); /* finish: class ... { }; */
+    }
+  printf ("\n}; // Procedure\n");
+}
 
 void
 CodeGeneratorModule::run ()
@@ -701,106 +802,8 @@ CodeGeneratorModule::run ()
     procs.push_back (&(*mi));
 
   /* generate procedures */
-  for (vector<const Method*>::const_iterator ppi = procs.begin(); ppi != procs.end(); ppi++)
-    {
-      const Method *mi = *ppi;  // FIXME: things containing maps shouldn't be constant
-      const Map<std::string, IString> &infos = mi->infos;
-      string ptName = string ("Procedure_") + TypeName (mi->name);
-      string ptFullName = canonify_name (nspace + ptName);
-      bool is_void = mi->result.type == "void";
-      if (parser.fromInclude (mi->name))
-        continue;
-      
-      /* skeleton class declaration + type macro */
-      printf ("#define %s_TYPE_%s (BSE_CXX_DECLARED_PROC_TYPE (%s))\n",
-              cUC_NAME (nspace), cUC_NAME (TypeName (mi->name)), ptName.c_str());
-      printf ("BSE_CXX_DECLARE_PROC (%s);\n", ptName.c_str());
-      printf ("class %s {\n", ptName.c_str());
+  generate_procedures (nspace, procs, images);
 
-      /* class Info strings */
-      /* pixstream(), this is a bit of a hack, we make it a template rather than
-       * a normal inline method to avoid huge images in debugging code
-       */
-      string icon = infos.get("icon");
-      string pstream = "NULL";
-      if (icon != "")
-        {
-          printf ("  template<bool> static inline const unsigned char* pixstream();\n");
-          images.push_back (Image (include_relative (icon, mi->file),
-                                   "template<bool> const unsigned char*\n" +
-                                   ptName +
-                                   "::pixstream()"));
-          pstream = "pixstream<true>()";
-        }
-      printf ("public:\n");
-      printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* options   () { return %s; }\n", infos.get("options").escaped().c_str());
-      printf ("  static inline const char* category  () { static const char *c = NULL; \n");
-      printf ("    const char *root_category = %s, *category = %s;\n",
-              infos.get("root_category").escaped().c_str(), infos.get("category").escaped().c_str());
-      printf ("    if (!c && category[0]) c = g_intern_strconcat (root_category && root_category[0] ? root_category : \"/Proc\",\n");
-      printf ("                                    category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
-      printf ("    return c; }\n");
-      printf ("  static inline const char* blurb     () { return %s; }\n", infos.get("blurb").escaped().c_str());
-      printf ("  static inline const char* authors   () { return %s; }\n", infos.get("authors").escaped().c_str());
-      printf ("  static inline const char* license   () { return %s; }\n", infos.get("license").escaped().c_str());
-      printf ("  static inline const char* type_name () { return \"%s\"; }\n", ptFullName.c_str());
-      
-      /* return type */
-      printf ("  static %s exec (", TypeRef (mi->result.type));
-      /* args */
-      for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
-        {
-          if (ai != mi->params.begin())
-            printf (", ");
-          printf ("%s %s", TypeRef (ai->type), ai->name.c_str());
-        }
-      printf (");\n");
-      
-      /* marshal */
-      printf ("  static BseErrorType marshal (BseProcedureClass *procedure,\n"
-              "                               const GValue      *in_values,\n"
-              "                               GValue            *out_values)\n");
-      printf ("  {\n");
-      printf ("    try {\n");
-      if (!is_void)
-        printf ("      %s __return_value =\n", TypeRef (mi->result.type));
-      printf ("        exec (\n");
-      int i = 0;
-      for (vector<Param>::const_iterator pi = mi->params.begin(); pi != mi->params.end(); pi++)
-        printf ("              %s (in_values + %u)%c\n", func_value_get_param (*pi, TypeRef (pi->type)).c_str(), i++,
-                &(*pi) == &(mi->params.back()) ? ' ' : ',');
-      printf ("             );\n");
-      if (!is_void)
-        printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result));
-      if (!is_void && func_param_return_free (mi->result) != "")
-        printf ("      if (__return_value) %s (__return_value);\n", func_param_return_free (mi->result).c_str());
-      printf ("    } catch (std::exception &e) {\n");
-      printf ("      sfi_debug (\"%%s: %%s\", \"%s\", e.what());\n", ptName.c_str());
-      printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
-      printf ("    } catch (...) {\n");
-      printf ("      sfi_debug (\"%%s: %%s\", \"%s\", \"unknown exception\");\n", ptName.c_str());
-      printf ("      return BSE_ERROR_PROC_EXECUTION;\n");
-      printf ("    }\n");
-      printf ("    return BSE_ERROR_NONE;\n");
-      printf ("  }\n");
-
-      /* init */
-      printf ("  static void init (BseProcedureClass *proc,\n"
-              "                    GParamSpec       **in_pspecs,\n"
-              "                    GParamSpec       **out_pspecs)\n");
-      printf ("  {\n");
-      for (vector<Param>::const_iterator ai = mi->params.begin(); ai != mi->params.end(); ai++)
-        printf ("    *(in_pspecs++) = %s;\n", pspec_constructor (*ai).c_str());
-          if (!is_void)
-        printf ("    *(out_pspecs++) = %s;\n", pspec_constructor (mi->result).c_str());
-      printf ("  }\n");
-      
-      /* done */
-      printf ("};\n"); /* finish: class ... { }; */
-    }
-  printf ("\n");
-  
   /* image method implementations */
   for (vector<Image>::const_iterator ii = images.begin(); ii != images.end(); ii++)
     {

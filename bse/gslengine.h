@@ -168,30 +168,31 @@ void		gsl_trans_dismiss	(GslTrans	 *trans);
 void		gsl_transact		(GslJob		 *job,
 					 ...);
 GslJob*		gsl_job_request_reply	(GslModule	 *module,
-					 GslReplyFunc	  reply_func,	/* UserThread */
-					 gpointer	  data);
+					 gpointer	  data,
+					 GslReplyFunc	  reply_func);	/* UserThread */
 GslJob*		gsl_job_flow_access	(GslModule	 *module,
 					 guint64	  tick_stamp,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
-					 GslFreeFunc	  free_func);	/* UserThread */
+					 GslReplyFunc	  reply_func);	/* UserThread */
 GslJob*		gsl_job_boundary_access	(GslModule	 *module,
 					 guint64	  tick_stamp,
 					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
-					 GslFreeFunc	  free_func);	/* UserThread */
+					 GslReplyFunc     reply_func);	/* UserThread */
 
 
 /* --- module utilities (EngineThread functions) --- */
-gfloat*	      gsl_engine_const_values   (gfloat		 value);
-gpointer      gsl_module_process_reply  (GslModule      *module);
+gfloat*	      gsl_engine_const_values   (gfloat		  value);
+gpointer      gsl_module_peek_reply     (GslModule       *module);
+gpointer      gsl_module_process_reply  (GslModule       *module);
 
 
 /* --- initialization & main loop --- */
-void	        gsl_engine_init		(gboolean	 threaded,
-					 guint		 block_size,
-					 guint		 sample_freq,
-					 guint		 sub_sample_mask);
+void	        gsl_engine_init		(gboolean	  threaded,
+					 guint		  block_size,
+					 guint		  sample_freq,
+					 guint		  sub_sample_mask);
 typedef struct
 {
   glong		timeout;
@@ -210,7 +211,7 @@ gboolean      gsl_engine_has_garbage		 (void);
 void	      gsl_engine_garbage_collect	 (void);
 void	      gsl_engine_wait_on_trans		 (void);
 guint64	      gsl_engine_tick_stamp_from_systime (guint64	systime);
-#define	      gsl_engine_block_size()		 ((const guint)	gsl_externvar_bsize + 0)
+#define	      gsl_engine_block_size()		 ((const guint)	gsl_externvar_block_size + 0)
 #define	      gsl_engine_sample_freq()		 ((const guint)	gsl_externvar_sample_freq + 0)
 #define	      gsl_engine_sub_sample_mask()	 ((const guint)	gsl_externvar_sub_sample_mask + 0)
 #define	      gsl_engine_sub_sample_steps()	 ((const guint)	gsl_externvar_sub_sample_steps + 0)
@@ -219,7 +220,7 @@ guint64	      gsl_engine_tick_stamp_from_systime (guint64	systime);
 
 
 /*< private >*/
-extern guint	gsl_externvar_bsize;
+extern guint	gsl_externvar_block_size;
 extern guint	gsl_externvar_sample_freq;
 extern guint	gsl_externvar_sub_sample_mask;
 extern guint	gsl_externvar_sub_sample_steps;

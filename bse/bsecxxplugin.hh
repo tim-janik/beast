@@ -105,28 +105,28 @@ EnumValue (int         int_value,
   (bse_type_keeper__9##ProcType.get_type ())
 #define BSE_CXX_DECLARE_PROC(ProcType)                                  \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__9##ProcType;
-#define BSE_CXX_REGISTER_PROC(ProcType)                                         \
+#define BSE_CXX_REGISTER_PROCEDURE(ProcType)                                    \
   template<class C> static ::BseExportNode* bse_export_node ();                 \
   template<> static ::BseExportNode*                                            \
-  bse_export_node<Procedure_##ProcType> ()                                      \
+  bse_export_node<Procedure::ProcType> ()                                       \
   {                                                                             \
     static ::BseExportNodeProc pnode = {                                        \
       { NULL, ::BSE_EXPORT_NODE_PROC, NULL, },                                  \
-      0, Procedure_##ProcType::init, Procedure_##ProcType::marshal,             \
+      0, Procedure::ProcType::init, Procedure::ProcType::marshal,               \
     };                                                                          \
     if (!pnode.node.name) {                                                     \
-      pnode.node.name = Procedure_##ProcType::type_name();                      \
-      pnode.node.options = Procedure_##ProcType::options();                     \
-      pnode.node.category = Procedure_##ProcType::category();                   \
-      pnode.node.authors = Procedure_##ProcType::authors();                     \
-      pnode.node.license = Procedure_##ProcType::license();                     \
-      pnode.node.pixstream = Procedure_##ProcType::pixstream();                 \
-      pnode.node.blurb = Procedure_##ProcType::blurb();                         \
+      pnode.node.name = Procedure::ProcType::type_name();                       \
+      pnode.node.options = Procedure::ProcType::options();                      \
+      pnode.node.category = Procedure::ProcType::category();                    \
+      pnode.node.authors = Procedure::ProcType::authors();                      \
+      pnode.node.license = Procedure::ProcType::license();                      \
+      pnode.node.pixstream = Procedure::ProcType::pixstream();                  \
+      pnode.node.blurb = Procedure::ProcType::blurb();                          \
     }                                                                           \
     return &pnode.node;                                                         \
   }                                                                             \
   ::Bse::ExportTypeKeeper                                                       \
-         bse_type_keeper__9##ProcType (bse_export_node<Procedure_##ProcType>,   \
+         bse_type_keeper__9##ProcType (bse_export_node<Procedure::ProcType>,    \
                                    &BSE_CXX_EXPORT_IDENTITY);
 
 

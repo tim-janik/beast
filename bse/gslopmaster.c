@@ -722,6 +722,14 @@ master_update_node_state (EngineNode *node,
 }
 
 gpointer
+gsl_module_peek_reply (GslModule *module)
+{
+  EngineNode *node = ENGINE_NODE (module);
+  g_return_val_if_fail (ENGINE_NODE_IS_SCHEDULED (node), NULL);
+  return node->reply_jobs ? node->reply_jobs->data : NULL;
+}
+
+gpointer
 gsl_module_process_reply (GslModule *module)
 {
   EngineNode *node = ENGINE_NODE (module);

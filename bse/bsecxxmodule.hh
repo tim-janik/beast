@@ -53,7 +53,7 @@ public:
 
 class SynthesisModule {
   template<class T, typename P> class AccessorP1; /* 1-argument member function closure */
-  void          *engine_module;
+  GslModule     *engine_module;
   const IStream *istreams;
   const JStream *jstreams;
   const OStream *ostreams;
@@ -70,6 +70,9 @@ public:
                                              const float *values);
   const float*              const_values    (float  value);
   inline const unsigned int mix_freq        () const;
+  inline const unsigned int block_size      () const;
+  inline guint64            tick_stamp      ();
+  inline GslModule*         gslmodule       ();
   static inline int         dtoi            (double d) { return gsl_dtoi (d); }
   static inline int         ftoi            (float  f) { return gsl_ftoi (f); }
   /* member function closure base */
@@ -87,6 +90,7 @@ public:
 
 class Effect : public CxxBase {
 public:
+  /* BseObject functionality */
   explicit                  Effect               ();
   void                      set_property         (guint            prop_id,
                                                   const Value     &value,
@@ -94,10 +98,25 @@ public:
   void                      get_property         (guint            prop_id,
                                                   Value           &value,
                                                   GParamSpec      *pspec);
+  /* BseSource accessors */
+  bool          is_prepared()                   { return BSE_SOURCE_PREPARED (gobject()); }
+  guint         n_ichannels()                   { return BSE_SOURCE_N_ICHANNELS (gobject()); }
+  guint         n_joint_ichannels()             { return BSE_SOURCE_N_JOINT_ICHANNELS (gobject()); }
+  guint         n_ochannels()                   { return BSE_SOURCE_N_OCHANNELS (gobject()); }
+  bool          is_joint_ichannel (guint i)     { return BSE_SOURCE_IS_JOINT_ICHANNEL (gobject(), i); }
+  guint         ichannels_istream (guint i)     { return BSE_SOURCE_ICHANNEL_ISTREAM (gobject(), i); }
+  guint         ichannels_jstream (guint i)     { return BSE_SOURCE_ICHANNEL_JSTREAM (gobject(), i); }
+  guint         ochannels_ostream (guint i)     { return BSE_SOURCE_OCHANNEL_OSTREAM (gobject(), i); }
+  const gchar*  ichannel_ident (guint i)        { return BSE_SOURCE_ICHANNEL_IDENT (gobject(), i); }
+  const gchar*  ichannel_name (guint i)         { return BSE_SOURCE_ICHANNEL_NAME (gobject(), i); }
+  const gchar*  ichannel_blurb (guint i)        { return BSE_SOURCE_ICHANNEL_BLURB (gobject(), i); }
+  const gchar*  ochannel_ident (guint i)        { return BSE_SOURCE_OCHANNEL_IDENT (gobject(), i); }
+  const gchar*  ochannel_name (guint i)         { return BSE_SOURCE_OCHANNEL_NAME (gobject(), i); }
+  const gchar*  ochannel_blurb (guint i)        { return BSE_SOURCE_OCHANNEL_BLURB (gobject(), i); }
   virtual SynthesisModule*  create_module        (unsigned int     context_handle,
                                                   GslTrans        *trans) = 0;
-  virtual SynthesisModule::Accessor*
-  module_configurator  () = 0;
+  virtual SynthesisModule::
+  Accessor*                 module_configurator  () = 0;
   void                      update_modules       (GslTrans        *trans = NULL);
   
   static void               class_init           (CxxBaseClass    *klass);
@@ -135,10 +154,30 @@ ObjectType::module_configurator()                                               
 
 
 /* --- implementation details --- */
-extern "C" { extern guint gsl_externvar_sample_freq; }
+namespace externC { extern "C" {
+extern guint gsl_externvar_sample_freq;
+extern guint gsl_externvar_block_size;
+extern guint64 gsl_module_tick_stamp (GslModule*);
+} }
+inline GslModule*
+SynthesisModule::gslmodule ()
+{
+  return engine_module;
+}
 inline const unsigned int
-SynthesisModule::mix_freq () const {
-  return gsl_externvar_sample_freq;
+SynthesisModule::mix_freq () const
+{
+  return externC::gsl_externvar_sample_freq;
+}
+inline const unsigned int
+SynthesisModule::block_size () const
+{
+  return externC::gsl_externvar_block_size;
+}
+inline guint64
+SynthesisModule::tick_stamp ()
+{
+  return externC::gsl_module_tick_stamp (gslmodule());
 }
 inline const IStream&
 SynthesisModule::istream (unsigned int istream_index) const

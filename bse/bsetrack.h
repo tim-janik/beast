@@ -76,6 +76,8 @@ void	bse_track_add_modules		(BseTrack		*self,
 					 BseContainer		*container,
                                          BseMidiReceiver        *midi_receiver,
 					 BseSource		*merger);
+void    bse_track_connect_sniffer       (BseTrack               *self,
+                                         BseSource              *source);
 void	bse_track_remove_modules	(BseTrack		*self,
 					 BseContainer		*container);
 void	bse_track_clone_voices		(BseTrack		*self,

@@ -22,6 +22,7 @@
 #include <bse/bsepart.h>
 #include <bse/bsetrack.h>
 #include "bsemidireceiver.h"
+#include "bseundostack.h"
 #include "bseproject.h"
 #include "gslcommon.h"
 #include "gslengine.h"
@@ -215,6 +216,43 @@ METHOD (BseSong, find-track-for-part) {
 
   /* set output parameters */
   bse_value_set_object (out_values++, track);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, create-sniffer) {
+  HELP  = "Create a new Part in a Song";
+  IN    = bse_param_spec_object ("song", "Song", NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
+  IN    = bse_param_spec_object ("track", "Track", NULL,
+				 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_object ("sniffer", "Sniffer", NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self   = bse_value_get_object (in_values++);
+  BseTrack *track = bse_value_get_object (in_values++);
+  BseUndoStack *ustack;
+  BseSource *child;
+
+  /* check parameters */
+  if (!BSE_IS_SONG (self) || !BSE_IS_TRACK (track) || BSE_ITEM (track)->parent != (BseItem*) self)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  ustack = bse_item_undo_open (self, "create-part");
+  bse_undo_stack_ignore_steps (ustack);
+  child = bse_container_new_child (BSE_CONTAINER (self), g_type_from_name ("BseSniffer"), NULL);
+  bse_item_set_internal (child, TRUE);
+  bse_track_connect_sniffer (track, child);
+  bse_undo_stack_unignore_steps (ustack);
+  bse_item_undo_close (ustack);
+  
+  /* set output parameters */
+  bse_value_set_object (out_values++, child);
   
   return BSE_ERROR_NONE;
 }

@@ -73,6 +73,9 @@ G_BEGIN_DECLS
 #define	g_object_set_data_full(o,k,d,f)	  g_object_set_data_full ((gpointer) o, k, d, (gpointer) f)
 #define	g_object_steal_data(o,k)	  g_object_steal_data ((gpointer) o, k)
 #endif  /* !__cplusplus */
+void g_object_disconnect_any (gpointer object,
+                              gpointer function,
+                              gpointer data); /* workaorund for g_object_disconnect() */
 
 
 /* --- string functions --- */

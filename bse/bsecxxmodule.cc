@@ -97,8 +97,8 @@ void
 SynthesisModule::ostream_set (unsigned int ostream_index,
                               const float *values)
 {
-  GslModule *gslmodule = static_cast<GslModule*> (engine_module);
-  gslmodule->ostreams[ostream_index].values = const_cast<float*> (values);
+  GslModule *m = gslmodule();
+  m->ostreams[ostream_index].values = const_cast<float*> (values);
 }
 
 const float*

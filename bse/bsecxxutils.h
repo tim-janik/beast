@@ -26,6 +26,23 @@
 
 namespace Bse {
 
+/* --- Procedure namespace work arounds --- */
+namespace Procedure {
+typedef SfiBool     Bool;
+typedef SfiInt      Int;
+typedef SfiNum      Num;
+typedef SfiTime     Time;
+typedef SfiNote     Note;
+typedef SfiReal     Real;
+typedef SfiChoice   Choice;
+typedef std::string String;  /* not using SfiString resp. gchar* here */
+typedef SfiBBlock   BBlock;
+typedef SfiFBlock   FBlock;
+typedef SfiSeq      Seq;
+typedef SfiRec      Rec;
+typedef SfiProxy    Proxy;
+};
+
 /* --- type alias frequently used standard lib things --- */
 typedef std::string String;
 

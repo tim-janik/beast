@@ -40,7 +40,20 @@ protected:
   std::string func_value_dup_param (const Param &param);
   std::string func_param_return_free (const Param &param);
   std::string func_param_free (const Param &param);
-
+  
+  struct Image {
+    std::string file;
+    std::string method;
+    Image (const std::string &f,
+           const std::string &m)
+      : file (f), method (m)
+    {}
+  };
+  
+  void  generate_procedures (const std::string          &outer_nspace,
+                             std::vector<const Method*> &procs,
+                             std::vector<Image>         &images);
+  
 public:
   CodeGeneratorModule (const Parser &parser) : CodeGeneratorCBase (parser) {
   }

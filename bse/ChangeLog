@@ -1,3 +1,34 @@
+Tue Dec 30 23:48:17 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecxxmodule.[hc]*: use GslModule type, strip unnecessary casts,
+	added block_size(), tick_stamp() and gslmodule() accessors.
+	added wrappers around BseSource accessor macros.
+
+	* bsecxxplugin.[hc]*: changed procedure registration macro to
+	BSE_CXX_REGISTER_PROCEDURE() and adapted it to put everything into the
+	Procedure namespace.
+
+	* bsecxxutils.[hc]*: provided convenience typedefs to ease procedure
+	writing in the Procedure namespace.
+
+	* bsemidireceiver.cc: removed casts.
+
+	* bsesniffer.[hc]*: implemented stereo sniffing routine, as well as
+	the corresponding procedures and signal + emission thereof.
+
+	* bsesong.proc: added bse-song-create-sniffer() to create a sniffer
+	for a specific track.
+
+	* bsesource.c: removed unnecessary casts.
+
+	* bsetrack.[hc]: added bse_track_connect_sniffer().
+
+	* gslopmaster.c:
+	* gslengine.[hc]: made gsl_job_flow_access() and gsl_job_boundary_access()
+	take a GslReplyFunc() as free function, made gsl_job_request_reply()
+	match their argument ordering. renamed gsl_externvar_block_size.
+	provided gsl_module_peek_reply().
+
 Mon Dec 29 21:00:23 2003  Tim Janik  <timj@gtk.org>
 
 	* bsesniffer.idl:

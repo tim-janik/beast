@@ -84,7 +84,7 @@ $(OBJECTS): sficonfig.h
 # programs to build
 #
 # source files
-common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-module.cc sfidl-cxx.cc glib-extra.c
+common_idl_sources = sfidl-module.cc sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-cxx.cc glib-extra.c
 
 noinst_PROGRAMS = sfidl testsfi
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)

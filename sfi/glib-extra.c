@@ -21,6 +21,24 @@
 #include "glib-extra.h"
 
 
+void
+g_object_disconnect_any (gpointer object,
+                         gpointer function,
+                         gpointer data)
+{
+  g_return_if_fail (G_IS_OBJECT (object));
+  g_return_if_fail (function != NULL);
+  /* FIXME: the only reason we have this function is that
+   * g_object_disconnect() throws a warning for an any-signal::
+   * disconnection that does not exist (it may do so for all-signals
+   * instead).
+   */
+  g_signal_handlers_disconnect_matched (object, G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA,
+                                        0, 0, 0,
+                                        function, data);
+}
+
+
 /* --- string functions --- */
 gchar**
 g_straddv (gchar      **str_array,

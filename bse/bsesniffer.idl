@@ -31,7 +31,8 @@ class Sniffer : Effect {
   // hidden core plugin:
   Info    category  = _("/Misc/Sniffer");
   Info    blurb     = _("BseSniffer provides the neccessary data to implement client side signal scopes.");
-  IStream audio_in  = (_("Audio In"), _("Audio input"));
+  IStream audio_in1 = (_("Left Audio In"), "");
+  IStream audio_in2 = (_("Right Audio In"), "");
   group _("Snapshooting") {
     Bool  ctrl_mul  = Bool (_("Multiply Controls"),
                             _("Multiply the two control inputs with each other, "
@@ -39,22 +40,26 @@ class Sniffer : Effect {
                             TRUE, STANDARD);
     Real  alevel1    = Perc (_("Input 1 [%]"), _("Attenuate the level of audio input 1"), 100, STANDARD);
   };
-  signal notify_pcm_data (Num   num,
-                          Real  f,
-                          FBlock fb,
-                          Int   i)
+  signal notify_pcm_data (Num    tick_stamp,
+                          FBlock left_samples,
+                          FBlock right_samples)
   {
     Info    authors   = "Tim Janik";
     Info    license   = _("GNU General Public License");
   }
 };
 
-// test procedure
-Int sniffer_start_shooting (Sniffer obj, Int i)
-{
-  // hidden core plugin: Info    category  = _("/Misc/Start Sniffer");
-  Info    authors   = "Tim Janik";
-  Info    license   = _("GNU General Public License");
-}
+// test enum
+choice SnifferType {
+  REQUIRE_SINGLE_INPUT,
+  PICK_FIRST_INPUT,
+  AVERAGE_INPUTS,
+};
+
+void sniffer_request_samples (Sniffer     obj,
+                              Num         tick_stamp,
+                              Int         n_samples,
+                              SnifferType stype);
+Num  sniffer_get_tick_stamp  (Sniffer obj);
 
 };

@@ -480,8 +480,8 @@ gsl_job_access (GslModule    *module,
  */
 GslJob*
 gsl_job_request_reply (GslModule    *module,
-                       GslReplyFunc  reply_func,
-                       gpointer      data)
+                       gpointer      data,
+                       GslReplyFunc  reply_func)
 {
   GslJob *job;
   EngineReplyJob *rjob;
@@ -524,7 +524,7 @@ gsl_job_flow_access (GslModule    *module,
 		     guint64       tick_stamp,
 		     GslAccessFunc access_func,
 		     gpointer      data,
-		     GslFreeFunc   free_func)
+		     GslReplyFunc  reply_func)
 {
   GslJob *job;
   EngineTimedJob *tjob;
@@ -535,7 +535,7 @@ gsl_job_flow_access (GslModule    *module,
   g_return_val_if_fail (access_func != NULL, NULL);
   
   tjob = g_new0 (EngineTimedJob, 1);
-  tjob->reply_func = (GslReplyFunc) free_func;
+  tjob->reply_func = reply_func;
   tjob->data = data;
   tjob->tick_stamp = tick_stamp;
   tjob->access_func = access_func;
@@ -569,7 +569,7 @@ gsl_job_boundary_access (GslModule    *module,
                          guint64       tick_stamp,
                          GslAccessFunc access_func,
                          gpointer      data,
-                         GslFreeFunc   free_func)
+                         GslReplyFunc  reply_func)
 {
   GslJob *job;
   EngineTimedJob *tjob;
@@ -580,7 +580,7 @@ gsl_job_boundary_access (GslModule    *module,
   g_return_val_if_fail (access_func != NULL, NULL);
   
   tjob = g_new0 (EngineTimedJob, 1);
-  tjob->reply_func = (GslReplyFunc) free_func;
+  tjob->reply_func = reply_func;
   tjob->data = data;
   tjob->tick_stamp = tick_stamp;
   tjob->access_func = access_func;
@@ -1148,7 +1148,7 @@ static gboolean		gsl_engine_initialized = FALSE;
 static gboolean		gsl_engine_threaded = FALSE;
 static SfiThread       *master_thread = NULL;
 static EngineMasterData master_data;
-guint			gsl_externvar_bsize = 0;
+guint			gsl_externvar_block_size = 0;
 guint			gsl_externvar_sample_freq = 0;
 guint			gsl_externvar_sub_sample_mask = 0;
 guint			gsl_externvar_sub_sample_steps = 0;
@@ -1180,7 +1180,7 @@ gsl_engine_init (gboolean run_threaded,
   
   gsl_engine_initialized = TRUE;
   gsl_engine_threaded = run_threaded;
-  gsl_externvar_bsize = block_size;
+  gsl_externvar_block_size = block_size;
   gsl_externvar_sample_freq = sample_freq;
   gsl_externvar_sub_sample_mask = sub_sample_mask << 2;	/* shift out sizeof (float) alignment */
   gsl_externvar_sub_sample_steps = sub_sample_mask + 1;

@@ -1,3 +1,14 @@
+Tue Dec 30 23:37:29 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added g_object_disconnect_any() as a workaround for
+	g_object_disconnect() barfing on missing signal connections.
+
+	* sfidl-module.[hc]: seperated procedure generation.
+	changed procedure generation namespace. the client side procedure
+	implementations look much more intuitive now, if written inside
+	the Procedure namespace. fixed Procedure type name to follow BSE
+	conventions.
+
 Mon Dec 29 21:16:07 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: s/canonify_type/canonify_name/. made more functions
