@@ -1,3 +1,12 @@
+Sat Oct 30 16:20:10 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: depend on gtk+-2.4.11, as earlier versions have severe
+	resizing bugs triggered by beast.
+
+	* beast-gtk/gxk/gxkutils.c (_gxk_init_utils): removed <=gtk+-2.4.10 
+	resizing work-around, since it may triggerer endless loops under
+	certain circumstances.
+
 Sat Oct 30 13:22:23 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/plugin-devel.texi: introduced :db-value:, :db-volume: and

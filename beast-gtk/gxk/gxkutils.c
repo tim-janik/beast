@@ -87,57 +87,6 @@ ehook_container_focus_child_set (GSignalInvocationHint *ihint,
   return TRUE;
 }
 
-static const int GTK_REQUEST_NEEDED = 1 << 13;       // PRIVATE_GTK_REQUEST_NEEDED
-static const int GTK_ALLOC_NEEDED   = 1 << 12;       // PRIVATE_GTK_ALLOC_NEEDED
-static gboolean
-ehook_widget_size_allocate (GSignalInvocationHint *ihint,
-                            guint                  n_param_values,
-                            const GValue          *param_values,
-                            gpointer               data)
-{
-  GtkWidget *widget = g_value_get_object (param_values + 0);
-  /* half-backed workaround for gtk_widget_size_allocate() not
-   * honouring re-queued resizes
-   */
-  if (widget->private_flags & GTK_REQUEST_NEEDED)
-    gtk_widget_queue_resize (widget);
-  return TRUE;
-}
-static void
-fixup_gtk24_size_allocate (void)
-{
-#if GTK_CHECK_VERSION (2, 4, 0) && !GTK_CHECK_VERSION (2, 5, 5) // GTKFIX
-  GtkWidget *widget = g_object_new (GTK_TYPE_ALIGNMENT, "visible", TRUE, NULL);
-  g_object_ref (widget);
-  gtk_object_sink (GTK_OBJECT (widget));
-  gtk_widget_queue_resize (widget);
-  if ((widget->private_flags & GTK_REQUEST_NEEDED) &&
-      (widget->private_flags & GTK_ALLOC_NEEDED))
-    {
-      gtk_widget_size_request (widget, NULL);
-      if (!(widget->private_flags & GTK_REQUEST_NEEDED) &&
-          (widget->private_flags & GTK_ALLOC_NEEDED))
-        {
-          GtkAllocation allocation = { 0, 0, 10, 10 };
-          gtk_widget_size_allocate (widget, &allocation);
-          if (!(widget->private_flags & GTK_REQUEST_NEEDED) &&
-              !(widget->private_flags & GTK_ALLOC_NEEDED))
-            {
-              gtk_widget_queue_resize (widget);
-              if ((widget->private_flags & GTK_REQUEST_NEEDED) &&
-                  (widget->private_flags & GTK_ALLOC_NEEDED))
-                {
-                  g_signal_add_emission_hook (g_signal_lookup ("size-allocate", GTK_TYPE_WIDGET), 0,
-                                              ehook_widget_size_allocate, NULL, NULL);
-                  
-                }
-            }
-        }
-    }
-#endif
-  (void) ehook_widget_size_allocate; /* silence compiler */
-}
-
 void
 _gxk_init_utils (void)
 {
@@ -159,9 +108,6 @@ _gxk_init_utils (void)
   g_type_class_unref (g_type_class_ref (GTK_TYPE_CONTAINER));   /* create static class */
   g_signal_add_emission_hook (g_signal_lookup ("set-focus-child", GTK_TYPE_CONTAINER), 0,
                               ehook_container_focus_child_set, NULL, NULL);
-
-  /* workaround gtk_widget_size_allocate() not honouring NEED_REQUEST */
-  fixup_gtk24_size_allocate();
 }
 
 /**
