@@ -51,7 +51,7 @@ static void     bse_wave_osc_get_property       (GObject                *object,
                                                  guint                   param_id,
                                                  GValue                 *value,
                                                  GParamSpec             *pspec);
-static BseProxySeq* bse_wave_osc_list_proxies   (BseItem                *item,
+static BseItemSeq* bse_wave_osc_list_items      (BseItem                *item,
                                                  guint                   param_id,
                                                  GParamSpec             *pspec);
 static void     bse_wave_osc_context_create     (BseSource              *source,
@@ -120,7 +120,7 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
   gobject_class->finalize = bse_wave_osc_finalize;
   gobject_class->dispose = bse_wave_osc_dispose;
   
-  item_class->list_proxies = bse_wave_osc_list_proxies;
+  item_class->list_items = bse_wave_osc_list_items;
   
   source_class->context_create = bse_wave_osc_context_create;
   
@@ -180,13 +180,13 @@ bse_wave_osc_init (BseWaveOsc *self)
   self->config.cfreq = 440.;
 }
 
-static BseProxySeq*
-bse_wave_osc_list_proxies (BseItem    *item,
-                           guint       param_id,
-                           GParamSpec *pspec)
+static BseItemSeq*
+bse_wave_osc_list_items (BseItem    *item,
+                         guint       param_id,
+                         GParamSpec *pspec)
 {
   BseWaveOsc *self = BSE_WAVE_OSC (item);
-  BseProxySeq *pseq = bse_proxy_seq_new ();
+  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
       BseProject *project;
@@ -196,14 +196,14 @@ bse_wave_osc_list_proxies (BseItem    *item,
         {
           BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
           
-          bse_item_gather_proxies_typed (BSE_ITEM (wrepo), pseq, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
+          bse_item_gather_items_typed (BSE_ITEM (wrepo), iseq, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
         }
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return pseq;
+  return iseq;
 }
 
 static void

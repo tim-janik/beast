@@ -483,7 +483,7 @@ METHOD (BseProject, match-items-by-uname) {
                             NULL, SFI_PARAM_STANDARD);
   IN    = sfi_pspec_string ("uname", NULL, NULL,
                             NULL, SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_boxed ("item_list", "Item List", NULL, BSE_TYPE_PROXY_SEQ, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("item_list", "Item List", NULL, BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
@@ -494,25 +494,25 @@ METHOD (BseProject, match-items-by-uname) {
   const gchar *string = sfi_value_get_string (in_values++);
   GType type          = tname ? g_type_from_name (tname) : 0;
   GList *list, *free_list;
-  BseProxySeq *pseq;
+  BseItemSeq *iseq;
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project) || !string || !g_type_is_a (type, BSE_TYPE_ITEM))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  pseq = bse_proxy_seq_new ();
+  iseq = bse_item_seq_new ();
   free_list = bse_objects_list_by_uname (type, string);
   for (list = free_list; list; list = list->next)
     if (bse_item_get_project (list->data) == project)
       {
-        bse_proxy_seq_append (pseq, BSE_OBJECT_ID (list->data));
+        bse_item_seq_append (iseq, list->data);
         break;
       }
   g_list_free (free_list);
   
   /* set output parameters */
-  bse_value_take_boxed (out_values++, pseq);
+  bse_value_take_boxed (out_values++, iseq);
   
   return BSE_ERROR_NONE;
 }
@@ -521,14 +521,14 @@ METHOD (BseProject, get-supers) {
   HELP  = "Retrieve all supers of this project.";
   IN    = bse_param_spec_object ("project", NULL, NULL,
                                  BSE_TYPE_PROJECT, SFI_PARAM_STANDARD);
-  OUT   = bse_param_spec_boxed ("super_list", NULL, NULL, BSE_TYPE_PROXY_SEQ, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("super_list", NULL, NULL, BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
         GValue            *out_values)
 {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
-  BseProxySeq *pseq;
+  BseItemSeq *iseq;
   GSList *slist;
   
   /* check parameters */
@@ -536,12 +536,12 @@ METHOD (BseProject, get-supers) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  pseq = bse_proxy_seq_new ();
+  iseq = bse_item_seq_new ();
   for (slist = project->supers; slist; slist = slist->next)
-    bse_proxy_seq_append (pseq, BSE_OBJECT_ID (slist->data));
+    bse_item_seq_append (iseq, slist->data);
   
   /* set output parameters */
-  bse_value_take_boxed (out_values++, pseq);
+  bse_value_take_boxed (out_values++, iseq);
   
   return BSE_ERROR_NONE;
 }

@@ -60,7 +60,7 @@ static void         bse_song_class_init       (BseSongClass       *class);
 static void         bse_song_init             (BseSong            *song);
 static void         bse_song_finalize         (GObject            *object);
 static void         bse_song_release_children (BseContainer       *container);
-static BseProxySeq* bse_song_list_proxies     (BseItem            *item,
+static BseItemSeq*  bse_song_list_items       (BseItem            *item,
                                                guint               param_id,
                                                GParamSpec         *pspec);
 static void         bse_song_set_property     (GObject            *object,
@@ -147,7 +147,7 @@ bse_song_class_init (BseSongClass *class)
   gobject_class->finalize = bse_song_finalize;
   
   item_class->set_parent = bse_song_set_parent;
-  item_class->list_proxies = bse_song_list_proxies;
+  item_class->list_items = bse_song_list_items;
 
   source_class->prepare = bse_song_prepare;
   source_class->context_create = bse_song_context_create;
@@ -322,23 +322,23 @@ bse_song_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static BseProxySeq*
-bse_song_list_proxies (BseItem    *item,
-                       guint       param_id,
-                       GParamSpec *pspec)
+static BseItemSeq*
+bse_song_list_items (BseItem    *item,
+                     guint       param_id,
+                     GParamSpec *pspec)
 {
   BseSong *self = BSE_SONG (item);
-  BseProxySeq *pseq = bse_proxy_seq_new ();
+  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
     case PROP_POST_NET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return pseq;
+  return iseq;
 }
 
 static void

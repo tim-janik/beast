@@ -59,7 +59,7 @@ static void         bse_midi_synth_get_property        (GObject           *msynt
                                                         guint              param_id,
                                                         GValue            *value,
                                                         GParamSpec        *pspec);
-static BseProxySeq* bse_midi_synth_list_proxies        (BseItem           *item,
+static BseItemSeq*  bse_midi_synth_list_items          (BseItem           *item,
                                                         guint              param_id,
                                                         GParamSpec        *pspec);
 static void         bse_midi_synth_context_create      (BseSource         *source,
@@ -114,7 +114,7 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
   gobject_class->get_property = bse_midi_synth_get_property;
   gobject_class->finalize = bse_midi_synth_finalize;
   
-  item_class->list_proxies = bse_midi_synth_list_proxies;
+  item_class->list_items = bse_midi_synth_list_items;
   
   source_class->context_create = bse_midi_synth_context_create;
   
@@ -282,26 +282,26 @@ bse_midi_synth_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static BseProxySeq*
-bse_midi_synth_list_proxies (BseItem    *item,
-			     guint       param_id,
-			     GParamSpec *pspec)
+static BseItemSeq*
+bse_midi_synth_list_items (BseItem    *item,
+                           guint       param_id,
+                           GParamSpec *pspec)
 {
   BseMidiSynth *self = BSE_MIDI_SYNTH (item);
-  BseProxySeq *pseq = bse_proxy_seq_new ();
+  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
     case PROP_SNET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     case PROP_POST_NET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return pseq;
+  return iseq;
 }
 
 static void

@@ -33,6 +33,14 @@
 
 namespace Bse {
 
+/* --- frequently used constants --- */
+const SfiInt  KAMMER_NOTE = SFI_KAMMER_NOTE;
+const SfiInt  KAMMER_OCTAVE = SFI_KAMMER_OCTAVE;
+const SfiReal KAMMER_FREQ = BSE_KAMMER_FREQUENCY_f;
+const SfiInt  MIN_FINE_TUNE = BSE_MIN_FINE_TUNE;
+const SfiInt  MAX_FINE_TUNE = BSE_MAX_FINE_TUNE;
+
+
 /* -- export identity --- */
 /* provide plugin export identity, preceeding all type exports */
 #ifndef BSE_COMPILATION
@@ -59,8 +67,8 @@ extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h
  * object, which provides the enum's get_type() implementation and
  * auto-registers the enum's export node with the export_identity.
  */
-#define BSE_CXX_DECLARED_ENUM_TYPE(EnumType)                            \
-  (bse_type_keeper__3##EnumType.get_type ())
+#define BSE_CXX_DECLARED_ENUM_TYPE(NameSpace,EnumType)                  \
+  (::NameSpace::bse_type_keeper__3##EnumType.get_type ())
 #define BSE_CXX_DECLARE_ENUM(EnumType,EnumName,N,ICode)                 \
   template<class E> static BseExportNode* bse_export_node ();           \
   template<> static BseExportNode*                                      \
@@ -103,8 +111,8 @@ EnumValue (int         int_value,
  * object, which provides the record's get_type() implementation and
  * auto-registers the record's export node with the export_identity.
  */
-#define BSE_CXX_DECLARED_RECORD_TYPE(RecordType)                        \
-  (bse_type_keeper__1##RecordType.get_type ())
+#define BSE_CXX_DECLARED_RECORD_TYPE(NameSpace,RecordType)              \
+  (::NameSpace::bse_type_keeper__1##RecordType.get_type ())
 #define BSE_CXX_DECLARE_RECORD(RecordType)                              \
   template<class E> static BseExportNode* bse_export_node ();           \
   template<> static BseExportNode*                                      \
@@ -136,8 +144,8 @@ EnumValue (int         int_value,
 
 /* --- sequence registration --- */
 /* sequence registration works similar to record registration */
-#define BSE_CXX_DECLARED_SEQUENCE_TYPE(SequenceType)                            \
-  (bse_type_keeper__1##SequenceType.get_type ())
+#define BSE_CXX_DECLARED_SEQUENCE_TYPE(NameSpace,SequenceType)                  \
+  (::NameSpace::bse_type_keeper__1##SequenceType.get_type ())
 #define BSE_CXX_DECLARE_SEQUENCE(SequenceType)                                  \
   template<class E> static BseExportNode* bse_export_node ();                   \
   template<> static BseExportNode*                                              \
@@ -169,9 +177,9 @@ EnumValue (int         int_value,
 
 /* --- procedure registration --- */
 /* procedure registration works similar to enum registration. */
-#define BSE_CXX_DECLARED_PROC_TYPE(ProcType)                            \
-  (bse_type_keeper__9##ProcType.get_type ())
-#define BSE_CXX_DECLARE_PROC(ProcType)                                  \
+#define BSE_CXX_DECLARED_PROC_TYPE(NameSpace,ProcType)                          \
+  (::NameSpace::bse_type_keeper__9##ProcType.get_type ())
+#define BSE_CXX_DECLARE_PROC(ProcType)                                          \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__9##ProcType;
 #define BSE_CXX_REGISTER_PROCEDURE(ProcType)                                    \
   template<class C> static ::BseExportNode* bse_export_node ();                 \
@@ -204,9 +212,9 @@ EnumValue (int         int_value,
  * C++ methods callable, and for effects, we're providing some basic
  * method implementations to interface with the synmthesis Module.
  */
-#define BSE_CXX_DECLARED_CLASS_TYPE(ClassType)                          \
-  (bse_type_keeper__0##ClassType.get_type ())
-#define BSE_CXX_DECLARE_CLASS(ClassType)                                \
+#define BSE_CXX_DECLARED_CLASS_TYPE(NameSpace,ClassType)                        \
+  (::NameSpace::bse_type_keeper__0##ClassType.get_type ())
+#define BSE_CXX_DECLARE_CLASS(ClassType)                                        \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__0##ClassType;
 #define BSE_CXX_REGISTER_EFFECT(Effect)                                         \
   BSE_CXX_DEFINE_SET_PROPERTY (Effect ## Base);                                 \

@@ -1,3 +1,39 @@
+Mon Mar  1 20:08:12 2004  Tim Janik  <timj@gtk.org>
+
+	* switched the native C binding for idl types to a C wrapper
+	binding which is based on a C++ binding for core idl types.
+
+	* bsecore.idl: turn ProxySeq into a ItemSeq for proper typing.
+
+	* bsecxxbase.idl:
+	* bseamplifier.idl: bring up to par with recent idl fixes.
+
+	* bsecore.cc: new file, needed to implement bsecore.idl contents
+	and the C wrapper bindings. 
+
+	* bsecxxplugin.h: provide constants used in idl files. fixed namespace
+	issues in BSE_CXX_DECLARED_*_TYPE() macros by making them absolute.
+
+	* bsegconfig.c: retrieve record fields via bse_gconfig_get_fields() now.
+
+	* Makefile.am: added rules to generate bsegencore.cc. this implements
+	the C functions from bsegentypes.h on top of the C++ core binding.
+
+	* bsemain.[hc]: initialize C wrapper types.
+
+	* bsesong.c:
+	* bsetrack.c:
+	* bsesubsynth.c:
+	* bsemidisynth.c:
+	* bseproject.proc:
+	* bseitem.[hcp]*:
+	* bsewaveosc.c:
+	* bsecontainer.[hcp]*: adapt to BseItemSeq changes.
+
+	* bsetype.c: removed cruft.
+
+	* bserecords.idl: removed, replaced by bsecore.idl.
+
 Fri Feb 27 11:23:01 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecore.idl: CVS copied from bserecords.idl.

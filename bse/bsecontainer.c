@@ -402,29 +402,29 @@ static gboolean
 list_items (BseItem *item,
             gpointer data)
 {
-  BseProxySeq *pseq = data;
+  BseItemSeq *iseq = data;
   
-  bse_proxy_seq_append (pseq, BSE_OBJECT_ID (item));
+  bse_item_seq_append (iseq, item);
   
   return TRUE;
 }
 
-BseProxySeq*
+BseItemSeq*
 bse_container_list_items (BseContainer *container)
 {
-  BseProxySeq *pseq;
+  BseItemSeq *iseq;
   
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
   
-  pseq = bse_proxy_seq_new ();
+  iseq = bse_item_seq_new ();
   if (container->n_items)
     {
       g_return_val_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL, NULL); /* paranoid */
       
-      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, list_items, pseq);
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, list_items, iseq);
     }
   
-  return pseq;
+  return iseq;
 }
 
 static gboolean

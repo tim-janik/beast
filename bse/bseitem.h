@@ -60,7 +60,7 @@ struct _BseItemClass
 {
   BseObjectClass parent_class;
   
-  BseProxySeq*  (*list_proxies)  (BseItem       *item,
+  BseItemSeq*   (*list_items)    (BseItem       *item,
                                   guint          param_id,
                                   GParamSpec    *pspec);
   
@@ -87,18 +87,18 @@ typedef gboolean (*BseItemCheckProxy)        (BseItem        *proxy,
 
 
 /* --- prototypes --- */
-BseProxySeq*    bse_item_gather_proxies      (BseItem              *item,
-                                              BseProxySeq          *proxies,
+BseItemSeq*    bse_item_gather_items         (BseItem              *item,
+                                              BseItemSeq           *iseq,
                                               GType                 base_type,
                                               BseItemCheckContainer ccheck,
                                               BseItemCheckProxy     pcheck,
                                               gpointer              data);
-BseProxySeq*    bse_item_gather_proxies_typed(BseItem              *item,
-                                              BseProxySeq          *proxies,
+BseItemSeq*    bse_item_gather_items_typed   (BseItem              *item,
+                                              BseItemSeq           *iseq,
                                               GType                 proxy_type,
                                               GType                 container_type,
                                               gboolean              allow_ancestor);
-BseProxySeq*    bse_item_list_proxies        (BseItem         *item,
+BseItemSeq*    bse_item_list_items           (BseItem         *item,
                                               const gchar     *property);
 void            bse_item_set_internal        (gpointer         item,
                                               gboolean         internal);

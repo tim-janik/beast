@@ -63,7 +63,7 @@ static void         bse_track_get_property        (GObject       *object,
                                                    guint          param_id,
                                                    GValue        *value,
                                                    GParamSpec    *pspec);
-static BseProxySeq* bse_track_list_proxies        (BseItem       *item,
+static BseItemSeq*  bse_track_list_items          (BseItem       *item,
                                                    guint          param_id,
                                                    GParamSpec    *pspec);
 static void         bse_track_store_private       (BseObject     *object,
@@ -119,7 +119,7 @@ bse_track_class_init (BseTrackClass *class)
   object_class->store_private = bse_track_store_private;
   object_class->restore_private = bse_track_restore_private;
   
-  item_class->list_proxies = bse_track_list_proxies;
+  item_class->list_items = bse_track_list_items;
   
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MUTED,
@@ -317,35 +317,35 @@ track_uncross_part (BseItem *owner,
       }
 }
 
-static BseProxySeq*
-bse_track_list_proxies (BseItem    *item,
-			guint       param_id,
-			GParamSpec *pspec)
+static BseItemSeq*
+bse_track_list_items (BseItem    *item,
+                      guint       param_id,
+                      GParamSpec *pspec)
 {
   BseTrack *self = BSE_TRACK (item);
-  BseProxySeq *pseq = bse_proxy_seq_new ();
+  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
       BseProject *project;
     case PROP_SYNTH_NET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     case PROP_POST_NET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     case PROP_WAVE:
       project = bse_item_get_project (item);
       if (project)
 	{
 	  BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
-	  bse_item_gather_proxies_typed (BSE_ITEM (wrepo), pseq, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
+	  bse_item_gather_items_typed (BSE_ITEM (wrepo), iseq, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
 	}
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return pseq;
+  return iseq;
 }
 
 static void
@@ -612,7 +612,7 @@ bse_track_list_parts (BseTrack *self)
 	{
 	  BseTrackPart tp = { 0, };
 	  tp.tick = entry->tick;
-	  tp.part = BSE_OBJECT_ID (entry->part);
+	  tp.part = entry->part;
 	  if (song)
 	    bse_song_get_timing (song, tp.tick, &timing);
 	  tp.duration = MAX (timing.tpt, entry->part->last_tick_SL);

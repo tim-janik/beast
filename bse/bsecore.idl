@@ -17,7 +17,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-namespace Bse {  // FIXME: sync to bsemidievent.h; stefan, how can we refer to generated enums?
+namespace Bse {
+using namespace Sfi;
 
 /* param options */
 Const READWRITE = ":r:w:";
@@ -29,14 +30,13 @@ Const GUI_RDONLY = ":r:w:G:ro:";
 /* extra flags */
 Const SKIP_DEFAULT = ":skip-default:";
 Const SKIP_UNDO = ":skip-undo:";
-
 Const STANDARD = DEFAULT;
+
 Const MAXINT = +2147483647;
 Const MININT = -2147483648;
 Const MAXNUM = +9223372036854775807;
 Const MINNUM = -9223372036854775808;
 
-using namespace Sfi;
 
 choice MidiSignalType {
   /* special cased signals */
@@ -231,10 +231,10 @@ sequence StringSeq {
 
 class Item;
 
-sequence ProxySeq {
+sequence ItemSeq {
   Info   BLURB = ("An item list");
-  Item   proxies;
-  Info   HELP = ("A list of BSE objects, usually items.");
+  Item   items;
+  Info   HELP = ("A list of BSE items or derived types.");
 };
 
 record PartNote

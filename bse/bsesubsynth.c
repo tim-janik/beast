@@ -49,7 +49,7 @@ static void	 bse_sub_synth_get_property	(GObject                *object,
 						 guint                   param_id,
 						 GValue                 *value,
 						 GParamSpec             *pspec);
-static BseProxySeq* bse_sub_synth_list_proxies	(BseItem		*item,
+static BseItemSeq* bse_sub_synth_list_items	(BseItem		*item,
 						 guint			 param_id,
 						 GParamSpec		*pspec);
 static void	 bse_sub_synth_do_dispose	(GObject		*object);
@@ -118,7 +118,7 @@ bse_sub_synth_class_init (BseSubSynthClass *class)
   gobject_class->get_property = bse_sub_synth_get_property;
   gobject_class->dispose = bse_sub_synth_do_dispose;
   
-  item_class->list_proxies = bse_sub_synth_list_proxies;
+  item_class->list_items = bse_sub_synth_list_items;
   
   source_class->context_create = bse_sub_synth_context_create;
   source_class->context_connect = bse_sub_synth_context_connect;
@@ -207,23 +207,23 @@ bse_sub_synth_do_dispose (GObject *object)
   G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
-static BseProxySeq*
-bse_sub_synth_list_proxies (BseItem    *item,
-			    guint       param_id,
-			    GParamSpec *pspec)
+static BseItemSeq*
+bse_sub_synth_list_items (BseItem    *item,
+                          guint       param_id,
+                          GParamSpec *pspec)
 {
   BseSubSynth *self = BSE_SUB_SYNTH (item);
-  BseProxySeq *pseq = bse_proxy_seq_new ();
+  BseItemSeq *iseq = bse_item_seq_new ();
   switch (param_id)
     {
     case PARAM_SNET:
-      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
+      bse_item_gather_items_typed (item, iseq, BSE_TYPE_CSYNTH, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
-  return pseq;
+  return iseq;
 }
 
 static gboolean

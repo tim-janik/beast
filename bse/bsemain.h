@@ -52,6 +52,7 @@ guint           bse_main_getpid         (void);
 
 
 /* --- internal --- */
+void    _bse_init_c_wrappers    ();
 extern GMainContext *bse_main_context;
 extern SfiMutex	     bse_main_sequencer_mutex;
 extern gboolean      bse_main_debug_extensions;

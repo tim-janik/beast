@@ -48,7 +48,7 @@ static void             bse_item_get_property_internal  (GObject                
 static void             bse_item_update_state           (BseItem                *self);
 static gboolean         bse_item_real_needs_storage     (BseItem                *self,
                                                          BseStorage             *storage);
-static BseProxySeq*     bse_item_list_no_proxies        (BseItem                *item,
+static BseItemSeq*      bse_item_list_no_items          (BseItem                *item,
                                                          guint                   param_id,
                                                          GParamSpec             *pspec);
 static void             bse_item_do_dispose             (GObject                *object);
@@ -94,7 +94,7 @@ BSE_BUILTIN_TYPE (BseItem)
 static void
 bse_item_class_init_base (BseItemClass *class)
 {
-  class->list_proxies = bse_item_list_no_proxies;
+  class->list_items = bse_item_list_no_items;
 }
 
 static void
@@ -121,7 +121,7 @@ bse_item_class_init (BseItemClass *class)
   class->get_seqid = bse_item_do_get_seqid;
   class->get_undo = bse_item_default_get_undo;
   class->needs_storage = bse_item_real_needs_storage;
-
+  
   bse_object_class_add_param (object_class, NULL,
                               PROP_SEQID,
                               sfi_pspec_int ("seqid", "Sequential ID", NULL,
@@ -172,13 +172,13 @@ static void
 bse_item_do_dispose (GObject *gobject)
 {
   BseItem *item = BSE_ITEM (gobject);
-
+  
   /* force removal from parent */
   if (item->parent)
     bse_container_remove_item (BSE_CONTAINER (item->parent), item);
-
+  
   bse_item_delete_parasites (item);
-
+  
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
 }
@@ -197,12 +197,12 @@ bse_item_do_finalize (GObject *object)
   g_return_if_fail (item->use_count == 0);
 }
 
-static BseProxySeq*
-bse_item_list_no_proxies (BseItem    *item,
-                          guint       param_id,
-                          GParamSpec *pspec)
+static BseItemSeq*
+bse_item_list_no_items (BseItem    *item,
+                        guint       param_id,
+                        GParamSpec *pspec)
 {
-  return bse_proxy_seq_new ();
+  return bse_item_seq_new ();
 }
 
 static void
@@ -243,14 +243,14 @@ bse_item_update_state (BseItem *self)
 {
   /* save original state */
   gboolean old_internal = BSE_ITEM_INTERNAL (self);
-
+  
   /* update state */
   if ((BSE_OBJECT_FLAGS (self) & BSE_ITEM_FLAG_INTERN) ||
       (self->parent && BSE_ITEM_INTERNAL (self->parent)))
     BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_INTERN_BRANCH);
   else
     BSE_OBJECT_UNSET_FLAGS (self, BSE_ITEM_FLAG_INTERN_BRANCH);
-
+  
   /* compare state and recurse if necessary */
   if (BSE_IS_CONTAINER (self) && (old_internal != BSE_ITEM_INTERNAL (self)))
     bse_container_forall_items ((BseContainer*) self, recurse_update_state, NULL);
@@ -274,9 +274,9 @@ bse_item_set_internal (gpointer item,
                        gboolean internal)
 {
   BseItem *self = item;
-
+  
   g_return_if_fail (BSE_IS_ITEM (self));
-
+  
   if (internal)
     BSE_OBJECT_SET_FLAGS (self, BSE_ITEM_FLAG_INTERN);
   else
@@ -297,7 +297,7 @@ bse_item_needs_storage (BseItem    *self,
 {
   g_return_val_if_fail (BSE_IS_ITEM (self), FALSE);
   g_return_val_if_fail (BSE_IS_STORAGE (storage), FALSE);
-
+  
   return BSE_ITEM_GET_CLASS (self)->needs_storage (self, storage);
 }
 
@@ -308,7 +308,7 @@ bse_item_compat_setup (BseItem         *self,
                        guint            vmicro)
 {
   g_return_if_fail (BSE_IS_ITEM (self));
-
+  
   if (BSE_ITEM_GET_CLASS (self)->compat_setup)
     BSE_ITEM_GET_CLASS (self)->compat_setup (self, vmajor, vminor, vmicro);
 }
@@ -316,7 +316,7 @@ bse_item_compat_setup (BseItem         *self,
 typedef struct {
   BseItem              *item;
   gpointer              data;
-  BseProxySeq          *proxies;
+  BseItemSeq           *iseq;
   GType                 base_type;
   BseItemCheckContainer ccheck;
   BseItemCheckProxy     pcheck;
@@ -331,41 +331,41 @@ gather_child (BseItem *child,
   if (child != gdata->item && !BSE_ITEM_INTERNAL (child) &&
       g_type_is_a (G_OBJECT_TYPE (child), gdata->base_type) &&
       (!gdata->pcheck || gdata->pcheck (child, gdata->item, gdata->data)))
-    bse_proxy_seq_append (gdata->proxies, BSE_OBJECT_ID (child));
+    bse_item_seq_append (gdata->iseq, child);
   return TRUE;
 }
 
 /**
- * bse_item_gather_proxies
+ * bse_item_gather_items
  * @item:      valid #BseItem from which to start gathering
- * @proxies:   sequence of proxies to append to
- * @base_type: base type of the proxies to gather
+ * @items:     sequence of items to append to
+ * @base_type: base type of the items to gather
  * @ccheck:    container filter function
  * @pcheck:    proxy filter function
  * @data:      @data pointer to @ccheck and @pcheck
- * @RETURNS:   returns @proxies
+ * @RETURNS:   returns @items
  *
  * This function gathers items from an object hirachy, walking upwards,
  * starting out with @item. For each container passing @ccheck(), all
  * immediate children are tested for addition with @pcheck.
  */
-BseProxySeq*
-bse_item_gather_proxies (BseItem              *item,
-                         BseProxySeq          *proxies,
-                         GType                 base_type,
-                         BseItemCheckContainer ccheck,
-                         BseItemCheckProxy     pcheck,
-                         gpointer              data)
+BseItemSeq*
+bse_item_gather_items (BseItem              *item,
+                       BseItemSeq           *iseq,
+                       GType                 base_type,
+                       BseItemCheckContainer ccheck,
+                       BseItemCheckProxy     pcheck,
+                       gpointer              data)
 {
   GatherData gdata;
   
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-  g_return_val_if_fail (proxies != NULL, NULL);
+  g_return_val_if_fail (iseq != NULL, NULL);
   g_return_val_if_fail (g_type_is_a (base_type, BSE_TYPE_ITEM), NULL);
   
   gdata.item = item;
   gdata.data = data;
-  gdata.proxies = proxies;
+  gdata.iseq = iseq;
   gdata.base_type = base_type;
   gdata.ccheck = ccheck;
   gdata.pcheck = pcheck;
@@ -378,7 +378,7 @@ bse_item_gather_proxies (BseItem              *item,
         bse_container_forall_items (container, gather_child, &gdata);
       item = item->parent;
     }
-  return proxies;
+  return iseq;
 }
 
 static gboolean
@@ -399,36 +399,36 @@ gather_typed_acheck (BseItem  *proxy,
 }
 
 /**
- * bse_item_gather_proxies_typed
+ * bse_item_gather_items_typed
  * @item:           valid #BseItem from which to start gathering
- * @proxies:        sequence of proxies to append to
- * @proxy_type:     base type of the proxies to gather
- * @container_type: base type of the containers to check for proxies
+ * @items:          sequence of items to append to
+ * @proxy_type:     base type of the items to gather
+ * @container_type: base type of the containers to check for items
  * @allow_ancestor: if %FALSE, direct ancestors of @item are omitted
- * @RETURNS:   returns @proxies
+ * @RETURNS:   returns @items
  *
- * Variant of bse_item_gather_proxies(), the containers and proxies
+ * Variant of bse_item_gather_items(), the containers and items
  * are simply filtered by checking derivation from @container_type
- * and @proxy_type respectively. Proxies may not be direct ancestors
+ * and @proxy_type respectively. Items may not be direct ancestors
  * of @item if @allow_ancestor is %FALSE.
  */
-BseProxySeq*
-bse_item_gather_proxies_typed (BseItem              *item,
-                               BseProxySeq          *proxies,
-                               GType                 proxy_type,
-                               GType                 container_type,
-                               gboolean              allow_ancestor)
+BseItemSeq*
+bse_item_gather_items_typed (BseItem              *item,
+                             BseItemSeq           *iseq,
+                             GType                 proxy_type,
+                             GType                 container_type,
+                             gboolean              allow_ancestor)
 {
   if (allow_ancestor)
-    return bse_item_gather_proxies (item, proxies, proxy_type, gather_typed_ccheck, NULL, (gpointer) container_type);
+    return bse_item_gather_items (item, iseq, proxy_type, gather_typed_ccheck, NULL, (gpointer) container_type);
   else
-    return bse_item_gather_proxies (item, proxies, proxy_type,
-                                    gather_typed_ccheck, gather_typed_acheck, (gpointer) container_type);
+    return bse_item_gather_items (item, iseq, proxy_type,
+                                  gather_typed_ccheck, gather_typed_acheck, (gpointer) container_type);
 }
 
-BseProxySeq*
-bse_item_list_proxies (BseItem     *item,
-                       const gchar *property)
+BseItemSeq*
+bse_item_list_items (BseItem     *item,
+                     const gchar *property)
 {
   BseItemClass *class;
   GParamSpec *pspec;
@@ -440,7 +440,7 @@ bse_item_list_proxies (BseItem     *item,
   if (!pspec)
     return NULL;
   class = g_type_class_peek (pspec->owner_type);
-  return class->list_proxies (item, pspec->param_id, pspec);
+  return class->list_items (item, pspec->param_id, pspec);
 }
 
 BseItem*
@@ -494,7 +494,7 @@ bse_item_set_parent (BseItem *item,
     g_object_unref (parent);
   else
     g_object_run_dispose (G_OBJECT (item));
-
+  
   g_object_unref (item);
 }
 
@@ -671,10 +671,10 @@ BseItem*
 bse_item_get_toplevel (BseItem *item)
 {
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-
+  
   while (item->parent)
     item = item->parent;
-
+  
   return item;
 }
 
@@ -682,10 +682,10 @@ BseProject*
 bse_item_get_project (BseItem *item)
 {
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-
+  
   while (item->parent)
     item = item->parent;
-
+  
   return BSE_IS_PROJECT (item) ? (BseProject*) item : NULL;
 }
 
@@ -716,13 +716,13 @@ find_method_procedure (GType        object_type,
     {
       gchar *name, *type_name = g_type_name (type);
       guint l1 = strlen (type_name);
-
+      
       name = g_new (gchar, l1 + 1 + l2 + 1);
       memcpy (name, type_name, l1);
       name[l1] = '+';
       memcpy (name + l1 + 1, method_name, l2);
       name[l1 + 1 + l2] = 0;
-
+      
       proc_type = bse_procedure_lookup (name);
       g_free (name);
       if (proc_type)
@@ -742,14 +742,14 @@ bse_item_execva_i (BseItem     *item,
   BseErrorType error;
   GType proc_type = find_method_procedure (BSE_OBJECT_TYPE (item), procedure);
   GValue obj_value;
-
+  
   if (!proc_type)
     {
       g_warning ("no such method \"%s\" of item %s",
                  procedure, bse_object_debug_name (item));
       return BSE_ERROR_INTERNAL;
     }
-
+  
   /* setup first arg (the object) */
   obj_value.g_type = 0;
   g_value_init (&obj_value, BSE_TYPE_ITEM);
@@ -919,7 +919,7 @@ bse_item_push_undo_proc_valist (gpointer     item,
       bse_item_undo_close (ustack);
       return;
     }
-
+  
   proc = g_type_class_ref (proc_type);
   /* we allow one return value */
   if (proc->n_out_pspecs > 1)
@@ -930,13 +930,13 @@ bse_item_push_undo_proc_valist (gpointer     item,
       bse_item_undo_close (ustack);
       return;
     }
-
+  
   ivalues = g_new (GValue, proc->n_in_pspecs);
   /* setup first arg (the object) */
   ivalues[0].g_type = 0;
   g_value_init (ivalues + 0, BSE_TYPE_ITEM);
   g_value_set_object (ivalues + 0, item);
-
+  
   /* collect procedure args */
   error = bse_procedure_collect_input_args (proc, ivalues + 0, var_args, ivalues);
   if (!error)
@@ -968,10 +968,10 @@ bse_item_push_undo_proc (gpointer         item,
                          ...)
 {
   va_list var_args;
-
+  
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (procedure != NULL);
-
+  
   va_start (var_args, procedure);
   bse_item_push_undo_proc_valist (item, procedure, FALSE, var_args);
   va_end (var_args);
@@ -983,10 +983,10 @@ bse_item_push_redo_proc (gpointer         item,
                          ...)
 {
   va_list var_args;
-
+  
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (procedure != NULL);
-
+  
   va_start (var_args, procedure);
   bse_item_push_undo_proc_valist (item, procedure, TRUE, var_args);
   va_end (var_args);
@@ -1000,7 +1000,7 @@ bse_item_set_undoable (gpointer        object,
   va_list var_args;
   
   g_return_if_fail (BSE_IS_ITEM (object));
-
+  
   va_start (var_args, first_property_name);
   bse_item_set_valist_undoable (object, first_property_name, var_args);
   va_end (var_args);
@@ -1013,19 +1013,19 @@ bse_item_set_valist_undoable (gpointer     object,
 {
   BseItem *self = object;
   const gchar *name;
-
+  
   g_return_if_fail (BSE_IS_ITEM (self));
-
+  
   g_object_ref (object);
   g_object_freeze_notify (object);
-
+  
   name = first_property_name;
   while (name)
     {
       GValue value = { 0, };
       GParamSpec *pspec;
       gchar *error = NULL;
-
+      
       pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (self), name);
       if (!pspec)
         {
@@ -1152,9 +1152,9 @@ bse_item_undo_open (gpointer     item,
   BseUndoStack *ustack;
   gchar *buffer;
   va_list args;
-
+  
   g_return_val_if_fail (format != NULL, NULL);
-
+  
   ustack = BSE_ITEM_GET_CLASS (self)->get_undo (self);
   va_start (args, format);
   buffer = g_strdup_vprintf (format, args);
@@ -1186,11 +1186,11 @@ undo_restore_item (BseUndoStep  *ustep,
   BseItem *item = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
   BseStorage *storage = ustep->data[1].v_pointer;
   GTokenType expected_token = G_TOKEN_NONE;
-
+  
   expected_token = bse_storage_restore_item (storage, item);
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
-
+  
   bse_storage_resolve_item_links (storage);
 }
 

@@ -92,13 +92,16 @@ bse_c_sources = $(strip \
 # Synthesis Modules
 bse_idl_sources = $(strip \
 	bseamplifier.idl	\
+	bsecore.idl		\
 	bsesniffer.idl		\
 )
 $(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
+$(srcdir)/bsecore.cc: bsecore.gen-idl.h
 $(srcdir)/bsesniffer.cc: bsesniffer.gen-idl.h
 idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
 bse_cc_sources = $(strip 	\
 	bseamplifier.cc		\
+	bsecore.cc		\
 	bsesniffer.cc		\
 )
 # idl files not used for build rules
@@ -162,7 +165,7 @@ bse_extra_sources = $(strip \
 	mkcproc.pl \
 	bseconfig.h.in \
 	bsepcmmodule.c \
-	bserecords.idl \
+	bsecore.idl \
 	bse.idl \
 )
 # we use our own built_sources variable rules instead of BUILT_SOURCES,
@@ -211,7 +214,7 @@ SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 # rules to generate built sources
 #
 # setup autogeneration dependancies
-tmp_files = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
+tmp_files = xgen-sbgth xgen-bgtc xgen-bgcc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
 	    xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi xgen-tlist
 CLEANFILES += $(tmp_files) @DVLBUILD@ $(bse_proc_gen_sources)
 $(OBJECTS): $(bse_built_h_sources)
@@ -219,7 +222,7 @@ $(OBJECTS): $(bse_built_h_sources)
 $(srcdir)/bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
 # normal autogeneration rules
 stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(bse_c_sources) $(bse_public_h_sources)
-stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.idl $(SFIDL)
+stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bsecore.idl $(SFIDL)
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -227,19 +230,25 @@ stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.idl $(SFIDL)
 	  --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	    $(bse_public_h_sources) > xgen-sbgth \
 	&& $(PERL) mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bserecords.idl >> xgen-sbgth \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-sbgth \
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
-bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bserecords.idl $(SFIDL) # $(bse_c_sources)
+bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bsecore.idl $(SFIDL) # $(bse_c_sources)
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
 	    $(bse_public_h_sources) >> xgen-bgtc \
 	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init _sfidl_types_init bserecords.idl >> xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
 	&& rm -f xgen-bgtc
+# && $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init bsecore.idl >> xgen-bgtc
+bsegencore.cc: @DVLBUILD@ bsecore.idl $(SFIDL) bsecore.gen-idl.h
+	cd $(srcdir) \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init bsecore.idl >> xgen-bgcc \
+	&& cp xgen-bgcc $(@F) \
+	&& rm -f xgen-bgcc
+$(srcdir)/bsecore.cc: bsegencore.cc
 bsegentype_array.c: @DVLBUILD@ bsegentypes.c
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-bgtac \
@@ -278,14 +287,14 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 # setup generation of C++ objects from idl files
 %.gen-idl.h: $(srcdir)/%.idl $(SFIDL)
-	$(SFIDL) --core-cxx $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
+	$(SFIDL) --core-cxx --macro $< $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
 
 
 #
 # this file describes the BSE public API and needs to be generated at the
 # end of the build process
 #
-bsehack.idl: $(srcdir)/bserecords.idl bseprocidl
+bsehack.idl: $(srcdir)/bsecore.idl bseprocidl
 	grep -v bsehack.idl bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-tlist
 	echo "/* this file was generated from make $< */" > xgen-bgasi \
 	&& ./bseprocidl xgen-tlist >> xgen-bgasi \
@@ -294,7 +303,7 @@ bsehack.idl: $(srcdir)/bserecords.idl bseprocidl
 CLEANFILES += bsehack.idl
 noinst_DATA = bsehack.idl
 
-#	&& cat $(srcdir)/bserecords.idl >> xgen-bgasi 
+#	&& cat $(srcdir)/bsecore.idl >> xgen-bgasi 
 
 #
 # convenience targets for generated source files

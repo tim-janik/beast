@@ -381,16 +381,6 @@ bse_param_spec_enum (const gchar    *name,
 
 
 /* --- SFIDL includes --- */
-/* provide common constants */
-#include "bseglobals.h"
-#include "topconfig.h"
-/* provide IDL constants */
-#define	KAMMER_FREQ	BSE_KAMMER_FREQUENCY_f
-#define	KAMMER_NOTE	BSE_KAMMER_NOTE
-#define	KAMMER_OCTAVE	BSE_KAMMER_OCTAVE
-#define	MAXINT		G_MAXINT
-#define	MIN_FINE_TUNE	BSE_MIN_FINE_TUNE
-#define	MAX_FINE_TUNE	BSE_MAX_FINE_TUNE
 /* include SFIDL generations */
 #include        "bsegentypes.c"
 
@@ -453,7 +443,4 @@ bse_type_init (void)
   /* initialize builtin class types */
   for (i = 0; i < n_builtin_types; i++)
     *(builtin_types[i].type_p) = builtin_types[i].register_type ();
-  
-  /* initialize SFIDL types */
-  _sfidl_types_init ();
 }
