@@ -1,18 +1,14 @@
 FIXME(urgent):
 - copy xinfos in set_dhandle_from_temporary
+- bsewave.c: FIXME: set authors, license, comment
 - nuke data handle qdata
 - fix serialno generation for ogg/vorbis encoder and cutter
 - fix bsewavetool oggenc saving osc_freq, not midi_note
 - consolidate bsewave tokens
+- install bsewavetool, bsewavetool.1
+- gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
 - fix float saving with de_DE
 - remove num from SfiStoreReadBin()?
-- gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
-- improve cutvorbis: add boundaries, non-cut, comment filter and comment adder
-- add gsl_data_handle_is_vorbis()
-- add gsl_data_handle_store_vorbis()
-- bsewave.c: FIXME: set authors, license, comment
-- install bsewavetool
-- GslWaveFileInfo -> BseWaveLibraryInfo
 - disable StandardOsc->selfmod
 - add a "Creating Skins" section to the beast manual page
 - provide config-parameter (by engine) which provides 16kHz limit listening-threshold used implicitely in osc-code etc. (important for 48K,84K)
