@@ -43,6 +43,7 @@ html_targets = $(strip		\
 	$(patsubst %.3, %.3.html, $(man_MANS)) \
 	faq.html		\
 	quickstart.html		\
+	overview-de.html	\
 	gsl-mplan.html		\
 )
 
@@ -134,6 +135,7 @@ index.lst: $(REFERENCE_XMLS)
 %.html: %.xml navigation.xml
 	$(XML2HTML) --output=$@ --images="cvs-images/" \
 		--banner="beast" --icon="beast16.png" $<
+
 # postscript rules
 %.nroff: %.xml
 	$(XML2NROFF) --output=$@ $<

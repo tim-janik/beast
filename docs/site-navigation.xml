@@ -18,7 +18,8 @@
 
   <navigation-node title="Documentation"           target="documentation.html">
     <navigation-node title="FAQ"                   target="faq.html" />
-    <navigation-node title="Tutorials">
+    <navigation-node title="Introduction">
+      <navigation-node title="Overview (German)"   target="overview-de.html" />
       <navigation-node title="Quick Start"         target="quickstart.html" />
     </navigation-node>
     <navigation-node title="API Reference">

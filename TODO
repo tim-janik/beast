@@ -1,4 +1,5 @@
 FIXMES:
+- change default zoom factor in sample view
 - switch h/v zoom spinner in piano roll
 - add Solo propety to tracks
 - play notes when inserted into piano roll

@@ -11,7 +11,7 @@
 @unnumbered What's New?
 
 
-@newsTitle{Thursday 10 Jul 2003, LinuxTag 2003}
+@newsTitle{Thursday 10 Jul 2003, BEAST IRC Channel & LinuxTag 2003}
 
 Stefan Westerfeld and Tim Janik are going to the
 @uref{http://www.linuxtag.org/2003/de/index.html,,LinuxTag 2003}
@@ -19,6 +19,16 @@ this Weekend (11.-13. July). We'll probably hang out at the GNOME
 and KDE booths if people want to catch us to talk about @beast{},
 @uref{http://www.arts-project.org,,aRts} or
 @uref{http://sfk.evilplan.org/csl/,,CSL}.
+
+A
+@uref{beast-doc://overview-de,, german paper accompanying the BEAST talk}
+held at LinuxTag has been added to our
+@uref{beast-doc://documentation,, Documentation section}.
+
+If we're not hanging out at LinuxTag, you may also join us for a chat on
+the @code{#beast} channel on the GimpNet IRC Network. The
+@uref{beast-doc://contact,, Contact section}
+has more details if you're not familiar with IRC yet.
 
 
 @newsTitle{Wednesday 25 Jun 2003, BEAST Bugfix Realease}

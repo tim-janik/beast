@@ -1,3 +1,11 @@
+Fri Jul 11 03:09:42 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: announce german paper and irc channel.
+	
+	* docs/site-navigation.xml:
+	* docs/overview-de.texi: added german paper accompanying a talk
+	for LinuxTag 2003.
+
 Thu Jul 10 22:28:41 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: announce linuxtag presence of tim and stefan.
