@@ -65,7 +65,11 @@ static const GxkStockAction piano_edit_undo[] = {
   { N_("Undo"),         "<ctrl>Z",   N_("Undo last editing step"),                          ACTION_UNDO,       BST_STOCK_UNDO },
   { N_("Redo"),         "<ctrl>R",   N_("Redo the last undone editing step"),               ACTION_REDO,       BST_STOCK_REDO },
 };
-
+static const GxkStockAction piano_clear_undo[] = {
+  { N_("_Clear Undo"),          NULL,           NULL,
+    ACTION_CLEAR_UNDO,          BST_STOCK_CLEAR_UNDO, },
+};
+     
 
 /* --- variables --- */
 static gpointer	parent_class = NULL;
@@ -168,6 +172,9 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_widget_publish_actions (self, "piano-edit-undo",
                               G_N_ELEMENTS (piano_edit_undo), piano_edit_undo,
                               NULL, part_dialog_action_check, part_dialog_action_exec);
+  if (BST_DVL_HINTS)
+    gxk_widget_publish_actions (self, "piano-clear-undo", G_N_ELEMENTS (piano_clear_undo), piano_clear_undo,
+                                NULL, part_dialog_action_check, part_dialog_action_exec);
 
   /* FIXME: use paned child-properties after gtk+-2.4 */
   paned = gxk_gadget_find (gadget, "piano-paned");

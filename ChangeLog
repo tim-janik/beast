@@ -1,3 +1,12 @@
+Tue Dec 16 12:00:55 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c: show authors/license fields.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added missing piano-clear-undo
+	actions to piano-roll popup menus.
+
+	* beast-gtk/bstpartdialog.c: register missing piano-clear-undo actions.
+
 Tue Dec 16 02:20:42 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: support opening new views for a project.

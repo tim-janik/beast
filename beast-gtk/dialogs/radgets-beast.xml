@@ -225,6 +225,7 @@
 	      <submenu _label="_Edit" >
 		<menu-factory action-root="" actions="piano-edit-actions" />
 		<menu-factory action-root="" actions="piano-edit-undo" separator="1" />
+		<menu-factory action-root="" actions="piano-clear-undo" />
 	      </submenu>
 	      <submenu _label="_Quantization" >
 		<menu-factory action-root="" actions="pctrl-quant-tools" />
@@ -242,6 +243,7 @@
 	      <submenu _label="_Edit" >
 		<menu-factory action-root="" actions="piano-edit-actions" />
 		<menu-factory action-root="" actions="piano-edit-undo" separator="1" />
+		<menu-factory action-root="" actions="piano-clear-undo" />
 	      </submenu>
 	      <submenu _label="_Quantization" >
 		<menu-factory action-root="" actions="pctrl-quant-tools" />

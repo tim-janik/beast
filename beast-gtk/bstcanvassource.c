@@ -395,7 +395,6 @@ csource_info_update (BstCanvasSource *csource)
   GtkWidget *frame = (csource->source_info // && (force_update || GTK_WIDGET_VISIBLE (csource->source_info))
 		      ? gxk_dialog_get_child (GXK_DIALOG (csource->source_info))
 		      : NULL);
-
   if (frame)
     {
       GtkWidget *text = GTK_BIN (frame)->child;
@@ -456,13 +455,23 @@ csource_info_update (BstCanvasSource *csource)
 
       /* description */
       string = bse_item_get_type_blurb (csource->source);
-      if (string)
+      if (string && string[0])
 	{
 	  gxk_scroll_text_aprintf (text, "\nDescription:\n");
 	  gxk_scroll_text_push_indent (text);
 	  gxk_scroll_text_aprintf (text, "%s\n", string);
 	  gxk_scroll_text_pop_indent (text);
 	}
+
+      /* authors */
+      string = bse_item_get_type_authors (csource->source);
+      if (string && string[0])
+        gxk_scroll_text_aprintf (text, "\nAuthors: %s\n", string);
+      
+      /* license */
+      string = bse_item_get_type_license (csource->source);
+      if (string && string[0])
+        gxk_scroll_text_aprintf (text, "\nLicense: %s\n", string);
     }
 }
 
