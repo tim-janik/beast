@@ -4,7 +4,8 @@
 ## Makefile.am for BEAST/BSE
 
 
-demo_DATA = $(strip \
+demo_DATA = $(strip		\
+	partymonster.bse	\
 )
 demodir = $(bsedemodir)
 
