@@ -12,6 +12,7 @@ beast-gtk/bsteventrollctrl.c
 beast-gtk/bstfiledialog.c
 beast-gtk/bstgrowbar.c
 beast-gtk/bstinstrumentview.c
+beast-gtk/bstitemseqdialog.c
 beast-gtk/bstitemview.c
 beast-gtk/bstkeybindings.c
 beast-gtk/bstmain.c
@@ -61,16 +62,19 @@ bse/bsebiquadfilter.c
 bse/bsebus.c
 bse/bseconstant.c
 bse/bsecore.idl
+bse/bseenums.c
 bse/bseinstrumentinput.c
 bse/bseinstrumentoutput.c
 bse/bsemidicontroller.c
 bse/bsemidiinput.c
+bse/bsemidisynth.c
 bse/bsemidivoice.c
 bse/bseparasite.proc
 bse/bsepcminput.c
 bse/bsepcmoutput.c
 bse/bseserver.c
 bse/bsesnooper.c
+bse/bsesong.c
 bse/bsesong.proc
 bse/bsestandardosc.c
 bse/bsesubiport.c
