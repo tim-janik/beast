@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface Definition Language     -*-mode: c++;-*-
- * Copyright (C) 2002, 2003 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -235,14 +235,15 @@ sequence ProxySeq {
 
 record PartNote
 {
-  Info     BLURB      = "Part specific note representation";
+  Info     BLURB        = "Part specific note representation";
   Int      id           = UInt ("ID", "", 0, ":readwrite");
-  Int      tick = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
-  Int      duration   = ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
-  Int      note       = Note ("Note", "", KAMMER_NOTE, ":readwrite");
+  Int      channel      = ("Channel", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int      tick         = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
+  Int      duration     = ("Duration", "Duration in number of ticks", 0, 0, MAXINT, 1, ":readwrite");
+  Int      note         = Note ("Note", "", KAMMER_NOTE, ":readwrite");
   Int      fine_tune    = ("Fine Tune", "", 0, MIN_FINE_TUNE, MAX_FINE_TUNE, 1, ":readwrite");
   Real     velocity     = ("Velocity", "", 1, 0, 1.0, 0.1, ":readwrite");
-  Bool     selected   = ("Selected", "", FALSE, ":readwrite");
+  Bool     selected     = ("Selected", "", FALSE, ":readwrite");
 };
 
 sequence PartNoteSeq {

@@ -18,14 +18,11 @@
 #ifndef __BSE_UTILS_H__
 #define __BSE_UTILS_H__
 
-#include	<bse/bseenums.h>
-#include	<bse/bseglobals.h>
-#include	<bse/bsecompat.h>
+#include <bse/bseenums.h>
+#include <bse/bseglobals.h>
+#include <bse/bsecompat.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- C++ helper declaration --- */
 void    bse_cxx_init      (void);
@@ -36,6 +33,7 @@ void    bse_cxx_checks    (void);
 BseNoteDescription* bse_note_description            (SfiInt              note,
                                                      gint                fine_tune);
 BsePartNote*        bse_part_note                    (guint              id,
+                                                      guint              channel,
                                                       guint              tick,
                                                       guint              duration,
                                                       gint               note,
@@ -95,9 +93,6 @@ bse_bbuffer_putc (gchar bbuffer[BSE_BBUFFER_SIZE],
   bbuffer[1] = 0;
 }
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_UTILS_H__ */

@@ -1,3 +1,14 @@
+Tue Feb 17 01:48:50 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepart.[hc]:
+	(bse_part_list_notes):
+	(bse_part_select_notes):
+	(bse_part_select_notes_exclusive): added support for channel arguments,
+	to limit effect of these functions to a specific channel, unless
+	channel=~0 was passed. adapted callers.
+
+	* bserecords.idl: enrich PartNote by a channel field. adapted callers.
+
 Thu Feb 12 10:48:26 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepart.[hc]:

@@ -112,6 +112,7 @@ gboolean           bse_part_change_control            (BsePart           *self,
                                                        BseMidiSignalType  ctype,
                                                        gfloat             value);
 BsePartNoteSeq*    bse_part_list_notes                (BsePart           *self,
+                                                       guint              channel,
                                                        guint              tick,
                                                        guint              duration,
                                                        gint               min_note,
@@ -131,6 +132,7 @@ BsePartNoteSeq*    bse_part_list_selected_notes       (BsePart           *self);
 BsePartControlSeq* bse_part_list_selected_controls    (BsePart           *self,
                                                        BseMidiSignalType  ctype);
 void               bse_part_select_notes              (BsePart           *self,
+                                                       guint              channel,
                                                        guint              tick,
                                                        guint              duration,
                                                        gint               min_note,
@@ -142,6 +144,7 @@ void               bse_part_select_controls           (BsePart           *self,
                                                        BseMidiSignalType  ctype,
                                                        gboolean           selected);
 void               bse_part_select_notes_exclusive    (BsePart           *self,
+                                                       guint              channel,
                                                        guint              tick,
                                                        guint              duration,
                                                        gint               min_note,

@@ -407,6 +407,7 @@ queue_control_update (BsePart *self,
 
 void
 bse_part_select_notes (BsePart *self,
+                       guint    match_channel,
                        guint    tick,
                        guint    duration,
                        gint     min_note,
@@ -421,8 +422,11 @@ bse_part_select_notes (BsePart *self,
   max_note = BSE_NOTE_CLAMP (max_note);
   for (channel = 0; channel < self->n_channels; channel++)
     {
-      BsePartEventNote *note = bse_part_note_channel_lookup_ge (&self->channels[channel], tick);
-      BsePartEventNote *last = bse_part_note_channel_lookup_lt (&self->channels[channel], tick + duration);
+      BsePartEventNote *note, *last;
+      if (channel != match_channel && match_channel != ~0)
+        continue;
+      note = bse_part_note_channel_lookup_ge (&self->channels[channel], tick);
+      last = bse_part_note_channel_lookup_lt (&self->channels[channel], tick + duration);
       if (!note)
         continue;
       while (note <= last)
@@ -452,7 +456,7 @@ bse_part_select_controls (BsePart          *self,
 
   if (BSE_PART_NOTE_CONTROL (ctype))
     {
-      bse_part_select_notes (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, selected);
+      bse_part_select_notes (self, ~0, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, selected);
       return;
     }
 
@@ -475,6 +479,7 @@ bse_part_select_controls (BsePart          *self,
 
 void
 bse_part_select_notes_exclusive (BsePart *self,
+                                 guint    match_channel,
                                  guint    tick,
                                  guint    duration,
                                  gint     min_note,
@@ -493,7 +498,8 @@ bse_part_select_notes_exclusive (BsePart *self,
       while (note < nbound)
         {
           gboolean selected = (note->tick >= tick && note->tick < tick + duration &&
-                               note->note >= min_note && note->note <= max_note);
+                               note->note >= min_note && note->note <= max_note &&
+                               (channel == match_channel || match_channel == ~0));
           if (note->selected != selected)
             {
               bse_part_note_channel_change_note (&self->channels[channel], note, note->id, selected,
@@ -534,11 +540,11 @@ bse_part_select_controls_exclusive (BsePart           *self,
 
   if (BSE_PART_NOTE_CONTROL (ctype))
     {
-      bse_part_select_notes_exclusive (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE);
+      bse_part_select_notes_exclusive (self, ~0, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE);
       return;
     }
 
-  bse_part_select_notes (self, 0, BSE_PART_MAX_TICK, BSE_MIN_NOTE, BSE_MAX_NOTE, FALSE);
+  bse_part_select_notes (self, ~0, 0, BSE_PART_MAX_TICK, BSE_MIN_NOTE, BSE_MAX_NOTE, FALSE);
 
   node = bse_part_controls_lookup_ge (&self->controls, 0);
   if (!node)
@@ -1029,9 +1035,11 @@ bse_part_query_event (BsePart           *self,
 
 static void
 part_note_seq_append (BsePartNoteSeq   *pseq,
+                      guint             channel,
                       BsePartEventNote *note)
 {
   BsePartNote *pnote = bse_part_note (note->id,
+                                      channel,
                                       note->tick,
                                       note->duration,
                                       note->note,
@@ -1056,6 +1064,7 @@ part_control_seq_append_note (BsePartControlSeq *cseq,
 
 BsePartNoteSeq*
 bse_part_list_notes (BsePart *self,
+                     guint    match_channel,
                      guint    tick,
                      guint    duration,
                      gint     min_note,
@@ -1074,7 +1083,10 @@ bse_part_list_notes (BsePart *self,
   pseq = bse_part_note_seq_new ();
   for (channel = 0; channel < self->n_channels; channel++)
     {
-      SfiUPool *tickpool = sfi_upool_new ();
+      SfiUPool *tickpool;
+      if (channel != match_channel && match_channel != ~0)
+        continue;
+      tickpool = sfi_upool_new ();
       /* gather notes spanning across tick */
       note = include_crossings ? bse_part_note_channel_lookup_lt (&self->channels[channel], tick) : NULL;
       if (note)
@@ -1104,7 +1116,7 @@ bse_part_list_notes (BsePart *self,
       for (j = 0; j < n; j++)
         {
           note = bse_part_note_channel_lookup (&self->channels[channel], ids[j]);
-          part_note_seq_append (pseq, note);
+          part_note_seq_append (pseq, channel, note);
         }
       g_free (ids);
     }
@@ -1218,7 +1230,7 @@ bse_part_list_selected_notes (BsePart *self)
       while (note < bound)
         {
           if (note->selected)
-            part_note_seq_append (pseq, note);
+            part_note_seq_append (pseq, channel, note);
           note++;
         }
     }

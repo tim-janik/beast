@@ -60,6 +60,7 @@ bse_note_description (SfiInt note,
 
 BsePartNote*
 bse_part_note (guint    id,
+	       guint    channel,
 	       guint    tick,
 	       guint    duration,
 	       gint     note,
@@ -70,6 +71,7 @@ bse_part_note (guint    id,
   BsePartNote *pnote = bse_part_note_new ();
 
   pnote->id = id;
+  pnote->channel = channel;
   pnote->tick = tick;
   pnote->duration = duration;
   pnote->note = note;

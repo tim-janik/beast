@@ -416,7 +416,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_notes (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, TRUE));
+  bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, TRUE));
   
   return BSE_ERROR_NONE;
 }
@@ -425,6 +425,8 @@ METHOD (BsePart, list-notes-within) {
   HELP	= "List all notes within a tick range.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_int ("channel", "Channel", NULL,
+			 0, 0, BSE_PART_MAX_CHANNELS, 4, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
 			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
@@ -438,6 +440,7 @@ BODY (BseProcedureClass *proc,
 {
   /* extract parameter values */
   BsePart *self     = bse_value_get_object (in_values++);
+  guint    channel  = sfi_value_get_int (in_values++);
   guint    tick	    = sfi_value_get_int (in_values++);
   guint    duration = sfi_value_get_int (in_values++);
   
@@ -446,7 +449,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_notes (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, FALSE));
+  bse_value_take_boxed (out_values++, bse_part_list_notes (self, channel, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, FALSE));
   
   return BSE_ERROR_NONE;
 }
@@ -626,7 +629,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_notes (self, tick, duration, note, note, TRUE));
+  bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, duration, note, note, TRUE));
   
   return BSE_ERROR_NONE;
 }
@@ -656,7 +659,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_notes (self, tick, 1, note, note, TRUE));
+  bse_value_take_boxed (out_values++, bse_part_list_notes (self, ~0, tick, 1, note, note, TRUE));
   
   return BSE_ERROR_NONE;
 }
@@ -802,7 +805,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_notes_exclusive (self, tick, duration, min_note, max_note);
+  bse_part_select_notes_exclusive (self, ~0, tick, duration, min_note, max_note);
   
   return BSE_ERROR_NONE;
 }
@@ -866,7 +869,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_notes (self, tick, duration, min_note, max_note, TRUE);
+  bse_part_select_notes (self, ~0, tick, duration, min_note, max_note, TRUE);
   
   return BSE_ERROR_NONE;
 }
@@ -899,7 +902,7 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_notes (self, tick, duration, min_note, max_note, FALSE);
+  bse_part_select_notes (self, ~0, tick, duration, min_note, max_note, FALSE);
   
   return BSE_ERROR_NONE;
 }
