@@ -75,7 +75,11 @@ gchar*          g_path_concat     (const gchar   *first_path,
 
 
 /* --- string options --- */
+gchar*          g_option_concat   (const gchar   *first_option,
+                                   ...);
 gboolean        g_option_check    (const gchar   *option_string,
+                                   const gchar   *option);
+gchar*          g_option_get      (const gchar   *option_string,
                                    const gchar   *option);
 
 

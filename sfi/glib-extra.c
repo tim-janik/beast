@@ -138,38 +138,60 @@ g_quark_intern_static (const gchar   *string)
   return g_quark_to_string (g_quark_from_static_string (string));
 }
 
-gchar*
-g_path_concat (const gchar *first_path,
-               ...)
+static gchar*
+delim_concat_varargs (const gchar *first_string,
+                      gchar        delim,
+                      va_list      var_args)
 {
   GString *gstring;
-  va_list args;
   gchar *s;
 
-  if (!first_path)
+  if (!first_string)
     return NULL;
 
-  gstring = g_string_new (first_path);
-  va_start (args, first_path);
-  s = va_arg (args, gchar*);
+  gstring = g_string_new (first_string);
+  s = va_arg (var_args, gchar*);
   while (s)
     {
       if (s[0])
         {
-          if (gstring->len && gstring->str[gstring->len - 1] != G_SEARCHPATH_SEPARATOR &&
-              s[0] != G_SEARCHPATH_SEPARATOR)
-            g_string_append_c (gstring, G_SEARCHPATH_SEPARATOR);
+          if (gstring->len && gstring->str[gstring->len - 1] != delim &&
+              s[0] != delim)
+            g_string_append_c (gstring, delim);
           g_string_append (gstring, s);
         }
-      s = va_arg (args, gchar*);
+      s = va_arg (var_args, gchar*);
     }
-  va_end (args);
 
   return g_string_free (gstring, FALSE);
 }
 
+gchar*
+g_path_concat (const gchar *first_path,
+               ...)
+{
+  va_list args;
+  gchar *s;
+  va_start (args, first_path);
+  s = delim_concat_varargs (first_path, G_SEARCHPATH_SEPARATOR, args);
+  va_end (args);
+  return s;
+}
+
 
 /* --- string options --- */
+gchar*
+g_option_concat (const gchar *first_option,
+                 ...)
+{
+  va_list args;
+  gchar *s;
+  va_start (args, first_option);
+  s = delim_concat_varargs (first_option, ':', args);
+  va_end (args);
+  return s;
+}
+
 static const gchar*
 g_option_find_value (const gchar *option_string,
                      const gchar *option)
@@ -199,6 +221,32 @@ g_option_find_value (const gchar *option_string,
   return valid ? p + l : NULL;
 }
 
+gchar*
+g_option_get (const gchar *option_string,
+              const gchar *option)
+{
+  const gchar *value = NULL;
+
+  if (option && option[0])
+    value = g_option_find_value (option_string, option);
+
+  if (!value)
+    return FALSE;                       /* option not present */
+  else switch (value[0])
+    {
+      gchar *s;
+    case ':':   return g_strdup ("1");  /* option was present, no modifier */
+    case 0:     return g_strdup ("1");  /* option was present, no modifier */
+    case '+':   return g_strdup ("1");  /* option was present, enable modifier */
+    case '-':   return NULL;            /* option was present, disable modifier */
+    case '=':                           /* option present with assignment */
+      value++;
+      s = strchr (value, ':');
+      return s ? g_strndup (value, s - value) : g_strdup (value);
+    default:    return NULL;            /* anything else, undefined */
+    }
+}
+
 gboolean
 g_option_check (const gchar *option_string,
                 const gchar *option)
@@ -209,14 +257,27 @@ g_option_check (const gchar *option_string,
     value = g_option_find_value (option_string, option);
 
   if (!value)
-    return FALSE;               /* option not present */
+    return FALSE;                       /* option not present */
   else switch (value[0])
     {
-    case ':':   return TRUE;    /* option was present, no modifier */
-    case 0:     return TRUE;    /* option was present, no modifier */
-    case '+':   return TRUE;    /* option was present, enable modifier */
-    case '-':   return FALSE;   /* option was present, disable modifier */
-    default:    return FALSE;   /* anything else, undefined */
+      gchar *s;
+    case ':':   return TRUE;            /* option was present, no modifier */
+    case 0:     return TRUE;            /* option was present, no modifier */
+    case '+':   return TRUE;            /* option was present, enable modifier */
+    case '-':   return FALSE;           /* option was present, disable modifier */
+    case '=':                           /* option present with assignment */
+      value++;
+      s = strchr (value, ':');
+      if (!s || s == value)             /* empty assignment */
+        return FALSE;
+      else switch (s[0])
+        {
+        case '0': case 'f': case 'F':
+        case 'n': case 'N':             /* false assigments */
+          return FALSE;
+        default: return TRUE;           /* anything else holds true */
+        }
+    default:    return FALSE;           /* anything else, undefined */
     }
 }
 

@@ -1,3 +1,7 @@
+Sat Nov  1 03:39:38 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added g_option_concat() and g_option_get().
+
 Mon Oct 27 19:56:12 2003  Tim Janik  <timj@gtk.org>
 
 	* sfifilecrawler.[hc]: added sfi_make_dirpath() to create directories
