@@ -1,3 +1,15 @@
+Tue Apr 16 13:00:43 2002  Tim Janik  <timj@gtk.org>
+
+	* test/simple-echo.bse: simple echo example.
+
+	* beast-gtk/bstradiotools.c: use category name + leaf index
+	for tool names.
+
+	* beast-gtk/bstsnetrouter.[hc]: provide a popup menu to select
+	modules to insert from.
+
+	* test/midi-test.bse: fixes due to BSE changes.
+
 Mon Apr 15 14:48:37 2002  Tim Janik  <timj@gtk.org>
 
 	* test/midi-test.bse: fix standard oscillator.

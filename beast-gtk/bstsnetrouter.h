@@ -63,6 +63,8 @@ struct _BstSNetRouter
 struct _BstSNetRouterClass
 {
   GnomeCanvasClass parent_class;
+
+  GtkItemFactory  *popup_factory;
 };
 
 

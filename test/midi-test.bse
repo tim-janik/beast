@@ -2,46 +2,41 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-04-15 13:40:17")
+  (modification-time "2002-04-16 10:57:42")
   (creation-time "2002-01-12 12:42:41")
   (name "Wave-Repository"))
 (BseMidiSynth::MIDI-Net
   (snet (BseSNet::MIDI-Instrument))
   (n-voices 4)
-  (modification-time "2002-04-15 13:40:17")
+  (modification-time "2002-04-16 10:57:42")
   (creation-time "2002-01-12 12:42:52")
   (blurb "Don't touch Routing")
   (name "MIDI-Net"))
 (BseSNet::MIDI-Instrument
-  (modification-time "2002-04-15 13:40:17")
+  (modification-time "2002-04-16 10:57:42")
   (creation-time "2002-01-12 12:42:55")
   (name "MIDI-Instrument")
-  (BseMidiKeyboard::MidiKeyboard
-    (name "MidiKeyboard")
-    (parasite f "BstRouterCoords" 2 388.000000 219.000000))
-  (BseOutPort::LeftOut
-    (port-name "left_out")
-    (name "LeftOut")
-    (source-input "input" BseSNet:1.BseMult:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 -21.000000 187.000000))
-  (BseOutPort::RightOut
-    (port-name "right_out")
-    (name "RightOut")
-    (source-input "input" BseSNet:1.BseMult:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 -34.000000 38.000000))
+  (BseSubKeyboard::SubKeyboard
+    (name "SubKeyboard")
+    (parasite f "BstRouterCoords" 2 405.000000 233.000000))
   (BseMult::BseMult-1
     (name "BseMult-1")
     (source-input "mono_in1" BseSNet:1.BseStandardOsc:1 "osc_out")
     (source-input "mono_in2" BseSNet:1.BseSimpleADSR:1 "adsr_out")
-    (parasite f "BstRouterCoords" 2 95.000000 122.000000))
+    (parasite f "BstRouterCoords" 2 199.000000 105.000000))
   (BseSimpleADSR::ADSR-Envelope
     (decay-time 30.000002)
     (name "ADSR-Envelope")
-    (source-input "gate_in" BseSNet:1.BseMidiKeyboard:1 "gate")
-    (parasite f "BstRouterCoords" 2 258.000000 68.000000))
+    (source-input "gate_in" BseSNet:1.BseSubKeyboard:1 "gate")
+    (parasite f "BstRouterCoords" 2 326.000000 103.000000))
   (BseStandardOsc::Main_Voice
     (fm-perc 27.777779)
     (name "Main_Voice")
-    (source-input "freq_in" BseSNet:1.BseMidiKeyboard:1 "frequency")
-    (source-input "sync_in" BseSNet:1.BseMidiKeyboard:1 "gate")
-    (parasite f "BstRouterCoords" 2 205.000000 215.500000)))
+    (source-input "freq_in" BseSNet:1.BseSubKeyboard:1 "frequency")
+    (source-input "sync_in" BseSNet:1.BseSubKeyboard:1 "gate")
+    (parasite f "BstRouterCoords" 2 254.000000 219.500000))
+  (BseSubInstrument::BseSubInstrument-1
+    (name "BseSubInstrument-1")
+    (source-input "left_out" BseSNet:1.BseMult:1 "mono_out")
+    (source-input "right_out" BseSNet:1.BseMult:1 "mono_out")
+    (parasite f "BstRouterCoords" 2 81.000000 78.500000)))

@@ -41,6 +41,8 @@ static void	  bst_snet_router_item_added    (BstSNetRouter          *router,
 static void	  bst_snet_router_viewable_changed (GtkWidget		*widget);
 static gboolean	  bst_snet_router_event		(GtkWidget		*widget,
 						 GdkEvent               *event);
+static gboolean	  bst_snet_router_button_press	(GtkWidget		*widget,
+						 GdkEventButton         *event);
 static gboolean	  bst_snet_router_root_event    (BstSNetRouter          *router,
 						 GdkEvent               *event);
 static void	  bst_snet_router_reset_tool	(BstSNetRouter		*router);
@@ -48,7 +50,25 @@ static void	  bst_snet_router_update_links	(BstSNetRouter		*router,
 						 BstCanvasSource        *csource);
 static void	  bst_snet_router_adjust_zoom	(BstSNetRouter		*router);
 static void	  bst_router_set_tool		(BstSNetRouter		*router);
-     
+static void	  bst_router_popup_select       (GtkWidget		*widget,
+						 gulong			 callback_action,
+						 gpointer                popup_data);
+
+
+/* --- menus --- */
+static GtkItemFactoryEntry popup_entries[] =
+{
+  { "/Modules",		NULL,		NULL,	0,	"<Title>",	0 },
+  { "/-----",		NULL,		NULL,	0,	"<Separator>",	0 },
+  { "/Audio _Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/Other _Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_Routing",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_Filters",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_Virtualization",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_Input & Output",	NULL,		NULL,	0,	"<Branch>",	0 },
+  { "/_Enhance",	NULL,		NULL,	0,	"<Branch>",	0 },
+};
+
 
 /* --- static variables --- */
 static gpointer            parent_class = NULL;
@@ -87,7 +107,11 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-  
+  GtkItemFactoryEntry *centries;
+  BseCategory *cats;
+  GSList *slist;
+  guint n_cats;
+
   parent_class = g_type_class_peek_parent (class);
   bst_snet_router_class = class;
   
@@ -95,6 +119,23 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   object_class->destroy = bst_snet_router_destroy;
   
   widget_class->event = bst_snet_router_event;
+  widget_class->button_press_event = bst_snet_router_button_press;
+
+  class->popup_factory = gtk_item_factory_new (GTK_TYPE_MENU, "<BstSnetRouter>", NULL);
+  gtk_accel_group_lock (class->popup_factory->accel_group);
+
+  /* construct menu entry list */
+  cats = bse_categories_match_typed ("/Modules/*", BSE_TYPE_SOURCE, &n_cats);
+  centries = bst_menu_entries_from_cats (n_cats, cats, bst_router_popup_select);
+  slist = bst_menu_entries_slist (n_cats, centries);
+  slist = bst_menu_entries_sort (slist);
+  slist = g_slist_concat (bst_menu_entries_slist (G_N_ELEMENTS (popup_entries), popup_entries), slist);
+
+  /* create entries and release allocations */
+  bst_menu_entries_create (class->popup_factory, slist, NULL);
+  g_slist_free (slist);
+  g_free (centries);
+  g_free (cats);
 }
 
 static void
@@ -273,6 +314,17 @@ bst_snet_router_rebuild (BstSNetRouter *router)
   bst_snet_router_update (router);
 
   bst_snet_router_adjust_region (router);
+}
+
+static void
+bst_router_popup_select (GtkWidget *widget,
+			 gulong     callback_action,
+			 gpointer   popup_data)
+{
+  BstSNetRouter *router = BST_SNET_ROUTER (widget);
+
+  if (router->rtools)
+    bst_radio_tools_set_tool (router->rtools, callback_action);
 }
 
 static void
@@ -858,6 +910,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	    }
 	  else if (clink && !csource)
 	    bst_canvas_link_toggle_view (clink);
+	  handled = TRUE;
 	}
       else if (event->button.button == 1 && router->rtools->tool_id == 1) /* finish link */
 	{
@@ -934,13 +987,14 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      bst_choice_destroy (choice);
 	      /* FIXME: get rid of artifacts left behind removal (mostly rect-ellipse) */
 	      gtk_widget_queue_draw (GTK_WIDGET (canvas));
+	      handled = TRUE;
 	    }
 	  else if (clink && !csource)
 	    {
 	      GtkWidget *choice;
 	      
 	      choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/LinkPopup",
-						BST_CHOICE_TITLE ("Source link"),
+						BST_CHOICE_TITLE ("Module link"),
 						BST_CHOICE_SEPERATOR,
 						BST_CHOICE (2, "Properties", PROPERTIES),
 						BST_CHOICE_SEPERATOR,
@@ -963,6 +1017,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      bst_choice_destroy (choice);
 	      /* FIXME: get rid of artifacts left behind removal (mostly rect-ellipse) */
 	      gtk_widget_queue_draw (GTK_WIDGET (canvas));
+	      handled = TRUE;
 	    }
 	}
     }
@@ -1020,6 +1075,31 @@ bst_snet_router_event (GtkWidget *widget,
   if (!handled && GTK_WIDGET_CLASS (parent_class)->event)
     handled = GTK_WIDGET_CLASS (parent_class)->event (widget, event);
   
+  return handled;
+}
+
+static gboolean
+bst_snet_router_button_press (GtkWidget      *widget,
+			      GdkEventButton *event)
+{
+  gboolean handled;
+
+  /* chain parent class' handler */
+  handled = GTK_WIDGET_CLASS (parent_class)->button_press_event (widget, event);
+
+  if (!handled && event->button == 3)
+    {
+      GtkItemFactory *popup_factory = BST_SNET_ROUTER_GET_CLASS (widget)->popup_factory;
+
+      /* we get here, if there was no clickable canvas item */
+      handled = TRUE;
+      bst_menu_popup (popup_factory,
+		      widget,
+		      NULL, NULL,
+		      event->x_root, event->y_root,
+		      event->button, event->time);
+    }
+
   return handled;
 }
 

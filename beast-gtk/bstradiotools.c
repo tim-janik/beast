@@ -201,14 +201,14 @@ bst_radio_tools_add_category (BstRadioTools    *rtools,
     name += next_uc;
 #endif
   
-  tip = g_strconcat (category->category + category->mindex + 1,
+  tip = g_strconcat (category->category + category->lindex + 1,
 		     " [",
 		     g_type_name (category->type),
 		     "]",
 		     NULL);
   bst_radio_tools_add_tool (rtools,
 			    tool_id,
-			    category->category + category->mindex + 1,
+			    category->category + category->lindex + 1,
 			    tip,
 			    bse_type_blurb (category->type),
 			    category->icon,

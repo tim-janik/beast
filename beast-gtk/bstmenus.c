@@ -26,6 +26,7 @@ struct _BstChoice
 {
   BstChoiceFlags type_and_flags;
   const gchar   *icon_stock_id;
+  BswIcon       *bsw_icon;
   const gchar   *name;
   gpointer       p_id;
 };
@@ -73,9 +74,9 @@ bst_menu_entries_sort (GSList *entry_slist)
 }
 
 GtkItemFactoryEntry*
-bst_menu_entries_from_cats (guint           n_cats,
-			    BseCategory    *cats,
-			    BstMenuCallback callback)
+bst_menu_entries_from_cats (guint              n_cats,
+			    const BseCategory *cats,
+			    BstMenuCallback    callback)
 {
   GtkItemFactoryEntry *entries, *entry;
 
@@ -272,14 +273,16 @@ bst_menu_add_accel_owner (GtkItemFactory  *ifactory,
 
 BstChoice*
 bst_choice_alloc (BstChoiceFlags type,
-		  const gchar   *icon_stock_id,
 		  const gchar   *choice_name,
-		  gpointer       choice_id)
+		  gpointer       choice_id,
+		  const gchar   *icon_stock_id,
+		  BswIcon       *icon)
 {
   BstChoice *choice = g_new (BstChoice, 1);
 
   choice->type_and_flags = type;
   choice->icon_stock_id = icon_stock_id;
+  choice->bsw_icon = icon ? bsw_icon_ref (icon) : NULL;
   choice->name = choice_name;
   choice->p_id = choice_id;
 
@@ -348,6 +351,14 @@ menu_item_add_activator (GtkWidget *widget,
 		      NULL);
 }
 
+static void
+free_choice (BstChoice *choice)
+{
+  if (choice->bsw_icon)
+    bsw_icon_unref (choice->bsw_icon);
+  g_free (choice);
+}
+
 void
 bst_choice_menu_add_choice_and_free (GtkWidget *menu,
 				     BstChoice *choice)
@@ -390,7 +401,7 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
       if (choice_type == BST_CHOICE_TYPE_TITLE)
 	bst_widget_modify_as_title (any);
     }
-  g_free (choice);
+  free_choice (choice);
 }
 
 void
@@ -532,7 +543,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 	  break;
 	}
 
-      g_free (choice);
+      free_choice (choice);
       
       choice = va_arg (args, BstChoice*);
     }

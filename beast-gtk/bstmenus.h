@@ -39,7 +39,7 @@ typedef void  (*BstMenuCallback)    (GtkWidget *owner,
 
 /* --- item factory helpers --- */
 GtkItemFactoryEntry* bst_menu_entries_from_cats	(guint			    n_cats,
-						 BseCategory		   *cats,
+						 const BseCategory	   *cats,
 						 BstMenuCallback	    callback);
 GSList*		     bst_menu_entries_slist	(guint			    n_ientries,
 						 const GtkItemFactoryEntry *ientries);
@@ -80,24 +80,24 @@ void	   bst_choice_destroy		  (GtkWidget		  *choice);
 
 /* --- BstChoice shortcuts --- */
 #define BST_CHOICE_TITLE(name)           (bst_choice_alloc (BST_CHOICE_TYPE_TITLE, \
-							    BST_STOCK_NONE, (name), 0))
+							    (name), 0, BST_STOCK_NONE, 0))
 #define BST_CHOICE(id, name, bst_icon)   (bst_choice_alloc (BST_CHOICE_TYPE_ITEM, \
-							    BST_STOCK_ ## bst_icon, \
-                                                            (name), (gpointer) (id)))
+							    (name), (gpointer) (id), \
+                                                            BST_STOCK_ ## bst_icon, 0))
 #define BST_CHOICE_D(id, name, bst_icon) (bst_choice_alloc (BST_CHOICE_TYPE_ITEM | \
 							    BST_CHOICE_FLAG_DEFAULT, \
-							    BST_STOCK_ ## bst_icon, \
-                                                            (name), (gpointer) (id)))
+                                                            (name), (gpointer) (id), \
+							    BST_STOCK_ ## bst_icon, 0))
 #define BST_CHOICE_S(id, name, icon, s)  (bst_choice_alloc (BST_CHOICE_TYPE_ITEM | \
 							    ((s) ? 0 : BST_CHOICE_FLAG_INSENSITIVE), \
-							     BST_STOCK_ ## icon, \
-                                                            (name), (gpointer) (id)))
+                                                            (name), (gpointer) (id), \
+							    BST_STOCK_ ## icon, 0))
 #define BST_CHOICE_SUBMENU(name,menu)    (bst_choice_alloc (BST_CHOICE_TYPE_SUBMENU, \
-							    BST_STOCK_NONE, (name), (menu)))
+							    (name), (menu), BST_STOCK_NONE, 0))
 #define BST_CHOICE_TEXT(name)            (bst_choice_alloc (BST_CHOICE_TYPE_TEXT, \
-							    BST_STOCK_NONE, (name), 0))
+							    (name), 0, BST_STOCK_NONE, 0))
 #define BST_CHOICE_SEPERATOR             (bst_choice_alloc (BST_CHOICE_TYPE_SEPARATOR, \
-							    BST_STOCK_NONE, NULL, 0))
+							    NULL, 0, BST_STOCK_NONE, 0))
 #define BST_CHOICE_END                   (NULL)
 
 
@@ -115,9 +115,10 @@ typedef enum
   BST_CHOICE_FLAG_MASK		= (~BST_CHOICE_TYPE_MASK)
 } BstChoiceFlags;
 BstChoice* bst_choice_alloc               (BstChoiceFlags          type,
-					   const gchar		  *icon_stock_id,
 					   const gchar            *choice_name,
-					   gpointer                choice_id);
+					   gpointer                choice_id,
+					   const gchar		  *icon_stock_id,
+					   BswIcon		  *bsw_icon);
 
 
 #ifdef __cplusplus
