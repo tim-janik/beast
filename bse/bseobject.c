@@ -517,9 +517,12 @@ bse_object_do_shutdown (BseObject *object)
 static void
 bse_object_do_destroy (BseObject *object)
 {
-  g_datalist_clear (&object->datalist);
-
+  /* remove object from hash list *before* clearing data list,
+   * since the object name is kept in the datalist!
+   */
   bse_object_names_ht_remove (object);
+
+  g_datalist_clear (&object->datalist);
 }
 
 void
@@ -864,7 +867,7 @@ bse_object_remove_notifiers_i (BseObject   *object,
   if (hook_list)
     {
       GHook *hook;
-      GQuark quark = mask & 1 ? g_quark_try_string (method) : 0;
+      GQuark quark = (mask & 1) ? g_quark_try_string (method) : 0;
 
       mask = ~mask;
 

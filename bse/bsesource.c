@@ -159,8 +159,12 @@ bse_source_do_shutdown (BseObject *object)
 
   g_return_if_fail (!BSE_SOURCE_PREPARED (source));
 
-  while (source->n_inputs)
-    BSE_SOURCE_GET_CLASS (source)->remove_input (source, source->n_inputs - 1);
+  if (source->n_inputs)
+    {
+      while (source->n_inputs)
+	BSE_SOURCE_GET_CLASS (source)->remove_input (source, source->n_inputs - 1);
+      BSE_NOTIFY (source, io_changed, NOTIFY (OBJECT, DATA));
+    }
 
   g_free (source->inputs);
   
@@ -507,9 +511,10 @@ bse_source_set_input (BseSource *source,
 
   BSE_SOURCE_GET_CLASS (source)->add_input (source, ichannel_id,
 					    input, ochannel_id, history);
-  
   bse_source_calc_history (input, ochannel_id);
-
+  BSE_NOTIFY (source, io_changed, NOTIFY (OBJECT, DATA));
+  BSE_NOTIFY (input, io_changed, NOTIFY (OBJECT, DATA));
+  
   bse_object_unref (BSE_OBJECT (input));
   bse_object_unref (BSE_OBJECT (source));
   
@@ -555,6 +560,7 @@ bse_source_remove_input (BseSource *source,
       {
 	bse_object_ref (BSE_OBJECT (source));
         BSE_SOURCE_GET_CLASS (source)->remove_input (source, i);
+	BSE_NOTIFY (source, io_changed, NOTIFY (OBJECT, DATA));
 	bse_object_unref (BSE_OBJECT (source));
 
 	return TRUE;
@@ -601,6 +607,7 @@ bse_source_clear_ichannel (BseSource *source,
     if (source->inputs[i].ichannel_id == ichannel_id)
       {
 	BSE_SOURCE_GET_CLASS (source)->remove_input (source, i);
+	BSE_NOTIFY (source, io_changed, NOTIFY (OBJECT, DATA));
 	break;
       }
 
@@ -614,8 +621,12 @@ bse_source_clear_ichannels (BseSource *source)
 
   bse_object_ref (BSE_OBJECT (source));
 
-  while (source->n_inputs)
-    BSE_SOURCE_GET_CLASS (source)->remove_input (source, source->n_inputs - 1);
+  if (source->n_inputs)
+    {
+      while (source->n_inputs)
+	BSE_SOURCE_GET_CLASS (source)->remove_input (source, source->n_inputs - 1);
+      BSE_NOTIFY (source, io_changed, NOTIFY (OBJECT, DATA));
+    }
 
   bse_object_unref (BSE_OBJECT (source));
 }

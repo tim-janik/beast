@@ -225,6 +225,8 @@ typedef	void	(*BseNotify_name_set)		(BseObject	*object,
 typedef	void	(*BseNotify_param_changed)	(BseObject	*object,
 						 BseParamSpec	*pspec,
 						 gpointer	 data);
+typedef	void	(*BseNotify_io_changed)		(BseSource	*source,
+						 gpointer	 data);
 typedef void	(*BseNotify_write_chars)	(BseText	*text,
 						 guint		 n_chars,
 						 const gchar	*chars,

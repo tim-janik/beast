@@ -1,3 +1,12 @@
+Sat Nov  6 19:21:06 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesource.c: notify outside world when input/output channels got
+	added/removed. we simply notify "io_changed" in this case for now.
+
+	* bseobject.c (bse_object_do_destroy): squeezed a bug that had been
+	causing random crashes in the last time. basically we left invalid
+	pointers in the object name hash table.
+
 Sat Nov  6 05:55:59 1999  Tim Janik  <timj@gtk.org>
 
 	* icons/snet.xcf: 
