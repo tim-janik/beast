@@ -42,7 +42,6 @@ typedef struct {
   const gchar  *tooltip;
   gulong        action_id;
   const gchar  *stock_icon;     /* stock_id for the icon or NULL */
-  const gchar  *options;
 } GxkAction;
 
 typedef struct {

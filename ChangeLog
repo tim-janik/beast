@@ -1,3 +1,7 @@
+Thu Jan 20 02:20:06 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkaction.[hc]: removed unused options field, code cleanups.
+
 Thu Jan 20 01:15:10 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/*.c:

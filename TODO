@@ -1,8 +1,4 @@
 FIXME(urgent):
-- add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
-- delete: GxkAction.options, GxkAction.key?
-- s/ActionSet/ActionLink/
-- implement GxkActionFactory like gxk_window_add_assortment_client()
 - bsewavetool: fix per-command docu to properly account for input.bsewave
 - start playback at play pointer position
 - add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
@@ -37,6 +33,7 @@ FIXME(urgent):
 - close pianoroll window in response to part::release  
 - add dialog to ask the user whether he really wants to delete the last link to a part.
 - make sfi_wstore_flush_fd() return -errno on errors and handle those in Wave::store()
+- add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 TODO:
 - add editable text fields to snet router
 - implement ResetAll according to: http://www.midi.org/about-midi/rp15.shtml (more: http://www.midi.org/about-midi/specinfo.shtml)
