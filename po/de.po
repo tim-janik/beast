@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-04 19:55+0200\n"
+"POT-Creation-Date: 2004-09-04 20:13+0200\n"
 "PO-Revision-Date: 2004-01-04 22:01+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -28,7 +28,7 @@ msgstr "Ein neues Projekt anlegen"
 
 #: beast-gtk/bstapp.c:70
 msgid "_Open..."
-msgstr "Ö_ffnen..."
+msgstr "_Öffnen..."
 
 #: beast-gtk/bstapp.c:70
 msgid "Open existing project"
@@ -45,7 +45,7 @@ msgstr "Ein vorhandenes Projekt in das momentan geöffnete einbinden"
 
 #: beast-gtk/bstapp.c:74
 msgid "_Import MIDI..."
-msgstr ""
+msgstr "MIDI Datei _importieren"
 
 #: beast-gtk/bstapp.c:74
 msgid "Import a standard MIDI file into the current project"
@@ -73,7 +73,7 @@ msgstr "Speichern _unter..."
 
 #: beast-gtk/bstapp.c:82
 msgid "Write project to a specific file"
-msgstr "Projekt in einer bestimmten Datei speichern"
+msgstr "Projekt unter einem bestimmten Dateinamen speichern"
 
 #: beast-gtk/bstapp.c:86
 msgid "_Quit"
@@ -156,9 +156,8 @@ msgid "New View"
 msgstr "Neue Ansicht"
 
 #: beast-gtk/bstapp.c:117
-#, fuzzy
 msgid "Create an extra view of the project"
-msgstr "Ein neues Projekt anlegen"
+msgstr "Eine neue Projektansicht öffnen"
 
 #: beast-gtk/bstapp.c:121
 msgid "_Play"
@@ -166,7 +165,7 @@ msgstr "_Wiedergabe"
 
 #: beast-gtk/bstapp.c:121
 msgid "Play or restart playback of the project"
-msgstr "Wiedergabe des projektes starten oder neustarten"
+msgstr "Wiedergabe des Projektes starten oder neustarten"
 
 #: beast-gtk/bstapp.c:123
 msgid "_Stop"
@@ -611,7 +610,7 @@ msgstr "Hinzufügen..."
 
 #: beast-gtk/bstkeybindings.c:51
 msgid "Bind a new key combination to a program function"
-msgstr ""
+msgstr "Neue Tastenkombination einer Programmfunktion zuweisen"
 
 #: beast-gtk/bstkeybindings.c:53
 msgid "Change..."
@@ -619,7 +618,7 @@ msgstr "Ändern..."
 
 #: beast-gtk/bstkeybindings.c:53
 msgid "Change the currently selected key binding"
-msgstr "Tastenverknüpfung ändern"
+msgstr "Tastenkombination ändern"
 
 #: beast-gtk/bstkeybindings.c:55 beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Raise"
@@ -627,7 +626,7 @@ msgstr "Erhöhen"
 
 #: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
-msgstr ""
+msgstr "Aktuelle Position der Tastenkombination nach oben verschieben"
 
 #: beast-gtk/bstkeybindings.c:57 beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Lower"
@@ -635,11 +634,11 @@ msgstr "Absenken"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
-msgstr ""
+msgstr "Aktuelle Position der Tastenkombination nach unten verschieben"
 
 #: beast-gtk/bstkeybindings.c:59
 msgid "Delete the currently selected key binding"
-msgstr "Tastenverknüpfung löschen"
+msgstr "Tastenkombination löschen"
 
 #: beast-gtk/bstkeybindings.c:61
 msgid "Load"
@@ -647,19 +646,19 @@ msgstr "Laden"
 
 #: beast-gtk/bstkeybindings.c:61
 msgid "Load a key binding set"
-msgstr ""
+msgstr "Laden einer Tastenkombinationskonfiguration"
 
 #: beast-gtk/bstkeybindings.c:237
 msgid "Load Key Binding"
-msgstr ""
+msgstr "Laden einer Tastenkombination"
 
 #: beast-gtk/bstkeybindings.c:432
 msgid "Key Binding"
-msgstr ""
+msgstr "Tastenkombination"
 
 #: beast-gtk/bstkeybindings.c:433
 msgid "Key combinations used to activate a function"
-msgstr ""
+msgstr "Tastenkombinationen die verwendet wird um eine Funktion zu aktivieren"
 
 #: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
 msgid "Function"
@@ -667,7 +666,7 @@ msgstr "Funktion"
 
 #: beast-gtk/bstkeybindings.c:436
 msgid "Functions to be activated for a key binding"
-msgstr ""
+msgstr "Funktion die bei einer Tastenkombination aktiviert wird"
 
 #: beast-gtk/bstkeybindings.c:438
 msgid "Parameter"
@@ -701,7 +700,7 @@ msgstr "Startvorgang"
 #. BEAST initialization
 #: beast-gtk/bstmain.c:141
 msgid "Initializers"
-msgstr ""
+msgstr "Initialisierung"
 
 #. parse rc file
 #: beast-gtk/bstmain.c:148
@@ -773,11 +772,11 @@ msgstr "Drop-Down-Knopf"
 
 #: beast-gtk/bstparam-choice.c:155
 msgid "Popup Options"
-msgstr ""
+msgstr "Auswahlfeld"
 
 #: beast-gtk/bstparam-choice.c:161
 msgid "Standard Option Menu"
-msgstr ""
+msgstr "Auswahlmenü"
 
 #: beast-gtk/bstparam-color-spinner.c:67
 msgid "Select Color"
@@ -796,7 +795,7 @@ msgstr "..."
 
 #: beast-gtk/bstparam-item-seq.c:146
 msgid "Item List"
-msgstr ""
+msgstr "Objektliste"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -3123,14 +3122,12 @@ msgid "License:"
 msgstr "Lizenz:"
 
 #: bse/bseautodoc.c:408 bse/bseautodoc.c:410
-#, fuzzy
 msgid "BSE-Objects"
-msgstr "Objekte"
+msgstr "BSE-Objekte"
 
 #: bse/bseautodoc.c:410
-#, fuzzy
 msgid " Object Reference"
-msgstr "Plugin Referenz"
+msgstr "Objekt Referenz"
 
 #: bse/bseautodoc.c:429
 msgid "Properties:"
