@@ -99,6 +99,7 @@ DOCS:
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
 - what kind of texi macros should be used to markup manual page contents?
   could WRITING.3 have a set of default macros showing this? [alper]
+- allow commas in @refBlurb{}, respectively Info BLURB = ","; texts [alper]
 
 Stefan Gui TODOs (priorities: 9=high, 0=low):
 8 - closing the BEAST window should ask (close/save/abort) if unsaved changes are
