@@ -1,3 +1,10 @@
+Sun Oct  5 07:02:00 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: changed generated code to contain a virtual
+	property_changed() function per inheritance level.
+	special cased Trigger() properties, we reset their value to false
+	after update_modules().
+
 Fri Oct  3 13:52:57 2003  Tim Janik  <timj@gtk.org>
 
 	* sfistore.[hc]: added sfi_rstore_new_open().

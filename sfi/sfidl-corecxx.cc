@@ -365,6 +365,7 @@ CodeGeneratorModule::run ()
       string ctName = TypeName (ci->name);
       string ctNameBase = TypeName (ci->name) + "Base";
       string ctProperties = TypeName (ci->name) + "Properties";
+      string ctPropertyID = TypeName (ci->name) + "PropertyID";
       vector<string> destroy_jobs;
       if (parser.fromInclude (ci->name))
         continue;
@@ -449,7 +450,7 @@ CodeGeneratorModule::run ()
       /* property IDs */
       if (ci->properties.begin() != ci->properties.end())
         {
-          printf ("protected:\n  enum PropertyID {\n");
+          printf ("protected:\n  enum %s {\n", ctPropertyID.c_str());
           vector<Param>::const_iterator pi = ci->properties.begin();
           printf ("    PROP_%s = 1,\n", cUC_NAME (pi->name));
           for (pi++; pi != ci->properties.end(); pi++)
@@ -472,9 +473,20 @@ CodeGeneratorModule::run ()
           printf ("    break;\n");
         }
       printf ("    };\n");
+      printf ("    property_changed ((%s) prop_id);\n", ctPropertyID.c_str());
       printf ("    update_modules();\n");
-      printf ("    if (static_data.property_changed)\n");
-      printf ("      (reinterpret_cast<%s*>(this)->*static_data.property_changed) ((PropertyID) prop_id);\n", ctName.c_str());
+      /* reset triggers */
+      printf ("    switch (prop_id) {\n");
+      for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
+        {
+          if (pi->pspec != "Trigger")
+            continue;
+          printf ("    case PROP_%s:\n", cUC_NAME (pi->name));
+          printf ("      %s = FALSE;\n", pi->name.c_str());
+          printf ("    break;\n");
+        }
+      printf ("    default: ;\n");
+      printf ("    };\n");
       printf ("  }\n");
       
       /* property getter */
@@ -493,15 +505,12 @@ CodeGeneratorModule::run ()
       /* static data */
       printf ("private:\n");
       printf ("  static struct StaticData {\n");
-      printf ("    void (%s::*property_changed) (PropertyID prop_id);\n", ctName.c_str());
+      printf ("    int dummy;\n");
       printf ("  } static_data;\n");
 
       /* property-changed hooking */
       printf ("protected:\n");
-      printf ("  static void set_property_changed (void (%s::*mfunc) (PropertyID))\n", ctName.c_str());
-      printf ("  {\n");
-      printf ("    static_data.property_changed = mfunc;\n");
-      printf ("  }\n");
+      printf ("  virtual void property_changed (%s) {}\n", ctPropertyID.c_str());
 
       /* methods */
       for (vector<Method>::const_iterator mi = ci->methods.begin(); mi != ci->methods.end(); mi++)
