@@ -572,9 +572,8 @@ bst_param_create (gpointer	owner,
 	{
 	  GtkWidget *menu;
 	  
-	  menu = g_object_connect (gtk_widget_new (GTK_TYPE_MENU, NULL),
-				   "swapped_signal::selection_done", bst_param_gtk_changed, bparam,
-				   NULL);
+	  menu = gtk_widget_new (GTK_TYPE_MENU,
+				 NULL);
 	  gtk_menu_set_accel_path (GTK_MENU (menu), "<BEAST-Param>/EnumPopup");
 	  while (ev->value_nick)
 	    {
@@ -589,6 +588,9 @@ bst_param_create (gpointer	owner,
 	    }
 	  
 	  gtk_option_menu_set_menu (GTK_OPTION_MENU (action), menu);
+	  g_object_connect (action,
+			    "swapped_signal::changed", bst_param_gtk_changed, bparam,
+			    NULL);
 	}
       group = bst_gmask_form (parent_container, action, FALSE);
       bst_gmask_set_prompt (group, prompt);
@@ -880,7 +882,7 @@ bst_param_update (BstParam *bparam)
 	  for (list = GTK_MENU_SHELL (any)->children; list; list = list->next)
 	    {
 	      GtkWidget *item = list->data;
-	      GtkEnumValue *ev = gtk_object_get_data_by_id (GTK_OBJECT (item), quark_evalues);
+	      GEnumValue *ev = gtk_object_get_data_by_id (GTK_OBJECT (item), quark_evalues);
 	      
 	      if (ev->value == g_value_get_enum (value))
 		{
@@ -1057,7 +1059,7 @@ bst_param_apply (BstParam *bparam,
       any = GTK_OPTION_MENU (action)->menu_item;
       if (any)
 	{
-	  GtkEnumValue *ev = gtk_object_get_data_by_id (GTK_OBJECT (any), quark_evalues);
+	  GEnumValue *ev = gtk_object_get_data_by_id (GTK_OBJECT (any), quark_evalues);
 	  
 	  g_value_set_enum (value, ev->value);
 	}

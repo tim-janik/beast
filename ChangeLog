@@ -1,3 +1,7 @@
+Wed Feb  6 02:40:30 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_create): fix option menu handling.
+
 Tue Feb  5 04:37:13 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsequence.[hc]: new simple widget handling BseSequence
