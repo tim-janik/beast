@@ -23,9 +23,7 @@
 #include	<glib.h>
 #include	<glib-object.h>
 
-
 G_BEGIN_DECLS
-
 
 /* --- macros --- */
 #if (GLIB_SIZEOF_LONG > 4)
@@ -245,6 +243,54 @@ guint   g_usignal_add_full       (gint           priority,
 				  GDestroyNotify destroy);
 void    g_usignal_notify         (gint8          usignal);
 #endif
+
+
+/* --- GType boilerplate --- */
+#ifndef G_DEFINE_TYPE
+#define G_DEFINE_TYPE(TN, t_n, T_P)                         G_DEFINE_TYPE_INTERNAL (TN, t_n, T_P, 0, parent_class, {})
+#define G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_)          G_DEFINE_TYPE_INTERNAL (TN, t_n, T_P, 0, parent_class, _C_)
+#define G_DEFINE_ABSTRACT_TYPE(TN, t_n, T_P)                G_DEFINE_TYPE_INTERNAL (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, parent_class, {})
+#define G_DEFINE_ABSTRACT_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_TYPE_INTERNAL (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, parent_class, _C_)
+#define G_IMPLEMENT_INTERFACE(TYPE_IFACE, iface_init)       { \
+  static const GInterfaceInfo g_implement_interface_info = { \
+    (GInterfaceInitFunc) iface_init \
+  }; \
+  g_type_add_interface_static (g_define_type_id, TYPE_IFACE, &g_implement_interface_info); \
+}
+#define G_DEFINE_TYPE_INTERNAL(TypeName, type_name, TYPE_PARENT, flags, type_parent_class, CODE) \
+\
+static void     type_name##_init              (TypeName        *self); \
+static void     type_name##_class_init        (TypeName##Class *klass); \
+static gpointer type_parent_class = NULL; \
+static void     type_name##_class_intern_init (gpointer klass) \
+{ \
+  type_parent_class = g_type_class_peek_parent (klass); \
+  type_name##_class_init ((TypeName##Class*) klass); \
+} \
+\
+GType \
+type_name##_get_type (void) \
+{ \
+  static GType g_define_type_id = 0; \
+  if (G_UNLIKELY (g_define_type_id == 0)) \
+    { \
+      static const GTypeInfo g_define_type_info = { \
+        sizeof (TypeName##Class), \
+        (GBaseInitFunc) NULL, \
+        (GBaseFinalizeFunc) NULL, \
+        (GClassInitFunc) type_name##_class_intern_init, \
+        (GClassFinalizeFunc) NULL, \
+        NULL,   /* class_data */ \
+        sizeof (TypeName), \
+        0,      /* n_preallocs */ \
+        (GInstanceInitFunc) type_name##_init, \
+      }; \
+      g_define_type_id = g_type_register_static (TYPE_PARENT, #TypeName, &g_define_type_info, flags); \
+      { CODE ; } \
+    } \
+  return g_define_type_id; \
+}
+#endif /* !G_DEFINE_TYPE */
 
 
 /* --- FIXME: roll our own 64Bit GScanner --- */
