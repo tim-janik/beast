@@ -240,6 +240,74 @@ bse_item_cross_unref (BseItem *owner,
 	       BSE_OBJECT_TYPE_NAME (ref_item));
 }
 
+static gboolean
+cross_list_func (BseItem *owner,
+		 BseItem *ref_item,
+		 gpointer data_p)
+{
+  gpointer *data = data_p;
+  BseItem *item = data[0];
+
+  if (item == ref_item)
+    data[1] = g_list_prepend (data[1], owner);
+
+  return TRUE;
+}
+
+GList*
+bse_item_list_cross_owners (BseItem *item)
+{
+  gpointer data[2] = { item, NULL };
+
+  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+
+  do
+    {
+      if (BSE_IS_CONTAINER (item))
+	bse_container_cross_forall (BSE_CONTAINER (item), cross_list_func, data);
+      item = item->container;
+    }
+  while (item);
+
+  return data[1];
+}
+
+static gboolean
+cross_check_func (BseItem *owner,
+		  BseItem *ref_item,
+		  gpointer data_p)
+{
+  gpointer *data = data_p;
+  BseItem *item = data[0];
+
+  if (item == ref_item)
+    {
+      data[1] = GINT_TO_POINTER (TRUE);
+
+      return FALSE;
+    }
+  else
+    return TRUE;
+}
+
+gboolean
+bse_item_has_cross_owners (BseItem *item)
+{
+  gpointer data[2] = { item, GINT_TO_POINTER (FALSE) };
+
+  g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
+
+  do
+    {
+      if (BSE_IS_CONTAINER (item))
+	bse_container_cross_forall (BSE_CONTAINER (item), cross_check_func, data);
+      item = item->container;
+    }
+  while (item);
+
+  return GPOINTER_TO_INT (data[1]);
+}
+
 BseSuper*
 bse_item_get_super (BseItem *item)
 {

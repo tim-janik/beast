@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -20,14 +20,14 @@
 #ifndef __BSE_ITEM_H__
 #define __BSE_ITEM_H__
 
-#include	<bse/bseobject.h>
+#include        <bse/bseobject.h>
 
 
 /* --- object type macros --- */
-#define	BSE_TYPE_ITEM		    (BSE_TYPE_ID (BseItem))
-#define BSE_ITEM(object)	    (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_ITEM, BseItem))
-#define BSE_ITEM_CLASS(class)	    (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_ITEM, BseItemClass))
-#define BSE_IS_ITEM(object)	    (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_ITEM))
+#define BSE_TYPE_ITEM               (BSE_TYPE_ID (BseItem))
+#define BSE_ITEM(object)            (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_ITEM, BseItem))
+#define BSE_ITEM_CLASS(class)       (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_ITEM, BseItemClass))
+#define BSE_IS_ITEM(object)         (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_ITEM))
 #define BSE_IS_ITEM_CLASS(class)    (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ITEM))
 #define BSE_ITEM_GET_CLASS(object)  ((BseItemClass*) (((BseObject*) (object))->bse_struct.bse_class))
 
@@ -39,65 +39,67 @@
 /* --- bse item flags --- */
 typedef enum                            /*< skip >*/
 {
-  BSE_ITEM_FLAG_PARENT_REF	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0)
+  BSE_ITEM_FLAG_PARENT_REF      = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0)
 } BseItemFlags;
-#define BSE_ITEM_FLAGS_USHIFT	       (BSE_OBJECT_FLAGS_USHIFT + 1)
+#define BSE_ITEM_FLAGS_USHIFT          (BSE_OBJECT_FLAGS_USHIFT + 1)
 
 
 /* --- BseItem object --- */
 struct _BseItem
 {
-  BseObject	parent_object;
+  BseObject     parent_object;
   
-  BseItem	*container;
+  BseItem       *container;
 };
 struct _BseItemClass
 {
   BseObjectClass parent_class;
 
-  void	(*set_container)  (BseItem	*item,
-			   BseItem	*container);
-  guint	 (*get_seqid)	  (BseItem	*item);
-  void	 (*seqid_changed) (BseItem	*item);
+  void  (*set_container)  (BseItem      *item,
+                           BseItem      *container);
+  guint  (*get_seqid)     (BseItem      *item);
+  void   (*seqid_changed) (BseItem      *item);
 };
 
-typedef void    (*BseItemCrossFunc)     (BseItem        *owner,
-					 BseItem        *ref_item,
-					 gpointer        data);
+typedef void    (*BseItemCrossFunc)        (BseItem        *owner,
+					    BseItem        *ref_item,
+					    gpointer        data);
 
 
 /* --- prototypes --- */
-guint		bse_item_get_seqid	(BseItem	 *item);
-void		bse_item_seqid_changed	(BseItem	 *item);
-gboolean	bse_item_has_anchestor	(BseItem	 *item,
-					 BseItem         *container);
-BseSuper*	bse_item_get_super	(BseItem	 *item);
-BseProject*	bse_item_get_project	(BseItem	 *item);
-gboolean	bse_item_has_ancestor	(BseItem	 *item,
-					 BseItem	 *ancestor);
-gchar* /*fr*/	bse_item_make_handle	(BseItem	 *item,
-					 gboolean	  named);
-void            bse_item_cross_ref      (BseItem         *owner,
-					 BseItem         *ref_item,
-					 BseItemCrossFunc destroy_func,
-					 gpointer         data);
-void            bse_item_cross_unref    (BseItem         *owner,
-					 BseItem         *ref_item);
-BseErrorType	bse_item_exec_proc	(BseItem	 *item,
-					 const gchar	 *procedure,
-					 ...);
-BseErrorType	bse_item_exec_void_proc	(BseItem	 *item,
-					 const gchar	 *procedure,
-					 ...);
-BseStorage*	bse_item_open_undo	(BseItem	 *item,
-					 const gchar	 *undo_group);
-void		bse_item_close_undo	(BseItem	 *item,
-					 BseStorage  	 *storage);
+guint           bse_item_get_seqid         (BseItem         *item);
+void            bse_item_seqid_changed     (BseItem         *item);
+gboolean        bse_item_has_anchestor     (BseItem         *item,
+					    BseItem         *container);
+BseSuper*       bse_item_get_super         (BseItem         *item);
+BseProject*     bse_item_get_project       (BseItem         *item);
+gboolean        bse_item_has_ancestor      (BseItem         *item,
+					    BseItem         *ancestor);
+gchar* /*fr*/   bse_item_make_handle       (BseItem         *item,
+					    gboolean         named);
+void            bse_item_cross_ref         (BseItem         *owner,
+					    BseItem         *ref_item,
+					    BseItemCrossFunc destroy_func,
+					    gpointer         data);
+void            bse_item_cross_unref       (BseItem         *owner,
+					    BseItem         *ref_item);
+gboolean        bse_item_has_cross_owners  (BseItem         *ref_item);
+GList* /*fr*/   bse_item_list_cross_owners (BseItem         *ref_item);
+BseErrorType    bse_item_exec_proc         (BseItem         *item,
+					    const gchar     *procedure,
+					    ...);
+BseErrorType    bse_item_exec_void_proc    (BseItem         *item,
+					    const gchar     *procedure,
+					    ...);
+BseStorage*     bse_item_open_undo         (BseItem         *item,
+					    const gchar     *undo_group);
+void            bse_item_close_undo        (BseItem         *item,
+					    BseStorage      *storage);
 
 
 /* --- internal --- */
-void		bse_item_set_container	(BseItem	*item,
-					 BseItem	*container);
+void            bse_item_set_container     (BseItem        *item,
+					    BseItem        *container);
 
 
 

@@ -42,6 +42,8 @@ GSList* g_slist_insert_before   (GSList        *slist,
 GList*  g_list_insert_before    (GList         *list,
 				 GList         *sibling,
 				 gpointer       data);
+GSList*	g_slist_remove_any	(GSList	       *list,
+				 gpointer	data);
 
 
 /* --- signal queue --- */

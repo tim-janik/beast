@@ -125,7 +125,7 @@ bse_song_sequencer_step (BseSong *song)
 					channel,
 					sequencer->next_pattern_row);
 	  
-	  bse_mixer_activate_voice (sequencer->va->voices[channel], note);
+	  bse_song_mixer_activate_voice (sequencer->va->voices[channel], note);
 	}
       
       sequencer->next_pattern_row++;
@@ -150,7 +150,7 @@ bse_song_sequencer_fill_hunk (BseSong	     *song,
   
   bse_song_sequencer_step (song);
   
-  bse_mixer_fill_buffer (sequencer);
+  bse_song_mixer_fill_buffer (sequencer);
   
   /* fill the hunk and clip the values
    */

@@ -34,6 +34,9 @@
 /* --- BseContainer object --- */
 typedef gboolean (*BseForallItemsFunc) (BseItem	 *item,
 					gpointer  data);
+typedef gboolean (*BseForallCrossFunc) (BseItem	 *owner,
+					BseItem  *ref_item,
+					gpointer  data);
 struct _BseContainer
 {
   BseSource	parent_object;
@@ -103,6 +106,9 @@ void            bse_container_cross_unref       (BseContainer    *container,
 						 BseItem         *ref_item);
 void		bse_container_uncross_item	(BseContainer    *container,
 						 BseItem         *item);
+void		bse_container_cross_forall	(BseContainer	*container,
+						 BseForallCrossFunc func,
+						 gpointer	 data);
 
 
 

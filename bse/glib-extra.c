@@ -567,3 +567,31 @@ g_pattern_spec_free (GPatternSpec *pspec)
   pspec->pattern_reversed = NULL;
   g_free (pspec);
 }
+
+GSList*
+g_slist_remove_any (GSList   *list,
+		    gpointer  data)
+{
+  GSList *node, *prev = NULL;
+
+  node = list;
+  while (node)
+    {
+      if (node->data == data)
+	{
+	  GSList *next = node->next;
+
+	  if (prev)
+	    prev->next = next;
+	  else
+	    list = next;
+	  g_slist_free_1 (node);
+	  node = next;
+	  continue;
+	}
+      prev = node;
+      node = prev->next;
+    }
+
+  return list;
+}

@@ -1,3 +1,34 @@
+Mon Jan 17 15:01:11 2000  Tim Janik  <timj@gtk.org>
+
+	* bsedefs.h:
+	* bsecontainer.c: provide asyncronous notification of cross-link
+	changes through a "cross_changes" notifier.
+
+	* glib-extra.[hc]: added g_slist_remove_any() to walk the whole list
+	and remove items, in case an item got added twice or more times.
+	added G_STRLOC macro that expands to a string, describing its current
+	source file location.
+
+	* bseitem.[hc]: supply bse_item_has_cross_owners() and
+	bse_item_list_cross_owners(), the return value needs to be
+	g_list_free()ed, no references are held on the items though.
+
+	* bsecontainer.[hc]: implemented bse_container_cross_forall() to walk
+	all cross references (do *not* modify the cross references during
+	execution of this function).
+
+	* bsesongmixer.c (bse_song_mixer_activate_voice): deal with NULL samples
+	in instruments.
+
+	* bsesongsequencer.c:
+	* bsesongmixer.c (bse_song_mixer_fill_buffer): namespace fixups.
+
+Mon Jan 17 12:59:16 2000  Tim Janik  <timj@gtk.org>
+
+	* bsechunk.[hc]: provide bse_chunk_get_trigger_state() that returns
+	whether a specified track of a chunk carries a positive trigger signal
+	or not.
+
 Mon Jan 17 11:07:16 2000  Tim Janik  <timj@gtk.org>
 
 	* bsehunkmixer.h: provide BSE_CLIP_SAMPLE_VALUE().

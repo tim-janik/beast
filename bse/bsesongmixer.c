@@ -24,9 +24,9 @@
 
 
 /* --- prototypes --- */
-static void	bse_mixer_activate_voice	(BseVoice		*voice,
+static void	bse_song_mixer_activate_voice	(BseVoice		*voice,
 						 BseNote		*note);
-static void	bse_mixer_fill_buffer		(BseSongSequencer	*sequencer);
+static void	bse_song_mixer_fill_buffer	(BseSongSequencer	*sequencer);
 
 
 /* --- functions --- */
@@ -39,8 +39,8 @@ static void	bse_mixer_fill_buffer		(BseSongSequencer	*sequencer);
  * wird das instrument nicht neu angeschlagen
  */
 static void
-bse_mixer_activate_voice (BseVoice *voice,
-			  BseNote  *note)
+bse_song_mixer_activate_voice (BseVoice *voice,
+			       BseNote  *note)
 {
   g_return_if_fail (voice != NULL);
   g_return_if_fail (note != NULL);
@@ -48,12 +48,10 @@ bse_mixer_activate_voice (BseVoice *voice,
   if (note->instrument)
     {
       BseInstrument *instrument = note->instrument;
-      BseSample *sample = instrument->sample;
+      BseSample *sample = instrument->type == BSE_INSTRUMENT_SAMPLE ? instrument->sample : NULL;
 
       /* we got a new instrument, so we need to strike a new note
        */
-      
-      g_return_if_fail (instrument->type == BSE_INSTRUMENT_SAMPLE);
 
       if (voice->active)
 	{
@@ -62,8 +60,7 @@ bse_mixer_activate_voice (BseVoice *voice,
 	  voice = bse_voice_make_poly_and_renew (voice);
 	}
 
-      if (note->note == BSE_NOTE_VOID ||
-	  !sample)
+      if (note->note == BSE_NOTE_VOID || !sample)
 	{
 	  /* this is actually a pretty senseless note
 	   * FIXME: olaf?
@@ -91,9 +88,9 @@ bse_mixer_activate_voice (BseVoice *voice,
 }
 
 static void
-bse_mixer_add_voice_to_buffer (BseSongSequencer *sequencer,
-			       BseVoice		*voice,
-			       BseMixValue	*buffer)
+bse_song_mixer_add_voice_to_buffer (BseSongSequencer *sequencer,
+				    BseVoice	     *voice,
+				    BseMixValue	     *buffer)
 {
   BseMixValue  *l_buffer;
   BseMixValue  *r_buffer;
@@ -233,7 +230,7 @@ bse_mixer_add_voice_to_buffer (BseSongSequencer *sequencer,
 /* fuellt den angegebenen buffer mit den aktiven voices
  */
 static void
-bse_mixer_fill_buffer (BseSongSequencer *sequencer)
+bse_song_mixer_fill_buffer (BseSongSequencer *sequencer)
 {
   BseMixValue *buffer = sequencer->mix_buffer;
   BseVoiceAllocator *va = sequencer->va;
@@ -263,7 +260,7 @@ bse_mixer_fill_buffer (BseSongSequencer *sequencer)
       
       /* add voice to the buffer
        */
-      bse_mixer_add_voice_to_buffer (sequencer, voice, buffer);
+      bse_song_mixer_add_voice_to_buffer (sequencer, voice, buffer);
 
       /* handle effects
        */

@@ -260,6 +260,8 @@ typedef	void	(*BseNotify_item_added)		(BseContainer	*container,
 typedef	void	(*BseNotify_item_removed)	(BseContainer	*container,
 						 BseItem	*item,
 						 gpointer	 data);
+typedef	void	(*BseNotify_cross_changes)	(BseContainer	*container,
+						 gpointer	 data);
 typedef void	(*BseNotify_seqid_changed)	(BseItem	*item,
 						 gpointer	 data);
 typedef void	(*BseNotify_set_container)	(BseItem	*item,

@@ -465,6 +465,29 @@ bse_chunk_complete_state (BseChunk *chunk)
     }
 }
 
+gboolean
+bse_chunk_get_trigger_state (BseChunk *chunk,
+			     guint     track)
+{
+  g_return_val_if_fail (chunk != NULL, FALSE);
+  g_return_val_if_fail (chunk->ref_count > 0, FALSE);
+  g_return_val_if_fail (track < chunk->n_tracks, FALSE);
+  
+  if (chunk->state_filled)
+    return chunk->state[track] > BSE_MAX_SAMPLE_VALUE / 2;
+  else if (chunk->hunk_filled)
+    {
+      BseSampleValue *hunk = chunk->hunk + track;
+      guint i;
+
+      for (i = 0; i < BSE_TRACK_LENGTH; i++)
+	if (hunk[i] > BSE_MAX_SAMPLE_VALUE / 2)
+	  return TRUE;
+    }
+
+  return FALSE;
+}
+
 BseSampleValue*
 bse_chunk_complete_hunk (BseChunk *chunk)
 {
