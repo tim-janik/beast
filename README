@@ -8,18 +8,18 @@ GNU GPL and GNU LGPL, that runs under unix.
 More information about the project can be found at the website and
 in the documents and manuals shipped with release tarballs.
 
-In order to build release tarballs, you need Gtk+-2.2, a recent version
-of the Gtk+-2.2 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
+In order to build release tarballs, you need Gtk+-2.4, a recent version
+of the Gtk+-2.4 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
 decoder library) around when compiling BEAST.
-Most distributions already ship these packages,
+Most distributions already ship with these packages,
 the sources can be found at:
 
 GnomeCanvas (GNOME-2.0):
   ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/
-Gtk+-2.2:
-  ftp://ftp.gtk.org/pub/gtk/v2.2/
+Gtk+-2.4:
+  ftp://ftp.gtk.org/pub/gtk/v2.4/
 Guile-1.6:
   http://www.gnu.org/software/guile/guile.html
 Ogg/Vorbis (at least version 1.0):

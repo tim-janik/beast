@@ -18,8 +18,8 @@ Publically consumable releases can be found via ftp:
 @anchor{requirements}
 @unnumbered Requirements
 
-To get a basic start, you'll also need Gtk+-2.2, a recent version
-of the Gtk+-2.2 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
+To get a basic start, you'll also need Gtk+-2.4, a recent version
+of the Gtk+-2.4 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
 decoder library) around when compiling BEAST. Most distributions
@@ -27,7 +27,7 @@ already ship these packages, their sources can be found at:
 
 @itemize
 @item @uref{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/,, GnomeCanvas} (GNOME-2.0)
-@item @uref{ftp://ftp.gtk.org/pub/gtk/v2.2/,, Gtk+-2.2}
+@item @uref{ftp://ftp.gtk.org/pub/gtk/v2.4/,, Gtk+-2.4}
 @item @uref{http://www.gnu.org/software/guile/guile.html,, Guile-1.6}
 @item @uref{http://www.xiph.org/ogg/vorbis/download/,, Ogg/Vorbis} (at least version 1.0)
 @item @uref{http://www.mars.org/home/rob/proj/mpeg/,, MAD} (@bse was developed against libmad-0.14.2)

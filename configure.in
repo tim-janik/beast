@@ -145,7 +145,7 @@ AC_DEFUN(AC_I18N_REQUIREMENTS,
 AC_DEFUN(AC_SFI_REQUIREMENTS,
 [
     dnl We need GLib with friends
-    PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.0.6 gobject-2.0 gmodule-2.0 gthread-2.0)
+    PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.4.0 gobject-2.0 gmodule-2.0 gthread-2.0)
     AC_SUBST(GLIB_CFLAGS)
     AC_SUBST(GLIB_LIBS)
     SFI_CFLAGS="$GLIB_CFLAGS"
@@ -325,7 +325,7 @@ AC_DEFUN(AC_GXK_REQUIREMENTS,
 [
     dnl required libraries
     DEPENDANCIES=
-    DEPENDANCIES="$DEPENDANCIES gtk+-2.0 >= 2.0.0"
+    DEPENDANCIES="$DEPENDANCIES gtk+-2.0 >= 2.4.0"
     DEPENDANCIES="$DEPENDANCIES pangoft2 >= 1.0"
     DEPENDANCIES="$DEPENDANCIES libart-2.0 >= 2.3.8"
     DEPENDANCIES="$DEPENDANCIES libgnomecanvas-2.0 >= 1.112.0"

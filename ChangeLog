@@ -1,3 +1,9 @@
+Tue Oct  5 19:38:39 2004  Tim Janik  <timj@gtk.org>
+
+	* site-download.texi:
+	* configure.in: 
+	* README: dependency upgrade from Gtk+-2.2 to Gtk+-2.4.
+
 Tue Oct  5 19:12:31 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkradget.[hc]: added hook:* arguments for radgets, so
