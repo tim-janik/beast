@@ -57,6 +57,9 @@ G_BEGIN_DECLS
 #define	g_scanner_remove_symbol( scanner, symbol )	G_STMT_START { \
   g_scanner_scope_remove_symbol ((scanner), 0, (symbol)); \
 } G_STMT_END
+#if GLIB_CHECK_VERSION (2, 4, 0)                // FIXME: remove <=GLib-2.4.0 dependant code
+#define g_value_set_boxed_take_ownership        g_value_take_boxed
+#endif
 
 
 /* --- abandon typesafety for some frequently used functions --- */
