@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-22 14:28+0200\n"
+"POT-Creation-Date: 2004-06-23 14:06+0200\n"
 "PO-Revision-Date: 2004-01-12 15:14+0100\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -55,9 +55,11 @@ msgstr "_Mbylle"
 msgid "_Save"
 msgstr "_Ruaj"
 
+#. GRUT modified this item
+#. GRUT modified this item
 #: beast-gtk/bstapp.c:82
 msgid "Save _As..."
-msgstr "Ruaje _Si"
+msgstr "Ruaje _Si..."
 
 #: beast-gtk/bstapp.c:86
 msgid "_Quit"
@@ -71,17 +73,19 @@ msgstr "_Preferime..."
 msgid "Rebuild"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstapp.c:96
 msgid "_About..."
-msgstr "_Informacione mbi..."
+msgstr "_Informacione..."
 
 #: beast-gtk/bstapp.c:99
 msgid "_Undo"
 msgstr "_Anullo"
 
+#. GRUT modified this item
 #: beast-gtk/bstapp.c:101
 msgid "_Redo"
-msgstr "_Rip�s�it"
+msgstr "_Përsërit"
 
 #: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
@@ -175,9 +179,10 @@ msgstr ""
 msgid "Rack editor"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstapp.c:805
 msgid "Preferences"
-msgstr "Preferime"
+msgstr "Preferimet"
 
 #: beast-gtk/bstapp.c:832
 msgid "Procedure Browser"
@@ -213,11 +218,12 @@ msgstr ""
 msgid "Input"
 msgstr "Input"
 
+#. GRUT modified this item
 #: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
 #: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
 #: plugins/artscompressor.idl:58
 msgid "Output"
-msgstr ""
+msgstr "Rezultati"
 
 #: beast-gtk/bstcanvassource.c:975
 msgid "(Hint)"
@@ -284,10 +290,10 @@ msgstr ""
 msgid "Open Project"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstfiledialog.c:396
-#, fuzzy
 msgid "Select File"
-msgstr "Zgjidh"
+msgstr "Zgjidh file"
 
 #: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
@@ -426,19 +432,19 @@ msgstr "Komenti"
 msgid "Type"
 msgstr "Lloji"
 
+#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:51
-#, fuzzy
 msgid "Add..."
-msgstr "Shto"
+msgstr "Shto..."
 
 #: beast-gtk/bstkeybindings.c:51
 msgid "Bind a new key combination to a program function"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:53
-#, fuzzy
 msgid "Change..."
-msgstr "Duke ngarkuar..."
+msgstr "Ndrysho..."
 
 #: beast-gtk/bstkeybindings.c:53
 msgid "Change the currently selected key binding"
@@ -453,9 +459,10 @@ msgstr "Përpjestim"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower"
-msgstr ""
+msgstr "Inferior"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
@@ -485,19 +492,19 @@ msgstr ""
 msgid "Key combinations used to activate a function"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
-#, fuzzy
 msgid "Function"
-msgstr "Pyetje"
+msgstr "Funksioni"
 
 #: beast-gtk/bstkeybindings.c:436
 msgid "Functions to be activated for a key binding"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstkeybindings.c:438
-#, fuzzy
 msgid "Parameter"
-msgstr "Motiv"
+msgstr "Parametri"
 
 #: beast-gtk/bstkeybindings.c:439
 msgid "Parameter to pass to functions upon activation"
@@ -548,9 +555,10 @@ msgstr "Plugins"
 msgid "LADSPA Plugins"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstmain.c:232
 msgid "Scripts"
-msgstr "Scripts"
+msgstr "Scripte"
 
 #. listen to BseServer notification
 #.
@@ -601,10 +609,10 @@ msgstr ""
 msgid "Standard Option Menu"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstparam-color-spinner.c:67
-#, fuzzy
 msgid "Select Color"
-msgstr "Zgjidh"
+msgstr "Zgjidh ngjyrën"
 
 #: beast-gtk/bstparam-color-spinner.c:116
 msgid "Color Entry"
@@ -662,9 +670,10 @@ msgstr "Pastro (fshi)"
 msgid "Clear the current selection"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstpartdialog.c:61
 msgid "Cut"
-msgstr "Pri"
+msgstr "Preje"
 
 #: beast-gtk/bstpartdialog.c:61
 msgid "Move the current selection into clipboard"
@@ -678,9 +687,10 @@ msgstr "Kopjo"
 msgid "Copy the current selection into clipboard"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstpartdialog.c:63
 msgid "Paste"
-msgstr "Ngjit"
+msgstr "Ngjite"
 
 #: beast-gtk/bstpartdialog.c:63
 msgid "Insert clipboard contents as current selection"
@@ -694,9 +704,10 @@ msgstr "Anullo"
 msgid "Undo last editing step"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstpartdialog.c:67
 msgid "Redo"
-msgstr "Përsërit"
+msgstr "Përsërite"
 
 #: beast-gtk/bstpartdialog.c:67
 msgid "Redo the last undone editing step"
@@ -871,10 +882,10 @@ msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstpatternctrl.c:91
-#, fuzzy
 msgid "Direction"
-msgstr "Përshkrimi"
+msgstr "Drejtimi"
 
 #: beast-gtk/bstpatternctrl.c:92
 msgid "The direction of cell movement each time an event or note was edited"
@@ -1205,9 +1216,10 @@ msgstr ""
 msgid "Generic Keys"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstpreferences.c:88
 msgid "Skin"
-msgstr ""
+msgstr "Skin (Veshja grafike)"
 
 #: beast-gtk/bstprocedure.c:296
 #, c-format
@@ -1235,22 +1247,25 @@ msgstr ""
 msgid "Percentage of CPU usage"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstprofiler.c:247
 msgid "UTime"
-msgstr ""
+msgstr "UTime"
 
 #: beast-gtk/bstprofiler.c:247
 msgid "Milliseconds of user CPU time used by thread"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstprofiler.c:248
 msgid "STime"
-msgstr ""
+msgstr "STime"
 
 #: beast-gtk/bstprofiler.c:248
 msgid "Milliseconds of system CPU time used by thread"
 msgstr ""
 
+#. GRUT modified this item
 #.
 #. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
 #. _("Thread State:\n"
@@ -1266,7 +1281,7 @@ msgstr ""
 #.
 #: beast-gtk/bstprofiler.c:262
 msgid "Nice"
-msgstr ""
+msgstr "Nice"
 
 #: beast-gtk/bstprofiler.c:262
 msgid "Thread priority from -20 (high) to +19 (low)"
@@ -1313,9 +1328,10 @@ msgstr ""
 msgid "Controller"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstrackitem.c:209
 msgid "Duplicate"
-msgstr "Dupliko"
+msgstr "Dyfisho"
 
 #: beast-gtk/bstrackitem.c:211
 msgid "Grow Horizontally"
@@ -1333,14 +1349,16 @@ msgstr ""
 msgid "Shrink Vertically"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:78
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
-msgstr "Etiketë"
+msgstr "Etiketa"
 
+#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:35
 msgid "Up"
-msgstr ""
+msgstr "Sipër"
 
 #: beast-gtk/bstrecords.idl:35
 msgid "Move upwards"
@@ -1362,18 +1380,19 @@ msgstr "Djathtas"
 msgid "Move to the right"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:38
 msgid "Down"
-msgstr ""
+msgstr "Poshtë"
 
 #: beast-gtk/bstrecords.idl:38
 msgid "Step downwards"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:42
-#, fuzzy
 msgid "None"
-msgstr "Shënim"
+msgstr "Asnjë"
 
 #: beast-gtk/bstrecords.idl:42
 msgid "Unspecified length"
@@ -1575,9 +1594,10 @@ msgstr ""
 msgid "Release counter"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:73
 msgid "Font Size"
-msgstr ""
+msgstr "Madhësia e gërmave"
 
 #: beast-gtk/bstrecords.idl:73
 msgid "Font size in pixels for labels displayed in synthesis networks"
@@ -1650,9 +1670,10 @@ msgstr ""
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bstrecords.idl:98 beast-gtk/bstrecords.idl:108
 msgid "Background Color"
-msgstr ""
+msgstr "Ngjyra e Sfondit"
 
 #: beast-gtk/bstrecords.idl:99 beast-gtk/bstrecords.idl:109
 msgid "Horizontal Bar Color"
@@ -1870,9 +1891,10 @@ msgstr ""
 msgid "Reset Loop"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/bststest.c:590
 msgid "Score"
-msgstr "Pik�"
+msgstr "Pikë"
 
 #: beast-gtk/bststest.c:598
 msgid "Find"
@@ -2011,9 +2033,10 @@ msgstr ""
 msgid "Error"
 msgstr "Gabim"
 
+#. GRUT modified this item
 #: beast-gtk/bstusermessage.c:95
 msgid "Warning"
-msgstr "Paralajmërim"
+msgstr "Kujdes"
 
 #: beast-gtk/bstusermessage.c:99
 msgid "Notice"
@@ -2023,10 +2046,11 @@ msgstr ""
 msgid "Diagnostic"
 msgstr ""
 
+#. GRUT modified this item
 #. shouldn't end up in dialogs
 #: beast-gtk/bstusermessage.c:107
 msgid "Debug"
-msgstr ""
+msgstr "Gjetja dhe korrigjimi i gabimeve"
 
 #: beast-gtk/bstusermessage.c:111
 msgid "Miscellaneous Message"
@@ -2144,9 +2168,10 @@ msgstr ""
 msgid "Piano Notes"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Repeat"
-msgstr ""
+msgstr "Përsërit"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Repeat playback within loop points"
@@ -2172,17 +2197,19 @@ msgstr ""
 msgid "Zoom"
 msgstr "Shkalla"
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "_Apply"
-msgstr ""
+msgstr "_Zbato"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "_Audio Sources"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "_Cancel"
-msgstr ""
+msgstr "_Anullo"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Demo"
@@ -2256,17 +2283,19 @@ msgstr ""
 msgid "_Synthesizers"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Tools"
-msgstr "_Vegla"
+msgstr "_Instrumentë"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Utilities"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_View"
-msgstr "_Shiko"
+msgstr "_Shfaq"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Virtualization"
@@ -2292,17 +2321,19 @@ msgstr ""
 msgid "Go to browser index"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-standard.xml.h:6
 msgid "Location"
-msgstr "Pozicioni"
+msgstr "Vendodhja"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:7
 msgid "Reload current page"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-standard.xml.h:8
 msgid "_Back"
-msgstr "_Kthehu mbrapa"
+msgstr "_Mbrapa"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:9
 msgid "_Find"
@@ -2312,9 +2343,10 @@ msgstr "_Gjej"
 msgid "_Forward"
 msgstr "_Vazhdo"
 
+#. GRUT modified this item
 #: beast-gtk/dialogs/radgets-standard.xml.h:11
 msgid "_Index"
-msgstr "_Tregues"
+msgstr "_Treguesi"
 
 #: beast-gtk/dialogs/radgets-standard.xml.h:12
 msgid "_Reload"
@@ -2381,12 +2413,13 @@ msgstr "Teksti i etiketës"
 msgid "Use underline"
 msgstr "Përdor nënvijë"
 
+#. GRUT modified this item
 #: beast-gtk/gxk/gxksimplelabel.c:138
 msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
 msgstr ""
-"Nëse vihet, një nënvijë në tekst tregon që gërma pasuese duhet përdorursi "
+"Nëse vihet, një nënvijë në tekst tregon që gërma pasuese duhet përdorur si "
 "kyç për përshpejtues \"mnemonic\""
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
@@ -2398,9 +2431,10 @@ msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
-msgstr "Justifikimi"
+msgstr "Orientimi"
 
 #: beast-gtk/gxk/gxksimplelabel.c:148
 msgid ""
@@ -2408,9 +2442,10 @@ msgid ""
 "This does NOT affect the alignment of the label within its allocation."
 msgstr ""
 
+#. GRUT modified this item
 #: beast-gtk/gxk/gxksimplelabel.c:152
 msgid "Pattern"
-msgstr "Motiv"
+msgstr "Motivi"
 
 #: beast-gtk/gxk/gxksimplelabel.c:153
 msgid ""
@@ -2432,17 +2467,19 @@ msgstr "Kyçi përshpejtues \"mnemonic\" për këtë etiketë"
 msgid "Mnemonic widget"
 msgstr "\"Mnemonic widget\""
 
+#. GRUT modified this item
 #: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
-"\"Widget\"-i që duhet aktivizuar kur shtypet një kyç \"mnemonic\" etikete"
+"\"Widget\"-i që duhet aktivuar kur shtypet një kyç \"mnemonic\" etikete"
 
+#. GRUT modified this item
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
 #.
 #: beast-gtk/gxk/gxksimplelabel.c:575
 msgid "..."
-msgstr ""
+msgstr "..."
 
 #: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
@@ -2796,9 +2833,10 @@ msgstr "Gjendja"
 msgid "The execution state of the thread"
 msgstr ""
 
+#. GRUT modified this item
 #: bse/bsecore.idl:380
 msgid "Priority"
-msgstr ""
+msgstr "Prioriteti"
 
 #: bse/bsecore.idl:380
 msgid ""
@@ -2806,9 +2844,10 @@ msgid ""
 "low priority one that is 'nice' to others"
 msgstr ""
 
+#. GRUT modified this item
 #: bse/bsecore.idl:383
 msgid "Processor"
-msgstr ""
+msgstr "Proçesori"
 
 #: bse/bsecore.idl:383
 msgid "The processor that this thread is currently being executed on"
@@ -3413,9 +3452,10 @@ msgstr ""
 msgid "Set the threshold"
 msgstr ""
 
+#. GRUT modified this item
 #: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Ratio"
-msgstr "Përpjestim"
+msgstr "Përpjestimi"
 
 #: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Set the compression ratio"
@@ -3554,9 +3594,10 @@ msgstr ""
 msgid "Filter Specification"
 msgstr ""
 
+#. GRUT modified this item
 #: plugins/bseiirfilter.c:131
 msgid "Order"
-msgstr "Rregulli"
+msgstr "Renditja"
 
 #: plugins/bseiirfilter.c:131
 msgid "Order of Filter"
