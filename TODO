@@ -4,7 +4,6 @@ FIXME(urgent):
 - WaveList: list items with basname first, add a field for full pathname
 - automatically change project name to basename fo saved file name
 - check instrument assignment, this often works only atthe second selection (from synth selection dialog)
-- don't save BseWave xinfos if they are NULL
 - add stock icons for Select/None Select/All Select/Invert
 - add a "Creating Skins" section to the beast manual page
 - bsewavetool: fix per-command docu to properly account for input.bsewave

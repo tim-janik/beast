@@ -349,7 +349,7 @@ bse_wave_store_private (BseObject  *object,
 
   if (!wave->locator_set || BSE_STORAGE_SELF_CONTAINED (storage))
     {
-      if (wave->xinfos)
+      if (wave->xinfos && wave->xinfos[0])
         {
           bse_storage_break (storage);
           bse_storage_puts (storage, "(xinfos ");
@@ -374,13 +374,16 @@ bse_wave_store_private (BseObject  *object,
           bse_storage_push_level (storage);
           if (wchunk->dcache->dhandle->setup.xinfos)
             {
-              bse_storage_break (storage);
-              bse_storage_puts (storage, "(xinfos ");
               gchar **xinfos = bse_xinfos_dup_consolidated (wchunk->dcache->dhandle->setup.xinfos, FALSE);
               xinfos = bse_xinfos_del_value (xinfos, "osc-freq");
-              bse_storage_put_xinfos (storage, xinfos);
+              if (xinfos && xinfos[0])
+                {
+                  bse_storage_break (storage);
+                  bse_storage_puts (storage, "(xinfos ");
+                  bse_storage_put_xinfos (storage, xinfos);
+                  bse_storage_putc (storage, ')');
+                }
               g_strfreev (xinfos);
-              bse_storage_putc (storage, ')');
             }
           bse_storage_break (storage);
           bse_storage_put_data_handle (storage, 0, wchunk->dcache->dhandle);
