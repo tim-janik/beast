@@ -85,7 +85,7 @@ BseItem*        bse_item_common_ancestor     (BseItem         *item1,
 					      BseItem         *item2);
 gchar* /*fr*/   bse_item_make_handle         (BseItem         *item,
 					      gboolean         named);
-gchar* /*fr*/   bse_item_make_nick_path      (BseItem         *item);
+gchar* /*fr*/   bse_item_make_uloc_path      (BseItem         *item);
 void            bse_item_cross_ref           (BseItem         *owner,
 					      BseItem         *ref_item,
 					      BseItemUncross   uncross_func);

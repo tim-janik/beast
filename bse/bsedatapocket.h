@@ -51,7 +51,7 @@ typedef struct _BseDataPocket		BseDataPocket;
 typedef struct _BseDataPocketClass	BseDataPocketClass;
 typedef union {
   guint64  v_int64;
-  gint     v_int;
+  guint    v_int;
   gfloat   v_float;
   gchar   *v_string;
   BseItem *v_object;

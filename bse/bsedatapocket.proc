@@ -85,6 +85,55 @@ METHOD (BseDataPocket, delete-entry) {
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseDataPocket, get-n-entries) {
+  HELP	= "Retrive the number of entries created in a data pocket.";
+  IN	= g_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
+			       BSE_TYPE_DATA_POCKET, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_uint ("n_entries", "N Entries", "The number of entries in use",
+			     0, G_MAXINT, 1, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseDataPocket *pocket = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_DATA_POCKET (pocket))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_uint (out_values++, pocket->n_entries);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseDataPocket, get-nth-entry-id) {
+  HELP	= "Retrive the ID of an entry in the data pocket by sequential index.";
+  IN	= g_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
+			       BSE_TYPE_DATA_POCKET, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("entry_index", "Entry Index", "index into number of entries present",
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_uint ("entry_id", "Entry ID", "The unique pocket entry ID (or 0 if there's no such entry)",
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseDataPocket *pocket = g_value_get_object (in_values++);
+  guint index           = g_value_get_uint (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_DATA_POCKET (pocket))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_uint (out_values++, index < pocket->n_entries ? pocket->entries[index].id : 0);
+
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseDataPocket, set-float) {
   HELP	= ("Set a named floating point value in a data pocket entry. "
 	   "Names are required to distinguish different values from each other "
@@ -110,7 +159,7 @@ METHOD (BseDataPocket, set-float) {
   gchar *name           = g_value_get_string (in_values++);
   gfloat v_float        = g_value_get_float (in_values++);
   BseDataPocketValue value;
-  gboolean fail = TRUE;
+  gboolean success = FALSE;
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
@@ -119,10 +168,10 @@ METHOD (BseDataPocket, set-float) {
   /* action */
   value.v_float = v_float;
   if (id)
-    fail = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_FLOAT, value);
+    success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_FLOAT, value);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, fail ? BSE_ERROR_NOT_FOUND : BSE_ERROR_NONE);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
 
   return BSE_ERROR_NONE;
 }
@@ -150,21 +199,21 @@ METHOD (BseDataPocket, set-int) {
   BseDataPocket *pocket = g_value_get_object (in_values++);
   guint id              = g_value_get_uint (in_values++);
   gchar *name           = g_value_get_string (in_values++);
-  gint v_int            = g_value_get_int (in_values++);
+  guint v_uint          = g_value_get_int (in_values++);
   BseDataPocketValue value;
-  gboolean fail = TRUE;
+  gboolean success = FALSE;
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  value.v_int = v_int;
+  value.v_int = v_uint;
   if (id)
-    fail = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_INT, value);
+    success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_INT, value);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, fail ? BSE_ERROR_NOT_FOUND : BSE_ERROR_NONE);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
 
   return BSE_ERROR_NONE;
 }
@@ -194,7 +243,7 @@ METHOD (BseDataPocket, set-object) {
   gchar *name           = g_value_get_string (in_values++);
   BseItem *v_object     = g_value_get_object (in_values++);
   BseDataPocketValue value;
-  gboolean fail = TRUE;
+  gboolean success = FALSE;
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket) ||
@@ -204,10 +253,10 @@ METHOD (BseDataPocket, set-object) {
   /* action */
   value.v_object = v_object;
   if (id)
-    fail = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_OBJECT, value);
+    success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_OBJECT, value);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, fail ? BSE_ERROR_NOT_FOUND : BSE_ERROR_NONE);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
 
   return BSE_ERROR_NONE;
 }
@@ -235,7 +284,7 @@ METHOD (BseDataPocket, set-string) {
   gchar *name           = g_value_get_string (in_values++);
   gchar *v_string       = g_value_get_string (in_values++);
   BseDataPocketValue value;
-  gboolean fail = TRUE;
+  gboolean success = FALSE;
 
   /* check parameters */
   if (!BSE_IS_DATA_POCKET (pocket))
@@ -244,10 +293,10 @@ METHOD (BseDataPocket, set-string) {
   /* action */
   value.v_string = v_string;
   if (id)
-    fail = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_STRING, value);
+    success = _bse_data_pocket_entry_set (pocket, id, g_quark_from_string (name), BSE_DATA_POCKET_STRING, value);
 
   /* set output parameters */
-  g_value_set_enum (out_values++, fail ? BSE_ERROR_NOT_FOUND : BSE_ERROR_NONE);
+  g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
 
   return BSE_ERROR_NONE;
 }
@@ -384,55 +433,6 @@ METHOD (BseDataPocket, get-string) {
 
   /* set output parameters */
   g_value_set_string (out_values++, type == BSE_DATA_POCKET_STRING ? value.v_string : 0);
-
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseDataPocket, get-n-entries) {
-  HELP	= "Retrive the number of entries created in a data pocket.";
-  IN	= g_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-			       BSE_TYPE_DATA_POCKET, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_uint ("n_entries", "N Entries", "The number of entries in use",
-			     1, G_MAXINT, 1, BSE_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-	GValue            *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseDataPocket *pocket = g_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-
-  /* set output parameters */
-  g_value_set_uint (out_values++, pocket->n_entries);
-
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseDataPocket, get-entry-id) {
-  HELP	= "Retrive the ID of an entry in the data pocket by sequential index.";
-  IN	= g_param_spec_object ("data_pocket", "Data Pocket", "The data pocket storing values",
-			       BSE_TYPE_DATA_POCKET, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_uint ("entry_index", "Entry Index", "index into number of entries present",
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_uint ("entry_id", "Entry ID", "The unique pocket entry ID (or 0 if there's no such entry)",
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-	GValue            *in_values,
-	GValue            *out_values)
-{
-  /* extract parameter values */
-  BseDataPocket *pocket = g_value_get_object (in_values++);
-  guint index           = g_value_get_uint (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_DATA_POCKET (pocket))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-
-  /* set output parameters */
-  g_value_set_uint (out_values++, index < pocket->n_entries ? pocket->entries[index].id : 0);
 
   return BSE_ERROR_NONE;
 }

@@ -44,15 +44,8 @@ struct _BseStorageBBlock
 
 
 /* --- macros --- */
-#define parse_or_return(scanner, token) { guint _t = (token); \
-                                          if (g_scanner_get_next_token (scanner) != _t) \
-                                            return _t; \
-                                        }
-#define peek_or_return(scanner, token) { GScanner *__s = (scanner); guint _t = (token); \
-                                          if (g_scanner_peek_next_token (__s) != _t) { \
-                                            g_scanner_get_next_token (__s); \
-                                            return _t; \
-                                        } }
+#define parse_or_return		bse_storage_scanner_parse_or_return
+#define peek_or_return		bse_storage_scanner_peek_or_return
 
 
 /* --- variables --- */

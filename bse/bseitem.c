@@ -426,10 +426,10 @@ bse_item_make_handle (BseItem *item,
 }
 
 gchar* /* free result */
-bse_item_make_nick_path (BseItem *item)
+bse_item_make_uloc_path (BseItem *item)
 {
   BseItem *project;
-  gchar *nick = NULL;
+  gchar *uloc = NULL;
 
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
 
@@ -437,14 +437,14 @@ bse_item_make_nick_path (BseItem *item)
 
   while (item && item != project)
     {
-      gchar *string = nick;
+      gchar *string = uloc;
 
-      nick = g_strconcat (BSE_OBJECT_ULOC (item), string ? "." : NULL, string, NULL);
+      uloc = g_strconcat (BSE_OBJECT_ULOC (item), string ? "." : NULL, string, NULL);
       g_free (string);
       item = item->parent;
     }
 
-  return nick;
+  return uloc;
 }
 
 static inline BseErrorType

@@ -350,9 +350,10 @@ load_wave_dsc (gpointer         data,
       *error_p = GSL_ERROR_FORMAT_UNKNOWN;
       return NULL;
     }
-  GSL_DEBUG_LOADER ("n_channels: %d sample_freq: %d bit_width: %u",
-		    fmt_header.n_channels, fmt_header.sample_freq, fmt_header.bit_per_sample);
-
+  if (0)
+    GSL_DEBUG_LOADER ("n_channels: %d sample_freq: %d bit_width: %u",
+		      fmt_header.n_channels, fmt_header.sample_freq, fmt_header.bit_per_sample);
+  
   dsc = gsl_new_struct0 (WaveDsc, 1);
   dsc->wdsc.name = g_strdup (fi->wfi.waves[0].name);
   dsc->wdsc.n_channels = fmt_header.n_channels;

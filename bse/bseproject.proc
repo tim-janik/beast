@@ -25,6 +25,7 @@
 #include        <bse/bsesnet.h>
 #include        <bse/bsemidisynth.h>
 #include        <bse/bsedatapocket.h>
+#include        <bse/bswprivate.h>
 
 
 AUTHOR	= "Tim Janik <timj@gtk.org>";
@@ -295,5 +296,103 @@ METHOD (BseProject, create-midi-synth) {
   g_value_set_object (out_values++, G_OBJECT (midi_synth));
   g_object_unref (midi_synth);
   
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, list-uloc-paths) {
+  HELP  = ("List uloc paths for all items of a specified type within this project. "
+	   "By their uloc paths, items are uniquely identifyable within a project.");
+  IN    = g_param_spec_object ("project", NULL, NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_ulong ("item_type", NULL, NULL,
+			      0, G_MAXLONG, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boxed ("uloc_paths", NULL, NULL,
+			      BSW_TYPE_VITER_STRING,
+			      BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  GType type          = g_value_get_ulong (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !g_type_is_a (type, BSE_TYPE_ITEM))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_boxed_take_ownership (out_values++,
+				    bse_project_make_uloc_paths (project, type));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, find-item) {
+  HELP  = "Find an item within a project, given its uloc path.";
+  IN    = g_param_spec_object ("project", NULL, NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("uloc_path", NULL, NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_object ("item", NULL, NULL,
+			       BSE_TYPE_ITEM, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  const gchar *string = g_value_get_string (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !string)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_object (out_values++, bse_project_item_from_uloc_path (project, string));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseProject, list-items-by-uloc) {
+  HELP  = "Retrive all items of a specific type within a project with matching uloc";
+  IN    = g_param_spec_object ("project", NULL, NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_ulong ("item_type", NULL, NULL,
+			      0, G_MAXLONG, 0, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("uloc", NULL, NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boxed ("item_list", NULL, NULL,
+			      BSW_TYPE_VITER_PROXY,
+			      BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  GType type          = g_value_get_ulong (in_values++);
+  const gchar *string = g_value_get_string (in_values++);
+  GList *list, *free_list;
+  BswVIter *iter;
+
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !string || !g_type_is_a (type, BSE_TYPE_ITEM))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  iter = bsw_viter_create (BSW_TYPE_VITER_PROXY, 1);
+  free_list = bse_objects_list_by_uloc (type, string);
+  for (list = free_list; list; list = list->next)
+    if (bse_item_get_project (list->data) == project)
+      {
+	bsw_viter_append_object (iter, list->data);
+	break;
+      }
+  g_list_free (free_list);
+
+  /* set output parameters */
+  g_value_set_boxed_take_ownership (out_values++, iter);
+
   return BSE_ERROR_NONE;
 }

@@ -101,6 +101,8 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseutils.h \
 	bsewave.h \
 	bsewaverepo.h \
+	bswcommon.h \
+	bswprivate.h \
 	glib-extra.h \
 	$(GSL_H_SRC) \
 	$(TOYPROF_H_SOURCES) \
@@ -169,12 +171,14 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseutils.c \
 	bsewave.c \
 	bsewaverepo.c \
+	bswcommon.c \
 	glib-extra.c \
 	$(GSL_C_SRC) \
 	$(TOYPROF_C_SOURCES) \
 @STRIP_END@
 # procedure sources
 bse_proc_sources = @STRIP_BEGIN@ \
+	bsecontainer.proc \
 	bsedatapocket.proc \
 	bseenums.proc \
 	bsehelloworld.proc \
@@ -188,6 +192,7 @@ bse_proc_sources = @STRIP_BEGIN@ \
 	bsewaverepo.proc \
 @STRIP_END@
 bse_proc_gen_sources = @STRIP_BEGIN@ \
+	bsecontainer.gen-proc.c \
 	bsedatapocket.gen-proc.c \
 	bseenums.gen-proc.c \
 	bsehelloworld.gen-proc.c \

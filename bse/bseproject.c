@@ -23,6 +23,7 @@
 #include	"bsesnet.h"
 #include	"bsemarshal.h"
 #include	"bsewaverepo.h"
+#include	"bswprivate.h"
 #include	"gslengine.h"
 #include	<string.h>
 #include	<stdlib.h>
@@ -198,23 +199,6 @@ bse_project_forall_items (BseContainer      *container,
     }
 }
 
-GList*
-bse_project_list_supers (BseProject *project,
-			 GType       super_type)
-{
-  GList *list = NULL;
-  GSList *slist;
-
-  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (g_type_is_a (super_type, BSE_TYPE_SUPER), NULL);
-
-  for (slist = project->supers; slist; slist = slist->next)
-    if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), super_type))
-      list = g_list_prepend (list, slist->data);
-
-  return list;
-}
-
 static gboolean
 make_nick_paths (BseItem *item,
 		 gpointer data_p)
@@ -222,9 +206,10 @@ make_nick_paths (BseItem *item,
   gpointer *data = data_p;
   GType item_type = (GType) data[1];
   gchar *prefix = data[2];
+  BswVIter *iter = data[0];
 
   if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
-    data[0] = g_list_prepend (data[0], g_strconcat (prefix, BSE_OBJECT_ULOC (item), NULL));
+    bsw_viter_append_string_take_ownership (iter, g_strconcat (prefix, BSE_OBJECT_ULOC (item), NULL));
   if (BSE_IS_CONTAINER (item))
     {
       data[2] = g_strconcat (prefix, BSE_OBJECT_ULOC (item), ".", NULL);
@@ -236,26 +221,29 @@ make_nick_paths (BseItem *item,
   return TRUE;
 }
 
-GList* /* free result (strings and list) */
-bse_project_list_nick_paths (BseProject *project,
+BswVIter*
+bse_project_make_uloc_paths (BseProject *project,
 			     GType       item_type)
 {
   gpointer data[3] = { NULL, (gpointer) item_type, "" };
+  BswVIter *iter;
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
   g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
+  iter = bsw_viter_create (BSW_TYPE_VITER_STRING, 16);
+  data[0] = iter;
   bse_container_forall_items (BSE_CONTAINER (project), make_nick_paths, data);
 
-  return g_list_reverse (data[0]);
+  return iter;
 }
 
 static BseItem*
-container_find_nick_item (BseContainer *container,
-			  gchar        *nick)
+container_find_uloc_item (BseContainer *container,
+			  gchar        *uloc)
 {
   BseItem *item;
-  gchar *next = strchr (nick, '.');
+  gchar *next = strchr (uloc, '.');
 
   if (next)
     {
@@ -263,27 +251,27 @@ container_find_nick_item (BseContainer *container,
       next = *next ? next : NULL;
     }
 
-  item = bse_container_lookup_item (container, nick);
+  item = bse_container_lookup_item (container, uloc);
 
   if (next)
-    item = BSE_IS_CONTAINER (item) ? container_find_nick_item (BSE_CONTAINER (item), next) : NULL;
+    item = BSE_IS_CONTAINER (item) ? container_find_uloc_item (BSE_CONTAINER (item), next) : NULL;
 
   return item;
 }
 
 BseItem*
-bse_project_item_from_nick_path (BseProject  *project,
-				 const gchar *nick_path)
+bse_project_item_from_uloc_path (BseProject  *project,
+				 const gchar *uloc_path)
 {
   BseItem *item;
-  gchar *nick;
+  gchar *uloc;
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (nick_path != NULL, NULL);
+  g_return_val_if_fail (uloc_path != NULL, NULL);
 
-  nick = g_strdup (nick_path);
-  item = container_find_nick_item (BSE_CONTAINER (project), nick);
-  g_free (nick);
+  uloc = g_strdup (uloc_path);
+  item = container_find_uloc_item (BSE_CONTAINER (project), uloc);
+  g_free (uloc);
 
   return item;
 }
@@ -433,10 +421,10 @@ bse_project_find_item (BseProject  *project,
     {
       gchar *oname;
 
+      item = slist->data;
       if (G_OBJECT_TYPE (item) != item_type)
 	continue;
 
-      item = slist->data;
       g_object_get (item, "name", &oname, NULL);
       if (oname && strcmp (oname, name) == 0)
 	break;

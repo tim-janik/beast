@@ -142,6 +142,19 @@ GTokenType	bse_storage_parse_param_value	(BseStorage	*storage,
 						 GParamSpec	*pspec);
 
 
+/* --- helpers --- */
+#define bse_storage_scanner_parse_or_return(scanner, token)  G_STMT_START{ \
+  guint _t = (token); \
+  if (g_scanner_get_next_token (scanner) != _t) \
+    return _t; \
+}G_STMT_END
+#define bse_storage_scanner_peek_or_return(scanner, token)   G_STMT_START{ \
+  GScanner *__s = (scanner); guint _t = (token); \
+  if (g_scanner_peek_next_token (__s) != _t) { \
+    g_scanner_get_next_token (__s); /* advance position for error-handler */ \
+    return _t; \
+  } \
+}G_STMT_END
 
 #ifdef __cplusplus
 }

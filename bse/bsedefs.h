@@ -22,7 +22,7 @@
 
 #undef          G_DISABLE_ASSERT
 #undef          G_DISABLE_CHECKS
-#include	<bse/glib-extra.h>
+#include	<bse/bswcommon.h>
 #include	<math.h>
 
 
@@ -95,8 +95,8 @@ typedef struct  _BseSource              BseSource;
 typedef struct  _BseSourceClass         BseSourceClass;
 typedef struct  _BseSuper               BseSuper;
 typedef struct  _BseSuperClass          BseSuperClass;
+typedef struct  _BseVoice		BseVoice;
 typedef struct  _BseWave                BseWave;
-typedef struct  _BseVoice               BseVoice;
 typedef struct  _BseWaveRepo            BseWaveRepo;
 typedef struct  _BseWaveRepoClass       BseWaveRepoClass;
 

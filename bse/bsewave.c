@@ -742,7 +742,7 @@ bse_wave_do_restore_private (BseObject  *object,
 	      g_free (wave_name);
 	      return ')';
 	    }
-	  g_print ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
+	  // g_print ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
 	  bse_wave_set_locator (wave, file_name, wave_name);
 	  expected_token = G_TOKEN_NONE; /* got ')' */
 	}
@@ -765,12 +765,13 @@ bse_wave_do_restore_private (BseObject  *object,
 	      GslDataCache *dcache;
 	      GslWaveChunk *wchunk;
 
-	      g_print ("add_wave_chunk %u %f %f jl%u pl%u c%lu s%lu e%lu w%p\n",
-		       parsed_wchunk.n_channels,
-		       parsed_wchunk.osc_freq, parsed_wchunk.mix_freq,
-		       parsed_wchunk.jump_loop, parsed_wchunk.ping_pong_loop,
-		       parsed_wchunk.loop_count, parsed_wchunk.loop_start, parsed_wchunk.loop_end,
-		       parsed_wchunk.wave_handle);
+	      if (0)
+		g_print ("add_wave_chunk %u %f %f jl%u pl%u c%lu s%lu e%lu w%p\n",
+			 parsed_wchunk.n_channels,
+			 parsed_wchunk.osc_freq, parsed_wchunk.mix_freq,
+			 parsed_wchunk.jump_loop, parsed_wchunk.ping_pong_loop,
+			 parsed_wchunk.loop_count, parsed_wchunk.loop_start, parsed_wchunk.loop_end,
+			 parsed_wchunk.wave_handle);
 	      dcache = gsl_data_cache_from_dhandle (parsed_wchunk.wave_handle,
 						    gsl_get_config ()->wave_chunk_padding * parsed_wchunk.n_channels);
 	      wchunk = _gsl_wave_chunk_create (dcache,
@@ -808,8 +809,9 @@ bse_wave_do_restore (BseObject  *object,
   if (BSE_OBJECT_CLASS (parent_class)->restore)
     expected_token = BSE_OBJECT_CLASS (parent_class)->restore (object, storage);
 
-  g_printerr ("BseWave: post parsing: %u wave chunks locator_set=%u\n",
-	      wave->n_wchunks, wave->locator_set);
+  if (0)
+    g_printerr ("BseWave: post parsing: %u wave chunks locator_set=%u\n",
+		wave->n_wchunks, wave->locator_set);
 
   return expected_token;
 }

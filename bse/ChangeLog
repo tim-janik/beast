@@ -1,3 +1,43 @@
+Wed Feb 13 17:32:45 2002  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.proc: add list-items() procedure.
+
+	* bsecontainer.[hc]:
+	* bseitem.[hc]:
+	* bseproject.[hc]:
+	fix functions returning lists of values.
+
+	* bseproject.proc: added procedures for item handling via
+	uloc paths.
+
+	* bseitem.proc: bug fixes. provide get-uloc-path().
+
+	* bsedatapocket.c: omit extraneous changed notification from
+	_bse_data_pocket_entry_set().
+
+	* bsedatapocket.proc: bug fixes.
+
+	* bsestorage.[hc]: export scanner convenience macros.
+
+	* gslloader-wav.c:
+	* bsewave.c: disable debugging output.
+
+Tue Feb 12 06:42:33 2002  Tim Janik  <timj@gtk.org>
+
+	* bswcommon.[hc] bswprivate.h: provide low-level glue code at the
+	BSE layer, to reduce wrapping complexity.
+	implement BswVIter, a value iterator which is used to return
+	lists of values from procedures.
+
+	* bsedatapocket.c:
+	(bse_data_pocket_do_store_private): 
+	(bse_data_pocket_do_restore_private): implement storage and parsing
+	abilities.
+
+Tue Feb 12 06:40:09 2002  Tim Janik  <timj@gtk.org>
+
+	* bseproject.c (bse_project_find_item): fix bad uninitialized variable.
+
 Mon Feb 11 22:31:37 2002  Tim Janik  <timj@gtk.org>
 
 	* gsltests.c (main): applied changes from stefan to support filter

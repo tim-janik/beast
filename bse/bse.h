@@ -61,6 +61,7 @@
 #include        <bse/bseutils.h>
 #include        <bse/bsewave.h>
 #include        <bse/bsewaverepo.h>
+#include        <bse/bswcommon.h>
 
 
 #endif /* __BSE_H__ */

@@ -19,7 +19,12 @@
 
 #include "bsemain.h"
 #include "bsemarshal.h"
+#include "bsestorage.h"
 
+
+/* --- macros --- */
+#define parse_or_return         bse_storage_scanner_parse_or_return
+#define peek_or_return          bse_storage_scanner_peek_or_return
 
 
 /* --- structures --- */
@@ -33,10 +38,14 @@ struct _Notify
 
 
 /* --- prototypes --- */
-static void	   bse_data_pocket_init		(BseDataPocket		*pocket);
-static void	   bse_data_pocket_class_init	(BseDataPocketClass	*class);
-static void	   bse_data_pocket_destroy	(BseObject		*object);
-static void	   bse_data_pocket_finalize	(GObject		*object);
+static void	    bse_data_pocket_init		(BseDataPocket		*pocket);
+static void	    bse_data_pocket_class_init		(BseDataPocketClass	*class);
+static void	    bse_data_pocket_destroy		(BseObject		*object);
+static void	    bse_data_pocket_finalize		(GObject		*object);
+static void	    bse_data_pocket_do_store_private	(BseObject		*object,
+							 BseStorage		*storage);
+static BseTokenType bse_data_pocket_do_restore_private	(BseObject		*object,
+							 BseStorage		*storage);
 
 
 /* --- variables --- */
@@ -45,6 +54,8 @@ static guint	signal_entry_added = 0;
 static guint	signal_entry_removed = 0;
 static guint	signal_entry_changed = 0;
 static Notify  *changed_notify_list = NULL;
+static GQuark	quark_create_entry = 0;
+static GQuark	quark_set_data = 0;
 
 
 /* --- functions --- */
@@ -77,10 +88,14 @@ bse_data_pocket_class_init (BseDataPocketClass *class)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
+  quark_create_entry = g_quark_from_static_string ("create-entry");
+  quark_set_data = g_quark_from_static_string ("set-data");
   
   gobject_class->finalize = bse_data_pocket_finalize;
   
   object_class->destroy = bse_data_pocket_destroy;
+  object_class->store_private = bse_data_pocket_do_store_private;
+  object_class->restore_private = bse_data_pocket_do_restore_private;
   
   signal_entry_added = bse_object_class_add_signal (object_class, "entry-added",
 						    bse_marshal_VOID__UINT,
@@ -177,8 +192,8 @@ changed_notify_handler (gpointer data)
 }
 
 static void
-notify_add (BseDataPocket *pocket,
-	    guint          entry_id)
+changed_notify_add (BseDataPocket *pocket,
+		    guint          entry_id)
 {
   Notify *notify;
 
@@ -211,7 +226,7 @@ pocket_uncross (BseItem *pitem,
 	    entry->items[n].value.v_object == item)
 	  {
 	    if (!have_this_id++)
-	      notify_add (pocket, entry->id);
+	      changed_notify_add (pocket, entry->id);
 	    entry->items[n].value.v_object = NULL;
 	  }
     }
@@ -345,13 +360,19 @@ _bse_data_pocket_entry_set (BseDataPocket     *pocket,
 			    BseDataPocketValue value)
 {
   BseDataPocketEntry *entry;
-  guint i, n;
-  
+  guint i, n, delete;
+
   g_return_val_if_fail (BSE_IS_DATA_POCKET (pocket), FALSE);
   g_return_val_if_fail (id > 0, FALSE);
   g_return_val_if_fail (data_quark > 0, FALSE);
   if (type == BSE_DATA_POCKET_OBJECT && value.v_object)
     g_return_val_if_fail (BSE_IS_ITEM (value.v_object), FALSE);
+
+  delete = ((type == BSE_DATA_POCKET_INT && value.v_int == 0) ||
+	    (type == BSE_DATA_POCKET_INT64 && value.v_int64 == 0) ||
+	    (type == BSE_DATA_POCKET_FLOAT && value.v_float == 0.0) ||
+	    (type == BSE_DATA_POCKET_STRING && value.v_string == NULL) ||
+	    (type == BSE_DATA_POCKET_OBJECT && value.v_object == NULL));
 
   for (i = 0; i < pocket->n_entries; i++)
     if (pocket->entries[i].id == id)
@@ -363,15 +384,23 @@ _bse_data_pocket_entry_set (BseDataPocket     *pocket,
   for (n = 0; n < entry->n_items; n++)
     if (entry->items[n].quark == data_quark)
       break;
+
+  /* check premature exit paths and grow as required */
   if (n >= entry->n_items)
     {
+      if (delete)
+	return TRUE;
+
       n = entry->n_items++;
       entry->items = g_realloc (entry->items, sizeof (entry->items[0]) * entry->n_items);
       entry->items[n].type = 0;
       entry->items[n].quark = data_quark;
       pocket->need_store++;
     }
+  else if (memcmp (&value, &entry->items[n].value, sizeof (value)) == 0)
+    return TRUE;
 
+  /* cleanup */
   if (entry->items[n].type == BSE_DATA_POCKET_STRING)
     g_free (entry->items[n].value.v_string);
   else if (entry->items[n].type == BSE_DATA_POCKET_OBJECT)
@@ -380,12 +409,8 @@ _bse_data_pocket_entry_set (BseDataPocket     *pocket,
       remove_cross_ref (pocket, value.v_object);
     }
 
-  /* deletion */
-  if ((type == BSE_DATA_POCKET_INT && value.v_int == 0) ||
-      (type == BSE_DATA_POCKET_INT64 && value.v_int64 == 0) ||
-      (type == BSE_DATA_POCKET_FLOAT && value.v_float == 0.0) ||
-      (type == BSE_DATA_POCKET_STRING && value.v_string == NULL) ||
-      (type == BSE_DATA_POCKET_OBJECT && value.v_object == NULL))
+  /* assignment */
+  if (delete)
     {
       entry->n_items--;
       if (n < entry->n_items)
@@ -407,7 +432,7 @@ _bse_data_pocket_entry_set (BseDataPocket     *pocket,
   else
     BSE_OBJECT_SET_FLAGS (pocket, BSE_ITEM_FLAG_STORAGE_IGNORE);
 
-  notify_add (pocket, entry->id);
+  changed_notify_add (pocket, entry->id);
 
   return TRUE;
 }
@@ -443,4 +468,206 @@ _bse_data_pocket_entry_get (BseDataPocket      *pocket,
   *value = entry->items[n].value;
 
   return entry->items[n].type;
+}
+
+static void
+bse_data_pocket_do_store_private (BseObject  *object,
+				  BseStorage *storage)
+{
+  BseDataPocket *pocket = BSE_DATA_POCKET (object);
+  guint i, j;
+  
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->store_private)
+    BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
+
+  for (i = 0; i < pocket->n_entries; i++)
+    {
+      BseDataPocketEntry *entry = pocket->entries + i;
+      
+      if (!entry->n_items)
+	continue;
+      
+      bse_storage_break (storage);
+      bse_storage_printf (storage, "(create-entry");
+      bse_storage_needs_break (storage);
+      bse_storage_push_level (storage);
+      
+      for (j = 0; j < entry->n_items; j++)
+	{
+	  bse_storage_break (storage);
+	  bse_storage_printf (storage,
+			      "(set-data \"%s\" %c ",
+			      g_quark_to_string (entry->items[j].quark),
+			      entry->items[j].type);
+	  switch (entry->items[j].type)
+	    {
+	      BseItem *obj;
+	      gchar *string;
+	      guint v_uint;
+	    case BSE_DATA_POCKET_INT:	bse_storage_printf (storage, "%u", entry->items[j].value.v_int);	break;
+	    case BSE_DATA_POCKET_FLOAT:	bse_storage_printf (storage, "%.17e", entry->items[j].value.v_float);	break;
+	    case BSE_DATA_POCKET_INT64:
+	      v_uint = entry->items[j].value.v_int64 >> 32;
+	      bse_storage_printf (storage, "%u ", v_uint);
+	      v_uint = entry->items[j].value.v_int64 & 0xffffffff;
+	      bse_storage_printf (storage, "%u", v_uint);
+	      break;
+	    case BSE_DATA_POCKET_STRING:
+	      string = g_strescape (entry->items[j].value.v_string, NULL);
+	      bse_storage_printf (storage, "\"%s\"", string);
+	      g_free (string);
+	      break;
+	    case BSE_DATA_POCKET_OBJECT:
+	      obj = entry->items[j].value.v_object;
+	      if (BSE_IS_ITEM (obj))
+		{
+		  BseProject *project = bse_item_get_project (obj);
+		  gchar *path = bse_container_make_item_path (BSE_CONTAINER (project), obj, TRUE);
+		  
+		  bse_storage_printf (storage, "(%s)", path);
+		  g_free (path);
+		}
+	      else
+		bse_storage_puts (storage, "nil");
+	      break;
+	    default:			g_assert_not_reached ();
+	    }
+	  bse_storage_putc (storage, ')');
+	}
+      bse_storage_pop_level (storage);
+      bse_storage_putc (storage, ')');
+    }
+}
+
+static BseTokenType
+parse_set_data (BseDataPocket *pocket,
+		guint	       id,
+		BseStorage    *storage)
+{
+  GScanner *scanner = storage->scanner;
+  BseDataPocketValue value;
+  GQuark quark;
+  guint type;
+  gboolean char_2_token;
+
+  parse_or_return (scanner, G_TOKEN_STRING);
+  quark = g_quark_from_string (scanner->value.v_string);
+
+  char_2_token = scanner->config->char_2_token;
+  scanner->config->char_2_token = FALSE;
+  g_scanner_get_next_token (scanner);
+  scanner->config->char_2_token = char_2_token;
+  if (scanner->token != G_TOKEN_CHAR)
+    return G_TOKEN_CHAR;
+  type = scanner->value.v_char;
+
+  switch (type)
+    {
+      gboolean negate;
+    case BSE_DATA_POCKET_INT:
+      parse_or_return (scanner, G_TOKEN_INT);
+      value.v_int = scanner->value.v_int;
+      break;
+    case BSE_DATA_POCKET_FLOAT:
+      negate = g_scanner_peek_next_token (scanner) == '-';
+      if (negate)
+	g_scanner_get_next_token (scanner);	/* eat '-' */
+      parse_or_return (scanner, G_TOKEN_FLOAT);
+      value.v_float = negate ? scanner->value.v_float : -scanner->value.v_float;
+      break;
+    case BSE_DATA_POCKET_INT64:
+      parse_or_return (scanner, G_TOKEN_INT);
+      peek_or_return (scanner, G_TOKEN_INT);
+      value.v_int64 = scanner->value.v_int;
+      value.v_int64 <<= 32;
+      g_scanner_get_next_token (scanner); /* read next int */
+      value.v_int64 |= scanner->value.v_int & 0xffffffff;
+      break;
+    case BSE_DATA_POCKET_STRING:
+      parse_or_return (scanner, G_TOKEN_STRING);
+      value.v_string = scanner->value.v_string;
+      break;
+    case BSE_DATA_POCKET_OBJECT:
+      if (g_scanner_get_next_token (scanner) == BSE_TOKEN_NIL)
+	value.v_object = NULL;
+      else
+	{
+	  gpointer item;
+
+	  if (scanner->token != '(')
+	    return '(';
+	  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+	  peek_or_return (scanner, ')');
+	  if (!storage->resolver)
+	    return bse_storage_warn_skip (storage,
+					  "unable to resolve reference `%s'",
+					  scanner->value.v_identifier);
+	  item = storage->resolver (storage->resolver_data,
+				    storage,
+				    BSE_TYPE_ITEM,
+				    scanner->value.v_identifier);
+	  value.v_object = item;
+	  g_scanner_get_next_token (scanner); /* eat ')' */
+	}
+      break;
+    default:
+      /* unmatched data type */
+      return bse_storage_warn_skip (storage,
+				    "invalid data type specification `%c' for \"%s\"",
+				    type,
+				    g_quark_to_string (quark));
+    }
+  peek_or_return (scanner, ')');
+
+  /* caution, value might stil point to scanner->value.v_string */
+  _bse_data_pocket_entry_set (pocket, id, quark, type, value);
+
+  g_scanner_get_next_token (scanner); /* eat ')' */
+
+  return G_TOKEN_NONE;
+}
+
+static BseTokenType
+bse_data_pocket_do_restore_private (BseObject  *object,
+				    BseStorage *storage)
+{
+  BseDataPocket *pocket = BSE_DATA_POCKET (object);
+  GScanner *scanner = storage->scanner;
+  GTokenType expected_token = BSE_TOKEN_UNMATCHED;
+
+  /* chain parent class' handler */
+  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
+    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+
+  /* support storage commands */
+  if (expected_token == BSE_TOKEN_UNMATCHED &&
+      g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+      g_quark_try_string (scanner->next_value.v_identifier) == quark_create_entry)
+    {
+      guint id = _bse_data_pocket_create_entry (pocket);
+
+      g_scanner_get_next_token (scanner); /* eat quark */
+      while (g_scanner_peek_next_token (scanner) != ')')
+	{
+	  g_scanner_get_next_token (scanner); /* read token */
+	  if (scanner->token == '(')
+	    {
+	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
+	      if (g_quark_try_string (scanner->value.v_identifier) == quark_set_data)
+		{
+		  expected_token = parse_set_data (pocket, id, storage);
+		  if (expected_token != G_TOKEN_NONE)
+		    return expected_token;
+		}
+	      else
+		bse_storage_warn_skip (storage, "unknown directive `%s'", scanner->next_value.v_identifier);
+	    }
+	  else
+	    return ')';
+	}
+      parse_or_return (scanner, ')');
+    }
+
+  return expected_token;
 }

@@ -49,12 +49,10 @@ struct _BseProjectClass
 /* --- prototypes --- */
 void		bse_project_start_playback	(BseProject	*project);
 void		bse_project_stop_playback	(BseProject	*project);
-GList*		bse_project_list_supers		(BseProject	*project,
-						 GType  	 super_type);
-GList* /*fr*/	bse_project_list_nick_paths	(BseProject	*project,
+BswVIter*	bse_project_make_uloc_paths	(BseProject	*project,
 						 GType  	 item_type);
-BseItem*	bse_project_item_from_nick_path	(BseProject	*project,
-						 const gchar	*nick_path);
+BseItem*	bse_project_item_from_uloc_path	(BseProject	*project,
+						 const gchar	*uloc_path);
 BseErrorType	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
 BseErrorType	bse_project_store_bse		(BseProject	*project,
