@@ -26,7 +26,7 @@ using namespace Sfi;
 namespace { // Anon
 using namespace Bse;
 
-static const guint PROBE_QUEUE_LENGTH = 5;
+static const guint PROBE_QUEUE_LENGTH = 3;
 static guint signal_probes = 0;
 
 class SourceProbes {
@@ -310,6 +310,7 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
     }
   };
   ProbeRequestSeq prs (cprseq);
+  /* sort probe-requests, so requests of a single source are adjhacent */
   stable_sort (prs.begin(), prs.end(), Sub::probe_requests_lesser);
   BseSource *current = NULL;
   const ProbeFeatures **channel_features = NULL;
@@ -318,9 +319,9 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
       if (!(*it)->source)
         continue;       /* can happen due to sources getting destroyed before asyncronous delivery */
       else if ((*it)->source != current)
-        {
+        {               /* open new request list */
           if (current)
-            {
+            {           /* commit old request list */
               SourceProbes *probes = SourceProbes::create_from_source (current);
               probes->queue_probe_request (channel_features);
               probes->commit_requests();
@@ -331,11 +332,11 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
           channel_features = g_new0 (const ProbeFeatures*, BSE_SOURCE_N_OCHANNELS (current));
         }
       guint channel_id = (*it)->channel_id;
-      if (channel_id < BSE_SOURCE_N_OCHANNELS (current))
+      if (channel_id < BSE_SOURCE_N_OCHANNELS (current))        /* add request */
         channel_features[channel_id] = (*it)->probe_features.c_ptr();
     }
   if (current)
-    {
+    {                   /* commit last request list */
       SourceProbes *probes = SourceProbes::create_from_source (current);
       probes->queue_probe_request (channel_features);
       probes->commit_requests();
