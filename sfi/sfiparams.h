@@ -227,6 +227,7 @@ GParamSpec*      sfi_pspec_to_serializable   (GParamSpec *pspec);
 #define	SFI_PARAM_HINT_DIAL	  "dial:"
 #define	SFI_PARAM_HINT_SCALE	  "scale:"
 #define	SFI_PARAM_HINT_LOG_SCALE  "log-scale:"
+#define	SFI_PARAM_HINT_TRIGGER    "trigger"     /* boolean hint for trigger buttons */
 /* readable and writable */
 #define	SFI_PARAM_DEFAULT	  SFI_PARAM_READWRITE SFI_PARAM_SERVE_GUI SFI_PARAM_SERVE_STORAGE
 #define	SFI_PARAM_GUI		  SFI_PARAM_READWRITE SFI_PARAM_SERVE_GUI
