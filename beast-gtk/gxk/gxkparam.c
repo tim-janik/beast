@@ -31,10 +31,10 @@ param_update_flags (GxkParam *param)
   param->editable = !param->constant;
   if (!param->constant && param->ueditable &&
       param->binding && param->binding->check_writable)
-    param->treadonly = !param->binding->check_writable (param);
+    param->breadonly = !param->binding->check_writable (param);
   else
-    param->treadonly = FALSE;
-  param->sensitive = param->constant || (!param->treadonly && param->ueditable);
+    param->breadonly = FALSE;
+  param->sensitive = param->constant || (!param->breadonly && !param->greadonly && param->ueditable);
   if (was_sensitive != param->sensitive)
     for (slist = param->objects; slist; slist = slist->next)
       if (GTK_IS_WIDGET (slist->data))
@@ -57,6 +57,7 @@ param_new (GParamSpec      *pspec,
                     !(pspec->flags & G_PARAM_WRITABLE) ||
                     g_param_spec_check_option (pspec, "ro");
   param->ueditable = TRUE;
+  param->greadonly = FALSE;
   param_update_flags (param);
   param->binding = binding;
   if (param->binding->setup)
@@ -97,7 +98,10 @@ param_call_update (GxkParam *param,
     {
       gboolean updating = param->updating;
       param->updating = TRUE;   /* protect value from change-notifications during setup */
+      gboolean was_greadonly = param->greadonly;
       ufunc (param, object);
+      if (was_greadonly != param->greadonly)
+        param_update_flags (param);     /* update() may change greadonly */
       param->updating = updating;
     }
 }

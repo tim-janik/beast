@@ -203,8 +203,7 @@ void         gxk_scrolled_window_unspare_space    (GtkScrolledWindow*scwin);
 GtkWidget*   gxk_scrolled_window_create           (GtkWidget        *child,
                                                    GtkShadowType     shadow_type,
                                                    gdouble           xrequest,
-                                                   gdouble           yrequest,
-                                                   gboolean          spare_space);
+                                                   gdouble           yrequest);
 
 /* functions to affect a widget tree's toplevel */
 void         gxk_toplevel_delete                  (GtkWidget        *widget);

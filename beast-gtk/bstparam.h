@@ -28,6 +28,11 @@ BstGMask*    bst_param_create_gmask   (GxkParam    *param,
                                        GtkWidget   *parent);
 
 
+/* --- SfiValue parameters --- */
+GxkParam*    bst_param_new_value      (GParamSpec          *pspec,
+                                       GxkParamValueNotify  notify,
+                                       gpointer             notify_data);
+
 /* --- SfiRec parameters --- */
 GxkParam*    bst_param_new_rec        (GParamSpec  *pspec,
                                        SfiRec      *rec);

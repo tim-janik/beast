@@ -2565,12 +2565,12 @@ requisition_to_aux_info (GtkWidget      *widget,
     {
       GtkScrolledWindow *scwin = GTK_SCROLLED_WINDOW (widget->parent);
       GtkRequisition requisition;
-      if (scwin->vscrollbar && scwin->vscrollbar_policy != GTK_POLICY_NEVER)
+      if (xyscale[0] >= 1.0 && scwin->vscrollbar && scwin->vscrollbar_policy != GTK_POLICY_NEVER)
         {
           gtk_widget_size_request (scwin->vscrollbar, &requisition);
           width += requisition.width;
         }
-      if (scwin->hscrollbar && scwin->hscrollbar_policy != GTK_POLICY_NEVER)
+      if (xyscale[1] >= 1.0 && scwin->hscrollbar && scwin->hscrollbar_policy != GTK_POLICY_NEVER)
         {
           gtk_widget_size_request (scwin->hscrollbar, &requisition);
           height += requisition.height;
@@ -2682,14 +2682,12 @@ GtkWidget*
 gxk_scrolled_window_create (GtkWidget        *child,
                             GtkShadowType     shadow_type,
                             gdouble           xrequest,
-                            gdouble           yrequest,
-                            gboolean          spare_space)
+                            gdouble           yrequest)
 {
-  GtkWidget *scwin = g_object_new (GXK_TYPE_SCROLLED_WINDOW,
+  GtkWidget *scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
                                    "visible", TRUE,
                                    "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
                                    "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-                                   "spare-space", spare_space,
                                    NULL);
   child = gtk_widget_get_toplevel (child);
   GtkWidget *viewport = g_object_new (GTK_TYPE_VIEWPORT,

@@ -265,7 +265,7 @@ bst_param_view_rebuild (BstParamView *self)
 		    "homogeneous", FALSE,
 		    "border_width", border_width,
 		    NULL);
-      GtkWidget *scwin = gxk_scrolled_window_create (gcontainer, GTK_SHADOW_NONE, 1, 0.8, TRUE);
+      GtkWidget *scwin = gxk_scrolled_window_create (gcontainer, GTK_SHADOW_NONE, 1, 0.8);
       gtk_container_add (GTK_CONTAINER (self), scwin);
     }
   

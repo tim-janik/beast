@@ -37,8 +37,9 @@ typedef struct {
   guint            editable : 1;  /* whether widgets should be editable */
   guint            sensitive : 1; /* whether widgets should be sensitive */
   guint		   constant : 1;  /* whether binding allowes writes */
-  guint		   treadonly : 1; /* binding is temporarily RO */
   guint		   ueditable : 1; /* user determined editability */
+  guint		   breadonly : 1; /* binding is temporarily RO */
+  guint		   greadonly : 1; /* GUI is temporarily RO */
   /* binding data */
   GxkParamBinding *binding;
   union {

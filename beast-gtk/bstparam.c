@@ -83,6 +83,7 @@ bst_param_create_gmask (GxkParam    *param,
                         const gchar *editor_name,
                         GtkWidget   *parent)
 {
+  SfiProxy proxy = bst_param_get_proxy (param);
   const gchar *group;
   GtkWidget *xframe, *action, *prompt = NULL;
   BstGMask *gmask;
@@ -125,9 +126,20 @@ bst_param_create_gmask (GxkParam    *param,
 
   expand_action = !prompt || gxk_widget_check_option (action, "hexpand");
   gmask = bst_gmask_form (parent, action, expand_action ? BST_GMASK_BIG : BST_GMASK_INTERLEAVE);
+  if (BSE_IS_SOURCE (proxy) && sfi_pspec_check_option (param->pspec, "automate"))
+    {
+      GtkWidget *automation = gxk_param_create_editor (param, "automation");
+      if (prompt)
+        {
+          GtkBox *hbox = g_object_new (GTK_TYPE_HBOX, "visible", TRUE, NULL);
+          gtk_box_pack_start (hbox, gtk_widget_get_toplevel (prompt), FALSE, TRUE, 0);
+          gtk_box_pack_end (hbox, automation, FALSE, TRUE, 0);
+        }
+      else
+        prompt = automation;
+    }
   if (prompt)
     bst_gmask_set_prompt (gmask, prompt);
-  
   if (sfi_pspec_check_option (param->pspec, "dial"))
     {
       GtkWidget *dial = gxk_param_create_editor (param, "dial");
@@ -147,6 +159,18 @@ bst_param_create_gmask (GxkParam    *param,
   bst_gmask_pack (gmask);
   gxk_param_update (param);
   return gmask;
+}
+
+/* --- value binding --- */
+GxkParam*
+bst_param_new_value (GParamSpec          *pspec,
+                     GxkParamValueNotify  notify,
+                     gpointer             notify_data)
+{
+  GxkParam *param = gxk_param_new_value (pspec, notify, notify_data);
+  if (param)
+    gxk_param_set_size_group (param, param_size_group);
+  return param;
 }
 
 /* --- proxy binding --- */
@@ -341,6 +365,7 @@ bst_param_xframe_check_button (GxkParam *param,
 #include "bstparam-scale.c"
 #include "bstparam-searchpath.c"
 #include "bstparam-time.c"
+#include "bstparam-automation.c"
 void
 _bst_init_params (void)
 {
@@ -359,6 +384,7 @@ _bst_init_params (void)
   gxk_param_register_editor (&param_note_spinner, NULL);
   gxk_param_register_editor (&param_proxy, NULL);
   gxk_param_register_editor (&param_item_seq, NULL);
+  gxk_param_register_editor (&param_automation, NULL);
   gxk_param_register_editor (&param_scale1, NULL);
   gxk_param_register_editor (&param_scale2, NULL);
   gxk_param_register_editor (&param_scale3, NULL);

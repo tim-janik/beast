@@ -1,3 +1,21 @@
+Tue Sep 14 13:35:26 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-automation.c: new parameter type, to adjust 
+	automation settings of a property.
+
+	* beast-gtk/bstparam.[hc]: introduce bst_param_new_value() which
+	wraps bst_param_new_value(), but also enables size grouping for
+	the parameter editors.
+	bst_param_create_gmask(): create automation editor for :automate:
+	properties.
+
+	* beast-gtk/gxk/gxkparam.[hc]: support temorary GUI readonly flag.
+
+	* beast-gtk/gxk/gxkutils.[hc]:
+	gxk_widget_proxy_requisition(): request extra vscrollbar space only if
+	horizontal downscaling is disabled. same for vertical dimension.
+	gxk_scrolled_window_create(): removed useless argument changed callers.
+
 Mon Sep 13 21:52:07 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkutils.[hc]: removed gxk_object_derive(), a suitable

@@ -164,7 +164,7 @@ bst_preferences_build_rec_editor (SfiRec      *rec,
   else
     sfi_ring_free (params);
 
-  return gxk_scrolled_window_create (vbox, GTK_SHADOW_NONE, 1, 0.8, FALSE);
+  return gxk_scrolled_window_create (vbox, GTK_SHADOW_NONE, 1, 0.8);
 }
 
 static void
