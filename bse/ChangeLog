@@ -1,3 +1,20 @@
+Wed Jan 12 23:11:31 2000  Tim Janik  <timj@gtk.org>
+
+	* bseplugin.[hc]: exported enum types support.
+
+	* bseexports.h: provide support for auto-generated exported enum
+	types.
+
+	* bseenums.[hc]: provide bse_enum_type_register() and
+	bse_enum_complete_info () to register exported enums.
+
+	* bsestorage.c (bse_storage_parse_param_value): humpf, flags value
+	parsing case was missing.
+	(bse_storage_put_param): store enum values by names to avoid
+	ambiguities.
+
+	* mkenums.pl (parse_trigraph): allow white spaces in nick names.
+
 Sun Jan  9 22:58:42 2000  Tim Janik  <timj@gtk.org>
 
 	* mkenums.pl: enforce real trigraphs (again), so /*< skip >*/

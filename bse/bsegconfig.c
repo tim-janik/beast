@@ -360,7 +360,7 @@ bse_gconfig_revert (BseGConfig *gconf)
   
   g_return_if_fail (BSE_IS_GCONFIG (gconf));
   
-  bse_object_ref (gconf);
+  bse_object_ref (BSE_OBJECT (gconf));
   
   BSE_GCONFIG_GET_CLASS (gconf)->revert (gconf);
   
@@ -377,7 +377,7 @@ bse_gconfig_revert (BseGConfig *gconf)
     }
   while (class);
   
-  bse_object_unref (gconf);
+  bse_object_unref (BSE_OBJECT (gconf));
 }
 
 static void

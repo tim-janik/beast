@@ -19,6 +19,7 @@
 
 #include	"bseparamcol.c"
 #include	"bseitem.h"
+#include	"bseexports.h"
 #include	<string.h>
 
 

@@ -142,10 +142,9 @@ typedef enum
   BSE_DEBUG_OBJECTS		= (1 << 2),
   BSE_DEBUG_NOTIFY		= (1 << 3),
   BSE_DEBUG_PLUGINS		= (1 << 4),
-  BSE_DEBUG_REGS		= (1 << 5),
-  BSE_DEBUG_CHUNKS		= (1 << 6),
-  BSE_DEBUG_LOOP		= (1 << 7),
-  BSE_DEBUG_PCM			= (1 << 8)
+  BSE_DEBUG_CHUNKS		= (1 << 5),
+  BSE_DEBUG_LOOP		= (1 << 6),
+  BSE_DEBUG_PCM			= (1 << 7)
 } BseDebugFlags;
 typedef enum			/*< skip >*/
 {
@@ -213,20 +212,20 @@ extern const gchar *bse_log_domain_bse;
 
 
 /* --- BSE function types --- */
-typedef	void		(*BseFunc)		(void);
-typedef BseTokenType	(*BseTryStatement)	(gpointer        func_data,
-						 BseStorage     *storage,
-						 gpointer        user_data);
-typedef BseObject*	(*BsePathResolver)	(gpointer        func_data,
-						 BseStorage     *storage,
-						 BseType         required_type,
-						 const gchar    *path);
-typedef gboolean	(*BseProcedureShare)	(gpointer	 func_data,
-						 const gchar	*proc_name,
-						 gfloat		 progress);
-typedef gboolean	(*BseCategoryForeach)	(const gchar	*category_path,
-						 BseType	 type,
-						 gpointer	 user_data);
+typedef	void	      (*BseFunc)	      (void);
+typedef BseTokenType  (*BseTryStatement)     (gpointer       	 func_data,
+					      BseStorage     	*storage,
+					      gpointer       	 user_data);
+typedef BseObject*    (*BsePathResolver)     (gpointer       	 func_data,
+					      BseStorage     	*storage,
+					      BseType        	 required_type,
+					      const gchar    	*path);
+typedef gboolean      (*BseProcedureShare)   (gpointer		 func_data,
+					      const gchar	*proc_name,
+					      gfloat		 progress);
+typedef gboolean      (*BseCategoryForeach)  (const gchar	*category_path,
+					      BseType		 type,
+					      gpointer	 	 user_data);
 
 
 /* --- notification (object callbacks) --- */

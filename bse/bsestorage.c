@@ -378,7 +378,7 @@ bse_storage_put_param (BseStorage *storage,
     case BSE_TYPE_PARAM_ENUM:
       ev = bse_enum_get_value (param->pspec->s_enum.enum_class, param->value.v_enum);
       if (ev)
-	bse_storage_puts (storage, ev->value_nick);
+	bse_storage_puts (storage, ev->value_name);
       else
 	bse_storage_printf (storage, "%d", param->value.v_enum);
       break;
@@ -397,7 +397,7 @@ bse_storage_put_param (BseStorage *storage,
 	      if (i++)
 		bse_storage_putc (storage, ' ');
 	      
-	      bse_storage_puts (storage, fv->value_nick);
+	      bse_storage_puts (storage, fv->value_name);
 	      
 	      fv = bse_flags_get_first_value (param->pspec->s_flags.flags_class, value);
 	    }
@@ -1053,6 +1053,7 @@ bse_storage_parse_param_value (BseStorage *storage,
     {
       gboolean v_bool;
       gint v_enum;
+      guint v_flags;
       gint v_note;
       gdouble v_double;
       gchar *string, buffer[2];
@@ -1151,6 +1152,40 @@ bse_storage_parse_param_value (BseStorage *storage,
 	return bse_storage_warn_skip (storage,
 				      "parameter value `%d' out of bounds for parameter `%s'",
 				      v_enum,
+				      pspec->any.name);
+      break;
+    case BSE_TYPE_PARAM_FLAGS:
+      v_flags = 0;
+      do
+	{
+	  g_scanner_get_next_token (scanner);
+	  if (scanner->token == G_TOKEN_INT)
+	    v_flags |= scanner->value.v_int;
+	  else if (scanner->token == G_TOKEN_IDENTIFIER)
+	    {
+	      BseFlagsValue *fv;
+	      
+	      fv = bse_flags_get_value_by_nick (param->pspec->s_flags.flags_class,
+						scanner->value.v_identifier);
+	      if (!fv)
+		bse_flags_get_value_by_name (param->pspec->s_flags.flags_class,
+					     scanner->value.v_identifier);
+	      if (fv)
+		v_flags |= fv->value;
+	      else
+		return bse_storage_warn_skip (storage,
+					      "unrecognized flags value `%s' for parameter `%s'",
+					      scanner->value.v_identifier,
+					      pspec->any.name);
+	    }
+	  else
+	    return G_TOKEN_IDENTIFIER;
+	}
+      while (g_scanner_peek_next_token (scanner) != ')');
+      if (bse_param_set_flags (param, v_flags))
+	return bse_storage_warn_skip (storage,
+				      "parameter value `%d' out of bounds for parameter `%s'",
+				      v_flags,
 				      pspec->any.name);
       break;
     case BSE_TYPE_PARAM_FLOAT:

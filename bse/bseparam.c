@@ -1228,8 +1228,8 @@ static const guint n_exchange_rules = sizeof (exchange_rules) / sizeof (exchange
 static inline void
 (*param_exchange_lookup (BseType   type1,
                          BseType   type2,
-                         gboolean *needs_switch)) (BseParam*,
-                                                   BseParam*)
+                         gboolean *must_swap)) (BseParam*,
+						BseParam*)
 {
   guint i;
   
@@ -1238,15 +1238,15 @@ static inline void
       if (exchange_rules[i].type1 == type1 &&
           exchange_rules[i].type2 == type2)
         {
-          if (needs_switch)
-            *needs_switch = FALSE;
+          if (must_swap)
+            *must_swap = FALSE;
           return exchange_rules[i].exchange;
         }
       else if (exchange_rules[i].type1 == type2 &&
                exchange_rules[i].type2 == type1)
         {
-          if (needs_switch)
-            *needs_switch = TRUE;
+          if (must_swap)
+            *must_swap = TRUE;
           return exchange_rules[i].exchange;
         }
     }
@@ -1260,7 +1260,7 @@ bse_param_types_exchangable (BseType param_type1,
 {
   g_return_val_if_fail (BSE_TYPE_IS_PARAM (param_type1), FALSE);
   g_return_val_if_fail (BSE_TYPE_IS_PARAM (param_type2), FALSE);
-
+  
   return param_exchange_lookup (BSE_FUNDAMENTAL_TYPE (param_type1),
                                 BSE_FUNDAMENTAL_TYPE (param_type2),
                                 NULL) != NULL;
@@ -1271,17 +1271,17 @@ bse_param_values_exchange (BseParam *param1,
                            BseParam *param2)
 {
   void  (*exchange_value) (BseParam*, BseParam*);
-  gboolean needs_switch;
-
+  gboolean must_swap;
+  
   g_return_val_if_fail (BSE_IS_PARAM (param1), FALSE);
   g_return_val_if_fail (BSE_IS_PARAM (param2), FALSE);
-
+  
   exchange_value = param_exchange_lookup (BSE_FUNDAMENTAL_TYPE (param1->pspec->type),
                                           BSE_FUNDAMENTAL_TYPE (param2->pspec->type),
-                                          &needs_switch);
+                                          &must_swap);
   if (exchange_value)
-    exchange_value (needs_switch ? param2 : param1, needs_switch ? param1 : param2);
-
+    exchange_value (must_swap ? param2 : param1, must_swap ? param1 : param2);
+  
   return exchange_value != NULL;
 }
 
@@ -1291,16 +1291,16 @@ bse_param_value_convert (BseParam *param_src,
 {
   BseParam tmp = { NULL, };
   gboolean success;
-
+  
   g_return_val_if_fail (BSE_IS_PARAM (param_src), FALSE);
   g_return_val_if_fail (BSE_IS_PARAM (param_dest), FALSE);
-
+  
   bse_param_init (&tmp, param_src->pspec);
   bse_param_copy_value (param_src, &tmp);
-
+  
   success = bse_param_values_exchange (&tmp, param_dest);
-
+  
   bse_param_free_value (&tmp);
-
+  
   return success;
 }

@@ -62,6 +62,7 @@ typedef enum
 /* --- possible frequencies --- */
 typedef enum
 {
+#define BSE_PCM_FREQ_MIN	BSE_PCM_FREQ_8000
   BSE_PCM_FREQ_8000     = (1 <<  1),	  /*   8000 Hz */
   BSE_PCM_FREQ_11025    = (1 <<  2),	  /*  11025 Hz */
   BSE_PCM_FREQ_16000    = (1 <<  3),      /*  16000 Hz */
@@ -73,9 +74,8 @@ typedef enum
   BSE_PCM_FREQ_96000    = (1 <<  9),      /*  96000 Hz */
   BSE_PCM_FREQ_176400   = (1 << 10),      /* 176400 Hz */
   BSE_PCM_FREQ_192000   = (1 << 11),      /* 192000 Hz */
-  BSE_PCM_FREQ_MIN	= BSE_PCM_FREQ_8000,
-  BSE_PCM_FREQ_MAX	= BSE_PCM_FREQ_192000,
-  BSE_PCM_FREQ_LAST_BIT = 12
+#define	BSE_PCM_FREQ_MAX	BSE_PCM_FREQ_192000
+#define	BSE_PCM_FREQ_LAST_BIT	12
 } BsePcmFreqMask;
 
 

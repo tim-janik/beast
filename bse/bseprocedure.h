@@ -20,7 +20,7 @@
 #ifndef __BSE_PROCEDURE_H__
 #define __BSE_PROCEDURE_H__
 
-#include	<bse/bseexports.h>
+#include	<bse/bseparam.h>
 
 
 #ifdef __cplusplus
@@ -40,6 +40,9 @@ extern "C" {
 
 
 /* --- BseProcedureClass --- */
+typedef BseErrorType  (*BseProcedureExec)    (BseProcedureClass *procedure,
+					      BseParam          *iparams,
+					      BseParam          *oparams);
 struct _BseProcedureClass
 {
   BseTypeClass    bse_class;

@@ -3,21 +3,36 @@
 # Information about the current enumeration
 
 my $flags;			# Is enumeration a bitmask
-my $seenbitshift;			# Have we seen bitshift operators?
-my $prefix;			# Prefix for this enumeration
+my $seenbitshift;		# Have we seen bitshift operators?
+my $enum_prefix;		# Prefix for this enumeration
 my $enumname;			# Name for this enumeration
-my $enumindex = 0;			# Global enum counter
+my $enumshort;			# Name for this enumeration
+my $enumindex = 0;		# Global enum counter
 my $firstenum = 1;		# Is this the first enumeration in file?
 my @entries;			# [ $name, $val ] for each entry
 
-sub parse_options {
+# substitutions:
+# @EnumName@                    PrefixTheEEnum
+# @enum_name@                   prefix_the_eenum
+# @ENUMNAME@                    PREFIX_THE_EENUM
+# @ENUMSHORT@                   THE_EENUM
+# @VALUENAME@                   PREFIX_THE_VVALUE
+# @valuenick@                   vvalue
+# @Type@                        Enum or Flags
+# @TYPE@                        ENUM or FLAGS
+
+
+sub parse_trigraph {
     my $opts = shift;
     my @opts;
 
     for $opt (split /\s*,\s*/, $opts) {
-#        print "xxxOPT \"$opt\"\n";
+	$opt =~ s/^\s*//;
+	$opt =~ s/\s*$//;
+#	print STDERR "xxxOPT \"$opt\"\n";
 #       my ($key,$val) = $opt =~ /\s*(\w+)(?:=(\S+))?/;
-        my ($key,$val) = $opt =~ /\s*(\w+)(?:=(\S+))?/;
+        my ($key,$val) = $opt =~ /(\w+)(?:=(.+))?/;
+#	print STDERR "KEY=\"$key\" VAL=\"$val\"\n";
 	defined $val or $val = 1;
 	push @opts, $key, $val;
     }
@@ -93,7 +108,7 @@ sub parse_entries {
 	    }
 
 	    if (defined $options) {
-		my %options = parse_options($options);
+		my %options = parse_trigraph($options);
 		if (!defined $options{skip}) {
 		    push @entries, [ $name, $options{nick} ];
 		}
@@ -111,41 +126,39 @@ sub parse_entries {
 }
 
 
-my $gen_externs = 0;
-my $gen_interns = 0;
-my $gen_list = 0;
-my $gen_arrays = 0;
-my $gen_includes = 0;
-
+my $iprod = "";
+my $hprod = "";
+my $tprod = "";
+my $eprod = "";
+my $vprod_head = "";
+my $vprod = "";
+my $vprod_tail = "";
 
 # parse options
 while ($_ = $ARGV[0], /^-/) {
     shift;
     last if /^--$/;
-    if (/^--includes$/) { $gen_includes = 1 }
-    elsif (/^--externs$/)  { $gen_externs = 1 }
-    elsif (/^--interns$/)  { $gen_interns = 1 }
-    elsif (/^--arrays$/)  { $gen_arrays = 1 }
-    elsif (/^--list$/)  { $gen_list = 1 }
+    if (/^--iprod$/)  { $iprod = $iprod . shift }
+    elsif (/^--eprod$/)  { $eprod = $eprod . shift }
+    elsif (/^--vhead$/)  { $vprod_head = $vprod_head . shift }
+    elsif (/^--vprod$/)  { $vprod = $vprod . shift }
+    elsif (/^--vtail$/)  { $vprod_tail = $vprod_tail . shift }
+    elsif (/^--hprod$/)  { $hprod = $hprod . shift }
+    elsif (/^--tprod$/)  { $tprod = $tprod . shift }
 }
 
 print "\n/**\n ** Generated data (by mkenums.pl";
-if ($gen_includes) {
-    print " --includes";
-}
-if ($gen_externs) {
-    print " --externs";
-}
-if ($gen_interns) {
-    print " --interns";
-}
-if ($gen_arrays) {
-    print " --arrays";
-}
-if ($gen_list) {
-    print " --list";
-}
 print ")\n **/\n";
+
+if (length($hprod)) {
+    my $prod = $hprod;
+
+    $prod =~ s/\@filename\@/$ARGV/g;
+    $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
+    $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+		
+    print "$prod\n";
+}
 
 while (<>) {
     if (eof) {
@@ -176,12 +189,12 @@ while (<>) {
             >\s*\*/)?
          @x) {
 	if (defined $2) {
-	    my %options = parse_options ($2);
+	    my %options = parse_trigraph ($2);
 	    next if defined $options{skip};
-	    $prefix = $options{prefix};
+	    $enum_prefix = $options{prefix};
 	    $flags = $options{flags};
 	} else {
-	    $prefix = undef;
+	    $enum_prefix = undef;
 	    $flags = undef;
 	}
 	# Didn't have trailing '{' look on next lines
@@ -207,94 +220,150 @@ while (<>) {
 
 	# Autogenerate a prefix
 
-	if (!defined $prefix) {
+	if (!defined $enum_prefix) {
 	    for (@entries) {
 		my $nick = $_->[1];
 		if (!defined $nick) {
 		    my $name = $_->[0];
-		    if (defined $prefix) {
-			my $tmp = ~ ($name ^ $prefix);
+		    if (defined $enum_prefix) {
+			my $tmp = ~ ($name ^ $enum_prefix);
 			($tmp) = $tmp =~ /(^\xff*)/;
-			$prefix = $prefix & $tmp;
+			$enum_prefix = $enum_prefix & $tmp;
 		    } else {
-			$prefix = $name;
+			$enum_prefix = $name;
 		    }
 		}
 	    }
-	    if (!defined $prefix) {
-		$prefix = "";
+	    if (!defined $enum_prefix) {
+		$enum_prefix = "";
 	    } else {
 		# Trim so that it ends in an underscore
-		$prefix =~ s/_[^_]*$/_/;
+		$enum_prefix =~ s/_[^_]*$/_/;
 	    }
 	} else {
 	    # canonicalize user defined prefixes
-	    $prefix = uc($prefix);
-	    $prefix =~ s/-/_/g;
-	    $prefix =~ s/(.*)([^_])$/$1$2_/;
+	    $enum_prefix = uc($enum_prefix);
+	    $enum_prefix =~ s/-/_/g;
+	    $enum_prefix =~ s/(.*)([^_])$/$1$2_/;
 	}
 	
 	for $entry (@entries) {
 	    my ($name,$nick) = @{$entry};
             if (!defined $nick) {
- 	        ($nick = $name) =~ s/^$prefix//;
+ 	        ($nick = $name) =~ s/^$enum_prefix//;
 	        $nick =~ tr/_/-/;
 	        $nick = lc($nick);
 	        @{$entry} = ($name, $nick);
             }
 	}
 	
+
 	# Spit out the output
 	
-	($valuename = $enumname) =~ s/([A-Z][a-z])/_$1/g;
-	$valuename =~ s/([a-z])([A-Z])/$1_$2/g;
-	$valuename = lc($valuename);
-	$valuename =~ s/_(.*)/$1/;
+	# enumname is e.g. GMatchType
+	$enspace = $enumname;
+	$enspace =~ s/^([A-Z][a-z]*).*$/$1/;
 	
-	($enumtype = $enumname) =~ s/^Bse//;
-	$enumtype =~ s/([^A-Z])([A-Z])/$1_$2/g;
-	$enumtype =~ s/([A-Z][A-Z])([A-Z][0-9a-z])/$1_$2/g;
-	$enumtype = uc($enumtype);
+	$enumshort = $enumname;
+	$enumshort  =~ s/^[A-Z][a-z]*//;
+	$enumshort =~ s/([^A-Z])([A-Z])/$1_$2/g;
+	$enumshort =~ s/([A-Z][A-Z])([A-Z][0-9a-z])/$1_$2/g;
+	$enumshort = uc($enumshort);
+
+	$enumlong = uc($enspace) . "_" . $enumshort;
+	$enumsym = lc($enspace) . "_" . lc($enumshort);
 
 	if ($firstenum) {
-	    print "\n/* --- $ARGV --- */\n";
 	    $firstenum = 0;
 	    
-	    if ($gen_includes) {
-		print "#include\t\"$ARGV\"\n";
+	    if (length($iprod)) {
+		my $prod = $iprod;
+
+		$prod =~ s/\@filename\@/$ARGV/g;
+		$prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
+		$prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+		
+		print "$prod\n";
 	    }
 	}
 	
-	if ($gen_externs) {
-	    print "#define BSE_TYPE_$enumtype\t(BSE_TYPE_ID ($enumname))\n";
-            print "extern BseType bse_type_builtin_id_$enumname;\n";
+	if (length($eprod)) {
+	    my $prod = $eprod;
+
+	    $prod =~ s/\@enum_name\@/$enumsym/g;
+	    $prod =~ s/\@EnumName\@/$enumname/g;
+	    $prod =~ s/\@ENUMSHORT\@/$enumshort/g;
+	    $prod =~ s/\@ENUMNAME\@/$enumlong/g;
+	    if ($flags) { $prod =~ s/\@type\@/flags/g; } else { $prod =~ s/\@type\@/enum/g; }
+	    if ($flags) { $prod =~ s/\@Type\@/Flags/g; } else { $prod =~ s/\@Type\@/Enum/g; }
+	    if ($flags) { $prod =~ s/\@TYPE\@/FLAGS/g; } else { $prod =~ s/\@TYPE\@/ENUM/g; }
+	    $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
+	    $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+
+	    print "$prod\n";
 	}
 
-	if ($gen_interns) {
-            print "BseType bse_type_builtin_id_$enumname = 0;\n";
+	if (length($vprod_head)) {
+	    my $prod = $vprod_head;
+
+	    $prod =~ s/\@enum_name\@/$enumsym/g;
+            $prod =~ s/\@EnumName\@/$enumname/g;
+            $prod =~ s/\@ENUMSHORT\@/$enumshort/g;
+            $prod =~ s/\@ENUMNAME\@/$enumlong/g;
+	    if ($flags) { $prod =~ s/\@type\@/flags/g; } else { $prod =~ s/\@type\@/enum/g; }
+	    if ($flags) { $prod =~ s/\@Type\@/Flags/g; } else { $prod =~ s/\@Type\@/Enum/g; }
+	    if ($flags) { $prod =~ s/\@TYPE\@/FLAGS/g; } else { $prod =~ s/\@TYPE\@/ENUM/g; }
+            $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
+            $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+	    
+            print "$prod\n";
 	}
 
-	if ($gen_arrays) {
-	    print "/* $enumname\n */\n";
-
-	    print "static Bse".($flags ? "Flags" : "Enum")."Value ${valuename}_values[] = {\n";
+	if (length($vprod)) {
+	    my $prod = $vprod;
+	    
+	    $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
+	    $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
 	    for (@entries) {
 		my ($name,$nick) = @{$_};
-		print qq(  { $name, "$name", "$nick" },\n);
-	    }
-	    print "  { 0, NULL, NULL }\n};\n";
+		my $tmp_prod = $vprod;
 
-	    print "\n";
+		$tmp_prod =~ s/\@VALUENAME\@/$name/g;
+		$tmp_prod =~ s/\@valuenick\@/$nick/g;
+		if ($flags) { $tmp_prod =~ s/\@type\@/flags/g; } else { $tmp_prod =~ s/\@type\@/enum/g; }
+		if ($flags) { $tmp_prod =~ s/\@Type\@/Flags/g; } else { $tmp_prod =~ s/\@Type\@/Enum/g; }
+		if ($flags) { $tmp_prod =~ s/\@TYPE\@/FLAGS/g; } else { $tmp_prod =~ s/\@TYPE\@/ENUM/g; }
+
+		print "$tmp_prod\n";
+	    }
 	}
 
-	if ($gen_list) {
-	    print "  { \"$enumname\",";
-	    print " BSE_TYPE_".($flags ? "FLAGS" : "ENUM").",";
-	    print " &bse_type_builtin_id_$enumname,";
-	    print " ${valuename}_values },\n";
+	if (length($vprod_tail)) {
+	    my $prod = $vprod_tail;
+
+	    $prod =~ s/\@enum_name\@/$enumsym/g;
+            $prod =~ s/\@EnumName\@/$enumname/g;
+            $prod =~ s/\@ENUMSHORT\@/$enumshort/g;
+            $prod =~ s/\@ENUMNAME\@/$enumlong/g;
+	    if ($flags) { $prod =~ s/\@type\@/flags/g; } else { $prod =~ s/\@type\@/enum/g; }
+	    if ($flags) { $prod =~ s/\@Type\@/Flags/g; } else { $prod =~ s/\@Type\@/Enum/g; }
+	    if ($flags) { $prod =~ s/\@TYPE\@/FLAGS/g; } else { $prod =~ s/\@TYPE\@/ENUM/g; }
+            $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
+            $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+	    
+            print "$prod\n";
 	}
     }
 }
 
+if (length($tprod)) {
+    my $prod = $tprod;
+
+    $prod =~ s/\@filename\@/$ARGV/g;
+    $prod =~ s/\\a/\a/g; $prod =~ s/\\b/\b/g; $prod =~ s/\\t/\t/g; $prod =~ s/\\n/\n/g;
+    $prod =~ s/\\v/\v/g; $prod =~ s/\\f/\f/g; $prod =~ s/\\r/\r/g;
+		
+    print "$prod\n";
+}
 
 print "\n/**\n ** Generated data ends here\n **/\n";

@@ -20,6 +20,7 @@
 #include	"bsecategories.h"
 #include	"bseprocedure.h"
 #include	"bseobject.h"
+#include	"bseenums.h"
 #include	<gmodule.h>
 #include	<string.h>
 #include	<fcntl.h>
@@ -94,15 +95,14 @@ bse_plugin_register_types (BsePlugin    *plugin,
 			   gconstpointer array_p,
 			   BseExportType exp_type)
 {
-  const BseExportSpec *especs = array_p;
-
   switch (plugin && array_p ? exp_type : 0)
     {
       const BseExportProcedure *pspec;
       const BseExportObject *ospec;
-
+      const BseExportEnum *espec;
+      
     case BSE_EXPORT_TYPE_PROCS:
-      for (pspec = &especs->s_proc; pspec->type_p; pspec++)
+      for (pspec = array_p; pspec->type_p; pspec++)
 	{
 	  if (pspec->name &&
 	      pspec->init &&
@@ -112,20 +112,20 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      guint on = plugin->n_proc_types;
 	      const gchar *error;
 	      
-	      BSE_IF_DEBUG (REGS)
+	      BSE_IF_DEBUG (PLUGINS)
 		g_message ("register-procedure: \"%s\"", pspec->name);
 	      
 	      type = bse_type_from_name (pspec->name);
 	      if (type)
 		return "Attempt to register known symbol";
-
+	      
 	      error = bse_procedure_type_register (pspec->name,
 						   pspec->blurb,
 						   plugin,
 						   &type);
 	      if (error)
 		return error;
-
+	      
 	      if (pspec->category)
 		bse_categories_register_icon (pspec->category, type, &pspec->pixdata);
 	      
@@ -134,16 +134,16 @@ bse_plugin_register_types (BsePlugin    *plugin,
 					    plugin->proc_types,
 					    plugin->n_proc_types);
 	      plugin->proc_types[on] = type;
-
+	      
 	      plugin->exports_procedures = TRUE;
 	      *(pspec->type_p) = type;
 	    }
 	}
-      plugin->e_procs = especs;
+      plugin->e_procs = array_p;
       return NULL;
-
+      
     case BSE_EXPORT_TYPE_OBJECTS:
-      for (ospec = &especs->s_object; ospec->type_p; ospec++)
+      for (ospec = array_p; ospec->type_p; ospec++)
 	{
 	  if (ospec->name &&
 	      ospec->object_info)
@@ -152,39 +152,77 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      guint on = plugin->n_object_types;
 	      const gchar *error;
 	      
-	      BSE_IF_DEBUG (REGS)
+	      BSE_IF_DEBUG (PLUGINS)
 		g_message ("register-object: \"%s\"", ospec->name);
 	      
 	      type = bse_type_from_name (ospec->name);
 	      if (type)
 		return "Attempt to register known symbol";
-
+	      
 	      error = bse_object_type_register (ospec->name,
 						ospec->parent_type,
 						ospec->blurb,
 						plugin,
 						&type);
-
+	      
 	      if (error)
 		return error;
-
+	      
 	      if (ospec->category)
 		bse_categories_register_icon (ospec->category, type, &ospec->pixdata);
-
+	      
 	      plugin->n_object_types++;
 	      plugin->object_types = g_renew (BseType,
 					      plugin->object_types,
 					      plugin->n_object_types);
 	      plugin->object_types[on] = type;
-
+	      
 	      plugin->exports_objects = TRUE;
 	      *(ospec->type_p) = type;
 	    }
 	}
-      plugin->e_objects = especs;
+      plugin->e_objects = array_p;
+      return NULL;
+      
+    case BSE_EXPORT_TYPE_ENUMS:
+      for (espec = array_p; espec->type_p; espec++)
+	{
+	  if (espec->name &&
+	      espec->parent_type &&
+	      espec->values)
+	    {
+	      BseType type;
+	      guint on = plugin->n_enum_types;
+	      const gchar *error;
+	      
+	      BSE_IF_DEBUG (PLUGINS)
+		g_message ("register-enum: \"%s\"", espec->name);
+	      
+	      type = bse_type_from_name (espec->name);
+	      if (type)
+		return "Attempt to register known symbol";
+	      
+	      error = bse_enum_type_register (espec->name,
+					      espec->parent_type,
+					      plugin,
+					      &type);
+	      if (error)
+		return error;
+	      
+	      plugin->n_enum_types++;
+	      plugin->enum_types = g_renew (BseType,
+					    plugin->enum_types,
+					    plugin->n_enum_types);
+	      plugin->enum_types[on] = type;
+	      
+	      plugin->exports_enums = TRUE;
+	      *(espec->type_p) = type;
+	    }
+	}
+      plugin->e_enums = array_p;
       return NULL;
     }
-
+  
   return bse_error_blurb (BSE_ERROR_INTERNAL);
 }
 
@@ -193,6 +231,7 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
 {
   const BseExportProcedure *pspecs = plugin->e_procs;
   const BseExportObject *ospecs = plugin->e_objects;
+  const BseExportEnum *especs = plugin->e_enums;
   gchar *error = NULL;
   
   /* procedure types
@@ -239,6 +278,30 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
 	  }
       if (exp_types < exp_last)
 	error = "Unable to rematch object types from previous initialization";
+    }
+
+  /* enum types
+   */
+  if (especs)
+    {
+      const BseExportEnum *espec;
+      BseType *exp_types = plugin->enum_types;
+      BseType *exp_last = plugin->enum_types + plugin->n_enum_types;
+      
+      for (espec = especs; espec->type_p && exp_types < exp_last; espec++)
+	if (espec->name &&
+	    espec->parent_type &&
+	    espec->values &&
+	    bse_type_from_name (espec->name) == *exp_types)
+	  {
+	    if (*espec->type_p)
+	      g_warning ("while reinitializing \"%s\", type id for `%s' already assigned?",
+			 plugin->name,
+			 espec->name);
+	    *espec->type_p = *(exp_types++);
+	  }
+      if (exp_types < exp_last)
+	error = "Unable to rematch enum types from previous initialization";
     }
 
   return error;
@@ -289,6 +352,25 @@ bse_plugin_ref (BsePlugin *plugin)
 	  else
 	    error = g_module_error ();
 	}
+      if (!error && plugin->exports_enums)
+	{
+	  gpointer *sym_array;
+
+	  if (g_module_symbol (plugin->gmodule,
+			       BSE_EXPORT_SYMBOL (Enum),
+			       (gpointer) &sym_array))
+	    {
+	      if (sym_array)
+		{
+		  plugin->e_enums = *sym_array;
+		  need_reinit |= TRUE;
+		}
+	      else
+		error = "Failed to refetch enum types";
+	    }
+	  else
+	    error = g_module_error ();
+	}
 
       if (!error)
 	error = bse_plugin_reinit_type_ids (plugin);
@@ -310,6 +392,7 @@ bse_plugin_unload (BsePlugin *plugin)
   /* reset plugin pointers */
   plugin->e_procs = NULL;
   plugin->e_objects = NULL;
+  plugin->e_enums = NULL;
 
   BSE_IF_DEBUG (PLUGINS)
     g_message ("unloaded-plugin \"%s\"", plugin->name);
@@ -379,6 +462,12 @@ bse_plugin_complete_info (BsePlugin   *plugin,
       spec_size = sizeof (BseExportObject);
       complete_info = bse_object_complete_info;
       break;
+    case BSE_TYPE_ENUM:
+    case BSE_TYPE_FLAGS:
+      specs_p = plugin->e_enums;
+      spec_size = sizeof (BseExportEnum);
+      complete_info = bse_enum_complete_info;
+      break;
     default:
       g_assert_not_reached ();
       break;
@@ -420,7 +509,7 @@ bse_plugin_check_load (const gchar *_file_name)
   BsePlugin *plugin;
   const BseExportBegin *sym_begin;
   const BseExportEnd *sym_end;
-  gconstpointer *sym_array;
+  gpointer *sym_array;
   gchar *error = NULL;
   
   g_return_val_if_fail (file_name != NULL, NULL);
@@ -517,6 +606,13 @@ bse_plugin_check_load (const gchar *_file_name)
     error = (gchar*) bse_plugin_register_types (plugin, sym_array, BSE_EXPORT_TYPE_PROCS);
   if (!error && g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (Object), (gpointer) &sym_array))
     error = (gchar*) bse_plugin_register_types (plugin, sym_array, BSE_EXPORT_TYPE_OBJECTS);
+  if (!error && g_module_symbol (gmodule, BSE_EXPORT_SYMBOL (Enum), (gpointer) &sym_array))
+    {
+      if (sym_array)
+	error = (gchar*) bse_plugin_register_types (plugin, *sym_array, BSE_EXPORT_TYPE_ENUMS);
+      else
+	error = "Failed to fetch enum types";
+    }
 
   bse_plugins = g_slist_prepend (bse_plugins, plugin);
 

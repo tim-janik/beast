@@ -200,14 +200,20 @@ stamp-bsegentypes.h: @MISSING_PERL5@ $(srcdir)/mkenums.pl $(srcdir)/mktypes.pl
 stamp-bsegentypes.h: @MISSING_PERL5@ @BIRNET_N@ $(bse_c_sources)
 stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_h_sources)
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkenums.pl --externs $(bse_h_sources) > xgen-sbgth \
+	&& $(PERL) $(srcdir)/mkenums.pl \
+	  --iprod "\n/* --- @filename@ --- */" \
+	  --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
+	  --eprod "extern BseType BSE_TYPE_ID (@EnumName@);" \
+	    $(bse_h_sources) > xgen-sbgth \
 	&& $(PERL) $(srcdir)/mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $@
-bsegentypes.c: @MISSING_PERL5@ bsegentypes.h
+bsegentypes.c: @MISSING_PERL5@ bsegentypes.h $(srcdir)/mkenums.pl $(srcdir)/mktypes.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkenums.pl --interns $(bse_h_sources) > xgen-bgtc \
+	&& $(PERL) $(srcdir)/mkenums.pl \
+	  --eprod "\nBseType BSE_TYPE_ID (@EnumName@) = 0;" \
+	    $(bse_h_sources) > xgen-bgtc \
 	&& $(PERL) $(srcdir)/mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
 	&& cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
@@ -218,13 +224,22 @@ bsegentype_array.c: @MISSING_PERL5@ bsegentypes.c
 	&& rm -f xgen-bgtac
 stamp-bseenum_arrays.c: @MISSING_PERL5@ $(bse_h_sources) $(srcdir)/mkenums.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkenums.pl --arrays --includes $(bse_h_sources) > xgen-sbeac \
+	&& $(PERL) $(srcdir)/mkenums.pl \
+	  --iprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
+	  --vhead "/* @EnumName@\n */\n" \
+	  --vhead "static Bse@Type@Value @enum_name@_values[] = {" \
+	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
+	  --vtail "  { 0, NULL, NULL }\n};\n" \
+	    $(bse_h_sources) > xgen-sbeac \
 	&& (cmp -s xgen-sbeac bseenum_arrays.c || cp xgen-sbeac bseenum_arrays.c) \
 	&& rm -f xgen-sbeac \
 	&& echo timestamp > $@
 bseenum_list.c: @MISSING_PERL5@ bseenum_arrays.c $(srcdir)/mkenums.pl
 	cd $(srcdir) \
-	&& $(PERL) $(srcdir)/mkenums.pl --list $(bse_h_sources) > xgen-belc \
+	&& $(PERL) $(srcdir)/mkenums.pl \
+	  --iprod "\n/* --- @filename@ --- */" \
+	  --eprod "  { \"@EnumName@\", BSE_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
+	    $(bse_h_sources) > xgen-belc \
 	&& cp xgen-belc $@ \
 	&& rm -f xgen-belc
 bsebuiltin_externs.c: @MISSING_PERL5@ $(bse_builtin_c_sources) $(srcdir)/mkbuiltinlist.pl

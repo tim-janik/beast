@@ -17,6 +17,7 @@
  */
 #include	"bseenums.h"
 
+#include        <bse/bseexports.h>
 #include	<errno.h>
 
 /* --- prototypes --- */
@@ -87,6 +88,57 @@ bse_type_register_enums (void)
 						     NULL,
 						     &info);
     }
+}
+
+void
+bse_enum_complete_info (const BseExportSpec *spec,
+			BseTypeInfo         *info)
+{
+  const BseExportEnum *espec = &spec->s_enum;
+  
+  if (espec->parent_type == BSE_TYPE_ENUM)
+    {
+      info->class_size = sizeof (BseEnumClass);
+      info->class_init = (BseClassInitFunc) bse_enum_class_init;
+    }
+  else if (espec->parent_type == BSE_TYPE_FLAGS)
+    {
+      info->class_size = sizeof (BseFlagsClass);
+      info->class_init = (BseClassInitFunc) bse_flags_class_init;
+    }
+  else
+    g_assert_not_reached ();
+  
+  info->class_data = espec->values;
+}
+
+const gchar*
+bse_enum_type_register (const gchar *name,
+			BseType      parent_type,
+			BsePlugin   *plugin,
+			BseType     *ret_type)
+{
+  BseType type;
+
+  g_return_val_if_fail (ret_type != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
+  *ret_type = 0;
+  g_return_val_if_fail (name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
+  g_return_val_if_fail (parent_type != 0, bse_error_blurb (BSE_ERROR_INTERNAL));
+  g_return_val_if_fail (plugin != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
+
+  type = bse_type_from_name (name);
+  if (type)
+    return "Enum Type already registered";
+  if (parent_type != BSE_TYPE_ENUM && parent_type != parent_type)
+    return "Parent type neither enum nor flags";
+
+  type = bse_type_register_dynamic (parent_type,
+				    name,
+				    NULL,
+				    plugin);
+  *ret_type = type;
+
+  return NULL;
 }
 
 static void

@@ -36,15 +36,19 @@ struct _BsePlugin
   guint		 module_refs : 24;
   guint		 exports_procedures : 1;
   guint		 exports_objects : 1;
+  guint		 exports_enums : 1;
 
   guint		 n_proc_types;
   BseType	*proc_types;
   guint		 n_object_types;
   BseType	*object_types;
+  guint		 n_enum_types;
+  BseType	*enum_types;
 
   /* private */
   gconstpointer	 e_procs;
   gconstpointer	 e_objects;
+  gconstpointer	 e_enums;
 };
 
 
@@ -66,11 +70,14 @@ extern void	bse_plugin_complete_info	(BsePlugin      *plugin,
 #ifndef	BSE_COMPILATION
 #  define BSE_EXPORT_IMPL_S(y)		bse_export__##y##__symbol
 #  define BSE_EXPORT_IMPL_V(y)		BseExport##y BSE_EXPORT_IMPL_S (y)
+#  define BSE_EXPORT_IMPL_W(y)		BseExport##y * BSE_EXPORT_IMPL_S (y)
 #  define BSE_EXPORT_IMPL_B(y)		BSE_EXPORT_CHECK_INIT \
                                         BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_V (Begin); \
                                         BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_V (Begin) = y
 #  define BSE_EXPORT_IMPL_A(y)		BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_V (y) []; \
                                         BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_V (y) []
+#  define BSE_EXPORT_IMPL_P(y)		BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_W (y); \
+                                        BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_W (y)
 #  define BSE_EXPORT_IMPL_E		BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_V (End); \
                                         BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_V (End) = BSE_MAGIC
 #else  /* BSE_COMPILATION */

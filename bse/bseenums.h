@@ -170,6 +170,13 @@ BseErrorType	bse_error_from_errno		(gint		 v_errno,
 						 BseErrorType    fallback);
 
 
+/* --- implementation details --- */
+const gchar*    bse_enum_type_register          (const gchar *name,
+						 BseType      parent_type,
+						 BsePlugin   *plugin,
+						 BseType     *ret_type);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
