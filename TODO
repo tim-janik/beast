@@ -1,5 +1,4 @@
 FIXMES:
-- skip undo for trigger properties
 - disable bseevaluator without --devel as it's unstable
 - remove hpack and vpack
 - make plugins/Makefile.am actually pick up *.idl files in distribution tarballs
@@ -12,7 +11,6 @@ FIXMES:
 - auto-connect viewable-changed to gadget notebooks
 - add one-shot property to gxk-gadget-factories
 - make the plugin loader match on *.so and not *.la files
-- i18n: for _label="" define label and _label after translation
 - for menu factory branches, translate submenus *after* using the path as key
 - beast --devel misses "clear undo" in partdialog
 - extend module info dialog to cover author license etc.
@@ -27,7 +25,6 @@ FIXMES:
 - add new test song containing a wave track so the internal wave csynth is properly testet
 - File/Open should merge if issued on an empty project
 - add author and license information to module types just like we do for procedures
-- default saving (SFI_PARAM_SKIP_DEFAULT)
 - fix non-NULL icons at 0x0, GUI breaks in lots of places for them
 - move non-infrastructure synthesis modules out of the core into plugins/
 - freeverb bypass toggle
@@ -37,7 +34,6 @@ FIXMES:
 - add Volume property to tracks
 - fix nominator/denomiator settings in songs
 - fix glue gc assertion after sfi_glue_describe_proc("")
-- change default zoom factor in sample view
 - add frequency splitter/multiplier module (plus cent-wise detune?)
 - add frequency output module, offering bpm, 1/1 1/4 1/3 notes frequencies
 - add sfisclock.h to sfi.h

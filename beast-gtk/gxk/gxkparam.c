@@ -531,7 +531,11 @@ gxk_param_create_editor (GxkParam               *param,
 {
   GxkParamEditor *editor = param_lookup_editor (editor_name, param->pspec);
   gchar *tooltip = gxk_param_dup_tooltip (param);
-  GtkWidget *widget = editor->create_widget (param, tooltip, editor->variant);
+  GtkWidget *widget;
+  gboolean updating = param->updating;
+  param->updating = TRUE;       /* protect value from setup-notifications */
+  widget = editor->create_widget (param, tooltip, editor->variant);
+  param->updating = updating;
   g_free (tooltip);
   gxk_object_set_param_callback (GTK_OBJECT (widget), (gpointer) editor->update);
   gxk_param_add_object (param, GTK_OBJECT (widget));
