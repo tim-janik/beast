@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.55\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-23 23:41+0100\n"
+"POT-Creation-Date: 2003-12-28 13:06+0100\n"
 "PO-Revision-Date: 2003-11-22 13:47+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -44,144 +44,153 @@ msgid "Merge an existing project into the current project"
 msgstr "Ein vorhandenes Projekt in das momentan Geöffnete einbinden"
 
 #: beast-gtk/bstapp.c:57
+msgid "_Import MIDI..."
+msgstr ""
+
+#: beast-gtk/bstapp.c:57
+#, fuzzy
+msgid "Import a standard MIDI file into the current project"
+msgstr "Ein vorhandenes Projekt in das momentan Geöffnete einbinden"
+
+#: beast-gtk/bstapp.c:59
 msgid "_Close"
 msgstr "S_chließen"
 
-#: beast-gtk/bstapp.c:61
+#: beast-gtk/bstapp.c:63
 msgid "_Save"
 msgstr "_Speichern"
 
-#: beast-gtk/bstapp.c:63
+#: beast-gtk/bstapp.c:65
 msgid "Save _As..."
 msgstr "Speichern _unter..."
 
-#: beast-gtk/bstapp.c:67
+#: beast-gtk/bstapp.c:69
 msgid "_Quit"
 msgstr "_Beenden"
 
-#: beast-gtk/bstapp.c:71
+#: beast-gtk/bstapp.c:73
 msgid "_Preferences..."
 msgstr "_Einstellungen..."
 
-#: beast-gtk/bstapp.c:74
+#: beast-gtk/bstapp.c:76
 msgid "Rebuild"
 msgstr "Auffrischen"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:79
 msgid "_About..."
 msgstr "_Info..."
 
-#: beast-gtk/bstapp.c:80
+#: beast-gtk/bstapp.c:82
 msgid "_Undo"
 msgstr "_Rückgängig"
 
-#: beast-gtk/bstapp.c:82
+#: beast-gtk/bstapp.c:84
 msgid "_Redo"
 msgstr "_Wiederholen"
 
 # CHECK
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:69
+#: beast-gtk/bstapp.c:88 beast-gtk/bstpartdialog.c:69
 msgid "_Clear Undo"
 msgstr "Rückgängig-Chronik _löschen"
 
-#: beast-gtk/bstapp.c:90
+#: beast-gtk/bstapp.c:92
 msgid "Procedure _Browser"
 msgstr "Prozedur-_Browser"
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:94
 msgid "Rack Editor"
 msgstr "Ablageeditor"
 
-#: beast-gtk/bstapp.c:94
+#: beast-gtk/bstapp.c:96
 msgid "Device _Monitor"
 msgstr "Geräte ü_berwachen"
 
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:98
 #, fuzzy
 msgid "New View"
 msgstr "_Ansicht"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:102
 msgid "_Play"
 msgstr "_Wiedergabe"
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:104
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:108
 msgid "New Song"
 msgstr "Neuer Titel"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:110
 msgid "New Custom Synthesizer"
 msgstr "Neuer benutzerdef. Synthesizer"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:112
 msgid "New MIDI Synthesizer"
 msgstr "Neuer MIDI-Synthesizer"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:114
 msgid "Remove Song or Synthesizer"
 msgstr "Titel oder Synthesizer entfernen"
-
-#: beast-gtk/bstapp.c:116
-msgid "Load _Effect"
-msgstr "_Effekt laden"
 
 #: beast-gtk/bstapp.c:118
 msgid "Load _Instrument"
 msgstr "_Instrument laden"
 
 #: beast-gtk/bstapp.c:120
-msgid "Save As Effect"
-msgstr "Als Effekt speichern"
+msgid "Load _Effect"
+msgstr "_Effekt laden"
 
 #: beast-gtk/bstapp.c:122
 msgid "Save As Instrument"
 msgstr "Als Instrument speichern"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:124
+msgid "Save As Effect"
+msgstr "Als Effekt speichern"
+
+#: beast-gtk/bstapp.c:128
 msgid "_Release Notes..."
 msgstr "_Release-Hinweise..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:129
 msgid "Quick Start..."
 msgstr "Schnelleinstieg..."
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:130
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:131
+#: beast-gtk/bstapp.c:133
 msgid "GSL Engine..."
 msgstr "GSL-Engine..."
 
-#: beast-gtk/bstapp.c:547 beast-gtk/bstapp.c:554 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:549 beast-gtk/bstapp.c:556 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Projekt »%s« wird geöffnet"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:717
+#: beast-gtk/bstapp.c:722
 msgid "Rack editor"
 msgstr "Ablageeditor"
 
-#: beast-gtk/bstapp.c:731
+#: beast-gtk/bstapp.c:736
 msgid "Preferences"
 msgstr "Einstellungen"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:745
+#: beast-gtk/bstapp.c:750
 msgid "Device Monitor"
 msgstr "Geräte überwachen"
 
-#: beast-gtk/bstapp.c:764
+#: beast-gtk/bstapp.c:769
 msgid "Procedure Browser"
 msgstr "Prozedur-Browser"
 
-#: beast-gtk/bstapp.c:821
+#: beast-gtk/bstapp.c:826
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release-Hinweise"
@@ -194,7 +203,7 @@ msgstr "Modulverknüpfung: "
 msgid "Module link"
 msgstr "Modulverknüpfung"
 
-#: beast-gtk/bstcanvassource.c:488
+#: beast-gtk/bstcanvassource.c:487
 msgid "Module Info"
 msgstr "Modulinfos"
 
@@ -288,7 +297,17 @@ msgstr "Einbinden: %s"
 msgid "Merging project `%s'"
 msgstr "Projekt »%s« wird eingebunden"
 
-#: beast-gtk/bstfiledialog.c:499
+#: beast-gtk/bstfiledialog.c:492
+#, c-format
+msgid "Import MIDI: %s"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:503
+#, c-format
+msgid "Importing MIDI file `%s'"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:523
 #, c-format
 msgid ""
 "Failed to delete file\n"
@@ -300,27 +319,27 @@ msgstr ""
 "Grund:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:528
+#: beast-gtk/bstfiledialog.c:552
 #, c-format
 msgid "Save: %s"
 msgstr "Speichern: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:530
+#: beast-gtk/bstfiledialog.c:554
 msgid "Fully include wave files"
 msgstr "Wave-Dateien integrieren"
 
-#: beast-gtk/bstfiledialog.c:531
+#: beast-gtk/bstfiledialog.c:555
 msgid "Store references to wave files"
 msgstr "Verweise auf Wave-Dateien speichern"
 
-#: beast-gtk/bstfiledialog.c:552 beast-gtk/bstfiledialog.c:562
+#: beast-gtk/bstfiledialog.c:576 beast-gtk/bstfiledialog.c:586
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Projekt »%s« wird gespeichert"
 
-#: beast-gtk/bstfiledialog.c:553 beast-gtk/bstfiledialog.c:629
-#: beast-gtk/bstfiledialog.c:705
+#: beast-gtk/bstfiledialog.c:577 beast-gtk/bstfiledialog.c:653
+#: beast-gtk/bstfiledialog.c:729
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -333,47 +352,47 @@ msgstr ""
 "Grund:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:577
+#: beast-gtk/bstfiledialog.c:601
 msgid "Load Effect"
 msgstr "Effekt laden"
 
-#: beast-gtk/bstfiledialog.c:590
+#: beast-gtk/bstfiledialog.c:614
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Effekt »%s« wird eingebunden"
 
-#: beast-gtk/bstfiledialog.c:607
+#: beast-gtk/bstfiledialog.c:631
 msgid "Save Effect"
 msgstr "Effekt speichern"
 
-#: beast-gtk/bstfiledialog.c:628 beast-gtk/bstfiledialog.c:638
+#: beast-gtk/bstfiledialog.c:652 beast-gtk/bstfiledialog.c:662
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Effekt »%s« wird gespeichert"
 
-#: beast-gtk/bstfiledialog.c:653
+#: beast-gtk/bstfiledialog.c:677
 msgid "Load Instrument"
 msgstr "Instrument laden"
 
-#: beast-gtk/bstfiledialog.c:666
+#: beast-gtk/bstfiledialog.c:690
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Instrument »%s« wird eingebunden"
 
-#: beast-gtk/bstfiledialog.c:683
+#: beast-gtk/bstfiledialog.c:707
 msgid "Save Instrument"
 msgstr "Instrument speichern"
 
-#: beast-gtk/bstfiledialog.c:704 beast-gtk/bstfiledialog.c:714
+#: beast-gtk/bstfiledialog.c:728 beast-gtk/bstfiledialog.c:738
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Instrument »%s« wird gespeichert"
 
-#: beast-gtk/bstfiledialog.c:730
+#: beast-gtk/bstfiledialog.c:754
 msgid "Load Wave"
 msgstr "Wave laden"
 
-#: beast-gtk/bstfiledialog.c:742 beast-gtk/bstfiledialog.c:744
+#: beast-gtk/bstfiledialog.c:766 beast-gtk/bstfiledialog.c:768
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Wave »%s« wird geladen"
@@ -497,12 +516,12 @@ msgstr ""
 msgid "Note Sequence Grid Editor"
 msgstr ""
 
-#: beast-gtk/bstparam-note-spinner.c:66
+#: beast-gtk/bstparam-note-spinner.c:74
 #, fuzzy
 msgid "Note Entry"
 msgstr "Noten_länge"
 
-#: beast-gtk/bstparam-proxy.c:289
+#: beast-gtk/bstparam-proxy.c:290
 msgid "Object Drop Down Box"
 msgstr ""
 
@@ -523,11 +542,11 @@ msgstr "Dialoge"
 msgid "Dial (Logarithmic"
 msgstr ""
 
-#: beast-gtk/bstparam-searchpath.c:52
+#: beast-gtk/bstparam-searchpath.c:54
 msgid "Remove Paths"
 msgstr "Pfade entfernen"
 
-#: beast-gtk/bstparam-searchpath.c:105
+#: beast-gtk/bstparam-searchpath.c:111
 msgid "Searchpath Text Entry"
 msgstr ""
 
@@ -1504,11 +1523,11 @@ msgstr ""
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Vertikale Auswahl"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:66
+#: beast-gtk/gxk/gxkparam-spinner.c:74
 msgid "Spin Button"
 msgstr ""
 
-#: beast-gtk/gxk/gxkparam-spinner.c:72
+#: beast-gtk/gxk/gxkparam-spinner.c:80
 msgid "Spin Button (Logarithmic)"
 msgstr ""
 

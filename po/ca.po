@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-23 23:41+0100\n"
+"POT-Creation-Date: 2003-12-28 13:06+0100\n"
 "PO-Revision-Date: 2003-11-18 14:21+0100\n"
 "Last-Translator: Xavier Conde Rueda <xaviconde@eresmas.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -40,143 +40,152 @@ msgid "Merge an existing project into the current project"
 msgstr "Fusiona un projecte existent amb el projecte actual"
 
 #: beast-gtk/bstapp.c:57
+msgid "_Import MIDI..."
+msgstr ""
+
+#: beast-gtk/bstapp.c:57
+#, fuzzy
+msgid "Import a standard MIDI file into the current project"
+msgstr "Fusiona un projecte existent amb el projecte actual"
+
+#: beast-gtk/bstapp.c:59
 msgid "_Close"
 msgstr "Tan_ca"
 
-#: beast-gtk/bstapp.c:61
+#: beast-gtk/bstapp.c:63
 msgid "_Save"
 msgstr "De_sa"
 
-#: beast-gtk/bstapp.c:63
+#: beast-gtk/bstapp.c:65
 msgid "Save _As..."
 msgstr "_Anomena i desa..."
 
-#: beast-gtk/bstapp.c:67
+#: beast-gtk/bstapp.c:69
 msgid "_Quit"
 msgstr "Su_rt"
 
-#: beast-gtk/bstapp.c:71
+#: beast-gtk/bstapp.c:73
 msgid "_Preferences..."
 msgstr "_Preferències..."
 
-#: beast-gtk/bstapp.c:74
+#: beast-gtk/bstapp.c:76
 msgid "Rebuild"
 msgstr "Torna a muntar"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:79
 msgid "_About..."
 msgstr "_Quant a..."
 
-#: beast-gtk/bstapp.c:80
+#: beast-gtk/bstapp.c:82
 msgid "_Undo"
 msgstr "_Desfès"
 
-#: beast-gtk/bstapp.c:82
+#: beast-gtk/bstapp.c:84
 msgid "_Redo"
 msgstr "To_rna a fer"
 
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:69
+#: beast-gtk/bstapp.c:88 beast-gtk/bstpartdialog.c:69
 msgid "_Clear Undo"
 msgstr "_Neteja història del desfés"
 
-#: beast-gtk/bstapp.c:90
+#: beast-gtk/bstapp.c:92
 msgid "Procedure _Browser"
 msgstr "Na_vegador de procediments"
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:94
 msgid "Rack Editor"
 msgstr "Editor del rack"
 
-#: beast-gtk/bstapp.c:94
+#: beast-gtk/bstapp.c:96
 msgid "Device _Monitor"
 msgstr "_Monitor del dispositiu"
 
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:98
 #, fuzzy
 msgid "New View"
 msgstr "_Visualitza"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:102
 msgid "_Play"
 msgstr "Re_produeix"
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:104
 msgid "_Stop"
 msgstr "A_tura"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:108
 msgid "New Song"
 msgstr "Nova cançó"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:110
 msgid "New Custom Synthesizer"
 msgstr "Nou sintetitzador personalitzat"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:112
 msgid "New MIDI Synthesizer"
 msgstr "Nou sintetitzador MIDI"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:114
 msgid "Remove Song or Synthesizer"
 msgstr "Esborra cançó o sintetitzador"
-
-#: beast-gtk/bstapp.c:116
-msgid "Load _Effect"
-msgstr "Carr_ega efecte"
 
 #: beast-gtk/bstapp.c:118
 msgid "Load _Instrument"
 msgstr "Carrega _instrument"
 
 #: beast-gtk/bstapp.c:120
-msgid "Save As Effect"
-msgstr "Desa com a efecte"
+msgid "Load _Effect"
+msgstr "Carr_ega efecte"
 
 #: beast-gtk/bstapp.c:122
 msgid "Save As Instrument"
 msgstr "Desa com a instrument"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:124
+msgid "Save As Effect"
+msgstr "Desa com a efecte"
+
+#: beast-gtk/bstapp.c:128
 msgid "_Release Notes..."
 msgstr "Notes sob_re la versió..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:129
 msgid "Quick Start..."
 msgstr "Inici ràpid..."
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:130
 msgid "_FAQ..."
 msgstr "_Preguntes habituals..."
 
-#: beast-gtk/bstapp.c:131
+#: beast-gtk/bstapp.c:133
 msgid "GSL Engine..."
 msgstr "Motor GSL..."
 
-#: beast-gtk/bstapp.c:547 beast-gtk/bstapp.c:554 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:549 beast-gtk/bstapp.c:556 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "S'està obrint el projecte `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:717
+#: beast-gtk/bstapp.c:722
 msgid "Rack editor"
 msgstr "Editor del rack"
 
-#: beast-gtk/bstapp.c:731
+#: beast-gtk/bstapp.c:736
 msgid "Preferences"
 msgstr "Preferències"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:745
+#: beast-gtk/bstapp.c:750
 msgid "Device Monitor"
 msgstr "Monitor del dispositiu"
 
-#: beast-gtk/bstapp.c:764
+#: beast-gtk/bstapp.c:769
 msgid "Procedure Browser"
 msgstr "Navegador de procediments"
 
-#: beast-gtk/bstapp.c:821
+#: beast-gtk/bstapp.c:826
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Notes sobre el BEAST-%s"
@@ -189,7 +198,7 @@ msgstr "Enllaç al mòdul: "
 msgid "Module link"
 msgstr "Enllaç al mòdul"
 
-#: beast-gtk/bstcanvassource.c:488
+#: beast-gtk/bstcanvassource.c:487
 msgid "Module Info"
 msgstr "Informació del mòdul"
 
@@ -282,7 +291,17 @@ msgstr "Fusiona: %s"
 msgid "Merging project `%s'"
 msgstr "S'està fusionant el projecte `%s'"
 
-#: beast-gtk/bstfiledialog.c:499
+#: beast-gtk/bstfiledialog.c:492
+#, c-format
+msgid "Import MIDI: %s"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:503
+#, c-format
+msgid "Importing MIDI file `%s'"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:523
 #, c-format
 msgid ""
 "Failed to delete file\n"
@@ -295,27 +314,27 @@ msgstr ""
 "degut a:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:528
+#: beast-gtk/bstfiledialog.c:552
 #, c-format
 msgid "Save: %s"
 msgstr "Desa: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:530
+#: beast-gtk/bstfiledialog.c:554
 msgid "Fully include wave files"
 msgstr "Inclou sencers els fitxers d'ona"
 
-#: beast-gtk/bstfiledialog.c:531
+#: beast-gtk/bstfiledialog.c:555
 msgid "Store references to wave files"
 msgstr "Desa referències a fitxers d'ona"
 
-#: beast-gtk/bstfiledialog.c:552 beast-gtk/bstfiledialog.c:562
+#: beast-gtk/bstfiledialog.c:576 beast-gtk/bstfiledialog.c:586
 #, c-format
 msgid "Saving project `%s'"
 msgstr "S'està desant el projecte `%s'"
 
-#: beast-gtk/bstfiledialog.c:553 beast-gtk/bstfiledialog.c:629
-#: beast-gtk/bstfiledialog.c:705
+#: beast-gtk/bstfiledialog.c:577 beast-gtk/bstfiledialog.c:653
+#: beast-gtk/bstfiledialog.c:729
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -330,47 +349,47 @@ msgstr ""
 "`%s':\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:577
+#: beast-gtk/bstfiledialog.c:601
 msgid "Load Effect"
 msgstr "Carrega efecte"
 
-#: beast-gtk/bstfiledialog.c:590
+#: beast-gtk/bstfiledialog.c:614
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "S'està fusionant l'efecte `%s'"
 
-#: beast-gtk/bstfiledialog.c:607
+#: beast-gtk/bstfiledialog.c:631
 msgid "Save Effect"
 msgstr "Desa efecte"
 
-#: beast-gtk/bstfiledialog.c:628 beast-gtk/bstfiledialog.c:638
+#: beast-gtk/bstfiledialog.c:652 beast-gtk/bstfiledialog.c:662
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "S'està desant l'efecte `%s'"
 
-#: beast-gtk/bstfiledialog.c:653
+#: beast-gtk/bstfiledialog.c:677
 msgid "Load Instrument"
 msgstr "Carrega instrument"
 
-#: beast-gtk/bstfiledialog.c:666
+#: beast-gtk/bstfiledialog.c:690
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "S'està fusionant l'instrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:683
+#: beast-gtk/bstfiledialog.c:707
 msgid "Save Instrument"
 msgstr "Desa instrument"
 
-#: beast-gtk/bstfiledialog.c:704 beast-gtk/bstfiledialog.c:714
+#: beast-gtk/bstfiledialog.c:728 beast-gtk/bstfiledialog.c:738
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "S'està desant l'instrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:730
+#: beast-gtk/bstfiledialog.c:754
 msgid "Load Wave"
 msgstr "Carrega ona"
 
-#: beast-gtk/bstfiledialog.c:742 beast-gtk/bstfiledialog.c:744
+#: beast-gtk/bstfiledialog.c:766 beast-gtk/bstfiledialog.c:768
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "S'està carregant l'ona `%s'"
@@ -495,12 +514,12 @@ msgstr ""
 msgid "Note Sequence Grid Editor"
 msgstr ""
 
-#: beast-gtk/bstparam-note-spinner.c:66
+#: beast-gtk/bstparam-note-spinner.c:74
 #, fuzzy
 msgid "Note Entry"
 msgstr "_Longitud de nota"
 
-#: beast-gtk/bstparam-proxy.c:289
+#: beast-gtk/bstparam-proxy.c:290
 msgid "Object Drop Down Box"
 msgstr ""
 
@@ -521,11 +540,11 @@ msgstr "Diàlegs"
 msgid "Dial (Logarithmic"
 msgstr ""
 
-#: beast-gtk/bstparam-searchpath.c:52
+#: beast-gtk/bstparam-searchpath.c:54
 msgid "Remove Paths"
 msgstr "Esborra camins"
 
-#: beast-gtk/bstparam-searchpath.c:105
+#: beast-gtk/bstparam-searchpath.c:111
 msgid "Searchpath Text Entry"
 msgstr ""
 
@@ -1494,11 +1513,11 @@ msgstr ""
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Selecció vertical"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:66
+#: beast-gtk/gxk/gxkparam-spinner.c:74
 msgid "Spin Button"
 msgstr ""
 
-#: beast-gtk/gxk/gxkparam-spinner.c:72
+#: beast-gtk/gxk/gxkparam-spinner.c:80
 msgid "Spin Button (Logarithmic)"
 msgstr ""
 

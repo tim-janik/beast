@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-27 14:13+0100\n"
+"POT-Creation-Date: 2003-12-28 13:06+0100\n"
 "PO-Revision-Date: 2003-12-27 20:16+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -40,142 +40,151 @@ msgid "Merge an existing project into the current project"
 msgstr "Součit existující projekt do aktuálního projektu"
 
 #: beast-gtk/bstapp.c:57
+msgid "_Import MIDI..."
+msgstr ""
+
+#: beast-gtk/bstapp.c:57
+#, fuzzy
+msgid "Import a standard MIDI file into the current project"
+msgstr "Součit existující projekt do aktuálního projektu"
+
+#: beast-gtk/bstapp.c:59
 msgid "_Close"
 msgstr "_Zavřít"
 
-#: beast-gtk/bstapp.c:61
+#: beast-gtk/bstapp.c:63
 msgid "_Save"
 msgstr "_Uložit"
 
-#: beast-gtk/bstapp.c:63
+#: beast-gtk/bstapp.c:65
 msgid "Save _As..."
 msgstr "Uložit _jako..."
 
-#: beast-gtk/bstapp.c:67
+#: beast-gtk/bstapp.c:69
 msgid "_Quit"
 msgstr "U_končit"
 
-#: beast-gtk/bstapp.c:71
+#: beast-gtk/bstapp.c:73
 msgid "_Preferences..."
 msgstr "_Nastaven..."
 
-#: beast-gtk/bstapp.c:74
+#: beast-gtk/bstapp.c:76
 msgid "Rebuild"
 msgstr "Znovu sestavit"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:79
 msgid "_About..."
 msgstr "O _aplikaci..."
 
-#: beast-gtk/bstapp.c:80
+#: beast-gtk/bstapp.c:82
 msgid "_Undo"
 msgstr "_Zpět"
 
-#: beast-gtk/bstapp.c:82
+#: beast-gtk/bstapp.c:84
 msgid "_Redo"
 msgstr "Z_novu"
 
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:69
+#: beast-gtk/bstapp.c:88 beast-gtk/bstpartdialog.c:69
 msgid "_Clear Undo"
 msgstr "Vyma_zat historii"
 
-#: beast-gtk/bstapp.c:90
+#: beast-gtk/bstapp.c:92
 msgid "Procedure _Browser"
 msgstr "_Procházeč procedur"
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:94
 msgid "Rack Editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:94
+#: beast-gtk/bstapp.c:96
 msgid "Device _Monitor"
 msgstr "_Sledování zařízení"
 
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:98
 msgid "New View"
 msgstr "Nový pohled"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:102
 msgid "_Play"
 msgstr "_Přehrávat"
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:104
 msgid "_Stop"
 msgstr "_Zastavit"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:108
 msgid "New Song"
 msgstr "Nová skladba"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:110
 msgid "New Custom Synthesizer"
 msgstr "Nový vlastní syntetizér"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:112
 msgid "New MIDI Synthesizer"
 msgstr "Nový syntetizér MIDI"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:114
 msgid "Remove Song or Synthesizer"
 msgstr "Odstranit skladbu nebo syntetizér"
-
-#: beast-gtk/bstapp.c:116
-msgid "Load _Effect"
-msgstr "Načíst _efekt"
 
 #: beast-gtk/bstapp.c:118
 msgid "Load _Instrument"
 msgstr "Načíst _nástroj"
 
 #: beast-gtk/bstapp.c:120
-msgid "Save As Effect"
-msgstr "Uložit jako efekt"
+msgid "Load _Effect"
+msgstr "Načíst _efekt"
 
 #: beast-gtk/bstapp.c:122
 msgid "Save As Instrument"
 msgstr "Uložit jako nástroj"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:124
+msgid "Save As Effect"
+msgstr "Uložit jako efekt"
+
+#: beast-gtk/bstapp.c:128
 msgid "_Release Notes..."
 msgstr "_Poznámky o vydání..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:129
 msgid "Quick Start..."
 msgstr "Rychlý start..."
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:130
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:131
+#: beast-gtk/bstapp.c:133
 msgid "GSL Engine..."
 msgstr "Engine GSL..."
 
-#: beast-gtk/bstapp.c:547 beast-gtk/bstapp.c:554 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:549 beast-gtk/bstapp.c:556 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otevírám projekt `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:717
+#: beast-gtk/bstapp.c:722
 msgid "Rack editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:731
+#: beast-gtk/bstapp.c:736
 msgid "Preferences"
 msgstr "Nastavení"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:745
+#: beast-gtk/bstapp.c:750
 msgid "Device Monitor"
 msgstr "Sledování zařízení"
 
-#: beast-gtk/bstapp.c:764
+#: beast-gtk/bstapp.c:769
 msgid "Procedure Browser"
 msgstr "Procházeč procedur"
 
-#: beast-gtk/bstapp.c:821
+#: beast-gtk/bstapp.c:826
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Poznámky o vydání BEAST-%s"
@@ -188,7 +197,7 @@ msgstr "Spojení modulů: "
 msgid "Module link"
 msgstr "Spojení modulů"
 
-#: beast-gtk/bstcanvassource.c:488
+#: beast-gtk/bstcanvassource.c:487
 msgid "Module Info"
 msgstr "Informace o modulu"
 
@@ -281,7 +290,17 @@ msgstr "Sloučit: %s"
 msgid "Merging project `%s'"
 msgstr "Slučuji projekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:499
+#: beast-gtk/bstfiledialog.c:492
+#, c-format
+msgid "Import MIDI: %s"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:503
+#, c-format
+msgid "Importing MIDI file `%s'"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:523
 #, c-format
 msgid ""
 "Failed to delete file\n"
@@ -294,27 +313,27 @@ msgstr ""
 "kvůli:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:528
+#: beast-gtk/bstfiledialog.c:552
 #, c-format
 msgid "Save: %s"
 msgstr "Uložit: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:530
+#: beast-gtk/bstfiledialog.c:554
 msgid "Fully include wave files"
 msgstr "Přímo zahrnout soubory vln"
 
-#: beast-gtk/bstfiledialog.c:531
+#: beast-gtk/bstfiledialog.c:555
 msgid "Store references to wave files"
 msgstr "Uložit odkazy na soubory vln"
 
-#: beast-gtk/bstfiledialog.c:552 beast-gtk/bstfiledialog.c:562
+#: beast-gtk/bstfiledialog.c:576 beast-gtk/bstfiledialog.c:586
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Ukládám projekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:553 beast-gtk/bstfiledialog.c:629
-#: beast-gtk/bstfiledialog.c:705
+#: beast-gtk/bstfiledialog.c:577 beast-gtk/bstfiledialog.c:653
+#: beast-gtk/bstfiledialog.c:729
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -329,47 +348,47 @@ msgstr ""
 "`%s':\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:577
+#: beast-gtk/bstfiledialog.c:601
 msgid "Load Effect"
 msgstr "Načíst efekt"
 
-#: beast-gtk/bstfiledialog.c:590
+#: beast-gtk/bstfiledialog.c:614
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Slučuji efekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:607
+#: beast-gtk/bstfiledialog.c:631
 msgid "Save Effect"
 msgstr "Uložit efekt"
 
-#: beast-gtk/bstfiledialog.c:628 beast-gtk/bstfiledialog.c:638
+#: beast-gtk/bstfiledialog.c:652 beast-gtk/bstfiledialog.c:662
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Ukládám efekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:653
+#: beast-gtk/bstfiledialog.c:677
 msgid "Load Instrument"
 msgstr "Načíst nástroj"
 
-#: beast-gtk/bstfiledialog.c:666
+#: beast-gtk/bstfiledialog.c:690
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Slučuji nástroj `%s'"
 
-#: beast-gtk/bstfiledialog.c:683
+#: beast-gtk/bstfiledialog.c:707
 msgid "Save Instrument"
 msgstr "Uložit nástroj"
 
-#: beast-gtk/bstfiledialog.c:704 beast-gtk/bstfiledialog.c:714
+#: beast-gtk/bstfiledialog.c:728 beast-gtk/bstfiledialog.c:738
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Ukládám nástroj `%s'"
 
-#: beast-gtk/bstfiledialog.c:730
+#: beast-gtk/bstfiledialog.c:754
 msgid "Load Wave"
 msgstr "Načíst vlnu"
 
-#: beast-gtk/bstfiledialog.c:742 beast-gtk/bstfiledialog.c:744
+#: beast-gtk/bstfiledialog.c:766 beast-gtk/bstfiledialog.c:768
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Načítám vlnu `%s'"
@@ -493,11 +512,11 @@ msgstr "Tlačítko rozbalení"
 msgid "Note Sequence Grid Editor"
 msgstr "Editor sekvence not v mřížce"
 
-#: beast-gtk/bstparam-note-spinner.c:66
+#: beast-gtk/bstparam-note-spinner.c:74
 msgid "Note Entry"
 msgstr "Vstup noty"
 
-#: beast-gtk/bstparam-proxy.c:289
+#: beast-gtk/bstparam-proxy.c:290
 msgid "Object Drop Down Box"
 msgstr "Pole pro výběr objektu"
 
@@ -517,11 +536,11 @@ msgstr "Ciferník"
 msgid "Dial (Logarithmic"
 msgstr "Ciferník (Logaritmický"
 
-#: beast-gtk/bstparam-searchpath.c:52
+#: beast-gtk/bstparam-searchpath.c:54
 msgid "Remove Paths"
 msgstr "Odstranit cesty"
 
-#: beast-gtk/bstparam-searchpath.c:105
+#: beast-gtk/bstparam-searchpath.c:111
 msgid "Searchpath Text Entry"
 msgstr "Pole pro zadání cesty hledání"
 
@@ -1458,11 +1477,11 @@ msgstr "Vodorovné zvětšení (logaritmické)"
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Svislé zvětšení (logaritmické)"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:66
+#: beast-gtk/gxk/gxkparam-spinner.c:74
 msgid "Spin Button"
 msgstr "Tlačítko se šipkami"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:72
+#: beast-gtk/gxk/gxkparam-spinner.c:80
 msgid "Spin Button (Logarithmic)"
 msgstr "Tlačítko se šipkami (logaritmické)"
 
