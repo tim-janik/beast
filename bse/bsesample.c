@@ -103,14 +103,14 @@ bse_sample_class_init (BseSampleClass *class)
    */
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_N_TRACKS,
-			      bse_param_spec_uint ("n_tracks", "Number of Tracks",
+			      bse_param_spec_uint ("n_tracks", "Number of Tracks", NULL,
 						   1, BSE_MAX_N_TRACKS,
 						   1, 1,
 						   BSE_PARAM_READWRITE |
 						   BSE_PARAM_SERVE_STORAGE));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_REC_FREQ,
-			      bse_param_spec_uint ("recording_frequency", "Recording Frequency",
+			      bse_param_spec_uint ("recording_frequency", "Recording Frequency", NULL,
 						   BSE_MIN_MIX_FREQ, BSE_MAX_MIX_FREQ,
 						   1024, BSE_DFL_SAMPLE_REC_FREQ,
 						   BSE_PARAM_READWRITE |

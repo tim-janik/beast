@@ -82,13 +82,13 @@ bse_bin_data_class_init (BseBinDataClass *class)
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_N_BITS,
-			      bse_param_spec_uint ("n_bits", "Value size in bits",
+			      bse_param_spec_uint ("n_bits", "# Bits", "Value size in bits",
 						   BSE_MIN_BIT_SIZE, BSE_MAX_BIT_SIZE,
 						   8, BSE_DFL_BIN_DATA_BITS,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_BYTE_SIZE,
-			      bse_param_spec_uint ("byte_size", "Value size in bytes",
+			      bse_param_spec_uint ("byte_size", "Byte Size", "Value size in bytes",
 						   BSE_MIN_BIT_SIZE / 8, BSE_MAX_BIT_SIZE / 8,
 						   1, BSE_DFL_BIN_DATA_BITS / 8,
 						   BSE_PARAM_READWRITE |

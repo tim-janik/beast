@@ -1,3 +1,8 @@
+Fri Dec 17 16:57:59 1999  Tim Janik  <timj@gtk.org>
+
+	* bseparam.[hc]: added parameter nick name for GUI uses.
+	* *.c: bunch of adaptions to bse_param_spec_* () calls to supply nick names.
+
 Fri Dec 17 08:48:29 1999  Tim Janik  <timj@gtk.org>
 
 	* bsemixer.[hc] (bse_hunk_fill): new function to fill a hunk with a

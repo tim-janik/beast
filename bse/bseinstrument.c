@@ -129,29 +129,29 @@ bse_instrument_class_init (BseInstrumentClass *class)
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_SAMPLE,
-			      bse_param_spec_item ("sample", "Sample",
+			      bse_param_spec_item ("sample", "Sample", NULL,
 						   BSE_TYPE_SAMPLE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_INTERPOLATION,
-			      bse_param_spec_bool ("interpolation", "Use interpolation?",
+			      bse_param_spec_bool ("interpolation", "Use interpolation?", NULL /* FIXME */,
 						   TRUE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_POLYPHONY,
-			      bse_param_spec_bool ("polyphony", "Polyphony instrument?",
+			      bse_param_spec_bool ("polyphony", "Polyphony instrument?", NULL,
 						   FALSE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
-			      bse_param_spec_float ("volume_f", "Volume [float]",
+			      bse_param_spec_float ("volume_f", "Volume [float]", NULL,
 						    0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
 						    0.1,
 						    bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB),
 						    BSE_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_dB,
-			      bse_param_spec_float ("volume_dB", "Volume [dB]",
+			      bse_param_spec_float ("volume_dB", "Volume [dB]", NULL,
 						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 						    BSE_STP_VOLUME_dB,
 						    BSE_DFL_INSTRUMENT_VOLUME_dB,
@@ -159,7 +159,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_PERC,
-			      bse_param_spec_uint ("volume_perc", "Volume [%]",
+			      bse_param_spec_uint ("volume_perc", "Volume [%]", NULL,
 						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 						   1,
 						   bse_dB_to_factor (BSE_DFL_SONG_VOLUME_dB) * 100,
@@ -167,7 +167,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						   BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_BALANCE,
-			      bse_param_spec_int ("balance", "Balance",
+			      bse_param_spec_int ("balance", "Balance", NULL,
 						  BSE_MIN_BALANCE, BSE_MAX_BALANCE,
 						  BSE_STP_BALANCE,
 						  BSE_DFL_INSTRUMENT_BALANCE,
@@ -175,7 +175,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						  BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_TRANSPOSE,
-			      bse_param_spec_int ("transpose", "Transpose",
+			      bse_param_spec_int ("transpose", "Transpose", NULL,
 						  BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE,
 						  BSE_STP_TRANSPOSE,
 						  BSE_DFL_INSTRUMENT_TRANSPOSE,
@@ -183,7 +183,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
 						  BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_FINE_TUNE,
-			      bse_param_spec_int ("fine_tune", "Fine tune",
+			      bse_param_spec_int ("fine_tune", "Fine tune", NULL,
 						  BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
 						  BSE_STP_FINE_TUNE,
 						  BSE_DFL_INSTRUMENT_FINE_TUNE,
@@ -193,70 +193,70 @@ bse_instrument_class_init (BseInstrumentClass *class)
    */
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ENVELOPE,
-			      bse_param_spec_dots ("envelope", "Envelope",
+			      bse_param_spec_dots ("envelope", "Envelope", NULL,
 						   ENV_N_DOTS, env_dots,
 						   BSE_PARAM_GUI));
   /* envelope parameters
    */
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DELAY_TIME,
-			      bse_param_spec_uint ("delay_time", "Delay Time",
+			      bse_param_spec_uint ("delay_time", "Delay Time", NULL,
 						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
 						   ENV_DELAY_TIME (env_dots) * BSE_MAX_ENV_TIME,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ATTACK_TIME,
-			      bse_param_spec_uint ("attack_time", "Attack Time",
+			      bse_param_spec_uint ("attack_time", "Attack Time", NULL,
 						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
 						   ENV_ATTACK_TIME (env_dots) * BSE_MAX_ENV_TIME,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ATTACK_LEVEL,
-			      bse_param_spec_uint ("attack_level", "Attack Level",
+			      bse_param_spec_uint ("attack_level", "Attack Level", NULL,
 						   0, 100, 1,
 						   ENV_ATTACK_LEVEL (env_dots) * 100,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DECAY_TIME,
-			      bse_param_spec_uint ("decay_time", "Decay Time",
+			      bse_param_spec_uint ("decay_time", "Decay Time", NULL,
 						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
 						   ENV_DECAY_TIME (env_dots) * BSE_MAX_ENV_TIME,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_LEVEL,
-			      bse_param_spec_uint ("sustain_level", "Sustain Level",
+			      bse_param_spec_uint ("sustain_level", "Sustain Level", NULL,
 						   0, 100, 1,
 						   ENV_SUSTAIN_LEVEL (env_dots) * 100,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_TIME,
-			      bse_param_spec_uint ("sustain_time", "Sustain Time",
+			      bse_param_spec_uint ("sustain_time", "Sustain Time", NULL,
 						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
 						   ENV_SUSTAIN_TIME (env_dots) * BSE_MAX_ENV_TIME,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_LEVEL,
-			      bse_param_spec_uint ("release_level", "Release Level",
+			      bse_param_spec_uint ("release_level", "Release Level", NULL,
 						   0, 100, 1,
 						   ENV_RELEASE_LEVEL (env_dots) * 100,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_TIME,
-			      bse_param_spec_uint ("release_time", "Release Time",
+			      bse_param_spec_uint ("release_time", "Release Time", NULL,
 						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
 						   ENV_RELEASE_TIME (env_dots) * BSE_MAX_ENV_TIME,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DURATION,
-			      bse_param_spec_uint ("duration", "Duration [ms]",
+			      bse_param_spec_uint ("duration", "Duration [ms]", NULL,
 						   0, BSE_MAX_ENV_TIME * 5, BSE_STP_ENV_TIME * 5,
 						   BSE_MAX_ENV_TIME,
 						   BSE_PARAM_GUI |

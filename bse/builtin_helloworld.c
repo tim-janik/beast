@@ -70,13 +70,13 @@ randomizer_setup (BseProcedureClass *proc,
   proc->date      = "1999";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_bool ("use-seed", "Use seed value?",
+  *(ipspecs++) = bse_param_spec_bool ("use-seed", "Use seed value?", NULL,
 				      FALSE, BSE_PARAM_PROCEDURE);
-  *(ipspecs++) = bse_param_spec_int ("seed", "Random Seed",
+  *(ipspecs++) = bse_param_spec_int ("seed", "Random Seed", NULL,
 				     -32768, 32767, 1, 42, BSE_PARAM_PROCEDURE);
 
   /* output parameters */
-  *(opspecs++) = bse_param_spec_string ("text", "Random Text",
+  *(opspecs++) = bse_param_spec_string ("text", "Random Text", NULL,
 					NULL, BSE_PARAM_DEFAULT);
 }
 
@@ -123,17 +123,17 @@ progressor_setup (BseProcedureClass *proc,
   proc->date      = "1999";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_uint ("n-iterations", "Number of total Iterations",
+  *(ipspecs++) = bse_param_spec_uint ("n-iterations", "Iterations", "Number of total Iterations",
 				      0, 1024*1024, 512, 1000, BSE_PARAM_PROCEDURE);
-  *(ipspecs++) = bse_param_spec_uint ("n-wait-spins", "Number of internal iterations",
+  *(ipspecs++) = bse_param_spec_uint ("n-wait-spins", "Cycles", "Number of internal iterations",
 				      0, 1024*1024, 512, 1000, BSE_PARAM_PROCEDURE);
-  *(ipspecs++) = bse_param_spec_bool ("update-progress", "Update Progress Value?",
+  *(ipspecs++) = bse_param_spec_bool ("update-progress", "Update Progress Value?", NULL,
 				      TRUE, BSE_PARAM_PROCEDURE);
 
   /* output parameters */
-  *(opspecs++) = bse_param_spec_string ("text1", "Status1",
+  *(opspecs++) = bse_param_spec_string ("text1", "Status1", NULL,
 					NULL, BSE_PARAM_DEFAULT);
-  *(opspecs++) = bse_param_spec_string ("text2", "Status2",
+  *(opspecs++) = bse_param_spec_string ("text2", "Status2", NULL,
 					NULL, BSE_PARAM_DEFAULT);
 }
 

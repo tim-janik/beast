@@ -591,5 +591,5 @@ bse_plugin_dir_list_files (const gchar *_dir_list)
     }
   g_free (free_me);
 
-  return g_list_sort (file_list, strcmp);
+  return g_list_sort (file_list, (GCompareFunc) strcmp);
 }

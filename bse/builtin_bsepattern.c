@@ -48,13 +48,13 @@ set_note_setup (BseProcedureClass *proc,
   proc->date      = "1999";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern",
+  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern", NULL,
 				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("channel", "Channel",
+  *(ipspecs++) = bse_param_spec_uint ("channel", "Channel", NULL,
                                       0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("row", "Row",
+  *(ipspecs++) = bse_param_spec_uint ("row", "Row", NULL,
                                       0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_note ("note", "Note to play",
+  *(ipspecs++) = bse_param_spec_note ("note", "Note", "Note to play",
                                       BSE_MIN_NOTE, BSE_MAX_NOTE,
 				      1, BSE_NOTE_VOID, TRUE,
 				      BSE_PARAM_DEFAULT);
@@ -116,13 +116,13 @@ set_instrument_setup (BseProcedureClass *proc,
   proc->date      = "1999";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern",
+  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern", NULL,
 				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("channel", "Channel",
+  *(ipspecs++) = bse_param_spec_uint ("channel", "Channel", NULL,
                                       0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_uint ("row", "Row",
+  *(ipspecs++) = bse_param_spec_uint ("row", "Row", NULL,
                                       0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_item ("instrument", "Instrument to play",
+  *(ipspecs++) = bse_param_spec_item ("instrument", "Instrument", "Instrument to play",
                                       BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
   /* output parameters */
 }

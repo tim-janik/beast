@@ -67,7 +67,7 @@ bse_effect_fine_tune_class_init (BseEffectClass *class)
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_FINE_TUNE,
-			      bse_param_spec_int ("fine_tune", "Fine tune",
+			      bse_param_spec_int ("fine_tune", "Fine tune", NULL,
 						  BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
 						  BSE_STP_FINE_TUNE,
 						  BSE_DFL_INSTRUMENT_FINE_TUNE,

@@ -67,7 +67,7 @@ bse_effect_pattern_jump_class_init (BseEffectClass *class)
 
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_PATTERN_ID,
-			      bse_param_spec_uint ("pattern_id", "Pattern Id",
+			      bse_param_spec_uint ("pattern_id", "Pattern Id", NULL,
 						   1, BSE_MAX_SEQ_ID,
 						   1,
 						   1,

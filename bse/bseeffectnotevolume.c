@@ -68,7 +68,7 @@ bse_effect_note_volume_class_init (BseEffectClass *class)
 
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_VOLUME_PERC,
-			      bse_param_spec_uint ("volume_perc", "Volume [%]",
+			      bse_param_spec_uint ("volume_perc", "Volume [%]", NULL,
 						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 						   1,
 						   bse_dB_to_factor (0) * 100,
@@ -76,7 +76,7 @@ bse_effect_note_volume_class_init (BseEffectClass *class)
 						   BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_VOLUME_dB,
-			      bse_param_spec_float ("volume_dB", "Volume [dB]",
+			      bse_param_spec_float ("volume_dB", "Volume [dB]", NULL,
 						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 						    BSE_STP_VOLUME_dB,
 						    0,

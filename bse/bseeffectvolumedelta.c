@@ -67,7 +67,7 @@ bse_effect_volume_delta_class_init (BseEffectClass *class)
 
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_DELTA_PERC,
-			      bse_param_spec_uint ("delta_perc", "Delta [%]",
+			      bse_param_spec_uint ("delta_perc", "Delta [%]", NULL,
 						   bse_dB_to_factor (BSE_MAX_VOLUME_dB) * (-100),
 						   bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 						   1,

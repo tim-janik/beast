@@ -99,23 +99,23 @@ bse_super_class_init (BseSuperClass *class)
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,
-			      bse_param_spec_fstring ("author", "Author",
+			      bse_param_spec_fstring ("author", "Author", NULL,
 						      NULL,
 						      BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_COPYRIGHT,
-			      bse_param_spec_fstring ("copyright", "Copyright",
+			      bse_param_spec_fstring ("copyright", "Copyright", NULL,
 						      NULL,
 						      BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_CREATION_TIME,
-			      bse_param_spec_time ("creation_time", "Creation Time",
+			      bse_param_spec_time ("creation_time", "Creation Time", NULL,
 						   0,
 						   BSE_PARAM_DEFAULT |
 						   BSE_PARAM_HINT_RDONLY));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_MOD_TIME,
-			      bse_param_spec_time ("modification_time", "Last modification time",
+			      bse_param_spec_time ("modification_time", "Last modification time", NULL,
 						   0,
 						   BSE_PARAM_READWRITE |
 						   BSE_PARAM_HINT_RDONLY |
