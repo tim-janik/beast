@@ -96,7 +96,7 @@ public:
 	    return;
 	  }
 
-	error = Compiler::compile (symbols, tokens, instructions);
+	error = Compiler::compile (symbols, tokens, new_instructions);
 	if (error != "")
 	  {
 	    set_status("ERROR: " + error);
