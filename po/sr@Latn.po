@@ -9,171 +9,171 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-14 01:50+0100\n"
-"PO-Revision-Date: 2003-11-14 01:55+0100\n"
+"POT-Creation-Date: 2003-11-18 23:18+0100\n"
+"PO-Revision-Date: 2003-11-18 23:27+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:51
 msgid "_New"
 msgstr "_Novi"
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:51
 msgid "Create new project"
 msgstr "Napravi novi projekat"
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:53
 msgid "_Open..."
 msgstr "_Otvori..."
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:53
 msgid "Open existing project"
 msgstr "Otvari postojeći projekat"
 
-#: beast-gtk/bstapp.c:57
+#: beast-gtk/bstapp.c:55
 msgid "_Merge..."
 msgstr "_Spoji..."
 
-#: beast-gtk/bstapp.c:57
+#: beast-gtk/bstapp.c:55
 msgid "Merge an existing project into the current project"
 msgstr "Spoji postojeći projekat sa tekućim projektom"
 
-#: beast-gtk/bstapp.c:59
+#: beast-gtk/bstapp.c:57
 msgid "_Close"
 msgstr "_Zatvori"
 
-#: beast-gtk/bstapp.c:63
+#: beast-gtk/bstapp.c:61
 msgid "_Save"
 msgstr "_Sačuvaj"
 
-#: beast-gtk/bstapp.c:65
+#: beast-gtk/bstapp.c:63
 msgid "Save _As..."
 msgstr "Sačuvaj _kao..."
 
-#: beast-gtk/bstapp.c:69
+#: beast-gtk/bstapp.c:67
 msgid "_Quit"
 msgstr "_Izađi"
 
-#: beast-gtk/bstapp.c:73
+#: beast-gtk/bstapp.c:71
 msgid "_Preferences..."
 msgstr "_Postavke..."
 
-#: beast-gtk/bstapp.c:76
+#: beast-gtk/bstapp.c:74
 msgid "Rebuild"
 msgstr "Ponovo _izgradi"
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:77
 msgid "_About..."
 msgstr "_O programu..."
 
-#: beast-gtk/bstapp.c:82
+#: beast-gtk/bstapp.c:80
 msgid "_Undo"
 msgstr "Opo_zovi"
 
-#: beast-gtk/bstapp.c:84
+#: beast-gtk/bstapp.c:82
 msgid "_Redo"
 msgstr "Po_novi"
 
-#: beast-gtk/bstapp.c:88
+#: beast-gtk/bstapp.c:86
 msgid "_Clear Undo"
 msgstr "_Očisti vraćanje"
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:90
 msgid "Procedure _Browser"
 msgstr "_Razgledač procedura"
 
-#: beast-gtk/bstapp.c:94
+#: beast-gtk/bstapp.c:92
 msgid "Rack Editor"
 msgstr "Uređivač polica"
 
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:94
 msgid "Device _Monitor"
 msgstr "Pr_aćenje uređaja"
 
-#: beast-gtk/bstapp.c:100
+#: beast-gtk/bstapp.c:98
 msgid "_Play"
 msgstr "_Pusti"
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:100
 msgid "_Stop"
 msgstr "_Zaustavi"
 
-#: beast-gtk/bstapp.c:106
+#: beast-gtk/bstapp.c:104
 msgid "New Song"
 msgstr "Nova pesma"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:106
 msgid "New Custom Synthesizer"
 msgstr "Novi sintetizator po izboru"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:108
 msgid "New MIDI Synthesizer"
 msgstr "Novi MIDI sintetizator"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:110
 msgid "Remove Song or Synthesizer"
 msgstr "Ukloni pesmu ili sintetizator"
 
-#: beast-gtk/bstapp.c:116
+#: beast-gtk/bstapp.c:114
 msgid "Load _Effect"
 msgstr "Učitaj _efekat"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:116
 msgid "Load _Instrument"
 msgstr "Učitaj _instrument"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:118
 msgid "Save As Effect"
 msgstr "Sačuvaj kao efekat"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:120
 msgid "Save As Instrument"
 msgstr "Sačuvaj kao instrument"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:124
 msgid "_Release Notes..."
 msgstr "_Objava izdanja..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:125
 msgid "Quick Start..."
 msgstr "Brzi početak..."
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:126
 msgid "_FAQ..."
 msgstr "Pitanja i _odgovori"
 
-#: beast-gtk/bstapp.c:131
+#: beast-gtk/bstapp.c:129
 msgid "GSL Engine..."
 msgstr "GSL mašinerija..."
 
-#: beast-gtk/bstapp.c:574 beast-gtk/bstapp.c:581 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:544 beast-gtk/bstapp.c:551 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otvara projekat „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:744
+#: beast-gtk/bstapp.c:714
 msgid "Rack editor"
 msgstr "Uređivač polica"
 
-#: beast-gtk/bstapp.c:758
+#: beast-gtk/bstapp.c:728
 msgid "Preferences"
 msgstr "Postavke"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:772
+#: beast-gtk/bstapp.c:742
 msgid "Device Monitor"
 msgstr "Praćenje uređaja"
 
-#: beast-gtk/bstapp.c:787
+#: beast-gtk/bstapp.c:757
 msgid "Procedure Browser"
 msgstr "Razgledač procedura"
 
-#: beast-gtk/bstapp.c:844
+#: beast-gtk/bstapp.c:814
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ZVER-%s Objava izdanja"
@@ -182,7 +182,7 @@ msgstr "ZVER-%s Objava izdanja"
 msgid "Module Link: "
 msgstr "Veza sa modulom:"
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:1055
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:914
 msgid "Module link"
 msgstr "Veza sa modulom"
 
@@ -190,11 +190,11 @@ msgstr "Veza sa modulom"
 msgid "Module Info"
 msgstr "Podaci o modulu"
 
-#: beast-gtk/bstcanvassource.c:971
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:200
 msgid "Input"
 msgstr "Ulaz"
 
-#: beast-gtk/bstcanvassource.c:980
+#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
 msgid "Output"
 msgstr "Izlaz"
 
@@ -202,51 +202,51 @@ msgstr "Izlaz"
 msgid "(Hint)"
 msgstr "(savet)"
 
-#: beast-gtk/bsteventrollctrl.c:344 beast-gtk/bsteventrollctrl.c:351
-#: beast-gtk/bsteventrollctrl.c:415
+#: beast-gtk/bsteventrollctrl.c:350 beast-gtk/bsteventrollctrl.c:357
+#: beast-gtk/bsteventrollctrl.c:421
 msgid "Move Control Event"
 msgstr "Premesti kontrolni događaj"
 
-#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:500
-#: beast-gtk/bsteventrollctrl.c:550 beast-gtk/bstpianorollctrl.c:445
-#: beast-gtk/bstpianorollctrl.c:555 beast-gtk/bstpianorollctrl.c:618
-#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:468
-#: beast-gtk/bsttrackrollctrl.c:540
+#: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
+#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:472
+#: beast-gtk/bstpianorollctrl.c:582 beast-gtk/bstpianorollctrl.c:645
+#: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
+#: beast-gtk/bsttrackrollctrl.c:560
 msgid "No target"
 msgstr "Bez mete"
 
-#: beast-gtk/bsteventrollctrl.c:415 beast-gtk/bsteventrollctrl.c:536
+#: beast-gtk/bsteventrollctrl.c:421 beast-gtk/bsteventrollctrl.c:542
 msgid "Lost Event"
 msgstr "Izgubljen događaj"
 
-#: beast-gtk/bsteventrollctrl.c:425 beast-gtk/bsteventrollctrl.c:458
+#: beast-gtk/bsteventrollctrl.c:431 beast-gtk/bsteventrollctrl.c:464
 msgid "Align Control Events"
 msgstr "Poravnaj kontrolne događaje"
 
-#: beast-gtk/bsteventrollctrl.c:458 beast-gtk/bsteventrollctrl.c:584
-#: beast-gtk/bstpianorollctrl.c:676 beast-gtk/bstpianorollctrl.c:712
+#: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bstpianorollctrl.c:703 beast-gtk/bstpianorollctrl.c:739
 msgid "Aborted"
 msgstr "Prekinut"
 
-#: beast-gtk/bsteventrollctrl.c:484
+#: beast-gtk/bsteventrollctrl.c:490
 msgid "Insert Control Event"
 msgstr "Umetni kontrolni događaj"
 
-#: beast-gtk/bsteventrollctrl.c:495 beast-gtk/bsteventrollctrl.c:500
-#: beast-gtk/bsteventrollctrl.c:536
+#: beast-gtk/bsteventrollctrl.c:501 beast-gtk/bsteventrollctrl.c:506
+#: beast-gtk/bsteventrollctrl.c:542
 msgid "Resize Control Event"
 msgstr "Promeni veličinu kontrolnog događaja"
 
-#: beast-gtk/bsteventrollctrl.c:547 beast-gtk/bsteventrollctrl.c:550
+#: beast-gtk/bsteventrollctrl.c:553 beast-gtk/bsteventrollctrl.c:556
 msgid "Delete Control Event"
 msgstr "Obriši kontrolni događaj"
 
-#: beast-gtk/bsteventrollctrl.c:560 beast-gtk/bsteventrollctrl.c:584
-#: beast-gtk/bstpianorollctrl.c:650 beast-gtk/bstpianorollctrl.c:676
+#: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bstpianorollctrl.c:677 beast-gtk/bstpianorollctrl.c:703
 msgid "Select Region"
 msgstr "Izaberi područje"
 
-#: beast-gtk/bsteventrollctrl.c:593 beast-gtk/bstpianorollctrl.c:721
+#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:748
 msgid "Abortion"
 msgstr "Prekid"
 
@@ -371,14 +371,14 @@ msgid "Loading wave `%s'"
 msgstr "Učitavam Wave „%s“"
 
 #: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:41
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:62
 msgid "Add"
 msgstr "Dodaj"
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstmessages.c:81
-#: beast-gtk/bstpartview.c:42 beast-gtk/bstpianorollctrl.c:48
-#: beast-gtk/bstrackitem.c:182 beast-gtk/bstsnetrouter.c:1017
-#: beast-gtk/bstsnetrouter.c:1059 beast-gtk/bsttrackview.c:66
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
+#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:182
+#: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
 #: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Obriši"
@@ -391,7 +391,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Ime"
 
-#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:587
+#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:572
 msgid "Comment"
 msgstr "Primedba"
 
@@ -399,8 +399,6 @@ msgstr "Primedba"
 msgid "Type"
 msgstr "Vrsta"
 
-#. now, we can popup the splash screen
-#.
 #: beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "Pokretanje Zveri"
@@ -419,291 +417,115 @@ msgstr "Objekti"
 msgid "Language"
 msgstr "Jezik"
 
-#: beast-gtk/bstmain.c:163
+#: beast-gtk/bstmain.c:162
 msgid "RC File"
 msgstr "RC datoteka"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:170
+#: beast-gtk/bstmain.c:169
 msgid "Splash Image"
 msgstr "Uvodna slika"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:182
+#: beast-gtk/bstmain.c:181
 msgid "BSE Core"
 msgstr "BSE jezgro"
 
-#: beast-gtk/bstmain.c:201
+#: beast-gtk/bstmain.c:200
 msgid "Plugins"
 msgstr "Dodaci"
 
-#: beast-gtk/bstmain.c:220
+#: beast-gtk/bstmain.c:219
 msgid "LADSPA Plugins"
 msgstr "LADSPA dodaci"
 
-#: beast-gtk/bstmain.c:248
+#: beast-gtk/bstmain.c:247
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:266
+#: beast-gtk/bstmain.c:265
 msgid "Dialogs"
 msgstr "Prozorčići"
 
-#: beast-gtk/bstmain.c:279
+#: beast-gtk/bstmain.c:272
 msgid "Loading..."
 msgstr "Učitavam..."
 
-#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
+#: beast-gtk/bstmain.c:302 beast-gtk/bstmain.c:304
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Učitavam „%s“"
 
-#: beast-gtk/bstmain.c:328
+#: beast-gtk/bstmain.c:321
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
 
-#. catalog_key, name, stock_id, accelerator, tooltip, blurb
-#: beast-gtk/bstmessages.c:21
-msgid "Left"
-msgstr "Levo"
+#: beast-gtk/bstmain.c:688
+msgid "BEAST About"
+msgstr "O Zveri"
 
-#: beast-gtk/bstmessages.c:23
-msgid "Use the horizontal ruler to adjust the left loop pointer"
-msgstr "Koristi vodoravni lenjir za popravku pokazivača leve petlje"
+#: beast-gtk/bstmain.c:689
+#, c-format
+msgid "BEAST Version %s"
+msgstr "ZVER, izdanje %s"
 
-#: beast-gtk/bstmessages.c:25
-msgid "Pos"
-msgstr "Položaj"
-
-#: beast-gtk/bstmessages.c:27
-msgid "Use the horizontal ruler to adjust the play position pointer"
-msgstr "Koristi vodoravni lenjir za popravku pokazivača toka puštanja"
-
-#: beast-gtk/bstmessages.c:29
-msgid "Right"
-msgstr "Desno"
-
-#: beast-gtk/bstmessages.c:31
-msgid "Use the horizontal ruler to adjust the right loop pointer"
-msgstr "Koristi vodoravni lenjir za popravku pokazivača desne petlje"
-
-#: beast-gtk/bstmessages.c:33
-msgid "Q: Tact"
-msgstr "Q: takt"
-
-#: beast-gtk/bstmessages.c:35
-msgid "Quantize to tact boundaries"
-msgstr "Kvantizacija na nivou takta"
-
-#: beast-gtk/bstmessages.c:37
-msgid "Q: None"
-msgstr "Q: ništa"
-
-#: beast-gtk/bstmessages.c:39
-msgid "No quantization selected"
-msgstr "Bez kvantizacije"
-
-#: beast-gtk/bstmessages.c:41
-msgid "Q: 1/1"
-msgstr "Q: 1/1"
-
-#: beast-gtk/bstmessages.c:43
-msgid "Quantize to full note boundaries"
-msgstr "Kvantizacija na nivou cele note"
-
-#: beast-gtk/bstmessages.c:45
-msgid "Q: 1/2"
-msgstr "Q: 1/2"
-
-#: beast-gtk/bstmessages.c:47
-msgid "Quantize to half note boundaries"
-msgstr "Kvantizacija na nivou pola note"
-
-#: beast-gtk/bstmessages.c:49
-msgid "Q: 1/4"
-msgstr "Q: 1/4"
-
-#: beast-gtk/bstmessages.c:51
-msgid "Quantize to quarter note boundaries"
-msgstr "Kvantizacija na nivou četvrt note"
-
-#: beast-gtk/bstmessages.c:53
-msgid "Q: 1/8"
-msgstr "Q: 1/8"
-
-#: beast-gtk/bstmessages.c:55
-msgid "Quantize to eighths note boundaries"
-msgstr "Kvantizacija na nivou osmine note"
-
-#: beast-gtk/bstmessages.c:57
-msgid "Q: 1/16"
-msgstr "Q: 1/16"
-
-#: beast-gtk/bstmessages.c:59
-msgid "Quantize to sixteenth note boundaries"
-msgstr "Kvantizacija na nivou šesnestine note"
-
-#: beast-gtk/bstmessages.c:61
-msgid "_Insert"
-msgstr "U_metni"
-
-#: beast-gtk/bstmessages.c:63
-msgid "Insert/edit/move parts (mouse button 1 and 2)"
-msgstr "Umetni/uredi/premesti delove (1. i 2. dugme miša)"
-
-#: beast-gtk/bstmessages.c:65
-msgid "Lin_k"
-msgstr "_Veži"
-
-#: beast-gtk/bstmessages.c:67
-msgid "Link or move parts (mouse button 1 and 2)"
-msgstr "Veži ili premesti delove (1. i 2. dugme miša)"
-
-#: beast-gtk/bstmessages.c:69
-msgid "_Rename"
-msgstr "Pre_imenuj"
-
-#: beast-gtk/bstmessages.c:71
-msgid "Rename parts"
-msgstr "Preimenuj delove"
-
-#: beast-gtk/bstmessages.c:73
-msgid "_Delete"
-msgstr "_Obriši"
-
-#: beast-gtk/bstmessages.c:75
-msgid "Delete parts"
-msgstr "Obriši delove"
-
-#: beast-gtk/bstmessages.c:77 beast-gtk/bstpianorollctrl.c:46
-msgid "Insert"
-msgstr "Umetni"
-
-#: beast-gtk/bstmessages.c:79 beast-gtk/bstpianorollctrl.c:46
-msgid "Insert/resize/move notes (mouse button 1 and 2)"
-msgstr "Umetni/promeni veličine/premesti note (1. i 2. dugme miša)"
-
-#: beast-gtk/bstmessages.c:83 beast-gtk/bstpianorollctrl.c:48
-msgid "Delete note (mouse button 1)"
-msgstr "Obriši notu (1. dugme miša)"
-
-#: beast-gtk/bstmessages.c:85
-msgid "Align"
-msgstr "Poravnaj"
-
-#: beast-gtk/bstmessages.c:87 beast-gtk/bstpianorollctrl.c:50
-msgid "Draw a line to align events to"
-msgstr "Nacrtajte liniju uz koju da poravnam događaje"
-
-#: beast-gtk/bstmessages.c:89 beast-gtk/bstpianorollctrl.c:52
-msgid "Select"
-msgstr "Izaberi"
-
-#: beast-gtk/bstmessages.c:91 beast-gtk/bstpianorollctrl.c:52
-msgid "Rectangle select notes"
-msgstr "Pravougaonik bira note"
-
-#: beast-gtk/bstmessages.c:93
-msgid "VSelect"
-msgstr "Uspravan izbor"
-
-#: beast-gtk/bstmessages.c:95 beast-gtk/bstpianorollctrl.c:54
-msgid "Select tick range vertically"
-msgstr "Izaberite uspravne podeoke"
-
-#: beast-gtk/bstmessages.c:97
-msgid "1/1"
-msgstr "1/1"
-
-#: beast-gtk/bstmessages.c:99
-msgid "Insert full notes"
-msgstr "Umetni pune note"
-
-#: beast-gtk/bstmessages.c:101
-msgid "1/2"
-msgstr "1/2"
-
-#: beast-gtk/bstmessages.c:103
-msgid "Insert half notes"
-msgstr "Umetni polunotu"
-
-#: beast-gtk/bstmessages.c:105
-msgid "1/4"
-msgstr "1/4"
-
-#: beast-gtk/bstmessages.c:107
-msgid "Insert quarter notes"
-msgstr "Umetni četvrtnotu"
-
-#: beast-gtk/bstmessages.c:109
-msgid "1/8"
-msgstr "1/8"
-
-#: beast-gtk/bstmessages.c:111
-msgid "Insert eighths note"
-msgstr "Umetni osminu note"
-
-#: beast-gtk/bstmessages.c:113
-msgid "1/16"
-msgstr "1/16"
-
-#: beast-gtk/bstmessages.c:115
-msgid "Insert sixteenth note"
-msgstr "Umetni šesnaestinu note"
+#: beast-gtk/bstmain.c:690
+msgid "Contributions made by:"
+msgstr "Takođe doprineli:"
 
 #: beast-gtk/bstparam-entry.c:61
 msgid "Remove Paths"
 msgstr "Ukloni putanje"
 
-#: beast-gtk/bstpartdialog.c:53
+#: beast-gtk/bstpartdialog.c:59
 msgid "Clear"
 msgstr "Očisti"
 
-#: beast-gtk/bstpartdialog.c:53
+#: beast-gtk/bstpartdialog.c:59
 msgid "Clear the current selection"
 msgstr "Očisti tekući izbor"
 
-#: beast-gtk/bstpartdialog.c:54
+#: beast-gtk/bstpartdialog.c:60
 msgid "Cut"
 msgstr "Iseci"
 
-#: beast-gtk/bstpartdialog.c:54
+#: beast-gtk/bstpartdialog.c:60
 msgid "Move the current selection into clipboard"
 msgstr "Premesti tekući izbor među isečke"
 
-#: beast-gtk/bstpartdialog.c:55
+#: beast-gtk/bstpartdialog.c:61
 msgid "Copy"
 msgstr "Umnoži"
 
-#: beast-gtk/bstpartdialog.c:55
+#: beast-gtk/bstpartdialog.c:61
 msgid "Copy the current selection into clipboard"
 msgstr "Umnoži tekući izbor među isečke"
 
-#: beast-gtk/bstpartdialog.c:56
+#: beast-gtk/bstpartdialog.c:62
 msgid "Paste"
 msgstr "Ubaci"
 
-#: beast-gtk/bstpartdialog.c:56
+#: beast-gtk/bstpartdialog.c:62
 msgid "Insert clipboard contents as current selection"
 msgstr "Ubaci sadržaj isečaka kao na mesto tekućeg izbora"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:65
 msgid "Undo"
 msgstr "Opozovi"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:65
 msgid "Undo last editing step"
 msgstr "Opozovi poslednju izmenu"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:66
 msgid "Redo"
 msgstr "Ponovi"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:66
 msgid "Redo the last undone editing step"
 msgstr "Ponovi poslednju opozvanu izmenu"
 
@@ -711,41 +533,165 @@ msgstr "Ponovi poslednju opozvanu izmenu"
 msgid "Editor"
 msgstr "Uređivač"
 
+#: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert"
+msgstr "Umetni"
+
+#: beast-gtk/bstpianorollctrl.c:46
+msgid "Insert/resize/move notes (mouse button 1 and 2)"
+msgstr "Umetni/promeni veličine/premesti note (1. i 2. dugme miša)"
+
+#: beast-gtk/bstpianorollctrl.c:48
+msgid "Delete note (mouse button 1)"
+msgstr "Obriši notu (1. dugme miša)"
+
 #: beast-gtk/bstpianorollctrl.c:50
 msgid "Align Events"
 msgstr "Uskladi događaje"
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:686
+#: beast-gtk/bstpianorollctrl.c:50
+msgid "Draw a line to align events to"
+msgstr "Nacrtajte liniju uz koju da poravnam događaje"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Select"
+msgstr "Izaberi"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Rectangle select notes"
+msgstr "Pravougaonik bira note"
+
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:713
 msgid "Vertical Select"
 msgstr "Uspravan izbor"
 
-#: beast-gtk/bstpianorollctrl.c:438 beast-gtk/bstpianorollctrl.c:445
-#: beast-gtk/bstpianorollctrl.c:533
+#: beast-gtk/bstpianorollctrl.c:54
+msgid "Select tick range vertically"
+msgstr "Izaberite uspravne podeoke"
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "1\\/1"
+msgstr "1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "Insert full notes"
+msgstr "Umetni pune note"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "1\\/2"
+msgstr "1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "Insert half notes"
+msgstr "Umetni polunotu"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "1\\/4"
+msgstr "1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "Insert quarter notes"
+msgstr "Umetni četvrtnotu"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "1\\/8"
+msgstr "1\\/8"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "Insert eighths note"
+msgstr "Umetni osminu note"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "1\\/16"
+msgstr "1\\/16"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "Insert sixteenth note"
+msgstr "Umetni šesnaestinu note"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Q: Tact"
+msgstr "Q: takt"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Quantize to tact boundaries"
+msgstr "Kvantizacija na nivou takta"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "Q: None"
+msgstr "Q: ništa"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "No quantization selected"
+msgstr "Bez kvantizacije"
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+msgid "Q: 1\\/1"
+msgstr "Q: 1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+msgid "Quantize to full note boundaries"
+msgstr "Kvantizacija na nivou cele note"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+msgid "Q: 1\\/2"
+msgstr "Q: 1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+msgid "Quantize to half note boundaries"
+msgstr "Kvantizacija na nivou pola note"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+msgid "Q: 1\\/4"
+msgstr "Q: 1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+msgid "Quantize to quarter note boundaries"
+msgstr "Kvantizacija na nivou četvrt note"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+msgid "Q: 1\\/8"
+msgstr "Q: 1\\/8"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+msgid "Quantize to eighths note boundaries"
+msgstr "Kvantizacija na nivou osmine note"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+msgid "Q: 1\\/16"
+msgstr "Q: 1\\/16"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+msgid "Quantize to sixteenth note boundaries"
+msgstr "Kvantizacija na nivou šesnestine note"
+
+#: beast-gtk/bstpianorollctrl.c:465 beast-gtk/bstpianorollctrl.c:472
+#: beast-gtk/bstpianorollctrl.c:560
 msgid "Move Note"
 msgstr "Premesti notu"
 
-#: beast-gtk/bstpianorollctrl.c:533 beast-gtk/bstpianorollctrl.c:604
+#: beast-gtk/bstpianorollctrl.c:560 beast-gtk/bstpianorollctrl.c:631
 msgid "Lost Note"
 msgstr "Izgubljena nota"
 
-#: beast-gtk/bstpianorollctrl.c:550 beast-gtk/bstpianorollctrl.c:555
-#: beast-gtk/bstpianorollctrl.c:604
+#: beast-gtk/bstpianorollctrl.c:577 beast-gtk/bstpianorollctrl.c:582
+#: beast-gtk/bstpianorollctrl.c:631
 msgid "Resize Note"
 msgstr "Promeni veličinu note"
 
-#: beast-gtk/bstpianorollctrl.c:615 beast-gtk/bstpianorollctrl.c:618
+#: beast-gtk/bstpianorollctrl.c:642 beast-gtk/bstpianorollctrl.c:645
 msgid "Delete Note"
 msgstr "Obriši notu"
 
-#: beast-gtk/bstpianorollctrl.c:640
+#: beast-gtk/bstpianorollctrl.c:667
 msgid "Insert Note"
 msgstr "Umetni notu"
 
-#: beast-gtk/bstpianorollctrl.c:712
+#: beast-gtk/bstpianorollctrl.c:739
 msgid "Vertical Region"
 msgstr "Uspravno područje"
 
-#: beast-gtk/bstpianorollctrl.c:833
+#: beast-gtk/bstpianorollctrl.c:860
 msgid "Play note"
 msgstr "Pusti notu"
 
@@ -753,7 +699,7 @@ msgstr "Pusti notu"
 msgid "Playback"
 msgstr "Puštanje"
 
-#: beast-gtk/bstprocedure.c:213 beast-gtk/bstradiotools.c:625
+#: beast-gtk/bstprocedure.c:213
 msgid "Description"
 msgstr "Opis"
 
@@ -789,7 +735,7 @@ msgstr ""
 "Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
 "budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
 
-#: beast-gtk/bstrackeditor.c:109 beast-gtk/dialogs/gadgets-beast.xml.h:6
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "_Edit"
 msgstr "_Uredi"
 
@@ -876,75 +822,111 @@ msgstr "Skiciraj maksimum"
 msgid "Preview"
 msgstr "Preslušaj"
 
-#: beast-gtk/bstsnetrouter.c:407
+#: beast-gtk/bstsnetrouter.c:72
+msgid ""
+"Edit tool (mouse buttons 1-3)\n"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
+msgstr ""
+"Alat za uređivanje (1-3. dugme miša)\n"
+"Koristite 1. dugme da napravite veze, 2. dugme za premeštanje i 3. dugme da izmenite osobine"
+
+#: beast-gtk/bstsnetrouter.c:77
+msgid "Edit"
+msgstr "Uredi"
+
+#: beast-gtk/bstsnetrouter.c:77
+msgid "Edit/Move/Menu (mouse buttons 1-3)"
+msgstr "Uredi/Premesti/Meni (1–3. dugme miša)"
+
+#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1069
 msgid "Palette"
 msgstr "Paleta"
 
-#: beast-gtk/bstsnetrouter.c:926
+#: beast-gtk/bstsnetrouter.c:81
+msgid "Toggle visibility of the tool palette"
+msgstr "Izmeni vidljivost palete alatki"
+
+#: beast-gtk/bstsnetrouter.c:197
+msgid "PCM Output module"
+msgstr "PCM izlazni modul"
+
+#: beast-gtk/bstsnetrouter.c:198
+msgid "DCA"
+msgstr "DCA"
+
+#: beast-gtk/bstsnetrouter.c:198
+msgid "Standard amplifier module"
+msgstr "Obični modul za pojačavanje"
+
+#: beast-gtk/bstsnetrouter.c:199
+msgid "Snoop"
+msgstr "Njuškaj"
+
+#: beast-gtk/bstsnetrouter.c:199
+msgid "Signal debugging module"
+msgstr "Modul za razbubiranje signala"
+
+#: beast-gtk/bstsnetrouter.c:200
+msgid "PCM Input module"
+msgstr "PCM ulazni modul"
+
+#: beast-gtk/bstsnetrouter.c:245
+msgid "Channel Hints"
+msgstr "Nagoveštaji kanala"
+
+#: beast-gtk/bstsnetrouter.c:245
+msgid "Toggle channel name hints"
+msgstr "Isključi/uključi nagoveštaje imena kanala"
+
+#: beast-gtk/bstsnetrouter.c:785
 msgid "Input channel in use"
 msgstr "Ulazni kanal u upotrebi"
 
-#: beast-gtk/bstsnetrouter.c:953 beast-gtk/bstsnetrouter.c:955
-#: beast-gtk/bstsnetrouter.c:991
+#: beast-gtk/bstsnetrouter.c:812 beast-gtk/bstsnetrouter.c:814
+#: beast-gtk/bstsnetrouter.c:850
 msgid "Create Link"
 msgstr "Napravi vezu"
 
-#: beast-gtk/bstsnetrouter.c:953
+#: beast-gtk/bstsnetrouter.c:812
 msgid "Select output module"
 msgstr "Izaberite izlazni modul"
 
-#: beast-gtk/bstsnetrouter.c:955
+#: beast-gtk/bstsnetrouter.c:814
 msgid "Select input module"
 msgstr "Izaberite ulazni modul"
 
-#: beast-gtk/bstsnetrouter.c:1011
+#: beast-gtk/bstsnetrouter.c:870
 msgid "Properties"
 msgstr "Osobine"
 
-#: beast-gtk/bstsnetrouter.c:1012
+#: beast-gtk/bstsnetrouter.c:871
 msgid "Reset Properties"
 msgstr "Vrati osobine"
 
-#: beast-gtk/bstsnetrouter.c:1013
+#: beast-gtk/bstsnetrouter.c:872
 msgid "Delete Inputs"
 msgstr "Ukloni ulaze"
 
-#: beast-gtk/bstsnetrouter.c:1014
+#: beast-gtk/bstsnetrouter.c:873
 msgid "Delete Outputs"
 msgstr "Ukloni izlaze"
 
-#: beast-gtk/bstsnetrouter.c:1015 beast-gtk/bstsnetrouter.c:1057
+#: beast-gtk/bstsnetrouter.c:874 beast-gtk/bstsnetrouter.c:916
 msgid "Show Info"
 msgstr "Prikaži podatke"
 
-#: beast-gtk/bstsnetrouter.c:1041
+#: beast-gtk/bstsnetrouter.c:900
 msgid "Remove Module"
 msgstr "Ukloni modul"
 
-#: beast-gtk/bstsnetrouter.c:1068
+#: beast-gtk/bstsnetrouter.c:927
 msgid "Delete Link"
 msgstr "Ukloni vezu"
 
-#: beast-gtk/bstsnetrouter.c:1122
+#: beast-gtk/bstsnetrouter.c:981
 msgid "Insert Module"
 msgstr "Umetni modul"
-
-#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:140
-msgid "Routing"
-msgstr "Usmeravanje"
-
-#: beast-gtk/bstsnetshell.c:128 beast-gtk/bstsongshell.c:124
-#: beast-gtk/bstwavereposhell.c:118
-msgid "Parameters"
-msgstr "Parametri"
-
-#: beast-gtk/bstsongshell.c:119
-msgid "Tracks"
-msgstr "Pesme"
-
-#: beast-gtk/bstsongshell.c:129
-msgid "Parts"
-msgstr "Delovi"
 
 #: beast-gtk/bststest.c:550
 msgid "Selection to Loop"
@@ -982,75 +964,128 @@ msgstr "Označi signal (glava)"
 msgid "Mark Signal (Tail)"
 msgstr "Označi signal (rep)"
 
-#: beast-gtk/bsttrackrollctrl.c:388 beast-gtk/bsttrackrollctrl.c:400
+#: beast-gtk/bstsupershell.c:172 beast-gtk/bstsupershell.c:285
+msgid "Waves"
+msgstr "Talasi"
+
+#: beast-gtk/bstsupershell.c:235
+msgid "Tracks"
+msgstr "Pesme"
+
+#: beast-gtk/bstsupershell.c:240 beast-gtk/bstsupershell.c:272
+#: beast-gtk/bstsupershell.c:290
+msgid "Parameters"
+msgstr "Parametri"
+
+#: beast-gtk/bstsupershell.c:245
+msgid "Parts"
+msgstr "Delovi"
+
+#: beast-gtk/bstsupershell.c:251 beast-gtk/bstsupershell.c:266
+msgid "Routing"
+msgstr "Usmeravanje"
+
+#: beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "Umetni/uredi/premesti delove (1. i 2. dugme miša)"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link"
+msgstr "Veži"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "Veži ili premesti delove (1. i 2. dugme miša)"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename"
+msgstr "Preimenuj"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename parts"
+msgstr "Preimenuj delove"
+
+#: beast-gtk/bsttrackrollctrl.c:51
+msgid "Delete parts"
+msgstr "Obriši delove"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "Levo"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr "Koristi vodoravni lenjir za popravku pokazivača leve petlje"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Pos"
+msgstr "Položaj"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr "Koristi vodoravni lenjir za popravku pokazivača toka puštanja"
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "Desno"
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr "Koristi vodoravni lenjir za popravku pokazivača desne petlje"
+
+#: beast-gtk/bsttrackrollctrl.c:408 beast-gtk/bsttrackrollctrl.c:420
 msgid "Edit Part"
 msgstr "Uredi deo"
 
-#: beast-gtk/bsttrackrollctrl.c:388
+#: beast-gtk/bsttrackrollctrl.c:408
 msgid "No Part"
 msgstr "Bez dela"
 
-#: beast-gtk/bsttrackrollctrl.c:419 beast-gtk/bsttrackrollctrl.c:421
-#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+#: beast-gtk/bsttrackrollctrl.c:439 beast-gtk/bsttrackrollctrl.c:441
+#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
 msgid "Insert Part"
 msgstr "Umetni deo"
 
-#: beast-gtk/bsttrackrollctrl.c:421 beast-gtk/bsttrackrollctrl.c:523
+#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:543
 msgid "Lost Part"
 msgstr "Izgubljen deo"
 
-#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
 msgid "Position taken"
 msgstr "Položaj zauzet"
 
-#: beast-gtk/bsttrackrollctrl.c:433
+#: beast-gtk/bsttrackrollctrl.c:453
 msgid "Insert part"
 msgstr "Umetni deo"
 
-#: beast-gtk/bsttrackrollctrl.c:433
+#: beast-gtk/bsttrackrollctrl.c:453
 msgid "No Track"
 msgstr "Bez pesme"
 
-#: beast-gtk/bsttrackrollctrl.c:445 beast-gtk/bsttrackrollctrl.c:448
+#: beast-gtk/bsttrackrollctrl.c:465 beast-gtk/bsttrackrollctrl.c:468
 msgid "Delete Part"
 msgstr "Ukloni deo"
 
-#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
 msgid "Link Part"
 msgstr "Veži deo"
 
-#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
-#: beast-gtk/bsttrackrollctrl.c:523
+#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
+#: beast-gtk/bsttrackrollctrl.c:543
 msgid "Move Part"
 msgstr "Premesti deo"
 
-#: beast-gtk/bsttrackrollctrl.c:535 beast-gtk/bsttrackrollctrl.c:540
+#: beast-gtk/bsttrackrollctrl.c:555 beast-gtk/bsttrackrollctrl.c:560
 msgid "Start Editor"
 msgstr "Pokreni uređivač"
 
-#: beast-gtk/bsttrackview.c:63
+#: beast-gtk/bsttrackview.c:62
 msgid "Add a new track to this song"
 msgstr "Dodaj novu melodiju u ovu pesmu"
 
-#: beast-gtk/bsttrackview.c:66
+#: beast-gtk/bsttrackview.c:65
 msgid "Delete the currently selected track"
 msgstr "Obriši trenutno izabranu melodiju"
-
-#: beast-gtk/bsttrackview.c:536
-msgid "Repeat"
-msgstr "Ponovi"
-
-#: beast-gtk/bsttrackview.c:536
-msgid "Repeat playback within loop points"
-msgstr "Ponovo pusti u tačkama vrtenja"
-
-#: beast-gtk/bsttrackview.c:556
-msgid "Zoom"
-msgstr "Uvećanje"
-
-#: beast-gtk/bsttrackview.c:556
-msgid "Horizontal Zoom"
-msgstr "Vodoravno uvećanje"
 
 #: beast-gtk/bstusermessage.c:91
 msgid "Notice"
@@ -1092,11 +1127,6 @@ msgstr "Klizaj levo"
 msgid "Scroll Right"
 msgstr "Klizaj desno"
 
-#. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
-#: beast-gtk/bstwavereposhell.c:113 beast-gtk/bstwavereposhell.c:128
-msgid "Waves"
-msgstr "Talasi"
-
 #: beast-gtk/bstwaveview.c:43
 msgid "Load..."
 msgstr "Učitaj..."
@@ -1105,11 +1135,9 @@ msgstr "Učitaj..."
 msgid "Lib..."
 msgstr "Biblioteka..."
 
-# bug: should this be translated?
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
-#: beast-gtk/dialogs/gadgets-standard.xml.h:1
-msgid "$action-name"
-msgstr "$action-name"
+msgid "Adjust the zoom factor of the router display"
+msgstr "Prilagodi činilac uvećanja prikaza preusmerivača"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Control Type:"
@@ -1120,45 +1148,194 @@ msgid "Development"
 msgstr "Razvoj"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:4
+msgid "E_xamples"
+msgstr "_Primeri"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+msgid "Events"
+msgstr "Događaji"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+msgid "HZoom"
+msgstr "VUvećanje"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+msgid "Horizontal piano zoom"
+msgstr "Vodoravno uvećanje za klavir"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+msgid "Horizontal track zoom"
+msgstr "Vodoravno uvećanje pesme"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+msgid "Note _Length"
+msgstr "Dužina _note"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+msgid "Piano Notes"
+msgstr "Note za klavir"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+msgid "Repeat"
+msgstr "Ponovi"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+msgid "Repeat playback within loop points"
+msgstr "Ponovo pusti u tačkama vrtenja"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+msgid "Synthesis Modules"
+msgstr "Moduli za sintezu"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+msgid "VZoom"
+msgstr "UUvećanje"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+msgid "Vertical piano zoom"
+msgstr "Uspravno uvećanje za klavir"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:16
 msgid "Wave_s"
 msgstr "_Talasi"
 
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+msgid "Zoom"
+msgstr "Uvećanje"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+msgid "_Audio Sources"
+msgstr "Izvori _zvuka"
+
 # Hteo sam „proba“, ali imamo i „Test“, pa je bolje tu iskoristiti
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+# distonirati? u Leksikonu se to pominje u smislu zvuka
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+msgid "_Distortion"
+msgstr "Is_krivljenje"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+msgid "_Enhance"
+msgstr "Po_boljšanje"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "_File"
 msgstr "_Datoteka"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+msgid "_Filters"
+msgstr "_Filteri"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
 msgid "_Help"
 msgstr "_Pomoć"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+msgid "_Input & Output"
+msgstr "_Ulaz i izlaz"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+msgid "_LADSPA"
+msgstr "_LADSPA"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+msgid "_Misc"
+msgstr "_Razno"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+msgid "_Other Sources"
+msgstr "_Ostali izvori"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
 msgid "_Project"
 msgstr "_Projekat"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+msgid "_Quantization"
+msgstr "_Kvantizacija"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+msgid "_Routing"
+msgstr "Us_meravanje"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_Song"
 msgstr "P_esma"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+msgid "_Spatial"
+msgstr "_Prostorno"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Synth"
 msgstr "_Sintetizator"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Synthesizers"
 msgstr "_Sintetizatori"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Tools"
 msgstr "_Alati"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+msgid "_Utilities"
+msgstr "_Pomoćni alati"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_View"
 msgstr "P_regled"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+msgid "_Virtualization"
+msgstr "_Virtuelizacija"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+msgid "Find in current document"
+msgstr "Nađi u tekućem dokumentu"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+msgid "Go back one page"
+msgstr "Idi jednu stranu unazad"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+msgid "Go forward one page"
+msgstr "Idi jednu stranu unapred"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+msgid "Go to browser index"
+msgstr "Idi u indeks čitača"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+msgid "Location"
+msgstr "Putanja"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+msgid "Reload current page"
+msgstr "Osveži tekuću stranicu"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+msgid "_Back"
+msgstr "Na_zad"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+msgid "_Find"
+msgstr "Pro_nađi"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+msgid "_Forward"
+msgstr "Na_pred"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+msgid "_Index"
+msgstr "_Indeks"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+msgid "_Reload"
+msgstr "Os_veži"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -1183,6 +1360,19 @@ msgstr "BSE višedelna Wave datoteka"
 #: data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "BSE datoteka za sintezu"
+
+#~ msgid "_Delete"
+#~ msgstr "_Obriši"
+
+#~ msgid "Align"
+#~ msgstr "Poravnaj"
+
+#~ msgid "VSelect"
+#~ msgstr "Uspravan izbor"
+
+# bug: should this be translated?
+#~ msgid "$action-name"
+#~ msgstr "$action-name"
 
 #~ msgid "/File/_New"
 #~ msgstr "/Datoteka/_Nova"
