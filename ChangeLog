@@ -1,3 +1,13 @@
+Sat Aug 24 12:02:21 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttexttools.c (text_buffer_tagdef): support empty tagdefs.
+
+	* docs/quickstart.texi: use doctitle and docauthor markup.
+
+	* docs/generated/markup.xsl:
+	* docs/generated/html.xsl: updates from alper for doctitle
+	and docauthor.
+
 Fri Aug 23 21:21:54 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/quickstart.texi: complete "Setting Up Songs" chapter.

@@ -57,6 +57,23 @@ div.banner {
   width: 100%;
 }
 
+div.title_page {
+  text-align: center;
+  margin-bottom: 3em;
+}
+
+div.title_document_title {
+}
+
+div.title_revision {
+}
+
+div.title_author {
+  font-size: 140%;
+  font-weight: bold;
+  margin: 2em;
+}
+
 span.toc_chapter {
   font-size: 120%;
   color: #222266;
@@ -214,6 +231,8 @@ p.tableitem {
     <td valign="top">
     <!-- content starts -->
 
+      <xsl:call-template name="title_page"/>
+
       <xsl:apply-templates/>
 
     <!-- content ends -->
@@ -225,7 +244,7 @@ p.tableitem {
 </html>
 </xsl:template>
 
-<xsl:template match="setfilename|settitle|itemfunction|columnfraction"/>
+<xsl:template match="setfilename|settitle|document-title|document-author|itemfunction|columnfraction"/>
 
 <xsl:template name="base_href">
   <xsl:if test="string-length($base_href) > 0">
@@ -281,6 +300,25 @@ p.tableitem {
       <xsl:value-of select="$title"/>
     </h1>
   </div>
+</xsl:template>
+
+<xsl:template name="title_page">
+  <xsl:if test="string-length(/texinfo/para/document-title) > 0 or string-length(/texinfo/para/document-author) > 0">
+    <div class="title_page">
+      <xsl:if test="string-length(/texinfo/para/document-title) > 0">
+	<div class="title_document_title">
+	  <xsl:call-template name="big_title">
+	    <xsl:with-param name="title" select="/texinfo/para/document-title"/>
+	  </xsl:call-template>
+	</div>
+      </xsl:if>
+      <xsl:if test="string-length(/texinfo/para/document-author) > 0">
+	<div class="title_author">
+	  <xsl:value-of select="/texinfo/para/document-author"/>
+	</div>
+      </xsl:if>
+    </div>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="para/revision">
@@ -690,7 +728,7 @@ p.tableitem {
   <xsl:choose>
     <!-- If this para is the parent of a revision or toc tag, then we -->
     <!-- omit the <p> tag in output -->
-    <xsl:when test="count(./revision) > 0 or count(./table-of-contents) > 0">
+    <xsl:when test="count(./revision) > 0 or count(./table-of-contents) > 0 or count(./document-author) > 0 or count(./document-title) > 0">
       <xsl:apply-templates/>
     </xsl:when>
     <!-- Paragrapgh is bogus (ie. white-space only), skip it -->

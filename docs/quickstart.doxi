@@ -6,8 +6,8 @@
 
 @include teximacros.texi
 
-@majorheading @beastbse Quick Start Guide
-@center Tim Janik
+@doctitle @beastbse Quick Start Guide
+@docauthor Tim Janik
 @center @revision
 @*
 This guide attempts to give a few brief hints for new users,

@@ -45,6 +45,10 @@
     <tagdef name="tableitem"	  indent="45" />
     <tagdef name="multitable"     family="mono" />
 
+    <tagdef name="title_page"     justification="center" />
+    <tagdef name="doc_title"      underline="double" />
+    <tagdef name="doc_author"     weight="bold" />
+
     <tagdef name="hyperlink"      underline="single" foreground="#0000ff" />
 
     <!-- contextual tags -->
@@ -73,7 +77,10 @@
     <tagdef name="menupath"       style="italic" weight="bold" background="#e0e0e0" />
     <tagdef name="pagepath"       style="italic" weight="bold" background="#f0f0f0" />
     <tagdef name="object"         family="mono" style="italic" />
+    
+    <!-- generate body -->
     <span tag="body">
+      <xsl:call-template name="title_page"/>
       <xsl:apply-templates/>
       <breakline/>
       <newline/>
@@ -81,7 +88,28 @@
   </xsl:template>
 
   <!-- useless tags -->
-  <xsl:template match="setfilename|settitle|itemfunction|columnfraction"/>
+  <xsl:template match="setfilename|settitle|document-title|document-author|itemfunction|columnfraction"/>
+
+  <xsl:template name="title_page">
+    <xsl:if test="string-length(/texinfo/para/document-title) > 0 or string-length(/texinfo/para/document-author) > 0">
+      <newline/>
+      <newline/>
+      <span tag="title_page">
+	<xsl:if test="string-length(/texinfo/para/document-title) > 0">
+	  <span tag="doc_title">
+	    <xsl:value-of select="/texinfo/para/document-title"/>
+	    <breakline/><newline/>
+	  </span>
+	</xsl:if>
+	<xsl:if test="string-length(/texinfo/para/document-author) > 0">
+	  <span tag="doc_author">
+	    <xsl:value-of select="/texinfo/para/document-author"/>
+	    <breakline/><newline/>
+	  </span>
+	</xsl:if>
+      </span>
+    </xsl:if>
+  </xsl:template>
 
   <!-- revision bit -->
   <xsl:template match="para/revision">
@@ -503,7 +531,7 @@
   <xsl:template match="para">
     <!-- <breakline/> -->
     <!-- If paragrapgh is bogus (ie. white-space only), skip it -->
-    <xsl:if test="not(normalize-space(.) = '') or count(./revision) > 0 or count(./table-of-contents) > 0">
+    <xsl:if test="not(normalize-space(.) = '') or count(./revision) > 0 or count(./table-of-contents) > 0 or count(./document-author) > 0 or count(./document-title) > 0">
       <xsl:apply-templates/>
     </xsl:if>
     <!-- <breakline/> -->

@@ -162,7 +162,7 @@ text_buffer_tagdef (GtkTextBuffer *tbuffer,
   GtkTextTagTable *ttable = gtk_text_buffer_get_tag_table (tbuffer);
   GtkTextTag *tag = gtk_text_tag_table_lookup (ttable, tag_name);
   GValue value = { 0, };
-  GParamSpec *pspec;
+  GParamSpec *pspec = NULL;
   if (!tag)
     {
       tag = g_object_new (GTK_TYPE_TEXT_TAG,
@@ -172,7 +172,8 @@ text_buffer_tagdef (GtkTextBuffer *tbuffer,
       gtk_text_tag_table_add (ttable, tag);
       g_object_unref (tag);
     }
-  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (tag), property);
+  if (property)
+    pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (tag), property);
   switch (pspec ? G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec)) : 0)
     {
       gdouble v_float;
@@ -246,6 +247,13 @@ data_tag_event (GtkTextTag        *tag,
       const gchar *data = g_object_get_data (G_OBJECT (tag), "data");
       g_message ("text activation with data: %s\n", data);
     }
+  else if (0)
+    {
+      GEnumClass *eclass = g_type_class_ref (GDK_TYPE_EVENT_TYPE);
+      GEnumValue *ev = g_enum_get_value (eclass, event->type);
+      g_message ("TextTagEvent: %s\n", ev->value_name);
+      g_type_class_unref (eclass);
+    }
   return FALSE;
 }
 
@@ -318,6 +326,7 @@ tsm_start_element  (GMarkupParseContext *context,
 	{
 	  const gchar *errtname = attribute_values[i];
 	  gchar *tname = g_strdup_printf ("%u-%s", md->tagns, attribute_values[i]);
+	  text_buffer_tagdef (md->tbuffer, tname, NULL, NULL);
 	  for (i = 0; attribute_names[i]; i++)
 	    if (strcmp (attribute_names[i], "name") != 0 &&
 		strcmp (attribute_names[i], "comment") != 0)
