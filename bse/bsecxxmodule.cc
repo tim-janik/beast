@@ -210,59 +210,57 @@ midi_control_handler (gpointer                  handler_data, /* MIDI Device Thr
                       BseMidiSignalType         signal_type,
                       gfloat                    control_value,
                       guint                     n_mcdatas,
-                      const BseMidiControlData *mcdatas,
+                      BseModule          *const*modules,
                       BseTrans                 *trans)
 {
   GParamSpec *pspec = static_cast<GParamSpec*> (handler_data);
   g_return_if_fail (n_mcdatas > 0);
   MidiControlJobData *jdata = new MidiControlJobData;
   jdata->prop_id = pspec->param_id;
-  jdata->control_value = CLAMP (control_value, mcdatas[0].minimum, mcdatas[0].maximum);
+  jdata->control_value = control_value;
   for (guint i = 0; i < n_mcdatas; i++)
     bse_trans_add (trans,
-                   bse_job_flow_access (mcdatas[i].module,
+                   bse_job_flow_access (modules[i],
                                         tick_stamp,
                                         midi_control_flow_access,
                                         jdata,
                                         i + 1 >= n_mcdatas ? MidiControlJobData::free : NULL));
 }
 
-static BseMidiControlData
-make_midi_control_data (BseModule  *module,
-                        GParamSpec *pspec)
+static void
+get_midi_control_range (GParamSpec *pspec,
+                        float      &minimum,
+                        float      &maximum)
 {
-  BseMidiControlData mcdata = { module, };
   if (SFI_IS_PSPEC_REAL (pspec))
     {
       SfiParamSpecReal *rspec = SFI_PSPEC_REAL (pspec);
-      mcdata.minimum = rspec->minimum;
-      mcdata.maximum = rspec->maximum;
+      minimum = rspec->minimum;
+      maximum = rspec->maximum;
     }
   else if (SFI_IS_PSPEC_INT (pspec))
     {
       SfiParamSpecInt *ispec = SFI_PSPEC_INT (pspec);
-      mcdata.minimum = ispec->minimum;
-      mcdata.maximum = ispec->maximum;
+      minimum = ispec->minimum;
+      maximum = ispec->maximum;
     }
   else if (SFI_IS_PSPEC_BOOL (pspec))
     {
-      mcdata.minimum = 0;
-      mcdata.maximum = 1;
+      minimum = 0;
+      maximum = 1;
     }
   else if (SFI_IS_PSPEC_NUM (pspec))
     {
       SfiParamSpecNum *nspec = SFI_PSPEC_NUM (pspec);
-      mcdata.minimum = nspec->minimum;
-      mcdata.maximum = nspec->maximum;
+      minimum = nspec->minimum;
+      maximum = nspec->maximum;
     }
-  return mcdata;
 }
 
 struct HandlerSetup {
   bool                   add_handler;
   guint                  n_aprops;
   BseAutomationProperty *aprops;
-  BseMidiControlData    *mcdatas;
   BseMidiReceiver       *midi_receiver;
   guint                  midi_channel;
 };
@@ -275,19 +273,24 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
   guint i;
   for (i = 0; i < hs->n_aprops; i++)
     if (hs->add_handler)
-      bse_midi_receiver_add_control_handler (hs->midi_receiver,
-                                             hs->midi_channel,
-                                             hs->aprops[i].signal_type,
-                                             midi_control_handler,
-                                             hs->aprops[i].pspec,
-                                             hs->mcdatas[i]);
+      {
+        float minimum = 0, maximum = 0;
+        get_midi_control_range (hs->aprops[i].pspec, minimum, maximum);
+        bse_midi_receiver_add_control_handler (hs->midi_receiver,
+                                               hs->midi_channel,
+                                               hs->aprops[i].signal_type,
+                                               minimum, maximum,
+                                               midi_control_handler,
+                                               hs->aprops[i].pspec,
+                                               module);
+      }
     else
       bse_midi_receiver_remove_control_handler (hs->midi_receiver,
                                                 hs->midi_channel,
                                                 hs->aprops[i].signal_type,
                                                 midi_control_handler,
                                                 hs->aprops[i].pspec,
-                                                hs->mcdatas[i]);
+                                                module);
 }
 
 static void
@@ -295,7 +298,6 @@ handler_setup_free (gpointer        data)       /* User Thread */
 {
   HandlerSetup *hs = reinterpret_cast<HandlerSetup*> (data);
   g_free (hs->aprops);
-  g_free (hs->mcdatas);
   g_free (hs);
 }
 
@@ -318,9 +320,6 @@ Effect::integrate_engine_module (unsigned int   context_handle,
       hs->add_handler = true;
       hs->n_aprops = n_props;
       hs->aprops = aprops;
-      hs->mcdatas = g_new0 (BseMidiControlData, hs->n_aprops);
-      for (guint i = 0; i < hs->n_aprops; i++)
-        hs->mcdatas[i] = make_midi_control_data (engine_module, hs->aprops[i].pspec);
       BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
       hs->midi_receiver = mc.midi_receiver;
       hs->midi_channel = mc.midi_channel;
@@ -346,9 +345,6 @@ Effect::dismiss_engine_module (BseModule       *engine_module,
           hs->add_handler = false;
           hs->n_aprops = n_props;
           hs->aprops = aprops;
-          hs->mcdatas = g_new0 (BseMidiControlData, hs->n_aprops);
-          for (guint i = 0; i < hs->n_aprops; i++)
-            hs->mcdatas[i].module = engine_module;
           BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
           hs->midi_receiver = mc.midi_receiver;
           hs->midi_channel = mc.midi_channel;

@@ -59,12 +59,17 @@ struct ControlKey {
 struct ControlHandler {
   BseMidiControlHandler           handler_func;
   gpointer                        handler_data;
-  std::vector<BseMidiControlData> mcdata;
+  gfloat                          minimum, maximum;
+  std::vector<BseModule*>         modules;
   explicit
   ControlHandler (BseMidiControlHandler hfunc,
-                  gpointer              hdata) :
+                  gpointer              hdata,
+                  gfloat                vmin = 0,
+                  gfloat                vmax = 0) :
     handler_func (hfunc),
-    handler_data (hdata)
+    handler_data (hdata),
+    minimum (vmin),
+    maximum (vmax)
   {
   }
   void modify() {}
@@ -79,24 +84,24 @@ struct ControlHandler {
     return handler_func < that.handler_func || (handler_func == that.handler_func && handler_data < that.handler_data);
   }
   void
-  add_entry (BseMidiControlData mcd)
+  add_module (BseModule *module)
   {
-    mcdata.push_back (mcd);
+    modules.push_back (module);
   }
   void
-  remove_entry (BseMidiControlData mcd)
+  remove_module (BseModule *module)
   {
-    for (std::vector<BseMidiControlData>::iterator it = mcdata.begin(); it != mcdata.end(); it++)
-      if (it->module == mcd.module)
+    for (std::vector<BseModule*>::iterator it = modules.begin(); it != modules.end(); it++)
+      if (*it == module)
         {
-          mcdata.erase (it);
+          modules.erase (it);
           return;
         }
-    g_warning ("%s: no such module: %p", G_STRLOC, mcd.module);
+    g_warning ("%s: no such module: %p", G_STRLOC, module);
   }
   ~ControlHandler()
   {
-    g_return_if_fail (mcdata.size() == 0);
+    g_return_if_fail (modules.size() == 0);
   }
 };
 struct ControlValue {
@@ -113,23 +118,25 @@ struct ControlValue {
   void
   add_handler (BseMidiControlHandler handler_func,
                gpointer              handler_data,
-               BseMidiControlData    cdata)
+               gfloat                minimum,
+               gfloat                maximum,
+               BseModule            *module)
   {
     HandlerList::iterator it = handlers.find (ControlHandler (handler_func, handler_data));
     if (it == handlers.end())
-      it = handlers.insert (ControlHandler (handler_func, handler_data)).first;
+      it = handlers.insert (ControlHandler (handler_func, handler_data, minimum, maximum)).first;
     ControlHandler *ch = const_cast<ControlHandler*> (&(*it));
-    ch->add_entry (cdata);
+    ch->add_module (module);
   }
   void
   remove_handler (BseMidiControlHandler handler_func,
                   gpointer              handler_data,
-                  BseMidiControlData    cdata)
+                  BseModule            *module)
   {
     HandlerList::iterator it = handlers.find (ControlHandler (handler_func, handler_data));
     g_return_if_fail (it != handlers.end());
     ControlHandler *ch = const_cast<ControlHandler*> (&(*it));
-    ch->remove_entry (cdata);
+    ch->remove_module (module);
   }
   void
   notify_handlers (guint64           tick_stamp,
@@ -137,7 +144,9 @@ struct ControlValue {
                    BseTrans         *trans)
   {
     for (HandlerList::iterator it = handlers.begin(); it != handlers.end(); it++)
-      it->handler_func (it->handler_data, tick_stamp, signal_type, value, it->mcdata.size(), &it->mcdata[0], trans);
+      it->handler_func (it->handler_data, tick_stamp, signal_type,
+                        CLAMP (value, it->minimum, it->maximum),
+                        it->modules.size(), &it->modules[0], trans);
   }
   ~ControlValue()
   {
@@ -315,22 +324,24 @@ public:
   void
   add_control_handler (guint                 midi_channel,
                        BseMidiSignalType     signal_type,
+                       gfloat                minimum,
+                       gfloat                maximum,
                        BseMidiControlHandler handler_func,
                        gpointer              handler_data,
-                       BseMidiControlData    cdata)
+                       BseModule            *module)
   {
     ControlValue *cv = get_control_value (midi_channel, signal_type);
-    cv->add_handler (handler_func, handler_data, cdata);
+    cv->add_handler (handler_func, handler_data, minimum, maximum, module);
   }
   void
   remove_control_handler (guint                 midi_channel,
                           BseMidiSignalType     signal_type,
                           BseMidiControlHandler handler_func,
                           gpointer              handler_data,
-                          BseMidiControlData    cdata)
+                          BseModule            *module)
   {
     ControlValue *cv = get_control_value (midi_channel, signal_type);
-    cv->remove_handler (handler_func, handler_data, cdata);
+    cv->remove_handler (handler_func, handler_data, module);
   }
 };
 
@@ -1355,17 +1366,19 @@ void
 bse_midi_receiver_add_control_handler (BseMidiReceiver      *self,
                                        guint                 midi_channel,
                                        BseMidiSignalType     signal_type,
+                                       gfloat                minimum,
+                                       gfloat                maximum,
                                        BseMidiControlHandler handler_func,
                                        gpointer              handler_data,
-                                       BseMidiControlData    cdata)
+                                       BseModule            *module)
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (midi_channel > 0);
   g_return_if_fail (handler_func != NULL);
-  g_return_if_fail (cdata.module != NULL);
+  g_return_if_fail (module != NULL);
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  self->add_control_handler (midi_channel, signal_type, handler_func, handler_data, cdata);
+  self->add_control_handler (midi_channel, signal_type, minimum, maximum, handler_func, handler_data, module);
   BSE_MIDI_RECEIVER_UNLOCK (self);
 }
 
@@ -1375,15 +1388,15 @@ bse_midi_receiver_remove_control_handler (BseMidiReceiver      *self,
                                           BseMidiSignalType     signal_type,
                                           BseMidiControlHandler handler_func,
                                           gpointer              handler_data,
-                                          BseMidiControlData    cdata)
+                                          BseModule            *module)
 {
   g_return_if_fail (self != NULL);
   g_return_if_fail (midi_channel > 0);
   g_return_if_fail (handler_func != NULL);
-  g_return_if_fail (cdata.module != NULL);
+  g_return_if_fail (module != NULL);
   
   BSE_MIDI_RECEIVER_LOCK (self);
-  self->remove_control_handler (midi_channel, signal_type, handler_func, handler_data, cdata);
+  self->remove_control_handler (midi_channel, signal_type, handler_func, handler_data, module);
   BSE_MIDI_RECEIVER_UNLOCK (self);
 }
 
