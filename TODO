@@ -1,5 +1,6 @@
 FIXMES:
-- support parsing:
+- add author and license to procedure execution dialog
+- for notes support parsing:
   #c-4    => cis-4
   c#4     => cis+4
   c#-4    => cis-4
