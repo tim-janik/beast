@@ -75,7 +75,7 @@ bse_atan_distort_class_init (BseAtanDistortClass *class)
   guint channel_id;
   
   parent_class = g_type_class_peek_parent (class);
-
+  
   gobject_class->set_property = bse_atan_distort_set_property;
   gobject_class->get_property = bse_atan_distort_get_property;
   
@@ -84,11 +84,11 @@ bse_atan_distort_class_init (BseAtanDistortClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_BOOST_AMOUNT,
 			      sfi_pspec_real ("boost_amount", "Boost Amount [%]",
-						   "The atan distortion boost amount (strength) ranges "
-						   "from maximum attenuation (0%) to maximum boost (100%).",
-						   50, 0, 100.0, 5,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
-
+					      "The atan distortion boost amount (strength) ranges "
+					      "from maximum attenuation (0%) to maximum boost (100%).",
+					      50, 0, 100.0, 5,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE SFI_PARAM_FLOAT));
+  
   channel_id = bse_source_class_add_ichannel (source_class, "Audio In", "Audio Input SIgnal");
   g_assert (channel_id == BSE_ATAN_DISTORT_ICHANNEL_MONO1);
   channel_id = bse_source_class_add_ochannel (source_class, "Audio Out", "Distorted Audio Output");
@@ -181,7 +181,7 @@ atan_distort_process (GslModule *module,
   gfloat *sig_out = module->ostreams[BSE_ATAN_DISTORT_OCHANNEL_MONO1].values;
   gfloat *bound = sig_out + n_values;
   gdouble prescale = admod->prescale;
-
+  
   /* we don't need to process any data if our input or
    * output stream isn't connected
    */
@@ -194,7 +194,7 @@ atan_distort_process (GslModule *module,
       module->ostreams[BSE_ATAN_DISTORT_OCHANNEL_MONO1].values = gsl_engine_const_values (0);
       return;
     }
-
+  
   /* do the mixing */
   do
     *sig_out++ = gsl_approx_atan1 (prescale * *sig_in++);
@@ -219,19 +219,19 @@ bse_atan_distort_context_create (BseSource *source,
   BseAtanDistort *self = BSE_ATAN_DISTORT (source);
   AtanDistortModule *admod;
   GslModule *module;
-
+  
   /* for each context that BseAtanDistort is used in, we create
    * a GslModule with data portion AtanDistortModule, that runs
    * in the synthesis engine.
    */
   admod = g_new0 (AtanDistortModule, 1);
-
+  
   /* initial setup of module parameters */
   admod->prescale = self->prescale;
-
+  
   /* create a GslModule with AtanDistortModule as user_data */
   module = gsl_module_new (&admod_class, admod);
-
+  
   /* the istreams and ostreams of our GslModule map 1:1 to
    * BseAtanDistort's input/output channels, so we can call
    * bse_source_set_context_module() which does all the internal
@@ -239,7 +239,7 @@ bse_atan_distort_context_create (BseSource *source,
    * input/output channels of BseAtanDistort
    */
   bse_source_set_context_module (source, context_handle, module);
-
+  
   /* commit module to engine */
   gsl_trans_add (trans, gsl_job_integrate (module));
   

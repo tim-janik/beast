@@ -107,7 +107,7 @@ bse_sequencer_class_init (BseSequencerClass *class)
 			      PARAM_COUNTER,
 			      sfi_pspec_real ("counter", "Timing [ms]", NULL,
 					      100, 0, 1000, 5,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE SFI_PARAM_FLOAT));
   
   ochannel = bse_source_class_add_ochannel (source_class, "Freq Out", "Frequency Signal");
   g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_FREQ);

@@ -91,23 +91,23 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *class)
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ATTACK_TIME,
 			      sfi_pspec_real ("attack_time", "Attack Time [%]", NULL,
-						   10.0, 0.0, 100.0, 1.0,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      10.0, 0.0, 100.0, 1.0,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DECAY_TIME,
 			      sfi_pspec_real ("decay_time", "Decay Time [%]", NULL,
-						   30.0, 0.0, 100.0, 1.0,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      30.0, 0.0, 100.0, 1.0,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_LEVEL,
 			      sfi_pspec_real ("sustain_level", "Sustain Level [%]", NULL,
-						   50.0, 0.0, 100.0, 1.0,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      50.0, 0.0, 100.0, 1.0,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_TIME,
 			      sfi_pspec_real ("release_time", "Release Time [%]", NULL,
-						   40.0, 0.0, 100.0, 1.0,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      40.0, 0.0, 100.0, 1.0,
+					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL SFI_PARAM_FLOAT));
   desc = g_strdup_printf ("Time ranges in seconds: %.1f %.1f %.1f",
 			  BSE_TIME_RANGE_SHORT_ms / 1000.0,
 			  BSE_TIME_RANGE_MEDIUM_ms / 1000.0,
@@ -268,11 +268,11 @@ simple_adsr_process (GslModule *module,
   gfloat *wave_out = GSL_MODULE_OBUFFER (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT);
   gboolean have_gate = GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected;
   guint state = 0;
-
+  
   if (!GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT).connected &&
       !GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).connected)
     return;	/* no output */
-
+  
   if (env->phase == POST_RELEASE &&
       !GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected &&
       !GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER).connected)
@@ -285,7 +285,7 @@ simple_adsr_process (GslModule *module,
 	GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (0.0);
       return;
     }
-
+  
   ramp->wave_out = wave_out;
   ramp->bound = wave_out + n_values;
   do
@@ -367,7 +367,7 @@ simple_adsr_process (GslModule *module,
 	}
     }
   while (state != BSE_MIX_RAMP_REACHED_BOUND);
-
+  
   if (env->phase == POST_RELEASE)
     GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (1.0);
   else
@@ -380,7 +380,7 @@ bse_simple_adsr_update_modules (BseSimpleADSR *adsr,
 {
   BseSimpleADSRVars vars;
   gfloat ms = bse_time_range_to_ms (adsr->time_range);
-
+  
   ms *= gsl_engine_sample_freq () / 1000.0;
   if (adsr->attack_time < TIME_EPSILON)
     {
@@ -441,7 +441,7 @@ bse_simple_adsr_context_create (BseSource *source,
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
-
+  
   /* update module data */
   bse_simple_adsr_update_modules (simple_adsr, trans);
 }
