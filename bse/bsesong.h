@@ -48,7 +48,8 @@ struct _BseSong
   gfloat            bpm;
   gfloat            volume_factor;      /* 1-based factor */
   
-  GList            *parts;              /* of type BsePart* */
+  SfiRing          *parts;              /* of type BsePart* */
+  SfiRing          *busses;             /* of type BseSongBus* */
 
   BseSource	   *context_merger;
   BseSource	   *postprocess;

@@ -21,10 +21,7 @@
 
 #include <bse/bsesource.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_INPUT		(BSE_TYPE_ID (BsePcmInput))
@@ -62,11 +59,6 @@ enum
 };
 
 
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_PCM_INPUT_H__ */

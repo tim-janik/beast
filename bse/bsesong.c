@@ -19,6 +19,7 @@
 
 #include "bsetrack.h"
 #include "bsepart.h"
+#include "bsesongbus.h"
 #include "bsecontextmerger.h"
 #include "bsepcmoutput.h"
 #include "bseproject.h"
@@ -251,6 +252,7 @@ bse_song_init (BseSong *self)
   self->volume_factor = bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
   self->parts = NULL;
+  self->busses = NULL;
 
   self->pnet = NULL;
 
@@ -297,6 +299,8 @@ bse_song_release_children (BseContainer *container)
 {
   BseSong *self = BSE_SONG (container);
 
+  while (self->busses)
+    bse_container_remove_item (container, self->busses->data);
   while (self->parts)
     bse_container_remove_item (container, self->parts->data);
   while (self->tracks_SL)
@@ -600,9 +604,11 @@ bse_song_add_item (BseContainer *container,
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
     self->tracks_SL = sfi_ring_append (self->tracks_SL, item);
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
-    self->parts = g_list_append (self->parts, item);
+    self->parts = sfi_ring_append (self->parts, item);
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SONG_BUS))
+    self->busses = sfi_ring_append (self->busses, item);
   else
-    /* parent class manages BseSources */ ;
+    /* parent class manages other BseSources */ ;
   self->song_done_SL = FALSE;	/* let sequencer recheck if playing */
 
   /* chain parent class' add_item handler */
@@ -616,28 +622,32 @@ bse_song_forall_items (BseContainer	 *container,
 		       BseForallItemsFunc func,
 		       gpointer		  data)
 {
-  BseSong *song;
+  BseSong *self = BSE_SONG (container);
   SfiRing *ring;
-  GList *list;
-  
-  song = BSE_SONG (container);
-  
-  ring = song->tracks_SL;
+
+  ring = self->busses;
   while (ring)
     {
       BseItem *item = ring->data;
-      ring = sfi_ring_walk (ring, song->tracks_SL);
+      ring = sfi_ring_walk (ring, self->busses);
       if (!func (item, data))
 	return;
     }
 
-  list = song->parts;
-  while (list)
+  ring = self->tracks_SL;
+  while (ring)
     {
-      BseItem *item;
-      
-      item = list->data;
-      list = list->next;
+      BseItem *item = ring->data;
+      ring = sfi_ring_walk (ring, self->tracks_SL);
+      if (!func (item, data))
+	return;
+    }
+
+  ring = self->parts;
+  while (ring)
+    {
+      BseItem *item = ring->data;
+      ring = sfi_ring_walk (ring, self->parts);
       if (!func (item, data))
 	return;
     }
@@ -650,45 +660,35 @@ static void
 bse_song_remove_item (BseContainer *container,
 		      BseItem	   *item)
 {
-  BseSong *song;
-  GList **list_p = NULL;
-  
-  song = BSE_SONG (container);
+  BseSong *self = BSE_SONG (container);
   
   if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_TRACK))
     {
       SfiRing *ring, *tmp;
-      bse_track_remove_modules (BSE_TRACK (item), BSE_CONTAINER (song));
-      ring = sfi_ring_find (song->tracks_SL, item);
-      for (tmp = sfi_ring_walk (ring, song->tracks_SL); tmp; tmp = sfi_ring_walk (tmp, song->tracks_SL))
+      bse_track_remove_modules (BSE_TRACK (item), BSE_CONTAINER (self));
+      ring = sfi_ring_find (self->tracks_SL, item);
+      for (tmp = sfi_ring_walk (ring, self->tracks_SL); tmp; tmp = sfi_ring_walk (tmp, self->tracks_SL))
 	bse_item_queue_seqid_changed (tmp->data);
       BSE_SEQUENCER_LOCK ();
-      song->tracks_SL = sfi_ring_remove_node (song->tracks_SL, ring);
+      self->tracks_SL = sfi_ring_remove_node (self->tracks_SL, ring);
       BSE_SEQUENCER_UNLOCK ();
     }
   else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_PART))
-    list_p = &song->parts;
+    {
+      SfiRing *tmp, *ring = sfi_ring_find (self->parts, item);
+      for (tmp = sfi_ring_walk (ring, self->parts); tmp; tmp = sfi_ring_walk (tmp, self->parts))
+	bse_item_queue_seqid_changed (tmp->data);
+      self->parts = sfi_ring_remove_node (self->parts, ring);
+    }
+  else if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SONG_BUS))
+    {
+      SfiRing *tmp, *ring = sfi_ring_find (self->busses, item);
+      for (tmp = sfi_ring_walk (ring, self->busses); tmp; tmp = sfi_ring_walk (tmp, self->busses))
+	bse_item_queue_seqid_changed (tmp->data);
+      self->busses = sfi_ring_remove_node (self->busses, ring);
+    }
   else
     /* parent class manages BseSources */;
-
-  if (list_p)
-    {
-      GList *list, *tmp;
-      for (list = *list_p; list; list = list->next)
-	if (list->data == (gpointer) item)
-	  break;
-      if (list->prev)
-        list->prev->next = list->next;
-      else
-        *list_p = list->next;
-      if (list->next)
-	list->next->prev = list->prev;
-      tmp = list;
-      list = list->next;
-      g_list_free_1 (tmp);
-      for (; list; list = list->next)
-	bse_item_queue_seqid_changed (list->data);
-    }
 
   /* chain parent class' remove_item handler */
   BSE_CONTAINER_CLASS (parent_class)->remove_item (container, item);

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine        -*-mode: c;-*-
- * Copyright (C) 2003 Tim Janik
+ * Copyright (C) 2003-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +19,7 @@
 #include <bse/bseplugin.h>
 #include <bse/bseprocedure.h>
 #include <bse/bsesong.h>
+#include <bse/bsesongbus.h>
 #include <bse/bsepart.h>
 #include <bse/bsetrack.h>
 #include "bsemidireceiver.h"
@@ -30,6 +31,75 @@
 AUTHORS = "Tim Janik <timj@gtk.org>";
 LICENSE = "GNU Lesser General Public License";
 
+
+METHOD (BseSong, create-bus) {
+  HELP  = "Create a new Bus in a Song";
+  IN    = bse_param_spec_object ("song", NULL, NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_object ("bus", NULL, NULL,
+				 BSE_TYPE_SONG_BUS, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self = bse_value_get_object (in_values++);
+  BseUndoStack *ustack;
+  BseItem *child;
+
+  /* check parameters */
+  if (!BSE_IS_SONG (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  ustack = bse_item_undo_open (self, "create-bus");
+  child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_SONG_BUS, NULL);
+  bse_item_push_undo_proc (self, "remove-bus", child);
+  bse_item_undo_close (ustack);
+  
+  /* set output parameters */
+  bse_value_set_object (out_values++, child);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSong, remove-bus) {
+  HELP  = "Delete a Bus from a Song";
+  IN    = bse_param_spec_object ("song", NULL, NULL,
+				 BSE_TYPE_SONG, SFI_PARAM_STANDARD);
+  IN    = bse_param_spec_object ("bus", NULL, NULL,
+				 BSE_TYPE_SONG_BUS, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSong *self = bse_value_get_object (in_values++);
+  BseItem *child = bse_value_get_object (in_values++);
+  BseErrorType error = BSE_ERROR_NONE;
+  
+  /* check parameters */
+  if (!BSE_IS_SONG (self) || !BSE_IS_SONG_BUS (child) || BSE_ITEM (child)->parent != BSE_ITEM (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  if (BSE_SOURCE_PREPARED (self))
+    error = BSE_ERROR_SOURCE_BUSY;
+  else
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "remove-child %s", bse_object_debug_name (child));
+      /* remove and backup object references */
+      bse_container_uncross_undoable (BSE_CONTAINER (self), child);
+      /* how to get rid of the item once backed up */
+      bse_item_push_redo_proc (self, "remove-bus", child);
+      /* remove (without redo queueing) */
+      bse_container_remove_backedup (BSE_CONTAINER (self), child, ustack);
+      /* done */
+      bse_item_undo_close (ustack);
+    }
+
+  return error;
+}
 
 METHOD (BseSong, create-part) {
   HELP  = "Create a new Part in a Song";
@@ -87,7 +157,7 @@ METHOD (BseSong, remove-part) {
   else
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "remove-child %s", bse_object_debug_name (child));
-      /* remove object references */
+      /* remove and backup object references */
       bse_container_uncross_undoable (BSE_CONTAINER (self), child);
       /* how to get rid of the item once backed up */
       bse_item_push_redo_proc (self, "remove-part", child);
