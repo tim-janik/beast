@@ -250,10 +250,12 @@ gadget_factory_retrieve_branch (GxkGadgetFactory *self,
     {
       const gchar *leaf = gxk_factory_path_get_leaf (path);
       gchar *action_path = g_strconcat (path_prefix, path, NULL);
-      GxkGadgetOpt *options = gxk_gadget_options ("action-path", action_path,
-                                                  "action-name", leaf,
+      gchar *unescaped = g_strcompress (leaf);
+      GxkGadgetOpt *options = gxk_gadget_options ("action-name", unescaped,
+                                                  "action-path", action_path,
                                                   NULL);
       options = gxk_gadget_options_merge (options, call_options);
+      g_free (unescaped);
       g_free (action_path);
       if (leaf > path)
         {
@@ -320,7 +322,7 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
           const gchar *action_name;
           GxkGadgetOpt *options;
           GxkAction action;
-          gchar *path;
+          gchar *path, *unescaped;
           gxk_action_list_get_action (alist, i, &action);
           action_name = self->per_branch ? gxk_factory_path_get_leaf (action.name) : action.name;
           if (action_name > action.name)
@@ -334,13 +336,15 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
           else
             parent = self->gadget;
           path = g_strconcat (path_prefix, action.key, NULL);
-          options = gxk_gadget_options ("action-name", action_name,
+          unescaped = g_strcompress (action_name);
+          options = gxk_gadget_options ("action-name", unescaped,
                                         "action-key", action.key,
                                         "action-path", path,
                                         "action-accel", action.accelerator,
                                         "action-tooltip", action.tooltip,
                                         "action-stock", action.stock_icon,
                                         NULL);
+          g_free (unescaped);
           g_free (path);
           gadget = gxk_gadget_creator (NULL, domain, self->per_action, parent, self->pass_options, options);
           if (parent == self->gadget)

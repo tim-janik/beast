@@ -1,3 +1,11 @@
+Mon Nov 17 17:24:13 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackrollctrl.c:
+	* beast-gtk/bstpianorollctrl.c: \\-escape slashes in menu item names.
+
+	* beast-gtk/gxk/gxkgadgetfactory.c: unescape action-names via
+	g_strcompress() which also handles "\\/".
+
 Mon Nov 17 16:44:38 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-beast.xml: removed action-root="" resetting
