@@ -1,4 +1,5 @@
 FIXME(urgent):
+- GslWaveFileInfo -> BseWaveLibraryInfo
 - disable StandardOsc->selfmod
 - add a "Creating Skins" section to the beast manual page
 - provide config-parameter (by engine) which provides 16kHz limit listening-threshold used implicitely in osc-code etc. (important for 48K,84K)
