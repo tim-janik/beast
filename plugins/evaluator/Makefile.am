@@ -19,7 +19,7 @@ bseevaluator_la_LDFLAGS = -module -avoid-version
 bseevaluator_la_LIBADD  = $(BSE_LIBS) -lm
 $(srcdir)/bseevaluator.cc: bseevaluator.gen-idl.h
 plugins_built_sources += bseevaluator.gen-idl.h
-EXTRA_HEADERS += bseevaluator.idl
+EXTRA_HEADERS += bseevaluator.idl symbols.h token.h instruction.h compiler.h cpu.h
 
 plugin_LTLIBRARIES = bseevaluator.la
 
