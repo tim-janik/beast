@@ -1,3 +1,8 @@
+Mon Jun 23 20:43:59 2003  Tim Janik  <timj@gtk.org>
+
+	* shell/bsesh.c: return an error code!=0 (currently 102) if the
+	connection failed.
+
 Mon Jun 23 05:18:53 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkutils.c (gxk_tree_view_get_row_area): fix

@@ -27,6 +27,8 @@
 
 #define	PRG_NAME	"bsesh"
 
+#define BSE_EXIT_STATUS 102
+
 #define	BOILERPLATE_SCM		BSE_PATH_SCRIPTS "/bse-scm-glue.boot"
 
 
@@ -53,7 +55,7 @@ port_closed (SfiComPort *port,
 {
   /* we don't do anything fancy here */
   if (port)
-    exit (0);
+    exit (BSE_EXIT_STATUS);
 }
 
 int
@@ -82,7 +84,7 @@ main (int   argc,
       if (!bse_scm_port->connected)
 	{
 	  g_printerr ("%s: failed to connect to pipe (%d, %d)\n", PRG_NAME, bse_scm_pipe[0], bse_scm_pipe[1]);
-	  exit (1);
+	  exit (BSE_EXIT_STATUS);
 	}
       bse_scm_context = sfi_glue_encoder_context (bse_scm_port);
     }
@@ -170,7 +172,7 @@ shell_parse_args (gint    *argc_p,
 	  if (bse_scm_pipe[0] < 2 || bse_scm_pipe[1] < 2)
 	    {
 	      g_printerr ("%s: invalid arguments supplied for: --bse-pipe <inpipe> <outpipe>\n", PRG_NAME);
-	      exit (1);
+	      exit (BSE_EXIT_STATUS);
 	    }
 	}
       else if (strcmp (argv[i], "--bse-eval") == 0)
@@ -185,7 +187,7 @@ shell_parse_args (gint    *argc_p,
 	  if (!bse_scm_eval_expr)
 	    {
 	      g_printerr ("%s: invalid arguments supplied for: --bse-eval <expression>\n", PRG_NAME);
-	      exit (1);
+	      exit (BSE_EXIT_STATUS);
 	    }
 	}
       else if (strcmp (argv[i], "--bse-enable-register") == 0)
