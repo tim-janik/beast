@@ -1,3 +1,10 @@
+Sat Nov 20 06:54:22 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnifferscope.c:
+	bse_source_queue_probe_request(): prioritize scope updates lower than
+	gtk's redraw priority, to 1) allow timely updates, 2) prevent scope
+	updates running behind playposition under heavy load scenarios.
+
 Fri Nov 19 00:47:50 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: announce release.

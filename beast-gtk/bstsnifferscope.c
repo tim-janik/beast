@@ -341,7 +341,7 @@ bse_source_queue_probe_request (SfiProxy            source,
   request.probe_features = &features;
   if (!probe_request_seq)
     {
-      g_idle_add_full (G_PRIORITY_HIGH, source_probe_idle_request, NULL, NULL);
+      g_idle_add_full (GTK_PRIORITY_REDRAW + 5, source_probe_idle_request, NULL, NULL);
       probe_request_seq = bse_probe_request_seq_new();
     }
   bse_probe_request_seq_append (probe_request_seq, &request);
