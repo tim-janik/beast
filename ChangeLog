@@ -1,3 +1,11 @@
+Tue Oct 28 00:34:38 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-links-synthesis.texi: updates.
+
+	* docs/site-news.texi: announce 0.5.5 and LinuxUser article, rotate news.
+
+	* docs/site-historic.texi: link to LinuxUser article.
+
 Mon Oct 27 22:43:10 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: throw out 0.5.5, interface 0, binary 0.
