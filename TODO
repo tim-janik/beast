@@ -1,5 +1,4 @@
 FIXMES:
-- fix icons in file menu
 - regitering the same procedure twice trigegrs g_warning()
 - document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
 - .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this
@@ -23,6 +22,8 @@ FIXMES:
   which operate on the currently selected synth (project child)
   /Synthesizers/Demo
   alternatively, introduce /Insert/ toplevel menu
+- create ~/beast/instruments ~/beast/effects when saving effect/instrument
+- migrate artscompressor threshold/output to dB (keep compat code)
 - add demo song
 - nuke bsegconfig.[hc]?
 - add new test song containing a wave track
