@@ -8,6 +8,9 @@ Tue Dec  2 23:28:37 2003  Tim Janik  <timj@gtk.org>
 	which supports SfiRec as parasite data and uses a file-path alike
 	nameing scheme for the parasites. storage not yet implemented.
 
+	* bseparasite.proc: added procedures to list, set, add and get new
+	parasite records.
+
 Fri Nov 28 03:34:15 2003  Tim Janik  <timj@gtk.org>
 
 	* tests/testcxx.cc: reenabled closure test, use BSE_TYPE_AMPLIFIER as

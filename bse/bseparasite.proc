@@ -1,0 +1,106 @@
+/* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
+ * Copyright (C) 2003 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include <bse/bseparasite.h>
+#include <bse/bseprocedure.h>
+#include <bse/bseexports.h>
+
+AUTHORS	= "Tim Janik <timj@gtk.org>";
+LICENSE = "GNU Lesser General Public License";
+
+METHOD (BseItem, list-parasites) {
+  HELP	= _("List parasites within a parasite path segment.");
+  IN    = bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("path", _("Path"), NULL, NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("paths", _("Parasite Paths"), NULL, BSE_TYPE_STRING_SEQ, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  BseItem     *item = g_value_get_object (in_values++);
+  const gchar *path = g_value_get_string (in_values++);
+  SfiRing *ring;
+  BseStringSeq *sseq;
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  sseq = bse_string_seq_new ();
+  ring = bse_item_list_parasites (item, path);
+  while (ring)
+    bse_string_seq_append (sseq, sfi_ring_pop_head (&ring));
+  bse_value_take_boxed (out_values++, sseq);
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, get-parasite) {
+  SfiRecFields zero_fields = { 0, };
+  HELP	= _("Retrieve a parasite from an item.");
+  IN	= bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  IN 	= sfi_pspec_string ("path", _("Path"), NULL, NULL, SFI_PARAM_DEFAULT);
+  OUT	= sfi_pspec_rec ("parasite", _("Parasite"), NULL, zero_fields, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  BseItem     *item = g_value_get_object (in_values++);
+  const gchar *path = g_value_get_string (in_values++);
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  sfi_value_set_rec (out_values++, bse_item_get_parasite (item, path));
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, set-parasite) {
+  SfiRecFields zero_fields = { 0, };
+  HELP	= _("Set or change a parasite on an item.");
+  IN    = bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("path", _("Path"), NULL, NULL, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_rec ("parasite", _("Parasite"), NULL, zero_fields, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  BseItem     *item = g_value_get_object (in_values++);
+  const gchar *path = g_value_get_string (in_values++);
+  SfiRec      *rec  = sfi_value_get_rec (in_values++);
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  bse_item_set_parasite (item, path, rec);
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseItem, add-parasite) {
+  SfiRecFields zero_fields = { 0, };
+  HELP	= _("Add a new parasite to an item.");
+  IN    = bse_param_spec_object ("item", _("Item"), NULL, BSE_TYPE_ITEM, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_string ("path", _("Path"), NULL, NULL, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_rec ("parasite", _("Parasite"), NULL, zero_fields, SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	const GValue      *in_values,
+	GValue            *out_values)
+{
+  BseItem     *item = g_value_get_object (in_values++);
+  const gchar *path = g_value_get_string (in_values++);
+  SfiRec      *rec  = sfi_value_get_rec (in_values++);
+  if (!BSE_IS_ITEM (item))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  path = bse_item_create_parasite_name (item, path);
+  if (path)
+    bse_item_set_parasite (item, path, rec);
+  g_print ("%s: %s: %p\n", G_STRFUNC, path, rec);
+  return BSE_ERROR_NONE;
+}
