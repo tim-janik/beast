@@ -45,7 +45,7 @@ Thu Feb 13 10:53:59 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/icons/Makefile.am: fix EXTRA_DIST filter.
 
-Tue Feb 11 11:46:52 2003  Alper Ersoy <dirt@gtk.org>
+Tue Feb 11 11:46:52 2003  Alper Ersoy  <dirt@gtk.org>
 
  	* docs/generated/Makefile.am: fixed man/nroff build process and added
 	a descriptive comment of the steps taken.
@@ -227,7 +227,7 @@ Fri Jan 24 18:57:53 2003  Tim Janik  <timj@gtk.org>
 	type increment.
 	(bst_piano_roll_overlap_grow_hpanel_area): limit fudging by 0.
 
-Fri Jan 24 00:42:20 2003  Alper Ersoy <dirt@gtk.org>
+Fri Jan 24 00:42:20 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/html.xsl:
 	* docs/generated/navigation.xsl:
@@ -265,7 +265,7 @@ Thu Jan 23 09:36:14 2003  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: supply --enable-devel-rules=yes to ./configure.
 
-Thu Jan 23 01:40:09 2003  Alper Ersoy <dirt@gtk.org>
+Thu Jan 23 01:40:09 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/teximacros.texi: added an artificial linebreak at the end of
 	the revision line to avoid a bug with makeinfo that would lead to
@@ -433,7 +433,7 @@ Sat Jan 11 00:47:27 2003  Tim Janik  <timj@gtk.org>
 	* changed logfile to logentry in alpers last patch to better
 	identify the markup purpose.
 
-Fri Jan 10 12:15:40 2003  Alper Ersoy <dirt@gtk.org>
+Fri Jan 10 12:15:40 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/teximacros.texi: added @logfile macro.
 
@@ -464,7 +464,7 @@ Thu Jan  9 17:51:50 2003  Tim Janik  <timj@gtk.org>
 	* docs/generated/log2texi.sh: sync SYMBOL_PREFIX and MACRO_PREFIX with
 	FUNC_PREFIX, so all match sfi and gdk. removed bsw as supported match.
 
-Thu Jan  9 18:06:26 2003  Alper Ersoy <dirt@gtk.org>
+Thu Jan  9 18:06:26 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/WRITING.3.texi: removed part about mono/monospace parameter to
 	@docfont{}.
@@ -490,7 +490,7 @@ Thu Jan  9 03:22:37 2003  Tim Janik  <timj@gtk.org>
 	constant and function identifier matches. extend numeric constant
 	markup.
 
-Wed Jan  8 02:41:29 2003  Alper Ersoy <dirt@gtk.org>
+Wed Jan  8 02:41:29 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/Makefile.am: added simple rule for pdf generation
 	from ps files.
@@ -679,7 +679,7 @@ Tue Dec 31 09:11:19 2002  Tim Janik  <timj@gtk.org>
 	my old beast web site script that used to generate raw
 	html.
 
-Mon Dec 30 18:21:33 2002  Alper Ersoy <aersoy@tfz.net>
+Mon Dec 30 18:21:33 2002  Alper Ersoy  <aersoy@tfz.net>
 
 	Here are website changes:
 
@@ -725,7 +725,7 @@ Mon Dec 30 18:21:33 2002  Alper Ersoy <aersoy@tfz.net>
 	new website related documents. (api-overview.texi left to be
 	filled out by Tim).
 
-Mon Dec 30 18:21:33 2002  Alper Ersoy <aersoy@tfz.net>
+Mon Dec 30 18:21:33 2002  Alper Ersoy  <aersoy@tfz.net>
 
 	Here are non-website changes:
 	
