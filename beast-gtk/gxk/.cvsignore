@@ -1,0 +1,11 @@
+*.lo
+.deps
+_libs
+.libs
+Makefile
+Makefile.in
+gxkgentypes.c
+gxkgentypes.h
+gxkgentypes.stamp
+gxkmarshal.c
+gxkmarshal.h
