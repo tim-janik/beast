@@ -1,3 +1,10 @@
+Mon Feb 16 12:35:33 2004  Tim Janik  <timj@gtk.org>
+
+	* sfinote.c: strip whitespaces from string before attempting to parse
+	notes.
+
+	* sfiserial.c: avoide unnecessary newlines before sequences and records.
+
 Sat Feb 14 08:53:03 2004  Tim Janik  <timj@gtk.org>
 
 	* sfitime.c (_sfi_init_time): applied fix from Rasmus Kaj <kaj@e.kth.se>

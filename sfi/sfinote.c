@@ -81,7 +81,7 @@ sfi_note_from_string_err (const gchar *note_string,
     *error_p = NULL;
   g_return_val_if_fail (note_string != NULL, SFI_NOTE_VOID);
   
-  string = g_strdup (note_string);
+  string = g_strdup_stripped (note_string);
   g_ascii_strdown (string, -1);
   
   note = SFI_NOTE_VOID;

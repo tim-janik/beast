@@ -690,6 +690,7 @@ static void
 value_store_param (const GValue *value,
 		   GString      *gstring,
 		   gboolean     *needs_break,
+                   gboolean      compound_break,
 		   GParamSpec   *pspec,
 		   guint         indent)
 {
@@ -715,6 +716,7 @@ value_store_param (const GValue *value,
       sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL, sfi_pspec_get_options (pspec));
       break;
     case SFI_SCAT_SEQ:
+      *needs_break = *needs_break || compound_break;
       seq = sfi_value_get_seq (value);
       if (!seq)
 	gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
@@ -730,7 +732,7 @@ value_store_param (const GValue *value,
 		  {
 		    if (nth == 0)
 		      {
-			gstring_break (gstring, needs_break, indent);
+			gstring_check_break (gstring, needs_break, indent);
 			gstring_puts (gstring, "("); /* open sequence */
 		      }
 		    else if (nth % 5)
@@ -738,15 +740,17 @@ value_store_param (const GValue *value,
 		    else
 		      *needs_break = TRUE;
 		    nth++;
-		    value_store_param (seq->elements + i, gstring, needs_break, espec, indent + 1);
+		    value_store_param (seq->elements + i, gstring, needs_break, FALSE, espec, indent + 1);
 		  }
 	    }
           if (nth == 0)
 	    gstring_puts (gstring, "("); /* open sequence */
 	  gstring_putc (gstring, ')'); /* close sequence */
 	}
+      *needs_break = TRUE;
       break;
     case SFI_SCAT_REC:
+      *needs_break = *needs_break || compound_break;
       rec = sfi_value_get_rec (value);
       if (!rec)
 	gstring_puts (gstring, SFI_SERIAL_NULL_TOKEN);
@@ -762,13 +766,13 @@ value_store_param (const GValue *value,
 		{
 		  if (nth++ == 0)
 		    {
-		      gstring_break (gstring, needs_break, indent);
+		      gstring_check_break (gstring, needs_break, indent);
 		      gstring_puts (gstring, "("); /* open record */
 		    }
 		  else
 		    gstring_break (gstring, needs_break, indent + 1);
 		  gstring_printf (gstring, "(%s ", fspecs.fields[i]->name); /* open field */
-		  value_store_param (fvalue, gstring, needs_break, fspecs.fields[i], indent + 2 + 1);
+		  value_store_param (fvalue, gstring, needs_break, FALSE, fspecs.fields[i], indent + 2 + 1);
 		  gstring_putc (gstring, ')'); /* close field */
 		}
 	    }
@@ -776,6 +780,7 @@ value_store_param (const GValue *value,
 	    gstring_puts (gstring, "("); /* open record */
           gstring_putc (gstring, ')'); /* close record */
 	}
+      *needs_break = TRUE;
       break;
     default:
       g_error ("%s: unimplemented category (%u)", G_STRLOC, scat);
@@ -797,7 +802,7 @@ sfi_value_store_param (const GValue *value,
 
   gstring_check_break (gstring, &needs_break, indent);
   gstring_printf (gstring, "(%s ", pspec->name);
-  value_store_param (value, gstring, &needs_break, pspec, indent + 2);
+  value_store_param (value, gstring, &needs_break, TRUE, pspec, indent + 2);
   gstring_putc (gstring, ')');
 }
 
