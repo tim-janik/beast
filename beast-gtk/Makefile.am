@@ -5,13 +5,7 @@
  
 SUBDIRS = gxk icons images
 
-INCLUDES = $(strip \
-	-I$(top_srcdir)	\
-	-I. \
-	$(BEAST_CFLAGS) \
-	-DG_DISABLE_CONST_RETURNS \
-	-DGTK_ENABLE_BROKEN \
-)
+INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk $(BEAST_CFLAGS) -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
 # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
 
 # we specify the logging domain here
@@ -95,59 +89,57 @@ SFIDL = ../sfi/sfidl    # FIXME: cd $(srcdir) && $(SFIDL) doesn't work for build
 
 
 # gen-sources
-$(srcdir)/bstenum_arrays.c: $(beast_headers)
-	cd $(srcdir) \
+bstenum_arrays.c: $(beast_headers)
+	(cd ${srcdir} \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
 	  --vhead "/* @EnumName@\n */\n" \
 	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
-	    $(beast_headers) > xgen-beac \
+	    $(beast_headers) ) > xgen-beac \
 	&& (cmp -s xgen-beac $@ || touch bstenum_arrays.stamp) \
 	&& cp xgen-beac $@ \
 	&& rm -f xgen-beac
 $(srcdir)/bstenum_arrays.stamp: bstenum_arrays.c
 	@ [ -f $@ ] || touch $@
-$(srcdir)/bstgentypes.h: bstenum_arrays.stamp bstrecords.sfidl
-	cd $(srcdir) \
+bstgentypes.h: bstenum_arrays.stamp ${srcdir}/bstrecords.sfidl
+	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
 	  --eprod "extern GType bst__type_id__@EnumName@;" \
-	    $(beast_headers) > xgen-bgth \
-	&& $(SFIDL) --header --implementation bstrecords.sfidl >> xgen-bgth \
+	    $(beast_headers) ) > xgen-bgth \
+	&& $(SFIDL) --header --implementation ${srcdir}/bstrecords.sfidl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
-$(srcdir)/bstgentypes.c: bstenum_arrays.stamp bstrecords.sfidl
-	cd $(srcdir) \
+$(srcdir)/bstgentypes.c: bstenum_arrays.stamp ${srcdir}/bstrecords.sfidl
+	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
-	    $(beast_headers) > xgen-bgtc \
-	&& $(SFIDL) --source --implementation --init _bst_init_idl bstrecords.sfidl >> xgen-bgtc \
+	    $(beast_headers) ) > xgen-bgtc \
+	&& $(SFIDL) --source --implementation --init _bst_init_idl ${srcdir}/bstrecords.sfidl >> xgen-bgtc \
         && cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
 $(srcdir)/bstenum_list.c: bstenum_arrays.stamp
-	cd $(srcdir) \
+	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &bst__type_id__@EnumName@, @enum_name@_values }," \
-	    $(beast_headers) > xgen-belc \
+	    $(beast_headers) ) > xgen-belc \
 	&& cp xgen-belc $@ \
 	&& rm -f xgen-belc
 $(srcdir)/bstmarshal.h: bstmarshal.list
-	cd $(srcdir) \
-	&& glib-genmarshal --prefix=bst_marshal bstmarshal.list --header >> xgen-bmh \
+	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --header > xgen-bmh \
 	&& cp xgen-bmh bstmarshal.h \
 	&& rm -f xgen-bmh
 $(srcdir)/bstmarshal.c: bstmarshal.list
-	cd $(srcdir) \
-	&& glib-genmarshal --prefix=bst_marshal bstmarshal.list --body >> xgen-bmc \
+	glib-genmarshal --prefix=bst_marshal $(srcdir)/bstmarshal.list --body > xgen-bmc \
 	&& cp xgen-bmc bstmarshal.c \
 	&& rm -f xgen-bmc
 
 SCANKEYS=$(top_builddir)/beast-gtk/scankeys
-stamp-ckeycheck: scankeys $(beast_sources) $(beast_extra_sources)
+stamp-ckeycheck: @DVLBUILD@ scankeys $(beast_sources) $(beast_extra_sources)
 	cd $(srcdir) \
 	&& $(SCANKEYS) --count --key CKEY --skipkeys catalog-en.c \
 	     --tmplstart '#error MISSING DOC KEYS:\n' \
@@ -157,7 +149,7 @@ stamp-ckeycheck: scankeys $(beast_sources) $(beast_extra_sources)
 beast_DEPENDENCIES += stamp-ckeycheck
 
 debug_key_globs = $(top_srcdir)/beast-gtk/*.[hc] $(top_srcdir)/bse/*.[hc] $(top_srcdir)/sfi/*.[hc]
-bstdebugkeys.defs: scankeys $(debug_key_globs)
+bstdebugkeys.defs: @DVLBUILD@ scankeys $(debug_key_globs)
 	cd $(srcdir) \
 	&& echo > xgen-bdkd \
 	&& grep -E 'sfi_debug_(keyfunc|test_key)' $(debug_key_globs) \

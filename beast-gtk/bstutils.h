@@ -19,10 +19,10 @@
 #ifndef __BST_UTILS_H__
 #define __BST_UTILS_H__
 
-#include        <bsw/bsw.h>
-#include        <gtk/gtk.h>
-#include        "bstdefs.h"
-#include        "bstcluehunter.h"
+#include <bsw/bsw.h>
+#include <gtk/gtk.h>
+#include "bstdefs.h"
+#include "bstcluehunter.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,7 +34,7 @@ extern "C" {
 /* marshallers */
 #include "bstmarshal.h"
 /* icon stock IDs */
-#include "./icons/bst-stock-gen.h"
+#include "beast-gtk/icons/bst-stock-gen.h"
 
 
 /* --- utility structs --- */

@@ -24,8 +24,8 @@
 #include "bstusermessage.h"
 #include "bstcatalog.h"
 #include "bstpreferences.h"
-#include "../PKG_config.h"
-#include "images/beast-images.h"
+#include "PKG_config.h"
+#include "beast-gtk/images/beast-images.h"
 #include <unistd.h>
 #include <string.h>
 #include "sfi/toyprof-mem.h"

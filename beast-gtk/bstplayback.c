@@ -18,7 +18,6 @@
 #include "bstplayback.h"
 #include "bstapp.h"
 
-#include "../PKG_config.h"	/* BST_HAVE_BIRNET */
 
 
 

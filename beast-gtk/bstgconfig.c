@@ -118,7 +118,7 @@ bst_gconfig_set_rc_version (const gchar *rc_version)
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "../PKG_config.h"	/* BST_VERSION */
+#include "PKG_config.h"		/* BST_VERSION */
 #include <sfi/sfistore.h>	/* we rely on internal API here */
 static void
 accel_map_print (gpointer        data,

@@ -88,7 +88,7 @@ _bst_init_utils (void)
   /* initialize stock icons (included above) */
   {
     /* generated stock icons */
-#include "./icons/bst-stock-gen.c"
+#include "beast-gtk/icons/bst-stock-gen.c"
 
     gxk_stock_register_icons (G_N_ELEMENTS (stock_icons), stock_icons);
   }

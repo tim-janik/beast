@@ -17,7 +17,7 @@
  */
 #include "bstcanvassource.h"
 
-#include "../PKG_config.h"
+#include "PKG_config.h"
 
 #include "bstparamview.h"
 #include "bstgconfig.h"

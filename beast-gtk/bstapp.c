@@ -17,7 +17,7 @@
  */
 #include "bstapp.h"
 
-#include "../PKG_config.h"
+#include "PKG_config.h"
 
 #include "bstsongshell.h"
 #include "bstwavereposhell.h"
