@@ -31,16 +31,16 @@
     (parasite f "BstRouterCoords" 2 -34.000000 38.000000))
   (BseMult::BseMult-1
     (name "BseMult-1")
-    (source-input "mono_in1" BseSNet:1.BseSimpleOsc:1 "osc_out")
+    (source-input "mono_in1" BseSNet:1.BseStandardOsc:1 "osc_out")
     (source-input "mono_in2" BseSNet:1.BseSimpleADSR:1 "adsr_out")
     (parasite f "BstRouterCoords" 2 95.000000 122.000000))
   (BseSimpleADSR::ADSR-Envelope
     (name "ADSR-Envelope")
     (source-input "gate_in" BseSNet:1.BseMidiKeyboard:1 "gate")
     (parasite f "BstRouterCoords" 2 258.000000 68.000000))
-  (BseSimpleOsc::Main_Voice
+  (BseStandardOsc::Main_Voice
     (fm-perc 27.777781)
-    (wave-form BSE_SIMPLE_OSC_GSAW)
+    (wave-form BSE_STANDARD_OSC_GSAW)
     (name "Main_Voice")
     (source-input "freq_in" BseSNet:1.BseMidiKeyboard:1 "frequency")
     (source-input "freq_mod_in" BseSNet:1.BseMidiKeyboard:1 "gate")

@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.0
-date    = 04 Apr 2002
+date    = 05 Apr 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 04 Apr 2002 BEAST-0.4.0
+GSL-Functions 05 Apr 2002 BEAST-0.4.0
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
@@ -164,6 +164,52 @@ GSL's execution tick stamp as unsigned 64bit integer
 
 @DOC-DESCRIPTION@
 Retrive the GSL global tick stamp. GSL increments its global tick stamp at certain intervals, by specific amounts (refer to @STRONG gsl_engine_init()@ for further details). The tick stamp is a non-wrapping, unsigned 64bit integer greater than 0. Threads can schedule sleep interruptions at certain tick stamps with @STRONG gsl_thread_awake_after()@ and @STRONG gsl_thread_awake_before()@. Tick stamp updating occours at GSL engine block processing boundaries, so code that can guarantee to not run across those boundaries (for instance @STRONG GslProcessFunc()@ functions) may use the macro @EMPH GSL_TICK_STAMP@ to retrive the current tick in a faster manner (not involving mutex locking). See also @STRONG gsl_module_tick_stamp()@.  
+@DOC-SYNOPSIS@
+@STRONG gsl_data_find_block@ (@EMPH handle@, @EMPH n_values@, @EMPH values@, @EMPH epsilon@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 25
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GslDataHandle*
+typeraw = GslDataHandle*
+@DOC-PARAMETER@
+handle
+@DOC-PARDESC@
+an open GslDataHandle
+
+@DOC-VARIABLE-DEFINITIONS@
+type = guint\ \ \ \ \ \ \ \ \ 
+typeraw = guint         
+@DOC-PARAMETER@
+n_values
+@DOC-PARDESC@
+amount of values to look for
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gfloat*\ 
+typeraw = const gfloat* 
+@DOC-PARAMETER@
+values
+@DOC-PARDESC@
+values to find
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gfloat\ \ \ \ \ \ \ \ 
+typeraw = gfloat        
+@DOC-PARAMETER@
+epsilon
+@DOC-PARDESC@
+maximum difference upon comparisions
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 25
+
+@DOC-RETURNS@
+position of values in data handle or -1
+
+@DOC-DESCRIPTION@
+Find the position of a block of values within a data handle, where all values compare to the reference values with a delta smaller than epsilon.  
 @DOC-SYNOPSIS@
 @STRONG gsl_module_tick_stamp@ (@EMPH module@);
 
