@@ -10,7 +10,7 @@
 
 @unnumbered Mailing List
 
-A mailing list (pretty low volume) is available at
+A mailing list for discussing usage/development of @beast is available at
 @uref{http://mail.gnome.org/mailman/listinfo/beast/}.
 
 @unnumbered Contacts
