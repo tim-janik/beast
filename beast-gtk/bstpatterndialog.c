@@ -151,7 +151,7 @@ bst_pattern_dialog_gtkfix_default_accels (void)
 				   "\")",
 				   NULL);
 
-      gtk_item_factory_parse_rc_string (string);
+      //FIXME: gtk_item_factory_parse_rc_string (string);
       g_free (string);
     }
 }

@@ -567,12 +567,12 @@ bst_param_create (gpointer	owner,
 	  menu = g_object_connect (gtk_widget_new (GTK_TYPE_MENU, NULL),
 				   "swapped_signal::selection_done", bst_param_gtk_changed, bparam,
 				   NULL);
+	  gtk_menu_set_accel_path (GTK_MENU (menu), "<BEAST-Param>/EnumPopup");
 	  while (ev->value_nick)
 	    {
 	      GtkWidget *item;
 	      
 	      item = gtk_menu_item_new_with_label (ev->value_nick);
-	      gtk_widget_lock_accelerators (item);
 	      gtk_widget_show (item);
 	      gtk_object_set_data_by_id (GTK_OBJECT (item), quark_evalues, ev);
 	      gtk_container_add (GTK_CONTAINER (menu), item);

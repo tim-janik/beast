@@ -199,7 +199,8 @@ drag_pattern_button_press (GtkWidget       *widget,
       GtkWidget *choice;
       gchar *string = g_strconcat ("Pattern: ", BSE_OBJECT_NAME (drag_pattern->pattern), NULL);
 
-      choice = bst_choice_menu_createv (BST_CHOICE_TITLE (string),
+      choice = bst_choice_menu_createv ("<BEAST-DragPattern>/Popup",
+					BST_CHOICE_TITLE (string),
 					BST_CHOICE_SEPERATOR,
 					BST_CHOICE (2, "Duplicate", NONE),
 					BST_CHOICE_SEPERATOR,

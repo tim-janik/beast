@@ -101,7 +101,8 @@ GSList* bst_menu_entries_sort		  (GSList		  *entry_slist);
 void    bst_menu_entries_create_list      (GtkItemFactory         *ifactory,
 					   GSList                 *bst_menu_entries,
 					   gpointer                callback_data);
-GtkWidget* bst_choice_menu_createv        (BstChoice              *first_choice,
+GtkWidget* bst_choice_menu_createv        (const gchar		  *menu_path,
+					   BstChoice              *first_choice,
 					   ...);
 GtkWidget* bst_choice_dialog_createv      (BstChoice              *first_choice,
 					   ...);

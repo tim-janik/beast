@@ -2466,36 +2466,32 @@ bst_pattern_editor_channel_popup (BstPatternEditor *pe,
     gtk_widget_unref (pe->channel_popup);
   
   pe->popup_tag = channel;
-  pe->channel_popup =
-    gtk_widget_new (gtk_menu_get_type (),
-		    NULL);
+  pe->channel_popup = gtk_widget_new (GTK_TYPE_MENU, NULL);
+  gtk_menu_set_accel_path (GTK_MENU (pe->channel_popup), "<BEAST-PatternEditor>/ChannelPopup");
   gtk_widget_ref (pe->channel_popup);
   gtk_object_sink (GTK_OBJECT (pe->channel_popup));
   item = gtk_menu_item_new_with_label ("Instruments");
   gtk_widget_set (item,
-		  "GtkObject::user_data", NULL,
-		  "GtkWidget::sensitive", FALSE,
-		  "GtkWidget::visible", TRUE,
-		  "GtkWidget::parent", pe->channel_popup,
+		  "user_data", NULL,
+		  "sensitive", FALSE,
+		  "visible", TRUE,
+		  "parent", pe->channel_popup,
 		  NULL);
-  gtk_widget_lock_accelerators (item);
   item = gtk_menu_item_new ();
   gtk_widget_set (item,
-		  "GtkObject::user_data", NULL,
-		  "GtkWidget::sensitive", FALSE,
-		  "GtkWidget::visible", TRUE,
-		  "GtkWidget::parent", pe->channel_popup,
+		  "user_data", NULL,
+		  "sensitive", FALSE,
+		  "visible", TRUE,
+		  "parent", pe->channel_popup,
 		  NULL);
-  gtk_widget_lock_accelerators (item);
   item = gtk_menu_item_new_with_label ("<NONE>");
   gtk_widget_set (item,
-		  "GtkObject::user_data", NULL,
-		  "GtkObject::signal::activate", bst_pattern_editor_set_instrument, pe,
-		  "GtkWidget::sensitive", TRUE,
-		  "GtkWidget::visible", TRUE,
-		  "GtkWidget::parent", pe->channel_popup,
+		  "user_data", NULL,
+		  "signal::activate", bst_pattern_editor_set_instrument, pe,
+		  "sensitive", TRUE,
+		  "visible", TRUE,
+		  "parent", pe->channel_popup,
 		  NULL);
-  gtk_widget_lock_accelerators (item);
   for (list = BSE_SONG (bse_item_get_super (BSE_ITEM (pe->pattern)))->instruments; list; list = list->next)
     {
       BseInstrument *instrument;
@@ -2511,13 +2507,12 @@ bst_pattern_editor_channel_popup (BstPatternEditor *pe,
       string = g_strconcat (buffer, ") ", string, NULL);
       item = gtk_menu_item_new_with_label (string);
       gtk_widget_set (item,
-		      "GtkObject::user_data", instrument,
-		      "GtkObject::signal::activate", bst_pattern_editor_set_instrument, pe,
-		      "GtkWidget::sensitive", TRUE,
-		      "GtkWidget::visible", TRUE,
-		      "GtkWidget::parent", pe->channel_popup,
+		      "user_data", instrument,
+		      "signal::activate", bst_pattern_editor_set_instrument, pe,
+		      "sensitive", TRUE,
+		      "visible", TRUE,
+		      "parent", pe->channel_popup,
 		      NULL);
-      gtk_widget_lock_accelerators (item);
       g_free (string);
     }
   gtk_menu_popup (GTK_MENU (pe->channel_popup),

@@ -1,3 +1,8 @@
+Tue Nov 13 01:37:35 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpreferences.c (accel_map_print): fix according
+	to gtk's new accel map API.
+
 Mon Oct 29 22:38:27 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c: options update.

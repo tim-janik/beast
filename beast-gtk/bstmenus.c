@@ -277,7 +277,8 @@ check_main_quit (void)
 }
 
 GtkWidget*
-bst_choice_menu_createv (BstChoice *first_choice,
+bst_choice_menu_createv (const gchar *menu_path,
+			 BstChoice *first_choice,
 			 ...)
 {
   BstChoice *choice;
@@ -292,6 +293,7 @@ bst_choice_menu_createv (BstChoice *first_choice,
 					   NULL),
 			   "signal::selection-done", check_main_quit, NULL,
 			   NULL);
+  gtk_menu_set_accel_path (GTK_MENU (menu), menu_path);
   gtk_widget_ref (menu);
   gtk_object_sink (GTK_OBJECT (menu));
 
@@ -310,7 +312,6 @@ bst_choice_menu_createv (BstChoice *first_choice,
 					       NULL),
 			       "signal::activate", menu_choice_activate, GUINT_TO_POINTER (choice->id),
 			       NULL);
-      gtk_widget_lock_accelerators (item);
       if (choice->name)
 	{
 	  GtkWidget *any;
@@ -329,7 +330,7 @@ bst_choice_menu_createv (BstChoice *first_choice,
 				"visible", TRUE,
 				"label", choice->name,
 				"parent", hbox,
-				"accel_object", item,
+				"accel_widget", item,
 				"xalign", 0.0,
 				NULL);
 	  if (choice_type == BST_CHOICE_TYPE_TITLE)

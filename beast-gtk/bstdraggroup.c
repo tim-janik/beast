@@ -228,7 +228,8 @@ drag_group_button_press (GtkWidget       *widget,
       GtkWidget *choice;
       gchar *string = g_strconcat ("Group: ", BSE_OBJECT_NAME (drag_group->pattern_group), NULL);
 
-      choice = bst_choice_menu_createv (BST_CHOICE_TITLE (string),
+      choice = bst_choice_menu_createv ("<BEAST-DragGroup>/Popup",
+					BST_CHOICE_TITLE (string),
 					BST_CHOICE_SEPERATOR,
 					BST_CHOICE (2, "Duplicate", NONE),
 					BST_CHOICE (3, "Duplicate-Link", NONE),

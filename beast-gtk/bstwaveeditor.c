@@ -321,7 +321,7 @@ bst_wave_editor_gtkfix_default_accels (void)
 				   "\")",
 				   NULL);
 
-      gtk_item_factory_parse_rc_string (string);
+      //FIXME; gtk_item_factory_parse_rc_string (string);
       g_free (string);
     }
 }
@@ -905,7 +905,8 @@ bst_wave_editor_rebuild (BstWaveEditor *wave_editor)
 		      "visible", TRUE,
 		      NULL);
   gtk_option_menu_set_menu (GTK_OPTION_MENU (any),
-			    bst_choice_menu_createv (BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, "Shape Range", NONE),
+			    bst_choice_menu_createv ("<BEAST-WaveEditor>/Popup",
+						     BST_CHOICE (BST_QSAMPLER_DRAW_CRANGE, "Shape Range", NONE),
 						     BST_CHOICE (BST_QSAMPLER_DRAW_ZERO_SHAPE, "Shape Average", NONE),
 						     BST_CHOICE (BST_QSAMPLER_DRAW_MINIMUM_SHAPE, "Shape Minimum", NONE),
 						     BST_CHOICE (BST_QSAMPLER_DRAW_MAXIMUM_SHAPE, "Shape Maximum", NONE),

@@ -866,7 +866,8 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      for (i = 0; i < bsw_source_n_ichannels (csource->source); i++)
 		if (BSE_SOURCE_INPUT (bse_object_from_id (csource->source), i)->osource != NULL)
 		  has_inputs = TRUE;
-	      choice = bst_choice_menu_createv (BST_CHOICE_TITLE (source_name),
+	      choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/ModulePopup",
+						BST_CHOICE_TITLE (source_name),
 						BST_CHOICE_SEPERATOR,
 						BST_CHOICE_S (2, "Properties", PROPERTIES, csource->source != router->snet),
 						BST_CHOICE_S (3, "Delete Inputs", NO_ILINK, has_inputs),
@@ -904,7 +905,8 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	    {
 	      GtkWidget *choice;
 	      
-	      choice = bst_choice_menu_createv (BST_CHOICE_TITLE ("Source link"),
+	      choice = bst_choice_menu_createv ("<BEAST-SNetRouter>/LinkPopup",
+						BST_CHOICE_TITLE ("Source link"),
 						BST_CHOICE_SEPERATOR,
 						BST_CHOICE (2, "Properties", PROPERTIES),
 						BST_CHOICE_SEPERATOR,

@@ -316,6 +316,39 @@ ifactory_print_func (gpointer     user_data,
     bse_storage_needs_break (storage);
 }
 
+static void
+accel_map_print (gpointer        data,
+		 const gchar    *accel_path,
+		 guint           accel_key,
+		 guint           accel_mods,
+		 gboolean        changed)
+{
+  GString *gstring = g_string_new (changed ? NULL : "; ");
+  BseStorage *storage = data;
+  gchar *tmp, *name;
+
+  g_string_append (gstring, "(gtk_accel_path \"");
+
+  tmp = g_strescape (accel_path, NULL);
+  g_string_append (gstring, tmp);
+  g_free (tmp);
+
+  g_string_append (gstring, "\" \"");
+
+  name = gtk_accelerator_name (accel_key, accel_mods);
+  tmp = g_strescape (name, NULL);
+  g_free (name);
+  g_string_append (gstring, tmp);
+  g_free (tmp);
+
+  g_string_append (gstring, "\")");
+
+  bse_storage_puts (storage, gstring->str);
+  bse_storage_break (storage);
+
+  g_string_free (gstring, TRUE);
+}
+
 BseErrorType
 bst_rc_dump (const gchar *file_name,
 	     BseGConfig  *gconf)
@@ -361,7 +394,8 @@ bst_rc_dump (const gchar *file_name,
   bse_storage_break (storage);
   bse_storage_puts (storage, "(menu-accelerators");
   bse_storage_push_level (storage);
-  gtk_item_factory_dump_items (NULL, TRUE, ifactory_print_func, storage);
+  bse_storage_break (storage);
+  gtk_accel_map_foreach (storage, accel_map_print);
   bse_storage_pop_level (storage);
   bse_storage_handle_break (storage);
   bse_storage_putc (storage, ')');
@@ -408,11 +442,7 @@ bst_rc_parse (const gchar *file_name,
 	    expected_token = bse_object_restore (BSE_OBJECT (gconf), storage);
 	  else if (bse_string_equals ("menu-accelerators", scanner->value.v_identifier))
 	    {
-	      guint symbol_2_token = scanner->config->symbol_2_token;
-
-	      scanner->config->symbol_2_token = FALSE;
-	      gtk_item_factory_parse_rc_scanner (scanner);
-	      scanner->config->symbol_2_token = symbol_2_token;
+	      gtk_accel_map_load_scanner (scanner);
 
 	      if (g_scanner_get_next_token (scanner) != ')')
 		expected_token = ')';
