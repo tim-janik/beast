@@ -124,7 +124,7 @@ bse_track_class_init (BseTrackClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MUTED,
 			      sfi_pspec_bool ("muted", "Muted", NULL,
-					      FALSE, SFI_PARAM_DEFAULT));
+					      FALSE, SFI_PARAM_DEFAULT ":skip-default"));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PROP_SYNTH_NET,
 			      bse_param_spec_object ("snet", "Custom Synth Net", "Synthesis network to be used as instrument",
@@ -145,7 +145,7 @@ bse_track_class_init (BseTrackClass *class)
                               sfi_pspec_int ("midi_channel", "MIDI Channel",
                                              "Midi channel assigned to this track, 0 uses private per-track channel",
                                              0, 0, BSE_MIDI_MAX_CHANNELS, 1,
-                                             SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
+                                             SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
   bse_object_class_add_param (object_class, "Synth Postprocess",
 			      PROP_POST_NET,
 			      bse_param_spec_object ("pnet", "Custom Postprocess Net",

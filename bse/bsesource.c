@@ -219,12 +219,12 @@ bse_source_class_init (BseSourceClass *class)
 			      PROP_POS_X,
 			      sfi_pspec_real ("pos_x", "Position X", NULL,
 					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
-					      SFI_PARAM_STORAGE));
+					      SFI_PARAM_STORAGE ":skip-default"));
   bse_object_class_add_param (object_class, "Position",
 			      PROP_POS_Y,
 			      sfi_pspec_real ("pos_y", "Position Y", NULL,
 					      0, -SFI_MAXREAL, SFI_MAXREAL, 10,
-					      SFI_PARAM_STORAGE));
+					      SFI_PARAM_STORAGE ":skip-default"));
 
   source_signals[SIGNAL_IO_CHANGED] = bse_object_class_add_signal (object_class, "io_changed",
 								   G_TYPE_NONE, 0);

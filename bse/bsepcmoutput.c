@@ -114,7 +114,8 @@ bse_pcm_output_class_init (BsePcmOutputClass *class)
 			      sfi_pspec_real ("master_volume_f", "Master [float]", NULL,
 					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
 					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
-					      0.1, SFI_PARAM_STORAGE));
+					      0.1,
+                                              SFI_PARAM_STORAGE ":skip-default")); // FIXME: don't skip-default
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_dB,
 			      sfi_pspec_real ("master_volume_dB", "Master [dB]", NULL,

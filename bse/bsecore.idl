@@ -26,6 +26,9 @@ Const DEFAULT = ":r:w:G:S:";
 Const GUI = ":r:w:G:";
 Const DEFAULT_RDONLY = ":r:w:G:S:ro:";
 Const GUI_RDONLY = ":r:w:G:ro:";
+/* extra flags */
+Const SKIP_DEFAULT = ":skip-default:";
+Const SKIP_UNDO = ":skip-undo:";
 
 Const STANDARD = DEFAULT;
 

@@ -122,7 +122,7 @@ bse_midi_synth_class_init (BseMidiSynthClass *class)
 			      PROP_MIDI_CHANNEL,
 			      sfi_pspec_int ("midi_channel", "MIDI Channel", NULL,
 					     1, 1, BSE_MIDI_MAX_CHANNELS, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
   bse_object_class_add_param (object_class, "MIDI Instrument",
 			      PROP_N_VOICES,
 			      sfi_pspec_int ("n_voices", "Max Voices", "Maximum number of voices for simultaneous playback",

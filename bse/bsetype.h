@@ -98,7 +98,7 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 #define	sfidl_pspec_Bool_default(group, name)	\
   sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_Trigger(group, name, nick, blurb)			\
-  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, FALSE, "trigger:" SFI_PARAM_GUI), group)
+  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, FALSE, "trigger:skip-undo:" SFI_PARAM_GUI), group)
 #define	sfidl_pspec_Int(group, name, nick, blurb, dflt, min, max, step, hints)	\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints), group)
 #define	sfidl_pspec_Int_default(group, name)	\

@@ -46,6 +46,7 @@ bse_param_spec_object (const gchar    *name,
   
   pspec = g_param_spec_object (name, NULL_CHECKED (nick), NULL_CHECKED (blurb), object_type, 0);
   sfi_pspec_set_options (pspec, hints);
+  sfi_pspec_add_option (pspec, "skip-default", "+");
   
   return pspec;
 }

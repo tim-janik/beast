@@ -113,7 +113,7 @@ bse_midi_controller_class_init (BseMidiControllerClass *class)
                               sfi_pspec_int ("midi_channel", "MIDI Channel",
                                              "Input MIDI channel, 0 uses network's default channel",
                                              0, 0, BSE_MIDI_MAX_CHANNELS, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
   bse_object_class_add_param (object_class, "MIDI Controls",
 			      PROP_CONTROL_1,
 			      bse_param_spec_genum ("control_1", "Signal 1", NULL,

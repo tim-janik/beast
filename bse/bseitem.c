@@ -993,9 +993,9 @@ bse_item_push_redo_proc (gpointer         item,
 }
 
 void
-bse_item_set (gpointer        object,
-              const gchar    *first_property_name,
-              ...)
+bse_item_set_undoable (gpointer        object,
+                       const gchar    *first_property_name,
+                       ...)
 {
   va_list var_args;
   
@@ -1102,6 +1102,14 @@ unde_free_property (BseUndoStep *ustep)
   g_free (ustep->data[2].v_pointer);
 }
 
+static inline gboolean
+item_property_check_skip_undo (BseItem     *self,
+                               const gchar *name)
+{
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (self), name);
+  return pspec && sfi_pspec_check_option (pspec, "skip-undo");
+}
+
 void
 bse_item_set_property_undoable (BseItem      *self,
                                 const gchar  *name,
@@ -1113,7 +1121,8 @@ bse_item_set_property_undoable (BseItem      *self,
   g_value_init (tvalue, G_VALUE_TYPE (value));
   g_object_get_property (G_OBJECT (self), name, tvalue);
   if (BSE_ITEM_INTERNAL (self) ||
-      values_equal_for_undo (value, tvalue))
+      values_equal_for_undo (value, tvalue) ||
+      item_property_check_skip_undo (self, name))
     {
       /* we're about to set a value on an internal item or
        * to set the same value again => skip undo

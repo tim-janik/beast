@@ -94,7 +94,7 @@ bse_instrument_input_class_init (BseInstrumentInputClass *class)
       
       string = g_strdup_printf ("in_port_%u", i + 1);
       bse_object_class_add_param (object_class, NULL, PROP_IPORT_NAME + i * 2,
-				  sfi_pspec_string (string, NULL, NULL, NULL, 0));
+				  sfi_pspec_string (string, NULL, NULL, NULL, NULL));
       g_free (string);
     }
   

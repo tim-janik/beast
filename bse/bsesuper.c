@@ -100,12 +100,12 @@ bse_super_class_init (BseSuperClass *class)
 			      PARAM_AUTHOR,
 			      sfi_pspec_string ("author", _("Author"), _("Person changing or creating this object"),
 						NULL,
-						SFI_PARAM_DEFAULT));
+						SFI_PARAM_DEFAULT ":skip-default"));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_LICENSE,
 			      sfi_pspec_string ("license", _("License"), _("Copyright license applying to this object"),
 						NULL,
-						SFI_PARAM_DEFAULT));
+						SFI_PARAM_DEFAULT ":skip-default"));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_COPYRIGHT,
 			      sfi_pspec_string ("copyright", NULL, NULL, NULL, "w")); // COMPAT-FIXME: remove around 0.7.0

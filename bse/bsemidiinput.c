@@ -109,7 +109,7 @@ bse_midi_input_class_init (BseMidiInputClass *class)
 			      sfi_pspec_int ("midi_channel", "MIDI Channel",
                                              "Input MIDI channel, 0 uses network's default channel",
 					     0, 0, BSE_MIDI_MAX_CHANNELS, 1,
-					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale"));
+					     SFI_PARAM_GUI SFI_PARAM_STORAGE ":scale:skip-default"));
   
   ochannel_id = bse_source_class_add_ochannel (source_class, "Frequency", "Note Frequency");
   g_assert (ochannel_id == BSE_MIDI_INPUT_OCHANNEL_FREQUENCY);

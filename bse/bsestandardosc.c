@@ -144,7 +144,7 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      PROP_PHASE,
 			      sfi_pspec_real ("phase", "Phase", NULL,
 					      0.0, -180.0, 180.0, 5.0,
-					      SFI_PARAM_DEFAULT ":f:dial"));
+					      SFI_PARAM_DEFAULT ":f:dial:skip-default"));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PROP_BASE_FREQ,
 			      bse_param_spec_freq_simple ("base_freq", "Frequency", NULL,
@@ -156,7 +156,7 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      PROP_FINE_TUNE,
 			      sfi_pspec_int ("fine_tune", "Fine Tune", NULL,
 					     0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10,
-					     SFI_PARAM_DEFAULT ":f:dial"));
+					     SFI_PARAM_DEFAULT ":f:dial:skip-default"));
   bse_object_class_add_param (object_class, "Modulation",
 			      PROP_FM_PERC,
 			      sfi_pspec_real ("fm_perc", "Input Modulation [%]",
@@ -180,7 +180,7 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      sfi_pspec_real ("self_perc", "Self Modulation [%]",
 					      "Strength of self modulation",
 					      0.0, 0.0, 100.0, 5.0,
-					      SFI_PARAM_DEFAULT ":f:scale"));
+					      SFI_PARAM_DEFAULT ":f:scale:skip-default"));
   bse_object_class_add_param (object_class, "Pulse Modulation",
 			      PROP_PULSE_WIDTH,
 			      sfi_pspec_real ("pulse_width", "Pulse Width",

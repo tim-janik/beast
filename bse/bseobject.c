@@ -152,7 +152,7 @@ bse_object_class_init (BseObjectClass *class)
 			      PROP_BLURB,
 			      sfi_pspec_string ("blurb", "Comment", NULL,
 						NULL,
-						SFI_PARAM_DEFAULT));
+						SFI_PARAM_DEFAULT ":skip-default"));
   
   object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (class, "release",
 								G_TYPE_NONE, 0);

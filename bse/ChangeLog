@@ -1,3 +1,30 @@
+Mon Dec 15 22:42:37 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidicontroller.c:
+	* bsepcminput.c:
+	* bsepcmoutput.c:
+	* bsesong.c:
+	* bsesource.c:
+	* bsestandardosc.c:
+	* bsemidiinput.c:
+	* bsesubiport.c:
+	* bsesuboport.c:
+	* bsesubsynth.c:
+	* bsesuper.c:
+	* bsetrack.c:
+	* bsemidisynth.c:
+	* bseobject.c: flagged :skip-default: properties.
+
+	* bseparam.c: make object properties skip-default automatically.
+
+	* bseitem.c: skip undo recording for :skip-undo: properties.
+
+	* bserecords.idl: provide SKIP_DEFAULT and SKIP_UNDO constants.
+
+	* bsestorage.c: don't serialize defaulting :skip-default: properties.
+
+	* bsetype.h: skip undo/redo for :trigger: properties.
+
 Mon Dec 15 21:16:49 2003  Tim Janik  <timj@gtk.org>
 
 	* bseundostack.h: remove 64bit fields from BseUndoStep data union and

@@ -1043,7 +1043,9 @@ store_item_properties (BseItem    *item,
 
           g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
           g_object_get_property (G_OBJECT (item), pspec->name, &value);
-          if (!g_param_value_defaults (pspec, &value) || !BSE_STORAGE_SKIP_DEFAULTS (storage))
+          if (!g_param_value_defaults (pspec, &value) ||
+              !sfi_pspec_check_option (pspec, "skip-default") ||
+              !BSE_STORAGE_SKIP_DEFAULTS (storage))
             bse_item_store_property (item, storage, &value, pspec);
           g_value_unset (&value);
         }
