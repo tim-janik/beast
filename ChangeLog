@@ -1,3 +1,7 @@
+Fri Jul 23 14:58:49 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-links-synthesis.texi: link updates.
+
 Sat Jul 17 12:36:35 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnifferscope.[hc]: disabled drawing code. ported
