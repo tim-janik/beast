@@ -1,3 +1,16 @@
+Wed Sep 22 14:26:12 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c: added documentation for --bse-latency,
+	--bse-mixing-freq, --bse-control-freq, --bse-pcm-driver,
+	--bse-midi-driver, --bse-driver-list. handle -p and -m option
+	aliases. don't auto save BSE rc file if any of these PCM setup
+	options is given. don't auto save BEAST rc file is preferences
+	were saved during program's lifetime. exit after driver list dump
+	for --bse-driver-list.
+
+	* beast-gtk/bstpreferences.[hc]: added bst_preferences_saved()
+	to figure whether preferences got saved at some point.
+
 Wed Sep 22 01:59:31 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/bsefextract.cc: Added --cut-zeros option, which cuts zero

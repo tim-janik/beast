@@ -307,6 +307,14 @@ bst_preferences_load_rc_files (void)
   g_slist_free (slist);
 }
 
+static gboolean successfull_rc_dump = FALSE;
+
+gboolean
+bst_preferences_saved (void)
+{
+  return successfull_rc_dump;
+}
+
 void
 bst_preferences_save (BstPreferences *self)
 {
@@ -322,6 +330,8 @@ bst_preferences_save (BstPreferences *self)
   error = bst_rc_dump (file_name);
   if (error)
     g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
+  else
+    successfull_rc_dump = TRUE;
   g_free (file_name);
 
   file_name = g_strdup (bst_key_binding_rcfile ());

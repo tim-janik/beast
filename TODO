@@ -1,4 +1,5 @@
 FIXMES:	(release-critical)
+- don't record samples to WAV file before *any* song is processed by sequencer
 - fix ssequencer super list length>1 for one song
 - bse_project_stop_playback: add nop job
 - midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle

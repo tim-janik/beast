@@ -53,6 +53,7 @@ static gboolean     arg_force_xkb = FALSE;
 static gboolean     register_core_plugins = TRUE;
 static gboolean     register_ladspa_plugins = TRUE;
 static gboolean     register_scripts = TRUE;
+static gboolean     may_auto_update_bse_rc_file = TRUE;
 
 
 /* --- functions --- */
@@ -85,7 +86,6 @@ main (int   argc,
   SfiRec *bseconfig;
   gchar *string;
   GSource *source;
-  gboolean save_rc_file = TRUE;
   guint i;
 
   /* initialize i18n */
@@ -323,9 +323,10 @@ main (int   argc,
 
   /* fire up release notes dialog
    */
+  gboolean update_rc_files = FALSE;
   if (!BST_RC_VERSION || strcmp (BST_RC_VERSION, BST_VERSION))
     {
-      save_rc_file = TRUE;
+      update_rc_files = TRUE;
       bst_app_show_release_notes (app);
       bst_gconfig_set_rc_version (BST_VERSION);
     }
@@ -364,9 +365,10 @@ main (int   argc,
   GDK_THREADS_ENTER ();
   
   /* save BSE configuration */
-  bse_server_save_preferences (BSE_SERVER);
-  if (save_rc_file)
+  if (update_rc_files && !bst_preferences_saved())
     {
+      if (may_auto_update_bse_rc_file)
+        bse_server_save_preferences (BSE_SERVER);
       /* save BEAST configuration and accelerator map */
       gchar *file_name = BST_STRDUP_RC_FILE ();
       BseErrorType error = bst_rc_dump (file_name);
@@ -374,10 +376,6 @@ main (int   argc,
 	g_warning ("failed to save rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);
     }
-  
-  /* remove pcm devices
-   */
-  // bse_heart_unregister_all_devices ();
   
   /* perform necessary cleanup cycles
    */
@@ -417,6 +415,7 @@ bst_early_parse_args (int    *argc_p,
   if (envar)
     sfi_debug_deny (envar);
 
+  gboolean initialize_bse_and_exit = FALSE;
   for (i = 1; i < argc; i++)
     {
       if (strncmp (argv[i], "-:", 2) == 0)
@@ -565,6 +564,48 @@ bst_early_parse_args (int    *argc_p,
           g_free (freeme);
 	  exit (0);
 	}
+      else if (strcmp ("--bse-latency", argv[i]) == 0 ||
+               strncmp ("--bse-latency=", argv[i], 14) == 0)
+        {
+          gchar *equal = argv[i] + 13;
+          may_auto_update_bse_rc_file = FALSE;
+          if (*equal != '=')
+            i++;
+          /* leave args for BSE */
+        }
+      else if (strcmp ("--bse-mixing-freq", argv[i]) == 0 ||
+               strncmp ("--bse-mixing-freq=", argv[i], 18) == 0)
+        {
+          gchar *equal = argv[i] + 17;
+          may_auto_update_bse_rc_file = FALSE;
+          if (*equal != '=')
+            i++;
+          /* leave args for BSE */
+        }
+      else if (strcmp ("--bse-control-freq", argv[i]) == 0 ||
+               strncmp ("--bse-control-freq=", argv[i], 19) == 0)
+        {
+          gchar *equal = argv[i] + 18;
+          may_auto_update_bse_rc_file = FALSE;
+          if (*equal != '=')
+            i++;
+          /* leave args for BSE */
+        }
+      else if (strcmp ("--bse-driver-list", argv[i]) == 0)
+        {
+          initialize_bse_and_exit = TRUE;
+          /* leave args for BSE */
+        }
+      else if (strcmp ("-p", argv[i]) == 0)
+        {
+          /* modify args for BSE */
+          argv[i] = "--bse-pcm-driver";
+        }
+      else if (strcmp ("-m", argv[i]) == 0)
+        {
+          /* modify args for BSE */
+          argv[i] = "--bse-midi-driver";
+        }
     }
   gxk_param_set_devel_tips (bst_developer_hints);
 
@@ -577,6 +618,12 @@ bst_early_parse_args (int    *argc_p,
           argv[i] = NULL;
       }
   *argc_p = e;
+
+  if (initialize_bse_and_exit)
+    {
+      bse_init_async (argc_p, argv_p, bseconfig);
+      exit (0);
+    }
 }
 
 static void G_GNUC_NORETURN
@@ -641,6 +688,22 @@ bst_print_blurb (void)
   g_print ("  -h, --help              show this help message\n");
   g_print ("  -v, --version           print version and file paths\n");
   g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
+  g_print ("  --bse-latency=USECONDS  specify synthesis latency in milliseconds\n");
+  g_print ("  --bse-mixing-freq=FREQ  specify synthesis mixing frequency in Hz \n");
+  g_print ("  --bse-control-freq=FREQ specify control frequency in Hz\n");
+  g_print ("  --bse-pcm-driver DRIVERCONF\n");
+  g_print ("  -p DRIVERCONF           try to use the PCM driver DRIVERCONF, multiple\n");
+  g_print ("                          options may be supplied to try a variety of\n");
+  g_print ("                          drivers, unless -p auto is given, only the\n");
+  g_print ("                          drivers listed by -p options are used; each\n");
+  g_print ("                          DRIVERCONF consists of a driver name and an\n");
+  g_print ("                          optional comma seperated list of arguments,\n");
+  g_print ("                          e.g.: -p oss=/dev/dsp2\n");
+  g_print ("  --bse-midi-driver DRIVERCONF\n");
+  g_print ("  -m DRIVERCONF           try to use the MIDI driver DRIVERCONF, multiple\n");
+  g_print ("                          options may be specified similarly to the\n");
+  g_print ("                          option handling for --bse-pcm-driver\n");
+  g_print ("  --bse-driver-list       list available PCM and MIDI drivers\n");
   g_print ("Development Options:\n");
   g_print ("  --debug=KEYS            enable specific debugging messages\n");
   g_print ("  --no-debug=KEYS         disable specific debugging messages\n");

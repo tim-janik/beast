@@ -66,6 +66,7 @@ GtkType		 bst_preferences_get_type	(void);
 void		 bst_preferences_apply		(BstPreferences *prefs);
 void		 bst_preferences_load_rc_files	(void);
 void		 bst_preferences_save		(BstPreferences *prefs);
+gboolean	 bst_preferences_saved  	(void);
 void		 bst_preferences_revert		(BstPreferences *prefs);
 void		 bst_preferences_default_revert	(BstPreferences *prefs);
 void		 bst_preferences_create_buttons (BstPreferences *prefs,
