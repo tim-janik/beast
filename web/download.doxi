@@ -30,7 +30,7 @@ already ship these packages, their sources can be found at:
 @item @uref{ftp://ftp.gtk.org/pub/gtk/v2.4/,, Gtk+-2.4}
 @item @uref{http://www.gnu.org/software/guile/guile.html,, Guile-1.6}
 @item @uref{http://www.xiph.org/ogg/vorbis/download/,, Ogg/Vorbis} (at least version 1.0)
-@item @uref{http://www.mars.org/home/rob/proj/mpeg/,, MAD} (@bse was developed against libmad-0.14.2)
+@item @uref{http://www.mars.org/home/rob/proj/mpeg/,, MAD} (@bse requires libmad-0.15.1b)
 @end itemize
 
 BEAST also supports the

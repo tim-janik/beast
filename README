@@ -24,7 +24,7 @@ Guile-1.6:
   http://www.gnu.org/software/guile/guile.html
 Ogg/Vorbis (at least version 1.0):
   http://www.xiph.org/ogg/vorbis/download/
-MAD (BSE was developed against libmad-0.14.2):
+MAD (BSE requires libmad-0.15.1b):
   http://www.mars.org/home/rob/proj/mpeg/
 
 The official ftp site for BEAST/BSE is:
