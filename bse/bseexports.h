@@ -122,7 +122,7 @@ struct _BseExportEnum
   GType              *type_p;	   /* obligatory */
   const gchar  	     *name;	   /* obligatory */
   GType               parent_type; /* obligatory */
-  gpointer            values;      /* obligatory */
+  gconstpointer       values;      /* obligatory */
 };
 struct _BseExportFileHandler
 {

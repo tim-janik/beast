@@ -1,3 +1,12 @@
+Wed Jul 30 05:08:54 2003  Tim Janik  <timj@gtk.org>
+
+	* bseexports.h (struct _BseExportEnum): fix constantness.
+
+	* bsetype.[hc]: export sfidl_pspec constructors, so
+	plugins may use them.
+	
+	* gslloader-gslwave.c: fix symbols.
+
 Tue Jul 29 13:59:34 2003  Tim Janik  <timj@gtk.org>
 
 	* bsepart.proc: added get-range-controls() to list events

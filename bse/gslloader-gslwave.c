@@ -108,9 +108,9 @@ static const char *wave_tokens_512[] = {
   "loop_type",	"loop_start",   "loop_end",	"loop_count",
 };
 static const char *wave_tokens_768[] = {
-  "big_endian", "big",          "little_endian", "little",
-  "signed_8",   "signed_12",    "signed_16",
-  "unsigned_8", "unsigned_12",  "unsigned_16",
+  "big-endian", "big",          "little-endian", "little",
+  "signed-8",   "signed-12",    "signed-16",
+  "unsigned-8", "unsigned-12",  "unsigned-16",
   "float",	"none",		"jump",		 "pingpong",
 };
 
