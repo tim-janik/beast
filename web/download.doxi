@@ -10,7 +10,10 @@
 
 @unnumbered Where Can I Get @beastbse{}?
 
-Publically consumable releases can be found at the official ftp location: @uref{ftp://beast.gtk.org/pub/beast/}. Or alternatively via http: @uref{http://beast.gtk.org/beast-ftp/}.
+Publically consumable releases can be found at the official ftp location:
+@uref{ftp://beast.gtk.org/pub/beast/}.
+Or alternatively via http:
+@uref{http://beast.gtk.org/beast-ftp/}.
 
 @unnumbered Requirements
 
@@ -19,8 +22,7 @@ of the Gtk+-2.0 based GnomeCanvas, Guile-1.6 and the Ogg/Vorbis
 Codec libraries.
 Though optional, it is a good idea to also have libmad (MPEG audio
 decoder library) around when compiling BEAST. Most distributions
-already ship these packages or will soon, their sources can be
-found at:
+already ship these packages, their sources can be found at:
 
 @itemize
 @item @uref{ftp://ftp.gnome.org/pub/GNOME/sources/libgnomecanvas/,, GnomeCanvas} (GNOME-2.0)
@@ -32,9 +34,9 @@ found at:
 
 BEAST also supports the
 @uref{http://www.ladspa.org/,, LADSPA} plugin API, so various kinds of
-third party plugins can be loaded and executed. A collection
-of links to LADSPA plugins is kept at
-@uref{http://www.ladspa.org}.
+third party plugins can be loaded and executed.
+A collection of links to LADSPA plugins is kept at
+@uref{http://www.ladspa.org/}.
 BEAST will look for LADSPA plugins under @file{lib/ladspa/} of it's own
 installation prefix, and in the directories listed in @code{$LADSPA_PATH}.
 
@@ -53,5 +55,23 @@ $ cvs -z3 checkout beast
 
 We recommend that you read the @uref{http://developer.gnome.org/tools/cvs.html,, tutorial}
 on using, getting, and building GNOME projects from CVS.
+
+Building from CVS requires additional tools than building the
+release tarballs. The reason for this is due to building documentation
+and auto-generating code that are included into releases. In particular,
+building @beast from CVS now requires the texitheque module hosted in
+@uref{http://www.freedesktop.org/,, freedesktop.org} CVS. Anonymous
+CVS access to freedesktop.org is described on their
+@uref{http://www.freedesktop.org/about/involved.html,, getting involved}
+page, however to just get texitheque, you do:
+
+@lisp
+$ export CVSROOT=':pserver:anonymous@@freedom.codefactory.se:/freedesktop'
+$ cvs login # there is no password, just hit return
+$ cvs -z3 checkout texitheque
+@end lisp
+
+Beware though, CVS versions may behave way less stable than release tarballs,
+and on occasions may produce invalid @file{.bse} files.
 
 @bye

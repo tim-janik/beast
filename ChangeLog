@@ -1,3 +1,11 @@
+Mon Jun 16 20:37:38 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_reload_supers): don't show internal
+	supers.
+
+	* docs/site-download.texi: comment on needing texitheque when building
+	from CVS.
+
 Fri Jun 13 20:11:08 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.c (bst_part_dialog_set_proxy): listen to undo/

@@ -460,6 +460,9 @@ bst_app_reload_supers (BstApp *app)
       GtkWidget *label, *page = NULL;
       GSList *node;
 
+      if (!BST_DBG_EXT && bse_item_internal (pseq->proxies[i]))
+        continue;
+
       for (node = page_list; node; node = node->next)
         if (BST_SUPER_SHELL (node->data)->super == pseq->proxies[i])
           {
