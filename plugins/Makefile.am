@@ -54,7 +54,6 @@ EXTRA_DIST += $(strip \
 )
 
 # *.enums generation rule
-if IF_DVLBUILD
 %.enums: %.h
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
@@ -77,7 +76,6 @@ if IF_DVLBUILD
 	&& cp xgen-enums-$(@F) $(@F) \
 	&& rm -f xgen-enums-$(@F)
 CLEANFILES += $(plugins_built_sources) xgen-enums-*
-endif
 
 ## include generated plugin Makefile
 include Makefile.plugins

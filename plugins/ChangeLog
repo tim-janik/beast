@@ -1,3 +1,8 @@
+Sat May 10 18:13:37 2003  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am (%.enums: %.h): enable rule unconditionally since
+	it relies only on glib-mkenums which should always be available.
+
 Wed Apr 16 19:25:45 2003  Tim Janik  <timj@gtk.org>
 
 	* freeverb/allpass.hpp:
