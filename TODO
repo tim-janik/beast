@@ -21,8 +21,14 @@ FIXME(urgent):
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 - provide script to render bse file to WAV. then add File/Export function which:
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
+- close pianoroll window in response to part::release  
 TODO:
 - add "..." to new dialog items in View/
+- show note and timing position of current mouse pointer in piano roll status bar
+- store pianor roll settings (hzoom,vzoom,quantization,note-length) in .bse files
+- add play button to pianoroll to start song-playback at pianoroll->pattern start
+- need note-specific undo per part in pianoroll
+- change projectname in accordance to file name (and change beast-project-window-title accordingly)
 - add "Help on Skins" button to skin settings dialog, describing --skinrc option
 - menus: s/New Custom Synthesizer/Add Custom Synthesizer/
          s/New MIDI Synthesizer/Add MIDI Synthesizer/  (might get removed)
@@ -49,7 +55,6 @@ TODO:
 - disable probing for invisible scopes
 - implement horizontal dB-meters as BstParam type
 - don't record samples to WAV file before *any* song is processed by sequencer
-- note-specific undo per part
 - piano roll interpret scroll events for vertical scrolling
 - implement GxkLogAdjustment in terms of GxkAdapterAdjustment and rename gxklogadjustment.h
 - add GxkDialog minimum shrink sizes support
