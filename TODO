@@ -1,4 +1,4 @@
-IXMES:
+FIXMES:
 - typed record serialization needs to honour indent for sfi_value_store_param()
 - serialization of homogeneous sequences could store the field type code only once
 - alow snet flagging as aggregate
