@@ -19,6 +19,7 @@
 #include "bstparamview.h"
 #include "bsttrackview.h"
 #include "bstpartview.h"
+#include "bstsongbusview.h"
 #include "bstwaveview.h"
 #include "bstrackview.h"
 #include "bstsnetrouter.h"
@@ -221,6 +222,12 @@ super_shell_build_song (BstSuperShell *self,
                             g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
                                           "label", _("Parts"),
                                           NULL));
+  if (BST_DBG_EXT)
+    gtk_notebook_append_page (notebook,
+                              bst_song_bus_view_new (song),
+                              g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+                                            "label", _("Busses"),
+                                            NULL));
   if (BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (song))),

@@ -1,3 +1,14 @@
+Mon Jul  5 08:53:07 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsupershell.c: added song-bus view to song-shell in
+	debugging mode.
+
+	* beast-gtk/bstsongbusview.[hc]: new widget to view song busses.
+
+	* beast-gtk/bstutils.c: radget-register song busses.
+
+	* beast-gtk/dialogs/radgets-beast.xml: added song bus widget tree.
+
 Sun Jul  4 02:43:43 2004  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4: don't pass -Wmissing-prototypes to g++-3.4.

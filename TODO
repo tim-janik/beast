@@ -1,6 +1,6 @@
 FIXMES:
-- rename "WAVE File" to "Export AUDIO"
-- rename Synthesis1 (thread view) to DSP-1
+- rename "WAVE File" to "Export Audio"
+- rename Synthesis1 (thread view) to DSP#1
 - when loading/merging bse files, make sure all orphan parts are in a new muted track and delete part-item-view
 - implement ordinary save functionality
 - pattern editor: pressing G+1 on G+1, should delete old note (and its length) and insert new note (and its length)

@@ -194,6 +194,23 @@
       <alignment name="property-area" />
     </vpaned>
   </xdef:part-view>
+
+  <!-- song bus view -->
+  <xdef:song-bus-view inherit="BstSongBusView" border-width="3" >
+    <vpaned>
+      <hbox spacing="3" >
+	<scrolled-window name="tree-area" shadow-type="shadow-in" pack:expand="1" >
+	  <tree-view name="tree-view" height="120" width="200" />
+	</scrolled-window>
+	<alignment yscale="0" yalign="0" >
+	  <vbox homogeneous="1" spacing="3" >
+	    <big-button-factory actions="song-bus-view-actions" />
+	  </vbox>
+	</alignment>
+      </hbox>
+      <alignment name="property-area" />
+    </vpaned>
+  </xdef:song-bus-view>
   
   <!-- piano-roll-box -->
   <xdef:piano-roll-box inherit="vbox" spacing="3" >
