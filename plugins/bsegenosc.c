@@ -106,32 +106,32 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_SINE,
-			      bse_param_spec_bool ("sine_table", "Sine Wave",
+			      bse_param_spec_bool ("sine_table", "Sine Wave", NULL,
 						   TRUE,
 						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_PULSE,
-			      bse_param_spec_bool ("pulse_table", "Pulse",
+			      bse_param_spec_bool ("pulse_table", "Pulse", NULL,
 						   FALSE,
 						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_GSAW,
-			      bse_param_spec_bool ("gsaw_table", "Growing Saw",
+			      bse_param_spec_bool ("gsaw_table", "Growing Saw", NULL,
 						   FALSE,
 						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_SSAW,
-			      bse_param_spec_bool ("ssaw_table", "Shrinking Saw",
+			      bse_param_spec_bool ("ssaw_table", "Shrinking Saw", NULL,
 						   FALSE,
 						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Wave Form",
 			      PARAM_TRIANGLE,
-			      bse_param_spec_bool ("triangle_table", "Triangle",
+			      bse_param_spec_bool ("triangle_table", "Triangle", NULL,
 						   FALSE,
 						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_PHASE,
-                              bse_param_spec_float ("phase", "Phase",
+                              bse_param_spec_float ("phase", "Phase", NULL,
 						    -180.0, 180.0,
 						    5.0,
 						    0.0,
@@ -139,7 +139,7 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_FREQ,
-                              bse_param_spec_float ("base_freq", "Frequency",
+                              bse_param_spec_float ("base_freq", "Frequency", NULL,
 						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
 						    10.0,
 						    BSE_KAMMER_FREQ,
@@ -147,13 +147,13 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_NOTE,
-                              bse_param_spec_note ("base_note", "Note",
+                              bse_param_spec_note ("base_note", "Note", NULL,
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
 						   1, BSE_KAMMER_NOTE, TRUE,
 						   BSE_PARAM_GUI));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_FM_PERC,
-                              bse_param_spec_float ("fm_perc", "Modulation [%]",
+                              bse_param_spec_float ("fm_perc", "Modulation [%]", NULL,
 						    0, 100.0,
 						    5.0,
 						    10.0,

@@ -91,29 +91,29 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_LOWPASS,
-			      bse_param_spec_bool ("lowpass", "LowPass",
+			      bse_param_spec_bool ("lowpass", "LowPass", NULL,
 						   TRUE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_DEGREE,
-			      bse_param_spec_uint ("degree", "Degree (# coefficients)",
+			      bse_param_spec_uint ("degree", "Degree", "Number of filter coefficients",
 						   1, 128,
 						   2,
 						   3,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Smoothing",
 			      PARAM_HANN,
-			      bse_param_spec_bool ("hann_smooth", "von Hann",
+			      bse_param_spec_bool ("hann_smooth", "von Hann", NULL,
 						   FALSE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Smoothing",
 			      PARAM_LANCZOS,
-			      bse_param_spec_bool ("lanczos_smooth", "C. Lanczos",
+			      bse_param_spec_bool ("lanczos_smooth", "C. Lanczos", NULL,
 						   FALSE,
 						   BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Cut off",
 			      PARAM_CUT_OFF_FREQ,
-			      bse_param_spec_float ("cut_off_freq", "Frequency",
+			      bse_param_spec_float ("cut_off_freq", "Frequency", NULL,
 						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
 						    5.0,
 						    BSE_KAMMER_FREQ / 2,
@@ -121,7 +121,7 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 						    BSE_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Cut off",
 			      PARAM_CUT_OFF_NOTE,
-			      bse_param_spec_note ("cut_off_note", "Note",
+			      bse_param_spec_note ("cut_off_note", "Note", NULL,
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
 						   1,
 						   bse_note_from_freq (BSE_KAMMER_FREQ / 2),

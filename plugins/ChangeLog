@@ -1,3 +1,17 @@
+Fri Dec 17 17:53:18 1999  Tim Janik  <timj@gtk.org>
+
+	* pluged bad memory leaks:
+	* bsemult.c (bse_mult_calc_chunk):
+	* bseadder.c (bse_adder_calc_chunk): use chunk_new_orphan() not
+	chunk_new_foreign(), since we allocated the hunk and don't
+	provide it from static data.
+
+Fri Dec 17 17:26:12 1999  Tim Janik  <timj@gtk.org>
+
+	* greeting.c: (test file anyways)
+	* bsegenosc.c: 
+	* bsefirfilter.c: adapted bse_param_spec* () calls to supply nick names.
+
 Fri Dec 17 10:43:54 1999  Tim Janik  <timj@gtk.org>
 
 	* bsemult.[hc]: added multiplier source to fold signals.

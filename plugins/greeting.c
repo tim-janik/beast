@@ -41,11 +41,11 @@ greeting_setup (BseProcedureClass *proc,
   proc->date      = "1999";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_uint ("year", "Curent Year",
+  *(ipspecs++) = bse_param_spec_uint ("year", "Curent Year", NULL,
 				      1980, 2100, 1, 1999, BSE_PARAM_PROCEDURE);
   
   /* output parameters */
-  *(opspecs++) = bse_param_spec_string ("greeting", "Greeting",
+  *(opspecs++) = bse_param_spec_string ("greeting", "Greeting", NULL,
 					NULL, BSE_PARAM_DEFAULT);
 }
 

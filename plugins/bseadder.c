@@ -185,7 +185,7 @@ bse_adder_calc_chunk (BseSource *source,
     }
   while (++mv < bound);
 
-  return bse_chunk_new_foreign (1, hunk, FALSE);
+  return bse_chunk_new_orphan (1, hunk);
 }
 
 static void
