@@ -21,6 +21,7 @@
 #include "bstcanvaslink.h"
 #include "bststatusbar.h"
 #include "bstmenus.h"
+#include "bstgconfig.h"
 
 
 /* --- prototypes --- */
@@ -97,7 +98,7 @@ bst_snet_router_init (BstSNetRouter      *router,
 {
   GnomeCanvas *canvas = GNOME_CANVAS (router);
   
-  canvas->aa = TRUE; /* FIXME: need preference settings for this */
+  canvas->aa = BST_SNET_ANTI_ALIASED;
   router->toolbar = NULL;
   router->adjustment = NULL;
   router->snet = NULL;
@@ -913,7 +914,7 @@ bst_snet_router_event (GtkWidget *widget,
 			       NULL);
 	  router->world_x = 0;
 	  router->world_y = 0;
-	  if (1 && router->edit_radio) /* FIXME: need preference settings for this */
+	  if (BST_SNET_EDIT_FALLBACK && router->edit_radio)
 	    gtk_button_clicked (GTK_BUTTON (router->edit_radio));
 	}
       else if (router->mode > 1 || (router->mode == 1 && event->button.button != 1))

@@ -23,6 +23,7 @@
 #include	"bstxkb.h"
 #include	"bstkeytables.h"
 #include	"bstmenus.h"
+#include	"bstgconfig.h"
 #include	"bstpreferences.h"
 #include	"../PKG_config.h"
 
@@ -68,9 +69,10 @@ main (int   argc,
   
   g_message ("BEAST: pid = %u", getpid ());
   
-  /* initialize BSE
+  /* initialize BSE and preferences
    */
   bse_init (&argc, &argv);
+  bst_globals_init ();
   
   /* initialize GUI libraries and pre-parse args
    */
@@ -85,11 +87,16 @@ main (int   argc,
   /* parse rc file */
   if (1)
     {
+      BseGConfig *gconf;
       BseErrorType error;
       gchar *file_name;
 
-      file_name = g_strconcat (g_get_home_dir (), "/.beastrc", NULL);
-      error = bst_rc_parse (file_name);
+      file_name = BST_STRDUP_RC_FILE ();
+      gconf = bse_object_new (BST_TYPE_GCONFIG, NULL);
+      bse_gconfig_revert (gconf);
+      error = bst_rc_parse (file_name, gconf);
+      bse_gconfig_apply (gconf);
+      bse_object_unref (BSE_OBJECT (gconf));
       if (error)
 	g_warning ("error parsing rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);
@@ -231,11 +238,15 @@ main (int   argc,
   /* save rc file */
   if (1)
     {
+      BseGConfig *gconf;
       BseErrorType error;
       gchar *file_name;
 
-      file_name = g_strconcat (g_get_home_dir (), "/.beastrc", NULL);
-      error = bst_rc_dump (file_name);
+      gconf = bse_object_new (BST_TYPE_GCONFIG, NULL);
+      bse_gconfig_revert (gconf);
+      file_name = BST_STRDUP_RC_FILE ();
+      error = bst_rc_dump (file_name, gconf);
+      bse_object_unref (BSE_OBJECT (gconf));
       if (error)
 	g_warning ("error saving rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);
@@ -364,25 +375,16 @@ bst_parse_args (int    *argc_p,
 }
 
 static BstKeyTablePatch*
-bst_key_table_from_xkb (const gchar *display)
+bst_key_table_from_xkb_symbol (const gchar *xkb_symbol)
 {
-  gchar *encoding, *layout, *model, *variant, *name = NULL;
+  gchar *encoding, *layout, *model, *variant;
   GSList *slist, *name_list = NULL;
   BstKeyTablePatch *patch = NULL;
   
-  if (bst_xkb_open (gdk_get_display (), TRUE))
-    {
-      name = g_strdup (bst_xkb_get_symbol (TRUE));
-      if (!name)
-	name = g_strdup (bst_xkb_get_symbol (FALSE));
-      bst_xkb_close ();
-    }
-  
-  bst_xkb_parse_symbol (name, &encoding, &layout, &model, &variant);
+  bst_xkb_parse_symbol (xkb_symbol, &encoding, &layout, &model, &variant);
   BST_IF_DEBUG (KEYTABLE)
     g_message ("keytable %s: encoding(%s) layout(%s) model(%s) variant(%s)",
-	       name, encoding, layout, model, variant);
-  g_free (name);
+	       xkb_symbol, encoding, layout, model, variant);
   
   /* strip number of keys (if present) */
   if (layout)
@@ -426,7 +428,7 @@ bst_key_table_from_xkb (const gchar *display)
   
   for (slist = name_list; slist; slist = slist->next)
     {
-      name = slist->data;
+      gchar *name = slist->data;
       
       if (!patch)
 	{
@@ -443,13 +445,57 @@ bst_key_table_from_xkb (const gchar *display)
     }
   g_slist_free (name_list);
   
+  return patch;
+}
+
+static BstKeyTablePatch*
+bst_key_table_from_xkb (const gchar *display)
+{
+  BstKeyTablePatch *patch = NULL;
+
+  if (!BST_XKB_FORCE_QUERY && BST_XKB_SYMBOL)
+    patch = bst_key_table_patch_find (BST_XKB_SYMBOL);
+
+  if (!patch && !BST_XKB_FORCE_QUERY && BST_XKB_SYMBOL)
+    {
+      BST_IF_DEBUG (KEYTABLE)
+	g_message ("Failed to find keytable \"%s\"", BST_XKB_SYMBOL);
+    }
+
   if (!patch)
     {
-      name = BST_DFL_KEYTABLE;	/* default keyboard */
+      gchar *xkb_symbol = NULL;
+
+      BST_IF_DEBUG (KEYTABLE)
+	g_message ("Querying keytable layout from X-Server...");
+
+      if (bst_xkb_open (display, TRUE))
+	{
+	  xkb_symbol = g_strdup (bst_xkb_get_symbol (TRUE));
+	  if (!xkb_symbol)
+	    xkb_symbol = g_strdup (bst_xkb_get_symbol (FALSE));
+	  bst_xkb_close ();
+	}
+
+      patch = bst_key_table_from_xkb_symbol (xkb_symbol);
+      g_free (xkb_symbol);
+    }
+
+  if (patch)
+    {
+      BST_IF_DEBUG (KEYTABLE)
+	g_message ("Using keytable \"%s\"", patch->identifier);
+    }
+  else
+    {
+      gchar *name = BST_DFL_KEYTABLE;
+
       BST_IF_DEBUG (KEYTABLE)
 	g_message ("Guessing keytable failed, reverting to \"%s\"", name);
       patch = bst_key_table_patch_find (name);
     }
+
+  bst_globals_set_xkb_symbol (patch->identifier);
   
   return patch;
 }
@@ -615,12 +661,14 @@ static GtkWidget *subwindow_choice = NULL;
 GtkWidget*
 bst_subwindow_new (GtkObject  *alive_host,
 		   GtkWidget **ssubwindow_p,
-		   GtkWidget  *child)
+		   GtkWidget  *child,
+		   guint       zero)
 {
   GtkWidget *window;
 
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
   g_return_val_if_fail (child->parent == NULL, NULL);
+  g_return_val_if_fail (zero == 0, NULL);
   if (alive_host)
     g_return_val_if_fail (GTK_IS_OBJECT (alive_host), NULL);
   if (ssubwindow_p)
@@ -677,6 +725,15 @@ gtk_widget_showraise (GtkWidget *widget)
   gtk_widget_show (widget);
   if (GTK_WIDGET_REALIZED (widget))
     gdk_window_raise (widget->window);
+}
+
+void
+gtk_toplevel_hide (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  widget = gtk_widget_get_toplevel (widget);
+  gtk_widget_hide (widget);
 }
 
 GnomeCanvasItem*

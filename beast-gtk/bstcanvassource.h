@@ -52,6 +52,7 @@ struct _BstCanvasSource
   GnomeCanvasItem *text;
   GSList	  *channel_items;
 
+  guint		   swap_channels : 1;
   guint            in_move : 1;
   gdouble	   move_dx, move_dy;
 };

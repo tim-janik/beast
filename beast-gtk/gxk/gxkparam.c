@@ -969,6 +969,7 @@ bst_param_apply (BstParam *bparam,
   BseParam *param = &bparam->param;
   BseParamSpec *pspec = param->pspec;
   BseParam param2 = { 0, };
+  gchar *dummy = NULL;
   guint dirty = 0;
 
   bse_param_init (&param2, pspec);
@@ -979,7 +980,7 @@ bst_param_apply (BstParam *bparam,
   switch (pspec->type)
     {
       GtkWidget *action, *pre_action;
-      gchar *string, *dummy;
+      gchar *string;
       BseTime time_data;
       guint base;
       guint note_data;
@@ -1004,6 +1005,7 @@ bst_param_apply (BstParam *bparam,
       else
 	base = 10;
       dirty += bse_param_set_int (param, strtol (string, &dummy, base));
+      dirty += dummy != NULL && (*dummy != 0 || dummy == string);
       break;
     case BSE_TYPE_PARAM_UINT:
       action = GROUP_GET_ACTION (group);
@@ -1021,6 +1023,7 @@ bst_param_apply (BstParam *bparam,
       else
 	base = 10;
       dirty += bse_param_set_uint (param, strtol (string, &dummy, base));
+      dirty += dummy != NULL && (*dummy != 0 || dummy == string);
       break;
     case BSE_TYPE_PARAM_FLOAT:
       action = GROUP_GET_ACTION (group);

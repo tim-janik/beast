@@ -224,7 +224,8 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
 										   "justify", GTK_JUSTIFY_LEFT,
 										   "xpad", 5,
 										   NULL),
-							  NULL));
+							  NULL),
+					  0);
   clink_view_update (clink, TRUE);
   gtk_widget_showraise (clink->link_view);
 }

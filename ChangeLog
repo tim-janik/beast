@@ -1,3 +1,23 @@
+Sun Jan  9 12:51:23 2000  Tim Janik  <timj@gtk.org>
+
+        * beast-gtk/bstgconfig.[hc]: implemented BEAST configuration settings
+	  with a BstGlobals struct and a BstGConfig object.
+
+        * beast-gtk/bstpreferences.[hc]: feature BstGConfig object by adding a
+	  notebook page for the object settings derived frmo BSE_TYPE_GCONFIG.
+
+        * beast-gtk/main.c: cache the keytable in the config settings, so we
+        don't need to requery it upon every startup (and risk triggering the
+        XKB bugs).
+	(bst_key_table_from_xkb_symbol): seperated out the xkb_symbol->keypatch
+	logic from bst_key_table_from_xkb().
+        
+Sun Jan  9 07:28:49 2000  Tim Janik  <timj@gtk.org>
+
+	* NEWS: updates for version 0.3.1.
+
+	* configure.in: up to version 0.3.1.
+
 Sat Jan  8 02:02:03 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c (bst_app_operate): view faq.txt, bse-heart.txt and

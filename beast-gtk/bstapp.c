@@ -24,6 +24,7 @@
 #include	"bstfiledialog.h"
 #include	"bststatusbar.h"
 #include	"bstheartmonitor.h"
+#include	"bstgconfig.h"
 #include	"bstpreferences.h"
 
 
@@ -474,13 +475,17 @@ bst_app_operate (BstApp *app,
     case BST_OP_DIALOG_PREFERENCES:
       if (!bst_preferences)
 	{
-	  BseGConfig *gconf = bse_object_new (BSE_TYPE_GCONFIG, NULL);
+	  GtkWidget *deflt;
+	  BseGConfig *gconf = bse_object_new (BST_TYPE_GCONFIG, NULL);
 
+	  bse_gconfig_revert (gconf);
 	  bst_preferences = bst_preferences_new (gconf);
 	  bse_object_unref (BSE_OBJECT (gconf));
 	  gtk_widget_show (bst_preferences);
-	  bst_preferences = bst_subwindow_new (NULL, &bst_preferences, bst_preferences);
+	  deflt = BST_PREFERENCES (bst_preferences)->close; // apply;
+	  bst_preferences = bst_subwindow_new (NULL, &bst_preferences, bst_preferences, 0);
 	  gtk_window_set_title (GTK_WINDOW (bst_preferences), "BEAST: Preferences");
+	  gtk_widget_grab_default (deflt);
 	}
       gtk_widget_showraise (bst_preferences);
       break;
@@ -497,7 +502,7 @@ bst_app_operate (BstApp *app,
 	    {
 	      hmon = bst_heart_monitor_new (heart);
 	      gtk_widget_show (hmon);
-	      hmon = bst_subwindow_new (NULL, NULL, hmon);
+	      hmon = bst_subwindow_new (NULL, NULL, hmon, 0);
 	      gtk_window_set_title (GTK_WINDOW (hmon), "BEAST: Device Monitor");
 	    }
 	  gtk_widget_showraise (hmon);
@@ -522,7 +527,7 @@ bst_app_operate (BstApp *app,
       help_file = "bse-heart.txt";
       goto case_help_dialog;
     case BST_OP_HELP_NETWORKS:
-      help_file = "bse-networks.txt1";
+      help_file = "bse-networks.txt";
       goto case_help_dialog;
     case BST_OP_HELP_ABOUT:
       break;
@@ -534,7 +539,8 @@ bst_app_operate (BstApp *app,
 	  string = g_strconcat (BST_PATH_DOCS, "/", help_file, NULL);
 	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_subwindow_new (NULL,
 									&bst_help_dialogs[op - BST_OP_HELP_FIRST],
-									bst_text_view_from_file (string));
+									bst_text_view_from_file (string),
+									0);
 	  g_free (string);
 	  string = g_strconcat ("BEAST: ", help_file, NULL);
 	  gtk_window_set_title (GTK_WINDOW (bst_help_dialogs[op - BST_OP_HELP_FIRST]), string);

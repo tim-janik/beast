@@ -45,9 +45,11 @@ struct _BstPreferences
 
   BseGConfig	*gconf;
 
-  GtkWidget	*param_view;
+  GtkWidget	*bse_param_view;
+  GtkWidget	*bst_param_view;
+  GtkWidget	*notebook;
   GtkWidget	*apply;
-  GtkWidget	*save;
+  GtkWidget	*close;
 };
 struct _BstPreferencesClass
 {
@@ -62,14 +64,17 @@ void		 bst_preferences_rebuild	(BstPreferences *prefs);
 void		 bst_preferences_set_gconfig	(BstPreferences *prefs,
 						 BseGConfig     *gconf);
 void		 bst_preferences_apply		(BstPreferences *prefs);
+void		 bst_preferences_save		(BstPreferences *prefs);
 void		 bst_preferences_revert		(BstPreferences *prefs);
 void		 bst_preferences_default_revert	(BstPreferences *prefs);
 #define	bst_preferences_update	bst_preferences_revert
 
 
 /* --- rc file --- */
-BseErrorType	 bst_rc_dump			(const gchar	*file_name);
-BseErrorType	 bst_rc_parse			(const gchar	*file_name);
+BseErrorType	 bst_rc_dump			(const gchar	*file_name,
+						 BseGConfig     *gconf);
+BseErrorType	 bst_rc_parse			(const gchar	*file_name,
+						 BseGConfig     *gconf);
 
 
 

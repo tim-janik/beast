@@ -18,12 +18,9 @@
 #include	"bstcanvassource.h"
 
 #include	"bstparamview.h"
+#include	"bstgconfig.h"
 #include	"../PKG_config.h"
 
-
-
-/* --- BEAST feature ;) --- */
-#define	FLIP_CHANNELS(s) (BSE_CHECK_STRUCT_TYPE ((s), flip_channels_type)) /* FIXME: config option */
 
 
 /* --- defines --- */
@@ -35,8 +32,8 @@
 #define	ICON_Y		((gdouble) 0)
 #define ICHANNEL_realX	((gdouble) 0)
 #define OCHANNEL_realX	((gdouble) CHANNEL_WIDTH + ICON_WIDTH)
-#define ICHANNEL_X(s)	(FLIP_CHANNELS (s) ? OCHANNEL_realX : ICHANNEL_realX)
-#define OCHANNEL_X(s)	(FLIP_CHANNELS (s) ? ICHANNEL_realX : OCHANNEL_realX)
+#define ICHANNEL_X(cs)	(cs->swap_channels ? OCHANNEL_realX : ICHANNEL_realX)
+#define OCHANNEL_X(cs)	(cs->swap_channels ? ICHANNEL_realX : OCHANNEL_realX)
 #define ICHANNEL_Y	((gdouble) 0)
 #define OCHANNEL_Y	((gdouble) 0)
 #define	TOTAL_WIDTH	((gdouble) CHANNEL_WIDTH + ICON_WIDTH + CHANNEL_WIDTH)
@@ -76,7 +73,6 @@ static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
 static gpointer              parent_class = NULL;
 static BstCanvasSourceClass *bst_canvas_source_class = NULL;
 static guint                 csource_signals[SIGNAL_LAST] = { 0 };
-static BseType               flip_channels_type = 0;
 
 
 /* --- functions --- */
@@ -134,8 +130,6 @@ bst_canvas_source_class_init (BstCanvasSourceClass *class)
 		    gtk_signal_default_marshaller,
 		    GTK_TYPE_NONE, 0);
   gtk_object_class_add_signals (object_class, csource_signals, SIGNAL_LAST);
-
-  flip_channels_type = bse_type_from_name ("BseLoopback");
 }
 
 static void
@@ -148,6 +142,7 @@ bst_canvas_source_init (BstCanvasSource *csource)
   csource->icon_item = NULL;
   csource->text = NULL;
   csource->channel_items = NULL;
+  csource->swap_channels = BST_SNET_SWAP_IO_CHANNELS;
   csource->in_move = FALSE;
   csource->move_dx = 0;
   csource->move_dy = 0;
@@ -339,7 +334,7 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
 
       param_view = bst_param_view_new (BSE_OBJECT (csource->source));
       gtk_widget_show (param_view);
-      csource->source_view = bst_subwindow_new (GTK_OBJECT (csource), &csource->source_view, param_view);
+      csource->source_view = bst_subwindow_new (GTK_OBJECT (csource), &csource->source_view, param_view, 0);
       source_name_changed (csource);
     }
   gtk_widget_showraise (csource->source_view);
@@ -374,7 +369,7 @@ bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
   
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
   
-  x = ICHANNEL_X (csource->source) + CHANNEL_WIDTH / 2;
+  x = ICHANNEL_X (csource) + CHANNEL_WIDTH / 2;
   y = CHANNEL_HEIGHT / BSE_SOURCE_N_ICHANNELS (csource->source);
   y *= ochannel_id - 0.5;
   y += ICHANNEL_Y;
@@ -395,7 +390,7 @@ bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
   
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
   
-  x = OCHANNEL_X (csource->source) + CHANNEL_WIDTH / 2;
+  x = OCHANNEL_X (csource) + CHANNEL_WIDTH / 2;
   y = CHANNEL_HEIGHT / BSE_SOURCE_N_OCHANNELS (csource->source);
   y *= ichannel_id - 0.5;
   y += OCHANNEL_Y;
@@ -417,7 +412,7 @@ bst_canvas_source_ichannel_at (BstCanvasSource *csource,
 
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
 
-  x -= ICHANNEL_X (csource->source);
+  x -= ICHANNEL_X (csource);
   y -= ICHANNEL_Y;
   if (x > 0 && x < CHANNEL_WIDTH &&
       y > 0 && y < CHANNEL_HEIGHT &&
@@ -441,7 +436,7 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
 
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
 
-  x -= OCHANNEL_X (csource->source);
+  x -= OCHANNEL_X (csource);
   y -= OCHANNEL_Y;
   if (x > 0 && x < CHANNEL_WIDTH &&
       y > 0 && y < CHANNEL_HEIGHT &&
@@ -477,13 +472,13 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   if (is_input)
     {
       n_channels = BSE_SOURCE_N_ICHANNELS (csource->source);
-      x1 = ICHANNEL_X (csource->source);
+      x1 = ICHANNEL_X (csource);
       y1 = ICHANNEL_Y;
     }
   else
     {
       n_channels = BSE_SOURCE_N_OCHANNELS (csource->source);
-      x1 = OCHANNEL_X (csource->source);
+      x1 = OCHANNEL_X (csource);
       y1 = OCHANNEL_Y;
     }
   x2 = x1 + CHANNEL_WIDTH;

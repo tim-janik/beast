@@ -120,6 +120,8 @@ extern BstDebugFlags bst_debug_flags;
 #endif /* !G_ENABLE_DEBUG */
 
 
+#define BST_STRDUP_RC_FILE()	(g_strconcat (g_get_home_dir (), "/.beastrc", NULL))
+
 /* it's hackish to have these prototypes in here, but we need
  * 'em somewhere, implementations are in bstmain.c
  */
@@ -134,9 +136,12 @@ extern void bst_object_set         (gpointer     object,
 
 GtkWidget* bst_subwindow_new       (GtkObject	 *alive_host,
 				    GtkWidget	**ssubwindow_p,
-				    GtkWidget	 *child);
+				    GtkWidget	 *child,
+				    guint	  zero);
 GtkWidget* bst_subwindow_get_child (GtkWidget	 *subwindow);
 void	   gtk_widget_showraise    (GtkWidget	 *widget);
+void	   gtk_toplevel_hide       (GtkWidget    *widget);
+
 
 /* --- canvas utils/workarounds --- */
 extern GnomeCanvasPoints* gnome_canvas_points_new0 (guint num_points);

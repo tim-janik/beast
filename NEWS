@@ -1,0 +1,31 @@
+Overview of Changes in BEAST/BSE 0.3.1:
+
+* Fixed a dumb major bug in the ALSA backend that could prevent
+  it from playing at all
+* Preferences dialog contains BEAST preferences as well now
+* Keytable caching to avoid XKB bug triggering
+* New synthesis object: BseCompressor
+* Runtime display of FAQ ;)
+* Random GUI improvements
+* Miscellaneous minor bugfixes
+
+What's new in BEAST/BSE 0.3.0:
+
+* Synthesis networks implemented, plugins currently imlemented:
+  - noise generator
+  - generic oscillator for various wave forms, such as
+    sine, saw, triangle...
+  - FIR filter with lowpass and highpass mode
+  - multiplier
+  - adder (can also run in subtract mode)
+  - recording source
+* BseIcon support for C-source inlined RLE-encoded RGB(A) images
+* Envelopes and polyphony for song instruments
+* Incremental keytable patch mechanism
+* Good overall stability
+* Preferences dialog
+* Device Monitor for latency settings
+* New BseHeart object with new PCM device syncronization/mixing model
+* Procedure types
+* Improved .bse file format
+* Bunch of exciting things that i forgot about ;)

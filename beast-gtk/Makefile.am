@@ -34,6 +34,7 @@ beast_headers = $(strip \
 	bstdefs.h \
 	bstfiledialog.h \
 	bstfreeradiobutton.h \
+	bstgconfig.h \
 	bstheartmonitor.h \
 	bstinstrumentview.h \
 	bstitemview.h \
@@ -64,6 +65,7 @@ beast_sources = $(strip \
 	bstcanvassource.c \
 	bstfiledialog.c \
 	bstfreeradiobutton.c \
+	bstgconfig.c \
 	bstheartmonitor.c \
 	bstinstrumentview.c \
 	bstitemview.c \
