@@ -1,4 +1,5 @@
 FIXMES:
+- track editor is grey if no tracks are present
 - typed record serialization needs to honour indent for sfi_value_store_param()
 - serialization of homogeneous sequences could store the field type code only once
 - alow snet flagging as aggregate
@@ -44,6 +45,7 @@ FIXMES:
 - fix engine deinitialization assertions in bseserver.c
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
 - save errno across logging/debugging
+- master tune slider in preferences (kammer ton)
 
 URGENT:
 - support pspec groups in idl files [stw]
@@ -100,6 +102,13 @@ TrackView:
 - context menu with delete, move, insert (double click inserts?)
 
 PianoRoll:
+- add to piano roll dialog:
+  part-link properties:
+  - loop-count
+  - length (tact-entry)
+  - part coment
+  this fixes tact-kind queries for piano roll editing
+  and song position pointer placement
 - hotkey in piano roll to replay project
 - piano roll: pasting doesn't quantize (without later movement)
 - hscrollbar resizable (like cubase) or last-tick + 1 tact

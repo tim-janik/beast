@@ -57,7 +57,8 @@ static BstMenuConfigEntry menubar_entries[] =
   { "/File/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/File/_New",			"<ctrl>N",	BST_OP (PROJECT_NEW),		"<Item>" },
   { "/File/_Open...",			"<ctrl>O",	BST_OP (PROJECT_OPEN),		"<Item>" },
-  { "/File/_Save",			"<ctrl>S",	BST_OP (PROJECT_SAVE),		"<Item>" },
+  { "/File/_Merge...",			"<ctrl>M",	BST_OP (PROJECT_MERGE),		"<Item>" },
+  { "/File/_Save",			NULL,		BST_OP (PROJECT_SAVE),		"<Item>" },
   { "/File/Save _As...",		NULL,		BST_OP (PROJECT_SAVE_AS),	"<Item>" },
   { "/File/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/File/_Dialogs",			NULL,		NULL, 0,			"<Branch>" },
@@ -554,6 +555,7 @@ bst_app_operate (BstApp *app,
 {
   static GtkWidget *bst_help_dialogs[BST_OP_HELP_LAST - BST_OP_HELP_FIRST + 1] = { NULL, };
   static GtkWidget *gxk_dialog_open = NULL;
+  static GtkWidget *gxk_dialog_merge = NULL;
   static GtkWidget *gxk_dialog_save = NULL;
   static GtkWidget *bst_preferences = NULL;
   static GtkWidget *bst_proc_browser = NULL;
@@ -591,12 +593,22 @@ bst_app_operate (BstApp *app,
     case BST_OP_PROJECT_OPEN:
       if (!gxk_dialog_open)
 	{
-	  gxk_dialog_open = bst_file_dialog_new_open (app);
+	  gxk_dialog_open = bst_file_dialog_new_open (app, 0);
 	  g_object_connect (gxk_dialog_open,
 			    "signal::destroy", gtk_widget_destroyed, &gxk_dialog_open,
 			    NULL);
 	}
       gxk_widget_showraise (gxk_dialog_open);
+      break;
+    case BST_OP_PROJECT_MERGE:
+      if (!gxk_dialog_merge)
+	{
+	  gxk_dialog_merge = bst_file_dialog_new_open (app, app->project);
+	  g_object_connect (gxk_dialog_merge,
+			    "signal::destroy", gtk_widget_destroyed, &gxk_dialog_merge,
+			    NULL);
+	}
+      gxk_widget_showraise (gxk_dialog_merge);
       break;
     case BST_OP_PROJECT_SAVE_AS:
       if (gxk_dialog_save)
@@ -854,6 +866,7 @@ bst_app_can_operate (BstApp *app,
     {
     case BST_OP_PROJECT_NEW:
     case BST_OP_PROJECT_OPEN:
+    case BST_OP_PROJECT_MERGE:
     case BST_OP_PROJECT_SAVE_AS:
     case BST_OP_PROJECT_NEW_SONG:
     case BST_OP_PROJECT_NEW_SNET:

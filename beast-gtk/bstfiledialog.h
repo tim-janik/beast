@@ -56,7 +56,8 @@ struct _BstFileDialogClass
 
 /* --- prototypes --- */
 GtkType		bst_file_dialog_get_type	(void);
-GtkWidget*	bst_file_dialog_new_open	(BstApp		*app);
+GtkWidget*	bst_file_dialog_new_open	(BstApp		*app,
+						 SfiProxy	 merge_project);
 GtkWidget*	bst_file_dialog_new_save	(BstApp		*app);
 
 

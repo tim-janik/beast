@@ -1,3 +1,10 @@
+Sun Feb 16 09:01:28 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstfiledialog.c (bst_file_dialog_open): support merging
+	an existing project with BSE file contents.
+
+	* beast-gtk/bstapp.c: added /File/Merge menu entry.
+
 Fri Feb 14 07:50:29 2003  Tim Janik  <timj@gtk.org>
 
 	* test/test-song.bse: adoptions.

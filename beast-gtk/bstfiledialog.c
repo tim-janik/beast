@@ -80,17 +80,22 @@ bst_file_dialog_open (BstFileDialog *fd)
   gchar *file_name;
   SfiProxy project;
   BseErrorType error;
-
+  SfiProxy merge_project;
+  
   file_name = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (fd)));
+  merge_project = g_object_get_long (fd, "merger");
 
-  project = bse_server_use_new_project (BSE_SERVER, file_name);
+  if (merge_project)
+    project = bse_item_use (merge_project);
+  else
+    project = bse_server_use_new_project (BSE_SERVER, file_name);
   error = bse_project_restore_from_file (project, file_name);
 
   if (error)
     g_message ("failed to load project `%s': %s", /* FIXME */
 	       file_name,
 	       bse_error_blurb (error));
-  else
+  else if (!merge_project)
     {
       BstApp *app;
 
@@ -171,7 +176,8 @@ bst_file_dialog_save (BstFileDialog *fd)
 }
 
 GtkWidget*
-bst_file_dialog_new_open (BstApp *app)
+bst_file_dialog_new_open (BstApp  *app,
+			  SfiProxy merge_project)
 {
   GtkWidget *dialog;
 
@@ -189,6 +195,7 @@ bst_file_dialog_new_open (BstApp *app)
   if (app)
     {
       gtk_object_set_data (GTK_OBJECT (dialog), "app", app);
+      g_object_set_long (dialog, "merger", merge_project);
       gtk_signal_connect_object_while_alive (GTK_OBJECT (app),
 					     "destroy",
 					     G_CALLBACK (gtk_widget_destroy),
