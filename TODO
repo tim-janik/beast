@@ -9,6 +9,8 @@ FIXMES:	(release-critical)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - deleteing last track + undo doesn't redraw trackroll
 - add compat code to auto-connect tracks for songs<=0.6.2
+- adjust engine block size (Subject: blocksize vs. cpu)
+- save mixer bus volumes
 TODO:
 - add GxkDialog minimum shrink sizes support
 - preserve part-link ids in tracks across part-tick movement and remove-tick+insert-part undo
