@@ -425,12 +425,12 @@ sequence TypeSeq {
 class Item;
 
 sequence ItemSeq {
-  Info   BLURB = ("A list of BSE items or derived types.");
+  Info   blurb = ("A list of BSE items or derived types.");
   Item   items;
 };
 
 record PropertyCandidates {
-  Info    BLURB      = ("A strcuture describing tentative property values.");
+  Info    blurb      = ("A strcuture describing tentative property values.");
   String  label;
   String  tooltip;
   ItemSeq items;
@@ -439,7 +439,7 @@ record PropertyCandidates {
 
 record PartNote
 {
-  Info     BLURB        = "Part specific note representation";
+  Info     blurb        = "Part specific note representation";
   Int      id           = UInt ("ID", "", 0, ":readwrite");
   Int      channel      = ("Channel", "", 0, 0, MAXINT, 1, ":readwrite");
   Int      tick         = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
@@ -451,13 +451,13 @@ record PartNote
 };
 
 sequence PartNoteSeq {
-  Info     BLURB = "A list of part notes";
+  Info     blurb = "A list of part notes";
   PartNote pnotes;
 };
 
 record PartControl
 {
-  Info           BLURB        = "Part specific control event representation";
+  Info           blurb        = "Part specific control event representation";
   Int            id           = UInt ("ID", "", 0, ":readwrite");
   Int            tick         = ("Tick", "", 0, 0, MAXINT, 1, ":readwrite");
   MidiSignalType control_type;
@@ -466,7 +466,7 @@ record PartControl
 };
 
 sequence PartControlSeq {
-  Info BLURB = "A list of part control events";
+  Info blurb = "A list of part control events";
   PartControl pcontrols;
 };
 
@@ -483,8 +483,8 @@ record NoteDescription
   /* constants */
   Int    max_fine_tune   = Int ("Max Fine Tune", "", MAX_FINE_TUNE, MAX_FINE_TUNE, MAX_FINE_TUNE, 0, ":readable");
   Int    kammer_note     = Int ("Kammer Note", "", KAMMER_NOTE, KAMMER_NOTE, KAMMER_NOTE, 0, ":readable");
-  // FIXME: turn semicolons in BLURB into commas once texitheque got fixed
-  Info   BLURB           = "A note description provides all necessary details about a specific note. "
+  // FIXME: turn semicolons in blurb into commas once texitheque got fixed
+  Info   blurb           = "A note description provides all necessary details about a specific note. "
                            "Various procedures exist to retrieve a note description; given different "
                            "key values. The max_fine_tune and kammer_note fields are constants; which "
                            "are provided for compatibility reasons and will vanish in future APIs.";
@@ -498,7 +498,7 @@ record NoteSequence
 
 record Icon
 {
-  Info   BLURB           = "BSE icon representation.";
+  Info   blurb           = "BSE icon representation.";
   Int    bytes_per_pixel = ("Bytes Per Pixel", "Bytes Per Pixel (3:RGB, 4:RGBA, 0:NONE)", 4, 3, 4, 1, ":readwrite");
   Int    width           = ("Width", "Width in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");
   Int    height          = ("Height", "Height in pixels or 0 for no icon", 0, 0, MAXINT, 1, ":readwrite");

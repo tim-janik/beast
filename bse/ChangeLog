@@ -1,3 +1,7 @@
+Mon Dec 13 15:31:37 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseprocidl.cc bsecore.idl: Info strings should be lower case.
+
 Sun Dec 12 19:47:32 2004  Tim Janik  <timj@gtk.org>
 
 	* removed gslwave.header and gslloader-gslwave.c, build from

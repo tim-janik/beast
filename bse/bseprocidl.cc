@@ -269,7 +269,7 @@ void printMethods (const std::string& iface)
 	    {
 	      char *ehelp = g_strescape (blurb, 0);
 	      printIndent ();
-	      print ("Info HELP = \"%s\";\n", ehelp);
+	      print ("Info help = \"%s\";\n", ehelp);
 	      g_free (ehelp);
 	    }
           
