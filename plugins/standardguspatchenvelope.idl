@@ -24,6 +24,7 @@ namespace Standard {
 
 class GusPatchEnvelope : Effect {
   // Info    icon        = "icons/noise.png";
+  Info    options     = "unstable";
   Info    authors     = "Stefan Westerfeld";
   Info    license     = _("GNU Lesser General Public License");
   Info    category    = _("/Misc/StandardGusPatchEnvelope");
