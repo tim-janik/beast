@@ -121,6 +121,12 @@ TODO:
 - pattern editor: transpose script (up and down by semitone, so that we can use an accelerator)
 - pattern editor: background colors should be different (darker) every 4 and every 16 steps (maybe
   depending on measure)
+- pattern editor: selection, cut, copy, paste
+- pattern editor: marker for play position
+- pattern editor: play notes when inserted (also a piano roll TODO item); should be optional
+- pattern editor: channel based muting
+- pattern editor: allow combining multiple pattern editors (i.e. editing multiple parts which are
+  played synchronously) spawned across multiple tracks
 - let bst_key_combo_popup() display currently pressed modifiers
 - let bst_key_combo_popup() tell the user to press a mouse button to abort
 - pattern editor: render letters with pango into offscreen pixmaps, draw text by copying offscreen pixmaps (but skinning?)
