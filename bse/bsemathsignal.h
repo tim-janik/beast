@@ -73,6 +73,14 @@ extern "C" {
 static inline float	gsl_signal_exp2 (float x);
 
 
+/* --- windows --- */
+double	gsl_window_bartlett	(double x);	/* narrowest */
+double	gsl_window_blackman	(double x);
+double	gsl_window_cos		(double x);
+double	gsl_window_hamming	(double x);
+double	gsl_window_sinc		(double x);
+double	gsl_window_rectangle	(double x);	/* widest */
+
 
 /* --- implementation details --- */
 static inline float

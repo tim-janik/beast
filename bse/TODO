@@ -8,6 +8,8 @@ Problems:
 - _SL functions have to be revisited and thoroughly implemented
 - track_step_SL() needs bpm_tick => stamp_tick translation
 - multi-channel/note/instantiation???
+- fix context creation recursion in subsynth
+- fix snet propety changes in sub synth and instrument
 
 NEW:
 - get rid of parasites by means of using data pocket

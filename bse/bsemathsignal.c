@@ -19,6 +19,64 @@
 #include "gslsignal.h"
 
 
+/* --- windows --- */
+double
+gsl_window_bartlett (double x)	/* triangle */
+{
+  if (fabs (x) > 1)
+    return 0;
+
+  return 1.0 - fabs (x);
+}
+
+double
+gsl_window_blackman (double x)
+{
+  if (fabs (x) > 1)
+    return 0;
+
+  return 0.42 + 0.5 * cos (GSL_PI * x) + 0.08 * cos (2.0 * GSL_PI * x);
+}
+
+double
+gsl_window_cos (double x)	/* von Hann window */
+{
+  if (fabs (x) > 1)
+    return 0;
+
+  return 0.5 * cos (x * GSL_PI) + 0.5;
+}
+
+double
+gsl_window_hamming (double x)	/* sharp (rectangle) cutoffs at boundaries */
+{
+  if (fabs (x) > 1)
+    return 0;
+
+  return 0.54 + 0.46 * cos (GSL_PI * x);
+}
+
+double
+gsl_window_sinc (double x)	/* noramlied C. Lanczos window */
+{
+  if (fabs (x) > 1)
+    return 0;
+  x = x * GSL_PI;
+  if (fabs (x) < 1e-12)
+    return 1.0;
+  else
+    return sin (x) / x;
+}
+
+double
+gsl_window_rectangle (double x)	/* a square */
+{
+  if (fabs (x) > 1)
+    return 0;
+  return 1.0;
+}
+
+
 /* --- exp2f() approximation taylor coefficients finder --- */
 #if 0
 #include <stdio.h>

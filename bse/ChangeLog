@@ -1,3 +1,11 @@
+Mon Apr  8 14:04:30 2002  Tim Janik  <timj@gtk.org>
+
+	* gsldefs.h: define if_expect() and if_reject() if GSL_EXTENSIONS
+	is defined, to make these usable in third-party code.
+
+	* gslsignal.[hc]: added windowing functions to implement the
+	windows: blackman, cos, bartlett, hamming, sinc and rectangle.
+
 Fri Apr  5 07:42:16 2002  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle-mad.c: disable file contents if !GSL_HAVE_LIBMAD.
