@@ -20,6 +20,8 @@
 
 #include <bse/gslengine.h>
 
+#include <string.h>
+
 #define	BSE_DFL_MIXER_VOLUME_dB	(BSE_DFL_MASTER_VOLUME_dB)
 
 /* --- parameters --- */

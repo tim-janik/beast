@@ -21,6 +21,7 @@
 #include <bse/gslengine.h>
 #include <bse/gslfilter.h>
 
+#include <string.h>
 
 /* include generated enums
  */

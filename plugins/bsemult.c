@@ -20,6 +20,7 @@
 
 #include <bse/gslengine.h>
 
+#include <string.h>
 
 /* --- prototypes --- */
 static void	 bse_mult_init			(BseMult	*mult);

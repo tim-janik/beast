@@ -1,3 +1,8 @@
+Tue Feb 18 17:51:11 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseadder.c bseiirfilter.c bsemixer.c bsemult.c davxtalstrings.c:
+	fixes to build without warnings on gcc-3.2.
+
 Mon Dec 30 00:46:59 2002  Tim Janik  <timj@gtk.org>
 
 	* *.c: cleaned up old compat code.

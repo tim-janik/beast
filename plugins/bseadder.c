@@ -20,6 +20,8 @@
 
 #include <bse/gslengine.h>
 
+#include <string.h>
+
 
 /* --- parameters --- */
 enum

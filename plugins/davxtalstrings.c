@@ -35,6 +35,7 @@
 #include <bse/gslengine.h>
 #include <bse/gslsignal.h>
 
+#include <string.h>
 
 /* --- parameters --- */
 enum
