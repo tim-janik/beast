@@ -284,7 +284,6 @@ Effects:
 sfidl:
   - support records and sequences in bse-plugin-generator and bseprocidl
   - reenable signals in bseprocidl
-  - add dump-include-path option to bse-plugin-generator
   fixes:
   - support N/A choice values, currently hardcoded for BseErrorType
   - syntax for neutral values in choices
@@ -303,13 +302,6 @@ sfidl:
       foo-bar, foo_bar, fooBar, FOO_BAR, FooBar
   C language binding:
     - review ParamSpec/Record primitive types
-    - new enum syntax for value; nick
-      YES,
-      YES = 1,
-      YES = "Yes",
-      YES = (1, "Yes"),
-      YES = Neutral,
-      YES = (Neutral, "Yes"),
   Qt language binding:
     - everything
 
