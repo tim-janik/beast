@@ -3,7 +3,7 @@
 @settitle BSE Plugin Development
 @footnotestyle end
 @c %**end of header
-@c revision-date: $Id: plugin-devel.doxi,v 1.7 2004/10/30 14:28:36 timj Exp $
+@c revision-date: $Id: plugin-devel.doxi,v 1.8 2004/12/19 13:03:17 timj Exp $
 
 @include texiutils.texi
 
@@ -198,7 +198,7 @@ and @option{:skip-undo:}.
         Percentage property, the minimum and maximum are fixed 0 and 100 respectively, and additional options
         are provided for GUIs to recognize percentage properties as such.
 @item @strong{@func{DBVolume}  (@var{label}, @var{description}, @var{default_db}, @var{minimum_db}, @var{maximum_db}, @var{options})} @* 
-	A @type{DBVolume} property is used for real-valued properties with values >0 which are used as volume factors and
+	A @type{DBVolume} property is used for @type{Real}-valued properties with values >0 which are used as volume factors and
 	should be displayed and editable as values in decibel.
 	The @var{default_db}, @var{minimum_db} and @var{maximum_db} parameters are converted into linear volume factors
 	before being interpreted as property default and limits. For example, a @code{DBVolume(``'', ``'', 0, -6, +6, STANDARD)}
@@ -207,10 +207,13 @@ and @option{:skip-undo:}.
 	A @type{Balance} property is similar to a normal @type{Real} property, but has a fixed
 	minimum and maximum of -100 and +100 and defaults to 0.
 @item @strong{@func{Gain}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options})} @*
-@item @strong{@func{Frequency} (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{options})} @*
-        A real property with linear scale, setup with a @var{stepping} of 10.
 @item @strong{@func{Freq}      (@var{label}, @var{description}, @var{default}, @var{options})} @*
-        A real property with logarithmic scale, centered around A+2.
+        A @type{Real} property with logarithmic scale centered around A+2.
+	The actual range of this property in Hertz goes from 0.00005=1/20000Hz to 20000Hz.
+@item @strong{@func{Frequency} (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{options})} @*
+        A @type{Real} property with logarithmic scale centered around A+2, setup with a @var{stepping} of 10.
+        In order for the logarithmic scale to fit the parameter ranges, the @var{minimum} frequency 
+        must be smaller than 51.9Hz (corresponds to As-1) and the @var{maximum} frequency must be larger than 15053Hz (corresponds to Ais+6).
 @item @strong{@func{LogScale}  (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{center}, @var{base}, @var{n_steps}, @var{options})} @*
         Properties of this type can be displayed by using a logarithmic scale.
         The arguments @var{base} and @var{n_steps} determine the logarithmic scale which starts
