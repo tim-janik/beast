@@ -20,6 +20,8 @@
 #include "bsepcmdevice.h"
 
 
+#define	DEBUG	sfi_debug_keyfunc ("pcmmodule")
+
 
 /* --- typedefs & structures --- */
 typedef struct
@@ -86,7 +88,8 @@ bse_pcm_module_poll (gpointer       data,
   BsePcmHandle *handle = mdata->handle;
   BsePcmStatus status;
   guint fillmark, watermark;
-  
+  static gint debug_hint = 0;
+
   /* get playback status */
   bse_pcm_handle_status (mdata->handle, &status);
   
@@ -94,12 +97,25 @@ bse_pcm_module_poll (gpointer       data,
   watermark = MIN (watermark, handle->playback_watermark);
   fillmark = status.total_playback_values - status.n_playback_values_available;
   if (fillmark <= watermark)
-    return TRUE;	/* need to write out stuff now */
+    {
+      if (!debug_hint++)
+	{
+	  gfloat perc = status.n_playback_values_available * 100. / status.total_playback_values;
+	  DEBUG ("free=%f%% latency=%f %s", perc,
+		 handle->playback_watermark / (gfloat) handle->n_channels / handle->mix_freq,
+		 perc >= 97.0 ? "**" : "");
+	}
+      return TRUE;	/* need to write out stuff now */
+    }
   
   fillmark -= watermark;
   fillmark /= handle->n_channels;
   *timeout_p = fillmark * 1000.0 / mdata->handle->mix_freq;
-  
+
+  DEBUG ("free=%f%% latency=%f", status.n_playback_values_available * 100. / status.total_playback_values,
+	 handle->playback_watermark / (gfloat) handle->n_channels / handle->mix_freq);
+  debug_hint = 0;
+
   return *timeout_p == 0;
 #endif
 }

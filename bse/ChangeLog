@@ -1,3 +1,10 @@
+Mon Mar 17 07:06:43 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice.[hc]: derive from BseItem, so device can later be valid
+	BseServer children and be exported through the middleware.
+
+	* gslwaveosc.c: turn debugging prints into DEBUG() calls.
+
 Thu Mar 13 21:30:14 2003  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am (gslincludedir): install gsl headers under bse/.

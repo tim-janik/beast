@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ BSE_BUILTIN_TYPE (BsePcmDevice)
   
   g_assert (BSE_PCM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   
-  return bse_type_register_static (BSE_TYPE_OBJECT,
+  return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BsePcmDevice",
 				   "PCM device base type",
 				   &pcm_device_info);

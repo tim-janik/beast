@@ -17,12 +17,12 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gslwaveosc.h"
-
 #include "gslfilter.h"
 #include "gslsignal.h"
 #include "gslengine.h"	/* for gsl_engine_sample_freq() */
-
 #include <string.h>
+
+#define DEBUG   sfi_debug_keyfunc ("waveosc")
 
 #define FRAC_SHIFT		(16)
 #define FRAC_MASK		((1 << FRAC_SHIFT) - 1)
@@ -216,10 +216,10 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
     {
       guint i;
 
-      g_printerr ("clearing filter state at:\n");
+      DEBUG ("clearing filter state at:\n");
       for (i = 0; i < GSL_WAVE_OSC_FILTER_ORDER; i++)
 	{
-	  g_printerr ("%u) %+.38f\n", i, wosc->y[i]);
+	  DEBUG ("%u) %+.38f\n", i, wosc->y[i]);
 	  if (GSL_DOUBLE_IS_INF (wosc->y[0]) || fabs (wosc->y[0]) > GSL_SIGNAL_KAPPA)
 	    wosc->y[i] = GSL_DOUBLE_SIGN (wosc->y[0]) ? -1.0 : 1.0;
 	  else
@@ -278,7 +278,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 	  wosc->b[GSL_WAVE_OSC_FILTER_ORDER - i] = wosc->b[i];
 	  wosc->b[i] = t;
 	}
-      g_printerr ("WaveOsc-filter: fc=%f fr=%f st=%f is=%u\n", freq_c/GSL_PI*2, freq_r/GSL_PI*2, step, wosc->istep);
+      DEBUG ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/GSL_PI*2, freq_r/GSL_PI*2, step, wosc->istep);
     }
 
   if (clear_state)
@@ -334,8 +334,8 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
   wosc->x = wosc->block.start;
 
-  g_printerr ("wave lookup: want=%f got=%f length=%lu\n",
-	      base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
+  DEBUG ("wave lookup: want=%f got=%f length=%lu\n",
+	 base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
 
   wosc->last_freq_level = GSL_SIGNAL_FROM_FREQ (base_freq);
   wosc->last_mod_level = 0;

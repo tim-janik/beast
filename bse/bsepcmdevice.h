@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 #ifndef __BSE_PCM_DEVICE_H__
 #define __BSE_PCM_DEVICE_H__
 
-#include <bse/bseobject.h>
+#include <bse/bseitem.h>
 #include <bse/gsldefs.h>
 
 
@@ -66,11 +66,11 @@ typedef enum	/*< skip >*/
 } BsePcmChannelMode;
 typedef enum	/*< skip >*/
 {
-  BSE_PCM_FLAG_OPEN	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
-  BSE_PCM_FLAG_READABLE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
-  BSE_PCM_FLAG_WRITABLE	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
+  BSE_PCM_FLAG_OPEN	= 1 << (BSE_ITEM_FLAGS_USHIFT + 0),
+  BSE_PCM_FLAG_READABLE	= 1 << (BSE_ITEM_FLAGS_USHIFT + 1),
+  BSE_PCM_FLAG_WRITABLE	= 1 << (BSE_ITEM_FLAGS_USHIFT + 2)
 } BsePcmFlags;
-#define	BSE_PCM_FLAGS_USHIFT	(BSE_OBJECT_FLAGS_USHIFT + 3)
+#define	BSE_PCM_FLAGS_USHIFT	(BSE_ITEM_FLAGS_USHIFT + 3)
 
 
 /* --- BsePcmDevice structs --- */
@@ -104,7 +104,7 @@ struct _BsePcmHandle
 };
 struct _BsePcmDevice
 {
-  BseObject		parent_object;
+  BseItem		parent_instance;
 
   /* requested caps */
   BsePcmFreqMode	req_freq_mode;
@@ -115,7 +115,7 @@ struct _BsePcmDevice
 };
 struct _BsePcmDeviceClass
 {
-  BseObjectClass	parent_class;
+  BseItemClass		parent_class;
 
   guint			driver_rating;
   BseErrorType	(*open)		(BsePcmDevice	*pdev);
