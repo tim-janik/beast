@@ -483,7 +483,7 @@ bse_mixer_calc_chunk (BseSource *source,
 
   /* clip the mix buffer to output hunk */
   hunk = bse_hunk_alloc (1);
-  bse_hunk_clip_mix_buffer (1, hunk, mixer->volume_factor[0], mixer->mix_buffer);
+  bse_hunk_clip_from_mix_buffer (1, hunk, mixer->volume_factor[0], mixer->mix_buffer);
 
   return bse_chunk_new_orphan (1, hunk);
 }

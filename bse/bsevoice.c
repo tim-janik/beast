@@ -34,8 +34,10 @@ bse_voice_meminit (BseVoice          *voice,
   voice->next = NULL;
 
   voice->input_type = BSE_VOICE_INPUT_NONE;
-  voice->fading = FALSE;
   voice->make_poly = FALSE;
+
+  voice->fader_pending = FALSE;
+  voice->is_fading = FALSE;
   
   voice->volume_factor = 1;
   voice->balance = 0;
@@ -45,18 +47,13 @@ bse_voice_meminit (BseVoice          *voice,
   
   voice->note = BSE_KAMMER_NOTE;
   
-  voice->n_tracks = 0;
-
   voice->env_part = BSE_ENVELOPE_PART_DONE;
   voice->env_steps_to_go = 0;
   voice->env_vol_delta = 0;
   voice->env_volume_factor = 1.0;
   
-  voice->left_volume = 0;
-  voice->right_volume = 0;
-
-  voice->left_volume_delta = 0;
-  voice->right_volume_delta = 0;
+  memset (&voice->volume, 0, sizeof (voice->volume));
+  memset (&voice->source, 0, sizeof (voice->source));
 
   memset (&voice->input, 0, sizeof (voice->input));
 }
@@ -92,8 +89,6 @@ bse_voice_reset (BseVoice *voice)
 					 NULL);
 	  bse_object_unlock (BSE_OBJECT (voice->input.synth.sinstrument));
 	}
-      break;
-    case BSE_VOICE_INPUT_FADE_RAMP:
       break;
     default:
       g_assert_not_reached ();
@@ -251,8 +246,9 @@ bse_voice_activate (BseVoice      *voice,
 
   /* set instrument
    */
-  voice->fading = FALSE;
   voice->make_poly = FALSE;
+  voice->fader_pending = FALSE;
+  voice->is_fading = FALSE;
   voice->volume_factor = instrument->volume_factor;
   voice->balance = instrument->balance;
   voice->transpose = instrument->transpose;
@@ -269,22 +265,33 @@ bse_voice_activate (BseVoice      *voice,
       voice->input_type = BSE_VOICE_INPUT_SAMPLE;
       voice->make_poly = instrument->polyphony;
       /* set and lock sample */
-      voice->n_tracks = sample->n_tracks;
-      voice->input.sample.freq_factor = ((gfloat) sample->rec_freq) / BSE_MIX_FREQ_f;
       voice->input.sample.sample = sample;
       bse_object_lock (BSE_OBJECT (voice->input.sample.sample));
+      voice->input.sample.freq_factor = ((gfloat) sample->rec_freq) / BSE_MIX_FREQ_f;
+      voice->input.sample.rate.interpolation = instrument->interpolation;
+      voice->source.n_tracks = sample->n_tracks;
+      voice->source.loop_count = 0;
+      voice->source.loop_start = NULL;
+      voice->source.loop_bound = NULL;
+      voice->source.run_limit = FALSE;
+      voice->source.max_run_values = 0;
       break;
     case BSE_INSTRUMENT_SYNTH:
       sinstrument = BSE_SINSTRUMENT (instrument->input);
       g_return_if_fail (BSE_SOURCE_N_OCHANNELS (sinstrument) >= BSE_DFL_OCHANNEL_ID);
+      g_assert (BSE_SOURCE_OCHANNEL_DEF (sinstrument, BSE_DFL_OCHANNEL_ID)->n_tracks <= 2);
       voice->input_type = BSE_VOICE_INPUT_SYNTH;
-      voice->n_tracks = BSE_SOURCE_OCHANNEL_DEF (sinstrument, BSE_DFL_OCHANNEL_ID)->n_tracks;
-      voice->input.synth.last_index = 0;
       voice->input.synth.sinstrument = sinstrument;
+      bse_object_lock (BSE_OBJECT (voice->input.synth.sinstrument));
       bse_sinstrument_poke_foreigns (voice->input.synth.sinstrument,
 				     voice->input.synth.sinstrument->instrument,
 				     voice);
-      bse_object_lock (BSE_OBJECT (voice->input.synth.sinstrument));
+      voice->source.n_tracks = BSE_SOURCE_OCHANNEL_DEF (sinstrument, BSE_DFL_OCHANNEL_ID)->n_tracks;
+      voice->source.loop_count = 0;
+      voice->source.loop_start = NULL;
+      voice->source.loop_bound = NULL;
+      voice->source.run_limit = FALSE;
+      voice->source.max_run_values = 0;
       break;
     default:
       g_assert_not_reached ();
@@ -292,6 +299,7 @@ bse_voice_activate (BseVoice      *voice,
     }
 
   bse_voice_set_note (voice, note, fine_tune);
+  bse_voice_set_envelope_part (voice, BSE_ENVELOPE_PART_DELAY);
 }
 
 void
@@ -303,7 +311,7 @@ bse_voice_set_note (BseVoice *voice,
   g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
 
   /* don't screw the fading process */
-  if (voice->fading)
+  if (voice->is_fading)
     return;
 
   switch (voice->input_type)
@@ -323,9 +331,11 @@ bse_voice_set_note (BseVoice *voice,
 	  voice->input.sample.bin_data = munk->bin_data;
 	  bse_object_lock (BSE_OBJECT (voice->input.sample.bin_data));
 
-	  voice->input.sample.cur_pos = (BseSampleValue*) munk->bin_data->values;
-	  voice->input.sample.bound = voice->input.sample.cur_pos + munk->bin_data->n_values;
-	  voice->input.sample.pos_frac = 0;
+	  voice->source.cur_pos = (BseSampleValue*) munk->bin_data->values;
+	  voice->source.bound = voice->source.cur_pos + munk->bin_data->n_values;
+	  voice->input.sample.rate.frac = 0;
+	  voice->input.sample.rate.step = 0;
+	  voice->input.sample.rate.delta = 0;
 	}
       /* calc new sample rate according to note */
       voice->note = note;
@@ -352,7 +362,7 @@ bse_voice_set_fine_tune (BseVoice *voice,
   g_return_if_fail (voice != NULL);
 
   /* don't screw the fading process */
-  if (voice->fading)
+  if (voice->is_fading)
     return;
 
   fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
@@ -361,7 +371,7 @@ bse_voice_set_fine_tune (BseVoice *voice,
   switch (voice->input_type)
     {
     case BSE_VOICE_INPUT_SAMPLE:	/* adjust sample rate to a new fine_tune */
-      voice->input.sample.rate = 0.5 + BSE_FINE_TUNE_FACTOR (voice->fine_tune) * voice->input.sample.base_rate;
+      voice->input.sample.rate.step = 0.5 + BSE_FINE_TUNE_FACTOR (voice->fine_tune) * voice->input.sample.base_rate;
       break;
     case BSE_VOICE_INPUT_SYNTH:		/* adjust playback freq to a new fine_tune */
       voice->input.synth.freq = BSE_FINE_TUNE_FACTOR (voice->fine_tune) * voice->input.synth.base_freq;
@@ -384,7 +394,7 @@ bse_voice_set_envelope_part (BseVoice           *voice,
   g_return_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE);
   
   /* don't screw the fading process */
-  if (voice->fading)
+  if (voice->is_fading)
     return;
 
   /* set envelope position to attack, decay, etc...
@@ -452,87 +462,73 @@ bse_voice_set_envelope_part (BseVoice           *voice,
 }
 
 void
-bse_voice_fade_out (BseVoice *voice)
+bse_voice_fade_out_until (BseVoice *voice,
+			  guint     n_values)
 {
-  guint time;
-  guint n_values;
-  
+  guint n_fade_values;
+
   g_return_if_fail (voice != NULL);
   g_return_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE);
-  g_return_if_fail (voice->fading == FALSE);
-  
-  voice->fading = TRUE;
-  
-  /* adjust time to a nominative volume factor of 1.0 */
-  time = MAX (voice->left_volume, voice->right_volume) * BSE_FADE_OUT_TIME_ms;
-  
-  /* number of buffer values we need to fade */
-  n_values = BSE_MIX_FREQ_f * time / 1000.0;
-  
-  /* stop playing after fading is done */
-  switch (voice->input_type)
-    {
-      BseSInstrument *sinstrument;
-      guint n_sample_values;
-      
-    case BSE_VOICE_INPUT_SAMPLE:
-      n_sample_values = voice->input.sample.pos_frac + voice->input.sample.rate * n_values;
-      n_sample_values >>= 16;
-      voice->input.sample.bound = MIN (voice->input.sample.bound,
-				       voice->input.sample.cur_pos + n_sample_values * voice->n_tracks);
-      break;
-    case BSE_VOICE_INPUT_SYNTH:
-      sinstrument = voice->input.synth.sinstrument;
-      bse_sinstrument_poke_foreigns (voice->input.synth.sinstrument,
-				     voice->input.synth.sinstrument->instrument,
-				     NULL);
-      voice->input.synth.sinstrument = NULL;
-      if (voice->input.synth.last_index)
-	{
-	  BseChunk *chunk = bse_source_ref_chunk (BSE_SOURCE (sinstrument),
-						  BSE_DFL_OCHANNEL_ID,
-						  voice->input.synth.last_index);
-	  BseSampleValue *hunk = bse_chunk_complete_hunk (chunk);
+  g_return_if_fail (n_values > 0);
 
-	  g_assert (voice->n_tracks == 2);
+  /* don't screw the fading process */
+  if (voice->is_fading)
+    return;
+  g_return_if_fail (voice->source.run_limit == FALSE);
 
-	  g_print ("fade_vals: %p: %+6d*%f %+6d*%f ",
-		   hunk,
-		   hunk[(BSE_TRACK_LENGTH - 1) * chunk->n_tracks], voice->left_volume,
-		   hunk[(BSE_TRACK_LENGTH - 1) * chunk->n_tracks + 1], voice->right_volume);
-	  voice->left_volume *= hunk[(BSE_TRACK_LENGTH - 1) * chunk->n_tracks];
-	  voice->right_volume *= hunk[(BSE_TRACK_LENGTH - 1) * chunk->n_tracks + 1];
-	  g_print ("%+6.0f %+6.0f\n",
-		   voice->left_volume,
-		   voice->right_volume);
-	  bse_chunk_unref (chunk);
-	  voice->input.fade_ramp.n_values_left = n_values;
-	}
-      else
-	voice->input.fade_ramp.n_values_left = 0;
-      voice->input_type = BSE_VOICE_INPUT_FADE_RAMP;
-      bse_object_unlock (BSE_OBJECT (sinstrument));
-      break;
-    default:
-      g_assert_not_reached ();
-      break;
-    }
-  
-  /* calculate volume adjustment */
-  if (n_values)
-    {
-      voice->left_volume_delta = - voice->left_volume / n_values;
-      voice->right_volume_delta = - voice->right_volume / n_values;
-      // printf ("deltas: %9f/%d=%9f %9f/%d=%9f\n", voice->left_volume, n_values, voice->left_volume_delta, voice->right_volume, n_values, voice->right_volume_delta);
-    }
-  else
-    {
-      voice->left_volume_delta = 0;
-      voice->right_volume_delta = 0;
-    }
+  n_fade_values = BSE_FADE_OUT_TIME_ms * BSE_MIX_FREQ_f / 1000.0;
+  voice->fader_pending = TRUE;
+  n_fade_values = MIN (n_values, n_fade_values);
+  voice->source.run_limit = TRUE;
+  voice->source.max_run_values = n_values - n_fade_values;
 }
 
-gboolean	/* return whether voice is still alive */
+void
+bse_voice_fade_out (BseVoice *voice)
+{
+  g_return_if_fail (voice != NULL);
+  g_return_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE);
+
+  /* don't screw the fading process */
+  if (voice->is_fading)
+    return;
+
+  voice->fader_pending = TRUE;
+  voice->source.run_limit = TRUE;
+  voice->source.max_run_values = 0;
+  bse_voice_need_after_fade (voice);
+}
+
+gboolean /* return whether voice needs fading (always alive) */
+bse_voice_need_after_fade (BseVoice *voice)
+{
+  g_return_val_if_fail (voice != NULL, FALSE);
+  g_return_val_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE, FALSE);
+
+  if (voice->fader_pending && !voice->is_fading && !BSE_MIX_SOURCE_ACTIVE (&voice->source))
+    {
+      guint n_fade_values;
+
+      voice->is_fading  = TRUE;
+      n_fade_values = BSE_FADE_OUT_TIME_ms * BSE_MIX_FREQ_f / 1000.0;
+      voice->source.run_limit = TRUE;
+      voice->source.max_run_values = MIN (n_fade_values,
+					  MAX (voice->volume.left, voice->volume.right) * n_fade_values);
+
+      /* calculate volume deltas for fade ramp */
+      if (voice->source.max_run_values)
+	{
+	  voice->volume.left_delta = - voice->volume.left / voice->source.max_run_values;
+	  voice->volume.right_delta = - voice->volume.right / voice->source.max_run_values;
+
+	  return BSE_MIX_SOURCE_ACTIVE (&voice->source);
+	}
+    }
+
+  return FALSE;
+}
+
+gboolean /* return whether voice is still alive */
 bse_voice_preprocess (BseVoice *voice)
 {
   gfloat l_volume, r_volume;
@@ -541,24 +537,15 @@ bse_voice_preprocess (BseVoice *voice)
   g_return_val_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE, FALSE);
 
   /* check whether we are done playing the voice or are currently fading */
-  if (voice->input_type == BSE_VOICE_INPUT_SAMPLE &&
-      voice->input.sample.cur_pos >= voice->input.sample.bound)
+  if (!BSE_MIX_SOURCE_ACTIVE (&voice->source))
     {
       bse_voice_reset (voice);
       return FALSE;
     }
-  if (voice->fading)
-    {
-      if (voice->input_type == BSE_VOICE_INPUT_FADE_RAMP &&
-	  voice->input.fade_ramp.n_values_left <= 0)
-	{
-	  bse_voice_reset (voice);
-	  return FALSE;
-	}
 
-      /* don't screw the fading process */
-      return TRUE;
-    }
+  /* don't screw the fading process */
+  if (voice->is_fading)
+    return TRUE;
 
   /* stereo position */
   if (voice->balance < 0)
@@ -576,37 +563,29 @@ bse_voice_preprocess (BseVoice *voice)
   l_volume *= voice->env_volume_factor;
   r_volume *= voice->env_volume_factor;
 
-  voice->left_volume = l_volume;
-  voice->right_volume = r_volume;
+  voice->volume.left = l_volume;
+  voice->volume.right = r_volume;
 
   return TRUE;
 }
 
-gboolean	/* return whether voice is still alive */
+gboolean /* return whether voice is still alive */
 bse_voice_postprocess (BseVoice *voice)
 {
   g_return_val_if_fail (voice != NULL, FALSE);
   g_return_val_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE, FALSE);
 
   /* check whether we are done playing the voice or are currently fading */
-  if (voice->input_type == BSE_VOICE_INPUT_SAMPLE &&
-      voice->input.sample.cur_pos >= voice->input.sample.bound)
+  if (!BSE_MIX_SOURCE_ACTIVE (&voice->source) &&
+      !bse_voice_need_after_fade (voice))
     {
       bse_voice_reset (voice);
       return FALSE;
     }
-  if (voice->fading)
-    {
-      if (voice->input_type == BSE_VOICE_INPUT_FADE_RAMP &&
-	  voice->input.fade_ramp.n_values_left <= 0)
-	{
-	  bse_voice_reset (voice);
-	  return FALSE;
-	}
 
-      /* don't screw the fading process */
-      return TRUE;
-    }
+  /* don't screw the fading process */
+  if (voice->is_fading)
+    return TRUE;
 
   /* step envelope
    */

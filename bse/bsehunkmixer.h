@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  *
- * bsemixer.h: BSE chunk mixing functions
+ * bsehunkmixer.h: BSE chunk mixing functions
  */
 #ifndef __BSE_HUNK_MIXER_H__
 #define __BSE_HUNK_MIXER_H__
@@ -41,14 +41,10 @@ void	bse_hunk_mix			(guint                 n_dest_tracks,
 void	bse_hunk_fill			(guint		       n_tracks,
 					 BseSampleValue	      *hunk,
 					 BseSampleValue	       value);
-void	bse_hunk_clip_mix_buffer	(guint		       n_tracks,
-					 BseSampleValue	      *dest_hunk,
+void	bse_hunk_clip_from_mix_buffer	(guint                 n_tracks,
+					 BseSampleValue       *dest_hunk,
 					 gfloat                master_volume,
-					 BseMixValue	      *src_mix_buffer);
-void	bse_mix_buffer_fill		(guint		       n_tracks,
-					 BseMixValue	      *mix_buffer,
-					 BseSampleValue	       value);
-
+					 BseMixValue          *src_mix_buffer);
 
 
 /* --- implementation details --- */

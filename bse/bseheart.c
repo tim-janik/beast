@@ -763,7 +763,7 @@ bse_heart_mix_chunks (BseHeart *heart,
   g_slist_free (chunk_list);
 
   chunk = bse_chunk_new (n_tracks);
-  bse_hunk_clip_mix_buffer (n_tracks, chunk->hunk, 1.0, mix_buffer);
+  bse_hunk_clip_from_mix_buffer (n_tracks, chunk->hunk, 1.0, mix_buffer);
   chunk->hunk_filled = TRUE;
 
   return chunk;

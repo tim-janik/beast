@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 1998, 1999, 2000 Olaf Hoehmann and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -264,7 +264,7 @@ bse_hunk_fill (guint	       n_tracks,
 	       BseSampleValue *hunk,
 	       BseSampleValue  value)
 {
-  g_return_if_fail (n_tracks >= 1 && n_tracks <= MAX_N_MIX_TRACKS);
+  g_return_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS);
   g_return_if_fail (hunk != NULL);
 
   if (value >> 8 == (value & 0xff))
@@ -280,34 +280,14 @@ bse_hunk_fill (guint	       n_tracks,
 }
 
 void
-bse_mix_buffer_fill (guint          n_tracks,
-		     BseMixValue   *mix_buffer,
-		     BseSampleValue value)
-{
-  g_return_if_fail (n_tracks >= 1 && n_tracks <= MAX_N_MIX_TRACKS);
-  g_return_if_fail (mix_buffer != NULL);
-
-  if (value == 0)
-    memset (mix_buffer, value, n_tracks * BSE_TRACK_LENGTH * sizeof (BseMixValue));
-  else
-    {
-      BseMixValue *bound = mix_buffer + n_tracks * BSE_TRACK_LENGTH;
-
-      do
-	*(mix_buffer++) = value;
-      while (mix_buffer < bound);
-    }
-}
-
-void
-bse_hunk_clip_mix_buffer (guint           n_tracks,
-			  BseSampleValue *dest_hunk,
-			  gfloat          master_volume,
-			  BseMixValue    *src_mix_buffer)
+bse_hunk_clip_from_mix_buffer (guint           n_tracks,
+			       BseSampleValue *dest_hunk,
+			       gfloat          master_volume,
+			       BseMixValue    *src_mix_buffer)
 {
   BseMixValue *bound;
   
-  g_return_if_fail (n_tracks >= 1 && n_tracks <= MAX_N_MIX_TRACKS);
+  g_return_if_fail (n_tracks >= 1 && n_tracks <= BSE_MAX_N_TRACKS);
   g_return_if_fail (dest_hunk != NULL);
   g_return_if_fail (src_mix_buffer != NULL);
 

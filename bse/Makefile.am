@@ -49,6 +49,7 @@ bse_builtin_c_sources = @STRIP_BEGIN@ \
 bse_public_h_sources = @STRIP_BEGIN@ \
 	bse.h \
 	bsebindata.h \
+	bsebuffermixer.h \
 	bsecapture.h \
 	bsecategories.h \
 	bsechunk.h \
@@ -101,6 +102,7 @@ bse_private_h_sources = @STRIP_BEGIN@ \
 # BSE C sources to build the library from
 bse_c_sources = @STRIP_BEGIN@ \
 	bsebindata.c \
+	bsebuffermixer.c \
 	bsecapture.c \
 	bsecategories.c \
 	bsechunk.c \
@@ -124,7 +126,6 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseobject.c \
 	bseparam.c \
 	bseparasite.c \
-	bseparamcol.c \
 	bsepattern.c \
 	bsepcmdevice.c \
 	bsepcmdevice-oss.c \
@@ -163,6 +164,7 @@ bse_built_sources = @STRIP_BEGIN@ \
 	bsebuiltin_array.c \
 	bsegentypes.c \
 	bsegentype_array.c \
+	bsebuffermixer_gen.c \
 @STRIP_END@
 # built sources that get installed with the header files
 bse_built_public_sources = @STRIP_BEGIN@ \
@@ -176,7 +178,8 @@ bse_extra_sources = @STRIP_BEGIN@ \
 	mkenums.pl \
 	mktypes.pl \
 	bseconfig.h.in \
-	bsesongmixer.c \
+	bseparamcol.c \
+	bsebuffermixercore.c \
 @STRIP_END@
 
 #
@@ -194,7 +197,7 @@ EXTRA_DIST += $(bse_built_sources) $(bse_built_public_sources) $(bse_extra_sourc
 # rules to generate built sources
 #
 # setup autogeneration dependancies
-gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac xgen-bnac
+gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac xgen-bnac xgen-bmc
 CLEANFILES += $(gen_sources)
 COPYING: $(bse_built_public_sources) $(bse_built_sources)
 $(OBJECTS): COPYING # this is our oldest-source-stamp
@@ -271,6 +274,21 @@ bsenotifier_array.c: bsedefs.h
 	&& echo "/* Generated data ends here */" >> xgen-bnac \
 	&& cp xgen-bnac $@ \
 	&& rm -f xgen-bnac
+bsebuffermixer_gen.c: @MISSING_PERL5@ bsebuffermixer.c $(srcdir)/mkcalls.pl bsebuffermixercore.c
+	cd $(srcdir) \
+	&& $(PERL) $(srcdir)//mkcalls.pl \
+	  --magic MAKE_MIXER_CALLS_FOR \
+	  --prod1 "#define MIXER_FUNCTION_ID \t buffer_mixer_function__@n@\n" \
+	  --prod1 "#define MIXER_FLAGS \t (@value@)\n" \
+	  --prod1 "#include \"bsebuffermixercore.c\"" \
+	  --head2 "\nstatic BufferMixerFunc\n" \
+	  --head2 "fetch_buffer_mixer_function (guint flags)\n" \
+	  --head2 "{\n  switch (flags)\n    {" \
+	  --prod2 "    case (@value@): \t return buffer_mixer_function__@n@;" \
+	  --tail2 "    default: \t return NULL;\n    }\n}" \
+	    bsebuffermixer.c > xgen-bmc \
+	&& cp xgen-bmc $@ \
+	&& rm -f xgen-bmc
 
 #
 # convenience targets for the builtsources

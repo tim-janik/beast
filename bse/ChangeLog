@@ -1,3 +1,23 @@
+Tue Feb 22 04:58:22 2000  Tim Janik  <timj@gtk.org>
+
+	* bsebuffermixer.[hc]: new files, containing abstracted and optimized 
+	BseMixValue buffer mixing functions, based on the former song mixing
+	core.
+	* bsebuffermixercore.c: actuall mixer function implementation, compiled
+	multiple times with different optimization setups.
+
+	* bsehunkmixer.[hc]: removed BseMixValue related mixing functions,
+	s/bse_hunk_clip_mix_buffer()/bse_hunk_clip_from_mix_buffer()/.
+
+	* bsesongsequencer.c: moved a bunch of the former bsesongmixer.c
+	fucntions here, cleaned code up a bit by using bse_mix_buffer_*()
+	functions.
+	temporarily disabled synth instruments.
+
+	* bsevoice.[hc]: major cleanups and rewrites, use BseMix* type
+	structures for certain value sets. some preparation for note effect
+	support.
+
 Wed Feb  9 12:58:48 2000  Tim Janik  <timj@gtk.org>
 
 	* bseparam.[hc]: major parameter cleanups, scratched the param_group,

@@ -19,6 +19,7 @@
 #ifndef __BSE_VOICE_H__
 #define __BSE_VOICE_H__
 
+#include        <bse/bsebuffermixer.h>
 #include        <bse/bseinstrument.h>
 #include        <bse/bsesinstrument.h>
 #include        <bse/bsesample.h>
@@ -30,18 +31,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
-
-/* --- internal enums --- */
-typedef enum			/*< skip >*/
-{
-  BSE_ENVELOPE_PART_DELAY,
-  BSE_ENVELOPE_PART_ATTACK,
-  BSE_ENVELOPE_PART_DECAY,
-  BSE_ENVELOPE_PART_SUSTAIN,
-  BSE_ENVELOPE_PART_RELEASE,
-  BSE_ENVELOPE_PART_DONE
-} BseEnvelopePartType;
 
 
 /* --- Voice allocator --- */
@@ -62,13 +51,23 @@ struct _BseVoiceAllocator
 };
 
 
-typedef enum
+/* --- enums --- */
+typedef enum			/*< skip >*/
 {
   BSE_VOICE_INPUT_NONE,
   BSE_VOICE_INPUT_SAMPLE,
-  BSE_VOICE_INPUT_SYNTH,
-  BSE_VOICE_INPUT_FADE_RAMP
+  BSE_VOICE_INPUT_SYNTH
 } BseVoiceType;
+typedef enum			/*< skip >*/
+{
+  BSE_ENVELOPE_PART_DELAY,
+  BSE_ENVELOPE_PART_ATTACK,
+  BSE_ENVELOPE_PART_DECAY,
+  BSE_ENVELOPE_PART_SUSTAIN,
+  BSE_ENVELOPE_PART_RELEASE,
+  BSE_ENVELOPE_PART_DONE
+} BseEnvelopePartType;
+
 
 /* --- BseVoice --- */
 struct _BseVoice
@@ -80,8 +79,11 @@ struct _BseVoice
 
   /* flags */
   BseVoiceType	  input_type : 8;
-  guint		  fading : 1;
   guint		  make_poly : 1;
+
+  /* fader setup */
+  guint		  fader_pending : 1;
+  guint		  is_fading : 1;
 
   /* from BseInstrument
    */
@@ -95,51 +97,38 @@ struct _BseVoice
    */
   gint		  note;
 
-  guint		  n_tracks;
-
   /* Envelope Generator */
   BseEnvelopePartType env_part;		 /* current part of envelope */
   guint		      env_steps_to_go;   /* # chunks this part lasts */
   gfloat	      env_vol_delta;	 /* volume delta per sequencer step */
   gfloat	      env_volume_factor; /* resulting envelope volume */
 
-  /* mixer fields, volume factors while playback and sample fading
-   * concrete sample values for fade ramps
+  /* mixer source
    */
-  gfloat	      left_volume;
-  gfloat	      right_volume;
+  BseMixSource source;
 
-  /* fader deltas */
-  gfloat	      left_volume_delta;
-  gfloat	      right_volume_delta;
+  /* mixer volume fields, volume factors for playback
+   * and fader deltas for sample fading
+   */
+  BseMixVolume volume;
 
   union {
     struct {
-      /* from BseSample, freq_factor = sample->rec_freq / BSE_MIX_FREQ */
-      gfloat	      freq_factor;
-      BseSampleValue *bound;
-
-      guint32	      base_rate;	/* base readout rate from note (<<16) */
-      guint32	      rate;		/* fine tune adjusted base rate */
-      
-      /* sample mixer fields, runtime-adjusted */
-      BseSampleValue *cur_pos;
-      guint	      pos_frac;
-
       /* object references for locking */
       BseSample*      sample;
-      BseBinData*     bin_data;
+      BseBinData*     bin_data;		/* from sample's munk for current note */
+
+      gfloat	      freq_factor;	/* sample->rec_freq / BSE_MIX_FREQ */
+      gint	      base_rate;	/* base readout rate from note (<<16) */
+
+      BseMixRate      rate;
     } sample;
     struct {
+      BseSInstrument* sinstrument;
+
       gfloat	      base_freq;	/* base playback freq from note */
       gfloat	      freq;		/* fine tune adjusted base freq */
-
-      BseIndex	      last_index;
-      BseSInstrument* sinstrument;
     } synth;
-    struct {
-      gint            n_values_left;	/* # values left while fading */
-    } fade_ramp;
   } input;
 };
 
@@ -150,9 +139,7 @@ void		bse_voice_set_fine_tune		(BseVoice	*voice,
 						 gint     	 fine_tune);
 void		bse_voice_set_envelope_part	(BseVoice       *voice,
 						 BseEnvelopePartType env_part);
-void		bse_voice_set_note		(BseVoice	*voice,
-						 gint		 note,
-						 gint            fine_tune);
+/* bse_voice_adjust_note (BseVoice *voice, gint note); */
 
 
 /* --- private --- */
@@ -161,6 +148,12 @@ void		bse_voice_activate		(BseVoice	*voice,
 						 BseInstrument	*instrument,
 						 gint		 note,
 						 gint            fine_tune);
+void		bse_voice_set_note		(BseVoice	*voice,
+						 gint		 note,
+						 gint            fine_tune);
+void		bse_voice_fade_out_until	(BseVoice	*voice,
+						 guint           n_values);
+gboolean	bse_voice_need_after_fade	(BseVoice	*voice);
 gboolean	bse_voice_preprocess		(BseVoice	*voice);
 gboolean	bse_voice_postprocess		(BseVoice	*voice);
 
