@@ -1,3 +1,8 @@
+Thu Sep 23 15:54:04 2004  Tim Janik  <timj@gtk.org>
+
+	* shell/bsesh.c: added support for BSE device listing. implemented
+	--help and --version.
+
 Wed Sep 22 23:27:23 2004  Sven Herzberg  <herzi@gnome-de.org>
 
 	* beast-gtk/gxk/gxkcanvas.c: fixed this: if one set the zoom size
