@@ -19,25 +19,32 @@
 
 #include "bstpartdialog.h"
 #include "bstpianoroll.h"
-#include "bstactivatable.h"
 
 
 
 /* --- prototypes --- */
 static void	bst_part_view_class_init	(BstPartViewClass	*klass);
 static void	bst_part_view_init		(BstPartView		*part_view);
-static void     bst_part_view_activate          (BstActivatable         *activatable,
+static void     part_view_action_exec           (gpointer                data,
                                                  gulong                  action);
-static gboolean bst_part_view_can_activate      (BstActivatable         *activatable,
+static gboolean part_view_action_check          (gpointer                data,
                                                  gulong                  action);
+
+
+/* --- part actions --- */
+enum {
+  ACTION_ADD_PART,
+  ACTION_DELETE_PART,
+  ACTION_EDIT_PART
+};
+static const GxkStockAction part_view_actions[] = {
+  { N_("Add"),          NULL,   NULL,   ACTION_ADD_PART,        BST_STOCK_PART },
+  { N_("Delete"),       NULL,   NULL,   ACTION_DELETE_PART,     BST_STOCK_TRASHCAN },
+  { N_("Editor"),       NULL,   NULL,   ACTION_EDIT_PART,       BST_STOCK_PART_EDITOR },
+};
 
 
 /* --- variables --- */
-static BstItemViewOp part_view_ops[] = {
-  { N_("Add"),		BST_ACTION_ADD_PART,	BST_STOCK_PART,		},
-  { N_("Delete"),	BST_ACTION_DELETE_PART,	BST_STOCK_TRASHCAN,	},
-  { N_("Editor"),	BST_ACTION_EDIT_PART,	BST_STOCK_PART_EDITOR,	},
-};
 static gpointer	parent_class = NULL;
 
 
@@ -60,10 +67,6 @@ bst_part_view_get_type (void)
         (GInstanceInitFunc) bst_part_view_init,
       };
       type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstPartView", &type_info, 0);
-      bst_type_implement_activatable (type,
-                                      bst_part_view_activate,
-                                      bst_part_view_can_activate,
-                                      NULL);
     }
   return type;
 }
@@ -76,8 +79,6 @@ bst_part_view_class_init (BstPartViewClass *class)
   
   parent_class = g_type_class_peek_parent (class);
 
-  item_view_class->n_ops = G_N_ELEMENTS (part_view_ops);
-  item_view_class->ops = part_view_ops;
   item_view_class->item_type = "BsePart";
 }
 
@@ -90,8 +91,10 @@ bst_part_view_init (BstPartView *self)
   /* setup tree view */
   GtkTreeView *tview = gxk_gadget_find (gadget, "tree-view");
   bst_item_view_complete_tree (iview, tview);
-  /* create tool buttons */
-  bst_item_view_build_buttons (iview, gxk_gadget_find (gadget, "tree-button-area"));
+  /* create tool actions */
+  gxk_widget_publish_actions (self, "part-view-actions",
+                              G_N_ELEMENTS (part_view_actions), part_view_actions,
+                              NULL, part_view_action_check, part_view_action_exec);
   /* create property editor */
   bst_item_view_build_param_view (iview, gxk_gadget_find (gadget, "property-area"));
 }
@@ -111,47 +114,45 @@ popup_part_dialog (BstPartView *part_view)
 }
 
 static void
-bst_part_view_activate (BstActivatable         *activatable,
-                        gulong                  action)
+part_view_action_exec (gpointer                data,
+                       gulong                  action)
 {
-  BstPartView *self = BST_PART_VIEW (activatable);
+  BstPartView *self = BST_PART_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
   SfiProxy song = item_view->container;
-
   switch (action)
     {
       SfiProxy item;
-    case BST_ACTION_ADD_PART:
+    case ACTION_ADD_PART:
       item = bse_song_create_part (song);
       bst_item_view_select (item_view, item);
       break;
-    case BST_ACTION_DELETE_PART:
+    case ACTION_DELETE_PART:
       item = bst_item_view_get_current (item_view);
       bse_song_remove_part (song, item);
       break;
-    case BST_ACTION_EDIT_PART:
+    case ACTION_EDIT_PART:
       popup_part_dialog (self);
       break;
     }
-  bst_widget_update_activatable (activatable);
+  gxk_widget_update_actions_downwards (self);
 }
 
 static gboolean
-bst_part_view_can_activate (BstActivatable *activatable,
-                            gulong          action)
+part_view_action_check (gpointer                data,
+                        gulong                  action)
 {
-  BstPartView *self = BST_PART_VIEW (activatable);
+  BstPartView *self = BST_PART_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
-
   switch (action)
     {
       SfiProxy item;
-    case BST_ACTION_ADD_PART:
+    case ACTION_ADD_PART:
       return TRUE;
-    case BST_ACTION_DELETE_PART:
+    case ACTION_DELETE_PART:
       item = bst_item_view_get_current (item_view);
       return item != 0;
-    case BST_ACTION_EDIT_PART:
+    case ACTION_EDIT_PART:
       item = bst_item_view_get_current (item_view);
       return item != 0;
     default:

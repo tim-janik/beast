@@ -22,6 +22,8 @@
 #include "bsttrackview.h"
 #include "bstwaveview.h"
 #include "bstpartview.h"
+#include "bstpianoroll.h"
+#include "bsteventroll.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -36,13 +38,18 @@
 static void	_bst_init_idl			(void);
 
 
+/* --- variables --- */
+static GtkIconFactory *stock_icon_factory = NULL;
+
+
 /* --- functions --- */
 void
 _bst_init_utils (void)
 {
-  static guint initialized = 0;
-  
-  g_assert (initialized++ == 0);
+  g_assert (stock_icon_factory == NULL);
+
+  stock_icon_factory = gtk_icon_factory_new ();
+  gtk_icon_factory_add_default (stock_icon_factory);
 
   /* initialize generated type ids */
   {
@@ -99,9 +106,11 @@ void
 _bst_init_gadgets (void)
 {
   gchar *text;
-  gxk_gadget_add_type (BST_TYPE_TRACK_VIEW);
-  gxk_gadget_add_type (BST_TYPE_WAVE_VIEW);
-  gxk_gadget_add_type (BST_TYPE_PART_VIEW);
+  gxk_gadget_define_widget_type (BST_TYPE_TRACK_VIEW);
+  gxk_gadget_define_widget_type (BST_TYPE_WAVE_VIEW);
+  gxk_gadget_define_widget_type (BST_TYPE_PART_VIEW);
+  gxk_gadget_define_widget_type (BST_TYPE_PIANO_ROLL);
+  gxk_gadget_define_widget_type (BST_TYPE_EVENT_ROLL);
   text = gxk_zfile_uncompress (BST_GADGETS_STANDARD_SIZE, BST_GADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_GADGETS_STANDARD_DATA));
   gxk_gadget_parse_text ("beast", text, -1, NULL);
   g_free (text);
@@ -136,6 +145,31 @@ bst_stock_icon_button (const gchar *stock_id)
                                NULL);
   gtk_widget_show_all (w);
   return w;
+}
+
+void
+bst_stock_register_icon (const gchar    *stock_id,
+                         guint           bytes_per_pixel,
+                         guint           width,
+                         guint           height,
+                         guint           rowstride,
+                         const guint8   *pixels)
+{
+  g_return_if_fail (bytes_per_pixel == 3 || bytes_per_pixel == 4);
+  g_return_if_fail (width > 0 && height > 0 && rowstride >= width * bytes_per_pixel);
+
+  if (!gtk_icon_factory_lookup (stock_icon_factory, stock_id))
+    {
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data (g_memdup (pixels, rowstride * height * bytes_per_pixel),
+                                                    GDK_COLORSPACE_RGB, bytes_per_pixel == 4,
+                                                    8, width, height,
+                                                    width * bytes_per_pixel,
+                                                    (GdkPixbufDestroyNotify) g_free, NULL);
+      GtkIconSet *iset = gtk_icon_set_new_from_pixbuf (pixbuf);
+      g_object_unref (pixbuf);
+      gtk_icon_factory_add (stock_icon_factory, stock_id, iset);
+      gtk_icon_set_unref (iset);
+    }
 }
 
 GtkWidget*

@@ -17,7 +17,6 @@
  */
 #include "bstpartdialog.h"
 #include "bstprocedure.h"
-#include "bstactivatable.h"
 #include "bstmenus.h"
 #include "bstparam.h"
 
@@ -34,25 +33,15 @@ static void	piano_canvas_clicked		(BstPartDialog		*part_dialog,
 						 gint			 note,
 						 GdkEvent		*event,
 						 BstPianoRoll		*proll);
-static void	part_dialog_run_proc		(GtkWidget		*widget,
-						 gulong                  category_id,
-						 gpointer		 popup_data);
-static void	menu_select_tool		(GtkWidget              *owner,
-						 gulong                  callback_action,
-						 gpointer                popup_data);
-static void     bst_part_dialog_activate        (BstActivatable         *activatable,
+static void     part_dialog_action_exec         (gpointer                data,
                                                  gulong                  action);
-static gboolean bst_part_dialog_can_activate    (BstActivatable         *activatable,
+static gboolean part_dialog_action_check        (gpointer                data,
                                                  gulong                  action);
-static void     bst_part_dialog_update_activatable (BstActivatable *activatable);
-static void	menu_activate_tool		(GtkWidget              *owner,
-						 gulong                  callback_action,
-						 gpointer                popup_data);
 
 
-/* --- variables --- */
+/* --- track actions --- */
 enum {
-  ACTION_CLEAR,
+  ACTION_CLEAR = 1,
   ACTION_CUT,
   ACTION_COPY,
   ACTION_PASTE,
@@ -60,28 +49,19 @@ enum {
   ACTION_REDO,
   ACTION_CLEAR_UNDO
 };
-static BstMenuConfigEntry popup_entries[] =
-{
-#define MENU_CB(xxx)	menu_select_tool, BST_GENERIC_ROLL_TOOL_ ## xxx
-#define ACTION_CB(xxx)	menu_activate_tool, ACTION_ ## xxx
-  { N_("/_Tools"),		NULL,		NULL,   0,		"<Branch>",	0 },
-  { N_("/Tools/Insert"),	"I",		MENU_CB (INSERT),	"<StockItem>",	BST_STOCK_PART_TOOL },
-  { N_("/Tools/Delete"),	"D",		MENU_CB (DELETE),	"<StockItem>",	BST_STOCK_TRASHCAN },
-  { N_("/Tools/Align Events"),  "A",		MENU_CB (ALIGN),	"<StockItem>",	BST_STOCK_EVENT_CONTROL },
-  { N_("/Tools/Select"),	"S",		MENU_CB (SELECT),	"<StockItem>",	BST_STOCK_RECT_SELECT },
-  { N_("/Tools/Vertical Select"), "V",  	MENU_CB (VSELECT),	"<StockItem>",	BST_STOCK_VERT_SELECT },
-  { N_("/_Edit"),		NULL,		NULL,   0,		"<Branch>",	0 },
-  { N_("/Edit/Cut"),    	"<ctrl>X",	ACTION_CB (CUT),	"<StockItem>",	BST_STOCK_MUSIC_CUT },
-  { N_("/Edit/Copy"),   	"<ctrl>C",	ACTION_CB (COPY),	"<StockItem>",	BST_STOCK_MUSIC_COPY },
-  { N_("/Edit/Paste"),  	"<ctrl>V",	ACTION_CB (PASTE),	"<StockItem>",	BST_STOCK_MUSIC_PASTE },
-  { N_("/Edit/Clear"),  	"<ctrl>K",	ACTION_CB (CLEAR),	"<StockItem>",	BST_STOCK_TRASH_SCISSORS },
-  {    "/Edit/-----1",   	NULL,     	NULL,   0,           	"<Separator>",	0 },
-  { N_("/Edit/Undo"),   	"<ctrl>Z",      ACTION_CB (UNDO),	"<StockItem>",	BST_STOCK_UNDO },
-  { N_("/Edit/Redo"),   	"<ctrl>R",      ACTION_CB (REDO),	"<StockItem>",	BST_STOCK_REDO },
-  // {    "/-----1",             	NULL,		NULL,	0,		"<Separator>",	0 },
-  // { N_("/Scripts"),		NULL,		NULL,   0,		"<Title>",	0 },
-  // { N_("/Test"),		NULL,		NULL,	0,		"<Branch>",	0 },
+static const GxkStockAction piano_edit_actions[] = {
+  { N_("Clear"),        "<ctrl>K",   N_("Clear the current selection"),                     ACTION_CLEAR,      BST_STOCK_TRASH_SCISSORS },
+  { N_("Cut"),          "<ctrl>X",   N_("Move the current selection into clipboard"),       ACTION_CUT,        BST_STOCK_MUSIC_CUT },
+  { N_("Copy"),         "<ctrl>C",   N_("Copy the current selection into clipboard"),       ACTION_COPY,       BST_STOCK_MUSIC_COPY },
+  { N_("Paste"),        "<ctrl>V",   N_("Insert clipboard contents as current selection"),  ACTION_PASTE,      BST_STOCK_MUSIC_PASTE },
 };
+static const GxkStockAction piano_edit_undo[] = {
+  { N_("Undo"),         "<ctrl>Z",   N_("Undo last editing step"),                          ACTION_UNDO,       BST_STOCK_UNDO },
+  { N_("Redo"),         "<ctrl>R",   N_("Redo the last undone editing step"),               ACTION_REDO,       BST_STOCK_REDO },
+};
+
+
+/* --- variables --- */
 static gpointer	parent_class = NULL;
 
 
@@ -107,10 +87,6 @@ bst_part_dialog_get_type (void)
       type = g_type_register_static (GXK_TYPE_DIALOG,
 				     "BstPartDialog",
 				     &type_info, 0);
-      bst_type_implement_activatable (type,
-                                      bst_part_dialog_activate,
-                                      bst_part_dialog_can_activate,
-                                      bst_part_dialog_update_activatable);
     }
   
   return type;
@@ -120,27 +96,10 @@ static void
 bst_part_dialog_class_init (BstPartDialogClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  BseCategorySeq *cseq;
-  BstMenuConfig *m1, *m2;
 
   parent_class = g_type_class_peek_parent (class);
   
   gobject_class->finalize = bst_part_dialog_finalize;
-  
-  /* create item factory for menu entries and categories */
-  class->popup_factory = gtk_item_factory_new (GTK_TYPE_MENU, "<BstPartDialog>", NULL);
-
-  /* standard entries */
-  m1 = bst_menu_config_from_entries (G_N_ELEMENTS (popup_entries), popup_entries);
-  /* procedures */
-  cseq = bse_categories_match ("/Part/*");
-  m2 = bst_menu_config_from_cats (cseq, part_dialog_run_proc, 1, NULL, BST_STOCK_EXECUTE);
-  bst_menu_config_sort (m2);
-  /* merge */
-  m1 = bst_menu_config_merge (m1, m2);
-  /* and create menu items */
-  bst_menu_config_create_items (m1, class->popup_factory, NULL);
-  bst_menu_config_free (m1);
 }
 
 static void
@@ -176,48 +135,60 @@ eparam_changed (gpointer         data,
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
-  BstPartDialogClass *class = BST_PART_DIALOG_GET_CLASS (self);
-  GtkWidget *main_vbox, *entry, *button;
-  GtkWidget *hscroll, *vscroll, *prframe, *erframe, *hb1, *hb2, *vb, *hb3, *hb4, *eb, *align1, *align2, *paned;
+  GtkWidget *entry, *button, *hscroll, *vscroll, *eb, *child;
+  GtkPaned *paned;
   GtkObject *adjustment;
   GParamSpec *pspec;
+  GxkGadget *gadget;
 
   /* configure self */
   g_object_set (self,
-		"default_width", 600,
+                "name", "BEAST-PartDialog",
+                "default_width", 600,
 		"default_height", 450,
 		"flags", GXK_DIALOG_STATUS_SHELL,
 		NULL);
-  main_vbox = GXK_DIALOG (self)->vbox;
-  g_object_set (main_vbox,
-                "spacing", SCROLLBAR_SPACING,
-                NULL);
 
-  /* scrollbars */
-  hscroll = gtk_hscrollbar_new (NULL);
-  vscroll = gtk_vscrollbar_new (NULL);
-  align1 = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
-  align2 = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
+  /* gadget-complete GUI */
+  gadget = gxk_gadget_create ("beast", "piano-roll-box", NULL);
+  gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), gadget);
+  hscroll = gxk_gadget_find (gadget, "piano-roll-hscrollbar");
+  vscroll = gxk_gadget_find (gadget, "piano-roll-vscrollbar");
 
+  /* publish actions */
+  gxk_widget_publish_actions (self, "piano-edit-actions",
+                              G_N_ELEMENTS (piano_edit_actions), piano_edit_actions,
+                              NULL, part_dialog_action_check, part_dialog_action_exec);
+  gxk_widget_publish_actions (self, "piano-edit-undo",
+                              G_N_ELEMENTS (piano_edit_undo), piano_edit_undo,
+                              NULL, part_dialog_action_check, part_dialog_action_exec);
+
+  /* FIXME: use paned child-properties after gtk+-2.4 */
+  paned = gxk_gadget_find (gadget, "piano-paned");
+  child = g_object_ref (paned->child1);
+  gtk_container_remove (GTK_CONTAINER (paned), child);
+  gtk_paned_pack1 (paned, child, TRUE, TRUE);
+  g_object_unref (child);
+  child = g_object_ref (paned->child2);
+  gtk_container_remove (GTK_CONTAINER (paned), child);
+  gtk_paned_pack2 (paned, child, FALSE, TRUE);
+  g_object_unref (child);
+  
   /* piano roll */
-  prframe = g_object_new (GTK_TYPE_FRAME, "shadow_type", GTK_SHADOW_IN, NULL);
-  self->proll = g_object_new (BST_TYPE_PIANO_ROLL, "parent", prframe, "height_request", 200, NULL);
+  self->proll = gxk_gadget_find (gadget, "piano-roll");
   gxk_nullify_on_destroy (self->proll, &self->proll);
-  self->pctrl = bst_piano_roll_controller_new (self->proll);
   g_object_connect (self->proll,
-		    "swapped_signal::canvas-clicked", piano_canvas_clicked, self,
-		    NULL);
+                    "swapped_signal::canvas-clicked", piano_canvas_clicked, self,
+                    NULL);
   bst_piano_roll_set_hadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_piano_roll_set_vadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
+  self->pctrl = bst_piano_roll_controller_new (self->proll);
+  gxk_widget_publish_action_list (self, "piano-edit-tools", bst_piano_roll_controller_canvas_actions (self->pctrl));
 
   /* event roll */
-  erframe = g_object_new (GTK_TYPE_FRAME, "shadow_type", GTK_SHADOW_IN, NULL);
-  self->eroll = g_object_new (BST_TYPE_EVENT_ROLL, "parent", erframe, "height_request", 50, NULL);
+  self->eroll = gxk_gadget_find (gadget, "event-roll");
   gxk_nullify_on_destroy (self->eroll, &self->eroll);
-  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, self->pctrl->canvas_rtools);
-  g_object_connect (self->eroll,
-		    // "swapped_signal::canvas-clicked", event_canvas_clicked, self,
-		    NULL);
+  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, NULL); // FIXME: self->pctrl->canvas_rtools);
   bst_event_roll_set_hadjustment (self->eroll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
 
@@ -231,7 +202,7 @@ bst_part_dialog_init (BstPartDialog *self)
     {
       BstParam *bparam = bst_param_value_create (pspec, TRUE, NULL, eparam_changed, self);
       GtkWidget *rwidget = bst_param_rack_widget (bparam);
-      g_object_set (rwidget, "parent", eb, NULL);
+      gxk_gadget_add (gadget, "event-roll-control-area", rwidget);
       g_object_connect (rwidget, "swapped_signal::destroy", bst_param_destroy, bparam, NULL);
       g_param_spec_unref (pspec);
       sfi_value_set_choice (&bparam->value, bse_midi_signal_type_to_choice (BSE_MIDI_SIGNAL_VELOCITY));
@@ -239,53 +210,13 @@ bst_part_dialog_init (BstPartDialog *self)
       bst_param_apply_value (bparam); /* update model */
     }
 
-  /* piano roll box */
-  hb1 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
-  gtk_box_pack_start (GTK_BOX (hb1), prframe, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (hb1), GTK_WIDGET (vscroll), FALSE, TRUE, 0);
-
-  /* event roll box */
-  vb = g_object_new (GTK_TYPE_VBOX, "spacing", 0, "child", erframe, NULL);
-  hb2 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
-  gtk_box_pack_start (GTK_BOX (hb2), vb, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (hb2), align1, FALSE, TRUE, 0);
-
-  /* event roll configure box */
-  hb3 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
-  g_object_new (GTK_TYPE_LABEL, "label", _("Control Type: "), "parent", hb3, NULL);
-  gtk_box_pack_start (GTK_BOX (hb3), eb, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (vb), hb3, FALSE, TRUE, 0);
-
-  /* hscrollbar box */
-  hb4 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
-  gtk_box_pack_start (GTK_BOX (hb4), hscroll, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (hb4), align2, FALSE, TRUE, 0);
-
-  /* pack boxes, show contents */
-  paned = g_object_new (GTK_TYPE_VPANED,
-                        "height_request", 500,
-                        "border_width", 0,
-                        "position", 400,
-                        NULL);
-  gtk_paned_pack1 (GTK_PANED (paned), hb1, TRUE, TRUE);
-  gtk_paned_pack2 (GTK_PANED (paned), hb2, TRUE, TRUE);
-  gtk_box_pack_start (GTK_BOX (main_vbox), paned, TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (main_vbox), hb4, FALSE, TRUE, 0);
-  gtk_widget_show_all (main_vbox);
-
-  /* vscrollbar size grouping */
-  gxk_size_group (GTK_SIZE_GROUP_HORIZONTAL,
-                  vscroll, align1, align2,
-                  NULL);
-
   /* create toolbar */
   self->toolbar = gxk_toolbar_new (&self->toolbar);
-  gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (self->toolbar), FALSE, TRUE, 0);
-  gtk_box_reorder_child (GTK_BOX (main_vbox), GTK_WIDGET (self->toolbar), 0);
+  gxk_gadget_add (gadget, "toolbar-area", self->toolbar);
 
   /* add note tools to toolbar */
-  bst_radio_tools_build_toolbar (self->pctrl->canvas_rtools, self->toolbar);
-  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->canvas_rtools->accel_group);
+  // bst_radio_tools_build_toolbar (self->pctrl->canvas_rtools, self->toolbar);
+  // gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->canvas_rtools->accel_group);
   
   /* selection ops (copy/cut/...) */
   gxk_toolbar_append_separator (self->toolbar);
@@ -326,7 +257,6 @@ bst_part_dialog_init (BstPartDialog *self)
 		      "HZoom", "Horizontal Zoom", entry);
 
   /* vzoom */
-  // gxk_toolbar_append_space (self->toolbar);
   adjustment = gtk_adjustment_new (4, 1, 16, 1, 4, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", vzoom_changed, self,
@@ -339,12 +269,6 @@ bst_part_dialog_init (BstPartDialog *self)
 			NULL);
   gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
 		      "VZoom", "Vertical Zoom", entry);
-
-  /* setup the popup menu
-   */
-  gtk_window_add_accel_group (GTK_WINDOW (self),
-			      class->popup_factory->accel_group);
-  bst_menu_add_accel_owner (class->popup_factory, GTK_WIDGET (self));
 }
 
 static void
@@ -373,7 +297,7 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
   if (self->project)
     {
       bse_proxy_disconnect (self->project,
-                            "any_signal", bst_widget_update_activatable, self,
+                            "any_signal", gxk_widget_update_actions_downwards, self,
                             NULL);
       self->project = 0;
     }
@@ -389,24 +313,11 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
         bst_event_roll_set_proxy (self->eroll, part);
       self->project = project;
       bse_proxy_connect (self->project,
-                         "swapped_signal::property-notify::dirty", bst_widget_update_activatable, self,
+                         "swapped_signal::property-notify::dirty", gxk_widget_update_actions_downwards, self,
                          NULL);
     }
 
-  bst_widget_update_activatable (self);
-}
-
-static void
-part_dialog_run_proc (GtkWidget *widget,
-		      gulong     category_id,
-		      gpointer   popup_data)
-{
-  BstPartDialog *self = BST_PART_DIALOG (widget);
-  BseCategory *cat = bse_category_from_id (category_id);
-  
-  bst_procedure_exec_auto (cat->type,
-			   "part", SFI_TYPE_PROXY, self->proll->proxy,
-			   NULL);
+  gxk_widget_update_actions_downwards (self);
 }
 
 static void
@@ -419,6 +330,7 @@ piano_canvas_clicked (BstPartDialog *self,
 {
   if (button == 3 && event)
     {
+#if 0
       GtkItemFactory *popup_factory = BST_PART_DIALOG_GET_CLASS (self)->popup_factory;
 
       bst_menu_popup (popup_factory,
@@ -426,32 +338,15 @@ piano_canvas_clicked (BstPartDialog *self,
 		      NULL, NULL,
 		      event->button.x_root, event->button.y_root,
 		      event->button.button, event->button.time);
+#endif
     }
 }
 
 static void
-menu_select_tool (GtkWidget *owner,
-		  gulong     callback_action,
-		  gpointer   popup_data)
+part_dialog_action_exec (gpointer data,
+                         gulong   action)
 {
-  BstPartDialog *self = BST_PART_DIALOG (owner);
-  if (self->pctrl && self->pctrl->canvas_rtools)
-    bst_radio_tools_set_tool (self->pctrl->canvas_rtools, callback_action);
-}
-
-static void
-menu_activate_tool (GtkWidget *owner,
-		    gulong     callback_action,
-		    gpointer   popup_data)
-{
-  bst_activatable_activate (BST_ACTIVATABLE (owner), callback_action);
-}
-
-static void
-bst_part_dialog_activate (BstActivatable         *activatable,
-                          gulong                  action)
-{
-  BstPartDialog *self = BST_PART_DIALOG (activatable);
+  BstPartDialog *self = BST_PART_DIALOG (data);
 
   gxk_status_window_push (self);
 
@@ -482,18 +377,24 @@ bst_part_dialog_activate (BstActivatable         *activatable,
     case ACTION_CLEAR_UNDO:
       bse_item_clear_undo (self->proll->proxy);
       break;
+    default:
+      if (action >= BST_GENERIC_ROLL_TOOL_FIRST)
+        {
+          // FIXME: if (self->pctrl && self->pctrl->canvas_rtools) bst_radio_tools_set_tool (self->pctrl->canvas_rtools, action);
+        }
+      break;
     }
 
   gxk_status_window_pop ();
 
-  bst_widget_update_activatable (activatable);
+  gxk_widget_update_actions_downwards (self);
 }
 
 static gboolean
-bst_part_dialog_can_activate (BstActivatable         *activatable,
-                              gulong                  action)
+part_dialog_action_check (gpointer data,
+                          gulong   action)
 {
-  BstPartDialog *self = BST_PART_DIALOG (activatable);
+  BstPartDialog *self = BST_PART_DIALOG (data);
   switch (action)
     {
     case ACTION_CLEAR:
@@ -519,28 +420,10 @@ bst_part_dialog_can_activate (BstActivatable         *activatable,
     case BST_GENERIC_ROLL_TOOL_VSELECT:
       return TRUE;
     default:
+      if (action >= BST_GENERIC_ROLL_TOOL_FIRST)
+        {
+          return TRUE;
+        }
       return FALSE;
-    }
-}
-
-static void
-bst_part_dialog_update_activatable (BstActivatable *activatable)
-{
-  BstPartDialog *self = BST_PART_DIALOG (activatable);
-  GtkItemFactory *popup_factory = BST_PART_DIALOG_GET_CLASS (self)->popup_factory;
-  GtkWidget *widget;
-  gulong i;
-
-  /* check if the app (its widget tree) was already destroyed */
-  if (!GTK_BIN (self)->child)
-    return;
-
-  /* update app actions */
-  for (i = 0; i < G_N_ELEMENTS (popup_entries); i++)
-    {
-      gulong action = popup_entries[i].callback_action;
-      widget = gtk_item_factory_get_widget_by_action (popup_factory, action);
-      if (widget && action)
-        gtk_widget_set_sensitive (widget, bst_activatable_can_activate (activatable, action));
     }
 }

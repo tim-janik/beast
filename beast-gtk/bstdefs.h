@@ -35,10 +35,6 @@ typedef enum
   BST_ACTION_APP_FIRST          = 0x0001 << 16,
   /* wave view actions */
   BST_ACTION_WAVE_FIRST         = 0x0002 << 16,
-  /* (song) part view actions */
-  BST_ACTION_PART_FIRST         = 0x0003 << 16,
-  /* (song) track view actions */
-  BST_ACTION_TRACK_FIRST        = 0x0004 << 16,
 } BstActionRegions;
 
 typedef enum {
@@ -54,11 +50,12 @@ typedef enum {
   BST_QUANTIZE_TACT		= 65535
 } BstQuantizationType;
 
+/* choose IDs that are unlikely to clash with category IDs */
+#define BST_GENERIC_ROLL_TOOL_FIRST	(G_MAXINT - 100000)
 typedef enum /*< skip >*/
 {
   BST_GENERIC_ROLL_TOOL_NONE,
-  /* choose IDs that are unlikely to clash with category IDs */
-  BST_GENERIC_ROLL_TOOL_INSERT            = G_MAXINT - 1000,
+  BST_GENERIC_ROLL_TOOL_INSERT            = BST_GENERIC_ROLL_TOOL_FIRST,
   BST_GENERIC_ROLL_TOOL_RESIZE,
   BST_GENERIC_ROLL_TOOL_LINK,
   BST_GENERIC_ROLL_TOOL_RENAME,

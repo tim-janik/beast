@@ -107,6 +107,12 @@ typedef struct {
 GtkWidget*      bst_stock_button        (const gchar    *stock_id);
 GtkWidget*      bst_stock_dbutton       (const gchar    *stock_id);
 GtkWidget*      bst_stock_icon_button   (const gchar    *stock_id);
+void            bst_stock_register_icon (const gchar    *stock_id,
+                                         guint           bytes_per_pixel,
+                                         guint           width,
+                                         guint           height,
+                                         guint           rowstride,
+                                         const guint8   *pixels);
 
 
 /* --- pixbuf shortcuts --- */

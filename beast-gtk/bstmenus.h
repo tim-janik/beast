@@ -74,6 +74,22 @@ typedef struct {
 } BstMenuConfig;
 
 
+/* --- GxkAction helpers --- */
+void            bst_action_list_add_cat         (GxkActionList          *alist,
+                                                 BseCategory            *cat,
+                                                 GxkActionCheck          acheck,
+                                                 GxkActionExec           aexec,
+                                                 gpointer                user_data,
+                                                 guint                   skip_levels,
+                                                 const gchar            *stock_fallback);
+GxkActionList*  bst_action_list_from_cats       (BseCategorySeq         *cseq,
+                                                 GxkActionCheck          acheck,
+                                                 GxkActionExec           aexec,
+                                                 gpointer                user_data,
+                                                 guint                   skip_levels,
+                                                 const gchar            *stock_fallback);
+
+
 /* --- item factory helpers --- */
 BstMenuConfig*	bst_menu_config_from_entries	(guint			 n_entries,
 						 BstMenuConfigEntry	*entries);

@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstsupershell.h"
-#include "bstactivatable.h"
 
 
 enum {
@@ -43,10 +42,6 @@ static void	bst_super_shell_setup_super	(BstSuperShell		*super_shell,
 						 SfiProxy     		 super);
 static void	bst_super_shell_release_super	(BstSuperShell		*super_shell,
 						 SfiProxy		 super);
-static void     bst_super_shell_activate        (BstActivatable         *activatable,
-                                                 gulong                  action);
-static gboolean bst_super_shell_can_activate    (BstActivatable         *activatable,
-                                                 gulong                  action);
 
 
 /* --- static variables --- */
@@ -73,10 +68,6 @@ bst_super_shell_get_type (void)
         (GInstanceInitFunc) bst_super_shell_init,
       };
       type = g_type_register_static (GTK_TYPE_VBOX, "BstSuperShell", &type_info, 0);
-      bst_type_implement_activatable (type,
-                                      bst_super_shell_activate,
-                                      bst_super_shell_can_activate,
-                                      NULL);
     }
   return type;
 }
@@ -258,18 +249,4 @@ bst_super_shell_update_label (BstSuperShell *self)
   g_return_if_fail (BST_IS_SUPER_SHELL (self));
 
   bst_super_shell_name_set (self);
-}
-
-static void
-bst_super_shell_activate (BstActivatable *activatable,
-                          gulong          action)
-{
-  bst_widget_update_activatable (activatable);
-}
-
-static gboolean
-bst_super_shell_can_activate (BstActivatable *activatable,
-                              gulong          action)
-{
-  return FALSE;
 }

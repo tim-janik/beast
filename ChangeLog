@@ -1,3 +1,77 @@
+Wed Nov 12 04:26:22 2003  Tim Janik  <timj@gtk.org>
+
+	* overall switch to Gxk gadget and action based GUIs.
+	this removed lots of hand-crafted GUI code, menu/item factory code
+	and extra mechanisms (e.g. for action activation or menu item
+	sensitivity adjustments).
+
+	* beast-gtk/dialogs/gadgets-beast.xml: more beast dialog specifications.
+	introduced factories for menu items and toolbar buttons.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: more standard widget
+	refinements. added Gxk builtin types (e.g. gadget-factory).
+
+	* beast-gtk/gxk/gxkaction.[hc]: new mechanism to publish GUI actions,
+	like operations on menu items or tool selections (radio actions) or
+	simple operational buttons through an identifier within a widget tree.
+	GxkActionList contains action descriptions, GxkActionGroup holds
+	state for radio-group selections and GxkActionFactory implements the
+	hooks to facilitate the actions registered for a widget tree.
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: object implementation, derived
+	from GxkActionFactory to construct gadgets for actions registered
+	in a widget tree.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: implemented small auxillary widgets
+	(objects), mostly to patch around property deficencies in Gtk+.
+
+	* beast-gtk/gxk/gxkgadget.[hc]: support gadget factory and
+	gxkauxwidgets.h. reimplemented option handling. removed stale code.
+	lots of fixes, reordering, made type registration somewhat more
+	sophistiated. gadgets maybe GObjects now. added special support
+	for gadgets generated inside gadgets.
+
+	* beast-gtk/gxk/gxkstock.c: register aliases for basic stock sizes
+	(to be used in gadget definition files).
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_window_get_menu_accel_group(),
+	gxk_submenu_attach_to_item() and gxk_widget_get_attach_toplevel().
+
+	* beast-gtk/bstutils.[hc]: register custom Bst widgets as gxk gadget
+	types. added bst_stock_register_icon().
+
+	* beast-gtk/bstmenus.[hc]: added convenience functions to enter
+	BseCategory entries into a GxkActionList.
+
+	* beast-gtk/bstwavereposhell.[hc]:
+	* beast-gtk/bstsongshell.[hc]:
+	* beast-gtk/bstsupershell.[hc]: removed BstActivatable implementation.
+
+	* beast-gtk/bstpartdialog.[hc]: removed BstActivatable implementation.
+	switched to creating GUI from Gxk gadgets. switched to publishing
+	GxkStockAction entries which temporarily breaks button3 popup menu.
+
+	* beast-gtk/bstpianorollctrl.[hc]: test implementation of using
+	GxkActionList and GxkActionGroup for tool selection and to
+	publish (provide) actions for widgets. (temporarily breaks event-roll
+	controller).
+
+	* beast-gtk/bsttrackview.[hc]:
+	* beast-gtk/bstwaveview.[hc]:
+	* beast-gtk/bstpartview.[hc]: removed BstActivatable implementation.
+	switched to publishing GxkStockAction entries. generate GUI from Gxk
+	gadgets.
+
+	* beast-gtk/bstitemview.[hc]: removed BstActivatable implementation.
+	removed BstItemViewOp implementation, since derived objects switched
+	to publishing GxkStockAction entries.
+
+	* beast-gtk/bstapp.[hc]: removed BstActivatable implementation.
+	switched from using BstMenuConfigEntry to publishing GxkStockAction
+	entries per widget. switched to creating GUI from Gxk gadgets.
+
+	* beast-gtk/bstactivatable.[hc]: removed.
+
 Fri Nov  7 23:31:40 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkstock.[hc]: renamed GxkStockAction to

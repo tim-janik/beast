@@ -19,31 +19,35 @@
 #include "bstprocedure.h"
 #include "bstwaveeditor.h"
 #include "bstfiledialog.h"
-#include "bstactivatable.h"
 #include "bstsampleeditor.h"
-
 
 
 /* --- prototypes --- */
 static void	bst_wave_view_class_init	(BstWaveViewClass	*klass);
 static void	bst_wave_view_init		(BstWaveView		*wave_view);
-static void     bst_wave_view_activate          (BstActivatable         *activatable,
+static void     wave_view_action_exec           (gpointer                data,
                                                  gulong                  action);
-static gboolean bst_wave_view_can_activate      (BstActivatable         *activatable,
+static gboolean wave_view_action_check          (gpointer                data,
                                                  gulong                  action);
 
 
-/* --- wave ops --- */
-static BstItemViewOp wave_view_ops[] = {
-  { "Load...",	      BST_ACTION_LOAD_WAVE,	BST_STOCK_LOAD,	},
-  { "Lib...",	      BST_ACTION_LOAD_WAVE_LIB,	BST_STOCK_LOAD_LIB,	},
-  { "Delete",	      BST_ACTION_DELETE_WAVE,	BST_STOCK_TRASHCAN,	},
-  { "Editor",	      BST_ACTION_EDIT_WAVE,	BST_STOCK_EDIT_TOOL,	},
+/* --- wave actions --- */
+enum {
+  ACTION_LOAD_WAVE,
+  ACTION_LOAD_WAVE_LIB,
+  ACTION_DELETE_WAVE,
+  ACTION_EDIT_WAVE,
+  ACTION_WAVE_LAST
 };
-static guint n_wave_view_ops = sizeof (wave_view_ops) / sizeof (wave_view_ops[0]);
+static const GxkStockAction wave_view_actions[] = {
+  { N_("Load..."),  NULL,   NULL,   ACTION_LOAD_WAVE,       BST_STOCK_LOAD,	},
+  { N_("Lib..."),   NULL,   NULL,   ACTION_LOAD_WAVE_LIB,	BST_STOCK_LOAD_LIB, },
+  { N_("Delete"),   NULL,   NULL,   ACTION_DELETE_WAVE,	BST_STOCK_TRASHCAN, },
+  { N_("Editor"),   NULL,   NULL,   ACTION_EDIT_WAVE,	BST_STOCK_EDIT_TOOL, },
+};
 
 
-/* --- static variables --- */
+/* --- variables --- */
 static gpointer		 parent_class = NULL;
 
 
@@ -66,10 +70,6 @@ bst_wave_view_get_type (void)
 	(GInstanceInitFunc) bst_wave_view_init,
       };
       type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstWaveView", &type_info, 0);
-      bst_type_implement_activatable (type,
-                                      bst_wave_view_activate,
-                                      bst_wave_view_can_activate,
-                                      NULL);
     }
   return type;
 }
@@ -81,8 +81,6 @@ bst_wave_view_class_init (BstWaveViewClass *class)
   
   parent_class = g_type_class_peek_parent (class);
 
-  item_view_class->n_ops = n_wave_view_ops;
-  item_view_class->ops = wave_view_ops;
   item_view_class->item_type = "BseWave";
 }
 
@@ -92,13 +90,14 @@ bst_wave_view_init (BstWaveView *self)
   BstItemView *iview = BST_ITEM_VIEW (self);
   /* complete GUI */
   GxkGadget *gadget = gxk_gadget_complete (GTK_WIDGET (self), "beast", "wave-view", NULL);
+  gxk_widget_publish_actions (self, "wave-view-actions",
+                              G_N_ELEMENTS (wave_view_actions), wave_view_actions,
+                              NULL, wave_view_action_check, wave_view_action_exec);
   /* setup tree view */
   GtkTreeView *tview = gxk_gadget_find (gadget, "tree-view");
   bst_item_view_complete_tree (iview, tview);
   /* prime locals */
   self->editable = TRUE;
-  /* create tool buttons */
-  bst_item_view_build_buttons (iview, gxk_gadget_find (gadget, "tree-button-area"));
 }
 
 GtkWidget*
@@ -161,53 +160,53 @@ bst_wave_view_set_editable (BstWaveView *self,
   if (iview->tree)
     gxk_tree_view_set_editable (iview->tree, self->editable);
 
-  bst_widget_update_activatable (self);
+  gxk_widget_update_actions_downwards (self);
 }
 
 static void
-bst_wave_view_activate (BstActivatable *activatable,
-                        gulong          action)
+wave_view_action_exec (gpointer                data,
+                       gulong                  action)
 {
-  BstWaveView *self = BST_WAVE_VIEW (activatable);
+  BstWaveView *self = BST_WAVE_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
   SfiProxy wrepo = item_view->container;
 
   switch (action)
     {
       SfiProxy item;
-    case BST_ACTION_LOAD_WAVE:
+    case ACTION_LOAD_WAVE:
       bst_file_dialog_popup_load_wave (item_view, BST_ITEM_VIEW (self)->container, FALSE);
       break;
-    case BST_ACTION_LOAD_WAVE_LIB:
+    case ACTION_LOAD_WAVE_LIB:
       bst_file_dialog_popup_load_wave (item_view, BST_ITEM_VIEW (self)->container, TRUE);
       break;
-    case BST_ACTION_DELETE_WAVE:
+    case ACTION_DELETE_WAVE:
       item = bst_item_view_get_current (BST_ITEM_VIEW (self));
       bse_wave_repo_remove_wave (wrepo, item);
       break;
-    case BST_ACTION_EDIT_WAVE:
+    case ACTION_EDIT_WAVE:
       popup_wave_dialog (self);
       break;
     default:
       break;
     }
-  bst_widget_update_activatable (activatable);
+  gxk_widget_update_actions_downwards (self);
 }
 
 static gboolean
-bst_wave_view_can_activate (BstActivatable *activatable,
-                            gulong          action)
+wave_view_action_check (gpointer                data,
+                        gulong                  action)
 {
-  BstWaveView *self = BST_WAVE_VIEW (activatable);
+  BstWaveView *self = BST_WAVE_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
   switch (action)
     {
-    case BST_ACTION_LOAD_WAVE:
-    case BST_ACTION_LOAD_WAVE_LIB:
+    case ACTION_LOAD_WAVE:
+    case ACTION_LOAD_WAVE_LIB:
       return TRUE;
-    case BST_ACTION_DELETE_WAVE:
+    case ACTION_DELETE_WAVE:
       return bst_item_view_get_current (item_view) != 0;
-    case BST_ACTION_EDIT_WAVE:
+    case ACTION_EDIT_WAVE:
       return bst_item_view_get_current (item_view) != 0 && self->editable;
     default:
       return FALSE;

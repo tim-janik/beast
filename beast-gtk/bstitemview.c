@@ -18,18 +18,14 @@
 #include "bstitemview.h"
 #include "bstparamview.h"
 #include "bsttreestores.h"
-#include "bstactivatable.h"
 
 
 /* --- prototypes --- */
 static void	bst_item_view_class_init	(BstItemViewClass	*klass);
-static void     bst_item_view_init_activatable  (BstActivatableIface    *iface,
-                                                 gpointer                iface_data);
 static void	bst_item_view_init		(BstItemView		*self,
 						 BstItemViewClass	*real_class);
 static void	bst_item_view_destroy		(GtkObject		*object);
 static void	bst_item_view_finalize		(GObject		*object);
-static void	bst_item_view_update_activatable(BstActivatable         *activatable);
 static void	item_view_listen_on		(BstItemView		*self,
 						 SfiProxy		 item);
 static void	item_view_unlisten_on		(BstItemView		*self,
@@ -60,13 +56,7 @@ bst_item_view_get_type (void)
 	0,      /* n_preallocs */
 	(GInstanceInitFunc) bst_item_view_init,
       };
-      static const GInterfaceInfo activatable_info = {
-        (GInterfaceInitFunc) bst_item_view_init_activatable,    /* interface_init */
-        NULL,                                                   /* interface_finalize */
-        NULL                                                    /* interface_data */
-      };
       type = g_type_register_static (GTK_TYPE_ALIGNMENT, "BstItemView", &type_info, 0);
-      g_type_add_interface_static (type, BST_TYPE_ACTIVATABLE, &activatable_info);
     }
   return type;
 }
@@ -84,29 +74,11 @@ bst_item_view_class_init (BstItemViewClass *class)
   object_class->destroy = bst_item_view_destroy;
   
   class->item_type = NULL;
-  class->n_ops = 0;
-  class->ops = NULL;
   
   class->listen_on = item_view_listen_on;
   class->unlisten_on = item_view_unlisten_on;
 
   class->set_container = item_view_set_container;
-}
-
-static void
-bst_item_view_init_activatable (BstActivatableIface *iface,
-                                gpointer             iface_data)
-{
-  iface->update = bst_item_view_update_activatable;
-}
-
-static void
-button_action (GtkWidget *widget,
-	       gpointer	  op)
-{
-  while (!BST_IS_ITEM_VIEW (widget))
-    widget = widget->parent;
-  bst_activatable_activate (BST_ACTIVATABLE (widget), GPOINTER_TO_UINT (op));
 }
 
 static void
@@ -123,11 +95,7 @@ bst_item_view_destroy (GtkObject *object)
 
   bst_item_view_set_container (self, 0);
   
-  bst_activatable_update_enqueue (BST_ACTIVATABLE (object));
-
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
-
-  bst_activatable_update_dequeue (BST_ACTIVATABLE (object));
 }
 
 static void
@@ -194,7 +162,7 @@ item_view_listener (GtkTreeModel *model,
     BST_ITEM_VIEW_GET_CLASS (self)->listen_on (self, item);
   else
     BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (self, item);
-  bst_widget_update_activatable (self);
+  gxk_widget_update_actions (self);
 }
 
 GtkTreeModel*
@@ -217,7 +185,7 @@ pview_selection_changed (BstItemView *self)
   if (self->pview)
     bst_param_view_set_item (BST_PARAM_VIEW (self->pview),
 			     bst_item_view_get_current (self));
-  bst_widget_update_activatable (self);
+  gxk_widget_update_actions (self);
 }
 
 void
@@ -277,55 +245,14 @@ bst_item_view_complete_tree (BstItemView *self,
 				   0.0, _("Type"), NULL,
 				   NULL, NULL, 0);
   /* sync to selection */
-  bst_widget_update_activatable (self);
-}
-
-void
-bst_item_view_build_buttons (BstItemView  *self,
-                             GtkContainer *container)
-{
-  guint i;
-
-  g_return_if_fail (self->op_widgets == NULL);
-
-  /* action buttons */
-  self->op_widgets = g_new0 (GtkWidget*, BST_ITEM_VIEW_GET_CLASS (self)->n_ops);
-  for (i = 0; i < BST_ITEM_VIEW_GET_CLASS (self)->n_ops; i++)
-    {
-      BstItemViewOp *bop = BST_ITEM_VIEW_GET_CLASS (self)->ops + i;
-      GtkWidget *label = g_object_new (GTK_TYPE_LABEL,
-				       "label", gettext (bop->op_name),
-				       NULL);
-      self->op_widgets[i] = g_object_new (GTK_TYPE_BUTTON,
-					  "can_focus", FALSE,
-					  "parent", container,
-					  "sensitive", FALSE,
-					  NULL);
-      g_object_connect (self->op_widgets[i],
-			"signal::clicked", button_action, GUINT_TO_POINTER (bop->op),
-			"signal::destroy", gtk_widget_destroyed, &self->op_widgets[i],
-			NULL);
-      if (!bop->stock_icon)
-	gtk_container_add (GTK_CONTAINER (self->op_widgets[i]), label);
-      else
-	g_object_new (GTK_TYPE_VBOX,
-		      "homogeneous", FALSE,
-		      "spacing", 0,
-		      "child", gxk_stock_image (bop->stock_icon, BST_SIZE_BIG_BUTTON),
-		      "child", label,
-		      "parent", self->op_widgets[i],
-		      NULL);
-      if (bop->tooltip)
-	gtk_tooltips_set_tip (GXK_TOOLTIPS, self->op_widgets[i], gettext (bop->tooltip), NULL);
-    }
-  gtk_widget_show_all (GTK_WIDGET (container));
+  gxk_widget_update_actions (self);
 }
 
 static void
 item_view_listen_on (BstItemView *self,
 		     SfiProxy     item)
 {
-  bse_proxy_connect (item, "swapped_signal::property-notify", bst_widget_update_activatable, self, NULL);
+  bse_proxy_connect (item, "swapped_signal::property-notify", gxk_widget_update_actions, self, NULL);
   if (self->auto_select == item)
     bst_item_view_select (self, item);
   self->auto_select = 0;
@@ -335,7 +262,7 @@ static void
 item_view_unlisten_on (BstItemView *self,
 		       SfiProxy     item)
 {
-  bse_proxy_disconnect (item, "any_signal", bst_widget_update_activatable, self, NULL);
+  bse_proxy_disconnect (item, "any_signal", gxk_widget_update_actions, self, NULL);
 }
 
 static void
@@ -379,7 +306,7 @@ bst_item_view_set_container (BstItemView *self,
 
   BST_ITEM_VIEW_GET_CLASS (self)->set_container (self, new_container);
 
-  bst_widget_update_activatable (self);
+  gxk_widget_update_actions (self);
 }
 
 void
@@ -500,22 +427,5 @@ bst_item_view_build_param_view (BstItemView  *self,
   bst_param_view_set_mask (BST_PARAM_VIEW (self->pview), "BseItem", 0, NULL, NULL);
   gtk_widget_show (self->pview);
   gtk_container_add (container, self->pview);
-  bst_widget_update_activatable (self);
-}
-
-static void
-bst_item_view_update_activatable (BstActivatable *activatable)
-{
-  BstItemView *self = BST_ITEM_VIEW (activatable);
-  BstItemViewClass *ivclass = BST_ITEM_VIEW_GET_CLASS (self);
-  gulong i;
-
-  /* update action buttons */
-  if (self->op_widgets)
-    for (i = 0; i < ivclass->n_ops; i++)
-      {
-        BstItemViewOp *bop = ivclass->ops + i;
-        if (self->op_widgets[i])
-          gtk_widget_set_sensitive (self->op_widgets[i], bst_activatable_can_activate (activatable, bop->op));
-      }
+  gxk_widget_update_actions (self);
 }

@@ -18,22 +18,13 @@
 #include "bstsongshell.h"
 
 #include "bstparamview.h"
-#include "bstactivatable.h"
 #include "bstapp.h"
 
 
 /* --- prototypes --- */
 static void	bst_song_shell_class_init	  (BstSongShellClass	  *klass);
-static void     bst_song_shell_init_activatable   (BstActivatableIface    *iface,
-                                                   gpointer                iface_data);
 static void	bst_song_shell_init		  (BstSongShell		  *pe);
 static void	bst_song_shell_rebuild		  (BstSuperShell          *super_shell);
-static void	bst_song_shell_activate		  (BstActivatable         *activatable,
-                                                   gulong                  action);
-static gboolean	bst_song_shell_can_activate	  (BstActivatable         *activatable,
-                                                   gulong                  action);
-static void     bst_song_shell_request_update     (BstActivatable         *activatable);
-static void     bst_song_shell_update_activatable (BstActivatable         *activatable);
 
 
 /* --- static variables --- */
@@ -59,13 +50,7 @@ bst_song_shell_get_type (void)
         0,      /* n_preallocs */
         (GInstanceInitFunc) bst_song_shell_init,
       };
-      static const GInterfaceInfo activatable_info = {
-        (GInterfaceInitFunc) bst_song_shell_init_activatable,           /* interface_init */
-        NULL,                                                           /* interface_finalize */
-        NULL                                                            /* interface_data */
-      };
       type = g_type_register_static (BST_TYPE_SUPER_SHELL, "BstSongShell", &type_info, 0);
-      g_type_add_interface_static (type, BST_TYPE_ACTIVATABLE, &activatable_info);
     }
   return type;
 }
@@ -81,16 +66,6 @@ bst_song_shell_class_init (BstSongShellClass *class)
   super_shell_class->rebuild = bst_song_shell_rebuild;
 
   class->factories_path = "<BstSongShell>";
-}
-
-static void
-bst_song_shell_init_activatable (BstActivatableIface *iface,
-                                 gpointer             iface_data)
-{
-  iface->activate = bst_song_shell_activate;
-  iface->can_activate = bst_song_shell_can_activate;
-  iface->request_update = bst_song_shell_request_update;
-  iface->update = bst_song_shell_update_activatable;
 }
 
 static void
@@ -166,54 +141,4 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 						"visible", TRUE,
 						NULL));
     }
-}
-
-static void
-bst_song_shell_activate (BstActivatable *activatable,
-                         gulong          action)
-{
-  BstSongShell *self = BST_SONG_SHELL (activatable);
-  // BseSong *song = BSE_SONG (super_shell->super);
-
-  if (action >= BST_ACTION_PART_FIRST && action <= BST_ACTION_PART_LAST)
-    bst_activatable_activate (BST_ACTIVATABLE (self->part_view), action);
-  else if (action >= BST_ACTION_TRACK_FIRST && action <= BST_ACTION_TRACK_LAST)
-    bst_activatable_activate (BST_ACTIVATABLE (self->track_view), action);
-  bst_widget_update_activatable (activatable);
-}
-
-static gboolean
-bst_song_shell_can_activate (BstActivatable *activatable,
-                             gulong          action)
-{
-  BstSongShell *self = BST_SONG_SHELL (activatable);
-  // BseSong *song = BSE_SONG (super_shell->super);
-
-  if (action >= BST_ACTION_PART_FIRST && action <= BST_ACTION_PART_LAST && self->part_view)
-    return bst_activatable_can_activate (BST_ACTIVATABLE (self->part_view), action);
-  else if (action >= BST_ACTION_TRACK_FIRST && action <= BST_ACTION_TRACK_LAST && self->track_view)
-    return bst_activatable_can_activate (BST_ACTIVATABLE (self->track_view), action);
-  else
-    return FALSE;
-}
-
-static void
-bst_song_shell_request_update (BstActivatable *activatable)
-{
-  BstSongShell *self = BST_SONG_SHELL (activatable);
-  /* chain to normal handler */
-  bst_activatable_default_request_update (activatable);
-  /* add activatable children */
-  if (self->part_view)
-    bst_activatable_update_enqueue (BST_ACTIVATABLE (self->part_view));
-  if (self->track_view)
-    bst_activatable_update_enqueue (BST_ACTIVATABLE (self->track_view));
-}
-
-static void
-bst_song_shell_update_activatable (BstActivatable *activatable)
-{
-  // BstSongShell *self = BST_SONG_SHELL (activatable);
-
-  /* no original actions to update */
 }

@@ -36,7 +36,6 @@ G_BEGIN_DECLS
 /* --- structures & typedefs --- */
 typedef	struct	_BstItemView		BstItemView;
 typedef	struct	_BstItemViewClass	BstItemViewClass;
-typedef	struct	_BstItemViewOp		BstItemViewOp;
 struct _BstItemView
 {
   GtkAlignment	  parent_object;
@@ -55,8 +54,6 @@ struct _BstItemViewClass
   GtkAlignmentClass parent_class;
 
   const gchar	   *item_type;
-  guint		    n_ops;
-  BstItemViewOp	   *ops;
 
   void	      (*set_container)	(BstItemView	*self,
 				 SfiProxy	 new_container);
@@ -64,13 +61,6 @@ struct _BstItemViewClass
 				 SfiProxy	 item);
   void	      (*unlisten_on)	(BstItemView	*self,
 				 SfiProxy	 item);
-};
-struct _BstItemViewOp
-{
-  const gchar *op_name;
-  guint	       op;
-  const gchar *stock_icon;
-  const gchar *tooltip;
 };
 
 
@@ -89,8 +79,6 @@ void		bst_item_view_set_tree  	(BstItemView	*item_view,
 						 GtkTreeView    *tree);
 void            bst_item_view_complete_tree     (BstItemView    *self,
 						 GtkTreeView    *tree);
-void		bst_item_view_build_buttons  	(BstItemView	*item_view,
-						 GtkContainer   *container);
 void            bst_item_view_build_param_view  (BstItemView    *self,
                                                  GtkContainer   *container);
 void		bst_item_view_refresh   	(BstItemView    *self,

@@ -1,0 +1,818 @@
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 2003 Tim Janik
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include "gxkaction.h"
+#include <string.h>
+#include <libintl.h>
+
+
+#define intern_null_string(s,sconst)      (s ? (sconst ? g_intern_static_string : g_intern_string) (s) : NULL)
+#define intern_i18n_string(idom,s,sconst) (intern_null_string (idom && s ? dgettext (idom, s) : s, sconst))
+
+
+/* --- action class ---- */
+typedef struct {
+  GxkActionCheck  acheck;
+  GxkActionExec   aexec;
+  gpointer        user_data;
+  GxkActionGroup *agroup;
+  guint           class_flags;
+  /* non-key fields */
+  guint           ref_count;
+} ActionClass;
+static GHashTable *action_class_ht = NULL;
+
+static gboolean
+action_class_equals (gconstpointer v1,
+                     gconstpointer v2)
+{
+  const ActionClass *c1 = v1;
+  const ActionClass *c2 = v2;
+  return (c1->acheck      == c2->acheck &&
+          c1->aexec       == c2->aexec &&
+          c1->user_data   == c2->user_data &&
+          c1->agroup      == c2->agroup &&
+          c1->class_flags == c2->class_flags);
+}
+
+static guint
+action_class_hash (gconstpointer v)
+{
+  const ActionClass *c = v;
+  return (G_HASH_POINTER (c->acheck) ^
+          G_HASH_POINTER (c->aexec) ^
+          G_HASH_POINTER (c->user_data) ^
+          G_HASH_POINTER (c->agroup) ^
+          c->class_flags);
+}
+
+static ActionClass*
+action_class_ref_new (GxkActionCheck  acheck,
+                      GxkActionExec   aexec,
+                      gpointer        user_data,
+                      GxkActionGroup *agroup,
+                      guint           class_flags)
+{
+  ActionClass key, *c;
+  key.acheck = acheck;
+  key.aexec = aexec;
+  key.user_data = user_data;
+  key.agroup = agroup;
+  key.class_flags = class_flags;
+  c = g_hash_table_lookup (action_class_ht, &key);
+  if (!c)
+    {
+      key.agroup = agroup ? g_object_ref (agroup) : NULL;
+      key.ref_count = 1;
+      c = g_memdup (&key, sizeof (key));
+      g_hash_table_insert (action_class_ht, c, c);
+    }
+  else
+    c->ref_count++;
+  return c;
+}
+
+static ActionClass*
+action_class_ref (ActionClass *aclass)
+{
+  g_return_val_if_fail (aclass->ref_count > 0, NULL);
+  aclass->ref_count++;
+  return aclass;
+}
+
+static void
+action_class_unref (ActionClass *aclass)
+{
+  g_return_if_fail (aclass->ref_count > 0);
+  aclass->ref_count--;
+  if (!aclass->ref_count)
+    {
+      g_hash_table_remove (action_class_ht, aclass);
+      if (aclass->agroup)
+        g_object_unref (aclass->agroup);
+      g_free (aclass);
+    }
+}
+
+
+/* --- action list --- */
+typedef struct {
+  ActionClass   *klass;
+  const gchar   *key;
+  GxkStockAction action;
+  GSList        *widgets;
+} ActionEntry;
+static GQuark quark_action_entry = 0;
+
+struct GxkActionList {
+  guint           n_entries;
+  ActionEntry   **entries;
+  GxkActionGroup *agroup;
+};
+
+static void
+action_list_add (GxkActionList        *alist,
+                 ActionClass          *klass,
+                 gboolean              sconst,
+                 const gchar          *key,
+                 const GxkStockAction *action,
+                 const gchar          *i18n_domain)
+{
+  ActionEntry *entry = g_new (ActionEntry, 1);
+  guint j;
+  entry->klass = action_class_ref (klass);
+  entry->key = g_intern_string (key);
+  entry->action = *action;
+  entry->action.name = intern_i18n_string (i18n_domain, action->name, sconst);
+  // g_print ("action-trans: %s %s => %s\n", i18n_domain, action->name, entry->action.name);
+  entry->action.accelerator = intern_null_string (action->accelerator, sconst);
+  entry->action.tooltip = intern_i18n_string (i18n_domain, action->tooltip, sconst);
+  entry->action.stock_icon = intern_null_string (action->stock_icon, sconst);
+  entry->widgets = NULL;
+  j = alist->n_entries++;
+  alist->entries = g_renew (ActionEntry*, alist->entries, alist->n_entries);
+  alist->entries[j] = entry;
+}
+
+static void
+action_entry_free (ActionEntry *entry)
+{
+  while (entry->widgets)
+    {
+      GtkWidget *widget = g_slist_pop_head (&entry->widgets);
+      g_object_set_qdata (widget, quark_action_entry, NULL);
+      g_object_unref (widget);
+    }
+  action_class_unref (entry->klass);
+  g_free (entry);
+}
+
+GxkActionList*
+gxk_action_list_create (void)
+{
+  return gxk_action_list_create_grouped (NULL);
+}
+
+GxkActionList*
+gxk_action_list_create_grouped (GxkActionGroup *agroup)
+{
+  GxkActionList *alist = g_new0 (GxkActionList, 1);
+  alist->agroup = agroup ? g_object_ref (agroup) : NULL;
+  return alist;
+}
+
+void
+gxk_action_list_add_actions (GxkActionList        *alist,
+                             guint                 n_actions,
+                             const GxkStockAction *actions,
+                             const gchar          *i18n_domain,
+                             GxkActionCheck        acheck,
+                             GxkActionExec         aexec,
+                             gpointer              user_data)
+{
+  const gchar *idomain = i18n_domain ? i18n_domain : textdomain (NULL);
+  ActionClass *klass = action_class_ref_new (acheck, aexec, user_data, alist->agroup, 0);
+  guint i;
+  for (i = 0; i < n_actions; i++)
+    {
+      g_return_if_fail (actions[i].name != NULL);
+      action_list_add (alist, klass, TRUE, actions[i].name, actions + i, idomain);
+    }
+  action_class_unref (klass);
+}
+
+void
+gxk_action_list_add_translated (GxkActionList          *alist,
+                                const gchar            *key,
+                                const gchar            *name,          /* translated (key) */
+                                const gchar            *accelerator,
+                                const gchar            *tooltip,       /* translated */
+                                gulong                  action_id,
+                                const gchar            *stock_icon,
+                                GxkActionCheck          acheck,
+                                GxkActionExec           aexec,
+                                gpointer                user_data)
+{
+  ActionClass *klass = action_class_ref_new (acheck, aexec, user_data, alist->agroup, 0);
+  GxkStockAction a = { 0, };
+  g_return_if_fail (key && name);
+  a.name = name;
+  a.accelerator = accelerator;
+  a.tooltip = tooltip;
+  a.action_id = action_id;
+  a.stock_icon = stock_icon;
+  action_list_add (alist, klass, FALSE, key, &a, NULL);
+  action_class_unref (klass);
+}
+
+static gint
+action_entries_compare (gconstpointer v1,
+                        gconstpointer v2,
+                        gpointer      user_data)
+{
+  const ActionEntry *const*p1 = v1, *e1 = *p1;
+  const ActionEntry *const*p2 = v2, *e2 = *p2;
+  return strcmp (e1->action.name, e2->action.name);
+}
+
+GxkActionList*
+gxk_action_list_sort (GxkActionList *alist)
+{
+  g_qsort_with_data (alist->entries, alist->n_entries, sizeof (alist->entries[0]), action_entries_compare, NULL);
+  return alist;
+}
+
+GxkActionList*
+gxk_action_list_merge (GxkActionList *alist1,
+                       GxkActionList *alist2)
+{
+  guint j = alist1->n_entries;
+  alist1->n_entries += alist2->n_entries;
+  alist1->entries = g_renew (ActionEntry*, alist1->entries, alist1->n_entries);
+  memcpy (alist1->entries + j, alist2->entries, sizeof (alist2->entries[0]) * alist2->n_entries);
+  if (alist1->agroup != alist2->agroup && alist1->agroup)
+    {
+      g_object_unref (alist1->agroup);
+      alist1->agroup = NULL;
+    }
+  g_free (alist2->entries);
+  if (alist2->agroup)
+    g_object_unref (alist2->agroup);
+  g_free (alist2);
+  return alist1;
+}
+
+GxkActionList*
+gxk_action_list_copy (GxkActionList *alist)
+{
+  GxkActionList *al = gxk_action_list_create_grouped (alist->agroup);
+  al->n_entries = alist->n_entries;
+  al->entries = g_renew (ActionEntry*, al->entries, al->n_entries);
+  memcpy (al->entries, alist->entries, sizeof (alist->entries[0]) * alist->n_entries);
+  return al;
+}
+
+guint
+gxk_action_list_get_n_actions (GxkActionList *alist)
+{
+  return alist->n_entries;
+}
+
+void
+gxk_action_list_get_action (GxkActionList          *alist,
+                            guint                   nth,
+                            GxkAction              *action)
+{
+  ActionEntry *e;
+  g_return_if_fail (nth < alist->n_entries);
+  e = alist->entries[nth];
+  action->key = e->key;
+  action->action_data = e;
+  action->name = e->action.name;
+  action->accelerator = e->action.accelerator;
+  action->tooltip = e->action.tooltip;
+  action->action_id = e->action.action_id;
+  action->stock_icon = e->action.stock_icon;
+  action->options = NULL;
+}
+
+static void
+widget_set_active (GxkActionGroup *agroup,
+                   GtkWidget      *widget)
+{
+  ActionEntry *e = g_object_get_qdata (widget, quark_action_entry);
+  if (e)
+    {
+      GValue value = { 0, };
+      g_value_init (&value, G_TYPE_BOOLEAN);
+      g_value_set_boolean (&value, agroup->action_id == e->action.action_id);
+      g_object_set_property ((GObject*) widget, "active", &value);
+      g_value_unset (&value);
+    }
+}
+
+void
+gxk_action_list_regulate_widget (GxkActionList          *alist,
+                                 guint                   nth,
+                                 GtkWidget              *widget)
+{
+  ActionEntry *e;
+  g_return_if_fail (nth < alist->n_entries);
+  e = alist->entries[nth];
+  e->widgets = g_slist_prepend (e->widgets, g_object_ref (widget));
+  g_object_set_qdata (widget, quark_action_entry, e);
+  if (e->klass->agroup)
+    {
+      GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (widget), "active");
+      if (pspec && pspec->value_type == G_TYPE_BOOLEAN)
+        g_signal_connect_object (e->klass->agroup, "changed", G_CALLBACK (widget_set_active), widget, 0);
+    }
+}
+
+void
+gxk_action_list_free (GxkActionList *alist)
+{
+  guint i;
+  for (i = 0; i < alist->n_entries; i++)
+    action_entry_free (alist->entries[i]);
+  g_free (alist->entries);
+  if (alist->agroup)
+    g_object_unref (alist->agroup);
+   g_free (alist);
+}
+
+void
+gxk_action_activate_callback (gconstpointer action_data)
+{
+  const ActionEntry *e = action_data;
+  g_return_if_fail (e && e->klass && e->klass->ref_count > 0);
+  if (!e->klass->agroup || e->klass->agroup->lock_count == 0)
+    {
+      if (!e->klass->acheck || e->klass->acheck (e->klass->user_data, e->action.action_id))
+        {
+          if (e->klass->agroup)
+            gxk_action_group_select (e->klass->agroup, e->action.action_id);
+          if (e->klass->aexec)
+            e->klass->aexec (e->klass->user_data, e->action.action_id);
+        }
+      else
+        {
+          gboolean sensitive = FALSE;
+          gboolean active = e->klass->agroup && e->klass->agroup->action_id == e->action.action_id;
+          GSList *wnode;
+          for (wnode = e->widgets; wnode; wnode = wnode->next)
+            gxk_widget_regulate (wnode->data, sensitive, active);
+        }
+    }
+}
+
+
+/* --- GtkWindow action sets --- */
+typedef struct {
+  GtkWidget     *widget;
+  gchar         *prefix;
+  GxkActionList *alist;
+  GSList        *snode;
+} AcionSet;
+static GQuark quark_action_sets = 0;
+static GQuark quark_action_factories = 0;
+
+static void
+window_add_action_set (GtkWidget *window,
+                       AcionSet  *aset)
+{
+  GSList *slist;
+  g_return_if_fail (aset->snode == NULL);
+  g_return_if_fail (GTK_IS_WIDGET (aset->widget));
+  slist = g_object_get_qdata (window, quark_action_sets);
+  slist = g_slist_prepend (slist, aset);
+  aset->snode = slist;
+  g_object_set_qdata (window, quark_action_sets, slist);
+  slist = g_object_get_qdata (window, quark_action_factories);
+  while (slist)
+    {
+      GxkActionFactory *afactory = slist->data;
+      slist = slist->next;
+      GXK_ACTION_FACTORY_GET_CLASS (afactory)->match_action_list (afactory, aset->prefix, aset->alist);
+    }
+}
+
+static void
+window_remove_action_sets (GtkWidget *window,
+                           GtkWidget *widget)
+{
+  GSList *start = NULL, *last = NULL, *slist = g_object_get_qdata (window, quark_action_sets);
+  while (slist)
+    {
+      AcionSet *aset = slist->data;
+      GSList *tmpsl = slist;
+      slist = slist->next;
+      if (!aset)
+        g_slist_free_1 (tmpsl);
+      else if (aset->widget == widget)
+        {
+          g_assert (aset->snode == tmpsl); /* paranoid */
+          aset->snode = NULL;
+          g_slist_free_1 (tmpsl);
+        }
+      else
+        {
+          if (last)
+            last->next = tmpsl;
+          else
+            start = tmpsl;
+          last = tmpsl;
+        }
+    }
+  g_object_set_qdata (window, quark_action_sets, start);
+}
+
+static GSList *window_queue = NULL;
+static GQuark  quark_widgets_upwards = 0;
+static GQuark  quark_widgets_downwards = 0;
+
+static void
+free_widget_slist (gpointer data)
+{
+  GSList *slist = data;
+  while (slist)
+    {
+      GtkWidget *widget = g_slist_pop_head (&slist);
+      g_object_unref (widget);
+    }
+}
+
+static inline gboolean
+check_ancestor (GtkWidget *widget,
+                GtkWidget *ancestor)
+{
+  while (widget)
+    {
+      if (widget == ancestor)
+        return TRUE;
+      widget = widget->parent;
+    }
+  return FALSE;
+}
+
+static gboolean
+window_action_update_timer (gpointer data)
+{
+  GDK_THREADS_ENTER ();
+  while (window_queue)
+    {
+      GtkWidget *window = g_slist_pop_head (&window_queue);
+      GSList *slist = g_object_get_qdata (window, quark_action_sets);
+      GSList *upwards = g_object_steal_qdata (window, quark_widgets_upwards);
+      GSList *downwards = g_object_steal_qdata (window, quark_widgets_downwards);
+      GtkWidget *last = NULL;
+      gboolean needs_update = FALSE;
+      for (; slist; slist = slist->next)
+        {
+          AcionSet *aset = slist->data;
+          GxkActionList *alist = aset ? aset->alist : NULL;
+          guint i;
+          if (!aset)
+            continue;
+          if (last != aset->widget) /* minor caching */
+            {
+              GSList *wnode;
+              last = aset->widget;
+              needs_update = FALSE;
+              for (wnode = upwards; wnode; wnode = wnode->next)
+                if (check_ancestor (wnode->data, aset->widget))
+                  {
+                    needs_update = TRUE;
+                    break;
+                  }
+              for (wnode = needs_update ? NULL : downwards; wnode; wnode = wnode->next)
+                if (check_ancestor (aset->widget, wnode->data))
+                  {
+                    needs_update = TRUE;
+                    break;
+                  }
+            }
+          for (i = 0; i < alist->n_entries; i++)
+            {
+              ActionEntry *e = alist->entries[i];
+              gboolean sensitive, active;
+              GSList *wnode;
+              if (!e->widgets)
+                continue;
+              sensitive = !e->klass->acheck || e->klass->acheck (e->klass->user_data, e->action.action_id);
+              active = e->klass->agroup && e->klass->agroup->action_id == e->action.action_id;
+              for (wnode = e->widgets; wnode; wnode = wnode->next)
+                gxk_widget_regulate (wnode->data, sensitive, active);
+            }
+        }
+      free_widget_slist (upwards);
+      free_widget_slist (downwards);
+      g_object_unref (window);
+    }
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+static void
+window_queue_action_updates (GtkWidget *window,
+                             GtkWidget *upwards,
+                             GtkWidget *downwards)
+{
+  gboolean need_timer = FALSE;
+  if (((GObject*) window)->ref_count && upwards && ((GObject*) upwards)->ref_count)
+    {
+      GSList *slist = g_object_get_qdata (window, quark_widgets_upwards);
+      if (!g_slist_find (slist, upwards))
+        {
+          if (!slist)
+            g_object_set_qdata_full (window, quark_widgets_upwards,
+                                     g_slist_prepend (NULL, g_object_ref (upwards)),
+                                     free_widget_slist);
+          else
+            slist->next = g_slist_prepend (slist->next, g_object_ref (upwards));
+          need_timer = TRUE;
+        }
+    }
+  if (((GObject*) window)->ref_count && downwards && ((GObject*) downwards)->ref_count)
+    {
+      GSList *slist = g_object_get_qdata (window, quark_widgets_downwards);
+      if (!g_slist_find (slist, downwards))
+        {
+          if (!slist)
+            g_object_set_qdata_full (window, quark_widgets_downwards,
+                                     g_slist_prepend (NULL, g_object_ref (downwards)),
+                                     free_widget_slist);
+          else
+            slist->next = g_slist_prepend (slist->next, g_object_ref (downwards));
+          need_timer = TRUE;
+        }
+    }
+  if (need_timer && !g_slist_find (window_queue, window))
+    {
+      if (!window_queue)
+        g_timeout_add (50, window_action_update_timer, NULL);
+      window_queue = g_slist_prepend (window_queue, g_object_ref (window));
+    }
+}
+
+
+/* --- widget action handling --- */
+static GQuark quark_widget_actions = 0;
+
+static void
+gxk_widget_hierarchy_changed (GtkWidget *widget,
+                              GtkWidget *previous_toplevel)
+{
+  if (previous_toplevel)
+    window_remove_action_sets (previous_toplevel, widget);
+  else
+    {
+      GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+      GSList *slist = g_object_get_qdata (widget, quark_widget_actions);
+      while (slist)
+        {
+          window_add_action_set (toplevel, slist->data);
+          slist = slist->next;
+        }
+    }
+}
+
+static void
+destroy_action_sets (gpointer data)
+{
+  GSList *slist = data;
+  while (slist)
+    {
+      AcionSet *aset = g_slist_pop_head (&slist);
+      if (aset->snode)  /* still in window list */
+        {
+          g_assert (aset->snode->data == (void*) aset); /* paranoid */
+          aset->snode->data = NULL;
+        }
+      gxk_action_list_free (aset->alist);
+      g_free (aset->prefix);
+      g_free (aset);
+    }
+}
+
+void
+gxk_widget_publish_action_list (gpointer       widget,
+                                const gchar   *prefix,
+                                GxkActionList *alist)
+{
+  AcionSet *aset = g_new0 (AcionSet, 1);
+  GtkWidget *toplevel;
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  aset->widget = widget;
+  aset->prefix = g_strdup (prefix);
+  aset->alist = alist;
+  g_object_set_qdata_full (widget, quark_widget_actions,
+                           g_slist_prepend (g_object_steal_qdata (widget, quark_widget_actions), aset),
+                           destroy_action_sets);
+  toplevel = gtk_widget_get_toplevel (widget);
+  if (GTK_IS_WINDOW (toplevel))
+    window_add_action_set (toplevel, aset);
+  if (!gxk_signal_handler_pending (widget, "hierarchy_changed", G_CALLBACK (gxk_widget_hierarchy_changed), NULL))
+    g_object_connect (widget, "signal_after::hierarchy-changed", gxk_widget_hierarchy_changed, NULL, NULL);
+  gxk_widget_update_actions_downwards (widget);
+}
+
+void
+gxk_widget_publish_actions (gpointer                widget,
+                            const gchar            *prefix,
+                            guint                   n_actions,
+                            const GxkStockAction   *actions,
+                            const gchar            *i18n_domain,
+                            GxkActionCheck          acheck,
+                            GxkActionExec           aexec)
+{
+  GxkActionList *alist = gxk_action_list_create ();
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  gxk_action_list_add_actions (alist, n_actions, actions, i18n_domain, acheck, aexec, widget);
+  gxk_widget_publish_action_list (widget, prefix, alist);
+}
+
+void
+gxk_widget_update_actions_upwards (gpointer widget)
+{
+  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (GTK_IS_WINDOW (toplevel))
+    window_queue_action_updates (toplevel, widget, NULL);
+}
+
+void
+gxk_widget_update_actions_downwards (gpointer widget)
+{
+  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (GTK_IS_WINDOW (toplevel))
+    window_queue_action_updates (toplevel, NULL, widget);
+}
+
+void
+gxk_widget_update_actions (gpointer widget)
+{
+  GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (GTK_IS_WINDOW (toplevel))
+    window_queue_action_updates (toplevel, widget, widget);
+}
+
+void
+gxk_widget_regulate (GtkWidget      *widget,
+                     gboolean        sensitive,
+                     gboolean        active)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (((GObject*) widget)->ref_count > 0)
+    {
+      GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (widget), "active");
+      gtk_widget_set_sensitive (widget, sensitive);
+      if (pspec && pspec->value_type == G_TYPE_BOOLEAN)
+        {
+          GValue value = { 0, };
+          g_value_init (&value, G_TYPE_BOOLEAN);
+          g_value_set_boolean (&value, active);
+          g_object_set_property ((GObject*) widget, "active", &value);
+          g_value_unset (&value);
+        }
+    }
+}
+
+
+/* --- action group --- */
+static gulong action_group_signal_changed = 0;
+
+static void
+gxk_action_group_class_init (GxkActionGroupClass *class)
+{
+  action_group_signal_changed = g_signal_new ("changed", G_OBJECT_CLASS_TYPE (class),
+                                              G_SIGNAL_RUN_LAST,
+                                              G_STRUCT_OFFSET (GxkActionGroupClass, changed),
+                                              NULL, NULL, gtk_signal_default_marshaller,
+                                              G_TYPE_NONE, 0);
+}
+
+GType
+gxk_action_group_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      static const GTypeInfo type_info = {
+        sizeof (GxkActionGroupClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) gxk_action_group_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (GxkActionGroup),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      type = g_type_register_static (G_TYPE_OBJECT, "GxkActionGroup", &type_info, 0);
+    }
+  return type;
+}
+
+GxkActionGroup*
+gxk_action_group_new (void)
+{
+  return g_object_new (GXK_TYPE_ACTION_GROUP, NULL);
+}
+
+void
+gxk_action_group_select (GxkActionGroup *self,
+                         gulong          action_id)
+{
+  g_return_if_fail (GXK_IS_ACTION_GROUP (self));
+  if (!self->lock_count && action_id != self->action_id)
+    {
+      self->action_id = action_id;
+      self->lock_count++;
+      g_signal_emit (self, action_group_signal_changed, 0);
+      self->lock_count--;
+    }
+}
+
+void
+gxk_action_group_lock (GxkActionGroup *self)
+{
+  g_return_if_fail (GXK_IS_ACTION_GROUP (self));
+  self->lock_count++;
+}
+
+void
+gxk_action_group_unlock (GxkActionGroup *self)
+{
+  g_return_if_fail (GXK_IS_ACTION_GROUP (self));
+  g_return_if_fail (self->lock_count > 0);
+  self->lock_count--;
+}
+
+void
+gxk_action_group_dispose (GxkActionGroup *self)
+{
+  g_return_if_fail (GXK_IS_ACTION_GROUP (self));
+  g_object_run_dispose ((GObject*) self);
+}
+
+
+/* --- action factory --- */
+GType
+gxk_action_factory_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      static const GTypeInfo type_info = {
+        sizeof (GxkActionFactoryClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) NULL,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (GxkActionFactory),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      type = g_type_register_static (G_TYPE_OBJECT, "GxkActionFactory", &type_info, 0);
+    }
+  return type;
+}
+
+void
+gxk_window_add_action_factory (GtkWindow        *window,
+                               GxkActionFactory *afactory)
+{
+  GSList *slist = g_object_get_qdata (window, quark_action_factories);
+  g_object_set_qdata (window, quark_action_factories, g_slist_prepend (slist, afactory));
+  slist = g_object_get_qdata (window, quark_action_sets);
+  while (slist)
+    {
+      AcionSet *aset = slist->data;
+      slist = slist->next;
+      if (aset)
+        GXK_ACTION_FACTORY_GET_CLASS (afactory)->match_action_list (afactory, aset->prefix, aset->alist);
+    }
+}
+
+void
+gxk_window_remove_action_factory (GtkWindow        *window,
+                                  GxkActionFactory *afactory)
+{
+  GSList *slist = g_object_get_qdata (window, quark_action_factories);
+  slist = g_slist_remove (slist, afactory);
+  g_object_set_qdata (window, quark_action_factories, slist);
+}
+
+
+/* --- initialization --- */
+void
+_gxk_init_actions (void)
+{
+  g_assert (action_class_ht == NULL);
+  action_class_ht = g_hash_table_new (action_class_hash, action_class_equals);
+  quark_action_sets = g_quark_from_static_string ("GxkWindow-action-sets");
+  quark_action_factories = g_quark_from_static_string ("GxkActionFactory-list");
+  quark_action_entry = g_quark_from_static_string ("GxkAction-entry");
+  quark_widget_actions = g_quark_from_static_string ("GxkWidget-action-sets");
+  quark_widgets_upwards = g_quark_from_static_string ("GxkWindow-widgets-upwards");
+  quark_widgets_downwards = g_quark_from_static_string ("GxkWindow-widgets-downwards");
+}

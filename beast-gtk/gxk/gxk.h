@@ -22,10 +22,13 @@
 #include <sfi/glib-extra.h>
 #include <gtk/gtk.h>
 
+#include <gxk/gxkaction.h>
+#include <gxk/gxkauxwidgets.h>
 #include <gxk/gxkcanvas.h>
 #include <gxk/gxkcellrendererpopup.h>
 #include <gxk/gxkdialog.h>
 #include <gxk/gxkgadget.h>
+#include <gxk/gxkgadgetfactory.h>
 #include <gxk/gxkglobals.h>
 #include <gxk/gxkled.h>
 #include <gxk/gxklistwrapper.h>

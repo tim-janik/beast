@@ -46,16 +46,6 @@ struct _BstWaveViewClass
 };
 
 
-/* --- actions --- */
-enum {
-  BST_ACTION_LOAD_WAVE  = BST_ACTION_WAVE_FIRST,
-  BST_ACTION_LOAD_WAVE_LIB,
-  BST_ACTION_DELETE_WAVE,
-  BST_ACTION_EDIT_WAVE,
-  BST_ACTION_WAVE_LAST
-};
-
-
 /* --- prototypes --- */
 GType		bst_wave_view_get_type          (void);
 GtkWidget*	bst_wave_view_new               (SfiProxy     wrepo);

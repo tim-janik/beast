@@ -39,4 +39,6 @@ gxk_init (void)
 
   _gxk_init_utils ();
   _gxk_init_stock ();
+  _gxk_init_actions ();
+  _gxk_init_gadget_types ();
 }

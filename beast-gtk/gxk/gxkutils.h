@@ -41,6 +41,10 @@ GtkWidget*  gxk_item_factory_get_item		(GtkItemFactory	 *ifactory,
 GtkWidget*  gxk_item_factory_get_widget		(GtkItemFactory	 *ifactory,
 						 const gchar	 *path);
 void	    gxk_widget_proxy_requisition	(GtkWidget	 *widget);
+void        gxk_submenu_attach_to_item          (GtkMenu         *menu,
+                                                 GtkMenuItem     *menu_item);
+GtkWidget*  gxk_widget_get_attach_toplevel      (GtkWidget       *widget);
+GtkAccelGroup*  gxk_window_get_menu_accel_group (GtkWindow       *window);
 
 
 /* --- GtkFileSelection workarounds --- */

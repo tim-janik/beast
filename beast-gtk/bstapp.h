@@ -115,8 +115,9 @@ void            bst_app_reload_supers           (BstApp         *app);
 void            bst_app_create_default          (BstApp         *app);
 GtkWidget*      bst_app_get_current_shell       (BstApp         *app);
 SfiProxy        bst_app_get_current_super       (BstApp         *app);
-GtkItemFactory* bst_app_menu_factory            (BstApp         *app);
 BstApp*         bst_app_find                    (SfiProxy        project);
+void            bst_app_trigger_action          (BstApp         *app,
+                                                 gulong          action);
 
 G_END_DECLS
 

@@ -16,7 +16,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsttrackview.h"
-#include "bstactivatable.h"
 #include "bstparam.h"
 #include "bsttracksynthdialog.h"
 
@@ -29,9 +28,9 @@
 static void	bst_track_view_class_init	(BstTrackViewClass	*klass);
 static void	bst_track_view_init		(BstTrackView		*self);
 static void	bst_track_view_finalize		(GObject		*object);
-static void     bst_track_view_activate         (BstActivatable         *activatable,
+static gboolean track_view_action_check         (gpointer                data,
                                                  gulong                  action);
-static gboolean bst_track_view_can_activate     (BstActivatable         *activatable,
+static void     track_view_action_exec          (gpointer                data,
                                                  gulong                  action);
 static void     track_view_set_container        (BstItemView            *self,
 						 SfiProxy                new_container);
@@ -55,14 +54,19 @@ enum {
 };
 
 
-/* --- track ops --- */
-static BstItemViewOp track_view_ops[] = {
-  { N_("Add"),		BST_ACTION_ADD_TRACK,   	BST_STOCK_TRACK,
-    N_("Add a new track to this song") },
-  { N_("Delete"),	BST_ACTION_DELETE_TRACK,	BST_STOCK_TRASHCAN,
-    N_("Delete the currently selected track") },
+/* --- track actions --- */
+enum {
+  ACTION_ADD_TRACK,
+  ACTION_DELETE_TRACK
 };
-static guint n_track_view_ops = sizeof (track_view_ops) / sizeof (track_view_ops[0]);
+static const GxkStockAction track_view_actions[] = {
+  { N_("Add"),            NULL,         N_("Add a new track to this song"),
+    ACTION_ADD_TRACK,     BST_STOCK_TRACK,
+  },
+  { N_("Delete"),         NULL,         N_("Delete the currently selected track"),
+    ACTION_DELETE_TRACK,  BST_STOCK_TRASHCAN,
+  },
+};
 
 
 /* --- variables --- */
@@ -88,10 +92,6 @@ bst_track_view_get_type (void)
         (GInstanceInitFunc) bst_track_view_init,
       };
       type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstTrackView", &type_info, 0);
-      bst_type_implement_activatable (type,
-                                      bst_track_view_activate,
-                                      bst_track_view_can_activate,
-                                      NULL);
     }
   return type;
 }
@@ -106,8 +106,6 @@ bst_track_view_class_init (BstTrackViewClass *class)
 
   gobject_class->finalize = bst_track_view_finalize;
 
-  item_view_class->n_ops = n_track_view_ops;
-  item_view_class->ops = track_view_ops;
   item_view_class->set_container = track_view_set_container;
   item_view_class->listen_on = track_view_listen_on;
   item_view_class->unlisten_on = track_view_unlisten_on;
@@ -448,6 +446,9 @@ bst_track_view_init (BstTrackView *self)
   GxkGadget *gadget;
 
   /* create GUI */
+  gxk_widget_publish_actions (self, "track-view-actions",
+                              G_N_ELEMENTS (track_view_actions), track_view_actions,
+                              NULL, track_view_action_check, track_view_action_exec);
   gadget = gxk_gadget_complete (GTK_WIDGET (self), "beast", "track-view", NULL);
 
   /* item list model */
@@ -522,9 +523,6 @@ bst_track_view_init (BstTrackView *self)
   /* track roll controller */
   self->troll_ctrl = bst_track_roll_controller_new (self->troll);
   bst_track_roll_controller_set_song (self->troll_ctrl, iview->container);
-
-  /* create tool buttons */
-  bst_item_view_build_buttons (iview, gxk_gadget_find (gadget, "tree-button-area"));
 
   /* create toolbar */
   self->toolbar = gxk_toolbar_new (&self->toolbar);
@@ -675,17 +673,17 @@ track_view_unlisten_on (BstItemView *iview,
 }
 
 static void
-bst_track_view_activate (BstActivatable         *activatable,
-                         gulong                  action)
+track_view_action_exec (gpointer data,
+                        gulong   action)
 {
-  BstTrackView *self = BST_TRACK_VIEW (activatable);
+  BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
   SfiProxy song = item_view->container;
 
   switch (action)
     {
       SfiProxy item;
-    case BST_ACTION_ADD_TRACK:
+    case ACTION_ADD_TRACK:
       bse_item_group_undo (song, "Add Track");
       item = bse_song_create_track (song);
       if (item)
@@ -697,27 +695,27 @@ bst_track_view_activate (BstActivatable         *activatable,
 	}
       bse_item_ungroup_undo (song);
       break;
-    case BST_ACTION_DELETE_TRACK:
+    case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
       bse_song_remove_track (song, item);
       break;
     }
-  bst_widget_update_activatable (activatable);
+  gxk_widget_update_actions_downwards (self);
 }
 
 static gboolean
-bst_track_view_can_activate (BstActivatable *activatable,
-                             gulong          action)
+track_view_action_check (gpointer data,
+                         gulong   action)
 {
-  BstTrackView *self = BST_TRACK_VIEW (activatable);
+  BstTrackView *self = BST_TRACK_VIEW (data);
   BstItemView *item_view = BST_ITEM_VIEW (self);
   
   switch (action)
     {
       SfiProxy item;
-    case BST_ACTION_ADD_TRACK:
+    case ACTION_ADD_TRACK:
       return TRUE;
-    case BST_ACTION_DELETE_TRACK:
+    case ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
       return item != 0;
     default:

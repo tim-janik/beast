@@ -12,29 +12,38 @@
   <xdef:frame-shadow-out      inherit="frame"               prop:shadow="shadow-out" />
   <xdef:frame-etched-in       inherit="frame"               prop:shadow="etched-in" />
   <xdef:frame-etched-out      inherit="frame"               prop:shadow="etched-out" />
-  <!-- frame -->
+  <!-- boxes: expand= fill= spacing= -->
   <xdef:hbox                  inherit="GtkHBox"
     prop:spacing="$(ifdef,spacing,$spacing,0)"
-    default-pack:expand="0"
-    default-pack:fill="1"
+    default-pack:expand="$(ifdef,expand,$expand,0)"
+    default-pack:fill="$(ifdef,fill,$fill,1)"
     />
   <xdef:vbox                  inherit="GtkVBox"
     prop:spacing="$(ifdef,spacing,$spacing,0)"
-    default-pack:expand="0"
-    default-pack:fill="1"
+    default-pack:expand="$(ifdef,expand,$expand,0)"
+    default-pack:fill="$(ifdef,fill,$fill,1)"
     />
   <xdef:outer-hbox            inherit="hbox"
     prop:border-width="3" />
   <xdef:outer-vbox            inherit="vbox"
     prop:border-width="3" />
-  <!-- button: stock= label= -->
+  <!-- buttons: stock= label= focus= default= -->
   <xdef:button                inherit="GtkButton"
-    prop:label="$(null-collapse,$(if,$label,$label,$stock))"
+    prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
+    prop:can-default="$(ifdef,default,$default,0)"
+    prop:can-focus="$(ifdef,focus,$focus,1)"
     prop:use-stock="$(if,$stock)" />
   <xdef:can-default-button    inherit="button"
     prop:can-default="1" />
   <xdef:default-button        inherit="can-default-button"
     prop:has-default="1" />
+  <xdef:checkbutton           inherit="GtkCheckButton"
+    prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
+    prop:can-default="$(ifdef,default,$default,0)"
+    prop:can-focus="$(ifdef,focus,$focus,1)"
+    prop:use-stock="$(if,$stock)" />
+  <xdef:togglebutton          inherit="checkbutton"
+    prop:draw-indicator="0" />
   <!-- label: label= -->
   <xdef:label                 inherit="GtkLabel"
     prop:label="$label" />
@@ -53,9 +62,27 @@
     prop:show-tabs="1" prop:tab-pos="top" />
   <xdef:bottom-deck           inherit="deck"
     prop:show-tabs="1" prop:tab-pos="bottom" />
-  <!-- menu widgets -->
-  <xdef:menubar               inherit="GtkMenuBar"          />
-  <xdef:menuitem              inherit="GtkImageMenuItem"    />
+  <!-- image: stock-image= stock-size= -->
+  <xdef:image                 inherit="GxkImage"
+    prop:stock-size="$stock-size"
+    prop:stock="$stock-image" />
+  <!-- menubar -->
+  <xdef:menubar               inherit="GtkMenuBar" />
+  <!-- menuitem: label= accel-path= accel= stock-image= -->
+  <xdef:menuitem              inherit="GxkMenuItem"
+    prop:text="$label"
+    prop:accel-path="$(null-collapse,$accel-path)"
+    prop:accel="$accel"
+    prop:stock-image="$stock-image" />
+  <!-- submenu: label= stock-image= -->
+  <xdef:submenu               inherit="GxkMenuItem"
+    default-area="menu"
+    prop:text="$label"
+    prop:stock-image="$stock-image" >
+    <GtkMenu name="menu" tearoff-title="$label" />
+  </xdef:submenu>
+  <xdef:submenu-last        inherit="submenu"
+    prop:right-justify="1" />
   <!-- paned containers -->
   <xdef:hpaned                inherit="GtkHPaned" />
   <xdef:vpaned                inherit="GtkVPaned" />
@@ -84,4 +111,37 @@
     <vbox name="south" />
   </xdef:border-layout>
       
+
+  <!-- Gxk builtin types -->
+
+  <!-- widget-patcher -->
+  <xdef:widget-patcher inherit="GxkWidgetPatcher" />
+  <!-- tooltip: text= -->
+  <xdef:tooltip inherit="widget-patcher"
+    prop:tooltip="$(null-collapse,$text)" />
+  <!-- gadget-factory: actions= activatable= regulate= per-list= per-action= -->
+  <xdef:gadget-factory        inherit="GxkGadgetFactory"
+    prop:action-list="$actions"
+    prop:activatable="$activatable"
+    prop:regulate="$regulate"
+    prop:per-list="$(null-collapse,$per-list)"
+    prop:per-action="$(null-collapse,$per-action)" />
+  <!-- menu-factory: actions= separator= -->
+  <xdef:menu-factory inherit="gadget-factory"
+    per-list="$(if,$separator,menu-factory-per-list,)"
+    per-action="menu-factory-per-action"
+    activatable="menu-factory-per-action"
+    regulate="menu-factory-per-action" >
+  </xdef:menu-factory>
+  <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
+  <xdef:menu-factory-per-action inherit="menuitem"
+    _label="$action-name"
+    accel="$action-accel"
+    accel-path="$action-path"
+    stock-image="$action-stock" />
+  <!-- menu-separator: actions= -->
+  <xdef:menu-separator inherit="GxkMenuItem" prop:sensitive="0" />
+  <!-- menu-tearoff: actions= -->
+  <xdef:menu-tearoff inherit="GtkTearoffMenuItem" />
+
 </gxk-gadget-definitions>

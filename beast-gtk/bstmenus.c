@@ -20,6 +20,61 @@
 
 #include <string.h>
 
+
+/* --- GxkAction helpers --- */
+void
+bst_action_list_add_cat (GxkActionList          *alist,
+                         BseCategory            *cat,
+                         GxkActionCheck          acheck,
+                         GxkActionExec           aexec,
+                         gpointer                user_data,
+                         guint                   skip_levels,
+                         const gchar            *stock_fallback)
+{
+  const gchar *p, *stock_id;
+
+  if (cat->icon && (cat->icon->width + cat->icon->height) > 0)  // FIXME: need NULL icons
+    {
+      bst_stock_register_icon (cat->category, cat->icon->bytes_per_pixel,
+                               cat->icon->width, cat->icon->height,
+                               cat->icon->width * cat->icon->bytes_per_pixel,
+                               cat->icon->pixels->bytes);
+      stock_id = cat->category;
+    }
+  else
+    stock_id = stock_fallback;
+
+  p = cat->category[0] == '/' ? cat->category + 1 : cat->category;      // FIXME: needs i18n
+  while (skip_levels--)
+    {
+      const gchar *d = strchr (p, '/');
+      p = d ? d + 1 : p;
+    }
+
+  gxk_action_list_add_translated (alist, cat->category, p, NULL, NULL,
+                                  cat->category_id, stock_id,
+                                  acheck, aexec, user_data);
+}
+
+GxkActionList*
+bst_action_list_from_cats (BseCategorySeq         *cseq,
+                           GxkActionCheck          acheck,
+                           GxkActionExec           aexec,
+                           gpointer                user_data,
+                           guint                   skip_levels,
+                           const gchar            *stock_fallback)
+{
+  GxkActionList *alist = gxk_action_list_create ();
+  guint i;
+
+  g_return_val_if_fail (cseq != NULL, alist);
+
+  for (i = 0; i < cseq->n_cats; i++)
+    bst_action_list_add_cat (alist, cseq->cats[i], acheck, aexec, user_data, skip_levels, stock_fallback);
+  return alist;
+}
+
+
 /* --- structures --- */
 struct _BstChoice
 {

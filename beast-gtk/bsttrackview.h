@@ -51,14 +51,6 @@ struct _BstTrackViewClass
 };
 
 
-/* --- actions --- */
-enum {
-  BST_ACTION_ADD_TRACK          = BST_ACTION_TRACK_FIRST,
-  BST_ACTION_DELETE_TRACK,
-  BST_ACTION_TRACK_LAST
-};
-
-
 /* --- prototypes --- */
 GType		bst_track_view_get_type	(void);
 GtkWidget*	bst_track_view_new	(SfiProxy	song);

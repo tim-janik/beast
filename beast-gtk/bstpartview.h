@@ -44,15 +44,6 @@ struct _BstPartViewClass
 };
 
 
-/* --- actions --- */
-enum {
-  BST_ACTION_ADD_PART           = BST_ACTION_PART_FIRST,
-  BST_ACTION_DELETE_PART,
-  BST_ACTION_EDIT_PART,
-  BST_ACTION_PART_LAST
-};
-
-
 /* --- prototypes --- */
 GType		bst_part_view_get_type	(void);
 

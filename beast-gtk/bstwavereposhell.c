@@ -18,23 +18,14 @@
 #include "bstwavereposhell.h"
 
 #include "bstparamview.h"
-#include "bstactivatable.h"
 #include "bstapp.h"
 
 
 /* --- prototypes --- */
 static void     bst_wave_repo_shell_class_init          (BstWaveRepoShellClass  *klass);
-static void     bst_wave_repo_shell_init_activatable    (BstActivatableIface    *iface,
-                                                         gpointer                iface_data);
 static void     bst_wave_repo_shell_init                (BstWaveRepoShell       *wshell);
 static void     bst_wave_repo_shell_rebuild             (BstSuperShell          *super_shell);
 static gchar*   bst_wave_repo_shell_get_title           (BstSuperShell          *super_shell);
-static void     bst_wave_repo_shell_activate            (BstActivatable         *activatable,
-                                                         gulong                  action);
-static gboolean bst_wave_repo_shell_can_activate        (BstActivatable         *activatable,
-                                                         gulong                  action);
-static void     bst_wave_repo_shell_request_update      (BstActivatable         *activatable);
-static void     bst_wave_repo_shell_update_activatable  (BstActivatable         *activatable);
 
 
 
@@ -60,13 +51,7 @@ bst_wave_repo_shell_get_type (void)
         0,      /* n_preallocs */
         (GInstanceInitFunc) bst_wave_repo_shell_init,
       };
-      static const GInterfaceInfo activatable_info = {
-        (GInterfaceInitFunc) bst_wave_repo_shell_init_activatable,      /* interface_init */
-        NULL,                                                           /* interface_finalize */
-        NULL                                                            /* interface_data */
-      };
       type = g_type_register_static (BST_TYPE_SUPER_SHELL, "BstWaveRepoShell", &type_info, 0);
-      g_type_add_interface_static (type, BST_TYPE_ACTIVATABLE, &activatable_info);
     }
   return type;
 }
@@ -80,16 +65,6 @@ bst_wave_repo_shell_class_init (BstWaveRepoShellClass *class)
 
   super_shell_class->get_title = bst_wave_repo_shell_get_title;
   super_shell_class->rebuild = bst_wave_repo_shell_rebuild;
-}
-
-static void
-bst_wave_repo_shell_init_activatable (BstActivatableIface *iface,
-                                      gpointer             iface_data)
-{
-  iface->activate = bst_wave_repo_shell_activate;
-  iface->can_activate = bst_wave_repo_shell_can_activate;
-  iface->request_update = bst_wave_repo_shell_request_update;
-  iface->update = bst_wave_repo_shell_update_activatable;
 }
 
 static void
@@ -151,41 +126,4 @@ bst_wave_repo_shell_get_title (BstSuperShell *super_shell)
   // BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
 
   return g_strdup (_("Waves"));
-}
-
-static void
-bst_wave_repo_shell_activate (BstActivatable *activatable,
-                              gulong          action)
-{
-  BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (activatable);
-  if (self->wave_view)
-    bst_activatable_activate (BST_ACTIVATABLE (self->wave_view), action);
-  bst_widget_update_activatable (activatable);
-}
-
-static gboolean
-bst_wave_repo_shell_can_activate (BstActivatable *activatable,
-                                  gulong          action)
-{
-  BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (activatable);
-  return self->wave_view && bst_activatable_can_activate (BST_ACTIVATABLE (self->wave_view), action);
-}
-
-static void
-bst_wave_repo_shell_request_update (BstActivatable *activatable)
-{
-  BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (activatable);
-  /* chain to normal handler */
-  bst_activatable_default_request_update (activatable);
-  /* add activatable children */
-  if (self->wave_view)
-    bst_activatable_update_enqueue (BST_ACTIVATABLE (self->wave_view));
-}
-
-static void
-bst_wave_repo_shell_update_activatable (BstActivatable *activatable)
-{
-  // BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (activatable);
-
-  /* no original actions to update */
 }

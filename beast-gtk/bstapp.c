@@ -19,7 +19,6 @@
 
 #include "topconfig.h"
 
-#include "bstactivatable.h"
 #include "bstsongshell.h"
 #include "bstwavereposhell.h"
 #include "bstsnetshell.h"
@@ -36,110 +35,100 @@
 
 /* --- prototypes --- */
 static void     bst_app_class_init              (BstAppClass    *class);
-static void     bst_app_init_activatable        (BstActivatableIface    *iface,
-                                                 gpointer                iface_data);
 static void     bst_app_init                    (BstApp         *app);
 static void     bst_app_destroy                 (GtkObject      *object);
 static gboolean bst_app_handle_delete_event     (GtkWidget      *widget,
                                                  GdkEventAny    *event);
-static void     bst_app_menu_callback           (GtkWidget      *owner,
-                                                 gulong          callback_action,
-                                                 gpointer        popup_data);
-static void     bst_app_run_script_proc         (GtkWidget      *widget,
-                                                 gulong          category_id,
-                                                 gpointer        popup_data);
-static void     bst_app_activate                (BstActivatable *activatable,
+static void     bst_app_run_script_proc         (gpointer        data,
+                                                 gulong          category_id);
+static GxkActionList* demo_entries_create       (BstApp         *app);
+static void     app_action_exec                 (gpointer        data,
                                                  gulong          action);
-static gboolean bst_app_can_activate            (BstActivatable *activatable,
+static gboolean app_action_check                (gpointer        data,
                                                  gulong          action);
-static void     bst_app_request_update          (BstActivatable *activatable);
-static void     bst_app_update_activatable      (BstActivatable *activatable);
-static BstMenuConfig* demo_entries_create       (const gchar    *path);
 
 
 /* --- menus --- */
-static gchar       *bst_app_factories_path = "<BstApp>";
-static BstMenuConfigEntry menubar_entries[] =
-{
-#define CB(action) (bst_app_menu_callback), (BST_ACTION_ ## action)
-  { N_("/_File"),                            NULL,      NULL, 0,                        "<Branch>" },
-  {    "/File/<<<<<<",                       NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/File/_New"),                        "<ctrl>N", CB (NEW_PROJECT),               "<StockItem>", BST_STOCK_NEW },
-  { N_("/File/_Open..."),                    "<ctrl>O", CB (OPEN_PROJECT),              "<StockItem>", BST_STOCK_OPEN },
-  { N_("/File/_Merge..."),                   "<ctrl>M", CB (MERGE_PROJECT),             "<StockItem>", BST_STOCK_MERGE },
-  { N_("/File/_Close"),                      "<ctrl>W", CB (CLOSE_PROJECT),             "<StockItem>", BST_STOCK_CLOSE },
-  {    "/File/-----",                        NULL,      NULL, 0,                        "<Separator>" },
-  { N_("/File/_Save"),                       NULL,      CB (SAVE_PROJECT),              "<StockItem>", BST_STOCK_SAVE },
-  { N_("/File/Save _As..."),                 NULL,      CB (SAVE_PROJECT_AS),           "<StockItem>", BST_STOCK_SAVE_AS },
-  {    "/File/-----",                        NULL,      NULL, 0,                        "<Separator>" },
-  { N_("/File/Preferences..."),              NULL,      CB (SHOW_PREFERENCES),          "<StockItem>", BST_STOCK_PREFERENCES },
-  {    "/File/-----",                        NULL,      NULL, 0,                        "<Separator>" },
-  { N_("/File/_Quit"),                       "<ctrl>Q", CB (EXIT),                      "<StockItem>", BST_STOCK_QUIT },
-  { N_("/_Edit"),                            NULL,      NULL, 0,                        "<Branch>" },
-  {    "/Edit/<<<<<<",                       NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/Edit/_Undo"),                       "<ctrl>Z", CB (UNDO),                      "<StockItem>", BST_STOCK_UNDO },
-  { N_("/Edit/_Redo"),                       "<ctrl>R", CB (REDO),                      "<StockItem>", BST_STOCK_REDO },
-  { N_("/Edit/_Clear Undo"),                 NULL,      CB (CLEAR_UNDO),                "<StockItem>", BST_STOCK_CLEAR_UNDO },
-  {    "/Edit/-----",                        NULL,      NULL, 0,                        "<Separator>" },
-  { N_("/Edit/Preferences..."),              NULL,      CB (SHOW_PREFERENCES),          "<StockItem>", BST_STOCK_PREFERENCES },
-  { N_("/_View"),                            NULL,      NULL, 0,                        "<Branch>" },
-  {    "/View/<<<<<<",                       NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/View/Procedure _Browser"),          NULL,      CB (SHOW_PROC_BROWSER),         "<Item>" },
-  { N_("/View/Rack Editor"),                 NULL,      CB (RACK_EDITOR),               "<Item>" },
-  { N_("/View/Device _Monitor"),             NULL,      CB (SHOW_DEVICE_MONITOR),       "<Item>" },
-  {    "/View/-----",                        NULL,      NULL, 0,                        "<Separator>" },
-  { N_("/View/Preferences"),                 NULL,      CB (SHOW_PREFERENCES),          "<Item>" },
-  {    "/View/-----",                        NULL,      NULL, 0,                        "<Separator>" },
-  { N_("/View/Rebuild"),                     NULL,      CB (REBUILD),                   "<Item>" },
-  { N_("/_Project"),                         NULL,      NULL, 0,                        "<Branch>" },
-  {    "/Project/<<<<<<",                    NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/Project/_Play"),                    "<ctrl>P", CB (START_PLAYBACK),            "<StockItem>", BST_STOCK_PLAY },
-  { N_("/Project/_Stop"),                    "<ctrl>S", CB (STOP_PLAYBACK),             "<StockItem>", BST_STOCK_STOP },
-  {    "/Project/-----",                     NULL,      NULL, 0,                        "<Separator>" },
-  { N_("/Project/New Song"),                 NULL,      CB (NEW_SONG),                  "<StockItem>", BST_STOCK_NEW_SONG },
-  { N_("/Project/New Custom Synthesizer"),   NULL,      CB (NEW_CSYNTH),                "<StockItem>", BST_STOCK_NEW_CSYNTH },
-  { N_("/Project/New MIDI Synthesizer"),     NULL,      CB (NEW_MIDI_SYNTH),            "<StockItem>", BST_STOCK_NEW_MIDI_SYNTH },
-  { N_("/Project/Remove Song or Synthesizer"), NULL,    CB (REMOVE_SYNTH),              "<StockItem>", BST_STOCK_REMOVE_SYNTH },
-#if 0
-  { N_("/_Song"),                            NULL,      NULL, 0,                        "<Branch>" },
-  {    "/Song/<<<<<<",                       NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/Song/Add _Part"),                   NULL,      CB (ADD_PART),                  "<Item>" },
-  { N_("/Song/Delete _Part"),                NULL,      CB (DELETE_PART),               "<Item>" },
-  { N_("/Song/Add _Track"),                  NULL,      CB (ADD_TRACK),                 "<Item>" },
-  { N_("/Song/_Delete Track"),               NULL,      CB (DELETE_TRACK),              "<Item>" },
-  { N_("/_Synth"),                           NULL,      NULL, 0,                        "<Branch>" },
-  {    "/Synth/<<<<<<",                      NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/Synth/_Test"),                      NULL,      CB (NONE),                      "<Item>" },
-  { N_("/Wave_s"),                           NULL,      NULL, 0,                        "<Branch>" },
-  {    "/Waves/<<<<<<",                      NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/Waves/_Load Wave..."),              NULL,      CB (LOAD_WAVE),                 "<Item>" },
-  { N_("/Waves/Delete Wave"),                NULL,      CB (DELETE_WAVE),               "<Item>" },
-  { N_("/Waves/_Edit Wave..."),              NULL,      CB (EDIT_WAVE),                 "<Item>" },
-#endif
-  { N_("/_Synthesizers"),                    NULL,      NULL, 0,                        "<Branch>" },
-  {    "/Synthesizers/<<<<<<",               NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/Synthesizers/Load _Effect"),        NULL,      CB (MERGE_EFFECT),              "<Item>" },
-  { N_("/Synthesizers/Load _Instrument"),    NULL,      CB (MERGE_INSTRUMENT),          "<Item>" },
-  { N_("/Synthesizers/Save As Effect"),      NULL,      CB (SAVE_EFFECT),               "<Item>" },
-  { N_("/Synthesizers/Save As Instrument"),  NULL,      CB (SAVE_INSTRUMENT),           "<Item>" },
-  { N_("/_Tools"),                           NULL,      NULL, 0,                        "<Branch>" },
-  {    "/Tools/<<<<<<",                      NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/Tools/_Song"),                      NULL,      NULL, 0,                        "<Branch>" },
-  { N_("/Tools/_Synth"),                     NULL,      NULL, 0,                        "<Branch>" },
-  { N_("/Tools/Wave_s"),                     NULL,      NULL, 0,                        "<Branch>" },
-  { N_("/_Demo"),                            NULL,      NULL, 0,                        "<Branch>" },
-  {    "/Demo/<<<<<<",                       NULL,      NULL, 0,                        "<Tearoff>" },
+static const GxkStockAction file_open_actions[] = {
+  { N_("_New"),                 "<ctrl>N",      N_("Create new project"),
+    BST_ACTION_NEW_PROJECT,     BST_STOCK_NEW,  },
+  { N_("_Open..."),             "<ctrl>O",      N_("Open existing project"),
+    BST_ACTION_OPEN_PROJECT,    BST_STOCK_OPEN, },
+  { N_("_Merge..."),            "<ctrl>M",      N_("Merge an existing project into the current project"),
+    BST_ACTION_MERGE_PROJECT,   BST_STOCK_MERGE, },
+  { N_("_Close"),               "<ctrl>W",      NULL,
+    BST_ACTION_CLOSE_PROJECT,   BST_STOCK_CLOSE, },
 };
-static BstMenuConfigEntry menubar_help_entries[] = {
-  { N_("/_Help"),                            NULL,      NULL, 0,                        "<LastBranch>" },
-  {    "/Help/<<<<<<",                       NULL,      NULL, 0,                        "<Tearoff>" },
-  { N_("/Help/_Release Notes..."),           NULL,      CB (HELP_RELEASE_NOTES),        "<StockItem>", BST_STOCK_DOC_NEWS },
-  { N_("/Help/Quick Start..."),              NULL,      CB (HELP_QUICK_START),          "<StockItem>", BST_STOCK_HELP },
-  { N_("/Help/_FAQ..."),                     NULL,      CB (HELP_FAQ),                  "<StockItem>", BST_STOCK_DOC_FAQ },
-  { N_("/Help/Development/GSL Engine..."), NULL,        CB (HELP_GSL_PLAN),             "<StockItem>", BST_STOCK_DOC_DEVEL },
-  {    "/Help/-----",                        NULL,      NULL, 0,                        "<Separator>" },
-  { N_("/Help/_About..."),                   NULL,      CB (HELP_ABOUT),                "<StockItem>", BST_STOCK_ABOUT },
-#undef  CB
+static const GxkStockAction file_save_actions[] = {
+  { N_("_Save"),                NULL,           NULL,
+    BST_ACTION_SAVE_PROJECT,    BST_STOCK_SAVE, },
+  { N_("Save _As..."),          NULL,           NULL,
+    BST_ACTION_SAVE_PROJECT_AS, BST_STOCK_SAVE_AS, },
+};
+static const GxkStockAction file_epilog_actions[] = {
+  { N_("_Quit"),                "<ctrl>Q",      NULL,
+    BST_ACTION_EXIT,            BST_STOCK_QUIT, },
+};
+static const GxkStockAction preference_actions[] = {
+  { N_("_Preferences..."),      NULL,           NULL,   BST_ACTION_SHOW_PREFERENCES,    BST_STOCK_PREFERENCES, },
+};
+static const GxkStockAction rebuild_actions[] = {
+  { N_("Rebuild"),              NULL,           NULL,   BST_ACTION_REBUILD, },
+};
+static const GxkStockAction about_actions[] = {
+  { N_("_About..."),            NULL,           NULL,   BST_ACTION_HELP_ABOUT,          BST_STOCK_ABOUT },
+};
+static const GxkStockAction undo_actions[] = {
+  { N_("_Undo"),                "<ctrl>Z",      NULL,
+    BST_ACTION_UNDO,            BST_STOCK_UNDO, },
+  { N_("_Redo"),                "<ctrl>R",      NULL,
+    BST_ACTION_REDO,            BST_STOCK_REDO, },
+};
+static const GxkStockAction undo_dvl_actions[] = {
+  { N_("_Clear Undo"),          NULL,           NULL,
+    BST_ACTION_CLEAR_UNDO,      BST_STOCK_CLEAR_UNDO, },
+};
+static const GxkStockAction dialog_actions[] = {
+  { N_("Procedure _Browser"),   NULL,           NULL,
+    BST_ACTION_SHOW_PROC_BROWSER, },
+  { N_("Rack Editor"),          NULL,           NULL,
+    BST_ACTION_RACK_EDITOR, },
+  { N_("Device _Monitor"),      NULL,           NULL,
+    BST_ACTION_SHOW_DEVICE_MONITOR, },
+};
+static const GxkStockAction playback_actions[] = {
+  { N_("_Play"),                "<ctrl>P",      NULL,
+    BST_ACTION_START_PLAYBACK,  BST_STOCK_PLAY },
+  { N_("_Stop"),                "<ctrl>S",      NULL,
+    BST_ACTION_STOP_PLAYBACK,  BST_STOCK_STOP },
+};
+static const GxkStockAction project_actions[] = {
+  { N_("New Song"),             NULL,           NULL,
+    BST_ACTION_NEW_SONG,        BST_STOCK_NEW_SONG },
+  { N_("New Custom Synthesizer"), NULL,         NULL,
+    BST_ACTION_NEW_CSYNTH,      BST_STOCK_NEW_CSYNTH },
+  { N_("New MIDI Synthesizer"), NULL,           NULL,
+    BST_ACTION_NEW_MIDI_SYNTH,  BST_STOCK_NEW_MIDI_SYNTH },
+  { N_("Remove Song or Synthesizer"), NULL,     NULL,
+    BST_ACTION_REMOVE_SYNTH,    BST_STOCK_REMOVE_SYNTH },
+};
+static const GxkStockAction library_files_actions[] = {
+  { N_("Load _Effect"),         NULL,           NULL,
+    BST_ACTION_MERGE_EFFECT, },
+  { N_("Load _Instrument"),     NULL,           NULL,
+    BST_ACTION_MERGE_INSTRUMENT, },
+  { N_("Save As Effect"),       NULL,           NULL,
+    BST_ACTION_SAVE_EFFECT, },
+  { N_("Save As Instrument"),   NULL,           NULL,
+    BST_ACTION_SAVE_INSTRUMENT, },
+};
+static const GxkStockAction simple_help_actions[] = {
+  { N_("_Release Notes..."),    NULL,           NULL,   BST_ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
+  { N_("Quick Start..."),       NULL,           NULL,   BST_ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
+  { N_("_FAQ..."),              NULL,           NULL,   BST_ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
+};
+static const GxkStockAction devel_help_actions[] = {
+  { N_("GSL Engine..."),        NULL,           NULL,   BST_ACTION_HELP_GSL_PLAN,       BST_STOCK_DOC_DEVEL },
 };
 
 
@@ -166,13 +155,7 @@ bst_app_get_type (void)
         0,      /* n_preallocs */
         (GInstanceInitFunc) bst_app_init,
       };
-      static const GInterfaceInfo activatable_info = {
-        (GInterfaceInitFunc) bst_app_init_activatable,  /* interface_init */
-        NULL,                                           /* interface_finalize */
-        NULL                                            /* interface_data */
-      };
       type = g_type_register_static (GXK_TYPE_DIALOG, "BstApp", &type_info, 0);
-      g_type_add_interface_static (type, BST_TYPE_ACTIVATABLE, &activatable_info);
     }
   return type;
 }
@@ -194,16 +177,6 @@ bst_app_class_init (BstAppClass *class)
 }
 
 static void
-bst_app_init_activatable (BstActivatableIface *iface,
-                          gpointer             iface_data)
-{
-  iface->activate = bst_app_activate;
-  iface->can_activate = bst_app_can_activate;
-  iface->request_update = bst_app_request_update;
-  iface->update = bst_app_update_activatable;
-}
-
-static void
 bst_app_register (BstApp *app)
 {
   if (!g_slist_find (bst_app_class->apps, app))
@@ -218,12 +191,12 @@ bst_app_unregister (BstApp *app)
 static void
 bst_app_init (BstApp *app)
 {
-  GtkWindow *window = GTK_WINDOW (app);
-  GtkItemFactory *factory;
+  GtkWidget *widget = GTK_WIDGET (app);
   BseCategorySeq *cseq;
-  BstMenuConfig *m1, *m2;
+  GxkActionList *al1, *al2;
   
   g_object_set (app,
+                "name", "BEAST-Application",
                 "allow_shrink", TRUE,
                 "allow_grow", TRUE,
                 "flags", GXK_DIALOG_STATUS_SHELL,
@@ -231,60 +204,65 @@ bst_app_init (BstApp *app)
   bst_app_register (app);
   app->box = gxk_gadget_create ("beast", "application-box", NULL);
   gtk_container_add (GTK_CONTAINER (GXK_DIALOG (app)->vbox), app->box);
-
-  /* setup the menu bar
-   */
-  factory = bst_item_factory_new (GTK_TYPE_MENU_BAR, bst_app_factories_path);
-  gtk_window_add_accel_group (window, factory->accel_group);
-  gxk_gadget_add (app->box, "menu-area", factory->widget);
-  gtk_widget_show (factory->widget);
-  gtk_object_set_data_full (GTK_OBJECT (app),
-                            bst_app_factories_path,
-                            factory,
-                            (GtkDestroyNotify) gtk_object_unref);
-  /* standard entries */
-  m1 = bst_menu_config_from_entries (G_N_ELEMENTS (menubar_entries), menubar_entries);
+  
+  /* publish widget specific actions */
+  gxk_widget_publish_actions (app, "file-open", G_N_ELEMENTS (file_open_actions), file_open_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "file-save", G_N_ELEMENTS (file_save_actions), file_save_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "file-epilog", G_N_ELEMENTS (file_epilog_actions), file_epilog_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "preference", G_N_ELEMENTS (preference_actions), preference_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "rebuild", G_N_ELEMENTS (rebuild_actions), rebuild_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "about", G_N_ELEMENTS (about_actions), about_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "undo", G_N_ELEMENTS (undo_actions), undo_actions,
+                              NULL, app_action_check, app_action_exec);
+  if (BST_DVL_HINTS)
+    gxk_widget_publish_actions (app, "undo-dvl", G_N_ELEMENTS (undo_dvl_actions), undo_dvl_actions,
+                                NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "dialog", G_N_ELEMENTS (dialog_actions), dialog_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "playback", G_N_ELEMENTS (playback_actions), playback_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "project", G_N_ELEMENTS (project_actions), project_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "library-files", G_N_ELEMENTS (library_files_actions), library_files_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "simple-help", G_N_ELEMENTS (simple_help_actions), simple_help_actions,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (app, "devel-help", G_N_ELEMENTS (devel_help_actions), devel_help_actions,
+                              NULL, app_action_check, app_action_exec);
   /* Project utilities */
   cseq = bse_categories_match ("/Project/*");
-  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/", BST_STOCK_EXECUTE);
-  bst_menu_config_sort (m2);
-  m1 = bst_menu_config_merge (m1, m2);
-  /* Song utilities */
+  al1 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  gxk_action_list_sort (al1);
+  gxk_widget_publish_action_list (widget, "tools-project", al1);
+  /* Song scripts */
   cseq = bse_categories_match ("/Song/*");
-  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Song/", BST_STOCK_EXECUTE);
-  bst_menu_config_sort (m2);
-  m1 = bst_menu_config_merge (m1, m2);
-  /* CSynth utilities */
+  al1 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  gxk_action_list_sort (al1);
+  gxk_widget_publish_action_list (widget, "tools-song", al1);
+  /* CSynth & SNet utilities */
   cseq = bse_categories_match ("/CSynth/*");
-  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Synth/", BST_STOCK_EXECUTE);
-  bst_menu_config_sort (m2);
-  m1 = bst_menu_config_merge (m1, m2);
-  /* SNet utilities */
+  al1 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  gxk_action_list_sort (al1);
   cseq = bse_categories_match ("/SNet/*");
-  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Synth/", BST_STOCK_EXECUTE);
-  bst_menu_config_sort (m2);
-  m1 = bst_menu_config_merge (m1, m2);
-#if 0
-  /* Wave utilities */
-  cseq = bse_categories_match ("/Wave/*");
-  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Waves/", BST_STOCK_EXECUTE);
-  bst_menu_config_sort (m2);
-  m1 = bst_menu_config_merge (m1, m2);
-#endif
+  al2 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  gxk_action_list_sort (al2);
+  al1 = gxk_action_list_merge (al1, al2);
+  gxk_widget_publish_action_list (widget, "tools-synth", al1);
   /* WaveRepo utilities */
   cseq = bse_categories_match ("/WaveRepo/*");
-  m2 = bst_menu_config_from_cats (cseq, bst_app_run_script_proc, 1, "/Tools/Waves/", BST_STOCK_EXECUTE);
-  bst_menu_config_sort (m2);
-  m1 = bst_menu_config_merge (m1, m2);
-  /* add help entries */
-  m2 = bst_menu_config_from_entries (G_N_ELEMENTS (menubar_help_entries), menubar_help_entries);
-  m1 = bst_menu_config_merge (m1, m2);
+  al1 = bst_action_list_from_cats (cseq, NULL, bst_app_run_script_proc, app, 1, BST_STOCK_EXECUTE);
+  gxk_action_list_sort (al1);
+  gxk_widget_publish_action_list (widget, "tools-wave-repo", al1);
   /* add demo songs */
-  m2 = demo_entries_create ("/Demo");
-  m1 = bst_menu_config_merge (m1, m2);
-  /* and create menu items */
-  bst_menu_config_create_items (m1, factory, GTK_WIDGET (app));
-  bst_menu_config_free (m1);
+  al1 = demo_entries_create (app);
+  gxk_action_list_sort (al1);
+  gxk_widget_publish_action_list (widget, "demo-songs", al1);
 
   /* setup playback controls */
   app->pcontrols = g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
@@ -292,7 +270,7 @@ bst_app_init (BstApp *app)
   /* setup the main notebook */
   app->notebook = gxk_gadget_find (app->box, "main-notebook");
   g_object_connect (app->notebook,
-                    "swapped_signal_after::switch-page", bst_widget_update_activatable, app,
+                    "swapped_signal_after::switch-page", gxk_widget_update_actions, app,
                     "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
                     NULL);
 }
@@ -312,7 +290,7 @@ bst_app_destroy (GtkObject *object)
       bse_project_deactivate (self->project);
       bse_proxy_disconnect (self->project,
                            "any_signal", bst_app_reload_supers, self,
-                           "any_signal", bst_widget_update_activatable, self,
+                           "any_signal", gxk_widget_update_actions, self,
                            NULL);
       bse_item_unuse (self->project);
       self->project = 0;
@@ -353,8 +331,8 @@ bst_app_new (SfiProxy project)
   bse_proxy_connect (self->project,
                      "swapped_signal::item-added", bst_app_reload_supers, self,
                      "swapped_signal::item-remove", bst_app_reload_supers, self,
-                     "swapped_signal::state-changed", bst_widget_update_activatable, self,
-                     "swapped_signal::property-notify::dirty", bst_widget_update_activatable, self,
+                     "swapped_signal::state-changed", gxk_widget_update_actions, self,
+                     "swapped_signal::property-notify::dirty", gxk_widget_update_actions, self,
                      NULL);
   bst_window_sync_title_to_proxy (GXK_DIALOG (self), self->project, "%s");
   if (self->pcontrols)
@@ -364,7 +342,7 @@ bst_app_new (SfiProxy project)
 
   /* update menu entries
    */
-  bst_widget_update_activatable (self);
+  gxk_widget_update_actions (self);
 
   return self;
 }
@@ -411,14 +389,6 @@ bst_app_get_current_super (BstApp *app)
       return super_shell->super;
     }
   return 0;
-}
-
-GtkItemFactory*
-bst_app_menu_factory (BstApp *app)
-{
-  g_return_val_if_fail (BST_IS_APP (app), NULL);
-
-  return gtk_object_get_data (GTK_OBJECT (app), bst_app_factories_path);
 }
 
 static GtkWidget*
@@ -594,9 +564,8 @@ demo_entries_setup (void)
 }
 
 static void
-demo_play_song (GtkWidget   *owner,
-                gulong       callback_action,
-                gpointer     popup_data)
+demo_play_song (gpointer data,
+                gulong   callback_action)
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
   SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
@@ -616,32 +585,24 @@ demo_play_song (GtkWidget   *owner,
   bse_item_unuse (project);
 }
 
-static BstMenuConfig*
-demo_entries_create (const gchar *path)
+static GxkActionList*
+demo_entries_create (BstApp *app)
 {
-  BstMenuConfig *m1 = bst_menu_config_from_entries (0, NULL);
+  GxkActionList *alist = gxk_action_list_create ();
   guint i;
   demo_entries_setup ();
   for (i = 0; i < n_demo_entries; i++)
-    {
-      BstMenuConfigEntry entry = { 0, };
-      entry.path = g_strconcat (path, "/", demo_entries[i].name, NULL);
-      entry.callback = demo_play_song;
-      entry.callback_action = BST_ACTION_LOAD_DEMO_0000 + i;
-      entry.item_type = "<StockItem>";
-      entry.extra_data = BST_STOCK_NOTE_ICON;
-      m1 = bst_menu_config_merge (bst_menu_config_from_entries (1, &entry), m1);
-    }
-  bst_menu_config_sort (m1);
-  return m1;
+    gxk_action_list_add_translated (alist, demo_entries[i].name, demo_entries[i].name,
+                                    NULL, NULL, BST_ACTION_LOAD_DEMO_0000 + i, BST_STOCK_NOTE_ICON,
+                                    NULL, demo_play_song, app);
+  return alist;
 }
 
 static void
-bst_app_run_script_proc (GtkWidget *widget,
-                         gulong     category_id,
-                         gpointer   popup_data)
+bst_app_run_script_proc (gpointer data,
+                         gulong   category_id)
 {
-  BstApp *self = BST_APP (widget);
+  BstApp *self = BST_APP (data);
   BseCategory *cat = bse_category_from_id (category_id);
   GtkWidget *shell = bst_app_get_current_shell (self);
   SfiProxy super = shell ? BST_SUPER_SHELL (shell)->super : 0;
@@ -667,25 +628,24 @@ bst_app_run_script_proc (GtkWidget *widget,
                            NULL);
 }
 
-static void
-bst_app_menu_callback (GtkWidget *owner,
-                       gulong     callback_action,
-                       gpointer   popup_data)
+void
+bst_app_trigger_action (BstApp *app,
+                        gulong  action)
 {
-  bst_activatable_activate (BST_ACTIVATABLE (owner), callback_action);
+  if (app_action_check (app, action))
+    app_action_exec (app, action);
 }
 
 static void
-bst_app_activate (BstActivatable *activatable,
-                  gulong          action)
+app_action_exec (gpointer data,
+                 gulong   action)
 {
   static GtkWidget *bst_help_dialogs[BST_ACTION_HELP_LAST - BST_ACTION_HELP_FIRST + 1] = { NULL, };
   static GtkWidget *bst_preferences = NULL;
-  BstApp *self = BST_APP (activatable);
+  BstApp *self = BST_APP (data);
   gchar *help_file = NULL, *help_title = NULL;
   GtkWidget *widget = GTK_WIDGET (self);
-  GtkWidget *shell = bst_app_get_current_shell (self);
-
+  
   gxk_status_window_push (widget);
 
   switch (action)
@@ -908,26 +868,25 @@ bst_app_activate (BstActivatable *activatable,
     case BST_ACTION_HELP_ABOUT:
       break;
     default:
-      if (shell)
-        bst_activatable_activate (BST_ACTIVATABLE (shell), action);
+      g_assert_not_reached ();
       break;
     }
 
   gxk_status_window_pop ();
 
-  bst_widget_update_activatable (activatable);
+  gxk_widget_update_actions_downwards (self);
 }
 
 static gboolean
-bst_app_can_activate (BstActivatable *activatable,
-                      gulong          action)
+app_action_check (gpointer data,
+                  gulong   action)
 {
-  BstApp *self = BST_APP (activatable);
-
+  BstApp *self = BST_APP (data);
+  
   switch (action)
     {
-      GtkWidget *shell;
       SfiProxy super;
+      GtkWidget *shell;
     case BST_ACTION_NEW_PROJECT:
     case BST_ACTION_OPEN_PROJECT:
     case BST_ACTION_MERGE_PROJECT:
@@ -948,7 +907,6 @@ bst_app_can_activate (BstActivatable *activatable,
     case BST_ACTION_REDO:
       return bse_project_redo_depth (self->project) > 0;
     case BST_ACTION_REBUILD:
-    case BST_ACTION_EXIT:
       return TRUE;
     case BST_ACTION_START_PLAYBACK:
       if (self->project && bse_project_can_play (self->project))
@@ -976,75 +934,17 @@ bst_app_can_activate (BstActivatable *activatable,
     case BST_ACTION_HELP_RELEASE_NOTES:
     case BST_ACTION_HELP_QUICK_START:
       return TRUE;
-    default:
+    case BST_ACTION_EXIT:
+      /* "mis"-use generic "Exit" update to sync Tools menu items */
       shell = bst_app_get_current_shell (self);
-      return shell ? bst_activatable_can_activate (BST_ACTIVATABLE (shell), action) : FALSE;
-    }
-}
-
-static void
-bst_app_request_update (BstActivatable *activatable)
-{
-  BstApp *self = BST_APP (activatable);
-  GList *list;
-
-  /* check if the app (its widget tree) was already destroyed */
-  if (!GTK_BIN (self)->child)
-    return;
-
-  /* chain to normal handler */
-  bst_activatable_default_request_update (activatable);
-
-  /* enqueue activatable children */
-  list = gtk_container_get_children (GTK_CONTAINER (self->notebook));
-  while (list)
-    {
-      BstActivatable *activatable = g_list_pop_head (&list);
-      if (BST_IS_ACTIVATABLE (activatable))
-        bst_widget_update_activatable (activatable);
-    }
-}
-
-static void
-bst_app_update_activatable (BstActivatable *activatable)
-{
-  BstApp *self = BST_APP (activatable);
-  GtkWidget *widget, *shell = bst_app_get_current_shell (self);
-  GtkItemFactory *factory = bst_app_menu_factory (self);
-  gulong i;
-
-  /* check if the app (its widget tree) was already destroyed */
-  if (!GTK_BIN (self)->child)
-    return;
-
-  /* update menu bar menu items */
-  gxk_item_factory_sensitize (factory, "/Song", BST_IS_SONG_SHELL (shell));
-  gxk_item_factory_sensitize (factory, "/Tools/Song", BST_IS_SONG_SHELL (shell));
-  gxk_item_factory_sensitize (factory, "/Synth", BST_IS_SNET_SHELL (shell));
-  gxk_item_factory_sensitize (factory, "/Tools/Synth", BST_IS_SNET_SHELL (shell));
-  gxk_item_factory_sensitize (factory, "/Waves", BST_IS_WAVE_REPO_SHELL (shell));
-  gxk_item_factory_sensitize (factory, "/Tools/Waves", BST_IS_WAVE_REPO_SHELL (shell));
-
-  /* special adjustments */
-  widget = gxk_item_factory_get_item (factory, "/Edit/Clear Undo");
-  if (widget && BST_DVL_HINTS)
-    gtk_widget_show (widget);
-  else if (widget && !BST_DVL_HINTS)
-    gtk_widget_hide (widget);
-
-  /* update app actions */
-  for (i = 0; i < G_N_ELEMENTS (menubar_entries); i++)
-    {
-      gulong action = menubar_entries[i].callback_action;
-      widget = gtk_item_factory_get_widget_by_action (factory, action);
-      if (widget && action)
-        gtk_widget_set_sensitive (widget, bst_activatable_can_activate (activatable, action));
-    }
-  for (i = 0; i < G_N_ELEMENTS (menubar_help_entries); i++)
-    {
-      gulong action = menubar_help_entries[i].callback_action;
-      widget = gtk_item_factory_get_widget_by_action (factory, action);
-      if (widget && action)
-        gtk_widget_set_sensitive (widget, bst_activatable_can_activate (activatable, action));
+      gxk_gadget_sensitize (self, "song-submenu", BST_IS_SONG_SHELL (shell));
+      gxk_gadget_sensitize (self, "synth-submenu", BST_IS_SNET_SHELL (shell));
+      // FIXME: gxk_gadget_sensitize (self, "waves-submenu", BST_IS_WAVE_REPO_SHELL (shell));
+      return TRUE;
+    case BST_ACTION_HELP_ABOUT:
+      return FALSE;
+    default:
+      g_warning ("BstApp: unknown action: %lu", action);
+      return FALSE;
     }
 }

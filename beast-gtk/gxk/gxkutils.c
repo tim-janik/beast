@@ -2057,6 +2057,147 @@ gxk_widget_proxy_requisition (GtkWidget *widget)
   g_signal_connect_after (widget, "size_request", G_CALLBACK (requisition_to_aux_info), NULL);
 }
 
+/**
+ * gxk_window_get_menu_accel_group
+ * @window:  valid #GtkWindow
+ * @RETURNS: valid #GtkAccelGroup
+ *
+ * This function hands out an accel group for @window
+ * specifically targeted at holding accelerators of
+ * menu items in this window.
+ */
+GtkAccelGroup*
+gxk_window_get_menu_accel_group (GtkWindow *window)
+{
+  GtkAccelGroup *agroup = g_object_get_data (window, "GxkWindow-menu-accel-group");
+  if (!agroup)
+    {
+      agroup = gtk_accel_group_new ();
+      gtk_window_add_accel_group (window, agroup);
+      g_object_set_data_full (window, "GxkWindow-menu-accel-group", agroup, g_object_unref);
+    }
+  return agroup;
+}
+
+static void
+submenu_check_sensitive (GtkMenu *menu)
+{
+  GtkWidget *widget = gtk_menu_get_attach_widget (menu);
+  if (GTK_IS_MENU_ITEM (widget))
+    {
+      GtkMenuItem *item = GTK_MENU_ITEM (widget);
+      if (item->submenu == (GtkWidget*) menu)
+        {
+          GtkMenuShell *shell = GTK_MENU_SHELL (menu);
+          gboolean seen_visible = FALSE;
+          GList *list;
+          for (list = shell->children; list; list = list->next)
+            {
+              GtkWidget *child = list->data;
+              if (GTK_WIDGET_VISIBLE (child) &&
+                  G_OBJECT_TYPE (child) != GTK_TYPE_TEAROFF_MENU_ITEM)
+                {
+                  seen_visible = TRUE;
+                  break;
+                }
+            }
+          gtk_widget_set_sensitive (widget, seen_visible);
+        }
+    }
+}
+
+static void
+menu_refetch_accel_group (GtkMenu *menu)
+{
+  GtkWidget *toplevel = gxk_widget_get_attach_toplevel ((GtkWidget*) menu);
+  if (GTK_IS_WINDOW (toplevel))
+    gtk_menu_set_accel_group (menu, gxk_window_get_menu_accel_group ((GtkWindow*) toplevel));
+}
+
+static void
+menu_item_propagate_hierarchy_changed (GtkMenuItem *menu_item)
+{
+  GtkWidget *menu = menu_item->submenu;
+  if (menu)
+    {
+      GList *list;
+      for (list = GTK_MENU_SHELL (menu)->children; list; list = list->next)
+        if (gxk_signal_handler_pending (list->data, "hierarchy-changed",
+                                        G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL))
+          menu_item_propagate_hierarchy_changed (list->data);
+      menu_refetch_accel_group (GTK_MENU (menu));
+    }
+}
+
+/**
+ * gxk_submenu_attach_to_item
+ * @menu:      valid #GtkMenu
+ * @menu_item: valid #GtkMenuItem
+ *
+ * This function is a replacement for
+ * gtk_menu_item_set_submenu(). It installs
+ * the necessary hooks on the @menu to automatically
+ * update sensitivity of @menu_item in response
+ * to children being deleted or added to the @menu.
+ * The rationality behind this is to avoid empty menus
+ * being presented to the user.
+ * Also, a propagation mechanism is set up, so @menu
+ * and submenus thereof automatically fetch their
+ * accelerator groups via gxk_window_get_menu_accel_group()
+ * from the toplevel window.
+ */
+void
+gxk_submenu_attach_to_item (GtkMenu     *menu,
+                            GtkMenuItem *menu_item)
+{
+  g_return_if_fail (GTK_IS_MENU (menu));
+  g_return_if_fail (GTK_IS_MENU_ITEM (menu_item));
+
+  gtk_menu_item_set_submenu (menu_item, GTK_WIDGET (menu));
+
+  if (!gxk_signal_handler_pending (menu_item, "hierarchy-changed", G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL))
+    g_signal_connect_after (menu_item, "hierarchy-changed", G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL);
+  menu_item_propagate_hierarchy_changed (menu_item);
+
+  if (!gxk_signal_handler_pending (menu, "parent-set", G_CALLBACK (submenu_check_sensitive), NULL))
+    g_object_connect (menu,
+                      "signal_after::parent-set", submenu_check_sensitive, NULL,
+                      "signal_after::add", submenu_check_sensitive, NULL,
+                      "signal_after::remove", submenu_check_sensitive, NULL,
+                      NULL);
+  submenu_check_sensitive (menu);
+}
+
+/**
+ * gxk_widget_get_attach_toplevel
+ * @widget: valid #GtkWidget
+ *
+ * This function returns the topmost container widget
+ * for @widget, much like gtk_widget_get_toplevel().
+ * The only difference is that for menus, not the immediate
+ * parent is returned (the #GtkWindow used to display a
+ * menu) but the tree walk continues on the menu item
+ * using the menu as submenu.
+ * For example, for a window containing a menubar with
+ * submenus, gtk_widget_get_toplevel() invoked on one
+ * of the menu items will return the #GtkWindow widgets
+ * for the corresponding submenus, while
+ * gxk_widget_get_attach_toplevel() will return the
+ * actual #GtkWindow containing the menubar.
+ */
+GtkWidget*
+gxk_widget_get_attach_toplevel (GtkWidget *widget)
+{
+  GtkWidget *parent;
+  do {
+    parent = widget->parent;
+    if (GTK_IS_MENU (widget))
+      parent = gtk_menu_get_attach_widget ((GtkMenu*) widget);
+    widget = parent ? parent : widget;
+  } while (parent);
+  return widget;
+}
+
 GtkWidget*
 gxk_file_selection_split (GtkFileSelection *fs,
 			  GtkWidget       **bbox_p)

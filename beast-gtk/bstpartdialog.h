@@ -52,8 +52,6 @@ struct _BstPartDialog
 struct _BstPartDialogClass
 {
   GxkDialogClass parent_class;
-
-  GtkItemFactory *popup_factory;
 };
 
 

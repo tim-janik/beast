@@ -39,23 +39,24 @@ typedef struct {
   /* tool selections */
   BstRadioTools   *note_rtools;
   BstRadioTools   *quant_rtools;
-  BstRadioTools   *canvas_rtools;
+  GxkActionGroup  *canvas_atools;
 } BstPianoRollController;
 
 
 /* --- API --- */
-BstPianoRollController*	bst_piano_roll_controller_new		(BstPianoRoll		*proll);
-BstPianoRollController*	bst_piano_roll_controller_ref		(BstPianoRollController	*self);
-void			bst_piano_roll_controller_unref		(BstPianoRollController	*self);
-guint                   bst_piano_roll_controller_quantize      (BstPianoRollController *self,
-                                                                 guint                   fine_tick);
-void			bst_piano_roll_controller_set_clipboard (BsePartNoteSeq		*pseq);
-BsePartNoteSeq*		bst_piano_roll_controller_get_clipboard	(void);
-void			bst_piano_roll_controller_clear		(BstPianoRollController	*self);
-void			bst_piano_roll_controller_cut		(BstPianoRollController	*self);
-gboolean		bst_piano_roll_controller_copy		(BstPianoRollController	*self);
-void			bst_piano_roll_controller_paste		(BstPianoRollController	*self);
-gboolean                bst_piano_roll_controler_clipboard_full (BstPianoRollController *self);
+BstPianoRollController*	bst_piano_roll_controller_new		 (BstPianoRoll		 *proll);
+BstPianoRollController*	bst_piano_roll_controller_ref		 (BstPianoRollController *self);
+void			bst_piano_roll_controller_unref		 (BstPianoRollController *self);
+guint                   bst_piano_roll_controller_quantize       (BstPianoRollController *self,
+                                                                 guint                    fine_tick);
+void			bst_piano_roll_controller_set_clipboard  (BsePartNoteSeq	 *pseq);
+BsePartNoteSeq*		bst_piano_roll_controller_get_clipboard	 (void);
+GxkActionList*          bst_piano_roll_controller_canvas_actions (BstPianoRollController *self);
+void			bst_piano_roll_controller_clear		 (BstPianoRollController *self);
+void			bst_piano_roll_controller_cut		 (BstPianoRollController *self);
+gboolean		bst_piano_roll_controller_copy		 (BstPianoRollController *self);
+void			bst_piano_roll_controller_paste		 (BstPianoRollController *self);
+gboolean                bst_piano_roll_controler_clipboard_full  (BstPianoRollController *self);
 
 
 G_END_DECLS

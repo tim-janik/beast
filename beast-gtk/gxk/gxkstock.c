@@ -46,6 +46,13 @@ _gxk_init_stock (void)
   gxk_size_toolbar = gxk_size_big_button;
   gxk_size_canvas = gtk_icon_size_register ("GxkIconSizeCanvas", 64, 64);
   gxk_size_palette = gxk_size_toolbar;
+  gtk_icon_size_register_alias ("button", GXK_SIZE_BUTTON);
+  gtk_icon_size_register_alias ("big-button", GXK_SIZE_BIG_BUTTON);
+  gtk_icon_size_register_alias ("canvas", GXK_SIZE_CANVAS);
+  gtk_icon_size_register_alias ("toolbar", GXK_SIZE_TOOLBAR);
+  gtk_icon_size_register_alias ("menu", GXK_SIZE_MENU);
+  gtk_icon_size_register_alias ("info-sign", GXK_SIZE_INFO_SIGN);
+  gtk_icon_size_register_alias ("palette", GXK_SIZE_PALETTE);
 }
 
 /**

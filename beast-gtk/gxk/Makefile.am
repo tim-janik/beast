@@ -16,17 +16,17 @@ DEFS += $(strip \
 noinst_LIBRARIES = libgxk.a
 
 gxk_headers = $(strip \
-	gxkled.h	gxkcanvas.h	gxkdialog.h	gxkglobals.h	\
+	gxkled.h	gxkcanvas.h	gxkdialog.h	gxkauxwidgets.h \
 	gxkstatusbar.h	gxkstock.h	gxktexttools.h	gxklistwrapper.h \
 	gxktoolbar.h	gxkutils.h	gxkpolygon.h	gxkcellrendererpopup.h \
-	gxkgadget.h	\
+	gxkgadget.h	gxkaction.h	gxkglobals.h	gxkgadgetfactory.h \
 	gxk.h \
 )
 gxk_c_sources = $(strip \
-	gxkled.c	gxkcanvas.c	gxkdialog.c	gxkglobals.c	\
+	gxkled.c	gxkcanvas.c	gxkdialog.c	gxkauxwidgets.c \
 	gxkstatusbar.c	gxkstock.c	gxktexttools.c	gxklistwrapper.c \
 	gxktoolbar.c	gxkutils.c	gxkpolygon.c	gxkcellrendererpopup.c \
-	gxkgadget.c	\
+	gxkgadget.c	gxkaction.c	gxkglobals.c	gxkgadgetfactory.c \
 )
 gxk_extra_sources = $(strip \
 	gxkmarshal.list \

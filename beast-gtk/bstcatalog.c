@@ -63,7 +63,7 @@ bst_catalog_get_tool (const gchar *cat_key)
     }
   else
     {
-      tool.cat_key = g_quark_intern (cat_key);
+      tool.cat_key = g_intern_string (cat_key);
       tool.name = tool.cat_key;
       tool.tooltip = "PROGRAMMING ERROR: category missing from bstmessages.c";
     }
