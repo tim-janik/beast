@@ -1,3 +1,9 @@
+Wed Jan 12 23:51:23 2000  Tim Janik  <timj@gtk.org>
+
+        * beast-gtk/bstparam.c (bst_param_apply):
+        (bst_param_update):
+        (bst_param_create): added missing BSE_TYPE_PARAM_ENUM support.
+
 Sun Jan  9 12:51:23 2000  Tim Janik  <timj@gtk.org>
 
         * beast-gtk/bstgconfig.[hc]: implemented BEAST configuration settings

@@ -51,6 +51,11 @@ static gint dots_area_motion_event	(GtkWidget          *widget,
 					 BstParam	    *bparam);
 
 
+/* --- variables --- */
+static GQuark quark_evalues = 0;
+static GQuark quark_fvalues = 0;
+
+
 /* --- widget group --- */
 #define _GROUP_GET_NAMED_WIDGET(g,n) ((GtkWidget*) gtk_object_get_data (GTK_OBJECT (g), n))
 static void
@@ -490,7 +495,11 @@ bst_param_create (gpointer      owner,
   g_return_val_if_fail (GTK_IS_TOOLTIPS (tooltips), NULL);
   
   if (!null_group)
-    null_group = g_quark_from_static_string ("Bst-null-group");
+    {
+      null_group = g_quark_from_static_string ("Bst-null-group");
+      quark_evalues = g_quark_from_static_string ("Bst-enum-values");
+      quark_fvalues = g_quark_from_static_string ("Bst-flags-values");
+    }
 
   bparam = g_new0 (BstParam, 1);
   bse_param_init_default (&bparam->param, pspec);
@@ -624,8 +633,9 @@ bst_param_create (gpointer      owner,
   switch (pspec->type)
     {
       GtkWidget *action, *prompt, *pre_action, *post_action, *frame, *any, *group;
-      guint width;
       DotAreaData *dot_data;
+      BseEnumValue *ev;
+      guint width;
 
     case BSE_TYPE_PARAM_BOOL:
       action = gtk_widget_new (radio ? BST_TYPE_FREE_RADIO_BUTTON : GTK_TYPE_CHECK_BUTTON,
@@ -706,6 +716,46 @@ bst_param_create (gpointer      owner,
       widget_group = GROUP_DONE (group);
       break;
     case BSE_TYPE_PARAM_ENUM:
+      ev = pspec->s_enum.enum_class->values;
+      prompt = gtk_widget_new (GTK_TYPE_LABEL,
+			       "visible", TRUE,
+			       "label", name,
+			       "justify", GTK_JUSTIFY_LEFT,
+			       "xalign", 0.0,
+			       "sensitive", !read_only && ev,
+			       NULL);
+      action = gtk_option_menu_new ();
+      gtk_widget_set (action,
+		      "visible", TRUE,
+		      "sensitive", !read_only && ev,
+		      NULL);
+      if (ev)
+	{
+	  GtkWidget *menu;
+
+	  menu = gtk_widget_new (GTK_TYPE_MENU,
+				 "object_signal::selection_done", bst_param_gtk_changed, bparam,
+				 NULL);
+	  while (ev->value_nick)
+	    {
+	      GtkWidget *item;
+
+	      item = gtk_menu_item_new_with_label (ev->value_nick);
+	      gtk_widget_lock_accelerators (item);
+	      gtk_widget_show (item);
+	      gtk_object_set_data_by_id (GTK_OBJECT (item), quark_evalues, ev);
+	      gtk_container_add (GTK_CONTAINER (menu), item);
+
+	      ev++;
+	    }
+
+	  gtk_option_menu_set_menu (GTK_OPTION_MENU (action), menu);
+	}
+      group = GROUP_FORM (parent_container, action, FALSE);
+      GROUP_ADD_PROMPT (group, prompt);
+      GROUP_SET_TIP (group, tooltip, NULL);
+      widget_group = GROUP_DONE (group);
+      break;
     case BSE_TYPE_PARAM_FLAGS:
       prompt = gtk_widget_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
@@ -954,6 +1004,27 @@ bst_param_update (BstParam *bparam)
 	}
       break;
     case BSE_TYPE_PARAM_ENUM:
+      action = GROUP_GET_ACTION (group);
+      any = gtk_option_menu_get_menu (GTK_OPTION_MENU (action));
+      if (any)
+	{
+	  GList *list;
+	  guint n = 0;
+	  
+	  for (list = GTK_MENU_SHELL (any)->children; list; list = list->next)
+	    {
+	      GtkWidget *item = list->data;
+	      GtkEnumValue *ev = gtk_object_get_data_by_id (GTK_OBJECT (item), quark_evalues);
+
+	      if (ev->value == param->value.v_enum)
+		{
+		  gtk_option_menu_set_history (GTK_OPTION_MENU (action), n);
+		  break;
+		}
+	      n++;
+	    }
+	}
+      break;
     case BSE_TYPE_PARAM_FLAGS:
     default:
       g_warning ("unknown param type: `%s'", pspec->any.name);
@@ -979,7 +1050,7 @@ bst_param_apply (BstParam *bparam,
 
   switch (pspec->type)
     {
-      GtkWidget *action, *pre_action;
+      GtkWidget *action, *pre_action, *any;
       gchar *string;
       BseTime time_data;
       guint base;
@@ -1112,6 +1183,15 @@ bst_param_apply (BstParam *bparam,
 	dirty += bse_param_set_item (param, NULL);
       break;
     case BSE_TYPE_PARAM_ENUM:
+      action = GROUP_GET_ACTION (group);
+      any = GTK_OPTION_MENU (action)->menu_item;
+      if (any)
+	{
+	  GtkEnumValue *ev = gtk_object_get_data_by_id (GTK_OBJECT (any), quark_evalues);
+
+	  dirty += bse_param_set_enum (param, ev->value);
+	}
+      break;
     case BSE_TYPE_PARAM_FLAGS:
     default:
       g_warning ("unknown param type: `%s'", pspec->any.name);

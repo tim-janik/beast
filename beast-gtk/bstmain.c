@@ -95,10 +95,13 @@ main (int   argc,
       gconf = bse_object_new (BST_TYPE_GCONFIG, NULL);
       bse_gconfig_revert (gconf);
       error = bst_rc_parse (file_name, gconf);
-      bse_gconfig_apply (gconf);
+      if (error != BSE_ERROR_FILE_NOT_FOUND)
+	{
+	  bse_gconfig_apply (gconf);
+	  if (error)
+	    g_warning ("error parsing rc-file \"%s\": %s", file_name, bse_error_blurb (error));
+	}
       bse_object_unref (BSE_OBJECT (gconf));
-      if (error)
-	g_warning ("error parsing rc-file \"%s\": %s", file_name, bse_error_blurb (error));
       g_free (file_name);
     }
 
