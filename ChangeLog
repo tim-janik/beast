@@ -1,3 +1,8 @@
+Thu Jul 31 18:15:03 2003  Tim Janik  <timj@gtk.org>
+
+	* added cxxdummy.cc files over the place to force C++ linkage
+	of executables.
+
 Tue Jul 29 14:00:37 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsteventroll.[hc]: added support for segment

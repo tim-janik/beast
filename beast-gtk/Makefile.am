@@ -175,9 +175,9 @@ bin_PROGRAMS = beast
 beast_SOURCES = bstmain.c $(beast_sources)
 beast_LDADD = $(progs_LDADD)
 noinst_PROGRAMS = bststest tsmview
-bststest_SOURCES = bststest.c bstutils.c bstqsampler.c
+bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
 bststest_LDADD = $(progs_LDADD)
-tsmview_SOURCES = tsmview.c
+tsmview_SOURCES = tsmview.c cxxdummy.cc
 tsmview_LDADD = $(progs_LDADD)
 
 

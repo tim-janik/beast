@@ -118,10 +118,10 @@ noinst_PROGRAMS = mkapi testbsw
 # link programs against BSW
 progs_LDADD = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
 # source files
-mkapi_SOURCES = mkapi.c
+mkapi_SOURCES = mkapi.c cxxdummy.cc
 mkapi_LDADD = $(progs_LDADD)
 $(srcdir)/testbsw.c: bswgenapi.h
-testbsw_SOURCES = testbsw.c
+testbsw_SOURCES = testbsw.c cxxdummy.cc
 testbsw_LDADD = libbsw.la $(progs_LDADD)
 
 #
