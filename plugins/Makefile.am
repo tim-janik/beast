@@ -78,16 +78,17 @@ if IF_HAVE_PERL5
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
 	  --vtail "static GType BSE_TYPE_ID (@EnumName@);" \
-	    $< > xgen-enums \
+	    $< > xgen-enums-$(@F) \
 	&& $(GLIB_MKENUMS) \
 	  --fhead "\n#include\t<bse/bseexports.h>\n" \
 	  --fhead "\nBSE_EXPORT_STATIC_ENUMS = {" \
 	  --eprod "  { &BSE_TYPE_ID (@EnumName@), \"@EnumName@\",\n" \
 	  --eprod "    G_TYPE_@TYPE@, @enum_name@_values }," \
 	  --ftail "  { NULL, },\n};" \
-	    $< >> xgen-enums \
-	&& cp xgen-enums $(@F) \
-	&& rm -f xgen-enums
+	    $< >> xgen-enums-$(@F) \
+	&& cp xgen-enums-$(@F) $(@F) \
+	&& rm -f xgen-enums-$(@F)
+CLEANFILES += $(plugins_built_sources) xgen-enums-*
 endif
 
 ## include generated plugin Makefile

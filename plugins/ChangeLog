@@ -1,3 +1,8 @@
+Thu Sep 27 14:42:11 2001  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am (%.enums): fix enum autogeneration for parallel builds.
+	we can#t use the same tmpfile name here.
+
 Thu Sep 27 13:08:53 2001  Tim Janik  <timj@gtk.org>
 
 	* lots of adaptions to BSE changes, fixes and new plugins.
