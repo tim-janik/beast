@@ -113,6 +113,9 @@ temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
 #
 XMLANTISPACE=$(top_builddir)/docs/utils/xmlantispace
 REFERENCE_XMLS = $(patsubst %.3, %.3.crossfix.xml, $(man_MANS))
+# docs to be distributed
+distdocs = $(markup_targets) $(man_MANS)
+# conditional build rules
 if IF_BUILDDOCS
 gnome-index.lst.gz: # default-generate if not present to avoid build breakage
 	echo | gzip -9 >$@
@@ -247,12 +250,12 @@ release-news.texi: $(top_srcdir)/NEWS Makefile
 conditional_clean = $(strip \
 	navigation.xml		gnome-index.lst		\
 	gsl-mplan.texi		release-news.texi	\
-	$(markup_targets)	$(man_MANS)		\
 	$(temp_ref_docu)	$(temp_log2texi)	\
+	$(distdocs)					\
 )
 endif
 CLEANFILES += $(conditional_clean)
-
+EXTRA_DIST += $(distdocs)
 
 #
 # website generation
