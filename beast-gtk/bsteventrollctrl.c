@@ -349,7 +349,7 @@ move_start (BstEventRollController *self,
       controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, _("Move Control Event"), NULL);
       drag->state = BST_DRAG_CONTINUE;
-      if (bse_part_is_selected_event (part, self->obj_id))
+      if (bse_part_is_event_selected (part, self->obj_id))
 	self->sel_cseq = bse_part_control_seq_copy_shallow (bse_part_list_selected_controls (part, CONTROL_TYPE (self)));
     }
   else
@@ -403,9 +403,14 @@ move_motion (BstEventRollController *self,
   new_tick = bst_event_roll_controller_quantize (self, drag->current_tick);
   if (new_tick != self->obj_tick)
     {
-      if (bse_part_change_control (part, self->obj_id, new_tick, CONTROL_TYPE (self), self->obj_value) != BSE_ERROR_NONE)
-        drag->state = BST_DRAG_ERROR;
-      self->obj_tick = new_tick;
+      BsePartControlSeq *cseq = bse_part_get_controls (part, new_tick, CONTROL_TYPE (self));
+      if (!cseq->n_pcontrols)    /* avoid overlap */
+        {
+          if (bse_part_change_control (part, self->obj_id, new_tick, CONTROL_TYPE (self), self->obj_value) != BSE_ERROR_NONE)
+            drag->state = BST_DRAG_ERROR;
+          else
+            self->obj_tick = new_tick;
+        }
     }
 }
 
@@ -611,12 +616,12 @@ controller_canvas_drag (BstEventRollController *self,
     BstGenericRollTool tool;
     DragFunc start, motion, abort;
   } tool_table[] = {
-    { BST_GENERIC_ROLL_TOOL_INSERT, insert_resize_start,	resize_motion,  resize_abort,	},
-    { BST_GENERIC_ROLL_TOOL_ALIGN,	align_start,	align_motion,	align_abort,	},
-    { BST_GENERIC_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
-    { BST_GENERIC_ROLL_TOOL_MOVE,		move_start,	move_motion,	move_abort,	},
-    { BST_GENERIC_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},
-    { BST_GENERIC_ROLL_TOOL_SELECT,	select_start,	select_motion,	select_abort,	},
+    { BST_GENERIC_ROLL_TOOL_INSERT,     insert_resize_start,	resize_motion,  resize_abort,	},
+    { BST_GENERIC_ROLL_TOOL_ALIGN,	align_start,	        align_motion,	align_abort,	},
+    { BST_GENERIC_ROLL_TOOL_RESIZE,	resize_start,	        resize_motion,	resize_abort,	},
+    { BST_GENERIC_ROLL_TOOL_MOVE,	move_start,	        move_motion,	move_abort,	},
+    { BST_GENERIC_ROLL_TOOL_DELETE,	delete_start,	        NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_SELECT,	select_start,	        select_motion,	select_abort,	},
   };
   guint i;
   

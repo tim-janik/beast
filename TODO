@@ -1,4 +1,5 @@
 FIXMES:
+- create one canonical place for supported sample formats and keep that updated
 - remove bse-plugin-generator
 - document options: :filename, :rgb, :hex
 - remove bstdragutils.[hc]
@@ -68,7 +69,6 @@ FIXMES:
 - fix gsl wave osc
 - nuke SFI memblocks, malloc() is good enough
 - fix engine deinitialization warning in bseserver.c
-- match enum names on word boundaries only
 - master tune slider in preferences (kammer ton)
 - bsemididevice-oss throws warnings when compiled without midi support
 - MidiEvent (serialization)
@@ -80,7 +80,6 @@ FIXMES:
 - fix and canonify decibell naming everywhere
 - sample chunk display should show note names not only midi notes
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
-- RackEditor covers are broken for rack-items close to right table boundary
 - fix the word "tact" vs. measure
 - need tact number entry widget
 - fade in/out of samples in sample editor
@@ -115,6 +114,8 @@ Stefan Gui TODOs (priorities: 9=high, 0=low):
 4 - implement selection and copy and paste of parts in the strack roll
 
 TODO:
+- CPU monitoring
+- add facility to record MIDI control events
 - implement an object clippboard
 - add script to re-quantize piano-roll selections
 - freeverb bypass toggle

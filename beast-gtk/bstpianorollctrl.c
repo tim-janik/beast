@@ -354,12 +354,12 @@ bst_piano_roll_controller_paste (BstPianoRollController *self)
 	  note = pnote->note + cnote;
 	  if (note >= 0)
 	    {
-	      id = bse_part_insert_note (proxy,
-					 pnote->tick - ctick + paste_tick,
-					 pnote->duration,
-					 note,
-					 pnote->fine_tune,
-					 pnote->velocity);
+	      id = bse_part_insert_note_auto (proxy,
+                                              pnote->tick - ctick + paste_tick,
+                                              pnote->duration,
+                                              note,
+                                              pnote->fine_tune,
+                                              pnote->velocity);
               bse_part_select_event (proxy, id);
             }
 	}
@@ -465,7 +465,7 @@ move_start (BstPianoRollController *self,
       controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, _("Move Note"), NULL);
       drag->state = BST_DRAG_CONTINUE;
-      if (bse_part_is_selected_event (part, self->obj_id))
+      if (bse_part_is_event_selected (part, self->obj_id))
 	self->sel_pseq = bse_part_note_seq_copy_shallow (bse_part_list_selected_notes (part));
     }
   else
@@ -535,11 +535,11 @@ move_motion (BstPianoRollController *self,
     {
       bse_item_group_undo (part, "Move Note");
       if (bse_part_delete_event (part, self->obj_id) != BSE_ERROR_NONE)
-	drag->state = BST_DRAG_ERROR;
+        drag->state = BST_DRAG_ERROR;
       else
 	{
-	  self->obj_id = bse_part_insert_note (part, new_tick, self->obj_duration,
-					       drag->current_note, self->obj_fine_tune, self->obj_velocity);
+	  self->obj_id = bse_part_insert_note_auto (part, new_tick, self->obj_duration,
+                                                    drag->current_note, self->obj_fine_tune, self->obj_velocity);
 	  self->obj_tick = new_tick;
 	  self->obj_note = drag->current_note;
 	  if (!self->obj_id)
@@ -614,8 +614,8 @@ resize_motion (BstPianoRollController *self,
 	}
       if (new_duration && drag->state != BST_DRAG_ERROR)
 	{
-	  self->obj_id = bse_part_insert_note (part, new_tick, new_duration,
-					       self->obj_note, self->obj_fine_tune, self->obj_velocity);
+	  self->obj_id = bse_part_insert_note_auto (part, new_tick, new_duration,
+                                                    self->obj_note, self->obj_fine_tune, self->obj_velocity);
 	  self->obj_tick = new_tick;
 	  self->obj_duration = new_duration;
 	  if (!self->obj_id)
@@ -661,7 +661,7 @@ insert_start (BstPianoRollController *self,
 	error = BSE_ERROR_INVALID_OVERLAP;
       else
 	{
-	  bse_part_insert_note (part, qtick, duration, drag->start_note, 0, 1.0);
+	  bse_part_insert_note_auto (part, qtick, duration, drag->start_note, 0, 1.0);
 	  error = BSE_ERROR_NONE;
 	}
     }

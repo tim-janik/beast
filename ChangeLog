@@ -1,3 +1,13 @@
+Sun Feb  8 03:27:44 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: increased version to 0.6.0-rc1, binary 0, interface 0.
+
+	* beast-gtk/bsteventrollctrl.c: adapt to API changes in BsePart.
+	refuse to move single control events to ticks where tey'd overlap
+	with events of the same type.
+
+	* beast-gtk/bstpianorollctrl.c: adapt to BsePart API changes.
+
 Fri Feb  6 20:53:09 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkaction.[hc] (gxk_action_list_force_regulate): new
