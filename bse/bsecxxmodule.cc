@@ -48,16 +48,16 @@ void
 access_trampoline (BseModule *module,
                    gpointer   data)
 {
-  SynthesisModule::Accessor *ac = static_cast<SynthesisModule::Accessor*> (data);
+  SynthesisModule::Closure *clo = static_cast<SynthesisModule::Closure*> (data);
   SynthesisModule *m = static_cast<SynthesisModule*> (module->user_data);
-  (*ac) (m);
+  (*clo) (m);
 }
 
 void
 access_data_free (gpointer data)
 {
-  SynthesisModule::Accessor *ac = static_cast<SynthesisModule::Accessor*> (data);
-  delete ac;
+  SynthesisModule::Closure *clo = static_cast<SynthesisModule::Closure*> (data);
+  delete clo;
 }
 
 void
@@ -66,11 +66,11 @@ Effect::update_modules (BseTrans *trans)
   BseSource *source = cast (this);
   if (BSE_SOURCE_PREPARED (source))
     {
-      SynthesisModule::Accessor *ac = module_configurator();
-      if (ac)
+      SynthesisModule::Closure *clo = make_module_config_closure();
+      if (clo)
         {
           BseTrans *atrans = trans ? trans : bse_trans_open();
-          bse_source_access_modules (source, access_trampoline, ac, access_data_free, atrans);
+          bse_source_access_modules (source, access_trampoline, clo, access_data_free, atrans);
           if (!trans)
             bse_trans_commit (atrans);
         }
@@ -185,25 +185,6 @@ Effect::create_engine_class (SynthesisModule *sample_module,
   return source_class->engine_class;
 }
 
-struct MidiControlJobData {
-  guint  prop_id;
-  gfloat control_value;
-  static void
-  free (gpointer data)
-  {
-    MidiControlJobData *jdata = static_cast<MidiControlJobData*> (data);
-    delete jdata;
-  }
-};
-
-static void
-midi_control_flow_access (BseModule      *module,       /* Engine Thread */
-                          gpointer        data)
-{
-  MidiControlJobData *jdata = static_cast<MidiControlJobData*> (data);
-  g_printerr ("midi_control: module=%p prop_id=%u value=%f\n", module, jdata->prop_id, jdata->control_value);
-}
-
 static void
 midi_control_handler (gpointer                  handler_data, /* MIDI Device Thread (and possibly others) */
                       guint64                   tick_stamp,
@@ -211,20 +192,30 @@ midi_control_handler (gpointer                  handler_data, /* MIDI Device Thr
                       gfloat                    control_value,
                       guint                     n_mcdatas,
                       BseModule          *const*modules,
+                      gpointer                  user_data,
                       BseTrans                 *trans)
 {
   GParamSpec *pspec = static_cast<GParamSpec*> (handler_data);
   g_return_if_fail (n_mcdatas > 0);
-  MidiControlJobData *jdata = new MidiControlJobData;
-  jdata->prop_id = pspec->param_id;
-  jdata->control_value = control_value;
+  struct Sub {
+    static void
+    auto_update_data_free (gpointer data)
+    {
+      SynthesisModule::AutoUpdateData *adata = static_cast<SynthesisModule::AutoUpdateData*> (data);
+      delete adata;
+    }
+  };
+  SynthesisModule::AutoUpdate accessor = (SynthesisModule::AutoUpdate) (user_data);
+  SynthesisModule::AutoUpdateData *adata = new SynthesisModule::AutoUpdateData;
+  adata->prop_id = pspec->param_id;
+  adata->control_value = control_value;
   for (guint i = 0; i < n_mcdatas; i++)
     bse_trans_add (trans,
                    bse_job_flow_access (modules[i],
                                         tick_stamp,
-                                        midi_control_flow_access,
-                                        jdata,
-                                        i + 1 >= n_mcdatas ? MidiControlJobData::free : NULL));
+                                        accessor,
+                                        adata,
+                                        i + 1 >= n_mcdatas ? Sub::auto_update_data_free : NULL));
 }
 
 static void
@@ -258,6 +249,7 @@ get_midi_control_range (GParamSpec *pspec,
 }
 
 struct HandlerSetup {
+  Effect                *effect;
   bool                   add_handler;
   guint                  n_aprops;
   BseAutomationProperty *aprops;
@@ -283,6 +275,14 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
                                                midi_control_handler,
                                                hs->aprops[i].pspec,
                                                module);
+        if (!i)
+          bse_midi_receiver_set_control_handler_data (hs->midi_receiver,
+                                                      hs->aprops[i].midi_channel ? hs->aprops[i].midi_channel : hs->midi_channel,
+                                                      hs->aprops[i].signal_type,
+                                                      midi_control_handler,
+                                                      hs->aprops[i].pspec,
+                                                      (void*) hs->effect->get_module_auto_update(),
+                                                      NULL);
       }
     else
       bse_midi_receiver_remove_control_handler (hs->midi_receiver,
@@ -317,6 +317,7 @@ Effect::integrate_engine_module (unsigned int   context_handle,
   if (n_props)
     {
       HandlerSetup *hs = g_new0 (HandlerSetup, 1);
+      hs->effect = this;
       hs->add_handler = true;
       hs->n_aprops = n_props;
       hs->aprops = aprops;
@@ -342,6 +343,7 @@ Effect::dismiss_engine_module (BseModule       *engine_module,
       if (n_props)
         {
           HandlerSetup *hs = g_new0 (HandlerSetup, 1);
+          hs->effect = this;
           hs->add_handler = false;
           hs->n_aprops = n_props;
           hs->aprops = aprops;
@@ -367,7 +369,7 @@ void
 Effect::class_init (CxxBaseClass *klass)
 {
   static gpointer effect_parent_class = NULL;
-  struct Local
+  struct Trampoline
   {
     static void
     effect_context_create (BseSource *source,
@@ -384,9 +386,9 @@ Effect::class_init (CxxBaseClass *klass)
       /* reset module */
       bse_trans_add (trans, bse_job_force_reset (engine_module));
       /* configure module */
-      SynthesisModule::Accessor *ac = self->module_configurator();
-      if (ac)
-        bse_trans_add (trans, bse_job_access (engine_module, access_trampoline, ac, access_data_free));
+      SynthesisModule::Closure *clo = self->make_module_config_closure();
+      if (clo)
+        bse_trans_add (trans, bse_job_access (engine_module, access_trampoline, clo, access_data_free));
       
       /* chain parent class' handler */
       BSE_SOURCE_CLASS (effect_parent_class)->context_create (source, context_handle, trans);
@@ -447,10 +449,10 @@ Effect::class_init (CxxBaseClass *klass)
   BseSourceClass *source_class = klass;
 
   effect_parent_class = g_type_class_peek_parent (klass);
-  source_class->context_create = Local::effect_context_create;
-  source_class->context_dismiss = Local::effect_context_dismiss;
-  source_class->prepare = Local::effect_prepare;
-  source_class->reset = Local::effect_reset;
+  source_class->context_create = Trampoline::effect_context_create;
+  source_class->context_dismiss = Trampoline::effect_context_dismiss;
+  source_class->prepare = Trampoline::effect_prepare;
+  source_class->reset = Trampoline::effect_reset;
 }
 
 
@@ -482,4 +484,4 @@ bse_cxx_checks (void)  // prototyped in bseutils.h
   check_mirror_structs ();
 }
 
-}
+} // Anon

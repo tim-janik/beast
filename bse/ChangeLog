@@ -1,3 +1,21 @@
+Thu Sep 16 15:41:38 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecxxmodule.[hc]*: accessor->closure rename where appropriate.
+	moved MidiControlJobData into SynthesisModule.
+	renamed module_configurator() to make_module_config_closure().
+	use bse_midi_receiver_set_control_handler_data() to provide an
+	auto_update() function handle for midi_control_handler().
+	(SynthesisModule): provide an auto_update_accessor() template, to be
+	used as flow job function on engine modules to call auto_update().
+	specialised template so an auto_update() method is required only
+	for objects with the NeedAutoUpdateTag category.
+
+	* bsedefs.h: provide BSE_MODULE_GET_USER_DATA().
+	* bseengine.c: double check BSE_MODULE_GET_USER_DATA().
+
+	* bsemidireceiver.[hc]*: added extra user_data to midi control handler,
+	required by bsecxxmodule: bse_midi_receiver_set_control_handler_data().
+
 Wed Sep 15 22:48:41 2004  Tim Janik  <timj@gtk.org>
 
 	* *.idl: removed SFI_PARAM_ prefix from option constants.

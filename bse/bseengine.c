@@ -1375,6 +1375,11 @@ bse_engine_init (gboolean run_threaded)
   g_return_if_fail (bse_engine_initialized == FALSE);
   
   bse_engine_initialized = TRUE;
+  
+  /* some code assertions */
+  g_assert (&BSE_MODULE_GET_USER_DATA ((BseModule*) 42) == &((BseModule*) 42)->user_data);
+  
+  /* initialize components */
   bse_engine_reinit_utils();
   /* first configure */
   bse_engine_configure (50, 44100, 50);

@@ -67,8 +67,6 @@ typedef struct  _BseMidiReceiver           BseMidiReceiver;
 typedef struct  _BseMidiSynth              BseMidiSynth;
 typedef struct  _BseMidiSynthClass         BseMidiSynthClass;
 typedef struct  _BseMidiContext            BseMidiContext;
-typedef struct  _BseModule                 BseModule;
-typedef struct  _BseModuleClass            BseModuleClass;
 typedef struct  _BseObject                 BseObject;
 typedef struct  _BseObjectClass            BseObjectClass;
 typedef struct  _BseParasite		   BseParasite;
@@ -107,6 +105,12 @@ typedef struct  _BseVoice		   BseVoice;
 typedef struct  _BseWave                   BseWave;
 typedef struct  _BseWaveRepo               BseWaveRepo;
 typedef struct  _BseWaveRepoClass          BseWaveRepoClass;
+
+/* --- BseModule special handling --- */
+typedef struct  _BseModule                 BseModule;
+typedef struct  _BseModuleClass            BseModuleClass;
+/* dereference BseModule.user_data without including bseengine.h */
+#define	BSE_MODULE_GET_USER_DATA(bsemodule)	(((gpointer*) bsemodule)[1])
 
 
 /* --- BSE aux structures --- */
