@@ -40,10 +40,9 @@ SfiThread*    sfi_thread_run		(const gchar    *name,
 					 gpointer	 user_data);
 SfiThread*    sfi_thread_self		(void);
 gint          sfi_thread_self_pid	(void);
+gint	      sfi_thread_get_pid	(SfiThread      *thread);
+const gchar*  sfi_thread_get_name	(SfiThread      *thread);
 void	      sfi_thread_set_name	(const gchar    *name);
-void	      sfi_thread_set_wakeup	(SfiThreadWakeup wakeup_func,
-					 gpointer	 wakeup_data,
-					 GDestroyNotify	 destroy);
 gboolean      sfi_thread_sleep		(glong		 max_useconds);
 gboolean      sfi_thread_aborted	(void);
 void	      sfi_thread_queue_abort	(SfiThread	*thread);
@@ -51,6 +50,9 @@ void	      sfi_thread_abort		(SfiThread	*thread);
 void	      sfi_thread_wakeup		(SfiThread	*thread);
 void	      sfi_thread_awake_after	(guint64	 stamp);
 void	      sfi_thread_emit_wakeups	(guint64	 stamp);
+void	      sfi_thread_set_wakeup	(SfiThreadWakeup wakeup_func,
+					 gpointer	 wakeup_data,
+					 GDestroyNotify	 destroy);
 gpointer      sfi_thread_get_qdata	(GQuark		 quark);
 void	      sfi_thread_set_qdata_full	(GQuark		 quark,
 					 gpointer	 data,

@@ -424,6 +424,36 @@ sfi_thread_self_pid (void)
   return sfi_thread_self ()->tid;
 }
 
+/**
+ * sfi_thread_get_pid
+ * @thread:  a valid %SfiThread handle
+ * @RETURNS: thread id
+ * Return the specific id for @thread. This function is highly
+ * system dependant. The thread id may deviate from the overall
+ * process id or not. On linux, threads have their own id,
+ * allthough since kernel 2.6, they share the same process id.
+ */
+gint
+sfi_thread_get_pid (SfiThread *thread)
+{
+  thread = thread ? thread : sfi_thread_self();
+  return thread->tid;
+}
+
+/**
+ * sfi_thread_get_pid
+ * @thread:  a valid %SfiThread handle
+ * @RETURNS: thread name
+ * Return the name of @thread as specified upon invokation of
+ * sfi_thread_run() or assigned by sfi_thread_set_name().
+ */
+const gchar*
+sfi_thread_get_name (SfiThread *thread)
+{
+  thread = thread ? thread : sfi_thread_self();
+  return thread->name;
+}
+
 static void
 sfi_thread_wakeup_L (SfiThread *thread)
 {
@@ -1063,7 +1093,9 @@ _sfi_init_threads (void)
   sfi_mutex_init (&global_thread_mutex);
   sfi_cond_init (&global_thread_cond);
   
-  _sfi_init_memory ();
+  _sfi_init_logging ();
   
+  _sfi_init_memory ();
+
   sfi_thread_self ();
 }

@@ -116,6 +116,7 @@ sfi_glue_encoder_context (SfiComPort *port)
   return &encoder->context;
 }
 
+#if 0
 GValue* /* needs sfi_value_free() */
 sfi_glue_encode_message (guint        log_level,
 			 const gchar *format,
@@ -153,6 +154,7 @@ sfi_glue_encode_message (guint        log_level,
   g_free (buffer);
   return value;
 }
+#endif
 
 static gboolean
 encoder_process_message (SfiGlueEncoder *encoder,
@@ -178,12 +180,14 @@ encoder_process_message (SfiGlueEncoder *encoder,
 	    sfi_diag ("ignoring message with spurious return value");
 	  break;
 	case SFI_GLUE_CODEC_ASYNC_MESSAGE:
+#if 0
 	  if (seq->n_elements >= 4)
 	    sfi_log_printf (sfi_seq_get_string (seq, 1),
                             sfi_seq_get_int (seq, 2),
                             SfiLogger (NULL, NULL, NULL),
                             sfi_seq_get_string (seq, 3));
 	  else
+#endif
 	    sfi_diag ("ignoring message with invalid message contents");
 	  break;
 	case SFI_GLUE_CODEC_ASYNC_EVENT:

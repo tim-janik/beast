@@ -40,9 +40,11 @@ typedef struct
 SfiGlueContext*	sfi_glue_encoder_context	(SfiComPort	*port);
 
 
+#if 0
 GValue*		sfi_glue_encode_message		(guint		 log_level,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2,3);
+#endif
 
 
 /* --- decoder API --- */
