@@ -57,10 +57,10 @@ temp_files =  xgen-tih xgen-tic xgen-sch
 CLEANFILES += $(temp_files)
 CLEANFILES += testidl.h testidl.c
 testidl.h: $(srcdir)/testidl.idl sfidl
-	$(SFIDL) --header --implementation --boxed $(srcdir)/testidl.idl > xgen-tih \
+	$(SFIDL) --core-c --header $(srcdir)/testidl.idl > xgen-tih \
 	&& mv xgen-tih testidl.h
 testidl.c: $(srcdir)/testidl.idl sfidl
-	$(SFIDL) --source --implementation --boxed --init test_types_init $(srcdir)/testidl.idl > xgen-tic \
+	$(SFIDL) --core-c --source --init test_types_init $(srcdir)/testidl.idl > xgen-tic \
 	&& mv xgen-tic testidl.c
 EXTRA_DIST += testidl.idl
 
@@ -84,7 +84,9 @@ $(OBJECTS): sficonfig.h
 # programs to build
 #
 # source files
-common_idl_sources = sfidl-module.cc sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-cxx.cc sfidl-factory.cc sfidl-typelist.cc glib-extra.c
+common_idl_sources = sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc \
+  sfidl-factory.cc sfidl-typelist.cc sfidl-cbase.cc sfidl-clientc.cc sfidl-clientcxx.cc sfidl-corec.cc \
+  sfidl-corecxx.cc sfidl-cxxbase.cc sfidl-hostc.cc glib-extra.c
 
 noinst_PROGRAMS = testsfi testcxx testsfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
@@ -92,7 +94,9 @@ sfidl_LDADD = $(SFI_LIBS) -lm
 
 bin_PROGRAMS = sfidl
 
-EXTRA_DIST += sfidl-generator.h sfidl-namespace.h sfidl-options.h sfidl-parser.h sfidl-module.h sfidl-cxx.h sfidl-factory.h sfidl-typelist.h
+EXTRA_DIST += sfidl-generator.h sfidl-namespace.h sfidl-options.h sfidl-parser.h sfidl-factory.h sfidl-typelist.h
+EXTRA_DIST += sfidl-cbase.h sfidl-clientc.h sfidl-clientcxx.h sfidl-corec.h sfidl-corecxx.h sfidl-cxxbase.h sfidl-hostc.h
+
 progs_extra_sources += sfidl-namespace.h
 testsfi_SOURCES = testsfi.c
 testsfi_LDADD = libsfi.la

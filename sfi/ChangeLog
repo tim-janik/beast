@@ -1,3 +1,33 @@
+Sun Feb 22 01:44:09 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.*: Put seperate classes in seperate files. So this
+	now should contain class CodeGenerator, nothing more.
+
+	* sfidl-cbase.* sfidl-cxxbase.*: Base classes for C / C++ language
+	bindings (from sfidl-generator.cc).
+	
+	* sfidl-clientc.* sfidl-hostc.* sfidl-corec.*: Three new C language
+	bindings (--client-c --host-c --core-c), all containing the code from
+	sfidl-generator.cc
+
+	* sfidl-corecxx.*: Rename from sfidl-module.*.
+
+	* sfidl-clientcxx.*: Rename from sfidl-cxx.*. Moved some stuff from
+	the CodeGeneratorCxxBase to CodeGeneratorClientCxx, since the core
+	binding will not use it.
+
+	* sfidl-module.* sfidl-cxx.*: Removed (contents are sfidl-corecxx.*
+	and sfidl-clientcxx.* now).
+
+	* sfidl-options.cc: Stripped --boxed --interface --implementation
+	options: these are selected implicitely by selecting the language
+	binding.
+
+	* sfidl.cc: No longer default one language binding (CodeGeneratorC).
+
+	* Makefile.am: Adapted to the new sfidl file structure, and the new
+	options.
+
 Sat Feb 21 23:28:58 2004  Tim Janik  <timj@gtk.org>
 
 	* cvs copied sfidl sources:

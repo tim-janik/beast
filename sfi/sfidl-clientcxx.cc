@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "sfidl-cxx.h"
+#include "sfidl-clientcxx.h"
 #include "sfidl-factory.h"
 #include <fcntl.h>
 #include <stdio.h>
@@ -26,7 +26,6 @@
 #include "sfidl-namespace.h"
 #include "sfidl-options.h"
 #include "sfidl-parser.h"
-#include "sfidl-module.h"
 #include "sfiparams.h" /* scatId (SFI_SCAT_*) */
 
 using namespace Sfidl;
@@ -39,7 +38,7 @@ static string fail (const string& error)
 }
 
 string
-CodeGeneratorCxxBase::typeArg (const string& type)
+CodeGeneratorClientCxx::typeArg (const string& type)
 {
   switch (parser.typeOf (type))
     {
@@ -53,7 +52,7 @@ CodeGeneratorCxxBase::typeArg (const string& type)
 }
 
 string
-CodeGeneratorCxxBase::typeField (const string& type)
+CodeGeneratorClientCxx::typeField (const string& type)
 {
   switch (parser.typeOf (type))
     {
@@ -67,7 +66,7 @@ CodeGeneratorCxxBase::typeField (const string& type)
 }
 
 string
-CodeGeneratorCxxBase::typeRet (const string& type)
+CodeGeneratorClientCxx::typeRet (const string& type)
 {
   switch (parser.typeOf (type))
     {
@@ -81,7 +80,7 @@ CodeGeneratorCxxBase::typeRet (const string& type)
 }
 
 string
-CodeGeneratorCxxBase::funcNew (const string& type)
+CodeGeneratorClientCxx::funcNew (const string& type)
 {
   switch (parser.typeOf (type))
     {
@@ -91,7 +90,7 @@ CodeGeneratorCxxBase::funcNew (const string& type)
 }
 
 string
-CodeGeneratorCxxBase::funcCopy (const string& type)
+CodeGeneratorClientCxx::funcCopy (const string& type)
 {
   switch (parser.typeOf (type))
     {
@@ -101,7 +100,7 @@ CodeGeneratorCxxBase::funcCopy (const string& type)
 }
 
 string
-CodeGeneratorCxxBase::funcFree (const string& type)
+CodeGeneratorClientCxx::funcFree (const string& type)
 {
   switch (parser.typeOf (type))
     {
@@ -110,7 +109,7 @@ CodeGeneratorCxxBase::funcFree (const string& type)
     }
 }
 
-string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std::string& name, 
+string CodeGeneratorClientCxx::createTypeCode (const std::string& type, const std::string& name, 
 				             TypeCodeModel model)
 {
   /* FIXME: parameter validation */
@@ -252,115 +251,8 @@ cUC_TYPE_NAME (const string &cstr) // FIXME: need mammut renaming function
   return g_intern_string (UC_TYPE_NAME (cstr).c_str());
 }
 
-/* produce type-system-independant pspec constructors */
-std::string
-CodeGeneratorCxxBase::untyped_pspec_constructor (const Param &param)
-{
-  switch (parser.typeOf (param.type))
-    {
-    case CHOICE:
-      {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Choice";
-        if (param.args == "")
-          pspec += "_default";
-        pspec += " (" + group + ", \"" + param.name + "\", ";
-        if (param.args != "")
-          pspec += param.args + ", ";
-        pspec += param.type + "_choice_values()";
-        pspec += ")";
-        return pspec;
-      }
-    case RECORD:
-      {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Record";
-        if (param.args == "")
-          pspec += "_default (" + group + ", \"" + param.name + "\", ";
-        else
-          pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
-        pspec += param.type + "::get_fields()";
-        pspec += ")";
-        return pspec;
-      }
-    case SEQUENCE:
-      {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Sequence";
-        if (param.args == "")
-          pspec += "_default (" + group + ", \"" + param.name + "\", ";
-        else
-          pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
-        pspec += param.type + "::get_element()";
-        pspec += ")";
-        return pspec;
-      }
-    default:    return makeParamSpec (param);
-    }
-}
-
-/* produce type-system-dependant pspec constructors */
-std::string
-CodeGeneratorCxxBase::typed_pspec_constructor (const Param &param)
-{
-  switch (parser.typeOf (param.type))
-    {
-    case CHOICE:
-      {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_GEnum";
-        if (param.args == "")
-          pspec += "_default";
-        pspec += " (" + group + ", \"" + param.name + "\", ";
-        if (param.args != "")
-          pspec += param.args + ", ";
-        pspec += cUC_TYPE_NAME (param.type);
-        pspec += ")";
-        return pspec;
-      }
-    case RECORD:
-      {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_BoxedRec";
-        if (param.args == "")
-          pspec += "_default (" + group + ", \"" + param.name + "\", ";
-        else
-          pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
-        pspec += cUC_TYPE_NAME (param.type);
-        pspec += ")";
-        return pspec;
-      }
-    case SEQUENCE:
-      {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_BoxedSeq";
-        if (param.args == "")
-          pspec += "_default (" + group + ", \"" + param.name + "\", ";
-        else
-          pspec += " (" + group + ", \"" + param.name + "\", " + param.args + ", ";
-        pspec += cUC_TYPE_NAME (param.type);
-        pspec += ")";
-        return pspec;
-      }
-    case OBJECT:
-      {
-        const string group = (param.group != "") ? param.group.escaped() : "NULL";
-        string pspec = "sfidl_pspec_Object";
-        if (param.args == "")
-          pspec += "_default";
-        pspec += " (" + group + ", \"" + param.name + "\", ";
-        if (param.args != "")
-          pspec += param.args + ", ";
-        pspec += cUC_TYPE_NAME (param.type);
-        pspec += ")";
-        return pspec;
-      }
-    default:    return makeParamSpec (param);
-    }
-}
-
 void
-CodeGeneratorCxxBase::printChoicePrototype (NamespaceHelper& nspace)
+CodeGeneratorClientCxx::printChoicePrototype (NamespaceHelper& nspace)
 {
   printf ("\n/* choice prototypes */\n");
   for (vector<Choice>::const_iterator ci = parser.getChoices().begin(); ci != parser.getChoices().end(); ci++)
@@ -375,7 +267,7 @@ CodeGeneratorCxxBase::printChoicePrototype (NamespaceHelper& nspace)
 }
 
 void
-CodeGeneratorCxxBase::printChoiceImpl (NamespaceHelper& nspace)
+CodeGeneratorClientCxx::printChoiceImpl (NamespaceHelper& nspace)
 {
   printf ("\n/* choice implementations */\n");
   for (vector<Choice>::const_iterator ci = parser.getChoices().begin(); ci != parser.getChoices().end(); ci++)
@@ -401,7 +293,7 @@ CodeGeneratorCxxBase::printChoiceImpl (NamespaceHelper& nspace)
 }
 
 void
-CodeGeneratorCxxBase::printRecSeqForwardDecl (NamespaceHelper& nspace)
+CodeGeneratorClientCxx::printRecSeqForwardDecl (NamespaceHelper& nspace)
 {
   vector<Sequence>::const_iterator si;
   vector<Record>::const_iterator ri;
@@ -435,7 +327,7 @@ CodeGeneratorCxxBase::printRecSeqForwardDecl (NamespaceHelper& nspace)
     }
 }
 
-void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
+void CodeGeneratorClientCxx::printRecSeqDefinition (NamespaceHelper& nspace)
 {
   vector<Param>::const_iterator pi;
 
@@ -511,7 +403,7 @@ void CodeGeneratorCxxBase::printRecSeqDefinition (NamespaceHelper& nspace)
     }
 }
 
-void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
+void CodeGeneratorClientCxx::printRecSeqImpl (NamespaceHelper& nspace)
 {
   printf ("\n/* record/sequence implementations */\n");
 
@@ -672,7 +564,7 @@ void CodeGeneratorCxxBase::printRecSeqImpl (NamespaceHelper& nspace)
     }
 }
 
-bool CodeGeneratorCxx::run ()
+bool CodeGeneratorClientCxx::run ()
 {
   vector<Choice>::const_iterator ei;
   vector<Param>::const_iterator pi;
@@ -797,7 +689,7 @@ bool CodeGeneratorCxx::run ()
   return 1;
 }
 
-string CodeGeneratorCxx::makeProcName (const string& className, const string& procName)
+string CodeGeneratorClientCxx::makeProcName (const string& className, const string& procName)
 {
   if (className == "")
     {
@@ -813,7 +705,7 @@ string CodeGeneratorCxx::makeProcName (const string& className, const string& pr
     }
 }
 
-void CodeGeneratorCxx::printMethods (const Class& cdef)
+void CodeGeneratorClientCxx::printMethods (const Class& cdef)
 {
   vector<Method>::const_iterator mi;
   vector<Param>::const_iterator pi;
@@ -838,7 +730,7 @@ void CodeGeneratorCxx::printMethods (const Class& cdef)
     }
 }
 
-void CodeGeneratorCxx::printProperties (const Class& cdef)
+void CodeGeneratorClientCxx::printProperties (const Class& cdef)
 {
   vector<Param>::const_iterator pi;
   bool proto = options.doHeader;
@@ -884,9 +776,9 @@ void CodeGeneratorCxx::printProperties (const Class& cdef)
 
 namespace {
 
-class CxxFactory : public Factory {
+class ClientCxxFactory : public Factory {
 public:
-  string option() const	      { return "--cxx"; }
+  string option() const	      { return "--client-cxx"; }
   string description() const  { return "generate client C++ language binding"; }
 
   void init (Options& options) const
@@ -897,7 +789,7 @@ public:
 
   CodeGenerator *create (const Parser& parser) const
   {
-    return new CodeGeneratorCxx (parser);
+    return new CodeGeneratorClientCxx (parser);
   }
 } cxx_factory;
 

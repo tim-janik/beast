@@ -17,23 +17,11 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "sfidl-generator.h"
-#include "sfidl-namespace.h"
 #include "sfidl-options.h"
 #include "sfidl-parser.h"
-#include "sfidl-module.h"
-#include "sfidl-typelist.h"
-#include "sfidl-factory.h"
-#include "sfidl-cxx.h"
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <ctype.h>
 
 using namespace Sfidl;
 using namespace std;
-
-
 
 int main (int argc, char **argv)
 {
@@ -63,14 +51,17 @@ int main (int argc, char **argv)
       return 1;
     }
 
+  if (!options.codeGenerator)
+    {
+      options.printUsage();
+      return 1;
+    }
+
   if (!parser.parse(argv[1]))
     {
       /* parse error */
       return 1;
     }
-
-  if (!options.codeGenerator)
-    options.codeGenerator = new CodeGeneratorC (parser);
 
   if (!options.codeGenerator->run ())
     {

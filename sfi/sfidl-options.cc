@@ -88,21 +88,6 @@ bool Options::parse (int *argc_p, char **argv_p[], const Parser& parser)
 	  doSource = true;
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--interface", argv[i]) == 0)
-	{
-	  doInterface = true;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--implementation", argv[i]) == 0)
-	{
-	  doImplementation = true;
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--boxed", argv[i]) == 0)
-	{
-	  generateBoxedTypes = true;
-	  argv[i] = NULL;
-	}
       else if ((len = strlen("--prefix=")) &&
 	  (strcmp ("--prefix", argv[i]) == 0 ||
 	   strncmp ("--prefix=", argv[i], len) == 0))
@@ -374,21 +359,22 @@ void Options::printUsage ()
 {
   list<Factory *> factories = Factory::listFactories();
 
-  fprintf (stderr, "usage: %s [ <options> ] <idlfile>\n", sfidlName.c_str());
+  fprintf (stderr, "usage: %s <binding> [ <options> ] <idlfile>\n", sfidlName.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "general options:\n");
   fprintf (stderr, " --header                    generate header file\n");
   fprintf (stderr, " --source                    generate source file\n");
   fprintf (stderr, "\n");
-  fprintf (stderr, " --interface                 generate interface\n");
-  fprintf (stderr, " --implementation            generate implementation\n");
-  fprintf (stderr, "\n");
-  fprintf (stderr, " --init <name>               set the name of the init function\n");
-  fprintf (stderr, " --idl-line-numbers          generate #line directives relative to .sfidl file\n");
   fprintf (stderr, " -I <directory>              add this directory to the include path\n");
+  fprintf (stderr, " --print-include-path        print include path\n");
+  fprintf (stderr, " --nostdinc                  don't use standard include path\n");
+  fprintf (stderr, " --idl-line-numbers          generate #line directives relative to .sfidl file\n");
+  fprintf (stderr, "\n");
+  fprintf (stderr, " --help                      this help\n");
+  fprintf (stderr, " --version                   print version\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "options for the C language binding:\n");
-  fprintf (stderr, " --boxed                     generate glib boxed types (bse specific!)\n");
+  fprintf (stderr, " --init <name>               set the name of the init function\n");
   fprintf (stderr, " --prefix <prefix>           set the prefix for c functions\n");
   fprintf (stderr, "\n");
   fprintf (stderr, "options for the C++ language binding:\n");
@@ -400,12 +386,6 @@ void Options::printUsage ()
 
   for (list<Factory *>::const_iterator fi = factories.begin(); fi != factories.end(); fi++)
     fprintf (stderr, " %-28s%s\n", (*fi)->option().c_str(), (*fi)->description().c_str());
-
-  fprintf (stderr, "\n");
-  fprintf (stderr, " --help                      this help\n");
-  fprintf (stderr, " --version                   print version\n");
-  fprintf (stderr, " --print-include-path        print include path\n");
-  fprintf (stderr, " --nostdinc                  don't use standard include path\n");
 }
 
 

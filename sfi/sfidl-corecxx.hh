@@ -16,16 +16,16 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef _SFIDL_MODULE_H__
-#define _SFIDL_MODULE_H__
+#ifndef _SFIDL_CORECXX_H__
+#define _SFIDL_CORECXX_H__
 
 #include "sfidl-generator.h"
-#include "sfidl-cxx.h"
+#include "sfidl-cxxbase.h"
 #include "sfidl-parser.h"
 #include <stdio.h>
 #include <string>
 #include <list>
 
-#endif	/* _SFIDL_MODULE_H__ */
+#endif	/* _SFIDL_CORECXX_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */
