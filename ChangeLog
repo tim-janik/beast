@@ -1,3 +1,10 @@
+Fri Nov 28 03:13:09 2003  Tim Janik  <timj@gtk.org>
+
+	* tests/Makefile.am: rewrote cxxapi generation rules.
+	added hacks to work around missing std::string and sfi_value_get_cxxstring().
+
+	* tests/cxxbinding.cc: include bsecxxapi.h.
+
 Fri Nov 28 00:55:55 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* configure.in Makefile.am: Added tests directory.
