@@ -69,8 +69,6 @@ struct _BseSNet
 struct _BseSNetClass
 {
   BseSuperClass parent_class;
-
-  BseIcon      *icon;
 };
 
 

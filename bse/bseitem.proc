@@ -183,11 +183,7 @@ METHOD (BseItem, use) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  if (!item->use_count)
-    bse_object_ref (item);
-  item->use_count++;
-
-  /* set output parameters */
+  bse_item_use (item);
   
   return BSE_ERROR_NONE;
 }

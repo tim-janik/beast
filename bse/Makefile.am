@@ -50,6 +50,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsecontainer.h \
 	bsedatapocket.h \
 	bsedefs.h \
+	bseeditablesample.h \
 	bseeffect.h \
 	bseeffectbalance.h \
 	bseeffectfinetune.h \
@@ -121,6 +122,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseconstant.c \
 	bsecontainer.c \
 	bsedatapocket.c \
+	bseeditablesample.c \
 	bseeffect.c \
 	bseeffectbalance.c \
 	bseeffectfinetune.c \
@@ -180,6 +182,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 bse_proc_sources = @STRIP_BEGIN@ \
 	bsecontainer.proc \
 	bsedatapocket.proc \
+	bseeditablesample.proc \
 	bseenums.proc \
 	bsehelloworld.proc \
 	bseobject.proc \
@@ -195,6 +198,7 @@ bse_proc_gen_sources = @STRIP_BEGIN@ \
 	bsecontainer.gen-proc.c \
 	bsedatapocket.gen-proc.c \
 	bseenums.gen-proc.c \
+	bseeditablesample.gen-proc.c \
 	bsehelloworld.gen-proc.c \
 	bseobject.gen-proc.c \
 	bseproject.gen-proc.c \

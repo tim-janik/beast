@@ -58,9 +58,9 @@ struct _BsePlugin
   GType  	*enum_types;
 
   /* private */
-  gconstpointer	 e_procs;
-  gconstpointer	 e_objects;
   gconstpointer	 e_enums;
+  gconstpointer	 e_objects;
+  gconstpointer	 e_procs;
   gconstpointer	 e_file_handlers;
 };
 struct _BsePluginClass

@@ -81,11 +81,11 @@ CRIGHTS	= "Tim Janik <timj@gtk.org>";
 DATE	= "2001";
 
 
-METHOD (BseWaveRepo, read-file) {
-  HELP	= "Read Wave from file";
+METHOD (BseWaveRepo, load-file) {
+  HELP	= "Load Wave from file";
   IN    = g_param_spec_object ("wave_repo", "Wave Repo", NULL,
 			       BSE_TYPE_WAVE_REPO, BSE_PARAM_DEFAULT);
-  IN	= g_param_spec_string ("file_name", "File Name", "The file to read waves from",
+  IN	= g_param_spec_string ("file_name", "File Name", "The file to import waves from",
  			       NULL, BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_enum ("error", "Error", NULL,
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,

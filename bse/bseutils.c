@@ -1027,10 +1027,10 @@ bse_darrays_match_freq (gfloat   match_freq,
 
 
 /* --- icons --- */
-BseIcon*
+BswIcon*
 bse_icon_from_pixdata (const BsePixdata *pixdata)
 {
-  BseIcon *icon;
+  BswIcon *icon;
   guint bpp, encoding;
 
   g_return_val_if_fail (pixdata != NULL, NULL);
@@ -1053,7 +1053,7 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
   if (!pixdata->encoded_pix_data)
     return NULL;
 
-  icon = g_new0 (BseIcon, 1);
+  icon = g_new0 (BswIcon, 1);
   icon->bytes_per_pixel = bpp;
   icon->ref_count = 1;
   icon->width = pixdata->width;
@@ -1111,48 +1111,6 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
     memcpy (icon->pixels, pixdata->encoded_pix_data, icon->width * icon->height * bpp);
   
   return icon;
-}
-
-#define STATIC_REF_COUNT (1 << 31)
-
-BseIcon*
-bse_icon_ref_static (BseIcon *icon)
-{
-  g_return_val_if_fail (icon != NULL, NULL);
-  g_return_val_if_fail (icon->ref_count > 0, NULL);
-
-  icon->ref_count |= STATIC_REF_COUNT;
-
-  return icon;
-}
-
-BseIcon*
-bse_icon_ref (BseIcon *icon)
-{
-  g_return_val_if_fail (icon != NULL, NULL);
-  g_return_val_if_fail (icon->ref_count > 0, NULL);
-
-  if (!(icon->ref_count & STATIC_REF_COUNT))
-    icon->ref_count += 1;
-
-  return icon;
-}
-
-void
-bse_icon_unref (BseIcon *icon)
-{
-  g_return_if_fail (icon != NULL);
-  g_return_if_fail (icon->ref_count > 0);
-
-  if (!(icon->ref_count & STATIC_REF_COUNT))
-    {
-      icon->ref_count -= 1;
-      if (!icon->ref_count)
-	{
-	  g_free (icon->pixels);
-	  g_free (icon);
-	}
-    }
 }
 
 

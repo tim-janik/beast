@@ -76,7 +76,7 @@ static BseTokenType	bse_object_do_try_statement	(BseObject	*object,
 							 BseStorage	*storage);
 static GTokenType	bse_object_do_restore		(BseObject	*object,
 							 BseStorage	*storage);
-static BseIcon*		bse_object_do_get_icon		(BseObject	*object);
+static BswIcon*		bse_object_do_get_icon		(BseObject	*object);
 
 
 /* --- variables --- */
@@ -742,10 +742,10 @@ bse_object_notify_icon_changed (BseObject *object)
   g_signal_emit (object, object_signals[SIGNAL_ICON_CHANGED], 0);
 }
 
-BseIcon*
+BswIcon*
 bse_object_get_icon (BseObject *object)
 {
-  BseIcon *icon;
+  BswIcon *icon;
   
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
   
@@ -758,7 +758,7 @@ bse_object_get_icon (BseObject *object)
   return icon;
 }
 
-static BseIcon*
+static BswIcon*
 bse_object_do_get_icon (BseObject *object)
 {
   BseCategory *cats;
@@ -773,7 +773,7 @@ bse_object_do_get_icon (BseObject *object)
   cats = bse_categories_from_type (BSE_OBJECT_TYPE (object), &n_cats);
   for (i = 0; i < n_cats; i++)
     {
-      BseIcon *icon = cats[i].icon;
+      BswIcon *icon = cats[i].icon;
       
       if (icon)
 	{

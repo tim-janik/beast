@@ -669,12 +669,12 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
   g_return_val_if_fail (dcache != NULL, NULL);
   
   dhandle = gsl_new_struct0 (DCacheHandle, 1);
-  success = gsl_data_handle_common_init (&dhandle->dhandle, NULL, dcache->handle->bit_depth);
+  success = gsl_data_handle_common_init (&dhandle->dhandle, NULL, dcache->dhandle->bit_depth);
   if (success)
     {
-      dhandle->dhandle.name = g_strdup_printf ("%s// #dcache /", dcache->handle->name);
+      dhandle->dhandle.name = g_strdup_printf ("%s// #dcache /", dcache->dhandle->name);
       dhandle->dhandle.vtable = &dcache_handle_vtable;
-      dhandle->dhandle.n_values = dcache->handle->n_values;
+      dhandle->dhandle.n_values = dcache->dhandle->n_values;
       dhandle->dcache = gsl_data_cache_ref (dcache);
       dhandle->node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
     }

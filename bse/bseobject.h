@@ -99,7 +99,7 @@ struct _BseObjectClass
   BseTokenType		(*restore_private)	(BseObject	*object,
 						 BseStorage	*storage);
   void			(*unlocked)		(BseObject	*object);
-  BseIcon*		(*get_icon)		(BseObject	*object);
+  BswIcon*		(*get_icon)		(BseObject	*object);
   void			(*destroy)		(BseObject	*object);
 };
 
@@ -154,7 +154,7 @@ void		bse_object_set_data_full	(BseObject	*object,
 						 const gchar	*key,
 						 gpointer	 data,
 						 GDestroyNotify	 destroy);
-BseIcon*	bse_object_get_icon		(BseObject	*object);
+BswIcon*	bse_object_get_icon		(BseObject	*object);
 void		bse_object_notify_icon_changed	(BseObject	*object);
 gpointer	bse_object_from_id		(guint		 unique_id);
 GList*		bse_objects_list		(GType		 type);

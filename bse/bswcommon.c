@@ -71,6 +71,19 @@ bsw_value_get_proxy (const GValue *value)
   return (BswProxy) value->data[0].v_pointer;
 }
 
+GParamSpec*
+bsw_param_spec_proxy (const gchar *name,
+		      const gchar *nick,
+		      const gchar *blurb,
+		      GParamFlags  flags)
+{
+  GParamSpec *pspec = g_param_spec_pointer (name, nick, blurb, flags);
+
+  pspec->value_type = BSW_TYPE_PROXY;
+
+  return pspec;
+}
+
 
 /* --- BSW value iterators --- */
 static gpointer
@@ -294,4 +307,105 @@ bsw_viter_append_proxy (BswVIterProxy *iter,
 
   i = bsw_viter_grow1 (iter);
   iter->items[i].v_proxy = proxy;
+}
+
+
+/* --- BSW value block --- */
+static gpointer
+vblock_copy (gpointer boxed)
+{
+  return boxed ? bsw_value_block_ref (boxed) : NULL;
+}
+
+static void
+vblock_free (gpointer boxed)
+{
+  if (boxed)
+    bsw_value_block_unref (boxed);
+}
+
+GType
+bsw_value_block_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    type = g_boxed_type_register_static ("BswValueBlock", vblock_copy, vblock_free);
+  return type;
+}
+
+BswValueBlock*
+bsw_value_block_new (guint n_values)
+{
+  BswValueBlock *vblock = g_malloc0 (sizeof (BswValueBlock) + sizeof (vblock->values[0]) * (MAX (n_values, 1) - 1));
+
+  vblock->ref_count = 1;
+  vblock->n_values = n_values;
+
+  return vblock;
+}
+
+BswValueBlock*
+bsw_value_block_ref (BswValueBlock *vblock)
+{
+  g_return_val_if_fail (vblock != NULL, NULL);
+  g_return_val_if_fail (vblock->ref_count > 0, NULL);
+
+  vblock->ref_count++;
+
+  return vblock;
+}
+
+void
+bsw_value_block_unref (BswValueBlock *vblock)
+{
+  g_return_if_fail (vblock != NULL);
+  g_return_if_fail (vblock->ref_count > 0);
+
+  vblock->ref_count--;
+  if (!vblock->ref_count)
+    g_free (vblock);
+}
+
+
+/* --- BSW icons --- */
+#define STATIC_REF_COUNT (1 << 31)
+
+BswIcon*
+bsw_icon_ref_static (BswIcon *icon)
+{
+  g_return_val_if_fail (icon != NULL, NULL);
+  g_return_val_if_fail (icon->ref_count > 0, NULL);
+
+  icon->ref_count |= STATIC_REF_COUNT;
+
+  return icon;
+}
+
+BswIcon*
+bsw_icon_ref (BswIcon *icon)
+{
+  g_return_val_if_fail (icon != NULL, NULL);
+  g_return_val_if_fail (icon->ref_count > 0, NULL);
+
+  if (!(icon->ref_count & STATIC_REF_COUNT))
+    icon->ref_count += 1;
+
+  return icon;
+}
+
+void
+bsw_icon_unref (BswIcon *icon)
+{
+  g_return_if_fail (icon != NULL);
+  g_return_if_fail (icon->ref_count > 0);
+
+  if (!(icon->ref_count & STATIC_REF_COUNT))
+    {
+      icon->ref_count -= 1;
+      if (!icon->ref_count)
+	{
+	  g_free (icon->pixels);
+	  g_free (icon);
+	}
+    }
 }

@@ -32,15 +32,32 @@ extern "C" {
 #define BSW_TYPE_VITER_INT       (bsw_viter_int_get_type ())
 #define BSW_TYPE_VITER_STRING    (bsw_viter_string_get_type ())
 #define BSW_TYPE_VITER_PROXY     (bsw_viter_proxy_get_type ())
+#define	BSW_TYPE_VALUE_BLOCK	 (bsw_value_block_get_type ())
 #define	BSW_VALUE_HOLDS_PROXY(v) (G_TYPE_CHECK_VALUE_TYPE ((v), BSW_TYPE_PROXY))
 
 
-/* --- typedefs --- */
-typedef gsize		 BswProxy;
-typedef struct _BswVIter BswVIter;
-typedef BswVIter         BswVIterInt;
-typedef BswVIter         BswVIterString;
-typedef BswVIter         BswVIterProxy;
+/* --- typedefs & structures --- */
+typedef gsize		      BswProxy;
+typedef struct _BswVIter      BswVIter;
+typedef BswVIter              BswVIterInt;
+typedef BswVIter              BswVIterString;
+typedef BswVIter              BswVIterProxy;
+typedef struct _BswValueBlock BswValueBlock;
+typedef struct _BswIcon	      BswIcon;
+struct _BswIcon
+{
+  guint   bytes_per_pixel; /* 3:RGB, 4:RGBA */
+  guint   ref_count;       /* &(1<<31) indicates permanent ref counts */
+  guint   width;
+  guint   height;
+  guint8 *pixels;
+};
+struct _BswValueBlock
+{
+  guint   ref_count;
+  guint   n_values;
+  gfloat  values[1];	/* flexible array */
+};
 
 
 /* --- BSW proxy --- */
@@ -48,6 +65,10 @@ GType		bsw_proxy_get_type		(void);
 void		bsw_value_set_proxy		(GValue		*value,
 						 BswProxy	 proxy);
 BswProxy	bsw_value_get_proxy		(const GValue	*value);
+GParamSpec*     bsw_param_spec_proxy            (const gchar    *name,
+						 const gchar    *nick,
+						 const gchar    *blurb,
+						 GParamFlags     flags);
 
 
 /* --- BSW value iterators --- */
@@ -67,6 +88,18 @@ gint            bsw_viter_get_int               (BswVIterInt    *iter);
 gchar*          bsw_viter_get_string            (BswVIterString *iter);
 BswProxy        bsw_viter_get_proxy             (BswVIterProxy  *iter);
 
+
+/* --- BSW value block --- */
+GType		bsw_value_block_get_type	(void);
+BswValueBlock*	bsw_value_block_new		(guint		 n_values);
+BswValueBlock*	bsw_value_block_ref		(BswValueBlock	*vblock);
+void		bsw_value_block_unref		(BswValueBlock	*vblock);
+
+
+/* --- BSW icons --- */
+BswIcon*	bsw_icon_ref_static		(BswIcon	*icon);
+BswIcon*	bsw_icon_ref			(BswIcon	*icon);
+void		bsw_icon_unref			(BswIcon	*icon);
 
 
 #ifdef __cplusplus

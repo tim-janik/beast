@@ -26,7 +26,6 @@
 #include        <fcntl.h>
 #include        <unistd.h>
 
-#include        "./icons/snet.c"
 
 /* --- parameters --- */
 enum

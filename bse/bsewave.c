@@ -522,7 +522,7 @@ bse_wave_do_store_private (BseObject  *object,
 	  bse_storage_break (storage);
 	  bse_storage_printf (storage, "(wave-handle ");
 	  bse_storage_put_wave_handle (storage, 32,
-				       url->wchunk->dcache->handle,
+				       url->wchunk->dcache->dhandle,
 				       url->wchunk->offset,
 				       url->wchunk->length);
 	  bse_storage_handle_break (storage);

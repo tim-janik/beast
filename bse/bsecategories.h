@@ -33,7 +33,7 @@ struct _BseCategory
   gchar	  *category;
   guint    mindex;
   GType    type;
-  BseIcon *icon; /* static icons, no need for reference counting */
+  BswIcon *icon; /* static icons, no need for reference counting */
 };
 
 

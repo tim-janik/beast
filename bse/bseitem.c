@@ -156,6 +156,17 @@ bse_item_do_set_parent (BseItem *item,
 }
 
 void
+bse_item_use (BseItem *item)
+{
+  g_return_if_fail (BSE_IS_ITEM (item));
+  g_return_if_fail (G_OBJECT (item)->ref_count > 0);
+
+  if (!item->use_count)
+    bse_object_ref (item);
+  item->use_count++;
+}
+
+void
 bse_item_set_parent (BseItem *item,
 		     BseItem *parent)
 {

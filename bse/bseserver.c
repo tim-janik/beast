@@ -123,6 +123,8 @@ bse_server_init (BseServer *server)
   server->midi_decoder = NULL;
   server->midi_modules = NULL;
   server->midi_ref_count = 0;
+  server->main_context = g_main_context_default ();
+  g_main_context_ref (server->main_context);
   BSE_OBJECT_SET_FLAGS (server, BSE_ITEM_FLAG_SINGLETON);
 }
 

@@ -110,7 +110,7 @@ fill_block (GslWaveChunk *wchunk,
 	    gboolean	  backward,
 	    guint	  loop_count)
 {
-  GslLong dcache_length = wchunk->dcache->handle->n_values;
+  GslLong dcache_length = wchunk->dcache->dhandle->n_values;
   guint i, dnode_length = wchunk->dcache->node_size;
   GslDataCacheNode *dnode;
   WPos wpos;
@@ -577,7 +577,7 @@ _gsl_wave_chunk_create (GslDataCache   *dcache,
   g_return_val_if_fail (offset >= 0, NULL);
   g_return_val_if_fail (n_values > 0, NULL);
   g_return_val_if_fail (n_channels > 0, NULL);
-  g_return_val_if_fail (offset + n_values * n_channels <= dcache->handle->n_values, NULL);
+  g_return_val_if_fail (offset + n_values * n_channels <= dcache->dhandle->n_values, NULL);
   g_return_val_if_fail (osc_freq < mix_freq / 2, NULL);
   g_return_val_if_fail (dcache->padding >= gsl_get_config ()->wave_chunk_padding * n_channels, NULL);
 

@@ -36,7 +36,7 @@ extern "C" {
 
 
 /* --- BseWave --- */
-typedef struct _BseSourceClass    BseWaveClass;
+typedef struct _BseWaveClass      BseWaveClass;
 typedef struct
 {
   guint		 n_wchunks;
@@ -63,6 +63,10 @@ struct _BseWave
 
   /* prepared-state GslModule index */
   GSList	    *index_list;
+};
+struct _BseWaveClass
+{
+  BseSourceClass parent_class;
 };
 
 

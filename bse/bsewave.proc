@@ -18,6 +18,7 @@
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>
 #include        <bse/bsewave.h>
+#include        <bse/bseeditablesample.h>
 
 
 AUTHOR  = "Tim Janik <timj@gtk.org>";
@@ -79,6 +80,44 @@ BODY (BseProcedureClass *proc,
 
   /* set output parameters */
   g_value_set_uint (out_values++, wave->n_channels);
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseWave, use-editable) {
+  HELP  = "Retrive an editable sample object for a wave chunk.";
+  IN    = g_param_spec_object ("wave", "Wave", NULL,
+			       BSE_TYPE_WAVE, BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_uint ("chunk_index", NULL, "Index of chunk to edit",
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_object ("esample", NULL, "Editable sample",
+			       BSE_TYPE_EDITABLE_SAMPLE, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseWave *wave     = g_value_get_object (in_values++);
+  guint chunk_index = g_value_get_uint (in_values++);
+  BseEditableSample *esample = NULL;
+  GslWaveChunk *wchunk = NULL;
+
+  /* check parameters */
+  if (!BSE_IS_WAVE (wave))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  wchunk = g_slist_nth_data (wave->wave_chunks, chunk_index);
+  if (wchunk)
+    {
+      esample = g_object_new (BSE_TYPE_EDITABLE_SAMPLE, NULL);
+      bse_editable_sample_set_wchunk (esample, wchunk);
+      bse_item_use (BSE_ITEM (esample));
+      g_object_unref (esample);
+    }
+
+  /* set output parameters */
+  g_value_set_object (out_values++, esample);
 
   return BSE_ERROR_NONE;
 }

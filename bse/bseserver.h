@@ -62,6 +62,8 @@ struct _BseServer
   guint		  midi_ref_count;
 
   GSList	 *watch_list;
+
+  GMainContext   *main_context;
 };
 struct _BseServerClass
 {

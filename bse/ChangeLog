@@ -1,3 +1,30 @@
+Sun Mar 10 10:08:32 2002  Tim Janik  <timj@gtk.org>
+
+	* bseeditablesample.[hc], bseeditablesample.proc: new object
+	exporting the necesary interface to edit samples, i.e.
+	GslWaveChunks. (or at least, it'll soon gain interface additions
+	towards this end).
+
+	* bseitem.[hc]: export bse_item_use() for non-item procedures.
+
+	* bseplugin.[hc]: fix type registration order, so newly introduced
+	procedures can use newly introduced objects.
+
+	* bseserver.proc: supply a procuder to check for loader matches.
+
+	* bsewave.proc: added procedure to retrive a BseEditableSample.
+
+	* bswcommon.[hc]: made BseIcon into a BswIcon structure, so this
+	can be shared and exported through the wrapper code.
+	introduced BswValueBlock, which is basically a ref-counted array
+	of floats.
+
+	* gsldatacache.[hc]: support checking for presence of nodes without
+	affecting the number of queued nodes (schrooedingers katze ;)
+	fix dhandle naming.
+
+	* fix BseIcon vs. BswIcon.
+
 Wed Feb 13 18:12:16 2002  Tim Janik  <timj@gtk.org>
 
 	* gsltests.c: 

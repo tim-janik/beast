@@ -105,7 +105,6 @@ typedef struct  _BseWaveRepoClass       BseWaveRepoClass;
 typedef struct  _BseCategory            BseCategory;
 typedef struct  _BseChunk               BseChunk;
 typedef struct  _BseGlobals             BseGlobals;
-typedef struct  _BseIcon                BseIcon;
 typedef struct  _BsePixdata             BsePixdata;
 typedef struct  _BseMixBuffer           BseMixBuffer;
 typedef struct  _BseMixSource           BseMixSource;
@@ -167,14 +166,6 @@ struct _BsePixdata
   guint          width : 12;
   guint          height : 12;
   const guint8  *encoded_pix_data;
-};
-struct _BseIcon
-{
-  guint   bytes_per_pixel; /* 3:RGB, 4:RGBA */
-  guint   ref_count;       /* &(1<<31) indicates permanent ref counts */
-  guint   width;
-  guint   height;
-  guint8 *pixels;
 };
 
 
