@@ -22,7 +22,7 @@
 #include "bsecsynth.h"
 #include "bseproject.h"
 #include "bsemidireceiver.h"
-#include "./icons/inoutport.c"
+#include "./icons/subsynth.c"
 #include "gslengine.h"
 
 #include <string.h>
@@ -90,9 +90,9 @@ BSE_BUILTIN_TYPE (BseSubSynth)
     (GInstanceInitFunc) bse_sub_synth_init,
   };
   static const BsePixdata pixdata = {
-    INOUTPORT_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-    INOUTPORT_IMAGE_WIDTH, INOUTPORT_IMAGE_HEIGHT,
-    INOUTPORT_IMAGE_RLE_PIXEL_DATA,
+    SUBSYNTH_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+    SUBSYNTH_IMAGE_WIDTH, SUBSYNTH_IMAGE_HEIGHT,
+    SUBSYNTH_IMAGE_RLE_PIXEL_DATA,
   };
   GType type = bse_type_register_static (BSE_TYPE_SOURCE,
                                          "BseSubSynth",

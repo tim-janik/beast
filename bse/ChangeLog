@@ -1,3 +1,15 @@
+Fri Oct 10 16:47:53 2003  Tim Janik  <timj@gtk.org>
+
+	* icons/inport.c:
+	* icons/outport.c:
+	* icons/subsynth.c:
+	* icons/virtual.xcf: replaced virtual in/out/subsynth icons.
+
+	* icons/inport.xcf:
+	* icons/outport.xcf:
+	* icons/inoutport.c:
+	* icons/icons/inoutport.xcf: removed.
+
 Fri Oct 10 00:53:56 2003  Tim Janik  <timj@gtk.org>
 
 	* bseamplifier.idl (Bse): *sigh* workaround bse/bse.idl include.
