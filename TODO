@@ -1,12 +1,11 @@
 FIXMES:
+- implement proper pattern/track/song resizing by means of adding [-] and [+] buttons next to scrollbars
+- need midi keyboard demo .bse file to be easily loadable (via demo/ menu)
+- remove docs/generated/bse-plugin-generator.1
+- make channel blurbs and module names have the same font in router display
+- assertion failed: BSE-ERROR **: file bsemidireceiver.cc: line 525 (void <unnamed>::change_voice_input(<unnamed>::VoiceInput*, <unnamed>::VoiceInputTable*, long long unsigned int, <unnamed>::VoiceChangeType, float, float, GslTrans*)): assertion failed: (vinput->iter == table->end())
 - add DSP engine module stats to profiler dialog
 - add tooltips to categories and use that for bst_action_list_add_cat()
-- remove docs/generated/bse-plugin-generator.1
-- assertion failed:
-  BSE-ERROR **: file bsemidireceiver.cc: line 525 (void <unnamed>::change_voice_input(<unnamed>::VoiceInput*, <unnamed>::VoiceInputTable*, long long unsigned int, <unnamed>::VoiceChangeType, float, float, GslTrans*)): assertion failed: (vinput->iter == table->end())
-- implement proper pattern/track/song resizing by means of adding [-] and [+] buttons next to scrollbars
-- make channel blurbs and module names have the same font in router display
-- need midi keyboard demo .bse file to be easily loadable (via demo/ menu)
 - take a look at the cdrecord source for their __dtoa() implementation
 - if mmap() is available, write autosave.bse to it every couple minutes (no need to flush unless crashes take the data with them)
 - make View/Rebuild --devel or -:d only
