@@ -112,7 +112,7 @@ AC_DEFUN(AC_LIBBSE_CHECK,
     AC_SUBST(BSE_LIBS)
 
     dnl --- BSE Drivers directory ---
-    AC_MSG_CHECKING([for BSE Driver installtion directory])
+    AC_MSG_CHECKING([for BSE Driver installation directory])
     bsedriverinstalldir=`$PKG_CONFIG --variable=driverdir bse`
     AC_MSG_RESULT([$bsedriverinstalldir])
     if test -z "$bsedriverinstalldir" ; then
