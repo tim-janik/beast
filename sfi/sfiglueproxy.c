@@ -351,7 +351,7 @@ sfi_glue_signal_connect_closure (SfiProxy       proxy,
 	}
       else
 	{
-	  g_message ("failed to connect to signal \"%s\" on proxy (%lu)", signal, proxy);
+	  g_message ("no such signal \"%s\" on proxy (%lu) to connect to", signal, proxy);
 	  sfi_glue_gc_add (closure, g_closure_unref);
 	}
     }

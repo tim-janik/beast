@@ -800,8 +800,11 @@ main (int   argc,
   test_threads ();
   test_sfidl_seq ();
   test_misc ();
-  
+
   return 0;
 }
+
+/* distcc preprocessing test */
+char *test_distcc_strings = "ÿÿÿÿ";
 
 /* vim:set ts=8 sts=2 sw=2: */
