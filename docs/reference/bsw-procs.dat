@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1
-date    = 27 May 2002
+date    = 13 Jun 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 27 May 2002 BEAST-0.4.1
+BSW-Procedures 13 Jun 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -36,6 +36,36 @@ item-list:
 
 @DOC-DESCRIPTION@
 Retrive all items within a container  
+@DOC-SYNOPSIS@
+@STRONG bsw-container-lookup-item@ (@EMPH container@, @EMPH uname@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+container
+@DOC-PARDESC@
+The Container
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+uname
+@DOC-PARDESC@
+Unique item name
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+item: The item named by uname
+
+@DOC-DESCRIPTION@
+Lookup an immediate child of a container from its uname (the uname is the name of the item, unique between all immediate children of a container).  
 @DOC-SYNOPSIS@
 @STRONG bsw-data-pocket-create-entry@ (@EMPH data-pocket@);
 
@@ -635,6 +665,36 @@ sample-block: Block of samples
 @DOC-DESCRIPTION@
 Read a set of samples from a specific offset.  
 @DOC-SYNOPSIS@
+@STRONG bsw-item-check-is-a@ (@EMPH item@, @EMPH type-name@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 12
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+item
+@DOC-PARDESC@
+The Item
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+type-name
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 12
+
+@DOC-RETURNS@
+is-a: 
+
+@DOC-DESCRIPTION@
+Check whether an item has a certain type.  
+@DOC-SYNOPSIS@
 @STRONG bsw-item-common-ancestor@ (@EMPH item@, @EMPH item2@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -904,6 +964,28 @@ used-item:
 
 @DOC-DESCRIPTION@
 Increment use count to keep an item alive.  
+@DOC-SYNOPSIS@
+@STRONG bsw-midi-notifier-current-time@ (@EMPH midi-notifier@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+midi-notifier
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+msec-time: 
+
+@DOC-DESCRIPTION@
+Test  
 @DOC-SYNOPSIS@
 @STRONG bsw-object-is-a@ (@EMPH item@, @EMPH type-name@);
 
@@ -1468,7 +1550,7 @@ typeraw =
 @DOC-PARAMETER@
 project
 @DOC-PARDESC@
-
+The project
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1476,13 +1558,13 @@ typeraw =
 @DOC-PARAMETER@
 file-name
 @DOC-PARDESC@
-
+Source file name
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 12
 
 @DOC-RETURNS@
-error: 
+error: Error indicating possible failures
 
 @DOC-DESCRIPTION@
 Load a project from file  
@@ -1498,7 +1580,7 @@ typeraw =
 @DOC-PARAMETER@
 project
 @DOC-PARDESC@
-
+The project
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1506,7 +1588,7 @@ typeraw =
 @DOC-PARAMETER@
 file-name
 @DOC-PARDESC@
-
+Destination file name
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1514,18 +1596,18 @@ typeraw =
 @DOC-PARAMETER@
 self-contained
 @DOC-PARDESC@
-
+Whether references to other objects (e.g. samples) should be stored or whether to include everything in a self-contained .bse file
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 17
 
 @DOC-RETURNS@
-error: 
+error: Error indicating possible failures
 
 @DOC-DESCRIPTION@
 Save a project into a BSE file  
 @DOC-SYNOPSIS@
-@STRONG bsw-project-create-midi-synth@ (@EMPH project@);
+@STRONG bsw-project-create-midi-synth@ (@EMPH project@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1536,18 +1618,26 @@ typeraw =
 @DOC-PARAMETER@
 project
 @DOC-PARDESC@
+The project
 
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+MIDI synth name
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
 
 @DOC-RETURNS@
-midi-synth: 
+midi-synth: New MIDI synth
 
 @DOC-DESCRIPTION@
-Create a MIDI synthesizer network in project  
+Create a MIDI synthesizer network for this project.  
 @DOC-SYNOPSIS@
-@STRONG bsw-project-create-snet@ (@EMPH project@);
+@STRONG bsw-project-create-snet@ (@EMPH project@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1558,18 +1648,26 @@ typeraw =
 @DOC-PARAMETER@
 project
 @DOC-PARDESC@
+The project
 
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Synth network name
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
 
 @DOC-RETURNS@
-snet: 
+snet: New synth network
 
 @DOC-DESCRIPTION@
-Create a synthsizer network in project  
+Create a synthsizer network for this project.  
 @DOC-SYNOPSIS@
-@STRONG bsw-project-create-song@ (@EMPH project@);
+@STRONG bsw-project-create-song@ (@EMPH project@, @EMPH name@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1580,16 +1678,24 @@ typeraw =
 @DOC-PARAMETER@
 project
 @DOC-PARDESC@
+The project
 
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+Song name
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
 
 @DOC-RETURNS@
-song: 
+song: The new song
 
 @DOC-DESCRIPTION@
-Create a new song in project  
+Create a song for this project.  
 @DOC-SYNOPSIS@
 @STRONG bsw-project-ensure-wave-repo@ (@EMPH project@);
 
@@ -1602,13 +1708,13 @@ typeraw =
 @DOC-PARAMETER@
 project
 @DOC-PARDESC@
-
+The project
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
 
 @DOC-RETURNS@
-wrepo: 
+wrepo: The project's unique wave repo
 
 @DOC-DESCRIPTION@
 Ensure the project has a wave repository  
@@ -1654,7 +1760,7 @@ typeraw =
 @DOC-PARAMETER@
 project
 @DOC-PARDESC@
-
+The project
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1662,13 +1768,13 @@ typeraw =
 @DOC-PARAMETER@
 name
 @DOC-PARDESC@
-
+Name of the data pocket
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
 
 @DOC-RETURNS@
-data-pocket: 
+data-pocket: The data pocket
 
 @DOC-DESCRIPTION@
 Retrive a specifically named data pocket for this project  
@@ -1684,13 +1790,13 @@ typeraw =
 @DOC-PARAMETER@
 project
 @DOC-PARDESC@
-
+The project
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
 
 @DOC-RETURNS@
-is-playing: 
+is-playing: Whether the project is currently producing sound
 
 @DOC-DESCRIPTION@
 Check whether a project is currently playing  
@@ -1763,7 +1869,7 @@ item-list:
 @DOC-DESCRIPTION@
 Retrive all items of a specific type within a project with matching uname  
 @DOC-SYNOPSIS@
-@STRONG bsw-snet-can-create-source@ (@EMPH snet@, @EMPH source-type@);
+@STRONG bsw-snet-can-create-source@ (@EMPH snet@, @EMPH module-type@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -1780,7 +1886,7 @@ snet
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source-type
+module-type
 @DOC-PARDESC@
 
 
@@ -1793,7 +1899,7 @@ error:
 @DOC-DESCRIPTION@
 Check whether inserting a new module into a synthesis network is possible  
 @DOC-SYNOPSIS@
-@STRONG bsw-snet-create-source@ (@EMPH snet@, @EMPH source-type@);
+@STRONG bsw-snet-create-source@ (@EMPH snet@, @EMPH module-type@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 14
@@ -1810,7 +1916,7 @@ snet
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source-type
+module-type
 @DOC-PARDESC@
 
 
@@ -1818,12 +1924,12 @@ source-type
 retspace = 14
 
 @DOC-RETURNS@
-source: 
+module: 
 
 @DOC-DESCRIPTION@
 Insert a new module into a synthesis network  
 @DOC-SYNOPSIS@
-@STRONG bsw-snet-remove-source@ (@EMPH snet@, @EMPH source@);
+@STRONG bsw-snet-remove-source@ (@EMPH snet@, @EMPH module@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1840,7 +1946,7 @@ snet
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -1874,6 +1980,166 @@ user-synth:
 
 @DOC-DESCRIPTION@
 Check whether users may edit synthesis modules of this network  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control-get-action@ (@EMPH script-control@, @EMPH nth-action@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+nth-action
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+action: 
+
+@DOC-DESCRIPTION@
+Retrive an action of this script control.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control-get-action-blurb@ (@EMPH script-control@, @EMPH nth-action@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+nth-action
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+action-blurb: 
+
+@DOC-DESCRIPTION@
+Retrive the help string of an action of this script control.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control-get-action-name@ (@EMPH script-control@, @EMPH nth-action@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+nth-action
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+action-name: 
+
+@DOC-DESCRIPTION@
+Retrive the name of an action of this script control.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control-kill@ (@EMPH script-control@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+
+@DOC-DESCRIPTION@
+Kill a currently running script  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control-n-actions@ (@EMPH script-control@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+n-actions: 
+
+@DOC-DESCRIPTION@
+Retrive number of user actions of this script control.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control-trigger-action@ (@EMPH script-control@, @EMPH action@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+action
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+
+@DOC-DESCRIPTION@
+Trigger an installed user action of this script control.  
 @DOC-SYNOPSIS@
 @STRONG bsw-server-can-load@ (@EMPH server@, @EMPH file-name@);
 
@@ -1989,6 +2255,28 @@ note-description:
 @DOC-DESCRIPTION@
 Describe a note, providing information about its octave, half tone, frequency, etc.  
 @DOC-SYNOPSIS@
+@STRONG bsw-server-get-midi-notifier@ (@EMPH server@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+midi-notifier: 
+
+@DOC-DESCRIPTION@
+Retrive the global midi notifier object.  
+@DOC-SYNOPSIS@
 @STRONG bsw-server-halt-project@ (@EMPH server@, @EMPH project@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -2016,6 +2304,28 @@ retspace = 10
 
 @DOC-DESCRIPTION@
 Stop processing a project generating sound  
+@DOC-SYNOPSIS@
+@STRONG bsw-server-n-scripts@ (@EMPH server@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+server
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+n-connections: Number of Connections
+
+@DOC-DESCRIPTION@
+Return the number of scripts currently running on this server.  
 @DOC-SYNOPSIS@
 @STRONG bsw-server-note-from-freq@ (@EMPH server@, @EMPH freq@);
 
@@ -2237,7 +2547,7 @@ retspace = 7
 @DOC-DESCRIPTION@
 Delete a Part from a Song  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-clear-inputs@ (@EMPH source@);
+@STRONG bsw-source-clear-inputs@ (@EMPH module@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 9
@@ -2246,7 +2556,7 @@ parspace = 9
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -2255,9 +2565,9 @@ retspace = 9
 
 
 @DOC-DESCRIPTION@
-Disconnect all source inputs  
+Disconnect all module inputs.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-clear-outputs@ (@EMPH source@);
+@STRONG bsw-source-clear-outputs@ (@EMPH module@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 9
@@ -2266,7 +2576,7 @@ parspace = 9
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -2275,9 +2585,9 @@ retspace = 9
 
 
 @DOC-DESCRIPTION@
-Disconnect all source outputs  
+Disconnect all module outputs.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-ichannel-blurb@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ichannel-blurb@ (@EMPH module@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2286,7 +2596,7 @@ parspace = 16
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -2305,9 +2615,9 @@ retspace = 16
 channel-blurb: 
 
 @DOC-DESCRIPTION@
-Get input channel description  
+Get input channel description.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-ichannel-get-n-joints@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ichannel-cname@ (@EMPH module@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2316,7 +2626,37 @@ parspace = 16
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+channel-name: 
+
+@DOC-DESCRIPTION@
+Get canonical input channel name.  
+@DOC-SYNOPSIS@
+@STRONG bsw-source-ichannel-get-n-joints@ (@EMPH module@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+module
 @DOC-PARDESC@
 
 
@@ -2335,9 +2675,9 @@ retspace = 16
 n-joints: 
 
 @DOC-DESCRIPTION@
-Retrive the number of input connections of an input channel  
+Retrive the number of inputs connected to an input channel.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-ichannel-get-ochannel@ (@EMPH source@, @EMPH input-channel@, @EMPH input-joint@);
+@STRONG bsw-source-ichannel-get-ochannel@ (@EMPH module@, @EMPH input-channel@, @EMPH input-joint@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2346,7 +2686,7 @@ parspace = 16
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -2373,9 +2713,9 @@ retspace = 16
 ochannel: 
 
 @DOC-DESCRIPTION@
-Retrive output channel of the source connected to a specific joint of an input channel  
+Retrive output channel of the module connected to a specific joint of an input channel.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-ichannel-get-osource@ (@EMPH source@, @EMPH input-channel@, @EMPH input-joint@);
+@STRONG bsw-source-ichannel-get-osource@ (@EMPH module@, @EMPH input-channel@, @EMPH input-joint@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2384,7 +2724,7 @@ parspace = 16
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -2411,9 +2751,9 @@ retspace = 16
 osource: 
 
 @DOC-DESCRIPTION@
-Retrive output source connected to a specific joint of an input channel  
+Retrive output module connected to a specific joint of an input channel  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-ichannel-name@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ichannel-name@ (@EMPH module@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2422,7 +2762,7 @@ parspace = 16
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -2441,9 +2781,9 @@ retspace = 16
 channel-name: 
 
 @DOC-DESCRIPTION@
-Get input channel name  
+Get input channel name.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-is-joint-ichannel@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-is-joint-ichannel@ (@EMPH module@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2452,7 +2792,7 @@ parspace = 16
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -2471,53 +2811,9 @@ retspace = 16
 is-jchannel: 
 
 @DOC-DESCRIPTION@
-Check if an input channel is a joint (multi-connect) channel  
+Check if an input channel is a joint (multi-connect) channel.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-n-ichannels@ (@EMPH source@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-source
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-n-channels: 
-
-@DOC-DESCRIPTION@
-Get the number of input channels of a source  
-@DOC-SYNOPSIS@
-@STRONG bsw-source-n-ochannels@ (@EMPH source@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-source
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-n-channels: 
-
-@DOC-DESCRIPTION@
-Get the number of output channels of a source  
-@DOC-SYNOPSIS@
-@STRONG bsw-source-ochannel-blurb@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-is-joint-ichannel-by-id@ (@EMPH module@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2526,7 +2822,81 @@ parspace = 16
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+is-jchannel: 
+
+@DOC-DESCRIPTION@
+Check if an input channel is a joint (multi-connect) channel.  
+@DOC-SYNOPSIS@
+@STRONG bsw-source-n-ichannels@ (@EMPH module@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+n-channels: 
+
+@DOC-DESCRIPTION@
+Get the number of input channels of a module.  
+@DOC-SYNOPSIS@
+@STRONG bsw-source-n-ochannels@ (@EMPH module@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+n-channels: 
+
+@DOC-DESCRIPTION@
+Get the number of output channels of a module.  
+@DOC-SYNOPSIS@
+@STRONG bsw-source-ochannel-blurb@ (@EMPH module@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+module
 @DOC-PARDESC@
 
 
@@ -2545,9 +2915,9 @@ retspace = 16
 channel-blurb: 
 
 @DOC-DESCRIPTION@
-Get output channel description  
+Get output channel description.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-ochannel-name@ (@EMPH source@, @EMPH input-channel@);
+@STRONG bsw-source-ochannel-cname@ (@EMPH module@, @EMPH input-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 16
@@ -2556,7 +2926,7 @@ parspace = 16
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+module
 @DOC-PARDESC@
 
 
@@ -2575,9 +2945,39 @@ retspace = 16
 channel-name: 
 
 @DOC-DESCRIPTION@
-Get output channel name  
+Get canonical output channel name.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-set-input@ (@EMPH input-source@, @EMPH input-channel@, @EMPH output-source@, @EMPH output-channel@);
+@STRONG bsw-source-ochannel-name@ (@EMPH module@, @EMPH input-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 16
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 16
+
+@DOC-RETURNS@
+channel-name: 
+
+@DOC-DESCRIPTION@
+Get output channel name.  
+@DOC-SYNOPSIS@
+@STRONG bsw-source-set-input@ (@EMPH imodule@, @EMPH input-channel@, @EMPH omodule@, @EMPH output-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 17
@@ -2586,7 +2986,7 @@ parspace = 17
 type = 
 typeraw = 
 @DOC-PARAMETER@
-input-source
+imodule
 @DOC-PARDESC@
 
 
@@ -2602,7 +3002,7 @@ input-channel
 type = 
 typeraw = 
 @DOC-PARAMETER@
-output-source
+omodule
 @DOC-PARDESC@
 
 
@@ -2621,9 +3021,9 @@ retspace = 17
 error: 
 
 @DOC-DESCRIPTION@
-Connect a source input to another source's output  
+Connect a module input to another module's output.  
 @DOC-SYNOPSIS@
-@STRONG bsw-source-unset-input@ (@EMPH source@, @EMPH input-channel@, @EMPH output-source@, @EMPH output-channel@);
+@STRONG bsw-source-set-input-by-id@ (@EMPH imodule@, @EMPH input-channel@, @EMPH omodule@, @EMPH output-channel@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 17
@@ -2632,7 +3032,7 @@ parspace = 17
 type = 
 typeraw = 
 @DOC-PARAMETER@
-source
+imodule
 @DOC-PARDESC@
 
 
@@ -2648,7 +3048,7 @@ input-channel
 type = 
 typeraw = 
 @DOC-PARAMETER@
-output-source
+omodule
 @DOC-PARDESC@
 
 
@@ -2667,7 +3067,99 @@ retspace = 17
 error: 
 
 @DOC-DESCRIPTION@
-Disconnect a source input  
+Connect a module input to another module's output.  
+@DOC-SYNOPSIS@
+@STRONG bsw-source-unset-input@ (@EMPH module@, @EMPH input-channel@, @EMPH omodule@, @EMPH output-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+omodule
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+output-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Disconnect a module input.  
+@DOC-SYNOPSIS@
+@STRONG bsw-source-unset-input-by-id@ (@EMPH module@, @EMPH input-channel@, @EMPH omodule@, @EMPH output-channel@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+module
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+input-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+omodule
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+output-channel
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+error: 
+
+@DOC-DESCRIPTION@
+Disconnect a module input.  
 @DOC-SYNOPSIS@
 @STRONG bsw-wave-load-wave@ (@EMPH wave@, @EMPH file-name@, @EMPH wave-name@);
 
@@ -2837,6 +3329,160 @@ retspace = 12
 @DOC-DESCRIPTION@
 Remove a wave from repository  
 @DOC-SYNOPSIS@
+@STRONG bsw-script-add-action@ (@EMPH action@, @EMPH name@, @EMPH blurb@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 9
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+action
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+name
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+blurb
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 9
+
+
+@DOC-DESCRIPTION@
+Install a user action for script control.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+script-control: 
+
+@DOC-DESCRIPTION@
+Retrive the current script control object.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-exit@ (@EMPH msg-type@, @EMPH message@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+msg-type
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+message
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Exit a script, leaving a message.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-progress@ (@EMPH progress@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+progress
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Indicate progress (from 0.0 to 1.0 or -1 for unknown amount).  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-remove-action@ (@EMPH script-control@, @EMPH action@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+action
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+
+@DOC-DESCRIPTION@
+Remove a previously installed user action from script control.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-set-msg@ (@EMPH msg-type@, @EMPH message@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+msg-type
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+message
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Alter script status message.  
+@DOC-SYNOPSIS@
 @STRONG bsw-hello-world@ ();
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -2923,36 +3569,46 @@ name:
 @DOC-DESCRIPTION@
 Retrive the name of an error value  
 @DOC-SYNOPSIS@
-@STRONG bsw-exit@ (@EMPH error@);
+@STRONG bsw-proxy-check@ (@EMPH item@, @EMPH type-name@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 8
+parspace = 12
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
 typeraw = 
 @DOC-PARAMETER@
-error
+item
+@DOC-PARDESC@
+The Item
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+type-name
 @DOC-PARDESC@
 
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 8
+retspace = 12
 
+@DOC-RETURNS@
+is-a: 
 
 @DOC-DESCRIPTION@
-Exit a script indicating error or success.  
+Check whether a proxy has a certain type.  
 @DOC-SYNOPSIS@
-@STRONG bsw-exit-msg@ (@EMPH msg-type@, @EMPH message@);
+@STRONG bsw-note-to-freq@ (@EMPH note@, @EMPH fine-tune@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 11
+parspace = 12
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
 typeraw = 
 @DOC-PARAMETER@
-msg-type
+note
 @DOC-PARDESC@
 
 
@@ -2960,33 +3616,15 @@ msg-type
 type = 
 typeraw = 
 @DOC-PARAMETER@
-message
+fine-tune
 @DOC-PARDESC@
 
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 11
+retspace = 12
 
+@DOC-RETURNS@
+frequency: 
 
 @DOC-DESCRIPTION@
-Exit a script, leaving a message.  
-@DOC-SYNOPSIS@
-@STRONG bsw-progress@ (@EMPH progress@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-progress
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-
-@DOC-DESCRIPTION@
-Indicate progress (from 0.0 to 1.0 or -1 for unknown amount).  
+Retrive the frequency of a certain note.  

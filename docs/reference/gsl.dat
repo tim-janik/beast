@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.1
-date    = 22 May 2002
+date    = 13 Jun 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 22 May 2002 BEAST-0.4.1
+GSL-Functions 13 Jun 2002 BEAST-0.4.1
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
@@ -109,7 +109,19 @@ retspace = 17
 @EMPH TRUE@ if the thread should continue execution
 
 @DOC-DESCRIPTION@
-Sleep for the amount of time given. This function may get interrupted by wakeup or abort requests, it returns whether the thread is supposed to continue execution after waking up.  
+Sleep for the amount of time given. This function may get interrupted by wakeup or abort requests, it returns whether the thread is supposed to continue execution after waking up. This function also processes remaining data from the thread's poll fd.  
+@DOC-SYNOPSIS@
+@STRONG gsl_thread_awake_after@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 3
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 3
+
+
+@DOC-DESCRIPTION@
+RETURNS: GPollFD for the current thread Get the GPollfd for the current thread which is used to signal thread wakeups (e.g. due to @STRONG gsl_thread_abort()@ or @STRONG gsl_thread_wakeup()@).  
 @DOC-SYNOPSIS@
 @STRONG gsl_thread_awake_after@ (@EMPH tick_stamp@);
 
@@ -544,50 +556,50 @@ The GslPollFunc is a user supplied callback function which can be hooked into th
 @STRONG gsl_job_add_poll@ (@EMPH poll_func@, @EMPH data@, @EMPH free_func@, @EMPH n_fds@, @EMPH fds@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 28
+parspace = 26
 
 @DOC-VARIABLE-DEFINITIONS@
-type = GslPollFunc\ \ \ \ \ 
-typeraw = GslPollFunc     
+type = GslPollFunc\ \ \ 
+typeraw = GslPollFunc   
 @DOC-PARAMETER@
 poll_func
 @DOC-PARDESC@
 Poll function to add
 
 @DOC-VARIABLE-DEFINITIONS@
-type = gpointer\ \ \ \ \ \ \ \ 
-typeraw = gpointer        
+type = gpointer\ \ \ \ \ \ 
+typeraw = gpointer      
 @DOC-PARAMETER@
 data
 @DOC-PARDESC@
 Data of poll function
 
 @DOC-VARIABLE-DEFINITIONS@
-type = GslFreeFunc\ \ \ \ \ 
-typeraw = GslFreeFunc     
+type = GslFreeFunc\ \ \ 
+typeraw = GslFreeFunc   
 @DOC-PARAMETER@
 free_func
 @DOC-PARDESC@
 Function to free @EMPH data@
 
 @DOC-VARIABLE-DEFINITIONS@
-type = guint\ \ \ \ \ \ \ \ \ \ \ 
-typeraw = guint           
+type = guint\ \ \ \ \ \ \ \ \ 
+typeraw = guint         
 @DOC-PARAMETER@
 n_fds
 @DOC-PARDESC@
 Number of poll file descriptors
 
 @DOC-VARIABLE-DEFINITIONS@
-type = const\ GslPollFD*
-typeraw = const GslPollFD*
+type = const\ GPollFD*
+typeraw = const GPollFD*
 @DOC-PARAMETER@
 fds
 @DOC-PARDESC@
 File descriptors to @STRONG select(2)@ or @STRONG poll(2)@ on
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 28
+retspace = 26
 
 @DOC-RETURNS@
 New job suitable for @STRONG gsl_trans_add()@

@@ -39,6 +39,7 @@ static void	piano_canvas_press		(BstPartDialog		*part_dialog,
 						 guint			 button,
 						 guint			 tick_position,
 						 gfloat			 freq,
+						 GdkEvent		*event,
 						 BstPianoRoll		*proll);
 static void	piano_canvas_motion		(BstPartDialog		*part_dialog,
 						 guint			 button,
@@ -50,9 +51,18 @@ static void	piano_canvas_release		(BstPartDialog		*part_dialog,
 						 guint			 tick_position,
 						 gfloat			 freq,
 						 BstPianoRoll		*proll);
+static void	part_dialog_run_proc		(GtkWidget		*widget,
+						 gulong			 callback_action,
+						 gpointer		 popup_data);
 
 
-/* --- static variables --- */
+/* --- variables --- */
+static GtkItemFactoryEntry popup_entries[] =
+{
+  { "/Scripts",         NULL,           NULL,   0,      "<Title>",      0 },
+  { "/-----",           NULL,           NULL,   0,      "<Separator>",  0 },
+  { "/Test",            NULL,           NULL,   0,      "<Branch>",     0 },
+};
 static gpointer	parent_class = NULL;
 
 
@@ -88,6 +98,10 @@ static void
 bst_part_dialog_class_init (BstPartDialogClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GtkItemFactoryEntry *centries;
+  BseCategory *cats;
+  GSList *slist;
+  guint n_cats;
   
   parent_class = g_type_class_peek_parent (class);
   
@@ -95,6 +109,20 @@ bst_part_dialog_class_init (BstPartDialogClass *class)
   
   /* create item factory for menu entries and categories */
   class->popup_factory = gtk_item_factory_new (GTK_TYPE_MENU, "<BstPartDialog>", NULL);
+  gtk_accel_group_lock (class->popup_factory->accel_group);
+
+  /* construct menu entry list */
+  cats = bse_categories_match_typed ("/Scripts/*", BSE_TYPE_PROCEDURE, &n_cats);
+  centries = bst_menu_entries_from_cats (n_cats, cats, part_dialog_run_proc, TRUE);
+  slist = bst_menu_entries_slist (n_cats, centries);
+  slist = bst_menu_entries_sort (slist);
+  slist = g_slist_concat (bst_menu_entries_slist (G_N_ELEMENTS (popup_entries), popup_entries), slist);
+
+  /* create entries and release allocations */
+  bst_menu_entries_create (class->popup_factory, slist, NULL);
+  g_slist_free (slist);
+  g_free (centries);
+  g_free (cats);
 }
 
 static void
@@ -254,13 +282,40 @@ piano_update_cursor (BstPartDialog *self)
 }
 
 static void
+part_dialog_run_proc (GtkWidget *widget,
+		      gulong     callback_action,
+		      gpointer   popup_data)
+{
+  BstPartDialog *self = BST_PART_DIALOG (widget);
+
+  GType proc_type = callback_action;
+
+  bst_procedure_exec_auto (proc_type,
+			   "part", BSE_TYPE_PART, bse_object_from_id (BST_PIANO_ROLL (self->proll)->proxy),
+			   NULL);
+}
+
+static void
 piano_canvas_press (BstPartDialog *self,
                     guint          button,
                     guint          tick,
                     gfloat         freq,
+		    GdkEvent      *event,
                     BstPianoRoll  *proll)
 {
   BswProxy part = proll->proxy;
+
+  if (button == 3 && event)
+    {
+      GtkItemFactory *popup_factory = BST_PART_DIALOG_GET_CLASS (self)->popup_factory;
+
+      bst_menu_popup (popup_factory,
+		      GTK_WIDGET (self),
+		      NULL, NULL,
+		      event->button.x_root, event->button.y_root,
+		      event->button.button, event->button.time);
+      return;
+    }
 
   switch (self->rtools->tool_id)
     {

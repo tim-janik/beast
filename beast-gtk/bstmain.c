@@ -49,6 +49,7 @@ static void			bst_print_blurb		(FILE	     *fout,
 /* --- variables --- */
 BstDebugFlags       bst_debug_flags = 0;
 GtkTooltips        *bst_global_tooltips = NULL;
+gboolean            bst_dvl_hints = FALSE;
 static GDebugKey    bst_debug_keys[] = { /* keep in sync with bstdefs.h */
   { "keytable",		BST_DEBUG_KEYTABLE, },
   { "samples",		BST_DEBUG_SAMPLES, },
@@ -83,6 +84,7 @@ main (int   argc,
 {
   BswLockFuncs lfuncs = { NULL, gtk_lock, gtk_unlock };
   BstApp *app = NULL;
+  gchar *env_str;
   guint i, this_rc_version;
   
   /* initialize BSE, BSW and preferences
@@ -142,12 +144,37 @@ main (int   argc,
       g_free (file_name);
     }
 
-  /* check load BSE plugins to register types
+  /* register dynamic types and modules (plugins)
+   */
+  if (bst_load_plugins)
+    bsw_register_plugins (NULL, TRUE, NULL);
+
+  /* debugging hook
+   */
+  env_str = g_getenv ("BEAST_SLEEP4GDB");
+  if (env_str && atoi (env_str) > 0)
+    {
+      g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
+      g_usleep (2147483647);
+    }
+
+  /* register scripts
    */
   if (bst_load_plugins)
     {
-      bsw_register_plugins (NULL, TRUE, NULL);
+      guint n_scripts;
+
+      /* script registration, this is done asyncronously,
+       * so we wait until all are done
+       */
+      n_scripts = bsw_server_n_scripts (BSW_SERVER);
       bsw_register_scripts (NULL, TRUE, NULL);
+      while (bsw_server_n_scripts (BSW_SERVER) > n_scripts)
+	{
+	  GDK_THREADS_LEAVE ();
+	  g_main_iteration (TRUE);
+	  GDK_THREADS_ENTER ();
+	}
     }
   
   /* open files given on command line
@@ -384,6 +411,11 @@ bst_parse_args (int    *argc_p,
 	    }
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--hints", argv[i]) == 0)
+	{
+	  bst_dvl_hints = TRUE;
+          argv[i] = NULL;
+	}
       else if (strcmp ("--force-xkb", argv[i]) == 0)
 	{
 	  arg_force_xkb = TRUE;
@@ -456,15 +488,16 @@ bst_print_blurb (FILE    *fout,
   else
     {
       fprintf (fout, "Usage: beast [options] [files...]\n");
+      fprintf (fout, "  --hints 			enrich the GUI with hints usefull for (script) developers\n");
       fprintf (fout, "  --no-plugins			disable plugins (debug usage only)\n");
+      fprintf (fout, "  --force-xkb			force XKB keytable queries\n");
       fprintf (fout, "  --beast-debug=keys		enable certain BEAST debug stages\n");
       fprintf (fout, "  --beast-no-debug=keys		disable certain BEAST debug stages\n");
-      fprintf (fout, "  --force-xkb			force XKB keytable queries\n");
       fprintf (fout, "  --bse-debug=keys		enable certain BSE debug stages\n");
       fprintf (fout, "  --bse-no-debug=keys		disable certain BSE debug stages\n");
       fprintf (fout, "  -h, --help			show this help message\n");
       fprintf (fout, "  -v, --version			print version informations\n");
-      fprintf (fout, "  --display=DISPLAY		X server to contact; see X(1)\n");
+      fprintf (fout, "  --display=DISPLAY		X server for the GUI; see X(1)\n");
       fprintf (fout, "  --no-xshm			disable use of X shared memory extension\n");
       fprintf (fout, "  --gtk-debug=FLAGS		Gtk+ debugging flags to enable\n");
       fprintf (fout, "  --gtk-no-debug=FLAGS		Gtk+ debugging flags to disable\n");
@@ -472,7 +505,6 @@ bst_print_blurb (FILE    *fout,
       fprintf (fout, "  --gdk-debug=FLAGS		Gdk debugging flags to enable\n");
       fprintf (fout, "  --gdk-no-debug=FLAGS		Gdk debugging flags to disable\n");
       fprintf (fout, "  --g-fatal-warnings		make warnings fatal (abort)\n");
-      fprintf (fout, "  --display=DISPLAY		X display to use\n");
       fprintf (fout, "  --sync   			do all X calls synchronously\n");
     }
 }

@@ -368,7 +368,10 @@ csource_info_update (BstCanvasSource *csource)
       for (i = 0; i < bsw_source_n_ichannels (csource->source); i++)
 	{
           string = bsw_source_ichannel_blurb (csource->source, i);
-	  bst_wrap_text_aprintf (text, "%s%s\n", bsw_source_ichannel_name (csource->source, i), string ? ":" : "");
+	  bst_wrap_text_aprintf (text, "%s[%s]%s\n",
+				 bsw_source_ichannel_name (csource->source, i),
+				 bsw_source_ichannel_cname (csource->source, i),
+				 string ? ":" : "");
 	  if (string)
 	    {
 	      bst_wrap_text_push_indent (text, "  ");
@@ -388,7 +391,10 @@ csource_info_update (BstCanvasSource *csource)
       for (i = 0; i < bsw_source_n_ochannels (csource->source); i++)
 	{
 	  string = bsw_source_ochannel_blurb (csource->source, i);
-	  bst_wrap_text_aprintf (text, "%s%s\n", bsw_source_ochannel_name (csource->source, i), string ? ":" : "");
+	  bst_wrap_text_aprintf (text, "%s[%s]%s\n",
+				 bsw_source_ochannel_name (csource->source, i),
+				 bsw_source_ochannel_cname (csource->source, i),
+				 string ? ":" : "");
           if (string)
 	    {
 	      bst_wrap_text_push_indent (text, "  ");
@@ -460,7 +466,7 @@ bst_canvas_source_is_jchannel (BstCanvasSource *csource,
   if (!csource->source)
     return FALSE;
 
-  return bsw_source_is_joint_ichannel (csource->source, ichannel);
+  return bsw_source_is_joint_ichannel_by_id (csource->source, ichannel);
 }
 
 gboolean
@@ -472,7 +478,7 @@ bst_canvas_source_ichannel_free (BstCanvasSource *csource,
   if (!csource->source)
     return FALSE;
 
-  if (bsw_source_is_joint_ichannel (csource->source, ichannel))
+  if (bsw_source_is_joint_ichannel_by_id (csource->source, ichannel))
     return TRUE;
   else
     return bsw_source_ichannel_get_osource (csource->source, ichannel, 0) == 0;
@@ -675,7 +681,7 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
   for (i = 0; i < n_channels; i++)
     {
       GnomeCanvasItem *item;
-      gboolean is_jchannel = is_input && bsw_source_is_joint_ichannel (csource->source, i);
+      gboolean is_jchannel = is_input && bsw_source_is_joint_ichannel_by_id (csource->source, i);
       guint tmp_color = is_jchannel ? color2 : color1;
 
       y2 = y1 + d_y;
@@ -863,13 +869,14 @@ bst_canvas_source_event (GnomeCanvasItem *item,
       else
 	{
 	  guint channel;
-	  gchar *name = NULL, *prefix = NULL;
+	  gchar *name = NULL, *prefix = NULL, *cname = NULL;
 
 	  /* set i/o channel hints */
 	  channel = bst_canvas_source_ichannel_at (csource, event->motion.x, event->motion.y);
 	  if (channel != ~0)
 	    {
 	      name = bsw_source_ichannel_name (csource->source, channel);
+	      cname = bsw_source_ichannel_cname (csource->source, channel);
 	      prefix = "Input";
 	    }
 	  else
@@ -878,11 +885,12 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	      if (channel != ~0)
 		{
 		  name = bsw_source_ochannel_name (csource->source, channel);
+		  cname = bsw_source_ochannel_cname (csource->source, channel);
 		  prefix = "Output";
 		}
 	    }
 	  if (name)
-	    bst_status_printf (BST_STATUS_IDLE_HINT, "(Hint)", "%s: %s", prefix, name);
+	    bst_status_printf (BST_STATUS_IDLE_HINT, "(Hint)", "%s[%s]: %s", prefix, cname, name);
 	  else
 	    bst_status_set (BST_STATUS_IDLE_HINT, NULL, NULL);
 	}

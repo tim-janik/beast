@@ -256,13 +256,6 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
   bst_procedure_shell_reset (shell);
 }
 
-static gboolean
-deferred_uncatch (gpointer data)
-{
-  bst_status_bar_uncatch_procs ();
-  return FALSE;
-}
-
 void
 bst_procedure_shell_execute (BstProcedureShell *shell)
 {
@@ -294,11 +287,8 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
                                     shell->first_out_bparam);
       shell->in_execution = FALSE;
 
-      /* somewhat hackish, since notification is delivered asyncron
-       * (like all BSW signals), we wait a bit before disabling
-       * notification again
-       */
-      g_timeout_add (1 * 1000, deferred_uncatch, NULL);
+      /* disable procedure notification */
+      bst_status_bar_uncatch_procs ();
       
       bst_procedure_shell_update (shell);
     }
@@ -507,6 +497,7 @@ bst_procedure_exec_internal (GType        procedure_type,
       /* hand control over to user
        */
       gtk_widget_show_now (dialog);
+      gdk_window_raise (dialog->window);
       if (main_loop_recurse)
 	{
 	  do

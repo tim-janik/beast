@@ -78,13 +78,15 @@ struct _BstDialogClass
 
 /* --- prototypes --- */
 GtkType		bst_dialog_get_type		  (void);
-GtkWidget*	bst_dialog_new			  (gpointer	   pointer_loc,
+gpointer	bst_dialog_new			  (gpointer	   pointer_loc,
 						   GtkObject	  *alive_object,
 						   BstDialogFlags  flags,
 						   const gchar    *title,
 						   GtkWidget	  *child);
 void		bst_dialog_set_title		  (BstDialog	  *dialog,
 						   const gchar	  *title);
+void		bst_dialog_set_child		  (BstDialog	  *dialog,
+						   GtkWidget	  *child);
 GtkWidget*	bst_dialog_get_child		  (BstDialog	  *dialog);
 BstDialog*	bst_dialog_get_status_window	  (void);
 void		bst_dialog_sync_title_to_proxy	  (BstDialog	  *dialog,
@@ -94,6 +96,7 @@ void		bst_dialog_add_flags		  (BstDialog	  *dialog,
 						   BstDialogFlags  flags);
 void		bst_dialog_clear_flags		  (BstDialog	  *dialog,
 						   BstDialogFlags  flags);
+void		bst_dialog_remove_actions	  (BstDialog	  *dialog);
 #define		bst_dialog_action(		   dialog, action, callback, data)	\
                                                   bst_dialog_action_multi ((dialog), (action), (callback), (data), 0, 0)
 #define		bst_dialog_default_action(	   dialog, action, callback, data)	\

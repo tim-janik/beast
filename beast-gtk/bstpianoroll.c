@@ -175,8 +175,9 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
   signal_canvas_press = g_signal_new ("canvas-press", G_OBJECT_CLASS_TYPE (class),
 				      G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, canvas_press),
 				      NULL, NULL,
-				      bst_marshal_NONE__UINT_UINT_FLOAT,
-				      G_TYPE_NONE, 3, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_FLOAT);
+				      bst_marshal_NONE__UINT_UINT_FLOAT_BOXED,
+				      G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_FLOAT,
+				      GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_canvas_motion = g_signal_new ("canvas-motion", G_OBJECT_CLASS_TYPE (class),
 				       G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstPianoRollClass, canvas_motion),
 				       NULL, NULL,
@@ -1379,7 +1380,7 @@ bst_piano_roll_button_press (GtkWidget	    *widget,
 	  desc = bsw_server_construct_note (BSW_SERVER, info.note, info.octave, 0);
 	  self->drag_freq0 = desc->freq;
 	  bsw_note_description_free (desc);
-	  g_signal_emit (self, signal_canvas_press, 0, self->drag_button, self->drag_tick0, self->drag_freq0);
+	  g_signal_emit (self, signal_canvas_press, 0, self->drag_button, self->drag_tick0, self->drag_freq0, event);
 	}
     }
 

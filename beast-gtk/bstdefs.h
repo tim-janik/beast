@@ -133,6 +133,8 @@ extern BstDebugFlags bst_debug_flags;
 #  define BST_IF_DEBUG(type)	while (0) /* don't exec */
 #endif /* !G_ENABLE_DEBUG */
 #define	BST_DVL_EXT		(BSE_DVL_EXT)
+#define	BST_DVL_HINTS		(bst_dvl_hints)
+extern gboolean bst_dvl_hints;
 
 extern void bst_update_can_operate (GtkWidget   *some_widget);
 

@@ -13,21 +13,21 @@
   (parasite #\f "BstRouterCoords" 2 -176.000000 -11.000000)
   (parasite #\f "BstRouterZoom" 1 1.000000)
   (bse-container-restore "BseAdder::BseAdder-1"
-    (source-input "audio1" (bse-upath-resolve 1 "BseStandardOsc-3") "audio_out")
-    (source-input "audio2" (bse-upath-resolve 1 "BseStandardOsc-4") "audio_out")
+    (source-input "audio-in1" (bse-upath-resolve 1 "BseStandardOsc-3") "audio-out")
+    (source-input "audio-in2" (bse-upath-resolve 1 "BseStandardOsc-4") "audio-out")
     (parasite #\f "BstRouterCoords" 2 179.000000 64.000000))
   (bse-container-restore "BseMult::BseMult-1"
-    (source-input "mono_in1" (bse-upath-resolve 1 "BseStandardOsc-1") "audio_out")
-    (source-input "mono_in2" (bse-upath-resolve 1 "BseStandardOsc-2") "audio_out")
-    (source-input "mono_in3" (bse-upath-resolve 1 "BseConstant-1") "const_out_1")
+    (source-input "audio-in1" (bse-upath-resolve 1 "BseStandardOsc-1") "audio-out")
+    (source-input "audio-in2" (bse-upath-resolve 1 "BseStandardOsc-2") "audio-out")
+    (source-input "audio-in3" (bse-upath-resolve 1 "BseConstant-1") "const-out1")
     (parasite #\f "BstRouterCoords" 2 -33.000000 65.000000))
   (bse-container-restore "BsePcmOutput::BsePcmOutput-1"
-    (source-input "left_in" (bse-upath-resolve 1 "BseMult-1") "mono_out")
-    (source-input "right_in" (bse-upath-resolve 1 "BseMult-1") "mono_out")
+    (source-input "left-audio-in" (bse-upath-resolve 1 "BseMult-1") "audio-out")
+    (source-input "right-audio-in" (bse-upath-resolve 1 "BseMult-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -32.500000 -27.500000))
   (bse-container-restore "BseStandardOsc::BseStandardOsc-1"
     (fm-perc 18.500000)
-    (source-input "freq_mod_in" (bse-upath-resolve 1 "BseAdder-1") "audio_out")
+    (source-input "freq-mod-in" (bse-upath-resolve 1 "BseAdder-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 75.000000 63.500000))
   (bse-container-restore "BseStandardOsc::BseStandardOsc-2"
     (base-freq 6.600000)

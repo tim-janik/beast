@@ -95,7 +95,8 @@ struct _BstPianoRollClass
   void		(*canvas_press)			(BstPianoRoll	*proll,
 						 guint		 button,
 						 guint		 tick_position,
-						 gfloat		 freq);
+						 gfloat		 freq,
+						 GdkEvent	*event);
   void		(*canvas_motion)		(BstPianoRoll	*proll,
 						 guint		 button,
 						 guint		 tick_position,

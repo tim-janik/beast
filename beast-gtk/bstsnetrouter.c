@@ -129,7 +129,7 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
 
   /* construct menu entry list */
   cats = bse_categories_match_typed ("/Modules/*", BSE_TYPE_SOURCE, &n_cats);
-  centries = bst_menu_entries_from_cats (n_cats, cats, bst_router_popup_select);
+  centries = bst_menu_entries_from_cats (n_cats, cats, bst_router_popup_select, TRUE);
   slist = bst_menu_entries_slist (n_cats, centries);
   slist = bst_menu_entries_sort (slist);
   slist = g_slist_concat (bst_menu_entries_slist (G_N_ELEMENTS (popup_entries), popup_entries), slist);
@@ -906,11 +906,11 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      if (!csource || (router->drag_is_input ? ochannel : ichannel) == ~0)
 		error = router->drag_is_input ? BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL : BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
 	      else if (router->drag_is_input)
-		error = bsw_source_set_input (router->drag_csource->source, router->drag_channel,
-					      csource->source, ochannel);
+		error = bsw_source_set_input_by_id (router->drag_csource->source, router->drag_channel,
+						    csource->source, ochannel);
 	      else
-		error = bsw_source_set_input (csource->source, ichannel,
-					      router->drag_csource->source, router->drag_channel);
+		error = bsw_source_set_input_by_id (csource->source, ichannel,
+						    router->drag_csource->source, router->drag_channel);
 	      router->drag_csource = NULL;
 	      router->drag_channel = ~0;
 	      bst_snet_router_reset_tool (router);
@@ -988,8 +988,8 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 		{
 		  BseErrorType error;
 		case 1:
-		  error = bsw_source_unset_input (clink->icsource->source, clink->ichannel,
-						  clink->ocsource->source, clink->ochannel);
+		  error = bsw_source_unset_input_by_id (clink->icsource->source, clink->ichannel,
+							clink->ocsource->source, clink->ochannel);
 		  bst_status_eprintf (error, "Delete Link");
 		  break;
 		case 2:

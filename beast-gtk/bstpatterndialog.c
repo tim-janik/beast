@@ -108,10 +108,10 @@ bst_pattern_dialog_class_init (BstPatternDialogClass *class)
 
   /* categories */
   cats = bse_categories_match_typed ("/Method/BsePattern/*", BSE_TYPE_PROCEDURE, &n_c1entries);
-  c1entries = bst_menu_entries_from_cats (n_c1entries, cats, pattern_dialog_exec_proc);
+  c1entries = bst_menu_entries_from_cats (n_c1entries, cats, pattern_dialog_exec_proc, TRUE);
   g_free (cats);
   cats = bse_categories_match_typed ("/Proc/Toys/*", BSE_TYPE_PROCEDURE, &n_c2entries);
-  c2entries = bst_menu_entries_from_cats (n_c2entries, cats, pattern_dialog_exec_proc);
+  c2entries = bst_menu_entries_from_cats (n_c2entries, cats, pattern_dialog_exec_proc, TRUE);
   g_free (cats);
 
   /* construct menu entry list */

@@ -30,6 +30,8 @@
 #include	"bstpatterneditor.h"
 #include	"bstservermonitor.h"
 #include	"bstrackeditor.h"
+#include	"bstmenus.h"
+#include	"bstprocedure.h"
 
 
 
@@ -39,6 +41,9 @@ static void	bst_app_init			(BstApp		 *app);
 static void	bst_app_destroy			(GtkObject	 *object);
 static gboolean bst_app_handle_delete_event	(GtkWidget	 *widget,
 						 GdkEventAny	 *event);
+static void     bst_app_run_script_proc		(GtkWidget	 *widget,
+						 gulong           callback_action,
+						 gpointer         popup_data);
 
 
 /* --- menus --- */
@@ -78,7 +83,7 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Edit/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Edit/_Undo",			"<ctrl>Z",	BST_OP (UNDO_LAST),		"<Item>" },
   { "/Edit/_Redo",			"<ctrl>R",	BST_OP (REDO_LAST),		"<Item>" },
-  { "/_Song",				NULL,		NULL, 0,			"<Branch>" },
+  { "/S_ong",				NULL,		NULL, 0,			"<Branch>" },
   { "/Song/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Song/_Add Pattern",		"<ctrl>P",	BST_OP (PATTERN_ADD),		"<Item>" },
   { "/Song/Delete Pattern",		NULL,		BST_OP (PATTERN_DELETE),	"<Item>" },
@@ -89,9 +94,12 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Waves/_Load Wave...",		"",		BST_OP (WAVE_LOAD),		"<Item>" },
   { "/Waves/Delete Wave",		NULL,		BST_OP (WAVE_DELETE),		"<Item>" },
   { "/Waves/_Edit Wave...",		"",		BST_OP (WAVE_EDITOR),		"<Item>" },
+  { "/_Scripts",			NULL,		NULL, 0,			"<Branch>" },
   // { "/S_Net",			NULL,		NULL, 0,			"<Branch>" },
   // { "/SNet/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   // { "/SNet/_Test",			"",		BST_OP (NONE),			"<Item>" },
+};
+static GtkItemFactoryEntry menubar_help_entries[] = {
   { "/_Help",				NULL,		NULL, 0,			"<LastBranch>" },
   { "/Help/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Help/_Release Notes...",		NULL,		BST_OP (HELP_RELEASE_NOTES),	"<Item>" },
@@ -102,7 +110,6 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Help/_About...",			NULL,		BST_OP (HELP_ABOUT),		"<Item>" },
 #undef	BST_OP
 };
-static guint n_menubar_entries = sizeof (menubar_entries) / sizeof (menubar_entries[0]);
 
 
 /* --- variables --- */
@@ -170,7 +177,11 @@ bst_app_init (BstApp *app)
   GtkWidget *widget = GTK_WIDGET (app);
   GtkWindow *window = GTK_WINDOW (app);
   GtkItemFactory *factory;
-
+  GtkItemFactoryEntry *centries;
+  BseCategory *cats;
+  GSList *slist;
+  guint n_cats;
+  
   g_object_set (app,
 		"allow_shrink", TRUE,
 		"allow_grow", TRUE,
@@ -195,7 +206,6 @@ bst_app_init (BstApp *app)
    */
   factory = gtk_item_factory_new (GTK_TYPE_MENU_BAR, bst_app_factories_path, NULL);
   gtk_window_add_accel_group (window, factory->accel_group);
-  gtk_item_factory_create_items (factory, n_menubar_entries, menubar_entries, app);
   gtk_container_add_with_properties (GTK_CONTAINER (app->main_vbox),
 				     factory->widget,
 				     "expand", FALSE,
@@ -207,6 +217,24 @@ bst_app_init (BstApp *app)
 			    factory,
 			    (GtkDestroyNotify) gtk_object_unref);
 
+  /* setup standard entries
+   */
+  gtk_item_factory_create_items (factory, G_N_ELEMENTS (menubar_entries), menubar_entries, app);
+
+  /* add scripts to the menu bar
+   */
+  cats = bse_categories_match_typed ("/Scripts/*", BSE_TYPE_PROCEDURE, &n_cats);
+  centries = bst_menu_entries_from_cats (n_cats, cats, bst_app_run_script_proc, FALSE);
+  slist = bst_menu_entries_slist (n_cats, centries);
+  slist = bst_menu_entries_sort (slist);
+  bst_menu_entries_create (factory, slist, GTK_WIDGET (app));
+  g_slist_free (slist);
+  g_free (centries);
+  g_free (cats);
+
+  /* setup help entries
+   */
+  gtk_item_factory_create_items (factory, G_N_ELEMENTS (menubar_help_entries), menubar_help_entries, app);
 
   /* setup the main notebook
    */
@@ -494,6 +522,19 @@ rebuild_super_shell (BstSuperShell *super_shell)
   bsw_item_unuse (proxy);
 }
 
+static void
+bst_app_run_script_proc (GtkWidget *widget,
+			 gulong     callback_action,
+			 gpointer   popup_data)
+{
+  BstApp *self = BST_APP (widget);
+  GType proc_type = callback_action;
+
+  bst_procedure_exec_auto (proc_type,
+			   "project", BSE_TYPE_PROJECT, bse_object_from_id (self->project),
+			   NULL);
+}
+
 void
 bst_app_operate (BstApp *app,
 		 BstOps	 op)
@@ -569,15 +610,15 @@ bst_app_operate (BstApp *app,
 	}
       break;
     case BST_OP_PROJECT_NEW_SONG:
-      proxy = bsw_project_create_song (app->project);
+      proxy = bsw_project_create_song (app->project, NULL);
       super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_NEW_SNET:
-      proxy = bsw_project_create_snet (app->project);
+      proxy = bsw_project_create_snet (app->project, NULL);
       super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_NEW_MIDI_SYNTH:
-      proxy = bsw_project_create_midi_synth (app->project);
+      proxy = bsw_project_create_midi_synth (app->project, NULL);
       super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_PLAY:

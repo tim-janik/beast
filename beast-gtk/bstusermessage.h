@@ -26,9 +26,9 @@ extern "C" {
 
 
 /* --- prototypes --- */
-void	bst_user_messages_listen	(void);
-void	bst_user_messages_kill		(void);
-
+void	   bst_user_messages_listen	(void);
+void	   bst_user_messages_kill	(void);
+GtkWidget* bst_user_message_dialog_new	(BswProxy	script_control);
 
 #ifdef __cplusplus
 }

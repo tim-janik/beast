@@ -76,6 +76,9 @@ void	   bst_status_window_push		(gpointer        widget);
 void	   bst_status_window_pop		(void);
 void	   bst_status_push_progress_window	(gpointer        widget);
 void	   bst_status_pop_progress_window	(void);
+void	   bst_status_set_script_control_window (BswProxy	script_control,
+						 GtkWindow     *window);
+void	   bst_status_delete_script_control	(BswProxy	script_control);
 
 
 

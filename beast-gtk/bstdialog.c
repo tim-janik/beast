@@ -302,14 +302,14 @@ bst_dialog_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-GtkWidget*
+gpointer
 bst_dialog_new (gpointer       pointer_loc,
 		GtkObject     *alive_object,
 		BstDialogFlags flags,
 		const gchar   *title,
 		GtkWidget     *child)
 {
-  GtkWidget *dialog;
+  BstDialog *dialog;
 
   dialog = g_object_new (BST_TYPE_DIALOG,
 			 "pointer", pointer_loc,
@@ -317,9 +317,8 @@ bst_dialog_new (gpointer       pointer_loc,
 			 "flags", flags,
 			 "title", title ? title : DEFAULT_TITLE,
 			 NULL);
-  bst_dialog_set_title (BST_DIALOG (dialog), title);
-  if (child)
-    gtk_container_add (GTK_CONTAINER (BST_DIALOG (dialog)->vbox), child);
+  bst_dialog_set_title (dialog, title);
+  bst_dialog_set_child (dialog, child);
 
   return dialog;
 }
@@ -372,6 +371,17 @@ bst_dialog_get_child (BstDialog *dialog)
   child = box && box->children ? box->children->data : NULL;
 
   return child ? child->widget : NULL;
+}
+
+void
+bst_dialog_set_child (BstDialog *dialog,
+		      GtkWidget *child)
+{
+  g_return_if_fail (BST_IS_DIALOG (dialog));
+
+  gtk_container_foreach (GTK_CONTAINER (dialog->vbox), (GtkCallback) gtk_widget_destroy, NULL);
+  if (child)
+    gtk_container_add (GTK_CONTAINER (dialog->vbox), child);
 }
 
 static void
@@ -498,6 +508,15 @@ bst_dialog_sync_title_to_proxy (BstDialog   *dialog,
     }
 }
 
+void
+bst_dialog_remove_actions (BstDialog *dialog)
+{
+  g_return_if_fail (BST_IS_DIALOG (dialog));
+
+  if (dialog->hbox)
+    gtk_container_foreach (GTK_CONTAINER (dialog->hbox), (GtkCallback) gtk_widget_destroy, NULL);
+}
+
 GtkWidget*
 bst_dialog_action_multi (BstDialog          *dialog,
 			 const gchar        *action,
@@ -531,7 +550,7 @@ bst_dialog_action_multi (BstDialog          *dialog,
 			       (multi_mode & BST_DIALOG_MULTI_SWAPPED) ? G_CONNECT_SWAPPED : 0);
 
       /* setup button contents */
-      alignment = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
+      alignment = gtk_alignment_new (0.5, 0.5, 0.1, 0.1);
       gtk_container_add (GTK_CONTAINER (button), alignment);
       hbox = gtk_hbox_new (FALSE, 2);
       gtk_container_add (GTK_CONTAINER (alignment), hbox);

@@ -40,14 +40,14 @@ bst_play_back_handle_new (void)
   if (BST_DVL_EXT)
     gtk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 
-  handle->snet = bsw_project_create_snet (handle->project);
+  handle->snet = bsw_project_create_snet (handle->project, NULL);
   bsw_proxy_set (handle->snet, "auto_activate", TRUE, NULL);
   handle->speaker = bsw_snet_create_source (handle->snet, "BsePcmOutput");
   handle->wosc = bsw_snet_create_source (handle->snet, "BseWaveOsc");
-  bsw_source_set_input (handle->speaker, 0, handle->wosc, 0);
-  bsw_source_set_input (handle->speaker, 1, handle->wosc, 0);
+  bsw_source_set_input_by_id (handle->speaker, 0, handle->wosc, 0);
+  bsw_source_set_input_by_id (handle->speaker, 1, handle->wosc, 0);
   handle->constant = bsw_snet_create_source (handle->snet, "BseConstant");
-  bsw_source_set_input (handle->wosc, 0, handle->constant, 0);
+  bsw_source_set_input_by_id (handle->wosc, 0, handle->constant, 0);
   bsw_proxy_connect (handle->wosc,
 		     "swapped_signal::notify_pcm_position", wave_oscillator_pcm_notify, handle,
 		     NULL);

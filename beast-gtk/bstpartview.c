@@ -32,16 +32,12 @@ static gboolean	bst_part_view_can_operate	(BstItemView		*item_view,
 						 BstOps			 op);
 
 
-/* --- part ops --- */
+/* --- variables --- */
 static BstItemViewOp part_view_ops[] = {
   { "Add",		BST_OP_PART_ADD,	BST_STOCK_PART,		},
   { "Delete",		BST_OP_PART_DELETE,	BST_STOCK_TRASHCAN,	},
   { "Editor...",	BST_OP_PART_EDITOR,	BST_STOCK_PART_EDITOR,	},
 };
-static guint n_part_view_ops = sizeof (part_view_ops) / sizeof (part_view_ops[0]);
-
-
-/* --- static variables --- */
 static gpointer	parent_class = NULL;
 
 
@@ -78,12 +74,12 @@ bst_part_view_class_init (BstPartViewClass *class)
 {
   // GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (class);
-
+  
   parent_class = g_type_class_peek_parent (class);
 
   item_view_class->can_operate = bst_part_view_can_operate;
   item_view_class->operate = bst_part_view_operate;
-  item_view_class->n_ops = n_part_view_ops;
+  item_view_class->n_ops = G_N_ELEMENTS (part_view_ops);
   item_view_class->ops = part_view_ops;
 }
 

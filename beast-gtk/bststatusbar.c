@@ -19,6 +19,7 @@
 #include        "bststatusbar.h"
 
 #include        "bstdialog.h"
+#include        "bstusermessage.h"
 
 #include        <gdk/gdkkeysyms.h>
 #include        <string.h>
@@ -359,23 +360,30 @@ status_bar_get_current (void)
 }
 
 static void
-exec_status (BseServer    *server,
+exec_status (BswProxy      server,
 	     BswExecStatus status,
 	     const gchar  *exec_name,
 	     gfloat        progress,
 	     BseErrorType  error,
+	     BswProxy      script_control,
 	     gpointer      data)
 {
+  GtkWindow *sctrl_window = script_control ? bsw_proxy_get_data (script_control, "script-control-window") : NULL;
+
+  if (sctrl_window)
+    bst_status_window_push (sctrl_window);
   switch (status)
     {
       gboolean have_progress_window;
     case BSW_EXEC_STATUS_START:
-      if (proc_catch_count)
+      if (proc_catch_count || sctrl_window)
 	bst_status_set (0, exec_name, "Starting");
+      if (!sctrl_window && script_control)
+	bst_user_message_dialog_new (script_control);
       break;
     case BSW_EXEC_STATUS_PROGRESS:
       /* if possible, indicate progress on progress_window */
-      have_progress_window = progress_window_stack != NULL;
+      have_progress_window = progress_window_stack != NULL && !sctrl_window;
       if (have_progress_window)
 	bst_status_window_push (progress_window_stack->data);
       /* conscious notification from procedure/script, so we always pass
@@ -390,10 +398,12 @@ exec_status (BseServer    *server,
 	bst_status_window_pop ();
       break;
     case BSW_EXEC_STATUS_DONE:
-      if (proc_catch_count)
+      if (proc_catch_count || sctrl_window)
 	bst_status_eprintf (error, exec_name);
       break;
     }
+  if (sctrl_window)
+    bst_status_window_pop ();
 }
 
 void
@@ -436,4 +446,19 @@ bst_status_pop_progress_window (void)
 
   gtk_widget_unref (progress_window_stack->data);
   progress_window_stack = g_slist_remove (progress_window_stack, progress_window_stack->data);
+}
+
+void
+bst_status_set_script_control_window (BswProxy   script_control,
+				      GtkWindow *window)
+{
+  g_return_if_fail (GTK_IS_WINDOW (window));
+
+  bsw_proxy_set_data (script_control, "script-control-window", window);
+}
+
+void
+bst_status_delete_script_control (BswProxy script_control)
+{
+  bsw_proxy_remove_data (script_control, "script-control-window");
 }

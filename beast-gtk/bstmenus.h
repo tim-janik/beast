@@ -40,7 +40,8 @@ typedef void  (*BstMenuCallback)    (GtkWidget *owner,
 /* --- item factory helpers --- */
 GtkItemFactoryEntry* bst_menu_entries_from_cats	(guint			    n_cats,
 						 const BseCategory	   *cats,
-						 BstMenuCallback	    callback);
+						 BstMenuCallback	    callback,
+						 gboolean		    remove_toplevel);
 GSList*		     bst_menu_entries_slist	(guint			    n_ientries,
 						 const GtkItemFactoryEntry *ientries);
 GSList*		     bst_menu_entries_sort	(GSList			   *entry_slist);

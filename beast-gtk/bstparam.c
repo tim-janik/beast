@@ -526,6 +526,12 @@ bst_param_create (gpointer	owner,
   
   name = g_param_spec_get_nick (pspec);
   tooltip = g_param_spec_get_blurb (pspec);
+  if (!BST_DVL_HINTS)
+    tooltip = g_strdup (tooltip);
+  else if (tooltip)
+    tooltip = g_strdup_printf ("(%s): %s", g_param_spec_get_name (pspec), tooltip);
+  else
+    tooltip = g_strdup_printf ("(%s)", g_param_spec_get_name (pspec));
   
   expandable = FALSE;
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec)))
@@ -862,6 +868,8 @@ bst_param_create (gpointer	owner,
       break;
     }
 
+  g_free (tooltip);
+  
   if (BST_IS_DIAL (dial))
     bst_dial_set_align_widget (BST_DIAL (dial), bst_gmask_get_action (group), 0, 1);
   

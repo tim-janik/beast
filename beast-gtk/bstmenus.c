@@ -76,7 +76,8 @@ bst_menu_entries_sort (GSList *entry_slist)
 GtkItemFactoryEntry*
 bst_menu_entries_from_cats (guint              n_cats,
 			    const BseCategory *cats,
-			    BstMenuCallback    callback)
+			    BstMenuCallback    callback,
+			    gboolean	       remove_toplevel)
 {
   GtkItemFactoryEntry *entries, *entry;
 
@@ -88,7 +89,7 @@ bst_menu_entries_from_cats (guint              n_cats,
   entries = g_new0 (GtkItemFactoryEntry, n_cats);
   for (entry = entries; entry < entries + n_cats; entry++)
     {
-      entry->path = cats->category + cats->mindex;
+      entry->path = cats->category + (remove_toplevel ? cats->mindex : 0);
       entry->accelerator = NULL;
       entry->callback = callback;
       entry->callback_action = cats->type;

@@ -258,7 +258,7 @@ bst_stock_action (const gchar *stock_id)
 	      break;
 	    }
 	}
-      if (gtk_stock_lookup (action, &item))
+      if (action && gtk_stock_lookup (action, &item))
 	action = item.label;
       else
 	action = NULL;
@@ -1780,7 +1780,7 @@ bst_wrap_text_create (gboolean     center,
 
   if (string)
     bst_wrap_text_append (tview, string);
-
+  
   return tview;
 }
 

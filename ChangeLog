@@ -1,3 +1,52 @@
+Wed Jun 12 06:16:07 2002  Tim Janik  <timj@gtk.org>
+
+	* bswproxy.[hc]: added facility to set/get data pointers per proxy.
+
+	* bswsignal.c: fix closure guards and signal connection.
+
+Thu Jun 13 07:29:20 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw-boilerplate.scm.x: more scheme function definitions.
+
+	* bswscminterp.[hc]: new binding implementation, based on the
+	GSL Glue layer. we use an extra SMOB type to hook into the
+	garbage collector now.
+
+	* bswshell.c: support startup suspension via BSW_SHELL_SLEEP4GDB=1.
+	adaptions to new bswscminterp.h.
+
+	* progressor-example.scm: procedure fixes.
+
+	* got rid of the old C glue generation code.
+
+	* bstmain.c: support startup suspension via BEAST_SLEEP4GDB=1.
+	fixup plugin and script registration process somewhat.
+	added --hints option to display additional information in tooltips
+	usefull for script implementations.
+
+	* bstpianoroll.[hc]: supply GdkEvent in canvas event signals to allow
+	pointer graps in handlers.
+
+	* bstpartdialog.c: implemented procedure startup menu.
+
+	* bstprocedure.c: removed some bad status hacks.
+
+	* bststatusbar.[hc]: added support for script-control dialogs.
+
+	* bstusermessage.[hc]: implemented script-control dialog.
+
+	* bstutils.c: fix NULL action lookup.
+
+Mon May 27 16:45:48 2002  Tim Janik  <timj@gtk.org>
+
+	* test/*.bse: fixes due to i/o channel renames.
+
+	* bstapp.c: added /Script menu.
+
+	* bstcanvassource.c: provide canonical channel names in info dialogs.
+
+	* bstdialog.c: allow setting of child and removal of actions.
+
 Mon May 27 06:58:30 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c (bst_procedure_shell_execute): remove hack
