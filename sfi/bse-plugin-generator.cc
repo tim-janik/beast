@@ -40,7 +40,7 @@ using namespace std;
 static void
 usage ()
 {
-  g_print ("usage: %s [options] <input.mdef>\n", PRG_NAME);
+  g_print ("usage: %s [options] <input.idl>\n", PRG_NAME);
   g_print (" -h, --help                  print usage information\n");
   g_print (" -I <directory>              add this directory to the include path\n");
   g_print (" --version                   print version\n");

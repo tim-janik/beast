@@ -388,7 +388,7 @@ void Parser::preprocess (const string& input_filename)
 		location = filename;
 	      g_free (dir);
 	    }
-	  if (location != "") // all #include directives => search includepath with standard include dirs
+	  if (location == "") // all #include directives => search includepath with standard include dirs
 	    {
 	      for(vector<string>::const_iterator i = options.includePath.begin(); i != options.includePath.end(); i++)
 		{

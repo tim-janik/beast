@@ -1,3 +1,9 @@
+Sun Sep 21 04:23:18 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bse-plugin-generator.cc: Renamed pdef to idl.
+	
+	* sfidl-parser.cc: Fixed #include handling (typo).
+
 Sun Sep 21 02:29:42 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bse-plugin-generator.cc: Duplicated include related options
