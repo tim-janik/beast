@@ -260,7 +260,7 @@ super_shell_build_snet (BstSuperShell *self,
   SfiProxy snet = self->super;
   GtkWidget *param_view;
 
-  if (bse_snet_supports_user_synths (snet))
+  if (BST_DBG_EXT && bse_snet_supports_user_synths (snet))
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (bst_rack_view_new (snet)),
                               g_object_new (GTK_TYPE_LABEL, "label", _("Rack"), NULL));
@@ -319,8 +319,8 @@ super_shell_add_views (BstSuperShell *self)
 {
   if (BSE_IS_SONG (self->super))
     super_shell_build_song (self, create_notebook (self));
-  else if (BSE_IS_CSYNTH (self->super))
-    super_shell_build_snet (self, create_notebook (self));
   else if (BSE_IS_WAVE_REPO (self->super))
     super_shell_build_wave_repo (self, create_notebook (self));
+  else /* BSE_IS_SNET (self->super) */
+    super_shell_build_snet (self, create_notebook (self));
 }
