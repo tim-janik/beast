@@ -37,7 +37,7 @@ extern "C" {
 
 
 
-typedef enum                    /* <skip> */
+typedef enum                    /*< skip >*/
 {
   BSE_PARAM_READABLE            = 1 << 0,
   BSE_PARAM_WRITABLE            = 1 << 1,

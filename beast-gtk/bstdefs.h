@@ -107,7 +107,7 @@ BseIcon* bst_icon_from_stock (BstIconId icon_id);
 
 
 /* --- debug stuff --- */
-typedef enum                    /* <skip> */
+typedef enum                    /*< skip >*/
 { /* keep in sync with bstmain.c */
   BST_DEBUG_KEYTABLE		= (1 << 0),
   BST_DEBUG_SAMPLES		= (1 << 1)

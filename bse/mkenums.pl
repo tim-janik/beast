@@ -16,7 +16,8 @@ sub parse_options {
 
     for $opt (split /\s*,\s*/, $opts) {
 #        print "xxxOPT \"$opt\"\n";
-        my ($key,$val) = $opt =~ /^(\w+)(?:=(.+))?/;
+#       my ($key,$val) = $opt =~ /\s*(\w+)(?:=(\S+))?/;
+        my ($key,$val) = $opt =~ /\s*(\w+)(?:=(\S+))?/;
 	defined $val or $val = 1;
 	push @opts, $key, $val;
     }
@@ -29,7 +30,7 @@ sub parse_entries {
     while (<$file>) {
 	
 	# strip comments w/o options
-	s@/\*(?!\s*<)
+	s@/\*(?!<)
 	    ([^*]+|\*(?!/))*
 		\*/@@gx;
 
@@ -56,7 +57,7 @@ sub parse_entries {
 	    }
 	    
 	    # strip comments w/o options
-	    s@/\*(?!\s*<)
+	    s@/\*(?!<)
 		([^*]+|\*(?!/))*
 		    \*/@@gx;
 	
@@ -78,7 +79,7 @@ sub parse_entries {
               (?:=(                      # value
                    (?:[^,/]|/(?!\*))*
                   ))?,?\s*
-              (?:/\*\s*<                 # options
+              (?:/\*<                    # options
                 (([^*]|\*(?!/))*)
                >\s*\*/)?,?
               \s*$
@@ -162,7 +163,7 @@ while (<>) {
     }
 
     # strip comments w/o options
-    s@/\*(?!\s*<)
+    s@/\*(?!<)
         ([^*]+|\*(?!/))*
             \*/@@gx;
 
@@ -170,7 +171,7 @@ while (<>) {
 
     if (m@^\s*typedef\s+enum\s*
            ({)?\s*
-           (?:/\*\s*<
+           (?:/\*<
              (([^*]|\*(?!/))*)
             >\s*\*/)?
          @x) {

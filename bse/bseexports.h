@@ -63,7 +63,7 @@ typedef void         (*BseProcedureUnload) (BseProcedureClass *procedure);
 
 
 /* --- export types --- */
-typedef enum			/* <skip> */
+typedef enum			/*< skip >*/
 {
   BSE_EXPORT_TYPE_PROCS		= 1,
   BSE_EXPORT_TYPE_OBJECTS	= 2

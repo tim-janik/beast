@@ -64,7 +64,7 @@ extern "C" {
 
 
 /* --- bse object flags --- */
-typedef enum                            /* <skip> */
+typedef enum                            /*< skip >*/
 {
   BSE_OBJECT_FLAG_CONSTRUCTED           = 1 << 0,
   BSE_OBJECT_FLAG_DESTROYED             = 1 << 1,

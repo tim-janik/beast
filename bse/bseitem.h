@@ -37,7 +37,7 @@
 
 
 /* --- bse item flags --- */
-typedef enum                            /* <skip> */
+typedef enum                            /*< skip >*/
 {
   BSE_ITEM_FLAG_PARENT_REF	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0)
 } BseItemFlags;

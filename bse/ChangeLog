@@ -1,3 +1,10 @@
+Sun Jan  9 22:58:42 2000  Tim Janik  <timj@gtk.org>
+
+	* mkenums.pl: enforce real trigraphs (again), so /*< skip >*/
+	is recognized while /* < skip > */ is not.
+
+	* *.h: bunch of trigraphs adapted.
+
 Sun Jan  9 13:42:01 2000  Tim Janik  <timj@gtk.org>
 
 	* bsegconfig.c (bse_gconfig_do_default_revert): 

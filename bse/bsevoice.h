@@ -32,7 +32,7 @@ extern "C" {
 
 
 /* --- internal enums --- */
-typedef enum			/* <skip> */
+typedef enum			/*< skip >*/
 {
   BSE_ENVELOPE_PART_DELAY,
   BSE_ENVELOPE_PART_ATTACK,

@@ -80,14 +80,14 @@ typedef enum
   BSE_LOOP_PATTERN,
   BSE_LOOP_PATTERN_ROWS,
   BSE_LOOP_SONG,
-  BSE_LOOP_LAST				/* <skip> */
+  BSE_LOOP_LAST				/*< skip >*/
 } BseLoopType;
 typedef enum
 {
   BSE_INSTRUMENT_NONE,
   BSE_INSTRUMENT_SAMPLE,
   BSE_INSTRUMENT_MIDI,
-  BSE_INSTRUMENT_LAST			/* <skip> */
+  BSE_INSTRUMENT_LAST			/*< skip >*/
 } BseInstrumentType;
 typedef enum
 {
@@ -143,7 +143,7 @@ typedef enum
   BSE_ERROR_PROC_EXECUTION,
   BSE_ERROR_PROC_NEEDLESS,
   BSE_ERROR_PROC_ABORT,
-  BSE_ERROR_LAST			/* <skip> */
+  BSE_ERROR_LAST			/*< skip >*/
 } BseErrorType;
 
 

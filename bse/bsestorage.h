@@ -40,7 +40,7 @@ extern "C" {
 #define	BSE_STORAGE_PUT_DEFAULTS(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_PUT_DEFAULTS) != 0)
 
 /* --- BseStorage flags --- */
-typedef enum			/* <skip> */
+typedef enum			/*< skip >*/
 {
   BSE_STORAGE_FLAG_READABLE	= 1 << 0,
   BSE_STORAGE_FLAG_WRITABLE	= 1 << 1,

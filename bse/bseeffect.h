@@ -69,7 +69,7 @@ typedef enum
   BSE_EFFECT_TYPE_PORTAMENTO,
   BSE_EFFECT_TYPE_PORTAMENTO_UP,
   BSE_EFFECT_TYPE_PORTAMENTO_DOWN,
-  BSE_EFFECT_TYPE_LAST                       /* <skip> */
+  BSE_EFFECT_TYPE_LAST                       /*< skip >*/
 } BseEffectType;
 
 

@@ -147,12 +147,12 @@ typedef enum
   BSE_DEBUG_LOOP		= (1 << 7),
   BSE_DEBUG_PCM			= (1 << 8)
 } BseDebugFlags;
-typedef enum			/* <skip> */
+typedef enum			/*< skip >*/
 {
   BSE_TOKEN_UNMATCHED           = G_TOKEN_LAST + 1,
   BSE_TOKEN_NIL			= G_TOKEN_LAST + 2
 } BseTokenType;
-typedef enum                    /* <skip> */
+typedef enum                    /*< skip >*/
 {
   BSE_PIXDATA_RGB               = 3,
   BSE_PIXDATA_RGBA              = 4,
