@@ -53,7 +53,7 @@
       <navigation-node title="SFI"                 target="log-sfi.html"     />
     </navigation-node>
     <navigation-node title="BEAST/BSE Development">
-      <navigation-node title="Plugin Generator"    target="bse-plugin-generator.1.html"   />
+      <navigation-node title="IDL Compiler"        target="sfidl-manual.html"   />
       <navigation-node title="GXK Functions"       target="beast-gxk.3.html"   />
       <navigation-node title="BSE Functions"       target="bse.3.html"         />
       <navigation-node title="Synth Engine"        target="engine-mplan.html"  />

@@ -4,8 +4,7 @@ texi_docs = $(strip						\
 	WRITING.3.texi			beast-index.texi	\
 	quickstart.texi			plugin-devel.texi	\
 	release-notes.texi		faq.texi		\
-	bse-plugin-generator.1.texi	sfidl.1.texi		\
-	sfidl-manual.texi		\
+	sfidl.1.texi			sfidl-manual.texi	\
 )
 texi_images = $(strip		\
 	module-voices.png	\

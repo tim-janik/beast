@@ -89,7 +89,7 @@ bsesh -- A Guile based scheme shell for @beast and @bse{}.
 @unnumbered SEE ALSO
 @uref{man://1/guile},
 @uref{beast-man://1/beast},
-@uref{beast-man://1/bse-plugin-generator}
+@uref{beast-man://1/sfidl}
 
 @*
 @revision{Document Revised:}

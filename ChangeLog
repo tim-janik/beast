@@ -1,3 +1,15 @@
+Wed Feb 11 02:36:30 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/bse-plugin-generator.1.texi: removed, tehres sfidl.1 now.
+
+	* docs/*.1.texi: updated links to point to sfidl.1.
+
+	* docs/sfidl.1.texi: updated documentation of command line options.
+
+	* docs/beast.1.texi: updates.
+
+	* docs/site-navigation.xml: link to sfidl-manual instead of sfild.1.
+
 Wed Feb 11 02:04:29 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdragutils.[hc]: 

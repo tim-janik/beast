@@ -15,8 +15,9 @@ beast -- Graphical program to simulate audio synthesis and compose music.
 	@command{beast} [@var{OPTIONS}] [@var{FILES...}]
 
 @unnumbered DESCRIPTION
-	@beast is the BEdevilled Audio SysTem. It is a Gtk+/GNOME based program to
-	simulate audio synthesis and to compose music.
+	@beast is the BEdevilled Audio SysTem. It is a music composition and
+	modular synthesis application released as free software under the
+	GNU GPL and GNU LGPL.
 
 	@beast comes with various synthesis modules which can be arranged in
 	networks for modular synthesis. It is capable of monophonic and polyphonic
@@ -80,7 +81,7 @@ beast -- Graphical program to simulate audio synthesis and compose music.
 
 @unnumbered SEE ALSO
 @uref{beast-man://1/bsesh},
-@uref{beast-man://1/bse-plugin-generator}
+@uref{beast-man://1/sfidl}
 @*
 @revision{Document Revised:}
 @bye

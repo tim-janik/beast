@@ -9,7 +9,7 @@ docsdir = ${beastdocsdir}
 docs_DATA = ${markup_targets}
 
 # install man pages
-man1_MANS = beast.1 bsesh.1 bse-plugin-generator.1 sfidl.1
+man1_MANS = beast.1 bsesh.1 sfidl.1
 man3_MANS = sfi.3 bse.3 beast-gxk.3 bse-procs.3 bse-structs.3
 man_MANS = $(man1_MANS) $(man3_MANS)
 

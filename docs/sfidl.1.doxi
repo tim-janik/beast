@@ -16,26 +16,39 @@ SFIDL - SFI IDL Compiler
 
 @unnumbered DESCRIPTION
 
-	@command{sfidl} generates glue code for @bse objects from
-	interface definition language files.
+	@command{sfidl} generates glue code for @bse objects and
+	plugins from interface definition language files.
 
 @unnumbered OPTIONS
 
 @table @option
 @item ---help
-	print usage information
-
+	Print usage information.
 @item -I <@var{DIRECTORY}>
-	add @var{DIRECTORY} to the include path
-
+	Add @var{DIRECTORY} to include path.
 @item ---version
-	print version
-
+	Print program version.
 @item ---print-include-path
-	print include path
-
+	Print include path.
 @item ---nostdinc
-	don't use standard include path
+	Prevents standard include path from being used.
+@item ---prefix <@var{prefix}>
+	C language binding option, sets the prefix for c functions.
+@item ---cxx
+	Generate C++ client language binding.
+@item ---namespace <@var{namespace}>
+	C++ client language binding, sets the namespace to use for the code.
+@item ---list-types
+	Print all types defined in the idlfile. This option is used only
+	for BSE internally to ease transition from C to C++ types.
+@item ---core-cxx
+	Generate C++ core language binding.
+@item ---plugin
+	Generate C++ plugin language binding.
+@item ---header, ---source, ---interface, ---implementation, ---idl-line-numbers
+@item ---boxed, ---mixed, ---lower, ---qt, ---init <@var{NAME}>
+	These command line options are either broken or obsolete, they
+	will be removed or replaced sooner or later.
 @end table
 
 @unnumbered SEE ALSO
