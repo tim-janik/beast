@@ -33,6 +33,11 @@ G_BEGIN_DECLS
 #else
 #define G_HASH_LONG(l)	(l)
 #endif
+#if (GLIB_SIZEOF_VOID_P > 4)
+#define G_HASH_POINTER(p)	((guint32) (((gsize) (p)) + (((gsize) (p)) >> 32)))
+#else
+#define G_HASH_POINTER(p)       ((guint32) (gsize) (p))
+#endif
 
 
 /* --- provide (historic) aliases --- */
@@ -67,8 +72,8 @@ gchar*		g_strdup_stripped (const gchar	 *string);
 gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
 
-const gchar*    g_quark_intern        (const gchar   *string);
-const gchar*    g_quark_intern_static (const gchar   *string);
+const gchar*    g_intern_string        (const gchar   *string);
+const gchar*    g_intern_static_string (const gchar   *string);
 
 gchar*          g_path_concat     (const gchar   *first_path,
                                    ...);

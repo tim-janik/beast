@@ -1,3 +1,9 @@
+Wed Nov 12 04:21:32 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: provide G_HASH_POINTER().
+	renamed *quark_intern* functions to:
+	g_intern_string() and g_intern_static_string().
+
 Sun Nov  2 20:09:45 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-generator.cc: fix printf()-args.

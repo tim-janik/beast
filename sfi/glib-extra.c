@@ -127,13 +127,13 @@ g_strdup_lstrip (const gchar *string)
 }
 
 const gchar*
-g_quark_intern (const gchar *string)
+g_intern_string (const gchar *string)
 {
   return g_quark_to_string (g_quark_from_string (string));
 }
 
 const gchar*
-g_quark_intern_static (const gchar   *string)
+g_intern_static_string (const gchar   *string)
 {
   return g_quark_to_string (g_quark_from_static_string (string));
 }
