@@ -511,10 +511,8 @@ gtk_tree_view_append_text_columns (GtkTreeView *tree_view,
   while (n_cols--)
     {
       guint col = va_arg (var_args, guint);
-      gfloat xalign = va_arg (var_args, double);
+      gfloat xalign = va_arg (var_args, gdouble);
       gchar *title = va_arg (var_args, gchar*);
-      
-      g_print ("%u %f %s\n", col, xalign, title);
       
       gtk_tree_view_add_column (tree_view, -1,
 				g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
