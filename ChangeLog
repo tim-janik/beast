@@ -1,3 +1,7 @@
+Tue May 14 04:39:43 2002  Tim Janik  <timj@gtk.org>
+
+	* test/simple-loop.bse: beefed-up version, using new modules.
+
 Sun May 12 07:00:38 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.c (bst_wrap_text_create): fix wrap texts by using
