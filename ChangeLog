@@ -1,3 +1,12 @@
+Sat Oct 18 05:09:24 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (bst_app_activate): hook up effect and instrument
+	saving in /Synthesiser menu.
+
+	* beast-gtk/bstfiledialog.[hc]: setup radio buttons after set_mode().
+	prime file selection singletons with appropriate default directories.
+	implement effect and instrument saving.
+
 Sat Oct 18 04:59:23 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/demo/partymonster.bse: More work on song: use compression.

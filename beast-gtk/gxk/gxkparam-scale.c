@@ -48,7 +48,7 @@ param_scale_create_widget (BstParam    *bparam,
 			   const gchar *tooltip)
 {
   GParamSpec *pspec = bparam->pspec;
-  gboolean logarithmic = bparam->impl->hints ? strstr (bparam->impl->hints, "log-scale") != NULL : FALSE;
+  gboolean logarithmic = g_option_check (bparam->impl->hints, "log-scale");
   GtkWidget *action;
   gpointer linear_adjustment, adjustment = NULL;
 

@@ -63,7 +63,7 @@ struct _BstFileDialog
   GtkWidget	   *spage;	/* sample selection */
   GtkTreeView	   *tview;	/* sample selection tree view */
   GtkWidget	   *osave;	/* save options */
-  GtkWidget	   *radio1;
+  GtkWidget	   *radio1, *radio2;
   gchar            *selected;
   /* mode state */
   BstFileDialogMode mode : 16;
@@ -73,7 +73,7 @@ struct _BstFileDialog
   gchar            *search_path;
   const gchar      *search_filter;
   GtkWindow	   *parent_window;
-  SfiProxy	    proxy;
+  SfiProxy	    proxy, super;
 };
 struct _BstFileDialogClass
 {
@@ -90,6 +90,12 @@ GtkWidget*	bst_file_dialog_popup_save_project	(gpointer	   parent_widget,
 							 SfiProxy	   project);
 GtkWidget*      bst_file_dialog_popup_merge_effect      (gpointer          parent_widget,
                                                          SfiProxy          project);
+GtkWidget*	bst_file_dialog_popup_save_effect	(gpointer	   parent_widget,
+							 SfiProxy	   project,
+                                                         SfiProxy          super);
+GtkWidget*	bst_file_dialog_popup_save_instrument	(gpointer	   parent_widget,
+							 SfiProxy	   project,
+                                                         SfiProxy          super);
 GtkWidget*      bst_file_dialog_popup_merge_instrument  (gpointer          parent_widget,
                                                          SfiProxy          project);
 GtkWidget*	bst_file_dialog_popup_select_dir  	(gpointer	   parent_widget);

@@ -680,6 +680,12 @@ bst_app_activate (BstActivatable *activatable,
     case BST_ACTION_MERGE_INSTRUMENT:
       bst_file_dialog_popup_merge_instrument (self, self->project);
       break;
+    case BST_ACTION_SAVE_EFFECT:
+      bst_file_dialog_popup_save_effect (self, self->project, bst_app_get_current_super (self));
+      break;
+    case BST_ACTION_SAVE_INSTRUMENT:
+      bst_file_dialog_popup_save_instrument (self, self->project, bst_app_get_current_super (self));
+      break;
     case BST_ACTION_NEW_SONG:
       proxy = bse_project_create_song (self->project, NULL);
       break;
@@ -909,7 +915,7 @@ bst_app_can_activate (BstActivatable *activatable,
     case BST_ACTION_SAVE_EFFECT:
     case BST_ACTION_SAVE_INSTRUMENT:
       super = bst_app_get_current_super (self);
-      return FALSE && BSE_IS_CSYNTH (super) && !bse_project_is_active (self->project);
+      return BSE_IS_CSYNTH (super) && !bse_project_is_active (self->project);
       // case BST_OP_HELP_ABOUT:
     case BST_ACTION_HELP_FAQ:
     case BST_ACTION_HELP_GSL_PLAN:

@@ -89,7 +89,7 @@ bst_file_dialog_init (BstFileDialog *self)
 {
   GtkTreeSelection *tsel;
   GtkTreeModel *smodel;
-  GtkWidget *bbox, *vbox, *any;
+  GtkWidget *bbox, *vbox;
   GtkWidget *main_box = GXK_DIALOG (self)->vbox;
   
   self->ignore_activate = TRUE;
@@ -202,20 +202,20 @@ bst_file_dialog_init (BstFileDialog *self)
 		       "parent", self->osave,
 		       NULL);
   self->radio1 = g_object_new (GTK_TYPE_RADIO_BUTTON,
-			       "label", _("Store references to wave files"),
+			       "label", "radio-1",
 			       "visible", TRUE,
 			       "parent", vbox,
 			       "can_focus", FALSE,
 			       NULL);
   gtk_misc_set_alignment (GTK_MISC (GTK_BIN (self->radio1)->child), 0, .5);
-  any = g_object_new (GTK_TYPE_RADIO_BUTTON,
-			      "label", _("Include wave files"),
-		      "visible", TRUE,
-		      "parent", vbox,
-		      "group", self->radio1,
-		      "can_focus", FALSE,
-		      NULL);
-  gtk_misc_set_alignment (GTK_MISC (GTK_BIN (any)->child), 0, .5);
+  self->radio2 = g_object_new (GTK_TYPE_RADIO_BUTTON,
+                               "label", "radio-2",
+                               "visible", TRUE,
+                               "parent", vbox,
+                               "group", self->radio1,
+                               "can_focus", FALSE,
+                               NULL);
+  gtk_misc_set_alignment (GTK_MISC (GTK_BIN (self->radio2)->child), 0, .5);
   
   /* setup actions */
   g_object_connect (self->fs->ok_button, "swapped_signal::clicked", bst_file_dialog_activate, self, NULL);
@@ -267,7 +267,10 @@ bst_file_dialog_global_effect (void)
 {
   static BstFileDialog *singleton = NULL;
   if (!singleton)
-    singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+    {
+      singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+      gtk_file_selection_complete (singleton->fs, bse_server_get_custom_effect_dir (BSE_SERVER));
+    }
   return singleton;
 }
 
@@ -276,7 +279,10 @@ bst_file_dialog_global_instrument (void)
 {
   static BstFileDialog *singleton = NULL;
   if (!singleton)
-    singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+    {
+      singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+      gtk_file_selection_complete (singleton->fs, bse_server_get_custom_instrument_dir (BSE_SERVER));
+    }
   return singleton;
 }
 
@@ -308,6 +314,7 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
   /* reset proxy handling */
   bst_window_sync_title_to_proxy (self, proxy, fs_title);
   self->proxy = proxy;
+  self->super = 0;
   
   /* cleanup connections to old parent_window */
   if (self->parent_window)
@@ -463,6 +470,42 @@ bst_file_dialog_merge_project (BstFileDialog *self,
   return TRUE;
 }
 
+static gboolean
+retry_after_file_unlink (gchar       *title,
+                         gchar       *message,
+                         const gchar *file_name)
+{
+  GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
+                                                 BST_CHOICE_TEXT (message),
+                                                 BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
+                                                 BST_CHOICE (0, BST_STOCK_CANCEL, NONE),
+                                                 BST_CHOICE_END);
+  gboolean need_retry = FALSE;
+  if (bst_choice_modal (choice, 0, 0) == 1)
+    {
+      bst_choice_destroy (choice);
+      if (unlink (file_name) < 0)
+        {
+          gchar *text = g_strdup_printf (_("Failed to delete file\n`%s'\ndue to:\n%s"),
+                                         file_name, g_strerror (errno));
+          choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
+                                              BST_CHOICE_TEXT (text),
+                                              BST_CHOICE_D (0, BST_STOCK_CLOSE, NONE),
+                                              BST_CHOICE_END);
+          g_free (text);
+          bst_choice_modal (choice, 0, 0);
+          bst_choice_destroy (choice);
+        }
+      else
+        need_retry = TRUE;
+    }
+  else
+    bst_choice_destroy (choice);
+  g_free (message);
+  g_free (title);
+  return need_retry;
+}
+
 GtkWidget*
 bst_file_dialog_popup_save_project (gpointer   parent_widget,
 				    SfiProxy   project)
@@ -473,8 +516,11 @@ bst_file_dialog_popup_save_project (gpointer   parent_widget,
   bst_file_dialog_set_mode (self, parent_widget,
 			    BST_FILE_DIALOG_SAVE_PROJECT,
 			    _("Save: %s"), project);
-  /* resetting: gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (self->radio1), TRUE); */
+  /* setup radio buttons */
+  g_object_set (GTK_BIN (self->radio1)->child, "label", _("Fully include wave files"), NULL);
+  g_object_set (GTK_BIN (self->radio2)->child, "label", _("Store references to wave files"), NULL);
   gtk_widget_show (self->osave);
+  /* show dialog */
   gxk_widget_showraise (widget);
 
   return widget;
@@ -485,50 +531,25 @@ bst_file_dialog_save_project (BstFileDialog *self,
 			      const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  gboolean handled = TRUE, self_contained = !GTK_TOGGLE_BUTTON (self->radio1)->active;
+  gboolean handled = TRUE, self_contained = GTK_TOGGLE_BUTTON (self->radio1)->active;
   BseErrorType error;
 
  retry_saving:
-  error = bse_project_store_bse (project, file_name, self_contained);
+  error = bse_project_store_bse (project, 0, file_name, self_contained);
   /* offer retry if file exists */
   if (error == BSE_ERROR_FILE_EXISTS)
     {
-      gchar *title = g_strdup_printf (_("Saving project `%s'"), bse_item_get_name (project));
-      gchar *text = g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"),
-				     bse_item_get_name (project),
-				     file_name,
-				     bse_error_blurb (error));
-      GtkWidget *choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
-						     BST_CHOICE_TEXT (text),
-						     BST_CHOICE_D (1, BST_STOCK_OVERWRITE, NONE),
-						     BST_CHOICE (0, BST_STOCK_CANCEL, NONE),
-						     BST_CHOICE_END);
-      g_free (title);
-      g_free (text);
-      if (bst_choice_modal (choice, 0, 0) == 1)
-	{
-	  bst_choice_destroy (choice);
-	  if (unlink (file_name) < 0)
-	    {
-	      title = g_strdup_printf (_("Deleting file `%s'"), bse_item_get_name (project));
-	      text = g_strdup_printf (_("Failed to delete file\n`%s'\ndue to:\n%s"),
-				      file_name, bse_error_blurb (error));
-	      choice = bst_choice_dialog_createv (BST_CHOICE_TITLE (title),
-						  BST_CHOICE_TEXT (text),
-						  BST_CHOICE_D (0, BST_STOCK_CLOSE, NONE),
-						  BST_CHOICE_END);
-	      bst_choice_modal (choice, 0, 0);
-	      bst_choice_destroy (choice);
-	    }
-	  else
-	    goto retry_saving;
-	}
-      else
-	bst_choice_destroy (choice);
+      if (retry_after_file_unlink (g_strdup_printf (_("Saving project `%s'"), bse_item_get_name (project)),
+                                   g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"),
+                                                    bse_item_get_name (project),
+                                                    file_name,
+                                                    bse_error_blurb (error)),
+                                   file_name))
+        goto retry_saving;
       handled = FALSE;
     }
   else
-    bst_status_eprintf (error, _("Saving project `%s'"), file_name);
+    bst_status_eprintf (error, _("Saving project `%s'"), bse_item_get_name (self->proxy));
   bse_item_unuse (project);
 
   return handled;
@@ -564,6 +585,53 @@ bst_file_dialog_merge_effect (BstFileDialog *self,
 }
 
 GtkWidget*
+bst_file_dialog_popup_save_effect (gpointer parent_widget,
+                                   SfiProxy project,
+                                   SfiProxy super)
+{
+  BstFileDialog *self = bst_file_dialog_global_effect ();
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  bst_file_dialog_set_mode (self, parent_widget,
+			    BST_FILE_DIALOG_SAVE_EFFECT,
+			    _("Save Effect"), project);
+  self->super = super;
+  /* show dialog */
+  gxk_widget_showraise (widget);
+
+  return widget;
+}
+
+static gboolean
+bst_file_dialog_save_effect (BstFileDialog *self,
+                             const gchar   *file_name)
+{
+  SfiProxy project = bse_item_use (self->proxy);
+  gboolean handled = TRUE;
+  BseErrorType error;
+
+ retry_saving:
+  error = bse_project_store_bse (project, self->super, file_name, TRUE);
+  /* offer retry if file exists */
+  if (error == BSE_ERROR_FILE_EXISTS)
+    {
+      if (retry_after_file_unlink (g_strdup_printf (_("Saving effect `%s'"), bse_item_get_name (self->super)),
+                                   g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"),
+                                                    bse_item_get_name (self->super),
+                                                    file_name,
+                                                    bse_error_blurb (error)),
+                                   file_name))
+        goto retry_saving;
+      handled = FALSE;
+    }
+  else
+    bst_status_eprintf (error, _("Saving effect `%s'"), bse_item_get_name (self->super));
+  bse_item_unuse (project);
+
+  return handled;
+}
+
+GtkWidget*
 bst_file_dialog_popup_merge_instrument (gpointer   parent_widget,
                                         SfiProxy   project)
 {
@@ -590,6 +658,53 @@ bst_file_dialog_merge_instrument (BstFileDialog *self,
   bse_item_unuse (project);
 
   return TRUE;
+}
+
+GtkWidget*
+bst_file_dialog_popup_save_instrument (gpointer parent_widget,
+                                       SfiProxy project,
+                                       SfiProxy super)
+{
+  BstFileDialog *self = bst_file_dialog_global_instrument ();
+  GtkWidget *widget = GTK_WIDGET (self);
+  
+  bst_file_dialog_set_mode (self, parent_widget,
+			    BST_FILE_DIALOG_SAVE_INSTRUMENT,
+			    _("Save Instrument"), project);
+  self->super = super;
+  /* show dialog */
+  gxk_widget_showraise (widget);
+  
+  return widget;
+}
+
+static gboolean
+bst_file_dialog_save_instrument (BstFileDialog *self,
+                                 const gchar   *file_name)
+{
+  SfiProxy project = bse_item_use (self->proxy);
+  gboolean handled = TRUE;
+  BseErrorType error;
+
+ retry_saving:
+  error = bse_project_store_bse (project, self->super, file_name, TRUE);
+  /* offer retry if file exists */
+  if (error == BSE_ERROR_FILE_EXISTS)
+    {
+      if (retry_after_file_unlink (g_strdup_printf (_("Saving instrument `%s'"), bse_item_get_name (self->super)),
+                                   g_strdup_printf (_("Failed to save\n`%s'\nto\n`%s':\n%s"),
+                                                    bse_item_get_name (self->super),
+                                                    file_name,
+                                                    bse_error_blurb (error)),
+                                   file_name))
+        goto retry_saving;
+      handled = FALSE;
+    }
+  else
+    bst_status_eprintf (error, _("Saving instrument `%s'"), bse_item_get_name (self->super));
+  bse_item_unuse (project);
+
+  return handled;
 }
 
 GtkWidget*
@@ -711,6 +826,12 @@ bst_file_dialog_activate (BstFileDialog *self)
       break;
     case BST_FILE_DIALOG_SAVE_PROJECT:
       popdown = bst_file_dialog_save_project (self, file_name);
+      break;
+    case BST_FILE_DIALOG_SAVE_EFFECT:
+      popdown = bst_file_dialog_save_effect (self, file_name);
+      break;
+    case BST_FILE_DIALOG_SAVE_INSTRUMENT:
+      popdown = bst_file_dialog_save_instrument (self, file_name);
       break;
     case BST_FILE_DIALOG_SELECT_DIR:
       popdown = TRUE;   /* handled via BstFileDialogHandler and ->selected */
