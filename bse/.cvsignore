@@ -27,7 +27,6 @@ bseprocidl
 bseinfo
 bsemarshal.c
 bsemarshal.h
-bse.idl
 
 gslfft.c
 gslconfig.h
