@@ -163,6 +163,11 @@ string CodeGenerator::makeStyleName (const string& name)
 
 /*--- functions for "C and C++"-like languages ---*/
 
+const gchar *CodeGeneratorCBase::makeCStr (const std::string& str)
+{
+  return g_intern_string (str.c_str());
+}
+
 string CodeGeneratorCBase::makeGTypeName(const string& name)
 {
   return makeUpperName (NamespaceHelper::namespaceOf (name)
@@ -246,6 +251,98 @@ string CodeGeneratorCBase::scatId (SfiSCategory c)
   return s;
 }
 
+// how "type" looks like when passed as argument to a function
+const gchar *
+CodeGeneratorCBase::typeArg (const std::string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case VOID:      return "void";
+      case BOOL:
+      case INT:
+      case NUM:
+      case REAL:      return makeCStr ("Sfi" + type);
+      case STRING:    return "const gchar*";
+      case CHOICE:    return makeCStr (makeMixedName (type));
+      case BBLOCK:    return "SfiBBlock*";
+      case FBLOCK:    return "SfiFBlock*";
+      case SFIREC:    return "SfiRec*";
+      case RECORD:
+      case SEQUENCE:  return makeCStr (makeMixedName (type)+"*");
+      case OBJECT:    return "SfiProxy";
+    }
+  return NULL;
+}
+
+// how "type" looks like when stored as member in a struct or class
+const gchar *
+CodeGeneratorCBase::typeField (const std::string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case VOID:      return "void";
+      case BOOL:
+      case INT:
+      case NUM:
+      case REAL:      return makeCStr ("Sfi" + type);
+      case STRING:    return "gchar*";
+      case CHOICE:    return makeCStr (makeMixedName (type));
+      case BBLOCK:    return "SfiBBlock*";
+      case FBLOCK:    return "SfiFBlock*";
+      case SFIREC:    return "SfiRec*";
+      case RECORD:
+      case SEQUENCE:  return makeCStr (makeMixedName (type)+"*");
+      case OBJECT:    return "SfiProxy";
+    }
+  return NULL;
+}
+
+// how the return type of a function returning "type" looks like
+const gchar *
+CodeGeneratorCBase::typeRet (const std::string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case VOID:      return "void";
+      case BOOL:
+      case INT:
+      case NUM:
+      case REAL:      return makeCStr ("Sfi" + type);
+      case STRING:    return "const gchar*";
+      case CHOICE:    return makeCStr (makeMixedName (type));
+      case BBLOCK:    return "SfiBBlock*";
+      case FBLOCK:    return "SfiFBlock*";
+      case SFIREC:    return "SfiRec*";
+      case RECORD:
+      case SEQUENCE:  return makeCStr (makeMixedName (type)+"*");
+      case OBJECT:    return "SfiProxy";
+    }
+  return NULL;
+}
+
+// how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
+const gchar *
+CodeGeneratorCBase::typeArray (const std::string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case VOID:      return "void";
+      case BOOL:
+      case INT:
+      case NUM:
+      case REAL:      return makeCStr ("Sfi" + type + "*");
+      case STRING:    return "gchar**";
+      case CHOICE:    return makeCStr (makeMixedName (type) + "*");
+      case BBLOCK:    return "SfiBBlock**";
+      case FBLOCK:    return "SfiFBlock**";
+      case SFIREC:    return "SfiRec**";
+      case RECORD:
+      case SEQUENCE:  return makeCStr (makeMixedName (type)+"**");
+      case OBJECT:    return "SfiProxy*";
+    }
+  return NULL;
+}
+
 string CodeGeneratorCBase::createTypeCode (const std::string& type, TypeCodeModel model)
 {
   return createTypeCode (type, "", model);
@@ -256,19 +353,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 {
   switch (model)
     {
-      /*
-       * data types: the following models deal with how to represent a certain
-       * SFI type in the binding
-       */
-      // how "type" looks like when passed as argument to a function
-      case MODEL_ARG:	      g_assert (name == ""); break;
-      // how the return type of a function returning "type" looks like
-      case MODEL_RET:	      g_assert (name == ""); break;
-      // how "type" looks like when stored as member in a struct or class
-      case MODEL_MEMBER:      g_assert (name == ""); break;
-      // how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
-      case MODEL_ARRAY:	      g_assert (name == ""); break;
-      
       /*
        * memory issues: the following models deal with how to allocate, copy
        * and free a SFI type
@@ -313,10 +397,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
 
   if (parser.isRecord (type) || parser.isSequence (type))
     {
-      if (model == MODEL_ARG)         return makeMixedName (type)+"*";
-      if (model == MODEL_MEMBER)      return makeMixedName (type)+"*";
-      if (model == MODEL_RET)         return makeMixedName (type)+"*";
-      if (model == MODEL_ARRAY)       return makeMixedName (type)+"**";
       if (model == MODEL_FREE)        return makeLowerName (type)+"_free ("+name+")";
       if (model == MODEL_COPY)        return makeLowerName (type)+"_copy_shallow ("+name+")";
       if (model == MODEL_NEW)         return name + " = " + makeLowerName (type)+"_new ()";
@@ -368,10 +448,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
     }
   else if (parser.isChoice (type))
     {
-      if (model == MODEL_ARG)         return makeMixedName (type);
-      if (model == MODEL_MEMBER)      return makeMixedName (type);
-      if (model == MODEL_RET)         return makeMixedName (type);
-      if (model == MODEL_ARRAY)       return makeMixedName (type) + "*";
       if (model == MODEL_FREE)        return "";
       if (model == MODEL_COPY)        return name;
       if (model == MODEL_NEW)         return "";
@@ -405,10 +481,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
        * it might for instance be worthwile being able to ensure that if
        * we're expecting a "SfkServer" object, we will have one
        */
-      if (model == MODEL_ARG)         return "SfiProxy";
-      if (model == MODEL_MEMBER)      return "SfiProxy";
-      if (model == MODEL_RET)         return "SfiProxy";
-      if (model == MODEL_ARRAY)       return "SfiProxy*";
       if (model == MODEL_FREE)        return "";
       if (model == MODEL_COPY)        return name;
       if (model == MODEL_NEW)         return "";
@@ -427,10 +499,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
     {
       switch (model)
 	{
-	  case MODEL_ARG:         return "const gchar*";
-	  case MODEL_MEMBER:      return "gchar*";
-	  case MODEL_RET:         return "const gchar*";
-	  case MODEL_ARRAY:       return "gchar**";
 	  case MODEL_FREE:        return "g_free (" + name + ")";
 	  case MODEL_COPY:        return "g_strdup (" + name + ")";;
 	  case MODEL_NEW:         return "";
@@ -448,10 +516,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
     }
   else if (type == "BBlock")
     {
-      if (model == MODEL_ARG)         return "SfiBBlock*";
-      if (model == MODEL_MEMBER)      return "SfiBBlock*";
-      if (model == MODEL_RET)         return "SfiBBlock*";
-      if (model == MODEL_ARRAY)       return "SfiBBlock**";
       if (model == MODEL_FREE)        return "sfi_bblock_unref (" + name + ")";
       if (model == MODEL_COPY)        return "sfi_bblock_ref (" + name + ")";;
       if (model == MODEL_NEW)         return name + " = sfi_bblock_new ()";
@@ -468,10 +532,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
     }
   else if (type == "FBlock")
     {
-      if (model == MODEL_ARG)         return "SfiFBlock*";
-      if (model == MODEL_MEMBER)      return "SfiFBlock*";
-      if (model == MODEL_RET)         return "SfiFBlock*";
-      if (model == MODEL_ARRAY)       return "SfiFBlock**";
       if (model == MODEL_FREE)        return "sfi_fblock_unref (" + name + ")";
       if (model == MODEL_COPY)        return "sfi_fblock_ref (" + name + ")";;
       if (model == MODEL_NEW)         return name + " = sfi_fblock_new ()";
@@ -489,10 +549,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
   else if (type == "Rec")
     {
       /* FIXME: review this for correctness */
-      if (model == MODEL_ARG)         return "SfiRec*";
-      if (model == MODEL_MEMBER)      return "SfiRec*";
-      if (model == MODEL_RET)         return "SfiRec*";
-      if (model == MODEL_ARRAY)       return "SfiRec**";
       if (model == MODEL_FREE)        return "sfi_rec_unref (" + name + ")";
       if (model == MODEL_COPY)        return "sfi_rec_ref (" + name + ")";;
       if (model == MODEL_NEW)         return name + " = sfi_rec_new ()";
@@ -511,10 +567,6 @@ string CodeGeneratorCBase::createTypeCode (const string& type, const string &nam
     {
       string sfi = (type == "void") ? "" : "Sfi"; /* there is no such thing as an SfiVoid */
 
-      if (model == MODEL_ARG)         return sfi + type;
-      if (model == MODEL_MEMBER)      return sfi + type;
-      if (model == MODEL_RET)         return sfi + type;
-      if (model == MODEL_ARRAY)       return sfi + type + "*";
       if (model == MODEL_FREE)        return "";
       if (model == MODEL_COPY)        return name;
       if (model == MODEL_NEW)         return "";
@@ -564,16 +616,14 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
     }
 
   bool first = true;
-  string ret = createTypeCode(mdef.result.type, "", MODEL_RET);
-  printf("%s%s%s (", ret.c_str(), proto?" ":"\n", mname.c_str());
+  printf("%s%s%s (", typeRet (mdef.result.type), proto?" ":"\n", mname.c_str());
   for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
     {
       if (pi->name == "_object_id") continue; // C++ binding: get _object_id from class
 
-      string arg = createTypeCode(pi->type, "", MODEL_ARG);
       if(!first) printf(", ");
       first = false;
-      printf("%s %s", arg.c_str(), pi->name.c_str());
+      printf("%s %s", typeArg (pi->type), pi->name.c_str());
     }
   if (first)
     printf("void");
@@ -592,7 +642,7 @@ void CodeGeneratorCBase::printProcedure (const Method& mdef, bool proto, const s
 
   string rfree = createTypeCode (mdef.result.type, "_retval_conv", MODEL_VCALL_RFREE);
   if (rfree != "")
-    printf ("  %s _retval_conv;\n", ret.c_str());
+    printf ("  %s _retval_conv;\n", typeRet (mdef.result.type));
 
   map<string, string> cname;
   for(pi = mdef.params.begin(); pi != mdef.params.end(); pi++)
@@ -666,8 +716,7 @@ void CodeGeneratorCBase::printChoiceConverters()
       int minval = 1, maxval = 1;
       vector<ChoiceValue>::iterator ci;
       string name = makeLowerName (ei->name);
-      string arg = createTypeCode (ei->name, MODEL_ARG);
-      string ret = createTypeCode (ei->name, MODEL_RET);
+      string arg = typeArg (ei->name);
 
       /* produce reverse sorted enum array */
       vector<ChoiceValue> components = ei->contents;
@@ -693,11 +742,11 @@ void CodeGeneratorCBase::printChoiceConverters()
 	  name.c_str(), name.c_str());
       printf("}\n\n");
 
-      printf("%s\n", ret.c_str());
+      printf("%s\n", typeRet (ei->name));
       printf("%s_from_choice (const gchar *choice)\n", name.c_str());
       printf("{\n");
       printf("  return (%s) (choice ? sfi_constants_get_index (G_N_ELEMENTS (%s_vals), "
-	                    "%s_vals, choice) : 0);\n", ret.c_str(), name.c_str(), name.c_str());
+	                    "%s_vals, choice) : 0);\n", typeRet (ei->name), name.c_str(), name.c_str());
       printf("}\n");
       printf("\n");
     }
@@ -832,7 +881,7 @@ void CodeGeneratorC::run ()
 	  if (parser.fromInclude (si->name)) continue;
 
 	  string mname = makeMixedName (si->name.c_str());
-	  string array = createTypeCode (si->content.type, "", MODEL_ARRAY);
+	  string array = typeArray (si->content.type);
 	  string elements = si->content.name;
 	  
 	  printf("struct _%s {\n", mname.c_str());
@@ -849,7 +898,7 @@ void CodeGeneratorC::run ()
 	  printf("struct _%s {\n", mname.c_str());
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
-	      printf("  %s %s;\n", createTypeCode(pi->type, "", MODEL_MEMBER).c_str(), pi->name.c_str());
+	      printf("  %s %s;\n", typeField (pi->type), pi->name.c_str());
 	    }
 	  printf("};\n");
 	}
@@ -860,9 +909,9 @@ void CodeGeneratorC::run ()
 	{
 	  if (parser.fromInclude (si->name)) continue;
 
-	  string ret = createTypeCode (si->name, "", MODEL_RET);
-	  string arg = createTypeCode (si->name, "", MODEL_ARG);
-	  string element = createTypeCode (si->content.type, "", MODEL_ARG);
+	  string ret = typeRet (si->name);
+	  string arg = typeArg (si->name);
+	  string element = typeArg (si->content.type);
 	  string lname = makeLowerName (si->name.c_str());
 	  
 	  printf("%s %s_new (void);\n", ret.c_str(), lname.c_str());
@@ -878,8 +927,8 @@ void CodeGeneratorC::run ()
 	{
 	  if (parser.fromInclude (ri->name)) continue;
 
-	  string ret = createTypeCode (ri->name, "", MODEL_RET);
-	  string arg = createTypeCode (ri->name, "", MODEL_ARG);
+	  string ret = typeRet (ri->name);
+	  string arg = typeArg (ri->name);
 	  string lname = makeLowerName (ri->name.c_str());
 	  
 	  printf("%s %s_new (void);\n", ret.c_str(), lname.c_str());
@@ -929,9 +978,9 @@ void CodeGeneratorC::run ()
 	{
 	  if (parser.fromInclude (si->name)) continue;
 
-	  string ret = createTypeCode (si->name, "", MODEL_RET);
-	  string arg = createTypeCode (si->name, "", MODEL_ARG);
-	  string element = createTypeCode (si->content.type, "", MODEL_ARG);
+	  string ret = typeRet (si->name);
+	  string arg = typeArg (si->name);
+	  string element = typeArg (si->content.type);
 	  string elements = si->content.name;
 	  string lname = makeLowerName (si->name.c_str());
 	  string mname = makeMixedName (si->name.c_str());
@@ -1068,8 +1117,8 @@ void CodeGeneratorC::run ()
 	{
 	  if (parser.fromInclude (ri->name)) continue;
 
-	  string ret = createTypeCode (ri->name, "", MODEL_RET);
-	  string arg = createTypeCode (ri->name, "", MODEL_ARG);
+	  string ret = typeRet (ri->name);
+	  string arg = typeArg (ri->name);
 	  string lname = makeLowerName (ri->name.c_str());
 	  string mname = makeMixedName (ri->name.c_str());
 	  
@@ -1407,8 +1456,7 @@ void CodeGeneratorC::run ()
 	      printf("  /* TODO: do something meaningful here */\n");
 	      for (pi = si->params.begin(); pi != si->params.end(); pi++)
 		{
-		  string arg = createTypeCode(pi->type, "", MODEL_ARG);
-		  printf("  %s %s;\n", arg.c_str(), pi->name.c_str());
+		  printf("  %s %s;\n", typeArg (pi->type), pi->name.c_str());
 		}
 	      printf("}\n");
 	    }

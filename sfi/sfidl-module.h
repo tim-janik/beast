@@ -20,6 +20,7 @@
 #define _SFIDL_MODULE_H__
 
 #include "sfidl-generator.h"
+#include "sfidl-cxx.h"
 #include "sfidl-parser.h"
 #include <stdio.h>
 #include <string>
@@ -27,7 +28,7 @@
 
 namespace Sfidl {
 
-class CodeGeneratorModule : public CodeGeneratorCBase {
+class CodeGeneratorModule : public CodeGeneratorCxxBase {
 protected:
   const gchar* TypeRef (const std::string &type);
   std::string createTypeCode (const std::string& type, const std::string& name,
@@ -55,7 +56,7 @@ protected:
                              std::vector<Image>         &images);
   
 public:
-  CodeGeneratorModule (const Parser &parser) : CodeGeneratorCBase (parser) {
+  CodeGeneratorModule (const Parser &parser) : CodeGeneratorCxxBase (parser) {
   }
   void run ();
 };

@@ -383,7 +383,7 @@ void Parser::preprocess (const string& filename, bool includeImpl)
 void Parser::preprocessContents (const string& input_filename)
 {
   string filename;
-  bool includeImpl;
+  bool includeImpl = false; // always initialized again, this just silences the compiler
   enum
     {
       lineStart, idlCode, commentC, commentCxx,

@@ -323,12 +323,7 @@ sfidl:
     - port arts driver from csl to port-audio
     - write port-audio driver for beast
     - optional conversion routines C++ -> C (and back)
-    - introducting CodeGeneratorCxxBase
     - createTypeCode refactoring
-      typeArg
-      typeField
-      typeReturn
-      typeArray
       funcFromValue, funcToValue,
       funcCopy, funcFree, funcNew,
       codeVCallArgs

@@ -60,12 +60,14 @@ namespace Sfidl {
   class CodeGeneratorCBase : public CodeGenerator {
   protected:
     enum TypeCodeModel {
-      MODEL_ARG, MODEL_MEMBER, MODEL_RET, MODEL_ARRAY,
+      /* MODEL_ARG, MODEL_MEMBER, MODEL_RET, MODEL_ARRAY, */
       MODEL_FREE, MODEL_COPY, MODEL_NEW, MODEL_FROM_VALUE, MODEL_TO_VALUE,
       MODEL_VCALL, MODEL_VCALL_ARG, 
       MODEL_VCALL_CARG, MODEL_VCALL_CONV, MODEL_VCALL_CFREE,
       MODEL_VCALL_RET, MODEL_VCALL_RCONV, MODEL_VCALL_RFREE
     };
+
+    const gchar *makeCStr (const std::string& str);
 
     std::string scatId (SfiSCategory c);
     void printProcedure (const Method& mdef, bool proto = false, const std::string& className = "");
@@ -75,6 +77,21 @@ namespace Sfidl {
     std::string makeGTypeName (const std::string& name);
     std::string makeParamSpec (const Param& pdef);
     std::string createTypeCode (const std::string& type, TypeCodeModel model);
+
+    /*
+     * data types: the following models deal with how to represent a certain
+     * SFI type in the binding
+     */
+
+    // how "type" looks like when passed as argument to a function
+    virtual const gchar *typeArg (const std::string& type);
+    // how "type" looks like when stored as member in a struct or class
+    virtual const gchar *typeField (const std::string& type);
+    // how the return type of a function returning "type" looks like
+    virtual const gchar *typeRet (const std::string& type);
+    // how an array of "type"s looks like ( == MODEL_MEMBER + "*" ?)
+    virtual const gchar *typeArray (const std::string& type);
+
     virtual std::string createTypeCode (const std::string& type, const std::string& name, 
 				        TypeCodeModel model);
 

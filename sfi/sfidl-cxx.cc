@@ -31,6 +31,118 @@
 using namespace Sfidl;
 using namespace std;
 
+static string fail (const string& error)
+{
+  g_error ("%s\n", error.c_str());
+  return "*fail(" + error + ")*";
+}
+
+const gchar *
+CodeGeneratorCxxBase::typeArg (const string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case STRING:    return "const std::string&";
+      case RECORD:    return makeCStr (type + "Ptr");
+      case SEQUENCE:  return makeCStr ("const " + type + "&");
+      case CHOICE:    return makeCStr (type);
+      case OBJECT:    return makeCStr (type);
+      default:	      return CodeGeneratorCBase::typeArg (type);
+    }
+}
+
+const gchar *
+CodeGeneratorCxxBase::typeField (const string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case STRING:    return "std::string";
+      case RECORD:    return makeCStr (type + "Ptr");
+      case CHOICE:
+      case OBJECT:
+      case SEQUENCE:  return makeCStr (type);
+      default:	      return CodeGeneratorCBase::typeArg (type);
+    }
+}
+
+const gchar *
+CodeGeneratorCxxBase::typeRet (const string& type)
+{
+  switch (parser.typeOf (type))
+    {
+      case STRING:    return "std::string";
+      case RECORD:    return makeCStr (type + "Ptr");
+      case CHOICE:
+      case OBJECT:
+      case SEQUENCE:  return makeCStr (type);
+      default:	      return CodeGeneratorCBase::typeArg (type);
+    }
+}
+
+string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std::string& name, 
+				             TypeCodeModel model)
+{
+  /* FIXME: parameter validation */
+  switch (parser.typeOf (type))
+    {
+      case STRING:
+	switch (model)
+	  {
+	    case MODEL_FREE:        return "";
+	    case MODEL_COPY:        return name;
+	    case MODEL_NEW:         return "";
+	    case MODEL_TO_VALUE:    return "sfi_value_string ("+name+".c_str())";
+	    case MODEL_FROM_VALUE:  return "sfi_value_get_cxxstring ("+name+")";
+	    case MODEL_VCALL:       return "sfi_glue_vcall_string";
+	    case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+".c_str(),";
+	    case MODEL_VCALL_CARG:  return "";
+	    case MODEL_VCALL_CONV:  return "";
+	    case MODEL_VCALL_CFREE: return "";
+	    case MODEL_VCALL_RET:   return "std::string";
+	    case MODEL_VCALL_RCONV: return name;
+	    case MODEL_VCALL_RFREE: return "";
+	  }
+	  break;
+      case RECORD:
+	switch (model)
+	  {
+	    case MODEL_TO_VALUE:    return "sfi_value_new_take_rec ("+type+"::_to_rec ("+name+"))";
+	    case MODEL_FROM_VALUE:  return type + "::_from_rec (sfi_value_get_rec ("+name+"))";
+	    case MODEL_VCALL_CONV:  return type + "::_to_rec ("+name+")";
+	    case MODEL_VCALL_RCONV: return type + "::_from_rec ("+name+")";
+	    case MODEL_VCALL_RFREE: return "";
+	    default: ;
+	  }
+	  break;
+      case SEQUENCE:
+	switch (model)
+	  {
+	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+name+"._to_seq ())";
+	    case MODEL_FROM_VALUE:  return type + "::_from_seq (sfi_value_get_seq ("+name+"))";
+	    case MODEL_VCALL_CONV:  return type + "::_to_seq ("+name+")";
+	    case MODEL_VCALL_RCONV: return type + "::_from_seq ("+name+")";
+	    case MODEL_VCALL_RFREE: return "";
+	    default: ;
+	  }
+	break;
+      case OBJECT:
+	switch (model)
+	  {
+	    case MODEL_VCALL_ARG:
+	      {
+		/* this is a bit hacky */
+		if (name == "_object_id")
+		  return "'" + scatId (SFI_SCAT_PROXY) + "', "+name+",";
+		else
+		  return "'" + scatId (SFI_SCAT_PROXY) + "', "+name+"._proxy(),";
+	      }
+	    default: ;
+	  }
+      default: ;
+    }
+  return CodeGeneratorCBase::createTypeCode (type, name, model);
+}
+
 void CodeGeneratorCxx::run ()
 {
   vector<Sequence>::const_iterator si;
@@ -101,16 +213,14 @@ void CodeGeneratorCxx::run ()
 	  /* FIXME: need optimized refcounted copy-on-write sequences as base types */
 
 	  string name = nspace.printableForm (si->name);
-	  string content = createTypeCode (si->content.type, MODEL_MEMBER);
-	  string arg = createTypeCode (si->name, MODEL_ARG);
-	  string ret = createTypeCode (si->name, MODEL_RET);
+	  string content = typeField (si->content.type);
 
 	  printf("\n");
 	  printf("class %s : public Bse::Sequence<%s> {\n", name.c_str(), content.c_str());
 	  printf("public:\n");
 	  /* TODO: make this a constructor? */
-	  printf("  static %s _from_seq (SfiSeq *seq);\n", ret.c_str(), ret.c_str());
-	  printf("  SfiSeq *_to_seq ();\n", arg.c_str());
+	  printf("  static %s _from_seq (SfiSeq *seq);\n", typeRet (si->name));
+	  printf("  SfiSeq *_to_seq ();\n");
 	  printf("};\n");
 	}
 
@@ -161,8 +271,7 @@ void CodeGeneratorCxx::run ()
 	  printf("public:\n");
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
 	    {
-	      printf("  %s %s;\n", createTypeCode(pi->type, MODEL_MEMBER).c_str(),
-		                   pi->name.c_str());
+	      printf("  %s %s;\n", typeField (pi->type), pi->name.c_str());
 	    }
 	  printf("  static %sPtr _from_rec (SfiRec *rec);\n", name.c_str());
 	  printf("  static SfiRec *_to_rec (%sPtr ptr);\n", name.c_str());
@@ -186,18 +295,16 @@ void CodeGeneratorCxx::run ()
 	{
 	  if (parser.fromInclude (si->name)) continue;
 
-	  string ret = createTypeCode (si->name, MODEL_RET);
-	  string arg = createTypeCode (si->name, MODEL_ARG);
 	  string name = si->name;
 
           string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
-          printf("%s\n", ret.c_str());
+          printf("%s\n", typeRet (si->name));
           printf("%s::_from_seq (SfiSeq *sfi_seq)\n", name.c_str());
           printf("{\n");
-          printf("  %s seq;\n", ret.c_str());
+          printf("  %s seq;\n", typeRet (si->name));
           printf("  guint i, length;\n");
           printf("\n");
-          printf("  g_return_val_if_fail (sfi_seq != NULL, seq);\n",ret.c_str());
+          printf("  g_return_val_if_fail (sfi_seq != NULL, seq);\n");
           printf("\n");
           printf("  length = sfi_seq_length (sfi_seq);\n");
 	  printf("  seq.resize (length);\n");
@@ -230,11 +337,9 @@ void CodeGeneratorCxx::run ()
 	{
 	  if (parser.fromInclude (ri->name)) continue;
 
-	  string ret = createTypeCode (ri->name, MODEL_RET);
-	  string arg = createTypeCode (ri->name, MODEL_ARG);
 	  string name = ri->name;
 
-          printf("%s\n", ret.c_str());
+          printf("%s\n", typeRet (ri->name));
           printf("%s::_from_rec (SfiRec *sfi_rec)\n", name.c_str());
           printf("{\n");
           printf("  GValue *element;\n");
@@ -242,7 +347,7 @@ void CodeGeneratorCxx::run ()
           printf("  if (!sfi_rec)\n");
 	  printf("    return NULL;\n");
           printf("\n");
-          printf("  %s rec = new %s();\n", arg.c_str(), name.c_str());
+          printf("  %s rec = new %s();\n", typeArg (ri->name), name.c_str());
           for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
             {
               string elementFromValue = createTypeCode (pi->type, "element", MODEL_FROM_VALUE);
@@ -255,7 +360,7 @@ void CodeGeneratorCxx::run ()
           printf("}\n\n");
 
 	  printf("SfiRec *\n");
-	  printf("%s::_to_rec (%s rec)\n", name.c_str(), arg.c_str());
+	  printf("%s::_to_rec (%s rec)\n", name.c_str(), typeArg (ri->name));
 	  printf("{\n");
 	  printf("  SfiRec *sfi_rec;\n");
 	  printf("  GValue *element;\n");
@@ -349,14 +454,13 @@ void CodeGeneratorCxx::printProperties(const Class& cdef)
       string getProperty = makeStyleName (pi->name);
       string newName = makeLowerName ("new_" + pi->name);
       string propName = makeLowerName (pi->name, '-');
-      string ret = createTypeCode (pi->type, MODEL_RET);
+      string ret = typeRet (pi->type);
       if (proto) {
 	/* property getter */
 	printf ("  %s %s ();\n", ret.c_str(), getProperty.c_str());
 
 	/* property setter */
-	printf ("  void %s (%s %s);\n", setProperty.c_str(),
-	        createTypeCode (pi->type, MODEL_ARG).c_str(), newName.c_str());
+	printf ("  void %s (%s %s);\n", setProperty.c_str(), typeArg (pi->type), newName.c_str());
       }
       else {
 	/* property getter */
@@ -371,7 +475,7 @@ void CodeGeneratorCxx::printProperties(const Class& cdef)
 	/* property setter */
 	printf ("void\n");
 	printf ("%s::%s (%s %s)\n", cdef.name.c_str(), setProperty.c_str(),
-	        createTypeCode (pi->type, MODEL_ARG).c_str(), newName.c_str());
+				    typeArg (pi->type), newName.c_str());
 	printf ("{\n");
 	string conv = createTypeCode (pi->type, newName.c_str(), MODEL_VCALL_CONV);
 	if (conv != "")
@@ -393,95 +497,4 @@ void CodeGeneratorCxx::printProperties(const Class& cdef)
     }
 }
 
-static string fail (const string& error)
-{
-  g_error ("%s\n", error.c_str());
-  return "*fail(" + error + ")*";
-}
-
-string CodeGeneratorCxx::createTypeCode (const std::string& type, const std::string& name, 
-				         TypeCodeModel model)
-{
-  /* FIXME: parameter validation */
-  switch (parser.typeOf (type))
-    {
-      case STRING:
-	switch (model)
-	  {
-	    case MODEL_ARG:         return "const std::string&";
-	    case MODEL_MEMBER:      return "std::string";
-	    case MODEL_RET:         return "std::string";
-	    case MODEL_ARRAY:       return fail ("C specific");
-	    case MODEL_FREE:        return "";
-	    case MODEL_COPY:        return name;
-	    case MODEL_NEW:         return "";
-	    case MODEL_TO_VALUE:    return "sfi_value_string ("+name+".c_str())";
-	    case MODEL_FROM_VALUE:  return "sfi_value_get_cxxstring ("+name+")";
-	    case MODEL_VCALL:       return "sfi_glue_vcall_string";
-	    case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+".c_str(),";
-	    case MODEL_VCALL_CARG:  return "";
-	    case MODEL_VCALL_CONV:  return "";
-	    case MODEL_VCALL_CFREE: return "";
-	    case MODEL_VCALL_RET:   return "std::string";
-	    case MODEL_VCALL_RCONV: return name;
-	    case MODEL_VCALL_RFREE: return "";
-	  }
-	  break;
-      case RECORD:
-	switch (model)
-	  {
-	    case MODEL_ARG:	    return type + "Ptr";
-	    case MODEL_MEMBER:	    return type + "Ptr";
-	    case MODEL_RET:	    return type + "Ptr";
-	    case MODEL_TO_VALUE:    return "sfi_value_new_take_rec ("+type+"::_to_rec ("+name+"))";
-	    case MODEL_FROM_VALUE:  return type + "::_from_rec (sfi_value_get_rec ("+name+"))";
-	    case MODEL_VCALL_CONV:  return type + "::_to_rec ("+name+")";
-	    case MODEL_VCALL_RCONV: return type + "::_from_rec ("+name+")";
-	    case MODEL_VCALL_RFREE: return "";
-	    default: ;
-	  }
-	  break;
-      case SEQUENCE:
-	switch (model)
-	  {
-	    case MODEL_ARG:	    return "const " + type + "&";
-	    case MODEL_MEMBER:	    return type;
-	    case MODEL_RET:	    return type;
-	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+name+"._to_seq ())";
-	    case MODEL_FROM_VALUE:  return type + "::_from_seq (sfi_value_get_seq ("+name+"))";
-	    case MODEL_VCALL_CONV:  return type + "::_to_seq ("+name+")";
-	    case MODEL_VCALL_RCONV: return type + "::_from_seq ("+name+")";
-	    case MODEL_VCALL_RFREE: return "";
-	    default: ;
-	  }
-	  break;
-      case CHOICE:
-	switch (model)
-	  {
-	    case MODEL_ARG:	    return type;
-	    case MODEL_MEMBER:	    return type;
-	    case MODEL_RET:	    return type;
-	    default: ;
-	  }
-	break;
-      case OBJECT:
-	switch (model)
-	  {
-	    case MODEL_ARG:	    return type;
-	    case MODEL_MEMBER:      return type;
-	    case MODEL_RET:	    return type;
-	    case MODEL_VCALL_ARG:
-	      {
-		/* this is a bit hacky */
-		if (name == "_object_id")
-		  return "'" + scatId (SFI_SCAT_PROXY) + "', "+name+",";
-		else
-		  return "'" + scatId (SFI_SCAT_PROXY) + "', "+name+"._proxy(),";
-	      }
-	    default: ;
-	  }
-      default: ;
-    }
-  return CodeGeneratorCBase::createTypeCode (type, name, model);
-}
 /* vim:set ts=8 sts=2 sw=2: */

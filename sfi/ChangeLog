@@ -1,3 +1,20 @@
+Wed Dec 31 00:11:48 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-cxx.* sfidl-module.*: Introduce new CodeGeneratorCxxBase
+	class, which serves as base for CodeGeneratorCxx and
+	CodeGeneratorModule.
+
+	* sfidl-cxx.* sfidl-module.* sfidl-generator.*: Started to break up
+	createTypeCode into smaller virtual functions, one for each model.
+	MODEL_ARG, MODEL_MEMBER, MODEL_RET and MODEL_ARRAY are gone now. The
+	functions which replace them are called typeArg, typeField, typeRet
+	and typeArray. They also return const gchar*, using
+	CodeGeneratorCBase::makeCStr (which takes a std::string, and returns a
+	g_intern_string).
+
+	* sfidl-parser.cc: Silence compiler warning about includeImpl being
+	unitialized (always will be initialized, but gcc doesn't see that).
+
 Tue Dec 30 23:37:29 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: added g_object_disconnect_any() as a workaround for

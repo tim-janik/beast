@@ -80,23 +80,14 @@ CodeGeneratorModule::TypeRef (const string &type)
 string
 CodeGeneratorModule::createTypeCode (const string& type, const string& name, TypeCodeModel model)
 {
-  // FIXME: argument validation
-
-  if (parser.isRecord (type))
-    {
-      switch (model)
-      {
-	case MODEL_MEMBER: return type + "Ptr";
-	default: ;
-      }
-    }
-  return CodeGeneratorCBase::createTypeCode (type, name, model);
+  /* currently, no special casing required */
+  return CodeGeneratorCxxBase::createTypeCode (type, name, model);
 }
 
 const gchar*
 CodeGeneratorModule::TypeField (const string& type)
 {
-  return g_intern_string (createTypeCode (type, "", MODEL_MEMBER).c_str());
+  return typeField(type);
 }
 
 static vector<string>

@@ -23,20 +23,30 @@
 #include "sfidl-namespace.h"
 
 namespace Sfidl {
-  
-  class CodeGeneratorCxx : public CodeGeneratorCBase {
+
+  class CodeGeneratorCxxBase : public CodeGeneratorCBase {
+  protected:
+    using CodeGeneratorCBase::createTypeCode;
+    std::string createTypeCode (const std::string& type, const std::string& name, 
+				TypeCodeModel model);
+
+    const gchar *typeArg (const std::string& type);
+    const gchar *typeField (const std::string& type);
+    const gchar *typeRet (const std::string& type);
+  public:
+    CodeGeneratorCxxBase (const Parser& parser) : CodeGeneratorCBase (parser) {
+    }
+  };
+
+  class CodeGeneratorCxx : public CodeGeneratorCxxBase {
   protected:
     NamespaceHelper nspace;
     std::string makeProcName (const std::string& className, const std::string& procName);
     void printMethods (const Class& cdef);
     void printProperties (const Class& cdef);
 
-    using CodeGeneratorCBase::createTypeCode;
-    std::string createTypeCode (const std::string& type, const std::string& name, 
-				TypeCodeModel model);
-
   public:
-    CodeGeneratorCxx (const Parser& parser) : CodeGeneratorCBase (parser), nspace (stdout) {
+    CodeGeneratorCxx (const Parser& parser) : CodeGeneratorCxxBase (parser), nspace (stdout) {
     }
     void run ();
   };
