@@ -418,7 +418,7 @@ bst_file_dialog_open_project (BstFileDialog *self,
 			      const gchar   *file_name)
 {
   SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
-  BseErrorType error = bse_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name);
 
   if (error)
     bst_status_eprintf (error, _("Opening project `%s'"), file_name);
@@ -457,7 +457,7 @@ bst_file_dialog_merge_project (BstFileDialog *self,
 			       const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  BseErrorType error = bse_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name);
 
   bst_status_eprintf (error, _("Merging project `%s'"), file_name);
 
@@ -595,7 +595,7 @@ bst_file_dialog_merge_effect (BstFileDialog *self,
                               const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  BseErrorType error = bse_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name);
 
   bst_status_eprintf (error, _("Merging effect `%s'"), file_name);
 
@@ -671,7 +671,7 @@ bst_file_dialog_merge_instrument (BstFileDialog *self,
                                   const gchar   *file_name)
 {
   SfiProxy project = bse_item_use (self->proxy);
-  BseErrorType error = bse_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name);
 
   bst_status_eprintf (error, _("Merging instrument `%s'"), file_name);
 

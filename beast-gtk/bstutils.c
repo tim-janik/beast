@@ -181,7 +181,30 @@ bst_stock_register_icon (const gchar    *stock_id,
 }
 
 
-/* --- beast/bsw specific extensions --- */
+/* --- BSE utilities --- */
+BseErrorType
+bst_project_restore_from_file (SfiProxy         project,
+                               const gchar     *file_name)
+{
+  BseErrorType error = bse_project_restore_from_file (project, file_name);
+  /* regardless of how good the restoration worked, try to
+   * keep the resulting project in a GUI usable state.
+   */
+  BseItemSeq *iseq = bse_container_list_children (project);
+  guint i;
+  for (i = 0; i < iseq->n_items; i++)
+    if (BSE_IS_SONG (iseq->items[i]))
+      {
+        /* fixup orphaned parts */
+        bse_song_ensure_track_links (iseq->items[i]);
+        /* fixup unconnected tracks */
+        bse_song_ensure_output_busses (iseq->items[i]);
+      }
+  return error;
+}
+
+
+/* --- beast/bse specific extensions --- */
 void
 bst_status_eprintf (BseErrorType error,
                     const gchar *message_fmt,

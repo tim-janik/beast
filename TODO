@@ -1,5 +1,10 @@
 FIXMES:
-- find track for part should reveal NULL for orphans
+- rename songbus files to bus
+- implement ensure-track-links
+- master bus creation + making the bus master needs to go to undo
+- fix gettid syscall to use syscall(2)
+- rename bsesongbus.[hc] to bsebus.[hc]
+- call bse_song_esnure_*() procs after loading/merging projects
 - change [M] toggle tooltip in the track-view to explain *sequencer* muting (i.e. ignore notes)
 - optimize BseAdder according to BseSummation
 - verify that no IO channel buffer memory is being allocated for virtual modules

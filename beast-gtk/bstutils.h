@@ -26,6 +26,11 @@
 
 G_BEGIN_DECLS
 
+/* --- BSE utilities --- */
+BseErrorType   bst_project_restore_from_file  (SfiProxy         project,
+                                               const gchar     *file_name);
+
+
 /* --- GUI utilities --- */
 void           bst_status_eprintf             (BseErrorType     error,
                                                const gchar     *message_fmt,

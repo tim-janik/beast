@@ -292,7 +292,7 @@ main (int   argc,
 	    }
 	}
       project = bse_server_use_new_project (BSE_SERVER, argv[i]);
-      error = bse_project_restore_from_file (project, argv[i]);
+      error = bst_project_restore_from_file (project, argv[i]);
       
       if (!error)
 	{

@@ -1,3 +1,18 @@
+Tue Jul 13 21:53:30 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.[hc]: refactored and rearranged
+	code. turned the canvas link SList into a ring, and simplified
+	code by using SfiRing functions.
+
+	* beast-gtk/bstsongbusview.c: s/SongBus/Bus/.
+
+	* beast-gtk/bsttrackview.c: make sure newly created tracks have
+	an output bus (master).
+
+	* bstutils.[hc]: introduced bst_project_restore_from_file() which does
+	some sanity fixups on top of bse_project_restore_from_file().
+	adapted callers.
+
 Thu Jul  8 12:20:40 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-links-related.texi: link updates.

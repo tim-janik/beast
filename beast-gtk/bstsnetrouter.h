@@ -55,7 +55,7 @@ struct _BstSNetRouter
   guint             drag_channel;
   BstCanvasSource  *drag_csource;
   GnomeCanvasItem  *tmp_line;
-  GSList           *link_list;
+  SfiRing          *canvas_links;
 };
 struct _BstSNetRouterClass
 {

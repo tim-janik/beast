@@ -336,7 +336,7 @@ bst_child_list_wrapper_setup (GxkListWrapper *self,
                          "signal::item_added", child_list_wrapper_item_added, ps,
                          "signal::item_remove", child_list_wrapper_item_removed, ps,
                          NULL);
-      iseq = bse_container_list_items (ps->u.cl.container);
+      iseq = bse_container_list_children (ps->u.cl.container);
       for (i = 0; i < iseq->n_items; i++)
         child_list_wrapper_item_added (ps->u.cl.container, iseq->items[i], ps);
       g_object_set_data_full (self, "ProxyStore", ps, child_list_wrapper_destroy_data);

@@ -564,7 +564,7 @@ demo_play_song (gpointer data,
 {
   const gchar *file_name = demo_entries[callback_action - BST_ACTION_LOAD_DEMO_0000].file;
   SfiProxy project = bse_server_use_new_project (BSE_SERVER, file_name);
-  BseErrorType error = bse_project_restore_from_file (project, file_name);
+  BseErrorType error = bst_project_restore_from_file (project, file_name);
   if (error)
     bst_status_eprintf (error, _("Opening project `%s'"), file_name);
   else

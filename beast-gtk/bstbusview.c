@@ -44,7 +44,7 @@ bst_song_bus_view_class_init (BstSongBusViewClass *class)
 {
   BstItemViewClass *item_view_class = BST_ITEM_VIEW_CLASS (class);
   
-  item_view_class->item_type = "BseSongBus";
+  item_view_class->item_type = "BseBus";
 }
 
 static void
