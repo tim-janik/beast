@@ -1,4 +1,5 @@
 FIXMES:
+- save loop coordinbates
 - rename "WAVE File" to "Export Audio"
 - rename Synthesis1 (thread view) to DSP#1
 - when loading/merging bse files, make sure all orphan parts are in a new muted track and delete part-item-view
@@ -208,6 +209,37 @@ TODO:
 : gsldatacache.c: nuke blocks upon reopen if mtime changed
 : clone handle caller must be fetched from stack
 
+SourceSniffing:
+  typedef struct {
+    guint           n_channels;
+    BseSourceProbe *probes;
+  } BseSourceProbeList;
+  typedef enum {
+    BSE_SOURCE_PROBE_PEAKS   = 1,
+    BSE_SOURCE_PROBE_SAMPLES = 2,
+    BSE_SOURCE_PROBE_FFT     = 4,
+  } BseSourceProbeMask;
+  typedef struct {
+    guint              channel_id;  // output channel id
+    SfiTime            block_stamp;
+    BseSourceProbeMask probe_mask;
+    gfloat             min, max;    // probe_mask & BSE_SOURCE_PROBE_PEAKS
+    FBlock            *sample_data; // probe_mask & BSE_SOURCE_PROBE_SAMPLES
+    FBlock            *fft_data;    // probe_mask & BSE_SOURCE_PROBE_FFT
+  } BseSourceProbe;
+  bse_source_request_probes (BseSource *source, guint ochannel_id, BseSourceProbeMask probe_mask);
+  /* lasts for approx 3 probes or 1 second */
+  typedef struct {
+    BseSource         *source;
+    guint              ochannel_id;
+    BseSourceProbeMask probe_mask;
+  } BseSourceProbeRequest;
+  typedef struct {
+    guint                  n_requests;
+    BseSourceProbeRequest *requests;
+  } BseSourceMassRequest;
+  bse_source_mass_request (BseSourceMassRequest *mrq);
+  
 Logging:
 * stdlog could be log file, syslog, stderr and GUI
 * Severity:

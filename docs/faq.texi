@@ -22,8 +22,8 @@
                 
 @section Authors
 The main author of @beastbse is Tim Janik.
-Contributions were made by David A. Bartold, Alper Ersoy,
-Olaf Hoehmann, Dave Seidel and Stefan Westerfeld.
+A list of the various contributions is given in the
+About box of @beast{}.
 
 @section Document History
 This FAQ was written by @uref{mailto://timj@@beast.gtk.org,Tim Janik}.
@@ -144,5 +144,21 @@ This allowes us to greatly simplify some code portions (for instance
 the plugin implementations), but it's also a stress-test for the
 compilers out there. So people encountering problems compiling C++ code
 in @beast should try to upgrade their compilers as a first meassure.
+
+@anchor{hard-output-limiting}
+@section Unwanted signal distortion when using multiple tracks
+
+The signal output of a song's tracks in @beast are added up before they are
+routed to the sound output driver. If this added-up signal exceeds the maximum
+amplitude supported by the output driver (usually the machine's sound card),
+the output values are clipped to the supported range, causing the audio signal to
+encounter distortion of varying amounts, depending on the signal utilization
+of the channels.
+In the current version (0.6.2), the distortion can be circumvented by adding a
+post-processing network to songs which attenuates the incoming signals (left and
+right). The Quick Start Guide has a section detailing the setup of postprocessing
+networks.
+For future versions, a mixer is already in development, which will allow to
+handle this situation in much more flexible and adequate ways.
 
 @bye
