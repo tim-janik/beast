@@ -181,12 +181,18 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 	
     dnl OSS-Lite driver check
     AC_MSG_CHECKING(for OSS-Lite sounddriver device)
-    if test -c /dev/dsp && cat /dev/sndstat >/dev/null 2>&1; then
+    have_oss_sndstat=no
+    if test -r /proc/asound/oss-devices && test -r /proc/asound/sndstat; then
+	have_oss_sndstat=yes
+    elif test -r /dev/sndstat; then
+	have_oss_sndstat=yes
+    fi
+    if test -c /dev/dsp && test "$have_oss_sndstat" = yes; then
 	bseossdevice=\"/dev/dsp\"
 	bse_have_snddev=yes
 	AC_MSG_RESULT(/dev/dsp)
     #elif test -c /dev/dsp1 && cat /dev/sndstat >/dev/null 2>&1; then
-    #	bseossdevice=\"/dev/dsp\"
+    #	bseossdevice=\"/dev/dsp1\"
     #	bse_have_snddev=yes
     #	AC_MSG_RESULT(/dev/dsp1)
     else

@@ -26,6 +26,8 @@
 #include        <gle/gtkvwrapbox.h>
 #include	<gnome.h>
 #include	"gnomeforest.h"
+#include	"bstzoomedwindow.h"
+#include	"bstfreeradiobutton.h"
 
 #ifdef __cplusplus
 extern "C" {

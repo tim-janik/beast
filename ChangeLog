@@ -1,3 +1,24 @@
+Sat Nov 20 08:47:50 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_event): reset router mode
+	to "Edit" after a new source has been added.
+
+	* beast-gtk/bstparam.c (bst_param_update): took out the automatic
+	GtkEntry growing if the new string is wider than the allocation.
+	the entry will always grow, because stupid GtkEntry reports always
+	reports a requested width >150.
+	(bst_param_create): changed default note field width to 50 (from 40),
+	feature free radios.
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): popup
+	csource paramview for button3, sync on BseSource name changes.
+
+	* beast-gtk/bstcanvassource.[hc] (bst_canvas_source_popup_view): new
+	function to popup paramview.
+
+	* configure.in: accept /proc/asound/sndstat as alternative to
+	/dev/sndstat if /proc/asound/oss-devices exists.
+
 Mon Nov 15 22:50:38 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstfreeradiobutton.[hc]: new radio button type that allowes

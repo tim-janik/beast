@@ -46,6 +46,8 @@ struct _BstCanvasSource
 
   BseSource       *source;
 
+  GtkWidget	  *source_view;
+
   GnomeCanvasItem *rect;
   GnomeCanvasItem *text;
 
@@ -75,6 +77,7 @@ void		 bst_canvas_source_ichannel_pos	(BstCanvasSource  *csource,
 						 guint             ichannel_id,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
+void		bst_canvas_source_popup_view	(BstCanvasSource  *csource);
 
 
 /* --- FIXME: ugly hackery to store coords --- */

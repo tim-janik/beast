@@ -341,7 +341,7 @@ bst_param_create (gpointer      owner,
   GtkWidget *spinner = NULL;
   GtkWidget *scale = NULL;
   GtkWidget *dial = NULL;
-  gboolean read_only, string_toggle;
+  gboolean read_only, string_toggle, radio;
   gchar *name, *tooltip;
 
   if (BSE_TYPE_IS_PROCEDURE (owner_type))
@@ -408,6 +408,7 @@ bst_param_create (gpointer      owner,
   /* feature param hints and integral values
    */
   read_only = (pspec->any.flags & BSE_PARAM_HINT_RDONLY) != 0;
+  radio = (pspec->any.flags & BSE_PARAM_HINT_RADIO) != 0;
   string_toggle = (pspec->any.flags & BSE_PARAM_HINT_CHECK_NULL) != 0;
   switch (pspec->type)
     {
@@ -495,7 +496,7 @@ bst_param_create (gpointer      owner,
       DotAreaData *dot_data;
 
     case BSE_TYPE_PARAM_BOOL:
-      action = gtk_widget_new (GTK_TYPE_CHECK_BUTTON,
+      action = gtk_widget_new (radio ? BST_TYPE_FREE_RADIO_BUTTON : GTK_TYPE_CHECK_BUTTON,
 			       "visible", TRUE,
 			       "label", name,
 			       "sensitive", !read_only,
@@ -526,7 +527,7 @@ bst_param_create (gpointer      owner,
 	  width = 60;
 	  break;
 	case BSE_TYPE_PARAM_NOTE:
-	  width = 40;
+	  width = 50;
 	  break;
 	default:
 	  width = 3;
@@ -745,14 +746,16 @@ bst_param_update (BstParam *bparam)
 	}
       if (!g_str_equal (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	{
+	  gtk_entry_set_text (GTK_ENTRY (action), string);
+#if 0
 	  GtkRequisition requisition;
 	  
-	  gtk_entry_set_text (GTK_ENTRY (action), string);
 	  gtk_widget_size_request (action, &requisition);
 	  if (MAX (requisition.width, action->requisition.width) > action->allocation.width)
 	    gtk_widget_set_usize (action,
 				  MAX (requisition.width, action->requisition.width),
 				  -1);
+#endif
 	  // gtk_entry_set_position (GTK_ENTRY (action), 0);
 	  if (GTK_IS_SPIN_BUTTON (action))
 	    gtk_spin_button_update (GTK_SPIN_BUTTON (action));

@@ -99,6 +99,7 @@ bst_snet_router_init (BstSNetRouter      *router,
   router->toolbar = NULL;
   router->snet = NULL;
   router->mode = 0;
+  router->edit_radio = NULL;
   router->world_x = 0;
   router->world_y = 0;
   router->ochannel_id = 0;
@@ -477,6 +478,10 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
 			     bst_icon_from_stock (BST_ICON_MOUSE_TOOL),
 			     BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
 			     &router->mode);
+  router->edit_radio = radio;
+  gtk_widget_set (router->edit_radio,
+		  "object_signal::destroy", bse_nullify_pointer, &router->edit_radio,
+		  NULL);
   
   /* add BseSource types from categories
    */
@@ -784,6 +789,19 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	}
       handled = TRUE;
     }
+  else if (event->type == GDK_BUTTON_PRESS &&
+	   event->button.button == 3)
+    {
+      GnomeCanvasItem *item;
+      BstCanvasSource *csource = NULL;
+
+      item = gnome_canvas_get_item_at (canvas, event->button.x, event->button.y);
+      if (item)
+	csource = gtk_object_get_data (GTK_OBJECT (item), "csource");
+
+      if (csource && csource->source != (BseSource*) router->snet)
+	bst_canvas_source_popup_view (csource);
+    }
   
   return handled;
 }
@@ -810,6 +828,8 @@ bst_snet_router_event (GtkWidget *widget,
 			       NULL);
 	  router->world_x = 0;
 	  router->world_y = 0;
+	  if (1 && router->edit_radio) /* FIXME: need preference settings for this */
+	    gtk_button_clicked (GTK_BUTTON (router->edit_radio));
 	}
       else if (router->mode > 1 || (router->mode == 1 && event->button.button != 1))
 	{

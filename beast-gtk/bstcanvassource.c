@@ -17,6 +17,8 @@
  */
 #include "bstcanvassource.h"
 
+#include "bstparamview.h"
+
 
 /* --- defines --- */
 #define CONNECTOR_WIDTH	(10)
@@ -115,7 +117,10 @@ bst_canvas_source_init (BstCanvasSource *csource)
 {
   GtkObject *object = GTK_OBJECT (csource);
   
+  csource->source = NULL;
+  csource->source_view = NULL;
   csource->rect = NULL;
+  csource->in_move = FALSE;
   csource->move_dx = 0;
   csource->move_dy = 0;
   gtk_signal_connect (object, "args_changed", bst_canvas_source_changed, NULL);
@@ -131,10 +136,40 @@ source_channels_changed (BstCanvasSource *csource)
 }
 
 static void
+source_name_changed (BstCanvasSource *csource)
+{
+  BseProject *project;
+  gchar *pname;
+  gchar *name;
+
+  g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
+
+  name = bse_object_get_name (BSE_OBJECT (csource->source));
+  if (!name)
+    name = bse_type_name (BSE_OBJECT_TYPE (csource->source));
+  project = bse_item_get_project (BSE_ITEM (csource->source));
+  pname = bse_object_get_name (BSE_OBJECT (project));
+  if (!pname)
+    pname = bse_type_name (BSE_OBJECT_TYPE (project));
+  pname = g_strconcat (pname, ":", name, NULL);
+
+  if (csource->text)
+    bst_object_set (csource->text, "text", name, NULL);
+
+  if (csource->source_view)
+    gtk_window_set_title (GTK_WINDOW (csource->source_view), pname);
+
+  g_free (pname);
+}
+
+static void
 bst_canvas_source_destroy (GtkObject *object)
 {
   BstCanvasSource *csource = BST_CANVAS_SOURCE (object);
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (object);
+
+  if (csource->source_view)
+    gtk_widget_destroy (csource->source_view);
   
   while (group->item_list)
     gtk_object_destroy (group->item_list->data);
@@ -144,6 +179,9 @@ bst_canvas_source_destroy (GtkObject *object)
 				       &csource->source);
   bse_object_remove_notifiers_by_func (BSE_OBJECT (csource->source),
 				       source_channels_changed,
+				       csource);
+  bse_object_remove_notifiers_by_func (BSE_OBJECT (csource->source),
+				       source_name_changed,
 				       csource);
   csource->source = NULL;
 
@@ -175,7 +213,11 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
 				"io_changed",
 				source_channels_changed,
 				csource);
-
+  bse_object_add_data_notifier (BSE_OBJECT (csource->source),
+				"name-set",
+				source_name_changed,
+				csource);
+  
   if (bst_object_get_coords (BSE_OBJECT (csource->source), &world_x, &world_y))
     {
       world_x = - world_x;
@@ -202,6 +244,33 @@ bst_canvas_source_update_links (BstCanvasSource *csource)
 
   if (!GTK_OBJECT_DESTROYED (csource) && csource->source)
     gtk_signal_emit (GTK_OBJECT (csource), csource_signals[SIGNAL_UPDATE_LINKS]);
+}
+
+void
+bst_canvas_source_popup_view (BstCanvasSource *csource)
+{
+  g_return_if_fail (BST_CANVAS_SOURCE (csource));
+
+  if (!csource->source_view)
+    {
+      GtkWidget *param_view;
+
+      csource->source_view = gtk_widget_new (GTK_TYPE_WINDOW,
+					     "auto_shrink", FALSE,
+					     "allow_shrink", FALSE,
+					     "allow_grow", TRUE,
+					     "object_signal::destroy", bse_nullify_pointer, &csource->source_view,
+					     "signal::delete_event", gtk_widget_hide, NULL,
+					     "signal::delete_event", gtk_true, NULL,
+					     NULL);
+      param_view = bst_param_view_new (BSE_OBJECT (csource->source));
+      gtk_widget_show (param_view);
+      gtk_container_add (GTK_CONTAINER (csource->source_view), param_view);
+      source_name_changed (csource);
+    }
+
+  gtk_widget_show (csource->source_view);
+  gdk_window_raise (csource->source_view->window);
 }
 
 void
@@ -249,7 +318,6 @@ bst_canvas_source_build (BstCanvasSource *csource)
   GnomeCanvasPoints *gpoints;
   BseIcon *icon;
   gdouble tmp_x2;
-  gchar *name;
 
   csource->rect = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
 					 GNOME_TYPE_CANVAS_RECT,
@@ -261,7 +329,8 @@ bst_canvas_source_build (BstCanvasSource *csource)
 					 "signal::destroy", gtk_widget_destroyed, &csource->rect,
 					 "object_signal::event", bst_canvas_source_child_event, csource,
 					 NULL);
-
+  gtk_object_set_data (GTK_OBJECT (csource->rect), "csource", csource);
+  
   icon = bse_object_get_icon (BSE_OBJECT (csource->source));
   if (!icon)
     icon = bst_icon_from_stock (BST_ICON_NOICON);
@@ -288,9 +357,7 @@ bst_canvas_source_build (BstCanvasSource *csource)
 			    "BseIcon",
 			    icon,
 			    (GtkDestroyNotify) bse_icon_unref);
-  name = bse_object_get_name (BSE_OBJECT (csource->source));
-  if (!name)
-    name = bse_type_name (BSE_OBJECT_TYPE (csource->source));
+  gtk_object_set_data (GTK_OBJECT (group), "csource", csource);
   csource->text = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
 					 GNOME_TYPE_CANVAS_TEXT,
 					 "fill_color", "black",
@@ -298,10 +365,12 @@ bst_canvas_source_build (BstCanvasSource *csource)
 					 "justification", GTK_JUSTIFY_CENTER,
 					 "x", (gdouble) (CONNECTOR_WIDTH + ICON_WIDTH / 2),
 					 "y", (gdouble) ICON_HEIGHT,
-					 "text", name,
 					 "font", "-adobe-helvetica-medium-r-normal--12-*-72-72-p-*-iso8859-1",
 					 "signal::destroy", gtk_widget_destroyed, &csource->text,
 					 NULL);
+  gtk_object_set_data (GTK_OBJECT (csource->text), "csource", csource);
+  source_name_changed (csource);
+
   gpoints = gnome_canvas_points_new (2);
   
   gpoints->coords[0] = 0.0;
@@ -317,21 +386,24 @@ bst_canvas_source_build (BstCanvasSource *csource)
 				"x2", gpoints->coords[2],
 				"y2", gpoints->coords[3],
 				NULL);
+  gtk_object_set_data (GTK_OBJECT (item), "csource", csource);
   gtk_object_set_data (GTK_OBJECT (item), "csource_iconnector", csource);
   gpoints->coords[0] += CONNECTOR_WIDTH;
-  gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
-			 GNOME_TYPE_CANVAS_LINE,
-			 "fill_color", "black",
-			 "points", gpoints,
-			 NULL);
+  item = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
+				GNOME_TYPE_CANVAS_LINE,
+				"fill_color", "black",
+				"points", gpoints,
+				NULL);
+  gtk_object_set_data (GTK_OBJECT (item), "csource", csource);
   
   gpoints->coords[0] += ICON_WIDTH;
   gpoints->coords[2] += ICON_WIDTH;
-  gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
-			 GNOME_TYPE_CANVAS_LINE,
-			 "fill_color", "black",
-			 "points", gpoints,
-			 NULL);
+  item = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
+				GNOME_TYPE_CANVAS_LINE,
+				"fill_color", "black",
+				"points", gpoints,
+				NULL);
+  gtk_object_set_data (GTK_OBJECT (item), "csource", csource);
   tmp_x2 = gpoints->coords[2] + CONNECTOR_WIDTH;
   item = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
 				GNOME_TYPE_CANVAS_RECT,
@@ -342,15 +414,17 @@ bst_canvas_source_build (BstCanvasSource *csource)
 				"x2", tmp_x2,
 				"y2", gpoints->coords[3],
 				NULL);
+  gtk_object_set_data (GTK_OBJECT (item), "csource", csource);
   gtk_object_set_data (GTK_OBJECT (item), "csource_oconnector", csource);
   gpoints->coords[1] = gpoints->coords[3];
   gpoints->coords[0] = 0.0;
   gpoints->coords[2] += CONNECTOR_WIDTH;
-  gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
-			 GNOME_TYPE_CANVAS_LINE,
-			 "fill_color", "black",
-			 "points", gpoints,
-			 NULL);
+  item = gnome_canvas_item_new (GNOME_CANVAS_GROUP (csource),
+				GNOME_TYPE_CANVAS_LINE,
+				"fill_color", "black",
+				"points", gpoints,
+				NULL);
+  gtk_object_set_data (GTK_OBJECT (item), "csource", csource);
   gnome_canvas_points_free (gpoints);
 }
 

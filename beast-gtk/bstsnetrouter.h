@@ -49,6 +49,7 @@ struct _BstSNetRouter
   BseSNet	   *snet;
 
   guint		    mode; /* 0, 1, radio_active ;) */
+  GtkWidget        *edit_radio;
 
   gdouble           world_x, world_y;
   guint             ochannel_id;

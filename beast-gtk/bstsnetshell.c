@@ -17,7 +17,6 @@
  */
 #include "bstsnetshell.h"
 
-#include "bstzoomedwindow.h"
 #include "bstparamview.h"
 #include "bstapp.h"
 

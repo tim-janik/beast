@@ -19,7 +19,6 @@
 #include "bstsongrouter.h"
 
 #include <math.h>
-#include "bstzoomedwindow.h"
 #include "bstcanvassource.h"
 #include "gnomeforest.h"
 #include "bstcanvaslink.h"
