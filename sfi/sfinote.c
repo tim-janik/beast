@@ -16,7 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <string.h>
+#include <stdlib.h>
 #include "sfinote.h"
 
 
@@ -86,7 +86,7 @@ sfi_note_from_string (const gchar *note_string)
 	break;
     }
   
-  note = SFI_NOTE_VOID;			/* *invalid* SFI_NOTE_VOID path */
+  note = SFI_KAMMER_NOTE;		/* *invalid* note value */
   if (fits)
     {
       gchar *s;

@@ -1,4 +1,7 @@
-Fri Oct  4 08:37:25 2002  Tim Janik  <timj@gtk.org>
+Fri Oct  4 08:53:29 2002  Tim Janik  <timj@gtk.org>
+
+	* sfinote.c (sfi_note_from_string): default to kammer note
+	instead of SFI_NOTE_VOID if the note is unparsable.
 
 	* testsfi.c: new file, executed by make check.
 	currently contains small tests for notes and time.

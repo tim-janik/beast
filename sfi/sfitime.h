@@ -23,7 +23,7 @@
 
 G_BEGIN_DECLS
 
-/* --- time (unix seconds) --- */
+/* --- time (unix micro seconds) --- */
 #define	SFI_USEC_FACTOR		((SfiTime) 1000000)		/* 64bit wide */
 #define	SFI_MIN_TIME		(631148400 * SFI_USEC_FACTOR)	/* 1990-01-01 00:00:00 */
 #define	SFI_MAX_TIME		(2147483647 * SFI_USEC_FACTOR)	/* 2038-01-19 04:14:07 */

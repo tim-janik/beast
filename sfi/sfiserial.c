@@ -19,6 +19,7 @@
 #include "sfiserial.h"
 #include "sfiparams.h"
 #include "sfitime.h"
+#include "sfinote.h"
 
 
 /* --- storage helpers --- */
@@ -406,8 +407,8 @@ parse_value_nonstruct (GValue       *value,
       break;
     case SFI_PSPEC_NOTE:
       parse_or_return (scanner, G_TOKEN_STRING);
-      num = sfi_note_from_string (scanner->value.v_string, errorp);
-      if (*errorp)
+      num = sfi_note_from_string (scanner->value.v_string);
+      if (!SFI_NOTE_IS_VALID (num))
 	return G_TOKEN_STRING;
       sfi_value_set_int (value, num);
       break;
