@@ -45,15 +45,6 @@ struct _GxkRackTable
   guint          cell_width;
   guint          cell_height;
   GxkRackEditor *editor;
-
-  guint             drag_col;
-  guint             drag_row;
-  gint              xofs;
-  gint              yofs;
-
-  /* child resizing windows */
-  GdkWindow     *crq1, *crq2, *crq3, *crq4;     /* upper left, right and bottom left, right corners */
-  GdkWindow     *crb1, *crb2, *crb3, *crb4;     /* upper, right, bottom and left bars */
 };
 struct _GxkRackTableClass
 {
@@ -68,22 +59,25 @@ struct _GxkRackTableClass
 
 /* --- prototypes --- */
 GType      gxk_rack_table_get_type             (void);
-gboolean   gxk_rack_table_check_cell           (GxkRackTable *self,
-                                                guint         col,
-                                                guint         row);
-GtkWidget* gxk_rack_table_find_child           (GxkRackTable *self,
-                                                gint          x,
-                                                gint          y);
+gboolean   gxk_rack_table_get_child_area       (GxkRackTable *self,
+                                                GtkWidget    *child,
+                                                guint        *col,
+                                                guint        *row,
+                                                guint        *hspan,
+                                                guint        *vspan);
 void       gxk_rack_table_redraw_cells         (GxkRackTable *self,
                                                 guint         hcell1,
                                                 guint         vcell1,
                                                 guint         hspan,
                                                 guint         vspan);
-gboolean   gxk_rack_table_iwindow_translate    (GxkRackTable *self,
+gboolean   gxk_rack_table_translate            (GxkRackTable *self,
                                                 gint          x,
                                                 gint          y,
                                                 guint        *hcell,
                                                 guint        *vcell);
+GtkWidget* gxk_rack_table_find_child           (GxkRackTable *self,
+                                                gint          x,
+                                                gint          y);
 void       gxk_rack_table_update_child_map     (GxkRackTable *self);
 void       gxk_rack_table_invalidate_child_map (GxkRackTable *self);
 

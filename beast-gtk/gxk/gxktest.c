@@ -226,11 +226,21 @@ rack_test (void)
                      g_object_new (GXK_TYPE_RACK_ITEM,
                                    "child", g_object_new (GTK_TYPE_LABEL, "visible", 1, "label", "RackItem", NULL),
                                    NULL));
+  gtk_container_add (GTK_CONTAINER (rtable),
+                     g_object_new (GXK_TYPE_RACK_ITEM,
+                                   NULL));
+  gtk_container_add (GTK_CONTAINER (rtable),
+                     g_object_new (GXK_TYPE_RACK_ITEM,
+                                   "shadow-type", GTK_SHADOW_ETCHED_IN,
+                                   "label-widget", g_object_new (GXK_TYPE_SIMPLE_LABEL,
+                                                                 "visible", 1,
+                                                                 "label", "Huhu, this is an opverlong label text",
+                                                                 "auto-cut", TRUE,
+                                                                 NULL),
+                                   NULL));
   win = g_object_new (GTK_TYPE_WINDOW,
                       "border_width", 20,
                       "child", box,
-                      "default_width", 400,
-                      "default_height", 400,
                       "sensitive", TRUE,
                       "visible", TRUE,
                       NULL);

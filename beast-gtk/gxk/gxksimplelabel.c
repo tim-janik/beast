@@ -168,6 +168,7 @@ static void
 simple_label_init (GxkSimpleLabel *self)
 {
   GTK_WIDGET_SET_FLAGS (self, GTK_NO_WINDOW);
+  gtk_widget_show (GTK_WIDGET (self));
   
   self->jtype = GTK_JUSTIFY_LEFT;
   self->layout = NULL;

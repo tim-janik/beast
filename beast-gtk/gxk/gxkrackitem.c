@@ -20,13 +20,19 @@
 #include <string.h>
 
 /* --- prototypes --- */
-static void     gxk_rack_item_class_init         (GxkRackItemClass *klass);
-static void     gxk_rack_item_init               (GxkRackItem      *self);
-static void     gxk_rack_item_destroy            (GtkObject        *object);
-static void     gxk_rack_item_parent_set         (GtkWidget        *widget,
-                                                  GtkWidget        *previous_parent);
-static void     gxk_rack_item_button_press       (GxkRackItem      *self,
-                                                  GdkEventButton   *event);
+static void gxk_rack_item_class_init               (GxkRackItemClass *klass);
+static void gxk_rack_item_init                     (GxkRackItem      *self);
+static void gxk_rack_item_destroy                  (GtkObject        *object);
+static void gxk_rack_item_add                      (GtkContainer     *container,
+                                                    GtkWidget        *child);
+static void gxk_rack_item_remove                   (GtkContainer     *container,
+                                                    GtkWidget        *child);
+static void gxk_rack_item_parent_set               (GtkWidget        *widget,
+                                                    GtkWidget        *previous_parent);
+static void gxk_rack_item_size_allocate            (GtkWidget        *widget,
+                                                    GtkAllocation    *allocation);
+static void gxk_rack_item_button_press             (GxkRackItem      *self,
+                                                    GdkEventButton   *event);
 
 
 /* --- static variables --- */
@@ -66,13 +72,18 @@ gxk_rack_item_class_init (GxkRackItemClass *class)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  GtkContainerClass *container_class = GTK_CONTAINER_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
   
   object_class->destroy = gxk_rack_item_destroy;
   
   widget_class->parent_set = gxk_rack_item_parent_set;
-  
+  widget_class->size_allocate = gxk_rack_item_size_allocate;
+
+  container_class->add = gxk_rack_item_add;
+  container_class->remove = gxk_rack_item_remove;
+
   class->button_press = gxk_rack_item_button_press;
   
   g_signal_new ("button-press",
@@ -92,7 +103,8 @@ gxk_rack_item_init (GxkRackItem *self)
                 NULL);
   self->col = self->row = -1;
   self->hspan = self->vspan = 0;
-  self->empty_frame = FALSE;
+  self->empty_frame = TRUE;
+  GTK_FRAME (self)->label_xalign = 0.5;
 }
 
 static void
@@ -105,14 +117,39 @@ gxk_rack_item_destroy (GtkObject *object)
 }
 
 static void
+gxk_rack_item_add (GtkContainer     *container,
+                   GtkWidget        *child)
+{
+  GxkRackItem *self = GXK_RACK_ITEM (container);
+  GtkWidget *widget = GTK_WIDGET (self);
+  self->empty_frame = FALSE;
+  if (GXK_IS_RACK_TABLE (widget->parent))
+    gxk_rack_table_invalidate_child_map (GXK_RACK_TABLE (widget->parent));
+  GTK_CONTAINER_CLASS (parent_class)->add (container, child);
+}
+
+static void
+gxk_rack_item_remove (GtkContainer     *container,
+                      GtkWidget        *child)
+{
+  GxkRackItem *self = GXK_RACK_ITEM (container);
+  GtkWidget *widget = GTK_WIDGET (self);
+  self->empty_frame = TRUE;
+  if (GXK_IS_RACK_TABLE (widget->parent))
+    gxk_rack_table_invalidate_child_map (GXK_RACK_TABLE (widget->parent));
+  GTK_CONTAINER_CLASS (parent_class)->remove (container, child);
+}
+
+static void
 update_frame (GxkRackItem *self)
 {
   GtkWidget *widget = GTK_WIDGET (self);
   GxkRackTable *rtable = GXK_RACK_TABLE (widget->parent);
-  
-  g_object_set (self,
-                "shadow_type", rtable->editor ? GTK_SHADOW_ETCHED_OUT : GTK_SHADOW_NONE,
-                NULL);
+
+  if (!self->empty_frame)
+    g_object_set (self,
+                  "shadow_type", rtable->editor ? GTK_SHADOW_ETCHED_OUT : GTK_SHADOW_NONE,
+                  NULL);
 }
 
 static void
@@ -131,6 +168,86 @@ gxk_rack_item_parent_set (GtkWidget *widget,
   /* chain parent class' handler */
   if (GTK_WIDGET_CLASS (parent_class)->parent_set)
     GTK_WIDGET_CLASS (parent_class)->parent_set (widget, previous_parent);
+}
+
+static void
+gxk_rack_item_size_allocate (GtkWidget        *widget,
+                             GtkAllocation    *assigned_allocation)
+{
+  GxkRackItem *self = GXK_RACK_ITEM (widget);
+  /* GxkRackItem is overriding this function, because:
+   * a) GtkFrame doesn't constrain the width of the label widget to the frame size
+   * b) we want the frame to be centered within the rack table cell thickness
+   */
+  GtkFrame *frame = GTK_FRAME (widget);
+  GtkBin *bin = GTK_BIN (widget);
+  GtkAllocation new_allocation;
+  gint cell_width = GXK_IS_RACK_TABLE (widget->parent) ? GXK_RACK_TABLE (widget->parent)->cell_width : 0;
+  gint cell_height = GXK_IS_RACK_TABLE (widget->parent) ? GXK_RACK_TABLE (widget->parent)->cell_height : 0;
+
+  widget->allocation = *assigned_allocation;
+
+  /* center within cell thickness */
+  cell_width -= widget->style->xthickness / 2;
+  cell_height -= widget->style->ythickness / 2;
+  if (self->empty_frame && cell_width > 0 && widget->allocation.width >= 2 * cell_width)
+    {
+      widget->allocation.x += cell_width / 2;
+      widget->allocation.width -= cell_width;
+    }
+  if (self->empty_frame && cell_height > 0 && widget->allocation.height >= 2 * cell_height)
+    {
+      widget->allocation.y += frame->label_widget ? 0 : cell_height / 2;
+      widget->allocation.height -= frame->label_widget ? cell_height / 2 : cell_height;
+    }
+
+  GTK_FRAME_GET_CLASS (frame)->compute_child_allocation (frame, &new_allocation);
+
+  /* If the child allocation changed, that means that the frame is drawn
+   * in a new place, so we must redraw the entire widget.
+   */
+  if (GTK_WIDGET_MAPPED (widget) &&
+      (new_allocation.x != frame->child_allocation.x ||
+       new_allocation.y != frame->child_allocation.y ||
+       new_allocation.width != frame->child_allocation.width ||
+       new_allocation.height != frame->child_allocation.height))
+    gdk_window_invalidate_rect (widget->window, &widget->allocation, FALSE);
+
+  if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
+    gtk_widget_size_allocate (bin->child, &new_allocation);
+
+  frame->child_allocation = new_allocation;
+
+  if (frame->label_widget && GTK_WIDGET_VISIBLE (frame->label_widget))
+    {
+      GtkRequisition child_requisition;
+      GtkAllocation child_allocation;
+      const int LABEL_PAD = 1, LABEL_SIDE_PAD = 2;
+      gfloat xalign;
+
+      gtk_widget_get_child_requisition (frame->label_widget, &child_requisition);
+
+      if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
+        xalign = frame->label_xalign;
+      else
+        xalign = 1.0 - frame->label_xalign;
+
+      child_allocation.x = frame->child_allocation.x + LABEL_SIDE_PAD +
+                           xalign * MAX (0, (frame->child_allocation.width -
+                                             child_requisition.width -
+                                             2 * LABEL_PAD -
+                                             2 * LABEL_SIDE_PAD)) +
+                           LABEL_PAD;
+      child_allocation.width = MIN (child_requisition.width,
+                                    frame->child_allocation.width -
+                                    // 2 * LABEL_PAD -
+                                    2 * LABEL_SIDE_PAD);
+
+      child_allocation.y = frame->child_allocation.y - child_requisition.height;
+      child_allocation.height = child_requisition.height;
+
+      gtk_widget_size_allocate (frame->label_widget, &child_allocation);
+    }
 }
 
 static void

@@ -146,7 +146,7 @@ gxk_rack_table_init (GxkRackTable *self)
                 NULL);
   self->child_map = NULL;
   self->cell_request_width = 12;
-  self->cell_request_height = 10;
+  self->cell_request_height = 12;
   self->cell_width = 0;
   self->cell_height = 0;
   self->editor = NULL;
@@ -188,6 +188,10 @@ gxk_rack_table_style_set (GtkWidget *widget,
     }
   self->cell_request_width = x;
   self->cell_request_height = font->ascent + font->descent;
+  if (1)
+    {
+      self->cell_request_width = self->cell_request_height = MAX (self->cell_request_width, self->cell_request_height);
+    }
 }
 
 static void
@@ -441,7 +445,10 @@ gxk_rack_table_add (GtkContainer *container,
       guint r, c;
       for (r = row < 0 ? 0 : row; r < (row < 0 ? table->nrows : row + 1); r++)
         for (c = col < 0 ? 0 : col; c < (col < 0 ? table->ncols : col + 1); c++)
-          if (gxk_rack_table_check_area (self, c, r, MAX (hspan, 1), MAX (vspan, 1)))
+          if (gxk_rack_table_check_area (self,
+                                         GXK_IS_RACK_ITEM (child) &&
+                                         GXK_RACK_ITEM (child)->empty_frame,
+                                         c, r, MAX (hspan, 1), MAX (vspan, 1), NULL))
             goto break_break;
     break_break:
       row = CLAMP (row, 0, table->nrows - 1);
@@ -496,21 +503,21 @@ gxk_rack_table_remove (GtkContainer *container,
 }
 
 gboolean
-gxk_rack_table_iwindow_translate (GxkRackTable          *self,
-                                  gint                   x,
-                                  gint                   y,
-                                  guint                 *hcell,
-                                  guint                 *vcell)
+gxk_rack_table_translate (GxkRackTable          *self,
+                          gint                   x,
+                          gint                   y,
+                          guint                 *hcell,
+                          guint                 *vcell)
 {
   GtkTable *table = GTK_TABLE (self);
   guint i;
-  
+
+  /* translate widget relative coordinates */
   x -= GTK_CONTAINER (self)->border_width;
   *hcell = 0;
   for (i = 0; i < table->ncols; i++)
     {
-      guint bound = table->cols[i].allocation + table->cols[i].spacing;
-      
+      gint bound = table->cols[i].allocation + table->cols[i].spacing;
       if (x < bound)
         {
           *hcell = i;
@@ -525,8 +532,7 @@ gxk_rack_table_iwindow_translate (GxkRackTable          *self,
   *vcell = 0;
   for (i = 0; i < table->nrows; i++)
     {
-      guint bound = table->rows[i].allocation + table->rows[i].spacing;
-      
+      gint bound = table->rows[i].allocation + table->rows[i].spacing;
       if (y < bound)
         {
           *vcell = i;
@@ -547,16 +553,57 @@ gxk_rack_table_find_child (GxkRackTable *self,
 {
   GtkTable *table = GTK_TABLE (self);
   GList *list;
+  gint h, v;
+  if (gxk_rack_table_translate (self, x, y, &h, &v))
+    {
+      for (list = table->children; list; list = list->next)
+        {
+          GtkTableChild *child = list->data;
+          if (h >= child->left_attach && h < child->right_attach &&
+              v >= child->top_attach && v < child->bottom_attach)
+            {
+              if (GXK_IS_RACK_ITEM (child->widget) &&       /* exempt inner areas of frames */
+                  GXK_RACK_ITEM (child->widget)->empty_frame &&
+                  h >= child->left_attach + 1 &&
+                  h + 1 < child->right_attach &&
+                  v >= child->top_attach + 1 &&
+                  v + 1 < child->bottom_attach)
+                continue;
+              return child->widget;
+            }
+        }
+    }
+  return NULL;
+}
+
+gboolean
+gxk_rack_table_get_child_area (GxkRackTable *self,
+                               GtkWidget    *child_widget,
+                               guint        *col,
+                               guint        *row,
+                               guint        *hspan,
+                               guint        *vspan)
+{
+  GtkTable *table = GTK_TABLE (self);
+  GList *list;
 
   for (list = table->children; list; list = list->next)
     {
       GtkTableChild *child = list->data;
-      GtkAllocation *allocation = &child->widget->allocation;
-      if (x >= allocation->x && x < allocation->x + allocation->width &&
-          y >= allocation->y && y < allocation->y + allocation->height)
-        return child->widget;
+      if (child->widget == child_widget)
+        {
+          if (col)
+            *col = child->left_attach;
+          if (row)
+            *row = child->top_attach;
+          if (hspan)
+            *hspan = child->right_attach - child->left_attach;
+          if (vspan)
+            *vspan = child->bottom_attach - child->top_attach;
+          return TRUE;
+        }
     }
-  return NULL;
+  return FALSE;
 }
 
 static GtkWidget*
