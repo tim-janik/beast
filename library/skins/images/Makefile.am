@@ -5,7 +5,10 @@
 
 
 images_DATA = $(strip		\
+	blueimpress.jpg		\
+	brownforms.jpg		\
 	moonpaper.png		\
+	silvervein.png		\
 )
 imagesdir = $(beastskinsdir)/images
 

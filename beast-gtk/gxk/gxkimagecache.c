@@ -20,7 +20,7 @@
 #include <string.h>
 
 
-#define MAX_CACHE_FILL  7
+#define MAX_CACHE_FILL  0
 
 
 /* --- variables --- */

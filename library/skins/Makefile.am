@@ -6,8 +6,11 @@
 SUBDIRS = images
 
 skins_DATA = $(strip		\
-	white.skin		\
+	blueimpress.skin	\
+	brownforms.skin		\
 	moonpaper.skin		\
+	silvervein.skin		\
+	white.skin		\
 )
 skinsdir = $(beastskinsdir)
 

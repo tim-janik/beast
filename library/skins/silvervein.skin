@@ -1,0 +1,13 @@
+; skin-file for BEAST v0.5.6
+
+; BstSkinConfig Dump
+(beast-skin-config-v1 
+  ((skin-name "Silver Vein")
+   (piano-image "images/silvervein.png")
+   (piano-shade 100)
+   (piano-color 0x00000000)
+   (piano-hbar 0x00ffffff)
+   (piano-vbar 0x00ffffff)
+   (piano-hgrid 0x00909090)
+   (piano-vgrid 0x00909090)
+   (piano-mbar 0x00ac6060)))

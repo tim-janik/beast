@@ -1,0 +1,13 @@
+; skin-file for BEAST v0.5.6
+
+; BstSkinConfig Dump
+(beast-skin-config-v1 
+  ((skin-name "Brown Forms")
+   (piano-image "images/brownforms.jpg")
+   (piano-shade 100)
+   (piano-color 0x00000000)
+   (piano-hbar 0x00ffff00)
+   (piano-vbar 0x00ffff00)
+   (piano-hgrid 0x00ef6f10)
+   (piano-vgrid 0x00ef6f10)
+   (piano-mbar 0x00ffcc00)))

@@ -1,0 +1,13 @@
+; skin-file for BEAST v0.5.6
+
+; BstSkinConfig Dump
+(beast-skin-config-v1 
+  ((skin-name "Blue Impression")
+   (piano-image "images/blueimpress.jpg")
+   (piano-shade 100)
+   (piano-color 0x00ffffff)
+   (piano-hbar 0x001af2e3)
+   (piano-vbar 0x001af2e3)
+   (piano-hgrid 0x0090ee90)
+   (piano-vgrid 0x00add8e6)
+   (piano-mbar 0x001e90ff)))

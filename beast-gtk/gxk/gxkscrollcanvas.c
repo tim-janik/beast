@@ -536,7 +536,7 @@ scroll_canvas_unrealize (GtkWidget *widget)
   guint i;
 
   /* ignore skin changes */
-  class->realized_widgets = g_slist_prepend (class->realized_widgets, self);
+  class->realized_widgets = g_slist_remove (class->realized_widgets, self);
 
   /* release color GCs */
   for (i = 0; i < class->n_colors; i++)
