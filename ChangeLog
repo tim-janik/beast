@@ -1,3 +1,9 @@
+Mon Mar  3 16:04:55 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-links-related.texi: added CSL.
+
+	* docs/site-news.texi: post an update on the LinuxForum news entry.
+
 Thu Feb 27 05:21:47 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/reference-filter.pl: remove all non-alphanumeric

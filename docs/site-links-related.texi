@@ -11,14 +11,15 @@
 @itemize
 @item @uref{http://www.arts-project.org,, aRts - analog Realtime Synthesizer}
 @item @uref{http://www.gstreamer.net,, GStreamer - Media Component Framework}
+@item @uref{http://www.glame.de,, GLAME - GNU/Linux Audio Mechanics}
 @item @uref{http://www.xiph.org/ogg/vorbis/,, Ogg/Vorbis - Open Audio Codec}
 @item @uref{http://www.mars.org/home/rob/proj/mpeg/,, MAD - MPEG Audio Decoder}
+@item @uref{http://sfk.evilplan.org/csl,, CSL - Common Sound Layer}
 @item @uref{http://www.dreampoint.co.uk,, Freeverb - Public Domain Reverb}
-@item @uref{http://www.glame.de,, GLAME - GNU/Linux Audio Mechanics}
+@item @uref{http://www.gnu.org/software/guile/guile.html,, Guile - Scheme Scipting Language}
+@item @uref{http://www.gnu.org/software/texinfo/,, Texinfo - BEAST and BSE documentation format}
 @item @uref{http://www.gtk.org,, GTK+ - The GIMP Toolkit}
 @item @uref{http://www.gnome.org,, GNOME Project}
-@item @uref{http://www.gnu.org/software/texinfo/,, Texinfo - BEAST and BSE documentation format}
-@item @uref{http://www.gnu.org/software/guile/guile.html,, Guile - Scheme Scipting Language}
 @item @uref{http://www.gnu.org,, GNU - GNU's Not Unix!}
 @end itemize
 

@@ -20,6 +20,13 @@ want to catch us to talk about @beast{},
 @uref{http://www.arts-project.org,,aRts} or
 @uref{http://sfk.evilplan.org/csl/,,CSL}.
 
+@strong{UPDATE:} Stefan Westerfeld posted a summary of our
+discussions with Leon Shiman, who leads the
+@uref{http://www.mediaapplicationserver.net,,Media Application Server}
+development group, to the
+@uref{http://lists.kde.org/?l=kde-multimedia&m=104669966423967&w=2,,kde-multimedia}
+list.
+
 
 @newsTitle{Friday 21 February 2003, Recent Development}
 
