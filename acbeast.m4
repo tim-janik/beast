@@ -289,7 +289,7 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 	
 		dnl Warnings.
 		MC_EVAR_ADD(CXXFLAGS, -Wall, -Wall)
-		MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
+		dnl MC_EVAR_ADD(CXXFLAGS, -Wmissing-prototypes, -Wmissing-prototypes)
 		MC_EVAR_ADD(CXXFLAGS, -Wno-cast-qual, -Wno-cast-qual)
 		dnl MC_EVAR_ADD(CXXFLAGS, -Winline, -Winline)
 

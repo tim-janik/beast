@@ -54,10 +54,24 @@ widget_ancestry_mapped (GtkWidget *widget)
   return TRUE;
 }
 
+#if 0
+static void
+widget_print_ancestry (GtkWidget *widget)
+{
+  g_print ("%s: drawable=%d window-viewable=%d ancestry-mapped=%d\n",
+           g_type_name (G_OBJECT_TYPE (widget)), GTK_WIDGET_DRAWABLE (widget),
+           gdk_window_is_viewable (widget->window),
+           widget_ancestry_mapped (widget));
+  if (widget->parent)
+    widget_print_ancestry (widget->parent);
+}
+#endif
+
 static gboolean
 gxk_widget_real_can_activate_accel (GtkWidget *widget, // GTKFIX: #145270, FIXME: remove this
                                     guint      signal_id)
 {
+  // g_print ("%s: accelerator-check:\n",  g_type_name (G_OBJECT_TYPE (widget))), widget_print_ancestry(widget);
   /* widgets must be onscreen for accels to take effect */
   return GTK_WIDGET_IS_SENSITIVE (widget) && GTK_WIDGET_DRAWABLE (widget) && gdk_window_is_viewable (widget->window) && widget_ancestry_mapped (widget);
 }
