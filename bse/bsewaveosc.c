@@ -299,7 +299,7 @@ bse_wave_osc_set_property (GObject      *object,
 	{
 	  if (self->wave)
 	    {
-	      bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->wave));
+	      bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->wave)); // FIXME: use uncross_ref
 	      g_assert (self->wave == NULL);	/* paranoid */
 	    }
 	  if (self->esample_wchunk)
@@ -308,7 +308,7 @@ bse_wave_osc_set_property (GObject      *object,
 	  self->wave = wave;
 	  if (self->wave)
 	    {
-	      bse_item_cross_ref (BSE_ITEM (self), BSE_ITEM (self->wave), wave_uncross);
+	      bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), wave_uncross);
 	      g_object_connect (self->wave, "swapped_signal::notify::name", notify_wave_changed, self, NULL);
 	      bse_wave_request_index (self->wave);
 	      bse_wave_osc_update_config_wchunk (self);

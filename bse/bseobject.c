@@ -85,6 +85,9 @@ static BseTokenType	bse_object_do_try_statement	(BseObject	*object,
 static GTokenType	bse_object_do_restore		(BseObject	*object,
 							 BseStorage	*storage);
 static BseIcon*		bse_object_do_get_icon		(BseObject	*object);
+static guint		eclosure_hash			(gconstpointer	 c);
+static gint		eclosure_equals			(gconstpointer	 c1,
+							 gconstpointer	 c2);
 
 
 /* --- variables --- */
@@ -93,6 +96,7 @@ GQuark		   bse_quark_uname = 0;
 GQuark		   bse_quark_icon = 0;
 static GQuark	   quark_blurb = 0;
 static GHashTable *object_unames_ht = NULL;
+static GHashTable *eclosures_ht = NULL;
 static SfiUStore  *object_id_ustore = NULL;
 static GQuark	   quark_property_changed_queue = 0;
 static guint       object_signals[SIGNAL_LAST] = { 0, };
@@ -192,6 +196,7 @@ bse_object_class_init (BseObjectClass *class)
   quark_property_changed_queue = g_quark_from_static_string ("bse-property-changed-queue");
   quark_blurb = g_quark_from_static_string ("bse-object-blurb");
   object_unames_ht = g_hash_table_new (bse_string_hash, bse_string_equals);
+  eclosures_ht = g_hash_table_new (eclosure_hash, eclosure_equals);
   object_id_ustore = sfi_ustore_new ();
   
   gobject_class->set_property = bse_object_do_set_property;
@@ -494,6 +499,33 @@ bse_object_class_add_signal (BseObjectClass    *oclass,
   signal_id = g_signal_new_valist (signal_name,
 				   G_TYPE_FROM_CLASS (oclass),
 				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
+				   NULL, NULL, NULL,
+				   bse_marshal_signal,
+				   return_type,
+				   n_params, args);
+  va_end (args);
+  
+  return signal_id;
+}
+
+guint
+bse_object_class_add_asignal (BseObjectClass    *oclass,
+			      const gchar       *signal_name,
+			      GType              return_type,
+			      guint              n_params,
+			      ...)
+{
+  va_list args;
+  guint signal_id;
+  
+  g_return_val_if_fail (BSE_IS_OBJECT_CLASS (oclass), 0);
+  g_return_val_if_fail (n_params <= SFI_VMARSHAL_MAX_ARGS, 0);
+  g_return_val_if_fail (signal_name != NULL, 0);
+  
+  va_start (args, n_params);
+  signal_id = g_signal_new_valist (signal_name,
+				   G_TYPE_FROM_CLASS (oclass),
+				   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS | G_SIGNAL_ACTION,
 				   NULL, NULL, NULL,
 				   bse_marshal_signal,
 				   return_type,
@@ -946,4 +978,144 @@ bse_object_do_restore_private (BseObject  *object,
   g_value_unset (&value);
   
   return expected_token;
+}
+
+typedef struct {
+  GClosure closure;
+  guint    dest_signal;
+  GQuark   dest_detail;
+  guint    erefs;
+  gpointer src_object;
+  gulong   handler;
+  guint    src_signal;
+  guint    src_detail;
+} EClosure;
+
+static guint
+eclosure_hash (gconstpointer c)
+{
+  const EClosure *e = c;
+  guint h = G_HASH_LONG ((long) e->src_object) >> 2;
+  h += G_HASH_LONG ((long) e->closure.data) >> 1;
+  h += e->src_detail;
+  h += e->dest_detail << 1;
+  h += e->src_signal << 12;
+  h += e->dest_signal << 13;
+  return h;
+}
+
+static gint
+eclosure_equals (gconstpointer c1,
+		 gconstpointer c2)
+{
+  const EClosure *e1 = c1, *e2 = c2;
+  return (e1->src_object   == e2->src_object &&
+	  e1->closure.data == e2->closure.data &&
+	  e1->src_detail   == e2->src_detail &&
+	  e1->dest_detail  == e2->dest_detail &&
+	  e1->src_signal   == e2->src_signal &&
+	  e1->dest_signal  == e2->dest_signal);
+}
+
+static void
+eclosure_marshal (GClosure       *closure,
+		  GValue /*out*/ *return_value,
+		  guint           n_param_values,
+		  const GValue   *param_values,
+		  gpointer        invocation_hint,
+		  gpointer        marshal_data)
+{
+  EClosure *e = (EClosure*) closure;
+  g_signal_emit (e->closure.data, e->dest_signal, e->dest_detail);
+}
+
+void
+bse_object_reemit_signal (gpointer     src_object,
+			  const gchar *src_signal,
+			  gpointer     dest_object,
+			  const gchar *dest_signal)
+{
+  EClosure key;
+  if (g_signal_parse_name (dest_signal, G_OBJECT_TYPE (dest_object), &key.dest_signal, &key.dest_detail, TRUE) &&
+      g_signal_parse_name (src_signal, G_OBJECT_TYPE (src_object), &key.src_signal, &key.src_detail, TRUE))
+    {
+      EClosure *e;
+      key.closure.data = dest_object;
+      key.src_object = src_object;
+      e = g_hash_table_lookup (eclosures_ht, &key);
+      if (!e)
+	{
+	  GSignalQuery query;
+	  g_signal_query (key.dest_signal, &query);
+	  if (!(query.return_type == G_TYPE_NONE &&
+		query.n_params == 0 &&
+		(query.signal_flags & G_SIGNAL_ACTION ||
+		 strcmp (query.signal_name, "notify") == 0 ||
+		 strncmp (query.signal_name, "notify::", 8) == 0)))
+	    {
+	      g_warning ("%s: invalid signal for reemission: \"%s\"", G_STRLOC, dest_signal);
+	      return;
+	    }
+	  e = (EClosure*) g_closure_new_simple (sizeof (EClosure), dest_object);
+	  e->erefs = 1;
+	  e->closure.data = dest_object;
+	  e->src_object = src_object;
+	  e->dest_signal = key.dest_signal;
+	  e->dest_detail = key.dest_detail;
+	  e->src_signal = key.src_signal;
+	  e->src_detail = key.src_detail;
+	  g_closure_set_marshal (&e->closure, eclosure_marshal);
+	  g_closure_ref (&e->closure);
+	  g_closure_sink (&e->closure);
+	  g_signal_connect_closure_by_id (e->src_object,
+					  e->src_signal, e->src_detail,
+					  &e->closure, G_CONNECT_AFTER);
+	  g_hash_table_insert (eclosures_ht, e, e);
+	}
+      else
+	e->erefs++;
+    }
+  else
+    g_warning ("%s: invalid signal specs: \"%s\", \"%s\"",
+	       G_STRLOC, src_signal, dest_signal);
+}
+
+void
+bse_object_remove_reemit (gpointer     src_object,
+			  const gchar *src_signal,
+			  gpointer     dest_object,
+			  const gchar *dest_signal)
+{
+  EClosure key;
+  if (g_signal_parse_name (dest_signal, G_OBJECT_TYPE (dest_object), &key.dest_signal, &key.dest_detail, TRUE) &&
+      g_signal_parse_name (src_signal, G_OBJECT_TYPE (src_object), &key.src_signal, &key.src_detail, TRUE))
+    {
+      EClosure *e;
+      key.closure.data = dest_object;
+      key.src_object = src_object;
+      e = g_hash_table_lookup (eclosures_ht, &key);
+      if (e)
+	{
+	  g_return_if_fail (e->erefs > 0);
+
+	  e->erefs--;
+	  if (!e->erefs)
+	    {
+	      g_hash_table_remove (eclosures_ht, e);
+	      g_signal_handlers_disconnect_matched (e->src_object, G_SIGNAL_MATCH_CLOSURE |
+						    G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_DETAIL,
+						    e->src_signal, e->src_detail,
+						    &e->closure, NULL, NULL);
+	      g_closure_invalidate (&e->closure);
+	      g_closure_unref (&e->closure);
+	    }
+	}
+      else
+	g_warning ("%s: no reemission for object \"%s\" signal \"%s\" to object \"%s\" signal \"%s\"",
+		   G_STRLOC, bse_object_debug_name (src_object), src_signal,
+		   bse_object_debug_name (dest_object), dest_signal);
+    }
+  else
+    g_warning ("%s: invalid signal specs: \"%s\", \"%s\"",
+	       G_STRLOC, src_signal, dest_signal);
 }

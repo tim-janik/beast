@@ -38,7 +38,7 @@ G_BEGIN_DECLS
 typedef gboolean (*BseForallItemsFunc) (BseItem	 *item,
 					gpointer  data);
 typedef gboolean (*BseForallCrossFunc) (BseItem	 *owner,
-					BseItem  *ref_item,
+					BseItem  *link,
 					gpointer  data);
 struct _BseContainer
 {
@@ -97,19 +97,19 @@ gchar* /*fr*/	bse_container_make_upath	(BseContainer	*container,
 
 
 /* --- internal functions --- */
-void            bse_container_cross_ref         (BseContainer    *container,
+void          _bse_container_cross_link		(BseContainer    *container,
 						 BseItem         *owner,
-						 BseItem         *ref_item,
+						 BseItem         *link,
 						 BseItemUncross   uncross_func);
-void            bse_container_cross_unref       (BseContainer    *container,
+void          _bse_container_cross_unlink	(BseContainer    *container,
 						 BseItem         *owner,
-						 BseItem         *ref_item,
-						 gboolean	 notify);
-void		bse_container_uncross_item	(BseContainer    *container,
+						 BseItem         *link,
+						 BseItemUncross   uncross);
+void          _bse_container_uncross		(BseContainer    *container,
+						 BseItem         *owner,
+						 BseItem         *link);
+void	      _bse_container_uncross_descendant	(BseContainer    *container,
 						 BseItem         *item);
-void		bse_container_cross_forall	(BseContainer	*container,
-						 BseForallCrossFunc func,
-						 gpointer	 data);
 
 
 

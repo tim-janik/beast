@@ -68,7 +68,7 @@ struct _BseItemClass
 };
 
 typedef void     (*BseItemUncross)	     (BseItem        *owner,
-					      BseItem        *ref_item);
+					      BseItem        *link);
 typedef gboolean (*BseItemCheckContainer)    (BseContainer   *container,
 					      BseItem	     *item,
 					      gpointer	      data);
@@ -94,15 +94,14 @@ gboolean        bse_item_has_ancestor        (BseItem         *item,
 					      BseItem         *ancestor);
 BseItem*        bse_item_common_ancestor     (BseItem         *item1,
 					      BseItem         *item2);
-void            bse_item_cross_ref           (BseItem         *owner,
-					      BseItem         *ref_item,
+void            bse_item_cross_link	     (BseItem         *owner,
+					      BseItem         *link,
 					      BseItemUncross   uncross_func);
-void            bse_item_cross_unref         (BseItem         *owner,
-					      BseItem         *ref_item);
+void            bse_item_cross_unlink	     (BseItem         *owner,
+					      BseItem         *link,
+					      BseItemUncross   uncross_func);
 void            bse_item_uncross	     (BseItem         *owner,
-					      BseItem         *ref_item);
-gboolean        bse_item_has_cross_owners    (BseItem         *ref_item);
-GList* /*fr*/   bse_item_list_cross_owners   (BseItem         *ref_item);
+					      BseItem         *link);
 BseErrorType    bse_item_exec_proc           (gpointer	       item,
 					      const gchar     *procedure,
 					      ...);

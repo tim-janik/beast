@@ -1,3 +1,27 @@
+Tue Feb 11 06:58:09 2003  Tim Janik  <timj@gtk.org>
+
+	* bseobject.[hc]: added bse_object_reemit_signal() and
+	bse_object_remove_reemit() to forward signal emissions
+	from one object to another.
+	added convenience functions bse_object_proxy_notifies() and
+	bse_object_unproxy_notifies() to forward signals relevant
+	for an object reference.
+
+	* bsetrack.c: fixed up cross-references. keep cross
+	references on inserted parts, fixup finalization leaks.
+	proxy name changes and last-tick changes from parts to
+	::changed.
+
+	* bseitem.[hc]: renamed cross-ref to cross-link in public API.
+	removed bse_item_list_cross_owners() and bse_item_has_cross_owners().
+	bse_item_uncross() now removes _all_ existing cross links,
+	bse_item_cross_unlink() now requires uncross_func passed in to
+	a previous call to bse_item_cross_link().
+
+	* bsecontainer.[hc]: reworked and cleaned up cross links.
+	allow removal of cross-links during uncross_func() invocation.
+	removed bse_container_cross_forall().
+
 Mon Feb 10 21:37:54 2003  Tim Janik  <timj@gtk.org>
 
 	* bseglue.c (bglue_proxy_set_property): handle invalid value

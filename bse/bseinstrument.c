@@ -374,13 +374,13 @@ bse_instrument_set_property (GObject      *object,
     case PARAM_WAVE:
       if (instrument->wave)
 	{
-	  bse_item_uncross (BSE_ITEM (instrument), BSE_ITEM (instrument->wave));
+	  bse_item_uncross (BSE_ITEM (instrument), BSE_ITEM (instrument->wave)); // FIXME: use uncross_ref
 	  g_assert (instrument->wave == NULL);
 	}
       instrument->wave = bse_value_get_object (value);
       if (instrument->wave)
 	{
-	  bse_item_cross_ref (BSE_ITEM (instrument), BSE_ITEM (instrument->wave), wave_uncross);
+	  bse_item_cross_link (BSE_ITEM (instrument), BSE_ITEM (instrument->wave), wave_uncross);
 	  g_object_connect (instrument->wave,
 			    "swapped_signal::notify::name", notify_wave_changed, instrument,
 			    NULL);
@@ -395,7 +395,7 @@ bse_instrument_set_property (GObject      *object,
       instrument->user_snet = bse_value_get_object (value);
       if (instrument->user_snet)
 	{
-	  bse_item_cross_ref (BSE_ITEM (instrument), BSE_ITEM (instrument->user_snet), user_snet_uncross);
+	  bse_item_cross_link (BSE_ITEM (instrument), BSE_ITEM (instrument->user_snet), user_snet_uncross);
 	  g_object_connect (instrument->user_snet,
 			    "swapped_signal::notify::name", notify_user_snet_changed, instrument,
 			    NULL);

@@ -36,6 +36,7 @@ enum
   SIGNAL_ITEM_REMOVED,
   SIGNAL_LAST
 };
+typedef struct _UncrossNode UncrossNode;
 
 
 /* --- prototypes --- */
@@ -71,11 +72,12 @@ static void	    container_release_children		(BseContainer		*container);
 
 
 /* --- variables --- */
-static GTypeClass	*parent_class = NULL;
-static GQuark		 quark_cross_refs = 0;
-static GSList           *containers_cross_changes = NULL;
-static guint             containers_cross_changes_handler = 0;
-static guint		 container_signals[SIGNAL_LAST] = { 0, };
+static GTypeClass  *parent_class = NULL;
+static GQuark	    quark_cross_links = 0;
+static GSList      *containers_cross_changes = NULL;
+static guint        containers_cross_changes_handler = 0;
+static guint	    container_signals[SIGNAL_LAST] = { 0, };
+static UncrossNode *uncross_stack = NULL;
 
 
 /* --- functions --- */
@@ -115,7 +117,7 @@ bse_container_class_init (BseContainerClass *class)
   item_class = BSE_ITEM_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   
-  quark_cross_refs = g_quark_from_static_string ("BseContainerCrossRefs");
+  quark_cross_links = g_quark_from_static_string ("BseContainerCrossLinks");
   
   gobject_class->dispose = bse_container_dispose;
   gobject_class->finalize = bse_container_finalize;
@@ -135,7 +137,7 @@ bse_container_class_init (BseContainerClass *class)
   class->retrieve_child = bse_container_real_retrieve_child;
   class->context_children = container_context_children;
   class->release_children = container_release_children;
-
+  
   container_signals[SIGNAL_ITEM_ADDED] = bse_object_class_add_signal (object_class, "item_added",
 								      G_TYPE_NONE, 1, BSE_TYPE_ITEM);
   container_signals[SIGNAL_ITEM_REMOVED] = bse_object_class_add_signal (object_class, "item_removed",
@@ -164,15 +166,15 @@ static void
 bse_container_dispose (GObject *gobject)
 {
   BseContainer *container = BSE_CONTAINER (gobject);
-
+  
   if (!BSE_ITEM (container)->use_count)
     {
       BSE_CONTAINER_GET_CLASS (container)->release_children (container);
-
-      /* remove any existing cross-references (with notification) */
-      g_object_set_qdata (container, quark_cross_refs, NULL);
+      
+      /* remove any existing cross-links (with notification) */
+      g_object_set_qdata (container, quark_cross_links, NULL);
     }
-
+  
   /* chain parent class' dispose handler */
   G_OBJECT_CLASS (parent_class)->dispose (gobject);
 }
@@ -181,7 +183,7 @@ static void
 bse_container_finalize (GObject *gobject)
 {
   BseContainer *container = BSE_CONTAINER (gobject);
-
+  
   if (container->n_items)
     g_warning ("%s: finalize handlers missed to remove %u items from %s",
 	       G_STRLOC,
@@ -309,7 +311,7 @@ bse_container_do_remove_item (BseContainer *container,
   
   do
     {
-      bse_container_uncross_item (BSE_CONTAINER (ancestor), item);
+      _bse_container_uncross_descendant (BSE_CONTAINER (ancestor), item);
       ancestor = ancestor->parent;
     }
   while (ancestor);
@@ -342,7 +344,7 @@ bse_container_remove_item (BseContainer *container,
 {
   gboolean finalizing_container;
   guint seqid;
-
+  
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (item->parent == BSE_ITEM (container));
@@ -352,7 +354,7 @@ bse_container_remove_item (BseContainer *container,
   if (!finalizing_container)
     g_object_ref (container);
   g_object_ref (item);
-
+  
   seqid = bse_container_get_item_seqid (container, item);
   g_object_freeze_notify (G_OBJECT (container));
   g_object_freeze_notify (G_OBJECT (item));
@@ -804,134 +806,155 @@ container_queue_cross_changes (BseContainer *container)
 typedef struct
 {
   BseItem           *owner;
-  BseItem           *ref_item;
+  BseItem           *link;
   BseItemUncross     uncross;
   // gpointer         data;
-} CrossRef;
+} CrossLink;
 typedef struct
 {
-  guint         n_cross_refs;
+  guint         n_cross_links;
   BseContainer *container;
-  CrossRef      cross_refs[1]; /* flexible array */
-} BseContainerCrossRefs;
+  CrossLink     cross_links[1]; /* flexible array */
+} BseContainerCrossLinks;
+struct _UncrossNode
+{
+  UncrossNode   *next;
+  BseContainer  *container;
+  BseItem       *owner;
+  BseItem       *link;
+  BseItemUncross uncross;
+};
 
 static inline void
-uncross_ref (BseContainerCrossRefs *crefs,
-	     guint                  n,
-	     gboolean		    notify)
+uncross_link_R (BseContainerCrossLinks *clinks,
+		guint                   n,
+		gboolean                notify)
 {
-  BseItem *owner = crefs->cross_refs[n].owner;
-  BseItem *ref_item = crefs->cross_refs[n].ref_item;
-  BseItemUncross uncross = crefs->cross_refs[n].uncross;
+  UncrossNode unode;
+  unode.owner = clinks->cross_links[n].owner;
+  unode.link = clinks->cross_links[n].link;
+  unode.uncross = clinks->cross_links[n].uncross;
   
-  crefs->n_cross_refs--;
-  if (n < crefs->n_cross_refs)
-    crefs->cross_refs[n] = crefs->cross_refs[crefs->n_cross_refs];
+  clinks->n_cross_links--;
+  if (n < clinks->n_cross_links)
+    clinks->cross_links[n] = clinks->cross_links[clinks->n_cross_links];
   
   if (notify)
-    uncross (owner, ref_item);
+    {
+      /* record recursion */
+      unode.container = clinks->container;
+      unode.next = uncross_stack;
+      uncross_stack = &unode;
+      unode.uncross (unode.owner, unode.link); /* may recurse */
+      g_assert (uncross_stack == &unode); /* paranoid */
+      uncross_stack = unode.next;
+    }
 }
 
 static void
-destroy_crefs (gpointer data)
+destroy_clinks (gpointer data)
 {
-  BseContainerCrossRefs *crefs = data;
+  BseContainerCrossLinks *clinks = data;
   
-  if (crefs->n_cross_refs)
-    container_queue_cross_changes (crefs->container);
+  if (clinks->n_cross_links)
+    container_queue_cross_changes (clinks->container);
   
-  while (crefs->n_cross_refs)
-    uncross_ref (crefs, crefs->n_cross_refs - 1, TRUE);
-  g_free (crefs);
+  while (clinks->n_cross_links)
+    uncross_link_R (clinks, clinks->n_cross_links - 1, TRUE);
+  g_free (clinks);
 }
 
 static inline void
-container_set_crefs (gpointer               container,
-		     BseContainerCrossRefs *crefs)
+container_set_clinks (gpointer                container,
+		      BseContainerCrossLinks *clinks)
 {
-  g_object_steal_qdata (container, quark_cross_refs);
-  g_object_set_qdata_full (container, quark_cross_refs, crefs, destroy_crefs);
+  g_object_steal_qdata (container, quark_cross_links);
+  g_object_set_qdata_full (container, quark_cross_links, clinks, destroy_clinks);
 }
 
-static inline BseContainerCrossRefs*
-container_get_crefs (gpointer container)
+static inline BseContainerCrossLinks*
+container_get_clinks (gpointer container)
 {
-  return g_object_get_qdata (container, quark_cross_refs);
+  return g_object_get_qdata (container, quark_cross_links);
 }
 
 void
-bse_container_cross_ref (BseContainer    *container,
-			 BseItem         *owner,
-			 BseItem         *ref_item,
-			 BseItemUncross	  uncross)
+_bse_container_cross_link (BseContainer    *container,
+			   BseItem         *owner,
+			   BseItem         *link,
+			   BseItemUncross   uncross)
 {
-  BseContainerCrossRefs *crefs;
+  BseContainerCrossLinks *clinks;
   guint i;
   
   /* prerequisites:
-   * container == bse_item_common_ancestor (owner, ref_item)
-   * container != owner || container != ref_item
+   * - container == bse_item_common_ancestor (owner, link)
+   * - container != owner || container != link
+   * + implies: owner != link
    */
   
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (ref_item));
+  g_return_if_fail (BSE_IS_ITEM (link));
   g_return_if_fail (uncross != NULL);
   
-  crefs = container_get_crefs (container);
-  if (!crefs)
+  clinks = container_get_clinks (container);
+  if (!clinks)
     {
       i = 0;
-      crefs = g_realloc (crefs, sizeof (BseContainerCrossRefs));
-      crefs->n_cross_refs = i + 1;
-      crefs->container = container;
-      container_set_crefs (container, crefs);
+      clinks = g_realloc (clinks, sizeof (BseContainerCrossLinks));
+      clinks->n_cross_links = i + 1;
+      clinks->container = container;
+      container_set_clinks (container, clinks);
     }
   else
     {
-      BseContainerCrossRefs *old_loc = crefs;
+      BseContainerCrossLinks *old_loc = clinks;
       
-      i = crefs->n_cross_refs++;
-      crefs = g_realloc (crefs, sizeof (BseContainerCrossRefs) + i * sizeof (crefs->cross_refs[0]));
-      if (old_loc != crefs)
-	container_set_crefs (container, crefs);
+      i = clinks->n_cross_links++;
+      clinks = g_realloc (clinks, sizeof (BseContainerCrossLinks) + i * sizeof (clinks->cross_links[0]));
+      if (old_loc != clinks)
+	container_set_clinks (container, clinks);
     }
-  crefs->cross_refs[i].owner = owner;
-  crefs->cross_refs[i].ref_item = ref_item;
-  crefs->cross_refs[i].uncross = uncross;
-  // crefs->cross_refs[i].data = data;
+  clinks->cross_links[i].owner = owner;
+  clinks->cross_links[i].link = link;
+  clinks->cross_links[i].uncross = uncross;
+  // clinks->cross_links[i].data = data;
   
   container_queue_cross_changes (container);
 }
 
 void
-bse_container_cross_unref (BseContainer *container,
-			   BseItem      *owner,
-			   BseItem      *ref_item,
-			   gboolean	 notify)
+_bse_container_cross_unlink (BseContainer  *container,
+			     BseItem       *owner,
+			     BseItem       *link,
+			     BseItemUncross uncross)
 {
-  BseContainerCrossRefs *crefs;
+  BseContainerCrossLinks *clinks;
+  UncrossNode *unode;
   gboolean found_one = FALSE;
   
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (ref_item));
+  g_return_if_fail (BSE_IS_ITEM (link));
+  g_return_if_fail (uncross != NULL);
   
   g_object_ref (container);
   g_object_ref (owner);
-  g_object_ref (ref_item);
+  g_object_ref (link);
   
-  crefs = container_get_crefs (container);
-  if (crefs)
+  clinks = container_get_clinks (container);
+  if (clinks)
     {
       guint i = 0;
       
-      while (i < crefs->n_cross_refs)
+      while (i < clinks->n_cross_links)
 	{
-	  if (crefs->cross_refs[i].owner == owner &&
-	      crefs->cross_refs[i].ref_item == ref_item)
+	  if (clinks->cross_links[i].owner == owner &&
+	      clinks->cross_links[i].link == link &&
+	      clinks->cross_links[i].uncross == uncross)
 	    {
-	      uncross_ref (crefs, i, notify);
+	      uncross_link_R (clinks, i, FALSE);
 	      container_queue_cross_changes (container);
 	      found_one = TRUE;
 	      break;
@@ -939,14 +962,65 @@ bse_container_cross_unref (BseContainer *container,
 	  i++;
 	}
     }
-  
+  /* need to check for recursion before warning */
   if (!found_one)
-    g_warning (G_STRLOC ": unable to find cross ref from `%s' to `%s' on `%s'",
+    for (unode = uncross_stack; unode; unode = unode->next)
+      if (unode->container == container &&
+	  unode->owner == owner &&
+	  unode->link == link &&
+	  unode->uncross == uncross)
+	{
+	  unode->container = NULL;
+	  unode->owner = NULL;
+	  unode->link = NULL;
+	  unode->uncross = NULL;
+	  found_one = TRUE;
+	  break;
+	}
+  if (!found_one)
+    g_warning ("no cross link from `%s' to `%s' on `%s' to remove",
 	       G_OBJECT_TYPE_NAME (owner),
-	       G_OBJECT_TYPE_NAME (ref_item),
+	       G_OBJECT_TYPE_NAME (link),
 	       G_OBJECT_TYPE_NAME (container));
   
-  g_object_unref (ref_item);
+  g_object_unref (link);
+  g_object_unref (owner);
+  g_object_unref (container);
+}
+
+void
+_bse_container_uncross (BseContainer  *container,
+			BseItem       *owner,
+			BseItem       *link)
+{
+  BseContainerCrossLinks *clinks;
+  
+  g_return_if_fail (BSE_IS_CONTAINER (container));
+  g_return_if_fail (BSE_IS_ITEM (owner));
+  g_return_if_fail (BSE_IS_ITEM (link));
+  
+  g_object_ref (container);
+  g_object_ref (owner);
+  g_object_ref (link);
+  
+  clinks = container_get_clinks (container);
+  if (clinks)
+    {
+      guint i = 0;
+      while (i < clinks->n_cross_links)
+	{
+	  if (clinks->cross_links[i].owner == owner &&
+	      clinks->cross_links[i].link == link)
+	    {
+	      uncross_link_R (clinks, i, TRUE);
+	      container_queue_cross_changes (container);
+	      i = 0;
+	    }
+	  i++;
+	}
+    }
+  
+  g_object_unref (link);
   g_object_unref (owner);
   g_object_unref (container);
 }
@@ -973,10 +1047,10 @@ item_check_branch (BseItem *item,
 }
 
 void
-bse_container_uncross_item (BseContainer *container,
-			    BseItem      *item)
+_bse_container_uncross_descendant (BseContainer *container,
+				   BseItem      *item)
 {
-  BseContainerCrossRefs *crefs;
+  BseContainerCrossLinks *clinks;
   gboolean found_one = FALSE;
   
   /* prerequisites:
@@ -986,8 +1060,8 @@ bse_container_uncross_item (BseContainer *container,
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (item));
   
-  crefs = container_get_crefs (container);
-  if (crefs)
+  clinks = container_get_clinks (container);
+  if (clinks)
     {
       guint i = 0;
       
@@ -997,23 +1071,24 @@ bse_container_uncross_item (BseContainer *container,
       /* suppress tree walks where possible
        */
       if (!BSE_IS_CONTAINER (item) || ((BseContainer*) item)->n_items == 0)
-	while (i < crefs->n_cross_refs)
+	while (i < clinks->n_cross_links)
 	  {
-	    if (crefs->cross_refs[i].owner == item || crefs->cross_refs[i].ref_item == item)
+	    if (clinks->cross_links[i].owner == item || clinks->cross_links[i].link == item)
 	      {
 		found_one = TRUE;
-		uncross_ref (crefs, i, TRUE);
+		uncross_link_R (clinks, i, TRUE);
+		i = 0;
 	      }
 	    else
 	      i++;
 	  }
-      else /* need to check whether item is ancestor of any of the cross-ref items here */
+      else /* need to check whether item is ancestor of any of the cross-link items here */
 	{
 	  BseItem *saved_parent, *citem = BSE_ITEM (container);
 	  
 	  /* we do some minor hackery here, for optimization purposes:
 	   * since item is a child of container, we don't need to walk
-	   * ->owner's or ->ref_item's ancestor list any further than
+	   * ->owner's or ->link's ancestor list any further than
 	   * up to reaching container.
 	   * to suppress extra checks in item_check_branch() in this
 	   * regard, we simply set container->parent to NULL temporarily
@@ -1021,15 +1096,16 @@ bse_container_uncross_item (BseContainer *container,
 	   */
 	  saved_parent = citem->parent;
 	  citem->parent = NULL;
-	  while (i < crefs->n_cross_refs)
+	  while (i < clinks->n_cross_links)
 	    {
-	      if (item_check_branch (crefs->cross_refs[i].owner, item) ||
-		  item_check_branch (crefs->cross_refs[i].ref_item, item))
+	      if (item_check_branch (clinks->cross_links[i].owner, item) ||
+		  item_check_branch (clinks->cross_links[i].link, item))
 		{
 		  citem->parent = saved_parent;
 		  
 		  found_one = TRUE;
-		  uncross_ref (crefs, i, TRUE);
+		  uncross_link_R (clinks, i, TRUE);
+		  i = 0;
 		  
 		  saved_parent = citem->parent;
 		  citem->parent = NULL;
@@ -1045,27 +1121,6 @@ bse_container_uncross_item (BseContainer *container,
       
       g_object_unref (item);
       g_object_unref (container);
-    }
-}
-
-void
-bse_container_cross_forall (BseContainer      *container,
-			    BseForallCrossFunc func,
-			    gpointer           data)
-{
-  BseContainerCrossRefs *crefs;
-  
-  g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (func != NULL);
-  
-  crefs = container_get_crefs (container);
-  if (crefs)
-    {
-      guint i;
-      
-      for (i = 0; i < crefs->n_cross_refs; i++)
-	if (!func (crefs->cross_refs[i].owner, crefs->cross_refs[i].ref_item, data))
-	  return;
     }
 }
 

@@ -128,6 +128,11 @@ guint		bse_object_class_add_signal	(BseObjectClass	*oclass,
 						 GType           return_type,
 						 guint           n_params,
 						 ...);
+guint		bse_object_class_add_asignal	(BseObjectClass	*oclass,
+						 const gchar	*signal_name,
+						 GType           return_type,
+						 guint           n_params,
+						 ...);
 guint		bse_object_class_add_dsignal	(BseObjectClass	*oclass,
 						 const gchar	*signal_name,
 						 GType           return_type,
@@ -150,6 +155,30 @@ GTokenType	bse_object_restore		(BseObject	*object,
 						 BseStorage	*storage);
 void		bse_object_debug_leaks		(void);
 const gchar*	bse_object_debug_name		(gpointer	 object);
+void		bse_object_reemit_signal	(gpointer	 src_object,
+						 const gchar	*src_signal,
+						 gpointer	 dest_obejct,
+						 const gchar	*dest_signal);
+void		bse_object_remove_reemit	(gpointer	 src_object,
+						 const gchar	*src_signal,
+						 gpointer	 dest_object,
+						 const gchar	*dest_signal);
+static inline void
+bse_object_proxy_notifies	(gpointer	 src_object,
+				 gpointer	 dest_object,
+				 const gchar	*dest_signal)
+{
+  bse_object_reemit_signal (src_object, "notify::uname", dest_object, dest_signal);
+  bse_object_reemit_signal (src_object, "icon-changed", dest_object, dest_signal);
+}
+static inline void
+bse_object_unproxy_notifies	(gpointer	 src_object,
+				 gpointer	 dest_object,
+				 const gchar	*dest_signal)
+{
+  bse_object_remove_reemit (src_object, "notify::uname", dest_object, dest_signal);
+  bse_object_remove_reemit (src_object, "icon-changed", dest_object, dest_signal);
+}
 
 
 /* --- implementation details --- */

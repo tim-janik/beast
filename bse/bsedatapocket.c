@@ -248,7 +248,7 @@ add_cross_ref (BseDataPocket *pocket,
   
   if (!g_slist_find (pocket->cr_items, item))
     {
-      bse_item_cross_ref (BSE_ITEM (pocket), item, pocket_uncross);
+      bse_item_cross_link (BSE_ITEM (pocket), item, pocket_uncross);
       pocket->cr_items = g_slist_prepend (pocket->cr_items, item);
     }
 }
@@ -275,7 +275,7 @@ remove_cross_ref (BseDataPocket *pocket,
     }
   
   pocket->cr_items = g_slist_remove (pocket->cr_items, item);
-  bse_item_cross_unref (BSE_ITEM (pocket), item);
+  bse_item_cross_unlink (BSE_ITEM (pocket), item, pocket_uncross);
 }
 
 guint

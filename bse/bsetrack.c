@@ -135,8 +135,7 @@ bse_track_class_init (BseTrackClass *class)
 			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
 					     8, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
-  signal_changed = bse_object_class_add_signal (object_class, "changed",
-						G_TYPE_NONE, 0);
+  signal_changed = bse_object_class_add_asignal (object_class, "changed", G_TYPE_NONE, 0);
 }
 
 static void
@@ -147,7 +146,6 @@ bse_track_init (BseTrack *self)
   self->muted_SL = FALSE;
   self->n_entries_SL = 0;
   self->entries_SL = g_renew (BseTrackEntry, NULL, upper_power2 (self->n_entries_SL));
-  self->part_SL = NULL;
   self->midi_receiver_SL = bse_midi_receiver_new ("intern");
   self->track_done_SL = FALSE;
 }
@@ -164,7 +162,7 @@ bse_track_dispose (GObject *object)
   
   /* check uncrossed references */
   g_assert (self->snet == NULL);
-  g_assert (self->part_SL == NULL);
+  g_assert (self->n_entries_SL == 0);
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->dispose (object);
@@ -175,15 +173,17 @@ bse_track_finalize (GObject *object)
 {
   BseTrack *self = BSE_TRACK (object);
 
-  g_warning ("%s: leaking object refs, FIXME", G_STRLOC);
-
-  g_free (self->entries_SL);	// FIXME
+  g_assert (self->n_entries_SL == 0);
+  g_free (self->entries_SL);
   bse_midi_receiver_unref (self->midi_receiver_SL);
   self->midi_receiver_SL = NULL;
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
+static void	track_uncross_part	(BseItem *owner,
+					 BseItem *ref_item);
 
 static void
 track_add_entry (BseTrack *self,
@@ -207,7 +207,11 @@ track_add_entry (BseTrack *self,
   g_memmove (self->entries_SL + index + 1, self->entries_SL + index, (n - index) * sizeof (self->entries_SL[0]));
   self->entries_SL[index].tick = tick;
   self->entries_SL[index].part = part;
+  self->track_done_SL = FALSE;	/* let sequencer recheck if playing */
   BSE_SEQUENCER_UNLOCK ();
+  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
+  bse_object_proxy_notifies (part, self, "changed");
+  bse_object_reemit_signal (part, "notify::last-tick", self, "changed");
 }
 
 static void
@@ -215,9 +219,14 @@ track_delete_entry (BseTrack *self,
 		    guint     index)
 {
   guint n;
+  BsePart *part;
 
   g_return_if_fail (index < self->n_entries_SL);
 
+  part = self->entries_SL[index].part;
+  bse_object_remove_reemit (part, "notify::last-tick", self, "changed");
+  bse_object_unproxy_notifies (part, self, "changed");
+  bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (part), track_uncross_part);
   BSE_SEQUENCER_LOCK ();
   n = self->n_entries_SL--;
   g_memmove (self->entries_SL + index, self->entries_SL + index + 1, (self->n_entries_SL - index) * sizeof (self->entries_SL[0]));
@@ -251,6 +260,21 @@ track_lookup_entry (BseTrack *self,
     return i > 0 ? nodes + i - 1 : NULL;	/* previous entry */
   else
     return nodes + i;				/* closest match */
+}
+
+static void
+track_uncross_part (BseItem *owner,
+		    BseItem *item)
+{
+  BseTrack *self = BSE_TRACK (owner);
+  BsePart *part = BSE_PART (item);
+  guint i;
+  for (i = 0; i < self->n_entries_SL; i++)
+    if (self->entries_SL[i].part == part)
+      {
+	track_delete_entry (self, i);
+	g_signal_emit (self, signal_changed, 0);
+      }
 }
 
 static gboolean
@@ -307,43 +331,11 @@ bse_track_list_proxies (BseItem    *item,
 }
 
 static void
-notify_snet_changed (BseTrack *self)
-{
-  g_object_notify (G_OBJECT (self), "snet");
-}
-
-static void
-snet_uncross (BseItem *owner,
-	      BseItem *ref_item)
+track_uncross_snet (BseItem *owner,
+		    BseItem *ref_item)
 {
   BseTrack *self = BSE_TRACK (owner);
-  
-  g_object_disconnect (self->snet,
-		       "any_signal", notify_snet_changed, self,
-		       NULL);
-  self->snet = NULL;
-  g_object_notify (G_OBJECT (self), "snet");
-}
-
-static void
-notify_part_changed (BseTrack *self)
-{
-  g_object_notify (G_OBJECT (self), "part");
-}
-
-static void
-part_uncross (BseItem *owner,
-	      BseItem *ref_item)
-{
-  BseTrack *self = BSE_TRACK (owner);
-  
-  g_object_disconnect (self->part_SL,
-		       "any_signal", notify_part_changed, self,
-		       NULL);
-  BSE_SEQUENCER_LOCK ();
-  self->part_SL = NULL;
-  BSE_SEQUENCER_UNLOCK ();
-  g_object_notify (G_OBJECT (self), "part");
+  g_object_set (self, "snet", NULL, NULL);
 }
 
 static void
@@ -362,36 +354,22 @@ bse_track_set_property (GObject      *object,
       BSE_SEQUENCER_UNLOCK ();
       break;
     case PROP_PART:
-      if (self->part_SL)
-	{
-	  bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->part_SL));
-	  g_assert (self->part_SL == NULL);
-	}
       BSE_SEQUENCER_LOCK ();
       self->part_SL = bse_value_get_object (value);
       self->track_done_SL = FALSE;	/* let sequencer recheck if playing */
       BSE_SEQUENCER_UNLOCK ();
-      if (self->part_SL)
-	{
-	  bse_item_cross_ref (BSE_ITEM (self), BSE_ITEM (self->part_SL), part_uncross);
-	  g_object_connect (self->part_SL,
-			    "swapped_signal::notify::name", notify_part_changed, self,
-			    NULL);
-	}
       break;
     case PROP_SYNTH_NET:
       if (self->snet)
 	{
-	  bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->snet));
-	  g_assert (self->snet == NULL);
+	  bse_object_unproxy_notifies (self->snet, self, "changed");
+	  bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
 	}
       self->snet = bse_value_get_object (value);
       if (self->snet)
 	{
-	  bse_item_cross_ref (BSE_ITEM (self), BSE_ITEM (self->snet), snet_uncross);
-	  g_object_connect (self->snet,
-			    "swapped_signal::notify::name", notify_snet_changed, self,
-			    NULL);
+	  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
+	  bse_object_proxy_notifies (self->snet, self, "changed");
 	}
       if (self->sub_synth)
 	g_object_set (self->sub_synth,

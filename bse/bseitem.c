@@ -387,158 +387,89 @@ bse_item_common_ancestor (BseItem *item1,
 }
 
 /**
- * bse_item_cross_ref
- * @owner:        reference owner
- * @ref_item:     item to be referenced by @owner
+ * bse_item_cross_link
+ * @owner:    reference owner
+ * @link:     item to be referenced by @owner
  * @uncross_func: notifier to be executed on uncrossing
  *
- * Install a weak cross reference from @owner to @ref_item.
+ * Install a weak cross reference from @owner to @link.
  * The two items must have a common ancestor when the cross
- * reference is installed. Once their ancestry changes so that
+ * link is installed. Once their ancestry changes so that
  * they don't have a common ancestor anymore, @uncross_func()
  * is executed.
  */
 void
-bse_item_cross_ref (BseItem         *owner,
-		    BseItem         *ref_item,
-		    BseItemUncross   uncross_func)
+bse_item_cross_link (BseItem         *owner,
+		     BseItem         *link,
+		     BseItemUncross   uncross_func)
 {
   BseItem *container;
   
   g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (ref_item));
+  g_return_if_fail (BSE_IS_ITEM (link));
   g_return_if_fail (uncross_func != NULL);
   
-  container = bse_item_common_ancestor (owner, ref_item);
+  container = bse_item_common_ancestor (owner, link);
   
   if (container)
-    bse_container_cross_ref (BSE_CONTAINER (container), owner, ref_item, uncross_func);
+    _bse_container_cross_link (BSE_CONTAINER (container), owner, link, uncross_func);
   else
     g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
 	       BSE_OBJECT_TYPE_NAME (owner),
-	       BSE_OBJECT_TYPE_NAME (ref_item));
+	       BSE_OBJECT_TYPE_NAME (link));
 }
 
 /**
- * bse_item_cross_unref
- * @owner:        reference owner
- * @ref_item:     item referenced by @owner
+ * bse_item_cross_unlink
+ * @owner:    reference owner
+ * @link:     item referenced by @owner
+ * @uncross_func: notifier queued to be executed on uncrossing
  *
- * Removes a cross reference previously installed via
- * bse_item_cross_ref() without executing the associated notifier.
+ * Removes a cross link previously installed via
+ * bse_item_cross_link() without executing @uncross_func().
  */
 void
-bse_item_cross_unref (BseItem *owner,
-		      BseItem *ref_item)
+bse_item_cross_unlink (BseItem        *owner,
+		       BseItem        *link,
+		       BseItemUncross  uncross_func)
 {
   BseItem *container;
   
   g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (ref_item));
+  g_return_if_fail (BSE_IS_ITEM (link));
+  g_return_if_fail (uncross_func != NULL);
   
-  container = bse_item_common_ancestor (owner, ref_item);
+  container = bse_item_common_ancestor (owner, link);
   
   if (container)
-    bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item, FALSE);
+    _bse_container_cross_unlink (BSE_CONTAINER (container), owner, link, uncross_func);
   else
     g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
 	       BSE_OBJECT_TYPE_NAME (owner),
-	       BSE_OBJECT_TYPE_NAME (ref_item));
+	       BSE_OBJECT_TYPE_NAME (link));
 }
 
 /**
  * bse_item_uncross
- * @owner:        reference owner
- * @ref_item:     item referenced by @owner
+ * @owner:    reference owner
+ * @link:     item referenced by @owner
  *
- * Destroys an existing cross reference previously installed via
- * bse_item_cross_ref() by executing the associated notifier.
+ * Destroys all existing cross links from @owner to
+ * @link by executing the associated notifiers.
  */
 void
 bse_item_uncross (BseItem *owner,
-		  BseItem *ref_item)
+		  BseItem *link)
 {
   BseItem *container;
   
   g_return_if_fail (BSE_IS_ITEM (owner));
-  g_return_if_fail (BSE_IS_ITEM (ref_item));
+  g_return_if_fail (BSE_IS_ITEM (link));
   
-  container = bse_item_common_ancestor (owner, ref_item);
+  container = bse_item_common_ancestor (owner, link);
   
   if (container)
-    bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item, TRUE);
-  else
-    g_warning ("%s: `%s' and `%s' have no common anchestor", G_STRLOC,
-	       BSE_OBJECT_TYPE_NAME (owner),
-	       BSE_OBJECT_TYPE_NAME (ref_item));
-}
-
-static gboolean
-cross_list_func (BseItem *owner,
-		 BseItem *ref_item,
-		 gpointer data_p)
-{
-  gpointer *data = data_p;
-  BseItem *item = data[0];
-  
-  if (item == ref_item)
-    data[1] = g_list_prepend (data[1], owner);
-  
-  return TRUE;
-}
-
-GList*
-bse_item_list_cross_owners (BseItem *item)
-{
-  gpointer data[2] = { item, NULL };
-  
-  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
-  
-  do
-    {
-      if (BSE_IS_CONTAINER (item))
-	bse_container_cross_forall (BSE_CONTAINER (item), cross_list_func, data);
-      item = item->parent;
-    }
-  while (item);
-  
-  return data[1];
-}
-
-static gboolean
-cross_check_func (BseItem *owner,
-		  BseItem *ref_item,
-		  gpointer data_p)
-{
-  gpointer *data = data_p;
-  BseItem *item = data[0];
-  
-  if (item == ref_item)
-    {
-      data[1] = GINT_TO_POINTER (TRUE);
-      
-      return FALSE;
-    }
-  else
-    return TRUE;
-}
-
-gboolean
-bse_item_has_cross_owners (BseItem *item)
-{
-  gpointer data[2] = { item, GINT_TO_POINTER (FALSE) };
-  
-  g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
-  
-  do
-    {
-      if (BSE_IS_CONTAINER (item))
-	bse_container_cross_forall (BSE_CONTAINER (item), cross_check_func, data);
-      item = item->parent;
-    }
-  while (item);
-  
-  return GPOINTER_TO_INT (data[1]);
+    _bse_container_uncross (BSE_CONTAINER (container), owner, link);
 }
 
 BseSuper*
