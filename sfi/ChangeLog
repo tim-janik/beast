@@ -1,3 +1,7 @@
+Sun Nov  2 20:09:45 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-generator.cc: fix printf()-args.
+
 Sat Nov  1 03:39:38 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: added g_option_concat() and g_option_get().

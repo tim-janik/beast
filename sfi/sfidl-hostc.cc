@@ -911,7 +911,7 @@ void CodeGeneratorC::run ()
 	    }
 	  printf("\n");
 	  printf("  seq->%s = g_realloc (seq->%s, new_size * sizeof (seq->%s[0]));\n",
-                 elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
+                 elements.c_str(), elements.c_str(), elements.c_str());
 	  printf("  if (new_size > seq->n_%s)\n", elements.c_str());
 	  if (element_i_new != "")
 	    {
@@ -1124,7 +1124,7 @@ void CodeGeneratorC::run ()
 	      printf("static void\n");
 	      printf("%s_rec2boxed (const GValue *src_value, GValue *dest_value)\n", name.c_str());
 	      printf("{\n");
-	      printf("  SfiRec *rec = sfi_value_get_rec (src_value);\n", name.c_str());
+	      printf("  SfiRec *rec = sfi_value_get_rec (src_value);\n");
 	      printf("  g_value_set_boxed_take_ownership (dest_value,\n");
 	      printf("    rec ? %s_from_rec (rec) : NULL);\n", name.c_str());
 	      printf("}\n");
@@ -1165,7 +1165,7 @@ void CodeGeneratorC::run ()
 	      printf("static void\n");
 	      printf("%s_seq2boxed (const GValue *src_value, GValue *dest_value)\n", name.c_str());
 	      printf("{\n");
-              printf("  SfiSeq *seq = sfi_value_get_seq (src_value);\n", name.c_str());
+              printf("  SfiSeq *seq = sfi_value_get_seq (src_value);\n");
 	      printf("  g_value_set_boxed_take_ownership (dest_value,\n");
 	      printf("    seq ? %s_from_seq (seq) : NULL);\n", name.c_str());
 	      printf("}\n");
