@@ -136,7 +136,7 @@ show_procdoc (void)
 	   "@unnumbered NAME\n"
 	   "BSE-Procedures - BSE Procedures Reference\n"
 	   "\n"
-	   "@revision{Document Revised:}@*\n"
+	   "@revision{Document Revised:}\n"
 	   "\n"
 	   "@unnumbered SYNOPSIS\n"
 	   "@printplainindex fn\n"
@@ -257,7 +257,7 @@ show_structdoc (void)
 	   "@unnumbered NAME\n"
 	   "BSE-Structures - BSE Structure Reference\n"
 	   "\n"
-	   "@revision{Document Revised:}@*\n"
+	   "@revision{Document Revised:}\n"
 	   "\n"
 	   "@unnumbered SYNOPSIS\n"
 	   "@printplainindex fn\n"
@@ -422,7 +422,7 @@ main (gint   argc,
 		 slist == seealso ? "" : ", ");
     }
 
-  g_print ("\n\n"
+  g_print ("\n"
            "@*\n"
 	   "@revision{Document Revised:}\n"
 	   "@bye\n");

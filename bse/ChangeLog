@@ -1,3 +1,7 @@
+Thu Jan 23 01:40:09 2003  Alper Ersoy <dirt@gtk.org>
+
+	* bseautodoc.c: adjusted linebreaks around revision lines.
+
 Wed Jan 22 23:24:50 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.[hc]: supply sequential ID with ::item-removed as this
