@@ -26,6 +26,15 @@
 @unnumbered What's New?
 
 
+@newsTitle{Sunday 04 Jul 2004, Mailing List Back Up}
+
+Thanks to Owen Taylor, a configuration error of the
+@uref{http://mail.gnome.org/archives/beast/,, beast mailing list}
+was fixed, so the list is up again and reports about the new
+@uref{http://beast.gtk.org/beast-ftp/v0.6/testing/beast-0.6.2-rc2.tar.gz,, release candidate}
+(as well as ordinary beast stuff) can be discussed on list again.
+
+
 @newsTitle{Thursday 01 Jul 2004, New Release Candidate}
 
 A new release candidate
