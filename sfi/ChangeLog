@@ -1,3 +1,9 @@
+Fri Jul 25 17:17:52 2003  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl-parser.*: adapted prototyping to work in cases where the full
+	definition of a choice/class/record/sequence is not contained in the
+	idl file at all
+
 Wed Jul 23 02:05:24 2003  Tim Janik  <timj@gtk.org>
 
 	* sficomport.c: reset pfd.events to 0 once the fd becomes -1.

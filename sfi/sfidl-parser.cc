@@ -148,42 +148,26 @@ static  GScannerConfig  scanner_config_template = {
 
 bool Parser::isChoice(const string& type) const
 {
-  vector<Choice>::const_iterator i;
-  
-  for(i=choices.begin();i != choices.end(); i++)
-    if(i->name == type) return true;
-  
-  return false;
+  map<string,int>::const_iterator i = typeMap.find (type);
+  return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdChoice);
 }
 
 bool Parser::isSequence(const string& type) const
 {
-  vector<Sequence>::const_iterator i;
-  
-  for(i=sequences.begin();i != sequences.end(); i++)
-    if(i->name == type) return true;
-  
-  return false;
+  map<string,int>::const_iterator i = typeMap.find (type);
+  return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdSequence);
 }
 
 bool Parser::isRecord(const string& type) const
 {
-  vector<Record>::const_iterator i;
-  
-  for(i=records.begin();i != records.end(); i++)
-    if(i->name == type) return true;
-  
-  return false;
+  map<string,int>::const_iterator i = typeMap.find (type);
+  return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdRecord);
 }
 
 bool Parser::isClass(const string& type) const
 {
-  vector<Class>::const_iterator i;
-  
-  for(i=classes.begin();i != classes.end(); i++)
-    if(i->name == type) return true;
-  
-  return false;
+  map<string,int>::const_iterator i = typeMap.find (type);
+  return (i != typeMap.end()) && ((i->second & (~tdProto)) == tdClass);
 }
 
 Sequence Parser::findSequence(const string& name) const
@@ -689,6 +673,7 @@ GTokenType Parser::parseChoice ()
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
+      addPrototype (choice.name, tdChoice);
       return G_TOKEN_NONE;
     }
   parse_or_return (G_TOKEN_LEFT_CURLY);
@@ -766,6 +751,7 @@ GTokenType Parser::parseRecord ()
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
+      addPrototype (record.name, tdRecord);
       return G_TOKEN_NONE;
     }
   parse_or_return (G_TOKEN_LEFT_CURLY);
@@ -944,6 +930,7 @@ GTokenType Parser::parseSequence ()
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
+      addPrototype (sequence.name, tdSequence);
       return G_TOKEN_NONE;
     }
   parse_or_return ('{');
@@ -980,6 +967,7 @@ GTokenType Parser::parseClass ()
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
+      addPrototype (cdef.name, tdClass);
       return G_TOKEN_NONE;
     }
   if (g_scanner_peek_next_token (scanner) == GTokenType(':'))
@@ -1169,6 +1157,7 @@ void Parser::addChoiceTodo(const Choice& choice)
     {
       types.push_back (choice.name);
     }
+  addType (choice.name, tdChoice);
 }
 
 void Parser::addRecordTodo(const Record& record)
@@ -1183,6 +1172,7 @@ void Parser::addRecordTodo(const Record& record)
     {
       types.push_back (record.name);
     }
+  addType (record.name, tdRecord);
 }
 
 void Parser::addSequenceTodo(const Sequence& sequence)
@@ -1197,6 +1187,7 @@ void Parser::addSequenceTodo(const Sequence& sequence)
     {
       types.push_back (sequence.name);
     }
+  addType (sequence.name, tdSequence);
 }
 
 void Parser::addClassTodo(const Class& cdef)
@@ -1211,6 +1202,7 @@ void Parser::addClassTodo(const Class& cdef)
     {
       types.push_back (cdef.name);
     }
+  addType (cdef.name, tdClass);
 }
 
 void Parser::addProcedureTodo(const Method& pdef)
@@ -1234,6 +1226,50 @@ bool Parser::fromInclude(const string& type) const
   for (ii = includedNames.begin(); ii != includedNames.end(); ii++)
     if (*ii == type) return true;
   return false;
+}
+
+void Parser::addType (const std::string& type, TypeDeclaration typeDecl)
+{
+  int& m = typeMap[type];
+
+  if (m == 0)
+    {
+      m = typeDecl;
+    }
+  else if (m == typeDecl)
+    {
+      printError ("double definition of '%s' as same type\n", type.c_str());
+    }
+  else if (m == (typeDecl | tdProto))
+    {
+      m = typeDecl;
+    }
+  else
+    {
+      printError ("double definition of '%s' as different types\n", type.c_str());
+    }
+}
+
+void Parser::addPrototype (const std::string& type, TypeDeclaration typeDecl)
+{
+  int& m = typeMap[type];
+
+  if (m == 0)
+    {
+      m = typeDecl | tdProto;
+    }
+  else if (m == typeDecl)
+    {
+      // prototype after full definition is okay
+    }
+  else if (m == (typeDecl | tdProto))
+    {
+      // double prototype is okay
+    }
+  else
+    {
+      printError ("double definition of '%s' as different types\n", type.c_str());
+    }
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

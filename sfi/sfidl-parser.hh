@@ -102,6 +102,18 @@ struct Class {
   std::map<std::string, std::string> infos;
 };
 
+enum TypeDeclaration {
+  tdChoice        = 1,
+  tdRecord        = 2,
+  tdSequence      = 3,
+  tdClass         = 4,
+  tdProto         = 8,
+  tdChoiceProto   = tdChoice | tdProto,
+  tdRecordProto   = tdRecord | tdProto,
+  tdSequenceProto = tdSequence | tdProto,
+  tdClassProto    = tdClass | tdProto,
+};
+
 class Parser {
 protected:
   const class Options&      options;
@@ -112,6 +124,7 @@ protected:
 
   std::vector<std::string>  includedNames;
   std::vector<std::string>  types;
+  std::map<std::string,int> typeMap;
 
   std::vector<std::string>  includes;          // files to include
   std::vector<Constant>	    constants;
@@ -134,6 +147,9 @@ protected:
   void addSequenceTodo(const Sequence& sdef);
   void addClassTodo(const Class& cdef);
   void addProcedureTodo(const Method& pdef);
+
+  void addPrototype (const std::string& type, TypeDeclaration typeDecl);
+  void addType (const std::string& type, TypeDeclaration typeDecl);
 
   GTokenType parseStringOrConst (std::string &s);
   GTokenType parseConstant ();
