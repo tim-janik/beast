@@ -894,7 +894,7 @@ scroll_canvas_expose (GtkWidget      *widget,
         }
       else if (event->window == self->canvas)
         {
-          g_print ("%s: canvas-expose: %d %d %d %d\n", G_OBJECT_TYPE_NAME (self), area.x, area.y, area.width, area.height);
+          // g_print ("%s: canvas-expose: %d %d %d %d\n", G_OBJECT_TYPE_NAME (self), area.x, area.y, area.width, area.height);
           if (class->double_buffer_canvas)
             gdk_window_begin_paint_rect (event->window, &area);
           else if (class->auto_clear)
