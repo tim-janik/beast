@@ -233,6 +233,11 @@
 	      <submenu _label="Note _Length" >
 		<menu-factory action-root="" actions="pctrl-note-tools" />
 	      </submenu>
+	      <menu-action-separator action-root="" actions="part-scripts" />
+	      <submenu _label="_Utilities" hidden-when-insensitive="1" >
+		<menu-tearoff />
+		<menu-factory action-root="" actions="part-scripts" />
+	      </submenu>
 	    </popup-menu>
 	    <popup-menu name="event-popup" >
               <menu-title _label="Events" />
@@ -291,7 +296,7 @@
       <menu-tearoff />
       <menu-factory action-root="" actions="dialog" />
       <menu-separator/>
-      <submenu _label="_Skins" separator="1">
+      <submenu _label="_Skins" >
 	<menu-tearoff />
 	<menu-factory action-root="" actions="skin-options" />
       </submenu>

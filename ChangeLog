@@ -1,3 +1,23 @@
+Sun Feb 15 16:14:17 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpartdialog.c: add /Part/ scripts as "part-scripts"
+	actions to the piano roll dialog, so users can execute per-part scripts.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: add "Utilities" submenu
+	to the piano roll popup menu, listing "part-scripts" actions.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: allow caller arguments
+	of per-branch=, per-list= and per-list= for gadget-factory and
+	menu-factory. defined menu-action-separator which is generated only
+	if a specific action-list is published.
+
+	* beast-gtk/gxk/gxkgadgetfactory.c: handle empty string arguments for
+	::name, ::per-branch, ::per-list and ::per-action properties by assuming
+	NULL automatically. ignore publishing of empty action-lists.
+
+	* beast-gtk/gxk/gxkutils.c (gxk_menu_check_sensitive): ignore tear-off
+	menu items when checking submenus for activatable contents.
+
 Wed Feb 11 11:19:04 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-oldnews.texi: 

@@ -41,6 +41,8 @@ static void     part_dialog_action_exec         (gpointer                data,
                                                  gulong                  action);
 static gboolean part_dialog_action_check        (gpointer                data,
                                                  gulong                  action);
+static void     part_dialog_run_script_proc     (gpointer                data,
+                                                 gulong                  category_id);
 
 
 /* --- track actions --- */
@@ -114,6 +116,8 @@ static void
 bst_part_dialog_init (BstPartDialog *self)
 {
   GtkWidget *hscroll, *vscroll, *eb, *child;
+  BseCategorySeq *cseq;
+  GxkActionList *al1;
   GtkPaned *paned;
   GtkObject *adjustment;
   GParamSpec *pspec;
@@ -143,6 +147,12 @@ bst_part_dialog_init (BstPartDialog *self)
   if (BST_DVL_HINTS)
     gxk_widget_publish_actions (self, "piano-clear-undo", G_N_ELEMENTS (piano_clear_undo), piano_clear_undo,
                                 NULL, part_dialog_action_check, part_dialog_action_exec);
+
+  /* publish /Part/ scripts */
+  cseq = bse_categories_match ("/Part/*");
+  al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, part_dialog_run_script_proc, self);
+  gxk_action_list_sort (al1);
+  gxk_widget_publish_action_list (self, "part-scripts", al1);
 
   /* FIXME: use paned child-properties after gtk+-2.4 */
   paned = gxk_gadget_find (gadget, "piano-paned");
@@ -292,6 +302,20 @@ event_canvas_clicked (BstEventRoll           *eroll,
     gxk_menu_popup (gxk_gadget_find (self, "event-popup"),
                     event->button.x_root, event->button.y_root, FALSE,
                     event->button.button, event->button.time);
+}
+
+static void
+part_dialog_run_script_proc (gpointer                data,
+                             gulong                  category_id)
+{
+  BstPartDialog *self = BST_PART_DIALOG (data);
+  BseCategory *cat = bse_category_from_id (category_id);
+  SfiProxy part = self->proll->proxy;
+
+  bst_procedure_exec_auto (cat->type,
+                           "project", SFI_TYPE_PROXY, bse_item_get_project (part),
+                           "part", SFI_TYPE_PROXY, part,
+                           NULL);
 }
 
 static void

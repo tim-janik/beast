@@ -2494,7 +2494,9 @@ gxk_menu_check_sensitive (GtkMenu *menu)
   for (list = shell->children; list; list = list->next)
     {
       GtkWidget *child = list->data;
-      if (GTK_WIDGET_VISIBLE (child) && GTK_WIDGET_IS_SENSITIVE (child))
+      if (GTK_WIDGET_VISIBLE (child) &&
+          GTK_WIDGET_IS_SENSITIVE (child) &&
+          !GTK_IS_TEAROFF_MENU_ITEM (child))
         return TRUE;
     }
   return FALSE;

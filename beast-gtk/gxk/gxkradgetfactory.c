@@ -119,6 +119,13 @@ gxk_gadget_factory_init (GxkGadgetFactory *self)
   self->action_root = g_strdup (":xdef");
 }
 
+static gchar*
+value_dup_string_non_empty (const GValue *value)
+{
+  const gchar *str = g_value_get_string (value);
+  return str && str[0] ? g_strdup (str) : NULL;
+}
+
 static void
 gxk_gadget_factory_set_property (GObject      *object,
                                  guint         param_id,
@@ -130,16 +137,11 @@ gxk_gadget_factory_set_property (GObject      *object,
     {
     case PROP_NAME:
       g_free (self->name);
-      self->name = g_value_dup_string (value);
+      self->name = value_dup_string_non_empty (value);
       break;
     case PROP_ACTION_ROOT:
       g_free (self->action_root);
-      self->action_root = g_value_dup_string (value);
-      if (self->action_root && !self->action_root[0])
-        {
-          g_free (self->action_root);
-          self->action_root = NULL;
-        }
+      self->action_root = value_dup_string_non_empty (value);
       break;
     case PROP_ACTION_LIST:
       g_free (self->action_list);
@@ -147,15 +149,15 @@ gxk_gadget_factory_set_property (GObject      *object,
       break;
     case PROP_PER_LIST:
       g_free (self->per_list);
-      self->per_list = g_value_dup_string (value);
+      self->per_list = value_dup_string_non_empty (value);
       break;
     case PROP_PER_BRANCH:
       g_free (self->per_branch);
-      self->per_branch = g_value_dup_string (value);
+      self->per_branch = value_dup_string_non_empty (value);
       break;
     case PROP_PER_ACTION:
       g_free (self->per_action);
-      self->per_action = g_value_dup_string (value);
+      self->per_action = value_dup_string_non_empty (value);
       break;
     case PROP_ACTIVATABLE:
       g_free (self->activatable);
@@ -312,14 +314,16 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
                                   GtkWidget              *publisher)
 {
   GxkGadgetFactory *self = GXK_GADGET_FACTORY (afactory);
-  if (self->action_list && strcmp (self->action_list, prefix) == 0 &&
+  guint n_actions = gxk_action_list_get_n_actions (alist);
+  if (n_actions && self->action_list &&
+      strcmp (self->action_list, prefix) == 0 &&
       match_action_root (self, publisher))
     {
       const gchar *domain = gxk_gadget_get_domain (self);
       const gchar *wname = GTK_WIDGET (self->window)->name;
       gchar *path_prefix = wname ? g_strdup_printf ("<%s>/%s/", wname, prefix) : NULL;
-      guint i, n = self->per_action ? gxk_action_list_get_n_actions (alist) : 0;
       GSList *slist;
+      guint i;
       if (self->per_list)
         {
           GxkGadgetArgs *action_args = gxk_gadget_args ("action-path", path_prefix, NULL);
@@ -345,7 +349,7 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
               g_free (key_path);
             }
         }
-      for (i = self->per_action ? 0 : n; i < n; i++)
+      for (i = self->per_action ? 0 : n_actions; i < n_actions; i++)
         {
           GxkGadget *gadget, *parent;
           GxkGadgetArgs *action_args;

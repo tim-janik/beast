@@ -199,6 +199,7 @@
   <xdef:gadget-factory        inherit="GxkGadgetFactory"
     prop:action-root="$(ifdef,action-root,$action-root,:xdef)"
     prop:action-list="$actions"
+    prop:per-branch="$(null-collapse,$per-branch)"
     prop:per-list="$(null-collapse,$per-list)"
     prop:per-action="$(null-collapse,$per-action)"
     prop:activatable="$(null-collapse,$per-action)" prop:regulate="$(null-collapse,$per-action)" />
@@ -208,9 +209,9 @@
     />
   <!-- menu-factory: actions= separator= -->
   <xdef:menu-factory inherit="gadget-factory"
-    prop:per-branch="menu-factory-branch"
-    per-list="$(if,$separator,menu-factory-per-list,)"
-    per-action="menu-factory-per-action" />
+    per-branch="menu-factory-branch"
+    per-list="$(ifdef,per-list,$per-list,$(if,$separator,menu-factory-per-list,))"
+    per-action="$(ifdef,per-action,$per-action,menu-factory-per-action)" />
   <xdef:menu-factory-branch inherit="submenu" label="$action-name" hidden-when-insensitive="$hidden" />
   <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
   <xdef:menu-factory-per-action inherit="menu-item"
@@ -220,6 +221,11 @@
     stock-image="$action-stock" >
     <tooltip text="$action-tooltip" latent-tooltip="1" />
   </xdef:menu-factory-per-action>
+  <!-- menu-action-separator: produce a menu separator if actions are present: action-root= actions=  -->
+  <xdef:menu-action-separator inherit="gadget-factory"
+    per-branch=""
+    per-list="menu-factory-per-list"
+    per-action="" />
   
   <!-- separator: hseparator= vseparator= -->
   <xdef:separator inherit="alignment" yscale="0.4" xscale="0.4"  >
