@@ -193,8 +193,6 @@ GslRing*
 gsl_ring_prepend (GslRing  *head,
 		  gpointer data)
 {
-  g_return_val_if_fail (data != NULL, head);
-  
   return gsl_ring_prepend_i (head, data);
 }
 
@@ -203,8 +201,6 @@ gsl_ring_prepend_uniq (GslRing  *head,
 		       gpointer data)
 {
   GslRing *walk;
-  
-  g_return_val_if_fail (data != NULL, head);
   
   for (walk = head; walk; walk = gsl_ring_walk (head, walk))
     if (walk->data == data)
@@ -217,8 +213,6 @@ gsl_ring_append (GslRing  *head,
 		 gpointer data)
 {
   GslRing *ring;
-  
-  g_return_val_if_fail (data != NULL, head);
   
   ring = gsl_ring_prepend_i (head, data);
   
@@ -251,8 +245,8 @@ gsl_ring_remove_node (GslRing *head,
 {
   if (!head)
     g_return_val_if_fail (head == NULL && node == NULL, NULL);
-  g_return_val_if_fail (node != NULL, NULL);
-  /* can't check whether node is really part of head */
+  if (!head || !node)
+    return NULL;
   
   /* special case one item ring */
   if (head->prev == head)
@@ -274,13 +268,13 @@ gsl_ring_remove_node (GslRing *head,
 }
 
 GslRing*
-gsl_ring_remove (GslRing  *head,
+gsl_ring_remove (GslRing *head,
 		 gpointer data)
 {
   GslRing *walk;
-  
-  g_return_val_if_fail (data != NULL, head);
-  g_return_val_if_fail (head != NULL, NULL);    /* since we don't allow NULL data, head can't be NULL either */
+
+  if (!head)
+    return NULL;
   
   /* make tail data removal an O(1) operation */
   if (head->prev->data == data)
@@ -293,6 +287,42 @@ gsl_ring_remove (GslRing  *head,
   g_warning (G_STRLOC ": couldn't find data item (%p) to remove from ring (%p)", data, head);
   
   return head;
+}
+
+guint
+gsl_ring_length (GslRing *head)
+{
+  GslRing *ring;
+  guint i = 0;
+  
+  for (ring = head; ring; ring = gsl_ring_walk (head, ring))
+    i++;
+
+  return i;
+}
+
+GslRing*
+gsl_ring_nth (GslRing *head,
+	      guint    n)
+{
+  GslRing *ring = head;
+
+  while (n-- && ring)
+    ring = gsl_ring_walk (head, ring);
+
+  return ring;
+}
+
+gpointer
+gsl_ring_nth_data (GslRing *head,
+		   guint    n)
+{
+  GslRing *ring = head;
+
+  while (n-- && ring)
+    ring = gsl_ring_walk (head, ring);
+
+  return ring ? ring->data : ring;
 }
 
 void

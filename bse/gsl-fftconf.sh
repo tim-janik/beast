@@ -412,4 +412,50 @@ gsl_power2_fftsr (const unsigned int n_values,
       default:	 gsl_power2_fftc_big (n_values, NULL, r_values_out, -1);
     }
 }
+void
+gsl_power2_fftar_simple (const unsigned int n_values,
+                         const float       *real_values,
+                         float             *complex_values)
+{
+  double *rv, *cv;
+  guint i;
+
+  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 2);
+
+  rv = g_new (double, n_values * 2);
+  cv = rv + n_values;
+  i = n_values;
+  while (i--)
+    rv[i] = real_values[i];
+  gsl_power2_fftar (n_values, rv, cv);
+  i = n_values;
+  while (i--)
+    complex_values[i] = cv[i];
+  complex_values[n_values] = complex_values[1];
+  complex_values[1] = 0.0;
+  complex_values[n_values + 1] = 0.0;
+  g_free (rv);
+}
+void
+gsl_power2_fftsr_simple (const unsigned int n_values,
+                         const float       *complex_values,
+                         float             *real_values)
+{
+  double *cv, *rv;
+  guint i;
+
+  g_return_if_fail ((n_values & (n_values - 1)) == 0 && n_values >= 2);
+
+  cv = g_new (double, n_values * 2);
+  rv = cv + n_values;
+  i = n_values;
+  while (i--)
+    cv[i] = complex_values[i];
+  cv[1] = complex_values[n_values];
+  gsl_power2_fftsr (n_values, cv, rv);
+  i = n_values;
+  while (i--)
+    real_values[i] = rv[i];
+  g_free (cv);
+}
 __EOF

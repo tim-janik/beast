@@ -28,10 +28,10 @@
  *			  undefined symbol error.
  * TOYPROF_EXIT		- exit code to return upon profiler aborts
  */
-// #define TOYPROF_PENTIUM		1
-#define TOYPROF_AUTOSTART		1
+#define TOYPROF_PENTIUM		1
+#define TOYPROF_AUTOSTART	1
 #define TOYPROF_DISABLE		1
-#define TOYPROF_EXIT			-1
+#define TOYPROF_EXIT		-1
 
 
 /* --- implementation --- */
@@ -192,9 +192,9 @@ static char*	toyprof_dlname	(void		*addr,
 /* --- variables --- */
 static ToyprofRoot	toyprof_root = { 0, NULL, 0, NULL, };
 #ifdef	TOYPROF_AUTOSTART
-static ToyprofBehaviour toyprof_behaviour = TOYPROF_PROFILE_TIMING;
+static volatile ToyprofBehaviour toyprof_behaviour = TOYPROF_PROFILE_TIMING;
 #else
-static ToyprofBehaviour	toyprof_behaviour = TOYPROF_OFF;
+static volatile ToyprofBehaviour toyprof_behaviour = TOYPROF_OFF;
 #endif
 
 

@@ -1,8 +1,21 @@
+Wed Dec 12 04:44:08 2001  Tim Janik  <timj@gtk.org>
+
+	* fft.h: added tentative float convenience wrapers.
+
+	* gslwavedsc.[hc]: added stringification and parsing functions for
+	byte order and wave format.
+
+	* gslcommon.[hc]: added gsl_ring_length(), gsl_ring_nth(),
+	and gsl_ring_nth_data(), fixed other gsl_ring_* functions.
+
+	* gsldatautils.h: add double conversion variants gsl_conv_from_double,
+	gsl_conv_from_double_clip and gsl_conv_to_double.
+
 Tue Dec 11 01:17:43 2001  Tim Janik  <timj@gtk.org>
 
 	* gsldatautils.[hc]: new files containing general sample data/
 	data handle utility functions, some of these functions are
-	written by Stefan Westerfeld.
+	based on code from Stefan Westerfeld.
 	(gsl_data_detect_signal): detects signal start and end position within
 	a data handle.
 	(gsl_data_find_sample): find sample values or ranges thereof within

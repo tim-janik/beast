@@ -84,6 +84,11 @@ GslRing*	gsl_ring_remove_node	(GslRing	*head,
 					 GslRing	*node);
 GslRing*	gsl_ring_remove		(GslRing	*head,
 					 gpointer	 data);
+guint		gsl_ring_length		(GslRing	*head);
+GslRing*	gsl_ring_nth		(GslRing	*head,
+					 guint           n);
+gpointer	gsl_ring_nth_data	(GslRing	*head,
+					 guint           n);
 gpointer	gsl_ring_pop_head	(GslRing       **head);
 gpointer	gsl_ring_pop_tail	(GslRing       **head);
 void		gsl_ring_free		(GslRing	*head);

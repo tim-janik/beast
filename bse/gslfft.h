@@ -107,6 +107,15 @@ void	gsl_power2_fftar (const unsigned int n_values,
 void	gsl_power2_fftsr (const unsigned int n_values,
 			  const double      *ri_values_in,
 			  double            *r_values_out);
+
+
+/* --- convenience wrappers --- */
+void	gsl_power2_fftar_simple	(const unsigned int n_values,
+				 const float       *real_values,
+				 float		   *complex_values);
+void	gsl_power2_fftsr_simple	(const unsigned int n_values,
+				 const float	   *complex_values,
+				 float             *real_values);
      
      
      

@@ -25,6 +25,7 @@
 #include "gsldatahandle.h"
 #include <fcntl.h>
 #include <unistd.h>
+#include <string.h>
 #include <errno.h>
 
 
@@ -570,4 +571,86 @@ gsl_wave_chunk_from_dsc (GslWaveDsc *wave_dsc,
     return NULL;
 
   return wchunk;
+}
+
+const gchar*
+gsl_wave_format_to_string (GslWaveFormatType format)
+{
+  switch (format)
+    {
+    case GSL_WAVE_FORMAT_UNSIGNED_8:	return "unsigned_8";
+    case GSL_WAVE_FORMAT_SIGNED_8:	return "signed_8";
+    case GSL_WAVE_FORMAT_UNSIGNED_12:	return "unsigned_12";
+    case GSL_WAVE_FORMAT_SIGNED_12:	return "signed_12";
+    case GSL_WAVE_FORMAT_UNSIGNED_16:	return "unsigned_16";
+    case GSL_WAVE_FORMAT_SIGNED_16:	return "signed_16";
+    case GSL_WAVE_FORMAT_FLOAT:		return "float";
+    case GSL_WAVE_FORMAT_NONE:
+    case GSL_WAVE_FORMAT_LAST:
+    default:
+      g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, NULL);
+      return NULL;
+    }
+}
+
+GslWaveFormatType
+gsl_wave_format_from_string (const gchar *string)
+{
+  gboolean is_unsigned = FALSE;
+
+  g_return_val_if_fail (string != NULL, GSL_WAVE_FORMAT_NONE);
+
+  while (*string == ' ')
+    string++;
+  if (strncasecmp (string, "float", 5) == 0)
+    return GSL_WAVE_FORMAT_FLOAT;
+  if ((string[0] == 'u' || string[0] == 'U') &&
+      (string[1] == 'n' || string[1] == 'N'))
+    {
+      is_unsigned = TRUE;
+      string += 2;
+    }
+  if (strncasecmp (string, "signed", 6) != 0)
+    return GSL_WAVE_FORMAT_NONE;
+  string += 6;
+  if (string[0] != '-' && string[0] != '_')
+    return GSL_WAVE_FORMAT_NONE;
+  string += 1;
+  if (string[0] == '8')
+    return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_8 : GSL_WAVE_FORMAT_SIGNED_8;
+  if (string[0] != '1')
+    return GSL_WAVE_FORMAT_NONE;
+  string += 1;
+  if (string[0] == '2')
+    return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_12 : GSL_WAVE_FORMAT_SIGNED_12;
+  if (string[0] == '6')
+    return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_16 : GSL_WAVE_FORMAT_SIGNED_16;
+  return GSL_WAVE_FORMAT_NONE;
+}
+
+const gchar*
+gsl_byte_order_to_string (guint byte_order)
+{
+  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
+
+  if (byte_order == G_LITTLE_ENDIAN)
+    return "little_endian";
+  if (byte_order == G_BIG_ENDIAN)
+    return "big_endian";
+  
+  return NULL;
+}
+
+guint
+gsl_byte_order_from_string (const gchar *string)
+{
+  g_return_val_if_fail (string != NULL, 0);
+
+  while (*string == ' ')
+    string++;
+  if (strncasecmp (string, "little", 6) == 0)
+    return G_LITTLE_ENDIAN;
+  if (strncasecmp (string, "big", 3) == 0)
+    return G_BIG_ENDIAN;
+  return 0;
 }

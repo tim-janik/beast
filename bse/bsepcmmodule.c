@@ -52,7 +52,7 @@ bse_pcm_module_poll (gpointer         data,
 		     const GslPollFD *fds,
 		     gboolean         revents_filled)
 {
-#if 0
+#if 1
   /* written for full OSS buffer fills */
   BsePCMModuleData *mdata = data;
   BsePcmStatus status;

@@ -67,6 +67,13 @@ GslWaveDsc*	gsl_wave_dsc_read		(const gchar	  *file_name);
 void		gsl_wave_dsc_free		(GslWaveDsc	  *wave);
 
 
+/* --- parse utils --- */
+const gchar*	  gsl_wave_format_to_string	(GslWaveFormatType format);
+GslWaveFormatType gsl_wave_format_from_string	(const gchar	  *string);
+const gchar*	  gsl_byte_order_to_string	(guint		   byte_order);
+guint		  gsl_byte_order_from_string	(const gchar	  *string);
+
+
 /* --- utils --- */
 GslDataHandle*	gsl_data_handle_from_wave_file	(const gchar	  *file_name,
 						 GslWaveFormatType format,
