@@ -47,7 +47,6 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #endif
 
 #define PCM_DEBUG(...)          sfi_debug ("pcm", __VA_ARGS__)
-#define LATENCY_DEBUG(...)      sfi_debug ("latency", __VA_ARGS__)
 
 
 /* --- OSS PCM handle --- */
@@ -58,6 +57,7 @@ typedef struct
   guint		n_frags;
   guint		frag_size;
   guint		frame_size;
+  guint         queue_length;
   gint16       *frag_buf;
   guint         read_write_count;
   gboolean      needs_trigger;
@@ -196,7 +196,9 @@ bse_pcm_device_oss_open (BseDevice     *device,
       /* try setup */
       guint frag_length = BSE_PCM_DEVICE (device)->req_block_length;
       oss->frag_size = frag_length * handle->n_channels * 2;
-      error = oss_device_setup (oss, BSE_PCM_DEVICE (device)->req_queue_length);
+      guint latency = CLAMP (BSE_PCM_DEVICE (device)->req_latency_ms, 1, 5000); /* in milliseconds */
+      latency = BSE_PCM_DEVICE (device)->req_mix_freq / 1000.0 * latency;       /* in frames */
+      error = oss_device_setup (oss, latency);
     }
   else
     error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
@@ -328,18 +330,18 @@ oss_device_setup (OSSHandle *oss,
     return BSE_ERROR_DEVICE_BUFFER;
   oss->n_frags = info.fragstotal;
   oss->frag_size = info.fragsize;
-  handle->queue_length = info.bytes / oss->frame_size;
-  if (handle->queue_length != oss->frag_size * oss->n_frags / oss->frame_size)
+  oss->queue_length = info.bytes / oss->frame_size;
+  if (oss->queue_length != oss->frag_size * oss->n_frags / oss->frame_size)
     {
       /* return BSE_ERROR_DEVICE_BUFFER; */
       sfi_diag ("OSS: buffer size (%d) differs from fragment space (%d)", info.bytes, info.fragstotal * info.fragsize);
-      handle->queue_length = oss->n_frags * oss->frag_size / oss->frame_size;
+      oss->queue_length = oss->n_frags * oss->frag_size / oss->frame_size;
     }
 
   if (handle->readable)
     {
       req_queue_length = MAX (req_queue_length, 3 * info.fragsize / oss->frame_size);   /* can't get better than 3 fragments */
-      handle->queue_length = MIN (handle->queue_length, req_queue_length);
+      oss->queue_length = MIN (oss->queue_length, req_queue_length);
     }
   else  /* only writable */
     {
@@ -348,8 +350,8 @@ oss_device_setup (OSSHandle *oss,
        * seconds for the latency, to not force the suer to adjust latency if
        * he catches a write-only OSS device temporarily.
        */
-      req_queue_length = MIN (req_queue_length, handle->queue_length);
-      handle->queue_length = CLAMP (25 * handle->mix_freq / 1000, req_queue_length, handle->queue_length);
+      req_queue_length = MIN (req_queue_length, oss->queue_length);
+      oss->queue_length = CLAMP (25 * handle->mix_freq / 1000, req_queue_length, oss->queue_length);
     }
 
   PCM_DEBUG ("OSS: setup: w=%d r=%d n_channels=%d mix_freq=%u queue=%u nfrags=%u fsize=%u bufsz=%u\n",
@@ -357,7 +359,7 @@ oss_device_setup (OSSHandle *oss,
 	     handle->readable,
 	     handle->n_channels,
 	     handle->mix_freq,
-             handle->queue_length,
+             oss->queue_length,
 	     oss->n_frags,
 	     oss->frag_size / oss->frame_size,
 	     info.bytes / oss->frame_size);
@@ -408,7 +410,7 @@ oss_device_retrigger (OSSHandle *oss)
     }
 
   /* provide latency buffering */
-  gint size = handle->queue_length * oss->frame_size, n;
+  gint size = oss->queue_length * oss->frame_size, n;
   guint8 *silence = g_malloc0 (size);
   do
     n = write (oss->fd, silence, size);
@@ -463,18 +465,18 @@ oss_device_check_io (BsePcmHandle *handle,
   if (!checked_underrun && handle->readable && handle->writable)
     {
       checked_underrun = TRUE;
-      if (n_capture_avail > handle->queue_length + oss->frag_size / oss->frame_size)
+      if (n_capture_avail > oss->queue_length + oss->frag_size / oss->frame_size)
         {
           if (oss->hard_sync)
             {
-              g_printerr ("OSS: underrung detected (diff=%d), forcing hard sync (retrigger)\n", n_capture_avail - handle->queue_length);
+              g_printerr ("OSS: underrun detected (diff=%d), forcing hard sync (retrigger)\n", n_capture_avail - oss->queue_length);
               oss->needs_trigger = TRUE;
             }
           else /* soft-sync */
             {
-              g_printerr ("OSS: underrung detected (diff=%d), skipping data\n", n_capture_avail - handle->queue_length);
+              g_printerr ("OSS: underrun detected (diff=%d), skipping data\n", n_capture_avail - oss->queue_length);
               /* soft sync, throw away extra data */
-              guint n_bytes = oss->frame_size * (n_capture_avail - handle->queue_length);
+              guint n_bytes = oss->frame_size * (n_capture_avail - oss->queue_length);
               do
                 {
                   gssize l, n = MIN (FRAG_BUF_SIZE (oss), n_bytes);
@@ -498,7 +500,7 @@ oss_device_check_io (BsePcmHandle *handle,
 
   /* check immediate processing need */
   guint fill_frames = n_total_playback - n_playback_avail;
-  if (fill_frames <= handle->queue_length)
+  if (fill_frames <= oss->queue_length)
     return TRUE;        /* need process */
 
   /* calculate timeout until processing is possible/needed */
@@ -506,7 +508,7 @@ oss_device_check_io (BsePcmHandle *handle,
   if (handle->readable)
     diff_frames = handle->block_length - n_capture_avail;
   else /* only writable */
-    diff_frames = fill_frames - handle->queue_length;
+    diff_frames = fill_frames - oss->queue_length;
   *timeoutp = diff_frames * 1000 / handle->mix_freq;
   /* OSS workaround for low latency */
   if (handle->readable)

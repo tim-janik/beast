@@ -1,3 +1,12 @@
+Mon Sep 27 06:38:57 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice.[hc]: removed queue_length field from handle, as it's
+	OSS specific. turned req_queue_length field into req_latency_ms, i.e.
+	requested latency in milliseconds.
+
+	* bsemididevice-oss.c: added queue_length field to handle. adapt
+	to BsePcmDevice.req_latency_ms.
+
 Mon Sep 27 01:09:39 2004  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-oss.c: fixed hardcoded n_channels=2 and a number of buglets.

@@ -31,8 +31,8 @@ bse_pcm_device_init (BsePcmDevice *pdev)
 {
   pdev->req_n_channels = 2;
   pdev->req_mix_freq = 44100;
+  pdev->req_latency_ms = 150;
   pdev->req_block_length = 1024;
-  pdev->req_queue_length = 4096;
   pdev->handle = NULL;
 }
 
@@ -51,8 +51,7 @@ bse_pcm_device_request (BsePcmDevice  *self,
   self->req_n_channels = n_channels;
   self->req_mix_freq = mix_freq;
   self->req_block_length = MAX (block_length, 2);
-  guint latency = self->req_mix_freq / 1000.0 * CLAMP (latency_ms, 1, 5000); /* in frames */
-  self->req_queue_length = MAX (latency, 2 * self->req_block_length);
+  self->req_latency_ms = latency_ms;
 }
 
 static void

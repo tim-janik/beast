@@ -54,7 +54,6 @@ struct _BsePcmHandle
   guint			 writable : 1;
   guint			 n_channels;    /* should be req_n_channels */
   guint 		 mix_freq;      /* should be req_mix_freq within 1% tolerance */
-  guint                  queue_length;  /* usually <= req_queue_length */
   guint                  block_length;  /* in frames, filled in after open() before i/o */
   SfiMutex		 mutex;
   gsize	   (*read)	(BsePcmHandle		*handle,
@@ -72,7 +71,7 @@ struct _BsePcmDevice
   /* requested caps */
   guint			req_n_channels;
   guint                 req_mix_freq;
-  guint                 req_queue_length; /* latency in frames */
+  guint                 req_latency_ms;   /* latency in milliseconds */
   guint                 req_block_length; /* in frames, a guess at block_length after open() */
 
   /* operational handle */
