@@ -175,6 +175,7 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 #define BSE_VOICES_POLY_OVER_FIXED	(1)
 #define BSE_NOTIFY_PRIORITY		(G_PRIORITY_HIGH_IDLE + 20 /* object notify + cross changes */)
 #define BSE_MIX_VALUE_BYTES_EQUAL(val)	(BSE_UINT32_BYTES_EQUAL (val))
+#define	BSE_DEFAULT_RATING		(500)
 
 
 /* --- BseGlobals - configurable defaults --- */

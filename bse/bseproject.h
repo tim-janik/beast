@@ -61,7 +61,8 @@ BseItem*	bse_project_item_from_nick_path	(BseProject	*project,
 BseErrorType	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
 BseErrorType	bse_project_store_bse		(BseProject	*project,
-						 const gchar	*bse_file);
+						 const gchar	*bse_file,
+						 gboolean        self_contained);
 BseObject*	bse_project_path_resolver	(gpointer        project /* func_data */,
 						 BseStorage     *storage,
 						 GType           required_type,

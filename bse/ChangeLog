@@ -1,3 +1,23 @@
+Sat Feb  2 12:22:11 2002  Tim Janik  <timj@gtk.org>
+
+	* bseproject.[hc]:
+	(bse_project_store_bse): add argument on whether to save wave
+	files per reference or inlined.
+	BseProject+store-bse: provide a procedure to actually store
+	a project.
+
+	* bsestorage.h: added a flag and macro BSE_STORAGE_SELF_CONTAINED()
+	to indicate that objects shouldn't store references.
+	* bsestorage.c: convert sample data via gsl_conv_from_float_clip().
+
+	* bsewave.c: fix up the raminings of deciding between inlined storage
+	or file references, works with BSE_STORAGE_SELF_CONTAINED() now.
+
+Sat Feb  2 11:22:10 2002  Tim Janik  <timj@gtk.org>
+
+	* bsemididevice-null.[hc]: new NULL midi device. basically allowes
+	beast to operate with PCM without the need for /dev/midi.
+
 Sat Feb  2 09:21:39 2002  Tim Janik  <timj@gtk.org>
 
 	* gslcommon.[hc] (gsl_check_file): new function for elaborate

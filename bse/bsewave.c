@@ -36,9 +36,10 @@ enum {
 
 typedef struct
 {
-  GslWaveChunk     *wchunk;
-  gchar            *file_name;
-  gchar		   *wave_name;
+  GslWaveChunk	*wchunk;
+  gchar		*file_name;
+  gchar		*wave_name;
+  gboolean	 locator_overrides;
 } WaveChunkUrl;
 
 typedef struct
@@ -338,6 +339,8 @@ void
 bse_wave_add_chunk (BseWave      *wave,
 		    GslWaveChunk *wchunk)
 {
+  WaveChunkUrl *url;
+
   g_return_if_fail (BSE_IS_WAVE (wave));
   g_return_if_fail (wchunk != NULL);
   g_return_if_fail (wchunk->dcache != NULL);
@@ -351,15 +354,14 @@ bse_wave_add_chunk (BseWave      *wave,
   wchunk->owner_data = wave;
   wave->wave_chunks = g_slist_insert_sorted (wave->wave_chunks, wchunk, wchunk_cmp);
   wave->n_wchunks++;
-  if (wave->locator_set)
-    {
-      WaveChunkUrl *url = g_new0 (WaveChunkUrl, 1);
 
-      url->wchunk = wchunk;
-      url->file_name = NULL;
-      url->wave_name = NULL;
-      wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
-    }
+  url = g_new0 (WaveChunkUrl, 1);
+  url->wchunk = wchunk;
+  url->file_name = NULL;
+  url->wave_name = NULL;
+  url->locator_overrides = FALSE;
+  wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
+
   wave_update_index (wave, FALSE);
   BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
 }
@@ -386,6 +388,7 @@ bse_wave_add_chunk_with_locator (BseWave      *wave,
   url->wchunk = wchunk;
   url->file_name = g_strdup (file_name);
   url->wave_name = g_strdup (wave_name);
+  url->locator_overrides = FALSE;
   wave->wave_chunk_urls = g_slist_prepend (wave->wave_chunk_urls, url);
   wave_update_index (wave, FALSE);
   BSE_OBJECT_UNSET_FLAGS (wave, BSE_ITEM_FLAG_STORAGE_IGNORE);
@@ -396,15 +399,23 @@ bse_wave_set_locator (BseWave     *wave,
 		      const gchar *file_name,
 		      const gchar *wave_name)
 {
+  GSList *slist;
+
   g_return_if_fail (BSE_IS_WAVE (wave));
   g_return_if_fail (file_name != NULL);
   g_return_if_fail (wave_name != NULL);
   g_return_if_fail (wave->locator_set == FALSE);
 
-  nuke_wave_urls (wave);
   wave->locator_set = TRUE;
   wave->file_name = g_strdup (file_name);
   wave->wave_name = g_strdup (wave_name);
+  for (slist = wave->wave_chunk_urls; slist; slist = slist->next)
+    {
+      WaveChunkUrl *url = slist->data;
+
+      url->locator_overrides = TRUE;
+    }
+
   g_object_freeze_notify (G_OBJECT (wave));
   g_object_notify (G_OBJECT (wave), "locator_set");
   g_object_notify (G_OBJECT (wave), "file_name");
@@ -428,7 +439,7 @@ bse_wave_do_store_private (BseObject  *object,
   if (BSE_OBJECT_CLASS (parent_class)->store_private)
     BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
 
-  if (wave->locator_set)
+  if (wave->locator_set && !BSE_STORAGE_SELF_CONTAINED (storage))
     {
       bse_storage_break (storage);
       bse_storage_printf (storage, "(load-wave \"%s\" \"%s\"", wave->file_name, wave->wave_name);
@@ -438,11 +449,18 @@ bse_wave_do_store_private (BseObject  *object,
 	  GSList *slist;
 	  guint i = 0;
 
-	  bse_storage_printf (storage, " skip");
-	  bse_storage_push_level (storage);
 	  for (slist = wave->wave_chunk_urls; slist; slist = slist->next)
 	    {
 	      WaveChunkUrl *url = slist->data;
+
+	      if (url->locator_overrides)
+		continue;
+
+	      if (i == 0)
+		{
+		  bse_storage_printf (storage, " skip");
+		  bse_storage_push_level (storage);
+		}
 
 	      if (i++ % 3 == 0)
 		bse_storage_break (storage);
@@ -450,9 +468,9 @@ bse_wave_do_store_private (BseObject  *object,
 		bse_storage_putc (storage, ' ');
 	      bse_storage_printf (storage, "%g", url->wchunk->osc_freq);
 	    }
-	  bse_storage_pop_level (storage);
+	  if (i != 0)
+	    bse_storage_pop_level (storage);
 	}
-
       bse_storage_putc (storage, ')');
       bse_storage_break (storage);
       bse_storage_printf (storage, "(set-locator \"%s\" \"%s\")", wave->file_name, wave->wave_name);
@@ -462,7 +480,10 @@ bse_wave_do_store_private (BseObject  *object,
     {
       WaveChunkUrl *url = slist->data;
 
-      if (url->file_name && url->wave_name)
+      if (url->locator_overrides && wave->locator_set && !BSE_STORAGE_SELF_CONTAINED (storage))
+	continue;
+
+      if (url->file_name && url->wave_name && !BSE_STORAGE_SELF_CONTAINED (storage))
 	{
 	  bse_storage_break (storage);
 	  bse_storage_printf (storage, "(load-wave \"%s\" \"%s\" list %g)",
@@ -474,7 +495,7 @@ bse_wave_do_store_private (BseObject  *object,
           bse_storage_break (storage);
 	  bse_storage_printf (storage, "(wave-chunk %g %g", url->wchunk->osc_freq, url->wchunk->mix_freq);
           bse_storage_push_level (storage);
-	  if (1||url->wchunk->n_channels > 1) // FIXME
+	  if (TRUE || url->wchunk->n_channels > 1) // FIXME
 	    {
 	      bse_storage_break (storage);
 	      bse_storage_printf (storage, "(n-channels %u)", url->wchunk->n_channels);
@@ -787,8 +808,8 @@ bse_wave_do_restore (BseObject  *object,
   if (BSE_OBJECT_CLASS (parent_class)->restore)
     expected_token = BSE_OBJECT_CLASS (parent_class)->restore (object, storage);
 
-  g_print ("post parsing: %u wave chunks locator_set=%u\n",
-	   wave->n_wchunks, wave->locator_set);
+  g_printerr ("BseWave: post parsing: %u wave chunks locator_set=%u\n",
+	      wave->n_wchunks, wave->locator_set);
 
   return expected_token;
 }

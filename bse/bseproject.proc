@@ -96,6 +96,39 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseProject, store-bse, "File/Store") {
+  HELP	= "Save a project into a BSE file";
+  IN	= g_param_spec_object ("project", "Project", NULL,
+			       BSE_TYPE_PROJECT, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_string ("file-name", "File", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_boolean ("self-contained", "Self Contained", NULL,
+				NULL, BSE_PARAM_DEFAULT);
+  OUT	= g_param_spec_enum ("error", "Error", NULL,
+			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+	GValue            *in_values,
+	GValue            *out_values)
+{
+  /* extract parameter values */
+  BseProject *project = g_value_get_object (in_values++);
+  gchar *file_name = g_value_get_string (in_values++);
+  gboolean self_contained = g_value_get_boolean (in_values++);
+  BseErrorType error;
+  
+  /* check parameters */
+  if (!BSE_IS_PROJECT (project) || !file_name)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  error = bse_project_store_bse (project, file_name, self_contained);
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
 METHOD (BseProject, create-song) {
   HELP	= "Create a new song in project";
   IN	= g_param_spec_object ("project", "Project", NULL,

@@ -389,7 +389,8 @@ bse_project_restore (BseProject *project,
 
 BseErrorType
 bse_project_store_bse (BseProject  *project,
-		       const gchar *bse_file)
+		       const gchar *bse_file,
+		       gboolean     self_contained)
 {
   BseStorage *storage;
   gint fd;
@@ -411,6 +412,8 @@ bse_project_store_bse (BseProject  *project,
     return (errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_FILE_IO);
 
   storage = bse_storage_new ();
+  if (self_contained)
+    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_SELF_CONTAINED);
   bse_storage_prepare_write (storage, FALSE);
   bse_container_store_items (BSE_CONTAINER (project), storage);
 

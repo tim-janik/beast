@@ -67,6 +67,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsemath.h \
 	bsehunkmixer.h \
 	bsemididevice.h \
+	bsemididevice-null.h \
 	bsemididevice-oss.h \
 	bsemidievent.h \
 	bsemidimodule.h \
@@ -134,6 +135,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsemath.c \
 	bsehunkmixer.c \
 	bsemididevice.c \
+	bsemididevice-null.c \
 	bsemididevice-oss.c \
 	bsemidievent.c \
 	bsemidimodule.c \

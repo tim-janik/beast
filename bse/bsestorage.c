@@ -23,6 +23,7 @@
 #include "bsesample.h"
 #include "bsesong.h"
 #include "gsldatahandle.h"
+#include "gsldatautils.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -487,27 +488,13 @@ bse_storage_flush_fd (BseStorage *storage,
 	      vlength -= l;
 	      if (bblock->bytes_per_value == 1)
 		{
-		  guint8 *p = (guint8*) fbuffer, *b = p + l;
-		  gfloat *f = fbuffer;
-
-		  do
-		    {
-		      gfloat v = *f++; v = CLAMP (v, -1.0, 1.0);
-		      *p++ = v * 127;
-		    }
-		  while (p < b);
+		  gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER,
+					    fbuffer, fbuffer, l);
 		}
 	      else if (bblock->bytes_per_value == 2)
 		{
-		  guint16 *p = (guint16*) fbuffer, *b = p + l;
-		  gfloat *f = fbuffer;
-
-		  do
-		    {
-		      gfloat v = *f++; v = CLAMP (v, -1.0, 1.0);
-		      *p++ = v * 32767;
-		    }
-		  while (p < b);
+                  gsl_conv_from_float_clip (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER,
+                                            fbuffer, fbuffer, l);
 		  l *= 2;
 		}
 	      else

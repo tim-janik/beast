@@ -115,7 +115,7 @@ bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
 
   pcm_device_class->open = bse_pcm_device_oss_open;
   pcm_device_class->suspend = bse_pcm_device_oss_close;
-  pcm_device_class->driver_rating = 1;
+  pcm_device_class->driver_rating = BSE_DEFAULT_RATING;
 }
 
 static void
