@@ -1,3 +1,8 @@
+Wed Dec 29 22:24:51 2004 Stefan Westerfeld <stefan@space.twc.de>
+
+	* gslloader.h:
+	* gslloader-pat.cc: Code cleanups and better error handling.
+
 Wed Dec 29 12:52:01 2004 Stefan Westerfeld <stefan@space.twc.de>
 
 	* bsestorage.c: Include "gslcommon.h" for gsl_byte_order_to_string.
