@@ -35,7 +35,6 @@ main (int argc, char *argv[])
   /* Setup output pcm device, we use the OSS PCM Driver.
    */
   pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_PCM_DEVICE_OSS, NULL);
-  bse_pcm_device_set_device_name (pdev, "/dev/dsp");
   
   /* Read samples
    */
@@ -80,7 +79,7 @@ main (int argc, char *argv[])
     {
       g_warning ("Opening %s \"%s\" failed: %s\n",
 		 BSE_OBJECT_TYPE_NAME (pdev),
-		 pdev->device_name,
+		 bse_pcm_device_get_device_name (pdev),
 		 bse_error_blurb (error));
       return -1;
     }
@@ -88,7 +87,7 @@ main (int argc, char *argv[])
     {
       g_print ("Using %s \"%s\" with %uHz in %u channel mode, fragment size %d\n",
 	       BSE_OBJECT_TYPE_NAME (pdev),
-	       pdev->device_name,
+	       bse_pcm_device_get_device_name (pdev),
 	       (guint) pdev->sample_freq,
 	       pdev->n_channels,
 	       pdev->fragment_size);

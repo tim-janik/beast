@@ -367,6 +367,16 @@ static void
 bse_snet_reset (BseSource *source)
 {
   BseSNet *snet = BSE_SNET (source);
+  GList *list;
+
+  /* reset all children */
+  for (list = snet->sources; list; list = list->next)
+    {
+      BseSource *source = list->data;
+
+      if (BSE_SOURCE_PREPARED (source))
+	bse_source_reset (source);
+    }
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);

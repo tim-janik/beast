@@ -552,7 +552,7 @@ device_open_handler (gpointer data)
 					 2 * BSE_TRACK_LENGTH * sizeof (BseSampleValue));
 	  if (error)
 	    g_warning ("failed to open PCM Device \"%s\": %s",
-		       pdev->device_name,
+		       bse_pcm_device_get_device_name (pdev),
 		       bse_error_blurb (error));
 	  if (BSE_PCM_DEVICE_OPEN (pdev))
 	    {
@@ -818,7 +818,26 @@ bse_heart_dispatch (gpointer  source_data,
 	{
 	  BseSampleValue *obuf;
 	  GSList *node, *slist = bse_heart_collect_chunks (heart, hdevice);
+	  guint blocks_over;
+	  guint threshold_max = 2 * pdev->n_fragments / 3;
+	  guint threshold_min = pdev->n_fragments / 3;
 
+#if 0
+	  blocks_over = bse_pcm_device_oready (pdev, BSE_TRACK_LENGTH * pdev->n_channels);
+	  if (blocks_over > threshold_max)
+	    {
+	      g_message ("playback underrun (%d), filling up...", blocks_over - threshold_min);
+	      memset (heart->mix_buffer,
+		      0,
+		      BSE_TRACK_LENGTH * pdev->n_channels * sizeof (BseSampleValue));
+	      do
+		bse_pcm_device_write (pdev,
+				      BSE_TRACK_LENGTH * pdev->n_channels,
+				      (gpointer) heart->mix_buffer);
+	      while (--blocks_over > threshold_min);
+	    }
+#endif
+	  
 	  /* FIXME: optimize here for 1 chunk with n_tracks == odev->n_channels */
 	  obuf = bse_heart_mix_chunks (heart, slist, pdev->n_channels);
 	  bse_pcm_device_write (pdev, BSE_TRACK_LENGTH * pdev->n_channels, obuf);

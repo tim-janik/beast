@@ -301,6 +301,7 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_DEVICE_BUSY:			return "Device busy";
     case BSE_ERROR_DEVICE_IO:			return "Device I/O error";
     case BSE_ERROR_DEVICE_GET_CAPS:		return "Failed to query device capabilities";
+    case BSE_ERROR_DEVICE_CAPS_MISMATCH:	return "Device capabilities not sufficient";
     case BSE_ERROR_DEVICE_SET_CAPS:		return "Failed to set device capabilities";
     case BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL:	return "No such input channel";
     case BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL:	return "No such output channel";

@@ -93,7 +93,6 @@ struct _BsePcmDevice
 {
   BseObject	     parent_object;
 
-  gchar             *device_name;
   BseErrorType	     last_error;
   BsePcmCapabilities caps;
 
@@ -116,6 +115,8 @@ struct _BsePcmDeviceClass
 {
   BseObjectClass  parent_class;
 
+  gchar*	(*device_name)	(BsePcmDevice	*pdev,
+				 gboolean	 descriptive);
   BseErrorType	(*update_caps)	(BsePcmDevice	*pdev);
   BseErrorType	(*open)		(BsePcmDevice	*pdev,
 				 gboolean	 readable,
@@ -136,8 +137,6 @@ struct _BsePcmDeviceClass
 
 
 /* --- prototypes --- */
-void		bse_pcm_device_set_device_name	 (BsePcmDevice	 *pdev,
-						  const gchar	 *device_name);
 BseErrorType 	bse_pcm_device_update_caps	 (BsePcmDevice	 *pdev);
 BseErrorType 	bse_pcm_device_open		 (BsePcmDevice	 *pdev,
 						  gboolean	  readable,
@@ -146,9 +145,9 @@ BseErrorType 	bse_pcm_device_open		 (BsePcmDevice	 *pdev,
 						  gdouble         sample_freq,
 						  guint           fragment_size);
 void	     	bse_pcm_device_close		 (BsePcmDevice	 *pdev);
-gboolean     	bse_pcm_device_oready		 (BsePcmDevice	 *pdev,
+guint     	bse_pcm_device_oready		 (BsePcmDevice	 *pdev,
 						  guint		  n_values);
-gboolean     	bse_pcm_device_iready		 (BsePcmDevice	 *pdev,
+guint     	bse_pcm_device_iready		 (BsePcmDevice	 *pdev,
 						  guint		  n_values);
 void	     	bse_pcm_device_read		 (BsePcmDevice	 *pdev,
 						  guint		  n_values,
@@ -159,6 +158,9 @@ void	     	bse_pcm_device_write		 (BsePcmDevice	 *pdev,
 void	     	bse_pcm_device_set_capture_cache (BsePcmDevice	 *pdev,
 						  BseSampleValue *cache,
 						  GDestroyNotify  destroy);
+void	 	bse_pcm_device_invalidate_caps	 (BsePcmDevice	 *pdev);
+gchar*		bse_pcm_device_get_device_name   (BsePcmDevice	 *pdev);
+gchar*		bse_pcm_device_get_device_blurb  (BsePcmDevice	 *pdev);
 
 
 /* --- frequency utilities --- */

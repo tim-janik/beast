@@ -111,6 +111,9 @@ typedef enum
 #  define BSE_BUILTIN_PROTO(BseTypeName) extern BseType bse_type_builtin_register_##BseTypeName (void)
 #  define BSE_BUILTIN_TYPE(BseTypeName)	 BSE_BUILTIN_PROTO (BseTypeName); \
                                          BseType bse_type_builtin_register_##BseTypeName (void)
+#  define BSE_DUMMY_TYPE(BseTypeName)	 BSE_BUILTIN_PROTO (BseTypeName); \
+                                         BseType bse_type_builtin_register_##BseTypeName (void) \
+                                         { return 0; } BSE_BUILTIN_PROTO (BseTypeName)
 #endif /* BSE_COMPILATION */
 
 

@@ -1,3 +1,66 @@
+Sun Dec 12 04:50:19 1999  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-oss.c (bse_pcm_device_oss_open): start playback with
+	read() here already, normally select(in) should do, but that is not
+	the case for pseudo-OSS drivers in the kernel.
+
+	* bsepcmdevice-oss.c (bse_pcm_device_oss_update_caps): fixed bug with
+	max_fragment_size readout, this could stop OSS card drivers from
+	working if they supported all fragment sizes we check for.
+
+	* <sigh> duplex still doesn't work correctly here, this defers further
+	work until i got a new machine that *does* work in duplex mode. it's
+	certainly not the fault of all the 3 soundcards and 5 drivers that i
+	eventually tested here ;(
+
+Sat Dec 11 05:34:17 1999  Tim Janik  <timj@gtk.org>
+
+	* bsetype.h (BSE_DUMMY_TYPE): install a dummy type, needed when normal
+	type defs had to be disabled.
+
+	* bsepcmdevice-alsa.[hc]: first implementation of an ALSA based pcm
+	driver.
+
+Fri Dec 10 16:19:51 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesource.c (bse_source_default_skip_chunk): hm, changed ckip_chunk()
+	semantics, reinvoking calc_chunk() doesn't really go along with
+	different source cycle indices. unless we change skip_chunk() to be
+	comprehensively called for all BseHeart sources before the global
+	index is increased, one basically can't call ref_chunk() from
+	this method.
+
+Fri Dec 10 08:26:00 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.c (bse_snet_reset): reset all sources that we serve
+	as a container for.
+
+	* bsesource.c: we prepare isource in two cases, for osources that
+	are already prepared and get a new isource, for osources that are
+	currently being prepared and have isources as input.
+	we mostly do not reset sources anymore.
+
+Thu Dec  9 23:55:00 1999  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice.[hc]:
+	(bse_pcm_device_iready):
+	(bse_pcm_device_oready):
+	return number of writable blocks instead of just boolean.
+	(bse_pcm_device_write): 
+	(bse_pcm_device_read): 
+	adjust left space appropriatedly.
+
+Thu Dec  9 16:34:15 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesource.[hc]:
+	(bse_source_do_cycle): 
+	(bse_source_do_prepare): 
+	(bse_source_calc_history): 
+	cleanups/optimizations to the ochannel history buffer. fixed a bug
+	introduced with recent cleanups that completely disabled history.
+	(bse_source_do_shutdown): do proper cleanups through function calls,
+	and don't reinvent the wheel all over ;)
+
 Thu Dec  9 03:23:30 1999  Tim Janik  <timj@gtk.org>
 
 	* bsesource.c (bse_source_set_input): don't allow shortcircuiting

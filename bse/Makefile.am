@@ -75,6 +75,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsepattern.h \
 	bsepcmdevice.h \
 	bsepcmdevice-oss.h \
+	bsepcmdevice-alsa.h \
 	bseplugin.h \
 	bseprocedure.h \
 	bseproject.h \
@@ -120,6 +121,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsepattern.c \
 	bsepcmdevice.c \
 	bsepcmdevice-oss.c \
+	bsepcmdevice-alsa.c \
 	bseplugin.c \
 	bseprocedure.c \
 	bseproject.c \
@@ -255,16 +257,6 @@ bseconfigpaths.h: $(top_srcdir)/configure bseconfig.h Makefile
 	&& echo "#define BSE_PATH_DATA     \"${bsedatadir}\"" >> xgen-bcph \
 	&& echo "#define BSE_PATH_LIB      \"${bselibdir}\"" >> xgen-bcph \
 	&& echo "#define BSE_PATH_PLUGINS  (BSE_PATH_LIB \"/plugins\")" >> xgen-bcph \
-	&& if test -z '$(bseossdevice)' ; then \
-	     echo '#undef BSE_PATH_DEVICE_OSS' >> xgen-bcph ; \
-	   else \
-	     echo '#define BSE_PATH_DEVICE_OSS $(bseossdevice)' >> xgen-bcph ; \
-	   fi \
-	&& if test -z '$(bsealsadevices)' ; then \
-	     echo '#undef BSE_PATH_DEVICE_LIST_ALSA' >> xgen-bcph ; \
-	   else \
-	     echo '#define BSE_PATH_DEVICE_LIST_ALSA $(bsealsadevices)' >> xgen-bcph ; \
-	   fi \
 	&& echo >> xgen-bcph \
 	&& echo "/* Generated data ends here */" >> xgen-bcph \
 	&& (cmp -s xgen-bcph $@ || cp xgen-bcph $@) \

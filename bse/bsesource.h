@@ -78,7 +78,7 @@ struct _BseSourceInput
 struct _BseSourceOChannel
 {
   guint	      ring_offset;
-  guint       history;
+  guint       ring_length;
   guint	      muted : 1;
   guint	      in_calc : 1;
   BseChunk  **chunks;
@@ -104,7 +104,7 @@ struct _BseSourceIChannelDef
   guint    max_n_tracks; /* minimum/maximum number of tracks required for
 			  * output channel (FIXME: or 0 to indicate an infinite number of input sources).
 			  */
-  guint    min_history;
+  guint    history;
 };
 struct _BseSourceOChannelDef
 {
