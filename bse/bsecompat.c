@@ -36,6 +36,8 @@ bse_compat_rewrite_type_name (BseStorage    *storage,
     { 0, 5, 4,  "BseSubInstrument",     "BseInstrumentOutput"   },
     { 0, 6, 2,  "ArtsCompressor",       "BseArtsCompressor"     },
     { 0, 6, 2,  "ArtsStereoCompressor", "BseArtsCompressor"     },
+    { 0, 6, 2,  "DavBassFilter",        "BseDavBassFilter"      },
+    { 0, 6, 2,  "DavChorus",            "BseDavChorus"          },
   };
   guint i;
   for (i = 0; i < G_N_ELEMENTS (type_changes); i++)
