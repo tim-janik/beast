@@ -1,3 +1,9 @@
+Sat May 10 21:33:25 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* docs/generated/Makefile.am: added rule that copies texi files from
+	parent directory. adjusted prerequisites from html and site rules.
+	added a missing backslash in html rule.
+
 Sat May 10 18:08:18 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: disable texitheque checks if --enable-devel-rules

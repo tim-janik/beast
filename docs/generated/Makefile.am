@@ -115,6 +115,8 @@ gnome-index.lst.gz: # default-generate if not present to avoid build breakage
 	echo | gzip -9 >$@
 gnome-index.lst: $(srcdir)/gnome-index.lst.gz	# uncompress rule
 	cat $< | gzip -d >$@
+%.texi: $(srcdir)/../%.texi
+	cp $< $@
 # generate *.xml from *.texi with texitheque
 %.xml: %.texi index.lst gnome-index.lst
 	$(TEXI2XML) --index=index.lst --index=gnome-index.lst --output=$@ $<
@@ -128,10 +130,9 @@ index.lst: $(REFERENCE_XMLS)
 # man from xml (installed)
 %.3: %.3.nroff
 	cp -f $< $@
-	rm -f $<
 # html from xml (website)
-%.html: %.xml
-	$(XML2HTML) --output=$@ --images="cvs-images/"
+%.html: %.xml navigation.xml
+	$(XML2HTML) --output=$@ --images="cvs-images/" \
 		--banner="beast" --icon="beast16.png" $<
 # postscript rules
 %.nroff: %.xml
@@ -140,8 +141,8 @@ index.lst: $(REFERENCE_XMLS)
 	groff -man -t $< >$@
 %.pdf: %.ps
 	ps2pdf13 $< $@
-# where to get website *.xml from
-%.xml: $(srcdir)/../site-%.xml
+# where to get website *.texi from
+%.texi: $(srcdir)/../site-%.texi
 	cp -p $< $@
 # plain text generation rules
 gsl-mplan.texi: $(top_srcdir)/bse/gsl-mplan.txt Makefile
@@ -182,7 +183,9 @@ ACCOUNT=${USER}@beast.gtk.org
 XPREFIX=_tmpFile~
 index.html: news.html
 	ln -s $< $@
-site:	$(html_targets) navigation.xml index.html
+navigation.xml: $(srcdir)/../site-navigation.xml
+	cp $< $@
+site:	$(html_targets) index.html navigation.xml
 	tar jcf beast-site-con.tar.bz2 --mode=0664 $(html_targets) index.html css/*.css
 	tar zcf beast-site-img.tar.gz  --mode=0664 css/images/*.png
 	tar zcf beast-site-nav.tar.gz  --mode=0664 navigation.xml
