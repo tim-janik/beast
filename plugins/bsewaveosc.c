@@ -21,6 +21,9 @@
 #include <bse/gslengine.h>
 #include <bse/gslwavechunk.h>
 #include <bse/gslfilter.h>
+#include <bse/bsemarshal.h>
+#include <bse/bsemain.h>
+#include <bse/bseeditablesample.h>
 
 
 
@@ -31,7 +34,8 @@ enum
   PARAM_WAVE,
   PARAM_FM_PERC,
   PARAM_FM_EXP,
-  PARAM_FM_OCTAVES
+  PARAM_FM_OCTAVES,
+  PARAM_EDITABLE_SAMPLE
 };
 
 
@@ -40,6 +44,7 @@ static void	bse_wave_osc_init		(BseWaveOsc		*wosc);
 static void	bse_wave_osc_class_init		(BseWaveOscClass	*class);
 static void	bse_wave_osc_class_finalize	(BseWaveOscClass	*class);
 static void	bse_wave_osc_destroy		(BseObject		*object);
+static void	bse_wave_osc_finalize		(GObject		*object);
 static void	bse_wave_osc_set_property	(BseWaveOsc		*wosc,
 						 guint			 param_id,
 						 GValue			*value,
@@ -59,6 +64,7 @@ static void	bse_wave_osc_update_modules	(BseWaveOsc		*wosc);
 /* --- variables --- */
 static GType		 type_id_wave_osc = 0;
 static gpointer		 parent_class = NULL;
+static guint		 signal_notify_pcm_position = 0;
 static const GTypeInfo type_info_wave_osc = {
   sizeof (BseWaveOscClass),
   
@@ -87,6 +93,7 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
   
   gobject_class->set_property = (GObjectSetPropertyFunc) bse_wave_osc_set_property;
   gobject_class->get_property = (GObjectGetPropertyFunc) bse_wave_osc_get_property;
+  gobject_class->finalize = bse_wave_osc_finalize;
 
   object_class->destroy = bse_wave_osc_destroy;
   
@@ -122,6 +129,16 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
 						    1.0, 0.01,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_SCALE));
+
+  bse_object_class_add_param (object_class, NULL,
+			      PARAM_EDITABLE_SAMPLE,
+			      g_param_spec_object ("editable_sample", NULL, NULL,
+						   BSE_TYPE_EDITABLE_SAMPLE,
+						   G_PARAM_WRITABLE));
+
+  signal_notify_pcm_position = bse_object_class_add_signal (object_class, "notify_pcm_position",
+							    bse_marshal_VOID__UINT,
+							    G_TYPE_NONE, 1, G_TYPE_UINT);
 
   ichannel = bse_source_class_add_ichannel (source_class, "freq_in", "Frequency Input");
   g_assert (ichannel == BSE_WAVE_OSC_ICHANNEL_FREQ);
@@ -171,6 +188,19 @@ bse_wave_osc_destroy (BseObject *object)
 }
 
 static void
+bse_wave_osc_finalize (GObject *object)
+{
+  BseWaveOsc *wosc = BSE_WAVE_OSC (object);
+
+  if (wosc->esample_wchunk)
+    _gsl_wave_chunk_destroy (wosc->esample_wchunk);
+  wosc->esample_wchunk = NULL;
+
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static void
 notify_wave_changed (BseWaveOsc *wosc)
 {
   g_object_notify (G_OBJECT (wosc), "wave");
@@ -197,6 +227,13 @@ wave_uncross (BseItem *owner,
   g_object_notify (G_OBJECT (wosc), "wave");
 }
 
+static GslWaveChunk*
+wchunk_from_esample (gpointer wchunk_data,
+		     gfloat   freq)
+{
+  return wchunk_data;
+}
+
 static void
 bse_wave_osc_set_property (BseWaveOsc  *wosc,
 			   guint        param_id,
@@ -205,16 +242,17 @@ bse_wave_osc_set_property (BseWaveOsc  *wosc,
 {
   switch (param_id)
     {
+      BseEditableSample *esample;
     case PARAM_WAVE:
+      if (wosc->esample_wchunk)
+	g_object_set (wosc, "editable_sample", NULL, NULL);
       if (wosc->wave)
 	{
 	  g_object_disconnect (wosc->wave,
 			       "any_signal", notify_wave_changed, wosc,
 			       NULL);
 	  bse_item_cross_unref (BSE_ITEM (wosc), BSE_ITEM (wosc->wave));
-	  wosc->wave = NULL;
-	  wosc->config.wchunk_data = NULL;
-	  wosc->config.wchunk_from_freq = NULL;
+	  g_assert (wosc->wave == NULL);
 	}
       wosc->wave = g_value_get_object (value);
       if (wosc->wave)
@@ -237,6 +275,37 @@ bse_wave_osc_set_property (BseWaveOsc  *wosc,
 	   * before we return
 	   */
 	  gsl_engine_wait_on_trans ();
+	}
+      if (wosc->esample_wchunk)
+	_gsl_wave_chunk_destroy (wosc->esample_wchunk);
+      wosc->esample_wchunk = NULL;
+      break;
+    case PARAM_EDITABLE_SAMPLE:
+      if (wosc->wave)
+	g_object_set (wosc, "wave", NULL, NULL);
+      if (wosc->esample_wchunk)
+	{
+	  wosc->config.wchunk_data = NULL;
+	  wosc->config.wchunk_from_freq = NULL;
+	  if (BSE_SOURCE_PREPARED (wosc))
+	    {
+	      bse_wave_osc_update_modules (wosc);
+	      gsl_engine_wait_on_trans ();
+	    }
+	  _gsl_wave_chunk_destroy (wosc->esample_wchunk);
+	  wosc->esample_wchunk = NULL;
+	}
+      esample = g_value_get_object (value);
+      if (esample && esample->wchunk)
+	{
+	  wosc->esample_wchunk = gsl_wave_chunk_copy (esample->wchunk);
+	  if (BSE_SOURCE_PREPARED (wosc))
+	    {
+	      wosc->config.wchunk_data = wosc->esample_wchunk;
+	      wosc->config.wchunk_from_freq = wchunk_from_esample;
+	      bse_wave_osc_update_modules (wosc);
+	      gsl_engine_wait_on_trans ();
+	    }
 	}
       break;
     case PARAM_FM_PERC:
@@ -300,11 +369,18 @@ bse_wave_osc_prepare (BseSource *source)
 {
   BseWaveOsc *wosc = BSE_WAVE_OSC (source);
 
-  wosc->config.wchunk_data = bse_wave_get_index_for_modules (wosc->wave);
-  if (wosc->config.wchunk_data)
-    wosc->config.wchunk_from_freq = (gpointer) bse_wave_index_lookup_best;
-  else
-    wosc->config.wchunk_from_freq = NULL;
+  wosc->config.wchunk_from_freq = NULL;
+  if (wosc->wave)
+    {
+      wosc->config.wchunk_data = bse_wave_get_index_for_modules (wosc->wave);
+      if (wosc->config.wchunk_data)
+	wosc->config.wchunk_from_freq = (gpointer) bse_wave_index_lookup_best;
+    }
+  else if (wosc->esample_wchunk)
+    {
+      wosc->config.wchunk_data = wosc->esample_wchunk;
+      wosc->config.wchunk_from_freq = wchunk_from_esample;
+    }
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
@@ -316,6 +392,8 @@ wmod_access (GslModule *module,
 {
   GslWaveOscData *wmod = module->user_data;
   GslWaveOscConfig *config = data;
+
+  /* this runs in the Gsl Engine threads */
 
   gsl_wave_osc_config (wmod, config);
 }
@@ -405,6 +483,76 @@ bse_wave_osc_reset (BseSource *source)
 }
 
 
+/* --- request pcm_position --- */
+static GType type_id_request_pcm_position = 0;
+static void
+request_pcm_position_setup (BseProcedureClass *proc,
+			    GParamSpec       **in_pspecs,
+			    GParamSpec       **out_pspecs)
+{
+  proc->help      = ("Request emission of the ::notify_pcm_position signal.");
+  proc->author    = "Tim Janik <timj@gtk.org>";
+  proc->copyright = "Tim Janik <timj@gtk.org>";
+  proc->date      = "2002";
+
+  /* input parameters */
+  *(in_pspecs++) = g_param_spec_object ("wosc", NULL, "Wave Oscilator",
+					BSE_TYPE_WAVE_OSC, BSE_PARAM_DEFAULT);
+}
+
+static void
+pcm_pos_access (GslModule *module,
+		gpointer   data)
+{
+  GslWaveOscData *wmod = module->user_data;
+  BseWaveOsc *wosc = data;
+
+  /* this runs in the GSL engine threads */
+
+  wosc->module_pcm_position = wmod->block.offset;
+}
+
+static void
+pcm_pos_access_free (gpointer data)
+{
+  BseWaveOsc *wosc = data;
+
+  BSE_THREADS_ENTER ();
+  
+  /* this is guaranteed by the GSL engine to be run in user thread */
+
+  g_signal_emit (wosc, signal_notify_pcm_position, 0, wosc->module_pcm_position);
+
+  g_object_unref (wosc);
+
+  BSE_THREADS_LEAVE ();
+}
+
+static BseErrorType
+request_pcm_position_exec (BseProcedureClass *proc,
+			   GValue            *in_values,
+			   GValue            *out_values)
+{
+  /* extract parameter values */
+  BseWaveOsc *wosc = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_WAVE_OSC (wosc))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  if (BSE_SOURCE_PREPARED (wosc))
+    bse_source_access_omodules (BSE_SOURCE (wosc),
+				BSE_WAVE_OSC_OCHANNEL_WAVE,
+				pcm_pos_access,
+				g_object_ref (wosc),
+				pcm_pos_access_free,
+				NULL);
+
+  return BSE_ERROR_NONE;
+}
+
+
+
 /* --- Export to BSE --- */
 #include "./icons/waveosc.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
@@ -420,6 +568,13 @@ BSE_EXPORT_OBJECTS = {
     { WAVE_OSC_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       WAVE_OSC_IMAGE_WIDTH, WAVE_OSC_IMAGE_HEIGHT,
       WAVE_OSC_IMAGE_RLE_PIXEL_DATA, },
+  },
+  { NULL, },
+};
+BSE_EXPORT_PROCEDURES = {
+  { &type_id_request_pcm_position, "BseWaveOsc+request_pcm_position", NULL, 0,
+    request_pcm_position_setup, request_pcm_position_exec, NULL,
+    "/Method/BseWaveOsc/Intern/Request Pcm Position",
   },
   { NULL, },
 };

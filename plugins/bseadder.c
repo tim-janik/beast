@@ -42,7 +42,7 @@ static void	 bse_adder_get_property		(BseAdder	*adder,
 						 guint           param_id,
 						 GValue         *value,
 						 GParamSpec     *pspec);
-static BseIcon*	 bse_adder_do_get_icon		(BseObject	*object);
+static BswIcon*	 bse_adder_do_get_icon		(BseObject	*object);
 static void      bse_adder_context_create       (BseSource      *source,
 						 guint           context_handle,
 						 GslTrans       *trans);
@@ -115,7 +115,7 @@ bse_adder_class_init (BseAdderClass *class)
 static void
 bse_adder_class_finalize (BseAdderClass *class)
 {
-  bse_icon_unref (class->sub_icon);
+  bsw_icon_unref (class->sub_icon);
   class->sub_icon = NULL;
 }
 
@@ -126,7 +126,7 @@ bse_adder_init (BseAdder *adder)
   adder->subtract = FALSE;
 }
 
-static BseIcon*
+static BswIcon*
 bse_adder_do_get_icon (BseObject *object)
 {
   BseAdder *adder = BSE_ADDER (object);
