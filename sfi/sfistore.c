@@ -173,7 +173,7 @@ sfi_wstore_put_param (SfiWStore	   *wstore,
   g_return_if_fail (spspec != NULL);	/* we really couldn't do anything here */
   
   g_value_init (&svalue, G_PARAM_SPEC_VALUE_TYPE (spspec));
-  if (g_value_transform (value, &svalue))
+  if (sfi_value_transform (value, &svalue))
     {
       GString *gstring = g_string_new (NULL);
       if (g_param_value_validate (spspec, &svalue))
@@ -497,7 +497,7 @@ sfi_rstore_parse_param (SfiRStore  *rstore,
   token = sfi_value_parse_param_rest (&pvalue, rstore->scanner, spspec);
   if (token == G_TOKEN_NONE)
     {
-      if (g_value_transform (&pvalue, value))
+      if (sfi_value_transform (&pvalue, value))
 	{
 	  if (g_param_value_validate (pspec, value))
 	    {

@@ -606,6 +606,13 @@ sfi_value_proxy (SfiProxy vproxy)
 
 /* --- transformation --- */
 void
+sfi_value_choice2enum_simple (const GValue *choice_value,
+			      GValue       *enum_value)
+{
+  return sfi_value_choice2enum (choice_value, enum_value, NULL);
+}
+
+void
 sfi_value_choice2enum (const GValue *choice_value,
 		       GValue       *enum_value,
 		       GParamSpec   *fallback_param)
@@ -723,4 +730,47 @@ sfi_enum2choice (gint            enum_value,
   g_type_class_unref (eclass);
 
   return choice;
+}
+
+/* transform function to work around glib bugs */
+gboolean
+sfi_value_type_compatible (GType           src_type,
+			   GType           dest_type)
+{
+  return g_value_type_compatible (src_type, dest_type);
+}
+
+gboolean
+sfi_value_type_transformable (GType           src_type,
+			      GType           dest_type)
+{
+  if (sfi_value_type_transformable (src_type, dest_type))
+    return TRUE;
+  if (src_type == SFI_TYPE_CHOICE && G_TYPE_IS_ENUM (dest_type) && dest_type != G_TYPE_ENUM)
+    return TRUE;
+  if (dest_type == SFI_TYPE_CHOICE && G_TYPE_IS_ENUM (src_type) && src_type != G_TYPE_ENUM)
+    return TRUE;
+  return FALSE;
+}
+
+gboolean
+sfi_value_transform (const GValue   *src_value,
+		     GValue         *dest_value)
+{
+  GType src_type, dest_type;
+  if (g_value_transform (src_value, dest_value))
+    return TRUE;
+  src_type = G_VALUE_TYPE (src_value);
+  dest_type = G_VALUE_TYPE (dest_value);
+  if (src_type == SFI_TYPE_CHOICE && G_TYPE_IS_ENUM (dest_type) && dest_type != G_TYPE_ENUM)
+    {
+      sfi_value_choice2enum_simple (src_value, dest_value);
+      return TRUE;
+    }
+  if (dest_type == SFI_TYPE_CHOICE && G_TYPE_IS_ENUM (src_type) && src_type != G_TYPE_ENUM)
+    {
+      sfi_value_enum2choice (src_value, dest_value);
+      return TRUE;
+    }
+  return FALSE;
 }

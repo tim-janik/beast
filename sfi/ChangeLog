@@ -1,3 +1,16 @@
+Mon Feb 17 19:07:13 2003  Tim Janik  <timj@gtk.org>
+
+	* sfivalues.[hc]: <sigh>, added sfi_value_transform(),
+	sfi_value_type_compatible() and sfi_value_type_transformable()
+	to work around bugs in equally named glib functions. GLib-2.2.1
+	(and prior) can't register transform functions for dynamic types,
+	so we hardcode choice<=>enum transforms in these functions.
+	changed all callers of related glib functions.
+
+	* sfivalues.c (sfi_value_choice2enum_simple): provide
+	sfi_value_choice2enum_simple() which is readily usable as transform
+	function.
+
 Mon Feb 17 15:20:10 2003  Tim Janik  <timj@gtk.org>
 
 	* sfimemory.[hc] (sfi_alloc_upper_power2): fix return type.

@@ -154,15 +154,24 @@ void	sfi_value_free		(GValue		*value);
 
 
 /* --- transformation --- */
-void	sfi_value_choice2enum	(const GValue	*choice_value,
-				 GValue		*enum_value,
-				 GParamSpec	*fallback_param);
-void	sfi_value_enum2choice	(const GValue	*enum_value,
-				 GValue		*choice_value);
-gint    sfi_choice2enum         (const gchar    *choice_value,
-                                 GType           enum_type);
-gchar*  sfi_enum2choice         (gint            enum_value,
-                                 GType           enum_type);
+void	 sfi_value_choice2enum		(const GValue	*choice_value,
+					 GValue		*enum_value,
+					 GParamSpec	*fallback_param);
+void	 sfi_value_choice2enum_simple	(const GValue	*choice_value,
+					 GValue		*enum_value);
+void	 sfi_value_enum2choice		(const GValue	*enum_value,
+					 GValue		*choice_value);
+gint     sfi_choice2enum		(const gchar    *choice_value,
+					 GType           enum_type);
+gchar*   sfi_enum2choice		(gint            enum_value,
+					 GType           enum_type);
+/* transform function to work around glib bugs */
+gboolean sfi_value_transform		(const GValue   *src_value,
+					 GValue         *dest_value);
+gboolean sfi_value_type_compatible	(GType           src_type,
+					 GType           dest_type);
+gboolean sfi_value_type_transformable	(GType           src_type,
+					 GType           dest_type);
 
 
 /* --- internal --- */

@@ -329,18 +329,18 @@ param_seq_validate (GParamSpec *pspec,
 	  
           /* support conversion of wrongly typed elements */
           if (G_VALUE_TYPE (element) != G_PARAM_SPEC_VALUE_TYPE (element_spec) &&
-              g_value_type_transformable (G_VALUE_TYPE (element), G_PARAM_SPEC_VALUE_TYPE (element_spec)))
+              sfi_value_type_transformable (G_VALUE_TYPE (element), G_PARAM_SPEC_VALUE_TYPE (element_spec)))
             {
               GValue dummy = { 0, };
               g_value_init (&dummy, G_PARAM_SPEC_VALUE_TYPE (element_spec));
-              g_value_transform (element, &dummy);
+              sfi_value_transform (element, &dummy);
               g_value_unset (element);
               memcpy (element, &dummy, sizeof (dummy)); /* relocate value */
               changed++;
             }
 	  
           /* need to fixup value type, or ensure that the element is initialized at all */
-          if (!g_value_type_compatible (G_VALUE_TYPE (element), G_PARAM_SPEC_VALUE_TYPE (element_spec)))
+          if (!sfi_value_type_compatible (G_VALUE_TYPE (element), G_PARAM_SPEC_VALUE_TYPE (element_spec)))
             {
               if (G_VALUE_TYPE (element) != 0)
                 g_value_unset (element);
@@ -387,18 +387,18 @@ param_rec_validate (GParamSpec *pspec,
 	  
           /* support conversion of wrongly typed fields */
           if (G_VALUE_TYPE (field) != G_PARAM_SPEC_VALUE_TYPE (fspec) &&
-              g_value_type_transformable (G_VALUE_TYPE (field), G_PARAM_SPEC_VALUE_TYPE (fspec)))
+              sfi_value_type_transformable (G_VALUE_TYPE (field), G_PARAM_SPEC_VALUE_TYPE (fspec)))
             {
               GValue dummy = { 0, };
               g_value_init (&dummy, G_PARAM_SPEC_VALUE_TYPE (fspec));
-              g_value_transform (field, &dummy);
+              sfi_value_transform (field, &dummy);
               g_value_unset (field);
               memcpy (field, &dummy, sizeof (dummy)); /* relocate value */
               changed++;
             }
 	  
           /* need to fixup value type, or ensure that the field is initialized at all */
-          if (!g_value_type_compatible (G_VALUE_TYPE (field), G_PARAM_SPEC_VALUE_TYPE (fspec)))
+          if (!sfi_value_type_compatible (G_VALUE_TYPE (field), G_PARAM_SPEC_VALUE_TYPE (fspec)))
             {
               if (G_VALUE_TYPE (field) != 0)
                 g_value_unset (field);

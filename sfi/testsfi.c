@@ -746,8 +746,8 @@ test_sfidl_seq (void)
 
     /* transform record to boxed type */
     g_value_init (&pos_value, TEST_TYPE_POSITION);
-    ASSERT (g_value_type_transformable (SFI_TYPE_REC, TEST_TYPE_POSITION));
-    g_value_transform (&rec_value, &pos_value);
+    ASSERT (sfi_value_type_transformable (SFI_TYPE_REC, TEST_TYPE_POSITION));
+    sfi_value_transform (&rec_value, &pos_value);
 
     /* get boxed type */
     ASSERT (G_VALUE_HOLDS (&pos_value, TEST_TYPE_POSITION));
