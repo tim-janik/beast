@@ -1,3 +1,17 @@
+Tue May 27 02:57:00 2003  Tim Janik  <timj@gtk.org>
+
+	* bsetrack.c (bse_track_list_proxies):
+	* bsesubsynth.c (bse_sub_synth_list_proxies): 
+	* bsewaveosc.c (bse_wave_osc_list_proxies): 
+	* bsemidisynth.c (bse_midi_synth_list_proxies):
+	gather proxies with bse_item_gather_proxies_typed(), now
+	that BseSNet is abstract and the type checks don't need
+	to resort to BSE_TYPE_SNET== hacks anymore.
+
+	* bseitem.c (bse_item_gather_proxies_typed): don't gather
+	ancestors of the originating item (unless allow_ancestor
+	is passed as TRUE).
+
 Tue May 27 02:22:37 2003  Tim Janik  <timj@gtk.org>
 
 	* bseproject.proc: added bse-project-remove-snet.

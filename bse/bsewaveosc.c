@@ -212,18 +212,6 @@ bse_wave_osc_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static gboolean
-check_wrepo (BseItem *item)
-{
-  return BSE_IS_WAVE_REPO (item);
-}
-
-static gboolean
-check_wave (BseItem *item)
-{
-  return BSE_IS_WAVE (item);
-}
-
 static BseProxySeq*
 bse_wave_osc_list_proxies (BseItem    *item,
 			   guint       param_id,
@@ -240,10 +228,7 @@ bse_wave_osc_list_proxies (BseItem    *item,
 	{
 	  BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
 	  
-	  bse_item_gather_proxies (BSE_ITEM (wrepo), pseq, BSE_TYPE_WAVE,
-				   (BseItemCheckContainer) check_wrepo,
-				   (BseItemCheckProxy) check_wave,
-				   NULL);
+	  bse_item_gather_proxies_typed (BSE_ITEM (wrepo), pseq, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO, FALSE);
 	}
       break;
     default:

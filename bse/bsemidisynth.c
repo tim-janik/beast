@@ -255,19 +255,6 @@ bse_midi_synth_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static gboolean
-check_project (BseItem *item)
-{
-  return BSE_IS_PROJECT (item);
-}
-
-static gboolean
-check_synth (BseItem *item)
-{
-  // FIXME: we check for non-derived snets here because snet is base type for midisnets and songs
-  return G_OBJECT_TYPE (item) == BSE_TYPE_SNET;
-}
-
 static BseProxySeq*
 bse_midi_synth_list_proxies (BseItem    *item,
 			     guint       param_id,
@@ -278,10 +265,7 @@ bse_midi_synth_list_proxies (BseItem    *item,
   switch (param_id)
     {
     case PARAM_SNET:
-      bse_item_gather_proxies (item, pseq, BSE_TYPE_SNET,
-			       (BseItemCheckContainer) check_project,
-			       (BseItemCheckProxy) check_synth,
-			       NULL);
+      bse_item_gather_proxies_typed (item, pseq, BSE_TYPE_SNET, BSE_TYPE_PROJECT, FALSE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);

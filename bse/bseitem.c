@@ -246,6 +246,7 @@ gather_child (BseItem *child,
  * @ccheck:    container filter function
  * @pcheck:    proxy filter function
  * @data:      @data pointer to @ccheck and @pcheck
+ * @RETURNS:   returns @proxies
  *
  * This function gathers items from an object hirachy, walking upwards,
  * starting out with @item. For each container passing @ccheck(), all
@@ -292,12 +293,21 @@ gather_typed_ccheck (BseContainer   *container,
   return g_type_is_a (G_OBJECT_TYPE (container), type);
 }
 
+static gboolean
+gather_typed_acheck (BseItem  *proxy,
+		     BseItem  *item,
+		     gpointer  data)
+{
+  return proxy != item && !bse_item_has_ancestor (item, proxy);
+}
+
 /**
  * bse_item_gather_proxies_typed
  * @item:           valid #BseItem from which to start gathering
  * @proxies:        sequence of proxies to append to
  * @proxy_type:     base type of the proxies to gather
  * @container_type: base type of the containers to check for proxies
+ * @RETURNS:   returns @proxies
  *
  * Variant of bse_item_gather_proxies(), the containers and proxies
  * are simply filtered by checking derivation from @container_type
@@ -307,9 +317,14 @@ BseProxySeq*
 bse_item_gather_proxies_typed (BseItem              *item,
 			       BseProxySeq          *proxies,
 			       GType                 proxy_type,
-			       GType                 container_type)
+			       GType                 container_type,
+                               gboolean              allow_ancestor)
 {
-  return bse_item_gather_proxies (item, proxies, proxy_type, gather_typed_ccheck, NULL, (gpointer) container_type);
+  if (allow_ancestor)
+    return bse_item_gather_proxies (item, proxies, proxy_type, gather_typed_ccheck, NULL, (gpointer) container_type);
+  else
+    return bse_item_gather_proxies (item, proxies, proxy_type,
+                                    gather_typed_ccheck, gather_typed_acheck, (gpointer) container_type);
 }
 
 BseProxySeq*

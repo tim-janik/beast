@@ -20,11 +20,7 @@
 
 #include	<bse/bseitem.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_TRACK		    (BSE_TYPE_ID (BseTrack))
@@ -96,8 +92,6 @@ BsePart*	 bse_track_get_part_SL	(BseTrack		*self,
 					 guint			*start,
 					 guint			*next);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_TRACK_H__ */
