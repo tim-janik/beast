@@ -82,10 +82,6 @@ FIXMES:
 - fix BseSong::denominator SpinButton arrows not working
 * eliminate everything that fgrep -i fixme/hack reveals
 
-TODO:
-- implement humanizer scheme script that offsets notes by a few random ticks
-- add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
-
 DOCS:
 - fix umlauts in utf8 texi files [Alper]
 - add QuickStart section on wave selection
@@ -103,6 +99,40 @@ DOCS:
 - the FAQ entry 1.13 has an anchor of #node-2-13-0-0 instead of #node-1-13-0-0
   due to unnumbered sections being counted as well. unnumbered sections should
   be counted seperately (e.g. as #node-u1-0-0-0). [alper]
+
+TODO:
+- piano and track roll scrolling implemented with secondary scrollbar
+- piano roll dialog gains partlink property editor
+- item links: (where (link 3 "TrackLink::LinkTrack::Cool"))
+              (where (3 "tree:sopidgsdf:sdggsdf"))
+              (where (link 3 "tree::sopidgsdf::sdggsdf"))
+- prop flag: SFI_PARAM_SKIP_DEFAULT
+- implement humanizer scheme script that offsets notes by a few random ticks
+- add text about MIDI realtime synthesis via external MIDI devices to beast overview paper
+- add toplevel menu item "Synth" with items:
+  - Export to Effect Library
+  - Export to Instrument Library
+  - Export to Custom Library
+  - Export (+File dialog)
+  which saves the currently selected synth (project child)
+- support loading of Effects from Effect Library directory from a button in the router/rackview display
+- add "Insert Property" menu to rack view which lists all objects and their proeprties hirachically
+- object tree backbone/trunk/tribe type for project, server and workbench
+- item_get_toplevel() function for toplevel parent quries
+- proxies get exported: if toplevel->use_count>0
+- backbones exist only if they have a use_count
+- forcefull alive keeping of objects if they have a use_count
+- how export proxies of parents that don't have a use_count and are no backbones?
+- emulate ref_count+::destroy semantics with use_count+::release? ala:
+  - use_count prevents ::release emission
+  - ::release on containers removes children
+- implement remote use-count collection
+- complete and intergrate piano-script
+* move mix_freq and recording_freq into datahandle
+* fix reversed data handle wrg n_channels
+: propagate mtime changes through cascaded data handles (e.g. for dcache)
+: gsldatacache.c: nuke blocks upon reopen if mtime changed
+: clone handle caller must be fetched from stack
 
 PianoRoll:
 - implement HFlip selection script
@@ -135,6 +165,11 @@ Snet Router:
 - add property editor dialog which contains intersection of properties from selected objects
 - middle mouse button on canvas background should scroll
 
+Grouping multiple Modules in Synth Router:
+1. copy selected modules to a new CSynth
+2. delete selected modules
+3. add SubSynth instead of selected modules, which uses the new CSynth
+
 TrackView:
 - resizable scrollbar
 - context menu with delete, move, insert (double click inserts?)
@@ -144,32 +179,6 @@ SClock:
 - calc non-linear slope in one go
 - new clock type that switches to linear once >QUEUE_LENGTH
 
-MEETING-RESULTS:
-- piano and track roll scrolling implemented with secondary scrollbar
-- piano roll dialog gains partlink property editor
-- item links: (where (link 3 "TrackLink::LinkTrack::Cool"))
-              (where (3 "tree:sopidgsdf:sdggsdf"))
-              (where (link 3 "tree::sopidgsdf::sdggsdf"))
-- prop flag: SFI_PARAM_SKIP_DEFAULT
-
-Random:
-- object tree backbone/trunk/tribe type for project, server and workbench
-- item_get_toplevel() function for toplevel parent quries
-- proxies get exported: if toplevel->use_count>0
-- backbones exist only if they have a use_count
-- forcefull alive keeping of objects if they have a use_count
-- how export proxies of parents that don't have a use_count and are no backbones?
-- emulate ref_count+::destroy semantics with use_count+::release? ala:
-  - use_count prevents ::release emission
-  - ::release on containers removes children
-- implement remote use-count collection
-- complete and intergrate piano-script
-* move mix_freq and recording_freq into datahandle
-* fix reversed data handle wrg n_channels
-: propagate mtime changes through cascaded data handles (e.g. for dcache)
-: gsldatacache.c: nuke blocks upon reopen if mtime changed
-: clone handle caller must be fetched from stack
-                            
 General BSE:
 - object tree backbone/trunk/tribe type for project, server and workbench (treeroot storageroot)
 - item_get_toplevel() function for toplevel parent queries
