@@ -59,6 +59,7 @@ html_targets = $(strip		\
 	faq.html		\
 	plugin-devel.html	\
 	sfidl-manual.html	\
+	plugin-devel.html	\
 	quickstart.html		\
 	overview-de.html	\
 	engine-mplan.html	\

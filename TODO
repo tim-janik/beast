@@ -24,10 +24,6 @@ TODO:
   * waverepo: similar to Lib... button; CSynth: box(filter,osc)+connection+speaker; Song: pages of notes
 - get rid of FIXMEs in beast-gtk/testgui.c
 - seqid changed notification *only* works for non-source children of BseSong
-- delete+undo on tracks kills connections (busses?)
-- assertion:
-  BSE-ERROR **: file bsemidireceiver.cc: line 526 (void <unnamed>::change_voice_input(<unnamed>::VoiceInput*, <unnamed>::VoiceInputTable*, long long unsigned int, <unnamed>::VoiceChangeType, float, float, BseTrans*)): assertion failed: (vinput->iter == table->end())
-  aborting...
 - (beast:18498): BSE-WARNING **: while executing undo method "BseSong+remove-bus" of item "BseSong::Unnamed": Synthesis module currently busy
 - rename bsesnifferscope.* to bsescope.*
 - split bstutils into bstgutils
@@ -45,9 +41,8 @@ TODO:
 - change [M] toggle tooltip in the track-view to explain *sequencer* muting (i.e. ignore notes)
 - optimize BseAdder according to BseSummation
 - verify that no IO channel buffer memory is being allocated for virtual modules
-- put "audio channels first, then Ctrl channels (amp)" convention into effect-writing-doc (needed for mix1, mix2, mix5.1 object options)
 - Error: "inputchannelalreadyinuse" should popup new error dialog
-- implement (GUI for) locked properties (e.g. lock bw for lp/hp filters)
+- lock band-width property for lp/hp filters
 - save loop coordinates
 - when loading/merging bse files, make sure all orphan parts are in a new muted track and delete part-item-view
 - delete parts upon their last unlink from a track
@@ -82,7 +77,6 @@ TODO:
 - add author and license to procedure execution dialog
 - fix repeat not working if left/right exchanged
 - create one canonical place for supported sample formats and keep that updated
-- document options: :filename, :rgb, :hex :note-sequence :item-sequence
 - make sample editor play stereo
 - allow inverted synth-done (i.e. suitable for gate connecitons)
 - add gate-out to ADSR

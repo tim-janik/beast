@@ -16,6 +16,7 @@ are established, and an example plugin is being developed.
 
 @contents
 
+
 @chapter Getting Started
 
 You don't need a full fledged software development environment in order
@@ -30,6 +31,7 @@ audio processing in general you can find
 a link list to tutorials and DSP programming tips at the @beast
 @uref{http://beast.gtk.org/,, Website}. A good foundation in maths
 helps a lot in understanding the materiels covered.
+
 
 @chapter Basic Concepts
 
@@ -62,6 +64,7 @@ To summarize, in order to write a @bse module, we need to:
 @item implement the data processing function of the engine module.
 @end itemize
 
+
 @chapter Defining the module
 
 In the past, the @bse plugin API went through quite a few major rewrites
@@ -82,7 +85,7 @@ a standard module needs three files for a full implementation:
 mechanic code fragments the programmer would need to create manually
 otherwise and to generate binding and glue code between various
 @bse components, the IDL compiler is described in detail in
-@uref{beast-doc://sfidl-manual,,the SFIDL manual}.
+@uref{beast-doc://sfidl-manual,,the sfidl manual}.
 
 To make use of the BSE object tree, every plugin IDL file starts out with
 an include statement. Then a namespace is opened within which the desired
@@ -92,11 +95,11 @@ For most plugins, an ordinary class definition with properties and input
 and output channels suffices:
 
 @example
-#include <bse/bse.idl>			// include BSE classes and definitions
-namespace Bse @{ namespace Contrib @{	// enter the namespace Bse::Contrib
-class NotchFilter : Effect @{		// derive Notchfilter from Bse::Effect
-  Real    frequency;			// a property
-  OStream audio_out;			// output signal
+#include <bse/bse.idl>                  // include BSE classes and definitions
+namespace Bse @{ namespace Contrib @{   // enter the namespace Bse::Contrib
+class NotchFilter : Effect @{           // derive Notchfilter from Bse::Effect
+  Real    frequency;                    // a property
+  OStream audio_out;                    // output signal
 @};
 @} @} // Bse::Contrib
 @end example
@@ -104,70 +107,280 @@ class NotchFilter : Effect @{		// derive Notchfilter from Bse::Effect
 Here we have a small @object{NotchFilter} object, defined in the namespace
 @namespace{Bse::Contrib} which is the standard namespace for third-party
 @bse plugins, more on namespaces can be found in the
-@uref{beast-doc://sfidl-manual#namespaces,, SFIDL manual namespace section}.
+@uref{beast-doc://sfidl-manual#namespaces,, sfidl Namespaces}.
 The object has a @property{frequency} property of type @type{Real} and
 an output channel @channel{audio_out}.
+
+@anchor{channels}
+@section Input and output channels
+
+In order for a module to effectively process audio, it needs input and output
+signal channels, unless its purely a producer for which signal inputs would
+be useless. Often a module needs ``audio'' channels and ``control'' channels,
+that is, some channels are used for audible signals, and other are used for
+non-audible control signals, such as volume. It is not entirely clear for
+every signal whether it is an audio or a control signal. Often it is its use
+that would best suit to provide a classification into either category but
+advanced knowledge of all possible uses is not available to the ordinary
+plugin writer.
+To fully support every kind of signal use, @bse doesn't make a technical
+distinction between so decided ``audio'' and ``control'' signals.
+
+It is recommended however, that in order to improve usability, signals
+envisioned to be used primarily as audio signals are placed before
+other signals envisioned to be used as control signals in a class
+definition and therefore in generated GUIs. A good example for a module
+meeting this requirement is the @type{BseAmplifier}:
+@example
+class Amplifier : Effect @{
+  IStream audio_in1  = (_("Audio In1"), _("First audio input"));
+  IStream audio_in2  = (_("Audio In2"), _("Second audio input"));
+  IStream ctrl_in1   = (_("Ctrl In1"), _("First control input"));
+  IStream ctrl_in2   = (_("Ctrl In2"), _("Second control input"));
+  OStream audio_out  = (_("Audio Out"), _("Amplified audio output"));
+@};
+@end example
+For classes such as @option{``mix1''} or @option{``mix2''} which indicate
+multi channel mixer effects (see
+@uref{beast-doc://plugin-devel#class-options,, class options}), the audio
+channels put to actual use are also the first channels provided by a module.
+
+A @bse module may have three different types of channels:
+@enumerate
+@item @strong{IStream} - an input stream, to be connected to a single output.
+@item @strong{JStream} - an input stream, to be connected to many outputs (to join).
+@item @strong{OStream} - an output stream, may be connected to any number of input streams.
+@end enumerate
+
 
 @anchor{properties}
 @section Property types
 
 @bse provides a large set of property constructors.
-By convention, all constructors expect a translatable label and a translatable
-description as first two arguments and an option string as last argument. The
-various supported options are described in the next section. Here, we give an
-overview of the various constructors, grouped by types.
+By convention, all constructors expect a translatable label as first
+argument, a translatable description as second argument and an option
+string as last argument, as described in the
+@uref{beast-doc://sfidl-manual#properties,, sfidl Properties}.
+The various supported options are described in the next section. Here, we give an
+overview of the various constructors provided by @bse{}, grouped by types.
+Note that some property constructors already add extra options to the arguments given,
+for instance @func{Trigger()} will automatically provide the options @option{:trigger:}
+and @option{:skip-undo:}.
 
 @subsection Bool properties
 @itemize
-@item @func{Bool} (@var{label}, @var{description}, @var{default}, @var{options}) @*
-	An ordinary property of type Bool. For GUIs and documentation generation, the
-	translatable strings @var{label} and @var{description} are provided. The default
-	value is given by @var{default} and possible values for @var{options} are discussed
-	in the @uref{beast-doc://plugin-devel#options,, property options section}.
+@item @strong{@func{Bool} (@var{label}, @var{description}, @var{default}, @var{options})} @*
+        An ordinary property of type @type{Bool}. For GUIs and documentation generation, the
+        translatable strings @var{label} and @var{description} are provided. The default
+        value is given by @var{default}. Possible values (e.g. @option{:trigger:} which
+	might be handy for some booleans) for @var{options} are discussed in the
+	@uref{beast-doc://plugin-devel#options,, property options section}.
+@item @strong{@func{Trigger} (@var{label}, @var{description}, @var{options})} @*
+	This is a boolean property that's practically always @const{FALSE}. It may be
+	set to @const{TRUE} in a trigger attempt though, so certain actions may be
+	started in response. GUIs would usually display this option via a clickable
+	button.
 @end itemize
+
 
 @subsection Real (IEEE-754 double precision floating point) properties
 @itemize
-@item @func{Real}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options}) @*
-	An ordinary property of type Real. Most arguments should be self explanatory, @var{stepping} can be used by
-	GUIs to provide increment/decrement editing abilities.
-@item @func{Perc}      (@var{label}, @var{description}, @var{default}, @var{options}) @*
-	Percentage property, the minimum and maximum are fixed 0 and 100 respectively, and additional options
-	are provided for GUIs to recognize percentage properties as such.
-@item @func{DB}        (@var{label}, @var{description}, @var{default}, @var{options}) @* 
-@item @func{Balance}   (@var{label}, @var{description}, @var{default}, @var{options}) @* 
-@item @func{Frequency} (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{options}) @*
-@item @func{Gain}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options}) @*
+@item @strong{@func{Real}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options})} @*
+        An ordinary property of type @type{Real}. For GUIs and documentation generation, the
+	translatable strings @var{label} and @var{description} are provided. The default,
+	minimum and maximum values for the @type{Real} property are given by the respective arguments.
+	The @var{stepping} argument can be used by GUIs to provide increment/decrement
+	editing abilities. Possible values for @var{options} are discussed in the
+	@uref{beast-doc://plugin-devel#options,, property options section}.
+@item @strong{@func{Perc}      (@var{label}, @var{description}, @var{default}, @var{options})} @*
+        Percentage property, the minimum and maximum are fixed 0 and 100 respectively, and additional options
+        are provided for GUIs to recognize percentage properties as such.
+@item @strong{@func{DB}        (@var{label}, @var{description}, @var{default}, @var{options})} @* 
+	A @type{DB} property is used for properties holding values in deci bell. The minimum and
+	maximum supported by @bse are currently -144 and +24, the default can be specified through an argument.
+@item @strong{@func{Balance}   (@var{label}, @var{description}, @var{default}, @var{options})} @* 
+	A @type{Balance} property is similar to a normal @type{Real} property, but has a fixed
+	minimum and maximum of -100 and +100 and defaults to 0.
+@item @strong{@func{Gain}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options})} @*
+@item @strong{@func{Frequency} (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{options})} @*
+        A real property with linear scale, setup with a @var{stepping} of 10.
+@item @strong{@func{Freq}      (@var{label}, @var{description}, @var{default}, @var{options})} @*
+        A real property with logarithmic scale, centered around A+2.
+@item @strong{@func{LogScale}  (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{center}, @var{base}, @var{n_steps}, @var{options})} @*
+        Properties of this type can be displayed by using a logarithmic scale.
+        The arguments @var{base} and @var{n_steps} determine the logarithmic scale which starts
+        from @var{center}*@var{base}^(-@var{n_steps}) and reaches up to @var{center}*@var{base}^@var{n_steps}
+        with @var{center}*@var{base}^0=@var{center} in the middle. For example, a six octave scale with
+        @var{center}=440, @var{base}=2 and @var{n_steps}=3 would look like this:
+@example
+Minimum:      440 * 2^-3 = 440 * 0.125 =   55 (A-2)
+Intermediate: 440 * 2^-2 = 440 * 0.25  =  110 (A-1)
+Intermediate: 440 * 2^-1 = 440 * 0.5   =  220 (A)
+Center:       440 * 2^0  = 440 * 1     =  440 (A+1)
+Intermediate: 440 * 2^1  = 440 * 2     =  880 (A+2)
+Intermediate: 440 * 2^2  = 440 * 4     = 1760 (A+3)
+Maximum:      440 * 2^3  = 440 * 8     = 3520 (A+4)
+@end example
 @end itemize
+
 
 @subsection Int (signed 32bit) properties
 @itemize
-@item @func{Int}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options}) @*
-@item @func{UInt}     (@var{label}, @var{description}, @var{default}, @var{options}) @*
-	Similar to @func{Int()} where the minimum and maximum are fixed at 0 and 2147483647.
-@item @func{Octave}   (@var{label}, @var{description}, @var{default}, @var{options}) @*
-@item @func{FineTune} (@var{label}, @var{description}, @var{options}) @*
-@end itemize
-
-@subsection Other numeric properties
-@itemize
-@item @func{Note} (@var{label}, @var{description}, @var{default}, @var{options}) @*
-Int property within 0 and 131 (sometimes also uses 132 to denote no/unspecified/unparsable notes).
-For the @var{default} value, @bse provides a constant @const{KAMMER_NOTE} and a set of macros taking
-an octave argument:
+@item @strong{@func{Int}      (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options})} @*
+        An ordinary property of type @type{Int}. For GUIs and documentation generation, the
+	translatable strings @var{label} and @var{description} are provided. The default,
+	minimum and maximum values for the @type{Int} property are given by the respective arguments.
+	The @var{stepping} argument can be used by GUIs to provide increment/decrement
+	editing abilities. Possible values for @var{options} are discussed in the
+	@uref{beast-doc://plugin-devel#options,, property options section}.
+@item @strong{@func{UInt}     (@var{label}, @var{description}, @var{default}, @var{options})} @*
+        Similar to @func{Int()} where the minimum and maximum are fixed at 0 and 2147483647.
+@item @strong{@func{Octave}   (@var{label}, @var{description}, @var{default}, @var{options})} @*
+	An integer property ranging from -4 to +6 with variable default.
+@item @strong{@func{FineTune} (@var{label}, @var{description}, @var{options})} @*
+@item @strong{@func{Note} (@var{label}, @var{description}, @var{default}, @var{options})} @*
+	Int property within 0 and 131 (sometimes also uses 132 to denote no/unspecified/unparsable note).
+	For the @var{default} value, @bse provides a constant @const{KAMMER_NOTE} and a set of macros taking
+	an octave argument:
 @cmacro{NOTE_C}(@var{octave}), @cmacro{NOTE_Cis}(@var{octave}), @cmacro{NOTE_Des}(@var{octave}), @cmacro{NOTE_D}(@var{octave}),
 @cmacro{NOTE_Dis}(@var{octave}), @cmacro{NOTE_Es}(@var{octave}), @cmacro{NOTE_E}(@var{octave}), @cmacro{NOTE_F}(@var{octave}),
 @cmacro{NOTE_Fis}(@var{octave}), @cmacro{NOTE_Ges}(@var{octave}), @cmacro{NOTE_G}(@var{octave}), @cmacro{NOTE_Gis}(@var{octave}),
 @cmacro{NOTE_As}(@var{octave}), @cmacro{NOTE_A}(@var{octave}), @cmacro{NOTE_Ais}(@var{octave}), @cmacro{NOTE_Bes}(@var{octave}),
 @cmacro{NOTE_B}(@var{octave}).
-@item @func{Num} (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options}) @*
-A signed 64bit numeric property with -9223372036854775808 and 9223372036854775807 as possible minimum and maximum values.
 @end itemize
+
+
+@subsection Other properties
+@itemize
+@item @strong{@func{Num} (@var{label}, @var{description}, @var{default}, @var{minimum}, @var{maximum}, @var{stepping}, @var{options})} @*
+	A signed 64bit numeric property similar to @type{Int} covering the integer
+	range -9223372036854775808 til 9223372036854775807.
+@item @strong{@func{String}   (@var{label}, @var{description}, @var{default}, @var{options})} @*
+        @type{String} property, the @func{String()} constructor is used to provide a translatable
+        label and translatable description and to define the default string value. For some strings
+        it makes sense to provide additional options such as @option{:searchpath:}.
+@item @strong{@func{Choice}   (@var{label}, @var{description}, @var{default}, @var{options})} @*
+        Choice property, the @func{Choice()} constructor is used to provide a
+        translatable label and translatable description and to define the default choice value.
+@item @strong{@func{BBlock}   (@var{label}, @var{description}, @var{options})} @*
+        Byte block property, the @func{BBlock()} constructor is used to provide a label and description.
+@item @strong{@func{FBlock}   (@var{label}, @var{description}, @var{options})} @*
+        Float value block property, the @func{FBlock()} constructor is used to provide a label and description.
+@item @strong{@func{Record}   (@var{label}, @var{description}, @var{options})} @*
+        Record type property, the @func{Record()} constructor is used to provide a translatable label
+	and translatable description for properties that have the type of a previously defined record
+	(see @uref{beast-doc://sfidl-manual#composite-types,,sfidl Composite Types}).
+@item @strong{@func{Sequence} (@var{label}, @var{description}, @var{options})} @*
+        Sequence type property, the @func{Sequence()} constructor is used to provide a translatable label
+	and translatable description for properties that have the type of a previously defined sequence
+	(see @uref{beast-doc://sfidl-manual#composite-types,,sfidl Composite Types}).
+@item @strong{@func{Object}   (@var{label}, @var{description}, @var{options})} @*
+        Object property, the @func{Object()} constructor is used to provide a translatable label
+	and translatable description for properties that have the type of a previously defined object
+	(see @uref{beast-doc://sfidl-manual#classes,,sfidl Classes}).
+@end itemize
+
 
 @anchor{options}
 @section Property options
 
+A special cpability of IDL properties is behavioural adjustment through an added option string.
+Several options can be combined in such a string by concatenating them with ``:'', and options
+can be enabled or disabled by postfixing them with ``+'' or ``-''.
+The following lists describe the property options currently supported (defined) by @bse{}.
+
+Property options from @type{GParamSpec}:
+@itemize
+@item @strong{``r''} - the property is readable (same as @const{G_PARAM_READABLE})
+@item @strong{``w''} - the property is writable (same as @const{G_PARAM_WRITABLE})
+@item @strong{``construct''} - the property is writable (same as @const{G_PARAM_CONSTRUCT})
+@item @strong{``construct-only''} - the property is writable (same as @const{G_PARAM_CONSTRUCT_ONLY})
+@item @strong{``lax-validation''} - the property is writable (same as @const{G_PARAM_LAX_VALIDATION})
+@end itemize
+
+BSE core options:
+@itemize
+@item @strong{``S''}            - the property is serializable
+@item @strong{``f''}            - float indicator, reduce serialization precision to IEEE 754 Single Precision Floating Point
+@item @strong{``skip-default''} - do not serialize property if its set to its default value
+@item @strong{``skip-undo''}    - do not record property changes to undo/redo mechanism
+@item @strong{``unprepared''}   - the property is writable only for unprepared objects
+@end itemize 
+
+GUI Options:
+@itemize 
+@item @strong{``G''}             - the property should be represented by GUIs
+@item @strong{``ro''}            - for GUI representation purposes, the property should be considered read-only (non-editable)
+@item @strong{``trigger''}       - a hint to display the property with a trigger button
+@item @strong{``radio''}         - a hint to display the property with a radio button
+@item @strong{``dial''}          - a hint to display the property with dial knob
+@item @strong{``scale''}         - a hint to display the property with a scale adjustment
+@item @strong{``log-scale''}     - a hint to display the property with a logarithmic scale adjustment
+@item @strong{``DB''}            - a hint to indicate deci bell display
+@item @strong{``searchpath''}    - a hint indicating a property consisting of colon seperated directory list
+@item @strong{``filename''}      - a hint indicating a property consisting of a filename
+@item @strong{``rgb''}           - a hint indicating a property consisting of an RGB color value
+@item @strong{``hex''}           - a hint indicating a preference for base 16 in numeric editing
+@item @strong{``item-sequence''} - the property type is a sequence of item objects
+@item @strong{``note-sequence''} - the property type is a sequence of notes
+@end itemize
+
+Predefined options sets:
+@itemize
+@item @strong{READWRITE}        - property is readable and writable (``:r:w:'')
+@item @strong{GUI}              - property is READWRITE and GUI representable (``:r:w:G:'')
+@item @strong{GUI_RDONLY}       - property is GUI but non-editable (``:r:w:G:ro:'')
+@item @strong{GUI_READABLE}     - property is readable and GUI representable but not writable (``:r:G:'')
+@item @strong{STORAGE}          - property is READWRITE and serializable (``:r:w:S:'')
+@item @strong{STANDARD}         - property is READWRITE, STORAGE and GUI (``:r:w:S:G:'')
+@item @strong{STANDARD_RDONLY}  - property is READWRITE, STORAGE, GUI_RDONLY (``:r:w:S:G:ro:'')
+@item @strong{SKIP_DEFAULT}     - property is READWRITE, STORAGE, GUI_RDONLY (``:r:w:S:G:ro:'')
+@end itemize
+
+Extra option sets (mostly for convenience and readability):
+@itemize
+@item @strong{SKIP_DEFAULT}     - skip default value serialization (``:skip-default:'')
+@item @strong{SKIP_UNDO}        - property changes are not undo/redo recorded (``:skip-undo:'')
+@end itemize
+
+
+@anchor{class-options}
+@section Class options
+
+The property option mechanism described in the last chapter has been adapted
+for classes at some point. Currently, applications of this feature a very rare,
+but expected to increase in the future. As such, the recognized option set for
+classes also is very limited at the moment.
+
+Predefined class options:
+@itemize
+@item @strong{``unstable''}     - code is considered unstable and enabled only by ---devel
+@item @strong{``mix1''}         - this class implements a mono channel mixer effect (also see @uref{beast-doc://plugin-devel#channels,, channels})
+@item @strong{``mix2''}         - this class implements a stereo channel mixer effect
+@item @strong{``mix5.1''}       - this class implements a 5.1 channel mixer effect
+@end itemize
+
+
 @section Adding a @file{PNG} icon
+
+Every GUI representable object should have an icon eventually. Once an image file
+exists in the desired format, it is easily integrated into a class definition:
+
+@example
+class NotchFilter : Effect @{
+  Info    icon      = ``notch.png'';	// use the image notch.png as class icon
+@};
+@end example
+
+Images to be used as class icons should meet a few requirements:
+@enumerate
+@item @strong{Size}:   the class icon should be 64 pixels wide and 64 pixels heigh.
+@item @strong{Colors}: the image should be provided in RGBA format with transparent background.
+@item @strong{Format}: the image should be provided in a common image format, @file{PNG} is fully supported by @command{sfidl}.
+@end enumerate
+
+@subsection Changing the icon
+
 
 @chapter Writing the @file{C++} file
 
@@ -182,6 +395,5 @@ A signed 64bit numeric property with -9223372036854775808 and 922337203685477580
 @chapter Storing custom data
 
 @chapter Additional Methods
-@section Changing the icon
 
 @bye

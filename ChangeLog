@@ -1,3 +1,16 @@
+Sat Sep  4 04:56:07 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/plugin-devel.texi: wording fixes. started section on input and
+	output channels. documented proeprty constructors. documented property
+	oprtions. documented class options. added class icon documentation.
+
+	* docs/sfidl-manual.texi: wording fixups. added some proeprty 
+	constructor documentation. 
+
+	* docs/generated/Makefile.am: build plugin-devel.html.
+
+	* docs/site-navigation.xml: link to plugin-devel.html.
+
 Fri Sep  3 20:12:37 2004  Tim Janik  <timj@gtk.org>
 
 	* plugin-devel.texi: more documentation, especially on properties.

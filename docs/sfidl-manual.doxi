@@ -286,6 +286,7 @@ record Test @{
 
 @section Classes and procedures
 
+@anchor{classes}
 @subsection Classes
 
 IDL defined APIs consist mostly of classes. SFI supports single inheritance, so a set
@@ -387,9 +388,9 @@ class Balance : Bse::Effect @{
     Real  lowpass    = Frequency (_("Lowpass [Hz]"),
                                   _("Lowpass filter frequency for the control signal"),
                                   100, 100, 1000, STANDARD);
-    Real  obalance   = Balance (_("Output Balance"),
-                                _("Adjust output balance between left and right"),
-                                0, STANDARD);
+    Real  obalance   = (_("Output Balance"), 
+                        _("Adjust output balance between left and right"),
+                        0, -100, 100, 10, STANDARD);
   @};
 @};
 @} @} // Bse::Contrib
@@ -408,7 +409,7 @@ these constructors expect a translatable label and a translatable description as
 and an option string as last argument.
 The constructors are provided by the @command{sfidl} language bindings, so their availability
 differs dependant on that.
-In the above example, the percentage, balance and frequency constructors, all of type @type{Real}
+In the above example, the percentage and frequency constructors, both of type @type{Real}
 and provided by @bse{}, are used and expect these arguments:
 @enumerate
 @item a translatable label,
@@ -418,16 +419,19 @@ and provided by @bse{}, are used and expect these arguments:
 @item a maximum value (@func{Freuquency()} only),
 @item an option argument.
 @end enumerate
+Finally, @var{obalance} is an example for leaving out the constructor name, in this
+case the constructor name is assumed to be the type name, so the following two lines
+are fully equivalent:
+@example
+    Real obalance = (_("Output Balance"), _("Blurb"), 0, -100, 100, 10, STANDARD);
+    Real obalance = Real (_("Output Balance"), _("Blurb"), 0, -100, 100, 10, STANDARD);
+@end example
 
-More on property constructors provided by @bse can be found in the
+More on property constructors provided by @bse can be found as part of the
 @uref{beast-doc://plugin-devel,, plugin development guide} in the
 @uref{beast-doc://plugin-devel#properties,, property section} and the
 @uref{beast-doc://plugin-devel#options,, property option section}.
 
-For this section, it is only useful to know that the last element of the parameter specification
-adds some flags. For instance @const{STANDARD} means that the property can be read, written, will be saved
-to the file and shown in the gui.
-@const{GUI} on the contrary means that the property will only be used for GUIs, can be changed by the GUI, but won't be saved to the file.
 
 @subsection Streams
 

@@ -47,12 +47,13 @@
   <navigation-node title="Development"             target="development.html">
     <navigation-node title="Release NEWS"          target="release-news.html"  />
     <navigation-node title="ChangeLogs">
-      <navigation-node title="BEAST"               target="log-beast.html"   />
-      <navigation-node title="Plugins"             target="log-plugins.html" />
-      <navigation-node title="BSE"                 target="log-bse.html"     />
-      <navigation-node title="SFI"                 target="log-sfi.html"     />
+      <navigation-node title="BEAST Changes"       target="log-beast.html"   />
+      <navigation-node title="Plugin Changes"      target="log-plugins.html" />
+      <navigation-node title="BSE Changes"         target="log-bse.html"     />
+      <navigation-node title="SFI Changes"         target="log-sfi.html"     />
     </navigation-node>
     <navigation-node title="BEAST/BSE Development">
+      <navigation-node title="Writing Plugins"     target="plugin-devel.html"   />
       <navigation-node title="IDL Compiler"        target="sfidl-manual.html"   />
       <navigation-node title="GXK Functions"       target="beast-gxk.3.html"   />
       <navigation-node title="BSE Functions"       target="bse.3.html"         />
