@@ -299,10 +299,10 @@ bse_midi_icontroller_context_connect (BseSource *source,
   GslModule *midictrl = self->midi_input_module;
 
   /* connect module to midi control uplink */
-  gsl_trans_add (trans, gsl_job_iconnect (midictrl, 0, module, 0));
-  gsl_trans_add (trans, gsl_job_iconnect (midictrl, 1, module, 1));
-  gsl_trans_add (trans, gsl_job_iconnect (midictrl, 2, module, 2));
-  gsl_trans_add (trans, gsl_job_iconnect (midictrl, 3, module, 3));
+  gsl_trans_add (trans, gsl_job_connect (midictrl, 0, module, 0));
+  gsl_trans_add (trans, gsl_job_connect (midictrl, 1, module, 1));
+  gsl_trans_add (trans, gsl_job_connect (midictrl, 2, module, 2));
+  gsl_trans_add (trans, gsl_job_connect (midictrl, 3, module, 3));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);
@@ -338,10 +338,10 @@ bse_midi_icontroller_update_modules (BseMidiIController *self)
 	  gsl_trans_add (trans, gsl_job_disconnect (module, 2));
 	  gsl_trans_add (trans, gsl_job_disconnect (module, 3));
 	  /* connect to new module */
-	  gsl_trans_add (trans, gsl_job_iconnect (midictrl, 0, module, 0));
-	  gsl_trans_add (trans, gsl_job_iconnect (midictrl, 1, module, 1));
-	  gsl_trans_add (trans, gsl_job_iconnect (midictrl, 2, module, 2));
-	  gsl_trans_add (trans, gsl_job_iconnect (midictrl, 3, module, 3));
+	  gsl_trans_add (trans, gsl_job_connect (midictrl, 0, module, 0));
+	  gsl_trans_add (trans, gsl_job_connect (midictrl, 1, module, 1));
+	  gsl_trans_add (trans, gsl_job_connect (midictrl, 2, module, 2));
+	  gsl_trans_add (trans, gsl_job_connect (midictrl, 3, module, 3));
 	}
       g_free (cids);
 

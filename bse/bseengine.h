@@ -28,15 +28,16 @@ extern "C" {
 
 
 /* --- constants --- */
-#define	GSL_STREAM_MAX_VALUES		   (16384)	/* FIXME */
-#define	GSL_MODULE_N_OSTREAMS(module)	   ((module)->klass->n_ostreams)
-#define	GSL_MODULE_N_ISTREAMS(module)	   ((module)->klass->n_istreams)
-#define	GSL_MODULE_N_JSTREAMS(module)	   ((module)->klass->n_jstreams)
-#define	GSL_MODULE_ISTREAM(module, stream) ((module)->istreams[(stream)])
-#define	GSL_MODULE_JSTREAM(module, stream) ((module)->jstreams[(stream)])
-#define	GSL_MODULE_OSTREAM(module, stream) ((module)->ostreams[(stream)])
-#define	GSL_MODULE_IBUFFER(module, stream) (GSL_MODULE_ISTREAM ((module), (stream)).values)
-#define	GSL_MODULE_OBUFFER(module, stream) (GSL_MODULE_OSTREAM ((module), (stream)).values)
+#define	GSL_STREAM_MAX_VALUES		        (16384)	/* FIXME */
+#define	GSL_MODULE_N_OSTREAMS(module)	        ((module)->klass->n_ostreams)
+#define	GSL_MODULE_N_ISTREAMS(module)	        ((module)->klass->n_istreams)
+#define	GSL_MODULE_N_JSTREAMS(module)	        ((module)->klass->n_jstreams)
+#define	GSL_MODULE_ISTREAM(module, stream)      ((module)->istreams[(stream)])
+#define	GSL_MODULE_JSTREAM(module, stream)      ((module)->jstreams[(stream)])
+#define	GSL_MODULE_OSTREAM(module, stream)      ((module)->ostreams[(stream)])
+#define	GSL_MODULE_IBUFFER(module, stream)      (GSL_MODULE_ISTREAM ((module), (stream)).values)
+#define	GSL_MODULE_JBUFFER(module, stream, con) (GSL_MODULE_JSTREAM ((module), (stream)).values[con])
+#define	GSL_MODULE_OBUFFER(module, stream)      (GSL_MODULE_OSTREAM ((module), (stream)).values)
 
 
 /* --- typedefs --- */
@@ -107,13 +108,20 @@ struct _GslOStream
 GslModule*	gsl_module_new		(const GslClass	 *klass,
 					 gpointer	  user_data);
 guint64		gsl_module_tick_stamp	(GslModule	 *module);
-GslJob*		gsl_job_iconnect	(GslModule	 *src_module,
+GslJob*		gsl_job_connect		(GslModule	 *src_module,
 					 guint		  src_ostream,
 					 GslModule	 *dest_module,
 					 guint		  dest_istream);
-#define		gsl_job_jconnect	gsl_job_iconnect	// FIXME
+GslJob*		gsl_job_jconnect	(GslModule	 *src_module,
+					 guint		  src_ostream,
+					 GslModule	 *dest_module,
+					 guint		  dest_jstream);
 GslJob*		gsl_job_disconnect	(GslModule	 *dest_module,
 					 guint		  dest_istream);
+GslJob*		gsl_job_jdisconnect	(GslModule	 *dest_module,
+					 guint		  dest_jstream,
+					 GslModule	 *src_module,
+					 guint		  src_ostream);
 GslJob*		gsl_job_integrate	(GslModule	 *module);
 GslJob*		gsl_job_discard		(GslModule	 *module);
 GslJob*		gsl_job_access		(GslModule	 *module,

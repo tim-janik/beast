@@ -228,6 +228,7 @@ void		gsl_alloc_report	(void);
 const guint	gsl_alloc_upper_power2	(const gulong	 number);
 void	       _gsl_tick_stamp_inc	(void);
 void	       _gsl_tick_stamp_set_leap (guint		 ticks);
+void	_gsl_init_signal		(void);
 void	_gsl_init_data_handles		(void);
 void	_gsl_init_data_caches		(void);
 void	_gsl_init_engine_utils		(void);

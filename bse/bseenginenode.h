@@ -30,8 +30,9 @@ extern "C" {
 
 
 #define	OP_NODE(module)			((OpNode*) (module))
-#define OP_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
-#define OP_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
+#define ENGINE_NODE_N_OSTREAMS(node)	((node)->module.klass->n_ostreams)
+#define ENGINE_NODE_N_ISTREAMS(node)	((node)->module.klass->n_istreams)
+#define ENGINE_NODE_N_JSTREAMS(node)	((node)->module.klass->n_jstreams)
 #define	OP_NODE_IS_CONSUMER(node)	((node)->is_consumer && \
 					 (node)->output_nodes == NULL)
 #define	OP_NODE_IS_DEFERRED(node)	(FALSE)
@@ -55,8 +56,10 @@ typedef enum {
   OP_JOB_NOP,
   OP_JOB_INTEGRATE,
   OP_JOB_DISCARD,
-  OP_JOB_CONNECT,
-  OP_JOB_DISCONNECT,
+  ENGINE_JOB_ICONNECT,
+  ENGINE_JOB_JCONNECT,
+  ENGINE_JOB_IDISCONNECT,
+  ENGINE_JOB_JDISCONNECT,
   GSL_JOB_SET_CONSUMER,
   GSL_JOB_UNSET_CONSUMER,
   GSL_JOB_ACCESS,
@@ -74,7 +77,7 @@ struct _GslJob
     OpNode	     *node;
     struct {
       OpNode	     *dest_node;
-      guint	      dest_istream;
+      guint	      dest_ijstream;
       OpNode	     *src_node;
       guint	      src_ostream;
     } connection;
@@ -140,20 +143,26 @@ typedef struct
 {
   OpNode *src_node;
   guint	  src_stream;		/* ostream of src_node */
-} OpInput;
+} EngineInput;
+typedef struct
+{
+  OpNode *src_node;
+  guint	  src_stream;		/* ostream of src_node */
+} EngineJInput;
 typedef struct
 {
   gfloat *buffer;
   guint	  n_outputs;
-} OpOutput;
+} EngineOutput;
 struct _OpNode	/* fields sorted by order of processing access */
 {
   GslModule	 module;
 
   GslRecMutex	 rec_mutex;	/* processing lock */
   guint64	 counter;	/* <= GSL_TICK_STAMP */
-  OpInput	*inputs;	/* [OP_NODE_N_ISTREAMS()] */
-  OpOutput	*outputs;	/* [OP_NODE_N_OSTREAMS()] */
+  EngineInput	*inputs;	/* [ENGINE_NODE_N_ISTREAMS()] */
+  EngineJInput **jinputs;	/* [ENGINE_NODE_N_JSTREAMS()] */
+  EngineOutput	*outputs;	/* [ENGINE_NODE_N_OSTREAMS()] */
 
   /* flow jobs */
   GslFlowJob	*flow_jobs;			/* active jobs */

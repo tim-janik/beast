@@ -571,11 +571,11 @@ bse_source_context_connect_ichannel (BseSource        *source,
 	  GslModule *omodule = bse_source_get_context_omodule (input->idata.osource,
 							       context->id);
 	  gsl_trans_add (trans,
-			 gsl_job_iconnect (omodule,
-					   BSE_SOURCE_OCHANNEL_OSTREAM (input->idata.osource,
+			 gsl_job_connect (omodule,
+					  BSE_SOURCE_OCHANNEL_OSTREAM (input->idata.osource,
 								       input->idata.ochannel),
-					   context->imodule,
-					   BSE_SOURCE_ICHANNEL_ISTREAM (source, ichannel)));
+					  context->imodule,
+					  BSE_SOURCE_ICHANNEL_ISTREAM (source, ichannel)));
 	}
     }
 }
@@ -1105,7 +1105,7 @@ bse_source_real_remove_input (BseSource *source,
 {
   BseSourceInput *input = BSE_SOURCE_INPUT (source, ichannel);
   GslTrans *trans = NULL;
-  gint j = ~0;
+  gint j = -1;
 
   if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
     {
@@ -1117,21 +1117,28 @@ bse_source_real_remove_input (BseSource *source,
 
   if (BSE_SOURCE_PREPARED (source) && BSE_SOURCE_N_CONTEXTS (source))
     {
-      if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
+      guint c;
+      trans = gsl_trans_open ();
+      for (c = 0; c < BSE_SOURCE_N_CONTEXTS (source); c++)
 	{
-	  g_warning ("can't disconnect jstreams yet "); // FIXME
-	}
-      else
-	{
-	  guint c;
-	  
-	  trans = gsl_trans_open ();
-	  for (c = 0; c < BSE_SOURCE_N_CONTEXTS (source); c++)
+	  BseSourceContext *context = context_nth (source, c);
+	  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
 	    {
-	      BseSourceContext *context = context_nth (source, c);
-
-	      gsl_trans_add (trans, gsl_job_disconnect (context->imodule,
-							BSE_SOURCE_ICHANNEL_ISTREAM (source, ichannel)));
+	      BseSourceContext *src_context = context_nth (osource, c);
+	      gsl_trans_add (trans, gsl_job_jdisconnect (context->imodule,
+							 BSE_SOURCE_ICHANNEL_JSTREAM (source, ichannel),
+							 src_context->omodule,
+							 BSE_SOURCE_OCHANNEL_OSTREAM (osource, ochannel)));
+	    }
+	  else
+	    {
+	      for (c = 0; c < BSE_SOURCE_N_CONTEXTS (source); c++)
+		{
+		  BseSourceContext *context = context_nth (source, c);
+		  
+		  gsl_trans_add (trans, gsl_job_disconnect (context->imodule,
+							    BSE_SOURCE_ICHANNEL_ISTREAM (source, ichannel)));
+		}
 	    }
 	}
     }

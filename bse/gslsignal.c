@@ -18,6 +18,8 @@
  */
 #include "gslsignal.h"
 
+#include "gslcommon.h"
+
 
 /* --- windows --- */
 double
@@ -74,6 +76,23 @@ gsl_window_rect (double x)	/* a square */
   if (fabs (x) > 1)
     return 0;
   return 1.0;
+}
+
+
+/* --- cents & init --- */
+const gdouble *gsl_cent_table = NULL;
+#define GSL_2_RAISED_TO_1_OVER_1200_d     ( /* 2^(1/1200) */ \
+              1.0005777895065548488418016859213821589946746826171875)
+void
+_gsl_init_signal (void)
+{
+  static gdouble cent_table_space[201];
+  gint i;
+
+  /* allow negative indexing within [-100..+100] */
+  gsl_cent_table = cent_table_space + 100;
+  for (i = -100; i <= 100; i++)
+    cent_table_space[100 + i] = pow (GSL_2_RAISED_TO_1_OVER_1200_d, i);
 }
 
 

@@ -117,13 +117,6 @@ osc_process (GslOscData   *osc,
 	     gfloat       *mono_out,
 	     gfloat       *sync_out)
 {
-  /* mode changes:
-   * ifreq:	if (ifreq) last_freq=inval else lookup wave
-   * isync:	last_sync=0
-   * imod:	last_mod=0
-   * exp_mod:	n/a
-   */
-  
   mode |= isync ? OSC_FLAG_ISYNC : 0;
   mode |= sync_out ? OSC_FLAG_OSYNC : 0;
   mode |= ifreq ? OSC_FLAG_FREQ : 0;
@@ -151,7 +144,7 @@ osc_process (GslOscData   *osc,
 	  osc->last_pos = flpos / osc->wave.ifrac_to_float;
 	  osc->cur_pos = fcpos / osc->wave.ifrac_to_float;
 	}
-      if (change_mask & OSC_FLAG_ISYNC)
+      if (!(mode & OSC_FLAG_ISYNC))
 	osc->last_sync_level = 0;
       if (mode & OSC_FLAG_PULSE_OSC)
 	{

@@ -47,7 +47,12 @@
  cout << "2^(1/72) =\n";
  cout << "2^" << (ld) 1 / (ld) 72 << " =\n";
  cout << r << "\n";
- 
+
+ r = pow ((ld) 2, (ld) 1 / (ld) 1200);
+ cout << "2^(1/1200) =\n";
+ cout << "2^" << (ld) 1 / (ld) 1200 << " =\n";
+ cout << r << "\n";
+
  return 0;
  }
 */
@@ -58,6 +63,8 @@
               0.05776226504666215344485635796445421874523162841796875)
 #define	BSE_2_RAISED_TO_1_OVER_72_d	( /* 2^(1/72) */ \
               1.009673533228510944326217213529162108898162841796875)
+#define BSE_2_RAISED_TO_1_OVER_1200_d     ( /* 2^(1/1200) */ \
+              1.0005777895065548488418016859213821589946746826171875)
 
 
 /* --- prototypes --- */
@@ -146,18 +153,12 @@ bse_globals_init (void)
   _bse_halftone_factor_table = ht_factor_table_d;
   _bse_halftone_factor_table_fixed = ht_factor_table_fixed_ui;
   
-  /* fine tune assertments, so BSE_2_RAISED_TO_1_OVER_72_d is the right
-   * constant (12 * 6 = 72)
-   */
-  g_assert (- BSE_MIN_FINE_TUNE == BSE_MAX_FINE_TUNE &&
-	    BSE_MAX_FINE_TUNE == 6);
-  
   /* setup fine tune factorization table, since fine tunes are in the
-   * positive and in the negative range, we allow negative indexes here.
+   * positive and in the negative range, we allow negative indieces here.
    */
   for (i = -BSE_MAX_FINE_TUNE; i <= BSE_MAX_FINE_TUNE; i++)
     {
-      ft_factor_table_d[BSE_MAX_FINE_TUNE + i] = pow (BSE_2_RAISED_TO_1_OVER_72_d, i);
+      ft_factor_table_d[BSE_MAX_FINE_TUNE + i] = pow (BSE_2_RAISED_TO_1_OVER_1200_d, i);
       BSE_IF_DEBUG (TABLES)
 	g_message ("ft-table: [%d] -> %.20f",
 		   i, ft_factor_table_d[BSE_MAX_FINE_TUNE + i]);

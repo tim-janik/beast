@@ -528,8 +528,8 @@ bse_snet_set_iport_src (BseSNet     *snet,
   port->src_omodule = omodule;
   port->src_ostream = ostream;
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_iconnect (port->src_omodule, port->src_ostream,
-					    port->dest_imodule, port->dest_istream));
+    gsl_trans_add (trans, gsl_job_connect (port->src_omodule, port->src_ostream,
+					   port->dest_imodule, port->dest_istream));
   if (!port->dest_imodule && !port->src_omodule)
     port_delete (snet, port);
 }
@@ -564,8 +564,8 @@ bse_snet_set_iport_dest (BseSNet     *snet,
   port->dest_imodule = imodule;
   port->dest_istream = istream;
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_iconnect (port->src_omodule, port->src_ostream,
-					    port->dest_imodule, port->dest_istream));
+    gsl_trans_add (trans, gsl_job_connect (port->src_omodule, port->src_ostream,
+					   port->dest_imodule, port->dest_istream));
   if (!port->dest_imodule && !port->src_omodule)
     port_delete (snet, port);
 }
@@ -600,8 +600,8 @@ bse_snet_set_oport_src (BseSNet     *snet,
   port->src_omodule = omodule;
   port->src_ostream = ostream;
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_iconnect (port->src_omodule, port->src_ostream,
-					    port->dest_imodule, port->dest_istream));
+    gsl_trans_add (trans, gsl_job_connect (port->src_omodule, port->src_ostream,
+					   port->dest_imodule, port->dest_istream));
   if (!port->dest_imodule && !port->src_omodule)
     port_delete (snet, port);
 }
@@ -636,8 +636,8 @@ bse_snet_set_oport_dest (BseSNet     *snet,
   port->dest_imodule = imodule;
   port->dest_istream = istream;
   if (port->src_omodule && port->dest_imodule)
-    gsl_trans_add (trans, gsl_job_iconnect (port->src_omodule, port->src_ostream,
-					    port->dest_imodule, port->dest_istream));
+    gsl_trans_add (trans, gsl_job_connect (port->src_omodule, port->src_ostream,
+					   port->dest_imodule, port->dest_istream));
   if (!port->dest_imodule && !port->src_omodule)
     port_delete (snet, port);
 }

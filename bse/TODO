@@ -1,3 +1,4 @@
+- fix fune-tune settings (from gsl)
 - partials context creation for non-modifiable snets:
   gsl-module: BseContextBus 4in<->4out
   BseSource: BseContextIBus (owns ContextBus) 4in, BseContextOBus 4out
@@ -12,11 +13,17 @@ Problems:
 - fix snet propety changes in sub synth and instrument
 
 NEW:
+- re-eval balance defines, provide just MAX_BALANCE
+- provide proper dB functions in GSL
+- implement BSE_PARAM_FORCE_DIRTY (never skip due to value==default)
+- adjust stepping for all percentage settings
+- get rid of BseSampleValue
 - get rid of parasites by means of using data pocket
 - alive keeping for waves which are removed, but whose index is in use?
 - loading (restore) may only work when not playing (to keep consistency
   and avoid lock contentions during playback)
 - during playback the set instruments needs to be fixed on a song  
+- BSE_SOURCE_GET_CLASS (source)->remove_input() add GslTrans* so clear_input removes really in batches
   
 OLD:
 general:

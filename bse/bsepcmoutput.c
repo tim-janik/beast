@@ -300,8 +300,8 @@ bse_pcm_output_context_connect (BseSource *source,
   module = bse_source_get_context_imodule (source, context_handle);
   
   /* connect module to server uplink */
-  gsl_trans_add (trans, gsl_job_iconnect (module, 0, oput->uplink, 0));
-  gsl_trans_add (trans, gsl_job_iconnect (module, 1, oput->uplink, 1));
+  gsl_trans_add (trans, gsl_job_connect (module, 0, oput->uplink, 0));
+  gsl_trans_add (trans, gsl_job_connect (module, 1, oput->uplink, 1));
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->context_connect (source, context_handle, trans);

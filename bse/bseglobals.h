@@ -113,7 +113,7 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 #define	BSE_MIN_TRANSPOSE		(-12)
 #define	BSE_MAX_TRANSPOSE		(12)	/* 1 octave */
 #define	BSE_MIN_FINE_TUNE		(- BSE_MAX_FINE_TUNE)
-#define	BSE_MAX_FINE_TUNE		(6)	/* inter-note divisor */
+#define	BSE_MAX_FINE_TUNE		(100)	/* inter-note divisor */
 #define	BSE_MAX_ENV_TIME		(10000) /* ms */
 #define	BSE_MIN_MIX_FREQ		(1378)
 #define	BSE_MAX_MIX_FREQ		(96000)

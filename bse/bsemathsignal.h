@@ -82,6 +82,11 @@ double	gsl_window_sinc		(double x);
 double	gsl_window_rect		(double x);	/* widest */
 
 
+/* --- cents (1/100th of a semitone) --- */
+#define	gsl_cent_factor(index /* -100..100 */)	(gsl_cent_table[index])
+extern const gdouble *gsl_cent_table;
+
+
 /* --- implementation details --- */
 static inline float  G_GNUC_CONST
 _gsl_signal_exp2_fraction (float x)	/* 2^x, -0.5 <= x <= 0.5 */

@@ -43,16 +43,18 @@ gsl_module_new (const GslClass *klass,
   /* setup GslModule */
   node->module.klass = klass;
   node->module.user_data = user_data;
-  node->module.istreams = klass->n_istreams ? gsl_new_struct0 (GslIStream, OP_NODE_N_ISTREAMS (node)) : NULL;
-  node->module.ostreams = _gsl_alloc_ostreams (OP_NODE_N_OSTREAMS (node));
+  node->module.istreams = klass->n_istreams ? gsl_new_struct0 (GslIStream, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
+  node->module.jstreams = klass->n_jstreams ? gsl_new_struct0 (GslJStream, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
+  node->module.ostreams = _gsl_alloc_ostreams (ENGINE_NODE_N_OSTREAMS (node));
   
   /* setup OpNode */
-  node->inputs = OP_NODE_N_ISTREAMS (node) ? gsl_new_struct0 (OpInput, OP_NODE_N_ISTREAMS (node)) : NULL;
-  node->outputs = OP_NODE_N_OSTREAMS (node) ? gsl_new_struct0 (OpOutput, OP_NODE_N_OSTREAMS (node)) : NULL;
+  node->inputs = ENGINE_NODE_N_ISTREAMS (node) ? gsl_new_struct0 (EngineInput, ENGINE_NODE_N_ISTREAMS (node)) : NULL;
+  node->jinputs = ENGINE_NODE_N_JSTREAMS (node) ? gsl_new_struct0 (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node)) : NULL;
+  node->outputs = ENGINE_NODE_N_OSTREAMS (node) ? gsl_new_struct0 (EngineOutput, ENGINE_NODE_N_OSTREAMS (node)) : NULL;
   node->output_nodes = NULL;
   node->integrated = FALSE;
   gsl_rec_mutex_init (&node->rec_mutex);
-  for (i = 0; i < OP_NODE_N_OSTREAMS (node); i++)
+  for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
     node->outputs[i].buffer = node->module.ostreams[i].values;
   node->flow_jobs = NULL;
   node->fjob_first = NULL;
@@ -123,7 +125,7 @@ gsl_job_discard (GslModule *module)
 }
 
 /**
- * gsl_job_iconnect
+ * gsl_job_connect
  * @src_module: Module with output stream
  * @src_ostream: Index of output stream of @src_module
  * @dest_module: Module with unconnected input stream
@@ -136,10 +138,10 @@ gsl_job_discard (GslModule *module)
  * is executed).
  */
 GslJob*
-gsl_job_iconnect (GslModule *src_module,
-		  guint      src_ostream,
-		  GslModule *dest_module,
-		  guint      dest_istream)
+gsl_job_connect (GslModule *src_module,
+		 guint      src_ostream,
+		 GslModule *dest_module,
+		 guint      dest_istream)
 {
   GslJob *job;
   
@@ -149,9 +151,32 @@ gsl_job_iconnect (GslModule *src_module,
   g_return_val_if_fail (dest_istream < dest_module->klass->n_istreams, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = OP_JOB_CONNECT;
+  job->job_id = ENGINE_JOB_ICONNECT;
   job->data.connection.dest_node = OP_NODE (dest_module);
-  job->data.connection.dest_istream = dest_istream;
+  job->data.connection.dest_ijstream = dest_istream;
+  job->data.connection.src_node = OP_NODE (src_module);
+  job->data.connection.src_ostream = src_ostream;
+  
+  return job;
+}
+
+GslJob*
+gsl_job_jconnect (GslModule *src_module,
+		  guint      src_ostream,
+		  GslModule *dest_module,
+		  guint      dest_jstream)
+{
+  GslJob *job;
+  
+  g_return_val_if_fail (src_module != NULL, NULL);
+  g_return_val_if_fail (src_ostream < src_module->klass->n_ostreams, NULL);
+  g_return_val_if_fail (dest_module != NULL, NULL);
+  g_return_val_if_fail (dest_jstream < dest_module->klass->n_jstreams, NULL);
+  
+  job = gsl_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_JCONNECT;
+  job->data.connection.dest_node = OP_NODE (dest_module);
+  job->data.connection.dest_ijstream = dest_jstream;
   job->data.connection.src_node = OP_NODE (src_module);
   job->data.connection.src_ostream = src_ostream;
   
@@ -178,11 +203,34 @@ gsl_job_disconnect (GslModule *dest_module,
   g_return_val_if_fail (dest_istream < dest_module->klass->n_istreams, NULL);
   
   job = gsl_new_struct0 (GslJob, 1);
-  job->job_id = OP_JOB_DISCONNECT;
+  job->job_id = ENGINE_JOB_IDISCONNECT;
   job->data.connection.dest_node = OP_NODE (dest_module);
-  job->data.connection.dest_istream = dest_istream;
+  job->data.connection.dest_ijstream = dest_istream;
   job->data.connection.src_node = NULL;
   job->data.connection.src_ostream = ~0;
+  
+  return job;
+}
+
+GslJob*
+gsl_job_jdisconnect (GslModule *dest_module,
+		     guint      dest_jstream,
+		     GslModule *src_module,
+		     guint	src_ostream)
+{
+  GslJob *job;
+  
+  g_return_val_if_fail (dest_module != NULL, NULL);
+  g_return_val_if_fail (dest_jstream < dest_module->klass->n_jstreams, NULL);
+  g_return_val_if_fail (src_module != NULL, NULL);
+  g_return_val_if_fail (src_ostream < src_module->klass->n_ostreams, NULL);
+  
+  job = gsl_new_struct0 (GslJob, 1);
+  job->job_id = ENGINE_JOB_JDISCONNECT;
+  job->data.connection.dest_node = OP_NODE (dest_module);
+  job->data.connection.dest_ijstream = dest_jstream;
+  job->data.connection.src_node = OP_NODE (src_module);
+  job->data.connection.src_ostream = src_ostream;
   
   return job;
 }

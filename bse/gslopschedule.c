@@ -477,13 +477,13 @@ subschedule_query_node (OpSchedule *schedule,
 			OpNode	   *node,
 			OpQuery	   *query)
 {
-  guint i, leaf_level = 0;
+  guint i, j, leaf_level = 0;
 
   g_return_if_fail (node->sched_router_tag == FALSE);
 
   SCHED_DEBUG ("start_query(%p)", node);
   node->sched_router_tag = TRUE;
-  for (i = 0; i < OP_NODE_N_ISTREAMS (node); i++)
+  for (i = 0; i < ENGINE_NODE_N_ISTREAMS (node); i++)
     {
       OpNode *child = node->inputs[i].src_node;
 
@@ -521,6 +521,43 @@ subschedule_query_node (OpSchedule *schedule,
 	  g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
 	}
     }
+  for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
+    for (i = 0; i < node->module.jstreams[j].n_connections; i++)
+      {
+	OpNode *child = node->jinputs[j][i].src_node;
+	
+	if (OP_NODE_IS_SCHEDULED (child))
+	  {
+	    leaf_level = MAX (leaf_level, child->sched_leaf_level + 1);
+	    continue;
+	  }
+	else if (child->sched_router_tag)	/* cycle */
+	  {
+	    query_add_cycle (query, child, node);
+	  }
+	else			/* nice boy ;) */
+	  {
+	    OpQuery child_query = { 0, };
+	    
+	    subschedule_query_node (schedule, child, &child_query);
+	    leaf_level = MAX (leaf_level, child_query.leaf_level + 1);
+	    if (!child_query.cycles)
+	      {
+		g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
+		_op_schedule_node (schedule, child, child_query.leaf_level);
+	      }
+	    else if (master_resolve_cycles (&child_query, child))
+	      {
+		g_assert (child == child_query.cycle_nodes->data);	/* paranoid */
+		_op_schedule_cycle (schedule, child_query.cycle_nodes, child_query.leaf_level);
+		child_query.cycle_nodes = NULL;
+	      }
+	    else
+	      query_merge_cycles (query, &child_query, node);
+	    g_assert (child_query.cycles == NULL);	/* paranoid */
+	    g_assert (child_query.cycle_nodes == NULL);	/* paranoid */
+	  }
+      }
   query->leaf_level = leaf_level;
   node->counter = GSL_TICK_STAMP;
   node->sched_router_tag = FALSE;

@@ -53,6 +53,8 @@ _gsl_alloc_ostreams (guint n)
 static void
 free_node (OpNode *node)
 {
+  guint j;
+
   g_return_if_fail (node != NULL);
   g_return_if_fail (node->output_nodes == NULL);
   g_return_if_fail (node->integrated == FALSE);
@@ -62,19 +64,29 @@ free_node (OpNode *node)
   if (node->module.klass->free)
     node->module.klass->free (node->module.user_data, node->module.klass);
   gsl_rec_mutex_destroy (&node->rec_mutex);
-  if (OP_NODE_N_OSTREAMS (node))
+  if (node->module.ostreams)
     {
-      guint n = OP_NODE_N_OSTREAMS (node);
+      guint n = ENGINE_NODE_N_OSTREAMS (node);
       guint i = sizeof (GslOStream) * n + sizeof (gfloat) * gsl_engine_block_size () * n;
 
       gsl_free_memblock (i, node->module.ostreams);
+      gsl_delete_structs (EngineOutput, ENGINE_NODE_N_OSTREAMS (node), node->outputs);
     }
-  if (OP_NODE_N_ISTREAMS (node))
-    gsl_delete_structs (GslIStream, OP_NODE_N_ISTREAMS (node), node->module.istreams);
-  if (node->inputs)
-    gsl_delete_structs (OpInput, OP_NODE_N_ISTREAMS (node), node->inputs);
-  if (node->outputs)
-    gsl_delete_structs (OpOutput, OP_NODE_N_OSTREAMS (node), node->outputs);
+  if (node->module.istreams)
+    {
+      gsl_delete_structs (GslIStream, ENGINE_NODE_N_ISTREAMS (node), node->module.istreams);
+      gsl_delete_structs (EngineInput, ENGINE_NODE_N_ISTREAMS (node), node->inputs);
+    }
+  for (j = 0; j < ENGINE_NODE_N_JSTREAMS (node); j++)
+    {
+      g_free (node->jinputs[j]);
+      g_free (node->module.jstreams[j].values);
+    }
+  if (node->module.jstreams)
+    {
+      gsl_delete_structs (GslJStream, ENGINE_NODE_N_JSTREAMS (node), node->module.jstreams);
+      gsl_delete_structs (EngineJInput*, ENGINE_NODE_N_JSTREAMS (node), node->jinputs);
+    }
   gsl_delete_struct (OpNode, node);
 }
 

@@ -1515,6 +1515,7 @@ gsl_init (const GslConfigValue values[],
   gsl_cond_init (&global_thread_cond);
   main_thread_tdata = create_tdata ();
   g_assert (main_thread_tdata != NULL);
+  _gsl_init_signal ();
   _gsl_init_data_handles ();
   _gsl_init_data_caches ();
   _gsl_init_engine_utils ();

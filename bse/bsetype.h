@@ -44,6 +44,10 @@ typedef enum
   BSE_PARAM_SERVE_STORAGE	= 1 << 9,
   BSE_PARAM_SERVE_MASK		= 0x00000f00,
 
+  /* storage flags */
+  BSE_PARAM_FORCE_DIRTY		= 1 << 13,
+  BSE_PARAM_STORAGE_FLAG_MASK	= 0x0000f000,
+
   /* GUI hints */
   BSE_PARAM_HINT_CHECK_NULL	= 1 << 16,
   BSE_PARAM_HINT_RDONLY		= 1 << 17,

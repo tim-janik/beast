@@ -35,6 +35,7 @@ enum
   PROP_PHASE,
   PROP_BASE_FREQ,
   PROP_BASE_NOTE,
+  PROP_FINE_TUNE,
   PROP_FM_PERC,
   PROP_FM_EXP,
   PROP_FM_OCTAVES,
@@ -157,6 +158,13 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
 						   BSE_KAMMER_NOTE, 1, TRUE,
 						   BSE_PARAM_GUI));
+  bse_object_class_add_param (object_class, "Base Frequency",
+			      PROP_FINE_TUNE,
+			      bse_param_spec_int ("fine_tune", "Fine Tune", NULL,
+						  BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
+						  0, 10,
+						  BSE_PARAM_DEFAULT |
+						  BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Modulation",
 			      PROP_FM_PERC,
 			      bse_param_spec_float ("fm_perc", "Input Modulation [%]",
@@ -282,6 +290,10 @@ bse_standard_osc_set_property (GObject      *object,
       if (bse_note_from_freq (self->config.cfreq) != bse_value_get_note (value))
 	bse_object_param_changed (BSE_OBJECT (self), "base_note");
       break;
+    case PROP_FINE_TUNE:
+      self->config.fine_tune = g_value_get_int (value);
+      bse_standard_osc_update_modules (self, FALSE, NULL);
+      break;
     case PROP_FM_PERC:
       self->fm_strength = g_value_get_float (value) / 100.0;
       bse_standard_osc_update_modules (self, FALSE, NULL);
@@ -333,6 +345,9 @@ bse_standard_osc_get_property (GObject    *object,
       break;
     case PROP_BASE_NOTE:
       bse_value_set_note (value, bse_note_from_freq (self->config.cfreq));
+      break;
+    case PROP_FINE_TUNE:
+      g_value_set_int (value, self->config.fine_tune);
       break;
     case PROP_FM_PERC:
       g_value_set_float (value, self->fm_strength * 100.0);

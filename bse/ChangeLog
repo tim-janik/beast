@@ -1,3 +1,27 @@
+Sun Apr 21 21:10:17 2002  Tim Janik  <timj@gtk.org>
+
+	* bseglobals.[hc]: change fine-tune to match GSL fine-tune
+	cent table.
+
+	* bsesource.[hc]: complete joint channel implementation.
+
+	* bsestandardosc.[hc]: add fine-tune property, allowing
+	for slight detunes of multiple oscillators.
+
+	* gslopnode.h:
+	* gsloputil.c:
+	* gslopschedule.c:
+	* gslopmaster.[hc]:
+	* gslengine.[hc]: complete joint channel implementation.
+	NULL terminate the jstream gfloat**values; pointer array.
+
+	* gsloscillator.h:
+	* gsloscillator-aux.c: implement oscillator fine-tune.
+	* gsloscillator.c: fix sync-update clicks.
+
+	* gslsignal.[hc]: implement semitone cent fine-tune factor
+	table, available as gsl_cent_factor().
+
 Tue Apr 16 12:51:17 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesnooper.[hc]: move this module from plugins to BSE.
