@@ -13,6 +13,8 @@ Sample manipulation includes generation of new sounds from module
 networks, based on subtractive synthesis.
 More information on the fundamental principles can be found in the
 ./docs subdirectory.
+Some *.bse files used for testing are also included in the ./test
+subdirectory.
 
 To get a basic start, you'll also need the beast-data-*.tar.gz package,
 which comes with a set of default samples, songs, etc...
@@ -23,8 +25,11 @@ The official ftp site is:
 The official web site is:
   http://beast.gtk.org/
 
+And finally there's a mailing list (merely an alias) as well:
+  beast@beast.gtk.org
+send an email to timj@beast.gtk.org to get subscribed.
 
 Installation
 ============
 
-See the file 'INSTALL'
+See the file `INSTALL'.
