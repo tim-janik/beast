@@ -1,3 +1,8 @@
+Sun Dec 26 13:04:02 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslwaveosc-aux.c: Fix ping pong looping: the code now should behave
+	correctly for backward playing (negative block dirstride).
+
 Sat Dec 25 17:14:15 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslloader-pat.cc: Handle format field correclty (support 8bit and

@@ -109,7 +109,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      wave_osc_transform_filter (wosc, BSE_SIGNAL_TO_FREQ (freq_level));
 	    }
 	}
-      
+
       /* process filter while necesary */
       while (wosc->cur_pos >= (FRAC_MASK + 1) << 1)
 	{
@@ -117,7 +117,8 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	  gfloat d, d0, d1, d2, d3, d4, d5, d6, d7;
 	  gfloat *x;
 
-	  if (UNLIKELY (wosc->x >= boundary))       /* wchunk block boundary */
+	  if (UNLIKELY ((block->dirstride > 0 && wosc->x >= boundary) ||
+		        (block->dirstride < 0 && wosc->x <= boundary)))       /* wchunk block boundary */
 	    {
 	      GslLong next_offset = block->next_offset;
 
@@ -129,79 +130,39 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      boundary = block->end;
 	    }
 	  
-	  if (LIKELY (block->dirstride > 0))
-	    {
-	      x = wosc->x;
-	      d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d1 = b[1] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d2 = b[2] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d3 = b[3] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d4 = b[4] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      c8 = a[8] * x[-4 * DIRSTRIDE (block)];
-	      c6 = a[6] * x[-3 * DIRSTRIDE (block)];
-	      c4 = a[4] * x[-2 * DIRSTRIDE (block)];
-	      c2 = a[2] * x[-1 * DIRSTRIDE (block)];
-	      c0 = a[0] * x[0 * DIRSTRIDE (block)];
-	      d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
-	      c = c0 + c2 + c4 + c6 + c8;
-	      y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
-	      d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d1 = b[1] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d2 = b[2] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d3 = b[3] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d4 = b[4] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      c7 = a[7] * x[-3 * DIRSTRIDE (block)];
-	      c5 = a[5] * x[-2 * DIRSTRIDE (block)];
-	      c3 = a[3] * x[-1 * DIRSTRIDE (block)];
-	      c1 = a[1] * x[0 * DIRSTRIDE (block)];
-	      d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
-	      c = c1 + c3 + c5 + c7;
-	      y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
-	      wosc->x += DIRSTRIDE (block);
-	    }
-          else /* dirstride < 0 */
-	    {
-	      x = wosc->x;
-	      d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d1 = b[1] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d2 = b[2] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d3 = b[3] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d4 = b[4] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      c8 = a[8] * x[-4 * -DIRSTRIDE (block)];
-	      c6 = a[6] * x[-3 * -DIRSTRIDE (block)];
-	      c4 = a[4] * x[-2 * -DIRSTRIDE (block)];
-	      c2 = a[2] * x[-1 * -DIRSTRIDE (block)];
-	      c0 = a[0] * x[0 * -DIRSTRIDE (block)];
-	      d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
-	      c = c0 + c2 + c4 + c6 + c8;
-	      y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
-	      d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d1 = b[1] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d2 = b[2] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d3 = b[3] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d4 = b[4] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      c7 = a[7] * x[-3 * -DIRSTRIDE (block)];
-	      c5 = a[5] * x[-2 * -DIRSTRIDE (block)];
-	      c3 = a[3] * x[-1 * -DIRSTRIDE (block)];
-	      c1 = a[1] * x[0 * -DIRSTRIDE (block)];
-	      d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
-	      c = c1 + c3 + c5 + c7;
-	      y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
-	      wosc->x += -DIRSTRIDE (block);
-	    }
-
+	  x = wosc->x;
+	  d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d1 = b[1] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d2 = b[2] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d3 = b[3] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d4 = b[4] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  c8 = a[8] * x[-4 * DIRSTRIDE (block)];
+	  c6 = a[6] * x[-3 * DIRSTRIDE (block)];
+	  c4 = a[4] * x[-2 * DIRSTRIDE (block)];
+	  c2 = a[2] * x[-1 * DIRSTRIDE (block)];
+	  c0 = a[0] * x[0 * DIRSTRIDE (block)];
+	  d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
+	  c = c0 + c2 + c4 + c6 + c8;
+	  y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
+	  d0 = b[0] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d1 = b[1] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d2 = b[2] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d3 = b[3] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d4 = b[4] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
+	  c7 = a[7] * x[-3 * DIRSTRIDE (block)];
+	  c5 = a[5] * x[-2 * DIRSTRIDE (block)];
+	  c3 = a[3] * x[-1 * DIRSTRIDE (block)];
+	  c1 = a[1] * x[0 * DIRSTRIDE (block)];
+	  d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
+	  c = c1 + c3 + c5 + c7;
+	  y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
+	  wosc->x += DIRSTRIDE (block);
 	  wosc->cur_pos -= (FRAC_MASK + 1) << 1;
 	}
 
