@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-03 19:03+0200\n"
+"POT-Creation-Date: 2004-09-04 18:11+0200\n"
 "PO-Revision-Date: 2004-09-03 20:08+0000\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
@@ -1421,7 +1421,7 @@ msgstr "Procedimento"
 msgid "Totals"
 msgstr "Totais"
 
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:390
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:409
 msgid "Thread Name"
 msgstr "Nome da thread"
 
@@ -2402,7 +2402,9 @@ msgstr "Exclui a faixa selecionada atualmente"
 #: beast-gtk/bsttrackview.c:514
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
-msgstr "Notas de pistas não marcadas são ignoradas pelo seqüenciador durante a reprodução"
+msgstr ""
+"Notas de pistas não marcadas são ignoradas pelo seqüenciador durante a "
+"reprodução"
 
 #: beast-gtk/bsttrackview.c:517 bse/bsemidisynth.c:427 bse/bsetrack.c:887
 msgid "Maximum number of voices for simultaneous playback"
@@ -3384,27 +3386,27 @@ msgstr "Freqüência"
 msgid "Const Out%u"
 msgstr "Saída constante%u"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:410
 msgid "State"
 msgstr "Estado"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:410
 msgid "The execution state of the thread"
 msgstr "O estado de execução da thread"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:411
 msgid "Thread ID"
 msgstr "ID da thread"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:411
 msgid "A unique number identifying this thread"
 msgstr "Um número único que identifica essa thread"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:413
 msgid "Priority"
 msgstr "Prioridade"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:413
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -3412,51 +3414,51 @@ msgstr ""
 "O valor ótimo de uma thread, -20 indica uma thread de alta prioridade e +19 "
 "uma de baixa prioridade que é 'ótimo' para outras"
 
-#: bse/bsecore.idl:397
+#: bse/bsecore.idl:416
 msgid "Processor"
 msgstr "Processador"
 
-#: bse/bsecore.idl:397
+#: bse/bsecore.idl:416
 msgid "The processor that this thread is currently being executed on"
 msgstr "O processador em que essa thread está sendo executada atualmente"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:418
 msgid "User Time"
 msgstr "Tempo do usuário"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:418
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "O tempo da CPU utilizado executando instruções dessa thread"
 
-#: bse/bsecore.idl:401
+#: bse/bsecore.idl:420
 msgid "System Time"
 msgstr "Tempo do sistema"
 
-#: bse/bsecore.idl:401
+#: bse/bsecore.idl:420
 msgid "The CPU time spent in the system for this thread"
 msgstr "O tempo da CPU utilizado no sistema para essa thread"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:422
 msgid "Child User Time"
 msgstr "Tempo filho do usuário"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:422
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "O tempo da CPU utilizado executando instruções de filhos dessa thread"
 
-#: bse/bsecore.idl:405
+#: bse/bsecore.idl:424
 msgid "Child System Time"
 msgstr "Tempo filho do sistema"
 
-#: bse/bsecore.idl:405
+#: bse/bsecore.idl:424
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "O tempo da CPU utilizado no sistema para filhos dessa thread"
 
-#: bse/bsecore.idl:446
+#: bse/bsecore.idl:465
 msgid "Latency [ms]"
 msgstr "Latência [ms]"
 
-#: bse/bsecore.idl:447
+#: bse/bsecore.idl:466
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -3464,20 +3466,20 @@ msgstr ""
 "Duração do processamento entre entrada e saída de uma única amostra, valores "
 "menores aumentam a carga da CPU"
 
-#: bse/bsecore.idl:450
+#: bse/bsecore.idl:469
 msgid "Synth Mixing Frequency"
 msgstr "Freqüência de mixagem de síntese"
 
-#: bse/bsecore.idl:451
+#: bse/bsecore.idl:470
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 "Freqüência de mixagem de síntese, valores comuns são: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:453
+#: bse/bsecore.idl:472
 msgid "Synth Control Frequency"
 msgstr "Freqüência de controle de síntese"
 
-#: bse/bsecore.idl:454
+#: bse/bsecore.idl:473
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"

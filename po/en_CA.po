@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-03 16:35-0400\n"
+"POT-Creation-Date: 2004-09-04 18:11+0200\n"
 "PO-Revision-Date: 2004-09-03 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
@@ -1403,7 +1403,7 @@ msgstr "Procedure"
 msgid "Totals"
 msgstr "Totals"
 
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:390
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:409
 msgid "Thread Name"
 msgstr "Thread Name"
 
@@ -3352,27 +3352,27 @@ msgstr "Frequency"
 msgid "Const Out%u"
 msgstr "Const Out%u"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:410
 msgid "State"
 msgstr "State"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:410
 msgid "The execution state of the thread"
 msgstr "The execution state of the thread"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:411
 msgid "Thread ID"
 msgstr "Thread ID"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:411
 msgid "A unique number identifying this thread"
 msgstr "A unique number identifying this thread"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:413
 msgid "Priority"
 msgstr "Priority"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:413
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -3380,51 +3380,51 @@ msgstr ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 
-#: bse/bsecore.idl:397
+#: bse/bsecore.idl:416
 msgid "Processor"
 msgstr "Processor"
 
-#: bse/bsecore.idl:397
+#: bse/bsecore.idl:416
 msgid "The processor that this thread is currently being executed on"
 msgstr "The processor that this thread is currently being executed on"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:418
 msgid "User Time"
 msgstr "User Time"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:418
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "The CPU time spent executing instructions of this thread"
 
-#: bse/bsecore.idl:401
+#: bse/bsecore.idl:420
 msgid "System Time"
 msgstr "System Time"
 
-#: bse/bsecore.idl:401
+#: bse/bsecore.idl:420
 msgid "The CPU time spent in the system for this thread"
 msgstr "The CPU time spent in the system for this thread"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:422
 msgid "Child User Time"
 msgstr "Child User Time"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:422
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "The CPU time spent executing instructions of children of this thread"
 
-#: bse/bsecore.idl:405
+#: bse/bsecore.idl:424
 msgid "Child System Time"
 msgstr "Child System Time"
 
-#: bse/bsecore.idl:405
+#: bse/bsecore.idl:424
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "The CPU time spent in the system for children of this thread"
 
-#: bse/bsecore.idl:446
+#: bse/bsecore.idl:465
 msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
-#: bse/bsecore.idl:447
+#: bse/bsecore.idl:466
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -3432,19 +3432,19 @@ msgstr ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 
-#: bse/bsecore.idl:450
+#: bse/bsecore.idl:469
 msgid "Synth Mixing Frequency"
 msgstr "Synth Mixing Frequency"
 
-#: bse/bsecore.idl:451
+#: bse/bsecore.idl:470
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:453
+#: bse/bsecore.idl:472
 msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
-#: bse/bsecore.idl:454
+#: bse/bsecore.idl:473
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"

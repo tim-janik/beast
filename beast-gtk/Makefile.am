@@ -77,7 +77,7 @@ beast_extra_sources = $(strip 						\
 	bstparam-note-spinner.c		bstparam-proxy.c		\
 	bstparam-color-spinner.c	bstparam-scale.c		\
 	bstparam-searchpath.c		bstparam-time.c			\
-	bstrackeditor-covers.c						\
+	bstparam-item-seq.c		bstrackeditor-covers.c		\
 )
 beast_extra_files = $(strip \
 	bstmarshal.list					\

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-02 11:02+0200\n"
+"POT-Creation-Date: 2004-09-04 18:11+0200\n"
 "PO-Revision-Date: 2004-09-03 17:26+0200\n"
 "Last-Translator: Laurent Dhima <laurenti@alblinux.net>\n"
 "Language-Team: Albanian <gnome-albanian-perkthyesit@lists.sourceforge.net>\n"
@@ -203,7 +203,8 @@ msgstr "E re E personalizuar"
 
 #: beast-gtk/bstapp.c:129
 #, fuzzy
-msgid "Create a new synthesizer mesh to be used as effect or instrument in songs"
+msgid ""
+"Create a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr "Krijo a i ri në"
 
 #: beast-gtk/bstapp.c:131
@@ -317,8 +318,7 @@ msgid "Opening project `%s'"
 msgstr ""
 
 #: beast-gtk/bstapp.c:680
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "veshje"
 
@@ -337,14 +337,12 @@ msgid "Procedure Browser"
 msgstr "Shfletuesi"
 
 #: beast-gtk/bstapp.c:945
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Release Shënime"
 
 #: beast-gtk/bstauxdialogs.c:389
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Please press the keyboard shortcut to be installed for function: %s"
 msgstr "tastiera instaluar për"
 
@@ -414,13 +412,13 @@ msgid "Adjust whether to draw dB values instead of lines"
 msgstr "Përshtat nga rreshta"
 
 #: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
-#: beast-gtk/bstdbmeter.c:1510
+#: beast-gtk/bstdbmeter.c:1525
 #, fuzzy
 msgid "Orientation"
 msgstr "Drejtimi"
 
 #: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
-#: beast-gtk/bstdbmeter.c:1510
+#: beast-gtk/bstdbmeter.c:1525
 msgid "Choose horizontal or vertical orientation"
 msgstr ""
 
@@ -444,7 +442,7 @@ msgstr "Lëvize Kontrollo Ndodhi"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
-#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:128
+#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:129
 #, fuzzy
 msgid "No target"
 msgstr "Jo"
@@ -523,20 +521,17 @@ msgid "Merging project `%s'"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.c:478
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Import MIDI: %s"
 msgstr "Importo MIDI"
 
 #: beast-gtk/bstfiledialog.c:489
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "MIDI"
 
 #: beast-gtk/bstfiledialog.c:509
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Failed to delete file\n"
 "`%s'\n"
@@ -545,8 +540,7 @@ msgid ""
 msgstr "Dështoi elemino j j"
 
 #: beast-gtk/bstfiledialog.c:538
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Save: %s"
 msgstr "Ruaj"
 
@@ -560,15 +554,13 @@ msgid "Store references to wave files"
 msgstr ""
 
 #: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Saving project `%s'"
 msgstr "Duke ruajtur"
 
 #: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
 #: beast-gtk/bstfiledialog.c:715
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid ""
 "Failed to save\n"
 "`%s'\n"
@@ -593,8 +585,7 @@ msgid "Save Effect"
 msgstr "Ruaj"
 
 #: beast-gtk/bstfiledialog.c:638 beast-gtk/bstfiledialog.c:648
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Saving effect `%s'"
 msgstr "Duke ruajtur"
 
@@ -614,8 +605,7 @@ msgid "Save Instrument"
 msgstr "Ruaj"
 
 #: beast-gtk/bstfiledialog.c:714 beast-gtk/bstfiledialog.c:724
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Saving instrument `%s'"
 msgstr "Duke ruajtur"
 
@@ -640,14 +630,12 @@ msgid "Grow the scrollable area"
 msgstr "Rrit"
 
 #: beast-gtk/bstitemseqdialog.c:139
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Adds the selection from the \"%s\" list to the \"%s\" list"
 msgstr "lista lista"
 
 #: beast-gtk/bstitemseqdialog.c:142
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Removes the selection from the \"%s\" list"
 msgstr "lista"
 
@@ -655,7 +643,7 @@ msgstr "lista"
 msgid "ID"
 msgstr "ID"
 
-#: beast-gtk/bstitemview.c:208
+#: beast-gtk/bstitemview.c:208 beast-gtk/bsttrackview.c:511
 msgid "Name"
 msgstr "Emri"
 
@@ -835,8 +823,7 @@ msgid "BEAST About"
 msgstr "Informacione"
 
 #: beast-gtk/bstmain.c:726
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "BEAST Version %s"
 msgstr "Versioni"
 
@@ -1155,7 +1142,8 @@ msgstr "_Ndalo"
 
 #: beast-gtk/bstpatternctrl.c:124
 #, fuzzy
-msgid "The number of cells to move across each time an event or note was edited"
+msgid ""
+"The number of cells to move across each time an event or note was edited"
 msgstr "nga ora"
 
 #: beast-gtk/bstpatternctrl.c:128
@@ -1173,7 +1161,8 @@ msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:134
 #, fuzzy
-msgid "Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr "Kavo nga"
 
 #: beast-gtk/bstpatternctrl.c:137
@@ -1199,7 +1188,8 @@ msgstr "Përshtat nga rreshta"
 #. movement
 #: beast-gtk/bstpatternctrl.c:313
 #, fuzzy
-msgid "Move focus to the next cell (up/left/right/down according to configuration)"
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr "Lëvize në vazhdim sipër majtas djathtas poshtë"
 
 #: beast-gtk/bstpatternctrl.c:314
@@ -1579,7 +1569,7 @@ msgstr ""
 msgid "Totals"
 msgstr "Totalet"
 
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:390
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:409
 #, fuzzy
 msgid "Thread Name"
 msgstr "Emri"
@@ -1610,7 +1600,8 @@ msgstr "UTime"
 
 #: beast-gtk/bstprofiler.c:250
 #, fuzzy
-msgid "Average number of milliseconds per second of user CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of user CPU time used by thread"
 msgstr "Mesatarja nga milisekonda sekondë nga përdorues CPU ora nga"
 
 #: beast-gtk/bstprofiler.c:251
@@ -1619,7 +1610,8 @@ msgstr "STime"
 
 #: beast-gtk/bstprofiler.c:251
 #, fuzzy
-msgid "Average number of milliseconds per second of system CPU time used by thread"
+msgid ""
+"Average number of milliseconds per second of system CPU time used by thread"
 msgstr "Mesatarja nga milisekonda sekondë nga sistemi CPU ora nga"
 
 #.
@@ -2526,8 +2518,7 @@ msgid "Song: %s"
 msgstr ""
 
 #: beast-gtk/bstsupershell.c:172
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI"
 
@@ -2680,6 +2671,31 @@ msgstr "Shto a i ri"
 #, fuzzy
 msgid "Delete the currently selected track"
 msgstr "Elemino"
+
+#: beast-gtk/bsttrackview.c:514
+msgid ""
+"Notes from unchecked tracks are ignored by the sequencer during playback"
+msgstr ""
+
+#: beast-gtk/bsttrackview.c:517 bse/bsemidisynth.c:427 bse/bsetrack.c:887
+#, fuzzy
+msgid "Maximum number of voices for simultaneous playback"
+msgstr "nga për"
+
+#: beast-gtk/bsttrackview.c:520
+#, fuzzy
+msgid "Synthesis network or wave to be used as instrument by this track"
+msgstr "MIDI"
+
+#: beast-gtk/bsttrackview.c:523 bse/bsetrack.c:893
+#, fuzzy
+msgid "Midi channel assigned to this track, 0 uses private per-track channel"
+msgstr "Midi"
+
+#: beast-gtk/bsttrackview.c:526 bse/bsemidisynth.c:436 bse/bsesong.c:739
+#: bse/bsetrack.c:898
+msgid "Synthesis network to be used as postprocessor"
+msgstr ""
 
 #: beast-gtk/bstusermessage.c:91
 msgid "Error"
@@ -3090,7 +3106,7 @@ msgstr "Array nga"
 msgid "Number of Rows"
 msgstr "Numri nga Rreshtat"
 
-#: beast-gtk/gxk/gxkparam-entry.c:56
+#: beast-gtk/gxk/gxkparam-entry.c:64
 #, fuzzy
 msgid "Text Entry"
 msgstr "Teksti"
@@ -3168,7 +3184,8 @@ msgstr "Automatike preje"
 
 #: beast-gtk/gxk/gxksimplelabel.c:143
 #, fuzzy
-msgid "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr "tekst është preje dhe është"
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
@@ -3208,7 +3225,8 @@ msgstr "\"Mnemonic widget\""
 
 #: beast-gtk/gxk/gxksimplelabel.c:163
 msgid "The widget to be activated when the label's mnemonic key is pressed"
-msgstr "\"Widget\"-i që duhet aktivuar kur shtypet një kyç \"mnemonic\" etikete"
+msgstr ""
+"\"Widget\"-i që duhet aktivuar kur shtypet një kyç \"mnemonic\" etikete"
 
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
@@ -3239,7 +3257,9 @@ msgid ""
 "mixed control signal can influence the amplification linearly (to amplify "
 "other control signals) or exponentially (to amplify audio signals). Finally, "
 "the master volume controls amplification of the resulting output signal."
-msgstr "dy kontrolli dhe dy mbas dhe niveli nga kontrolli nga a për i jashtëm burimet volumi kontrolli tjetër kontrolli volumi nga."
+msgstr ""
+"dy kontrolli dhe dy mbas dhe niveli nga kontrolli nga a për i jashtëm "
+"burimet volumi kontrolli tjetër kontrolli volumi nga."
 
 #: bse/bseamplifier.idl:45 plugins/bseadder.c:97 plugins/bsebalance.idl:36
 #: plugins/bsemult.c:60
@@ -3507,7 +3527,8 @@ msgstr "Lloji"
 
 #: bse/bsebiquadfilter.c:153
 #, fuzzy
-msgid "The filter gain normalization type (supported only by highpass and lowpass)"
+msgid ""
+"The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr "filtro lloji nga dhe"
 
 #: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
@@ -3593,80 +3614,80 @@ msgstr "Input"
 msgid "Filtered Audio Signal"
 msgstr "Zëri Sinjali"
 
-#: bse/bsebus.c:118
+#: bse/bsebus.c:123
 #, fuzzy
 msgid "Available Inputs"
 msgstr "Input"
 
-#: bse/bsebus.c:118
+#: bse/bsebus.c:123
 #, fuzzy
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "Lista nga"
 
 #. FIXME: fix volume
-#: bse/bsebus.c:631 bse/bsebus.c:633 bse/bsebus.c:635 bse/bsebus.c:637
-#: bse/bsebus.c:641 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
-#: bse/bsemidisynth.c:452 bse/bsesong.c:708 bse/bsesong.c:714
-#: bse/bsesong.c:721 bse/bsetrack.c:875
+#: bse/bsebus.c:734 bse/bsebus.c:736 bse/bsebus.c:738 bse/bsebus.c:740
+#: bse/bsebus.c:744 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
+#: bse/bsemidisynth.c:452 bse/bsesong.c:699 bse/bsesong.c:705
+#: bse/bsesong.c:712 bse/bsetrack.c:871
 msgid "Adjustments"
 msgstr ""
 
-#: bse/bsebus.c:632
+#: bse/bsebus.c:735
 #, fuzzy
 msgid "Mute"
 msgstr "Pa zë"
 
-#: bse/bsebus.c:632
+#: bse/bsebus.c:735
 #, fuzzy
 msgid "Mute: turn off the bus volume"
 msgstr "Pa zë volumi"
 
-#: bse/bsebus.c:634
+#: bse/bsebus.c:737
 msgid "Solo"
 msgstr ""
 
-#: bse/bsebus.c:634
+#: bse/bsebus.c:737
 #, fuzzy
 msgid "Solo: mute all other busses"
 msgstr "tjetër"
 
-#: bse/bsebus.c:636
+#: bse/bsebus.c:739
 #, fuzzy
 msgid "Sync"
 msgstr "Shënim"
 
-#: bse/bsebus.c:636
+#: bse/bsebus.c:739
 #, fuzzy
 msgid "Sync: enforce the same volume left and right"
 msgstr "volumi majtas dhe djathtas"
 
-#: bse/bsebus.c:638
+#: bse/bsebus.c:741
 #, fuzzy
 msgid "Left Volume [dB]"
 msgstr "Majtas Volumi"
 
-#: bse/bsebus.c:638
+#: bse/bsebus.c:741
 #, fuzzy
 msgid "Volume adjustment of left bus channel"
 msgstr "Volumi nga majtas"
 
-#: bse/bsebus.c:642
+#: bse/bsebus.c:745
 #, fuzzy
 msgid "Right Volume [dB]"
 msgstr "Djathtas Volumi"
 
-#: bse/bsebus.c:642
+#: bse/bsebus.c:745
 #, fuzzy
 msgid "Volume adjustment of right bus channel"
 msgstr "Volumi nga djathtas"
 
-#: bse/bsebus.c:645
+#: bse/bsebus.c:748
 #, fuzzy
 msgid "Signal Inputs"
 msgstr "Input"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.c:648
+#: bse/bsebus.c:751
 #, fuzzy
 msgid "Input Signals"
 msgstr "Audio"
@@ -3674,65 +3695,65 @@ msgstr "Audio"
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.c:652
+#: bse/bsebus.c:755
 #, fuzzy
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "dhe"
 
-#: bse/bsebus.c:655
+#: bse/bsebus.c:758
 msgid "Internals"
 msgstr ""
 
-#: bse/bsebus.c:657
+#: bse/bsebus.c:760
 #, fuzzy
 msgid "Master Output"
 msgstr "Rezultati"
 
-#: bse/bsebus.c:660 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:763 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 #, fuzzy
 msgid "Left Audio In"
 msgstr "Majtas Zëri Zmadho"
 
-#: bse/bsebus.c:660 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:763 bse/bsepcmoutput.c:128
 #, fuzzy
 msgid "Left channel input"
 msgstr "Majtas"
 
-#: bse/bsebus.c:662 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:765 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 #, fuzzy
 msgid "Right Audio In"
 msgstr "Djathtas Zëri Zmadho"
 
-#: bse/bsebus.c:662
+#: bse/bsebus.c:765
 #, fuzzy
 msgid "Right channel input"
 msgstr "Input"
 
-#: bse/bsebus.c:664 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:767 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 #, fuzzy
 msgid "Left Audio Out"
 msgstr "Majtas Zëri Zvogëlo"
 
-#: bse/bsebus.c:664 bse/bsepcminput.c:128
+#: bse/bsebus.c:767 bse/bsepcminput.c:128
 #, fuzzy
 msgid "Left channel output"
 msgstr "Majtas"
 
-#: bse/bsebus.c:666 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:769 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 #, fuzzy
 msgid "Right Audio Out"
 msgstr "Djathtas Zëri Zvogëlo"
 
-#: bse/bsebus.c:666 bse/bsepcminput.c:130
+#: bse/bsebus.c:769 bse/bsepcminput.c:130
 #, fuzzy
 msgid "Right channel output"
 msgstr "Djathtas"
 
-#: bse/bsebus.c:685
+#: bse/bsebus.c:788
 #, fuzzy
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
@@ -3745,8 +3766,7 @@ msgid "/Other Sources/Constant"
 msgstr "Tjetër Burimet"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Constant Output %u"
 msgstr "Rezultati"
 
@@ -3755,124 +3775,123 @@ msgstr "Rezultati"
 msgid "Value [float]"
 msgstr "Vlera"
 
-#: bse/bseconstant.c:117 bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
+#: bse/bseconstant.c:117 bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:109
 #: bse/bsestandardosc.c:143
 msgid "Frequency"
 msgstr "Frekuenca"
 
 #: bse/bseconstant.c:136
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Const Out%u"
 msgstr "Zvogëlo"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:410
 #, fuzzy
 msgid "State"
 msgstr "Gjendja"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:410
 #, fuzzy
 msgid "The execution state of the thread"
 msgstr "nga"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:411
 #, fuzzy
 msgid "Thread ID"
 msgstr "ID"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:411
 #, fuzzy
 msgid "A unique number identifying this thread"
 msgstr "A"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:413
 msgid "Priority"
 msgstr "Prioriteti"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:413
 #, fuzzy
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
 msgstr "i mirë nga a a e lartë dhe a e ulët është i mirë"
 
-#: bse/bsecore.idl:397
+#: bse/bsecore.idl:416
 msgid "Processor"
 msgstr "Proçesori"
 
-#: bse/bsecore.idl:397
+#: bse/bsecore.idl:416
 #, fuzzy
 msgid "The processor that this thread is currently being executed on"
 msgstr "është në"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:418
 #, fuzzy
 msgid "User Time"
 msgstr "Përdoruesi Ora"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:418
 #, fuzzy
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "CPU ora nga"
 
-#: bse/bsecore.idl:401
+#: bse/bsecore.idl:420
 #, fuzzy
 msgid "System Time"
 msgstr "Sistemi Ora"
 
-#: bse/bsecore.idl:401
+#: bse/bsecore.idl:420
 #, fuzzy
 msgid "The CPU time spent in the system for this thread"
 msgstr "CPU ora në sistemi për"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:422
 #, fuzzy
 msgid "Child User Time"
 msgstr "Bir Përdoruesi Ora"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:422
 #, fuzzy
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "CPU ora nga nga"
 
-#: bse/bsecore.idl:405
+#: bse/bsecore.idl:424
 #, fuzzy
 msgid "Child System Time"
 msgstr "Bir Sistemi Ora"
 
-#: bse/bsecore.idl:405
+#: bse/bsecore.idl:424
 #, fuzzy
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "CPU ora në sistemi për nga"
 
-#: bse/bsecore.idl:446
+#: bse/bsecore.idl:465
 #, fuzzy
 msgid "Latency [ms]"
 msgstr "ms"
 
-#: bse/bsecore.idl:447
+#: bse/bsecore.idl:466
 #, fuzzy
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr "kohëzgjatja dhe nga a CPU ngarkoje"
 
-#: bse/bsecore.idl:450
+#: bse/bsecore.idl:469
 #, fuzzy
 msgid "Synth Mixing Frequency"
 msgstr "Frekuenca"
 
-#: bse/bsecore.idl:451
+#: bse/bsecore.idl:470
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: bse/bsecore.idl:453
+#: bse/bsecore.idl:472
 #, fuzzy
 msgid "Synth Control Frequency"
 msgstr "Frekuenca"
 
-#: bse/bsecore.idl:454
+#: bse/bsecore.idl:473
 #, fuzzy
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
@@ -3957,162 +3976,167 @@ msgstr "Input Rezultati"
 
 #: bse/bseenums.c:114
 #, fuzzy
+msgid "Invalid synthesis module connection"
+msgstr "E pavlefshme lloji"
+
+#: bse/bseenums.c:115
+#, fuzzy
 msgid "Parent mismatch"
 msgstr "Prindi"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.c:116
 msgid "Bad loopback"
 msgstr ""
 
-#: bse/bseenums.c:116
+#: bse/bseenums.c:117
 msgid "Synthesis module currently busy"
 msgstr ""
 
-#: bse/bseenums.c:117
+#: bse/bseenums.c:118
 #, fuzzy
 msgid "Invalid synthsis module type"
 msgstr "E pavlefshme lloji"
 
-#: bse/bseenums.c:118
+#: bse/bseenums.c:119
 #, fuzzy
 msgid "No such procedure"
 msgstr "Jo"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.c:120
 msgid "Procedure currently busy"
 msgstr ""
 
 #. recursion
-#: bse/bseenums.c:120
+#: bse/bseenums.c:121
 #, fuzzy
 msgid "Procedure parameter invalid"
 msgstr "I pavlefshëm"
 
-#: bse/bseenums.c:121
+#: bse/bseenums.c:122
 msgid "Procedure execution failed"
 msgstr ""
 
-#: bse/bseenums.c:122
+#: bse/bseenums.c:123
 msgid "Procedure execution aborted"
 msgstr ""
 
-#: bse/bseenums.c:123
+#: bse/bseenums.c:124
 #, fuzzy
 msgid "Parsing error"
 msgstr "gabim"
 
-#: bse/bseenums.c:124
+#: bse/bseenums.c:125
 #, fuzzy
 msgid "Failed to spawn child process"
 msgstr "Dështoi fëmi (sekondar, i dytë)"
 
 #. various procedure errors
-#: bse/bseenums.c:126
+#: bse/bseenums.c:127
 #, fuzzy
 msgid "No such entry"
 msgstr "Jo"
 
-#: bse/bseenums.c:127
+#: bse/bseenums.c:128
 #, fuzzy
 msgid "No such event"
 msgstr "Jo"
 
-#: bse/bseenums.c:129
+#: bse/bseenums.c:130
 msgid "Ownership mismatch"
 msgstr ""
 
-#: bse/bseenums.c:130
+#: bse/bseenums.c:131
 #, fuzzy
 msgid "Invalid offset"
 msgstr "E pavlefshme"
 
-#: bse/bseenums.c:131
+#: bse/bseenums.c:132
 #, fuzzy
 msgid "Invalid duration"
 msgstr "E pavlefshme kohëzgjatja"
 
-#: bse/bseenums.c:132
+#: bse/bseenums.c:133
 #, fuzzy
 msgid "Invalid overlap"
 msgstr "E pavlefshme"
 
-#: bse/bseinstrumentinput.c:68
-#, fuzzy
-msgid "/Input & Output/Instrument Voice Input"
-msgstr "Input Rezultati Zë Input"
-
-#: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
+#: bse/bseinstrumentinput.c:120 bse/bsemidiinput.c:109
 #, fuzzy
 msgid "Note Frequency"
 msgstr "Frekuenca"
 
-#: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
+#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:111
 #, fuzzy
 msgid "Gate"
 msgstr "Ngjit"
 
-#: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
+#: bse/bseinstrumentinput.c:122 bse/bsemidiinput.c:111
 #, fuzzy
 msgid "High if the note is currently being pressed"
 msgstr "E lartë është"
 
-#: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
+#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:113
 msgid "Velocity"
 msgstr "Shpejtësia"
 
-#: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
+#: bse/bseinstrumentinput.c:124 bse/bsemidiinput.c:113
 #, fuzzy
 msgid "Velocity of the note press"
 msgstr "Shpejtësia nga"
 
-#: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
+#: bse/bseinstrumentinput.c:126 bse/bsemidiinput.c:115
 msgid "Aftertouch"
 msgstr ""
 
-#: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
+#: bse/bseinstrumentinput.c:126 bse/bsemidiinput.c:115
 #, fuzzy
 msgid "Velocity while the note is pressed"
 msgstr "Shpejtësia është"
 
-#: bse/bseinstrumentoutput.c:68
+#: bse/bseinstrumentinput.c:151
 #, fuzzy
-msgid "/Input & Output/Instrument Output"
-msgstr "Input Rezultati Rezultati"
+msgid "/Input & Output/Instrument Voice Input"
+msgstr "Input Rezultati Zë Input"
 
-#: bse/bseinstrumentoutput.c:101
+#: bse/bseinstrumentoutput.c:120
 #, fuzzy
 msgid "Left Audio"
 msgstr "Audio"
 
-#: bse/bseinstrumentoutput.c:101
+#: bse/bseinstrumentoutput.c:120
 #, fuzzy
 msgid "Left Channel Output"
 msgstr "Majtas Kanali Rezultati"
 
-#: bse/bseinstrumentoutput.c:103
+#: bse/bseinstrumentoutput.c:122
 #, fuzzy
 msgid "Right Audio"
 msgstr "Djathtas"
 
-#: bse/bseinstrumentoutput.c:103
+#: bse/bseinstrumentoutput.c:122
 #, fuzzy
 msgid "Right Channel Output"
 msgstr "Djathtas Kanali Rezultati"
 
-#: bse/bseinstrumentoutput.c:105
+#: bse/bseinstrumentoutput.c:124
 #, fuzzy
 msgid "Unused"
 msgstr "Anullo"
 
-#: bse/bseinstrumentoutput.c:107
+#: bse/bseinstrumentoutput.c:126
 #, fuzzy
 msgid "Synth Done"
 msgstr "Sintetizuesi U plotësua"
 
-#: bse/bseinstrumentoutput.c:107
+#: bse/bseinstrumentoutput.c:126
 #, fuzzy
 msgid "High indicates the instrument is done synthesizing"
 msgstr "E lartë është u krye"
+
+#: bse/bseinstrumentoutput.c:151
+#, fuzzy
+msgid "/Input & Output/Instrument Output"
+msgstr "Input Rezultati Rezultati"
 
 #: bse/bsemidicontroller.c:86
 #, fuzzy
@@ -4164,7 +4188,7 @@ msgstr "MIDI Sinjali 4"
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "Input Rezultati MIDI Zë Input"
 
-#: bse/bsemidisynth.c:226 bse/bsesubsynth.c:146 bse/bsetrack.c:275
+#: bse/bsemidisynth.c:226 bse/bsesubsynth.c:157 bse/bsetrack.c:275
 #, fuzzy
 msgid "Available Synthesizers"
 msgstr "Në dispozicion"
@@ -4185,13 +4209,13 @@ msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "Lista nga a"
 
 #: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
-#: bse/bsemidisynth.c:434 bse/bsesong.c:746 bse/bsetrack.c:894
-#: bse/bsetrack.c:900
+#: bse/bsemidisynth.c:434 bse/bsesong.c:737 bse/bsetrack.c:890
+#: bse/bsetrack.c:896
 #, fuzzy
 msgid "MIDI Instrument"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.c:422 bse/bsetrack.c:896
+#: bse/bsemidisynth.c:422 bse/bsetrack.c:892
 #, fuzzy
 msgid "MIDI Channel"
 msgstr "MIDI Kanali"
@@ -4201,12 +4225,7 @@ msgstr "MIDI Kanali"
 msgid "Max Voices"
 msgstr "Zëra"
 
-#: bse/bsemidisynth.c:427 bse/bsetrack.c:891
-#, fuzzy
-msgid "Maximum number of voices for simultaneous playback"
-msgstr "nga për"
-
-#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:494 bse/bsetrack.c:881
+#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:509 bse/bsetrack.c:877
 msgid "Synthesizer"
 msgstr ""
 
@@ -4215,31 +4234,27 @@ msgstr ""
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "MIDI"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:748 bse/bsetrack.c:902
+#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:898
 #, fuzzy
 msgid "Postprocessor"
 msgstr "Proçesori"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:748 bse/bsetrack.c:902
-msgid "Synthesis network to be used as postprocessor"
-msgstr ""
-
-#: bse/bsemidisynth.c:441 bse/bsesong.c:710
+#: bse/bsemidisynth.c:441 bse/bsesong.c:701
 #, fuzzy
 msgid "Master [float]"
 msgstr "Master"
 
-#: bse/bsemidisynth.c:447 bse/bsesong.c:716
+#: bse/bsemidisynth.c:447 bse/bsesong.c:707
 #, fuzzy
 msgid "Master [dB]"
 msgstr "Master"
 
-#: bse/bsemidisynth.c:454 bse/bsesong.c:723
+#: bse/bsemidisynth.c:454 bse/bsesong.c:714
 #, fuzzy
 msgid "Master [%]"
 msgstr "Master"
 
-#: bse/bsemidisynth.c:458 bse/bsesong.c:750
+#: bse/bsemidisynth.c:458 bse/bsesong.c:741
 #, fuzzy
 msgid "Playback Settings"
 msgstr "Rregullimet"
@@ -4352,14 +4367,12 @@ msgid "Alert me about MIDI device selections"
 msgstr "Alarm informacione MIDI periferik"
 
 #: bse/bseserver.c:506
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr "hap midi periferik periferik"
 
 #: bse/bseserver.c:548
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "failed to open output file \"%s\": %s"
 msgstr "hap"
 
@@ -4378,45 +4391,45 @@ msgstr "Sinjali Zmadho"
 msgid "Snoop Signal"
 msgstr "Sinjali"
 
-#: bse/bsesong.c:727 bse/bsesong.c:731 bse/bsesong.c:735 bse/bsesong.c:739
+#: bse/bsesong.c:718 bse/bsesong.c:722 bse/bsesong.c:726 bse/bsesong.c:730
 msgid "Timing"
 msgstr ""
 
-#: bse/bsesong.c:729
+#: bse/bsesong.c:720
 #, fuzzy
 msgid "Ticks"
 msgstr "Pistat"
 
-#: bse/bsesong.c:729
+#: bse/bsesong.c:720
 #, fuzzy
 msgid "Number of ticks per quarter note"
 msgstr "Numri nga"
 
-#: bse/bsesong.c:733
+#: bse/bsesong.c:724
 msgid "Numerator"
 msgstr ""
 
-#: bse/bsesong.c:733
+#: bse/bsesong.c:724
 msgid "Measure numerator"
 msgstr ""
 
-#: bse/bsesong.c:737
+#: bse/bsesong.c:728
 msgid "Denominator"
 msgstr ""
 
-#: bse/bsesong.c:737
+#: bse/bsesong.c:728
 #, fuzzy
 msgid "Measure denominator, must be a power of 2"
 msgstr "a nga 2"
 
-#: bse/bsesong.c:741
+#: bse/bsesong.c:732
 #, fuzzy
 msgid "Beats per minute"
 msgstr "minutë"
 
 #. change default
 #. override parent property
-#: bse/bsesong.c:755 bse/bsesong.c:759 bse/bsesong.c:764 bse/bsesong.c:769
+#: bse/bsesong.c:746 bse/bsesong.c:750 bse/bsesong.c:755 bse/bsesong.c:760
 msgid "Looping"
 msgstr ""
 
@@ -4497,7 +4510,7 @@ msgstr "Zëri Burimet Standart"
 msgid "Wave Form"
 msgstr "Formular"
 
-#: bse/bsestandardosc.c:132 bse/bsetrack.c:886 bse/bsewaveosc.c:530
+#: bse/bsestandardosc.c:132 bse/bsetrack.c:882 bse/bsewaveosc.c:530
 #: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr ""
@@ -4610,79 +4623,76 @@ msgstr "Zvogëlo"
 msgid "Syncronization Output"
 msgstr "Rezultati"
 
-#: bse/bsesubiport.c:90
+#: bse/bsesubiport.c:294 bse/bsesubsynth.c:537
+#, fuzzy, c-format
+msgid "Virtual input %u"
+msgstr "Virtual"
+
+#: bse/bsesubiport.c:301 bse/bsesubsynth.c:517
+#, fuzzy, c-format
+msgid "Input Port %u"
+msgstr "Input Porta"
+
+#: bse/bsesubiport.c:303 bse/bsesuboport.c:304 bse/bsesubsynth.c:507
+msgid "Assignments"
+msgstr ""
+
+#: bse/bsesubiport.c:305 bse/bsesuboport.c:306
+#, fuzzy
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr "emri është a emri"
+
+#: bse/bsesubiport.c:335
 #, fuzzy
 msgid "/Virtualization/Virtual Input"
 msgstr "Virtual Input"
 
-#: bse/bsesubiport.c:122 bse/bsesubsynth.c:502
-#, c-format
-#, fuzzy
-msgid "Input Port %u"
-msgstr "Input Porta"
-
-#: bse/bsesubiport.c:124 bse/bsesuboport.c:124 bse/bsesubsynth.c:492
-msgid "Assignments"
-msgstr ""
-
-#: bse/bsesubiport.c:126 bse/bsesuboport.c:126
-#, fuzzy
-msgid "The port name is a unique name to establish input<->output port relationships"
-msgstr "emri është a emri"
-
-#: bse/bsesubiport.c:134 bse/bsesubsynth.c:522
-#, c-format
-#, fuzzy
-msgid "Virtual input %u"
+#: bse/bsesuboport.c:295 bse/bsesubsynth.c:544
+#, fuzzy, c-format
+msgid "Virtual output %u"
 msgstr "Virtual"
 
-#: bse/bsesuboport.c:90
+#: bse/bsesuboport.c:302 bse/bsesubsynth.c:527
+#, fuzzy, c-format
+msgid "Output Port %u"
+msgstr "Rezultati Porta"
+
+#: bse/bsesuboport.c:336
 #, fuzzy
 msgid "/Virtualization/Virtual Output"
 msgstr "Virtual Rezultati"
 
-#: bse/bsesuboport.c:122 bse/bsesubsynth.c:512
-#, c-format
-#, fuzzy
-msgid "Output Port %u"
-msgstr "Rezultati Porta"
-
-#: bse/bsesuboport.c:134 bse/bsesubsynth.c:529
-#, c-format
-#, fuzzy
-msgid "Virtual output %u"
-msgstr "Virtual"
-
-#: bse/bsesubsynth.c:94
+#: bse/bsesubsynth.c:96
 #, fuzzy
 msgid "/Virtualization/Virtual Sub Synth"
 msgstr "Virtual Nën Sintetizuesi"
 
-#: bse/bsesubsynth.c:146
+#: bse/bsesubsynth.c:157
 #, fuzzy
 msgid "List of available synthesis networks to choose a sub network from"
 msgstr "Lista nga a"
 
-#: bse/bsesubsynth.c:495
+#: bse/bsesubsynth.c:510
 msgid "Synthesis network to use as embedded sub network"
 msgstr ""
 
-#: bse/bsesubsynth.c:504
+#: bse/bsesubsynth.c:519
 #, fuzzy
 msgid "Input Assignments"
 msgstr "Input"
 
-#: bse/bsesubsynth.c:505
+#: bse/bsesubsynth.c:520
 #, fuzzy
 msgid "Output port name to interface from"
 msgstr "Rezultati emri interfaqja"
 
-#: bse/bsesubsynth.c:514
+#: bse/bsesubsynth.c:529
 #, fuzzy
 msgid "Output Assignments"
 msgstr "Rezultati"
 
-#: bse/bsesubsynth.c:515
+#: bse/bsesubsynth.c:530
 #, fuzzy
 msgid "Input port name to interface to"
 msgstr "Input emri interfaqja"
@@ -4728,31 +4738,26 @@ msgstr "Në dispozicion"
 msgid "List of available waves to choose as track instrument"
 msgstr "Lista nga"
 
-#: bse/bsetrack.c:877
+#: bse/bsetrack.c:873
 msgid "Muted"
 msgstr ""
 
-#: bse/bsetrack.c:879 bse/bsetrack.c:884 bse/bsetrack.c:889
+#: bse/bsetrack.c:875 bse/bsetrack.c:880 bse/bsetrack.c:885
 #, fuzzy
 msgid "Synth Input"
 msgstr "Input"
 
-#: bse/bsetrack.c:881
+#: bse/bsetrack.c:877
 msgid "Synthesis network to be used as instrument"
 msgstr ""
 
-#: bse/bsetrack.c:886
+#: bse/bsetrack.c:882
 msgid "Wave to be used as instrument"
 msgstr ""
 
-#: bse/bsetrack.c:891
+#: bse/bsetrack.c:887
 msgid "Max Voixes"
 msgstr ""
-
-#: bse/bsetrack.c:897
-#, fuzzy
-msgid "Midi channel assigned to this track, 0 uses private per-track channel"
-msgstr "Midi"
 
 #: bse/bsewaveosc.c:94
 #, fuzzy
@@ -4952,7 +4957,9 @@ msgid ""
 "is controlled by a balance adjustment and the sum of the control inputs. To "
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
-msgstr "është a stereo me dy dhe dy kontrolli nga niveli është nga a dhe nga kontrolli Për për kontrolli është nga a thjeshtë filtro me."
+msgstr ""
+"është a stereo me dy dhe dy kontrolli nga niveli është nga a dhe nga "
+"kontrolli Për për kontrolli është nga a thjeshtë filtro me."
 
 #: plugins/bsebalance.idl:40
 #, fuzzy
@@ -5086,26 +5093,22 @@ msgid "Sole Output"
 msgstr "Rezultati"
 
 #: plugins/bsemixer.c:115
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Channel%u"
 msgstr "Kanali"
 
 #: plugins/bsemixer.c:117
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Channel%u [float]"
 msgstr "Kanali"
 
 #: plugins/bsemixer.c:127
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Channel%u [dB]"
 msgstr "Kanali"
 
 #: plugins/bsemixer.c:138
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Channel%u [%%]"
 msgstr "Kanali"
 
@@ -5115,8 +5118,7 @@ msgid "Audio In%u"
 msgstr "Audio"
 
 #: plugins/bsemixer.c:150
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Input Channel %u"
 msgstr "Input Kanali"
 
@@ -5224,7 +5226,8 @@ msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
-msgstr "është a e ulët TB filtro në nga filtro është në në Muzikore Programe nga nga."
+msgstr ""
+"është a e ulët TB filtro në nga filtro është në në Muzikore Programe nga nga."
 
 #: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
@@ -5425,4 +5428,3 @@ msgstr "Majtas Rezultati"
 #, fuzzy
 msgid "Right Output"
 msgstr "Djathtas Rezultati"
-

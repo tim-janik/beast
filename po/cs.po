@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-03 11:04+0200\n"
+"POT-Creation-Date: 2004-09-04 18:11+0200\n"
 "PO-Revision-Date: 2004-09-03 14:16+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -394,7 +394,7 @@ msgstr "Přesunout řídicí událost"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
-#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:128
+#: beast-gtk/bsttrackrollctrl.c:568 bse/bseenums.c:129
 msgid "No target"
 msgstr "Žádný cíl"
 
@@ -589,7 +589,7 @@ msgstr "Odstraní výběr ze seznamu \"%s\""
 msgid "ID"
 msgstr "ID"
 
-#: beast-gtk/bstitemview.c:208
+#: beast-gtk/bstitemview.c:208 beast-gtk/bsttrackview.c:511
 msgid "Name"
 msgstr "Název"
 
@@ -1408,7 +1408,7 @@ msgstr "Procedura"
 msgid "Totals"
 msgstr "Součty"
 
-#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:390
+#: beast-gtk/bstprofiler.c:246 bse/bsecore.idl:409
 msgid "Thread Name"
 msgstr "Název vlákna"
 
@@ -2382,6 +2382,29 @@ msgstr "Přidat k této skladbě novou stopu"
 msgid "Delete the currently selected track"
 msgstr "Odstranit momentálně vybranou stopu"
 
+#: beast-gtk/bsttrackview.c:514
+msgid ""
+"Notes from unchecked tracks are ignored by the sequencer during playback"
+msgstr ""
+
+#: beast-gtk/bsttrackview.c:517 bse/bsemidisynth.c:427 bse/bsetrack.c:887
+msgid "Maximum number of voices for simultaneous playback"
+msgstr "Maximální počet hlasů pro současné přehrávání"
+
+#: beast-gtk/bsttrackview.c:520
+#, fuzzy
+msgid "Synthesis network or wave to be used as instrument by this track"
+msgstr "Síť syntézy, kterou používat jako nástroj"
+
+#: beast-gtk/bsttrackview.c:523 bse/bsetrack.c:893
+msgid "Midi channel assigned to this track, 0 uses private per-track channel"
+msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
+
+#: beast-gtk/bsttrackview.c:526 bse/bsemidisynth.c:436 bse/bsesong.c:739
+#: bse/bsetrack.c:898
+msgid "Synthesis network to be used as postprocessor"
+msgstr "Síť syntézy, kterou používat jako postprocesor"
+
 #: beast-gtk/bstusermessage.c:91
 msgid "Error"
 msgstr "Chyba"
@@ -3187,124 +3210,124 @@ msgstr "Vstup modulace zisku"
 msgid "Filtered Audio Signal"
 msgstr "Filtrovaný signál zvuku"
 
-#: bse/bsebus.c:118
+#: bse/bsebus.c:123
 msgid "Available Inputs"
 msgstr "Dostupné vstupy"
 
-#: bse/bsebus.c:118
+#: bse/bsebus.c:123
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "Seznam dostupných signálů syntézy, které používat jako vstup sběrnice"
 
 #. FIXME: fix volume
-#: bse/bsebus.c:631 bse/bsebus.c:633 bse/bsebus.c:635 bse/bsebus.c:637
-#: bse/bsebus.c:641 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
+#: bse/bsebus.c:734 bse/bsebus.c:736 bse/bsebus.c:738 bse/bsebus.c:740
+#: bse/bsebus.c:744 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
 #: bse/bsemidisynth.c:452 bse/bsesong.c:699 bse/bsesong.c:705
 #: bse/bsesong.c:712 bse/bsetrack.c:871
 msgid "Adjustments"
 msgstr "Úpravy"
 
-#: bse/bsebus.c:632
+#: bse/bsebus.c:735
 msgid "Mute"
 msgstr "Umlčet"
 
-#: bse/bsebus.c:632
+#: bse/bsebus.c:735
 msgid "Mute: turn off the bus volume"
 msgstr "Umlčet: vypnout hlasitost sběrnice"
 
-#: bse/bsebus.c:634
+#: bse/bsebus.c:737
 msgid "Solo"
 msgstr "Sólo"
 
 # FIXME: s/busses/buses/
-#: bse/bsebus.c:634
+#: bse/bsebus.c:737
 msgid "Solo: mute all other busses"
 msgstr "Sólo: umlčet všechny ostatní sběrnice"
 
-#: bse/bsebus.c:636
+#: bse/bsebus.c:739
 msgid "Sync"
 msgstr "Sync"
 
-#: bse/bsebus.c:636
+#: bse/bsebus.c:739
 msgid "Sync: enforce the same volume left and right"
 msgstr "Sync: vnutit stejnou hlasitost vlevo a vpravo"
 
-#: bse/bsebus.c:638
+#: bse/bsebus.c:741
 msgid "Left Volume [dB]"
 msgstr "Levá hlasitost [dB]"
 
-#: bse/bsebus.c:638
+#: bse/bsebus.c:741
 msgid "Volume adjustment of left bus channel"
 msgstr "Úprava hlasitosti levého kanálu sběrnice"
 
-#: bse/bsebus.c:642
+#: bse/bsebus.c:745
 msgid "Right Volume [dB]"
 msgstr "Pravá hlasitost [dB]"
 
-#: bse/bsebus.c:642
+#: bse/bsebus.c:745
 msgid "Volume adjustment of right bus channel"
 msgstr "Úprava hlasitosti pravého kanálu sběrnice"
 
-#: bse/bsebus.c:645
+#: bse/bsebus.c:748
 msgid "Signal Inputs"
 msgstr "Vstupy signálu"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.c:648
+#: bse/bsebus.c:751
 msgid "Input Signals"
 msgstr "Vstupní signály"
 
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.c:652
+#: bse/bsebus.c:755
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Signály syntézy (ze stop a sběrnic) používané jako vstup sběrnice"
 
-#: bse/bsebus.c:655
+#: bse/bsebus.c:758
 msgid "Internals"
 msgstr "Vnitřnosti"
 
-#: bse/bsebus.c:657
+#: bse/bsebus.c:760
 msgid "Master Output"
 msgstr "Hlavní výstup"
 
-#: bse/bsebus.c:660 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:763 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Levý zvuk In"
 
-#: bse/bsebus.c:660 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:763 bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr "Vstup levého kanálu"
 
-#: bse/bsebus.c:662 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:765 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Pravý zvuk In"
 
-#: bse/bsebus.c:662
+#: bse/bsebus.c:765
 msgid "Right channel input"
 msgstr "Vstup pravého kanálu"
 
-#: bse/bsebus.c:664 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:767 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Levý zvuk Out"
 
-#: bse/bsebus.c:664 bse/bsepcminput.c:128
+#: bse/bsebus.c:767 bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr "Výstup levého kanálu"
 
-#: bse/bsebus.c:666 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:769 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Pravý zvuk Out"
 
-#: bse/bsebus.c:666 bse/bsepcminput.c:130
+#: bse/bsebus.c:769 bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr "Výstup pravého kanálu"
 
-#: bse/bsebus.c:685
+#: bse/bsebus.c:788
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -3335,27 +3358,27 @@ msgstr "Frekvence"
 msgid "Const Out%u"
 msgstr "Konst Out%u"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:410
 msgid "State"
 msgstr "Stav"
 
-#: bse/bsecore.idl:391
+#: bse/bsecore.idl:410
 msgid "The execution state of the thread"
 msgstr "Stav vykonávání vlákna"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:411
 msgid "Thread ID"
 msgstr "ID vlákna"
 
-#: bse/bsecore.idl:392
+#: bse/bsecore.idl:411
 msgid "A unique number identifying this thread"
 msgstr "Jedinečné číslo identifikující toto vlákno"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:413
 msgid "Priority"
 msgstr "Priorita"
 
-#: bse/bsecore.idl:394
+#: bse/bsecore.idl:413
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
@@ -3363,51 +3386,51 @@ msgstr ""
 "Hodnota nice vlákna, -20 znamená vlákno s vysokou prioritou a +19 vlákno s "
 "nízkou prioritou, které je na ostatní 'nice'"
 
-#: bse/bsecore.idl:397
+#: bse/bsecore.idl:416
 msgid "Processor"
 msgstr "Procesor"
 
-#: bse/bsecore.idl:397
+#: bse/bsecore.idl:416
 msgid "The processor that this thread is currently being executed on"
 msgstr "Procesor, na kterém se toto vlákno právě provádí"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:418
 msgid "User Time"
 msgstr "Uživatelský čas"
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:418
 msgid "The CPU time spent executing instructions of this thread"
 msgstr "Čas CPU strávený prováděním instrukcí tohoto vlákna"
 
-#: bse/bsecore.idl:401
+#: bse/bsecore.idl:420
 msgid "System Time"
 msgstr "Systémový čas"
 
-#: bse/bsecore.idl:401
+#: bse/bsecore.idl:420
 msgid "The CPU time spent in the system for this thread"
 msgstr "Čas CPU strávený v systému pro toto vlákno"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:422
 msgid "Child User Time"
 msgstr "Uživatelský čas potomků"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:422
 msgid "The CPU time spent executing instructions of children of this thread"
 msgstr "Čas CPU strávený prováděním instrukcí potomků tohoto vlákna"
 
-#: bse/bsecore.idl:405
+#: bse/bsecore.idl:424
 msgid "Child System Time"
 msgstr "Systémový čas potomků"
 
-#: bse/bsecore.idl:405
+#: bse/bsecore.idl:424
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "Čas CPU strávený v systému pro potomky tohoto vlákna"
 
-#: bse/bsecore.idl:446
+#: bse/bsecore.idl:465
 msgid "Latency [ms]"
 msgstr "Zpoždění [ms]"
 
-#: bse/bsecore.idl:447
+#: bse/bsecore.idl:466
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -3415,19 +3438,19 @@ msgstr ""
 "Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty "
 "zvyšují zátěž CPU"
 
-#: bse/bsecore.idl:450
+#: bse/bsecore.idl:469
 msgid "Synth Mixing Frequency"
 msgstr "Frekvence mixování syntézy"
 
-#: bse/bsecore.idl:451
+#: bse/bsecore.idl:470
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Frekvence mixování syntézy, obvyklé hodnoty jsou 22050, 4410, 48000"
 
-#: bse/bsecore.idl:453
+#: bse/bsecore.idl:472
 msgid "Synth Control Frequency"
 msgstr "Frekvence řízení syntézy"
 
-#: bse/bsecore.idl:454
+#: bse/bsecore.idl:473
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3498,72 +3521,77 @@ msgid "Input/Output channels already connected"
 msgstr "Vstupní/výstupní kanály jsou již připojeny"
 
 #: bse/bseenums.c:114
+#, fuzzy
+msgid "Invalid synthesis module connection"
+msgstr "Neplatný typ modulu syntézy"
+
+#: bse/bseenums.c:115
 msgid "Parent mismatch"
 msgstr "Rodič nesouhlasí"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.c:116
 msgid "Bad loopback"
 msgstr "Špatný loopback"
 
-#: bse/bseenums.c:116
+#: bse/bseenums.c:117
 msgid "Synthesis module currently busy"
 msgstr "Modul syntézy se právě používá"
 
-#: bse/bseenums.c:117
+#: bse/bseenums.c:118
 msgid "Invalid synthsis module type"
 msgstr "Neplatný typ modulu syntézy"
 
-#: bse/bseenums.c:118
+#: bse/bseenums.c:119
 msgid "No such procedure"
 msgstr "Taková procedura neexistuje"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.c:120
 msgid "Procedure currently busy"
 msgstr "Procedura se právě používá"
 
 #. recursion
-#: bse/bseenums.c:120
+#: bse/bseenums.c:121
 msgid "Procedure parameter invalid"
 msgstr "Parametr procedury není platný"
 
-#: bse/bseenums.c:121
+#: bse/bseenums.c:122
 msgid "Procedure execution failed"
 msgstr "Spouštění procedury selhalo"
 
-#: bse/bseenums.c:122
+#: bse/bseenums.c:123
 msgid "Procedure execution aborted"
 msgstr "Spouštění procedury přerušeno"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.c:124
 msgid "Parsing error"
 msgstr "Chyba zpracovávání"
 
-#: bse/bseenums.c:124
+#: bse/bseenums.c:125
 msgid "Failed to spawn child process"
 msgstr "Nemohu spustit proces potomka"
 
 #. various procedure errors
-#: bse/bseenums.c:126
+#: bse/bseenums.c:127
 msgid "No such entry"
 msgstr "Taková položka neexistuje"
 
-#: bse/bseenums.c:127
+#: bse/bseenums.c:128
 msgid "No such event"
 msgstr "Taková událost neexistuje"
 
-#: bse/bseenums.c:129
+#: bse/bseenums.c:130
 msgid "Ownership mismatch"
 msgstr "Vlastnictví nesouhlasí"
 
-#: bse/bseenums.c:130
+#: bse/bseenums.c:131
 msgid "Invalid offset"
 msgstr "Neplatný posun"
 
-#: bse/bseenums.c:131
+#: bse/bseenums.c:132
 msgid "Invalid duration"
 msgstr "Neplatné trvání"
 
-#: bse/bseenums.c:132
+#: bse/bseenums.c:133
 msgid "Invalid overlap"
 msgstr "Neplatný překryv"
 
@@ -3701,10 +3729,6 @@ msgstr "Kanál MIDI"
 msgid "Max Voices"
 msgstr "Max hlasů"
 
-#: bse/bsemidisynth.c:427 bse/bsetrack.c:887
-msgid "Maximum number of voices for simultaneous playback"
-msgstr "Maximální počet hlasů pro současné přehrávání"
-
 #: bse/bsemidisynth.c:432 bse/bsesubsynth.c:509 bse/bsetrack.c:877
 msgid "Synthesizer"
 msgstr "Syntetizér"
@@ -3716,10 +3740,6 @@ msgstr "Síť syntézy, kterou používat jako nástroj MIDI"
 #: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:898
 msgid "Postprocessor"
 msgstr "Postprocesor"
-
-#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:898
-msgid "Synthesis network to be used as postprocessor"
-msgstr "Síť syntézy, kterou používat jako postprocesor"
 
 #: bse/bsemidisynth.c:441 bse/bsesong.c:701
 msgid "Master [float]"
@@ -4171,10 +4191,6 @@ msgstr "Vlna, kterou používat jako nástroj"
 #: bse/bsetrack.c:887
 msgid "Max Voixes"
 msgstr "Max hlasů"
-
-#: bse/bsetrack.c:893
-msgid "Midi channel assigned to this track, 0 uses private per-track channel"
-msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
 
 #: bse/bsewaveosc.c:94
 msgid "/Audio Sources/Wave Oscillator"
