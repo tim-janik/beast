@@ -143,7 +143,6 @@ bst_piano_roll_init (BstPianoRoll *self)
   gxk_scroll_canvas_set_canvas_cursor (scc, GDK_LEFT_PTR);
   gxk_scroll_canvas_set_left_panel_cursor (scc, GDK_HAND2);
   gxk_scroll_canvas_set_top_panel_cursor (scc, GDK_LEFT_PTR);
-  self->scroll_timer = 0;
   self->selection_tick = 0;
   self->selection_duration = 0;
   self->selection_min_note = 0;
@@ -180,14 +179,25 @@ bst_piano_roll_finalize (GObject *object)
   
   bst_piano_roll_set_proxy (self, 0);
   
-  if (self->scroll_timer)
-    {
-      g_source_remove (self->scroll_timer);
-      self->scroll_timer = 0;
-    }
   bst_ascii_pixbuf_unref ();
   
   G_OBJECT_CLASS (bst_piano_roll_parent_class)->finalize (object);
+}
+
+static void
+bst_piano_roll_map (GtkWidget *widget)
+{
+  BstPianoRoll *self = BST_PIANO_ROLL (widget);
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
+  
+  /* initially center the vscrollbar */
+  if (self->proxy)
+    gtk_adjustment_set_value (scc->vadjustment,
+                              (scc->vadjustment->upper -
+                               scc->vadjustment->lower -
+                               scc->vadjustment->page_size) / 2);
+
+  GTK_WIDGET_CLASS (bst_piano_roll_parent_class)->map (widget);
 }
 
 gfloat
@@ -884,6 +894,9 @@ piano_roll_adjustment_changed (GxkScrollCanvas *scc,
           gtk_adjustment_changed (adj);
         }
     }
+  if (adj == scc->vadjustment)
+    {
+    }
 }
 
 static void
@@ -916,14 +929,6 @@ piano_roll_update_adjustments (GxkScrollCanvas *scc,
       scc->vadjustment->step_increment = OCTAVE_HEIGHT (self) / 7;
     }
   GXK_SCROLL_CANVAS_CLASS (bst_piano_roll_parent_class)->update_adjustments (scc, hadj, vadj);
-  if (self->init_vpos && self->proxy)
-    {
-      self->init_vpos = FALSE;
-      gtk_adjustment_set_value (scc->vadjustment,
-                                (scc->vadjustment->upper -
-                                 scc->vadjustment->lower -
-                                 scc->vadjustment->page_size) / 2);
-    }
 }
 
 static void
@@ -1083,7 +1088,6 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
   self->proxy = proxy;
   if (self->proxy)
     {
-      self->init_vpos = TRUE;
       bse_item_use (self->proxy);
       bse_proxy_connect (self->proxy,
 			 "swapped_signal::release", piano_roll_release_proxy, self,
@@ -1240,14 +1244,16 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  // GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (class);
   
   gobject_class->dispose = bst_piano_roll_dispose;
   gobject_class->finalize = bst_piano_roll_finalize;
   
   object_class->destroy = bst_piano_roll_destroy;
-  
+
+  widget_class->map = bst_piano_roll_map;
+
   scroll_canvas_class->hscrollable = TRUE;
   scroll_canvas_class->vscrollable = TRUE;
   scroll_canvas_class->get_layout = piano_roll_get_layout;

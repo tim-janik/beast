@@ -1,3 +1,8 @@
+Sun Dec 26 00:36:54 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpianoroll.[hc]: removed cruft.
+	(bst_piano_roll_map): center vertical scrollbar.
+
 Sun Dec 19 13:47:01 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/plugin-devel.texi: adapted documentation to Frequency() changes.

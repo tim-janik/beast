@@ -74,11 +74,6 @@ struct _BstPianoRoll
   /* slight hack */
   guint          release_closes_toplevel : 1;
 
-  /* scroll offset */
-  guint		 init_vpos : 1;
-
-  guint		 scroll_timer;
-
   /* selection rectangle */
   guint		 selection_tick;
   guint		 selection_duration;
