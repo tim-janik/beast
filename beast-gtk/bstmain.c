@@ -109,9 +109,9 @@ main (int   argc,
 
   /* pre-parse BEAST args */
   bseconfig = sfi_rec_new ();
-  bst_early_parse_args (&argc, &argv, bseconfig);
 
   /* initialize Gtk+ and go into threading mode */
+  bst_early_parse_args (&argc, &argv, bseconfig);
   gtk_init (&argc, &argv);
   g_set_prgname ("BEAST");	/* overriding Gdk's program name */
   GDK_THREADS_ENTER ();
@@ -571,7 +571,8 @@ bst_early_parse_args (int    *argc_p,
     if (argv[i])
       {
         argv[e++] = argv[i];
-        argv[i] = NULL;
+        if (i >= e)
+          argv[i] = NULL;
       }
   *argc_p = e;
 }

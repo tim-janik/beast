@@ -148,7 +148,7 @@ update_dialog (GxkDialog     *dialog,
 				    "xalign", 0.5,
 				    "yalign", 0.5,
 				    "xscale", 1.0,
-				    "yscale", 0.1, // 0.75,
+				    "yscale", 0.5, // 0.75,
 				    "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK | GXK_SCROLL_TEXT_CENTER, message),
 				    NULL),
 		      TRUE, TRUE, 5);

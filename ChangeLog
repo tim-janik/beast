@@ -1,3 +1,10 @@
+Wed May  5 18:16:11 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (bst_early_parse_args): fixed parsing bug.
+
+	* beast-gtk/bstusermessage.c (update_dialog): some dialog layout
+	tweaking for bigger error messages.
+
 Wed May  5 15:19:46 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/Makefile.am: grep for new debugging statements
