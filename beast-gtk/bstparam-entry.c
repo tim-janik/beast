@@ -18,10 +18,12 @@
 
 
 /* --- string parameters --- */
+#include "bstauxdialogs.h"
+#include "bstfiledialog.h"
 static void
-param_entry_change_value (GtkWidget *entry,
-			  BstParam  *bparam)
+param_entry_change_value (GtkWidget *entry)
 {
+  BstParam *bparam = g_object_get_data (entry, "user_data");
   if (!bparam->updating)
     {
       const gchar *string = gtk_entry_get_text (GTK_ENTRY (entry));
@@ -35,8 +37,55 @@ param_entry_focus_out (GtkWidget     *entry,
 		       GdkEventFocus *event,
 		       BstParam      *bparam)
 {
-  param_entry_change_value (entry, bparam);
+  param_entry_change_value (entry);
   return FALSE;
+}
+
+static void
+param_entry_path_assign (GtkWidget  *dialog,
+                         gchar     **strings,
+                         gpointer    user_data)
+{
+  GtkWidget *action = user_data;
+  gchar *paths = g_strjoinv (":", strings);
+  gtk_entry_set_text (GTK_ENTRY (action), paths);
+  g_free (paths);
+  param_entry_change_value (action);
+}
+
+static void
+param_entry_path_popup_remove (GtkWidget *action)
+{
+  GtkEntry *entry = GTK_ENTRY (action);
+  gchar **paths = g_strsplit (gtk_entry_get_text (entry), ":", -1);
+  GtkWidget *dialog = bst_list_popup_new ("Remove Paths", action,
+                                          param_entry_path_assign,
+                                          action, NULL);
+  guint i;
+  for (i = 0; paths[i]; i++)
+    bst_list_popup_add (dialog, paths[i]);
+  g_strfreev (paths);
+  gxk_widget_showraise (dialog);
+}
+
+static void
+param_entry_path_add (GtkWidget   *dialog,
+                      const gchar *file,
+                      gpointer     user_data)
+{
+  GtkWidget *action = user_data;
+  gchar *path = gtk_entry_get_text (GTK_ENTRY (action));
+  gchar *str = g_strconcat (path, path[0] ? ":" : "", file, NULL);
+  gtk_entry_set_text (GTK_ENTRY (action), str);
+  g_free (str);
+  param_entry_change_value (action);
+}
+
+static void
+param_entry_path_popup_add (GtkWidget *action)
+{
+  GtkWidget *dialog = bst_file_dialog_popup_select_dir (action);
+  bst_file_dialog_set_handler (BST_FILE_DIALOG (dialog), param_entry_path_add, action, NULL);
 }
 
 static BstGMask*
@@ -50,6 +99,7 @@ param_entry_create_gmask (BstParam    *bparam,
   action = g_object_new (GTK_TYPE_ENTRY,
 			 "visible", TRUE,
 			 "activates_default", TRUE,
+                         "user_data", bparam,
 			 NULL);
   g_object_connect (action,
 		    "signal::key_press_event", bst_param_entry_key_press, NULL,
@@ -74,6 +124,15 @@ param_entry_create_gmask (BstParam    *bparam,
   gmask = bst_gmask_form (gmask_parent, action, BST_GMASK_FILL);
   bst_gmask_set_prompt (gmask, prompt);
   bst_gmask_set_tip (gmask, tooltip);
+  if (sfi_pspec_test_hint (bparam->pspec, "file-paths"))
+    {
+      GtkWidget *br, *ba;
+      bst_gmask_set_atail (gmask, bst_hpack0 (":", br = bst_stock_icon_button (BST_STOCK_REMOVE),
+                                              ":", ba = bst_stock_icon_button (BST_STOCK_ADD),
+                                              NULL));
+      g_object_connect (br, "swapped_signal::clicked", param_entry_path_popup_remove, action, NULL);
+      g_object_connect (ba, "swapped_signal::clicked", param_entry_path_popup_add, action, NULL);
+    }
 
   return gmask;
 }
@@ -87,12 +146,23 @@ param_entry_create_widget (BstParam    *bparam,
   action = g_object_new (GTK_TYPE_ENTRY,
 			 "visible", TRUE,
 			 "activates_default", TRUE,
+                         "user_data", bparam,
 			 NULL);
   g_object_connect (action,
 		    "signal::key_press_event", bst_param_entry_key_press, NULL,
 		    "signal::activate", param_entry_change_value, bparam,
 		    "signal::focus_out_event", param_entry_focus_out, bparam,
 		    NULL);
+  if (sfi_pspec_test_hint (bparam->pspec, "file-paths"))
+    {
+      GtkWidget *br, *ba;
+      bst_hpack0 ("*", action,
+                  ":", br = bst_stock_icon_button (BST_STOCK_REMOVE),
+                  ":", ba = bst_stock_icon_button (BST_STOCK_ADD),
+                  NULL);
+      g_object_connect (br, "swapped_signal::clicked", param_entry_path_popup_remove, action, NULL);
+      g_object_connect (ba, "swapped_signal::clicked", param_entry_path_popup_add, action, NULL);
+    }
 
   return action;
 }

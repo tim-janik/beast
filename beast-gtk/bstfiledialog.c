@@ -263,11 +263,13 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
   GtkWindow *window = GTK_WINDOW (self);
   
   g_return_if_fail (BST_IS_FILE_DIALOG (self));
-  
+
   gtk_widget_hide (GTK_WIDGET (self));
   gtk_widget_hide (self->osave);
   self->mode = mode;
-  
+  g_free (self->selected);
+  self->selected = NULL;
+
   /* reset proxy handling */
   bst_window_sync_title_to_proxy (self, proxy, fs_title);
   self->proxy = proxy;
@@ -339,6 +341,20 @@ bst_file_dialog_popup_open_project (gpointer parent_widget)
   bst_file_dialog_set_mode (self, parent_widget,
 			    BST_FILE_DIALOG_OPEN_PROJECT,
 			    "Open Project", 0);
+  gxk_widget_showraise (widget);
+
+  return widget;
+}
+
+GtkWidget*
+bst_file_dialog_popup_select_dir (gpointer parent_widget)
+{
+  BstFileDialog *self = bst_file_dialog_singleton ();
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  bst_file_dialog_set_mode (self, parent_widget,
+			    BST_FILE_DIALOG_SELECT_DIR | BST_FILE_DIALOG_ALLOW_DIRS,
+			    "Select Directory", 0);
   gxk_widget_showraise (widget);
 
   return widget;
@@ -497,6 +513,40 @@ bst_file_dialog_load_wave (BstFileDialog *self,
   return TRUE;
 }
 
+typedef struct {
+  BstFileDialogHandler handler;
+  gpointer             data;
+  GDestroyNotify       destroy;
+} BstFileDialogData;
+
+static void
+bst_file_dialog_handler (BstFileDialog     *self,
+                         BstFileDialogData *data)
+{
+  if (data->handler && self->selected)
+    data->handler (GTK_WIDGET (self), self->selected, data->data);
+  if (data->destroy)
+    data->destroy (data->data);
+  g_object_disconnect (self, "any_signal", bst_file_dialog_handler, data, NULL);
+  g_free (data);
+}
+
+void
+bst_file_dialog_set_handler (BstFileDialog    *self,
+                             BstFileDialogHandler handler,
+                             gpointer          handler_data,
+                             GDestroyNotify    destroy)
+{
+  BstFileDialogData *data = g_new0 (BstFileDialogData, 1);
+
+  g_return_if_fail (GTK_WIDGET_VISIBLE (self));
+
+  data->handler = handler;
+  data->data = handler_data;
+  data->destroy = destroy;
+  g_object_connect (self, "signal_after::hide", bst_file_dialog_handler, data, NULL);
+}
+
 static void
 bst_file_dialog_activate (BstFileDialog *self)
 {
@@ -534,6 +584,7 @@ bst_file_dialog_activate (BstFileDialog *self)
       g_free (file_name);
       return;
     }
+
   if (swin)
     gxk_status_window_push (swin);
   switch (self->mode & BST_FILE_DIALOG_MODE_MASK)
@@ -547,6 +598,9 @@ bst_file_dialog_activate (BstFileDialog *self)
     case BST_FILE_DIALOG_SAVE_PROJECT:
       popdown = bst_file_dialog_save_project (self, file_name);
       break;
+    case BST_FILE_DIALOG_SELECT_DIR:
+      popdown = TRUE;   /* handled via BstFileDialogHandler and ->selected */
+      break;
     case BST_FILE_DIALOG_LOAD_WAVE:
     case BST_FILE_DIALOG_LOAD_WAVE_LIB:
       popdown = bst_file_dialog_load_wave (self, file_name);
@@ -558,6 +612,10 @@ bst_file_dialog_activate (BstFileDialog *self)
     {
       /* ignore_activate guards against multiple clicks from long loads */
       self->ignore_activate = TRUE;
+      g_free (self->selected);
+      self->selected = file_name;
       gxk_toplevel_delete (GTK_WIDGET (self));
     }
+  else
+    g_free (file_name);
 }

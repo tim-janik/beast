@@ -68,6 +68,8 @@ typedef struct {
 #define BST_STOCK_DOC_FAQ	        GTK_STOCK_NEW // FIXME
 #define BST_STOCK_DOC_DEVEL	        GTK_STOCK_NEW // FIXME
 #define BST_STOCK_ABOUT	                GTK_STOCK_YES // FIXME
+#define BST_STOCK_ADD                   GTK_STOCK_ADD
+#define BST_STOCK_REMOVE                GTK_STOCK_REMOVE
 
 
 /* --- stock actions and aliases --- */
@@ -101,6 +103,12 @@ typedef struct {
 #define	BST_SIZE_PALETTE		GXK_SIZE_PALETTE
 
 
+/* --- stock utilities --- */
+GtkWidget*      bst_stock_button        (const gchar    *stock_id);
+GtkWidget*      bst_stock_dbutton       (const gchar    *stock_id);
+GtkWidget*      bst_stock_icon_button   (const gchar    *stock_id);
+
+
 /* --- pixbuf shortcuts --- */
 #define bst_pixbuf_no_icon()	gxk_stock_fallback_pixbuf (BST_STOCK_NO_ICON)
 #define bst_pixbuf_ladspa()	gxk_stock_fallback_pixbuf (BST_STOCK_LADSPA)
@@ -120,6 +128,17 @@ void		bst_window_sync_title_to_proxy	(gpointer	 window,
 						 SfiProxy	 proxy,
 						 const gchar	*title_format);
 const gchar**	bst_log_scan_keys		(void);
+
+
+/* --- packing utilities --- */
+GtkWidget*      bst_vpack               (const gchar    *first_location,
+                                         ...);
+GtkWidget*      bst_hpack               (const gchar    *first_location,
+                                         ...);
+GtkWidget*      bst_vpack0              (const gchar    *first_location,
+                                         ...);
+GtkWidget*      bst_hpack0              (const gchar    *first_location,
+                                         ...);
 
 
 /* --- GUI field mask --- */

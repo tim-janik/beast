@@ -92,6 +92,34 @@ _bst_init_utils (void)
 }
 
 GtkWidget*
+bst_stock_button (const gchar *stock_id)
+{
+  GtkWidget *w = gtk_button_new_from_stock (stock_id);
+  gtk_widget_show_all (w);
+  return w;
+}
+
+GtkWidget*
+bst_stock_dbutton (const gchar *stock_id)
+{
+  GtkWidget *w = bst_stock_button (stock_id);
+  g_object_set (w, "can-default", TRUE, NULL);
+  return w;
+}
+
+GtkWidget*
+bst_stock_icon_button (const gchar *stock_id)
+{
+  GtkWidget *w = g_object_new (GTK_TYPE_BUTTON,
+                               "visible", TRUE,
+                               "child", gtk_image_new_from_stock (stock_id, GTK_ICON_SIZE_BUTTON),
+                               "can-focus", FALSE,
+                               NULL);
+  gtk_widget_show_all (w);
+  return w;
+}
+
+GtkWidget*
 bst_image_from_icon (BseIcon    *icon,
 		     GtkIconSize icon_size)
 {
@@ -217,6 +245,137 @@ bst_window_sync_title_to_proxy (gpointer     window,
       g_object_set_data (window, "bst-title-sync", NULL);
       g_object_set (window, "title", title_format, NULL);
     }
+}
+
+
+/* --- packing utilities --- */
+#define SPACING 3
+static void
+bst_util_pack (GtkWidget   *widget,
+               const gchar *location,
+               guint        spacing,
+               va_list      args)
+{
+  GtkBox *box = GTK_BOX (widget);
+  while (location)
+    {
+      gchar *t, **toks = g_strsplit (location, ":", -1);
+      guint border = 0, padding = 0, i = 0;
+      gboolean fill = FALSE, expand = FALSE, start = TRUE;
+      GtkWidget *child;
+      t = toks[i++];
+      if (t && t[0] >= '0' && t[0] <= '9')
+        {
+          border = g_ascii_strtoull (t, NULL, 10);
+          t = toks[i++];
+        }
+      if (t && t[0] == '+')
+        {
+          expand = TRUE;
+          t = toks[i++];
+        }
+      if (t && t[0] == '*')
+        {
+          expand = fill = TRUE;
+          t = toks[i++];
+        }
+      if (t && t[0] == 'H')
+        {
+          gtk_box_set_homogeneous (box, TRUE);
+          expand = fill = TRUE;
+          t = toks[i++];
+        }
+      if (t && t[0] == 's')
+        {
+          start = TRUE;
+          t = toks[i++];
+        }
+      if (t && t[0] == 'e')
+        {
+          start = FALSE;
+          t = toks[i++];
+        }
+      if (t && t[0] == 'p')
+        {
+          padding = g_ascii_strtoull (t + 1, NULL, 10);
+          t = toks[i++];
+        }
+      g_strfreev (toks);
+      child = va_arg (args, GtkWidget*);
+      if (child)
+        {
+          if (border)
+            child = g_object_new (GTK_TYPE_ALIGNMENT,
+                                  "child", child,
+                                  "border_width", border * spacing,
+                                  NULL);
+          if (start)
+            gtk_box_pack_start (box, child, expand, fill, padding);
+          else
+            gtk_box_pack_end (box, child, expand, fill, padding);
+        }
+      location = va_arg (args, gchar*);
+    }
+}
+
+GtkWidget*
+bst_vpack (const gchar *first_location,
+           ...)
+{
+  va_list args;
+  GtkWidget *box = g_object_new (GTK_TYPE_VBOX,
+                                 "spacing", SPACING,
+                                 NULL);
+  va_start (args, first_location);
+  bst_util_pack (box, first_location, SPACING, args);
+  va_end (args);
+  gtk_widget_show_all (box);
+  return box;
+}
+
+GtkWidget*
+bst_hpack (const gchar *first_location,
+           ...)
+{
+  va_list args;
+  GtkWidget *box = g_object_new (GTK_TYPE_HBOX,
+                                 "spacing", SPACING,
+                                 NULL);
+  va_start (args, first_location);
+  bst_util_pack (box, first_location, SPACING, args);
+  va_end (args);
+  gtk_widget_show_all (box);
+  return box;
+}
+
+GtkWidget*
+bst_vpack0 (const gchar *first_location,
+            ...)
+{
+  va_list args;
+  GtkWidget *box = g_object_new (GTK_TYPE_VBOX,
+                                 "spacing", 0,
+                                 NULL);
+  va_start (args, first_location);
+  bst_util_pack (box, first_location, SPACING, args);
+  va_end (args);
+  gtk_widget_show_all (box);
+  return box;
+}
+
+GtkWidget*
+bst_hpack0 (const gchar *first_location,
+            ...)
+{
+  va_list args;
+  GtkWidget *box = g_object_new (GTK_TYPE_HBOX,
+                                 "spacing", 0,
+                                 NULL);
+  va_start (args, first_location);
+  bst_util_pack (box, first_location, SPACING, args);
+  va_end (args);
+  gtk_widget_show_all (box);
+  return box;
 }
 
 

@@ -328,7 +328,7 @@ bst_param_rack_widget (BstParam *bparam)
   g_object_ref (bparam->gdata.widget);
   bparam->updating = FALSE;
   bst_param_update_sensitivity (bparam); /* bst_param_update (bparam); */
-  return bparam->gdata.widget;
+  return gtk_widget_get_toplevel (bparam->gdata.widget);
 }
 
 void

@@ -43,8 +43,9 @@ typedef enum {
   BST_FILE_DIALOG_OPEN_PROJECT	= 0x0001,
   BST_FILE_DIALOG_MERGE_PROJECT	= 0x0002,
   BST_FILE_DIALOG_SAVE_PROJECT	= 0x0003,
-  BST_FILE_DIALOG_LOAD_WAVE	= 0x0004,
-  BST_FILE_DIALOG_LOAD_WAVE_LIB	= 0x0005,
+  BST_FILE_DIALOG_SELECT_DIR	= 0x0009,
+  BST_FILE_DIALOG_LOAD_WAVE	= 0x0011,
+  BST_FILE_DIALOG_LOAD_WAVE_LIB	= 0x0012,
   BST_FILE_DIALOG_MODE_MASK	= 0x00ff,
   BST_FILE_DIALOG_ALLOW_DIRS	= 0x1000,
   BST_FILE_DIALOG_FLAG_MASK	= 0xff00
@@ -59,6 +60,7 @@ struct _BstFileDialog
   GtkTreeView	   *tview;	/* sample selection tree view */
   GtkWidget	   *osave;	/* save options */
   GtkWidget	   *radio1;
+  gchar            *selected;
   /* mode state */
   BstFileDialogMode mode : 16;
   guint		    ignore_activate : 1;
@@ -79,6 +81,7 @@ GtkWidget*	bst_file_dialog_popup_merge_project	(gpointer	   parent_widget,
 							 SfiProxy	   project);
 GtkWidget*	bst_file_dialog_popup_save_project	(gpointer	   parent_widget,
 							 SfiProxy	   project);
+GtkWidget*	bst_file_dialog_popup_select_dir  	(gpointer	   parent_widget);
 GtkWidget*	bst_file_dialog_popup_load_wave		(gpointer	   parent_widget,
 							 SfiProxy	   wave_repo,
 							 gboolean	   show_lib);
@@ -87,7 +90,13 @@ void		bst_file_dialog_set_mode		(BstFileDialog	  *self,
 							 BstFileDialogMode mode,
 							 const gchar	  *fs_title,
 							 SfiProxy	   project);
-
+typedef void  (*BstFileDialogHandler)                   (GtkWidget        *dialog,
+                                                         const gchar      *file,
+                                                         gpointer          user_data);
+void            bst_file_dialog_set_handler             (BstFileDialog    *self,
+                                                         BstFileDialogHandler handler,
+                                                         gpointer          handler_data,
+                                                         GDestroyNotify    destroy);
 
 G_END_DECLS
 

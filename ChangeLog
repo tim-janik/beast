@@ -1,3 +1,22 @@
+Sat Oct 11 17:54:01 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstauxdialogs.[hc]: new file for small auxillary dialog
+	implementations, contains string list popup so far.
+
+	* beast-gtk/bstfiledialog.[hc]: keep the last valid selection in
+	self->selected. added select_dir() popup variant, added notification
+	ability for valid selections.
+
+	* beast-gtk/bstparam-entry.c: provide remove/add directory popup
+	dialogs for entris containing search paths.
+
+	* beast-gtk/bstparam.c (bst_param_rack_widget): action widgets may
+	have a parent already, so return the toplevel container of an action
+	widget.
+
+	* beast-gtk/bstutils.[hc]: added stock ids, helper functions to create
+	stock buttons, and utility functions for h/v box packing.
+
 Fri Oct 10 15:50:55 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c: 
