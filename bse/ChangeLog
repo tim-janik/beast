@@ -1,3 +1,7 @@
+Sat Jan  8 04:44:14 2005  Tim Janik  <timj@gtk.org>
+
+	* gslloader-pat.cc: removed.
+
 Sat Jan  8 04:43:00 2005  Tim Janik  <timj@gtk.org>
 
 	* bseloader-guspatch.cc: CVS copied from gslloader-pat.cc.
