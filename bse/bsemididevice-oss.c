@@ -21,7 +21,7 @@
 #include	"bsemidireceiver.h"
 #include	"gslcommon.h"
 
-#include	"../PKG_config.h"
+#include	"PKG_config.h"
 
 #ifndef	BSE_MIDI_DEVICE_CONF_OSS
 BSE_DUMMY_TYPE (BseMidiDeviceOSS);

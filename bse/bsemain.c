@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsemain.h"
-#include "bseconfig.h"	/* for *_VERSION and *_AGE */
+#include <bse/bseconfig.h>	/* for *_VERSION and *_AGE */
 #include "bseserver.h"
 #include "bsessequencer.h"
 #include "bsejanitor.h"

@@ -17,7 +17,7 @@
  */
 #include	"bsepcmdevice-oss.h"
 
-#include	"../PKG_config.h"
+#include	"PKG_config.h"
 
 #include	"gsldatautils.h"
 

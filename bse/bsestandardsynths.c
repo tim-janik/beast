@@ -35,7 +35,7 @@ typedef struct {
 
 
 /* --- generated ZFiles --- */
-#include "zintern/bse-zfile.c"	/* bse_zfiles */
+#include "bse/zintern/bse-zfile.c"	/* bse_zfiles */
 
 
 /* --- variables --- */

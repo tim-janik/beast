@@ -21,7 +21,7 @@
 #include "bsebindata.h"
 #include "bseproject.h"
 #include "bseparasite.h"
-#include "bseconfig.h"
+#include <bse/bseconfig.h>
 #include "gsldatahandle.h"
 #include "gsldatautils.h"
 #include <fcntl.h>
