@@ -45,7 +45,7 @@
 #define TEXT_HEIGHT		((gdouble) FONT_HEIGHT + 2)
 #define	CHANNEL_FONT		("Sans")
 #define	TEXT_FONT		("Serif")
-#define	FONT_HEIGHT		((gdouble) 12)
+#define	FONT_HEIGHT		((gdouble) BST_GCONFIG (snet_font_size))
 #define RGBA_BLACK		(0x000000ff)
 
 

@@ -32,6 +32,8 @@ using namespace Sfi;
 record GConfig {
   String rc_version			= (NULL, _("Release counter"), NULL, SFI_PARAM_STORAGE);
   group "Synthesis Networks" {
+    Int         snet_font_size          = (_("Font Size"), _("Font size in pixels for labels displayed in synthesis networks"),
+                                           10, 1, 48, 2, SFI_PARAM_STANDARD);
     Bool        snet_anti_aliased	= (_("Anti-Alias"), _("Draw synthesis networks anti-aliased?"),
 					    TRUE, SFI_PARAM_STANDARD);
     Bool        snet_edit_fallback	= (_("Single Edit"), _("Fallback into Edit mode after creating synthesis modules?"),

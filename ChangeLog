@@ -1,3 +1,10 @@
+Wed Jan 28 16:42:10 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstrecords.idl: added snet_font_size property, defaulting
+	to 10 pixels (formerly 12).
+
+	* beast-gtk/bstcanvassource.c: fetch font size from preferences.
+
 Wed Jan 28 15:41:15 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/Makefile.am: added afidl.1.texi.

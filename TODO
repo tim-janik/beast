@@ -1,7 +1,6 @@
 FIXMES:
 - rename sfidl.texi to sfidl-manual.texi
-- make sfidl/bse-plugin-generator manual pages match new/changed options
-- rc setting for canvas font sizes
+- complete sfidl.1 manual page
 - bseautodoc.c: use bse_type_get_license() instead of sfi_info_string_find()
 - remove sfi_boxed_get_record_info
 - remove sfi_info_string_find
