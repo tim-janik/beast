@@ -1,3 +1,7 @@
+Fri Oct  8 10:01:37 2004  Tim Janik  <timj@gtk.org>
+
+	* bseieee754.h: CVS copied from gslieee754.h.
+
 Fri Oct  8 09:55:43 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemathsignal.h: CVS copied from gslsignal.h.
