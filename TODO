@@ -103,6 +103,7 @@ Stefan Gui TODOs (priorities: 9=high, 0=low):
 2 - Comment field in Project -> SNet is too small to enter reasonable
 
 TODO:
+- add script to re-quantize piano-roll selections
 - virtual MIDI keyboard
 - fix tracks used only as modulation input (party-monster.bse)
 - delay class destruction and plugin unloading through async handlers (slight timeout)
