@@ -183,7 +183,7 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
 		bparam = bst_param_create (proc,
 					   BSE_TYPE_PROCEDURE,
 					   *pspec_p,
-					   GTK_BOX (param_box),
+					   param_box,
 					   GTK_TOOLTIPS (procedure_dialog->tooltips));
 		procedure_dialog->bparams = g_slist_append (procedure_dialog->bparams, bparam);
 		bst_param_set_editable (bparam, !hackval);

@@ -154,9 +154,12 @@ bst_param_view_rebuild (BstParamView *param_view)
 
   g_return_if_fail (BST_IS_PARAM_VIEW (param_view));
 
-  param_box = GTK_WIDGET (param_view);
-
   bst_param_view_destroy_contents (param_view);
+
+  param_box = gtk_widget_new (GTK_TYPE_VBOX,
+			      "visible", TRUE,
+			      "parent", param_view,
+			      NULL);
 
   if (!param_view->object)
     return;
@@ -196,7 +199,7 @@ bst_param_view_rebuild (BstParamView *param_view)
 		bparam = bst_param_create (object,
 					   BSE_TYPE_OBJECT,
 					   *pspec_p,
-					   GTK_BOX (param_box),
+					   param_box,
 					   GTK_TOOLTIPS (param_view->tooltips));
 		param_view->bparams = g_slist_prepend (param_view->bparams, bparam);
 	      }

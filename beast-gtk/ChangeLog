@@ -1,3 +1,7 @@
+1999-06-06    <timj@dhcpd7.redhat.com>
+
+	* bstparam.c: prepare parameters for wrap box container.
+
 Mon May 17 02:49:23 1999  Tim Janik  <timj@gtk.org>
 
 	* bunch of Makefile and configure changes so make distcheck works.

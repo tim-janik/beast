@@ -50,7 +50,7 @@ struct _BstParam
 BstParam*	bst_param_create		(gpointer	 owner,
 						 BseType	 owner_type,
 						 BseParamSpec	*pspec,
-						 GtkBox         *parent_box,
+						 GtkWidget      *parent,
 						 GtkTooltips	*tooltips);
 /* bst_param_get - set the widget's value from the object
  * bst_param_set - set the object's value from the widget (this implies

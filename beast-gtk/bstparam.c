@@ -178,9 +178,11 @@ BstParam*
 bst_param_create (gpointer      owner,
 		  BseType	owner_type,
 		  BseParamSpec *pspec,
-		  GtkBox       *parent_box,
+		  GtkWidget    *parent,
 		  GtkTooltips  *tooltips)
 {
+  GtkBox *parent_box;
+  static GQuark null_group = 0;
   BstParam *bparam;
   GtkWidget *widget;
   GtkAdjustment *adjustment = NULL;
@@ -196,8 +198,11 @@ bst_param_create (gpointer      owner,
   else
     g_return_val_if_fail (BSE_IS_OBJECT (owner), NULL);
   g_return_val_if_fail (BSE_IS_PARAM_SPEC (pspec), NULL);
-  g_return_val_if_fail (GTK_IS_BOX (parent_box), NULL);
+  g_return_val_if_fail (GTK_IS_WIDGET (parent), NULL);
   g_return_val_if_fail (GTK_IS_TOOLTIPS (tooltips), NULL);
+  
+  if (!null_group)
+    null_group = g_quark_from_static_string ("Bst-null-group");
 
   bparam = g_new0 (BstParam, 1);
   bse_param_init_default (&bparam->param, pspec);
@@ -215,37 +220,36 @@ bst_param_create (gpointer      owner,
   bparam->locked = 1;
   bse_type_class_ref (owner_type);
   
-  if (pspec->any.param_group)
+  parent_box = gtk_object_get_data_by_id (GTK_OBJECT (parent), pspec->any.param_group);
+  if (!parent_box || GTK_OBJECT_DESTROYED (parent_box) || !GTK_IS_BOX (parent_box))
     {
-      GtkWidget *box;
+      GtkWidget *any;
       
-      box = gtk_object_get_data_by_id (GTK_OBJECT (parent_box), pspec->any.param_group);
-      if (!box || GTK_OBJECT_DESTROYED (box))
-	{
-	  GtkWidget *frame;
-
-	  frame = gtk_widget_new (GTK_TYPE_FRAME,
-				  "visible", TRUE,
-				  "label", g_quark_to_string (pspec->any.param_group),
-				  NULL),
-	  box = gtk_widget_new (GTK_TYPE_VBOX,
-				"visible", TRUE,
-				"homogeneous", FALSE,
-				"spacing", 0,
-				"border_width", 5,
-				"parent", frame,
-				NULL);
-	  gtk_box_pack_start (GTK_BOX (parent_box), frame, FALSE, TRUE, 0);
-	  gtk_widget_ref (box);
-	  gtk_object_set_data_by_id_full (GTK_OBJECT (parent_box),
-					  pspec->any.param_group,
-					  box,
-					  (GtkDestroyNotify) gtk_widget_unref);
-	}
-      parent_box = GTK_BOX (box);
+      any = gtk_widget_new (GTK_TYPE_VBOX,
+			    "visible", TRUE,
+			    "homogeneous", FALSE,
+			    "spacing", 0,
+			    "border_width", pspec->any.param_group ? 5 : 0,
+			    NULL);
+      parent_box = GTK_BOX (any);
+      gtk_widget_ref (any);
+      gtk_object_set_data_by_id_full (GTK_OBJECT (parent),
+				      pspec->any.param_group ? pspec->any.param_group : null_group,
+				      any,
+				      (GtkDestroyNotify) gtk_widget_unref);
+      if (pspec->any.param_group)
+	any = gtk_widget_new (GTK_TYPE_FRAME,
+			      "visible", TRUE,
+			      "label", g_quark_to_string (pspec->any.param_group),
+			      "child", any,
+			      NULL);
+      if (GTK_IS_BOX (parent))
+	gtk_box_pack_start (GTK_BOX (parent), any, FALSE, TRUE, 0);
+      else
+	gtk_container_add (GTK_CONTAINER (parent), any);
     }
+  parent = NULL;
   
-
   /* feature param hints and integral values
    */
   read_only = (pspec->any.flags & BSE_PARAM_HINT_RDONLY) != 0;
