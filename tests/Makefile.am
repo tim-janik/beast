@@ -3,11 +3,16 @@
 #
 ## Makefile.am for BEAST tests
 
+SUBDIRS =
+
+CFLAGS   += $(EXTRA_CFLAGS)
+CPPFLAGS += $(EXTRA_CXXFLAGS)
 INCLUDES += -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) -I. $(SFI_CFLAGS)
 
 DEFS += -DG_LOG_DOMAIN=\"BEAST-TEST\" # -DG_DISABLE_CONST_RETURNS
 
 SFIDL = $(top_builddir)/sfi/sfidl
+SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 #
 # rules to generate built sources
@@ -22,13 +27,15 @@ CLEANFILES += $(gen_sources)
 bsecxxapi.h: $(top_builddir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include <bsw/bswcxxutils.h>\n" > xgen-bcah \
-	&& $(SFIDL) --cxx --header --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcah \
+	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcah \
+	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ testplugin.idl >> xgen-bcah \
 	&& cp xgen-bcah $@ \
 	&& rm -f xgen-bcah
 bsecxxapi.cc: bsecxxapi.h $(top_builddir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include \"bsecxxapi.h\"\n" > xgen-bcac \
-	&& $(SFIDL) --cxx --source --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcac \
+	&& $(SFIDL) $(SFIDL_INC) --cxx --source --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcac \
+	&& $(SFIDL) $(SFIDL_INC) --cxx --source --interface --prefix test_ testplugin.idl >> xgen-bcac \
 	&& cp xgen-bcac $@ \
 	&& rm -f xgen-bcac
 CLEANFILES += bsecxxapi.h bsecxxapi.cc
@@ -60,5 +67,21 @@ $(srcdir)/cxxbinding.cc: bsecxxapi.h
 
 noinst_PROGRAMS = $(TESTS)
 
+# test plugin: setup generation of C++ plugins from idl files
+BSEPGEN = $(top_builddir)/sfi/bse-plugin-generator
+%.gen-idl.h: %.idl $(BSEPGEN)
+	$(BSEPGEN) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
+
+# test plugin: library
+testplugin_la_SOURCES = testplugin.cc
+testplugin_la_LDFLAGS = -module -avoid-version
+testplugin_la_LIBADD  = $(BSE_LIBS) -lm
+plugindir = $(bseplugindir)/nirvana
+plugin_LTLIBRARIES = testplugin.la
+
+$(srcdir)/testplugin.cc: testplugin.gen-idl.h
+
+CLEANFILES += testplugin.gen-idl.h
 EXTRA_DIST += $(strip \
+	testplugin.gen-idl.h \
 )

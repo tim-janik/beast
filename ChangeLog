@@ -1,3 +1,12 @@
+Sat Dec 20 21:24:55 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/testplugin.idl tests/testplugin.cc: Provide a plugin for
+	testing the language binding(s).
+
+	* tests/cxxbinding.cc: Load testplugin.
+
+	* tests/Makefile.am: Build testplugin.
+
 Sat Dec 20 19:49:02 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkgadget.c: allow variables referencing themselves,

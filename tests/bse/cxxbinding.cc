@@ -53,6 +53,19 @@ int main(int argc, char **argv)
   printf ("error_blurb: %s\n", error_blurb (ERROR_DEVICE_ASYNC).c_str());
 
   Server server = 1;
+  /*
+   * FIXME: the plugin path should probably
+   *  (a) be relative to $(top_builddir)
+   *  (b) include the directories containing plugins as well
+   */
+  GConfigPtr prefs = GConfig::_from_rec (server.bse_preferences ());
+  prefs->plugin_path = "./.libs:" + prefs->plugin_path;
+  SfiRec *rec = GConfig::_to_rec (prefs);
+  server.set_bse_preferences (rec);
+  sfi_rec_unref (rec);
+  prefs = GConfig::_from_rec (server.bse_preferences());
+
+  printf ("plugin path = %s\n", prefs->plugin_path.c_str());
   printf ("register core plugins ... "); fflush (stdout);
   server.register_core_plugins();
   sleep(2);
@@ -64,6 +77,16 @@ int main(int argc, char **argv)
   sleep(2);
   printf("done\n");
 
+  /* ... test plugin ... */
+  Project test_project = server.use_new_project("test_project");
+  CSynth synth = test_project.create_csynth("synth");
+
+  // FIXME: dynamic_cast me
+  Test::Plugin plugin = synth.create_source("TestPlugin")._proxy();
+  if (plugin)
+    printf("success creating plugin.\n");
+
+  /* ... */
   printf("playing test-song.bse ... "); fflush(stdout);
   Project project = server.use_new_project("foo");
   project.restore_from_file("../test/test-song.bse");
