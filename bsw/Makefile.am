@@ -82,15 +82,15 @@ CLEANFILES += $(gen_sources)
 # initial creation of the real stamp-* files
 bswgenapi.h: stamp-bswgenapi.h ;
 # normal autogeneration rules
-stamp-bswgenapi.h: $(top_builddir)/bse/bse.sfidl $(SFIDL)
+stamp-bswgenapi.h: $(top_builddir)/bse/bse.idl $(SFIDL)
 	echo -e "#include <sfi/sfi.h>\n" > xgen-sbpah \
-	&& $(SFIDL) --header --interface --prefix foo_prefix $(top_builddir)/bse/bse.sfidl >> xgen-sbpah \
+	&& $(SFIDL) --header --interface --prefix foo_prefix $(top_builddir)/bse/bse.idl >> xgen-sbpah \
 	&& (cmp -s xgen-sbpah bswgenapi.h || cp xgen-sbpah bswgenapi.h) \
 	&& rm -f xgen-sbpah \
 	&& echo timestamp > $@
-bswgenapi.c: bswgenapi.h $(top_builddir)/bse/bse.sfidl $(SFIDL)
+bswgenapi.c: bswgenapi.h $(top_builddir)/bse/bse.idl $(SFIDL)
 	echo -e "#include \"bswgenapi.h\"\n" > xgen-sbpac \
-	&& $(SFIDL) --source --interface --prefix foo_prefix $(top_builddir)/bse/bse.sfidl >> xgen-sbpac \
+	&& $(SFIDL) --source --interface --prefix foo_prefix $(top_builddir)/bse/bse.idl >> xgen-sbpac \
 	&& cp xgen-sbpac $@ \
 	&& rm -f xgen-sbpac
 

@@ -78,7 +78,7 @@ beast_extra_sources = $(strip \
 )
 beast_extra_files = $(strip \
 	catalog-en.c		bstmarshal.list		stamp-bstenum_arrays.c \
-	bstdebugkeys.defs	bstrecords.sfidl	stamp-ckeycheck \
+	bstdebugkeys.defs	bstrecords.idl		stamp-ckeycheck \
 )
 # BEAST built sources that don't get installed
 beast_built_sources = @STRIP_BEGIN@ \
@@ -110,22 +110,22 @@ bstenum_arrays.c: $(beast_headers)
 	&& rm -f xgen-beac
 $(srcdir)/stamp-bstenum_arrays.c: bstenum_arrays.c
 	@ [ -f $@ ] || touch $@
-bstgentypes.h: stamp-bstenum_arrays.c ${srcdir}/bstrecords.sfidl
+bstgentypes.h: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl
 	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
 	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
 	  --eprod "extern GType bst__type_id__@EnumName@;" \
 	    $(beast_headers) ) > xgen-bgth \
-	&& $(SFIDL) --header --implementation ${srcdir}/bstrecords.sfidl >> xgen-bgth \
+	&& $(SFIDL) --header --implementation ${srcdir}/bstrecords.idl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
-$(srcdir)/bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.sfidl
+$(srcdir)/bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl
 	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
 	    $(beast_headers) ) > xgen-bgtc \
-	&& $(SFIDL) --source --implementation --init _bst_init_idl ${srcdir}/bstrecords.sfidl >> xgen-bgtc \
+	&& $(SFIDL) --source --implementation --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-bgtc \
         && cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
 $(srcdir)/bstenum_list.c: stamp-bstenum_arrays.c
