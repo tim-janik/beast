@@ -1241,9 +1241,9 @@ bst_file_scan_find_key (const gchar *file,
 #ifndef BST_DEBUG_KEYS
 #  define BST_DEBUG_KEYS        /* none */
 #endif
-static const gchar *debug_keys[] = { BST_LOG_SCAN_KEYS NULL };
+static const gchar *debug_keys[] = { BST_LOG_DEBUG_KEYS NULL };
 const gchar**
-_bst_log_scan_keys (void)
+_bst_log_debug_keys (void)
 {
   return debug_keys;
 }

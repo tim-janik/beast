@@ -152,9 +152,9 @@ debug_key_globs = $(top_srcdir)/beast-gtk/*.[hc] $(top_srcdir)/bse/*.[hc] $(top_
 bstdebugkeys.defs: @DVLBUILD@ $(debug_key_globs)
 	cd $(srcdir) \
 	&& echo > xgen-bdkd \
-	&& grep -E 'sfi_debug_(keyfunc|test_key)' $(debug_key_globs) \
-	| $(SCANKEYS) --key sfi_debug_keyfunc --key sfi_debug_test_key \
-	     --tmplstart '#define BST_LOG_SCAN_KEYS \\\n' \
+	&& grep -E 'sfi_debug(|_check)\b' $(debug_key_globs) \
+	| $(SCANKEYS) --key sfi_debug --key sfi_log_check \
+	     --tmplstart '#define BST_LOG_DEBUG_KEYS \\\n' \
 	     --tmplkey   '  %s, \\\n' \
 	     --tmplend   '\n' 	--needkeys - >> xgen-bdkd \
 	&& cp xgen-bdkd $@ \

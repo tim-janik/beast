@@ -626,7 +626,7 @@ controller_canvas_drag (BstEventRollController *self,
   };
   guint i;
   
-  // sfi_debug ("canvas drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
+  // g_printerr ("canvas drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
 
   if (drag->type == GXK_DRAG_START)
     {
@@ -711,7 +711,7 @@ void
 controller_vpanel_drag (BstEventRollController *self,
                         BstEventRollDrag       *drag)
 {
-  // sfi_debug ("vpanel drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
+  // g_printerr ("vpanel drag event, tick=%d (valid=%d) value=%f", drag->current_tick, drag->current_valid, drag->current_value);
   
   if (drag->type == GXK_DRAG_START ||
       drag->type == GXK_DRAG_MOTION)

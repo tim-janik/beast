@@ -102,8 +102,7 @@ main (int   argc,
 
   /* initialize Sfi guts */
   sfi_init ();
-  sfi_log_allow_info ("all");
-  // sfi_log_allow_debug ("misc");
+  sfi_debug_allow ("misc");
   /* ensure SFI can wake us up */
   sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
 			 g_main_context_default (), NULL);
@@ -329,9 +328,10 @@ main (int   argc,
       bst_gconfig_set_rc_version (BST_VERSION);
     }
 
-  /* release splash grab */
+  /* release splash grab, install message dialog handler */
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
+  sfi_log_set_handler (bst_user_message_log_handler);
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -340,6 +340,7 @@ main (int   argc,
       g_main_iteration (TRUE);
       GDK_THREADS_ENTER ();
     }
+  sfi_log_set_handler (NULL);
   
   /* stop everything playing
    */
@@ -401,18 +402,18 @@ bst_early_parse_args (int    *argc_p,
   gchar *envar;
   guint i, e;
   
-  envar = getenv ("BEAST_DEBUG");
-  if (envar)
-    {
-      sfi_log_allow_debug (envar);
-      sfi_log_allow_info (envar);
-    }
   envar = getenv ("BST_DEBUG");
   if (envar)
-    {
-      sfi_log_allow_debug (envar);
-      sfi_log_allow_info (envar);
-    }
+    sfi_debug_allow (envar);
+  envar = getenv ("BST_NO_DEBUG");
+  if (envar)
+    sfi_debug_deny (envar);
+  envar = getenv ("BEAST_DEBUG");
+  if (envar)
+    sfi_debug_allow (envar);
+  envar = getenv ("BEAST_NO_DEBUG");
+  if (envar)
+    sfi_debug_deny (envar);
 
   for (i = 1; i < argc; i++)
     {
@@ -460,7 +461,7 @@ bst_early_parse_args (int    *argc_p,
 	}
       else if (strcmp ("--debug-list", argv[i]) == 0)
 	{
-	  const gchar **keys = _bst_log_scan_keys ();
+	  const gchar **keys = _bst_log_debug_keys ();
 	  guint i;
 	  g_print ("debug keys: all");
 	  for (i = 0; keys[i]; i++)
@@ -475,15 +476,25 @@ bst_early_parse_args (int    *argc_p,
 	  gchar *equal = argv[i] + 7;
 	  
 	  if (*equal == '=')
-	    {
-	      sfi_log_allow_debug (equal + 1);
-	      sfi_log_allow_info (equal + 1);
-	    }
+            sfi_debug_allow (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      sfi_log_allow_debug (argv[i]);
-	      sfi_log_allow_info (argv[i]);
+	      sfi_debug_allow (argv[i]);
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--no-debug", argv[i]) == 0 ||
+	       strncmp ("--no-debug=", argv[i], 8) == 0)
+	{
+	  gchar *equal = argv[i] + 7;
+	  
+	  if (*equal == '=')
+            sfi_debug_deny (equal + 1);
+	  else if (i + 1 < argc)
+	    {
+	      argv[i++] = NULL;
+	      sfi_debug_deny (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -555,22 +566,14 @@ bst_early_parse_args (int    *argc_p,
     }
   gxk_param_set_devel_tips (bst_developer_hints);
 
-  e = 0;
+  e = 1;
   for (i = 1; i < argc; i++)
-    {
-      if (e)
-	{
-	  if (argv[i])
-	    {
-	      argv[e++] = argv[i];
-	      argv[i] = NULL;
-	    }
-	}
-      else if (!argv[i])
-	e = i;
-    }
-  if (e)
-    *argc_p = e;
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        argv[i] = NULL;
+      }
+  *argc_p = e;
 }
 
 static void G_GNUC_NORETURN
@@ -637,7 +640,8 @@ bst_print_blurb (void)
   g_print ("  -v, --version           print version and file paths\n");
   g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
   g_print ("Development Options:\n");
-  g_print ("  --debug=KEYS            enable certain verbosity stages\n");
+  g_print ("  --debug=KEYS            enable specific debugging messages\n");
+  g_print ("  --no-debug=KEYS         disable specific debugging messages\n");
   g_print ("  --debug-list            list possible debug keys\n");
   g_print ("  -:[flags]               [flags] can be any of:\n");
   g_print ("                          f - fatal warnings\n");

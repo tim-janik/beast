@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
   g_thread_init (NULL);
   sfi_init ();
-  sfi_log_allow_debug ("misc");
+  sfi_debug_allow ("misc");
   bse_init_async (&argc, &argv, NULL);
   bse_context = bse_init_glue_context (argv[0]);
 

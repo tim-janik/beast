@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,21 +86,25 @@ message_title (BseUserMsgType mtype,
   gchar *msg;
   switch (mtype)
     {
-    case BSE_USER_MSG_INFO:
-      *stock = BST_STOCK_INFO;
-      msg = _("Notice");
-      break;
-    case BSE_USER_MSG_QUESTION:
-      *stock = BST_STOCK_QUESTION;
-      msg = _("Question");
+    case BSE_USER_MSG_ERROR:
+      *stock = BST_STOCK_ERROR;
+      msg =_("Error");
       break;
     case BSE_USER_MSG_WARNING:
       *stock = BST_STOCK_WARNING;
       msg =_("Warning");
       break;
-    case BSE_USER_MSG_ERROR:
-      *stock = BST_STOCK_ERROR;
-      msg =_("Error");
+    case BSE_USER_MSG_INFO:
+      *stock = BST_STOCK_INFO;
+      msg = _("Notice");
+      break;
+    case BSE_USER_MSG_DIAG:
+      *stock = BST_STOCK_DIAG;
+      msg = _("Diagnostic");
+      break;
+    case BSE_USER_MSG_DEBUG:
+      *stock = BST_STOCK_DIAG;  /* shouldn't end up in dialogs */
+      msg = _("Debug");
       break;
     default:
       *stock = NULL;
@@ -144,7 +148,7 @@ update_dialog (GxkDialog     *dialog,
 				    "xalign", 0.5,
 				    "yalign", 0.5,
 				    "xscale", 1.0,
-				    "yscale", 0.75,
+				    "yscale", 0.1, // 0.75,
 				    "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK | GXK_SCROLL_TEXT_CENTER, message),
 				    NULL),
 		      TRUE, TRUE, 5);
@@ -189,6 +193,25 @@ bst_user_message_popup (BseUserMsgType msg_type,
   msg_windows = g_slist_prepend (msg_windows, dialog);
   gtk_widget_show (widget);
   return widget;
+}
+
+void
+bst_user_message_log_handler (const char             *log_domain,
+                              unsigned char           level,
+                              const SfiLogContext    *lcontext,
+                              const char             *message)
+{
+  BseUserMsgType msg_type;
+  switch (level)
+    {
+    case SFI_LOG_ERROR: msg_type = BSE_USER_MSG_ERROR;   break;
+    case SFI_LOG_WARN:  msg_type = BSE_USER_MSG_WARNING; break;
+    case SFI_LOG_INFO:  msg_type = BSE_USER_MSG_INFO;    break;
+    case SFI_LOG_DIAG:  msg_type = BSE_USER_MSG_DIAG;    break;
+    case SFI_LOG_DEBUG: msg_type = BSE_USER_MSG_DEBUG;   break;
+    default:            msg_type = BSE_USER_MSG_DEBUG;   break;
+    }
+  bst_user_message_popup (msg_type, message);
 }
 
 static void

@@ -8,6 +8,7 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	browse-image.xcf	\
 	cdrom.xcf		\
 	clipboard.xcf		\
+	diag.xcf		\
 	editor.xcf		\
 	event-control.xcf	\
 	knob.xcf		\
@@ -44,6 +45,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_ARROW_LEFT		$(srcdir)/arrow_left.png	\
 	STOCK_ARROW_RIGHT		$(srcdir)/arrow_right.png	\
 	STOCK_ARROW_DOWN		$(srcdir)/arrow_down.png	\
+	STOCK_DIAG			$(srcdir)/diag.png		\
 	STOCK_EDIT			$(srcdir)/edit.png		\
 	STOCK_EDIT_TOOL			$(srcdir)/editor.png		\
 	STOCK_EVENT_CONTROL		$(srcdir)/event-control.png	\

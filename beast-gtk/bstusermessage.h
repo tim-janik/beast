@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,20 +20,19 @@
 
 #include	"bstutils.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- prototypes --- */
 void	   bst_catch_scripts_and_msgs		(void);
 GtkWidget* bst_user_message_popup		(BseUserMsgType msg_type,
 						 const gchar   *message);
 void	   bst_user_messages_kill		(void);
+void       bst_user_message_log_handler         (const char             *log_domain,
+                                                 unsigned char           level,
+                                                 const SfiLogContext    *lcontext,
+                                                 const char             *message);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
+G_END_DECLS
 
 #endif	/* __BST_USER_MESSAGE_H__ */
