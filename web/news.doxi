@@ -11,6 +11,25 @@
 @unnumbered What's New?
 
 
+@newsTitle{Tuesday 22 Jul 2003, BEAST Realease [Velocity Edit]}
+
+BEAST/BSE version 0.5.4 is available in the
+@uref{beast-doc://download,,download section}.
+@c here is the
+@c @uref{http://gnomedesktop.org/article.php?sid=1182,,FootNotes announcement}.
+
+Tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.4.tar.gz,, beast-0.5.4.tar.gz}
+and patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.3-0.5.4.bz2,, patch-beast-0.5.3-0.5.4.bz2}.
+
+Newly added features in this release involve a drum module, velocity-,
+fine-tune- and control-event-editing in songs and support for post-processing
+effects in songs.
+The details are outlined in the
+@uref{beast-doc://release-news,,NEWS section}.
+
+
 @newsTitle{Friday 18 Jul 2003, BEAST RPM Packages}
 
 After visiting the @beast talk at LinuxTag 2003,
@@ -40,23 +59,6 @@ If we're not hanging out at LinuxTag, you may also join us for a chat on
 the @code{#beast} channel on the GimpNet IRC Network. The
 @uref{beast-doc://contact,, Contact section}
 has more details if you're not familiar with IRC yet.
-
-
-@newsTitle{Wednesday 25 Jun 2003, BEAST Bugfix Realease}
-
-BEAST/BSE version 0.5.3 is available in the
-@uref{beast-doc://download,,download section}, here is the
-@uref{http://gnomedesktop.org/article.php?sid=1182,,FootNotes announcement}.
-
-Tarball:
-@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.3.tar.gz,, beast-0.5.3.tar.gz}
-and patch:
-@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.2-0.5.3.bz2,, patch-beast-0.5.2-0.5.3.bz2}.
-
-Aparently version 0.5.2 crashed during script initialization on some systems
-due to bugs in the child communication code. So here is a quick update, fixing
-the crash and
-@uref{beast-doc://release-news,,other minor bugs}.
 
 
 @bye

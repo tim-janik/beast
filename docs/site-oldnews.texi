@@ -11,6 +11,23 @@
 @unnumbered What Was New? (Ancient News)
 
 
+@newsTitle{Wednesday 25 Jun 2003, BEAST Bugfix Realease}
+
+BEAST/BSE version 0.5.3 is available in the
+@uref{beast-doc://download,,download section}, here is the
+@uref{http://gnomedesktop.org/article.php?sid=1182,,FootNotes announcement}.
+
+Tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/beast-0.5.3.tar.gz,, beast-0.5.3.tar.gz}
+and patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.5/patch-beast-0.5.2-0.5.3.bz2,, patch-beast-0.5.2-0.5.3.bz2}.
+
+Aparently version 0.5.2 crashed during script initialization on some systems
+due to bugs in the child communication code. So here is a quick update, fixing
+the crash and
+@uref{beast-doc://release-news,,other minor bugs}.
+
+
 @newsTitle{Saturday 21 Jun 2003, The i-didn't-mean-to Realease}
 
 BEAST/BSE version 0.5.2 is available in the
