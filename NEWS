@@ -7,8 +7,12 @@ Overview of Changes in BEAST/BSE 0.4.1:
 * Added MIDI synthesis support
 * Added sample/wave display and preview facilities
 * Added sample loaders for .wav, .ogg, .mp3 and .gslwave files
+* Added sophisticated sample caching layer to spare file I/O
+  and mp3 or Vorbis decoded sample data
 * New threaded sound engine which can share synthesis
   module calculations between processors
+* Major speed improvements to the threading layer by using pthreads
+  directly where possible
 * New synthesis modules:
   FreeVerb	  - a reverb based on code by Jeremy Wakefield
   BiquadFilter    - various basic IIR (resonance) filter types
