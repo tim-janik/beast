@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-20 19:02+0200\n"
-"PO-Revision-Date: 2004-08-20 22:33+0200\n"
+"POT-Creation-Date: 2004-08-23 11:02+0200\n"
+"PO-Revision-Date: 2004-08-23 15:00+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -52,143 +52,250 @@ msgstr "Importovat standardní soubor MIDI do aktuálního projektu"
 msgid "_Close"
 msgstr "_Zavřít"
 
+#: beast-gtk/bstapp.c:76
+msgid "Close the project"
+msgstr "Zavřít projekt"
+
 #: beast-gtk/bstapp.c:80
 msgid "_Save"
 msgstr "_Uložit"
+
+#: beast-gtk/bstapp.c:80
+msgid "Write project to disk"
+msgstr "Zapsat projekt na disk"
 
 #: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr "Uložit _jako..."
 
+#: beast-gtk/bstapp.c:82
+msgid "Write project to a specific file"
+msgstr "Zapsat projekt do konkrétního souboru"
+
 #: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr "U_končit"
+
+#: beast-gtk/bstapp.c:86
+msgid "Close all windows and quit"
+msgstr "Zavřít všechna okna a skončit"
 
 #: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
 msgstr "_Nastaven..."
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:90
+msgid "Adjust overall program behaviour"
+msgstr "Upravit obecné chování programu"
+
+#: beast-gtk/bstapp.c:94
 msgid "Rebuild"
 msgstr "Znovu sestavit"
 
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:97
 msgid "_About..."
 msgstr "O _aplikaci..."
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:97
+msgid "Display developer and contributor credits"
+msgstr "Zobrazit kredity vývojářů a přispěvatelů"
+
+#: beast-gtk/bstapp.c:101
 msgid "_Undo"
 msgstr "_Zpět"
 
 #: beast-gtk/bstapp.c:101
+msgid "Undo the effect of the last action"
+msgstr "Vrátit zpět efekt přechozí akce"
+
+#: beast-gtk/bstapp.c:103
 msgid "_Redo"
 msgstr "Z_novu"
 
-#: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:103
+msgid "Redo the last undone action"
+msgstr "Zopakovat poslední vrácenou akci"
+
+#: beast-gtk/bstapp.c:107 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "Vyma_zat historii"
 
-#: beast-gtk/bstapp.c:109
+#: beast-gtk/bstapp.c:107
+msgid "Delete the complete undo history"
+msgstr "Odstranit celou historii vracení"
+
+#: beast-gtk/bstapp.c:111
 msgid "Procedure _Browser"
 msgstr "_Procházeč procedur"
 
 #: beast-gtk/bstapp.c:111
+msgid "Display an overview of all procedures"
+msgstr "Zobrazit přehled všech procedur"
+
+#: beast-gtk/bstapp.c:113
 msgid "Rack Editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
+#: beast-gtk/bstapp.c:115 beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Profiler"
 
 #: beast-gtk/bstapp.c:115
+msgid "Display statistics and timing information"
+msgstr "Zobrazit statistiky a informace o časování"
+
+#: beast-gtk/bstapp.c:117
 msgid "New View"
 msgstr "Nový pohled"
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:117
+msgid "Create an extra view of the project"
+msgstr "Vytvořit další pohled na projekt"
+
+#: beast-gtk/bstapp.c:121
 msgid "_Play"
 msgstr "_Přehrávat"
 
 #: beast-gtk/bstapp.c:121
+msgid "Play or restart playback of the project"
+msgstr "Přehrávat nebo znovu spustit přehrávání projektu"
+
+#: beast-gtk/bstapp.c:123
 msgid "_Stop"
 msgstr "_Zastavit"
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:123
+msgid "Stop playback of the project"
+msgstr "Zastavit přehrávání projektu"
+
+#: beast-gtk/bstapp.c:127
 msgid "New Song"
 msgstr "Nová skladba"
 
 #: beast-gtk/bstapp.c:127
+msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
+msgstr "Vytvořit novou skladbu, skládájící se z mixéru, stop, částí a poznámek"
+
+#: beast-gtk/bstapp.c:129
 msgid "New Custom Synthesizer"
 msgstr "Nový vlastní syntetizér"
 
 #: beast-gtk/bstapp.c:129
+msgid ""
+"Create a new synthesizer mesh to be used as effect or instrument in songs"
+msgstr "Vytvořit novou síť syntetizéru pro použití jako efekt nebo nástroj ve skladbách"
+
+#: beast-gtk/bstapp.c:131
 msgid "New MIDI Synthesizer"
 msgstr "Nový syntetizér MIDI"
 
 #: beast-gtk/bstapp.c:131
+msgid ""
+"Create a new MIDI synthesizer to control an instrument from external MIDI "
+"events"
+msgstr "Vytvořit nový syntetizér MIDI pro ovládání nástroje externími událostmi MIDI"
+
+#: beast-gtk/bstapp.c:133
 msgid "Remove Song or Synthesizer"
 msgstr "Odstranit skladbu nebo syntetizér"
 
-#: beast-gtk/bstapp.c:135
+#: beast-gtk/bstapp.c:133
+msgid "Remove the currently selected synthesizer (song)"
+msgstr "Odstranit momentálně vybraný syntetizér (skladbu)"
+
+#: beast-gtk/bstapp.c:137
 msgid "Load _Instrument"
 msgstr "Načíst _nástroj"
 
 #: beast-gtk/bstapp.c:137
+msgid "Load synthesizer mesh from instruments folder"
+msgstr "Načíst síť syntetizéru z adresáře nástrojů"
+
+#: beast-gtk/bstapp.c:139
 msgid "Load _Effect"
 msgstr "Načíst _efekt"
 
 #: beast-gtk/bstapp.c:139
+msgid "Load synthesizer mesh from effects folder"
+msgstr "Načíst síť syntetizéru z adresáře efektů"
+
+#: beast-gtk/bstapp.c:141
 msgid "Save As Instrument"
 msgstr "Uložit jako nástroj"
 
 #: beast-gtk/bstapp.c:141
+msgid "Save synthesizer mesh to instruments folder"
+msgstr "Uložit síť syntetizéru do adresáře nástrojů"
+
+#: beast-gtk/bstapp.c:143
 msgid "Save As Effect"
 msgstr "Uložit jako efekt"
 
-#: beast-gtk/bstapp.c:145
+#: beast-gtk/bstapp.c:143
+msgid "Save synthesizer mesh to effects folder"
+msgstr "Uložit síť syntetizéru do adresáře efektů"
+
+#: beast-gtk/bstapp.c:147
 msgid "_Release Notes..."
 msgstr "_Poznámky o vydání..."
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:147
+msgid "Notes and informations about this release cycle"
+msgstr "Poznámky a informace o tomto cyklu vydání"
+
+#: beast-gtk/bstapp.c:149
 msgid "Quick Start..."
 msgstr "Rychlý start..."
 
-#: beast-gtk/bstapp.c:147
+#: beast-gtk/bstapp.c:149
+msgid "Provides an introduction about how to accomplish the most common tasks"
+msgstr "Poskytuje úvod o tom, jak provést nejčastější úkony"
+
+#: beast-gtk/bstapp.c:151
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:150
-msgid "GSL Engine..."
-msgstr "Engine GSL..."
+#: beast-gtk/bstapp.c:151
+msgid "Frequently asked questions"
+msgstr "Často kladené otázky"
 
-#: beast-gtk/bstapp.c:280
+#: beast-gtk/bstapp.c:155
+msgid "DSP Engine..."
+msgstr "Engine DSP..."
+
+#: beast-gtk/bstapp.c:155
+msgid "Technical description of the multi-threaded synthesis engine innards"
+msgstr "Technický popis vnitřností vícevláknového engine syntetizéru"
+
+#: beast-gtk/bstapp.c:286
 msgid "Export Audio"
 msgstr "Exportovat zvuk"
 
-#: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:613 beast-gtk/bstapp.c:620 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otevírám projekt `%s'"
 
-#: beast-gtk/bstapp.c:636
+#: beast-gtk/bstapp.c:680
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Načítám skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:797
+#: beast-gtk/bstapp.c:847
 msgid "Rack editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:811
+#: beast-gtk/bstapp.c:861
 msgid "Preferences"
 msgstr "Nastavení"
 
-#: beast-gtk/bstapp.c:838
+#: beast-gtk/bstapp.c:888
 msgid "Procedure Browser"
 msgstr "Procházeč procedur"
 
-#: beast-gtk/bstapp.c:895
+#: beast-gtk/bstapp.c:945
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Poznámky o vydání BEAST-%s"
@@ -202,6 +309,26 @@ msgstr ""
 #: beast-gtk/bstauxdialogs.c:394
 msgid "Please press the keyboard shortcut to be installed..."
 msgstr "Stiskněte prosím klávesovou zkratku, kterou nainstalovat..."
+
+#: beast-gtk/bstbuseditor.c:37 beast-gtk/bstbusmixer.c:34
+#: beast-gtk/bstbusview.c:34 beast-gtk/bstinstrumentview.c:33
+#: beast-gtk/bstpartview.c:39 beast-gtk/bsttrackview.c:61
+msgid "Add"
+msgstr "Přidat"
+
+#: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusview.c:35
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
+#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
+#: beast-gtk/bstsnetrouter.c:751 beast-gtk/bsttrackrollctrl.c:51
+#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
+msgid "Delete"
+msgstr "Odstranit"
+
+#: beast-gtk/bstbuseditor.c:39 beast-gtk/bstpartview.c:41
+#: beast-gtk/bstwaveview.c:47
+msgid "Editor"
+msgstr "Editor"
 
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
@@ -228,6 +355,32 @@ msgstr "Výstup"
 #: beast-gtk/bstcanvassource.c:975
 msgid "(Hint)"
 msgstr "(Nápověda)"
+
+#: beast-gtk/bstdbmeter.c:761
+msgid "Draw Values"
+msgstr "Kreslit hodnoty"
+
+#: beast-gtk/bstdbmeter.c:761
+msgid "Adjust whether to draw dB values instead of lines"
+msgstr "Upravit, jestli kreslit hodnoty dB místo čar"
+
+#: beast-gtk/bstdbmeter.c:764 beast-gtk/bstdbmeter.c:1059
+#: beast-gtk/bstdbmeter.c:1506
+msgid "Orientation"
+msgstr "Orientace"
+
+#: beast-gtk/bstdbmeter.c:764 beast-gtk/bstdbmeter.c:1059
+#: beast-gtk/bstdbmeter.c:1506
+msgid "Choose horizontal or vertical orientation"
+msgstr "Zvolte vodorovnou nebo smislou orientaci"
+
+#: beast-gtk/bstdbmeter.c:767
+msgid "Justify"
+msgstr "Zarovnat"
+
+#: beast-gtk/bstdbmeter.c:767
+msgid "Adjust relative alignment of the values or bars to be drawn"
+msgstr "Upravit relativní zarovnání kreslených hodnot nebo pruhů"
 
 #: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
 #: beast-gtk/bsteventrollctrl.c:427
@@ -418,20 +571,6 @@ msgstr "Zmenšit posunovatelnou oblast"
 #: beast-gtk/bstgrowbar.c:93
 msgid "Grow the scrollable area"
 msgstr "Zvětšit posunovatelnou oblast"
-
-#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
-#: beast-gtk/bstbusview.c:34 beast-gtk/bsttrackview.c:61
-msgid "Add"
-msgstr "Přidat"
-
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
-#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
-#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
-#: beast-gtk/bstsnetrouter.c:751 beast-gtk/bstbusview.c:35
-#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:64
-#: beast-gtk/bstwaveview.c:45
-msgid "Delete"
-msgstr "Odstranit"
 
 #: beast-gtk/bstitemview.c:205
 msgid "ID"
@@ -722,10 +861,6 @@ msgstr "Znovu"
 #: beast-gtk/bstpartdialog.c:67
 msgid "Redo the last undone editing step"
 msgstr "Zopakovat poslední vrácený krok úprav"
-
-#: beast-gtk/bstpartview.c:41 beast-gtk/bstwaveview.c:47
-msgid "Editor"
-msgstr "Editor"
 
 #: beast-gtk/bstpatterncolumns.c:686
 msgid ""
@@ -2085,38 +2220,58 @@ msgstr "Označit signál (začátek)"
 msgid "Mark Signal (Tail)"
 msgstr "Označit signál (konec)"
 
-#: beast-gtk/bstsupershell.c:151 beast-gtk/bstsupershell.c:279
+#: beast-gtk/bstsupershell.c:161 beast-gtk/bstsupershell.c:195
+#: beast-gtk/bstsupershell.c:322
 msgid "Waves"
 msgstr "Vlny"
 
-#: beast-gtk/bstsupershell.c:214
+#: beast-gtk/bstsupershell.c:162
+msgid "Wave Repository"
+msgstr "Úložiště vln"
+
+#: beast-gtk/bstsupershell.c:167
+#, c-format
+msgid "Song: %s"
+msgstr "Skladba: %s"
+
+#: beast-gtk/bstsupershell.c:172
+#, c-format
+msgid "MIDI Synthesizer: %s"
+msgstr "Syntetizér MIDI: %s"
+
+#: beast-gtk/bstsupershell.c:177
+#, c-format
+msgid "Synthesizer: %s"
+msgstr "Syntetizér: %s"
+
+#: beast-gtk/bstsupershell.c:257
 msgid "Tracks"
 msgstr "Stopy"
 
-#: beast-gtk/bstsupershell.c:219
+#: beast-gtk/bstsupershell.c:262
 msgid "Mixer"
 msgstr "Mixér"
 
-#: beast-gtk/bstsupershell.c:224 beast-gtk/bstsupershell.c:266
-#: beast-gtk/bstsupershell.c:284 plugins/artscompressor.idl:34
+#: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:309
+#: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parametry"
 
-#: beast-gtk/bstsupershell.c:229
+#: beast-gtk/bstsupershell.c:272
 msgid "Parts"
 msgstr "Části"
 
-#: beast-gtk/bstsupershell.c:235
+#: beast-gtk/bstsupershell.c:278
 msgid "Busses"
 msgstr "Sběrnice"
 
-#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:260
+#: beast-gtk/bstsupershell.c:284 beast-gtk/bstsupershell.c:303
 msgid "Routing"
 msgstr "Směrování"
 
-#: beast-gtk/bstsupershell.c:255
+#: beast-gtk/bstsupershell.c:298
 msgid "Rack"
 msgstr "Rack"
 
@@ -2470,7 +2625,7 @@ msgstr "_Syntéza"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Synthesizers"
-msgstr "_Syntetizátory"
+msgstr "_Syntetizéry"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_Tools"
@@ -2991,6 +3146,90 @@ msgstr "Vstup modulace zisku"
 msgid "Filtered Audio Signal"
 msgstr "Filtrovaný signál zvuku"
 
+#: bse/bsebus.c:363
+msgid "Signal Inputs"
+msgstr "Vstupy signálu"
+
+#: bse/bsebus.c:365 bse/bsetrack.c:130
+msgid "Custom Synth Net"
+msgstr "Vlastní síť syntézy"
+
+#: bse/bsebus.c:365 bse/bsetrack.c:130
+msgid "Synthesis network to be used as instrument"
+msgstr "Síť syntézy, kterou používat jako nástroj"
+
+#: bse/bsebus.c:367 bse/bsebus.c:372 bse/bsetrack.c:124
+msgid "Adjustments"
+msgstr "Úpravy"
+
+#: bse/bsebus.c:369
+msgid "Left Volume [dB]"
+msgstr "Levá hlasitost [dB]"
+
+#: bse/bsebus.c:369
+msgid "Volume adjustment of left bus channel"
+msgstr "Úprava hlasitosti levého kanálu sběrnice"
+
+#: bse/bsebus.c:374
+msgid "Right Volume [dB]"
+msgstr "Pravá hlasitost [dB]"
+
+#: bse/bsebus.c:374
+msgid "Volume adjustment of right bus channel"
+msgstr "Úprava hlasitosti pravého kanálu sběrnice"
+
+#: bse/bsebus.c:377
+msgid "Internals"
+msgstr "Vnitřnosti"
+
+#: bse/bsebus.c:379
+msgid "Master Output"
+msgstr "Hlavní výstup"
+
+#: bse/bsebus.c:382 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Audio In"
+msgstr "Levý zvuk In"
+
+#: bse/bsebus.c:382 bse/bsepcmoutput.c:128
+msgid "Left channel input"
+msgstr "Vstup levého kanálu"
+
+#: bse/bsebus.c:384 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Audio In"
+msgstr "Pravý zvuk In"
+
+#: bse/bsebus.c:384
+msgid "Right channel input"
+msgstr "Vstup pravého kanálu"
+
+#: bse/bsebus.c:386 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Audio Out"
+msgstr "Levý zvuk Out"
+
+#: bse/bsebus.c:386 bse/bsepcminput.c:128
+msgid "Left channel output"
+msgstr "Výstup levého kanálu"
+
+#: bse/bsebus.c:388 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Audio Out"
+msgstr "Pravý zvuk Out"
+
+#: bse/bsebus.c:388 bse/bsepcminput.c:130
+msgid "Right channel output"
+msgstr "Výstup pravého kanálu"
+
+#: bse/bsebus.c:407
+msgid ""
+"Bus implementation for songs, used to route track audio signals to the "
+"master output."
+msgstr ""
+"Implementace sběrnice pro skladby používaná pro směrování signálů stop zvuku "
+"na hlavní výstup."
+
 #: bse/bseconstant.c:84
 msgid "/Other Sources/Constant"
 msgstr "/Jiné zdroje/Konstantní"
@@ -3282,41 +3521,9 @@ msgstr "Parazit"
 msgid "/Input & Output/PCM Input"
 msgstr "/Vstup a výstup/Vstup PCM"
 
-#: bse/bsepcminput.c:128 bse/bsebus.c:313 plugins/artscompressor.idl:51
-#: plugins/freeverb/bsefreeverb.c:125
-msgid "Left Audio Out"
-msgstr "Levý zvuk Out"
-
-#: bse/bsepcminput.c:128 bse/bsebus.c:313
-msgid "Left channel output"
-msgstr "Výstup levého kanálu"
-
-#: bse/bsepcminput.c:130 bse/bsebus.c:315 plugins/artscompressor.idl:52
-#: plugins/freeverb/bsefreeverb.c:126
-msgid "Right Audio Out"
-msgstr "Pravý zvuk Out"
-
-#: bse/bsepcminput.c:130 bse/bsebus.c:315
-msgid "Right channel output"
-msgstr "Výstup pravého kanálu"
-
 #: bse/bsepcmoutput.c:85
 msgid "/Input & Output/PCM Output"
 msgstr "/Vstup a výstup/Výstup PCM"
-
-#: bse/bsepcmoutput.c:128 bse/bsebus.c:309 plugins/artscompressor.idl:49
-#: plugins/freeverb/bsefreeverb.c:123
-msgid "Left Audio In"
-msgstr "Levý zvuk In"
-
-#: bse/bsepcmoutput.c:128 bse/bsebus.c:309
-msgid "Left channel input"
-msgstr "Vstup levého kanálu"
-
-#: bse/bsepcmoutput.c:130 bse/bsebus.c:311 plugins/artscompressor.idl:50
-#: plugins/freeverb/bsefreeverb.c:124
-msgid "Right Audio In"
-msgstr "Pravý zvuk In"
 
 #: bse/bsepcmoutput.c:130
 msgid "Right channel Input"
@@ -3368,89 +3575,45 @@ msgstr "Vytvořit novou mixážní sběrnici pro skladbu."
 msgid "Delete a mixer bus from a Song."
 msgstr "Odstranit mixážní sběrnici ze skladby."
 
-#: bse/bsesong.proc:106
+#: bse/bsesong.proc:121
 msgid "Retrieve master output bus of a song."
 msgstr "Získat sběrnici hlavního výstupu pro skladbu."
 
-#: bse/bsesong.proc:133
+#: bse/bsesong.proc:148
 msgid "Ensure that each part in a song is inserted into at least one track."
 msgstr "Zajistit, že každá část skladby je vložena do alespoň jedné stopy."
 
-#: bse/bsesong.proc:154
-msgid "Ensure that each track in a song is connected to an output bus."
-msgstr "Zajistit, že každá stopa skladby je připojena k výstupní sběrnici."
+#: bse/bsesong.proc:169
+msgid "Connect all unconnected track of a song to the master output bus."
+msgstr "Připojit všechny nepřipojené stopy skladby k hlavní výstupní sběrnici."
 
-#: bse/bsesong.proc:194
+#: bse/bsesong.proc:209
 msgid "Create a new Part in a Song."
 msgstr "Vytvořit nový part skladby."
 
-#: bse/bsesong.proc:225
+#: bse/bsesong.proc:240
 msgid "Delete a Part from a Song."
 msgstr "Odstranit part ze skladby."
 
-#: bse/bsesong.proc:263
+#: bse/bsesong.proc:278
 msgid "Create a new Track for a Song."
 msgstr "Vytvořit novou stopu ve skladbě."
 
-#: bse/bsesong.proc:299
+#: bse/bsesong.proc:314
 msgid "Delete a Track from a Song."
 msgstr "Odstranit stopu ze skladby."
 
-#: bse/bsesong.proc:338
+#: bse/bsesong.proc:353
 msgid "Find a track suitable for playing notes of a given part."
 msgstr "Hledat stopu vhodnou pro přehrávání not daného partu."
 
-#: bse/bsesong.proc:381
+#: bse/bsesong.proc:396
 msgid "Synthesize a note on a song of an active project."
 msgstr "Syntetizovat notu do skladby z aktuálního projektu."
 
-#: bse/bsesong.proc:431
+#: bse/bsesong.proc:446
 msgid "Retrieve song timing information at a specific tick."
 msgstr "Získat informace o časování skladby u konkrétního znaménka."
-
-#: bse/bsebus.c:294
-msgid "Signal Inputs"
-msgstr "Vstupy signálu"
-
-#: bse/bsebus.c:296
-msgid "Custom Synth Net"
-msgstr "Vlastní síť syntézy"
-
-#: bse/bsebus.c:296
-msgid "Synthesis network to be used as instrument"
-msgstr "Síť syntézy, kterou používat jako nástroj"
-
-#: bse/bsebus.c:298 bse/bsebus.c:303
-msgid "Adjustments"
-msgstr "Úpravy"
-
-#: bse/bsebus.c:300
-msgid "Left Volume [dB]"
-msgstr "Levá hlasitost [dB]"
-
-#: bse/bsebus.c:300
-msgid "Volume adjustment of left bus channel"
-msgstr "Úprava hlasitosti levého kanálu sběrnice"
-
-#: bse/bsebus.c:305
-msgid "Right Volume [dB]"
-msgstr "Pravá hlasitost [dB]"
-
-#: bse/bsebus.c:305
-msgid "Volume adjustment of right bus channel"
-msgstr "Úprava hlasitosti pravého kanálu sběrnice"
-
-#: bse/bsebus.c:311
-msgid "Right channel input"
-msgstr "Vstup pravého kanálu"
-
-#: bse/bsebus.c:334
-msgid ""
-"Bus implementation for songs, used to route track audio signals to the "
-"master output."
-msgstr ""
-"Implementace sběrnice pro skladby používaná pro směrování signálů stop zvuku "
-"na hlavní výstup."
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -3657,6 +3820,55 @@ msgstr "Čas vytvoření"
 #: bse/bsesuper.c:118
 msgid "Last modification time"
 msgstr "Čas poslední změny"
+
+#: bse/bsetrack.c:126
+msgid "Muted"
+msgstr "Umlčeno"
+
+#: bse/bsetrack.c:128 bse/bsetrack.c:133 bse/bsetrack.c:138
+msgid "Synth Input"
+msgstr "Vstup syntézy"
+
+#: bse/bsetrack.c:135
+msgid "Custom Wave"
+msgstr "Vlastní vlna"
+
+#: bse/bsetrack.c:135
+msgid "Wave to be used as instrument"
+msgstr "Vlna, kterou používat jako nástroj"
+
+# FIXME: s/Voixes/Voices/
+#: bse/bsetrack.c:140
+msgid "Max Voixes"
+msgstr "Max hlasů"
+
+#: bse/bsetrack.c:140
+msgid "Maximum number of voices for simultaneous playback"
+msgstr "Maximální počet hlasů pro současné přehrávání"
+
+#: bse/bsetrack.c:143
+msgid "MIDI Instrument"
+msgstr "Nástroj MIDI"
+
+#: bse/bsetrack.c:145
+msgid "MIDI Channel"
+msgstr "Kanál MIDI"
+
+#: bse/bsetrack.c:146
+msgid "Midi channel assigned to this track, 0 uses private per-track channel"
+msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
+
+#: bse/bsetrack.c:149
+msgid "Synth Postprocess"
+msgstr "Syntéza pozpracování"
+
+#: bse/bsetrack.c:151
+msgid "Custom Postprocess Net"
+msgstr "Vlastní síť pozpracování"
+
+#: bse/bsetrack.c:152
+msgid "Synthesis network to postprocess track sound"
+msgstr "Síť syntézy, kterou pozpracovávat zvuk stopy"
 
 #: bse/bsewaveosc.c:97
 msgid "/Audio Sources/Wave Oscillator"
