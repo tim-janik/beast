@@ -476,10 +476,8 @@ struct FileInfo
 
     /* free GslWaveDsc */
     for (guint i = 0; i < wdsc.n_chunks; i++)
-      {
-        g_strfreev (wdsc.chunks[i].xinfos); // FIXME: double free with gslloader.c
-        wdsc.chunks[i].xinfos = NULL;
-      }
+      g_strfreev (wdsc.chunks[i].xinfos);
+
     g_strfreev (wdsc.xinfos);
     g_free (wdsc.name);
     g_free (wdsc.chunks);

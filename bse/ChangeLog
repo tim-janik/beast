@@ -1,3 +1,8 @@
+Mon Jan 3 11:31:14 2005 Stefan Westerfeld <stefan@space.twc.de>
+
+	* gslloader-pat.cc: Since "the double free with gslloader.c" is fixed
+	in gslloader.c now, we don't need our mini workaround any longer.
+
 Sun Jan  2 15:26:55 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsetrack.c: Use different playback networks for GUS Patches and
