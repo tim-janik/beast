@@ -569,7 +569,7 @@ METHOD (BseItem, undo-depth) {
 
   project = bse_item_get_project (self);
   if (project)
-    bse_item_exec_void (project, "undo-depth", &depth);
+    bse_item_exec (project, "undo-depth", &depth);
 
   /* set output parameters */
   sfi_value_set_int (out_values++, depth);
@@ -598,7 +598,7 @@ METHOD (BseItem, redo-depth) {
 
   project = bse_item_get_project (self);
   if (project)
-    bse_item_exec_void (project, "redo-depth", &depth);
+    bse_item_exec (project, "redo-depth", &depth);
 
   /* set output parameters */
   sfi_value_set_int (out_values++, depth);

@@ -1,3 +1,8 @@
+Fri Jun 13 20:01:58 2003  Tim Janik  <timj@gtk.org>
+
+	* bseitem.proc: use bse_item_exec(), not bse_item_exec_void() to keep
+	the return value after procedure execution.
+
 Tue Jun 10 22:08:18 2003  Tim Janik  <timj@gtk.org>
 
 	* bseitem.c: renamed bse_item_exec_void_proc() to bse_item_exec_void().
