@@ -17,11 +17,13 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	mini-csynth.xcf		\
 	mini-song.xcf		\
 	mini-waverepo.xcf	\
+	mixer.xcf		\
 	mouse_tool.xcf		\
 	no_olink.xcf		\
 	noicon.xcf		\
 	notes.xcf		\
 	palette.xcf		\
+	part.xcf		\
 	part-tool.xcf		\
 	part-copy.xcf		\
 	pattern-group.xcf	\
@@ -33,6 +35,9 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	rect-select.xcf		\
 	target.xcf		\
 	text.xcf		\
+	tracks-add.xcf		\
+	tracks.xcf		\
+	tracker.xcf		\
 	trash-scissors.xcf	\
 	trashcan.xcf		\
 	vert-select.xcf		\
@@ -63,6 +68,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_MINI_MIDI_SYNTH		$(srcdir)/mini-midi-synth.png	\
 	STOCK_MINI_SONG			$(srcdir)/mini-song.png		\
 	STOCK_MINI_WAVE_REPO		$(srcdir)/mini-waverepo.png	\
+	STOCK_MIXER			$(srcdir)/mixer.png		\
 	STOCK_MOUSE_TOOL		$(srcdir)/mouse_tool.png	\
 	STOCK_MUSIC_CUT			$(srcdir)/music-cut.png		\
 	STOCK_MUSIC_COPY		$(srcdir)/music-copy.png	\
@@ -82,7 +88,7 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_PALETTE			$(srcdir)/palette.png		\
 	STOCK_PART			$(srcdir)/part.png		\
 	STOCK_PART_TEXT			$(srcdir)/part-text.png		\
-	STOCK_PART_COPY			$(srcdir)/part-copy.png		\
+	STOCK_PART_LINK			$(srcdir)/part-link.png		\
 	STOCK_PART_EDITOR		$(srcdir)/part-editor.png	\
 	STOCK_PART_TOOL			$(srcdir)/part-tool.png		\
 	STOCK_PATTERN			$(srcdir)/pattern.png		\
@@ -109,7 +115,9 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_TICK_LOOP_LEFT		$(srcdir)/loopleft.png		\
 	STOCK_TICK_LOOP_RIGHT		$(srcdir)/loopright.png		\
 	STOCK_TICK_POINTER		$(srcdir)/tickpointer.png	\
-	STOCK_TRACK			$(srcdir)/railway.png		\
+	STOCK_TRACKS			$(srcdir)/tracks.png		\
+	STOCK_TRACKS_ADD		$(srcdir)/tracks-add.png	\
+	STOCK_TRACKER			$(srcdir)/tracker.png		\
 	STOCK_TRASH_SCISSORS		$(srcdir)/trash-scissors.png	\
 	STOCK_TRASHCAN			$(srcdir)/trashcan.png		\
 	STOCK_VERT_SELECT		$(srcdir)/vert-select.png	\

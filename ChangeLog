@@ -1,3 +1,24 @@
+Mon Sep  6 18:42:02 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackrollctrl.c:
+	* beast-gtk/bstbusmixer.c:
+	* beast-gtk/bsttrackview.c: icon updates.
+
+	* beast-gtk/bstsupershell.c: provide icons in notebook tabs where available.
+
+	* beast-gtk/icons/mixer.png:
+	* beast-gtk/icons/mixer.xcf:
+	* beast-gtk/icons/part.xcf:
+	* beast-gtk/icons/tracker.png:
+	* beast-gtk/icons/tracker.xcf:
+	* beast-gtk/icons/tracks-add.png:
+	* beast-gtk/icons/tracks-add.xcf:
+	* beast-gtk/icons/tracks.png:
+	* beast-gtk/icons/tracks.xcf: added new icons from Artem Popov <tfwo@mail.ru>.
+
+	* beast-gtk/icons/part-link.png: added part-link mockup.
+	* beast-gtk/icons/part-copy.png: removed.
+
 Mon Sep  6 08:57:42 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbuseditor.c: fixed up ::outputs editing by creating

@@ -230,19 +230,31 @@ bst_super_shell_set_super (BstSuperShell *self,
     }
 }
 
-GtkWidget*
-bst_super_shell_create_label (BstSuperShell *super_shell)
+static GtkWidget*
+create_notebook_label (const gchar *label_text,
+                       const gchar *stock_image,
+                       const gchar *tooltip)
 {
   GtkWidget *ev = g_object_new (GTK_TYPE_EVENT_BOX, NULL);
   GtkWidget *image = gtk_image_new();
+  if (stock_image)
+    gtk_image_set_from_stock (GTK_IMAGE (image), stock_image, GXK_ICON_SIZE_TABULATOR);
   GtkWidget *label = g_object_new (GTK_TYPE_LABEL,
                                    "width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
+                                   "label", label_text,
                                    NULL);
   GtkWidget *box = g_object_new (GTK_TYPE_HBOX, "parent", ev, NULL);
   gtk_box_pack_start (GTK_BOX (box), image, FALSE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (box), label, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
+  gxk_widget_set_tooltip (ev, tooltip);
   gtk_widget_show_all (ev);
   return ev;
+}
+
+GtkWidget*
+bst_super_shell_create_label (BstSuperShell *super_shell)
+{
+  return create_notebook_label ("SuperShell", NULL, NULL);
 }
 
 static void
@@ -253,36 +265,24 @@ super_shell_build_song (BstSuperShell *self,
 
   gtk_notebook_append_page (notebook,
                             bst_track_view_new (song),
-			    g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                          "label", _("Tracks"),
-                                          NULL));
+                            create_notebook_label (_("Tracks"), BST_STOCK_TRACKS, _("Tracks contain instrument definitions and parts with notes")));
   gtk_notebook_append_page (notebook,
                             bst_bus_mixer_new (song),
-                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                          "label", _("Mixer"),
-                                          NULL));
+                            create_notebook_label (_("Mixer"), BST_STOCK_MIXER, _("Mix track outputs, adjust volume and add effects")));
   gtk_notebook_append_page (notebook,
                             bst_param_view_new (song),
-                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                          "label", _("Parameters"),
-                                          NULL));
+                            create_notebook_label (_("Parameters"), NULL, _("Adjust general song parameters")));
   gtk_notebook_append_page (notebook,
                             bst_part_view_new (song),
-                            g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                          "label", _("Parts"),
-                                          NULL));
+                            create_notebook_label (_("Parts"), BST_STOCK_PART, NULL));
   if (BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               bst_bus_view_new (song),
-                              g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                            "label", _("Busses"),
-                                            NULL));
+                              create_notebook_label (_("Busses"), NULL, NULL));
   if (BST_DBG_EXT)
     gtk_notebook_append_page (notebook,
                               gtk_widget_get_toplevel (GTK_WIDGET (bst_snet_router_build_page (song))),
-                              g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-                                            "label", _("Routing"),
-                                            NULL));
+                              create_notebook_label (_("Routing"), NULL, NULL));
 }
 
 static void

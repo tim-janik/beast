@@ -45,7 +45,7 @@ bst_track_roll_controller_canvas_actions (BstTrackRollController *self)
     { N_("Insert"),             "I",    N_("Insert/edit/move parts (mouse button 1 and 2)"),
       BST_GENERIC_ROLL_TOOL_INSERT,     BST_STOCK_PART_EDITOR },
     { N_("Link"),               "K",    N_("Link or move parts (mouse button 1 and 2)"),
-      BST_GENERIC_ROLL_TOOL_LINK,       BST_STOCK_PART_COPY },
+      BST_GENERIC_ROLL_TOOL_LINK,       BST_STOCK_PART_LINK },
     { N_("Rename"),             "E",    N_("Rename parts"),
       BST_GENERIC_ROLL_TOOL_RENAME,     BST_STOCK_PART_TEXT },
     { N_("Delete"),             "D",    N_("Delete parts"),

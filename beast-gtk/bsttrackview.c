@@ -61,7 +61,7 @@ enum {
 };
 static const GxkStockAction track_view_actions[] = {
   { N_("Add"),            NULL,         N_("Add a new track to this song"),
-    ACTION_ADD_TRACK,     BST_STOCK_TRACK,
+    ACTION_ADD_TRACK,     BST_STOCK_TRACKS_ADD,
   },
   { N_("Delete"),         NULL,         N_("Delete the currently selected track"),
     ACTION_DELETE_TRACK,  BST_STOCK_TRASHCAN,

@@ -31,7 +31,7 @@ enum {
   ACTION_ADD_BUS,
 };
 static const GxkStockAction bus_mixer_actions[] = {
-  { N_("Add"),          NULL,   NULL,   ACTION_ADD_BUS,        BST_STOCK_PART },
+  { N_("Add"),          NULL,   NULL,   ACTION_ADD_BUS,        BST_STOCK_MIXER },
 };
 
 
