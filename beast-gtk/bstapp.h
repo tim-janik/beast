@@ -42,7 +42,7 @@ typedef struct  _BstAppClass  BstAppClass;
 /* --- structures --- */
 struct _BstApp
 {
-  BstDialog      window;
+  GxkDialog      window;
 
   BswProxy	 project;
 
@@ -56,7 +56,7 @@ struct _BstApp
 };
 struct _BstAppClass
 {
-  BstDialogClass        parent_class;
+  GxkDialogClass        parent_class;
   gboolean		seen_apps;
   GSList               *apps;
 };

@@ -52,10 +52,15 @@ glong	g_object_get_long		(gpointer		 object,
 void	gxk_widget_make_insensitive	(GtkWidget	*widget);
 void	gxk_widget_make_sensitive	(GtkWidget	*widget);
 #define GTK_STYLE_THICKNESS(s,xy)	((s)-> xy##thickness)
+void	gxk_widget_showraise		(GtkWidget	*widget);
+void	gxk_idle_show_widget		(GtkWidget	*widget);
+
+/* functions to affect a widget tree's toplevel */
 void	gxk_toplevel_delete		(GtkWidget	*widget);
+void	gxk_toplevel_hide		(GtkWidget	*widget);
+void	gxk_toplevel_activate_default	(GtkWidget	*widget);
 
-
-/* --- widget appearance --- */
+/* widget appearance */
 void	gxk_widget_modify_as_title	(GtkWidget	*widget);
 void	gxk_widget_modify_bg_as_base	(GtkWidget	*widget);
 void	gxk_widget_modify_base_as_bg	(GtkWidget	*widget);

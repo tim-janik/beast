@@ -17,7 +17,6 @@
  */
 #include	"bstwavedialog.h"
 
-#include	"bststatusbar.h"
 #include	"bstmenus.h"
 #include	<unistd.h>
 #include	<errno.h>
@@ -111,7 +110,7 @@ bst_wave_dialog_open (BstWaveDialog *wd)
 
   wave_name = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (wd)));
 
-  bst_status_printf (0, NULL, "Loading wave `%s'", wave_name);
+  gxk_status_printf (0, NULL, "Loading wave `%s'", wave_name);
 
   error = bsw_wave_repo_load_file (wrepo, wave_name);
 

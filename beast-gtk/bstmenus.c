@@ -18,8 +18,6 @@
  */
 #include "bstmenus.h"
 
-#include "bstdialog.h"
-
 
 /* --- structures --- */
 struct _BstChoice
@@ -514,7 +512,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
   
   /* create dialog
    */
-  dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_POPUP_POS | BST_DIALOG_MODAL,
+  dialog = gxk_dialog_new (NULL, NULL, GXK_DIALOG_POPUP_POS | GXK_DIALOG_MODAL,
 			   NULL, vbox);
   gtk_widget_ref (dialog);
   gtk_object_sink (GTK_OBJECT (dialog));
@@ -535,10 +533,10 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 	  gtk_widget_set (dialog, "title", choice->name, NULL);
 	  break;
 	case BST_CHOICE_TYPE_ITEM:
-	  any = bst_dialog_action_multi (BST_DIALOG (dialog), choice->name,
+	  any = gxk_dialog_action_multi (GXK_DIALOG (dialog), choice->name,
 					 button_choice_activate, choice->p_id,
 					 choice->icon_stock_id,
-					 (choice_flags & BST_CHOICE_FLAG_DEFAULT) ? BST_DIALOG_MULTI_DEFAULT : 0);
+					 (choice_flags & BST_CHOICE_FLAG_DEFAULT) ? GXK_DIALOG_MULTI_DEFAULT : 0);
 	  if (choice_flags & BST_CHOICE_FLAG_INSENSITIVE)
 	    gtk_widget_set_sensitive (any, FALSE);
 	  break;
@@ -586,9 +584,9 @@ bst_choice_selectable (GtkWidget *widget)
 	}
       g_list_free (children);
     }
-  else if (BST_IS_DIALOG (widget))
+  else if (GXK_IS_DIALOG (widget))
     {
-      GList *list, *children = gtk_container_children (GTK_CONTAINER (BST_DIALOG (widget)->hbox));
+      GList *list, *children = gtk_container_children (GTK_CONTAINER (GXK_DIALOG (widget)->hbox));
 
       for (list = children; list; list = list->next)
 	{
@@ -631,7 +629,7 @@ bst_choice_modal (GtkWidget *choice,
       
       data = gtk_object_get_data (GTK_OBJECT (menu), "BstChoice");
     }
-  else if (BST_IS_DIALOG (choice))
+  else if (GXK_IS_DIALOG (choice))
     {
       gtk_object_set_data (GTK_OBJECT (choice), "BstChoice", data);
 

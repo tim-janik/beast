@@ -18,7 +18,6 @@
 #include	"bstpatterneditor.h"
 
 #include	"bstgconfig.h"
-#include	"bstdialog.h"
 #include	<gtk/gtksignal.h>
 #include	<gdk/gdkkeysyms.h>
 #include	<string.h>
@@ -858,8 +857,8 @@ bst_pattern_editor_set_pattern (BstPatternEditor *pe,
 			NULL);
       bst_pe_size_changed (pe);
       toplevel = gtk_widget_get_toplevel (GTK_WIDGET (pe));
-      if (BST_IS_DIALOG (toplevel))
-	bst_dialog_sync_title_to_proxy (BST_DIALOG (toplevel), BSE_OBJECT_ID (pattern), "%s");
+      if (GXK_IS_DIALOG (toplevel))
+	bst_window_sync_title_to_proxy (GXK_DIALOG (toplevel), BSE_OBJECT_ID (pattern), "%s");
     }
 }
 

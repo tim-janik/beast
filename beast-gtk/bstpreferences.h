@@ -20,8 +20,6 @@
 #define __BST_PREFERENCES_H__
 
 #include	"bstparamview.h"
-#include	"bstdialog.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,7 +66,7 @@ void		 bst_preferences_save		(BstPreferences *prefs);
 void		 bst_preferences_revert		(BstPreferences *prefs);
 void		 bst_preferences_default_revert	(BstPreferences *prefs);
 void		 bst_preferences_create_buttons (BstPreferences *prefs,
-						 BstDialog      *dialog);
+						 GxkDialog      *dialog);
 #define	bst_preferences_update	bst_preferences_revert
 
 

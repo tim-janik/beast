@@ -18,12 +18,10 @@
 #include "bstwaveview.h"
 
 // #include "bstwavedialog.h"
-#include "bststatusbar.h"
 #include "bstprocedure.h"
 #include "bstwaveeditor.h"
 #include "bstwavedialog.h"
 #include "bstsampleeditor.h"
-#include "bstdialog.h"
 
 
 
@@ -135,9 +133,9 @@ popup_wave_dialog (BstWaveView *wave_view)
   GtkWidget *weditor, *wdialog;
 
   weditor = bst_wave_editor_new (wave);
-  wdialog = bst_dialog_new (NULL, GTK_OBJECT (wave_view), BST_DIALOG_DELETE_BUTTON,
+  wdialog = gxk_dialog_new (NULL, GTK_OBJECT (wave_view), GXK_DIALOG_DELETE_BUTTON,
 			    NULL, weditor);
-  bst_dialog_sync_title_to_proxy (BST_DIALOG (wdialog), wave, "%s");
+  bst_window_sync_title_to_proxy (GXK_DIALOG (wdialog), wave, "%s");
   gtk_widget_show (wdialog);
 }
 
@@ -152,10 +150,10 @@ popup_wave_dialog (BstWaveView *wave_view)
     {
       GtkWidget *wdialog, *editor = bst_sample_editor_new (esample);
 
-      wdialog = bst_dialog_new (NULL, GTK_OBJECT (wave_view), BST_DIALOG_DELETE_BUTTON,
+      wdialog = gxk_dialog_new (NULL, GTK_OBJECT (wave_view), GXK_DIALOG_DELETE_BUTTON,
 				NULL,
 				editor);
-      bst_dialog_sync_title_to_proxy (BST_DIALOG (wdialog), esample, "%s");
+      bst_window_sync_title_to_proxy (GXK_DIALOG (wdialog), esample, "%s");
       gtk_widget_show (editor);
       bsw_item_unuse (esample);
       gtk_widget_show (wdialog);

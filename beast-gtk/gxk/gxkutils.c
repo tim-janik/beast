@@ -140,6 +140,125 @@ gxk_widget_make_sensitive (GtkWidget *widget)
   gtk_widget_set_sensitive (widget, TRUE);
 }
 
+static gint
+idle_shower (GtkWidget **widget_p)
+{
+  GDK_THREADS_ENTER ();
+
+  if (GTK_IS_WIDGET (*widget_p))
+    {
+      gtk_signal_disconnect_by_func (GTK_OBJECT (*widget_p),
+				     GTK_SIGNAL_FUNC (gtk_widget_destroyed),
+				     widget_p);
+      gtk_widget_show (*widget_p);
+    }
+
+  g_free (widget_p);
+
+  GDK_THREADS_LEAVE ();
+
+  return FALSE;
+}
+
+/**
+ * gxk_idle_show_widget
+ * @widget: a valid widget
+ *
+ * Defer showing this widget until the next idle handler
+ * is run. This is usefull if other things are pending
+ * which need to be processed first, for instance
+ * hiding other toplevels.
+ */
+void
+gxk_idle_show_widget (GtkWidget *widget)
+{
+  GtkWidget **widget_p;
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  widget_p = g_new (GtkWidget*, 1);
+
+  *widget_p = widget;
+  gtk_signal_connect (GTK_OBJECT (widget),
+		      "destroy",
+		      GTK_SIGNAL_FUNC (gtk_widget_destroyed),
+		      widget_p);
+  gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_shower, widget_p);
+}
+
+/**
+ * gxk_widget_showraise
+ * @widget: a valid widget
+ *
+ * Show the widget. If the widget is a toplevel,
+ * also raise its window to top.
+ */
+void
+gxk_widget_showraise (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  gtk_widget_show (widget);
+  if (GTK_WIDGET_REALIZED (widget) && !widget->parent)
+    gdk_window_raise (widget->window);
+}
+
+/**
+ * gxk_toplevel_delete
+ * @widget: a widget having a toplevel
+ *
+ * This function is usefull to produce the exact same effect
+ * as if the user caused window manager triggered window
+ * deletion on the toplevel of @widget.
+ */
+void
+gxk_toplevel_delete (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  widget = gtk_widget_get_toplevel (widget);
+  if (GTK_IS_WINDOW (widget) && GTK_WIDGET_DRAWABLE (widget))
+    {
+      GdkEvent event = { 0, };
+
+      event.any.type = GDK_DELETE;
+      event.any.window = widget->window;
+      event.any.send_event = TRUE;
+      gdk_event_put (&event);
+    }
+}
+
+/**
+ * gxk_toplevel_activate_default
+ * @widget: a widget having a toplevel
+ *
+ * Activate the default widget of the toplevel of @widget.
+ */
+void
+gxk_toplevel_activate_default (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  widget = gtk_widget_get_toplevel (widget);
+  if (GTK_IS_WINDOW (widget))
+    gtk_window_activate_default (GTK_WINDOW (widget));
+}
+
+/**
+ * gxk_toplevel_hide
+ * @widget: a widget having a toplevel
+ *
+ * Hide the toplevel of @widget.
+ */
+void
+gxk_toplevel_hide (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  widget = gtk_widget_get_toplevel (widget);
+  gtk_widget_hide (widget);
+}
+
 static void
 style_modify_fg_as_sensitive (GtkWidget *widget)
 {

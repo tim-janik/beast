@@ -21,8 +21,6 @@
 
 #include "bstparamview.h"
 #include "bstgconfig.h"
-#include "bstdialog.h"
-#include "bststatusbar.h"
 #include "bsttexttools.h"
 
 
@@ -175,13 +173,13 @@ source_name_changed (BstCanvasSource *csource)
 
   if (csource->source_view)
     {
-      bst_dialog_set_title (BST_DIALOG (csource->source_view), name);
+      gxk_dialog_set_title (GXK_DIALOG (csource->source_view), name);
       csource_info_update (csource);
     }
 
   name = g_strconcat ("Info: ", name, NULL);
   if (csource->source_info)
-    bst_dialog_set_title (BST_DIALOG (csource->source_info), name);
+    gxk_dialog_set_title (GXK_DIALOG (csource->source_info), name);
   g_free (name);
 }
 
@@ -326,14 +324,14 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
 
       param_view = bst_param_view_new (csource->source);
       gtk_widget_show (param_view);
-      csource->source_view = bst_dialog_new (&csource->source_view,
+      csource->source_view = gxk_dialog_new (&csource->source_view,
 					     GTK_OBJECT (csource),
-					     BST_DIALOG_POPUP_POS,
+					     GXK_DIALOG_POPUP_POS,
 					     bsw_item_get_name_or_type (csource->source),
 					     param_view);
       source_name_changed (csource);
     }
-  gtk_widget_showraise (csource->source_view);
+  gxk_widget_showraise (csource->source_view);
 }
 
 void
@@ -368,7 +366,7 @@ static void
 csource_info_update (BstCanvasSource *csource)
 {
   GtkWidget *frame = (csource->source_info // && (force_update || GTK_WIDGET_VISIBLE (csource->source_info))
-		      ? bst_dialog_get_child (BST_DIALOG (csource->source_info))
+		      ? gxk_dialog_get_child (GXK_DIALOG (csource->source_info))
 		      : NULL);
 
   if (frame)
@@ -448,9 +446,9 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 
   if (!csource->source_info)
     {
-      csource->source_info = bst_dialog_new (&csource->source_info,
+      csource->source_info = gxk_dialog_new (&csource->source_info,
 					     GTK_OBJECT (csource),
-					     BST_DIALOG_POPUP_POS,
+					     GXK_DIALOG_POPUP_POS,
 					     bsw_item_get_name_or_type (csource->source),
 					     gtk_widget_new (GTK_TYPE_FRAME,
 							     "visible", TRUE,
@@ -461,7 +459,7 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
     }
   csource_info_update (csource);
   source_name_changed (csource);
-  gtk_widget_showraise (csource->source_info);
+  gxk_widget_showraise (csource->source_info);
 }
 
 void
@@ -943,9 +941,9 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 		}
 	    }
 	  if (name)
-	    bst_status_printf (BST_STATUS_IDLE_HINT, "(Hint)", "%s[%s]: %s", prefix, cname, name);
+	    gxk_status_printf (GXK_STATUS_IDLE_HINT, "(Hint)", "%s[%s]: %s", prefix, cname, name);
 	  else
-	    bst_status_set (BST_STATUS_IDLE_HINT, NULL, NULL);
+	    gxk_status_set (GXK_STATUS_IDLE_HINT, NULL, NULL);
 	}
       break;
     case GDK_BUTTON_RELEASE:

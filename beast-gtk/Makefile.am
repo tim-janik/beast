@@ -45,7 +45,6 @@ beast_headers = $(strip \
 	bstcontrollers.h \
 	bstdefs.h \
 	bstdial.h \
-	bstdialog.h \
 	bstdragutils.h \
 	bstfiledialog.h \
 	bstfreeradiobutton.h \
@@ -78,7 +77,6 @@ beast_headers = $(strip \
 	bstsnetrouter.h \
 	bstsongshell.h \
 	bstsplash.h \
-	bststatusbar.h \
 	bsttexttools.h \
 	bsttoolbar.h \
 	bsttrackview.h \
@@ -106,7 +104,6 @@ beast_sources = $(strip \
 	bstcluehunter.c \
 	bstcontrollers.c \
 	bstdial.c \
-	bstdialog.c \
 	bstdragutils.c \
 	bstfiledialog.c \
 	bstfreeradiobutton.c \
@@ -138,7 +135,6 @@ beast_sources = $(strip \
 	bstsnetrouter.c \
 	bstsongshell.c \
 	bstsplash.c \
-	bststatusbar.c \
 	bsttexttools.c \
 	bsttoolbar.c \
 	bsttrackview.c \

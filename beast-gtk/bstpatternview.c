@@ -18,7 +18,6 @@
 #include "bstpatternview.h"
 
 #include "bstpatterndialog.h"
-#include "bststatusbar.h"
 
 
 

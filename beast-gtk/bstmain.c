@@ -23,7 +23,6 @@
 #include	"bstkeytables.h"
 #include	"bstgconfig.h"
 #include	"bstusermessage.h"
-#include	"bststatusbar.h"
 #include	"bstpreferences.h"
 #include	"bsttexttools.h"
 #include	"../PKG_config.h"
@@ -213,8 +212,7 @@ main (int   argc,
   /* listen to BseServer notification
    */
   bst_splash_update_entity (splash, "Dialogs");
-  bst_user_messages_listen ();
-  bst_status_bar_listen_exec_status ();
+  bst_catch_scripts_and_msgs ();
 
   /* setup default keytable for pattern editor class
    */
@@ -246,7 +244,7 @@ main (int   argc,
 	      if (!error)
 		{
 		  app = bst_app_new (project);
-		  gtk_idle_show_widget (GTK_WIDGET (app));
+		  gxk_idle_show_widget (GTK_WIDGET (app));
 		  bsw_item_unuse (project);
 		  continue;
 		}
@@ -256,7 +254,7 @@ main (int   argc,
 	    {
 	      BswProxy wrepo = bsw_project_ensure_wave_repo (app->project);
 	      
-	      bst_status_printf (BST_STATUS_WAIT, NULL, "Loading \"%s\"", argv[i]);
+	      gxk_status_printf (GXK_STATUS_WAIT, NULL, "Loading \"%s\"", argv[i]);
 	      error = bsw_wave_repo_load_file (wrepo, argv[i]);
 	      bst_status_eprintf (error, "Loading \"%s\"", argv[i]);
 	      if (!error)
@@ -269,7 +267,7 @@ main (int   argc,
       if (!error)
 	{
 	  app = bst_app_new (project);
-	  gtk_idle_show_widget (GTK_WIDGET (app));
+	  gxk_idle_show_widget (GTK_WIDGET (app));
 	}
       bsw_item_unuse (project);
       
@@ -286,7 +284,7 @@ main (int   argc,
       bsw_project_ensure_wave_repo (project);
       app = bst_app_new (project);
       bsw_item_unuse (project);
-      gtk_idle_show_widget (GTK_WIDGET (app));
+      gxk_idle_show_widget (GTK_WIDGET (app));
     }
   
   /* fire up release notes dialog

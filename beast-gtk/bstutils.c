@@ -132,6 +132,95 @@ bst_image_from_icon (BswIcon    *icon,
 }
 
 
+/* --- beast/bsw specific extensions --- */
+void
+bst_status_eprintf (BswErrorType error,
+		    const gchar *message_fmt,
+		    ...)
+{
+  gchar *buffer;
+  va_list args;
+  
+  va_start (args, message_fmt);
+  buffer = g_strdup_vprintf (message_fmt, args);
+  va_end (args);
+  
+  if (error)
+    gxk_status_set (GXK_STATUS_ERROR, buffer, bsw_error_blurb (error));
+  else
+    gxk_status_set (GXK_STATUS_DONE, buffer, NULL);
+  g_free (buffer);
+}
+
+typedef struct {
+  GtkWindow *window;
+  BswProxy   proxy;
+  gchar     *title1;
+  gchar     *title2;
+} TitleSync;
+
+static void
+sync_title (TitleSync *tsync)
+{
+  gchar *s, *name = bsw_item_get_name (tsync->proxy);
+
+  s = g_strconcat (tsync->title1, name ? name : "<NULL>", tsync->title2, NULL);
+  g_object_set (tsync->window, "title", s, NULL);
+  g_free (s);
+}
+
+static void
+free_title_sync (gpointer data)
+{
+  TitleSync *tsync = data;
+
+  bsw_proxy_disconnect (tsync->proxy,
+			"any_signal", sync_title, tsync,
+			NULL);
+  g_free (tsync->title1);
+  g_free (tsync->title2);
+  g_free (tsync);
+}
+
+void
+bst_window_sync_title_to_proxy (gpointer     window,
+				BswProxy     proxy,
+				const gchar *title_format)
+{
+  g_return_if_fail (GTK_IS_WINDOW (window));
+  if (proxy)
+    {
+      g_return_if_fail (BSW_IS_ITEM (proxy));
+      g_return_if_fail (title_format != NULL);
+      g_return_if_fail (strstr (title_format, "%s") != NULL);
+    }
+
+  if (proxy)
+    {
+      TitleSync *tsync = g_new0 (TitleSync, 1);
+      gchar *p = strstr (title_format, "%s");
+
+      tsync->window = window;
+      tsync->proxy = proxy;
+      tsync->title1 = g_strndup (title_format, p - title_format);
+      tsync->title2 = g_strdup (p + 2);
+      bsw_proxy_connect (tsync->proxy,
+			 "swapped_signal::notify::uname", sync_title, tsync,
+			 NULL);
+      g_object_set_data_full (window, "bst-title-sync", tsync, free_title_sync);
+      sync_title (tsync);
+    }
+  else
+    {
+      if (g_object_get_data (window, "bst-title-sync"))
+	{
+	  g_object_set (window, "title", NULL, NULL);
+	  g_object_set_data (window, "bst-title-sync", NULL);
+	}
+    }
+}
+
+
 /* --- Gtk+ Utilities --- */
 static gulong viewable_changed_id = 0;
 
@@ -277,57 +366,6 @@ gtk_widget_viewable (GtkWidget *widget)
   return TRUE;
 }
 
-void
-gtk_widget_showraise (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  gtk_widget_show (widget);
-  if (GTK_WIDGET_REALIZED (widget))
-    gdk_window_raise (widget->window);
-}
-
-void
-gtk_toplevel_hide (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  widget = gtk_widget_get_toplevel (widget);
-  gtk_widget_hide (widget);
-}
-
-void
-gtk_toplevel_delete (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  /* this function is usefull to produce the exact same effect
-   * as if the user caused window manager triggered window
-   * deletion.
-   */
-
-  widget = gtk_widget_get_toplevel (widget);
-  if (GTK_IS_WINDOW (widget) && GTK_WIDGET_DRAWABLE (widget))
-    {
-      GdkEvent event = { 0, };
-
-      event.any.type = GDK_DELETE;
-      event.any.window = widget->window;
-      event.any.send_event = TRUE;
-      gdk_event_put (&event);
-    }
-}
-
-void
-gtk_toplevel_activate_default (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  widget = gtk_widget_get_toplevel (widget);
-  if (GTK_IS_WINDOW (widget))
-    gtk_window_activate_default (GTK_WINDOW (widget));
-}
-
 static void
 requisition_to_aux_info (GtkWidget      *widget,
 			 GtkRequisition *requisition)
@@ -404,89 +442,6 @@ gtk_file_selection_heal (GtkFileSelection *fs)
 			NULL);
   gtk_box_pack_end (GTK_BOX (main_vbox), any, FALSE, TRUE, 0);
   gtk_widget_grab_focus (fs->selection_entry);
-}
-
-static gint
-idle_shower (GtkWidget **widget_p)
-{
-  GDK_THREADS_ENTER ();
-  
-  if (GTK_IS_WIDGET (*widget_p))
-    {
-      gtk_signal_disconnect_by_func (GTK_OBJECT (*widget_p),
-				     GTK_SIGNAL_FUNC (gtk_widget_destroyed),
-				     widget_p);
-      gtk_widget_show (*widget_p);
-    }
-  
-  g_free (widget_p);
-  
-  GDK_THREADS_LEAVE ();
-  
-  return FALSE;
-}
-
-void
-gtk_idle_show_widget (GtkWidget *widget)
-{
-  GtkWidget **widget_p;
-
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  widget_p = g_new (GtkWidget*, 1);
-
-  *widget_p = widget;
-  gtk_signal_connect (GTK_OBJECT (widget),
-		      "destroy",
-		      GTK_SIGNAL_FUNC (gtk_widget_destroyed),
-		      widget_p);
-  gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, (GtkFunction) idle_shower, widget_p);
-}
-
-static gboolean
-idle_unparent (gpointer data)
-{
-  GtkWidget *widget;
-
-  GDK_THREADS_ENTER ();
-
-  widget = GTK_WIDGET (data);
-  if (widget->parent)
-    gtk_container_remove (GTK_CONTAINER (widget->parent), widget);
-
-  gtk_widget_unref (widget);
-
-  GDK_THREADS_LEAVE ();
-
-  return FALSE;
-}
-
-void
-gtk_idle_unparent (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  if (widget->parent)
-    {
-      gtk_widget_ref (widget);
-      gtk_idle_add_priority (GTK_PRIORITY_RESIZE - 1, idle_unparent, widget);
-    }
-}
-
-void
-gtk_last_event_coords (gint *x_root,
-		       gint *y_root)
-{
-  GdkEvent *event = gtk_get_current_event ();
-  gdouble x = 0, y = 0;
-
-  if (event)
-    gdk_event_get_root_coords (event, &x, &y);
-
-  if (x_root)
-    *x_root = x;
-  if (y_root)
-    *y_root = x;
 }
 
 void

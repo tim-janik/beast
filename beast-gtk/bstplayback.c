@@ -17,7 +17,6 @@
  */
 #include "bstplayback.h"
 #include "bstapp.h"
-#include "bststatusbar.h"
 
 #include "../PKG_config.h"	/* BST_HAVE_BIRNET */
 
@@ -38,7 +37,7 @@ bst_play_back_handle_new (void)
   handle = g_new0 (BstPlayBackHandle, 1);
   handle->project = bsw_server_use_new_project (BSW_SERVER, "# BEAST Play Back");
   if (BST_DVL_EXT)
-    gtk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
+    gxk_idle_show_widget (GTK_WIDGET (bst_app_new (handle->project)));
 
   handle->snet = bsw_project_create_snet (handle->project, NULL);
   bsw_proxy_set (handle->snet, "auto_activate", TRUE, NULL);

@@ -20,8 +20,6 @@
 #define __BST_PROC_BROWSER_H__
 
 #include	"bstparamview.h"
-#include	"bstdialog.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -65,7 +63,7 @@ struct _BstProcBrowserClass
 GType		 bst_proc_browser_get_type	 (void);
 GtkWidget*	 bst_proc_browser_new		 (void);
 void		 bst_proc_browser_create_buttons (BstProcBrowser *self,
-						  BstDialog      *dialog);
+						  GxkDialog      *dialog);
 
 
 

@@ -1,3 +1,9 @@
+Overview of Changes in BEAST/BSE 0.4.2:
+
+* Added documentation about GUI extensions to Gtk
+* Made documentation browser navigatable
+* Bug fixes and major cleanups
+
 Overview of Changes in BEAST/BSE 0.4.1:
 
 * Added cool startup splash-screen from Jimmac

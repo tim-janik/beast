@@ -17,7 +17,6 @@
  */
 #include "bstrackitem.h"
 
-#include "bststatusbar.h"
 #include "bstmenus.h"
 
 

@@ -17,15 +17,11 @@
  */
 #include "bstusermessage.h"
 
-#include "bstdialog.h"
-#include "bststatusbar.h"
 #include "bsttexttools.h"
 
 
 /* --- prototypes --- */
-static void	user_message	(BswProxy        server,
-				 BswUserMsgType  msg_type,
-				 const gchar    *message);
+static GtkWidget*	create_script_control_dialog	(BswProxy	script_control);
 
 
 /* --- variables --- */
@@ -33,11 +29,40 @@ static GSList *msg_windows = NULL;
 
 
 /* --- functions --- */
+static void
+user_message (BswProxy        server,
+	      BswUserMsgType  msg_type,
+	      const gchar    *message)
+{
+  bst_user_message_popup (msg_type, message);
+}
+
+static void
+script_start (BswProxy server,
+	      BswProxy script_control)
+{
+  create_script_control_dialog (script_control);
+}
+
+static void
+script_error (BswProxy     server,
+	      const gchar *script_name,
+	      const gchar *proc_name,
+	      const gchar *reason)
+{
+  gchar *msg = g_strdup_printf ("Invocation of %s() from \"%s\" failed: %s",
+				proc_name, script_name, reason);
+  bst_user_message_popup (BSW_USER_MSG_ERROR, msg);
+  g_free (msg);
+}
+
 void
-bst_user_messages_listen (void)
+bst_catch_scripts_and_msgs (void)
 {
   bsw_proxy_connect (BSW_SERVER,
-		     "signal::user-message", user_message, NULL,
+		     "signal::user_message", user_message, NULL,
+		     "signal::script_start", script_start, NULL,
+		     "signal::script_error", script_error, NULL,
 		     NULL);
 }
 
@@ -79,7 +104,7 @@ message_title (BswUserMsgType mtype,
       break;
     default:
       *stock = NULL;
-      msg = "Misc Message";
+      msg = "Miscellaneous Message";
       break;
     }
   return msg;
@@ -95,7 +120,7 @@ sctrl_action (gpointer   data,
 }
 
 static void
-update_dialog (BstDialog     *dialog,
+update_dialog (GxkDialog     *dialog,
 	       BswUserMsgType msg_type,
 	       const gchar   *message,
 	       BswProxy       sctrl)
@@ -104,7 +129,7 @@ update_dialog (BstDialog     *dialog,
   GtkWidget *hbox;
   gchar *xmessage;
 
-  bst_dialog_remove_actions (dialog);
+  gxk_dialog_remove_actions (dialog);
   
   hbox = g_object_new (GTK_TYPE_HBOX,
 		       "visible", TRUE,
@@ -124,8 +149,8 @@ update_dialog (BstDialog     *dialog,
 				    NULL),
 		      TRUE, TRUE, 5);
   g_free (xmessage);	/* grrr, the new text widget is still enormously buggy */
-  bst_dialog_set_child (dialog, hbox);
-  bst_dialog_set_title (dialog, title);
+  gxk_dialog_set_child (dialog, hbox);
+  gxk_dialog_set_title (dialog, title);
   if (BSW_IS_SCRIPT_CONTROL (sctrl))
     {
       guint i, n = bsw_script_control_n_actions (sctrl);
@@ -138,43 +163,36 @@ update_dialog (BstDialog     *dialog,
 
 	  if (action)
 	    {
-	      GtkWidget *button = bst_dialog_action_multi (dialog, name,
+	      GtkWidget *button = gxk_dialog_action_multi (dialog, name,
 							   sctrl_action, (gpointer) sctrl,
-							   action, BST_DIALOG_MULTI_SWAPPED);
+							   action, GXK_DIALOG_MULTI_SWAPPED);
 	      g_object_set_data_full (G_OBJECT (button), "user_data", g_strdup (action), g_free);
 	      gtk_tooltips_set_tip (BST_TOOLTIPS, button, blurb, NULL);
 	    }
 	}
-      bst_dialog_action (dialog, BST_STOCK_CANCEL, gtk_toplevel_delete, NULL);
+      gxk_dialog_action (dialog, BST_STOCK_CANCEL, gxk_toplevel_delete, NULL);
     }
 }
 
-static void
-create_dialog (BswUserMsgType msg_type,
-	       const gchar   *message,
-	       BswProxy       sctrl)
+GtkWidget*
+bst_user_message_popup (BswUserMsgType msg_type,
+			const gchar   *message)
 {
-  BstDialog *dialog = bst_dialog_new (NULL, NULL, 0, NULL, NULL);
+  GxkDialog *dialog = gxk_dialog_new (NULL, NULL, 0, NULL, NULL);
+  GtkWidget *widget = GTK_WIDGET (dialog);
 
   update_dialog (dialog, msg_type, message, 0);	/* deletes actions */
-  bst_dialog_add_flags (dialog, BST_DIALOG_DELETE_BUTTON);
+  gxk_dialog_add_flags (dialog, GXK_DIALOG_DELETE_BUTTON);
   g_object_connect (dialog,
 		    "signal::destroy", dialog_destroyed, NULL,
 		    NULL);
   msg_windows = g_slist_prepend (msg_windows, dialog);
-  gtk_widget_show (GTK_WIDGET (dialog));
+  gtk_widget_show (widget);
+  return widget;
 }
 
 static void
-user_message (BswProxy        server,
-	      BswUserMsgType  msg_type,
-	      const gchar    *message)
-{
-  create_dialog (msg_type, message, 0);
-}
-
-static void
-sctrl_actions_changed (BstDialog *dialog)
+sctrl_actions_changed (GxkDialog *dialog)
 {
   BswProxy sctrl = (BswProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
   BswUserMsgType msg_type;
@@ -189,31 +207,53 @@ sctrl_actions_changed (BstDialog *dialog)
 }
 
 static void
-sctrl_window_destroyed (gpointer data)
+sctrl_progress (GxkDialog *dialog,
+		gfloat     progress)
 {
-  BswProxy proxy = (BswProxy) data;
+  BswProxy sctrl = (BswProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
+  gchar *exec_name = g_strdup_printf ("%s::%s()",
+				      bsw_script_control_get_script_name (sctrl),
+				      bsw_script_control_get_proc_name (sctrl));
 
-  bsw_script_control_kill (proxy);
-  bsw_item_unuse (proxy);
-  bst_status_delete_script_control ((BswProxy) data);
+  gxk_status_window_push (dialog);
+  if (progress < 0)
+    gxk_status_set (GXK_STATUS_PROGRESS, exec_name, "processing");
+  else
+    gxk_status_set (progress * 100.0, exec_name, "processing");
+  gxk_status_window_pop ();
+  g_free (exec_name);
 }
 
-GtkWidget*
-bst_user_message_dialog_new (BswProxy script_control)
+static void
+sctrl_window_destroyed (GxkDialog *dialog)
 {
-  BstDialog *dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_STATUS_SHELL, NULL, NULL);
+  BswProxy sctrl = (BswProxy) g_object_get_data (G_OBJECT (dialog), "user-data");
+
+  bsw_script_control_kill (sctrl);
+  bsw_item_unuse (sctrl);
+  bsw_proxy_disconnect (sctrl,
+			"any_signal", sctrl_actions_changed, dialog,
+			"any_signal", sctrl_progress, dialog,
+			"any_signal", gtk_widget_destroy, dialog,
+			NULL);
+}
+
+static GtkWidget*
+create_script_control_dialog (BswProxy script_control)
+{
+  GxkDialog *dialog = gxk_dialog_new (NULL, NULL, GXK_DIALOG_STATUS_SHELL, NULL, NULL);
 
   g_object_set_data (G_OBJECT (dialog), "user-data", (gpointer) script_control);
   bsw_proxy_connect (script_control,
 		     "swapped-object-signal::action-changed", sctrl_actions_changed, dialog,
 		     "swapped-object-signal::notify::user-msg", sctrl_actions_changed, dialog,
+		     "swapped-object-signal::progress", sctrl_progress, dialog,
 		     "swapped-object-signal::killed", gtk_widget_destroy, dialog,
 		     NULL);
   sctrl_actions_changed (dialog);
-  bst_status_set_script_control_window (script_control, GTK_WINDOW (dialog));
   bsw_item_use (script_control);
   g_object_connect (dialog,
-		    "swapped_signal::destroy", sctrl_window_destroyed, (gpointer) script_control,
+		    "swapped_signal::destroy", sctrl_window_destroyed, dialog,
 		    NULL);
   gtk_widget_show (GTK_WIDGET (dialog));
 

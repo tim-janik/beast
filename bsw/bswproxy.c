@@ -184,7 +184,7 @@ add_gc (gpointer data,
   g_assert (sizeof (*gcdata) == sizeof (GList));
 
   if (!collector_id)
-    bse_idle_background (garbage_collector, NULL);
+    collector_id = bse_idle_background (garbage_collector, NULL);
   gcdata->data = data;
   gcdata->free_func = free_func;
   gcdata->next = collector_list;

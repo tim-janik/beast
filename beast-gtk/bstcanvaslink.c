@@ -17,7 +17,6 @@
  */
 #include "bstcanvaslink.h"
 
-#include "bstdialog.h"
 #include "bsttexttools.h"
 
 #include <math.h>
@@ -164,7 +163,7 @@ clink_view_update (BstCanvasLink *clink,
 		   gboolean       force_update)
 {
   GtkWidget *frame = (clink->link_view && (force_update || GTK_WIDGET_VISIBLE (clink->link_view))
-		      ? bst_dialog_get_child (BST_DIALOG (clink->link_view))
+		      ? gxk_dialog_get_child (GXK_DIALOG (clink->link_view))
 		      : NULL);
 
   if (frame)
@@ -178,7 +177,7 @@ clink_view_update (BstCanvasLink *clink,
       iname = clink->icsource ? bsw_item_get_name_or_type (clink->icsource->source) : "<???>";
       oname = clink->ocsource ? bsw_item_get_name_or_type (clink->ocsource->source) : "<???>";
       string = g_strconcat ("Module Link: ", iname, " <=> ", oname, NULL);
-      bst_dialog_set_title (BST_DIALOG (clink->link_view), string);
+      gxk_dialog_set_title (GXK_DIALOG (clink->link_view), string);
       g_free (string);
 
       /* construct actuall information
@@ -226,7 +225,7 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
   
   if (!clink->link_view)
-    clink->link_view = bst_dialog_new (&clink->link_view,
+    clink->link_view = gxk_dialog_new (&clink->link_view,
 				       GTK_OBJECT (clink),
 				       0,
 				       NULL,
@@ -237,7 +236,7 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
 						       "child", bst_scroll_text_create (0, NULL),
 						       NULL));
   clink_view_update (clink, TRUE);
-  gtk_widget_showraise (clink->link_view);
+  gxk_widget_showraise (clink->link_view);
 }
 
 void

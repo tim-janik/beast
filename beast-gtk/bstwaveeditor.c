@@ -17,7 +17,6 @@
  */
 #include	"bstwaveeditor.h"
 
-#include	"bststatusbar.h"
 #include	"bstplayback.h"
 #include	"bstprocedure.h"
 #include	"bstmenus.h"

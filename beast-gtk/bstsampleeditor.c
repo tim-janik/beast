@@ -17,7 +17,6 @@
  */
 #include	"bstsampleeditor.h"
 
-#include	"bststatusbar.h"
 #include	"bstprocedure.h"
 #include	"bstmenus.h"
 #include	<gdk/gdkkeysyms.h>

@@ -18,13 +18,17 @@ noinst_LIBRARIES = libgxk.a
 gxk_headers = $(strip \
 	gxk.h \
 	gxkcanvas.h \
+	gxkdialog.h \
 	gxkglobals.h \
+	gxkstatusbar.h \
 	gxkstock.h \
 	gxkutils.h \
 )
 gxk_c_sources = $(strip \
 	gxkcanvas.c \
+	gxkdialog.c \
 	gxkglobals.c \
+	gxkstatusbar.c \
 	gxkstock.c \
 	gxkutils.c \
 )

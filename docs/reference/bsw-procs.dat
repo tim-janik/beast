@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.2
-date    = 05 Sep 2002
+date    = 07 Sep 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 05 Sep 2002 BEAST-0.4.2
+BSW-Procedures 07 Sep 2002 BEAST-0.4.2
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -2286,6 +2286,50 @@ action-name:
 
 @DOC-DESCRIPTION@
 Retrive the name of an action of this script control.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control-get-proc-name@ (@EMPH script-control@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+proc-name: 
+
+@DOC-DESCRIPTION@
+Retrive the procedure name of this script control.  
+@DOC-SYNOPSIS@
+@STRONG bsw-script-control-get-script-name@ (@EMPH script-control@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 17
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+script-control
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 17
+
+@DOC-RETURNS@
+script-name: 
+
+@DOC-DESCRIPTION@
+Retrive the script name of this script control.  
 @DOC-SYNOPSIS@
 @STRONG bsw-script-control-kill@ (@EMPH script-control@);
 

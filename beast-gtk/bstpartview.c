@@ -17,7 +17,6 @@
  */
 #include "bstpartview.h"
 
-#include "bststatusbar.h"
 #include "bstpartdialog.h"
 #include "bstpianoroll.h"
 

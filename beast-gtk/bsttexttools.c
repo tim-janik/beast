@@ -1537,7 +1537,7 @@ scroll_text_reload (GtkWidget *sctext)
     {
       gchar *loc = navigation_strdup_url (tnav);
       text_buffer_add_error (gtk_text_view_get_buffer (bst_scroll_text_get_text_view (sctext)),
-			     "Invalid resource locator: %s", loc);
+			     "Resource locator with unknown method: %s", loc);
       g_free (loc);
       bst_text_view_cursor_to_end (bst_scroll_text_get_text_view (sctext));
     }

@@ -10,8 +10,8 @@
 @unnumbered RELEASE-NOTES
 
 @keepspaceSTART
-		Much has changed in the new development version of BEAST.
-		In brief (specifics can be found in the NEWS section), the
+		Much has changed in the new development series (v0.4) of BEAST.
+		In brief (specifics can be found in the @uref{news.markup,,NEWS section}), the
 		GUI was majorly polished, many new synthesis features have
 		been added and support for various external wave file formats
 		was implemented.

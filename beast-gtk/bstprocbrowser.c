@@ -247,19 +247,19 @@ bst_proc_browser_execute (BstProcBrowser *self)
 
 void
 bst_proc_browser_create_buttons (BstProcBrowser *self,
-				 BstDialog      *dialog)
+				 GxkDialog      *dialog)
 {
   GtkWidget *widget;
 
   g_return_if_fail (BST_IS_PROC_BROWSER (self));
-  g_return_if_fail (BST_IS_DIALOG (dialog));
+  g_return_if_fail (GXK_IS_DIALOG (dialog));
   g_return_if_fail (self->execute == NULL);
 
   /* Execute
    */
   if (0)
     {
-      self->execute = g_object_connect (bst_dialog_default_action (dialog, BST_STOCK_EXECUTE, NULL, NULL),
+      self->execute = g_object_connect (gxk_dialog_default_action (dialog, BST_STOCK_EXECUTE, NULL, NULL),
 					"swapped_signal::clicked", bst_proc_browser_execute, self,
 					"swapped_signal::destroy", g_nullify_pointer, &self->execute,
 					NULL);
@@ -270,5 +270,5 @@ bst_proc_browser_create_buttons (BstProcBrowser *self,
 
   /* Close
    */
-  widget = bst_dialog_action (dialog, BST_STOCK_CLOSE, gtk_toplevel_delete, NULL);
+  widget = gxk_dialog_action (dialog, BST_STOCK_CLOSE, gxk_toplevel_delete, NULL);
 }

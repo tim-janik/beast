@@ -17,8 +17,6 @@
  */
 #include "bstprocedure.h"
 
-#include "bststatusbar.h"
-#include "bstdialog.h"
 #include "bsttexttools.h"
 #include <gobject/gvaluecollector.h>
 #include <string.h>
@@ -279,17 +277,13 @@ bst_procedure_shell_execute (BstProcedureShell *shell)
     {
       BseErrorType error;
 
-      /* enable procedure notification */
-      bst_status_bar_catch_procs ();
-
       shell->in_execution = TRUE;
       error = bse_procedure_execvl (shell->proc,
                                     shell->bparams,
                                     shell->first_out_bparam);
       shell->in_execution = FALSE;
 
-      /* disable procedure notification */
-      bst_status_bar_uncatch_procs ();
+      bst_status_eprintf (error, "Executing `%s'", shell->proc->name);
       
       bst_procedure_shell_update (shell);
     }
@@ -413,7 +407,7 @@ shell_hide_on_demand (GtkWidget *widget)
   BstProcedureShell *shell = BST_PROCEDURE_SHELL (widget);
   
   if (shell->hide_dialog_on_exec)
-    gtk_toplevel_hide (widget);
+    gxk_toplevel_hide (widget);
 }
 
 BstProcedureShell*
@@ -426,21 +420,16 @@ bst_procedure_shell_global (void)
       global_proc_shell = (BstProcedureShell*) bst_procedure_shell_new (NULL);
       g_object_ref (global_proc_shell);
       gtk_object_sink (GTK_OBJECT (global_proc_shell));
-      dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_STATUS_SHELL | BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_MODAL,
+      dialog = gxk_dialog_new (NULL, NULL, GXK_DIALOG_STATUS_SHELL | GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_MODAL,
 			       "Procedure", NULL);
 
-      /* we're the best window to indicate procedure/script progress */
-      g_object_connect (dialog,
-			"signal::show", bst_status_push_progress_window, NULL,
-			"signal::hide", bst_status_pop_progress_window, NULL,
-			NULL);
-      gtk_container_add (GTK_CONTAINER (BST_DIALOG (dialog)->vbox), GTK_WIDGET (global_proc_shell));
+      gtk_container_add (GTK_CONTAINER (GXK_DIALOG (dialog)->vbox), GTK_WIDGET (global_proc_shell));
       gtk_widget_show (GTK_WIDGET (global_proc_shell));
 
       /* actions */
-      bst_dialog_default_action_swapped (BST_DIALOG (dialog),
+      gxk_dialog_default_action_swapped (GXK_DIALOG (dialog),
 					 BST_STOCK_EXECUTE, bst_procedure_shell_execute, global_proc_shell);
-      bst_dialog_action (BST_DIALOG (dialog), BST_STOCK_CLOSE, gtk_toplevel_delete, NULL);
+      gxk_dialog_action (GXK_DIALOG (dialog), BST_STOCK_CLOSE, gxk_toplevel_delete, NULL);
     }
   return global_proc_shell;
 }
@@ -484,12 +473,12 @@ bst_procedure_exec_internal (GType        procedure_type,
     }
 
   if (modal)
-    bst_dialog_add_flags (BST_DIALOG (dialog), BST_DIALOG_MODAL);
+    gxk_dialog_add_flags (GXK_DIALOG (dialog), GXK_DIALOG_MODAL);
   else
-    bst_dialog_clear_flags (BST_DIALOG (dialog), BST_DIALOG_MODAL);
+    gxk_dialog_clear_flags (GXK_DIALOG (dialog), GXK_DIALOG_MODAL);
 
   /* execution */
-  bst_status_window_push (dialog);
+  gxk_status_window_push (dialog);
   g_object_ref (dialog);
   if (auto_start && shell->n_preset_params == shell->n_in_params && shell->n_out_params == 0)
     bst_procedure_shell_execute (shell);
@@ -510,7 +499,7 @@ bst_procedure_exec_internal (GType        procedure_type,
 	  while (GTK_WIDGET_DRAWABLE (dialog));
 	}
     }
-  bst_status_window_pop ();
+  gxk_status_window_pop ();
   g_object_unref (dialog);
 
   g_type_class_unref (proc);

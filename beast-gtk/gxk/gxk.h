@@ -22,7 +22,9 @@
 #include <gtk/gtk.h>
 
 #include <gxk/gxkcanvas.h>
+#include <gxk/gxkdialog.h>
 #include <gxk/gxkglobals.h>
+#include <gxk/gxkstatusbar.h>
 #include <gxk/gxkstock.h>
 #include <gxk/gxkutils.h>
 

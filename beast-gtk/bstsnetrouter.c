@@ -19,10 +19,8 @@
 
 #include <math.h>
 #include "bstcanvaslink.h"
-#include "bststatusbar.h"
 #include "bstmenus.h"
 #include "bstgconfig.h"
-#include "bstdialog.h"
 #include <gdk/gdkkeysyms.h>
 
 
@@ -343,14 +341,14 @@ bst_snet_router_toggle_palette (BstSNetRouter *router)
   if (!router->palette || !GTK_WIDGET_VISIBLE (router->palette))
     {
       if (!router->palette)
-	router->palette = g_object_connect (bst_dialog_new (&router->palette,
+	router->palette = g_object_connect (gxk_dialog_new (&router->palette,
 							    GTK_OBJECT (router),
-							    BST_DIALOG_HIDE_ON_DELETE,
+							    GXK_DIALOG_HIDE_ON_DELETE,
 							    "Palette",
 							    bst_radio_tools_build_palette (router->rtools, TRUE, GTK_RELIEF_NORMAL)),
 					    "swapped_signal::hide", palette_reset, router,
 					    NULL);
-      gtk_widget_showraise (router->palette);
+      gxk_widget_showraise (router->palette);
     }
   else
     gtk_widget_hide (router->palette);
@@ -784,7 +782,7 @@ update_tmp_line (BstSNetRouter *router)
       if (router->rtools->tool_id != 1)
 	{
 	  gtk_object_destroy (GTK_OBJECT (router->tmp_line));
-	  bst_status_clear ();
+	  gxk_status_clear ();
 	  /* queue update cause canvas-line is broken and leaves artefacts */
 	  gnome_canvas_FIXME_hard_update (GNOME_CANVAS (router));
 	}
@@ -835,7 +833,7 @@ bst_router_set_tool (BstSNetRouter *router)
       if (cursor)
 	gdk_cursor_destroy (cursor);
 
-      bst_status_clear ();
+      gxk_status_clear ();
     }
 }
 
@@ -877,7 +875,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	  router->drag_is_input = ichannel != ~0;
 	  if (csource && at_channel && router->drag_is_input &&  /* ichannel in use */
 	      !bst_canvas_source_ichannel_free (csource, ichannel))
-	    bst_status_set (BST_STATUS_ERROR, "Input channel in use", NULL);
+	    gxk_status_set (GXK_STATUS_ERROR, "Input channel in use", NULL);
 	  else if (csource && at_channel) /* i/o link */
 	    {
 	      GnomeCanvasPoints *gpoints = gnome_canvas_points_new (2);
@@ -904,9 +902,9 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      router->world_y = event->button.y;
 	      bst_radio_tools_set_tool (router->rtools, 1);
 	      if (router->drag_is_input)
-		bst_status_set (BST_STATUS_WAIT, "Create Link", "Select output module");
+		gxk_status_set (GXK_STATUS_WAIT, "Create Link", "Select output module");
 	      else
-		bst_status_set (BST_STATUS_WAIT, "Create Link", "Select input module");
+		gxk_status_set (GXK_STATUS_WAIT, "Create Link", "Select input module");
 	      handled = TRUE;
 	    }
 	  else if (csource && csource->source != router->snet)
@@ -971,7 +969,6 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 						BST_CHOICE_END);
 	      g_free (source_name);
 	      i = bst_choice_modal (choice, event->button.button, event->button.time);
-	      bst_status_bar_catch_procs ();
 	      switch (i)
 		{
 		  BswErrorType error;
@@ -992,7 +989,6 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 		  bst_canvas_source_popup_info (csource);
 		  break;
 		}
-	      bst_status_bar_uncatch_procs ();
 	      bst_choice_destroy (choice);
 	      /* FIXME: get rid of artifacts left behind removal (mostly rect-ellipse) */
 	      gtk_widget_queue_draw (GTK_WIDGET (canvas));
@@ -1011,7 +1007,6 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 						BST_CHOICE (1, "Delete", DELETE),
 						BST_CHOICE_END);
 	      i = bst_choice_modal (choice, event->button.button, event->button.time);
-              bst_status_bar_catch_procs ();
 	      switch (i)
 		{
 		  BseErrorType error;
@@ -1024,7 +1019,6 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 		  bst_canvas_link_popup_view (clink);
 		  break;
 		}
-	      bst_status_bar_uncatch_procs ();
 	      bst_choice_destroy (choice);
 	      /* FIXME: get rid of artifacts left behind removal (mostly rect-ellipse) */
 	      gtk_widget_queue_draw (GTK_WIDGET (canvas));
@@ -1082,7 +1076,7 @@ bst_snet_router_event (GtkWidget *widget,
       if (event->key.keyval == GDK_Escape)
 	{
 	  handled = TRUE;
-	  bst_status_clear ();
+	  gxk_status_clear ();
 	  bst_radio_tools_set_tool (router->rtools, 0);
 	}
       break;

@@ -17,7 +17,6 @@
  */
 #include	"bstpatterndialog.h"
 
-#include	"bststatusbar.h"
 #include	"bstprocedure.h"
 #include	"bstmenus.h"
 #include	"bsteffectview.h"
@@ -83,7 +82,7 @@ bst_pattern_dialog_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
       
-      pattern_dialog_type = gtk_type_unique (BST_TYPE_DIALOG, &pattern_dialog_info);
+      pattern_dialog_type = gtk_type_unique (GXK_TYPE_DIALOG, &pattern_dialog_info);
     }
   
   return pattern_dialog_type;
@@ -171,9 +170,9 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
   g_object_set (pattern_dialog,
 		"default_width", 600,
 		"default_height", 450,
-		"flags", BST_DIALOG_STATUS_SHELL,
+		"flags", GXK_DIALOG_STATUS_SHELL,
 		NULL);
-  main_vbox = BST_DIALOG (pattern_dialog)->vbox;
+  main_vbox = GXK_DIALOG (pattern_dialog)->vbox;
   
   /* setup effect view */
   pattern_dialog->effect_view = g_object_connect (gtk_widget_new (BST_TYPE_EFFECT_VIEW,

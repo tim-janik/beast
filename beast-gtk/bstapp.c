@@ -23,7 +23,6 @@
 #include "bstwavereposhell.h"
 #include "bstsnetshell.h"
 #include "bstfiledialog.h"
-#include "bststatusbar.h"
 #include "bstgconfig.h"
 #include "bstpreferences.h"
 #include "bstprocbrowser.h"
@@ -136,7 +135,7 @@ bst_app_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
 
-      app_type = gtk_type_unique (BST_TYPE_DIALOG, &app_info);
+      app_type = gtk_type_unique (GXK_TYPE_DIALOG, &app_info);
     }
 
   return app_type;
@@ -184,7 +183,7 @@ bst_app_init (BstApp *app)
   g_object_set (app,
 		"allow_shrink", TRUE,
 		"allow_grow", TRUE,
-		"flags", BST_DIALOG_STATUS_SHELL,
+		"flags", GXK_DIALOG_STATUS_SHELL,
 		NULL);
   bst_app_register (app);
   if (0)
@@ -195,7 +194,7 @@ bst_app_init (BstApp *app)
   bst_app_register (app);
   app->main_vbox = g_object_connect (gtk_widget_new (GTK_TYPE_VBOX,
 						     "visible", TRUE,
-						     "parent", BST_DIALOG (app)->vbox,
+						     "parent", GXK_DIALOG (app)->vbox,
 						     NULL),
 				     "swapped_signal::destroy", g_nullify_pointer, &app->main_vbox,
 				     NULL);
@@ -305,7 +304,7 @@ bst_app_new (BswProxy project)
 		    "swapped_signal::item-added", bst_app_reload_supers, app,
 		    "swapped_signal::item-removed", bst_app_reload_supers, app,
 		    NULL);
-  bst_dialog_sync_title_to_proxy (BST_DIALOG (app), app->project, "%s");
+  bst_window_sync_title_to_proxy (GXK_DIALOG (app), app->project, "%s");
 
   bst_app_reload_supers (app);
 
@@ -539,8 +538,8 @@ bst_app_operate (BstApp *app,
 		 BstOps	 op)
 {
   static GtkWidget *bst_help_dialogs[BST_OP_HELP_LAST - BST_OP_HELP_FIRST + 1] = { NULL, };
-  static GtkWidget *bst_dialog_open = NULL;
-  static GtkWidget *bst_dialog_save = NULL;
+  static GtkWidget *gxk_dialog_open = NULL;
+  static GtkWidget *gxk_dialog_save = NULL;
   static GtkWidget *bst_preferences = NULL;
   static GtkWidget *bst_proc_browser = NULL;
   GtkWidget *widget, *shell;
@@ -554,7 +553,7 @@ bst_app_operate (BstApp *app,
 
   gtk_widget_ref (widget);
 
-  bst_status_window_push (widget);
+  gxk_status_window_push (widget);
 
   switch (op)
     {
@@ -571,30 +570,30 @@ bst_app_operate (BstApp *app,
 	  new_app = bst_app_new (project);
 	  bsw_item_unuse (project);
 
-	  gtk_idle_show_widget (GTK_WIDGET (new_app));
+	  gxk_idle_show_widget (GTK_WIDGET (new_app));
 	}
       break;
     case BST_OP_PROJECT_OPEN:
-      if (!bst_dialog_open)
+      if (!gxk_dialog_open)
 	{
-	  bst_dialog_open = bst_file_dialog_new_open (app);
-	  g_object_connect (bst_dialog_open,
-			    "signal::destroy", gtk_widget_destroyed, &bst_dialog_open,
+	  gxk_dialog_open = bst_file_dialog_new_open (app);
+	  g_object_connect (gxk_dialog_open,
+			    "signal::destroy", gtk_widget_destroyed, &gxk_dialog_open,
 			    NULL);
 	}
-      gtk_widget_showraise (bst_dialog_open);
+      gxk_widget_showraise (gxk_dialog_open);
       break;
     case BST_OP_PROJECT_SAVE_AS:
-      if (bst_dialog_save)
-	gtk_widget_destroy (bst_dialog_save);
-      bst_dialog_save = bst_file_dialog_new_save (app);
-      g_object_connect (bst_dialog_save,
-			"signal::destroy", gtk_widget_destroyed, &bst_dialog_save,
+      if (gxk_dialog_save)
+	gtk_widget_destroy (gxk_dialog_save);
+      gxk_dialog_save = bst_file_dialog_new_save (app);
+      g_object_connect (gxk_dialog_save,
+			"signal::destroy", gtk_widget_destroyed, &gxk_dialog_save,
 			NULL);
-      gtk_widget_showraise (bst_dialog_save);
+      gxk_widget_showraise (gxk_dialog_save);
       break;
     case BST_OP_PROJECT_CLOSE:
-      gtk_toplevel_delete (widget);
+      gxk_toplevel_delete (widget);
       break;
     case BST_OP_EXIT:
       if (bst_app_class)
@@ -602,7 +601,7 @@ bst_app_operate (BstApp *app,
 	  GSList *slist, *free_slist = g_slist_copy (bst_app_class->apps);
 
 	  for (slist = free_slist; slist; slist = slist->next)
-	    gtk_toplevel_delete (slist->data);
+	    gxk_toplevel_delete (slist->data);
 	  g_slist_free (free_slist);
 	}
       break;
@@ -634,7 +633,7 @@ bst_app_operate (BstApp *app,
       break;
     case BST_OP_PROJECT_STOP:
       bsw_server_halt_project (BSW_SERVER, app->project);
-      bst_status_set (BST_STATUS_DONE, "Stopping Playback", NULL);
+      gxk_status_set (GXK_STATUS_DONE, "Stopping Playback", NULL);
       break;
     case BST_OP_PROJECT_RACK_EDITOR:
       if (!app->rack_dialog)
@@ -645,13 +644,13 @@ bst_app_operate (BstApp *app,
 
 	  app->rack_editor = g_object_connect (ed, "swapped_signal::destroy", g_nullify_pointer, &app->rack_editor, NULL);
 	  bst_rack_editor_set_rack_view (ed, bsw_project_get_data_pocket (app->project, "BEAST-Rack-View"));
-	  app->rack_dialog = bst_dialog_new (&app->rack_dialog,
+	  app->rack_dialog = gxk_dialog_new (&app->rack_dialog,
 					     GTK_OBJECT (app),
-					     0, // FIXME: undo Edit when hide && BST_DIALOG_HIDE_ON_DELETE
+					     0, // FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 					     "Rack editor",
 					     app->rack_editor);
 	}
-      gtk_widget_showraise (app->rack_dialog);
+      gxk_widget_showraise (app->rack_dialog);
       break;
     case BST_OP_DIALOG_PREFERENCES:
       if (!bst_preferences)
@@ -664,16 +663,16 @@ bst_app_operate (BstApp *app,
 	  bse_object_unref (BSE_OBJECT (gconf));
 	  gtk_widget_show (widget);
 
-	  bst_preferences = bst_dialog_new (&bst_preferences,
+	  bst_preferences = gxk_dialog_new (&bst_preferences,
 					    NULL,
-					    BST_DIALOG_HIDE_ON_DELETE,
+					    GXK_DIALOG_HIDE_ON_DELETE,
 					    "Preferences",
 					    widget);
-	  bst_preferences_create_buttons (BST_PREFERENCES (widget), BST_DIALOG (bst_preferences));
+	  bst_preferences_create_buttons (BST_PREFERENCES (widget), GXK_DIALOG (bst_preferences));
 	}
       if (!GTK_WIDGET_VISIBLE (bst_preferences))
-	bst_preferences_revert (BST_PREFERENCES (bst_dialog_get_child (BST_DIALOG (bst_preferences))));
-      gtk_widget_showraise (bst_preferences);
+	bst_preferences_revert (BST_PREFERENCES (gxk_dialog_get_child (GXK_DIALOG (bst_preferences))));
+      gxk_widget_showraise (bst_preferences);
       break;
     case BST_OP_DIALOG_PROC_BROWSER:
       if (!bst_proc_browser)
@@ -682,21 +681,21 @@ bst_app_operate (BstApp *app,
 
 	  widget = bst_proc_browser_new ();
 	  gtk_widget_show (widget);
-	  bst_proc_browser = bst_dialog_new (&bst_proc_browser,
+	  bst_proc_browser = gxk_dialog_new (&bst_proc_browser,
 					     NULL,
-					     BST_DIALOG_HIDE_ON_DELETE,
+					     GXK_DIALOG_HIDE_ON_DELETE,
 					     "Procedure Browser",
 					     widget);
-	  bst_proc_browser_create_buttons (BST_PROC_BROWSER (widget), BST_DIALOG (bst_proc_browser));
+	  bst_proc_browser_create_buttons (BST_PROC_BROWSER (widget), GXK_DIALOG (bst_proc_browser));
 	}
-      gtk_widget_showraise (bst_proc_browser);
+      gxk_widget_showraise (bst_proc_browser);
       break;
     case BST_OP_DIALOG_DEVICE_MONITOR:
       any = g_object_new (BST_TYPE_SERVER_MONITOR, NULL);
       gtk_widget_show (any);
-      any = bst_dialog_new (NULL,
+      any = gxk_dialog_new (NULL,
 			    GTK_OBJECT (app),
-			    BST_DIALOG_DELETE_BUTTON, // FIXME: BST_DIALOG_HIDE_ON_DELETE && save dialog pointer
+			    GXK_DIALOG_DELETE_BUTTON, // FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
 			    "Device Monitor",
 			    any);
       gtk_widget_show (any);
@@ -763,9 +762,9 @@ bst_app_operate (BstApp *app,
 	  bst_scroll_text_set_index (sctext, index);
 	  g_free (index);
 	  bst_scroll_text_enter (sctext, help_file);
-	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
+	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = gxk_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
 								     NULL,
-								     BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_DELETE_BUTTON,
+								     GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_DELETE_BUTTON,
 								     help_title, sctext);
 	  g_object_set (bst_help_dialogs[op - BST_OP_HELP_FIRST],
 			"default_width", 560,
@@ -773,8 +772,8 @@ bst_app_operate (BstApp *app,
 			NULL);
 	}
       g_free (help_file);
-      bst_scroll_text_rewind (bst_dialog_get_child (BST_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
-      gtk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
+      bst_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
+      gxk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
       break;
     case BST_OP_HELP_RELEASE_NOTES:
       if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
@@ -787,9 +786,9 @@ bst_app_operate (BstApp *app,
 	  help_file = g_strconcat (BST_PATH_DOCS, "/news.markup", NULL);
 	  bst_scroll_text_append_file_tsm (sctext, help_file);
 	  g_free (help_file);
-	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
+	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = gxk_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
 								     NULL,
-								     BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_DELETE_BUTTON,
+								     GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_DELETE_BUTTON,
 								     help_title, sctext);
 	  g_object_set (bst_help_dialogs[op - BST_OP_HELP_FIRST],
 			"default_width", 560,
@@ -797,8 +796,8 @@ bst_app_operate (BstApp *app,
 			NULL);
 	  g_free (help_title);
 	}
-      bst_scroll_text_rewind (bst_dialog_get_child (BST_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
-      gtk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
+      bst_scroll_text_rewind (gxk_dialog_get_child (GXK_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
+      gxk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
       break;
     case BST_OP_HELP_ABOUT:
       break;
@@ -808,7 +807,7 @@ bst_app_operate (BstApp *app,
       break;
     }
 
-  bst_status_window_pop ();
+  gxk_status_window_pop ();
 
   bst_update_can_operate (widget);
 

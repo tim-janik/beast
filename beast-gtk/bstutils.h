@@ -24,7 +24,6 @@
 #include        <gtk/gtk.h>
 #include        "bstdefs.h"
 #include        "bstcluehunter.h"
-#include        "bstdialog.h"	// FIXME
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,21 +87,22 @@ GtkWidget*	bst_image_from_icon		(BswIcon	*icon,
 						 GtkIconSize	 icon_size);
 
 
+/* --- beast/bsw specific extensions --- */
+void		bst_status_eprintf		(BswErrorType	 error,
+						 const gchar	*message_fmt,
+						 ...) G_GNUC_PRINTF (2, 3);
+void		bst_window_sync_title_to_proxy	(gpointer	 window,
+						 BswProxy	 proxy,
+						 const gchar	*title_format);
+
+
 /* --- Gtk+ utilities & workarounds --- */
 #define    GTK_TYPE_VPANED               (gtk_vpaned_get_type ())
 #define    GTK_TYPE_HPANED               (gtk_hpaned_get_type ())
 void	   gtk_post_init_patch_ups	 (void);
 gboolean   gtk_widget_viewable		 (GtkWidget		*widget);
-void	   gtk_widget_showraise		 (GtkWidget		*widget);
-void	   gtk_toplevel_hide		 (GtkWidget		*widget);
-void	   gtk_toplevel_delete		 (GtkWidget		*widget);
-void	   gtk_toplevel_activate_default (GtkWidget		*widget);
 void	   bst_widget_request_aux_info	 (GtkWidget		*viewport);
 void	   gtk_file_selection_heal	 (GtkFileSelection	*fs);
-void	   gtk_idle_show_widget		 (GtkWidget		*widget);
-void	   gtk_idle_unparent		 (GtkWidget		*widget);
-void	   gtk_last_event_coords	 (gint			*x_root,
-					  gint			*y_root);
 void	   gtk_clist_moveto_selection	 (GtkCList		*clist);
 gpointer   gtk_clist_get_selection_data	 (GtkCList		*clist,
 					  guint                  index);

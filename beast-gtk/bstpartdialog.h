@@ -18,7 +18,6 @@
 #ifndef __BST_PART_DIALOG_H__
 #define __BST_PART_DIALOG_H__
 
-#include	"bstdialog.h"
 #include	"bstpianoroll.h"
 #include	"bstpianorollctrl.h"
 #include	"bstradiotools.h"
@@ -42,7 +41,7 @@ typedef	struct	_BstPartDialog		BstPartDialog;
 typedef	struct	_BstPartDialogClass	BstPartDialogClass;
 struct _BstPartDialog
 {
-  BstDialog	parent_object;
+  GxkDialog	parent_object;
 
   GtkWidget	*main_vbox;
   GtkWidget	*scrolled_window;
@@ -53,7 +52,7 @@ struct _BstPartDialog
 };
 struct _BstPartDialogClass
 {
-  BstDialogClass parent_class;
+  GxkDialogClass parent_class;
 
   GtkItemFactory *popup_factory;
 };

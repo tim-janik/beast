@@ -1,5 +1,5 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik and Red Hat, Inc.
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 1998-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,24 +16,22 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include        "bststatusbar.h"
+#include "gxkstatusbar.h"
 
-#include        "bstdialog.h"
-#include        "bstusermessage.h"
-
-#include        <gdk/gdkkeysyms.h>
-#include        <string.h>
+#include <gdk/gdkkeysyms.h>
+#include <math.h>
+#include <string.h>
+#include "gxkdialog.h"
 
 
 #define LONGEST_TIMEOUT         (2147483647 /* 2^31-1 */)
 #define PERC_CMP(f1, f2)        (fabs ((f1) - (f2)) < 1e-7)
 
-
 /* --- prototypes --- */
-static BstStatusBar*    status_bar_get_current  (void);
-static void             status_bar_queue_clear  (BstStatusBar   *sbar,
+static GxkStatusBar*    status_bar_get_current  (void);
+static void             status_bar_queue_clear  (GxkStatusBar   *sbar,
                                                  guint           msecs);
-static void             status_bar_set          (BstStatusBar   *sbar,
+static void             status_bar_set          (GxkStatusBar   *sbar,
                                                  gfloat          percentage,
                                                  const gchar    *message,
                                                  const gchar    *status_msg);
@@ -42,12 +40,11 @@ static void             status_bar_set          (BstStatusBar   *sbar,
 /* --- variables --- */
 static GQuark     quark_status_bar = 0;
 static GSList    *status_window_stack = NULL;
-static GSList    *progress_window_stack = NULL;
-static guint      proc_catch_count = 0;
+
 
 /* --- functions --- */
 static void
-status_bar_remove_timer (BstStatusBar *sbar)
+status_bar_remove_timer (GxkStatusBar *sbar)
 {
   if (sbar->timer_id)
     {
@@ -59,7 +56,7 @@ status_bar_remove_timer (BstStatusBar *sbar)
 static void
 sbar_free (gpointer data)
 {
-  BstStatusBar *sbar = data;
+  GxkStatusBar *sbar = data;
   
   status_bar_remove_timer (sbar);
   g_object_unref (sbar->pbar);
@@ -68,14 +65,21 @@ sbar_free (gpointer data)
   g_free (sbar);
 }
 
+/**
+ * gxk_status_bar_create
+ * @RETURNS: status bar container
+ *
+ * Create a status bar suitable to be packed into windows
+ * with status bar support.
+ */
 GtkWidget*
-bst_status_bar_create (void)
+gxk_status_bar_create (void)
 {
   GtkWidget *obox, *hbox;
-  BstStatusBar *sbar = g_new0 (BstStatusBar, 1);
+  GxkStatusBar *sbar = g_new0 (GxkStatusBar, 1);
   
   if (!quark_status_bar)
-    quark_status_bar = g_quark_from_static_string ("BstStatusBar");
+    quark_status_bar = g_quark_from_static_string ("GxkStatusBar");
   
   sbar->sbar = g_object_new (GTK_TYPE_FRAME,
                              "visible", FALSE,
@@ -134,39 +138,44 @@ bst_status_bar_create (void)
 static gboolean
 status_bar_clear_handler (gpointer data)
 {
-  BstStatusBar *sbar = data;
+  GxkStatusBar *sbar = data;
 
   GDK_THREADS_ENTER ();
   sbar->timer_id = 0;
-  status_bar_set (sbar, BST_STATUS_IDLE, NULL, NULL);
+  status_bar_set (sbar, GXK_STATUS_IDLE, NULL, NULL);
   GDK_THREADS_LEAVE ();
   
   return FALSE;
 }
 
 static void
-status_bar_queue_clear (BstStatusBar *sbar,
+status_bar_queue_clear (GxkStatusBar *sbar,
                         guint         msecs)
 {
   status_bar_remove_timer (sbar);
   
   if (!msecs)
-    status_bar_set (sbar, BST_STATUS_IDLE, NULL, NULL);
+    status_bar_set (sbar, GXK_STATUS_IDLE, NULL, NULL);
   else
     sbar->timer_id = g_timeout_add (msecs, status_bar_clear_handler, sbar);
 }
 
+/**
+ * gxk_status_clear
+ *
+ * Clear the current status bar.
+ */
 void
-bst_status_clear (void)
+gxk_status_clear (void)
 {
-  BstStatusBar *sbar = status_bar_get_current ();
+  GxkStatusBar *sbar = status_bar_get_current ();
   
   if (sbar)
     status_bar_queue_clear (sbar, 0);
 }
 
 static void
-status_bar_set (BstStatusBar *sbar,
+status_bar_set (GxkStatusBar *sbar,
                 gfloat        percentage,
                 const gchar  *message,
                 const gchar  *status_msg)
@@ -177,13 +186,13 @@ status_bar_set (BstStatusBar *sbar,
   gboolean activity_pulse = FALSE;
   gboolean beep = FALSE;                /* flag beeps for errors */
   
-  if (PERC_CMP (percentage, BST_STATUS_IDLE_HINT) && !sbar->is_idle)
+  if (PERC_CMP (percentage, GXK_STATUS_IDLE_HINT) && !sbar->is_idle)
     return;             /* don't override existing status */
   if (!message) /* clear */
-    percentage = BST_STATUS_IDLE;
+    percentage = GXK_STATUS_IDLE;
   
   sbar->is_idle = FALSE;
-  if (PERC_CMP (percentage, BST_STATUS_IDLE))
+  if (PERC_CMP (percentage, GXK_STATUS_IDLE))
     {
       sbar->is_idle = TRUE;
       clear_timeout = 0;        /* no timeout */
@@ -191,27 +200,27 @@ status_bar_set (BstStatusBar *sbar,
       message = NULL;
       status_msg = NULL;
     }
-  else if (PERC_CMP (percentage, BST_STATUS_IDLE_HINT))
+  else if (PERC_CMP (percentage, GXK_STATUS_IDLE_HINT))
     {
       sbar->is_idle = TRUE;
       format = "...Idle...";
     }
-  else if (PERC_CMP (percentage, BST_STATUS_ERROR))
+  else if (PERC_CMP (percentage, GXK_STATUS_ERROR))
     {
       clear_timeout = 25 * 1000;        /* error clearance timeout */
       format = "Error:";
       beep = TRUE;
     }
-  else if (PERC_CMP (percentage, BST_STATUS_WAIT))
+  else if (PERC_CMP (percentage, GXK_STATUS_WAIT))
     {
       clear_timeout = 0;        /* no timeout */
       format = "<>";
     }
-  else if (PERC_CMP (percentage, BST_STATUS_PROGRESS))
+  else if (PERC_CMP (percentage, GXK_STATUS_PROGRESS))
     {
       activity_pulse = TRUE;
     }
-  else if (PERC_CMP (percentage, BST_STATUS_DONE))
+  else if (PERC_CMP (percentage, GXK_STATUS_DONE))
     {
       format = "%P %%";
       fraction = 1.0;
@@ -240,24 +249,45 @@ status_bar_set (BstStatusBar *sbar,
     gdk_beep ();
 }
 
+/**
+ * gxk_status_set
+ * @percentage: progress percentage
+ * @message:    message to be displayed
+ * @status_msg: error status
+ *
+ * Set the current status bar message, progress percentage
+ * (usually 0% - 100% or one of the special values:
+ * %GXK_STATUS_ERROR, %GXK_STATUS_WAIT, %GXK_STATUS_IDLE,
+ * %GXK_STATUS_IDLE_HINT or %GXK_STATUS_PROGRESS) and
+ * error status.
+ */
 void
-bst_status_set (gfloat       percentage,
+gxk_status_set (gfloat       percentage,
                 const gchar *message,
                 const gchar *status_msg)
 {
-  BstStatusBar *sbar = status_bar_get_current ();
+  GxkStatusBar *sbar = status_bar_get_current ();
   
   if (sbar)
     status_bar_set (sbar, percentage, message, status_msg);
 }
 
+/**
+ * gxk_status_printf
+ * @percentage:  progress percentage
+ * @status_msg:  error status
+ * @message_fmt: printf style message to be displayed
+ *
+ * Similar to gxk_status_set() but supports construction of
+ * the message through a printf(3) style argument list.
+ */
 void
-bst_status_printf (gfloat       percentage,
+gxk_status_printf (gfloat       percentage,
                    const gchar *status_msg,
                    const gchar *message_fmt,
                    ...)
 {
-  BstStatusBar *sbar = status_bar_get_current ();
+  GxkStatusBar *sbar = status_bar_get_current ();
   
   if (sbar)
     {
@@ -273,36 +303,20 @@ bst_status_printf (gfloat       percentage,
     }
 }
 
+/**
+ * gxk_status_errnoprintf
+ * @libc_errno:  errno value
+ * @message_fmt: printf style message to be displayed
+ *
+ * Similar to gxk_status_printf() but figures the error
+ * status automatically from the passed in @libc_errno.
+ */
 void
-bst_status_eprintf (BswErrorType error,
-		    const gchar *message_fmt,
-		    ...)
-{
-  BstStatusBar *sbar = status_bar_get_current ();
-  
-  if (sbar)
-    {
-      gchar *buffer;
-      va_list args;
-      
-      va_start (args, message_fmt);
-      buffer = g_strdup_vprintf (message_fmt, args);
-      va_end (args);
-
-      if (error)
-	status_bar_set (sbar, BST_STATUS_ERROR, buffer, bsw_error_blurb (error));
-      else
-	status_bar_set (sbar, BST_STATUS_DONE, buffer, NULL);
-      g_free (buffer);
-    }
-}
-
-void
-bst_status_errnoprintf (gint         libc_errno,
+gxk_status_errnoprintf (gint         libc_errno,
 			const gchar *message_fmt,
 			...)
 {
-  BstStatusBar *sbar = status_bar_get_current ();
+  GxkStatusBar *sbar = status_bar_get_current ();
   
   if (sbar)
     {
@@ -314,15 +328,22 @@ bst_status_errnoprintf (gint         libc_errno,
       va_end (args);
 
       if (libc_errno)
-	status_bar_set (sbar, BST_STATUS_ERROR, buffer, g_strerror (libc_errno));
+	status_bar_set (sbar, GXK_STATUS_ERROR, buffer, g_strerror (libc_errno));
       else
-	status_bar_set (sbar, BST_STATUS_DONE, buffer, NULL);
+	status_bar_set (sbar, GXK_STATUS_DONE, buffer, NULL);
       g_free (buffer);
     }
 }
 
+/**
+ * gxk_status_window_push
+ * @widget: status bar window
+ *
+ * Push a window onto the stack of windows that have
+ * the current status bar.
+ */
 void
-bst_status_window_push (gpointer widget)
+gxk_status_window_push (gpointer widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
   widget = gtk_widget_get_toplevel (widget);
@@ -332,8 +353,14 @@ bst_status_window_push (gpointer widget)
   status_window_stack = g_slist_prepend (status_window_stack, widget);
 }
 
+/**
+ * gxk_status_window_pop
+ *
+ * Pop the most recently pushed window from the status bar
+ * window stack.
+ */
 void
-bst_status_window_pop (void)
+gxk_status_window_pop (void)
 {
   g_return_if_fail (status_window_stack != NULL);
   
@@ -341,124 +368,20 @@ bst_status_window_pop (void)
   status_window_stack = g_slist_remove (status_window_stack, status_window_stack->data);
 }
 
-static BstStatusBar*
+static GxkStatusBar*
 status_bar_get_current (void)
 {
-  BstDialog *dialog;
+  GxkDialog *dialog;
   GSList *slist;
   
   for (slist = status_window_stack; slist; slist = slist->next)
     {
-      dialog = BST_DIALOG (slist->data);
+      dialog = GXK_DIALOG (slist->data);
       
       if (dialog->status_bar && GTK_WIDGET_DRAWABLE (dialog->status_bar))
         return g_object_get_qdata (G_OBJECT (dialog->status_bar), quark_status_bar);
     }
-  dialog = bst_dialog_get_status_window ();
+  dialog = gxk_dialog_get_status_window ();
   
   return dialog ? g_object_get_qdata (G_OBJECT (dialog->status_bar), quark_status_bar) : NULL;
-}
-
-static void
-exec_status (BswProxy      server,
-	     BswExecStatus status,
-	     const gchar  *exec_name,
-	     gfloat        progress,
-	     BseErrorType  error,
-	     BswProxy      script_control,
-	     gpointer      data)
-{
-  GtkWindow *sctrl_window = script_control ? bsw_proxy_get_data (script_control, "script-control-window") : NULL;
-
-  if (sctrl_window)
-    bst_status_window_push (sctrl_window);
-  switch (status)
-    {
-      gboolean have_progress_window;
-    case BSW_EXEC_STATUS_START:
-      if (proc_catch_count || sctrl_window)
-	bst_status_set (0, exec_name, "Starting");
-      if (!sctrl_window && script_control)
-	bst_user_message_dialog_new (script_control);
-      break;
-    case BSW_EXEC_STATUS_PROGRESS:
-      /* if possible, indicate progress on progress_window */
-      have_progress_window = progress_window_stack != NULL && !sctrl_window;
-      if (have_progress_window)
-	bst_status_window_push (progress_window_stack->data);
-      /* conscious notification from procedure/script, so we always pass
-       * this on to the user
-       */
-      if (progress < 0)
-	bst_status_set (BST_STATUS_PROGRESS, exec_name, "processing");
-      else
-	bst_status_set (progress * 100.0, exec_name, "processing");
-      /* cleanup */
-      if (have_progress_window)
-	bst_status_window_pop ();
-      break;
-    case BSW_EXEC_STATUS_DONE:
-      if (proc_catch_count || sctrl_window)
-	bst_status_eprintf (error, exec_name);
-      break;
-    }
-  if (sctrl_window)
-    bst_status_window_pop ();
-}
-
-void
-bst_status_bar_listen_exec_status (void)
-{
-  bsw_proxy_connect (BSW_SERVER,
-		     "signal::exec_status", exec_status, NULL,
-		     NULL);
-}
-
-void
-bst_status_bar_catch_procs (void)
-{
-  proc_catch_count++;
-}
-
-void
-bst_status_bar_uncatch_procs (void)
-{
-  g_return_if_fail (proc_catch_count > 0);
-  
-  proc_catch_count--;
-}
-
-void
-bst_status_push_progress_window (gpointer widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  widget = gtk_widget_get_toplevel (widget);
-  g_return_if_fail (GTK_IS_WINDOW (widget));
-
-  gtk_widget_ref (widget);
-  progress_window_stack = g_slist_prepend (progress_window_stack, widget);
-}
-
-void
-bst_status_pop_progress_window (void)
-{
-  g_return_if_fail (progress_window_stack != NULL);
-
-  gtk_widget_unref (progress_window_stack->data);
-  progress_window_stack = g_slist_remove (progress_window_stack, progress_window_stack->data);
-}
-
-void
-bst_status_set_script_control_window (BswProxy   script_control,
-				      GtkWindow *window)
-{
-  g_return_if_fail (GTK_IS_WINDOW (window));
-
-  bsw_proxy_set_data (script_control, "script-control-window", window);
-}
-
-void
-bst_status_delete_script_control (BswProxy script_control)
-{
-  bsw_proxy_remove_data (script_control, "script-control-window");
 }

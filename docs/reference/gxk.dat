@@ -2,18 +2,438 @@
 name    = GXK-Functions
 blurb   = Gtk+ Extension Kit Function Reference
 package = BEAST-0.4.2
-date    = 06 Sep 2002
+date    = 07 Sep 2002
 image   = gxk-functions
 
 @DOC-TITLE@
 GXK-Functions
 
 @DOC-HEAD@
-GXK-Functions 06 Sep 2002 BEAST-0.4.2
+GXK-Functions 07 Sep 2002 BEAST-0.4.2
 
 @DOC-NAME@
 GXK-Functions - Gtk+ Extension Kit Function Reference
 
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_new@ (@EMPH pointer_loc@, @EMPH alive_object@, @EMPH flags@, @EMPH title@, @EMPH child@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 30
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ \ \ \ \ \ \ 
+typeraw = gpointer       
+@DOC-PARAMETER@
+pointer_loc
+@DOC-PARDESC@
+pointer to nullify upon dialog destruction
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkObject*\ \ \ \ \ 
+typeraw = GtkObject*     
+@DOC-PARAMETER@
+alive_object
+@DOC-PARDESC@
+object which upon destruction, takes the dialog with it
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialogFlags\ 
+typeraw = GxkDialogFlags 
+@DOC-PARAMETER@
+flags
+@DOC-PARDESC@
+dialog flags
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*\ \ \ 
+typeraw = const gchar*   
+@DOC-PARAMETER@
+title
+@DOC-PARDESC@
+window title for the dialog
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*\ \ \ \ \ 
+typeraw = GtkWidget*     
+@DOC-PARAMETER@
+child
+@DOC-PARDESC@
+child to pack into the dialog
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 30
+
+
+@DOC-DESCRIPTION@
+Create a new configurable dialog. Possible values for the flags are: @EMPH GXK_DIALOG_HIDE_ON_DELETE@: only hide and not desroy the dialog upon window manager delete events; @EMPH GXK_DIALOG_STATUS_SHELL@: the dialog has a status bar and acts as a shell window for primary application data; @EMPH GXK_DIALOG_MODAL@: the dialog is modal while visible; @EMPH GXK_DIALOG_POPUP_POS@: popup the dialog below mouse pointer; @EMPH GXK_DIALOG_DELETE_BUTTON@: add a "Close" button to the dialog (not recommended for GXK_DIALOG_STATUS_SHELL dialogs, which usually have menus).  
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_set_title@ (@EMPH dialog@, @EMPH title@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 21
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialog*\ \ 
+typeraw = GxkDialog*  
+@DOC-PARAMETER@
+dialog
+@DOC-PARDESC@
+valid GxkDialog
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+title
+@DOC-PARDESC@
+dialog window manager title
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 21
+
+
+@DOC-DESCRIPTION@
+Change the dialog's window manager title and role.  
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_add_flags@ (@EMPH dialog@, @EMPH flags@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialog*\ \ \ \ \ 
+typeraw = GxkDialog*     
+@DOC-PARAMETER@
+dialog
+@DOC-PARDESC@
+valid GxkDialog
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialogFlags\ 
+typeraw = GxkDialogFlags 
+@DOC-PARAMETER@
+flags
+@DOC-PARDESC@
+additional flags to set on the dialog.
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+
+@DOC-DESCRIPTION@
+Alter dialog flags, see @STRONG gxk_dialog_new()@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_clear_flags@ (@EMPH dialog@, @EMPH flags@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 24
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialog*\ \ \ \ \ 
+typeraw = GxkDialog*     
+@DOC-PARAMETER@
+dialog
+@DOC-PARDESC@
+valid GxkDialog
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialogFlags\ 
+typeraw = GxkDialogFlags 
+@DOC-PARAMETER@
+flags
+@DOC-PARDESC@
+flags to unset on the dialog.
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 24
+
+
+@DOC-DESCRIPTION@
+Alter dialog flags, see @STRONG gxk_dialog_new()@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_get_child@ (@EMPH dialog@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialog*
+typeraw = GxkDialog*
+@DOC-PARAMETER@
+dialog
+@DOC-PARDESC@
+valid GxkDialog
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Retrive the primary child of the dialog.  
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_set_child@ (@EMPH dialog@, @EMPH child@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialog*
+typeraw = GxkDialog*
+@DOC-PARAMETER@
+dialog
+@DOC-PARDESC@
+valid GxkDialog
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+child
+@DOC-PARDESC@
+new child
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Change the dialog's primary child to @EMPH child@. Destroys the old child if any.  
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_get_status_window@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+a valid GxkDialog or @EMPH NULL@
+
+@DOC-DESCRIPTION@
+Retrive the most recently entered GxkDialog if any.  
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_remove_actions@ (@EMPH dialog@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GxkDialog*
+typeraw = GxkDialog*
+@DOC-PARAMETER@
+dialog
+@DOC-PARDESC@
+valid GxkDialog
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Remove all action buttons setup for this dialog.  
+@DOC-SYNOPSIS@
+@STRONG gxk_dialog_action*@ (@EMPH dialog@, @EMPH action@, @EMPH callback@, @EMPH data@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+dialog
+@DOC-PARDESC@
+valid GxkDialog
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+action
+@DOC-PARDESC@
+button label or stock ID
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+callback
+@DOC-PARDESC@
+callback function for button activation
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+data
+@DOC-PARDESC@
+callback data
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+
+@DOC-DESCRIPTION@
+Add a new (stock) button to a dialog.  
+@DOC-SYNOPSIS@
+@STRONG gxk_status_bar_create@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+status bar container
+
+@DOC-DESCRIPTION@
+Create a status bar suitable to be packed into windows with status bar support.  
+@DOC-SYNOPSIS@
+@STRONG gxk_status_clear@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 3
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 3
+
+
+@DOC-DESCRIPTION@
+Clear the current status bar.  
+@DOC-SYNOPSIS@
+@STRONG gxk_status_set@ (@EMPH percentage@, @EMPH message@, @EMPH status_msg@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 25
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gfloat\ \ \ \ \ \ 
+typeraw = gfloat      
+@DOC-PARAMETER@
+percentage
+@DOC-PARDESC@
+progress percentage
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+message
+@DOC-PARDESC@
+message to be displayed
+
+@DOC-VARIABLE-DEFINITIONS@
+type = const\ gchar*
+typeraw = const gchar*
+@DOC-PARAMETER@
+status_msg
+@DOC-PARDESC@
+error status
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 25
+
+
+@DOC-DESCRIPTION@
+Set the current status bar message, progress percentage (usually 0% - 100% or one of the special values: @EMPH GXK_STATUS_ERROR@, @EMPH GXK_STATUS_WAIT@, @EMPH GXK_STATUS_IDLE@, @EMPH GXK_STATUS_IDLE_HINT@ or @EMPH GXK_STATUS_PROGRESS@) and error status.  
+@DOC-SYNOPSIS@
+@STRONG gxk_status_printf@ (@EMPH percentage@, @EMPH status_msg@, @EMPH message_fmt@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+percentage
+@DOC-PARDESC@
+progress percentage
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+status_msg
+@DOC-PARDESC@
+error status
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+message_fmt
+@DOC-PARDESC@
+printf style message to be displayed
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+
+@DOC-DESCRIPTION@
+Similar to @STRONG gxk_status_set()@ but supports construction of the message through a @STRONG printf(3)@ style argument list.  
+@DOC-SYNOPSIS@
+@STRONG gxk_status_errnoprintf@ (@EMPH libc_errno@, @EMPH message_fmt@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 14
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+libc_errno
+@DOC-PARDESC@
+errno value
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+message_fmt
+@DOC-PARDESC@
+printf style message to be displayed
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 14
+
+
+@DOC-DESCRIPTION@
+Similar to @STRONG gxk_status_printf()@ but figures the error status automatically from the passed in @EMPH libc_errno@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_status_window_push@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 18
+
+@DOC-VARIABLE-DEFINITIONS@
+type = gpointer\ 
+typeraw = gpointer 
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+status bar window
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 18
+
+
+@DOC-DESCRIPTION@
+Push a window onto the stack of windows that have the current status bar.  
+@DOC-SYNOPSIS@
+@STRONG gxk_status_window_pop@ ();
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 3
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 3
+
+
+@DOC-DESCRIPTION@
+Pop the most recently pushed window from the status bar window stack.  
 @DOC-SYNOPSIS@
 @STRONG gxk_size_width@ (@EMPH icon_size@);
 
@@ -422,6 +842,106 @@ retspace = 19
 
 @DOC-DESCRIPTION@
 This function is euqivalent to gtk_widget_set_sensitive (@EMPH widget@, @STRONG TRUE@); It exists as a convenient signal connection callback.  
+@DOC-SYNOPSIS@
+@STRONG gxk_idle_show_widget@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a valid widget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Defer showing this widget until the next idle handler is run. This is usefull if other things are pending which need to be processed first, for instance hiding other toplevels.  
+@DOC-SYNOPSIS@
+@STRONG gxk_widget_showraise@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a valid widget
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Show the widget. If the widget is a toplevel, also raise its window to top.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toplevel_delete@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a widget having a toplevel
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+This function is usefull to produce the exact same effect as if the user caused window manager triggered window deletion on the toplevel of @EMPH widget@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toplevel_activate_default@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a widget having a toplevel
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Activate the default widget of the toplevel of @EMPH widget@.  
+@DOC-SYNOPSIS@
+@STRONG gxk_toplevel_hide@ (@EMPH widget@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 19
+
+@DOC-VARIABLE-DEFINITIONS@
+type = GtkWidget*
+typeraw = GtkWidget*
+@DOC-PARAMETER@
+widget
+@DOC-PARDESC@
+a widget having a toplevel
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 19
+
+
+@DOC-DESCRIPTION@
+Hide the toplevel of @EMPH widget@.  
 @DOC-SYNOPSIS@
 @STRONG gxk_widget_modify_as_title@ (@EMPH widget@);
 

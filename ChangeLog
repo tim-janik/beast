@@ -1,3 +1,35 @@
+Sat Sep  7 16:06:51 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw/bswproxy.c (add_gc): remember the collector id. fixes
+	enourmous cpu consumption for procedure string returns.
+
+	* beast-gtk/bstdialog.[hc]:
+	* beast-gtk/bststatusbar.[hc]: removed in favour of gxk variants.
+
+	* beast-gtk/gxk/gxkdialog.[hc]:
+	* beast-gtk/gxk/gxkstatusbar.[hc]: convert Bst widgets into GXK
+	variants GxkDialog and GxkStatusBar by removing beast/bsw specific
+	code portions.
+
+	* beast-gtk/bstusermessage.[hc]: adapt to changes in BSE, the server
+	signals script start/error and user messages. the script control
+	objects signal progress.
+
+	* beast-gtk/bstutils.[hc]: add beast/bsw specific extensions:
+	(bst_status_eprintf): set BswErrorType status through gsk_status_set().
+	(bst_window_sync_title_to_proxy): sync a window's title to a proxy name.
+	removed gtk_widget_showraise, gtk_toplevel_hide, gtk_toplevel_delete,
+	gtk_toplevel_activate_default, gtk_idle_show_widget, gtk_idle_unparent,
+	and gtk_last_event_coords.
+	
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_widget_showraise,
+	gxk_idle_show_widget, gxk_toplevel_delete, gxk_toplevel_hide and
+	gxk_toplevel_activate_default.
+
+	* beast-gtk/*.[hc]: adaptions due to GXK changes.
+
+	* docs/release-notes.texi: adapt to development series v0.4.
+
 Fri Sep  6 17:37:19 2002  Tim Janik  <timj@gtk.org>
 
 	* started general refactoring and cleanup work.

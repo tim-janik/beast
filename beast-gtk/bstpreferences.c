@@ -402,17 +402,17 @@ bst_rc_parse (const gchar *file_name,
 
 void
 bst_preferences_create_buttons (BstPreferences *prefs,
-				BstDialog      *dialog)
+				GxkDialog      *dialog)
 {
   GtkWidget *widget;
 
   g_return_if_fail (BST_IS_PREFERENCES (prefs));
-  g_return_if_fail (BST_IS_DIALOG (dialog));
+  g_return_if_fail (GXK_IS_DIALOG (dialog));
   g_return_if_fail (prefs->apply == NULL);
 
   /* Apply
    */
-  prefs->apply = g_object_connect (bst_dialog_default_action (dialog, BST_STOCK_APPLY, NULL, NULL),
+  prefs->apply = g_object_connect (gxk_dialog_default_action (dialog, BST_STOCK_APPLY, NULL, NULL),
 				   "swapped_signal::clicked", bst_preferences_apply, prefs,
 				   "swapped_signal::clicked", bst_preferences_save, prefs,
 				   "swapped_signal::destroy", g_nullify_pointer, &prefs->apply,
@@ -425,19 +425,19 @@ bst_preferences_create_buttons (BstPreferences *prefs,
 
   /* Revert
    */
-  widget = bst_dialog_action_swapped (dialog, BST_STOCK_REVERT, bst_preferences_revert, prefs);
+  widget = gxk_dialog_action_swapped (dialog, BST_STOCK_REVERT, bst_preferences_revert, prefs);
   gtk_tooltips_set_tip (BST_TOOLTIPS, widget,
 			"Revert the preference values to the current internal values.",
 			NULL);
 
   /* Default Revert
    */
-  widget = bst_dialog_action_swapped (dialog, BST_STOCK_DEFAULT_REVERT, bst_preferences_default_revert, prefs);
+  widget = gxk_dialog_action_swapped (dialog, BST_STOCK_DEFAULT_REVERT, bst_preferences_default_revert, prefs);
   gtk_tooltips_set_tip (BST_TOOLTIPS, widget,
 			"Revert to hardcoded default values (factory settings).",
 			NULL);
 
   /* Close
    */
-  widget = bst_dialog_action (dialog, BST_STOCK_CLOSE, gtk_toplevel_delete, NULL);
+  widget = gxk_dialog_action (dialog, BST_STOCK_CLOSE, gxk_toplevel_delete, NULL);
 }

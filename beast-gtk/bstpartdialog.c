@@ -17,7 +17,6 @@
  */
 #include	"bstpartdialog.h"
 
-#include	"bststatusbar.h"
 #include	"bstprocedure.h"
 #include	"bstmenus.h"
 
@@ -94,7 +93,7 @@ bst_part_dialog_get_type (void)
 	(GInstanceInitFunc) bst_part_dialog_init,
       };
       
-      type = g_type_register_static (BST_TYPE_DIALOG,
+      type = g_type_register_static (GXK_TYPE_DIALOG,
 				     "BstPartDialog",
 				     &type_info, 0);
     }
@@ -159,9 +158,9 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_set (self,
 		"default_width", 600,
 		"default_height", 450,
-		"flags", BST_DIALOG_STATUS_SHELL,
+		"flags", GXK_DIALOG_STATUS_SHELL,
 		NULL);
-  main_vbox = BST_DIALOG (self)->vbox;
+  main_vbox = GXK_DIALOG (self)->vbox;
 
   /* create toolbar */
   self->toolbar = bst_toolbar_new (&self->toolbar);
@@ -312,7 +311,7 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
   if (part)
     g_return_if_fail (BSW_IS_PART (part));
 
-  bst_dialog_sync_title_to_proxy (BST_DIALOG (self), part, "%s");
+  bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
   bst_piano_roll_set_proxy (BST_PIANO_ROLL (self->proll), part);
 }
 

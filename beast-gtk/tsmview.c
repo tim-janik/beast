@@ -17,7 +17,6 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bsttexttools.h"
-#include "bstdialog.h"
 
 
 #define PRGNAME "tsmview"
@@ -66,12 +65,12 @@ main (int   argc,
   title = g_strdup ("tsmview");	// g_strconcat (title, " - tsmview", NULL);
   g_free (str);
 
-  dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_DELETE_BUTTON, title, NULL);
+  dialog = gxk_dialog_new (NULL, NULL, GXK_DIALOG_DELETE_BUTTON, title, NULL);
   g_free (title);
 
   g_object_connect (dialog, "signal::destroy", gtk_main_quit, NULL, NULL);
 
-  bst_dialog_set_child (BST_DIALOG (dialog), sctext);
+  gxk_dialog_set_child (GXK_DIALOG (dialog), sctext);
 
   g_object_set (dialog,
 		"default_width", 560,

@@ -17,7 +17,6 @@
  */
 #include	"bstfiledialog.h"
 
-#include	"bststatusbar.h"
 #include	"bstmenus.h"
 #include	<unistd.h>
 #include	<errno.h>
@@ -97,10 +96,10 @@ bst_file_dialog_open (BstFileDialog *fd)
 
       bsw_project_ensure_wave_repo (project);
       app = bst_app_new (project);
-      bst_status_window_push (app);
+      gxk_status_window_push (app);
       bst_status_eprintf (error,"Loading project `%s'", file_name);
-      bst_status_window_pop ();
-      gtk_idle_show_widget (GTK_WIDGET (app));
+      gxk_status_window_pop ();
+      gxk_idle_show_widget (GTK_WIDGET (app));
     }
   bsw_item_unuse (project);
 
@@ -125,7 +124,7 @@ bst_file_dialog_save (BstFileDialog *fd)
   if (radio)
     self_contained = !GTK_TOGGLE_BUTTON (radio)->active;
 
-  bst_status_window_push (app);
+  gxk_status_window_push (app);
 
  retry_saving:
 
@@ -153,7 +152,7 @@ bst_file_dialog_save (BstFileDialog *fd)
 	{
 	  bst_choice_destroy (choice);
 	  if (unlink (file_name) < 0)
-	    bst_status_errnoprintf (errno, "Deleting `%s'", file_name);
+	    gxk_status_errnoprintf (errno, "Deleting `%s'", file_name);
 	  else
 	    goto retry_saving;
 	}
@@ -167,7 +166,7 @@ bst_file_dialog_save (BstFileDialog *fd)
 	gtk_widget_destroy (GTK_WIDGET (fd));
     }
 
-  bst_status_window_pop ();
+  gxk_status_window_pop ();
   g_free (file_name);
 }
 
