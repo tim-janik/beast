@@ -190,8 +190,8 @@ private:
                 guint fft_size = probe.sample_data.length();
                 if (fft_size)
                   {
-                    fft_size = 1 << (g_bit_storage (num) - 1);
-                    fft_size = CLAMP (fft_size, 2, 65536);
+                    fft_size = 1 << (g_bit_storage (fft_size) - 1);
+                    fft_size = MIN (fft_size, 65536);
                     probe.fft_data.resize (fft_size);
                     /* perform fft */
                     double *rv = g_new (double, fft_size * 2), *cv = rv + fft_size; // FIXME: optimize
