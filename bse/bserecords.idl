@@ -220,9 +220,12 @@ sequence NoteSeq {
 sequence StringSeq {
   String strings;
 };
+
+class Item;
+
 sequence ProxySeq {
   Info   BLURB = ("An item list");
-  Proxy  proxies;
+  Item   proxies;
   Info   HELP = ("A list of BSE objects, usually items.");
 };
 
@@ -317,9 +320,11 @@ sequence DotSeq {
 };
 
 /* BSE Track structures */
+
+class Part;
 record TrackPart {
   Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
-  Proxy part;
+  Part          part;
   Int           duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_DEFAULT);
 };
 sequence TrackPartSeq {

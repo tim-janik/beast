@@ -1,3 +1,7 @@
+Wed Nov 26 22:14:44 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bserecords.idl: Proxy is gone.
+
 Wed Nov 26 13:40:11 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsecxxsmart.h: Added (template) classes for SmartPtr, RefCountable,
