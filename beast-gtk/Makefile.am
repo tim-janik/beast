@@ -164,9 +164,10 @@ bstutils.c: bstdebugkeys.defs
 #
 # setup BEAST sources and their dependancies
 #
-bin_PROGRAMS = beast
-beast_SOURCES = bstmain.c $(beast_sources)
-beast_LDADD = $(progs_LDADD)
+bin_PROGRAMS = @BEAST_BINARY@			# this expands to beast-$BST_VERSION
+EXTRA_PROGRAMS = beast-\$(BST_VERSION)		# make automake-1.4 eat beast____BST_VERSION_ variables
+beast____BST_VERSION__SOURCES = bstmain.c $(beast_sources)
+beast____BST_VERSION__LDADD = $(progs_LDADD)
 noinst_PROGRAMS = tsmview # bststest
 # bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
 # bststest_LDADD = $(progs_LDADD)

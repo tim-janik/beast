@@ -1,3 +1,14 @@
+Wed Feb 25 05:52:01 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: provide BSESH_BINARY and BEAST_BINARY automake variables
+	to build versioned binaries.
+
+	* beast-gtk/Makefile.am: hack around automake-1.4 deficencies and build
+	beast-$BST_VERSION via conditional build of @BEAST_BINARY@.
+
+	* shell/Makefile.am: hack around automake-1.4 deficencies and build
+	bsesh-$BSE_VERSION via conditional build of @BSESH_BINARY@.
+
 Wed Feb 25 04:49:55 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-beast.xml: made the toplevel-notebook tabs

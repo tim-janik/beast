@@ -288,6 +288,9 @@ AC_DEFUN(AC_BSE_SHELL_REQUIREMENTS,
     BSE_SHELL_CFLAGS="$BSE_CFLAGS"
     BSE_SHELL_LIBS="$BSE_LIBS"
 
+    BSESH_BINARY="bsesh-$BSE_VERSION"
+    AC_SUBST(BSESH_BINARY)
+
     dnl --- libguile check ---
     # require guile-config
     AC_PATH_PROG(GUILE_CONFIG, guile-1.6-config)
@@ -330,6 +333,9 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     BEAST_LIBS="$GXK_LIBS"
     AC_SUBST(BEAST_CFLAGS)
     AC_SUBST(BEAST_LIBS)
+
+    BEAST_BINARY="beast-$BST_VERSION"
+    AC_SUBST(BEAST_BINARY)
 
     dnl Feature XKB extension if present
     cflags=$CFLAGS
