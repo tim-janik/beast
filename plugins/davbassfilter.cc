@@ -143,7 +143,7 @@ class BassFilter : public BassFilterBase {
         while (out < bound)
           {
             gfloat current_trigger = *trigger++;
-            if (G_UNLIKELY (last_trigger > current_trigger))
+            if (G_UNLIKELY (last_trigger < current_trigger))
               {
                 c0 = e1;
                 envpos = 0;
