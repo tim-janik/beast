@@ -2,13 +2,13 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.19 2004/03/06 15:25:27 timj Exp $
+# $Id: sv.po,v 1.20 2004/03/06 17:54:28 timj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-06 15:33+0100\n"
+"POT-Creation-Date: 2004-03-06 18:46+0100\n"
 "PO-Revision-Date: 2003-11-02 01:49+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
