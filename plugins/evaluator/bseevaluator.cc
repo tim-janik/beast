@@ -17,10 +17,10 @@
  *
  */
 #include "bseevaluator.gen-idl.h"
-#include "symbols.h"
-#include "instruction.h"
-#include "cpu.h"
-#include "compiler.h"
+#include "symbols.hh"
+#include "instruction.hh"
+#include "cpu.hh"
+#include "compiler.hh"
 
 #include <math.h>
 #include <string.h>

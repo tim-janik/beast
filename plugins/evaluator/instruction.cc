@@ -18,7 +18,7 @@
 
     */
 
-#include "instruction.h"
+#include "instruction.hh"
 
 using namespace Bse::EvaluatorUtils;
 

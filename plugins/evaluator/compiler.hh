@@ -21,9 +21,9 @@
 #ifndef BSE_EVALUATOR_COMPILER_H
 #define BSE_EVALUATOR_COMPILER_H
 
-#include "token.h"
-#include "instruction.h"
-#include "symbols.h"
+#include "token.hh"
+#include "instruction.hh"
+#include "symbols.hh"
 
 #include <vector>
 #include <string>

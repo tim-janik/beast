@@ -18,7 +18,7 @@
 
     */
 
-#include "compiler.h"
+#include "compiler.hh"
 #include <assert.h>
 #include <ctype.h>
 

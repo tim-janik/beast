@@ -21,8 +21,8 @@
 #ifndef BSE_EVALUATOR_CPU_H
 #define BSE_EVALUATOR_CPU_H
 
-#include "instruction.h"
-#include "symbols.h"
+#include "instruction.hh"
+#include "symbols.hh"
 
 #include <vector>
 

@@ -18,7 +18,7 @@
 
     */
 
-#include "cpu.h"
+#include "cpu.hh"
 
 #include <algorithm>
 #include <assert.h>

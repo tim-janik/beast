@@ -21,7 +21,7 @@
 #ifndef BSE_EVALUATOR_INSTRUCTION_H
 #define BSE_EVALUATOR_INSTRUCTION_H
 
-#include "symbols.h"
+#include "symbols.hh"
 #include <math.h>
 
 namespace Bse {

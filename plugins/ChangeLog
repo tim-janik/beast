@@ -1,3 +1,9 @@
+Mon Mar  7 07:55:46 2005  Tim Janik  <timj@gtk.org>
+
+        * removed obsolete .h C++ headers.
+
+        * adapted sources to compile against .hh C++ headers.
+
 Thu Jan 20 01:34:00 2005  Tim Janik  <timj@gtk.org>
 
 	* standardsaturator.idl: move saturator into the distortion submenu.

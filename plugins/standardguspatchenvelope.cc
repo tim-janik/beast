@@ -32,11 +32,11 @@
  * Code to load and unload GUS-compatible instrument patches.
  */
 
-#include <bse/bsecxxplugin.h>
+#include <bse/bsecxxplugin.hh>
 #include <bse/bsewave.h>
+#include "standardguspatchenvelope.gen-idl.h"
 #include <bse/gslwavechunk.h>
 #include <bse/bsemathsignal.h>
-#include "standardguspatchenvelope.gen-idl.h"
 
 using namespace std;
 using namespace Sfi;

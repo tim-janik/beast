@@ -22,10 +22,10 @@
 #include <vector>
 #include <string>
 
-#include "symbols.h"
-#include "compiler.h"
-#include "cpu.h"
-#include "instruction.h"
+#include "symbols.hh"
+#include "compiler.hh"
+#include "cpu.hh"
+#include "instruction.hh"
 
 using std::vector;
 using std::string;
