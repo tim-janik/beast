@@ -666,7 +666,6 @@ beast_show_about_box (void)
     "Jakub Steiner",
     "Ville P\xc3\xa4tsi",
     /* general code and fixes */
-    "Christian Neumair",
     "Sam Hocevar",
     "Alper Ersoy",
     "Ben Collver",
@@ -681,13 +680,14 @@ beast_show_about_box (void)
     "Alexandre Prokoudine",
     "Danilo Segan",
     "Christian Rose",
-    //"Christian Neumair",
+    "Christian Neumair",
     "Miloslav Trmac",
     "Duarte Loreto",
     "Vincent van Adrighem",
     "Danilo Segan",
     "Xavier Conde Rueda",
     "Kostas Papadimas",
+    "Ismael Andres Rubio Rojas",
     NULL
   };
   if (!GTK_WIDGET_VISIBLE (beast_splash))
