@@ -55,10 +55,10 @@ class Compressor : Effect {
   group _("Parameters") {
     Real attack       = Real (_("Attack [ms]"), _("Set the attack time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
     Real release      = Real (_("Release [ms]"), _("Set the release time in milliseconds"), 10.0, 0.1, 250.0, 10.0, STANDARD ":scale");
-    Real threshold_db = Gain (_("Threshold [dB]"), _("Set the threshold"), 0, -30, 0, 1, STANDARD ":scale");
+    Real threshold_db = Gain (_("Threshold [dB]"), _("Only parts louder than threshold are compressed"), 0, -100, 0, 1, STANDARD ":scale");
     Real ratio_to_one = Real (_("Ratio [x:1]"), _("Set the compression ratio to x:1"), 2, 1.0, 20.0, 1, STANDARD ":scale");
     Real output_db    = Gain (_("Output [dB]"), _("Set the output amplification"), 0, -20, 20, 1, STANDARD ":scale");
-    Bool auto_output  = Bool (_("Auto Output"), _("Adjust the output amplification automatically"), FALSE, STANDARD);
+    Bool auto_output  = Bool (_("Auto Output"), _("Adjust the output amplification automatically"), FALSE, SFI_PARAM_GUI);
   };
   group "compat" {    /* compatibility properties */
     Real threshold    = Real (NULL, NULL, 1, 0.00001, 1, 0.01, "w");

@@ -22,14 +22,23 @@
 #include <math.h>
 #include <string.h>
 
-#define LN2 0.69314718
 
 namespace Bse {
 namespace Arts {
 using namespace std;
 
+/*
+ * constants
+ */
+static const double LN2 = 0.693147180559945;	/* log(2) */
+static const double MUG_CORR_FACT = 0.4;	/* makeup gain correction factor (from jamin-0.9.0 source)
+						 * dampens the makeup gain correction to stop it over correcting */
+
 class Compressor : public CompressorBase
 {
+  /*
+   * engine module
+   */
   class Module : public SynthesisModule {
     /* state */
     double volume;
@@ -57,7 +66,6 @@ class Compressor : public CompressorBase
        */
       attackfactor = LN2 / max (params->attack / 1000 * mix_freq(), LN2);
       releasefactor = LN2 / max (params->release / 1000 * mix_freq(), LN2);
-      printf ("Compressor::Module: attackfactor = %f, releasefactor = %f\n", attackfactor, releasefactor);
     }
 
     /* conversion doesn't test for linear == 0,
@@ -169,7 +177,10 @@ public:
       case PROP_RATIO_TO_ONE:
       case PROP_THRESHOLD_DB:
 	if (auto_output)
-	  output_db = threshold_db / ratio_to_one - threshold_db;
+	  {
+	    /* keep CLAMP range in sync with .idl file */
+	    output_db = CLAMP ((threshold_db / ratio_to_one - threshold_db) * MUG_CORR_FACT, -20.0, 20.0);
+	  }
         notify ("output_db");
         break;
       /* compat properties */
@@ -177,13 +188,15 @@ public:
         if (ratio > 0)
 	  set ("ratio_to_one", 1 / ratio, NULL);
 	else
-	  set ("ratio_to_one", 10000, NULL); /* max ratio */
+	  set ("ratio_to_one", 20.0, NULL); /* max ratio */
 	break;
       case PROP_THRESHOLD:
-        set ("threshold_db", bse_db_from_factor (threshold, -100), NULL);
+	/* keep CLAMP range in sync with .idl file */
+        set ("threshold_db", CLAMP (bse_db_from_factor (threshold, -100), -100.0, 0.0), NULL);
         break;
       case PROP_OUTPUT:
-        set ("output_db", bse_db_from_factor (output, -100), NULL);
+	/* keep CLAMP range in sync with .idl file */
+        set ("output_db", CLAMP (bse_db_from_factor (output, -100), -20.0, 20.0), NULL);
         break;
       default: ;
       }
