@@ -40,7 +40,7 @@
 
 /* --- functions --- */
 static void
-playout_calc_char_extends (PangoLayout *pango_layout,
+playout_calc_char_extents (PangoLayout *pango_layout,
                            gint        *char_offset, /* to center ink-rect within logical-rect */
                            gint        *char_width,
                            const gchar *chars,
@@ -97,14 +97,14 @@ pattern_column_note_width_request (BstPatternColumn       *column,
 {
   BstPatternColumnNote *self = (BstPatternColumnNote*) column;
   gint width;
-  playout_calc_char_extends (pango_layout, &self->co0, &self->cw0, "*-# ", TRUE);
+  playout_calc_char_extents (pango_layout, &self->co0, &self->cw0, "*-# ", TRUE);
   self->co0 += 1;
   self->cw0 += 1 + 1;
-  playout_calc_char_extends (pango_layout, &self->co1, &self->cw1, "*-CDEFGABH", TRUE);
+  playout_calc_char_extents (pango_layout, &self->co1, &self->cw1, "*-CDEFGABH", TRUE);
   self->cw1 += 1;
-  playout_calc_char_extends (pango_layout, &self->co2, &self->cw2, "*-+ ", TRUE);
+  playout_calc_char_extents (pango_layout, &self->co2, &self->cw2, "*-+ ", TRUE);
   self->cw2 += 1;
-  playout_calc_char_extends (pango_layout, &self->co3, &self->cw3, "*- 123456", TRUE);
+  playout_calc_char_extents (pango_layout, &self->co3, &self->cw3, "*- 123456", TRUE);
   width = self->cw0 + self->cw1 + self->cw2 + self->cw3;
   return FOCUS_WIDTH (pview) + width + XTHICKNESS (pview) + FOCUS_WIDTH (pview);
 }
@@ -280,7 +280,7 @@ pattern_column_event_width_request (BstPatternColumn       *column,
   BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
   gboolean is_signed  = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
   gint width, n_digits = 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK);
-  playout_calc_char_extends (pango_layout, &self->co, &self->cw, "0123456789", TRUE);
+  playout_calc_char_extents (pango_layout, &self->co, &self->cw, "0123456789", TRUE);
   width = 1 + (is_signed + n_digits) * (self->cw + 1);
   return FOCUS_WIDTH (pview) + width + FOCUS_WIDTH (pview);
 }

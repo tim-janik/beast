@@ -1,6 +1,4 @@
 FIXME(urgent):
-- review BSE_MIDI_SIGNAL_CONTINUOUS_11 value default
-- playout_calc_char_extends: s/extends/extents/
 - 0.6.5: simply load guspatch files as mono samples without extra xinfo values
 - 0.6.5: disable gus-patch envelope
 - after laoding a sample from the instrument selection box, make it the default selection
