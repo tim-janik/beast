@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-18 00:28+0100\n"
-"PO-Revision-Date: 2004-12-16 19:50-0400\n"
+"POT-Creation-Date: 2004-12-19 05:28-0500\n"
+"PO-Revision-Date: 2004-12-19 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -406,20 +406,20 @@ msgstr "Module Link: "
 msgid "Module link"
 msgstr "Module link"
 
-#: beast-gtk/bstcanvassource.c:444
+#: beast-gtk/bstcanvassource.c:450
 msgid "Module Info"
 msgstr "Module Info"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1089
+#: beast-gtk/bstcanvassource.c:978 beast-gtk/bstsnetrouter.c:1089
 msgid "Input"
 msgstr "Input"
 
-#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1093
+#: beast-gtk/bstcanvassource.c:987 beast-gtk/bstsnetrouter.c:1093
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Output"
 
-#: beast-gtk/bstcanvassource.c:985
+#: beast-gtk/bstcanvassource.c:991
 msgid "(Hint)"
 msgstr "(Hint)"
 
@@ -4709,7 +4709,6 @@ msgstr "BPM Steps"
 msgid "Step width for beats per minute"
 msgstr "Step width for beats per minute"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsedevice.c:312
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
@@ -4989,7 +4988,6 @@ msgstr "Ctrl Out4"
 msgid "MIDI Signal 4"
 msgstr "MIDI Signal 4"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-null.c:92
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
@@ -4998,7 +4996,6 @@ msgstr ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-oss.c:270
 msgid ""
 "Open Sound System MIDI driver:\n"
@@ -5135,8 +5132,6 @@ msgstr "Parasite Paths"
 msgid "Parasite"
 msgstr "Parasite"
 
-#. syntax
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-null.c:145
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
@@ -5150,7 +5145,6 @@ msgstr ""
 msgid "DEVICE,MODE"
 msgstr "DEVICE,MODE"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-oss.c:653
 msgid ""
 "Open Sound System PCM driver:\n"
@@ -5378,7 +5372,7 @@ msgstr "Phase"
 
 #: bse/bsestandardosc.c:137
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
-msgstr ""
+msgstr "Initial phase of the oscillator wave form (cycle offset in degree)"
 
 #: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:148
 msgid "Base Frequency"
@@ -5386,11 +5380,11 @@ msgstr "Base Frequency"
 
 #: bse/bsestandardosc.c:142
 msgid "Number of oscillator cycles per second"
-msgstr ""
+msgstr "Number of oscillator cycles per second"
 
 #: bse/bsestandardosc.c:146
 msgid "Musical notation corresponding to the oscillator frequency"
-msgstr ""
+msgstr "Musical notation corresponding to the oscillator frequency"
 
 #: bse/bsestandardosc.c:150
 msgid "Fine Tune"
@@ -5398,7 +5392,7 @@ msgstr "Fine Tune"
 
 #: bse/bsestandardosc.c:150
 msgid "Amount of detuning in cent (hundredth part of a note)"
-msgstr ""
+msgstr "Amount of detuning in cent (hundredth part of a note)"
 
 #: bse/bsestandardosc.c:155 bse/bsewaveosc.c:568
 msgid "Input Modulation [%]"
@@ -5677,7 +5671,6 @@ msgstr "Audio"
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:CARD,DEV,SUBDEV"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-alsa/bsemididevice-alsa.c:311
 #, c-format
 msgid ""
@@ -5707,7 +5700,6 @@ msgstr ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-alsa/bsepcmdevice-alsa.c:556
 #, c-format
 msgid ""
@@ -5737,7 +5729,6 @@ msgstr ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-portaudio/bsepcmdevice-portaudio.cc:354
 #, c-format
 msgid ""
@@ -6256,7 +6247,7 @@ msgstr "Wet out [%]"
 msgid "Set the amount of modified data to mix"
 msgstr "Set the amount of modified data to mix"
 
-#: plugins/davguitar.c:302
+#: plugins/davguitar.c:303
 msgid "Guitar Output"
 msgstr "Guitar Output"
 
