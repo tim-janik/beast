@@ -219,6 +219,13 @@ bst_piano_roll_controller_paste (BstPianoRollController *self)
     }
 }
 
+gboolean
+bst_piano_roll_controler_clipboard_full (BstPianoRollController *self)
+{
+  BsePartNoteSeq *pseq = bst_piano_roll_controller_get_clipboard ();
+  return pseq && pseq->n_pnotes;
+}
+
 static void
 controller_update_cursor (BstPianoRollController *self,
 			  BstPianoRollTool        tool)

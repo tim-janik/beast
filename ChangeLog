@@ -1,3 +1,9 @@
+Mon Jul  7 22:07:43 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpartdialog.c: fixup tool menu item sensitivity.
+
+	* docs/quickstart.texi: update Custom Synthesizer text.
+
 Sat Jul  5 02:47:44 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam-proxy.c (param_proxy_change_value): properly clean

@@ -213,7 +213,7 @@ bst_part_dialog_init (BstPartDialog *self)
 
   /* register tools */
   bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_INSERT,
-				  "Edit", "Insert/resize/move notes (mouse button 1 and 2)", NULL,
+				  "Insert", "Insert/resize/move notes (mouse button 1 and 2)", NULL,
 				  BST_STOCK_PART_TOOL, BST_RADIO_TOOLS_EVERYWHERE);
   bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_DELETE,
 				  "Delete", "Delete note (mouse button 1)", NULL,
@@ -515,14 +515,23 @@ bst_part_dialog_can_activate (BstActivatable         *activatable,
     case ACTION_CLEAR:
     case ACTION_CUT:
     case ACTION_COPY:
-    case ACTION_PASTE:
       return TRUE;
+    case ACTION_PASTE:
+      return bst_piano_roll_controler_clipboard_full (self->proll_ctrl);
     case ACTION_UNDO:
       return self->project && bse_project_undo_depth (self->project) > 0;
     case ACTION_REDO:
       return self->project && bse_project_redo_depth (self->project) > 0;
     case ACTION_CLEAR_UNDO:
       return self->project && bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
+      /* tools */
+    case BST_PIANO_ROLL_TOOL_INSERT:
+    case BST_PIANO_ROLL_TOOL_RESIZE:
+    case BST_PIANO_ROLL_TOOL_MOVE:
+    case BST_PIANO_ROLL_TOOL_DELETE:
+    case BST_PIANO_ROLL_TOOL_SELECT:
+    case BST_PIANO_ROLL_TOOL_VSELECT:
+      return TRUE;
     default:
       return FALSE;
     }

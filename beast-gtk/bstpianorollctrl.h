@@ -74,6 +74,7 @@ void			bst_piano_roll_controller_clear		(BstPianoRollController	*self);
 void			bst_piano_roll_controller_cut		(BstPianoRollController	*self);
 void			bst_piano_roll_controller_copy		(BstPianoRollController	*self);
 void			bst_piano_roll_controller_paste		(BstPianoRollController	*self);
+gboolean                bst_piano_roll_controler_clipboard_full (BstPianoRollController *self);
 
 
 G_END_DECLS

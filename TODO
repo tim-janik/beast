@@ -1,9 +1,18 @@
 FIXMES:
+- switch h/v zoom spinner in piano roll
+- add Solo propety to tracks
+- play notes when inserted into piano roll
+- fix default for MIDI-Synth n-voices, increase to 16
+- add Postprocessing snet property to MIDI-Synth
+- add frequency splitter/multiplier (plus cent-wise detune?)
+- add frequency output, offering bpm, 1/1 1/4 1/3 notes frequencies
+- fix BseAmplifier: defaults: gain=0, exponential-control=false
 - add sfisclock.h to sfi.h
 - add QuickStart section on wave seleciton
 - add QuickStart section on postprocessing effects
 - <mg> quick rfe based on 0.5.3: implement multiple selection in the wave loader file selector and have an add button that does not close the dialog
 - add demo song
+- add Reset menu item to BseSource menu
 - check whether */icons/Makefile.icons is included in dist tarball
 - check whether plugins/Makefile.plugins is included in dist tarball
 - fixup filemenu/dialog for WAVE recording
@@ -72,6 +81,7 @@ FIXMES:
 
 DOCS:
 - add QuickStart section on piano roll usage, esp. copy+pasting
+- implement Playback facility in doc browser for .bse file links
 - try implementing some kind of table layout for tsmview [timj]
 - add QuickStart-Samples docs once we support sample editing [timj]
 - turn off word-wrapping for normal files (e.g. /etc/profile) in
