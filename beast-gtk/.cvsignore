@@ -7,7 +7,6 @@ Makefile.in
 beast
 bstconfigpaths.h
 bstenum_arrays.c
-bstenum_arrays.stamp
 bstenum_list.c
 bstgentypes.c
 bstgentypes.h
@@ -18,4 +17,5 @@ bststest
 bstrtest
 tsmview
 scankeys
+stamp-bstenum_arrays.c
 stamp-ckeycheck

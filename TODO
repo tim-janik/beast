@@ -1,4 +1,7 @@
 FIXMES:
+- fix all test files
+- add configure option for devices
+- fix .bse file version number
 - fix engine deinitialization assertions in bseserver.c
 - match enum names on word boundaries only
 - master tune slider in preferences (kammer ton)

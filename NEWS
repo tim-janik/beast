@@ -1,4 +1,4 @@
-Overview of Changes in BEAST/BSE 0.4.2:
+Overview of Changes in BEAST/BSE 0.5.0:
 
 * Moved BSE into its own thread
 * Added IDL based code generator [Stefan Westerfeld]
@@ -10,6 +10,7 @@ Overview of Changes in BEAST/BSE 0.4.2:
 * Made documentation browser navigatable
 * Imporved MIDI support
 * Added track editor to allow complex song arrangements
+* The guile shell to BSE is named bsesh now
 * Major code cleanups, bug fixes and refactoring
 * Lots of GUI bug fixes, improvements and revamps
 * Bug fixes and major cleanups

@@ -70,11 +70,11 @@ beast_extra_sources = $(strip \
 	bstparam-scale.c	bstparam-choice.c	bstparam-note-sequence.c \
 	bstparam-entry.c	bstparam-strnum.c	bstparam-note-spinner.c \
 	bstparam-proxy.c	\
-	bstrackeditor-covers.c	bstmarshal.c		\
+	bstrackeditor-covers.c	bstmarshal.c \
 )
 beast_extra_files = $(strip \
-	catalog-en.c	bstmarshal.list		bstenum_arrays.stamp	stamp-ckeycheck \
-	bstdebugkeys.defs \
+	catalog-en.c		bstmarshal.list		stamp-bstenum_arrays.c \
+	bstdebugkeys.defs	bstrecords.sfidl	stamp-ckeycheck \
 )
 # BEAST built sources that don't get installed
 beast_built_sources = @STRIP_BEGIN@ \
@@ -101,12 +101,12 @@ bstenum_arrays.c: $(beast_headers)
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
 	    $(beast_headers) ) > xgen-beac \
-	&& (cmp -s xgen-beac $@ || touch bstenum_arrays.stamp) \
+	&& (cmp -s xgen-beac $@ || touch stamp-bstenum_arrays.c) \
 	&& cp xgen-beac $@ \
 	&& rm -f xgen-beac
-$(srcdir)/bstenum_arrays.stamp: bstenum_arrays.c
+$(srcdir)/stamp-bstenum_arrays.c: bstenum_arrays.c
 	@ [ -f $@ ] || touch $@
-bstgentypes.h: bstenum_arrays.stamp ${srcdir}/bstrecords.sfidl
+bstgentypes.h: stamp-bstenum_arrays.c ${srcdir}/bstrecords.sfidl
 	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \
@@ -116,7 +116,7 @@ bstgentypes.h: bstenum_arrays.stamp ${srcdir}/bstrecords.sfidl
 	&& $(SFIDL) --header --implementation ${srcdir}/bstrecords.sfidl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
-$(srcdir)/bstgentypes.c: bstenum_arrays.stamp ${srcdir}/bstrecords.sfidl
+$(srcdir)/bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.sfidl
 	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
@@ -124,7 +124,7 @@ $(srcdir)/bstgentypes.c: bstenum_arrays.stamp ${srcdir}/bstrecords.sfidl
 	&& $(SFIDL) --source --implementation --init _bst_init_idl ${srcdir}/bstrecords.sfidl >> xgen-bgtc \
         && cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
-$(srcdir)/bstenum_list.c: bstenum_arrays.stamp
+$(srcdir)/bstenum_list.c: stamp-bstenum_arrays.c
 	(cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --fprod "\n/* --- @filename@ --- */" \

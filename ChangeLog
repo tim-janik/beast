@@ -1,3 +1,7 @@
+Tue Mar 11 06:46:19 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to 0.5.0-rc1, released rc tarball.
+
 Mon Mar 10 11:14:28 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: don't build docs if we're not configured for @DVLBUILD@.
