@@ -25,11 +25,11 @@
 
 /* --- object type macros --- */
 #define	BSE_TYPE_PROJECT	      (BSE_TYPE_ID (BseProject))
-#define BSE_PROJECT(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_PROJECT, BseProject))
-#define BSE_PROJECT_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_PROJECT, BseProjectClass))
-#define BSE_IS_PROJECT(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_PROJECT))
-#define BSE_IS_PROJECT_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PROJECT))
-#define BSE_PROJECT_GET_CLASS(object) ((BseProjectClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_PROJECT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PROJECT, BseProject))
+#define BSE_PROJECT_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PROJECT, BseProjectClass))
+#define BSE_IS_PROJECT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PROJECT))
+#define BSE_IS_PROJECT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PROJECT))
+#define BSE_PROJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseProjectClass))
 
 
 /* --- BseProject object --- */
@@ -54,9 +54,9 @@ void		bse_project_add_super		(BseProject	*project,
 void		bse_project_remove_super	(BseProject	*project,
 						 BseSuper	*super);
 GList*		bse_project_list_supers		(BseProject	*project,
-						 BseType	 super_type);
+						 GType  	 super_type);
 GList* /*fr*/	bse_project_list_nick_paths	(BseProject	*project,
-						 BseType	 item_type);
+						 GType  	 item_type);
 BseItem*	bse_project_item_from_nick_path	(BseProject	*project,
 						 const gchar	*nick_path);
 BseErrorType	bse_project_restore		(BseProject	*project,
@@ -65,7 +65,7 @@ BseErrorType	bse_project_store_bse		(BseProject	*project,
 						 const gchar	*bse_file);
 BseObject*	bse_project_path_resolver	(gpointer        project /* func_data */,
 						 BseStorage     *storage,
-						 BseType         required_type,
+						 GType           required_type,
 						 const gchar    *path);
      
 

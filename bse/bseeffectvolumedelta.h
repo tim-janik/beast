@@ -36,8 +36,8 @@ extern "C" {
 
 /* --- BseEffectVolumeDelta type macros --- */
 #define BSE_TYPE_EFFECT_VOLUME_DELTA    (BSE_TYPE_ID (BseEffectVolumeDelta))
-#define BSE_EFFECT_VOLUME_DELTA(obj)    (BSE_CHECK_STRUCT_CAST ((obj), BSE_TYPE_EFFECT_VOLUME_DELTA, BseEffectVolumeDelta))
-#define BSE_IS_EFFECT_VOLUME_DELTA(obj) (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_EFFECT_VOLUME_DELTA))
+#define BSE_EFFECT_VOLUME_DELTA(obj)    (G_TYPE_CHECK_INSTANCE_CAST ((obj), BSE_TYPE_EFFECT_VOLUME_DELTA, BseEffectVolumeDelta))
+#define BSE_IS_EFFECT_VOLUME_DELTA(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_EFFECT_VOLUME_DELTA))
 
 
 /* --- BseEffectVolumeDelta --- */

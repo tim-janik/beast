@@ -27,11 +27,11 @@
 
 
 /* --- BSE types --- */
-static BseType type_id_clear_content = 0;
-static BseType type_id_random_fill = 0;
-static BseType type_id_select_invert = 0;
-static BseType type_id_select_all = 0;
-static BseType type_id_select_none = 0;
+static GType   type_id_clear_content = 0;
+static GType   type_id_random_fill = 0;
+static GType   type_id_select_invert = 0;
+static GType   type_id_select_all = 0;
+static GType   type_id_select_none = 0;
 
 
 /* --- clear-content --- */
@@ -229,27 +229,27 @@ multi_select_exec (BseProcedureClass *proc,
 /* --- Export to BSE --- */
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_PROCEDURES = {
-  { &type_id_clear_content, "BsePattern::clear-content",
+  { &type_id_clear_content, "BsePattern+clear-content",
     "Reset note and instrument contents", 0,
     clear_content_setup, clear_content_exec, NULL,
     "/Method/BsePattern/Edit/Clear",
   },
-  { &type_id_random_fill, "BsePattern::random-fill",
+  { &type_id_random_fill, "BsePattern+random-fill",
     "Fill the selection with random notes", 0,
     random_fill_setup, random_fill_exec, NULL,
     "/Method/BsePattern/Tools/Fill random",
   },
-  { &type_id_select_invert, "BsePattern::select-invert",
+  { &type_id_select_invert, "BsePattern+select-invert",
     "Invert the selection", SELECT_INVERT,
     multi_select_setup, multi_select_exec, NULL,
     "/Method/BsePattern/Select/Invert",
   },
-  { &type_id_select_all, "BsePattern::select-all",
+  { &type_id_select_all, "BsePattern+select-all",
     "Select everything", SELECT_ALL,
     multi_select_setup, multi_select_exec, NULL,
     "/Method/BsePattern/Select/All",
   },
-  { &type_id_select_none, "BsePattern::select-none",
+  { &type_id_select_none, "BsePattern+select-none",
     "Unselect everything", SELECT_NONE,
     multi_select_setup, multi_select_exec, NULL,
     "/Method/BsePattern/Select/None",

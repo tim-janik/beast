@@ -30,11 +30,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_PATTERN	      (BSE_TYPE_ID (BsePattern))
-#define BSE_PATTERN(object)	      (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_PATTERN, BsePattern))
-#define BSE_PATTERN_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_PATTERN, BsePatternClass))
-#define BSE_IS_PATTERN(object)	      (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_PATTERN))
-#define BSE_IS_PATTERN_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PATTERN))
-#define BSE_PATTERN_GET_CLASS(object) ((BsePatternClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_PATTERN(object)	      (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PATTERN, BsePattern))
+#define BSE_PATTERN_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PATTERN, BsePatternClass))
+#define BSE_IS_PATTERN(object)	      (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PATTERN))
+#define BSE_IS_PATTERN_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PATTERN))
+#define BSE_PATTERN_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BsePatternClass))
 
 
 /* --- BsePattern object --- */

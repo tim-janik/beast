@@ -44,26 +44,26 @@ bse_type_register_enums (void)
 {
   static const struct {
     gchar *name;
-    BseType parent_type;
-    BseType *type_p;
+    GType   parent_type;
+    GType   *type_p;
     gpointer values;
   } enums[] = {
     /* include generated enum list */
 #include "bseenum_list.c"
   };
   guint n_enums = sizeof (enums) / sizeof (enums[0]);
-  BseTypeInfo info = {
+  GTypeInfo info = {
     0 /* class_size */,
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) NULL /* class_init */,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) NULL /* class_init */,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     0 /* object_size */,
     0 /* n_preallocs */,
-    (BseObjectInitFunc) NULL,
+    (GInstanceInitFunc) NULL,
   };
   guint i;
   
@@ -72,12 +72,12 @@ bse_type_register_enums (void)
       if (enums[i].parent_type == BSE_TYPE_ENUM)
 	{
 	  info.class_size = sizeof (BseEnumClass);
-	  info.class_init = (BseClassInitFunc) bse_enum_class_init;
+	  info.class_init = (GClassInitFunc) bse_enum_class_init;
 	}
       else if (enums[i].parent_type == BSE_TYPE_FLAGS)
 	{
 	  info.class_size = sizeof (BseFlagsClass);
-	  info.class_init = (BseClassInitFunc) bse_flags_class_init;
+	  info.class_init = (GClassInitFunc) bse_flags_class_init;
 	}
       else
 	g_assert_not_reached ();
@@ -92,19 +92,19 @@ bse_type_register_enums (void)
 
 void
 bse_enum_complete_info (const BseExportSpec *spec,
-			BseTypeInfo         *info)
+			GTypeInfo         *info)
 {
   const BseExportEnum *espec = &spec->s_enum;
   
   if (espec->parent_type == BSE_TYPE_ENUM)
     {
       info->class_size = sizeof (BseEnumClass);
-      info->class_init = (BseClassInitFunc) bse_enum_class_init;
+      info->class_init = (GClassInitFunc) bse_enum_class_init;
     }
   else if (espec->parent_type == BSE_TYPE_FLAGS)
     {
       info->class_size = sizeof (BseFlagsClass);
-      info->class_init = (BseClassInitFunc) bse_flags_class_init;
+      info->class_init = (GClassInitFunc) bse_flags_class_init;
     }
   else
     g_assert_not_reached ();
@@ -114,11 +114,11 @@ bse_enum_complete_info (const BseExportSpec *spec,
 
 const gchar*
 bse_enum_type_register (const gchar *name,
-			BseType      parent_type,
+			GType        parent_type,
 			BsePlugin   *plugin,
-			BseType     *ret_type)
+			GType       *ret_type)
 {
-  BseType type;
+  GType   type;
 
   g_return_val_if_fail (ret_type != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
   *ret_type = 0;
@@ -126,7 +126,7 @@ bse_enum_type_register (const gchar *name,
   g_return_val_if_fail (parent_type != 0, bse_error_blurb (BSE_ERROR_INTERNAL));
   g_return_val_if_fail (plugin != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
 
-  type = bse_type_from_name (name);
+  type = g_type_from_name (name);
   if (type)
     return "Enum Type already registered";
   if (parent_type != BSE_TYPE_ENUM && parent_type != parent_type)
@@ -304,7 +304,7 @@ bse_error_name (BseErrorType error_value)
   BseEnumValue *ev;
   
   if (!bse_error_class)
-    bse_error_class = bse_type_class_ref (BSE_TYPE_ERROR_TYPE);
+    bse_error_class = g_type_class_ref (BSE_TYPE_ERROR_TYPE);
   
   ev = bse_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_name : NULL;
@@ -316,7 +316,7 @@ bse_error_nick (BseErrorType error_value)
   BseEnumValue *ev;
   
   if (!bse_error_class)
-    bse_error_class = bse_type_class_ref (BSE_TYPE_ERROR_TYPE);
+    bse_error_class = g_type_class_ref (BSE_TYPE_ERROR_TYPE);
   
   ev = bse_enum_get_value (bse_error_class, error_value);
   return ev ? ev->value_nick : NULL;
@@ -328,7 +328,7 @@ bse_error_blurb (BseErrorType error_value)
   BseEnumValue *ev;
   
   if (!bse_error_class)
-    bse_error_class = bse_type_class_ref (BSE_TYPE_ERROR_TYPE);
+    bse_error_class = g_type_class_ref (BSE_TYPE_ERROR_TYPE);
   
   switch (error_value)
     {

@@ -30,6 +30,8 @@ extern "C" {
 /* --- BsePlugin --- */
 struct _BsePlugin
 {
+  GTypePlugin    gtype_plugin;
+
   gchar		*name;
   gchar		*fname;
   gpointer	 gmodule;
@@ -39,11 +41,11 @@ struct _BsePlugin
   guint		 exports_enums : 1;
 
   guint		 n_proc_types;
-  BseType	*proc_types;
+  GType  	*proc_types;
   guint		 n_object_types;
-  BseType	*object_types;
+  GType  	*object_types;
   guint		 n_enum_types;
-  BseType	*enum_types;
+  GType  	*enum_types;
 
   /* private */
   gconstpointer	 e_procs;
@@ -64,8 +66,8 @@ void		bse_plugin_unref		(BsePlugin	*plugin);
 /* --- implementation details --- */
 void		bse_plugin_init			(void);
 extern void	bse_plugin_complete_info	(BsePlugin      *plugin,
-                                                 BseType         type,
-                                                 BseTypeInfo    *type_info);
+                                                 GType           type,
+                                                 GTypeInfo    *type_info);
 #define BSE_EXPORT_SYMBOL(y)		"bse_export__" G_STRINGIFY (y) "__symbol"
 #ifndef	BSE_COMPILATION
 #  define BSE_EXPORT_IMPL_S(y)		bse_export__##y##__symbol

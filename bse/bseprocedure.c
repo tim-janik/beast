@@ -37,7 +37,7 @@ struct _ShareNode
 
 
 /* --- prototypes --- */
-extern void	bse_type_register_procedure_info  (BseTypeInfo		    *info);
+extern void	bse_type_register_procedure_info  (GTypeInfo		    *info);
 static void     bse_procedure_base_init		  (BseProcedureClass	    *proc);
 static void     bse_procedure_base_destroy	  (BseProcedureClass	    *proc);
 static void     bse_procedure_init		  (BseProcedureClass	    *proc,
@@ -52,15 +52,15 @@ static GHookList    proc_notifiers = { 0, };
 
 /* --- functions --- */
 extern void
-bse_type_register_procedure_info (BseTypeInfo *info)
+bse_type_register_procedure_info (GTypeInfo *info)
 {
-  static const BseTypeInfo proc_info = {
+  static const GTypeInfo proc_info = {
     sizeof (BseProcedureClass),
 
-    (BseBaseInitFunc) bse_procedure_base_init,
-    (BseBaseDestroyFunc) bse_procedure_base_destroy,
-    (BseClassInitFunc) NULL,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) bse_procedure_base_init,
+    (GBaseDestroyFunc) bse_procedure_base_destroy,
+    (GClassInitFunc) NULL,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     /* non classed type stuff */
@@ -125,7 +125,7 @@ bse_procedure_init (BseProcedureClass        *proc,
   memset (in_param_specs, 0, sizeof (in_param_specs));
   memset (out_param_specs, 0, sizeof (out_param_specs));
 
-  proc->name = bse_type_name (BSE_PROCEDURE_TYPE (proc));
+  proc->name = g_type_name (BSE_PROCEDURE_TYPE (proc));
   proc->blurb = bse_type_blurb (BSE_PROCEDURE_TYPE (proc));
   proc->private_id = pspec->private_id;
 
@@ -202,26 +202,26 @@ bse_procedure_init (BseProcedureClass        *proc,
 
 void
 bse_procedure_complete_info (const BseExportSpec *spec,
-			     BseTypeInfo         *info)
+			     GTypeInfo         *info)
 {
   const BseExportProcedure *pspec = &spec->s_proc;
 
   info->class_size = sizeof (BseProcedureClass);
-  info->class_init = (BseClassInitFunc) bse_procedure_init;
-  info->class_destroy = (BseClassDestroyFunc) pspec->unload;
+  info->class_init = (GClassInitFunc) bse_procedure_init;
+  info->class_destroy = (GClassDestroyFunc) pspec->unload;
   info->class_data = pspec;
 }
 
 BseProcedureClass*
 bse_procedure_find_ref (const gchar *name)
 {
-  BseType type;
+  GType   type;
 
   g_return_val_if_fail (name != NULL, NULL);
 
-  type = bse_type_from_name (name);
+  type = g_type_from_name (name);
   if (BSE_TYPE_IS_PROCEDURE (type))
-    return bse_type_class_ref (type);
+    return g_type_class_ref (type);
 
   return NULL;
 }
@@ -231,7 +231,7 @@ bse_procedure_ref (BseProcedureClass *proc)
 {
   g_return_if_fail (BSE_IS_PROCEDURE_CLASS (proc));
 
-  bse_type_class_ref (BSE_PROCEDURE_TYPE (proc));
+  g_type_class_ref (BSE_PROCEDURE_TYPE (proc));
 }
 
 void
@@ -239,7 +239,7 @@ bse_procedure_unref (BseProcedureClass *proc)
 {
   g_return_if_fail (BSE_IS_PROCEDURE_CLASS (proc));
 
-  bse_type_class_unref (proc);
+  g_type_class_unref (proc);
 }
 
 static gboolean
@@ -424,7 +424,7 @@ bse_procedure_exec (const gchar *name,
   proc = bse_procedure_find_ref (name);
   if (!proc)
     {
-      if (bse_type_from_name (name))
+      if (g_type_from_name (name))
 	g_warning ("Cannot exec non-procedure `%s'", name);
       else
 	g_warning ("Cannot exec unknown procedure \"%s\"", name);
@@ -453,7 +453,7 @@ bse_procedure_void_exec (const gchar *name,
   proc = bse_procedure_find_ref (name);
   if (!proc)
     {
-      if (bse_type_from_name (name))
+      if (g_type_from_name (name))
 	g_warning ("Cannot exec non-procedure `%s'", name);
       else
 	g_warning ("Cannot exec unknown procedure \"%s\"", name);
@@ -485,7 +485,7 @@ bse_procedure_execva_item (BseProcedureClass *proc,
   if (item)
     {
       g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
-      g_return_val_if_fail (bse_type_is_a (BSE_OBJECT_TYPE (item),
+      g_return_val_if_fail (g_type_is_a (BSE_OBJECT_TYPE (item),
 					   proc->in_param_specs[0]->s_item.item_type),
 			    BSE_ERROR_INTERNAL);
     }
@@ -578,9 +578,9 @@ const gchar*
 bse_procedure_type_register (const gchar *name,
 			     const gchar *blurb,
 			     BsePlugin   *plugin,
-			     BseType     *ret_type)
+			     GType       *ret_type)
 {
-  BseType type, base_type = 0;
+  GType   type, base_type = 0;
   gchar *p;
 
   g_return_val_if_fail (ret_type != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
@@ -588,21 +588,21 @@ bse_procedure_type_register (const gchar *name,
   g_return_val_if_fail (name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
   g_return_val_if_fail (plugin != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
 
-  type = bse_type_from_name (name);
+  type = g_type_from_name (name);
   if (type)
     return "Procedure already registered";
 
-  p = strchr (name, ':');
+  p = strchr (name, '+');
   if (p)
     {
-      /* enforce <ITEM>::<NAME> syntax */
-      if (p[1] != ':' || !p[2])
+      /* enforce <ITEM>+<METHOD> syntax */
+      if (!p[1])
 	return "Procedure name invalid";
 
       p = g_strndup (name, p - name);
-      base_type = bse_type_from_name (p);
+      base_type = g_type_from_name (p);
       g_free (p);
-      if (!bse_type_is_a (base_type, BSE_TYPE_ITEM))
+      if (!g_type_is_a (base_type, BSE_TYPE_ITEM))
 	return "Procedure base type invalid";
     }
   

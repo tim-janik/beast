@@ -24,11 +24,11 @@
 
 /* --- object type macros --- */
 #define	BSE_TYPE_CONTAINER		(BSE_TYPE_ID (BseContainer))
-#define BSE_CONTAINER(object)		(BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_CONTAINER, BseContainer))
-#define BSE_CONTAINER_CLASS(class)	(BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_CONTAINER, BseContainerClass))
-#define BSE_IS_CONTAINER(object)	(BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_CONTAINER))
-#define BSE_IS_CONTAINER_CLASS(class)	(BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_CONTAINER))
-#define BSE_CONTAINER_GET_CLASS(object) ((BseContainerClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_CONTAINER(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_CONTAINER, BseContainer))
+#define BSE_CONTAINER_CLASS(class)	(G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_CONTAINER, BseContainerClass))
+#define BSE_IS_CONTAINER(object)	(G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_CONTAINER))
+#define BSE_IS_CONTAINER_CLASS(class)	(G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_CONTAINER))
+#define BSE_CONTAINER_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseContainerClass))
 
 
 /* --- BseContainer object --- */
@@ -57,7 +57,7 @@ struct _BseContainerClass
   guint		(*item_seqid)		(BseContainer		*container,
 					 BseItem		*item);
   BseItem*	(*get_item)		(BseContainer		*container,
-					 BseType		 item_type,
+					 GType  		 item_type,
 					 guint			 seq_id);
 };
 
@@ -66,7 +66,7 @@ struct _BseContainerClass
 void		bse_container_add_item		(BseContainer	*container,
 						 BseItem	*item);
 BseItem*        bse_container_new_item          (BseContainer   *container,
-						 BseType         item_type,
+						 GType           item_type,
 						 const gchar    *first_param_name,
 						 ...);
 void		bse_container_remove_item	(BseContainer	*container,
@@ -80,7 +80,7 @@ GList*		bse_container_list_items	(BseContainer	*container);
 guint		bse_container_get_item_seqid	(BseContainer	*container,
 						 BseItem	*item);
 BseItem*	bse_container_get_item		(BseContainer	*container,
-						 BseType	 item_type,
+						 GType  	 item_type,
 						 guint		 seq_id);
 void		bse_container_store_items	(BseContainer	*container,
 						 BseStorage	*storage);

@@ -51,7 +51,7 @@ static const struct {
 
 
 /* --- prototypes --- */
-extern void		bse_type_register_object_info	(BseTypeInfo	*info);
+extern void		bse_type_register_object_info	(GTypeInfo	*info);
 static void		bse_object_class_base_init	(BseObjectClass	*class);
 static void		bse_object_class_base_destroy	(BseObjectClass	*class);
 static void		bse_object_class_init		(BseObjectClass	*class);
@@ -125,20 +125,20 @@ bse_object_debug (void)
 
 /* --- functions --- */
 extern void
-bse_type_register_object_info (BseTypeInfo *info)
+bse_type_register_object_info (GTypeInfo *info)
 {
-  static const BseTypeInfo object_info = {
+  static const GTypeInfo object_info = {
     sizeof (BseObjectClass),
 
-    (BseBaseInitFunc) bse_object_class_base_init,
-    (BseBaseDestroyFunc) bse_object_class_base_destroy,
-    (BseClassInitFunc) bse_object_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) bse_object_class_base_init,
+    (GBaseDestroyFunc) bse_object_class_base_destroy,
+    (GClassInitFunc) bse_object_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseObject),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_object_init,
+    (GInstanceInitFunc) bse_object_init,
   };
 
   *info = object_info;
@@ -148,7 +148,7 @@ bse_type_register_object_info (BseTypeInfo *info)
 
 void
 bse_object_complete_info (const BseExportSpec *spec,
-			  BseTypeInfo         *info)
+			  GTypeInfo         *info)
 {
   const BseExportObject *ospec = &spec->s_object;
 
@@ -160,9 +160,9 @@ bse_object_type_register (const gchar *name,
 			  const gchar *parent_name,
 			  const gchar *blurb,
 			  BsePlugin   *plugin,
-			  BseType     *ret_type)
+			  GType       *ret_type)
 {
-  BseType type;
+  GType   type;
 
   g_return_val_if_fail (ret_type != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
   *ret_type = 0;
@@ -170,10 +170,10 @@ bse_object_type_register (const gchar *name,
   g_return_val_if_fail (parent_name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
   g_return_val_if_fail (plugin != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
 
-  type = bse_type_from_name (name);
+  type = g_type_from_name (name);
   if (type)
     return "Object already registered";
-  type = bse_type_from_name (parent_name);
+  type = g_type_from_name (parent_name);
   if (!type)
     return "Parent type unknown";
   if (!BSE_TYPE_IS_OBJECT (type))
@@ -199,8 +199,8 @@ bse_object_class_base_init (BseObjectClass *class)
   class->n_notifiers = 0;
   class->notifiers = NULL;
   for (i = 0; bse_notifiers[i].notifier && bse_notifiers[i].object; i++)
-    if (bse_type_conforms_to (BSE_CLASS_TYPE (class),
-			      bse_type_from_name (bse_notifiers[i].object)))
+    if (g_type_conforms_to (BSE_CLASS_TYPE (class),
+			      g_type_from_name (bse_notifiers[i].object)))
       {
 	class->notifiers = g_renew (GQuark, class->notifiers, class->n_notifiers + 1);
 	class->notifiers[class->n_notifiers] = g_quark_from_static_string (bse_notifiers[i].notifier);
@@ -288,7 +288,7 @@ bse_object_class_init (BseObjectClass *class)
    */
   for (i = 0; bse_notifiers[i].notifier || bse_notifiers[i].object; i++)
     if (!bse_notifiers[i].notifier ||
-	!bse_type_conforms_to (bse_type_from_name (bse_notifiers[i].object),
+	!g_type_conforms_to (g_type_from_name (bse_notifiers[i].object),
 			       BSE_TYPE_OBJECT))
       g_error ("notifier entry (\"%s\", `%s') refers to invalid (unknown) type or name",
 	       bse_notifiers[i].notifier, bse_notifiers[i].object);
@@ -423,13 +423,13 @@ bse_object_class_check_notifier (BseObjectClass *class,
 }
 
 gpointer
-bse_object_new_valist (BseType      type,
+bse_object_new_valist (GType        type,
 		       const gchar *first_param_name,
 		       va_list      var_args)
 {
   BseObject *object;
   
-  g_return_val_if_fail (bse_type_is_a (type, BSE_TYPE_OBJECT), NULL);
+  g_return_val_if_fail (g_type_is_a (type, BSE_TYPE_OBJECT), NULL);
   
   object = bse_type_create_object (type);
   
@@ -440,14 +440,14 @@ bse_object_new_valist (BseType      type,
 }
 
 gpointer
-bse_object_new (BseType      type,
+bse_object_new (GType        type,
 		const gchar *first_param_name,
 		...)
 {
   BseObject *object;
   va_list var_args;
   
-  g_return_val_if_fail (bse_type_is_a (type, BSE_TYPE_OBJECT), NULL);
+  g_return_val_if_fail (g_type_is_a (type, BSE_TYPE_OBJECT), NULL);
   
   va_start (var_args, first_param_name);
   object = bse_object_new_valist (type, first_param_name, var_args);
@@ -583,7 +583,7 @@ bse_object_unref (BseObject *object)
 }
 
 GList*
-bse_objects_list_by_name (BseType      type,
+bse_objects_list_by_name (GType        type,
 			  const gchar *name)
 {
   GList *object_list = NULL;
@@ -597,7 +597,7 @@ bse_objects_list_by_name (BseType      type,
       object_slist = g_hash_table_lookup (bse_object_names_ht, name);
       
       for (slist = object_slist; slist; slist = slist->next)
-	if (bse_type_is_a (BSE_OBJECT_TYPE (slist->data), type))
+	if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), type))
 	  object_list = g_list_prepend (object_list, slist->data);
     }
 
@@ -613,12 +613,12 @@ list_objects (gpointer key,
   gpointer *data = user_data;
 
   for (slist = value; slist; slist = slist->next)
-    if (bse_type_is_a (BSE_OBJECT_TYPE (slist->data), GPOINTER_TO_UINT (data[1])))
+    if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), GPOINTER_TO_UINT (data[1])))
       data[0] = g_list_prepend (data[0], slist->data);
 }
 
 GList*
-bse_objects_list (BseType type)
+bse_objects_list (GType   type)
 {
   g_return_val_if_fail (BSE_TYPE_IS_OBJECT (type) == TRUE, NULL);
 
@@ -999,7 +999,7 @@ bse_object_class_get_parser (BseObjectClass *class,
 	if (strcmp (class->parsers[i].token, token) == 0)
 	  return class->parsers + i;
 
-      class = bse_type_class_peek_parent (class);
+      class = g_type_class_peek_parent (class);
     }
   while (class);
 
@@ -1062,7 +1062,7 @@ bse_object_do_get_icon (BseObject *object)
 
 gpointer
 bse_object_ensure_interface_data (BseObject          *object,
-				  BseType             interface_type,
+				  GType               interface_type,
 				  BseInterfaceDataNew new_func,
 				  GDestroyNotify      destroy_func)
 {
@@ -1070,12 +1070,12 @@ bse_object_ensure_interface_data (BseObject          *object,
   GQuark quark;
 
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
-  g_return_val_if_fail (BSE_TYPE_IS_INTERFACE (interface_type), NULL);
-  g_return_val_if_fail (bse_type_conforms_to (BSE_OBJECT_TYPE (object), interface_type), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (interface_type), NULL);
+  g_return_val_if_fail (g_type_conforms_to (BSE_OBJECT_TYPE (object), interface_type), NULL);
   if (!new_func)
     g_return_val_if_fail (destroy_func == NULL, NULL);
 
-  quark = bse_type_quark (interface_type);
+  quark = g_type_quark (interface_type);
 
   data = g_datalist_id_get_data (&object->datalist, quark);
   if (!data && new_func)
@@ -1094,30 +1094,30 @@ iface_slist_destroy (gpointer data)
   GSList *slist;
 
   for (slist = iface_list; slist; slist = slist->next)
-    bse_type_interface_unref (slist->data);
+    /* FIXME: bse_type_interface_unref (slist->data) */;
 
   g_slist_free (iface_list);
 }
 
 gpointer
 bse_object_get_interface (BseObject *object,
-			  BseType    interface_type)
+			  GType      interface_type)
 {
   static GQuark iface_slist_quark = 0;
   GSList *slist;
-  BseTypeInterface *iface_table;
+  GTypeInterface *iface_table;
 
   g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
-  g_return_val_if_fail (BSE_TYPE_IS_INTERFACE (interface_type), NULL);
+  g_return_val_if_fail (G_TYPE_IS_INTERFACE (interface_type), NULL);
   
   /* try a fast lookup */
-  iface_table = bse_type_interface_peek (BSE_OBJECT_GET_CLASS (object), interface_type);
+  iface_table = g_type_interface_peek (BSE_OBJECT_GET_CLASS (object), interface_type);
   if (iface_table)
     return iface_table;
 
-  g_return_val_if_fail (bse_type_conforms_to (BSE_OBJECT_TYPE (object), interface_type), NULL);
+  g_return_val_if_fail (g_type_conforms_to (BSE_OBJECT_TYPE (object), interface_type), NULL);
 
-  iface_table = bse_type_interface_ref (BSE_OBJECT_GET_CLASS (object), interface_type);
+  /* FIXME: iface_table = bse_type_interface_ref (BSE_OBJECT_GET_CLASS (object), interface_type); */
 
   if (!iface_slist_quark)
     iface_slist_quark = g_quark_from_string ("bse-interface-list");
@@ -1234,7 +1234,7 @@ bse_object_class_find_object_param_spec (BseObjectClass *class,
       ospec = g_hash_table_lookup (bse_ospec_ht, &key);
       if (ospec)
 	break;
-      key.object_type = bse_type_parent (key.object_type);
+      key.object_type = g_type_parent (key.object_type);
     }
   while (key.object_type);
 
@@ -1435,8 +1435,8 @@ bse_object_set_param (BseObject	*object,
 	{
 	  g_warning ("%s: can't convert object parameter `%s' from `%s' to `%s'", G_STRLOC,
 		     param->pspec->any.name,
-		     bse_type_name (param->pspec->type),
-		     bse_type_name (ospec->pspec.type));
+		     g_type_name (param->pspec->type),
+		     g_type_name (ospec->pspec.type));
 	  return;
 	}
     }
@@ -1445,7 +1445,7 @@ bse_object_set_param (BseObject	*object,
   
   bse_object_ref (object);
 
-  class = bse_type_class_peek (ospec->object_type);
+  class = g_type_class_peek (ospec->object_type);
   class->set_param (object, &tmp_param, ospec->param_id);
   bse_object_queue_param_changed (object, ospec);
 
@@ -1484,7 +1484,7 @@ bse_object_get_param (BseObject *object,
 
   bse_object_ref (object);
 
-  class = bse_type_class_peek (ospec->object_type);
+  class = g_type_class_peek (ospec->object_type);
   class->get_param (object, &tmp_param, ospec->param_id);
 
   if (tmp_param.pspec != param->pspec)
@@ -1493,8 +1493,8 @@ bse_object_get_param (BseObject *object,
 	{
 	  g_warning ("%s: can't convert object parameter `%s' from `%s' to `%s'", G_STRLOC,
 		     tmp_param.pspec->any.name,
-		     bse_type_name (tmp_param.pspec->type),
-		     bse_type_name (param->pspec->type));
+		     g_type_name (tmp_param.pspec->type),
+		     g_type_name (param->pspec->type));
 	}
     }
   else
@@ -1548,7 +1548,7 @@ bse_object_do_store_private (BseObject  *object,
   while (class)
     {
       class_list = g_slist_prepend (class_list, class);
-      class = bse_type_class_peek_parent (class);
+      class = g_type_class_peek_parent (class);
     }
   for (slist = class_list; slist; slist = slist->next)
     {

@@ -77,20 +77,20 @@ static gpointer parent_class = NULL;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BsePcmDeviceOSS)
 {
-  BseType pcm_device_oss_type;
+  GType   pcm_device_oss_type;
   
-  static const BseTypeInfo pcm_device_oss_info = {
+  static const GTypeInfo pcm_device_oss_info = {
     sizeof (BsePcmDeviceOSSClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_pcm_device_oss_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_pcm_device_oss_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BsePcmDeviceOSS),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_pcm_device_oss_init,
+    (GInstanceInitFunc) bse_pcm_device_oss_init,
   };
   
   pcm_device_oss_type = bse_type_register_static (BSE_TYPE_PCM_DEVICE,
@@ -109,7 +109,7 @@ bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
   BseDeviceClass *device_class;
   BsePcmDeviceClass *pcm_device_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_PCM_DEVICE);
+  parent_class = g_type_class_peek (BSE_TYPE_PCM_DEVICE);
   object_class = BSE_OBJECT_CLASS (class);
   device_class = BSE_DEVICE_CLASS (class);
   pcm_device_class = BSE_PCM_DEVICE_CLASS (class);

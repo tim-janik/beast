@@ -157,7 +157,7 @@ while (<>) {
     }
 
     if ($gen_externs) {
-	print "extern BseType bse_type_builtin_id_$type;\n";
+	print "extern GType bse_type_builtin_id_$type;\n";
     }
 
     if ($gen_export_proto) {
@@ -165,7 +165,7 @@ while (<>) {
     }
     
     if ($gen_interns) {
-	print "BseType bse_type_builtin_id_$type = 0;\n";
+	print "GType bse_type_builtin_id_$type = 0;\n";
     }
 }
 

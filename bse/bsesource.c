@@ -54,25 +54,25 @@ static BseTokenType bse_source_do_restore_private	(BseObject      *object,
 
 
 /* --- variables --- */
-static BseTypeClass *parent_class = NULL;
+static GTypeClass *parent_class = NULL;
 static GQuark        quark_deferred_input = 0;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSource)
 {
-  static const BseTypeInfo source_info = {
+  static const GTypeInfo source_info = {
     sizeof (BseSourceClass),
     
-    (BseBaseInitFunc) bse_source_class_base_init,
-    (BseBaseDestroyFunc) bse_source_class_base_destroy,
-    (BseClassInitFunc) bse_source_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) bse_source_class_base_init,
+    (GBaseDestroyFunc) bse_source_class_base_destroy,
+    (GClassInitFunc) bse_source_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSource),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_source_init,
+    (GInstanceInitFunc) bse_source_init,
   };
 
   g_assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
@@ -121,7 +121,7 @@ bse_source_class_init (BseSourceClass *class)
 {
   BseObjectClass *object_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_ITEM);
+  parent_class = g_type_class_peek (BSE_TYPE_ITEM);
   object_class = BSE_OBJECT_CLASS (class);
   
   object_class->store_private = bse_source_do_store_private;

@@ -29,16 +29,16 @@ extern "C" {
 
 
 /* --- type macros --- */
-#define BSE_ENUM_CLASS(class)     (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_ENUM, BseEnumClass))
-#define BSE_IS_ENUM_CLASS(class)  (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ENUM))
-#define BSE_FLAGS_CLASS(class)    (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_FLAGS, BseFlagsClass))
-#define BSE_IS_FLAGS_CLASS(class) (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_FLAGS))
+#define BSE_ENUM_CLASS(class)     (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_ENUM, BseEnumClass))
+#define BSE_IS_ENUM_CLASS(class)  (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ENUM))
+#define BSE_FLAGS_CLASS(class)    (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_FLAGS, BseFlagsClass))
+#define BSE_IS_FLAGS_CLASS(class) (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_FLAGS))
 
 
 /* --- enum/flag values & classes --- */
 struct	_BseEnumClass
 {
-  BseTypeClass	bse_class;
+  GTypeClass	bse_class;
   
   gint		 minimum;
   gint		 maximum;
@@ -47,7 +47,7 @@ struct	_BseEnumClass
 };
 struct	_BseFlagsClass
 {
-  BseTypeClass	bse_class;
+  GTypeClass	bse_class;
   
   guint		 mask;
   guint		 n_values;
@@ -165,9 +165,9 @@ BseErrorType	bse_error_from_errno		(gint		 v_errno,
 
 /* --- implementation details --- */
 const gchar*    bse_enum_type_register          (const gchar *name,
-						 BseType      parent_type,
+						 GType        parent_type,
 						 BsePlugin   *plugin,
-						 BseType     *ret_type);
+						 GType       *ret_type);
 
 
 #ifdef __cplusplus

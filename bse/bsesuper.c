@@ -48,7 +48,7 @@ static void	bse_super_do_modified	(BseSuper		*super,
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static GTypeClass	*parent_class = NULL;
 static GQuark		 quark_author = 0;
 static GQuark		 quark_copyright = 0;
 static GSList		*bse_super_objects = NULL;
@@ -57,18 +57,18 @@ static GSList		*bse_super_objects = NULL;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSuper)
 {
-  static const BseTypeInfo super_info = {
+  static const GTypeInfo super_info = {
     sizeof (BseSuperClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_super_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_super_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSuper),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_super_init,
+    (GInstanceInitFunc) bse_super_init,
   };
   
   return bse_type_register_static (BSE_TYPE_CONTAINER,
@@ -84,7 +84,7 @@ bse_super_class_init (BseSuperClass *class)
   BseItemClass *item_class;
   BseContainerClass *container_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_CONTAINER);
+  parent_class = g_type_class_peek (BSE_TYPE_CONTAINER);
   object_class = BSE_OBJECT_CLASS (class);
   item_class = BSE_ITEM_CLASS (class);
   container_class = BSE_CONTAINER_CLASS (class);

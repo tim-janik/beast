@@ -22,8 +22,7 @@
 
 #undef          G_DISABLE_ASSERT
 #undef          G_DISABLE_CHECKS
-#include        <glib.h>
-#include        <bse/glib-extra.h>
+#include        <bse/glib-gtype.h>	/* FIXME: <glib.h> */
 #include        <math.h>
 
 
@@ -50,10 +49,6 @@ typedef gint32                          BseMixValue;
 typedef gint16                          BseSampleValue;
 typedef gulong                          BseTime;
 typedef guint                           BseIndex2D;
-typedef guint                           BseType;
-typedef struct  _BseTypeClass           BseTypeClass;
-typedef struct  _BseTypeInterface       BseTypeInterface;
-typedef struct  _BseTypeStruct          BseTypeStruct;
 
 
 /* --- BSE parameters (and values) --- */
@@ -131,13 +126,9 @@ typedef struct  _BseMixVolume           BseMixVolume;
 typedef struct  _BseMixRate             BseMixRate;
 typedef struct  _BseMunk                BseMunk;
 typedef struct  _BsePatternNote         BsePatternNote;
-typedef struct  _BsePcmConfig           BsePcmConfig;
 typedef struct  _BsePlugin              BsePlugin;
-typedef struct  _BseSampleHashEntry     BseSampleHashEntry;
 typedef struct  _BseSongSequencer       BseSongSequencer;
 typedef struct  _BseStorage             BseStorage;
-typedef struct  _BseTypeInfo            BseTypeInfo;
-typedef struct  _BseInterfaceInfo       BseInterfaceInfo;
 typedef struct  _BseVoice               BseVoice;
 typedef struct  _BseVoiceAllocator      BseVoiceAllocator;
 typedef struct  _BseNotifyHook          BseNotifyHook;
@@ -233,13 +224,13 @@ typedef BseTokenType  (*BseTryStatement)     (gpointer           func_data,
                                               gpointer           user_data);
 typedef BseObject*    (*BsePathResolver)     (gpointer           func_data,
                                               BseStorage        *storage,
-                                              BseType            required_type,
+                                              GType              required_type,
                                               const gchar       *path);
 typedef gboolean      (*BseProcedureShare)   (gpointer           func_data,
                                               const gchar       *proc_name,
                                               gfloat             progress);
 typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
-                                              BseType            type,
+                                              GType              type,
                                               gpointer           user_data);
 
 

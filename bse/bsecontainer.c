@@ -45,7 +45,7 @@ static void         bse_container_reset                 (BseSource              
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static GTypeClass	*parent_class = NULL;
 static GQuark		 quark_cross_refs = 0;
 static GSList           *containers_cross_changes = NULL;
 static guint             containers_cross_changes_handler = 0;
@@ -54,18 +54,18 @@ static guint             containers_cross_changes_handler = 0;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseContainer)
 {
-  static const BseTypeInfo container_info = {
+  static const GTypeInfo container_info = {
     sizeof (BseContainerClass),
 
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_container_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_container_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseContainer),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_container_init,
+    (GInstanceInitFunc) bse_container_init,
   };
   
   return bse_type_register_static (BSE_TYPE_SOURCE,
@@ -81,7 +81,7 @@ bse_container_class_init (BseContainerClass *class)
   BseItemClass *item_class;
   BseSourceClass *source_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   item_class = BSE_ITEM_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
@@ -232,7 +232,7 @@ bse_container_add_item_unrefed (BseContainer *container,
 
 BseItem*
 bse_container_new_item (BseContainer *container,
-			BseType       item_type,
+			GType         item_type,
 			const gchar  *first_param_name,
 			...)
 {
@@ -240,7 +240,7 @@ bse_container_new_item (BseContainer *container,
   va_list var_args;
 
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
-  g_return_val_if_fail (bse_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
+  g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
   va_start (var_args, first_param_name);
   item = bse_object_new_valist (item_type, first_param_name, var_args);
@@ -416,12 +416,12 @@ find_nth_item (BseItem *item,
 
 BseItem*
 bse_container_get_item (BseContainer *container,
-			BseType       item_type,
+			GType         item_type,
 			guint         seqid)
 {
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
   g_return_val_if_fail (seqid > 0, NULL);
-  g_return_val_if_fail (bse_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
+  g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
   if (BSE_CONTAINER_GET_CLASS (container)->get_item)
     return BSE_CONTAINER_GET_CLASS (container)->get_item (container, item_type, seqid);
@@ -567,9 +567,9 @@ find_named_typed_item (BseItem *item,
 {
   gpointer *data = data_p;
   gchar *name = data[1];
-  BseType type = GPOINTER_TO_UINT (data[2]);
+  GType   type = GPOINTER_TO_UINT (data[2]);
 
-  if (bse_type_is_a (BSE_OBJECT_TYPE (item), type) &&
+  if (g_type_is_a (BSE_OBJECT_TYPE (item), type) &&
       bse_string_equals (BSE_OBJECT_NAME (item), name))
     {
       data[0] = item;
@@ -584,7 +584,7 @@ bse_container_item_from_handle (BseContainer *container,
 {
   gchar *type_name, *ident, *name = NULL;
   BseItem *item = NULL;
-  BseType type;
+  GType   type;
 
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
   g_return_val_if_fail (handle != NULL, NULL);
@@ -609,8 +609,8 @@ bse_container_item_from_handle (BseContainer *container,
       if (*ident == ':')
 	name = ident + 1;
     }
-  type = bse_type_from_name (type_name);
-  if (bse_type_is_a (type, BSE_TYPE_ITEM))
+  type = g_type_from_name (type_name);
+  if (g_type_is_a (type, BSE_TYPE_ITEM))
     {
       if (name)
 	{

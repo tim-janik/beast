@@ -41,19 +41,19 @@ extern "C" {
  * normally implemented.
  */
 #define BSE_OBJECT(object)           (BSE_IS_OBJECT (object) ? ((BseObject*) (object)) : \
-                                      BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_OBJECT, BseObject))
+                                      G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_OBJECT, BseObject))
 #define BSE_OBJECT_CLASS(class)      (BSE_IS_OBJECT_CLASS (class) ? ((BseObjectClass*) (class)) : \
-                                      BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_OBJECT, BseObjectClass))
+                                      G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_OBJECT, BseObjectClass))
 #define BSE_IS_OBJECT(object)        (((BseObject*) (object)) != NULL && \
-                                      BSE_IS_OBJECT_CLASS (((BseTypeStruct*) (object))->bse_class))
-#define BSE_IS_OBJECT_CLASS(class)   (((BseTypeClass*) (class)) != NULL && \
-                                      BSE_TYPE_IS_OBJECT (((BseTypeClass*) (class))->bse_type))
-#define BSE_OBJECT_GET_CLASS(object) ((BseObjectClass*) (((BseObject*) (object))->bse_struct.bse_class))
+                                      BSE_IS_OBJECT_CLASS (((GTypeInstance*) (object))->g_class))
+#define BSE_IS_OBJECT_CLASS(class)   (((GTypeClass*) (class)) != NULL && \
+                                      BSE_TYPE_IS_OBJECT (((GTypeClass*) (class))->g_type))
+#define BSE_OBJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseObjectClass))
 
 
 /* --- object member/convenience macros --- */
-#define BSE_OBJECT_TYPE(object)           (BSE_STRUCT_TYPE (object))
-#define BSE_OBJECT_TYPE_NAME(object)      (bse_type_name (BSE_OBJECT_TYPE (object)))
+#define BSE_OBJECT_TYPE(object)           (G_TYPE_FROM_INSTANCE (object))
+#define BSE_OBJECT_TYPE_NAME(object)      (g_type_name (BSE_OBJECT_TYPE (object)))
 #define BSE_OBJECT_NAME(object)           ((gchar*) g_datalist_id_get_data (&((BseObject*) (object))->datalist, _bse_quark_name))
 #define BSE_OBJECT_FLAGS(object)          (((BseObject*) (object))->flags)
 #define BSE_OBJECT_SET_FLAGS(object, f)   (BSE_OBJECT_FLAGS (object) |= (f))
@@ -88,7 +88,7 @@ typedef GTokenType (*BseObjectParseStatement) (BseObject     *object,
 					       gpointer       user_data);
 struct _BseObject
 {
-  BseTypeStruct          bse_struct;
+  GTypeInstance          bse_struct;
   
   /* pack into one guint */
   guint16                flags;
@@ -107,12 +107,12 @@ struct _BseObjectParamSpec
 {
   guint        param_id;
   GQuark       param_group;
-  BseType      object_type;
+  GType        object_type;
   BseParamSpec pspec;
 };
 struct _BseObjectClass
 {
-  BseTypeClass           bse_class;
+  GTypeClass           bse_class;
 
   guint                  n_param_specs;
   BseObjectParamSpec   **param_specs;
@@ -165,10 +165,10 @@ void            bse_object_class_add_parser     (BseObjectClass *oclass,
 
 
 /* --- object prototypes --- */
-gpointer        bse_object_new                  (BseType         type,
+gpointer        bse_object_new                  (GType           type,
                                                  const gchar    *first_param_name,
                                                  ...);
-gpointer        bse_object_new_valist           (BseType         type,
+gpointer        bse_object_new_valist           (GType           type,
                                                  const gchar    *first_param_name,
                                                  va_list         var_args);
 void            bse_object_set                  (BseObject      *object,
@@ -213,19 +213,19 @@ gpointer        bse_object_steal_qdata          (BseObject      *object,
 BseIcon*        bse_object_get_icon             (BseObject      *object);
 void		bse_object_notify_icon_changed  (BseObject      *object);
 gpointer        bse_object_ensure_interface_data(BseObject      *object,
-                                                 BseType         interface_type,
+                                                 GType           interface_type,
                                                  BseInterfaceDataNew new_func,
                                                  GDestroyNotify  destroy_func);
 gpointer        bse_object_get_interface_data   (BseObject      *object,
-                                                 BseType         interface_type);
+                                                 GType           interface_type);
 gpointer        bse_object_get_interface        (BseObject      *object,
-                                                 BseType         interface_type);
+                                                 GType           interface_type);
 void            bse_object_get_param            (BseObject      *object,
                                                  BseParam       *param);
 void            bse_object_set_param            (BseObject      *object,
                                                  BseParam       *param);
-GList*          bse_objects_list                (BseType         type);
-GList*          bse_objects_list_by_name        (BseType         type,
+GList*          bse_objects_list                (GType           type);
+GList*          bse_objects_list_by_name        (GType           type,
                                                  const gchar    *name);
 void            bse_object_store                (BseObject      *object,
                                                  BseStorage     *storage);
@@ -262,7 +262,7 @@ const gchar*    bse_object_type_register        (const gchar *name,
                                                  const gchar *parent_name,
                                                  const gchar *blurb,
                                                  BsePlugin   *plugin,
-                                                 BseType     *ret_type);
+                                                 GType       *ret_type);
 extern GQuark _bse_quark_name;
 #define BSE_OBJECT_GET_INTERFACE(op, type_id, type) \
     ((type*) bse_object_get_interface ((BseObject*) (op), (type_id)))
@@ -311,7 +311,7 @@ G_STMT_START { \
 	     G_STRLOC, \
 	     param_id, \
 	     param->pspec->any.name, \
-	     bse_type_name (param->pspec->type), \
+	     g_type_name (param->pspec->type), \
 	     BSE_OBJECT_TYPE_NAME (object))
 
 

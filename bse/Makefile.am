@@ -95,6 +95,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsetype.h \
 	bseutils.h \
 	glib-extra.h \
+	glib-gtype.h \
 @STRIP_END@
 # BSE header files that don't get installed
 bse_private_h_sources = @STRIP_BEGIN@ \
@@ -147,6 +148,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseutils.c \
 	bsevoice.c \
 	glib-extra.c \
+	glib-gtype.c \
 @STRIP_END@
 # we use our own built_sources variable rules instead of BUILT_SOURCES,
 # since handles BUILT_SOURCES strange and wrong on some occasions (mostly
@@ -215,7 +217,7 @@ stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_h_sources)
 	&& $(PERL) $(srcdir)/mkenums.pl \
 	  --iprod "\n/* --- @filename@ --- */" \
 	  --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
-	  --eprod "extern BseType BSE_TYPE_ID (@EnumName@);" \
+	  --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
 	    $(bse_h_sources) > xgen-sbgth \
 	&& $(PERL) $(srcdir)/mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
@@ -224,7 +226,7 @@ stamp-bsegentypes.h: @MISSING_PERL5@ $(bse_h_sources)
 bsegentypes.c: @MISSING_PERL5@ bsegentypes.h $(srcdir)/mkenums.pl $(srcdir)/mktypes.pl
 	cd $(srcdir) \
 	&& $(PERL) $(srcdir)/mkenums.pl \
-	  --eprod "\nBseType BSE_TYPE_ID (@EnumName@) = 0;" \
+	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
 	    $(bse_h_sources) > xgen-bgtc \
 	&& $(PERL) $(srcdir)/mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
 	&& cp xgen-bgtc $@ \

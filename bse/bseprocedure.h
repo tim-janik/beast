@@ -31,7 +31,7 @@ extern "C" {
 
 /* --- BSE type macros --- */
 #define	BSE_PROCEDURE_TYPE(proc)	(BSE_CLASS_TYPE (proc))
-#define	BSE_IS_PROCEDURE_CLASS(proc)	(BSE_CHECK_CLASS_TYPE ((proc), BSE_TYPE_PROCEDURE))
+#define	BSE_IS_PROCEDURE_CLASS(proc)	(G_TYPE_CHECK_CLASS_TYPE ((proc), BSE_TYPE_PROCEDURE))
 
 
 /* --- limits --- */
@@ -45,7 +45,7 @@ typedef BseErrorType  (*BseProcedureExec)    (BseProcedureClass *procedure,
 					      BseParam          *oparams);
 struct _BseProcedureClass
 {
-  BseTypeClass    bse_class;
+  GTypeClass    bse_class;
   gchar          *name;
   gchar          *blurb;
   guint           private_id;
@@ -115,7 +115,7 @@ BseErrorType bse_procedure_execva_item	(BseProcedureClass	*proc,
 const gchar* bse_procedure_type_register (const gchar		*name,
 					  const gchar		*blurb,
 					  BsePlugin		*plugin,
-					  BseType		*ret_type);
+					  GType  		*ret_type);
 
 
 

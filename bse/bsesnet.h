@@ -31,11 +31,12 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_SNET		   (BSE_TYPE_ID (BseSNet))
-#define BSE_SNET(object)	   (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_SNET, BseSNet))
-#define BSE_SNET_CLASS(class)	   (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_SNET, BseSNetClass))
-#define BSE_IS_SNET(object)	   (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_SNET))
-#define BSE_IS_SNET_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SNET))
-#define BSE_SNET_GET_CLASS(object) ((BseSNetClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_SNET(object)	   (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SNET, BseSNet))
+#define BSE_SNET_CLASS(class)	   (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SNET, BseSNetClass))
+#define BSE_IS_SNET(object)	   (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SNET))
+#define BSE_IS_SNET_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SNET))
+#define BSE_SNET_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseSNetClass))
+
 
 /* --- BseSNet object --- */
 struct _BseSNet
@@ -72,7 +73,7 @@ BseSNet*	bse_snet_new		(BseProject	*project,
 BseSNet*	bse_snet_lookup		(BseProject	*project,
 					 const gchar	*name);
 BseSource*	bse_snet_new_source	(BseSNet        *snet,
-					 BseType         source_type,
+					 GType           source_type,
 					 const gchar    *first_param_name,
 					 ...);
 void		bse_snet_remove_source	(BseSNet        *snet,

@@ -122,6 +122,20 @@ _bse_datalist_id_remove_no_notify (GData **datalist,
 #endif
 
 
+#undef G_STRUCT_OFFSET
+#undef G_STRUCT_MEMBER_P
+#undef G_STRUCT_MEMBER
+/* Provide convenience macros for handling structure
+ * fields through their offsets.
+ */
+#define G_STRUCT_OFFSET(struct_type, member)    \
+    ((glong) ((guint8*) &((struct_type*) 0)->member))
+#define G_STRUCT_MEMBER_P(struct_p, struct_offset)   \
+    ((gpointer) ((guint8*) (struct_p) + (glong) (struct_offset)))
+#define G_STRUCT_MEMBER(member_type, struct_p, struct_offset)   \
+    (*(member_type*) G_STRUCT_MEMBER_P ((struct_p), (struct_offset)))
+
+
 
 
 #ifdef __cplusplus

@@ -32,7 +32,7 @@ struct _CEntry
   CEntry  *next;
   GQuark   category;
   guint    mindex;
-  BseType  type;
+  GType    type;
   BseIcon *icon;
 };
 
@@ -120,7 +120,7 @@ centry_new (const gchar *caller,
 
 void
 bse_categories_register (const gchar *category,
-			 BseType      type)
+			 GType        type)
 {
   CEntry *centry;
 
@@ -136,7 +136,7 @@ bse_categories_register (const gchar *category,
 
 void
 bse_categories_register_icon (const gchar      *category,
-			      BseType           type,
+			      GType             type,
 			      const BsePixdata *pixdata)
 {
   CEntry *centry;
@@ -160,7 +160,7 @@ bse_categories_register_icon (const gchar      *category,
 
 static inline BseCategory*
 categories_match (const gchar *pattern,
-		  BseType      base_type,
+		  GType        base_type,
 		  guint       *n_matches)
 {
   GPatternSpec *pspec;
@@ -175,7 +175,7 @@ categories_match (const gchar *pattern,
       gchar *category = g_quark_to_string (centry->category);
 
       if (g_pattern_match_string (pspec, category) &&
-	  (!base_type || bse_type_conforms_to (centry->type, base_type)))
+	  (!base_type || g_type_conforms_to (centry->type, base_type)))
 	{
 	  guint i = n_cats;
 	  
@@ -209,19 +209,19 @@ bse_categories_match (const gchar *pattern,
 
 BseCategory* /* free result */
 bse_categories_match_typed (const gchar *pattern,
-			    BseType      base_type,
+			    GType        base_type,
 			    guint       *n_matches)
 {
   if (n_matches)
     *n_matches = 0;
   g_return_val_if_fail (pattern != NULL, NULL);
-  g_return_val_if_fail (base_type > BSE_TYPE_NONE, NULL);
+  g_return_val_if_fail (base_type > G_TYPE_NONE, NULL);
 
   return categories_match (pattern, base_type, n_matches);
 }
 
 BseCategory* /* free result */
-bse_categories_from_type (BseType type,
+bse_categories_from_type (GType   type,
 			  guint  *n_categories)
 {
   CEntry *centry;

@@ -25,11 +25,11 @@
 
 /* --- object type macros --- */
 #define	BSE_TYPE_BIN_DATA	       (BSE_TYPE_ID (BseBinData))
-#define BSE_BIN_DATA(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_BIN_DATA, BseBinData))
-#define BSE_BIN_DATA_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_BIN_DATA, BseBinDataClass))
-#define BSE_IS_BIN_DATA(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_BIN_DATA))
-#define BSE_IS_BIN_DATA_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_BIN_DATA))
-#define BSE_BIN_DATA_GET_CLASS(object) ((BseBinDataClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_BIN_DATA(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_BIN_DATA, BseBinData))
+#define BSE_BIN_DATA_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_BIN_DATA, BseBinDataClass))
+#define BSE_IS_BIN_DATA(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_BIN_DATA))
+#define BSE_IS_BIN_DATA_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_BIN_DATA))
+#define BSE_BIN_DATA_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseBinDataClass))
 
 
 /* --- Data types --- */

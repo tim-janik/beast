@@ -355,7 +355,7 @@ bse_storage_put_param (BseStorage *storage,
   bse_storage_puts (storage, param->pspec->any.name);
   bse_storage_putc (storage, ' ');
   
-  switch (BSE_FUNDAMENTAL_TYPE (param->pspec->type))
+  switch (param->pspec->type)
     {
       gchar *string;
       BseEnumValue *ev;
@@ -462,7 +462,7 @@ bse_storage_put_param (BseStorage *storage,
     default:
       bse_storage_putc (storage, '?');
       g_warning (G_STRLOC ": unhandled parameter type `%s' (%d)",
-		 bse_type_name (param->pspec->type),
+		 g_type_name (param->pspec->type),
 		 param->pspec->type);
       break;
     }
@@ -1049,7 +1049,7 @@ bse_storage_parse_param_value (BseStorage *storage,
   scanner = storage->scanner;
   pspec = param->pspec;
   
-  switch (BSE_FUNDAMENTAL_TYPE (pspec->type))
+  switch (pspec->type)
     {
       gboolean v_bool;
       gint v_enum;
@@ -1374,7 +1374,7 @@ bse_storage_parse_param_value (BseStorage *storage,
     default:
       return bse_storage_warn_skip (storage,
 				    "unhandled parameter type `%s' for parameter `%s'",
-				    bse_type_name (pspec->type),
+				    g_type_name (pspec->type),
 				    pspec->any.name);
     }
   

@@ -47,24 +47,24 @@ static BseTokenType bse_pattern_group_restore_private	(BseObject         	*objec
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static GTypeClass	*parent_class = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BsePatternGroup)
 {
-  static const BseTypeInfo pattern_group_info = {
+  static const GTypeInfo pattern_group_info = {
     sizeof (BsePatternGroupClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_pattern_group_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_pattern_group_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_group */,
     
     sizeof (BsePatternGroup),
     BSE_PREALLOC_N_PATTERN_GROUPS /* n_preallocs */,
-    (BseObjectInitFunc) bse_pattern_group_init,
+    (GInstanceInitFunc) bse_pattern_group_init,
   };
   
   return bse_type_register_static (BSE_TYPE_ITEM,
@@ -78,7 +78,7 @@ bse_pattern_group_class_init (BsePatternGroupClass *class)
 {
   BseObjectClass *object_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_ITEM);
+  parent_class = g_type_class_peek (BSE_TYPE_ITEM);
   object_class = BSE_OBJECT_CLASS (class);
   
   object_class->set_param = (BseObjectSetParamFunc) bse_pattern_group_set_param;

@@ -36,8 +36,8 @@ extern "C" {
 
 /* --- BseEffectPatternJump type macros --- */
 #define BSE_TYPE_EFFECT_PATTERN_JUMP    (BSE_TYPE_ID (BseEffectPatternJump))
-#define BSE_EFFECT_PATTERN_JUMP(obj)    (BSE_CHECK_STRUCT_CAST ((obj), BSE_TYPE_EFFECT_PATTERN_JUMP, BseEffectPatternJump))
-#define BSE_IS_EFFECT_PATTERN_JUMP(obj) (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_EFFECT_PATTERN_JUMP))
+#define BSE_EFFECT_PATTERN_JUMP(obj)    (G_TYPE_CHECK_INSTANCE_CAST ((obj), BSE_TYPE_EFFECT_PATTERN_JUMP, BseEffectPatternJump))
+#define BSE_IS_EFFECT_PATTERN_JUMP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_EFFECT_PATTERN_JUMP))
 
 
 /* --- BseEffectPatternJump --- */

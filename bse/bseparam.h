@@ -30,11 +30,26 @@ extern "C" {
 
 
 /* --- type macros --- */
-#define BSE_IS_PARAM(param)      (((BseParam*) (param)) && \
-                                  BSE_IS_PARAM_SPEC (((BseParam*) (param))->pspec))
-#define BSE_IS_PARAM_SPEC(pspec) (((BseParamSpec*) (pspec)) && \
-                                  BSE_TYPE_IS_PARAM (((BseParamSpec*) (pspec))->type))
-
+#define BSE_IS_PARAM(param)           (((BseParam*) (param)) && \
+                                       BSE_IS_PARAM_SPEC (((BseParam*) (param))->pspec))
+#define BSE_IS_PARAM_SPEC(pspec)     (((BseParamSpec*) (pspec)) && \
+                                      BSE_TYPE_IS_PARAM (((BseParamSpec*) (pspec))->type))
+#define BSE_IS_PARAM_OF_TYPE(p,t)    (BSE_IS_PARAM (p) && \
+				      g_type_is_a (((BseParam*) (param))->pspec->type, t))
+#define BSE_IS_PARAM_BOOL(param)     (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_BOOL))
+#define BSE_IS_PARAM_INT(param)      (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_INT))
+#define BSE_IS_PARAM_UINT(param)     (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_UINT))
+#define BSE_IS_PARAM_ENUM(param)     (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_ENUM))
+#define BSE_IS_PARAM_FLAGS(param)    (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_FLAGS))
+#define BSE_IS_PARAM_FLOAT(param)    (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_FLOAT))
+#define BSE_IS_PARAM_DOUBLE(param)   (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_DOUBLE))
+#define BSE_IS_PARAM_TIME(param)     (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_TIME))
+#define BSE_IS_PARAM_NOTE(param)     (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_NOTE))
+#define BSE_IS_PARAM_INDEX_2D(param) (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_INDEX_2D))
+#define BSE_IS_PARAM_STRING(param)   (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_STRING))
+#define BSE_IS_PARAM_DOTS(param)     (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_DOTS))
+#define BSE_IS_PARAM_ITEM(param)     (BSE_IS_PARAM_OF_TYPE (param, BSE_TYPE_PARAM_ITEM))
+  
 
 
 typedef enum                    /*< skip >*/
@@ -88,14 +103,14 @@ union _BseParamValue
 };
 struct _BseParam
 {
-  /* class member from BseTypeStruct */
+  /* class member from GTypeInstance */
   BseParamSpec  *pspec;
   
   BseParamValue  value;
 };
 struct _BseParamSpecAny
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -103,7 +118,7 @@ struct _BseParamSpecAny
 };
 struct _BseParamSpecBool
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -116,7 +131,7 @@ struct _BseParamSpecBool
 };
 struct _BseParamSpecInt
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -129,7 +144,7 @@ struct _BseParamSpecInt
 };
 struct _BseParamSpecUInt
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -142,7 +157,7 @@ struct _BseParamSpecUInt
 };
 struct _BseParamSpecEnum
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -153,7 +168,7 @@ struct _BseParamSpecEnum
 };
 struct _BseParamSpecFlags
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -164,7 +179,7 @@ struct _BseParamSpecFlags
 };
 struct _BseParamSpecFloat
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -177,7 +192,7 @@ struct _BseParamSpecFloat
 };
 struct _BseParamSpecDouble
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -190,7 +205,7 @@ struct _BseParamSpecDouble
 };
 struct _BseParamSpecTime
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -200,7 +215,7 @@ struct _BseParamSpecTime
 };
 struct _BseParamSpecNote
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -214,7 +229,7 @@ struct _BseParamSpecNote
 };
 struct _BseParamSpecIndex2D
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -226,7 +241,7 @@ struct _BseParamSpecIndex2D
 };
 struct _BseParamSpecString
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -240,7 +255,7 @@ struct _BseParamSpecString
 };
 struct _BseParamSpecDots
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
@@ -251,19 +266,19 @@ struct _BseParamSpecDots
 };
 struct _BseParamSpecItem
 {
-  BseTypeClass   bse_class;
+  GTypeClass   bse_class;
   gchar         *name;
   gchar         *nick;
   gchar         *blurb;
   BseParamBits   flags;
   
-  BseType        item_type;
+  GType          item_type;
 };
 union _BseParamSpec
 {
-  /* type member from BseTypeClass which all param specs are derived from */
-  BseType                type;
-  BseTypeClass           bse_class;
+  /* type member from GTypeClass which all param specs are derived from */
+  GType                  type;
+  GTypeClass           bse_class;
   
   BseParamSpecAny        any;
   BseParamSpecBool      s_bool;
@@ -332,8 +347,8 @@ gboolean    bse_param_value_convert     (const BseParam *param_src,
 					 BseParam       *param_dest);
 gboolean    bse_param_values_exchange   (BseParam       *param1,
 					 BseParam       *param2);
-gboolean    bse_param_types_exchangable (BseType         param_type1,
-					 BseType         param_type2);
+gboolean    bse_param_types_exchangable (GType           param_type1,
+					 GType           param_type2);
 
 
 /* --- param specs --- */
@@ -362,13 +377,13 @@ BseParamSpec*   bse_param_spec_uint     (const gchar    *name,
 BseParamSpec*   bse_param_spec_enum     (const gchar    *name,
                                          const gchar    *nick,
                                          const gchar    *blurb,
-                                         BseType         enum_type,
+                                         GType           enum_type,
                                          gint            default_value,
                                          BseParamBits    flags);
 BseParamSpec*   bse_param_spec_flags    (const gchar    *name,
                                          const gchar    *nick,
                                          const gchar    *blurb,
-                                         BseType         flags_type,
+                                         GType           flags_type,
                                          guint           default_value,
                                          BseParamBits    flags);
 BseParamSpec*   bse_param_spec_float    (const gchar    *name,
@@ -427,7 +442,7 @@ BseParamSpec*   bse_param_spec_dots     (const gchar    *name,
 BseParamSpec*   bse_param_spec_item     (const gchar    *name,
                                          const gchar    *nick,
                                          const gchar    *blurb,
-                                         BseType         item_type,
+                                         GType           item_type,
                                          BseParamBits    flags);
 
 

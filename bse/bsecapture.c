@@ -46,20 +46,20 @@ static gpointer  parent_class = NULL;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseCapture)
 {
-  BseType capture_type;
+  GType   capture_type;
   
-  static const BseTypeInfo capture_info = {
+  static const GTypeInfo capture_info = {
     sizeof (BseCaptureClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_capture_class_init,
-    (BseClassDestroyFunc) bse_capture_class_destroy,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_capture_class_init,
+    (GClassDestroyFunc) bse_capture_class_destroy,
     NULL /* class_data */,
     
     sizeof (BseCapture),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_capture_init,
+    (GInstanceInitFunc) bse_capture_init,
   };
   static const BsePixdata mic_pixdata = {
     MIC_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
@@ -83,7 +83,7 @@ bse_capture_class_init (BseCaptureClass *class)
   BseSourceClass *source_class;
   guint ochannel_id;
 
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 

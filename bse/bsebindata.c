@@ -44,24 +44,24 @@ static void	bse_bin_data_free_values	(BseBinData		*bin_data);
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static GTypeClass	*parent_class = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseBinData)
 {
-  static const BseTypeInfo bin_data_info = {
+  static const GTypeInfo bin_data_info = {
     sizeof (BseBinDataClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_bin_data_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_bin_data_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseBinData),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_bin_data_init,
+    (GInstanceInitFunc) bse_bin_data_init,
   };
   
   return bse_type_register_static (BSE_TYPE_OBJECT,
@@ -75,7 +75,7 @@ bse_bin_data_class_init (BseBinDataClass *class)
 {
   BseObjectClass *object_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_OBJECT);
+  parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
   object_class = BSE_OBJECT_CLASS (class);
   
   object_class->set_param = (BseObjectSetParamFunc) bse_bin_data_set_param;

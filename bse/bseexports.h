@@ -78,12 +78,12 @@ typedef enum			/*< skip >*/
 /* --- export declarations --- */
 struct _BseExportAny
 {
-  BseType            *type_p;
+  GType              *type_p;
   const gchar  	     *name;
 };
 struct _BseExportProcedure
 {
-  BseType            *type_p;	   /* obligatory */
+  GType              *type_p;	   /* obligatory */
   const gchar  	     *name;	   /* obligatory */
   const gchar  	     *blurb;	   /* optional */
   const guint  	      private_id;  /* optional */
@@ -97,21 +97,21 @@ struct _BseExportProcedure
 };
 struct _BseExportObject
 {
-  BseType            *type_p;	   /* obligatory */
+  GType              *type_p;	   /* obligatory */
   const gchar  	     *name;	   /* obligatory */
   const gchar  	     *parent_type; /* obligatory */
   const gchar  	     *blurb;	   /* optional */
 
-  const BseTypeInfo  *object_info; /* obligatory */
+  const GTypeInfo  *object_info; /* obligatory */
 
   const gchar  	     *category;	   /* recommended */
   const BsePixdata    pixdata;     /* optional */
 };
 struct _BseExportEnum
 {
-  BseType            *type_p;	   /* obligatory */
+  GType              *type_p;	   /* obligatory */
   const gchar  	     *name;	   /* obligatory */
-  BseType             parent_type; /* obligatory */
+  GType               parent_type; /* obligatory */
   gpointer            values;      /* obligatory */
 };
 
@@ -119,7 +119,7 @@ struct _BseExportEnum
 /* --- export union --- */
 union _BseExportSpec
 {
-  BseType		 *type_p; /* common to all members */
+  GType  		 *type_p; /* common to all members */
   BseExportAny		  any;
   BseExportProcedure	  s_proc;
   BseExportObject	  s_object;
@@ -129,11 +129,11 @@ union _BseExportSpec
 
 /* --- internal prototypes --- */
 void	bse_procedure_complete_info	(const BseExportSpec *spec,
-					 BseTypeInfo         *info);
+					 GTypeInfo         *info);
 void	bse_object_complete_info	(const BseExportSpec *spec,
-					 BseTypeInfo         *info);
+					 GTypeInfo         *info);
 void	bse_enum_complete_info		(const BseExportSpec *spec,
-					 BseTypeInfo         *info);
+					 GTypeInfo         *info);
 
 
 

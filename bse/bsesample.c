@@ -55,24 +55,24 @@ static BseTokenType bse_sample_do_restore_private	(BseObject	*object,
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static GTypeClass	*parent_class = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSample)
 {
-  static const BseTypeInfo sample_info = {
+  static const GTypeInfo sample_info = {
     sizeof (BseSampleClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_sample_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_sample_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSample),
     BSE_PREALLOC_N_SAMPLES /* n_preallocs */,
-    (BseObjectInitFunc) bse_sample_init,
+    (GInstanceInitFunc) bse_sample_init,
   };
   
   return bse_type_register_static (BSE_TYPE_SUPER,
@@ -88,7 +88,7 @@ bse_sample_class_init (BseSampleClass *class)
   BseContainerClass *container_class;
   BseSuperClass *super_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_SUPER);
+  parent_class = g_type_class_peek (BSE_TYPE_SUPER);
   object_class = BSE_OBJECT_CLASS (class);
   container_class = BSE_CONTAINER_CLASS (class);
   super_class = BSE_SUPER_CLASS (class);

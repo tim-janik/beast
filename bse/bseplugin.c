@@ -40,6 +40,13 @@ gconstpointer BSE_EXPORT_IMPL_S (Procedure) = NULL;
 gconstpointer BSE_EXPORT_IMPL_S (Object) = NULL;
 BSE_EXPORT_IMPL_C = NULL;
 static GSList    *bse_plugins = NULL;
+static GTypePluginVTable bse_plugin_vtable = {
+  (GTypePluginRef) bse_plugin_ref,
+  (GTypePluginUnRef) bse_plugin_unref,
+  (GTypePluginFillTypeInfo) bse_plugin_complete_info,
+  (GTypePluginFillInterfaceInfo) NULL,
+};
+
 
 /* --- functions --- */
 void
@@ -69,6 +76,7 @@ bse_plugin_init (void)
 	  BsePlugin *plugin = g_new0 (BsePlugin, 1); /* FIXME: alloc only */
 
 	  bse_plugins = g_slist_prepend (bse_plugins, plugin);
+	  plugin->gtype_plugin.vtable = &bse_plugin_vtable;
 	  plugin->name = "BSE-Builtin"; /* this is usually reset */
 	  plugin->fname = NULL;
 	  plugin->gmodule = NULL;
@@ -108,14 +116,14 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      pspec->init &&
 	      pspec->exec)
 	    {
-	      BseType type;
+	      GType   type;
 	      guint on = plugin->n_proc_types;
 	      const gchar *error;
 	      
 	      BSE_IF_DEBUG (PLUGINS)
 		g_message ("register-procedure: \"%s\"", pspec->name);
 	      
-	      type = bse_type_from_name (pspec->name);
+	      type = g_type_from_name (pspec->name);
 	      if (type)
 		return "Attempt to register known symbol";
 	      
@@ -130,7 +138,7 @@ bse_plugin_register_types (BsePlugin    *plugin,
 		bse_categories_register_icon (pspec->category, type, &pspec->pixdata);
 	      
 	      plugin->n_proc_types++;
-	      plugin->proc_types = g_renew (BseType,
+	      plugin->proc_types = g_renew (GType  ,
 					    plugin->proc_types,
 					    plugin->n_proc_types);
 	      plugin->proc_types[on] = type;
@@ -148,14 +156,14 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	  if (ospec->name &&
 	      ospec->object_info)
 	    {
-	      BseType type;
+	      GType   type;
 	      guint on = plugin->n_object_types;
 	      const gchar *error;
 	      
 	      BSE_IF_DEBUG (PLUGINS)
 		g_message ("register-object: \"%s\"", ospec->name);
 	      
-	      type = bse_type_from_name (ospec->name);
+	      type = g_type_from_name (ospec->name);
 	      if (type)
 		return "Attempt to register known symbol";
 	      
@@ -172,7 +180,7 @@ bse_plugin_register_types (BsePlugin    *plugin,
 		bse_categories_register_icon (ospec->category, type, &ospec->pixdata);
 	      
 	      plugin->n_object_types++;
-	      plugin->object_types = g_renew (BseType,
+	      plugin->object_types = g_renew (GType  ,
 					      plugin->object_types,
 					      plugin->n_object_types);
 	      plugin->object_types[on] = type;
@@ -191,14 +199,14 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      espec->parent_type &&
 	      espec->values)
 	    {
-	      BseType type;
+	      GType   type;
 	      guint on = plugin->n_enum_types;
 	      const gchar *error;
 	      
 	      BSE_IF_DEBUG (PLUGINS)
 		g_message ("register-enum: \"%s\"", espec->name);
 	      
-	      type = bse_type_from_name (espec->name);
+	      type = g_type_from_name (espec->name);
 	      if (type)
 		return "Attempt to register known symbol";
 	      
@@ -210,7 +218,7 @@ bse_plugin_register_types (BsePlugin    *plugin,
 		return error;
 	      
 	      plugin->n_enum_types++;
-	      plugin->enum_types = g_renew (BseType,
+	      plugin->enum_types = g_renew (GType  ,
 					    plugin->enum_types,
 					    plugin->n_enum_types);
 	      plugin->enum_types[on] = type;
@@ -239,14 +247,14 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
   if (pspecs)
     {
       const BseExportProcedure *pspec;
-      BseType *exp_types = plugin->proc_types;
-      BseType *exp_last = plugin->proc_types + plugin->n_proc_types;
+      GType   *exp_types = plugin->proc_types;
+      GType   *exp_last = plugin->proc_types + plugin->n_proc_types;
       
       for (pspec = pspecs; pspec->type_p && exp_types < exp_last; pspec++)
 	if (pspec->name &&
 	    pspec->init &&
 	    pspec->exec &&
-	    bse_type_from_name (pspec->name) == *exp_types)
+	    g_type_from_name (pspec->name) == *exp_types)
 	  {
 	    if (*pspec->type_p)
 	      g_warning ("while reinitializing \"%s\", type id for `%s' already assigned?",
@@ -263,12 +271,12 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
   if (ospecs)
     {
       const BseExportObject *ospec;
-      BseType *exp_types = plugin->object_types;
-      BseType *exp_last = plugin->object_types + plugin->n_object_types;
+      GType   *exp_types = plugin->object_types;
+      GType   *exp_last = plugin->object_types + plugin->n_object_types;
       
       for (ospec = ospecs; ospec->type_p && exp_types < exp_last; ospec++)
 	if (ospec->object_info &&
-	    bse_type_from_name (ospec->name) == *exp_types)
+	    g_type_from_name (ospec->name) == *exp_types)
 	  {
 	    if (*ospec->type_p)
 	      g_warning ("while reinitializing \"%s\", type id for `%s' already assigned?",
@@ -285,14 +293,14 @@ bse_plugin_reinit_type_ids (BsePlugin *plugin)
   if (especs)
     {
       const BseExportEnum *espec;
-      BseType *exp_types = plugin->enum_types;
-      BseType *exp_last = plugin->enum_types + plugin->n_enum_types;
+      GType   *exp_types = plugin->enum_types;
+      GType   *exp_last = plugin->enum_types + plugin->n_enum_types;
       
       for (espec = especs; espec->type_p && exp_types < exp_last; espec++)
 	if (espec->name &&
 	    espec->parent_type &&
 	    espec->values &&
-	    bse_type_from_name (espec->name) == *exp_types)
+	    g_type_from_name (espec->name) == *exp_types)
 	  {
 	    if (*espec->type_p)
 	      g_warning ("while reinitializing \"%s\", type id for `%s' already assigned?",
@@ -414,7 +422,7 @@ bse_plugin_unref (BsePlugin *plugin)
 
 static inline const BseExportSpec*
 bse_plugin_get_export_spec (BsePlugin    *plugin,
-			    BseType       type,
+			    GType         type,
 			    gconstpointer export_specs,
 			    guint         spec_size)
 {
@@ -434,13 +442,13 @@ bse_plugin_get_export_spec (BsePlugin    *plugin,
 
 void
 bse_plugin_complete_info (BsePlugin   *plugin,
-			  BseType      type,
-			  BseTypeInfo *type_info)
+			  GType        type,
+			  GTypeInfo *type_info)
 {
   const BseExportSpec *export_spec = NULL;
   gconstpointer specs_p = NULL;
   guint spec_size = 0;
-  void (*complete_info) (const BseExportSpec *, BseTypeInfo *) = NULL;
+  void (*complete_info) (const BseExportSpec *, GTypeInfo *) = NULL;
   
   g_return_if_fail (plugin != NULL);
   g_return_if_fail (plugin->module_refs > 0);
@@ -450,7 +458,7 @@ bse_plugin_complete_info (BsePlugin   *plugin,
    * get passed.
    */
   
-  switch (BSE_FUNDAMENTAL_TYPE (type))
+  switch (G_TYPE_FUNDAMENTAL (type))
     {
     case BSE_TYPE_PROCEDURE:
       specs_p = plugin->e_procs;
@@ -476,7 +484,7 @@ bse_plugin_complete_info (BsePlugin   *plugin,
   export_spec = bse_plugin_get_export_spec (plugin, type, specs_p, spec_size);
   if (!export_spec || !complete_info)
     g_error ("unable to find export spec for `%s' in \"%s\"",
-	     bse_type_name (type),
+	     g_type_name (type),
 	     plugin->name);
 
   complete_info (export_spec, type_info);
@@ -597,6 +605,7 @@ bse_plugin_check_load (const gchar *_file_name)
   /* create plugin and feature type registration
    */
   plugin = g_new0 (BsePlugin, 1); /* FIXME: alloc_only */
+  plugin->gtype_plugin.vtable = &bse_plugin_vtable;
   plugin->name = g_strdup (*sym_begin);
   plugin->fname = file_name;
   plugin->gmodule = gmodule;

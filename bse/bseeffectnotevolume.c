@@ -38,18 +38,18 @@ static void bse_effect_note_volume_get_param  (BseEffectNoteVolume *effect,
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseEffectNoteVolume)
 {
-  static const BseTypeInfo effect_info = {
+  static const GTypeInfo effect_info = {
     sizeof (BseEffectClass),
 
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_effect_note_volume_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_effect_note_volume_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseEffectNoteVolume),
     BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
-    (BseObjectInitFunc) bse_effect_note_volume_init,
+    (GInstanceInitFunc) bse_effect_note_volume_init,
   };
 
   return bse_type_register_static (BSE_TYPE_EFFECT,

@@ -36,8 +36,8 @@ extern "C" {
 
 /* --- BseEffectFineTune type macros --- */
 #define BSE_TYPE_EFFECT_FINE_TUNE    (BSE_TYPE_ID (BseEffectFineTune))
-#define BSE_EFFECT_FINE_TUNE(obj)    (BSE_CHECK_STRUCT_CAST ((obj), BSE_TYPE_EFFECT_FINE_TUNE, BseEffectFineTune))
-#define BSE_IS_EFFECT_FINE_TUNE(obj) (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_EFFECT_FINE_TUNE))
+#define BSE_EFFECT_FINE_TUNE(obj)    (G_TYPE_CHECK_INSTANCE_CAST ((obj), BSE_TYPE_EFFECT_FINE_TUNE, BseEffectFineTune))
+#define BSE_IS_EFFECT_FINE_TUNE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_EFFECT_FINE_TUNE))
 
 
 /* --- BseEffectFineTune --- */

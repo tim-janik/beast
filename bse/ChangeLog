@@ -1,3 +1,15 @@
+Fri Mar 24 09:19:55 2000  Tim Janik  <timj@gtk.org>
+
+	* bsetype.[hc]: ported the BSE type system over to use the GLib
+	one, bsetype.c is now < 200 lines, hoehoe ;)
+
+	* *.[hc]: port over from BSE to GLib type system.
+
+Fri Mar 24 06:00:07 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-gtype.[hc]: finished GLib Type System implementation, now
+	on to the testing.
+
 Mon Mar 13 00:05:37 2000  Tim Janik  <timj@gtk.org>
 
 	* bsesongsequencer.c (bse_song_sequencer_step): handle songs with

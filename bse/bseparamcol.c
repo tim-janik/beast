@@ -31,21 +31,21 @@
 #define	BSE_PARAM_COLLECT_VALUE(param, var_args, _error)	\
 G_STMT_START { \
   gchar *__error_msg; \
-  BseType fundamental_type; \
+  GType param_type; \
 \
-  fundamental_type = BSE_FUNDAMENTAL_TYPE ((param)->pspec->type); \
+  param_type = (param)->pspec->type; \
 \
   __error_msg = NULL; \
-  switch (fundamental_type) \
+  switch (param_type) \
     { \
-    case BSE_TYPE_INVALID: \
+    case G_TYPE_INVALID: \
       __error_msg = g_strdup ("invalid untyped argument"); \
       break; \
 \
-    case BSE_TYPE_NONE: \
+    case G_TYPE_NONE: \
       /* we just ignore this type, since it arithmetically just requires \
        * us to not move the var_args pointer any further. callers need to \
-       * check for the validity of BSE_TYPE_NONE themselves. \
+       * check for the validity of G_TYPE_NONE themselves. \
        * \
        * __error_msg = g_strdup ("invalid argument type `void'"); \
        */ \
@@ -109,7 +109,7 @@ G_STMT_START { \
 \
     default: \
       __error_msg = g_strconcat ("unsupported argument type `", \
-			         bse_type_name ((param)->pspec->type), \
+			         g_type_name ((param)->pspec->type), \
 			         "'", \
 			         NULL); \
       break; \

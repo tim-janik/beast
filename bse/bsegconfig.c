@@ -61,25 +61,25 @@ extern void        bse_globals_reset               (BseGlobals       *globals); 
 
 
 /* --- variables --- */
-static BseTypeClass     *parent_class = NULL;
+static GTypeClass     *parent_class = NULL;
 static GSList           *bse_gconfig_list = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseGConfig)
 {
-  static const BseTypeInfo gconfig_info = {
+  static const GTypeInfo gconfig_info = {
     sizeof (BseGConfigClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_gconfig_class_init,
-    (BseClassDestroyFunc) bse_gconfig_class_destroy,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_gconfig_class_init,
+    (GClassDestroyFunc) bse_gconfig_class_destroy,
     NULL /* class_data */,
 
     sizeof (BseGConfig),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_gconfig_init,
+    (GInstanceInitFunc) bse_gconfig_init,
   };
 
   return bse_type_register_static (BSE_TYPE_OBJECT,
@@ -140,7 +140,7 @@ bse_gconfig_class_init (BseGConfigClass *class)
   BseObjectClass *object_class;
   BseGlobals globals_defaults = { 0, };
     
-  parent_class = bse_type_class_peek (BSE_TYPE_OBJECT);
+  parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
   object_class = BSE_OBJECT_CLASS (class);
   
   object_class->set_param = (BseObjectSetParamFunc) bse_gconfig_set_param;
@@ -369,7 +369,7 @@ bse_gconfig_revert (BseGConfig *gconf)
 	  
 	  bse_object_param_changed (BSE_OBJECT (gconf), ospec->pspec.any.name);
 	}
-      class = bse_type_class_peek_parent (class);
+      class = g_type_class_peek_parent (class);
     }
   while (class);
   
@@ -413,7 +413,7 @@ bse_gconfig_do_default_revert (BseGConfig *gconf)
 	  bse_object_set_param (object, &param);
 	  bse_param_free_value (&param);
 	}
-      class = bse_type_class_peek_parent (class);
+      class = g_type_class_peek_parent (class);
     }
   while (class);
 }

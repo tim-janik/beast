@@ -54,24 +54,24 @@ static BseTokenType bse_pattern_restore_private	 (BseObject		*object,
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static GTypeClass	*parent_class = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BsePattern)
 {
-  static const BseTypeInfo pattern_info = {
+  static const GTypeInfo pattern_info = {
     sizeof (BsePatternClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_pattern_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_pattern_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BsePattern),
     BSE_PREALLOC_N_PATTERNS /* n_preallocs */,
-    (BseObjectInitFunc) bse_pattern_init,
+    (GInstanceInitFunc) bse_pattern_init,
   };
   
   return bse_type_register_static (BSE_TYPE_ITEM,
@@ -86,7 +86,7 @@ bse_pattern_class_init (BsePatternClass	*class)
   BseObjectClass *object_class;
   BseItemClass *item_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_ITEM);
+  parent_class = g_type_class_peek (BSE_TYPE_ITEM);
   object_class = BSE_OBJECT_CLASS (class);
   item_class = BSE_ITEM_CLASS (class);
   

@@ -32,23 +32,23 @@ struct _BseCategory
 {
   gchar	  *category;
   guint    mindex;
-  BseType  type;
+  GType    type;
   BseIcon *icon; /* static icons, no need for reference counting */
 };
 
 
 /* --- prototypes --- */
 void                bse_categories_register      (const gchar      *category,
-						  BseType           type);
+						  GType             type);
 void                bse_categories_register_icon (const gchar      *category,
-						  BseType           type,
+						  GType             type,
 						  const BsePixdata *pixdata);
 BseCategory* /*fr*/ bse_categories_match         (const gchar      *pattern,
 						  guint            *n_matches);
 BseCategory* /*fr*/ bse_categories_match_typed   (const gchar      *pattern,
-						  BseType           base_type,
+						  GType             base_type,
 						  guint            *n_matches);
-BseCategory* /*fr*/ bse_categories_from_type     (BseType           type,
+BseCategory* /*fr*/ bse_categories_from_type     (GType             type,
 						  guint            *n_categories);
 
 

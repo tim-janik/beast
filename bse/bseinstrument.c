@@ -91,24 +91,24 @@ static void	bse_instrument_unlocked		(BseObject		*object);
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static GTypeClass	*parent_class = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseInstrument)
 {
-  static const BseTypeInfo instrument_info = {
+  static const GTypeInfo instrument_info = {
     sizeof (BseInstrumentClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_instrument_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_instrument_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseInstrument),
     BSE_PREALLOC_N_INSTRUMENTS /* n_preallocs */,
-    (BseObjectInitFunc) bse_instrument_init,
+    (GInstanceInitFunc) bse_instrument_init,
   };
   
   return bse_type_register_static (BSE_TYPE_ITEM,
@@ -123,7 +123,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
   BseObjectClass *object_class;
   BseItemClass *item_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_ITEM);
+  parent_class = g_type_class_peek (BSE_TYPE_ITEM);
   object_class = BSE_OBJECT_CLASS (class);
   item_class = BSE_ITEM_CLASS (class);
   

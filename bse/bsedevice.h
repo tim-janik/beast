@@ -30,11 +30,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_DEVICE              (BSE_TYPE_ID (BseDevice))
-#define BSE_DEVICE(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_DEVICE, BseDevice))
-#define BSE_DEVICE_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_DEVICE, BseDeviceClass))
-#define BSE_IS_DEVICE(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_DEVICE))
-#define BSE_IS_DEVICE_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_DEVICE))
-#define BSE_DEVICE_GET_CLASS(object) ((BseDeviceClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_DEVICE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_DEVICE, BseDevice))
+#define BSE_DEVICE_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_DEVICE, BseDeviceClass))
+#define BSE_IS_DEVICE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_DEVICE))
+#define BSE_IS_DEVICE_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_DEVICE))
+#define BSE_DEVICE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseDeviceClass))
 
 
 /* --- object member/convenience macros --- */

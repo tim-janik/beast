@@ -23,7 +23,7 @@
 
 
 /* --- prototypes --- */
-static BseParamSpec*    bse_param_spec_alloc            (BseType         type,
+static BseParamSpec*    bse_param_spec_alloc            (GType           type,
                                                          const gchar    *name,
                                                          const gchar    *nick,
                                                          const gchar    *blurb,
@@ -114,7 +114,7 @@ bse_param_values_cmp (const BseParam *param1,
       return CMP_VALS (v_item, value1, value2); /* FIXME: modification time? */
     default:
       g_warning ("%s: used with type `%s'", G_STRLOC,
-                 bse_type_name (param1->pspec->type));
+                 g_type_name (param1->pspec->type));
       return failed;
     }
 }
@@ -181,7 +181,7 @@ bse_param_init_i (BseParam     *param,
       break;
     default:
       g_warning ("%s: used with type `%s'", G_STRLOC,
-                 bse_type_name (pspec->type));
+                 g_type_name (pspec->type));
       break;
     }
 }
@@ -377,7 +377,7 @@ bse_param_move_value (BseParam *param,
       break;
     default:
       g_warning ("%s: used with type `%s'", G_STRLOC,
-                 bse_type_name (pspec->type));
+                 g_type_name (pspec->type));
       break;
     }
 }
@@ -487,7 +487,7 @@ bse_param_validate (BseParam *param)
       break;
     case BSE_TYPE_PARAM_ITEM:
       if (param->value.v_item &&
-          !bse_type_is_a (BSE_OBJECT_TYPE (param->value.v_item),
+          !g_type_is_a (BSE_OBJECT_TYPE (param->value.v_item),
                           pspec->s_item.item_type))
         {
           bse_object_unref (BSE_OBJECT (param->value.v_item));
@@ -496,7 +496,7 @@ bse_param_validate (BseParam *param)
       break;
     default:
       g_warning ("%s: used with type `%s'", G_STRLOC,
-                 bse_type_name (param->pspec->type));
+                 g_type_name (param->pspec->type));
       break;
     }
   
@@ -506,13 +506,16 @@ bse_param_validate (BseParam *param)
   return changed > 0;
 }
 
-#define BSE_N_PARAM_TYPES       (BSE_TYPE_PARAM_LAST - BSE_TYPE_PARAM_FIRST + 1)
+#define BSE_PARAM_N_TYPES	(BSE_PARAM_NEXT_TYPE - 1)
+#define	BSE_PARAM_TYPE_INDEX(t)	(G_TYPE_BRANCH_SEQNO (t) - 1)
+#define	BSE_PARAM_TYPE_IS_OK(t)	(G_TYPE_BRANCH_SEQNO (t) && G_TYPE_BRANCH_SEQNO (t) < BSE_PARAM_NEXT_TYPE)
 
-static GMemChunk *bse_param_mem_chunks[BSE_N_PARAM_TYPES];
+static GMemChunk *bse_param_mem_chunks[BSE_PARAM_N_TYPES] = { NULL, };
 static const struct {
-  guint16   ssize;
+  guint16   usize;
   guint16   prealloc;
-} bse_param_spec_sizes[BSE_N_PARAM_TYPES] = {
+} bse_param_spec_sizes[BSE_PARAM_N_TYPES] = {
+  /* order synced with bsetype.c */
   { sizeof (BseParamSpecBool),          16 },
   { sizeof (BseParamSpecInt),            8 },
   { sizeof (BseParamSpecUInt),          16 },
@@ -529,16 +532,15 @@ static const struct {
 };
 
 static BseParamSpec*
-bse_param_spec_alloc (BseType       type,
-                      const gchar  *name,
-                      const gchar  *nick,
-                      const gchar  *blurb,
-                      BseParamBits  flags)
+bse_param_spec_alloc (GType        type,
+                      const gchar *name,
+                      const gchar *nick,
+                      const gchar *blurb,
+                      BseParamBits flags)
 {
   static gboolean initialized = FALSE;
   BseParamSpec *pspec;
   
-  type = BSE_FUNDAMENTAL_TYPE (type);
   g_return_val_if_fail (BSE_TYPE_IS_PARAM (type), NULL);
   g_return_val_if_fail (name != NULL, NULL);
 
@@ -548,21 +550,23 @@ bse_param_spec_alloc (BseType       type,
       
       initialized++;
 
-      for (i = 0; i < BSE_N_PARAM_TYPES; i++)
+      g_assert (BSE_PARAM_NEXT_TYPE == g_type_fundamental_branch_last (BSE_TYPE_PARAM));
+
+      for (i = 0; i < BSE_PARAM_N_TYPES; i++)
         {
           bse_param_mem_chunks[i] = NULL;
-          g_assert (bse_param_spec_sizes[i].ssize >= sizeof (BseParamSpecAny));
+          g_assert (bse_param_spec_sizes[i].usize >= sizeof (BseParamSpecAny));
         }
     }
   
-  if (!bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST])
-    bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST] =
-      g_mem_chunk_new (bse_type_name (type),
-                       bse_param_spec_sizes[type - BSE_TYPE_PARAM_FIRST].ssize,
-                       (bse_param_spec_sizes[type - BSE_TYPE_PARAM_FIRST].ssize *
-                        bse_param_spec_sizes[type - BSE_TYPE_PARAM_FIRST].prealloc),
+  if (!bse_param_mem_chunks[BSE_PARAM_TYPE_INDEX (type)])
+    bse_param_mem_chunks[BSE_PARAM_TYPE_INDEX (type)] =
+      g_mem_chunk_new (g_type_name (type),
+                       bse_param_spec_sizes[BSE_PARAM_TYPE_INDEX (type)].usize,
+                       (bse_param_spec_sizes[BSE_PARAM_TYPE_INDEX (type)].usize *
+                        bse_param_spec_sizes[BSE_PARAM_TYPE_INDEX (type)].prealloc),
                        G_ALLOC_AND_FREE);
-  pspec = g_chunk_new0 (BseParamSpec, bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST]);
+  pspec = g_chunk_new0 (BseParamSpec, bse_param_mem_chunks[BSE_PARAM_TYPE_INDEX (type)]);
   pspec->type = type;
   pspec->any.name = g_strdup (name);
   g_strcanon (pspec->any.name, "-", '-');
@@ -578,10 +582,10 @@ bse_param_spec_alloc (BseType       type,
 void
 bse_param_spec_free_fields (BseParamSpec *static_pspec)
 {
-  BseType type;
+  GType type;
   
   g_return_if_fail (BSE_IS_PARAM_SPEC (static_pspec));
-  g_return_if_fail (static_pspec->type >= BSE_TYPE_PARAM_FIRST && static_pspec->type <= BSE_TYPE_PARAM_LAST);
+  g_return_if_fail (BSE_PARAM_TYPE_IS_OK (static_pspec->type));
   
   type = static_pspec->type;
   
@@ -601,10 +605,10 @@ bse_param_spec_free_fields (BseParamSpec *static_pspec)
     case BSE_TYPE_PARAM_ITEM:
       break;
     case BSE_TYPE_PARAM_ENUM:
-      bse_type_class_unref (static_pspec->s_enum.enum_class);
+      g_type_class_unref (static_pspec->s_enum.enum_class);
       break;
     case BSE_TYPE_PARAM_FLAGS:
-      bse_type_class_unref (static_pspec->s_flags.flags_class);
+      g_type_class_unref (static_pspec->s_flags.flags_class);
       break;
     case BSE_TYPE_PARAM_STRING:
       g_free (static_pspec->s_string.default_value);
@@ -621,7 +625,7 @@ bse_param_spec_free_fields (BseParamSpec *static_pspec)
   g_free (static_pspec->any.nick);
   g_free (static_pspec->any.blurb);
   
-  memset (static_pspec, 0, bse_param_spec_sizes[type - BSE_TYPE_PARAM_FIRST].ssize);
+  memset (static_pspec, 0, bse_param_spec_sizes[BSE_PARAM_TYPE_INDEX (type)].usize);
 }
 
 gpointer
@@ -629,21 +633,21 @@ bse_param_spec_renew (BseParamSpec *pspec,
 		      guint         n_prepend_bytes)
 {
   guint8 *data;
-  BseType type;
+  GType   type;
   guint spec_size;
 
   g_return_val_if_fail (BSE_IS_PARAM_SPEC (pspec), NULL);
-  g_return_val_if_fail (pspec->type >= BSE_TYPE_PARAM_FIRST && pspec->type <= BSE_TYPE_PARAM_LAST, NULL);
+  g_return_val_if_fail (BSE_PARAM_TYPE_IS_OK (pspec->type), NULL);
 
   type = pspec->type;
 
-  spec_size = bse_param_spec_sizes[type - BSE_TYPE_PARAM_FIRST].ssize;
+  spec_size = bse_param_spec_sizes[BSE_PARAM_TYPE_INDEX (type)].usize;
   data = g_malloc0 (n_prepend_bytes + spec_size);
   memcpy (data + n_prepend_bytes, pspec, spec_size);
 
   memset (pspec, 0, spec_size);
 
-  g_chunk_free (pspec, bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST]);
+  g_chunk_free (pspec, bse_param_mem_chunks[BSE_PARAM_TYPE_INDEX (type)]);
 
   return data;
 }
@@ -651,16 +655,16 @@ bse_param_spec_renew (BseParamSpec *pspec,
 void
 bse_param_spec_free (BseParamSpec *pspec)
 {
-  BseType type;
+  GType   type;
 
   g_return_if_fail (BSE_IS_PARAM_SPEC (pspec));
-  g_return_if_fail (pspec->type >= BSE_TYPE_PARAM_FIRST && pspec->type <= BSE_TYPE_PARAM_LAST);
+  g_return_if_fail (BSE_PARAM_TYPE_IS_OK (pspec->type));
 
   type = pspec->type;
 
   bse_param_spec_free_fields (pspec);
   
-  g_chunk_free (pspec, bse_param_mem_chunks[type - BSE_TYPE_PARAM_FIRST]);
+  g_chunk_free (pspec, bse_param_mem_chunks[BSE_PARAM_TYPE_INDEX (type)]);
 }
 
 BseParamSpec*
@@ -726,16 +730,16 @@ BseParamSpec*
 bse_param_spec_enum (const gchar *name,
                      const gchar *nick,
                      const gchar *blurb,
-                     BseType      enum_type,
+                     GType        enum_type,
                      gint         default_value,
                      BseParamBits flags)
 {
   BseParamSpec *pspec;
   
-  g_return_val_if_fail (bse_type_is_a (enum_type, BSE_TYPE_ENUM), NULL);
+  g_return_val_if_fail (g_type_is_a (enum_type, BSE_TYPE_ENUM), NULL);
   
   pspec = bse_param_spec_alloc (BSE_TYPE_PARAM_ENUM, name, nick, blurb, flags);
-  pspec->s_enum.enum_class = bse_type_class_ref (enum_type);
+  pspec->s_enum.enum_class = g_type_class_ref (enum_type);
   pspec->s_enum.default_value = default_value;
   
   return pspec;
@@ -745,16 +749,16 @@ BseParamSpec*
 bse_param_spec_flags (const gchar *name,
                       const gchar *nick,
                       const gchar *blurb,
-                      BseType      flags_type,
+                      GType        flags_type,
                       guint        default_value,
                       BseParamBits flags)
 {
   BseParamSpec *pspec;
   
-  g_return_val_if_fail (bse_type_is_a (flags_type, BSE_TYPE_FLAGS), NULL);
+  g_return_val_if_fail (g_type_is_a (flags_type, BSE_TYPE_FLAGS), NULL);
   
   pspec = bse_param_spec_alloc (BSE_TYPE_PARAM_FLAGS, name, nick, blurb, flags);
-  pspec->s_flags.flags_class = bse_type_class_ref (flags_type);
+  pspec->s_flags.flags_class = g_type_class_ref (flags_type);
   pspec->s_flags.default_value = default_value;
   
   return pspec;
@@ -941,12 +945,12 @@ BseParamSpec*
 bse_param_spec_item (const gchar *name,
                      const gchar *nick,
                      const gchar *blurb,
-                     BseType      item_type,
+                     GType        item_type,
                      BseParamBits flags)
 {
   BseParamSpec *pspec;
 
-  g_return_val_if_fail (bse_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
+  g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
   pspec = bse_param_spec_alloc (BSE_TYPE_PARAM_ITEM, name, nick, blurb, flags);
   pspec->s_item.item_type = item_type;
@@ -958,8 +962,7 @@ gboolean
 bse_param_set_bool (BseParam *param,
                     gboolean  v_bool)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_BOOL, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_BOOL (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -972,8 +975,7 @@ gboolean
 bse_param_set_int (BseParam *param,
                    gint      v_int)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_INT, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_INT (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -986,8 +988,7 @@ gboolean
 bse_param_set_uint (BseParam *param,
                     guint     v_uint)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_UINT, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_UINT (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1000,8 +1001,7 @@ gboolean
 bse_param_set_enum (BseParam *param,
                     gint      v_enum)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_ENUM, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_ENUM (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1014,8 +1014,7 @@ gboolean
 bse_param_set_flags (BseParam *param,
                      guint     v_flags)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_FLAGS, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_FLAGS (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1028,8 +1027,7 @@ gboolean
 bse_param_set_float (BseParam *param,
                      gfloat    v_float)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_FLOAT, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_FLOAT (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1042,8 +1040,7 @@ gboolean
 bse_param_set_double (BseParam *param,
                       gdouble   v_double)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_DOUBLE, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_DOUBLE (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1056,8 +1053,7 @@ gboolean
 bse_param_set_time (BseParam *param,
                     BseTime   v_time)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_TIME, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_TIME (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1070,8 +1066,7 @@ gboolean
 bse_param_set_note (BseParam *param,
                     gint      v_note)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_NOTE, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_NOTE (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1084,8 +1079,7 @@ gboolean
 bse_param_set_index_2d (BseParam *param,
                         guint     v_index_2d)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_INDEX_2D, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_INDEX_2D (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1098,8 +1092,7 @@ gboolean
 bse_param_set_string (BseParam    *param,
                       const gchar *v_string)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_STRING, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_STRING (param), FALSE);
   
   bse_param_free_value (param);
   
@@ -1112,8 +1105,7 @@ gboolean
 bse_param_set_dots (BseParam *param,
                     BseDot   *v_dots)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_DOTS, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_DOTS (param), FALSE);
 
   bse_param_free_value (param);
 
@@ -1128,8 +1120,7 @@ bse_param_set_dot (BseParam *param,
                    gfloat    x,
                    gfloat    y)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_DOTS, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_DOTS (param), FALSE);
   g_return_val_if_fail (dot < param->pspec->s_dots.n_dots, FALSE);
 
   if (!param->value.v_dots)
@@ -1145,8 +1136,7 @@ gboolean
 bse_param_set_item (BseParam *param,
                     BseItem  *v_item)
 {
-  g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
-  g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_ITEM, FALSE);
+  g_return_val_if_fail (BSE_IS_PARAM_ITEM (param), FALSE);
   if (v_item)
     g_return_val_if_fail (BSE_IS_ITEM (v_item), FALSE);
   
@@ -1218,8 +1208,8 @@ param_exch_double_uint (BseParam *param1,
   param2->value.v_uint = tmp + 0.5;
 }
 static const struct {
-  BseType type1;
-  BseType type2;
+  GType   type1;
+  GType   type2;
   void  (*exchange) (BseParam*, BseParam*);
 } exchange_rules[] = {
   { BSE_TYPE_PARAM_BOOL,        BSE_TYPE_PARAM_INT,             param_exch_copy, },
@@ -1246,8 +1236,8 @@ static const struct {
 };
 static const guint n_exchange_rules = sizeof (exchange_rules) / sizeof (exchange_rules[0]);
 static inline void
-(*param_exchange_lookup (BseType   type1,
-                         BseType   type2,
+(*param_exchange_lookup (GType     type1,
+                         GType     type2,
                          gboolean *must_swap)) (BseParam*,
 						BseParam*)
 {
@@ -1282,14 +1272,14 @@ static inline void
 }
 
 gboolean
-bse_param_types_exchangable (BseType param_type1,
-                             BseType param_type2)
+bse_param_types_exchangable (GType   param_type1,
+                             GType   param_type2)
 {
   g_return_val_if_fail (BSE_TYPE_IS_PARAM (param_type1), FALSE);
   g_return_val_if_fail (BSE_TYPE_IS_PARAM (param_type2), FALSE);
   
-  return param_exchange_lookup (BSE_FUNDAMENTAL_TYPE (param_type1),
-                                BSE_FUNDAMENTAL_TYPE (param_type2),
+  return param_exchange_lookup (param_type1,
+                                param_type2,
                                 NULL) != NULL;
 }
 
@@ -1303,8 +1293,8 @@ bse_param_values_exchange (BseParam *param1,
   g_return_val_if_fail (BSE_IS_PARAM (param1), FALSE);
   g_return_val_if_fail (BSE_IS_PARAM (param2), FALSE);
   
-  exchange_value = param_exchange_lookup (BSE_FUNDAMENTAL_TYPE (param1->pspec->type),
-                                          BSE_FUNDAMENTAL_TYPE (param2->pspec->type),
+  exchange_value = param_exchange_lookup (param1->pspec->type,
+                                          param2->pspec->type,
                                           &must_swap);
   if (exchange_value)
     {

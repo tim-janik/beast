@@ -65,26 +65,26 @@ static void      bse_snet_reset                  (BseSource      *source);
 
 
 /* --- variables --- */
-static BseTypeClass     *parent_class = NULL;
+static GTypeClass     *parent_class = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSNet)
 {
-  BseType snet_type;
+  GType   snet_type;
 
-  static const BseTypeInfo snet_info = {
+  static const GTypeInfo snet_info = {
     sizeof (BseSNetClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_snet_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_snet_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSNet),
     BSE_PREALLOC_N_SUPERS /* n_preallocs */,
-    (BseObjectInitFunc) bse_snet_init,
+    (GInstanceInitFunc) bse_snet_init,
   };
   
   snet_type = bse_type_register_static (BSE_TYPE_SUPER,
@@ -110,7 +110,7 @@ bse_snet_class_init (BseSNetClass *class)
   BseSuperClass *super_class;
   guint ichannel_id, ochannel_id;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_SUPER);
+  parent_class = g_type_class_peek (BSE_TYPE_SUPER);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
   container_class = BSE_CONTAINER_CLASS (class);
@@ -279,7 +279,7 @@ bse_snet_add_item (BseContainer *container,
 {
   BseSNet *snet = BSE_SNET (container);
 
-  if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
+  if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = g_list_append (snet->sources, item);
   else
     g_warning ("BseSNet: cannot add non-source item type `%s'",
@@ -317,7 +317,7 @@ bse_snet_remove_item (BseContainer *container,
 
   snet = BSE_SNET (container);
 
-  if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
+  if (g_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
     snet->sources = g_list_remove (snet->sources, item);
   else
     g_warning ("BseSNet: cannot remove non-source item type `%s'",
@@ -329,7 +329,7 @@ bse_snet_remove_item (BseContainer *container,
 
 BseSource*
 bse_snet_new_source (BseSNet     *snet,
-                     BseType      source_type,
+                     GType        source_type,
                      const gchar *first_param_name,
                      ...)
 {
@@ -338,7 +338,7 @@ bse_snet_new_source (BseSNet     *snet,
   va_list var_args;
 
   g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
-  g_return_val_if_fail (bse_type_is_a (source_type, BSE_TYPE_SOURCE), NULL);
+  g_return_val_if_fail (g_type_is_a (source_type, BSE_TYPE_SOURCE), NULL);
 
   container = BSE_CONTAINER (snet);
   va_start (var_args, first_param_name);

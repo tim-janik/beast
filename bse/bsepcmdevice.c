@@ -36,18 +36,18 @@ static gpointer parent_class = NULL;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BsePcmDevice)
 {
-  static const BseTypeInfo pcm_device_info = {
+  static const GTypeInfo pcm_device_info = {
     sizeof (BsePcmDeviceClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_pcm_device_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_pcm_device_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BsePcmDevice),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_pcm_device_init,
+    (GInstanceInitFunc) bse_pcm_device_init,
   };
   
   g_assert (BSE_PCM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
@@ -64,7 +64,7 @@ bse_pcm_device_class_init (BsePcmDeviceClass *class)
   BseObjectClass *object_class;
   BseDeviceClass *device_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_DEVICE);
+  parent_class = g_type_class_peek (BSE_TYPE_DEVICE);
   object_class = BSE_OBJECT_CLASS (class);
   device_class = BSE_DEVICE_CLASS (class);
   

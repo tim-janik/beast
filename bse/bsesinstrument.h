@@ -34,11 +34,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_SINSTRUMENT              (BSE_TYPE_ID (BseSInstrument))
-#define BSE_SINSTRUMENT(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_SINSTRUMENT, BseSInstrument))
-#define BSE_SINSTRUMENT_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_SINSTRUMENT, BseSInstrumentClass))
-#define BSE_IS_SINSTRUMENT(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_SINSTRUMENT))
-#define BSE_IS_SINSTRUMENT_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SINSTRUMENT))
-#define BSE_SINSTRUMENT_GET_CLASS(object) ((BseSInstrumentClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_SINSTRUMENT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_SINSTRUMENT, BseSInstrument))
+#define BSE_SINSTRUMENT_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_SINSTRUMENT, BseSInstrumentClass))
+#define BSE_IS_SINSTRUMENT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_SINSTRUMENT))
+#define BSE_IS_SINSTRUMENT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SINSTRUMENT))
+#define BSE_SINSTRUMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseSInstrumentClass))
 
 
 /* --- BseSInstrument source --- */

@@ -36,8 +36,8 @@ extern "C" {
 
 /* --- BseEffectPatternBreak type macros --- */
 #define BSE_TYPE_EFFECT_PATTERN_BREAK    (BSE_TYPE_ID (BseEffectPatternBreak))
-#define BSE_EFFECT_PATTERN_BREAK(obj)    (BSE_CHECK_STRUCT_CAST ((obj), BSE_TYPE_EFFECT_PATTERN_BREAK, BseEffectPatternBreak))
-#define BSE_IS_EFFECT_PATTERN_BREAK(obj) (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_EFFECT_PATTERN_BREAK))
+#define BSE_EFFECT_PATTERN_BREAK(obj)    (G_TYPE_CHECK_INSTANCE_CAST ((obj), BSE_TYPE_EFFECT_PATTERN_BREAK, BseEffectPatternBreak))
+#define BSE_IS_EFFECT_PATTERN_BREAK(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_EFFECT_PATTERN_BREAK))
 
 
 /* --- BseEffectPatternBreak --- */

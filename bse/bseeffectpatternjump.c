@@ -37,18 +37,18 @@ static void bse_effect_pattern_jump_get_param  (BseEffectPatternJump *effect,
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseEffectPatternJump)
 {
-  static const BseTypeInfo effect_info = {
+  static const GTypeInfo effect_info = {
     sizeof (BseEffectClass),
 
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_effect_pattern_jump_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_effect_pattern_jump_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseEffectPatternJump),
     BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
-    (BseObjectInitFunc) bse_effect_pattern_jump_init,
+    (GInstanceInitFunc) bse_effect_pattern_jump_init,
   };
 
   return bse_type_register_static (BSE_TYPE_EFFECT,

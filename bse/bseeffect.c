@@ -25,24 +25,24 @@ static void bse_effect_destroy    (BseObject      *object);
 
 
 /* --- variables --- */
-static BseTypeClass *parent_class = NULL;
+static GTypeClass *parent_class = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseEffect)
 {
-  static const BseTypeInfo effect_info = {
+  static const GTypeInfo effect_info = {
     sizeof (BseEffectClass),
 
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_effect_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_effect_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseEffect),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_effect_init,
+    (GInstanceInitFunc) bse_effect_init,
   };
 
   return bse_type_register_static (BSE_TYPE_OBJECT,
@@ -56,7 +56,7 @@ bse_effect_class_init (BseEffectClass *class)
 {
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
-  parent_class = bse_type_class_peek (BSE_TYPE_OBJECT);
+  parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
 
   object_class->destroy = bse_effect_destroy;
 

@@ -21,9 +21,6 @@
 #define __BSE_H__
 
 
-#include        <glib.h>
-#include        <bse/glib-extra.h>
-
 /* BSE includes
  */
 #include        <bse/bseglobals.h>

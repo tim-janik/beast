@@ -37,18 +37,18 @@ static void bse_effect_fine_tune_get_param  (BseEffectFineTune *effect,
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseEffectFineTune)
 {
-  static const BseTypeInfo effect_info = {
+  static const GTypeInfo effect_info = {
     sizeof (BseEffectClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_effect_fine_tune_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_effect_fine_tune_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseEffectFineTune),
     BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
-    (BseObjectInitFunc) bse_effect_fine_tune_init,
+    (GInstanceInitFunc) bse_effect_fine_tune_init,
   };
   
   return bse_type_register_static (BSE_TYPE_EFFECT,

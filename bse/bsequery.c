@@ -26,7 +26,7 @@
 static gchar *indent_inc = NULL;
 static guint spacing = 1;
 static FILE *f_out = NULL;
-static BseType root = BSE_TYPE_OBJECT;
+static GType   root = BSE_TYPE_OBJECT;
 static gboolean recursion = TRUE;
 static gboolean feature_blurb = FALSE;
 static gboolean feature_channels = FALSE;
@@ -48,17 +48,17 @@ static gboolean feature_channels = FALSE;
 #define	O_KEY_FILL "_"
 
 static void
-show_nodes (BseType type,
-	    BseType sibling,
+show_nodes (GType   type,
+	    GType   sibling,
 	    const gchar *indent)
 {
-  BseType *children;
+  GType   *children;
   guint i;
 
   if (!type)
     return;
 
-  children = bse_type_children (type, NULL);
+  children = g_type_children (type, NULL);
 
   if (type != root)
     for (i = 0; i < spacing; i++)
@@ -68,9 +68,9 @@ show_nodes (BseType type,
 	   indent,
 	   sibling ? O_BRANCH : (type != root ? O_LLEAF : O_SPACE),
 	   O_ESPACE,
-	   bse_type_name (type));
+	   g_type_name (type));
 
-  for (i = strlen (bse_type_name (type)); i <= strlen (indent_inc); i++)
+  for (i = strlen (g_type_name (type)); i <= strlen (indent_inc); i++)
     fputs (O_KEY_FILL, f_out);
 
   if (feature_blurb && bse_type_blurb (type))
@@ -80,9 +80,9 @@ show_nodes (BseType type,
       fputs ("]", f_out);
     }
 
-  if (feature_channels && bse_type_is_a (type, BSE_TYPE_SOURCE))
+  if (feature_channels && g_type_is_a (type, BSE_TYPE_SOURCE))
     {
-      BseSourceClass *class = bse_type_class_ref (type);
+      BseSourceClass *class = g_type_class_ref (type);
       gchar buffer[1024];
 
       sprintf (buffer,
@@ -90,7 +90,7 @@ show_nodes (BseType type,
 	       class->n_ichannels,
 	       class->n_ochannels);
       fputs (buffer, f_out);
-      bse_type_class_unref (class);
+      g_type_class_unref (class);
     }
 
   fputc ('\n', f_out);
@@ -98,7 +98,7 @@ show_nodes (BseType type,
   if (children && recursion)
     {
       gchar *new_indent;
-      BseType *child;
+      GType   *child;
 
       if (sibling)
 	new_indent = g_strconcat (indent, O_VLINE, indent_inc, NULL);
@@ -124,7 +124,7 @@ show_cats (void)
   for (i = 0; i < n_cats; i++)
     fprintf (f_out, "%s\t(%s)\n",
 	     cats[i].category,
-	     bse_type_name (cats[i].type));
+	     g_type_name (cats[i].type));
   g_free (cats);
 }
 
@@ -200,7 +200,7 @@ main (gint   argc,
 	{
 	  i++;
 	  if (i < argc)
-	    root = bse_type_from_name (argv[i]);
+	    root = g_type_from_name (argv[i]);
 	}
       else if (strcmp ("-n", argv[i]) == 0)
 	{

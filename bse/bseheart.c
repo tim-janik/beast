@@ -66,18 +66,18 @@ static GSourceFuncs bse_heart_gsource_funcs = {
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseHeart)
 {
-  static const BseTypeInfo heart_info = {
+  static const GTypeInfo heart_info = {
     sizeof (BseHeartClass),
 
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_heart_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_heart_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseHeart),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_heart_init,
+    (GInstanceInitFunc) bse_heart_init,
   };
 
   return bse_type_register_static (BSE_TYPE_OBJECT,
@@ -91,7 +91,7 @@ bse_heart_class_init (BseHeartClass *class)
 {
   BseObjectClass *object_class;
 
-  parent_class = bse_type_class_peek (BSE_TYPE_OBJECT);
+  parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
   object_class = BSE_OBJECT_CLASS (class);
 
   object_class->set_param = (BseObjectSetParamFunc) bse_heart_set_param;

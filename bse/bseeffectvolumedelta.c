@@ -37,18 +37,18 @@ static void bse_effect_volume_delta_get_param  (BseEffectVolumeDelta *effect,
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseEffectVolumeDelta)
 {
-  static const BseTypeInfo effect_info = {
+  static const GTypeInfo effect_info = {
     sizeof (BseEffectClass),
 
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_effect_volume_delta_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_effect_volume_delta_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseEffectVolumeDelta),
     BSE_PREALLOC_N_EFFECTS /* n_preallocs */,
-    (BseObjectInitFunc) bse_effect_volume_delta_init,
+    (GInstanceInitFunc) bse_effect_volume_delta_init,
   };
 
   return bse_type_register_static (BSE_TYPE_EFFECT,

@@ -25,7 +25,7 @@
 
 
 /* --- hello_world --- */
-static BseType type_id_hello_world = 0;
+static GType   type_id_hello_world = 0;
 static void
 hello_world_setup (BseProcedureClass *proc,
 		   BseParamSpec     **ipspecs,
@@ -55,7 +55,7 @@ hello_world_exec (BseProcedureClass *proc,
 
 /* --- randomizer --- */
 #include <stdlib.h>
-static BseType type_id_randomizer = 0;
+static GType   type_id_randomizer = 0;
 static void
 randomizer_setup (BseProcedureClass *proc,
 		  BseParamSpec    **ipspecs,
@@ -109,7 +109,7 @@ randomizer_exec (BseProcedureClass *proc,
 
 /* --- progressor --- */
 #include <stdlib.h>
-static BseType type_id_progressor = 0;
+static GType   type_id_progressor = 0;
 static void
 progressor_setup (BseProcedureClass *proc,
 		  BseParamSpec     **ipspecs,

@@ -30,11 +30,11 @@ extern "C" {
 
 /* --- BseEffect type macros --- */
 #define BSE_TYPE_EFFECT		     (BSE_TYPE_ID (BseEffect))
-#define BSE_EFFECT(object)	     (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_EFFECT, BseEffect))
-#define BSE_EFFECT_CLASS(class)	     (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_EFFECT, BseEffectClass))
-#define BSE_IS_EFFECT(object)	     (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_EFFECT))
-#define BSE_IS_EFFECT_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_EFFECT))
-#define BSE_EFFECT_GET_CLASS(object) ((BseEffectClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_EFFECT(object)	     (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_EFFECT, BseEffect))
+#define BSE_EFFECT_CLASS(class)	     (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_EFFECT, BseEffectClass))
+#define BSE_IS_EFFECT(object)	     (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_EFFECT))
+#define BSE_IS_EFFECT_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_EFFECT))
+#define BSE_EFFECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BseEffectClass))
 
 
 /* BSE effects are fairly lightweight (and somewhat uncommon) objects.

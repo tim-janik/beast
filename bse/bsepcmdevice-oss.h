@@ -30,11 +30,11 @@ extern "C" {
 
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_DEVICE_OSS		     (BSE_TYPE_ID (BsePcmDeviceOSS))
-#define BSE_PCM_DEVICE_OSS(object)	     (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_PCM_DEVICE_OSS, BsePcmDeviceOSS))
-#define BSE_PCM_DEVICE_OSS_CLASS(class)	     (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_PCM_DEVICE_OSS, BsePcmDeviceOSSClass))
-#define BSE_IS_PCM_DEVICE_OSS(object)	     (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_PCM_DEVICE_OSS))
-#define BSE_IS_PCM_DEVICE_OSS_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_DEVICE_OSS))
-#define BSE_PCM_DEVICE_OSS_GET_CLASS(object) ((BsePcmDeviceOSSClass*) (((BseObject*) (object))->bse_struct.bse_class))
+#define BSE_PCM_DEVICE_OSS(object)	     (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_PCM_DEVICE_OSS, BsePcmDeviceOSS))
+#define BSE_PCM_DEVICE_OSS_CLASS(class)	     (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_PCM_DEVICE_OSS, BsePcmDeviceOSSClass))
+#define BSE_IS_PCM_DEVICE_OSS(object)	     (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_PCM_DEVICE_OSS))
+#define BSE_IS_PCM_DEVICE_OSS_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PCM_DEVICE_OSS))
+#define BSE_PCM_DEVICE_OSS_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BsePcmDeviceOSSClass))
 
 
 /* --- BsePcmDeviceOSS object --- */

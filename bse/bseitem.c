@@ -36,7 +36,7 @@ static void	bse_item_do_set_parent		(BseItem                *item,
 
 
 /* --- variables --- */
-static BseTypeClass *parent_class = NULL;
+static GTypeClass *parent_class = NULL;
 static GSList       *item_seqid_changed_queue = NULL;
 
 
@@ -44,18 +44,18 @@ static GSList       *item_seqid_changed_queue = NULL;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseItem)
 {
-  static const BseTypeInfo item_info = {
+  static const GTypeInfo item_info = {
     sizeof (BseItemClass),
 
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_item_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_item_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseItem),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_item_init,
+    (GInstanceInitFunc) bse_item_init,
   };
 
   g_assert (BSE_ITEM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
@@ -71,7 +71,7 @@ bse_item_class_init (BseItemClass *class)
 {
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
-  parent_class = bse_type_class_peek (BSE_TYPE_OBJECT);
+  parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
 
   object_class->set_name = bse_item_do_set_name;
   object_class->shutdown = bse_item_do_shutdown;
@@ -429,7 +429,7 @@ bse_item_execva_i (BseItem     *item,
 {
   BseProcedureClass *proc;
   BseErrorType error;
-  BseType type;
+  GType   type;
   guint l2;
 
   /* FIXME: we could need faster lookups here */
@@ -437,7 +437,7 @@ bse_item_execva_i (BseItem     *item,
   l2 = strlen (procedure);
   do
     {
-      gchar *p, *name, *type_name = bse_type_name (type);
+      gchar *p, *name, *type_name = g_type_name (type);
       guint l1 = strlen (type_name);
 
       name = strcpy (g_new (gchar, l1 + 2 + l2 + 1), type_name);
@@ -448,9 +448,9 @@ bse_item_execva_i (BseItem     *item,
       
       proc = bse_procedure_find_ref (name);
       g_free (name);
-      type = bse_type_parent (type);
+      type = g_type_parent (type);
     }
-  while (!proc && bse_type_is_a (type, BSE_TYPE_ITEM));
+  while (!proc && g_type_is_a (type, BSE_TYPE_ITEM));
 
   if (!BSE_IS_PROCEDURE_CLASS (proc))
     {

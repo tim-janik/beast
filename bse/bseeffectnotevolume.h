@@ -36,8 +36,8 @@ extern "C" {
 
 /* --- BseEffectNoteVolume type macros --- */
 #define BSE_TYPE_EFFECT_NOTE_VOLUME    (BSE_TYPE_ID (BseEffectNoteVolume))
-#define BSE_EFFECT_NOTE_VOLUME(obj)    (BSE_CHECK_STRUCT_CAST ((obj), BSE_TYPE_EFFECT_NOTE_VOLUME, BseEffectNoteVolume))
-#define BSE_IS_EFFECT_NOTE_VOLUME(obj) (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_EFFECT_NOTE_VOLUME))
+#define BSE_EFFECT_NOTE_VOLUME(obj)    (G_TYPE_CHECK_INSTANCE_CAST ((obj), BSE_TYPE_EFFECT_NOTE_VOLUME, BseEffectNoteVolume))
+#define BSE_IS_EFFECT_NOTE_VOLUME(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_EFFECT_NOTE_VOLUME))
 
 
 /* --- BseEffectNoteVolume --- */

@@ -45,29 +45,29 @@ static void	bse_project_forall_items(BseContainer		*container,
 static guint	bse_project_item_seqid	(BseContainer		*container,
 					 BseItem		*item);
 static BseItem*	bse_project_get_item	(BseContainer		*container,
-					 BseType		 item_type,
+					 GType  		 item_type,
 					 guint		         seqid);
 
 
 /* --- variables --- */
-static BseTypeClass	*parent_class = NULL;
+static GTypeClass	*parent_class = NULL;
 
 
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseProject)
 {
-  static const BseTypeInfo project_info = {
+  static const GTypeInfo project_info = {
     sizeof (BseProjectClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_project_class_init,
-    (BseClassDestroyFunc) NULL,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_project_class_init,
+    (GClassDestroyFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseProject),
     BSE_PREALLOC_N_PROJECTS /* n_preallocs */,
-    (BseObjectInitFunc) bse_project_init,
+    (GInstanceInitFunc) bse_project_init,
   };
   
   return bse_type_register_static (BSE_TYPE_CONTAINER,
@@ -82,7 +82,7 @@ bse_project_class_init (BseProjectClass *class)
   BseObjectClass *object_class;
   BseContainerClass *container_class;
   
-  parent_class = bse_type_class_peek (BSE_TYPE_CONTAINER);
+  parent_class = g_type_class_peek (BSE_TYPE_CONTAINER);
   object_class = BSE_OBJECT_CLASS (class);
   container_class = BSE_CONTAINER_CLASS (class);
   
@@ -219,13 +219,13 @@ bse_project_item_seqid (BseContainer *container,
 
 static BseItem*
 bse_project_get_item (BseContainer *container,
-		      BseType       item_type,
+		      GType         item_type,
 		      guint         seqid)
 {
   BseProject *project = BSE_PROJECT (container);
   GSList *slist;
 
-  slist = (bse_type_is_a (item_type, BSE_TYPE_SUPER) ?
+  slist = (g_type_is_a (item_type, BSE_TYPE_SUPER) ?
 	   g_slist_nth (project->supers, seqid - 1) :
 	   NULL);
 
@@ -234,16 +234,16 @@ bse_project_get_item (BseContainer *container,
 
 GList*
 bse_project_list_supers (BseProject *project,
-			 BseType     super_type)
+			 GType       super_type)
 {
   GList *list = NULL;
   GSList *slist;
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (bse_type_is_a (super_type, BSE_TYPE_SUPER), NULL);
+  g_return_val_if_fail (g_type_is_a (super_type, BSE_TYPE_SUPER), NULL);
 
   for (slist = project->supers; slist; slist = slist->next)
-    if (bse_type_is_a (BSE_OBJECT_TYPE (slist->data), super_type))
+    if (g_type_is_a (BSE_OBJECT_TYPE (slist->data), super_type))
       list = g_list_prepend (list, slist->data);
 
   return list;
@@ -254,10 +254,10 @@ make_nick_paths (BseItem *item,
 		 gpointer data_p)
 {
   gpointer *data = data_p;
-  BseType item_type = GPOINTER_TO_UINT (data[1]);
+  GType   item_type = GPOINTER_TO_UINT (data[1]);
   gchar *prefix = data[2];
 
-  if (bse_type_is_a (BSE_OBJECT_TYPE (item), item_type))
+  if (g_type_is_a (BSE_OBJECT_TYPE (item), item_type))
     data[0] = g_list_prepend (data[0], g_strconcat (prefix, BSE_OBJECT_NAME (item), NULL));
   if (BSE_IS_CONTAINER (item))
     {
@@ -272,12 +272,12 @@ make_nick_paths (BseItem *item,
 
 GList* /* free result (strings and list) */
 bse_project_list_nick_paths (BseProject *project,
-			     BseType     item_type)
+			     GType       item_type)
 {
   gpointer data[3] = { NULL, GUINT_TO_POINTER (item_type), "" };
 
   g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
-  g_return_val_if_fail (bse_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
+  g_return_val_if_fail (g_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
 
   bse_container_forall_items (BSE_CONTAINER (project), make_nick_paths, data);
 
@@ -433,7 +433,7 @@ bse_project_store_bse (BseProject  *project,
 BseObject*
 bse_project_path_resolver (gpointer     func_data,
 			   BseStorage  *storage,
-			   BseType      required_type,
+			   GType        required_type,
 			   const gchar *path)
 {
   BseProject *project = func_data;
@@ -445,7 +445,7 @@ bse_project_path_resolver (gpointer     func_data,
 
   /* FIXME: need error handling, storage warnings.... */
 
-  if (bse_type_is_a (required_type, BSE_TYPE_ITEM))
+  if (g_type_is_a (required_type, BSE_TYPE_ITEM))
     item = bse_container_item_from_path (BSE_CONTAINER (project), path);
 
   return item;

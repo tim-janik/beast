@@ -56,20 +56,20 @@ static gpointer  parent_class = NULL;
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSInstrument)
 {
-  BseType sinstrument_type;
+  GType   sinstrument_type;
   
-  static const BseTypeInfo sinstrument_info = {
+  static const GTypeInfo sinstrument_info = {
     sizeof (BseSInstrumentClass),
     
-    (BseBaseInitFunc) NULL,
-    (BseBaseDestroyFunc) NULL,
-    (BseClassInitFunc) bse_sinstrument_class_init,
-    (BseClassDestroyFunc) bse_sinstrument_class_destroy,
+    (GBaseInitFunc) NULL,
+    (GBaseDestroyFunc) NULL,
+    (GClassInitFunc) bse_sinstrument_class_init,
+    (GClassDestroyFunc) bse_sinstrument_class_destroy,
     NULL /* class_data */,
     
     sizeof (BseSInstrument),
     0 /* n_preallocs */,
-    (BseObjectInitFunc) bse_sinstrument_init,
+    (GInstanceInitFunc) bse_sinstrument_init,
   };
   static const BsePixdata sinstrument_pixdata = {
     SINSTRUMENT_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
@@ -93,7 +93,7 @@ bse_sinstrument_class_init (BseSInstrumentClass *class)
   BseSourceClass *source_class;
   guint ichannel_id, ochannel_id;
 
-  parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
+  parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 
