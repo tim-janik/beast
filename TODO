@@ -1,4 +1,5 @@
 FIXMES:
+- fix patch selection popup
 - add new test song containing a wave track
 - fix saving of internal objects
 - fix sub-synth "snet" property setter

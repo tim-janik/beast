@@ -19,6 +19,7 @@
 #ifndef __GXK_CELL_RENDERER_POPUP_H__
 #define __GXK_CELL_RENDERER_POPUP_H__
 
+#include <gxk/gxkutils.h>
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkeventbox.h>
 
@@ -36,15 +37,21 @@ G_BEGIN_DECLS
 /* --- structures & typedefs --- */
 typedef struct {
   GtkCellRendererText parent_instace;
+  GtkWidget          *dialog;
   gboolean	      mybool;
 } GxkCellRendererPopup;
 typedef struct {
   GtkCellRendererTextClass parent_class;
+  void (*popup) (GxkCellRendererPopup *cell,
+		 const gchar          *path,
+		 const gchar          *text);
 } GxkCellRendererPopupClass;
 
 
 /* --- functions --- */
 GType	gxk_cell_renderer_popup_get_type	(void);
+void	gxk_cell_renderer_popup_dialog		(GxkCellRendererPopup	*popup,
+						 GtkWidget		*dialog);
 
 
 /* --- type macros --- */
@@ -64,7 +71,9 @@ typedef struct {
   guint8	   block_remove_widget;
   guint8	   block_editing_done;
 } GxkProxyEditable;
-typedef GtkEventBoxClass GxkProxyEditableClass;
+typedef struct {
+  GtkEventBoxClass parent_class;
+} GxkProxyEditableClass;
 
 
 /* --- functions --- */

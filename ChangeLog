@@ -1,3 +1,28 @@
+Mon Apr 28 22:13:19 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.[hc]:
+	(gxk_tree_view_add_popup_column): added handling and setup of
+	a popup_callback.
+	renamed gxk_cell_editable_focus_out_handler() to
+	gxk_cell_editable_is_focus_handler(), this function now handles
+	focussing on notify::is-focus signal emissions.
+
+	* beast-gtk/bsttrackview.c (track_view_synth_popup): handle popup
+	of patch selection dialog.
+
+	* beast-gtk/bsttrackroll.c (bst_track_roll_start_edit): handle
+	editing aborts by catching notify::is-focus signals.
+
+	* beast-gtk/bstitemview.c (bst_item_view_get_type): GType updates.
+
+	* beast-gtk/gxk/gxkcellrendererpopup.[hc]: added popup signal. make
+	popup button insensitive if no popup handler is present.
+	(gxk_cell_renderer_popup_start_editing): don't chain to parent, but
+	create the entry ourselves and handle editing aborts with
+	gxk_cell_editable_is_focus_handler() on notify::is-focus.
+	(gxk_cell_renderer_popup_dialog): new function to let the cell
+	renderer popup and manage user supplied dialogs during edits.
+
 Mon Apr 28 04:27:47 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackview.c: support waves besides synth networks in

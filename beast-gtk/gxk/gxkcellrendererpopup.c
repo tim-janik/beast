@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxkcellrendererpopup.h"
+#include "gxkmarshal.h"
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkarrow.h>
@@ -75,6 +76,7 @@ static GtkCellEditable* gxk_cell_renderer_popup_start_editing (GtkCellRenderer  
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
+static guint    signal_popup = 0;
 
 
 /* --- functions --- */
@@ -141,6 +143,15 @@ gxk_cell_renderer_popup_class_init (GxkCellRendererPopupClass *class)
 				   g_param_spec_boolean ("mybool", "MYBOOL", NULL,
 							 FALSE,
 							 G_PARAM_READWRITE));
+  signal_popup = g_signal_new ("popup",
+			       G_OBJECT_CLASS_TYPE (object_class),
+			       G_SIGNAL_RUN_LAST,
+			       G_STRUCT_OFFSET (GxkCellRendererPopupClass, popup),
+			       NULL, NULL,
+			       gxk_marshal_VOID__STRING_STRING,
+			       G_TYPE_NONE, 2,
+			       G_TYPE_STRING,
+			       G_TYPE_STRING);
 }
 
 static void
@@ -232,10 +243,51 @@ gxk_cell_renderer_popup_activate (GtkCellRenderer     *cell,
 #endif
 }
 
+void
+gxk_cell_renderer_popup_dialog (GxkCellRendererPopup *self,
+				GtkWidget            *dialog)
+{
+  g_return_if_fail (GXK_IS_CELL_RENDERER_POPUP (self));
+  if (dialog)
+    g_return_if_fail (GTK_IS_WINDOW (dialog));
+
+  if (self->dialog)
+    {
+      gxk_toplevel_delete (self->dialog);
+      g_object_unref (self->dialog);
+    }
+  self->dialog = dialog;
+  if (self->dialog)
+    {
+      g_object_ref (self->dialog);
+      gxk_widget_showraise (self->dialog);
+    }
+}
+
+static void
+gxk_cell_renderer_popup_popdown (GxkCellRendererPopup *self)
+{
+  gxk_cell_renderer_popup_dialog (self, NULL);
+}
+
+static void
+gxk_cell_renderer_popup_editing_done (GxkCellRendererPopup *self,
+				      GtkEntry             *entry)
+{
+  const gchar *path = g_object_get_data (self, "gxk-cell-edit-path");
+  if (entry->editing_canceled)
+    return;
+  g_signal_emit_by_name (self, "edited", path, gtk_entry_get_text (entry));
+}
+
 static gboolean
 gxk_cell_renderer_popup_clicked (GxkCellRendererPopup *self)
 {
-  g_message ("FIXME: missing popup window!\n");
+  const gchar *path = g_object_get_data (self, "gxk-cell-edit-path");
+  if (self->dialog)
+    gxk_cell_renderer_popup_dialog (self, NULL);
+  else
+    g_signal_emit (self, signal_popup, 0, path, NULL);
   return TRUE;	/* we handled the event */
 }
 
@@ -248,41 +300,60 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
 				       GdkRectangle         *cell_area,
 				       GtkCellRendererState  flags)
 {
-  GtkCellEditable *ecell = GTK_CELL_RENDERER_CLASS (parent_class)->start_editing (cell, event, widget, path,
-										  background_area, cell_area, flags);
-  GtkWidget *echild = GTK_WIDGET (ecell);
-  GxkProxyEditable *proxy = g_object_new (GXK_TYPE_PROXY_EDITABLE,
-					  "visible", TRUE,
-					  "events", GDK_BUTTON_PRESS_MASK,
-					  NULL);
-  GtkWidget *hbox = g_object_new (GTK_TYPE_HBOX,
-				  "visible", TRUE,
-				  "parent", proxy,
-				  "child", echild,
-				  NULL);
+  GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (cell);
+  GtkCellRendererText *tcell = GTK_CELL_RENDERER_TEXT (self);
+  GtkWidget *popup_area, *entry, *hbox;
+  GtkCellEditable *ecell;
+  GxkProxyEditable *eproxy;
+  if (tcell->editable == FALSE)
+    return NULL;
+  entry = g_object_new (GTK_TYPE_ENTRY,
+			"has_frame", FALSE,
+			"visible", TRUE,
+			NULL);
+  g_object_connect (entry,
+		    "swapped_signal::editing_done", gxk_cell_renderer_popup_editing_done, self,
+		    "signal::notify::is-focus", gxk_cell_editable_is_focus_handler, self,
+		    NULL);
+  if (tcell->text)
+    gtk_entry_set_text (GTK_ENTRY (entry), tcell->text);
+  ecell = GTK_CELL_EDITABLE (entry);
+  gtk_editable_select_region (GTK_EDITABLE (entry), 0, -1);
+  eproxy = g_object_new (GXK_TYPE_PROXY_EDITABLE,
+			 "visible", TRUE,
+			 "events", GDK_BUTTON_PRESS_MASK,
+			 NULL);
+  hbox = g_object_new (GTK_TYPE_HBOX,
+		       "visible", TRUE,
+		       "parent", eproxy,
+		       "child", entry,
+		       NULL);
 #if 0	/* GTKFIX: this exhibits tree view scrolling+resizing bug in gtk+2.2 */
-  GtkWidget *popup_area = g_object_new (GTK_TYPE_BUTTON, "visible", TRUE,
-					"can_focus", FALSE, "width_request", ARROW_WIDTH,
-					"child", g_object_new (GTK_TYPE_ARROW, "visible", TRUE,
-							       "arrow_type", GTK_ARROW_DOWN, NULL),
-					NULL);
+  popup_area = g_object_new (GTK_TYPE_BUTTON, "visible", TRUE,
+			     "can_focus", FALSE, "width_request", ARROW_WIDTH,
+			     "child", g_object_new (GTK_TYPE_ARROW, "visible", TRUE,
+						    "arrow_type", GTK_ARROW_DOWN, NULL),
+			     NULL);
   g_object_connect (popup_area, "swapped_signal::clicked", gxk_cell_renderer_popup_clicked, cell, NULL);
 #else
-  GtkWidget *popup_area = g_object_new (GTK_TYPE_FRAME, "visible", TRUE, "width_request", ARROW_WIDTH,
-					"shadow_type", GTK_SHADOW_OUT,
-					"child", g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
-							       "label", "...", NULL),
-					NULL);
-  g_object_connect (proxy, "swapped_signal::button_press_event", gxk_cell_renderer_popup_clicked, cell, NULL);
+  popup_area = g_object_new (GTK_TYPE_FRAME, "visible", TRUE, "width_request", ARROW_WIDTH,
+			     "shadow_type", GTK_SHADOW_OUT,
+			     "child", g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
+						    "label", "...", NULL),
+			     NULL);
+  g_object_connect (eproxy, "swapped_signal::button_press_event", gxk_cell_renderer_popup_clicked, cell, NULL);
 #endif
-  g_object_connect (proxy,
+  if (!g_signal_has_handler_pending (self, signal_popup, 0, FALSE))
+    gtk_widget_set_sensitive (popup_area, FALSE);
+  g_object_connect (eproxy,
 		    // "swapped_signal::remove_widget", g_print, "remove_widget\n",
 		    // "swapped_signal::editing_done", g_print, "editing_done\n",
+		    "swapped_signal::remove_widget", gxk_cell_renderer_popup_popdown, self,
 		    NULL);
   gtk_box_pack_start (GTK_BOX (hbox), popup_area, FALSE, FALSE, 0);
-  gxk_proxy_editable_set_cell_editable (proxy, ecell);
-  
-  return GTK_CELL_EDITABLE (proxy);
+  gxk_proxy_editable_set_cell_editable (eproxy, ecell);
+  g_object_set_data_full (cell, "gxk-cell-edit-path", g_strdup (path), g_free);
+  return GTK_CELL_EDITABLE (eproxy);
 }
 
 

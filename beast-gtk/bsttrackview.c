@@ -233,6 +233,34 @@ track_view_synth_edited (BstTrackView *self,
 }
 
 static void
+track_view_synth_popup (BstTrackView         *self,
+			const gchar          *strpath,
+			const gchar          *text,
+			GxkCellRendererPopup *pcell)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      guint seqid = row + 1;
+      SfiProxy item = bse_container_get_item (BST_ITEM_VIEW (self)->container,
+					      BST_ITEM_VIEW (self)->item_type,
+					      seqid);
+      if (!self->synth_dialog)
+	{
+	  self->synth_dialog = gxk_dialog_new (&self->synth_dialog,
+					       GTK_OBJECT (self),
+					       GXK_DIALOG_HIDE_ON_DELETE,
+					       "Synth selection",
+					       NULL);
+	}
+      bst_window_sync_title_to_proxy (self->synth_dialog, item, "%s - Synth selection");
+      gxk_cell_renderer_popup_dialog (pcell, self->synth_dialog);
+    }
+}
+
+static void
 track_view_mute_toggled (BstTrackView          *self,
 			 const gchar           *strpath,
 			 GtkCellRendererToggle *tcell)
@@ -511,7 +539,7 @@ bst_track_view_create_tree (BstItemView *iview)
 				 track_view_voices_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree,
 				  COL_SYNTH, 0.5, "Synth", "Synthesizer network or wave to be used by this track",
-				  track_view_synth_edited, self, G_CONNECT_SWAPPED);
+				  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree,
 				 COL_BLURB, 0.0, "Comment", NULL,
 				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);

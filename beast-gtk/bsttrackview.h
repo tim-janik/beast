@@ -44,6 +44,7 @@ struct _BstTrackView
   BstTrackRollController *troll_ctrl;
   GxkToolbar		 *toolbar;
   GtkWidget		 *repeat_toggle;
+  GtkWidget		 *synth_dialog;
 };
 struct _BstTrackViewClass
 {

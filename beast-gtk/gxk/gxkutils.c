@@ -839,7 +839,8 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
  * @xalign:	      horizontal text alignment
  * @title:            column title
  * @tooltip:          column tooltip
- * @edited_callback:  notification callback 
+ * @edited_callback:  edit notification callback 
+ * @popup_callback:   popup notification callback 
  * @data:             data passed in to toggled_callback
  * @cflags:           connection flags
  *
@@ -853,6 +854,7 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 				const gchar  *title,
 				const gchar  *tooltip,
 				gpointer      edited_callback,
+				gpointer      popup_callback,
 				gpointer      data,
 				GConnectFlags cflags)
 {
@@ -865,6 +867,8 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 		       "xalign", xalign,
 		       "editable", edited_callback != NULL,
 		       NULL);
+  if (popup_callback)
+    g_signal_connect_data (cell, "popup", G_CALLBACK (popup_callback), data, NULL, cflags);
   if (edited_callback)
     g_signal_connect_data (cell, "edited", G_CALLBACK (edited_callback), data, NULL, cflags);
   gxk_tree_view_add_column (tree_view, -1,
@@ -1616,22 +1620,21 @@ gxk_cell_editable_canceled (GtkCellEditable *ecell)
 }
 
 /**
- * gxk_cell_editable_focus_out_handler
+ * gxk_cell_editable_is_focus_handler
  * @ecell:   valid #GtkCellEditable
  * @RETURNS: returns %FALSE
  *
  * Call gtk_cell_editable_editing_done() if necessary and return %FALSE.
- * This function is meant to be used to handle focus out events on
- * #GtkCellEditable widgets.
+ * This function is meant to be used to handle "notify::is-focus" signals
+ * on #GtkCellEditable widgets.
  */
-gboolean
-gxk_cell_editable_focus_out_handler (GtkCellEditable *ecell)
+void
+gxk_cell_editable_is_focus_handler (GtkCellEditable *ecell)
 {
-  g_return_val_if_fail (GTK_IS_CELL_EDITABLE (ecell), FALSE);
+  g_return_if_fail (GTK_IS_CELL_EDITABLE (ecell));
 
-  // gtk_cell_editable_editing_done (ecell);
-
-  return FALSE;
+  if (!gtk_widget_is_focus (GTK_WIDGET (ecell)))
+    gtk_cell_editable_editing_done (ecell);
 }
 
 static gchar*

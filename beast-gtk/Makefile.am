@@ -45,7 +45,8 @@ beast_headers = $(strip \
 	bstusermessage.h	bstutils.h	bstwavedialog.h		bstwaveeditor.h	\
 	bstwavereposhell.h	bstwaveview.h	bstsongshell.h		bstxkb.h	\
 	bstzoomedwindow.h	glewidgets.h	bsttrackrollctrl.h	bstxframe.h	\
-	bstcatalog.h		bstdial.h	bstdefs.h bstmarshal.h \
+	bstcatalog.h		bstdial.h			\
+	bstmarshal.h bstdefs.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
@@ -62,7 +63,8 @@ beast_sources = $(strip \
 	bstusermessage.c	bstutils.c	bstwavedialog.c		bstwaveeditor.c	\
 	bstwavereposhell.c	bstwaveview.c	bstsongshell.c		bstxkb.c	\
 	bstzoomedwindow.c	glewidgets.c	bsttrackrollctrl.c	bstxframe.c	\
-	bstcatalog.c		bstdial.c	$(PROFILE_SOURCE) \
+	bstcatalog.c		bstdial.c			\
+	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \

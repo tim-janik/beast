@@ -31,7 +31,7 @@ G_BEGIN_DECLS
 
 
 /* --- Gtk+ workarounds and amendments --- */
-gboolean    gxk_cell_editable_focus_out_handler (GtkCellEditable *ecell);
+void        gxk_cell_editable_is_focus_handler  (GtkCellEditable *ecell);
 gboolean    gxk_cell_editable_canceled		(GtkCellEditable *ecell);
 GtkWidget*  gxk_item_factory_get_item		(GtkItemFactory	 *ifactory,
 						 const gchar	 *path);
@@ -134,6 +134,7 @@ void	 gxk_tree_view_add_popup_column		(GtkTreeView  *tree_view,
 						 const gchar  *title,
 						 const gchar  *tooltip,
 						 gpointer      edited_callback,
+						 gpointer      popup_callback,
 						 gpointer      data,
 						 GConnectFlags cflags);
 void	gxk_tree_view_column_set_tip_title	(GtkTreeViewColumn   *tree_column,

@@ -85,7 +85,7 @@ struct _BstItemViewOp
 
 
 /* --- prototypes --- */
-GtkType		bst_item_view_get_type		(void);
+GType		bst_item_view_get_type		(void);
 void		bst_item_view_select		(BstItemView	*item_view,
 						 SfiProxy	 item);
 SfiProxy	bst_item_view_get_current	(BstItemView	*item_view);

@@ -1660,7 +1660,7 @@ bst_track_roll_start_edit (BstTrackRoll    *self,
     }
   self->ecell = ecell;
   g_object_connect (self->ecell,
-		    "signal::focus_out_event", gxk_cell_editable_focus_out_handler, self,
+		    "signal::notify::is-focus", gxk_cell_editable_is_focus_handler, self,
 		    "swapped_signal::editing_done", bst_track_roll_stop_edit, self,
 		    NULL);
   self->ecell_row = row;
@@ -1683,7 +1683,7 @@ track_roll_stop_edit (BstTrackRoll *self,
 		     canceled || gxk_cell_editable_canceled (self->ecell),
 		     self->ecell);
       g_object_disconnect (self->ecell,
-			   "any_signal::focus_out_event", gxk_cell_editable_focus_out_handler, self,
+			   "any_signal::notify::is-focus", gxk_cell_editable_is_focus_handler, self,
 			   "any_signal::editing_done", bst_track_roll_stop_edit, self,
 			   NULL);
       gtk_widget_unparent (GTK_WIDGET (self->ecell));

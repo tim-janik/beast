@@ -50,41 +50,39 @@ static gpointer		 parent_class = NULL;
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_item_view_get_type (void)
 {
-  static GtkType item_view_type = 0;
-  
-  if (!item_view_type)
+  static GType type = 0;
+  if (!type)
     {
-      GtkTypeInfo item_view_info =
-      {
-	"BstItemView",
+      static const GTypeInfo type_info = {
+        sizeof (BstItemViewClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) bst_item_view_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
 	sizeof (BstItemView),
-	sizeof (BstItemViewClass),
-	(GtkClassInitFunc) bst_item_view_class_init,
-	(GtkObjectInitFunc) bst_item_view_init,
-	/* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) bst_item_view_init,
       };
-      
-      item_view_type = gtk_type_unique (GTK_TYPE_ALIGNMENT, &item_view_info);
+      type = g_type_register_static (GTK_TYPE_ALIGNMENT,
+				     "BstItemView",
+				     &type_info, 0);
     }
-  
-  return item_view_type;
+  return type;
 }
 
 static void
 bst_item_view_class_init (BstItemViewClass *class)
 {
-  GtkObjectClass *object_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   
-  object_class = GTK_OBJECT_CLASS (class);
+  parent_class = g_type_class_peek_parent (class);
   
-  parent_class = gtk_type_class (GTK_TYPE_ALIGNMENT);
-  
-  G_OBJECT_CLASS (object_class)->finalize = bst_item_view_finalize;
+  gobject_class->finalize = bst_item_view_finalize;
 
   object_class->destroy = bst_item_view_destroy;
   
