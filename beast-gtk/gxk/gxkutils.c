@@ -92,7 +92,7 @@ _gxk_init_utils (void)
  * @RETURNS: whether @widget is visible on screen
  *
  * Checks for @widget to be effectively visible on screen.
- * Note that this is not the same as gdk_window_viewable()
+ * Note that this is not the same as gdk_window_is_viewable()
  * for the widget's window or GTK_WIDGET_DRAWABLE(), as
  * those may return true for children of notebooks, eventboxes
  * or handleboxes although the widget is not visible on screen.
