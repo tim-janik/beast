@@ -1,3 +1,9 @@
+Thu Feb 10 23:55:37 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_icon_set): arg, fighting
+	pixbuf again. set x_in_pixels and y_in_pixels to FALSE, so the icons
+	don't walk away when zooming.
+
 Thu Feb 10 11:51:28 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c:
