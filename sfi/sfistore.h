@@ -80,7 +80,7 @@ void            sfi_wstore_put_binary         (SfiWStore      *wstore,
                                                SfiStoreReadBin reader,
                                                gpointer        data,
                                                GDestroyNotify  destroy);
-void            sfi_wstore_flush_fd           (SfiWStore      *wstore,
+gint /*-errno*/ sfi_wstore_flush_fd           (SfiWStore      *wstore,
                                                gint            fd);
 const gchar*    sfi_wstore_peek_text          (SfiWStore      *wstore,
                                                guint          *length);

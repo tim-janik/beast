@@ -246,7 +246,7 @@ sfi_wstore_peek_text (SfiWStore      *wstore,
   return wstore->text->str;
 }
 
-void
+gint /* -errno */
 sfi_wstore_flush_fd (SfiWStore *wstore,
 		     gint      fd)
 {
@@ -256,9 +256,9 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
   off_t text_offset, binary_offset;
   guint l;
   
-  g_return_if_fail (wstore != NULL);
-  g_return_if_fail (wstore->flushed == FALSE);
-  g_return_if_fail (fd >= 0);
+  g_return_val_if_fail (wstore != NULL, -EINVAL);
+  g_return_val_if_fail (wstore->flushed == FALSE, -EINVAL);
+  g_return_val_if_fail (fd >= 0, -EINVAL);
 
   wstore->flushed = TRUE;
 
@@ -268,11 +268,15 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
   do
     text_offset = lseek (fd, 0, SEEK_CUR);
   while (text_offset < 0 && errno == EINTR);
-  
+  if (text_offset < 0 && errno)
+    return -errno;
+
   /* dump text */
   do
     l = write (fd, wstore->text->str, wstore->text->len);
   while (l < 0 && errno == EINTR);
+  if (l < 0 && errno)
+    return -errno;
   
   /* binary data header */
   if (wstore->bblocks)
@@ -283,6 +287,8 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       do
 	l = write (fd, term, n);
       while (l < 0 && errno == EINTR);
+      if (l < 0 && errno)
+        return -errno;
     }
   
   /* save binary offset */
@@ -290,6 +296,8 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
     binary_offset = lseek (fd, 0, SEEK_CUR);
   while (binary_offset < 0 && errno == EINTR);
   /* binary_offset is position of the first byte *after* \000 */
+  if (binary_offset < 0 && errno)
+    return -errno;
 
   /* store binary data */
   for (ring = wstore->bblocks; ring; ring = sfi_ring_walk (ring, wstore->bblocks))
@@ -302,6 +310,8 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
 	bblock->offset = lseek (fd, 0, SEEK_CUR);
       while (bblock->offset < 0 && errno == EINTR);
       bblock->length = 0;
+      if (bblock->offset < 0 && errno)
+        return -errno;
       
       /* dump binary */
       do
@@ -314,6 +324,8 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
 	    l = write (fd, buffer, n);
 	  while (l < 0 && errno == EINTR);
 	  bblock->length += n;
+          if (l < 0 && errno)
+            return -errno;
 	}
       while (n);
     }
@@ -329,13 +341,20 @@ sfi_wstore_flush_fd (SfiWStore *wstore,
       do
 	foff = lseek (fd, text_offset + bblock->patch_offset, SEEK_SET);
       while (foff < 0 && errno == EINTR);
+      if (foff < 0 && errno)
+        return -errno;
       g_snprintf (ptext, sizeof (ptext), "0x%08x 0x%08x",
 		  (guint32) (bblock->offset - binary_offset),
 		  (guint32) bblock->length);
       do
 	l = write (fd, ptext, sizeof (ptext) - 1);
       while (l < 0 && errno == EINTR);
+      if (l < 0 && errno)
+        return -errno;
     }
+
+  /* finished successfully */
+  return 0;
 }
 
 

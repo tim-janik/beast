@@ -1,3 +1,8 @@
+Thu Jan 20 05:13:30 2005  Tim Janik  <timj@gtk.org>
+
+	* sfistore.c (sfi_wstore_flush_fd): return negative errno
+	in case of errors.
+
 Thu Jan  6 18:50:27 2005  Tim Janik  <timj@gtk.org>
 
 	* sfistore.[hc]: added sfi_rstore_parse_zbinary() to parse binary
