@@ -1,3 +1,8 @@
+Wed Oct 15 02:36:02 2003  Tim Janik  <timj@gtk.org>
+
+	* update.sh: figure versioned gettext domain (GETTEXT_PACKAGE)
+	from ../po-helper.sh.
+
 Tue Oct 14 21:55:38 2003  Tim Janik  <timj@gtk.org>
 
 	* initial setup.

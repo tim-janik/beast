@@ -2,5 +2,4 @@
 Makefile
 Makefile.in
 POTFILES
-bse.pot
 missing
