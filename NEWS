@@ -13,6 +13,7 @@
   DavOrgan       - a modifiable Additive Organ Synthesizer
   DavSynDrum     - a synthesized drum generator
   DavCanyonDelay - adds deep, long delay echo effects
+  DavBassFilter  - TB-303 low-pass resonant filter clone
 * Pattern editor keytable display
 * Simple sample views for samples used in a project
 * More test files in the test/ subdirectory ;)
