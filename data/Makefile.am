@@ -31,8 +31,8 @@ beast-images.h:	Makefile ${public_images}
 
 
 # install pkg-config files
-pkgconfig_DATA = sfi.pc bse.pc
 pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = sfi.pc bse.pc
 $(pkgconfig_DATA): $(top_builddir)/config.status
 
 # install .applications files
@@ -90,6 +90,9 @@ CLEANFILES += $(noinst_build_sources)
 EXTRA_DIST += $(strip           \
 	${public_images}	\
 	${private_images}	\
+	${dotapplications_DATA}	\
+	${dotdesktop_in_files}	\
+	${mime_in_file}		\
         sfi.pc.in               \
         bse.pc.in               \
 )
