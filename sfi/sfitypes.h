@@ -85,7 +85,8 @@ const gchar* sfi_constants_get_name	(guint		     n_consts,
 					 guint		     index);
 gint	     sfi_constants_rcmp		(const gchar	    *canon_identifier1,
 					 const gchar	    *canon_identifier2);
-
+const char*  sfi_category_concat        (const char         *prefix,
+                                         const char         *trunk);
 
 /* --- idl macro magic --- */
 #define SFI_START_ARGS()     (

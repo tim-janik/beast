@@ -1,3 +1,10 @@
+Thu May 20 14:11:01 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: use sfi_category_concat() to fixup categories.
+	support translated categories.
+
+	* sfitypes.[hc]: added helper function sfi_category_concat().
+
 Wed May  5 16:37:26 2004  Tim Janik  <timj@gtk.org>
 
 	* sfilog.[hc]: rewrite of the logging/debugging system.

@@ -898,10 +898,12 @@ public:
         printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
         printf ("  static void               class_init (::Bse::CxxBaseClass *klass);\n");
         printf ("  static inline const char* options   () { return %s; }\n", ci->infos.get("options").escaped().c_str());
-        printf ("  static inline const char* category  () { static const char *c = NULL; const char *category = %s; \n",
-                ci->infos.get("category").escaped().c_str());
-        printf ("    if (!c && category[0]) c = g_intern_strconcat (\"/Modules\", category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
-        printf ("    return c; }\n");
+        printf ("  static inline const char* category  () { static const char *c = NULL;\n");
+        printf ("    return c ? c : c = sfi_category_concat (\"/Modules\", %s); }\n",
+                ci->infos.get("category").escaped(" ").c_str()); // untranslated
+        printf ("  static inline const char* i18n_category  () { static const char *c = NULL;\n");
+        printf ("    return c ? c : c = sfi_category_concat (\"/Modules\", %s); }\n",
+                ci->infos.get("category").escaped().c_str());    // translated
         printf ("  static inline const char* blurb     () { return %s; }\n", ci->infos.get("blurb").escaped().c_str());
         printf ("  static inline const char* authors   () { return %s; }\n", ci->infos.get("authors").escaped().c_str());
         printf ("  static inline const char* license   () { return %s; }\n", ci->infos.get("license").escaped().c_str());
@@ -1167,12 +1169,12 @@ public:
         printf ("public:\n");
         printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
         printf ("  static inline const char* options   () { return %s; }\n", infos.get("options").escaped().c_str());
-        printf ("  static inline const char* category  () { static const char *c = NULL; \n");
-        printf ("    const char *root_category = %s, *category = %s;\n",
-                infos.get("root_category").escaped().c_str(), infos.get("category").escaped().c_str());
-        printf ("    if (!c && category[0]) c = g_intern_strconcat (root_category && root_category[0] ? root_category : \"/Proc\",\n");
-        printf ("                                    category[0] == '/' ? \"\" : \"/\", category, NULL);\n");
-        printf ("    return c; }\n");
+        printf ("  static inline const char* category  () { static const char *c = NULL;\n");
+        printf ("    return c ? c : c = sfi_category_concat (\"/Proc\", %s); }\n",
+                infos.get("category").escaped(" ").c_str());    // untranslated
+        printf ("  static inline const char* i18n_category  () { static const char *c = NULL;\n");
+        printf ("    return c ? c : c = sfi_category_concat (\"/Proc\", %s); }\n",
+                infos.get("category").escaped().c_str());       // translated
         printf ("  static inline const char* blurb     () { return %s; }\n", infos.get("blurb").escaped().c_str());
         printf ("  static inline const char* authors   () { return %s; }\n", infos.get("authors").escaped().c_str());
         printf ("  static inline const char* license   () { return %s; }\n", infos.get("license").escaped().c_str());

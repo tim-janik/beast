@@ -247,3 +247,26 @@ sfi_constants_rcmp (const gchar *canon_identifier1,
     return l1 - l2;
   return cmp;
 }
+
+const char*
+sfi_category_concat (const char         *prefix,
+                     const char         *trunk)
+{
+  if (prefix && !prefix[0])
+    prefix = NULL;
+  if (!trunk || !trunk[0])
+    return NULL;
+  gboolean prefix_needs_slash1 = prefix && prefix[0] != '/';
+  gboolean prefix_last = prefix ? prefix[strlen (prefix) - 1] : 0;
+  gboolean prefix_has_slash2 = prefix_last == '/';
+  gboolean prefix_needs_slash2 = prefix && !prefix_has_slash2;
+  if (prefix_has_slash2 && trunk)
+    while (trunk[0] == '/')
+      trunk++;
+  gboolean trunk_needs_slash1 = !prefix && trunk[0] != '/';
+  return g_intern_strconcat (prefix_needs_slash1 ? "/" : "",
+                             prefix ? prefix : "",
+                             prefix_needs_slash2 || trunk_needs_slash1 ? "/" : "",
+                             trunk,
+                             NULL);
+}
