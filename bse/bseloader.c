@@ -197,7 +197,7 @@ gsl_wave_file_info_load (const gchar  *file_name,
   else /* no loader match */
     {
       /* try to provide apropriate error code */
-      error = gsl_check_file (file_name, "rf");
+      error = gsl_file_check (file_name, "rf");
       if (!error)
 	error = GSL_ERROR_FORMAT_UNKNOWN;
     }

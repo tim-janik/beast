@@ -144,12 +144,12 @@ main (int   argc,
       const gchar *file = pshift ();
       
       g_print ("file test for \"%s\":\n", file);
-      g_print ("  is readable   : %s\n", gsl_strerror (gsl_check_file (file, "r")));
-      g_print ("  is writable   : %s\n", gsl_strerror (gsl_check_file (file, "w")));
-      g_print ("  is executable : %s\n", gsl_strerror (gsl_check_file (file, "x")));
-      g_print ("  is file       : %s\n", gsl_strerror (gsl_check_file (file, "f")));
-      g_print ("  is directory  : %s\n", gsl_strerror (gsl_check_file (file, "d")));
-      g_print ("  is link       : %s\n", gsl_strerror (gsl_check_file (file, "l")));
+      g_print ("  is readable   : %s\n", gsl_strerror (gsl_file_check (file, "r")));
+      g_print ("  is writable   : %s\n", gsl_strerror (gsl_file_check (file, "w")));
+      g_print ("  is executable : %s\n", gsl_strerror (gsl_file_check (file, "x")));
+      g_print ("  is file       : %s\n", gsl_strerror (gsl_file_check (file, "f")));
+      g_print ("  is directory  : %s\n", gsl_strerror (gsl_file_check (file, "d")));
+      g_print ("  is link       : %s\n", gsl_strerror (gsl_file_check (file, "l")));
     }
   else if (strcmp (arg, "ring-test") == 0)
     {

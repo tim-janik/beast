@@ -75,10 +75,8 @@ GslErrorType gsl_error_from_errno	(gint		 sys_errno,
 GslErrorType gsl_error_select           (guint           n_errors,
                                          GslErrorType    first_error,
                                          ...);
-GslErrorType gsl_check_file		(const gchar	*file_name,
+GslErrorType gsl_file_check		(const gchar	*file_name,
 					 const gchar	*mode);
-gboolean     gsl_check_file_equals	(const gchar	*file1,
-					 const gchar	*file2);
 
 
 /* --- progress notification --- */

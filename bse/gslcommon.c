@@ -202,87 +202,12 @@ gsl_byte_order_from_string (const gchar *string)
 }
 
 GslErrorType
-gsl_check_file (const gchar *file_name,
+gsl_file_check (const gchar *file_name,
 		const gchar *mode)
 {
-  guint access_mask = 0;
-  
-  if (strchr (mode, 'r'))	/* readable */
-    access_mask |= R_OK;
-  if (strchr (mode, 'w'))	/* writable */
-    access_mask |= W_OK;
-  if (strchr (mode, 'x'))	/* executable */
-    access_mask |= X_OK;
-
-  if (access_mask && access (file_name, access_mask) < 0)
-    goto have_errno;
-  
-  gboolean check_file = strchr (mode, 'f') != NULL;	/* open as file */
-  gboolean check_dir  = strchr (mode, 'd') != NULL;	/* open as directory */
-  gboolean check_link = strchr (mode, 'l') != NULL;	/* open as link */
-  gboolean check_char = strchr (mode, 'c') != NULL;	/* open as character device */
-  gboolean check_block = strchr (mode, 'b') != NULL;	/* open as block device */
-  gboolean check_pipe = strchr (mode, 'p') != NULL;	/* open as pipe */
-
-  if (check_file || check_dir || check_link || check_char || check_block || check_pipe)
-    {
-      struct stat st;
-      
-      if (check_link)
-	{
-	  if (lstat (file_name, &st) < 0)
-	    goto have_errno;
-	}
-      else if (stat (file_name, &st) < 0)
-	goto have_errno;
-
-      if (0)
-        g_printerr ("%s: check \"%s\": %s%s%s%s%s%s\n",
-                    G_GNUC_PRETTY_FUNCTION, file_name,
-                    S_ISREG (st.st_mode) ? "f" : "",
-                    S_ISDIR (st.st_mode) ? "d" : "",
-                    S_ISLNK (st.st_mode) ? "l" : "",
-                    S_ISCHR (st.st_mode) ? "c" : "",
-                    S_ISBLK (st.st_mode) ? "b" : "",
-                    S_ISFIFO (st.st_mode) ? "p" : "");
-                  
-      if (check_file && S_ISDIR (st.st_mode))
-        return GSL_ERROR_IS_DIR;
-
-      if ((check_file && !S_ISREG (st.st_mode)) ||
-	  (check_dir && !S_ISDIR (st.st_mode)) ||
-	  (check_link && !S_ISLNK (st.st_mode)) ||
-          (check_char && !S_ISCHR (st.st_mode)) ||
-          (check_block && !S_ISBLK (st.st_mode)) ||
-          (check_pipe && !S_ISFIFO (st.st_mode)))
-	return GSL_ERROR_OPEN_FAILED;
-    }
-
-  return GSL_ERROR_NONE;
-  
- have_errno:
+  if (sfi_file_check (file_name, mode))
+    return GSL_ERROR_NONE;
   return gsl_error_from_errno (errno, GSL_ERROR_OPEN_FAILED);
-}
-
-gboolean
-gsl_check_file_equals (const gchar    *file1,
-                       const gchar    *file2)
-{
-  if (!file1 || !file2)
-    return file1 == file2;
-  struct stat st1 = { 0, }, st2 = { 0, };
-  gint err1 = 0, err2 = 0;
-  errno = 0;
-  if (stat (file1, &st1) < 0 && stat (file1, &st1) < 0)
-    err1 = errno;
-  errno = 0;
-  if (stat (file2, &st2) < 0 && stat (file2, &st2) < 0)
-    err2 = errno;
-  if (err1 || err2)
-    return err1 == err2;
-  return (st1.st_dev  == st2.st_dev &&
-          st1.st_ino  == st2.st_ino &&
-          st1.st_rdev == st2.st_rdev);
 }
 
 GslErrorType
@@ -293,8 +218,6 @@ gsl_error_from_errno (gint         sys_errno,
     {
     case ELOOP:
     case ENAMETOOLONG:
-    case ENODEV:
-    case ENOTDIR:
     case ENOENT:        return GSL_ERROR_NOT_FOUND;
     case EISDIR:        return GSL_ERROR_IS_DIR;
     case EROFS:
@@ -312,8 +235,10 @@ gsl_error_from_errno (gint         sys_errno,
     case EBUSY:         return GSL_ERROR_BUSY;
     case EAGAIN:
     case EINTR:		return GSL_ERROR_TEMP;
-    case EFAULT:
-    case EBADF:         return GSL_ERROR_INTERNAL;
+    case EFAULT:        return GSL_ERROR_INTERNAL;
+    case EBADF:
+    case ENOTDIR:
+    case ENODEV:
     case EINVAL:
     default:            return fallback;
     }

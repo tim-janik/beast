@@ -624,7 +624,7 @@ bse_wave_load_wave_file (BseWave      *wave,
     }
   else
     {
-      error = gsl_check_file (file_name, "fr");
+      error = gsl_file_check (file_name, "fr");
       if (!error)
 	error = BSE_ERROR_FILE_OPEN_FAILED;
     }

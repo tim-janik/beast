@@ -71,7 +71,7 @@ static BseErrorType
 check_device_usage (const gchar *name,
                     const gchar *check_mode)
 {
-  BseErrorType error = gsl_check_file (name, check_mode);
+  BseErrorType error = gsl_file_check (name, check_mode);
   if (!error)
     {
       errno = 0;
@@ -98,7 +98,7 @@ bse_midi_device_oss_list_devices (BseDevice *device)
   for (i = 0; i < G_N_ELEMENTS (postfixes); i++)
     {
       gchar *dname = g_strconcat (BSE_MIDI_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
-      if (!gsl_check_file_equals (last, dname))
+      if (!sfi_file_equals (last, dname))
         {
           if (check_device_usage (dname, "crw") == GSL_ERROR_NONE)
             ring = sfi_ring_append (ring,
