@@ -1,0 +1,6 @@
+Sun Nov 28 15:38:12 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsepcmdevice-portaudio.cc: initial version of a PortAudioV19 driver
+	based on PortAudios blocking API; works with the PortAudio ALSA
+	driver, and somewhat with the PortAudio OSS driver (which appears to
+	have bugs when it comes to configuring latency)

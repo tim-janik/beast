@@ -1,0 +1,3 @@
+Initial Release of BSE-PortAudio 0.6.3:
+
+* Provide an PortAudioV19 PCM driver for BSE
