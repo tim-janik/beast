@@ -389,7 +389,7 @@ drag_group_drag_motion (GtkWidget      *hbox,
   if (drag_source &&                                            /* check SAME_APP */
       gtk_widget_is_ancestor (drag_source, plist) &&		/* check widget branch */
       context->targets &&                                       /* check target type */
-      GPOINTER_TO_UINT (context->targets->data) == atom_beast_pattern_pointer)
+      context->targets->data == atom_beast_pattern_pointer)
     {
       guint action = context->actions & context->suggested_action;
       gint old_pos, new_pos;

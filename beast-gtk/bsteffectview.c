@@ -329,14 +329,14 @@ update_effect_lists (BstEffectView *effect_view)
 	      gchar *name = cats[i].category + cats[i].mindex + 1;
 	      gint clist_row = gtk_clist_insert (aclist, 0, &name);
 	      
-	      gtk_clist_set_row_data (aclist, clist_row, GUINT_TO_POINTER (cats[i].type));
+	      gtk_clist_set_row_data (aclist, clist_row, (gpointer) cats[i].type);
 	    }
 	  g_free (cats);
 	  gtk_clist_select_row (aclist, 0, -1);
 	  gtk_clist_thaw (aclist);
 	}
 
-      ptype = GPOINTER_TO_UINT (gtk_clist_get_selection_data (pclist, 0));
+      ptype = (GType) gtk_clist_get_selection_data (pclist, 0);
       gtk_clist_freeze (pclist);
       gtk_clist_clear (pclist);
       if (effect_view->pattern)

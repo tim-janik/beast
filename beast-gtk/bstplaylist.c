@@ -306,7 +306,7 @@ group_list_drag_motion (GtkWidget      *group_list,
   if (drag_source &&							/* check SAME_APP */
       gtk_widget_is_ancestor (drag_source, GTK_WIDGET (plist)) &&	/* check widget branch */
       context->targets &&						/* check target type */
-      GPOINTER_TO_UINT (context->targets->data) == atom_beast_pattern_group_pointer)
+      context->targets->data == atom_beast_pattern_group_pointer)
     {
       guint action = context->actions & context->suggested_action;
       gint old_pos, new_pos;

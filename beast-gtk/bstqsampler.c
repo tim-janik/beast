@@ -242,7 +242,7 @@ static void
 bst_qsampler_size_request (GtkWidget      *widget,
 			   GtkRequisition *requisition)
 {
-  BstQSampler *qsampler = BST_QSAMPLER (widget);
+  /* BstQSampler *qsampler = BST_QSAMPLER (widget); */
 
   /* can just guess constantly */
   requisition->width = 32;

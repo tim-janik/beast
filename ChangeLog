@@ -1,3 +1,11 @@
+Mon Nov 26 10:16:54 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/*.c: various pointer/GType casting cleanups.
+
+Mon Nov 26 10:08:01 2001  Tim Janik  <timj@gtk.org>
+
+	* bsw/mkapi.c: fix GType->UINT casting.
+
 Sun Nov 25 23:25:04 2001  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up version requirements for canvas, gtk, etc. to
