@@ -41,6 +41,7 @@ pattern_controller_vraster_notify (gpointer             notify_data,
     { BST_NOTE_LENGTH_16,         96 },
     { BST_NOTE_LENGTH_32,         48 },
     { BST_NOTE_LENGTH_64,         24 },
+    { BST_NOTE_LENGTH_128,        12 },
     { BST_NOTE_LENGTH_1_P,      2304 }, /* 4 * 384 * 3 / 2 */
     { BST_NOTE_LENGTH_2_P,      1152 },
     { BST_NOTE_LENGTH_4_P,       576 },
@@ -48,6 +49,7 @@ pattern_controller_vraster_notify (gpointer             notify_data,
     { BST_NOTE_LENGTH_16_P,      144 },
     { BST_NOTE_LENGTH_32_P,       72 },
     { BST_NOTE_LENGTH_64_P,       36 },
+    { BST_NOTE_LENGTH_128_P,      18 },
     { BST_NOTE_LENGTH_1_T,      1024 }, /* 4 * 384 * 2 / 3 */
     { BST_NOTE_LENGTH_2_T,       512 },
     { BST_NOTE_LENGTH_4_T,       256 },
@@ -55,6 +57,7 @@ pattern_controller_vraster_notify (gpointer             notify_data,
     { BST_NOTE_LENGTH_16_T,       64 },
     { BST_NOTE_LENGTH_32_T,       32 },
     { BST_NOTE_LENGTH_64_T,       16 },
+    { BST_NOTE_LENGTH_128_T,       8 },
   };
   int i, vraster = 384, vsval = bst_note_length_from_choice (sfi_value_get_choice (&self->vraster->value));
   for (i = 0; i < G_N_ELEMENTS (choices); i++)

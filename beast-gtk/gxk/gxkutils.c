@@ -876,6 +876,23 @@ gxk_widget_force_bg_clear (GtkWidget *widget)
 }
 
 /**
+ * gxk_widget_set_tooltip
+ * @widget:  a valid GtkWidget
+ * @tooltip: descriptive tooltip
+ *
+ * As a convenience function, this sets the @tooltip for @widget
+ * on %GXK_TOOLTIPS, if @widget is supposed to have tooltips
+ * according to the system configuration and also sets the latent tooltip.
+ */
+void
+gxk_widget_set_tooltip (GtkWidget   *widget,
+                        const gchar *tooltip)
+{
+  gxk_widget_set_latent_tooltip (widget, tooltip);
+  gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+}
+
+/**
  * gxk_widget_set_latent_tooltip
  * @widget:  a valid GtkWidget
  * @tooltip: descriptive tooltip

@@ -81,7 +81,7 @@ param_choice_create (GxkParam    *param,
   for (i = 0; i < cvalues.n_values; i++)
     {
       GtkWidget *item = gtk_menu_item_new_with_label (cvalues.values[i].choice_label);
-      gxk_widget_set_latent_tooltip (item, cvalues.values[i].choice_blurb);
+      gxk_widget_set_tooltip (item, cvalues.values[i].choice_blurb);
       gtk_widget_show (item);
       g_object_connect (item, "signal::activate", param_choice_item_activated, widget, NULL);
       g_object_set_qdata (G_OBJECT (item), quark_param_choice_values, (gpointer) &cvalues.values[i]);
