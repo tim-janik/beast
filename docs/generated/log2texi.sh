@@ -1,17 +1,18 @@
 #!/bin/bash
 
 SYMBOL_PATTERN='[*0-9A-Z?][*0-9A-Za-z_?]*\(()\)\{0,1\}'
-FUNC_PATTERN='[*0-9A-Za-z?][*0-9A-Za-z_?]*\(()\)\{0,1\}'
-SYMBOL_PREFIX='\(Sfi\|Gsl\|Bse\|Bst\|Gxk\|Gtk\|Gdk\|Gnome\|G\)'
-  FUNC_PREFIX='\(sfi\|gsl\|bse\|bst\|gxk\|gtk\|gdk\|gnome\|g\)'
- MACRO_PREFIX='\(SFI\|GSL\|BSE\|BST\|GXK\|GTK\|GDK\|GNOME\|G\)'
-CONST1_EXPR='\b\([0-9]\+\.[0-9]\+\([eE][+-]\?[0-9]\+\)\?\)'
-CONST2_EXPR='\b\([0-9]\+\.\?\([eE][+-]\?[0-9]\+\)\)'
-CONST3_EXPR='\b\([0-9]\+\.\)'
-CONST4_EXPR='\B\(\.[0-9]\+\([eE][+-]\?[0-9]\+\)\?\)'
+  FUNC_PATTERN='[*0-9A-Za-z?][*0-9A-Za-z_?]*\(()\)\{0,1\}'
+   SYMBOL_GLIB='\(G[*A-Z?]\+[*a-z?][*0-9A-Za-z_?]*\)'
+ SYMBOL_PREFIX='\(Sfi\|Gsl\|Bse\|Bst\|Gxk\|Gtk\|Gdk\|Gnome\)' # SYMBOL_GLIB instead of 'G'
+   FUNC_PREFIX='\(sfi\|gsl\|bse\|bst\|gxk\|gtk\|gdk\|gnome\|g\)'
+  MACRO_PREFIX='\(SFI\|GSL\|BSE\|BST\|GXK\|GTK\|GDK\|GNOME\|G\)'
+CONST1_EXPR='\b\([0-9]\+\.[0-9]\+\([eE][+-]\?[0-9]\+\)\?\)\b'
+CONST2_EXPR='\b\([0-9]\+\.\?\([eE][+-]\?[0-9]\+\)\)\b'
+CONST3_EXPR='\b\([0-9]\+\.\)\B'
+CONST4_EXPR='\B\(\.[0-9]\+\([eE][+-]\?[0-9]\+\)\?\)\b'
 CONST5_EXPR='\b\([0-9]\+[LlUu]\+\)\b'
-CONST6_EXPR='\b\([0-9]\+\)'
-CONST7_EXPR='\b\(0[xX][A-Fa-f0-9]\+\)'
+CONST6_EXPR='\b\([0-9]\+\)\b'
+CONST7_EXPR='\b\(0[xX][A-Fa-f0-9]\+\)\b'
 
 export SYMBOL_PATTERN FUNC_PATTERN SYMBOL_PREFIX FUNC_PREFIX MACRO_PREFIX
 
@@ -41,6 +42,7 @@ function ChangeLog2texi ()
 	-e '/^[12][-0-9]\{9\}/s/^\(.*\)$/@unnumberedsec @code{\1}/' \
 	-e '/^[A-z]\{3\}/s/^\(.*\)$/@unnumberedsec @code{\1}/' \
 	-e 's/\(\b'"$SYMBOL_PREFIX"''"$SYMBOL_PATTERN"'\)/@reference_type{\1}/g' \
+	-e 's/\(\b'"$SYMBOL_GLIB"'\)/@reference_type{\1}/g' \
 	-e 's/\(\b'"$FUNC_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_function{\1}/g' \
 	-e 's/\(\b'"$MACRO_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_constant{\1}/g' \
 	-e '/^[ 	]\+/ { ' \

@@ -1,3 +1,10 @@
+Sat Jan 11 15:21:08 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/log2texi.sh: use SYMBOL_GLIB to match GLib
+	types, so we don't incedentally markup words like 'GUI'.
+	added word boundary constrains to CONST?_EXPR to avoid digit
+	markup for words like '24bit'.
+
 Sat Jan 11 00:47:27 2003  Tim Janik  <timj@gtk.org>
 
 	* changed logfile to logentry in alpers last patch to better
