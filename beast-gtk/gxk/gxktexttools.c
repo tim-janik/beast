@@ -398,6 +398,7 @@ text_buffer_tagdef (GtkTextBuffer *tbuffer,
       g_value_init (&value, vtype);
       eclass = g_type_class_ref (vtype);
       g_value_set_enum (&value, enum_match_value (eclass, tag_value, edefault));
+      g_type_class_unref (eclass);
       break;
     default:
       return FALSE;

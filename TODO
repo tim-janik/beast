@@ -4,10 +4,9 @@ FIXMES:
 - auto-connect viewable-changed to gadget notebooks
 - fix accel activation of menu items in popups on invisible notebook pages
 - add one-shot property to factories
-- i18n in xml
 
+- extend module info dialog to cover author license etc.
 - rename gsl-mplan.txt to engine-mplan.txt
-- gxktexttools.c does eclass = g_type_class_ref (vtype); without unref
 - remove/rename test-string.bse
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
@@ -16,8 +15,6 @@ FIXMES:
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
 - add piano roll scripts and offer those in pianoroll button3 menu
 - registering the same procedure twice triggers a g_warning()
-- document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
-- fix forcing unique names for children of a project 
 - add new test song containing a wave track so the internal wave csynth is properly testet
 - File/Open should merge if issued on an empty project
 - add author and license information to module types just like we do for procedures
