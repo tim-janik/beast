@@ -1,3 +1,10 @@
+Mon Dec 29 12:54:07 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: announce release, screenshot updates etc.
+
+	* autogen.sh: up autoconf dedendancy to 2.58 since earlier version
+	aren't working correctly on all platforms to build beast.
+
 Sun Dec 28 18:39:22 2003  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: run libtoolize automatically, so developers
