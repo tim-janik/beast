@@ -123,6 +123,8 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 4, hints), group)
 #define	sfidl_pspec_Freq(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (bse_param_spec_freq (name, nick, blurb, dflt, hints), group)
+#define	sfidl_pspec_Frequency(group, name, nick, blurb, dflt, min, max, hints)			\
+  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, 10.0, SFI_PARAM_HINT_SCALE hints), group)
 #define sfidl_pspec_Gain(group, name, nick, blurb, dflt, min, max, step, hints) \
   sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
 #define	sfidl_pspec_FineTune(group, name, nick, blurb, hints)			\

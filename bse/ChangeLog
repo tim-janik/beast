@@ -1,3 +1,7 @@
+Sun Oct  5 08:18:12 2003  Tim Janik  <timj@gtk.org>
+
+	* bsetype.h (sfidl_pspec_Frequency): new pspec creator.
+
 Sun Oct  5 07:00:40 2003  Tim Janik  <timj@gtk.org>
 
 	* bseutils.[hc]: added balance property utility functions.
