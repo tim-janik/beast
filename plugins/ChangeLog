@@ -1,3 +1,9 @@
+Thu Sep  4 15:13:55 2003  Tim Janik  <timj@gtk.org>
+
+	* davxtalstrings.c: fix hinting for trigger property.
+
+	* icons/eguitar.png, icons/eguitar.xcf: new icon.
+
 Wed Sep  3 01:19:33 2003  Tim Janik  <timj@gtk.org>
 
 	* icons/chorus.xcf: 

@@ -43,8 +43,8 @@ enum
   PARAM_0,
   PARAM_BASE_FREQ,
   PARAM_BASE_NOTE,
-  PARAM_TRIGGER_HIT,
   PARAM_TRIGGER_VEL,
+  PARAM_TRIGGER_HIT,
   PARAM_NOTE_DECAY,
   PARAM_TENSION_DECAY,
   PARAM_METALLIC_FACTOR,
@@ -115,7 +115,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
 						   SFI_PARAM_GUI SFI_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_HIT,
 			      sfi_pspec_bool ("trigger_pulse", "Trigger Hit", "Pluck the string",
-						   FALSE, SFI_PARAM_GUI));
+						   FALSE, SFI_PARAM_GUI SFI_PARAM_HINT_TRIGGER));
   bse_object_class_add_param (object_class, "Decay", PARAM_NOTE_DECAY,
 			      sfi_pspec_real ("note_decay", "Note Decay",
 						   "Note decay is the 'half-life' of the note's decay in seconds",
