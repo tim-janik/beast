@@ -154,22 +154,20 @@ gsl-mplan.texi: $(top_srcdir)/bse/gsl-mplan.txt Makefile
 	&& echo "\input texinfo"		 >$@ \
 	&& echo "@settitle GSL Flow Engine"	>>$@ \
 	&& echo "@include teximacros.texi" 	>>$@ \
-	&& echo "@docfont{mono}"                >>$@ \
-	&& echo "@format"			>>$@ \
+	&& echo "@example"			>>$@ \
 	&& echo "@verbatiminclude $<"		>>$@ \
-	&& echo "@end format"			>>$@ \
+	&& echo "@end example"			>>$@ \
 	&& echo "@bye"				>>$@
 release-news.texi: $(top_srcdir)/NEWS Makefile
 	cd . \
 	&& echo "\input texinfo"		>$@ \
 	&& echo "@settitle BEAST/BSE NEWS"	>>$@ \
 	&& echo "@include teximacros.texi" 	>>$@ \
-	&& echo "@docfont{mono}"                >>$@ \
 	&& echo "@hasbanner{large}"             >>$@ \
 	&& echo "@navigation{navigation.xml}"   >>$@ \
-	&& echo "@format"			>>$@ \
+	&& echo "@example"			>>$@ \
 	&& echo "@verbatiminclude $<"		>>$@ \
-	&& echo "@end format"			>>$@ \
+	&& echo "@end example"			>>$@ \
 	&& echo "@bye"				>>$@
 # cleanup
 conditional_clean = $(strip \

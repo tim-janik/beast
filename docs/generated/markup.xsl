@@ -95,7 +95,7 @@
       <tagdef name="reference-constant"     family="monospace" foreground="#00b0b0" />
       <tagdef name="reference-returns"	    family="monospace" foreground="#228822" />
       <tagdef name="reference-type"	    family="monospace" foreground="#228822" />
-      <tagdef name="reference-blurb"	    family="monospace" foreground="#555555" />
+      <tagdef name="reference-blurb"	    family="monospace" />
       <tagdef name="reference-struct"	    family="monospace" left_margin="5" />
       <tagdef name="reference-struct-type"  family="monospace" foreground="#662407" left_margin="5" />
       <tagdef name="reference-struct-name"  family="monospace" foreground="#228822" />
@@ -122,7 +122,6 @@
     <xsl:choose>
       <xsl:when test="$font='tech' or $font='techstyle' or $font='sans' or $font='sans-serif'"><xsl:text>sans</xsl:text></xsl:when>
       <xsl:when test="$font='story' or $font='storystyle' or $font='serif' or $font=''"><xsl:text>serif</xsl:text></xsl:when>
-      <xsl:when test="$font='mono' or $font='monospace' or $font='fixed'"><xsl:text>monospace</xsl:text></xsl:when>
       <xsl:otherwise>
 	<xsl:message>XSL-WARNING: omitting unknown font style '<xsl:value-of select="$font"/>'</xsl:message>
       </xsl:otherwise>

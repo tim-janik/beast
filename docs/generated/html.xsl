@@ -79,9 +79,6 @@
     <xsl:when test="$font='story' or $font='storystyle' or $font='serif'">
       <xsl:text>font-family: serif;</xsl:text>
     </xsl:when>
-    <xsl:when test="$font='mono' or $font='monospace' or $font='mono-space' or $font='fixed'">
-      <xsl:text>font-family: monospace;</xsl:text>
-    </xsl:when>
     <xsl:otherwise>
       <xsl:message>XSL-WARNING: omitting unknown font style '<xsl:value-of select="$font"/>'</xsl:message>
     </xsl:otherwise>

@@ -50,8 +50,6 @@
 .fam H</xsl:text></xsl:when>
     <xsl:when test="$font='story' or $font='storystyle' or $font='serif'"><xsl:text>
 .fam T</xsl:text></xsl:when>
-    <xsl:when test="$font='mono' or $font='monospace' or $font='mono-space' or $font='fixed'"><xsl:text>
-.fam C</xsl:text></xsl:when>
     <xsl:otherwise>
       <xsl:message>XSL-WARNING: omitting unknown font style '<xsl:value-of select="$font"/>'</xsl:message>
     </xsl:otherwise>

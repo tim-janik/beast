@@ -2,9 +2,9 @@
 
 SYMBOL_PATTERN='[*0-9A-Z?][*0-9A-Za-z_?]*\(()\)\{0,1\}'
 FUNC_PATTERN='[*0-9A-Za-z?][*0-9A-Za-z_?]*\(()\)\{0,1\}'
-SYMBOL_PREFIX='\(Gsl\|Bse\|Bsw\|Bst\|Gtk\|Gdk\|Gnome\)'
-FUNC_PREFIX='\(gsl\|bse\|bsw\|bst\|gtk\|gnome\)'
-MACRO_PREFIX='\(GSL\|BSE\|BSW\|BST\|GTK\|Gdk\|GNOME\)'
+SYMBOL_PREFIX='\(Sfi\|Gsl\|Bse\|Bst\|Gtk\|Gdk\|Gnome\)'
+  FUNC_PREFIX='\(sfi\|gsl\|bse\|bst\|gtk\|gdk\|gnome\)'
+ MACRO_PREFIX='\(SFI\|GSL\|BSE\|BST\|GTK\|Gdk\|GNOME\)'
 
 export SYMBOL_PATTERN FUNC_PATTERN SYMBOL_PREFIX FUNC_PREFIX MACRO_PREFIX
 
@@ -21,8 +21,8 @@ function ChangeLog2texi ()
 	-e '/^[ 	]\+\* [^:]\+:/s/[ 	]*\(\* \)\([^:(<>)]*\)/\1@file{\2}/' \
 	-e '/^[ 	]\+[^*]/s/^[ 	]\+/  /' \
 	-e '/^[		]\+\* [^:]\+$/s/^[ 	]\+//' \
-	-e '/^[12][-0-9]\{9\}/s/^\(.*\)$/@unnumberedsec \1/' \
-	-e '/^[A-z]\{3\}/s/^\(.*\)$/@unnumberedsec \1/' \
+	-e '/^[12][-0-9]\{9\}/s/^\(.*\)$/@unnumberedsec @code{\1}/' \
+	-e '/^[A-z]\{3\}/s/^\(.*\)$/@unnumberedsec @code{\1}/' \
 	-e 's/\(\b'"$SYMBOL_PREFIX"''"$SYMBOL_PATTERN"'\)/@reference_parameter{\1}/g' \
 	-e 's/\(\b'"$FUNC_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_function{\1}/g' \
 	-e 's/\(\b'"$MACRO_PREFIX"'_'"$FUNC_PATTERN"'\)/@reference_function{\1}/g' \
@@ -40,8 +40,6 @@ function print_template ()
 @c %**end of header
 
 @include teximacros.texi
-
-@docfont{mono}
 
 @unnumbered @@TITLE@@
 

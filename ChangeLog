@@ -1,3 +1,28 @@
+Thu Jan  9 17:51:50 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/log2texi.sh: sync SYMBOL_PREFIX and MACRO_PREFIX with
+	FUNC_PREFIX, so all match sfi and gdk. removed bsw as supported match.
+
+Thu Jan  9 18:06:26 2003  Alper Ersoy <dirt@gtk.org>
+
+	* docs/WRITING.3.texi: removed part about mono/monospace parameter to
+	@docfont{}.
+
+	* docs/generated/log2texi.sh:
+	* docs/generated/Makefile.am: removed @docfont{mono}
+
+	* docs/generated/html.xsl:
+	* docs/generated/man.xsl:
+	* docs/generated/markup.xsl: removed mono/monospace from possible
+	parameters to @docfont{}.
+
+	* docs/generated/Makefile.am: changed @format with @example.
+
+	* docs/generated/log2texi.sh: added sfi to FUNC_PREFIX, and @code{} to
+	date/time substitution.
+
+	* docs/generated/markup.xsl: removed color from blurb markup
+
 Thu Jan  9 03:22:37 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/scandocs.pl (tags_highlight): fix variable, type,

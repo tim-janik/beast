@@ -17,9 +17,8 @@ and covers a few examples, e.g. for linking to other documents.
 
 @code{@@docfont@{ARG@}} styles:@*
 Possible parameters to @code{@@docfont} are: @code{tech}, @code{techstyle},
-@code{sans}, @code{sans-serif} for Sans Serif; @code{story},
-@code{storystyle}, @code{serif} for Serif; and @code{mono}, @code{monospace},
-@code{fixed} for Monospace. Default is @code{serif} on all
+@code{sans}, @code{sans-serif} for Sans Serif; and @code{story},
+@code{storystyle}, @code{serif} for Serif; Default is @code{serif} on all
 outputs.
 
 Link Styles:
