@@ -36,8 +36,7 @@
 
 
 /* --- debugging and errors --- */
-#define	MAD_DEBUG	sfi_debug_keyfunc ("mad")
-#define	MAD_MSG		sfi_info_keyfunc ("mad")
+#define	MAD_DEBUG(...)  sfi_debug ("mad", __VA_ARGS__)
 
 
 /* --- defines --- */
@@ -520,8 +519,8 @@ dh_mad_read (GslDataHandle *dhandle,
     }
   else /* something went wrong here, _badly_ */
     {
-      MAD_MSG ("during init: pcm position screwed (pos: %lu, handle-pos: %lu), aborting read",
-	       pos, handle->pcm_pos);	
+      sfi_diag ("MAD-init: pcm position screwed (pos: %lu, handle-pos: %lu), aborting read",
+                pos, handle->pcm_pos);	
       return -1;
     }
 }

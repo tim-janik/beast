@@ -20,8 +20,7 @@
 #include "gslengine.h"
 #include <string.h>
 
-#define DEBUG   sfi_debug_keyfunc ("midi-decoder")
-#define INFO    sfi_info_keyfunc ("midi-decoder")
+#define DEBUG(...)      sfi_debug ("midi-decoder", __VA_ARGS__)
 
 /* --- prototypes --- */
 static void     bse_midi_decoder_construct_event   (BseMidiDecoder *self);
@@ -258,8 +257,8 @@ midi_decoder_parse_data (BseMidiDecoder *self,
             break;
           case BSE_MIDI_END_EX:
           default: /* probably bogus, inform user for debugging purposes */
-            INFO ("BseMidiDecoder: unhandled midi %s byte 0x%02X\n",
-                  self->event_type < 0x80 ? "data" : "command", self->event_type);
+            sfi_diag ("BseMidiDecoder: unhandled midi %s byte 0x%02X\n",
+                      self->event_type < 0x80 ? "data" : "command", self->event_type);
             self->event_type = 0;             /* start over */
             next_state = BSE_MIDI_DECODER_ZERO;
             break;
@@ -553,7 +552,7 @@ bse_midi_decoder_construct_event (BseMidiDecoder *self)
   else
     {
       if (event->status)
-        INFO ("BseMidiDecoder: discarding midi event (0x%02X): data invalid\n", event->status);
+        sfi_diag ("BseMidiDecoder: discarding midi event (0x%02X): data invalid\n", event->status);
       bse_midi_free_event (event);
     }
   self->n_bytes = 0;

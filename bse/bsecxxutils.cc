@@ -121,16 +121,13 @@ bse_terminate_handler ()
     throw;      // rethrow
   }
   catch (Exception &e) {
-    sfi_error ("aborting due to exception: %s [in %s]", e.what(), e.where());
-    abort ();
+    g_error ("aborting due to exception: %s [in %s]", e.what(), e.where());
   }
   catch (std::exception &e) {
-    sfi_error ("aborting due to exception: %s", e.what());
-    abort ();
+    g_error ("aborting due to exception: %s", e.what());
   }
   catch (...) {
-    sfi_error ("aborting due to unknown exception");
-    abort ();
+    g_error ("aborting due to uncaught exception");
   }
 }
 

@@ -280,7 +280,7 @@ bse_init_intern (gint    *argc,
           gchar *name = sfi_ring_pop_head (&ring);
           const char *error = bse_plugin_check_load (name);
           if (error)
-            sfi_warn ("while loading \"%s\": %s", name, error);
+            sfi_diag ("while loading \"%s\": %s", name, error);
           g_free (name);
         }
     }
@@ -338,10 +338,10 @@ bse_async_parse_args (gint    *argc_p,
 
   envar = getenv ("BSE_DEBUG");
   if (envar)
-    {
-      sfi_log_allow_debug (envar);
-      sfi_log_allow_debug (envar);
-    }
+    sfi_debug_allow (envar);
+  envar = getenv ("BSE_NO_DEBUG");
+  if (envar)
+    sfi_debug_deny (envar);
 
   for (i = 1; i < argc; i++)
     {
@@ -361,36 +361,38 @@ bse_async_parse_args (gint    *argc_p,
 	  gchar *equal = argv[i] + 11;
 	  
 	  if (*equal == '=')
-	    {
-	      sfi_log_allow_debug (equal + 1);
-	      sfi_log_allow_info (equal + 1);
-	    }
+            sfi_debug_allow (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
-	      sfi_log_allow_debug (argv[i]);
-	      sfi_log_allow_info (argv[i]);
+	      sfi_debug_allow (argv[i]);
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-no-debug", argv[i]) == 0 ||
+	       strncmp ("--bse-no-debug=", argv[i], 12) == 0)
+	{
+	  gchar *equal = argv[i] + 11;
+	  
+	  if (*equal == '=')
+            sfi_debug_deny (equal + 1);
+	  else if (i + 1 < argc)
+	    {
+	      argv[i++] = NULL;
+	      sfi_debug_deny (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
     }
-  
-  e = 0;
+
+  e = 1;
   for (i = 1; i < argc; i++)
-    {
-      if (e)
-	{
-	  if (argv[i])
-	    {
-	      argv[e++] = argv[i];
-	      argv[i] = NULL;
-	    }
-	}
-      else if (!argv[i])
-	e = i;
-    }
-  if (e)
-    *argc_p = e;
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        argv[i] = NULL;
+      }
+  *argc_p = e;
 
   if (config && sfi_rec_get_bool (config, "debug-extensions"))
     bse_main_debug_extensions = TRUE;

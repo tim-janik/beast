@@ -677,7 +677,10 @@ bse_song_remove_item (BseContainer *container,
       for (list = *list_p; list; list = list->next)
 	if (list->data == (gpointer) item)
 	  break;
-      (list->prev ? list->prev->next : *list_p) = list->next;
+      if (list->prev)
+        list->prev->next = list->next;
+      else
+        *list_p = list->next;
       if (list->next)
 	list->next->prev = list->prev;
       tmp = list;

@@ -20,7 +20,7 @@
 #include "bsepcmdevice.h"
 
 
-#define	DEBUG	sfi_debug_keyfunc ("pcmmodule")
+#define	DEBUG(...)      sfi_debug ("pcmmodule", __VA_ARGS__)
 
 
 /* --- typedefs & structures --- */

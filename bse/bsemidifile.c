@@ -26,7 +26,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define SMF_DEBUG       sfi_debug_keyfunc ("midi-file")
+#define SMF_DEBUG(...)  sfi_debug ("midi-file", __VA_ARGS__)
 
 typedef struct {
   guint32       type;   /* four letter chunk identifier */

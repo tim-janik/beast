@@ -25,7 +25,7 @@
 #include <unistd.h>
 
 
-#define	DEBUG	sfi_debug_keyfunc ("engine")
+#define DEBUG(...)      sfi_debug ("engine", __VA_ARGS__)
 
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most probably just use EINTR,
@@ -1320,14 +1320,14 @@ gsl_engine_init (gboolean run_threaded)
       if (!err)
 	{
 	  glong d_long = fcntl (master_data.wakeup_pipe[0], F_GETFL, 0);
-	  /* sfi_debug ("master_wpipe-readfd, blocking=%ld", d_long & O_NONBLOCK); */
+	  /* DEBUG ("master_wpipe-readfd, blocking=%ld", d_long & O_NONBLOCK); */
 	  d_long |= O_NONBLOCK;
 	  err = fcntl (master_data.wakeup_pipe[0], F_SETFL, d_long);
 	}
       if (!err)
 	{
 	  glong d_long = fcntl (master_data.wakeup_pipe[1], F_GETFL, 0);
-	  /* sfi_debug ("master_wpipe-writefd, blocking=%ld", d_long & O_NONBLOCK); */
+	  /* DEBUG ("master_wpipe-writefd, blocking=%ld", d_long & O_NONBLOCK); */
 	  d_long |= O_NONBLOCK;
 	  err = fcntl (master_data.wakeup_pipe[1], F_SETFL, d_long);
 	}

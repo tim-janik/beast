@@ -28,7 +28,7 @@
 #include <errno.h>
 
 
-#define DEBUG   sfi_debug_keyfunc ("wav")
+#define DEBUG(...)      sfi_debug ("bsewave", __VA_ARGS__)
 
 #define parse_or_return(scanner, token) { guint _t = (token); \
                                           if (g_scanner_get_next_token (scanner) != _t) \

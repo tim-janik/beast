@@ -177,7 +177,7 @@ bse_pcm_writer_write (BsePcmWriter *self,
       g_free (dest);
       if (j < 0 && errno)
 	{
- 	  sfi_info ("failed to write %u bytes to WAV file: %s", n_bytes, g_strerror (errno));
+ 	  sfi_diag ("failed to write %u bytes to WAV file: %s", n_bytes, g_strerror (errno));
 	  self->broken = TRUE;
 	}
     }

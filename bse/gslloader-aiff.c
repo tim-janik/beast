@@ -33,8 +33,7 @@
  */
 
 /* --- macros --- */
-#define AIFF_DEBUG      sfi_debug_keyfunc ("aiff")
-#define AIFF_MSG	sfi_info_keyfunc ("aiff")
+#define AIFF_DEBUG(...)         sfi_debug ("aiff", __VA_ARGS__)
 #define AIFF_ULONG(a,b,c,d)     (((a) << 24) | ((b) << 16) | ((c) <<  8) | (d))
 #define AIFF_ID(str4)           AIFF_ULONG (str4[0], str4[1], str4[2], str4[3])
 

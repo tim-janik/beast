@@ -163,7 +163,7 @@ bse_object_class_init (BseObjectClass *class)
 void
 bse_object_debug_leaks (void)
 {
-  if (sfi_debug_test_key ("leaks"))
+  if (sfi_debug_check ("leaks"))
     {
       GList *list, *objects = bse_objects_list (BSE_TYPE_OBJECT);
       
@@ -171,13 +171,13 @@ bse_object_debug_leaks (void)
 	{
 	  BseObject *object = list->data;
 	  
-	  g_message ("[%p] stale %s\t ref_count=%u prepared=%u locked=%u id=%u",
-		     object,
+	  sfi_debug ("leaks", "stale %s:\t prepared=%u locked=%u ref_count=%u id=%u ((BseObject*)%p)",
 		     G_OBJECT_TYPE_NAME (object),
-		     G_OBJECT (object)->ref_count,
 		     BSE_IS_SOURCE (object) && BSE_SOURCE_PREPARED (object),
 		     object->lock_count > 0,
-		     BSE_OBJECT_ID (object));
+		     G_OBJECT (object)->ref_count,
+		     BSE_OBJECT_ID (object),
+                     object);
 	}
       g_list_free (objects);
     }

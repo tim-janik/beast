@@ -24,7 +24,7 @@
 #include <sfi/gbsearcharray.h>
 
 
-#define OSC_DEBUG		sfi_debug_keyfunc ("osc")
+#define OSC_DEBUG(...)  sfi_debug ("osc", __VA_ARGS__)
 
 #define	OSC_FREQ_EPSILON	(1e-3)	/* range within which frequencies are "equal" */
 

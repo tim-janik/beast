@@ -22,8 +22,8 @@
 #include <string.h>
 #include <errno.h>
 
-#define DEBUG         sfi_info_keyfunc ("vorbis")
-#define INFO          sfi_info_keyfunc ("vorbis")
+#define DEBUG(...)      sfi_debug ("vorbis", __VA_ARGS__)
+#define DIAG(...)       sfi_diag (__VA_ARGS__)
 
 
 /* --- structures --- */
@@ -217,7 +217,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          INFO ("ignoring packet preceeding Vorbis stream: %s", ov_error_blurb (error));
+          DIAG ("ignoring packet preceeding Vorbis stream: %s", ov_error_blurb (error));
         }
       else /* valid vorbis stream start */
         {
@@ -230,7 +230,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          INFO ("invalid Vorbis (comment) header packet: %s", ov_error_blurb (error));
+          DIAG ("invalid Vorbis (comment) header packet: %s", ov_error_blurb (error));
           vorbis_cutter_abort (self);
         }
       else
@@ -240,7 +240,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
       error = vorbis_synthesis_headerin (&self->vinfo, &self->vcomment, opacket);
       if (error < 0)
         {
-          INFO ("invalid Vorbis (codebook) header packet: %s", ov_error_blurb (error));
+          DIAG ("invalid Vorbis (codebook) header packet: %s", ov_error_blurb (error));
           vorbis_cutter_abort (self);
         }
       else
@@ -254,7 +254,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
     default:    /* audio packets */
       window = vorbis_packet_blocksize (&self->vinfo, opacket);
       if (window < 0)
-        INFO ("skipping package: %s", ov_error_blurb (window));
+        DIAG ("skipping package: %s", ov_error_blurb (window));
       else
         {
           self->n_packets++;
@@ -282,7 +282,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
             {
               if (!opacket->e_o_s &&    /* catch granule mismatches (before end) */
                   self->tracking_granule != opacket->granulepos)
-                sfi_warn ("failed to track position of input ogg stream, output possibly corrupted");
+                DIAG ("failed to track position of input ogg stream, output possibly corrupted");
               self->tracking_granule = opacket->granulepos;
               last_on_page = TRUE;      /* only the last packet of a page has a granule */
             }

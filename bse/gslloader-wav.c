@@ -46,8 +46,7 @@ typedef guint16 Word;
 
 
 /* --- debugging and errors --- */
-#define WAV_DEBUG	sfi_debug_keyfunc ("wav")
-#define INFO		sfi_info_keyfunc ("wav")
+#define WAV_DEBUG(...)  sfi_debug ("wav", __VA_ARGS__)
 
 
 /* --- functions --- */
@@ -194,7 +193,7 @@ wav_read_fmt_header (gint       fd,
 	  l = read (fd, junk, l);
 	  if (l < 1 || l > n)
 	    {
-	      INFO ("failed to read FmtHeader");
+	      sfi_diag ("failed to read FmtHeader from WAVE file");
 	      return gsl_error_from_errno (errno, GSL_ERROR_IO);
 	    }
 	  n -= l;

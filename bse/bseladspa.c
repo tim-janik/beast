@@ -23,7 +23,7 @@
 
 #include "ladspa.h"
 
-#define DEBUG   sfi_debug_keyfunc ("ladspa")
+#define DEBUG(...)      sfi_debug ("ladspa", __VA_ARGS__)
 
 #define	LADSPA_TYPE_NAME	"BseLadspaModule_"
 

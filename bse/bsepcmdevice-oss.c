@@ -46,8 +46,8 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
 
-#define OSS_DEBUG      sfi_debug_keyfunc ("oss")
-#define LATENCY_DEBUG  sfi_debug_keyfunc ("latency")
+#define OSS_DEBUG(...)          sfi_debug ("oss", __VA_ARGS__)
+#define LATENCY_DEBUG(...)      sfi_debug ("latency", __VA_ARGS__)
 
 
 /* --- OSS PCM handle --- */

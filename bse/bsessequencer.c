@@ -24,7 +24,7 @@
 #include "bsemain.h"
 
 
-#define DEBUG	sfi_debug_keyfunc ("sequencer")
+#define DEBUG(...)      sfi_debug ("sequencer", __VA_ARGS__)
 
 
 /* --- prototypes --- */

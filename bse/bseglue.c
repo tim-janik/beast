@@ -540,7 +540,7 @@ bse_glue_enum_index (GType enum_type,
   eclass = g_type_class_ref (enum_type);
   ev = g_enum_get_value (eclass, enum_value);
   if (!ev)
-    g_message ("%s: enum \"%s\" has no value %u", G_STRLOC, g_type_name (enum_type), enum_value);
+    sfi_diag ("%s: enum \"%s\" has no value %u", G_STRLOC, g_type_name (enum_type), enum_value);
   index = ev ? ev - eclass->values : G_MAXINT;
   g_type_class_unref (eclass);
   
@@ -718,12 +718,7 @@ bglue_exec_proc (SfiGlueContext *context,
       g_slist_free (clearlist);
       
       if (error)
-        {
-          if (BSE_DBG_EXT)
-            g_warning ("while executing \"%s\": %s\n", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
-          else
-            g_message ("while executing \"%s\": %s\n", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
-        }
+        sfi_diag ("while executing \"%s\": %s", BSE_PROCEDURE_NAME (proc), bse_error_blurb (error));
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);
       for (i = 0; i < proc->n_out_pspecs; i++)
@@ -732,12 +727,7 @@ bglue_exec_proc (SfiGlueContext *context,
       g_type_class_unref (proc);
     }
   else
-    {
-      if (BSE_DBG_EXT)
-        g_warning ("failed to execute \"%s\": no such procedure\n", proc_name);
-      else
-        g_message ("failed to execute \"%s\": no such procedure\n", proc_name);
-    }
+    sfi_diag ("failed to execute \"%s\": no such procedure", proc_name);
   
   return retval;
 }
@@ -807,7 +797,7 @@ bglue_proxy_get_pspec (SfiGlueContext *context,
   
   if (!BSE_IS_ITEM (object))
     {
-      g_message ("property lookup: no such object (proxy=%lu)", proxy);
+      sfi_diag ("property lookup: no such object (proxy=%lu)", proxy);
       return NULL;
     }
   pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (object), prop_name);
@@ -852,7 +842,7 @@ bglue_proxy_set_property (SfiGlueContext *context,
 	  /* we do conversion and validation here, so we can roll our own warnings */
 	  g_value_init (&tmp_value, G_PARAM_SPEC_VALUE_TYPE (pspec));
 	  if (!sfi_value_transform (pvalue ? pvalue : value, &tmp_value))
-	    sfi_warn ("property `%s' (%s) of \"%s\" cannot be set from value of type `%s'",
+	    sfi_diag ("property `%s' (%s) of \"%s\" cannot be set from value of type `%s'",
 		      pspec->name,
 		      g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
 		      bse_object_debug_name (object),
@@ -875,7 +865,7 @@ bglue_proxy_set_property (SfiGlueContext *context,
 	    sfi_value_free (pvalue);
 	}
       else
-	sfi_warn ("object %s has no property `%s'",
+	sfi_diag ("object %s has no property `%s'",
 		  bse_object_debug_name (object), prop ? prop : "<NULL>");
     }
 }
@@ -901,7 +891,7 @@ bglue_proxy_get_property (SfiGlueContext *context,
 	  sfi_value_free (value);
 	}
       else
-        sfi_warn ("object %s has no such property: %s", bse_object_debug_name (object), prop);
+        sfi_diag ("object %s has no such property: %s", bse_object_debug_name (object), prop);
     }
   return rvalue;
 }
@@ -1077,10 +1067,10 @@ bglue_proxy_request_notify (SfiGlueContext *context,
     }
   else
     sig_closure_marshal = bclosure_marshal;
-
+  
   /* canonify signal name */
   signal = g_quark_to_string (qsignal);
-
+  
   for (slist = p->closures; slist; last = slist, slist = last->next)
     {
       bclosure = slist->data;
@@ -1088,7 +1078,7 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 	{
 	  if (enable_notify)
 	    {
-	      g_message ("%s: redundant signal \"%s\" connection on proxy (%lu)", bcontext->user, signal, proxy);
+	      sfi_diag ("%s: redundant signal \"%s\" connection on proxy (%lu)", bcontext->user, signal, proxy);
 	      return TRUE;
 	    }
 	  closure = (GClosure*) bclosure;
@@ -1106,11 +1096,11 @@ bglue_proxy_request_notify (SfiGlueContext *context,
   if (!enable_notify)
     {
 #if 0
-	g_message ("%s: bogus disconnection for signal \"%s\" on proxy (%lu)", bcontext->user, signal, proxy);
+      sfi_diag ("%s: bogus disconnection for signal \"%s\" on proxy (%lu)", bcontext->user, signal, proxy);
 #endif
-	return FALSE;
+      return FALSE;
     }
-
+  
   /* abort early if the signal is unknown */
   sig_name = g_strdup (signal);
   c = strchr (sig_name, ':');
@@ -1147,7 +1137,7 @@ bglue_proxy_processed_notify (SfiGlueContext *context,
 {
   BContext *bcontext = (BContext*) context;
   if (!bcontext_release_notify_ref (bcontext, notify_id))
-    sfi_warn ("got invalid event receipt (%u)", notify_id);
+    sfi_diag ("got invalid event receipt (%u)", notify_id);
 }
 
 static GValue*
@@ -1161,7 +1151,7 @@ bglue_client_msg (SfiGlueContext *context,
     ;
   else
     {
-      g_message ("unhandled client message: %s\n", msg);
+      sfi_diag ("unhandled client message: %s", msg);
       retval = sfi_value_string ("Unknown client msg");
     }
   

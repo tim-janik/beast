@@ -270,9 +270,8 @@ gsl_vorbis_encoder_setup_stream (GslVorbisEncoder *self,
   
   self->serial = serial;
   vorbis_info_init (&self->vinfo);
-  if (0)
-    sfi_debug ("init: channels=%u mixfreq=%u quality=%f bitrate=%d\n",
-               self->n_channels, self->sample_freq, self->vbr_quality, self->vbr_nominal);
+  sfi_debug ("vorbisenc", "init: channels=%u mixfreq=%u quality=%f bitrate=%d\n",
+             self->n_channels, self->sample_freq, self->vbr_quality, self->vbr_nominal);
   if (self->vbr_nominal > 0)    /* VBR setup by nominal bitrate */
     result = vorbis_encode_setup_managed (&self->vinfo,
                                           self->n_channels,

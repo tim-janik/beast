@@ -499,8 +499,11 @@ bse_server_open_midi_device (BseServer *server)
   if (error)
     {
       if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
-	sfi_info ("failed to open midi device %s (reverting to null device): %s",
-		  bse_object_debug_name (server->midi_device), bse_error_blurb (error));
+	sfi_warn (SfiLogger ("midi",
+                             _("Advice about MIDI device selections"),
+                             _("Alert me about MIDI device selections")),
+                  _("failed to open midi device %s (reverting to null device): %s"),
+                  bse_object_debug_name (server->midi_device), bse_error_blurb (error));
       g_object_unref (server->midi_device);
       server->midi_device = NULL;
       if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
@@ -540,7 +543,9 @@ bse_server_open_devices (BseServer *self)
 	  error = bse_pcm_writer_open (self->pcm_writer, self->wave_file, 2, gsl_engine_sample_freq ());
 	  if (error)
 	    {
-	      sfi_info ("failed to open WAV file \"%s\": %s", self->wave_file, bse_error_blurb (error));
+              sfi_warn (SfiLogger ("recording", NULL, NULL),
+                        _("failed to open output file \"%s\": %s"),
+                        self->wave_file, bse_error_blurb (error));
 	      g_object_unref (self->pcm_writer);
 	      self->pcm_writer = NULL;
 	    }

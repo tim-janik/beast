@@ -29,8 +29,8 @@
 #include <errno.h>
 
 
-#define JOB_DEBUG    sfi_debug_keyfunc ("job")
-#define TJOB_DEBUG   sfi_debug_keyfunc ("tjob")
+#define JOB_DEBUG(...)  sfi_debug ("job", __VA_ARGS__)
+#define TJOB_DEBUG(...) sfi_debug ("tjob", __VA_ARGS__)
 
 #define	NODE_FLAG_RECONNECT(node)  G_STMT_START { /*(node)->needs_reset = TRUE*/; } G_STMT_END
 

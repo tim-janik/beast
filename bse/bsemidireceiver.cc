@@ -30,8 +30,8 @@ namespace {
 using namespace Bse;
 using namespace std;
 
-#define	DEBUG_EVENTS    sfi_debug_keyfunc ("midi-events")
-#define	DEBUG	        sfi_debug_keyfunc ("midi-receiver")
+#define	DEBUG(...)              sfi_debug ("midi-receiver", __VA_ARGS__)
+#define	DEBUG_EVENTS(...)       sfi_debug ("midi-events", __VA_ARGS__)
 
 
 #define	BSE_MIDI_RECEIVER_LOCK(self)            GSL_SPIN_LOCK (&midi_mutex)
@@ -826,7 +826,7 @@ MidiChannel::start_note (guint64         tick_stamp,
       change_voice_input (vinput, &mchannel->voice_input_table, tick_stamp, VOICE_ON, freq_val, velocity, trans);
     }
   else
-    sfi_info ("MidiChannel(%u): no voice available for note-on (%fHz)", mchannel->midi_channel, freq);
+    sfi_diag ("MidiChannel(%u): no voice available for note-on (%fHz)", mchannel->midi_channel, freq);
 }
 
 void
@@ -855,7 +855,7 @@ MidiChannel::adjust_note (guint64         tick_stamp,
   if (vinput)
     change_voice_input (vinput, &mchannel->voice_input_table, tick_stamp, vctype, freq_val, velocity, trans);
   else
-    sfi_info ("MidiChannel(%u): no voice available for %s (%fHz)", mchannel->midi_channel,
+    sfi_diag ("MidiChannel(%u): no voice available for %s (%fHz)", mchannel->midi_channel,
               etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity", freq);
 }
 
@@ -899,7 +899,7 @@ MidiChannel::debug_notes (guint64          tick_stamp,
       VoiceSwitch *voice = mchannel->voices[i];
       if (voice)
         for (j = 0; j < voice->n_vinputs; j++)
-          sfi_info ("MidiChannel(%u):Voice<%p>=%c: Synth<%p:%08llx>: State=%s Queued=%s Freq=%.2fHz",
+          sfi_diag ("MidiChannel(%u):Voice<%p>=%c: Synth<%p:%08llx>: State=%s Queued=%s Freq=%.2fHz",
                     mchannel->midi_channel, voice, voice->disconnected ? 'd' : 'C',
                     voice->vinputs[j], gsl_module_tick_stamp (voice->vinputs[j]->fmodule),
                     voice_state_to_string (voice->vinputs[j]->vstate),
@@ -1653,7 +1653,7 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
                                   event->data.note.velocity,
                                   trans);
           else
-            sfi_info ("ignoring note-on (%fHz) for unused midi channel: %u", event->data.note.frequency, event->channel);
+            sfi_diag ("ignoring note-on (%fHz) for foreign midi channel: %u", event->data.note.frequency, event->channel);
 	  break;
 	case BSE_MIDI_KEY_PRESSURE:
 	case BSE_MIDI_NOTE_OFF:

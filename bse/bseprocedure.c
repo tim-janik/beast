@@ -28,8 +28,7 @@
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
-#define EXEC_DEBUG              sfi_debug_keyfunc ("proc-exec")
-#define HACK_DEBUG /* very slow and leaks memory */ while (0) g_message
+#define HACK_DEBUG /* very slow and leaks memory */ while (0) g_printerr
 
 
 /* --- prototypes --- */
@@ -265,13 +264,13 @@ call_proc (BseProcedureClass  *proc,
     error = BSE_ERROR_PROC_PARAM_INVAL;
   else
     {
-      if (sfi_debug_test_key ("procs"))
+      if (sfi_debug_check ("procs"))
         {
           if (proc->n_in_pspecs && G_TYPE_IS_OBJECT (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0])))
-            EXEC_DEBUG ("executing procedure \"%s\" on object %s",
-                   BSE_PROCEDURE_NAME (proc), bse_object_debug_name (g_value_get_object (ivalues + 0)));
+            sfi_debug ("procs", "executing procedure \"%s\" on object %s",
+                       BSE_PROCEDURE_NAME (proc), bse_object_debug_name (g_value_get_object (ivalues + 0)));
           else
-            EXEC_DEBUG ("executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
+            sfi_debug ("procs", "executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
         }
       if (marshal)
         error = marshal (marshal_data, proc, ivalues, ovalues);

@@ -191,7 +191,7 @@ BODY (BseProcedureClass *proc,
     {
       info.size = sbuf.st_size;
       info.mtime = sbuf.st_mtime * SFI_USEC_FACTOR;
-      wfi = gsl_wave_file_info_load (filename, &info.error);
+      wfi = gsl_wave_file_info_load (filename, (GslErrorType*) &info.error);
       if (wfi)
 	{
 	  guint i;

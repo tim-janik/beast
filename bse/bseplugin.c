@@ -28,7 +28,7 @@
 #include	<unistd.h>
 
 
-#define DEBUG   sfi_debug_keyfunc ("plugins")
+#define DEBUG(...)      sfi_debug ("plugins", __VA_ARGS__)
 
 
 /* --- prototypes --- */

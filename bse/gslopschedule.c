@@ -293,7 +293,7 @@ _engine_schedule_secure (EngineSchedule *sched)
   sched->secured = TRUE;
   sched->cur_leaf_level = sched->leaf_levels;
   
-  if (sfi_debug_test_key ("sched"))
+  if (sfi_debug_check ("sched"))
     _engine_schedule_debug_dump (sched);
 }
 

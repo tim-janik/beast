@@ -20,7 +20,7 @@
 #include "bsecontainer.h"
 #include <string.h>
 
-#define UNDO_DEBUG      sfi_debug_keyfunc ("undo")
+#define UNDO_DEBUG(...) sfi_debug ("undo", __VA_ARGS__)
 
 /* --- variables --- */
 static BseUndoStack *dummy_ustack = NULL;
@@ -300,7 +300,7 @@ bse_undo_stack_undo (BseUndoStack *self)
       gboolean step_removed = FALSE;
       self->n_undo_groups--;
       UNDO_DEBUG ("EXECUTE UNDO: %s", group->name);
-      if (sfi_debug_test_key ("undo"))
+      if (sfi_debug_check ("undo"))
         {
           SfiRing *ring = group->undo_steps;
           for (ring = group->undo_steps; ring; ring = sfi_ring_walk (ring, group->undo_steps))

@@ -22,7 +22,7 @@
 #include "gslengine.h"	/* for gsl_engine_sample_freq() */
 #include <string.h>
 
-#define DEBUG   sfi_debug_keyfunc ("waveosc")
+#define DEBUG(...)      sfi_debug ("waveosc", __VA_ARGS__)
 
 #define FRAC_SHIFT		(16)
 #define FRAC_MASK		((1 << FRAC_SHIFT) - 1)
