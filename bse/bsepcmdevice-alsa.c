@@ -27,7 +27,7 @@ BSE_DUMMY_TYPE (BsePcmDeviceAlsa);
 #include        <errno.h>
 
 
-#if (SND_LIB_MAJOR == 0) && (SND_LIB_MINOR < 5)
+#ifndef HAVE_SND_PCM_CHANNEL_FLUSH
 #  define snd_pcm_playback_drain	snd_pcm_drain_playback
 #  define snd_pcm_channel_flush		snd_pcm_flush_channel
 #  define snd_card_get_longname(y,l)	((*(l)) = NULL)

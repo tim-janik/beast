@@ -1,3 +1,7 @@
+Fri Jan 14 15:06:29 2000  Tim Janik  <timj@gtk.org>
+
+        * released beast-0.3.1.tar.gz on http://beast.gtk.org.
+
 Fri Jan 14 02:41:14 2000  Tim Janik  <timj@gtk.org>
 
 	* configure.in: check for python and fold, since we use them in the

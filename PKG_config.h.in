@@ -21,3 +21,6 @@
 #undef  BST_WITH_GDK_PIXBUF
 #undef  BSE_PCM_DEVICE_CONF_ALSA
 #undef  BSE_PCM_DEVICE_CONF_OSS
+
+/* Define if you have the snd_pcm_channel_flush function.  */
+#undef HAVE_SND_PCM_CHANNEL_FLUSH

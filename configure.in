@@ -270,11 +270,12 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
         ],[{
           snd_pcm_open (0, 0, 0, SND_PCM_OPEN_CAPTURE);
           snd_pcm_channel_setup (0, 0);
-          snd_card_get_longname (SND_CARD_TYPE_SHARE, NULL);
+          /* snd_card_get_longname (SND_CARD_TYPE_SHARE, NULL); */
         }],[
           bse_have_pcmdev=yes
 	  AC_MSG_RESULT([found it - ALSA support enabled])
 	  AC_DEFINE_UNQUOTED(BSE_PCM_DEVICE_CONF_ALSA)
+	  AC_CHECK_FUNCS(snd_pcm_channel_flush)
 	  BSE_LIBS="-lasound $BSE_LIBS"
         ],[
 	  AC_MSG_RESULT([failed - disabling ALSA support])
