@@ -59,7 +59,7 @@ GParamSpec* bse_param_spec_boxed	(const gchar  *name,
 #define     bse_value_get_boxed          g_value_get_boxed
 #define     bse_value_set_boxed          g_value_set_boxed
 #define     bse_value_dup_boxed          g_value_dup_boxed
-#define     bse_value_take_boxed         g_value_set_boxed_take_ownership
+#define     bse_value_take_boxed         g_value_take_boxed
 
 
 /* --- convenience pspec constructors --- */
