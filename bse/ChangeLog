@@ -1,3 +1,13 @@
+Sun Oct 12 14:17:19 2003  Tim Janik  <timj@gtk.org>
+
+	* bsedefs.h: 
+	* bsemain.c: use BSE_GETTEXT_DOMAIN instead of unversioned "bse" and
+	bind gettext charset to UTF-8.
+
+	* bseconfig.h.in: provide BSE_GETTEXT_DOMAIN.
+	
+	* bsedefs.h: include bseconfig.h globally.
+	
 Sun Oct 12 01:12:15 2003  Tim Janik  <timj@gtk.org>
 
 	* fixes according to pspec hints->options change.

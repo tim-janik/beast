@@ -17,5 +17,4 @@
  */
 #include "bseconstvalues.h"
 
-#include <bse/bseconfig.h>
 

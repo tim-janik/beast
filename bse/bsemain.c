@@ -17,7 +17,6 @@
  */
 #include "bsemain.h"
 #include "topconfig.h"
-#include <bse/bseconfig.h>	/* for *_VERSION and *_AGE */
 #include "bseserver.h"
 #include "bsessequencer.h"
 #include "bsejanitor.h"
@@ -67,7 +66,8 @@ bse_init_async (gint    *argc,
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_async");
 
-  bindtextdomain ("bse", BST_PATH_LOCALE);
+  bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
+  bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
   
   /* this function is running in the user thread and needs to start the main BSE thread */
   
@@ -233,7 +233,8 @@ bse_init_intern (gint    *argc,
   if (bse_initialization_stage != 1)
     g_error ("%s() may only be called once", "bse_init_intern");
 
-  bindtextdomain ("bse", BST_PATH_LOCALE);
+  bindtextdomain (BSE_GETTEXT_DOMAIN, BST_PATH_LOCALE);
+  bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
   
   /* initialize submodules */
   sfi_init ();

@@ -34,6 +34,7 @@ extern "C" {
 #define BSE_BINARY_AGE                                  (@BSE_BINARY_AGE@)
 #define BSE_INTERFACE_AGE                               (@BSE_INTERFACE_AGE@)
 #define BSE_VERSION					("@BSE_VERSION@")
+#define	BSE_GETTEXT_DOMAIN				("@BSE_GETTEXT_DOMAIN@")
 
 /* check for header versions
  */

@@ -27,6 +27,7 @@
 #include <sfi/sfistore.h>	// FIXME
 #include <sfi/sficomwire.h>	// FIXME
 #include <math.h>
+#include <bse/bseconfig.h>
 
 
 #ifdef __cplusplus
@@ -166,7 +167,7 @@ typedef gboolean      (*BseCategoryForeach)  (const gchar       *category_path,
 
 
 /* --- i18n and gettext helpers --- */
-#define _(str)		dgettext ("bse", str)
+#define _(str)		dgettext (BSE_GETTEXT_DOMAIN, str)
 #ifdef gettext_noop
 #  define N_(str)	gettext_noop (str)
 #else

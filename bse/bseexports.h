@@ -21,7 +21,6 @@
 #define __BSE_EXPORTS_H__
 
 #include	<bse/bseprocedure.h>
-#include	<bse/bseconfig.h>
 
 G_BEGIN_DECLS
 
