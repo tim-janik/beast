@@ -782,14 +782,6 @@ bse_track_get_output (BseTrack *self)
   return self->postprocess;
 }
 
-void
-bse_track_connect_sniffer (BseTrack               *self,
-                           BseSource              *source)
-{
-  bse_source_must_set_input (source, 0, self->postprocess, 0);
-  bse_source_must_set_input (source, 1, self->postprocess, 1);
-}
-
 static void
 bse_track_update_midi_channel (BseTrack *self)
 {
