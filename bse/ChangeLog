@@ -1,3 +1,7 @@
+Wed Sep  1 01:44:46 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.c (bse_bus_set_property): use new sfi_ring_reorder() API.
+
 Tue Aug 31 23:55:52 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.c: added BseTrack and BseBus to the ::inputs candidate

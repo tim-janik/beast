@@ -167,10 +167,7 @@ bse_bus_set_property (GObject      *object,
         bse_bus_connect (self, sfi_ring_pop_head (&ring));
       sfi_ring_free (inputs);
       /* restore user provided order */
-      self->inputs = sfi_ring_sort (self->inputs, sfi_compare_pointers, NULL);
-      inputs = self->inputs;
-      self->inputs = sfi_ring_reorder (inputs, saved_inputs, sfi_compare_pointers, NULL);
-      sfi_ring_free (inputs);
+      self->inputs = sfi_ring_reorder (self->inputs, saved_inputs);
       sfi_ring_free (saved_inputs);
       break;
     case PROP_SNET:
