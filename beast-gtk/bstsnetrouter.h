@@ -71,7 +71,6 @@ GtkWidget*	 bst_snet_router_new		      (SfiProxy	     snet);
 void		 bst_snet_router_set_snet 	      (BstSNetRouter *router,
 						       SfiProxy       snet);
 void		 bst_snet_router_update		      (BstSNetRouter *snet_router);
-void		 bst_snet_router_rebuild	      (BstSNetRouter *snet_router);
 void		 bst_snet_router_adjust_region	      (BstSNetRouter *snet_router);
 BstCanvasSource* bst_snet_router_csource_from_source  (BstSNetRouter *snet_router,
 						       SfiProxy       source);

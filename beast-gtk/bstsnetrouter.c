@@ -295,47 +295,38 @@ bst_snet_router_item_added (BstSNetRouter *self,
 }
 
 void
-bst_snet_router_set_snet (BstSNetRouter *router,
+bst_snet_router_set_snet (BstSNetRouter *self,
                           SfiProxy       snet)
 {
-  g_return_if_fail (BST_IS_SNET_ROUTER (router));
+  g_return_if_fail (BST_IS_SNET_ROUTER (self));
   if (snet)
     g_return_if_fail (BSE_IS_SNET (snet));
   
-  if (router->snet)
+  if (self->snet)
     {
-      bst_snet_router_destroy_contents (router);
-      bse_proxy_disconnect (router->snet,
-                            "any_signal", bst_snet_router_item_added, router,
+      bst_snet_router_destroy_contents (self);
+      bse_proxy_disconnect (self->snet,
+                            "any_signal", bst_snet_router_item_added, self,
                             NULL);
-      bse_item_unuse (router->snet);
-      router->snet = 0;
+      bse_item_unuse (self->snet);
+      self->snet = 0;
     }
-  router->snet = snet;
-  if (router->snet)
+  self->snet = snet;
+  if (self->snet)
     {
-      bse_item_use (router->snet);      // FIXME: should we hold a use-count on the snet?
-      bse_proxy_connect (router->snet,
-                         "swapped_signal::item_added", bst_snet_router_item_added, router,
+      bse_item_use (self->snet);      // FIXME: should we hold a use-count on the snet?
+      bse_proxy_connect (self->snet,
+                         "swapped_signal::item_added", bst_snet_router_item_added, self,
                          NULL);
       
-      bst_snet_router_rebuild (BST_SNET_ROUTER (router));
+      bst_snet_router_update (self);
+      bst_snet_router_adjust_region (self);
 #if 0
       gfloat zoom;
-      if (bse_parasite_get_floats (router->snet, "BstRouterZoom", 1, &zoom) == 1)
-        gtk_adjustment_set_value (router->adjustment, zoom);
+      if (bse_parasite_get_floats (self->snet, "BstRouterZoom", 1, &zoom) == 1)
+        gtk_adjustment_set_value (self->adjustment, zoom);
 #endif
     }
-}
-
-void
-bst_snet_router_rebuild (BstSNetRouter *router)
-{
-  g_return_if_fail (BST_IS_SNET_ROUTER (router));
-  
-  bst_snet_router_update (router);
-
-  bst_snet_router_adjust_region (router);
 }
 
 static void
