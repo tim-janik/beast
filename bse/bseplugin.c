@@ -184,7 +184,7 @@ bse_plugin_use (GTypePlugin *gplugin)
       DEBUG ("reloading-plugin \"%s\" (\"%s\")", plugin->name, plugin->fname ? plugin->fname : "???NULL???");
       
       plugin->use_count++;
-      plugin->gmodule = g_module_open (plugin->fname, 0);
+      plugin->gmodule = g_module_open (plugin->fname, 0); /* reopen for use non-lazy */
       plugin_identity = lookup_export_identity (plugin->gmodule);
       if (!plugin->gmodule || !plugin_identity)
 	g_error ("Fatal plugin error, failed to reinitialize plugin: %s", g_module_error ());
@@ -469,7 +469,7 @@ bse_plugin_check_load (const gchar *_file_name)
   close (fd);
   
   /* load module */
-  gmodule = g_module_open (file_name, 0);
+  gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);
   if (!gmodule)
     {
       g_free (file_name);

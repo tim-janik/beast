@@ -98,7 +98,7 @@ ladspa_plugin_use (GTypePlugin *gplugin)
 
       DEBUG ("reloading-plugin \"%s\"", self->fname);
 
-      self->gmodule = g_module_open (self->fname, 0);
+      self->gmodule = g_module_open (self->fname, 0); /* reopen for use non-lazy */
       if (!self->gmodule)
 	error = g_module_error ();
       if (!error)
@@ -633,7 +633,7 @@ bse_ladspa_plugin_check_load (const gchar *file_name)
     return "Plugin already registered";
 
   /* load module once */
-  gmodule = g_module_open (file_name, 0);
+  gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);
   if (!gmodule)
     return g_module_error ();
   /* check whether this is a LADSPA module */

@@ -1,3 +1,9 @@
+Mon Aug 25 20:01:58 2003  Tim Janik  <timj@gtk.org>
+
+	* bseladspa.c (bse_ladspa_plugin_check_load): 
+	* bseplugin.c (bse_plugin_check_load): for type registration, module
+	symbols may be bound lazy.
+
 Mon Aug 25 19:04:24 2003  Tim Janik  <timj@gtk.org>
 
 	* mkbuiltinlist.pl: removed.
