@@ -345,7 +345,7 @@ string CodeGeneratorCxx::createTypeCode (const std::string& type, const std::str
 	    case MODEL_ARG:	    return type + "Ptr";
 	    case MODEL_MEMBER:	    return type + "Ptr";
 	    case MODEL_RET:	    return type + "Ptr";
-	    case MODEL_TO_VALUE:    return "sfi_value_rec_take_ref ("+type+"::_to_rec ("+name+"))";
+	    case MODEL_TO_VALUE:    return "sfi_value_new_take_rec ("+type+"::_to_rec ("+name+"))";
 	    case MODEL_FROM_VALUE:  return type + "::_from_rec (sfi_value_get_rec ("+name+"))";
 	    case MODEL_VCALL_CONV:  return type + "::_to_rec ("+name+")";
 	    case MODEL_VCALL_RCONV: return type + "::_from_rec ("+name+")";
@@ -359,7 +359,7 @@ string CodeGeneratorCxx::createTypeCode (const std::string& type, const std::str
 	    case MODEL_ARG:	    return "const " + type + "&";
 	    case MODEL_MEMBER:	    return type;
 	    case MODEL_RET:	    return type;
-	    case MODEL_TO_VALUE:    return "sfi_value_seq_take_ref ("+type+"::_to_seq ("+name+"))";
+	    case MODEL_TO_VALUE:    return "sfi_value_new_take_seq ("+type+"::_to_seq ("+name+"))";
 	    case MODEL_FROM_VALUE:  return type + "::_from_seq (sfi_value_get_seq ("+name+"))";
 	    case MODEL_VCALL_CONV:  return type + "::_to_seq ("+name+")";
 	    case MODEL_VCALL_RCONV: return type + "::_from_seq ("+name+")";

@@ -576,7 +576,7 @@ sfi_value_seq (SfiSeq *vseq)
 }
 
 GValue*
-sfi_value_seq_take_ref (SfiSeq *vseq)
+sfi_value_new_take_seq (SfiSeq *vseq)
 {
   GValue *value = alloc_value (SFI_TYPE_SEQ);
   sfi_value_set_seq (value, vseq);
@@ -594,7 +594,7 @@ sfi_value_rec (SfiRec *vrec)
 }
 
 GValue*
-sfi_value_rec_take_ref (SfiRec *vrec)
+sfi_value_new_take_rec (SfiRec *vrec)
 {
   GValue *value = alloc_value (SFI_TYPE_REC);
   sfi_value_set_rec (value, vrec);

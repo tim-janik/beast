@@ -481,6 +481,8 @@ CodeGeneratorModule::run ()
       printf ("    if (!c) c = g_strconcat (\"/Modules\", pcat[0] == '/' ? \"\" : \"/\", pcat, NULL);\n");
       printf ("    return c; }\n");
       printf ("  static inline const char* blurb     () { return %s; }\n", ci->infos.get("blurb").escaped().c_str());
+      printf ("  static inline const char* authors   () { return %s; }\n", ci->infos.get("authors").escaped().c_str());
+      printf ("  static inline const char* license   () { return %s; }\n", ci->infos.get("license").escaped().c_str());
       printf ("  static inline const char* type_name () { return \"%s\"; }\n", ctFullName.c_str());
       
       /* i/j/o channel names */

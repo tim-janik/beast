@@ -1,3 +1,12 @@
+Tue Dec 16 11:52:25 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: provide static accessors in generated Base objects
+	for authors and license info strings.
+
+	* sfivalues.[hc]: renamed sfi_value_rec_take_ref() to
+	sfi_value_new_take_rec() and sfi_value_seq_take_ref() to
+	sfi_value_new_take_seq(). adapted callers.
+
 Mon Dec 15 22:45:23 2003  Tim Janik  <timj@gtk.org>
 
 	* sfiparams.h: document :skip-default: and :skip-undo: property options.
