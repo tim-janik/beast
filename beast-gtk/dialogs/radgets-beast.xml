@@ -252,9 +252,9 @@
 	</scrolled-window>
 	<!-- raise/lower buttons -->
 	<hbox spacing="3" homogeneous="1" >
-	  <hstock-button id="button-up" stock="gtk-go-up" _label="Raise"
+	  <hstock-button id="button-up" stock-image="gtk-go-up" _label="Raise"
 	    _tooltip="Move the selection up by one position" />
-	  <hstock-button id="button-down" stock="gtk-go-down" _label="Lower"
+	  <hstock-button id="button-down" stock-image="gtk-go-down" _label="Lower"
 	    _tooltip="Move the selection down by one position" />
 	</hbox>
       </vbox>
@@ -499,7 +499,7 @@
 	<hbox spacing="2" border-width="2" >
 	  <hbox id="pattern-control-box" spacing="2" />
 	  <hstock-button id="configure-button" pack:pack-type="end"
-	    _label="Configure" stock="BST_STOCK_EDIT"
+	    _label="Configure" stock-image="BST_STOCK_EDIT"
 	    _tooltip="Configure the column layout of the pattern editor" />
 	</hbox>
 	<hbox pack:expand="1" >
@@ -532,9 +532,9 @@
     </hbox>
     <hseparator/>
     <hbox spacing="3" homogeneous="1" >
-      <hstock-button id="apply-button" _label="_Apply" stock="gtk-apply" can-default="1"
+      <hstock-button id="apply-button" _label="_Apply" stock-image="gtk-apply" can-default="1"
 	_tooltip="Aplly configuration changes to the pattern editor layout" />
-      <hstock-button id="cancel-button" _label="_Cancel" stock="gtk-cancel" can-default="1"
+      <hstock-button id="cancel-button" _label="_Cancel" stock-image="gtk-cancel" can-default="1"
 	_tooltip="Discard changes and close dialog" />
     </hbox>
   </xdef:pattern-editor-layout-box>

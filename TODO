@@ -1,11 +1,9 @@
 FIXMES:	(release-critical)
 - move and add compat for Arts::Compressor -> Bse::Arts::Compressor
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
-- add tooltip to trackview about mute meaning "skip sequencer"
 - instead of bse_engine_add_garbage(), the midireceiver needs a BSE_MIDI_RECEIVER_LOCK based callback mechanism (nodes aren't queued from teh BSE thread which invokes the engine gc)
 - disable vinput/vswitch job queueing (except for mono) if Done is not connected (use SCHEDULED(vinput/switch) to decide)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
-- use only stock= (not stock-image=) in radget files
 - support candidate tooltip in bst_track_synth_dialog_popup() similar to bst_item_seq_dialog_popup()
 - enfore minimum size of ca. screen-width and screen-height for GxkDialog (should make preferences scrollable)  
 - in preferences the skin-editor viewport shouldn't gxk_widget_proxy_requisition()

@@ -101,19 +101,19 @@
     prop:uline-label="$label"
     prop:accel-path="$(null-collapse,$accel-path)"
     prop:accel="$accel"
-    prop:stock-image="$stock-image" />
+    prop:stock-image="$(first-occupied,$stock-image,$stock)" />
   <!-- menu-title: label= stock-image= -->
   <xdef:menu-title            inherit="GxkMenuItem"
     prop:uline-label="$label"
     prop:title-style="1"
-    prop:stock-image="$stock-image" />
+    prop:stock-image="$(first-occupied,$stock-image,$stock)" />
   <!-- menu-separator: actions= -->
   <xdef:menu-separator inherit="GxkMenuItem" prop:sensitive="0" />
   <!-- submenu: label= stock-image= -->
   <xdef:submenu               inherit="GxkMenuItem"
     default-area="menu"
     prop:uline-label="$label"
-    prop:stock-image="$(ifdef,stock-image,$stock-image,BST_STOCK_FOLDER)"
+    prop:stock-image="$(first-occupied,$stock-image,$stock,BST_STOCK_FOLDER)"
     prop:right-justify="$(ifdef,last,$last,0)" >
     <hidden-when-insensitive hidden-when-insensitive="$hidden-when-insensitive" />
     <GtkMenu id="menu" tearoff-title="$label" />
@@ -127,17 +127,17 @@
     prop:stock-size="$(null-collapse,$stock-size)"
     prop:mode="$(first-occupied,$mode,tool-mode)"
     />
-  <!-- buttons: stock= label= relief= -->
+  <!-- buttons: stock-label= label= relief= -->
   <xdef:button                inherit="GtkButton"
-    prop:label="$(null-collapse,$(ifdef,label,$label,$(ifdef,text,$text,$stock)))"
+    prop:use-stock="$(if,$(first-occupied,$stock-label,$stock))"
+    prop:label="$(null-collapse,$(first-occupied,$label,$text,$stock-label,$stock))"
     prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
-    prop:relief="$(ifdef,relief,$relief,normal)"
-    prop:use-stock="$(if,$stock)" />
+    prop:relief="$(ifdef,relief,$relief,normal)" />
   <xdef:check-button          inherit="GtkCheckButton"
-    prop:label="$(null-collapse,$(ifdef,label,$label,$stock))"
+    prop:use-stock="$(if,$(first-occupied,$stock-label,$stock))"
+    prop:label="$(null-collapse,$(first-occupied,$label,$text,$stock-label,$stock))"
     prop:use-underline="$(ifdef,use-underline,$use-underline,1)"
-    prop:relief="$(ifdef,relief,$relief,normal)"
-    prop:use-stock="$(if,$stock)" />
+    prop:relief="$(ifdef,relief,$relief,normal)" />
   <xdef:toggle-button         inherit="check-button"
     prop:draw-indicator="0" />
   <!-- label: label= -->
@@ -173,7 +173,7 @@
   <!-- image: stock-image= stock-size= -->
   <xdef:image                 inherit="GxkImage"
     prop:stock-size="$(null-collapse,$stock-size)"
-    prop:stock="$stock-image" />
+    prop:stock="$(first-occupied,$stock-image,$stock)" />
   <!-- backshade -->
   <xdef:back-shade            inherit="GxkBackShade"
     />
@@ -375,8 +375,8 @@
     <tooltip text="$tooltip" />
     <vbox>
       <image expand="1"
-	stock-image="$stock-image"
-	visible="$(ifdef,stock-image,1,0)"
+	stock-image="$(first-occupied,$stock-image,$stock)"
+	visible="$(if,$(first-occupied,$stock-image,$stock))"
 	stock-size="$image-size" />
     </vbox>
   </xdef:image-button>
@@ -384,14 +384,14 @@
   <xdef:label-image-button inherit="image-button" label="" >
     <ulabel label="$label" />
   </xdef:label-image-button>
-  <!-- hstock-button: button, tooltip= stock= image-size= -->
-  <xdef:hstock-button inherit="button" default-area="hbox" label="" stock="" focus="1" >
+  <!-- hstock-button: button, tooltip= stock-image= image-size= -->
+  <xdef:hstock-button inherit="button" default-area="hbox" label="" focus="1" >
     <tooltip text="$tooltip" />
     <alignment xscale="0" xalign="0.5" >
       <hbox spacing="3" >
 	<image
-	  stock-image="$stock"
-	  visible="$(ifdef,stock,1,0)"
+	  stock-image="$(first-occupied,$stock-image,$stock)"
+	  visible="$(if,$(first-occupied,$stock-image,$stock))"
 	  stock-size="$image-size" />
 	<ulabel label="$label" visible="$(ifdef,label)" />
       </hbox>

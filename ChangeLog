@@ -1,3 +1,12 @@
+Fri Sep  3 15:46:52 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackview.c: tooltip fixups.
+
+	* beast-gtk/dialogs/radgets-beast.xml: stock-image fixups.
+
+	* beast-gtk/dialogs/radgets-standard.xml: properly support stock-label=
+	and stock-image= assignments besides stock=.
+
 Fri Sep  3 10:39:15 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tools/Makefile.am: Added bsefextract / bsefcompare.

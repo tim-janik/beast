@@ -508,22 +508,22 @@ bst_track_view_init (BstTrackView *self)
                                    0.0, "ID", NULL,
                                    NULL, NULL, 0);
   gxk_tree_view_add_text_column (iview->tree, COL_NAME, "S",
-				 0.0, "Name", NULL,
+				 0.0, _("Name"), NULL,
 				 bst_item_view_name_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_toggle_column (iview->tree, COL_MUTE, "",
-				   0.5, "M", "Notes from unchecked tracks are muted during playback",
+				   0.5, "M", _("Notes from unchecked tracks are ignored by the sequencer during playback"),
 				   track_view_mute_toggled, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_VOICES, "",
-				 0.5, "V", "Maximum number of voices for simultaneous playback",
+				 0.5, "V", _("Maximum number of voices for simultaneous playback"),
 				 track_view_voice_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree, COL_SYNTH, "#",
-				  0.5, "Synth", "Synthesizer network or wave to be used as voice by this track",
+				  0.5, "Synth", _("Synthesis network or wave to be used as instrument by this track"),
 				  track_view_synth_edited, track_view_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_MIDI_CHANNEL, "",
-                                 0.5, "Ch", "Midi channel assigned to this track, 0 uses private per-track channel",
+                                 0.5, "Ch", _("Midi channel assigned to this track, 0 uses private per-track channel"),
                                  track_view_midi_channel_edited, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_popup_column (iview->tree, COL_POST_SYNTH, "#",
-				  0.5, "Post", "Postprocessing Synthesizer network for this track",
+				  0.5, "Post", _("Synthesis network to be used as postprocessor"),
 				  track_view_post_synth_edited, track_view_post_synth_popup, self, G_CONNECT_SWAPPED);
   gxk_tree_view_add_text_column (iview->tree, COL_BLURB, "",
 				 0.0, _("Comment"), NULL,
