@@ -339,7 +339,7 @@ palette_ebox_button (BstSNetRouter  *self,
   GtkItemFactory *popup_factory = BST_SNET_ROUTER_GET_CLASS (self)->popup_factory;
 
   bst_menu_popup (popup_factory,
-		  self,
+		  GTK_WIDGET (self),
 		  NULL, NULL,
 		  event->x_root, event->y_root,
 		  event->button, event->time);

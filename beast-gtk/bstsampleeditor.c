@@ -349,6 +349,7 @@ change_draw_mode (BstSampleEditor *editor,
 
 static void
 update_play_back_marks (gpointer data,
+			SfiNum   tick_stamp,
 			guint    pcm_pos)
 {
   BstSampleEditor *editor = data;

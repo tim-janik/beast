@@ -27,7 +27,7 @@
 
 #define	PRG_NAME	"bsesh"
 
-#define	BOILERPLATE_SCM		BSE_PATH_SCRIPTS ## "/bse-scm-glue.boot"
+#define	BOILERPLATE_SCM		BSE_PATH_SCRIPTS "/bse-scm-glue.boot"
 
 
 /* --- prototypes --- */

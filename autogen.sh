@@ -4,92 +4,125 @@
 PROJECT=BEAST
 TEST_TYPE=-d
 FILE=bse
-AUTOMAKE=automake-1.4
+AUTOMAKE=automake
+AUTOMAKE_VERSION=1.4
+ACLOCAL=aclocal
+AUTOCONF=autoconf
+AUTOCONF_VERSION=2.13
+AUTOHEADER=autoheader
+#LIBTOOL=libtool
+CONFIGURE_OPTIONS=--enable-devel-rules=yes
 
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 ORIGDIR=`pwd`
 cd $srcdir
 DIE=0
-(autoconf --version) < /dev/null > /dev/null 2>&1 || {
-	echo
-	echo "You must have autoconf installed to compile $PROJECT."
-	echo "Download the appropriate package for your distribution,"
-	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-	DIE=1
-}
-(libtool --version) < /dev/null > /dev/null 2>&1 || {
-	echo
-	echo "You must have libtool installed to compile $PROJECT."
-	echo "Get ftp://alpha.gnu.org/gnu/libtool-1.2f.tar.gz"
-	echo "(or a newer version if it is available)"
-	DIE=1
-}
-($AUTOMAKE --version) < /dev/null > /dev/null 2>&1 || {
-	echo
-	echo "You must have $AUTOMAKE installed to compile $PROJECT."
-	echo "Download the appropriate package for your distribution,"
-	echo "or get the source tarball at ftp://ftp.gnu.org/pub/gnu/"
-	DIE=1
-}
 
-if test "$DIE" -eq 1; then
-	exit 1
-fi
-
+# check build directory
 test $TEST_TYPE $FILE || {
-	echo "You must run this script in the top-level $PROJECT directory"
-	exit 1
+	echo
+	echo "$0 needs to be invoked in the toplevel directory of $PROJECT"
+	DIE=1
 }
 
-if test -z "$*"; then
-	echo "I am going to run ./configure with no arguments - if you wish "
-        echo "to pass any to it, please specify them on the $0 command line."
+# check for automake
+if $AUTOMAKE --version 2>/dev/null | grep -q " $AUTOMAKE_VERSION\b" ; then
+	:	# all fine
+elif $AUTOMAKE$AUTOMAKE_VERSION --version 2>/dev/null | grep -q " $AUTOMAKE_VERSION\b" ; then
+	AUTOMAKE=$AUTOMAKE$AUTOMAKE_VERSION
+	ACLOCAL=$ACLOCAL$AUTOMAKE_VERSION
+elif $AUTOMAKE-$AUTOMAKE_VERSION --version 2>/dev/null | grep -q " $AUTOMAKE_VERSION\b" ; then
+	AUTOMAKE=$AUTOMAKE-$AUTOMAKE_VERSION
+	ACLOCAL=$ACLOCAL-$AUTOMAKE_VERSION
+else
+	echo
+	echo "You need to have $AUTOMAKE (version $AUTOMAKE_VERSION) installed to compile $PROJECT."
+	echo "Download the appropriate package for your distribution,"
+	echo "or get the source tarball at http://ftp.gnu.org/gnu/automake"
+	DIE=1
 fi
 
-case $CC in
-*xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
-esac
+# check for autoconf
+if $AUTOCONF --version 2>/dev/null | grep -q " $AUTOCONF_VERSION\b" ; then
+	:	# all fine
+elif $AUTOCONF$AUTOCONF_VERSION --version 2>/dev/null | grep -q " $AUTOCONF_VERSION\b" ; then
+	AUTOCONF=$AUTOCONF$AUTOCONF_VERSION
+	AUTOHEADER=$AUTOHEADER$AUTOCONF_VERSION
+elif $AUTOCONF-$AUTOCONF_VERSION --version 2>/dev/null | grep -q " $AUTOCONF_VERSION\b" ; then
+	AUTOCONF=$AUTOCONF-$AUTOCONF_VERSION
+	AUTOHEADER=$AUTOHEADER-$AUTOCONF_VERSION
+else
+	echo
+	echo "You need to have $AUTOCONF (version $AUTOCONF_VERSION) installed to compile $PROJECT."
+	echo "Download the appropriate package for your distribution,"
+	echo "or get the source tarball at http://ftp.gnu.org/gnu/autoconf"
+	DIE=1
+fi
 
+# check for libtool
+#$LIBTOOL --version >/dev/null 2>&1 || {
+#	echo
+#	echo "You need to have $LIBTOOL installed to compile $PROJECT."
+#	echo "Get the source tarball at http://ftp.gnu.org/gnu/libtool"
+#	DIE=1
+#}
+
+# sanity test aclocal
+$ACLOCAL --version >/dev/null 2>&1 || {
+	echo
+	echo "Unable to run $ACLOCAL though $AUTOMAKE is available."
+	echo "Please correct the above error first."
+	DIE=1
+}
+
+# sanity test autoheader
+$AUTOHEADER --version >/dev/null 2>&1 || {
+	echo
+	echo "Unable to run $AUTOHEADER though $AUTOCONF is available."
+	echo "Please correct the above error first."
+	DIE=1
+}
+
+# bail out as scheduled
+test "$DIE" -gt 0 && exit 1
+
+# sanity check $ACLOCAL_FLAGS
 if test -z "$ACLOCAL_FLAGS"; then
-
-	acdir=`aclocal --print-ac-dir`
-        m4list="glib.m4 gettext.m4"
-
-	for file in $m4list
-	do
-		if [ ! -f "$acdir/$file" ]; then
-			echo "WARNING: aclocal's directory is $acdir, but..."
-			echo "         no file $acdir/$file"
-			echo "         You may see fatal macro warnings below."
-			echo "         If these files are installed in /some/dir, set the ACLOCAL_FLAGS "
-			echo "         environment variable to \"-I /some/dir\", or install"
-			echo "         $acdir/$file."
-			echo ""
-		fi
+	acdir=`$ACLOCAL --print-ac-dir`
+        m4tests="glib-2.0.m4"
+	for file in $m4tests ; do
+		[ ! -f "$acdir/$file" ] && {
+			echo "WARNING: failed to find $file in $acdir"
+			echo "         If this file is installed in /some/dir, you may need to set"
+			echo "         the ACLOCAL_FLAGS environment variable to \"-I /some/dir\","
+			echo "         or install $acdir/$file."
+		}
 	done
 fi
 
+# run gettext
 #echo "Running gettextize...  Ignore non-fatal messages."
 # Hmm, we specify --force here, since otherwise things dont'
 # get added reliably, but we don't want to overwrite intl
 # while making dist.
 #echo "no" | gettextize --copy --force
 
-aclocal $ACLOCAL_FLAGS
+# run aclocal
+$ACLOCAL $ACLOCAL_FLAGS	|| exit $?
 
-# optionally feature autoheader
-(autoheader --version)  < /dev/null > /dev/null 2>&1 && autoheader
+# feature autoheader
+$AUTOHEADER || exit $?
 
-$AUTOMAKE --add-missing $am_opt
-autoconf
+# invoke automake
+case $CC in
+*xlc | *xlc\ * | *lcc | *lcc\ *) am_opt=--include-deps;;
+esac
+$AUTOMAKE --add-missing $am_opt || exit $?
+
+# invoke autoconf
+$AUTOCONF || exit $?
+
+# invoke configure
 cd $ORIGDIR
-
-if $srcdir/configure --enable-devel-rules=yes "$@"; then
-	echo 
-	echo "Now type 'make' to compile $PROJECT."
-else
-	echo
-	echo Configuration failed, correct above errors first.
-	exit 1
-fi
+$srcdir/configure $CONFIGURE_OPTIONS "$@" || exit $?

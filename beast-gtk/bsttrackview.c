@@ -18,6 +18,7 @@
 #include "bsttrackview.h"
 
 #include <stdlib.h> /* strtol */
+#include <string.h>
 
 #define	SCROLLBAR_SPACING (3) /* from gtkscrolledwindow.c:DEFAULT_SCROLLBAR_SPACING */
 

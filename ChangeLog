@@ -1,3 +1,16 @@
+Wed Apr 16 19:43:36 2003  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh: deamnd automake-1.4 and autoconf-1.3. support version
+	concatenation for these tools out of the box if supplied by the host
+	system. return proper exit codes in case of error.
+
+	* shell/bsesh.c (BOILERPLATE_SCM): fix "pasting does not give a valid
+	preprocessing token" warning.
+
+	* beast-gtk/bstmain.c: fix include.
+
+	* beast-gtk/bstsnetrouter.c (palette_ebox_button): fix cast.
+
 Mon Apr 14 02:17:03 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-news.texi: announce v0.5.1.

@@ -23,6 +23,7 @@
 #include "bstgconfig.h"
 #include "bstusermessage.h"
 #include "bstcatalog.h"
+#include "bstparam.h"
 #include "bstpreferences.h"
 #include "PKG_config.h"
 #include "beast-gtk/images/beast-images.h"

@@ -677,7 +677,7 @@ bst_rack_table_add (GtkContainer *container,
   if (rinfo.col < 0 || rinfo.row < 0 ||
       bst_rack_table_check_area (rtable, rinfo.col, rinfo.row, rinfo.hspan, rinfo.vspan))
     {
-      guint col, row;
+      guint row, col = 0; /* silence compiler */
 
       for (row = 0; row < table->nrows; row++)
 	for (col = 0; col + rinfo.hspan <= table->ncols; col++)
