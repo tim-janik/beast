@@ -31,7 +31,6 @@ bool silent = false;
 
 void print(const gchar *format, ...)
 {
-  gchar *buffer;
   va_list args;
   
   va_start (args, format);
@@ -192,7 +191,7 @@ void printPSpec (const char *dir, GParamSpec *pspec)
   std::string pname = paramName (pspec->name);
   
   printIndent ();
-  print ("%-4s%-20s@= (\"%s\", \"%s\", ",
+  print ("%-4s%-20s= (\"%s\", \"%s\", ",
          dir,
          pname.c_str(),
          g_param_spec_get_nick (pspec) ?  g_param_spec_get_nick (pspec) : "",
@@ -331,7 +330,6 @@ printChoices (void)
   for (i = 0; i < n; i++)
     {
       const gchar *name = g_type_name (children[i]);
-      const gchar *cname = g_type_name_to_cname (name);
       GEnumClass *eclass = (GEnumClass *)g_type_class_ref (children[i]);
       gboolean regular_choice = strcmp (name, "BseErrorType") != 0;
       GEnumValue *val;
@@ -349,8 +347,12 @@ printChoices (void)
 	    {
 	      bool neutral = (!regular_choice && val == eclass->values);
 	      printIndent();
-	      print ("%s @= %s(%d, \"%s\"),\n", removeBse (val->value_name).c_str(),
-                     neutral?"Neutral":"", val->value, val->value_nick);
+              if (neutral)
+                print ("%s = (Neutral, \"%s\"),\n", removeBse (val->value_name).c_str(),
+                       val->value_nick);
+              else
+                print ("%s = (%d, \"%s\"),\n", removeBse (val->value_name).c_str(),
+                       val->value, val->value_nick);
 	    }
           indent--;
 	  printIndent ();
