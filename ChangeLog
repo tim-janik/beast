@@ -1,3 +1,23 @@
+Sun Mar  9 15:44:48 2003  Tim Janik  <timj@gtk.org>
+
+	* TODO: got rid of a good chunk of fixmes.
+	prioritized stw/timj items.
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_icon_set): catch empty
+	icons.
+
+	* configure.in: removed CSL related checks.
+
+	* beast-gtk/bstrecords.sfidl: remove ALSA preference option.
+
+	* beast-gtk/bstdefs.h: cleaned up developer extensions and
+	related macros.
+
+	* beast-gtk/bstmain.c: fix up '-:' developer option.
+
+	* acbeast.m4: change gcc optimization from -O3 to -O2 since -O3
+	may produce buggy code at times.
+
 Sun Mar  9 07:03:49 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* beast-gtk/bstrecords.sfidl: added group supported by sfidl now

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,7 @@
 #include "bstzoomedwindow.h"
 #include "bstfreeradiobutton.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- BEAST mainmenu operations --- */
@@ -118,41 +116,31 @@ typedef enum {
 #define BST_DRAG_BUTTON_CONTEXT   (3) /* delete, clone, linkdup */
 
 
-/* --- debug stuff --- */
-typedef enum                    /*< skip >*/
-{ /* keep in sync with bstmain.c */
-  BST_DEBUG_KEYTABLE		= (1 << 0),
-  BST_DEBUG_SAMPLES		= (1 << 1)
-} BstDebugFlags;
-extern BstDebugFlags bst_debug_flags;
-#ifdef G_ENABLE_DEBUG
-#  define BST_IF_DEBUG(type)	if (!(bst_debug_flags & BST_DEBUG_ ## type)) { } else
-#else  /* !G_ENABLE_DEBUG */
-#  define BST_IF_DEBUG(type)	while (0) /* don't exec */
-#endif /* !G_ENABLE_DEBUG */
-#define	BST_DVL_EXT		(0) // FIXME: BSE_DVL_EXT
-#define	BST_DVL_HINTS		(bst_dvl_hints)
-extern gboolean bst_dvl_hints;
-
-extern gboolean beast_main_loop;
-
-extern void bst_update_can_operate (GtkWidget   *some_widget);
-
+/* --- miscellaneous --- */
+#define	BST_TOOLTIPS		(GXK_TOOLTIPS)
+#define	BST_DVL_HINTS		(bst_developer_hints != FALSE)
+#define	BST_DVL_EXT		(bst_developer_extensions != FALSE)
+#define	BST_MAIN_LOOP_QUIT()	do { bst_main_loop_running = FALSE; } while (0)
 #define	GNOME_CANVAS_NOTIFY(object)	G_STMT_START { \
     if (GTK_IS_OBJECT (object)) \
       g_signal_emit_by_name (object, "notify::generic-change", NULL); \
 } G_STMT_END
+extern void bst_update_can_operate (GtkWidget   *some_widget);
 
-#define	BST_TOOLTIPS			(GXK_TOOLTIPS)
-#ifndef	CKEY
-#  define CKEY(x) x
-#endif
+
+/* --- i18n and gettext helpers --- */
+#define CKEY(x) x
 /* allow gettext-ization */
 #define	_N(x)	x
 #define	_(x)	x
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+
+/* --- internal stuff --- */
+extern gboolean bst_developer_hints;
+extern gboolean bst_developer_extensions;
+extern gboolean bst_main_loop_running;
+
+
+G_END_DECLS
 
 #endif /* __BST_DEFS_H__ */

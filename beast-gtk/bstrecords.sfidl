@@ -20,16 +20,14 @@ namespace Bst {
   /* BEAST Global Config */
   record GConfig {
     String rc_version			@= (NULL, "Release counter", NULL, SFI_PARAM_STORAGE);
-    group: "Synthesis";
+  group: "Synthesis";
     Bool   snet_anti_aliased		@= ("Anti-Alias", "Draw synthesis networks anti-aliased?",
 					    TRUE, SFI_PARAM_DEFAULT);
     Bool   snet_edit_fallback		@= ("Single Edit", "Fallback into Edit mode after creating synthesis modules?",
 					    TRUE, SFI_PARAM_DEFAULT);
     Bool   snet_swap_io_channels	@= ("Swap IO", "Swap input with output channels when displaying synthesis modules?",
 					    FALSE, SFI_PARAM_DEFAULT);
-    group: "Misc";
-    Bool   enable_alsa			@= ("Support ALSA", "Utilize Advanced Linux Sound Architecture drivers if available",
-					    TRUE, SFI_PARAM_DEFAULT);
+  group: "Misc";
     Int    tab_width			@= ("Tab Width", "Specify project tab width in pixels",
 					    0, 0, 5000, 5, SFI_PARAM_DEFAULT);
   };

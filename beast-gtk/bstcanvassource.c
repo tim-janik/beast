@@ -581,7 +581,7 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
 {
   GdkPixbuf *pixbuf;
 
-  if (icon)
+  if (icon && icon->pixels->bytes)
     {
       icon = bse_icon_copy_shallow (icon);
       pixbuf = gdk_pixbuf_new_from_data (icon->pixels->bytes, GDK_COLORSPACE_RGB, icon->bytes_per_pixel == 4,

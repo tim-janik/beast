@@ -280,7 +280,7 @@ bst_app_destroy (GtkObject *object)
   if (!bst_app_class->apps && bst_app_class->seen_apps)
     {
       bst_app_class->seen_apps = FALSE;
-      beast_main_loop = FALSE;
+      BST_MAIN_LOOP_QUIT ();
     }
 }
 

@@ -29,7 +29,6 @@ extern "C" {
 
 /* --- BstGConfig - configurable defaults --- */
 #define	BST_RC_VERSION			(bst_global_config->rc_version)
-#define BST_DISABLE_ALSA		(bst_global_config->disable_alsa)
 #define BST_TAB_WIDTH			(bst_global_config->tab_width)
 #define BST_SNET_ANTI_ALIASED		(bst_global_config->snet_anti_aliased)
 #define BST_SNET_EDIT_FALLBACK		(bst_global_config->snet_edit_fallback)
