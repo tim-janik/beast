@@ -188,19 +188,19 @@ XPREFIX=_tmpFile~
 index.html: news.html
 	ln -s $< $@
 site:	$(html_targets) navigation.xsl navigation.xml index.html
-	tar zcf beast-site-con.tar.gz --mode=0664 $(html_targets) index.html css/*.css
-	tar zcf beast-site-img.tar.gz --mode=0664 css/images/*.png
-	tar zcf beast-site-nav.tar.gz --mode=0664 navigation.xml navigation.xsl
+	tar jcf beast-site-con.tar.bz2 --mode=0664 $(html_targets) index.html css/*.css
+	tar zcf beast-site-img.tar.gz  --mode=0664 css/images/*.png
+	tar zcf beast-site-nav.tar.gz  --mode=0664 navigation.xml navigation.xsl
 site-update-con: site
 	echo Connecting to ${ACCOUNT}... \
-	&& uuencode ${XPREFIX}-beast-site-con.tar.gz < beast-site-con.tar.gz \
+	&& uuencode ${XPREFIX}-beast-site-con.tar.bz2 < beast-site-con.tar.bz2 \
 	| ssh ${ACCOUNT} \
 	  "echo Receiving... \
 	   && uudecode \
 	   && echo Extracting... \
-	   && tar zxmpf ${XPREFIX}-beast-site-con.tar.gz -C /web/beast/html2 \
+	   && tar jxmpf ${XPREFIX}-beast-site-con.tar.bz2 -C /web/beast/html2 \
 	   && echo Cleaning up. \
-	   && rm ${XPREFIX}-beast-site-con.tar.gz"
+	   && rm ${XPREFIX}-beast-site-con.tar.bz2"
 site-update-img: site
 	echo Connecting to ${ACCOUNT}... \
 	&& uuencode ${XPREFIX}-beast-site-img.tar.gz < beast-site-img.tar.gz \
@@ -225,7 +225,7 @@ site-update-nav: site
 	   && (cd /web/beast/dyn2 && make)"
 site-update: site-update-con # site-update-img site-update-nav
 site-upgrade: site-update-con site-update-img site-update-nav
-CLEANFILES += beast-site-*.tar.gz index.html
+CLEANFILES += beast-site-*.tar.gz beast-site-*.tar.bz2 index.html
 
 
 #

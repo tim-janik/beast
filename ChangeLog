@@ -1,3 +1,10 @@
+Sat Jan 11 16:36:01 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am (site-update-con): transmit site
+	contents in bzip2 compressed tarball which is much smaller than
+	the gzip variant (not so for the images and navigation tarballs
+	though). added beast-site-*.tar.bz2 to clean targets.
+
 Sat Jan 11 16:04:18 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/Makefile.am: removed website related files from EXTRA_DIST,
