@@ -1,0 +1,115 @@
+/* BSE - Bedevilled Sound Engine        -*-mode: c;-*-
+ * Copyright (C) 2002 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include <bse/bseplugin.h>
+#include <bse/bseprocedure.h>
+#include <bse/bsescripthelper.h>
+#include <bse/bseserver.h>
+
+
+AUTHOR  = "Tim Janik <timj@gtk.org>";
+CRIGHTS = "Tim Janik";
+DATE    = "2002";
+
+
+PROCEDURE (bse-exit, "Utils/Misc/Exit") {
+  HELP  = "Exit a script indicating error or success.";
+  IN    = g_param_spec_enum ("error", "Error", NULL,
+                             BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        GValue            *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseErrorType error = g_value_get_enum (in_values++);
+  BseComWire *wire;
+
+  /* action */
+  wire = bse_script_peek_current_wire ();
+  if (wire)
+    {
+      wire->user_status = error;
+      if (!wire->killed)
+	bse_server_queue_kill_wire (bse_server_get (), wire);
+      bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_DONE, wire->ident, error ? 0 : 1, error);
+      /* we don't want our own exec status to override the one we just signalled */
+      bse_procedure_skip_next_exec_status ();
+    }
+
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-progress, "Utils/Misc/Progress") {
+  HELP  = "Indicate progress (from 0.0 to 1.0 or -1 for unknown amount).";
+  IN    = bse_param_spec_float ("progress", "Progress", NULL,
+				-1, 1.0, -1, 0.1,
+				BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        GValue            *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  gfloat progress = g_value_get_float (in_values++);
+  BseComWire *wire;
+
+  /* action */
+  wire = bse_script_peek_current_wire ();
+  bse_server_exec_status (bse_server_get (), BSE_EXEC_STATUS_PROGRESS,
+			  wire ? wire->ident : proc->name,
+			  progress > 0 ? progress : -1,
+			  BSE_ERROR_NONE);
+  /* we don't want our own exec status to override the one we just signalled */
+  bse_procedure_skip_next_exec_status ();
+  
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-exit-msg, "Utils/Misc/Exit Message") {
+  HELP  = "Exit a script, leaving a message.";
+  IN    = g_param_spec_enum ("msg_type", "Message Type", NULL,
+                             BSE_TYPE_USER_MSG_TYPE, BSE_ERROR_NONE,
+			     BSE_PARAM_DEFAULT);
+  IN    = g_param_spec_string ("message", "Message", NULL,
+			       NULL, BSE_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        GValue            *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseUserMsgType mtype   = g_value_get_enum (in_values++);
+  const gchar     *message = g_value_get_string (in_values++);
+  BseComWire *wire;
+
+  /* check parameters */
+  if (!message)
+    message = "<This is not a message>";
+
+  /* action */
+  bse_server_user_message (bse_server_get (), mtype, message);
+  wire = bse_script_peek_current_wire ();
+  if (wire)
+    {
+      /* wire->user_status = error; */
+      if (!wire->killed)
+	bse_server_queue_kill_wire (bse_server_get (), wire);
+      /* we don't want our own exec status to override the one from killing the wire */
+      bse_procedure_skip_next_exec_status ();
+    }
+
+  return BSE_ERROR_NONE;
+}
