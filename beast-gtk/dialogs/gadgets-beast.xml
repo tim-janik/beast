@@ -106,7 +106,7 @@
   </xdef:part-view>
 
   <!-- piano-roll-box -->
-  <xdef:piano-roll-box inherit="vbox" spacing="3" >
+  <xdef:piano-roll-box inherit="vbox" prop:spacing="3" >
     <vbox name="toolbar-area" area="north" >
       <frame-shadow-out >
 	<hbox name="toolbar" >
@@ -135,6 +135,18 @@
 	      </submenu>
 	      <submenu _label="Note _Length" >
 		<menu-factory action-root="" actions="pctrl-note-tools" />
+	      </submenu>
+	    </popup-menu>
+	    <popup-menu name="event-popup" >
+	      <submenu _label="_Tools" >
+		<menu-factory action-root="" actions="pctrl-canvas-tools" />
+	      </submenu>
+	      <submenu _label="_Edit" >
+		<menu-factory action-root="" actions="piano-edit-actions" />
+		<menu-factory action-root="" actions="piano-edit-undo" separator="1" />
+	      </submenu>
+	      <submenu _label="_Quantization" >
+		<menu-factory action-root="" actions="pctrl-quant-tools" />
 	      </submenu>
 	    </popup-menu>
 	  </piano-roll>

@@ -101,19 +101,19 @@ struct _BstEventRollClass
 {
   GtkContainerClass parent_class;
 
-  void		(*set_scroll_adjustments)	(BstEventRoll	  *proll,
+  void		(*set_scroll_adjustments)	(BstEventRoll	  *eroll,
 						 GtkAdjustment	  *hadjustment,
 						 GtkAdjustment	  *vadjustment);
   void		(*canvas_drag)			(BstEventRoll	  *self,
 						 BstEventRollDrag *drag);
-  void		(*canvas_clicked)		(BstEventRoll	  *proll,
+  void		(*canvas_clicked)		(BstEventRoll	  *eroll,
 						 guint		   button,
 						 guint		   tick_position,
 						 gfloat            value,
 						 GdkEvent	  *event);
   void		(*vpanel_drag)			(BstEventRoll	  *self,
 						 BstEventRollDrag *drag);
-  void		(*vpanel_clicked)		(BstEventRoll	  *proll,
+  void		(*vpanel_clicked)		(BstEventRoll	  *eroll,
 						 guint		   button,
 						 gfloat            value,
 						 GdkEvent	  *event);

@@ -19,7 +19,6 @@
 #define __BST_EVENT_ROLL_CONTROLLER_H__
 
 #include "bsteventroll.h"
-#include "bstradiotools.h"
 
 G_BEGIN_DECLS
 
@@ -35,15 +34,15 @@ typedef struct {
   /* tool data */
   guint		     tool_index;
   /* tool selections */
-  BstRadioTools   *quant_rtools;
-  BstRadioTools   *canvas_rtools;
+  GxkActionGroup  *quant_atools;
+  GxkActionGroup  *canvas_atools;
 } BstEventRollController;
 
 
 /* --- API --- */
 BstEventRollController*	bst_event_roll_controller_new		(BstEventRoll		*eroll,
-                                                                 BstRadioTools          *quant_rtools,
-                                                                 BstRadioTools          *canvas_rtools);
+                                                                 GxkActionGroup         *quant_atools,
+                                                                 GxkActionGroup         *canvas_atools);
 BstEventRollController*	bst_event_roll_controller_ref		(BstEventRollController	*self);
 void			bst_event_roll_controller_unref		(BstEventRollController	*self);
 guint                   bst_event_roll_controller_quantize      (BstEventRollController *self,

@@ -27,12 +27,18 @@
 static void	bst_part_dialog_class_init	(BstPartDialogClass	*klass);
 static void	bst_part_dialog_init		(BstPartDialog		*part_dialog);
 static void	bst_part_dialog_finalize	(GObject		*object);
-static void	piano_canvas_clicked		(BstPartDialog		*part_dialog,
+static void	piano_canvas_clicked		(BstPianoRoll           *proll,
 						 guint			 button,
 						 guint			 tick_position,
 						 gint			 note,
 						 GdkEvent		*event,
-						 BstPianoRoll		*proll);
+                                                 BstPartDialog		*self);
+static void	event_canvas_clicked		(BstEventRoll           *eroll,
+                                                 guint                   button,
+                                                 guint                   tick_position,
+                                                 gfloat                  value,
+                                                 GdkEvent               *event,
+                                                 BstPartDialog          *self);
 static void     part_dialog_action_exec         (gpointer                data,
                                                  gulong                  action);
 static gboolean part_dialog_action_check        (gpointer                data,
@@ -177,9 +183,7 @@ bst_part_dialog_init (BstPartDialog *self)
   /* piano roll */
   self->proll = gxk_gadget_find (gadget, "piano-roll");
   gxk_nullify_on_destroy (self->proll, &self->proll);
-  g_object_connect (self->proll,
-                    "swapped_signal::canvas-clicked", piano_canvas_clicked, self,
-                    NULL);
+  g_signal_connect (self->proll, "canvas-clicked", G_CALLBACK (piano_canvas_clicked), self);
   bst_piano_roll_set_hadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_piano_roll_set_vadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   self->pctrl = bst_piano_roll_controller_new (self->proll);
@@ -190,6 +194,7 @@ bst_part_dialog_init (BstPartDialog *self)
   /* event roll */
   self->eroll = gxk_gadget_find (gadget, "event-roll");
   gxk_nullify_on_destroy (self->eroll, &self->eroll);
+  g_signal_connect (self->eroll, "canvas-clicked", G_CALLBACK (event_canvas_clicked), self);
   self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_atools, self->pctrl->canvas_atools);
   bst_event_roll_set_hadjustment (self->eroll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
   bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
@@ -323,15 +328,29 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
 }
 
 static void
-piano_canvas_clicked (BstPartDialog *self,
-		      guint          button,
-		      guint          tick,
-		      gint           note,
-		      GdkEvent      *event,
-		      BstPianoRoll  *proll)
+piano_canvas_clicked (BstPianoRoll           *proll,
+                      guint                   button,
+                      guint                   tick_position,
+                      gint                    note,
+                      GdkEvent               *event,
+                      BstPartDialog          *self)
 {
   if (button == 3 && event)
     gxk_menu_popup (gxk_gadget_find (self, "piano-popup"),
+                    event->button.x_root, event->button.y_root, FALSE,
+                    event->button.button, event->button.time);
+}
+
+static void
+event_canvas_clicked (BstEventRoll           *eroll,
+                      guint                   button,
+                      guint                   tick_position,
+                      gfloat                  value,
+                      GdkEvent               *event,
+                      BstPartDialog          *self)
+{
+  if (button == 3 && event)
+    gxk_menu_popup (gxk_gadget_find (self, "event-popup"),
                     event->button.x_root, event->button.y_root, FALSE,
                     event->button.button, event->button.time);
 }

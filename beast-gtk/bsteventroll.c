@@ -192,7 +192,7 @@ bst_event_roll_class_init (BstEventRollClass *class)
   signal_canvas_clicked = g_signal_new ("canvas-clicked", G_OBJECT_CLASS_TYPE (class),
 					G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstEventRollClass, canvas_clicked),
 					NULL, NULL,
-					bst_marshal_NONE__UINT_UINT_INT_BOXED,
+					bst_marshal_NONE__UINT_UINT_FLOAT_BOXED,
 					G_TYPE_NONE, 4, G_TYPE_UINT, G_TYPE_UINT, G_TYPE_FLOAT,
 					GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_vpanel_drag = g_signal_new ("vpanel-drag", G_OBJECT_CLASS_TYPE (class),

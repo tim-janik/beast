@@ -1,3 +1,15 @@
+Fri Nov 14 11:20:03 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsteventroll.[hc]: fix canvas-clicked signal.
+
+	* beast-gtk/bsteventrollctrl.[hc]: use GxkActionGroup instead of
+	radio-tools.
+
+	* beast-gtk/bstpartdialog.c: added popup menu to event-roll.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: fixed toolbar spacing.
+	added event-roll menu.
+
 Fri Nov 14 10:53:54 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-beast.xml: 

@@ -3,14 +3,13 @@ FIXMES:
 - implement toolbar separator
 - implement menubutton
 - implement menu title
-- fix event-roll controller
 - move bst_action_list_add_cat() to bstutils.[hc]
 - recreate partdialog toolbar
 - recreate partdialog popup menu
 - delete BstActionRegions
 - i18n in xml
 - Tools, Demo
-- remove bstmenus.[hc]
+- clean up bstmenus.[hc]
 - remove bstcatalog.[hc]
 
 - rename gsl-mplan.txt to engine-mplan.txt
