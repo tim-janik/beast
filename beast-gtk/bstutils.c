@@ -405,7 +405,7 @@ bst_action_list_add_cat (GxkActionList          *alist,
 {
   const gchar *p, *stock_id;
 
-  if (cat->icon && (cat->icon->width + cat->icon->height) > 0)  // FIXME: need NULL icons
+  if (cat->icon)
     {
       bst_stock_register_icon (cat->category, cat->icon->bytes_per_pixel,
                                cat->icon->width, cat->icon->height,
@@ -416,7 +416,7 @@ bst_action_list_add_cat (GxkActionList          *alist,
   else
     stock_id = stock_fallback;
 
-  p = cat->category[0] == '/' ? cat->category + 1 : cat->category;      // FIXME: needs i18n
+  p = cat->category[0] == '/' ? cat->category + 1 : cat->category;
   while (skip_levels--)
     {
       const gchar *d = strchr (p, '/');

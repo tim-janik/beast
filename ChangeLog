@@ -1,3 +1,10 @@
+Thu Dec 18 00:25:41 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: removed hacks around degenerated
+	structures (instead of NULL pointers).
+
+	* beast-gtk/bstutils.c: likewise.
+
 Wed Dec 17 23:49:49 2003  Tim Janik  <timj@gtk.org>
 
 	* *.[hci]*: renamed SFI_PARAM_DEFAULT to SFI_PARAM_STANDARD.

@@ -213,7 +213,7 @@ bst_snet_router_init (BstSNetRouter      *self,
 	if (strcmp (toolbar_types[n].type, cat->type) == 0)
 	  {
             const gchar *stock_id;
-            if (cat->icon && (cat->icon->width + cat->icon->height) > 0)  // FIXME: need NULL icons
+            if (cat->icon)
               {
                 bst_stock_register_icon (cat->category, cat->icon->bytes_per_pixel,
                                          cat->icon->width, cat->icon->height,
