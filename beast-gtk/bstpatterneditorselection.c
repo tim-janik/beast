@@ -20,7 +20,6 @@
 
 
 #define SELECTION_TIMEOUT                       (33)
-#define	SELECTION_TEST(pe, channel, row)	(BSE_PATTERN_SELECTION_TEST ((pe)->selection, (channel), (row)))
 #define	SAVED_SELECTION_TEST(pe, channel, row)	(BSE_PATTERN_SELECTION_TEST ((pe)->saved_selection, (channel), (row)))
 
 
@@ -55,7 +54,6 @@ bst_pattern_editor_selection_meminit (BstPatternEditor *pe)
   pe->in_selection = FALSE;
   pe->selection_subtract = FALSE;
   pe->saved_selection = NULL;
-  pe->selection = NULL;
   pe->selection_channel = 0;
   pe->selection_row = 0;
   pe->selection_timer = 0;
@@ -74,7 +72,6 @@ bst_pattern_editor_selection_start (BstPatternEditor *pe,
 {
   GdkCursor *cursor;
   gboolean failed;
-  guint c, r;
 
   g_return_if_fail (pe->in_selection == FALSE);
   
@@ -101,17 +98,16 @@ bst_pattern_editor_selection_start (BstPatternEditor *pe,
   bse_object_lock (BSE_OBJECT (pe->pattern));
   
   pe->selection_subtract = subtract != FALSE;
+  pe->saved_selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
+  bse_pattern_save_selection (pe->pattern, pe->saved_selection);
   if (!keep_selection)
-    for (c = 0; c < BSE_PATTERN_SELECTION_N_CHANNELS (pe->selection); c++)
-      for (r = 0; r < BSE_PATTERN_SELECTION_N_ROWS (pe->selection); r++)
-	{
-	  if (BSE_PATTERN_SELECTION_TEST (pe->selection, c, r))
-	    {
-	      BSE_PATTERN_SELECTION_UNMARK (pe->selection, c, r);
-	      NOTE_CHANGED (pe, c, r);
-	    }
-	}
-  pe->saved_selection = bse_pattern_selection_copy (pe->selection);
+    {
+      guint32 *tmp_selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
+
+      bse_pattern_selection_fill (tmp_selection, FALSE);
+      bse_pattern_restore_selection (pe->pattern, tmp_selection);
+      bse_pattern_selection_free (tmp_selection);
+    }
   pe->selection_timer = 0;
   
   bst_pattern_editor_selection_update (pe, channel, row, panel_sa_x, panel_sa_y, TRUE);
@@ -164,7 +160,8 @@ bst_pattern_editor_selection_update (BstPatternEditor *pe,
       for (c = b_c; c <= e_c; c++)
 	for (r = b_r; r <= e_r; r++)
 	  {
-	    gboolean want_selection, selected = SELECTION_TEST (pe, c, r);
+	    BsePatternNote *note = bse_pattern_peek_note (pe->pattern, c, r);
+	    gboolean want_selection, selected = note->selected;
 	    gboolean in_selection = (c >= MIN (pe->focus_channel, pe->selection_channel) &&
 				     c <= MAX (pe->focus_channel, pe->selection_channel) &&
 				     r >= MIN (pe->focus_row, pe->selection_row) &&
@@ -176,15 +173,9 @@ bst_pattern_editor_selection_update (BstPatternEditor *pe,
 	      want_selection = in_selection || SAVED_SELECTION_TEST (pe, c, r);
 	    
 	    if (want_selection && !selected)
-	      {
-		BSE_PATTERN_SELECTION_MARK (pe->selection, c, r);
-		NOTE_CHANGED (pe, c, r);
-	      }
+	      bse_pattern_select_note (pe->pattern, c, r);
 	    else if (!want_selection && selected)
-	      {
-		BSE_PATTERN_SELECTION_UNMARK (pe->selection, c, r);
-		NOTE_CHANGED (pe, c, r);
-	      }
+	      bse_pattern_unselect_note (pe->pattern, c, r);
 	  }
       
       bst_pattern_editor_adjust_sas (pe, FALSE);
@@ -287,68 +278,22 @@ bst_pattern_editor_selection_done (BstPatternEditor *pe)
       pe->selection_timer = 0;
     }
 
-  bst_pattern_editor_apply_selection (pe);
-  
   bse_object_unlock (BSE_OBJECT (pe->pattern));
   pe->in_selection = FALSE;
 }
 
 void
-bst_pattern_editor_apply_selection (BstPatternEditor *pe)
-{
-  gboolean selected;
-
-  g_return_if_fail (BST_IS_PATTERN_EDITOR (pe));
-  g_return_if_fail (pe->pattern != NULL);
-
-  selected = SELECTION_TEST (pe, pe->focus_channel, pe->focus_row);
-  BSE_PATTERN_SELECTION_MARK (pe->selection, pe->focus_channel, pe->focus_row);
-  NOTE_CHANGED (pe, pe->focus_channel, pe->focus_row);
-  bse_pattern_restore_selection (pe->pattern, pe->selection);
-  if (!selected)
-    {
-      BSE_PATTERN_SELECTION_UNMARK (pe->selection, pe->focus_channel, pe->focus_row);
-      NOTE_CHANGED (pe, pe->focus_channel, pe->focus_row);
-    }
-}
-
-void
-bst_pattern_editor_resync_selection (BstPatternEditor *pe)
-{
-  guint32 *selection;
-  guint c, r;
-
-  g_return_if_fail (BST_IS_PATTERN_EDITOR (pe));
-  g_return_if_fail (pe->pattern != NULL);
-
-  selection = bse_pattern_selection_copy (pe->selection);
-  bse_pattern_save_selection (pe->pattern, pe->selection);
-
-  for (c = 0; c < BSE_PATTERN_SELECTION_N_CHANNELS (pe->selection); c++)
-    for (r = 0; r < BSE_PATTERN_SELECTION_N_ROWS (pe->selection); r++)
-      if (BSE_PATTERN_SELECTION_TEST (pe->selection, c, r) !=
-	  BSE_PATTERN_SELECTION_TEST (selection, c, r))
-	NOTE_CHANGED (pe, c, r);
-
-  bse_pattern_selection_free (selection);
-}
-
-void
 bst_pattern_editor_reset_selection (BstPatternEditor *pe)
 {
-  guint c, r;
-  
   g_return_if_fail (BST_IS_PATTERN_EDITOR (pe));
   g_return_if_fail (pe->pattern != NULL);
 
   if (!pe->in_selection)
     {
-      for (c = 0; c < BSE_PATTERN_SELECTION_N_CHANNELS (pe->selection); c++)
-	for (r = 0; r < BSE_PATTERN_SELECTION_N_ROWS (pe->selection); r++)
-	  if (BSE_PATTERN_SELECTION_TEST (pe->selection, c, r))
-	    {
-	      BSE_PATTERN_SELECTION_UNMARK (pe->selection, c, r);
-	      NOTE_CHANGED (pe, c, r);
-	    }
+      guint32 *tmp_selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
+
+      bse_pattern_selection_fill (tmp_selection, FALSE);
+      bse_pattern_restore_selection (pe->pattern, tmp_selection);
+      bse_pattern_selection_free (tmp_selection);
     }
 }

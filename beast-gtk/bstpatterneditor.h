@@ -202,8 +202,7 @@ struct _BstPatternEditor
   /* selection */
   guint		in_selection : 1;
   guint		selection_subtract : 1;
-  guint32	*saved_selection;
-  guint32	*selection;
+  guint32      *saved_selection;
   guint16	selection_channel;
   guint16	selection_row;
   guint		selection_timer;
@@ -305,12 +304,6 @@ GString*   bst_pattern_editor_class_keydump   (BstPatternEditorClass	*pe_class);
 
 
 /* --- selections --- */
-/* we maintain a bitmask of selected notes independantly from the
- * BsePattern structure, so we provide functions to sync our
- * our selection with the BsePattern
- */
-void bst_pattern_editor_apply_selection  (BstPatternEditor *pe);
-void bst_pattern_editor_resync_selection (BstPatternEditor *pe);
 void bst_pattern_editor_reset_selection  (BstPatternEditor *pe);
 
 

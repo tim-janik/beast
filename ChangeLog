@@ -1,3 +1,29 @@
+Mon Feb  7 03:40:20 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterneditor.*: changed things back so that we have
+	one selection per pattern. for multiple views and the possibility
+	of having procedures invoked unrelated to a view, this seems to be
+	the sanest way of handling things. note however, that in contrast
+	to common behaviour in spreadsheets, we don't auto-select the
+	currently focussed cell with this.
+
+	* beast-gtk/bstpatterneditorselection.c:
+	(bst_pattern_editor_selection_start): delete the pattern's selection
+	itself, not a copy of its selection.
+
+	* beast-gtk/bstpatterneditor.c:
+	(bst_pattern_editor_draw_tone): draw notes selected state regardless of
+	its focus state.
+	(bst_pattern_editor_set_pattern): install notifier handler for
+	"note_selection_changed".
+	(bst_pattern_editor_set_focus): reset the selection according to the
+	`reset_selection' argument, even if the focus didn't change.
+	(bst_pe_size_changed): don't reset the pattern's selection.
+
+	* beast-gtk/bstpatterndialog.c (pe_cell_clicked): don't give auto-focus
+	to the cell the click occured on. auto-select the current focus note
+	if no notes are selected currently though.
+
 Sun Feb  6 09:54:12 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterndialog.c (pattern_dialog_exec_proc): push

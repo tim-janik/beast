@@ -499,12 +499,6 @@ bst_pattern_editor_shutdown (GtkObject *object)
   if (pe->pattern)
     bst_pattern_editor_release_pattern (pe);
 
-  if (pe->selection)
-    {
-      bse_pattern_selection_free (pe->selection);
-      pe->selection = NULL;
-    }
-  
   GTK_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
@@ -727,14 +721,12 @@ bst_pe_size_changed (BstPatternEditor *pe)
   
   g_return_if_fail (BST_IS_PATTERN_EDITOR (pe));
   
+  if (pe->in_selection)
+    bst_pattern_editor_selection_done (pe);
+  
   focus_channel = pe->focus_channel;
   focus_row = pe->focus_row;
   
-  if (pe->selection)
-    bse_pattern_selection_free (pe->selection);
-  pe->selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
-  bse_pattern_save_selection (pe->pattern, pe->selection);
-
   g_free (pe->instruments);
   pe->instruments = g_new (BseInstrument*, pe->pattern->n_channels);
   for (i = 0, list = BSE_SONG (bse_item_get_super (BSE_ITEM (pe->pattern)))->instruments;
@@ -746,7 +738,7 @@ bst_pe_size_changed (BstPatternEditor *pe)
   
   gtk_widget_queue_resize (GTK_WIDGET (pe));
   
-  bst_pattern_editor_set_focus (pe, focus_channel, focus_row, TRUE);
+  bst_pattern_editor_set_focus (pe, focus_channel, focus_row, FALSE);
 }
 
 static void
@@ -802,9 +794,6 @@ bst_pattern_editor_release_pattern (BstPatternEditor *pe)
   pe->pattern = NULL;
   g_free (pe->instruments);
   pe->instruments = NULL;
-  if (pe->selection)
-    bse_pattern_selection_free (pe->selection);
-  pe->selection = NULL;
 }
 
 void
@@ -834,6 +823,10 @@ bst_pattern_editor_set_pattern (BstPatternEditor *pe,
 				    pe);
       bse_object_add_data_notifier (pattern,
 				    "note_changed",
+				    bst_pe_note_changed,
+				    pe);
+      bse_object_add_data_notifier (pattern,
+				    "note_selection_changed",
 				    bst_pe_note_changed,
 				    pe);
       bse_object_add_data_notifier (pattern,
@@ -1870,7 +1863,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
   g_return_if_fail (row < N_ROWS (pe));
   
   note = bse_pattern_peek_note (pe->pattern, channel, row);
-  selected = SELECTION_TEST (pe, channel, row) && (channel != pe->focus_channel || row != pe->focus_row);
+  selected = note->selected;
   if (selected)
     {
       fg_gc = widget->style->fg_gc[GTK_STATE_SELECTED];
@@ -2012,10 +2005,10 @@ bst_pattern_editor_set_focus (BstPatternEditor *pe,
 	  bst_pattern_editor_draw_tone (pe, pe->focus_channel, pe->focus_row);
 	  bst_pattern_editor_draw_grid (pe, pe->focus_channel, pe->focus_row, 0, 0);
 	}
-      if (reset_selection)
-	bst_pattern_editor_reset_selection (pe);
     }
-  bst_pattern_editor_apply_selection (pe);
+
+  if (reset_selection)
+    bst_pattern_editor_reset_selection (pe);
 
   bst_pattern_editor_adjust_sas (pe, FALSE);
 }
