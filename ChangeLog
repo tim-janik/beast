@@ -1,3 +1,8 @@
+Mon Dec 29 20:48:58 2003  Tim Janik  <timj@gtk.org>
+
+	* tests/cxxbinding.cc: add missing <unistd.h>, reported by Nedko
+	Arnaudov for OpenBSD.
+
 Sun Dec 28 19:44:00 2003  Tim Janik  <timj@gtk.org>
 
 	* test/test-song.bse: updated to version 0.5.6, refined module
