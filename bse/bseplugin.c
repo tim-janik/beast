@@ -190,7 +190,7 @@ bse_plugin_use (GTypePlugin *gplugin)
     {
       BseExportIdentity *plugin_identity;
 
-      DEBUG ("reloading-plugin \"%s\" (\"%s\")", plugin->name, plugin->fname ? plugin->fname : "???NULL???");
+      DEBUG ("reloading-plugin: %s (\"%s\")", plugin->name, plugin->fname ? plugin->fname : "???NULL???");
       
       plugin->use_count++;
       plugin->gmodule = g_module_open (plugin->fname, 0); /* reopen for use non-lazy */
@@ -218,7 +218,7 @@ bse_plugin_unload (BsePlugin *plugin)
   /* reset plugin local pointers */
   plugin->chain = NULL;
   
-  DEBUG ("unloaded-plugin \"%s\"", plugin->name);
+  DEBUG ("unloaded-plugin: %s", plugin->name);
 }
 
 static void
@@ -467,6 +467,7 @@ bse_plugin_check_load (const gchar *const_file_name)
   gchar *file_name;
   GModule *gmodule;
   gchar *error = NULL;
+  const gchar *cerror = NULL;
   
   g_return_val_if_fail (const_file_name != NULL, NULL);
 
@@ -517,19 +518,25 @@ bse_plugin_check_load (const gchar *const_file_name)
     }
   else
     file_name = g_strdup (const_file_name);
-  
+
+  DEBUG ("register: %s", file_name);
+
   /* load module */
   gmodule = g_module_open (file_name, G_MODULE_BIND_LAZY);
   if (!gmodule)
     {
+      cerror = g_module_error ();
+      DEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
-      return g_module_error ();
+      return cerror;
     }
   if (bse_plugin_find (gmodule))
     {
       g_module_close (gmodule);
+      cerror = "Plugin already loaded";
+      DEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
-      return "Plugin already loaded";
+      return cerror;
     }
 
   /* verify plugin identity (BSE + version) */
@@ -537,16 +544,20 @@ bse_plugin_check_load (const gchar *const_file_name)
   if (!plugin_identity || !plugin_identity->name)
     {
       g_module_close (gmodule);
+      cerror = "Not a BSE Plugin";
+      DEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
-      return "Not a BSE Plugin";
+      return cerror;
     }
   if (plugin_identity->major != BSE_MAJOR_VERSION ||
       plugin_identity->minor != BSE_MINOR_VERSION ||
       plugin_identity->micro != BSE_MICRO_VERSION)
     {
       g_module_close (gmodule);
+      cerror = "Invalid BSE Plugin Version";
+      DEBUG ("error: %s: %s", file_name, cerror);
       g_free (file_name);
-      return "Invalid BSE Plugin Version";
+      return cerror;
     }
 
   /* create plugin if this is a BSE plugin with valid type chain */
@@ -568,8 +579,9 @@ bse_plugin_check_load (const gchar *const_file_name)
   else
     {
       g_module_close (gmodule);
-      g_free (file_name);
       error = NULL; /* empty plugin */
+      DEBUG ("plugin empty: %s", file_name);
+      g_free (file_name);
     }
 
   return error;

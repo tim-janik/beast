@@ -1,3 +1,8 @@
+Fri Jan 23 22:38:57 2004  Tim Janik  <timj@gtk.org>
+
+	* bseplugin.c (bse_plugin_check_load): added debugging output for
+	--bse-debug=plugins.
+
 Fri Jan 23 02:28:58 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecxxplugin.h: complete record and sequence registration macros.
