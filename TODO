@@ -511,7 +511,7 @@ GSL:
 76- [stw]         1 8 3-stage joining FFT code
 76- [stw]         4   /usr/share/doc/sfftw-dev/README.hacks
 76- [stw]         1 7 FFT L-case optimiaztions
-  - [stw]         5 1 .PAT loader (move)
+  - [stw]         5 1 .PAT loader (timidity file format) (move)
 74- [stw/timj]    6 5 filter evaluate function (to draw graph)
   - [stw/timj]    6 3 1) OscTableEntry sizes (wave_table_size ())
   - [stw/timj]    7 3 2) development of gsl_osc_table_create() frequencies
