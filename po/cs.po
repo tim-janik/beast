@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-24 03:38+0100\n"
-"PO-Revision-Date: 2004-02-24 13:07+0100\n"
+"POT-Creation-Date: 2004-02-25 03:08+0100\n"
+"PO-Revision-Date: 2004-02-25 07:24+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -477,35 +477,35 @@ msgstr "Snížit momentálně vybranou klávesouvou zkratku relativně vůči so
 msgid "Delete the currently selected key binding"
 msgstr "Odstranit momentálně vybranou klávesovou zkratku"
 
-#: beast-gtk/bstkeybindings.c:391
+#: beast-gtk/bstkeybindings.c:395
 msgid "Key Binding"
 msgstr "Klávesová zkratka"
 
-#: beast-gtk/bstkeybindings.c:392
+#: beast-gtk/bstkeybindings.c:396
 msgid "Key combinations used to activate a function"
 msgstr "Kombinace kláves používané pro aktivování funkce"
 
-#: beast-gtk/bstkeybindings.c:394 beast-gtk/bstkeybindings.c:418
+#: beast-gtk/bstkeybindings.c:398 beast-gtk/bstkeybindings.c:422
 msgid "Function"
 msgstr "Funkce"
 
-#: beast-gtk/bstkeybindings.c:395
+#: beast-gtk/bstkeybindings.c:399
 msgid "Functions to be activated for a key binding"
 msgstr "Funkce, které aktivovat pro klávesovou zkratku"
 
-#: beast-gtk/bstkeybindings.c:397
+#: beast-gtk/bstkeybindings.c:401
 msgid "Parameter"
 msgstr "Parametr"
 
-#: beast-gtk/bstkeybindings.c:398
+#: beast-gtk/bstkeybindings.c:402
 msgid "Parameter to pass to functions upon activation"
 msgstr "Parametr, který při aktivaci předat funkci"
 
-#: beast-gtk/bstkeybindings.c:419
+#: beast-gtk/bstkeybindings.c:423
 msgid "Function used to create new key bindings"
 msgstr "Funkce používaná pro vytvoření nových klávesových zkratek"
 
-#: beast-gtk/bstkeybindings.c:421 beast-gtk/bstprocedure.c:206
+#: beast-gtk/bstkeybindings.c:425 beast-gtk/bstprocedure.c:206
 msgid "Description"
 msgstr "Popis"
 
@@ -694,7 +694,7 @@ msgstr "Zopakovat poslední vrácený krok úprav"
 msgid "Editor"
 msgstr "Editor"
 
-#: beast-gtk/bstpatterncolumns.c:501
+#: beast-gtk/bstpatterncolumns.c:653
 msgid ""
 "The pattern editor column layout is specified by listing column types with "
 "possible modifiers in display order."
@@ -702,25 +702,25 @@ msgstr ""
 "Rozložení sloupců editoru vzorků je určeno vypsáním typů sloupců s možnými "
 "modifikátory v pořadí zobrazování."
 
-#: beast-gtk/bstpatterncolumns.c:503
+#: beast-gtk/bstpatterncolumns.c:655
 msgid "COLUMN TYPES:"
 msgstr "TYPY SLOUPCŮ:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:505
+#: beast-gtk/bstpatterncolumns.c:657
 msgid "note-1, note-2, ..."
 msgstr "note-1, note-2, ..."
 
-#: beast-gtk/bstpatterncolumns.c:506
+#: beast-gtk/bstpatterncolumns.c:658
 msgid "  display notes of the first, second, ... channel"
 msgstr "  poznámky o zobrazování prvního, druhého, ... kanálu"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:508
+#: beast-gtk/bstpatterncolumns.c:660
 msgid "offset-1, length-2, velocity-3, ..."
 msgstr "offset-1, length-2, velocity-3, ..."
 
-#: beast-gtk/bstpatterncolumns.c:509
+#: beast-gtk/bstpatterncolumns.c:661
 msgid ""
 "  display offset, length or velocity of notes in the first, second, ... "
 "channel"
@@ -728,124 +728,124 @@ msgstr ""
 "  posun zobrazení, délka nebo rychlost not v prvním, druhém, ... kanálu"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:511
+#: beast-gtk/bstpatterncolumns.c:663
 msgid "control-0, ..., control-63, cc-0, cc-31"
 msgstr "control-0, ..., control-63, cc-0, cc-31"
 
-#: beast-gtk/bstpatterncolumns.c:512
+#: beast-gtk/bstpatterncolumns.c:664
 msgid "  select various event types (controls, continuous controllers)"
 msgstr "  zvolte různé typy událostí (řídicí signály, spojité ovladače)"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:514
+#: beast-gtk/bstpatterncolumns.c:666
 msgid "bar, |"
 msgstr "bar, |"
 
-#: beast-gtk/bstpatterncolumns.c:515
+#: beast-gtk/bstpatterncolumns.c:667
 msgid "  display solid vertical bar"
 msgstr "  zobrazit souvislý svislý pruh"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:517
+#: beast-gtk/bstpatterncolumns.c:669
 msgid "dbar, :"
 msgstr "dbar, :"
 
-#: beast-gtk/bstpatterncolumns.c:518
+#: beast-gtk/bstpatterncolumns.c:670
 msgid "  display dotted vertical bar"
 msgstr "  zobrazit tečkovaný svislý pruh"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:520
+#: beast-gtk/bstpatterncolumns.c:672
 msgid "space, _"
 msgstr "space, _"
 
-#: beast-gtk/bstpatterncolumns.c:521
+#: beast-gtk/bstpatterncolumns.c:673
 msgid "  insert vertical space"
 msgstr "  vložit vertikální prostor"
 
-#: beast-gtk/bstpatterncolumns.c:522
+#: beast-gtk/bstpatterncolumns.c:674
 msgid "EVENTS:"
 msgstr "UDÁLOSTI:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:524
+#: beast-gtk/bstpatterncolumns.c:676
 msgid "  balance, volume, cc-8, ..."
 msgstr "  balance, volume, cc-8, ..."
 
-#: beast-gtk/bstpatterncolumns.c:525
+#: beast-gtk/bstpatterncolumns.c:677
 msgid "MODIFIERS:"
 msgstr "MODIFIKÁTORY:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:527
+#: beast-gtk/bstpatterncolumns.c:679
 msgid "hex2, hex4"
 msgstr "hex2, hex4"
 
-#: beast-gtk/bstpatterncolumns.c:528
+#: beast-gtk/bstpatterncolumns.c:680
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
 msgstr ""
 "  zobrazit šestnáctková čísla se 2 (00..FF) nebo 4 (0000..FFFF) číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:530
+#: beast-gtk/bstpatterncolumns.c:682
 msgid "shex2, shex4"
 msgstr "shex2, shex4"
 
-#: beast-gtk/bstpatterncolumns.c:531
+#: beast-gtk/bstpatterncolumns.c:683
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
 msgstr ""
 "  zobrazit šestnáctková čísla se znaménkem se 2 (-FF..+FF) nebo 4 (-FFFF.."
 "+FFFF) číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:533
+#: beast-gtk/bstpatterncolumns.c:685
 msgid "dec2, dec3"
 msgstr "dec2, dec3"
 
-#: beast-gtk/bstpatterncolumns.c:534
+#: beast-gtk/bstpatterncolumns.c:686
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
 msgstr "  zobrazit desítková čísla se 2 (00..99) nebo 3 (000..999) číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:536
+#: beast-gtk/bstpatterncolumns.c:688
 msgid "sdec2, sdec3"
 msgstr "sdec2, sdec3"
 
-#: beast-gtk/bstpatterncolumns.c:537
+#: beast-gtk/bstpatterncolumns.c:689
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
 msgstr ""
 "  zobrazit desítková čísla se znaménkem se 2 (-99..+99) nebo 3 (-999..+999) "
 "číslicemi"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:539
+#: beast-gtk/bstpatterncolumns.c:691
 msgid "col1, col2, col3"
 msgstr "col1, col2, col3"
 
-#: beast-gtk/bstpatterncolumns.c:540
+#: beast-gtk/bstpatterncolumns.c:692
 msgid "  selects one of 3 predefined colors"
 msgstr "  výběr jedné ze 3 předdefinovaných barev"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:542
+#: beast-gtk/bstpatterncolumns.c:694
 msgid "lfold, rfold"
 msgstr "lfold, rfold"
 
-#: beast-gtk/bstpatterncolumns.c:543
+#: beast-gtk/bstpatterncolumns.c:695
 msgid "  allow folding the column into left/right neighbour"
 msgstr "  umožnit spojení sloupce s levým/pravým sousedem"
 
-#: beast-gtk/bstpatterncolumns.c:544
+#: beast-gtk/bstpatterncolumns.c:696
 msgid "EXAMPLE:"
 msgstr "PŘÍKLAD:"
 
 #. !!! LEAVE UNTRANSLATED !!!
-#: beast-gtk/bstpatterncolumns.c:546
+#: beast-gtk/bstpatterncolumns.c:698
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 
 #. GXK_DIALOG_MODAL
-#: beast-gtk/bstpatterncolumns.c:556
+#: beast-gtk/bstpatterncolumns.c:708
 msgid "Pattern Editor Layout"
 msgstr "Rozložení editoru vzorků"
 
@@ -866,113 +866,101 @@ msgstr "Směr"
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr "Směr pohybu buňky po každé úpravě události nebo noty"
 
+#: beast-gtk/bstpatternctrl.c:49
+msgid "HWrap"
+msgstr "VPřechod"
+
+#: beast-gtk/bstpatternctrl.c:50
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgstr "Přepnout, jestli vodorovný pohyb aktivní buňky bude pokračovat od opačného konce"
+
 #. movement
-#: beast-gtk/bstpatternctrl.c:161
+#: beast-gtk/bstpatternctrl.c:192
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 "Aktivovat následující buňku (nahoru/doleva/doprava/dolů podle nastavení)"
 
-#: beast-gtk/bstpatternctrl.c:162
+#: beast-gtk/bstpatternctrl.c:193
 msgid "Move focus cell upwards"
 msgstr "Aktivovat buňku nahoře"
 
-#: beast-gtk/bstpatternctrl.c:163
+#: beast-gtk/bstpatternctrl.c:194
 msgid "Move focus cell to the left"
 msgstr "Aktivovat buňku vlevo"
 
-#: beast-gtk/bstpatternctrl.c:164
+#: beast-gtk/bstpatternctrl.c:195
 msgid "Move focus cell to the right"
 msgstr "Aktivovat buňku vpravo"
 
-#: beast-gtk/bstpatternctrl.c:165
+#: beast-gtk/bstpatternctrl.c:196
 msgid "Move focus cell downwards"
 msgstr "Aktivovat buňku doků"
 
-#: beast-gtk/bstpatternctrl.c:166
+#: beast-gtk/bstpatternctrl.c:197
 msgid "Move focus cell upwards page-wise"
 msgstr "Aktivovat buňku o stránku výš"
 
-#: beast-gtk/bstpatternctrl.c:167
+#: beast-gtk/bstpatternctrl.c:198
 msgid "Move focus cell to the left page-wise"
 msgstr "Aktivovat buňku o stránku vlevo"
 
-#: beast-gtk/bstpatternctrl.c:168
+#: beast-gtk/bstpatternctrl.c:199
 msgid "Move focus cell to the right page-wise"
 msgstr "Aktivovat buňku o stránku vpravo"
 
-#: beast-gtk/bstpatternctrl.c:169
+#: beast-gtk/bstpatternctrl.c:200
 msgid "Move focus cell downwards page-wise"
 msgstr "Aktivovat buňku o stránku níž"
 
-#: beast-gtk/bstpatternctrl.c:170
+#: beast-gtk/bstpatternctrl.c:201
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Aktivovat nejvyšší možnou buňku"
 
-#: beast-gtk/bstpatternctrl.c:171
+#: beast-gtk/bstpatternctrl.c:202
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Aktivovat nejlevější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.c:172
+#: beast-gtk/bstpatternctrl.c:203
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Aktivovat nejpravější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.c:173
+#: beast-gtk/bstpatternctrl.c:204
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Aktivovat nejspodnější možnou buňku"
 
-#: beast-gtk/bstpatternctrl.c:177
-msgid "Remove any events in the focus cell"
-msgstr "Odstranit události v aktivní buňce"
+#: beast-gtk/bstpatternctrl.c:207
+msgid "Set the number of steps to make when moving to the next cell"
+msgstr "Nastavit počet provedených kroků při přesunu na následující buňku"
 
-#: beast-gtk/bstpatternctrl.c:180
-msgid "Remove any events in the focus cell and move to the next cell"
-msgstr "Odstranit události v aktivní buňce a aktivovat následující buňku"
-
-#: beast-gtk/bstpatternctrl.c:184
-msgid "Set the focus cell note"
-msgstr "Nastavit notu v aktivní buňce"
-
-#: beast-gtk/bstpatternctrl.c:187
-msgid "Set the focus cell note and move to the next cell"
-msgstr "Nastavit notu v aktivní buňce a aktivovat na následující buňku"
-
-#: beast-gtk/bstpatternctrl.c:190
-msgid "Set the focus cell note relative to the base octave"
-msgstr "Nastavit notu v aktivní buňce relativně k základní oktávě"
-
-#: beast-gtk/bstpatternctrl.c:193
-msgid ""
-"Set the focus cell note relative to the base octave and move to the next cell"
-msgstr ""
-"Nastavit notu v aktivní buňce relativně k základní oktávě a aktivovat "
-"následující buňku"
-
-#: beast-gtk/bstpatternctrl.c:197
-msgid "Set the focus cell octave"
-msgstr "Nastavit oktávu aktivní buňky"
-
-#: beast-gtk/bstpatternctrl.c:200
-msgid "Set the focus cell octave and move to the next cell"
-msgstr "Nastavit oktávu aktivní buňky a aktivovat následující buňku"
-
-#: beast-gtk/bstpatternctrl.c:203
-msgid "Change the focus cell octave by a given amount"
-msgstr "Změnit oktávu aktivní buňky o danou hodnotu"
-
-#: beast-gtk/bstpatternctrl.c:206
-msgid ""
-"Change the focus cell octave by a given amount and move to the next cell"
-msgstr ""
-"Změnit oktávu aktivní buňky o danou hodnotu a aktivovat následující buňku"
-
-#: beast-gtk/bstpatternctrl.c:210
+#: beast-gtk/bstpatternctrl.c:211
 msgid "Set the base octave"
 msgstr "Nastavit základní oktávu"
 
-#: beast-gtk/bstpatternctrl.c:213
+#: beast-gtk/bstpatternctrl.c:214
 msgid "Change the base octave by a given amount"
 msgstr "Změnit základní oktávu o danou hodnotu"
+
+#: beast-gtk/bstpatternctrl.c:218
+msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
+msgstr "Změnit číselný obsah aktivní buňky (např. oktávu) o danou hodnotu"
+
+#: beast-gtk/bstpatternctrl.c:222
+msgid "Set the focus cell octave"
+msgstr "Nastavit oktávu aktivní buňky"
+
+#: beast-gtk/bstpatternctrl.c:226 beast-gtk/bstpatternctrl.c:240
+msgid "Remove any events in the focus cell"
+msgstr "Odstranit události v aktivní buňce"
+
+#: beast-gtk/bstpatternctrl.c:230 beast-gtk/bstpatternctrl.c:244
+msgid "Set the focus cell note"
+msgstr "Nastavit notu v aktivní buňce"
+
+#: beast-gtk/bstpatternctrl.c:234 beast-gtk/bstpatternctrl.c:248
+msgid "Sets the value of the focus digit"
+msgstr "Nastavuje hodnotu aktivní číslice"
 
 #: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert"
@@ -2910,6 +2898,27 @@ msgstr "Stav"
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr "Stav používaný pro výstup zpráv o chybách"
+
+#~ msgid "Remove any events in the focus cell and move to the next cell"
+#~ msgstr "Odstranit události v aktivní buňce a aktivovat následující buňku"
+
+#~ msgid "Set the focus cell note relative to the base octave"
+#~ msgstr "Nastavit notu v aktivní buňce relativně k základní oktávě"
+
+#~ msgid ""
+#~ "Set the focus cell note relative to the base octave and move to the next "
+#~ "cell"
+#~ msgstr ""
+#~ "Nastavit notu v aktivní buňce relativně k základní oktávě a aktivovat "
+#~ "následující buňku"
+
+#~ msgid "Set the focus cell octave and move to the next cell"
+#~ msgstr "Nastavit oktávu aktivní buňky a aktivovat následující buňku"
+
+#~ msgid ""
+#~ "Change the focus cell octave by a given amount and move to the next cell"
+#~ msgstr ""
+#~ "Změnit oktávu aktivní buňky o danou hodnotu a aktivovat následující buňku"
 
 #~ msgid "Objects"
 #~ msgstr "Objekty"
