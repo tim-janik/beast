@@ -54,6 +54,7 @@ struct _SfiThread
   guint64	  awake_stamp;
   GData		 *qdata;
   gint            tid;
+  gpointer        guard_cache;
   /* accounting */
   struct {
     struct timeval stamp;
@@ -763,143 +764,173 @@ sfi_thread_info_free (SfiThreadInfo  *info)
 }
 
 
-/* --- hazard pointers / thread guards --- */
+/* --- hazard pointer guards --- */
 struct SfiGuard
 {
-  gpointer   value; /* must be first memeber to allow (gpointer*) casts */
-  SfiGuard  *next;
+  SfiGuard  *next;       /* global guard list */
   SfiThread *thread;
+  SfiGuard  *cache_next; /* per thread free list */
+  guint      n_values;
+  gpointer   values[1];  /* variable length array */
 };
 static SfiGuard * volatile guard_list = NULL;
-static gint       volatile guard_list_length = 0; /* an upper bound on length(guard_list) */
+static gint       volatile guard_list_length = 0;
+#define SFI_GUARD_ALIGN  (4)
+#define guard2values(ptr)       G_STRUCT_MEMBER_P (ptr, +G_STRUCT_OFFSET (SfiGuard, values[0]))
+#define values2guard(ptr)       G_STRUCT_MEMBER_P (ptr, -G_STRUCT_OFFSET (SfiGuard, values[0]))
 
 /**
  * sfi_guard_register
- * @RETURNS: a valid #SfiGuard
- * Retrieve a new guard for node protection for the current thread.
- * The exact mechanism of protection is described in sfi_guard_store().
- * Note that for two guards allocated successively by calls to
- * sfi_guard_register(), no ordering guarantee is provided with
- * regards to evaluation by sfi_guard_collect(). In particular,
- * no index is associated with the guards returned by this function
- * which can be used to fullfill the condition C2 as described in
+ * @n_hazards: number of required hazard pointers
+ * @RETURNS:   a valid #SfiGuard
+ * Retrieve a new guard for node protection of the current thread.
+ * The exact mechanism of protection is described in sfi_guard_protect().
+ * Note that sfi_guard_snap_values() will walk the hazard pointer
+ * array in ascending order, so that pointers may migrate from array
+ * positions with a lower index to positions with a higher index while
+ * retaining protection, according to condition C2 as described in
  * http://www.research.ibm.com/people/m/michael/podc-2002.pdf.
+ * If an equally or bigger sized hazard pointer array was previously
+ * deregistered by this thread, registration takes constant time.
  */
 SfiGuard*
-sfi_guard_register (void)
+sfi_guard_register (guint n_hazards)
 {
   SfiThread *thread = sfi_thread_self();
-  /* reuse released guards */
-  SfiGuard *guard;
-  for (guard = g_atomic_pointer_get (&guard_list); guard; guard = guard->next)
-    if (!guard->thread && g_atomic_pointer_compare_and_exchange ((gpointer*) &guard->thread, NULL, thread))
-      break;
+  SfiGuard *guard, *last = NULL;
+  /* reuse cached guards */
+  for (guard = thread->guard_cache; guard; last = guard, guard = last->cache_next)
+    if (n_hazards <= guard->n_values)
+      {
+        if (last)
+          last->cache_next = guard->cache_next;
+        else
+          thread->guard_cache = guard->cache_next;
+        guard->cache_next = NULL;
+        break;
+      }
   /* allocate new guard */
   if (!guard)
     {
-      g_atomic_int_add ((gint*) &guard_list_length, 1);
-      guard = g_new0 (SfiGuard, 1);
+      n_hazards = ((MAX (n_hazards, 3) + SFI_GUARD_ALIGN - 1) / SFI_GUARD_ALIGN) * SFI_GUARD_ALIGN;
+      g_atomic_int_add ((gint*) &guard_list_length, n_hazards);
+      guard = g_malloc0 (sizeof (SfiGuard) + (n_hazards - 1) * sizeof (guard->values[0]));
+      guard->n_values = n_hazards;
       guard->thread = thread;
       do
         guard->next = g_atomic_pointer_get (&guard_list);
       while (!g_atomic_pointer_compare_and_exchange ((gpointer) &guard_list, guard->next, guard));
     }
-  return guard;
+  return guard2values (guard);
 }
 
 /**
  * sfi_guard_deregister
  * @guard: a valid #SfiGuard as returned from sfi_guard_register()
- * Deregister a previously registered guard by a call to sfi_guard_register().
+ * Deregister a guard previously registered by a call to sfi_guard_register().
+ * Deregistration is performed in constant time.
  */
 void
 sfi_guard_deregister (SfiGuard *guard)
 {
+  guard = values2guard (guard);
   SfiThread *thread = sfi_thread_self();
   g_return_if_fail (guard->thread == thread);
-  guard->value = NULL; /* required memory barrier follows */
-  g_atomic_pointer_compare_and_exchange ((gpointer*) &guard->thread, thread, NULL); /* reset ->thread with memory barrier */
+  memset (guard->values, 0, sizeof (guard->values[0]) * guard->n_values);
+  /* must we have a memory barrier here? */
+  guard->cache_next = thread->guard_cache;
+  thread->guard_cache = guard;
 }
 
 static void
 sfi_guard_deregister_all (SfiThread *thread)
 {
   SfiGuard *guard;
+  thread->guard_cache = NULL;
   for (guard = g_atomic_pointer_get (&guard_list); guard; guard = guard->next)
     if (guard->thread == thread)
-      sfi_guard_deregister (guard);
+      {
+        memset (guard->values, 0, sizeof (guard->values[0]) * guard->n_values);
+        guard->cache_next = NULL;
+        g_atomic_pointer_compare_and_exchange ((gpointer*) &guard->thread, thread, NULL); /* reset ->thread with memory barrier */
+      }
 }
 
 /**
- * sfi_guard_store
- * @guard: a valid #SfiGuard as returned from sfi_guard_register()
- * @value: a hazardous pointer value or %NULL to reset protection
+ * sfi_guard_protect
+ * @guard:      a valid #SfiGuard as returned from sfi_guard_register()
+ * @nth_hazard: index of the hazard pointer to use for protection
+ * @value:      a hazardous pointer value or %NULL to reset protection
  * Protect the node pointed to by @value from being destroyed by another
  * thread and against the ABA problem caused by premature reuse.
  * For this to work, threads destroying nodes of the type pointed to by
  * @value need to suspend destruction as long as nodes are protected,
- * which can by checked by calls to sfi_guard_collect() or
- * sfi_guard_is_protected().
- * Descriptions of safe memory reclamation via hazard pointers or guards can
- * be found in
- * http://www.research.ibm.com/people/m/michael/podc-2002.pdf (read
- * sfi_guard_register() for caveats regarding this paper),
+ * which can by checked by calls to sfi_guard_is_protected() or by
+ * searching the values returned from sfi_guard_snap_values().
+ * Descriptions of safe memory reclamation and ABA problem detection
+ * via hazard pointers guards can be found in
+ * http://www.research.ibm.com/people/m/michael/podc-2002.pdf,
  * http://www.cs.brown.edu/people/mph/HerlihyLM02/smli_tr-2002-112.pdf,
  * http://research.sun.com/scalable/Papers/CATS2003.pdf and
  * http://www.research.ibm.com/people/m/michael/ieeetpds-2004.pdf.
  * The exact sequence of steps to protect and access a node is as follows:
  * @* 1) Store the adress of a node to be protected in a hazard pointer
- * @* 2) Verify that the hazard pointer points to valid node
+ * @* 2) Verify that the hazard pointer points to a valid node
  * @* 3) Dereference the node only as long as it's protected by the hazard pointer.
  * @* For example:
- * @* 0: SfiGuard *guard = sfi_guard_register();
- * @* 1: retry_peek_head:
+ * @* 0: SfiGuard *guard = sfi_guard_register (1);
+ * @* 1: peek_head_label:
  * @* 2: auto GSList *node = shared_list_head;
- * @* 3: sfi_guard_store (guard, node);
- * @* 4: if (node != shared_list_head) goto retry_peek_head;
+ * @* 3: sfi_guard_protect (guard, 0, node);
+ * @* 4: if (node != shared_list_head) goto peek_head_label;
  * @* 5: operate_on_protected_node (node);
  * @* 6: sfi_guard_deregister (guard);
  */
 #if 0
 static inline
-void sfi_guard_store (SfiGuard *guard,  /* defined in sfithreads.h */
-                      gpointer  value);
+void sfi_guard_protect (SfiGuard *guard,  /* defined in sfithreads.h */
+                        guint     nth_hazard,
+                        gpointer  value);
 #endif
 
 /**
- * sfi_guard_get_n_values
- * @RETURNS:   an upper bound on the number of registered guards
- * Retrieve an upper bound on the number of value slots currently
- * required for a successfull call to sfi_guard_collect().
- * A subsequent call to sfi_guard_collect() may still fail due to
- * addtional guards being registerted meanwhile. A retry on calling
- * sfi_guard_get_n_values() and sfi_guard_collect() is in order
- * in that case.
+ * sfi_guard_n_snap_values
+ * @RETURNS:   an upper bound on the number of registered hazard pointers
+ * Retrieve an upper bound on the number of hazard pointer value slots
+ * currently required for a successfull call to sfi_guard_snap_values().
+ * Note that a subsequent call to sfi_guard_snap_values() may still fail
+ * due to addtional guards being registerted meanwhile. In such a case
+ * sfi_guard_n_snap_values() and sfi_guard_snap_values() can simply be
+ * called again.
  */
 guint
-sfi_guard_get_n_values (void)
+sfi_guard_n_snap_values (void)
 {
   return g_atomic_int_get ((gint*) &guard_list_length);
 }
 
 /**
- * sfi_guard_collect
+ * sfi_guard_snap_values
  * @n_values:  location of n_values variable
  * @values:    value array to fill in
  * @RETURNS:   %TRUE if @values provided enough space and is filled
- * Collect all non-NULL hazard pointer values. %TRUE is returned if
- * the number of non-NULL hazard pointer values didn't exceed the
- * input value pointed to by @n_values, and all values could be
- * returned in the array pointed to by @values.
+ * Make a snapshot of all non-NULL hazard pointer values.
+ * %TRUE is returned if the number of non-NULL hazard pointer
+ * values didn't exceed the size of the input value array provided
+ * by @n_values, and all values are returned in the array pointed
+ * to by @values.
  * The number of values filled in is returned in @n_values.
  * %FALSE is returned if not enough space was available to return
- * all non-NULL values. sfi_guard_get_n_values() may be used to
+ * all non-NULL values. sfi_guard_n_snap_values() may be used to
  * retrieve the current upper bound on the number of registered
- * guards. Note that a successive call to sfi_guard_collect() with
+ * guards. Note that a successive call to sfi_guard_snap_values() with
  * the requested number of value slots supplied may still fail,
- * because additional guards may have been registered meanwhile
- * and another call to sfi_guard_get_n_values() will return a
- * larger number.
+ * because additional guards may have been registered meanwhile.
+ * In such a case sfi_guard_n_snap_values() and sfi_guard_snap_values()
+ * can simply be called again.
+ * This funciton will always walk the hazard pointer arrays supplied
+ * by sfi_guard_register() in ascending order, to allow pointer migration
+ * from lower to higher array indieces while retaining protection.
  * The returned pointer values are unordered, so in order to perform
  * multiple pointer lookups, we recommend sorting the returned array
  * and then doing binary lookups. However if only a single pointer
@@ -907,22 +938,24 @@ sfi_guard_get_n_values (void)
  * considered.
  */
 gboolean
-sfi_guard_collect (guint          *n_values,
-                   gpointer       *values)
+sfi_guard_snap_values (guint          *n_values,
+                       gpointer       *values)
 {
-  guint n = 0;
+  guint i, n = 0;
   SfiGuard *guard;
   for (guard = g_atomic_pointer_get (&guard_list); guard; guard = guard->next)
-    {
-      gpointer v = guard->value;
-      if (v)
+    if (guard->thread)
+      for (i = 0; i < guard->n_values; i++)
         {
-          n++;
-          if (n > *n_values)
-            return FALSE;       /* not enough space provided */
-          *values++ = v;
+          gpointer v = guard->values[i];
+          if (v)
+            {
+              n++;
+              if (n > *n_values)
+                return FALSE;   /* not enough space provided */
+              *values++ = v;
+            }
         }
-    }
   *n_values = n;                /* number of values used */
   return TRUE;
 }
@@ -931,13 +964,16 @@ sfi_guard_collect (guint          *n_values,
  * sfi_guard_is_protected
  * @value:    hazard pointer value
  * @RETURNS:  %TRUE if a hazard pointer protecting @value has been found
- * Check whether @value is protected by a hazard pointer (guard).
- * If multiple pointer values are to be checked, use sfi_guard_collect()
- * instead as this function has O(n_hazard_pointers) time complexity.
- * If only one pointer value has to be looked up though,
+ * Check whether @value is protected by a hazard pointer guard.
+ * If multiple pointer values are to be checked, use sfi_guard_snap_values()
+ * instead, as this function has O(n_hazard_pointers) time complexity.
+ * If only one pointer value needs to be looked up though,
  * calling sfi_guard_is_protected() will provide a result faster than
- * calling sfi_guard_collect() and looking up the pointer in the
+ * calling sfi_guard_snap_values() and looking up the pointer in the
  * filled-in array.
+ * Lookup within hazard pointer arrays will always occour in ascending
+ * order to allow pointer migration as described in sfi_guard_snap_values()
+ * and sfi_guard_register().
  */
 gboolean
 sfi_guard_is_protected (gpointer value)
@@ -945,9 +981,12 @@ sfi_guard_is_protected (gpointer value)
   if (value)
     {
       SfiGuard *guard;
+      guint i;
       for (guard = g_atomic_pointer_get (&guard_list); guard; guard = guard->next)
-        if (guard->value == value)
-          return TRUE;
+        if (guard->thread)
+          for (i = 0; i < guard->n_values; i++)
+            if (guard->values[i] == value)
+              return TRUE;
     }
   return FALSE;
 }

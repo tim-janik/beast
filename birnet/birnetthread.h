@@ -91,13 +91,14 @@ void            sfi_thread_info_free    (SfiThreadInfo  *info);
 
 /* --- hazard pointers / thread guards --- */
 typedef struct  SfiGuard                 SfiGuard;
-SfiGuard*       sfi_guard_register      (void);
+SfiGuard*       sfi_guard_register      (guint           n_hazards);
 void            sfi_guard_deregister    (SfiGuard       *guard);
 static inline
-void            sfi_guard_store         (SfiGuard       *guard,
+void            sfi_guard_protect       (SfiGuard       *guard,
+                                         guint           nth_hazard,
                                          gpointer        value);
-guint           sfi_guard_get_n_values  (void);
-gboolean        sfi_guard_collect       (guint          *n_values,
+guint           sfi_guard_n_snap_values (void);
+gboolean        sfi_guard_snap_values   (guint          *n_values,
                                          gpointer       *values);
 gboolean        sfi_guard_is_protected  (gpointer        value);
 
@@ -168,15 +169,16 @@ struct _SfiThreadTable
 };
 extern SfiThreadTable sfi_thread_table;
 static inline void /* inlined for speed */
-sfi_guard_store (SfiGuard      *guard,
-                 gpointer       value)
+sfi_guard_protect (SfiGuard      *guard,
+                   guint          nth_hazard,
+                   gpointer       value)
 {
-  gpointer *hploc = (gpointer*) guard;
+  gpointer *hparray = (gpointer*) guard;
   /* simply writing the pointer value would omit memory barriers necessary on
    * some systems, so we use g_atomic_pointer_compare_and_exchange().
    */
-  if (*hploc != value)
-    g_atomic_pointer_compare_and_exchange (hploc, *hploc, value);
+  if (hparray[nth_hazard] != value)
+    g_atomic_pointer_compare_and_exchange (&hparray[nth_hazard], hparray[nth_hazard], value);
 }
 void	_sfi_init_threads (void);
 

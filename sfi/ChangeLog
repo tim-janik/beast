@@ -1,3 +1,15 @@
+Wed Oct 13 18:50:19 2004  Tim Janik  <timj@gtk.org>
+
+	* sfithreads.[hc]: reworked hazard pointer guard API.
+	sfi_guard_register(): provide an array of hazard pointers in
+	O(1) time if this thread previously deregistered an array
+	of sufficient size.
+	sfi_guard_protect(): renamed from sfi_guard_store(), require
+	array index to adress hazard pointer within guard.
+	sfi_guard_n_snap_values(): renamed.
+	sfi_guard_snap_values(): renamed, provide ordering guarantee.
+	sfi_guard_is_protected(): provide ordering guarantee.
+
 Tue Oct 12 10:58:21 2004  Tim Janik  <timj@gtk.org>
 
 	* sfithreads.[hc]: implemented hazard pointers or thread guards.
