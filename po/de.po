@@ -82,7 +82,7 @@ msgstr "_Wiederholen"
 # CHECK
 #: beast-gtk/bstapp.c:86
 msgid "_Clear Undo"
-msgstr "Rückgängig-Puffer _leeren"
+msgstr "Rückgängig-Chronik _löschen"
 
 #: beast-gtk/bstapp.c:90
 msgid "Procedure _Browser"
@@ -620,15 +620,15 @@ msgstr "Q: Takt"
 
 #: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
-msgstr "Auf Taktgrenzen quantifizieren"
+msgstr "Auf Taktgrenzen quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
 msgid "Q: None"
-msgstr "Q: Nein"
+msgstr "Q: Keine"
 
 #: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
 msgid "No quantization selected"
-msgstr "Keine Quantifizierung gewählt"
+msgstr "Keine Quantisierung gewählt"
 
 #: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
 msgid "Q: 1\\/1"
@@ -644,7 +644,7 @@ msgstr "Q: 1\\/2"
 
 #: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
-msgstr "Auf halbe Noten quantifizieren"
+msgstr "Auf halbe Noten quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
 msgid "Q: 1\\/4"
@@ -652,7 +652,7 @@ msgstr "Q: 1\\/4"
 
 #: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
-msgstr "Auf Viertelnoten quantifizieren"
+msgstr "Auf Viertelnoten quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
 msgid "Q: 1\\/8"
@@ -660,7 +660,7 @@ msgstr "Q: 1\\/8"
 
 #: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
-msgstr "Auf Achtelnoten quantifizieren"
+msgstr "Auf Achtelnoten quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
 msgid "Q: 1\\/16"
@@ -668,7 +668,7 @@ msgstr "Q: 1\\/16"
 
 #: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
-msgstr "Auf Sechzehntelnoten quantifizieren"
+msgstr "Auf Sechzehntelnoten quantisieren"
 
 #: beast-gtk/bstpianorollctrl.c:465 beast-gtk/bstpianorollctrl.c:472
 #: beast-gtk/bstpianorollctrl.c:560
@@ -1287,7 +1287,7 @@ msgstr "_Projekt"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Quantization"
-msgstr "_Quantifizierung"
+msgstr "_Quantisierung"
 
 # CHECK
 #: beast-gtk/dialogs/gadgets-beast.xml.h:32
