@@ -32,7 +32,8 @@
 	      (bse-test-error error)
 	      (string-append "FAILED: " wave-file ": " (bse-error-blurb error))
 		  (string-append "OK:     " wave-file)))
-	  (newline)))
+	  (newline)
+	  (flush-all-ports))) ;; allows 'bsesh -s waveloadtest.scm * |tee ...' constructions work properly
 
 (define test-load-waves
   (lambda wave-files

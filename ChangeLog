@@ -1,3 +1,7 @@
+Fri Dec  3 16:55:13 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tests/scripts/waveloadtest.scm: Flush at newline boundary.
+
 Fri Dec  3 16:42:24 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/scripts/Makefile.am:
