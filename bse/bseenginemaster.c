@@ -733,7 +733,7 @@ master_take_probes (EngineNode   *node,
       /* fill probe data */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         if (pjob->oblocks[i])
-          memcpy (pjob->oblocks[i] + pjob->n_values, node->module.ostreams[i].values + offset, n);
+          memcpy (pjob->oblocks[i] + pjob->n_values, node->module.ostreams[i].values + offset, n * sizeof (gfloat));
       pjob->n_values += n;
       pjob->value_counter -= n;
       break;
@@ -744,10 +744,10 @@ master_take_probes (EngineNode   *node,
         if (pjob->oblocks[i])
           {
             EngineInput *input = node->inputs + i;
-            if (input->real_node)
-              memcpy (pjob->oblocks[i] + pjob->n_values,
-                      input->real_node->module.ostreams[input->real_stream].values + offset, n);
-          }
+	    if (input->real_node)
+	      memcpy (pjob->oblocks[i] + pjob->n_values,
+		      input->real_node->module.ostreams[input->real_stream].values + offset, n * sizeof (gfloat));
+	  }
       pjob->n_values += n;
       pjob->value_counter -= n;
       need_collect = TRUE;
