@@ -32,6 +32,7 @@ typedef struct {
   GParamSpec	  *pspec;
   GValue	   value;
   GSList          *objects;       /* of type GObject* */
+  guint16          size_group;
   guint            editable : 1;  /* whether widgets should be editable */
   guint            sensitive : 1; /* whether widgets should be sensitive */
   guint		   updating : 1;  /* flag to guard recursions */
@@ -132,7 +133,7 @@ GtkWidget*   gxk_param_create_editor    (GxkParam               *param,
                                          const gchar            *editor_name);
 
 
-/* --- param implementation utils --- */
+/* --- param editor size groups --- */
 typedef struct {
   guint char_chars,   char_digits;
   guint uchar_chars,  uchar_digits;
@@ -145,9 +146,19 @@ typedef struct {
   guint float_chars,  float_digits;
   guint double_chars, double_digits;
   guint string_chars, string_digits;
+  guint may_shrink;
 } GxkParamEditorSizes;
-const GxkParamEditorSizes* gxk_param_get_editor_sizes (void);
-void                       gxk_param_set_editor_sizes (const GxkParamEditorSizes *esizes);
+guint                      gxk_param_create_size_group (void);
+void                       gxk_param_set_sizes         (guint                      size_group,
+                                                        const GxkParamEditorSizes *esizes);
+void                       gxk_param_set_size_group    (GxkParam                  *param,
+                                                        guint                      size_group);
+const GxkParamEditorSizes* gxk_param_get_editor_sizes  (GxkParam                  *param);
+guint                      gxk_param_get_digits        (gdouble                    value,
+                                                        guint                      base);
+
+
+/* --- param implementation utils --- */
 gboolean       gxk_param_entry_key_press        (GtkEntry    *entry,
                                                  GdkEventKey *event);
 void           gxk_param_entry_set_text         (GxkParam    *param,

@@ -31,6 +31,13 @@ using namespace Sfi;
 Const STORAGE = ":r:w:S:";
 Const STANDARD = STORAGE "G:";
 
+choice Direction {
+  UP    = (_("Up"), _("Move upwards")),
+  LEFT  = (_("Left"), _("Move to the left")),
+  RIGHT = (_("Right"), _("Move to the right")),
+  DOWN  = (_("Down"), _("Step downwards"))
+};
+
 /* BEAST Global Config */
 record GConfig {
   String rc_version			= (NULL, _("Release counter"), NULL, STORAGE);

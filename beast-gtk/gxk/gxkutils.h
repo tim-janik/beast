@@ -157,35 +157,39 @@ GdkColor gdk_color_from_rgba            (guint                   rgb_value);
 
 /* --- Gtk convenience --- */
 #define GTK_STYLE_THICKNESS(s,xy)	((s)-> xy##thickness)
-void	gxk_widget_make_insensitive	(GtkWidget	*widget);
-void	gxk_widget_make_sensitive	(GtkWidget	*widget);
-void	gxk_widget_showraise		(GtkWidget	*widget);
-void	gxk_idle_showraise		(GtkWidget	*widget);
-void	gxk_idle_show_widget		(GtkWidget	*widget);
-void	gxk_idle_unrealize_widget	(GtkWidget	*widget);
-void    gxk_notebook_add_page		(GtkNotebook	*notebook,
-					 GtkWidget	*child,
-					 const gchar	*tab_text,
-					 gboolean        expand_fill);
-void    gxk_notebook_set_current_page_widget (GtkNotebook *notebook,
-					      GtkWidget   *page);
-GtkWidget* gtk_notebook_current_widget       (GtkNotebook *notebook);
+void         gxk_widget_make_insensitive          (GtkWidget        *widget);
+void         gxk_widget_make_sensitive            (GtkWidget        *widget);
+void         gxk_widget_showraise                 (GtkWidget        *widget);
+void         gxk_idle_showraise                   (GtkWidget        *widget);
+void         gxk_idle_show_widget                 (GtkWidget        *widget);
+void         gxk_idle_unrealize_widget            (GtkWidget        *widget);
+void         gxk_notebook_add_page                (GtkNotebook      *notebook,
+                                                   GtkWidget        *child,
+                                                   const gchar      *tab_text,
+                                                   gboolean          expand_fill);
+void         gxk_notebook_set_current_page_widget (GtkNotebook      *notebook,
+                                                   GtkWidget        *page);
+GtkWidget*   gxk_vseparator_space_new             (gboolean          draw_seperator);
+GtkWidget*   gtk_notebook_current_widget          (GtkNotebook      *notebook);
 
 /* functions to affect a widget tree's toplevel */
-void	gxk_toplevel_delete		(GtkWidget	*widget);
-void	gxk_toplevel_hide		(GtkWidget	*widget);
-void	gxk_toplevel_activate_default	(GtkWidget	*widget);
+void         gxk_toplevel_delete                  (GtkWidget        *widget);
+void         gxk_toplevel_hide                    (GtkWidget        *widget);
+void         gxk_toplevel_activate_default        (GtkWidget        *widget);
 
 /* widget utilities */
-void	gxk_widget_modify_as_title	(GtkWidget	*widget);
-void	gxk_widget_modify_bg_as_base	(GtkWidget	*widget);
-void	gxk_widget_modify_base_as_bg	(GtkWidget	*widget);
-void	gxk_widget_force_bg_clear	(GtkWidget	*widget);
-void	gxk_widget_activate_accel_group	(GtkWidget	*widget,
-					 GtkAccelGroup	*accel_group);
-void	gxk_size_group			(GtkSizeGroupMode sgmode,
-					 gpointer	  first_widget,
-					 ...);
+void         gxk_widget_modify_as_title           (GtkWidget        *widget);
+void         gxk_widget_modify_bg_as_base         (GtkWidget        *widget);
+void         gxk_widget_modify_base_as_bg         (GtkWidget        *widget);
+void         gxk_widget_force_bg_clear            (GtkWidget        *widget);
+void         gxk_widget_set_latent_tooltip        (GtkWidget        *widget,
+                                                   const gchar      *tooltip);
+const gchar* gxk_widget_get_latent_tooltip        (GtkWidget        *widget);
+void         gxk_widget_activate_accel_group      (GtkWidget        *widget,
+                                                   GtkAccelGroup    *accel_group);
+void         gxk_size_group                       (GtkSizeGroupMode  sgmode,
+                                                   gpointer          first_widget,
+                                                   ...);
 
 /* tree view convenience */
 gint	 gxk_tree_spath_index0			(const gchar		*strpath);

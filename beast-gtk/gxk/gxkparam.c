@@ -19,6 +19,7 @@
 #include "gxkparam.h"
 #include "gxklogadjustment.h"
 #include <string.h>
+#include <math.h>
 #include <libintl.h>
 
 /* --- GxkParam functions --- */
@@ -538,7 +539,7 @@ gxk_param_create_editor (GxkParam               *param,
 {
   GxkParamEditor *editor = param_lookup_editor (editor_name, param->pspec);
   gchar *tooltip = gxk_param_dup_tooltip (param);
-  GtkWidget *widget;
+  GtkWidget *widget, *toplevel;
   gboolean updating = param->updating;
   param->updating = TRUE;       /* protect value from change-notifications during setup */
   widget = editor->create_widget (param, tooltip, editor->variant);
@@ -546,7 +547,10 @@ gxk_param_create_editor (GxkParam               *param,
   g_free (tooltip);
   gxk_object_set_param_callback (GTK_OBJECT (widget), (gpointer) editor->update);
   gxk_param_add_object (param, GTK_OBJECT (widget));
-  return widget;
+  toplevel = gtk_widget_get_toplevel (widget);
+  if (toplevel != widget)
+    gxk_param_add_object (param, GTK_OBJECT (toplevel));
+  return toplevel;
 }
 
 /* --- param editor sizes --- */
@@ -567,20 +571,56 @@ static const GxkParamEditorSizes param_editor_default_sizes = {
   2, 7,         /* float */
   2, 17,        /* double */
   8, 2,         /* string */
+  TRUE,         /* may_shrink */
 };
-static GxkParamEditorSizes param_editor_sizes;
+static GxkParamEditorSizes *size_groups = NULL;
+static guint                n_size_groups = 0;
+
+guint
+gxk_param_create_size_group (void)
+{
+  guint i;
+  g_assert (n_size_groups < 0xffff);
+  i = n_size_groups++;
+  size_groups = g_renew (GxkParamEditorSizes, size_groups, n_size_groups);
+  size_groups[i] = param_editor_default_sizes;
+  size_groups[i].may_shrink = FALSE;
+  return n_size_groups;
+}
 
 const GxkParamEditorSizes*
-gxk_param_get_editor_sizes (void)
+gxk_param_get_editor_sizes (GxkParam *param)
 {
-  return &param_editor_sizes;
+  if (param->size_group && param->size_group <= n_size_groups)
+    return &size_groups[param->size_group - 1];
+  return &param_editor_default_sizes;
 }
 
 void
-gxk_param_set_editor_sizes (const GxkParamEditorSizes *esizes)
+gxk_param_set_size_group (GxkParam                  *param,
+                          guint                      size_group)
 {
-  param_editor_sizes = esizes ? *esizes : param_editor_default_sizes;
+  g_return_if_fail (size_group <= n_size_groups);
+  param->size_group = size_group;
 }
+
+void
+gxk_param_set_sizes (guint                      size_group,
+                     const GxkParamEditorSizes *esizes)
+{
+  g_return_if_fail (size_group > 0 && size_group <= n_size_groups);
+  size_groups[size_group - 1] = esizes ? *esizes : param_editor_default_sizes;
+}
+
+guint
+gxk_param_get_digits (gdouble                    value,
+                      guint                      base)
+{
+  if (value <= 1 || base < 2)
+    return 1;
+  return 1 + log (value) / log (base);
+}
+
 
 /* --- param editor widgets --- */
 #include "gxkparam-entry.c"
@@ -592,10 +632,10 @@ gxk_param_set_editor_sizes (const GxkParamEditorSizes *esizes)
 void
 _gxk_init_params (void)
 {
-  param_editor_sizes = param_editor_default_sizes;
   gxk_param_register_editor (&param_entry, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_label1, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_label2, GXK_I18N_DOMAIN);
+  gxk_param_register_editor (&param_label3, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_scale1, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_scale2, GXK_I18N_DOMAIN);
   gxk_param_register_editor (&param_scale3, GXK_I18N_DOMAIN);

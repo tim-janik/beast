@@ -501,7 +501,7 @@ widget_patcher_adopt (GxkGadget          *gadget,
   GxkWidgetPatcher *self = GXK_WIDGET_PATCHER (gadget);
   if (self->tooltip)
     {
-      g_object_set_data_full (parent, "gxk-widget-patcher-latent-tooltip", g_strdup (self->tooltip), g_free);
+      gxk_widget_set_latent_tooltip (parent, self->tooltip);
       if (self->tooltip_visible)
         gtk_tooltips_set_tip (GXK_TOOLTIPS, parent, self->tooltip, NULL);
     }
@@ -531,12 +531,6 @@ widget_patcher_adopt (GxkGadget          *gadget,
   g_object_set_double (parent, "gxk-resize-vunits", self->resize_vunits);
   g_idle_add (widget_patcher_unref, self);      /* takes over initial ref count */
   return FALSE; /* no support for packing options */
-}
-
-const gchar*
-gxk_widget_get_latent_tooltip (GtkWidget *widget)
-{
-  return g_object_get_data (widget, "gxk-widget-patcher-latent-tooltip");
 }
 
 GType
@@ -744,6 +738,12 @@ gxk_menu_button_update (GxkMenuButton *self)
                   if (self->icon_size)
                     g_object_set (self->image, "icon-size", self->icon_size, NULL);
                 }
+              g_object_set (self->islot,        /* make room for cslot */
+                            "visible", GTK_BIN (self->islot)->child != NULL,
+                            NULL);
+              gtk_container_child_set (GTK_CONTAINER (self->cslot->parent), self->cslot,
+                                       "expand", GTK_BIN (self->islot)->child == NULL,
+                                       NULL);   /* vertically center cslot */
               g_object_connect (self->menu_item, "swapped_signal::state_changed", menu_button_proxy_state, self, NULL);
               menu_button_proxy_state (self);
               tipdata = gtk_tooltips_data_get (self->menu_item);

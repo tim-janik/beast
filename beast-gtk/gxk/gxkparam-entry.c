@@ -37,7 +37,7 @@ param_entry_create (GxkParam    *param,
                                     "activates_default", TRUE,
                                     "width_chars", 0,
                                     NULL);
-  const GxkParamEditorSizes *esizes = gxk_param_get_editor_sizes ();
+  const GxkParamEditorSizes *esizes = gxk_param_get_editor_sizes (param);
   gxk_widget_add_font_requisition (widget, esizes->string_chars, esizes->string_digits);
   gxk_param_entry_connect_handlers (param, widget, param_entry_changed);
   gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);

@@ -48,6 +48,8 @@ typedef enum /*< skip >*/
 } BstPatternFunction;
 
 typedef struct {
+  GxkParam        *steps;
+  GxkParam        *step_dir;
   /* misc data */
   guint            ref_count;
   BstPatternView  *pview;

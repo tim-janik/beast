@@ -115,7 +115,7 @@ eparam_changed (gpointer  data,
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
-  GtkWidget *eb, *child;
+  GtkWidget *eb, *child, *box;
   GtkRange *srange;
   BseCategorySeq *cseq;
   GxkActionList *al1;
@@ -194,8 +194,16 @@ bst_part_dialog_init (BstPartDialog *self)
   srange = gxk_gadget_find (gadget, "pattern-view-vscrollbar");
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->pview), gtk_range_get_adjustment (srange));
   self->pvctrl = bst_pattern_controller_new (self->pview, self->pictrl->quant_rtools);
+
+  /* pattern view controls */
   g_signal_connect_swapped (gxk_gadget_find (gadget, "conf-button"), "clicked",
                             G_CALLBACK (bst_pattern_column_layouter_popup), self->pview);
+  box = gxk_gadget_find (gadget, "pattern-control-box");
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "name"));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, NULL));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, "name"));
+  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, NULL));
 
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);

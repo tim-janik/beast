@@ -1,6 +1,6 @@
 FIXMES:
 - part editor UI, add fields:
-  Jump Steps: __ Jump Direction: _ Last Tick: _____, Last (used) Channel: ___
+  Last Tick: _____, Max (used) Channel: ___, Base Octave: ___
 - add author and license to procedure execution dialog
 - copy/paste in piano roll produces two selected note blocks
 - fix ref-count initilization for Bst*Controller

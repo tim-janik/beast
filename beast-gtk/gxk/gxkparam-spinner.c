@@ -30,7 +30,7 @@ param_spinner_create (GxkParam    *param,
 {
   GtkWidget *widget;
   GtkAdjustment *adjustment = NULL;
-  const GxkParamEditorSizes *esize = gxk_param_get_editor_sizes ();
+  const GxkParamEditorSizes *esize = gxk_param_get_editor_sizes (param);
   guint chars = 1, digits = 0, fracts = 0;
   switch (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (&param->value)))
     {
@@ -49,6 +49,14 @@ param_spinner_create (GxkParam    *param,
     adjustment = gxk_param_get_log_adjustment (param);
   if (!adjustment)
     adjustment = gxk_param_get_adjustment (param);
+  if (esize->may_shrink)
+    {
+      double mv = MAX (ABS (adjustment->lower), ABS (adjustment->upper));
+      guint vdigits = gxk_param_get_digits (mv, 10);
+      digits = MIN (digits, vdigits);
+      if (adjustment->lower >= 0 && adjustment->upper >= 0 && chars >= 1)
+        chars -= 1;     /* no sign */
+    }
   widget = g_object_new (GTK_TYPE_SPIN_BUTTON,
                          "visible", TRUE,
                          "activates_default", TRUE,

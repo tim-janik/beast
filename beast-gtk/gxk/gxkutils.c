@@ -623,6 +623,34 @@ gxk_notebook_set_current_page_widget (GtkNotebook *notebook,
     gtk_notebook_set_current_page (notebook, num);
 }
 
+static void
+vseparator_space_request (GtkWidget      *widget,
+                          GtkRequisition *requisition,
+                          gpointer        data)
+{
+  guint i = GPOINTER_TO_INT (data);
+  requisition->width = i * widget->style->xthickness;
+}
+
+/**
+ * gxk_vseparator_space_new
+ * @draw_seperator: enable visible vertical seperator
+ * @RETURNS:        visible vertical space/seperator widget
+ *
+ * Create a vertical seperator widget. @draw_seperator indicates
+ * whether the seperator should be amount to simple space or not.
+ */
+GtkWidget*
+gxk_vseparator_space_new (gboolean draw_seperator)
+{
+  GtkWidget *widget = g_object_new (draw_seperator ? GTK_TYPE_VSEPARATOR : GTK_TYPE_ALIGNMENT,
+                                    "visible", TRUE,
+                                    NULL);
+  g_signal_connect (widget, "size-request", G_CALLBACK (vseparator_space_request),
+                    GUINT_TO_POINTER (draw_seperator ? 2 + 1 + 2 : 3));
+  return widget;
+}
+
 /**
  * gtk_notebook_current_widget
  * @notebook: valid #GtkNotebook
@@ -838,6 +866,40 @@ gxk_widget_force_bg_clear (GtkWidget *widget)
   gtk_widget_set_redraw_on_allocate (widget, TRUE);
   if (!gxk_signal_handler_pending (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL))
     g_signal_connect (widget, "expose_event", G_CALLBACK (expose_bg_clear), NULL);
+}
+
+/**
+ * gxk_widget_set_latent_tooltip
+ * @widget:  a valid GtkWidget
+ * @tooltip: descriptive tooltip
+ *
+ * Set the latent tooltip for this widget. A latent tooltip
+ * will not be shown on mouse over for this widget. Instead
+ * it can be querried by other widgets via
+ * gxk_widget_get_latent_tooltip() to be shown when appropriate.
+ * For instance, GxkMenuButton shows the latent tooltip of its
+ * currently selected menu item.
+ */
+void
+gxk_widget_set_latent_tooltip (GtkWidget   *widget,
+                               const gchar *tooltip)
+{
+  g_object_set_data_full (widget, "gxk-widget-latent-tooltip", g_strdup (tooltip), g_free);
+}
+
+/**
+ * gxk_widget_get_latent_tooltip
+ * @widget:  a valid GtkWidget
+ * @RETUSN: descriptive tooltip
+ *
+ * Retrieve the latent tooltip for @widget. See
+ * gxk_widget_set_latent_tooltip() for the purpose of latent
+ * tooltips.
+ */
+const gchar*
+gxk_widget_get_latent_tooltip (GtkWidget *widget)
+{
+  return g_object_get_data (widget, "gxk-widget-latent-tooltip");
 }
 
 static gboolean

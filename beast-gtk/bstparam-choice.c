@@ -37,7 +37,7 @@ param_choice_change_value (GtkWidget *widget,
       if (item)
 	{
           SfiChoiceValue *cv = g_object_get_qdata (G_OBJECT (item), quark_param_choice_values);
-	  sfi_value_set_choice (&param->value, cv->choice_name);
+	  sfi_value_set_choice (&param->value, cv->choice_ident);
 	}
       gxk_param_apply_value (param);
     }
@@ -83,7 +83,8 @@ param_choice_create (GxkParam    *param,
   menu = g_object_new (GTK_TYPE_MENU, NULL);
   for (i = 0; i < cvalues.n_values; i++)
     {
-      GtkWidget *item = gtk_menu_item_new_with_label (cvalues.values[i].choice_blurb);
+      GtkWidget *item = gtk_menu_item_new_with_label (cvalues.values[i].choice_label);
+      gxk_widget_set_latent_tooltip (item, cvalues.values[i].choice_blurb);
       gtk_widget_show (item);
       g_object_connect (item, "signal::activate", param_choice_item_activated, widget, NULL);
       g_object_set_qdata (G_OBJECT (item), quark_param_choice_values, (gpointer) &cvalues.values[i]);
@@ -131,7 +132,7 @@ param_choice_update (GxkParam  *param,
 	{
 	  GtkWidget *item = list->data;
 	  SfiChoiceValue *cv = g_object_get_qdata (G_OBJECT (item), quark_param_choice_values);
-	  if (sfi_choice_match (cv->choice_name, string))
+	  if (sfi_choice_match (cv->choice_ident, string))
             {
               param_choice_item_activated (item, widget);
               break;
@@ -143,13 +144,13 @@ param_choice_update (GxkParam  *param,
 static GxkParamEditor param_choice1 = {
   { "choice-menu",      N_("Drop Down Box (Option Menu)"), },
   { G_TYPE_STRING,      "SfiChoice", },
-  { NULL,       +6,     TRUE, },        /* options, rating, editing */
+  { NULL,       +5,     TRUE, },        /* options, rating, editing */
   param_choice_create,  param_choice_update,    CHOICE_PARAM_OPTION_MENU
 };
 static GxkParamEditor param_choice2 = {
   { "choice-button",    N_("Drop Down Button"), },
   { G_TYPE_STRING,      "SfiChoice", },
-  { NULL,       +5,     TRUE, },        /* options, rating, editing */
+  { NULL,       +6,     TRUE, },        /* options, rating, editing */
   param_choice_create,  param_choice_update,    CHOICE_PARAM_MENU_BUTTON
 };
 static const gchar *param_choice_aliases1[] = {

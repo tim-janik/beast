@@ -36,6 +36,16 @@ bst_pattern_controller_new (BstPatternView         *pview,
   g_return_val_if_fail (BST_IS_PATTERN_VIEW (pview), NULL);
 
   self = g_new0 (BstPatternController, 1);
+  self->steps = gxk_param_new_value (sfi_pspec_int ("steps", _("Steps"),
+                                                    _("The number of cells to move across each time "
+                                                      "an event or note was edited"),
+                                                    1, 0, 384, 4, SFI_PARAM_STANDARD),
+                                     NULL, NULL);
+  self->step_dir = gxk_param_new_value (sfi_pspec_choice ("step_dir", _("Direction"),
+                                                          _("The direction of cell movement each time "
+                                                            "an event or note was edited"),
+                                                          "down", bst_direction_get_values(), SFI_PARAM_STANDARD),
+                                        NULL, NULL);
   self->pview = pview;
   self->ref_count = 1;
 
@@ -76,6 +86,8 @@ bst_pattern_controller_unref (BstPatternController   *self)
           gxk_action_group_dispose (self->quant_rtools);
           g_object_unref (self->quant_rtools);
         }
+      gxk_param_destroy (self->steps);
+      gxk_param_destroy (self->step_dir);
       g_free (self);
     }
 }
@@ -103,19 +115,26 @@ pattern_controller_key_press (BstPatternController *self,
       /* movement */
       switch (ftype & BST_PATTERN_MASK_MOVEMENT)
         {
-        case BST_PATTERN_MOVE_LEFT:         focus_col--;                                        break;
-        case BST_PATTERN_MOVE_RIGHT:        focus_col++;                                        break;
-        case BST_PATTERN_MOVE_UP:           focus_row--;                                        break;
+          guint d;
+        case BST_PATTERN_MOVE_LEFT:     focus_col--;                                            break;
+        case BST_PATTERN_MOVE_RIGHT:    focus_col++;                                            break;
+        case BST_PATTERN_MOVE_UP:       focus_row--;                                            break;
+        case BST_PATTERN_MOVE_DOWN:     focus_row++;                                            break;
+        case BST_PATTERN_PAGE_LEFT:     focus_col -= channel_page;                              break;
+        case BST_PATTERN_PAGE_RIGHT:    focus_col += channel_page;                              break;
+        case BST_PATTERN_PAGE_UP:       focus_row -= row_page;                                  break;
+        case BST_PATTERN_PAGE_DOWN:     focus_row += row_page;                                  break;
+        case BST_PATTERN_JUMP_LEFT:     focus_col = 0;                                          break;
+        case BST_PATTERN_JUMP_RIGHT:    focus_col = pview->n_focus_cols - 1;                    break;
+        case BST_PATTERN_JUMP_TOP:      focus_row = 0;                                          break;
+        case BST_PATTERN_JUMP_BOTTOM:   focus_row = bst_pattern_view_get_last_row (pview);      break;
         case BST_PATTERN_MOVE_NEXT:
-        case BST_PATTERN_MOVE_DOWN:         focus_row++;                                        break;
-        case BST_PATTERN_PAGE_LEFT:         focus_col -= channel_page;                          break;
-        case BST_PATTERN_PAGE_RIGHT:        focus_col += channel_page;                          break;
-        case BST_PATTERN_PAGE_UP:           focus_row -= row_page;                              break;
-        case BST_PATTERN_PAGE_DOWN:         focus_row += row_page;                              break;
-        case BST_PATTERN_JUMP_LEFT:         focus_col = 0;                                      break;
-        case BST_PATTERN_JUMP_RIGHT:        focus_col = pview->n_focus_cols - 1;                break;
-        case BST_PATTERN_JUMP_TOP:          focus_row = 0;                                      break;
-        case BST_PATTERN_JUMP_BOTTOM:       focus_row = bst_pattern_view_get_last_row (pview);  break;
+          d = bst_direction_from_choice (sfi_value_get_choice (&self->step_dir->value));
+          if (d == BST_LEFT || d == BST_RIGHT)
+            focus_col += (d == BST_LEFT ? -1 : +1) * g_value_get_int (&self->steps->value);
+          else /* UP/DOWN */
+            focus_row += (d == BST_UP ? -1 : +1) * g_value_get_int (&self->steps->value);
+          break;
         default: ;
         }
       /* wrapping */

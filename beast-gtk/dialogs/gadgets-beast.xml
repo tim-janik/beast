@@ -212,12 +212,12 @@
     </vbox>
     <notebook pack:expand="1">
       <vbox>
-	<alignment xalign="1.0" xscale="0" >
-	  <hbox >
-	    <hstock-button name="conf-button" _label="Configure" stock="BST_STOCK_EDIT"
-	      _tooltip="Configure the display facilities of the pattern editor" />
-	  </hbox>
-	</alignment>
+	<hbox spacing="2" border-width="2" >
+	  <hbox name="pattern-control-box" spacing="2" />
+	  <hstock-button name="conf-button" pack:pack-type="end"
+	    _label="Configure" stock="BST_STOCK_EDIT"
+	    _tooltip="Configure the column layout of the pattern editor" />
+	</hbox>
 	<hbox pack:expand="1" >
 	  <frame-shadow-in pack:expand="1" >
 	    <pattern-view />

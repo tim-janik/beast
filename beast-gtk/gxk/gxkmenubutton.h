@@ -81,8 +81,6 @@ typedef struct {
 GType   gxk_widget_patcher_get_type     (void);
 extern const GxkGadgetType *_gxk_widget_patcher_def;
 
-const gchar*    gxk_widget_get_latent_tooltip (GtkWidget *widget);
-
 /* --- menu button --- */
 #define GXK_TYPE_MENU_BUTTON              (gxk_menu_button_get_type ())
 #define GXK_MENU_BUTTON(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_MENU_BUTTON, GxkMenuButton))

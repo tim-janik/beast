@@ -1,3 +1,42 @@
+Thu Feb 19 03:40:42 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatternctrl.[hc]: added parameters for stepping direction
+	and step width, these are honoured by "next" cell movement. 
+
+	* beast-gtk/bstrecords.idl: added Direction choices.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: provide container for pattern
+	view controls.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: gxk_widget_get_latent_tooltip() got
+	moved. centered menu button child for the non-image case.
+
+	* beast-gtk/gxk/gxkparam-label.c: added support for pspec name labels
+	and tooltips.
+
+	* beast-gtk/gxk/gxkparam-spinner.c: shrink size byunused digits if
+	size group permits.
+
+	* beast-gtk/gxk/gxkparam.[hc]: added size groups, a mechanism to specify
+	different layout sizes for GxkParams. allow params to shrink unused
+	request space by defautl.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_vseparator_space_new().
+	moved gxk_widget_set_latent_tooltip() / gxk_widget_get_latent_tooltip()
+	here.
+
+	* beast-gtk/bstpartdialog.c: added GUI for pattern control pspecs.
+
+	* beast-gtk/bstparam-choice.c: adapt to choice changes. set latent
+	tooltip on menu items. give menu button higher rating than option menu.
+
+	* beast-gtk/bstparam.[hc]: open up an extra size group for property
+	parameters. set size group sizes from preferences. we used to do this
+	before as well, this just allows non-property parameters to have
+	their own sizes.
+	(bst_param_new_proxy):
+	(bst_param_new_rec): add proxy and record parameters to size group.
+
 Wed Feb 18 01:17:44 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstauxdialogs.c: lower-case grabbed key events.

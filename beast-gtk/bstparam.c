@@ -27,6 +27,7 @@ static gboolean bst_param_xframe_check_button (GxkParam *param,
 /* --- variable --- */
 static GQuark quark_null_group = 0;
 static GQuark quark_param_choice_values = 0;
+static guint  param_size_group = 0;
 
 
 /* --- gmask parameters --- */
@@ -91,7 +92,7 @@ bst_param_create_gmask (GxkParam    *param,
   g_return_val_if_fail (GXK_IS_PARAM (param), NULL);
   g_return_val_if_fail (GTK_IS_CONTAINER (parent), NULL);
   
-  gxk_param_set_editor_sizes (BST_GCONFIG (size_group_input_fields) ? &param_editor_sizes : NULL);
+  gxk_param_set_sizes (param_size_group, BST_GCONFIG (size_group_input_fields) ? &param_editor_sizes : NULL);
   group = sfi_pspec_get_group (param->pspec);
   parent = param_get_gmask_container (parent, group ? g_quark_from_string (group) : 0);
   
@@ -208,6 +209,7 @@ bst_param_new_proxy (GParamSpec *pspec,
 {
   GxkParam *param = gxk_param_new (pspec, &proxy_binding, (gpointer) FALSE);
   bst_param_set_proxy (param, proxy);
+  gxk_param_set_size_group (param, param_size_group);
   return param;
 }
 
@@ -281,6 +283,7 @@ bst_param_new_rec (GParamSpec *pspec,
   GxkParam *param = gxk_param_new (pspec, &record_binding, (gpointer) FALSE);
   g_return_val_if_fail (rec != NULL, NULL);
   param->bdata[0].v_pointer = sfi_rec_ref (rec);
+  gxk_param_set_size_group (param, param_size_group);
   return param;
 }
 
@@ -328,9 +331,10 @@ void
 _bst_init_params (void)
 {
   g_assert (quark_null_group == 0);
-  
+
   quark_null_group = g_quark_from_static_string ("bst-param-null-group");
   quark_param_choice_values = g_quark_from_static_string ("bst-param-choice-values");
+  param_size_group = gxk_param_create_size_group ();
   gxk_param_register_editor (&param_choice1, NULL);
   gxk_param_register_editor (&param_choice2, NULL);
   gxk_param_register_aliases (param_choice_aliases1);
