@@ -504,8 +504,8 @@ bse_simple_osc_update_modules (BseSimpleOsc *simple_osc,
     vars.fm_strength = 0.0;
 
   /* update modules in all contexts with the new vars */
-  bse_source_update_imodules (BSE_SOURCE (simple_osc),
-			      BSE_SIMPLE_OSC_ICHANNEL_FREQ,
+  bse_source_update_omodules (BSE_SOURCE (simple_osc),
+			      BSE_SIMPLE_OSC_OCHANNEL_OSC,
 			      G_STRUCT_OFFSET (SimpleOsc, vars),
 			      &vars,
 			      sizeof (vars),

@@ -1,3 +1,9 @@
+Fri Feb  1 02:16:02 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesimpleosc.c:
+	* bsegenosc.c: use bse_source_update_omodules() now as the
+	variant for imodules vanished.
+
 Tue Jan 29 15:17:43 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesnooper: set consumership.
