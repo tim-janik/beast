@@ -133,6 +133,7 @@
   <!-- decks (notebook) -->
   <xdef:notebook              inherit="GtkNotebook"
     prop:scrollable="1"
+    prop:homogeneous="$(first-occupied,$homogeneous,0)"
     />
   <xdef:deck                  inherit="notebook"
     prop:show-tabs="0"

@@ -197,7 +197,7 @@
   
   <!-- piano-roll-box -->
   <xdef:piano-roll-box inherit="vbox" spacing="3" >
-    <notebook pack:expand="1">
+    <notebook pack:expand="1" homogeneous="1" >
       <!-- PianoRoll-vbox -->
       <vbox pack:tab-label="Piano Roll" >
 	<vbox name="toolbar-area" area="north" >
