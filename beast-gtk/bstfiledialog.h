@@ -40,15 +40,19 @@ typedef struct  _BstFileDialogClass BstFileDialogClass;
 
 /* --- structures --- */
 typedef enum {
-  BST_FILE_DIALOG_OPEN_PROJECT	= 0x0001,
-  BST_FILE_DIALOG_MERGE_PROJECT	= 0x0002,
-  BST_FILE_DIALOG_SAVE_PROJECT	= 0x0003,
-  BST_FILE_DIALOG_SELECT_DIR	= 0x0009,
-  BST_FILE_DIALOG_LOAD_WAVE	= 0x0011,
-  BST_FILE_DIALOG_LOAD_WAVE_LIB	= 0x0012,
-  BST_FILE_DIALOG_MODE_MASK	= 0x00ff,
-  BST_FILE_DIALOG_ALLOW_DIRS	= 0x1000,
-  BST_FILE_DIALOG_FLAG_MASK	= 0xff00
+  BST_FILE_DIALOG_OPEN_PROJECT	   = 0x0001,
+  BST_FILE_DIALOG_MERGE_PROJECT	   = 0x0002,
+  BST_FILE_DIALOG_SAVE_PROJECT	   = 0x0003,
+  BST_FILE_DIALOG_SELECT_DIR	   = 0x0009,
+  BST_FILE_DIALOG_LOAD_WAVE	   = 0x0011,
+  BST_FILE_DIALOG_LOAD_WAVE_LIB	   = 0x0012,
+  BST_FILE_DIALOG_MERGE_EFFECT     = 0x0021,
+  BST_FILE_DIALOG_MERGE_INSTRUMENT = 0x0022,
+  BST_FILE_DIALOG_SAVE_EFFECT      = 0x0023,
+  BST_FILE_DIALOG_SAVE_INSTRUMENT  = 0x0024,
+  BST_FILE_DIALOG_MODE_MASK	   = 0x00ff,
+  BST_FILE_DIALOG_ALLOW_DIRS	   = 0x1000,
+  BST_FILE_DIALOG_FLAG_MASK	   = 0xff00
 } BstFileDialogMode;
 struct _BstFileDialog
 {
@@ -64,7 +68,10 @@ struct _BstFileDialog
   /* mode state */
   BstFileDialogMode mode : 16;
   guint		    ignore_activate : 1;
-  guint		    using_sample_list : 1;
+  guint		    using_file_store : 1;
+  GtkTreeModel     *file_store;
+  gchar            *search_path;
+  const gchar      *search_filter;
   GtkWindow	   *parent_window;
   SfiProxy	    proxy;
 };
@@ -81,6 +88,10 @@ GtkWidget*	bst_file_dialog_popup_merge_project	(gpointer	   parent_widget,
 							 SfiProxy	   project);
 GtkWidget*	bst_file_dialog_popup_save_project	(gpointer	   parent_widget,
 							 SfiProxy	   project);
+GtkWidget*      bst_file_dialog_popup_merge_effect      (gpointer          parent_widget,
+                                                         SfiProxy          project);
+GtkWidget*      bst_file_dialog_popup_merge_instrument  (gpointer          parent_widget,
+                                                         SfiProxy          project);
 GtkWidget*	bst_file_dialog_popup_select_dir  	(gpointer	   parent_widget);
 GtkWidget*	bst_file_dialog_popup_load_wave		(gpointer	   parent_widget,
 							 SfiProxy	   wave_repo,

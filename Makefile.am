@@ -23,6 +23,7 @@ make-paths.h: $(top_builddir)/config.status Makefile
 	&& echo "#define BSE_PATH_BINARIES        \"${bindir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_LADSPA          \"${bseladspapath}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_PLUGINS         \"${bseplugindir}\"" >> xgen-pph \
+	&& echo "#define BSE_PATH_DEMOS           \"${bsedemodir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_SAMPLES         \"${bsesampledir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_EFFECTS         \"${bseeffectdir}\"" >> xgen-pph \
 	&& echo "#define BSE_PATH_INSTRUMENTS     \"${bseinstrumentdir}\"" >> xgen-pph \

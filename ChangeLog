@@ -1,3 +1,15 @@
+Fri Oct 17 22:19:18 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: add /Synthesizers submenu, support
+	loading of effects and instruments.
+
+	* beast-gtk/bstfiledialog.[hc]: add effect and instrument
+	library loading dialogs. use seperate dialogs for project,
+	wave, effects and instruments.
+
+	* beast-gtk/bsttreestores.[hc]: reworked bst_file_store_*()
+	implementation and API to support multiple file stores.
+
 Fri Oct 17 21:35:43 2003  Tim Janik  <timj@gtk.org>
 
 	* library/*/Makefile.am: include _DATA files in tarballs.

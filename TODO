@@ -1,4 +1,5 @@
 FIXMES:
+- document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
 - .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this
 - amplifier: audio_balance and ctrl_balance range: -100..+100
 - File/Open should merge if issued on an empty project

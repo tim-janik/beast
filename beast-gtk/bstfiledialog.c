@@ -72,15 +72,15 @@ tree_viewable_changed (BstFileDialog *self)
   gboolean viewable = gxk_widget_viewable (GTK_WIDGET (self->tview));
   gboolean tvisible = GTK_WIDGET_VISIBLE (gtk_widget_get_toplevel (GTK_WIDGET (self->tview)));
   
-  if (viewable && !self->using_sample_list)
+  if (viewable && !self->using_file_store)
     {
-      self->using_sample_list = TRUE;
-      bst_file_store_use_sample_list ();
+      self->using_file_store = TRUE;
+      bst_file_store_update_list (self->file_store, self->search_path, self->search_filter);
     }
-  else if (!tvisible && self->using_sample_list)
+  else if (!tvisible && self->using_file_store)
     {
-      self->using_sample_list = FALSE;
-      bst_file_store_unuse_sample_list ();
+      self->using_file_store = FALSE;
+      bst_file_store_forget_list (self->file_store);
     }
 }
 
@@ -144,7 +144,8 @@ bst_file_dialog_init (BstFileDialog *self)
 			      "shadow_type", GTK_SHADOW_IN,
 			      NULL);
   gxk_notebook_add_page (GTK_NOTEBOOK (self->notebook), self->spage, "Sample Selection", TRUE);
-  smodel = gtk_tree_model_sort_new_with_model (bst_file_store_get_sample_list ());
+  self->file_store = bst_file_store_create ();
+  smodel = gtk_tree_model_sort_new_with_model (self->file_store);
   self->tview = g_object_new (GTK_TYPE_TREE_VIEW,
 			      "visible", TRUE,
 			      "can_focus", TRUE,
@@ -235,14 +236,48 @@ bst_file_dialog_finalize (GObject *object)
   BstFileDialog *self = BST_FILE_DIALOG (object);
   
   bst_file_dialog_set_mode (self, NULL, 0, NULL, 0);
-  if (self->using_sample_list)
-    {
-      self->using_sample_list = FALSE;
-      bst_file_store_unuse_sample_list ();
-    }
+  g_free (self->search_path);
+  self->search_filter = NULL;
+  bst_file_store_destroy (self->file_store);
   
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static BstFileDialog*
+bst_file_dialog_global_project (void)
+{
+  static BstFileDialog *singleton = NULL;
+  if (!singleton)
+    singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+  return singleton;
+}
+
+static BstFileDialog*
+bst_file_dialog_global_wave (void)
+{
+  static BstFileDialog *singleton = NULL;
+  if (!singleton)
+    singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+  return singleton;
+}
+
+static BstFileDialog*
+bst_file_dialog_global_effect (void)
+{
+  static BstFileDialog *singleton = NULL;
+  if (!singleton)
+    singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+  return singleton;
+}
+
+static BstFileDialog*
+bst_file_dialog_global_instrument (void)
+{
+  static BstFileDialog *singleton = NULL;
+  if (!singleton)
+    singleton = g_object_new (BST_TYPE_FILE_DIALOG, NULL);
+  return singleton;
 }
 
 static void
@@ -301,41 +336,56 @@ bst_file_dialog_set_mode (BstFileDialog    *self,
   switch (mode & BST_FILE_DIALOG_MODE_MASK)
     {
     case BST_FILE_DIALOG_LOAD_WAVE:
+      g_free (self->search_path);
+      self->search_path = g_strdup (bse_server_get_sample_path (BSE_SERVER));
+      self->search_filter = NULL;
       gtk_widget_show (self->spage);
       gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->fpage);
       g_object_set (self->notebook, "show_border", TRUE, "show_tabs", TRUE, NULL);
       break;
     case BST_FILE_DIALOG_LOAD_WAVE_LIB:
+      g_free (self->search_path);
+      self->search_path = g_strdup (bse_server_get_sample_path (BSE_SERVER));
+      self->search_filter = NULL;
+      gtk_widget_show (self->spage);
+      gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->spage);
+      g_object_set (self->notebook, "show_border", TRUE, "show_tabs", TRUE, NULL);
+      break;
+    case BST_FILE_DIALOG_MERGE_EFFECT:
+      g_free (self->search_path);
+      self->search_path = g_strdup (bse_server_get_effect_path (BSE_SERVER));
+      self->search_filter = "*";
+      gtk_widget_show (self->spage);
+      gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->spage);
+      g_object_set (self->notebook, "show_border", TRUE, "show_tabs", TRUE, NULL);
+      break;
+    case BST_FILE_DIALOG_MERGE_INSTRUMENT:
+      g_free (self->search_path);
+      self->search_path = g_strdup (bse_server_get_instrument_path (BSE_SERVER));
+      self->search_filter = "*";
       gtk_widget_show (self->spage);
       gxk_notebook_set_current_page_widget (GTK_NOTEBOOK (self->notebook), self->spage);
       g_object_set (self->notebook, "show_border", TRUE, "show_tabs", TRUE, NULL);
       break;
     default:
-      if (self->using_sample_list)
-	{
-	  self->using_sample_list = FALSE;
-	  bst_file_store_unuse_sample_list ();
-	}
+      g_free (self->search_path);
+      self->search_path = NULL;
+      self->search_filter = NULL;
+      if (self->using_file_store)
+        {
+          self->using_file_store = FALSE;
+          bst_file_store_forget_list (self->file_store);
+        }
       gtk_widget_hide (self->spage);
       g_object_set (self->notebook, "show_border", FALSE, "show_tabs", FALSE, NULL);
       break;
     }
 }
 
-static BstFileDialog*
-bst_file_dialog_singleton (void)
-{
-  static BstFileDialog *fd_singleton = NULL;
-  if (!fd_singleton)
-    fd_singleton = g_object_new (BST_TYPE_FILE_DIALOG,
-				 NULL);
-  return fd_singleton;
-}
-
 GtkWidget*
 bst_file_dialog_popup_open_project (gpointer parent_widget)
 {
-  BstFileDialog *self = bst_file_dialog_singleton ();
+  BstFileDialog *self = bst_file_dialog_global_project ();
   GtkWidget *widget = GTK_WIDGET (self);
 
   bst_file_dialog_set_mode (self, parent_widget,
@@ -349,7 +399,7 @@ bst_file_dialog_popup_open_project (gpointer parent_widget)
 GtkWidget*
 bst_file_dialog_popup_select_dir (gpointer parent_widget)
 {
-  BstFileDialog *self = bst_file_dialog_singleton ();
+  BstFileDialog *self = bst_file_dialog_global_project ();
   GtkWidget *widget = GTK_WIDGET (self);
 
   bst_file_dialog_set_mode (self, parent_widget,
@@ -388,7 +438,7 @@ GtkWidget*
 bst_file_dialog_popup_merge_project (gpointer   parent_widget,
 				     SfiProxy   project)
 {
-  BstFileDialog *self = bst_file_dialog_singleton ();
+  BstFileDialog *self = bst_file_dialog_global_project ();
   GtkWidget *widget = GTK_WIDGET (self);
 
   bst_file_dialog_set_mode (self, parent_widget,
@@ -417,7 +467,7 @@ GtkWidget*
 bst_file_dialog_popup_save_project (gpointer   parent_widget,
 				    SfiProxy   project)
 {
-  BstFileDialog *self = bst_file_dialog_singleton ();
+  BstFileDialog *self = bst_file_dialog_global_project ();
   GtkWidget *widget = GTK_WIDGET (self);
 
   bst_file_dialog_set_mode (self, parent_widget,
@@ -485,11 +535,69 @@ bst_file_dialog_save_project (BstFileDialog *self,
 }
 
 GtkWidget*
+bst_file_dialog_popup_merge_effect (gpointer   parent_widget,
+                                    SfiProxy   project)
+{
+  BstFileDialog *self = bst_file_dialog_global_effect ();
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  bst_file_dialog_set_mode (self, parent_widget,
+                            BST_FILE_DIALOG_MERGE_EFFECT,
+                            _("Load Effect"), project);
+  gxk_widget_showraise (widget);
+
+  return widget;
+}
+
+static gboolean
+bst_file_dialog_merge_effect (BstFileDialog *self,
+                              const gchar   *file_name)
+{
+  SfiProxy project = bse_item_use (self->proxy);
+  BseErrorType error = bse_project_restore_from_file (project, file_name);
+
+  bst_status_eprintf (error, _("Merging effect `%s'"), file_name);
+
+  bse_item_unuse (project);
+
+  return TRUE;
+}
+
+GtkWidget*
+bst_file_dialog_popup_merge_instrument (gpointer   parent_widget,
+                                        SfiProxy   project)
+{
+  BstFileDialog *self = bst_file_dialog_global_instrument ();
+  GtkWidget *widget = GTK_WIDGET (self);
+
+  bst_file_dialog_set_mode (self, parent_widget,
+                            BST_FILE_DIALOG_MERGE_INSTRUMENT,
+                            _("Load Instrument"), project);
+  gxk_widget_showraise (widget);
+
+  return widget;
+}
+
+static gboolean
+bst_file_dialog_merge_instrument (BstFileDialog *self,
+                                  const gchar   *file_name)
+{
+  SfiProxy project = bse_item_use (self->proxy);
+  BseErrorType error = bse_project_restore_from_file (project, file_name);
+
+  bst_status_eprintf (error, _("Merging instrument `%s'"), file_name);
+
+  bse_item_unuse (project);
+
+  return TRUE;
+}
+
+GtkWidget*
 bst_file_dialog_popup_load_wave (gpointer parent_widget,
 				 SfiProxy wave_repo,
 				 gboolean show_lib)
 {
-  BstFileDialog *self = bst_file_dialog_singleton ();
+  BstFileDialog *self = bst_file_dialog_global_wave ();
   GtkWidget *widget = GTK_WIDGET (self);
 
   bst_file_dialog_set_mode (self, parent_widget,
@@ -594,6 +702,12 @@ bst_file_dialog_activate (BstFileDialog *self)
       break;
     case BST_FILE_DIALOG_MERGE_PROJECT:
       popdown = bst_file_dialog_merge_project (self, file_name);
+      break;
+    case BST_FILE_DIALOG_MERGE_EFFECT:
+      popdown = bst_file_dialog_merge_effect (self, file_name);
+      break;
+    case BST_FILE_DIALOG_MERGE_INSTRUMENT:
+      popdown = bst_file_dialog_merge_instrument (self, file_name);
       break;
     case BST_FILE_DIALOG_SAVE_PROJECT:
       popdown = bst_file_dialog_save_project (self, file_name);

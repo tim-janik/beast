@@ -36,9 +36,12 @@ enum {
   BST_FILE_STORE_COL_LOADABLE,
   BST_FILE_STORE_N_COLS
 };
-GtkTreeModel*   bst_file_store_get_sample_list          (void);
-void            bst_file_store_use_sample_list          (void);
-void            bst_file_store_unuse_sample_list        (void);
+GtkTreeModel*   bst_file_store_create           (void);
+void            bst_file_store_update_list      (GtkTreeModel *model,
+                                                 const gchar  *search_path,
+                                                 const gchar  *filter);
+void            bst_file_store_forget_list      (GtkTreeModel *model);
+void            bst_file_store_destroy          (GtkTreeModel *model);
 
 
 /* --- proxy stores --- */

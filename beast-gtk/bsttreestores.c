@@ -111,15 +111,35 @@ file_store_idle_handler (gpointer data)
   return busy;
 }
 
-static void
-file_store_rebuild (GtkTreeModel *model)
+GtkTreeModel*
+bst_file_store_create (void)
+{
+  GtkTreeStore *sample_store = gtk_tree_store_new (BST_FILE_STORE_N_COLS,
+                                                   G_TYPE_UINT,         // BST_FILE_STORE_COL_ID
+                                                   G_TYPE_STRING,       // BST_FILE_STORE_COL_FILE
+                                                   G_TYPE_STRING,       // BST_FILE_STORE_COL_BASE_NAME
+                                                   G_TYPE_STRING,       // BST_FILE_STORE_COL_WAVE_NAME
+                                                   G_TYPE_UINT,         // BST_FILE_STORE_COL_SIZE
+                                                   SFI_TYPE_NUM,        // BST_FILE_STORE_COL_TIME_USECS
+                                                   G_TYPE_STRING,       // BST_FILE_STORE_COL_TIME_STR
+                                                   G_TYPE_STRING,       // BST_FILE_STORE_COL_LOADER
+                                                   G_TYPE_BOOLEAN,      // BST_FILE_STORE_COL_LOADABLE
+                                                   -1);
+  return (GtkTreeModel*) sample_store;
+}
+
+void
+bst_file_store_update_list (GtkTreeModel *model,
+                            const gchar  *search_path,
+                            const gchar  *filter)
 {
   GtkTreeStore *store = GTK_TREE_STORE (model);
-  const gchar *path = g_object_get_data (store, "search-path");
   SfiFileCrawler *crawler = sfi_file_crawler_new ();
   glong l;
 
-  sfi_file_crawler_add_search_path (crawler, path, NULL);
+  g_return_if_fail (search_path != NULL);
+  
+  sfi_file_crawler_add_search_path (crawler, search_path, filter);
   g_object_set_data_full (store, "file-crawler", crawler, sfi_file_crawler_destroy);
   l = g_timeout_add_full (G_PRIORITY_LOW + 100, 0,
                           file_store_idle_handler,
@@ -127,8 +147,8 @@ file_store_rebuild (GtkTreeModel *model)
   g_object_set_long (store, "timer", l);
 }
 
-static void
-file_store_clear (GtkTreeModel *model)
+void
+bst_file_store_forget_list (GtkTreeModel *model)
 {
   GtkTreeStore *store = GTK_TREE_STORE (model);
   glong l;
@@ -145,48 +165,11 @@ file_store_clear (GtkTreeModel *model)
   gtk_tree_store_clear (store);
 }
 
-GtkTreeModel*
-bst_file_store_get_sample_list (void)
-{
-  static GtkTreeStore *sample_store = NULL;
-  if (!sample_store)
-    {
-      gchar *path = g_strdup (bse_server_get_sample_path (BSE_SERVER));
-      sample_store = gtk_tree_store_new (BST_FILE_STORE_N_COLS,
-                                         G_TYPE_UINT,   // BST_FILE_STORE_COL_ID
-                                         G_TYPE_STRING, // BST_FILE_STORE_COL_FILE
-                                         G_TYPE_STRING, // BST_FILE_STORE_COL_BASE_NAME
-                                         G_TYPE_STRING, // BST_FILE_STORE_COL_WAVE_NAME
-                                         G_TYPE_UINT,   // BST_FILE_STORE_COL_SIZE
-                                         SFI_TYPE_NUM,  // BST_FILE_STORE_COL_TIME_USECS
-                                         G_TYPE_STRING, // BST_FILE_STORE_COL_TIME_STR
-                                         G_TYPE_STRING, // BST_FILE_STORE_COL_LOADER
-                                         G_TYPE_BOOLEAN,        // BST_FILE_STORE_COL_LOADABLE
-                                         -1);
-      g_object_set_data_full (sample_store, "search-path", path, g_free);
-    }
-  return GTK_TREE_MODEL (sample_store);
-}
-
-static guint sample_list_use_count = 0;
-
 void
-bst_file_store_use_sample_list (void)
+bst_file_store_destroy (GtkTreeModel *model)
 {
-  if (!sample_list_use_count)
-    file_store_rebuild (bst_file_store_get_sample_list ());
-  sample_list_use_count++;
-}
-
-void
-bst_file_store_unuse_sample_list (void)
-{
-  if (sample_list_use_count)
-    {
-      sample_list_use_count--;
-      if (!sample_list_use_count)
-        file_store_clear (bst_file_store_get_sample_list ());
-    }
+  bst_file_store_forget_list (model);
+  g_object_unref (model);
 }
 
 
