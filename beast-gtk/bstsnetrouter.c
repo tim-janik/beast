@@ -142,45 +142,45 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
 }
 
 static void
-bst_snet_router_init (BstSNetRouter      *router,
+bst_snet_router_init (BstSNetRouter      *self,
 		      BstSNetRouterClass *class)
 {
-  GnomeCanvas *canvas = GNOME_CANVAS (router);
+  GnomeCanvas *canvas = GNOME_CANVAS (self);
   
-  router->toolbar = NULL;
-  router->palette = NULL;
-  router->adjustment = NULL;
-  router->snet = 0;
-  router->world_x = 0;
-  router->world_y = 0;
-  router->drag_is_input = FALSE;
-  router->drag_channel = ~0;
-  router->drag_csource = NULL;
-  router->tmp_line = NULL;
-  router->link_list = NULL;
+  self->toolbar = NULL;
+  self->palette = NULL;
+  self->adjustment = NULL;
+  self->snet = 0;
+  self->world_x = 0;
+  self->world_y = 0;
+  self->drag_is_input = FALSE;
+  self->drag_channel = ~0;
+  self->drag_csource = NULL;
+  self->tmp_line = NULL;
+  self->link_list = NULL;
 
-  router->rtools = bst_radio_tools_new ();
-  gtk_object_ref (GTK_OBJECT (router->rtools));
-  gtk_object_sink (GTK_OBJECT (router->rtools));
-  g_object_connect (router->rtools,
-		    "swapped_signal_after::set_tool", bst_router_set_tool, router,
+  self->rtools = bst_radio_tools_new ();
+  g_object_ref (self->rtools);
+  gtk_object_sink (GTK_OBJECT (self->rtools));
+  g_object_connect (self->rtools,
+		    "swapped_signal_after::set_tool", bst_router_set_tool, self,
 		    NULL);
   
   g_object_connect (GTK_OBJECT (canvas->root),
-		    "swapped_signal::event", bst_snet_router_root_event, router,
+		    "swapped_signal::event", bst_snet_router_root_event, self,
 		    NULL);
-  g_object_connect (GTK_OBJECT (router),
+  g_object_connect (GTK_OBJECT (self),
 		    "signal_after::show", bst_snet_router_reset_tool, NULL,
 		    "signal::viewable_changed", bst_snet_router_viewable_changed, NULL,
 		    NULL);
   
-  router->adjustment = (GtkAdjustment*) gtk_adjustment_new (1.0, 0.20, 5.00, 0.05, 0.50, 0.50);
-  g_object_connect (GTK_OBJECT (router->adjustment),
-		    "swapped_signal::value_changed", bst_snet_router_adjust_zoom, router,
-		    "swapped_signal::destroy", g_nullify_pointer, &router->adjustment,
+  self->adjustment = (GtkAdjustment*) gtk_adjustment_new (1.0, 0.20, 5.00, 0.05, 0.50, 0.50);
+  g_object_connect (GTK_OBJECT (self->adjustment),
+		    "swapped_signal::value_changed", bst_snet_router_adjust_zoom, self,
+		    "swapped_signal::destroy", g_nullify_pointer, &self->adjustment,
 		    NULL);
 
-  bst_snet_router_build_tools (router);
+  bst_snet_router_build_tools (self);
 }
 
 static void
@@ -210,19 +210,16 @@ bst_snet_router_destroy_contents (BstSNetRouter *router)
 static void
 bst_snet_router_destroy (GtkObject *object)
 {
-  BstSNetRouter *router = BST_SNET_ROUTER (object);
+  BstSNetRouter *self = BST_SNET_ROUTER (object);
   
-  bst_snet_router_reset_tool (router);
-  bst_snet_router_destroy_contents (router);
-  bst_snet_router_set_snet (router, 0);
+  bst_snet_router_reset_tool (self);
+  bst_snet_router_destroy_contents (self);
+  bst_snet_router_set_snet (self, 0);
 
-  if (router->toolbar)
-    {
-      gtk_widget_destroy (router->toolbar);
-      router->toolbar = NULL;
-    }
-  if (router->palette)
-    gtk_widget_destroy (router->palette);
+  if (self->toolbar)
+    gtk_widget_destroy (GTK_WIDGET (self->toolbar));
+  if (self->palette)
+    gtk_widget_destroy (self->palette);
   
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -496,100 +493,92 @@ bst_snet_router_adjust_zoom (BstSNetRouter *router)
 }
 
 static void
-bst_snet_router_build_tools (BstSNetRouter *router)
+bst_snet_router_build_tools (BstSNetRouter *self)
 {
   GtkWidget *button;
   BseCategory *cats;
   guint i, n_cats;
   
-  g_return_if_fail (BST_IS_SNET_ROUTER (router));
-
-  if (router->toolbar)
-    gtk_widget_destroy (router->toolbar);
-  if (router->palette)
-    gtk_widget_destroy (router->palette);
-
+  g_return_if_fail (BST_IS_SNET_ROUTER (self));
+  
+  if (self->toolbar)
+    gtk_widget_destroy (GTK_WIDGET (self->toolbar));
+  if (self->palette)
+    gtk_widget_destroy (self->palette);
+  
   /* setup radio tools
    */
-  bst_radio_tools_clear_tools (router->rtools);
+  bst_radio_tools_clear_tools (self->rtools);
   /* add link/move/property edit tool */
-  bst_radio_tools_add_stock_tool (router->rtools,
+  bst_radio_tools_add_stock_tool (self->rtools,
 				  0,
 				  "Edit",
-				  "Edit tool (mouse buttons 1-3)",
+				  "Edit/Move/Menu (mouse buttons 1-3)",
 				  ("Edit tool (mouse buttons 1-3)\n"
 				   "Use button1 to create links, "
 				   "button2 for movement and "
 				   "button3 to change properties"),
 				  BST_STOCK_MOUSE_TOOL,
 				  BST_RADIO_TOOLS_EVERYWHERE);
-
+  
   /* add BseSource types from categories */
   cats = bse_categories_match ("/Modules/*", &n_cats);
   for (i = 0; i < n_cats; i++)
     {
-      static const gchar *toolbar_categories[] = {
-	"BsePcmOutput", "BseAmplifier", "BseSnooper", "BsePcmInput",
+      static struct { gchar *type, *name, *tip; } toolbar_cats[] = {
+	{ "BsePcmOutput", "Output", "PCM Output" },
+	{ "BseAmplifier", "DCA", "Amplifier" },
+	{ "BseSnooper", "Snoop", "Signal Debugging Tool" },
+	{ "BsePcmInput", "Input", "PCM Input" },
       };
-      guint n, n_toolbar_categories = sizeof (toolbar_categories) / sizeof (toolbar_categories[0]);
-      gboolean add_to_toolbar = FALSE;
-
-      for (n = 0; n < n_toolbar_categories; n++)
-	if (strcmp (toolbar_categories[n], g_type_name (cats[i].type)) == 0)
+      guint n;
+      
+      for (n = 0; n < G_N_ELEMENTS (toolbar_cats); n++)
+	if (strcmp (toolbar_cats[n].type, g_type_name (cats[i].type)) == 0)
 	  {
-	    add_to_toolbar = TRUE;
+	    bst_radio_tools_add_tool (self->rtools, cats[i].type,
+				      toolbar_cats[n].name,
+				      toolbar_cats[n].tip, NULL,
+				      cats[i].icon, BST_RADIO_TOOLS_TOOLBAR);
 	    break;
 	  }
-      bst_radio_tools_add_category (router->rtools,
+      bst_radio_tools_add_category (self->rtools,
 				    cats[i].type,
 				    cats + i,
-				    BST_RADIO_TOOLS_PALETTE |
-				    (add_to_toolbar ? BST_RADIO_TOOLS_TOOLBAR : 0));
+				    BST_RADIO_TOOLS_PALETTE);
     }
   g_free (cats);
-
+  
   /* create toolbar
    */
-  router->toolbar = g_object_connect (gtk_widget_new (GTK_TYPE_TOOLBAR,
-						      "visible", TRUE,
-						      "orientation", GTK_ORIENTATION_HORIZONTAL,
-						      "toolbar_style", GTK_TOOLBAR_BOTH,
-						      // "relief", GTK_RELIEF_NONE,
-						      // "space_style", GTK_TOOLBAR_SPACE_LINE,
-						      NULL),
-				      "swapped_signal::destroy", g_nullify_pointer, &router->toolbar,
-				      NULL);
-  
+  self->toolbar = bst_toolbar_new (&self->toolbar);
+
   /* add radios to toolbar
    */
-  bst_radio_tools_build_gtk_toolbar (router->rtools, GTK_TOOLBAR (router->toolbar));
-
-  /* seperate radios
-   */
-  gtk_toolbar_append_space (GTK_TOOLBAR (router->toolbar));
-
+  bst_radio_tools_build_toolbar (self->rtools, self->toolbar);
+  
   /* add `Palette' button to toolbar
    */
-  button = gtk_toolbar_append_element (GTK_TOOLBAR (router->toolbar), GTK_TOOLBAR_CHILD_BUTTON, NULL,
-				       "Palette", "Toggle visibility of the tool palette", NULL,
-				       bst_image_from_stock (BST_STOCK_PALETTE, BST_SIZE_PALETTE),
-				       NULL, NULL);
+  bst_toolbar_append_space (self->toolbar);
+  button = bst_toolbar_append (self->toolbar, BST_TOOLBAR_BUTTON,
+			       "Palette", "Toggle visibility of the tool palette",
+			       bst_image_from_stock (BST_STOCK_PALETTE, BST_SIZE_TOOLBAR));
   g_object_connect (button,
-		    "swapped_signal::clicked", bst_snet_router_toggle_palette, router,
+		    "swapped_signal::clicked", bst_snet_router_toggle_palette, self,
 		    NULL);
-
+  
   /* add `Zoom' spinner
    */
-  button = gtk_spin_button_new (router->adjustment, 0.0, 2);
+  button = gtk_spin_button_new (self->adjustment, 0.0, 2);
   gtk_widget_set_usize (button, 50, 0);
   gtk_widget_show (button);
-  gtk_toolbar_append_element (GTK_TOOLBAR (router->toolbar), GTK_TOOLBAR_CHILD_WIDGET, button,
-			      "Zoom Factor", "Adjust the zoom factor of the router display", NULL,
-			      NULL, NULL, NULL);
+  bst_toolbar_append (self->toolbar, BST_TOOLBAR_EXTRA_WIDGET,
+		      "Zoom Factor", "Adjust the zoom factor of the router display",
+		      button);
 
   /* set default tool
    */
-  bst_radio_tools_set_tool (router->rtools, 0);
+  bst_radio_tools_set_tool (self->rtools, 0);
 }
 
 void
@@ -1089,7 +1078,7 @@ bst_snet_router_button_press (GtkWidget      *widget,
 		      event->x_root, event->y_root,
 		      event->button, event->time);
     }
-
+  
   return handled;
 }
 
@@ -1111,24 +1100,25 @@ bst_snet_router_build_page (BswProxy snet)
     " ####  #### ",
     "            ",
   };
-  GtkWidget *router, *zoomed_window, *router_box, *pix;
+  BstSNetRouter *self;
+  GtkWidget *zoomed_window, *router_box, *pix;
   GdkPixmap *pixmap;
   GdkBitmap *mask;
-
+  
   g_return_val_if_fail (BSW_IS_SNET (snet), NULL);
-
-  router = g_object_new (BST_TYPE_SNET_ROUTER,
-			 "aa", BST_SNET_ANTI_ALIASED,
-			 NULL);
-  bst_snet_router_set_snet (BST_SNET_ROUTER (router), snet);
-
+  
+  self = g_object_new (BST_TYPE_SNET_ROUTER,
+		       "aa", BST_SNET_ANTI_ALIASED,
+		       NULL);
+  bst_snet_router_set_snet (self, snet);
+  
   router_box = g_object_new (GTK_TYPE_VBOX,
 			     "visible", TRUE,
 			     "homogeneous", FALSE,
 			     "spacing", 3,
 			     "border_width", 5,
 			     NULL);
-  gtk_box_pack_start (GTK_BOX (router_box), BST_SNET_ROUTER (router)->toolbar, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (router_box), GTK_WIDGET (self->toolbar), FALSE, TRUE, 0);
   zoomed_window = g_object_new (BST_TYPE_ZOOMED_WINDOW,
 				"visible", TRUE,
 				"hscrollbar_policy", GTK_POLICY_ALWAYS,
@@ -1136,10 +1126,10 @@ bst_snet_router_build_page (BswProxy snet)
 				"parent", router_box,
 				NULL);
   g_object_connect (zoomed_window,
-		    "swapped_signal::zoom", bst_snet_router_adjust_region, router,
+		    "swapped_signal::zoom", bst_snet_router_adjust_region, self,
 		    "swapped_signal::zoom", gtk_false, NULL,
 		    NULL);
-
+  
   pixmap = gdk_pixmap_colormap_create_from_xpm_d (NULL, gtk_widget_get_colormap (zoomed_window),
 						  &mask, NULL, zoom_xpm);
   pix = gtk_pixmap_new (pixmap, mask);
@@ -1150,10 +1140,10 @@ bst_snet_router_build_page (BswProxy snet)
 		  "parent", BST_ZOOMED_WINDOW (zoomed_window)->toggle_button,
 		  NULL);
   
-  g_object_set (router,
+  g_object_set (self,
 		"visible", TRUE,
 		"parent", zoomed_window,
 		NULL);
-
-  return BST_SNET_ROUTER (router);
+  
+  return BST_SNET_ROUTER (self);
 }

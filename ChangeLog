@@ -1,3 +1,21 @@
+Mon Jul 15 14:40:52 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_build_page): use BstToolbar
+	instead of GtkToolbar to fix up zoom and tool size layout.
+
+	* beast-gtk/bstcanvassource.c: provide sane default size for info
+	window.
+
+	* beast-gtk/bstpartdialog.c: fix radio tool fallback.
+
+	* beast-gtk/bstradiotools.c: fixup toggle button state of fallback
+	tool when deactivated.
+
+	* beast-gtk/bstcanvassource.c: provide sane default size for info
+	window.
+	
+	* beast-gtk/bsttoolbar.c: fix up tooltip on custom widgets.
+
 Mon Jul 15 07:18:40 2002  Tim Janik  <timj@gtk.org>
 
 	* bsw-shell/record-midi.scm (record-midi): quick script to record midi notes

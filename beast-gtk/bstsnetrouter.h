@@ -44,7 +44,7 @@ struct _BstSNetRouter
 {
   GnomeCanvas	    parent_object;
 
-  GtkWidget	   *toolbar;
+  BstToolbar	   *toolbar;
   GtkWidget	   *palette;
   GtkAdjustment    *adjustment;
 

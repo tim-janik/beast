@@ -27,7 +27,7 @@
 static void	bst_part_dialog_class_init	(BstPartDialogClass	*klass);
 static void	bst_part_dialog_init		(BstPartDialog		*part_dialog);
 static void	bst_part_dialog_finalize	(GObject		*object);
-static void	piano_update_cursor		(BstPartDialog		*part_dialog);
+static void	part_dialog_update_tool		(BstPartDialog		*part_dialog);
 static void	piano_canvas_press		(BstPartDialog		*part_dialog,
 						 guint			 button,
 						 guint			 tick_position,
@@ -184,7 +184,7 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_ref (self->rtools);
   gtk_object_sink (GTK_OBJECT (self->rtools));
   g_object_connect (self->rtools,
-		    "swapped_signal::set_tool", piano_update_cursor, self,
+		    "swapped_signal::set_tool", part_dialog_update_tool, self,
 		    NULL);
   bst_radio_tools_set_tool (self->rtools, BST_PIANO_ROLL_TOOL_INSERT);
 
@@ -294,7 +294,7 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
 }
 
 static void
-piano_update_cursor (BstPartDialog *self)	// FIXME: name
+part_dialog_update_tool (BstPartDialog *self)
 {
   switch (self->rtools->tool_id)
     {
@@ -337,6 +337,9 @@ piano_update_cursor (BstPartDialog *self)	// FIXME: name
 					      BST_PIANO_ROLL_TOOL_VSELECT,
 					      BST_PIANO_ROLL_TOOL_NONE,
 					      BST_PIANO_ROLL_TOOL_NONE);
+      break;
+    default:	/* fallback */
+      bst_radio_tools_set_tool (self->rtools, BST_PIANO_ROLL_TOOL_INSERT);
       break;
     }
 }

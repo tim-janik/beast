@@ -1,7 +1,4 @@
 URGENT:
-- complete bst_wrap_text implementation
-- sampleview needs to be completed (view chunks)
-- piano roll: disable selection tools until they are implemented
 - put a WARNING somewhere about file format changes in future versions
 - subsynth cycle search algorithm
 - bsw_item_check_value(item,name,value) to filter non-valid objects property settings

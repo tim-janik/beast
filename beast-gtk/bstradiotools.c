@@ -314,6 +314,13 @@ rtools_toggle_toggled (BstRadioTools   *rtools,
     {
       tool_id = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (toggle)));
       bst_radio_tools_set_tool (rtools, toggle->active ? tool_id : 0);
+      /* enforce depressed state */
+      if (rtools->tool_id == tool_id && !toggle->active)
+	{
+	  rtools->block_tool_id = TRUE;
+	  gtk_toggle_button_set_active (toggle, TRUE);
+	  rtools->block_tool_id = FALSE;
+	}
     }
 }
 

@@ -423,16 +423,22 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
 
   if (!csource->source_info)
-    csource->source_info = bst_dialog_new (&csource->source_info,
-					   GTK_OBJECT (csource),
-					   BST_DIALOG_POPUP_POS,
-					   bsw_item_get_name_or_type (csource->source),
-					   gtk_widget_new (GTK_TYPE_FRAME,
-							   "visible", TRUE,
-							   "border_width", 5,
-							   "label", "Module Info",
-							   "child", bst_wrap_text_create (FALSE, NULL),
-							   NULL));
+    {
+      csource->source_info = bst_dialog_new (&csource->source_info,
+					     GTK_OBJECT (csource),
+					     BST_DIALOG_POPUP_POS,
+					     bsw_item_get_name_or_type (csource->source),
+					     gtk_widget_new (GTK_TYPE_FRAME,
+							     "visible", TRUE,
+							     "border_width", 5,
+							     "label", "Module Info",
+							     "child", bst_wrap_text_create (FALSE, NULL),
+							     NULL));
+      g_object_set (csource->source_info,
+		    "default_width", 320,
+		    "default_height", 200,
+		    NULL);
+    }
   csource_info_update (csource);
   source_name_changed (csource);
   gtk_widget_showraise (csource->source_info);

@@ -250,6 +250,8 @@ bst_toolbar_append (BstToolbar     *self,
 			  "xscale", 1.0,
 			  "child", icon,
 			  NULL);
+      if (filtered && icon)
+	gtk_tooltips_set_tip (BST_TOOLTIPS, icon, tooltip, NULL);
       gtk_box_pack_start (GTK_BOX (vbox), any, TRUE, TRUE, 0);
       size_data = filtered ? NULL : icon;
       if (name)
