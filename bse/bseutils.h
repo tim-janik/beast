@@ -33,8 +33,8 @@ void    bse_cxx_checks    (void);
 
 
 /* --- record utils --- */
-BseNoteDescription* bse_note_description             (SfiInt             note,
-                                                      gint               fine_tune);
+BseNoteDescription* bse_note_description            (SfiInt              note,
+                                                     gint                fine_tune);
 BsePartNote*        bse_part_note                    (guint              id,
                                                       guint              tick,
                                                       guint              duration,
@@ -54,27 +54,6 @@ void                bse_part_control_seq_take_append (BsePartControlSeq *seq,
 void                bse_note_sequence_resize         (BseNoteSequence   *rec,
                                                       guint              length);
 guint               bse_note_sequence_length         (BseNoteSequence   *rec);
-
-
-/* --- notes & frequencies --- */
-gint	bse_note_from_freq	          (gdouble	 freq);
-gint	bse_note_from_freq_bounded        (gdouble	 freq);
-gint    bse_note_fine_tune_from_note_freq (gint		 note,
-					   gdouble	 freq);
-gdouble	bse_note_to_freq	(gint		 note);
-gdouble	bse_note_to_tuned_freq	(gint		 note,
-				 gint            fine_tune);
-
-/* find match_freq in inclusive_set (NULL acts as wildcard) and don't
- * find match_freq in exclusive_set (NULL acts as empty set). the sets
- * have to contain GValues of type G_TYPE_FLOAT.
- */
-gboolean        bse_value_arrays_match_freq     (gfloat          match_freq,
-						 GValueArray    *inclusive_set,
-						 GValueArray    *exclusive_set);
-gboolean        bse_darrays_match_freq	        (gfloat          match_freq,
-						 GDArray        *inclusive_set,
-						 GDArray        *exclusive_set);
 
 
 /* --- icons --- */

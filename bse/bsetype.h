@@ -93,6 +93,12 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 
 
 /* --- provide IDL pspec initializers --- */
+#define	sfidl_pspec_Bool(group, name, nick, blurb, dflt, hints)			\
+  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, hints), group)
+#define	sfidl_pspec_Bool_default(group, name)	\
+  sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_Trigger(group, name, nick, blurb)			\
+  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, FALSE, SFI_PARAM_GUI SFI_PARAM_HINT_TRIGGER), group)
 #define	sfidl_pspec_Int(group, name, nick, blurb, dflt, min, max, step, hints)	\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints), group)
 #define	sfidl_pspec_Int_default(group, name)	\
@@ -107,28 +113,24 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
 #define	sfidl_pspec_Real_default(group, name)	\
   sfi_pspec_set_group (sfi_pspec_real (name, NULL, NULL, 0, -SFI_MAXREAL, SFI_MAXREAL, 10, SFI_PARAM_DEFAULT), group)
-#define	sfidl_pspec_Bool(group, name, nick, blurb, dflt, hints)			\
-  sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, hints), group)
-#define	sfidl_pspec_Bool_default(group, name)	\
-  sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT), group)
-#define	sfidl_pspec_Choice_default(group, name, cvalues)	\
-  sfi_pspec_set_group (sfi_pspec_choice (name, NULL, NULL, NULL, cvalues, SFI_PARAM_DEFAULT), group)
-#define	sfidl_pspec_GEnum(group, name, nick, blurb, dval, hints, etype)	\
-  sfi_pspec_set_group (bse_param_spec_genum (name, nick, blurb, etype, dval, hints), group)
-#define	sfidl_pspec_GEnum_default(group, name, etype)	\
-  sfi_pspec_set_group (bse_param_spec_genum (name, NULL, NULL, etype, 0, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_Perc(group, name, nick, blurb, dflt, hints)	\
+  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, 0.0, 100.0, 5.0, hints SFI_PARAM_HINT_SCALE), group)
 #define	sfidl_pspec_Note(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (sfi_pspec_note (name, nick, blurb, dflt, SFI_MIN_NOTE, SFI_MAX_NOTE, FALSE, hints), group)
 #define	sfidl_pspec_Octave(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 4, hints), group)
 #define	sfidl_pspec_Freq(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (bse_param_spec_freq (name, nick, blurb, dflt, hints), group)
-#define sfidl_pspec_Frequency(group, name, nick, blurb, hints) \
-  sfidl_pspec_Freq (group, name, nick, blurb, BSE_KAMMER_FREQUENCY_f, hints)
 #define sfidl_pspec_Gain(group, name, nick, blurb, dflt, min, max, step, hints) \
   sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
 #define	sfidl_pspec_FineTune(group, name, nick, blurb, hints)			\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, hints), group)
+#define	sfidl_pspec_Choice_default(group, name, cvalues)	\
+  sfi_pspec_set_group (sfi_pspec_choice (name, NULL, NULL, NULL, cvalues, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_GEnum(group, name, nick, blurb, dval, hints, etype)	\
+  sfi_pspec_set_group (bse_param_spec_genum (name, nick, blurb, etype, dval, hints), group)
+#define	sfidl_pspec_GEnum_default(group, name, etype)	\
+  sfi_pspec_set_group (bse_param_spec_genum (name, NULL, NULL, etype, 0, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_String(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, hints), group)
 #define	sfidl_pspec_String_default(group, name)  \

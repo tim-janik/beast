@@ -78,8 +78,8 @@ void            bse_wave_remove_chunk           (BseWave        *wave,
 BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name,
-						 GDArray	*list_array,
-						 GDArray	*skip_array);
+						 BseFreqArray	*list_array,
+						 BseFreqArray	*skip_array);
 void		bse_wave_set_locator		(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name);

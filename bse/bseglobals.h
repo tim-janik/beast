@@ -22,6 +22,7 @@
 
 #include	<bse/bsedefs.h>
 #include	<bse/bsemath.h>
+#include	<bse/bsenote.h>
 #include	<bse/bseconstvalues.h>
 
 

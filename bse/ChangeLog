@@ -1,3 +1,22 @@
+Thu Sep  4 14:34:36 2003  Tim Janik  <timj@gtk.org>
+
+	* bsenote.[hc]: newly added files. these take over note utility
+	fucntions from bseutils.[hc] and at some point probably also note
+	specific functions from sfi. implemented frequency array, based
+	on the GDArray code.
+
+	* bsewave.[hc]: use BseFreqArray to match frequencies now, since
+	GDArray is gone.
+
+	* bsetype.h: added pspec constructors for Trigger and Perc.
+	removed Frequency constructor, there's one for Freq.
+
+	* bsecxxplugin.h: support static data i ninitialization of generated classes.
+
+	* bseutils.h:
+	* bseutils.c:
+	* bsecompat.h: removed note specific stuff.
+
 Wed Sep  3 00:59:09 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecxxbase.[hc]*: provide public conversion function for GObject

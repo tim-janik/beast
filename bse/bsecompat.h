@@ -23,22 +23,6 @@
 G_BEGIN_DECLS
 
 
-/* --- ordinary renames --- */
-#define	BSE_MIN_NOTE		SFI_MIN_NOTE
-#define	BSE_KAMMER_NOTE		SFI_KAMMER_NOTE
-#define	BSE_MAX_NOTE		SFI_MAX_NOTE
-#define	BSE_NOTE_CLAMP		SFI_NOTE_CLAMP
-#define	BSE_NOTE_IS_VALID	SFI_NOTE_IS_VALID
-#define	BSE_KAMMER_OCTAVE	SFI_KAMMER_OCTAVE
-#define	BSE_MIN_OCTAVE		SFI_MIN_OCTAVE
-#define	BSE_MAX_OCTAVE		SFI_MAX_OCTAVE
-#define	BSE_NOTE_VOID		SFI_NOTE_VOID
-#define	BSE_NOTE_UNPARSABLE	SFI_NOTE_VOID
-#define	BSE_NOTE_GENERIC	SFI_NOTE_GENERIC
-#define	bse_note_from_string	sfi_note_from_string
-#define	bse_note_to_string	sfi_note_to_string
-#define	bse_note_examine	sfi_note_examine
-
 /* --- parameter changes --- */
 #define bse_param_spec_genum(name,nick,blurb, genum_type, default_value, hints) \
    bse_param_spec_enum (name,nick,blurb, default_value, genum_type, hints)

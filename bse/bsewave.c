@@ -558,11 +558,11 @@ parse_wave_chunk (BseWave         *wave,
 }
 
 BseErrorType
-bse_wave_load_wave_file (BseWave     *wave,
-			 const gchar *file_name,
-			 const gchar *wave_name,
-			 GDArray     *list_array,
-			 GDArray     *skip_array)
+bse_wave_load_wave_file (BseWave      *wave,
+			 const gchar  *file_name,
+			 const gchar  *wave_name,
+			 BseFreqArray *list_array,
+			 BseFreqArray *skip_array)
 {
   BseErrorType error = BSE_ERROR_NONE;
   GslWaveFileInfo *fi;
@@ -586,7 +586,7 @@ bse_wave_load_wave_file (BseWave     *wave,
 	  if (wdsc)
 	    {
 	      for (i = 0; i < wdsc->n_chunks; i++)
-		if (bse_darrays_match_freq (wdsc->chunks[i].osc_freq, list_array, skip_array))
+		if (bse_freq_arrays_match_freq (wdsc->chunks[i].osc_freq, list_array, skip_array))
 		  {
 		    BseErrorType tmp_error;
 		    GslWaveChunk *wchunk = gsl_wave_chunk_create (wdsc, i, &tmp_error);
@@ -633,7 +633,7 @@ bse_wave_restore_private (BseObject  *object,
   quark = g_quark_try_string (scanner->next_value.v_identifier);
   if (quark == quark_load_wave)
     {
-      GDArray *skip_list, *load_list, *array;
+      BseFreqArray *skip_list, *load_list, *array;
       gchar *file_name, *wave_name;
       BseErrorType error;
       
@@ -646,8 +646,8 @@ bse_wave_restore_private (BseObject  *object,
 	  return G_TOKEN_STRING;
 	}
       wave_name = g_strdup (scanner->value.v_string);
-      skip_list = g_darray_new (1024);
-      load_list = g_darray_new (1024);
+      skip_list = bse_freq_array_new (1024);
+      load_list = bse_freq_array_new (1024);
       while (g_scanner_get_next_token (scanner) != ')')
 	{
 	  if (scanner->token == G_TOKEN_IDENTIFIER)
@@ -672,7 +672,7 @@ bse_wave_restore_private (BseObject  *object,
 		     g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
 		{
 		  g_scanner_get_next_token (scanner); /* int or float */
-		  g_darray_append (array, scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int);
+		  bse_freq_array_append (array, scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int);
 		}
 	    }
 	  else
@@ -681,7 +681,7 @@ bse_wave_restore_private (BseObject  *object,
 	      goto out_of_load_wave;
 	    }
 	}
-      error = bse_wave_load_wave_file (wave, file_name, wave_name, load_list->n_values ? load_list : 0, skip_list);
+      error = bse_wave_load_wave_file (wave, file_name, wave_name, bse_freq_array_n_values (load_list) ? load_list : 0, skip_list);
       if (error)
 	bse_storage_warn (storage, "failed to load wave \"%s\" from \"%s\": %s",
 			  wave_name, file_name, bse_error_blurb (error));
@@ -689,8 +689,8 @@ bse_wave_restore_private (BseObject  *object,
     out_of_load_wave:
       g_free (file_name);
       g_free (wave_name);
-      g_darray_free (skip_list);
-      g_darray_free (load_list);
+      bse_freq_array_free (skip_list);
+      bse_freq_array_free (load_list);
     }
   else if (quark == quark_set_locator)
     {

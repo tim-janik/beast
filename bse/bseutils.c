@@ -358,6 +358,38 @@ bse_path_pattern_list_matches (const gchar *file_pattern,
 
 
 /* --- record utils --- */
+BseNoteDescription*
+bse_note_description (SfiInt note,
+                      gint   fine_tune)
+{
+  BseNoteDescription *info = bse_note_description_new ();
+
+  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
+    {
+      gchar letter;
+      info->note = note;
+      bse_note_examine (info->note,
+                        &info->octave,
+                        &info->semitone,
+                        &info->upshift,
+                        &letter);
+      info->letter = letter;
+      info->fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
+      info->freq = bse_note_to_tuned_freq (info->note, info->fine_tune);
+      info->name = bse_note_to_string (info->note);
+      info->max_fine_tune = BSE_MAX_FINE_TUNE;
+      info->kammer_note = BSE_KAMMER_NOTE;
+    }
+  else
+    {
+      info->note = BSE_NOTE_VOID;
+      info->name = NULL;
+      info->max_fine_tune = BSE_MAX_FINE_TUNE;
+      info->kammer_note = BSE_KAMMER_NOTE;
+    }
+  return info;
+}
+
 BsePartNote*
 bse_part_note (guint    id,
 	       guint    tick,
@@ -420,38 +452,6 @@ bse_part_control_seq_take_append (BsePartControlSeq *seq,
   bse_part_control_free (element);
 }
 
-BseNoteDescription*
-bse_note_description (SfiInt note,
-		      gint   fine_tune)
-{
-  BseNoteDescription *info = bse_note_description_new ();
-
-  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    {
-      gchar letter;
-      info->note = note;
-      bse_note_examine (info->note,
-			&info->octave,
-			&info->semitone,
-			&info->upshift,
-			&letter);
-      info->letter = letter;
-      info->fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
-      info->freq = bse_note_to_tuned_freq (info->note, info->fine_tune);
-      info->name = bse_note_to_string (info->note);
-      info->max_fine_tune = BSE_MAX_FINE_TUNE;
-      info->kammer_note = BSE_KAMMER_NOTE;
-    }
-  else
-    {
-      info->note = BSE_NOTE_VOID;
-      info->name = NULL;
-      info->max_fine_tune = BSE_MAX_FINE_TUNE;
-      info->kammer_note = BSE_KAMMER_NOTE;
-    }
-  return info;
-}
-
 void
 bse_note_sequence_resize (BseNoteSequence *rec,
 			  guint            length)
@@ -467,127 +467,6 @@ guint
 bse_note_sequence_length (BseNoteSequence *rec)
 {
   return rec->notes->n_notes;
-}
-
-
-/* --- notes --- */
-gint
-bse_note_from_freq (gdouble freq)
-{
-  gdouble d;
-  gint note;
-
-  freq /= BSE_KAMMER_FREQUENCY_f;
-  d = log (freq) / BSE_LN_2_POW_1_DIV_12_d;
-  note = gsl_ftoi (BSE_KAMMER_NOTE + d);
-
-  return note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE ? note : BSE_NOTE_VOID;
-}
-
-gint
-bse_note_from_freq_bounded (gdouble freq)
-{
-  gdouble d;
-  gint note;
-
-  freq /= BSE_KAMMER_FREQUENCY_f;
-  d = log (freq) / BSE_LN_2_POW_1_DIV_12_d;
-  note = gsl_ftoi (BSE_KAMMER_NOTE + d);
-
-  return CLAMP (note, BSE_MIN_NOTE, BSE_MAX_NOTE);
-}
-
-gint
-bse_note_fine_tune_from_note_freq (gint    note,
-				   gdouble freq)
-{
-  gdouble d;
-  gint fine_tune;
-  
-  freq /= BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note);
-  d = log (freq) / BSE_LN_2_POW_1_DIV_1200_d;
-  fine_tune = gsl_ftoi (d);
-
-  return CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
-}
-
-gdouble
-bse_note_to_freq (gint note)
-{
-  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    return BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note);
-  else
-    return 0.0;
-}
-
-gdouble
-bse_note_to_tuned_freq (gint note,
-			gint fine_tune)
-{
-  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    return BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
-  else
-    return 0.0;
-}
-
-gboolean
-bse_value_arrays_match_freq (gfloat       match_freq,
-			     GValueArray *inclusive_set,
-			     GValueArray *exclusive_set)
-{
-  guint i;
-
-  if (exclusive_set)
-    for (i = 0; i < exclusive_set->n_values; i++)
-      {
-	GValue *value = exclusive_set->values + i;
-
-	if (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)) == G_TYPE_FLOAT &&
-	    fabs (value->data[0].v_float - match_freq) < BSE_FREQUENCY_EPSILON)
-	  return FALSE;
-      }
-
-  if (!inclusive_set)
-    return TRUE;
-
-  for (i = 0; i < inclusive_set->n_values; i++)
-    {
-      GValue *value = inclusive_set->values + i;
-      
-      if (G_TYPE_FUNDAMENTAL (G_VALUE_TYPE (value)) == G_TYPE_FLOAT &&
-	  fabs (value->data[0].v_float - match_freq) < BSE_FREQUENCY_EPSILON)
-	return TRUE;
-    }
-  return FALSE;
-}
-
-gboolean
-bse_darrays_match_freq (gfloat   match_freq,
-			GDArray *inclusive_set,
-			GDArray *exclusive_set)
-{
-  guint i;
-
-  if (exclusive_set)
-    for (i = 0; i < exclusive_set->n_values; i++)
-      {
-	gdouble *value = exclusive_set->values + i;
-
-	if (fabs (*value - match_freq) < BSE_FREQUENCY_EPSILON)
-	  return FALSE;
-      }
-
-  if (!inclusive_set)
-    return TRUE;
-
-  for (i = 0; i < inclusive_set->n_values; i++)
-    {
-      gdouble *value = inclusive_set->values + i;
-      
-      if (fabs (*value - match_freq) < BSE_FREQUENCY_EPSILON)
-	return TRUE;
-    }
-  return FALSE;
 }
 
 

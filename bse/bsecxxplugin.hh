@@ -134,6 +134,7 @@ EnumValue (int         int_value,
                              BSE_CXX_SYM (Effect ## Base, set_property),        \
                              BSE_CXX_SYM (Effect ## Base, get_property));       \
   BSE_CXX_DEFINE_INSTANCE_INIT (Effect);                                        \
+  BSE_CXX_DEFINE_STATIC_DATA (Effect##Base);                                    \
   template<class C> static ::BseExportNode* bse_export_node ();                 \
   template<> static ::BseExportNode*                                            \
   bse_export_node<Effect> ()                                                    \
@@ -174,6 +175,9 @@ ObjectType::module_configurator()                                               
 #define BSE_EFFECT_INTEGRATE_MODULE(ObjectType,ModuleType,ParamType)            \
   BSE_CXX_DEFINE_CREATE_MODULE (ObjectType,ModuleType,ParamType);               \
   BSE_CXX_DEFINE_MODULE_CONFIGURATOR (ObjectType,ModuleType,ParamType);
+/* implement static_data portions used by auto-generated classes */
+#define BSE_CXX_DEFINE_STATIC_DATA(ObjectType)                                  \
+  ObjectType::StaticData ObjectType::static_data;
 
 
 /* --- type keeper for export nodes --- */

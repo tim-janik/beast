@@ -57,6 +57,7 @@ bse_public_h_sources = $(strip \
 	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
 	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
 	bsecompat.h		bseundostack.h		bsemonokeyboard.c		bsemididecoder.h \
+	bsenote.h		\
 	bsecxxvalue.h		bsecxxutils.h		bsecxxbase.h			bsecxxclosure.h \
 	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			examplepeakfilter.h \
 )
@@ -83,6 +84,7 @@ bse_c_sources = $(strip \
 	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
 	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
 	bsecompat.c		bseundostack.c		bsemonokeyboard.c		bsemididecoder.c \
+	bsenote.c		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			examplepeakfilter.cc \
 )
