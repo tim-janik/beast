@@ -46,6 +46,7 @@ struct _BstPatternDialog
   GtkWidget	*main_vbox;
   GtkWidget	*scrolled_window;
   GtkWidget	*pattern_editor;
+  GtkWidget	*effect_view;
 
   GtkWidget	*popup;
 

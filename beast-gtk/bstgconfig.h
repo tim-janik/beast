@@ -62,7 +62,7 @@ extern const BstGlobals * const bst_globals;
 #define BST_GCONFIG_CLASS(class)      (G_TYPE_CHECK_CLASS_CAST ((class), BST_TYPE_GCONFIG, BstGConfigClass))
 #define BST_IS_GCONFIG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_GCONFIG))
 #define BST_IS_GCONFIG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BST_TYPE_GCONFIG))
-#define BST_GCONFIG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BstGConfigClass))
+#define BST_GCONFIG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_GCONFIG, BstGConfigClass))
 extern GType bst_type_id_BstGConfig;
 
 

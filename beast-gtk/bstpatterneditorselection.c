@@ -98,11 +98,11 @@ bst_pattern_editor_selection_start (BstPatternEditor *pe,
   bse_object_lock (BSE_OBJECT (pe->pattern));
   
   pe->selection_subtract = subtract != FALSE;
-  pe->saved_selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
+  pe->saved_selection = bse_pattern_selection_new (N_CHANNELS (pe), N_ROWS (pe));
   bse_pattern_save_selection (pe->pattern, pe->saved_selection);
   if (!keep_selection)
     {
-      guint32 *tmp_selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
+      guint32 *tmp_selection = bse_pattern_selection_new (N_CHANNELS (pe), N_ROWS (pe));
 
       bse_pattern_selection_fill (tmp_selection, FALSE);
       bse_pattern_restore_selection (pe->pattern, tmp_selection);
@@ -290,7 +290,7 @@ bst_pattern_editor_reset_selection (BstPatternEditor *pe)
 
   if (!pe->in_selection)
     {
-      guint32 *tmp_selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
+      guint32 *tmp_selection = bse_pattern_selection_new (N_CHANNELS (pe), N_ROWS (pe));
 
       bse_pattern_selection_fill (tmp_selection, FALSE);
       bse_pattern_restore_selection (pe->pattern, tmp_selection);
@@ -310,13 +310,13 @@ bst_pattern_editor_select_rectangle (BstPatternEditor *pe,
 
   if (!pe->in_selection)
     {
-      guint32 *tmp_selection = bse_pattern_selection_new (pe->pattern->n_channels, pe->pattern->n_rows);
+      guint32 *tmp_selection = bse_pattern_selection_new (N_CHANNELS (pe), N_ROWS (pe));
       guint c, r;
 
-      start_channel = MIN (start_channel, pe->pattern->n_channels - 1);
-      start_row = MIN (start_row, pe->pattern->n_rows - 1);
-      end_channel = MIN (end_channel, pe->pattern->n_channels - 1);
-      end_row = MIN (end_row, pe->pattern->n_rows - 1);
+      start_channel = MIN (start_channel, N_CHANNELS (pe) - 1);
+      start_row = MIN (start_row, N_ROWS (pe) - 1);
+      end_channel = MIN (end_channel, N_CHANNELS (pe) - 1);
+      end_row = MIN (end_row, N_ROWS (pe) - 1);
 
       for (c = MIN (start_channel, end_channel); c <= MAX (start_channel, end_channel); c++)
 	for (r = MIN (start_row, end_row); r <= MAX (start_row, end_row); r++)

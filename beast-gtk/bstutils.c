@@ -338,6 +338,35 @@ gtk_last_event_widget_coords (GtkWidget *widget,
     *y = ty;
 }
 
+void
+gtk_clist_moveto_selection (GtkCList *clist)
+{
+  g_return_if_fail (GTK_IS_CLIST (clist));
+
+  if (GTK_WIDGET_DRAWABLE (clist) && clist->selection)
+    {
+      gint row = GPOINTER_TO_INT (clist->selection->data);
+      
+      if (gtk_clist_row_is_visible (clist, row) != GTK_VISIBILITY_FULL)
+	gtk_clist_moveto (clist, row, -1, 0.5, 0);
+    }
+}
+
+gpointer
+gtk_clist_get_selection_data (GtkCList *clist,
+			      guint     index)
+{
+  GList *list;
+  gint row;
+
+  g_return_val_if_fail (GTK_IS_CLIST (clist), NULL);
+
+  list = g_list_nth (clist->selection, index);
+  row = list ? GPOINTER_TO_INT (list->data) : -1;
+
+  return row >= 0 ? gtk_clist_get_row_data (clist, row) : NULL;
+}
+
 
 /* --- Gtk+ Kennel --- */
 struct _GtkKennel

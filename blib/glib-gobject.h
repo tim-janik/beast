@@ -38,7 +38,7 @@ extern "C" {
 				    G_IS_OBJECT_CLASS (((GTypeInstance*) (object))->g_class))
 #define G_IS_OBJECT_CLASS(class)   (((GTypeClass*) (class)) != NULL && \
 				    G_TYPE_IS_OBJECT (((GTypeClass*) (class))->g_type))
-#define G_OBJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GObjectClass))
+#define G_OBJECT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), G_TYPE_OBJECT, GObjectClass))
 #define G_OBJECT_TYPE(object)	   (G_TYPE_FROM_INSTANCE (object))
 #define G_OBJECT_TYPE_NAME(object) (g_type_name (G_OBJECT_TYPE (object)))
 #define G_OBJECT_CLASS_TYPE(class) (G_TYPE_FROM_CLASS (class))

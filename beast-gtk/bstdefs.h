@@ -63,6 +63,8 @@ typedef enum
   BST_OP_PATTERN_EDITOR,
   BST_OP_INSTRUMENT_ADD,
   BST_OP_INSTRUMENT_DELETE,
+  BST_OP_EFFECT_ADD,
+  BST_OP_EFFECT_DELETE,
 
   /* super operations
    */

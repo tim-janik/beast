@@ -70,6 +70,12 @@ void	   gtk_last_event_coords	 (gint			*x_root,
 void	   gtk_last_event_widget_coords	 (GtkWidget		*widget,
 					  gint			*x,
 					  gint			*y);
+void	   gtk_clist_moveto_selection	 (GtkCList		*clist);
+gpointer   gtk_clist_get_selection_data	 (GtkCList		*clist,
+					  guint                  index);
+#ifndef	gtk_marshal_NONE__UINT_UINT
+#  define gtk_marshal_NONE__UINT_UINT	gtk_marshal_NONE__INT_INT
+#endif
 
 
 /* --- Gtk+ Kennel --- */

@@ -43,13 +43,16 @@ typedef	struct	_BstItemViewClass	BstItemViewClass;
 typedef	struct	_BstItemViewOp		BstItemViewOp;
 struct _BstItemView
 {
-  GtkVPaned	 parent_object;
+  GtkAlignment	 parent_object;
+
+  GtkWidget	*paned;
 
   GType  	 item_type;
   
   BseContainer	*container;
 
   gchar		*id_format;
+  guint		 item_list_pos;
   
   GtkWidget	*item_clist;
   
@@ -59,12 +62,12 @@ struct _BstItemView
 };
 struct _BstItemViewClass
 {
-  GtkVPanedClass parent_class;
+  GtkAlignmentClass parent_class;
 
-  guint			 n_ops;
-  BstItemViewOp		*ops;
+  guint		    n_ops;
+  BstItemViewOp	   *ops;
 
-  guint                  default_param_view_height;
+  guint             default_param_view_height;
 
   void          (*operate)       (BstItemView	*item_view,
 				  BstOps	 op);
@@ -94,6 +97,9 @@ gboolean	bst_item_view_can_operate	(BstItemView	*item_view,
 						 BstOps		 op);
 void		bst_item_view_set_id_format	(BstItemView	*item_view,
 						 const gchar	*id_format);
+void		bst_item_view_set_layout	(BstItemView	*item_view,
+						 gboolean	 horizontal,
+						 guint		 pos);
 
 
 

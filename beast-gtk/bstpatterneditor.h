@@ -201,62 +201,63 @@ typedef void  (*BstPatternEffectAreaDraw)       (BstPatternEditor       *pe,
                                                  gpointer                user_data);
 struct _BstPatternEditor
 {
-  GtkContainer  container;
+  GtkContainer    parent_instance;
   
-  guint16       channel_grid;
-  guint16       row_grid;
+  guint16         channel_grid;
+  guint16         row_grid;
   
-  guint16       char_width;
-  guint16       char_height;
-  guint16       char_descent;
+  guint16         char_width;
+  guint16         char_height;
+  guint16         char_descent;
   
-  GdkWindow     *index_sa;
-  GdkWindow     *index;
-  GdkWindow     *headline_sa;
-  GdkWindow     *headline;
-  GdkWindow     *panel_sa;
-  GdkWindow     *panel;
+  GdkWindow      *index_sa;
+  GdkWindow      *index;
+  GdkWindow      *headline_sa;
+  GdkWindow      *headline;
+  GdkWindow      *panel_sa;
+  GdkWindow      *panel;
   
-  guint         popup_tag;
-  GtkWidget     *channel_popup;
+  guint           popup_tag;
+  GtkWidget      *channel_popup;
   
-  GtkAdjustment *vadjustment;
-  GtkAdjustment *hadjustment;
+  GtkAdjustment  *vadjustment;
+  GtkAdjustment  *hadjustment;
   
-  BsePattern    *pattern;
+  BsePattern     *pattern;
   BseInstrument **instruments;
   
   /* key handling */
-  guint16       channel_page;
-  guint16       row_page;
+  guint16         channel_page;
+  guint16         row_page;
   BstPEActionType wrap_type;    /* either BST_PEA_WRAP_TO_PATTERN or BST_PEA_WRAP_TO_NOTE */
   /* where to move after a note got set */
-  guint         next_moves_left : 1;
-  guint         next_moves_right : 1;
-  guint         next_moves_up : 1;
-  guint         next_moves_down : 1;
+  guint           next_moves_left : 1;
+  guint           next_moves_right : 1;
+  guint           next_moves_up : 1;
+  guint           next_moves_down : 1;
   
   /* selection */
-  guint         in_selection : 1;
-  guint         selection_subtract : 1;
-  guint32      *saved_selection;
-  guint16       selection_channel;
-  guint16       selection_row;
-  guint         selection_timer;
-  guint16       selection_timer_channel;
-  guint16       selection_timer_row;
+  guint           in_selection : 1;
+  guint           selection_subtract : 1;
+  guint32        *saved_selection;
+  guint16         selection_channel;
+  guint16         selection_row;
+  guint           selection_timer;
+  guint16         selection_timer_channel;
+  guint16         selection_timer_row;
   
   /* draw frame */
-  guint16       channel_mod;
-  guint16       row_mod;
+  guint16         channel_mod;
+  guint16         row_mod;
   
-  guint16       last_focus_channel;
-  guint16       last_focus_row;
-  guint16       focus_channel;
-  guint16       focus_row;
-  gint          last_row;
+  guint16         last_focus_channel;
+  guint16         last_focus_row;
+  guint16         focus_channel;
+  guint16         focus_row;
+  guint		  focus_changed_handler;
+  gint            marked_row;
 
-  gint          base_octave;
+  gint            base_octave;
   
   /* effect area */
   guint                        ea_width;
@@ -285,6 +286,9 @@ struct _BstPatternEditorClass
                                    guint             root_y,
                                    guint             button,
                                    guint             time);
+  void  (*focus_changed)          (BstPatternEditor *pe,
+                                   guint             channel,
+                                   guint             row);
 };
 
 

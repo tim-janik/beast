@@ -15,11 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "bstpatterndialog.h"
+#include	"bstpatterndialog.h"
 
-#include "bststatusbar.h"
-#include "bstprocedure.h"
-#include "bstmenus.h"
+#include	"bststatusbar.h"
+#include	"bstprocedure.h"
+#include	"bstmenus.h"
+#include	"bsteffectview.h"
 
 
 
@@ -160,11 +161,23 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
   BstPatternDialogClass *class = BST_PATTERN_DIALOG_GET_CLASS (pattern_dialog);
   GtkItemFactory *factory;
 
-  bst_status_bar_ensure (GTK_WINDOW (pattern_dialog));
+  gtk_window_set_default_size (GTK_WINDOW (pattern_dialog), 600, 450);
+
+  /* setup main container */
+  bst_status_bar_ensure (GTK_WINDOW (pattern_dialog));	/* adds box and status bar */
   pattern_dialog->main_vbox = GTK_BIN (pattern_dialog)->child;
   gtk_widget_set (pattern_dialog->main_vbox,
 		  "signal::destroy", gtk_widget_destroyed, &pattern_dialog->main_vbox,
 		  NULL);
+
+  /* setup effect view */
+  pattern_dialog->effect_view = gtk_widget_new (BST_TYPE_EFFECT_VIEW,
+						"visible", TRUE,
+						"signal::destroy", gtk_widget_destroyed, &pattern_dialog->effect_view,
+						NULL);
+  gtk_box_pack_start (GTK_BOX (pattern_dialog->main_vbox), pattern_dialog->effect_view, FALSE, TRUE, 0);
+
+  /* setup pattern editor parent */
   pattern_dialog->scrolled_window =
     gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
 		    "visible", TRUE,
@@ -237,7 +250,7 @@ pe_effect_area_draw (BstPatternEditor *pe,
 		   n ? fg_gc : light_gc,
 		   x,
 		   y + pe->char_height - pe->char_descent,
-		   !n ? "-" : n == 1 ? "*" : "#");
+		   !n ? "-" : n == 1 ? "+" : "*");
 }
 
 static inline void
@@ -326,6 +339,18 @@ pe_key_press (GtkObject        *pattern_editor,
   return handled;
 }
 
+static void
+pe_focus_changed (GtkObject        *pattern_editor,
+		  guint             channel,
+		  guint             row,
+		  BstPatternDialog *pattern_dialog)
+{
+  BstPatternEditor *pe = BST_PATTERN_EDITOR (pattern_editor);
+
+  if (GTK_WIDGET_DRAWABLE (pattern_dialog->effect_view))
+    bst_effect_view_set_note (BST_EFFECT_VIEW (pattern_dialog->effect_view), pe->pattern, channel, row);
+}
+
 GtkWidget*
 bst_pattern_dialog_new (BsePattern *pattern)
 {
@@ -344,6 +369,7 @@ bst_pattern_dialog_new (BsePattern *pattern)
 		  "signal::pattern-step", bst_pattern_editor_dfl_stepper, NULL,
 		  "signal::cell-activate", pe_cell_activate, pattern_dialog,
 		  "signal::key-press-event", pe_key_press, pattern_dialog,
+		  "signal::focus-changed", pe_focus_changed, pattern_dialog,
 		  "parent", pattern_dialog->scrolled_window,
 		  NULL);
   bst_pattern_editor_set_effect_hooks (BST_PATTERN_EDITOR (pattern_dialog->pattern_editor),

@@ -1,9 +1,36 @@
+Mon May 29 02:42:41 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterneditor.[hc]: added signal for focus changes.
+	pass light_gc into effect drawing code, macro cleanups to avoid
+	accessing BsePattern fields directly.
+
+	* bsteffectview.[hc]: new container to provide effect views per
+	note, similar to BstItemView, but doesn't inherit from it, because
+	effects are not items and have certain constraints (only one
+	BseEffect derived type may exist per note).
+
+	* bstpatterndialog.[hc]: embed effect view container to allow effect
+	editing of pattern notes.
+
+	* bstutils.[hc]: moved some GtkCList workarounds from various code
+	portions here to 1) maintain them in a single place, 2) be able to
+	use them all around beast code, 3) keep all Gtk kludges in one
+	source file for reference.
+
+Thu May 25 06:22:35 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstitemview.[hc]: aggregate the paned container,
+	don't inherit from it. so we keep the underlying container
+	type exchangable. BstItemView is a GtkAlignment now.
+	(bst_item_view_set_layout): allow runtime changing of item view
+	layout.
+
 Wed May 24 23:59:15 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstinstrumentview.c: display instrument id as a
 	hexadecimal number.
 
-	* beast-gtk/bstitemview.[hc] (bst_item_view_set_id_formate): allow
+	* beast-gtk/bstitemview.[hc] (bst_item_view_set_id_format): allow
 	customization of id format string.
 
 	* beast-gtk/bstpatterneditor.c (INSTRUMENT_FMT): display instrument id

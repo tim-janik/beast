@@ -119,7 +119,7 @@ struct _GTypeInterface
 #define G_TYPE_CHECK_CLASS_CAST(g_class, g_type, c_type)        (_G_TYPE_CCC ((g_class), (g_type), c_type))
 #define G_TYPE_CHECK_INSTANCE_TYPE(instance, g_type)            (_G_TYPE_CIT ((instance), (g_type)))
 #define G_TYPE_CHECK_CLASS_TYPE(g_class, g_type)                (_G_TYPE_CCT ((g_class), (g_type)))
-#define G_TYPE_INSTANCE_GET_CLASS(instance, c_type)             (_G_TYPE_IGC ((instance), c_type))
+#define G_TYPE_INSTANCE_GET_CLASS(instance, g_type, c_type)     (_G_TYPE_IGC ((instance), c_type))
 #define G_TYPE_FROM_INSTANCE(instance)                          (G_TYPE_FROM_CLASS (((GTypeInstance*) (instance))->g_class))
 #define G_TYPE_FROM_CLASS(g_class)                              (((GTypeClass*) (g_class))->g_type)
 

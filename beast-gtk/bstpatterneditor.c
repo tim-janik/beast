@@ -111,8 +111,8 @@
 #define INNER_Y_BORDER(w)		(Y_THICK(w) + 1)
 #define X_BORDER(w)			(OUTER_X_BORDER (w) + INNER_X_BORDER (w))
 #define Y_BORDER(w)			(OUTER_Y_BORDER (w) + INNER_Y_BORDER (w))
-#define N_CHANNELS(pe)			(PE (pe)->pattern->n_channels)
-#define N_ROWS(pe)			(PE (pe)->pattern->n_rows)
+#define N_CHANNELS(pe)			(BSE_PATTERN_N_CHANNELS (PE (pe)->pattern))
+#define N_ROWS(pe)			(BSE_PATTERN_N_ROWS (PE (pe)->pattern))
 #define	CHAR_WIDTH(pe)			(PE (pe)->char_width)
 #define	CHAR_HEIGHT(pe)			(PE (pe)->char_height)
 
@@ -184,6 +184,7 @@ enum
 {
   SIGNAL_PATTERN_STEP,
   SIGNAL_CELL_ACTIVATE,
+  SIGNAL_FOCUS_CHANGED,
   LAST_SIGNAL
 };
 typedef	void	(*SignalPatternStep)	(GtkObject	*object,
@@ -386,6 +387,9 @@ bst_pattern_editor_class_init (BstPatternEditorClass *class)
   widget_class->button_release_event = bst_pattern_editor_button_release;
   
   class->set_scroll_adjustments = bst_pattern_editor_set_scroll_adjustments;
+  class->pattern_step = NULL;
+  class->cell_activate = NULL;
+  class->focus_changed = NULL;
   class->pea_ktab = g_hash_table_new (NULL, NULL);
   
   widget_class->set_scroll_adjustments_signal =
@@ -416,6 +420,15 @@ bst_pattern_editor_class_init (BstPatternEditorClass *class)
 		    GTK_TYPE_UINT,
 		    GTK_TYPE_UINT,
 		    GTK_TYPE_UINT,
+		    GTK_TYPE_UINT,
+		    GTK_TYPE_UINT);
+  pe_signals[SIGNAL_FOCUS_CHANGED] =
+    gtk_signal_new ("focus_changed",
+		    GTK_RUN_LAST | GTK_RUN_NO_RECURSE,
+		    object_class->type,
+		    GTK_SIGNAL_OFFSET (BstPatternEditorClass, focus_changed),
+		    gtk_marshal_NONE__UINT_UINT,
+		    GTK_TYPE_NONE, 2,
 		    GTK_TYPE_UINT,
 		    GTK_TYPE_UINT);
   gtk_object_class_add_signals (object_class, pe_signals, LAST_SIGNAL);
@@ -467,7 +480,8 @@ bst_pattern_editor_init (BstPatternEditor *pe)
   pe->last_focus_row = 0;
   pe->focus_channel = 0;
   pe->focus_row = 0;
-  pe->last_row = -1;
+  pe->focus_changed_handler = 0;
+  pe->marked_row = -1;
   pe->base_octave = 1;
   
   pe->vadjustment = NULL;
@@ -534,6 +548,12 @@ bst_pattern_editor_finalize (GtkObject *object)
   
   gtk_object_unref (GTK_OBJECT (pe->hadjustment));
   gtk_object_unref (GTK_OBJECT (pe->vadjustment));
+
+  if (pe->focus_changed_handler)
+    {
+      gtk_idle_remove (pe->focus_changed_handler);
+      pe->focus_changed_handler = 0;
+    }
   
   GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -730,12 +750,12 @@ bst_pe_size_changed (BstPatternEditor *pe)
   focus_row = pe->focus_row;
   
   g_free (pe->instruments);
-  pe->instruments = g_new (BseInstrument*, pe->pattern->n_channels);
+  pe->instruments = g_new (BseInstrument*, N_CHANNELS (pe));
   for (i = 0, list = BSE_SONG (bse_item_get_super (BSE_ITEM (pe->pattern)))->instruments;
-       list && i < pe->pattern->n_channels;
+       list && i < N_CHANNELS (pe);
        list = list->next, i++)
     pe->instruments[i] = list->data;
-  while (i < pe->pattern->n_channels)
+  while (i < N_CHANNELS (pe))
     pe->instruments[i++] = NULL;
   
   gtk_widget_queue_resize (GTK_WIDGET (pe));
@@ -1239,7 +1259,7 @@ bst_pattern_editor_realize (GtkWidget *widget)
   
   attributes.x = 0;
   attributes.y = 0;
-  attributes.width = PANEL_HEIGHT (pe);
+  attributes.width = PANEL_WIDTH (pe);
   attributes.height = HEADLINE_SA_HEIGHT (pe);
   attributes.wclass = GDK_INPUT_OUTPUT;
   attributes.event_mask = gtk_widget_get_events (widget);
@@ -1262,7 +1282,7 @@ bst_pattern_editor_realize (GtkWidget *widget)
   
   attributes.x = 0;
   attributes.y = 0;
-  attributes.width = PANEL_HEIGHT (pe);
+  attributes.width = PANEL_WIDTH (pe);
   attributes.height = PANEL_HEIGHT (pe);
   attributes.wclass = GDK_INPUT_OUTPUT;
   attributes.event_mask = gtk_widget_get_events (widget);
@@ -1970,6 +1990,26 @@ bst_pattern_editor_set_octave (BstPatternEditor *pe,
   pe->base_octave = CLAMP (octave, min_octave, max_octave);
 }
 
+static gboolean
+focus_changed_notifier (gpointer data)
+{
+  BstPatternEditor *pe = BST_PATTERN_EDITOR (data);
+
+  /* only notify if we're really idle */
+  if (g_main_pending ())
+    return TRUE;
+
+  if (GTK_WIDGET_DRAWABLE (pe))
+    gtk_signal_emit (GTK_OBJECT (pe),
+		     pe_signals[SIGNAL_FOCUS_CHANGED],
+		     pe->focus_channel,
+		     pe->focus_row);
+  pe->focus_changed_handler = 0;
+  gtk_widget_unref (data);
+
+  return FALSE;
+}
+
 void
 bst_pattern_editor_set_focus (BstPatternEditor *pe,
 			      guint		channel,
@@ -1984,10 +2024,10 @@ bst_pattern_editor_set_focus (BstPatternEditor *pe,
   
   widget = GTK_WIDGET (pe);
   
-  if (channel >= pe->pattern->n_channels)
-    channel = pe->pattern->n_channels - 1;
-  if (row >= pe->pattern->n_rows)
-    row = pe->pattern->n_rows - 1;
+  if (channel >= N_CHANNELS (pe))
+    channel = N_CHANNELS (pe) - 1;
+  if (row >= N_ROWS (pe))
+    row = N_ROWS (pe) - 1;
   
   old_channel = pe->focus_channel;
   old_row = pe->focus_row;
@@ -2017,6 +2057,11 @@ bst_pattern_editor_set_focus (BstPatternEditor *pe,
   pe->last_focus_row = pe->focus_row;
 
   bst_pattern_editor_adjust_sas (pe, FALSE);
+  if (!pe->focus_changed_handler)
+    {
+      gtk_widget_ref (widget);
+      pe->focus_changed_handler = gtk_idle_add (focus_changed_notifier, pe);
+    }
 }
 
 static gint
@@ -2102,7 +2147,7 @@ bst_pattern_editor_button_press (GtkWidget	*widget,
       gint channel;
       
       if (bst_pattern_editor_get_clamped_cell (pe, event->x, 0, NULL, &channel, NULL) &&
-	  event->button == 3 && channel < pe->pattern->n_channels)
+	  event->button == 3 && channel < N_CHANNELS (pe))
 	bst_pattern_editor_channel_popup (pe, channel, event->button, event->time);
       
       handled = TRUE;
@@ -2245,18 +2290,18 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
 	  focus_row -= (pe->next_moves_up != 0);
 	  focus_row += (pe->next_moves_down != 0);
 	  break;
-	case BST_PEA_MOVE_LEFT:		focus_channel--;				break;
-	case BST_PEA_MOVE_RIGHT:	focus_channel++;				break;
-	case BST_PEA_MOVE_UP:		focus_row--;					break;
-	case BST_PEA_MOVE_DOWN:		focus_row++;					break;
-	case BST_PEA_MOVE_PAGE_LEFT:	focus_channel -= pe->channel_page;		break;
-	case BST_PEA_MOVE_PAGE_RIGHT:	focus_channel += pe->channel_page;		break;
-	case BST_PEA_MOVE_PAGE_UP:	focus_row -= pe->row_page;			break;
-	case BST_PEA_MOVE_PAGE_DOWN:	focus_row += pe->row_page;			break;
-	case BST_PEA_MOVE_JUMP_LEFT:	focus_channel = 0;				break;
-	case BST_PEA_MOVE_JUMP_RIGHT:	focus_channel = pe->pattern->n_channels - 1;	break;
-	case BST_PEA_MOVE_JUMP_TOP:	focus_row = 0;					break;
-	case BST_PEA_MOVE_JUMP_BOTTOM:	focus_row = pe->pattern->n_rows - 1;		break;
+	case BST_PEA_MOVE_LEFT:		focus_channel--;			break;
+	case BST_PEA_MOVE_RIGHT:	focus_channel++;			break;
+	case BST_PEA_MOVE_UP:		focus_row--;				break;
+	case BST_PEA_MOVE_DOWN:		focus_row++;				break;
+	case BST_PEA_MOVE_PAGE_LEFT:	focus_channel -= pe->channel_page;	break;
+	case BST_PEA_MOVE_PAGE_RIGHT:	focus_channel += pe->channel_page;	break;
+	case BST_PEA_MOVE_PAGE_UP:	focus_row -= pe->row_page;		break;
+	case BST_PEA_MOVE_PAGE_DOWN:	focus_row += pe->row_page;		break;
+	case BST_PEA_MOVE_JUMP_LEFT:	focus_channel = 0;			break;
+	case BST_PEA_MOVE_JUMP_RIGHT:	focus_channel = N_CHANNELS (pe) - 1;	break;
+	case BST_PEA_MOVE_JUMP_TOP:	focus_row = 0;				break;
+	case BST_PEA_MOVE_JUMP_BOTTOM:	focus_row = N_ROWS (pe) - 1;		break;
 	case BST_PEA_MOVE_PREV_PATTERN:
 	  difference = -1;
 	  new_focus_channel = focus_channel;
@@ -2276,39 +2321,39 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
 	pea_mask &= BST_PEA_WRAP_TO_NOTE;
       if (focus_channel < 0)
 	focus_channel = (pea_mask == BST_PEA_WRAP_TO_NOTE
-			 ? pe->pattern->n_channels - 1
+			 ? N_CHANNELS (pe) - 1
 			 : 0);
-      if (focus_channel >= pe->pattern->n_channels)
+      if (focus_channel >= N_CHANNELS (pe))
 	focus_channel = (pea_mask == BST_PEA_WRAP_TO_NOTE
 			 ? 0
-			 : pe->pattern->n_channels - 1);
+			 : N_CHANNELS (pe) - 1);
       if (focus_row < 0)
 	{
 	  if (pea_mask == BST_PEA_WRAP_TO_NOTE)
-	    focus_row = pe->pattern->n_rows - 1;
+	    focus_row = N_ROWS (pe) - 1;
 	  else if (pea_mask == BST_PEA_WRAP_TO_PATTERN)
 	    {
 	      difference = -1;
-	      new_focus_row = pe->pattern->n_rows + focus_row;
+	      new_focus_row = N_ROWS (pe) + focus_row;
 	      new_focus_channel = focus_channel;
 	      focus_row = 0;
 	    }
 	  else
 	    focus_row = 0;
 	}
-      if (focus_row >= pe->pattern->n_rows)
+      if (focus_row >= N_ROWS (pe))
 	{
 	  if (pea_mask == BST_PEA_WRAP_TO_NOTE)
 	    focus_row = 0;
 	  else if (pea_mask == BST_PEA_WRAP_TO_PATTERN)
 	    {
 	      difference = +1;
-	      new_focus_row = focus_row - pe->pattern->n_rows;
+	      new_focus_row = focus_row - N_ROWS (pe);
 	      new_focus_channel = focus_channel;
-	      focus_row = pe->pattern->n_rows - 1;
+	      focus_row = N_ROWS (pe) - 1;
 	    }
 	  else
-	    focus_row = pe->pattern->n_rows - 1;
+	    focus_row = N_ROWS (pe) - 1;
 	}
       /* apply changes */
       if (note != pnote->note)
@@ -2488,24 +2533,24 @@ bst_pattern_editor_channel_popup (BstPatternEditor *pe,
 }
 
 void
-bst_pattern_editor_mark_row (BstPatternEditor	    *pe,
-			     gint		     row)
+bst_pattern_editor_mark_row (BstPatternEditor *pe,
+			     gint	       row)
 {
   g_return_if_fail (pe != NULL);
   g_return_if_fail (BST_IS_PATTERN_EDITOR (pe));
   g_return_if_fail (row >= -1);
-  g_return_if_fail (row < pe->pattern->n_rows);
+  g_return_if_fail (row < N_ROWS (pe));
   
   FIXME (i am bogus);
   
-  if (pe->last_row >= 0)
+  if (pe->marked_row >= 0)
     {
-      bst_pattern_editor_draw_tone (pe, 0, pe->last_row);
+      bst_pattern_editor_draw_tone (pe, 0, pe->marked_row);
     }
-  pe->last_row = row;
-  if (pe->last_row >= 0)
+  pe->marked_row = row;
+  if (pe->marked_row >= 0)
     {
-      bst_pattern_editor_draw_tone (pe, 0, pe->last_row);
+      bst_pattern_editor_draw_tone (pe, 0, pe->marked_row);
     }
 }
 

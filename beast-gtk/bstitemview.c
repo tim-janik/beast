@@ -68,7 +68,7 @@ bst_item_view_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
       
-      item_view_type = gtk_type_unique (GTK_TYPE_VPANED, &item_view_info);
+      item_view_type = gtk_type_unique (GTK_TYPE_ALIGNMENT, &item_view_info);
     }
   
   return item_view_type;
@@ -82,7 +82,7 @@ bst_item_view_class_init (BstItemViewClass *class)
   object_class = GTK_OBJECT_CLASS (class);
   
   bst_item_view_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_VPANED);
+  parent_class = gtk_type_class (GTK_TYPE_ALIGNMENT);
   
   object_class->destroy = bst_item_view_destroy;
   object_class->finalize = bst_item_view_finalize;
@@ -99,9 +99,16 @@ static void
 bst_item_view_init (BstItemView      *item_view,
 		    BstItemViewClass *real_class)
 {
+  item_view->paned = gtk_widget_new (GTK_TYPE_VPANED,
+				     "visible", TRUE,
+				     "parent", item_view,
+				     NULL);
+  gtk_widget_ref (item_view->paned);
+
   item_view->item_type = 0;
   item_view->container = NULL;
   item_view->id_format = g_strdup ("%03u");
+  item_view->item_list_pos = 0;
   item_view->item_clist = NULL;
   item_view->param_view = NULL;
   item_view->op_widgets = g_new0 (GtkWidget*, real_class->n_ops);
@@ -111,7 +118,7 @@ bst_item_view_init (BstItemView      *item_view,
 static void
 bst_item_view_destroy_contents (BstItemView *item_view)
 {
-  gtk_container_foreach (GTK_CONTAINER (item_view), (GtkCallback) gtk_widget_destroy, NULL);
+  gtk_container_foreach (GTK_CONTAINER (item_view->paned), (GtkCallback) gtk_widget_destroy, NULL);
 }
 
 static void
@@ -142,6 +149,8 @@ bst_item_view_finalize (GtkObject *object)
   g_free (item_view->id_format);
   g_free (item_view->op_widgets);
   
+  gtk_widget_unref (item_view->paned);
+
   GTK_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -199,11 +208,11 @@ bst_item_view_build_param_view (BstItemView *item_view)
 		      "visible", TRUE,
 		      default_param_view_height > 0 ? "height" : NULL, default_param_view_height,
 		      NULL);
-      gtk_paned_pack2 (GTK_PANED (item_view),
-		       item_view->param_view,
-		       TRUE,
-		       TRUE);
-	
+      (item_view->item_list_pos ? gtk_paned_pack1 : gtk_paned_pack2) (GTK_PANED (item_view->paned),
+								      item_view->param_view,
+								      TRUE,
+								      TRUE);
+      
       bst_param_view_set_object (BST_PARAM_VIEW (item_view->param_view),
 				 (BseObject*) bst_item_view_get_current (item_view));
     }
@@ -359,18 +368,6 @@ bst_item_view_set_container (BstItemView  *item_view,
 }
 
 static void
-clist_adjust_visibility (GtkCList *clist)
-{
-  if (clist->selection)
-    {
-      gint row = GPOINTER_TO_INT (clist->selection->data);
-      
-      if (gtk_clist_row_is_visible (clist, row) != GTK_VISIBILITY_FULL)
-	gtk_clist_moveto (clist, row, -1, 0.5, 0);
-    }
-}
-
-static void
 bst_item_view_selection_changed (BstItemView *item_view)
 {
   GtkCList *clist = GTK_CLIST (item_view->item_clist);
@@ -379,7 +376,7 @@ bst_item_view_selection_changed (BstItemView *item_view)
     bst_param_view_set_object (BST_PARAM_VIEW (item_view->param_view),
 			       (BseObject*) bst_item_view_get_current (item_view));
 
-  clist_adjust_visibility (clist);
+  gtk_clist_moveto_selection (clist);
 }
 
 static void
@@ -413,11 +410,11 @@ bst_item_view_rebuild (BstItemView *item_view)
 			     "border_width", 5,
 			     "visible", TRUE,
 			     NULL);
-  gtk_paned_pack1 (GTK_PANED (item_view),
-		   list_box,
-		   FALSE,
-		   FALSE);
-
+  (item_view->item_list_pos ? gtk_paned_pack2 : gtk_paned_pack1) (GTK_PANED (item_view->paned),
+								  list_box,
+								  FALSE,
+								  FALSE);
+  
   /* action buttons
    */
   vbox = gtk_widget_new (GTK_TYPE_VBOX,
@@ -477,8 +474,8 @@ bst_item_view_rebuild (BstItemView *item_view)
 		    "height", 60,
 		    "signal::destroy", gtk_widget_destroyed, &item_view->item_clist,
 		    "object_signal::select_row", bst_item_view_selection_changed, item_view,
-		    "signal_after::size_allocate", clist_adjust_visibility, NULL,
-		    "signal_after::map", clist_adjust_visibility, NULL,
+		    "signal_after::size_allocate", gtk_clist_moveto_selection, NULL,
+		    "signal_after::map", gtk_clist_moveto_selection, NULL,
 		    "visible", TRUE,
 		    "parent", gtk_widget_new (GTK_TYPE_SCROLLED_WINDOW,
 					      "visible", TRUE,
@@ -640,4 +637,61 @@ bst_item_view_can_operate (BstItemView *item_view,
   gtk_widget_unref (GTK_WIDGET (item_view));
   
   return can_do;
+}
+
+void
+bst_item_view_set_layout (BstItemView *item_view,
+			  gboolean     horizontal,
+			  guint        pos)
+{
+  GtkWidget *child1, *child2;
+
+  g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
+
+  if (item_view->item_list_pos)
+    {
+      child2 = GTK_PANED (item_view->paned)->child1;
+      child1 = GTK_PANED (item_view->paned)->child2;
+    }
+  else
+    {
+      child1 = GTK_PANED (item_view->paned)->child1;
+      child2 = GTK_PANED (item_view->paned)->child2;
+    }
+  if (child1)
+    {
+      gtk_widget_ref (child1);
+      gtk_container_remove (GTK_CONTAINER (child1->parent), child1);
+    }
+  if (child2)
+    {
+      gtk_widget_ref (child2);
+      gtk_container_remove (GTK_CONTAINER (child2->parent), child2);
+    }
+  gtk_widget_destroy (item_view->paned);
+  gtk_widget_unref (item_view->paned);
+
+  item_view->item_list_pos = pos ? 1 : 0;
+
+  item_view->paned = gtk_widget_new (horizontal ? GTK_TYPE_HPANED : GTK_TYPE_VPANED,
+				     "visible", TRUE,
+				     "parent", item_view,
+				     NULL);
+  gtk_widget_ref (item_view->paned);
+  if (child1)
+    {
+      (item_view->item_list_pos ? gtk_paned_pack2 : gtk_paned_pack1) (GTK_PANED (item_view->paned),
+								      child1,
+								      FALSE,
+								      FALSE);
+      gtk_widget_unref (child1);
+    }
+  if (child2)
+    {
+      (item_view->item_list_pos ? gtk_paned_pack1 : gtk_paned_pack2) (GTK_PANED (item_view->paned),
+								      child2,
+								      TRUE,
+								      TRUE);
+      gtk_widget_unref (child2);
+    }
 }
