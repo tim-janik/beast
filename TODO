@@ -218,6 +218,7 @@ DOCS:
 - allow commas in @refBlurb{}, respectively Info BLURB = ","; texts [alper]
 - plugin-devel: mention possibility of deriving from BassFilterProperties() for expensive
   table etc. calculations
+- automate uploading of images from docs/ to gtk.org:/web/beast/html/cvs-images/
 
 FEATURE-EXTRACT/-COMPARE:
 - base frequency feature
