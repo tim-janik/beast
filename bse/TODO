@@ -25,6 +25,7 @@ NEW:
   and avoid lock contentions during playback)
 - during playback the instrument set needs to be fixed on a song  
 - BSE_SOURCE_GET_CLASS (source)->remove_input() add GslTrans* so clear_input removes really in batches
+- add pre-amplification (0..1) to freeverb for clip prevention
   
 OLD:
 general:

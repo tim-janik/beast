@@ -215,18 +215,18 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
 
+  ichannel = bse_source_class_add_ichannel (source_class, "Freq In", "Oscillating Frequency Input");
+  g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_FREQ);
+  ichannel = bse_source_class_add_ichannel (source_class, "Freq Mod In", "Frequency Modulation Input");
+  g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD);
+  ichannel = bse_source_class_add_ichannel (source_class, "PWM In", "Pulse Width Modulation Input");
+  g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_PWM);
+  ichannel = bse_source_class_add_ichannel (source_class, "Sync In", "Syncronization Input");
+  g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_SYNC);
   ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", "Oscillated Output");
   g_assert (ochannel == BSE_STANDARD_OSC_OCHANNEL_OSC);
   ochannel = bse_source_class_add_ochannel (source_class, "Sync Out", "Syncronization Output");
   g_assert (ochannel == BSE_STANDARD_OSC_OCHANNEL_SYNC);
-  ichannel = bse_source_class_add_ichannel (source_class, "Freq In", "Oscillating Frequency Input");
-  g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_FREQ);
-  ichannel = bse_source_class_add_ichannel (source_class, "Modulation In", "Frequency Modulation Input");
-  g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_FREQ_MOD);
-  ichannel = bse_source_class_add_ichannel (source_class, "Sync In", "Syncronization Input");
-  g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_SYNC);
-  ichannel = bse_source_class_add_ichannel (source_class, "PWM In", "Pulse Width Modulation Input");
-  g_assert (ichannel == BSE_STANDARD_OSC_ICHANNEL_PWM);
 }
 
 static void
