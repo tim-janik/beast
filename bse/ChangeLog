@@ -1,3 +1,14 @@
+Tue Sep 14 13:42:11 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.cc: cleanup control handler if the last module is
+	removed from the control handler module list.
+
+	* bsesource.c: count :automate: properties as :prepared: properties.
+
+	* bsesource.proc: provide bse_source_is_prepared(), 
+	bse_source_set_automation(), bse_source_get_automation_channel() and
+	bse_source_get_automation_control().
+
 Tue Sep 14 09:24:27 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesource.[hc]: allow a MIDI channel to be specified together with

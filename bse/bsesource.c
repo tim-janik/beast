@@ -354,11 +354,12 @@ source_class_collect_properties (BseSourceClass *class)
       GParamSpec **pspecs = g_object_class_list_properties (G_OBJECT_CLASS (class), &n);
       for (i = 0; i < n; i++)
         {
-          if (sfi_pspec_check_option (pspecs[i], "prepared") ||
-              sfi_pspec_check_option (pspecs[i], "unprepared"))
+          gboolean automate = sfi_pspec_check_option (pspecs[i], "automate");
+          gboolean preparation = automate || (sfi_pspec_check_option (pspecs[i], "prepared") ||
+                                              sfi_pspec_check_option (pspecs[i], "unprepared"));
+          if (preparation)
             class->unprepared_properties = sfi_ring_append (class->unprepared_properties, pspecs[i]);
-          if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspecs[i]), G_TYPE_DOUBLE) &&
-              sfi_pspec_check_option (pspecs[i], "automate"))
+          if (automate && g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspecs[i]), G_TYPE_DOUBLE))
             class->automation_properties = sfi_ring_append (class->automation_properties, pspecs[i]);
         }
       g_free (pspecs);

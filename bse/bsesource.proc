@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2000-2003 Tim Janik
+ * Copyright (C) 2000-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@
 #include <bse/bsesource.h>
 #include <bse/bseundostack.h>
 #include <bse/gslieee754.h>
+#include <bse/bsemidievent.h>
 
 
 AUTHORS	= "Tim Janik <timj@gtk.org>";
@@ -702,3 +703,126 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
+METHOD (BseSource, set-automation) {
+  HELP	= "Setup automation parameters for a property.";
+  IN	= bse_param_spec_object ("source", NULL, NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_string ("property_name", NULL, "Item property name",
+                            NULL, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_int ("midi_channel", _("MIDI Channel"), _("The MIDI Channel from which automation events should be received, 0 designates the default MIDI channel"),
+                         0, 0, BSE_MIDI_MAX_CHANNELS, 1, SFI_PARAM_STANDARD ":scale:unprepared");
+  IN    = bse_param_spec_genum ("control_type", _("Control Type"), _("The type of control events used for automation"),
+                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_CONTINUOUS_16, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_genum ("error", "Error", NULL, BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source       = bse_value_get_object (in_values++);
+  gchar     *property     = sfi_value_get_string (in_values++);
+  guint      midi_channel = sfi_value_get_int (in_values++);
+  guint      control_type = g_value_get_enum (in_values++);
+  BseErrorType error = BSE_ERROR_NONE;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || !property)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* connect */
+  guint old_midi_channel = 0;
+  guint old_control_type = 0;
+  bse_source_get_automation_property (source, property, &old_midi_channel, &old_control_type);
+  if (old_midi_channel != midi_channel || old_control_type != control_type)
+    {
+      error = bse_source_set_automation_property (source, property, midi_channel, control_type);
+      if (error == BSE_ERROR_NONE)
+        bse_item_push_undo_proc (source, "set-automation", source, property, old_midi_channel, old_control_type);
+    }
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, get-automation-channel) {
+  HELP	= "Get MIDI channel from an automation property.";
+  IN	= bse_param_spec_object ("source", NULL, NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_string ("property_name", NULL, "Item property name",
+                            NULL, SFI_PARAM_STANDARD);
+  OUT   = sfi_pspec_int ("midi_channel", NULL, NULL, 0, 0, BSE_MIDI_MAX_CHANNELS, 1, SFI_PARAM_STANDARD ":scale:unprepared");
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source       = bse_value_get_object (in_values++);
+  gchar     *property     = sfi_value_get_string (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || !property)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* connect */
+  guint midi_channel = 0;
+  bse_source_get_automation_property (source, property, &midi_channel, NULL);
+  /* set output parameters */
+  g_value_set_int (out_values++, midi_channel);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, get-automation-control) {
+  HELP	= "Get control type from an automation property.";
+  IN	= bse_param_spec_object ("source", NULL, NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
+  IN    = sfi_pspec_string ("property_name", NULL, "Item property name",
+                            NULL, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_genum ("control_type", NULL, NULL, BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_CONTINUOUS_16, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source       = bse_value_get_object (in_values++);
+  gchar     *property     = sfi_value_get_string (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || !property)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* connect */
+  guint control_type = 0;
+  bse_source_get_automation_property (source, property, NULL, &control_type);
+  /* set output parameters */
+  g_value_set_enum (out_values++, control_type);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, is-prepared) {
+  HELP  = "Check whether a source is prepared for synthesis processing.";
+  IN	= bse_param_spec_object ("source", NULL, NULL,
+				 BSE_TYPE_SOURCE, SFI_PARAM_STANDARD);
+  OUT   = sfi_pspec_bool ("is_prepared", NULL, NULL, FALSE, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source       = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  sfi_value_set_bool (out_values++, BSE_SOURCE_PREPARED (source));
+
+  return BSE_ERROR_NONE;
+}

@@ -137,6 +137,8 @@ struct ControlValue {
     g_return_if_fail (it != handlers.end());
     ControlHandler *ch = const_cast<ControlHandler*> (&(*it));
     ch->remove_module (module);
+    if (ch->modules.size() == 0)
+      handlers.erase (it);
   }
   void
   notify_handlers (guint64           tick_stamp,
