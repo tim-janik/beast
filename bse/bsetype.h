@@ -147,10 +147,6 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_choice (name, nick, blurb, #dval, cvalues, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_Choice_default(group, name, cvalues) \
   sfidl_pspec_Choice (group, name, NULL, NULL, NULL, SFI_PARAM_STANDARD, cvalues)
-#define sfidl_pspec_GEnum(group, name, nick, blurb, dval, options, etype) \
-  sfi_pspec_set_group (bse_param_spec_genum (name, nick, blurb, etype, dval, options), group)
-#define sfidl_pspec_GEnum_default(group, name, etype) \
-  sfi_pspec_set_group (bse_param_spec_genum (name, NULL, NULL, etype, 0, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_String(group, name, nick, blurb, dflt, options) \
   sfi_pspec_set_group (sfi_pspec_string (name, nick, blurb, dflt, options), group)
 #define sfidl_pspec_String_default(group, name) \
@@ -175,6 +171,15 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (sfi_pspec_seq (name, nick, blurb, element, options), group)
 #define sfidl_pspec_Sequence_default(group, name, element) \
   sfidl_pspec_Sequence (group, name, NULL, NULL, SFI_PARAM_STANDARD, element)
+#define sfidl_pspec_Object_default(group, name) \
+  sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_STANDARD), group)
+#define sfidl_pspec_Object(group, name, nick, blurb, options) \
+  sfi_pspec_set_group (sfi_pspec_proxy (name, nick, blurb, options), group)
+/* pspecs with GType */
+#define sfidl_pspec_GEnum(group, name, nick, blurb, dval, options, etype) \
+  sfi_pspec_set_group (bse_param_spec_genum (name, nick, blurb, etype, dval, options), group)
+#define sfidl_pspec_GEnum_default(group, name, etype) \
+  sfi_pspec_set_group (bse_param_spec_genum (name, NULL, NULL, etype, 0, SFI_PARAM_STANDARD), group)
 #define sfidl_pspec_BoxedRec(group, name, nick, blurb, options, rectype) \
   sfi_pspec_set_group (bse_param_spec_boxed (name, nick, blurb, rectype, options), group)
 #define sfidl_pspec_BoxedRec_default(group, name, rectype) \
@@ -183,10 +188,10 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
   sfi_pspec_set_group (bse_param_spec_boxed (name, nick, blurb, seqtype, options), group)
 #define sfidl_pspec_BoxedSeq_default(group, name, seqtype) \
   sfidl_pspec_BoxedSeq (group, name, NULL, NULL, SFI_PARAM_STANDARD, seqtype)
-#define sfidl_pspec_Proxy_default(group, name) \
-  sfi_pspec_set_group (sfi_pspec_proxy (name, NULL, NULL, SFI_PARAM_STANDARD), group)
-#define sfidl_pspec_Object_default(group, name, otype) \
+#define sfidl_pspec_TypedObject_default(group, name, otype) \
   sfi_pspec_set_group (bse_param_spec_object (name, NULL, NULL, otype, SFI_PARAM_STANDARD), group)
+#define sfidl_pspec_TypedObject(group, name, nick, blurb, options, otype) \
+  sfi_pspec_set_group (bse_param_spec_object (name, nick, blurb, otype, options), group)
 
 
 G_END_DECLS

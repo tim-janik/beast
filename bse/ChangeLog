@@ -1,3 +1,12 @@
+Sat Sep  4 04:54:34 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl: option cleanups. provide NOTE_*() macros for Note()
+	properties.
+
+	* bsetype.h: pspec constructor cleanups and adaptions.
+
+	* bseinfo.c: provide octave info.
+
 Fri Sep  3 14:30:34 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.[hc]: added store/restore support for ::inputs. made

@@ -21,21 +21,40 @@ namespace Bse {
 using namespace Sfi;
 
 /* param options */
-Const READWRITE = ":r:w:";
-Const STORAGE = ":r:w:S:";
-Const DEFAULT = ":r:w:G:S:";
-Const GUI = ":r:w:G:";
-Const DEFAULT_RDONLY = ":r:w:G:S:ro:";
-Const GUI_RDONLY = ":r:w:G:ro:";
-/* extra flags */
-Const SKIP_DEFAULT = ":skip-default:";
-Const SKIP_UNDO = ":skip-undo:";
-Const STANDARD = DEFAULT;
-
+Const READWRITE       = ":r:w:";
+Const STORAGE         = ":r:w:S:";
+Const STANDARD        = ":r:w:S:G:";
+Const STANDARD_RDONLY = ":r:w:S:G:ro:";
+Const GUI             = ":r:w:G:";
+Const GUI_RDONLY      = ":r:w:G:ro:";
+Const GUI_READABLE    = ":r:G:";
+/* extra options */
+Const SKIP_DEFAULT    = ":skip-default:";
+Const SKIP_UNDO       = ":skip-undo:";
+Const DEFAULT = STANDARD; // FIXME: remove
+/* numeric constants */
 Const MAXINT = +2147483647;
 Const MININT = -2147483648;
 Const MAXNUM = +9223372036854775807;
 Const MINNUM = -9223372036854775808;
+/* note numbers */
+ConstIdent NOTE_C   = SFI_NOTE_C;
+ConstIdent NOTE_Cis = SFI_NOTE_Cis;
+ConstIdent NOTE_Des = SFI_NOTE_Des;
+ConstIdent NOTE_D   = SFI_NOTE_D;
+ConstIdent NOTE_Dis = SFI_NOTE_Dis;
+ConstIdent NOTE_Es  = SFI_NOTE_Es;
+ConstIdent NOTE_E   = SFI_NOTE_E;
+ConstIdent NOTE_F   = SFI_NOTE_F;
+ConstIdent NOTE_Fis = SFI_NOTE_Fis;
+ConstIdent NOTE_Ges = SFI_NOTE_Ges;
+ConstIdent NOTE_G   = SFI_NOTE_G;
+ConstIdent NOTE_Gis = SFI_NOTE_Gis;
+ConstIdent NOTE_As  = SFI_NOTE_As;
+ConstIdent NOTE_A   = SFI_NOTE_A;
+ConstIdent NOTE_Ais = SFI_NOTE_Ais;
+ConstIdent NOTE_Bes = SFI_NOTE_Bes;
+ConstIdent NOTE_B   = SFI_NOTE_B;
 
 
 choice MidiSignalType {

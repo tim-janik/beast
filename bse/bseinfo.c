@@ -22,6 +22,13 @@
 #define	FLF	"26.20"
 
 static void
+print_int (const gchar *name,
+           gint         integer)
+{
+  g_print ("%s =%-4d\n", name, integer);
+}
+
+static void
 print_note (const gchar *note_name,
 	    gint         note)
 {
@@ -54,6 +61,8 @@ main (gint   argc,
   bse_init_intern (&argc, &argv, NULL);
   
   g_print ("Rate relevant limits:\n");
+  print_int       ("BSE_MIN_OCTAVE   ", BSE_MIN_OCTAVE);
+  print_int       ("BSE_MAX_OCTAVE   ", BSE_MAX_OCTAVE);
   print_note      ("BSE_MIN_NOTE     ", BSE_MIN_NOTE);
   print_note      ("BSE_KAMMER_NOTE  ", BSE_KAMMER_NOTE);
   print_note      ("BSE_MAX_NOTE     ", BSE_MAX_NOTE);
