@@ -32,16 +32,12 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <list>
 
 using namespace std;
 
 struct Options {
   string	      programName;
-  FILE		     *extractStartTime;     /* NULL if start time feature should not be extracted */
-  FILE		     *extractEndTime;	    /* NULL if end time feature should not be extracted */
-  FILE		     *extractSpectrum;	    /* NULL if spectrum should not be extracted */
-  FILE		     *extractAvgSpectrum;   /* NULL if average spectrum should not be extracted */
-  FILE               *extractAvgEnergy;     /* NULL if average energy should not be extracted */
   guint               channel;
 
   map<string, FILE*>  outputFiles;
@@ -53,10 +49,328 @@ struct Options {
   FILE *openOutputFile (const char *filename);
 } options;
 
+class Signal
+{
+  mutable GslDataPeekBuffer peek_buffer;
+  GslDataHandle	 *data_handle;
+  guint		  signal_n_channels;
+  GslLong	  signal_length;
+
+public:
+  Signal (GslDataHandle *data_handle)
+    : data_handle (data_handle)
+  {
+    signal_n_channels = gsl_data_handle_n_channels (data_handle);
+    signal_length = gsl_data_handle_length (data_handle);
+
+    memset (&peek_buffer, 0, sizeof (peek_buffer));
+    peek_buffer.dir = 1; /* incremental direction */;
+  }
+
+  GslLong length() const
+  {
+    return signal_length;
+  }
+
+  guint n_channels() const
+  {
+    return signal_n_channels;
+  }
+
+  double operator[] (GslLong k) const
+  {
+    return gsl_data_handle_peek_value (data_handle, k, &peek_buffer);
+  }
+  
+  double mix_freq() const
+  {
+    return data_handle->setup.mix_freq;
+  }
+
+  double time_ms (GslLong k) const
+  {
+    GslLong n_frames = k / n_channels();
+    return n_frames * 1000.0 / mix_freq();
+  }
+};
+
+struct Feature;
+
+list<Feature *> featureList;
+
+struct Feature
+{
+  const char *option;
+  const char *description;
+  FILE *outputFile;
+
+  void printValue (double data) const
+  {
+    fprintf (outputFile, "%f\n", data);
+  }
+
+  void printVector (const vector<double>& data) const
+  {
+    for (vector<double>::const_iterator di = data.begin(); di != data.end(); di++)
+      fprintf (outputFile, (di == data.begin() ? "%f" : " %f"), *di);
+    fprintf (outputFile, "\n");
+  }
+
+  Feature (const char *option, const char *description)
+    : option (option), description (description), outputFile (NULL)
+  {
+  }
+
+  virtual void compute (const Signal& signal) = 0;
+  virtual void printResults() const = 0;
+  virtual ~Feature()
+  {
+  }
+};
+
+struct StartTimeFeature : public Feature
+{
+  double startTime;
+  StartTimeFeature() : Feature ("--start-time", "signal start time in ms (first non-zero sample)")
+  {
+    startTime = -1;
+  }
+  void compute (const Signal& signal)
+  {
+    for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
+      {
+	if (signal[l] != 0)
+	  {
+	    startTime = signal.time_ms (l);
+	    return;
+	  }
+      }
+  }
+  void printResults() const
+  {
+    printValue (startTime);
+  }
+};
+
+struct EndTimeFeature : public Feature
+{
+  double endTime;
+  EndTimeFeature() : Feature ("--end-time", "signal end time in ms (last non-zero sample)")
+  {
+    endTime = -1;
+  }
+  void compute (const Signal& signal)
+  {
+    for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
+      {
+	if (signal[l] != 0)
+	  endTime = signal.time_ms (l);
+      }
+  }
+  void printResults() const
+  {
+    printValue (endTime);
+  }
+};
+
+struct SpectrumFeature : public Feature
+{
+  vector< vector<double> > spectrum;
+
+  SpectrumFeature() : Feature ("--spectrum", "frequency spectrum")
+  {
+  }
+
+  vector<double>
+  build_frequency_vector (GslLong size,
+			  double *samples)
+  {
+    vector<double> fvector;
+    double in[size], c[size + 2], *im;
+    gint i;
+
+    for (i = 0; i < size; i++)
+      in[i] = gsl_window_blackman (2.0 * i / size - 1.0) * samples[i]; /* gsl blackman window is defined in range [-1, 1] */
+
+    gsl_power2_fftar (size, in, c);
+    c[size] = c[1];
+    c[size + 1] = 0;
+    c[1] = 0;
+    im = c + 1;
+
+    for (i = 0; i <= size >> 1; i++)
+      {
+	double abs = sqrt (c[i << 1] * c[i << 1] + im[i << 1] * im[i << 1]);
+	/* FIXME: is this the correct normalization? */
+	fvector.push_back (abs / size);
+      }
+    return fvector;
+  }
+
+  vector<double>
+  collapse_frequency_vector (const vector<double>& fvector,
+			     double mix_freq,
+			     double first_freq,
+			     double factor)
+  {
+    vector<double> result;
+    double value = 0;
+    int count = 0;
+
+    for (size_t j = 0; j < fvector.size(); j++)
+      {
+	double freq = (j * mix_freq) / (fvector.size() - 1) / 2;
+	while (freq > first_freq)
+	  {
+	    if (count)
+	      result.push_back (value);
+	    count = 0;
+	    value = 0;
+	    first_freq *= factor;
+	  }
+
+	value += fvector[j];
+	count++;
+      }
+
+    if (count)
+      result.push_back (value);
+
+    return result;
+  }
+
+  void compute (const Signal& signal)
+  {
+    if (spectrum.size()) /* don't compute the same feature twice */
+      return;
+
+    double file_size_ms = signal.time_ms (signal.length());
+
+    for (double offset_ms = 0; offset_ms < file_size_ms; offset_ms += 30) /* extract a feature vector every 30 ms */
+      {
+	GslLong extract_frame = GslLong (offset_ms / file_size_ms * signal.length() / signal.n_channels());
+
+	double samples[4096];
+	bool skip = false;
+	GslLong k = extract_frame * signal.n_channels() + options.channel;
+
+	for (int j = 0; j < 4096; j++)
+	  {
+	    if (k < signal.length())
+	      samples[j] = signal[k];
+	    else
+	      skip = true; /* alternative implementation: fill up with zeros;
+			      however this results in click features being extracted at eof */
+	    k += signal.n_channels();
+	  }
+
+	if (!skip)
+	  {
+	    vector<double> fvector = build_frequency_vector (4096, samples);
+	    spectrum.push_back (collapse_frequency_vector (fvector, signal.mix_freq(), 50, 1.6));
+	  }
+      }
+  }
+
+  void printResults() const
+  {
+    for (vector< vector<double> >::const_iterator si = spectrum.begin(); si != spectrum.end(); si++)
+      printVector (*si);
+  }
+};
+
+struct AvgSpectrumFeature : public Feature
+{
+  SpectrumFeature *spectrumFeature;
+  vector<double> avg_spectrum;
+
+  AvgSpectrumFeature (SpectrumFeature *spectrumFeature) : Feature ("--avg-spectrum", "average frequency spectrum"),
+							  spectrumFeature (spectrumFeature)
+  {
+  }
+
+  void compute (const Signal& signal)
+  {
+    /*
+     * dependancy: we need the spectrum to compute the average spectrum
+     */
+    spectrumFeature->compute (signal);
+
+    for (vector< vector<double> >::const_iterator si = spectrumFeature->spectrum.begin(); si != spectrumFeature->spectrum.end(); si++)
+    {
+      avg_spectrum.resize (si->size());
+      for (size_t j = 0; j < si->size(); j++)
+	avg_spectrum[j] += (*si)[j] / spectrumFeature->spectrum.size();
+    }
+  }
+  void printResults() const
+  {
+    printVector (avg_spectrum);
+  }
+};
+
+struct AvgEnergyFeature : public Feature
+{
+  double avg_energy;
+
+  AvgEnergyFeature() : Feature ("--avg-energy", "average signal energy in dB")
+  {
+    avg_energy = 0;
+  }
+
+  void compute (const Signal& signal)
+  {
+    GslLong avg_energy_count = 0;
+    for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
+      {
+	double sample = signal[l];
+
+	avg_energy += sample * sample;
+	avg_energy_count++;
+      }
+
+    if (avg_energy_count)
+      avg_energy /= avg_energy_count;
+
+    avg_energy = 10 * log (avg_energy) / log (10);
+  }
+
+  void printResults() const
+  {
+    fprintf (outputFile, "%f\n", avg_energy);
+  }
+};
+
+struct MinMaxPeakFeature : public Feature
+{
+  double min_peak;
+  double max_peak;
+
+  MinMaxPeakFeature() : Feature ("--min-max-peak", "minimum and maximum signal peak")
+  {
+    min_peak = 0;
+    max_peak = 0;
+  }
+
+  void compute (const Signal& signal)
+  {
+    for (GslLong l = options.channel; l < signal.length(); l += signal.n_channels())
+      {
+	min_peak = min (signal[l], min_peak);
+	max_peak = max (signal[l], max_peak);
+      }
+  }
+
+  void printResults() const
+  {
+    fprintf (outputFile, "%f\n", min_peak);
+    fprintf (outputFile, "%f\n", max_peak);
+  }
+};
+
 Options::Options ()
 {
   programName = "bsefextract";
-  extractStartTime = extractEndTime = NULL;
   channel = 0;
 }
 
@@ -100,45 +414,21 @@ void Options::parse (int *argc_p, char **argv_p[])
 
   for (i = 1; i < argc; i++)
     {
-      const char *opt = strtok (argv[i], "=");
+      char *argv_copy = g_strdup (argv[i]);
+      const char *opt = strtok (argv_copy, "=");
       const char *arg = opt ? strtok (NULL, "\n") : NULL;
 
-      if (strcmp ("--help", argv[i]) == 0)
+      if (strcmp ("--help", opt) == 0)
 	{
 	  printUsage();
 	  exit (0);
 	}
-      else if (strcmp ("--version", argv[i]) == 0)
+      else if (strcmp ("--version", opt) == 0)
 	{
 	  printf ("%s %s\n", programName.c_str(), BST_VERSION);
 	  exit (0);
 	}
-      else if (strcmp ("--start-time", opt) == 0)
-	{
-	  extractStartTime = openOutputFile (arg);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--end-time", argv[i]) == 0)
-	{
-	  extractEndTime = openOutputFile (arg);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--spectrum", argv[i]) == 0)
-	{
-	  extractSpectrum = openOutputFile (arg);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--avg-spectrum", argv[i]) == 0)
-	{
-	  extractAvgSpectrum = openOutputFile (arg);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--avg-energy", argv[i]) == 0)
-	{
-	  extractAvgEnergy = openOutputFile (arg);
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--channel", argv[i]) == 0)
+      else if (strcmp ("--channel", opt) == 0)
 	{
 	  if (!arg)
 	    {
@@ -148,6 +438,18 @@ void Options::parse (int *argc_p, char **argv_p[])
 	  channel = atoi (arg);
 	  argv[i] = NULL;
 	}
+      else
+	{
+	  for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
+	    {
+	      if (strcmp ((*fi)->option, opt) == 0)
+		{
+		  (*fi)->outputFile = openOutputFile (arg);
+		  argv[i] = NULL;
+		}
+	    }
+	}
+      g_free (argv_copy);
     }
 
   /* resort argc/argv */
@@ -174,11 +476,8 @@ void Options::printUsage ()
   fprintf (stderr, "usage: %s [ <options> ] <audiofile>\n", programName.c_str());
   fprintf (stderr, "\n");
   fprintf (stderr, "features that can be extracted:\n");
-  fprintf (stderr, " --start-time                signal start time in ms (first non-zero sample)\n");
-  fprintf (stderr, " --end-time                  signal end time in ms (last non-zero sample)\n");
-  fprintf (stderr, " --spectrum                  frequency spectrum\n");
-  fprintf (stderr, " --avg-spectrum              average frequency spectrum\n");
-  fprintf (stderr, " --avg-energy                average signal energy in dB\n");
+  for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
+    printf (" %-28s%s\n", (*fi)->option, (*fi)->description);
   fprintf (stderr, "\n");
   fprintf (stderr, "other options:\n");
   fprintf (stderr, " --channel=<channel>         select channel (0: left, 1: right)\n");
@@ -201,71 +500,6 @@ void printHeader (FILE *file, const char *src)
     }
 }
 
-static vector<double>
-build_frequency_vector (GslLong size,
-                        double *samples)
-{
-  vector<double> fvector;
-  double in[size], c[size + 2], *im;
-  gint i;
-
-  for (i = 0; i < size; i++)
-    in[i] = gsl_window_blackman (2.0 * i / size - 1.0) * samples[i]; /* gsl blackman window is defined in range [-1, 1] */
-
-  gsl_power2_fftar (size, in, c);
-  c[size] = c[1];
-  c[size + 1] = 0;
-  c[1] = 0;
-  im = c + 1;
-
-  for (i = 0; i <= size >> 1; i++)
-    {
-      double abs = sqrt (c[i << 1] * c[i << 1] + im[i << 1] * im[i << 1]);
-      /* FIXME: is this the correct normalization? */
-      fvector.push_back (abs / size);
-    }
-  return fvector;
-}
-
-static vector<double>
-collapse_frequency_vector (const vector<double>& fvector,
-			   double mix_freq,
-			   double first_freq,
-			   double factor)
-{
-  vector<double> result;
-  double value = 0;
-  int count = 0;
-
-  for (size_t j = 0; j < fvector.size(); j++)
-    {
-      double freq = (j * mix_freq) / (fvector.size() - 1) / 2;
-      while (freq > first_freq)
-	{
-	  if (count)
-	    result.push_back (value);
-	  count = 0;
-	  value = 0;
-	  first_freq *= factor;
-	}
-
-      value += fvector[j];
-      count++;
-    }
-
-  if (count)
-    result.push_back (value);
-
-  return result;
-}
-
-void fput_vector (FILE *file, const vector<double>& data)
-{
-  for (vector<double>::const_iterator di = data.begin(); di != data.end(); di++)
-    fprintf (file, (di == data.begin() ? "%f" : " %f"), *di);
-  fprintf (file, "\n");
-}
-
 int main (int argc, char **argv)
 {
   /* init */
@@ -281,9 +515,18 @@ int main (int argc, char **argv)
   gsl_init (gslconfig);
   /*bse_init_intern (&argc, &argv, NULL);*/
 
+  /* supported features */
+  SpectrumFeature *spectrumFeature = new SpectrumFeature;
+
+  featureList.push_back (new StartTimeFeature());
+  featureList.push_back (new EndTimeFeature());
+  featureList.push_back (spectrumFeature);
+  featureList.push_back (new AvgSpectrumFeature (spectrumFeature));
+  featureList.push_back (new AvgEnergyFeature());
+  featureList.push_back (new MinMaxPeakFeature());
+
   /* parse options */
   options.parse (&argc, &argv);
-
   if (argc != 2)
     {
       options.printUsage ();
@@ -322,144 +565,29 @@ int main (int argc, char **argv)
     }
 
   /* extract features */
-  double startTime = -1;
-  double endTime = -1;
+  Signal signal (dhandle);
 
-  guint	  n_channels = gsl_data_handle_n_channels (dhandle);
-  GslLong length = gsl_data_handle_length (dhandle);
-  GslLong offset = 0;
-
-  if (options.channel >= n_channels)
+  if (options.channel >= signal.n_channels())
     {
       fprintf (stderr, "%s: bad channel %d, input file %s has %d channels\n",
-	       options.programName.c_str(), options.channel, argv[1], n_channels);
+	       options.programName.c_str(), options.channel, argv[1], signal.n_channels());
       exit (1);
     }
-  vector<double> sample_data (n_channels);
-  gfloat values[512];
-  while (offset < length)
-    {
-      GslLong n_values = gsl_data_handle_read (dhandle, offset, sizeof (values) / sizeof (gfloat), values);
 
-      if (n_values > 0)
-	{
-	  if (options.extractStartTime || options.extractEndTime)
-	    {
-	      for (GslLong i = 0; i < n_values; i++)
-		{
-		  if (values[i] != 0)
-		    {
-		      GslLong n_frames = (offset + i) / n_channels;
-		      gfloat time = n_frames * 1000.0 / dhandle->setup.mix_freq;
-		      if (startTime < 0)
-			startTime = time;
-		      endTime = time;
-		    }
-		}
-	    }
-	  offset += n_values;
-	}
-      else
-	{
-	  fprintf (stderr, "%s: read error on input file %s\n", options.programName.c_str(), argv[1]);
-	  exit (1);
-	}
-    }
-
-  vector< vector<double> > spectrum;
-  vector<double> avg_spectrum;
-
-  if (options.extractSpectrum || options.extractAvgSpectrum)
-    {
-      double file_size_ms = 1000.0 * length / n_channels / dhandle->setup.mix_freq;
-      GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
-
-      for (double offset_ms = 0; offset_ms < file_size_ms; offset_ms += 30) /* extract a feature vector every 30 ms */
-	{
-	  GslLong extract_frame = GslLong (offset_ms / file_size_ms * length / n_channels);
-
-	  double samples[4096];
-	  bool skip = false;
-	  GslLong k = extract_frame * n_channels + options.channel;
-
-	  for (int j = 0; j < 4096; j++)
-	    {
-	      if (k < length)
-		samples[j] = gsl_data_handle_peek_value (dhandle, k, &peek_buffer);
-	      else
-		skip = true; /* alternative implementation: fill up with zeros;
-				however this results in click features being extracted at eof */
-	      k += n_channels;
-	    }
-
-	  if (!skip)
-	    {
-	      vector<double> fvector = build_frequency_vector (4096, samples);
-	      spectrum.push_back (collapse_frequency_vector (fvector, dhandle->setup.mix_freq, 50, 1.6));
-	    }
-	}
-
-      for (vector< vector<double> >::const_iterator si = spectrum.begin(); si != spectrum.end(); si++)
-	{
-	  avg_spectrum.resize (si->size());
-	  for (size_t j = 0; j < si->size(); j++)
-	    avg_spectrum[j] += (*si)[j] / spectrum.size();
-	}
-    }
-
-  double avg_energy = 0;
-  if (options.extractAvgEnergy)
-    {
-      GslDataPeekBuffer peek_buffer = { +1 /* incremental direction */, 0, };
-      GslLong avg_energy_count = 0;
-
-      for (GslLong k = options.channel; k < length; k++)
-	{
-	  double sample = gsl_data_handle_peek_value (dhandle, k, &peek_buffer);
-	  avg_energy += sample * sample;
-	  avg_energy_count++;
-	}
-
-      if (avg_energy_count)
-	avg_energy /= avg_energy_count;
-
-      avg_energy = 10 * log (avg_energy) / log (10);
-    }
+  for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
+    if ((*fi)->outputFile)
+      (*fi)->compute (signal);
 
   /* print results */
-  if (options.extractStartTime)
+  for (list<Feature*>::const_iterator fi = featureList.begin(); fi != featureList.end(); fi++)
     {
-      printHeader (options.extractStartTime, argv[1]);
-      fprintf (options.extractStartTime, "# --start-time: signal start time in ms (first non-zero sample)\n");
-      fprintf (options.extractStartTime, "%f\n", startTime);
-    }
-
-  if (options.extractEndTime)
-    {
-      printHeader (options.extractEndTime, argv[1]);
-      fprintf (options.extractEndTime, "# --end-time: signal end time in ms (last non-zero sample)\n");
-      fprintf (options.extractEndTime, "%f\n", endTime);
-    }
-
-  if (options.extractSpectrum)
-    {
-      printHeader (options.extractSpectrum, argv[1]);
-      fprintf (options.extractSpectrum, "# --spectrum: frequency spectrum\n");
-
-      for (vector< vector<double> >::const_iterator si = spectrum.begin(); si != spectrum.end(); si++)
-	fput_vector (options.extractSpectrum, *si);
-    }
-  if (options.extractAvgSpectrum)
-    {
-      printHeader (options.extractAvgSpectrum, argv[1]);
-      fprintf (options.extractAvgSpectrum, "# --avg-spectrum: average frequency spectrum\n");
-      fput_vector (options.extractAvgSpectrum, avg_spectrum);
-    }
-  if (options.extractAvgEnergy)
-    {
-      printHeader (options.extractAvgEnergy, argv[1]);
-      fprintf (options.extractAvgEnergy, "# --avg-energy: average signal energy in dB\n");
-      fprintf (options.extractAvgEnergy, "%f\n", avg_energy);
+      const Feature& feature = *(*fi);
+      if (feature.outputFile)
+	{
+	  printHeader (feature.outputFile, argv[1]);
+	  fprintf (feature.outputFile, "# %s: %s\n", feature.option, feature.description);
+	  feature.printResults();
+	}
     }
 }
 

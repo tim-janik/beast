@@ -1,3 +1,15 @@
+Wed Sep 15 17:02:38 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* tools/bsefextract.cc: Added --min-max-peak feature, which figures
+	out the smallest and largest sample.
+	Code refactoring and cleanup: each feature extraction algorithm is now
+	in a seperate class derived from class Feature. To make C++-Coding
+	convenient, there is a class Signal, which allows writing signal[5] in
+	algorithms to get the fifth input-sample.
+	While refactoring, fixed bugs in --start-time, --end-time and
+	--avg-energy features, which ignored the --channel command line
+	argument.
+
 Thu Sep 16 23:47:36 2004  Tim Janik  <timj@gtk.org>
 
 	* data/beast.xml.in: install mime type definitions.
