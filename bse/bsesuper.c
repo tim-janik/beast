@@ -145,10 +145,18 @@ bse_super_get_property (GObject     *object,
 }
 
 static void
-bse_super_do_modified (BseSuper *super,
-		       SfiTime	 stamp)
+super_modified (BseSuper *super,
+                SfiTime	 stamp)
 {
   super->mod_time = MAX (super->mod_time, stamp);
+}
+
+static void
+super_compat_finish (BseSuper       *super,
+                     guint           vmajor,
+                     guint           vminor,
+                     guint           vmicro)
+{
 }
 
 static void
@@ -167,7 +175,8 @@ bse_super_class_init (BseSuperClass *class)
   gobject_class->get_property = bse_super_get_property;
   gobject_class->finalize = bse_super_finalize;
 
-  class->modified = bse_super_do_modified;
+  class->modified = super_modified;
+  class->compat_finish = super_compat_finish;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,

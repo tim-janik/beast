@@ -20,6 +20,7 @@
 #include <bse/bsetrack.h>
 #include <bse/bsepart.h>
 #include <bse/bsesong.h>
+#include <bse/bsebus.h>
 #include <bse/bseundostack.h>
 
 
@@ -294,6 +295,44 @@ METHOD (BseTrack, get-last-tick) {
 
   /* set output parameters */
   sfi_value_set_int (out_values++, bse_track_get_last_tick (self));
+
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseTrack, ensure-output) {
+  HELP  = "Ensure the track has an output connection to a bus.";
+  IN    = bse_param_spec_object ("track", "Track", NULL,
+                                 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_genum ("error", NULL, NULL,
+                                BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseTrack *self = bse_value_get_object (in_values++);
+  BseErrorType error = BSE_ERROR_NONE;
+
+  /* check parameters */
+  if (!BSE_IS_TRACK (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  BseItem *parent = BSE_ITEM (self)->parent;
+  if (BSE_IS_SONG (parent) && !self->bus_outputs)
+    {
+      BseSong *song = BSE_SONG (parent);
+      BseBus *master = bse_song_find_master (song);
+      if (master)
+        {
+          error = bse_bus_connect (master, BSE_ITEM (self));
+          if (!error)
+            bse_item_push_undo_proc (master, "disconnect-track", self);
+        }
+    }
+
+  /* set output parameters */
+  g_value_set_enum (out_values++, error);
 
   return BSE_ERROR_NONE;
 }

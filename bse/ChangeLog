@@ -1,3 +1,20 @@
+Sat Oct 16 11:17:21 2004  Tim Janik  <timj@gtk.org>
+
+	* bsetrack.proc: provide ensure-output() which connects to master bus.
+
+	* bsesong.[hc]:
+	provide bse_song_ensure_master().
+	bse_song_compat_finish(): auto-connect old tracks to master bus.
+
+	* bsesong.proc: removed ensure-output-busses() which is really just
+	internal compat code.
+
+	* bseproject.c:
+	bse_project_restore(): allow supers to perform compat actions after
+	restoring from file.
+
+	* bsesuper.[hc]: added compat_finish() class method.
+
 Sat Oct 16 10:02:06 2004  Tim Janik  <timj@gtk.org>
 
 	* bsebus.proc: added ensure-output() to ensure a master bus connection.

@@ -60,6 +60,10 @@ struct _BseSuperClass
   
   void		(*modified)		(BseSuper	*super,
 					 SfiTime	 stamp);
+  void          (*compat_finish)        (BseSuper       *super,
+                                         guint           vmajor,
+                                         guint           vminor,
+                                         guint           vmicro);
 };
 
 

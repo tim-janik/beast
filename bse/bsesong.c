@@ -659,6 +659,74 @@ bse_song_init (BseSong *self)
 			     self->postprocess, 1);
 }
 
+static const gchar*
+master_bus_name (void)
+{
+  /* TRANSLATORS: this is the name of the master mixer bus. i.e. the final audio output bus. */
+  return _("Master");
+}
+
+BseSource*
+bse_song_ensure_master (BseSong *self)
+{
+  BseSource *child = (BseSource*) bse_song_find_master (self);
+  if (!child)
+    {
+      BseUndoStack *ustack = bse_item_undo_open (self, "create-master");
+      child = bse_container_new_child_bname (BSE_CONTAINER (self), BSE_TYPE_BUS, master_bus_name(), NULL);
+      g_object_set (child, "master-output", TRUE, NULL); /* no undo */
+      bse_item_push_undo_proc (self, "remove-bus", child);
+      bse_item_undo_close (ustack);
+    }
+  return child;
+}
+
+static void
+bse_song_compat_finish (BseSuper       *super,
+                        guint           vmajor,
+                        guint           vminor,
+                        guint           vmicro)
+{
+  BseSong *self = BSE_SONG (super);
+
+  /* chain parent class' handler */
+  BSE_SUPER_CLASS (parent_class)->compat_finish (super, vmajor, vminor, vmicro);
+
+  /* fixup old non-mixer songs */
+  if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 6, 2) <= 0)
+    {
+      /* collect all bus inputs */
+      SfiRing *node, *tracks, *inputs = NULL;
+      for (node = self->busses; node; node = sfi_ring_walk (node, self->busses))
+        inputs = sfi_ring_concat (inputs, bse_bus_list_inputs (node->data));
+      /* find tracks that are not in input list */
+      tracks = sfi_ring_copy (self->tracks_SL);
+      inputs = sfi_ring_sort (inputs, sfi_pointer_cmp, NULL);
+      tracks = sfi_ring_sort (tracks, sfi_pointer_cmp, NULL);
+      node = sfi_ring_difference (tracks, inputs, sfi_pointer_cmp, NULL);
+      sfi_ring_free (inputs);
+      sfi_ring_free (tracks);
+      tracks = node;
+      /* connect remaining tracks */
+      gboolean clear_undo = FALSE;
+      BseSource *master = bse_song_ensure_master (self);
+      for (node = master ? tracks : NULL; node; node = sfi_ring_walk (node, tracks))
+        {
+          BseErrorType error = bse_bus_connect (BSE_BUS (master), node->data);
+          if (error)
+            sfi_warning ("Failed to connect track %s: %s", bse_object_debug_name (node->data), bse_error_blurb (error));
+          clear_undo = TRUE;
+        }
+      sfi_ring_free (tracks);
+      if (clear_undo)
+        {
+          BseProject *project = bse_item_get_project (BSE_ITEM (self));
+          if (project)
+            bse_project_clear_undo (project);
+        }
+    }
+}
+
 static void
 bse_song_class_init (BseSongClass *class)
 {
@@ -667,6 +735,7 @@ bse_song_class_init (BseSongClass *class)
   BseItemClass *item_class = BSE_ITEM_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
+  BseSuperClass *super_class = BSE_SUPER_CLASS (class);
   BseSongTiming timing;
 
   parent_class = g_type_class_peek_parent (class);
@@ -686,6 +755,8 @@ bse_song_class_init (BseSongClass *class)
   container_class->remove_item = bse_song_remove_item;
   container_class->forall_items = bse_song_forall_items;
   container_class->release_children = bse_song_release_children;
+
+  super_class->compat_finish = bse_song_compat_finish;
 
   bse_song_timing_get_default (&timing);
 

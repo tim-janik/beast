@@ -529,6 +529,15 @@ bse_project_restore (BseProject *self,
 
   bse_storage_resolve_item_links (storage);
 
+  GSList *slist = self->supers;
+  while (slist)
+    {
+      BseSuper *super = slist->data;
+      slist = slist->next;
+      BseSuperClass *super_class = BSE_SUPER_GET_CLASS (super);
+      super_class->compat_finish (super, storage->major_version, storage->minor_version, storage->micro_version);
+    }
+
   g_object_unref (self);
 
   return (scanner->parse_errors >= scanner->max_parse_errors ?

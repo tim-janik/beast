@@ -93,6 +93,7 @@ void		bse_song_get_timing		(BseSong	*self,
 void		bse_song_timing_get_default	(BseSongTiming	*timing);
 BseSource*      bse_song_create_summation       (BseSong        *self);
 BseBus*         bse_song_find_master            (BseSong        *self);
+BseSource*      bse_song_ensure_master          (BseSong        *self);
 void            bse_song_set_solo_bus           (BseSong        *self,
                                                  BseBus         *bus);
 
