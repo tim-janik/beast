@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,13 +16,12 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <string.h>
-#include <sfi/gbsearcharray.h>
 #include "gslosctable.h"
-
 #include "gslcommon.h"
 #include "gslmath.h"
 #include "gslfft.h"
+#include <string.h>
+#include <sfi/gbsearcharray.h>
 
 
 #define OSC_DEBUG		sfi_debug_keyfunc ("osc")
@@ -196,12 +195,22 @@ osc_table_entry_lookup_best (const GslOscTable *table,
     {
       i = g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep);
       if (i + 1 < g_bsearch_array_get_n_nodes (table->entry_array))
-	ep = g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i + 1);
+	{
+	  ep = g_bsearch_array_get_nth (table->entry_array, &osc_taconfig, i + 1);
+	  OSC_DEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
+		     mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
+		     table, i + 1, g_bsearch_array_get_n_nodes (table->entry_array));
+	}
       else	/* bad, might cause aliasing */
-	OSC_DEBUG ("lookup mismatch, aliasing possible: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
+	OSC_DEBUG ("osc-lookup: mismatch, aliasing possible: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
 		   mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
 		   table, i, g_bsearch_array_get_n_nodes (table->entry_array));
     }
+  else
+    OSC_DEBUG ("osc-lookup: want_freq=%f got_freq=%f (table=%p, i=%u, n=%u)",
+	       mfreq * table->mix_freq, (*ep)->mfreq * table->mix_freq,
+	       table, g_bsearch_array_get_index (table->entry_array, &osc_taconfig, ep),
+	       g_bsearch_array_get_n_nodes (table->entry_array));
   
   if (min_mfreq)
     {
@@ -624,4 +633,23 @@ gsl_osc_wave_normalize (guint   n_values,
     }
 
   gsl_osc_wave_adjust_range (n_values, values, min, max, new_center, new_max);
+}
+
+const gchar*
+gsl_osc_wave_form_name (GslOscWaveForm wave_form)
+{
+  switch (wave_form)
+    {
+    case GSL_OSC_WAVE_SINE:		return "sine";
+    case GSL_OSC_WAVE_TRIANGLE:		return "triangle";
+    case GSL_OSC_WAVE_SAW_RISE:		return "saw_rise";
+    case GSL_OSC_WAVE_SAW_FALL:		return "saw_fall";
+    case GSL_OSC_WAVE_PEAK_RISE:	return "peak_rise";
+    case GSL_OSC_WAVE_PEAK_FALL:	return "peak_fall";
+    case GSL_OSC_WAVE_MOOG_SAW:		return "moog_saw";
+    case GSL_OSC_WAVE_SQUARE:		return "square";
+    case GSL_OSC_WAVE_PULSE_SAW:	return "pulse_saw";
+    default:
+    case GSL_OSC_WAVE_NONE:		return "invalid";
+    }
 }

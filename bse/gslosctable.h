@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,7 @@
 
 #include <bse/gsldefs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- structures & enums --- */
@@ -94,11 +92,9 @@ void		gsl_osc_wave_adjust_range	(guint			 n_values,
 						 gfloat			 max,
 						 gfloat			 new_center,
 						 gfloat			 new_max);
+const gchar*	gsl_osc_wave_form_name		(GslOscWaveForm		 wave_form);
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_OSC_TABLE_H__ */

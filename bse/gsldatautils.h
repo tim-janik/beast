@@ -85,6 +85,10 @@ gint /* errno */     gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
 						 guint			 n_bits,
 						 guint			 n_channels,
 						 guint			 sample_freq);
+gint /* errno */     gsl_wave_file_dump_data	(gint			 fd,
+						 guint			 n_bits,
+						 guint			 n_values,
+						 const gfloat		*values);
 void		     gsl_data_handle_dump_wstore(GslDataHandle		*dhandle,
 						 SfiWStore		*wstore,
 						 GslWaveFormatType	 format,
