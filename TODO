@@ -100,9 +100,7 @@ Stefan Gui TODOs (priorities: 9=high, 0=low):
 6 - file open on an unmodified project should not open a new project window but
     reuse the existing one
 5 - implement copying of parts
-4 - implement selection and copy and paste in the song view
-3 - make appropriate borders for notes in piano roll view (two consecutive same pitch notes
-    should be distinguishable)
+4 - implement selection and copy and paste of parts in the strack roll
 2 - Comment field in Project -> SNet is too small to enter reasonable
 
 TODO:
