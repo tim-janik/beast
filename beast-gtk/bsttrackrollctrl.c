@@ -65,13 +65,13 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
 		    NULL);
   {
     BstTool radio_tools[] = {
-      { CKEY ("TrackRoll/Insert"),	BST_TRACK_ROLL_TOOL_INSERT,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/Link"),	BST_TRACK_ROLL_TOOL_LINK,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/Rename"),	BST_TRACK_ROLL_TOOL_RENAME,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/Delete"),	BST_TRACK_ROLL_TOOL_DELETE,     BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/Insert"),	BST_GENERIC_ROLL_TOOL_INSERT,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/Link"),	BST_GENERIC_ROLL_TOOL_LINK,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/Rename"),	BST_GENERIC_ROLL_TOOL_RENAME,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/Delete"),	BST_GENERIC_ROLL_TOOL_DELETE,   BST_RADIO_TOOLS_EVERYWHERE },
     };
     bst_radio_tools_add_tools (self->canvas_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
-    bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT);
+    bst_radio_tools_set_tool (self->canvas_rtools, BST_GENERIC_ROLL_TOOL_INSERT);
   }
   /* register hpanel tools */
   self->hpanel_rtools = bst_radio_tools_new ();
@@ -80,12 +80,12 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
 		    NULL);
   {
     BstTool radio_tools[] = {
-      { CKEY ("TrackRoll/TickLeft"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/TickPos"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,	BST_RADIO_TOOLS_EVERYWHERE },
-      { CKEY ("TrackRoll/TickRight"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/TickLeft"),	BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT,	  BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/TickPos"),	BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER,  BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/TickRight"),	BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT,	  BST_RADIO_TOOLS_EVERYWHERE },
     };
     bst_radio_tools_add_tools (self->hpanel_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
-    bst_radio_tools_set_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER);
+    bst_radio_tools_set_tool (self->hpanel_rtools, BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER);
   }
   /* register quantization tools */
   self->quant_rtools = bst_radio_tools_new ();
@@ -106,38 +106,38 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
   return self;
 }
 
-static BstTrackRollTool
+static BstGenericRollTool
 hpanel_button_tool (BstTrackRollController *self,
 		    guint                   button)
 {
   switch (self->hpanel_rtools->tool_id)	/* user selected tool */
     {
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT:
+    case BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT:
       switch (button)
 	{
-	case 1:	 return BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT;
-	case 2:	 return BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER;
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:	 return BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT;
+	case 2:	 return BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER;
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER:
+    case BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER:
       switch (button)
 	{
-	case 1:	 return BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER;
-	case 2:	 return BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER;
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:	 return BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER;
+	case 2:	 return BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER;
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT:
+    case BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT:
       switch (button)
 	{
-	case 1:	 return BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT;
-	case 2:	 return BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER;
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:	 return BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT;
+	case 2:	 return BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER;
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
     }
-  return BST_TRACK_ROLL_TOOL_NONE;
+  return BST_GENERIC_ROLL_TOOL_NONE;
 }
 
-static BstTrackRollTool
+static BstGenericRollTool
 canvas_button_tool (BstTrackRollController *self,
 		    guint                   button,
 		    guint                   have_object)
@@ -145,79 +145,79 @@ canvas_button_tool (BstTrackRollController *self,
   switch (self->canvas_rtools->tool_id | /* user selected tool */
 	  (have_object ? HAVE_OBJECT : 0))
     {
-    case BST_TRACK_ROLL_TOOL_INSERT | HAVE_OBJECT:
+    case BST_GENERIC_ROLL_TOOL_INSERT | HAVE_OBJECT:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_EDITOR;
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_EDITOR;
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_INSERT:
+    case BST_GENERIC_ROLL_TOOL_INSERT:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_INSERT;
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;	/* error */
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_INSERT;
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;	/* error */
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_LINK | HAVE_OBJECT:
+    case BST_GENERIC_ROLL_TOOL_LINK | HAVE_OBJECT:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_LINK;
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_LINK;
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_LINK:
+    case BST_GENERIC_ROLL_TOOL_LINK:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_LINK;
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;	/* error */
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_LINK;
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;	/* error */
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_RENAME | HAVE_OBJECT:
+    case BST_GENERIC_ROLL_TOOL_RENAME | HAVE_OBJECT:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_RENAME;
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_RENAME;
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_RENAME:
+    case BST_GENERIC_ROLL_TOOL_RENAME:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_RENAME;	/* error */
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;	/* error */
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_RENAME;	/* error */
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;	/* error */
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_DELETE | HAVE_OBJECT:
+    case BST_GENERIC_ROLL_TOOL_DELETE | HAVE_OBJECT:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_DELETE;
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_DELETE:
+    case BST_GENERIC_ROLL_TOOL_DELETE:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_DELETE;	/* error */
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;	/* error */
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;	/* error */
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;	/* error */
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_EDITOR | HAVE_OBJECT:
+    case BST_GENERIC_ROLL_TOOL_EDITOR | HAVE_OBJECT:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_EDITOR;
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_EDITOR;
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
-    case BST_TRACK_ROLL_TOOL_EDITOR:
+    case BST_GENERIC_ROLL_TOOL_EDITOR:
       switch (button)
 	{
-	case 1:  return BST_TRACK_ROLL_TOOL_EDITOR;     	/* error */
-	case 2:  return BST_TRACK_ROLL_TOOL_MOVE;		/* error */
-	default: return BST_TRACK_ROLL_TOOL_NONE;
+	case 1:  return BST_GENERIC_ROLL_TOOL_EDITOR;     	/* error */
+	case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;		/* error */
+	default: return BST_GENERIC_ROLL_TOOL_NONE;
 	}
       break;
     }
-  return BST_TRACK_ROLL_TOOL_NONE;
+  return BST_GENERIC_ROLL_TOOL_NONE;
 }
 
 BstTrackRollController*
@@ -240,11 +240,11 @@ bst_track_roll_controller_unref (BstTrackRollController *self)
   self->ref_count--;
   if (!self->ref_count)
     {
-      bst_radio_tools_destroy (self->canvas_rtools);
+      bst_radio_tools_dispose (self->canvas_rtools);
       g_object_unref (self->canvas_rtools);
-      bst_radio_tools_destroy (self->hpanel_rtools);
+      bst_radio_tools_dispose (self->hpanel_rtools);
       g_object_unref (self->hpanel_rtools);
-      bst_radio_tools_destroy (self->quant_rtools);
+      bst_radio_tools_dispose (self->quant_rtools);
       g_object_unref (self->quant_rtools);
       g_free (self);
     }
@@ -319,13 +319,13 @@ controller_update_hpanel_cursor (BstTrackRollController *self,
 {
   switch (tool_id)
     {
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER:
+    case BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER:
       bst_track_roll_set_hpanel_cursor (self->troll, GDK_SB_DOWN_ARROW);
       break;
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT:
+    case BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT:
       bst_track_roll_set_hpanel_cursor (self->troll, GDK_LEFT_SIDE);
       break;
-    case BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT:
+    case BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT:
       bst_track_roll_set_hpanel_cursor (self->troll, GDK_RIGHT_SIDE);
       break;
     default:
@@ -340,22 +340,22 @@ controller_update_canvas_cursor (BstTrackRollController *self,
 {
   switch (tool_id)
     {
-    case BST_TRACK_ROLL_TOOL_INSERT:
+    case BST_GENERIC_ROLL_TOOL_INSERT:
       bst_track_roll_set_canvas_cursor (self->troll, GDK_PENCIL);
       break;
-    case BST_TRACK_ROLL_TOOL_LINK:
+    case BST_GENERIC_ROLL_TOOL_LINK:
       bst_track_roll_set_canvas_cursor (self->troll, GDK_DIAMOND_CROSS);
       break;
-    case BST_TRACK_ROLL_TOOL_RENAME:
+    case BST_GENERIC_ROLL_TOOL_RENAME:
       bst_track_roll_set_canvas_cursor (self->troll, GXK_DEFAULT_CURSOR);
       break;
-    case BST_TRACK_ROLL_TOOL_MOVE:
+    case BST_GENERIC_ROLL_TOOL_MOVE:
       bst_track_roll_set_canvas_cursor (self->troll, GDK_FLEUR);
       break;
-    case BST_TRACK_ROLL_TOOL_DELETE:
+    case BST_GENERIC_ROLL_TOOL_DELETE:
       bst_track_roll_set_canvas_cursor (self->troll, GDK_TARGET);
       break;
-    case BST_TRACK_ROLL_TOOL_EDITOR:
+    case BST_GENERIC_ROLL_TOOL_EDITOR:
       bst_track_roll_set_canvas_cursor (self->troll, GDK_HAND2);
       break;
     default:
@@ -382,7 +382,7 @@ edit_name_start (BstTrackRollController *self,
 				 GTK_CELL_EDITABLE (entry));
       g_signal_connect_data (entry, "editing_done", G_CALLBACK (bst_track_roll_stop_edit),
 			     self->troll, NULL, G_CONNECT_SWAPPED);
-      controller_update_canvas_cursor (self, BST_TRACK_ROLL_TOOL_RENAME);
+      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_RENAME);
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, _("Edit Part"), _("No Part"));
@@ -458,7 +458,7 @@ move_link_start (BstTrackRollController *self,
   if (self->obj_part)	/* got part to move */
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
-      controller_update_canvas_cursor (self, link_pending ? BST_TRACK_ROLL_TOOL_LINK : BST_TRACK_ROLL_TOOL_MOVE);
+      controller_update_canvas_cursor (self, link_pending ? BST_GENERIC_ROLL_TOOL_LINK : BST_GENERIC_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_PROGRESS, action, NULL);
       drag->state = BST_DRAG_CONTINUE;
       self->skip_deletion = link_pending;
@@ -505,7 +505,7 @@ move_motion (BstTrackRollController *self,
 	  else
 	    {
 	      self->skip_deletion = FALSE;
-	      controller_update_canvas_cursor (self, BST_TRACK_ROLL_TOOL_MOVE);
+	      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
 	    }
 	  self->obj_track = drag->current_track;
 	  self->obj_tick = new_tick;
@@ -534,7 +534,7 @@ editor_create (BstTrackRollController *self,
       g_signal_connect_object (self->troll, "destroy", G_CALLBACK (gtk_widget_destroy), pdialog, G_CONNECT_SWAPPED);
       gxk_status_set (GXK_STATUS_DONE, _("Start Editor"), NULL);
       gtk_widget_show (pdialog);
-      bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT);
+      bst_radio_tools_set_tool (self->canvas_rtools, BST_GENERIC_ROLL_TOOL_INSERT);
     }
   else
     gxk_status_set (GXK_STATUS_ERROR, _("Start Editor"), _("No target"));
@@ -582,7 +582,7 @@ typedef void (*DragFunc) (BstTrackRollController *,
 			  BstTrackRollDrag       *);
 struct _BstTrackRollUtil
 {
-  BstTrackRollTool tool;
+  BstGenericRollTool tool;
   DragFunc start, motion, abort;
 };
 
@@ -591,23 +591,23 @@ controller_drag (BstTrackRollController *self,
 		 BstTrackRollDrag       *drag)
 {
   static const BstTrackRollUtil canvas_tool_table[] = {
-    { BST_TRACK_ROLL_TOOL_INSERT,	insert_start,		NULL,		NULL,		},
-    { BST_TRACK_ROLL_TOOL_MOVE,		move_start,		move_motion,	move_abort,	},
-    { BST_TRACK_ROLL_TOOL_LINK,		link_start,		move_motion,	move_abort,	},
-    { BST_TRACK_ROLL_TOOL_DELETE,	delete_start,		NULL,		NULL,		},
-    { BST_TRACK_ROLL_TOOL_RENAME,	edit_name_start,	NULL,		NULL,		},
-    { BST_TRACK_ROLL_TOOL_EDITOR,	editor_create,		NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_INSERT,	insert_start,		NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_MOVE,	move_start,		move_motion,	move_abort,	},
+    { BST_GENERIC_ROLL_TOOL_LINK,	link_start,		move_motion,	move_abort,	},
+    { BST_GENERIC_ROLL_TOOL_DELETE,	delete_start,		NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_RENAME,	edit_name_start,	NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_EDITOR,	editor_create,		NULL,		NULL,		},
   };
   static const BstTrackRollUtil hpanel_tool_table[] = {
-    { BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,	pointer_move,	 pointer_move,	  NULL,		},
-    { BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,	tick_left_move,	 tick_left_move,  NULL,		},
-    { BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,	tick_right_move, tick_right_move, NULL,		},
+    { BST_GENERIC_ROLL_TOOL_MOVE_TICK_POINTER,	pointer_move,	 pointer_move,	  NULL,		},
+    { BST_GENERIC_ROLL_TOOL_MOVE_TICK_LEFT,	tick_left_move,	 tick_left_move,  NULL,		},
+    { BST_GENERIC_ROLL_TOOL_MOVE_TICK_RIGHT,	tick_right_move, tick_right_move, NULL,		},
   };
 
   /* initial drag handling */
   if (drag->type == BST_DRAG_START)
     {
-      BstTrackRollTool obj_tool, tool;
+      BstGenericRollTool obj_tool, tool;
       BseTrackPart *tpart = NULL;
       const BstTrackRollUtil *tool_table;
       guint i, n_tools;

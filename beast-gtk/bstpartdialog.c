@@ -28,7 +28,6 @@
 static void	bst_part_dialog_class_init	(BstPartDialogClass	*klass);
 static void	bst_part_dialog_init		(BstPartDialog		*part_dialog);
 static void	bst_part_dialog_finalize	(GObject		*object);
-static void	part_dialog_update_tool		(BstPartDialog		*part_dialog);
 static void	piano_canvas_clicked		(BstPartDialog		*part_dialog,
 						 guint			 button,
 						 guint			 tick_position,
@@ -38,10 +37,6 @@ static void	piano_canvas_clicked		(BstPartDialog		*part_dialog,
 static void	part_dialog_run_proc		(GtkWidget		*widget,
 						 gulong                  category_id,
 						 gpointer		 popup_data);
-static void	part_dialog_note_choice		(BstPartDialog		*self,
-						 guint			 choice);
-static void	part_dialog_qnote_choice	(BstPartDialog		*self,
-						 guint			 choice);
 static void	menu_select_tool		(GtkWidget              *owner,
 						 gulong                  callback_action,
 						 gpointer                popup_data);
@@ -67,7 +62,7 @@ enum {
 };
 static BstMenuConfigEntry popup_entries[] =
 {
-#define MENU_CB(xxx)	menu_select_tool, BST_PIANO_ROLL_TOOL_ ## xxx
+#define MENU_CB(xxx)	menu_select_tool, BST_GENERIC_ROLL_TOOL_ ## xxx
 #define ACTION_CB(xxx)	menu_activate_tool, ACTION_ ## xxx
   { N_("/_Tools"),		NULL,		NULL,   0,		"<Branch>",	0 },
   { N_("/Tools/Insert"),	"I",		MENU_CB (INSERT),	"<StockItem>",	BST_STOCK_PART_TOOL },
@@ -182,7 +177,7 @@ static void
 bst_part_dialog_init (BstPartDialog *self)
 {
   BstPartDialogClass *class = BST_PART_DIALOG_GET_CLASS (self);
-  GtkWidget *main_vbox, *entry, *choice, *button;
+  GtkWidget *main_vbox, *entry, *button;
   GtkWidget *hscroll, *vscroll, *prframe, *erframe, *hb1, *hb2, *vb, *hb3, *hb4, *eb, *align1, *align2, *paned;
   GtkObject *adjustment;
   GParamSpec *pspec;
@@ -219,7 +214,7 @@ bst_part_dialog_init (BstPartDialog *self)
   erframe = g_object_new (GTK_TYPE_FRAME, "shadow_type", GTK_SHADOW_IN, NULL);
   self->eroll = g_object_new (BST_TYPE_EVENT_ROLL, "parent", erframe, "height_request", 50, NULL);
   gxk_nullify_on_destroy (self->eroll, &self->eroll);
-  self->ectrl = bst_event_roll_controller_new (self->eroll);
+  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, self->pctrl->canvas_rtools);
   g_object_connect (self->eroll,
 		    // "swapped_signal::canvas-clicked", event_canvas_clicked, self,
 		    NULL);
@@ -288,31 +283,10 @@ bst_part_dialog_init (BstPartDialog *self)
   gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (self->toolbar), FALSE, TRUE, 0);
   gtk_box_reorder_child (GTK_BOX (main_vbox), GTK_WIDGET (self->toolbar), 0);
 
-  /* radio tools */
-  self->rtools = bst_radio_tools_new ();
-  g_object_connect (self->rtools,
-		    "swapped_signal::set_tool", part_dialog_update_tool, self,
-		    NULL);
-  bst_radio_tools_set_tool (self->rtools, BST_PIANO_ROLL_TOOL_INSERT);
-
-  /* register tools */
-  bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_INSERT,
-				  "Insert", "Insert/resize/move notes (mouse button 1 and 2)", NULL,
-				  BST_STOCK_PART_TOOL, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_DELETE,
-				  "Delete", "Delete note (mouse button 1)", NULL,
-				  BST_STOCK_TRASHCAN, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_ALIGN,
-				  "Align", "Draw a line to align events to", NULL,
-				  BST_STOCK_EVENT_CONTROL, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_SELECT,
-				  "Select", "Rectangle select notes", NULL,
-				  BST_STOCK_RECT_SELECT, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_add_stock_tool (self->rtools, BST_PIANO_ROLL_TOOL_VSELECT,
-				  "VSelect", "Select tick range vertically", NULL,
-				  BST_STOCK_VERT_SELECT, BST_RADIO_TOOLS_EVERYWHERE);
-  bst_radio_tools_build_toolbar (self->rtools, self->toolbar);
-
+  /* add note tools to toolbar */
+  bst_radio_tools_build_toolbar (self->pctrl->canvas_rtools, self->toolbar);
+  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->canvas_rtools->accel_group);
+  
   /* selection ops (copy/cut/...) */
   gxk_toolbar_append_separator (self->toolbar);
   button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Clear", "Clear the current selection", BST_STOCK_TRASH_SCISSORS);
@@ -328,37 +302,14 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_paste, self->pctrl, NULL);
   g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_paste, self->ectrl, NULL);
 
-  /* note selection */
-  gxk_toolbar_append_separator (self->toolbar);
-  choice = gxk_toolbar_append_choice (self->toolbar, GXK_TOOLBAR_TRUNC_BUTTON,
-				      (GxkToolbarChoiceFunc) part_dialog_note_choice, self, NULL);
-  gxk_toolbar_choice_add (choice, "1/1", "Insert full notes",
-			  gxk_stock_image (BST_STOCK_NOTE_1, BST_SIZE_TOOLBAR), 1);
-  gxk_toolbar_choice_add (choice, "1/2", "Insert half notes",
-			  gxk_stock_image (BST_STOCK_NOTE_2, BST_SIZE_TOOLBAR), 2);
-  gxk_toolbar_choice_set (choice, "1/4", "Insert quarter notes",
-			  gxk_stock_image (BST_STOCK_NOTE_4, BST_SIZE_TOOLBAR), 4);
-  gxk_toolbar_choice_add (choice, "1/8", "Insert eighths note",
-			  gxk_stock_image (BST_STOCK_NOTE_8, BST_SIZE_TOOLBAR), 8);
-  gxk_toolbar_choice_add (choice, "1/16", "Insert sixteenth note",
-			  gxk_stock_image (BST_STOCK_NOTE_16, BST_SIZE_TOOLBAR), 16);
+  /* add note-length choice to toolbar */
+  bst_radio_tools_build_toolbar_choice (self->pctrl->note_rtools, self->toolbar);
+  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->note_rtools->accel_group);
   
-  /* quantization selection */
-  choice = gxk_toolbar_append_choice (self->toolbar, GXK_TOOLBAR_TRUNC_BUTTON,
-				      (GxkToolbarChoiceFunc) part_dialog_qnote_choice, self, NULL);
-  gxk_toolbar_choice_add (choice, "None", "No quantization selected",
-			  gxk_stock_image (BST_STOCK_QNOTE_NONE, BST_SIZE_TOOLBAR), 0);
-  gxk_toolbar_choice_add (choice, "Q: 1/1", "Quantize to full note boundaries",
-			  gxk_stock_image (BST_STOCK_QNOTE_1, BST_SIZE_TOOLBAR), 1);
-  gxk_toolbar_choice_add (choice, "Q: 1/2", "Quantize to half note boundaries",
-			  gxk_stock_image (BST_STOCK_QNOTE_2, BST_SIZE_TOOLBAR), 2);
-  gxk_toolbar_choice_add (choice, "Q: 1/4", "Quantize to quarter note boundaries",
-			  gxk_stock_image (BST_STOCK_QNOTE_4, BST_SIZE_TOOLBAR), 4);
-  gxk_toolbar_choice_set (choice, "Q: 1/8", "Quantize to eighths note boundaries",
-			  gxk_stock_image (BST_STOCK_QNOTE_8, BST_SIZE_TOOLBAR), 8);
-  gxk_toolbar_choice_add (choice, "Q: 1/16", "Quantize to sixteenth note boundaries",
-			  gxk_stock_image (BST_STOCK_QNOTE_16, BST_SIZE_TOOLBAR), 16);
-
+  /* add quantization selection to toolbar */
+  bst_radio_tools_build_toolbar_choice (self->pctrl->quant_rtools, self->toolbar);
+  gxk_widget_activate_accel_group (GTK_WIDGET (self), self->pctrl->quant_rtools->accel_group);
+  
   /* hzoom */
   gxk_toolbar_append_separator (self->toolbar);
   adjustment = gtk_adjustment_new (13, 0, 100, 1, 5, 0);
@@ -403,7 +354,6 @@ bst_part_dialog_finalize (GObject *object)
 
   bst_part_dialog_set_proxy (self, 0);
 
-  g_object_unref (self->rtools);
   bst_piano_roll_controller_unref (self->pctrl);
   bst_event_roll_controller_unref (self->ectrl);
   
@@ -447,107 +397,6 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
 }
 
 static void
-part_dialog_update_tool (BstPartDialog *self)
-{
-  switch (self->rtools->tool_id)
-    {
-    case BST_PIANO_ROLL_TOOL_INSERT:
-      bst_piano_roll_controller_set_obj_tools (self->pctrl,
-					       BST_PIANO_ROLL_TOOL_RESIZE,
-					       BST_PIANO_ROLL_TOOL_MOVE,
-					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->pctrl,
-					      BST_PIANO_ROLL_TOOL_INSERT,
-					      BST_PIANO_ROLL_TOOL_MOVE,		/* error */
-					      BST_PIANO_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_obj_tools (self->ectrl,
-					       BST_EVENT_ROLL_TOOL_RESIZE,
-					       BST_EVENT_ROLL_TOOL_MOVE,
-					       BST_EVENT_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_bg_tools (self->ectrl,
-                                              BST_EVENT_ROLL_TOOL_INSERT,
-                                              BST_EVENT_ROLL_TOOL_MOVE,         /* error */
-                                              BST_EVENT_ROLL_TOOL_NONE);
-      break;
-    case BST_PIANO_ROLL_TOOL_DELETE:
-      bst_piano_roll_controller_set_obj_tools (self->pctrl,
-					       BST_PIANO_ROLL_TOOL_DELETE,
-					       BST_PIANO_ROLL_TOOL_MOVE,
-					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->pctrl,
-					      BST_PIANO_ROLL_TOOL_DELETE,	/* error */
-					      BST_PIANO_ROLL_TOOL_MOVE,		/* error */
-					      BST_PIANO_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_obj_tools (self->ectrl,
-					       BST_EVENT_ROLL_TOOL_DELETE,
-					       BST_EVENT_ROLL_TOOL_MOVE,
-					       BST_EVENT_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_bg_tools (self->ectrl,
-					      BST_EVENT_ROLL_TOOL_DELETE,	/* error */
-					      BST_EVENT_ROLL_TOOL_MOVE,		/* error */
-					      BST_EVENT_ROLL_TOOL_NONE);
-      break;
-    case BST_PIANO_ROLL_TOOL_ALIGN:
-      bst_piano_roll_controller_set_obj_tools (self->pctrl,
-					       BST_PIANO_ROLL_TOOL_ALIGN,
-					       BST_PIANO_ROLL_TOOL_MOVE,
-					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->pctrl,
-					      BST_PIANO_ROLL_TOOL_ALIGN,
-					      BST_PIANO_ROLL_TOOL_MOVE,		/* error */
-					      BST_PIANO_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_obj_tools (self->ectrl,
-					       BST_EVENT_ROLL_TOOL_ALIGN,
-					       BST_EVENT_ROLL_TOOL_MOVE,
-					       BST_EVENT_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_bg_tools (self->ectrl,
-					      BST_EVENT_ROLL_TOOL_ALIGN,
-					      BST_EVENT_ROLL_TOOL_MOVE,		/* error */
-					      BST_EVENT_ROLL_TOOL_NONE);
-      break;
-    case BST_PIANO_ROLL_TOOL_SELECT:
-      bst_piano_roll_controller_set_obj_tools (self->pctrl,
-					       BST_PIANO_ROLL_TOOL_SELECT,
-					       BST_PIANO_ROLL_TOOL_MOVE,
-					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->pctrl,
-					      BST_PIANO_ROLL_TOOL_SELECT,
-					      BST_PIANO_ROLL_TOOL_NONE,
-					      BST_PIANO_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_obj_tools (self->ectrl,
-					       BST_EVENT_ROLL_TOOL_SELECT,
-					       BST_EVENT_ROLL_TOOL_MOVE,
-					       BST_EVENT_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_bg_tools (self->ectrl,
-					      BST_EVENT_ROLL_TOOL_SELECT,
-					      BST_EVENT_ROLL_TOOL_NONE,
-					      BST_EVENT_ROLL_TOOL_NONE);
-      break;
-    case BST_PIANO_ROLL_TOOL_VSELECT:
-      bst_piano_roll_controller_set_obj_tools (self->pctrl,
-					       BST_PIANO_ROLL_TOOL_VSELECT,
-                                               BST_PIANO_ROLL_TOOL_MOVE,
-					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->pctrl,
-					      BST_PIANO_ROLL_TOOL_VSELECT,
-					      BST_PIANO_ROLL_TOOL_NONE,
-					      BST_PIANO_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_obj_tools (self->ectrl,
-					       BST_EVENT_ROLL_TOOL_SELECT,
-					       BST_EVENT_ROLL_TOOL_MOVE,
-					       BST_EVENT_ROLL_TOOL_NONE);
-      bst_event_roll_controller_set_bg_tools (self->ectrl,
-					      BST_EVENT_ROLL_TOOL_SELECT,
-					      BST_EVENT_ROLL_TOOL_NONE,
-					      BST_EVENT_ROLL_TOOL_NONE);
-      break;
-    default:	/* fallback */
-      bst_radio_tools_set_tool (self->rtools, BST_PIANO_ROLL_TOOL_INSERT);
-      break;
-    }
-}
-
-static void
 part_dialog_run_proc (GtkWidget *widget,
 		      gulong     category_id,
 		      gpointer   popup_data)
@@ -581,27 +430,13 @@ piano_canvas_clicked (BstPartDialog *self,
 }
 
 static void
-part_dialog_note_choice (BstPartDialog *self,
-			 guint          choice)
-{
-  self->pctrl->note_length = choice;
-}
-
-static void
-part_dialog_qnote_choice (BstPartDialog *self,
-			  guint          choice)
-{
-  bst_piano_roll_set_quantization (self->proll, choice);
-  bst_event_roll_set_quantization (self->eroll, choice);
-}
-
-static void
 menu_select_tool (GtkWidget *owner,
 		  gulong     callback_action,
 		  gpointer   popup_data)
 {
   BstPartDialog *self = BST_PART_DIALOG (owner);
-  bst_radio_tools_set_tool (self->rtools, callback_action);
+  if (self->pctrl && self->pctrl->canvas_rtools)
+    bst_radio_tools_set_tool (self->pctrl->canvas_rtools, callback_action);
 }
 
 static void
@@ -675,13 +510,13 @@ bst_part_dialog_can_activate (BstActivatable         *activatable,
     case ACTION_CLEAR_UNDO:
       return self->project && bse_project_undo_depth (self->project) + bse_project_redo_depth (self->project) > 0;
       /* tools */
-    case BST_PIANO_ROLL_TOOL_INSERT:
-    case BST_PIANO_ROLL_TOOL_RESIZE:
-    case BST_PIANO_ROLL_TOOL_MOVE:
-    case BST_PIANO_ROLL_TOOL_DELETE:
-    case BST_PIANO_ROLL_TOOL_ALIGN:
-    case BST_PIANO_ROLL_TOOL_SELECT:
-    case BST_PIANO_ROLL_TOOL_VSELECT:
+    case BST_GENERIC_ROLL_TOOL_INSERT:
+    case BST_GENERIC_ROLL_TOOL_RESIZE:
+    case BST_GENERIC_ROLL_TOOL_MOVE:
+    case BST_GENERIC_ROLL_TOOL_DELETE:
+    case BST_GENERIC_ROLL_TOOL_ALIGN:
+    case BST_GENERIC_ROLL_TOOL_SELECT:
+    case BST_GENERIC_ROLL_TOOL_VSELECT:
       return TRUE;
     default:
       return FALSE;

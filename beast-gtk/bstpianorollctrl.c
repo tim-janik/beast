@@ -19,14 +19,18 @@
 #include "bsteventrollctrl.h"
 
 
+#define NOTE_LENGTH(self)       ((self)->note_rtools->tool_id)
+#define QUANTIZATION(self)      ((self)->quant_rtools->tool_id)
+#define HAVE_OBJECT             (1 << 31)
+
 
 /* --- prototypes --- */
 static void	controller_canvas_drag		(BstPianoRollController	*self,
 						 BstPianoRollDrag	*drag);
 static void	controller_piano_drag		(BstPianoRollController	*self,
 						 BstPianoRollDrag	*drag);
-static void	controller_update_cursor	(BstPianoRollController *self,
-						 BstPianoRollTool	 tool);
+static void	controller_update_canvas_cursor	(BstPianoRollController *self,
+						 BstGenericRollTool	 tool);
 
 
 /* --- variables --- */
@@ -62,7 +66,6 @@ bst_piano_roll_controller_new (BstPianoRoll *proll)
   self->ref_count = 1;
 
   self->ref_count++;
-  self->note_length = 1;
   g_signal_connect_data (proll, "canvas-drag",
 			 G_CALLBACK (controller_canvas_drag),
 			 self, (GClosureNotify) bst_piano_roll_controller_unref,
@@ -71,6 +74,51 @@ bst_piano_roll_controller_new (BstPianoRoll *proll)
 			 G_CALLBACK (controller_piano_drag),
 			 self, NULL,
 			 G_CONNECT_SWAPPED);
+  /* register canvas tools */
+  self->canvas_rtools = bst_radio_tools_new ();
+  {
+    BstTool radio_tools[] = {
+      { CKEY ("PianoRoll/Insert"),      BST_GENERIC_ROLL_TOOL_INSERT,     BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("PianoRoll/Delete"),      BST_GENERIC_ROLL_TOOL_DELETE,     BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("PianoRoll/Align"),       BST_GENERIC_ROLL_TOOL_ALIGN,      BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("PianoRoll/Select"),      BST_GENERIC_ROLL_TOOL_SELECT,     BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("PianoRoll/VSelect"),     BST_GENERIC_ROLL_TOOL_VSELECT,    BST_RADIO_TOOLS_EVERYWHERE },
+    };
+    bst_radio_tools_add_tools (self->canvas_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
+    bst_radio_tools_set_tool (self->canvas_rtools, BST_GENERIC_ROLL_TOOL_INSERT);
+  }
+  /* register note length tools */
+  self->note_rtools = bst_radio_tools_new ();
+  {
+    BstTool radio_tools[] = {
+      { CKEY ("Note/1"),                1,    BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Note/2"),                2,    BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Note/4"),                4,    BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Note/8"),                8,    BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Note/16"),               16,   BST_RADIO_TOOLS_EVERYWHERE },
+    };
+    bst_radio_tools_add_tools (self->note_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
+    bst_radio_tools_set_tool (self->note_rtools, 4);
+  }
+  /* register quantization tools */
+  self->quant_rtools = bst_radio_tools_new ();
+  {
+    BstTool radio_tools[] = {
+      { CKEY ("Quant/None"),    BST_QUANTIZE_NONE,      BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/1"),       BST_QUANTIZE_NOTE_1,    BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/2"),       BST_QUANTIZE_NOTE_2,    BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/4"),       BST_QUANTIZE_NOTE_4,    BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/8"),       BST_QUANTIZE_NOTE_8,    BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/16"),      BST_QUANTIZE_NOTE_16,   BST_RADIO_TOOLS_EVERYWHERE },
+    };
+    bst_radio_tools_add_tools (self->quant_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
+    bst_radio_tools_set_tool (self->quant_rtools, BST_QUANTIZE_NOTE_8);
+  }
+  /* update from rtools */
+  g_object_connect (self->canvas_rtools,
+                    "swapped_signal::set_tool", controller_update_canvas_cursor, self,
+                    NULL);
+  controller_update_canvas_cursor (self, self->canvas_rtools->tool_id);
   return self;
 }
 
@@ -93,34 +141,87 @@ bst_piano_roll_controller_unref (BstPianoRollController *self)
 
   self->ref_count--;
   if (!self->ref_count)
-    g_free (self);
+    {
+      bst_radio_tools_dispose (self->canvas_rtools);
+      g_object_unref (self->canvas_rtools);
+      bst_radio_tools_dispose (self->note_rtools);
+      g_object_unref (self->note_rtools);
+      bst_radio_tools_dispose (self->quant_rtools);
+      g_object_unref (self->quant_rtools);
+      g_free (self);
+    }
 }
 
-void
-bst_piano_roll_controller_set_obj_tools (BstPianoRollController *self,
-					 BstPianoRollTool        tool1,
-					 BstPianoRollTool        tool2,
-					 BstPianoRollTool        tool3)
+static BstGenericRollTool
+piano_canvas_button_tool (BstPianoRollController *self,
+                          guint                   button,
+                          guint                   have_object)
 {
-  g_return_if_fail (self != NULL);
-
-  self->obj_tool1 = tool1;
-  self->obj_tool2 = tool2;
-  self->obj_tool3 = tool3;
-}
-
-void
-bst_piano_roll_controller_set_bg_tools (BstPianoRollController *self,
-					BstPianoRollTool        tool1,
-					BstPianoRollTool        tool2,
-					BstPianoRollTool        tool3)
-{
-  g_return_if_fail (self != NULL);
-
-  self->bg_tool1 = tool1;
-  self->bg_tool2 = tool2;
-  self->bg_tool3 = tool3;
-  controller_update_cursor (self, self->bg_tool1);
+  switch (self->canvas_rtools->tool_id | /* user selected tool */
+          (have_object ? HAVE_OBJECT : 0))
+    {
+    case BST_GENERIC_ROLL_TOOL_INSERT: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_INSERT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_INSERT | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_RESIZE;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_DELETE: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;       /* user error */
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_DELETE | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_ALIGN: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_ALIGN;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_ALIGN | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_ALIGN;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_SELECT: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_SELECT | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_VSELECT: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_VSELECT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_VSELECT | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_VSELECT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    }
+  return BST_GENERIC_ROLL_TOOL_NONE;
 }
 
 void
@@ -196,7 +297,7 @@ bst_piano_roll_controller_paste (BstPianoRollController *self)
       bse_item_group_undo (proxy, "Paste Clipboard");
       bse_part_deselect_notes (proxy, 0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
       bst_piano_roll_get_paste_pos (self->proll, &paste_tick, &paste_note);
-      paste_tick = bst_piano_roll_quantize (self->proll, paste_tick);
+      paste_tick = bst_piano_roll_controller_quantize (self, paste_tick);
       for (i = 0; i < pseq->n_pnotes; i++)
 	{
 	  BsePartNote *pnote = pseq->pnotes[i];
@@ -232,28 +333,49 @@ bst_piano_roll_controler_clipboard_full (BstPianoRollController *self)
   return pseq && pseq->n_pnotes;
 }
 
+guint
+bst_piano_roll_controller_quantize (BstPianoRollController *self,
+                                    guint                   fine_tick)
+{
+  g_return_val_if_fail (self != NULL, fine_tick);
+
+  /* quantize tick */
+  if (QUANTIZATION (self) && self->proll)
+    {
+      guint quant = self->proll->ppqn * 4 / QUANTIZATION (self);
+      guint qtick = fine_tick / quant;
+      qtick *= quant;
+      if (fine_tick - qtick > quant / 2 &&
+          qtick + quant > fine_tick)
+        fine_tick = qtick + quant;
+      else
+        fine_tick = qtick;
+    }
+  return fine_tick;
+}
+
 static void
-controller_update_cursor (BstPianoRollController *self,
-			  BstPianoRollTool        tool)
+controller_update_canvas_cursor (BstPianoRollController *self,
+                                 BstGenericRollTool      tool)
 {
   switch (tool)
     {
-    case BST_PIANO_ROLL_TOOL_INSERT:
+    case BST_GENERIC_ROLL_TOOL_INSERT:
       bst_piano_roll_set_canvas_cursor (self->proll, GDK_PENCIL);
       break;
-    case BST_PIANO_ROLL_TOOL_RESIZE:
+    case BST_GENERIC_ROLL_TOOL_RESIZE:
       bst_piano_roll_set_canvas_cursor (self->proll, GDK_SB_H_DOUBLE_ARROW);
       break;
-    case BST_PIANO_ROLL_TOOL_MOVE:
+    case BST_GENERIC_ROLL_TOOL_MOVE:
       bst_piano_roll_set_canvas_cursor (self->proll, GDK_FLEUR);
       break;
-    case BST_PIANO_ROLL_TOOL_DELETE:
+    case BST_GENERIC_ROLL_TOOL_DELETE:
       bst_piano_roll_set_canvas_cursor (self->proll, GDK_TARGET);
       break;
-    case BST_PIANO_ROLL_TOOL_SELECT:
+    case BST_GENERIC_ROLL_TOOL_SELECT:
       bst_piano_roll_set_canvas_cursor (self->proll, GDK_CROSSHAIR);
       break;
-    case BST_PIANO_ROLL_TOOL_VSELECT:
+    case BST_GENERIC_ROLL_TOOL_VSELECT:
       bst_piano_roll_set_canvas_cursor (self->proll, GDK_LEFT_SIDE);
       break;
     default:
@@ -295,7 +417,7 @@ move_start (BstPianoRollController *self,
   if (self->obj_id)	/* got note to move */
     {
       self->xoffset = drag->start_tick - self->obj_tick;	/* drag offset */
-      controller_update_cursor (self, BST_PIANO_ROLL_TOOL_MOVE);
+      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, _("Move Note"), NULL);
       drag->state = BST_DRAG_CONTINUE;
       if (bse_part_is_selected_event (part, self->obj_id))
@@ -316,7 +438,7 @@ move_group_motion (BstPianoRollController *self,
   gint i, new_tick, old_note, new_note, delta_tick, delta_note;
 
   new_tick = MAX (drag->current_tick, self->xoffset) - self->xoffset;
-  new_tick = bst_piano_roll_quantize (drag->proll, new_tick);
+  new_tick = bst_piano_roll_controller_quantize (self, new_tick);
   old_note = self->obj_note;
   new_note = drag->current_note;
   delta_tick = self->obj_tick;
@@ -360,7 +482,7 @@ move_motion (BstPianoRollController *self,
     }
 
   new_tick = MAX (drag->current_tick, self->xoffset) - self->xoffset;
-  new_tick = bst_piano_roll_quantize (drag->proll, new_tick);
+  new_tick = bst_piano_roll_controller_quantize (self, new_tick);
   note_changed = self->obj_note != drag->current_note;
   if ((new_tick != self->obj_tick || note_changed) &&
       !check_hoverlap (part, new_tick, self->obj_duration, drag->current_note,
@@ -407,7 +529,7 @@ resize_start (BstPianoRollController *self,
 	self->tick_bound = bound;
       else
 	self->tick_bound = self->obj_tick;
-      controller_update_cursor (self, BST_PIANO_ROLL_TOOL_RESIZE);
+      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_RESIZE);
       gxk_status_set (GXK_STATUS_WAIT, _("Resize Note"), NULL);
       drag->state = BST_DRAG_CONTINUE;
     }
@@ -426,7 +548,7 @@ resize_motion (BstPianoRollController *self,
   guint new_bound, new_tick, new_duration;
 
   /* calc new note around fix-point */
-  new_tick = bst_piano_roll_quantize (drag->proll, drag->current_tick);
+  new_tick = bst_piano_roll_controller_quantize (self, drag->current_tick);
   new_bound = MAX (new_tick, self->tick_bound);
   new_tick = MIN (new_tick, self->tick_bound);
   new_duration = new_bound - new_tick;
@@ -488,8 +610,8 @@ insert_start (BstPianoRollController *self,
   BseErrorType error = BSE_ERROR_NO_TARGET;
   if (drag->start_valid)
     {
-      guint qtick = bst_piano_roll_quantize (drag->proll, drag->start_tick);
-      guint duration = drag->proll->ppqn * 4 / self->note_length;
+      guint qtick = bst_piano_roll_controller_quantize (self, drag->start_tick);
+      guint duration = drag->proll->ppqn * 4 / NOTE_LENGTH (self);
       if (check_hoverlap (part, qtick, duration, drag->start_note, 0, 0))
 	error = BSE_ERROR_INVALID_OVERLAP;
       else
@@ -506,7 +628,7 @@ static void
 select_start (BstPianoRollController *self,
 	      BstPianoRollDrag       *drag)
 {
-  drag->start_tick = bst_piano_roll_quantize (drag->proll, drag->start_tick);
+  drag->start_tick = bst_piano_roll_controller_quantize (self, drag->start_tick);
   bst_piano_roll_set_view_selection (drag->proll, drag->start_tick, 0, 0, 0);
   gxk_status_set (GXK_STATUS_WAIT, _("Select Region"), NULL);
   drag->state = BST_DRAG_CONTINUE;
@@ -542,7 +664,7 @@ static void
 vselect_start (BstPianoRollController *self,
 	       BstPianoRollDrag       *drag)
 {
-  drag->start_tick = bst_piano_roll_quantize (drag->proll, drag->start_tick);
+  drag->start_tick = bst_piano_roll_controller_quantize (self, drag->start_tick);
   bst_piano_roll_set_view_selection (drag->proll, drag->start_tick, 0, drag->proll->min_note, drag->proll->max_note);
   gxk_status_set (GXK_STATUS_WAIT, _("Vertical Select"), NULL);
   drag->state = BST_DRAG_CONTINUE;
@@ -591,22 +713,22 @@ controller_canvas_drag (BstPianoRollController *self,
 			BstPianoRollDrag       *drag)
 {
   static struct {
-    BstPianoRollTool tool;
+    BstGenericRollTool tool;
     DragFunc start, motion, abort;
   } tool_table[] = {
-    { BST_PIANO_ROLL_TOOL_INSERT,	insert_start,	NULL,		NULL,		},
-    { BST_PIANO_ROLL_TOOL_ALIGN,	insert_start,	NULL,		NULL,		},
-    { BST_PIANO_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
-    { BST_PIANO_ROLL_TOOL_MOVE,		move_start,	move_motion,	move_abort,	},
-    { BST_PIANO_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},
-    { BST_PIANO_ROLL_TOOL_SELECT,	select_start,	select_motion,	select_abort,	},
-    { BST_PIANO_ROLL_TOOL_VSELECT,	vselect_start,	vselect_motion,	vselect_abort,	},
+    { BST_GENERIC_ROLL_TOOL_INSERT,	insert_start,	NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_ALIGN,	insert_start,	NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
+    { BST_GENERIC_ROLL_TOOL_MOVE,	move_start,	move_motion,	move_abort,	},
+    { BST_GENERIC_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_SELECT,	select_start,	select_motion,	select_abort,	},
+    { BST_GENERIC_ROLL_TOOL_VSELECT,	vselect_start,	vselect_motion,	vselect_abort,	},
   };
   guint i;
 
   if (drag->type == BST_DRAG_START)
     {
-      BstPianoRollTool tool = BST_PIANO_ROLL_TOOL_NONE;
+      BstGenericRollTool tool = BST_GENERIC_ROLL_TOOL_NONE;
       BsePartNoteSeq *pseq;
 
       /* setup drag data */
@@ -637,21 +759,7 @@ controller_canvas_drag (BstPianoRollController *self,
       self->tick_bound = 0;
 
       /* find drag tool */
-      tool = BST_PIANO_ROLL_TOOL_NONE;
-      if (self->obj_id)		/* have object */
-	switch (drag->button)
-	  {
-	  case 1:	tool = self->obj_tool1;	break;
-	  case 2:	tool = self->obj_tool2;	break;
-	  case 3:	tool = self->obj_tool3;	break;
-	  }
-      else
-	switch (drag->button)
-	  {
-	  case 1:	tool = self->bg_tool1;	break;
-	  case 2:	tool = self->bg_tool2;	break;
-	  case 3:	tool = self->bg_tool3;	break;
-	  }
+      tool = piano_canvas_button_tool (self, drag->button, self->obj_id > 0);
       for (i = 0; i < G_N_ELEMENTS (tool_table); i++)
 	if (tool_table[i].tool == tool)
 	  break;
@@ -679,7 +787,7 @@ controller_canvas_drag (BstPianoRollController *self,
     }
   if (drag->type == BST_DRAG_DONE ||
       drag->type == BST_DRAG_ABORT)
-    controller_update_cursor (self, self->bg_tool1);
+    controller_update_canvas_cursor (self, self->canvas_rtools->tool_id);
 }
 
 void

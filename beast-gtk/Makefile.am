@@ -150,7 +150,7 @@ stamp-ckeycheck: @DVLBUILD@ $(beast_sources) $(beast_extra_sources)
 	cd $(srcdir) \
 	&& $(SCANKEYS) --count --key CKEY --skipkeys bstmessages.c \
 	     --tmplstart '#error MISSING DOC KEYS:\n' \
-	     --tmplkey '  { CKEY (%s),\t\t"Name",\n  BST_STOCK_,\t\t\t\t"",\n    "tip", NULL,\n  },\n' \
+	     --tmplkey '  { CKEY (%s),\t\tN_("Name"),\n    BST_STOCK_,\t\t\t\t"",\n    N_("tip"), NULL,\n  },\n' \
 	     --needkeys $(beast_sources) $(beast_extra_sources)
 	touch $@
 beast: stamp-ckeycheck

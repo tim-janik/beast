@@ -62,7 +62,6 @@ struct _BstPianoRoll
 
   /* horizontal layout */
   guint		 ppqn;		/* parts per quarter note */
-  guint		 quantization;
   guint		 qnpt;		/* quarter notes per tact */
   guint		 max_ticks;	/* in ticks */
   gfloat	 hzoom;
@@ -137,15 +136,11 @@ void	bst_piano_roll_set_vpanel_cursor	(BstPianoRoll	*self,
 						 GdkCursorType	 cursor);
 void	bst_piano_roll_set_hpanel_cursor	(BstPianoRoll	*self,
 						 GdkCursorType	 cursor);
-void	bst_piano_roll_set_quantization		(BstPianoRoll	*self,
-						 guint		 note_fraction);
 void	bst_piano_roll_set_view_selection	(BstPianoRoll	*self,
 						 guint		 tick,
 						 guint		 duration,
 						 gint		 min_note,
 						 gint		 max_note);
-guint	bst_piano_roll_quantize			(BstPianoRoll	*self,
-						 guint		 fine_tick);
 gint	bst_piano_roll_get_vpanel_width		(BstPianoRoll	*self);
 void    bst_piano_roll_get_paste_pos		(BstPianoRoll	*self,
 						 guint          *tick_p,

@@ -24,20 +24,6 @@
 
 G_BEGIN_DECLS
 
-typedef enum /*< skip >*/
-{
-  BST_TRACK_ROLL_TOOL_NONE,
-  /* choose IDs that are unlikely to clash with category IDs */
-  BST_TRACK_ROLL_TOOL_INSERT		= G_MAXINT - 1000,
-  BST_TRACK_ROLL_TOOL_LINK,
-  BST_TRACK_ROLL_TOOL_RENAME,
-  BST_TRACK_ROLL_TOOL_EDITOR,
-  BST_TRACK_ROLL_TOOL_MOVE,
-  BST_TRACK_ROLL_TOOL_DELETE,
-  BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,
-  BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,
-  BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,
-} BstTrackRollTool;
 typedef struct _BstTrackRollUtil BstTrackRollUtil;
 typedef struct {
   /* misc data */

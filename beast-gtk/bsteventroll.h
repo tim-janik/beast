@@ -64,7 +64,6 @@ struct _BstEventRoll
 
   /* horizontal layout */
   guint		 ppqn;		/* parts per quarter note */
-  guint		 quantization;
   guint		 qnpt;		/* quarter notes per tact */
   guint		 max_ticks;	/* in ticks */
   gfloat	 hzoom;
@@ -133,16 +132,12 @@ void        bst_event_roll_set_canvas_cursor     (BstEventRoll   *self,
                                                   GdkCursorType   cursor);
 void        bst_event_roll_set_vpanel_cursor     (BstEventRoll   *self,
                                                   GdkCursorType   cursor);
-void        bst_event_roll_set_quantization      (BstEventRoll   *self,
-                                                  guint           note_fraction);
 void        bst_event_roll_set_view_selection    (BstEventRoll   *self,
                                                   guint           tick,
                                                   guint           duration);
 void        bst_event_roll_set_vpanel_width_hook (BstEventRoll   *self,
                                                   gint          (*fetch_vpanel_width) (gpointer data),
                                                   gpointer        data);
-guint       bst_event_roll_quantize              (BstEventRoll   *self,
-                                                  guint           fine_tick);
 void        bst_event_roll_set_control_type      (BstEventRoll   *self,
                                                   guint           control_type);
 void        bst_event_roll_init_segment          (BstEventRoll   *self,

@@ -1406,53 +1406,6 @@ bst_event_roll_set_view_selection (BstEventRoll *self,
 }
 
 void
-bst_event_roll_set_quantization (BstEventRoll *self,
-				 guint         note_fraction)
-{
-  g_return_if_fail (BST_IS_EVENT_ROLL (self));
-
-  switch (note_fraction)
-    {
-    case 1:
-    case 2:
-    case 4:
-    case 8:
-    case 16:
-    case 32:
-    case 64:
-    case 128:
-    case 256:
-    case 512:
-      self->quantization = note_fraction;
-      break;
-    default:
-      self->quantization = 0;
-      break;
-    }
-}
-
-guint
-bst_event_roll_quantize (BstEventRoll *self,
-			 guint         fine_tick)
-{
-  g_return_val_if_fail (BST_IS_EVENT_ROLL (self), fine_tick);
-
-  /* quantize tick */
-  if (self->quantization)
-    {
-      guint quant = self->ppqn * 4 / self->quantization;
-      guint qtick = fine_tick / quant;
-      qtick *= quant;
-      if (fine_tick - qtick > quant / 2 &&
-	  qtick + quant > fine_tick)
-	fine_tick = qtick + quant;
-      else
-	fine_tick = qtick;
-    }
-  return fine_tick;
-}
-
-void
 bst_event_roll_set_control_type (BstEventRoll   *self,
                                  guint           control_type)
 {

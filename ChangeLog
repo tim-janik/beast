@@ -1,3 +1,35 @@
+Sat Oct 25 19:28:46 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdefs.h: added enum for track-roll/piano-roll/event-roll
+	utilities.
+
+	* beast-gtk/bsttrackrollctrl.[hc]: account for for utility enum removal.
+
+	* beast-gtk/bstradiotools.c: ignore toggle-button toggles that don't
+	activate a toggle button, regardless of whether they are triggered
+	by the GUI or accelerators. (fixes pressing accelerator for a
+	radio-tools button twice to unselect the button).
+
+	* beast-gtk/bstpianoroll.[hc]:
+	* beast-gtk/bsteventroll.[hc]: remove quantization code.
+
+	* beast-gtk/bsteventrollctrl.[hc]: added quantization code. construct
+	with radio-tools object to select quantization and behaviour.
+	determine button/tool associations.
+
+	* beast-gtk/bstpianorollctrl.[hc]: added quantization code. added
+	radio-tools construction code for note-length, utility selection and
+	quantization selection. determine button/tool associations.
+
+	* beast-gtk/bstpartdialog.[hc]: construct event roll controller with
+	radio-tools from piano roll as they share utility and quantization.
+	remove radio-tools construction code.
+
+	* beast-gtk/bstmessages.c: added tool descriptions for piano-roll and
+	event-roll.
+
+	* bsw/Makefile.am: change c-symbol function prefix to beast_.
+
 Sat Oct 25 17:34:31 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/cons/binote.png: new stock menu icon.

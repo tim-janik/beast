@@ -1,6 +1,4 @@
 FIXMES:
-- fix foo-prefix prefix
-- /Demo			# parse song name from bse files
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
@@ -9,9 +7,8 @@ FIXMES:
 - provide proper stock instrument
 - .desktop file and file manager registration (freedesktop.org) rythmbox has examples on this
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
-- /Demo
 - check button3 /Tools/ menu in piano rool editor
-- check i18n strings for pianoroll GUI elements
+- fix pianoroll/Test menu
 - registering the same procedure twice triggers a g_warning()
 - document bse_item_check_is_a(), remove bse_object_is_a() from bse-procs
 - fix forcing unique names for children of a project 

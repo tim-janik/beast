@@ -95,7 +95,7 @@ void            bst_radio_tools_add_stock_tool	     (BstRadioTools	*rtools,
 						      const gchar	*stock_icon,
 						      BstRadioToolsFlags flags);
 void            bst_radio_tools_clear_tools	     (BstRadioTools	*rtools);
-void		bst_radio_tools_destroy		     (BstRadioTools	*rtools);
+void		bst_radio_tools_dispose		     (BstRadioTools	*rtools);
 void            bst_radio_tools_add_category	     (BstRadioTools	*rtools,
 						      guint		 tool_id,
 						      BseCategory	*category,

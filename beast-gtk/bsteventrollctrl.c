@@ -20,6 +20,8 @@
 
 
 #define CONTROL_TYPE(erctrl)    ((erctrl)->eroll->control_type)
+#define QUANTIZATION(self)      ((self)->quant_rtools->tool_id)
+#define HAVE_OBJECT             (1 << 31)
 
 
 /* --- prototypes --- */
@@ -27,8 +29,8 @@ static void	controller_canvas_drag		(BstEventRollController	*self,
 						 BstEventRollDrag	*drag);
 static void	controller_vpanel_drag		(BstEventRollController	*self,
 						 BstEventRollDrag	*drag);
-static void	controller_update_cursor	(BstEventRollController *self,
-						 BstEventRollTool	 tool);
+static void	controller_update_canvas_cursor	(BstEventRollController *self,
+						 BstGenericRollTool	 tool);
 
 
 /* --- variables --- */
@@ -53,12 +55,15 @@ bst_event_roll_controller_get_clipboard (void)
 }
 
 BstEventRollController*
-bst_event_roll_controller_new (BstEventRoll *eroll)
+bst_event_roll_controller_new (BstEventRoll  *eroll,
+                               BstRadioTools *quant_rtools,
+                               BstRadioTools *canvas_rtools)
 {
   BstEventRollController *self;
   
   g_return_val_if_fail (BST_IS_EVENT_ROLL (eroll), NULL);
-  
+  g_return_val_if_fail (quant_rtools && canvas_rtools, NULL);
+
   self = g_new0 (BstEventRollController, 1);
   self->eroll = eroll;
   self->ref_count = 1;
@@ -72,6 +77,14 @@ bst_event_roll_controller_new (BstEventRoll *eroll)
 			 G_CALLBACK (controller_vpanel_drag),
 			 self, NULL,
 			 G_CONNECT_SWAPPED);
+  self->quant_rtools = g_object_ref (quant_rtools);
+  self->canvas_rtools = g_object_ref (canvas_rtools);
+  /* update from rtools */
+  g_object_connect (self->canvas_rtools,
+                    "swapped_signal::set_tool", controller_update_canvas_cursor, self,
+                    NULL);
+  controller_update_canvas_cursor (self, self->canvas_rtools->tool_id);
+  
   return self;
 }
 
@@ -94,34 +107,85 @@ bst_event_roll_controller_unref (BstEventRollController *self)
   
   self->ref_count--;
   if (!self->ref_count)
-    g_free (self);
+    {
+      bst_radio_tools_dispose (self->canvas_rtools);
+      g_object_unref (self->canvas_rtools);
+      bst_radio_tools_dispose (self->quant_rtools);
+      g_object_unref (self->quant_rtools);
+      g_free (self);
+    }
 }
 
-void
-bst_event_roll_controller_set_obj_tools (BstEventRollController *self,
-					 BstEventRollTool        tool1,
-					 BstEventRollTool        tool2,
-					 BstEventRollTool        tool3)
+static BstGenericRollTool
+event_canvas_button_tool (BstEventRollController *self,
+                          guint                   button,
+                          guint                   have_object)
 {
-  g_return_if_fail (self != NULL);
-  
-  self->obj_tool1 = tool1;
-  self->obj_tool2 = tool2;
-  self->obj_tool3 = tool3;
-}
-
-void
-bst_event_roll_controller_set_bg_tools (BstEventRollController *self,
-					BstEventRollTool        tool1,
-					BstEventRollTool        tool2,
-					BstEventRollTool        tool3)
-{
-  g_return_if_fail (self != NULL);
-  
-  self->bg_tool1 = tool1;
-  self->bg_tool2 = tool2;
-  self->bg_tool3 = tool3;
-  controller_update_cursor (self, self->bg_tool1);
+  switch (self->canvas_rtools->tool_id | /* user selected tool */
+          (have_object ? HAVE_OBJECT : 0))
+    {
+    case BST_GENERIC_ROLL_TOOL_INSERT: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_INSERT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_INSERT | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_RESIZE;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_DELETE: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;       /* user error */
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_DELETE | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_DELETE;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_ALIGN: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_ALIGN;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_ALIGN | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_ALIGN;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_SELECT: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_SELECT | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_VSELECT: /* background */
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;         /* user error */
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    case BST_GENERIC_ROLL_TOOL_VSELECT | HAVE_OBJECT:
+      switch (button) {
+      case 1:  return BST_GENERIC_ROLL_TOOL_SELECT;
+      case 2:  return BST_GENERIC_ROLL_TOOL_MOVE;
+      default: return BST_GENERIC_ROLL_TOOL_NONE;
+      }
+    }
+  return BST_GENERIC_ROLL_TOOL_NONE;
 }
 
 void
@@ -221,25 +285,46 @@ bst_event_roll_controler_clipboard_full (BstEventRollController *self)
   return cseq && cseq->n_pcontrols;
 }
 
+guint
+bst_event_roll_controller_quantize (BstEventRollController *self,
+                                    guint                   fine_tick)
+{
+  g_return_val_if_fail (self != NULL, fine_tick);
+
+  /* quantize tick */
+  if (QUANTIZATION (self) && self->eroll)
+    {
+      guint quant = self->eroll->ppqn * 4 / QUANTIZATION (self);
+      guint qtick = fine_tick / quant;
+      qtick *= quant;
+      if (fine_tick - qtick > quant / 2 &&
+          qtick + quant > fine_tick)
+        fine_tick = qtick + quant;
+      else
+        fine_tick = qtick;
+    }
+  return fine_tick;
+}
+
 static void
-controller_update_cursor (BstEventRollController *self,
-			  BstEventRollTool        tool)
+controller_update_canvas_cursor (BstEventRollController *self,
+                                 BstGenericRollTool      tool)
 {
   switch (tool)
     {
-    case BST_EVENT_ROLL_TOOL_INSERT:
+    case BST_GENERIC_ROLL_TOOL_INSERT:
       bst_event_roll_set_canvas_cursor (self->eroll, GDK_PENCIL);
       break;
-    case BST_EVENT_ROLL_TOOL_RESIZE:
+    case BST_GENERIC_ROLL_TOOL_RESIZE:
       bst_event_roll_set_canvas_cursor (self->eroll, GDK_SB_V_DOUBLE_ARROW);
       break;
-    case BST_EVENT_ROLL_TOOL_MOVE:
+    case BST_GENERIC_ROLL_TOOL_MOVE:
       bst_event_roll_set_canvas_cursor (self->eroll, GDK_FLEUR);
       break;
-    case BST_EVENT_ROLL_TOOL_DELETE:
+    case BST_GENERIC_ROLL_TOOL_DELETE:
       bst_event_roll_set_canvas_cursor (self->eroll, GDK_TARGET);
       break;
-    case BST_EVENT_ROLL_TOOL_SELECT:
+    case BST_GENERIC_ROLL_TOOL_SELECT:
       bst_event_roll_set_canvas_cursor (self->eroll, GDK_CROSSHAIR);
       break;
     default:
@@ -255,7 +340,7 @@ move_start (BstEventRollController *self,
   SfiProxy part = self->eroll->proxy;
   if (self->obj_id)	/* got control event to move */
     {
-      controller_update_cursor (self, BST_EVENT_ROLL_TOOL_MOVE);
+      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_MOVE);
       gxk_status_set (GXK_STATUS_WAIT, _("Move Control Event"), NULL);
       drag->state = BST_DRAG_CONTINUE;
       if (bse_part_is_selected_event (part, self->obj_id))
@@ -275,7 +360,7 @@ move_group_motion (BstEventRollController *self,
   SfiProxy part = self->eroll->proxy;
   gint i, new_tick, delta_tick;
   
-  new_tick = bst_event_roll_quantize (drag->eroll, drag->current_tick);
+  new_tick = bst_event_roll_controller_quantize (self, drag->current_tick);
   delta_tick = self->obj_tick;
   delta_tick -= new_tick;
   bse_item_group_undo (part, "Move Selection");
@@ -309,7 +394,7 @@ move_motion (BstEventRollController *self,
       return;
     }
   
-  new_tick = bst_event_roll_quantize (drag->eroll, drag->current_tick);
+  new_tick = bst_event_roll_controller_quantize (self, drag->current_tick);
   if (new_tick != self->obj_tick)
     {
       if (bse_part_change_control (part, self->obj_id, new_tick, CONTROL_TYPE (self), self->obj_value) != BSE_ERROR_NONE)
@@ -381,7 +466,7 @@ insert_start (BstEventRollController *self,
   BseErrorType error = BSE_ERROR_INVALID_OVERLAP;
   if (!self->obj_id && drag->start_valid)
     {
-      guint qtick = bst_event_roll_quantize (drag->eroll, drag->start_tick);
+      guint qtick = bst_event_roll_controller_quantize (self, drag->start_tick);
       self->obj_id = bse_part_insert_control (part, qtick, CONTROL_TYPE (self), drag->current_value);
       if (self->obj_id)
         {
@@ -406,7 +491,7 @@ resize_start (BstEventRollController *self,
 {
   if (self->obj_id)	/* got control event for resize */
     {
-      controller_update_cursor (self, BST_EVENT_ROLL_TOOL_RESIZE);
+      controller_update_canvas_cursor (self, BST_GENERIC_ROLL_TOOL_RESIZE);
       gxk_status_set (GXK_STATUS_WAIT, _("Resize Control Event"), NULL);
       drag->state = BST_DRAG_CONTINUE;
     }
@@ -470,7 +555,7 @@ static void
 select_start (BstEventRollController *self,
 	      BstEventRollDrag       *drag)
 {
-  drag->start_tick = bst_event_roll_quantize (drag->eroll, drag->start_tick);
+  drag->start_tick = bst_event_roll_controller_quantize (self, drag->start_tick);
   bst_event_roll_set_view_selection (drag->eroll, drag->start_tick, 0);
   gxk_status_set (GXK_STATUS_WAIT, _("Select Region"), NULL);
   drag->state = BST_DRAG_CONTINUE;
@@ -517,15 +602,15 @@ controller_canvas_drag (BstEventRollController *self,
 			BstEventRollDrag       *drag)
 {
   static struct {
-    BstEventRollTool tool;
+    BstGenericRollTool tool;
     DragFunc start, motion, abort;
   } tool_table[] = {
-    { BST_EVENT_ROLL_TOOL_INSERT, insert_resize_start,	resize_motion,  resize_abort,	},
-    { BST_EVENT_ROLL_TOOL_ALIGN,	align_start,	align_motion,	align_abort,	},
-    { BST_EVENT_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
-    { BST_EVENT_ROLL_TOOL_MOVE,		move_start,	move_motion,	move_abort,	},
-    { BST_EVENT_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},
-    { BST_EVENT_ROLL_TOOL_SELECT,	select_start,	select_motion,	select_abort,	},
+    { BST_GENERIC_ROLL_TOOL_INSERT, insert_resize_start,	resize_motion,  resize_abort,	},
+    { BST_GENERIC_ROLL_TOOL_ALIGN,	align_start,	align_motion,	align_abort,	},
+    { BST_GENERIC_ROLL_TOOL_RESIZE,	resize_start,	resize_motion,	resize_abort,	},
+    { BST_GENERIC_ROLL_TOOL_MOVE,		move_start,	move_motion,	move_abort,	},
+    { BST_GENERIC_ROLL_TOOL_DELETE,	delete_start,	NULL,		NULL,		},
+    { BST_GENERIC_ROLL_TOOL_SELECT,	select_start,	select_motion,	select_abort,	},
   };
   guint i;
   
@@ -533,7 +618,7 @@ controller_canvas_drag (BstEventRollController *self,
 
   if (drag->type == BST_DRAG_START)
     {
-      BstEventRollTool tool = BST_EVENT_ROLL_TOOL_NONE;
+      BstGenericRollTool tool = BST_GENERIC_ROLL_TOOL_NONE;
       BsePartControlSeq *cseq;
       gint j, i = drag->start_tick;
       BsePartControl *nearest = NULL;
@@ -559,7 +644,7 @@ controller_canvas_drag (BstEventRollController *self,
         }
       if (!nearest && retry_quantized--)
         {
-          i = bst_event_roll_quantize (drag->eroll, drag->start_tick);
+          i = bst_event_roll_controller_quantize (self, drag->start_tick);
           goto retry_quantized;
         }
       if (nearest)
@@ -579,21 +664,7 @@ controller_canvas_drag (BstEventRollController *self,
       self->sel_cseq = NULL;
       
       /* find drag tool */
-      tool = BST_EVENT_ROLL_TOOL_NONE;
-      if (self->obj_id)		/* have object */
-	switch (drag->button)
-	  {
-	  case 1:	tool = self->obj_tool1;	break;
-	  case 2:	tool = self->obj_tool2;	break;
-	  case 3:	tool = self->obj_tool3;	break;
-	  }
-      else
-	switch (drag->button)
-	  {
-	  case 1:	tool = self->bg_tool1;	break;
-	  case 2:	tool = self->bg_tool2;	break;
-	  case 3:	tool = self->bg_tool3;	break;
-	  }
+      tool = event_canvas_button_tool (self, drag->button, self->obj_id > 0);
       for (i = 0; i < G_N_ELEMENTS (tool_table); i++)
 	if (tool_table[i].tool == tool)
 	  break;
@@ -621,7 +692,7 @@ controller_canvas_drag (BstEventRollController *self,
     }
   if (drag->type == BST_DRAG_DONE ||
       drag->type == BST_DRAG_ABORT)
-    controller_update_cursor (self, self->bg_tool1);
+    controller_update_canvas_cursor (self, self->canvas_rtools->tool_id);
 }
 
 void

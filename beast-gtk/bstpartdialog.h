@@ -47,7 +47,6 @@ struct _BstPartDialog
   BstEventRoll  *eroll;
   BstEventRollController *ectrl;
   GxkToolbar	*toolbar;
-  BstRadioTools	*rtools;
   SfiProxy       project;
 };
 struct _BstPartDialogClass

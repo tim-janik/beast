@@ -336,7 +336,7 @@ bst_radio_tools_clear_tools (BstRadioTools *self)
 }
 
 void
-bst_radio_tools_destroy (BstRadioTools *self)
+bst_radio_tools_dispose (BstRadioTools *self)
 {
   g_return_if_fail (BST_IS_RADIO_TOOLS (self));
   
@@ -360,6 +360,7 @@ rtools_toggle_toggled (BstRadioTools   *self,
     {
       GdkEvent *event = gtk_get_current_event ();
       tool_id = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (toggle)));
+#if 0
       /* ignore untoggeling through the GUI (button release on depressed toggle) */
       if (toggle->active ||
           (gtk_get_event_widget (event) == GTK_WIDGET (toggle) &&
@@ -367,6 +368,10 @@ rtools_toggle_toggled (BstRadioTools   *self,
         bst_radio_tools_set_tool (self, tool_id);
       else
         bst_radio_tools_set_tool (self, 0);
+#endif
+      /* react to activating toggle changes only */
+      if (toggle->active)
+        bst_radio_tools_set_tool (self, tool_id);
       /* enforce depressed state in case tool_id didn't change */
       if (self->tool_id == tool_id && !toggle->active)
         {

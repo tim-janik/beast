@@ -18,53 +18,36 @@
 #ifndef __BST_EVENT_ROLL_CONTROLLER_H__
 #define __BST_EVENT_ROLL_CONTROLLER_H__
 
-
 #include "bsteventroll.h"
+#include "bstradiotools.h"
 
 G_BEGIN_DECLS
 
-typedef enum /*< skip >*/
-{
-  BST_EVENT_ROLL_TOOL_NONE,
-  /* choose IDs that are unlikely to clash with category IDs */
-  BST_EVENT_ROLL_TOOL_INSERT		= G_MAXINT - 1000,
-  BST_EVENT_ROLL_TOOL_RESIZE,
-  BST_EVENT_ROLL_TOOL_ALIGN,
-  BST_EVENT_ROLL_TOOL_MOVE,
-  BST_EVENT_ROLL_TOOL_DELETE,
-  BST_EVENT_ROLL_TOOL_SELECT
-} BstEventRollTool;
-
 typedef struct {
-  BstEventRollTool   obj_tool1;
-  BstEventRollTool   obj_tool2;
-  BstEventRollTool   obj_tool3;
-  BstEventRollTool   bg_tool1;
-  BstEventRollTool   bg_tool2;
-  BstEventRollTool   bg_tool3;
+  /* misc data */
   guint		     ref_count;
   BstEventRoll	    *eroll;
   /* drag data */
-  BsePartControlSeq *sel_cseq;
-  guint		     tool_index;
   guint		     obj_id, obj_tick;
   gfloat             obj_value;
+  BsePartControlSeq *sel_cseq;
   BstSegment        *segment;
+  /* tool data */
+  guint		     tool_index;
+  /* tool selections */
+  BstRadioTools   *quant_rtools;
+  BstRadioTools   *canvas_rtools;
 } BstEventRollController;
 
 
 /* --- API --- */
-BstEventRollController*	bst_event_roll_controller_new		(BstEventRoll		*eroll);
+BstEventRollController*	bst_event_roll_controller_new		(BstEventRoll		*eroll,
+                                                                 BstRadioTools          *quant_rtools,
+                                                                 BstRadioTools          *canvas_rtools);
 BstEventRollController*	bst_event_roll_controller_ref		(BstEventRollController	*self);
 void			bst_event_roll_controller_unref		(BstEventRollController	*self);
-void			bst_event_roll_controller_set_bg_tools	(BstEventRollController	*self,
-								 BstEventRollTool	 tool1,
-								 BstEventRollTool	 tool2,
-								 BstEventRollTool	 tool3);
-void			bst_event_roll_controller_set_obj_tools	(BstEventRollController	*self,
-								 BstEventRollTool	 tool1,
-								 BstEventRollTool	 tool2,
-								 BstEventRollTool	 tool3);
+guint                   bst_event_roll_controller_quantize      (BstEventRollController *self,
+                                                                 guint                   fine_tick);
 void			bst_event_roll_controller_set_clipboard (BsePartControlSeq	*cseq);
 BsePartControlSeq*	bst_event_roll_controller_get_clipboard	(void);
 void			bst_event_roll_controller_clear		(BstEventRollController	*self);

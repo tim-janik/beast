@@ -18,42 +18,28 @@
 #ifndef __BST_PIANO_ROLL_CONTROLLER_H__
 #define __BST_PIANO_ROLL_CONTROLLER_H__
 
-
 #include "bstpianoroll.h"
+#include "bstradiotools.h"
 
 G_BEGIN_DECLS
 
-typedef enum /*< skip >*/
-{
-  BST_PIANO_ROLL_TOOL_NONE,
-  /* choose IDs that are unlikely to clash with category IDs */
-  BST_PIANO_ROLL_TOOL_INSERT		= G_MAXINT - 1000,
-  BST_PIANO_ROLL_TOOL_RESIZE,
-  BST_PIANO_ROLL_TOOL_ALIGN,
-  BST_PIANO_ROLL_TOOL_MOVE,
-  BST_PIANO_ROLL_TOOL_DELETE,
-  BST_PIANO_ROLL_TOOL_SELECT,
-  BST_PIANO_ROLL_TOOL_VSELECT
-} BstPianoRollTool;
-
 typedef struct {
-  BstPianoRollTool obj_tool1;
-  BstPianoRollTool obj_tool2;
-  BstPianoRollTool obj_tool3;
-  BstPianoRollTool bg_tool1;
-  BstPianoRollTool bg_tool2;
-  BstPianoRollTool bg_tool3;
+  /* misc data */
   guint		   ref_count;
   BstPianoRoll	  *proll;
-  guint		   note_length;
   /* drag data */
-  BsePartNoteSeq  *sel_pseq;
-  guint		   tool_index;
   guint		   obj_id, obj_tick, obj_duration;
   gint		   obj_note, obj_fine_tune;
   gfloat           obj_velocity;
   guint		   xoffset;
   guint		   tick_bound;
+  BsePartNoteSeq  *sel_pseq;
+  /* tool data */
+  guint		   tool_index;
+  /* tool selections */
+  BstRadioTools   *note_rtools;
+  BstRadioTools   *quant_rtools;
+  BstRadioTools   *canvas_rtools;
 } BstPianoRollController;
 
 
@@ -61,14 +47,8 @@ typedef struct {
 BstPianoRollController*	bst_piano_roll_controller_new		(BstPianoRoll		*proll);
 BstPianoRollController*	bst_piano_roll_controller_ref		(BstPianoRollController	*self);
 void			bst_piano_roll_controller_unref		(BstPianoRollController	*self);
-void			bst_piano_roll_controller_set_bg_tools	(BstPianoRollController	*self,
-								 BstPianoRollTool	 tool1,
-								 BstPianoRollTool	 tool2,
-								 BstPianoRollTool	 tool3);
-void			bst_piano_roll_controller_set_obj_tools	(BstPianoRollController	*self,
-								 BstPianoRollTool	 tool1,
-								 BstPianoRollTool	 tool2,
-								 BstPianoRollTool	 tool3);
+guint                   bst_piano_roll_controller_quantize      (BstPianoRollController *self,
+                                                                 guint                   fine_tick);
 void			bst_piano_roll_controller_set_clipboard (BsePartNoteSeq		*pseq);
 BsePartNoteSeq*		bst_piano_roll_controller_get_clipboard	(void);
 void			bst_piano_roll_controller_clear		(BstPianoRollController	*self);
