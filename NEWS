@@ -6,8 +6,17 @@ Overview of Changes in BEAST/BSE 0.4.1:
 * Added GSL - a common sound backend for BSE and aRts
 * New threaded sound engine which can share synthesis
   module calculation between processors and process cycles
-* Enhanced IIR Filters
-* Many new synthesis modules
+* New synthesis modules:
+  FreeVerb	  - a reverb based on code by Jeremy Wakefield
+  ResonanceFilter - IIR resonance filter
+  ADSR Envelope   - a simple envelope generator
+  IIR Filter      - various IIR filter types
+  Ports/SubSynth  - allows synthesis network rerouting
+  Constant        - constant value output module
+  WaveOsc         - Anti-aliasing wave playback
+  Sequencer	  - a mini sequencer for harmonic tone switches
+* Many (not yet all) synthesis modules got ported to the
+  new engine and got improved in quality and speed
 * New file caching layer
 * Major GUI cleanup
 * External Wave file support for WAVE, MPEG and Ogg/Vorbis
