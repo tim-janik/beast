@@ -93,21 +93,8 @@ DOCS:
   tsmview. then, gsl-mplan.txt and NEWS don't need anymore markup. [timj]
 - report mising underline to havoc, alper has a tsmview example in
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
-- nroff files need another build step to get final page numbers [alper]
-- the FAQ entry 1.13 has an anchor of #node-2-13-0-0 instead of #node-1-13-0-0
-  due to unnumbered sections being counted as well. unnumbered sections should
-  be counted seperately (e.g. as #node-u1-0-0-0). [alper]
-- manual pages shouldn't get the package version as command line arg,
-  i.e. --package "BEAST-$(VERSION)" [alper]
-- manual pages aren't generated with their section number, e.g. the gcc
-  manual page starts with GCC(1), but bse-procs.3 with BSE-Procedures()
-  instead of BSE-Procedures(3) [alper]
 - what kind of texi macros should be used to markup manual page contents?
   could WRITING.3 have a set of default macros showing this? [alper]
-- bse-plugin-generator.1.texi uses @emph{} as only markup facility atm
-  and should be fixed to use proper man page markup. [alper?]
-- BAD: "--help" in texi file is put out as "-help" in manual pages
-  and .markup
 
 TODO:
 - virtual MIDI keyboard
