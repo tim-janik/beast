@@ -50,6 +50,7 @@ collect_thread_totals::exec ()
                         SfiThreadInfo    *ti)
     {
       th->name = ti->name;
+      th->thread_id = ti->thread_id;
       th->state = convert (ti->state);
       th->priority = ti->priority;
       th->processor = ti->processor;

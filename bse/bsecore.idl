@@ -377,6 +377,8 @@ choice ThreadState {
 record ThreadInfo {
   String      name      = (_("Thread Name"), NULL, NULL, STANDARD);
   ThreadState state     = (_("State"), _("The execution state of the thread"), THREAD_STATE_UNKNOWN, STANDARD);
+  Int         thread_id = (_("Thread ID"), _("A unique number identifying this thread"),
+                           0, 0, G_MAXINT, 1, STANDARD);
   Int         priority  = (_("Priority"), _("The nice value of a thread, -20 indicates a high priority thread and "
                                             "+19 a low priority one that is 'nice' to others"),
                            0, -20, 19, 1, STANDARD);
