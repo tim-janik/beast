@@ -132,6 +132,8 @@ typedef enum    /*< skip >*/
   GSL_WAVE_FORMAT_NONE,
   GSL_WAVE_FORMAT_UNSIGNED_8,
   GSL_WAVE_FORMAT_SIGNED_8,
+  GSL_WAVE_FORMAT_ALAW,
+  GSL_WAVE_FORMAT_ULAW,
   GSL_WAVE_FORMAT_UNSIGNED_12,
   GSL_WAVE_FORMAT_SIGNED_12,
   GSL_WAVE_FORMAT_UNSIGNED_16,
@@ -139,6 +141,7 @@ typedef enum    /*< skip >*/
   GSL_WAVE_FORMAT_FLOAT,
   GSL_WAVE_FORMAT_LAST
 } GslWaveFormatType;
+#define GSL_WAVE_FORMAT_IS_LAW(f)       ((f) == GSL_WAVE_FORMAT_ALAW || (f) == GSL_WAVE_FORMAT_ULAW)
 
 const gchar*      gsl_wave_format_to_string     (GslWaveFormatType format);
 GslWaveFormatType gsl_wave_format_from_string   (const gchar      *string);

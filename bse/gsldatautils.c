@@ -70,7 +70,8 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
   g_return_val_if_fail (dhandle != NULL, EINVAL);
   g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), EINVAL);
   g_return_val_if_fail (fd >= 0, EINVAL);
-  g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, EINVAL);
+  g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, EINVAL);
+  g_return_val_if_fail (!GSL_WAVE_FORMAT_IS_LAW (format), EINVAL);
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, EINVAL);
 
   l = dhandle->setup.n_values;
@@ -255,7 +256,7 @@ gsl_data_handle_dump_wav (GslDataHandle *dhandle,
     return errno;
 
   return gsl_data_handle_dump (dhandle, fd,
-			       n_bits == 16 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
+			       n_bits > 8 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
 			       G_LITTLE_ENDIAN);
 }
 

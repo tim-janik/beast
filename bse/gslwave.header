@@ -15,10 +15,15 @@ wave {
         name = "quoted string"	# each wave must have a descriptive name
         mix_freq = 44100	# the default sampling frequency for the
         			# wave chunks to follow. defaults to 44100.
+	
+	# optional contents
+	author = "Mr. Example"
+	license = "Green OpenMusic License"
+	info = "Some comment for the user"
 
 	# raw sample specific contents:
         format = signed_8       # for raw samples, possible formats are:
-        			# signed_8, unsigned_8, signed_12,
+        			# alaw, ulaw, signed_8, unsigned_8, signed_12,
         			# unsigned_12, signed_16, unsigned_16 or
         			# float. defaults to signed_16.
         byte_order = little	# for raw samples, possible values are:
@@ -30,6 +35,7 @@ wave {
         # a chunk definition; a sample chunk points to encoded sample
         # data which records how the wave sounds at given note.
         chunk {
+        	label = "quoted string" # descriptive string for the GUI
                 osc_freq = 440.0	# note frequency the chunk is to be
                 			# played at. (or, the note that was
                 			# played when the chunk was recorded).
@@ -39,6 +45,8 @@ wave {
 	        mix_freq = 44100	# for raw samples, the sampling
 	        			# frequency with which this chunk has
 	        			# been recorded.
+		volume = 1.0		# float value 0..1
+		balance = 0.0		# float value -1..1
                 rawlink = (...)		# reference to raw sample block in
                 			# binary appendix of this file
                 ogglink = (...)		# reference to Ogg/Vorbis data block
@@ -79,4 +87,4 @@ wave {
 
 ^@ <--- supposedly \000
 
-File content which is ignore by the bsewave header parser.
+File content which is ignored by the bsewave header parser.

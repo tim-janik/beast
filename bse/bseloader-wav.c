@@ -28,6 +28,12 @@
 #include <errno.h>
 
 
+#define FORMAT_IS_ALAW(f)       ((f) == 0x0006  /* Microsoft ALAW */ || \
+                                 (f) == 0x0102) /* IBM ALAW */
+#define FORMAT_IS_ULAW(f)       ((f) == 0x0007  /* Microsoft MULAW */ || \
+                                 (f) == 0x0101) /* IBM MULAW */
+
+
 /* load routine for the RIFF/WAVE sample format
  * ref.: C't 01/1993 pp. 213
  */
@@ -41,7 +47,7 @@ typedef guint16 Word;
 
 /* --- debugging and errors --- */
 #define WAV_DEBUG	sfi_debug_keyfunc ("wav")
-#define WAV_MSG		sfi_info_keyfunc ("wav")
+#define INFO		sfi_info_keyfunc ("wav")
 
 
 /* --- functions --- */
@@ -137,10 +143,16 @@ wav_read_fmt_header (gint       fd,
       WAV_DEBUG ("unmatched token 'fmt '");
       return GSL_ERROR_FORMAT_UNKNOWN;
     }
-  if (header->format != 1 /* PCM */ ||
-      header->n_channels > 2 || header->n_channels < 1)
+  if (header->format != 1 /* PCM */ &&
+      !FORMAT_IS_ALAW (header->format) &&
+      !FORMAT_IS_ULAW (header->format))
     {
-      WAV_DEBUG ("invalid format (%u) or n_channels (%u)", header->format, header->n_channels);
+      WAV_DEBUG ("unknown format (%u)", header->format);
+      return GSL_ERROR_FORMAT_UNKNOWN;
+    }
+  if (header->n_channels > 2 || header->n_channels < 1)
+    {
+      WAV_DEBUG ("invalid number of channels (%u)", header->n_channels);
       return GSL_ERROR_FORMAT_UNKNOWN;
     }
   if (header->length < 16)
@@ -171,7 +183,7 @@ wav_read_fmt_header (gint       fd,
     {
       guint n;
       
-      WAV_DEBUG ("WAVE header too long (%u)", header->length);
+      WAV_DEBUG ("skipping %u bytes of overlong WAVE header", header->length - 16);
       
       n = header->length - 16;
       while (n)
@@ -182,13 +194,11 @@ wav_read_fmt_header (gint       fd,
 	  l = read (fd, junk, l);
 	  if (l < 1 || l > n)
 	    {
-	      WAV_DEBUG ("failed to read FmtHeader");
+	      INFO ("failed to read FmtHeader");
 	      return gsl_error_from_errno (errno, GSL_ERROR_IO);
 	    }
 	  n -= l;
 	}
-      
-      WAV_MSG ("skipping %u bytes of overlong WAVE header", header->length - 16);
     }
   
   return GSL_ERROR_NONE;
@@ -348,8 +358,12 @@ wav_load_wave_dsc (gpointer         data,
     }
   if (*error_p)
     return NULL;
-  
-  switch (fmt_header.bit_per_sample)
+
+  if (fmt_header.bit_per_sample == 8 && FORMAT_IS_ALAW (fmt_header.format))
+    format = GSL_WAVE_FORMAT_ALAW;
+  else if (fmt_header.bit_per_sample == 8 && FORMAT_IS_ULAW (fmt_header.format))
+    format = GSL_WAVE_FORMAT_ULAW;
+  else switch (fmt_header.bit_per_sample)
     {
     case 8:	format = GSL_WAVE_FORMAT_UNSIGNED_8;	break;
     case 12:	format = GSL_WAVE_FORMAT_SIGNED_12;	break;
@@ -415,11 +429,27 @@ _gsl_init_loader_wav (void)
   static const gchar *mime_types[] = { "audio/wav", "audio/x-wav", NULL, };
   static const gchar *magics[] = {
     (
-     "0  string  RIFF\n"
-     "8  string  WAVE\n"
+     "0  string  RIFF\n"        /* RIFF little-endian data */
+     "8  string  WAVE\n"        /* WAVE audio */
      "12 string  fmt\\s\n"	/* expect "fmt " */
      "16 lelong  >15\n"		/* expect valid sub chunk length */
-     "20 leshort =1\n"		/* expect PCM format */
+     "20 leshort =1\n"		/* Microsoft PCM */
+     ),
+    (
+     "0  string  RIFF\n" "8  string  WAVE\n" "12 string  fmt\\s\n" "16 lelong  >15\n"
+     "20 leshort =0x0006\n"	/* Microsoft A-LAW */
+     ),
+    (
+     "0  string  RIFF\n" "8  string  WAVE\n" "12 string  fmt\\s\n" "16 lelong  >15\n"
+     "20 leshort =0x0102\n"	/* IBM A-LAW */
+     ),
+    (
+     "0  string  RIFF\n" "8  string  WAVE\n" "12 string  fmt\\s\n" "16 lelong  >15\n"
+     "20 leshort =0x0007\n"	/* Microsoft U-LAW */
+     ),
+    (
+     "0  string  RIFF\n" "8  string  WAVE\n" "12 string  fmt\\s\n" "16 lelong  >15\n"
+     "20 leshort =0x0101\n"	/* IBM U-LAW */
      ),
     NULL,
   };

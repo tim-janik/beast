@@ -1,3 +1,19 @@
+Fri Jan 16 19:42:30 2004  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle.[hc]: added support for alaw and ulaw sample formats.
+	(wave_format_byte_width): the byte width needs not be deductable from
+	the bit-depth (i.e. is different for alaw/ulaw).
+	(wave_handle_read): removed conversion cases by means of using
+	gsl_conv_to_float() instead.
+
+	* gsldatautils.[hc]: implement alaw/ulaw decoding.
+
+	* gslloader-wav.c: added support for ALAW and ULAW encoded WAV files.
+
+	* gslloader-gslwave.c: started support for additional fields.
+
+	* gslwave.header: document newly supported fields.
+
 Fri Jan 16 17:51:53 2004  Tim Janik  <timj@gtk.org>
 
 	* engine-mplan.txt: fixed typo.

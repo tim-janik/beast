@@ -20,6 +20,7 @@
 
 #include "gslcommon.h"
 #include "gsldatacache.h"
+#include "gsldatautils.h"
 #include "gslfilehash.h"
 
 #include <string.h>
@@ -1138,6 +1139,9 @@ wave_format_bit_depth (const GslWaveFormatType format)
     case GSL_WAVE_FORMAT_UNSIGNED_8:
     case GSL_WAVE_FORMAT_SIGNED_8:
       return 8;
+    case GSL_WAVE_FORMAT_ALAW:
+    case GSL_WAVE_FORMAT_ULAW:
+      return 11;
     case GSL_WAVE_FORMAT_UNSIGNED_12:
     case GSL_WAVE_FORMAT_SIGNED_12:
       return 12;
@@ -1150,7 +1154,19 @@ wave_format_bit_depth (const GslWaveFormatType format)
       return 0;
     }
 }
-#define	wave_format_byte_width(f)	((wave_format_bit_depth (f) + 7) / 8)
+
+static inline const guint G_GNUC_CONST
+wave_format_byte_width (const GslWaveFormatType format)
+{
+  switch (format)
+    {
+    case GSL_WAVE_FORMAT_ALAW:
+    case GSL_WAVE_FORMAT_ULAW:
+      return 1;
+    default:
+      return (wave_format_bit_depth (format) + 7) / 8;
+    }
+}                   
 
 guint
 gsl_wave_format_bit_depth (GslWaveFormatType format)
@@ -1247,7 +1263,7 @@ wave_handle_read (GslDataHandle *data_handle,
 {
   WaveHandle *whandle = (WaveHandle*) data_handle;
   gpointer buffer = values;
-  GslLong l, i, byte_offset;
+  GslLong l, byte_offset;
 
   byte_offset = voffset * wave_format_byte_width (whandle->format);	/* float offset into bytes */
   byte_offset += whandle->byte_offset;
@@ -1260,19 +1276,16 @@ wave_handle_read (GslDataHandle *data_handle,
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values, u8);
       if (l < 1)
 	return l;
-      for (i = 0; i < l; i++)
-	{
-	  int v = u8[i] - 128;
-	  values[i] = v * (1. / 128.);
-	}
+      gsl_conv_to_float (whandle->format, whandle->byte_order, u8, values, l);
       break;
     case GSL_WAVE_FORMAT_SIGNED_8:
+    case GSL_WAVE_FORMAT_ALAW:
+    case GSL_WAVE_FORMAT_ULAW:
       s8 = buffer; s8 += n_values * 3;
       l = gsl_hfile_pread (whandle->hfile, byte_offset, n_values, s8);
       if (l < 1)
 	return l;
-      for (i = 0; i < l; i++)
-	values[i] = s8[i] * (1. / 128.);
+      gsl_conv_to_float (whandle->format, whandle->byte_order, s8, values, l);
       break;
     case GSL_WAVE_FORMAT_SIGNED_12:
     case GSL_WAVE_FORMAT_UNSIGNED_12:
@@ -1283,67 +1296,7 @@ wave_handle_read (GslDataHandle *data_handle,
       if (l < 2)
 	return l < 0 ? l : 0;
       l >>= 1;
-      switch (whandle->format)
-	{
-	case GSL_WAVE_FORMAT_UNSIGNED_16:
-	  if (whandle->byte_order != G_BYTE_ORDER)
-	    for (i = 0; i < l; i++)
-	      {
-		int v = GUINT16_SWAP_LE_BE (u16[i]); v -= 32768;
-		values[i] = v * (1. / 32768.);
-	      }
-	  else /* whandle->byte_order == G_BYTE_ORDER */
-	    for (i = 0; i < l; i++)
-	      {
-		int v = u16[i]; v -= 32768;
-		values[i] = v * (1. / 32768.);
-	      }
-	  break;
-	case GSL_WAVE_FORMAT_UNSIGNED_12:
-	  if (whandle->byte_order != G_BYTE_ORDER)
-	    for (i = 0; i < l; i++)
-	      {
-		int v = GUINT16_SWAP_LE_BE (u16[i]); v &= 0x0fff; v -= 4096;
-		values[i] = v * (1. / 4096.);
-	      }
-	  else /* whandle->byte_order == G_BYTE_ORDER */
-	    for (i = 0; i < l; i++)
-	      {
-		int v = u16[i]; v &= 0x0fff; v -= 4096;
-		values[i] = v * (1. / 4096.);
-	      }
-	  break;
-	case GSL_WAVE_FORMAT_SIGNED_16:
-	  if (whandle->byte_order != G_BYTE_ORDER)
-	    for (i = 0; i < l; i++)
-	      {
-		gint16 v = GUINT16_SWAP_LE_BE (u16[i]);
-		values[i] = v * (1. / 32768.);
-	      }
-	  else /* whandle->byte_order == G_BYTE_ORDER */
-	    for (i = 0; i < l; i++)
-	      {
-		gint16 v = u16[i];
-		values[i] = v * (1. / 32768.);
-	      }
-	  break;
-	case GSL_WAVE_FORMAT_SIGNED_12:
-	  if (whandle->byte_order != G_BYTE_ORDER)
-	    for (i = 0; i < l; i++)
-	      {
-		gint16 v = GUINT16_SWAP_LE_BE (u16[i]);
-		values[i] = CLAMP (v, -4096, 4096) * (1. / 4096.);
-	      }
-	  else /* whandle->byte_order == G_BYTE_ORDER */
-	    for (i = 0; i < l; i++)
-	      {
-		gint16 v = u16[i];
-		values[i] = CLAMP (v, -4096, 4096) * (1. / 4096.);
-	      }
-	  break;
-	default:
-	  g_assert_not_reached ();
-	}
+      gsl_conv_to_float (whandle->format, whandle->byte_order, u16, values, l);
       break;
     case GSL_WAVE_FORMAT_FLOAT:
       u32 = buffer;
@@ -1351,9 +1304,7 @@ wave_handle_read (GslDataHandle *data_handle,
       if (l < 4)
 	return l < 0 ? l : 0;
       l >>= 2;
-      if (whandle->byte_order != G_BYTE_ORDER)
-	for (i = 0; i < l; i++)
-	  u32[i] = GUINT32_SWAP_LE_BE (u32[i]);
+      gsl_conv_to_float (whandle->format, whandle->byte_order, u32, values, l);
       break;
     default:
       l = -1;
@@ -1438,15 +1389,15 @@ gsl_wave_format_to_string (GslWaveFormatType format)
     {
     case GSL_WAVE_FORMAT_UNSIGNED_8:    return "unsigned-8";
     case GSL_WAVE_FORMAT_SIGNED_8:      return "signed-8";
+    case GSL_WAVE_FORMAT_ALAW:          return "alaw";
+    case GSL_WAVE_FORMAT_ULAW:          return "ulaw";
     case GSL_WAVE_FORMAT_UNSIGNED_12:   return "unsigned-12";
     case GSL_WAVE_FORMAT_SIGNED_12:     return "signed-12";
     case GSL_WAVE_FORMAT_UNSIGNED_16:   return "unsigned-16";
     case GSL_WAVE_FORMAT_SIGNED_16:     return "signed-16";
     case GSL_WAVE_FORMAT_FLOAT:         return "float";
-    case GSL_WAVE_FORMAT_NONE:
-    case GSL_WAVE_FORMAT_LAST:
     default:
-      g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, NULL);
+      g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
       return NULL;
     }
 }
@@ -1460,6 +1411,10 @@ gsl_wave_format_from_string (const gchar *string)
 
   while (*string == ' ')
     string++;
+  if (strncasecmp (string, "alaw", 5) == 0)
+    return GSL_WAVE_FORMAT_ALAW;
+  if (strncasecmp (string, "ulaw", 5) == 0)
+    return GSL_WAVE_FORMAT_ULAW;
   if (strncasecmp (string, "float", 5) == 0)
     return GSL_WAVE_FORMAT_FLOAT;
   if ((string[0] == 'u' || string[0] == 'U') &&

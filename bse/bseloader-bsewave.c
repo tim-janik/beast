@@ -28,7 +28,7 @@
 #include <errno.h>
 
 
-#define	GSL_DEBUG_LOADER	g_message
+#define DEBUG   sfi_debug_keyfunc ("wav")
 
 #define parse_or_return(scanner, token) { guint _t = (token); \
                                           if (g_scanner_get_next_token (scanner) != _t) \
@@ -47,12 +47,18 @@ typedef enum
   GSL_WAVE_TOKEN_WAVE           = 512,
   GSL_WAVE_TOKEN_CHUNK,
   GSL_WAVE_TOKEN_NAME,
+  GSL_WAVE_TOKEN_AUTHORS,
+  GSL_WAVE_TOKEN_LICENSE,
+  GSL_WAVE_TOKEN_COMMENT,
   GSL_WAVE_TOKEN_BYTE_ORDER,
   GSL_WAVE_TOKEN_FORMAT,
   GSL_WAVE_TOKEN_N_CHANNELS,
   GSL_WAVE_TOKEN_MIX_FREQ,
   GSL_WAVE_TOKEN_OSC_FREQ,
   GSL_WAVE_TOKEN_MIDI_NOTE,
+  GSL_WAVE_TOKEN_LABEL,
+  GSL_WAVE_TOKEN_VOLUME,
+  GSL_WAVE_TOKEN_BALANCE,
   GSL_WAVE_TOKEN_FILE,
   GSL_WAVE_TOKEN_INDEX,
   GSL_WAVE_TOKEN_RAWLINK,
@@ -75,6 +81,8 @@ typedef enum
   GSL_WAVE_TOKEN_UNSIGNED_8,
   GSL_WAVE_TOKEN_UNSIGNED_12,
   GSL_WAVE_TOKEN_UNSIGNED_16,
+  GSL_WAVE_TOKEN_ALAW,
+  GSL_WAVE_TOKEN_ULAW,
   GSL_WAVE_TOKEN_FLOAT,
   GSL_WAVE_TOKEN_NONE,
   GSL_WAVE_TOKEN_JUMP,
@@ -101,9 +109,12 @@ typedef struct
 
 /* --- tokens --- */
 static const char *wave_tokens_512[] = {
-  "wave",       "chunk",        "name",         "byte_order",
+  "wave",       "chunk",
+  "name",       "author",       "license",      "info",
+  "byte_order",
   "format",     "n_channels",   "mix_freq",     "osc_freq",
-  "midi_note",  "file",         "index",	"rawlink",
+  "midi_note",  "label",        "volume",       "balance",
+  "file",       "index",	"rawlink",
   "ogglink",    "boffset",	"n_values",
   "loop_type",	"loop_start",   "loop_end",	"loop_count",
 };
@@ -111,7 +122,8 @@ static const char *wave_tokens_768[] = {
   "big-endian", "big",          "little-endian", "little",
   "signed-8",   "signed-12",    "signed-16",
   "unsigned-8", "unsigned-12",  "unsigned-16",
-  "float",	"none",		"jump",		 "pingpong",
+  "alaw",       "ulaw",         "float",
+  "none",	"jump",		"pingpong",
 };
 
 
@@ -280,10 +292,12 @@ static guint
 gslwave_parse_chunk_dsc (GScanner        *scanner,
 			 GslWaveChunkDsc *chunk)
 {
+  gboolean negate = FALSE;
   parse_or_return (scanner, '{');
   do
     switch (g_scanner_get_next_token (scanner))
       {
+        double dvalue;
       case '}':
 	return G_TOKEN_NONE;
       default:
@@ -354,6 +368,45 @@ gslwave_parse_chunk_dsc (GScanner        *scanner,
 	chunk->osc_freq = gsl_temp_freq (gsl_get_config ()->kammer_freq,
 					 scanner->value.v_int64 - gsl_get_config ()->midi_kammer_note);
 	break;
+      case GSL_WAVE_TOKEN_LABEL:
+        parse_or_return (scanner, '=');
+        parse_or_return (scanner, G_TOKEN_STRING);
+        DEBUG ("ignoring: label=\"%s\"", scanner->value.v_string);
+        break;
+      case GSL_WAVE_TOKEN_VOLUME:
+        parse_or_return (scanner, '=');
+        if (g_scanner_peek_next_token (scanner) == '-')
+          {
+            g_scanner_get_next_token (scanner);
+            negate = TRUE;
+          }
+        switch (g_scanner_get_next_token (scanner))
+          {
+          case G_TOKEN_FLOAT:   dvalue = scanner->value.v_float;        break;
+          case G_TOKEN_INT:     dvalue = scanner->value.v_int64;        break;
+          default:              return G_TOKEN_FLOAT;
+          }
+        if (negate)
+          dvalue = -dvalue;
+        DEBUG ("ignoring: volume=%f", dvalue);
+        break;
+      case GSL_WAVE_TOKEN_BALANCE:
+        parse_or_return (scanner, '=');
+        if (g_scanner_peek_next_token (scanner) == '-')
+          {
+            g_scanner_get_next_token (scanner);
+            negate = TRUE;
+          }
+        switch (g_scanner_get_next_token (scanner))
+          {
+          case G_TOKEN_FLOAT:   dvalue = scanner->value.v_float;        break;
+          case G_TOKEN_INT:     dvalue = scanner->value.v_int64;        break;
+          default:              return G_TOKEN_FLOAT;
+          }
+        if (negate)
+          dvalue = -dvalue;
+        DEBUG ("ignoring: balance=%f", dvalue);
+        break;
       case GSL_WAVE_TOKEN_BOFFSET:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
@@ -398,10 +451,12 @@ gslwave_parse_wave_dsc (GScanner    *scanner,
 			WaveDsc     *dsc,
 			const gchar *wave_name)
 {
+  gboolean negate = FALSE;
   parse_or_return (scanner, '{');
   do
     switch (g_scanner_get_next_token (scanner))
       {
+        gdouble dvalue;
 	guint i, token;
       case '}':
 	return G_TOKEN_NONE;
@@ -422,6 +477,55 @@ gslwave_parse_wave_dsc (GScanner    *scanner,
 	else
 	  dsc->wdsc.name = g_strdup (scanner->value.v_string);
 	break;
+      case GSL_WAVE_TOKEN_AUTHORS:
+	parse_or_return (scanner, '=');
+	parse_or_return (scanner, G_TOKEN_STRING);
+        DEBUG ("ignore: authors=\"%s\"", scanner->value.v_string);
+        break;
+      case GSL_WAVE_TOKEN_LICENSE:
+	parse_or_return (scanner, '=');
+	parse_or_return (scanner, G_TOKEN_STRING);
+        DEBUG ("ignore: license=\"%s\"", scanner->value.v_string);
+        break;
+      case GSL_WAVE_TOKEN_COMMENT:
+	parse_or_return (scanner, '=');
+	parse_or_return (scanner, G_TOKEN_STRING);
+        DEBUG ("ignore: comment=\"%s\"", scanner->value.v_string);
+        break;
+      case GSL_WAVE_TOKEN_VOLUME:
+        parse_or_return (scanner, '=');
+        if (g_scanner_peek_next_token (scanner) == '-')
+          {
+            g_scanner_get_next_token (scanner);
+            negate = TRUE;
+          }
+        switch (g_scanner_get_next_token (scanner))
+          {
+          case G_TOKEN_FLOAT:   dvalue = scanner->value.v_float;        break;
+          case G_TOKEN_INT:     dvalue = scanner->value.v_int64;        break;
+          default:              return G_TOKEN_FLOAT;
+          }
+        if (negate)
+          dvalue = -dvalue;
+        DEBUG ("ignoring: volume=%f", dvalue);
+        break;
+      case GSL_WAVE_TOKEN_BALANCE:
+        parse_or_return (scanner, '=');
+        if (g_scanner_peek_next_token (scanner) == '-')
+          {
+            g_scanner_get_next_token (scanner);
+            negate = TRUE;
+          }
+        switch (g_scanner_get_next_token (scanner))
+          {
+          case G_TOKEN_FLOAT:   dvalue = scanner->value.v_float;        break;
+          case G_TOKEN_INT:     dvalue = scanner->value.v_int64;        break;
+          default:              return G_TOKEN_FLOAT;
+          }
+        if (negate)
+          dvalue = -dvalue;
+        DEBUG ("ignoring: balance=%f", dvalue);
+        break;
       case GSL_WAVE_TOKEN_CHUNK:
 	if (g_scanner_peek_next_token (scanner) != '{')
 	  parse_or_return (scanner, '{');
@@ -482,6 +586,8 @@ gslwave_parse_wave_dsc (GScanner    *scanner,
 	  case GSL_WAVE_TOKEN_UNSIGNED_8:	dsc->format = GSL_WAVE_FORMAT_UNSIGNED_8;  break;
 	  case GSL_WAVE_TOKEN_UNSIGNED_12:	dsc->format = GSL_WAVE_FORMAT_UNSIGNED_12; break;
 	  case GSL_WAVE_TOKEN_UNSIGNED_16:	dsc->format = GSL_WAVE_FORMAT_UNSIGNED_16; break;
+	  case GSL_WAVE_TOKEN_ALAW:		dsc->format = GSL_WAVE_FORMAT_ALAW;	   break;
+	  case GSL_WAVE_TOKEN_ULAW:		dsc->format = GSL_WAVE_FORMAT_ULAW;	   break;
 	  case GSL_WAVE_TOKEN_FLOAT:		dsc->format = GSL_WAVE_FORMAT_FLOAT;	   break;
 	  default:				return GSL_WAVE_TOKEN_SIGNED_16;
 	  }
