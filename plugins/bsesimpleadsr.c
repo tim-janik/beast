@@ -1,5 +1,5 @@
 /* BseSimpleADSR - BSE Simpl ADSR Envelope Generator
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library Simpleeral Public License as
@@ -134,6 +134,8 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *class)
   g_assert (ichannel == BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER);
   ochannel = bse_source_class_add_ochannel (source_class, "Ctrl Out", "Attack-Decay-Sustain-Release envelope output");
   g_assert (ochannel == BSE_SIMPLE_ADSR_OCHANNEL_OUT);
+  ochannel = bse_source_class_add_ochannel (source_class, "Done Out", "This signal goes high after the release phase has completed");
+  g_assert (ochannel == BSE_SIMPLE_ADSR_OCHANNEL_DONE);
 }
 
 static void
@@ -273,7 +275,8 @@ simple_adsr_process (GslModule *module,
   gboolean have_gate = GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected;
   guint state = 0;
 
-  if (!module->ostreams[0].connected)
+  if (!GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT).connected &&
+      !GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).connected)
     return;	/* no output */
 
   if (env->phase == POST_RELEASE &&
@@ -281,7 +284,11 @@ simple_adsr_process (GslModule *module,
       !GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER).connected)
     {
       /* no trigger input possible */
-      ramp->wave_out = gsl_engine_const_values (0.0);
+      GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT).values = gsl_engine_const_values (0.0);
+      if (env->phase == POST_RELEASE)
+	GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (1.0);
+      else
+	GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (0.0);
       return;
     }
 
@@ -366,6 +373,11 @@ simple_adsr_process (GslModule *module,
 	}
     }
   while (state != BSE_MIX_RAMP_REACHED_BOUND);
+
+  if (env->phase == POST_RELEASE)
+    GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (1.0);
+  else
+    GSL_MODULE_OSTREAM (module, BSE_SIMPLE_ADSR_OCHANNEL_DONE).values = gsl_engine_const_values (0.0);
 }
 
 static void

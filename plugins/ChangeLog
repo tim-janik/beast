@@ -1,3 +1,8 @@
+Mon Jul 15 06:26:18 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesimpleadsr*.[hc]: support "done" output signal which goes high
+	once the envelope completed the release phase.
+
 Mon May 27 22:57:09 2002  Tim Janik  <timj@gtk.org>
 
 	* more i/o channel name fixups.

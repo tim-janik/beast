@@ -1,5 +1,5 @@
 /* BseSimpleADSR - BSE Simpl ADSR Envelope Generator
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library Simpleeral Public License as
@@ -74,6 +74,7 @@ enum
 enum
 {
   BSE_SIMPLE_ADSR_OCHANNEL_OUT,
+  BSE_SIMPLE_ADSR_OCHANNEL_DONE,
   BSE_SIMPLE_ADSR_N_OCHANNELS
 };
 
