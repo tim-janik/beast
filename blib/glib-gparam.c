@@ -159,7 +159,7 @@ g_param_spec_internal (GType        param_type,
 
   pspec = (gpointer) g_type_create_instance (param_type);
   pspec->name = g_strdup (name);
-  g_strcanon (pspec->name, "-", '-');
+  g_strcanon (pspec->name, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "-", '-');
   pspec->nick = g_strdup (nick ? nick : pspec->name);
   pspec->blurb = g_strdup (blurb);
   pspec->flags = (flags & G_PARAM_USER_MASK) | (flags & G_PARAM_MASK);
@@ -294,7 +294,7 @@ g_param_spec_hash_table_lookup (GHashTable   *hash_table,
     key.name = g_strndup (param_name, delim - param_name);
   else
     key.name = g_strdup (param_name);
-  g_strcanon (key.name, "-", '-');
+  g_strcanon (key.name, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "-", '-');
 
   if (trailer)
     *trailer = delim;

@@ -23,31 +23,26 @@
 #include	<string.h>
 
 
-/* string functions
- */
+#if !GLIB_CHECK_VERSION (1, 3, 1)
 gchar*
 g_strcanon (gchar       *string,
-	    const gchar *extra_valid_chars,
+	    const gchar *valid_chars,
 	    gchar        subsitutor)
 {
   register gchar *c;
   
   g_return_val_if_fail (string != NULL, NULL);
-  
-  if (!extra_valid_chars)
-    extra_valid_chars = "";
+  g_return_val_if_fail (valid_chars != NULL, NULL);
   
   for (c = string; *c; c++)
     {
-      if ((*c < 'a' || *c > 'z') &&
-	  (*c < 'A' || *c > 'Z') &&
-	  (*c < '0' || *c > '9') &&
-	  !strchr (extra_valid_chars, *c))
+      if (!strchr (valid_chars, *c))
 	*c = subsitutor;
     }
   
   return string;
 }
+#endif /* !GLIB_CHECK_VERSION (1, 3, 1) */
 
 gchar*
 g_strdup_quoted (const gchar *string)

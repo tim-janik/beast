@@ -54,8 +54,6 @@ typedef enum    /*< skip >*/
   G_TYPE_GLE_GOBJECT,
 
   /* the following reserved ids should vanish soon */
-  G_TYPE_BSE_PARAM,
-  G_TYPE_BSE_OBJECT,
   G_TYPE_GTK_OBJECT,
   G_TYPE_GTK_ARG,
 

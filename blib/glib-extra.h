@@ -29,9 +29,6 @@ extern "C" {
 
 
 /* --- string functions --- */
-gchar*  g_strcanon              (gchar         *string,
-				 const gchar   *extra_valid_chars,
-				 gchar          subsitutor);
 gchar*  g_strdup_quoted         (const gchar   *string);
 
 
@@ -90,6 +87,9 @@ gboolean      g_pattern_match_simple   (const gchar  *pattern,
 					const gchar  *string);
 
 #if !GLIB_CHECK_VERSION (1, 3, 1)
+gchar*  g_strcanon              (gchar         *string,
+				 const gchar   *valid_chars,
+				 gchar          subsitutor);
 #define G_STRINGIFY(macro_or_string)    _G_STRINGIFY_INTERNAL (macro_or_string)
 #define _G_STRINGIFY_INTERNAL(contents) #contents
 typedef struct _GTrashStack GTrashStack;
@@ -113,28 +113,22 @@ _bse_datalist_id_remove_no_notify (GData **datalist,
   return ret_data;
 }
 #define g_datalist_id_remove_no_notify _bse_datalist_id_remove_no_notify     
-#endif /* !GLIB_CHECK_VERSION (1, 3, 1) */
-
+#define G_CSET_DIGITS   "0123456789"
 #ifdef  __GNUC__
 #define G_STRLOC	__FILE__ ":" G_STRINGIFY (__LINE__) ":" __PRETTY_FUNCTION__ "()"
 #else
 #define G_STRLOC	__FILE__ ":" G_STRINGIFY (__LINE__)
 #endif
-
-
 #undef G_STRUCT_OFFSET
 #undef G_STRUCT_MEMBER_P
 #undef G_STRUCT_MEMBER
-/* Provide convenience macros for handling structure
- * fields through their offsets.
- */
 #define G_STRUCT_OFFSET(struct_type, member)    \
     ((glong) ((guint8*) &((struct_type*) 0)->member))
 #define G_STRUCT_MEMBER_P(struct_p, struct_offset)   \
     ((gpointer) ((guint8*) (struct_p) + (glong) (struct_offset)))
 #define G_STRUCT_MEMBER(member_type, struct_p, struct_offset)   \
     (*(member_type*) G_STRUCT_MEMBER_P ((struct_p), (struct_offset)))
-
+#endif /* !GLIB_CHECK_VERSION (1, 3, 1) */
 
 
 

@@ -1,3 +1,13 @@
+Fri Apr 28 21:33:52 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.h: more adaptions for GLib 1.3.1 compatibility.
+	* glib-extra.c (g_strcanon): only allow characters passed as
+	valid_chars.
+
+	* glib-gparam.c (g_param_spec_internal): 
+	* glib-gparam.c (g_param_spec_hash_table_lookup): list all valid
+	characters in call to g_strcanon().
+
 Mon Apr 17 20:45:50 2000  Tim Janik  <timj@gtk.org>
 
 	* glib-gobject.c (g_object_base_class_finalize): oops, don't unset
