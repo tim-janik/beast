@@ -1,6 +1,21 @@
+Tue Aug 20 17:32:35 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprocedure.c: fix va_start() invocations.
+
+	* docs/teximacros.texi: add @revision{} macro from alper to
+	show last revision stamp in generated output.
+
+	* docs/generated/html.xsl: update from alper with bug fixes.
+
+	* docs/generated/markup.xsl: update from alper with bug fixes,
+	fixes majorheading handling.
+
+	* docs/faq.texi:
+	* docs/quickstart.texi: fix revision date generation.
+
 Fri Aug 16 13:02:10 2002  Tim Janik  <timj@gtk.org>
 
-	* incorporate docs changes from Alper Ersoy <dirt@gtk.org>:
+	* incorporate doc changes from Alper Ersoy <dirt@gtk.org>:
 
 	* docs/faq.texi: add @toc.
 	* docs/quickstart.texi: add @toc, put title as majorheading.

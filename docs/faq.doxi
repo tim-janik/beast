@@ -7,6 +7,9 @@
 
 @include teximacros.texi
 
+@majorheading @beastbse FAQ - Frequently Asked Questions
+@revision
+
 @toc
 
 @chapter @beastbse FAQ
@@ -21,7 +24,7 @@ This FAQ was written by @uref{timj@@beast.gtk.org,Tim Janik}.
 Initial markup was done by Dave Seidel, until
 @uref{dirt@@gtk.org,Alper Ersoy} implemented
 a new markup parser for @beast documentation. Around the
-0.4.1 release, the docs were migrated to texinfo format.
+0.4.1 release, the docs got migrated to texinfo format.
 
 @section Contact Information and Resources
 @itemize

@@ -525,7 +525,7 @@ bst_procedure_exec_modal (GType        procedure_type,
 
   g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
 
-  var_args = va_start (var_args, preset_param);
+  va_start (var_args, preset_param);
   bst_procedure_exec_internal (procedure_type, preset_param, TRUE, TRUE, TRUE, var_args);
   va_end (var_args);
 }
@@ -539,7 +539,7 @@ bst_procedure_exec (GType        procedure_type,
 
   g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
 
-  var_args = va_start (var_args, preset_param);
+  va_start (var_args, preset_param);
   bst_procedure_exec_internal (procedure_type, preset_param, FALSE, FALSE, FALSE, var_args);
   va_end (var_args);
 }
@@ -553,7 +553,7 @@ bst_procedure_exec_auto (GType        procedure_type,
 
   g_return_if_fail (BSE_TYPE_IS_PROCEDURE (procedure_type));
 
-  var_args = va_start (var_args, preset_param);
+  va_start (var_args, preset_param);
   bst_procedure_exec_internal (procedure_type, preset_param, FALSE, TRUE, FALSE, var_args);
   va_end (var_args);
 }

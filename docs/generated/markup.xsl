@@ -45,6 +45,8 @@
     <tagdef name="tableitem"	  indent="45" />
     <tagdef name="multitable"     family="mono" />
 
+    <tagdef name="hyperlink"      underline="single" foreground="#0000ff" />
+
     <!-- contextual tags -->
     <tagdef name="code"           family="mono" foreground="#000040" />
 
@@ -73,8 +75,6 @@
     <tagdef name="object"         family="mono" style="italic" />
     <span tag="body">
       <xsl:apply-templates/>
-
-      <xsl:call-template name="revision"/>
       <breakline/>
       <newline/>
     </span>
@@ -84,16 +84,21 @@
   <xsl:template match="setfilename|settitle|itemfunction|columnfraction"/>
 
   <!-- revision bit -->
-  <xsl:template name="revision">
-    <xsl:if test="string-length($revision) > 0">
-      <breakline/>
-      <newline/>
-      <span tag="revision">
-        <xsl:text>Document revised: </xsl:text><xsl:value-of select="$revision"/>
-      </span>
-      <breakline/>
-      <newline/>
-    </xsl:if>
+  <xsl:template match="revision">
+    <xsl:choose>
+      <xsl:when test="string-length($revision) > 0">
+	<breakline/>
+	<newline/>
+	<span tag="revision">
+	  <xsl:text>Document revised: </xsl:text><xsl:value-of select="$revision"/>
+	</span>
+	<breakline/>
+	<newline/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message>XSL-WARNING: Skipping Document Revision line, revision date not provided.</xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <!-- table of contents related ftuff -->
@@ -126,12 +131,15 @@
   </xsl:template>
 
   <xsl:template name="toc_chapter">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:number format="1 - "/><xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:number format="1 - "/><xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
     <xsl:if test="count(./section) > 0">
       <span tag="indented">
 	<xsl:for-each select="./section">
@@ -142,12 +150,15 @@
   </xsl:template>
 
   <xsl:template name="toc_section">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:number level="multiple" count="chapter|section" format="1.1 - "/><xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:number level="multiple" count="chapter|section" format="1.1 - "/><xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
     <xsl:if test="count(./subsection) > 0">
       <span tag="indented">
 	<xsl:for-each select="./subsection">
@@ -158,12 +169,15 @@
   </xsl:template>
 
   <xsl:template name="toc_subsection">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:number level="multiple" count="chapter|section|subsection" format="1.1.1 - "/><xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:number level="multiple" count="chapter|section|subsection" format="1.1.1 - "/><xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
     <xsl:if test="count(./subsubsection) > 0">
       <span tag="indented">
 	<xsl:for-each select="./subsubsection">
@@ -174,21 +188,27 @@
   </xsl:template>
 
   <xsl:template name="toc_subsubsection">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:number level="multiple" count="chapter|section|subsection|subsubsection" format="1.1.1.1 - "/><xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:number level="multiple" count="chapter|section|subsection|subsubsection" format="1.1.1.1 - "/><xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
   </xsl:template>
 
   <xsl:template name="toc_appendix">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:text>Appendix </xsl:text><xsl:number format="A - "/><xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:text>Appendix </xsl:text><xsl:number format="A - "/><xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
     <xsl:if test="count(./appendixsec) > 0">
       <span tag="indented">
 	<xsl:for-each select="./appendixsec">
@@ -199,12 +219,15 @@
   </xsl:template>
 
   <xsl:template name="toc_appendixsec">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:number level="multiple" count="appendix|appendixsec" format="A.1 - "/><xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:number level="multiple" count="appendix|appendixsec" format="A.1 - "/><xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
     <xsl:if test="count(./appendixsubsec) > 0">
       <span tag="indented">
 	<xsl:for-each select="./appendixsubsec">
@@ -215,12 +238,15 @@
   </xsl:template>
 
   <xsl:template name="toc_appendixsubsec">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec" format="A.1.1 - "/><xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec" format="A.1.1 - "/><xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
     <xsl:if test="count(./appendixsubsubsec) > 0">
       <span tag="indented">
 	<xsl:for-each select="./appendixsubsubsec">
@@ -231,21 +257,27 @@
   </xsl:template>
 
   <xsl:template name="toc_appendixsubsubsec">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec|appendixsubsubsec" format="A.1.1.1 - "/><xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:number level="multiple" count="appendix|appendixsec|appendixsubsec|appendixsubsubsec" format="A.1.1.1 - "/><xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
   </xsl:template>
 
   <xsl:template name="toc_unnumbered">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
     <xsl:if test="count(./unnumberedsec) > 0">
       <span tag="indented">
 	<xsl:for-each select="./unnumberedsec">
@@ -256,12 +288,14 @@
   </xsl:template>
 
   <xsl:template name="toc_unnumberedsec">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:value-of select="title"/>
+      </activatable><breakline/>
+    </span>
     <xsl:if test="count(./unnumberedsubsec) > 0">
       <span tag="indented">
 	<xsl:for-each select="./unnumberedsubsec">
@@ -272,12 +306,15 @@
   </xsl:template>
 
   <xsl:template name="toc_unnumberedsubsec">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
     <xsl:if test="count(./unnumberedsubsubsec) > 0">
       <span tag="indented">
 	<xsl:for-each select="./unnumberedsubsubsec">
@@ -288,12 +325,15 @@
   </xsl:template>
 
   <xsl:template name="toc_unnumberedsubsubsec">
-    <activatable>
-      <xsl:attribute name="data">
-	<xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
-      </xsl:attribute>
-      <xsl:value-of select="title"/>
-    </activatable><breakline/>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:text>#</xsl:text><xsl:call-template name="node_number"/>
+	</xsl:attribute>
+	<xsl:value-of select="title"/>
+      </activatable>
+    </span>
+    <breakline/>
   </xsl:template>
 
   <!-- end of table of contents related ftuff -->
@@ -411,7 +451,7 @@
     <newline/>
   </xsl:template>
 
-  <xsl:template match="unnumbered/title|chapheading/title/majorheading/title">
+  <xsl:template match="unnumbered/title|chapheading/title|majorheading/title">
     <breakline/>
     <newline/>
     <newline/>
@@ -561,7 +601,7 @@
     <breakline/>
   </xsl:template>
 
-  <xsl:template match="itemize/item">
+  <xsl:template match="itemize/item|enumerate/item">
     <breakline/>
     <span tag="item-margin">
       <span tag="bullet-tag"><image stock="gtk-yes" size="10x10"/></span>
@@ -570,7 +610,10 @@
     <breakline/>
   </xsl:template>
 
-  <xsl:template match="enumerate/item">
+  <xsl:template match="this-is-disabled-enumerate/item">
+    <!-- Alper, when enabling this, also see the previous template -->
+    <!-- because even after you enable this template, the previous -->
+    <!-- will block this template from working -->
     <breakline/>
     <span tag="item-margin">
       <span tag="bullet-tag"><xsl:number format="1. "/></span>
@@ -580,19 +623,17 @@
   </xsl:template>
 
   <xsl:template match="uref">
-    <span tag="fg-blue">
-      <span tag="underline">
-	<activatable>
-	  <xsl:attribute name="data">
-	    <xsl:value-of select="urefurl"/>
-	  </xsl:attribute>
-	  <xsl:choose>
-	    <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
-	    <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (<xsl:apply-templates select="urefurl"/>)</xsl:when>
-	    <xsl:otherwise><xsl:apply-templates select="urefurl"/></xsl:otherwise>
-	  </xsl:choose>
-	</activatable>
-      </span>
+    <span tag="hyperlink">
+      <activatable>
+	<xsl:attribute name="data">
+	  <xsl:value-of select="urefurl"/>
+	</xsl:attribute>
+	<xsl:choose>
+	  <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
+	  <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (<xsl:apply-templates select="urefurl"/>)</xsl:when>
+	  <xsl:otherwise><xsl:apply-templates select="urefurl"/></xsl:otherwise>
+	</xsl:choose>
+      </activatable>
     </span>
   </xsl:template>
 

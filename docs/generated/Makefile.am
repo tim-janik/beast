@@ -28,15 +28,14 @@ build_tools = $(strip		\
 	markup.xsl		\
 	texinfo.dtd		\
 )
-XSLTPROC = xsltproc	# FIXME
 
 if HAVE_XMLMAKEINFO_AND_XSLTPROC
 %.xml: $(srcdir)/../%.texi
 	$(XMLMAKEINFO) -I $(srcdir)/.. --xml $< -o $@
 %.markup: %.xml $(srcdir)/markup.xsl $(srcdir)/texinfo.dtd
-	$(XSLTPROC) $(srcdir)/markup.xsl $< >$@
+	$(XSLTPROC) --stringparam revision "`date -r $<`" $(srcdir)/markup.xsl $< >$@
 %.html: %.xml $(srcdir)/html.xsl $(srcdir)/texinfo.dtd
-	$(XSLTPROC) --param toc 1 --stringparam revision "`date -r $<`" $(srcdir)/html.xsl $< >$@
+	$(XSLTPROC) --stringparam revision "`date -r $<`" $(srcdir)/html.xsl $< >$@
 gsl-mplan.xml: $(top_srcdir)/bse/gsl-mplan.txt
 	cd . \
 	&& echo '<texinfo>' > $@ \

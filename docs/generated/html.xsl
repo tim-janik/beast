@@ -210,11 +210,7 @@ p.tableitem {
     <td valign="top">
     <!-- content starts -->
 
-      <xsl:apply-templates select="titlepage"/>
-
       <xsl:apply-templates/>
-
-      <xsl:call-template name="revision"/>
 
     <!-- content ends -->
     </td>
@@ -283,20 +279,26 @@ p.tableitem {
   </div>
 </xsl:template>
 
-<xsl:template name="revision">
-  <xsl:if test="string-length($revision) > 0">
-    <p><em><span class="revision"><xsl:text>Document revised: </xsl:text><xsl:value-of select="$revision"/></span></em></p>
-  </xsl:if>
+<xsl:template match="revision">
+  <xsl:choose>
+    <xsl:when test="string-length($revision) > 0">
+      <em><span class="revision"><xsl:text>Document revised: </xsl:text><xsl:value-of select="$revision"/></span></em>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:message>XSL-WARNING: Skipping Document Revision line, revision date not provided.</xsl:message>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template name="node_number">
   <xsl:text>node-</xsl:text><xsl:number level="multiple" count="chapter|section|subsection|subsubsection|appendix|appendixsec|appendixsubsec|appendixsubsubsec|unnumbered|unnumberedsec|unnumberedsubsec|unnumberedsubsubsec" format="1-1-1-1"/>
 </xsl:template>
 
-<xsl:template match="table-of-contents">
+<!-- Alper: fix this template by removing para tags when makeinfo is fixed -->
+<xsl:template match="para/table-of-contents">
   <xsl:call-template name="big_title">
     <xsl:with-param name="title">Table of Contents</xsl:with-param>
-    <xsl:with-param name="node">toc</xsl:with-param>
+    <xsl:with-param name="node"><xsl:text>toc-</xsl:text><xsl:number count="para"/></xsl:with-param>
   </xsl:call-template>
 
   <div class="toc">
