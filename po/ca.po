@@ -1,0 +1,958 @@
+# Traducció del mòdul Beast de l'equip de Softcatalà
+# Copyright (C) 2003
+# This file is distributed under the same license as the Beast package.
+# Xavier Conde Rueda <xaviconde@eresmas.com>, 2003.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Beast\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-10-16 14:07+0200\n"
+"PO-Revision-Date: 2003-10-27 19:50+0000\n"
+"Last-Translator: Xavier Conde Rueda <xaviconde@eresmas.com>\n"
+"Language-Team: catalan <tradgnome@softcatala.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: beast-gtk/bstapp.c:64
+msgid "/_File"
+msgstr "/_Fitxer"
+
+#: beast-gtk/bstapp.c:66
+msgid "/File/_New"
+msgstr "/Fitxer/_Nou"
+
+#: beast-gtk/bstapp.c:67
+msgid "/File/_Open..."
+msgstr "/Fitxer/_Obre..."
+
+#: beast-gtk/bstapp.c:68
+msgid "/File/_Merge..."
+msgstr "/Fitxer/F_usiona..."
+
+#: beast-gtk/bstapp.c:69
+msgid "/File/_Close"
+msgstr "/Fitxer/Tan_ca"
+
+#: beast-gtk/bstapp.c:71
+msgid "/File/_Save"
+msgstr "/Fitxer/De_sa"
+
+#: beast-gtk/bstapp.c:72
+msgid "/File/Save _As..."
+msgstr "/Fitxer/Des_a com a..."
+
+#: beast-gtk/bstapp.c:74
+msgid "/File/Preferences..."
+msgstr "/Fitxer/Preferències..."
+
+#: beast-gtk/bstapp.c:76
+msgid "/File/_Quit"
+msgstr "/Fitxer/Su_rt"
+
+#: beast-gtk/bstapp.c:77
+msgid "/_Edit"
+msgstr "/_Edita"
+
+#: beast-gtk/bstapp.c:79
+msgid "/Edit/_Undo"
+msgstr "/Edita/_Desfès"
+
+#: beast-gtk/bstapp.c:80
+msgid "/Edit/_Redo"
+msgstr "/Edita/To_rna a fer"
+
+#: beast-gtk/bstapp.c:81
+msgid "/Edit/_Clear Undo"
+msgstr "/Edita/Des_fés neteja"
+
+#: beast-gtk/bstapp.c:83
+msgid "/Edit/Preferences..."
+msgstr "/Edita/Preferències..."
+
+#: beast-gtk/bstapp.c:84
+msgid "/_View"
+msgstr "/_Visualitza"
+
+#: beast-gtk/bstapp.c:86
+msgid "/View/Procedure _Browser"
+msgstr "/Visualitza/Na_vegador de procediments"
+
+#: beast-gtk/bstapp.c:87
+msgid "/View/Rack Editor"
+msgstr "/Visualitza/Editor del rack"
+
+#: beast-gtk/bstapp.c:88
+msgid "/View/Device _Monitor"
+msgstr "/Visualitza/_Monitor de dispositiu"
+
+#: beast-gtk/bstapp.c:90
+msgid "/View/Preferences"
+msgstr "/Visualitza/Preferències"
+
+#: beast-gtk/bstapp.c:92
+msgid "/View/Rebuild"
+msgstr "/Visualitza/Torna a construir"
+
+#: beast-gtk/bstapp.c:93
+msgid "/_Project"
+msgstr "/_Projecte"
+
+#: beast-gtk/bstapp.c:95
+msgid "/Project/_Play"
+msgstr "/Projecte/Re_produeix"
+
+#: beast-gtk/bstapp.c:96
+msgid "/Project/_Stop"
+msgstr "/Projecte/A_tura"
+
+#: beast-gtk/bstapp.c:98
+msgid "/Project/New Song"
+msgstr "/Projecte/Nova cançó"
+
+#: beast-gtk/bstapp.c:99
+msgid "/Project/New Custom Synthesizer"
+msgstr "/Projecte/Nou sintetitzador personalitzat"
+
+#: beast-gtk/bstapp.c:100
+msgid "/Project/New MIDI Synthesizer"
+msgstr "/Projecte/Nou sintetitzador MIDI"
+
+#: beast-gtk/bstapp.c:101
+msgid "/Project/Remove Synthesizer"
+msgstr "/Projecte/Esborra sintetitzador"
+
+#: beast-gtk/bstapp.c:103
+msgid "/_Song"
+msgstr "/Ca_nçó"
+
+#: beast-gtk/bstapp.c:105
+msgid "/Song/Add _Part"
+msgstr "/Cançó/Afegeix _part"
+
+#: beast-gtk/bstapp.c:106
+msgid "/Song/Delete _Part"
+msgstr "/Cançó/Esborra _part"
+
+#: beast-gtk/bstapp.c:107
+msgid "/Song/Add _Track"
+msgstr "/Cançó/Afegeix pis_ta"
+
+#: beast-gtk/bstapp.c:108
+msgid "/Song/_Delete Track"
+msgstr "/Cançó/Es_borra pista"
+
+#: beast-gtk/bstapp.c:109
+msgid "/_Synth"
+msgstr "/_Sintetitzador"
+
+#: beast-gtk/bstapp.c:111
+msgid "/Synth/_Test"
+msgstr "/Sintetitzador/_Prova"
+
+#: beast-gtk/bstapp.c:112
+msgid "/Wave_s"
+msgstr "/O_na"
+
+#: beast-gtk/bstapp.c:114
+msgid "/Waves/_Load Wave..."
+msgstr "/Ona/Ca_rrega ona..."
+
+#: beast-gtk/bstapp.c:115
+msgid "/Waves/Delete Wave"
+msgstr "/Ona/Esborra ona"
+
+#: beast-gtk/bstapp.c:116
+msgid "/Waves/_Edit Wave..."
+msgstr "/Ona/_Edita ona..."
+
+#: beast-gtk/bstapp.c:118
+msgid "/_Tools"
+msgstr "/_Eines"
+
+#: beast-gtk/bstapp.c:119
+msgid "/Tools/_Song"
+msgstr "/Eines/_Cançó"
+
+#: beast-gtk/bstapp.c:120
+msgid "/Tools/_Synth"
+msgstr "/Eines/_Sintetitzador"
+
+#: beast-gtk/bstapp.c:121
+# Segur que l'accelerador està malament
+msgid "/Tools/Wave_s"
+msgstr "/Eines/On_es"
+
+#: beast-gtk/bstapp.c:124
+msgid "/_Help"
+msgstr "/_Ajut"
+
+#: beast-gtk/bstapp.c:126
+msgid "/Help/_Release Notes..."
+msgstr "/Ajut/Notes sob_re la versió..."
+
+#: beast-gtk/bstapp.c:127
+msgid "/Help/Quick Start..."
+msgstr "/Ajut/Inici ràpid..."
+
+#: beast-gtk/bstapp.c:128
+msgid "/Help/_FAQ..."
+msgstr "/Ajut/_Preguntes habituals..."
+
+#: beast-gtk/bstapp.c:129
+msgid "/Help/Development/GSL Engine..."
+msgstr "/Ajut/Desenvolupament/Motor GSL..."
+
+#: beast-gtk/bstapp.c:131
+msgid "/Help/_About..."
+msgstr "/Ajut/_Quant a..."
+
+#. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
+#: beast-gtk/bstapp.c:710
+msgid "Rack editor"
+msgstr "Editor del rack"
+
+#: beast-gtk/bstapp.c:724
+msgid "Preferences"
+msgstr "Preferències"
+
+#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
+#: beast-gtk/bstapp.c:738
+msgid "Device Monitor"
+msgstr "Monitor del dispositiu"
+
+#: beast-gtk/bstapp.c:753
+msgid "Procedure Browser"
+msgstr "Navegador de procediments"
+
+#: beast-gtk/bstapp.c:810
+#, c-format
+msgid "BEAST-%s Release Notes"
+msgstr "Notes sobre la versió del BEAST-%s"
+
+#: beast-gtk/bstcanvaslink.c:177
+msgid "Module Link: "
+msgstr "Enllaç al mòdul: "
+
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:1055
+msgid "Module link"
+msgstr "Enllaç al mòdul"
+
+#: beast-gtk/bstcanvassource.c:484
+msgid "Module Info"
+msgstr "Informació del mòdul"
+
+#: beast-gtk/bstcanvassource.c:972
+msgid "Input"
+msgstr "Entrada"
+
+#: beast-gtk/bstcanvassource.c:981
+msgid "Output"
+msgstr "Sortida"
+
+#: beast-gtk/bstcanvassource.c:985
+msgid "(Hint)"
+msgstr ""
+
+#: beast-gtk/bsteventrollctrl.c:259 beast-gtk/bsteventrollctrl.c:266
+#: beast-gtk/bsteventrollctrl.c:330
+msgid "Move Control Event"
+msgstr "Event de control de moviment"
+
+#: beast-gtk/bsteventrollctrl.c:266 beast-gtk/bsteventrollctrl.c:415
+#: beast-gtk/bsteventrollctrl.c:465 beast-gtk/bstpianorollctrl.c:306
+#: beast-gtk/bstpianorollctrl.c:416 beast-gtk/bstpianorollctrl.c:479
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsttrackrollctrl.c:540
+msgid "No target"
+msgstr "Cap objectiu"
+
+#: beast-gtk/bsteventrollctrl.c:330 beast-gtk/bsteventrollctrl.c:451
+msgid "Lost Event"
+msgstr "Event perdut"
+
+#: beast-gtk/bsteventrollctrl.c:340 beast-gtk/bsteventrollctrl.c:373
+msgid "Align Control Events"
+msgstr "Events de control d'alineació"
+
+#: beast-gtk/bsteventrollctrl.c:373 beast-gtk/bsteventrollctrl.c:499
+#: beast-gtk/bstpianorollctrl.c:537 beast-gtk/bstpianorollctrl.c:573
+msgid "Aborted"
+msgstr "Interromput"
+
+#: beast-gtk/bsteventrollctrl.c:399
+msgid "Insert Control Event"
+msgstr "Insereix event de control"
+
+#: beast-gtk/bsteventrollctrl.c:410 beast-gtk/bsteventrollctrl.c:415
+#: beast-gtk/bsteventrollctrl.c:451
+msgid "Resize Control Event"
+msgstr "Event de control de canvi de mida"
+
+#: beast-gtk/bsteventrollctrl.c:462 beast-gtk/bsteventrollctrl.c:465
+msgid "Delete Control Event"
+msgstr "Event de control d'esborrat"
+
+#: beast-gtk/bsteventrollctrl.c:475 beast-gtk/bsteventrollctrl.c:499
+#: beast-gtk/bstpianorollctrl.c:511 beast-gtk/bstpianorollctrl.c:537
+msgid "Select Region"
+msgstr "Seleccioneu regió"
+
+#: beast-gtk/bsteventrollctrl.c:508 beast-gtk/bstpianorollctrl.c:582
+msgid "Abortion"
+msgstr "Interrupció"
+
+#: beast-gtk/bstfiledialog.c:196
+msgid "Contents"
+msgstr "Continguts"
+
+#: beast-gtk/bstfiledialog.c:204
+msgid "Store references to wave files"
+msgstr "Desa referències a fitxers d'ona"
+
+#: beast-gtk/bstfiledialog.c:211
+msgid "Include wave files"
+msgstr "Inclou els fitxers d'ona"
+
+#. setup remaining bits
+#: beast-gtk/bstfiledialog.c:228
+msgid "File Selection"
+msgstr "Selecció de fitxer"
+
+#: beast-gtk/bstfiledialog.c:343
+msgid "Open Project"
+msgstr "Obre projecte"
+
+#: beast-gtk/bstfiledialog.c:357
+msgid "Select Directory"
+msgstr "Selecciona un directori"
+
+#: beast-gtk/bstfiledialog.c:371 beast-gtk/bstfiledialog.c:378
+#, c-format
+msgid "Opening project `%s'"
+msgstr "S'està obrint el projecte `%s'"
+
+#: beast-gtk/bstfiledialog.c:396
+#, c-format
+msgid "Merge: %s"
+msgstr "Fusiona: %s"
+
+#: beast-gtk/bstfiledialog.c:409
+#, c-format
+msgid "Merging project `%s'"
+msgstr "S'està fusionant el projecte `%s'"
+
+#: beast-gtk/bstfiledialog.c:425
+#, c-format
+msgid "Save: %s"
+msgstr "Desa: %s"
+
+#: beast-gtk/bstfiledialog.c:446 beast-gtk/bstfiledialog.c:481
+#, c-format
+msgid "Saving project `%s'"
+msgstr "S'està desant el projecte `%s'"
+
+#: beast-gtk/bstfiledialog.c:447
+#, c-format
+msgid ""
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+msgstr ""
+"No s'ha pogut desar\n"
+"`%s'\n"
+"a\n"
+"`%s':\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:463
+#, c-format
+msgid "Deleting file `%s'"
+msgstr "S'està esborrant el fitxer `%s'"
+
+#: beast-gtk/bstfiledialog.c:464
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"No s'ha pogut esborrar el fitxer\n"
+"`%s'\n"
+"degut a:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:497
+msgid "Load Wave"
+msgstr "Carrega ona"
+
+#: beast-gtk/bstfiledialog.c:509 beast-gtk/bstfiledialog.c:511
+#, c-format
+msgid "Loading wave `%s'"
+msgstr "S'està carregant l'ona `%s'"
+
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
+#: beast-gtk/bsttrackview.c:61
+msgid "Add"
+msgstr "Afegeix"
+
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:38
+#: beast-gtk/bstrackitem.c:182 beast-gtk/bstsnetrouter.c:1017
+#: beast-gtk/bstsnetrouter.c:1059 beast-gtk/bsttrackview.c:63
+msgid "Delete"
+msgstr "Esborra"
+
+#. now, we can popup the splash screen
+#.
+#: beast-gtk/bstmain.c:135
+msgid "BEAST Startup"
+msgstr "Inici de BEAST"
+
+#: beast-gtk/bstmain.c:142
+msgid "Startup"
+msgstr "Inici"
+
+#. BEAST initialization
+#.
+#: beast-gtk/bstmain.c:147
+msgid "Objects"
+msgstr "Objectes"
+
+#: beast-gtk/bstmain.c:151
+msgid "Language"
+msgstr "Llenguatge"
+
+#: beast-gtk/bstmain.c:164
+msgid "RC File"
+msgstr "Fitxer RC"
+
+#. show splash images
+#.
+#: beast-gtk/bstmain.c:171
+msgid "Splash Image"
+msgstr "Imatge al començament"
+
+#. start BSE core and connect
+#: beast-gtk/bstmain.c:183
+msgid "BSE Core"
+msgstr "Nucli BSE"
+
+#: beast-gtk/bstmain.c:202
+msgid "Plugins"
+msgstr "Connectors"
+
+#: beast-gtk/bstmain.c:221
+msgid "LADSPA Plugins"
+msgstr "Connectors LADSPA"
+
+#: beast-gtk/bstmain.c:249
+msgid "Scripts"
+msgstr "Fitxers de seqüència d'ordres"
+
+#. listen to BseServer notification
+#.
+#: beast-gtk/bstmain.c:267
+msgid "Dialogs"
+msgstr "Diàlegs"
+
+#: beast-gtk/bstmain.c:279
+msgid "Loading..."
+msgstr "S'està carregant..."
+
+#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
+#, c-format
+msgid "Loading \"%s\""
+msgstr "S'està carregant \"%s\""
+
+#: beast-gtk/bstmain.c:328
+#, c-format
+msgid "Loading project \"%s\""
+msgstr "S'està carregant el projecte \"%s\""
+
+#. catalog_key, name, stock_id, accelerator, tooltip, blurb
+#: beast-gtk/bstmessages.c:21
+msgid "Left"
+msgstr "Esquerre"
+
+#: beast-gtk/bstmessages.c:23
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr "Feu servir el regle horitzontal per ajustar el punter del bucle esquerre"
+
+#: beast-gtk/bstmessages.c:25
+msgid "Pos"
+msgstr "Possició"
+
+#: beast-gtk/bstmessages.c:27
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr "Feu servir el regle horitzontal per ajustar el punter de possició de reproducció"
+
+#: beast-gtk/bstmessages.c:29
+msgid "Right"
+msgstr "Dreta"
+
+#: beast-gtk/bstmessages.c:31
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr "Feu servir el regle horitzontal per ajustar el punter del bucle dret"
+
+#: beast-gtk/bstmessages.c:33
+msgid "Q: Tact"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:35
+msgid "Quantize to tact boundaries"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:37
+msgid "Q: None"
+msgstr "Q: cap"
+
+#: beast-gtk/bstmessages.c:39
+msgid "No quantization selected"
+msgstr "No s'ha seleccionat cap quantització"
+
+#: beast-gtk/bstmessages.c:41
+msgid "Q: 1/1"
+msgstr "Q: 1/1"
+
+#: beast-gtk/bstmessages.c:43
+msgid "Quantize to full note boundaries"
+msgstr "Quantitza fins als límits de nota completa"
+
+#: beast-gtk/bstmessages.c:45
+msgid "Q: 1/2"
+msgstr "Q: 1/2"
+
+#: beast-gtk/bstmessages.c:47
+msgid "Quantize to half note boundaries"
+msgstr "Quantitza fins als límits de mitja nota"
+
+#: beast-gtk/bstmessages.c:49
+msgid "Q: 1/4"
+msgstr "Q: 1/4"
+
+#: beast-gtk/bstmessages.c:51
+msgid "Quantize to quarter note boundaries"
+msgstr "Quantitza fins als límits d'un quart de nota"
+
+#: beast-gtk/bstmessages.c:53
+msgid "Q: 1/8"
+msgstr "Q: 1/8"
+
+#: beast-gtk/bstmessages.c:55
+msgid "Quantize to eighths note boundaries"
+msgstr "Quantitza fins als límits d'un vuitè de nota"
+
+#: beast-gtk/bstmessages.c:57
+msgid "Q: 1/16"
+msgstr "Q: 1/16"
+
+#: beast-gtk/bstmessages.c:59
+msgid "Quantize to sixteenth note boundaries"
+msgstr "Quantitza fins als límits d'un setzè de nota"
+
+#: beast-gtk/bstmessages.c:61
+msgid "_Insert"
+msgstr "_Insereix"
+
+#: beast-gtk/bstmessages.c:63
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "Insereix/edita/mou parts (botons del ratolí 1 i 2)"
+
+#: beast-gtk/bstmessages.c:65
+msgid "Lin_k"
+msgstr "En_llaça"
+
+#: beast-gtk/bstmessages.c:67
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "Enllaça o mou parts (botons del ratolí 1 i 2)"
+
+#: beast-gtk/bstmessages.c:69
+msgid "_Rename"
+msgstr "Can_via el nom"
+
+#: beast-gtk/bstmessages.c:71
+msgid "Rename parts"
+msgstr "Canvia el nom de les parts"
+
+#: beast-gtk/bstmessages.c:73
+msgid "_Delete"
+msgstr "_Esborra"
+
+#: beast-gtk/bstmessages.c:75
+msgid "Delete parts"
+msgstr "Esborra parts"
+
+#: beast-gtk/bstparam-entry.c:61
+msgid "Remove Paths"
+msgstr "Esborra camins"
+
+#: beast-gtk/bstpartdialog.c:260
+msgid "Control Type: "
+msgstr "Tipus de control: "
+
+#: beast-gtk/bstpartview.c:39
+msgid "Editor"
+msgstr "Editor"
+
+#: beast-gtk/bstpianorollctrl.c:299 beast-gtk/bstpianorollctrl.c:306
+#: beast-gtk/bstpianorollctrl.c:394
+msgid "Move Note"
+msgstr "Mou nota"
+
+#: beast-gtk/bstpianorollctrl.c:394 beast-gtk/bstpianorollctrl.c:465
+msgid "Lost Note"
+msgstr "Nota perduda"
+
+#: beast-gtk/bstpianorollctrl.c:411 beast-gtk/bstpianorollctrl.c:416
+#: beast-gtk/bstpianorollctrl.c:465
+msgid "Resize Note"
+msgstr "Canvia mida de nota"
+
+#: beast-gtk/bstpianorollctrl.c:476 beast-gtk/bstpianorollctrl.c:479
+msgid "Delete Note"
+msgstr "Esborra nota"
+
+#: beast-gtk/bstpianorollctrl.c:501
+msgid "Insert Note"
+msgstr "Insereix nota"
+
+#: beast-gtk/bstpianorollctrl.c:547
+msgid "Vertical Select"
+msgstr "Selecció vertical"
+
+#: beast-gtk/bstpianorollctrl.c:573
+msgid "Vertical Region"
+msgstr "Regió vertical"
+
+#: beast-gtk/bstpianorollctrl.c:708
+msgid "Play note"
+msgstr "Reprodueix nota"
+
+#: beast-gtk/bstplayback.c:76
+msgid "Playback"
+msgstr "Reproducció"
+
+#: beast-gtk/bstprocedure.c:213 beast-gtk/bstradiotools.c:620
+msgid "Description"
+msgstr "Descripció"
+
+#: beast-gtk/bstprocedure.c:297
+#, c-format
+msgid "Executing `%s'"
+msgstr "S'està executant `%s'"
+
+#: beast-gtk/bstprocedure.c:447
+msgid "Procedure"
+msgstr "Procediment"
+
+#: beast-gtk/bstprojectctrl.c:38
+msgid "Restarting Playback"
+msgstr "S'està reiniciant la reproducció"
+
+#: beast-gtk/bstprojectctrl.c:40
+msgid "Starting Playback"
+msgstr "S'està iniciant la reproducció"
+
+#: beast-gtk/bstprojectctrl.c:53
+msgid "Stopping Playback"
+msgstr "S'està aturant la reproducció"
+
+#: beast-gtk/bstrackeditor.c:98
+msgid "_Edit"
+msgstr "_Edita"
+
+#: beast-gtk/bstrackitem.c:172
+msgid "Edit Rack Item"
+msgstr "Edita element del rack"
+
+#: beast-gtk/bstrackitem.c:174
+msgid "Controller"
+msgstr "Controlador"
+
+#: beast-gtk/bstrackitem.c:175
+msgid "Duplicate"
+msgstr "Duplica"
+
+#: beast-gtk/bstrackitem.c:177
+msgid "Grow Horizontally"
+msgstr "Creix en horitzontal"
+
+#: beast-gtk/bstrackitem.c:178
+msgid "Grow Vertically"
+msgstr "Creix en vertical"
+
+#: beast-gtk/bstrackitem.c:179
+msgid "Shrink Horizontally"
+msgstr "Redueix en horitzontal"
+
+#: beast-gtk/bstrackitem.c:180
+msgid "Shrink Vertically"
+msgstr "Redueix en vertical"
+
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+msgid "Zoom:"
+msgstr "Ampliació:"
+
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+msgid "VScale:"
+msgstr "Escala vertical:"
+
+#: beast-gtk/bstsampleeditor.c:499
+msgid "Start:"
+msgstr "Inici:"
+
+#: beast-gtk/bstsampleeditor.c:506
+msgid "End:"
+msgstr "Fi:"
+
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+msgid "Shape Range"
+msgstr "Rang de la forma"
+
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+msgid "Shape Average"
+msgstr "Mitja de la forma"
+
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+msgid "Shape Minimum"
+msgstr "Mínim de la forma"
+
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+msgid "Shape Maximum"
+msgstr "Màxim de la forma"
+
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+msgid "Sketch Range"
+msgstr "Rang de l'esbòs"
+
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+msgid "Sketch Average"
+msgstr "Mitja de l'esbòs"
+
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+msgid "Sketch Minimum"
+msgstr "Mínim de l'esbòs"
+
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+msgid "Sketch Maximum"
+msgstr "Màxim de l'esbòs"
+
+#. TRANSLATORS: here "Preview" is meant audible, i.e. to
+#. * playback the current sample version and listen to it.
+#.
+#: beast-gtk/bstsampleeditor.c:539
+msgid "Preview"
+msgstr "Previsualitza"
+
+#: beast-gtk/bstsnetrouter.c:407
+msgid "Palette"
+msgstr "Paleta"
+
+#: beast-gtk/bstsnetrouter.c:926
+msgid "Input channel in use"
+msgstr "Canal d'entrada en ús"
+
+#: beast-gtk/bstsnetrouter.c:953 beast-gtk/bstsnetrouter.c:955
+#: beast-gtk/bstsnetrouter.c:991
+msgid "Create Link"
+msgstr "Crea enllaç"
+
+#: beast-gtk/bstsnetrouter.c:953
+msgid "Select output module"
+msgstr "Seleccioneu mòdul de sortida"
+
+#: beast-gtk/bstsnetrouter.c:955
+msgid "Select input module"
+msgstr "Seleccioneu mòdul d'entrada"
+
+#: beast-gtk/bstsnetrouter.c:1011
+msgid "Properties"
+msgstr "Propietats"
+
+#: beast-gtk/bstsnetrouter.c:1012
+msgid "Reset Properties"
+msgstr "Torna als valors originals de les propietats"
+
+#: beast-gtk/bstsnetrouter.c:1013
+msgid "Delete Inputs"
+msgstr "Esborra entrades"
+
+#: beast-gtk/bstsnetrouter.c:1014
+msgid "Delete Outputs"
+msgstr "Esborra sortides"
+
+#: beast-gtk/bstsnetrouter.c:1015 beast-gtk/bstsnetrouter.c:1057
+msgid "Show Info"
+msgstr "Mostra informació"
+
+#: beast-gtk/bstsnetrouter.c:1041
+msgid "Remove Module"
+msgstr "Esborra mòdul"
+
+#: beast-gtk/bstsnetrouter.c:1068
+msgid "Delete Link"
+msgstr "Esborra enllaç"
+
+#: beast-gtk/bstsnetrouter.c:1122
+msgid "Insert Module"
+msgstr "Insereix mòdul"
+
+#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:173
+msgid "Routing"
+msgstr "Encaminament"
+
+#: beast-gtk/bstsnetshell.c:131 beast-gtk/bstsongshell.c:157
+#: beast-gtk/bstwavereposhell.c:146
+msgid "Parameters"
+msgstr "Paràmetres"
+
+#: beast-gtk/bstsongshell.c:152
+msgid "Tracks"
+msgstr "Pistes"
+
+#: beast-gtk/bstsongshell.c:162
+msgid "Parts"
+msgstr "Parts"
+
+#: beast-gtk/bststest.c:550
+msgid "Selection to Loop"
+msgstr "Selecció a bucle"
+
+#: beast-gtk/bststest.c:558
+msgid "Loop to Selection"
+msgstr "Bucle a selecció"
+
+#: beast-gtk/bststest.c:566
+msgid "Zoom Selection"
+msgstr "Ampliació de selecció"
+
+#: beast-gtk/bststest.c:574
+msgid "Apply Loop"
+msgstr "Aplica bucle"
+
+#: beast-gtk/bststest.c:582
+msgid "Reset Loop"
+msgstr "Torna al començament del bucle"
+
+#: beast-gtk/bststest.c:590
+msgid "Score"
+msgstr "Partitura"
+
+#: beast-gtk/bststest.c:598
+msgid "Find"
+msgstr "Cerca"
+
+#: beast-gtk/bststest.c:616
+msgid "Mark Signal (Head)"
+msgstr "Senyal de marca (inici)"
+
+#: beast-gtk/bststest.c:626
+msgid "Mark Signal (Tail)"
+msgstr "Senyal de marca (cua)"
+
+#: beast-gtk/bsttrackrollctrl.c:388 beast-gtk/bsttrackrollctrl.c:400
+msgid "Edit Part"
+msgstr "Edita part"
+
+#: beast-gtk/bsttrackrollctrl.c:388
+msgid "No Part"
+msgstr "Cap part"
+
+#: beast-gtk/bsttrackrollctrl.c:419 beast-gtk/bsttrackrollctrl.c:421
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+msgid "Insert Part"
+msgstr "Insereix part"
+
+#: beast-gtk/bsttrackrollctrl.c:421 beast-gtk/bsttrackrollctrl.c:523
+msgid "Lost Part"
+msgstr "Part perduda"
+
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+msgid "Position taken"
+msgstr "S'ha pres la possició"
+
+#: beast-gtk/bsttrackrollctrl.c:433
+msgid "Insert part"
+msgstr "Insereix part"
+
+#: beast-gtk/bsttrackrollctrl.c:433
+msgid "No Track"
+msgstr "Cap pista"
+
+#: beast-gtk/bsttrackrollctrl.c:445 beast-gtk/bsttrackrollctrl.c:448
+msgid "Delete Part"
+msgstr "Esborra part"
+
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+msgid "Link Part"
+msgstr "Enllaça part"
+
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+#: beast-gtk/bsttrackrollctrl.c:523
+msgid "Move Part"
+msgstr "Mou part"
+
+#: beast-gtk/bsttrackrollctrl.c:535 beast-gtk/bsttrackrollctrl.c:540
+msgid "Start Editor"
+msgstr "Inicia l'editor"
+
+#: beast-gtk/bsttrackview.c:62
+msgid "Add a new track to this song"
+msgstr "Afegeix una nova pista a aquesta cançó"
+
+#: beast-gtk/bsttrackview.c:64
+msgid "Delete the currently selected track"
+msgstr "Esborra la pista seleccionada actualment"
+
+#: beast-gtk/bsttrackview.c:640
+msgid "Comment"
+msgstr "Comentari"
+
+#: beast-gtk/bstusermessage.c:91
+msgid "Notice"
+msgstr "Atenció"
+
+#: beast-gtk/bstusermessage.c:95
+msgid "Question"
+msgstr "Pregunta"
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Warning"
+msgstr "Avís"
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Error"
+msgstr "Error"
+
+#: beast-gtk/bstusermessage.c:107
+msgid "Miscellaneous Message"
+msgstr "Missatge miscel·lani"
+
+#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
+msgid "processing"
+msgstr "s'està processant"
+
+#: beast-gtk/bstwaveeditor.c:241
+msgid "Scroll None"
+msgstr "Cap desplaçament"
+
+#: beast-gtk/bstwaveeditor.c:242
+msgid "Scroll Both"
+msgstr "Desplaçament en dos sentits"
+
+#: beast-gtk/bstwaveeditor.c:243
+msgid "Scroll Left"
+msgstr "Desplaçament esquerre"
+
+#: beast-gtk/bstwaveeditor.c:244
+msgid "Scroll Right"
+msgstr "Desplaçament dret"
+
+#. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
+#: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
+msgid "Waves"
+msgstr "Ones"
