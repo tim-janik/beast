@@ -494,11 +494,11 @@ widget_patcher_hint_resize_inc (GtkWidget *widget)
     }
 }
 static gboolean
-widget_patcher_adopt (GxkGadget          *gadget,
-                      GxkGadget          *parent,
-                      GxkGadgetData      *gdgdata)
+widget_patcher_adopt (GxkRadget          *radget,
+                      GxkRadget          *parent,
+                      GxkRadgetData      *gdgdata)
 {
-  GxkWidgetPatcher *self = GXK_WIDGET_PATCHER (gadget);
+  GxkWidgetPatcher *self = GXK_WIDGET_PATCHER (radget);
   if (self->tooltip)
     {
       gxk_widget_set_latent_tooltip (parent, self->tooltip);
@@ -555,30 +555,30 @@ gxk_widget_patcher_get_type (void)
   return type;
 }
 
-static GxkGadget*
+static GxkRadget*
 widget_patcher_create (GType               type,
                        const gchar        *name,
-                       GxkGadgetData      *gdgdata)
+                       GxkRadgetData      *gdgdata)
 {
   return g_object_new (type, NULL);
 }
 
 static GParamSpec*
-widget_patcher_find_prop (GxkGadget    *gadget,
+widget_patcher_find_prop (GxkRadget    *radget,
                           const gchar  *prop_name)
 {
-  return g_object_class_find_property (G_OBJECT_GET_CLASS (gadget), prop_name);
+  return g_object_class_find_property (G_OBJECT_GET_CLASS (radget), prop_name);
 }
 
-static const GxkGadgetType widget_patcher_def = {
+static const GxkRadgetType widget_patcher_def = {
   widget_patcher_create,
   widget_patcher_find_prop,
-  (void(*)(GxkGadget*,const gchar*,const GValue*)) g_object_set_property,
+  (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
   widget_patcher_adopt,
   NULL,         /* find_pack */
   NULL,         /* set_pack */
 };
-const GxkGadgetType *_gxk_widget_patcher_def = &widget_patcher_def;
+const GxkRadgetType *_gxk_widget_patcher_def = &widget_patcher_def;
 
 
 /* --- focus frame --- */

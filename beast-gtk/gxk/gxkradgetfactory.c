@@ -33,64 +33,64 @@ enum {
 
 
 /* --- prototypes --- */
-static void     gxk_gadget_factory_class_init           (GxkGadgetFactoryClass  *class);
-static void     gxk_gadget_factory_init                 (GxkGadgetFactory       *self);
-static void     gxk_gadget_factory_finalize             (GObject                *object);
-static void     gxk_gadget_factory_set_property         (GObject                *object,
+static void     gxk_radget_factory_class_init           (GxkRadgetFactoryClass  *class);
+static void     gxk_radget_factory_init                 (GxkRadgetFactory       *self);
+static void     gxk_radget_factory_finalize             (GObject                *object);
+static void     gxk_radget_factory_set_property         (GObject                *object,
                                                          guint                   param_id,
                                                          const GValue           *value,
                                                          GParamSpec             *pspec);
-static void     gxk_gadget_factory_get_property         (GObject                *object,
+static void     gxk_radget_factory_get_property         (GObject                *object,
                                                          guint                   param_id,
                                                          GValue                 *value,
                                                          GParamSpec             *pspec);
-static void     gadget_factory_match_action_list        (GxkActionFactory       *afactory,
+static void     radget_factory_match_action_list        (GxkActionFactory       *afactory,
                                                          const gchar            *prefix,
                                                          GxkActionList          *alist,
                                                          GtkWidget              *publisher);
 
 
 /* --- static variables --- */
-static gpointer gadget_factory_parent_class = NULL;
-static GQuark   quark_gadget_factory_hook = 0;
+static gpointer radget_factory_parent_class = NULL;
+static GQuark   quark_radget_factory_hook = 0;
 
 
 /* --- functions --- */
 GType
-gxk_gadget_factory_get_type (void)
+gxk_radget_factory_get_type (void)
 {
   static GType type = 0;
   if (!type)
     {
       static const GTypeInfo type_info = {
-        sizeof (GxkGadgetFactoryClass),
+        sizeof (GxkRadgetFactoryClass),
         (GBaseInitFunc) NULL,
         (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gxk_gadget_factory_class_init,
+        (GClassInitFunc) gxk_radget_factory_class_init,
         NULL,   /* class_finalize */
         NULL,   /* class_data */
-        sizeof (GxkGadgetFactory),
+        sizeof (GxkRadgetFactory),
         0,      /* n_preallocs */
-        (GInstanceInitFunc) gxk_gadget_factory_init,
+        (GInstanceInitFunc) gxk_radget_factory_init,
       };
-      type = g_type_register_static (GXK_TYPE_ACTION_FACTORY, "GxkGadgetFactory", &type_info, 0);
+      type = g_type_register_static (GXK_TYPE_ACTION_FACTORY, "GxkRadgetFactory", &type_info, 0);
     }
   return type;
 }
 
 static void
-gxk_gadget_factory_class_init (GxkGadgetFactoryClass *class)
+gxk_radget_factory_class_init (GxkRadgetFactoryClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GxkActionFactoryClass *afactory_class = GXK_ACTION_FACTORY_CLASS (class);
-  gadget_factory_parent_class = g_type_class_peek_parent (class);
+  radget_factory_parent_class = g_type_class_peek_parent (class);
   
-  quark_gadget_factory_hook = g_quark_from_static_string ("GxkGadgetFactory-hook");
+  quark_radget_factory_hook = g_quark_from_static_string ("GxkRadgetFactory-hook");
   
-  gobject_class->set_property = gxk_gadget_factory_set_property;
-  gobject_class->get_property = gxk_gadget_factory_get_property;
-  gobject_class->finalize = gxk_gadget_factory_finalize;
-  afactory_class->match_action_list = gadget_factory_match_action_list;
+  gobject_class->set_property = gxk_radget_factory_set_property;
+  gobject_class->get_property = gxk_radget_factory_get_property;
+  gobject_class->finalize = gxk_radget_factory_finalize;
+  afactory_class->match_action_list = radget_factory_match_action_list;
   g_object_class_install_property (gobject_class, PROP_NAME,
                                    g_param_spec_string ("name", NULL, NULL, NULL, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class, PROP_ACTION_ROOT,
@@ -110,10 +110,10 @@ gxk_gadget_factory_class_init (GxkGadgetFactoryClass *class)
 }
 
 static void
-gxk_gadget_factory_init (GxkGadgetFactory *self)
+gxk_radget_factory_init (GxkRadgetFactory *self)
 {
   self->window = NULL;
-  self->gadget = NULL;
+  self->radget = NULL;
   self->timer = 0;
   self->name = NULL;
   self->action_root = g_strdup (":xdef");
@@ -127,12 +127,12 @@ value_dup_string_non_empty (const GValue *value)
 }
 
 static void
-gxk_gadget_factory_set_property (GObject      *object,
+gxk_radget_factory_set_property (GObject      *object,
                                  guint         param_id,
                                  const GValue *value,
                                  GParamSpec   *pspec)
 {
-  GxkGadgetFactory *self = GXK_GADGET_FACTORY (object);
+  GxkRadgetFactory *self = GXK_RADGET_FACTORY (object);
   switch (param_id)
     {
     case PROP_NAME:
@@ -174,12 +174,12 @@ gxk_gadget_factory_set_property (GObject      *object,
 }
 
 static void
-gxk_gadget_factory_get_property (GObject    *object,
+gxk_radget_factory_get_property (GObject    *object,
                                  guint       param_id,
                                  GValue     *value,
                                  GParamSpec *pspec)
 {
-  GxkGadgetFactory *self = GXK_GADGET_FACTORY (object);
+  GxkRadgetFactory *self = GXK_RADGET_FACTORY (object);
   switch (param_id)
     {
     case PROP_NAME:
@@ -213,9 +213,9 @@ gxk_gadget_factory_get_property (GObject    *object,
 }
 
 static void
-gxk_gadget_factory_finalize (GObject *object)
+gxk_radget_factory_finalize (GObject *object)
 {
-  GxkGadgetFactory *self = GXK_GADGET_FACTORY (object);
+  GxkRadgetFactory *self = GXK_RADGET_FACTORY (object);
   
   g_assert (self->window == NULL);
   g_datalist_clear (&self->branch_widgets);
@@ -226,7 +226,7 @@ gxk_gadget_factory_finalize (GObject *object)
   g_free (self->action_list);
   g_free (self->activatable);
   g_free (self->regulate);
-  gxk_gadget_free_args (self->call_args);
+  gxk_radget_free_args (self->call_args);
   while (self->branches)
     {
       GxkFactoryBranch *b = g_slist_pop_head (&self->branches);
@@ -236,26 +236,26 @@ gxk_gadget_factory_finalize (GObject *object)
   g_return_if_fail (self->timer == 0);
   
   /* chain parent class' handler */
-  G_OBJECT_CLASS (gadget_factory_parent_class)->finalize (object);
+  G_OBJECT_CLASS (radget_factory_parent_class)->finalize (object);
 }
 
-static GxkGadget*
-gadget_factory_retrieve_branch (GxkGadgetFactory *self,
+static GxkRadget*
+radget_factory_retrieve_branch (GxkRadgetFactory *self,
                                 const gchar      *key_path,     /* uline_unescaped */
                                 const gchar      *label_path,   /* translated, contains ulines */
-                                GxkGadget        *parent,
+                                GxkRadget        *parent,
                                 const gchar      *path_prefix,
-                                GxkGadgetArgs    *branch_args)
+                                GxkRadgetArgs    *branch_args)
 {
-  GxkGadget *gadget = g_datalist_get_data (&self->branch_widgets, key_path);
-  if (!gadget)
+  GxkRadget *radget = g_datalist_get_data (&self->branch_widgets, key_path);
+  if (!radget)
     {
       const gchar *key_leaf = gxk_factory_path_get_leaf (key_path);
       const gchar *label_leaf = gxk_factory_path_get_leaf (label_path);
       gchar *action_path = g_strconcat (path_prefix, key_path, NULL);
       gchar *unescaped = g_strcompress (label_leaf ? label_leaf : key_leaf);
       GSList *args_list = NULL;
-      GxkGadgetArgs *action_args = gxk_gadget_args ("action-name", unescaped,
+      GxkRadgetArgs *action_args = gxk_radget_args ("action-name", unescaped,
                                                     "action-path", action_path,
                                                     NULL);
       g_free (unescaped);
@@ -264,7 +264,7 @@ gadget_factory_retrieve_branch (GxkGadgetFactory *self,
         {
           gchar *key_ppath = g_strndup (key_path, key_leaf - key_path - 1);
           gchar *label_ppath = label_leaf && label_leaf > label_path ? g_strndup (label_path, label_leaf - label_path - 1) : NULL;
-          parent = gadget_factory_retrieve_branch (self, key_ppath, label_ppath, parent, path_prefix, branch_args);
+          parent = radget_factory_retrieve_branch (self, key_ppath, label_ppath, parent, path_prefix, branch_args);
           g_free (key_ppath);
           g_free (label_ppath);
         }
@@ -273,27 +273,27 @@ gadget_factory_retrieve_branch (GxkGadgetFactory *self,
       args_list = g_slist_prepend (args_list, action_args);
       if (branch_args)
         args_list = g_slist_prepend (args_list, branch_args);
-      gadget = gxk_gadget_creator (NULL, gxk_gadget_get_domain (self),
+      radget = gxk_radget_creator (NULL, gxk_radget_get_domain (self),
                                    self->per_branch, parent, args_list, NULL);
       g_slist_free (args_list);
-      gxk_gadget_free_args (action_args);
-      if (parent == self->gadget)
-        gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
-      gadget = gxk_gadget_find_area (gadget, NULL);
-      g_datalist_set_data (&self->branch_widgets, key_path, gadget);
+      gxk_radget_free_args (action_args);
+      if (parent == self->radget)
+        gxk_container_slot_reorder_child (GTK_CONTAINER (self->radget), radget, self->cslot);
+      radget = gxk_radget_find_area (radget, NULL);
+      g_datalist_set_data (&self->branch_widgets, key_path, radget);
     }
-  return gadget;
+  return radget;
 }
 
 static gboolean
-match_action_root (GxkGadgetFactory *self,
+match_action_root (GxkRadgetFactory *self,
                    GtkWidget        *publisher)
 {
   GtkWidget *ancestor;
   if (!self->action_root)
     return TRUE;
   if (strcmp (self->action_root, ":xdef") == 0)
-    ancestor = self->xdef_gadget;
+    ancestor = self->xdef_radget;
   else
     ancestor = gxk_widget_find_level_ordered ((GtkWidget*) self->window, self->action_root);
   return ancestor && gxk_widget_has_ancestor (publisher, ancestor);
@@ -308,34 +308,34 @@ strip_slashes (const gchar *string)
 }
 
 static void
-gadget_factory_match_action_list (GxkActionFactory       *afactory,
+radget_factory_match_action_list (GxkActionFactory       *afactory,
                                   const gchar            *prefix,
                                   GxkActionList          *alist,
                                   GtkWidget              *publisher)
 {
-  GxkGadgetFactory *self = GXK_GADGET_FACTORY (afactory);
+  GxkRadgetFactory *self = GXK_RADGET_FACTORY (afactory);
   guint n_actions = gxk_action_list_get_n_actions (alist);
   if (n_actions && self->action_list &&
       strcmp (self->action_list, prefix) == 0 &&
       match_action_root (self, publisher))
     {
-      const gchar *domain = gxk_gadget_get_domain (self);
+      const gchar *domain = gxk_radget_get_domain (self);
       const gchar *wname = GTK_WIDGET (self->window)->name;
       gchar *path_prefix = wname ? g_strdup_printf ("<%s>/%s/", wname, prefix) : NULL;
       GSList *slist;
       guint i;
       if (self->per_list)
         {
-          GxkGadgetArgs *action_args = gxk_gadget_args ("action-path", path_prefix, NULL);
+          GxkRadgetArgs *action_args = gxk_radget_args ("action-path", path_prefix, NULL);
           GSList *args_list = NULL;
-          GxkGadget *gadget;
+          GxkRadget *radget;
           if (self->call_args)
             args_list = g_slist_prepend (args_list, self->call_args);
           args_list = g_slist_prepend (args_list, action_args);
-          gadget = gxk_gadget_creator (NULL, domain, self->per_list, self->gadget, args_list, NULL);
+          radget = gxk_radget_creator (NULL, domain, self->per_list, self->radget, args_list, NULL);
           g_slist_free (args_list);
-          gxk_gadget_free_args (action_args);
-          gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
+          gxk_radget_free_args (action_args);
+          gxk_container_slot_reorder_child (GTK_CONTAINER (self->radget), radget, self->cslot);
         }
       for (slist = self->branches; slist; slist = slist->next)
         {
@@ -343,16 +343,16 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
           if (branch->key_label)
             {
               gchar *key_path = gxk_factory_path_unescape_uline (branch->key_label);
-              gadget_factory_retrieve_branch (self, strip_slashes (key_path),
+              radget_factory_retrieve_branch (self, strip_slashes (key_path),
                                               strip_slashes (branch->uline_label ? branch->uline_label : key_path),
-                                              self->gadget, path_prefix, branch->branch_args);
+                                              self->radget, path_prefix, branch->branch_args);
               g_free (key_path);
             }
         }
       for (i = self->per_action ? 0 : G_MAXINT; i < n_actions; i++)
         {
-          GxkGadget *gadget, *parent;
-          GxkGadgetArgs *action_args;
+          GxkRadget *radget, *parent;
+          GxkRadgetArgs *action_args;
           GSList *args_list = NULL;
           GxkAction action;
           gxk_action_list_get_action (alist, i, &action);
@@ -366,13 +366,13 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
             {
               gchar *key_ppath = g_strndup (key_path, key_leaf - key_path - 1);
               gchar *label_ppath = label_leaf && label_leaf > label_path ? g_strndup (label_path, label_leaf - label_path - 1) : NULL;
-              parent = gadget_factory_retrieve_branch (self, key_ppath, label_ppath, self->gadget, path_prefix, NULL);
+              parent = radget_factory_retrieve_branch (self, key_ppath, label_ppath, self->radget, path_prefix, NULL);
               g_free (key_ppath);
               g_free (label_ppath);
             }
           else
-            parent = self->gadget;
-          action_args = gxk_gadget_args ("action-name", unescaped,
+            parent = self->radget;
+          action_args = gxk_radget_args ("action-name", unescaped,
                                          "action-key", key_path,
                                          "action-path", action_path,
                                          "action-accel", action.accelerator,
@@ -385,15 +385,15 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
           if (self->call_args)
             args_list = g_slist_prepend (args_list, self->call_args);
           args_list = g_slist_prepend (args_list, action_args);
-          gadget = gxk_gadget_creator (NULL, domain, self->per_action, parent, args_list, NULL);
+          radget = gxk_radget_creator (NULL, domain, self->per_action, parent, args_list, NULL);
           g_slist_free (args_list);
-          gxk_gadget_free_args (action_args);
-          if (parent == self->gadget)
-            gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
-          if (GTK_IS_WIDGET (gadget))
+          gxk_radget_free_args (action_args);
+          if (parent == self->radget)
+            gxk_container_slot_reorder_child (GTK_CONTAINER (self->radget), radget, self->cslot);
+          if (GTK_IS_WIDGET (radget))
             {
-              GxkGadget *achild = self->activatable ? gxk_gadget_find (gadget, self->activatable) : NULL;
-              GxkGadget *rchild = self->regulate ? gxk_gadget_find (gadget, self->regulate) : NULL;
+              GxkRadget *achild = self->activatable ? gxk_radget_find (radget, self->activatable) : NULL;
+              GxkRadget *rchild = self->regulate ? gxk_radget_find (radget, self->regulate) : NULL;
               if (GTK_IS_WIDGET (achild))
                 {
                   const gchar *signal = GTK_IS_BUTTON (achild) ? "clicked" : "activate"; /* work around buttons */
@@ -416,13 +416,13 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
 }
 
 static gboolean
-gadget_factory_check_anchored (gpointer data)
+radget_factory_check_anchored (gpointer data)
 {
-  GxkGadgetFactory *self = data;
+  GxkRadgetFactory *self = data;
   GtkWidget *toplevel;
   gboolean is_window;
   GDK_THREADS_ENTER ();
-  toplevel = self->gadget ? gxk_widget_get_attach_toplevel (self->gadget) : NULL;
+  toplevel = self->radget ? gxk_widget_get_attach_toplevel (self->radget) : NULL;
   is_window = GTK_IS_WINDOW (toplevel);
   if (is_window && !self->window)
     {
@@ -441,11 +441,11 @@ gadget_factory_check_anchored (gpointer data)
 }
 
 void
-gxk_gadget_factory_check_anchored (GxkGadgetFactory *self)
+gxk_radget_factory_check_anchored (GxkRadgetFactory *self)
 {
-  if (self->gadget && !self->timer)
+  if (self->radget && !self->timer)
     self->timer = g_idle_add_full (GXK_ACTION_PRIORITY - 1,
-                                   gadget_factory_check_anchored,
+                                   radget_factory_check_anchored,
                                    self, NULL);
 }
 
@@ -455,71 +455,71 @@ destroy_factory_slist (gpointer data)
   GSList *slist = data;
   while (slist)
     {
-      GxkGadgetFactory *fact = g_slist_pop_head (&slist);
+      GxkRadgetFactory *fact = g_slist_pop_head (&slist);
       g_object_run_dispose (G_OBJECT (fact));
-      fact->gadget = NULL;
+      fact->radget = NULL;
       g_object_unref (fact);
     }
 }
 
 void
-gxk_gadget_factory_attach (GxkGadgetFactory *self,
-                           GxkGadget        *gadget)
+gxk_radget_factory_attach (GxkRadgetFactory *self,
+                           GxkRadget        *radget)
 {
   GSList *slist;
   
-  g_return_if_fail (self->gadget == NULL);
-  g_return_if_fail (GTK_IS_WIDGET (gadget));
+  g_return_if_fail (self->radget == NULL);
+  g_return_if_fail (GTK_IS_WIDGET (radget));
   
   g_object_ref (self);
-  slist = g_object_steal_qdata (gadget, quark_gadget_factory_hook);
+  slist = g_object_steal_qdata (radget, quark_radget_factory_hook);
   slist = g_slist_prepend (slist, self);
-  g_object_set_qdata_full (gadget, quark_gadget_factory_hook, slist, destroy_factory_slist);
-  self->gadget = gadget;
-  g_signal_connect_object (gadget, "hierarchy-changed",
-                           G_CALLBACK (gxk_gadget_factory_check_anchored), self, G_CONNECT_SWAPPED);
-  gxk_gadget_factory_check_anchored (self);
+  g_object_set_qdata_full (radget, quark_radget_factory_hook, slist, destroy_factory_slist);
+  self->radget = radget;
+  g_signal_connect_object (radget, "hierarchy-changed",
+                           G_CALLBACK (gxk_radget_factory_check_anchored), self, G_CONNECT_SWAPPED);
+  gxk_radget_factory_check_anchored (self);
 }
 
 
-/* --- gadget type hooks --- */
-static GxkGadget*
-gadget_factory_create (GType               type,
+/* --- radget type hooks --- */
+static GxkRadget*
+radget_factory_create (GType               type,
                        const gchar        *name,
-                       GxkGadgetData      *gdgdata)
+                       GxkRadgetData      *gdgdata)
 {
   return g_object_new (type, "name", name, NULL);
 }
 
 static GParamSpec*
-gadget_factory_find_prop (GxkGadget    *gadget,
+radget_factory_find_prop (GxkRadget    *radget,
                           const gchar  *prop_name)
 {
-  return g_object_class_find_property (G_OBJECT_GET_CLASS (gadget), prop_name);
+  return g_object_class_find_property (G_OBJECT_GET_CLASS (radget), prop_name);
 }
 
 static gboolean
-gadget_factory_adopt (GxkGadget          *gadget,
-                      GxkGadget          *parent,
-                      GxkGadgetData      *gdgdata)
+radget_factory_adopt (GxkRadget          *radget,
+                      GxkRadget          *parent,
+                      GxkRadgetData      *gdgdata)
 {
-  GxkGadgetFactory *self = gadget;
-  self->call_args = gxk_gadget_data_copy_call_args (gdgdata);
-  self->xdef_gadget = gxk_gadget_data_get_scope_gadget (gdgdata);
-  gxk_gadget_factory_attach (gadget, GTK_WIDGET (parent));
+  GxkRadgetFactory *self = radget;
+  self->call_args = gxk_radget_data_copy_call_args (gdgdata);
+  self->xdef_radget = gxk_radget_data_get_scope_radget (gdgdata);
+  gxk_radget_factory_attach (radget, GTK_WIDGET (parent));
   self->cslot = gxk_container_get_insertion_slot (GTK_CONTAINER (parent));
   return FALSE; /* no support for packing options */
 }
 
-static const GxkGadgetType gadget_factory_def = {
-  gadget_factory_create,
-  gadget_factory_find_prop,
-  (void(*)(GxkGadget*,const gchar*,const GValue*)) g_object_set_property,
-  gadget_factory_adopt,
+static const GxkRadgetType radget_factory_def = {
+  radget_factory_create,
+  radget_factory_find_prop,
+  (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
+  radget_factory_adopt,
   NULL, /* find_pack */
   NULL, /* set_pack */
 };
-const GxkGadgetType *_gxk_gadget_factory_def = &gadget_factory_def;
+const GxkRadgetType *_gxk_radget_factory_def = &radget_factory_def;
 
 
 /* --- GxkFactoryBranch --- */
@@ -559,7 +559,7 @@ gxk_factory_branch_finalize (GObject *object)
   GxkFactoryBranch *self = GXK_FACTORY_BRANCH (object);
   g_free (self->uline_label);
   g_free (self->key_label);
-  gxk_gadget_free_args (self->branch_args);
+  gxk_radget_free_args (self->branch_args);
   /* chain parent class' handler */
   G_OBJECT_CLASS (factory_branch_parent_class)->finalize (object);
 }
@@ -596,39 +596,39 @@ gxk_factory_branch_get_type (void)
     }
   return type;
 }
-/* --- GxkFactoryBranch gadget type hooks --- */
-static GxkGadget*
+/* --- GxkFactoryBranch radget type hooks --- */
+static GxkRadget*
 factory_branch_create (GType               type,
                        const gchar        *name,
-                       GxkGadgetData      *gdgdata)
+                       GxkRadgetData      *gdgdata)
 {
   return g_object_new (type, NULL);
 }
 static GParamSpec*
-factory_branch_find_prop (GxkGadget    *gadget,
+factory_branch_find_prop (GxkRadget    *radget,
                           const gchar  *prop_name)
 {
-  return g_object_class_find_property (G_OBJECT_GET_CLASS (gadget), prop_name);
+  return g_object_class_find_property (G_OBJECT_GET_CLASS (radget), prop_name);
 }
 static gboolean
-factory_branch_adopt (GxkGadget          *gadget,
-                      GxkGadget          *parent,
-                      GxkGadgetData      *gdgdata)
+factory_branch_adopt (GxkRadget          *radget,
+                      GxkRadget          *parent,
+                      GxkRadgetData      *gdgdata)
 {
-  GxkFactoryBranch *self = GXK_FACTORY_BRANCH (gadget);
-  GxkGadgetFactory *factory = GXK_GADGET_FACTORY (parent);
-  GxkGadgetArgs *args = gxk_gadget_data_copy_call_args (gdgdata);
-  self->branch_args = gxk_gadget_args_merge (self->branch_args, args);
-  gxk_gadget_free_args (args);
-  factory->branches = g_slist_append (factory->branches, gadget);
+  GxkFactoryBranch *self = GXK_FACTORY_BRANCH (radget);
+  GxkRadgetFactory *factory = GXK_RADGET_FACTORY (parent);
+  GxkRadgetArgs *args = gxk_radget_data_copy_call_args (gdgdata);
+  self->branch_args = gxk_radget_args_merge (self->branch_args, args);
+  gxk_radget_free_args (args);
+  factory->branches = g_slist_append (factory->branches, radget);
   return FALSE; /* no support for packing args */
 }
-static const GxkGadgetType factory_branch_def = {
+static const GxkRadgetType factory_branch_def = {
   factory_branch_create,
   factory_branch_find_prop,
-  (void(*)(GxkGadget*,const gchar*,const GValue*)) g_object_set_property,
+  (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
   factory_branch_adopt,
   NULL, /* find_pack */
   NULL, /* set_pack */
 };
-const GxkGadgetType *_gxk_factory_branch_def = &factory_branch_def;
+const GxkRadgetType *_gxk_factory_branch_def = &factory_branch_def;

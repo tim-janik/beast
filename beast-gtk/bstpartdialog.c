@@ -124,7 +124,7 @@ bst_part_dialog_init (BstPartDialog *self)
   GtkObject *adjustment;
   GtkAdjustment *adj;
   GParamSpec *pspec;
-  GxkGadget *gadget;
+  GxkRadget *radget;
 
   /* configure self */
   g_object_set (self,
@@ -134,9 +134,9 @@ bst_part_dialog_init (BstPartDialog *self)
 		"flags", GXK_DIALOG_STATUS_SHELL,
 		NULL);
 
-  /* gadget-complete GUI */
-  gadget = gxk_gadget_create ("beast", "piano-roll-box", NULL);
-  gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), gadget);
+  /* radget-complete GUI */
+  radget = gxk_radget_create ("beast", "piano-roll-box", NULL);
+  gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), radget);
 
   /* publish actions */
   gxk_widget_publish_actions (self, "piano-edit-actions",
@@ -156,7 +156,7 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_widget_publish_action_list (self, "part-scripts", al1);
 
   /* FIXME: use paned child-properties after gtk+-2.4 */
-  paned = gxk_gadget_find (gadget, "piano-paned");
+  paned = gxk_radget_find (radget, "piano-paned");
   child = g_object_ref (paned->child1);
   gtk_container_remove (GTK_CONTAINER (paned), child);
   gtk_paned_pack1 (paned, child, TRUE, TRUE);
@@ -167,16 +167,16 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_unref (child);
 
   /* piano roll */
-  self->proll = gxk_gadget_find (gadget, "piano-roll");
+  self->proll = gxk_radget_find (radget, "piano-roll");
   gxk_nullify_in_object (self, &self->proll);
   g_signal_connect (self->proll, "canvas-clicked", G_CALLBACK (piano_canvas_clicked), self);
-  srange = gxk_gadget_find (gadget, "piano-roll-vscrollbar");
+  srange = gxk_radget_find (radget, "piano-roll-vscrollbar");
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (srange));
-  srange = gxk_gadget_find (gadget, "piano-roll-hscrollbar");
+  srange = gxk_radget_find (radget, "piano-roll-hscrollbar");
   adj = gtk_range_get_adjustment (srange);
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->proll), adj);
   adj = resizer_adjustment_create (adj);
-  srange = gxk_gadget_find (gadget, "piano-roll-hscale");
+  srange = gxk_radget_find (radget, "piano-roll-hscale");
   gtk_range_set_adjustment (srange, adj);
   // g_object_unref (adj);
   self->pictrl = bst_piano_roll_controller_new (self->proll);
@@ -185,44 +185,44 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_widget_publish_action_list (self, "pctrl-quant-tools", bst_piano_roll_controller_quant_actions (self->pictrl));
 
   /* event roll */
-  self->eroll = gxk_gadget_find (gadget, "event-roll");
+  self->eroll = gxk_radget_find (radget, "event-roll");
   gxk_nullify_in_object (self, &self->eroll);
   g_signal_connect (self->eroll, "canvas-clicked", G_CALLBACK (event_canvas_clicked), self);
   self->ectrl = bst_event_roll_controller_new (self->eroll, self->pictrl->quant_rtools, self->pictrl->canvas_rtools);
-  srange = gxk_gadget_find (gadget, "piano-roll-hscrollbar");
+  srange = gxk_radget_find (radget, "piano-roll-hscrollbar");
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->eroll), gtk_range_get_adjustment (srange));
   bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
 
   /* pattern view */
-  self->pview = gxk_gadget_find (gadget, "pattern-view");
+  self->pview = gxk_radget_find (radget, "pattern-view");
   gxk_nullify_in_object (self, &self->pview);
-  srange = gxk_gadget_find (gadget, "pattern-view-hscrollbar");
+  srange = gxk_radget_find (radget, "pattern-view-hscrollbar");
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->pview), gtk_range_get_adjustment (srange));
-  srange = gxk_gadget_find (gadget, "pattern-view-vscrollbar");
+  srange = gxk_radget_find (radget, "pattern-view-vscrollbar");
   adj = gtk_range_get_adjustment (srange);
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->pview), adj);
   adj = resizer_adjustment_create (adj);
-  srange = gxk_gadget_find (gadget, "pattern-view-vscale");
+  srange = gxk_radget_find (radget, "pattern-view-vscale");
   gtk_range_set_adjustment (srange, adj);
   self->pvctrl = bst_pattern_controller_new (self->pview, self->pictrl->quant_rtools);
 
   /* pattern view controls */
-  g_signal_connect_swapped (gxk_gadget_find (gadget, "configure-button"), "clicked",
+  g_signal_connect_swapped (gxk_radget_find (radget, "configure-button"), "clicked",
                             G_CALLBACK (bst_pattern_column_layouter_popup), self->pview);
-  box = gxk_gadget_find (gadget, "pattern-control-box");
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->vraster, "name"));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->vraster, "combo-button"));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, "name"));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, NULL));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "name"));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "combo-button"));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->hwrap, NULL));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->base_octave, "name"));
-  gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->base_octave, NULL));
+  box = gxk_radget_find (radget, "pattern-control-box");
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->vraster, "name"));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->vraster, "combo-button"));
+  gxk_radget_add (radget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, "name"));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->steps, NULL));
+  gxk_radget_add (radget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "name"));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "combo-button"));
+  gxk_radget_add (radget, "pattern-control-box", gxk_vseparator_space_new (FALSE));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->hwrap, NULL));
+  gxk_radget_add (radget, "pattern-control-box", gxk_vseparator_space_new (TRUE));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->base_octave, "name"));
+  gxk_radget_add (radget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->base_octave, NULL));
 
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);
@@ -234,8 +234,8 @@ bst_part_dialog_init (BstPartDialog *self)
     {
       GxkParam *param = gxk_param_new_value (pspec, eparam_changed, self);
       GtkWidget *rwidget = gxk_param_create_editor (param, "choice-button");
-      gxk_gadget_add (gadget, "event-roll-control-area", rwidget);
-      g_object_connect (gadget, "swapped_signal::destroy", gxk_param_destroy, param, NULL);
+      gxk_radget_add (radget, "event-roll-control-area", rwidget);
+      g_object_connect (radget, "swapped_signal::destroy", gxk_param_destroy, param, NULL);
       g_param_spec_unref (pspec);
       sfi_value_set_choice (&param->value, bse_midi_signal_type_to_choice (BSE_MIDI_SIGNAL_VELOCITY));
       gxk_param_apply_value (param); /* update model, auto updates GUI */
@@ -246,9 +246,9 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", hzoom_changed, self,
 		    NULL);
-  srange = gxk_gadget_find (gadget, "piano-roll-hzoom-scale");
+  srange = gxk_radget_find (radget, "piano-roll-hzoom-scale");
   gtk_range_set_adjustment (srange, GTK_ADJUSTMENT (adjustment));
-  gxk_gadget_add (self, "hzoom-area",
+  gxk_radget_add (self, "hzoom-area",
                   g_object_new (GTK_TYPE_SPIN_BUTTON,
                                 "visible", TRUE,
                                 "adjustment", adjustment,
@@ -260,7 +260,7 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", vzoom_changed, self,
 		    NULL);
-  gxk_gadget_add (self, "vzoom-area",
+  gxk_radget_add (self, "vzoom-area",
                   g_object_new (GTK_TYPE_SPIN_BUTTON,
                                 "visible", TRUE,
                                 "adjustment", adjustment,
@@ -329,7 +329,7 @@ piano_canvas_clicked (BstPianoRoll           *proll,
                       BstPartDialog          *self)
 {
   if (button == 3 && event)
-    gxk_menu_popup (gxk_gadget_find (self, "piano-popup"),
+    gxk_menu_popup (gxk_radget_find (self, "piano-popup"),
                     event->button.x_root, event->button.y_root, FALSE,
                     event->button.button, event->button.time);
 }
@@ -343,7 +343,7 @@ event_canvas_clicked (BstEventRoll           *eroll,
                       BstPartDialog          *self)
 {
   if (button == 3 && event)
-    gxk_menu_popup (gxk_gadget_find (self, "event-popup"),
+    gxk_menu_popup (gxk_radget_find (self, "event-popup"),
                     event->button.x_root, event->button.y_root, FALSE,
                     event->button.button, event->button.time);
 }

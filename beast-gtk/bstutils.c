@@ -104,21 +104,21 @@ _bst_init_utils (void)
 
 #include "beast-gtk/dialogs/beast-xml-zfiles.c"
 void
-_bst_init_gadgets (void)
+_bst_init_radgets (void)
 {
   gchar *text;
-  gxk_gadget_define_widget_type (BST_TYPE_TRACK_VIEW);
-  gxk_gadget_define_widget_type (BST_TYPE_WAVE_VIEW);
-  gxk_gadget_define_widget_type (BST_TYPE_PART_VIEW);
-  gxk_gadget_define_widget_type (BST_TYPE_PIANO_ROLL);
-  gxk_gadget_define_widget_type (BST_TYPE_EVENT_ROLL);
-  gxk_gadget_define_widget_type (BST_TYPE_PATTERN_VIEW);
-  gxk_gadget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
+  gxk_radget_define_widget_type (BST_TYPE_TRACK_VIEW);
+  gxk_radget_define_widget_type (BST_TYPE_WAVE_VIEW);
+  gxk_radget_define_widget_type (BST_TYPE_PART_VIEW);
+  gxk_radget_define_widget_type (BST_TYPE_PIANO_ROLL);
+  gxk_radget_define_widget_type (BST_TYPE_EVENT_ROLL);
+  gxk_radget_define_widget_type (BST_TYPE_PATTERN_VIEW);
+  gxk_radget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
   text = gxk_zfile_uncompress (BST_RADGETS_STANDARD_SIZE, BST_RADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_RADGETS_STANDARD_DATA));
-  gxk_gadget_parse_text ("beast", text, -1, NULL, NULL);
+  gxk_radget_parse_text ("beast", text, -1, NULL, NULL);
   g_free (text);
   text = gxk_zfile_uncompress (BST_RADGETS_BEAST_SIZE, BST_RADGETS_BEAST_DATA, G_N_ELEMENTS (BST_RADGETS_BEAST_DATA));
-  gxk_gadget_parse_text ("beast", text, -1, NULL, NULL);
+  gxk_radget_parse_text ("beast", text, -1, NULL, NULL);
   g_free (text);
 }
 

@@ -357,16 +357,16 @@ gxk_dialog_new (gpointer       pointer_loc,
 }
 
 gpointer
-gxk_dialog_new_gadget (gpointer        pointer_loc,
+gxk_dialog_new_radget (gpointer        pointer_loc,
                        GtkObject      *alive_object,
                        GxkDialogFlags  flags,
                        const gchar    *title,
                        const gchar    *domain_name,
-                       const gchar    *gadget_name)
+                       const gchar    *radget_name)
 {
-  GxkGadget *gadget = gxk_gadget_create (domain_name, gadget_name, NULL);
-  if (gadget)
-    return gxk_dialog_new (pointer_loc, alive_object, flags, title, gadget);
+  GxkRadget *radget = gxk_radget_create (domain_name, radget_name, NULL);
+  if (radget)
+    return gxk_dialog_new (pointer_loc, alive_object, flags, title, radget);
   else
     return NULL;
 }

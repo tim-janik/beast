@@ -249,7 +249,7 @@ main (int   argc,
    */
   bst_splash_update_entity (beast_splash, _("Dialogs"));
   bst_catch_scripts_and_msgs ();
-  _bst_init_gadgets ();
+  _bst_init_radgets ();
 
   /* open files given on command line
    */

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
-<gxk-gadget-definitions
+<gxk-radget-definitions
   xmlns:xdef="http://beast.gtk.org/xmlns:xdef"
   xmlns:prop="http://beast.gtk.org/xmlns:prop"
   xmlns:pack="http://beast.gtk.org/xmlns:pack"
@@ -199,8 +199,8 @@
 
   <!-- Gxk builtin types -->
 
-  <!-- gadget-factory: actions= action-root= per-list= per-action= -->
-  <xdef:gadget-factory        inherit="GxkGadgetFactory"
+  <!-- radget-factory: actions= action-root= per-list= per-action= -->
+  <xdef:radget-factory        inherit="GxkRadgetFactory"
     prop:action-root="$(ifdef,action-root,$action-root,:xdef)"
     prop:action-list="$actions"
     prop:per-branch="$(null-collapse,$per-branch)"
@@ -212,7 +212,7 @@
     prop:key-label="$(null-collapse,$(ifdef,_label,$_label,$label))"
     />
   <!-- menu-factory: actions= separator= -->
-  <xdef:menu-factory inherit="gadget-factory"
+  <xdef:menu-factory inherit="radget-factory"
     per-branch="menu-factory-branch"
     per-list="$(ifdef,per-list,$per-list,$(if,$separator,menu-factory-per-list,))"
     per-action="$(ifdef,per-action,$per-action,menu-factory-per-action)" />
@@ -226,7 +226,7 @@
     <tooltip text="$action-tooltip" tooltip-only-latent="0" />
   </xdef:menu-factory-per-action>
   <!-- menu-action-separator: produce a menu separator if actions are present: action-root= actions=  -->
-  <xdef:menu-action-separator inherit="gadget-factory"
+  <xdef:menu-action-separator inherit="radget-factory"
     per-branch=""
     per-list="menu-factory-per-list"
     per-action="" />
@@ -246,9 +246,9 @@
 	size:vgroup="gxk-toolbar-space" />
     </hbox>
   </xdef:separator>
-  <!-- button factories: button-args, gadget-factory-args -->
-  <xdef:button-factory  inherit="gadget-factory" per-action="action-button" width-from-height="1.25" />
-  <xdef:toggle-factory  inherit="gadget-factory" per-action="action-toggle" width-from-height="1.25" />
+  <!-- button factories: button-args, radget-factory-args -->
+  <xdef:button-factory  inherit="radget-factory" per-action="action-button" width-from-height="1.25" />
+  <xdef:toggle-factory  inherit="radget-factory" per-action="action-toggle" width-from-height="1.25" />
   <!-- action buttons: button, widget-patcher, image-size= action-*= -->
   <xdef:action-image-button inherit="button" focus="0" default-area="vbox" >
     <tooltip text="$action-tooltip" />
@@ -334,7 +334,7 @@
     </vbox>
   </xdef:labeled-tool-area>
   
-  <xdef:text-toggle-factory inherit="gadget-factory"
+  <xdef:text-toggle-factory inherit="radget-factory"
     per-action="action-text-toggle" />
   <xdef:action-text-toggle inherit="toggle-button" focus="0" >
     <tooltip text="$action-tooltip" />
@@ -409,4 +409,4 @@
     </hbox>
   </xdef:gxk-scroll-text-toolbar>
 
-</gxk-gadget-definitions>
+</gxk-radget-definitions>

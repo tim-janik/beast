@@ -1312,7 +1312,7 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
 {
   GtkWidget *widget, *sctext, *scwin;
   GtkTextBuffer *tbuffer;
-  GxkGadget *toolbar = NULL;
+  GxkRadget *toolbar = NULL;
 
   gxk_text_buffer_init_custom ();
 
@@ -1323,7 +1323,7 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   /* navigation toolbar */
   if (flags & GXK_SCROLL_TEXT_NAVIGATABLE)
     {
-      toolbar = gxk_gadget_create ("beast", "gxk-scroll-text-toolbar", NULL); // FIXME: domain name
+      toolbar = gxk_radget_create ("beast", "gxk-scroll-text-toolbar", NULL); // FIXME: domain name
       gtk_box_pack_start (GTK_BOX (sctext), toolbar, FALSE, TRUE, 0);
     }
   else /* there's code depending on the "presence" of a widget in the toolbar slot */
@@ -1352,24 +1352,24 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
       tnav->vadjustment = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scwin));
       g_object_connect (tnav->vadjustment, "signal::value_changed", tnav_update_vpos, tnav, NULL);
       g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (gxk_scroll_text_advance), sctext);
-      tnav->backb = gxk_gadget_find (toolbar, "back-button");
+      tnav->backb = gxk_radget_find (toolbar, "back-button");
       g_object_connect (g_object_ref (tnav->backb), "swapped_signal::clicked", navigate_back, sctext, NULL);
       gtk_widget_set_sensitive (tnav->backb, FALSE);
-      tnav->forwardb = gxk_gadget_find (toolbar, "forward-button");
+      tnav->forwardb = gxk_radget_find (toolbar, "forward-button");
       g_object_connect (g_object_ref (tnav->forwardb), "swapped_signal::clicked", navigate_forward, sctext, NULL);
       gtk_widget_set_sensitive (tnav->forwardb, FALSE);
-      g_object_connect (gxk_gadget_find (toolbar, "reload-button"),
+      g_object_connect (gxk_radget_find (toolbar, "reload-button"),
                         "swapped_signal::clicked", navigate_reload, sctext,
                         NULL);
-      g_object_connect (gxk_gadget_find (toolbar, "index-button"),
+      g_object_connect (gxk_radget_find (toolbar, "index-button"),
                         "swapped_signal::clicked", navigate_index, sctext,
                         NULL);
-      button = gxk_gadget_find (toolbar, "find-button");
+      button = gxk_radget_find (toolbar, "find-button");
       g_object_connect (button,
                         "swapped_signal::clicked", navigate_find, sctext,
                         NULL);
       gtk_widget_set_sensitive (button, FALSE); // FIXME: implement Find
-      tnav->refe = gxk_gadget_find (toolbar, "location-entry");
+      tnav->refe = gxk_radget_find (toolbar, "location-entry");
       g_object_connect (g_object_ref (tnav->refe),
                         "swapped_signal::activate", navigate_goto, sctext,
                         "swapped_signal::key_press_event", scroll_text_key_event, sctext,

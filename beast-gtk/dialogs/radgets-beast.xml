@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
-<gxk-gadget-definitions
+<gxk-radget-definitions
   xmlns:xdef="http://beast.gtk.org/xmlns:xdef"
   xmlns:prop="http://beast.gtk.org/xmlns:prop"
   xmlns:pack="http://beast.gtk.org/xmlns:pack"
@@ -446,4 +446,4 @@
     </hbox>
   </xdef:application-box>
 
-</gxk-gadget-definitions>
+</gxk-radget-definitions>

@@ -103,17 +103,17 @@ toggle_edit_mode (GtkToggleButton *tb,
 static void
 rack_view_init (BstRackView *self)
 {
-  GxkGadget *gadget = gxk_gadget_complete (GTK_WIDGET (self), "beast", "rack-view", NULL);
+  GxkRadget *radget = gxk_radget_complete (GTK_WIDGET (self), "beast", "rack-view", NULL);
   GtkWidget *toggle;
-  self->rack_table = gxk_gadget_find (gadget, "rack-table");
+  self->rack_table = gxk_radget_find (radget, "rack-table");
   gtk_table_resize (GTK_TABLE (self->rack_table), 20, 80);
   gxk_nullify_in_object (self, &self->rack_table);
   g_object_connect (self->rack_table, "swapped_signal_after::button_press_event", rack_view_button_press_event, self, NULL);
-  g_object_connect (gxk_gadget_find (gadget, "rack-table-event-box"),
+  g_object_connect (gxk_radget_find (radget, "rack-table-event-box"),
                     "swapped_signal_after::button_press_event", rack_view_button_press_event, self, NULL);
   self->item = 0;
   gtk_widget_show (GTK_WIDGET (self));
-  toggle = gxk_gadget_find (gadget, "edit-toggle");
+  toggle = gxk_radget_find (radget, "edit-toggle");
   g_object_connect (toggle, "signal::clicked", toggle_edit_mode, self, NULL);
   /* publish popup menu actions */
   gxk_widget_publish_actions (self, "rack-view-popup-actions",
@@ -209,7 +209,7 @@ bst_rack_view_rebuild (BstRackView *self)
   g_return_if_fail (BST_IS_RACK_VIEW (self));
   
   gtk_container_foreach (GTK_CONTAINER (self->rack_table), (GtkCallback) gtk_widget_destroy, NULL);
-  toggle = gxk_gadget_find (self, "edit-toggle");
+  toggle = gxk_radget_find (self, "edit-toggle");
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (toggle), FALSE);
   if (!self->item)
     return;
@@ -222,7 +222,7 @@ rack_view_button_press_event (BstRackView     *self,
 {
   if (event->button == 3)
     {
-      gxk_menu_popup (gxk_gadget_find (self, "rack-view-popup"),
+      gxk_menu_popup (gxk_radget_find (self, "rack-view-popup"),
                       event->x_root, event->y_root, FALSE,
                       event->button, event->time);
       return TRUE;
@@ -239,7 +239,7 @@ rack_view_popup_action (gpointer                user_data,
     {
       SfiRec *rec;
     case ACTION_TOGGLE_EDIT:
-      gtk_widget_activate (gxk_gadget_find (self, "edit-toggle"));
+      gtk_widget_activate (gxk_radget_find (self, "edit-toggle"));
       break;
     case ACTION_ADD_LABEL:
       rec = sfi_rec_new ();

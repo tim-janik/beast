@@ -35,7 +35,7 @@
 
 #define NODE(n)         ((Node*) n)
 
-struct _GxkGadgetArgs {
+struct _GxkRadgetArgs {
   guint    n_variables;
   gboolean intern_quarks;
   GQuark  *quarks;
@@ -50,11 +50,11 @@ typedef struct {
 } EnvSpecials;
 
 typedef struct {
-  GSList       *args_list; /* GxkGadgetArgs* */
+  GSList       *args_list; /* GxkRadgetArgs* */
   const gchar  *name;
   EnvSpecials  *specials;
   GData        *hgroups, *vgroups, *hvgroups;
-  GxkGadget    *xdef_gadget;
+  GxkRadget    *xdef_radget;
 } Env;
 
 typedef struct {
@@ -69,12 +69,12 @@ struct Node {
   guint         depth; /* == number of ancestors */
   Node         *xdef_node;
   guint         xdef_depth; /* xdef_node->depth */
-  GSList       *parent_arg_list; /* of type GxkGadgetArgs* */
-  GxkGadgetArgs *call_args;
-  GxkGadgetArgs *scope_args;
-  GxkGadgetArgs *prop_args;
-  GxkGadgetArgs *pack_args;
-  GxkGadgetArgs *dfpk_args;
+  GSList       *parent_arg_list; /* of type GxkRadgetArgs* */
+  GxkRadgetArgs *call_args;
+  GxkRadgetArgs *scope_args;
+  GxkRadgetArgs *prop_args;
+  GxkRadgetArgs *pack_args;
+  GxkRadgetArgs *dfpk_args;
   const gchar  *size_hgroup;
   const gchar  *size_vgroup;
   const gchar  *size_hvgroup;
@@ -106,10 +106,10 @@ static gboolean        boolean_from_expr        (const gchar         *expr,
 static inline guint64  num_from_string          (const gchar         *value);
 static guint64         num_from_expr            (const gchar         *expr,
                                                  Env                 *env);
-static void            gadget_define_gtk_menu   (void);
+static void            radget_define_gtk_menu   (void);
 static Node*           node_children_find_area  (Node                *node,
                                                  const gchar         *area);
-static const gchar*    gadget_args_lookup_quark (const GxkGadgetArgs *args,
+static const gchar*    radget_args_lookup_quark (const GxkRadgetArgs *args,
                                                  GQuark               quark,
                                                  guint               *nth);
 
@@ -117,8 +117,8 @@ static const gchar*    gadget_args_lookup_quark (const GxkGadgetArgs *args,
 /* --- variables --- */
 static Domain *standard_domain = NULL;
 static GQuark  quark_name = 0;
-static GQuark  quark_gadget_type = 0;
-static GQuark  quark_gadget_node = 0;
+static GQuark  quark_radget_type = 0;
+static GQuark  quark_radget_node = 0;
 
 
 /* --- functions --- */
@@ -174,11 +174,11 @@ clone_list_find (CloneList *clist,
   return NULL;
 }
 
-static GxkGadgetArgs*
-clone_args (const GxkGadgetArgs *source)
+static GxkRadgetArgs*
+clone_args (const GxkRadgetArgs *source)
 {
   if (source)
-    return gxk_gadget_args_merge (gxk_gadget_const_args (), source);
+    return gxk_radget_args_merge (gxk_radget_const_args (), source);
   return NULL;
 }
 
@@ -201,7 +201,7 @@ clone_node_intern (Node        *source,
       /* no deep copy needed, since source->parent_arg_list are already parsed */
       node->parent_arg_list = source->parent_arg_list;
       /* "add-on" the new modifiable parent_arg_list slot (works only with slists) */
-      node->parent_arg_list = g_slist_prepend (node->parent_arg_list, gxk_gadget_const_args ());
+      node->parent_arg_list = g_slist_prepend (node->parent_arg_list, gxk_radget_const_args ());
     }
   else
     {
@@ -360,12 +360,12 @@ env_get_size_group (Env         *env,
 typedef struct _RecursiveOption RecursiveOption;
 struct _RecursiveOption {
   RecursiveOption     *next;
-  const GxkGadgetArgs *args;
+  const GxkRadgetArgs *args;
   GQuark               quark;
 };
 static RecursiveOption *stack_options = NULL;
 
-static const GxkGadgetArgs*
+static const GxkRadgetArgs*
 env_find_quark (Env   *env,
                 GQuark quark,
                 guint *nthp)
@@ -373,8 +373,8 @@ env_find_quark (Env   *env,
   GSList *slist;
   for (slist = env->args_list; slist; slist = slist->next)
     {
-      GxkGadgetArgs *args = slist->data;
-      if (gadget_args_lookup_quark (args, quark, nthp))
+      GxkRadgetArgs *args = slist->data;
+      if (radget_args_lookup_quark (args, quark, nthp))
         {
           RecursiveOption *ropt;
           for (ropt = stack_options; args && ropt; ropt = ropt->next)
@@ -391,7 +391,7 @@ static const gchar*
 env_lookup (Env         *env,
             const gchar *var)
 {
-  const GxkGadgetArgs *args;
+  const GxkRadgetArgs *args;
   GQuark quark = g_quark_try_string (var);
   guint nth;
   if (strcmp (var, "name") == 0)
@@ -402,7 +402,7 @@ env_lookup (Env         *env,
 
 static gchar*
 env_expand_args_value (Env                 *env,
-                       const GxkGadgetArgs *args,
+                       const GxkRadgetArgs *args,
                        guint                nth)
 {
   const gchar *value = ARGS_NTH_VALUE (args, nth);
@@ -517,7 +517,7 @@ parse_dollar (const gchar *c,
       else
         {
           guint nth;
-          const GxkGadgetArgs *args = env_find_quark (env, quark, &nth);
+          const GxkRadgetArgs *args = env_find_quark (env, quark, &nth);
           if (args)
             {
               gchar *exval = env_expand_args_value (env, args, nth);
@@ -646,14 +646,14 @@ node_lookup (Domain      *domain,
   return node;
 }
 
-static GxkGadgetArgs*
-gadget_args_intern_set (GxkGadgetArgs  *args,
+static GxkRadgetArgs*
+radget_args_intern_set (GxkRadgetArgs  *args,
                         const gchar    *name,
                         const gchar    *value)
 {
   if (!args)
-    args = gxk_gadget_const_args ();
-  return gxk_gadget_args_set (args, name, value);
+    args = gxk_radget_const_args ();
+  return gxk_radget_args_set (args, name, value);
 }
 
 static Node*
@@ -707,22 +707,22 @@ node_define (Domain       *domain,
         *area_p = g_intern_string (attribute_values[i]);
       }
   if (!node)
-    set_error (error, "no gadget type specified in definition of: %s", node_name);
+    set_error (error, "no radget type specified in definition of: %s", node_name);
   if (*error)
     return NULL;
   /* apply property attributes */
   for (i = 0; attribute_names[i]; i++)
     if (strncmp (attribute_names[i], "pack:", 5) == 0)
-      node->pack_args = gadget_args_intern_set (node->pack_args, attribute_names[i] + 5, attribute_values[i]);
+      node->pack_args = radget_args_intern_set (node->pack_args, attribute_names[i] + 5, attribute_values[i]);
     else if (strncmp (attribute_names[i], "default-pack:", 13) == 0)
-      node->dfpk_args = gadget_args_intern_set (node->dfpk_args, attribute_names[i] + 13, attribute_values[i]);
+      node->dfpk_args = radget_args_intern_set (node->dfpk_args, attribute_names[i] + 13, attribute_values[i]);
     else if (strcmp (attribute_names[i], "name") == 0 || strcmp (attribute_names[i], "_name") == 0)
       {
         if (name_p && !*name_p)
           *name_p = g_intern_string (attribute_values[i]);
       }
     else if (allow_defs && strncmp (attribute_names[i], "prop:", 5) == 0)
-      node->prop_args = gadget_args_intern_set (node->prop_args, attribute_names[i] + 5, attribute_values[i]);
+      node->prop_args = radget_args_intern_set (node->prop_args, attribute_names[i] + 5, attribute_values[i]);
     else if (strcmp (attribute_names[i], "size:hgroup") == 0 && g_type_is_a (node->type, GTK_TYPE_WIDGET))
       node->size_hgroup = g_intern_string (attribute_values[i]);
     else if (strcmp (attribute_names[i], "size:vgroup") == 0 && g_type_is_a (node->type, GTK_TYPE_WIDGET))
@@ -735,7 +735,7 @@ node_define (Domain       *domain,
       ; /* handled above */
 #if 0   // if at all, this should be part of an extra <local var=value"/> directive
     else if (strncmp (attribute_names[i], "local:", 6) == 0)
-      node->scope_args = gadget_args_intern_set (node->scope_args, attribute_names[i] + 6, attribute_values[i]);
+      node->scope_args = radget_args_intern_set (node->scope_args, attribute_names[i] + 6, attribute_values[i]);
 #endif
     else if (strchr (attribute_names[i], ':'))
       set_error (error, "invalid attribute \"%s\" in definition of: %s", attribute_names[i], node_name);
@@ -744,24 +744,24 @@ node_define (Domain       *domain,
         const gchar *name = attribute_names[i];
         const gchar *value = attribute_values[i];
         if (inherit)
-          gadget_args_intern_set (node->parent_arg_list->data, name, value);
+          radget_args_intern_set (node->parent_arg_list->data, name, value);
         else
-          node->call_args = gadget_args_intern_set (node->call_args, name, value);
+          node->call_args = radget_args_intern_set (node->call_args, name, value);
         if (name[0] == '_') /* i18n version */
           {
             if (inherit)
-              gadget_args_intern_set (node->parent_arg_list->data, name + 1, dgettext (i18n_domain, value));
+              radget_args_intern_set (node->parent_arg_list->data, name + 1, dgettext (i18n_domain, value));
             else
-              node->call_args = gadget_args_intern_set (node->call_args, name + 1, dgettext (i18n_domain, value));
+              node->call_args = radget_args_intern_set (node->call_args, name + 1, dgettext (i18n_domain, value));
           }
       }
   if (!g_type_is_a (node->type, G_TYPE_OBJECT))
-    set_error (error, "no gadget type specified in definition of: %s", node_name);
+    set_error (error, "no radget type specified in definition of: %s", node_name);
   return node;
 }
 
 static void             /* callback for open tags <foo bar="baz"> */
-gadget_start_element  (GMarkupParseContext *context,
+radget_start_element  (GMarkupParseContext *context,
                        const gchar         *element_name,
                        const gchar        **attribute_names,
                        const gchar        **attribute_values,
@@ -770,7 +770,7 @@ gadget_start_element  (GMarkupParseContext *context,
 {
   PData *pdata = user_data;
   Node *child;
-  if (!pdata->tag_opened && strcmp (element_name, "gxk-gadget-definitions") == 0)
+  if (!pdata->tag_opened && strcmp (element_name, "gxk-radget-definitions") == 0)
     {
       /* toplevel tag */
       pdata->tag_opened = TRUE;
@@ -779,7 +779,7 @@ gadget_start_element  (GMarkupParseContext *context,
     {
       const gchar *name = element_name + 5;
       if (g_datalist_get_data (&pdata->domain->nodes, name))
-        set_error (error, "redefinition of gadget: %s", name);
+        set_error (error, "redefinition of radget: %s", name);
       else
         {
           const gchar *default_area = NULL;
@@ -810,20 +810,20 @@ gadget_start_element  (GMarkupParseContext *context,
           pdata->node_stack = g_slist_prepend (pdata->node_stack, node);
         }
       else
-        set_error (error, "failed to define gadget: %s", element_name);
+        set_error (error, "failed to define radget: %s", element_name);
     }
   else
     set_error (error, "unknown element: %s", element_name);
 }
 
 static void             /* callback for close tags </foo> */
-gadget_end_element (GMarkupParseContext *context,
+radget_end_element (GMarkupParseContext *context,
                     const gchar         *element_name,
                     gpointer             user_data,
                     GError             **error)
 {
   PData *pdata = user_data;
-  if (strcmp (element_name, "gxk-gadget-definitions") == 0)
+  if (strcmp (element_name, "gxk-radget-definitions") == 0)
     {
       /* toplevel tag closed */
       pdata->tag_opened = FALSE;
@@ -839,7 +839,7 @@ gadget_end_element (GMarkupParseContext *context,
 }
 
 static void             /* callback for character data */
-gadget_text (GMarkupParseContext *context,
+radget_text (GMarkupParseContext *context,
              const gchar         *text,    /* text is not 0-terminated */
              gsize                text_len,
              gpointer             user_data,
@@ -849,7 +849,7 @@ gadget_text (GMarkupParseContext *context,
 }
 
 static void             /* callback for comments and processing instructions */
-gadget_passthrough (GMarkupParseContext *context,
+radget_passthrough (GMarkupParseContext *context,
                     const gchar         *passthrough_text, /* text is not 0-terminated. */
                     gsize                text_len,
                     gpointer             user_data,
@@ -859,7 +859,7 @@ gadget_passthrough (GMarkupParseContext *context,
 }
 
 static void             /* callback for errors, including ones set by other methods in the vtable */
-gadget_error (GMarkupParseContext *context,
+radget_error (GMarkupParseContext *context,
               GError              *error,  /* the GError should not be freed */
               gpointer             user_data)
 {
@@ -867,7 +867,7 @@ gadget_error (GMarkupParseContext *context,
 }
 
 static void
-gadget_parser (Domain      *domain,
+radget_parser (Domain      *domain,
                const gchar *i18n_domain,
                gint         fd,
                const gchar *text,
@@ -875,11 +875,11 @@ gadget_parser (Domain      *domain,
                GError     **error)
 {
   static GMarkupParser parser = {
-    gadget_start_element,
-    gadget_end_element,
-    gadget_text,
-    gadget_passthrough,
-    gadget_error,
+    radget_start_element,
+    radget_end_element,
+    radget_text,
+    radget_passthrough,
+    radget_error,
   };
   PData pbuf = { 0, }, *pdata = &pbuf;
   GMarkupParseContext *context = g_markup_parse_context_new (&parser, 0, pdata, NULL);
@@ -899,7 +899,7 @@ gadget_parser (Domain      *domain,
         length = 0;
     }
   if (length < 0)
-    set_error (error, "failed to read gadget file: %s", g_strerror (errno));
+    set_error (error, "failed to read radget file: %s", g_strerror (errno));
   if (!*error)
     g_markup_parse_context_end_parse (context, error);
   g_markup_parse_context_free (context);
@@ -908,7 +908,7 @@ gadget_parser (Domain      *domain,
 static GData *domains = NULL;
 
 void
-gxk_gadget_parse (const gchar    *domain_name,
+gxk_radget_parse (const gchar    *domain_name,
                   const gchar    *file_name,
                   const gchar    *i18n_domain,
                   GError        **error)
@@ -923,17 +923,17 @@ gxk_gadget_parse (const gchar    *domain_name,
       domain->domain = g_intern_string (domain_name);
       g_datalist_set_data (&domains, domain_name, domain);
     }
-  gadget_parser (domain, i18n_domain, fd, NULL, 0, error ? error : &myerror);
+  radget_parser (domain, i18n_domain, fd, NULL, 0, error ? error : &myerror);
   close (fd);
   if (myerror)
     {
-      g_warning ("GxkGadget: while parsing \"%s\": %s", file_name, myerror->message);
+      g_warning ("GxkRadget: while parsing \"%s\": %s", file_name, myerror->message);
       g_error_free (myerror);
     }
 }
 
 void
-gxk_gadget_parse_text (const gchar    *domain_name,
+gxk_radget_parse_text (const gchar    *domain_name,
                        const gchar    *text,
                        gint            text_len,
                        const gchar    *i18n_domain,
@@ -949,10 +949,10 @@ gxk_gadget_parse_text (const gchar    *domain_name,
       domain->domain = g_intern_string (domain_name);
       g_datalist_set_data (&domains, domain_name, domain);
     }
-  gadget_parser (domain, i18n_domain, -1, text, text_len < 0 ? strlen (text) : text_len, error ? error : &myerror);
+  radget_parser (domain, i18n_domain, -1, text, text_len < 0 ? strlen (text) : text_len, error ? error : &myerror);
   if (myerror)
     {
-      g_warning ("GxkGadget: while parsing: %s", myerror->message);
+      g_warning ("GxkRadget: while parsing: %s", myerror->message);
       g_error_free (myerror);
     }
 }
@@ -1042,20 +1042,20 @@ property_value_from_string (GtkType      widget_type,
   g_free (exvalue);
 }
 
-static GxkGadgetArgs*
-merge_args_list (GxkGadgetArgs *args,
+static GxkRadgetArgs*
+merge_args_list (GxkRadgetArgs *args,
                  GSList        *call_args)
 {
   if (call_args)
     {
       if (call_args->next)
         args = merge_args_list (args, call_args->next);
-      args = gxk_gadget_args_merge (args, call_args->data);
+      args = gxk_radget_args_merge (args, call_args->data);
     }
   return args;
 }
 
-static GxkGadgetArgs*
+static GxkRadgetArgs*
 node_expand_call_args (Node   *node,
                        GSList *call_args,
                        Env    *env)
@@ -1069,9 +1069,9 @@ node_expand_call_args (Node   *node,
    */
   guint i, n_pops = 0;
   /* flatten call args */
-  GxkGadgetArgs *args = gxk_gadget_args (NULL);
+  GxkRadgetArgs *args = gxk_radget_args (NULL);
   args = merge_args_list (args, call_args);
-  args = gxk_gadget_args_merge (args, node->call_args);
+  args = gxk_radget_args_merge (args, node->call_args);
   /* prepare for $name lookups */
   env->name = node->name;
   /* push args lists according to precedence */
@@ -1083,7 +1083,7 @@ node_expand_call_args (Node   *node,
         slist = g_slist_prepend (slist, polist->data);
       while (slist)     /* two times prepending keeps original order */
         {
-          GxkGadgetArgs *pargs = g_slist_pop_head (&slist);
+          GxkRadgetArgs *pargs = g_slist_pop_head (&slist);
           n_pops++, env->args_list = g_slist_prepend (env->args_list, pargs);
         }
     }
@@ -1108,47 +1108,47 @@ node_expand_call_args (Node   *node,
   return args;
 }
 
-struct GxkGadgetData {
+struct GxkRadgetData {
   Node         *node;
-  GxkGadgetArgs *call_stack_top;
-  GxkGadget    *xdef_gadget;
+  GxkRadgetArgs *call_stack_top;
+  GxkRadget    *xdef_radget;
   Env          *env;
 };
 
-static GxkGadget*
-gadget_create_from_node (Node         *node,
-                         GxkGadget    *gadget,
+static GxkRadget*
+radget_create_from_node (Node         *node,
+                         GxkRadget    *radget,
                          Env          *env,
                          GError      **error)
 {
-  GxkGadgetType tinfo;
+  GxkRadgetType tinfo;
   guint i, n_pops = 0;
   /* prepare for $name lookups */
   env->name = node->name;
   /* retrive type info */
-  if (!gxk_gadget_type_lookup (node->type, &tinfo))
-    g_error ("invalid gadget type: %s", g_type_name (node->type));
-  /* create gadget */
-  if (!gadget)
+  if (!gxk_radget_type_lookup (node->type, &tinfo))
+    g_error ("invalid radget type: %s", g_type_name (node->type));
+  /* create radget */
+  if (!radget)
     {
-      GxkGadgetData gdgdata;
+      GxkRadgetData gdgdata;
       gdgdata.node = node;
       gdgdata.call_stack_top = node->call_stack->data;
-      gdgdata.xdef_gadget = env->xdef_gadget;
+      gdgdata.xdef_radget = env->xdef_radget;
       gdgdata.env = env;
-      gadget = tinfo.create (node->type, node->name, &gdgdata);
+      radget = tinfo.create (node->type, node->name, &gdgdata);
     }
-  g_object_set_qdata (gadget, quark_gadget_node, node);
-  /* keep global xdef_gadget for gdg_data */
-  if (!env->xdef_gadget)
-    env->xdef_gadget = gadget;
+  g_object_set_qdata (radget, quark_radget_node, node);
+  /* keep global xdef_radget for gdg_data */
+  if (!env->xdef_radget)
+    env->xdef_radget = radget;
   /* widget specific patchups (size-groups) */
   if (node->size_hgroup)
-    gtk_size_group_add_widget (env_get_size_group (env, node->size_hgroup, 'h'), gadget);
+    gtk_size_group_add_widget (env_get_size_group (env, node->size_hgroup, 'h'), radget);
   if (node->size_vgroup)
-    gtk_size_group_add_widget (env_get_size_group (env, node->size_vgroup, 'v'), gadget);
+    gtk_size_group_add_widget (env_get_size_group (env, node->size_vgroup, 'v'), radget);
   if (node->size_hvgroup)
-    gtk_size_group_add_widget (env_get_size_group (env, node->size_hvgroup, 'b'), gadget);
+    gtk_size_group_add_widget (env_get_size_group (env, node->size_hvgroup, 'b'), radget);
   /* precedence for property value lookups:
    * - all node ancestry args
    * - expanded call_args
@@ -1163,40 +1163,40 @@ gadget_create_from_node (Node         *node,
     {
       const gchar *pname = ARGS_NTH_NAME (node->prop_args, i);
       const gchar *pvalue = ARGS_NTH_VALUE (node->prop_args, i);
-      GParamSpec *pspec = tinfo.find_prop (gadget, pname);
+      GParamSpec *pspec = tinfo.find_prop (radget, pname);
       if (pspec)
         {
           GValue value = { 0 };
           property_value_from_string (node->type, pspec, &value, pname, pvalue, env, error);
           if (G_VALUE_TYPE (&value))
             {
-              tinfo.set_prop (gadget, pname, &value);
+              tinfo.set_prop (radget, pname, &value);
               g_value_unset (&value);
             }
         }
       else
-        set_error (error, "gadget \"%s\" has no property: %s", node->name, pname);
+        set_error (error, "radget \"%s\" has no property: %s", node->name, pname);
     }
   /* cleanup */
   while (n_pops--)
     g_slist_pop_head (&env->args_list);
-  return gadget;
+  return radget;
 }
 
 static void
-gadget_add_to_parent (GxkGadget    *parent,
-                      GxkGadget    *gadget,
+radget_add_to_parent (GxkRadget    *parent,
+                      GxkRadget    *radget,
                       Env          *env,
                       GError      **error)
 {
-  Node *pnode = g_object_get_qdata (parent, quark_gadget_node);
-  Node *cnode = g_object_get_qdata (gadget, quark_gadget_node);
-  GxkGadgetType tinfo;
+  Node *pnode = g_object_get_qdata (parent, quark_radget_node);
+  Node *cnode = g_object_get_qdata (radget, quark_radget_node);
+  GxkRadgetType tinfo;
   guint i, needs_packing, n_pops = 0;
   /* prepare for $name lookups */
   env->name = cnode->name;
   /* retrive type info */
-  gxk_gadget_type_lookup (cnode->type, &tinfo);
+  gxk_radget_type_lookup (cnode->type, &tinfo);
   /* precedence for property value lookups:
    * - all node ancestry args
    * - expanded call_args
@@ -1208,39 +1208,39 @@ gadget_add_to_parent (GxkGadget    *parent,
                                                                                         env->args_list);
   /* perform set_parent() */
   {
-    GxkGadgetData gdgdata;
+    GxkRadgetData gdgdata;
     gdgdata.node = cnode;
     gdgdata.call_stack_top = cnode->call_stack->data;
-    gdgdata.xdef_gadget = env->xdef_gadget;
+    gdgdata.xdef_radget = env->xdef_radget;
     gdgdata.env = env;
-    needs_packing = tinfo.adopt (gadget, parent, &gdgdata);
+    needs_packing = tinfo.adopt (radget, parent, &gdgdata);
   }
   /* construct set of pack args and apply */
   if (needs_packing)
     {
-      GxkGadgetArgs *args = gxk_gadget_args_merge (gxk_gadget_const_args (),
+      GxkRadgetArgs *args = gxk_radget_args_merge (gxk_radget_const_args (),
                                                    pnode ? pnode->dfpk_args : NULL);
-      args = gxk_gadget_args_merge (args, cnode->pack_args);
+      args = gxk_radget_args_merge (args, cnode->pack_args);
       /* set pack args */
       for (i = 0; i < ARGS_N_ENTRIES (args); i++)
         {
           const gchar *pname = ARGS_NTH_NAME (args, i);
           const gchar *pvalue = ARGS_NTH_VALUE (args, i);
-          GParamSpec *pspec = tinfo.find_pack (gadget, pname);
+          GParamSpec *pspec = tinfo.find_pack (radget, pname);
           if (pspec)
             {
               GValue value = { 0 };
               property_value_from_string (0, pspec, &value, pname, pvalue, env, error);
               if (G_VALUE_TYPE (&value))
                 {
-                  tinfo.set_pack (gadget, pname, &value);
+                  tinfo.set_pack (radget, pname, &value);
                   g_value_unset (&value);
                 }
             }
           else
-            g_printerr ("GXK: no such pack property: %s,%s,%s\n", G_OBJECT_TYPE_NAME (parent), G_OBJECT_TYPE_NAME (gadget), pname);
+            g_printerr ("GXK: no such pack property: %s,%s,%s\n", G_OBJECT_TYPE_NAME (parent), G_OBJECT_TYPE_NAME (radget), pname);
         }
-      gxk_gadget_free_args (args);
+      gxk_radget_free_args (args);
     }
   /* cleanup */
   while (n_pops--)
@@ -1248,35 +1248,35 @@ gadget_add_to_parent (GxkGadget    *parent,
 }
 
 static void
-gadget_create_children (GxkGadget    *parent,
+radget_create_children (GxkRadget    *parent,
                         Env          *env,
                         GError      **error)
 {
-  Node *pnode = g_object_get_qdata (parent, quark_gadget_node);
+  Node *pnode = g_object_get_qdata (parent, quark_radget_node);
   GSList *slist;
   /* create children */
   for (slist = pnode->children; slist; slist = slist->next)
     {
       Node *cnode = slist->data;
-      GxkGadget *gadget;
+      GxkRadget *radget;
       /* node_expand_call_args() sets env->name */
-      GxkGadgetArgs *call_args = node_expand_call_args (cnode, NULL, env);
+      GxkRadgetArgs *call_args = node_expand_call_args (cnode, NULL, env);
       cnode->call_stack = g_slist_prepend (cnode->call_stack, call_args);
       /* create child */
-      gadget = gadget_create_from_node (cnode, NULL, env, error);
+      radget = radget_create_from_node (cnode, NULL, env, error);
       if (cnode->children)
-        gadget_create_children (gadget, env, error);
-      gadget_add_to_parent (parent, gadget, env, error);
+        radget_create_children (radget, env, error);
+      radget_add_to_parent (parent, radget, env, error);
       g_slist_pop_head (&cnode->call_stack);
-      gxk_gadget_free_args (call_args);
+      gxk_radget_free_args (call_args);
     }
 }
 
-static GxkGadget*
-gadget_creator (GxkGadget          *gadget,
+static GxkRadget*
+radget_creator (GxkRadget          *radget,
                 const gchar        *domain_name,
                 const gchar        *name,
-                GxkGadget          *parent,
+                GxkRadget          *parent,
                 GSList             *user_args,
                 GSList             *env_args)
 {
@@ -1286,7 +1286,7 @@ gadget_creator (GxkGadget          *gadget,
       Node *node = g_datalist_get_data (&domain->nodes, name);
       if (node)
         {
-          GxkGadgetArgs *call_args;
+          GxkRadgetArgs *call_args;
           Env env = { NULL, };
           GError *error = NULL;
           guint n_pops = 0;
@@ -1297,37 +1297,37 @@ gadget_creator (GxkGadget          *gadget,
             }
           call_args = node_expand_call_args (node, user_args, &env);
           n_pops++, node->call_stack = g_slist_prepend (node->call_stack, call_args);
-          if (gadget && !g_type_is_a (G_OBJECT_TYPE (gadget), node->type))
-            g_warning ("GxkGadget: gadget domain \"%s\": gadget `%s' differs from defined type: %s",
-                       domain_name, G_OBJECT_TYPE_NAME (gadget), node->name);
+          if (radget && !g_type_is_a (G_OBJECT_TYPE (radget), node->type))
+            g_warning ("GxkRadget: radget domain \"%s\": radget `%s' differs from defined type: %s",
+                       domain_name, G_OBJECT_TYPE_NAME (radget), node->name);
           else
             {
-              gadget = gadget_create_from_node (node, gadget, &env, &error);
-              gadget_create_children (gadget, &env, &error);
+              radget = radget_create_from_node (node, radget, &env, &error);
+              radget_create_children (radget, &env, &error);
             }
-          if (parent && gadget)
-            gadget_add_to_parent (parent, gadget, &env, &error);
+          if (parent && radget)
+            radget_add_to_parent (parent, radget, &env, &error);
           /* cleanup */
           while (n_pops--)
             g_slist_pop_head (&env.args_list);
-          gxk_gadget_free_args (call_args);
+          gxk_radget_free_args (call_args);
           env_clear (&env);
           if (error)
-            g_warning ("GxkGadget: while constructing gadget \"%s\": %s", node->name, error->message);
+            g_warning ("GxkRadget: while constructing radget \"%s\": %s", node->name, error->message);
           g_clear_error (&error);
         }
       else
-        g_warning ("GxkGadget: gadget domain \"%s\": no such node: %s", domain_name, name);
+        g_warning ("GxkRadget: radget domain \"%s\": no such node: %s", domain_name, name);
     }
   else
-    g_warning ("GxkGadget: no such gadget domain: %s", domain_name);
-  return gadget;
+    g_warning ("GxkRadget: no such radget domain: %s", domain_name);
+  return radget;
 }
 
-GxkGadgetArgs*
-gxk_gadget_data_copy_call_args (GxkGadgetData *gdgdata)
+GxkRadgetArgs*
+gxk_radget_data_copy_call_args (GxkRadgetData *gdgdata)
 {
-  GxkGadgetArgs *args;
+  GxkRadgetArgs *args;
   GSList *olist = NULL;
   olist = g_slist_copy (gdgdata->node->parent_arg_list);
   olist = g_slist_prepend (olist, gdgdata->call_stack_top);
@@ -1336,105 +1336,105 @@ gxk_gadget_data_copy_call_args (GxkGadgetData *gdgdata)
   return args;
 }
 
-GxkGadget*
-gxk_gadget_data_get_scope_gadget (GxkGadgetData *gdgdata)
+GxkRadget*
+gxk_radget_data_get_scope_radget (GxkRadgetData *gdgdata)
 {
-  return gdgdata->xdef_gadget;
+  return gdgdata->xdef_radget;
 }
 
-GxkGadget*
-gxk_gadget_creator (GxkGadget          *gadget,
+GxkRadget*
+gxk_radget_creator (GxkRadget          *radget,
                     const gchar        *domain_name,
                     const gchar        *name,
-                    GxkGadget          *parent,
+                    GxkRadget          *parent,
                     GSList             *call_args,
                     GSList             *env_args)
 {
   g_return_val_if_fail (domain_name != NULL, NULL);
   g_return_val_if_fail (name != NULL, NULL);
-  if (gadget)
+  if (radget)
     {
-      Node *gadget_node = g_object_get_qdata (gadget, quark_gadget_node);
-      g_return_val_if_fail (gadget_node == NULL, NULL);
+      Node *radget_node = g_object_get_qdata (radget, quark_radget_node);
+      g_return_val_if_fail (radget_node == NULL, NULL);
     }
-  return gadget_creator (gadget, domain_name, name, parent, call_args, env_args);
+  return radget_creator (radget, domain_name, name, parent, call_args, env_args);
 }
 
-GxkGadget*
-gxk_gadget_create (const gchar        *domain_name,
+GxkRadget*
+gxk_radget_create (const gchar        *domain_name,
                    const gchar        *name,
                    const gchar        *var1,
                    ...)
 {
-  GxkGadgetArgs *gargs;
-  GxkGadget *gadget;
+  GxkRadgetArgs *gargs;
+  GxkRadget *radget;
   GSList olist = { 0, };
   va_list vargs;
   va_start (vargs, var1);
-  gargs = gxk_gadget_args_valist (var1, vargs);
+  gargs = gxk_radget_args_valist (var1, vargs);
   olist.data = gargs;
-  gadget = gxk_gadget_creator (NULL, domain_name, name, NULL, &olist, NULL);
-  gxk_gadget_free_args (gargs);
+  radget = gxk_radget_creator (NULL, domain_name, name, NULL, &olist, NULL);
+  gxk_radget_free_args (gargs);
   va_end (vargs);
-  return gadget;
+  return radget;
 }
 
-GxkGadget*
-gxk_gadget_complete (GxkGadget          *gadget,
+GxkRadget*
+gxk_radget_complete (GxkRadget          *radget,
                      const gchar        *domain_name,
                      const gchar        *name,
                      const gchar        *var1,
                      ...)
 {
-  GxkGadgetArgs *gargs;
+  GxkRadgetArgs *gargs;
   GSList olist = { 0, };
   va_list vargs;
   va_start (vargs, var1);
-  gargs = gxk_gadget_args_valist (var1, vargs);
+  gargs = gxk_radget_args_valist (var1, vargs);
   olist.data = gargs;
-  gadget = gxk_gadget_creator (gadget, domain_name, name, NULL, &olist, NULL);
-  gxk_gadget_free_args (gargs);
+  radget = gxk_radget_creator (radget, domain_name, name, NULL, &olist, NULL);
+  gxk_radget_free_args (gargs);
   va_end (vargs);
-  return gadget;
+  return radget;
 }
 
-GxkGadgetArgs*
-gxk_gadget_const_args (void)
+GxkRadgetArgs*
+gxk_radget_const_args (void)
 {
-  GxkGadgetArgs *args = g_new0 (GxkGadgetArgs, 1);
+  GxkRadgetArgs *args = g_new0 (GxkRadgetArgs, 1);
   args->intern_quarks = TRUE;
   return args;
 }
 
-GxkGadgetArgs*
-gxk_gadget_args_valist (const gchar        *name1,
+GxkRadgetArgs*
+gxk_radget_args_valist (const gchar        *name1,
                         va_list             var_args)
 {
-  GxkGadgetArgs *args = g_new0 (GxkGadgetArgs, 1);
+  GxkRadgetArgs *args = g_new0 (GxkRadgetArgs, 1);
   const gchar *name = name1;
   while (name)
     {
       const gchar *value = va_arg (var_args, const gchar*);
-      args = gxk_gadget_args_set (args, name, value);
+      args = gxk_radget_args_set (args, name, value);
       name = va_arg (var_args, const gchar*);
     }
   return args;
 }
 
-GxkGadgetArgs*
-gxk_gadget_args (const gchar *name1,
+GxkRadgetArgs*
+gxk_radget_args (const gchar *name1,
                  ...)
 {
-  GxkGadgetArgs *args;
+  GxkRadgetArgs *args;
   va_list vargs;
   va_start (vargs, name1);
-  args = gxk_gadget_args_valist (name1, vargs);
+  args = gxk_radget_args_valist (name1, vargs);
   va_end (vargs);
   return args;
 }
 
-GxkGadgetArgs*
-gxk_gadget_args_set (GxkGadgetArgs  *args,
+GxkRadgetArgs*
+gxk_radget_args_set (GxkRadgetArgs  *args,
                      const gchar    *name,
                      const gchar    *value)
 {
@@ -1442,7 +1442,7 @@ gxk_gadget_args_set (GxkGadgetArgs  *args,
   guint i;
   g_return_val_if_fail (name != NULL, args);
   if (!args)
-    args = gxk_gadget_args (NULL);
+    args = gxk_radget_args (NULL);
   for (i = 0; i < ARGS_N_ENTRIES (args); i++)
     if (quark == args->quarks[i])
       break;
@@ -1463,7 +1463,7 @@ gxk_gadget_args_set (GxkGadgetArgs  *args,
 }
 
 static const gchar*
-gadget_args_lookup_quark (const GxkGadgetArgs *args,
+radget_args_lookup_quark (const GxkRadgetArgs *args,
                           GQuark               quark,
                           guint               *nthp)
 {
@@ -1479,32 +1479,32 @@ gadget_args_lookup_quark (const GxkGadgetArgs *args,
 }
 
 const gchar*
-gxk_gadget_args_get (const GxkGadgetArgs *args,
+gxk_radget_args_get (const GxkRadgetArgs *args,
                      const gchar         *name)
 {
   GQuark quark = g_quark_try_string (name);
   if (args && quark)
-    return gadget_args_lookup_quark (args, quark, NULL);
+    return radget_args_lookup_quark (args, quark, NULL);
   return NULL;
 }
 
-GxkGadgetArgs*
-gxk_gadget_args_merge (GxkGadgetArgs       *args,
-                       const GxkGadgetArgs *source)
+GxkRadgetArgs*
+gxk_radget_args_merge (GxkRadgetArgs       *args,
+                       const GxkRadgetArgs *source)
 {
   if (source)
     {
       guint i;
       if (!args)
-        args = gxk_gadget_args (NULL);
+        args = gxk_radget_args (NULL);
       for (i = 0; i < ARGS_N_ENTRIES (source); i++)
-        gxk_gadget_args_set (args, ARGS_NTH_NAME (source, i), ARGS_NTH_VALUE (source, i));
+        gxk_radget_args_set (args, ARGS_NTH_NAME (source, i), ARGS_NTH_VALUE (source, i));
     }
   return args;
 }
 
 void
-gxk_gadget_free_args (GxkGadgetArgs *args)
+gxk_radget_free_args (GxkRadgetArgs *args)
 {
   if (args)
     {
@@ -1519,19 +1519,19 @@ gxk_gadget_free_args (GxkGadgetArgs *args)
 }
 
 const gchar*
-gxk_gadget_get_domain (GxkGadget *gadget)
+gxk_radget_get_domain (GxkRadget *radget)
 {
-  Node *gadget_node = g_object_get_qdata (gadget, quark_gadget_node);
-  g_return_val_if_fail (gadget_node != NULL, NULL);
-  return gadget_node->domain;
+  Node *radget_node = g_object_get_qdata (radget, quark_radget_node);
+  g_return_val_if_fail (radget_node != NULL, NULL);
+  return radget_node->domain;
 }
 
 void
-gxk_gadget_sensitize (GxkGadget      *gadget,
+gxk_radget_sensitize (GxkRadget      *radget,
                       const gchar    *name,
                       gboolean        sensitive)
 {
-  GtkWidget *widget = gxk_gadget_find (gadget, name);
+  GtkWidget *widget = gxk_radget_find (radget, name);
   if (GTK_IS_WIDGET (widget))
     {
       /* special guard for menu items */
@@ -1546,64 +1546,64 @@ gxk_gadget_sensitize (GxkGadget      *gadget,
 }
 
 gpointer
-gxk_gadget_find (GxkGadget      *gadget,
+gxk_radget_find (GxkRadget      *radget,
                  const gchar    *name)
 {
   const gchar *next, *c = name;
   
-  g_return_val_if_fail (gadget != NULL, NULL);
+  g_return_val_if_fail (radget != NULL, NULL);
   g_return_val_if_fail (name != NULL, NULL);
   
-  if (!GTK_IS_WIDGET (gadget))
+  if (!GTK_IS_WIDGET (radget))
     return NULL;
   
   next = strchr (c, '.');
-  while (gadget && next)
+  while (radget && next)
     {
       gchar *name = g_strndup (c, next - c);
       c = next + 1;
-      gadget = gxk_widget_find_level_ordered (gadget, name);
+      radget = gxk_widget_find_level_ordered (radget, name);
       g_free (name);
     }
-  if (gadget)
-    gadget = gxk_widget_find_level_ordered (gadget, c);
-  return gadget;
+  if (radget)
+    radget = gxk_widget_find_level_ordered (radget, c);
+  return radget;
 }
 
 gpointer
-gxk_gadget_find_area (GxkGadget      *gadget,
+gxk_radget_find_area (GxkRadget      *radget,
                       const gchar    *area)
 {
   Node *node;
-  gadget = area ? gxk_gadget_find (gadget, area) : gadget;
-  if (!GTK_IS_WIDGET (gadget))
+  radget = area ? gxk_radget_find (radget, area) : radget;
+  if (!GTK_IS_WIDGET (radget))
     return NULL;
-  node = g_object_get_qdata (gadget, quark_gadget_node);
+  node = g_object_get_qdata (radget, quark_radget_node);
   while (node && node->default_area)
     {
-      gadget = gxk_widget_find_level_ordered (gadget, node->default_area);
-      node = gadget ? g_object_get_qdata (gadget, quark_gadget_node) : NULL;
+      radget = gxk_widget_find_level_ordered (radget, node->default_area);
+      node = radget ? g_object_get_qdata (radget, quark_radget_node) : NULL;
     }
-  return gadget;
+  return radget;
 }
 
 void
-gxk_gadget_add (GxkGadget      *gadget,
+gxk_radget_add (GxkRadget      *radget,
                 const gchar    *area,
                 gpointer        widget)
 {
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  gadget = gxk_gadget_find_area (gadget, area);
-  if (GTK_IS_CONTAINER (gadget))
-    gtk_container_add (gadget, widget);
+  radget = gxk_radget_find_area (radget, area);
+  if (GTK_IS_CONTAINER (radget))
+    gtk_container_add (radget, widget);
   else
-    g_error ("GxkGadget: failed to find area \"%s\"", area);
+    g_error ("GxkRadget: failed to find area \"%s\"", area);
 }
 
 
-/* --- gadget types --- */
+/* --- radget types --- */
 static void
-gadget_define_type (GType           type,
+radget_define_type (GType           type,
                     const gchar    *name,
                     const gchar   **attribute_names,
                     const gchar   **attribute_values,
@@ -1616,17 +1616,17 @@ gadget_define_type (GType           type,
                       i18n_domain, NULL, NULL, NULL, &error);
   g_datalist_set_data (&standard_domain->nodes, name, node);
   if (error)
-    g_error ("while registering standard gadgets: %s", error->message);
+    g_error ("while registering standard radgets: %s", error->message);
 }
 
 void
-_gxk_init_gadget_types (void)
+_gxk_init_radget_types (void)
 {
   GType types[1024], *t = types;
-  g_assert (quark_gadget_type == 0);
+  g_assert (quark_radget_type == 0);
   quark_name = g_quark_from_static_string ("name");
-  quark_gadget_type = g_quark_from_static_string ("GxkGadget-type");
-  quark_gadget_node = g_quark_from_static_string ("GxkGadget-node");
+  quark_radget_type = g_quark_from_static_string ("GxkRadget-type");
+  quark_radget_node = g_quark_from_static_string ("GxkRadget-node");
   standard_domain = g_new0 (Domain, 1);
   standard_domain->domain = g_intern_string ("standard");
   g_datalist_set_data (&domains, standard_domain->domain, standard_domain);
@@ -1644,18 +1644,18 @@ _gxk_init_gadget_types (void)
   *t++ = GTK_TYPE_HWRAP_BOX;    *t++ = GTK_TYPE_VWRAP_BOX;      *t++ = GXK_TYPE_FREE_RADIO_BUTTON;
   *t++ = GXK_TYPE_RACK_TABLE;   *t++ = GXK_TYPE_RACK_ITEM;	*t++ = GXK_TYPE_BACK_SHADE;
   while (t-- > types)
-    gxk_gadget_define_widget_type (*t);
-  gadget_define_gtk_menu ();
-  gxk_gadget_define_type (GXK_TYPE_GADGET_FACTORY, _gxk_gadget_factory_def);
-  gxk_gadget_define_type (GXK_TYPE_FACTORY_BRANCH, _gxk_factory_branch_def);
-  gxk_gadget_define_type (GXK_TYPE_WIDGET_PATCHER, _gxk_widget_patcher_def);
+    gxk_radget_define_widget_type (*t);
+  radget_define_gtk_menu ();
+  gxk_radget_define_type (GXK_TYPE_RADGET_FACTORY, _gxk_radget_factory_def);
+  gxk_radget_define_type (GXK_TYPE_FACTORY_BRANCH, _gxk_factory_branch_def);
+  gxk_radget_define_type (GXK_TYPE_WIDGET_PATCHER, _gxk_widget_patcher_def);
 }
 
 gboolean
-gxk_gadget_type_lookup (GType           type,
-                        GxkGadgetType  *ggtype)
+gxk_radget_type_lookup (GType           type,
+                        GxkRadgetType  *ggtype)
 {
-  GxkGadgetType *tdata = g_type_get_qdata (type, quark_gadget_type);
+  GxkRadgetType *tdata = g_type_get_qdata (type, quark_radget_type);
   if (tdata)
     {
       *ggtype = *tdata;
@@ -1665,70 +1665,70 @@ gxk_gadget_type_lookup (GType           type,
 }
 
 void
-gxk_gadget_define_type (GType                type,
-                        const GxkGadgetType *ggtype)
+gxk_radget_define_type (GType                type,
+                        const GxkRadgetType *ggtype)
 {
   const gchar *attribute_names[1] = { NULL };
   const gchar *attribute_values[1] = { NULL };
   
   g_return_if_fail (!G_TYPE_IS_ABSTRACT (type));
   g_return_if_fail (G_TYPE_IS_OBJECT (type));
-  g_return_if_fail (g_type_get_qdata (type, quark_gadget_type) == NULL);
+  g_return_if_fail (g_type_get_qdata (type, quark_radget_type) == NULL);
   
-  g_type_set_qdata (type, quark_gadget_type, (gpointer) ggtype);
-  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
+  g_type_set_qdata (type, quark_radget_type, (gpointer) ggtype);
+  radget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
 
 
 /* --- widget types --- */
-static GxkGadget*
+static GxkRadget*
 widget_create (GType               type,
                const gchar        *name,
-               GxkGadgetData      *gdgdata)
+               GxkRadgetData      *gdgdata)
 {
   return g_object_new (type, "name", name, NULL);
 }
 
 static GParamSpec*
-widget_find_prop (GxkGadget    *gadget,
+widget_find_prop (GxkRadget    *radget,
                   const gchar  *prop_name)
 {
-  return g_object_class_find_property (G_OBJECT_GET_CLASS (gadget), prop_name);
+  return g_object_class_find_property (G_OBJECT_GET_CLASS (radget), prop_name);
 }
 
 static gboolean
-widget_adopt (GxkGadget          *gadget,
-              GxkGadget          *parent,
-              GxkGadgetData      *gdgdata)
+widget_adopt (GxkRadget          *radget,
+              GxkRadget          *parent,
+              GxkRadgetData      *gdgdata)
 {
-  gtk_container_add (GTK_CONTAINER (parent), GTK_WIDGET (gadget));
+  gtk_container_add (GTK_CONTAINER (parent), GTK_WIDGET (radget));
   return TRUE;
 }
 
 static GParamSpec*
-widget_find_pack (GxkGadget    *gadget,
+widget_find_pack (GxkRadget    *radget,
                   const gchar  *pack_name)
 {
-  GtkWidget *parent = GTK_WIDGET (gadget)->parent;
+  GtkWidget *parent = GTK_WIDGET (radget)->parent;
   return gtk_container_class_find_child_property (G_OBJECT_GET_CLASS (parent), pack_name);
 }
 
 static void
-widget_set_pack (GxkGadget    *gadget,
+widget_set_pack (GxkRadget    *radget,
                  const gchar  *pack_name,
                  const GValue *value)
 {
-  GtkWidget *parent = GTK_WIDGET (gadget)->parent;
-  gtk_container_child_set_property (GTK_CONTAINER (parent), gadget, pack_name, value);
+  GtkWidget *parent = GTK_WIDGET (radget)->parent;
+  gtk_container_child_set_property (GTK_CONTAINER (parent), radget, pack_name, value);
 }
 
 void
-gxk_gadget_define_widget_type (GType type)
+gxk_radget_define_widget_type (GType type)
 {
-  static const GxkGadgetType widget_info = {
+  static const GxkRadgetType widget_info = {
     widget_create,
     widget_find_prop,
-    (void(*)(GxkGadget*,const gchar*,const GValue*)) g_object_set_property,
+    (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
     widget_adopt,
     widget_find_pack,
     widget_set_pack,
@@ -1756,9 +1756,9 @@ gxk_gadget_define_widget_type (GType type)
   
   g_return_if_fail (!G_TYPE_IS_ABSTRACT (type));
   g_return_if_fail (g_type_is_a (type, GTK_TYPE_WIDGET));
-  g_return_if_fail (g_type_get_qdata (type, quark_gadget_type) == NULL);
+  g_return_if_fail (g_type_get_qdata (type, quark_radget_type) == NULL);
   
-  g_type_set_qdata (type, quark_gadget_type, (gpointer) &widget_info);
+  g_type_set_qdata (type, quark_radget_type, (gpointer) &widget_info);
   for (i = 0; i < G_N_ELEMENTS (widget_def); i++)
     {
       attribute_names[j] = widget_def[i].name;
@@ -1774,34 +1774,34 @@ gxk_gadget_define_widget_type (GType type)
       }
   attribute_names[j] = NULL;
   attribute_values[j] = NULL;
-  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
+  radget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
 
 static gboolean
-menu_adopt (GxkGadget          *gadget,
-            GxkGadget          *parent,
-            GxkGadgetData      *gdgdata)
+menu_adopt (GxkRadget          *radget,
+            GxkRadget          *parent,
+            GxkRadgetData      *gdgdata)
 {
   if (GTK_IS_MENU_ITEM (parent))
-    gxk_menu_attach_as_submenu (gadget, parent);
+    gxk_menu_attach_as_submenu (radget, parent);
   else if (GTK_IS_OPTION_MENU (parent))
-    gtk_option_menu_set_menu (parent, gadget);
+    gtk_option_menu_set_menu (parent, radget);
   else if (GXK_IS_MENU_BUTTON (parent))
-    g_object_set (parent, "menu", gadget, NULL);
+    g_object_set (parent, "menu", radget, NULL);
   else
-    gxk_menu_attach_as_popup (gadget, parent);
+    gxk_menu_attach_as_popup (radget, parent);
   return TRUE;
 }
 
 static void* return_NULL (void) { return NULL; }
 
 static void
-gadget_define_gtk_menu (void)
+radget_define_gtk_menu (void)
 {
-  static const GxkGadgetType widget_info = {
+  static const GxkRadgetType widget_info = {
     widget_create,
     widget_find_prop,
-    (void(*)(GxkGadget*,const gchar*,const GValue*)) g_object_set_property,
+    (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
     menu_adopt,
     (void*) return_NULL,/* find_pack */
     NULL,               /* set_pack */
@@ -1809,10 +1809,10 @@ gadget_define_gtk_menu (void)
   const gchar *attribute_names[2] = { NULL, NULL };
   const gchar *attribute_values[2] = { NULL, NULL };
   GType type = GTK_TYPE_MENU;
-  g_type_set_qdata (type, quark_gadget_type, (gpointer) &widget_info);
+  g_type_set_qdata (type, quark_radget_type, (gpointer) &widget_info);
   attribute_names[0] = "prop:visible";
   attribute_values[0] = "$(ifdef,visible,$visible,1)";
-  gadget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
+  radget_define_type (type, g_type_name (type), attribute_names, attribute_values, NULL);
 }
 
 

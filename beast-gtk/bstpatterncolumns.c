@@ -666,7 +666,7 @@ static void
 pattern_column_layouter_apply (GtkWidget *dialog)
 {
   BstPatternView *pview = g_object_get_data (dialog, "user_data");
-  GtkEntry *entry = gxk_gadget_find (dialog, "layout-entry");
+  GtkEntry *entry = gxk_radget_find (dialog, "layout-entry");
   const gchar *layout = gtk_entry_get_text (entry);
   guint l = bst_pattern_view_set_layout (pview, layout);
   if (l < strlen (layout))
@@ -733,11 +733,11 @@ bst_pattern_column_layouter_popup (BstPatternView *pview)
     {
       GtkWidget *sctext, *w;
       guint i;
-      dialog = gxk_dialog_new_gadget (NULL, GTK_OBJECT (pview),
+      dialog = gxk_dialog_new_radget (NULL, GTK_OBJECT (pview),
                                       GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_POPUP_POS, // GXK_DIALOG_MODAL
                                       _("Pattern Editor Layout"),
                                       "beast", "pattern-editor-layout-box");
-      sctext = gxk_scroll_text_create_for (GXK_SCROLL_TEXT_WIDGET_LOOK, gxk_gadget_find (dialog, "sctext-box"));
+      sctext = gxk_scroll_text_create_for (GXK_SCROLL_TEXT_WIDGET_LOOK, gxk_radget_find (dialog, "sctext-box"));
       gxk_scroll_text_clear (sctext);
       for (i = 0; i < G_N_ELEMENTS (help_text); i++)
         {
@@ -750,15 +750,15 @@ bst_pattern_column_layouter_popup (BstPatternView *pview)
           if (p > tx)
             gxk_scroll_text_pop_indent (sctext);
         }
-      g_signal_connect (gxk_gadget_find (dialog, "cancel-button"), "clicked",
+      g_signal_connect (gxk_radget_find (dialog, "cancel-button"), "clicked",
                         G_CALLBACK (gxk_toplevel_delete), NULL);
-      g_signal_connect_swapped (w = gxk_gadget_find (dialog, "apply-button"), "clicked",
+      g_signal_connect_swapped (w = gxk_radget_find (dialog, "apply-button"), "clicked",
                                 G_CALLBACK (pattern_column_layouter_apply), dialog);
       gxk_dialog_set_default (GXK_DIALOG (dialog), w);
       g_object_set_data (dialog, "user_data", pview);
       g_object_set_data (pview, "BstPattern-layouter", dialog);
     }
-  entry = gxk_gadget_find (dialog, "layout-entry");
+  entry = gxk_radget_find (dialog, "layout-entry");
   gtk_entry_set_text (entry, bst_pattern_view_get_layout (pview));
   gxk_widget_showraise (dialog);
 }

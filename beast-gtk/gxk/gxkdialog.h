@@ -78,12 +78,12 @@ gpointer	gxk_dialog_new			  (gpointer	   pointer_loc,
 						   GxkDialogFlags  flags,
 						   const gchar    *title,
 						   GtkWidget	  *child);
-gpointer        gxk_dialog_new_gadget             (gpointer        pointer_loc,
+gpointer        gxk_dialog_new_radget             (gpointer        pointer_loc,
                                                    GtkObject      *alive_object,
                                                    GxkDialogFlags  flags,
                                                    const gchar    *title,
                                                    const gchar    *domain_name,
-                                                   const gchar    *gadget_name);
+                                                   const gchar    *radget_name);
 void		gxk_dialog_set_title		  (GxkDialog	  *dialog,
 						   const gchar	  *title);
 void		gxk_dialog_set_focus		  (GxkDialog	  *dialog,

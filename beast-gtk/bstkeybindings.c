@@ -86,7 +86,7 @@ key_bindings_load_file (GtkWidget   *dialog,
 {
   GtkWidget *self = GTK_WIDGET (data);
   BstKeyBinding *kbinding = g_object_get_data (self, "BstKeyBinding");
-  GtkTreeView *btview = gxk_gadget_find (self, "binding-tree-view");
+  GtkTreeView *btview = gxk_radget_find (self, "binding-tree-view");
   GtkTreeModel *model = gtk_tree_view_get_model (btview);
   GSList slist = { kbinding, NULL };
   BseErrorType error = bst_key_binding_parse (file, &slist);
@@ -102,8 +102,8 @@ key_bindings_exec_action (gpointer data,
 {
   GtkWidget *self = GTK_WIDGET (data);
   BstKeyBinding *kbinding = g_object_get_data (self, "BstKeyBinding");
-  GtkTreeView *btview = gxk_gadget_find (self, "binding-tree-view");
-  GtkTreeView *ftview = gxk_gadget_find (self, "function-tree-view");
+  GtkTreeView *btview = gxk_radget_find (self, "binding-tree-view");
+  GtkTreeView *ftview = gxk_radget_find (self, "function-tree-view");
   gxk_status_window_push (self);
   switch (action)
     {
@@ -253,8 +253,8 @@ key_bindings_check_action (gpointer data,
 {
   GtkWidget *self = GTK_WIDGET (data);
   gboolean editable = g_object_get_long (self, "editable");
-  GtkTreeView *btview = gxk_gadget_find (self, "binding-tree-view");
-  GtkTreeView *ftview = gxk_gadget_find (self, "function-tree-view");
+  GtkTreeView *btview = gxk_radget_find (self, "binding-tree-view");
+  GtkTreeView *ftview = gxk_radget_find (self, "function-tree-view");
   if (!editable)
     return FALSE;
   switch (action)
@@ -397,7 +397,7 @@ bst_key_binding_box (const gchar                 *binding_name,
                      const BstKeyBindingFunction *funcs,
                      gboolean                     editable)
 {
-  GxkGadget *self = gxk_gadget_create ("beast", "key-bindings-box", NULL);
+  GxkRadget *self = gxk_radget_create ("beast", "key-bindings-box", NULL);
   GxkListWrapper *lwrapper;
   GtkTreeSelection *tsel;
   GtkTreeView *tview;
@@ -423,7 +423,7 @@ bst_key_binding_box (const gchar                 *binding_name,
   gxk_list_wrapper_notify_append (lwrapper, kbinding->n_keys);
   
   /* binding view setup */
-  tview = gxk_gadget_find (self, "binding-tree-view");
+  tview = gxk_radget_find (self, "binding-tree-view");
   gtk_tree_view_set_model (tview, GTK_TREE_MODEL (lwrapper));
   tsel = gtk_tree_view_get_selection (tview);
   g_signal_connect_swapped (tsel, "changed", G_CALLBACK (gxk_widget_update_actions), tview);
@@ -450,7 +450,7 @@ bst_key_binding_box (const gchar                 *binding_name,
   gxk_list_wrapper_notify_append (lwrapper, kbinding->n_funcs);
   
   /* function view setup */
-  tview = gxk_gadget_find (self, "function-tree-view");
+  tview = gxk_radget_find (self, "function-tree-view");
   gtk_tree_view_set_model (tview, GTK_TREE_MODEL (lwrapper));
   tsel = gtk_tree_view_get_selection (tview);
   g_signal_connect_swapped (tsel, "changed", G_CALLBACK (gxk_widget_update_actions), tview);
@@ -469,7 +469,7 @@ bst_key_binding_box_set (GtkWidget                   *self,
                          BstKeyBindingItemSeq        *kbseq)
 {
   BstKeyBinding *kbinding = g_object_get_data (self, "BstKeyBinding");
-  GtkTreeView *btview = gxk_gadget_find (self, "binding-tree-view");
+  GtkTreeView *btview = gxk_radget_find (self, "binding-tree-view");
   GtkTreeModel *model = gtk_tree_view_get_model (btview);
   bst_key_binding_set_item_seq (kbinding, kbseq);
   gxk_list_wrapper_notify_clear (GXK_LIST_WRAPPER (model));

@@ -79,7 +79,7 @@ typedef struct {
   gdouble height_from_width;
 } GxkWidgetPatcher;
 GType   gxk_widget_patcher_get_type     (void);
-extern const GxkGadgetType *_gxk_widget_patcher_def;
+extern const GxkRadgetType *_gxk_widget_patcher_def;
 
 /* --- focus frame --- */
 #define GXK_TYPE_FOCUS_FRAME              (gxk_focus_frame_get_type ())

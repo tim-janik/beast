@@ -33,7 +33,7 @@ enum {
 
 /* --- variables --- */
 static GtkWidget *profiler_dialog = NULL;
-static GxkGadget *profiler = NULL;
+static GxkRadget *profiler = NULL;
 static guint      timer_id = 0;
 typedef struct {
   gchar *name;
@@ -219,7 +219,7 @@ bst_profiler_window_get (void)
 {
   if (!profiler)
     {
-      profiler = gxk_gadget_create ("beast", "profiler", NULL);
+      profiler = gxk_radget_create ("beast", "profiler", NULL);
       profiler_dialog = gxk_dialog_new (&profiler, NULL,
                                         GXK_DIALOG_HIDE_ON_DELETE,
                                         _("Profiler"),
@@ -237,7 +237,7 @@ bst_profiler_window_get (void)
                                profiler, G_CONNECT_SWAPPED);
       GtkTreeModel *smodel = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (lwrapper));
       g_object_unref (lwrapper);
-      GtkTreeView *tview = gxk_gadget_find (profiler, "tree-view");
+      GtkTreeView *tview = gxk_radget_find (profiler, "tree-view");
       gtk_tree_view_set_model (tview, smodel);
       GtkTreeSelection *tsel = gtk_tree_view_get_selection (tview);
       gtk_tree_selection_set_mode (tsel, GTK_SELECTION_NONE);

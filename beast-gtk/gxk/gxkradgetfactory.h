@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GXK_GADGET_FACTORY_H__
-#define __GXK_GADGET_FACTORY_H__
+#ifndef __GXK_RADGET_FACTORY_H__
+#define __GXK_RADGET_FACTORY_H__
 
 #include "gxkradget.h"
 #include "gxkaction.h"
@@ -26,20 +26,20 @@ G_BEGIN_DECLS
 
 
 /* --- type macros --- */
-#define GXK_TYPE_GADGET_FACTORY              (gxk_gadget_factory_get_type ())
-#define GXK_GADGET_FACTORY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_GADGET_FACTORY, GxkGadgetFactory))
-#define GXK_GADGET_FACTORY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_GADGET_FACTORY, GxkGadgetFactoryClass))
-#define GXK_IS_GADGET_FACTORY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_GADGET_FACTORY))
-#define GXK_IS_GADGET_FACTORY_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_GADGET_FACTORY))
-#define GXK_GADGET_FACTORY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_GADGET_FACTORY, GxkGadgetFactoryClass))
+#define GXK_TYPE_RADGET_FACTORY              (gxk_radget_factory_get_type ())
+#define GXK_RADGET_FACTORY(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_RADGET_FACTORY, GxkRadgetFactory))
+#define GXK_RADGET_FACTORY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_RADGET_FACTORY, GxkRadgetFactoryClass))
+#define GXK_IS_RADGET_FACTORY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_RADGET_FACTORY))
+#define GXK_IS_RADGET_FACTORY_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_RADGET_FACTORY))
+#define GXK_RADGET_FACTORY_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_RADGET_FACTORY, GxkRadgetFactoryClass))
 
 
 /* --- structures --- */
 typedef struct {
   GxkActionFactory parent_instance;
   GtkWindow       *window;
-  GxkGadget       *gadget;
-  GxkGadget       *xdef_gadget;
+  GxkRadget       *radget;
+  GxkRadget       *xdef_radget;
   guint            cslot;
   gulong           timer;
   gchar           *action_root;
@@ -50,19 +50,19 @@ typedef struct {
   gchar           *action_list;
   gchar           *activatable;
   gchar           *regulate;
-  GxkGadgetArgs   *call_args;
+  GxkRadgetArgs   *call_args;
   GData           *branch_widgets;
   GSList          *branches;
-} GxkGadgetFactory;
-typedef GxkActionFactoryClass GxkGadgetFactoryClass;
+} GxkRadgetFactory;
+typedef GxkActionFactoryClass GxkRadgetFactoryClass;
 
 
 /* --- public API --- */
-GType   gxk_gadget_factory_get_type             (void);
-void    gxk_gadget_factory_check_anchored       (GxkGadgetFactory       *self);
-void    gxk_gadget_factory_attach               (GxkGadgetFactory       *self,
-                                                 GxkGadget              *gadget);
-void    gxk_gadget_factory_match                (GxkGadgetFactory       *self,
+GType   gxk_radget_factory_get_type             (void);
+void    gxk_radget_factory_check_anchored       (GxkRadgetFactory       *self);
+void    gxk_radget_factory_attach               (GxkRadgetFactory       *self,
+                                                 GxkRadget              *radget);
+void    gxk_radget_factory_match                (GxkRadgetFactory       *self,
                                                  const gchar            *prefix,
                                                  GxkActionList          *alist);
 
@@ -78,17 +78,17 @@ typedef struct {
   GObject        parent_instance;
   gchar         *uline_label;
   gchar         *key_label;
-  GxkGadgetArgs *branch_args;
+  GxkRadgetArgs *branch_args;
 } GxkFactoryBranch;
 typedef GObjectClass GxkFactoryBranchClass;
 GType   gxk_factory_branch_get_type          (void);
 
 
 /* --- implementation details --- */
-extern const GxkGadgetType *_gxk_gadget_factory_def;
-extern const GxkGadgetType *_gxk_factory_branch_def;
+extern const GxkRadgetType *_gxk_radget_factory_def;
+extern const GxkRadgetType *_gxk_factory_branch_def;
 
 
 G_END_DECLS
 
-#endif /* __GXK_GADGET_FACTORY_H__ */
+#endif /* __GXK_RADGET_FACTORY_H__ */

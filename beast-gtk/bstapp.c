@@ -199,7 +199,7 @@ bst_app_init (BstApp *self)
                 "flags", GXK_DIALOG_STATUS_SHELL,
                 NULL);
   bst_app_register (self);
-  self->box = gxk_gadget_create ("beast", "application-box", NULL);
+  self->box = gxk_radget_create ("beast", "application-box", NULL);
   gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), self->box);
   
   /* publish widget specific actions */
@@ -267,17 +267,17 @@ bst_app_init (BstApp *self)
   
   /* setup playback controls */
   self->pcontrols = g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
-  gxk_gadget_add (self->box, "control-area", self->pcontrols);
+  gxk_radget_add (self->box, "control-area", self->pcontrols);
   
   /* setup WAVE file entry */
-  gxk_gadget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
+  gxk_radget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
   self->wave_file = bst_param_new_proxy (bse_proxy_get_pspec (BSE_SERVER, "wave_file"), BSE_SERVER);
-  gxk_gadget_add (self->box, "control-area-file-label", gxk_param_create_editor (self->wave_file, "name"));
-  gxk_gadget_add (self->box, "control-area-file-entry", gxk_param_create_editor (self->wave_file, NULL));
+  gxk_radget_add (self->box, "control-area-file-label", gxk_param_create_editor (self->wave_file, "name"));
+  gxk_radget_add (self->box, "control-area-file-entry", gxk_param_create_editor (self->wave_file, NULL));
   gxk_param_update (self->wave_file);
   
   /* setup the main notebook */
-  self->notebook = gxk_gadget_find (self->box, "main-notebook");
+  self->notebook = gxk_radget_find (self->box, "main-notebook");
   gxk_nullify_in_object (self, &self->notebook);
   g_object_connect (self->notebook,
                     "swapped_signal_after::switch-page", gxk_widget_update_actions, self,
@@ -985,9 +985,9 @@ app_action_check (gpointer data,
     case BST_ACTION_EXIT:
       /* abuse generic "Exit" update to sync Tools menu items */
       super = bst_app_get_current_super (self);
-      gxk_gadget_sensitize (self, "song-submenu", BSE_IS_SONG (super));
-      gxk_gadget_sensitize (self, "synth-submenu", BSE_IS_SNET (super) && !BSE_IS_SONG (super));
-      gxk_gadget_sensitize (self, "waves-submenu", BSE_IS_WAVE_REPO (super));
+      gxk_radget_sensitize (self, "song-submenu", BSE_IS_SONG (super));
+      gxk_radget_sensitize (self, "synth-submenu", BSE_IS_SNET (super) && !BSE_IS_SONG (super));
+      gxk_radget_sensitize (self, "waves-submenu", BSE_IS_WAVE_REPO (super));
       return TRUE;
     default:
       g_warning ("BstApp: unknown action: %lu", action);

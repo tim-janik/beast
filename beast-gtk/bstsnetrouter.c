@@ -1018,7 +1018,7 @@ bst_snet_router_button_press (GtkWidget      *widget,
 static void
 snet_router_tool2text (BstSNetRouter *self)
 {
-  GtkLabel *label = gxk_gadget_find (self->palette, "type-label");
+  GtkLabel *label = gxk_radget_find (self->palette, "type-label");
   BseCategory *cat = ROUTER_TOOL (self) ? bse_category_from_id (ROUTER_TOOL (self)) : 0;
   const gchar *blurb = cat ? bse_type_blurb (cat->type) : NULL;
   const gchar *authors = cat ? bse_type_authors (cat->type) : NULL;
@@ -1075,7 +1075,7 @@ snet_router_action_exec (gpointer        user_data,
                                           GTK_OBJECT (self),
                                           GXK_DIALOG_HIDE_ON_DELETE,
                                           _("Palette"),
-                                          gxk_gadget_create ("beast", "snet-palette", NULL));
+                                          gxk_radget_create ("beast", "snet-palette", NULL));
           /* add actions to palette */
           gxk_widget_republish_actions (self->palette, "router-util-actions", self);
           gxk_widget_republish_actions (self->palette, "router-canvas-tools", self);
@@ -1083,7 +1083,7 @@ snet_router_action_exec (gpointer        user_data,
           gxk_widget_republish_actions (self->palette, "router-palette-modules", self);
           /* add text handling to palette */
           self->palette_text = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL);
-          gxk_gadget_add (self->palette, "text-area", self->palette_text);
+          gxk_radget_add (self->palette, "text-area", self->palette_text);
           g_signal_connect_object (self->canvas_tool, "changed", G_CALLBACK (snet_router_tool2text), self, G_CONNECT_SWAPPED);
           snet_router_tool2text (self);
         }
@@ -1126,12 +1126,12 @@ bst_snet_router_build_page (SfiProxy snet)
   GtkWidget *zoomed_window, *pix;
   GdkPixmap *pixmap;
   GdkBitmap *mask;
-  GxkGadget *gadget;
+  GxkRadget *radget;
 
   g_return_val_if_fail (BSE_IS_SNET (snet), NULL);
 
-  /* main gadget */
-  gadget = gxk_gadget_create ("beast", "snet-view", NULL);
+  /* main radget */
+  radget = gxk_radget_create ("beast", "snet-view", NULL);
 
   /* router */
   self = g_object_new (BST_TYPE_SNET_ROUTER,
@@ -1139,11 +1139,11 @@ bst_snet_router_build_page (SfiProxy snet)
                        "visible", TRUE,
 		       NULL);
   bst_snet_router_set_snet (self, snet);
-  gxk_gadget_add (gadget, "zoomed-window", self);
-  self->canvas_popup = gxk_gadget_find (gadget, "snet-popup");
+  gxk_radget_add (radget, "zoomed-window", self);
+  self->canvas_popup = gxk_radget_find (radget, "snet-popup");
 
   /* setup zoomed window and its toggle pixmap */
-  zoomed_window = gxk_gadget_find (gadget, "zoomed-window");
+  zoomed_window = gxk_radget_find (radget, "zoomed-window");
   g_object_connect (zoomed_window,
 		    "swapped_signal::zoom", bst_snet_router_adjust_region, self,
 		    "swapped_signal::zoom", gtk_false, NULL,
@@ -1159,7 +1159,7 @@ bst_snet_router_build_page (SfiProxy snet)
 		  NULL);
 
   /* add Zoom spinner */
-  gxk_gadget_add (gadget, "zoom-area",
+  gxk_radget_add (radget, "zoom-area",
                   g_object_new (GTK_TYPE_SPIN_BUTTON,
                                 "visible", TRUE,
                                 "adjustment", self->adjustment,

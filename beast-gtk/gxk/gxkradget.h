@@ -16,102 +16,102 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GXK_GADGET_H__
-#define __GXK_GADGET_H__
+#ifndef __GXK_RADGET_H__
+#define __GXK_RADGET_H__
 
 #include "gxkutils.h"
 
 G_BEGIN_DECLS
 
 /* --- structures --- */
-#define GXK_GADGET    G_OBJECT
-#define GXK_IS_GADGET G_IS_OBJECT
-typedef void          GxkGadget;
-typedef struct _GxkGadgetArgs GxkGadgetArgs;
+#define GXK_RADGET    G_OBJECT
+#define GXK_IS_RADGET G_IS_OBJECT
+typedef void          GxkRadget;
+typedef struct _GxkRadgetArgs GxkRadgetArgs;
 
 
-/* --- gadget args (aggregation of (name, value) pairs) --- */
-GxkGadgetArgs* gxk_gadget_args          (const gchar         *name1,
+/* --- radget args (aggregation of (name, value) pairs) --- */
+GxkRadgetArgs* gxk_radget_args          (const gchar         *name1,
                                          ...);
-GxkGadgetArgs* gxk_gadget_args_valist   (const gchar         *name1,
+GxkRadgetArgs* gxk_radget_args_valist   (const gchar         *name1,
                                          va_list              var_args);
-GxkGadgetArgs* gxk_gadget_const_args    (void); /* based on intern_string values */
-GxkGadgetArgs* gxk_gadget_args_set      (GxkGadgetArgs       *args,
+GxkRadgetArgs* gxk_radget_const_args    (void); /* based on intern_string values */
+GxkRadgetArgs* gxk_radget_args_set      (GxkRadgetArgs       *args,
                                          const gchar         *name,
                                          const gchar         *value);
-const gchar*   gxk_gadget_args_get      (const GxkGadgetArgs *args,
+const gchar*   gxk_radget_args_get      (const GxkRadgetArgs *args,
                                          const gchar         *name);
-GxkGadgetArgs* gxk_gadget_args_merge    (GxkGadgetArgs       *dest,
-                                         const GxkGadgetArgs *source);
-void           gxk_gadget_free_args     (GxkGadgetArgs       *args);
+GxkRadgetArgs* gxk_radget_args_merge    (GxkRadgetArgs       *dest,
+                                         const GxkRadgetArgs *source);
+void           gxk_radget_free_args     (GxkRadgetArgs       *args);
 
 
-/* --- gadget functions --- */
-GxkGadget*    gxk_gadget_create         (const gchar        *domain_name,
+/* --- radget functions --- */
+GxkRadget*    gxk_radget_create         (const gchar        *domain_name,
                                          const gchar        *name,
                                          const gchar        *var1,
                                          ...);
-GxkGadget*    gxk_gadget_complete       (GxkGadget          *gadget,
+GxkRadget*    gxk_radget_complete       (GxkRadget          *radget,
                                          const gchar        *domain_name,
                                          const gchar        *name,
                                          const gchar        *var1,
                                          ...);
-GxkGadget*    gxk_gadget_creator        (GxkGadget          *gadget,
+GxkRadget*    gxk_radget_creator        (GxkRadget          *radget,
                                          const gchar        *domain_name,
                                          const gchar        *name,
-                                         GxkGadget          *parent,
-                                         GSList             *call_args, /* const GxkGadgetArgs* */
-                                         GSList             *env_args); /* const GxkGadgetArgs* */
-const gchar*  gxk_gadget_get_domain     (GxkGadget          *gadget);
-void          gxk_gadget_parse          (const gchar        *domain_name,
+                                         GxkRadget          *parent,
+                                         GSList             *call_args, /* const GxkRadgetArgs* */
+                                         GSList             *env_args); /* const GxkRadgetArgs* */
+const gchar*  gxk_radget_get_domain     (GxkRadget          *radget);
+void          gxk_radget_parse          (const gchar        *domain_name,
                                          const gchar        *file_name,
                                          const gchar        *i18n_domain,
                                          GError            **error);
-void          gxk_gadget_parse_text     (const gchar        *domain_name,
+void          gxk_radget_parse_text     (const gchar        *domain_name,
                                          const gchar        *text,
                                          gint                text_len,
                                          const gchar        *i18n_domain,
                                          GError            **error);
-gpointer      gxk_gadget_find           (GxkGadget          *gadget,
+gpointer      gxk_radget_find           (GxkRadget          *radget,
                                          const gchar        *name);
-gpointer      gxk_gadget_find_area      (GxkGadget          *gadget,
+gpointer      gxk_radget_find_area      (GxkRadget          *radget,
                                          const gchar        *area);
-void          gxk_gadget_add            (GxkGadget          *gadget,
+void          gxk_radget_add            (GxkRadget          *radget,
                                          const gchar        *area,
                                          gpointer            widget);
-void          gxk_gadget_sensitize      (GxkGadget          *gadget,
+void          gxk_radget_sensitize      (GxkRadget          *radget,
                                          const gchar        *name,
                                          gboolean            sensitive);
 
 
-/* --- gadget types --- */
-typedef struct GxkGadgetData GxkGadgetData;
+/* --- radget types --- */
+typedef struct GxkRadgetData GxkRadgetData;
 typedef struct {
-  GxkGadget*  (*create)    (GType               type,
+  GxkRadget*  (*create)    (GType               type,
                             const gchar        *name,
-                            GxkGadgetData      *gdgdata);
-  GParamSpec* (*find_prop) (GxkGadget          *gadget,
+                            GxkRadgetData      *gdgdata);
+  GParamSpec* (*find_prop) (GxkRadget          *radget,
                             const gchar        *prop_name);
-  void        (*set_prop)  (GxkGadget          *gadget,
+  void        (*set_prop)  (GxkRadget          *radget,
                             const gchar        *prop_name,
                             const GValue       *value);
-  gboolean    (*adopt)     (GxkGadget          *gadget,
-                            GxkGadget          *parent,
-                            GxkGadgetData      *gdgdata);
-  GParamSpec* (*find_pack) (GxkGadget          *gadget,
+  gboolean    (*adopt)     (GxkRadget          *radget,
+                            GxkRadget          *parent,
+                            GxkRadgetData      *gdgdata);
+  GParamSpec* (*find_pack) (GxkRadget          *radget,
                             const gchar        *pack_name);
-  void        (*set_pack)  (GxkGadget          *gadget,
+  void        (*set_pack)  (GxkRadget          *radget,
                             const gchar        *pack_name,
                             const GValue       *value);
-} GxkGadgetType;
-void           gxk_gadget_define_widget_type     (GType                type);
-void           gxk_gadget_define_type            (GType                type,
-                                                  const GxkGadgetType *ggtype);
-gboolean       gxk_gadget_type_lookup            (GType                type,
-                                                  GxkGadgetType       *ggtype);
-GxkGadgetArgs* gxk_gadget_data_copy_call_args    (GxkGadgetData       *gdgdata);
-GxkGadget*     gxk_gadget_data_get_scope_gadget  (GxkGadgetData       *gdgdata);
+} GxkRadgetType;
+void           gxk_radget_define_widget_type     (GType                type);
+void           gxk_radget_define_type            (GType                type,
+                                                  const GxkRadgetType *ggtype);
+gboolean       gxk_radget_type_lookup            (GType                type,
+                                                  GxkRadgetType       *ggtype);
+GxkRadgetArgs* gxk_radget_data_copy_call_args    (GxkRadgetData       *gdgdata);
+GxkRadget*     gxk_radget_data_get_scope_radget  (GxkRadgetData       *gdgdata);
 
 G_END_DECLS
 
-#endif /* __GXK_GADGET_H__ */
+#endif /* __GXK_RADGET_H__ */

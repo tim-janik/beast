@@ -401,13 +401,13 @@ bst_track_view_init (BstTrackView *self)
   GtkTreeSelection *tsel;
   GtkTreeModel *smodel;
   GxkListWrapper *lwrapper;
-  GxkGadget *gadget;
+  GxkRadget *radget;
 
   /* create GUI */
   gxk_widget_publish_actions (self, "track-view-actions",
                               G_N_ELEMENTS (track_view_actions), track_view_actions,
                               NULL, track_view_action_check, track_view_action_exec);
-  gadget = gxk_gadget_complete (GTK_WIDGET (self), "beast", "track-view", NULL);
+  radget = gxk_radget_complete (GTK_WIDGET (self), "beast", "track-view", NULL);
 
   /* item list model */
   lwrapper = gxk_list_wrapper_new (N_COLS,
@@ -427,12 +427,12 @@ bst_track_view_init (BstTrackView *self)
   g_object_unref (lwrapper);
   
   /* scrollbars */
-  treehs = gxk_gadget_find (gadget, "tree-hscrollbar");
-  trackhs = gxk_gadget_find (gadget, "track-hscrollbar");
-  vscroll = gxk_gadget_find (gadget, "tree-vscrollbar");
+  treehs = gxk_radget_find (radget, "tree-hscrollbar");
+  trackhs = gxk_radget_find (radget, "track-hscrollbar");
+  vscroll = gxk_radget_find (radget, "tree-vscrollbar");
   
   /* tree view (track list) */
-  tview = gxk_gadget_find (gadget, "tree-view");
+  tview = gxk_radget_find (radget, "tree-view");
   gtk_tree_view_set_model (tview, smodel);
   bst_item_view_set_tree (iview, tview);
   gtk_tree_view_set_hadjustment (iview->tree, gtk_range_get_adjustment (GTK_RANGE (treehs)));
@@ -445,7 +445,7 @@ bst_track_view_init (BstTrackView *self)
   /* track roll */
   self->troll = g_object_new (BST_TYPE_TRACK_ROLL,
                               "visible", TRUE,
-			      "parent", gxk_gadget_find (gadget, "track-area"),
+			      "parent", gxk_radget_find (radget, "track-area"),
 			      NULL);
   gxk_nullify_in_object (self, &self->troll);
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->troll), gtk_range_get_adjustment (GTK_RANGE (trackhs)));
@@ -475,7 +475,7 @@ bst_track_view_init (BstTrackView *self)
   gxk_widget_publish_action_list (self, "tctrl-quant-tools", bst_track_roll_controller_quant_actions (self->tctrl));
   
   /* add repeat toggle */
-  self->repeat_toggle = gxk_gadget_find (gadget, "repeat-toggle");
+  self->repeat_toggle = gxk_radget_find (radget, "repeat-toggle");
   gxk_nullify_in_object (self, &self->repeat_toggle);
   g_object_connect (self->repeat_toggle, "swapped_signal::toggled", track_view_repeat_toggled, self, NULL);
   track_view_repeat_changed (self);
@@ -485,7 +485,7 @@ bst_track_view_init (BstTrackView *self)
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", track_view_hzoom_changed, self,
 		    NULL);
-  gxk_gadget_add (self, "hzoom-area",
+  gxk_radget_add (self, "hzoom-area",
                   g_object_new (GTK_TYPE_SPIN_BUTTON,
                                 "visible", TRUE,
                                 "adjustment", adjustment,

@@ -45,7 +45,7 @@ struct _BstApp
 
   GxkParam       *wave_file;
 
-  GxkGadget      *box;
+  GxkRadget      *box;
   GtkNotebook    *notebook;
 
   GtkWidget      *rack_dialog;

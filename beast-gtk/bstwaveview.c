@@ -65,12 +65,12 @@ bst_wave_view_init (BstWaveView *self)
 {
   BstItemView *iview = BST_ITEM_VIEW (self);
   /* complete GUI */
-  GxkGadget *gadget = gxk_gadget_complete (GTK_WIDGET (self), "beast", "wave-view", NULL);
+  GxkRadget *radget = gxk_radget_complete (GTK_WIDGET (self), "beast", "wave-view", NULL);
   gxk_widget_publish_actions (self, "wave-view-actions",
                               G_N_ELEMENTS (wave_view_actions), wave_view_actions,
                               NULL, wave_view_action_check, wave_view_action_exec);
   /* setup tree view */
-  GtkTreeView *tview = gxk_gadget_find (gadget, "tree-view");
+  GtkTreeView *tview = gxk_radget_find (radget, "tree-view");
   bst_item_view_complete_tree (iview, tview);
   /* prime locals */
   self->editable = TRUE;
