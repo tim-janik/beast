@@ -1,3 +1,15 @@
+Mon Aug  5 11:21:11 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.[hc]: renamed bst_wrap_text_*() to
+	bst_text_view_*().
+	unfortunately, bst_text_view_from() still creates a GtkText widget
+	as opposed to the other bst_text_view_*() functions which deal with
+	GtkTextView already. that is because GtkTextView is simply still too
+	broken to correctly display Release-Notes and similar important stuff.
+
+	* beast-gtk/bstapp.c (bst_app_operate): we should use "mono" for fixed
+	font text views.
+
 Sun Aug  4 12:27:54 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstwaveeditor.c: update playback position slider.

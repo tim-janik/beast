@@ -766,7 +766,7 @@ bst_app_operate (BstApp *app,
 								   help_title,
 								   bst_text_view_from (help_string,
 										       help_file,
-										       "monospace"));
+										       "mono"));
       g_free (help_file);
       if (help_string)
 	g_string_free (help_string, TRUE);

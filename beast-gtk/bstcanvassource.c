@@ -354,65 +354,65 @@ csource_info_update (BstCanvasSource *csource)
       guint i;
 
       /* construct information */
-      bst_wrap_text_clear (text);
-      bst_wrap_text_aprintf (text, "%s (%s):\n",
+      bst_text_view_clear (text);
+      bst_text_view_aprintf (text, "%s (%s):\n",
 			     bsw_item_get_name_or_type (csource->source),
 			     bsw_item_get_type_name (csource->source));
 
       /* input channels */
       if (bsw_source_n_ichannels (csource->source))
 	{
-	  bst_wrap_text_aprintf (text, "\nInput Channels:\n");
-	  bst_wrap_text_push_indent (text, "  ");
+	  bst_text_view_aprintf (text, "\nInput Channels:\n");
+	  bst_text_view_push_indent (text, "  ");
 	}
       for (i = 0; i < bsw_source_n_ichannels (csource->source); i++)
 	{
           string = bsw_source_ichannel_blurb (csource->source, i);
-	  bst_wrap_text_aprintf (text, "%s[%s]%s\n",
+	  bst_text_view_aprintf (text, "%s[%s]%s\n",
 				 bsw_source_ichannel_name (csource->source, i),
 				 bsw_source_ichannel_cname (csource->source, i),
 				 string ? ":" : "");
 	  if (string)
 	    {
-	      bst_wrap_text_push_indent (text, "  ");
-	      bst_wrap_text_aprintf (text, "%s\n", string);
-	      bst_wrap_text_pop_indent (text);
+	      bst_text_view_push_indent (text, "  ");
+	      bst_text_view_aprintf (text, "%s\n", string);
+	      bst_text_view_pop_indent (text);
 	    }
 	}
       if (bsw_source_n_ichannels (csource->source))
-	bst_wrap_text_pop_indent (text);
+	bst_text_view_pop_indent (text);
 
       /* output channels */
       if (bsw_source_n_ochannels (csource->source))
 	{
-	  bst_wrap_text_aprintf (text, "\nOutput Channels:\n");
-	  bst_wrap_text_push_indent (text, "  ");
+	  bst_text_view_aprintf (text, "\nOutput Channels:\n");
+	  bst_text_view_push_indent (text, "  ");
 	}
       for (i = 0; i < bsw_source_n_ochannels (csource->source); i++)
 	{
 	  string = bsw_source_ochannel_blurb (csource->source, i);
-	  bst_wrap_text_aprintf (text, "%s[%s]%s\n",
+	  bst_text_view_aprintf (text, "%s[%s]%s\n",
 				 bsw_source_ochannel_name (csource->source, i),
 				 bsw_source_ochannel_cname (csource->source, i),
 				 string ? ":" : "");
           if (string)
 	    {
-	      bst_wrap_text_push_indent (text, "  ");
-	      bst_wrap_text_aprintf (text, "%s\n", string);
-	      bst_wrap_text_pop_indent (text);
+	      bst_text_view_push_indent (text, "  ");
+	      bst_text_view_aprintf (text, "%s\n", string);
+	      bst_text_view_pop_indent (text);
 	    }
 	}
       if (bsw_source_n_ochannels (csource->source))
-	bst_wrap_text_pop_indent (text);
+	bst_text_view_pop_indent (text);
 
       /* description */
       string = bsw_item_get_type_blurb (csource->source);
       if (string)
 	{
-	  bst_wrap_text_aprintf (text, "\nDescription:\n");
-	  bst_wrap_text_push_indent (text, "  ");
-	  bst_wrap_text_aprintf (text, "%s\n", string);
-	  bst_wrap_text_pop_indent (text);
+	  bst_text_view_aprintf (text, "\nDescription:\n");
+	  bst_text_view_push_indent (text, "  ");
+	  bst_text_view_aprintf (text, "%s\n", string);
+	  bst_text_view_pop_indent (text);
 	}
     }
 }
@@ -432,7 +432,7 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 							     "visible", TRUE,
 							     "border_width", 5,
 							     "label", "Module Info",
-							     "child", bst_wrap_text_create (FALSE, NULL),
+							     "child", bst_text_view_create (0, NULL),
 							     NULL));
       g_object_set (csource->source_info,
 		    "default_width", 320,
@@ -742,8 +742,8 @@ bst_canvas_source_build (BstCanvasSource *csource)
 							   "justification", GTK_JUSTIFY_CENTER,
 							   "x", TEXT_X,
 							   "y", TEXT_Y,
-							   // "font", "Serif 12",
-							   "font", "Sans 12",
+							   "font", "Serif 10",
+							   // "font", "Sans 12",
 							   NULL),
 				    "signal::destroy", gtk_widget_destroyed, &csource->text,
 				    "swapped_signal::event", bst_canvas_source_child_event, csource,

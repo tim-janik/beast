@@ -5,8 +5,6 @@ RELEASE:
 - disallow creating more than one track as long as playback isn't supported for it
 * add switch to set keytables directly, no-serverquery, which works without rc file
 - support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
-- fix sample seek bar updates
-- fix end of wave osc
 
 FEATURES:
 - Module Menu: add EDIT

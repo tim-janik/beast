@@ -1492,13 +1492,14 @@ bst_widget_modify_bg_as_base (GtkWidget *widget)
     gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_bg_as_base), NULL);
 }
 
+#if 1
 GtkWidget*
 bst_text_view_from (GString     *gstring,
 		    const gchar *file_name,
 		    const gchar *font_name)
 {
   GtkWidget *hbox, *text, *sb;
-  
+
   hbox = gtk_widget_new (GTK_TYPE_HBOX,
 			 "visible", TRUE,
 			 "homogeneous", FALSE,
@@ -1518,13 +1519,17 @@ bst_text_view_from (GString     *gstring,
 			 "height_request", 500,
 			 "parent", hbox,
 			 NULL);
-
-  if (font_name)
+  /* since we still have to use the deprecated GtkText widget, there're
+   * very little possibilities to alter the font displayed.
+   */
+  if (font_name && g_strcasecmp (font_name, "mono") == 0)
     {
-      PangoFontDescription *pfdesc = pango_font_description_from_string (font_name);
-
-      gtk_widget_modify_font (text, pfdesc);
-      pango_font_description_free (pfdesc);
+      PangoFontDescription *cur_fdesc = pango_font_description_copy (text->style->font_desc);
+      PangoFontDescription *alt_fdesc = pango_font_description_from_string ("fixed");
+      pango_font_description_merge (cur_fdesc, alt_fdesc, TRUE);
+      pango_font_description_free (alt_fdesc);
+      gtk_widget_modify_font (text, cur_fdesc);
+      pango_font_description_free (cur_fdesc);
     }
 
   if (gstring)
@@ -1566,6 +1571,56 @@ bst_text_view_from (GString     *gstring,
   
   return hbox;
 }
+#else
+GtkWidget*
+bst_text_view_from (GString     *gstring,
+		    const gchar *file_name,
+		    const gchar *font_name)
+{
+  GtkWidget *wtext;
+
+  wtext = bst_text_view_create (BST_TEXT_VIEW_SHEET_BG | BST_TEXT_VIEW_NO_WRAP, gstring ? gstring->str : NULL);
+
+  if (file_name)
+    {
+      gint fd;
+      
+      fd = open (file_name, O_RDONLY, 0);
+      if (fd >= 0)
+	{
+	  guint n;
+	  
+	  do
+	    {
+	      gchar buffer[512 + 1];
+	      do
+		n = read (fd, buffer, 512);
+	      while (n < 0 && errno == EINTR); /* don't mind signals */
+	      if (n > 0)
+		{
+		  buffer[n] = 0;
+		  bst_text_view_append (wtext, buffer);
+		}
+	    }
+	  while (n > 0);
+	  close (fd);
+	  
+	  if (n < 0)
+	    fd = -1;
+	}
+      if (fd < 0)
+	{
+	  gchar *error;
+	  
+	  error = g_strconcat ("Failed to load \"", file_name, "\":\n", g_strerror (errno), NULL);
+	  bst_text_view_append (wtext, error);
+	  g_free (error);
+	}
+    }
+  
+  return wtext;
+}
+#endif
 
 static void
 style_modify_base_as_bg (GtkWidget *widget)
@@ -1593,137 +1648,6 @@ bst_widget_modify_base_as_bg (GtkWidget *widget)
 					   NULL))
     gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_base_as_bg), NULL);
 }
-
-#if 0
-static void
-tweak_text_resize (GtkText *text)
-{
-  GtkAllocation *allocation = &GTK_WIDGET (text)->allocation;
-  
-  if (text->text_area)
-    gdk_window_move_resize (text->text_area,
-			    0, 0,
-			    allocation->width,
-			    allocation->height);
-  gtk_adjustment_set_value (text->vadj, 0);
-}
-
-GtkWidget*
-old_bst_wrap_text_create (gboolean     duplicate_newlines,
-			  const gchar *string)
-{
-  GtkWidget *text;
-  
-  text = g_object_connect (g_object_new (GTK_TYPE_TEXT,
-					 "visible", TRUE,
-					 "editable", FALSE,
-					 "word_wrap", TRUE,
-					 "line_wrap", TRUE,
-					 "can_focus", FALSE,
-					 NULL),
-			   "signal_after::realize", tweak_text_resize, NULL,
-			   "signal_after::size_allocate", tweak_text_resize, NULL,
-			   NULL);
-  bst_widget_modify_base_as_bg (text);
-  if (duplicate_newlines)
-    g_object_set_data (G_OBJECT (text), "duplicate_newlines", GUINT_TO_POINTER (TRUE));
-  bst_wrap_text_set (text, string);
-  
-  return text;
-}
-
-void
-old_bst_wrap_text_clear (GtkWidget *text)
-{
-  g_return_if_fail (GTK_IS_TEXT (text));
-
-  gtk_editable_delete_text (GTK_EDITABLE (text), 0, -1);
-  gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
-}
-
-void
-old_bst_wrap_text_set (GtkWidget   *text,
-		   const gchar *string)
-{
-  g_return_if_fail (GTK_IS_TEXT (text));
-
-  bst_wrap_text_clear (text);
-  if (string)
-    {
-      GString *gstring = g_string_new (string);
-      
-      if (g_object_get_data (G_OBJECT (text), "duplicate_newlines") != NULL)
-	{
-	  gint i;
-	  
-	  for (i = 0; i < gstring->len; i++)
-	    if (gstring->str[i] == '\n')
-	      g_string_insert_c (gstring, i++, '\n');
-	}
-      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
-      g_string_free (gstring, TRUE);
-    }
-  gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
-}
-
-void
-old_bst_wrap_text_aprintf (GtkWidget   *text,
-		       const gchar *text_fmt,
-		       ...)
-{
-  g_return_if_fail (GTK_IS_TEXT (text));
-
-  if (text_fmt)
-    {
-      va_list args;
-      gchar *buffer;
-      
-      va_start (args, text_fmt);
-      buffer = g_strdup_vprintf (text_fmt, args);
-      va_end (args);
-
-      bst_wrap_text_append (text, buffer);
-      g_free (buffer);
-    }
-}
-
-void
-old_bst_wrap_text_push_indent (GtkWidget   *text,
-			   const gchar *spaces)
-{
-  bst_wrap_text_append (text, spaces);
-}
-
-void
-old_bst_wrap_text_pop_indent (GtkWidget *text)
-{
-}
-
-void
-old_bst_wrap_text_append (GtkWidget   *text,
-		      const gchar *string)
-{
-  g_return_if_fail (GTK_IS_TEXT (text));
-  
-  if (string)
-    {
-      GString *gstring = g_string_new (string);
-      
-      if (g_object_get_data (G_OBJECT (text), "duplicate_newlines") != NULL)
-	{
-	  gint i;
-	  
-	  for (i = 0; i < gstring->len; i++)
-	    if (gstring->str[i] == '\n')
-	      g_string_insert_c (gstring, i++, '\n');
-	}
-      gtk_text_set_point (GTK_TEXT (text), gtk_text_get_length (GTK_TEXT (text)));
-      gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
-      g_string_free (gstring, TRUE);
-    }
-  gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
-}
-#endif
 
 static void
 text_view_append (GtkTextView *view,
@@ -1764,17 +1688,18 @@ text_view_append (GtkTextView *view,
   gtk_text_view_get_iter_at_location (view, &iter, 0, 0);
   gtk_text_buffer_move_mark (buffer, mark, &iter);
 
-  gtk_text_view_scroll_to_mark (view, mark, 0, TRUE, 0, 0);
+  // gtk_text_view_scroll_to_mark (view, mark, 0, TRUE, 0, 0);
+  gtk_text_view_scroll_mark_onscreen (view, mark);
 }
 
 GtkWidget*
-bst_wrap_text_create (gboolean     center,
-		      const gchar *string)
+bst_text_view_create (BstTextViewFlags flags,
+		      const gchar     *string)
 {
   GtkWidget *tview, *text_view;
   GtkTextBuffer *buffer;
   GtkTextIter iter;
-  
+
   tview = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
 			"visible", TRUE,
 			"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -1784,24 +1709,25 @@ bst_wrap_text_create (gboolean     center,
 			    "visible", TRUE,
 			    "editable", FALSE,
 			    "cursor_visible", FALSE,
-			    "wrap_mode", GTK_WRAP_WORD,
+			    "wrap_mode", flags & BST_TEXT_VIEW_NO_WRAP ? GTK_WRAP_NONE : GTK_WRAP_WORD,
 			    "parent", tview,
-			    !center ? NULL : "justification", GTK_JUSTIFY_CENTER,
+			    "justification", flags & BST_TEXT_VIEW_CENTER ? GTK_JUSTIFY_CENTER : GTK_JUSTIFY_LEFT,
 			    NULL);
-  bst_widget_modify_base_as_bg (text_view);
+  if (!(flags & BST_TEXT_VIEW_SHEET_BG))
+    bst_widget_modify_base_as_bg (text_view);
 
   buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view));
   gtk_text_buffer_get_start_iter (buffer, &iter);
   gtk_text_buffer_create_mark (buffer, "imark", &iter, TRUE);
 
   if (string)
-    bst_wrap_text_append (tview, string);
+    bst_text_view_append (tview, string);
   
   return tview;
 }
 
 void
-bst_wrap_text_clear (GtkWidget *tview)
+bst_text_view_clear (GtkWidget *tview)
 {
   GtkTextView *view;
   GtkTextBuffer *buffer;
@@ -1819,18 +1745,18 @@ bst_wrap_text_clear (GtkWidget *tview)
 }
 
 void
-bst_wrap_text_set (GtkWidget   *tview,
+bst_text_view_set (GtkWidget   *tview,
 		   const gchar *string)
 {
   g_return_if_fail (GTK_IS_SCROLLED_WINDOW (tview));
 
-  bst_wrap_text_clear (tview);
+  bst_text_view_clear (tview);
   if (string)
-    bst_wrap_text_append (tview, string);
+    bst_text_view_append (tview, string);
 }
 
 void
-bst_wrap_text_append (GtkWidget   *tview,
+bst_text_view_append (GtkWidget   *tview,
 		      const gchar *string)
 {
   GtkTextView *view;
@@ -1843,7 +1769,7 @@ bst_wrap_text_append (GtkWidget   *tview,
 }
 
 void
-bst_wrap_text_aprintf (GtkWidget   *tview,
+bst_text_view_aprintf (GtkWidget   *tview,
 		       const gchar *text_fmt,
 		       ...)
 {
@@ -1858,13 +1784,13 @@ bst_wrap_text_aprintf (GtkWidget   *tview,
       buffer = g_strdup_vprintf (text_fmt, args);
       va_end (args);
 
-      bst_wrap_text_append (tview, buffer);
+      bst_text_view_append (tview, buffer);
       g_free (buffer);
     }
 }
 
 void
-bst_wrap_text_push_indent (GtkWidget   *tview,
+bst_text_view_push_indent (GtkWidget   *tview,
 			   const gchar *spaces)
 {
   GtkTextView *view;
@@ -1878,7 +1804,7 @@ bst_wrap_text_push_indent (GtkWidget   *tview,
 }
 
 void
-bst_wrap_text_pop_indent (GtkWidget *tview)
+bst_text_view_pop_indent (GtkWidget *tview)
 {
   GtkTextView *view;
   guint indent;

@@ -192,30 +192,30 @@ clink_view_update (BstCanvasLink *clink,
 	ic_name = "?";
 
       /* compose new info */
-      bst_wrap_text_clear (text);
-      bst_wrap_text_aprintf (text, "Source Module:\n");
-      bst_wrap_text_push_indent (text, "  ");
+      bst_text_view_clear (text);
+      bst_text_view_aprintf (text, "Source Module:\n");
+      bst_text_view_push_indent (text, "  ");
       if (oc_blurb)
 	{
-	  bst_wrap_text_aprintf (text, "%s: %s:\n", oname, oc_name);
-	  bst_wrap_text_push_indent (text, "  ");
-	  bst_wrap_text_aprintf (text, "%s\n", oc_blurb);
-	  bst_wrap_text_pop_indent (text);
+	  bst_text_view_aprintf (text, "%s: %s:\n", oname, oc_name);
+	  bst_text_view_push_indent (text, "  ");
+	  bst_text_view_aprintf (text, "%s\n", oc_blurb);
+	  bst_text_view_pop_indent (text);
 	}
       else
-	bst_wrap_text_aprintf (text, "%s: %s\n", oname, oc_name);
-      bst_wrap_text_pop_indent (text);
-      bst_wrap_text_aprintf (text, "\nDestination Module:\n");
-      bst_wrap_text_push_indent (text, "  ");
+	bst_text_view_aprintf (text, "%s: %s\n", oname, oc_name);
+      bst_text_view_pop_indent (text);
+      bst_text_view_aprintf (text, "\nDestination Module:\n");
+      bst_text_view_push_indent (text, "  ");
       if (ic_blurb)
 	{
-	  bst_wrap_text_aprintf (text, "%s: %s:\n", iname, ic_name);
-	  bst_wrap_text_push_indent (text, "  ");
-	  bst_wrap_text_aprintf (text, "%s\n", ic_blurb);
-	  bst_wrap_text_pop_indent (text);
+	  bst_text_view_aprintf (text, "%s: %s:\n", iname, ic_name);
+	  bst_text_view_push_indent (text, "  ");
+	  bst_text_view_aprintf (text, "%s\n", ic_blurb);
+	  bst_text_view_pop_indent (text);
 	}
       else
-	bst_wrap_text_aprintf (text, "%s: %s\n", iname, ic_name);
+	bst_text_view_aprintf (text, "%s: %s\n", iname, ic_name);
     }
 }
 
@@ -233,7 +233,7 @@ bst_canvas_link_popup_view (BstCanvasLink *clink)
 						       "visible", TRUE,
 						       "border_width", 5,
 						       "label", "Module link",
-						       "child", bst_wrap_text_create (FALSE, NULL),
+						       "child", bst_text_view_create (0, NULL),
 						       NULL));
   clink_view_update (clink, TRUE);
   gtk_widget_showraise (clink->link_view);

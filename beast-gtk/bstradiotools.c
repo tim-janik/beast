@@ -413,12 +413,12 @@ toggle_apply_blurb (GtkToggleButton *toggle,
 
   if (tool_id == blurb_id && !toggle->active)
     {
-      bst_wrap_text_set (text, NULL);
+      bst_text_view_set (text, NULL);
       g_object_set_data (G_OBJECT (text), "user_data", GUINT_TO_POINTER (~0));
     }
   else if (toggle->active && tool_id != blurb_id)
     {
-      bst_wrap_text_set (text, gtk_object_get_data (GTK_OBJECT (toggle), "blurb"));
+      bst_text_view_set (text, gtk_object_get_data (GTK_OBJECT (toggle), "blurb"));
       g_object_set_data (G_OBJECT (text), "user_data", tool_id);
     }
 }
@@ -445,7 +445,7 @@ bst_radio_tools_build_palette (BstRadioTools *rtools,
   gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, TRUE, 0);
   if (show_descriptions)
     {
-      text = bst_wrap_text_create (FALSE, NULL);
+      text = bst_text_view_create (0, NULL);
       g_object_set_data (G_OBJECT (text), "user_data", GUINT_TO_POINTER (~0));
       gtk_widget_ref (text);
       gtk_object_sink (GTK_OBJECT (text));

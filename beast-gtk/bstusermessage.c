@@ -119,7 +119,7 @@ update_dialog (BstDialog     *dialog,
 				    "yalign", 0.5,
 				    "xscale", 1.0,
 				    "yscale", 0.75,
-				    "child", bst_wrap_text_create (TRUE, message),
+				    "child", bst_text_view_create (BST_TEXT_VIEW_CENTER, message),
 				    NULL),
 		      TRUE, TRUE, 5);
   g_free (xmessage);	/* grrr, the new text widget is still enormously buggy */
