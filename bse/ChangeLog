@@ -1,3 +1,8 @@
+Sun Dec 26 19:23:05 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* gslloader-pat.cc: Fixes/Code cleanups: the deinitialization
+	code (freeing, closing files and so on) should work now.
+
 Sun Dec 26 13:04:02 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslwaveosc-aux.c: Fix ping pong looping: the code now should behave
@@ -5,7 +10,7 @@ Sun Dec 26 13:04:02 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 Sat Dec 25 17:14:15 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
-	* gslloader-pat.cc: Handle format field correclty (support 8bit and
+	* gslloader-pat.cc: Handle format field correctly (support 8bit and
 	unsigned samples). Fix bug in tuning.
 
 Fri Dec 24 22:39:48 2004  Tim Janik  <timj@gtk.org>

@@ -108,18 +108,18 @@ namespace
 
   struct PatHeader
   {
-    char id[12];					/* ID='GF1PATCH110' */
-    char manufacturer_id[10];		/* Manufacturer ID */
-    char description[60];			/* Description of the contained Instruments
-					       or copyright of manufacturer. */
-    byte instruments;				/* Number of instruments in this patch */
-    byte voices;					/* Number of voices for sample */
-    byte channels;					/* Number of output channels
-						       (1=mono,2=stereo) */
-    word waveforms;					/* Number of waveforms */
-    word mastervolume;				/* Master volume for all samples */
-    dword size;						/* Size of the following data */
-    char reserved[36];				/* reserved */
+    char id[12];		  /* ID='GF1PATCH110' */
+    char manufacturer_id[10];	  /* Manufacturer ID */
+    char description[60];	  /* Description of the contained Instruments
+				     or copyright of manufacturer. */
+    byte instruments;		  /* Number of instruments in this patch */
+    byte voices;		  /* Number of voices for sample */
+    byte channels;		  /* Number of output channels
+				     (1=mono,2=stereo) */
+    word waveforms;		  /* Number of waveforms */
+    word mastervolume;		  /* Master volume for all samples */
+    dword size;			  /* Size of the following data */
+    char reserved[36];		  /* reserved */
 
     PatHeader(FILE *file)
     {
@@ -144,14 +144,14 @@ namespace
   {
     word	number;
     char	name[16];
-    dword 	size;					/* Size of the whole instrument in bytes. */
+    dword 	size;		  /* Size of the whole instrument in bytes. */
     byte	layers;
     char	reserved[40];
 
     /* layer? */
     word	layerUnknown;
     dword	layerSize;
-    byte	sampleCount;			/* number of samples in this layer (?) */
+    byte	sampleCount;	  /* number of samples in this layer (?) */
     char	layerReserved[40];
 
     PatInstrument(FILE *file)
@@ -175,15 +175,17 @@ namespace
     PAT_FORMAT_UNSIGNED = (1 << 1),
     PAT_FORMAT_LOOPED = (1 << 2),
     PAT_FORMAT_LOOP_BIDI = (1 << 3),
-    PAT_FORMAT_LOOP_BACKWARDS = (1 << 4)
+    PAT_FORMAT_LOOP_BACKWARDS = (1 << 4),
+    PAT_FORMAT_SUSTAIN = (1 << 5),
+    PAT_FORMAT_ENVELOPE = (1 << 6),
+    PAT_FORMAT_CLAMPED = (1 << 7) // timidity source says: ? (for last envelope??)
   };
 
   struct PatPatch
   {
-    char	filename[7];			/* Wave file name */
-    byte	fractions;				/* Fractions */
-    dword	wavesize;				/* Wave size.
-						       Size of the wave digital data */
+    char	filename[7];	  /* Wave file name */
+    byte	fractions;	  /* Fractions */
+    dword	wavesize;	  /* Wave size: Size of the wave digital data */
     dword	loopStart;
     dword	loopEnd;
     word	sampleRate;
@@ -243,7 +245,6 @@ struct FileInfo
 {
   GslWaveFileInfo wfi;
   GslWaveDsc      wdsc;
-  GslErrorType    error;
 
   PatHeader          *header;
   PatInstrument      *instrument;
@@ -304,16 +305,26 @@ struct FileInfo
     return ((wave_format & PAT_FORMAT_16BIT) ? 2 : 1) * header->channels;
   }
 
-  FileInfo (FILE *patfile, const gchar *file_name)
+  FileInfo (const gchar *file_name, GslErrorType *error_p)
   {
-    /* parse contents of patfile into Pat* data structurs */
+    /* initialize C structures with zeros */
+    memset (&wfi, 0, sizeof (wfi));
+    memset (&wdsc, 0, sizeof (wdsc));
 
+    /* open patch file */
+    FILE *patfile = fopen (file_name, "r");
+    if (!patfile)
+      {
+	*error_p = gsl_error_from_errno (errno, GSL_ERROR_IO);
+	return;
+      }
+
+    /* parse contents of patfile into Pat* data structurs */
     header = new PatHeader (patfile);
     if (header->channels == 0) /* fixup channels setting */
       header->channels = 1;
 
     instrument = new PatInstrument (patfile);
-
     for (int i = 0; i<instrument->sampleCount; i++)
       {
 	PatPatch *patch = new PatPatch (patfile);
@@ -323,17 +334,17 @@ struct FileInfo
 
 	printf (" - read patch, srate = %d (%d bytes)\n", patch->sampleRate, patch->wavesize);
       }
+    *error_p = GSL_ERROR_NONE; /* FIXME: more error handling might be useful */
+    fclose (patfile);
 
     /* allocate and fill appropriate Gsl* data structures */
 
     /* fill GslWaveFileInfo */
-    memset (&wfi, 0, sizeof (wfi));
     wfi.n_waves = 1;
     wfi.waves = (typeof (wfi.waves)) g_malloc0 (sizeof (wfi.waves[0]) * wfi.n_waves);
     wfi.waves[0].name = g_strdup (file_name);
 
     /* fill GslWaveDsc */
-    memset (&wdsc, 0, sizeof (wdsc));
     wdsc.name = g_strdup (file_name);
     wdsc.n_chunks = instrument->sampleCount;
     wdsc.chunks = (typeof (wdsc.chunks)) g_malloc0 (sizeof (wdsc.chunks[0]) * wdsc.n_chunks);
@@ -363,16 +374,27 @@ struct FileInfo
 			      patches[i]->wavesize / frame_size,
 			      wdsc.chunks[i].loop_type);
       }
-
-    error = GSL_ERROR_NONE; /* FIXME: more error handling might be useful */
   }
 
   ~FileInfo()
   {
-    delete header;
+    /* free patch data loaded from file */
+    vector<PatPatch *>::iterator pi;
+    for (pi = patches.begin(); pi != patches.end(); pi++)
+      delete *pi;
     delete instrument;
+    delete header;
 
-    g_free (wfi.waves);
+    /* free GslWaveDsc */
+    g_free (wdsc.name);
+    g_free (wdsc.chunks);
+
+    /* free GslWaveFileInfo */
+    if (wfi.waves)
+      {
+	g_free (wfi.waves[0].name);
+	g_free (wfi.waves);
+      }
   }
 };
 
@@ -381,18 +403,8 @@ pat_load_file_info (gpointer      data,
 		    const gchar  *file_name,
 		    GslErrorType *error_p)
 {
-  printf ("pat: LFI: %s\n", file_name);
-  FILE *patfile = fopen (file_name, "r");
-  if (!patfile)
-    {
-      *error_p = gsl_error_from_errno (errno, GSL_ERROR_IO);
-      return NULL;
-    }
-
-  FileInfo *file_info = new FileInfo (patfile, file_name);
-  *error_p = file_info->error;
-
-  if (file_info->error)
+  FileInfo *file_info = new FileInfo (file_name, error_p);
+  if (*error_p)
     {
       delete file_info;
       return NULL;
@@ -416,7 +428,6 @@ pat_load_wave_dsc (gpointer         data,
 		   GslErrorType    *error_p)
 {
   FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_file_info);
-  printf ("pat: LWD: %p (%d)\n", file_info, nth_wave);
   return &file_info->wdsc;
 }
 
@@ -432,14 +443,13 @@ pat_create_chunk_handle (gpointer      data,
 			 guint         nth_chunk,
 			 GslErrorType *error_p)
 {
-  printf ("cch %d\n", nth_chunk);
-  FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
-  GslDataHandle *dhandle;
-
   g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
 
+  FileInfo *file_info = reinterpret_cast<FileInfo*> (wave_dsc->file_info);
   PatPatch *patch = file_info->patches[nth_chunk];
-  printf ("gsl_wave_handle_new %s %d %d %d %f %f %ld %d\n",
+
+  printf ("pat loader chunk %d: gsl_wave_handle_new %s %d %d %d %f %f %ld %d\n",
+          nth_chunk,
 	  file_info->wfi.file_name,
 	  wave_dsc->n_channels,
 	  file_info->wave_format (patch->waveFormat),
@@ -449,6 +459,7 @@ pat_create_chunk_handle (gpointer      data,
 	  file_info->data_offsets[nth_chunk],
 	  patch->wavesize / file_info->bytes_per_frame (patch->waveFormat));
 
+  GslDataHandle *dhandle;
   dhandle = gsl_wave_handle_new (file_info->wfi.file_name,
 	                         wave_dsc->n_channels,
 				 file_info->wave_format (file_info->patches[nth_chunk]->waveFormat),
