@@ -1,3 +1,22 @@
+Fri Feb 27 07:08:55 2004  Tim Janik  <timj@gtk.org>
+
+	* launchers/Makefile.am: build beast and bsesh suid wrappers.
+
+	* launchers/beaststart.c: build versioned beast executable name.
+	* launchers/bseshstart.c: build versioned bsesh executable name.
+
+	* launchers/suidmain.c: figure executable name via
+	custom_find_executable() function, after dropping privileges.
+	* launchers/suidmain.h: prototype custom_find_executable().
+
+	* bse/bseconfig.h.in:
+	* configure.in: fix BSE_VERSION vs. BST_VERSION.
+
+	* beast-gtk/suidmain.c: removed
+	* beast-gtk/Makefile.am: don't build beast suidwrapper here.
+
+	* shell/Makefile.am: don't build bsesh suidwrapper here.
+
 Fri Feb 27 06:48:41 2004  Tim Janik  <timj@gtk.org>
 
 	* launchers/suidmain.c: CVS copied here from beast-gtk/.

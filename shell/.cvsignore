@@ -4,4 +4,3 @@ Makefile
 Makefile.in
 suidmain-tmp.c
 bsesh-0.*.*
-bsesh

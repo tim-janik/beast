@@ -15,6 +15,8 @@
  * otherwise) arising in any way out of the use of this software, even
  * if advised of the possibility of such damage.
  */
+#include "topconfig.h"  /* holds HAVE_SETEUID etc... */
+#include "suidmain.h"
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <unistd.h>
@@ -22,7 +24,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-#include "topconfig.h"  /* holds HAVE_SETEUID etc... */
 
 static int      /* returns 0 for success */
 adjust_priority (void)
@@ -58,8 +59,7 @@ int
 main (int    argc,
       char **argv)
 {
-  /* hardcode executable */
-  static char executable[] = SUIDMAIN_EXECUTABLE "\0";
+  const char *executable = NULL;
 
   int euid = geteuid ();
   int uid = getuid ();
@@ -87,10 +87,13 @@ main (int    argc,
   if (euid == 0 && priority_error)
     fprintf (stderr, "%s: failed to renice process: %s\n", argv[0], strerror (priority_error));
 
+  /* find executable */
+  executable = custom_find_executable (&argc, &argv);
+
   /* exec */
   argv[0] = executable;
   execv (executable, argv);
   /* handle execution errors */
   perror (executable);
-  return 1;
+  return -1;
 }

@@ -117,7 +117,7 @@ AC_DEFUN(AC_I18N_REQUIREMENTS,
     AC_SUBST(ALL_LINGUAS)
 
     dnl versioned BEAST gettext domain (po/)
-    BST_GETTEXT_DOMAIN=beast-v$BSE_VERSION    # version without -rcZ
+    BST_GETTEXT_DOMAIN=beast-v$BST_VERSION    # version without -rcZ
     AC_SUBST(BST_GETTEXT_DOMAIN)
     AC_DEFINE_UNQUOTED(BST_GETTEXT_DOMAIN, "$BST_GETTEXT_DOMAIN", [Versioned BEAST gettext domain])
     GETTEXT_PACKAGE=$BST_GETTEXT_DOMAIN
@@ -161,6 +161,9 @@ AC_DEFUN(AC_SFI_REQUIREMENTS,
 ])
 AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
+    dnl --- BSE version ---
+    AC_DEFINE_UNQUOTED(BSE_VERSION, "$BSE_VERSION", [BSE Version])
+
     dnl --- Ogg/Vorbis check ---
     OV_LIBS=
     ov_tests=0
@@ -379,11 +382,11 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 
     # --- BEAST paths ---
     beastbasedir=\${datadir}/beast
-    beastdocsdir=$beastbasedir/v$BSE_VERSION/docs
+    beastdocsdir=$beastbasedir/v$BST_VERSION/docs
     AC_SUBST(beastdocsdir)
-    beastimagesdir=$beastbasedir/v$BSE_VERSION/images
+    beastimagesdir=$beastbasedir/v$BST_VERSION/images
     AC_SUBST(beastimagesdir)
-    beastskinsdir=$beastbasedir/v$BSE_VERSION/skins
+    beastskinsdir=$beastbasedir/v$BST_VERSION/skins
     AC_SUBST(beastskinsdir)
 ])
 AC_DEFUN(AC_SUIDMAIN_REQUIREMENTS,

@@ -165,26 +165,16 @@ bstutils.c: bstdebugkeys.defs
 #
 # setup BEAST sources and their dependancies
 #
-bin_PROGRAMS = beast @BEAST_BINARY@		# this expands to beast-$BST_VERSION
+bin_PROGRAMS = @BEAST_BINARY@			# this expands to beast-$BST_VERSION
 EXTRA_PROGRAMS = beast-\$(BST_VERSION)		# make automake-1.4 eat beast____BST_VERSION_ variables
 beast____BST_VERSION__SOURCES = bstmain.c $(beast_sources)
 beast____BST_VERSION__LDADD = $(progs_LDADD)
-beast_SOURCES = suidmain.c
-SUIDMAIN_DEFS=-DSUIDMAIN_EXECUTABLE=\"$(bindir)/@BEAST_BINARY@\"
 noinst_PROGRAMS = tsmview # bststest
 # bststest_SOURCES = bststest.c bstutils.c bstqsampler.c cxxdummy.cc
 # bststest_LDADD = $(progs_LDADD)
 tsmview_SOURCES = tsmview.c cxxdummy.cc
 tsmview_LDADD = $(progs_LDADD)
 
-#
-# make BEAST wrapper suid to allow renicing
-#
-install-exec-local: install-binPROGRAMS
-	true \
-	&& ( chown root $(bindir)/beast \
-	&&   chmod 4755 $(bindir)/beast ) \
-	|| ( echo "*** WARNING *** beast needs to be installed as root to allow renicing ***" && sleep 5 )
 
 #
 # rules to generate built sources
