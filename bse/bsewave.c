@@ -593,7 +593,7 @@ bse_wave_load_wave_file (BseWave      *wave,
 	  break;
       if (i < fi->n_waves)
 	{
-	  GslWaveDsc *wdsc = gsl_wave_dsc_load (fi, i, &error);
+	  GslWaveDsc *wdsc = gsl_wave_dsc_load (fi, i, FALSE, &error);
 	  
 	  if (wdsc)
 	    {

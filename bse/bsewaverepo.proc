@@ -50,7 +50,7 @@ load_file (BseWaveRepo *wrepo,
       return BSE_ERROR_FORMAT_UNKNOWN;
     }
   
-  wdsc = gsl_wave_dsc_load (finfo, 0, &error);
+  wdsc = gsl_wave_dsc_load (finfo, 0, FALSE, &error);
   gsl_wave_file_info_unref (finfo);
   if (!wdsc)
     return error;

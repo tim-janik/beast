@@ -34,8 +34,10 @@ typedef struct {
 struct _GslVorbisCutter
 {
   /* user config */
-  GslLong               cutpoint;
+  SfiNum                cutpoint;
   GslVorbisCutterMode   cutmode;
+  guint                 filtered_serialno;
+  guint                 match_serialno : 1;
   /* state flags */
   guint                 vorbis_initialized : 1;
   guint                 eos : 1;
@@ -119,8 +121,8 @@ gsl_vorbis_cutter_new (void)
 
 void
 gsl_vorbis_cutter_set_cutpoint (GslVorbisCutter    *self,
-                                GslLong             cutpoint,
-                                GslVorbisCutterMode cutmode)
+                                GslVorbisCutterMode cutmode,
+                                SfiNum              cutpoint)
 {
   g_return_if_fail (self != NULL);
 
@@ -128,16 +130,36 @@ gsl_vorbis_cutter_set_cutpoint (GslVorbisCutter    *self,
    * i.e. sample[cutpoint] is removed for SAMPLE_BOUNDARY
    */
 
-  if (cutpoint >= GSL_VORBIS_CUTTER_SAMPLE_BOUNDARY)
+  switch (cutpoint > 0 ? cutmode : 0)
     {
+    case GSL_VORBIS_CUTTER_SAMPLE_BOUNDARY:
+    case GSL_VORBIS_CUTTER_PACKET_BOUNDARY:
+    case GSL_VORBIS_CUTTER_PAGE_BOUNDARY:
+      self->cutmode = cutmode;
       self->cutpoint = cutpoint;
-      self->cutmode = CLAMP (cutmode, GSL_VORBIS_CUTTER_SAMPLE_BOUNDARY, GSL_VORBIS_CUTTER_PAGE_BOUNDARY);
-    }
-  else
-    {
+      break;
+    default:
+      self->cutmode = GSL_VORBIS_CUTTER_NONE;
       self->cutpoint = 0;
-      self->cutmode = 0;
+      break;
     }
+}
+
+void
+gsl_vorbis_cutter_filter_serialno (GslVorbisCutter        *self,
+                                   guint                   serialno)
+{
+  g_return_if_fail (self != NULL);
+
+  self->filtered_serialno = serialno;
+  self->match_serialno = TRUE;
+}
+
+void
+gsl_vorbis_cutter_unfilter_serialno (GslVorbisCutter *self)
+{
+  g_return_if_fail (self != NULL);
+  self->match_serialno = FALSE;
 }
 
 void
@@ -186,7 +208,6 @@ gsl_vorbis_cutter_read_ogg (GslVorbisCutter *self,
   guint8 *ubytes = bytes;
 
   g_return_val_if_fail (self != NULL, 0);
-  g_return_val_if_fail (self->cutpoint != 0, 0);
 
   while (n_bytes && self->dblocks)
     {
@@ -302,6 +323,7 @@ vorbis_cutter_process_paket (GslVorbisCutter *self,
                 if (last_on_page)
                   opacket->e_o_s = 1;
                 break;
+              default: ;
               }
         }
       else
@@ -344,7 +366,6 @@ gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
                              guint8          *bytes)
 {
   g_return_if_fail (self != NULL);
-  g_return_if_fail (self->cutpoint != 0);
   if (n_bytes)
     g_return_if_fail (bytes != NULL);
   else
@@ -363,7 +384,11 @@ gsl_vorbis_cutter_write_ogg (GslVorbisCutter *self,
           /* resync serialno while we have no packets */
           if (self->n_packets == 0)
             {
-              int serialno = ogg_page_serialno (&opage);
+              int serialno;
+              if (self->match_serialno)
+                serialno = self->filtered_serialno;
+              else
+                serialno = ogg_page_serialno (&opage);
               ogg_stream_reset_serialno (&self->istream, serialno);
               ogg_stream_reset_serialno (&self->ostream, serialno);
             }

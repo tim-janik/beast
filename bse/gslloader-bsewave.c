@@ -691,7 +691,7 @@ gslwave_load_wave_dsc (gpointer         data,
     }
   else
     {
-      if (dsc->wdsc.n_chunks && dsc->wdsc.name)
+      if (dsc->wdsc.name)
 	{
 	  /* found the correctly named wave and parsed it */
 	}
@@ -745,7 +745,7 @@ gslwave_load_singlechunk_wave (GslWaveFileInfo *fi,
       return NULL;
     }
 
-  wdsc = gsl_wave_dsc_load (fi, i, error_p);
+  wdsc = gsl_wave_dsc_load (fi, i, FALSE, error_p);
   if (!wdsc)
     return NULL;
 

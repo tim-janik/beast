@@ -27,6 +27,7 @@ G_BEGIN_DECLS
 typedef struct _GslVorbisCutter  GslVorbisCutter;
 typedef enum
 {
+  GSL_VORBIS_CUTTER_NONE                = 0,
   GSL_VORBIS_CUTTER_SAMPLE_BOUNDARY     = 1,
   GSL_VORBIS_CUTTER_PACKET_BOUNDARY     = 2,
   GSL_VORBIS_CUTTER_PAGE_BOUNDARY       = 3
@@ -35,8 +36,11 @@ typedef enum
 /* --- cutter API --- */
 GslVorbisCutter*  gsl_vorbis_cutter_new                 (void);
 void              gsl_vorbis_cutter_set_cutpoint        (GslVorbisCutter        *self,
-                                                         GslLong                 cutpoint,
-                                                         GslVorbisCutterMode     cutmode);
+                                                         GslVorbisCutterMode     cutmode,
+                                                         SfiNum                  cutpoint);
+void              gsl_vorbis_cutter_filter_serialno     (GslVorbisCutter        *self,
+                                                         guint                   serialno);
+void              gsl_vorbis_cutter_unfilter_serialno   (GslVorbisCutter        *self);
 void              gsl_vorbis_cutter_write_ogg           (GslVorbisCutter        *self,
                                                          guint                   n_bytes,
                                                          guint8                 *bytes);

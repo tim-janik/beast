@@ -1,3 +1,19 @@
+Fri Dec 31 01:40:33 2004  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle-vorbis.c: cleanups. implemented GslVorbis1Handle which
+	can be used to store the compressed Ogg/Vorbis data of an Ogg/Vorbis
+	GslDataHandle. this uses GslVorbisCutter internally to properly rewrite
+	the Ogg stream.
+
+	* gslvorbis-cutter.[hc]: support non-cutting mode. support specification
+	of the logical bitstream to process by setting a serialno filter.
+
+	* gslloader-bsewave.c: allow loading of waves with an empty chunk list.
+
+	* gslloader.[hc]: support loading of waves with empty chunk list.
+
+	* gslcommon.c (gsl_error_from_errno): handle ENODATA.
+
 Thu Dec 30 17:06:29 2004  Tim Janik  <timj@gtk.org>
 
 	* gslloader.c (gsl_wave_dsc_free): remove bogus struct modification.

@@ -71,6 +71,7 @@ void                  gsl_wave_file_info_unref	(GslWaveFileInfo *wave_file_info)
 const gchar*	      gsl_wave_file_info_loader	(GslWaveFileInfo *fi);
 GslWaveDsc*	      gsl_wave_dsc_load		(GslWaveFileInfo *wave_file_info,
 						 guint		  nth_wave,
+                                                 gboolean         accept_empty,
 						 BseErrorType	 *error);
 void		      gsl_wave_dsc_free		(GslWaveDsc	 *wave_dsc);
 GslDataHandle*	      gsl_wave_handle_create	(GslWaveDsc	 *wave_dsc,

@@ -23,7 +23,62 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
+
+static GslVorbisCutterMode cutmode = GSL_VORBIS_CUTTER_NONE;
+static SfiNum              cutpoint = 0;
+static guint               filtered_serialno = 0;
+static gboolean            filter_serialno = FALSE;
+
+static void
+parse_args (int    *argc_p,
+            char ***argv_p)
+{
+  guint argc = *argc_p;
+  gchar **argv = *argv_p;
+  guint i;
+  for (i = 1; i < argc; i++)
+    {
+      if (strcmp ("-s", argv[i]) == 0 && i + 1 < argc)
+        {
+          cutmode = GSL_VORBIS_CUTTER_SAMPLE_BOUNDARY;
+          argv[i++] = NULL;
+          cutpoint = g_ascii_strtoull (argv[i], NULL, 10);
+          argv[i] = NULL;
+        }
+      else if (strcmp ("-k", argv[i]) == 0 && i + 1 < argc)
+        {
+          cutmode = GSL_VORBIS_CUTTER_PACKET_BOUNDARY;
+          argv[i++] = NULL;
+          cutpoint = g_ascii_strtoull (argv[i], NULL, 10);
+          argv[i] = NULL;
+        }
+      else if (strcmp ("-p", argv[i]) == 0 && i + 1 < argc)
+        {
+          cutmode = GSL_VORBIS_CUTTER_PAGE_BOUNDARY;
+          argv[i++] = NULL;
+          cutpoint = g_ascii_strtoull (argv[i], NULL, 10);
+          argv[i] = NULL;
+        }
+      else if (strcmp ("-S", argv[i]) == 0 && i + 1 < argc)
+        {
+          filter_serialno = TRUE;
+          argv[i++] = NULL;
+          filtered_serialno = g_ascii_strtoull (argv[i], NULL, 10);
+          argv[i] = NULL;
+        }
+    }
+  guint e = 1;
+  for (i = 1; i < argc; i++)
+    if (argv[i])
+      {
+        argv[e++] = argv[i];
+        if (i >= e)
+          argv[i] = NULL;
+      }
+  *argc_p = e;
+}
 
 int
 main (int   argc,
@@ -31,7 +86,6 @@ main (int   argc,
 {
   const gchar *ifile, *ofile;
   GslVorbisCutter *cutter;
-  GslLong cutpoint;
   gint ifd, ofd;
 
   /* initialization */
@@ -39,17 +93,23 @@ main (int   argc,
   bse_init_intern (&argc, &argv, NULL);
 
   /* arguments */
-  if (argc != 4)
+  parse_args (&argc, &argv);
+  if (argc != 3)
     {
-      g_printerr ("usage: cutvorbis infile.ogg <cutpoint> outfile.ogg\n");
+      g_printerr ("usage: cutvorbis infile.ogg [{-s|-k|-p} <cutpoint>] [-S <serialno>] outfile.ogg\n");
+      g_printerr ("  -S <serialno>  only process data from the Ogg/Vorbis stream with <serialno>\n");
+      g_printerr ("  -s <cutpoint>  cut the Ogg/Vorbis stream at sample <cutpoint>\n");
+      g_printerr ("  -k <cutpoint>  same as -s, but cut at packet boundary\n");
+      g_printerr ("  -p <cutpoint>  same as -s, but cut at page boundary\n");
       exit (1);
     }
   ifile = argv[1];
-  cutpoint = atoi (argv[2]);
-  ofile = argv[3];
+  ofile = argv[2];
 
   cutter = gsl_vorbis_cutter_new ();
-  gsl_vorbis_cutter_set_cutpoint (cutter, cutpoint, GSL_VORBIS_CUTTER_PACKET_BOUNDARY);
+  gsl_vorbis_cutter_set_cutpoint (cutter, cutmode, cutpoint);
+  if (filter_serialno)
+    gsl_vorbis_cutter_filter_serialno (cutter, filtered_serialno);
 
   ifd = open (ifile, O_RDONLY);
   if (ifd < 0)
@@ -71,9 +131,12 @@ main (int   argc,
       do
         j = read (ifd, buffer, blength);
       while (j < 0 && errno == EINTR);
-      if (j < 0)
+      if (j <= 0)
         {
-          g_printerr ("Error: failed to read from \"%s\": %s\n", ifile, g_strerror (errno));
+          const char *errstr = g_strerror (errno);
+          if (!errno && j == 0)
+            errstr = "End of File";
+          g_printerr ("Error: failed to read from \"%s\": %s\n", ifile, errstr);
           exit (1);
         }
       gsl_vorbis_cutter_write_ogg (cutter, j, buffer);

@@ -251,7 +251,8 @@ gsl_wave_file_info_loader (GslWaveFileInfo *fi)
 GslWaveDsc*
 gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
 		   guint            nth_wave,
-		   BseErrorType    *error_p)
+                   gboolean         accept_empty,
+                   BseErrorType    *error_p)
 {
   BseErrorType error = BSE_ERROR_NONE;
   GslWaveDsc *wdsc;
@@ -276,7 +277,7 @@ gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
     error = BSE_ERROR_FILE_EMPTY;
   if (wdsc)
     {
-      if (wdsc->n_chunks > 0)
+      if (accept_empty || wdsc->n_chunks > 0)
 	{
 	  g_return_val_if_fail (wdsc->file_info == NULL, NULL);
 	  g_return_val_if_fail (wdsc->name && strcmp (wdsc->name, wave_file_info->waves[nth_wave].name) == 0, NULL);

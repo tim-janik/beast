@@ -25,15 +25,22 @@
 
 G_BEGIN_DECLS
 
-/* linear-read handle! needs linbuffer handle wrapper
- */
-GslDataHandle*	gsl_data_handle_new_ogg_vorbis_muxed    (const gchar	*file_name,
-                                                         guint		 lbitstream,
-                                                         gfloat          osc_freq);
-GslDataHandle*	gsl_data_handle_new_ogg_vorbis_zoffset	(const gchar	*file_name,
-                                                         gfloat          osc_freq,
-                                                         GslLong         byte_offset,
-                                                         GslLong         byte_size);
+/* --- reading vorbis files --- */
+GslDataHandle* gsl_data_handle_new_ogg_vorbis_muxed   (const gchar      *file_name,
+                                                       guint	         lbitstream,
+                                                       gfloat            osc_freq);
+GslDataHandle* gsl_data_handle_new_ogg_vorbis_zoffset (const gchar      *file_name,
+                                                       gfloat            osc_freq,
+                                                       GslLong           byte_offset,
+                                                       GslLong           byte_size);
+
+/* --- writing vorbis files --- */
+typedef struct GslVorbis1Handle GslVorbis1Handle;
+GslVorbis1Handle* gsl_vorbis1_handle_new              (GslDataHandle    *ogg_vorbis_handle);
+gint              gsl_vorbis1_handle_reader           (GslVorbis1Handle *vorbis1, /* returns -errno || length */
+                                                       guint8           *buffer,
+                                                       guint             blength);
+void              gsl_vorbis1_handle_destroy          (GslVorbis1Handle *vorbis1);
 
 G_END_DECLS
 
