@@ -244,8 +244,8 @@ bst_profiler_window_get (void)
       g_object_unref (smodel);
       gxk_tree_view_add_text_column (tview, TCOL_NAME, "SAG", 0.0, _("Thread Name"), NULL, NULL, NULL, 0);
       gxk_tree_view_add_text_column (tview, TCOL_PERC, "SAG", 1.0, _("CPU%"), _("Percentage of CPU usage"), NULL, NULL, 0);
-      gxk_tree_view_add_text_column (tview, TCOL_UTIME, "SAG", 1.0, _("UTime"), _("Milliseconds of user CPU time used by thread"), NULL, NULL, 0);
-      gxk_tree_view_add_text_column (tview, TCOL_STIME, "SAG", 1.0, _("STime"), _("Milliseconds of system CPU time used by thread"), NULL, NULL, 0);
+      gxk_tree_view_add_text_column (tview, TCOL_UTIME, "SAG", 1.0, _("UTime"), _("Average number of milliseconds per second of user CPU time used by thread"), NULL, NULL, 0);
+      gxk_tree_view_add_text_column (tview, TCOL_STIME, "SAG", 1.0, _("STime"), _("Average number of milliseconds per second of system CPU time used by thread"), NULL, NULL, 0);
       /*
         gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
         _("Thread State:\n"
