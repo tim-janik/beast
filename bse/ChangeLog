@@ -1,3 +1,22 @@
+Mon Mar 13 00:05:37 2000  Tim Janik  <timj@gtk.org>
+
+	* bsesongsequencer.c (bse_song_sequencer_step): handle songs with
+	empty playlists (pattern==NULL). we still simply loop the song
+	at the end though...
+
+	* bsepatterngroup.[hc] (bse_pattern_group_get_nth_pattern): new function
+	to return pattern by play index.
+
+	* bsesong.c (bse_song_get_pattern_from_list): implemented this in
+	terms of fetching the current pattern to play from the pattern groups.
+
+Sun Mar 12 16:07:50 2000  Tim Janik  <timj@gtk.org>
+
+	* bseinstrument.c (bse_instrument_class_init): disabled synthesis
+	input facility.
+	* bsesinstrument.c (BSE_BUILTIN_TYPE): don't register a category
+	for this object yet.
+
 Fri Mar 10 22:48:33 2000  Tim Janik  <timj@gtk.org>
 
 	* bsesong.c: 

@@ -136,7 +136,7 @@ bse_instrument_class_init (BseInstrumentClass *class)
 			      PARAM_SYNTH,
 			      bse_param_spec_item ("sinstrument", "Synth", NULL,
 						   BSE_TYPE_SINSTRUMENT,
-						   BSE_PARAM_DEFAULT));
+						   (BSE_PARAM_DEFAULT) & ~BSE_PARAM_SERVE_GUI));
   bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_SAMPLE,
 			      bse_param_spec_item ("sample", "Sample", NULL,

@@ -54,13 +54,10 @@ struct _BseSong
 
   guint             n_pgroups;
   BsePatternGroup **pgroups;
-  
-  
+
+  /*< private >*/
   BseSongSequencer *sequencer;
   BseIndex          sequencer_index;
-  
-  guint pattern_list_length;
-  BsePattern **pattern_list;
 };
 struct _BseSongClass
 {

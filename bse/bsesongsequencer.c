@@ -129,13 +129,15 @@ bse_song_sequencer_step (BseSong *song)
 	  pattern = bse_song_get_pattern_from_list (song, sequencer->next_pattern);
 	}
       
-      for (channel = 0; channel < pattern->n_channels; channel++)
+      for (channel = 0; channel < song->n_channels; channel++)
 	{
+	  static const BsePatternNote empty_note = { NULL, BSE_NOTE_VOID, 0, NULL };
 	  BsePatternNote *note;
 	  
-	  note = bse_pattern_peek_note (pattern,
-					channel,
-					sequencer->next_pattern_row);
+	  note = (!pattern ? &empty_note :
+		  bse_pattern_peek_note (pattern,
+					 channel,
+					 sequencer->next_pattern_row));
 	  
 	  bse_song_mixer_activate_voice (sequencer->va->voices[channel], note);
 	}

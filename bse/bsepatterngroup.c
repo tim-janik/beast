@@ -259,6 +259,18 @@ bse_pattern_group_copy_contents (BsePatternGroup *pgroup,
   bse_object_unref (BSE_OBJECT (src_pgroup));
 }
 
+BsePattern*
+bse_pattern_group_get_nth_pattern (BsePatternGroup *pgroup,
+				   gint             index)
+{
+  g_return_val_if_fail (BSE_IS_PATTERN_GROUP (pgroup), NULL);
+  g_return_val_if_fail (index < pgroup->pattern_count, NULL);
+
+  g_return_val_if_fail (pgroup->pattern_count == pgroup->n_entries, NULL); /* current implementation */
+
+  return pgroup->entries[index].pattern;
+}
+
 static void
 bse_pattern_group_store_private (BseObject  *object,
 				 BseStorage *storage)

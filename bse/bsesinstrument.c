@@ -81,7 +81,7 @@ BSE_BUILTIN_TYPE (BseSInstrument)
 					       "BseSInstrument",
 					       "BSE Synthesis network Instrument",
 					       &sinstrument_info);
-  bse_categories_register_icon ("/Source/SInstrument", sinstrument_type, &sinstrument_pixdata);
+  /* bse_categories_register_icon ("/Source/SInstrument", sinstrument_type, &sinstrument_pixdata); */
   
   return sinstrument_type;
 }

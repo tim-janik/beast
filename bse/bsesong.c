@@ -207,9 +207,6 @@ bse_song_init (BseSong *song)
 
   song->sequencer = NULL;
   song->sequencer_index = 0;
-
-  song->pattern_list_length = 0;
-  song->pattern_list = NULL;
 }
 
 static void
@@ -702,11 +699,33 @@ bse_song_insert_pattern_group_copy (BseSong         *song,
   bse_object_unref (BSE_OBJECT (song));
 }
 
+BsePattern*
+bse_song_get_pattern_from_list (BseSong	*song,
+				guint	 pattern_index)
+{
+  BsePatternGroup *pgroup = NULL;
+  gint i;
+  
+  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
+
+  for (i = 0; i < song->n_pgroups; i++)
+    {
+      if (pattern_index < song->pgroups[i]->pattern_count)
+	{
+	  pgroup = song->pgroups[i];
+	  break;
+	}
+      pattern_index -= song->pgroups[i]->pattern_count;
+    }
+
+  return pgroup ? bse_pattern_group_get_nth_pattern (pgroup, pattern_index) : NULL;
+}
 
 
 
 
 
+#if 0
 BsePattern*
 bse_song_get_pattern_from_list (BseSong	*song,
 				guint	 pattern_index)
@@ -724,6 +743,7 @@ bse_song_get_pattern_from_list (BseSong	*song,
   else
     return NULL;
 }
+#endif
 
 BseInstrument*
 bse_song_get_instrument (BseSong *song,
