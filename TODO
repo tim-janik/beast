@@ -1,4 +1,4 @@
-FIXMES:
+IXMES:
 - typed record serialization needs to honour indent for sfi_value_store_param()
 - serialization of homogeneous sequences could store the field type code only once
 - alow snet flagging as aggregate
@@ -46,8 +46,7 @@ FIXMES:
 - save errno across logging/debugging
 
 URGENT:
-- support pspec groups in idl files [stefan]
-- clean up default storage in BSE files [stefan,tim]
+- support pspec groups in idl files [stw]
 
 DOCS:
 - try implementing some kind of table layout for tsmview [timj]
@@ -64,31 +63,31 @@ DOCS:
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq
-- [Stefan]  ?	LP -> LP transforms or zero/poles
-- [Stefan]  2h	3-stage joining FFT code
-- [Stefan]  ?h	FFT L-case optimiaztions
-- [Stf/tim] 3h	CSL: whitepaper completion and publication
-- [Stf/tim] 2h	CSL: csl_select() completion
-- [Stf/tim] 2h	Filter boundary conditions?
+- [stw]      ?	LP -> LP transforms or zero/poles
+- [stw]      2h	3-stage joining FFT code
+- [stw]      ?h	FFT L-case optimiaztions
+- [stw/timj] 3h	CSL: whitepaper completion and publication
+- [stw/timj] 2h	CSL: csl_select() completion
+- [stw/timj] 2h	Filter boundary conditions?
 		Also, need 2stage filters with way smaller errors
 		Filter: Oppenheim Schaefer page.441 2stage filters implementation
 		        (2stage pair finding by single (zero, pole) pair plus
 		        conj. complex pair)
-- [timj]    ?h	Buffered data handles for coarse seek
-- [timj]    ?	WaveOsc: prop for stereo channel
-- [timj]    ?	API for lp/hp/bp/bs generation from array of roots and poles
+- [timj]     ?h	Buffered data handles for coarse seek
+- [timj]     ?	WaveOsc: prop for stereo channel
+- [timj]     ?	API for lp/hp/bp/bs generation from array of roots and poles
 		(requires zero and poles with ->im != 0 to occour in
 		conjugated complex pairs)
-- [timj]    ?	in API and docs, s/roots/zeros/
-- [timj]    ?	gsltests: change freq input, so that [0..1] => [0..pi]
-- [timj]    ?	gsltest: swap epsilon and steepness params for t2* filters
-- [timj]    ?	Async DCache read-ahead thread creation
-- [timj]    ?	filter evaluate function (to draw graph)
-- [Stf/tim] 2h	GUI abstraction layer
-- [Stefan]  ?	.PAT loader (move)
-- [Stf/tim] ?h	1) OscTableEntry sizes (wave_table_size ())
-- [Stf/tim] ?h	2) development of gsl_osc_table_create() frequencies
-- [Stf/tim] ?h	3) PWM scaling
+- [timj]     ?	in API and docs, s/roots/zeros/
+- [timj]     ?	gsltests: change freq input, so that [0..1] => [0..pi]
+- [timj]     ?	gsltest: swap epsilon and steepness params for t2* filters
+- [timj]     ?	Async DCache read-ahead thread creation
+- [timj]     ?	filter evaluate function (to draw graph)
+- [stw/timj] 2h	GUI abstraction layer
+- [stw]      ?	.PAT loader (move)
+- [stw/timj] ?h	1) OscTableEntry sizes (wave_table_size ())
+- [stw/timj] ?h	2) development of gsl_osc_table_create() frequencies
+- [stw/timj] ?h	3) PWM scaling
 
 Snet Router:
 - ctrl+move should clone objects (DND style modifier) 
