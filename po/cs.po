@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-05 11:03+0200\n"
-"PO-Revision-Date: 2004-09-05 16:53+0200\n"
+"POT-Creation-Date: 2004-09-06 19:03+0200\n"
+"PO-Revision-Date: 2004-09-06 19:35+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -315,16 +315,16 @@ msgstr "Stiskněte prosím klávesovou zkratku, kterou nainstalovat..."
 
 #: beast-gtk/bstbuseditor.c:38 beast-gtk/bstbusmixer.c:34
 #: beast-gtk/bstbusview.c:34 beast-gtk/bstinstrumentview.c:33
-#: beast-gtk/bstpartview.c:39 beast-gtk/bsttrackview.c:61
+#: beast-gtk/bstpartview.c:39 beast-gtk/bsttrackview.c:63
 msgid "Add"
 msgstr "Přidat"
 
 #: beast-gtk/bstbuseditor.c:39 beast-gtk/bstbusview.c:35
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
 #: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
-#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:709
-#: beast-gtk/bstsnetrouter.c:751 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:64 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:710
+#: beast-gtk/bstsnetrouter.c:752 beast-gtk/bsttrackrollctrl.c:51
+#: beast-gtk/bsttrackview.c:66 beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Odstranit"
 
@@ -337,7 +337,7 @@ msgstr "Editor"
 msgid "Module Link: "
 msgstr "Spojení modulů: "
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:747
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:748
 msgid "Module link"
 msgstr "Spojení modulů"
 
@@ -345,11 +345,11 @@ msgstr "Spojení modulů"
 msgid "Module Info"
 msgstr "Informace o modulu"
 
-#: beast-gtk/bstcanvassource.c:963 beast-gtk/bstsnetrouter.c:1084
+#: beast-gtk/bstcanvassource.c:963 beast-gtk/bstsnetrouter.c:1085
 msgid "Input"
 msgstr "Vstup"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1081
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1082
 #: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
 #: plugins/artscompressor.idl:58
 msgid "Output"
@@ -575,25 +575,31 @@ msgstr "Zmenšit posouvatelnou oblast"
 msgid "Grow the scrollable area"
 msgstr "Zvětšit posouvatelnou oblast"
 
-#: beast-gtk/bstitemseqdialog.c:139
+#: beast-gtk/bstitemseqdialog.c:159
 #, c-format
 msgid "Adds the selection from the \"%s\" list to the \"%s\" list"
 msgstr "Přidá výběr ze seznamu \"%s\" do seznamu \"%s\""
 
-#: beast-gtk/bstitemseqdialog.c:142
+#: beast-gtk/bstitemseqdialog.c:162
 #, c-format
 msgid "Removes the selection from the \"%s\" list"
 msgstr "Odstraní výběr ze seznamu \"%s\""
+
+#. TRANSLATORS: this is a dialog title and %s is replaced by an object name
+#: beast-gtk/bstitemseqdialog.c:169
+#, c-format
+msgid "Object Selection: %s"
+msgstr "Výběr objektu: %s"
 
 #: beast-gtk/bstitemview.c:205
 msgid "ID"
 msgstr "ID"
 
-#: beast-gtk/bstitemview.c:208 beast-gtk/bsttrackview.c:511
+#: beast-gtk/bstitemview.c:208 beast-gtk/bsttrackview.c:583
 msgid "Name"
 msgstr "Název"
 
-#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:529
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:604
 msgid "Comment"
 msgstr "Poznámka"
 
@@ -2119,7 +2125,7 @@ msgstr "Upravit"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Upravit/přesunout/menu (tlačítka myši 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:923
+#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:924
 msgid "Palette"
 msgstr "Paleta"
 
@@ -2127,84 +2133,84 @@ msgstr "Paleta"
 msgid "Toggle visibility of the tool palette"
 msgstr "Přepnout viditelnost palety nástrojů"
 
-#: beast-gtk/bstsnetrouter.c:618
+#: beast-gtk/bstsnetrouter.c:619
 msgid "Input channel in use"
 msgstr "Vstupní kanál se používá"
 
-#: beast-gtk/bstsnetrouter.c:645 beast-gtk/bstsnetrouter.c:647
-#: beast-gtk/bstsnetrouter.c:683
+#: beast-gtk/bstsnetrouter.c:646 beast-gtk/bstsnetrouter.c:648
+#: beast-gtk/bstsnetrouter.c:684
 msgid "Create Link"
 msgstr "Vytvořit spojení"
 
-#: beast-gtk/bstsnetrouter.c:645
+#: beast-gtk/bstsnetrouter.c:646
 msgid "Select output module"
 msgstr "Vybrat výstupní modul"
 
-#: beast-gtk/bstsnetrouter.c:647
+#: beast-gtk/bstsnetrouter.c:648
 msgid "Select input module"
 msgstr "Vybrat vstupní modul"
 
-#: beast-gtk/bstsnetrouter.c:703
+#: beast-gtk/bstsnetrouter.c:704
 msgid "Properties"
 msgstr "Vlastnosti"
 
-#: beast-gtk/bstsnetrouter.c:704
+#: beast-gtk/bstsnetrouter.c:705
 msgid "Reset Properties"
 msgstr "Přenastavit vlastnosti"
 
-#: beast-gtk/bstsnetrouter.c:705
+#: beast-gtk/bstsnetrouter.c:706
 msgid "Delete Inputs"
 msgstr "Odstranit vstupy"
 
-#: beast-gtk/bstsnetrouter.c:706
+#: beast-gtk/bstsnetrouter.c:707
 msgid "Delete Outputs"
 msgstr "Odstranit výstupy"
 
-#: beast-gtk/bstsnetrouter.c:707 beast-gtk/bstsnetrouter.c:749
+#: beast-gtk/bstsnetrouter.c:708 beast-gtk/bstsnetrouter.c:750
 msgid "Show Info"
 msgstr "Zobrazit informace"
 
-#: beast-gtk/bstsnetrouter.c:733
+#: beast-gtk/bstsnetrouter.c:734
 msgid "Remove Module"
 msgstr "Odstranit modul"
 
-#: beast-gtk/bstsnetrouter.c:760
+#: beast-gtk/bstsnetrouter.c:761
 msgid "Delete Link"
 msgstr "Odstranit spojení"
 
-#: beast-gtk/bstsnetrouter.c:814
+#: beast-gtk/bstsnetrouter.c:815
 msgid "Insert Module"
 msgstr "Vložit modul"
 
-#: beast-gtk/bstsnetrouter.c:1081
+#: beast-gtk/bstsnetrouter.c:1082
 msgid "PCM Output module"
 msgstr "Modul výstupu PCM"
 
-#: beast-gtk/bstsnetrouter.c:1082
+#: beast-gtk/bstsnetrouter.c:1083
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:1082
+#: beast-gtk/bstsnetrouter.c:1083
 msgid "Standard amplifier module"
 msgstr "Standardní modul zesilovače"
 
-#: beast-gtk/bstsnetrouter.c:1083
+#: beast-gtk/bstsnetrouter.c:1084
 msgid "Snooper"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:1083
+#: beast-gtk/bstsnetrouter.c:1084
 msgid "Signal debugging module"
 msgstr "Modul ladění signálu"
 
-#: beast-gtk/bstsnetrouter.c:1084
+#: beast-gtk/bstsnetrouter.c:1085
 msgid "PCM Input module"
 msgstr "Modul vstupu PCM"
 
-#: beast-gtk/bstsnetrouter.c:1132
+#: beast-gtk/bstsnetrouter.c:1133
 msgid "Channel Hints"
 msgstr "Nápovědy kanálů"
 
-#: beast-gtk/bstsnetrouter.c:1132
+#: beast-gtk/bstsnetrouter.c:1133
 msgid "Toggle channel name hints"
 msgstr "Přepnout nápovědy názvů kanálů"
 
@@ -2268,30 +2274,42 @@ msgstr "Syntetizér MIDI: %s"
 msgid "Synthesizer: %s"
 msgstr "Syntetizér: %s"
 
-#: beast-gtk/bstsupershell.c:257
+#: beast-gtk/bstsupershell.c:268
 msgid "Tracks"
 msgstr "Stopy"
 
-#: beast-gtk/bstsupershell.c:262
+#: beast-gtk/bstsupershell.c:268
+msgid "Tracks contain instrument definitions and parts with notes"
+msgstr "Stopy obsahují definice nástrojů a části s notami"
+
+#: beast-gtk/bstsupershell.c:271
 msgid "Mixer"
 msgstr "Mixér"
 
-#: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:309
+#: beast-gtk/bstsupershell.c:271
+msgid "Mix track outputs, adjust volume and add effects"
+msgstr "Míchat výstupy stop, upravovat hlasitost a přidávat efekty"
+
+#: beast-gtk/bstsupershell.c:274 beast-gtk/bstsupershell.c:309
 #: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parametry"
 
-#: beast-gtk/bstsupershell.c:272
+#: beast-gtk/bstsupershell.c:274
+msgid "Adjust general song parameters"
+msgstr "Upravit obecné parametry skladby"
+
+#: beast-gtk/bstsupershell.c:277
 msgid "Parts"
 msgstr "Části"
 
-#: beast-gtk/bstsupershell.c:278
+#: beast-gtk/bstsupershell.c:281
 msgid "Busses"
 msgstr "Sběrnice"
 
-#: beast-gtk/bstsupershell.c:284 beast-gtk/bstsupershell.c:303
+#: beast-gtk/bstsupershell.c:285 beast-gtk/bstsupershell.c:303
 msgid "Routing"
 msgstr "Směrování"
 
@@ -2385,33 +2403,37 @@ msgstr "Přesunout část"
 msgid "Start Editor"
 msgstr "Spustit editor"
 
-#: beast-gtk/bsttrackview.c:61
+#: beast-gtk/bsttrackview.c:63
 msgid "Add a new track to this song"
 msgstr "Přidat k této skladbě novou stopu"
 
-#: beast-gtk/bsttrackview.c:64
+#: beast-gtk/bsttrackview.c:66
 msgid "Delete the currently selected track"
 msgstr "Odstranit momentálně vybranou stopu"
 
-#: beast-gtk/bsttrackview.c:514
+#: beast-gtk/bsttrackview.c:586
 msgid ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 msgstr "Noty z nezaškrtnutých stop sekvencer při přehrávání ignoruje"
 
-#: beast-gtk/bsttrackview.c:517 bse/bsemidisynth.c:427 bse/bsetrack.c:887
+#: beast-gtk/bsttrackview.c:589 bse/bsemidisynth.c:427 bse/bsetrack.c:912
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximální počet hlasů pro současné přehrávání"
 
-#: beast-gtk/bsttrackview.c:520
+#: beast-gtk/bsttrackview.c:592
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Síť syntézy nebo vlna, kterou v této stopě používat jako nástroj"
 
-#: beast-gtk/bsttrackview.c:523 bse/bsetrack.c:893
+#: beast-gtk/bsttrackview.c:595 bse/bsetrack.c:918
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Kanál midi přiřazený této stopě, 0 používá soukromý kanál pro stopu"
 
-#: beast-gtk/bsttrackview.c:526 bse/bsemidisynth.c:436 bse/bsesong.c:739
-#: bse/bsetrack.c:898
+#: beast-gtk/bsttrackview.c:598
+msgid "Mixer busses connected to track output"
+msgstr "Sběrnice mixéru připojené k výstupu stopy"
+
+#: beast-gtk/bsttrackview.c:601 bse/bsemidisynth.c:436 bse/bsesong.c:739
+#: bse/bsetrack.c:923
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Síť syntézy, kterou používat jako postprocesor"
 
@@ -3213,124 +3235,144 @@ msgstr "Vstup modulace zisku"
 msgid "Filtered Audio Signal"
 msgstr "Filtrovaný signál zvuku"
 
-#: bse/bsebus.c:123
+#: bse/bsebus.c:135
 msgid "Available Inputs"
 msgstr "Dostupné vstupy"
 
-#: bse/bsebus.c:123
+#: bse/bsebus.c:135
 msgid "List of available synthesis signals to be used as bus input"
 msgstr "Seznam dostupných signálů syntézy, které používat jako vstup sběrnice"
 
+#: bse/bsebus.c:146 bse/bsetrack.c:299
+msgid "Available Outputs"
+msgstr "Dostupné výstupy"
+
+#: bse/bsebus.c:146
+msgid "List of available mixer busses to be used as bus output"
+msgstr "Seznam dostupných sběrnic mixérů, které používat jako výstup sběrnice"
+
 #. FIXME: fix volume
-#: bse/bsebus.c:734 bse/bsebus.c:736 bse/bsebus.c:738 bse/bsebus.c:740
-#: bse/bsebus.c:744 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
+#: bse/bsebus.c:825 bse/bsebus.c:827 bse/bsebus.c:829 bse/bsebus.c:831
+#: bse/bsebus.c:835 bse/bsemidisynth.c:439 bse/bsemidisynth.c:445
 #: bse/bsemidisynth.c:452 bse/bsesong.c:699 bse/bsesong.c:705
-#: bse/bsesong.c:712 bse/bsetrack.c:871
+#: bse/bsesong.c:712 bse/bsetrack.c:896
 msgid "Adjustments"
 msgstr "Úpravy"
 
-#: bse/bsebus.c:735
+#: bse/bsebus.c:826
 msgid "Mute"
 msgstr "Umlčet"
 
-#: bse/bsebus.c:735
+#: bse/bsebus.c:826
 msgid "Mute: turn off the bus volume"
 msgstr "Umlčet: vypnout hlasitost sběrnice"
 
-#: bse/bsebus.c:737
+#: bse/bsebus.c:828
 msgid "Solo"
 msgstr "Sólo"
 
 # FIXME: s/busses/buses/
-#: bse/bsebus.c:737
+#: bse/bsebus.c:828
 msgid "Solo: mute all other busses"
 msgstr "Sólo: umlčet všechny ostatní sběrnice"
 
-#: bse/bsebus.c:739
+#: bse/bsebus.c:830
 msgid "Sync"
 msgstr "Sync"
 
-#: bse/bsebus.c:739
+#: bse/bsebus.c:830
 msgid "Sync: enforce the same volume left and right"
 msgstr "Sync: vnutit stejnou hlasitost vlevo a vpravo"
 
-#: bse/bsebus.c:741
+#: bse/bsebus.c:832
 msgid "Left Volume [dB]"
 msgstr "Levá hlasitost [dB]"
 
-#: bse/bsebus.c:741
+#: bse/bsebus.c:832
 msgid "Volume adjustment of left bus channel"
 msgstr "Úprava hlasitosti levého kanálu sběrnice"
 
-#: bse/bsebus.c:745
+#: bse/bsebus.c:836
 msgid "Right Volume [dB]"
 msgstr "Pravá hlasitost [dB]"
 
-#: bse/bsebus.c:745
+#: bse/bsebus.c:836
 msgid "Volume adjustment of right bus channel"
 msgstr "Úprava hlasitosti pravého kanálu sběrnice"
 
-#: bse/bsebus.c:748
+#: bse/bsebus.c:839
 msgid "Signal Inputs"
 msgstr "Vstupy signálu"
 
 #. SYNC: type partitions determine the order of displayed objects
-#: bse/bsebus.c:751
+#: bse/bsebus.c:842
 msgid "Input Signals"
 msgstr "Vstupní signály"
 
 #. TRANSLATORS: the "tracks and busses" order in this tooltip needs
 #. * to be preserved to match the GUI order of displayed objects.
 #.
-#: bse/bsebus.c:755
+#: bse/bsebus.c:846
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Signály syntézy (ze stop a sběrnic) používané jako vstup sběrnice"
 
-#: bse/bsebus.c:758
+#: bse/bsebus.c:848 bse/bsetrack.c:925
+msgid "Signal Outputs"
+msgstr "Výstupy signálu"
+
+#: bse/bsebus.c:850 bse/bsetrack.c:927
+msgid "Output Signals"
+msgstr "Výstupní signály"
+
+#: bse/bsebus.c:851
+msgid "Mixer busses used as output for synthesis signals"
+msgstr "Sběrnice mixéru používané jako výstup pro signály syntézy"
+
+#: bse/bsebus.c:854
 msgid "Internals"
 msgstr "Vnitřnosti"
 
-#: bse/bsebus.c:760
+#: bse/bsebus.c:856
 msgid "Master Output"
 msgstr "Hlavní výstup"
 
-#: bse/bsebus.c:763 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:859 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "Levý zvuk In"
 
-#: bse/bsebus.c:763 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:859 bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr "Vstup levého kanálu"
 
-#: bse/bsebus.c:765 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:861 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "Pravý zvuk In"
 
-#: bse/bsebus.c:765
+#: bse/bsebus.c:861
 msgid "Right channel input"
 msgstr "Vstup pravého kanálu"
 
-#: bse/bsebus.c:767 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:863 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "Levý zvuk Out"
 
-#: bse/bsebus.c:767 bse/bsepcminput.c:128
+#: bse/bsebus.c:863 bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr "Výstup levého kanálu"
 
-#: bse/bsebus.c:769 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:865 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "Pravý zvuk Out"
 
-#: bse/bsebus.c:769 bse/bsepcminput.c:130
+#: bse/bsebus.c:865 bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr "Výstup pravého kanálu"
 
-#: bse/bsebus.c:788
+#: bse/bsebus.c:884
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
@@ -3701,7 +3743,7 @@ msgstr "MIDI signál 4"
 msgid "/Input & Output/MIDI Voice Input"
 msgstr "/Vstup a výstup/Vstup hlasu MIDI"
 
-#: bse/bsemidisynth.c:226 bse/bsesubsynth.c:157 bse/bsetrack.c:275
+#: bse/bsemidisynth.c:226 bse/bsesubsynth.c:157 bse/bsetrack.c:291
 msgid "Available Synthesizers"
 msgstr "Dostupné syntetizéry"
 
@@ -3709,21 +3751,21 @@ msgstr "Dostupné syntetizéry"
 msgid "List of available synthesis networks to choose a MIDI instrument from"
 msgstr "Seznam dostupných sítí syntézy, ze kterých zvolit nástroj MIDI"
 
-#: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:279
+#: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:295
 msgid "Available Postprocessors"
 msgstr "Dostupné postprocesory"
 
-#: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:279
+#: bse/bsemidisynth.c:230 bse/bsesong.c:145 bse/bsetrack.c:295
 msgid "List of available synthesis networks to choose a postprocessor from"
 msgstr "Seznam dostupných sítí syntézy, ze které zvolit postprocesor"
 
 #: bse/bsemidisynth.c:420 bse/bsemidisynth.c:425 bse/bsemidisynth.c:430
-#: bse/bsemidisynth.c:434 bse/bsesong.c:737 bse/bsetrack.c:890
-#: bse/bsetrack.c:896
+#: bse/bsemidisynth.c:434 bse/bsesong.c:737 bse/bsetrack.c:915
+#: bse/bsetrack.c:921
 msgid "MIDI Instrument"
 msgstr "Nástroj MIDI"
 
-#: bse/bsemidisynth.c:422 bse/bsetrack.c:892
+#: bse/bsemidisynth.c:422 bse/bsetrack.c:917
 msgid "MIDI Channel"
 msgstr "Kanál MIDI"
 
@@ -3731,7 +3773,7 @@ msgstr "Kanál MIDI"
 msgid "Max Voices"
 msgstr "Max hlasů"
 
-#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:509 bse/bsetrack.c:877
+#: bse/bsemidisynth.c:432 bse/bsesubsynth.c:509 bse/bsetrack.c:902
 msgid "Synthesizer"
 msgstr "Syntetizér"
 
@@ -3739,7 +3781,7 @@ msgstr "Syntetizér"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Síť syntézy, kterou používat jako nástroj MIDI"
 
-#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:898
+#: bse/bsemidisynth.c:436 bse/bsesong.c:739 bse/bsetrack.c:923
 msgid "Postprocessor"
 msgstr "Postprocesor"
 
@@ -3971,7 +4013,7 @@ msgstr "/Zdroje zvuku/Standardní oscilátor"
 msgid "Wave Form"
 msgstr "Tvar vlny"
 
-#: bse/bsestandardosc.c:132 bse/bsetrack.c:882 bse/bsewaveosc.c:530
+#: bse/bsestandardosc.c:132 bse/bsetrack.c:907 bse/bsewaveosc.c:530
 #: bse/bsewaveosc.c:532
 msgid "Wave"
 msgstr "Vlna"
@@ -4161,38 +4203,46 @@ msgstr "Čas vytvoření"
 msgid "Last modification time"
 msgstr "Čas poslední změny"
 
-#: bse/bsetrack.c:275
-msgid "List of available synthesis networks to choose a track instrument from"
-msgstr "Seznam dostupných sítí syntézy, ze kterých zvolit nástroj stopy"
-
-#: bse/bsetrack.c:283 bse/bsewaveosc.c:125
+#: bse/bsetrack.c:282 bse/bsewaveosc.c:125
 msgid "Available Waves"
 msgstr "Dostupné vlny"
 
-#: bse/bsetrack.c:283
+#: bse/bsetrack.c:282
 msgid "List of available waves to choose as track instrument"
 msgstr "Seznam dostupných vln, ze kterých zvolit nástroj stopy"
 
-#: bse/bsetrack.c:873
+#: bse/bsetrack.c:291
+msgid "List of available synthesis networks to choose a track instrument from"
+msgstr "Seznam dostupných sítí syntézy, ze kterých zvolit nástroj stopy"
+
+#: bse/bsetrack.c:299
+msgid "List of available mixer busses to be used as track output"
+msgstr "Seznam dostupných sběrnic mixéru, které používat jako výstup stopy"
+
+#: bse/bsetrack.c:898
 msgid "Muted"
 msgstr "Umlčeno"
 
-#: bse/bsetrack.c:875 bse/bsetrack.c:880 bse/bsetrack.c:885
+#: bse/bsetrack.c:900 bse/bsetrack.c:905 bse/bsetrack.c:910
 msgid "Synth Input"
 msgstr "Vstup syntézy"
 
-#: bse/bsetrack.c:877
+#: bse/bsetrack.c:902
 msgid "Synthesis network to be used as instrument"
 msgstr "Síť syntézy, kterou používat jako nástroj"
 
-#: bse/bsetrack.c:882
+#: bse/bsetrack.c:907
 msgid "Wave to be used as instrument"
 msgstr "Vlna, kterou používat jako nástroj"
 
 # FIXME: s/Voixes/Voices/
-#: bse/bsetrack.c:887
+#: bse/bsetrack.c:912
 msgid "Max Voixes"
 msgstr "Max hlasů"
+
+#: bse/bsetrack.c:928
+msgid "Mixer busses used as output for this track"
+msgstr "Sběrnice mixéru používané jako výstup této stopy"
 
 #: bse/bsewaveosc.c:94
 msgid "/Audio Sources/Wave Oscillator"
