@@ -117,10 +117,10 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_DEVICE_SET_CAPS:		return "Failed to set device capabilities";
     case BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL:	return "No such input channel";
     case BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL:	return "No such output channel";
-    case BSE_ERROR_SOURCE_BAD_LOOPBACK:		return "Bad loopback";
+    case BSE_ERROR_SOURCE_NO_SUCH_CONNECTION:	return "Input/Output channels not connected";
     case BSE_ERROR_SOURCE_ICHANNEL_IN_USE:	return "Input channel already in use";
-    case BSE_ERROR_SOURCE_TOO_MANY_ITRACKS:	return "Too many input tracks required";
-    case BSE_ERROR_SOURCE_TOO_MANY_OTRACKS:	return "Too many output tracks supplied";
+    case BSE_ERROR_SOURCE_CHANNELS_CONNECTED:	return "Input/Output channels already connected";
+    case BSE_ERROR_SOURCE_BAD_LOOPBACK:		return "Bad loopback";
     case BSE_ERROR_SOURCE_BUSY:			return "Synthesis module currently busy";
     case BSE_ERROR_SOURCE_TYPE_INVALID:		return "Invalid synthsis module type";
     case BSE_ERROR_PROC_BUSY: /* recursion */	return "Procedure currently busy";

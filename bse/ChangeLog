@@ -1,3 +1,16 @@
+Thu Jan 24 11:04:41 2002  Tim Janik  <timj@gtk.org>
+
+	* bseenums.[hc]: added more source conneciton errors, removed
+	unneeded errors.
+
+	* bsesource.[hc]: add joint (multi-connect) input channels.
+	this still needs implementing on the engine side, i.e.
+	jchannel->jstream, but the BSE side of things should be fully
+	intact.
+
+	* bsesource.proc: added a couple more procedures to let
+	callers deal with ichannels and jchannels correctly.
+
 Thu Jan 24 05:59:45 2002  Tim Janik  <timj@gtk.org>
 
 	* gsl*.*: applied a good bunch of build fixes, and gcc-ism fixes

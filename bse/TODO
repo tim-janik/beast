@@ -3,7 +3,7 @@ NEW:
 - loading (restore) may only work when not playing (to keep consistency
   and avoid lock contentions during playback)
 - during playback the set instruments needs to be fixed on a song  
-- fix sequential IDs to be per-type, remove project and song special casing
+- fix sequential IDs to be per-type, remove special casing in project and song
 - GSL_ALWAYS_PROCESS into instance, remove n_ostreams check from IS_CONSUMER
 
 OLD:

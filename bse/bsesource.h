@@ -45,6 +45,7 @@ extern "C" {
 #define BSE_SOURCE_ICHANNEL_NAME(src,id)  (BSE_SOURCE (src)->channel_defs->ichannel_names[(id)])
 #define BSE_SOURCE_ICHANNEL_CNAME(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_cnames[(id)])
 #define BSE_SOURCE_ICHANNEL_BLURB(src,id) (BSE_SOURCE (src)->channel_defs->ichannel_blurbs[(id)])
+#define BSE_SOURCE_IS_JOINT_ICHANNEL(s,i) (BSE_SOURCE (s)->channel_defs->jchannel_flags[(i)] != 0)
 #define BSE_SOURCE_N_OCHANNELS(src)	  (BSE_SOURCE (src)->channel_defs->n_ochannels)
 #define BSE_SOURCE_OCHANNEL_NAME(src,id)  (BSE_SOURCE (src)->channel_defs->ochannel_names[(id)])
 #define BSE_SOURCE_OCHANNEL_CNAME(src,id) (BSE_SOURCE (src)->channel_defs->ochannel_cnames[(id)])
@@ -62,13 +63,22 @@ typedef enum
 
 
 /* --- structures --- */
-typedef struct _BseSourceInput		BseSourceInput;
+typedef union  _BseSourceInput		BseSourceInput;
+typedef struct _BseSourceOutput		BseSourceOutput;
 typedef struct _BseSourceChannelDefs	BseSourceChannelDefs;
 typedef struct _BseSourceContext	BseSourceContext;
-struct _BseSourceInput
+struct _BseSourceOutput
 {
   BseSource *osource;
   guint      ochannel;
+};
+union _BseSourceInput
+{
+  BseSourceOutput    idata;
+  struct {
+    guint	     n_joints;
+    BseSourceOutput *joints;
+  }                  jdata;
 };
 struct _BseSourceContext
 {
@@ -93,6 +103,7 @@ struct _BseSourceChannelDefs
   gchar **ichannel_names;
   gchar **ichannel_cnames;
   gchar **ichannel_blurbs;
+  guint8 *jchannel_flags;
   guint   n_ochannels;
   gchar **ochannel_names;
   gchar **ochannel_cnames;
@@ -122,7 +133,9 @@ struct _BseSourceClass
 			 BseSource	*osource,
 			 guint		 ochannel);
   void	(*remove_input)	(BseSource	*source,
-			 guint		 ichannel);
+			 guint		 ichannel,
+			 BseSource	*osource,
+			 guint		 ochannel);
 };
 
 
@@ -135,12 +148,17 @@ BseErrorType	_bse_source_set_input		(BseSource	*source,
 						 guint		 ichannel,
 						 BseSource	*osource,
 						 guint		 ochannel);
-void		_bse_source_unset_input		(BseSource	*source,
-						 guint		 ichannel);
+BseErrorType	_bse_source_unset_input		(BseSource	*source,
+						 guint		 ichannel,
+						 BseSource	*osource,
+						 guint		 ochannel);
 
 
 /* --- source implementations --- */
 guint		bse_source_class_add_ichannel	(BseSourceClass	*source_class,
+						 const gchar	*name,
+						 const gchar	*blurb);
+guint		bse_source_class_add_jchannel	(BseSourceClass	*source_class,
 						 const gchar	*name,
 						 const gchar	*blurb);
 guint		bse_source_class_add_ochannel	(BseSourceClass	*source_class,

@@ -73,6 +73,10 @@ METHOD (BseSource, unset-input) {
  			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
   IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
 			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_object ("output-source", "Output Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("output-channel", "Output Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_enum ("error", "Error", NULL,
 			     BSE_TYPE_ERROR_TYPE, BSE_ERROR_NONE,
 			     BSE_PARAM_DEFAULT);
@@ -84,17 +88,17 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseSource *isource = g_value_get_object (in_values++);
   guint ichannel     = g_value_get_uint (in_values++);
+  BseSource *osource = g_value_get_object (in_values++);
+  guint ochannel     = g_value_get_uint (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
 
   /* check parameters */
-  if (!BSE_IS_SOURCE (isource))
+  if (!BSE_IS_SOURCE (isource) || !BSE_IS_SOURCE (osource) ||
+      BSE_ITEM (isource)->parent != BSE_ITEM (osource)->parent)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* disconnect */
-  if (ichannel >= BSE_SOURCE_N_ICHANNELS (isource))
-    error = BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
-  else
-    _bse_source_unset_input (isource, ichannel);
+  error = _bse_source_unset_input (isource, ichannel, osource, ochannel);
 
   /* set output parameters */
   g_value_set_enum (out_values++, error);
@@ -142,30 +146,6 @@ BODY (BseProcedureClass *proc,
   
   /* disconnect */
   _bse_source_clear_ochannels (isource);
-  
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseSource, n-ochannels) {
-  HELP	= "Get the number of output channels of a source";
-  IN	= g_param_spec_object ("source", "Source", NULL,
- 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
-			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
-}
-BODY (BseProcedureClass *proc,
-      GValue            *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BseSource *source = g_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_SOURCE (source))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  /* set output parameters */
-  g_value_set_uint (out_values++, BSE_SOURCE_N_OCHANNELS (source));
   
   return BSE_ERROR_NONE;
 }
@@ -244,6 +224,163 @@ BODY (BseProcedureClass *proc,
 
   /* set output parameters */
   g_value_set_string (out_values++, BSE_SOURCE_ICHANNEL_BLURB (source, ichannel));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, is-joint-ichannel) {
+  HELP	= "Check if an input channel is a joint (multi-connect) channel";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_boolean ("is_jchannel", "Is Joint Channel", NULL,
+				FALSE, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ichannel    = g_value_get_uint (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  g_value_set_boolean (out_values++, BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, ichannel-get-n-joints) {
+  HELP	= "Retrive the number of input connections of an input channel";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_uint ("n_joints", "Number of Connections", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ichannel    = g_value_get_uint (in_values++);
+  BseSourceInput *input;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  input = BSE_SOURCE_INPUT (source, ichannel);
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
+    g_value_set_uint (out_values++, input->jdata.n_joints);
+  else
+    g_value_set_uint (out_values++, input->idata.osource ? 1 : 0);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, ichannel-get-osource) {
+  HELP	= "Retrive output source connected to a specific joint of an input channel";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-joint", "Input Joint", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_object ("osource", "Output Source", NULL,
+			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ichannel    = g_value_get_uint (in_values++);
+  guint joint       = g_value_get_uint (in_values++);
+  BseSourceInput *input;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  input = BSE_SOURCE_INPUT (source, ichannel);
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel) && joint < input->jdata.n_joints)
+    g_value_set_object (out_values++, input->jdata.joints[joint].osource);
+  else if (joint < 1)
+    g_value_set_object (out_values++, input->idata.osource);
+  else
+    g_value_set_object (out_values++, NULL);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, ichannel-get-ochannel) {
+  HELP	= "Retrive output channel of the source connected to a specific joint of an input channel";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-channel", "Input Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  IN	= g_param_spec_uint ("input-joint", "Input Joint", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_uint ("ochannel", "Output Channel", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+  guint ichannel    = g_value_get_uint (in_values++);
+  guint joint       = g_value_get_uint (in_values++);
+  BseSourceInput *input;
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source) || ichannel >= BSE_SOURCE_N_ICHANNELS (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* set output parameters */
+  input = BSE_SOURCE_INPUT (source, ichannel);
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel) && joint < input->jdata.n_joints)
+    g_value_set_uint (out_values++, input->jdata.joints[joint].ochannel);
+  else if (joint < 1)
+    g_value_set_uint (out_values++, input->idata.ochannel);
+  else
+    g_value_set_uint (out_values++, G_MAXINT);
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BseSource, n-ochannels) {
+  HELP	= "Get the number of output channels of a source";
+  IN	= g_param_spec_object ("source", "Source", NULL,
+ 			       BSE_TYPE_SOURCE, BSE_PARAM_DEFAULT);
+  OUT   = g_param_spec_uint ("n_channels", "Number of Channels", NULL,
+			     0, G_MAXINT, 0, BSE_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      GValue            *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BseSource *source = g_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_SOURCE (source))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* set output parameters */
+  g_value_set_uint (out_values++, BSE_SOURCE_N_OCHANNELS (source));
   
   return BSE_ERROR_NONE;
 }

@@ -52,7 +52,9 @@ static void	    bse_source_real_add_input		(BseSource	*source,
 							 BseSource 	*osource,
 							 guint     	 ochannel);
 static void	    bse_source_real_remove_input	(BseSource	*source,
-							 guint		 ichannel);
+							 guint		 ichannel,
+							 BseSource      *osource,
+							 guint           ochannel);
 static void	    bse_source_real_store_private	(BseObject	*object,
 							 BseStorage	*storage);
 static BseTokenType bse_source_real_restore_private	(BseObject      *object,
@@ -97,6 +99,7 @@ bse_source_class_base_init (BseSourceClass *class)
   class->channel_defs.ichannel_names = NULL;
   class->channel_defs.ichannel_cnames = NULL;
   class->channel_defs.ichannel_blurbs = NULL;
+  class->channel_defs.jchannel_flags = NULL;
   class->channel_defs.n_ochannels = 0;
   class->channel_defs.ochannel_names = NULL;
   class->channel_defs.ochannel_cnames = NULL;
@@ -117,10 +120,12 @@ bse_source_class_base_finalize (BseSourceClass *class)
   g_free (class->channel_defs.ichannel_names);
   g_free (class->channel_defs.ichannel_cnames);
   g_free (class->channel_defs.ichannel_blurbs);
+  g_free (class->channel_defs.jchannel_flags);
   class->channel_defs.n_ichannels = 0;
   class->channel_defs.ichannel_names = NULL;
   class->channel_defs.ichannel_cnames = NULL;
   class->channel_defs.ichannel_blurbs = NULL;
+  class->channel_defs.jchannel_flags = NULL;
   for (i = 0; i < class->channel_defs.n_ochannels; i++)
     {
       g_free (class->channel_defs.ochannel_cnames[i]);
@@ -175,7 +180,8 @@ static void
 bse_source_real_destroy (BseObject *object)
 {
   BseSource *source;
-  
+  guint i;
+
   source = BSE_SOURCE (object);
 
   if (bse_object_get_qdata (object, quark_deferred_input))
@@ -189,6 +195,9 @@ bse_source_real_destroy (BseObject *object)
     }
 
   _bse_source_clear_ichannels (source);
+  for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
+    if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
+      g_free (BSE_SOURCE_INPUT (source, i)->jdata.joints);
   g_free (source->inputs);
   source->inputs = NULL;
 
@@ -215,10 +224,11 @@ channel_dup_canonify (const gchar *name)
   return cname;
 }
 
-guint
-bse_source_class_add_ichannel (BseSourceClass *source_class,
-			       const gchar    *name,
-			       const gchar    *blurb)
+static guint
+bse_source_class_add_ijchannel (BseSourceClass *source_class,
+				const gchar    *name,
+				const gchar    *blurb,
+				gboolean        is_joint_channel)
 {
   BseSourceChannelDefs *defs;
   guint i;
@@ -244,11 +254,29 @@ bse_source_class_add_ichannel (BseSourceClass *source_class,
   defs->ichannel_names = g_renew (gchar*, defs->ichannel_names, defs->n_ichannels);
   defs->ichannel_cnames = g_renew (gchar*, defs->ichannel_cnames, defs->n_ichannels);
   defs->ichannel_blurbs = g_renew (gchar*, defs->ichannel_blurbs, defs->n_ichannels);
+  defs->jchannel_flags = g_renew (guint8, defs->jchannel_flags, defs->n_ichannels);
   defs->ichannel_names[i] = g_strdup (name);
   defs->ichannel_cnames[i] = cname;
   defs->ichannel_blurbs[i] = g_strdup (blurb);
+  defs->jchannel_flags[i] = is_joint_channel != FALSE;
   
   return i;
+}
+
+guint
+bse_source_class_add_ichannel (BseSourceClass *source_class,
+			       const gchar    *name,
+			       const gchar    *blurb)
+{
+  return bse_source_class_add_ijchannel (source_class, name, blurb, FALSE);
+}
+
+guint
+bse_source_class_add_jchannel (BseSourceClass *source_class,
+			       const gchar    *name,
+			       const gchar    *blurb)
+{
+  return bse_source_class_add_ijchannel (source_class, name, blurb, TRUE);
 }
 
 guint
@@ -412,18 +440,25 @@ bse_source_context_connect_ichannel (BseSource *source,
    * as it overrides our behaviour completely
    */
 
-  if (input->osource)
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
     {
-      guint module_ostream;
-      GslModule *omodule = bse_source_get_ochannel_module (input->osource,
-							   input->ochannel,
-							   context_handle,
-							   &module_ostream);
-
-      gsl_trans_add (trans,
-		     gsl_job_connect (omodule, module_ostream,
-				      context->ichannel_modules[ichannel],
-				      context->module_istreams[ichannel]));
+      g_message ("can't connect joint channels yet"); // FIXME: bse_sub_synth_context_dismiss()
+    }
+  else
+    {
+      if (input->idata.osource)
+	{
+	  guint module_ostream;
+	  GslModule *omodule = bse_source_get_ochannel_module (input->idata.osource,
+							       input->idata.ochannel,
+							       context_handle,
+							       &module_ostream);
+	  
+	  gsl_trans_add (trans,
+			 gsl_job_connect (omodule, module_ostream,
+					  context->ichannel_modules[ichannel],
+					  context->module_istreams[ichannel]));
+	}
     }
 }
 
@@ -749,21 +784,66 @@ bse_source_real_add_input (BseSource *source,
 {
   BseSourceInput *input = BSE_SOURCE_INPUT (source, ichannel);
 
-  g_return_if_fail (input->osource == NULL);
+  if (!BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
+    g_return_if_fail (input->idata.osource == NULL);
 
-  input->osource = osource;
-  input->ochannel = ochannel;
-  osource->outputs = g_slist_prepend (osource->outputs, source);
-
-  if (source->n_contexts)	/* only if BSE_SOURCE_PREPARED() */
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
     {
-      GslTrans *trans = gsl_trans_open ();
-      guint c;
-      
-      for (c = 0; c < source->n_contexts; c++)
-	bse_source_context_connect_ichannel (source, ichannel, c, trans);
-      gsl_trans_commit (trans);
+      guint j = input->jdata.n_joints++;
+
+      input->jdata.joints = g_renew (BseSourceOutput, input->jdata.joints, input->jdata.n_joints);
+      input->jdata.joints[j].osource = osource;
+      input->jdata.joints[j].ochannel = ochannel;
+      osource->outputs = g_slist_prepend (osource->outputs, source);
+
+      if (source->n_contexts)   /* only if BSE_SOURCE_PREPARED() */
+	{
+	  GslTrans *trans = gsl_trans_open ();
+	  guint c;
+
+	  for (c = 0; c < source->n_contexts; c++)
+	    bse_source_context_connect_ichannel (source, ichannel, c, trans);
+	  gsl_trans_commit (trans);
+	}
     }
+  else
+    {
+      input->idata.osource = osource;
+      input->idata.ochannel = ochannel;
+      osource->outputs = g_slist_prepend (osource->outputs, source);
+      
+      if (source->n_contexts)	/* only if BSE_SOURCE_PREPARED() */
+	{
+	  GslTrans *trans = gsl_trans_open ();
+	  guint c;
+	  
+	  for (c = 0; c < source->n_contexts; c++)
+	    bse_source_context_connect_ichannel (source, ichannel, c, trans);
+	  gsl_trans_commit (trans);
+	}
+    }
+}
+
+static gint
+check_jchannel_connection (BseSource *source,
+			   guint      ichannel,
+			   BseSource *osource,
+			   guint      ochannel)
+{
+  BseSourceInput *input = BSE_SOURCE_INPUT (source, ichannel);
+
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
+    {
+      guint j;
+
+      for (j = 0; j < input->jdata.n_joints; j++)
+	if (input->jdata.joints[j].osource == osource &&
+	    input->jdata.joints[j].ochannel == ochannel)
+	  break;
+      return j < input->jdata.n_joints ? j : -1;
+    }
+  else
+    return ochannel == 0 && osource == input->idata.osource ? 0 : -1;
 }
 
 BseErrorType
@@ -781,7 +861,12 @@ _bse_source_set_input (BseSource *source,
     return BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
   if (ochannel >= BSE_SOURCE_N_OCHANNELS (osource))
     return BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
-  if (BSE_SOURCE_INPUT (source, ichannel)->osource)
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
+    {
+      if (check_jchannel_connection (source, ichannel, osource, ochannel) >= 0)
+	return BSE_ERROR_SOURCE_CHANNELS_CONNECTED;
+    }
+  else if (BSE_SOURCE_INPUT (source, ichannel)->idata.osource)
     return BSE_ERROR_SOURCE_ICHANNEL_IN_USE;
 
   g_object_ref (source);
@@ -797,53 +882,88 @@ _bse_source_set_input (BseSource *source,
 
 static void
 bse_source_real_remove_input (BseSource *source,
-			      guint      ichannel)
+			      guint      ichannel,
+			      BseSource *osource,
+			      guint      ochannel)
 {
-  BseSource *osource = BSE_SOURCE_INPUT (source, ichannel)->osource;
+  BseSourceInput *input = BSE_SOURCE_INPUT (source, ichannel);
   GslTrans *trans = NULL;
+  gint j = ~0;
+
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
+    {
+      j = check_jchannel_connection (source, ichannel, osource, ochannel);
+      g_return_if_fail (j >= 0);
+    }
+  else
+    g_return_if_fail (osource == BSE_SOURCE_INPUT (source, ichannel)->idata.osource);
 
   if (source->n_contexts)	/* only if BSE_SOURCE_PREPARED() */
     {
-      guint c;
-      
-      trans = gsl_trans_open ();
-      for (c = 0; c < source->n_contexts; c++)
+      if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
 	{
-	  guint istream;
-	  GslModule *module = bse_source_get_ichannel_module (source, ichannel, c, &istream);
+	  g_message ("can't disconnect jstreams yet "); // FIXME
+	}
+      else
+	{
+	  guint c;
 	  
-	  gsl_trans_add (trans, gsl_job_disconnect (module, istream));
+	  trans = gsl_trans_open ();
+	  for (c = 0; c < source->n_contexts; c++)
+	    {
+	      guint istream;
+	      GslModule *module = bse_source_get_ichannel_module (source, ichannel, c, &istream);
+	      
+	      gsl_trans_add (trans, gsl_job_disconnect (module, istream));
+	    }
 	}
     }
 
-  BSE_SOURCE_INPUT (source, ichannel)->ochannel = 0;
-  BSE_SOURCE_INPUT (source, ichannel)->osource = NULL;
+  if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, ichannel))
+    {
+      guint k = --input->jdata.n_joints;
+
+      input->jdata.joints[j].osource = input->jdata.joints[k].osource;
+      input->jdata.joints[j].ochannel = input->jdata.joints[k].ochannel;
+    }
+  else
+    {
+      input->idata.osource = NULL;
+      input->idata.ochannel = 0;
+    }
   osource->outputs = g_slist_remove (osource->outputs, source);
 
   if (trans)
     gsl_trans_commit (trans);
 }
 
-void
+BseErrorType
 _bse_source_unset_input (BseSource *source,
-			 guint      ichannel)
+			 guint      ichannel,
+			 BseSource *osource,
+			 guint      ochannel)
 {
-  BseSource *osource;
+  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_SOURCE (osource), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_ITEM (source)->parent == BSE_ITEM (osource)->parent, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (source->n_contexts == osource->n_contexts, BSE_ERROR_INTERNAL); /* paranoid, checked parent */
 
-  g_return_if_fail (BSE_IS_SOURCE (source));
-  g_return_if_fail (ichannel < BSE_SOURCE_N_ICHANNELS (source));
+  if (ichannel >= BSE_SOURCE_N_ICHANNELS (source))
+    return BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;
+  if (ochannel >= BSE_SOURCE_N_OCHANNELS (osource))
+    return BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL;
+  if (check_jchannel_connection (source, ichannel, osource, ochannel) < 0)
+    return BSE_ERROR_SOURCE_NO_SUCH_CONNECTION;
 
   g_object_ref (source);
-  osource = BSE_SOURCE_INPUT (source, ichannel)->osource;
-  if (osource)
-    {
-      g_object_ref (osource);
-      BSE_SOURCE_GET_CLASS (source)->remove_input (source, ichannel);
-      g_signal_emit (source, source_signals[SIGNAL_IO_CHANGED], 0);
-      g_signal_emit (osource, source_signals[SIGNAL_IO_CHANGED], 0);
-      g_object_unref (osource);
-    }
+  g_object_ref (osource);
+  BSE_SOURCE_GET_CLASS (source)->remove_input (source, ichannel, osource, ochannel);
+  g_signal_emit (source, source_signals[SIGNAL_IO_CHANGED], 0);
+  g_signal_emit (osource, source_signals[SIGNAL_IO_CHANGED], 0);
+  g_object_unref (osource);
   g_object_unref (source);
+
+  return BSE_ERROR_NONE;
 }
 
 void
@@ -857,13 +977,32 @@ _bse_source_clear_ichannels (BseSource *source)
   g_object_ref (source);
   for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
     {
-      BseSource *osource = BSE_SOURCE_INPUT (source, i)->osource;
+      BseSourceInput *input = BSE_SOURCE_INPUT (source, i);
+      BseSource *osource;
 
-      if (osource)
+      if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
 	{
+	  guint ochannel;
+
+	  while (input->jdata.n_joints)
+	    {
+	      osource = input->jdata.joints[0].osource;
+	      ochannel = input->jdata.joints[0].ochannel;
+
+	      io_changed = TRUE;
+	      g_object_ref (osource);
+	      BSE_SOURCE_GET_CLASS (source)->remove_input (source, i, osource, ochannel);
+	      g_signal_emit (osource, source_signals[SIGNAL_IO_CHANGED], 0);
+	      g_object_unref (osource);
+	    }
+	}
+      else if (input->idata.osource)
+	{
+	  osource = input->idata.osource;
+
 	  io_changed = TRUE;
 	  g_object_ref (osource);
-	  BSE_SOURCE_GET_CLASS (source)->remove_input (source, i);
+	  BSE_SOURCE_GET_CLASS (source)->remove_input (source, i, osource, input->idata.ochannel);
 	  g_signal_emit (osource, source_signals[SIGNAL_IO_CHANGED], 0);
 	  g_object_unref (osource);
 	}
@@ -888,13 +1027,34 @@ _bse_source_clear_ochannels (BseSource *source)
       
       g_object_ref (isource);
       for (i = 0; i < BSE_SOURCE_N_ICHANNELS (isource); i++)
-	if (isource->inputs[i].osource == source)
-	  {
-	    io_changed = TRUE;
-	    BSE_SOURCE_GET_CLASS (isource)->remove_input (isource, i);
-	    g_signal_emit (isource, source_signals[SIGNAL_IO_CHANGED], 0);
-	    break;
-	  }
+	{
+	  BseSourceInput *input = BSE_SOURCE_INPUT (isource, i);
+
+	  if (BSE_SOURCE_IS_JOINT_ICHANNEL (isource, i))
+	    {
+	      guint j;
+
+	      for (j = 0; j < input->jdata.n_joints; j++)
+		if (input->jdata.joints[j].osource == source)
+		  break;
+	      if (j < input->jdata.n_joints)
+		{
+		  io_changed = TRUE;
+		  BSE_SOURCE_GET_CLASS (isource)->remove_input (isource, i,
+								source, input->jdata.joints[j].ochannel);
+		  g_signal_emit (isource, source_signals[SIGNAL_IO_CHANGED], 0);
+		  break;
+		}
+	    }
+	  else if (input->idata.osource == source)
+	    {
+	      io_changed = TRUE;
+	      BSE_SOURCE_GET_CLASS (isource)->remove_input (isource, i,
+							    source, input->idata.ochannel);
+	      g_signal_emit (isource, source_signals[SIGNAL_IO_CHANGED], 0);
+	      break;
+	    }
+	}
       g_object_unref (isource);
     }
   if (io_changed)
@@ -908,7 +1068,7 @@ bse_source_real_store_private (BseObject  *object,
 {
   BseSource *source = BSE_SOURCE (object);
   BseProject *project = bse_item_get_project (BSE_ITEM (source));
-  guint i;
+  guint i, j;
 
   /* chain parent class' handler */
   if (BSE_OBJECT_CLASS (parent_class)->store_private)
@@ -917,28 +1077,36 @@ bse_source_real_store_private (BseObject  *object,
   for (i = 0; i < BSE_SOURCE_N_ICHANNELS (source); i++)
     {
       BseSourceInput *input = BSE_SOURCE_INPUT (source, i);
-      gchar *path;
-
-      if (!input->osource)
-	continue;
-
-      path = bse_container_make_item_path (BSE_CONTAINER (project),
-					   BSE_ITEM (input->osource),
-					   FALSE);
+      GSList *slist, *outputs = NULL;
       
-      bse_storage_break (storage);
+      if (BSE_SOURCE_IS_JOINT_ICHANNEL (source, i))
+	for (j = 0; j < input->jdata.n_joints; j++)
+	  outputs = g_slist_append (outputs, input->jdata.joints + j);
+      else if (input->idata.osource)
+	outputs = g_slist_append (outputs, &input->idata);
       
-      bse_storage_printf (storage,
-			  "(source-input \"%s\" ",
-			  BSE_SOURCE_ICHANNEL_CNAME (source, i));
-      bse_storage_push_level (storage);
-      bse_storage_printf (storage, "%s \"%s\"",
-			  path,
-			  BSE_SOURCE_OCHANNEL_CNAME (input->osource, input->ochannel));
-      bse_storage_pop_level (storage);
-      bse_storage_handle_break (storage);
-      bse_storage_putc (storage, ')');
-      g_free (path);
+      for (slist = outputs; slist; slist = slist->next)
+	{
+	  BseSourceOutput *output = slist->data;
+	  gchar *path = bse_container_make_item_path (BSE_CONTAINER (project),
+						      BSE_ITEM (output->osource),
+						      FALSE);
+	  
+	  bse_storage_break (storage);
+	  
+	  bse_storage_printf (storage,
+			      "(source-input \"%s\" ",
+			      BSE_SOURCE_ICHANNEL_CNAME (source, i));
+	  bse_storage_push_level (storage);
+	  bse_storage_printf (storage, "%s \"%s\"",
+			      path,
+			      BSE_SOURCE_OCHANNEL_CNAME (output->osource, output->ochannel));
+	  bse_storage_pop_level (storage);
+	  bse_storage_handle_break (storage);
+	  bse_storage_putc (storage, ')');
+	  g_free (path);
+	}
+      g_slist_free (outputs);
     }
 }
 
@@ -1008,10 +1176,7 @@ resolve_dinput (BseSource  *source,
 			  dinput->ochannel_name,
 			  BSE_OBJECT_NAME (item),
 			    bse_error_blurb (error));
-	  g_print ("find: %s\n", dinput->osource_path);
-	  G_BREAKPOINT ();
 	  item = bse_container_item_from_path (BSE_CONTAINER (project), dinput->osource_path);
-	  g_print ("found: %s\n", G_OBJECT_TYPE_NAME (item));
 	}
     }
   
