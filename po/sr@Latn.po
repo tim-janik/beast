@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-18 23:18+0100\n"
-"PO-Revision-Date: 2003-11-18 23:27+0100\n"
+"POT-Creation-Date: 2003-11-21 01:26+0100\n"
+"PO-Revision-Date: 2003-11-21 01:31+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -464,16 +464,104 @@ msgstr "Učitavam „%s“"
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
 
-#: beast-gtk/bstmain.c:688
+#. graphics
+#: beast-gtk/bstmain.c:659
+msgid "Cyria Arweiler"
+msgstr "Sirija Arvajler (Cyria Arweiler)"
+
+#: beast-gtk/bstmain.c:660
+msgid "Tuomas Kuosmanen"
+msgstr "Tomas Kosmanen (Tuomas Kuosmanen)"
+
+#: beast-gtk/bstmain.c:661
+msgid "Jakub Steiner"
+msgstr "Jakub Štajner (Jakub Steiner)"
+
+# nesigurno
+#: beast-gtk/bstmain.c:662
+msgid "Ville Pätsi"
+msgstr "Vilje Petsi (Ville Pätsi)"
+
+#. general code and fixes
+#: beast-gtk/bstmain.c:664
+msgid "Christian Neumair"
+msgstr "Kristijan Nojmar (Christian Neumair)"
+
+#: beast-gtk/bstmain.c:665
+msgid "Sam Hocevar"
+msgstr "Sam Hočevar (Sam Hocevar)"
+
+#: beast-gtk/bstmain.c:666
+msgid "Alper Ersoy"
+msgstr "Alper Ersoj (Alper Ersoy)"
+
+#: beast-gtk/bstmain.c:667
+msgid "Ben Collver"
+msgstr "Ben Kolver (Ben Collver)"
+
+#: beast-gtk/bstmain.c:668
+msgid "Tim Janik"
+msgstr "Tim Janik (Tim Janik)"
+
+#: beast-gtk/bstmain.c:669
+msgid "Stefan Westerfeld"
+msgstr "Štefan Vesterfeld (Stefan Westerfeld)"
+
+#. plugins
+#: beast-gtk/bstmain.c:671
+msgid "David A. Bartold"
+msgstr "Dejvid A. Bartold (David A. Bartold)"
+
+#. _("Tim Janik"),
+#. _("Stefan Westerfeld"),
+#. languages
+#: beast-gtk/bstmain.c:675
+msgid "Metin Amiroff"
+msgstr "Metin Amirof (Metin Amiroff)"
+
+#: beast-gtk/bstmain.c:676
+msgid "Alexandre Prokoudine"
+msgstr "Aleksandar Prokoudin"
+
+#: beast-gtk/bstmain.c:677 beast-gtk/bstmain.c:683
+msgid "Danilo Segan"
+msgstr "Danilo Šegan"
+
+#: beast-gtk/bstmain.c:678
+msgid "Christian Rose"
+msgstr "Kristijan Rouz (Christian Rose)"
+
+#. _("Christian Neumair"),
+#: beast-gtk/bstmain.c:680
+msgid "Miloslav Trmac"
+msgstr "Miloslav Trmac"
+
+#: beast-gtk/bstmain.c:681
+msgid "Duarte Loreto"
+msgstr "Duarte Loreto"
+
+#: beast-gtk/bstmain.c:682
+msgid "Vincent van Adrighem"
+msgstr "Vinsent van Adrigem (Vincent van Adrighem)"
+
+#: beast-gtk/bstmain.c:684
+msgid "Xavier Conde Rueda"
+msgstr "Ksavijer Konde Rueda (Xavier Conde Rueda)"
+
+#: beast-gtk/bstmain.c:685
+msgid "Kostas Papadimas"
+msgstr "Kostas Papadimas"
+
+#: beast-gtk/bstmain.c:690
 msgid "BEAST About"
 msgstr "O Zveri"
 
-#: beast-gtk/bstmain.c:689
+#: beast-gtk/bstmain.c:691
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ZVER, izdanje %s"
 
-#: beast-gtk/bstmain.c:690
+#: beast-gtk/bstmain.c:692
 msgid "Contributions made by:"
 msgstr "Takođe doprineli:"
 
@@ -829,7 +917,8 @@ msgid ""
 "properties"
 msgstr ""
 "Alat za uređivanje (1-3. dugme miša)\n"
-"Koristite 1. dugme da napravite veze, 2. dugme za premeštanje i 3. dugme da izmenite osobine"
+"Koristite 1. dugme da napravite veze, 2. dugme za premeštanje i 3. dugme da "
+"izmenite osobine"
 
 #: beast-gtk/bstsnetrouter.c:77
 msgid "Edit"
