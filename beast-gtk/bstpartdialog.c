@@ -115,7 +115,8 @@ eparam_changed (gpointer  data,
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
-  GtkWidget *hscroll, *vscroll, *eb, *child;
+  GtkWidget *eb, *child;
+  GtkRange *srange;
   BseCategorySeq *cseq;
   GxkActionList *al1;
   GtkPaned *paned;
@@ -134,8 +135,6 @@ bst_part_dialog_init (BstPartDialog *self)
   /* gadget-complete GUI */
   gadget = gxk_gadget_create ("beast", "piano-roll-box", NULL);
   gtk_container_add (GTK_CONTAINER (GXK_DIALOG (self)->vbox), gadget);
-  hscroll = gxk_gadget_find (gadget, "piano-roll-hscrollbar");
-  vscroll = gxk_gadget_find (gadget, "piano-roll-vscrollbar");
 
   /* publish actions */
   gxk_widget_publish_actions (self, "piano-edit-actions",
@@ -164,25 +163,37 @@ bst_part_dialog_init (BstPartDialog *self)
   gtk_container_remove (GTK_CONTAINER (paned), child);
   gtk_paned_pack2 (paned, child, FALSE, TRUE);
   g_object_unref (child);
-  
+
   /* piano roll */
   self->proll = gxk_gadget_find (gadget, "piano-roll");
   gxk_nullify_in_object (self, &self->proll);
   g_signal_connect (self->proll, "canvas-clicked", G_CALLBACK (piano_canvas_clicked), self);
-  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (GTK_RANGE (hscroll)));
-  gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (GTK_RANGE (vscroll)));
-  self->pctrl = bst_piano_roll_controller_new (self->proll);
-  gxk_widget_publish_action_list (self, "pctrl-canvas-tools", bst_piano_roll_controller_canvas_actions (self->pctrl));
-  gxk_widget_publish_action_list (self, "pctrl-note-tools", bst_piano_roll_controller_note_actions (self->pctrl));
-  gxk_widget_publish_action_list (self, "pctrl-quant-tools", bst_piano_roll_controller_quant_actions (self->pctrl));
+  srange = gxk_gadget_find (gadget, "piano-roll-hscrollbar");
+  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (srange));
+  srange = gxk_gadget_find (gadget, "piano-roll-vscrollbar");
+  gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (srange));
+  self->pictrl = bst_piano_roll_controller_new (self->proll);
+  gxk_widget_publish_action_list (self, "pctrl-canvas-tools", bst_piano_roll_controller_canvas_actions (self->pictrl));
+  gxk_widget_publish_action_list (self, "pctrl-note-tools", bst_piano_roll_controller_note_actions (self->pictrl));
+  gxk_widget_publish_action_list (self, "pctrl-quant-tools", bst_piano_roll_controller_quant_actions (self->pictrl));
 
   /* event roll */
   self->eroll = gxk_gadget_find (gadget, "event-roll");
   gxk_nullify_in_object (self, &self->eroll);
   g_signal_connect (self->eroll, "canvas-clicked", G_CALLBACK (event_canvas_clicked), self);
-  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pctrl->quant_rtools, self->pctrl->canvas_rtools);
-  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->eroll), gtk_range_get_adjustment (GTK_RANGE (hscroll)));
+  self->ectrl = bst_event_roll_controller_new (self->eroll, self->pictrl->quant_rtools, self->pictrl->canvas_rtools);
+  srange = gxk_gadget_find (gadget, "piano-roll-hscrollbar");
+  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->eroll), gtk_range_get_adjustment (srange));
   bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
+
+  /* pattern view */
+  self->pview = gxk_gadget_find (gadget, "pattern-view");
+  gxk_nullify_in_object (self, &self->pview);
+  srange = gxk_gadget_find (gadget, "pattern-view-hscrollbar");
+  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->pview), gtk_range_get_adjustment (srange));
+  srange = gxk_gadget_find (gadget, "pattern-view-vscrollbar");
+  gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->pview), gtk_range_get_adjustment (srange));
+  self->pvctrl = bst_pattern_controller_new (self->pview, self->pictrl->quant_rtools);
 
   /* event roll children */
   g_object_new (GTK_TYPE_LABEL, "visible", TRUE, "label", "C", "parent", self->eroll, NULL);
@@ -234,7 +245,7 @@ bst_part_dialog_finalize (GObject *object)
 
   bst_part_dialog_set_proxy (self, 0);
 
-  bst_piano_roll_controller_unref (self->pctrl);
+  bst_piano_roll_controller_unref (self->pictrl);
   bst_event_roll_controller_unref (self->ectrl);
   
   G_OBJECT_CLASS (bst_part_dialog_parent_class)->finalize (object);
@@ -263,6 +274,8 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
   if (project)
     {
       bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
+      if (self->pview)
+        bst_pattern_view_set_proxy (self->pview, part);
       if (self->proll)
         bst_piano_roll_set_proxy (self->proll, part);
       if (self->eroll)
@@ -329,19 +342,19 @@ part_dialog_action_exec (gpointer data,
   switch (action)
     {
     case ACTION_CLEAR:
-      bst_piano_roll_controller_clear (self->pctrl);
+      bst_piano_roll_controller_clear (self->pictrl);
       bst_event_roll_controller_clear (self->ectrl);
       break;
     case ACTION_CUT:
-      bst_piano_roll_controller_cut (self->pctrl);
+      bst_piano_roll_controller_cut (self->pictrl);
       bst_event_roll_controller_cut (self->ectrl);
       break;
     case ACTION_COPY:
-      if (!bst_piano_roll_controller_copy (self->pctrl))
+      if (!bst_piano_roll_controller_copy (self->pictrl))
         bst_event_roll_controller_copy (self->ectrl);
       break;
     case ACTION_PASTE:
-      bst_piano_roll_controller_paste (self->pctrl);
+      bst_piano_roll_controller_paste (self->pictrl);
       bst_event_roll_controller_paste (self->ectrl);
       break;
     case ACTION_UNDO:
@@ -374,7 +387,7 @@ part_dialog_action_check (gpointer data,
     case ACTION_COPY:
       return TRUE;
     case ACTION_PASTE:
-      return (bst_piano_roll_controler_clipboard_full (self->pctrl) ||
+      return (bst_piano_roll_controler_clipboard_full (self->pictrl) ||
               bst_event_roll_controler_clipboard_full (self->ectrl));
     case ACTION_UNDO:
       return self->project && bse_project_undo_depth (self->project) > 0;

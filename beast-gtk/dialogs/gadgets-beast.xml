@@ -7,9 +7,10 @@
   xmlns:size="http://beast.gtk.org/xmlns:size" >
   
   <!-- misc BEAST widgets -->
-  <xdef:piano-roll inherit="BstPianoRoll" />
+  <xdef:piano-roll    inherit="BstPianoRoll" />
+  <xdef:pattern-view  inherit="BstPatternView" />
   <xdef:zoomed-window inherit="BstZoomedWindow" />
-  <xdef:event-roll inherit="BstEventRoll" />
+  <xdef:event-roll    inherit="BstEventRoll" />
   
   <!-- track view -->
   <xdef:track-view inherit="BstTrackView" border-width="3" >
@@ -209,73 +210,109 @@
 	</tool-area>
       </toolbar>
     </vbox>
-    <vpaned name="piano-paned" height="500" position="400" pack:expand="1" >
-      <!--! child1 of the vpaned is meant to expand, but only gtk+-2.4 has
-      !   ! child properties on paned, so C code patches up "piano-paned"
-      -->
-      <hbox spacing="3" >
-	<frame-shadow-in pack:expand="1" >
-	  <piano-roll height="200" >
-	    <popup-menu name="piano-popup" >
-	      <menu-title _label="Piano Notes" />
-	      <menu-separator />
-	      <submenu _label="_Tools" >
-		<menu-factory action-root="" actions="pctrl-canvas-tools" />
-	      </submenu>
-	      <submenu _label="_Edit" >
-		<menu-factory action-root="" actions="piano-edit-actions" />
-		<menu-factory action-root="" actions="piano-edit-undo" separator="1" />
-		<menu-factory action-root="" actions="piano-clear-undo" />
-	      </submenu>
-	      <submenu _label="_Quantization" >
-		<menu-factory action-root="" actions="pctrl-quant-tools" />
-	      </submenu>
-	      <submenu _label="Note _Length" >
-		<menu-factory action-root="" actions="pctrl-note-tools" />
-	      </submenu>
-	      <menu-action-separator action-root="" actions="part-scripts" />
-	      <submenu _label="_Utilities" hidden-when-insensitive="1" >
-		<menu-tearoff />
-		<menu-factory action-root="" actions="part-scripts" />
-	      </submenu>
-	    </popup-menu>
-	    <popup-menu name="event-popup" >
-              <menu-title _label="Events" />
-	      <menu-separator />
-	      <submenu _label="_Tools" >
-		<menu-factory action-root="" actions="pctrl-canvas-tools" />
-	      </submenu>
-	      <submenu _label="_Edit" >
-		<menu-factory action-root="" actions="piano-edit-actions" />
-		<menu-factory action-root="" actions="piano-edit-undo" separator="1" />
-		<menu-factory action-root="" actions="piano-clear-undo" />
-	      </submenu>
-	      <submenu _label="_Quantization" >
-		<menu-factory action-root="" actions="pctrl-quant-tools" />
-	      </submenu>
-	    </popup-menu>
-	  </piano-roll>
-	</frame-shadow-in>
-	<vscrollbar name="piano-roll-vscrollbar" size:hgroup="scroll-size" />
-      </hbox>
-      <hbox spacing="3" >
-	<vbox spacing="3" pack:expand="1" >
+    <notebook pack:expand="1">
+      <vbox>
+	<hbox pack:expand="1" >
 	  <frame-shadow-in pack:expand="1" >
-	    <event-roll height="50" />
+	    <pattern-view />
 	  </frame-shadow-in>
-	  <hbox>
-	    <label _label="Control Type:" expand="1" />
-	    <alignment name="event-roll-control-area" />
+	  <vscrollbar name="pattern-view-vscrollbar" size:hgroup="scroll-size" />
+	</hbox>
+	<hbox >
+	  <hscrollbar name="pattern-view-hscrollbar" expand="1" />
+	  <alignment size:hgroup="scroll-size" />
+	</hbox>
+      </vbox>
+      <vbox>
+	<vpaned name="piano-paned" height="500" position="400" pack:expand="1" >
+	  <!--! child1 of the vpaned is meant to expand, but only gtk+-2.4 has
+	  !   ! child properties on paned, so C code patches up "piano-paned"
+	  -->
+	  <hbox >
+	    <frame-shadow-in pack:expand="1" >
+	      <piano-roll height="200" >
+		<popup-menu name="piano-popup" >
+		  <menu-title _label="Piano Notes" />
+		  <menu-separator />
+		  <submenu _label="_Tools" >
+		    <menu-factory action-root="" actions="pctrl-canvas-tools" />
+		  </submenu>
+		  <submenu _label="_Edit" >
+		    <menu-factory action-root="" actions="piano-edit-actions" />
+		    <menu-factory action-root="" actions="piano-edit-undo" separator="1" />
+		    <menu-factory action-root="" actions="piano-clear-undo" />
+		  </submenu>
+		  <submenu _label="_Quantization" >
+		    <menu-factory action-root="" actions="pctrl-quant-tools" />
+		  </submenu>
+		  <submenu _label="Note _Length" >
+		    <menu-factory action-root="" actions="pctrl-note-tools" />
+		  </submenu>
+		  <menu-action-separator action-root="" actions="part-scripts" />
+		  <submenu _label="_Utilities" hidden-when-insensitive="1" >
+		    <menu-tearoff />
+		    <menu-factory action-root="" actions="part-scripts" />
+		  </submenu>
+		</popup-menu>
+	      </piano-roll>
+	    </frame-shadow-in>
+	    <vscrollbar name="piano-roll-vscrollbar" size:hgroup="scroll-size" />
 	  </hbox>
-	</vbox>
-	<alignment size:hgroup="scroll-size" />
-      </hbox>
-    </vpaned>
-    <hbox>
-      <hscrollbar name="piano-roll-hscrollbar" expand="1" />
-      <alignment size:hgroup="scroll-size" />
-    </hbox>
+	  <hbox >
+	    <vbox spacing="3" pack:expand="1" >
+	      <frame-shadow-in pack:expand="1" >
+		<event-roll height="50" >
+		  <popup-menu name="event-popup" >
+		    <menu-title _label="Events" />
+		    <menu-separator />
+		    <submenu _label="_Tools" >
+		      <menu-factory action-root="" actions="pctrl-canvas-tools" />
+		    </submenu>
+		    <submenu _label="_Edit" >
+		      <menu-factory action-root="" actions="piano-edit-actions" />
+		      <menu-factory action-root="" actions="piano-edit-undo" separator="1" />
+		      <menu-factory action-root="" actions="piano-clear-undo" />
+		    </submenu>
+		    <submenu _label="_Quantization" >
+		      <menu-factory action-root="" actions="pctrl-quant-tools" />
+		    </submenu>
+		  </popup-menu>
+		</event-roll>
+	      </frame-shadow-in>
+	      <hbox>
+		<label _label="Control Type:" expand="1" />
+		<alignment name="event-roll-control-area" />
+	      </hbox>
+	    </vbox>
+	    <alignment size:hgroup="scroll-size" />
+	  </hbox>
+	</vpaned>
+	<hbox>
+	  <hscrollbar name="piano-roll-hscrollbar" expand="1" />
+	  <alignment size:hgroup="scroll-size" />
+	</hbox>
+      </vbox>
+    </notebook>
   </xdef:piano-roll-box>
+
+  <!-- pattern editor keybinding dialog -->
+  <xdef:key-bindings-box inherit="vbox" >
+    <vbox spacing="3" expand="1" >
+      <scrolled-window shadow-type="shadow-in" pack:expand="1"
+	hscrollbar-policy="automatic" >
+	<tree-view name="binding-tree-view" />
+      </scrolled-window>
+      <alignment xscale="0" >
+	<hbox spacing="3" >
+	  <big-button-factory actions="key-bindings-actions" can-focus="1" />
+	</hbox>
+      </alignment>
+      <scrolled-window shadow-type="shadow-in" pack:expand="1"
+	hscrollbar-policy="automatic" >
+	<tree-view name="function-tree-view" />
+      </scrolled-window>
+    </vbox>
+  </xdef:key-bindings-box>
   
   <!-- beast-menubar -->
   <xdef:beast-menubar inherit="menubar" >

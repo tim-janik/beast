@@ -40,6 +40,11 @@ STOCK_IMAGE_DEFS = @STRIP_BEGIN@ \
 	STOCK_NOTE_ICON			$(srcdir)/binote.png		\
 	STOCK_BROWSE_IMAGE		$(srcdir)/browse-image.png	\
 	STOCK_COLOR_SELECTOR		$(srcdir)/colorselector.png	\
+	STOCK_ARROW_UP			$(srcdir)/arrow_up.png		\
+	STOCK_ARROW_LEFT		$(srcdir)/arrow_left.png	\
+	STOCK_ARROW_RIGHT		$(srcdir)/arrow_right.png	\
+	STOCK_ARROW_DOWN		$(srcdir)/arrow_down.png	\
+	STOCK_EDIT			$(srcdir)/edit.png		\
 	STOCK_EDIT_TOOL			$(srcdir)/editor.png		\
 	STOCK_EVENT_CONTROL		$(srcdir)/event-control.png	\
 	STOCK_FOLDER			$(srcdir)/folder.png		\

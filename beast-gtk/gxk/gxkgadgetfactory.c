@@ -349,7 +349,7 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
               g_free (key_path);
             }
         }
-      for (i = self->per_action ? 0 : n_actions; i < n_actions; i++)
+      for (i = self->per_action ? 0 : G_MAXINT; i < n_actions; i++)
         {
           GxkGadget *gadget, *parent;
           GxkGadgetArgs *action_args;

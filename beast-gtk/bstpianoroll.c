@@ -35,8 +35,7 @@
 #define	MIN_SEMITONE(self)	(SFI_NOTE_SEMITONE ((self)->min_note))
 #define X_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->x_offset)
 #define Y_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->y_offset)
-#define PLAYOUT(self, i)        (GXK_SCROLL_CANVAS (self)->pango_layout[i])
-#define PLAYOUT_HPANEL(self)    (PLAYOUT (self, PINDEX_HPANEL))
+#define PLAYOUT_HPANEL(self)    (gxk_scroll_canvas_get_pango_layout (GXK_SCROLL_CANVAS (self), 0))
 #define COLOR_GC(self, i)       (GXK_SCROLL_CANVAS (self)->color_gc[i])
 #define COLOR_GC_HGRID(self)    (COLOR_GC (self, CINDEX_HGRID))
 #define COLOR_GC_VGRID(self)    (COLOR_GC (self, CINDEX_VGRID))
@@ -72,11 +71,6 @@ static guint	signal_piano_clicked = 0;
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstPianoRoll, bst_piano_roll, GXK_TYPE_SCROLL_CANVAS);
-
-enum {
-  PINDEX_HPANEL,
-  PINDEX_COUNT
-};
 
 static void
 piano_roll_class_setup_skin (BstPianoRollClass *class)
@@ -114,7 +108,6 @@ piano_roll_class_setup_skin (BstPianoRollClass *class)
 #define CINDEX_MBAR     16
   };
   GxkScrollCanvasClass *scroll_canvas_class = GXK_SCROLL_CANVAS_CLASS (class);
-  scroll_canvas_class->n_pango_layouts = PINDEX_COUNT;
   scroll_canvas_class->n_colors = G_N_ELEMENTS (colors);
   scroll_canvas_class->colors = colors;
   colors[CINDEX_HGRID] = gdk_color_from_rgb (BST_SKIN_CONFIG (piano_hgrid));
@@ -1056,7 +1049,8 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
 			 NULL);
       self->min_note = bse_part_get_min_note (self->proxy);
       self->max_note = bse_part_get_max_note (self->proxy);
-      self->max_ticks = bse_part_get_max_tick (self->proxy);
+      bse_proxy_get (self->proxy, "last-tick", &self->max_ticks, NULL);
+      self->max_ticks = MAX (self->max_ticks, 1);
       bst_piano_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));

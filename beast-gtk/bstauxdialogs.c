@@ -297,3 +297,118 @@ bst_color_popup_new (const gchar            *title,
     }
   return dialog;
 }
+
+
+/* --- key grabber dialog --- */
+gboolean
+bst_key_combo_valid (guint              keyval,
+                     GdkModifierType    modifiers)
+{
+  static const guint extra_valid[] = {
+    GDK_Tab, GDK_ISO_Left_Tab, GDK_KP_Tab,
+    GDK_Up, GDK_Down, GDK_Left, GDK_Right,
+    GDK_KP_Up, GDK_KP_Down, GDK_KP_Left, GDK_KP_Right,
+    0
+  };
+  guint i;
+  if (gtk_accelerator_valid (keyval, modifiers))
+    return TRUE;
+  for (i = 0; extra_valid[i]; i++)
+    if (extra_valid[i] == keyval)
+      return TRUE;
+  return FALSE;
+}
+
+static guint           grab_key_keyval;
+static GdkModifierType grab_key_modifier;
+static gboolean        grab_key_valid;
+
+static gboolean
+grab_key_event (GtkWidget *window,
+                GdkEvent  *event)
+{
+  switch (event->type)
+    {
+    case GDK_BUTTON_PRESS:
+    case GDK_2BUTTON_PRESS:
+    case GDK_3BUTTON_PRESS:
+      gtk_widget_hide (window);
+      break;
+    case GDK_KEY_PRESS:
+      grab_key_keyval = event->key.keyval;
+      grab_key_modifier = event->key.state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK);
+      if (bst_key_combo_valid (grab_key_keyval, grab_key_modifier))
+        {
+          grab_key_valid = TRUE;
+          gtk_widget_hide (window);
+        }
+      break;
+    case GDK_DELETE:
+      gtk_widget_hide (window);
+      break;
+    default: ;
+    }
+  return !GTK_WIDGET_VISIBLE (window);
+}
+
+gboolean
+bst_key_combo_popup (const gchar            *function,
+                     guint                  *keyval,
+                     GdkModifierType        *modifier)
+{
+  static GtkWidget *key_window;
+  static GtkWidget *label;
+  if (!key_window)
+    {
+      key_window = g_object_new (GTK_TYPE_WINDOW,
+                                 "type", GTK_WINDOW_POPUP,
+                                 "modal", TRUE,
+                                 "window-position", GTK_WIN_POS_CENTER_ALWAYS,
+                                 "default-width", 320,
+                                 "default-height", 200,
+                                 NULL);
+      label = g_object_new (GTK_TYPE_LABEL,
+                            "visible", TRUE,
+                            "wrap", TRUE,
+                            "parent",
+                            g_object_new (GTK_TYPE_ALIGNMENT,
+                                          "visible", TRUE,
+                                          "border-width", 10,
+                                          "parent",
+                                          g_object_new (GTK_TYPE_FRAME,
+                                                        "visible", TRUE,
+                                                        "parent", key_window,
+                                                        "shadow-type", GTK_SHADOW_ETCHED_OUT,
+                                                        NULL),
+                                          NULL),
+                            NULL);
+      g_signal_connect (key_window, "event", G_CALLBACK (grab_key_event), NULL);
+    }
+  if (function && function[0])
+    {
+      gchar *str = g_strdup_printf (_("Please press the keyboard shortcut to be installed for function: %s"), function);
+      gtk_label_set_text (GTK_LABEL (label), str);
+      g_free (str);
+    }
+  else
+    gtk_label_set_text (GTK_LABEL (label), _("Please press the keyboard shortcut to be installed..."));
+  grab_key_valid = FALSE;
+  gtk_widget_show (key_window);
+  if (gxk_grab_pointer_and_keyboard (key_window->window, TRUE, GDK_BUTTON_PRESS_MASK,
+                                     NULL, NULL, GDK_CURRENT_TIME))
+    {
+      while (GTK_WIDGET_VISIBLE (key_window))
+        {
+          GDK_THREADS_LEAVE ();
+          g_main_iteration (TRUE);
+          GDK_THREADS_ENTER ();
+        }
+      gxk_ungrab_pointer_and_keyboard (key_window->window, GDK_CURRENT_TIME);
+    }
+  gtk_widget_hide (key_window);
+  if (keyval)
+    *keyval = grab_key_valid ? grab_key_keyval : 0;
+  if (modifier)
+    *modifier = grab_key_valid ? grab_key_modifier : 0;
+  return grab_key_valid;
+}

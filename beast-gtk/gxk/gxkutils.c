@@ -1516,6 +1516,25 @@ gxk_tree_selection_unselect_ipath (GtkTreeSelection *selection,
   gtk_tree_path_free (path);
 }
 
+void
+gxk_tree_view_select_index (GtkTreeView           *tview,
+                            guint                  index)
+{
+  GtkTreeSelection *tsel;
+  GtkTreePath *path;
+  g_return_if_fail (GTK_IS_TREE_VIEW (tview));
+  tsel = gtk_tree_view_get_selection (tview);
+  path = gtk_tree_path_new ();
+  gtk_tree_path_append_index (path, index);
+  gtk_tree_selection_select_path (tsel, path);
+  if (gtk_tree_selection_path_is_selected (tsel, path))
+    {
+      /* GTKFIX: this can trigger an assertion on empty sort models */
+      gtk_tree_view_set_cursor (tview, path, NULL, FALSE);
+    }
+  gtk_tree_path_free (path);
+}
+
 static GSList           *browse_selection_queue = NULL;
 static guint             browse_selection_handler_id = 0;
 static GtkTreeSelection *browse_selection_ignore = NULL;
@@ -1624,8 +1643,6 @@ gxk_tree_selection_force_browse (GtkTreeSelection *selection,
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
   if (model)
     g_return_if_fail (GTK_IS_TREE_MODEL (model));
-  return; // FIXME: hack disabled
-
   if (!gxk_signal_handler_pending (selection, "changed", G_CALLBACK (browse_selection_changed), selection))
     g_signal_connect_data (selection, "changed", G_CALLBACK (browse_selection_changed), selection, NULL, 0);
   if (model && !gxk_signal_handler_pending (model, "row-inserted", G_CALLBACK (browse_selection_changed), selection))
@@ -2503,11 +2520,21 @@ gxk_menu_check_sensitive (GtkMenu *menu)
 }
 
 static void
-submenu_check_sensitive (GtkMenu *menu)
+submenu_adjust_sensitivity (GtkMenu *menu)
 {
   GtkWidget *widget = gtk_menu_get_attach_widget (menu);
   if (GTK_IS_MENU_ITEM (widget))
-    gtk_widget_set_sensitive (widget, gxk_menu_check_sensitive (menu));
+    {
+      gboolean sensitive = gxk_menu_check_sensitive (menu);
+      if (sensitive != GTK_WIDGET_SENSITIVE (widget))
+        {
+          GtkWidget *parent = widget->parent;
+          gtk_widget_set_sensitive (widget, sensitive);
+          /* push change along to parent if necessary */
+          if (parent && gxk_signal_handler_pending (parent, "parent-set", G_CALLBACK (submenu_adjust_sensitivity), NULL))
+            submenu_adjust_sensitivity (GTK_MENU (parent));
+        }
+    }
 }
 
 static void
@@ -2538,7 +2565,7 @@ menu_item_propagate_hierarchy_changed (GtkMenuItem *menu_item)
  * the necessary hooks on the @menu to automatically
  * update sensitivity of @menu_item in response
  * to children being deleted or added to the @menu.
- * The rationality behind this is to avoid empty menus
+ * The rationale behind this is to avoid empty menus
  * being presented to the user.
  * Also, a propagation mechanism is set up, so @menu
  * and submenus thereof automatically fetch their
@@ -2558,13 +2585,13 @@ gxk_menu_attach_as_submenu (GtkMenu     *menu,
     g_signal_connect_after (menu_item, "hierarchy-changed", G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL);
   menu_item_propagate_hierarchy_changed (menu_item);
 
-  if (!gxk_signal_handler_pending (menu, "parent-set", G_CALLBACK (submenu_check_sensitive), NULL))
+  if (!gxk_signal_handler_pending (menu, "parent-set", G_CALLBACK (submenu_adjust_sensitivity), NULL))
     g_object_connect (menu,
-                      "signal_after::parent-set", submenu_check_sensitive, NULL,
-                      "signal_after::add", submenu_check_sensitive, NULL,
-                      "signal_after::remove", submenu_check_sensitive, NULL,
+                      "signal_after::parent-set", submenu_adjust_sensitivity, NULL,
+                      "signal_after::add", submenu_adjust_sensitivity, NULL,
+                      "signal_after::remove", submenu_adjust_sensitivity, NULL,
                       NULL);
-  submenu_check_sensitive (menu);
+  submenu_adjust_sensitivity (menu);
 }
 
 static void

@@ -248,6 +248,8 @@ void   gxk_tree_selection_select_ipath   (GtkTreeSelection      *selection,
 void   gxk_tree_selection_unselect_ipath (GtkTreeSelection      *selection,
 					  gint			 first_index,
 					  ...);
+void   gxk_tree_view_select_index        (GtkTreeView           *tview,
+                                          guint                  index);
 void   gxk_tree_selection_force_browse	 (GtkTreeSelection	*selection,
 					  GtkTreeModel		*model);
 void   gxk_tree_view_get_bin_window_pos	 (GtkTreeView		*tree,

@@ -629,7 +629,8 @@ bst_event_roll_set_proxy (BstEventRoll *self,
 			 // "swapped_signal::property-notify::uname", event_roll_update_name, self,
 			 "swapped_signal::range-changed", event_roll_update, self,
 			 NULL);
-      self->max_ticks = bse_part_get_max_tick (self->proxy);
+      bse_proxy_get (self->proxy, "last-tick", &self->max_ticks, NULL);
+      self->max_ticks = MAX (self->max_ticks, 1);
       bst_event_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));

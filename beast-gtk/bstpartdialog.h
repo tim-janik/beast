@@ -20,6 +20,8 @@
 
 #include	"bstpianoroll.h"
 #include	"bsteventroll.h"
+#include	"bstpatternview.h"
+#include	"bstpatternctrl.h"
 #include	"bstpianorollctrl.h"
 #include	"bsteventrollctrl.h"
 
@@ -39,13 +41,15 @@ typedef	struct	_BstPartDialog		BstPartDialog;
 typedef	struct	_BstPartDialogClass	BstPartDialogClass;
 struct _BstPartDialog
 {
-  GxkDialog	parent_object;
+  GxkDialog	          parent_object;
 
-  BstPianoRoll  *proll;
-  BstPianoRollController *pctrl;
-  BstEventRoll  *eroll;
+  BstPianoRoll           *proll;
+  BstPianoRollController *pictrl;
+  BstEventRoll           *eroll;
   BstEventRollController *ectrl;
-  SfiProxy       project;
+  BstPatternView         *pview;
+  BstPatternController   *pvctrl;
+  SfiProxy                project;
 };
 struct _BstPartDialogClass
 {

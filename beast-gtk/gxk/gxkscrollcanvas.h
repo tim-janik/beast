@@ -115,7 +115,8 @@ struct _GxkScrollCanvas
   GdkWindow            *canvas, *top_panel, *left_panel, *right_panel, *bottom_panel;
   GdkPixmap            *canvas_pixmap;
   GdkGC               **color_gc;       /* array of size class->n_colors */
-  PangoLayout         **pango_layout;   /* array of size class->n_pango_layouts */
+  guint                 n_pango_layouts;
+  PangoLayout         **pango_layouts;
   guint                 n_markers;
   GxkScrollMarker      *markers;
   /* scroll offset */
@@ -136,7 +137,6 @@ typedef struct
   guint                 hscrollable : 1;
   guint                 vscrollable : 1;
   /* skin config */
-  guint                 n_pango_layouts;
   guint                 n_colors;       /* must be const across skin changes */
   const GdkColor       *colors;
   gchar                *image_file_name;
@@ -197,6 +197,14 @@ void             gxk_scroll_canvas_set_vadjustment         (GxkScrollCanvas     
 void             gxk_scroll_canvas_update_adjustments      (GxkScrollCanvas        *self,
                                                             gboolean                hadj,
                                                             gboolean                vadj);
+void             gxk_scroll_canvas_scroll_to               (GxkScrollCanvas        *self,
+                                                            gint                    scroll_area_x,
+                                                            gint                    scroll_area_y);
+void             gxk_scroll_canvas_make_visible            (GxkScrollCanvas        *self,
+                                                            gint                    scroll_area_x,
+                                                            gint                    scroll_area_y,
+                                                            gint                    scroll_area_width,
+                                                            gint                    scroll_area_height);
 void             gxk_scroll_canvas_reallocate              (GxkScrollCanvas        *self);
 gboolean         gxk_scroll_canvas_dragging                (GxkScrollCanvas        *self);
 void             gxk_scroll_canvas_drag_abort              (GxkScrollCanvas        *self);
@@ -212,6 +220,10 @@ void             gxk_scroll_canvas_set_right_panel_cursor  (GxkScrollCanvas     
                                                             GdkCursorType           cursor);
 void             gxk_scroll_canvas_set_bottom_panel_cursor (GxkScrollCanvas        *self,
                                                             GdkCursorType           cursor);
+PangoLayout*     gxk_scroll_canvas_get_pango_layout        (GxkScrollCanvas        *self,
+                                                            guint                   nth);
+PangoLayout*     gxk_scroll_canvas_peek_pango_layout       (GxkScrollCanvas        *self,
+                                                            guint                   nth);
 GxkScrollMarker* gxk_scroll_canvas_lookup_marker           (GxkScrollCanvas        *self,
                                                             guint                   index,
                                                             guint                  *count);

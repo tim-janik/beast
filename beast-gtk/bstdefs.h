@@ -39,6 +39,9 @@ typedef enum {
   BST_QUANTIZE_TACT		= 65535
 } BstQuantizationType;
 
+
+typedef struct _BstKeyBinding BstKeyBinding;
+
 /* choose IDs that are unlikely to clash with category IDs */
 #define BST_GENERIC_ROLL_TOOL_FIRST	(G_MAXINT - 100000)
 typedef enum /*< skip >*/

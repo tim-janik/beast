@@ -225,7 +225,7 @@ bst_skin_dump (const gchar *file_name)
   sfi_wstore_printf (wstore, "; skin-file for BEAST v%s\n", BST_VERSION);
 
   /* store BstSkinConfig */
-  sfi_wstore_puts (wstore, "\n; BstSkinConfig Dump\n");
+  sfi_wstore_puts (wstore, "\n");
   rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
   if (1)
     {

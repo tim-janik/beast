@@ -23,6 +23,7 @@
 #include "bstwaveview.h"
 #include "bstpartview.h"
 #include "bstpianoroll.h"
+#include "bstpatternview.h"
 #include "bsteventroll.h"
 #include <fcntl.h>
 #include <errno.h>
@@ -111,6 +112,7 @@ _bst_init_gadgets (void)
   gxk_gadget_define_widget_type (BST_TYPE_PART_VIEW);
   gxk_gadget_define_widget_type (BST_TYPE_PIANO_ROLL);
   gxk_gadget_define_widget_type (BST_TYPE_EVENT_ROLL);
+  gxk_gadget_define_widget_type (BST_TYPE_PATTERN_VIEW);
   gxk_gadget_define_widget_type (BST_TYPE_ZOOMED_WINDOW);
   text = gxk_zfile_uncompress (BST_GADGETS_STANDARD_SIZE, BST_GADGETS_STANDARD_DATA, G_N_ELEMENTS (BST_GADGETS_STANDARD_DATA));
   gxk_gadget_parse_text ("beast", text, -1, NULL, NULL);

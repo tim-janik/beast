@@ -79,4 +79,14 @@ record SkinConfig {
   };
 };
 
+/* pattern editor key bindings */
+record KeyBindingItem {
+  String key_name   = (NULL, NULL, NULL, STANDARD);
+  String func_name  = (NULL, NULL, NULL, STANDARD);
+  Real   func_param = (NULL, NULL, 0, -1e37, 1e30, 100, STANDARD ":scale");
+};
+sequence KeyBindingItemSeq {
+  KeyBindingItem items;
+};
+
 };

@@ -31,9 +31,8 @@
 #define	ALLOCATION(self)	(&GTK_WIDGET (self)->allocation)
 #define X_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->x_offset)
 #define Y_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->y_offset)
-#define PLAYOUT(self, i)        (GXK_SCROLL_CANVAS (self)->pango_layout[i])
-#define PLAYOUT_HPANEL(self)    (PLAYOUT (self, PINDEX_HPANEL))
-#define PLAYOUT_CANVAS(self)    (PLAYOUT (self, PINDEX_CANVAS))
+#define PLAYOUT_HPANEL(self)    (gxk_scroll_canvas_get_pango_layout (GXK_SCROLL_CANVAS (self), 0))
+#define PLAYOUT_CANVAS(self)    (gxk_scroll_canvas_get_pango_layout (GXK_SCROLL_CANVAS (self), 1))
 #define COLOR_GC(self, i)       (GXK_SCROLL_CANVAS (self)->color_gc[i])
 #define COLOR_GC_POS(self)      (COLOR_GC (self, CINDEX_POS))
 #define COLOR_GC_LOOP(self)     (COLOR_GC (self, CINDEX_LOOP))
@@ -69,11 +68,6 @@ static guint	signal_stop_edit = 0;
 /* --- functions --- */
 G_DEFINE_TYPE (BstTrackRoll, bst_track_roll, GXK_TYPE_SCROLL_CANVAS);
 
-enum {
-  PINDEX_HPANEL,
-  PINDEX_CANVAS,
-  PINDEX_COUNT
-};
 enum {
   CINDEX_POS,
   CINDEX_LOOP,
@@ -1182,7 +1176,6 @@ bst_track_roll_class_init (BstTrackRollClass *class)
 
   scroll_canvas_class->hscrollable = TRUE;
   scroll_canvas_class->vscrollable = TRUE;
-  scroll_canvas_class->n_pango_layouts = PINDEX_COUNT;
   scroll_canvas_class->n_colors = CINDEX_COUNT;
   scroll_canvas_class->colors = colors;
   scroll_canvas_class->get_layout = track_roll_get_layout;

@@ -37,21 +37,22 @@ typedef	struct	_BstPreferences      BstPreferences;
 typedef	struct	_BstPreferencesClass BstPreferencesClass;
 struct _BstPreferences
 {
-  GtkVBox	 parent_object;
+  GtkVBox	        parent_object;
 
-  GtkNotebook	*notebook;
+  GtkNotebook	       *notebook;
+  GtkWidget	       *apply;
 
-  SfiRec	*bstrec;
-  SfiRing	*bstparams;
+  SfiRec	       *rec_gconfig;
+  SfiRing	       *params_gconfig;
 
-  SfiRec        *skinrec;
-  SfiRing       *skinparams;
+  GtkWidget            *box_pview;
 
-  GParamSpec    *bsepspec;
-  SfiRec	*bserec;
-  SfiRing	*bseparams;
+  SfiRec               *rec_skin;
+  SfiRing              *params_skin;
 
-  GtkWidget	*apply;
+  GParamSpec           *bsepspec;
+  SfiRec	       *bserec;
+  SfiRing	       *bseparams;
 };
 struct _BstPreferencesClass
 {

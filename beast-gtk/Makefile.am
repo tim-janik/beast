@@ -32,40 +32,40 @@ progs_LDADD = $(strip 			\
 #
 # BEAST header files that don't get installed
 beast_headers = $(strip \
-	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	\
-	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	\
-	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	\
-	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	\
-	bstsampleeditor.h	bstsequence.h	bstservermonitor.h	\
-	bstsnifferscope.h			bstfiledialog.h		bstgconfig.h	\
-	bstlogadjustment.h	bstitemview.h				bstknob.h	\
-	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	\
-	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	\
-	bstrackeditor.h		bstrackitem.h	bstracktable.h		\
-	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	\
-	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	\
-				bstwaveview.h				bstxkb.h	\
-	bstzoomedwindow.h	bstskinconfig.h	bsttrackrollctrl.h	bstxframe.h	\
-				bstrackview.h	bsttreestores.h		bstutils.h	\
+	bstcanvassource.h	bstapp.h	bstasciipixbuf.h	bstcanvaslink.h	    \
+	bstpatterncolumns.h	bstxkb.h	bstpatternview.h	bstpatternctrl.h    \
+	bstkeybindings.h								    \
+	bstpianorollctrl.h	bstpartview.h	bstpianoroll.h		bstplayback.h	    \
+	bsttrackroll.h		bstcluehunter.h	bstprojectctrl.h	bstxxutils.h	    \
+	bstauxdialogs.h		bstsegment.h	bsteventrollctrl.h	bsteventroll.h	    \
+	bstsnifferscope.h	bstwaveview.h	bstfiledialog.h		bstgconfig.h	    \
+	bstlogadjustment.h	bstitemview.h	bstservermonitor.h	bstknob.h	    \
+	bstparamview.h		bstmenus.h	bstparam.h		bstpartdialog.h	    \
+	bstprocbrowser.h	bstqsampler.h	bstpreferences.h	bstprocedure.h	    \
+	bstrackeditor.h		bstrackitem.h	bstracktable.h		bstsequence.h	    \
+	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	    \
+	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	    \
+	bstzoomedwindow.h	bstskinconfig.h	bsttrackrollctrl.h	bstxframe.h	    \
+	bstsampleeditor.h	bstrackview.h	bsttreestores.h		bstutils.h	    \
 	bstmarshal.h bstdefs.h \
 )
 # BEAST c sources to build the program from
 beast_sources = $(strip \
-	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	\
-	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	\
-	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	\
-	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	\
-	bstsampleeditor.c	bstsequence.c	bstservermonitor.c	\
-	bstsnifferscope.c			bstfiledialog.c		bstgconfig.c	\
-	bstlogadjustment.c	bstitemview.c				bstknob.c	\
-	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	\
-	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	\
-	bstrackeditor.c		bstrackitem.c	bstracktable.c		\
-	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	\
-	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	\
-				bstwaveview.c				bstxkb.c	\
-	bstzoomedwindow.c	bstskinconfig.c	bsttrackrollctrl.c	bstxframe.c	\
-				bstrackview.c	bsttreestores.c		bstutils.c	\
+	bstcanvassource.c	bstapp.c	bstasciipixbuf.c	bstcanvaslink.c	    \
+	bstpatterncolumns.c	bstxkb.c	bstpatternview.c	bstpatternctrl.c    \
+	bstkeybindings.c								    \
+	bstpianorollctrl.c	bstpartview.c	bstpianoroll.c		bstplayback.c	    \
+	bsttrackroll.c		bstcluehunter.c	bstprojectctrl.c	bstxxutils.cc	    \
+	bstauxdialogs.c		bstsegment.c	bsteventrollctrl.c	bsteventroll.c	    \
+	bstsnifferscope.c	bstwaveview.c	bstfiledialog.c		bstgconfig.c	    \
+	bstlogadjustment.c	bstitemview.c	bstservermonitor.c	bstknob.c	    \
+	bstparamview.c		bstmenus.c	bstparam.c		bstpartdialog.c	    \
+	bstprocbrowser.c	bstqsampler.c	bstpreferences.c	bstprocedure.c	    \
+	bstrackeditor.c		bstrackitem.c	bstracktable.c		bstsequence.c	    \
+	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	    \
+	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	    \
+	bstzoomedwindow.c	bstskinconfig.c	bsttrackrollctrl.c	bstxframe.c	    \
+	bstsampleeditor.c	bstrackview.c	bsttreestores.c		bstutils.c	    \
 	$(PROFILE_SOURCE) \
 )
 # BEAST sources that get included (don't have own .lo rules)

@@ -43,6 +43,11 @@ GtkWidget*     bst_color_popup_new   (const gchar            *title,
                                       BstColorPopupHandler    handler,
                                       gpointer                data,
                                       GDestroyNotify          destroy);
+gboolean       bst_key_combo_valid   (guint                   keyval,
+                                      GdkModifierType         modifiers);
+gboolean       bst_key_combo_popup   (const gchar            *function,
+                                      guint                  *keyval,
+                                      GdkModifierType        *modifier);
 
 
 G_END_DECLS

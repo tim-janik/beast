@@ -684,7 +684,9 @@ gxk_widget_publish_action_list (gpointer       widget,
   if (!gxk_signal_handler_pending (widget, "hierarchy_changed", G_CALLBACK (publisher_update_actions_sets), NULL))
     g_object_connect (widget, "signal_after::hierarchy-changed", publisher_update_actions_sets, NULL, NULL);
   publisher_update_actions_sets (widget);
-  gxk_widget_update_actions_downwards (widget);
+  if (!gxk_signal_handler_pending (widget, "realize", G_CALLBACK (gxk_widget_update_actions), NULL))
+    g_object_connect (widget, "signal_after::realize", gxk_widget_update_actions, NULL, NULL);
+  gxk_widget_update_actions (widget);
 }
 
 GSList*

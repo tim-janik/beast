@@ -134,7 +134,9 @@
     prop:justify="$(first-occupied,$justify,justify-left)"
     prop:use-underline="$(first-occupied,$use-underline,1)" />
   <!-- decks (notebook) -->
-  <xdef:notebook              inherit="GtkNotebook"         />
+  <xdef:notebook              inherit="GtkNotebook"
+    prop:scrollable="1"
+    />
   <xdef:deck                  inherit="notebook"
     prop:show-tabs="0"
     prop:show-border="0"
@@ -155,11 +157,13 @@
   <!-- scrollbars/scales -->
   <xdef:hscale                inherit="GtkHScale" />
   <xdef:vscale                inherit="GtkVScale" />
-  <xdef:hscrollbar            inherit="GtkHScrollbar" />
-  <xdef:vscrollbar            inherit="GtkVScrollbar" />
+  <xdef:hscrollbar            inherit="GtkHScrollbar" prop:can-focus="0" />
+  <xdef:vscrollbar            inherit="GtkVScrollbar" prop:can-focus="0" />
   <!-- misc containers -->
   <xdef:scrolled-window       inherit="GtkScrolledWindow"
     prop:shadow-type="$(first-occupied,$shadow-type,shadow-none)"
+    prop:hscrollbar-policy="$(first-occupied,$hscrollbar-policy,policy-always)"
+    prop:vscrollbar-policy="$(first-occupied,$vscrollbar-policy,policy-always)"
     />
   <xdef:tree-view             inherit="GtkTreeView"
     prop:rules-hint="$(ifdef,rules-hint,$rules-hint,1)"
@@ -213,7 +217,7 @@
     per-list="$(ifdef,per-list,$per-list,$(if,$separator,menu-factory-per-list,))"
     per-action="$(ifdef,per-action,$per-action,menu-factory-per-action)" />
   <xdef:menu-factory-branch inherit="submenu" label="$action-name" hidden-when-insensitive="$hidden" />
-  <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
+  <xdef:menu-factory-per-list inherit="menu-separator" />
   <xdef:menu-factory-per-action inherit="menu-item"
     label="$action-name"
     accel="$action-accel"
@@ -354,6 +358,19 @@
   <xdef:label-image-button inherit="image-button" label="" >
     <ulabel label="$label" />
   </xdef:label-image-button>
+  <!-- hstock-button: button, tooltip= stock= image-size= -->
+  <xdef:hstock-button inherit="button" default-area="hbox" label="" stock="" focus="1" >
+    <tooltip text="$tooltip" />
+    <alignment xscale="0" xalign="0" >
+      <hbox spacing="3" >
+	<image
+	  stock-image="$stock"
+	  visible="$(ifdef,stock,1,0)"
+	  stock-size="$image-size" />
+	<ulabel label="$label" visible="$(ifdef,label)" />
+      </hbox>
+    </alignment>
+  </xdef:hstock-button>
   <!-- big-button: label-image-button -->
   <xdef:big-button inherit="label-image-button" image-size="big-button" />
   <!-- big-tool-button: big-button -->

@@ -1,4 +1,11 @@
 FIXMES:
+- support parsing:
+  #c-4    => cis-4
+  c#4     => cis+4
+  c#-4    => cis-4
+- copy/paste in piano roll produces two selected note blocks
+- fix ref-count initilization for Bst*Controller
+- rename *_reallocate_children to *_reallocate_contents for GxkScrollCanvas and derived
 - fix repeat not working if left/right exchanged
 - create one canonical place for supported sample formats and keep that updated
 - document options: :filename, :rgb, :hex
@@ -109,6 +116,9 @@ Stefan Gui TODOs (priorities: 9=high, 0=low):
 4 - implement selection and copy and paste of parts in the strack roll
 
 TODO:
+- let bst_key_combo_popup() display currently pressed modifiers
+- let bst_key_combo_popup() tell the user to press a mouse button to abort
+- pattern editor: render letters with pango into offscreen pixmaps, draw text by copying offscreen pixmaps (but skinning?)
 - CPU monitoring
 - add facility to record MIDI control events
 - implement an object clippboard

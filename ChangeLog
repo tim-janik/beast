@@ -1,3 +1,68 @@
+Mon Feb 16 12:00:17 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstauxdialogs.[hc]: implemented key grabbing dialog.
+
+	* beast-gtk/bstkeybindings.[hc]: implemented key binding rcfile and
+	and configuration abilities.
+
+	* beast-gtk/bstmain.c: parse ~/.beast/keyrc.
+
+	* beast-gtk/bstpartdialog.c: display pattern view.
+
+	* beast-gtk/bstpatternview.[hc]: new widget, implementing a pattern view
+	for BsePart.
+
+	* beast-gtk/bstpatterncolumns.[hc]: new file, implement pattern view
+	column renderers, currently has column implementations for notes
+	and vertical bars.
+
+	* beast-gtk/bstpatternctrl.[hc]: new file, implementing pattern view
+	control actions / key binding functions.
+
+	* beast-gtk/bsttrackroll.c:
+	* beast-gtk/bstpianoroll.c: adapt to GxkScrollCanvas changes.
+
+	* beast-gtk/bstpreferences.[hc]: added preferences page for pattern view
+	key bindings.
+
+	* beast-gtk/bstrecords.idl: added structures used to save key bindings
+	in rc files.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: adapt GUI to display pattern
+	views.attach the event roll popup menu to the event roll (not piano
+	roll). added pattern editor keybinding dialog.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: make notebooks scrollbale
+	by default. do not give scrollbars focus by default, as focussed
+	scrollbars are mostly useless with gtk+-2.0. added hstock-button.
+
+	* beast-gtk/gxk/gxkaction.c: auto-update widget actions upon publishing
+	and upon widget realization.
+
+	* beast-gtk/gxk/gxkutils.[hc]:
+	(gxk_tree_selection_force_browse): reenable automatic selection of tree
+	rows for BROWSE selection modes.
+	(gxk_menu_attach_as_submenu): propagate changes in submenu sensitivity
+	up the menu hierarchy if parent submenus also have sensitivity handlers
+	setup. fixes out-of-order submenu updates leading to incorrectly disabled
+	submenus.
+	(gxk_tree_view_select_index): added simple tree row selection function.
+
+	* beast-gtk/gxk/gxkscrollcanvas.[hc]: support dynamic allocation of
+	pango layouts pr widget instance (not per derived class). properly
+	handle ::direction_changed signals. fixed small bug wrg marker
+	realization. made adjustment value constrain code more robust.
+	(gxk_scroll_canvas_setup_marker): properly redraw markers.
+	(gxk_scroll_canvas_get_pango_layout): demand create pango layout
+	if necessary.
+	(gxk_scroll_canvas_peek_pango_layout): retrieve an existing pango
+	layout.
+	(gxk_scroll_canvas_scroll_to): scroll to an exact point.
+	(gxk_scroll_canvas_make_visible): scroll the canvas into a position,
+	so that the given rectangle is visible.
+
+	* beast-gtk/icons/*.png: more stock images added.
+
 Sun Feb 15 16:14:17 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.c: add /Part/ scripts as "part-scripts"

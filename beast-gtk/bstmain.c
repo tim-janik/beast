@@ -21,6 +21,8 @@
 #include "bstsplash.h"
 #include "bstxkb.h"
 #include "bstgconfig.h"
+#include "bstkeybindings.h"
+#include "bstpatternctrl.h"
 #include "bstskinconfig.h"
 #include "bstusermessage.h"
 #include "bstparam.h"
@@ -151,11 +153,15 @@ main (int   argc,
   if (parse_rc_file)
     {
       gchar *file_name = BST_STRDUP_RC_FILE ();
+      GSList *slist = NULL;
       bst_splash_update_item (beast_splash, _("RC File"));
       bst_rc_parse (file_name);
       g_free (file_name);
       bst_splash_update_item (beast_splash, _("Skin RC"));
       bst_skin_parse (bst_skin_config_rcfile ());
+      slist = g_slist_prepend (slist, bst_pattern_controller_bindings());
+      bst_key_binding_parse (bst_key_binding_rcfile (), slist);
+      g_slist_free (slist);
     }
 
   /* show splash images
