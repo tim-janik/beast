@@ -122,13 +122,15 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 #define	sfidl_pspec_Octave(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 4, hints), group)
 #define	sfidl_pspec_Freq(group, name, nick, blurb, dflt, hints)			\
-  sfi_pspec_set_group (bse_param_spec_freq (name, nick, blurb, dflt, hints), group)
+  sfi_pspec_set_group (bse_param_spec_freq (name, nick, blurb, dflt, "scale:" hints), group)
 #define	sfidl_pspec_Frequency(group, name, nick, blurb, dflt, min, max, hints)			\
   sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, 10.0, "scale:" hints), group)
 #define sfidl_pspec_Gain(group, name, nick, blurb, dflt, min, max, step, hints) \
   sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
 #define	sfidl_pspec_FineTune(group, name, nick, blurb, hints)			\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, hints), group)
+#define sfidl_pspec_LogScale(group, name, nick, blurb, dflt, min, max, step, center, base, n_steps, hints) \
+  sfi_pspec_set_group (sfi_pspec_log_scale (name, nick, blurb, dflt, min, max, step, center, base, n_steps, "scale:" hints), group)
 #define	sfidl_pspec_Choice_default(group, name, cvalues)	\
   sfi_pspec_set_group (sfi_pspec_choice (name, NULL, NULL, NULL, cvalues, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_GEnum(group, name, nick, blurb, dval, hints, etype)	\

@@ -1,3 +1,8 @@
+Sat Oct 18 04:45:29 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsetype.h: Added "scale" hint to Freq param spec. Added LogScale
+	param spec.
+
 Fri Oct 17 22:05:10 2003  Tim Janik  <timj@gtk.org>
 
 	* bseserver.proc: export demo path and custom directories for
