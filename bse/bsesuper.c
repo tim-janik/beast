@@ -26,6 +26,7 @@ enum
   PARAM_0,
   PARAM_AUTHOR,
   PARAM_LICENSE,
+  PARAM_COPYRIGHT,
   PARAM_CREATION_TIME,
   PARAM_MOD_TIME
 };
@@ -105,6 +106,9 @@ bse_super_class_init (BseSuperClass *class)
 			      sfi_pspec_string ("license", _("License"), _("Copyright license applying to this object"),
 						NULL,
 						SFI_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, NULL,
+			      PARAM_COPYRIGHT,
+			      sfi_pspec_string ("copyright", NULL, NULL, NULL, "w")); // COMPAT-FIXME: remove around 0.7.0
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_CREATION_TIME,
 			      sfi_pspec_time ("creation_time", _("Creation Time"), NULL,
@@ -166,6 +170,13 @@ bse_super_set_property (GObject      *object,
 			       quark_license,
 			       g_strdup (g_value_get_string (value)),
 			       g_free);
+      break;
+    case PARAM_COPYRIGHT:
+      if (g_object_get_qdata (super, quark_license) == NULL)
+        g_object_set_qdata_full (super, quark_license,
+                                 g_strdup (g_value_get_string (value)),
+                                 g_free);
+      g_object_notify (super, "license");
       break;
     case PARAM_MOD_TIME:
       super->mod_time = MAX (super->creation_time, sfi_value_get_time (value));
