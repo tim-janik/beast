@@ -82,7 +82,7 @@ BSE_BUILTIN_TYPE (BseGConfig)
 
   return bse_type_register_static (BSE_TYPE_OBJECT,
 				   "BseGConfig",
-				   "Global configuration object",
+				   "BSE Global Configuration interface",
 				   &gconfig_info);
 }
 

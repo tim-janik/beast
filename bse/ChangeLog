@@ -1,3 +1,66 @@
+Mon Jan 31 19:09:37 2000  Tim Janik  <timj@gtk.org>
+
+        * bsesongsequencer.[hc]:
+        * bsesongmixer.c:
+        * bsevoice.[hc]: play bsesinstrument blocks for synthesis instruments,
+        we still have some fading problems here.
+
+Thu Jan 27 19:20:45 2000  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.c:
+	(bse_snet_remove_item): don't reset items, let BseContainer take
+	care of this.
+
+	* bseproject.c: only rprepare/reset the prject itself for playback, the
+	rest is taken care off by the BseContainer implementation.
+
+	* bsecontainer.c:
+	(bse_container_prepare): prepare all BseSource children.
+	(bse_container_reset): rest all BseSource children.
+	(bse_container_do_add_item): prepare items if necessary.
+	(bse_container_do_remove_item): reset item if necessary, clear input
+	and output channels for non-container children.
+
+Mon Jan 24 20:07:48 2000  Tim Janik  <timj@gtk.org>
+
+	* bseobject.c (bse_object_queue_param_changed): do param_changed
+	notification fully asyncronous from an idle handler (not only
+	compressed for multiple param specs).
+
+	* bseproject.[hc]:
+	(bse_project_list_nick_paths):
+	(bse_project_item_from_nick_path): new functions to list nick path of
+	all items of a specific type contained in this project, and to find
+	the items again from their nick paths.
+
+	* bseitem.[hc] (bse_item_make_nick_path): create an item path made up of
+	object names only.
+
+	* bsecontainer.c: fixed uncross bug.
+
+	* bsesongsequencer.[hc]:
+	* bsesongmixer.c:
+	* bsevoice.[hc]:
+	recoded the voice allocation scheme, so we keep the association of
+	poly voices with their original channels.
+	major source cleanups, fixed a bunch of bugs.
+	added support for voice inputs from other objects than samples.
+
+	* bsesong.[hc] (bse_song_update_sequencer): provide possibility for
+	external sequencer syncronization.
+
+	* icons/mic.*:
+	* bsecapture.[hc]:
+        moved capturing source from plugin dir to BSE proper.
+        
+	* bsepattern.[hc]: s/BseNote/BsePatternNote/.
+        *.[hc]: bunch of BsePatternNote fixups and signedness corrections for
+        notes in general.
+
+        * bseglobals.h:
+        * bsecontainer.c:
+        * bseheart.c: priority fixups.
+        
 Mon Jan 17 15:01:11 2000  Tim Janik  <timj@gtk.org>
 
 	* bsedefs.h:

@@ -488,8 +488,8 @@ bse_time_from_string (const gchar *time_string,
 #define BSE_2_RAISED_TO_1_OVER_72_d     ( /* 2^(1/72) */ \
               1.009673533228510944326217213529162108898162841796875)
 static const struct {
-  gchar *s;
-  guint v;
+  gchar *name;
+  gint note;
 } bse_note_table[] = {
   { "ces",	BSE_KAMMER_NOTE - 10 - BSE_KAMMER_OCTAVE * 12 },
   { "cis",	BSE_KAMMER_NOTE -  8 - BSE_KAMMER_OCTAVE * 12 },
@@ -520,11 +520,11 @@ static gchar *bse_note_name_table[12] = {
   "fis", "g", "gis", "a", "ais", "b",
 };
 
-guint
+gint
 bse_note_from_string (const gchar *note_string)
 {
   register gchar *string;
-  register guint note;
+  register gint note;
   register gboolean fit;
   register guint i;
   
@@ -555,8 +555,8 @@ bse_note_from_string (const gchar *note_string)
       
       p = 0;
       do
-	fit = bse_note_table[i].s[p] == string[p];
-      while (bse_note_table[i].s[++p] && fit);
+	fit = bse_note_table[i].name[p] == string[p];
+      while (bse_note_table[i].name[++p] && fit);
     }
   g_assert (i > 0); /* paranoid */
   i--;
@@ -566,10 +566,10 @@ bse_note_from_string (const gchar *note_string)
       gchar *s;
       register gint o;
       
-      note = bse_note_table[i].v;
-      if (*(string + strlen (bse_note_table[i].s)))
+      note = bse_note_table[i].note;
+      if (*(string + strlen (bse_note_table[i].name)))
 	{
-	  o = strtol (string + strlen (bse_note_table[i].s), &s, 10);
+	  o = strtol (string + strlen (bse_note_table[i].name), &s, 10);
 	  if (s && *s)
 	    note = BSE_NOTE_UNPARSABLE;
 	}
@@ -577,7 +577,7 @@ bse_note_from_string (const gchar *note_string)
 	o = 0;
       
       if (note != BSE_NOTE_UNPARSABLE)
-	note = CLAMP ((gint) bse_note_table[i].v + o * 12, BSE_MIN_NOTE, BSE_MAX_NOTE);
+	note = CLAMP (bse_note_table[i].note + o * 12, BSE_MIN_NOTE, BSE_MAX_NOTE);
     }
   
   g_free (string);
@@ -586,7 +586,7 @@ bse_note_from_string (const gchar *note_string)
 }
 
 gchar*
-bse_note_to_string (guint note)
+bse_note_to_string (gint note)
 {
   if (note != BSE_NOTE_VOID)
     {
@@ -610,7 +610,7 @@ bse_note_to_string (guint note)
 }
 
 void
-bse_note_examine (guint     note,
+bse_note_examine (gint      note,
 		  gint     *octave_p,
 		  guint    *half_tone_p,
 		  gboolean *ht_up_p,
@@ -625,7 +625,7 @@ bse_note_examine (guint     note,
   half_tone = note % 12 + (9 - (BSE_KAMMER_NOTE % 12));
   
   note -= half_tone;
-  octave = (gint) note - (BSE_KAMMER_NOTE - 9);
+  octave = note - (BSE_KAMMER_NOTE - 9);
   octave = octave / 12 + BSE_KAMMER_OCTAVE;
   
   if (octave_p)
@@ -638,21 +638,21 @@ bse_note_examine (guint     note,
     *letter_p = bse_note_name_table[half_tone][0];
 }
 
-guint
+gint
 bse_note_from_freq (gdouble freq)
 {
   gdouble d;
-  gint n;
+  gint note;
 
   freq /= BSE_KAMMER_FREQ_d;
   d = log (freq) / BSE_LN_OF_2_RAISED_TO_1_OVER_12_d;
-  n = BSE_KAMMER_NOTE + 0.5 + d;
+  note = BSE_KAMMER_NOTE + 0.5 + d;
 
-  return n >= BSE_MIN_NOTE && n <= BSE_MAX_NOTE ? n : BSE_NOTE_VOID;
+  return note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE ? note : BSE_NOTE_VOID;
 }
 
 gdouble
-bse_note_to_freq (guint note)
+bse_note_to_freq (gint note)
 {
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
     return BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (note);
@@ -661,8 +661,8 @@ bse_note_to_freq (guint note)
 }
 
 gdouble
-bse_note_to_tuned_freq (guint note,
-			gint  fine_tune)
+bse_note_to_tuned_freq (gint note,
+			gint fine_tune)
 {
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
     return BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
@@ -790,7 +790,6 @@ bse_icon_unref (BseIcon *icon)
       icon->ref_count -= 1;
       if (!icon->ref_count)
 	{
-	  g_print ("freeing icon\n");
 	  g_free (icon->pixels);
 	  g_free (icon);
 	}

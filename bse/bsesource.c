@@ -267,6 +267,7 @@ bse_source_class_add_ochannel (BseSourceClass *source_class,
   source_class->ochannel_defs[index].name = g_strdup (name);
   source_class->ochannel_defs[index].blurb = g_strdup (blurb);
   source_class->ochannel_defs[index].n_tracks = n_tracks;
+  source_class->ochannel_defs[index].min_history = 1;
 
   return index + 1;
 }
@@ -401,8 +402,7 @@ bse_source_calc_history (BseSource *source,
   
   g_return_if_fail (oc->in_calc == FALSE); /* paranoid */
 
-  queue_length = 0;	/* FIXME */
-  queue_length = 1;
+  queue_length = BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id)->min_history;
   for (slist = source->outputs; slist; slist = slist->next)
     {
       BseSource *output = slist->data;
@@ -693,11 +693,6 @@ bse_source_do_remove_input (BseSource *source,
 
   osource->outputs = g_slist_remove (osource->outputs, source);
 
-  /* un-prepare (reset) the source if we are the sole prepared
-   * output. FIXME: this can leave loopbacked prepared islands
-   */
-  if (!osource->outputs && BSE_SOURCE_PREPARED (osource))
-    bse_source_reset (osource);
   BSE_NOTIFY (osource, io_changed, NOTIFY (OBJECT, DATA));
   bse_object_unref (BSE_OBJECT (osource));
 }

@@ -996,11 +996,11 @@ bse_storage_parse_bin_data (BseStorage  *storage,
 
 GTokenType
 bse_storage_parse_note (BseStorage *storage,
-			guint      *note_p,
+			gint       *note_p,
 			gchar       bbuffer[BSE_BBUFFER_SIZE])
 {
   GScanner *scanner;
-  guint note;
+  gint note;
   gchar ibuffer[BSE_BBUFFER_SIZE];
 
   if (note_p)

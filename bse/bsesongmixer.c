@@ -18,6 +18,7 @@
 /* we get included from bsesongsequencer.c */
 #include	"bsesample.h"
 #include	"bseinstrument.h"
+#include	"bsesinstrument.h"
 #include	"bsevoice.h"
 #include	"bsepattern.h"
 #include	<string.h>
@@ -25,8 +26,9 @@
 
 /* --- prototypes --- */
 static void	bse_song_mixer_activate_voice	(BseVoice		*voice,
-						 BseNote		*note);
-static void	bse_song_mixer_fill_buffer	(BseSongSequencer	*sequencer);
+						 BsePatternNote		*note);
+static void	bse_song_mixer_fill_buffer	(BseSongSequencer	*sequencer,
+						 BseIndex                index);
 
 
 /* --- functions --- */
@@ -39,8 +41,8 @@ static void	bse_song_mixer_fill_buffer	(BseSongSequencer	*sequencer);
  * wird das instrument nicht neu angeschlagen
  */
 static void
-bse_song_mixer_activate_voice (BseVoice *voice,
-			       BseNote  *note)
+bse_song_mixer_activate_voice (BseVoice       *voice,
+			       BsePatternNote *note)
 {
   g_return_if_fail (voice != NULL);
   g_return_if_fail (note != NULL);
@@ -48,19 +50,18 @@ bse_song_mixer_activate_voice (BseVoice *voice,
   if (note->instrument)
     {
       BseInstrument *instrument = note->instrument;
-      BseSample *sample = instrument->type == BSE_INSTRUMENT_SAMPLE ? instrument->sample : NULL;
 
       /* we got a new instrument, so we need to strike a new note
        */
 
-      if (voice->active)
+      if (voice->input_type != BSE_VOICE_INPUT_NONE)
 	{
-	  if (!voice->polyphony)
+	  if (voice->input_type != BSE_VOICE_INPUT_SAMPLE || !voice->make_poly)
 	    bse_voice_fade_out (voice);
 	  voice = bse_voice_make_poly_and_renew (voice);
 	}
 
-      if (note->note == BSE_NOTE_VOID || !sample)
+      if (note->note == BSE_NOTE_VOID || instrument->type == BSE_INSTRUMENT_NONE)
 	{
 	  /* this is actually a pretty senseless note
 	   * FIXME: olaf?
@@ -70,12 +71,11 @@ bse_song_mixer_activate_voice (BseVoice *voice,
 
       /* ok, setup the voice
        */
-      bse_voice_activate (voice, instrument);
-      bse_voice_set_note (voice, note->note, voice->fine_tune);
+      bse_voice_activate (voice, instrument, note->note, voice->fine_tune);
       bse_voice_set_envelope_part (voice, BSE_ENVELOPE_PART_DELAY);  
     }
   else if (note->note != BSE_NOTE_VOID &&
-	   voice->active &&
+	   voice->input_type != BSE_VOICE_INPUT_NONE &&
 	   note->note != voice->note)
     {
       /* only the note changed, so adjust the stepping rates
@@ -88,9 +88,98 @@ bse_song_mixer_activate_voice (BseVoice *voice,
 }
 
 static void
-bse_song_mixer_add_voice_to_buffer (BseSongSequencer *sequencer,
-				    BseVoice	     *voice,
-				    BseMixValue	     *buffer)
+bse_song_mixer_add_fade_ramp (BseSongSequencer *sequencer,
+			      BseMixValue      *buffer,
+			      BseVoice	       *voice)
+{
+  gfloat l_volume, l_volume_delta = 0.0;
+  gfloat r_volume, r_volume_delta = 0.0;
+  BseMixValue *bound;
+  
+  g_return_if_fail (voice->input_type == BSE_VOICE_INPUT_FADE_RAMP);
+  g_return_if_fail (voice->input.fade_ramp.n_values_left > 0);
+  g_return_if_fail (voice->fading == TRUE);
+
+  /* check bounds and adjust buffer size if neccessary */
+  if (voice->input.fade_ramp.n_values_left > BSE_TRACK_LENGTH)
+    {
+      bound = buffer + BSE_TRACK_LENGTH * sequencer->n_tracks;
+      voice->input.fade_ramp.n_values_left -= BSE_TRACK_LENGTH;
+    }
+  else
+    {
+      bound = buffer + voice->input.fade_ramp.n_values_left * sequencer->n_tracks;
+      voice->input.fade_ramp.n_values_left = 0;
+    }
+  l_volume_delta = voice->left_volume_delta;
+  r_volume_delta = voice->right_volume_delta;
+
+  l_volume = voice->left_volume;
+  r_volume = voice->right_volume;
+
+  /* mix voice to buffer
+   */
+  do
+    {
+      register BseMixValue l_value = l_volume;
+      register BseMixValue r_value = r_volume;
+      
+      *(buffer++) += l_value;
+      *(buffer++) += r_value;
+      
+      l_volume += l_volume_delta;
+      r_volume += r_volume_delta;
+    }
+  while (buffer < bound);
+
+  voice->left_volume = l_volume;
+  voice->right_volume = r_volume;
+}
+
+static void
+bse_song_mixer_add_synth_voice (BseSongSequencer *sequencer,
+				BseMixValue	 *buffer,
+				BseVoice	 *voice,
+				BseChunk         *chunk)
+{
+  BseSampleValue *hunk = chunk->hunk;
+  gfloat l_volume, r_volume;
+  BseMixValue *bound;
+  
+  g_return_if_fail (voice->input_type == BSE_VOICE_INPUT_SYNTH);
+  g_return_if_fail (voice->fading == FALSE);
+  g_return_if_fail (sequencer->n_tracks == 2 && voice->n_tracks == 2 && chunk->n_tracks == 2);
+  g_return_if_fail (chunk->hunk_filled == TRUE);
+  
+  /* adjust buffer size */
+  bound = buffer + BSE_TRACK_LENGTH * sequencer->n_tracks;
+
+  l_volume = voice->left_volume;
+  r_volume = voice->right_volume;
+
+  /* mix voice to buffer
+   */
+  do
+    {
+      register BseMixValue l_value = *(hunk++);
+      register BseMixValue r_value = *(hunk++);
+      
+      l_value *= l_volume;
+      r_value *= r_volume;
+      
+      *(buffer++) += l_value;
+      *(buffer++) += r_value;
+    }
+  while (buffer < bound);
+  g_print ("last_vals: %p: %+6d*%f %+6d*%f %+6.0f %+6.0f\n", chunk->hunk,
+	   hunk[-2], voice->left_volume, hunk[-1], voice->right_volume,
+	   hunk[-2]*voice->left_volume, hunk[-1]*voice->right_volume);
+}
+
+static void
+bse_song_mixer_add_sample_voice (BseSongSequencer *sequencer,
+				 BseMixValue	  *buffer,
+				 BseVoice	  *voice)
 {
   BseMixValue  *l_buffer;
   BseMixValue  *r_buffer;
@@ -105,37 +194,39 @@ bse_song_mixer_add_voice_to_buffer (BseSongSequencer *sequencer,
   guint n_sample_values;
   gboolean jump_sample_pos = FALSE;
   
-  g_return_if_fail (sequencer != NULL);
-  g_return_if_fail (voice != NULL);
+  g_return_if_fail (voice->input_type == BSE_VOICE_INPUT_SAMPLE);
+  g_return_if_fail (voice->input.sample.bound > voice->input.sample.cur_pos);
   
   buffer_size = sequencer->mix_buffer_size;
   n_tracks = sequencer->n_tracks;
   
   l_buffer = buffer;
   r_buffer = buffer + 1;
-  rate = voice->sample_rate;
-  rate_pos = voice->sample_pos_frac;
-  l_sample = voice->sample_pos;
-  r_sample = voice->sample_pos + 1;
+  rate = voice->input.sample.rate;
+  rate_pos = voice->input.sample.pos_frac;
+  l_sample = voice->input.sample.cur_pos;
+  r_sample = voice->input.sample.cur_pos + 1;
   
   /* check for rate < 0 */
   next_smp_word = MAX (rate >> 16, 1);
   
   /* check bounds and adjust buffer size if neccessary */
-  n_sample_values = voice->sample_pos_frac + rate * (BSE_TRACK_LENGTH - 1);
+  n_sample_values = voice->input.sample.pos_frac + rate * (BSE_TRACK_LENGTH - 1);
   n_sample_values >>= 16;
-  if (voice->sample_end_pos <= voice->sample_pos + n_sample_values)
+  if (voice->input.sample.bound <= voice->input.sample.cur_pos + n_sample_values)
     {
-      n_sample_values = voice->sample_end_pos - voice->sample_pos;
-      buffer_size = ((n_sample_values << 16) - voice->sample_pos_frac) / rate + 1;
+      n_sample_values = voice->input.sample.bound - voice->input.sample.cur_pos;
+      buffer_size = ((n_sample_values << 16) - voice->input.sample.pos_frac) / rate + 1;
       buffer_size *= n_tracks;
       jump_sample_pos = TRUE; /* need this flag to get around rounding errors */
     }
-  
-  l_volume_delta = voice->fading ? voice->left_volume_delta : 0;
-  r_volume_delta = voice->fading ? voice->right_volume_delta : 0;
+
   l_volume = voice->left_volume;
   r_volume = voice->right_volume;
+
+  /* these are always 0, except when fading */
+  l_volume_delta = voice->left_volume_delta;
+  r_volume_delta = voice->right_volume_delta;
   
   /* hier kommen spaeter die aufrufe fuer die optimierten
    * routinen hin
@@ -176,14 +267,14 @@ bse_song_mixer_add_voice_to_buffer (BseSongSequencer *sequencer,
 	  r_volume += r_volume_delta;
 	  rate_pos += rate;
 	}
-      voice->sample_pos += rate_pos >> 16;
-      voice->sample_pos_frac = rate_pos & 0xffff;
+      voice->input.sample.cur_pos += rate_pos >> 16;
+      voice->input.sample.pos_frac = rate_pos & 0xffff;
     }
-  else /* stereo sample */
+  else if (voice->n_tracks == 2) /* stereo sample */
     {
       guint i;
 
-      next_smp_word *= 2;
+      next_smp_word *= n_tracks;
       for (i = 0; i < buffer_size; i += n_tracks)
 	{
 	  register BseMixValue pos_low;
@@ -198,8 +289,8 @@ bse_song_mixer_add_voice_to_buffer (BseSongSequencer *sequencer,
 	    ((BseMixValue) l_sample[ pos_high ]) * (0x00010000 - pos_low) +
 	    ((BseMixValue) l_sample[ pos_high + next_smp_word ]) * pos_low;
 	  r_value =
-	    ((BseMixValue) l_sample[ pos_high ]) * (0x00010000 - pos_low) +
-	    ((BseMixValue) l_sample[ pos_high + next_smp_word ]) * pos_low;
+	    ((BseMixValue) r_sample[ pos_high ]) * (0x00010000 - pos_low) +
+	    ((BseMixValue) r_sample[ pos_high + next_smp_word ]) * pos_low;
 	  
 	  /* shift *after* the volume multiply
 	   */
@@ -215,55 +306,81 @@ bse_song_mixer_add_voice_to_buffer (BseSongSequencer *sequencer,
 	  r_volume += r_volume_delta;
 	  rate_pos += rate;
 	}
-      voice->sample_pos += (rate_pos >> 16) << 1;
-      voice->sample_pos_frac = rate_pos & 0xffff;
+      voice->input.sample.cur_pos += (rate_pos >> 16) * n_tracks;
+      voice->input.sample.pos_frac = rate_pos & 0xffff;
     }
-  voice->left_volume = l_volume;
-  voice->right_volume = r_volume;
+  else
+    g_assert_not_reached ();
+
+  if (voice->fading)
+    {
+      voice->left_volume = l_volume;
+      voice->right_volume = r_volume;
+    }
   if (jump_sample_pos)
     {
-      // printf ("last volumes (%3u): %9f %9f\n", voice->sample_end_pos - voice->sample_pos, l_volume, r_volume);
-      voice->sample_pos = voice->sample_end_pos;
+      // printf ("last volumes (%3u): %9f %9f\n", voice->input.sample.bound - voice->input.sample.cur_pos, l_volume, r_volume);
+      voice->input.sample.cur_pos = voice->input.sample.bound;
     }
 }
 
 /* fuellt den angegebenen buffer mit den aktiven voices
  */
 static void
-bse_song_mixer_fill_buffer (BseSongSequencer *sequencer)
+bse_song_mixer_fill_buffer (BseSongSequencer *sequencer,
+			    BseIndex          index)
 {
   BseMixValue *buffer = sequencer->mix_buffer;
   BseVoiceAllocator *va = sequencer->va;
+  guint i, n_fixed_voices = va->n_voices;
   
   /* clear buffer, we use memset() because this function is
    * most likely hand-optimized for the target machine
    */
   memset (buffer, 0, sizeof (BseMixValue) * sequencer->mix_buffer_size);
 
-  /* iterate over the poly voices, we need an extra loop construction
-   * for this because poly voices can get rearranged for efficiency
-   * reasons. we compensate such rearangements with the ->next_voice
-   * counter in the rearranging code.
-   */
-  va->next_voice = 0;
-  while (va->next_voice < va->n_voices)
+  for (i = 0; i < n_fixed_voices; i++)
     {
-      BseVoice *voice = va->voices[va->next_voice++];
+      BseVoice *voice, *last = va->voices[i];
 
-      /* the fixed voices may be inactive */
-      if (!voice->active)
-	continue;
+      /* handle the fixed voice first (which is always accessible), then
+       * process the poly voices, we need an extra loop construction
+       * for this because poly voices can get unlinked within this
+       * loop for efficiency reasons. we compensate such rearangements
+       * through the last voice pointer.
+       */
+      for (voice = last->input_type != BSE_VOICE_INPUT_NONE ? last : last->next; voice; voice = last->next)
+	{
+	  /* update values for buffer mix, handle some effects
+	   */
+	  if (!bse_voice_preprocess (voice))
+	    continue;
 
-      /* update values for buffer mix
-       */
-      bse_voice_preprocess (voice);
-      
-      /* add voice to the buffer
-       */
-      bse_song_mixer_add_voice_to_buffer (sequencer, voice, buffer);
+	  /* add voice to mix buffer
+	   */
+	  if (voice->input_type == BSE_VOICE_INPUT_SAMPLE)
+	    bse_song_mixer_add_sample_voice (sequencer, buffer, voice);
+	  else if (voice->input_type == BSE_VOICE_INPUT_SYNTH)
+	    {
+	      BseSource *source = BSE_SOURCE (voice->input.synth.sinstrument);
+	      BseChunk *chunk = bse_source_ref_chunk (source, BSE_DFL_OCHANNEL_ID, index);
 
-      /* handle effects
-       */
-      bse_voice_postprocess (voice);
+	      voice->input.synth.last_index = index;
+
+	      bse_chunk_complete_hunk (chunk);
+	      bse_song_mixer_add_synth_voice (sequencer, buffer, voice, chunk);
+	      bse_chunk_unref (chunk);
+	    }
+	  else if (voice->input_type == BSE_VOICE_INPUT_FADE_RAMP)
+	    bse_song_mixer_add_fade_ramp (sequencer, buffer, voice);
+	  else
+	    g_assert_not_reached ();
+
+	  /* handle effects
+	   */
+	  if (!bse_voice_postprocess (voice))
+	    continue;
+	  last = voice;
+	}
     }
 }

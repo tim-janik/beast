@@ -20,6 +20,7 @@
 #define __BSE_VOICE_H__
 
 #include        <bse/bseinstrument.h>
+#include        <bse/bsesinstrument.h>
 #include        <bse/bsesample.h>
 #include        <bse/bsebindata.h>
 #include        <bse/bsepattern.h>
@@ -39,35 +40,48 @@ typedef enum			/*< skip >*/
   BSE_ENVELOPE_PART_DECAY,
   BSE_ENVELOPE_PART_SUSTAIN,
   BSE_ENVELOPE_PART_RELEASE,
-  BSE_ENVELOPE_PART_END
+  BSE_ENVELOPE_PART_DONE
 } BseEnvelopePartType;
 
 
 /* --- Voice allocator --- */
+struct _BseSongChannel
+{
+  guint		  n_poly_voices;
+  BseVoice	**voices;		/* n_voices here is 1 + n_poly_voices */
+};
 struct _BseVoiceAllocator
 {
-  guint		  n_voices;		/* fixed + poly */
-  BseVoice	**voices;		/* relocatable, mutatable */
-  guint		  next_voice;		/* loop compensator */
-
-  /* private */
-  guint		  n_fixed_voices;	/* const */
-  guint		  n_total_voices;
+  /*< private >*/
+  GTrashStack	 *free_voices;
   GSList	 *voice_blocks;
+
+  /*< public >*/
+  guint		  n_voices;		/* from BseSong.n_channels */
+  BseVoice	 *voices[1];		/* flexible array of size n_channels */
 };
 
+
+typedef enum
+{
+  BSE_VOICE_INPUT_NONE,
+  BSE_VOICE_INPUT_SAMPLE,
+  BSE_VOICE_INPUT_SYNTH,
+  BSE_VOICE_INPUT_FADE_RAMP
+} BseVoiceType;
 
 /* --- BseVoice --- */
 struct _BseVoice
 {
   /* allocation maintainance fields */
   BseVoiceAllocator	*allocator;	/* const */
-  guint			 index : 24;	/* const */
+  guint			 index;		/* const */
+  BseVoice		*next;		/* pointer to next poly */
 
   /* flags */
-  guint		  active : 1;
+  BseVoiceType	  input_type : 8;
   guint		  fading : 1;
-  guint		  polyphony : 1;
+  guint		  make_poly : 1;
 
   /* from BseInstrument
    */
@@ -77,73 +91,82 @@ struct _BseVoice
   gint		  fine_tune;
   BseEnvelope	  env;
 
-  /* from BseNote
+  /* from BsePatternNote
    */
-  guint		  note;
+  gint		  note;
 
-  /* from BseSample and its munk
-   * freq_factor	- sample->rec_freq / BSE_MIX_FREQ
-   */
   guint		  n_tracks;
-  gfloat	  freq_factor;
 
-  /* from BseMunk and its bin_data
-   */
-  guint		  rec_note;
-  BseSampleValue *sample_pos;
-  BseSampleValue *sample_end_pos;
-  guint		  sample_pos_frac;
+  /* Envelope Generator */
+  BseEnvelopePartType env_part;		 /* current part of envelope */
+  guint		      env_steps_to_go;   /* # chunks this part lasts */
+  gfloat	      env_vol_delta;	 /* volume delta per sequencer step */
+  gfloat	      env_volume_factor; /* resulting envelope volume */
 
-  /* private sample mixer fields
+  /* mixer fields, volume factors while playback and sample fading
+   * concrete sample values for fade ramps
    */
-  guint32	  sample_base_rate;	/* sample rate for indexing */
-  guint32	  sample_rate;		/* sample rate with fine tune */
+  gfloat	      left_volume;
+  gfloat	      right_volume;
 
-  /* Envelope Generator
-   *
-   * env_part		- current part of envelope
-   * env_steps_to_go	- number of buffers that this part lasts
-   * env_vol_delta	- volume change per buffer step
-   * env_volume_factor	- resulting env volume, adjusted by env_vol_delta
-   */
-  BseEnvelopePartType env_part;
-  guint		      env_steps_to_go;
-  gfloat	      env_vol_delta;
-  gfloat	      env_volume_factor;
+  /* fader deltas */
+  gfloat	      left_volume_delta;
+  gfloat	      right_volume_delta;
 
-  /* preprocessed values, used by the buffer mixing routines
-   */
-  gfloat	      left_volume, left_volume_delta;
-  gfloat	      right_volume, right_volume_delta;
-  
-  /* object references for locking
-   */
-  gpointer	 sample;
-  gpointer	 bin_data;
+  union {
+    struct {
+      /* from BseSample, freq_factor = sample->rec_freq / BSE_MIX_FREQ */
+      gfloat	      freq_factor;
+      BseSampleValue *bound;
+
+      guint32	      base_rate;	/* base readout rate from note (<<16) */
+      guint32	      rate;		/* fine tune adjusted base rate */
+      
+      /* sample mixer fields, runtime-adjusted */
+      BseSampleValue *cur_pos;
+      guint	      pos_frac;
+
+      /* object references for locking */
+      BseSample*      sample;
+      BseBinData*     bin_data;
+    } sample;
+    struct {
+      gfloat	      base_freq;	/* base playback freq from note */
+      gfloat	      freq;		/* fine tune adjusted base freq */
+
+      BseIndex	      last_index;
+      BseSInstrument* sinstrument;
+    } synth;
+    struct {
+      gint            n_values_left;	/* # values left while fading */
+    } fade_ramp;
+  } input;
 };
 
 
-/* --- prototypes --- */
-void		bse_voice_activate		(BseVoice	*voice,
-						 BseInstrument	*instrument);
-void		bse_voice_reset			(BseVoice	*voice);
-BseVoice*	bse_voice_make_poly_and_renew	(BseVoice	*voice);
+/* --- prototypes (safely to be used from effects) --- */
 void		bse_voice_fade_out		(BseVoice	*voice);
-void		bse_voice_new_note		(BseVoice	*voice,
-						 BseNote	*note);
-void		bse_voice_set_note		(BseVoice	*voice,
-						 guint		 note,
-						 gint            fine_tune);
 void		bse_voice_set_fine_tune		(BseVoice	*voice,
 						 gint     	 fine_tune);
 void		bse_voice_set_envelope_part	(BseVoice       *voice,
 						 BseEnvelopePartType env_part);
-void		bse_voice_preprocess		(BseVoice	*voice);
-void		bse_voice_postprocess		(BseVoice	*voice);
-     
+void		bse_voice_set_note		(BseVoice	*voice,
+						 gint		 note,
+						 gint            fine_tune);
+
+
+/* --- private --- */
+BseVoice*	bse_voice_make_poly_and_renew	(BseVoice	*voice);
+void		bse_voice_activate		(BseVoice	*voice,
+						 BseInstrument	*instrument,
+						 gint		 note,
+						 gint            fine_tune);
+gboolean	bse_voice_preprocess		(BseVoice	*voice);
+gboolean	bse_voice_postprocess		(BseVoice	*voice);
+
 
 /* --- allocation --- */
-BseVoiceAllocator* bse_voice_allocator_new	(guint		    n_fixed_voices);
+BseVoiceAllocator* bse_voice_allocator_new	(guint		    n_voices);
 void		   bse_voice_allocator_destroy	(BseVoiceAllocator *allocator);
 
 

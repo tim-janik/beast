@@ -70,8 +70,8 @@ set_note_exec (BseProcedureClass *proc,
   BsePattern *pattern	= (BsePattern*) (iparams++)->value.v_item;
   guint channel		= (iparams++)->value.v_uint;
   guint row		= (iparams++)->value.v_uint;
-  guint note_val	= (iparams++)->value.v_note;
-  BseNote *note;
+  gint note_val		= (iparams++)->value.v_note;
+  BsePatternNote *note;
 
   /* check parameters */
   if (!pattern ||
@@ -137,7 +137,7 @@ set_instrument_exec (BseProcedureClass *proc,
   guint channel		= (iparams++)->value.v_uint;
   guint row		= (iparams++)->value.v_uint;
   BseInstrument* instrument = (BseInstrument*) (iparams++)->value.v_item;
-  BseNote *note;
+  BsePatternNote *note;
 
   /* check parameters */
   if (!pattern ||

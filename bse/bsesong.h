@@ -54,6 +54,7 @@ struct _BseSong
   GList	*lfos			/* of type BseLfo* */;
   
   BseSongSequencer *sequencer;
+  BseIndex          sequencer_index;
   
   guint pattern_list_length;
   BsePattern **pattern_list;
@@ -89,6 +90,11 @@ void		bse_song_set_pattern_length	(BseSong	*song,
 						 guint		 pattern_length);
 void		bse_song_set_bpm		(BseSong	*song,
 						 guint		 bpm);
+
+
+/*< private >*/
+void		bse_song_update_sequencer	(BseSong	*song);
+
 #if 0
 void	bse_song_reload_instrument_samples	(BseSong		*song,
 						 BseSampleLookupCB	cb_func,

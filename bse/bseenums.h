@@ -84,13 +84,6 @@ typedef enum
 } BseLoopType;
 typedef enum
 {
-  BSE_INSTRUMENT_NONE,
-  BSE_INSTRUMENT_SAMPLE,
-  BSE_INSTRUMENT_MIDI,
-  BSE_INSTRUMENT_LAST			/*< skip >*/
-} BseInstrumentType;
-typedef enum
-{
   BSE_ERROR_NONE,
   BSE_ERROR_IGNORE,
   BSE_ERROR_UNKNOWN,

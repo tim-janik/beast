@@ -273,7 +273,7 @@ bse_sample_fillup_munks (BseSample *sample)
 static inline void
 bse_sample_set_munk_i (BseSample     *sample,
 		       guint	      munk_index,
-		       guint	      recording_note,
+		       gint	      recording_note,
 		       guint	      loop_begin,
 		       guint	      loop_end,
 		       BseBinData    *bin_data)
@@ -295,7 +295,7 @@ bse_sample_set_munk_i (BseSample     *sample,
 void
 bse_sample_set_munk (BseSample	   *sample,
 		     guint	    munk_index,
-		     guint	    recording_note,
+		     gint	    recording_note,
 		     guint	    loop_begin,
 		     guint	    loop_end,
 		     BseBinData    *bin_data)
@@ -411,7 +411,7 @@ parse_munk (BseSample  *sample,
     }
   else if (token_quark == quark_rec_note)
     {
-      guint rec_note;
+      gint rec_note;
       gchar bbuffer[BSE_BBUFFER_SIZE];
       GTokenType expected_token;
       
@@ -450,7 +450,7 @@ bse_sample_do_restore_private (BseObject  *object,
   GScanner *scanner = storage->scanner;
   GTokenType expected_token = BSE_TOKEN_UNMATCHED;
   gchar bbuffer[BSE_BBUFFER_SIZE];
-  guint note;
+  gint note;
   BseMunk munk = {
     BSE_NOTE_VOID,
     0, 0,

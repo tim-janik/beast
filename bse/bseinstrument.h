@@ -39,6 +39,13 @@ extern "C" {
 
 /* --- BseInstrument --- */
 typedef struct _BseEnvelope BseEnvelope;
+typedef enum				/*< skip >*/
+{
+  BSE_INSTRUMENT_NONE,
+  BSE_INSTRUMENT_SYNTH,
+  BSE_INSTRUMENT_SAMPLE,
+  BSE_INSTRUMENT_LAST                   /*< skip >*/
+} BseInstrumentType;
 struct _BseEnvelope
 {
   guint	 delay_time;
@@ -57,10 +64,11 @@ struct _BseInstrument
   BseInstrumentType  type;
   
   /* sample specific fields */
-  BseSample	*sample;
   guint		 interpolation : 1;
-
   guint		 polyphony : 1;
+
+  BseSource     *input; /* for sample and sinstrument */
+
   gfloat	 volume_factor;
   gint		 balance;
   gint		 transpose;
@@ -77,6 +85,8 @@ struct _BseInstrumentClass
 /* --- prototypes -- */
 void		bse_instrument_set_sample	(BseInstrument	*instrument,
 						 BseSample	*sample);
+void		bse_instrument_set_sinstrument	(BseInstrument	*instrument,
+						 BseSInstrument *sinstrument);
 
 
 

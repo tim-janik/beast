@@ -39,8 +39,9 @@ extern "C" {
 
 
 /* --- notes & note based frequencies --- */
-#define	BSE_KAMMER_FREQ			(440)
-#define	BSE_KAMMER_FREQ_d		((gdouble) 440)
+#define	BSE_KAMMER_FREQ_f		(440.0)
+#define	BSE_KAMMER_FREQ			((gint) BSE_KAMMER_FREQ_f)
+#define	BSE_KAMMER_FREQ_d		((gdouble) BSE_KAMMER_FREQ_f)
 #define	BSE_MIN_NOTE			(0)
 #define	BSE_MAX_NOTE			(123)
 #define	BSE_NOTE_VOID			(1024)
@@ -64,9 +65,9 @@ extern "C" {
 #define	BSE_NOTE_Ais(o)			(CLAMP (BSE_KAMMER_NOTE + 1 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
 #define	BSE_NOTE_Bes(o)			(BSE_NOTE_Ais (o))
 #define	BSE_NOTE_B(o)			(CLAMP (BSE_KAMMER_NOTE + 2 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_GENERIC(ht_i,o)	(BSE_NOTE_C(o)+(ht_i)-1 >= BSE_MIN_NOTE && BSE_NOTE_C(o)+(ht_i)-1 <= BSE_MAX_NOTE ? BSE_NOTE_C(o)+(ht_i)-1 : BSE_NOTE_VOID)
-#define	BSE_NOTE_OCTAVE_UP(n)		((n)+12 <= BSE_MAX_NOTE && (n)+12 >= BSE_MIN_NOTE ? (n)+12 : (n))
-#define	BSE_NOTE_OCTAVE_DOWN(n)		((n) >= BSE_MIN_NOTE+12 && (n)-12 <= BSE_MAX_NOTE ? (n)-12 : (n))
+#define	BSE_NOTE_GENERIC(ht_i,o)	(BSE_NOTE_C (o) + (ht_i) - 1 >= BSE_MIN_NOTE && BSE_NOTE_C (o) + (ht_i) - 1 <= BSE_MAX_NOTE ? BSE_NOTE_C (o) + (ht_i) - 1 : BSE_NOTE_VOID)
+#define	BSE_NOTE_OCTAVE_UP(n)		((n) + 12 <= BSE_MAX_NOTE && (n) + 12 >= BSE_MIN_NOTE ? (n) + 12 : (n))
+#define	BSE_NOTE_OCTAVE_DOWN(n)		((n) >= BSE_MIN_NOTE + 12 && (n) - 12 <= BSE_MAX_NOTE ? (n) - 12 : (n))
 #define	BSE_NOTE_VALID(n)		((n) >= BSE_MIN_NOTE && (n) <= (BSE_MAX_NOTE))
 
 
@@ -100,6 +101,8 @@ extern "C" {
 #define	BSE_MAX_N_VALUES		(128 * 1024 * 1024)
 #define	BSE_MAX_SEQ_ID			(65535)
 #define	BSE_BBUFFER_SIZE		(128)
+#define BSE_DFL_OCHANNEL_ID		(1)
+
 
 /* --- BseSource limits --- */
 #define	BSE_MAX_HISTORY			(128)
@@ -127,6 +130,8 @@ extern "C" {
 	    /* 1112753441 0x42534521 */	 ('E' <<  8) | ('!' <<  0))
 #define BSE_FADE_OUT_TIME_ms            (30)
 #define BSE_VOICES_POLY_OVER_FIXED	(1)
+#define BSE_DEVICE_PRIORITY		(BSE_HEART_PRIORITY - 1)
+#define BSE_NOTIFY_PRIORITY		(BSE_HEART_PRIORITY)
 
 
 /* --- BseGlobals - configurable defaults --- */
@@ -148,10 +153,10 @@ extern "C" {
 
 
 /* halftone factorization tables, i.e.
- * Index                     Result
- * (BSE_KAMMER_NOTE - 12) -> 0.5
- * BSE_KAMMER_NOTE	  -> 1.0
- * (BSE_KAMMER_NOTE + 12) -> 2.0
+ * Index                     Factor	Fixed
+ * (BSE_KAMMER_NOTE - 12) -> 0.5	32768
+ * BSE_KAMMER_NOTE	  -> 1.0	65536
+ * (BSE_KAMMER_NOTE + 12) -> 2.0	131072
  * etc...
  */
 extern const gdouble* _bse_halftone_factor_table;

@@ -67,7 +67,7 @@ void
 bse_song_sequencer_recalc (BseSong *song)
 {
   BseSongSequencer *sequencer;
-  const guint notes_per_tact = 4;
+  const gint notes_per_tact = 4;
   gdouble d;
   
   g_return_if_fail (BSE_IS_SONG (song));
@@ -94,11 +94,16 @@ bse_song_sequencer_set_pattern_loop (BseSong *song,
 {
 }
 
-static inline void
+void
 bse_song_sequencer_step (BseSong *song)
 {
-  BseSongSequencer *sequencer = song->sequencer;
+  BseSongSequencer *sequencer;
   
+  g_return_if_fail (BSE_IS_SONG (song));
+  g_return_if_fail (song->sequencer != NULL);
+
+  sequencer = song->sequencer;
+
   sequencer->step_counter++;
   if (sequencer->step_counter >= sequencer->step_threshold)
     {
@@ -119,7 +124,7 @@ bse_song_sequencer_step (BseSong *song)
       
       for (channel = 0; channel < pattern->n_channels; channel++)
 	{
-	  BseNote *note;
+	  BsePatternNote *note;
 	  
 	  note = bse_pattern_peek_note (pattern,
 					channel,
@@ -148,9 +153,7 @@ bse_song_sequencer_fill_hunk (BseSong	     *song,
   
   sequencer = song->sequencer;
   
-  bse_song_sequencer_step (song);
-  
-  bse_song_mixer_fill_buffer (sequencer);
+  bse_song_mixer_fill_buffer (sequencer, BSE_SOURCE (song)->index);
   
   /* fill the hunk and clip the values
    */

@@ -111,6 +111,7 @@ struct _BseSourceOChannelDef
   gchar   *name;
   gchar   *blurb;
   guint    n_tracks;
+  guint    min_history;
 };
 struct _BseSourceClass
 {

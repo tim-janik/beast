@@ -81,6 +81,8 @@ typedef struct  _BseParamSpecItem	BseParamSpecItem;
 /* --- BSE objects, classes & interfaces --- */
 typedef struct	_BseBinData		BseBinData;
 typedef struct	_BseBinDataClass	BseBinDataClass;
+typedef struct	_BseCapture		BseCapture;
+typedef struct	_BseCaptureClass	BseCaptureClass;
 typedef struct	_BseContainer		BseContainer;
 typedef struct	_BseContainerClass	BseContainerClass;
 typedef struct	_BseEnumClass		BseEnumClass;
@@ -102,6 +104,8 @@ typedef	struct	_BseProject		BseProject;
 typedef	struct	_BseProjectClass	BseProjectClass;
 typedef struct	_BseSample		BseSample;
 typedef struct	_BseSampleClass		BseSampleClass;
+typedef struct	_BseSInstrument		BseSInstrument;
+typedef struct	_BseSInstrumentClass	BseSInstrumentClass;
 typedef struct	_BseSNet		BseSNet;
 typedef struct	_BseSNetClass		BseSNetClass;
 typedef struct	_BseSong		BseSong;
@@ -121,7 +125,7 @@ typedef struct	_BseIcon		BseIcon;
 typedef struct	_BseLfo			BseLfo;
 typedef struct  _BsePixdata             BsePixdata;
 typedef struct	_BseMunk		BseMunk;
-typedef struct	_BseNote		BseNote;
+typedef struct	_BsePatternNote		BsePatternNote;
 typedef struct	_BsePcmConfig		BsePcmConfig;
 typedef struct	_BsePlugin		BsePlugin;
 typedef struct	_BseSampleHashEntry	BseSampleHashEntry;
@@ -264,7 +268,7 @@ typedef	void	(*BseNotify_cross_changes)	(BseContainer	*container,
 						 gpointer	 data);
 typedef void	(*BseNotify_seqid_changed)	(BseItem	*item,
 						 gpointer	 data);
-typedef void	(*BseNotify_set_container)	(BseItem	*item,
+typedef void	(*BseNotify_set_parent)		(BseItem	*item,
 						 BseItem	*container,
 						 gpointer	 data);
 typedef void	(*BseNotify_size_changed)	(BsePattern	*pattern,

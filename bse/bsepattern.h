@@ -38,7 +38,7 @@ extern "C" {
 
 
 /* --- BsePattern object --- */
-struct _BseNote
+struct _BsePatternNote
 {
   BseInstrument *instrument;
   guint		 note : 20;
@@ -56,7 +56,7 @@ struct _BsePattern
   guint	current_channel;
   guint current_row;
   
-  BseNote *notes		/* ->notes [ row * n_channels + channel] */;
+  BsePatternNote *notes		/* ->notes [ row * n_channels + channel] */;
 };
 struct _BsePatternClass
 {
@@ -68,7 +68,7 @@ struct _BsePatternClass
 /* returns a pointer to relocatable data, make sure to lock the
  * pattern to maintain validity.
  */
-BseNote*	bse_pattern_peek_note	    (BsePattern		*pattern,
+BsePatternNote*	bse_pattern_peek_note	    (BsePattern		*pattern,
 					     guint               channel,
 					     guint               row);
 GList* /*fl*/	bse_pattern_list_selection  (BsePattern		*pattern);
@@ -78,7 +78,7 @@ GList* /*fl*/	bse_pattern_list_selection  (BsePattern		*pattern);
 void		bse_pattern_set_note	    (BsePattern		*pattern,
 					     guint               channel,
 					     guint               row,
-					     guint		 note);
+					     gint		 note);
 void		bse_pattern_set_instrument  (BsePattern		*pattern,
 					     guint               channel,
 					     guint               row,
@@ -99,7 +99,7 @@ void		bse_pattern_set_n_rows	    (BsePattern		*pattern,
 void		bse_pattern_modify_note	    (BsePattern		*pattern,
 					     guint		 channel,
 					     guint		 row,
-					     guint		 note,
+					     gint		 note,
 					     BseInstrument	*instrument,
 					     gboolean		 selected);
 

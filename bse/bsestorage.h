@@ -134,7 +134,7 @@ GTokenType	bse_storage_parse_rest		(BseStorage     *storage,
 						 gpointer        func_data,
 						 gpointer        user_data);
 GTokenType	bse_storage_parse_note		(BseStorage	*storage,
-						 guint		*note,
+						 gint		*note,
 						 gchar           bbuffer[BSE_BBUFFER_SIZE]);
 GTokenType	bse_storage_parse_bin_data	(BseStorage	*storage,
 						 BseBinData    **bdata_p);

@@ -80,8 +80,7 @@ BSE_BUILTIN_TYPE (BseHeart)
 
   return bse_type_register_static (BSE_TYPE_OBJECT,
 				   "BseHeart",
-				   "Project container for administration "
-				   "of Source networks",
+				   "BSE Heart - fundamental audio router",
 				   &heart_info);
 }
 
@@ -543,8 +542,8 @@ bse_heart_source_add_odevice (BseSource    *source,
   g_return_if_fail (!BSE_SOURCE_OATTACHED (source));
   g_return_if_fail (BSE_IS_PCM_DEVICE (odev));
   g_return_if_fail (BSE_DEVICE_REGISTERED (odev));
-  g_return_if_fail (BSE_SOURCE_N_OCHANNELS (source) == 1);
-  g_return_if_fail (BSE_SOURCE_OCHANNEL_DEF (source, 1)->n_tracks <= 2);
+  g_return_if_fail (BSE_SOURCE_N_OCHANNELS (source) >= BSE_DFL_OCHANNEL_ID);
+  g_return_if_fail (BSE_SOURCE_OCHANNEL_DEF (source, BSE_DFL_OCHANNEL_ID)->n_tracks <= 2);
 
   heart = bse_heart_get_global (FALSE);
   
@@ -667,7 +666,7 @@ bse_heart_queue_device (BseHeart       *heart,
 
   heart->device_open_list = g_slist_prepend (heart->device_open_list, hdevice);
   if (!heart->device_open_handler_id)
-    heart->device_open_handler_id = g_idle_add_full (BSE_HEART_PRIORITY - 1,
+    heart->device_open_handler_id = g_idle_add_full (BSE_DEVICE_PRIORITY,
 						     device_open_handler,
 						     heart,
 						     NULL);
@@ -683,8 +682,8 @@ bse_heart_beat (BseHeart *heart)
   /* no, sources may NOT be removed or added during cycling
    */
 
-  /* turbo-cycle recently added sources */
-  for (i = 0; i < heart->n_sources; i++) /* FIXME */
+  /* turbo-cycle recently added sources */ /* FIXME */
+  for (i = 0; i < heart->n_sources; i++)
     {
       BseSource *source = heart->sources[i];
 
@@ -716,7 +715,7 @@ bse_heart_collect_chunks (BseHeart       *heart,
 
   for (i = 0; i < hdevice->n_osources; i++)
     slist = g_slist_prepend (slist, bse_source_ref_chunk (hdevice->osources[i],
-							  1,
+							  BSE_DFL_OCHANNEL_ID,
 							  bse_heart_beat_index));
 
   return slist;

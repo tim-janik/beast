@@ -49,6 +49,7 @@ bse_builtin_c_sources = @STRIP_BEGIN@ \
 bse_public_h_sources = @STRIP_BEGIN@ \
 	bse.h \
 	bsebindata.h \
+	bsecapture.h \
 	bsecategories.h \
 	bsechunk.h \
 	bseconfig.h \
@@ -82,6 +83,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseprocedure.h \
 	bseproject.h \
 	bsesample.h \
+	bsesinstrument.h \
 	bsesnet.h \
 	bsesong.h \
 	bsesongsequencer.h \
@@ -99,6 +101,7 @@ bse_private_h_sources = @STRIP_BEGIN@ \
 # BSE C sources to build the library from
 bse_c_sources = @STRIP_BEGIN@ \
 	bsebindata.c \
+	bsecapture.c \
 	bsecategories.c \
 	bsechunk.c \
 	bsecontainer.c \
@@ -130,6 +133,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseprocedure.c \
 	bseproject.c \
 	bsesample.c \
+	bsesinstrument.c \
 	bsesnet.c \
 	bsesong.c \
 	bsesongsequencer.c \

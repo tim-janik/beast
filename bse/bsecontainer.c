@@ -20,6 +20,7 @@
 #include	"bsesource.h"
 #include	"bseproject.h"
 #include	"bsestorage.h"
+#include	"bseheart.h"
 #include	<stdlib.h>
 #include	<string.h>
 
@@ -38,6 +39,9 @@ static void	    bse_container_do_add_item		(BseContainer		*container,
 							 BseItem		*item);
 static void	    bse_container_do_remove_item	(BseContainer		*container,
 							 BseItem		*item);
+static void         bse_container_prepare               (BseSource              *source,
+							 BseIndex                index);
+static void         bse_container_reset                 (BseSource              *source);
 
 
 /* --- variables --- */
@@ -75,10 +79,12 @@ bse_container_class_init (BseContainerClass *class)
 {
   BseObjectClass *object_class;
   BseItemClass *item_class;
+  BseSourceClass *source_class;
   
   parent_class = bse_type_class_peek (BSE_TYPE_SOURCE);
   object_class = BSE_OBJECT_CLASS (class);
   item_class = BSE_ITEM_CLASS (class);
+  source_class = BSE_SOURCE_CLASS (class);
 
   if (!quark_cross_refs)
     quark_cross_refs = g_quark_from_static_string ("BseContainerCrossRefs");
@@ -87,6 +93,9 @@ bse_container_class_init (BseContainerClass *class)
   object_class->try_statement = bse_container_try_statement;
   object_class->shutdown = bse_container_shutdown;
   object_class->destroy = bse_container_destroy;
+
+  source_class->prepare = bse_container_prepare;
+  source_class->reset = bse_container_reset;
   
   class->add_item = bse_container_do_add_item;
   class->remove_item = bse_container_do_remove_item;
@@ -140,7 +149,15 @@ bse_container_do_add_item (BseContainer *container,
   if (BSE_ITEM_PARENT_REF (item))
     bse_object_ref (BSE_OBJECT (item));
   container->n_items += 1;
-  bse_item_set_container (item, BSE_ITEM (container));
+  bse_item_set_parent (item, BSE_ITEM (container));
+
+  if (BSE_IS_SOURCE (item) && BSE_SOURCE_PREPARED (container))
+    {
+      g_return_if_fail (BSE_SOURCE_PREPARED (item) == FALSE);
+
+      BSE_OBJECT_SET_FLAGS (item, BSE_SOURCE_FLAG_PREPARED);
+      BSE_SOURCE_GET_CLASS (item)->prepare (BSE_SOURCE (item), bse_heart_get_beat_index ());
+    }
 }
 
 static inline void
@@ -187,7 +204,7 @@ bse_container_add_item (BseContainer *container,
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (!BSE_OBJECT_DESTROYED (container));
   g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (item->container == NULL);
+  g_return_if_fail (item->parent == NULL);
   g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
 
   BSE_OBJECT_SET_FLAGS (item, BSE_ITEM_FLAG_PARENT_REF);
@@ -201,7 +218,7 @@ bse_container_add_item_unrefed (BseContainer *container,
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (!BSE_OBJECT_DESTROYED (container));
   g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (item->container == NULL);
+  g_return_if_fail (item->parent == NULL);
   g_return_if_fail (!BSE_OBJECT_DESTROYED (item));
   g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
 
@@ -238,15 +255,34 @@ static void
 bse_container_do_remove_item (BseContainer *container,
 			      BseItem	   *item)
 {
+  BseItem *anchestor = BSE_ITEM (container);
+
   container->n_items -= 1;
-  bse_item_set_container (item, NULL);
 
   do
     {
-      bse_container_uncross_item (container, item);
-      container = (BseContainer*) ((BseItem*) container)->container;
+      bse_container_uncross_item (BSE_CONTAINER (anchestor), item);
+      anchestor = anchestor->parent;
     }
-  while (container);
+  while (anchestor);
+
+  if (BSE_IS_SOURCE (item) && BSE_SOURCE_PREPARED (container))
+    {
+      g_return_if_fail (BSE_SOURCE_PREPARED (item) == TRUE);
+
+      bse_source_reset (BSE_SOURCE (item));
+
+      if (!BSE_IS_CONTAINER (item))
+	{
+	  bse_source_clear_ichannels (BSE_SOURCE (item));
+	  bse_source_clear_ochannels (BSE_SOURCE (item));
+	}
+    }
+
+  /* reset parent *after* uncrossing, so "set_parent" notifiers on item
+   * operate on sane object trees
+   */
+  bse_item_set_parent (item, NULL);
 
   if (BSE_ITEM_PARENT_REF (item))
     {
@@ -261,7 +297,7 @@ bse_container_remove_item (BseContainer *container,
 {
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (item));
-  g_return_if_fail (item->container == BSE_ITEM (container));
+  g_return_if_fail (item->parent == BSE_ITEM (container));
   g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->remove_item != NULL); /* paranoid */
 
   bse_object_ref (BSE_OBJECT (container));
@@ -337,7 +373,7 @@ bse_container_get_item_seqid (BseContainer *container,
 {
   g_return_val_if_fail (BSE_IS_CONTAINER (container), 0);
   g_return_val_if_fail (BSE_IS_ITEM (item), 0);
-  g_return_val_if_fail (item->container == BSE_ITEM (container), 0);
+  g_return_val_if_fail (item->parent == BSE_ITEM (container), 0);
   
   if (BSE_CONTAINER_GET_CLASS (container)->item_seqid)
     return BSE_CONTAINER_GET_CLASS (container)->item_seqid (container, item);
@@ -632,7 +668,7 @@ bse_container_item_from_path (BseContainer *container,
   return item;
 }
 
-gchar*
+gchar* /* free result */
 bse_container_make_item_path (BseContainer *container,
 			      BseItem      *item,
 			      gboolean      persistent)
@@ -645,11 +681,11 @@ bse_container_make_item_path (BseContainer *container,
 
   path = bse_item_make_handle (item, persistent);
 
-  while (item->container != BSE_ITEM (container))
+  while (item->parent != BSE_ITEM (container))
     {
       gchar *string, *handle;
 
-      item = item->container;
+      item = item->parent;
       string = path;
       handle = bse_item_make_handle (item, persistent);
       path = g_strconcat (handle, ".", string, NULL);
@@ -672,6 +708,7 @@ notify_cross_changes (gpointer data)
     }
 
   containers_cross_changes_handler = 0;
+
   return FALSE;
 }
 
@@ -679,7 +716,7 @@ static inline void
 container_queue_cross_changes (BseContainer *container)
 {
   if (!containers_cross_changes_handler)
-    containers_cross_changes_handler = g_idle_add_full (BSE_HEART_PRIORITY,
+    containers_cross_changes_handler = g_idle_add_full (BSE_NOTIFY_PRIORITY,
 							notify_cross_changes,
 							NULL,
 							NULL);
@@ -744,23 +781,6 @@ container_get_crefs (gpointer container)
   return bse_object_get_qdata (container, quark_cross_refs);
 }
 
-static inline gboolean
-item_check_branch (BseItem *item,
-		   gpointer container)
-{
-  BseItem *anchestor = container;
-
-  do
-    {
-      if (item == anchestor)
-	return TRUE;
-      item = item->container;
-    }
-  while (item);
-
-  return FALSE;
-}
-
 void
 bse_container_cross_ref (BseContainer    *container,
 			 BseItem         *owner,
@@ -771,11 +791,14 @@ bse_container_cross_ref (BseContainer    *container,
   BseContainerCrossRefs *crefs;
   guint i;
 
+  /* prerequisites:
+   * container == bse_item_common_ancestor (owner, ref_item)
+   * container != owner || container != ref_item
+   */
+
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (owner));
   g_return_if_fail (BSE_IS_ITEM (ref_item));
-  g_return_if_fail (item_check_branch (owner, container));
-  g_return_if_fail (item_check_branch (ref_item, container));
   g_return_if_fail (destroy_func != NULL);
 
   crefs = container_get_crefs (container);
@@ -801,7 +824,7 @@ bse_container_cross_ref (BseContainer    *container,
   crefs->cross_refs[i].destroy = destroy_func;
   crefs->cross_refs[i].data = data;
 
-  container_queue_cross_changes (crefs->container);
+  container_queue_cross_changes (container);
 }
 
 void
@@ -831,7 +854,7 @@ bse_container_cross_unref (BseContainer *container,
 	      crefs->cross_refs[i].ref_item == ref_item)
 	    {
 	      destroy_cref (crefs, i);
-	      container_queue_cross_changes (crefs->container);
+	      container_queue_cross_changes (container);
 	      found_one = TRUE;
 	      break;
 	    }
@@ -840,7 +863,7 @@ bse_container_cross_unref (BseContainer *container,
     }
 
   if (!found_one)
-    g_warning (G_STRLOC ": unable to find cross ref from `%s' to `%s' on `%s'",
+    g_warning (G_STRLOC "unable to find cross ref from `%s' to `%s' on `%s'",
 	       BSE_OBJECT_TYPE_NAME (owner),
 	       BSE_OBJECT_TYPE_NAME (ref_item),
 	       BSE_OBJECT_TYPE_NAME (container));
@@ -850,12 +873,37 @@ bse_container_cross_unref (BseContainer *container,
   bse_object_unref (BSE_OBJECT (container));
 }
 
+/* we could in theory use bse_item_has_ancestor() here,
+ * but actually this test should be as fast as possible,
+ * and we also want to catch item == container
+ */
+static inline gboolean
+item_check_branch (BseItem *item,
+		   gpointer container)
+{
+  BseItem *anchestor = container;
+
+  do
+    {
+      if (item == anchestor)
+	return TRUE;
+      item = item->parent;
+    }
+  while (item);
+
+  return FALSE;
+}
+
 void
 bse_container_uncross_item (BseContainer *container,
 			    BseItem      *item)
 {
   BseContainerCrossRefs *crefs;
   gboolean found_one = FALSE;
+
+  /* prerequisites:
+   * bse_item_has_ancestor (item, container) == TRUE
+   */
 
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_ITEM (item));
@@ -868,37 +916,54 @@ bse_container_uncross_item (BseContainer *container,
       bse_object_ref (BSE_OBJECT (container));
       bse_object_ref (BSE_OBJECT (item));
 
-      if (BSE_IS_CONTAINER (item) && BSE_CONTAINER (item)->n_items)
-	while (i < crefs->n_cross_refs)
-	  {
-	    if (item_check_branch (crefs->cross_refs[i].owner, item) ||
-		item_check_branch (crefs->cross_refs[i].ref_item, item))
-	      {
-		destroy_cref (crefs, i);
-		if (!found_one)
-		  {
-		    container_queue_cross_changes (crefs->container);
-		    found_one = TRUE;
-		  }
-	      }
-	    else
-	      i++;
-	  }
-      else
+      /* suppress tree walks where possible
+       */
+      if (!BSE_IS_CONTAINER (item) || ((BseContainer*) item)->n_items == 0)
 	while (i < crefs->n_cross_refs)
 	  {
 	    if (crefs->cross_refs[i].owner == item || crefs->cross_refs[i].ref_item == item)
 	      {
+		found_one = TRUE;
 		destroy_cref (crefs, i);
-		if (!found_one)
-		  {
-		    container_queue_cross_changes (crefs->container);
-		    found_one = TRUE;
-		  }
 	      }
 	    else
 	      i++;
 	  }
+      else /* need to check whether item is anchestor of any of the cross-ref items here */
+	{
+	  BseItem *saved_parent, *citem = BSE_ITEM (container);
+
+	  /* we do some minor hackery here, for optimization purposes:
+	   * since item is a child of container, we don't need to walk
+	   * ->owner's or ->ref_item's anchestor list any further than
+	   * up to reaching container.
+	   * to suppress extra checks in item_check_branch() in this
+	   * regard, we simply set container->parent to NULL temporarily
+	   * and with that cause item_check_branch() to abort automatically
+	   */
+	  saved_parent = citem->parent;
+	  citem->parent = NULL;
+	  while (i < crefs->n_cross_refs)
+	    {
+	      if (item_check_branch (crefs->cross_refs[i].owner, item) ||
+		  item_check_branch (crefs->cross_refs[i].ref_item, item))
+		{
+		  citem->parent = saved_parent;
+
+		  found_one = TRUE;
+		  destroy_cref (crefs, i);
+
+		  saved_parent = citem->parent;
+		  citem->parent = NULL;
+		}
+	      else
+		i++;
+	    }
+	  citem->parent = saved_parent;
+	}
+
+      if (found_one)
+	container_queue_cross_changes (container);
 
       bse_object_unref (BSE_OBJECT (item));
       bse_object_unref (BSE_OBJECT (container));
@@ -924,4 +989,66 @@ bse_container_cross_forall (BseContainer      *container,
 	if (!func (crefs->cross_refs[i].owner, crefs->cross_refs[i].ref_item, data))
 	  return;
     }
+}
+
+static gboolean
+prepare_item (BseItem *item,
+	      gpointer data)
+{
+  if (BSE_IS_SOURCE (item) && !BSE_SOURCE_PREPARED (item))
+    {
+      BSE_OBJECT_SET_FLAGS (item, BSE_SOURCE_FLAG_PREPARED);
+      BSE_SOURCE_GET_CLASS (item)->prepare (BSE_SOURCE (item), bse_heart_get_beat_index ());
+    }
+
+  return TRUE;
+}
+
+static void
+bse_container_prepare (BseSource *source,
+		       BseIndex   index)
+{
+  BseContainer *container = BSE_CONTAINER (source);
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+
+  /* make sure all BseSource children are prepared as well */
+  if (container->n_items)
+    {
+      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, prepare_item, NULL);
+    }
+}
+
+static gboolean
+reset_item (BseItem *item,
+	    gpointer data)
+{
+  if (BSE_IS_SOURCE (item))
+    {
+      g_return_val_if_fail (BSE_SOURCE_PREPARED (item), TRUE);
+
+      bse_source_reset (BSE_SOURCE (item));
+    }
+
+  return TRUE;
+}
+
+static void
+bse_container_reset (BseSource *source)
+{
+  BseContainer *container = BSE_CONTAINER (source);
+
+  /* make sure all BseSource children are reset as well */
+  if (container->n_items)
+    {
+      g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->forall_items != NULL); /* paranoid */
+
+      BSE_CONTAINER_GET_CLASS (container)->forall_items (container, reset_item, NULL);
+    }
+
+  /* chain parent class' handler */
+  BSE_SOURCE_CLASS (parent_class)->reset (source);
 }

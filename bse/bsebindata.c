@@ -64,7 +64,7 @@ BSE_BUILTIN_TYPE (BseBinData)
   
   return bse_type_register_static (BSE_TYPE_OBJECT,
 				   "BseBinData",
-				   "Binary data container",
+				   "BSE binary data container",
 				   &bin_data_info);
 }
 

@@ -40,7 +40,7 @@ extern "C" {
 /* --- BseSample object --- */
 struct _BseMunk
 {
-  guint		rec_note;
+  gint		rec_note;
   
   /* loop_end == 0 indicates no loop
    */
@@ -71,7 +71,7 @@ BseSample*	bse_sample_lookup		(BseProject	*project,
 						 const gchar	*name);
 void		bse_sample_set_munk		(BseSample	*sample,
 						 guint		 munk,
-						 guint		 recording_note,
+						 gint		 recording_note,
 						 guint		 loop_begin,
 						 guint		 loop_end,
 						 BseBinData	*bin_data);

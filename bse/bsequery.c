@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include        "bse.h"
+#include        "../PKG_config.h"
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<unistd.h>
@@ -113,6 +114,20 @@ show_nodes (BseType type,
   g_free (children);
 }
 
+static void
+show_cats (void)
+{
+  BseCategory *cats;
+  guint i, n_cats;
+
+  cats = bse_categories_match ("*", &n_cats);
+  for (i = 0; i < n_cats; i++)
+    fprintf (f_out, "%s\t(%s)\n",
+	     cats[i].category,
+	     bse_type_name (cats[i].type));
+  g_free (cats);
+}
+
 static gint
 help (gchar *arg)
 {
@@ -122,11 +137,13 @@ help (gchar *arg)
   fprintf (stderr, "       -i       specifiy incremental indent string\n");
   fprintf (stderr, "       -s       specifiy line spacing\n");
   fprintf (stderr, "       -n       no recursion\n");
+  fprintf (stderr, "       -p       include plugins\n");
   fprintf (stderr, "       -h       guess what ;)\n");
   fprintf (stderr, "       -x       show type blurbs\n");
   fprintf (stderr, "       -y       show source channels\n");
   fprintf (stderr, "qualifiers:\n");
-  fprintf (stderr, "       tree     show object tree\n");
+  fprintf (stderr, "       tree     print object tree\n");
+  fprintf (stderr, "       cats     print categories\n");
 
   return arg != NULL;
 }
@@ -136,6 +153,7 @@ main (gint   argc,
       gchar *argv[])
 {
   gboolean gen_tree = 0;
+  gboolean gen_cats = 0;
   guint i;
   gchar *iindent = "";
   
@@ -200,6 +218,27 @@ main (gint   argc,
 	{
 	  gen_tree = 1;
 	}
+      else if (strcmp ("cats", argv[i]) == 0)
+	{
+	  gen_cats = 1;
+	}
+      else if (strcmp ("-p", argv[i]) == 0)
+	{
+	  GList *free_list, *list;
+
+	  /* check load BSE plugins to register types */
+	  free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
+	  for (list = free_list; list; list = list->next)
+	    {
+	      gchar *error, *string = list->data;
+	      
+	      error = bse_plugin_check_load (string);
+	      if (error)
+		g_error ("failed to load plugin \"%s\": %s", string, error);
+	      g_free (string);
+	    }
+	  g_list_free (free_list);
+	}
       else if (strcmp ("-h", argv[i]) == 0)
 	{
 	  return help (NULL);
@@ -211,7 +250,7 @@ main (gint   argc,
       else
 	return help (argv[i]);
     }
-  if (!gen_tree)
+  if (!gen_tree && !gen_cats)
     return help (argv[i-1]);
 
   if (!indent_inc)
@@ -225,6 +264,8 @@ main (gint   argc,
 
   if (gen_tree)
     show_nodes (root, 0, iindent);
+  if (gen_cats)
+    show_cats ();
 
   return 0;
 }

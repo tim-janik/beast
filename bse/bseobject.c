@@ -379,7 +379,7 @@ bse_object_do_set_param (BseObject *object,
       bse_object_set_qdata_full (object, quark_blurb, string, g_free);
       break;
     default:
-      g_warning ("%s: invalid attempt to set parameter \"%s\" of type `%s'",
+      g_warning (G_STRLOC "%s: invalid attempt to set parameter \"%s\" of type `%s'",
 		 BSE_OBJECT_TYPE_NAME (object),
 		 param->pspec->any.name,
 		 bse_type_name (param->pspec->type));
@@ -402,7 +402,7 @@ bse_object_do_get_param (BseObject *object,
       param->value.v_string = g_strdup (bse_object_get_qdata (object, quark_blurb));
       break;
     default:
-      g_warning ("%s: invalid attempt to get parameter \"%s\" of type `%s'",
+      g_warning (G_STRLOC "%s: invalid attempt to get parameter \"%s\" of type `%s'",
 		 BSE_OBJECT_TYPE_NAME (object),
 		 param->pspec->any.name,
 		 bse_type_name (param->pspec->type));
@@ -555,7 +555,7 @@ bse_object_unref (BseObject *object)
       BseObjectClass *class = BSE_OBJECT_GET_CLASS (object);
 
       if (BSE_OBJECT_IN_PARAM_CHANGED (object))
-	g_warning ("object destructed while in param_changed(), probably ref_count mess");
+	g_warning (G_STRLOC "object destructed while in param_changed(), probably ref_count mess");
 
       /* amongst other things, invoke destroy notifiers and set destroyed flag */
       class->shutdown (object);
@@ -770,7 +770,7 @@ bse_hook_list_destroy (gpointer data)
   g_hook_list_clear (hook_list);
   /* FIXME hook_list needs destruction notifier */
   if (hook_list->hooks || hook_list->hook_memchunk)
-    g_warning ("hook_list destruction failed, leaking memory...");
+    g_warning (G_STRLOC "hook_list destruction failed, leaking memory...");
   else
     g_free (hook_list);
 }
@@ -808,7 +808,7 @@ bse_object_add_notifier_i (BseObject     *object,
 
       if (!quark || !bse_object_class_check_notifier (BSE_OBJECT_GET_CLASS (object), quark))
 	{
-	  g_warning ("unable to find notify method \"%s\" in the `%s' class",
+	  g_warning (G_STRLOC "unable to find notify method \"%s\" in the `%s' class",
 		     method,
 		     BSE_OBJECT_TYPE_NAME (object));
 	  return 0;
@@ -932,7 +932,7 @@ bse_object_remove_notifiers_i (BseObject   *object,
     }
 
   if (!found_one)
-    g_warning ("couldn't remove notifier from %s \"%s\"",
+    g_warning (G_STRLOC "couldn't remove notifier from %s \"%s\"",
 	       BSE_OBJECT_TYPE_NAME (object),
 	       BSE_OBJECT_NAME (object));
 }
@@ -964,7 +964,7 @@ bse_object_remove_notifier (gpointer _object,
     id = !g_hook_destroy (hook_list, id);
 
   if (id)
-    g_warning ("couldn't remove notifier (%u) from %s \"%s\"",
+    g_warning (G_STRLOC "couldn't remove notifier (%u) from %s \"%s\"",
 	       oid,
 	       BSE_OBJECT_TYPE_NAME (object),
 	       BSE_OBJECT_NAME (object));
@@ -1168,7 +1168,7 @@ bse_object_class_add_param (BseObjectClass *class,
     {
       if (class->param_specs[i]->any.param_id == param_id)
 	{
-	  g_warning ("bse_object_class_add_param(): class `%s' already contains a parameter with id %u",
+	  g_warning (G_STRLOC "class `%s' already contains a parameter with id %u",
 		     BSE_CLASS_NAME (class),
 		     param_id);
 	  return;
@@ -1178,7 +1178,7 @@ bse_object_class_add_param (BseObjectClass *class,
   pspec->any.parent_type = BSE_CLASS_TYPE (class);
   if (g_hash_table_lookup (bse_pspec_ht, pspec))
     {
-      g_warning ("bse_object_class_add_param(): class `%s' already contains a parameter named `%s'",
+      g_warning (G_STRLOC "class `%s' already contains a parameter named `%s'",
 		 BSE_CLASS_NAME (class),
 		 pspec->any.name);
       pspec->any.parent_type = 0;
@@ -1254,59 +1254,70 @@ bse_object_class_get_param_spec (BseObjectClass *class,
   return pspec;
 }
 
-static inline void
-bse_object_notify_param_changed (BseObject    *object,
-				 BseParamSpec *pspec)
+static gboolean
+notify_param_changed (gpointer data)
 {
-  /* if this is a recursive call on this object, we simply queue further
-   * notifications, otherwise we dispatch untill the queue is completely
-   * empty.
-   * we don't queue notifications for params that have yet to be dispatched.
-   */
+  BseObject *object = BSE_OBJECT (data);
 
-  if (pspec)
-    {
-      GSList *slist, *last = NULL;
-      
-      slist = bse_object_get_qdata (object, quark_param_changed_queue);
-      for (; slist; last = slist, slist = last->next)
-	if (slist->data == pspec)
-	  goto skip_pspec;
-      
-      if (!last)
-	{
-	  bse_object_set_qdata_full (object,
-				     quark_param_changed_queue,
-				     g_slist_prepend (NULL, pspec),
-				     (GDestroyNotify) g_slist_free);
-	}
-      else
-	last->next = g_slist_prepend (NULL, pspec);
-      
-    skip_pspec:
-    }
-  
-  if (!BSE_OBJECT_IN_PARAM_CHANGED (object))
-    {
-      GSList *slist;
+  /* a reference count is still being held */
 
-      slist = bse_object_get_qdata (object, quark_param_changed_queue);
+  if (BSE_OBJECT_IN_PARAM_CHANGED (object))
+    g_warning (G_STRLOC "object `%s' still flagged `IN_PARAM_CHANGED' in idle handler, something's messed",
+	       BSE_OBJECT_TYPE_NAME (object));
+  else
+    {
+      GSList *slist = bse_object_get_qdata (object, quark_param_changed_queue);
       
-      bse_object_ref (object);
       BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
       
       for (; slist; slist = slist->next)
-	{
-	  pspec = slist->data;
-	  slist->data = NULL;
-	  BSE_NOTIFY (object, param_changed, NOTIFY (OBJECT, pspec, DATA));
-	}
-
-      bse_object_set_qdata (object, quark_param_changed_queue, NULL);
+	if (slist->data)
+	  {
+	    BseParamSpec *pspec = slist->data;
+	    
+	    slist->data = NULL;
+	    BSE_NOTIFY (object, param_changed, NOTIFY (OBJECT, pspec, DATA));
+	  }
       
       BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
-      bse_object_unref (object);
+
+      bse_object_set_qdata (object, quark_param_changed_queue, NULL);
     }
+  
+  return FALSE;
+}
+
+static inline void
+bse_object_queue_param_changed (BseObject    *object,
+				BseParamSpec *pspec)
+{
+  GSList *slist, *last = NULL;
+
+  /* if this is a recursive call on this object, we simply queue further
+   * notifications, otherwise we dispatch asyncronously from an idle handler
+   * untill the queue is completely empty.
+   * we don't queue notifications for params that have yet to be dispatched.
+   */
+  
+  slist = bse_object_get_qdata (object, quark_param_changed_queue);
+  for (; slist; last = slist, slist = last->next)
+    if (slist->data == pspec)
+      return;
+  
+  if (!last)
+    {
+      bse_object_ref (object);
+      g_idle_add_full (BSE_NOTIFY_PRIORITY,
+		       notify_param_changed,
+		       object,
+		       (GDestroyNotify) bse_object_unref);
+      bse_object_set_qdata_full (object,
+				 quark_param_changed_queue,
+				 g_slist_prepend (NULL, pspec),
+				 (GDestroyNotify) g_slist_free);
+    }
+  else
+    last->next = g_slist_append (NULL, pspec);
 }
 
 void
@@ -1320,9 +1331,9 @@ bse_object_param_changed (BseObject   *object,
 
   pspec = bse_object_class_get_param_spec (BSE_OBJECT_GET_CLASS (object), param_name);
   if (!pspec)
-    g_warning ("bse_object_param_changed(): invalid parameter name `%s'", param_name);
+    g_warning (G_STRLOC "invalid parameter name `%s'", param_name);
   else
-    bse_object_notify_param_changed (object, pspec);
+    bse_object_queue_param_changed (object, pspec);
 }
 
 void
@@ -1354,7 +1365,7 @@ bse_object_set_valist (BseObject   *object,
       pspec = bse_object_class_get_param_spec (class, name);
       if (!pspec)
 	{
-	  g_warning (G_GNUC_PRETTY_FUNCTION "(): invalid parameter name `%s'", name);
+	  g_warning (G_STRLOC "invalid parameter name `%s'", name);
 	  goto bail_out;
 	}
       
@@ -1362,7 +1373,7 @@ bse_object_set_valist (BseObject   *object,
       BSE_PARAM_COLLECT_VALUE (&param, var_args, error);
       if (error)
 	{
-	  g_warning (G_GNUC_PRETTY_FUNCTION "(): %s", error);
+	  g_warning (G_STRLOC "%s", error);
 	  g_free (error);
           goto bail_out;
 	}
@@ -1378,7 +1389,6 @@ bse_object_set_valist (BseObject   *object,
 
   if (!in_param_changed)
     BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
-  bse_object_notify_param_changed (object, NULL);
   
   bse_object_unref (object);
 }
@@ -1406,7 +1416,7 @@ bse_object_set_param (BseObject	*object,
   class->set_param (object, param);
   if (!in_param_changed)
     BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_IN_PARAM_CHANGED);
-  bse_object_notify_param_changed (object, param->pspec);
+  bse_object_queue_param_changed (object, param->pspec);
 
   bse_object_unref (object);
 }

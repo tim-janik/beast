@@ -288,7 +288,7 @@ bse_super_get_project (BseSuper *super)
 
   item = BSE_ITEM (super);
 
-  return BSE_IS_PROJECT (item->container) ? BSE_PROJECT (item->container) : NULL;
+  return BSE_IS_PROJECT (item->parent) ? BSE_PROJECT (item->parent) : NULL;
 }
 
 void

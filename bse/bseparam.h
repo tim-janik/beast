@@ -88,7 +88,7 @@ union _BseParamValue
   gfloat         v_float;
   gdouble        v_double;
   BseTime        v_time;
-  guint          v_note;
+  gint           v_note;
   guint          v_index_2d;
   gchar         *v_string;
   BseDot        *v_dots;
@@ -157,7 +157,7 @@ struct _BseParamSpecUInt
   
   guint         minimum;
   guint         maximum;
-  guint         stepping_rate;
+  gint          stepping_rate;
   guint         default_value;
 };
 struct _BseParamSpecEnum
@@ -244,10 +244,10 @@ struct _BseParamSpecNote
   BseParamBits   flags;
   guint          param_id;
   
-  guint         minimum;
-  guint         maximum;
-  guint         stepping_rate;
-  guint         default_value;
+  gint          minimum;
+  gint          maximum;
+  gint          stepping_rate;
+  gint          default_value;
   gboolean      allow_void;
 };
 struct _BseParamSpecIndex2D
@@ -364,7 +364,7 @@ gboolean        bse_param_set_double    (BseParam       *param,
 gboolean        bse_param_set_time      (BseParam       *param,
                                          BseTime         v_time);
 gboolean        bse_param_set_note      (BseParam       *param,
-                                         guint           v_note);
+                                         gint            v_note);
 gboolean        bse_param_set_index_2d  (BseParam       *param,
                                          guint           v_index_2d);
 gboolean        bse_param_set_string    (BseParam       *param,
@@ -406,7 +406,7 @@ BseParamSpec*   bse_param_spec_uint     (const gchar    *name,
                                          const gchar    *blurb,
                                          guint           minimum,
                                          guint           maximum,
-                                         guint           stepping_rate,
+                                         gint            stepping_rate,
                                          guint           default_value,
                                          BseParamBits    flags);
 BseParamSpec*   bse_param_spec_enum     (const gchar    *name,
@@ -445,10 +445,10 @@ BseParamSpec*   bse_param_spec_time     (const gchar    *name,
 BseParamSpec*   bse_param_spec_note     (const gchar    *name,
                                          const gchar    *nick,
                                          const gchar    *blurb,
-                                         guint           minimum,
-                                         guint           maximum,
-                                         guint           stepping_rate,
-                                         guint           default_value,
+                                         gint            minimum,
+                                         gint            maximum,
+                                         gint            stepping_rate,
+                                         gint            default_value,
                                          gboolean        allow_void,
                                          BseParamBits    flags);
 BseParamSpec*   bse_param_spec_index_2d (const gchar    *name,

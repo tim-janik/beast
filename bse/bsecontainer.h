@@ -90,7 +90,7 @@ BseItem*	bse_container_item_from_handle	(BseContainer	*container,
 						 const gchar	*handle);
 BseItem*	bse_container_item_from_path	(BseContainer	*container,
 						 const gchar	*path);
-gchar*		bse_container_make_item_path	(BseContainer	*container,
+gchar* /*fr*/	bse_container_make_item_path	(BseContainer	*container,
 						 BseItem	*item,
 						 gboolean	 persistent);
 

@@ -16,288 +16,361 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bsevoice.h"
+#include	"bsechunk.h"
 
+
+/* --- prototypes --- */
+static void		bse_voice_reset			(BseVoice	*voice);
 
 
 /* --- functions --- */
+static inline void
+bse_voice_meminit (BseVoice          *voice,
+		   BseVoiceAllocator *allocator,
+		   guint              index)
+{
+  voice->allocator = allocator;
+  voice->index = index;
+  voice->next = NULL;
+
+  voice->input_type = BSE_VOICE_INPUT_NONE;
+  voice->fading = FALSE;
+  voice->make_poly = FALSE;
+  
+  voice->volume_factor = 1;
+  voice->balance = 0;
+  voice->transpose = 0;
+  voice->fine_tune = 0;
+  memset (&voice->env, 0, sizeof (voice->env));
+  
+  voice->note = BSE_KAMMER_NOTE;
+  
+  voice->n_tracks = 0;
+
+  voice->env_part = BSE_ENVELOPE_PART_DONE;
+  voice->env_steps_to_go = 0;
+  voice->env_vol_delta = 0;
+  voice->env_volume_factor = 1.0;
+  
+  voice->left_volume = 0;
+  voice->right_volume = 0;
+
+  voice->left_volume_delta = 0;
+  voice->right_volume_delta = 0;
+
+  memset (&voice->input, 0, sizeof (voice->input));
+}
+
+static void
+bse_voice_reset (BseVoice *voice)
+{
+  BseVoiceAllocator *allocator;
+  guint index;
+
+  g_return_if_fail (voice != NULL);
+
+  allocator = voice->allocator;
+  index = voice->index;
+  
+  switch (voice->input_type)
+    {
+    case BSE_VOICE_INPUT_NONE:
+      break;
+    case BSE_VOICE_INPUT_SAMPLE:
+      /* free object links */
+      if (voice->input.sample.sample)
+	bse_object_unlock (BSE_OBJECT (voice->input.sample.sample));
+      if (voice->input.sample.bin_data)
+	bse_object_unlock (BSE_OBJECT (voice->input.sample.bin_data));
+      break;
+    case BSE_VOICE_INPUT_SYNTH:
+      /* free object links */
+      if (voice->input.synth.sinstrument)
+	{
+	  bse_sinstrument_poke_foreigns (voice->input.synth.sinstrument,
+					 voice->input.synth.sinstrument->instrument,
+					 NULL);
+	  bse_object_unlock (BSE_OBJECT (voice->input.synth.sinstrument));
+	}
+      break;
+    case BSE_VOICE_INPUT_FADE_RAMP:
+      break;
+    default:
+      g_assert_not_reached ();
+      break;
+    }
+  voice->input_type = BSE_VOICE_INPUT_NONE;
+      
+  /* simply reset memory if this is a fixed voice (but save poly) */
+  if (allocator->voices[index] == voice)
+    {
+      BseVoice *next = voice->next;
+
+      bse_voice_meminit (voice, voice->allocator, voice->index);
+      voice->next = next;
+    }
+  else /* ok this is a poly voice, need to unlink and free it */
+    {
+      BseVoice *cur, *last = allocator->voices[index];
+
+      do
+	{
+	  cur = last->next;
+	  if (cur == voice)
+	    {
+	      last->next = cur->next;
+	      break;
+	    }
+	  last = cur;
+	}
+      while (cur);
+      if (!cur)
+	g_error (G_STRLOC "unable to find and free poly voice (index=%u)", index);
+
+      g_trash_stack_push (&allocator->free_voices, voice);
+    }
+}
+
 BseVoiceAllocator*
-bse_voice_allocator_new (guint n_fixed_voices)
+bse_voice_allocator_new (guint n_voices)
 {
   BseVoiceAllocator *allocator;
   BseVoice *block;
-  guint i;
+  guint i, n_prealloc = n_voices * 1; // FIXME: s/1/2/ debug code
 
-  g_return_val_if_fail (n_fixed_voices > 0, NULL);
+  g_return_val_if_fail (n_voices > 0, NULL);
 
-  allocator = g_new (BseVoiceAllocator, 1);
-  allocator->n_total_voices = n_fixed_voices + n_fixed_voices * BSE_VOICES_POLY_OVER_FIXED;
-  allocator->n_voices = n_fixed_voices;
-  allocator->voices = g_new (BseVoice*, allocator->n_total_voices);
-  allocator->next_voice = 0;
-  allocator->n_fixed_voices = n_fixed_voices;
+  allocator = g_malloc (sizeof (BseVoiceAllocator) + (n_voices - 1) * sizeof (BseVoice*));
+  allocator->free_voices = NULL;
+  allocator->voice_blocks = NULL;
+  allocator->n_voices = n_voices;
 
-  block = g_new0 (BseVoice, allocator->n_total_voices);
-  allocator->voice_blocks = g_slist_prepend (NULL, block);
-
-  for (i = 0; i < allocator->n_total_voices; i++)
+  block = g_new (BseVoice, n_prealloc);
+  allocator->voice_blocks = g_slist_prepend (allocator->voice_blocks, block);
+  for (i = 0; i < n_voices; i++)
     {
-      BseVoice *voice = block++;
-
-      bse_voice_reset (voice);
-      voice->allocator = allocator;
-      voice->index = i;
-      allocator->voices[i] = voice;
+      bse_voice_meminit (block, allocator, i);
+      allocator->voices[i] = block++;
+    }
+  for (; i < n_prealloc; i++)
+    {
+      block->input_type = BSE_VOICE_INPUT_NONE;
+      g_trash_stack_push (&allocator->free_voices, block++);
     }
 
   return allocator;
 }
 
+static inline BseVoice*
+bse_voice_new (BseVoiceAllocator *allocator,
+	       guint              index)
+{
+  BseVoice *voice = g_trash_stack_pop (&allocator->free_voices);
+
+  if (!voice)
+    {
+      BseVoice *block;
+      guint i;
+
+      block = g_new (BseVoice, allocator->n_voices);
+      allocator->voice_blocks = g_slist_prepend (allocator->voice_blocks, block);
+      voice = block++;
+      for (i = 1; i < allocator->n_voices; i++)
+	{
+	  block->input_type = BSE_VOICE_INPUT_NONE;
+	  g_trash_stack_push (&allocator->free_voices, block++);
+	}
+    }
+
+  bse_voice_meminit (voice, allocator, index);
+
+  return voice;
+}
+
 void
 bse_voice_allocator_destroy (BseVoiceAllocator *allocator)
 {
-  guint i;
   GSList *slist;
+  guint i;
 
   g_return_if_fail (allocator != NULL);
 
-  while (allocator->n_voices > allocator->n_fixed_voices)
-    bse_voice_reset (allocator->voices[allocator->n_voices - 1]);
-  for (i = 0; i < allocator->n_fixed_voices; i++)
-    bse_voice_reset (allocator->voices[i]);
+  for (i = 0; i < allocator->n_voices; i++)
+    {
+      BseVoice *voice = allocator->voices[i];
 
-  g_free (allocator->voices);
+      if (voice->input_type != BSE_VOICE_INPUT_NONE)
+	bse_voice_reset (voice);
+      while (voice->next)
+	bse_voice_reset (voice->next);
+    }
 
   for (slist = allocator->voice_blocks; slist; slist = slist->next)
     g_free (slist->data);
-
   g_slist_free (allocator->voice_blocks);
 
   g_free (allocator);
 }
 
-static inline void
-bse_voice_allocator_check_free_voice (BseVoice *voice)
+/* never call this from effects */
+BseVoice*
+bse_voice_make_poly_and_renew (BseVoice *voice)
 {
-  BseVoiceAllocator *allocator = voice->allocator;
-  
-  g_return_if_fail (voice->index < allocator->n_voices);
-  g_return_if_fail (voice->active == FALSE);
-  
-  if (voice->index >= allocator->n_fixed_voices)
+  BseVoiceAllocator *allocator;
+  guint index;
+
+  g_return_val_if_fail (voice != NULL, NULL);
+  g_return_val_if_fail (voice->index < voice->allocator->n_voices, NULL);
+
+  allocator = voice->allocator;
+  index = voice->index;
+
+  /* only need to handle fixed voices */
+  g_return_val_if_fail (voice == allocator->voices[index], NULL);
+
+  if (voice->input_type != BSE_VOICE_INPUT_NONE)
     {
-      guint i = voice->index;
-
-      allocator->n_voices--;
-      if (i < allocator->n_voices)
-	{
-	  allocator->voices[i] = allocator->voices[allocator->n_voices];
-	  allocator->voices[i]->index = i;
-	  allocator->voices[allocator->n_voices] = voice;
-	  voice->index = allocator->n_voices;
-	  if (i + 1 == allocator->next_voice)
-	    allocator->next_voice--;
-	}
+      allocator->voices[index] = bse_voice_new (allocator, index);
+      allocator->voices[index]->next = voice;
+      voice = allocator->voices[index];
     }
-}
-
-static inline BseVoice*
-bse_voice_allocator_renew_voice (BseVoiceAllocator *allocator,
-				 guint              index)
-{
-  BseVoice *voice;
-
-  if (allocator->n_voices >= allocator->n_total_voices)
-    {
-      guint i, ototal = allocator->n_total_voices;
-      BseVoice *block = g_new0 (BseVoice, allocator->n_fixed_voices);
-
-      allocator->n_total_voices += allocator->n_fixed_voices;
-      allocator->voice_blocks = g_slist_prepend (allocator->voice_blocks, block);
-      allocator->voices = g_renew (BseVoice*,
-				   allocator->voices,
-				   allocator->n_total_voices);
-      for (i = ototal; i < allocator->n_total_voices; i++)
-	{
-	  voice = block++;
-	  bse_voice_reset (voice);
-	  voice->allocator = allocator;
-	  voice->index = i;
-	  allocator->voices[i] = voice;
-	}
-    }
-
-  voice = allocator->voices[allocator->n_voices];
-  allocator->voices[index]->index = allocator->n_voices;
-  allocator->voices[allocator->n_voices] = allocator->voices[index];
-  allocator->voices[index] = voice;
-  voice->index = index;
-
-  allocator->n_voices++;
 
   return voice;
 }
 
-BseVoice*
-bse_voice_make_poly_and_renew (BseVoice *voice)
-{
-  g_return_val_if_fail (voice != NULL, NULL);
-  g_return_val_if_fail (voice->index < voice->allocator->n_fixed_voices, NULL);
-
-  if (!voice->active)
-    return voice;
-
-  return bse_voice_allocator_renew_voice (voice->allocator, voice->index);
-}
-
-void
-bse_voice_reset (BseVoice *voice)
-{
-  g_return_if_fail (voice != NULL);
-
-  if (voice->active)
-    {
-      voice->active = FALSE;
-      voice->fading = FALSE;
-      voice->polyphony = FALSE;
-      
-      voice->volume_factor = 1;
-      voice->balance = 0;
-      voice->transpose = 0;
-      voice->fine_tune = 0;
-      memset (&voice->env, 0, sizeof (voice->env));
-      
-      voice->note = BSE_KAMMER_NOTE;
-      
-      voice->n_tracks = 0;
-      voice->freq_factor = 0;
-      
-      voice->rec_note = 0;
-      voice->sample_pos = 0;
-      voice->sample_end_pos = 0;
-      voice->sample_pos_frac = 0;
-      
-      voice->sample_base_rate = 0;
-      voice->sample_rate = 0;
-      
-      voice->env_part = BSE_ENVELOPE_PART_END;
-      voice->env_steps_to_go = 0;
-      voice->env_vol_delta = 0;
-      voice->env_volume_factor = 1;
-
-      voice->left_volume = 0;
-      voice->left_volume_delta = 0;
-      voice->right_volume = 0;
-      voice->right_volume_delta = 0;
-      
-      if (voice->sample)
-	bse_object_unlock (voice->sample);
-      voice->sample = NULL;
-      if (voice->bin_data)
-	bse_object_unlock (voice->bin_data);
-      voice->bin_data = NULL;
-
-      bse_voice_allocator_check_free_voice (voice);
-    }
-}
-
 void
 bse_voice_activate (BseVoice      *voice,
-		    BseInstrument *instrument)
+		    BseInstrument *instrument,
+		    gint           note,
+		    gint           fine_tune)
 {
-  BseSample *sample;
-
   g_return_if_fail (voice != NULL);
-  g_return_if_fail (voice->active == FALSE);
-  g_return_if_fail (instrument != NULL);
-  g_return_if_fail (instrument->sample != NULL);
-
-  sample = instrument->sample;
-
-  /* set and lock sample
-   */
-  voice->active = TRUE;
-  voice->sample = sample;
-  bse_object_lock (voice->sample);
-  voice->n_tracks = sample->n_tracks;
-  voice->freq_factor = ((gfloat) sample->rec_freq) / ((gfloat) BSE_MIX_FREQ);
+  g_return_if_fail (voice->input_type == BSE_VOICE_INPUT_NONE);
+  g_return_if_fail (BSE_IS_INSTRUMENT (instrument));
+  g_return_if_fail (instrument->type != BSE_INSTRUMENT_NONE);
 
   /* set instrument
    */
-  voice->polyphony = instrument->polyphony;
+  voice->fading = FALSE;
+  voice->make_poly = FALSE;
   voice->volume_factor = instrument->volume_factor;
   voice->balance = instrument->balance;
   voice->transpose = instrument->transpose;
   voice->fine_tune = instrument->fine_tune;
   memcpy (&voice->env, &instrument->env, sizeof (voice->env));
+  
+  switch (instrument->type)
+    {
+      BseSample *sample;
+      BseSInstrument *sinstrument;
+
+    case BSE_INSTRUMENT_SAMPLE:
+      sample = BSE_SAMPLE (instrument->input);
+      voice->input_type = BSE_VOICE_INPUT_SAMPLE;
+      voice->make_poly = instrument->polyphony;
+      /* set and lock sample */
+      voice->n_tracks = sample->n_tracks;
+      voice->input.sample.freq_factor = ((gfloat) sample->rec_freq) / BSE_MIX_FREQ_f;
+      voice->input.sample.sample = sample;
+      bse_object_lock (BSE_OBJECT (voice->input.sample.sample));
+      break;
+    case BSE_INSTRUMENT_SYNTH:
+      sinstrument = BSE_SINSTRUMENT (instrument->input);
+      g_return_if_fail (BSE_SOURCE_N_OCHANNELS (sinstrument) >= BSE_DFL_OCHANNEL_ID);
+      voice->input_type = BSE_VOICE_INPUT_SYNTH;
+      voice->n_tracks = BSE_SOURCE_OCHANNEL_DEF (sinstrument, BSE_DFL_OCHANNEL_ID)->n_tracks;
+      voice->input.synth.last_index = 0;
+      voice->input.synth.sinstrument = sinstrument;
+      bse_sinstrument_poke_foreigns (voice->input.synth.sinstrument,
+				     voice->input.synth.sinstrument->instrument,
+				     voice);
+      bse_object_lock (BSE_OBJECT (voice->input.synth.sinstrument));
+      break;
+    default:
+      g_assert_not_reached ();
+      break;
+    }
+
+  bse_voice_set_note (voice, note, fine_tune);
 }
 
-/* adjust sample rate to a new fine_tune
- */
+void
+bse_voice_set_note (BseVoice *voice,
+		    gint      note,
+		    gint      fine_tune)
+{
+  g_return_if_fail (voice != NULL);
+  g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
+
+  /* don't screw the fading process */
+  if (voice->fading)
+    return;
+
+  switch (voice->input_type)
+    {
+      BseSample *sample;
+      BseMunk *munk;
+      gint note_rate;
+
+    case BSE_VOICE_INPUT_SAMPLE:	/* fetch corresponding sample munk, adjust sample rates */
+      sample = voice->input.sample.sample;
+      munk = &sample->munks[note];
+      /* adjust object references */
+      if (voice->input.sample.bin_data != munk->bin_data)
+	{
+	  if (voice->input.sample.bin_data)
+	    bse_object_unlock (BSE_OBJECT (voice->input.sample.bin_data));
+	  voice->input.sample.bin_data = munk->bin_data;
+	  bse_object_lock (BSE_OBJECT (voice->input.sample.bin_data));
+
+	  voice->input.sample.cur_pos = (BseSampleValue*) munk->bin_data->values;
+	  voice->input.sample.bound = voice->input.sample.cur_pos + munk->bin_data->n_values;
+	  voice->input.sample.pos_frac = 0;
+	}
+      /* calc new sample rate according to note */
+      voice->note = note;
+      note_rate = note + voice->transpose;
+      note_rate += BSE_KAMMER_NOTE - munk->rec_note;
+      note_rate = BSE_HALFTONE_FACTOR_FIXED (note_rate);
+      voice->input.sample.base_rate = voice->input.sample.freq_factor * note_rate;
+      break;
+    case BSE_VOICE_INPUT_SYNTH:
+      voice->input.synth.base_freq = bse_note_to_freq (note) + voice->transpose;
+      break;
+    default:
+      g_assert_not_reached ();
+      break;
+    }
+
+  bse_voice_set_fine_tune (voice, fine_tune);
+}
+
 void
 bse_voice_set_fine_tune (BseVoice *voice,
 			 gint      fine_tune)
 {
   g_return_if_fail (voice != NULL);
 
-  if (!voice->active)
+  /* don't screw the fading process */
+  if (voice->fading)
     return;
 
   fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
-
   voice->fine_tune = fine_tune;
-  voice->sample_rate = 0.5 + BSE_FINE_TUNE_FACTOR (voice->fine_tune) * voice->sample_base_rate;
-}
 
-/* grab the appropriate sample munk and adjust sample rates
- */
-void
-bse_voice_set_note (BseVoice *voice,
-		    guint     note,
-		    gint      fine_tune)
-{
-  BseMunk *munk;
-  BseSample *sample;
-  gint note_rate;
-
-  g_return_if_fail (voice != NULL);
-  g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
-  g_return_if_fail (voice->active == TRUE);
-  g_return_if_fail (voice->sample != NULL);
-
-  /* first update the munk, and adjust bin_data reference
-   */
-  sample = voice->sample;
-  munk = &sample->munks[note];
-  if (voice->bin_data != munk->bin_data)
+  switch (voice->input_type)
     {
-      if (voice->bin_data)
-	bse_object_unlock (voice->bin_data);
-      voice->bin_data = munk->bin_data;
-      bse_object_lock (voice->bin_data);
-
-      voice->rec_note = munk->rec_note;
-      voice->sample_pos = (BseSampleValue*) munk->bin_data->values;
-      voice->sample_end_pos = voice->sample_pos + munk->bin_data->n_values;
-      voice->sample_pos_frac = 0;
+    case BSE_VOICE_INPUT_SAMPLE:	/* adjust sample rate to a new fine_tune */
+      voice->input.sample.rate = 0.5 + BSE_FINE_TUNE_FACTOR (voice->fine_tune) * voice->input.sample.base_rate;
+      break;
+    case BSE_VOICE_INPUT_SYNTH:		/* adjust playback freq to a new fine_tune */
+      voice->input.synth.freq = BSE_FINE_TUNE_FACTOR (voice->fine_tune) * voice->input.synth.base_freq;
+      break;
+    default:
+      break;
     }
-
-  /* now calculate the appropriate sample rate for this note
-   */
-  voice->note = note;
-  note_rate = note + voice->transpose;
-  note_rate += BSE_KAMMER_NOTE - voice->rec_note;
-  note_rate = BSE_HALFTONE_FACTOR_FIXED (note_rate);
-  voice->sample_base_rate = voice->freq_factor * note_rate;
-
-  bse_voice_set_fine_tune (voice, fine_tune);
 }
 
-/* setzt die position der envelope auf attack decay usw.
- * initialisiert alle noetigen variablen fuer die envelope und
- * errechnet die anzahl der steps etc
- * die time fuer den envelopepart wird unabhaenig von der buffer
- * groesse ermittelt
- */
 void
 bse_voice_set_envelope_part (BseVoice           *voice,
 			     BseEnvelopePartType env_part)
@@ -308,12 +381,23 @@ bse_voice_set_envelope_part (BseVoice           *voice,
   gdouble time = 0;
   
   g_return_if_fail (voice != NULL);
-  g_return_if_fail (voice->active == TRUE);
+  g_return_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE);
+  
+  /* don't screw the fading process */
+  if (voice->fading)
+    return;
 
+  /* set envelope position to attack, decay, etc...
+   * initialise all envelope variables, calculate amount
+   * of envelope steps
+   * the time slices for the envelope part are figured
+   * regardless of the buffer size
+   */
+  
   env = &voice->env;
-
+  
  recalc:
-
+  
   voice->env_part = env_part;
 
   switch (voice->env_part)
@@ -344,7 +428,7 @@ bse_voice_set_envelope_part (BseVoice           *voice,
       end_volume = 0;
       break;
     default:
-      voice->env_part = BSE_ENVELOPE_PART_END;
+      voice->env_part = BSE_ENVELOPE_PART_DONE;
       return;
     }
   
@@ -372,25 +456,68 @@ bse_voice_fade_out (BseVoice *voice)
 {
   guint time;
   guint n_values;
-  guint n_sample_values;
-
+  
   g_return_if_fail (voice != NULL);
-  g_return_if_fail (voice->active == TRUE);
-
+  g_return_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE);
+  g_return_if_fail (voice->fading == FALSE);
+  
   voice->fading = TRUE;
-
+  
   /* adjust time to a nominative volume factor of 1.0 */
   time = MAX (voice->left_volume, voice->right_volume) * BSE_FADE_OUT_TIME_ms;
-
+  
   /* number of buffer values we need to fade */
-  n_values = BSE_MIX_FREQ * time / 1000.0;
-
+  n_values = BSE_MIX_FREQ_f * time / 1000.0;
+  
   /* stop playing after fading is done */
-  n_sample_values = voice->sample_pos_frac + voice->sample_rate * n_values;
-  n_sample_values >>= 16;
-  voice->sample_end_pos = MIN (voice->sample_end_pos,
-			       voice->sample_pos + n_sample_values + voice->n_tracks);
+  switch (voice->input_type)
+    {
+      BseSInstrument *sinstrument;
+      guint n_sample_values;
+      
+    case BSE_VOICE_INPUT_SAMPLE:
+      n_sample_values = voice->input.sample.pos_frac + voice->input.sample.rate * n_values;
+      n_sample_values >>= 16;
+      voice->input.sample.bound = MIN (voice->input.sample.bound,
+				       voice->input.sample.cur_pos + n_sample_values * voice->n_tracks);
+      break;
+    case BSE_VOICE_INPUT_SYNTH:
+      sinstrument = voice->input.synth.sinstrument;
+      bse_sinstrument_poke_foreigns (voice->input.synth.sinstrument,
+				     voice->input.synth.sinstrument->instrument,
+				     NULL);
+      voice->input.synth.sinstrument = NULL;
+      if (voice->input.synth.last_index)
+	{
+	  BseChunk *chunk = bse_source_ref_chunk (BSE_SOURCE (sinstrument),
+						  BSE_DFL_OCHANNEL_ID,
+						  voice->input.synth.last_index);
+	  BseSampleValue *hunk = bse_chunk_complete_hunk (chunk);
 
+	  g_assert (voice->n_tracks == 2);
+
+	  g_print ("fade_vals: %p: %+6d*%f %+6d*%f ",
+		   hunk,
+		   hunk[(BSE_TRACK_LENGTH - 1) * chunk->n_tracks], voice->left_volume,
+		   hunk[(BSE_TRACK_LENGTH - 1) * chunk->n_tracks + 1], voice->right_volume);
+	  voice->left_volume *= hunk[(BSE_TRACK_LENGTH - 1) * chunk->n_tracks];
+	  voice->right_volume *= hunk[(BSE_TRACK_LENGTH - 1) * chunk->n_tracks + 1];
+	  g_print ("%+6.0f %+6.0f\n",
+		   voice->left_volume,
+		   voice->right_volume);
+	  bse_chunk_unref (chunk);
+	  voice->input.fade_ramp.n_values_left = n_values;
+	}
+      else
+	voice->input.fade_ramp.n_values_left = 0;
+      voice->input_type = BSE_VOICE_INPUT_FADE_RAMP;
+      bse_object_unlock (BSE_OBJECT (sinstrument));
+      break;
+    default:
+      g_assert_not_reached ();
+      break;
+    }
+  
   /* calculate volume adjustment */
   if (n_values)
     {
@@ -405,18 +532,32 @@ bse_voice_fade_out (BseVoice *voice)
     }
 }
 
-void
+gboolean	/* return whether voice is still alive */
 bse_voice_preprocess (BseVoice *voice)
 {
   gfloat l_volume, r_volume;
 
-  g_return_if_fail (voice != NULL);
-  g_return_if_fail (voice->active == TRUE);
+  g_return_val_if_fail (voice != NULL, FALSE);
+  g_return_val_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE, FALSE);
 
+  /* check whether we are done playing the voice or are currently fading */
+  if (voice->input_type == BSE_VOICE_INPUT_SAMPLE &&
+      voice->input.sample.cur_pos >= voice->input.sample.bound)
+    {
+      bse_voice_reset (voice);
+      return FALSE;
+    }
   if (voice->fading)
     {
+      if (voice->input_type == BSE_VOICE_INPUT_FADE_RAMP &&
+	  voice->input.fade_ramp.n_values_left <= 0)
+	{
+	  bse_voice_reset (voice);
+	  return FALSE;
+	}
+
       /* don't screw the fading process */
-      return;
+      return TRUE;
     }
 
   /* stereo position */
@@ -437,26 +578,34 @@ bse_voice_preprocess (BseVoice *voice)
 
   voice->left_volume = l_volume;
   voice->right_volume = r_volume;
+
+  return TRUE;
 }
 
-void
+gboolean	/* return whether voice is still alive */
 bse_voice_postprocess (BseVoice *voice)
 {
-  g_return_if_fail (voice != NULL);
-  g_return_if_fail (voice->active == TRUE);
+  g_return_val_if_fail (voice != NULL, FALSE);
+  g_return_val_if_fail (voice->input_type != BSE_VOICE_INPUT_NONE, FALSE);
 
-  /* check sample position
-   */
-  if (voice->sample_pos >= voice->sample_end_pos)
+  /* check whether we are done playing the voice or are currently fading */
+  if (voice->input_type == BSE_VOICE_INPUT_SAMPLE &&
+      voice->input.sample.cur_pos >= voice->input.sample.bound)
     {
       bse_voice_reset (voice);
-      return;
+      return FALSE;
     }
-
   if (voice->fading)
     {
+      if (voice->input_type == BSE_VOICE_INPUT_FADE_RAMP &&
+	  voice->input.fade_ramp.n_values_left <= 0)
+	{
+	  bse_voice_reset (voice);
+	  return FALSE;
+	}
+
       /* don't screw the fading process */
-      return;
+      return TRUE;
     }
 
   /* step envelope
@@ -469,10 +618,12 @@ bse_voice_postprocess (BseVoice *voice)
   else
     {
       bse_voice_set_envelope_part (voice, voice->env_part + 1);
-      if (voice->env_part == BSE_ENVELOPE_PART_END)
+      if (voice->env_part == BSE_ENVELOPE_PART_DONE)
 	{
 	  bse_voice_reset (voice);
-	  return;
+	  return FALSE;
 	}
     }
+
+  return TRUE;
 }

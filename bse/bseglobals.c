@@ -140,7 +140,7 @@ bse_globals_init (void)
     {
       ht_factor_table_d[i] = pow (BSE_2_RAISED_TO_1_OVER_12_d,
 				  ((gdouble) i) - BSE_KAMMER_NOTE);
-      ht_factor_table_fixed_ui[i] = 0.5 + ht_factor_table_d[i] * 65536;
+      ht_factor_table_fixed_ui[i] = ht_factor_table_d[i] * 65536.0 + 0.5;
       BSE_IF_DEBUG (TABLES)
 	{
 	  if (i == BSE_MIN_NOTE || i == BSE_MAX_NOTE ||

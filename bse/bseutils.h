@@ -50,20 +50,20 @@ BseTime		bse_time_from_string	(const gchar   *time_string,
 
 
 /* --- notes --- */
-void	bse_note_examine	(guint		 note,
+void	bse_note_examine	(gint		 note,
 				 gint		*octave_p,
 				 guint		*half_tone_p,
 				 gboolean	*ht_up_p,
 				 gchar		*letter_p);
 /* return a newly allocated string which describes `note' literally */
-gchar*	bse_note_to_string	(guint		 note);
+gchar*	bse_note_to_string	(gint		 note);
 /* return the numeric value of the note in `note_string'.
  * this function will return BSE_NOTE_UNPARSABLE if the conversation failed.
  */
-guint	bse_note_from_string	(const gchar	*note_string);
-guint	bse_note_from_freq	(gdouble	 freq);
-gdouble	bse_note_to_freq	(guint		 note);
-gdouble	bse_note_to_tuned_freq	(guint		 note,
+gint	bse_note_from_string	(const gchar	*note_string);
+gint	bse_note_from_freq	(gdouble	 freq);
+gdouble	bse_note_to_freq	(gint		 note);
+gdouble	bse_note_to_tuned_freq	(gint		 note,
 				 gint            fine_tune);
 
 

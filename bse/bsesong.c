@@ -188,7 +188,8 @@ bse_song_init (BseSong *song)
   song->lfos = NULL;
   
   song->sequencer = NULL;
-  
+  song->sequencer_index = 0;
+
   song->pattern_list_length = 0;
   song->pattern_list = NULL;
 }
@@ -643,6 +644,7 @@ bse_song_prepare (BseSource *source,
 
   bse_object_lock (BSE_OBJECT (song));
   
+  song->sequencer_index = index;
   bse_song_sequencer_setup (song, 2);
   
   /* chain parent class' handler */
@@ -650,6 +652,23 @@ bse_song_prepare (BseSource *source,
 
   /* FIXME: odevice hack */
   bse_heart_source_add_odevice (source, bse_heart_get_device (bse_heart_get_default_odevice ()));
+}
+
+void
+bse_song_update_sequencer (BseSong *song)
+{
+  g_return_if_fail (BSE_IS_SONG (song));
+
+  if (song->sequencer)
+    {
+      BseSource *source = BSE_SOURCE (song);
+
+      if (song->sequencer_index < source->index)
+	{
+	  song->sequencer_index++;
+	  bse_song_sequencer_step (song);
+	}
+    }
 }
 
 static BseChunk*
@@ -664,6 +683,11 @@ bse_song_calc_chunk (BseSource *source,
   /* FIXME: we need some kinda notification mechanism on sources when
    * the source stopped playing
    */
+  if (song->sequencer_index < source->index)
+    {
+      song->sequencer_index++;
+      bse_song_sequencer_step (song);
+    }
   
   hunk = bse_hunk_alloc0 (2);
   bse_song_sequencer_fill_hunk (song, hunk);
@@ -676,6 +700,7 @@ bse_song_reset (BseSource *source)
 {
   BseSong *song = BSE_SONG (source);
 
+  song->sequencer_index = 0;
   bse_song_sequencer_destroy (song);
   
   /* chain parent class' handler */

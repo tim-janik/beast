@@ -72,7 +72,7 @@ BSE_BUILTIN_TYPE (BseProject)
   
   return bse_type_register_static (BSE_TYPE_CONTAINER,
 				   "BseProject",
-				   "Coordinator for distinct super objects",
+				   "BSE Super container type",
 				   &project_info);
 }
 
@@ -140,7 +140,7 @@ bse_project_add_super (BseProject *project,
 {
   g_return_if_fail (BSE_IS_PROJECT (project));
   g_return_if_fail (BSE_IS_SUPER (super));
-  g_return_if_fail (BSE_ITEM (super)->container == NULL);
+  g_return_if_fail (BSE_ITEM (super)->parent == NULL);
 
   bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (super));
 }
@@ -167,7 +167,7 @@ bse_project_remove_super (BseProject *project,
 {
   g_return_if_fail (BSE_IS_PROJECT (project));
   g_return_if_fail (BSE_IS_SUPER (super));
-  g_return_if_fail (BSE_ITEM (super)->container == BSE_ITEM (project));
+  g_return_if_fail (BSE_ITEM (super)->parent == BSE_ITEM (project));
 
   bse_container_remove_item (BSE_CONTAINER (project), BSE_ITEM (super));
 }
@@ -247,6 +247,79 @@ bse_project_list_supers (BseProject *project,
       list = g_list_prepend (list, slist->data);
 
   return list;
+}
+
+static gboolean
+make_nick_paths (BseItem *item,
+		 gpointer data_p)
+{
+  gpointer *data = data_p;
+  BseType item_type = GPOINTER_TO_UINT (data[1]);
+  gchar *prefix = data[2];
+
+  if (bse_type_is_a (BSE_OBJECT_TYPE (item), item_type))
+    data[0] = g_list_prepend (data[0], g_strconcat (prefix, BSE_OBJECT_NAME (item), NULL));
+  if (BSE_IS_CONTAINER (item))
+    {
+      data[2] = g_strconcat (prefix, BSE_OBJECT_NAME (item), ".", NULL);
+      bse_container_forall_items (BSE_CONTAINER (item), make_nick_paths, data);
+      g_free (data[2]);
+      data[2] = prefix;
+    }
+
+  return TRUE;
+}
+
+GList* /* free result (strings and list) */
+bse_project_list_nick_paths (BseProject *project,
+			     BseType     item_type)
+{
+  gpointer data[3] = { NULL, GUINT_TO_POINTER (item_type), "" };
+
+  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  g_return_val_if_fail (bse_type_is_a (item_type, BSE_TYPE_ITEM), NULL);
+
+  bse_container_forall_items (BSE_CONTAINER (project), make_nick_paths, data);
+
+  return g_list_reverse (data[0]);
+}
+
+static BseItem*
+container_find_nick_item (BseContainer *container,
+			  gchar        *nick)
+{
+  BseItem *item;
+  gchar *next = strchr (nick, '.');
+
+  if (next)
+    {
+      *(next++) = 0;
+      next = *next ? next : NULL;
+    }
+
+  item = bse_container_lookup_item (container, nick);
+
+  if (next)
+    item = BSE_IS_CONTAINER (item) ? container_find_nick_item (BSE_CONTAINER (item), next) : NULL;
+
+  return item;
+}
+
+BseItem*
+bse_project_item_from_nick_path (BseProject  *project,
+				 const gchar *nick_path)
+{
+  BseItem *item;
+  gchar *nick;
+
+  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  g_return_val_if_fail (nick_path != NULL, NULL);
+
+  nick = g_strdup (nick_path);
+  item = container_find_nick_item (BSE_CONTAINER (project), nick);
+  g_free (nick);
+
+  return item;
 }
 
 static inline GTokenType
@@ -381,35 +454,20 @@ bse_project_path_resolver (gpointer     func_data,
 void
 bse_project_start_playback (BseProject *project)
 {
-  GSList *slist;
-  
   g_return_if_fail (BSE_IS_PROJECT (project));
   
-  for (slist = project->supers; slist; slist = slist->next)
+  if (!BSE_SOURCE_PREPARED (project))
     {
-      BseSource *source = BSE_SOURCE (slist->data);
-      
-      if (BSE_SOURCE_PREPARED (source))
-	bse_source_reset (source);
-
-      /* FIXME: make sure the super got an odevice */
-      BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
-      BSE_SOURCE_GET_CLASS (source)->prepare (source, bse_heart_get_beat_index ());
+      BSE_OBJECT_SET_FLAGS (project, BSE_SOURCE_FLAG_PREPARED);
+      BSE_SOURCE_GET_CLASS (project)->prepare (BSE_SOURCE (project), bse_heart_get_beat_index ());
     }
 }
 
 void
 bse_project_stop_playback (BseProject *project)
 {
-  GSList *slist;
-  
   g_return_if_fail (BSE_IS_PROJECT (project));
   
-  for (slist = project->supers; slist; slist = slist->next)
-    {
-      BseSource *source = BSE_SOURCE (slist->data);
-      
-      if (BSE_SOURCE_PREPARED (source))
-	bse_source_reset (source);
-    }
+  if (BSE_SOURCE_PREPARED (project))
+    bse_source_reset (BSE_SOURCE (project));
 }

@@ -54,7 +54,7 @@ BSE_BUILTIN_TYPE (BsePcmDevice)
   
   return bse_type_register_static (BSE_TYPE_DEVICE,
 				   "BsePcmDevice",
-				   "Base type for PCM devices",
+				   "PCM device base type",
 				   &pcm_device_info);
 }
 

@@ -55,6 +55,10 @@ void		bse_project_remove_super	(BseProject	*project,
 						 BseSuper	*super);
 GList*		bse_project_list_supers		(BseProject	*project,
 						 BseType	 super_type);
+GList* /*fr*/	bse_project_list_nick_paths	(BseProject	*project,
+						 BseType	 item_type);
+BseItem*	bse_project_item_from_nick_path	(BseProject	*project,
+						 const gchar	*nick_path);
 BseErrorType	bse_project_restore		(BseProject	*project,
 						 BseStorage	*storage);
 BseErrorType	bse_project_store_bse		(BseProject	*project,

@@ -315,7 +315,7 @@ bse_param_move_value (BseParam *param,
       gfloat *p_float;
       gdouble *p_double;
       BseTime *p_time;
-      guint *p_note;
+      gint *p_note;
       guint *p_index_2d;
       gchar **p_string;
       BseDot **p_dots;
@@ -675,7 +675,7 @@ bse_param_spec_uint (const gchar *name,
                      const gchar *blurb,
                      guint        minimum,
                      guint        maximum,
-                     guint        stepping_rate,
+                     gint         stepping_rate,
                      guint        default_value,
                      BseParamBits flags)
 {
@@ -789,10 +789,10 @@ BseParamSpec*
 bse_param_spec_note (const gchar *name,
                      const gchar *nick,
                      const gchar *blurb,
-                     guint        minimum,
-                     guint        maximum,
-                     guint        stepping_rate,
-                     guint        default_value,
+                     gint         minimum,
+                     gint         maximum,
+                     gint         stepping_rate,
+                     gint         default_value,
                      gboolean     allow_void,
                      BseParamBits flags)
 {
@@ -1036,7 +1036,7 @@ bse_param_set_time (BseParam *param,
 
 gboolean
 bse_param_set_note (BseParam *param,
-                    guint     v_note)
+                    gint      v_note)
 {
   g_return_val_if_fail (BSE_IS_PARAM (param), FALSE);
   g_return_val_if_fail (BSE_FUNDAMENTAL_TYPE (param->pspec->type) == BSE_TYPE_PARAM_NOTE, FALSE);

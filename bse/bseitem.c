@@ -30,8 +30,8 @@ static void	bse_item_do_shutdown		(BseObject		*object);
 static void	bse_item_do_set_name		(BseObject		*object,
 						 const gchar		*name);
 static guint	bse_item_do_get_seqid		(BseItem		*item);
-static void	bse_item_do_set_container	(BseItem                *item,
-						 BseItem                *container);
+static void	bse_item_do_set_parent		(BseItem                *item,
+						 BseItem                *parent);
 
 
 /* --- variables --- */
@@ -73,7 +73,7 @@ bse_item_class_init (BseItemClass *class)
   object_class->set_name = bse_item_do_set_name;
   object_class->shutdown = bse_item_do_shutdown;
 
-  class->set_container = bse_item_do_set_container;
+  class->set_parent = bse_item_do_set_parent;
   class->get_seqid = bse_item_do_get_seqid;
   class->seqid_changed = NULL;
 }
@@ -81,18 +81,15 @@ bse_item_class_init (BseItemClass *class)
 static void
 bse_item_init (BseItem *item)
 {
-  item->container = NULL;
+  item->parent = NULL;
 }
 
 static void
 bse_item_do_shutdown (BseObject *object)
 {
-  BseItem *item;
+  BseItem *item = BSE_ITEM (object);
 
-  item = BSE_ITEM (object);
-
-  if (item->container)
-    bse_container_remove_item (BSE_CONTAINER (item->container), item);
+  g_return_if_fail (item->parent == NULL);
 
   /* chain parent class' shutdown handler */
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
@@ -106,8 +103,8 @@ bse_item_do_set_name (BseObject   *object,
 
   /* ensure that item names within this container are unique
    */
-  if (!BSE_IS_CONTAINER (item->container) ||
-      !bse_container_lookup_item (BSE_CONTAINER (item->container), name))
+  if (!BSE_IS_CONTAINER (item->parent) ||
+      (name && !bse_container_lookup_item (BSE_CONTAINER (item->parent), name)))
     {
       /* chain parent class' set_name handler */
       BSE_OBJECT_CLASS (parent_class)->set_name (object, name);
@@ -115,44 +112,44 @@ bse_item_do_set_name (BseObject   *object,
 }
 
 static void
-bse_item_do_set_container (BseItem *item,
-			   BseItem *container)
+bse_item_do_set_parent (BseItem *item,
+			BseItem *parent)
 {
-  item->container = container;
+  item->parent = parent;
 }
 
 void
-bse_item_set_container (BseItem *item,
-			BseItem *container)
+bse_item_set_parent (BseItem *item,
+		     BseItem *parent)
 {
   g_return_if_fail (BSE_IS_ITEM (item));
-  if (container)
+  if (parent)
     {
-      g_return_if_fail (item->container == NULL);
-      g_return_if_fail (BSE_IS_CONTAINER (container));
+      g_return_if_fail (item->parent == NULL);
+      g_return_if_fail (BSE_IS_CONTAINER (parent));
     }
   else
-    g_return_if_fail (item->container != NULL);
-  g_return_if_fail (BSE_ITEM_GET_CLASS (item)->set_container != NULL); /* paranoid */
+    g_return_if_fail (item->parent != NULL);
+  g_return_if_fail (BSE_ITEM_GET_CLASS (item)->set_parent != NULL); /* paranoid */
 
   bse_object_ref (BSE_OBJECT (item));
-  if (container)
-    bse_object_ref (BSE_OBJECT (container));
+  if (parent)
+    bse_object_ref (BSE_OBJECT (parent));
 
-  BSE_NOTIFY (item, set_container, NOTIFY (OBJECT, container, DATA));
+  BSE_NOTIFY (item, set_parent, NOTIFY (OBJECT, parent, DATA));
 
-  BSE_ITEM_GET_CLASS (item)->set_container (item, container);
+  BSE_ITEM_GET_CLASS (item)->set_parent (item, parent);
 
   bse_object_unref (BSE_OBJECT (item));
-  if (container)
-    bse_object_unref (BSE_OBJECT (container));
+  if (parent)
+    bse_object_unref (BSE_OBJECT (parent));
 }
 
 static guint
 bse_item_do_get_seqid (BseItem *item)
 {
-  if (item->container)
-    return bse_container_get_item_seqid (BSE_CONTAINER (item->container), item);
+  if (item->parent)
+    return bse_container_get_item_seqid (BSE_CONTAINER (item->parent), item);
   else
     return 0;
 }
@@ -177,10 +174,13 @@ bse_item_get_seqid (BseItem *item)
   return BSE_ITEM_GET_CLASS (item)->get_seqid (item);
 }
 
-static inline BseItem*
-common_anchestor (BseItem *item1,
-		  BseItem *item2)
+BseItem*
+bse_item_common_ancestor (BseItem *item1,
+			  BseItem *item2)
 {
+  g_return_val_if_fail (BSE_IS_ITEM (item1), NULL);
+  g_return_val_if_fail (BSE_IS_ITEM (item2), NULL);
+
   do
     {
       BseItem *item = item2;
@@ -189,10 +189,10 @@ common_anchestor (BseItem *item1,
 	{
 	  if (item == item1)
 	    return item;
-	  item = item->container;
+	  item = item->parent;
 	}
       while (item);
-      item1 = item1->container;
+      item1 = item1->parent;
     }
   while (item1);
 
@@ -211,12 +211,12 @@ bse_item_cross_ref (BseItem         *owner,
   g_return_if_fail (BSE_IS_ITEM (ref_item));
   g_return_if_fail (destroy_func != NULL);
   
-  container = common_anchestor (owner, ref_item);
+  container = bse_item_common_ancestor (owner, ref_item);
   
   if (container)
     bse_container_cross_ref (BSE_CONTAINER (container), owner, ref_item, destroy_func, data);
   else
-    g_warning (G_STRLOC ": `%s' and `%s' have no common anchestor",
+    g_warning (G_STRLOC "`%s' and `%s' have no common anchestor",
 	       BSE_OBJECT_TYPE_NAME (owner),
 	       BSE_OBJECT_TYPE_NAME (ref_item));
 }
@@ -230,12 +230,12 @@ bse_item_cross_unref (BseItem *owner,
   g_return_if_fail (BSE_IS_ITEM (owner));
   g_return_if_fail (BSE_IS_ITEM (ref_item));
 
-  container = common_anchestor (owner, ref_item);
+  container = bse_item_common_ancestor (owner, ref_item);
 
   if (container)
     bse_container_cross_unref (BSE_CONTAINER (container), owner, ref_item);
   else
-    g_warning (G_STRLOC ": `%s' and `%s' have no common anchestor",
+    g_warning (G_STRLOC "`%s' and `%s' have no common anchestor",
 	       BSE_OBJECT_TYPE_NAME (owner),
 	       BSE_OBJECT_TYPE_NAME (ref_item));
 }
@@ -265,7 +265,7 @@ bse_item_list_cross_owners (BseItem *item)
     {
       if (BSE_IS_CONTAINER (item))
 	bse_container_cross_forall (BSE_CONTAINER (item), cross_list_func, data);
-      item = item->container;
+      item = item->parent;
     }
   while (item);
 
@@ -301,7 +301,7 @@ bse_item_has_cross_owners (BseItem *item)
     {
       if (BSE_IS_CONTAINER (item))
 	bse_container_cross_forall (BSE_CONTAINER (item), cross_check_func, data);
-      item = item->container;
+      item = item->parent;
     }
   while (item);
 
@@ -314,7 +314,7 @@ bse_item_get_super (BseItem *item)
   g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
 
   while (!BSE_IS_SUPER (item) && item)
-    item = item->container;
+    item = item->parent;
   
   return item ? BSE_SUPER (item) : NULL;
 }
@@ -338,9 +338,9 @@ bse_item_has_ancestor (BseItem *item,
   g_return_val_if_fail (BSE_IS_ITEM (item), FALSE);
   g_return_val_if_fail (BSE_IS_ITEM (ancestor), FALSE);
 
-  while (item->container)
+  while (item->parent)
     {
-      item = item->container;
+      item = item->parent;
       if (item == ancestor)
 	return TRUE;
     }
@@ -364,6 +364,28 @@ bse_item_make_handle (BseItem *item,
       
       return g_strconcat (BSE_OBJECT_TYPE_NAME (item), ":", buffer, NULL);
     }
+}
+
+gchar* /* free result */
+bse_item_make_nick_path (BseItem *item)
+{
+  BseItem *project;
+  gchar *nick = NULL;
+
+  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+
+  project = (BseItem*) bse_item_get_project (item);
+
+  while (item && item != project)
+    {
+      gchar *string = nick;
+
+      nick = g_strconcat (BSE_OBJECT_NAME (item), string ? "." : NULL, string, NULL);
+      g_free (string);
+      item = item->parent;
+    }
+
+  return nick;
 }
 
 static inline BseErrorType

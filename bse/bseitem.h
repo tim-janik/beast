@@ -49,14 +49,14 @@ struct _BseItem
 {
   BseObject     parent_object;
   
-  BseItem       *container;
+  BseItem       *parent;
 };
 struct _BseItemClass
 {
   BseObjectClass parent_class;
 
-  void  (*set_container)  (BseItem      *item,
-                           BseItem      *container);
+  void  (*set_parent)     (BseItem      *item,
+                           BseItem      *parent);
   guint  (*get_seqid)     (BseItem      *item);
   void   (*seqid_changed) (BseItem      *item);
 };
@@ -70,13 +70,16 @@ typedef void    (*BseItemCrossFunc)        (BseItem        *owner,
 guint           bse_item_get_seqid         (BseItem         *item);
 void            bse_item_seqid_changed     (BseItem         *item);
 gboolean        bse_item_has_anchestor     (BseItem         *item,
-					    BseItem         *container);
+					    BseItem         *anchestor);
 BseSuper*       bse_item_get_super         (BseItem         *item);
 BseProject*     bse_item_get_project       (BseItem         *item);
 gboolean        bse_item_has_ancestor      (BseItem         *item,
 					    BseItem         *ancestor);
+BseItem*	bse_item_common_ancestor   (BseItem         *item1,
+					    BseItem         *item2);
 gchar* /*fr*/   bse_item_make_handle       (BseItem         *item,
 					    gboolean         named);
+gchar* /*fr*/   bse_item_make_nick_path    (BseItem         *item);
 void            bse_item_cross_ref         (BseItem         *owner,
 					    BseItem         *ref_item,
 					    BseItemCrossFunc destroy_func,
@@ -98,8 +101,8 @@ void            bse_item_close_undo        (BseItem         *item,
 
 
 /* --- internal --- */
-void            bse_item_set_container     (BseItem        *item,
-					    BseItem        *container);
+void            bse_item_set_parent        (BseItem        *item,
+					    BseItem        *parent);
 
 
 

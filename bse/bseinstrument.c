@@ -16,12 +16,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bseinstrument.h"
+
+#include	"bsesinstrument.h"
 #include	"bsesample.h"
 #include	"bseglobals.h"
 
 
 enum {
   PARAM_0,
+  PARAM_SYNTH,
   PARAM_SAMPLE,
   PARAM_INTERPOLATION,
   PARAM_POLYPHONY,
@@ -127,17 +130,22 @@ bse_instrument_class_init (BseInstrumentClass *class)
   object_class->unlocked = bse_instrument_unlocked;
   object_class->shutdown = bse_instrument_do_shutdown;
   
-  bse_object_class_add_param (object_class, NULL,
+  bse_object_class_add_param (object_class, "Synthesis Input",
+			      PARAM_SYNTH,
+			      bse_param_spec_item ("sinstrument", "Synth", NULL,
+						   BSE_TYPE_SINSTRUMENT,
+						   BSE_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_SAMPLE,
 			      bse_param_spec_item ("sample", "Sample", NULL,
 						   BSE_TYPE_SAMPLE,
 						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, NULL,
+  bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_INTERPOLATION,
 			      bse_param_spec_bool ("interpolation", "Use interpolation?", NULL /* FIXME */,
 						   TRUE,
 						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, NULL,
+  bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_POLYPHONY,
 			      bse_param_spec_bool ("polyphony", "Polyphony instrument?", NULL,
 						   FALSE,
@@ -267,10 +275,7 @@ static void
 bse_instrument_init (BseInstrument *instrument)
 {
   instrument->type = BSE_INSTRUMENT_NONE;
-  instrument->sample = NULL;
-  
-  instrument->interpolation = TRUE;
-  instrument->polyphony = FALSE;
+
   instrument->volume_factor = bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB);
   instrument->balance = BSE_DFL_INSTRUMENT_BALANCE;
   instrument->transpose = BSE_DFL_INSTRUMENT_TRANSPOSE;
@@ -291,7 +296,7 @@ bse_instrument_do_shutdown (BseObject *object)
 {
   BseInstrument *instrument = BSE_INSTRUMENT (object);
   
-  g_assert (instrument->sample == NULL); /* paranoid */
+  g_assert (instrument->type == BSE_INSTRUMENT_NONE); /* paranoid */
   
   /* chain parent class' shutdown handler */
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
@@ -310,35 +315,90 @@ bse_instrument_unlocked (BseObject *object)
 }
 
 static void
-unset_sample (BseItem *owner,
-	      BseItem *sample,
-	      gpointer data)
+instrument_input_changed (BseInstrument *instrument)
+{
+  if (instrument->type == BSE_INSTRUMENT_SYNTH)
+    bse_object_param_changed (BSE_OBJECT (instrument), "sinstrument");
+  else if (instrument->type == BSE_INSTRUMENT_SAMPLE)
+    bse_object_param_changed (BSE_OBJECT (instrument), "sample");
+  else
+    g_assert_not_reached ();
+}
+
+static void
+unset_input_cb (BseItem *owner,
+		BseItem *input,
+		gpointer data)
 {
   BseInstrument *instrument = BSE_INSTRUMENT (owner);
 
-  instrument->sample = NULL;
+  bse_object_remove_notifiers_by_func (input,
+				       instrument_input_changed,
+				       instrument);
+  instrument_input_changed (instrument);
+  instrument->input = NULL;
   instrument->type = BSE_INSTRUMENT_NONE;
+  if (BSE_IS_SINSTRUMENT (input))
+    {
+      BseSInstrument *sinstrument = BSE_SINSTRUMENT (input);
+
+      bse_sinstrument_poke_foreigns (sinstrument, NULL, sinstrument->voice);
+      if (sinstrument->voice)
+	bse_voice_fade_out (sinstrument->voice);
+    }
+}
+
+static void
+instrument_set_input (BseInstrument  *instrument,
+		      BseSample      *sample,
+		      BseSInstrument *sinstrument)
+{
+  BseItem *item = BSE_ITEM (instrument);
+
+  g_return_if_fail (sample == NULL || sinstrument == NULL);
+  
+  if (instrument->input)
+    bse_item_cross_unref (item, BSE_ITEM (instrument->input));
+
+  if (sample)
+    {
+      instrument->input = BSE_SOURCE (sample);
+      instrument->type = BSE_INSTRUMENT_SAMPLE;
+      bse_item_cross_ref (item, BSE_ITEM (instrument->input), unset_input_cb, NULL);
+      bse_object_add_data_notifier (instrument->input,
+				    "name_set",
+				    instrument_input_changed,
+				    instrument);
+    }
+  else if (sinstrument && sinstrument->instrument == NULL)
+    {
+      instrument->input = BSE_SOURCE (sinstrument);
+      instrument->type = BSE_INSTRUMENT_SYNTH;
+      bse_item_cross_ref (item, BSE_ITEM (instrument->input), unset_input_cb, NULL);
+      bse_object_add_data_notifier (instrument->input,
+				    "name_set",
+				    instrument_input_changed,
+				    instrument);
+      bse_sinstrument_poke_foreigns (sinstrument, instrument, sinstrument->voice);
+    }
 }
 
 static void
 bse_instrument_set_param (BseInstrument *instrument,
 			  BseParam	*param)
 {
-  BseItem *item = BSE_ITEM (instrument);
   BseEnvelope *env = &instrument->env;
   
   switch (param->pspec->any.param_id)
     {
       guint total;
     case PARAM_SAMPLE:
-      if (instrument->sample)
-	bse_item_cross_unref (item, BSE_ITEM (instrument->sample));
-      instrument->sample = (BseSample*) param->value.v_item;
-      if (instrument->sample)
-	{
-	  bse_item_cross_ref (item, BSE_ITEM (instrument->sample), unset_sample, NULL);
-	  instrument->type = BSE_INSTRUMENT_SAMPLE;
-	}
+      instrument_set_input (instrument, (BseSample*) param->value.v_item, NULL);
+      bse_object_param_changed (BSE_OBJECT (instrument), "sinstrument");
+      break;
+    case PARAM_SYNTH:
+      instrument_set_input (instrument, NULL, (BseSInstrument*) param->value.v_item);
+      bse_object_param_changed (BSE_OBJECT (instrument), "sample");
       break;
     case PARAM_INTERPOLATION:
       instrument->interpolation = param->value.v_bool;
@@ -486,9 +546,24 @@ bse_instrument_get_param (BseInstrument *instrument,
     case PARAM_SAMPLE:
       if (param->value.v_item)
 	bse_object_unref (BSE_OBJECT (param->value.v_item));
-      param->value.v_item = (BseItem*) instrument->sample;
+      if (instrument->type == BSE_INSTRUMENT_SAMPLE && instrument->input)
+	{
+	  param->value.v_item = (BseItem*) instrument->input;
+	  bse_object_ref (BSE_OBJECT (param->value.v_item));
+	}
+      else
+	param->value.v_item = NULL;
+      break;
+    case PARAM_SYNTH:
       if (param->value.v_item)
-	bse_object_ref (BSE_OBJECT (param->value.v_item));
+	bse_object_unref (BSE_OBJECT (param->value.v_item));
+      if (instrument->type == BSE_INSTRUMENT_SYNTH && instrument->input)
+	{
+	  param->value.v_item = (BseItem*) instrument->input;
+	  bse_object_ref (BSE_OBJECT (param->value.v_item));
+	}
+      else
+	param->value.v_item = NULL;
       break;
     case PARAM_INTERPOLATION:
       param->value.v_bool = instrument->interpolation;
@@ -572,11 +647,31 @@ bse_instrument_set_sample (BseInstrument  *instrument,
 			   BseSample	  *sample)
 {
   g_return_if_fail (BSE_IS_INSTRUMENT (instrument));
-  g_return_if_fail (BSE_IS_SAMPLE (sample));
-  g_return_if_fail (bse_item_get_project (BSE_ITEM (sample)) ==
-		    bse_item_get_project (BSE_ITEM (instrument)));
+  if (sample)
+    {
+      g_return_if_fail (BSE_IS_SAMPLE (sample));
+      g_return_if_fail (bse_item_get_project (BSE_ITEM (instrument)) ==
+			bse_item_get_project (BSE_ITEM (sample)));
+    }
   
   bse_object_set (BSE_OBJECT (instrument),
 		  "sample", sample,
+		  NULL);
+}
+
+void
+bse_instrument_set_sinstrument (BseInstrument  *instrument,
+				BseSInstrument *sinstrument)
+{
+  g_return_if_fail (BSE_IS_INSTRUMENT (instrument));
+  if (sinstrument)
+    {
+      g_return_if_fail (BSE_IS_SINSTRUMENT (sinstrument));
+      g_return_if_fail (bse_item_get_project (BSE_ITEM (instrument)) ==
+			bse_item_get_project (BSE_ITEM (sinstrument)));
+    }
+  
+  bse_object_set (BSE_OBJECT (instrument),
+		  "sinstrument", sinstrument,
 		  NULL);
 }

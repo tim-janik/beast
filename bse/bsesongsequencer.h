@@ -66,6 +66,7 @@ void	bse_song_sequencer_set_loop		(BseSong	*song,
 void	bse_song_sequencer_set_pattern_loop	(BseSong	*song,
 						 guint		 start_pattern_row,
 						 guint		 end_pattern_row);
+void	bse_song_sequencer_step			(BseSong	*song);
 void	bse_song_sequencer_fill_hunk		(BseSong	*song,
 						 BseSampleValue	*hunk);
 void	bse_song_sequencer_destroy		(BseSong	*song);

@@ -91,8 +91,7 @@ BSE_BUILTIN_TYPE (BseSNet)
   
   snet_type = bse_type_register_static (BSE_TYPE_SUPER,
                                         "BseSNet",
-                                        "Project container for administration "
-                                        "of Source networks",
+                                        "BSE Synthesis (Filter) Network",
                                         &snet_info);
   bse_categories_register_icon ("/Source/Projects/SNet", snet_type, &snet_pixdata);
 
@@ -150,13 +149,9 @@ bse_snet_class_init (BseSNetClass *class)
 						   BSE_PARAM_GUI |
 						   BSE_PARAM_HINT_DIAL));
 
-  ichannel_id = bse_source_class_add_ichannel (source_class,
-					       "multi_in", "Multi Track In",
-					       1, 2); /* FIXME: BSE_MAX_N_TRACKS */
+  ichannel_id = bse_source_class_add_ichannel (source_class, "multi_in", "Multi Track In", 1, 2);
   g_assert (ichannel_id == BSE_SNET_ICHANNEL_MULTI);
-  ochannel_id = bse_source_class_add_ochannel (source_class,
-					       "stereo_out", "Stereo Out",
-					       2);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "stereo_out", "Stereo Out", 2);
   g_assert (ochannel_id == BSE_SNET_OCHANNEL_STEREO);
 }
 
@@ -315,15 +310,7 @@ bse_snet_remove_item (BseContainer *container,
   snet = BSE_SNET (container);
 
   if (bse_type_is_a (BSE_OBJECT_TYPE (item), BSE_TYPE_SOURCE))
-    {
-      BseSource *source = BSE_SOURCE (item);
-
-      bse_source_clear_ochannels (source);
-      bse_source_clear_ichannels (source);
-      if (BSE_SOURCE_PREPARED (source))
-	bse_source_reset (source);
-      snet->sources = g_list_remove (snet->sources, item);
-    }
+    snet->sources = g_list_remove (snet->sources, item);
   else
     g_warning ("BseSNet: cannot remove non-source item type `%s'",
                BSE_OBJECT_TYPE_NAME (item));
@@ -368,7 +355,7 @@ bse_snet_remove_source (BseSNet   *snet,
   container = BSE_CONTAINER (snet);
   item = BSE_ITEM (source);
   
-  g_return_if_fail (item->container == (BseItem*) container);
+  g_return_if_fail (item->parent == (BseItem*) container);
 
   bse_container_remove_item (container, item);
 }
@@ -425,6 +412,7 @@ bse_snet_reset (BseSource *source)
   BseSNet *snet = BSE_SNET (source);
   GList *list;
 
+#if 0 // FIXME 
   /* reset all children */
   for (list = snet->sources; list; list = list->next)
     {
@@ -433,7 +421,8 @@ bse_snet_reset (BseSource *source)
       if (BSE_SOURCE_PREPARED (source))
 	bse_source_reset (source);
     }
-
+#endif
+  
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
 

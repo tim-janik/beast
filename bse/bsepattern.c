@@ -40,8 +40,8 @@ enum
 static void	    bse_pattern_class_init	 (BsePatternClass	*class);
 static void	    bse_pattern_init		 (BsePattern		*pattern);
 static void	    bse_pattern_do_shutdown	 (BseObject		*object);
-static void	    bse_pattern_do_set_container (BseItem		*item,
-						  BseItem		*container);
+static void	    bse_pattern_do_set_parent    (BseItem		*item,
+						  BseItem		*parent);
 static void	    bse_pattern_reset_note	 (BsePattern		*pattern,
 						  guint			 channel,
 						  guint			 row);
@@ -95,7 +95,7 @@ bse_pattern_class_init (BsePatternClass	*class)
   object_class->restore_private = bse_pattern_restore_private;
   object_class->shutdown = bse_pattern_do_shutdown;
   
-  item_class->set_container = bse_pattern_do_set_container;
+  item_class->set_parent = bse_pattern_do_set_parent;
 }
 
 static void
@@ -126,32 +126,25 @@ bse_pattern_do_shutdown (BseObject *object)
 }
 
 static void
-bse_pattern_do_set_container (BseItem *item,
-			      BseItem *container)
+bse_pattern_do_set_parent (BseItem *item,
+			   BseItem *parent)
 {
   BsePattern *pattern;
   
-  if (container)
-    g_return_if_fail (BSE_IS_SONG (container));
+  if (parent)
+    g_return_if_fail (BSE_IS_SONG (parent));
   
   pattern = BSE_PATTERN (item);
   
-  /* chain parent class' set_container handler */
-  BSE_ITEM_CLASS (parent_class)->set_container (item, container);
+  /* chain parent class' set_parent handler */
+  BSE_ITEM_CLASS (parent_class)->set_parent (item, parent);
   
-  if (container)
+  if (parent)
     {
-      if (BSE_IS_SONG (container))
-	{
-	  BseSong *song;
-	  
-	  song = BSE_SONG (container);
-	  
-	  bse_pattern_set_n_channels (pattern, song->n_channels);
-	  bse_pattern_set_n_rows (pattern, song->pattern_length);
-	}
-      else
-	g_warning ("BsePattern is mean to be added to containers of type BseSong only");
+      BseSong *song = BSE_SONG (parent);
+      
+      bse_pattern_set_n_channels (pattern, song->n_channels);
+      bse_pattern_set_n_rows (pattern, song->pattern_length);
     }
 }
 
@@ -160,7 +153,7 @@ bse_pattern_reset_note (BsePattern *pattern,
 			guint	    channel,
 			guint	    row)
 {
-  BseNote *note;
+  BsePatternNote *note;
   
   note = &PNOTE (pattern, channel, row);
 
@@ -191,14 +184,14 @@ bse_pattern_set_n_channels (BsePattern *pattern,
   
   if (pattern->n_channels != n_channels)
     {
-      BseNote *notes;
+      BsePatternNote *notes;
       guint c, r;
       
       for (c = n_channels; c < pattern->n_channels; c++)
 	for (r = 0; r < pattern->n_rows; r++)
 	  bse_pattern_reset_note (pattern, c, r);
       
-      notes = g_new (BseNote, n_channels * pattern->n_rows);
+      notes = g_new (BsePatternNote, n_channels * pattern->n_rows);
       
       for (c = 0; c < n_channels; c++)
 	for (r = 0; r < pattern->n_rows; r++)
@@ -235,14 +228,14 @@ bse_pattern_set_n_rows (BsePattern *pattern,
 
   if (pattern->n_rows != n_rows)
     {
-      BseNote *notes;
+      BsePatternNote *notes;
       guint c, r;
       
       for (r = n_rows; r < pattern->n_rows; r++)
 	for (c = 0; c < pattern->n_channels; c++)
 	  bse_pattern_reset_note (pattern, c, r);
       
-      notes = g_new (BseNote, pattern->n_channels * n_rows);
+      notes = g_new (BsePatternNote, pattern->n_channels * n_rows);
       
       for (c = 0; c < pattern->n_channels; c++)
 	for (r = 0; r < n_rows; r++)
@@ -271,11 +264,11 @@ void
 bse_pattern_modify_note (BsePattern    *pattern,
 			 guint          channel,
 			 guint          row,
-			 guint          note_val,
+			 gint           note_val,
 			 BseInstrument *instrument,
 			 gboolean       selected)
 {
-  BseNote *note;
+  BsePatternNote *note;
   guint notify_changed = 0;
 
   g_return_if_fail (BSE_IS_PATTERN (pattern));
@@ -324,7 +317,7 @@ void
 bse_pattern_set_note (BsePattern *pattern,
 		      guint       channel,
 		      guint       row,
-		      guint       note)
+		      gint        note)
 {
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
@@ -363,7 +356,7 @@ bse_pattern_select_note (BsePattern *pattern,
 			 guint       channel,
 			 guint       row)
 {
-  BseNote *note;
+  BsePatternNote *note;
 
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
@@ -391,7 +384,7 @@ bse_pattern_unselect_note (BsePattern *pattern,
 			   guint       channel,
 			   guint       row)
 {
-  BseNote *note;
+  BsePatternNote *note;
 
   g_return_if_fail (BSE_IS_PATTERN (pattern));
   g_return_if_fail (channel < pattern->n_channels);
@@ -424,7 +417,7 @@ bse_pattern_list_selection (BsePattern *pattern)
   for (c = 0; c < pattern->n_channels; c++)
     for (r = 0; r < pattern->n_rows; r++)
       {
-	BseNote *note = &PNOTE (pattern, c, r);
+	BsePatternNote *note = &PNOTE (pattern, c, r);
 
 	if (note->selected)
 	  list = g_list_prepend (list, note);
@@ -433,7 +426,7 @@ bse_pattern_list_selection (BsePattern *pattern)
   return g_list_reverse (list);
 }
 
-BseNote*
+BsePatternNote*
 bse_pattern_peek_note (BsePattern *pattern,
 		       guint       channel,
 		       guint       row)
@@ -445,12 +438,12 @@ bse_pattern_peek_note (BsePattern *pattern,
   return &PNOTE (pattern, channel, row);
 }
 
-static BseNote*
+static BsePatternNote*
 get_note (BsePattern *pattern,
 	  guint	      channel,
 	  guint	      row)
 {
-  BseNote *note;
+  BsePatternNote *note;
   
   while (row >= pattern->n_rows)
     {
@@ -473,8 +466,8 @@ get_note (BsePattern *pattern,
 }
 
 static void
-save_note (BseStorage *storage,
-	   BseNote    *note)
+save_note (BseStorage     *storage,
+	   BsePatternNote *note)
 {
   bse_storage_break (storage);
   bse_storage_putc (storage, '(');
@@ -526,7 +519,7 @@ bse_pattern_store_private (BseObject  *object,
     {
       for (r = 0; r < pattern->n_rows; r++)
 	{
-	  BseNote *note, *note2, *note3;
+	  BsePatternNote *note, *note2, *note3;
 	  
 	  note = get_note (pattern, c, r);
 	  note2 = get_note (pattern, c, r + 1);
@@ -574,7 +567,7 @@ bse_pattern_restore_private (BseObject	*object,
   static GQuark quark_move_channel = 0;
   static GQuark quark_move_row = 0;
   GQuark token_quark;
-  guint note = BSE_NOTE_VOID;
+  gint note = BSE_NOTE_VOID;
   BseInstrument *instrument = NULL;
   BsePattern *pattern;
   
