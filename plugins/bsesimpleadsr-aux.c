@@ -48,7 +48,7 @@ typedef struct
 #define	CHECK_TRIG		(BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_TRIG)
 #define	STEP_UP			(BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_INC)
 #define	STEP_DOWN		(BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_DEC)
-#define GATE_CHANGE(v)		((BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_IGATE) ? (v) >= 0.5 : (v) < 0.5)
+#define GATE_CHECK(v)		((BSE_MIX_VARIANT & BSE_MIX_RAMP_WITH_IGATE) ? (v) >= 0.5 : (v) < 0.5)
 #define RAISING_EDGE(v1,v2)	((v1) < (v2))
 
 static inline BseMixRampState
@@ -69,7 +69,7 @@ BSE_MIX_VARIANT_NAME (BseMixRampLinear *ramp)
     return BSE_MIX_RAMP_REACHED_BOUND;
   do
     {
-      if (CHECK_GATE && GATE_CHANGE (*ramp->gate_in))
+      if (CHECK_GATE && GATE_CHECK (*ramp->gate_in))
 	RETURN (BSE_MIX_RAMP_GATE_CHANGE);
       if (CHECK_TRIG)
 	{

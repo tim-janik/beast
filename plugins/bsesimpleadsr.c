@@ -303,7 +303,7 @@ simple_adsr_process (BseModule *module,
 	    {
 	    case BSE_MIX_RAMP_REACHED_BORDER:	env->phase = DECAY;	break;
 	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = RELEASE;	break;
-	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
+	    case BSE_MIX_RAMP_REACHED_BOUND:				break;
 	    default:	g_error ("should not be reached: state: %d\n", state);
 	    }
 	  break;
@@ -371,6 +371,15 @@ simple_adsr_process (BseModule *module,
 }
 
 static void
+simple_adsr_reset (BseModule *module)
+{
+  SimpleADSR *env = module->user_data;
+  env->ramp.last_trigger = 0;
+  env->ramp.level = 0;
+  env->phase = ATTACK;
+}
+
+static void
 bse_simple_adsr_update_modules (BseSimpleADSR *adsr,
 				BseTrans      *trans)
 {
@@ -412,7 +421,7 @@ bse_simple_adsr_context_create (BseSource *source,
     BSE_SIMPLE_ADSR_N_OCHANNELS,	/* n_ostreams */
     simple_adsr_process,		/* process */
     NULL,                       	/* process_defer */
-    NULL,                       	/* reset */
+    simple_adsr_reset,               	/* reset */
     (BseModuleFreeFunc) g_free,		/* free */
     BSE_COST_CHEAP,			/* cost */
   };
@@ -420,8 +429,6 @@ bse_simple_adsr_context_create (BseSource *source,
   SimpleADSR *env = g_new0 (SimpleADSR, 1);
   BseModule *module;
   
-  env->ramp.last_trigger = 0;
-  env->ramp.level = 0;
   module = bse_module_new (&env_class, env);
   
   /* setup module i/o streams with BseSource i/o channels */
