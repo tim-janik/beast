@@ -28,5 +28,6 @@ beast-gtk/bstwaveeditor.c
 beast-gtk/bstwaveview.c
 beast-gtk/dialogs/gadgets-beast.xml
 beast-gtk/dialogs/gadgets-standard.xml
+beast-gtk/gxk/gxksimplelabel.c
 data/beast.desktop.in
 data/bse.keys.in

@@ -1,3 +1,9 @@
+2003-11-23  Danilo Šegan  <dsegan@gmx.net>
+
+	* sr.po, sr@Latn.po: Updated Serbian translation.
+
+	* POTFILES.in: Added beast-gtk/gxk/gxksimplelabel.c.
+
 Fri Nov 21 16:54:24 2003  Tim Janik  <timj@gtk.org>
 
 	* POTFILES.in: removed UTF-8 encoding setting.

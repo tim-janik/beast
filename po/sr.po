@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-21 01:26+0100\n"
-"PO-Revision-Date: 2003-11-21 01:31+0100\n"
+"POT-Creation-Date: 2003-11-23 01:28+0100\n"
+"PO-Revision-Date: 2003-11-23 01:32+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -464,104 +464,16 @@ msgstr "Учитавам „%s“"
 msgid "Loading project \"%s\""
 msgstr "Учитавам пројекат „%s“"
 
-#. graphics
-#: beast-gtk/bstmain.c:659
-msgid "Cyria Arweiler"
-msgstr "Сирија Арвајлер (Cyria Arweiler)"
-
-#: beast-gtk/bstmain.c:660
-msgid "Tuomas Kuosmanen"
-msgstr "Томас Косманен (Tuomas Kuosmanen)"
-
-#: beast-gtk/bstmain.c:661
-msgid "Jakub Steiner"
-msgstr "Јакуб Штајнер (Jakub Steiner)"
-
-# несигурно
-#: beast-gtk/bstmain.c:662
-msgid "Ville Pätsi"
-msgstr "Виље Петси (Ville Pätsi)"
-
-#. general code and fixes
-#: beast-gtk/bstmain.c:664
-msgid "Christian Neumair"
-msgstr "Кристијан Нојмар (Christian Neumair)"
-
-#: beast-gtk/bstmain.c:665
-msgid "Sam Hocevar"
-msgstr "Сам Хочевар (Sam Hocevar)"
-
-#: beast-gtk/bstmain.c:666
-msgid "Alper Ersoy"
-msgstr "Алпер Ерсој (Alper Ersoy)"
-
-#: beast-gtk/bstmain.c:667
-msgid "Ben Collver"
-msgstr "Бен Колвер (Ben Collver)"
-
-#: beast-gtk/bstmain.c:668
-msgid "Tim Janik"
-msgstr "Тим Јаник (Tim Janik)"
-
-#: beast-gtk/bstmain.c:669
-msgid "Stefan Westerfeld"
-msgstr "Штефан Вестерфелд (Stefan Westerfeld)"
-
-#. plugins
-#: beast-gtk/bstmain.c:671
-msgid "David A. Bartold"
-msgstr "Дејвид А. Бартолд (David A. Bartold)"
-
-#. _("Tim Janik"),
-#. _("Stefan Westerfeld"),
-#. languages
-#: beast-gtk/bstmain.c:675
-msgid "Metin Amiroff"
-msgstr "Метин Амироф (Metin Amiroff)"
-
-#: beast-gtk/bstmain.c:676
-msgid "Alexandre Prokoudine"
-msgstr "Александар Прокоудин"
-
-#: beast-gtk/bstmain.c:677 beast-gtk/bstmain.c:683
-msgid "Danilo Segan"
-msgstr "Данило Шеган"
-
-#: beast-gtk/bstmain.c:678
-msgid "Christian Rose"
-msgstr "Кристијан Роуз (Christian Rose)"
-
-#. _("Christian Neumair"),
-#: beast-gtk/bstmain.c:680
-msgid "Miloslav Trmac"
-msgstr "Милослав Трмац"
-
-#: beast-gtk/bstmain.c:681
-msgid "Duarte Loreto"
-msgstr "Дуарте Лорето"
-
-#: beast-gtk/bstmain.c:682
-msgid "Vincent van Adrighem"
-msgstr "Винсент ван Адригем (Vincent van Adrighem)"
-
-#: beast-gtk/bstmain.c:684
-msgid "Xavier Conde Rueda"
-msgstr "Ксавијер Конде Руеда (Xavier Conde Rueda)"
-
-#: beast-gtk/bstmain.c:685
-msgid "Kostas Papadimas"
-msgstr "Костас Пападимас"
-
-#: beast-gtk/bstmain.c:690
+#: beast-gtk/bstmain.c:694
 msgid "BEAST About"
 msgstr "О Звери"
 
-#: beast-gtk/bstmain.c:691
+#: beast-gtk/bstmain.c:695
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ЗВЕР, издање %s"
 
-#: beast-gtk/bstmain.c:692
+#: beast-gtk/bstmain.c:696
 msgid "Contributions made by:"
 msgstr "Такође допринели:"
 
@@ -949,8 +861,8 @@ msgid "Standard amplifier module"
 msgstr "Обични модул за појачавање"
 
 #: beast-gtk/bstsnetrouter.c:199
-msgid "Snoop"
-msgstr "Њушкај"
+msgid "Snooper"
+msgstr "Њушкало"
 
 #: beast-gtk/bstsnetrouter.c:199
 msgid "Signal debugging module"
@@ -1426,6 +1338,72 @@ msgstr "_Индекс"
 msgid "_Reload"
 msgstr "Ос_вежи"
 
+#: beast-gtk/gxk/gxksimplelabel.c:132
+msgid "Label"
+msgstr "Ознака"
+
+#: beast-gtk/gxk/gxksimplelabel.c:132
+msgid "The text of the label"
+msgstr "Текст ознаке"
+
+#: beast-gtk/gxk/gxksimplelabel.c:136
+msgid "Use underline"
+msgstr "Користи подвлаку"
+
+#: beast-gtk/gxk/gxksimplelabel.c:137
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr "Уколико је постављено, подвлака у тексту означава да следећи знак представља пречицу"
+
+#: beast-gtk/gxk/gxksimplelabel.c:141
+msgid "Auto cut"
+msgstr "Само-исеци"
+
+#: beast-gtk/gxk/gxksimplelabel.c:142
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgstr "Уколико је постављено, препуни текст се исеца и уместо њега се приказују три тачке „...“"
+
+#: beast-gtk/gxk/gxksimplelabel.c:146
+msgid "Justification"
+msgstr "Поравнавање"
+
+#: beast-gtk/gxk/gxksimplelabel.c:147
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr ""
+"Међусобно поравнавање редова текста у ознаци.\n"
+"Ово не утиче на поравнавање ознаке на свом месту."
+
+#: beast-gtk/gxk/gxksimplelabel.c:151
+msgid "Pattern"
+msgstr "Образац"
+
+# bug: a bit flakey, ain't it?
+#: beast-gtk/gxk/gxksimplelabel.c:152
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
+msgstr "Ниска са знацима „_“ на местима одговара знацима у тексту који се подвлаче"
+
+#: beast-gtk/gxk/gxksimplelabel.c:156
+msgid "Mnemonic key"
+msgstr "Пречица"
+
+#: beast-gtk/gxk/gxksimplelabel.c:157
+msgid "The mnemonic accelerator key for this label"
+msgstr "Тастер пречице за избор ове ознаке"
+
+#: beast-gtk/gxk/gxksimplelabel.c:161
+msgid "Mnemonic widget"
+msgstr "Елемент пречице"
+
+#: beast-gtk/gxk/gxksimplelabel.c:162
+msgid "The widget to be activated when the label's mnemonic key is pressed"
+msgstr "Елемент који се активира када се притисне пречица ознаке"
+
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "ЗВЕР"
@@ -1449,6 +1427,67 @@ msgstr "BSE вишеделна Wave датотека"
 #: data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "BSE датотека за синтезу"
+
+#~ msgid "Cyria Arweiler"
+#~ msgstr "Сирија Арвајлер (Cyria Arweiler)"
+
+#~ msgid "Tuomas Kuosmanen"
+#~ msgstr "Томас Косманен (Tuomas Kuosmanen)"
+
+#~ msgid "Jakub Steiner"
+#~ msgstr "Јакуб Штајнер (Jakub Steiner)"
+
+# несигурно
+#~ msgid "Ville Pätsi"
+#~ msgstr "Виље Петси (Ville Pätsi)"
+
+#~ msgid "Christian Neumair"
+#~ msgstr "Кристијан Нојмар (Christian Neumair)"
+
+#~ msgid "Sam Hocevar"
+#~ msgstr "Сам Хочевар (Sam Hocevar)"
+
+#~ msgid "Alper Ersoy"
+#~ msgstr "Алпер Ерсој (Alper Ersoy)"
+
+#~ msgid "Ben Collver"
+#~ msgstr "Бен Колвер (Ben Collver)"
+
+#~ msgid "Tim Janik"
+#~ msgstr "Тим Јаник (Tim Janik)"
+
+#~ msgid "Stefan Westerfeld"
+#~ msgstr "Штефан Вестерфелд (Stefan Westerfeld)"
+
+#~ msgid "David A. Bartold"
+#~ msgstr "Дејвид А. Бартолд (David A. Bartold)"
+
+#~ msgid "Metin Amiroff"
+#~ msgstr "Метин Амироф (Metin Amiroff)"
+
+#~ msgid "Alexandre Prokoudine"
+#~ msgstr "Александар Прокоудин"
+
+#~ msgid "Danilo Segan"
+#~ msgstr "Данило Шеган"
+
+#~ msgid "Christian Rose"
+#~ msgstr "Кристијан Роуз (Christian Rose)"
+
+#~ msgid "Miloslav Trmac"
+#~ msgstr "Милослав Трмац"
+
+#~ msgid "Duarte Loreto"
+#~ msgstr "Дуарте Лорето"
+
+#~ msgid "Vincent van Adrighem"
+#~ msgstr "Винсент ван Адригем (Vincent van Adrighem)"
+
+#~ msgid "Xavier Conde Rueda"
+#~ msgstr "Ксавијер Конде Руеда (Xavier Conde Rueda)"
+
+#~ msgid "Kostas Papadimas"
+#~ msgstr "Костас Пападимас"
 
 #~ msgid "_Delete"
 #~ msgstr "_Обриши"
@@ -1597,9 +1636,6 @@ msgstr "BSE датотека за синтезу"
 
 #~ msgid "Filter Type"
 #~ msgstr "Врста филтера"
-
-#~ msgid "The type of filter to use"
-#~ msgstr "Коју врсту филтера да користим"
 
 #~ msgid "Filter Specification"
 #~ msgstr "Навод филтера"
