@@ -144,14 +144,16 @@
   display: block;
   padding: 0.2em;
   padding-left: 14px;
+  text-decoration: none;
 }
 
 #navigation a:hover {
-  text-decoration: underline; /* none */
+  text-decoration: none;
   background-image: url(images/gradient.png);
   background-position: top left;
   background-repeat: repeat-y;
 /*  background-color: #b0b0de; */
+  color: #444444;
 }
 
 #navigation a.closed-tree {
@@ -253,10 +255,20 @@ body {
 
 a {
   text-decoration: none;
+  /* text-decoration: underline; */
+  color: #0000ff;
 }
 
 a:hover {
   text-decoration: underline;
+  color: #005090;
+}
+
+a:visited {
+  color: #460086;
+}
+
+a:active {
 }
 
 h1 {

@@ -49,6 +49,7 @@ html_targets = $(strip		\
 # extra dist
 build_tools = $(strip		\
 	navigation.xsl          \
+	reference-index.xsl     \
 	man.xsl			\
 	html.xsl		\
 	markup.xsl		\
@@ -111,12 +112,18 @@ temp_log2texi = log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi
 # texi/xml/target rules
 #
 XMLANTISPACE=$(top_builddir)/docs/utils/xmlantispace
+REFERENCE_XMLS = $(patsubst %.3, %.3-unpatched.xml, $(man_MANS))
 if HAVE_DOC_TOOLS
+index.lst: $(REFERENCE_XMLS) $(srcdir)/reference-index.xsl
+	$(XSLTPROC) $(srcdir)/reference-index.xsl $(REFERENCE_XMLS) >$@
 # generate *.xml from *.texi with makeinfo
-%.xml: %.texi			$(srcdir)/../teximacros.texi $(XMLANTISPACE)
+%.xml: %-unpatched.xml index.lst
+	$(srcdir)/reference-filter.pl $< >$@
+%-unpatched.xml: %.texi		$(srcdir)/../teximacros.texi $(XMLANTISPACE)
 	$(XMLMAKEINFO)  -D "TexiStamp `date -r $<`" \
-			-I $(srcdir)/.. --xml $< -o - \
-	| $(XMLANTISPACE) >$@
+			-I $(srcdir)/.. --xml $< -o $@
+	$(XMLANTISPACE) <$@ >$@.tmp
+	mv $@.tmp $@
 # *.markup from xml (program docs)
 %.markup: %.xml			$(srcdir)/markup.xsl $(srcdir)/texinfo.dtd
 	$(XSLTPROC) $(srcdir)/markup.xsl $< >$@
@@ -288,7 +295,7 @@ CLEANFILES += beast-site-*.tar.gz beast-site-*.tar.bz2 index.html
 # extra rules
 #
 clean-all-targets:	# clean targets that aren't shipped with tarballs
-	rm -f *.xml *.ps *.pdf *.html
+	rm -f *.xml *.ps *.pdf *.html index.lst
 # postscript and pdf variants
 ps-targets:	$(patsubst %.3, %.ps, $(man_MANS))
 pdf-targets:	$(patsubst %.3, %.pdf, $(man_MANS))
@@ -305,6 +312,7 @@ MAINTAINERCLEANFILES +=
 .INTERMEDIATE: $(strip \
 	release-news.texi gsl-mplan.texi navigation.xml index.html	\
 	log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi	\
+	$(REFERENCE_XMLS) \
 )
 
 # non-file rules

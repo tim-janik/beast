@@ -154,7 +154,7 @@ show_procdoc (void)
       gchar *sname = g_type_name_to_sname (cseq->cats[i]->type);
       guint j;
       
-      g_print ("@item (@refFunction{%s}@ ", sname);
+      g_print ("@item @anchor{%s}(@refFunctionNoLink{%s}@ ", sname, sname);
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
@@ -166,7 +166,7 @@ show_procdoc (void)
 	}
       g_print (") ");
       
-      g_print ("@findex @refFunction{%s} (", cname);
+      g_print ("@findex @refFunctionNoLink{%s} (", cname);
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
@@ -181,7 +181,7 @@ show_procdoc (void)
       
       g_print ("\n");
       
-      g_print ("@itemx @refFunction{%s} (", cname);
+      g_print ("@itemx @anchor{%s}@refFunctionNoLink{%s} (", cname, cname);
       for (j = 0; j < class->n_in_pspecs; j++)
 	{
 	  GParamSpec *pspec = G_PARAM_SPEC (class->in_pspecs[j]);
@@ -284,7 +284,7 @@ show_structdoc (void)
 	  SfiRing *ring, *pspecs = NULL;
 	  guint j;
 
-	  g_print ("@item @refStructType{%s} @refStructName{%s} @refStructOpen ", dname, name);
+	  g_print ("@item @anchor{%s}@refStructType{%s} @refStructName{%s} @refStructOpen ", name, dname, name);
 
 	  g_print ("@findex @refStructType{%s}@ @refStructName{%s};", dname, name);
 	  cstring = sfi_info_string_find (rinfo ? rinfo->infos : sinfo->infos, "BLURB");

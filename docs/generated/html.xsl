@@ -789,7 +789,7 @@
 	</xsl:choose>
       </xsl:variable>
       <!-- Name of the page -->
-      <xsl:variable name="page">
+      <xsl:variable name="page_tmp">
 	<xsl:choose>
 	  <xsl:when test="substring-after($url, '/') = ''">
 	    <xsl:value-of select="$url"/>
@@ -798,6 +798,21 @@
 	    <xsl:value-of select="substring-after($url, '/')"/>
 	  </xsl:otherwise>
 	</xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="page">
+	<xsl:choose>
+	  <xsl:when test="substring-after($page_tmp, '#') = ''">
+	    <xsl:value-of select="$page_tmp" />
+	  </xsl:when>
+	  <xsl:otherwise>
+	    <xsl:value-of select="substring-before($page_tmp, '#')" />
+	  </xsl:otherwise>
+	</xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="anchor">
+	<xsl:if test="not(substring-after($page_tmp, '#') = '')">
+	  <xsl:value-of select="concat('#', substring-after($page_tmp, '#'))" />
+	</xsl:if>
       </xsl:variable>
       <xsl:choose>
 	<xsl:when test="$protocol='man'">
@@ -812,7 +827,7 @@
 	  <!-- Print BEAST Man Page (it's a link) -->
 	  <a>
 	    <xsl:attribute name="href">
-	      <xsl:value-of select="concat($page, '.', $section, '.html')"/>
+	      <xsl:value-of select="concat($page, '.', $section, '.html', $anchor)"/>
 	    </xsl:attribute>
 	    <xsl:choose>
 	      <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>

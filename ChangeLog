@@ -1,3 +1,24 @@
+Thu Feb 20 01:03:35 2003  Alper Ersoy  <dirt@gtk.org>
+
+	* bse/bseautodoc.c:
+	* docs/teximacros.texi:
+	* docs/generated/Makefile.am:
+	* docs/generated/scandocs.pl: made function and struct names links to
+	their descriptions where possible.
+
+	* docs/generated/html.xsl:
+	* docs/generated/man.xsl:
+	* docs/generated/markup.xsl: added support for anchors in beast-man://
+	urls.
+
+	* docs/generated/man.xsl: fixed a few typos, improved layout in a few
+	places, especially in tables.
+
+	* docs/site-news.texi: fixed an overlooked macro name with a dash.
+
+	* docs/generated/css/default.css: removed underlines in navigation
+	link hovers in favor of colors. added colors for links.
+
 Tue Feb 18 17:54:40 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* beast-gtk/bstgconfig.c beast-gtk/bstmenus.c beast-gtk/bstrackitem.c

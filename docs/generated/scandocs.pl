@@ -157,9 +157,11 @@ sub tags_print_syntax {
     my $prefix    = shift || '';
     my @var_names = @{$rec->{var_names}};
 
-    print $prefix, '@refFunction{' . $rec->{name} . '} (',
+    my $anchor = ($prefix eq '@item ' ? '@anchor{' . $rec->{name} . '}' : ' ');
+
+    print $prefix, $anchor, '@refFunctionNoLink{' . $rec->{name} . '}(',
 	join(', ', map { $_ = "\@refParameter{$_}" } @var_names),
-	");";
+	');';
 }
 sub tags_highlight {
     my $t = shift;

@@ -47,6 +47,7 @@
 .\}
 .el \\!.XR .nr \\$* \\n%
 .rm xrtype
+.sp -2v
 ..
 .
 .\" Title macros
@@ -92,7 +93,7 @@
 .  tmw TC: .psdvi .ft B
 .  tmw TC: .nr pnowidth \\\\\\\\w'u \\n%'
 .  tmw TC: \\$* \\\\\\\\l'\\\\\\\\n[.l]u-\\\\\\\\n[.k]u-\\\\\\\\n[.i]u-\\\\\\\\n[pnowidth]u.' \\n%
-.  tmw TC. .rr pnowidth
+.  tmw TC: .rr pnowidth
 .  tmw TC: .psdvi .ft P
 .  tmw TC: .ps -4
 .\}
@@ -103,7 +104,7 @@
 .  tmw TC: .in +2m
 .  tmw TC: .nr pnowidth \\\\\\\\w'u \\n%'
 .  tmw TC: \\$* \\\\\\\\l'\\\\\\\\n[.l]u-\\\\\\\\n[.k]u-\\\\\\\\n[.i]u-\\\\\\\\n[pnowidth]u.' \\n%
-.  tmw TC. .rr pnowidth
+.  tmw TC: .rr pnowidth
 .  tmw TC: .in -2m
 .\}
 .el \\!.T2 \\$*{\\n%}
@@ -113,7 +114,7 @@
 .  tmw TC: .in +4m
 .  tmw TC: .nr pnowidth \\\\\\\\w'u \\n%'
 .  tmw TC: \\$* \\\\\\\\l'\\\\\\\\n[.l]u-\\\\\\\\n[.k]u-\\\\\\\\n[.i]u-\\\\\\\\n[pnowidth]u.' \\n%
-.  tmw TC. .rr pnowidth
+.  tmw TC: .rr pnowidth
 .  tmw TC: .in -4m
 .\}
 .el \\!.T3 \\$*{\\n%}
@@ -123,7 +124,7 @@
 .  tmw TC: .in +6m
 .  tmw TC: .nr pnowidth \\\\\\\\w'u \\n%'
 .  tmw TC: \\$* \\\\\\\\l'\\\\\\\\n[.l]u-\\\\\\\\n[.k]u-\\\\\\\\n[.i]u-\\\\\\\\n[pnowidth]u.' \\n%
-.  tmw TC. .rr pnowidth
+.  tmw TC: .rr pnowidth
 .  tmw TC: .in -6m
 .\}
 .el \\!.T4 \\$*{\\n%}
@@ -648,7 +649,7 @@
 	</xsl:choose>
       </xsl:variable>
       <!-- Name of the page -->
-      <xsl:variable name="page">
+      <xsl:variable name="page_tmp">
 	<xsl:choose>
 	  <xsl:when test="substring-after($url, '/') = ''">
 	    <xsl:value-of select="$url"/>
@@ -657,6 +658,21 @@
 	    <xsl:value-of select="substring-after($url, '/')"/>
 	  </xsl:otherwise>
 	</xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="page">
+	<xsl:choose>
+	  <xsl:when test="substring-after($page_tmp, '#') = ''">
+	    <xsl:value-of select="$page_tmp" />
+	  </xsl:when>
+	  <xsl:otherwise>
+	    <xsl:value-of select="substring-before($page_tmp, '#')" />
+	  </xsl:otherwise>
+	</xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="anchor">
+	<xsl:if test="not(substring-after($page_tmp, '#') = '')">
+	  <xsl:value-of select="concat('#', substring-after($page_tmp, '#'))" />
+	</xsl:if>
       </xsl:variable>
       <!-- Print it -->
       <xsl:choose>
@@ -828,11 +844,13 @@
 <!-- {{{ table handling -->
 
 <!-- {{{ multicolumn tables -->
-<xsl:template match="multitable">.TS
+<xsl:template match="multitable">.na
+.TS
 nokeep;
 l l l.
 <xsl:apply-templates/><xsl:text>
 .TE
+.ad
 
 </xsl:text>
 </xsl:template>
@@ -840,7 +858,21 @@ l l l.
 <xsl:template match="multitable/row"><xsl:apply-templates/><xsl:if test="not(position() = last())"><xsl:text>
 </xsl:text></xsl:if></xsl:template>
 
-<xsl:template match="multitable/row/entry"><xsl:apply-templates/><xsl:if test="not(position() = last())"><xsl:text>	</xsl:text></xsl:if></xsl:template>
+<xsl:template match="multitable/row/entry">
+  <xsl:choose>
+    <xsl:when test="position() = last()">
+      <xsl:text>T{
+</xsl:text>
+      <xsl:apply-templates />
+      <xsl:text>
+T}</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates />
+      <xsl:text>	</xsl:text>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
 <!-- }}} -->
 
 <!-- {{{ simple definition tables -->
@@ -879,10 +911,16 @@ l l l.
 .sp -1
 </xsl:text></xsl:template>
 
-<xsl:template match="printindex">@IF@
+<xsl:template match="printindex">
+<xsl:text>.na
+@IF@
+.ad
+</xsl:text>
 </xsl:template>
 
 <xsl:template match="para/printplainindex">
+<xsl:text>.na
+</xsl:text>
   <xsl:variable name="type" select="."/>
   <xsl:for-each select="//indexterm[@index=$type]">
     <xsl:sort/>
@@ -890,6 +928,8 @@ l l l.
 .br
 </xsl:text>
   </xsl:for-each>
+<xsl:text>.ad
+</xsl:text>
 </xsl:template>
 <!-- }}} -->
 

@@ -11,7 +11,7 @@
 @unnumbered What's New?
 
 
-@news_title{Saturday 11 January, Website Switch}
+@newsTitle{Saturday 11 January 2003, Website Switch}
 
 The new website is up, finally! Many thanks go to
 @uref{mailto://dirt@@gtk.org,,Alper Ersoy} for his continued efford to set

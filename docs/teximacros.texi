@@ -156,6 +156,10 @@
 @rmacro refFunction{TEXT}
 @ifxmlelse{\TEXT\,reference-function,nop}
 @end rmacro
+@c --- variant of @refFunction that will not be converted to a link
+@rmacro refFunctionNoLink{TEXT}
+@ifxmlelse{\TEXT\,reference-function-nolink,nop}
+@end rmacro
 @rmacro refParameter{TEXT}
 @ifxmlelse{\TEXT\,reference-parameter,nop}
 @end rmacro
