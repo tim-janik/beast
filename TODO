@@ -1,4 +1,6 @@
 FIXMES:
+- add new test song containing a wave track
+- fix saving of internal objects
 - fix sub-synth "snet" property setter
 - fix SNet derivation
 - fix internal synths being displayed by beast
