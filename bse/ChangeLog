@@ -1,3 +1,11 @@
+Tue May 14 21:36:51 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesource.c: defer resolution of the input
+	channel until resolve_dinput() and provide a better error
+	message.
+
+	* documentation fixes.
+
 Tue May 14 04:17:08 2002  Tim Janik  <timj@gtk.org>
 
 	* bsestandardosc.c (bse_standard_osc_class_init): channel order fixup.

@@ -2,18 +2,18 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-05-10 20:12:49")
+  (modification-time "2002-05-14 20:19:26")
   (creation-time "2002-01-12 12:42:41")
   (name "Wave-Repository"))
 (BseMidiSynth::MIDI-Net
   (snet (BseSNet::MIDI-Instrument))
   (n-voices 4)
-  (modification-time "2002-05-10 20:12:49")
+  (modification-time "2002-05-14 20:19:26")
   (creation-time "2002-01-12 12:42:52")
   (blurb "Don't touch Routing")
   (name "MIDI-Net"))
 (BseSNet::MIDI-Instrument
-  (modification-time "2002-05-10 20:12:49")
+  (modification-time "2002-05-14 20:19:26")
   (creation-time "2002-01-12 12:42:55")
   (name "MIDI-Instrument")
   (BseSubKeyboard::SubKeyboard
@@ -38,18 +38,18 @@
     (wave-form BSE_STANDARD_OSC_PULSE)
     (name "Main Voice 1")
     (source-input "freq_in" BseSNet:1.BseSubKeyboard:1 "frequency")
-    (source-input "sync_in" BseSNet:1.BseSubKeyboard:1 "gate")
     (source-input "pwm_in" BseSNet:1.BseSubKeyboard:1 "velocity")
+    (source-input "sync_in" BseSNet:1.BseSubKeyboard:1 "gate")
     (parasite f "BstRouterCoords" 2 261.000000 283.500000))
   (BseSubInstrument::BseSubInstrument-1
     (name "BseSubInstrument-1")
-    (source-input "left_out" BseSNet:1.BseCompressor:1 "mono_output1")
-    (source-input "right_out" BseSNet:1.BseCompressor:1 "mono_output1")
+    (source-input "left_out" BseSNet:1.BseAtanDistort:1 "audio_out")
+    (source-input "right_out" BseSNet:1.BseAtanDistort:1 "audio_out")
     (parasite f "BstRouterCoords" 2 -151.000000 68.500000))
   (BseAdder::BseAdder-1
     (name "BseAdder-1")
-    (source-input "audio1" BseSNet:1.BseStandardOsc:2 "audio_out")
     (source-input "audio1" BseSNet:1.BseStandardOsc:1 "audio_out")
+    (source-input "audio1" BseSNet:1.BseStandardOsc:2 "audio_out")
     (source-input "audio2" BseSNet:1.BseStandardOsc:3 "audio_out")
     (parasite f "BstRouterCoords" 2 75.000000 231.500000))
   (BseStandardOsc::Main_Voice_2
@@ -59,11 +59,6 @@
     (source-input "freq_in" BseSNet:1.BseSubKeyboard:1 "frequency")
     (source-input "sync_in" BseSNet:1.BseSubKeyboard:1 "gate")
     (parasite f "BstRouterCoords" 2 274.000000 189.500000))
-  (BseCompressor::BseCompressor-1
-    (pi-exp -1.000000)
-    (name "BseCompressor-1")
-    (source-input "mono_input1" BseSNet:1.BseMult:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 -14.000000 33.500000))
   (BseStandardOsc::Main_Voice_3
     (self-perc 15.000001)
     (fine-tune -7)
@@ -71,4 +66,9 @@
     (name "Main Voice 3")
     (source-input "freq_in" BseSNet:1.BseSubKeyboard:1 "frequency")
     (source-input "sync_in" BseSNet:1.BseSubKeyboard:1 "gate")
-    (parasite f "BstRouterCoords" 2 274.000000 95.500000)))
+    (parasite f "BstRouterCoords" 2 274.000000 95.500000))
+  (BseAtanDistort::BseAtanDistort-1
+    (boost-amount 20.000000)
+    (name "BseAtanDistort-1")
+    (source-input "audio_in" BseSNet:1.BseMult:1 "mono_out")
+    (parasite f "BstRouterCoords" 2 -27.000000 79.000000)))

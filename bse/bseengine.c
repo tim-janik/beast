@@ -115,7 +115,7 @@ gsl_job_integrate (GslModule *module)
  * @module: The module to discard
  * @Returns: New job suitable for gsl_trans_add()
  *
- * Create a new transaction job which remove @module from the
+ * Create a new transaction job which removes @module from the
  * engine and destroys it.
  */
 GslJob*

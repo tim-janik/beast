@@ -49,18 +49,28 @@ UPDATE: This problem hasn't yet been reproduced with gdb versions newer than 5.
 @FAQ-CATEGORY@
 General
 @FAQ-TITLE@
-Why can't I get the synthesis networks to work?
+Why doesn't my synthesis networks produce any sound?
 @FAQ-ANSWER@
-BEAST loads its plugins from some common installation directory. It therefore
-needs to be properly installed before you can make use of its plugins. Simply
-starting it from within the built directory is not sufficient.
+
+There are various possible causes for this. First, make sure you have
+BEAST correctly installed and accessing your sound card by running
+one of the synthesis tests in the ./test/ subdirectory.
+For custom synthesis networks, make sure you have something noisy (e.g.
+the audio output of an oscillator) hooked up to a PcmOutput module, and
+have the network's "Auto Activate" parameter (on it's "Parameters"
+notebook page, section "Playback Settings") enabled.
 
 @FAQ-CATEGORY@
 General
 @FAQ-TITLE@
-Why does loading of ./test/osc-test.bse fail?
+Why can't I get the synthesis networks to work?
 @FAQ-ANSWER@
-See previous item.
+This is probably a plugin loading problem, most synthesis networks
+require plugins and won't work if there are any problems loading/finding
+them.
+BEAST loads its plugins from some common installation directory. It therefore
+needs to be properly installed before you can make use of its plugins. Simply
+starting it from within the built directory is not sufficient.
 
 @FAQ-CATEGORY@
 General
@@ -76,7 +86,8 @@ Why can't I get BEAST to load my .mp3, .aiff, .something sample files?
 @FAQ-ANSWER@
 Import functionality for foreign sample types is currently being worked on, if
 you'd like to assist this process, send email to beast@beast.gtk.org.
-Wave file loaders currently exist for Ogg/Vorbis and .wav files.
+Sample file loaders currently exist for Ogg/Vorbis, MPEG Audio 1.0/2.0/2.5
+Layer I/II/III and .wav files.
 
 @FAQ-CATEGORY@
 General
@@ -96,4 +107,5 @@ General
 Why doesn't BEAST 0.4.0 play songs from earlier versions?
 @FAQ-ANSWER@
 The song support was completely rewritten for this version. If lots of
-compatiblity problem reports occour, a converter might be implemented at some point.
+compatiblity problem reports occour, a converter might be implemented
+at some point.

@@ -260,7 +260,7 @@ BSE_EXPORT_OBJECTS = {			/* this plugin implements an object type */
     "The strength with which the input signal is treated is adjustable from "
     "maximum attenuation to maximum boost.",
     &type_info_atan_distort,		/* type information */
-    "/Modules/Distort/Atan Distort",	/* category (menu hierachy entry) */
+    "/Modules/Distortion/Atan Distort",	/* category (menu hierachy entry) */
     { ATAN_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       ATAN_IMAGE_WIDTH, ATAN_IMAGE_HEIGHT,
       ATAN_IMAGE_RLE_PIXEL_DATA, },

@@ -2,11 +2,11 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-05-14 03:34:20")
+  (modification-time "2002-05-14 20:14:20")
   (creation-time "2002-02-06 14:05:19"))
 (BseSNet::Simple-Loop
   (auto-activate 't)
-  (modification-time "2002-05-14 03:34:20")
+  (modification-time "2002-05-14 20:14:20")
   (creation-time "2002-02-06 14:05:24")
   (name "Simple-Loop")
   (parasite f "BstRouterZoom" 1 1.000000)
@@ -64,11 +64,6 @@
     (source-input "left_in" BseSNet:1.BseAmplifier:1 "audio_out")
     (source-input "right_in" BseSNet:1.BseAmplifier:1 "audio_out")
     (parasite f "BstRouterCoords" 2 -9.500000 44.500000))
-  (BseCompressor::Distortion
-    (pi-exp 5.000000)
-    (name "Distortion")
-    (source-input "mono_input1" BseSNet:1.BseMult:2 "mono_out")
-    (parasite f "BstRouterCoords" 2 238.500000 -74.500000))
   (BseBiquadFilter::BiquadFilter
     (gain-perc 96.226418)
     (exponential-fm 't)
@@ -104,8 +99,8 @@
   (BseAdder::BseAdder-1
     (name "BseAdder-1")
     (source-input "audio1" BseSNet:1.DavXtalStrings:1 "audio_out")
-    (source-input "audio2" BseSNet:1.BseMult:1 "mono_out")
     (source-input "audio2" BseSNet:1.BseBiquadFilter:2 "audio_output")
+    (source-input "audio2" BseSNet:1.BseMult:1 "mono_out")
     (parasite f "BstRouterCoords" 2 124.500000 15.500000))
   (BseSimpleADSR::FilterADSR
     (release-time 14.000000)
@@ -121,7 +116,7 @@
     (gain 12.000000)
     (freq 244.685822)
     (name "DrumFilter")
-    (source-input "audio_input" BseSNet:1.BseCompressor:1 "mono_output1")
+    (source-input "audio_input" BseSNet:1.BseAtanDistort:1 "audio_out")
     (parasite f "BstRouterCoords" 2 131.500000 -138.500000))
   (BseStandardOsc::FilterLFO
     (base-freq 0.200000)
@@ -148,4 +143,9 @@
   (BseAmplifier::Amplifier
     (name "Amplifier")
     (source-input "audio1" BseSNet:1.BseBiquadFilter:1 "audio_output")
-    (parasite f "BstRouterCoords" 2 -10.500000 152.500000)))
+    (parasite f "BstRouterCoords" 2 -10.500000 152.500000))
+  (BseAtanDistort::DrumDistort
+    (boost-amount 100.000000)
+    (name "DrumDistort")
+    (source-input "audio_in" BseSNet:1.BseMult:2 "mono_out")
+    (parasite f "BstRouterCoords" 2 230.500000 -77.000000)))

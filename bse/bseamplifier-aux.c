@@ -73,7 +73,7 @@ GSL_INCLUDER_FUNC (Amplifier	*amplifier,
       else
 	cv_sum *= cstrength;
 #if   WITH_EXP_CTRL		/* exponential controls */
-      cv_sum = gsl_approx_qcircle4 (cv_sum);
+      cv_sum = gsl_approx_qcircle2 (cv_sum);
 #endif
       cv_sum += pregain;
       if_reject (cv_sum > 1.0)

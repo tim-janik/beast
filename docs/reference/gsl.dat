@@ -275,7 +275,7 @@ retspace = 19
 New job suitable for @STRONG gsl_trans_add()@
 
 @DOC-DESCRIPTION@
-Create a new transaction job which remove @EMPH module@ from the engine and destroys it.  
+Create a new transaction job which removes @EMPH module@ from the engine and destroys it.  
 @DOC-SYNOPSIS@
 @STRONG gsl_job_connect@ (@EMPH src_module@, @EMPH src_ostream@, @EMPH dest_module@, @EMPH dest_istream@);
 

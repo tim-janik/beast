@@ -663,7 +663,7 @@ retspace = 11
 ancestor: Common ancestor of both items
 
 @DOC-DESCRIPTION@
-Retrive the common ancestor of two items if there's any  
+Retrive the common ancestor of two items if there's any.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-name@ (@EMPH item@);
 
@@ -685,7 +685,7 @@ retspace = 11
 name: 
 
 @DOC-DESCRIPTION@
-Get an item's name  
+Retrive an item's name.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-name-or-type@ (@EMPH item@);
 
@@ -707,7 +707,7 @@ retspace = 11
 name: 
 
 @DOC-DESCRIPTION@
-Get an item's name or type if it has no name  
+Retrive an item's name or type if it has no name.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-parent@ (@EMPH item@);
 
@@ -729,7 +729,7 @@ retspace = 11
 parent: 
 
 @DOC-DESCRIPTION@
-Retrive item's parent  
+Retrive an item's parent.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-project@ (@EMPH item@);
 
@@ -751,7 +751,7 @@ retspace = 11
 project: 
 
 @DOC-DESCRIPTION@
-Retrive item's parent  
+Retrive an item's project.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-seqid@ (@EMPH item@);
 
@@ -773,7 +773,7 @@ retspace = 11
 seqid: 
 
 @DOC-DESCRIPTION@
-Retrive Sequential ID  
+Retrive an item's sequential ID. The sequential ID depends on the item's type an it's position inbetween siblings of the same type within it's immediate container.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-type@ (@EMPH item@);
 
@@ -795,7 +795,7 @@ retspace = 11
 type-id: 
 
 @DOC-DESCRIPTION@
-Retrive Type ID  
+Retrive an item's type ID.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-type-blurb@ (@EMPH item@);
 
@@ -817,7 +817,7 @@ retspace = 11
 type-blurb: 
 
 @DOC-DESCRIPTION@
-Retrieve Type Description  
+Retrieve an item's type description.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-type-name@ (@EMPH item@);
 
@@ -839,7 +839,7 @@ retspace = 11
 type-name: 
 
 @DOC-DESCRIPTION@
-Retrieve Type Name  
+Retrieve an item's type name.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::get-uloc-path@ (@EMPH item@);
 
@@ -881,7 +881,7 @@ retspace = 7
 
 
 @DOC-DESCRIPTION@
-Decrement use count for when an object is not needed anymore  
+Decrement use count for when an item is not needed anymore.  
 @DOC-SYNOPSIS@
 @STRONG BseItem::use@ (@EMPH item@);
 
@@ -901,7 +901,7 @@ retspace = 7
 
 
 @DOC-DESCRIPTION@
-Increment use count to keep the object alive  
+Increment use count to keep an item alive.  
 @DOC-SYNOPSIS@
 @STRONG BseObject::is-a@ (@EMPH item@, @EMPH type-name@);
 

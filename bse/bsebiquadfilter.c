@@ -101,7 +101,12 @@ BSE_BUILTIN_TYPE (BseBiquadFilter)
 
   type = bse_type_register_static (BSE_TYPE_SOURCE,
 				   "BseBiquadFilter",
-				   "BseBiquadFilter -- duu dada lalala FIXME or not",
+				   "BseBiquadFilter - an infinite impulse "
+				   "response filter, consisting of 2-zeros/2-poles "
+				   "segments (thus it's name: bi-quadratic). "
+				   "Various types of filters are supported with "
+				   "modulatable center (Cut-Off) frequency and "
+				   "gain input signals.",
 				   &type_info);
   bse_categories_register_icon ("/Modules/Filters/Biquad Types",
 				type, &pixdata);

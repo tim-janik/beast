@@ -1344,7 +1344,7 @@ typedef struct _DeferredInput DeferredInput;
 struct _DeferredInput
 {
   DeferredInput *next;
-  guint          ichannel;
+  gchar		*ichannel_name;
   gchar         *osource_path;
   gchar         *ochannel_name;
 };
@@ -1357,6 +1357,7 @@ deferred_input_free (gpointer data)
       DeferredInput *dinput = data;
       
       data = dinput->next;
+      g_free (dinput->ichannel_name);
       g_free (dinput->osource_path);
       g_free (dinput->ochannel_name);
       g_free (dinput);
@@ -1393,14 +1394,15 @@ resolve_dinput (BseSource  *source,
 	  continue;
 	}
       error = bse_source_set_input (source,
-				    dinput->ichannel,
+				    bse_source_find_ichannel (source,
+							      dinput->ichannel_name),
 				    BSE_SOURCE (item),
 				    bse_source_find_ochannel (BSE_SOURCE (item),
 							      dinput->ochannel_name));
       if (error && !aborted)
 	bse_storage_warn (storage,
 			  "failed to connect input \"%s\" of \"%s\" to output \"%s\" of \"%s\": %s",
-			  dinput->ichannel < BSE_SOURCE_N_ICHANNELS (source) ? BSE_SOURCE_ICHANNEL_CNAME (source, dinput->ichannel) : "???",
+			  dinput->ichannel_name,
 			  BSE_OBJECT_ULOC (source),
 			  dinput->ochannel_name,
 			  BSE_OBJECT_ULOC (item),
@@ -1419,7 +1421,7 @@ bse_source_real_restore_private (BseObject  *object,
   GTokenType expected_token = BSE_TOKEN_UNMATCHED;
   DeferredInput *dinput;
   BseProject *project;
-  guint ichannel;
+  gchar *ichannel_name;
   gchar *osource_path;
   
   /* chain parent class' handler */
@@ -1438,16 +1440,20 @@ bse_source_real_restore_private (BseObject  *object,
   /* parse ichannel name */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
     return G_TOKEN_STRING;
-  ichannel = bse_source_find_ichannel (source, scanner->value.v_string);
-  
+  ichannel_name = g_strdup (scanner->value.v_string);
+
   /* parse osource path */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return G_TOKEN_IDENTIFIER;
+    {
+      g_free (ichannel_name);
+      return G_TOKEN_IDENTIFIER;
+    }
   osource_path = g_strdup (scanner->value.v_identifier);
   
   /* parse ochannel name */
   if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
     {
+      g_free (ichannel_name);
       g_free (osource_path);
       
       return G_TOKEN_STRING;
@@ -1461,7 +1467,7 @@ bse_source_real_restore_private (BseObject  *object,
     quark_deferred_input = g_quark_from_static_string ("BseSourceDeferredInput");
   dinput = g_new (DeferredInput, 1);
   dinput->next = bse_object_steal_qdata (object, quark_deferred_input);
-  dinput->ichannel = ichannel;
+  dinput->ichannel_name = ichannel_name;
   dinput->osource_path = osource_path;
   dinput->ochannel_name = g_strdup (scanner->value.v_string);
   bse_object_set_qdata_full (object, quark_deferred_input, dinput, deferred_input_free);

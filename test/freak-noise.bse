@@ -2,11 +2,11 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-04-24 05:24:58")
+  (modification-time "2002-05-14 20:17:15")
   (creation-time "2002-02-06 02:35:04"))
 (BseSNet::Unnamed
   (auto-activate 't)
-  (modification-time "2002-04-24 05:24:58")
+  (modification-time "2002-05-14 20:17:15")
   (creation-time "2002-02-06 02:35:11")
   (name "Unnamed")
   (BseSequencer::BseSequencer-1
@@ -33,7 +33,7 @@
     (name "BseMixer-1")
     (source-input "mono_in1" BseSNet:1.BseMult:3 "mono_out")
     (source-input "mono_in2" BseSNet:1.BseMult:2 "mono_out")
-    (source-input "mono_in4" BseSNet:1.BseCompressor:1 "mono_output1")
+    (source-input "mono_in4" BseSNet:1.BseAtanDistort:1 "audio_out")
     (parasite f "BstRouterCoords" 2 -222.000000 -103.000000))
   (BsePcmOutput::BsePcmOutput-1
     (name "BsePcmOutput-1")
@@ -75,7 +75,7 @@
     (order 2)
     (name "BseIIRFilter-3")
     (source-input "mono_in" BseSNet:1.BseMult:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 -141.500000 -211.500000))
+    (parasite f "BstRouterCoords" 2 -142.500000 -270.500000))
   (BseSimpleADSR::BseSimpleADSR-1
     (release-time 1.200000)
     (sustain-level 3.900000)
@@ -90,11 +90,6 @@
     (source-input "mono_in2" BseSNet:1.BseSimpleADSR:1 "adsr_out")
     (source-input "mono_in3" BseSNet:1.BseSimpleADSR:2 "adsr_out")
     (parasite f "BstRouterCoords" 2 -17.500000 -249.500000))
-  (BseCompressor::BseCompressor-1
-    (pi-exp 1.250000)
-    (name "BseCompressor-1")
-    (source-input "mono_input1" BseSNet:1.BseIIRFilter:3 "mono_out")
-    (parasite f "BstRouterCoords" 2 -7.500000 -170.500000))
   (BseMult::BseMult-2
     (name "BseMult-2")
     (source-input "mono_in1" BseSNet:1.BseIIRFilter:1 "mono_out")
@@ -111,4 +106,9 @@
     (name "BseMult-3")
     (source-input "mono_in1" BseSNet:1.BseIIRFilter:2 "mono_out")
     (source-input "mono_in2" BseSNet:1.BseSimpleADSR:2 "adsr_out")
-    (parasite f "BstRouterCoords" 2 -111.500000 94.500000)))
+    (parasite f "BstRouterCoords" 2 -111.500000 94.500000))
+  (BseAtanDistort::BseAtanDistort-1
+    (boost-amount 60.000004)
+    (name "BseAtanDistort-1")
+    (source-input "audio_in" BseSNet:1.BseIIRFilter:3 "mono_out")
+    (parasite f "BstRouterCoords" 2 -145.000000 -176.500000)))

@@ -1,3 +1,11 @@
+Tue May 14 21:12:06 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: adjust filter menu.
+	
+	* test/*: fixups.
+
+	* doc updates.
+
 Tue May 14 04:39:43 2002  Tim Janik  <timj@gtk.org>
 
 	* test/simple-loop.bse: beefed-up version, using new modules.

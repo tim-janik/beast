@@ -2,12 +2,12 @@
 
 
 (BseWaveRepo::Wave-Repository
-  (modification-time "2002-04-24 05:26:35")
+  (modification-time "2002-05-14 20:31:40")
   (creation-time "2002-02-02 11:09:01")
   (name "Wave-Repository"))
 (BseSNet::Oscillator_test
   (auto-activate 't)
-  (modification-time "2002-04-24 05:26:35")
+  (modification-time "2002-05-14 20:31:40")
   (creation-time "1999-12-31 03:01:29")
   (author "Tim Janik")
   (blurb "strange isn't it? ;)")
@@ -18,27 +18,28 @@
     (name "BseAdder-1")
     (source-input "audio1" BseSNet:1.BseStandardOsc:3 "audio_out")
     (source-input "audio2" BseSNet:1.BseStandardOsc:4 "audio_out")
-    (parasite f "BstRouterCoords" 2 118.000000 -2.000000))
+    (parasite f "BstRouterCoords" 2 131.000000 50.000000))
   (BseMult::BseMult-1
     (name "BseMult-1")
     (source-input "mono_in1" BseSNet:1.BseStandardOsc:1 "audio_out")
     (source-input "mono_in2" BseSNet:1.BseStandardOsc:2 "audio_out")
-    (parasite f "BstRouterCoords" 2 -92.000000 25.000000))
+    (source-input "mono_in4" BseSNet:1.BseConstant:1 "const_out_1")
+    (parasite f "BstRouterCoords" 2 -90.000000 52.000000))
   (BsePcmOutput::BsePcmOutput-1
     (name "BsePcmOutput-1")
     (source-input "left_in" BseSNet:1.BseMult:1 "mono_out")
     (source-input "right_in" BseSNet:1.BseMult:1 "mono_out")
-    (parasite f "BstRouterCoords" 2 -91.500000 -80.500000))
+    (parasite f "BstRouterCoords" 2 -91.500000 -49.500000))
   (BseStandardOsc::BseStandardOsc-1
-    (fm-perc 18.571430)
+    (fm-perc 18.500000)
     (name "BseStandardOsc-1")
-    (source-input "modulation_in" BseSNet:1.BseAdder:1 "audio_out")
-    (parasite f "BstRouterCoords" 2 19.000000 56.500000))
+    (source-input "freq_mod_in" BseSNet:1.BseAdder:1 "audio_out")
+    (parasite f "BstRouterCoords" 2 19.000000 50.500000))
   (BseStandardOsc::BseStandardOsc-2
     (base-freq 6.600000)
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
     (name "BseStandardOsc-2")
-    (parasite f "BstRouterCoords" 2 19.000000 -49.500000))
+    (parasite f "BstRouterCoords" 2 131.000000 -53.500000))
   (BseStandardOsc::BseStandardOsc-3
     (self-perc 10.000000)
     (base-freq 55.000000)
@@ -50,4 +51,8 @@
     (base-freq 0.550000)
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
     (name "BseStandardOsc-4")
-    (parasite f "BstRouterCoords" 2 249.000000 -54.500000)))
+    (parasite f "BstRouterCoords" 2 249.000000 -54.500000))
+  (BseConstant::BseConstant-1
+    (value-1 0.340000)
+    (name "BseConstant-1")
+    (parasite f "BstRouterCoords" 2 18.500000 -51.000000)))
