@@ -4,6 +4,8 @@ Overview of Changes in BEAST/BSE 0.5.5:
   DavCanyonDelay - Canyon Echo by David A. Bartold
   BseMidiInput   - Monophonic MIDI Keyboard input module
   BseBalance     - Stereo panorama position module
+  ArtsCompressor - Mono and stereo compressor [Stefan Westerfeld]
+* Added utility script to crop and duplicate parts [Stefan Westerfeld]
 * Implemented ability to use sequencer as modulation source
 * Added support for external MIDI events in song tracks
 * Added .bse file playback facility to bsesh
