@@ -1,3 +1,15 @@
+Tue Oct 12 10:58:21 2004  Tim Janik  <timj@gtk.org>
+
+	* sfithreads.[hc]: implemented hazard pointers or thread guards.
+	sfi_thread_handle_deleted(): clear thread data after the wakeup destroy
+	function has been called. deregister all thread guards.
+	sfi_guard_deregister():
+	sfi_guard_register(): register/deregister guards.
+	sfi_guard_store(): protect a pointer via a guard.
+	sfi_guard_get_n_values(): number of values for collection.
+	sfi_guard_collect(): collected protected pointers.
+	sfi_guard_is_protected(): check single pointer protection.
+
 Fri Oct  8 06:49:42 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: removed g_strconcat_with_null() which used to work 

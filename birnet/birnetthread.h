@@ -23,14 +23,12 @@
 
 G_BEGIN_DECLS
 
-
 /* --- typedefs --- */
 typedef struct _SfiThreadTable		 SfiThreadTable;
 typedef struct _SfiThread		 SfiThread;
 typedef union  _SfiMutex		 SfiMutex;
 typedef union  _SfiCond			 SfiCond;
 typedef struct _SfiRecMutex		 SfiRecMutex;
-
 
 /* --- SfiThread --- */
 typedef void (*SfiThreadFunc)		(gpointer	 user_data);
@@ -64,7 +62,6 @@ gpointer      sfi_thread_steal_qdata	(GQuark		 quark);
 #define	      sfi_thread_set_data_full(  name, data, x)	sfi_thread_set_qdata_full (g_quark_from_string (name), (data), (x))
 #define	      sfi_thread_steal_data(     name)		sfi_thread_steal_qdata (g_quark_try_string (name))
 
-
 /* --- thread info --- */
 typedef enum /*< skip >*/
 {
@@ -92,6 +89,17 @@ typedef struct {
 SfiThreadInfo*  sfi_thread_info_collect (SfiThread      *thread);
 void            sfi_thread_info_free    (SfiThreadInfo  *info);
 
+/* --- hazard pointers / thread guards --- */
+typedef struct  SfiGuard                 SfiGuard;
+SfiGuard*       sfi_guard_register      (void);
+void            sfi_guard_deregister    (SfiGuard       *guard);
+static inline
+void            sfi_guard_store         (SfiGuard       *guard,
+                                         gpointer        value);
+guint           sfi_guard_get_n_values  (void);
+gboolean        sfi_guard_collect       (guint          *n_values,
+                                         gpointer       *values);
+gboolean        sfi_guard_is_protected  (gpointer        value);
 
 /* --- SfiMutex & SfiCond --- */
 #define sfi_mutex_init(mutex)		(sfi_thread_table.mutex_init (mutex))
@@ -99,12 +107,12 @@ void            sfi_thread_info_free    (SfiThreadInfo  *info);
 #define SFI_SPIN_UNLOCK(mutex)		(sfi_thread_table.mutex_unlock (mutex))
 #define SFI_SYNC_LOCK(mutex)		(sfi_thread_table.mutex_lock (mutex))
 #define SFI_SYNC_UNLOCK(mutex)		(sfi_thread_table.mutex_unlock (mutex))
-#define sfi_mutex_trylock(mutex)	(!sfi_thread_table.mutex_trylock (mutex))
+#define sfi_mutex_trylock(mutex)	(sfi_thread_table.mutex_trylock (mutex) == 0) /* TRUE indicates success */
 #define sfi_mutex_destroy(mutex)	(sfi_thread_table.mutex_destroy (mutex))
 #define sfi_rec_mutex_init(rmutex)	(sfi_thread_table.rec_mutex_init (rmutex))
 #define sfi_rec_mutex_lock(rmutex)	(sfi_thread_table.rec_mutex_lock (rmutex))
 #define sfi_rec_mutex_unlock(rmutex)	(sfi_thread_table.rec_mutex_unlock (rmutex))
-#define sfi_rec_mutex_trylock(rmutex)	(!sfi_thread_table.rec_mutex_trylock (rmutex))
+#define sfi_rec_mutex_trylock(rmutex)	(sfi_thread_table.rec_mutex_trylock (rmutex) == 0) /* TRUE indicates success */
 #define sfi_rec_mutex_destroy(rmutex)	(sfi_thread_table.rec_mutex_destroy (rmutex))
 #define sfi_cond_init(cond)		(sfi_thread_table.cond_init (cond))
 #define sfi_cond_signal(cond)		(sfi_thread_table.cond_signal (cond))
@@ -114,7 +122,6 @@ void            sfi_thread_info_free    (SfiThreadInfo  *info);
 void    sfi_cond_wait_timed		(SfiCond  *cond,
 					 SfiMutex *mutex,
 					 glong	   max_useconds);
-
 
 /* --- implementation --- */
 #include <sfi/sficonfig.h>
@@ -134,7 +141,6 @@ struct _SfiRecMutex
   SfiMutex   mutex;
   guint      depth;
 };
-void	sfi_thread_handle_deleted	(SfiThread	*handle);
 struct _SfiThreadTable
 {
   void		(*thread_set_handle)	(SfiThread	*handle);
@@ -161,6 +167,17 @@ struct _SfiThreadTable
   void		(*cond_destroy)		(SfiCond	*cond);
 };
 extern SfiThreadTable sfi_thread_table;
+static inline void /* inlined for speed */
+sfi_guard_store (SfiGuard      *guard,
+                 gpointer       value)
+{
+  gpointer *hploc = (gpointer*) guard;
+  /* simply writing the pointer value would omit memory barriers necessary on
+   * some systems, so we use g_atomic_pointer_compare_and_exchange().
+   */
+  if (*hploc != value)
+    g_atomic_pointer_compare_and_exchange (hploc, *hploc, value);
+}
 void	_sfi_init_threads (void);
 
 G_END_DECLS
