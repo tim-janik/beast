@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-11 09:34+0100\n"
+"POT-Creation-Date: 2004-03-05 19:54+0100\n"
 "PO-Revision-Date: 2003-12-08 17:11+0800\n"
 "Last-Translator: Dulmandakh Sukhbaatar <sdulmandakh@yahoo.com>\n"
 "Language-Team: Mongolian <openmn-core@lists.sf.net>\n"
@@ -85,7 +85,7 @@ msgstr "_Буцаа"
 msgid "_Redo"
 msgstr "_Дахи"
 
-#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:67
+#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Буцаалтыг арилга"
 
@@ -196,6 +196,15 @@ msgstr ""
 msgid "BEAST-%s Release Notes"
 msgstr ""
 
+#: beast-gtk/bstauxdialogs.c:389
+#, c-format
+msgid "Please press the keyboard shortcut to be installed for function: %s"
+msgstr ""
+
+#: beast-gtk/bstauxdialogs.c:394
+msgid "Please press the keyboard shortcut to be installed..."
+msgstr ""
+
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
 msgstr "Модулийн холбоос: "
@@ -213,7 +222,7 @@ msgid "Input"
 msgstr "Оролт"
 
 #: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
-#: bse/bseamplifier.idl:67 plugins/artscompressor.idl:39
+#: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
 #: plugins/artscompressor.idl:58
 msgid "Output"
 msgstr "Гаралт"
@@ -401,11 +410,11 @@ msgstr ""
 msgid "Add"
 msgstr "Нэм"
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:40
-#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:863 beast-gtk/bstsnetrouter.c:905
-#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:63
-#: beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
+#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
+#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
+#: beast-gtk/bsttrackview.c:63 beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Устга"
 
@@ -425,94 +434,182 @@ msgstr "Тайлбар"
 msgid "Type"
 msgstr "Төрөл"
 
-#: beast-gtk/bstmain.c:130
+#: beast-gtk/bstkeybindings.c:51
+#, fuzzy
+msgid "Add..."
+msgstr "Нэм"
+
+#: beast-gtk/bstkeybindings.c:51
+msgid "Bind a new key combination to a program function"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:53
+#, fuzzy
+msgid "Change..."
+msgstr "Ачааллаж байна..."
+
+#: beast-gtk/bstkeybindings.c:53
+#, fuzzy
+msgid "Change the currently selected key binding"
+msgstr "Энэ сонголтыг цэвэрлэ"
+
+#: beast-gtk/bstkeybindings.c:55
+#, fuzzy
+msgid "Raise"
+msgstr "Байрлал"
+
+#: beast-gtk/bstkeybindings.c:55
+msgid "Raise the currently selected key binding, relative to its neighbours"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:57
+msgid "Lower"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:57
+msgid "Lower the currently selected key binding, relative to its neighbours"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:59
+#, fuzzy
+msgid "Delete the currently selected key binding"
+msgstr "Энэ сонголтыг цэвэрлэ"
+
+#: beast-gtk/bstkeybindings.c:61
+#, fuzzy
+msgid "Load"
+msgstr "Ачаалла..."
+
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load a key binding set"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:237
+msgid "Load Key Binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:432
+msgid "Key Binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:433
+msgid "Key combinations used to activate a function"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
+#, fuzzy
+msgid "Function"
+msgstr "Асуулт"
+
+#: beast-gtk/bstkeybindings.c:436
+msgid "Functions to be activated for a key binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:438
+#, fuzzy
+msgid "Parameter"
+msgstr "Загварчлал"
+
+#: beast-gtk/bstkeybindings.c:439
+msgid "Parameter to pass to functions upon activation"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:460
+msgid "Function used to create new key bindings"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:462 beast-gtk/bstprocedure.c:206
+msgid "Description"
+msgstr "Тайлбар"
+
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:137
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr ""
 
 #. BEAST initialization
-#.
-#: beast-gtk/bstmain.c:142
-msgid "Objects"
-msgstr "Обьект"
+#: beast-gtk/bstmain.c:140
+msgid "Initializers"
+msgstr ""
 
+#. parse rc file
 #: beast-gtk/bstmain.c:147
-msgid "Language"
-msgstr "Хэл"
-
-#: beast-gtk/bstmain.c:154
-msgid "RC File"
-msgstr ""
-
-#: beast-gtk/bstmain.c:157
-msgid "Skin RC"
-msgstr ""
+#, fuzzy
+msgid "RC Files"
+msgstr "_Шүүлтүүрүүд"
 
 #. show splash images
-#.
-#: beast-gtk/bstmain.c:163
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr ""
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:175
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr ""
 
-#: beast-gtk/bstmain.c:194
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr "Плагинууд"
 
-#: beast-gtk/bstmain.c:213
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr ""
 
-#: beast-gtk/bstmain.c:241
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Скриптүүд"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:259
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr "Харилцахууд"
 
-#: beast-gtk/bstmain.c:266
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr "Ачааллаж байна..."
 
-#: beast-gtk/bstmain.c:296 beast-gtk/bstmain.c:298
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\"-г ачааллаж байна"
 
-#: beast-gtk/bstmain.c:315
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "\"%s\" төслийг ачааллаж байна"
 
-#: beast-gtk/bstmain.c:716
+#: beast-gtk/bstmain.c:710
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.c:717
+#: beast-gtk/bstmain.c:711
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:718
+#: beast-gtk/bstmain.c:712
 msgid "Contributions made by:"
 msgstr ""
 
-#: beast-gtk/bstparam-choice.c:144
-msgid "Drop Down Box (Option Menu)"
+#: beast-gtk/bstparam-choice.c:142
+msgid "Popup Options"
 msgstr ""
 
-#: beast-gtk/bstparam-choice.c:150
+#: beast-gtk/bstparam-choice.c:148
+msgid "Drop Down Combo"
+msgstr ""
+
+#: beast-gtk/bstparam-choice.c:154
 msgid "Drop Down Button"
+msgstr ""
+
+#: beast-gtk/bstparam-choice.c:160
+msgid "Standard Option Menu"
 msgstr ""
 
 #: beast-gtk/bstparam-color-spinner.c:67
@@ -570,57 +667,336 @@ msgstr ""
 msgid "Time Entry"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:57
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear"
 msgstr "Цэвэрлэ"
 
-#: beast-gtk/bstpartdialog.c:57
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear the current selection"
 msgstr "Энэ сонголтыг цэвэрлэ"
 
-#: beast-gtk/bstpartdialog.c:58
+#: beast-gtk/bstpartdialog.c:61
 msgid "Cut"
 msgstr "Хайчла"
 
-#: beast-gtk/bstpartdialog.c:58
+#: beast-gtk/bstpartdialog.c:61
 msgid "Move the current selection into clipboard"
 msgstr "Энэ сонголтыг клипборд руу зөө"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy"
 msgstr "Хуул"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy the current selection into clipboard"
 msgstr "Энэ сонголтыг клипборд руу хуул"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:63
 msgid "Paste"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:63
 msgid "Insert clipboard contents as current selection"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:63
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo"
 msgstr "Буцаа"
 
-#: beast-gtk/bstpartdialog.c:63
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo last editing step"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:64
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:64
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo the last undone editing step"
 msgstr ""
 
 #: beast-gtk/bstpartview.c:41 beast-gtk/bstwaveview.c:47
 msgid "Editor"
 msgstr "Засварлагч"
+
+#: beast-gtk/bstpatterncolumns.c:683
+msgid ""
+"The pattern editor column layout is specified by listing column types with "
+"possible modifiers in display order."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:685
+msgid "COLUMN TYPES:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:687
+msgid "note-1, note-2, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:688
+msgid "  display notes of the first, second, ... channel"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:690
+msgid "offset-1, length-2, velocity-3, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:691
+msgid ""
+"  display offset, length or velocity of notes in the first, second, ... "
+"channel"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:693
+msgid "control-0, ..., control-63, cc-0, cc-31"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:694
+msgid "  select various event types (controls, continuous controllers)"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:696
+msgid "bar, |"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:697
+msgid "  display solid vertical bar"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:699
+msgid "dbar, :"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:700
+msgid "  display dotted vertical bar"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:702
+msgid "space, _"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:703
+msgid "  insert vertical space"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:704
+msgid "EVENTS:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:706
+msgid "  balance, volume, cc-8, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:707
+msgid "MODIFIERS:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:709
+msgid "hex2, hex4"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:710
+msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:712
+msgid "shex2, shex4"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:713
+msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:715
+msgid "dec2, dec3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:716
+msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:718
+msgid "sdec2, sdec3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:719
+msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:721
+msgid "col1, col2, col3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:722
+msgid "  selects one of 3 predefined colors"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:724
+msgid "lfold, rfold"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:725
+msgid "  allow folding the column into left/right neighbour"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:726
+msgid "EXAMPLE:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:728
+msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+msgstr ""
+
+#. GXK_DIALOG_MODAL
+#: beast-gtk/bstpatterncolumns.c:738
+msgid "Pattern Editor Layout"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:79 beast-gtk/dialogs/gadgets-beast.xml.h:21
+msgid "VZoom"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:80
+msgid "The tick/note length per line"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:83
+#, fuzzy
+msgid "Steps"
+msgstr "_Зогсоо"
+
+#: beast-gtk/bstpatternctrl.c:84
+msgid ""
+"The number of cells to move across each time an event or note was edited"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:88
+#, fuzzy
+msgid "Direction"
+msgstr "Тайлбар"
+
+#: beast-gtk/bstpatternctrl.c:89
+msgid "The direction of cell movement each time an event or note was edited"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:93
+msgid "HWrap"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:94
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:97
+#, fuzzy
+msgid "Base Octave"
+msgstr "Урсгал"
+
+#: beast-gtk/bstpatternctrl.c:98
+msgid "Controls the octave relative to which notes are entered"
+msgstr ""
+
+#. movement
+#: beast-gtk/bstpatternctrl.c:265
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:266
+msgid "Move focus cell upwards"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:267
+msgid "Move focus cell to the left"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:268
+msgid "Move focus cell to the right"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:269
+msgid "Move focus cell downwards"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:270
+msgid "Move focus cell upwards page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:271
+msgid "Move focus cell to the left page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:272
+msgid "Move focus cell to the right page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:273
+msgid "Move focus cell downwards page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:274
+msgid "Set the focus cell to the topmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:275
+msgid "Set the focus cell to the leftmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:276
+msgid "Set the focus cell to the rightmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:277
+msgid "Set the focus cell to the bottommost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:280
+msgid "Set the number of steps to make when moving to the next cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:284
+msgid "Set the base octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:287
+msgid "Change the base octave by a given amount"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:291
+msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:295
+msgid "Set the focus cell octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:299 beast-gtk/bstpatternctrl.c:313
+msgid "Remove any events in the focus cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:303 beast-gtk/bstpatternctrl.c:317
+#, fuzzy
+msgid "Set the focus cell note"
+msgstr "Бүтэн нот оруул"
+
+#: beast-gtk/bstpatternctrl.c:307 beast-gtk/bstpatternctrl.c:321
+msgid "Sets the value of the focus digit"
+msgstr ""
 
 #: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert"
@@ -788,13 +1164,18 @@ msgstr "Нотыг тогло"
 msgid "Playback"
 msgstr ""
 
-#: beast-gtk/bstpreferences.c:69
-msgid "Skin"
+#: beast-gtk/bstpreferences.c:76
+#, fuzzy
+msgid "Piano Keys"
+msgstr "Төгөлдөр хуурын нот"
+
+#: beast-gtk/bstpreferences.c:83
+msgid "Generic Keys"
 msgstr ""
 
-#: beast-gtk/bstprocedure.c:206
-msgid "Description"
-msgstr "Тайлбар"
+#: beast-gtk/bstpreferences.c:88
+msgid "Skin"
+msgstr ""
 
 #: beast-gtk/bstprocedure.c:296
 #, c-format
@@ -826,7 +1207,7 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Edit"
 msgstr "_Засварла"
 
@@ -858,9 +1239,382 @@ msgstr "Хэвтээгээр тана"
 msgid "Shrink Vertically"
 msgstr "Босоогоор тана"
 
-#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:55
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:78
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:35
+msgid "Up"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:35
+#, fuzzy
+msgid "Move upwards"
+msgstr "Хэсгийг зөө"
+
+#: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "Зүүн"
+
+#: beast-gtk/bstrecords.idl:36
+#, fuzzy
+msgid "Move to the left"
+msgstr "Нотыг зөө"
+
+#: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "Баруун"
+
+#: beast-gtk/bstrecords.idl:37
+#, fuzzy
+msgid "Move to the right"
+msgstr "Нотыг зөө"
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Down"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Step downwards"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:42
+#, fuzzy
+msgid "None"
+msgstr "Бай алга"
+
+#: beast-gtk/bstrecords.idl:42
+msgid "Unspecified length"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:43
+#, fuzzy
+msgid "1/1"
+msgstr "1\\/1"
+
+#: beast-gtk/bstrecords.idl:43
+#, fuzzy
+msgid "Whole note"
+msgstr "Нотыг тогло"
+
+#: beast-gtk/bstrecords.idl:44
+#, fuzzy
+msgid "1/2"
+msgstr "1\\/2"
+
+#: beast-gtk/bstrecords.idl:44
+#, fuzzy
+msgid "Half note"
+msgstr "Нотыг тогло"
+
+#: beast-gtk/bstrecords.idl:45
+#, fuzzy
+msgid "1/4"
+msgstr "1\\/4"
+
+#: beast-gtk/bstrecords.idl:45
+#, fuzzy
+msgid "Quarter note"
+msgstr "Дөрөвтийн нот оруул"
+
+#: beast-gtk/bstrecords.idl:46
+#, fuzzy
+msgid "1/8"
+msgstr "1\\/8"
+
+#: beast-gtk/bstrecords.idl:46
+#, fuzzy
+msgid "Eighths note"
+msgstr "Наймтын нот оруул"
+
+#: beast-gtk/bstrecords.idl:47
+#, fuzzy
+msgid "1/16"
+msgstr "1\\/16"
+
+#: beast-gtk/bstrecords.idl:47
+#, fuzzy
+msgid "Sixteenth note"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstrecords.idl:48
+#, fuzzy
+msgid "1/32"
+msgstr "1\\/2"
+
+#: beast-gtk/bstrecords.idl:48
+#, fuzzy
+msgid "Thirtysecondth note"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstrecords.idl:49
+#, fuzzy
+msgid "1/64"
+msgstr "1\\/4"
+
+#: beast-gtk/bstrecords.idl:49
+msgid "Sixtyfourth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:50
+#, fuzzy
+msgid "1/1."
+msgstr "1\\/1"
+
+#: beast-gtk/bstrecords.idl:50
+msgid "Dotted whole note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:51
+#, fuzzy
+msgid "1/2."
+msgstr "1\\/2"
+
+#: beast-gtk/bstrecords.idl:51
+#, fuzzy
+msgid "Dotted half note"
+msgstr "Хагас нот оруул"
+
+#: beast-gtk/bstrecords.idl:52
+#, fuzzy
+msgid "1/4."
+msgstr "1\\/4"
+
+#: beast-gtk/bstrecords.idl:52
+#, fuzzy
+msgid "Dotted quarter note"
+msgstr "Дөрөвтийн нот оруул"
+
+#: beast-gtk/bstrecords.idl:53
+#, fuzzy
+msgid "1/8."
+msgstr "1\\/8"
+
+#: beast-gtk/bstrecords.idl:53
+#, fuzzy
+msgid "Dotted eighths note"
+msgstr "Наймтын нот оруул"
+
+#: beast-gtk/bstrecords.idl:54
+#, fuzzy
+msgid "1/16."
+msgstr "1\\/16"
+
+#: beast-gtk/bstrecords.idl:54
+#, fuzzy
+msgid "Dotted sixteenth note"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstrecords.idl:55
+#, fuzzy
+msgid "1/32."
+msgstr "1\\/2"
+
+#: beast-gtk/bstrecords.idl:55
+msgid "Dotted thirtysecondth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:56
+#, fuzzy
+msgid "1/64."
+msgstr "1\\/4"
+
+#: beast-gtk/bstrecords.idl:56
+msgid "Dotted sixtyfourth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:57
+#, fuzzy
+msgid "1/1T"
+msgstr "1\\/1"
+
+#: beast-gtk/bstrecords.idl:57
+msgid "Triplet whole note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:58
+#, fuzzy
+msgid "1/2T"
+msgstr "1\\/2"
+
+#: beast-gtk/bstrecords.idl:58
+#, fuzzy
+msgid "Triplet half note"
+msgstr "Хагас нот оруул"
+
+#: beast-gtk/bstrecords.idl:59
+#, fuzzy
+msgid "1/4T"
+msgstr "1\\/4"
+
+#: beast-gtk/bstrecords.idl:59
+#, fuzzy
+msgid "Triplet quarter note"
+msgstr "Дөрөвтийн нот оруул"
+
+#: beast-gtk/bstrecords.idl:60
+#, fuzzy
+msgid "1/8T"
+msgstr "1\\/8"
+
+#: beast-gtk/bstrecords.idl:60
+#, fuzzy
+msgid "Triplet eighths note"
+msgstr "Наймтын нот оруул"
+
+#: beast-gtk/bstrecords.idl:61
+#, fuzzy
+msgid "1/16T"
+msgstr "1\\/16"
+
+#: beast-gtk/bstrecords.idl:61
+#, fuzzy
+msgid "Triplet sixteenth note"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstrecords.idl:62
+#, fuzzy
+msgid "1/32T"
+msgstr "1\\/2"
+
+#: beast-gtk/bstrecords.idl:62
+msgid "Triplet thirtysecondth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:63
+#, fuzzy
+msgid "1/64T"
+msgstr "1\\/4"
+
+#: beast-gtk/bstrecords.idl:63
+#, fuzzy
+msgid "Triplet sixtyfourth note"
+msgstr "Арван зургаатын нот оруул"
+
+#: beast-gtk/bstrecords.idl:68
+#, fuzzy
+msgid "Release counter"
+msgstr "Нотын хэмжээг өөрчил"
+
+#: beast-gtk/bstrecords.idl:70
+msgid "Font Size"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:70
+msgid "Font size in pixels for labels displayed in synthesis networks"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:72
+msgid "Anti-Alias"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:72
+msgid "Draw synthesis networks anti-aliased?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:74
+msgid "Single Edit"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:74
+msgid "Fallback into Edit mode after creating synthesis modules?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:76
+msgid "Swap IO"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:76
+msgid "Swap input with output channels when displaying synthesis modules?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:80
+msgid "Tab Width"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:80
+msgid "Specify project tab width in pixels"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:82
+msgid "Homogeneous Input Fields"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:83
+msgid ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:91
+#, fuzzy
+msgid "Skin Name"
+msgstr "Нэр"
+
+#: beast-gtk/bstrecords.idl:91
+msgid "Name for the current skin configuration (used for skin selections)."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:93 beast-gtk/bstrecords.idl:103
+msgid "Background Image"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:93
+msgid "Background image used by the piano-roll widget."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
+msgid "Image shade"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
+msgid "Percentage of background image pixel to blend over background color."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:95 beast-gtk/bstrecords.idl:105
+msgid "Background Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
+#, fuzzy
+msgid "Horizontal Bar Color"
+msgstr "Хэвтээгээр өсгө"
+
+#: beast-gtk/bstrecords.idl:97
+#, fuzzy
+msgid "Vertical Bar Color"
+msgstr "Босоо сонголт"
+
+#: beast-gtk/bstrecords.idl:98
+#, fuzzy
+msgid "Horizontal Grid Color"
+msgstr "Хэвтээгээр өсгө"
+
+#: beast-gtk/bstrecords.idl:99
+#, fuzzy
+msgid "Vertical Grid Color"
+msgstr "Босоо бүс"
+
+#: beast-gtk/bstrecords.idl:100 beast-gtk/bstrecords.idl:107
+msgid "Middle Bar Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:103
+msgid "Background image used by the control events widget."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:108
+msgid "Positive Value Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:109
+#, fuzzy
+msgid "Zero Value Color"
+msgstr "Сонго"
+
+#: beast-gtk/bstrecords.idl:110
+msgid "Negative Value Color"
 msgstr ""
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
@@ -1111,10 +1865,6 @@ msgid "Delete parts"
 msgstr "Хэсгүүдийг устга"
 
 #: beast-gtk/bsttrackrollctrl.c:64
-msgid "Left"
-msgstr "Зүүн"
-
-#: beast-gtk/bsttrackrollctrl.c:64
 msgid "Use the horizontal ruler to adjust the left loop pointer"
 msgstr ""
 
@@ -1125,10 +1875,6 @@ msgstr "Байрлал"
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Use the horizontal ruler to adjust the play position pointer"
 msgstr ""
-
-#: beast-gtk/bsttrackrollctrl.c:68
-msgid "Right"
-msgstr "Баруун"
 
 #: beast-gtk/bsttrackrollctrl.c:68
 msgid "Use the horizontal ruler to adjust the right loop pointer"
@@ -1255,166 +2001,199 @@ msgid "Edit the currently selected wave"
 msgstr "Энэ сонголтыг цэвэрлэ"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
-msgid "Adjust the zoom factor of the router display"
+msgid "Adjust pattern length"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:2
-msgid "Control Type:"
-msgstr "Удирдлагын төрөл:"
+msgid "Adjust right view boundary"
+msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:3
-msgid "Development"
-msgstr "Хөгжүүлэлт"
+msgid "Adjust the zoom factor of the router display"
+msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:4
-msgid "E_xamples"
-msgstr "Ж_ишээнүүд"
+msgid "Aplly configuration changes to the pattern editor layout"
+msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:5
-msgid "Events"
+msgid "Configure"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:6
-msgid "HZoom"
+msgid "Configure the column layout of the pattern editor"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:7
-msgid "Horizontal piano zoom"
-msgstr ""
+msgid "Control Type:"
+msgstr "Удирдлагын төрөл:"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:8
-msgid "Horizontal track zoom"
-msgstr ""
+msgid "Development"
+msgstr "Хөгжүүлэлт"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:9
-msgid "Note _Length"
-msgstr "Нотын урт"
+msgid "Discard changes and close dialog"
+msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:10
-msgid "Piano Notes"
-msgstr "Төгөлдөр хуурын нот"
+msgid "E_xamples"
+msgstr "Ж_ишээнүүд"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:11
-msgid "Repeat"
-msgstr "Давт"
+msgid "Events"
+msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:12
-msgid "Repeat playback within loop points"
+msgid "HZoom"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:13
-msgid "Synthesis Modules"
+msgid "Horizontal piano zoom"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:14
-msgid "VZoom"
+msgid "Horizontal track zoom"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:15
-msgid "Vertical piano zoom"
+msgid "Layout:"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:16
-msgid "Virtual Rack"
-msgstr ""
+msgid "Note _Length"
+msgstr "Нотын урт"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:17
-msgid "Wave_s"
-msgstr ""
+msgid "Piano Notes"
+msgstr "Төгөлдөр хуурын нот"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:18
-msgid "Zoom"
-msgstr ""
+msgid "Repeat"
+msgstr "Давт"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:19
-msgid "_Audio Sources"
+msgid "Repeat playback within loop points"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:20
-msgid "_Demo"
+msgid "Synthesis Modules"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:21
-msgid "_Distortion"
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+msgid "Vertical piano zoom"
 msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:23
+msgid "Virtual Rack"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+msgid "Wave_s"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+msgid "Zoom"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+msgid "_Apply"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+msgid "_Audio Sources"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#, fuzzy
+msgid "_Cancel"
+msgstr "_Өсгө"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+msgid "_Demo"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+msgid "_Distortion"
+msgstr ""
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
 msgid "_Enhance"
 msgstr "_Өсгө"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_File"
 msgstr "_Файл"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
 msgid "_Filters"
 msgstr "_Шүүлтүүрүүд"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Help"
 msgstr "_Тусламж"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Input & Output"
 msgstr "_Орол ба гаралт"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_LADSPA"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Misc"
 msgstr "_Төрөл бүр"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Other Sources"
 msgstr "_Бусад эхүүд"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_Project"
 msgstr "_Төсөл"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_Quantization"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/gadgets-beast.xml.h:42
 msgid "_Routing"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/gadgets-beast.xml.h:43
 msgid "_Skins"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:44
 msgid "_Song"
 msgstr "_Дуу"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:45
 msgid "_Spatial"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:46
 msgid "_Synth"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:47
 msgid "_Synthesizers"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:48
 msgid "_Tools"
 msgstr "_Хэрэгслүүд"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:49
 msgid "_Utilities"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/gadgets-beast.xml.h:50
 msgid "_View"
 msgstr "_Үзэмж"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:42
+#: beast-gtk/dialogs/gadgets-beast.xml.h:51
 msgid "_Virtualization"
 msgstr ""
 
@@ -1482,7 +2261,12 @@ msgstr ""
 msgid "Text Entry"
 msgstr ""
 
-#: beast-gtk/gxk/gxkparam-label.c:49
+#: beast-gtk/gxk/gxkparam-label.c:66
+#, fuzzy
+msgid "Property Identifier"
+msgstr "Шинжүүд"
+
+#: beast-gtk/gxk/gxkparam-label.c:72
 #, fuzzy
 msgid "Property Name"
 msgstr "Шинжүүд"
@@ -1506,11 +2290,11 @@ msgstr ""
 msgid "Vertical Scale (Logarithmic)"
 msgstr "Босоо сонголт"
 
-#: beast-gtk/gxk/gxkparam-spinner.c:74
+#: beast-gtk/gxk/gxkparam-spinner.c:82
 msgid "Spin Button"
 msgstr ""
 
-#: beast-gtk/gxk/gxkparam-spinner.c:80
+#: beast-gtk/gxk/gxkparam-spinner.c:88
 msgid "Spin Button (Logarithmic)"
 msgstr ""
 
@@ -1577,16 +2361,24 @@ msgstr ""
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 
-#: bse/bseamplifier.idl:32 plugins/bsebalance.idl:26
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/gxk/gxksimplelabel.c:575
+#, fuzzy
+msgid "..."
+msgstr "Сан..."
+
+#: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
 msgid "GNU Lesser General Public License"
 msgstr ""
 
-#: bse/bseamplifier.idl:33
+#: bse/bseamplifier.idl:31
 msgid "/Routing/Amplifier"
 msgstr ""
 
-#: bse/bseamplifier.idl:34
+#: bse/bseamplifier.idl:32
 msgid ""
 "BseAmplifier provides input signal controlled amplification or attenuation. "
 "It supports two control inputs and two audio inputs which are mixed together "
@@ -1599,190 +2391,195 @@ msgid ""
 "the master volume controls amplification of the resulting output signal."
 msgstr ""
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:45 plugins/bseadder.c:100 plugins/bsebalance.idl:36
+#: plugins/bsemult.c:60
 #, fuzzy
 msgid "Audio In1"
 msgstr "Аудио"
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:45 plugins/bsebalance.idl:36
 msgid "First audio input"
 msgstr ""
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:46 plugins/bseadder.c:102 plugins/bsebalance.idl:37
+#: plugins/bsemult.c:62
 #, fuzzy
 msgid "Audio In2"
 msgstr "Аудио"
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:37
 msgid "Second audio input"
 msgstr ""
 
-#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:38
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
 msgid "Ctrl In1"
 msgstr ""
 
-#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:38
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
 msgid "First control input"
 msgstr ""
 
-#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:39
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
 msgid "Ctrl In2"
 msgstr ""
 
-#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:39
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
 msgid "Second control input"
 msgstr ""
 
-#: bse/bseamplifier.idl:51 plugins/artscompressor.idl:33
-#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:32
-#: plugins/evaluator/bseevaluator.idl:33
+#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:198 bse/bsestandardosc.c:207
+#: bse/bsewaveosc.c:161 plugins/artscompressor.idl:33 plugins/bseadder.c:104
+#: plugins/bseatandistort.c:92 plugins/bseiirfilter.c:162
+#: plugins/bsemixer.c:109 plugins/bsemult.c:68 plugins/davbassfilter.idl:35
+#: plugins/davchorus.idl:32 plugins/davorgan.c:133 plugins/davsyndrum.c:122
+#: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
 #, fuzzy
 msgid "Audio Out"
 msgstr "Аудио"
 
-#: bse/bseamplifier.idl:51
+#: bse/bseamplifier.idl:49
 msgid "Amplified audio output"
 msgstr ""
 
-#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:43
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:43
 #, fuzzy
 msgid "Audio Input"
 msgstr "Оролт"
 
-#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:44
+#: bse/bseamplifier.idl:51 bse/bseamplifier.idl:56 plugins/bsebalance.idl:44
 #: plugins/bsebalance.idl:49
 #, fuzzy
 msgid "Input 1 [%]"
 msgstr "Оролт"
 
-#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:44
+#: bse/bseamplifier.idl:51 plugins/bsebalance.idl:44
 msgid "Attenuate the level of audio input 1"
 msgstr ""
 
-#: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:45
+#: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:45
 #: plugins/bsebalance.idl:50
 #, fuzzy
 msgid "Input 2 [%]"
 msgstr "Оролт"
 
-#: bse/bseamplifier.idl:54 plugins/bsebalance.idl:45
+#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:45
 msgid "Attenuate the level of audio input 2"
 msgstr ""
 
-#: bse/bseamplifier.idl:55 bse/bseamplifier.idl:60 plugins/bsebalance.idl:46
+#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:46
 #: plugins/bsebalance.idl:51
 msgid "Balance"
 msgstr ""
 
-#: bse/bseamplifier.idl:55 plugins/bsebalance.idl:46
+#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:46
 msgid "Balance audio input levels"
 msgstr ""
 
-#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:48
+#: bse/bseamplifier.idl:55 plugins/bsebalance.idl:48
 #, fuzzy
 msgid "Control Input"
 msgstr "Удирдлагын төрөл:"
 
-#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:49
+#: bse/bseamplifier.idl:56 plugins/bsebalance.idl:49
 msgid "Attenuate the level of control input 1"
 msgstr ""
 
-#: bse/bseamplifier.idl:59 plugins/bsebalance.idl:50
+#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:50
 msgid "Attenuate the level of control input 2"
 msgstr ""
 
-#: bse/bseamplifier.idl:60 plugins/bsebalance.idl:51
+#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:51
 msgid "Balance control input levels"
 msgstr ""
 
-#: bse/bseamplifier.idl:61
+#: bse/bseamplifier.idl:59
 msgid "Multiply Controls"
 msgstr ""
 
-#: bse/bseamplifier.idl:62
+#: bse/bseamplifier.idl:60
 msgid ""
 "Switch the two control inputs to work like a chain of gain controls, rather "
 "than mixing them together, weighted by balance."
 msgstr ""
 
-#: bse/bseamplifier.idl:65
+#: bse/bseamplifier.idl:63
 msgid "Exponential Control"
 msgstr ""
 
-#: bse/bseamplifier.idl:65
+#: bse/bseamplifier.idl:63
 msgid "Toggle exponential and linear control response"
 msgstr ""
 
-#: bse/bseamplifier.idl:68 plugins/bsebalance.idl:54
+#: bse/bseamplifier.idl:66 plugins/bsebalance.idl:54
 #, fuzzy
 msgid "Control Strength"
 msgstr "Удирдлагын төрөл:"
 
-#: bse/bseamplifier.idl:68
+#: bse/bseamplifier.idl:66
 msgid "Adjust how much the control signals affect the output volume"
 msgstr ""
 
-#: bse/bseamplifier.idl:69
+#: bse/bseamplifier.idl:67
 msgid "Base Volume"
 msgstr ""
 
-#: bse/bseamplifier.idl:69
+#: bse/bseamplifier.idl:67
 msgid "Base amplification (the control signal adds up to this)"
 msgstr ""
 
-#: bse/bseamplifier.idl:70
+#: bse/bseamplifier.idl:68
 msgid "Master Volume"
 msgstr ""
 
-#: bse/bseamplifier.idl:70
+#: bse/bseamplifier.idl:68
 msgid "Output stage amplification"
 msgstr ""
 
-#: bse/bseautodoc.c:397 bse/bseautodoc.c:399
+#: bse/bseautodoc.c:360 bse/bseautodoc.c:422
+msgid "Authors:"
+msgstr ""
+
+#: bse/bseautodoc.c:365 bse/bseautodoc.c:425
+msgid "License:"
+msgstr ""
+
+#: bse/bseautodoc.c:408 bse/bseautodoc.c:410
 #, fuzzy
 msgid "BSE-Objects"
 msgstr "Обьект"
 
-#: bse/bseautodoc.c:399
+#: bse/bseautodoc.c:410
 msgid " Object Reference"
 msgstr ""
 
-#: bse/bseautodoc.c:411
-msgid "Authors:"
-msgstr ""
-
-#: bse/bseautodoc.c:414
-msgid "License:"
-msgstr ""
-
-#: bse/bseautodoc.c:418
+#: bse/bseautodoc.c:429
 #, fuzzy
 msgid "Properties:"
 msgstr "Шинжүүд"
 
-#: bse/bseautodoc.c:444 bse/bseautodoc.c:477 bse/bseautodoc.c:494
+#: bse/bseautodoc.c:455 bse/bseautodoc.c:488 bse/bseautodoc.c:505
 msgid "Identifier:"
 msgstr ""
 
-#: bse/bseautodoc.c:449 bse/bseautodoc.c:455
+#: bse/bseautodoc.c:460 bse/bseautodoc.c:466
 msgid "Range:"
 msgstr ""
 
-#: bse/bseautodoc.c:459 bse/bseautodoc.c:480 bse/bseautodoc.c:497
+#: bse/bseautodoc.c:470 bse/bseautodoc.c:491 bse/bseautodoc.c:508
 #, fuzzy
 msgid "Description:"
 msgstr "Тайлбар"
 
-#: bse/bseautodoc.c:469
+#: bse/bseautodoc.c:480
 #, fuzzy
 msgid "Input Channels:"
 msgstr "Оролтын суваг ашиглагдаж байна"
 
-#: bse/bseautodoc.c:476
+#: bse/bseautodoc.c:487
 msgid "(Joint Input)"
 msgstr ""
 
-#: bse/bseautodoc.c:487
+#: bse/bseautodoc.c:498
 #, fuzzy
 msgid "Output Channels:"
 msgstr "Оролтын суваг ашиглагдаж байна"
@@ -1810,7 +2607,7 @@ msgstr ""
 msgid "Cutoff [Hz]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:146 bse/bsestandardosc.c:154
+#: bse/bsebiquadfilter.c:146 bse/bseconstant.c:133 bse/bsestandardosc.c:154
 #: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
 #, fuzzy
 msgid "Note"
@@ -1837,7 +2634,8 @@ msgstr ""
 #: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
 #: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
 #: bse/bsestandardosc.c:160 bse/bsestandardosc.c:166 bse/bsestandardosc.c:172
-#: bse/bsestandardosc.c:178
+#: bse/bsestandardosc.c:178 bse/bsewaveosc.c:131 bse/bsewaveosc.c:137
+#: bse/bsewaveosc.c:143
 #, fuzzy
 msgid "Modulation"
 msgstr "Байрлал"
@@ -1850,7 +2648,7 @@ msgstr ""
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175
+#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175 bse/bsewaveosc.c:146
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 
@@ -1863,8 +2661,22 @@ msgstr ""
 msgid "Strength of gain modulation"
 msgstr ""
 
+#: bse/bsebiquadfilter.c:190 plugins/artscompressor.idl:32
+#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:160
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
+#, fuzzy
+msgid "Audio In"
+msgstr "Аудио"
+
 #: bse/bsebiquadfilter.c:190
 msgid "Unfiltered Audio Signal"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199 bse/bsewaveosc.c:155
+#: plugins/davorgan.c:132 plugins/davsyndrum.c:116
+#: plugins/davxtalstrings.c:141
+msgid "Freq In"
 msgstr ""
 
 #: bse/bsebiquadfilter.c:192
@@ -1872,7 +2684,15 @@ msgid "Center Frequency Input"
 msgstr ""
 
 #: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
+msgid "Freq Mod In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Frequency Modulation Input"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:196
+msgid "Gain Mod In"
 msgstr ""
 
 #: bse/bsebiquadfilter.c:196
@@ -1881,6 +2701,217 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
+msgstr ""
+
+#: bse/bseconstant.c:111 bse/bseconstant.c:142
+#, c-format
+msgid "Constant Output %u"
+msgstr ""
+
+#: bse/bseconstant.c:114
+msgid "Value [float]"
+msgstr ""
+
+#: bse/bseconstant.c:122 bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
+#: bse/bsestandardosc.c:150
+msgid "Frequency"
+msgstr ""
+
+#: bse/bseconstant.c:141
+#, c-format
+msgid "Const Out%u"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
+msgid "Note Frequency"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
+msgid "Gate"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
+msgid "High if the note is currently being pressed"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
+msgid "Velocity"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
+msgid "Velocity of the note press"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
+msgid "Aftertouch"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
+msgid "Velocity while the note is pressed"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:106
+#, fuzzy
+msgid "Left Audio"
+msgstr "Зүүн"
+
+#: bse/bseinstrumentoutput.c:106
+#, fuzzy
+msgid "Left Channel Output"
+msgstr "Гаралтуудыг устга"
+
+#: bse/bseinstrumentoutput.c:108
+#, fuzzy
+msgid "Right Audio"
+msgstr "Баруун"
+
+#: bse/bseinstrumentoutput.c:108
+#, fuzzy
+msgid "Right Channel Output"
+msgstr "Баруун"
+
+#: bse/bseinstrumentoutput.c:110
+#, fuzzy
+msgid "Unused"
+msgstr "Буцаа"
+
+#: bse/bseinstrumentoutput.c:112
+msgid "Synth Done"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:112
+msgid "High indicates the instrument is done synthesizing"
+msgstr ""
+
+#: bse/bsemidicontroller.c:142
+#, fuzzy
+msgid "Ctrl Out1"
+msgstr "Удирдлагын төрөл:"
+
+#: bse/bsemidicontroller.c:142
+msgid "MIDI Signal 1"
+msgstr ""
+
+#: bse/bsemidicontroller.c:144
+#, fuzzy
+msgid "Ctrl Out2"
+msgstr "Удирдлагын төрөл:"
+
+#: bse/bsemidicontroller.c:144
+msgid "MIDI Signal 2"
+msgstr ""
+
+#: bse/bsemidicontroller.c:146
+#, fuzzy
+msgid "Ctrl Out3"
+msgstr "Удирдлагын төрөл:"
+
+#: bse/bsemidicontroller.c:146
+msgid "MIDI Signal 3"
+msgstr ""
+
+#: bse/bsemidicontroller.c:148
+#, fuzzy
+msgid "Ctrl Out4"
+msgstr "Удирдлагын төрөл:"
+
+#: bse/bsemidicontroller.c:148
+msgid "MIDI Signal 4"
+msgstr ""
+
+#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
+#, fuzzy
+msgid "Freq Out"
+msgstr "Зүүн"
+
+#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:163
+#, fuzzy
+msgid "Gate Out"
+msgstr "Зүүн"
+
+#: bse/bsemidivoice.c:113
+#, fuzzy
+msgid "Velocity Out"
+msgstr "Зүүн"
+
+#: bse/bsemidivoice.c:115
+msgid "Aftertouch Out"
+msgstr ""
+
+#: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
+#, fuzzy
+msgid "Left In"
+msgstr "Зүүн"
+
+#: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
+#, fuzzy
+msgid "Right In"
+msgstr "Баруун"
+
+#: bse/bsemidivoice.c:137
+msgid "Disconnect In"
+msgstr ""
+
+#: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
+#: plugins/davcanyondelay.c:120
+#, fuzzy
+msgid "Left Out"
+msgstr "Зүүн"
+
+#: bse/bsemidivoice.c:141 plugins/bsebalance.idl:42
+#: plugins/davcanyondelay.c:122
+#, fuzzy
+msgid "Right Out"
+msgstr "Баруун"
+
+#: bse/bsemidivoice.c:143
+msgid "Disconnect Out"
+msgstr ""
+
+#: bse/bsepcminput.c:133 plugins/artscompressor.idl:51
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Audio Out"
+msgstr ""
+
+#: bse/bsepcminput.c:133
+msgid "Left channel output"
+msgstr ""
+
+#: bse/bsepcminput.c:135 plugins/artscompressor.idl:52
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Audio Out"
+msgstr ""
+
+#: bse/bsepcminput.c:135
+msgid "Right channel output"
+msgstr ""
+
+#: bse/bsepcmoutput.c:133 plugins/artscompressor.idl:49
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Audio In"
+msgstr ""
+
+#: bse/bsepcmoutput.c:133
+#, fuzzy
+msgid "Left channel input"
+msgstr "Оролтын суваг ашиглагдаж байна"
+
+#: bse/bsepcmoutput.c:135 plugins/artscompressor.idl:50
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Audio In"
+msgstr ""
+
+#: bse/bsepcmoutput.c:135
+#, fuzzy
+msgid "Right channel Input"
+msgstr "Оролтын суваг ашиглагдаж байна"
+
+#: bse/bsesnooper.c:113
+msgid "Signal In"
+msgstr ""
+
+#: bse/bsesnooper.c:113
+msgid "Snoop Signal"
 msgstr ""
 
 #: bse/bsestandardosc.c:111
@@ -1897,7 +2928,7 @@ msgstr ""
 msgid "Wave Form"
 msgstr ""
 
-#: bse/bsestandardosc.c:139
+#: bse/bsestandardosc.c:139 bse/bsewaveosc.c:127 bse/bsewaveosc.c:129
 #, fuzzy
 msgid "Wave"
 msgstr "Урсгал"
@@ -1915,23 +2946,19 @@ msgstr "Хэсгүүд"
 msgid "Base Frequency"
 msgstr ""
 
-#: bse/bsestandardosc.c:150
-msgid "Frequency"
-msgstr ""
-
 #: bse/bsestandardosc.c:157
 msgid "Fine Tune"
 msgstr ""
 
-#: bse/bsestandardosc.c:162
+#: bse/bsestandardosc.c:162 bse/bsewaveosc.c:133
 msgid "Input Modulation [%]"
 msgstr ""
 
-#: bse/bsestandardosc.c:168
+#: bse/bsestandardosc.c:168 bse/bsewaveosc.c:139
 msgid "Exponential FM"
 msgstr ""
 
-#: bse/bsestandardosc.c:174
+#: bse/bsestandardosc.c:174 bse/bsewaveosc.c:145
 #, fuzzy
 msgid "Octaves"
 msgstr "Урсгал"
@@ -1973,10 +3000,18 @@ msgid "Oscillating Frequency Input"
 msgstr ""
 
 #: bse/bsestandardosc.c:203
+msgid "PWM In"
+msgstr ""
+
+#: bse/bsestandardosc.c:203
 msgid "Pulse Width Modulation Input"
 msgstr ""
 
-#: bse/bsestandardosc.c:205
+#: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
+msgid "Sync In"
+msgstr ""
+
+#: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
 msgid "Syncronization Input"
 msgstr ""
 
@@ -1986,7 +3021,64 @@ msgid "Oscillated Output"
 msgstr "Гаралтуудыг устга"
 
 #: bse/bsestandardosc.c:209
+msgid "Sync Out"
+msgstr ""
+
+#: bse/bsestandardosc.c:209
 msgid "Syncronization Output"
+msgstr ""
+
+#: bse/bsesubiport.c:127 bse/bsesubsynth.c:137
+#, fuzzy, c-format
+msgid "Input Port %u"
+msgstr "Оролт"
+
+#: bse/bsesubiport.c:129 bse/bsesuboport.c:129 bse/bsesubsynth.c:127
+msgid "Assignments"
+msgstr ""
+
+#: bse/bsesubiport.c:131 bse/bsesuboport.c:131
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr ""
+
+#: bse/bsesubiport.c:139 bse/bsesubsynth.c:157
+#, c-format
+msgid "Virtual input %u"
+msgstr ""
+
+#: bse/bsesuboport.c:127 bse/bsesubsynth.c:147
+#, fuzzy, c-format
+msgid "Output Port %u"
+msgstr "Гаралт"
+
+#: bse/bsesuboport.c:139 bse/bsesubsynth.c:164
+#, c-format
+msgid "Virtual output %u"
+msgstr ""
+
+#: bse/bsesubsynth.c:129
+msgid "Synthesis Network"
+msgstr ""
+
+#: bse/bsesubsynth.c:130
+msgid "The synthesis network to interface to"
+msgstr ""
+
+#: bse/bsesubsynth.c:139
+msgid "Input Assignments"
+msgstr ""
+
+#: bse/bsesubsynth.c:140
+msgid "Output port name to interface from"
+msgstr ""
+
+#: bse/bsesubsynth.c:149
+msgid "Output Assignments"
+msgstr ""
+
+#: bse/bsesubsynth.c:150
+msgid "Input port name to interface to"
 msgstr ""
 
 #: bse/bsesuper.c:101
@@ -2013,16 +3105,52 @@ msgstr ""
 msgid "Last modification time"
 msgstr ""
 
+#: bse/bsewaveosc.c:129
+msgid "Wave to play"
+msgstr ""
+
+#: bse/bsewaveosc.c:134
+msgid "Modulation Strength for linear frequency modulation"
+msgstr ""
+
+#: bse/bsewaveosc.c:140
+msgid "Perform exponential frequency modulationinstead of linear"
+msgstr ""
+
+#: bse/bsewaveosc.c:155 plugins/davorgan.c:132
+msgid "Frequency Input"
+msgstr ""
+
+#: bse/bsewaveosc.c:159
+#, fuzzy
+msgid "Mod In"
+msgstr "Модулийн мэдээлэл"
+
+#: bse/bsewaveosc.c:159
+#, fuzzy
+msgid "Modulation Input"
+msgstr "Байрлал"
+
+#: bse/bsewaveosc.c:161
+#, fuzzy
+msgid "Wave Output"
+msgstr "Гаралт"
+
+#: bse/bsewaveosc.c:163
+#, fuzzy
+msgid "Gate Output"
+msgstr "Гаралтуудыг устга"
+
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr ""
 
 #: data/beast.desktop.in.h:2
-msgid "Music Composer"
+msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr ""
 
 #: data/beast.desktop.in.h:3
-msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
+msgid "Music Composer"
 msgstr ""
 
 #: data/bse.keys.in.h:1
@@ -2049,12 +3177,6 @@ msgstr ""
 #: plugins/artscompressor.idl:31
 msgid "ArtsCompressor compresses the sound."
 msgstr ""
-
-#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
-#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
-#, fuzzy
-msgid "Audio In"
-msgstr "Аудио"
 
 #: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
 #: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
@@ -2112,15 +3234,7 @@ msgid "ArtsStereoCompressor compresses the sound."
 msgstr ""
 
 #: plugins/artscompressor.idl:49
-msgid "Left Audio In"
-msgstr ""
-
-#: plugins/artscompressor.idl:49
 msgid "Left audio input"
-msgstr ""
-
-#: plugins/artscompressor.idl:50
-msgid "Right Audio In"
 msgstr ""
 
 #: plugins/artscompressor.idl:50
@@ -2128,20 +3242,37 @@ msgid "Right audio input"
 msgstr ""
 
 #: plugins/artscompressor.idl:51
-msgid "Left Audio Out"
-msgstr ""
-
-#: plugins/artscompressor.idl:51
 msgid "Compressed left audio output"
-msgstr ""
-
-#: plugins/artscompressor.idl:52
-msgid "Right Audio Out"
 msgstr ""
 
 #: plugins/artscompressor.idl:52
 msgid "Compressed right audio output"
 msgstr ""
+
+#: plugins/bseadder.c:100 plugins/bsemult.c:60
+#, fuzzy
+msgid "Audio Input 1"
+msgstr "Оролт"
+
+#: plugins/bseadder.c:102 plugins/bsemult.c:62
+#, fuzzy
+msgid "Audio Input 2"
+msgstr "Оролт"
+
+#: plugins/bseadder.c:104 plugins/bsemult.c:68
+#, fuzzy
+msgid "Audio Output"
+msgstr "Аудио"
+
+#: plugins/bseatandistort.c:90
+#, fuzzy
+msgid "Audio Input SIgnal"
+msgstr "Оролт"
+
+#: plugins/bseatandistort.c:92
+#, fuzzy
+msgid "Distorted Audio Output"
+msgstr "Гаралтуудыг устга"
 
 #: plugins/bsebalance.idl:27
 msgid "/Spatial/Balance"
@@ -2157,11 +3288,6 @@ msgid ""
 msgstr ""
 
 #: plugins/bsebalance.idl:40
-#, fuzzy
-msgid "Left Out"
-msgstr "Зүүн"
-
-#: plugins/bsebalance.idl:40
 msgid "Left audio output"
 msgstr ""
 
@@ -2172,11 +3298,6 @@ msgstr ""
 #: plugins/bsebalance.idl:41
 msgid "Mixed audio output"
 msgstr ""
-
-#: plugins/bsebalance.idl:42
-#, fuzzy
-msgid "Right Out"
-msgstr "Баруун"
 
 #: plugins/bsebalance.idl:42
 msgid "Right audio output"
@@ -2207,6 +3328,25 @@ msgstr "Гаралт"
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
 msgstr ""
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Out"
+msgstr ""
+
+#: plugins/bsefirfilter.c:143
+#, fuzzy
+msgid "Mono Filtered Output"
+msgstr "Гаралтуудыг устга"
+
+#: plugins/bsefirfilter.c:145
+#, fuzzy
+msgid "Mono In"
+msgstr "Удирдлагын төрөл:"
+
+#: plugins/bsefirfilter.c:145
+#, fuzzy
+msgid "Mono Signal Input"
+msgstr "Удирдлагын төрөл:"
 
 #: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
 msgid "Filter Choice"
@@ -2259,6 +3399,117 @@ msgstr "Оролтуудыг устга"
 msgid "Filtered Output"
 msgstr "Гаралтуудыг устга"
 
+#: plugins/bsemixer.c:109
+#, fuzzy
+msgid "Sole Output"
+msgstr "Гаралтуудыг устга"
+
+#: plugins/bsemixer.c:115
+#, c-format
+msgid "Channel%u"
+msgstr ""
+
+#: plugins/bsemixer.c:117
+#, c-format
+msgid "Channel%u [float]"
+msgstr ""
+
+#: plugins/bsemixer.c:127
+#, c-format
+msgid "Channel%u [dB]"
+msgstr ""
+
+#: plugins/bsemixer.c:138
+#, c-format
+msgid "Channel%u [%%]"
+msgstr ""
+
+#: plugins/bsemixer.c:149
+#, fuzzy, c-format
+msgid "Audio In%u"
+msgstr "Аудио"
+
+#: plugins/bsemixer.c:150
+#, fuzzy, c-format
+msgid "Input Channel %u"
+msgstr "Оролтын суваг ашиглагдаж байна"
+
+#: plugins/bsemult.c:64
+#, fuzzy
+msgid "Audio In3"
+msgstr "Аудио"
+
+#: plugins/bsemult.c:64
+#, fuzzy
+msgid "Audio Input 3"
+msgstr "Оролт"
+
+#: plugins/bsemult.c:66
+#, fuzzy
+msgid "Audio In4"
+msgstr "Аудио"
+
+#: plugins/bsemult.c:66
+#, fuzzy
+msgid "Audio Input 4"
+msgstr "Оролт"
+
+#: plugins/bsenoise.c:64
+msgid "Noise Out"
+msgstr ""
+
+#: plugins/bsenoise.c:64
+#, fuzzy
+msgid "Noise Output"
+msgstr "Гаралтуудыг устга"
+
+#: plugins/bsesequencer.c:107
+msgid "Frequency Signal"
+msgstr ""
+
+#: plugins/bsesequencer.c:109
+#, fuzzy
+msgid "Note Sync"
+msgstr "Нотын урт"
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync Signal"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate In"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate input (activates/deactivates envelope)"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger In"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger input (raising edge retriggers envelope)"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:122
+#, fuzzy
+msgid "Ctrl Out"
+msgstr "Удирдлагын төрөл:"
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Attack-Decay-Sustain-Release envelope output"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:124
+#, fuzzy
+msgid "Done Out"
+msgstr "Зүүн"
+
+#: plugins/bsesimpleadsr.c:124
+msgid "This signal goes high after the release phase has completed"
+msgstr ""
+
 #: plugins/davbassfilter.idl:29
 msgid "/Filters/Bass Filter"
 msgstr ""
@@ -2310,6 +3561,26 @@ msgstr ""
 msgid "Trigger filter"
 msgstr ""
 
+#: plugins/davcanyondelay.c:116
+#, fuzzy
+msgid "Left Audio Input"
+msgstr "Оролт"
+
+#: plugins/davcanyondelay.c:118
+#, fuzzy
+msgid "Right Audio Input"
+msgstr "Оролт"
+
+#: plugins/davcanyondelay.c:120
+#, fuzzy
+msgid "Left Audio Output"
+msgstr "Аудио"
+
+#: plugins/davcanyondelay.c:122
+#, fuzzy
+msgid "Right Audio Output"
+msgstr "Баруун"
+
 #: plugins/davchorus.idl:29
 #, fuzzy
 msgid "/Enhance/Chorus"
@@ -2330,6 +3601,55 @@ msgstr ""
 #: plugins/davchorus.idl:34
 msgid "Set the amount of modified data to mix"
 msgstr ""
+
+#: plugins/davguitar.c:302
+#, fuzzy
+msgid "Guitar Output"
+msgstr "Гаралтуудыг устга"
+
+#: plugins/davorgan.c:133
+#, fuzzy
+msgid "Organ Output"
+msgstr "Гаралт"
+
+#: plugins/davsyndrum.c:116
+msgid "Drum Frequency Input"
+msgstr ""
+
+#: plugins/davsyndrum.c:118
+#, fuzzy
+msgid "Ratio In"
+msgstr "Байрлал"
+
+#: plugins/davsyndrum.c:118
+msgid "Frequency shift ratio (assumed 1.0 if not connected)"
+msgstr ""
+
+#: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
+msgid "Trigger In"
+msgstr ""
+
+#: plugins/davsyndrum.c:120
+msgid "Hit the drum on raising edges"
+msgstr ""
+
+#: plugins/davsyndrum.c:122
+#, fuzzy
+msgid "SynDrum Output"
+msgstr "_Орол ба гаралт"
+
+#: plugins/davxtalstrings.c:141
+msgid "Pluck frequency input"
+msgstr ""
+
+#: plugins/davxtalstrings.c:143
+msgid "Pluck strings on raising edge"
+msgstr ""
+
+#: plugins/davxtalstrings.c:145
+#, fuzzy
+msgid "XtalStrings Output"
+msgstr "Гаралтуудыг устга"
 
 #: plugins/evaluator/bseevaluator.idl:28
 msgid "/Misc/Evaluator"
@@ -2363,3 +3683,29 @@ msgstr "Гараа:"
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr ""
+
+#: plugins/freeverb/bsefreeverb.c:123
+#, fuzzy
+msgid "Left Input"
+msgstr "Зүүн"
+
+#: plugins/freeverb/bsefreeverb.c:124
+#, fuzzy
+msgid "Right Input"
+msgstr "Баруун"
+
+#: plugins/freeverb/bsefreeverb.c:125
+#, fuzzy
+msgid "Left Output"
+msgstr "Зүүн"
+
+#: plugins/freeverb/bsefreeverb.c:126
+#, fuzzy
+msgid "Right Output"
+msgstr "Баруун"
+
+#~ msgid "Objects"
+#~ msgstr "Обьект"
+
+#~ msgid "Language"
+#~ msgstr "Хэл"

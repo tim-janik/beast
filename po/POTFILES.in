@@ -60,7 +60,7 @@ bse/bsemidiinput.c
 bse/bsemidivoice.c
 bse/bsepcminput.c
 bse/bsepcmoutput.c
-bse/bserecords.idl
+bse/bsecore.idl
 bse/bsesnooper.c
 bse/bsestandardosc.c
 bse/bsesubiport.c

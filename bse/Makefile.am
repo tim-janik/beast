@@ -206,7 +206,7 @@ EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
 EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
 GLIB_MKENUMS = glib-mkenums
 # WATCH OUT: $(SFIDL) works only builddir relative
-SFIDL = ../sfi/sfidl
+SFIDL = $(top_builddir)/sfi/sfidl
 SFIDL_INC = --nostdinc -I$(top_srcdir) -I$(top_builddir)
 
 
@@ -222,33 +222,37 @@ $(OBJECTS): $(bse_built_h_sources)
 $(srcdir)/bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
 # normal autogeneration rules
 stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(bse_c_sources) $(bse_public_h_sources)
-stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bsecore.idl $(SFIDL)
-	cd $(srcdir) \
-	&& $(GLIB_MKENUMS) \
-	  --fprod "\n/* --- @filename@ --- */" \
-	  --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
-	  --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
-	    $(bse_public_h_sources) > xgen-sbgth \
-	&& $(PERL) mktypes.pl --externs $(bse_c_sources) >> xgen-sbgth \
+stamp-bsegentypes.h: @DVLBUILD@ bsecore.idl $(SFIDL)
+	( \
+	  cd $(srcdir) \
+	  && $(GLIB_MKENUMS) \
+	    --fprod "\n/* --- @filename@ --- */" \
+	    --eprod "#define BSE_TYPE_@ENUMSHORT@\t    (BSE_TYPE_ID (@EnumName@))\n" \
+	    --eprod "extern GType BSE_TYPE_ID (@EnumName@);" \
+	      $(bse_public_h_sources) \
+	  && $(PERL) mktypes.pl --externs $(bse_c_sources) \
+	) > xgen-sbgth \
 	&& $(SFIDL) $(SFIDL_INC) --core-c --header $(srcdir)/bsecore.idl >> xgen-sbgth \
-	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
+	&& (cmp -s xgen-sbgth $(srcdir)/bsegentypes.h || cp xgen-sbgth $(srcdir)/bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
-bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bsecore.idl $(SFIDL) # $(bse_c_sources)
-	cd $(srcdir) \
-	&& $(GLIB_MKENUMS) \
-	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
-	    $(bse_public_h_sources) >> xgen-bgtc \
-	&& $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) >> xgen-bgtc \
+$(srcdir)/bsegentypes.c: @DVLBUILD@ mktypes.pl bsecore.idl $(SFIDL) # $(bse_c_sources)
+	( \
+	  cd $(srcdir) \
+	  && $(GLIB_MKENUMS) \
+	    --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
+	      $(bse_public_h_sources) \
+	  && $(PERL) mktypes.pl --interns --export-proto $(bse_c_sources) \
+	) > xgen-bgtc \
 	&& cp xgen-bgtc $(@F) \
 	&& rm -f xgen-bgtc
-# && $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init bsecore.idl >> xgen-bgtc
 bsegencore.cc: @DVLBUILD@ bsecore.idl $(SFIDL) bsecore.gen-idl.h
-	cd $(srcdir) \
-	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init bsecore.idl >> xgen-bgcc \
+	cd . \
+	&& $(SFIDL) $(SFIDL_INC) --core-c --source --init sfidl_types_init $(srcdir)/bsecore.idl >> xgen-bgcc \
 	&& cp xgen-bgcc $(@F) \
 	&& rm -f xgen-bgcc
 $(srcdir)/bsecore.cc: bsegencore.cc
+CLEANFILES += bsegencore.cc
 bsegentype_array.c: @DVLBUILD@ bsegentypes.c
 	cd $(srcdir) \
 	&& $(PERL) mktypes.pl --array $(bse_c_sources) > xgen-bgtac \
@@ -287,14 +291,14 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 # setup generation of C++ objects from idl files
 %.gen-idl.h: $(srcdir)/%.idl $(SFIDL)
-	$(SFIDL) --core-cxx --macro $< $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
+	$(SFIDL) --core-cxx --macro $(<F) $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
 
 
 #
 # this file describes the BSE public API and needs to be generated at the
 # end of the build process
 #
-bsehack.idl: $(srcdir)/bsecore.idl bseprocidl
+bsehack.idl: bsecore.idl bseprocidl
 	grep -v bsehack.idl bse.idl | $(SFIDL) $(SFIDL_INC) --list-types - > xgen-tlist
 	echo "/* this file was generated from make $< */" > xgen-bgasi \
 	&& ./bseprocidl xgen-tlist >> xgen-bgasi \
@@ -302,8 +306,6 @@ bsehack.idl: $(srcdir)/bsecore.idl bseprocidl
 	&& rm -f xgen-bgasi xgen-tlist
 CLEANFILES += bsehack.idl
 noinst_DATA = bsehack.idl
-
-#	&& cat $(srcdir)/bsecore.idl >> xgen-bgasi 
 
 #
 # convenience targets for generated source files

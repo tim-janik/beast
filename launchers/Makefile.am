@@ -14,6 +14,7 @@ DEFS += $(strip                         		\
 bin_PROGRAMS = beast bsesh
 beast_SOURCES = suidmain.c beaststart.c
 bsesh_SOURCES = suidmain.c bseshstart.c
+EXTRA_DIST += suidmain.h
 
 #
 # make bsesh wrapper suid to allow renicing

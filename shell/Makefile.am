@@ -3,7 +3,7 @@
 #
 ## Makefile.am for bsesh
 
-INCLUDES = -I$(top_srcdir) -I. $(BSE_SHELL_CFLAGS) -DG_DISABLE_CONST_RETURNS
+INCLUDES = -I$(top_srcdir) -I. -I$(top_builddir) $(BSE_SHELL_CFLAGS) -DG_DISABLE_CONST_RETURNS
 
 DEFS += $(strip                       	\
 	-DG_LOG_DOMAIN=\"bsesh\"       	\
