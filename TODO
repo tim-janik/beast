@@ -3,9 +3,6 @@ FIXMES:
            midi-input       + midi-controller
 - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
-- support records and sequences in bse-plugin-generator and bseprocidl
-- reenable signals in bseprocidl
-- add dump-include-path option to bse-plugin-generator
 - supply man page for bse-plugin-generator
 - add "bypass" option to audio output channels
 - enable Clear Undo only for --hints
@@ -275,6 +272,9 @@ Effects:
   (main source for http://zynaddsubfx.sourceforge.net)
 
 sfidl:
+  - support records and sequences in bse-plugin-generator and bseprocidl
+  - reenable signals in bseprocidl
+  - add dump-include-path option to bse-plugin-generator
   fixes:
   - support N/A choice values, currently hardcoded for BseErrorType
   - syntax for neutral values in choices
