@@ -59,6 +59,10 @@ GslLong		gsl_data_find_block		(GslDataHandle		*handle,
 						 guint			 n_values,
 						 const gfloat		*values,
 						 gfloat			 epsilon);
+gfloat*         gsl_data_make_fade_ramp         (GslDataHandle          *handle,
+                                                 GslLong                 min_pos, /* *= 0.0 + delta */
+                                                 GslLong                 max_pos, /* *= 1.0 - delta */
+                                                 GslLong                *length_p);
 
 
 /* --- data handle utils --- */
@@ -124,6 +128,33 @@ static inline void    gsl_conv_to_double	(GslWaveFormatType format,
 						 guint             n_values);
 static inline gint16  gsl_alaw_to_pcm           (gint8             alawv);
 static inline gint16  gsl_ulaw_to_pcm           (gint8             ulawv);
+
+
+/* --- clipping --- */
+typedef struct
+{
+  guint  produce_info : 1;
+  gfloat threshold;     /* 0..+1 */
+  guint  head_samples;
+  guint  tail_samples;
+  guint  fade_samples;
+  guint  pad_samples;
+  guint  tail_silence;
+} GslDataClipConfig;
+typedef struct
+{
+  GslDataHandle *dhandle;
+  guint          clipped_to_0length : 1;        /* no data above threshold */
+  guint          head_detected : 1;             /* found head_samples silence */
+  guint          tail_detected : 1;             /* found tail_samples silence */
+  guint          clipped_head : 1;
+  guint          clipped_tail : 1;
+  BseErrorType   error;
+} GslDataClipResult;
+
+BseErrorType    gsl_data_clip_sample    (GslDataHandle     *dhandle,
+                                         GslDataClipConfig *cconfig,
+                                         GslDataClipResult *result);
 
 
 /* --- misc implementations --- */

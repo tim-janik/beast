@@ -18,8 +18,9 @@
  */
 #include "gsldatautils.h"
 #include "gsldatacache.h"
-#include <errno.h>
+#include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 
 #define	BSIZE		GSL_DATA_HANDLE_PEEK_BUFFER	/* FIXME: global buffer size setting */
@@ -608,6 +609,205 @@ gsl_data_find_block (GslDataHandle *handle,
 	return i;
     }
   return -1;
+}
+
+/**
+ * gsl_data_make_fade_ramp
+ * @dhandle:  valid and opened #GslDataHandle
+ * @min_pos:  position within @dhandle
+ * @max_pos:  position within @dhandle
+ * @length_p: location to store the length of the fade ramp in
+ * @RETURNS:  newly allocated float block with fade ramp
+ * Create a float value block of abs (@max_pos - @min_pos) values,
+ * which contain a fade ramp of values from @dhandle, with @min_pos
+ * indicating the minimum of the fade ramp and @max_pos indicating
+ * its maximum.
+ */
+gfloat*
+gsl_data_make_fade_ramp (GslDataHandle *handle,
+                         GslLong        min_pos, /* *= 0.0 + delta */
+                         GslLong        max_pos, /* *= 1.0 - delta */
+                         GslLong       *length_p)
+{
+  GslDataPeekBuffer peekbuf = { +1, 0, };
+  gfloat ramp, rdelta, *values;
+  GslLong l, i;
+
+  g_return_val_if_fail (handle != NULL, NULL);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (handle), NULL);
+  g_return_val_if_fail (min_pos >= 0 && max_pos >= 0, NULL);
+  g_return_val_if_fail (min_pos < gsl_data_handle_n_values (handle), NULL);
+  g_return_val_if_fail (max_pos < gsl_data_handle_n_values (handle), NULL);
+
+  if (min_pos > max_pos)
+    {
+      l = min_pos;
+      min_pos = max_pos;
+      max_pos = l;
+      l = max_pos - min_pos;
+      rdelta = -1. / (gfloat) (l + 2);
+      ramp = 1.0 + rdelta;
+    }
+  else
+    {
+      l = max_pos - min_pos;
+      rdelta = +1. / (gfloat) (l + 2);
+      ramp = rdelta;
+    }
+
+  l += 1;
+  values = g_new (gfloat, l);
+  for (i = 0; i < l; i++)
+    {
+      values[i] = gsl_data_handle_peek_value (handle, min_pos + i, &peekbuf) * ramp;
+      ramp += rdelta;
+    }
+
+  if (length_p)
+    *length_p = l;
+
+  return values;
+}
+
+/**
+ * gsl_data_clip_sample
+ * @dhandle:  valid and opened #GslDataHandle
+ * @cconfig:  clip configuration
+ * @result:   clip result
+ * @RETURNS:  error code as stored in @result
+ * Clip silence at head and/or tail of a data handle
+ * according to a given threshold and optionally produce
+ * a fade ramp.
+ */
+BseErrorType
+gsl_data_clip_sample (GslDataHandle     *dhandle,
+                      GslDataClipConfig *cconfig,
+                      GslDataClipResult *result)
+{
+  g_return_val_if_fail (result != NULL, BSE_ERROR_INTERNAL);
+  memset (result, 0, sizeof (*result));
+  result->error = BSE_ERROR_INTERNAL;
+  g_return_val_if_fail (dhandle, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (cconfig != NULL, BSE_ERROR_INTERNAL);
+  gboolean info = cconfig->produce_info != FALSE;
+
+  SfiNum last_value = gsl_data_handle_n_values (dhandle);
+  if (last_value < 1)
+    {
+      if (info)
+        sfi_info ("Signal too short");
+      result->error = BSE_ERROR_FILE_EMPTY;
+      return result->error;
+    }
+  last_value -= 1;
+  
+  /* signal range detection */
+  SfiNum head = gsl_data_find_sample (dhandle, +cconfig->threshold, -cconfig->threshold, 0, +1);
+  if (head < 0)
+    {
+      if (info)
+        sfi_info ("All of signal below threshold");
+      result->clipped_to_0length = TRUE;
+      result->error = BSE_ERROR_DATA_UNMATCHED;
+      return result->error;
+    }
+  SfiNum tail = gsl_data_find_sample (dhandle, +cconfig->threshold, -cconfig->threshold,  -1, -1);
+  g_assert (tail >= 0);
+  
+  /* verify silence detection */
+  if (last_value - tail < cconfig->tail_samples)
+    {
+      if (info)
+        sfi_info ("Signal tail above threshold, # samples below: %llu", last_value - tail);
+      result->error = BSE_ERROR_DATA_UNMATCHED;
+      return result->error;
+    }
+  result->tail_detected = TRUE;
+  if (head < cconfig->head_samples)
+    {
+      if (info)
+        sfi_info ("Signal head above threshold, # samples below: %llu", head);
+      result->error = BSE_ERROR_DATA_UNMATCHED;
+      return result->error;
+    }
+  result->head_detected = TRUE;
+  if (info)
+    sfi_info ("Silence detected: head_silence=%lld tail_silence=%llu", head, last_value - tail);
+  
+  /* tail clipping protection */
+  if (last_value - tail < cconfig->tail_silence)
+    {
+      if (info)
+        sfi_info ("Tail silence too short for clipping: silence_length=%lld minimum_length=%u", last_value - tail, cconfig->tail_silence);
+      tail = last_value;
+    }
+  
+  /* padding */
+  if (cconfig->pad_samples)
+    {
+      SfiNum otail = tail;
+      tail += cconfig->pad_samples;
+      tail = MIN (last_value, tail);
+      if (info && otail != tail)
+        sfi_info ("Padding Tail: old_tail=%lld tail=%llu padding=%lld", otail, tail, tail - otail);
+    }
+  
+  /* unclipped handles */
+  if (head == 0 && last_value == tail)
+    {
+      result->dhandle = gsl_data_handle_ref (dhandle);
+      result->error = BSE_ERROR_NONE;
+      return result->error;
+    }
+
+  /* clipping */
+  GslDataHandle *clip_handle = gsl_data_handle_new_crop (dhandle, head, last_value - tail);
+  gsl_data_handle_open (clip_handle);
+  gsl_data_handle_unref (clip_handle);
+  if (info)
+    sfi_info ("Clipping: start=%llu end=%llu length=%ld (delta=%ld)", head, tail, gsl_data_handle_n_values (clip_handle),
+              gsl_data_handle_n_values (clip_handle) - gsl_data_handle_n_values (dhandle));
+  result->clipped_head = head > 0;
+  result->clipped_tail = last_value != tail;
+  
+  /* fading */
+  GslDataHandle *fade_handle;
+  if (cconfig->fade_samples && head)
+    {
+      GslLong l;
+      gfloat *ramp = gsl_data_make_fade_ramp (dhandle, MAX (head - 1 - (gint) cconfig->fade_samples, 0), head - 1, &l);
+
+      /* strip initial ramp silence */
+      gint j, bdepth = gsl_data_handle_bit_depth (dhandle);
+      gdouble threshold = 1.0 / (((SfiNum) 1) << (bdepth ? bdepth : 16));
+      for (j = 0; j < l; j++)
+        if (fabs (ramp[j]) >= threshold)
+          break;
+      if (j > 0) /* shorten ramp by j values which are below threshold */
+        {
+          l -= j;
+          g_memmove (ramp, ramp + j, l * sizeof (ramp[0]));
+        }
+      
+      fade_handle = gsl_data_handle_new_insert (clip_handle, gsl_data_handle_bit_depth (clip_handle), 0, l, ramp, g_free);
+      gsl_data_handle_open (fade_handle);
+      gsl_data_handle_unref (fade_handle);
+      if (info)
+        sfi_info ("Adding fade-in ramp: ramp_length=%ld length=%ld", l, gsl_data_handle_n_values (fade_handle));
+    }
+  else
+    {
+      fade_handle = clip_handle;
+      gsl_data_handle_open (fade_handle);
+    }
+  
+  /* prepare result and cleanup */
+  result->dhandle = gsl_data_handle_ref (fade_handle);
+  gsl_data_handle_close (fade_handle);
+  gsl_data_handle_close (clip_handle);
+  result->error = BSE_ERROR_NONE;
+  return result->error;
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

@@ -104,8 +104,8 @@ bse_error_blurb (BseErrorType error_value)
       /* file errors */
     case BSE_ERROR_FILE_BUSY:                   return _("Device or resource busy");
     case BSE_ERROR_FILE_EXISTS:                 return _("File exists already");
-    case BSE_ERROR_FILE_EOF:                    return _("File empty or premature EOF");
-      // case BSE_ERROR_FILE_EMPTY:
+    case BSE_ERROR_FILE_EOF:                    return _("Premature EOF");
+    case BSE_ERROR_FILE_EMPTY:                  return _("File empty");
     case BSE_ERROR_FILE_NOT_FOUND:              return _("No such file, device or directory");
     case BSE_ERROR_FILE_IS_DIR:                 return _("Is a directory");
     case BSE_ERROR_FILE_OPEN_FAILED:            return _("Open failed");
@@ -125,6 +125,7 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_WRONG_N_CHANNELS:            return _("Wrong number of channels");
     case BSE_ERROR_FORMAT_INVALID:              return _("Invalid format");
     case BSE_ERROR_FORMAT_UNKNOWN:              return _("Unknown format");
+    case BSE_ERROR_DATA_UNMATCHED:              return _("Requested data values unmatched");
       /* miscellaneous errors */
     case BSE_ERROR_TEMP:                        return _("Temporary error");
     case BSE_ERROR_WAVE_NOT_FOUND:              return _("No such wave");

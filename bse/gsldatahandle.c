@@ -957,7 +957,6 @@ insert_handle_close (GslDataHandle *dhandle)
 {
   InsertHandle *ihandle = (InsertHandle*) dhandle;
 
-  g_strfreev (dhandle->setup.xinfos);
   dhandle->setup.xinfos = NULL;
   gsl_data_handle_close (ihandle->src_handle);
 }
