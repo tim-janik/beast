@@ -167,7 +167,7 @@ clink_view_update (BstCanvasLink *clink,
   if (frame)
     {
       GtkWidget *text = GTK_BIN (frame)->child;
-      const gchar *ic_name, *oc_name, *ic_blurb, *oc_blurb, *iname, *oname;
+      const gchar *ic_label, *oc_label, *ic_blurb, *oc_blurb, *iname, *oname;
       gchar *string;
 
       /* figure appropriate window title
@@ -180,14 +180,14 @@ clink_view_update (BstCanvasLink *clink,
 
       /* construct actuall information
        */
-      oc_name = clink->ocsource ? bse_source_ochannel_name (clink->ocsource->source, clink->ochannel) : NULL;
+      oc_label = clink->ocsource ? bse_source_ochannel_label (clink->ocsource->source, clink->ochannel) : NULL;
       oc_blurb = clink->ocsource ? bse_source_ochannel_blurb (clink->ocsource->source, clink->ochannel) : NULL;
-      ic_name = clink->icsource ? bse_source_ichannel_name (clink->icsource->source, clink->ichannel) : NULL;
+      ic_label = clink->icsource ? bse_source_ichannel_label (clink->icsource->source, clink->ichannel) : NULL;
       ic_blurb = clink->icsource ? bse_source_ichannel_blurb (clink->icsource->source, clink->ichannel) : NULL;
-      if (!oc_name)
-	oc_name = "?";
-      if (!ic_name)
-	ic_name = "?";
+      if (!oc_label)
+	oc_label = "?";
+      if (!ic_label)
+	ic_label = "?";
 
       /* compose new info */
       gxk_scroll_text_clear (text);
@@ -195,25 +195,25 @@ clink_view_update (BstCanvasLink *clink,
       gxk_scroll_text_push_indent (text);
       if (oc_blurb)
 	{
-	  gxk_scroll_text_aprintf (text, "%s: %s:\n", oname, oc_name);
+	  gxk_scroll_text_aprintf (text, "%s: %s:\n", oname, oc_label);
 	  gxk_scroll_text_push_indent (text);
 	  gxk_scroll_text_aprintf (text, "%s\n", oc_blurb);
 	  gxk_scroll_text_pop_indent (text);
 	}
       else
-	gxk_scroll_text_aprintf (text, "%s: %s\n", oname, oc_name);
+	gxk_scroll_text_aprintf (text, "%s: %s\n", oname, oc_label);
       gxk_scroll_text_pop_indent (text);
       gxk_scroll_text_aprintf (text, "\nDestination Module:\n");
       gxk_scroll_text_push_indent (text);
       if (ic_blurb)
 	{
-	  gxk_scroll_text_aprintf (text, "%s: %s:\n", iname, ic_name);
+	  gxk_scroll_text_aprintf (text, "%s: %s:\n", iname, ic_label);
 	  gxk_scroll_text_push_indent (text);
 	  gxk_scroll_text_aprintf (text, "%s\n", ic_blurb);
 	  gxk_scroll_text_pop_indent (text);
 	}
       else
-	gxk_scroll_text_aprintf (text, "%s: %s\n", iname, ic_name);
+	gxk_scroll_text_aprintf (text, "%s: %s\n", iname, ic_label);
     }
 }
 

@@ -392,7 +392,7 @@ csource_info_update (BstCanvasSource *csource)
 	{
           string = bse_source_ichannel_blurb (csource->source, i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
-				   bse_source_ichannel_name (csource->source, i),
+				   bse_source_ichannel_label (csource->source, i),
 				   bse_source_ichannel_ident (csource->source, i),
 				   string ? ":" : "");
 	  if (string)
@@ -415,7 +415,7 @@ csource_info_update (BstCanvasSource *csource)
 	{
 	  string = bse_source_ochannel_blurb (csource->source, i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
-				   bse_source_ochannel_name (csource->source, i),
+				   bse_source_ochannel_label (csource->source, i),
 				   bse_source_ochannel_ident (csource->source, i),
 				   string ? ":" : "");
           if (string)
@@ -739,7 +739,7 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
     {
       GnomeCanvasItem *item;
       gboolean is_jchannel = is_input && bse_source_is_joint_ichannel_by_id (csource->source, i);
-      const gchar *name = (is_input ? bse_source_ichannel_name : bse_source_ochannel_name) (csource->source, i);
+      const gchar *label = (is_input ? bse_source_ichannel_label : bse_source_ochannel_label) (csource->source, i);
       guint tmp_color = is_jchannel ? color2 : color1;
 
       y2 = y1 + d_y;
@@ -765,13 +765,13 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
 				    "x", east_channel ? TOTAL_WIDTH (csource) + BORDER_PAD * 2. : -BORDER_PAD,
 				    "y", (y1 + y2) / 2.,
 				    "font", CHANNEL_FONT,
-				    "text", csource->show_hints ? name : "",
+				    "text", csource->show_hints ? label : "",
 				    NULL);
       item = g_object_connect (item,
 			       "swapped_signal::destroy", channel_name_remove, csource,
 			       NULL);
       gnome_canvas_text_set_zoom_size (GNOME_CANVAS_TEXT (item), FONT_HEIGHT);
-      g_object_set_data_full (G_OBJECT (item), "hint_text", g_strdup (name), g_free);
+      g_object_set_data_full (G_OBJECT (item), "hint_text", g_strdup (label), g_free);
       csource->channel_hints = g_slist_prepend (csource->channel_hints, item);
       
       color1 += color1_delta;
@@ -951,14 +951,14 @@ bst_canvas_source_event (GnomeCanvasItem *item,
       else
 	{
 	  guint channel;
-	  const gchar *name = NULL, *prefix = NULL, *cname = NULL;
+	  const gchar *label = NULL, *prefix = NULL, *ident = NULL;
 
 	  /* set i/o channel hints */
 	  channel = bst_canvas_source_ichannel_at (csource, event->motion.x, event->motion.y);
 	  if (channel != ~0)
 	    {
-	      name = bse_source_ichannel_name (csource->source, channel);
-	      cname = bse_source_ichannel_ident (csource->source, channel);
+	      label = bse_source_ichannel_label (csource->source, channel);
+	      ident = bse_source_ichannel_ident (csource->source, channel);
 	      prefix = _("Input");
 	    }
 	  else
@@ -966,13 +966,13 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	      channel = bst_canvas_source_ochannel_at (csource, event->motion.x, event->motion.y);
 	      if (channel != ~0)
 		{
-		  name = bse_source_ochannel_name (csource->source, channel);
-		  cname = bse_source_ochannel_ident (csource->source, channel);
+		  label = bse_source_ochannel_label (csource->source, channel);
+		  ident = bse_source_ochannel_ident (csource->source, channel);
 		  prefix = _("Output");
 		}
 	    }
-	  if (name)
-	    gxk_status_printf (GXK_STATUS_IDLE_HINT, _("(Hint)"), "%s[%s]: %s", prefix, cname, name);
+	  if (label)
+	    gxk_status_printf (GXK_STATUS_IDLE_HINT, _("(Hint)"), "%s[%s]: %s", prefix, ident, label);
 	  else
 	    gxk_status_set (GXK_STATUS_IDLE_HINT, NULL, NULL);
 	}
