@@ -33,6 +33,7 @@ typedef struct
   BseMidiHandle   handle;
   snd_rawmidi_t  *read_handle;
   snd_rawmidi_t  *write_handle;
+  guint           total_pfds;
 } AlsaMidiHandle;
 
 /* --- prototypes --- */
@@ -154,7 +155,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
   gchar *dname = n_args ? g_strjoinv (",", (gchar**) args) : g_strdup ("default");
   if (!aerror)
     aerror = snd_rawmidi_open (require_readable ? &alsa->read_handle : NULL,
-                               require_writable || 1 ? &alsa->write_handle : NULL, // FIXME
+                               require_writable ? &alsa->write_handle : NULL,
                                dname, 0);
   /* try setup */
   BseErrorType error = !aerror ? BSE_ERROR_NONE : bse_error_from_errno (-aerror, BSE_ERROR_FILE_OPEN_FAILED);
@@ -192,15 +193,26 @@ bse_midi_device_alsa_open (BseDevice     *device,
         BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
       BSE_MIDI_DEVICE (device)->handle = handle;
       BSE_MIDI_DEVICE (device)->handle = handle;
-      if (alsa->read_handle) // FIXME
+      if (alsa->read_handle || alsa->write_handle)
         {
-          snd_rawmidi_nonblock (alsa->read_handle, 1);
-          gint n_pfds = snd_rawmidi_poll_descriptors_count (alsa->read_handle);
-          if (n_pfds > 0)
+          if (alsa->read_handle)
+            snd_rawmidi_nonblock (alsa->read_handle, 1);
+          if (alsa->write_handle)
+            snd_rawmidi_nonblock (alsa->write_handle, 1);
+          gint rn = alsa->read_handle ? snd_rawmidi_poll_descriptors_count (alsa->read_handle) : 0;
+          gint wn = alsa->write_handle ? snd_rawmidi_poll_descriptors_count (alsa->write_handle) : 0;
+          rn = MAX (rn, 0);
+          wn = MAX (wn, 0);
+          if (rn || wn)
             {
-              struct pollfd *pfds = g_newa (struct pollfd, n_pfds);
-              if (snd_rawmidi_poll_descriptors (alsa->read_handle, pfds, n_pfds) >= 0)
-                bse_sequencer_add_io_watch (n_pfds, (GPollFD*) pfds, alsa_midi_io_handler, alsa);
+              struct pollfd *pfds = g_newa (struct pollfd, rn + wn);
+              alsa->total_pfds = 0;
+              if (rn && snd_rawmidi_poll_descriptors (alsa->read_handle, pfds, rn) >= 0)
+                alsa->total_pfds += rn;
+              if (wn && snd_rawmidi_poll_descriptors (alsa->write_handle, pfds + alsa->total_pfds, wn) >= 0)
+                alsa->total_pfds += wn;
+              if (alsa->total_pfds)
+                bse_sequencer_add_io_watch (alsa->total_pfds, (GPollFD*) pfds, alsa_midi_io_handler, alsa);
             }
         }
     }
@@ -224,7 +236,8 @@ bse_midi_device_alsa_close (BseDevice *device)
   AlsaMidiHandle *alsa = (AlsaMidiHandle*) BSE_MIDI_DEVICE (device)->handle;
   BSE_MIDI_DEVICE (device)->handle = NULL;
 
-  bse_sequencer_remove_io_watch (alsa_midi_io_handler, alsa);
+  if (alsa->total_pfds)
+    bse_sequencer_remove_io_watch (alsa_midi_io_handler, alsa);
 
   if (alsa->read_handle)
     snd_rawmidi_close (alsa->read_handle);

@@ -1,3 +1,7 @@
+Wed Sep 29 20:22:53 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemididevice-alsa.c: poll-fd fixups. removed debugging code.
+
 Wed Sep 29 19:51:29 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-alsa.c: handle IO through sequencer io watch.
