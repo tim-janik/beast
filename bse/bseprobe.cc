@@ -140,7 +140,7 @@ private:
           Probe &probe = **it;
           gfloat *block = oblocks[probe.channel_id];
           if (probe.probe_features->probe_samples || probe.probe_features->probe_fft)
-            probe.sample_data.take (sfi_fblock_new_foreign (bse_engine_block_size(), block, g_free));
+            probe.sample_data.take (sfi_fblock_new_foreign (n_values, block, g_free));
           oblocks[probe.channel_id] = NULL;    /* steal from engine */
           fill_probe (probe, n_values, block, FALSE);
         }
@@ -200,7 +200,9 @@ public:
         pdata->n_modules = 0;
         for (SfiRing *node = ring; node; node = sfi_ring_walk (node, ring))
           {
-            bse_trans_add (trans, bse_job_probe_request ((BseModule*) node->data, &channel_ages[0], source_probe_callback, pdata));
+            bse_trans_add (trans, bse_job_probe_request ((BseModule*) node->data,
+                                                         bse_engine_block_size() * 3, bse_engine_block_size(),
+                                                         &channel_ages[0], source_probe_callback, pdata));
             pdata->n_modules++;
           }
         pdata->n_pending = pdata->n_modules;
@@ -236,11 +238,11 @@ public:
         {
           if (channel_features[i]->probe_range)
             channel_ages[i] = range_ages[i] = PROBE_QUEUE_LENGTH;
-          else if (channel_features[i]->probe_energie)
+          if (channel_features[i]->probe_energie)
             channel_ages[i] = energie_ages[i] = PROBE_QUEUE_LENGTH;
-          else if (channel_features[i]->probe_samples)
+          if (channel_features[i]->probe_samples)
             channel_ages[i] = samples_ages[i] = PROBE_QUEUE_LENGTH;
-          else if (channel_features[i]->probe_fft)
+          if (channel_features[i]->probe_fft)
             channel_ages[i] = fft_ages[i] = PROBE_QUEUE_LENGTH;
         }
     queue_update();
@@ -303,6 +305,7 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
             {
               SourceProbes *probes = SourceProbes::create_from_source (current);
               probes->queue_probe_request (channel_features);
+              probes->commit_requests();
               g_free (channel_features);
               channel_features = NULL;
             }
@@ -317,6 +320,7 @@ source_mass_request::exec (const ProbeRequestSeq &cprseq)
     {
       SourceProbes *probes = SourceProbes::create_from_source (current);
       probes->queue_probe_request (channel_features);
+      probes->commit_requests();
       g_free (channel_features);
       channel_features = NULL;
     }

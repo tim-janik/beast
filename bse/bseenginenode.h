@@ -139,14 +139,16 @@ struct _EngineUserJob
 };
 struct _EngineProbeJob
 {
-  EngineProbeJob   *next;       /* keep in sync with EngineUserJob */
-  EngineJobType     job_type;   /* keep in sync with EngineUserJob */
-  BseEngineProbeFunc      probe_func;
-  gpointer          data;
-  guint64           tick_stamp;
-  guint             n_values;
-  guint             n_oblocks;
-  gfloat           *oblocks[1]; /* [ENGINE_NODE_N_OSTREAMS()] */
+  EngineProbeJob     *next;             /* keep in sync with EngineUserJob */
+  EngineJobType       job_type;         /* keep in sync with EngineUserJob */
+  BseEngineProbeFunc  probe_func;
+  gpointer            data;
+  guint64             tick_stamp;
+  guint               delay_counter;
+  guint               value_counter;
+  guint               n_values;
+  guint               n_oblocks;
+  gfloat             *oblocks[1];       /* [ENGINE_NODE_N_OSTREAMS()] */
 };
 struct _EngineTimedJob
 {

@@ -162,6 +162,8 @@ BseJob*    bse_job_access               (BseModule            *module,
                                          gpointer              data,
                                          BseFreeFunc           free_func);      /* UserThread */
 BseJob*    bse_job_probe_request        (BseModule            *module,
+                                         guint                 n_delay_samples,
+                                         guint                 n_probe_values,
                                          guint8               *ochannel_bytemask,
                                          BseEngineProbeFunc    probe,           /* UserThread */
                                          gpointer              data);

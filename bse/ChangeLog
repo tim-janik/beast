@@ -1,3 +1,16 @@
+Sat Jul 24 08:16:14 2004  Tim Janik  <timj@gtk.org>
+
+	* bseengine.[hc]: added n_delay and n_probes arguments to
+	bse_job_probe_request(), so the user can request block sizes
+	and probe spacings.
+
+	* bseenginenode.h:
+	* bseenginemaster.c: implemented variable length probe blocks and
+	probe block spacings. 
+
+	* bseprobe.cc: for now, request engine block size big probe
+	blocks, with a 3/4 spacing ratio. fixed request handling.
+
 Sat Jul 24 05:33:58 2004  Tim Janik  <timj@gtk.org>
 
 	* gsldefs.h: removed if_reject() and if_expect() variants.

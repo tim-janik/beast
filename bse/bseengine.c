@@ -481,17 +481,19 @@ bse_job_access (BseModule    *module,
 
 /**
  * bse_job_request_probe
- * @module:      The module to access
+ * @module:            The module to access
+ * @n_delay_samples:   Number of samples to wait before taking probes
+ * @n_probe_values:    Number of probe values to take
  * @ochannel_bytemask: One byte per ochannel, bytes != 0 indicate a probe request
- * @probe_func:  Function invoked with @data in the user thread
- * @data:        Data passed in to the accessor
- * @Returns:     New job suitable for bse_trans_add()
+ * @probe_func:        Function invoked with @data in the user thread
+ * @data:              Data passed in to the accessor
+ * @Returns:           New job suitable for bse_trans_add()
  *
- * Create a new transaction job which inserts @probe_func
- * with @data into the job queue of @module.
+ * Create a new transaction job which inserts @probe_func with @data
+ * into the job queue of @module.
  * Probe jobs are jobs which collect data from a given set of output
- * channels of a module as probe data. The job then is returned to
- * the user thread before the next block boundary, so @probe_func()
+ * channels of a module as probe data. The job then returns to the
+ * user thread before the next block boundary, and @probe_func()
  * will be invoked as early as possible.
  * There's no free_func() supplied to delete @data, because such a
  * function would always be called immediately after @probe_func().
@@ -502,14 +504,17 @@ bse_job_access (BseModule    *module,
  * This function is MT-safe and may be called from any thread.
  */
 BseJob*
-bse_job_probe_request (BseModule    *module,
-                       guint8       *ochannel_bytemask,
-                       BseEngineProbeFunc  probe_func,
-                       gpointer      data)
+bse_job_probe_request (BseModule         *module,
+                       guint              n_delay_samples,
+                       guint              n_probe_values,
+                       guint8            *ochannel_bytemask,
+                       BseEngineProbeFunc probe_func,
+                       gpointer           data)
 {
   g_return_val_if_fail (module != NULL, NULL);
   g_return_val_if_fail (probe_func != NULL, NULL);
   g_return_val_if_fail (ochannel_bytemask != NULL, NULL);
+  g_return_val_if_fail (n_probe_values > 0, NULL);
   
   guint i, n_oblocks = module->klass->n_ostreams;
   EngineProbeJob *pjob = g_malloc0 (sizeof (*pjob) +  sizeof (pjob->oblocks[0]) * n_oblocks);
@@ -518,11 +523,13 @@ bse_job_probe_request (BseModule    *module,
   pjob->probe_func = probe_func;
   pjob->data = data;
   pjob->tick_stamp = 0;
+  pjob->delay_counter = n_delay_samples;
+  pjob->value_counter = n_probe_values;
   pjob->n_values = 0;
   pjob->n_oblocks = n_oblocks;
   for (i = 0; i < n_oblocks; i++)
     if (ochannel_bytemask[i])
-      pjob->oblocks[i] = g_new0 (gfloat, bse_engine_block_size());
+      pjob->oblocks[i] = g_new0 (gfloat, n_probe_values);
   
   BseJob *job = sfi_new_struct0 (BseJob, 1);
   job->job_id = ENGINE_JOB_PROBE_JOB;

@@ -715,39 +715,56 @@ master_take_probes (EngineNode   *node,
 {
   if (G_LIKELY (!node->probe_jobs))
     return;
-  /* pop probe job */
+  /* peek probe job */
   EngineProbeJob *pjob = node->probe_jobs;
-  node->probe_jobs = pjob->next;
-  insert_trash_job (node, (EngineUserJob*) pjob);
+  guint offset = MIN (pjob->delay_counter, n_values);
+  pjob->delay_counter -= offset;
+  if (G_LIKELY (pjob->delay_counter > 0 || offset >= n_values))
+    return;
   /* fill probe parameters */
-  pjob->tick_stamp = current_stamp;
+  if (!pjob->n_values)
+    pjob->tick_stamp = current_stamp + offset;
+  gboolean need_collect = FALSE;
   switch (ptype)
     {
-      guint i;
-    case PROBE_UNSCHEDULED:
-      pjob->n_values = 0;
-      /* the blocks are already zero initialised */
-      _engine_node_collect_jobs (node);
-      break;
+      guint i, n;
     case PROBE_SCHEDULED:
-      pjob->n_values = n_values;
+      n = MIN (pjob->value_counter, n_values - offset);
       /* fill probe data */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         if (pjob->oblocks[i])
-          memcpy (pjob->oblocks[i], node->module.ostreams[i].values, pjob->n_values);
+          memcpy (pjob->oblocks[i] + pjob->n_values, node->module.ostreams[i].values + offset, n);
+      pjob->n_values += n;
+      pjob->value_counter -= n;
       break;
     case PROBE_VIRTUAL:
-      pjob->n_values = n_values;
+      n = MIN (pjob->value_counter, n_values - offset);
       /* fill probe data */
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
         if (pjob->oblocks[i])
           {
             EngineInput *input = node->inputs + i;
             if (node->inputs->real_node)
-              memcpy (pjob->oblocks[i], input->real_node->module.ostreams[input->real_stream].values, pjob->n_values);
+              memcpy (pjob->oblocks[i] + pjob->n_values,
+                      input->real_node->module.ostreams[input->real_stream].values + offset, n);
           }
-      _engine_node_collect_jobs (node);
+      pjob->n_values += n;
+      pjob->value_counter -= n;
+      need_collect = TRUE;
       break;
+    case PROBE_UNSCHEDULED:
+      pjob->value_counter = 0;
+      pjob->n_values = 0;
+      need_collect = TRUE;
+      break;
+    }
+  /* pop probe job */
+  if (!pjob->value_counter)
+    {
+      node->probe_jobs = pjob->next;
+      insert_trash_job (node, (EngineUserJob*) pjob);
+      if (need_collect)
+        _engine_node_collect_jobs (node);
     }
 }
 
