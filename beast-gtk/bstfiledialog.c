@@ -132,7 +132,7 @@ bst_file_dialog_save (BstFileDialog *fd)
 
   /* offer retry if file exists
    */
-  if (error == BSE_ERROR_EXISTS)
+  if (error == BSE_ERROR_FILE_EXISTS)
     {
       GtkWidget *choice;
       gchar *title = g_strdup_printf ("Saving project `%s'", bse_item_get_name (app->project));

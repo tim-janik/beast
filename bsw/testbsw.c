@@ -42,7 +42,7 @@ main (int   argc,
   ASSERT (project > BSE_SERVER);
   error = bse_project_restore_from_file (project, "/YOUbetterDONThaveTHIS");
   g_print ("load project result: %s\n", bse_error_blurb (error));
-  ASSERT (error == BSE_ERROR_NOT_FOUND);
+  ASSERT (error == BSE_ERROR_FILE_NOT_FOUND);
 
   bse_item_unuse (project);
   

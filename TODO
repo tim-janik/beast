@@ -35,6 +35,7 @@ FIXMES:
 - bstusermessage.c:user_message() signal handler takes choice argument
 - fix engine deinitialization assertions in bseserver.c
 - support [-- Raw --- (big/little) (c=2) (mix=44100) (8/12/16/32) ---] box in wave loader dialog
+- save errno across logging/debugging
 
 URGENT:
 - support pspec groups in idl files [stefan]

@@ -1,3 +1,10 @@
+Wed Jan  8 22:24:36 2003  Tim Janik  <timj@gtk.org>
+
+	* bstfiledialog.c:
+	* bstgconfig.c:
+	* bsw/testbsw.c:
+	fix BSE error handling.
+
 Wed Jan  8 15:47:53 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkpolygon.c (gxk_polygon_expose): indicate insensitive
