@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-07 19:59+0200\n"
-"PO-Revision-Date: 2004-07-06 13:00+0200\n"
+"POT-Creation-Date: 2004-07-09 19:13+0200\n"
+"PO-Revision-Date: 2004-07-09 23:31+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -161,9 +161,8 @@ msgid "GSL Engine..."
 msgstr "Engine GSL..."
 
 #: beast-gtk/bstapp.c:280
-#, fuzzy
 msgid "Export Audio"
-msgstr "Levý zvuk"
+msgstr "Exportovat zvuk"
 
 #: beast-gtk/bstapp.c:569 beast-gtk/bstapp.c:576 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
