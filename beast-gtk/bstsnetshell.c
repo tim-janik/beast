@@ -287,22 +287,13 @@ static void
 bst_snet_shell_operate (BstSuperShell *super_shell,
 			BstOps         op)
 {
-  BseSNet *snet = BSE_SNET (super_shell->super);
+  // BseSNet *snet = BSE_SNET (super_shell->super);
   BstSNetShell *snet_shell = BST_SNET_SHELL (super_shell);
-  BseMaster *master;
 
   g_return_if_fail (bst_snet_shell_can_operate (super_shell, op));
   
-  master = bst_app_get_master (BST_APP (gtk_widget_get_toplevel (GTK_WIDGET (super_shell))));
-  
   switch (op)
     {
-    case BST_OP_PLAY:
-      bse_master_add_source (master, BSE_SOURCE (snet), BSE_SNET_OCHANNEL_STEREO);
-      break;
-    case BST_OP_STOP:
-      bse_source_clear_ochannels (BSE_SOURCE (snet));
-      break;
     default:
       break;
     }
@@ -315,14 +306,10 @@ bst_snet_shell_can_operate (BstSuperShell *super_shell,
 			    BstOps	   op)
 {
   // BstSNetShell *snet_shell = BST_SNET_SHELL (super_shell);
-  BseSNet *snet = BSE_SNET (super_shell->super);
+  // BseSNet *snet = BSE_SNET (super_shell->super);
 
   switch (op)
     {
-    case BST_OP_PLAY:
-      return !BSE_SOURCE_PREPARED (snet);
-    case BST_OP_STOP:
-      return BSE_SOURCE_PREPARED (snet);
     default:
       return FALSE;
     }

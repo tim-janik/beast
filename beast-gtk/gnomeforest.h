@@ -110,6 +110,8 @@ extern "C" {
 #define	GNOME_IS_FOREST_CLASS(klass)	(GTK_CHECK_CLASS_TYPE ((klass), GNOME_TYPE_FOREST))
 #define GNOME_FOREST_GET_CLASS(obj)	((GnomeForestClass*) (((GtkObject*) (obj))->klass))
 
+#define GNOME_FOREST_PRIORITY	(GTK_PRIORITY_REDRAW)
+
 
 /* --- structures & typedefs --- */
 typedef	struct	_GnomeSprite		GnomeSprite;

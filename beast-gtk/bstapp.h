@@ -20,7 +20,6 @@
 
 
 #include        "bstdefs.h"
-#include        "bstmaster.h"
 
 
 #ifdef __cplusplus
@@ -51,7 +50,6 @@ struct _BstApp
   GtkWindow      window;
 
   BseProject	*project;
-  BstMaster	*master;
 
   GtkWidget	*main_vbox;
   GtkNotebook	*notebook;
@@ -79,7 +77,6 @@ void		bst_app_create_default		(BstApp		*app);
 GtkWidget*	bst_app_get_current_shell	(BstApp		*app);
 BseSuper*	bst_app_get_current_super	(BstApp		*app);
 GtkItemFactory*	bst_app_menu_factory		(BstApp		*app);
-BseMaster*	bst_app_get_master		(BstApp		*app);
 void		bst_app_update_can_operate	(BstApp		*app);
      
 

@@ -20,7 +20,6 @@
 #include "bstparamview.h"
 #include "bstapp.h"
 
-#define WANT_ROUTER 0
 
 /* --- prototypes --- */
 static void	bst_song_shell_class_init	(BstSongShellClass	*klass);
@@ -99,7 +98,6 @@ bst_song_shell_init (BstSongShell *song_shell)
   song_shell->param_view = NULL;
   song_shell->pattern_view = NULL;
   song_shell->instrument_view = NULL;
-  song_shell->song_router = NULL;
   song_shell->tooltips = gtk_tooltips_new ();
   gtk_object_ref (GTK_OBJECT (song_shell->tooltips));
   gtk_object_sink (GTK_OBJECT (song_shell->tooltips));
@@ -158,14 +156,6 @@ bst_song_shell_build (BstSongShell *song_shell)
 		  "signal::destroy", gtk_widget_destroyed, &song_shell->instrument_view,
 		  "visible", TRUE,
 		  NULL);
-  if (WANT_ROUTER)
-    {
-      song_shell->song_router = (BstSongRouter*) bst_song_router_new (song);
-      gtk_widget_set (GTK_WIDGET (song_shell->song_router),
-		      "signal::destroy", gtk_widget_destroyed, &song_shell->song_router,
-		      "visible", TRUE,
-		      NULL);
-    }
   
   notebook = gtk_widget_new (GTK_TYPE_NOTEBOOK,
 			     "GtkNotebook::scrollable", FALSE,
@@ -194,12 +184,6 @@ bst_song_shell_build (BstSongShell *song_shell)
 					    "label", "Instruments",
 					    "visible", TRUE,
 					    NULL));
-  if (WANT_ROUTER)
-    gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->song_router),
-			      gtk_widget_new (GTK_TYPE_LABEL,
-					      "label", "Routing",
-					      "visible", TRUE,
-					      NULL));
 }
 
 static void
@@ -239,8 +223,6 @@ bst_song_shell_update (BstSuperShell *super_shell)
   bst_param_view_update (song_shell->param_view);
   bst_item_view_update (song_shell->pattern_view);
   bst_item_view_update (song_shell->instrument_view);
-  if (WANT_ROUTER)
-    bst_song_router_update (song_shell->song_router);
 }
 
 static void
@@ -253,21 +235,16 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
   bst_param_view_rebuild (song_shell->param_view);
   bst_item_view_rebuild (song_shell->pattern_view);
   bst_item_view_rebuild (song_shell->instrument_view);
-  if (WANT_ROUTER)
-    bst_song_router_rebuild (song_shell->song_router);
 }
 
 static void
 bst_song_shell_operate (BstSuperShell *super_shell,
 			BstOps         op)
 {
-  BseSong *song = BSE_SONG (super_shell->super);
+  // BseSong *song = BSE_SONG (super_shell->super);
   BstSongShell *song_shell = BST_SONG_SHELL (super_shell);
-  BseMaster *master;
 
   g_return_if_fail (bst_song_shell_can_operate (super_shell, op));
-  
-  master = bst_app_get_master (BST_APP (gtk_widget_get_toplevel (GTK_WIDGET (super_shell))));
   
   switch (op)
     {
@@ -279,12 +256,6 @@ bst_song_shell_operate (BstSuperShell *super_shell,
     case BST_OP_INSTRUMENT_ADD:
     case BST_OP_INSTRUMENT_DELETE:
       bst_item_view_operate (song_shell->instrument_view, op);
-      break;
-    case BST_OP_PLAY:
-      bse_master_add_source (master, BSE_SOURCE (song), BSE_SONG_OCHANNEL_STEREO);
-      break;
-    case BST_OP_STOP:
-      bse_source_clear_ochannels (BSE_SOURCE (song));
       break;
     default:
       break;
@@ -298,7 +269,7 @@ bst_song_shell_can_operate (BstSuperShell *super_shell,
 			    BstOps	   op)
 {
   BstSongShell *song_shell = BST_SONG_SHELL (super_shell);
-  BseSong *song = BSE_SONG (super_shell->super);
+  // BseSong *song = BSE_SONG (super_shell->super);
 
   switch (op)
     {
@@ -311,10 +282,6 @@ bst_song_shell_can_operate (BstSuperShell *super_shell,
     case BST_OP_INSTRUMENT_DELETE:
       return (song_shell->instrument_view &&
 	      bst_item_view_can_operate (song_shell->instrument_view, op));
-    case BST_OP_PLAY:
-      return !BSE_SOURCE_PREPARED (song);
-    case BST_OP_STOP:
-      return BSE_SOURCE_PREPARED (song);
     default:
       return FALSE;
     }

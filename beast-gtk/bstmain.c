@@ -34,16 +34,16 @@
 
 
 /* --- prototypes --- */
-static void	bst_parse_args	(gint    *argc_p,
-				 gchar ***argv_p);
+static void			bst_parse_args		(gint        *argc_p,
+							 gchar     ***argv_p);
+static BstKeyTablePatch*	bst_key_table_from_xkb	(const gchar *display);
 
 
 /* --- variables --- */
 static guint        args_changed_signal_id = 0;
-BstDebugFlags       bst_debug_flags = BST_DEBUG_MASTER;
+BstDebugFlags       bst_debug_flags = 0;
 static GDebugKey       bst_debug_keys[] = { /* keep in sync with bstdefs.h */
   { "keytable",		BST_DEBUG_KEYTABLE, },
-  { "master",		BST_DEBUG_MASTER, },
   { "samples",		BST_DEBUG_SAMPLES, },
 };
 static const guint bst_n_debug_keys = sizeof (bst_debug_keys) / sizeof (bst_debug_keys[0]);
@@ -61,10 +61,10 @@ int
 main (int   argc,
       char *argv[])
 {
+  BsePcmDevice *pdev;
   GleParserData *pdata;
-  gchar *error, *resource_file = BST_PDATA_DIR "/beast.glr";
+  gchar *resource_file = BST_PDATA_DIR "/beast.glr";
   GSList *slist;
-  GSList *unref_list = NULL;
   BstApp *app = NULL;
   guint i;
   
@@ -85,6 +85,12 @@ main (int   argc,
   bst_free_radio_button_get_type ();
   bst_parse_args (&argc, &argv);
   
+
+  /* setup default keytable for pattern editor class
+   */
+  bst_key_table_install_patch (bst_key_table_from_xkb (gdk_get_display ()));
+
+
   /* check load BSE plugins to register types
    */
   if (1)
@@ -118,118 +124,20 @@ main (int   argc,
 				      GTK_TYPE_NONE, 0);
   
   
-  /* open master output stream
+  /* setup PCM Devices
    */
-  error = bst_master_init ();
-  if (error)
-    {
-      g_printerr (error);
-      g_free (error);
-      
-      return -1;
-    }
+  pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_ID (BsePcmDeviceOSS), NULL);
+  bse_pcm_device_set_device_name (pdev, "/dev/dsp");
+  bse_heart_register_device ("Master", pdev);
+  bse_heart_set_default_odevice ("Master");
+  bse_heart_set_default_idevice ("Master");
+
   
   /* register neccessary GLE components
    */
   bst_app_register ();
-  
-  
-  /* setup default keytable for pattern editor class
-   */
-  {
-    gchar *encoding, *layout, *model, *variant, *name = NULL;
-    GSList *slist, *name_list = NULL;
-    BstKeyTablePatch *patch = NULL;
-    
-    if (bst_xkb_open (gdk_get_display (), TRUE))
-      {
-	name = g_strdup (bst_xkb_get_symbol (TRUE));
-	if (!name)
-	  name = g_strdup (bst_xkb_get_symbol (FALSE));
-	bst_xkb_close ();
-      }
-    
-    bst_xkb_parse_symbol (name, &encoding, &layout, &model, &variant);
-    BST_DEBUG (KEYTABLE, {
-      g_message ("keytable %s: encoding(%s) layout(%s) model(%s) variant(%s)",
-		 name, encoding, layout, model, variant);
-    });
-    g_free (name);
-    
-    /* strip number of keys (if present) */
-    if (layout)
-      {
-	gchar *n, *l = layout;
-	
-	while (*l && (*l < '0' || *l > '9'))
-	  l++;
-	n = l;
-	while (*n >= '0' && *n <= '9')
-	  n++;
-	*n = 0;
-	n = layout;
-	layout = *l ? g_strdup (l) : NULL;
-	g_free (n);
-      }
-    
-    /* list guesses */
-    if (encoding)
-      {
-	name_list = g_slist_prepend (name_list, g_strdup (encoding));
-	if (layout)
-	  name_list = g_slist_prepend (name_list,
-				       g_strdup_printf ("%s-%s",
-							encoding,
-							layout));
-      }
-    if (model)
-      {
-	name_list = g_slist_prepend (name_list, g_strdup (model));
-	if (layout)
-	  name_list = g_slist_prepend (name_list,
-				       g_strdup_printf ("%s-%s",
-							model,
-							layout));
-      }
-    g_free (encoding);
-    g_free (layout);
-    g_free (model);
-    g_free (variant);
-    
-    for (slist = name_list; slist; slist = slist->next)
-      {
-	name = slist->data;
-	
-	if (!patch)
-	  {
-	    patch = bst_key_table_patch_find (name);
-	    BST_DEBUG (KEYTABLE, {
-	      g_message ("Guessing keytable, %s \"%s\"",
-			 patch ? "found" : "failed to get",
-			 name);
-	    });
-	  }
-	else
-	  BST_DEBUG (KEYTABLE, {
-	    g_message ("Guessing keytable, discarding \"%s\"", name);
-	  });
-	g_free (name);
-      }
-    g_slist_free (name_list);
-    
-    if (!patch)
-      {
-	name = BST_DFL_KEYTABLE;	/* default keyboard */
-	BST_DEBUG (KEYTABLE, {
-	  g_message ("Guessing keytable failed, reverting to \"%s\"", name);
-	});
-	patch = bst_key_table_patch_find (name);
-      }
-    
-    bst_key_table_install_patch (patch);
-  }
-  
-  
+
+
   /* parse GLE (GUI) resources
    */
   pdata = gle_parser_data_from_file (resource_file);
@@ -307,18 +215,25 @@ main (int   argc,
   /* and away into the main loop
    */
   gtk_main ();
+
+  /* stop everything playing */
+  bse_heart_reset_all_attach ();
+
+  /* FXME: wrt cleanup cycles */
+
+  /* perform necessary cleanup cycles */
+  while (g_main_iteration (FALSE))
+    ;
   
+  /* remove pcm devices */
+  bse_heart_unregister_device (pdev);
+
+  /* perform necessary cleanup cycles */
+  while (g_main_iteration (FALSE))
+    ;
   
-  for (slist = unref_list; slist; slist = slist->next)
-    bse_object_unref (slist->data);
-  g_slist_free (unref_list);
-  
-  
-  /* shutdown master
-   */
-  bst_master_shutdown ();
-  
-  BSE_DEBUG (CHUNKS, bse_chunk_debug ());
+  BSE_IF_DEBUG (CHUNKS)
+    bse_chunk_debug ();
   
   return 0;
 }
@@ -395,6 +310,101 @@ bst_parse_args (int    *argc_p,
     *argc_p = e;
 }
 
+static BstKeyTablePatch*
+bst_key_table_from_xkb (const gchar *display)
+{
+  gchar *encoding, *layout, *model, *variant, *name = NULL;
+  GSList *slist, *name_list = NULL;
+  BstKeyTablePatch *patch = NULL;
+  
+  if (bst_xkb_open (gdk_get_display (), TRUE))
+    {
+      name = g_strdup (bst_xkb_get_symbol (TRUE));
+      if (!name)
+	name = g_strdup (bst_xkb_get_symbol (FALSE));
+      bst_xkb_close ();
+    }
+  
+  bst_xkb_parse_symbol (name, &encoding, &layout, &model, &variant);
+  BST_DEBUG (KEYTABLE, {
+    g_message ("keytable %s: encoding(%s) layout(%s) model(%s) variant(%s)",
+	       name, encoding, layout, model, variant);
+  });
+  g_free (name);
+  
+  /* strip number of keys (if present) */
+  if (layout)
+    {
+      gchar *n, *l = layout;
+      
+      while (*l && (*l < '0' || *l > '9'))
+	l++;
+      n = l;
+      while (*n >= '0' && *n <= '9')
+	n++;
+      *n = 0;
+      n = layout;
+      layout = *l ? g_strdup (l) : NULL;
+      g_free (n);
+    }
+  
+  /* list guesses */
+  if (encoding)
+    {
+      name_list = g_slist_prepend (name_list, g_strdup (encoding));
+      if (layout)
+	name_list = g_slist_prepend (name_list,
+				     g_strdup_printf ("%s-%s",
+						      encoding,
+						      layout));
+    }
+  if (model)
+    {
+      name_list = g_slist_prepend (name_list, g_strdup (model));
+      if (layout)
+	name_list = g_slist_prepend (name_list,
+				     g_strdup_printf ("%s-%s",
+						      model,
+						      layout));
+    }
+  g_free (encoding);
+  g_free (layout);
+  g_free (model);
+  g_free (variant);
+  
+  for (slist = name_list; slist; slist = slist->next)
+    {
+      name = slist->data;
+      
+      if (!patch)
+	{
+	  patch = bst_key_table_patch_find (name);
+	  BST_DEBUG (KEYTABLE, {
+	    g_message ("Guessing keytable, %s \"%s\"",
+		       patch ? "found" : "failed to get",
+		       name);
+	  });
+	}
+      else
+	BST_DEBUG (KEYTABLE, {
+	  g_message ("Guessing keytable, discarding \"%s\"", name);
+	});
+      g_free (name);
+    }
+  g_slist_free (name_list);
+  
+  if (!patch)
+    {
+      name = BST_DFL_KEYTABLE;	/* default keyboard */
+      BST_DEBUG (KEYTABLE, {
+	g_message ("Guessing keytable failed, reverting to \"%s\"", name);
+      });
+      patch = bst_key_table_patch_find (name);
+    }
+  
+  return patch;
+}
+
 BseIcon*
 bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting needed */
 {
@@ -413,10 +423,10 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
   static const guint n_stock_icons = sizeof (pixdatas) / sizeof (pixdatas[0]);
   static BseIcon *icons[sizeof (pixdatas) / sizeof (pixdatas[0])] = { NULL, };
   guint icon_id = _id;
-
+  
   g_assert (n_stock_icons == BST_ICON_LAST);
   g_return_val_if_fail (icon_id < n_stock_icons, NULL);
-
+  
   if (!icons[icon_id])
     {
       icons[icon_id] = bse_icon_from_pixdata (pixdatas + icon_id); /* static reference */

@@ -1,3 +1,24 @@
+Sat Dec  4 22:51:25 1999  Tim Janik  <timj@gtk.org>
+
+	* test/testmixer.bse: new file with olaf's old testmixer.c tune.
+
+	* removed bstsongrouter.[hc].
+
+	* beast-gtk/gnomeforest.[hc]: grumbl, some priority fixups.
+
+	* beast-gtk/bstsongshell.c:
+	(bst_song_shell_can_operate): 
+	(bst_song_shell_operate): 
+	* beast-gtk/bstsnetshell.c:
+	(bst_snet_shell_can_operate): 
+	(bst_snet_shell_operate):
+	get rid of the OP_PLAY and OP_STOP cases, this should be handled on
+	project basis.
+
+	* beast-gtk/bstapp.c:
+	(bst_app_can_operate): 
+	(bst_app_operate): handle start and stop of plaback at project basis.
+
 Sat Nov 27 23:03:37 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (main): urg! load plugins from BSE_PATH_PLUGINS

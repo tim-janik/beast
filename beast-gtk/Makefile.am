@@ -40,7 +40,6 @@ beast_headers = $(strip \
 	bstinstrumentview.h \
 	bstitemview.h \
 	bstkeytables.h \
-	bstmaster.h \
 	bstmenus.h \
 	bstparam.h \
 	bstparamview.h \
@@ -52,7 +51,6 @@ beast_headers = $(strip \
 	bstsnetshell.h \
 	bstsnetrouter.h \
 	bstsongshell.h \
-	bstsongrouter.h \
 	bststatusbar.h \
 	bstsupershell.h \
 	bstxkb.h \
@@ -70,7 +68,6 @@ beast_sources = $(strip \
 	bstitemview.c \
 	bstkeytables.c \
 	bstmain.c \
-	bstmaster.c \
 	bstmenus.c \
 	bstparam.c \
 	bstparamview.c \
@@ -82,7 +79,6 @@ beast_sources = $(strip \
 	bstsnetshell.c \
 	bstsnetrouter.c \
 	bstsongshell.c \
-	bstsongrouter.c \
 	bststatusbar.c \
 	bstsupershell.c \
 	bstxkb.c \

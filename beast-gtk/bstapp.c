@@ -146,10 +146,9 @@ bst_app_destroy (GtkObject *object)
 {
   BstApp *app = BST_APP (object);
 
-  bst_master_unref (app->master);
-  app->master = NULL;
   if (app->project)
     {
+      bse_project_stop_playback (app->project);
       bse_object_remove_notifiers_by_func (BSE_OBJECT (app->project),
 					   app_set_title,
 					   app);
@@ -215,8 +214,6 @@ bst_app_build (GleGWidget *gwidget,
 
   bst_app_class->apps = g_slist_prepend (bst_app_class->apps, app);
 
-  app->master = bst_master_ref ();
-
   app->main_vbox = gle_widget_from_gname ("MainVBox");
   app->notebook = (GtkNotebook*) gle_widget_from_gname ("Notebook");
 
@@ -263,14 +260,6 @@ bst_app_get_current_shell (BstApp *app)
     }
 
   return NULL;
-}
-
-BseMaster*
-bst_app_get_master (BstApp *app)
-{
-  g_return_val_if_fail (BST_IS_APP (app), NULL);
-
-  return BSE_MASTER (app->master);
 }
 
 GtkItemFactory*
@@ -466,14 +455,10 @@ bst_app_operate (BstApp *app,
       bse_object_unref (BSE_OBJECT (snet));
       break;
     case BST_OP_PROJECT_PLAY:
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) foreach_super_shell_operate,
-			     GUINT_TO_POINTER (BST_OP_PLAY));
+      bse_project_start_playback (app->project);
       break;
     case BST_OP_PROJECT_STOP:
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) foreach_super_shell_operate,
-			     GUINT_TO_POINTER (BST_OP_STOP));
+      bse_project_stop_playback (app->project);
       break;
     case BST_OP_REFRESH:
       gtk_container_foreach (GTK_CONTAINER (app->notebook),
@@ -538,7 +523,6 @@ bst_app_can_operate (BstApp *app,
 
   switch (bst_op)
     {
-      gpointer data[2];
     case BST_OP_PROJECT_NEW:
     case BST_OP_PROJECT_OPEN:
     case BST_OP_PROJECT_SAVE_AS:
@@ -550,21 +534,19 @@ bst_app_can_operate (BstApp *app,
     case BST_OP_EXIT:
       return TRUE;
     case BST_OP_PROJECT_PLAY:
-      data[0] = GUINT_TO_POINTER (BST_OP_STOP);
-      data[1] = NONE;
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) forwhich_super_shell_can_operate,
-			     data);
-      return data[1] == NULL;
-      break;
+      if (app->project && app->project->supers)
+	return TRUE;
+      return FALSE;
     case BST_OP_PROJECT_STOP:
-      data[0] = GUINT_TO_POINTER (BST_OP_STOP);
-      data[1] = NULL;
-      gtk_container_foreach (GTK_CONTAINER (app->notebook),
-			     (GtkCallback) forany_super_shell_can_operate,
-			     data);
-      return data[1] != NULL;
-      break;
+      if (app->project)
+	{
+	  GSList *slist;
+
+	  for (slist = app->project->supers; slist; slist = slist->next)
+	    if (BSE_SOURCE_PREPARED (slist->data))
+	      return TRUE;
+	}
+      return FALSE;
     default:
       return shell ? bst_super_shell_can_operate (BST_SUPER_SHELL (shell), bst_op) : FALSE;
     }

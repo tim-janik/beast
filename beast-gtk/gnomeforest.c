@@ -1417,7 +1417,7 @@ gnome_forest_queue_update (GnomeForest *forest)
     {
       forest->update_queued = TRUE;
       gtk_object_ref (GTK_OBJECT (forest));
-      g_idle_add_full (G_PRIORITY_LOW + 1,
+      g_idle_add_full (GNOME_FOREST_PRIORITY - 1,
 		       gnome_forest_idle_update,
 		       forest,
 		       (GDestroyNotify) gtk_object_unref);
@@ -1762,13 +1762,13 @@ queue_animator (GnomeForest *forest,
 	  
 	  gtk_object_ref (GTK_OBJECT (forest));
 	  if (adata->delay)
-	    actrl->handler_id = g_timeout_add_full (G_PRIORITY_LOW + 2,
+	    actrl->handler_id = g_timeout_add_full (GNOME_FOREST_PRIORITY - 2,
 						    adata->delay,
 						    sprite_animator,
 						    g_memdup (sa_data, sizeof (sa_data)),
 						    sa_destroy);
 	  else
-	    actrl->handler_id = g_idle_add_full (G_PRIORITY_LOW + 2,
+	    actrl->handler_id = g_idle_add_full (GNOME_FOREST_PRIORITY - 2,
 						 sprite_animator,
 						 g_memdup (sa_data, sizeof (sa_data)),
 						 sa_destroy);

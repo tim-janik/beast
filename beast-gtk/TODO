@@ -8,6 +8,9 @@ general:
 	candidates: ::parent_set ::show ::destroy, since most lags happen
 	during widget building phase
 
+instrument editor:
+prehearse fuctionality with spinner to indicate note
+
 sample repo:
 -	this needs to be moved into BSE in a clean fashion
 

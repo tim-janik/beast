@@ -67,8 +67,6 @@ typedef enum
    */
   BST_OP_UNDO_LAST,
   BST_OP_REDO_LAST,
-  BST_OP_PLAY,
-  BST_OP_STOP,
 
   /* application wide
    */
@@ -96,8 +94,7 @@ BseIcon* bst_icon_from_stock (BstIconId icon_id);
 typedef enum                    /* <skip> */
 { /* keep in sync with bstmain.c */
   BST_DEBUG_KEYTABLE		= (1 << 0),
-  BST_DEBUG_MASTER		= (1 << 1),
-  BST_DEBUG_SAMPLES		= (1 << 2)
+  BST_DEBUG_SAMPLES		= (1 << 1)
 } BstDebugFlags;
 extern BstDebugFlags bst_debug_flags;
 #ifdef G_ENABLE_DEBUG
