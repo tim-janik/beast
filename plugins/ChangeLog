@@ -1,3 +1,8 @@
+Mon Dec 22 23:58:47 2003  Tim Janik  <timj@gtk.org>
+
+	* evaluator/bseevaluator.idl: declare this plugin "unstable" through
+	type options.
+
 Wed Dec 17 19:23:56 2003  Tim Janik  <timj@gtk.org>
 
 	* icons/davbassfilter.png: added DavBassFilter icon.

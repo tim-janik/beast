@@ -22,6 +22,7 @@ namespace Bse {
 
 class Evaluator : Bse::Effect {
   /*Info    icon      = "icons/bseevaluator.png";*/
+  Info    options   = "unstable";
   Info    authors   = "Stefan Westerfeld";
   Info    license   = _("GNU General Public License");
   Info    category  = _("/Misc/Evaluator");
