@@ -416,7 +416,37 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_notes_crossing (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE));
+  bse_value_take_boxed (out_values++, bse_part_list_notes (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, TRUE));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, list-notes-within) {
+  HELP	= "List all notes within a tick range.";
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_int ("tick", "Start Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_STANDARD);
+  IN	= sfi_pspec_int ("duration", "Tick Duration", NULL,
+			 1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("note_list", "Note List", NULL,
+				BSE_TYPE_PART_NOTE_SEQ, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    tick	    = sfi_value_get_int (in_values++);
+  guint    duration = sfi_value_get_int (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  bse_value_take_boxed (out_values++, bse_part_list_notes (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE, FALSE));
   
   return BSE_ERROR_NONE;
 }
@@ -596,13 +626,13 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_notes_crossing (self, tick, duration, note, note));
+  bse_value_take_boxed (out_values++, bse_part_list_notes (self, tick, duration, note, note, TRUE));
   
   return BSE_ERROR_NONE;
 }
 
 METHOD (BsePart, get-notes) {
-  HELP	= "Retrieve all notes of specific frequency at a specific tick.";
+  HELP	= "Retrieve all notes of specific frequency at or crossing a specific tick.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
   IN	= sfi_pspec_int ("tick", "Tick", NULL,
@@ -626,7 +656,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_value_take_boxed (out_values++, bse_part_list_notes_crossing (self, tick, 1, note, note));
+  bse_value_take_boxed (out_values++, bse_part_list_notes (self, tick, 1, note, note, TRUE));
   
   return BSE_ERROR_NONE;
 }
@@ -740,30 +770,6 @@ BODY (BseProcedureClass *proc,
   
   /* it doesn't currently make sense to restrict the standard note range */
   sfi_value_set_int (out_values++, BSE_MAX_NOTE);
-  
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BsePart, get-max-tick) {
-  HELP	= "Retrieve the maximum tick count represented in a part.";
-  IN	= bse_param_spec_object ("part", "Part", NULL,
-				 BSE_TYPE_PART, SFI_PARAM_STANDARD);
-  OUT	= sfi_pspec_int ("tick", "Tick", "Maximum Tick",
-			 0, 0, BSE_PART_MAX_TICK, 384, SFI_PARAM_STANDARD);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BsePart *self     = bse_value_get_object (in_values++);
-  
-  /* check parameters */
-  if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  /* output values */
-  sfi_value_set_int (out_values++, BSE_PART_MAX_TICK);
   
   return BSE_ERROR_NONE;
 }

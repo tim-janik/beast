@@ -111,11 +111,12 @@ gboolean           bse_part_change_control            (BsePart           *self,
                                                        guint              tick,
                                                        BseMidiSignalType  ctype,
                                                        gfloat             value);
-BsePartNoteSeq*    bse_part_list_notes_crossing       (BsePart           *self,
+BsePartNoteSeq*    bse_part_list_notes                (BsePart           *self,
                                                        guint              tick,
                                                        guint              duration,
                                                        gint               min_note,
-                                                       gint               max_note);
+                                                       gint               max_note,
+                                                       gboolean           include_crossings);
 BsePartControlSeq* bse_part_list_controls             (BsePart           *self,
                                                        guint              tick,
                                                        guint              duration,

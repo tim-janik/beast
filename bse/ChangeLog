@@ -1,3 +1,10 @@
+Thu Feb 12 10:48:26 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepart.[hc]:
+	(bse_part_list_notes): renamed from bse_part_list_notes_crossing(),
+	added an argument include_crossings. fixed possible dups of notes
+	starting exactly at tick for include_crossings.
+
 Wed Feb 11 01:43:49 2004  Tim Janik  <timj@gtk.org>
 
 	* bseamplifier.idl: let base_level properly default to 0.

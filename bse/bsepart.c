@@ -1055,11 +1055,12 @@ part_control_seq_append_note (BsePartControlSeq *cseq,
 }
 
 BsePartNoteSeq*
-bse_part_list_notes_crossing (BsePart *self,
-                              guint    tick,
-                              guint    duration,
-                              gint     min_note,
-                              gint     max_note)
+bse_part_list_notes (BsePart *self,
+                     guint    tick,
+                     guint    duration,
+                     gint     min_note,
+                     gint     max_note,
+                     gboolean include_crossings)
 {
   BsePartEventNote *bound, *note;
   BsePartNoteSeq *pseq;
@@ -1075,7 +1076,7 @@ bse_part_list_notes_crossing (BsePart *self,
     {
       SfiUPool *tickpool = sfi_upool_new ();
       /* gather notes spanning across tick */
-      note = bse_part_note_channel_lookup_le (&self->channels[channel], tick);
+      note = include_crossings ? bse_part_note_channel_lookup_lt (&self->channels[channel], tick) : NULL;
       if (note)
         for (j = 0; j < BSE_PART_NOTE_N_CROSSINGS (note); j++)
           {
@@ -1085,7 +1086,7 @@ bse_part_list_notes_crossing (BsePart *self,
                 xnote->note >= min_note && xnote->note <= max_note)
               sfi_upool_set (tickpool, xnote->tick);
           }
-      if (note && note->tick + note->duration > tick &&
+      if (note && note->tick + note->duration > tick && include_crossings &&
           note->note >= min_note && note->note <= max_note)
         sfi_upool_set (tickpool, note->tick);
       /* gather notes starting during duration */
@@ -1099,13 +1100,13 @@ bse_part_list_notes_crossing (BsePart *self,
         }
       /* add notes to sequence */
       ids = sfi_upool_list (tickpool, &n);
+      sfi_upool_destroy (tickpool);
       for (j = 0; j < n; j++)
         {
           note = bse_part_note_channel_lookup (&self->channels[channel], ids[j]);
           part_note_seq_append (pseq, note);
         }
       g_free (ids);
-      sfi_upool_destroy (tickpool);
     }
   return pseq;
 }
