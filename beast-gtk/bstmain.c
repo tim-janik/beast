@@ -517,7 +517,9 @@ bst_early_parse_args (int    *argc_p,
 	{
 	  gchar *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
           gchar *freeme = NULL;
-	  if (strcmp (arg, "docs") == 0)
+	  if (strcmp (arg, "prefix") == 0)
+	    g_print ("%s\n", BST_PATH_PREFIX);
+	  else if (strcmp (arg, "docs") == 0)
 	    g_print ("%s\n", BST_PATH_DOCS);
 	  else if (strcmp (arg, "images") == 0)
 	    g_print ("%s\n", BST_PATH_IMAGES);
@@ -545,7 +547,7 @@ bst_early_parse_args (int    *argc_p,
 	    {
 	      if (arg[0])
                 g_message ("no such resource path: %s", arg);
-	      g_message ("supported resource paths: docs, images, locale, keys, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
+	      g_message ("supported resource paths: prefix, docs, images, keys, locale, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
 	    }
           g_free (freeme);
 	  exit (0);
@@ -597,6 +599,7 @@ bst_exit_print_version (void)
   g_print ("\n");
   g_print ("Compiled for: %s\n", BST_ARCH_NAME);
   g_print ("\n");
+  g_print ("Prefix:          %s\n", BST_PATH_PREFIX);
   g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
   g_print ("Image Path:      %s\n", BST_PATH_IMAGES);
   g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);

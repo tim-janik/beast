@@ -79,6 +79,7 @@ config-paths.h: $(top_builddir)/config.status Makefile
 	&& echo "#define BST_PATH_LOCALE          \"${beastlocaledir}\"" >> xgen-cph \
 	&& echo "#define BST_PATH_KEYS            \"${beastkeysdir}\"" >> xgen-cph \
 	&& echo "#define BST_PATH_SKINS           \"${beastskinsdir}\"" >> xgen-cph \
+	&& echo "#define BST_PATH_PREFIX          \"${prefix}\"" >> xgen-cph \
 	&& echo >> xgen-cph \
 	&& echo "/* Generated data ends here */" >> xgen-cph \
 	&& (cp xgen-cph $@) \
