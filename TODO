@@ -101,6 +101,7 @@ DOCS:
   be counted seperately (e.g. as #node-u1-0-0-0). [alper]
 
 TODO:
+- virtual MIDI keyboard
 - piano and track roll scrolling implemented with secondary scrollbar
 - piano roll dialog gains partlink property editor
 - item links: (where (link 3 "TrackLink::LinkTrack::Cool"))

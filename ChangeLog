@@ -1,3 +1,10 @@
+Thu Sep  4 14:28:12 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparamview.c:
+	* beast-gtk/bstpreferences.c: allow display of non-readable properties.
+
+	* beast-gtk/bstmain.c: changed a couple of the -: debugging flags.
+
 Tue Sep  2 23:05:35 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-download.texi: update beast HOWTO url.

@@ -433,7 +433,7 @@ bst_early_parse_args (int    *argc_p,
 	{
 	  const gchar *flags = argv[i] + 2;
 	  g_printerr ("BEAST(%s): pid = %u\n", BST_VERSION, getpid ());
-	  if (strchr (flags, 'n') != NULL)
+	  if (strchr (flags, 'N') != NULL)
 	    {
 	      register_core_plugins = FALSE;
 	      register_ladspa_plugins = FALSE;
@@ -441,10 +441,16 @@ bst_early_parse_args (int    *argc_p,
 	    }
 	  if (strchr (flags, 'p'))
 	    register_core_plugins = TRUE;
+	  if (strchr (flags, 'P'))
+	    register_core_plugins = FALSE;
 	  if (strchr (flags, 'l'))
 	    register_ladspa_plugins = TRUE;
+	  if (strchr (flags, 'L'))
+	    register_ladspa_plugins = FALSE;
 	  if (strchr (flags, 's'))
 	    register_scripts = TRUE;
+	  if (strchr (flags, 'S'))
+	    register_scripts = FALSE;
 	  if (strchr (flags, 'f'))
 	    {
 	      GLogLevelFlags fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
@@ -603,10 +609,13 @@ bst_print_blurb (gboolean print_help)
       g_print ("  --debug-list            list possible debug keys\n");
       g_print ("  -:[flags]               [flags] can be any of:\n");
       g_print ("                          f - fatal warnings\n");
-      g_print ("                          n - disable script and plugin registration\n");
-      g_print ("                          p - reenable core plugin registration\n");
-      g_print ("                          l - reenable LADSPA plugin registration\n");
-      g_print ("                          s - reenable script registration\n");
+      g_print ("                          N - disable script and plugin registration\n");
+      g_print ("                          p - enable core plugin registration\n");
+      g_print ("                          P - disable core plugin registration\n");
+      g_print ("                          l - enable LADSPA plugin registration\n");
+      g_print ("                          L - disable LADSPA plugin registration\n");
+      g_print ("                          s - enable script registration\n");
+      g_print ("                          S - enable script registration\n");
       g_print ("                          d - debugging extensions (harmfull)\n");
       if (!BST_VERSION_STABLE)
         {
