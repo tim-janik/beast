@@ -1,3 +1,7 @@
+Sat Oct 18 04:59:35 2003  Tim Janik  <timj@gtk.org>
+
+	* sfiustore.[hc]: added pointer pool.
+
 Mon Oct 13 12:29:48 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: added convenience functions g_quark_intern()

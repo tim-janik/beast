@@ -51,6 +51,7 @@ typedef struct {
 } SfiRecFields;
 typedef struct _SfiUStore	SfiUStore;
 typedef struct _SfiUPool	SfiUPool;
+typedef struct _SfiPPool	SfiPPool;
 
 
 /* --- global --- */

@@ -172,3 +172,111 @@ sfi_upool_destroy (SfiUPool *pool)
 {
   sfi_ustore_destroy (ustore_cast (pool));
 }
+
+
+/* --- pointer pool --- */
+#define PPOOL_TAG ((gpointer) sfi_ppool_new)
+
+static inline SfiPPool*
+ppool_cast (register GTree *tree)
+{
+  return (SfiPPool*) tree;
+}
+
+static inline GTree*
+ppool_tree (register SfiPPool *pool)
+{
+  return (GTree*) pool;
+}
+
+static gint
+ppool_cmp (gconstpointer a,
+           gconstpointer b)
+{
+  const gchar *c1 = a;
+  const gchar *c2 = b;
+  return c1 < c2 ? -1 : c1 != c2;
+}
+
+SfiPPool*
+sfi_ppool_new (void)
+{
+  return ppool_cast (g_tree_new (ppool_cmp));
+}
+
+gboolean
+sfi_ppool_lookup (SfiPPool *pool,
+		  gpointer  unique_ptr)
+{
+  g_return_val_if_fail (pool != NULL, FALSE);
+  return g_tree_lookup (ppool_tree (pool), unique_ptr) != NULL;
+}
+
+void
+sfi_ppool_set (SfiPPool *pool,
+	       gpointer  unique_ptr)
+{
+  g_return_if_fail (pool != NULL);
+  g_tree_insert (ppool_tree (pool), unique_ptr, PPOOL_TAG);
+}
+
+void
+sfi_ppool_unset (SfiPPool *pool,
+		 gpointer  unique_ptr)
+{
+  g_return_if_fail (pool != NULL);
+  g_tree_remove (ppool_tree (pool), unique_ptr);
+}
+
+typedef struct {
+  gpointer        data;
+  SfiPPoolForeach foreach;
+} PPoolData;
+
+static gboolean
+ppool_foreach_wrapper (gpointer key,
+                       gpointer value,
+                       gpointer data)
+{
+  PPoolData *pdata = data;
+  /* iterate as long as SfiPPoolForeach() returns TRUE */
+  return !pdata->foreach (pdata->data, key);
+}
+
+void
+sfi_ppool_foreach (SfiPPool        *pool,
+		   SfiPPoolForeach  foreach,
+		   gpointer         data)
+{
+  PPoolData pdata;
+  g_return_if_fail (pool != NULL);
+  pdata.data = data;
+  pdata.foreach = foreach;
+  g_tree_foreach (ppool_tree (pool), ppool_foreach_wrapper, data);
+}
+
+static gboolean
+ppool_foreach_slist (gpointer key,
+                     gpointer value,
+                     gpointer data)
+{
+  GSList **slist_p = data;
+  *slist_p = g_slist_prepend (*slist_p, key);
+  return FALSE; /* always continue */
+}
+
+GSList*
+sfi_ppool_slist (SfiPPool *pool)
+{
+  GSList *slist = NULL;
+  g_return_val_if_fail (pool != NULL, NULL);
+  g_tree_foreach (ppool_tree (pool), ppool_foreach_slist, &slist);
+  return slist;
+}
+
+void
+sfi_ppool_destroy (SfiPPool *pool)
+{
+  g_return_if_fail (pool != NULL);
+  g_tree_destroy (ppool_tree (pool));
+}

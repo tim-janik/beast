@@ -32,6 +32,8 @@ typedef gboolean (*SfiUStoreForeach)	(gpointer	 data,
 					 gpointer	 value);
 typedef gboolean (*SfiUPoolForeach)	(gpointer	 data,
 					 gulong		 unique_id);
+typedef gboolean (*SfiPPoolForeach)	(gpointer	 data,
+					 gpointer        pointer);
 
 
 /* --- unique ID store --- */
@@ -61,6 +63,21 @@ void		sfi_upool_foreach	(SfiUPool	 *pool,
 					 SfiUPoolForeach  foreach,
 					 gpointer	  data);
 void		sfi_upool_destroy	(SfiUPool	 *pool);
+
+
+/* --- pointer pool --- */
+SfiPPool*	sfi_ppool_new		(void);
+gboolean	sfi_ppool_lookup	(SfiPPool	 *pool,
+					 gpointer	  unique_ptr);
+void		sfi_ppool_set		(SfiPPool	 *pool,
+					 gpointer	  unique_ptr);
+void		sfi_ppool_unset		(SfiPPool	 *pool,
+					 gpointer	  unique_ptr);
+void		sfi_ppool_foreach	(SfiPPool	 *pool,
+					 SfiPPoolForeach  foreach,
+					 gpointer	  data);
+GSList*		sfi_ppool_slist	        (SfiPPool	 *pool);
+void		sfi_ppool_destroy	(SfiPPool	 *pool);
 
 
 
