@@ -1,3 +1,8 @@
+Tue Jul 13 22:58:15 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebus.c:
+	* bsebus.h: CVS copied from bsesongbus.[hc]:
+
 Tue Jul 13 21:59:07 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.proc:
