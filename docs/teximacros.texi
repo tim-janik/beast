@@ -156,6 +156,9 @@
 @rmacro reference_parameter{TEXT}
 @ifxmlelse{\TEXT\,reference-parameter,nop}
 @end rmacro
+@rmacro reference_constant{TEXT}
+@ifxmlelse{\TEXT\,reference-constant,nop}
+@end rmacro
 @rmacro reference_type{TEXT}
 @ifxmlelse{\TEXT\,reference-type,nop}
 @end rmacro
@@ -164,6 +167,9 @@
 @end rmacro
 @rmacro reference_blurb{TEXT}
 @ifxmlelse{\TEXT\,reference-blurb,nop}
+@end rmacro
+@rmacro reference_struct_type{TEXT}
+@ifxmlelse{\TEXT\,reference-struct-type,nop}
 @end rmacro
 @rmacro reference_struct_name{TEXT}
 @ifxmlelse{\TEXT\,reference-struct-name,nop}

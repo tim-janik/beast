@@ -50,6 +50,9 @@ DOCS:
 - fix black backgrounds in logo contest thumbnails
   (occours on entries with alpha channel) [alper]
 - keep old news item links working after the site move (e.g. docs/cvs-news.html)
+- adjust overall brightness of the site [alper]
+- in development docs, make function names in descriptions links to
+  apropriate functions [alper]
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq

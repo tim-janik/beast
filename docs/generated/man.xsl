@@ -27,8 +27,10 @@
 .\" Load monospace fonts (Courier)
 .\" 5 -> Regular text
 .fp 5 C
-.\" 6 -> Italic text
-.fp 6 CI
+.\" 6 -> Bold text
+.fp 6 CB
+.\" 7 -> Italic text
+.fp 7 CI
 .\" Start the document
 .TH "<xsl:value-of select="settitle"/>" "<xsl:value-of select="$man_section"/>" "<xsl:call-template name="date"/>" "<xsl:value-of select="para/document-package"/>" "<xsl:value-of select="para/document-package"/>"
 <xsl:call-template name="title_page"/><xsl:apply-templates/>
@@ -351,17 +353,19 @@
 <!-- }}} -->
 
 <!-- {{{ reference generation -->
-<xsl:template match="reference-function">\fB<xsl:apply-templates/>\fP</xsl:template>
-<xsl:template match="reference-parameter">\fI<xsl:apply-templates/>\fP</xsl:template>
-<xsl:template match="reference-type">\fI<xsl:apply-templates/>\fP</xsl:template>
-<xsl:template match="reference-returns">\h'-2m'\fI<xsl:apply-templates/>\fP</xsl:template>
-<!-- <xsl:template match="reference-blurb">\fI<xsl:apply-templates/>\fP</xsl:template> -->
-<xsl:template match="reference-struct-name"> \fI<xsl:apply-templates/>\fP</xsl:template>
-<xsl:template match="reference-struct-open"> \fB{\fP</xsl:template>
+<xsl:template match="reference-function">\fB\f6<xsl:apply-templates/>\fP\f1</xsl:template>
+<xsl:template match="reference-parameter">\fI\f7<xsl:apply-templates/>\fP\f1</xsl:template>
+<xsl:template match="reference-constant">\f5<xsl:apply-templates/>\f1</xsl:template>
+<xsl:template match="reference-type">\fI\f7<xsl:apply-templates/>\fP\f1</xsl:template>
+<xsl:template match="reference-returns">\h'-2m'\fI\f7<xsl:apply-templates/>\fP\f1</xsl:template>
+<!-- <xsl:template match="reference-blurb">\fI\f7<xsl:apply-templates/>\fP\f1</xsl:template> -->
+<xsl:template match="reference-struct-name"> \fB\f6<xsl:apply-templates/>\fP\f6</xsl:template>
+<xsl:template match="reference-struct-type"> \fI\f7<xsl:apply-templates/>\fP\f1</xsl:template>
+<xsl:template match="reference-struct-open"> \fB\f6{\fP\f1</xsl:template>
 <xsl:template match="reference-struct-close"><xsl:text>.sp -1em
 .TP
 .PD 0
-\fB};\fP
+\fB\f6};\fP\f1
 
 </xsl:text></xsl:template>
 <!-- }}} -->
@@ -386,13 +390,13 @@
 
 <xsl:template match="acronym|cite|dfn|kbd|samp|var|url|email|key|env|file|command|option|code">\f5<xsl:apply-templates/>\f1</xsl:template>
 
-<xsl:template match="menupath">\f6<xsl:apply-templates/>\f1</xsl:template>
+<xsl:template match="menupath">\f7<xsl:apply-templates/>\f1</xsl:template>
 
-<xsl:template match="pagepath">\f6<xsl:apply-templates/>\f1</xsl:template>
+<xsl:template match="pagepath">\f7<xsl:apply-templates/>\f1</xsl:template>
 
 <xsl:template match="object">\f5<xsl:apply-templates/>\f1</xsl:template>
 
-<xsl:template match="channel">\f6<xsl:apply-templates/>\f1</xsl:template>
+<xsl:template match="channel">\f7<xsl:apply-templates/>\f1</xsl:template>
 
 <xsl:template match="property">"<xsl:apply-templates/>"</xsl:template>
 
@@ -448,8 +452,8 @@
     <xsl:when test="$protocol='http' or $protocol='ftp'">
       <xsl:choose>
 	<xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
-	<xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (\fI\f6<xsl:value-of select="concat($protocol, '://', $url)"/>\fP)</xsl:when>
-	<xsl:otherwise>\fI\f6<xsl:value-of select="concat($protocol, '://', $url)"/>\fP</xsl:otherwise>
+	<xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (\fI\f7<xsl:value-of select="concat($protocol, '://', $url)"/>\fP)</xsl:when>
+	<xsl:otherwise>\fI\f7<xsl:value-of select="concat($protocol, '://', $url)"/>\fP</xsl:otherwise>
       </xsl:choose>
     </xsl:when>
     <!-- PROTOCOL: FILE MAILTO -->
@@ -464,8 +468,8 @@
     <xsl:when test="$protocol='news'">
       <xsl:choose>
 	<xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
-	<xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (\fI\f6<xsl:value-of select="concat($protocol, ':', $url)"/>\fP)</xsl:when>
-	<xsl:otherwise>\fI\f6<xsl:value-of select="concat($protocol, ':', $url)"/>\fP</xsl:otherwise>
+	<xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (\fI\f7<xsl:value-of select="concat($protocol, ':', $url)"/>\fP)</xsl:when>
+	<xsl:otherwise>\fI\f7<xsl:value-of select="concat($protocol, ':', $url)"/>\fP</xsl:otherwise>
       </xsl:choose>
     </xsl:when>
     <!-- PROTOCOL: System and BEAST Man Pages -->
@@ -545,8 +549,8 @@
 	  <xsl:message>XSL-WARNING: unknown protocol '<xsl:value-of select="$protocol"/>' in <xsl:value-of select="urefurl"/>, using as-is</xsl:message>
 	  <xsl:choose>
 	    <xsl:when test="count(child::urefreplacement)"><xsl:apply-templates select="urefreplacement"/></xsl:when>
-	    <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (\fI\f6<xsl:value-of select="urefurl"/>\fP)</xsl:when>
-	    <xsl:otherwise>\fI\f6<xsl:value-of select="urefurl"/>\fP</xsl:otherwise>
+	    <xsl:when test="count(child::urefdesc)"><xsl:apply-templates select="urefdesc"/> (\fI\f7<xsl:value-of select="urefurl"/>\fP)</xsl:when>
+	    <xsl:otherwise>\fI\f7<xsl:value-of select="urefurl"/>\fP</xsl:otherwise>
 	  </xsl:choose>
 	</xsl:otherwise>
       </xsl:choose>

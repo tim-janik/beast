@@ -136,7 +136,7 @@ show_procdoc (void)
 	   "@unnumbered NAME\n"
 	   "BSE-Procedures - BSE Procedures Reference\n"
 	   "\n"
-	   "@revision{Document Revised:}\n"
+	   "@revision{Document Revised:}@*\n"
 	   "\n"
 	   "@unnumbered SYNOPSIS\n"
 	   "@printplainindex fn\n"
@@ -257,7 +257,7 @@ show_structdoc (void)
 	   "@unnumbered NAME\n"
 	   "BSE-Structures - BSE Structure Reference\n"
 	   "\n"
-	   "@revision{Document Revised:}\n"
+	   "@revision{Document Revised:}@*\n"
 	   "\n"
 	   "@unnumbered SYNOPSIS\n"
 	   "@printplainindex fn\n"
@@ -283,9 +283,9 @@ show_structdoc (void)
 	  SfiRing *ring, *pspecs = NULL;
 	  guint j;
 
-	  g_print ("@item @reference_type{%s} @reference_struct_name{%s} @reference_struct_open ", dname, name);
+	  g_print ("@item @reference_struct_type{%s} @reference_struct_name{%s} @reference_struct_open ", dname, name);
 
-	  g_print ("@findex @reference_type{%s}@ @reference_struct_name{%s};", dname, name);
+	  g_print ("@findex @reference_struct_type{%s}@ @reference_struct_name{%s};", dname, name);
 	  cstring = sfi_info_string_find (rinfo ? rinfo->infos : sinfo->infos, "BLURB");
 	  if (cstring)
 	    g_print (" - @reference_blurb{%s}", cstring);

@@ -167,10 +167,14 @@ sub tags_highlight {
     $t =~ s/@([A-Za-z0-9_-]+)/\@reference_parameter{$1}/g;
 
     # A constant
-    $t =~ s/%([A-Za-z0-9_-]+)/\@strong{$1}/g;
+    $t =~ s/%([A-Za-z0-9_-]+)/\@reference_constant{$1}/g;
 
-    # Everything else
-    $t =~ s/#([A-Za-z0-9_-]+)/\@emph{$1}/g;
+    # A number should look like a constant
+    # FIXME this needs improvements, especially in math formulas
+    $t =~ s/(\s+)([0-9]+)(\s+)/$1\@reference_constant{$2}$3/g;
+
+    # A type
+    $t =~ s/#([A-Za-z0-9_-]+)/\@reference_type{$1}/g;
 
     # A function name
     # $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/<strong>$1<\/strong>/g;
@@ -249,7 +253,7 @@ print <<END_HEADER;
 \@unnumbered NAME
 $pname - $pblurb
 
-\@revision{Document Revised:}
+\@revision{Document Revised:}\@*
 
 \@unnumbered SYNOPSIS
 \@printplainindex fn

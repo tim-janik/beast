@@ -658,21 +658,21 @@
 <!-- }}} -->
 
 <!-- {{{ reference generation -->
-<xsl:template match="reference-function|reference-parameter|reference-returns|reference-type|reference-blurb|reference-struct-name">
-  <span>
+<xsl:template match="reference-function|reference-parameter|reference-constant|reference-returns|reference-type|reference-blurb|reference-struct-name|reference-struct-type">
+  <code>
     <xsl:attribute name="class">
       <xsl:value-of select="local-name()"/>
     </xsl:attribute>
     <xsl:apply-templates/>
-  </span>
+  </code>
 </xsl:template>
 
 <xsl:template match="reference-struct-open">
-  <span class="reference-struct"> {</span>
+  <code class="reference-struct"> {</code>
 </xsl:template>
 
 <xsl:template match="reference-struct-close">
-  <span class="reference-struct-close">};</span>
+  <code class="reference-struct-close">};</code>
 </xsl:template>
 <!-- }}} -->
 

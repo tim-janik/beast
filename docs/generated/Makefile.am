@@ -135,6 +135,8 @@ if HAVE_XMLMAKEINFO_AND_XSLTPROC
 	groff -man -t $< >$@
 %.ps: %.3
 	groff -man -t $< >$@
+%.pdf: %.ps
+	ps2pdf13 $< $@
 # where to get *.texi docs from
 %.texi: $(srcdir)/../%.texi
 	sed -e "s#@sedfix{top_srcdir}#${top_srcdir}#" <$< >$@
@@ -226,6 +228,10 @@ clean: xml-clean
 ps_targets = $(patsubst %.3, %.ps, $(man_MANS))
 ps-targets:	$(ps_targets)
 CLEANFILES += $(ps_targets)
+# pdf variants
+pdf_targets = $(patsubst %.ps, %.pdf, $(ps_targets))
+pdf-targets:	$(pdf_targets)
+CLEANFILES += $(pdf_targets)
 # xml linting
 lint: $(markup_targets)
 	@for i in $^ ; do \
@@ -242,4 +248,4 @@ MAINTAINERCLEANFILES +=
 )
 
 # non-file rules
-.PHONY: site ps-targets lint xml-clean
+.PHONY: site ps-targets pdf-targets lint xml-clean

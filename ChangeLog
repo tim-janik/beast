@@ -1,3 +1,32 @@
+Wed Jan  8 02:41:29 2003  Alper Ersoy <dirt@gtk.org>
+
+	* docs/generated/Makefile.am: added simple rule for pdf generation
+	from ps files.
+	
+	* bse/bseautodoc.c: added struct_type markup.
+
+	* bse/bseautodoc.c: put a newline before SYNOPSIS titles.
+	* docs/generated/scandocs.pl: same here.
+	
+	* docs/teximacros.texi: added @reference_constant and
+	@reference_struct_type macros.
+
+	* docs/generated/html.xsl: support constant and struct_type markups.
+	* docs/generated/markup.xsl:
+	* docs/generated/man.xsl:
+	* docs/generated/scandocs.pl: same here.
+
+	* docs/generated/scandocs.pl: added initial markup for numbers as
+	constants, fixed type markup.
+
+	* docs/generated/html.xsl: use <code /> tags instead of <span /> for
+	reference generation.
+
+	* docs/generated/man.xsl: adjusted monospace markup in reference
+	generation.
+
+	* docs/generated/markup.xsl: adjusted colors of reference elements.
+
 Wed Jan  8 22:24:36 2003  Tim Janik  <timj@gtk.org>
 
 	* bstfiledialog.c:

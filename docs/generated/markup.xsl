@@ -90,13 +90,15 @@
       <tagdef name="smallformat"    wrap_mode="none" scale="0.9" />
 
       <!-- reference elements -->
-      <tagdef name="reference-function"	    weight="bold" foreground="#5555cc" />
-      <tagdef name="reference-parameter"    weight="bold" foreground="#198e86" />
-      <tagdef name="reference-returns"	    weight="bold" foreground="#228822" />
-      <tagdef name="reference-type"	    foreground="#555555" />
-      <tagdef name="reference-blurb"	    foreground="#555555" />
-      <tagdef name="reference-struct"	    weight="bold" left_margin="5" />
-      <tagdef name="reference-struct-name"  weight="bold" foreground="#668c1a" />
+      <tagdef name="reference-function"	    family="monospace" foreground="#5555cc" />
+      <tagdef name="reference-parameter"    family="monospace" foreground="#555555" />
+      <tagdef name="reference-constant"     family="monospace" foreground="#00b0b0" />
+      <tagdef name="reference-returns"	    family="monospace" foreground="#228822" />
+      <tagdef name="reference-type"	    family="monospace" foreground="#228822" />
+      <tagdef name="reference-blurb"	    family="monospace" foreground="#555555" />
+      <tagdef name="reference-struct"	    family="monospace" left_margin="5" />
+      <tagdef name="reference-struct-type"  family="monospace" foreground="#662407" left_margin="5" />
+      <tagdef name="reference-struct-name"  family="monospace" foreground="#228822" />
 
       <!-- high priority markup primitives -->
       <tagdef name="center"         justification="center" />
@@ -640,7 +642,7 @@
   <!-- }}} -->
 
   <!-- {{{ reference generation -->
-  <xsl:template match="reference-function|reference-parameter|reference-returns|reference-type|reference-blurb|reference-struct-name">
+  <xsl:template match="reference-function|reference-parameter|reference-returns|reference-type|reference-blurb|reference-struct-name|reference-struct-type">
     <span>
       <xsl:attribute name="tag">
 	<xsl:value-of select="local-name()"/>
