@@ -1,3 +1,7 @@
+Sat Nov 27 22:36:24 1999  Tim Janik  <timj@gtk.org>
+
+	* test/geekworld.bse: added test file, hacked up during geekworld.
+
 Sat Nov 27 07:40:54 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c:
