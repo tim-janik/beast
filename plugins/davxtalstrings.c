@@ -336,7 +336,7 @@ xmod_process (BseModule *module,
   for (i = 0; i < n_values; i++)
     {
       /* check input triggers */
-      if_reject (GSL_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i]))
+      if (G_UNLIKELY (GSL_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i])))
       	{
 	  xmod_trigger (xmod, freq_in ? GSL_SIGNAL_TO_FREQ (freq_in[i]) : xmod->tparams.freq);
 	  real_freq_256 = (int) (xmod->last_trigger_freq * 256);

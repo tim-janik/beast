@@ -254,7 +254,7 @@ dmod_process (BseModule *module,
       gfloat cur_freq;
 
       /* check input triggers */
-      if_reject (GSL_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i]))
+      if (G_UNLIKELY (GSL_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i])))
         {
           /* trigger drum */
           dmod_trigger (dmod,
