@@ -77,6 +77,16 @@ struct LineInfo {
   bool isInclude;
   int line;
   std::string filename;
+
+  // Produce a human readable location (file:line, using "stdin" where appropriate) 
+  std::string location() const
+  {
+    std::string result;
+    char *x = g_strdup_printf ("%s:%d", (filename == "-") ? "stdin" : filename.c_str(), line);
+    result = x;
+    g_free (x);
+    return result;
+  }
 };
 
 struct Constant {

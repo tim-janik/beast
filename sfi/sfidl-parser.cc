@@ -287,7 +287,7 @@ void Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_e
   if (scanner->line > 0 && parser->scannerLineInfo.size() >= scanner->line)
     {
       const LineInfo& info = parser->scannerLineInfo[scanner->line-1];
-      fprintf (stderr, "%s:%d: ", info.filename.c_str(), info.line);
+      fprintf (stderr, "%s: ", info.location().c_str());
     }
   else
     {
@@ -401,13 +401,7 @@ void Parser::preprocess (const string& filename, bool includeImpl)
 
       vector<LineInfo>::iterator li;
       for (li = scannerLineInfo.begin(); li != scannerLineInfo.end(); li++)
-	{
-	  li->isInclude = (implIncludes.count (li->filename) == 0);
-
-	  // Error messages are more readable if they speak of "stdin" instead of "-".
-	  if (li->filename == "-") 
-	    li->filename = "stdin";
-	}
+	li->isInclude = (implIncludes.count (li->filename) == 0);
     }
 }
 
@@ -536,7 +530,8 @@ void Parser::preprocessContents (const string& input_filename)
 	    }
 	  if (location == "")
 	    {
-	      fprintf(stderr,"include file '%s' not found\n", filename.c_str());
+	      fprintf (stderr, "%s: ", linfo.location().c_str());
+	      fprintf (stderr, "include file '%s' not found\n", filename.c_str());
 	      exit(1);
 	    }
 	  preprocess (location, includeImpl);

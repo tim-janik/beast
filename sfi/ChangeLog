@@ -1,3 +1,7 @@
+Mon Feb 23 19:38:35 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.*: Report filename/line for missing include files.
+
 Mon Feb 23 17:48:46 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.cc: Fixed bug - code generated will be generated for
