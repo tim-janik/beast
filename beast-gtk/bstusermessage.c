@@ -310,7 +310,7 @@ bst_user_message_popup (const BseUserMsg *umsg)
   if (dialog)
     repeat_dialog (dialog);
   else if (umsg && umsg->config_blurb && bst_msg_absorb_config_match (umsg->config_blurb))
-    ; /* message absorbed by configuration */
+    bst_msg_absorb_config_update (umsg->config_blurb); /* message absorbed by configuration */
   else
     {
       dialog = gxk_dialog_new (NULL, NULL, 0, NULL, NULL);

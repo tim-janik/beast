@@ -103,6 +103,28 @@ bst_msg_absorb_config_match (const gchar *config_blurb)
   return FALSE;
 }
 
+void
+bst_msg_absorb_config_update (const gchar *config_blurb)
+{
+  BstMsgAbsorbStringSeq *mstrings = bst_msg_absorb_config_get_global();
+  gboolean changed = FALSE;
+  guint i;
+  for (i = 0; i < mstrings->n_strings; i++)
+    if (strcmp (config_blurb, mstrings->strings[i]->cstring) == 0)
+      {
+        BstMsgAbsorbString *mas = mstrings->strings[i];
+        if (strcmp (mas->version, BST_VERSION) != 0)
+          {
+            g_free (mas->version);
+            mas->version = g_strdup (BST_VERSION);
+            changed = TRUE;
+          }
+        break;
+      }
+  if (changed)
+    bst_msg_absorb_config_save();
+}
+
 gboolean
 bst_msg_absorb_config_adjust (const gchar    *config_blurb,
                               gboolean        enabled,
@@ -119,9 +141,11 @@ bst_msg_absorb_config_adjust (const gchar    *config_blurb,
       mas.version = g_strdup (BST_VERSION);
       mas.cstring = g_strdup (config_blurb);
       mas.enabled = !enabled; /* force change */
+      i = mstrings->n_strings;
       bst_msg_absorb_string_seq_append (mstrings, &mas);
     }
-  if (mstrings->strings[i]->enabled != enabled)
+  if (mstrings->strings[i]->enabled != enabled ||
+      (update_version && strcmp (BST_VERSION, mstrings->strings[i]->version)))
     {
       BstMsgAbsorbString *mas = mstrings->strings[i];
       if (update_version)

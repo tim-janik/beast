@@ -1,3 +1,11 @@
+Mon Oct  4 07:15:54 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmsgabsorb.[hc]: added bst_msg_absorb_config_update()
+	to update versioning. 
+	bst_msg_absorb_config_adjust(): consider versioning changes.
+
+	* beast-gtk/bstusermessage.c: update version on filtered messages.
+
 Mon Oct  4 04:51:01 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstusermessage.c: spacing fixes.

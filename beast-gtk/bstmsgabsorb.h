@@ -35,6 +35,7 @@ gboolean               bst_msg_absorb_config_adjust     (const gchar    *config_
                                                          gboolean        enabled,
                                                          gboolean        update_version);
 gboolean               bst_msg_absorb_config_match      (const gchar    *config_blurb);
+void                   bst_msg_absorb_config_update     (const gchar    *config_blurb);
 GtkWidget*	       bst_msg_absorb_config_box	(void);
 void                   bst_msg_absorb_config_box_set    (GtkWidget      *box,
                                                          BstMsgAbsorbStringSeq *mass);
