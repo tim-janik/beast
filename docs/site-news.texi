@@ -11,6 +11,15 @@
 @unnumbered What's New?
 
 
+@newsTitle{August 27 Jul 2003, Site closed due to software patents}
+
+The BEAST website joins the
+@uref{http://swpat.ffii.org/group/demo/index.en.html,, online demonstration}
+of the
+@uref{http://www.ffii.org/,,Foundation for a Free Information Infrastructure}
+against software patents and closes its front
+page on August the 27th.
+
 @newsTitle{Tuesday 22 Jul 2003, BEAST Realease [Velocity Edit]}
 
 BEAST/BSE version 0.5.4 is available in the
