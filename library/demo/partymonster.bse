@@ -3,14 +3,14 @@
 (bse-version "0.5.5")
 
 (container-child "BseWaveRepo::Wave-Repository"
-  (modification-time "2003-10-18 01:55:00")
+  (modification-time "2003-10-25 15:04:19")
   (creation-time "2003-10-04 18:06:50"))
 (container-child "BseSong::Party Monster"
   (pnet (link 1 "Compression"))
   (bpm 140)
-  (modification-time "2003-10-18 01:55:00")
+  (modification-time "2003-10-25 15:04:19")
   (creation-time "2003-10-04 18:10:14")
-  (license "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
   (container-child "BseTrack::Track-01"
     (snet (link 2 "BaseDrum"))
@@ -1067,9 +1067,9 @@
     (insert-note 768 383 55)
     (insert-note 1152 384 55)))
 (container-child "BseCSynth::BaseDrum"
-  (modification-time "2003-10-18 01:55:00")
+  (modification-time "2003-10-25 15:04:19")
   (creation-time "2003-10-04 18:06:54")
-  (license "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
   (container-child "DavSynDrum::DavSynDrum-1"
     (res 50.00000074505806)
@@ -1114,9 +1114,9 @@
     (source-input "audio-in1" (link 1 "BseAmplifier-1") "audio-out")
     (source-input "ctrl-in1" (link 1 "MidiController-1") "ctrl-out1")))
 (container-child "BseCSynth::SynBass"
-  (modification-time "2003-10-18 01:55:00")
+  (modification-time "2003-10-25 15:04:19")
   (creation-time "2003-10-04 18:16:53")
-  (license "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
   (container-child "BseInstrumentInput::BseSubKeyboard-1"
     (pos-y -1.5800000000000001)
@@ -1171,9 +1171,9 @@
     (pos-x -2.0049999999999999)
     (source-input "freq-in" (link 1 "BseSubKeyboard-1") "frequency")))
 (container-child "BseCSynth::Hihat"
-  (modification-time "2003-10-18 01:55:00")
+  (modification-time "2003-10-25 15:04:19")
   (creation-time "2003-10-04 19:38:05")
-  (license "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
   (container-child "BseInstrumentInput::BseSubKeyboard-1"
     (pos-y 0.73999999999999999)
@@ -1221,10 +1221,9 @@
     (source-input "audio-in1" (link 1 "BseAmplifier-1") "audio-out")
     (source-input "ctrl-in1" (link 1 "MidiController-1") "ctrl-out1")))
 (container-child "BseCSynth::XtalString"
-  (auto-activate #t)
-  (modification-time "2003-10-18 01:55:00")
+  (modification-time "2003-10-25 15:04:19")
   (creation-time "2003-10-04 20:36:52")
-  (license "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::BseAmplifier-1"
     (olevel 37)
@@ -1271,9 +1270,9 @@
     (source-input "audio-in1" (link 1 "BseAmplifier-1") "audio-out")
     (source-input "ctrl-in1" (link 1 "MidiController-1") "ctrl-out1")))
 (container-child "BseCSynth::SynString"
-  (modification-time "2003-10-18 01:55:00")
+  (modification-time "2003-10-25 15:04:19")
   (creation-time "2003-10-04 21:06:50")
-  (license "Copyright (C) 2003 Stefan Westerfeld")
+  (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
   (author "Stefan Westerfeld")
   (container-child "BseAmplifier::BseAmplifier-1"
     (olevel 6)
@@ -1330,8 +1329,10 @@
     (pos-y 2.2599999999999998)
     (pos-x 0.27000000000000002)))
 (container-child "BseCSynth::Compression"
-  (modification-time "2003-10-18 01:55:54")
+  (modification-time "2003-10-25 15:04:19")
   (creation-time "2003-10-18 01:55:54")
+  (license "Green OpenMusic License (http://openmusic.linuxtag.org)")
+  (author "Stefan Westerfeld")
   (container-child "ArtsStereoCompressor::ArtsStereoCompressor-1"
     (output 6)
     (ratio 0.20065789473684212)

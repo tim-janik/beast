@@ -1,3 +1,10 @@
+Sat Oct 25 17:14:45 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* library/demo/partymonster.bse: Licensed under the Green OpenMusic
+	License (http://openmusic.linuxtag.org).
+
+	* library/scripts/song-parts-operations.scm: Licensed GPL.
+
 Sat Oct 25 02:16:35 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstrackeditor.c (bst_rack_editor_init): added warning
