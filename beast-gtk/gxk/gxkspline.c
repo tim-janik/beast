@@ -182,10 +182,10 @@ gxk_spline_new (guint                   n_points,
 
 /**
  * gxk_spline_eval
- * @spline: correctly setup #GxkSpline
- * @x:      x position for evaluation
- * @dy1:    location to store first derivative of y
- * RETURNS: y of @spline at position x
+ * @spline:  correctly setup #GxkSpline
+ * @x:       x position for evaluation
+ * @dy1:     location to store first derivative of y
+ * @RETURNS: y of @spline at position x
  *
  * Evaluate the @spline polynomial at position @x and
  * return the interpolated value y, as well as its first derivative.
@@ -213,9 +213,9 @@ gxk_spline_eval (const GxkSpline *spline,
 
 /**
  * gxk_spline_y
- * @spline: correctly setup #GxkSpline
- * @x:      x position for evaluation
- * RETURNS: y of @spline at position x
+ * @spline:  correctly setup #GxkSpline
+ * @x:       x position for evaluation
+ * @RETURNS: y of @spline at position x
  *
  * Evaluate the @spline polynomial at position @x and
  * return the interpolated value y.
@@ -236,9 +236,9 @@ round_to_double (double vin)
 
 /**
  * gxk_spline_findx
- * @spline: correctly setup #GxkSpline
- * @y:      interpolated y value
- * RETURNS: x position to yield y or NAN
+ * @spline:  correctly setup #GxkSpline
+ * @y:       interpolated y value
+ * @RETURNS: x position to yield y or NAN
  *
  * Find an x position for which spline evaluation yields y.
  * Due to round off, calling gxk_spline_y() on the result may
@@ -246,8 +246,8 @@ round_to_double (double vin)
  * If multiple x positions will yield y upon evaluation, any
  * of them may be returned. If no x position can yield y,
  * NAN is returned. Evaluation of this function may take
- * 10 times as long as calling its counterpart gxk_spline_y(),
- * some times much longer.
+ * about 10 times as long as calling its counterpart
+ * gxk_spline_y(), some times much longer.
  */
 double
 gxk_spline_findx (const GxkSpline *spline,
