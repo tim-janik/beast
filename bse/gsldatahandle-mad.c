@@ -29,6 +29,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <errno.h>
+
+#if	GSL_HAVE_LIBMAD
 #include <mad.h>
 
 
@@ -726,5 +728,23 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
 
   return GSL_ERROR_NONE;
 }
+
+#else	/* !GSL_HAVE_LIBMAD */
+
+GslDataHandle*
+gsl_data_handle_new_mad (const gchar *file_name)
+{
+  return NULL;
+}
+
+GslErrorType
+gsl_data_handle_mad_testopen (const gchar *file_name,
+			      guint       *n_channels,
+			      gfloat      *mix_freq)
+{
+  return GSL_ERROR_FORMAT_UNKNOWN;
+}
+
+#endif	/* !GSL_HAVE_LIBMAD */
 
 /* vim:set ts=8 sts=2 sw=2: */

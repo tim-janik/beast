@@ -1,3 +1,10 @@
+Fri Apr  5 07:42:16 2002  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle-mad.c: disable file contents if !GSL_HAVE_LIBMAD.
+
+	* gslloader-mad.c (_gsl_init_loader_mad): don't register the MAD MPEG
+	loader if !GSL_HAVE_LIBMAD.
+
 Fri Apr  5 06:45:29 2002  Tim Janik  <timj@gtk.org>
 
 	* gsldatahandle-mad.[hc]: libmad based mp3 datahandle implementation.

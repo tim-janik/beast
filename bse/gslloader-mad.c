@@ -205,5 +205,6 @@ _gsl_init_loader_mad (void)
   g_assert (initialized == FALSE);
   initialized = TRUE;
 
-  gsl_loader_register (&loader);
+  if (GSL_HAVE_LIBMAD)
+    gsl_loader_register (&loader);
 }
