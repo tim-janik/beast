@@ -1,3 +1,10 @@
+Mon Oct 21 16:16:35 2002  Tim Janik  <timj@gtk.org>
+
+	* sfivcall.[hc]: implement sfi_vcall_void(), a GValue based
+	function call marshaller (void returns) with up to 5 arguments.
+
+	* sfimarshal.[hcl]*: get rid of this.
+
 Sun Oct 20 19:06:14 2002  Tim Janik  <timj@gtk.org>
 
 	* sfidl.cc: generate data for boxed types after function definitions.

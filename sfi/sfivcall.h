@@ -1,5 +1,5 @@
 /* SFI - Synthesis Fusion Kit Interface
- * Copyright (C) 2002 Tim Janik and Stefan Westerfeld
+ * Copyright (C) 2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,18 +16,34 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __SFI_H__
-#define __SFI_H__
+#ifndef __SFI_VCALL_H__
+#define __SFI_VCALL_H__
 
-#include <sfi/sfinote.h>
-#include <sfi/sfiparams.h>
-#include <sfi/sfiprimitives.h>
-#include <sfi/sfiserial.h>
-#include <sfi/sfitime.h>
 #include <sfi/sfitypes.h>
-#include <sfi/sfivalues.h>
-#include <sfi/sfivcall.h>
 
-#endif /* __SFI_VALUE_H__ */
+G_BEGIN_DECLS
+
+/* --- hard limit --- */
+#define	SFI_VCALL_MAX_ARGS	5
+
+
+/* --- invocations --- */
+void	sfi_vcall_void	(gpointer	 func,
+			 gpointer	 arg0,
+			 guint		 n_args,
+			 GValue		*args,  /* 1..n */
+			 gpointer	 data); /* n+1 */
+
+
+/* --- internal --- */
+#if GLIB_SIZEOF_VOID_P == 4
+#define SFI_VCALL_PTR_ID  1
+#else
+#define SFI_VCALL_PTR_ID  2
+#endif
+
+G_END_DECLS
+
+#endif /* __SFI_VCALL_H__ */
 
 /* vim:set ts=8 sts=2 sw=2: */

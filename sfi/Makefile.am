@@ -28,6 +28,7 @@ sfi_headers = $(strip \
 	sfitime.h	\
 	sfitypes.h	\
 	sfivalues.h	\
+	sfivcall.h	\
 )
 sfi_c_sources = $(strip \
 	glib-extra.c	\
@@ -38,13 +39,11 @@ sfi_c_sources = $(strip \
 	sfitime.c	\
 	sfitypes.c	\
 	sfivalues.c	\
+	sfivcall.c	\
 )
 sfi_extra_sources = $(strip \
-	sfimarshal.list \
 )
 sfi_built_sources = $(strip \
-	sfimarshal.h \
-	sfimarshal.c \
 )
 
 GLIB_MKENUMS = glib-mkenums
@@ -52,17 +51,6 @@ temp_files =  xgen-smh xgen-smc
 stamp_files = # gxkgentypes.stamp
 
 $(sfi_c_sources): $(sfi_built_sources)
-
-$(srcdir)/sfimarshal.h:	sfimarshal.list
-	cd $(srcdir) \
-	&& glib-genmarshal --prefix=sfi_marshal sfimarshal.list --header >> xgen-gmh \
-	&& cp xgen-gmh sfimarshal.h \
-	&& rm -f xgen-gmh
-$(srcdir)/sfimarshal.c: sfimarshal.list
-	cd $(srcdir) \
-	&& glib-genmarshal --prefix=sfi_marshal sfimarshal.list --body >> xgen-gmc \
-	&& cp xgen-gmc sfimarshal.c \
-	&& rm -f xgen-gmc
 
 libsfi_la_SOURCES = $(sfi_c_sources)
 

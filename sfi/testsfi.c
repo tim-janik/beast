@@ -426,6 +426,124 @@ test_renames (void)
   DONE ();
 }
 
+static gboolean gen_vcall_switch = TRUE;
+
+static void
+vcall_gen (guint sig)
+{
+  guint i, n;
+  if (!gen_vcall_switch)
+    {
+      g_print ("static void\nvcall_%u (gpointer func, gpointer arg0, Arg *alist)\n{\n", sig);
+      g_print ("  void (*f) (gpointer");
+      for (i = sig; i; i >>= 2)
+	switch (i & 3)
+	  {
+	  case 1:	g_print (", guint32");		break;
+	  case 2:	g_print (", guint64");		break;
+	  case 3:	g_print (", double");		break;
+	  }
+      g_print (") = func;\n");
+      g_print ("  f (arg0");
+      for (i = sig, n = 0; i; i >>= 2, n++)
+	switch (i & 3)
+	  {
+	  case 1:	g_print (", alist[%u].v32", n);		break;
+	  case 2:	g_print (", alist[%u].v64", n);		break;
+	  case 3:	g_print (", alist[%u].vdbl", n);	break;
+	  }
+      g_print (");\n}\n");
+    }
+  else
+    {
+      g_print ("    case %6u: return vcall_%u;\n", sig, sig);
+    }
+}
+
+static void
+vcall_rec (guint sig,
+	   guint n_args)
+{
+  if (n_args--)
+    {
+      sig <<= 2;
+      vcall_rec (sig | 1, n_args);
+      vcall_rec (sig | 2, n_args);
+      vcall_rec (sig | 3, n_args);
+    }
+  else
+    vcall_gen (sig);
+}
+
+static void
+vcalls_generate (void)
+{
+  guint n;
+
+  gen_vcall_switch = FALSE;
+  for (n = 0; n <= SFI_VCALL_MAX_ARGS; n++)
+    vcall_rec (SFI_VCALL_PTR_ID, n);
+
+  gen_vcall_switch = TRUE;
+  g_print ("static VCall\nvcall_switch (guint sig)\n{\n");
+  g_print ("  switch (sig)\n    {\n");
+  for (n = 0; n <= SFI_VCALL_MAX_ARGS; n++)
+    vcall_rec (SFI_VCALL_PTR_ID, n);
+  g_print ("    default: g_assert_not_reached (); return NULL;\n");
+  g_print ("    }\n}\n");
+}
+
+static gchar *pointer1 = "huhu";
+static gchar *pointer2 = "haha";
+static gchar *pointer3 = "zoot";
+
+static void
+test_vcalls_func (gpointer o,
+		  SfiInt   i,
+		  SfiNum   n,
+		  SfiProxy p,
+		  SfiReal  r,
+		  SfiNum   self,
+		  gpointer data)
+{
+  ASSERT (o == pointer1);
+  ASSERT (i == -2134567);
+  ASSERT (n == -2598768763298128732);
+  ASSERT (p == (SfiProxy) pointer2);
+  ASSERT (r == -426.9112e-267);
+  ASSERT (self == (SfiNum) test_vcalls_func);
+  ASSERT (data == pointer3);
+}
+
+static void
+test_vcalls (void)
+{
+  GValue *val;
+  SfiSeq *seq = sfi_seq_new ();
+  MSG ("VCalls:");
+  val = sfi_value_int (-2134567);
+  sfi_seq_append (seq, val);
+  sfi_value_free (val);
+  val = sfi_value_num (-2598768763298128732);
+  sfi_seq_append (seq, val);
+  sfi_value_free (val);
+  val = sfi_value_proxy ((SfiProxy) pointer2);
+  sfi_seq_append (seq, val);
+  sfi_value_free (val);
+  val = sfi_value_real (-426.9112e-267);
+  sfi_seq_append (seq, val);
+  sfi_value_free (val);
+  val = sfi_value_num ((SfiNum) test_vcalls_func);
+  sfi_seq_append (seq, val);
+  sfi_value_free (val);
+  sfi_vcall_void (test_vcalls_func, pointer1,
+		  seq->n_elements, seq->elements,
+		  pointer3);
+  ASSERT (0 == 0);
+  DONE ();
+  sfi_seq_unref (seq);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -434,12 +552,19 @@ main (int   argc,
 
   sfi_init ();
 
+  if (0)
+    {
+      vcalls_generate ();
+      return 0;
+    }
+  
   test_notes ();
   test_time ();
   test_renames ();
   test_scanner64 ();
   test_typed_serialization (TRUE);
   test_typed_serialization (FALSE);
+  test_vcalls ();
   test_misc ();
   
   return 0;
