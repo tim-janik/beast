@@ -1,3 +1,12 @@
+Mon Mar 17 07:08:35 2003  Tim Janik  <timj@gtk.org>
+
+	* sfigluecodec.c (sfi_glue_decoder_dispatch): unref the fetched
+	event sequence since sfi_glue_context_fetch_event() passes on
+	ownership to us.
+
+	* toyprof-mem.[hc]: implement a signal triggered leak checker,
+	nuked the old statistic code.
+
 Thu Mar 13 12:35:50 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-parser.cc (parseParamDefHints): use %.17g to print doubles,

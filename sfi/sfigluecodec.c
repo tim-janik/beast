@@ -1026,6 +1026,7 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
       SfiSeq *tmp = sfi_seq_new ();
       sfi_seq_append_int (tmp, SFI_GLUE_CODEC_ASYNC_EVENT);
       sfi_seq_append_seq (tmp, seq);
+      sfi_seq_unref (seq);
       decoder->outgoing = sfi_ring_append (decoder->outgoing, sfi_value_seq (tmp));
       sfi_seq_unref (tmp);
       seq = sfi_glue_context_fetch_event ();
@@ -1076,6 +1077,7 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
       SfiSeq *tmp = sfi_seq_new ();
       sfi_seq_append_int (tmp, SFI_GLUE_CODEC_ASYNC_EVENT);
       sfi_seq_append_seq (tmp, seq);
+      sfi_seq_unref (seq);
       decoder->outgoing = sfi_ring_append (decoder->outgoing, sfi_value_seq (tmp));
       sfi_seq_unref (tmp);
       seq = sfi_glue_context_fetch_event ();

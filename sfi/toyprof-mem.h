@@ -1,5 +1,5 @@
 /* TOYPROF - Poor man's profiling toy
- * Copyright (C) 2000-2002 Tim Janik
+ * Copyright (C) 2000-2003 Tim Janik
  *
  * This code is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,21 +13,17 @@
 
 G_BEGIN_DECLS
 
-
-/* number of buckets to trace */
-#define TOYPROF_MEM_TABLE_SIZE 4096
-
+/* causes toyprof to setup hooks via g_mem_set_vtable() */
+void	toyprof_init_glib_memtable	(const gchar	*file_name,
+					 gint		 logger_signal);
+/* start logging memory allocations */
+guint	toyprof_start_leak_logger	(void);
 /* report memory statistics */
-void               toyprof_report_mem   (void);
+void	toyprof_dump_leaks		(guint		leak_logger_stamp,
+					 gint		fd);
 
-/* for g_mem_set_vtable (toyprof_mem_table); */
-extern GMemVTable *toyprof_mem_table;
-
-/* Gdb hooks */
-extern volatile gulong toyprof_trap_free_size;
-extern volatile gulong toyprof_trap_realloc_size;
-extern volatile gulong toyprof_trap_malloc_size;
-
+/* total amount of memory currently allocated */
+extern volatile gulong toyprof_memtotal;
 
 G_END_DECLS
 
