@@ -1,4 +1,10 @@
 FIXME(urgent):
+- show position pointer in part-editor
+- start playback at play pointer position
+- add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
+- write script which resizes 0-length notes to 1/4 note or similar length (those notes occour from MIDI drum pattern imports)
+- sfidl --client: generate: extern "C" ifdef's, include sfi/sfi.h
+- s/bse_server_use_new_project/bse_server_create_project/
 - install bsewavetool, bsewavetool.1
 - gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
 - fix float saving with de_DE
