@@ -237,12 +237,6 @@ MONITORING DIALOG:
   (Beast DSP Engine ---> Membrane)
   (Beast DSP Engine ---> Output Driver)
 
-DRIVER DIALOG:
-* Frame "Audio Driver"
-- Driver name (choice)
-* Frame "Midi Driver"
-- Driver NAme
-
 TASKS:
 - TrackRoll: provide contextmenu for parts to set loopmarker to start/end
 - InputDevices: use a webcam to extract 2D position, usable as e.g. filter input (filter input which changes rythm)
@@ -320,6 +314,8 @@ TASKS:
   - use_count prevents ::release emission
   - ::release on containers removes children
 - implement remote use-count collection
+- OPTIMIZE: optimize BseBalance process()
+- GUI: XFrames should highlight like buttons in EDIT mode?
 * eliminate everything that fgrep -i fixme/hack reveals
 * move mix_freq and recording_freq into datahandle
 * fix reversed data handle wrg n_channels
@@ -327,102 +323,8 @@ TASKS:
 : gsldatacache.c: nuke blocks upon reopen if mtime changed
 : clone handle caller must be fetched from stack
 
-SourceSniffing:
-  typedef struct {
-    guint           n_channels;
-    BseSourceProbe *probes;
-  } BseSourceProbeList;
-  typedef enum {
-    BSE_SOURCE_PROBE_PEAKS   = 1,
-    BSE_SOURCE_PROBE_SAMPLES = 2,
-    BSE_SOURCE_PROBE_FFT     = 4,
-  } BseSourceProbeMask;
-  typedef struct {
-    guint              channel_id;  // output channel id
-    SfiTime            block_stamp;
-    BseSourceProbeMask probe_mask;
-    gfloat             min, max;    // probe_mask & BSE_SOURCE_PROBE_PEAKS
-    FBlock            *sample_data; // probe_mask & BSE_SOURCE_PROBE_SAMPLES
-    FBlock            *fft_data;    // probe_mask & BSE_SOURCE_PROBE_FFT
-  } BseSourceProbe;
-  bse_source_request_probes (BseSource *source, guint ochannel_id, BseSourceProbeMask probe_mask);
-  /* lasts for approx 3 probes or 1 second */
-  typedef struct {
-    BseSource         *source;
-    guint              ochannel_id;
-    BseSourceProbeMask probe_mask;
-  } BseSourceProbeRequest;
-  typedef struct {
-    guint                  n_requests;
-    BseSourceProbeRequest *requests;
-  } BseSourceMassRequest;
-  bse_source_mass_request (BseSourceMassRequest *mrq);
-  
-Logging:
-* stdlog could be log file, syslog, stderr and GUI
-* Severity:
-  - sfi_error (fwd, stdlog, GUI)
-  - sfi_warn  (fwd, stdlog, GUI unless extra warning suppress)
-  - sfi_info  (fwd, stdlog, GUI unless message suppress)
-  - sfi_diag  (fwd, stdlog, not GUI)
-  - sfi_debug (loc, stdlog)
-* Message forewarding:
-  Scheme -> Shell -> wire -> BSE -> Beast
-  - need ability to track originating process
-  - need ability to track originating package
-* Allow message supression list through hash mechanism
-* Origin: special case "io/" to stdlog
-* GUI handler (thread local), proxy notification via BseServer signals
-* Example:
-  - #define LOG_DOMAIN "MidiDriver"
-    #define LOG_ORIGIN IO_GENERIC
-    _report ("MIDI", _("Advice about MIDI device selections"), _("failed to open %s, using Null MIDI device"), "/dev/midi");
-    _report ("MIDI",
-             _("Advice about MIDI device selections"),
-             _("Alert me about MIDI device selections"),
-             _("failed to open %s, using Null MIDI device"), "/dev/midi");
-  : Report: failed to open /dev/midi, using Null MIDI device
-    [ ] suppress future messages of this kind
-    
-        FooLogConf foo_log_conf (const char *, ...);
-
-	#define LOG_DOMAIN "AllProtocolsLib"
-	#define RDP_LOG     foo_log_conf ("io/rdp", _("Alert me about unrechable servers"), _("Alert me about unrechable servers"))
-	static FooLogConf RDP_LOG ("io/rdp", _("Alert me about unrechable servers"), _("Alert me about unrechable servers"));
-	foo_error (RDP_LOG, _("Server %s:%u not reachable"), server, port);
-	RDP_LOG.error (_("Server %s:%u not reachable"), server, port);
-
-	#define pcm_null FooLogger ("io/pcm", _("Advice about PCM device selections"))
-	pcm_null.error (_("using NULL device"));
-	
-	#define pcm_avail FooLogger ("io/pcm", _("Advice about PCM device availability"))
-	pcm_avail.warn (_("device disappeared: %s"), "/dev/pcm");
-	pcm_avail.warn (_("device appeared: %s"), "/dev/pcm");
-
-	#define music_log FooLogger ("io/music")
-	music_log.error (_("using NULL device"));
-	music_log.warn (_("device disappeared: %s"), "/dev/music");
-	music_log.warn (_("device appeared: %s"), "/dev/music");
-
-	#define midi_log FooLogger ("io/midi", _("Alert me about MIDI devices"), _("Advice about MIDI devices"))
-	midi_log.error (_("using NULL device"));
-	midi_log.warn (_("device disappeared: %s"), "/dev/midi");
-	midi_log.warn (_("device appeared: %s"), "/dev/midi");
-
-	Show Messages about:
-	[ ] Advice about PCM device selections
-	[ ] Advice about PCM device availability
-	[ ] Advice about MIDI devices
-
-	
-  - Message Supression Configuration:
-    -> reenable messages related to MIDI
-       ["MIDI" being kind or class]
-    Enable or disable certain messages types:
-    [ ] Advice about device selections
-   
-
 PianoRoll:
+- PianoRoll: add drum-roll mode where chunk labels are displayed (and note pictures change?)
 - play notes when inserted into piano roll
 - change piano roll dialog wrg GDK_Escape (ala trackroll)?
 - cleanup piano tick bar
@@ -452,7 +354,6 @@ Grouping multiple Modules in Synth Router:
 3. add SubSynth instead of selected modules, which uses the new CSynth
 
 TrackView:
-- resizable scrollbar
 - context menu with delete, move, insert (double click inserts?)
 
 SClock:
@@ -480,44 +381,9 @@ General BSE:
 - fix update_suspension_state() recursion for ordinary cycles
 - replace Balance settings with 3d room position?
 - BseSubInstrument contains pixel artefact
-BseWaveChunk:
-  if (pos > wchunk->tail.end)                                   /* outside wave boundaries */
-    {
-      iter->lbound = 0;
-      iter->rel_pos = wchunk->n_pad_values;
-      iter->ubound = iter->rel_pos + MIN (STATIC_ZERO_SIZE - 2 * wchunk->n_pad_values, pos - wchunk->tail.end);
-      if (PRINT_DEBUG_INFO)
-        g_print ("PHASE_UNDEF, post-tail %ld %ld %ld\n", iter->lbound, iter->rel_pos, iter->ubound);
-      return PHASE_UNDEF (wchunk);
-    }
-  the "pos - wchunk->tail.end" is wrong for direction=+1, should be checked only for direction=-1 and
-  then affect lbound
-* wavechunk, fill-block:
-  wpos.loop_count = loop_count;
-  dnode = gsl_data_cache_ref_node (wchunk->dcache, 0, TRUE);
-  s/0/wpos.pos/ or offset
-- notifier wakeup is disabled in bsemidireceiver.c
-  ('cause gsl_thread_main needs to be replaced by bse_main_thred() or somesuch)
-
-OPTIMIZATIONS:
-- optimize BseBalance process()
-
-GUI features:
-- entry focus watcher: for property editing entries, do:
-  ::focus_in   - set changed_flag=0
-  ::changed    - set changed_flag=1
-  _apply_value - set changed_flag=0
-  ::focus_out  - only re-apply value if changed_flag!=0
-- XFrames should highlight like buttons in EDIT mode?
-- part editor needs play position
-- track editor needs play position
-- Modul BseTranspose, inputs: frequency, outputs: frequency, property: semitones
-- part-view: double click on list items should fire up editor
-- BstToolbar, drop-down selections work only after button release
-- support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
-- fix data cache seeks to skip the -64 byte offset at block boundaries
 
 Effects:
+- BseTranspose: inputs: frequency, outputs: frequency, property: semitones
 * BLIT, band-limited impulse train oscillator
 - device monitor latency setting should be persistent in .bserc
 - implement filters from http://www.harmony-central.com/Computer/Programming/Audio-EQ-Cookbook.txt
