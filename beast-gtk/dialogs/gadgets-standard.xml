@@ -32,12 +32,21 @@
   <!-- menubar -->
   <xdef:menubar               inherit="GtkMenuBar" />
   <xdef:popup-menu            inherit="GtkMenu" />
+  <!-- menu-tearoff: actions= -->
+  <xdef:menu-tearoff inherit="GtkTearoffMenuItem" />
   <!-- menu-item: label= accel-path= accel= stock-image= -->
   <xdef:menu-item             inherit="GxkMenuItem"
     prop:uline-label="$label"
     prop:accel-path="$(null-collapse,$accel-path)"
     prop:accel="$accel"
     prop:stock-image="$stock-image" />
+  <!-- menu-title: label= stock-image= -->
+  <xdef:menu-title            inherit="GxkMenuItem"
+    prop:uline-label="$label"
+    prop:title-style="1"
+    prop:stock-image="$stock-image" />
+  <!-- menu-separator: actions= -->
+  <xdef:menu-separator inherit="GxkMenuItem" prop:sensitive="0" />
   <!-- submenu: label= stock-image= -->
   <xdef:submenu               inherit="GxkMenuItem"
     default-area="menu"
@@ -155,10 +164,6 @@
     stock-image="$action-stock" >
     <tooltip text="$action-tooltip" latent-tooltip="1" />
   </xdef:menu-factory-per-action>
-  <!-- menu-separator: actions= -->
-  <xdef:menu-separator inherit="GxkMenuItem" prop:sensitive="0" />
-  <!-- menu-tearoff: actions= -->
-  <xdef:menu-tearoff inherit="GtkTearoffMenuItem" />
 
   <!-- separator: hseparator= vseparator= -->
   <xdef:separator inherit="alignment"

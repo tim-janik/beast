@@ -1,3 +1,14 @@
+Sat Nov 15 07:20:23 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: introduced title-style property
+	for the menu item to call gxk_widget_modify_as_title() on it.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: moved menu widgets into one
+	place, added menu-title.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added menu-title items to popup
+	menus. fixed item-view buttons to have a relief again.
+
 Fri Nov 14 23:05:35 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.[hc]: removed last bits of manually coded

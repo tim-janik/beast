@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
 <gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
   
+  <xdef:big-button-factory  inherit="button-factory" image-size="big-button" />
   <!-- toolbar items -->
   <xdef:tool-button-factory inherit="button-factory" image-size="big-button" relief="none" />
   <xdef:tool-toggle-factory inherit="toggle-factory" image-size="big-button" relief="none" />
@@ -26,7 +27,7 @@
 	<vbox spacing="3" >
 	  <alignment prop:xscale="0" prop:xalign="0" >
 	    <hbox prop:homogeneous="1" spacing="3" size:vgroup="toolbar-size" >
-	      <tool-button-factory actions="track-view-actions" />
+	      <big-button-factory actions="track-view-actions" />
 	    </hbox>
 	  </alignment>
 	  <frame-shadow-in size:vgroup="tree-size" pack:expand="1" >
@@ -56,7 +57,7 @@
       </scrolled-window>
       <alignment prop:yscale="0" prop:yalign="0" >
 	<vbox prop:homogeneous="1" spacing="3" >
-	  <tool-button-factory actions="wave-view-actions" />
+	  <big-button-factory actions="wave-view-actions" />
 	</vbox>
       </alignment>
     </hbox>
@@ -71,7 +72,7 @@
 	</scrolled-window>
 	<alignment prop:yscale="0" prop:yalign="0" >
 	  <vbox prop:homogeneous="1" spacing="3" >
-	    <tool-button-factory actions="part-view-actions" />
+	    <big-button-factory actions="part-view-actions" />
 	  </vbox>
 	</alignment>
       </hbox>
@@ -118,6 +119,8 @@
 	<frame-shadow-in pack:expand="1" >
 	  <piano-roll prop:height-request="200" >
 	    <popup-menu name="piano-popup" >
+	      <menu-title _label="Piano Notes" />
+	      <menu-separator />
 	      <submenu _label="_Tools" >
 		<menu-factory action-root="" actions="pctrl-canvas-tools" />
 	      </submenu>
@@ -133,6 +136,8 @@
 	      </submenu>
 	    </popup-menu>
 	    <popup-menu name="event-popup" >
+              <menu-title _label="Events" />
+	      <menu-separator />
 	      <submenu _label="_Tools" >
 		<menu-factory action-root="" actions="pctrl-canvas-tools" />
 	      </submenu>

@@ -26,6 +26,7 @@ enum {
   MENU_ITEM_PROP_STOCK_IMAGE,
   MENU_ITEM_PROP_ACCEL_PATH,
   MENU_ITEM_PROP_ACCEL,
+  MENU_ITEM_PROP_TITLE_STYLE,
   MENU_ITEM_PROP_RIGHT_JUSTIFY
 };
 
@@ -57,14 +58,18 @@ gxk_menu_item_set_property (GObject      *object,
         gtk_container_remove (GTK_CONTAINER (self), bin->child);
       string = g_value_get_string (value);
       if (string)
-        g_object_new (GTK_TYPE_ACCEL_LABEL,
-                      "visible", TRUE,
-                      "label", string,
-                      "use-underline", TRUE,
-                      "xalign", 0.0,
-                      "accel-widget", self,
-                      "parent", self,
-                      NULL);
+        {
+          GtkWidget *label = g_object_new (GTK_TYPE_ACCEL_LABEL,
+                                           "visible", TRUE,
+                                           "label", string,
+                                           "use-underline", TRUE,
+                                           "xalign", 0.0,
+                                           "accel-widget", self,
+                                           "parent", self,
+                                           NULL);
+          if (g_object_get_long (self, "gxk-title-style"))
+            gxk_widget_modify_as_title (label);
+        }
       break;
     case MENU_ITEM_PROP_STOCK_IMAGE:
       string = g_value_get_string (value);
@@ -80,6 +85,15 @@ gxk_menu_item_set_property (GObject      *object,
       break;
     case MENU_ITEM_PROP_RIGHT_JUSTIFY:
       gtk_menu_item_set_right_justified (mitem, g_value_get_boolean (value));
+      break;
+    case MENU_ITEM_PROP_TITLE_STYLE:
+      if (g_value_get_boolean (value))
+        {
+          gxk_widget_modify_as_title (GTK_WIDGET (self));
+          g_object_set_long (self, "gxk-title-style", 1);
+          if (bin->child)
+            gxk_widget_modify_as_title (bin->child);
+        }
       break;
     case MENU_ITEM_PROP_ACCEL_PATH:
       path = g_value_get_string (value);
@@ -138,6 +152,8 @@ gxk_menu_item_class_init (GxkMenuItemClass *class)
                                    g_param_spec_string ("accel-path", NULL, NULL, NULL, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, MENU_ITEM_PROP_RIGHT_JUSTIFY,
                                    g_param_spec_boolean ("right-justify", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, MENU_ITEM_PROP_TITLE_STYLE,
+                                   g_param_spec_boolean ("title-style", NULL, NULL, FALSE, G_PARAM_WRITABLE));
 }
 
 GType

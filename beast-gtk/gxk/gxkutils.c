@@ -614,7 +614,7 @@ style_modify_fg_as_sensitive (GtkWidget *widget)
  *
  * Modify the widget and it's style, so that it is insensitive,
  * but doesn't quite look that way. Usefull for inactive title
- * menu items in menus.
+ * menu items in menus (@widget should be the menu item's label).
  */
 void
 gxk_widget_modify_as_title (GtkWidget *widget)

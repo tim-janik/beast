@@ -1,6 +1,5 @@
 FIXMES:
 - add one-shot property to factories
-- implement menu title
 - move bst_action_list_add_cat() to bstutils.[hc]
 - delete BstActionRegions
 - i18n in xml
