@@ -23,7 +23,7 @@
 
 #include	"gsldatautils.h"
 
-#if !HAVE_LIBCSL
+#if !BSE_PCM_DEVICE_CSL_SUPPORT
 BSE_DUMMY_TYPE (BsePcmDeviceCSL);
 #else
 
