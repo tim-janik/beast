@@ -34,9 +34,50 @@ using namespace std;
 #define	DEBUG(...)              sfi_debug ("midi-receiver", __VA_ARGS__)
 #define	DEBUG_EVENTS(...)       sfi_debug ("midi-events", __VA_ARGS__)
 
+/* --- variables --- */
+static SfiMutex                         global_midi_mutex = { 0, };
+#define	BSE_MIDI_RECEIVER_LOCK()        GSL_SPIN_LOCK (&global_midi_mutex)
+#define	BSE_MIDI_RECEIVER_UNLOCK()      GSL_SPIN_UNLOCK (&global_midi_mutex)
 
-#define	BSE_MIDI_RECEIVER_LOCK(self)            GSL_SPIN_LOCK (&midi_mutex)
-#define	BSE_MIDI_RECEIVER_UNLOCK(self)          GSL_SPIN_UNLOCK (&midi_mutex)
+
+/********************************************************************************
+ *
+ * Busy/idle states of a voice and correspondance with table entries:
+ *      Events          QS      Communication           VS      Table
+ *                      Idle                            Idle    0
+ *                      |                               |       0
+ * a) Voice activation at Note On:
+ *      NoteOn          |                               |       0
+ *                      Busy                            |       1 (+Voice)
+ *                      |       -> Job:activate,ON      |       1
+ *                      |                       ->      Busy    1
+ *                      |                               |       1
+ *                      Busy                            Busy    1
+ *
+ * b) Note synthesis finishes:
+ *      Done=1          |                               |       1
+ *                      |                               Idle    1
+ *                      |       GC:enter_idle   <-      |       1
+ *                      Idle    <-                      |       0 (-Voice)
+ *                      |                               |       0
+ *
+ * c) External Note Off Event:
+ *      NoteOff         |                               |       1
+ *                      Idle                            |       1
+ *                      |       -> Job:OFF              |       1
+ *                      |                       ->      Idle    1
+ *                      |       GC:enter_idle   <-      |       1
+ *                      |       <-                      |       0 (-Voice)
+ *                      |                               |       0
+ *
+ * Cases (b) and (c) can occour simultaneously, and sustain is handled
+ * similarly to note off events.
+ *
+ * QS   - queued state (simulated voice state)
+ * VS   - voice state
+ * UT   - UserThread (BSE core thread)
+ * MT   - MasterThread
+ *******************************************************************************/
 
 
 /* --- midi controls --- */
@@ -396,8 +437,8 @@ typedef struct
 } MidiCModuleData;
 
 static void
-midi_control_module_process (BseModule *module, /* vswitch->smodule */
-			     guint      n_values)
+midi_control_module_process_U (BseModule *module, /* vswitch->smodule */
+                               guint      n_values)
 {
   MidiCModuleData *cdata = (MidiCModuleData *) module->user_data;
   guint i;
@@ -416,7 +457,7 @@ create_midi_control_module_L (MidiReceiver      *self,
     0,                                  /* n_istreams */
     0,                                  /* n_jstreams */
     BSE_MIDI_CONTROL_MODULE_N_CHANNELS, /* n_ostreams */
-    midi_control_module_process,        /* process */
+    midi_control_module_process_U,      /* process */
     NULL,                               /* process_defer */
     NULL,                               /* reset */
     (BseModuleFreeFunc) g_free,         /* free */
@@ -447,8 +488,8 @@ typedef struct {
 } MidiCModuleAccessData;
 
 static void
-midi_control_module_access (BseModule *module,
-			    gpointer   data)
+midi_control_module_access_U (BseModule *module,
+                              gpointer   data)
 {
   MidiCModuleData *cdata = (MidiCModuleData *) module->user_data;
   MidiCModuleAccessData *adata = (MidiCModuleAccessData *) data;
@@ -460,11 +501,11 @@ midi_control_module_access (BseModule *module,
 }
 
 static void
-change_midi_control_modules (GSList           *modules,
-			     guint64           tick_stamp,
-			     BseMidiSignalType signal,
-			     gfloat            value,
-			     BseTrans         *trans)
+change_midi_control_modules_L (GSList           *modules,
+                               guint64           tick_stamp,
+                               BseMidiSignalType signal,
+                               gfloat            value,
+                               BseTrans         *trans)
 {
   MidiCModuleAccessData *adata;
   GSList *slist = modules;
@@ -477,15 +518,15 @@ change_midi_control_modules (GSList           *modules,
   for (slist = modules; slist; slist = slist->next)
     bse_trans_add (trans, bse_job_flow_access ((BseModule *) slist->data,
 					       tick_stamp,
-					       midi_control_module_access,
+					       midi_control_module_access_U,
 					       adata,
 					       slist->next ? NULL : g_free));
 }
 
 static gboolean
-match_midi_control_module (BseModule         *cmodule,
-                           guint              midi_channel,
-                           BseMidiSignalType  signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS])
+match_midi_control_module_L (BseModule         *cmodule,
+                             guint              midi_channel,
+                             BseMidiSignalType  signals[BSE_MIDI_CONTROL_MODULE_N_CHANNELS])
 {
   MidiCModuleData *cdata = (MidiCModuleData *) cmodule->user_data;
   gboolean match = TRUE;
@@ -559,8 +600,8 @@ struct VoiceInput
 };
 
 static void
-voice_input_module_process (BseModule *module,
-                            guint      n_values)
+voice_input_module_process_U (BseModule *module,
+                              guint      n_values)
 {
   VoiceInput *vinput = (VoiceInput*) module->user_data;
   
@@ -581,7 +622,7 @@ typedef struct {
 } VoiceInputData;
 
 static void
-voice_input_module_reset (BseModule *module)
+voice_input_module_reset_U (BseModule *module)
 {
   VoiceInput *vinput = (VoiceInput*) module->user_data;
   vinput->freq_value = 0;
@@ -591,7 +632,7 @@ voice_input_module_reset (BseModule *module)
 }
 
 static void
-voice_input_remove_from_table (VoiceInput *vinput)      /* UserThread */
+voice_input_remove_from_table_L (VoiceInput *vinput)    /* UserThread */
 {
   if (vinput->table && vinput->iter != vinput->table->end())
     {
@@ -614,24 +655,28 @@ voice_input_remove_from_table (VoiceInput *vinput)      /* UserThread */
 }
 
 static void
-voice_input_enter_sustain (gpointer data)     /* UserThread */
+voice_input_enter_sustain_U (gpointer data)     /* UserThread */
 {
   VoiceInput *vinput = (VoiceInput*) data;
-  voice_input_remove_from_table (vinput);
+  BSE_MIDI_RECEIVER_LOCK ();
+  voice_input_remove_from_table_L (vinput);
   vinput->queue_state = VSTATE_SUSTAINED;
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 static void
-voice_input_enter_idle (gpointer data)        /* UserThread */
+voice_input_enter_idle_U (gpointer data)        /* UserThread */
 {
   VoiceInput *vinput = (VoiceInput*) data;
-  voice_input_remove_from_table (vinput);
+  BSE_MIDI_RECEIVER_LOCK ();
+  voice_input_remove_from_table_L (vinput);
   vinput->queue_state = VSTATE_IDLE;
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 static void
-voice_input_module_access (BseModule *module,
-                           gpointer   data)
+voice_input_module_access_U (BseModule *module,
+                             gpointer   data)
 {
   VoiceInput *vinput = (VoiceInput*) module->user_data;
   VoiceInputData *mdata = (VoiceInputData *) data;
@@ -661,7 +706,7 @@ voice_input_module_access (BseModule *module,
           GSL_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))
         {
           vinput->vstate = VSTATE_SUSTAINED;
-          bse_engine_add_garbage (vinput, voice_input_enter_sustain);
+          bse_engine_add_garbage (vinput, voice_input_enter_sustain_U);
         }
       break;
     case VOICE_OFF:
@@ -677,18 +722,18 @@ voice_input_module_access (BseModule *module,
     kill_voice:
       vinput->vstate = VSTATE_IDLE;
       vinput->gate = 0.0;
-      bse_engine_add_garbage (vinput, voice_input_enter_idle);
+      bse_engine_add_garbage (vinput, voice_input_enter_idle_U);
       break;
     }
 }
 
 static void
-change_voice_input (VoiceInput      *vinput,
-                    guint64          tick_stamp,
-                    VoiceChangeType  vtype,
-                    gfloat           freq_value,
-                    gfloat           velocity,
-                    BseTrans        *trans)
+change_voice_input_L (VoiceInput      *vinput,
+                      guint64          tick_stamp,
+                      VoiceChangeType  vtype,
+                      gfloat           freq_value,
+                      gfloat           velocity,
+                      BseTrans        *trans)
 {
   switch (vtype)
     {
@@ -732,7 +777,7 @@ change_voice_input (VoiceInput      *vinput,
   mdata.vtype = vtype;
   mdata.freq_value = freq_value;
   mdata.velocity = velocity;
-  bse_trans_add (trans, bse_job_flow_access (vinput->fmodule, tick_stamp, voice_input_module_access, g_memdup (&mdata, sizeof (mdata)), g_free));
+  bse_trans_add (trans, bse_job_flow_access (vinput->fmodule, tick_stamp, voice_input_module_access_U, g_memdup (&mdata, sizeof (mdata)), g_free));
   vinput->tick_stamp = tick_stamp;
 
   DEBUG ("Synth<%p:%08llx>: QueueEvent=%s Freq=%.2fHz",
@@ -742,8 +787,8 @@ change_voice_input (VoiceInput      *vinput,
 }
 
 static void
-voice_input_module_free (gpointer        data,
-                         const BseModuleClass *klass)
+voice_input_module_free_U (gpointer        data,
+                           const BseModuleClass *klass)
 {
   VoiceInput *vinput = (VoiceInput*) data;
   g_assert (vinput->next == NULL);
@@ -751,18 +796,18 @@ voice_input_module_free (gpointer        data,
 }
 
 static VoiceInput*
-create_voice_input (VoiceInputTable *table,
-                    gboolean         ismono,
-                    BseTrans        *trans)
+create_voice_input_L (VoiceInputTable *table,
+                      gboolean         ismono,
+                      BseTrans        *trans)
 {
   static const BseModuleClass mono_synth_module_class = {
     0,                                  /* n_istreams */
     0,                                  /* n_jstreams */
     BSE_MIDI_VOICE_MODULE_N_CHANNELS,   /* n_ostreams */
-    voice_input_module_process,          /* process */
+    voice_input_module_process_U,       /* process */
     NULL,                               /* process_defer */
-    voice_input_module_reset,           /* reset */
-    voice_input_module_free,		/* free */
+    voice_input_module_reset_U,         /* reset */
+    voice_input_module_free_U,		/* free */
     BSE_COST_CHEAP
   };
   VoiceInput *vinput = new VoiceInput;
@@ -785,13 +830,13 @@ create_voice_input (VoiceInputTable *table,
 }
 
 static void
-destroy_voice_input (VoiceInput      *vinput,
-                     BseTrans        *trans)
+destroy_voice_input_L (VoiceInput      *vinput,
+                       BseTrans        *trans)
 {
   g_return_if_fail (vinput->ref_count == 0);
   
   if (vinput->table && vinput->iter != vinput->table->end())
-    voice_input_remove_from_table (vinput);
+    voice_input_remove_from_table_L (vinput);
   bse_trans_add (trans, bse_job_discard (vinput->fmodule));
 }
 
@@ -810,15 +855,17 @@ struct VoiceSwitch
 };
 
 static void
-voice_switch_module_reuse (gpointer data)       /* UserThread */
+voice_switch_module_reuse_U (gpointer data)     /* UserThread */
 {
   VoiceSwitch *vswitch = (VoiceSwitch*) data;
+  BSE_MIDI_RECEIVER_LOCK ();
   vswitch->disconnected = TRUE;         /* reuse possible */
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 static void
-voice_switch_module_process (BseModule *module,
-                             guint      n_values)
+voice_switch_module_process_U (BseModule *module,
+                               guint      n_values)
 {
   VoiceSwitch *vswitch = (VoiceSwitch*) module->user_data;
   guint i;
@@ -840,15 +887,15 @@ voice_switch_module_process (BseModule *module,
         if (vswitch->vinputs[i]->vstate == VSTATE_BUSY)
           {
             vswitch->vinputs[i]->vstate = VSTATE_IDLE;
-            bse_engine_add_garbage (vswitch->vinputs[i], voice_input_enter_idle);
+            bse_engine_add_garbage (vswitch->vinputs[i], voice_input_enter_idle_U);
           }
-      bse_engine_add_garbage (vswitch, voice_switch_module_reuse);
+      bse_engine_add_garbage (vswitch, voice_switch_module_reuse_U);
     }
 }
 
 static void
-voice_switch_module_boundary_check (BseModule *module,
-                                    gpointer   data)
+voice_switch_module_boundary_check_U (BseModule *module,
+                                      gpointer   data)
 {
   VoiceSwitch *vswitch = (VoiceSwitch*) module->user_data;
   if (!bse_module_has_source (vswitch->vmodule, 0))
@@ -863,39 +910,38 @@ voice_switch_module_boundary_check (BseModule *module,
 }
 
 static void
-activate_voice_switch (VoiceSwitch *vswitch,
-                       guint64      tick_stamp,
-                       BseTrans    *trans)
+activate_voice_switch_L (VoiceSwitch *vswitch,
+                         guint64      tick_stamp,
+                         BseTrans    *trans)
 {
   g_return_if_fail (vswitch->disconnected == TRUE);
   /* make sure the module is connected before tick_stamp */
-  bse_trans_add (trans, bse_job_boundary_access (vswitch->smodule, tick_stamp, voice_switch_module_boundary_check, NULL, NULL));
+  bse_trans_add (trans, bse_job_boundary_access (vswitch->smodule, tick_stamp, voice_switch_module_boundary_check_U, NULL, NULL));
   /* make sure the module is not suspended at tick_stamp */
   bse_trans_add (trans, bse_job_resume_at (vswitch->smodule, tick_stamp));
-  vswitch->disconnected = FALSE;  /* reset hint early */
+  vswitch->disconnected = FALSE;        /* reset hint ahead of time */
 }
 
 static void
-voice_switch_module_free (gpointer        data,
-                          const BseModuleClass *klass)
+voice_switch_module_free_U (gpointer        data,
+                            const BseModuleClass *klass)
 {
   VoiceSwitch *vswitch = (VoiceSwitch*) data;
-  
   g_free (vswitch->vinputs);
   g_free (vswitch);
 }
 
 static VoiceSwitch*
-create_voice_switch_module (BseTrans *trans)
+create_voice_switch_module_L (BseTrans *trans)
 {
   static const BseModuleClass switch_module_class = {
     BSE_MIDI_VOICE_N_CHANNELS,          /* n_istreams */
     0,                                  /* n_jstreams */
     BSE_MIDI_VOICE_N_CHANNELS,          /* n_ostreams */
-    voice_switch_module_process,        /* process */
+    voice_switch_module_process_U,      /* process */
     NULL,                               /* process_defer */
     NULL,                               /* reset */
-    voice_switch_module_free,           /* free */
+    voice_switch_module_free_U,         /* free */
     BSE_COST_CHEAP
   };
   VoiceSwitch *vswitch = g_new0 (VoiceSwitch, 1);
@@ -912,22 +958,22 @@ create_voice_switch_module (BseTrans *trans)
 }
 
 static inline gboolean
-check_voice_switch_available (VoiceSwitch *vswitch)
+check_voice_switch_available_L (VoiceSwitch *vswitch)
 {
   return vswitch->disconnected;
 }
 
 static void
-voice_switch_module_commit_accessor (BseModule *module,
-                                     gpointer   data)
+voice_switch_module_commit_accessor_U (BseModule *module,
+                                       gpointer   data)
 {
   BseTrans *trans = (BseTrans*) data;
   bse_trans_commit (trans);
 }
 
 static void
-destroy_voice_switch (VoiceSwitch *vswitch,
-                      BseTrans     *trans)
+destroy_voice_switch_L (VoiceSwitch *vswitch,
+                        BseTrans     *trans)
 {
   BseTrans *tmp_trans;
   
@@ -943,14 +989,14 @@ destroy_voice_switch (VoiceSwitch *vswitch,
    * so we use a normal accessor to defer destruction which makes
    * sure that pending disconnect jobs have been processed already.
    */
-  bse_trans_add (trans, bse_job_access (vswitch->smodule, voice_switch_module_commit_accessor, tmp_trans, NULL));
+  bse_trans_add (trans, bse_job_access (vswitch->smodule, voice_switch_module_commit_accessor_U, tmp_trans, NULL));
 }
 
 
 /* --- MidiChannel --- */
 static inline gboolean
-check_voice_input_improvement (VoiceInput *vinput1, /* vinput1 better than vinput2? */
-                               VoiceInput *vinput2)
+check_voice_input_improvement_L (VoiceInput *vinput1, /* vinput1 better than vinput2? */
+                                 VoiceInput *vinput2)
 {
   if (vinput1->queue_state == vinput2->queue_state)
     return vinput1->tick_stamp < vinput2->tick_stamp;
@@ -976,7 +1022,7 @@ MidiChannel::start_note (guint64         tick_stamp,
   
   /* adjust channel global mono synth */
   if (mchannel->vinput)
-    change_voice_input (mchannel->vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
+    change_voice_input_L (mchannel->vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
   
   /* figure voice from event */
   vswitch = NULL; // voice numbers on events not currently supported
@@ -986,7 +1032,7 @@ MidiChannel::start_note (guint64         tick_stamp,
       if (mchannel->voices[i] && mchannel->voices[i]->n_vinputs)
         {
           override_candidate = mchannel->voices[i];
-          if (check_voice_switch_available (mchannel->voices[i]))
+          if (check_voice_switch_available_L (mchannel->voices[i]))
             {
               vswitch = mchannel->voices[i];
               break;
@@ -1002,11 +1048,11 @@ MidiChannel::start_note (guint64         tick_stamp,
       VoiceInput *vinput = vswitch->vinputs[0];
       /* figure mono synth */
       for (i = 1; i < vswitch->n_vinputs; i++)
-        if (check_voice_input_improvement (vswitch->vinputs[i], vinput))
+        if (check_voice_input_improvement_L (vswitch->vinputs[i], vinput))
           vinput = vswitch->vinputs[i];
       /* setup voice */
-      activate_voice_switch (vswitch, tick_stamp, trans);
-      change_voice_input (vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
+      activate_voice_switch_L (vswitch, tick_stamp, trans);
+      change_voice_input_L (vinput, tick_stamp, VOICE_ON, freq_val, velocity, trans);
     }
   else
     sfi_diag ("MidiChannel(%u): no voice available for note-on (%fHz)", mchannel->midi_channel, freq);
@@ -1029,7 +1075,7 @@ MidiChannel::adjust_note (guint64         tick_stamp,
   
   /* adjust channel global mono synth */
   if (mchannel->vinput)
-    change_voice_input (mchannel->vinput, tick_stamp, vctype, freq_val, velocity, trans);
+    change_voice_input_L (mchannel->vinput, tick_stamp, vctype, freq_val, velocity, trans);
   
   /* find corresponding vinput */
   vinput = mchannel->voice_input_table[freq_val];
@@ -1038,7 +1084,7 @@ MidiChannel::adjust_note (guint64         tick_stamp,
 
   /* adjust note */
   if (vinput)
-    change_voice_input (vinput, tick_stamp, vctype, freq_val, velocity, trans);
+    change_voice_input_L (vinput, tick_stamp, vctype, freq_val, velocity, trans);
   else
     sfi_diag ("MidiChannel(%u): no voice available for %s (%fHz)", mchannel->midi_channel,
               etype == BSE_MIDI_NOTE_OFF ? "note-off" : "velocity", freq);
@@ -1054,9 +1100,9 @@ MidiChannel::kill_notes (guint64       tick_stamp,
   
   /* adjust channel global voice inputs */
   if (mchannel->vinput && sustained_only && mchannel->vinput->queue_state == VSTATE_SUSTAINED)
-    change_voice_input (mchannel->vinput, tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
+    change_voice_input_L (mchannel->vinput, tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
   else if (mchannel->vinput && !sustained_only && mchannel->vinput->queue_state != VSTATE_IDLE)
-    change_voice_input (mchannel->vinput, tick_stamp, VOICE_KILL, 0, 0, trans);
+    change_voice_input_L (mchannel->vinput, tick_stamp, VOICE_KILL, 0, 0, trans);
   
   /* adjust poly voice inputs */
   for (i = 0; i < mchannel->n_voices; i++)
@@ -1065,9 +1111,9 @@ MidiChannel::kill_notes (guint64       tick_stamp,
       if (vswitch)
         for (j = 0; j < vswitch->n_vinputs; j++)
           if (sustained_only && vswitch->vinputs[j]->queue_state == VSTATE_SUSTAINED)
-            change_voice_input (vswitch->vinputs[j], tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
+            change_voice_input_L (vswitch->vinputs[j], tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
           else if (!sustained_only && vswitch->vinputs[j]->queue_state != VSTATE_BUSY)
-            change_voice_input (vswitch->vinputs[j], tick_stamp, VOICE_KILL, 0, 0, trans);
+            change_voice_input_L (vswitch->vinputs[j], tick_stamp, VOICE_KILL, 0, 0, trans);
     }
 }
 
@@ -1109,7 +1155,6 @@ static gint	midi_receiver_process_event_L  (BseMidiReceiver        *self,
 
 
 /* --- variables --- */
-static SfiMutex                 midi_mutex = { 0, };
 static vector<BseMidiReceiver*> farm_residents;
 
 
@@ -1121,7 +1166,7 @@ _bse_midi_init (void)
   
   g_assert (initialized++ == FALSE);
   
-  sfi_mutex_init (&midi_mutex);
+  sfi_mutex_init (&global_midi_mutex);
 }
 
 static gint
@@ -1141,9 +1186,9 @@ bse_midi_receiver_enter_farm (BseMidiReceiver *self)
   g_return_if_fail (self != NULL);
   g_return_if_fail (find (farm_residents.begin(), farm_residents.end(), self) == farm_residents.end());
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   farm_residents.push_back (self);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 void
@@ -1151,10 +1196,10 @@ bse_midi_receiver_farm_distribute_event (BseMidiEvent *event)
 {
   g_return_if_fail (event != NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   for (vector<BseMidiReceiver*>::iterator it = farm_residents.begin(); it != farm_residents.end(); it++)
     (*it)->events = sfi_ring_insert_sorted ((*it)->events, bse_midi_copy_event (event), events_cmp, NULL);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 void
@@ -1164,10 +1209,10 @@ bse_midi_receiver_farm_process_events (guint64 max_tick_stamp)
   do
     {
       seen_event = FALSE;
-      BSE_MIDI_RECEIVER_LOCK (self);
+      BSE_MIDI_RECEIVER_LOCK ();
       for (vector<BseMidiReceiver*>::iterator it = farm_residents.begin(); it != farm_residents.end(); it++)
         seen_event |= midi_receiver_process_event_L (*it, max_tick_stamp);
-      BSE_MIDI_RECEIVER_UNLOCK (self);
+      BSE_MIDI_RECEIVER_UNLOCK ();
     }
   while (seen_event);
 }
@@ -1178,9 +1223,9 @@ bse_midi_receiver_leave_farm (BseMidiReceiver *self)
   g_return_if_fail (self != NULL);
   g_return_if_fail (find (farm_residents.begin(), farm_residents.end(), self) != farm_residents.end());
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   farm_residents.erase (find (farm_residents.begin(), farm_residents.end(), self));
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 void
@@ -1190,9 +1235,9 @@ bse_midi_receiver_push_event (BseMidiReceiver *self,
   g_return_if_fail (self != NULL);
   g_return_if_fail (event != NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   self->events = sfi_ring_insert_sorted (self->events, event, events_cmp, NULL);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 void
@@ -1205,9 +1250,9 @@ bse_midi_receiver_process_events (BseMidiReceiver *self,
   
   do
     {
-      BSE_MIDI_RECEIVER_LOCK (self);
+      BSE_MIDI_RECEIVER_LOCK ();
       seen_event = midi_receiver_process_event_L (self, max_tick_stamp);
-      BSE_MIDI_RECEIVER_UNLOCK (self);
+      BSE_MIDI_RECEIVER_UNLOCK ();
     }
   while (seen_event);
 }
@@ -1229,9 +1274,9 @@ bse_midi_receiver_ref (BseMidiReceiver *self)
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (self->ref_count > 0, NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   self->ref_count++;
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   
   return self;
 }
@@ -1244,12 +1289,12 @@ bse_midi_receiver_unref (BseMidiReceiver *self)
   g_return_if_fail (self != NULL);
   g_return_if_fail (self->ref_count > 0);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   self->ref_count--;
   need_destroy = self->ref_count == 0;
   leave_farm = need_destroy && find (farm_residents.begin(),
                                      farm_residents.end(), self) != farm_residents.end();
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   
   if (need_destroy)
     {
@@ -1267,7 +1312,7 @@ bse_midi_receiver_set_notifier (BseMidiReceiver *self,
   
   g_return_if_fail (self != NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   old_notifier = self->notifier;
   self->notifier = notifier;
   if (self->notifier)
@@ -1280,7 +1325,7 @@ bse_midi_receiver_set_notifier (BseMidiReceiver *self,
 	BseMidiEvent *event = (BseMidiEvent *) sfi_ring_pop_head (&self->notifier_events);
 	bse_midi_free_event (event);
       }
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 BseMidiNotifier*
@@ -1290,9 +1335,9 @@ bse_midi_receiver_get_notifier (BseMidiReceiver *self)
   
   g_return_val_if_fail (self != NULL, NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   notifier = self->notifier;
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   
   return notifier;
 }
@@ -1311,10 +1356,10 @@ bse_midi_receiver_fetch_notify_events (BseMidiReceiver *self)
   
   g_return_val_if_fail (self != NULL, NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   ring = self->notifier_events;
   self->notifier_events = NULL;
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   
   return ring;
 }
@@ -1332,15 +1377,15 @@ bse_midi_receiver_retrieve_control_module (BseMidiReceiver  *self,
   g_return_val_if_fail (midi_channel > 0, NULL);
   g_return_val_if_fail (signals != NULL, NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   for (i = 0; i < self->n_cmodules; i++)
     {
       cmodule = self->cmodules[i];
-      if (match_midi_control_module (cmodule, midi_channel, signals))
+      if (match_midi_control_module_L (cmodule, midi_channel, signals))
         {
           MidiCModuleData *cdata = (MidiCModuleData *) cmodule->user_data;
           cdata->ref_count++;
-	  BSE_MIDI_RECEIVER_UNLOCK (self);
+	  BSE_MIDI_RECEIVER_UNLOCK ();
           return cmodule;
         }
     }
@@ -1356,7 +1401,7 @@ bse_midi_receiver_retrieve_control_module (BseMidiReceiver  *self,
     self->add_control (midi_channel, signals[2], cmodule);
   if (signals[3] != signals[2] && signals[3] != signals[1] && signals[3] != signals[0])
     self->add_control (midi_channel, signals[3], cmodule);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   return cmodule;
 }
 
@@ -1370,7 +1415,7 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
   g_return_if_fail (self != NULL);
   g_return_if_fail (module != NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   for (i = 0; i < self->n_cmodules; i++)
     {
       BseModule *cmodule = self->cmodules[i];
@@ -1394,11 +1439,11 @@ bse_midi_receiver_discard_control_module (BseMidiReceiver *self,
 	      if (signals[3] != signals[2] && signals[3] != signals[1] && signals[3] != signals[0])
 		self->remove_control (midi_channel, signals[3], cmodule);
 	    }
-	  BSE_MIDI_RECEIVER_UNLOCK (self);
+	  BSE_MIDI_RECEIVER_UNLOCK ();
           return;
         }
     }
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   g_warning ("no such control module: %p", module);
 }
 
@@ -1415,9 +1460,9 @@ bse_midi_receiver_add_control_handler (BseMidiReceiver      *self,
   g_return_val_if_fail (handler_func != NULL, FALSE);
   g_return_val_if_fail (module != NULL, FALSE);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   gboolean has_data = self->add_control_handler (midi_channel, signal_type, handler_func, handler_data, module);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   return has_data;
 }
 
@@ -1434,9 +1479,9 @@ bse_midi_receiver_set_control_handler_data (BseMidiReceiver      *self,
   g_return_if_fail (midi_channel > 0);
   g_return_if_fail (handler_func != NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   self->set_control_handler_data (midi_channel, signal_type, handler_func, handler_data, extra_data, extra_free);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 void
@@ -1452,9 +1497,9 @@ bse_midi_receiver_remove_control_handler (BseMidiReceiver      *self,
   g_return_if_fail (handler_func != NULL);
   g_return_if_fail (module != NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   self->remove_control_handler (midi_channel, signal_type, handler_func, handler_data, module);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
 }
 
 BseModule*
@@ -1467,13 +1512,13 @@ bse_midi_receiver_retrieve_mono_voice (BseMidiReceiver *self,
   g_return_val_if_fail (self != NULL, NULL);
   g_return_val_if_fail (midi_channel > 0, NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   if (mchannel->vinput)
     mchannel->vinput->ref_count++;
   else
-    mchannel->vinput = create_voice_input (&mchannel->voice_input_table, TRUE, trans);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+    mchannel->vinput = create_voice_input_L (&mchannel->voice_input_table, TRUE, trans);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   return mchannel->vinput->fmodule;
 }
 
@@ -1488,20 +1533,20 @@ bse_midi_receiver_discard_mono_voice (BseMidiReceiver *self,
   g_return_if_fail (self != NULL);
   g_return_if_fail (fmodule != NULL);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   if (mchannel->vinput && mchannel->vinput->fmodule == fmodule)
     {
       mchannel->vinput->ref_count--;
       if (!mchannel->vinput->ref_count)
         {
-          destroy_voice_input (mchannel->vinput, trans);
+          destroy_voice_input_L (mchannel->vinput, trans);
           mchannel->vinput = NULL;
         }
-      BSE_MIDI_RECEIVER_UNLOCK (self);
+      BSE_MIDI_RECEIVER_UNLOCK ();
       return;
     }
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   g_warning ("no such mono synth module: %p", fmodule);
 }
 
@@ -1516,7 +1561,7 @@ bse_midi_receiver_create_poly_voice (BseMidiReceiver *self,
   g_return_val_if_fail (self != NULL, 0);
   g_return_val_if_fail (midi_channel > 0, 0);
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   /* find free voice slot */
   for (i = 0; i < mchannel->n_voices; i++)
@@ -1528,8 +1573,8 @@ bse_midi_receiver_create_poly_voice (BseMidiReceiver *self,
       i = mchannel->n_voices++;
       mchannel->voices = g_renew (VoiceSwitch*, mchannel->voices, mchannel->n_voices);
     }
-  mchannel->voices[i] = create_voice_switch_module (trans);
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  mchannel->voices[i] = create_voice_switch_module_L (trans);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   
   return i + 1;
 }
@@ -1548,7 +1593,7 @@ bse_midi_receiver_discard_poly_voice (BseMidiReceiver *self,
   g_return_if_fail (voice_id > 0);
   voice_id -= 1;
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
   if (vswitch)
@@ -1557,11 +1602,11 @@ bse_midi_receiver_discard_poly_voice (BseMidiReceiver *self,
       vswitch->ref_count--;
       if (!vswitch->ref_count)
         {
-          destroy_voice_switch (vswitch, trans);
+          destroy_voice_switch_L (vswitch, trans);
           mchannel->voices[voice_id] = NULL;
         }
     }
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   if (!vswitch)
     g_warning ("MIDI channel %u has no voice %u", midi_channel, voice_id + 1);
 }
@@ -1580,11 +1625,11 @@ bse_midi_receiver_get_poly_voice_input (BseMidiReceiver   *self,
   g_return_val_if_fail (voice_id > 0, NULL);
   voice_id -= 1;
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
   module = vswitch ? vswitch->smodule : NULL;
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   return module;
 }
 
@@ -1602,11 +1647,11 @@ bse_midi_receiver_get_poly_voice_output (BseMidiReceiver   *self,
   g_return_val_if_fail (voice_id > 0, NULL);
   voice_id -= 1;
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
   module = vswitch ? vswitch->vmodule : NULL;
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   return module;
 }
 
@@ -1625,18 +1670,18 @@ bse_midi_receiver_create_sub_voice (BseMidiReceiver   *self,
   g_return_val_if_fail (voice_id > 0, NULL);
   voice_id -= 1;
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
   if (vswitch)
     {
       guint i = vswitch->n_vinputs++;
       vswitch->vinputs = g_renew (VoiceInput*, vswitch->vinputs, vswitch->n_vinputs);
-      vswitch->vinputs[i] = create_voice_input (&mchannel->voice_input_table, FALSE, trans);
+      vswitch->vinputs[i] = create_voice_input_L (&mchannel->voice_input_table, FALSE, trans);
       vswitch->ref_count++;
       module = vswitch->vinputs[i]->fmodule;
     }
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   return module;
 }
 
@@ -1657,7 +1702,7 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
   g_return_if_fail (voice_id > 0);
   voice_id -= 1;
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
   if (vswitch)
@@ -1667,14 +1712,14 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
           vswitch->vinputs[i]->ref_count--;
           if (!vswitch->vinputs[i]->ref_count)
             {
-              destroy_voice_input (vswitch->vinputs[i], trans);
+              destroy_voice_input_L (vswitch->vinputs[i], trans);
               vswitch->vinputs[i] = vswitch->vinputs[--vswitch->n_vinputs];
               need_unref = TRUE;
             }
           fmodule = NULL;
           break;
         }
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   if (need_unref)
     bse_midi_receiver_discard_poly_voice (self, midi_channel, voice_id + 1, trans);
   if (fmodule)
@@ -1695,7 +1740,7 @@ bse_midi_receiver_voices_pending (BseMidiReceiver *self,
   if (self->events)
     return TRUE;
   
-  BSE_MIDI_RECEIVER_LOCK (self);
+  BSE_MIDI_RECEIVER_LOCK ();
   mchannel = self->get_channel (midi_channel);
   if (mchannel)
     {
@@ -1703,7 +1748,7 @@ bse_midi_receiver_voices_pending (BseMidiReceiver *self,
                                                mchannel->vinput->queue_state != VSTATE_IDLE));
       /* find busy poly voice */
       for (i = 0; i < mchannel->n_voices && !active; i++)
-        active = active || !check_voice_switch_available (mchannel->voices[i]);
+        active = active || !check_voice_switch_available_L (mchannel->voices[i]);
     }
   /* find pending events */
   for (ring = self->events; ring && !active; ring = sfi_ring_next (ring, self->events))
@@ -1711,7 +1756,7 @@ bse_midi_receiver_voices_pending (BseMidiReceiver *self,
       BseMidiEvent *event = (BseMidiEvent *) ring->data;
       active += event->channel == midi_channel;
     }
-  BSE_MIDI_RECEIVER_UNLOCK (self);
+  BSE_MIDI_RECEIVER_UNLOCK ();
   
   return active > 0;
 }
@@ -1729,11 +1774,8 @@ update_midi_signal_L (BseMidiReceiver  *self,
   GSList *signal_modules;
   
   signal_modules = self->set_control (channel, tick_stamp, signal, value, trans);
-  change_midi_control_modules (signal_modules,
-                               tick_stamp,
-                               signal,
-                               value,
-                               trans);
+  change_midi_control_modules_L (signal_modules, tick_stamp,
+                                 signal, value, trans);
 #if 0
   DEBUG ("MidiChannel[%u]: Signal %3u Value=%f (%s)", channel,
 	 signal, value, bse_midi_signal_name (signal));

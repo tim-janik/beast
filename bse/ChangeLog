@@ -1,3 +1,14 @@
+Tue Sep 21 02:18:37 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.cc: added documentation blurb on voice states and 
+	table entries, in relation to note-on, note-off and done=1 events.
+	added missing _U and _L locking marks to function names (except
+	midi receiver methods which are all implicitely _L).
+	voice_input_module_access_U():
+	voice_switch_module_reuse_U():
+	voice_input_enter_sustain_U():
+	voice_input_enter_idle_U(): added mssing locking guards.
+
 Tue Sep 21 01:03:30 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.[hc]*: BseFreeFunc fixup, ensured the free function
