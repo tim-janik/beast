@@ -28,7 +28,6 @@ namespace BseWaveTool {
 using namespace std;
 
 class WaveChunk {
-  string          temp_file;
 public:
   GslDataHandle  *dhandle; /* always open */
   /*Con*/         WaveChunk();
@@ -37,6 +36,9 @@ public:
   BseErrorType    set_dhandle_from_file (const string &fname,
                                          gdouble       osc_freq,
                                          gchar       **xinfos);
+  BseErrorType    change_dhandle        (GslDataHandle *xhandle,
+                                         gdouble        osc_freq,
+                                         gchar        **xinfos);
   /*Des*/         ~WaveChunk();
 };
 
@@ -66,7 +68,7 @@ public:
   {
     set_chunks_xinfo (key, value, osc_freq, false);
   }
-  void                  add_chunk       (GslDataHandle  *dhandle,
+  BseErrorType          add_chunk       (GslDataHandle  *dhandle,
                                          gchar         **xinfos = NULL);
   GslDataHandle*        lookup          (gfloat          osc_freq);
   void                  remove          (list<WaveChunk>::iterator it);

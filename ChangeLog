@@ -1,3 +1,15 @@
+Thu Jan 13 21:39:53 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.cc: added log handler for sfi_info() calls.
+	added -q option to suppress verbose output. added -f to create
+	command. changed oggenc quality option to -Q. extended add-chunk
+	command and implemented add-raw-chunk command. added clip command.
+	add loop-type=unloopable to all chunks which are tail-clipped.
+
+	* tools/bsewavetool.h: cleanups.
+
+	* tools/bwtwave.[hc]*: allow data handle changes, cleanups.
+
 Wed Jan 12 02:04:19 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpianoroll.[hc]: turned colors into an enum, added POINTER

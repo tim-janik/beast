@@ -43,6 +43,7 @@ static void     wavetool_print_blurb    (bool    bshort);
 
 /* --- variables --- */
 static bool   continue_on_error = false;
+static bool   quiet_infos = false;
 static string command_name;
 static string input_file;
 static string output_file;
@@ -50,12 +51,24 @@ list<Command*> Command::registry;
 list<string>   unlink_file_list;
 
 /* --- main program --- */
+static void
+wavetool_log_handler (SfiLogMessage  *msg)
+{
+  if (msg->level == SFI_LOG_INFO)
+    {
+      if (!quiet_infos)
+        g_printerr ("%s\n", msg->message);
+    }
+  else
+    sfi_log_default_handler (msg);
+}
+
 extern "C" int
 main (int   argc,
       char *argv[])
 {
   std::set_terminate (__gnu_cxx::__verbose_terminate_handler);
-
+  
   /* initialize random numbers */
   struct timeval tv;
   gettimeofday (&tv, NULL);
@@ -63,9 +76,12 @@ main (int   argc,
 
   /* initialization */
   g_thread_init (NULL);
+  sfi_init ();
   int orig_argc = argc;
   bse_init_intern (&argc, &argv, NULL);
   sfi_debug_allow ("main"); // FIXME
+  sfi_log_set_thread_handler (wavetool_log_handler);
+  sfi_log_assign_level (SFI_LOG_INFO, SFI_LOG_TO_HANDLER);
   
   /* pre-parse argument list to decide command */
   wavetool_parse_args (&argc, &argv);
@@ -120,7 +136,7 @@ main (int   argc,
     }
   
   /* load wave file */
-  sfi_debug ("main", "LOAD: %s", input_file.c_str());
+  g_printerr ("LOAD: %s\n", input_file.c_str());
   Wave *wave = command->create ();
   BseErrorType error = BSE_ERROR_NONE;
   if (!wave)
@@ -175,11 +191,11 @@ main (int   argc,
     }
 
   /* process */
-  sfi_debug ("main", "EXEC: %s", command_name.c_str());
+  g_printerr ("EXEC: %s\n", command_name.c_str());
   command->exec (wave);
   
   /* save */
-  sfi_debug ("main", "SAVE: %s", output_file.c_str());
+  g_printerr ("SAVE: %s\n", output_file.c_str());
   wave->sort();
   error = wave->store (output_file);
   if (error)
@@ -214,6 +230,7 @@ wavetool_print_blurb (bool bshort)
   g_print ("Usage: bsewavetool [tool-options] command <file.bsewave> {command-arguments}\n");
   g_print ("Tool options:\n");
   g_print ("  -o <output.bsewave>   name of the destination file (default: <file.bsewave>)\n");
+  g_print ("  -q                    quiet, suppress extra processing information\n");
   g_print ("  -k                    continue on errors (may overwrite bsewave files after\n");
   g_print ("                        load errors occoured for part of its contents)\n");
   g_print ("  -h, --help            show elaborated help message with command documentation\n");
@@ -303,6 +320,11 @@ wavetool_parse_args (int    *argc_p,
           continue_on_error = true;
           argv[i] = NULL;
         }
+      else if (strcmp ("-q", argv[i]) == 0)
+        {
+          quiet_infos = true;
+          argv[i] = NULL;
+        }
       else if (strcmp ("-o", argv[i]) == 0 ||
                strncmp ("-o", argv[i], 2) == 0)
         {
@@ -375,9 +397,11 @@ public:
 } cmd_store ("store");
 
 class Create : public Command {
+  bool force_creation;
 public:
   Create (const char *command_name) :
-    Command (command_name)
+    Command (command_name),
+    force_creation (false)
   {}
   void
   blurb (bool bshort)
@@ -388,20 +412,26 @@ public:
     g_print ("    Create an empty bsewave file, <n_channels>=1 (mono) and <n_channels>=2\n");
     g_print ("    (stereo) are currently supported. Options:\n");
     g_print ("    -N <wave-name>      name of the wave stored inside of <output.bsewave>\n");
+    g_print ("    -f                  force creation even if the file exists already\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   string wave_name;
   string channel_str;
   guint
-  parse_args (int    argc,
+  parse_args (guint  argc,
               char **argv)
   {
-    for (int i = 1; i < argc; i++)
+    for (guint i = 1; i < argc; i++)
       {
-        if (strcmp (argv[i], "-N") == 0 && i + 1 < argc)
+        if (strcmp (argv[i], "-N") == 0 && i + 1 < argc) // FIXME: use arg parser
           {
             argv[i++] = NULL;
             wave_name = argv[i];
+            argv[i] = NULL;
+          }
+        else if (strcmp (argv[i], "-f") == 0)
+          {
+            force_creation = true;
             argv[i] = NULL;
           }
         else if (channel_str == "")
@@ -419,7 +449,7 @@ public:
     guint n_channels = g_ascii_strtoull (channel_str.c_str(), NULL, 10);
     if (n_channels < 1 || n_channels > 2)
       {
-        sfi_error ("invalid number of channels: %d\n", n_channels);
+        sfi_error ("invalid number of channels: %s (%d)\n", channel_str.c_str(), n_channels);
         exit (1);
       }
     /* figure name */
@@ -439,7 +469,7 @@ public:
   void
   exec (Wave *wave)
   {
-    if (sfi_file_check (output_file.c_str(), "e"))
+    if (!force_creation && sfi_file_check (output_file.c_str(), "e"))
       {
         sfi_error ("not creating \"%s\": %s\n", output_file.c_str(), g_strerror (EEXIST));
         exit (1);
@@ -463,16 +493,16 @@ public:
       return;
     g_print ("    Compress all chunks with the Vorbis audio codec and store the wave data\n");
     g_print ("    as Ogg/Vorbis streams inside the bsewave file. Options:\n");
-    g_print ("    -q <n>              use quality level <n>, refer to oggenc(1) for details\n");
+    g_print ("    -Q <n>              use quality level <n>, refer to oggenc(1) for details\n");
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
-  parse_args (int    argc,
+  parse_args (guint  argc,
               char **argv)
   {
-    for (int i = 1; i < argc; i++)
+    for (guint i = 1; i < argc; i++)
       {
-        if (strcmp (argv[i], "-q") == 0 && i + 1 < argc)
+        if (strcmp (argv[i], "-Q") == 0 && i + 1 < argc)
           {
             argv[i++] = NULL;
             quality = g_ascii_strtod (argv[i], NULL);
@@ -532,7 +562,7 @@ public:
           }
         unlink_file_list.push_back (temp_file);
         const guint ENCODER_BUFFER = 16 * 1024;
-        g_printerr ("ENCODING: chunk % 7.2f/%.0f\r", gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle));
+        sfi_info ("ENCODING: chunk % 7.2f/%.0f", gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle));
         SfiNum n = 0, v = 0, l = gsl_data_handle_length (dhandle);
         while (n < l)
           {
@@ -561,9 +591,10 @@ public:
                     v += MAX (r, 0);
                   }
               }
-            g_printerr ("ENCODING: chunk % 7.2f/%.0f, processed %0.1f%%       \r",
-                        gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
-                        n * 99.999999 / l);
+            if (!quiet_infos)
+              g_printerr ("chunk % 7.2f/%.0f, processed %0.1f%%       \r",
+                          gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
+                          n * 99.999999 / l);
           }
         gsl_vorbis_encoder_pcm_done (enc);
         while (!gsl_vorbis_encoder_ogg_eos (enc))
@@ -587,9 +618,10 @@ public:
           }
         gsl_vorbis_encoder_destroy (enc);
         guint n_bytes = (gsl_data_handle_bit_depth (dhandle) + 7) / 8;
-        g_printerr ("ENCODING: chunk % 7.2f/%.0f, processed %0.1f%% (reduced to: %5.2f%%)      \n",
-                    gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
-                    n * 100.0 / l, v * 100.0 / (l * MAX (1, n_bytes)));
+        if (!quiet_infos)
+          g_printerr ("chunk % 7.2f/%.0f, processed %0.1f%% (reduced to: %5.2f%%)      \n",
+                      gsl_data_handle_osc_freq (chunk->dhandle), gsl_data_handle_mix_freq (chunk->dhandle),
+                  n * 100.0 / l, v * 100.0 / (l * MAX (1, n_bytes)));
         if (close (tmpfd) < 0)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to write to tmp file: %s",
@@ -610,6 +642,33 @@ public:
   }
 } cmd_oggenc ("oggenc");
 
+static inline bool
+parse_arg_option (char        **argv,
+                  guint        &i,
+                  guint         argc,
+                  const gchar  *arg,
+                  const gchar *&str)
+{
+  guint length = strlen (arg);
+  if (strncmp (argv[i], arg, length) == 0)
+    {
+      const gchar *equal = argv[i] + length;
+      if (*equal == '=')              /* -x=Arg */
+        str = equal + 1;
+      else if (*equal)                /* -xArg */
+        str = equal;
+      else if (i + 1 < argc)          /* -x Arg */
+        {
+          argv[i++] = NULL;
+          str = argv[i];
+        }
+      argv[i] = NULL;
+      if (str)
+        return true;
+    }
+  return false;
+}
+
 class AddChunk : public Command {
   struct OptChunk {
     const gchar *midi_note;
@@ -617,34 +676,64 @@ class AddChunk : public Command {
     const gchar *sample_file;
     guint        auto_extract_type; /* 1=midi-note, 2=osc-freq */
     const gchar *auto_extract_str;
+    GslWaveFormatType load_format;
+    guint             load_mix_freq;
+    guint             load_byte_order;
     OptChunk()
     {
       memset (this, 0, sizeof (*this));
+      load_format = GSL_WAVE_FORMAT_SIGNED_16;
+      load_mix_freq = 44100;
+      load_byte_order = G_LITTLE_ENDIAN;
     }
   };
   list<OptChunk> opt_chunks;
   OptChunk&
-  top_opt_chunk()
+  create_opt_chunk()
   {
     if (opt_chunks.empty())
-      opt_chunks.push_front (OptChunk());
-    OptChunk &ochunk = opt_chunks.front();
-    if (ochunk.sample_file)
-      opt_chunks.push_front (OptChunk());
-    ochunk = opt_chunks.front();
-    return ochunk;
+      {
+        opt_chunks.push_front (OptChunk());
+        return opt_chunks.front();
+      }
+    else
+      {
+        opt_chunks.push_front (OptChunk (opt_chunks.front()));
+        OptChunk &ochunk = opt_chunks.front();
+        ochunk.sample_file = NULL;
+        return ochunk;
+      }
   }
-public:
-  AddChunk (const char *command_name) :
-    Command (command_name)
+  OptChunk&
+  top_empty_opt_chunk()
   {
+    if (opt_chunks.empty() || opt_chunks.front().sample_file)
+      create_opt_chunk();
+    return opt_chunks.front();
+  }
+  bool              load_raw;
+public:
+  enum LoadType { AUTO, RAW };
+  AddChunk (const char *command_name,
+            LoadType    ltype = AUTO) :
+    Command (command_name),
+    load_raw (false)
+  {
+    if (ltype == RAW)
+      load_raw = true;
   }
   void
   blurb (bool bshort)
   {
     g_print ("[options] {-m=midi-note|-f=osc-freq} <sample-file> ...\n");
-    if (bshort)
-      return;
+    if (!bshort && !load_raw)
+      blurb_auto();
+    else if (!bshort && load_raw)
+      blurb_raw();
+  }
+  void
+  blurb_auto ()
+  {
     g_print ("    Add a new chunk containing <sample-file> to the wave file. For each chunk,\n");
     g_print ("    a unique oscillator frequency must be given to determine what note the\n");
     g_print ("    chunk is to be played back for. Multi oscillator frequency + sample-file\n");
@@ -664,107 +753,73 @@ public:
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
-  parse_args (int    argc,
+  parse_args (guint  argc,
               char **argv)
   {
-    for (int i = 1; i < argc; i++)
+    for (guint i = 1; i < argc; i++)
       {
-        if (strcmp ("--auto-extract-midi-note", argv[i]) == 0 ||
-            strncmp ("--auto-extract-midi-note", argv[i], 24) == 0)
+        const gchar *str;
+        if (parse_arg_option (argv, i, argc, "--auto-extract-midi-note", str))
           {
-            gchar *equal = argv[i] + 24;
-            const gchar *extract_str = NULL;
-            if (*equal == '=')            /* -*=Arg */
-              extract_str = equal + 1;
-            else if (*equal)              /* -*Arg */
-              extract_str = equal;
-            else if (i + 1 < argc)        /* -* Arg */
-              {
-                argv[i++] = NULL;
-                extract_str = argv[i];
-              }
-            argv[i] = NULL;
-            if (extract_str)
-              {
-                OptChunk &ochunk = top_opt_chunk();
-                ochunk.auto_extract_type = 1;
-                ochunk.auto_extract_str = extract_str;
-              }
+            OptChunk &ochunk = create_opt_chunk();
+            ochunk.auto_extract_type = 1;
+            ochunk.auto_extract_str = str;
           }
-        else if (strcmp ("--auto-extract-osc-freq", argv[i]) == 0 ||
-                 strncmp ("--auto-extract-osc-freq", argv[i], 23) == 0)
+        else if (parse_arg_option (argv, i, argc, "--auto-extract-osc-freq", str))
           {
-            gchar *equal = argv[i] + 23;
-            const gchar *extract_str = NULL;
-            if (*equal == '=')            /* -*=Arg */
-              extract_str = equal + 1;
-            else if (*equal)              /* -*Arg */
-              extract_str = equal;
-            else if (i + 1 < argc)        /* -* Arg */
-              {
-                argv[i++] = NULL;
-                extract_str = argv[i];
-              }
-            argv[i] = NULL;
-            if (extract_str)
-              {
-                OptChunk &ochunk = top_opt_chunk();
-                ochunk.auto_extract_type = 2;
-                ochunk.auto_extract_str = extract_str;
-              }
+            OptChunk &ochunk = create_opt_chunk();
+            ochunk.auto_extract_type = 2;
+            ochunk.auto_extract_str = str;
           }
-        else if (strcmp ("-m", argv[i]) == 0 ||
-            strncmp ("-m", argv[i], 2) == 0)
+        else if (parse_arg_option (argv, i, argc, "-m", str))
           {
-            gchar *equal = argv[i] + 2;
-            const gchar *note_str = NULL;
-            if (*equal == '=')            /* -m=Arg */
-              note_str = equal + 1;
-            else if (*equal)              /* -mArg */
-              note_str = equal;
-            else if (i + 1 < argc)        /* -m Arg */
-              {
-                argv[i++] = NULL;
-                note_str = argv[i];
-              }
-            argv[i] = NULL;
-            if (note_str)
-              {
-                OptChunk &ochunk = top_opt_chunk();
-                ochunk.osc_freq = 0;
-                ochunk.midi_note = note_str;
-              }
+            OptChunk &ochunk = create_opt_chunk();
+            ochunk.osc_freq = 0;
+            ochunk.midi_note = str;
           }
-        else if (strcmp ("-f", argv[i]) == 0 ||
-                 strncmp ("-f", argv[i], 2) == 0)
+        else if (parse_arg_option (argv, i, argc, "-f", str))
           {
-            gchar *equal = argv[i] + 2;
-            const gchar *freq_str = NULL;
-            if (*equal == '=')            /* -f=Arg */
-              freq_str = equal + 1;
-            else if (*equal)              /* -fArg */
-              freq_str = equal;
-            else if (i + 1 < argc)        /* -f Arg */
-              {
-                argv[i++] = NULL;
-                freq_str = argv[i];
-              }
-            argv[i] = NULL;
-            if (freq_str)
-              {
-                OptChunk &ochunk = top_opt_chunk();
-                ochunk.osc_freq = g_ascii_strtod (freq_str, NULL);
-                ochunk.midi_note = NULL;
-              }
+            OptChunk &ochunk = create_opt_chunk();
+            ochunk.osc_freq = g_ascii_strtod (str, NULL);
+            ochunk.midi_note = NULL;
+          }
+        else if (load_raw && parse_arg_option (argv, i, argc, "-R", str))
+          {
+            OptChunk &ochunk = top_empty_opt_chunk();
+            ochunk.load_mix_freq = g_ascii_strtoull (str, NULL, 10);
+          }
+        else if (load_raw && parse_arg_option (argv, i, argc, "-F", str))
+          {
+            OptChunk &ochunk = top_empty_opt_chunk();
+            ochunk.load_format = gsl_wave_format_from_string (str);
+          }
+        else if (load_raw && parse_arg_option (argv, i, argc, "-B", str))
+          {
+            OptChunk &ochunk = top_empty_opt_chunk();
+            ochunk.load_byte_order = gsl_byte_order_from_string (str);
           }
         else /* sample file name */
           {
-            OptChunk &ochunk = top_opt_chunk();
+            OptChunk &ochunk = top_empty_opt_chunk();
             ochunk.sample_file = argv[i];
             argv[i] = NULL;
           }
       }
     return 0; // no missing args
+  }
+  void
+  blurb_raw ()
+  {
+    g_print ("    Add a new chunk just like with \"add-chunk\", but load raw sample data.\n");
+    g_print ("    Additional raw sample format options are supported.\n");
+    g_print ("    Raw sample format options:\n");
+    g_print ("    -R <mix-freq>       mixing frequency for the next chunk [44100]\n");
+    g_print ("    -F <format>         raw sample format, supported formats are:\n");
+    g_print ("                        alaw, ulaw, float, signed-8, signed-12, signed-16,\n");
+    g_print ("                        unsigned-8, unsigned-12, unsigned-16 [signed-16]\n");
+    g_print ("    -B <byte-order>     raw sample byte order, supported types:\n");
+    g_print ("                        little-endian, big-endian [little-endian]\n");
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   static gdouble
   str2num (const gchar *str,
@@ -787,6 +842,45 @@ public:
     if (strchr (num_first, *str))
       return atof (str);
     return BSE_DOUBLE_NAN;
+  }
+  GslDataHandle*
+  load_file_auto (const OptChunk &opt,
+                  BseErrorType   &error)
+  {
+    GslDataHandle *dhandle = NULL;
+    const char *sample_file = opt.sample_file;
+    /* load sample file, auto-detecting file type */
+    GslWaveFileInfo *winfo = gsl_wave_file_info_load (sample_file, &error);
+    if (winfo && winfo->n_waves == 1)
+      {
+        GslWaveDsc *wdsc = gsl_wave_dsc_load (winfo, 0, TRUE, &error);
+        if (wdsc && wdsc->n_chunks == 1)
+          dhandle = gsl_wave_handle_create (wdsc, 0, &error);
+        else if (wdsc)
+          error = BSE_ERROR_FORMAT_INVALID;
+        if (wdsc)
+          gsl_wave_dsc_free (wdsc);
+      }
+    else if (winfo)
+      error = BSE_ERROR_FORMAT_INVALID;
+    if (winfo)
+      gsl_wave_file_info_unref (winfo);
+    return dhandle;
+  }
+  GslDataHandle*
+  load_file_raw (const OptChunk &opt,
+                 guint           n_channels,
+                 gfloat          osc_freq,
+                 BseErrorType   &error)
+  {
+    GslDataHandle *dhandle = NULL;
+    const char *sample_file = opt.sample_file;
+    /* load sample file from raw data */
+    dhandle = gsl_wave_handle_new (sample_file, n_channels,
+                                   opt.load_format, opt.load_byte_order, opt.load_mix_freq, osc_freq,
+                                   0, -1, NULL);
+    error = dhandle ? BSE_ERROR_NONE : BSE_ERROR_IO;
+    return dhandle;
   }
   void
   exec (Wave *wave)
@@ -848,52 +942,30 @@ public:
                          wave->name.c_str(), osc_freq);
               exit (1);
             }
-          /* load sample file */
-          sfi_debug (NULL, "LOAD: %s", ochunk.sample_file);
+          /* add sample file */
           BseErrorType error = BSE_ERROR_NONE;
-          GslWaveFileInfo *winfo = gsl_wave_file_info_load (ochunk.sample_file, &error);
-          if (winfo && winfo->n_waves == 1)
+          GslDataHandle *dhandle;
+          sfi_info ("LOAD: osc-freq=%g file=%s", osc_freq, ochunk.sample_file);
+          if (load_raw)
+            dhandle = load_file_raw (ochunk, wave->n_channels, osc_freq, error);
+          else
+            dhandle = load_file_auto (ochunk, error);
+          if (dhandle)
             {
-              GslWaveDsc *wdsc = gsl_wave_dsc_load (winfo, 0, TRUE, &error);
-              if (wdsc && wdsc->n_chunks == 1)
-                {
-                  GslDataHandle *dhandle = gsl_wave_handle_create (wdsc, 0, &error);
-                  if (dhandle)
-                    {
-                      wave->add_chunk (dhandle, xinfos);
-                      gsl_data_handle_unref (dhandle);
-                    }
-                  else
-                    {
-                      if (continue_on_error)
-                        {
-                          sfi_warning ("failed to load wave chunk from file \"%s\": %s (loader: %s)",
-                                       ochunk.sample_file, bse_error_blurb (error), gsl_wave_file_info_loader (winfo));
-                          error = BSE_ERROR_NONE;
-                        }
-                      else
-                        break;
-                    }
-                }
-              else if (wdsc)
-                error = BSE_ERROR_FORMAT_INVALID;
-              if (wdsc)
-                gsl_wave_dsc_free (wdsc);
+              error = wave->add_chunk (dhandle, xinfos);
+              gsl_data_handle_unref (dhandle);
             }
-          else if (winfo)
-            error = BSE_ERROR_FORMAT_INVALID;
-          if (winfo)
-            gsl_wave_file_info_unref (winfo);
           if (error)
             {
-              sfi_error ("failed to load wave chunk from file \"%s\": %s",
-                         ochunk.sample_file, bse_error_blurb (error));
-              exit (1);
+              (continue_on_error ? sfi_warning : sfi_error) ("failed to add wave chunk from file \"%s\": %s",
+                                                             ochunk.sample_file, bse_error_blurb (error));
+              if (!continue_on_error)
+                exit (1);
             }
           g_strfreev (xinfos);
         }
   }
-} cmd_add_chunk ("add-chunk");
+} cmd_add_chunk ("add-chunk"), cmd_add_raw_chunk ("add-raw-chunk", AddChunk::RAW);
 
 class XInfoCmd : public Command {
   vector<char*> args;
@@ -921,11 +993,11 @@ public:
     /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
   }
   guint
-  parse_args (int    argc,
+  parse_args (guint  argc,
               char **argv)
   {
     args.clear();
-    for (int i = 1; i < argc; i++)
+    for (guint i = 1; i < argc; i++)
       {
         args.push_back (argv[i]);
         argv[i] = NULL;
@@ -1035,12 +1107,145 @@ public:
   }
 } cmd_xinfo ("xinfo");
 
+class ClipCmd : public Command {
+  vector<char*> args;
+  gfloat threshold;
+  guint head_samples, tail_samples, fade_samples, pad_samples, tail_silence;
+public:
+  ClipCmd (const char *command_name) :
+    Command (command_name),
+    threshold (16 / 32767.),
+    head_samples (0),
+    tail_samples (0),
+    fade_samples (16),
+    pad_samples (16),
+    tail_silence (0)
+  {
+  }
+  void
+  blurb (bool bshort)
+  {
+    g_print ("[options]\n");
+    if (bshort)
+      return;
+    g_print ("    Clip head and or tail of a wave chunk and produce fade-in ramps at the\n");
+    g_print ("    beginning. Waves which are clipped to an essential 0-length will\n");
+    g_print ("    automatically be deleted.\n");
+    g_print ("    Options:\n");
+    g_print ("    --config=\"s h t f p r\"\n"); // FIXME: unimplemented
+    g_print ("                        clipping configuration, consisting of space-seperated\n");
+    g_print ("                        configuration values:\n");
+    g_print ("                        s) minimum signal threshold [%u]\n", guint (threshold * 32767));
+    g_print ("                        h) silence samples to verify at head [%u]\n", head_samples);
+    g_print ("                        t) silence samples to verify at tail [%u]\n", tail_samples);
+    g_print ("                        f) samples to fade-in before signal starts [%u]\n", fade_samples);
+    g_print ("                        p) padding samples after signal ends [%u]\n", pad_samples);
+    g_print ("                        r) silence samples required at tail for clipping [%u]\n", tail_silence);
+    g_print ("    -s=<threshold>      set the minimum signal threshold (0..32767) [%u]\n", guint (threshold * 32767));
+    g_print ("    -h=<head-samples>   number of silence samples to verify at head [%u]\n", head_samples);
+    g_print ("    -t=<tail-samples>   number of silence samples to verify at tail [%u]\n", tail_samples);
+    g_print ("    -f=<fade-samples>   number of samples to fade-in before signal starts [%u]\n", fade_samples);
+    g_print ("    -p=<pad-samples>    number of padding samples after signal ends [%u]\n", pad_samples);
+    g_print ("    -r=<tail-silence>   number of silence samples required at tail to allow\n");
+    g_print ("                        tail clipping [%u]\n", tail_silence);
+    /*       "**********1*********2*********3*********4*********5*********6*********7*********" */
+  }
+  guint
+  parse_args (guint  argc,
+              char **argv)
+  {
+    for (guint i = 1; i < argc; i++)
+      {
+        const gchar *str;
+        if (parse_arg_option (argv, i, argc, "-s", str))
+          threshold = g_ascii_strtod (str, NULL);
+        else if (parse_arg_option (argv, i, argc, "-h", str))
+          head_samples = g_ascii_strtoull (str, NULL, 10);
+        else if (parse_arg_option (argv, i, argc, "-t", str))
+          tail_samples = g_ascii_strtoull (str, NULL, 10);
+        else if (parse_arg_option (argv, i, argc, "-f", str))
+          fade_samples = g_ascii_strtoull (str, NULL, 10);
+        else if (parse_arg_option (argv, i, argc, "-p", str))
+          pad_samples = g_ascii_strtoull (str, NULL, 10);
+        else if (parse_arg_option (argv, i, argc, "-r", str))
+          tail_silence = g_ascii_strtoull (str, NULL, 10);
+      }
+    return 0; /* no args missing */
+  }
+  typedef enum {
+    NONE,
+    OSC_FREQ,
+    ALL_CHUNKS,
+    WAVE
+  } Location;
+  void
+  exec (Wave *wave)
+  {
+    vector<list<WaveChunk>::iterator> deleted;
+    /* level clipping */
+    for (list<WaveChunk>::iterator it = wave->chunks.begin(); it != wave->chunks.end(); it++)
+      {
+        WaveChunk *chunk = &*it;
+        sfi_info ("CLIP: chunk %f", gsl_data_handle_osc_freq (chunk->dhandle));
+        GslDataClipConfig cconfig = { 0 };
+        cconfig.produce_info = TRUE;
+        cconfig.threshold = threshold;
+        cconfig.head_samples = head_samples;
+        cconfig.tail_samples = tail_samples;
+        cconfig.fade_samples = fade_samples;
+        cconfig.pad_samples = pad_samples;
+        cconfig.tail_silence = tail_silence;
+        GslDataClipResult cresult;
+        GslDataHandle *dhandle = chunk->dhandle;
+        BseErrorType error;
+        error = gsl_data_clip_sample (dhandle, &cconfig, &cresult);
+        if (error == BSE_ERROR_DATA_UNMATCHED && cresult.clipped_to_0length)
+          {
+            sfi_info ("Deleting 0-length chunk");
+            deleted.push_back (it);
+            error = BSE_ERROR_NONE;
+          }
+        else if (error)
+          {
+            const gchar *reason = bse_error_blurb (error);
+            if (!cresult.tail_detected)
+              reason = "failed to detect silence at tail";
+            if (!cresult.head_detected)
+              reason = "failed to detect silence at head";
+            sfi_error ("level clipping failed: %s", reason);
+          }
+        else
+          {
+            gchar **xinfos = bse_xinfos_dup_consolidated (chunk->dhandle->setup.xinfos, FALSE);
+            if (cresult.clipped_tail)
+              xinfos = bse_xinfos_add_value (xinfos, "loop-type", "unloopable");
+            if (cresult.dhandle != chunk->dhandle)
+              {
+                error = chunk->change_dhandle (cresult.dhandle, gsl_data_handle_osc_freq (chunk->dhandle), xinfos);
+                if (error)
+                  sfi_error ("level clipping failed: %s", bse_error_blurb (error));
+              }
+            g_strfreev (xinfos);
+          }
+        if (error && !continue_on_error)
+          exit (1);
+      }
+    /* really delete chunks */
+    while (deleted.size())
+      {
+        wave->remove (deleted.back());
+        deleted.pop_back();
+      }
+  }
+} cmd_clip ("clip");
+
+
 /* TODO commands:
  * bsewavetool.1 # need manual page
  * bsewavetool merge <file.bsewave> <second.bsewave>
- * bsewavetool clip <file.bsewave> [-c clip-config] ...
  * bsewavetool loop <file.bsewave> [-a loop-algorithm] ...
- *         automatically add xinfos with loop errors
+ *         don't loop chunks with loop-type=unloopable xinfos
+ *         automatically add xinfos with looping errors.
  * bsewavetool omit <file.bsewave> [-a remove-algorithm] ...
  *   -L    drop samples based on loop errors
  * bsewavetool del-wave <file.bsewave> {-m midi-note|-f osc-freq} ...

@@ -35,7 +35,7 @@ public:
     registry.push_back (this);
   }
   virtual guint
-  parse_args (int    argc,
+  parse_args (guint  argc,
               char **argv)
   { return 0; }
   virtual Wave*
@@ -57,53 +57,5 @@ public:
   {}
   static list<Command*> registry;
 };
-
-/* --- structures --- */
-typedef struct
-{
-  gfloat          osc_freq;
-  guint		  midi_note;
-  gfloat          mix_freq;
-  GslDataHandle  *dhandle;
-  
-  GslWaveLoopType loop_type;
-  GslLong	  loop_start;
-  GslLong	  loop_end;
-  
-  /*< private >*/
-  gchar		 *dump_name;
-  gchar		 *dump_index;
-  gchar          *oggname;
-} BseWtChunk;
-
-typedef struct
-{
-  gchar      *wave_name;
-  guint       n_channels;
-  guint       n_chunks;
-  BseWtChunk *chunks;
-} BseWtWave;
-
-typedef struct
-{
-  gfloat threshold;	/* 0..+1 */
-  guint  head_detect;
-  guint  tail_detect;
-  guint  head_fade;
-  guint  tail_pad;
-  guint  min_tail;
-} GslLevelClip;
-
-typedef enum
-{
-  GSL_LEVEL_UNCLIPPED,	/* no silence */
-  GSL_LEVEL_CLIP_IO_ERROR,
-  GSL_LEVEL_CLIP_FAILED_HEAD_DETECT,
-  GSL_LEVEL_CLIP_FAILED_TAIL_DETECT,
-  GSL_LEVEL_CLIP_ALL,	/* all silence */
-  GSL_LEVEL_CLIPPED_HEAD,
-  GSL_LEVEL_CLIPPED_TAIL,
-  GSL_LEVEL_CLIPPED_HEAD_TAIL
-} GslLevelClipStatus;
 
 } // BseWaveTool

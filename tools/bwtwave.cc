@@ -38,7 +38,6 @@ WaveChunk::WaveChunk ()
 WaveChunk&
 WaveChunk::operator= (const WaveChunk &rhs)
 {
-  temp_file = rhs.temp_file;
   dhandle = rhs.dhandle;
   if (dhandle)
     gsl_data_handle_open (dhandle);
@@ -53,9 +52,37 @@ WaveChunk::WaveChunk (const WaveChunk &rhs)
 }
 
 BseErrorType
+WaveChunk::change_dhandle (GslDataHandle *xhandle,
+                           gdouble        osc_freq,
+                           gchar        **copy_xinfos)
+{
+  gchar **xinfos = bse_xinfos_dup_consolidated (copy_xinfos, FALSE);
+  if (osc_freq > 0)
+    xinfos = bse_xinfos_add_float (xinfos, "osc-freq", osc_freq);
+  if (xinfos)
+    {
+      GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (xhandle, xinfos);
+      g_strfreev (xinfos);
+      gsl_data_handle_unref (xhandle);
+      xhandle = tmp_handle;
+    }
+  BseErrorType error = gsl_data_handle_open (xhandle);
+  gsl_data_handle_unref (xhandle);
+  if (!error)
+    {
+      if (dhandle)
+        gsl_data_handle_close (dhandle);
+      dhandle = xhandle;
+      return BSE_ERROR_NONE;
+    }
+  else
+    return error;
+}
+
+BseErrorType
 WaveChunk::set_dhandle_from_file (const string &fname,
                                   gdouble       osc_freq,
-                                  gchar       **copy_xinfos)
+                                  gchar       **xinfos)
 {
   BseErrorType error = BSE_ERROR_NONE;
   GslWaveFileInfo *wfi = gsl_wave_file_info_load (fname.c_str(), &error);
@@ -66,40 +93,12 @@ WaveChunk::set_dhandle_from_file (const string &fname,
       if (wdc)
         {
           xhandle = gsl_wave_handle_create (wdc, 0, &error);
-          if (xhandle)
-            {
-              gchar **xinfos = bse_xinfos_dup_consolidated (copy_xinfos, FALSE);
-              if (osc_freq > 0)
-                xinfos = bse_xinfos_add_float (xinfos, "osc-freq", osc_freq);
-              if (xinfos)
-                {
-                  GslDataHandle *tmp_handle = gsl_data_handle_new_add_xinfos (xhandle, xinfos);
-                  g_strfreev (xinfos);
-                  gsl_data_handle_unref (xhandle);
-                  xhandle = tmp_handle;
-                }
-              error = gsl_data_handle_open (xhandle);
-              if (error)
-                {
-                  gsl_data_handle_close (xhandle);
-                  gsl_data_handle_unref (xhandle);
-                  xhandle = NULL;
-                }
-              else
-                gsl_data_handle_unref (xhandle);
-            }
           gsl_wave_dsc_free (wdc);
         }
       gsl_wave_file_info_unref  (wfi);
     }
   if (xhandle)
-    {
-      if (dhandle)
-        gsl_data_handle_close (dhandle);
-      dhandle = xhandle;
-      temp_file = fname;
-      return BSE_ERROR_NONE;
-    }
+    return change_dhandle (xhandle, osc_freq, xinfos);
   else
     return error;
 }
@@ -119,11 +118,11 @@ Wave::Wave (const gchar    *wave_name,
 {
 }
 
-void
+BseErrorType
 Wave::add_chunk (GslDataHandle  *dhandle,
                  gchar         **xinfos)
 {
-  g_return_if_fail (dhandle != NULL);
+  g_return_val_if_fail (dhandle != NULL, BSE_ERROR_INTERNAL);
 
   if (xinfos)
     {
@@ -142,6 +141,7 @@ Wave::add_chunk (GslDataHandle  *dhandle,
       chunks.push_front (wc);
     }
   gsl_data_handle_unref (dhandle);
+  return error;
 }
 
 void
