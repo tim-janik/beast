@@ -27,7 +27,6 @@ SRC_IMAGES = @STRIP_BEGIN@	\
 	palette.xcf		\
 	part.xcf		\
 	part-tool.xcf		\
-	part-copy.xcf		\
 	pattern-group.xcf	\
 	pattern-tool.xcf	\
 	pattern.xcf		\
