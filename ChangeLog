@@ -1,3 +1,9 @@
+Sat Jan 31 23:06:39 2004  Tim Janik  <timj@gtk.org>
+
+	* autogen.sh (check_version): applied fix to not append trailing
+	characters to the 6th comparison number. reordered expressions
+	for readability improvements.
+
 Fri Jan 30 23:56:11 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkscrollcanvas.[hc]: refactored and generalized

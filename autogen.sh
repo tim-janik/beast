@@ -36,12 +36,15 @@ test $TEST_TYPE $FILE || {
 # check_version(given,required) compare two versions in up to 6 decimal numbers
 check_version()
 {
-  # extract all numbers from given-version into ac_v?
-  eval `echo "$1:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g' \
-    -e 's/\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\(.*\)/ac_v1=\1 ac_v2=\2 ac_v3=\3 ac_v4=\4 ac_v5=\5 ac_v6=\6/' `
-  # extract all numbers from required-version into ac_r?
-  eval `echo "$2:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g' \
-    -e 's/\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\([^:]*\):\(.*\)/ac_r1=\1 ac_r2=\2 ac_r3=\3 ac_r4=\4 ac_r5=\5 ac_r6=\6/' `
+  # number pattern
+  N="\([^:]*\)"
+  # remove leading non-numbers, seperate by :
+     GIVEN=`echo "$1:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g'`
+  REQUIRED=`echo "$2:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g'`
+  # extract 6 numbers from $GIVEN into ac_v?
+  eval `echo "$GIVEN"    | sed "s/^$N:$N:$N:$N:$N:$N.*$/ac_v1=\1 ac_v2=\2 ac_v3=\3 ac_v4=\4 ac_v5=\5 ac_v6=\6/" `
+  # extract 6 numbers from $REQUIRED into ac_r?
+  eval `echo "$REQUIRED" | sed "s/^$N:$N:$N:$N:$N:$N.*$/ac_r1=\1 ac_r2=\2 ac_r3=\3 ac_r4=\4 ac_r5=\5 ac_r6=\6/" `
   # do the actual comparison (yielding 1 on success)
   ac_vm=`expr \( $ac_v1 \> $ac_r1 \) \| \( \( $ac_v1 \= $ac_r1 \) \& \(          \
                \( $ac_v2 \> $ac_r2 \) \| \( \( $ac_v2 \= $ac_r2 \) \& \(         \
@@ -54,9 +57,9 @@ check_version()
                 \) \)    \
                \) \)     \
               \) \)      `
-  #echo -n G: ; echo "$1:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g'
-  #echo -n R: ; echo "$2:0:0:0:0:0:0" | sed -e 's/^[^0-9]*//' -e 's/[^0-9]\+/:/g'
-  #echo = $ac_vm
+  #echo "Given:    ac_v1=$ac_v1 ac_v2=$ac_v2 ac_v3=$ac_v3 ac_v4=$ac_v4 ac_v5=$ac_v5 ac_v6=$ac_v6"
+  #echo "Required: ac_r1=$ac_r1 ac_r2=$ac_r2 ac_r3=$ac_r3 ac_r4=$ac_r4 ac_r5=$ac_r5 ac_r6=$ac_r6"
+  #echo "Result:   $ac_vm"
   test $ac_vm = 1
 }
 
