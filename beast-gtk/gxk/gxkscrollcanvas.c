@@ -88,9 +88,8 @@
 
 
 /* --- prototypes --- */
-static void     scroll_canvas_adjustment_changed        (GxkScrollCanvas        *self);
-static void     scroll_canvas_adjustment_value_changed  (GxkScrollCanvas        *self,
-                                                         GtkAdjustment          *adjustment);
+static void scroll_canvas_adjustment_value_changed   (GxkScrollCanvas        *self,
+                                                      GtkAdjustment          *adjustment);
 
 
 /* --- functions --- */
@@ -198,6 +197,14 @@ scroll_canvas_finalize (GObject *object)
   G_OBJECT_CLASS (gxk_scroll_canvas_parent_class)->finalize (object);
 }
 
+static void
+scroll_canvas_adjustment_changed_handler (GxkScrollCanvas *self,
+                                          GtkAdjustment   *adjustment)
+{
+  GxkScrollCanvasClass *class = GXK_SCROLL_CANVAS_GET_CLASS (self);
+  class->adjustment_changed (self, adjustment);
+}
+
 void
 gxk_scroll_canvas_set_hadjustment (GxkScrollCanvas *self,
                                    GtkAdjustment   *adjustment)
@@ -209,7 +216,7 @@ gxk_scroll_canvas_set_hadjustment (GxkScrollCanvas *self,
   if (self->hadjustment)
     {
       g_object_disconnect (self->hadjustment,
-                           "any_signal", scroll_canvas_adjustment_changed, self,
+                           "any_signal", scroll_canvas_adjustment_changed_handler, self,
                            "any_signal", scroll_canvas_adjustment_value_changed, self,
                            NULL);
       g_object_unref (self->hadjustment);
@@ -222,7 +229,7 @@ gxk_scroll_canvas_set_hadjustment (GxkScrollCanvas *self,
   self->hadjustment = g_object_ref (adjustment);
   gtk_object_sink (GTK_OBJECT (adjustment));
   g_object_connect (self->hadjustment,
-                    "swapped_signal::changed", scroll_canvas_adjustment_changed, self,
+                    "swapped_signal::changed", scroll_canvas_adjustment_changed_handler, self,
                     "swapped_signal::value-changed", scroll_canvas_adjustment_value_changed, self,
                     NULL);
 }
@@ -238,7 +245,7 @@ gxk_scroll_canvas_set_vadjustment (GxkScrollCanvas *self,
   if (self->vadjustment)
     {
       g_object_disconnect (self->vadjustment,
-                           "any_signal", scroll_canvas_adjustment_changed, self,
+                           "any_signal", scroll_canvas_adjustment_changed_handler, self,
                            "any_signal", scroll_canvas_adjustment_value_changed, self,
                            NULL);
       g_object_unref (self->vadjustment);
@@ -251,7 +258,7 @@ gxk_scroll_canvas_set_vadjustment (GxkScrollCanvas *self,
   self->vadjustment = g_object_ref (adjustment);
   gtk_object_sink (GTK_OBJECT (adjustment));
   g_object_connect (self->vadjustment,
-                    "swapped_signal::changed", scroll_canvas_adjustment_changed, self,
+                    "swapped_signal::changed", scroll_canvas_adjustment_changed_handler, self,
                     "swapped_signal::value-changed", scroll_canvas_adjustment_value_changed, self,
                     NULL);
 }
@@ -265,6 +272,25 @@ scroll_canvas_set_scroll_adjustments (GxkScrollCanvas *self,
     gxk_scroll_canvas_set_hadjustment (self, hadjustment);
   if (self->vadjustment != vadjustment)
     gxk_scroll_canvas_set_vadjustment (self, vadjustment);
+}
+
+void
+gxk_scroll_canvas_reset_pango_layouts (GxkScrollCanvas *self)
+{
+  gint i;
+  g_return_if_fail (GXK_IS_SCROLL_CANVAS (self));
+  /* resort to destroying the layouts to force recreation,
+   * so things like merging a font_desc with STYLE->font_desc
+   * take effect.
+   */
+  for (i = 0; i < self->n_pango_layouts; i++)
+    if (self->pango_layouts[i])
+      {
+        g_object_unref (self->pango_layouts[i]);
+        self->pango_layouts[i] = NULL;
+      }
+  /* force get_layout() size request to recreate required pango_layouts */
+  gtk_widget_queue_resize (GTK_WIDGET (self));
 }
 
 static void
@@ -307,20 +333,7 @@ scroll_canvas_reset_skin_and_style (GxkScrollCanvas *self,
         }
       /* reset pango layouts */
       if (relayout)
-        {
-          /* resort to destroying the layouts to force recreation,
-           * so things like merging a font_desc with STYLE->font_desc
-           * take effect
-           */
-          for (i = 0; i < self->n_pango_layouts; i++)
-            if (self->pango_layouts[i])
-              {
-                g_object_unref (self->pango_layouts[i]);
-                self->pango_layouts[i] = NULL;
-              }
-          /* force get_layout() size request to recreate required pango_layouts */
-          gtk_widget_queue_resize (widget);
-        }
+        gxk_scroll_canvas_reset_pango_layouts (self);
       else
         {
           for (i = 0; i < self->n_pango_layouts; i++)
@@ -1150,7 +1163,8 @@ gxk_scroll_canvas_peek_pango_layout (GxkScrollCanvas        *self,
 }
 
 static void
-scroll_canvas_adjustment_changed (GxkScrollCanvas *self)
+scroll_canvas_adjustment_changed (GxkScrollCanvas *self,
+                                  GtkAdjustment   *adjustment)
 {
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -1854,6 +1868,7 @@ gxk_scroll_canvas_class_init (GxkScrollCanvasClass *class)
   class->get_layout = (gpointer) dummy_handler;
   class->set_scroll_adjustments = scroll_canvas_set_scroll_adjustments;
   class->update_adjustments = scroll_canvas_update_adjustments;
+  class->adjustment_changed = scroll_canvas_adjustment_changed;
   class->draw_window = scroll_canvas_draw_window;
   class->draw_canvas = scroll_canvas_draw_canvas;
   class->draw_top_panel = scroll_canvas_draw_panel;

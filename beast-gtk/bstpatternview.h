@@ -73,6 +73,7 @@ struct _BstPatternView
   /* horizontal layout */
   guint              n_cols;
   BstPatternColumn **cols;
+  gchar             *layout_string;
 
   /* focus cell */
   guint              focus_col;
@@ -138,6 +139,7 @@ gboolean          bst_pattern_view_dispatch_key    (BstPatternView            *s
                                                     BstPatternAction           action,
                                                     gdouble                    param);
 gint              bst_pattern_view_get_last_row    (BstPatternView            *self);
+const gchar*      bst_pattern_view_get_layout      (BstPatternView            *self);
 guint             bst_pattern_view_set_layout      (BstPatternView            *self,
                                                     const gchar               *layout);
 

@@ -90,7 +90,6 @@ typedef enum /*< skip >*/
 
 /* --- i18n and gettext helpers --- */
 #define _(str)	dgettext (NULL, str)
-#define T_(str)	dgettext (NULL, str)
 #define N_(str)	(str)
 
 

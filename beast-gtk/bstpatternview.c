@@ -84,7 +84,12 @@ bst_pattern_view_init (BstPatternView *self)
   gxk_scroll_canvas_set_left_panel_cursor (scc, GDK_HAND2);
   gxk_scroll_canvas_set_top_panel_cursor (scc, GDK_LEFT_PTR);
   bst_pattern_view_vsetup (self, 384, 4, 800 * 384, 384);
-  bst_pattern_view_add_column (self, BST_PATTERN_LTYPE_NOTE, 0, 0);
+  bst_pattern_view_set_layout (self, ("_ "
+                                      "offset-0 : note-0 : velocity-0 : fine-tune-0 : length-0 | "
+                                      "offset-1 : note-1 : velocity-1 : fine-tune-1 : length-1 | "
+                                      "offset-2 : note-2 : velocity-2 : fine-tune-2 : length-2 | "
+                                      "offset-3 : note-3 : velocity-3 : fine-tune-3 : length-3 | "
+                                      "control-4 | control-7 | control-8"));
 }
 
 static void
@@ -104,6 +109,7 @@ bst_pattern_view_destroy_columns (BstPatternView *self)
   bst_pattern_view_set_pixmarker (self, 2, BST_PATTERN_VIEW_MARKER_FOCUS, -1, -1, 1, 1);
   bst_pattern_view_set_pixmarker (self, 3, BST_PATTERN_VIEW_MARKER_FOCUS, -1, -1, 1, 1);
   bst_pattern_view_set_pixmarker (self, 4, BST_PATTERN_VIEW_MARKER_FOCUS, -1, -1, 1, 1);
+  bst_pattern_view_set_pixmarker (self, 5, BST_PATTERN_VIEW_MARKER_FOCUS, -1, -1, 1, 1);
   while (self->n_cols)
     {
       self->n_cols--;
@@ -116,6 +122,9 @@ bst_pattern_view_destroy_columns (BstPatternView *self)
   g_free (self->focus_cols);
   self->focus_cols = NULL;
   gtk_widget_queue_resize (GTK_WIDGET (self));
+  g_free (self->layout_string);
+  self->layout_string = NULL;
+  gxk_scroll_canvas_reset_pango_layouts (GXK_SCROLL_CANVAS (self));
 }
 
 static void
@@ -125,7 +134,7 @@ bst_pattern_view_finalize (GObject *object)
 
   bst_pattern_view_set_proxy (self, 0);
   bst_pattern_view_destroy_columns (self);
-
+  
   G_OBJECT_CLASS (bst_pattern_view_parent_class)->finalize (object);
 }
 
@@ -743,7 +752,7 @@ bst_pattern_view_add_column (BstPatternView   *self,
   col = bst_pattern_column_create (ltype, num, lflags);
   self->cols[self->n_cols++] = col;
   col->focus_base = self->n_focus_cols;
-  for (i = 0; i < col->klass->n_focus_positions; i++)
+  for (i = 0; i < col->n_focus_positions; i++)
     {
       self->focus_cols = g_renew (BstPatternColumn*, self->focus_cols, self->n_focus_cols + 1);
       self->focus_cols[self->n_focus_cols++] = col;
@@ -777,6 +786,18 @@ bst_pattern_view_get_focus_cell (BstPatternView            *self,
   return NULL;
 }
 
+static PangoLayout*
+pattern_view_column_pango_layout (BstPatternView   *self,
+                                  BstPatternColumn *col)
+{
+  GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
+  gint i;
+  for (i = 0; i < self->n_cols; i++)
+    if (self->cols[i] == col)
+      break;
+  return gxk_scroll_canvas_peek_pango_layout (scc, COLUMN_PLAYOUT_INDEX (i));
+}
+
 gboolean
 bst_pattern_view_dispatch_key (BstPatternView            *self,
                                guint                      keyval,
@@ -789,18 +810,14 @@ bst_pattern_view_dispatch_key (BstPatternView            *self,
   guint focus_row = self->focus_row;
   if (focus_col < self->n_focus_cols && row_to_coords (self, focus_row, &rect.y, &rect.height))
     {
-      GxkScrollCanvas *scc = GXK_SCROLL_CANVAS (self);
       BstPatternColumn *col = self->focus_cols[focus_col];
-      gint i, tick, duration;
+      gint tick, duration;
       rect.x = col->x;
       rect.width = col->width;
       row_to_ticks (self, focus_row, &tick, &duration);
-      for (i = 0; i < self->n_cols; i++)
-        if (self->cols[i] == col)
-          break;
       if (col->klass->key_event &&
           col->klass->key_event (col, self, CANVAS (self),
-                                 gxk_scroll_canvas_peek_pango_layout (scc, COLUMN_PLAYOUT_INDEX (i)),
+                                 pattern_view_column_pango_layout (self, col),
                                  tick, duration, &rect,
                                  keyval, modifier, action, param))
         return TRUE;
@@ -837,6 +854,21 @@ bst_pattern_view_set_focus (BstPatternView           *self,
                                       rect.x + rect.width - fwidth, rect.y + fwidth, fwidth, rect.height - 2 * fwidth);
       bst_pattern_view_set_pixmarker (self, 4, BST_PATTERN_VIEW_MARKER_FOCUS,
                                       rect.x, rect.y + rect.height - fwidth, rect.width, fwidth);
+      if (col->n_focus_positions > 1)
+        {
+          gint tick, duration, fx, fw;
+          row_to_ticks (self, focus_row, &tick, &duration);
+          col->klass->get_focus_pos (col, self, CANVAS (self),
+                                     pattern_view_column_pango_layout (self, col),
+                                     tick, duration, &rect, focus_col - col->focus_base, &fx, &fw);
+          bst_pattern_view_set_pixmarker (self, 5, BST_PATTERN_VIEW_MARKER_FOCUS,
+                                          rect.x + fx,
+                                          rect.y + rect.height - fwidth - fwidth,
+                                          fw,
+                                          fwidth);
+        }
+      else
+        bst_pattern_view_set_pixmarker (self, 5, BST_PATTERN_VIEW_MARKER_FOCUS, -1, -1, 1, 1);
       gxk_scroll_canvas_make_visible (scc,
                                       X_OFFSET (self) + rect.x,
                                       Y_OFFSET (self) + rect.y,
@@ -933,6 +965,12 @@ bst_pattern_view_set_pixmarker (BstPatternView           *self,
     }
 }
 
+const gchar*
+bst_pattern_view_get_layout (BstPatternView *self)
+{
+  return self->layout_string;
+}
+
 guint
 bst_pattern_view_set_layout (BstPatternView *self,
                              const gchar    *layout)
@@ -961,6 +999,7 @@ bst_pattern_view_set_layout (BstPatternView *self,
     {
       guint i;
       bst_pattern_view_destroy_columns (self);
+      self->layout_string = g_strndup (layout, p2 - layout);
       for (i = 0; i < n; i++)
         bst_pattern_view_add_column (self, column[i].ltype, column[i].num, column[i].flags);
       self->focus_col = self->n_focus_cols ? self->focus_col % self->n_focus_cols : 0;

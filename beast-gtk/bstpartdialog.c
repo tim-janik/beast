@@ -43,6 +43,7 @@ static gboolean part_dialog_action_check        (gpointer                data,
                                                  gulong                  action);
 static void     part_dialog_run_script_proc     (gpointer                data,
                                                  gulong                  category_id);
+static GtkAdjustment* resizer_adjustment_create (GtkAdjustment          *client);
 
 
 /* --- track actions --- */
@@ -121,6 +122,7 @@ bst_part_dialog_init (BstPartDialog *self)
   GxkActionList *al1;
   GtkPaned *paned;
   GtkObject *adjustment;
+  GtkAdjustment *adj;
   GParamSpec *pspec;
   GxkGadget *gadget;
 
@@ -168,10 +170,15 @@ bst_part_dialog_init (BstPartDialog *self)
   self->proll = gxk_gadget_find (gadget, "piano-roll");
   gxk_nullify_in_object (self, &self->proll);
   g_signal_connect (self->proll, "canvas-clicked", G_CALLBACK (piano_canvas_clicked), self);
-  srange = gxk_gadget_find (gadget, "piano-roll-hscrollbar");
-  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (srange));
   srange = gxk_gadget_find (gadget, "piano-roll-vscrollbar");
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->proll), gtk_range_get_adjustment (srange));
+  srange = gxk_gadget_find (gadget, "piano-roll-hscrollbar");
+  adj = gtk_range_get_adjustment (srange);
+  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->proll), adj);
+  adj = resizer_adjustment_create (adj);
+  srange = gxk_gadget_find (gadget, "piano-roll-hscale");
+  gtk_range_set_adjustment (srange, adj);
+  // g_object_unref (adj);
   self->pictrl = bst_piano_roll_controller_new (self->proll);
   gxk_widget_publish_action_list (self, "pctrl-canvas-tools", bst_piano_roll_controller_canvas_actions (self->pictrl));
   gxk_widget_publish_action_list (self, "pctrl-note-tools", bst_piano_roll_controller_note_actions (self->pictrl));
@@ -196,7 +203,7 @@ bst_part_dialog_init (BstPartDialog *self)
   self->pvctrl = bst_pattern_controller_new (self->pview, self->pictrl->quant_rtools);
 
   /* pattern view controls */
-  g_signal_connect_swapped (gxk_gadget_find (gadget, "conf-button"), "clicked",
+  g_signal_connect_swapped (gxk_gadget_find (gadget, "configure-button"), "clicked",
                             G_CALLBACK (bst_pattern_column_layouter_popup), self->pview);
   box = gxk_gadget_find (gadget, "pattern-control-box");
   gxk_gadget_add (gadget, "pattern-control-box", gxk_param_create_editor (self->pvctrl->step_dir, "name"));
@@ -227,6 +234,8 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", hzoom_changed, self,
 		    NULL);
+  srange = gxk_gadget_find (gadget, "piano-roll-hzoom-scale");
+  gtk_range_set_adjustment (srange, GTK_ADJUSTMENT (adjustment));
   gxk_gadget_add (self, "hzoom-area",
                   g_object_new (GTK_TYPE_SPIN_BUTTON,
                                 "visible", TRUE,
@@ -339,6 +348,57 @@ part_dialog_run_script_proc (gpointer                data,
                            "project", SFI_TYPE_PROXY, bse_item_get_project (part),
                            "part", SFI_TYPE_PROXY, part,
                            NULL);
+}
+
+static void
+resizer_adjustment_client_changed (GtkAdjustment *adj)
+{
+  GtkAdjustment *client = g_object_get_data (adj, "client");
+  gdouble f, u = client->upper;
+  gdouble l = client->lower;
+  gdouble v = client->value + client->page_size;
+  f = (v - l) / (u - l);
+  f = 1.0 - f;
+  if (f != adj->value)
+    {
+      g_object_steal_data (adj, "client");
+      gtk_adjustment_set_value (adj, f);
+      g_object_set_data_full (adj, "client", g_object_ref (client), g_object_unref);
+    }
+}
+
+static void
+resizer_adjustment_value_changed (GtkAdjustment *adj)
+{
+  GtkAdjustment *client = g_object_get_data (adj, "client");
+  if (!client)
+    return;
+  gdouble f, u;
+  gdouble v = client->value + client->page_size;
+  /* calculate new client upper based on client->lower,
+   * client->value (>=50%) and adj->value, which indicates
+   * client->value position within 100%..50%
+   */
+  f = 1.0 - adj->value;
+  u = v / f;
+  if (u != client->upper)
+    {
+      g_print ("upper(%f)=%f\n", client->upper, u);
+      client->upper = u;
+      gtk_adjustment_changed (client);
+    }
+}
+
+static GtkAdjustment*
+resizer_adjustment_create (GtkAdjustment *client)
+{
+  GtkAdjustment *adj = (GtkAdjustment*) gtk_adjustment_new (0, 0, 1 - 0.05, 0.0001, 0.1, 0);
+  g_object_set_data_full (adj, "client", g_object_ref (client), g_object_unref);
+  resizer_adjustment_client_changed (adj);
+  g_signal_connect_object (client, "changed", G_CALLBACK (resizer_adjustment_client_changed), adj, G_CONNECT_SWAPPED);
+  g_signal_connect_object (client, "value-changed", G_CALLBACK (resizer_adjustment_client_changed), adj, G_CONNECT_SWAPPED);
+  g_signal_connect (adj, "value-changed", G_CALLBACK (resizer_adjustment_value_changed), NULL);
+  return adj;
 }
 
 static void

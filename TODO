@@ -1,4 +1,7 @@
 FIXMES:
+- fix bse_gettext()
+- piano roll/align events: does insert notes with wrong cursor
+- event roll: align events: outline colors don't honour skin colorization
 - part editor UI, add fields:
   Last Tick: _____, Max (used) Channel: ___, Base Octave: ___
 - add author and license to procedure execution dialog

@@ -1,3 +1,35 @@
+Mon Feb 23 04:46:12 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatternview.[hc]: improved default layout. reset
+	pango layouts when relayouting the columns. support column-specific
+	amount of focus-positions. implemented intra-column focus position. 
+
+	* beast-gtk/bstpartdialog.c: setup hzoom/hresizer scales for piano
+	roll. implemented hresizer to widen/shorten the range of reachable
+	tick positions.
+
+	* beast-gtk/bstpianoroll.c: properly constrain hadjustment setup once
+	it changes. handle last-tick changes in the model.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added hzoom and hresizer scales
+	to the GUI.
+
+	* beast-gtk/gxk/gxksimplelabel.c (label_cut_layout): translate ellipsis.
+
+	* beast-gtk/gxk/gxkscrollcanvas.c: support adjustment_changed handlers
+	in derived widgets. export function to reset pango layouts.
+
+	* beast-gtk/bsteventroll.c: leave step/page increment for hadjustment
+	alone. depend on pianbo roll setting it up correctly.
+
+	* beast-gtk/bstpatterncolumns.[hc]: implemented BstPatternColumnEvent,
+	a column to display event values in various formats. made layout
+	configuration dialog non-modal. added event value format facilities.
+	anhanced parser to support defaults. 
+
+	* beast-gtk/gxk/gxkutils.c: fixed '_'-escaping
+	in gxk_factory_path_unescape_uline().
+
 Mon Feb 23 02:44:57 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsw/Makefile.am:

@@ -211,8 +211,8 @@ bst_snet_router_init (BstSNetRouter      *self)
             else
               stock_id = stock_fallback;
             gxk_action_list_add_translated (toolbar_modules, cat->type,
-                                            T_(toolbar_types[n].name), NULL,
-                                            T_(toolbar_types[n].tip),
+                                            _(toolbar_types[n].name), NULL,
+                                            _(toolbar_types[n].tip),
                                             cat->category_id,
                                             stock_id,
                                             NULL, bst_router_popup_select, self);

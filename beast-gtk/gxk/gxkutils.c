@@ -240,7 +240,11 @@ gxk_factory_path_unescape_uline (const gchar *path)
   while (*p)
     {
       if (*p == '_')
-        p++;
+        {
+          p++;
+          if (*p == '_')
+            *d++ = *p++;
+        }
       *d++ = *p++;
     }
   *d = 0;

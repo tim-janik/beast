@@ -214,7 +214,7 @@
       <vbox>
 	<hbox spacing="2" border-width="2" >
 	  <hbox name="pattern-control-box" spacing="2" />
-	  <hstock-button name="conf-button" pack:pack-type="end"
+	  <hstock-button name="configure-button" pack:pack-type="end"
 	    _label="Configure" stock="BST_STOCK_EDIT"
 	    _tooltip="Configure the column layout of the pattern editor" />
 	</hbox>
@@ -294,7 +294,17 @@
 	  </hbox>
 	</vpaned>
 	<hbox>
-	  <hscrollbar name="piano-roll-hscrollbar" expand="1" />
+	  <vbox expand="1" spacing="1" >
+	    <hscrollbar name="piano-roll-hscrollbar" />
+	    <hbox homogeneous="1" spacing="3" >
+	      <hscale name="piano-roll-hzoom-scale" >
+		<tooltip _text="Horizontal piano zoom" />
+	      </hscale>
+	      <hscale name="piano-roll-hscale" >
+		<tooltip _text="Adjust right view boundary" />
+	      </hscale>
+	    </hbox>
+	  </vbox>
 	  <alignment size:hgroup="scroll-size" />
 	</hbox>
       </vbox>

@@ -865,6 +865,25 @@ piano_roll_queue_expose (BstPianoRoll *self,
 }
 
 static void
+piano_roll_adjustment_changed (GxkScrollCanvas *scc,
+			       GtkAdjustment   *adj)
+{
+  BstPianoRoll *self = BST_PIANO_ROLL (scc);
+  if (adj == scc->hadjustment)
+    {
+      double umin = ticks_to_pixels (self, self->max_ticks);
+      double umax = MAX (umin, 100e+6);
+      /* guard against invalid changes */
+      if (adj->lower != 0 || adj->upper != CLAMP (adj->upper, umin, umax))
+        {
+          scc->hadjustment->lower = 0;
+          scc->hadjustment->upper = CLAMP (scc->hadjustment->upper, umin, umax);
+          gtk_adjustment_changed (adj);
+        }
+    }
+}
+
+static void
 piano_roll_update_adjustments (GxkScrollCanvas *scc,
 			       gboolean         hadj,
 			       gboolean         vadj)
@@ -873,13 +892,12 @@ piano_roll_update_adjustments (GxkScrollCanvas *scc,
   
   if (hadj)
     {
-      scc->hadjustment->upper = ticks_to_pixels (self, self->max_ticks);
-      scc->hadjustment->step_increment = self->ppqn;
-      scc->hadjustment->page_increment = self->ppqn * self->qnpt;
-      /* FIXME: hack: artificially confine horizontal scroll range, until
-       * proper time scale support is implemented
-       */
-      scc->hadjustment->upper = MIN (scc->hadjustment->upper, 1000000);
+      double umin = ticks_to_pixels (self, self->max_ticks);
+      double umax = MAX (umin, 100e+6);
+      scc->hadjustment->lower = 0;
+      scc->hadjustment->upper = CLAMP (scc->hadjustment->upper, umin, umax);
+      scc->hadjustment->step_increment = ticks_to_pixels (self, self->ppqn);
+      scc->hadjustment->page_increment = ticks_to_pixels (self, self->ppqn * self->qnpt);
     }
   if (vadj)
     {
@@ -910,10 +928,11 @@ bst_piano_roll_hsetup (BstPianoRoll *self,
   gfloat old_hzoom = self->hzoom;
   
   /* here, we setup all things necessary to determine our
-   * horizontal layout. we have to avoid resizes at
-   * least if just max_ticks changes, since the tick range
-   * might need to grow during pointer grabs
+   * horizontal layout. we avoid resizes if only max_ticks
+   * changes, since the tick range might grow/shrink fairly
+   * frequently.
    */
+
   self->ppqn = MAX (ppqn, 1);
   self->qnpt = CLAMP (qnpt, 3, 4);
   self->max_ticks = MAX (max_ticks, 1);
@@ -921,12 +940,16 @@ bst_piano_roll_hsetup (BstPianoRoll *self,
   
   if (old_ppqn != self->ppqn ||
       old_qnpt != self->qnpt ||
-      old_max_ticks != self->max_ticks ||	// FIXME: shouldn't always cause a redraw
       old_hzoom != self->hzoom)
     {
       self->draw_qn_grid = ticks_to_pixels (self, self->ppqn) >= 3;
       self->draw_qqn_grid = ticks_to_pixels (self, self->ppqn / 4) >= 5;
       gtk_widget_queue_draw (GTK_WIDGET (self));
+      X_OFFSET (self) = GXK_SCROLL_CANVAS (self)->hadjustment->value;
+      gxk_scroll_canvas_update_adjustments (GXK_SCROLL_CANVAS (self), TRUE, FALSE);
+    }
+  else if (old_max_ticks != self->max_ticks)
+    {
       X_OFFSET (self) = GXK_SCROLL_CANVAS (self)->hadjustment->value;
       gxk_scroll_canvas_update_adjustments (GXK_SCROLL_CANVAS (self), TRUE, FALSE);
     }
@@ -998,6 +1021,14 @@ piano_roll_handle_drag (GxkScrollCanvas     *scc,
 }
 
 static void
+piano_roll_range_changed (BstPianoRoll *self)
+{
+  guint max_ticks;
+  bse_proxy_get (self->proxy, "last-tick", &max_ticks, NULL);
+  bst_piano_roll_hsetup (self, self->ppqn, self->qnpt, MAX (max_ticks, 1), self->hzoom);
+}
+
+static void
 piano_roll_update (BstPianoRoll *self,
 		   guint         tick,
 		   guint         duration,
@@ -1033,6 +1064,7 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
     {
       bse_proxy_disconnect (self->proxy,
 			    "any_signal", piano_roll_release_proxy, self,
+			    "any_signal", piano_roll_range_changed, self,
 			    "any_signal", piano_roll_update, self,
 			    NULL);
       bse_item_unuse (self->proxy);
@@ -1044,14 +1076,12 @@ bst_piano_roll_set_proxy (BstPianoRoll *self,
       bse_item_use (self->proxy);
       bse_proxy_connect (self->proxy,
 			 "swapped_signal::release", piano_roll_release_proxy, self,
-			 // "swapped_signal::property-notify::uname", piano_roll_update_name, self,
+                         "swapped_signal::property-notify::last-tick", piano_roll_range_changed, self,
 			 "swapped_signal::range-changed", piano_roll_update, self,
 			 NULL);
       self->min_note = bse_part_get_min_note (self->proxy);
       self->max_note = bse_part_get_max_note (self->proxy);
-      bse_proxy_get (self->proxy, "last-tick", &self->max_ticks, NULL);
-      self->max_ticks = MAX (self->max_ticks, 1);
-      bst_piano_roll_hsetup (self, self->ppqn, self->qnpt, self->max_ticks, self->hzoom);
+      piano_roll_range_changed (self);
     }
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
@@ -1214,6 +1244,7 @@ bst_piano_roll_class_init (BstPianoRollClass *class)
   scroll_canvas_class->draw_top_panel = bst_piano_roll_draw_hpanel;
   scroll_canvas_class->draw_left_panel = bst_piano_roll_draw_vpanel;
   scroll_canvas_class->update_adjustments = piano_roll_update_adjustments;
+  scroll_canvas_class->adjustment_changed = piano_roll_adjustment_changed;
   scroll_canvas_class->handle_drag = piano_roll_handle_drag;
 
   bst_skin_config_add_notify ((BstSkinConfigNotify) piano_roll_class_setup_skin, class);

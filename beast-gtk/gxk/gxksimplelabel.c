@@ -569,9 +569,12 @@ label_ensure_layout (GxkSimpleLabel *self)
 static void
 label_cut_layout (GxkSimpleLabel *self)
 {
+  /* TRANSLATORS: this is the string that is appended to the end
+   * of a clipped label if it does not fit its assigned width.
+   */
+  const gchar *cliptext = _("...");
   GtkWidget *widget = GTK_WIDGET (self);
   PangoRectangle logical_rect;
-  const gchar *cliptext = "...";
   gint l2 = strlen (cliptext);
   gint l1 = strlen (self->text);
   gint i, l = g_utf8_strlen (self->text, -1);

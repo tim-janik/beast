@@ -18,6 +18,7 @@
 #include "bstpatterncolumns.h"
 #include "bstpatternview.h"
 #include <string.h>
+#include <math.h>
 
 
 /* --- defines --- */
@@ -31,6 +32,40 @@
 #define FOCUS_WIDTH(self)       (bst_pattern_view_get_focus_width (self))
 #define X_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->x_offset)
 #define Y_OFFSET(self)          (GXK_SCROLL_CANVAS (self)->y_offset)
+
+
+/* --- functions --- */
+static void
+playout_calc_char_extends (PangoLayout *pango_layout,
+                           gint        *char_offset, /* to center ink-rect within logical-rect */
+                           gint        *char_width,
+                           const gchar *chars,
+                           gboolean     reduce_to_ink_width)
+{
+  gint mlwidth = 0, miwidth = 0;
+  while (chars[0])
+    {
+      PangoRectangle irect = { 0, }, lrect = { 0 };
+      pango_layout_set_text (pango_layout, chars++, 1);
+      pango_layout_get_pixel_extents (pango_layout, &irect, &lrect);
+      miwidth = MAX (miwidth, irect.width);
+      mlwidth = MAX (mlwidth, lrect.width);
+    }
+  if (reduce_to_ink_width)
+    {
+      if (char_width)
+        *char_width = miwidth;
+      if (char_offset)
+        *char_offset = (miwidth - mlwidth) / 2;
+    }
+  else
+    {
+      if (char_width)
+        *char_width = mlwidth;
+      if (char_offset)
+        *char_offset = 0;
+    }
+}
 
 
 /* --- note cell --- */
@@ -47,34 +82,6 @@ pattern_column_note_create_font_desc (BstPatternColumn *self)
   pango_font_description_set_family_static (fdesc, "monospace");
   pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
   return fdesc;
-}
-
-static void
-playout_calc_char_extends (PangoLayout *pango_layout,
-                           gint        *char_offset,
-                           gint        *char_width,
-                           const gchar *chars,
-                           gboolean     reduce_to_ink_width)
-{
-  gint mlwidth = 0, miwidth = 0;
-  while (chars[0])
-    {
-      PangoRectangle irect = { 0, }, lrect = { 0 };
-      pango_layout_set_text (pango_layout, chars++, 1);
-      pango_layout_get_pixel_extents (pango_layout, &irect, &lrect);
-      miwidth = MAX (miwidth, irect.width);
-      mlwidth = MAX (mlwidth, lrect.width);
-    }
-  if (reduce_to_ink_width)
-    {
-      *char_width = miwidth;
-      *char_offset = (miwidth - mlwidth) / 2;
-    }
-  else
-    {
-      *char_width = mlwidth;
-      *char_offset = 0;
-    }
 }
 
 static guint
@@ -140,11 +147,6 @@ pattern_column_note_draw_cell (BstPatternColumn       *column,
   gchar ch;
   gint accu, yline;
 
-  if (0)
-    gdk_draw_line (drawable, dark_gc,
-                   crect->x, crect->y,
-                   crect->x + crect->width - 1, crect->y);
-  
   accu = crect->x + FOCUS_WIDTH (pview);
   ch = pattern_column_note_char (self, pseq, 0);
   draw_gc = ch == '-' ? dark_gc : black_gc;      /* choose gc dependant on note letter */
@@ -223,14 +225,214 @@ static BstPatternColumnClass pattern_column_note_class = {
   sizeof (BstPatternColumnNote),
   NULL, /* init */
   pattern_column_note_create_font_desc,
-  pattern_column_note_draw_cell,
   pattern_column_note_width_request,
+  pattern_column_note_draw_cell,
+  NULL, /* get_focus_pos */
   pattern_column_note_key_event,
   pattern_column_note_finalize,
 };
 
 
+/* --- event cell --- */
+typedef struct {
+  BstPatternColumn column;
+  gint co;      /* character offset to translate ink-rect to logical-rect */
+  gint cw;      /* character width */
+} BstPatternColumnEvent;
+
+static void
+pattern_column_event_init (BstPatternColumn *column)
+{
+  gboolean is_signed  = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
+  gint n_digits = 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK);
+  column->n_focus_positions = is_signed + n_digits;
+}
+
+static PangoFontDescription*
+pattern_column_event_create_font_desc (BstPatternColumn *self)
+{
+  PangoFontDescription *fdesc = pango_font_description_new ();
+  pango_font_description_set_family_static (fdesc, "monospace");
+  // pango_font_description_set_weight (fdesc, PANGO_WEIGHT_BOLD);
+  return fdesc;
+}
+
+static guint
+pattern_column_event_width_request (BstPatternColumn       *column,
+                                    BstPatternView         *pview,
+                                    GdkWindow              *drawable,
+                                    PangoLayout            *pango_layout,
+                                    guint                   duration)
+{
+  BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
+  gboolean is_signed  = (column->lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
+  gint width, n_digits = 1 + (column->lflags & BST_PATTERN_LFLAG_DIGIT_MASK);
+  playout_calc_char_extends (pango_layout, &self->co, &self->cw, "0123456789", TRUE);
+  width = 1 + (is_signed + n_digits) * (self->cw + 1);
+  return FOCUS_WIDTH (pview) + width + FOCUS_WIDTH (pview);
+}
+
+static guint
+control_get_max (guint num_type,
+                 guint n_digits)
+{
+  if (num_type == BST_PATTERN_LFLAG_DEC)
+    return pow (10, n_digits) - 1;
+  else /* if (num_type == BST_PATTERN_LFLAG_HEX) */
+    return pow (16, n_digits) - 1;
+}
+
+static guint
+control_to_string (BstPatternLFlags lflags,
+                   gchar            buffer[64],
+                   gfloat           value,
+                   gchar            placeholder)
+{
+  gboolean is_signed  = (lflags & BST_PATTERN_LFLAG_SIGNED) != 0;
+  guint num_type = lflags & BST_PATTERN_LFLAG_NUM_MASK;
+  guint n_digits = MIN (9, 1 + (lflags & BST_PATTERN_LFLAG_DIGIT_MASK));
+
+  if (placeholder)
+    {
+      memset (buffer, placeholder, 64);
+      buffer[n_digits + is_signed] = 0;
+    }
+  else
+    {
+      const gchar *format;
+      gchar *p = buffer;
+      gint ival = control_get_max (num_type, n_digits) * value;
+      if (num_type == BST_PATTERN_LFLAG_DEC)
+        {
+          static const char *formats[] = { "%1u", "%2u", "%3u", "%4u", "%5u", "%6u", "%7u", "%8u", "%9u" };
+          format = formats[n_digits - 1];
+        }
+      else /* if (num_type == BST_PATTERN_LFLAG_HEX) */
+        {
+          static const char *formats[] = { "%01x", "%02x", "%03x", "%04x", "%05x", "%06x", "%07x", "%08x", "%09x" };
+          format = formats[n_digits - 1];
+        }
+      if (is_signed)
+        *p++ = ival == 0 ? ' ' : ival > 0 ? '+' : '-';
+      g_snprintf (p, 63, format, ABS (ival));
+    }
+  return is_signed + n_digits;
+}
+
+static void
+pattern_column_event_draw_cell (BstPatternColumn       *column,
+                                BstPatternView         *pview,
+                                GdkWindow              *drawable,
+                                PangoLayout            *pango_layout,
+                                guint                   tick,
+                                guint                   duration,
+                                GdkRectangle           *crect,
+                                GdkRectangle           *expose_area)
+{
+  BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
+  GdkGC *dark_gc = STYLE (pview)->dark_gc[GTK_STATE_NORMAL];
+  GdkGC *black_gc = STYLE (pview)->black_gc;
+  GdkGC *draw_gc;
+  SfiProxy proxy = pview->proxy;
+  BsePartControlSeq *cseq;
+  BsePartControl *pctrl;
+  gint i, n, accu, yline;
+  gchar buffer[64] = { 0, };
+
+  if (column->ltype == BST_PATTERN_LTYPE_VELOCITY)
+    cseq = proxy ? bse_part_get_channel_controls (proxy, column->num, tick, duration, BSE_MIDI_SIGNAL_VELOCITY) : NULL;
+  else if (column->ltype == BST_PATTERN_LTYPE_FINE_TUNE)
+    cseq = proxy ? bse_part_get_channel_controls (proxy, column->num, tick, duration, BSE_MIDI_SIGNAL_FINE_TUNE) : NULL;
+  else
+    cseq = proxy ? bse_part_list_controls (proxy, tick, duration, BSE_MIDI_SIGNAL_CONTINUOUS_0 + column->num) : NULL;
+  pctrl = cseq && cseq->n_pcontrols == 1 ? cseq->pcontrols[0] : NULL;
+  n = control_to_string (column->lflags, buffer, pctrl ? pctrl->value : 0,
+                         cseq && cseq->n_pcontrols > 1 ? '*' : pctrl ? 0 : '-');
+
+  draw_gc = pctrl ? black_gc : dark_gc;
+  accu = crect->x + FOCUS_WIDTH (pview) + 1;
+  for (i = 0; i < n; i++)
+    {
+      PangoRectangle irect, prect;
+      pango_layout_set_text (pango_layout, buffer + i, 1);
+      pango_layout_get_pixel_extents (pango_layout, &irect, &prect);
+      yline = crect->y + (crect->height - prect.height) / 2;
+      gdk_draw_layout (drawable, draw_gc, accu + self->co + (self->cw - prect.width) / 2, yline, pango_layout);
+      accu += self->cw + 1;
+    }
+}
+
+static void
+pattern_column_event_get_focus_pos (BstPatternColumn       *column,
+                                    BstPatternView         *pview,
+                                    GdkWindow              *drawable,
+                                    PangoLayout            *pango_layout,
+                                    guint                   tick,
+                                    guint                   duration,
+                                    GdkRectangle           *crect,
+                                    gint                    focus_pos,
+                                    gint                   *pos_x,
+                                    gint                   *pos_width)
+{
+  BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
+  gint i, accu, width = self->cw + 1;
+  accu = FOCUS_WIDTH (pview) + 1;
+  for (i = 0; i < focus_pos; i++)
+    accu += width;
+  *pos_x = accu;
+  *pos_width = width;
+}
+
+static gboolean
+pattern_column_event_key_event (BstPatternColumn       *column,
+                                BstPatternView         *pview,
+                                GdkWindow              *drawable,
+                                PangoLayout            *pango_layout,
+                                guint                   tick,
+                                guint                   duration,
+                                GdkRectangle           *cell_rect,
+                                guint                   keyval,
+                                GdkModifierType         modifier,
+                                BstPatternAction        action,
+                                gdouble                 param)
+{
+  return FALSE;
+}
+
+static void
+pattern_column_event_finalize (BstPatternColumn *column)
+{
+  BstPatternColumnEvent *self = (BstPatternColumnEvent*) column;
+  g_free (self);
+}
+
+static BstPatternColumnClass pattern_column_event_class = {
+  1,  /* n_focus_positions */
+  sizeof (BstPatternColumnEvent),
+  pattern_column_event_init,
+  pattern_column_event_create_font_desc,
+  pattern_column_event_width_request,
+  pattern_column_event_draw_cell,
+  pattern_column_event_get_focus_pos,
+  pattern_column_event_key_event,
+  pattern_column_event_finalize,
+};
+
+
 /* --- vbar cell --- */
+static guint
+pattern_column_vbar_width_request (BstPatternColumn       *self,
+                                   BstPatternView         *pview,
+                                   GdkWindow              *drawable,
+                                   PangoLayout            *pango_layout,
+                                   guint                   duration)
+{
+  if (self->num)        /* vbar */
+    return 1 + 1 + 1;
+  /* space */
+  return 1 + 1; // 2 * XTHICKNESS (pview) + 1;
+}
+
 static void
 pattern_column_vbar_draw_cell (BstPatternColumn       *self,
                                BstPatternView         *pview,
@@ -258,19 +460,6 @@ pattern_column_vbar_draw_cell (BstPatternColumn       *self,
     gdk_gc_set_line_attributes (draw_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
 }
 
-static guint
-pattern_column_vbar_width_request (BstPatternColumn       *self,
-                                   BstPatternView         *pview,
-                                   GdkWindow              *drawable,
-                                   PangoLayout            *pango_layout,
-                                   guint                   duration)
-{
-  if (self->num)        /* vbar */
-    return 1 + 1 + 1;
-  /* space */
-  return 2 * XTHICKNESS (pview) + 1;
-}
-
 static void
 pattern_column_vbar_finalize (BstPatternColumn *self)
 {
@@ -282,8 +471,9 @@ static BstPatternColumnClass pattern_column_vbar_class = {
   sizeof (BstPatternColumn),
   NULL, /* init */
   NULL, /* create_font_desc */
-  pattern_column_vbar_draw_cell,
   pattern_column_vbar_width_request,
+  pattern_column_vbar_draw_cell,
+  NULL, /* get_focus_pos */
   NULL, /* key_event */
   pattern_column_vbar_finalize,
 };
@@ -315,7 +505,7 @@ bst_pattern_column_layouter_popup (BstPatternView *pview)
     N_("note-1, note-2, ..."), "\n",
     N_("  display notes of the first, second, ... channel"), "\n",
     /* !!! LEAVE UNTRANSLATED !!! */
-    N_("offset-1, length-2, velocty-3, ..."), "\n",
+    N_("offset-1, length-2, velocity-3, ..."), "\n",
     N_("  display offset, length or velocity of notes in the first, second, ... channel"), "\n",
     /* !!! LEAVE UNTRANSLATED !!! */
     N_("control-0, ..., control-63, cc-0, cc-31"), "\n",
@@ -348,17 +538,21 @@ bst_pattern_column_layouter_popup (BstPatternView *pview)
     /* !!! LEAVE UNTRANSLATED !!! */
     N_("col1, col2, col3"), "\n",
     N_("  selects one of 3 predefined colors"), "\n",
+    /* !!! LEAVE UNTRANSLATED !!! */
+    N_("lfold, rfold"), "\n",
+    N_("  allow folding the column into left/right neighbour"), "\n",
     N_("EXAMPLE:"), "\n",
     /* !!! LEAVE UNTRANSLATED !!! */
     N_("note-1 | velocity-1=hex2 | note-2 | volume=hex4"), "\n",
   };
-  static GtkWidget *dialog = NULL;
+  GtkWidget *dialog = g_object_get_data (pview, "BstPattern-layouter");
+  GtkEntry *entry;
   if (!dialog)
     {
       GtkWidget *sctext, *w;
       guint i;
-      dialog = gxk_dialog_new_gadget (&dialog, NULL,
-                                      GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_MODAL | GXK_DIALOG_POPUP_POS,
+      dialog = gxk_dialog_new_gadget (NULL, GTK_OBJECT (pview),
+                                      GXK_DIALOG_HIDE_ON_DELETE | GXK_DIALOG_POPUP_POS, // GXK_DIALOG_MODAL
                                       _("Pattern Editor Layout"),
                                       "beast", "pattern-editor-layout-box");
       sctext = gxk_scroll_text_create_for (GXK_SCROLL_TEXT_WIDGET_LOOK, gxk_gadget_find (dialog, "sctext-box"));
@@ -379,8 +573,11 @@ bst_pattern_column_layouter_popup (BstPatternView *pview)
       g_signal_connect_swapped (w = gxk_gadget_find (dialog, "apply-button"), "clicked",
                                 G_CALLBACK (pattern_column_layouter_apply), dialog);
       gxk_dialog_set_default (GXK_DIALOG (dialog), w);
+      g_object_set_data (dialog, "user_data", pview);
+      g_object_set_data (pview, "BstPattern-layouter", dialog);
     }
-  g_object_set_data (dialog, "user_data", pview);
+  entry = gxk_gadget_find (dialog, "layout-entry");
+  gtk_entry_set_text (entry, bst_pattern_view_get_layout (pview));
   gxk_widget_showraise (dialog);
 }
 
@@ -404,20 +601,32 @@ bst_pattern_layout_parse_column (const gchar      *string,
     { "dbar", 0,        BST_PATTERN_LTYPE_DBAR },
     { ":", 0,           BST_PATTERN_LTYPE_DBAR },
   };
-  static const struct { const gchar *name; guint flag; } colflags[] = {
-    { "hex2",           BST_PATTERN_LFLAG_HEX2 },
-    { "hex4",           BST_PATTERN_LFLAG_HEX4 },
-    { "shex2",          BST_PATTERN_LFLAG_SIGNED | BST_PATTERN_LFLAG_HEX2 },
-    { "shex4",          BST_PATTERN_LFLAG_SIGNED | BST_PATTERN_LFLAG_HEX4 },
-    { "dec2",           BST_PATTERN_LFLAG_DEC2 },
-    { "dec3",           BST_PATTERN_LFLAG_DEC3 },
-    { "sdec2",          BST_PATTERN_LFLAG_SIGNED | BST_PATTERN_LFLAG_DEC2 },
-    { "sdec3",          BST_PATTERN_LFLAG_SIGNED | BST_PATTERN_LFLAG_DEC3 },
-    { "col1",           BST_PATTERN_LFLAG_COL1 },
-    { "col2",           BST_PATTERN_LFLAG_COL2 },
-    { "col3",           BST_PATTERN_LFLAG_COL3 },
+  static const struct { const gchar *name; guint flag, mask; } colflags[] = {
+#define NUM_MASK        (BST_PATTERN_LFLAG_NUM_MASK | BST_PATTERN_LFLAG_SIGNED)
+    { "hex1",           BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_1, NUM_MASK },
+    { "hex2",           BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_2, NUM_MASK },
+    { "hex3",           BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_3, NUM_MASK },
+    { "hex4",           BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_4, NUM_MASK },
+    { "shex1",          BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_1 | BST_PATTERN_LFLAG_SIGNED, NUM_MASK },
+    { "shex2",          BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_2 | BST_PATTERN_LFLAG_SIGNED, NUM_MASK },
+    { "shex3",          BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_3 | BST_PATTERN_LFLAG_SIGNED, NUM_MASK },
+    { "shex4",          BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_4 | BST_PATTERN_LFLAG_SIGNED, NUM_MASK },
+    { "dec1",           BST_PATTERN_LFLAG_DEC | BST_PATTERN_LFLAG_DIGIT_1, NUM_MASK },
+    { "dec2",           BST_PATTERN_LFLAG_DEC | BST_PATTERN_LFLAG_DIGIT_2, NUM_MASK },
+    { "dec3",           BST_PATTERN_LFLAG_DEC | BST_PATTERN_LFLAG_DIGIT_3, NUM_MASK },
+    { "dec4",           BST_PATTERN_LFLAG_DEC | BST_PATTERN_LFLAG_DIGIT_4, NUM_MASK },
+    { "sdec1",          BST_PATTERN_LFLAG_DEC | BST_PATTERN_LFLAG_DIGIT_1 | BST_PATTERN_LFLAG_SIGNED, NUM_MASK },
+    { "sdec2",          BST_PATTERN_LFLAG_DEC | BST_PATTERN_LFLAG_DIGIT_2 | BST_PATTERN_LFLAG_SIGNED, NUM_MASK },
+    { "sdec3",          BST_PATTERN_LFLAG_DEC | BST_PATTERN_LFLAG_DIGIT_3 | BST_PATTERN_LFLAG_SIGNED, NUM_MASK },
+    { "sdec4",          BST_PATTERN_LFLAG_DEC | BST_PATTERN_LFLAG_DIGIT_4 | BST_PATTERN_LFLAG_SIGNED, NUM_MASK },
+    { "col1",           BST_PATTERN_LFLAG_COL1, BST_PATTERN_LFLAG_COL_MASK },
+    { "col2",           BST_PATTERN_LFLAG_COL2, BST_PATTERN_LFLAG_COL_MASK },
+    { "col3",           BST_PATTERN_LFLAG_COL3, BST_PATTERN_LFLAG_COL_MASK },
+    { "col4",           BST_PATTERN_LFLAG_COL4, BST_PATTERN_LFLAG_COL_MASK },
+    { "lfold",          BST_PATTERN_LFLAG_LFOLD, BST_PATTERN_LFLAG_LFOLD },
+    { "rfold",          BST_PATTERN_LFLAG_RFOLD, BST_PATTERN_LFLAG_RFOLD },
   };
-  guint i;
+  guint i, fmask = 0;
   *ltype = 0;
   *num = 0;
   *flags = 0;
@@ -445,20 +654,24 @@ bst_pattern_layout_parse_column (const gchar      *string,
       g_free (mem);
     }
   /* parse flags */
-  if (string[0] != '=')
-    return string;      /* done without flags */
-  do
-    {
-      string++;
-      for (i = 0; i < G_N_ELEMENTS (flags); i++)
-        if (strncmp (string, colflags[i].name, strlen (colflags[i].name)) == 0)
-          {
-            string += strlen (colflags[i].name);
-            *flags |= colflags[i].flag;
-            break;
-          }
-    }
-  while (string[0] == ',');
+  if (string[0] == '=')
+    do
+      {
+        string++;
+        for (i = 0; i < G_N_ELEMENTS (colflags); i++)
+          if (strncmp (string, colflags[i].name, strlen (colflags[i].name)) == 0)
+            {
+              string += strlen (colflags[i].name);
+              *flags &= ~colflags[i].mask;
+              *flags |= colflags[i].flag;
+              fmask |= colflags[i].mask;
+              break;
+            }
+      }
+    while (string[0] == ',');
+  /* adjust defaults */
+  if (!(fmask & (BST_PATTERN_LFLAG_NUM_MASK | BST_PATTERN_LFLAG_DIGIT_MASK)))
+    *flags |= BST_PATTERN_LFLAG_SIGNED | BST_PATTERN_LFLAG_HEX | BST_PATTERN_LFLAG_DIGIT_2;
   return string;
 }
 
@@ -471,7 +684,8 @@ bst_pattern_column_create (BstPatternLType   ltype,
   BstPatternColumn *column;
   switch (ltype)
     {
-    case BST_PATTERN_LTYPE_CONTROL:
+    case BST_PATTERN_LTYPE_OFFSET:
+    case BST_PATTERN_LTYPE_LENGTH:
     case BST_PATTERN_LTYPE_SPACE:
       class = &pattern_column_vbar_class;
       num = 0;
@@ -485,17 +699,21 @@ bst_pattern_column_create (BstPatternLType   ltype,
       num = -1;
       break;
     case BST_PATTERN_LTYPE_NOTE:
-    case BST_PATTERN_LTYPE_OFFSET:
-    case BST_PATTERN_LTYPE_LENGTH:
+      class = &pattern_column_note_class;
+      break;
     case BST_PATTERN_LTYPE_VELOCITY:
     case BST_PATTERN_LTYPE_FINE_TUNE:
-      class = &pattern_column_note_class;
+    case BST_PATTERN_LTYPE_CONTROL:
+      class = &pattern_column_event_class;
       break;
     }
   g_assert (class->instance_size >= sizeof (BstPatternColumn));
   column = g_malloc0 (class->instance_size);
   column->klass = class;
   column->num = num;
+  column->ltype = ltype;
+  column->lflags = lflags;
+  column->n_focus_positions = class->n_focus_positions;
   if (class->init)
     class->init (column);
   return column;

@@ -465,8 +465,8 @@ event_roll_update_adjustments (GxkScrollCanvas *scc,
       scc->hadjustment->lower = 0;
       // FIXME: self->hadjustment->upper = self->max_ticks;
       // self->hadjustment->page_size = pixels_to_ticks (self, CANVAS_WIDTH (self));
-      scc->hadjustment->step_increment = self->ppqn;
-      scc->hadjustment->page_increment = self->ppqn * self->qnpt;
+      // scc->hadjustment->step_increment = self->ppqn;
+      // scc->hadjustment->page_increment = self->ppqn * self->qnpt;
     }
   GXK_SCROLL_CANVAS_CLASS (bst_event_roll_parent_class)->update_adjustments (scc, hadj, vadj);
 }

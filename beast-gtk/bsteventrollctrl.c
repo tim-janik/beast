@@ -450,7 +450,7 @@ align_motion (BstEventRollController *self,
       
       bse_item_group_undo (part, "Align Control Events");
       bst_event_roll_segment_tick_range (self->eroll, &tick, &duration);
-      cseq = bse_part_get_range_controls (part, tick, duration, CONTROL_TYPE (self));
+      cseq = bse_part_list_controls (part, tick, duration, CONTROL_TYPE (self));
       for (i = 0; i < cseq->n_pcontrols; i++)
         {
           BsePartControl *pctrl = cseq->pcontrols[i];

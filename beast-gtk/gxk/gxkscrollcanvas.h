@@ -152,6 +152,8 @@ typedef struct
   void          (*update_adjustments)           (GxkScrollCanvas        *self,
                                                  gboolean                hadj,
                                                  gboolean                vadj);
+  void          (*adjustment_changed)           (GxkScrollCanvas        *self,
+                                                 GtkAdjustment          *adj);
   void          (*reallocate_children)          (GxkScrollCanvas        *self,
                                                  gint                    xdiff,
                                                  gint                    ydiff);
@@ -205,6 +207,7 @@ void             gxk_scroll_canvas_make_visible            (GxkScrollCanvas     
                                                             gint                    scroll_area_y,
                                                             gint                    scroll_area_width,
                                                             gint                    scroll_area_height);
+void             gxk_scroll_canvas_reset_pango_layouts     (GxkScrollCanvas        *self);
 void             gxk_scroll_canvas_reallocate              (GxkScrollCanvas        *self);
 gboolean         gxk_scroll_canvas_dragging                (GxkScrollCanvas        *self);
 void             gxk_scroll_canvas_drag_abort              (GxkScrollCanvas        *self);

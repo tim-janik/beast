@@ -50,7 +50,9 @@ typedef struct _BstPatternColumnClass BstPatternColumnClass;
 struct _BstPatternColumn
 {
   BstPatternColumnClass *klass;
-  guint                  num;
+  gint                   num;
+  guint                  ltype, lflags; /* BstPatternLType, BstPatternLFlags */
+  guint                  n_focus_positions;
   /* fields private to BstPatternView */
   guint                  x;
   guint                  width;
@@ -62,6 +64,11 @@ struct _BstPatternColumnClass
   guint                   instance_size;
   void                  (*init)                 (BstPatternColumn       *self);
   PangoFontDescription* (*create_font_desc)     (BstPatternColumn       *self);
+  guint                 (*width_request)        (BstPatternColumn       *self,
+                                                 BstPatternView         *pview,
+                                                 GdkWindow              *drawable,
+                                                 PangoLayout            *pango_layout,
+                                                 guint                   duration);
   void                  (*draw_cell)            (BstPatternColumn       *self,
                                                  BstPatternView         *pview,
                                                  GdkWindow              *drawable,
@@ -70,11 +77,16 @@ struct _BstPatternColumnClass
                                                  guint                   duration,
                                                  GdkRectangle           *cell_rect,
                                                  GdkRectangle           *expose_area);
-  guint                 (*width_request)        (BstPatternColumn       *self,
+  void                  (*get_focus_pos)        (BstPatternColumn       *self,
                                                  BstPatternView         *pview,
                                                  GdkWindow              *drawable,
                                                  PangoLayout            *pango_layout,
-                                                 guint                   duration);
+                                                 guint                   tick,
+                                                 guint                   duration,
+                                                 GdkRectangle           *cell_rect,
+                                                 gint                    focus_pos,
+                                                 gint                   *pos_x,
+                                                 gint                   *pos_width);
   gboolean              (*key_event)            (BstPatternColumn       *self,
                                                  BstPatternView         *pview,
                                                  GdkWindow              *drawable,
@@ -101,14 +113,22 @@ typedef enum {
   BST_PATTERN_LTYPE_DBAR,
 } BstPatternLType;
 typedef enum {
-  BST_PATTERN_LFLAG_SIGNED      = 1 << 0,
-  BST_PATTERN_LFLAG_HEX2        = 1 << 1,
-  BST_PATTERN_LFLAG_HEX4        = 1 << 2,
-  BST_PATTERN_LFLAG_DEC2        = 1 << 3,
-  BST_PATTERN_LFLAG_DEC3        = 1 << 4,
-  BST_PATTERN_LFLAG_COL1        = 1 << 5,
-  BST_PATTERN_LFLAG_COL2        = 1 << 6,
-  BST_PATTERN_LFLAG_COL3        = 1 << 7,
+  BST_PATTERN_LFLAG_DIGIT_1     = 0 << 0,
+  BST_PATTERN_LFLAG_DIGIT_2     = 1 << 0,
+  BST_PATTERN_LFLAG_DIGIT_3     = 2 << 0,
+  BST_PATTERN_LFLAG_DIGIT_4     = 3 << 0,
+#define BST_PATTERN_LFLAG_DIGIT_MASK    (3 << 0)
+  BST_PATTERN_LFLAG_DEC         = 0 << 2,
+  BST_PATTERN_LFLAG_HEX         = 1 << 2,
+#define BST_PATTERN_LFLAG_NUM_MASK      (1 << 2)
+  BST_PATTERN_LFLAG_SIGNED      = 1 << 5,
+  BST_PATTERN_LFLAG_LFOLD       = 1 << 6,
+  BST_PATTERN_LFLAG_RFOLD       = 1 << 7,
+  BST_PATTERN_LFLAG_COL1        = 0 << 8,
+  BST_PATTERN_LFLAG_COL2        = 1 << 8,
+  BST_PATTERN_LFLAG_COL3        = 2 << 8,
+  BST_PATTERN_LFLAG_COL4        = 3 << 8,
+#define BST_PATTERN_LFLAG_COL_MASK      (3 << 8)
 } BstPatternLFlags;
 void              bst_pattern_column_layouter_popup (BstPatternView   *pview);
 const gchar*      bst_pattern_layout_parse_column   (const gchar      *string,

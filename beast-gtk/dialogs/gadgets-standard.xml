@@ -155,8 +155,8 @@
     prop:stock-size="$(null-collapse,$stock-size)"
     prop:stock="$stock-image" />
   <!-- scrollbars/scales -->
-  <xdef:hscale                inherit="GtkHScale" />
-  <xdef:vscale                inherit="GtkVScale" />
+  <xdef:hscale                inherit="GtkHScale" prop:draw_value="$(first-occupied,$draw-value,0)" prop:can-focus="0" />
+  <xdef:vscale                inherit="GtkVScale" prop:draw_value="$(first-occupied,$draw-value,0)" prop:can-focus="0" />
   <xdef:hscrollbar            inherit="GtkHScrollbar" prop:can-focus="0" />
   <xdef:vscrollbar            inherit="GtkVScrollbar" prop:can-focus="0" />
   <!-- misc containers -->
