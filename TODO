@@ -1,22 +1,23 @@
 FIXME(urgent):
+- fix float saving with de_DE
+- add a "Creating Skins" section to the beast manual page
 - bsewavetool: fix per-command docu to properly account for input.bsewave
+- install bsewavetool, bsewavetool.1
+- gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
+- play + play doesn't reset wave oscillator state
+- pianoroll: close pianoroll window in response to part::release  
+- pianoroll: select-all/none
 - start playback at play pointer position
 - add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
 - write script which resizes 0-length notes to 1/4 note or similar length (those notes occour from MIDI drum pattern imports)
 - sfidl --client: generate: extern "C" ifdef's, include sfi/sfi.h
-- install bsewavetool, bsewavetool.1
-- gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
-- fix float saving with de_DE
 - remove num from SfiStoreReadBin()?
-- add a "Creating Skins" section to the beast manual page
 - provide config-parameter (by engine) which provides 16kHz limit listening-threshold used implicitely in osc-code etc. (important for 48K,84K)
 - skip and retrigger updates for scope visibility changes
 - add midi control numbers to midi control enum values as tooltips
 - implement display of Note properties next to frequency properties (and nuke note properties from plugins)
-- ensure mixer and track setup for songs created via MIDI import
+- MIDI-import: ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
-- pianoroll: select-all/none
-- play + play doesn't reset wave oscillator state
 - use __thread to speed up sfi_thread_self(). configure test:
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
   compiler support and missing libc support will fail on accessing a __thread variable
@@ -26,7 +27,6 @@ FIXME(urgent):
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 - provide script to render bse file to WAV. then add File/Export function which:
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
-- close pianoroll window in response to part::release  
 - make sfi_wstore_flush_fd() return -errno on errors and handle those in Wave::store()
 - add http://tap-plugins.sourceforge.net/ladspa/sigmoid.html to BseStandardSaturation
 TODO:
