@@ -191,6 +191,9 @@ bst_wave_editor_init (BstWaveEditor *wave_editor)
 			    (GtkDestroyNotify) gtk_object_unref);
   wave_editor->proc_editor = NULL;
 #endif
+
+  /* playback handle */
+  wave_editor->phandle = bst_play_back_handle_new ();
 }
 
 static void
@@ -262,6 +265,12 @@ static void
 bst_wave_editor_destroy (GtkObject *object)
 {
   BstWaveEditor *wave_editor = BST_WAVE_EDITOR (object);
+
+  if (wave_editor->phandle)
+    {
+      bst_play_back_handle_destroy (wave_editor->phandle);
+      wave_editor->phandle = NULL;
+    }
 
   if (wave_editor->proc_editor)
     gtk_widget_destroy (wave_editor->proc_editor);
@@ -705,8 +714,8 @@ adjustments_changed (BstWaveEditor *wave_editor,
 static void
 play_back_wchunk (BstWaveEditor *wave_editor)
 {
-  BstPlayBackHandle *handle = bst_play_back_handle_new (wave_editor->wchunk);
-  
+  bst_play_back_handle_set (wave_editor->phandle, wave_editor->wchunk, wave_editor->wchunk->osc_freq);
+  bst_play_back_handle_start (wave_editor->phandle);
 }
 
 void
@@ -738,7 +747,7 @@ bst_wave_editor_rebuild (BstWaveEditor *wave_editor)
 			  NULL);
   tree = g_object_new (GTK_TYPE_TREE_VIEW,
 		       "visible", TRUE,
-		       "can_focus", FALSE,
+		       "can_focus", TRUE, /* FALSE, */
 		       "model", wave_editor->chunk_store,
 		       "border_width", 10,
 		       "parent", scwin,
@@ -861,7 +870,7 @@ bst_wave_editor_rebuild (BstWaveEditor *wave_editor)
 
   /* setup qsampler zoom and vscale
    */
-  mask_parent = bst_gmask_parent_create (BST_TOOLTIPS, 5);
+  mask_parent = bst_gmask_container_create (BST_TOOLTIPS, 5);
   gtk_box_pack_start (GTK_BOX (wave_editor->main_vbox), mask_parent, FALSE, TRUE, 0);
   wave_editor->zoom_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 0.1, 10, 0));
   g_object_connect (wave_editor->zoom_adjustment,

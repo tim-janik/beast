@@ -35,7 +35,7 @@ static gboolean	bst_wave_view_can_operate	(BstItemView		*item_view,
 
 /* --- wave ops --- */
 static BstItemViewOp wave_view_ops[] = {
-  { "Add...",		BST_OP_WAVE_ADD,	BST_ICON_NONE, /* FIXME: WAVE*/	},
+  { "Load...",		BST_OP_WAVE_LOAD,	BST_ICON_CDROM, /* FIXME: WAVE*/	},
   { "Delete",		BST_OP_WAVE_DELETE,	BST_ICON_TRASHCAN,	},
   { "Editor...",	BST_OP_WAVE_EDITOR,	BST_ICON_NONE,	},	// FIXME: need icon
 };
@@ -138,7 +138,7 @@ bst_wave_view_operate (BstItemView *item_view,
   switch (op)
     {
       BseItem *item;
-    case BST_OP_WAVE_ADD:
+    case BST_OP_WAVE_LOAD:
       bst_procedure_user_exec_method ("BseWaveRepo+read-file", BSE_OBJECT_ID (wrepo));
       break;
     case BST_OP_WAVE_DELETE:
@@ -163,7 +163,7 @@ bst_wave_view_can_operate (BstItemView *item_view,
 
   switch (op)
     {
-    case BST_OP_WAVE_ADD:
+    case BST_OP_WAVE_LOAD:
       return TRUE;
     case BST_OP_WAVE_DELETE:
       return bst_item_view_get_current (item_view) != 0;

@@ -23,7 +23,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -66,7 +65,6 @@ BstHeartMonitor* bst_heart_monitor_from_heart	(BseHeart	 *heart);
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

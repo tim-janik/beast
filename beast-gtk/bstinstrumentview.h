@@ -23,7 +23,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -56,7 +55,6 @@ GtkWidget*	bst_instrument_view_new		(BseSong	*song);
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

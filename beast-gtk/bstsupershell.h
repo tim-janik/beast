@@ -24,7 +24,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -83,7 +82,6 @@ void            bst_super_shell_update_parent   (BstSuperShell  *super_shell);
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

@@ -25,7 +25,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -82,7 +81,6 @@ void		 bst_snet_router_toggle_palette	     (BstSNetRouter *snet_router);
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

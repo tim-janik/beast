@@ -24,7 +24,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -66,7 +65,6 @@ void		bst_play_list_rebuild		(BstPlayList	*plist);
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

@@ -56,6 +56,7 @@ beast_headers = $(strip \
 	bstpatterndialog.h \
 	bstpatterneditor.h \
 	bstpatternview.h \
+	bstplayback.h \
 	bstplaylist.h \
 	bstpreferences.h \
 	bstprocedure.h \
@@ -97,6 +98,7 @@ beast_sources = $(strip \
 	bstpatterndialog.c \
 	bstpatterneditor.c \
 	bstpatternview.c \
+	bstplayback.c \
 	bstplaylist.c \
 	bstpreferences.c \
 	bstprocedure.c \

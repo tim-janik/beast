@@ -23,7 +23,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -73,7 +72,6 @@ void		bst_effect_view_set_note	(BstEffectView	*effect_view,
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

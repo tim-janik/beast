@@ -20,10 +20,10 @@
 
 #include	"bstdefs.h"
 #include	"bstqsampler.h"
+#include	"bstplayback.h"
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -57,6 +57,8 @@ struct _BstWaveEditor
   BstQSampler  **qsampler;
   GtkWidget	*popup;
   GtkWidget	*proc_editor;
+
+  BstPlayBackHandle *phandle;
 };
 struct _BstWaveEditorClass
 {
@@ -87,7 +89,6 @@ void		bst_wave_editor_gtkfix_default_accels (void);
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

@@ -24,7 +24,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -42,7 +41,7 @@ typedef	struct	_BstParamView		BstParamView;
 typedef	struct	_BstParamViewClass	BstParamViewClass;
 struct _BstParamView
 {
-  GtkVWrapBox	 parent_object;
+  GtkVBox	 parent_object;
 
   BseObject	*object;
 
@@ -52,10 +51,11 @@ struct _BstParamView
   GType  	 object_type;
   GPatternSpec  *reject_pattern;
   GPatternSpec  *match_pattern;
+  GtkWidget	*container;
 };
 struct _BstParamViewClass
 {
-  GtkVWrapBoxClass parent_class;
+  GtkVBoxClass parent_class;
 };
 
 
@@ -77,7 +77,6 @@ void		bst_param_view_set_mask		(BstParamView	*param_view,
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

@@ -46,6 +46,7 @@ bst_icon_from_stock (BstIconId _id)
 #include "./icons/pattern.c"
 #include "./icons/pattern-group.c"
 #include "./icons/pattern-tool.c"
+#include "./icons/cdrom.c"
   static const BsePixdata pixdatas[] = {
     /* BST_ICON_NONE */
     { 0, 0, 0, NULL, },
@@ -101,6 +102,10 @@ bst_icon_from_stock (BstIconId _id)
     { PATTERN_TOOL_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       PATTERN_TOOL_IMAGE_WIDTH, PATTERN_TOOL_IMAGE_HEIGHT,
       PATTERN_TOOL_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_CDROM */
+    { CDROM_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      CDROM_IMAGE_WIDTH, CDROM_IMAGE_HEIGHT,
+      CDROM_IMAGE_RLE_PIXEL_DATA, },
   };
   static const guint n_stock_icons = sizeof (pixdatas) / sizeof (pixdatas[0]);
   static BseIcon *icons[sizeof (pixdatas) / sizeof (pixdatas[0])] = { NULL, };
@@ -850,9 +855,16 @@ gmask_form (GtkWidget *parent,
   return action;
 }
 
+/**
+ * bst_gmask_container_create
+ * @tooltips:     Tooltip widget
+ * @border_width: Border width of this GUI mask
+ *
+ * Create the container for a new GUI field mask.
+ */
 GtkWidget*
-bst_gmask_parent_create (gpointer tooltips,
-			 guint    border_width)
+bst_gmask_container_create (gpointer tooltips,
+			    guint    border_width)
 {
   GtkWidget *container = gtk_widget_new (GTK_TYPE_TABLE,
 					 "visible", TRUE,
@@ -871,18 +883,18 @@ bst_gmask_parent_create (gpointer tooltips,
 }
 
 gpointer
-bst_gmask_form (GtkWidget *gmask_parent,
+bst_gmask_form (GtkWidget *gmask_container,
 		GtkWidget *action,
 		gboolean   expandable)
 {
-  return gmask_form (gmask_parent, action, expandable, FALSE);
+  return gmask_form (gmask_container, action, expandable, FALSE);
 }
 
 gpointer
-bst_gmask_form_big (GtkWidget *gmask_parent,
+bst_gmask_form_big (GtkWidget *gmask_container,
 		    GtkWidget *action)
 {
-  return gmask_form (gmask_parent, action, TRUE, TRUE);
+  return gmask_form (gmask_container, action, TRUE, TRUE);
 }
 
 void
@@ -1297,13 +1309,13 @@ bst_gmask_pack (gpointer mask)
 }
 
 gpointer
-bst_gmask_quick (GtkWidget   *gmask_parent,
+bst_gmask_quick (GtkWidget   *gmask_container,
 		 guint	      column,
 		 const gchar *prompt,
 		 gpointer     action_widget,
 		 const gchar *tip_text)
 {
-  gpointer mask = bst_gmask_form (gmask_parent, action_widget, TRUE);
+  gpointer mask = bst_gmask_form (gmask_container, action_widget, TRUE);
   
   if (prompt)
     bst_gmask_set_prompt (mask, g_object_new (GTK_TYPE_LABEL,

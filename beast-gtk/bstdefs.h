@@ -26,7 +26,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -63,6 +62,7 @@ typedef enum
   BST_OP_PATTERN_DELETE,
   BST_OP_PATTERN_EDITOR,
   BST_OP_WAVE_ADD,
+  BST_OP_WAVE_LOAD,
   BST_OP_WAVE_DELETE,
   BST_OP_WAVE_EDITOR,
   BST_OP_INSTRUMENT_ADD,
@@ -139,7 +139,6 @@ extern GtkTooltips *bst_global_tooltips;
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

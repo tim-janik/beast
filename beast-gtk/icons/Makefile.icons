@@ -1,4 +1,5 @@
 ## Generated data (by make Makefile.icons)
+icon_list += cdrom.c
 icon_list += close.c
 icon_list += mouse_tool.c
 icon_list += no_ilink.c
@@ -12,6 +13,7 @@ icon_list += properties.c
 icon_list += target.c
 icon_list += trashcan.c
 icon_list += trashsmall.c
+icon_list += cdrom.xcf
 icon_list += close.xcf
 icon_list += mouse_tool.xcf
 icon_list += no_olink.xcf

@@ -98,7 +98,6 @@ double art_vpath_area (const ArtVpath *vpath);
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -249,7 +248,6 @@ void	gnome_forest_kill_sprite_animations	(GnomeForest	  *forest,
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

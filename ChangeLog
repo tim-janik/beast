@@ -1,3 +1,13 @@
+Thu Dec 13 00:53:38 2001  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/icons/: added cdrom icon.
+
+	* beast-gtk/bstplayback.[hc]: first code cleanup.
+
+	* beast-gtk/bstsnetshell.c (zoomed_add_xpm): center xpm.
+	
+	* beast-gtk/*.h: remove unneeded #pragma lines.
+
 Wed Dec 12 21:57:04 2001  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetrouter.c (bst_snet_router_new): use gnome canvas

@@ -26,7 +26,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 #define	GTK_OBJECT_DESTROYED(x)	(0)
@@ -57,6 +56,7 @@ typedef enum
   BST_ICON_PATTERN,
   BST_ICON_PATTERN_GROUP,
   BST_ICON_PATTERN_TOOL,
+  BST_ICON_CDROM,
   BST_ICON_LAST
 } BstIconId;
 
@@ -128,13 +128,13 @@ void	   gtk_kennel_resize		 (GtkKennel		*kennel,
 					  guint			 height);
 
 
-/* --- field mask --- */
-GtkWidget*	bst_gmask_parent_create	(gpointer	tooltips,
+/* --- GUI field mask --- */
+GtkWidget*   bst_gmask_container_create	(gpointer	tooltips,
 					 guint		border_width);
-gpointer	bst_gmask_form		(GtkWidget     *gmask_parent,
+gpointer	bst_gmask_form		(GtkWidget     *gmask_container,
 					 GtkWidget     *action,
 					 gboolean	expandable);
-gpointer	bst_gmask_form_big	(GtkWidget     *gmask_parent,
+gpointer	bst_gmask_form_big	(GtkWidget     *gmask_container,
 					 GtkWidget     *action);
 void		bst_gmask_set_tip	(gpointer	mask,
 					 const gchar   *tip_text);
@@ -163,7 +163,7 @@ void		bst_gmask_foreach	(gpointer	mask,
 					 gpointer	func,
 					 gpointer	data);
 void		bst_gmask_pack		(gpointer	mask);
-gpointer	bst_gmask_quick		(GtkWidget     *gmask_parent,
+gpointer	bst_gmask_quick		(GtkWidget     *gmask_container,
 					 guint		column,
 					 const gchar   *prompt,
 					 gpointer       action_widget,
@@ -277,7 +277,6 @@ gboolean gdk_window_translate		(GdkWindow	*src_window,
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

@@ -2,9 +2,10 @@
 
 DOC_SOURCE_GLOB = $(top_srcdir)/bse/bse*.[hcp]*
 
-MAN_PAGES_3 = bse-procs.3 bse.3 gsl.3
+MAN_PAGES_3 = bse-procs.3 bse.3 gsl.3 bst.3
 BSE_MAN_SRC_GLOBS=$(top_srcdir)/bse/bse*.[hc]
 GSL_MAN_SRC_GLOBS=$(top_srcdir)/bse/gsl*.[hc]
+BST_MAN_SRC_GLOBS=$(top_srcdir)/beast-gtk/bst*.[hc]
 
 EXTRA_DIST += mkdocs.pl $(MAN_PAGES_3)
 
@@ -24,6 +25,12 @@ bse.3: $(BSE_MAN_SRC_GLOBS) $(srcdir)/mkdocs.pl
 	                    --blurb "BSE Function Reference" \
 			    --package "BEAST/BSE-$(VERSION)" \
 	                    $(BSE_MAN_SRC_GLOBS) >$@
+
+bst.3: $(BST_MAN_SRC_GLOBS) $(srcdir)/mkdocs.pl
+	$(srcdir)/mkdocs.pl --name "BST-Functions" \
+	                    --blurb "BST Function Reference" \
+			    --package "BEAST/BSE-$(VERSION)" \
+	                    $(BST_MAN_SRC_GLOBS) >$@
 
 gsl.3: $(GSL_MAN_SRC_GLOBS) $(srcdir)/mkdocs.pl
 	$(srcdir)/mkdocs.pl --name "GSL-Functions" \

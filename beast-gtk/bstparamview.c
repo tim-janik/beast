@@ -51,7 +51,7 @@ bst_param_view_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
       
-      param_view_type = gtk_type_unique (GTK_TYPE_VWRAP_BOX, &param_view_info);
+      param_view_type = gtk_type_unique (GTK_TYPE_VBOX, &param_view_info);
     }
   
   return param_view_type;
@@ -60,12 +60,10 @@ bst_param_view_get_type (void)
 static void
 bst_param_view_class_init (BstParamViewClass *class)
 {
-  GtkObjectClass *object_class;
-
-  object_class = GTK_OBJECT_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
 
   bst_param_view_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_VWRAP_BOX);
+  parent_class = g_type_class_peek_parent (class);
 
   object_class->destroy = bst_param_view_destroy;
 }
@@ -206,13 +204,17 @@ bst_param_view_rebuild (BstParamView *param_view)
     return;
   
   param_box = GTK_WIDGET (param_view);
-  gtk_widget_set (param_box,
-		  "visible", TRUE,
-		  "homogeneous", FALSE,
-		  "border_width", 5,
-		  "hspacing", 5,
-		  "aspect_ratio", 0.0,
-		  NULL);
+  param_view->container = g_object_new (GTK_TYPE_HWRAP_BOX,
+					"visible", TRUE,
+					"homogeneous", FALSE,
+					"border_width", 5,
+					"hspacing", 5,
+					"aspect_ratio", 0.0,
+					"parent", param_view,
+					NULL);
+  g_object_connect (param_view->container,
+		    "swapped_signal::destroy", g_nullify_pointer, &param_view->container,
+		    NULL);
   
   object = BSE_OBJECT (param_view->object);
   
@@ -240,7 +242,7 @@ bst_param_view_rebuild (BstParamView *param_view)
 				     BSE_TYPE_OBJECT,
 				     pspec,
 				     param_group,
-				     param_box,
+				     param_view->container,
 				     BST_TOOLTIPS);
 	  param_view->bparams = g_slist_prepend (param_view->bparams, bparam);
 	}

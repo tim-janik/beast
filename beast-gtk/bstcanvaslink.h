@@ -24,7 +24,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -89,7 +88,6 @@ BstCanvasSource* bst_canvas_link_csource_at		(BstCanvasLink	  *clink,
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

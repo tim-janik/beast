@@ -24,7 +24,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -80,7 +79,6 @@ BseErrorType	 bst_rc_parse			(const gchar	*file_name,
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

@@ -22,7 +22,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -47,7 +46,6 @@ void		  bst_key_table_install_patch	(BstKeyTablePatch *patch);
 
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

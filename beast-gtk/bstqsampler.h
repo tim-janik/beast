@@ -23,7 +23,6 @@
 
 #ifdef __cplusplus
 extern "C" {
-#pragma }
 #endif /* __cplusplus */
 
 
@@ -169,7 +168,6 @@ void	   bst_qsampler_set_adjustment	(BstQSampler			*qsampler,
      
 
 #ifdef __cplusplus
-#pragma {
 }
 #endif /* __cplusplus */
 

@@ -323,7 +323,7 @@ update_effect_lists (BstEffectView *effect_view)
 
 	  gtk_clist_freeze (aclist);
 	  gtk_clist_clear (aclist);
-	  cats = bse_categories_match_typed ("/Effect/*", BSE_TYPE_EFFECT, &n_cats);
+	  cats = bse_categories_match_typed ("/Effect/""*", BSE_TYPE_EFFECT, &n_cats);
 	  for (i = 0; i < n_cats; i++)
 	    {
 	      gchar *name = cats[i].category + cats[i].mindex + 1;
