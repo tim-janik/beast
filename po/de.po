@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-04 06:45+0100\n"
+"POT-Creation-Date: 2004-02-11 09:34+0100\n"
 "PO-Revision-Date: 2004-01-04 22:01+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -170,30 +170,30 @@ msgstr "GSL-Engine..."
 msgid "Opening project `%s'"
 msgstr "Projekt »%s« wird geöffnet"
 
-#: beast-gtk/bstapp.c:595
+#: beast-gtk/bstapp.c:597
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "Wave »%s« wird geladen"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:757
+#: beast-gtk/bstapp.c:759
 msgid "Rack editor"
 msgstr "Ablageeditor"
 
-#: beast-gtk/bstapp.c:771
+#: beast-gtk/bstapp.c:773
 msgid "Preferences"
 msgstr "Einstellungen"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:785
+#: beast-gtk/bstapp.c:787
 msgid "Device Monitor"
 msgstr "Geräte überwachen"
 
-#: beast-gtk/bstapp.c:804
+#: beast-gtk/bstapp.c:806
 msgid "Procedure Browser"
 msgstr "Prozedur-Browser"
 
-#: beast-gtk/bstapp.c:861
+#: beast-gtk/bstapp.c:863
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release-Hinweise"
@@ -225,51 +225,51 @@ msgstr "Ausgabe"
 msgid "(Hint)"
 msgstr "(Wink)"
 
-#: beast-gtk/bsteventrollctrl.c:350 beast-gtk/bsteventrollctrl.c:357
-#: beast-gtk/bsteventrollctrl.c:421
+#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
+#: beast-gtk/bsteventrollctrl.c:427
 msgid "Move Control Event"
 msgstr "Steuerereignis verschieben"
 
-#: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:473
 #: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
-#: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
-#: beast-gtk/bsttrackrollctrl.c:560
+#: beast-gtk/bsttrackrollctrl.c:470 beast-gtk/bsttrackrollctrl.c:490
+#: beast-gtk/bsttrackrollctrl.c:562
 msgid "No target"
 msgstr "Kein Ziel"
 
-#: beast-gtk/bsteventrollctrl.c:421 beast-gtk/bsteventrollctrl.c:542
+#: beast-gtk/bsteventrollctrl.c:427 beast-gtk/bsteventrollctrl.c:548
 msgid "Lost Event"
 msgstr "Event verloren"
 
-#: beast-gtk/bsteventrollctrl.c:431 beast-gtk/bsteventrollctrl.c:464
+#: beast-gtk/bsteventrollctrl.c:437 beast-gtk/bsteventrollctrl.c:470
 msgid "Align Control Events"
 msgstr "Steuerereignisse ausrichten"
 
-#: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
 #: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
 msgid "Aborted"
 msgstr "Abgebrochen"
 
-#: beast-gtk/bsteventrollctrl.c:490
+#: beast-gtk/bsteventrollctrl.c:496
 msgid "Insert Control Event"
 msgstr "Steuerereignis einfügen"
 
-#: beast-gtk/bsteventrollctrl.c:501 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:542
+#: beast-gtk/bsteventrollctrl.c:507 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:548
 msgid "Resize Control Event"
 msgstr "Größe des Steuerereignisses ändern"
 
-#: beast-gtk/bsteventrollctrl.c:553 beast-gtk/bsteventrollctrl.c:556
+#: beast-gtk/bsteventrollctrl.c:559 beast-gtk/bsteventrollctrl.c:562
 msgid "Delete Control Event"
 msgstr "Steuerereignis löschen"
 
-#: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
 #: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
 msgid "Select Region"
 msgstr "Bereich auswählen"
 
-#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:749
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:749
 msgid "Abortion"
 msgstr "Abbruch"
 
@@ -503,16 +503,16 @@ msgstr "»%s« wird geladen"
 msgid "Loading project \"%s\""
 msgstr "Projekt »%s« wird geladen"
 
-#: beast-gtk/bstmain.c:708
+#: beast-gtk/bstmain.c:716
 msgid "BEAST About"
 msgstr "Info zu BEAST"
 
-#: beast-gtk/bstmain.c:709
+#: beast-gtk/bstmain.c:717
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST-Version %s"
 
-#: beast-gtk/bstmain.c:710
+#: beast-gtk/bstmain.c:718
 msgid "Contributions made by:"
 msgstr "Mitwirkende:"
 
@@ -966,7 +966,7 @@ msgstr "Bearbeiten"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Bearbeiten/Verschieben/Menü (Mausknöpfe 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1056
+#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1077
 msgid "Palette"
 msgstr "Palette"
 
@@ -1175,50 +1175,50 @@ msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr ""
 "Das horizontale Lineal verwenden, um den rechten Loop-Marker anzupassen"
 
-#: beast-gtk/bsttrackrollctrl.c:408 beast-gtk/bsttrackrollctrl.c:420
+#: beast-gtk/bsttrackrollctrl.c:410 beast-gtk/bsttrackrollctrl.c:422
 msgid "Edit Part"
 msgstr "Part bearbeiten"
 
-#: beast-gtk/bsttrackrollctrl.c:408
+#: beast-gtk/bsttrackrollctrl.c:410
 msgid "No Part"
 msgstr "Kein Part"
 
-#: beast-gtk/bsttrackrollctrl.c:439 beast-gtk/bsttrackrollctrl.c:441
-#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:443
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
 msgid "Insert Part"
 msgstr "Part einfügen"
 
-#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:543
+#: beast-gtk/bsttrackrollctrl.c:443 beast-gtk/bsttrackrollctrl.c:545
 msgid "Lost Part"
 msgstr "Part verloren"
 
 # CHECK
-#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
 msgid "Position taken"
 msgstr "Position belegt"
 
-#: beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:455
 msgid "Insert part"
 msgstr "Part einfügen"
 
-#: beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:455
 msgid "No Track"
 msgstr "Keine Spur"
 
-#: beast-gtk/bsttrackrollctrl.c:465 beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsttrackrollctrl.c:467 beast-gtk/bsttrackrollctrl.c:470
 msgid "Delete Part"
 msgstr "Part löschen"
 
-#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
+#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
 msgid "Link Part"
 msgstr "Part verknüpfen"
 
-#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
-#: beast-gtk/bsttrackrollctrl.c:543
+#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
+#: beast-gtk/bsttrackrollctrl.c:545
 msgid "Move Part"
 msgstr "Part verschieben"
 
-#: beast-gtk/bsttrackrollctrl.c:555 beast-gtk/bsttrackrollctrl.c:560
+#: beast-gtk/bsttrackrollctrl.c:557 beast-gtk/bsttrackrollctrl.c:562
 msgid "Start Editor"
 msgstr "Editor starten"
 

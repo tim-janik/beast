@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-04 06:45+0100\n"
+"POT-Creation-Date: 2004-02-11 09:34+0100\n"
 "PO-Revision-Date: 2004-01-23 12:07+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
@@ -167,30 +167,30 @@ msgstr "GSL машинерија..."
 msgid "Opening project `%s'"
 msgstr "Отвара пројекат „%s“"
 
-#: beast-gtk/bstapp.c:595
+#: beast-gtk/bstapp.c:597
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "Учитавам талас „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:757
+#: beast-gtk/bstapp.c:759
 msgid "Rack editor"
 msgstr "Уређивач полица"
 
-#: beast-gtk/bstapp.c:771
+#: beast-gtk/bstapp.c:773
 msgid "Preferences"
 msgstr "Поставке"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:785
+#: beast-gtk/bstapp.c:787
 msgid "Device Monitor"
 msgstr "Праћење уређаја"
 
-#: beast-gtk/bstapp.c:804
+#: beast-gtk/bstapp.c:806
 msgid "Procedure Browser"
 msgstr "Разгледач процедура"
 
-#: beast-gtk/bstapp.c:861
+#: beast-gtk/bstapp.c:863
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ЗВЕР-%s Објава издања"
@@ -221,51 +221,51 @@ msgstr "Излаз"
 msgid "(Hint)"
 msgstr "(савет)"
 
-#: beast-gtk/bsteventrollctrl.c:350 beast-gtk/bsteventrollctrl.c:357
-#: beast-gtk/bsteventrollctrl.c:421
+#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
+#: beast-gtk/bsteventrollctrl.c:427
 msgid "Move Control Event"
 msgstr "Премести контролни догађај"
 
-#: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:473
 #: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
-#: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
-#: beast-gtk/bsttrackrollctrl.c:560
+#: beast-gtk/bsttrackrollctrl.c:470 beast-gtk/bsttrackrollctrl.c:490
+#: beast-gtk/bsttrackrollctrl.c:562
 msgid "No target"
 msgstr "Без мете"
 
-#: beast-gtk/bsteventrollctrl.c:421 beast-gtk/bsteventrollctrl.c:542
+#: beast-gtk/bsteventrollctrl.c:427 beast-gtk/bsteventrollctrl.c:548
 msgid "Lost Event"
 msgstr "Изгубљен догађај"
 
-#: beast-gtk/bsteventrollctrl.c:431 beast-gtk/bsteventrollctrl.c:464
+#: beast-gtk/bsteventrollctrl.c:437 beast-gtk/bsteventrollctrl.c:470
 msgid "Align Control Events"
 msgstr "Поравнај контролне догађаје"
 
-#: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
 #: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
 msgid "Aborted"
 msgstr "Прекинут"
 
-#: beast-gtk/bsteventrollctrl.c:490
+#: beast-gtk/bsteventrollctrl.c:496
 msgid "Insert Control Event"
 msgstr "Уметни контролни догађај"
 
-#: beast-gtk/bsteventrollctrl.c:501 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:542
+#: beast-gtk/bsteventrollctrl.c:507 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:548
 msgid "Resize Control Event"
 msgstr "Промени величину контролног догађаја"
 
-#: beast-gtk/bsteventrollctrl.c:553 beast-gtk/bsteventrollctrl.c:556
+#: beast-gtk/bsteventrollctrl.c:559 beast-gtk/bsteventrollctrl.c:562
 msgid "Delete Control Event"
 msgstr "Обриши контролни догађај"
 
-#: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
 #: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
 msgid "Select Region"
 msgstr "Изабери подручје"
 
-#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:749
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:749
 msgid "Abortion"
 msgstr "Прекид"
 
@@ -502,16 +502,16 @@ msgstr "Учитавам „%s“"
 msgid "Loading project \"%s\""
 msgstr "Учитавам пројекат „%s“"
 
-#: beast-gtk/bstmain.c:708
+#: beast-gtk/bstmain.c:716
 msgid "BEAST About"
 msgstr "О Звери"
 
-#: beast-gtk/bstmain.c:709
+#: beast-gtk/bstmain.c:717
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ЗВЕР, издање %s"
 
-#: beast-gtk/bstmain.c:710
+#: beast-gtk/bstmain.c:718
 msgid "Contributions made by:"
 msgstr "Такође допринели:"
 
@@ -949,7 +949,7 @@ msgstr "Уреди"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Уреди/Премести/Мени (1–3. дугме миша)"
 
-#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1056
+#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1077
 msgid "Palette"
 msgstr "Палета"
 
@@ -1149,49 +1149,49 @@ msgstr "Десно"
 msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr "Користи водоравни лењир за поправку показивача десне петље"
 
-#: beast-gtk/bsttrackrollctrl.c:408 beast-gtk/bsttrackrollctrl.c:420
+#: beast-gtk/bsttrackrollctrl.c:410 beast-gtk/bsttrackrollctrl.c:422
 msgid "Edit Part"
 msgstr "Уреди део"
 
-#: beast-gtk/bsttrackrollctrl.c:408
+#: beast-gtk/bsttrackrollctrl.c:410
 msgid "No Part"
 msgstr "Без дела"
 
-#: beast-gtk/bsttrackrollctrl.c:439 beast-gtk/bsttrackrollctrl.c:441
-#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:443
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
 msgid "Insert Part"
 msgstr "Уметни део"
 
-#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:543
+#: beast-gtk/bsttrackrollctrl.c:443 beast-gtk/bsttrackrollctrl.c:545
 msgid "Lost Part"
 msgstr "Изгубљен део"
 
-#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
 msgid "Position taken"
 msgstr "Положај заузет"
 
-#: beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:455
 msgid "Insert part"
 msgstr "Уметни део"
 
-#: beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:455
 msgid "No Track"
 msgstr "Без песме"
 
-#: beast-gtk/bsttrackrollctrl.c:465 beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsttrackrollctrl.c:467 beast-gtk/bsttrackrollctrl.c:470
 msgid "Delete Part"
 msgstr "Уклони део"
 
-#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
+#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
 msgid "Link Part"
 msgstr "Вежи део"
 
-#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
-#: beast-gtk/bsttrackrollctrl.c:543
+#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
+#: beast-gtk/bsttrackrollctrl.c:545
 msgid "Move Part"
 msgstr "Премести део"
 
-#: beast-gtk/bsttrackrollctrl.c:555 beast-gtk/bsttrackrollctrl.c:560
+#: beast-gtk/bsttrackrollctrl.c:557 beast-gtk/bsttrackrollctrl.c:562
 msgid "Start Editor"
 msgstr "Покрени уређивач"
 

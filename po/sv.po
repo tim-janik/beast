@@ -2,13 +2,13 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.15 2004/02/04 05:54:10 timj Exp $
+# $Id: sv.po,v 1.16 2004/02/11 09:46:07 timj Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-04 06:45+0100\n"
+"POT-Creation-Date: 2004-02-11 09:34+0100\n"
 "PO-Revision-Date: 2003-11-02 01:49+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -194,30 +194,30 @@ msgstr ""
 msgid "Opening project `%s'"
 msgstr "Öppnar projektet \"%s\""
 
-#: beast-gtk/bstapp.c:595
+#: beast-gtk/bstapp.c:597
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "Läser in vågen \"%s\""
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:757
+#: beast-gtk/bstapp.c:759
 msgid "Rack editor"
 msgstr "Rackredigerare"
 
-#: beast-gtk/bstapp.c:771
+#: beast-gtk/bstapp.c:773
 msgid "Preferences"
 msgstr "Inställningar"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:785
+#: beast-gtk/bstapp.c:787
 msgid "Device Monitor"
 msgstr "Enhetsövervakare"
 
-#: beast-gtk/bstapp.c:804
+#: beast-gtk/bstapp.c:806
 msgid "Procedure Browser"
 msgstr "Procedurbläddrare"
 
-#: beast-gtk/bstapp.c:861
+#: beast-gtk/bstapp.c:863
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Utgåvenoteringar för BEAST-%s"
@@ -248,51 +248,51 @@ msgstr "Utmatning"
 msgid "(Hint)"
 msgstr "(Tips)"
 
-#: beast-gtk/bsteventrollctrl.c:350 beast-gtk/bsteventrollctrl.c:357
-#: beast-gtk/bsteventrollctrl.c:421
+#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
+#: beast-gtk/bsteventrollctrl.c:427
 msgid "Move Control Event"
 msgstr "Flytta kontrollhändelse"
 
-#: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:473
+#: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:473
 #: beast-gtk/bstpianorollctrl.c:583 beast-gtk/bstpianorollctrl.c:646
-#: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
-#: beast-gtk/bsttrackrollctrl.c:560
+#: beast-gtk/bsttrackrollctrl.c:470 beast-gtk/bsttrackrollctrl.c:490
+#: beast-gtk/bsttrackrollctrl.c:562
 msgid "No target"
 msgstr "Inget mål"
 
-#: beast-gtk/bsteventrollctrl.c:421 beast-gtk/bsteventrollctrl.c:542
+#: beast-gtk/bsteventrollctrl.c:427 beast-gtk/bsteventrollctrl.c:548
 msgid "Lost Event"
 msgstr "Borttappad händelse"
 
-#: beast-gtk/bsteventrollctrl.c:431 beast-gtk/bsteventrollctrl.c:464
+#: beast-gtk/bsteventrollctrl.c:437 beast-gtk/bsteventrollctrl.c:470
 msgid "Align Control Events"
 msgstr "Justera kontrollhändelser"
 
-#: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
 #: beast-gtk/bstpianorollctrl.c:704 beast-gtk/bstpianorollctrl.c:740
 msgid "Aborted"
 msgstr "Avbruten"
 
-#: beast-gtk/bsteventrollctrl.c:490
+#: beast-gtk/bsteventrollctrl.c:496
 msgid "Insert Control Event"
 msgstr "Infoga kontrollhändelse"
 
-#: beast-gtk/bsteventrollctrl.c:501 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:542
+#: beast-gtk/bsteventrollctrl.c:507 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:548
 msgid "Resize Control Event"
 msgstr "Ändra storlek på kontrollhändelse"
 
-#: beast-gtk/bsteventrollctrl.c:553 beast-gtk/bsteventrollctrl.c:556
+#: beast-gtk/bsteventrollctrl.c:559 beast-gtk/bsteventrollctrl.c:562
 msgid "Delete Control Event"
 msgstr "Ta bort kontrollhändelse"
 
-#: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
+#: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
 #: beast-gtk/bstpianorollctrl.c:678 beast-gtk/bstpianorollctrl.c:704
 msgid "Select Region"
 msgstr "Markera område"
 
-#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:749
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:749
 msgid "Abortion"
 msgstr "Avbrytande"
 
@@ -529,17 +529,17 @@ msgstr "Läser in \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Läser in projektet \"%s\""
 
-#: beast-gtk/bstmain.c:708
+#: beast-gtk/bstmain.c:716
 #, fuzzy
 msgid "BEAST About"
 msgstr "BEAST"
 
-#: beast-gtk/bstmain.c:709
+#: beast-gtk/bstmain.c:717
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:710
+#: beast-gtk/bstmain.c:718
 msgid "Contributions made by:"
 msgstr ""
 
@@ -995,7 +995,7 @@ msgstr "_Redigera"
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Ta bort not (musknapp 1)"
 
-#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1056
+#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1077
 msgid "Palette"
 msgstr "Palett"
 
@@ -1203,49 +1203,49 @@ msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr ""
 "Använd den horisontella linjalen för att justera den högra slingpekaren"
 
-#: beast-gtk/bsttrackrollctrl.c:408 beast-gtk/bsttrackrollctrl.c:420
+#: beast-gtk/bsttrackrollctrl.c:410 beast-gtk/bsttrackrollctrl.c:422
 msgid "Edit Part"
 msgstr "Redigera del"
 
-#: beast-gtk/bsttrackrollctrl.c:408
+#: beast-gtk/bsttrackrollctrl.c:410
 msgid "No Part"
 msgstr "Ingen del"
 
-#: beast-gtk/bsttrackrollctrl.c:439 beast-gtk/bsttrackrollctrl.c:441
-#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:443
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
 msgid "Insert Part"
 msgstr "Infoga del"
 
-#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:543
+#: beast-gtk/bsttrackrollctrl.c:443 beast-gtk/bsttrackrollctrl.c:545
 msgid "Lost Part"
 msgstr "Borttappad del"
 
-#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:453
 msgid "Position taken"
 msgstr "Position tagen"
 
-#: beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:455
 msgid "Insert part"
 msgstr "Infoga del"
 
-#: beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:455
 msgid "No Track"
 msgstr "Inget spår"
 
-#: beast-gtk/bsttrackrollctrl.c:465 beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsttrackrollctrl.c:467 beast-gtk/bsttrackrollctrl.c:470
 msgid "Delete Part"
 msgstr "Ta bort del"
 
-#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
+#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
 msgid "Link Part"
 msgstr "Länka del"
 
-#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
-#: beast-gtk/bsttrackrollctrl.c:543
+#: beast-gtk/bsttrackrollctrl.c:479 beast-gtk/bsttrackrollctrl.c:513
+#: beast-gtk/bsttrackrollctrl.c:545
 msgid "Move Part"
 msgstr "Flytta del"
 
-#: beast-gtk/bsttrackrollctrl.c:555 beast-gtk/bsttrackrollctrl.c:560
+#: beast-gtk/bsttrackrollctrl.c:557 beast-gtk/bsttrackrollctrl.c:562
 msgid "Start Editor"
 msgstr "Starta redigerare"
 

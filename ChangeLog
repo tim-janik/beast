@@ -1,3 +1,7 @@
+Wed Feb 11 09:29:29 2004  Tim Janik  <timj@gtk.org>
+
+	* released 0.6.0, binary age 0, interface age 0.
+
 Wed Feb 11 09:14:44 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsplash.c (splash_select_string): improved rand()

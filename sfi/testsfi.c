@@ -762,7 +762,7 @@ test_sfidl_seq (void)
   value = sfi_rec_get (rec, "relevant");
 
   ASSERT (SFI_VALUE_HOLDS_CHOICE (value));
-  ASSERT (strcmp (sfi_value_get_choice (value), "TEST_NO") == 0);
+  ASSERT (strcmp (sfi_value_get_choice (value), "test-no") == 0);
 
   pos2 = test_position_from_rec (rec);
 
