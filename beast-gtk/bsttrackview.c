@@ -17,6 +17,8 @@
  */
 #include "bsttrackview.h"
 
+#include <stdlib.h> /* strtol */
+
 #define	SCROLLBAR_SPACING (3) /* from gtkscrolledwindow.c:DEFAULT_SCROLLBAR_SPACING */
 
 /* --- prototypes --- */
@@ -39,6 +41,8 @@ static void     track_view_update_tool          (BstTrackView		*self);
 enum {
   COL_SEQID,
   COL_NAME,
+  COL_MUTE,
+  COL_VOICES,
   COL_BLURB,
   N_COLS
 };
@@ -166,6 +170,8 @@ track_view_fill_value (BstItemView *iview,
   switch (column)
     {
       const gchar *string;
+      gboolean vbool;
+      SfiInt vint;
       SfiProxy item;
     case COL_SEQID:
       g_value_set_string_take_ownership (value, g_strdup_printf (iview->id_format, seqid));
@@ -174,11 +180,69 @@ track_view_fill_value (BstItemView *iview,
       item = bse_container_get_item (iview->container, iview->item_type, seqid);
       g_value_set_string (value, bse_item_get_name (item));
       break;
+    case COL_MUTE:
+      item = bse_container_get_item (iview->container, iview->item_type, seqid);
+      bse_proxy_get (item, "muted", &vbool, NULL);
+      g_value_set_boolean (value, !vbool);
+      break;
+    case COL_VOICES:
+      item = bse_container_get_item (iview->container, iview->item_type, seqid);
+      bse_proxy_get (item, "n_voices", &vint, NULL);
+      sfi_value_take_string (value, g_strdup_printf ("%2d", vint));
+      break;
     case COL_BLURB:
       item = bse_container_get_item (iview->container, iview->item_type, seqid);
       bse_proxy_get (item, "blurb", &string, NULL);
       g_value_set_string (value, string ? string : "");
       break;
+    }
+}
+
+static void
+track_view_mute_toggled (BstTrackView          *self,
+			 const gchar           *strpath,
+			 GtkCellRendererToggle *tcell)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      guint seqid = row + 1;
+      SfiProxy item = bse_container_get_item (BST_ITEM_VIEW (self)->container,
+					      BST_ITEM_VIEW (self)->item_type,
+					      seqid);
+      if (item)
+	{
+	  gboolean muted;
+	  bse_proxy_get (item, "muted", &muted, NULL);
+	  bse_proxy_set (item, "muted", !muted, NULL);
+	  bse_proxy_get (item, "muted", &muted, NULL);
+	  gtk_cell_renderer_toggle_set_active (tcell, !muted);
+	}
+    }
+}
+
+static void
+track_view_voices_edited (BstTrackView *self,
+			  const gchar  *strpath,
+			  const gchar  *text)
+{
+  g_return_if_fail (BST_IS_TRACK_VIEW (self));
+
+  if (strpath)
+    {
+      gint row = gxk_tree_spath_index0 (strpath);
+      guint seqid = row + 1;
+      SfiProxy item = bse_container_get_item (BST_ITEM_VIEW (self)->container,
+					      BST_ITEM_VIEW (self)->item_type,
+					      seqid);
+      if (item)
+	{
+	  int i = strtol (text, NULL, 10);
+	  if (i > 0)
+	    bse_proxy_set (item, "n_voices", i, NULL);
+	}
     }
 }
 
@@ -220,6 +284,8 @@ bst_track_view_create_tree (BstItemView *iview)
   iview->wlist = gxk_list_wrapper_new (N_COLS,
 				       G_TYPE_STRING,	/* COL_SEQID */
 				       G_TYPE_STRING,	/* COL_NAME */
+				       G_TYPE_BOOLEAN,	/* COL_MUTE */
+				       G_TYPE_STRING,	/* COL_VOICES */
 				       G_TYPE_STRING	/* COL_BLURB */
 				       );
   g_signal_connect_object (iview->wlist, "fill-value",
@@ -334,12 +400,18 @@ bst_track_view_create_tree (BstItemView *iview)
   /* add list view columns */
   gxk_tree_view_append_text_columns (iview->tree, 1,
 				     COL_SEQID, 0.0, "ID");
-  gxk_tree_view_add_editable_text_column (iview->tree,
-					  COL_NAME, 0.0, "Name",
-					  bst_item_view_name_edited, self, G_CONNECT_SWAPPED);
-  gxk_tree_view_add_editable_text_column (iview->tree,
-					  COL_BLURB, 0.0, "Comment",
-					  bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_text_column (iview->tree,
+				 COL_NAME, 0.0, "Name", NULL,
+				 bst_item_view_name_edited, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_toggle_column (iview->tree,
+				   COL_MUTE, 0.5, "M", "Notes from unchecked tracks are muted during playback",
+				   track_view_mute_toggled, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_text_column (iview->tree,
+				 COL_VOICES, 0.5, "V", "Maximum number of voices for simultaneous playback",
+				 track_view_voices_edited, self, G_CONNECT_SWAPPED);
+  gxk_tree_view_add_text_column (iview->tree,
+				 COL_BLURB, 0.0, "Comment", NULL,
+				 bst_item_view_blurb_edited, self, G_CONNECT_SWAPPED);
 
   /* make widgets visible */
   gtk_widget_show_all (GTK_WIDGET (hb));

@@ -631,42 +631,154 @@ gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
 }
 
 /**
- * gxk_tree_view_add_editable_text_column
- * @tree_view: valid #GtkTreeView
+ * gxk_tree_view_add_text_column
+ * @tree_view:        valid #GtkTreeView
+ * @model_column:     model column
+ * @xalign:	      horizontal text alignment
+ * @title:            column title
+ * @tooltip:          column tooltip
+ * @edited_callback:  notification callback 
+ * @data:             data passed in to toggled_callback
+ * @cflags:           connection flags
  *
- * Add an editable text column, similar to
+ * Add a text column, similar to
  * gxk_tree_view_append_text_columns().
  * @edited_callback(@data) is connected with
  * @cflags (see g_signal_connect_data()) to
- * the "edited" signal of the text cell.
+ * the "edited" signal of the text cell,
+ * or passed as %NULL which makes the column
+ * non-editable.
  */
 void
-gxk_tree_view_add_editable_text_column (GtkTreeView  *tree_view,
-					guint	      model_column,
-					gdouble       xalign,
-					const gchar  *title,
-					gpointer      edited_callback,
-					gpointer      data,
-					GConnectFlags cflags)
+gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
+			       guint	     model_column,
+			       gdouble       xalign,
+			       const gchar  *title,
+			       const gchar  *tooltip,
+			       gpointer      edited_callback,
+			       gpointer      data,
+			       GConnectFlags cflags)
 {
   GtkCellRenderer *cell;
+  GtkTreeViewColumn *tcol;
 
   g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
 
   cell = g_object_new (GTK_TYPE_CELL_RENDERER_TEXT,
 		       "xalign", xalign,
-		       "editable", TRUE,
+		       "editable", edited_callback != NULL,
 		       NULL);
-  g_signal_connect_data (cell, "edited", G_CALLBACK (edited_callback), data, NULL, cflags);
+  if (edited_callback)
+    g_signal_connect_data (cell, "edited", G_CALLBACK (edited_callback), data, NULL, cflags);
   gxk_tree_view_add_column (tree_view, -1,
-			    g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
-					  "title", title,
-					  "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
-					  "resizable", TRUE,
-					  NULL),
+			    tcol = g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
+						 "title", title,
+						 "sizing", GTK_TREE_VIEW_COLUMN_GROW_ONLY,
+						 "resizable", TRUE,
+						 NULL),
 			    cell,
 			    "text", model_column,
 			    NULL);
+  if (tooltip)
+    gxk_tree_view_column_set_tip_title (tcol, title, tooltip);
+  gtk_tree_view_column_set_alignment (tcol, xalign);
+}
+
+/**
+ * gxk_tree_view_add_toggle_column
+ * @tree_view:        valid #GtkTreeView
+ * @model_column:     model column
+ * @xalign:	      horizontal text alignment
+ * @title:            column title
+ * @tooltip:          column tooltip
+ * @toggled_callback: notification callback 
+ * @data:             data passed in to toggled_callback
+ * @cflags:           connection flags
+ *
+ * Add a toggle button column, similar
+ * to gxk_tree_view_add_text_column().
+ * @edited_callback(@data) is connected with
+ * @cflags (see g_signal_connect_data()) to
+ * the "toggled" signal of the toggle cell,
+ * or passed as %NULL which makes the column
+ * non-editable.
+ */
+void
+gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
+				 guint         model_column,
+				 gdouble       xalign,
+				 const gchar  *title,
+				 const gchar  *tooltip,
+				 gpointer      toggled_callback,
+				 gpointer      data,
+				 GConnectFlags cflags)
+{
+  GtkCellRenderer *cell;
+  GtkTreeViewColumn *tcol;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+
+  cell = g_object_new (GTK_TYPE_CELL_RENDERER_TOGGLE,
+		       /* "radio", radio_indicator, */
+		       "activatable", toggled_callback != NULL,
+		       NULL);
+  if (toggled_callback)
+    g_signal_connect_data (cell, "toggled", G_CALLBACK (toggled_callback), data, NULL, cflags);
+  gxk_tree_view_add_column (tree_view, -1,
+			    tcol = g_object_new (GTK_TYPE_TREE_VIEW_COLUMN,
+						 "title", title,
+						 "sizing", GTK_TREE_VIEW_COLUMN_AUTOSIZE,
+						 "resizable", TRUE,
+						 NULL),
+			    cell,
+			    "active", model_column,
+			    NULL);
+  if (tooltip)
+    gxk_tree_view_column_set_tip_title (tcol, title, tooltip);
+  gtk_tree_view_column_set_alignment (tcol, xalign);
+}
+
+static void
+fixup_tcolumn_title (GtkWidget   *widget,
+		     const gchar *tooltip)
+{
+  while (!GTK_IS_BUTTON (widget))
+    widget = widget->parent;
+  if (GTK_IS_BUTTON (widget))
+    gtk_tooltips_set_tip (GXK_TOOLTIPS, widget, tooltip, NULL);
+}
+
+/**
+ * gxk_tree_view_column_set_tip_title
+ * @tree_column: valid #GtkTreeViewColumn
+ * @title:       column title
+ * @tooltip:     column tooltip
+ *
+ * Set a tree view column title and its tooltip.
+ * This is a bug workaroud for missing tree view
+ * column API to set tooltips, so the column title
+ * or column title widget shouldn't be changed
+ * after calling this function.
+ */
+void
+gxk_tree_view_column_set_tip_title (GtkTreeViewColumn   *tree_column,
+				    const gchar         *title,
+				    const gchar		*tooltip)
+{
+  GtkWidget *label;
+
+  g_return_if_fail (GTK_IS_TREE_VIEW_COLUMN (tree_column));
+
+  gtk_tree_view_column_set_title (tree_column, title);
+  label = g_object_new (GTK_TYPE_LABEL,
+			"visible", TRUE,
+			"label", title,
+			"xalign", 0.5,
+			NULL);
+  g_signal_connect_data (label, "map",
+			 G_CALLBACK (fixup_tcolumn_title), g_strdup (tooltip), (GClosureNotify) g_free,
+			 0);
+  gtk_tree_view_column_set_widget (tree_column, label);
 }
 
 /**
@@ -1044,7 +1156,7 @@ gxk_tree_view_get_selected_row (GtkTreeView *tree)
 }
 
 /**
- * gxk_tree_view_is_row_selected
+ * gxk_tree_view_get_row_from_coord
  * @tree:  valid #GtkTreeView
  * @y:     bin window y coordinate
  * @row_p: row pointed to by @y

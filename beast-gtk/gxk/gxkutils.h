@@ -100,13 +100,25 @@ guint	 gxk_tree_view_add_column		(GtkTreeView		*tree_view,
 void	 gxk_tree_view_append_text_columns	(GtkTreeView		*tree_view,
 						 guint			 n_cols,
 						 ...);
-void	 gxk_tree_view_add_editable_text_column	(GtkTreeView  *tree_view,
+void	 gxk_tree_view_add_text_column		(GtkTreeView  *tree_view,
 						 guint	       model_column,
 						 gdouble       xalign,
 						 const gchar  *title,
+						 const gchar  *tooltip,
 						 gpointer      edited_callback,
 						 gpointer      data,
 						 GConnectFlags cflags);
+void	gxk_tree_view_add_toggle_column		(GtkTreeView  *tree_view,
+						 guint	      model_column,
+						 gdouble       xalign,
+						 const gchar  *title,
+						 const gchar  *tooltip,
+						 gpointer      toggled_callback,
+						 gpointer      data,
+						 GConnectFlags cflags);
+void	gxk_tree_view_column_set_tip_title	(GtkTreeViewColumn   *tree_column,
+						 const gchar         *title,
+						 const gchar	     *tooltip);
 
 /* tree selection convenience */
 void   gxk_tree_selection_select_spath   (GtkTreeSelection      *selection,

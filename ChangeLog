@@ -1,3 +1,16 @@
+Mon Feb 10 20:12:36 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttrackview.c: added editable tree view columns to
+	mute tracks and for maximum number of voices.
+
+	* beast-gtk/gxk/gxkutils.[hc]:
+	renamed gxk_tree_view_add_editable_text_column() to
+	gxk_tree_view_add_text_column() and added tooltip argument.
+	added gxk_tree_view_add_toggle_column() similar to the above function.
+	added gxk_tree_view_column_set_tip_title() to allow setting of
+	tooltips on tree view columns that isn't possible through the public
+	API.
+
 Sun Feb  9 19:05:48 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/scandocs.pl (tags_highlight): protect explicit
