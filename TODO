@@ -75,6 +75,9 @@ FIXMES:
 - delay class destruction and plugin unloading through async handlers (slight timeout)
 - replace Balance settings with 3d room position?
 - check for non-xref object links which should be turned into xrefs
+- fix the word "tact" vs. measure
+- clenup piano roll code
+- need tact number entry widget
 * eliminate everything that fgrep -i fixme/hack reveals
 
 DOCS:
@@ -89,7 +92,43 @@ DOCS:
   due to unnumbered sections being counted as well. unnumbered sections should
   be counted seperately (e.g. as #node-u1-0-0-0). [alper]
 
+SClock:
+- incremental sort for median
+- calc non-linear slope in one go
+- new clock type that switches to linear once >QUEUE_LENGTH
+
+Random:
+- object tree backbone/trunk/tribe type for project, server and workbench
+- item_get_toplevel() function for toplevel parent quries
+- proxies get exported: if toplevel->use_count>0
+- backbones exist only if they have a use_count
+- forcefull alive keeping of objects if they have a use_count
+- how export proxies of parents that don't have a use_count and are no backbones?
+- emulate ref_count+::destroy semantics with use_count+::release? ala:
+  - use_count prevents ::release emission
+  - ::release on containers removes children
+- implement remote use-count collection
+- cleanup all glue generation code in bsw-shell
+- complete and intergrate piano-script
+- portamento-to-note in piano roll? probably need special effects
+- bse_item_gather_proxies() could simply have container and child type (no callbacks) once midi/song don't derive from BseSNet
+* move mix_freq and recording_freq into datahandle
+* fix reversed data handle wrg n_channels
+: propagate mtime changes through cascaded data handles (e.g. for dcache)
+: gsldatacache.c: nuke blocks upon reopen if mtime changed
+: clone handle caller must be fetched from stack
+
+MEETING-RESULTS:
+- piano and track roll scrolling implemented with secondary scrollbar
+- piano roll dialog gains partlink property editor
+- item links: (where (link 3 "TrackLink::LinkTrack::Cool"))
+              (where (3 "tree:sopidgsdf:sdggsdf"))
+              (where (link 3 "tree::sopidgsdf::sdggsdf"))
+- prop flag: SFI_PARAM_SKIP_DEFAULT
+                            
 General BSE:
+- object tree backbone/trunk/tribe type for project, server and workbench (treeroot storageroot)
+- item_get_toplevel() function for toplevel parent quries
 - level-o-meter visualizer at links (adjustable?)
   needs linear (red >1) and logarithmic display
 - frequency shifter/multiplier (*2 etc.)
