@@ -50,12 +50,12 @@ class Amplifier : Effect {
   group _("Audio Input") {
     Real  alevel1    = Perc (_("Input 1 [%]"), _("Attenuate the level of audio input 1"), 100, STANDARD);
     Real  alevel2    = Perc (_("Input 2 [%]"), _("Attenuate the level of audio input 2"), 100, STANDARD);
-    Real  abalance   = Balance (_("Balance"), _("Balance audio input levels"), 0, SFI_PARAM_GUI);
+    Real  abalance   = Balance (_("Balance"), _("Balance audio input levels"), 0, GUI);
   };
   group _("Control Input") {
     Real  clevel1    = Perc (_("Input 1 [%]"), _("Attenuate the level of control input 1"), 100, STANDARD);
     Real  clevel2    = Perc (_("Input 2 [%]"), _("Attenuate the level of control input 2"), 100, STANDARD);
-    Real  cbalance   = Balance (_("Balance"), _("Balance control input levels"), 0, SFI_PARAM_GUI);
+    Real  cbalance   = Balance (_("Balance"), _("Balance control input levels"), 0, GUI);
     Bool  ctrl_mul   = Bool (_("Multiply Controls"),
                              _("Switch the two control inputs to work like a chain of gain "
                                "controls, rather than mixing them together, weighted by balance."),

@@ -58,7 +58,7 @@ class Compressor : Effect {
     Real threshold_db = Gain (_("Threshold [dB]"), _("Only parts louder than threshold are compressed"), 0, -100, 0, 1, STANDARD ":scale");
     Real ratio_to_one = Real (_("Ratio [x:1]"), _("Set the compression ratio to x:1"), 2, 1.0, 20.0, 1, STANDARD ":scale");
     Real output_db    = Gain (_("Output [dB]"), _("Set the output amplification"), 0, -20, 20, 1, STANDARD ":scale");
-    Bool auto_output  = Bool (_("Auto Output"), _("Adjust the output amplification automatically"), FALSE, SFI_PARAM_GUI);
+    Bool auto_output  = Bool (_("Auto Output"), _("Adjust the output amplification automatically"), FALSE, GUI);
   };
   group "compat" {    /* compatibility properties */
     Real threshold    = Real (NULL, NULL, 1, 0.00001, 1, 0.01, "w");

@@ -532,9 +532,9 @@ sequence DotSeq {
 
 class Part;
 record TrackPart {
-  Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
+  Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
   Part          part;
-  Int           duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
+  Int           duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, STANDARD);
 };
 sequence TrackPartSeq {
   TrackPart tparts;
@@ -543,24 +543,24 @@ sequence TrackPartSeq {
 /* BSE Song timing structure */
 record SongTiming {
   /* song position timing applies to */
-  Int   tick        = ("Current tick", NULL, 0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
+  Int   tick        = ("Current tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
   /* tempo */
-  Real  bpm         = ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, SFI_PARAM_STANDARD);
+  Real  bpm         = ("Beats per minute", NULL, 120, BSE_MIN_BPM, BSE_MAX_BPM, 10, STANDARD);
   /* signature */
-  Int   numerator   = ("Numerator", "Number of notes per measure", 4, 1, 256, 2, SFI_PARAM_STANDARD);
-  Int   denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, SFI_PARAM_STANDARD);
+  Int   numerator   = ("Numerator", "Number of notes per measure", 4, 1, 256, 2, STANDARD);
+  Int   denominator = ("Denominator", "Type of notes counted per measure", 4, 1, 256, 2, STANDARD);
   /* sequencer timing */
-  Int   tpqn        = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_STANDARD);
-  Int   tpt         = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_STANDARD);
+  Int   tpqn        = ("Ticks per quarter note", NULL, 384, 1, G_MAXINT, 12, STANDARD);
+  Int   tpt         = ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, STANDARD);
 };
 
 record SampleFileInfo {
-  String        file    = ("Filename", NULL, NULL, SFI_PARAM_STANDARD);
-  Int           size    = ("File Size", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_STANDARD);
-  Num           mtime   = ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, SFI_PARAM_STANDARD);
-  String        loader  = ("Loader", NULL, NULL, SFI_PARAM_STANDARD);
-  StringSeq     waves   = (NULL, NULL, SFI_PARAM_STANDARD);
-  Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_STANDARD); // FIXME: use BseErrorType here
+  String        file    = ("Filename", NULL, NULL, STANDARD);
+  Int           size    = ("File Size", NULL, 0, 0, G_MAXINT, 0, STANDARD);
+  Num           mtime   = ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, STANDARD);
+  String        loader  = ("Loader", NULL, NULL, STANDARD);
+  StringSeq     waves   = (NULL, NULL, STANDARD);
+  Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
 
 /* thread info */
@@ -649,13 +649,13 @@ record GConfig {
   group _("MIDI") {
     Bool invert_sustain = (_("Invert Sustain Pedal"),
                            _("Invert the state of sustain (damper) pedal so on/off meanings are reversed"),
-                           FALSE, SFI_PARAM_STANDARD);
+                           FALSE, STANDARD);
   };
   group _("Stepping Rates") {
     Real step_volume_dB = (_("Volume [dB] Steps"), _("Step width for volume in decibell"),
-                           0.1, 0.001, 5, 0.01, SFI_PARAM_STANDARD);
+                           0.1, 0.001, 5, 0.01, STANDARD);
     Int  step_bpm       = (_("BPM Steps"), _("Step width for beats per minute"),
-                           10, 1, 50, 1, SFI_PARAM_STANDARD);
+                           10, 1, 50, 1, STANDARD);
   };
 };
 
