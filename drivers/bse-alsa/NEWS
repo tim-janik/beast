@@ -1,0 +1,3 @@
+Initial Release: BSE-ALSA 0.6.3:
+
+* Provide an ALSA PCM driver for BSE.

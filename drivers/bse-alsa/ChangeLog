@@ -1,0 +1,6 @@
+Mon Sep 27 09:48:16 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.[hc]: implemented ALSA pcm driver plugin,
+	that works down to 1ms latency.
+
+	* configure.in: plugin package setup, version 0.6.3-rc1.

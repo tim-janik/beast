@@ -1,0 +1,26 @@
+BSE Driver Package
+==================
+
+This is a BSE (Bedevilled Sound Engine) plugin/driver package.
+In order to build this package, you need recent versions
+of BSE (>=0.6.3) and ALSA (>=1.0).
+
+ALSA:
+  http://www.alsa-project.org/
+
+The official ftp site for BEAST/BSE is:
+  ftp://beast.gtk.org/pub/beast
+
+The official web site for BEAST/BSE is:
+  http://beast.gtk.org/
+
+There also is a mailing list for the project (beast@gnome.org):
+  http://mail.gnome.org/mailman/listinfo/beast/
+
+And a related IRC channel:
+  #beast on GimpNet (irc.gimp.org:6666)
+
+Installation
+============
+
+See the file `INSTALL'.
