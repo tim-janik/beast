@@ -21,18 +21,18 @@
 namespace Bse {
 
 class Evaluator : Bse::Effect {
-  /*Info    icon      = "icons/chorus.png";*/
+  /*Info    icon      = "icons/bseevaluator.png";*/
   Info    authors   = "Stefan Westerfeld";
-  Info    license   = "GNU General Public License";
-  Info    category  = "/Modules/Misc/Evaluator";
-  Info    blurb     = ("BseEvaluator is a module which can compute arithmetic operations in a small language."
-		       "The audio input signal is called input, the audio output signal is called output."
-		       "Simple examples for programs would be \"output = input * 5\" or \"output = 2 * input + 1\"");
-  IStream input     = ("Audio In", "Audio input");
-  OStream output    = ("Audio Out", "Audio output");
-  group "Parameters" {
-    String source  = String ("Source code", "The source code", "output = input", STANDARD);
-    String status  = String ("Status", "Status used to output error messages", "", GUI_RDONLY);
+  Info    license   = _("GNU General Public License");
+  Info    category  = _("/Misc/Evaluator");
+  Info    blurb     = _("BseEvaluator is a module which can compute arithmetic operations in a small language. "
+                        "The audio input signal is called input, the audio output signal is called output. "
+                        "Simple examples for programs would be \"output = input * 5\" or \"output = 2 * input + 1\".");
+  IStream input     = (_("Audio In"), _("Audio input"));
+  OStream output    = (_("Audio Out"), _("Audio output"));
+  group _("Parameters") {
+    String source  = String (_("Source code"), _("The source code"), "output = input", STANDARD);
+    String status  = String (_("Status"), _("Status used to output error messages"), "", GUI_RDONLY);
   };
 };
 

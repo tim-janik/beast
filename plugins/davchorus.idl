@@ -23,11 +23,13 @@ Const STANDARD = Bse::STANDARD;
 
 class Chorus : Bse::Effect {
   Info    icon      = "icons/chorus.png";
-  Info    category  = "/Modules/Enhance/Chorus";
-  Info    blurb     = "DavChorus adds more depth to sounds";
-  IStream audio_in  = ("Audio In", "Audio input");
-  OStream audio_out = ("Audio Out", "Chorus audio output");
-  group "Parameters" {
+  Info    authors   = "David A. Bartold";
+  Info    license   = _("GNU Lesser General Public License");
+  Info    category  = _("/Enhance/Chorus");
+  Info    blurb     = _("DavChorus adds more depth to sounds");
+  IStream audio_in  = (_("Audio In"), _("Audio input"));
+  OStream audio_out = (_("Audio Out"), _("Chorus audio output"));
+  group _("Parameters") {
     Real wet_out = Perc (_("Wet out [%]"), _("Set the amount of modified data to mix"), 50.0, STANDARD);
   };
 };
