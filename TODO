@@ -1,5 +1,4 @@
 FIXME(urgent):
-- bsewavetool: fix arg parser issues (missing in some places)
 - bsewavetool: fix per-command docu to properly account for input.bsewave
 - bsewavetool: allow clipping of single chunks
 - start playback at play pointer position
