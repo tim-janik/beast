@@ -47,83 +47,92 @@ typedef int sdword;
 #define read_or_return_error(read_me) G_STMT_START{ BseErrorType _error = read_me; if (_error) return _error; }G_STMT_END
 
 static inline BseErrorType
-xRead (FILE *file, int len, void *data)
+fread_block (FILE *file,
+             int   len,
+             void *data)
 {
   if (fread (data, len, 1, file) != 1)
     if (feof (file))
       return BSE_ERROR_FILE_EOF;
     else
-      return gsl_error_from_errno (errno, BSE_ERROR_IO);
+      return gsl_error_from_errno (errno, BSE_ERROR_FILE_READ_FAILED);
   
   return BSE_ERROR_NONE;
 }
 
 static inline BseErrorType
-skip (FILE *file, int len)
+skip (FILE *file,
+      int   len)
 {
   while (len > 0)
     {
       char junk;
-      read_or_return_error (xRead (file, 1, &junk));
+      read_or_return_error (fread_block (file, 1, &junk));
       len--;
     }
   return BSE_ERROR_NONE;
 }
 
-
 static inline BseErrorType
-readBytes (FILE *file, unsigned char *bytes, int len)
+fread_bytes (FILE          *file,
+             unsigned char *bytes,
+             int            len)
 {
-  return xRead (file, len, bytes);
+  return fread_block (file, len, bytes);
 }
 
 static inline BseErrorType
-readString (FILE *file, char *str, int len)
+fread_string (FILE *file,
+              char *str,
+              int   len)
 {
-  return xRead (file, len, str);
+  return fread_block (file, len, str);
 }
 
 /* readXXX with sizeof(xxx) == 1 */
 static inline BseErrorType
-readByte (FILE *file, byte& b)
+fread_byte (FILE *file,
+          byte &b)
 {
-  return xRead (file, 1, &b);
+  return fread_block (file, 1, &b);
 }
 
 /* readXXX with sizeof(xxx) == 2 */
 static inline BseErrorType
-readWord (FILE *file, word& w)
+fread_word (FILE *file,
+          word &w)
 {
   byte h, l;
   
-  read_or_return_error (xRead (file, 1, &l));
-  read_or_return_error (xRead (file, 1, &h));
+  read_or_return_error (fread_block (file, 1, &l));
+  read_or_return_error (fread_block (file, 1, &h));
   w = (h << 8) + l;
   
   return BSE_ERROR_NONE;
 }
 
 static inline BseErrorType
-readSWord (FILE *file, sword& sw)
+fread_short_word (FILE  *file,
+                  sword &sw)
 {
   word w;
   
-  read_or_return_error (readWord (file, w));
-  sw = (sword)w;
+  read_or_return_error (fread_word (file, w));
+  sw = (sword) w;
   
   return BSE_ERROR_NONE;
 }
 
 /* readXXX with sizeof(xxx) == 4 */
 static inline BseErrorType
-readDWord (FILE *file, dword& dw)
+fread_dword (FILE *file, dword& dw)
 {
   byte h, l, hh, hl;
   
-  read_or_return_error (xRead (file, 1, &l));
-  read_or_return_error (xRead (file, 1, &h));
-  read_or_return_error (xRead (file, 1, &hl));
-  read_or_return_error (xRead (file, 1, &hh));
+  read_or_return_error (fread_block (file, 1, &l));
+  read_or_return_error (fread_block (file, 1, &h));
+  read_or_return_error (fread_block (file, 1, &hl));
+  read_or_return_error (fread_block (file, 1, &hh));
   dw = (hh << 24) + (hl << 16) + (h << 8) + l;
   
   return BSE_ERROR_NONE;
@@ -151,20 +160,20 @@ struct PatHeader
   BseErrorType
   load (FILE *file)
   {
-    read_or_return_error (readString (file, id, 12));
-    read_or_return_error (readString (file, manufacturer_id, 10));
-    read_or_return_error (readString (file, description, 60));
+    read_or_return_error (fread_string (file, id, 12));
+    read_or_return_error (fread_string (file, manufacturer_id, 10));
+    read_or_return_error (fread_string (file, description, 60));
     /*		skip(file, 2);*/
     
-    read_or_return_error (readByte (file, instruments));
-    read_or_return_error (readByte (file, voices));
-    read_or_return_error (readByte (file, channels));
+    read_or_return_error (fread_byte (file, instruments));
+    read_or_return_error (fread_byte (file, voices));
+    read_or_return_error (fread_byte (file, channels));
     
-    read_or_return_error (readWord (file, waveforms));
-    read_or_return_error (readWord (file, mastervolume));
-    read_or_return_error (readDWord (file, size));
+    read_or_return_error (fread_word (file, waveforms));
+    read_or_return_error (fread_word (file, mastervolume));
+    read_or_return_error (fread_dword (file, size));
     
-    read_or_return_error (readString (file, reserved, 36));
+    read_or_return_error (fread_string (file, reserved, 36));
     
     return BSE_ERROR_NONE;
   }
@@ -191,17 +200,17 @@ struct PatInstrument
   BseErrorType
   load (FILE *file)
   {
-    read_or_return_error (readWord (file, number));
-    read_or_return_error (readString (file, name, 16));
-    read_or_return_error (readDWord (file, size));
-    read_or_return_error (readByte (file, layers));
-    read_or_return_error (readString (file, reserved, 40));
+    read_or_return_error (fread_word (file, number));
+    read_or_return_error (fread_string (file, name, 16));
+    read_or_return_error (fread_dword (file, size));
+    read_or_return_error (fread_byte (file, layers));
+    read_or_return_error (fread_string (file, reserved, 40));
     
     /* layer: (?) */
-    read_or_return_error (readWord (file, layerUnknown));
-    read_or_return_error (readDWord (file, layerSize));
-    read_or_return_error (readByte (file, sampleCount));
-    read_or_return_error (readString (file, reserved, 40));
+    read_or_return_error (fread_word (file, layerUnknown));
+    read_or_return_error (fread_dword (file, layerSize));
+    read_or_return_error (fread_byte (file, sampleCount));
+    read_or_return_error (fread_string (file, reserved, 40));
     
     return BSE_ERROR_NONE;
   }
@@ -252,29 +261,29 @@ struct PatPatch
   BseErrorType
   load (FILE *file)
   {
-    read_or_return_error (readString (file, filename, 7));
-    read_or_return_error (readByte (file, fractions));
-    read_or_return_error (readDWord (file, wavesize));
-    read_or_return_error (readDWord (file, loopStart));
-    read_or_return_error (readDWord (file, loopEnd));
-    read_or_return_error (readWord (file, sampleRate));
-    read_or_return_error (readDWord (file, minFreq));
-    read_or_return_error (readDWord (file, maxFreq));
-    read_or_return_error (readDWord (file, origFreq));
-    read_or_return_error (readSWord (file, fineTune));
-    read_or_return_error (readByte (file, balance));
-    read_or_return_error (readBytes (file, filterRate, 6));
-    read_or_return_error (readBytes (file, filterOffset, 6));
-    read_or_return_error (readByte (file, tremoloSweep));
-    read_or_return_error (readByte (file, tremoloRate));
-    read_or_return_error (readByte (file, tremoloDepth));
-    read_or_return_error (readByte (file, vibratoSweep));
-    read_or_return_error (readByte (file, vibratoRate));
-    read_or_return_error (readByte (file, vibratoDepth));
-    read_or_return_error (readByte (file, waveFormat));
-    read_or_return_error (readSWord (file, freqScale));
-    read_or_return_error (readWord (file, freqScaleFactor));
-    read_or_return_error (readString (file, reserved, 36));
+    read_or_return_error (fread_string (file, filename, 7));
+    read_or_return_error (fread_byte (file, fractions));
+    read_or_return_error (fread_dword (file, wavesize));
+    read_or_return_error (fread_dword (file, loopStart));
+    read_or_return_error (fread_dword (file, loopEnd));
+    read_or_return_error (fread_word (file, sampleRate));
+    read_or_return_error (fread_dword (file, minFreq));
+    read_or_return_error (fread_dword (file, maxFreq));
+    read_or_return_error (fread_dword (file, origFreq));
+    read_or_return_error (fread_short_word (file, fineTune));
+    read_or_return_error (fread_byte (file, balance));
+    read_or_return_error (fread_bytes (file, filterRate, 6));
+    read_or_return_error (fread_bytes (file, filterOffset, 6));
+    read_or_return_error (fread_byte (file, tremoloSweep));
+    read_or_return_error (fread_byte (file, tremoloRate));
+    read_or_return_error (fread_byte (file, tremoloDepth));
+    read_or_return_error (fread_byte (file, vibratoSweep));
+    read_or_return_error (fread_byte (file, vibratoRate));
+    read_or_return_error (fread_byte (file, vibratoDepth));
+    read_or_return_error (fread_byte (file, waveFormat));
+    read_or_return_error (fread_short_word (file, freqScale));
+    read_or_return_error (fread_word (file, freqScaleFactor));
+    read_or_return_error (fread_string (file, reserved, 36));
     
     return BSE_ERROR_NONE;
   }
@@ -393,7 +402,7 @@ struct FileInfo
     FILE *patfile = fopen (file_name, "r");
     if (!patfile)
       {
-	*error_p = gsl_error_from_errno (errno, BSE_ERROR_IO);
+	*error_p = gsl_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 	return;
       }
     
