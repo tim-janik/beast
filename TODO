@@ -1,4 +1,6 @@
 FIXMES:
+- s/sfi_value_rec_take_ref/sfi_value_take_rec/
+- s/sfi_value_seq_take_ref/sfi_value_take_seq/
 - queue action updates upon grouped action execution 
 - introduce gxk_action_group_select()-freeze/thaw to surround select/exec pair
 - auto-connect viewable-changed to gadget notebooks
