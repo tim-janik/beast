@@ -19,6 +19,9 @@ general:
 -	delay class destruction and plugin unloading through timeout handlers
 *	eliminate everything that fgrep -i fixme/hack reveals ;)
 
+BseSource
+-	passing history to bse_source_set_input() is braindead, should come from
+	ichanneldef
 Song/Pattern
 -	mutable channels! (make them silent)
 	use procedure types for this

@@ -51,10 +51,14 @@ struct _BseSNetClass
 };
 
 
-/* --- ochannels --- */
+/* --- channels --- */
 enum {
   BSE_SNET_OCHANNEL_NONE,
   BSE_SNET_OCHANNEL_STEREO
+};
+enum {
+  BSE_SNET_ICHANNEL_NONE,
+  BSE_SNET_ICHANNEL_MONO
 };
 
 

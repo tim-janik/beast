@@ -102,7 +102,7 @@ bse_snet_class_init (BseSNetClass *class)
   BseSourceClass *source_class;
   BseContainerClass *container_class;
   BseSuperClass *super_class;
-  guint ochannel_id;
+  guint ichannel_id, ochannel_id;
   
   parent_class = bse_type_class_peek (BSE_TYPE_SUPER);
   object_class = BSE_OBJECT_CLASS (class);
@@ -121,8 +121,11 @@ bse_snet_class_init (BseSNetClass *class)
   container_class->add_item = bse_snet_add_item;
   container_class->remove_item = bse_snet_remove_item;
   container_class->forall_items = bse_snet_forall_items;
-
-  /* add BseSNet memebers as class parameters */
+  
+  ichannel_id = bse_source_class_add_ichannel (source_class,
+					       "Mono In", "Input Channel",
+					       1);
+  g_assert (ichannel_id == BSE_SNET_ICHANNEL_MONO);
   ochannel_id = bse_source_class_add_ochannel (source_class,
 					       "Stereo Out", "Stereo Output",
 					       2);

@@ -211,7 +211,7 @@ bse_master_do_cycle (BseSource *source)
 
       /* retrive hunk-completed chunks from input sources */
       for (i = 0; i < source->n_inputs; i++)
-	master->chunks[i] = bse_source_ref_chunk (source->inputs[i].source,
+	master->chunks[i] = bse_source_ref_chunk (source->inputs[i].osource,
 						  source->inputs[i].ochannel_id,
 						  source->index);
 
@@ -327,7 +327,7 @@ bse_masters_reset (void)
       BseSource *source = slist->data;
 
       while (source->n_inputs)
-	bse_source_remove_input (source, source->inputs[0].source);
+	bse_source_remove_input (source, source->inputs[0].osource);
 
       slist = slist->next;
       if (slist)

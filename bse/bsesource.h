@@ -71,7 +71,7 @@ struct _BseSourceInput
 {
   guint      ichannel_id;
   guint      history;
-  BseSource *source;
+  BseSource *osource;
   guint      ochannel_id;
 };
 struct _BseSourceOChannel

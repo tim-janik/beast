@@ -1,3 +1,7 @@
+Sun Nov  7 03:05:39 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesnet.[hc]: create a mono input channel.
+
 Sat Nov  6 19:21:06 1999  Tim Janik  <timj@gtk.org>
 
 	* bsesource.c: notify outside world when input/output channels got

@@ -253,7 +253,7 @@ bse_source_calc_history (BseSource *source,
       BseSource *output = slist->data;
       
       for (n = 0; n < output->n_inputs; n++)
-	if (output->inputs[n].source == source &&
+	if (output->inputs[n].osource == source &&
 	    output->inputs[n].ochannel_id == ochannel_id)
 	  {
 	    if (history)
@@ -445,7 +445,7 @@ bse_source_do_cycle (BseSource *source)
 
   for (i = 0; i < source->n_inputs; i++)
     {
-      BseSource *input = source->inputs[i].source;
+      BseSource *input = source->inputs[i].osource;
 
       while (input->index < source->index)
 	bse_source_cycle (input);
@@ -454,8 +454,14 @@ bse_source_do_cycle (BseSource *source)
   if (!BSE_SOURCE_PAUSED (source))
     {
       BseChunk* (*calc_chunk) (BseSource *source,
-			       guint      ochannel_id) =
-	BSE_SOURCE_GET_CLASS (source)->calc_chunk;
+			       guint      ochannel_id) = BSE_SOURCE_GET_CLASS (source)->calc_chunk;
+
+      if (!calc_chunk && BSE_SOURCE_N_OCHANNELS (source)) /* FIXME: paranoid */
+	{
+	  g_warning ("`%s' doesn't implement ->calc_chunk() memeber function",
+		     bse_type_name (BSE_OBJECT_TYPE (source)));
+	  return;
+	}
 
       for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
 	{
@@ -534,7 +540,7 @@ bse_source_do_add_input (BseSource *source,
   source->inputs = g_renew (BseSourceInput, source->inputs, source->n_inputs);
   source->inputs[i].ichannel_id = ichannel_id;
   source->inputs[i].history = history;
-  source->inputs[i].source = input;
+  source->inputs[i].osource = input;
   source->inputs[i].ochannel_id = ochannel_id;
   
   input->outputs = g_slist_prepend (input->outputs, source);
@@ -556,7 +562,7 @@ bse_source_remove_input (BseSource *source,
   g_return_val_if_fail (BSE_IS_SOURCE (input), FALSE);
 
   for (i = 0; i < source->n_inputs; i++)
-    if (source->inputs[i].source == input)
+    if (source->inputs[i].osource == input)
       {
 	bse_object_ref (BSE_OBJECT (source));
         BSE_SOURCE_GET_CLASS (source)->remove_input (source, i);
@@ -575,7 +581,7 @@ bse_source_do_remove_input (BseSource *source,
 {
   BseSource *input;
 
-  input = source->inputs[input_index].source;
+  input = source->inputs[input_index].osource;
 
   source->n_inputs--;
   if (input_index < source->n_inputs)
@@ -655,7 +661,7 @@ bse_source_do_prepare (BseSource *source,
   
   for (i = 0; i < source->n_inputs; i++)
     {
-      BseSource *input = source->inputs[i].source;
+      BseSource *input = source->inputs[i].osource;
       
       if (!BSE_SOURCE_PREPARED (input))
 	{
@@ -700,7 +706,7 @@ bse_source_do_reset (BseSource *source)
    */
   for (i = 0; i < source->n_inputs; i++)
     {
-      BseSource *input = source->inputs[i].source;
+      BseSource *input = source->inputs[i].osource;
       GSList *slist;
       
       for (slist = input->outputs; slist && input; slist = slist->next)
@@ -734,7 +740,7 @@ bse_source_list_inputs (BseSource *source)
   
   list = NULL;
   for (i = 0; i < source->n_inputs; i++)
-    list = g_list_prepend (list, source->inputs[i].source);
+    list = g_list_prepend (list, source->inputs[i].osource);
   
   return list;
 }
