@@ -1,5 +1,4 @@
 FIXMES:
-- fix compillation without texitheque
 - don't always rebuild lib-list [Rebuild]-button
 - nuke BSE file crawling functions
 - fix API for file matching in SFI
@@ -23,9 +22,10 @@ FIXMES:
 - fix main menubar which contains a lot of wrongly enabled menu items
 - register category IDs via ID mechanism
 - register drivers with categories
+- implement snet removal
+- fix compillation without texitheque
 - fix gsl wave osc
 - install bsw/* into bse/.
-- implement snet removal
 - nuke SFI memblocks, malloc() is good enough
 - GslModuleClass.free should be renamed free_user_data
 - add demo song
