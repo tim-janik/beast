@@ -300,6 +300,86 @@ bst_window_sync_title_to_proxy (gpointer     window,
     }
 }
 
+typedef struct {
+  gboolean       (*handler) (gpointer data);
+  gpointer         data;
+  void           (*free_func) (gpointer data);
+} BackgroundHandler;
+
+static SfiRing *background_handlers1 = NULL;
+static SfiRing *background_handlers2 = NULL;
+
+static gboolean
+bst_background_handlers_timeout (gpointer timeout_data)
+{
+  GDK_THREADS_ENTER();
+  if (background_handlers1 || background_handlers2)
+    {
+      BackgroundHandler *bgh = sfi_ring_pop_head (&background_handlers1);
+      gint prio = 1;
+      if (!bgh)
+        {
+          prio = 2;
+          bgh = sfi_ring_pop_head (&background_handlers2);
+        }
+      if (bgh->handler (bgh->data))
+        {
+          if (prio == 1)
+            background_handlers1 = sfi_ring_append (background_handlers1, bgh);
+          else
+            background_handlers2 = sfi_ring_append (background_handlers2, bgh);
+        }
+      else
+        {
+          if (bgh->free_func)
+            bgh->free_func (bgh->data);
+          g_free (bgh);
+        }
+    }
+  GDK_THREADS_LEAVE();
+  if (background_handlers1 || background_handlers2)
+    g_timeout_add_full (G_PRIORITY_LOW - 100,
+                        20, /* milliseconds */
+                        bst_background_handlers_timeout, NULL, NULL);
+  return FALSE;
+}
+
+static void
+bst_background_handler_add (gboolean       (*handler) (gpointer data),
+                            gpointer         data,
+                            void           (*free_func) (gpointer data),
+                            gint             prio)
+{
+  g_return_if_fail (handler != NULL);
+  BackgroundHandler *bgh = g_new0 (BackgroundHandler, 1);
+  bgh->handler = handler;
+  bgh->data = data;
+  bgh->free_func = free_func;
+  if (!background_handlers1 && !background_handlers2)
+    g_timeout_add_full (G_PRIORITY_LOW - 100,
+                        20, /* milliseconds */
+                        bst_background_handlers_timeout, NULL, NULL);
+  if (prio == 1)
+    background_handlers1 = sfi_ring_append (background_handlers1, bgh);
+  else
+    background_handlers2 = sfi_ring_append (background_handlers2, bgh);
+}
+
+void
+bst_background_handler1_add (gboolean       (*handler) (gpointer data),
+                             gpointer         data,
+                             void           (*free_func) (gpointer data))
+{
+  bst_background_handler_add (handler, data, free_func, 1);
+}
+
+void
+bst_background_handler2_add (gboolean       (*handler) (gpointer data),
+                             gpointer         data,
+                             void           (*free_func) (gpointer data))
+{
+  bst_background_handler_add (handler, data, free_func, 2);
+}
 
 /* --- packing utilities --- */
 #define SPACING 3

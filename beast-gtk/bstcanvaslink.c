@@ -27,7 +27,6 @@
 /* --- prototypes --- */
 static void	bst_canvas_link_class_init	(BstCanvasLinkClass	*class);
 static void	bst_canvas_link_init		(BstCanvasLink		*clink);
-static void	bst_canvas_link_update		(BstCanvasLink		*clink);
 static void	bst_canvas_link_destroy		(GtkObject		*object);
 static gboolean bst_canvas_link_event		(GnomeCanvasItem        *item,
 						 GdkEvent               *event);
@@ -35,6 +34,8 @@ static void	bst_canvas_link_adjust_arrow	(BstCanvasLink		*clink);
 static void	bst_canvas_link_adjust_tags	(BstCanvasLink		*clink);
 static gboolean	bst_canvas_link_child_event	(GnomeCanvasItem        *item,
 						 GdkEvent               *event);
+static void     bst_canvas_link_update          (BstCanvasLink          *clink);
+static gboolean bst_canvas_link_build_async     (gpointer                data);
 
 
 /* --- static variables --- */
@@ -127,6 +128,8 @@ bst_canvas_link_new (GnomeCanvasGroup *group)
   item = gnome_canvas_item_new (group,
 				BST_TYPE_CANVAS_LINK,
 				NULL);
+  g_object_ref (item->canvas);  /* GnomeCanvasItem doesn't properly clear its pointers */
+  bst_background_handler1_add (bst_canvas_link_build_async, g_object_ref (item), NULL);
   return item;
 }
 
@@ -163,7 +166,6 @@ clink_view_update (BstCanvasLink *clink,
   GtkWidget *frame = (clink->link_view && (force_update || GTK_WIDGET_VISIBLE (clink->link_view))
 		      ? gxk_dialog_get_child (GXK_DIALOG (clink->link_view))
 		      : NULL);
-
   if (frame)
     {
       GtkWidget *text = GTK_BIN (frame)->child;
@@ -326,78 +328,99 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
     }
 }
 
+static gboolean
+bst_canvas_link_build_async (gpointer data)
+{
+  GnomeCanvasItem *item = GNOME_CANVAS_ITEM (data);
+  if (gnome_canvas_item_check_undisposed (item))
+    {
+      BstCanvasLink *clink = BST_CANVAS_LINK (item);
+      if (!clink->arrow)
+        clink->arrow = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
+                                                                GNOME_TYPE_CANVAS_POLYGON,
+                                                                "outline_color_rgba", 0x0000ffff,
+                                                                "fill_color_rgba", 0xff0000ff,
+                                                                NULL),
+                                         "signal::destroy", gtk_widget_destroyed, &clink->arrow,
+                                         "swapped_signal::event", bst_canvas_link_child_event, clink,
+                                         NULL);
+      if (!clink->tag_start)
+        clink->tag_start = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
+                                                                    GNOME_TYPE_CANVAS_ELLIPSE,
+                                                                    "outline_color_rgba", 0x000000ff, // xffff00ff,
+                                                                    "fill_color_rgba", 0xffff00ff,
+                                                                    NULL),
+                                             "signal::destroy", gtk_widget_destroyed, &clink->tag_start,
+                                             "swapped_signal::event", bst_canvas_link_child_event, clink,
+                                             NULL);
+      if (!clink->tag_end)
+        {
+          gboolean is_jchannel = FALSE;
+          if (clink->icsource)
+            is_jchannel = bst_canvas_source_is_jchannel (clink->icsource, clink->ichannel);
+          clink->tag_end = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
+                                                                    GNOME_TYPE_CANVAS_ELLIPSE,
+                                                                    "outline_color_rgba", 0x000000ff, // 0xff0000ff,
+                                                                    "fill_color_rgba", is_jchannel ? 0x00ff00ff : 0xff0000ff,
+                                                                    NULL),
+                                             "signal::destroy", gtk_widget_destroyed, &clink->tag_end,
+                                             "swapped_signal::event", bst_canvas_link_child_event, clink,
+                                             NULL);
+        }
+      if (!clink->line)
+        clink->line = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
+                                                               GNOME_TYPE_CANVAS_LINE,
+                                                               "fill_color", "black",
+                                                               NULL),
+                                        "signal::destroy", gtk_widget_destroyed, &clink->line,
+                                        "swapped_signal::notify", bst_canvas_link_adjust_arrow, clink,
+                                        "swapped_signal::notify", bst_canvas_link_adjust_tags, clink,
+                                        NULL);
+      bst_canvas_link_update (clink);
+    }
+  GnomeCanvas *canvas = item->canvas;
+  g_object_unref (item);
+  g_object_unref (canvas);      /* canvases don't properly protect their items */
+  return FALSE;
+}
+
 static void
 bst_canvas_link_update (BstCanvasLink *clink)
 {
   GnomeCanvasItem *item = GNOME_CANVAS_ITEM (clink);
-  GnomeCanvasPoints *gpoints;
-  gdouble start_x = 0, start_y = 0, end_x = 10, end_y = 10;
-  gboolean is_jchannel = FALSE;
-
-  if (clink->ocsource)
+  if (clink->line)
     {
-      bst_canvas_source_ochannel_pos (clink->ocsource, clink->ochannel, &start_x, &start_y);
-      gnome_canvas_item_w2i (item, &start_x, &start_y);
+      gdouble start_x = 0, start_y = 0, end_x = 10, end_y = 10;
+      if (clink->ocsource)
+        {
+          bst_canvas_source_ochannel_pos (clink->ocsource, clink->ochannel, &start_x, &start_y);
+          gnome_canvas_item_w2i (item, &start_x, &start_y);
+        }
+      if (clink->icsource)
+        {
+          bst_canvas_source_ichannel_pos (clink->icsource, clink->ichannel, &end_x, &end_y);
+          gnome_canvas_item_w2i (item, &end_x, &end_y);
+        }
+      GnomeCanvasPoints *gpoints = gnome_canvas_points_new (2);
+      gpoints->coords[0] = start_x;
+      gpoints->coords[1] = start_y;
+      gpoints->coords[2] = end_x;
+      gpoints->coords[3] = end_y;
+      g_object_set (clink->line,
+                    "points", gpoints,
+                    NULL);
+      gnome_canvas_points_free (gpoints);
     }
-  if (clink->icsource)
-    {
-      bst_canvas_source_ichannel_pos (clink->icsource, clink->ichannel, &end_x, &end_y);
-      is_jchannel = bst_canvas_source_is_jchannel (clink->icsource, clink->ichannel);
-      gnome_canvas_item_w2i (item, &end_x, &end_y);
-    }
+  if (clink->tag_start)
+    gnome_canvas_item_raise_to_top (clink->tag_start);
+  if (clink->tag_end)
+    gnome_canvas_item_raise_to_top (clink->tag_end);
   if (clink->ocsource && clink->icsource)
     gnome_canvas_item_keep_above (GNOME_CANVAS_ITEM (clink),
-				  GNOME_CANVAS_ITEM (clink->ocsource),
-				  GNOME_CANVAS_ITEM (clink->icsource));
-  
-  
-  if (!clink->arrow)
-    clink->arrow = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
-							    GNOME_TYPE_CANVAS_POLYGON,
-							    "outline_color_rgba", 0x0000ffff,
-							    "fill_color_rgba", 0xff0000ff,
-							    NULL),
-				     "signal::destroy", gtk_widget_destroyed, &clink->arrow,
-				     "swapped_signal::event", bst_canvas_link_child_event, clink,
-				     NULL);
-  if (!clink->tag_start)
-    clink->tag_start = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
-								GNOME_TYPE_CANVAS_ELLIPSE,
-								"outline_color_rgba", 0x000000ff, // xffff00ff,
-								"fill_color_rgba", 0xffff00ff,
-								NULL),
-					 "signal::destroy", gtk_widget_destroyed, &clink->tag_start,
-					 "swapped_signal::event", bst_canvas_link_child_event, clink,
-					 NULL);
-  if (!clink->tag_end)
-    clink->tag_end = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
-							      GNOME_TYPE_CANVAS_ELLIPSE,
-							      "outline_color_rgba", 0x000000ff, // 0xff0000ff,
-							      "fill_color_rgba", is_jchannel ? 0x00ff00ff : 0xff0000ff,
-							      NULL),
-				       "signal::destroy", gtk_widget_destroyed, &clink->tag_end,
-				       "swapped_signal::event", bst_canvas_link_child_event, clink,
-				       NULL);
-  if (!clink->line)
-    clink->line = g_object_connect (gnome_canvas_item_new (GNOME_CANVAS_GROUP (clink),
-							   GNOME_TYPE_CANVAS_LINE,
-							   "fill_color", "black",
-							   NULL),
-				    "signal::destroy", gtk_widget_destroyed, &clink->line,
-				    "swapped_signal::notify", bst_canvas_link_adjust_arrow, clink,
-				    "swapped_signal::notify", bst_canvas_link_adjust_tags, clink,
-				    NULL);
-  gpoints = gnome_canvas_points_new (2);
-  gpoints->coords[0] = start_x;
-  gpoints->coords[1] = start_y;
-  gpoints->coords[2] = end_x;
-  gpoints->coords[3] = end_y;
-  g_object_set (clink->line,
-		"points", gpoints,
-		NULL);
-  gnome_canvas_points_free (gpoints);
-  gnome_canvas_item_raise_to_top (clink->tag_start);
-  gnome_canvas_item_raise_to_top (clink->tag_end);
+                                  GNOME_CANVAS_ITEM (clink->ocsource),
+                                  GNOME_CANVAS_ITEM (clink->icsource));
+  bst_canvas_link_adjust_tags (clink);
+  bst_canvas_link_adjust_arrow (clink);
 }
 
 static void
@@ -406,6 +429,8 @@ bst_canvas_link_adjust_tags (BstCanvasLink *clink)
   GnomeCanvasPoints *gpoints;
   gdouble x1, y1, x2, y2, *points;
   
+  if (!clink->line)
+    return;
   gtk_object_get (GTK_OBJECT (clink->line), "points", &gpoints, NULL);
   if (!gpoints)
     gpoints = gnome_canvas_points_new0 (2);
@@ -415,22 +440,24 @@ bst_canvas_link_adjust_tags (BstCanvasLink *clink)
   y1 = points[1] - TAG_DIAMETER;
   x2 = points[0] + TAG_DIAMETER;
   y2 = points[1] + TAG_DIAMETER;
-  g_object_set (clink->tag_start,
-		"x1", x1,
-		"y1", y1,
-		"x2", x2,
-		"y2", y2,
-		NULL);
+  if (clink->tag_start)
+    g_object_set (clink->tag_start,
+                  "x1", x1,
+                  "y1", y1,
+                  "x2", x2,
+                  "y2", y2,
+                  NULL);
   x1 = points[2] - TAG_DIAMETER;
   y1 = points[3] - TAG_DIAMETER;
   x2 = points[2] + TAG_DIAMETER;
   y2 = points[3] + TAG_DIAMETER;
-  g_object_set (clink->tag_end,
-		"x1", x1,
-		"y1", y1,
-		"x2", x2,
-		"y2", y2,
-		NULL);
+  if (clink->tag_end)
+    g_object_set (clink->tag_end,
+                  "x1", x1,
+                  "y1", y1,
+                  "x2", x2,
+                  "y2", y2,
+                  NULL);
   
   gnome_canvas_points_free (gpoints);
 }
@@ -441,6 +468,8 @@ bst_canvas_link_adjust_arrow (BstCanvasLink *clink)
   GnomeCanvasPoints *gpoints;
   gdouble dx, dy, l, x, y, px, py, cos_theta, sin_theta, *points;
   
+  if (!clink->line)
+    return;
   gtk_object_get (GTK_OBJECT (clink->line), "points", &gpoints, NULL);
   if (!gpoints)
     gpoints = gnome_canvas_points_new0 (2);
@@ -473,7 +502,8 @@ bst_canvas_link_adjust_arrow (BstCanvasLink *clink)
   *(points++) = px;
   *(points++) = py;
   
-  g_object_set (clink->arrow, "points", gpoints, NULL);
+  if (clink->arrow)
+    g_object_set (clink->arrow, "points", gpoints, NULL);
   gnome_canvas_points_free (gpoints);
 }
 

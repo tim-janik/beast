@@ -76,6 +76,12 @@ GxkActionList* bst_action_list_from_cats_pred (BseCategorySeq  *cseq,
                                                gpointer         user_data,
                                                BstActionListCategoryP predicate,
                                                gpointer         predicate_data);
+void           bst_background_handler1_add    (gboolean       (*handler) (gpointer data),
+                                               gpointer         data,
+                                               void           (*free_func) (gpointer data));
+void           bst_background_handler2_add    (gboolean       (*handler) (gpointer data),
+                                               gpointer         data,
+                                               void           (*free_func) (gpointer data));
 
 
 /* --- stock utilities --- */

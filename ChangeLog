@@ -1,3 +1,17 @@
+Thu Sep 30 02:54:19 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c:
+	* beast-gtk/bstcanvaslink.c: construct canvas link/source contents
+	from a 	background handler. take special precaution to work yround
+	dangling canvas pointers.
+
+	* beast-gtk/bstutils.[hc]: added functions to add background handlers.
+
+	* beast-gtk/gxk/gxkcanvas.[hc]: new funciton
+	gnome_canvas_item_check_undisposed() to check whether a canvas item is
+	still usable. relies on external item->canvas protection through
+	extra ref-counts, because canvases don't clear up after themselves.
+
 Tue Sep 28 23:17:44 2004  Tim Janik  <timj@gtk.org>
 
 	* tests/latency/bselatencytest.cc: really print out milli seconds.

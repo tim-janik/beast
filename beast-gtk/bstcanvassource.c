@@ -60,7 +60,6 @@ typedef void    (*SignalUpdateLinks)            (BstCanvasSource       *source,
 
 
 /* --- prototypes --- */
-static void	bst_canvas_source_build		(BstCanvasSource	*csource);
 static void	bst_canvas_source_destroy	(GtkObject		*object);
 static gboolean bst_canvas_source_event		(GnomeCanvasItem        *item,
 						 GdkEvent               *event);
@@ -72,6 +71,7 @@ static void	bst_canvas_icon_set		(GnomeCanvasItem	*item,
 						 BseIcon         	*icon,
                                                  const gchar            *module_type);
 static void	csource_info_update		(BstCanvasSource	*csource);
+static void     bst_canvas_source_build         (BstCanvasSource        *csource);
 
 
 /* --- static variables --- */
@@ -216,7 +216,8 @@ source_icon_changed (BstCanvasSource *csource)
   /* update icon in group, revert to a stock icon if none is available
    */
   icon = bse_item_get_icon (csource->source);
-  bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source));
+  if (csource->icon_item)
+    bst_canvas_icon_set (csource->icon_item, icon, bse_item_get_type (csource->source));
 }
 
 static void
@@ -283,7 +284,7 @@ bst_canvas_source_new (GnomeCanvasGroup *group,
 		     NULL);
 
   canvas_source_set_position (csource);
-  bst_canvas_source_build (BST_CANVAS_SOURCE (item));
+  bst_canvas_source_build (csource);
   
   GNOME_CANVAS_NOTIFY (item);
   
@@ -780,121 +781,97 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
     }
 }
 
+static gboolean
+bst_canvas_source_build_async (gpointer data)
+{
+  GnomeCanvasItem *item = GNOME_CANVAS_ITEM (data);
+  if (gnome_canvas_item_check_undisposed (item))
+    {
+      BstCanvasSource *csource = BST_CANVAS_SOURCE (item);
+      GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (csource);
+      
+      /* order of creation is important to enforce stacking */
+      
+      /* add icon to group */
+      if (!csource->icon_item)
+        {
+          csource->icon_item = g_object_connect (gnome_canvas_item_new (group,
+                                                                        GNOME_TYPE_CANVAS_PIXBUF,
+                                                                        "x", ICON_X (csource),
+                                                                        "y", ICON_Y (csource),
+                                                                        "width", ICON_WIDTH (csource),
+                                                                        "height", ICON_HEIGHT (csource),
+                                                                        NULL),
+                                                 "signal::destroy", gtk_widget_destroyed, &csource->icon_item,
+                                                 "swapped_signal::event", bst_canvas_source_child_event, csource,
+                                                 NULL);
+          source_icon_changed (csource);
+        }
+      
+      if (!csource->text)
+        {
+          /* add text item, invoke name_changed callback to setup the text value */
+          guint ocolor = csource->source && bse_item_internal (csource->source) ? RGBA_INTERNAL : RGBA_BLACK;
+          csource->text = gnome_canvas_item_new (group,
+                                                 GNOME_TYPE_CANVAS_TEXT,
+                                                 "fill_color_rgba", ocolor,
+                                                 "anchor", GTK_ANCHOR_NORTH,
+                                                 "justification", GTK_JUSTIFY_CENTER,
+                                                 "x", TEXT_X (csource),
+                                                 "y", TEXT_Y (csource),
+                                                 "font", TEXT_FONT,
+                                                 NULL);
+          g_object_connect (csource->text,
+                            "signal::destroy", gtk_widget_destroyed, &csource->text,
+                            "swapped_signal::event", bst_canvas_source_child_event, csource,
+                            NULL);
+          gnome_canvas_text_set_zoom_size (GNOME_CANVAS_TEXT (csource->text), FONT_HEIGHT);
+          source_name_changed (csource);
+        }
+      
+      /* add input and output channel items */
+      while (csource->channel_items)
+        gtk_object_destroy (csource->channel_items->data);
+      while (csource->channel_hints)
+        gtk_object_destroy (csource->channel_hints->data);
+      bst_canvas_source_build_channels (csource,
+                                        TRUE, /* input channels */
+                                        0xffff00, 0x808000,	  /* ichannels */
+                                        0x00afff, 0x005880);  /* jchannels */
+      bst_canvas_source_build_channels (csource,
+                                        FALSE, /* output channels */
+                                        0xff0000, 0x800000,
+                                        0, 0); /* unused */
+    }
+  GnomeCanvas *canvas = item->canvas;
+  g_object_unref (item);
+  g_object_unref (canvas);      /* canvases don't properly protect their items */
+  return FALSE;
+}
+
 static void
 bst_canvas_source_build (BstCanvasSource *csource)
 {
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (csource);
-  GnomeCanvasPoints *gpoints;
-  GnomeCanvasItem *item;
-
-  /* order of creation is important to enforce stacking */
-
-  /* add icon to group
-   */
-  csource->icon_item = g_object_connect (gnome_canvas_item_new (group,
-								GNOME_TYPE_CANVAS_PIXBUF,
-								"x", ICON_X (csource),
-								"y", ICON_Y (csource),
-								"width", ICON_WIDTH (csource),
-								"height", ICON_HEIGHT (csource),
-								NULL),
-					 "signal::destroy", gtk_widget_destroyed, &csource->icon_item,
-					 "swapped_signal::event", bst_canvas_source_child_event, csource,
-					 NULL);
-  source_icon_changed (csource);
-
-  /* add text item, invoke name_changed callback to setup the text value
-   */
-  guint ocolor = csource->source && bse_item_internal (csource->source) ? RGBA_INTERNAL : RGBA_BLACK;
-  csource->text = gnome_canvas_item_new (group,
-					 GNOME_TYPE_CANVAS_TEXT,
-					 "fill_color_rgba", ocolor,
-					 "anchor", GTK_ANCHOR_NORTH,
-					 "justification", GTK_JUSTIFY_CENTER,
-					 "x", TEXT_X (csource),
-					 "y", TEXT_Y (csource),
-					 "font", TEXT_FONT,
-					 NULL);
-  g_object_connect (csource->text,
-		    "signal::destroy", gtk_widget_destroyed, &csource->text,
-		    "swapped_signal::event", bst_canvas_source_child_event, csource,
-		    NULL);
-  gnome_canvas_text_set_zoom_size (GNOME_CANVAS_TEXT (csource->text), FONT_HEIGHT);
-  source_name_changed (csource);
-
-  /* add input and output channel items
-   */
-  while (csource->channel_items)
-    gtk_object_destroy (csource->channel_items->data);
-  while (csource->channel_hints)
-    gtk_object_destroy (csource->channel_hints->data);
-  bst_canvas_source_build_channels (csource,
-				    TRUE, /* input channels */
-				    0xffff00, 0x808000,	  /* ichannels */
-				    0x00afff, 0x005880);  /* jchannels */
-  bst_canvas_source_build_channels (csource,
-				    FALSE, /* output channels */
-				    0xff0000, 0x800000,
-				    0, 0); /* unused */
-
-  /* put line above and below the icon
-   */
-  if (0)
-    {
-      gpoints = gnome_canvas_points_newv (2, ICON_X (csource), ICON_Y (csource), ICON_X (csource) + ICON_WIDTH (csource), ICON_Y (csource));
-      item = g_object_connect (gnome_canvas_item_new (group,
-						      GNOME_TYPE_CANVAS_LINE,
-						      "fill_color_rgba", RGBA_BLACK,
-						      "points", gpoints,
-						      NULL),
-			       "swapped_signal::event", bst_canvas_source_child_event, csource,
-			       NULL);
-      gpoints->coords[1] += ICON_HEIGHT (csource);
-      gpoints->coords[3] += ICON_HEIGHT (csource);
-      item = g_object_connect (gnome_canvas_item_new (group,
-						      GNOME_TYPE_CANVAS_LINE,
-						      "fill_color_rgba", RGBA_BLACK,
-						      "points", gpoints,
-						      NULL),
-			       "swapped_signal::event", bst_canvas_source_child_event, csource,
-			       NULL);
-      gnome_canvas_points_free (gpoints);
-    }
-  
-#if 0
-#define ICON_BOTTOM             ((gdouble) ICON_Y + ICON_HEIGHT)
-  /* put a line at the bottom (ontop of the text) to close
-   * text bounding rectangle
-   */
-  gpoints = gnome_canvas_points_newv (2,
-				      CHANNEL_WIDTH (csource), ICON_BOTTOM,
-				      CHANNEL_WIDTH (csource) + ICON_WIDTH, ICON_BOTTOM);
-  item = g_object_connect (gnome_canvas_item_new (group,
-						  GNOME_TYPE_CANVAS_LINE,
-						  "fill_color_rgba", RGBA_BLACK,
-						  "points", gpoints,
-						  NULL),
-			   "swapped_signal::event", bst_canvas_source_child_event, csource,
-			   NULL);
-  gnome_canvas_points_free (gpoints);
-#endif
-
   /* put an outer rectangle, make it transparent in aa mode,
    * so we can receive mouse events everywhere
    */
-  item = g_object_connect (gnome_canvas_item_new (group,
-						  GNOME_TYPE_CANVAS_RECT,
-						  "outline_color_rgba", RGBA_BLACK, /* covers buggy canvas lines */
-						  "x1", 0.0,
-						  "y1", 0.0,
-						  "x2", TOTAL_WIDTH (csource),
-						  "y2", TOTAL_HEIGHT (csource),
-						  (GNOME_CANVAS_ITEM (csource)->canvas->aa
-						   ? "fill_color_rgba"
-						   : NULL), 0x00000000,
-						  NULL),
-			   "swapped_signal::event", bst_canvas_source_child_event, csource,
-			   NULL);
+  GnomeCanvasItem *rect = gnome_canvas_item_new (group,
+                                                 GNOME_TYPE_CANVAS_RECT,
+                                                 "outline_color_rgba", RGBA_BLACK, /* covers buggy canvas lines */
+                                                 "x1", 0.0,
+                                                 "y1", 0.0,
+                                                 "x2", TOTAL_WIDTH (csource),
+                                                 "y2", TOTAL_HEIGHT (csource),
+                                                 (GNOME_CANVAS_ITEM (csource)->canvas->aa
+                                                  ? "fill_color_rgba"
+                                                  : NULL), 0x00000000,
+                                                 NULL);
+  g_object_connect (rect,
+                    "swapped_signal::event", bst_canvas_source_child_event, csource,
+                    NULL);
+  g_object_ref (GNOME_CANVAS_ITEM (csource)->canvas);   /* GnomeCanvasItem doesn't properly clear its pointers */
+  bst_background_handler2_add (bst_canvas_source_build_async, g_object_ref (csource), NULL);
 }
 
 static void
@@ -904,7 +881,6 @@ bst_canvas_source_changed (BstCanvasSource *csource)
     {
       GnomeCanvasItem *item = GNOME_CANVAS_ITEM (csource);
       gdouble x = 0, y = 0;
-
       gnome_canvas_item_i2w (item, &x, &y);
       bse_object_set_parasite_coords (csource->source, x, y);
     }

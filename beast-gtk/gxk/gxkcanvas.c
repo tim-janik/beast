@@ -75,6 +75,25 @@ gnome_canvas_typed_item_at (GnomeCanvas *canvas,
   return item && g_type_is_a (GTK_OBJECT_TYPE (item), item_type) ? item : NULL;
 }
 
+gboolean
+gnome_canvas_item_check_undisposed (GnomeCanvasItem *item)
+{
+  if (GNOME_IS_CANVAS_ITEM (item))
+    {
+      GnomeCanvasItem *parent = item;
+      if (!item->parent &&
+          (!GNOME_IS_CANVAS_GROUP (item) ||
+           !GNOME_CANVAS_GROUP (item)->item_list))
+        return FALSE;
+      while (parent->parent)
+        parent = parent->parent;
+      if (GNOME_IS_CANVAS (item->canvas) && item->canvas == parent->canvas &&
+          item->canvas->root == parent)
+        return TRUE;
+    }
+  return FALSE;
+}
+
 guint
 gnome_canvas_item_get_stacking (GnomeCanvasItem *item)
 {

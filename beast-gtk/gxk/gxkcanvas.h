@@ -32,6 +32,7 @@ GnomeCanvasItem*	gnome_canvas_typed_item_at	(GnomeCanvas		*canvas,
 							 GtkType		 item_type,
 							 gdouble		 world_x,
 							 gdouble		 world_y);
+gboolean        gnome_canvas_item_check_undisposed      (GnomeCanvasItem        *item);
 guint		gnome_canvas_item_get_stacking		(GnomeCanvasItem	*item);
 void		gnome_canvas_item_keep_between		(GnomeCanvasItem	*between,
 							 GnomeCanvasItem	*item1,
