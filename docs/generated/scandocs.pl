@@ -245,8 +245,6 @@ print <<END_HEADER;
 
 \@docpackage{$package}
 \@docfont{tech}
-\@hasbanner{large}
-\@navigation{navigation.xml}
 
 \@unnumbered NAME
 $pname - $pblurb

@@ -1,3 +1,9 @@
+Tue Jan  7 17:04:11 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/scandocs.pl (print header): remove texi
+	macros \@hasbanner{large} @navigation{navigation.xml} to
+	spare layout space from function docs.
+
 Tue Jan  7 16:44:04 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/scandocs.pl: fix parameter markup.
