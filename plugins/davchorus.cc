@@ -274,16 +274,16 @@ dav_chorus_reset (BseSource *source)
 
 
 /* --- Export to DAV --- */
-#include "./icons/noicon.c"
+#include "./icons/chorus.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_chorus, "DavChorus", "BseSource",
     "DavChorus adds more depth to sounds",
     &type_info_chorus,
     "/Source/Chorus",
-    { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_WIDTH, NOICON_HEIGHT,
-      NOICON_RLE_PIXEL_DATA, },
+    { CHORUS_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      CHORUS_IMAGE_WIDTH, CHORUS_IMAGE_HEIGHT,
+      CHORUS_IMAGE_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };
