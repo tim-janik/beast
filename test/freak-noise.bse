@@ -1,97 +1,97 @@
 ;BseProjectV1
 
 
-(bse-project-restore "BseWaveRepo::Wave-Repository"
+(container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2002-05-21 07:20:35")
   (creation-time "2002-02-06 02:35:04"))
-(bse-project-restore "BseSNet::Unnamed"
+(container-child "BseSNet::Unnamed"
   (auto-activate #t)
   (modification-time "2002-05-21 07:20:35")
   (creation-time "2002-02-06 02:35:11")
-  (bse-container-restore "BseSequencer::BseSequencer-1"
+  (container-child "BseSequencer::BseSequencer-1"
     (counter 111.100014)
     (transpose 3)
-    (notes '(
+    (notes ((notes (
       "a+1" "d+2" "a+1" "b+1"
       "d+2" "b+1" "a+1" "b+1"
       "a+1" "d+2" "a+1" "b+1"
-      "d+2" "b+1" "d+2" "b+1"))
+      "d+2" "b+1" "d+2" "b+1"))))
     (parasite #\f "BstRouterCoords" 2 224.000000 138.000000))
-  (bse-container-restore "BseIIRFilter::BseIIRFilter-1"
+  (container-child "BseIIRFilter::BseIIRFilter-1"
     (cut-off-freq-2 20000.000000)
     (cut-off-freq 1058.195801)
     (epsilon 0.120000)
     (order 2)
     (filter-algorithm BSE_IIR_FILTER_CHEBYCHEFF1)
-    (source-input "audio-in" (bse-upath-resolve 1 "BseStandardOsc-1") "audio-out")
+    (source-input "audio-in" (link 1 "BseStandardOsc-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -4.000000 -79.000000))
-  (bse-container-restore "BseMixer::BseMixer-1"
+  (container-child "BseMixer::BseMixer-1"
     (master-volume-f 0.338844)
-    (source-input "audio-in1" (bse-upath-resolve 1 "BseMult-3") "audio-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "BseMult-2") "audio-out")
-    (source-input "audio-in4" (bse-upath-resolve 1 "BseAtanDistort-1") "audio-out")
+    (source-input "audio-in1" (link 1 "BseMult-3") "audio-out")
+    (source-input "audio-in2" (link 1 "BseMult-2") "audio-out")
+    (source-input "audio-in4" (link 1 "BseAtanDistort-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -222.000000 -103.000000))
-  (bse-container-restore "BsePcmOutput::BsePcmOutput-1"
-    (source-input "left-audio-in" (bse-upath-resolve 1 "BseMixer-1") "audio-out")
-    (source-input "right-audio-in" (bse-upath-resolve 1 "BseMixer-1") "audio-out")
+  (container-child "BsePcmOutput::BsePcmOutput-1"
+    (source-input "left-audio-in" (link 1 "BseMixer-1") "audio-out")
+    (source-input "right-audio-in" (link 1 "BseMixer-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -250.000000 4.000000))
-  (bse-container-restore "BseStandardOsc::BseStandardOsc-1"
+  (container-child "BseStandardOsc::BseStandardOsc-1"
     (fm-perc 15.000001)
     (base-freq 3333.333252)
     (phase 45.000000)
-    (source-input "freq-in" (bse-upath-resolve 1 "BseSequencer-2") "freq-out")
+    (source-input "freq-in" (link 1 "BseSequencer-2") "freq-out")
     (parasite #\f "BstRouterCoords" 2 115.000000 -78.000000))
-  (bse-container-restore "BseSequencer::BseSequencer-2"
+  (container-child "BseSequencer::BseSequencer-2"
     (counter 7.000000)
     (transpose -36)
-    (notes '(
-      "a+1" "b+1" "d+2" "e+2"))
+    (notes ((notes (
+      "a+1" "b+1" "d+2" "e+2"))))
     (parasite #\f "BstRouterCoords" 2 225.000000 -82.000000))
-  (bse-container-restore "BseIIRFilter::BseIIRFilter-2"
+  (container-child "BseIIRFilter::BseIIRFilter-2"
     (cut-off-freq-2 778.900024)
     (cut-off-freq 778.800049)
     (filter-type BSE_IIR_FILTER_HIGH_PASS)
-    (source-input "audio-in" (bse-upath-resolve 1 "BseStandardOsc-2") "audio-out")
+    (source-input "audio-in" (link 1 "BseStandardOsc-2") "audio-out")
     (parasite #\f "BstRouterCoords" 2 12.000000 124.000000))
-  (bse-container-restore "BseStandardOsc::BseStandardOsc-2"
+  (container-child "BseStandardOsc::BseStandardOsc-2"
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
-    (source-input "freq-in" (bse-upath-resolve 1 "BseSequencer-1") "freq-out")
+    (source-input "freq-in" (link 1 "BseSequencer-1") "freq-out")
     (parasite #\f "BstRouterCoords" 2 116.000000 136.000000))
-  (bse-container-restore "BseNoise::BseNoise-1"
+  (container-child "BseNoise::BseNoise-1"
     (parasite #\f "BstRouterCoords" 2 219.000000 -174.000000))
-  (bse-container-restore "BseIIRFilter::BseIIRFilter-3"
+  (container-child "BseIIRFilter::BseIIRFilter-3"
     (cut-off-freq-2 16969.712891)
     (cut-off-freq 7878.748535)
     (order 2)
-    (source-input "audio-in" (bse-upath-resolve 1 "BseMult-1") "audio-out")
+    (source-input "audio-in" (link 1 "BseMult-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -142.500000 -270.500000))
-  (bse-container-restore "BseSimpleADSR::BseSimpleADSR-1"
+  (container-child "BseSimpleADSR::BseSimpleADSR-1"
     (release-time 1.200000)
     (sustain-level 3.900000)
     (decay-time 0.100000)
     (attack-time 0.010000)
-    (source-input "retrigger-in" (bse-upath-resolve 1 "BseSequencer-2") "note-sync")
+    (source-input "retrigger-in" (link 1 "BseSequencer-2") "note-sync")
     (parasite #\f "BstRouterCoords" 2 104.500000 -262.500000))
-  (bse-container-restore "BseMult::BseMult-1"
-    (source-input "audio-in1" (bse-upath-resolve 1 "BseNoise-1") "noise-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "BseSimpleADSR-1") "ctrl-out")
-    (source-input "audio-in3" (bse-upath-resolve 1 "BseSimpleADSR-2") "ctrl-out")
+  (container-child "BseMult::BseMult-1"
+    (source-input "audio-in1" (link 1 "BseNoise-1") "noise-out")
+    (source-input "audio-in2" (link 1 "BseSimpleADSR-1") "ctrl-out")
+    (source-input "audio-in3" (link 1 "BseSimpleADSR-2") "ctrl-out")
     (parasite #\f "BstRouterCoords" 2 -17.500000 -249.500000))
-  (bse-container-restore "BseMult::BseMult-2"
-    (source-input "audio-in1" (bse-upath-resolve 1 "BseIIRFilter-1") "audio-out")
+  (container-child "BseMult::BseMult-2"
+    (source-input "audio-in1" (link 1 "BseIIRFilter-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -111.500000 -79.500000))
-  (bse-container-restore "BseSimpleADSR::BseSimpleADSR-2"
+  (container-child "BseSimpleADSR::BseSimpleADSR-2"
     (release-time 8.888890)
     (sustain-level 88.888893)
     (decay-time 2.222220)
     (attack-time 12.222220)
-    (source-input "retrigger-in" (bse-upath-resolve 1 "BseSequencer-1") "note-sync")
+    (source-input "retrigger-in" (link 1 "BseSequencer-1") "note-sync")
     (parasite #\f "BstRouterCoords" 2 25.500000 18.500000))
-  (bse-container-restore "BseMult::BseMult-3"
-    (source-input "audio-in1" (bse-upath-resolve 1 "BseIIRFilter-2") "audio-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "BseSimpleADSR-2") "ctrl-out")
+  (container-child "BseMult::BseMult-3"
+    (source-input "audio-in1" (link 1 "BseIIRFilter-2") "audio-out")
+    (source-input "audio-in2" (link 1 "BseSimpleADSR-2") "ctrl-out")
     (parasite #\f "BstRouterCoords" 2 -111.500000 94.500000))
-  (bse-container-restore "BseAtanDistort::BseAtanDistort-1"
+  (container-child "BseAtanDistort::BseAtanDistort-1"
     (boost-amount 60.000004)
-    (source-input "audio-in" (bse-upath-resolve 1 "BseIIRFilter-3") "audio-out")
+    (source-input "audio-in" (link 1 "BseIIRFilter-3") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -145.000000 -176.500000)))

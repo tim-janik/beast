@@ -1,10 +1,10 @@
 ;BseProjectV1
 
 
-(bse-project-restore "BseWaveRepo::Wave-Repository"
+(container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2002-05-21 02:01:58")
   (creation-time "2002-02-02 11:09:01"))
-(bse-project-restore "BseSNet::Oscillator_test"
+(container-child "BseSNet::Oscillator_test"
   (auto-activate #t)
   (modification-time "2002-05-21 02:01:58")
   (creation-time "1999-12-31 03:01:29")
@@ -12,37 +12,37 @@
   (blurb "strange isn't it? ;)")
   (parasite #\f "BstRouterCoords" 2 -176.000000 -11.000000)
   (parasite #\f "BstRouterZoom" 1 1.000000)
-  (bse-container-restore "BseAdder::BseAdder-1"
-    (source-input "audio-in1" (bse-upath-resolve 1 "BseStandardOsc-3") "audio-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "BseStandardOsc-4") "audio-out")
+  (container-child "BseAdder::BseAdder-1"
+    (source-input "audio-in1" (link 1 "BseStandardOsc-3") "audio-out")
+    (source-input "audio-in2" (link 1 "BseStandardOsc-4") "audio-out")
     (parasite #\f "BstRouterCoords" 2 179.000000 64.000000))
-  (bse-container-restore "BseMult::BseMult-1"
-    (source-input "audio-in1" (bse-upath-resolve 1 "BseStandardOsc-1") "audio-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "BseStandardOsc-2") "audio-out")
-    (source-input "audio-in3" (bse-upath-resolve 1 "BseConstant-1") "const-out1")
+  (container-child "BseMult::BseMult-1"
+    (source-input "audio-in1" (link 1 "BseStandardOsc-1") "audio-out")
+    (source-input "audio-in2" (link 1 "BseStandardOsc-2") "audio-out")
+    (source-input "audio-in3" (link 1 "BseConstant-1") "const-out1")
     (parasite #\f "BstRouterCoords" 2 -33.000000 65.000000))
-  (bse-container-restore "BsePcmOutput::BsePcmOutput-1"
-    (source-input "left-audio-in" (bse-upath-resolve 1 "BseMult-1") "audio-out")
-    (source-input "right-audio-in" (bse-upath-resolve 1 "BseMult-1") "audio-out")
+  (container-child "BsePcmOutput::BsePcmOutput-1"
+    (source-input "left-audio-in" (link 1 "BseMult-1") "audio-out")
+    (source-input "right-audio-in" (link 1 "BseMult-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -32.500000 -27.500000))
-  (bse-container-restore "BseStandardOsc::BseStandardOsc-1"
+  (container-child "BseStandardOsc::BseStandardOsc-1"
     (fm-perc 18.500000)
-    (source-input "freq-mod-in" (bse-upath-resolve 1 "BseAdder-1") "audio-out")
+    (source-input "freq-mod-in" (link 1 "BseAdder-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 75.000000 63.500000))
-  (bse-container-restore "BseStandardOsc::BseStandardOsc-2"
+  (container-child "BseStandardOsc::BseStandardOsc-2"
     (base-freq 6.600000)
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
     (parasite #\f "BstRouterCoords" 2 180.000000 -28.500000))
-  (bse-container-restore "BseStandardOsc::BseStandardOsc-3"
+  (container-child "BseStandardOsc::BseStandardOsc-3"
     (self-perc 10.000000)
     (base-freq 55.000000)
     (wave-form BSE_STANDARD_OSC_SINE)
     (parasite #\f "BstRouterCoords" 2 284.000000 63.500000))
-  (bse-container-restore "BseStandardOsc::BseStandardOsc-4"
+  (container-child "BseStandardOsc::BseStandardOsc-4"
     (self-perc 10.000000)
     (base-freq 0.550000)
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
     (parasite #\f "BstRouterCoords" 2 283.000000 -29.500000))
-  (bse-container-restore "BseConstant::BseConstant-1"
+  (container-child "BseConstant::BseConstant-1"
     (value-1 0.340000)
     (parasite #\f "BstRouterCoords" 2 75.500000 -28.000000)))

@@ -1,50 +1,51 @@
 ;BseProjectV1
 
 
-(bse-project-restore "BseWaveRepo::Wave-Repository"
+(container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2002-05-21 07:31:39")
   (creation-time "2002-04-13 21:18:35"))
-(bse-project-restore "BseMidiSynth::MIDI_Input"
-  (snet (bse-upath-resolve 1 "Instrument"))
+(container-child "BseMidiSynth::MIDI_Input"
+  (snet (link 1 "Instrument"))
   (n-voices 4)
   (modification-time "2002-05-21 07:31:39")
   (creation-time "2002-04-13 21:18:43"))
-(bse-project-restore "BseSNet::Instrument"
+(container-child "BseSNet::Instrument"
   (modification-time "2002-05-21 07:31:39")
   (creation-time "2002-04-13 21:18:47")
-  (bse-container-restore "BseStandardOsc::VCO"
+  (container-child "BseStandardOsc::VCO"
     (wave-form BSE_STANDARD_OSC_MOOG_SAW)
-    (source-input "freq-in" (bse-upath-resolve 1 "Keyboard") "frequency")
-    (source-input "sync-in" (bse-upath-resolve 1 "Keyboard") "gate")
+    (source-input "freq-in" (link 1 "Keyboard") "frequency")
+    (source-input "sync-in" (link 1 "Keyboard") "gate")
     (parasite #\f "BstRouterCoords" 2 143.000000 149.000000))
-  (bse-container-restore "BseSubKeyboard::Keyboard"
+  (container-child "BseSubKeyboard::Keyboard"
     (parasite #\f "BstRouterCoords" 2 285.000000 126.000000))
-  (bse-container-restore "BseStandardOsc::LFO"
+  (container-child "BseStandardOsc::LFO"
     (base-freq 9.000000)
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
-    (source-input "freq-in" (bse-upath-resolve 1 "VeloControl") "audio-out")
-    (source-input "sync-in" (bse-upath-resolve 1 "Keyboard") "gate")
+    (source-input "freq-in" (link 1 "VeloControl") "audio-out")
+    (source-input "sync-in" (link 1 "Keyboard") "gate")
     (parasite #\f "BstRouterCoords" 2 83.000000 34.000000))
-  (bse-container-restore "BseMult::EchoVCA"
-    (source-input "audio-in1" (bse-upath-resolve 1 "VCO") "audio-out")
-    (source-input "audio-in4" (bse-upath-resolve 1 "LFO") "audio-out")
+  (container-child "BseMult::EchoVCA"
+    (source-input "audio-in1" (link 1 "VCO") "audio-out")
+    (source-input "audio-in4" (link 1 "LFO") "audio-out")
     (parasite #\f "BstRouterCoords" 2 -15.000000 143.000000))
-  (bse-container-restore "BseMult::ADSR-VCA"
-    (source-input "audio-in1" (bse-upath-resolve 1 "EchoVCA") "audio-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "ADSR") "ctrl-out")
+  (container-child "BseMult::ADSR-VCA"
+    (source-input "audio-in1" (link 1 "EchoVCA") "audio-out")
+    (source-input "audio-in2" (link 1 "ADSR") "ctrl-out")
     (parasite #\f "BstRouterCoords" 2 -18.000000 48.000000))
-  (bse-container-restore "BseSimpleADSR::ADSR"
+  (container-child "BseSimpleADSR::ADSR"
     (decay-time 30.000002)
-    (source-input "gate-in" (bse-upath-resolve 1 "Keyboard") "gate")
+    (source-input "gate-in" (link 1 "Keyboard") "gate")
     (parasite #\f "BstRouterCoords" 2 75.000000 -73.000000))
-  (bse-container-restore "BseConstant::EchoFreq"
+  (container-child "BseConstant::EchoFreq"
     (value-1 0.000375)
     (parasite #\f "BstRouterCoords" 2 286.000000 -61.000000))
-  (bse-container-restore "BseMult::VeloControl"
-    (source-input "audio-in1" (bse-upath-resolve 1 "Keyboard") "velocity")
-    (source-input "audio-in2" (bse-upath-resolve 1 "EchoFreq") "const-out1")
+  (container-child "BseMult::VeloControl"
+    (source-input "audio-in1" (link 1 "Keyboard") "velocity")
+    (source-input "audio-in2" (link 1 "EchoFreq") "const-out1")
     (parasite #\f "BstRouterCoords" 2 187.000000 3.000000))
-  (bse-container-restore "BseSubInstrument::Output"
-    (source-input "left-audio" (bse-upath-resolve 1 "ADSR-VCA") "audio-out")
-    (source-input "right-audio" (bse-upath-resolve 1 "ADSR-VCA") "audio-out")
+  (container-child "BseSubInstrument::Output"
+    (source-input "left-audio" (link 1 "ADSR-VCA") "audio-out")
+    (source-input "right-audio" (link 1 "ADSR-VCA") "audio-out")
+    (source-input "synth-done" (link 1 "ADSR") "done-out")
     (parasite #\f "BstRouterCoords" 2 -60.500000 -68.500000)))

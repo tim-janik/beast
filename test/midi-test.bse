@@ -1,75 +1,75 @@
 ;BseProjectV1
 
 
-(bse-project-restore "BseWaveRepo::Wave-Repository"
+(container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2002-07-07 19:15:06")
   (creation-time "2002-01-12 12:42:41"))
-(bse-project-restore "BseMidiSynth::MIDI-Net"
-  (snet (bse-upath-resolve 1 "MIDI-Instrument"))
+(container-child "BseMidiSynth::MIDI-Net"
+  (snet (link 1 "MIDI-Instrument"))
   (n-voices 16)
   (modification-time "2002-07-07 19:15:06")
   (creation-time "2002-01-12 12:42:52")
   (blurb "Don't touch Routing"))
-(bse-project-restore "BseSNet::MIDI-Instrument"
+(container-child "BseSNet::MIDI-Instrument"
   (modification-time "2002-07-07 19:15:06")
   (creation-time "2002-01-12 12:42:55")
-  (bse-container-restore "BseSubKeyboard::SubKeyboard"
+  (container-child "BseSubKeyboard::SubKeyboard"
     (parasite #\f "BstRouterCoords" 2 467.000000 300.000000))
-  (bse-container-restore "BseMult::BseMult-1"
-    (source-input "audio-in1" (bse-upath-resolve 1 "BseAdder-1") "audio-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "ADSR-Envelope") "ctrl-out")
-    (source-input "audio-in3" (bse-upath-resolve 1 "BseMidiIController-1") "ctrl-out3")
+  (container-child "BseMult::BseMult-1"
+    (source-input "audio-in1" (link 1 "BseAdder-1") "audio-out")
+    (source-input "audio-in2" (link 1 "ADSR-Envelope") "ctrl-out")
+    (source-input "audio-in3" (link 1 "BseMidiIController-1") "ctrl-out3")
     (parasite #\f "BstRouterCoords" 2 60.000000 330.000000))
-  (bse-container-restore "BseSimpleADSR::ADSR-Envelope"
+  (container-child "BseSimpleADSR::ADSR-Envelope"
     (release-time 69)
     (sustain-level 91.428573608398438)
     (decay-time 6.3000001907348633)
     (attack-time 5.7142901420593262)
-    (source-input "gate-in" (bse-upath-resolve 1 "SubKeyboard") "gate")
+    (source-input "gate-in" (link 1 "SubKeyboard") "gate")
     (parasite #\f "BstRouterCoords" 2 181.000000 242.000000))
-  (bse-container-restore "BseStandardOsc::Main_Voice_1"
+  (container-child "BseStandardOsc::Main_Voice_1"
     (pulse-mod-perc 95.099998474121094)
     (fm-n-octaves 0.16666999459266663)
     (exponential-fm #t)
     (fm-perc 27.777778625488281)
     (wave-form BSE_STANDARD_OSC_PULSE)
-    (source-input "freq-in" (bse-upath-resolve 1 "SubKeyboard") "frequency")
-    (source-input "freq-mod-in" (bse-upath-resolve 1 "BseMidiIController-1") "ctrl-out1")
-    (source-input "pwm-in" (bse-upath-resolve 1 "SubKeyboard") "velocity")
-    (source-input "sync-in" (bse-upath-resolve 1 "SubKeyboard") "gate")
+    (source-input "freq-in" (link 1 "SubKeyboard") "frequency")
+    (source-input "freq-mod-in" (link 1 "BseMidiIController-1") "ctrl-out1")
+    (source-input "pwm-in" (link 1 "SubKeyboard") "velocity")
+    (source-input "sync-in" (link 1 "SubKeyboard") "gate")
     (parasite #\f "BstRouterCoords" 2 303.000000 345.500000))
-  (bse-container-restore "BseSubInstrument::BseSubInstrument-1"
-    (source-input "left-audio" (bse-upath-resolve 1 "BseAtanDistort-1") "audio-out")
-    (source-input "right-audio" (bse-upath-resolve 1 "BseAtanDistort-1") "audio-out")
-    (source-input "synth-done" (bse-upath-resolve 1 "ADSR-Envelope") "done-out")
+  (container-child "BseSubInstrument::BseSubInstrument-1"
+    (source-input "left-audio" (link 1 "BseAtanDistort-1") "audio-out")
+    (source-input "right-audio" (link 1 "BseAtanDistort-1") "audio-out")
+    (source-input "synth-done" (link 1 "ADSR-Envelope") "done-out")
     (parasite #\f "BstRouterCoords" 2 56.000000 150.500000))
-  (bse-container-restore "BseAdder::BseAdder-1"
-    (source-input "audio-in1" (bse-upath-resolve 1 "Main_Voice_1") "audio-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "Main_Voice_2") "audio-out")
-    (source-input "audio-in2" (bse-upath-resolve 1 "Main_Voice_3") "audio-out")
+  (container-child "BseAdder::BseAdder-1"
+    (source-input "audio-in1" (link 1 "Main_Voice_1") "audio-out")
+    (source-input "audio-in2" (link 1 "Main_Voice_2") "audio-out")
+    (source-input "audio-in2" (link 1 "Main_Voice_3") "audio-out")
     (parasite #\f "BstRouterCoords" 2 180.000000 333.500000))
-  (bse-container-restore "BseStandardOsc::Main_Voice_2"
+  (container-child "BseStandardOsc::Main_Voice_2"
     (fm-n-octaves 0.16666999459266663)
     (exponential-fm #t)
     (fine-tune 11)
     (wave-form BSE_STANDARD_OSC_MOOG_SAW)
-    (source-input "freq-in" (bse-upath-resolve 1 "SubKeyboard") "frequency")
-    (source-input "freq-mod-in" (bse-upath-resolve 1 "BseMidiIController-1") "ctrl-out1")
-    (source-input "sync-in" (bse-upath-resolve 1 "SubKeyboard") "gate")
+    (source-input "freq-in" (link 1 "SubKeyboard") "frequency")
+    (source-input "freq-mod-in" (link 1 "BseMidiIController-1") "ctrl-out1")
+    (source-input "sync-in" (link 1 "SubKeyboard") "gate")
     (parasite #\f "BstRouterCoords" 2 300.000000 253.500000))
-  (bse-container-restore "BseStandardOsc::Main_Voice_3"
+  (container-child "BseStandardOsc::Main_Voice_3"
     (self-perc 15.000000953674316)
     (fm-n-octaves 0.16666999459266663)
     (exponential-fm #t)
     (fine-tune -7)
     (wave-form BSE_STANDARD_OSC_TRIANGLE)
-    (source-input "freq-in" (bse-upath-resolve 1 "SubKeyboard") "frequency")
-    (source-input "freq-mod-in" (bse-upath-resolve 1 "BseMidiIController-1") "ctrl-out1")
-    (source-input "sync-in" (bse-upath-resolve 1 "SubKeyboard") "gate")
+    (source-input "freq-in" (link 1 "SubKeyboard") "frequency")
+    (source-input "freq-mod-in" (link 1 "BseMidiIController-1") "ctrl-out1")
+    (source-input "sync-in" (link 1 "SubKeyboard") "gate")
     (parasite #\f "BstRouterCoords" 2 306.000000 162.500000))
-  (bse-container-restore "BseAtanDistort::BseAtanDistort-1"
+  (container-child "BseAtanDistort::BseAtanDistort-1"
     (boost-amount 20)
-    (source-input "audio-in" (bse-upath-resolve 1 "BseMult-1") "audio-out")
+    (source-input "audio-in" (link 1 "BseMult-1") "audio-out")
     (parasite #\f "BstRouterCoords" 2 58.000000 240.000000))
-  (bse-container-restore "BseMidiIController::BseMidiIController-1"
+  (container-child "BseMidiIController::BseMidiIController-1"
     (parasite #\f "BstRouterCoords" 2 467.000000 197.000000)))

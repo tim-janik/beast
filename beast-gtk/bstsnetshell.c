@@ -112,23 +112,7 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 		    "signal_after::switch-page", gtk_widget_viewable_changed, NULL,
 		    NULL);
 
-  /* parameters
-   */
-  snet_shell->param_view = (BstParamView*) bst_param_view_new (snet);
-  g_object_set (GTK_WIDGET (snet_shell->param_view),
-		"visible", TRUE,
-		NULL);
-  g_object_connect (GTK_WIDGET (snet_shell->param_view),
-		    "signal::destroy", gtk_widget_destroyed, &snet_shell->param_view,
-		    NULL);
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (snet_shell->param_view),
-			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Parameters",
-					    "visible", TRUE,
-					    NULL));
-
-  /* router
-   */
+  /* router */
   if (bse_snet_supports_user_synths (snet) || BST_DVL_EXT)
     {
       snet_shell->snet_router = bst_snet_router_build_page (super_shell->super);
@@ -141,6 +125,19 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 						"visible", TRUE,
 						NULL));
     }
+  /* parameters */
+  snet_shell->param_view = (BstParamView*) bst_param_view_new (snet);
+  g_object_set (GTK_WIDGET (snet_shell->param_view),
+		"visible", TRUE,
+		NULL);
+  g_object_connect (GTK_WIDGET (snet_shell->param_view),
+		    "signal::destroy", gtk_widget_destroyed, &snet_shell->param_view,
+		    NULL);
+  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (snet_shell->param_view),
+			    gtk_widget_new (GTK_TYPE_LABEL,
+					    "label", "Parameters",
+					    "visible", TRUE,
+					    NULL));
 }
 
 static void

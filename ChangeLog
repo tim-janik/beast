@@ -1,3 +1,12 @@
+Mon Feb 17 18:38:11 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetshell.c (bst_snet_shell_rebuild): make the synth
+	router the first notebook page.
+
+	* test/simple-echo.bse: fix instrument "done" output.
+
+	* test/*.bse: storage format fixups.
+
 Sun Feb 16 09:01:28 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstfiledialog.c (bst_file_dialog_open): support merging
