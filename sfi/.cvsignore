@@ -1,0 +1,9 @@
+*.lo
+.deps
+_libs
+.libs
+Makefile
+Makefile.in
+libsfi.la
+sfimarshal.[hc]
+sfidl
