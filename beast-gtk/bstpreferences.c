@@ -51,7 +51,7 @@ bst_preferences_init (BstPreferences *self)
   GtkWidget *pchild;
   SfiRec *rec;
   
-  self->notebook = g_object_new (GTK_TYPE_NOTEBOOK,
+  self->notebook = g_object_new (GXK_TYPE_NOTEBOOK,
                                  "visible", TRUE,
                                  "parent", self,
                                  "tab_pos", GTK_POS_TOP,
@@ -60,9 +60,6 @@ bst_preferences_init (BstPreferences *self)
                                  "border_width", 5,
                                  NULL);
   gxk_nullify_in_object (self, &self->notebook);
-  g_object_connect (self->notebook,
-		    "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
-		    NULL);
   
   pspec = bst_gconfig_pspec ();
   self->rec_gconfig = bst_gconfig_to_rec (bst_gconfig_get_global ());

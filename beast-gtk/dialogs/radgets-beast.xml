@@ -648,12 +648,17 @@
       <beast-menubar />
     </vbox>
     <vbox id="toolbar-area" area="north" />
-    <bottom-deck id="main-notebook" expand="1" />
-    <hbox area="north" >
+    <hbox area="north" spacing="5" >
       <hbox id="control-area" />
       <hbox id="control-area-file-label" pack:pack-type="last" />
       <hbox id="control-area-file-entry" pack:pack-type="last" expand="1" />
     </hbox>
+    <vbox expand="1" >
+      <alignment xalign="0.5" xscale="0" >
+	<menu-button can-focus="1" mode="combo-mode" assortment="project-pages" />
+      </alignment>
+      <deck id="main-notebook" expand="1" assortment="project-pages" border-width="5" />
+    </vbox>
   </xdef:application-box>
 
 </gxk-radget-definitions>

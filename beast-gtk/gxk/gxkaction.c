@@ -453,10 +453,9 @@ static void
 window_remove_action_set (ActionSet *aset)
 {
   GtkWidget *window = aset->toplevel;
-  ActionSet *anode, *last = NULL;
   g_return_if_fail (GTK_IS_WIDGET (aset->toplevel));
   
-  g_object_get_qdata (window, quark_action_sets);
+  ActionSet *anode, *last = NULL;
   for (anode = g_object_get_qdata (window, quark_action_sets);
        anode;
        last = anode, anode = last->next)
@@ -670,7 +669,6 @@ gxk_widget_publish_action_list (gpointer       widget,
                                 GxkActionList *alist)
 {
   ActionSet *aset = g_new0 (ActionSet, 1);
-  GtkWidget *toplevel;
   g_return_if_fail (GTK_IS_WIDGET (widget));
   aset->ref_count = 1;
   aset->widget = widget;
@@ -679,7 +677,6 @@ gxk_widget_publish_action_list (gpointer       widget,
   g_object_set_qdata_full (widget, quark_widget_actions,
                            g_slist_prepend (g_object_steal_qdata (widget, quark_widget_actions), aset),
                            publisher_destroy_action_sets);
-  toplevel = gtk_widget_get_toplevel (widget);
   if (!gxk_signal_handler_exists (widget, "hierarchy_changed", G_CALLBACK (publisher_update_actions_sets), NULL))
     g_object_connect (widget, "signal_after::hierarchy-changed", publisher_update_actions_sets, NULL, NULL);
   publisher_update_actions_sets (widget);

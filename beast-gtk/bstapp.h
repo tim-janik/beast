@@ -53,6 +53,8 @@ struct _BstApp
   GtkWidget      *rack_dialog;
   GtkWidget      *rack_editor;
   GtkWidget      *pcontrols;
+
+  GxkAssortment  *ppages;
 };
 struct _BstAppClass
 {

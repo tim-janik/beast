@@ -46,14 +46,7 @@ param_choice_item_activated (GtkWidget *menu_item,
 {
   GtkMenuShell *mshell = GTK_MENU_SHELL (menu_item->parent);
   if (mshell)
-    {
-      guint n = mshell ? g_list_index (mshell->children, menu_item) : 0;
-      gtk_menu_set_active (GTK_MENU (mshell), n);
-      if (GXK_IS_MENU_BUTTON (widget))
-        gxk_menu_button_update (GXK_MENU_BUTTON (widget));
-      else
-        gtk_option_menu_set_history (GTK_OPTION_MENU (widget), n);
-    }
+    gxk_menu_set_active (GTK_MENU (mshell), menu_item);
 }
 
 static GtkWidget*

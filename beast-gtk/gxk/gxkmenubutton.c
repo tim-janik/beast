@@ -26,6 +26,7 @@ enum {
   MENU_BUTTON_PROP_0,
   MENU_BUTTON_PROP_CAN_FOCUS,
   MENU_BUTTON_PROP_MENU,
+  MENU_BUTTON_PROP_ASSORTMENT,
   MENU_BUTTON_PROP_STOCK_SIZE,
   MENU_BUTTON_PROP_RELIEF,
   MENU_BUTTON_PROP_MODE
@@ -208,10 +209,9 @@ menu_button_key_press (GtkWidget   *widget,
         {
           GtkWidget *sibling = menu_find_sibling (self->menu, self->menu_item, previous);
           if (sibling)
-            {
-              gtk_menu_set_active (self->menu, g_list_index (GTK_MENU_SHELL (self->menu)->children, sibling));
-              gxk_menu_button_update (self);
-            }
+            gxk_menu_set_active (self->menu, sibling);
+          else
+            gdk_beep();
           return TRUE;
         }
       break;
@@ -240,7 +240,7 @@ menu_button_proxy_state (GxkMenuButton *self)
 static void
 menu_button_max_size (GxkMenuButton *self)
 {
-  if (self->child)
+  if (self->child) /* ignore rrcursion */
     {
       GList *list, *children = GTK_MENU_SHELL (self->menu)->children;
       GtkRequisition child_requisition = { 0, };
@@ -259,7 +259,10 @@ menu_button_max_size (GxkMenuButton *self)
                 }
             }
         }
-      gtk_widget_size_request (self->child, &child_requisition);
+      GtkWidget *child = self->child;
+      self->child = NULL;  /* block against rrcursion */
+      gtk_widget_size_request (child, &child_requisition);
+      self->child = child; /* unblock */
       width = MAX (width, child_requisition.width);
       height = MAX (height, child_requisition.height);
       g_object_set (self->cslot,
@@ -276,6 +279,7 @@ menu_button_remove_contents (GxkMenuButton *self)
     {
       if (self->child)
         {
+          g_signal_handlers_disconnect_by_func (self->child, menu_button_max_size, self);
           gtk_widget_set_sensitive (self->child, TRUE);
           gtk_widget_reparent (self->child, self->menu_item);
           self->child = NULL;
@@ -313,7 +317,10 @@ gxk_menu_button_update (GxkMenuButton *self)
             {
               self->child = GTK_BIN (self->menu_item)->child;
               if (self->child)
-                gtk_widget_reparent (self->child, self->cslot);
+                {
+                  gtk_widget_reparent (self->child, self->cslot);
+                  g_object_connect (self->child, "swapped_signal_after::size-request", menu_button_max_size, self, NULL);
+                }
               if (GTK_IS_IMAGE_MENU_ITEM (self->menu_item))
                 self->image = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (self->menu_item));
               if (self->image)
@@ -365,12 +372,46 @@ menu_button_detacher (GtkWidget *widget,
 }
 
 static void
+menu_button_assortment_added (gpointer                client_data,
+                              GtkWindow              *window,
+                              GxkAssortment          *assortment,
+                              GtkWidget              *publisher)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (client_data);
+  if (self->assortment_name && assortment->publishing_name &&
+      strcmp (self->assortment_name, assortment->publishing_name) == 0)
+    {
+      GtkMenu *menu = g_object_new (GTK_TYPE_MENU, NULL);
+      gxk_assortment_manage_menu (assortment, menu);
+      g_object_set (self, "menu", menu, NULL);
+    }
+}
+
+static void
+menu_button_hierarchy_changed (GtkWidget        *widget,
+                               GtkWidget        *previous_toplevel)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (widget);
+  if (GTK_IS_WINDOW (previous_toplevel) && self->assortment_name)
+    gxk_window_remove_assortment_client (GTK_WINDOW (previous_toplevel), self);
+  if (GTK_WIDGET_CLASS (gxk_menu_button_parent_class)->hierarchy_changed)
+    GTK_WIDGET_CLASS (gxk_menu_button_parent_class)->hierarchy_changed (widget, previous_toplevel);
+  if (self->assortment_name)
+    {
+      GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+      if (GTK_IS_WINDOW (toplevel))
+        gxk_window_add_assortment_client (GTK_WINDOW (toplevel), menu_button_assortment_added, NULL, self);
+    }
+}
+
+static void
 gxk_menu_button_set_property (GObject      *object,
                               guint         param_id,
                               const GValue *value,
                               GParamSpec   *pspec)
 {
   GxkMenuButton *self = GXK_MENU_BUTTON (object);
+  GtkWidget *widget = GTK_WIDGET (self);
   switch (param_id)
     {
       const gchar *cstr;
@@ -417,6 +458,22 @@ gxk_menu_button_set_property (GObject      *object,
           gxk_menu_button_update (self);
         }
       break;
+    case MENU_BUTTON_PROP_ASSORTMENT:
+      if (self->assortment_name)
+        {
+          GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+          if (GTK_IS_WINDOW (toplevel))
+            gxk_window_remove_assortment_client (GTK_WINDOW (toplevel), self);
+          g_free (self->assortment_name);
+        }
+      self->assortment_name = g_value_dup_string (value);
+      if (self->assortment_name)
+        {
+          GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
+          if (GTK_IS_WINDOW (toplevel))
+            gxk_window_add_assortment_client (GTK_WINDOW (toplevel), menu_button_assortment_added, NULL, self);
+        }
+      break;
     case MENU_BUTTON_PROP_STOCK_SIZE:
       cstr = g_value_get_string (value);
       if (cstr)
@@ -454,6 +511,9 @@ gxk_menu_button_get_property (GObject    *object,
     case MENU_BUTTON_PROP_MENU:
       g_value_set_object (value, self->menu);
       break;
+    case MENU_BUTTON_PROP_ASSORTMENT:
+      g_value_set_object (value, self->assortment_name);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
@@ -466,7 +526,20 @@ menu_button_dispose (GObject *object)
   GxkMenuButton *self = GXK_MENU_BUTTON (object);
   if (self->menu)
     gtk_menu_detach (self->menu);
+  g_free (self->assortment_name);
+  self->assortment_name = NULL;
   G_OBJECT_CLASS (gxk_menu_button_parent_class)->dispose (object);
+}
+
+static void
+menu_button_finalize (GObject *object)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (object);
+  if (self->menu)
+    gtk_menu_detach (self->menu);
+  g_free (self->assortment_name);
+  self->assortment_name = NULL;
+  G_OBJECT_CLASS (gxk_menu_button_parent_class)->finalize (object);
 }
 
 #define FOCUS_SHADOW  (GTK_SHADOW_IN /* anything != NONE */)
@@ -548,7 +621,7 @@ menu_button_layout (GxkMenuButton *self)
   switch (mode)
     {
     case GXK_MENU_BUTTON_COMBO_MODE:    /* left align child in combo mode */
-      self->cslot = gtk_alignment_new (0, 0.5, 0, 0);
+      self->cslot = gtk_alignment_new (0, 0.5, 1, 1);
       break;
     case GXK_MENU_BUTTON_POPUP_MODE:    /* not capturing child */
       break;
@@ -620,7 +693,7 @@ menu_button_layout (GxkMenuButton *self)
       break;
     case GXK_MENU_BUTTON_COMBO_MODE:            /* [image] label---    | down arrow */
       /* pack islot and cslot */
-      hbox = g_object_new (GTK_TYPE_HBOX, NULL);
+      hbox = g_object_new (GTK_TYPE_HBOX, "spacing", 3, NULL);
       gtk_box_pack_start (GTK_BOX (hbox), self->islot, FALSE, TRUE, 0);
       gtk_box_pack_start (GTK_BOX (hbox), gtk_widget_get_toplevel (self->cslot), TRUE, TRUE, 0);
       /* setup focus frame */
@@ -687,6 +760,7 @@ gxk_menu_button_class_init (GxkMenuButtonClass *class)
   gobject_class->set_property = gxk_menu_button_set_property;
   gobject_class->get_property = gxk_menu_button_get_property;
   gobject_class->dispose = menu_button_dispose;
+  gobject_class->finalize = menu_button_finalize;
   g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_CAN_FOCUS,
                                    g_param_spec_boolean ("can_focus", NULL, NULL,
                                                          FALSE, G_PARAM_READWRITE));
@@ -698,11 +772,14 @@ gxk_menu_button_class_init (GxkMenuButtonClass *class)
                                                       GTK_RELIEF_NORMAL, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_MENU,
                                    g_param_spec_object ("menu", NULL, NULL, GTK_TYPE_MENU, G_PARAM_READWRITE));
+  g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_ASSORTMENT,
+                                   g_param_spec_string ("assortment", NULL, NULL, NULL, G_PARAM_READWRITE));
   g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_STOCK_SIZE,
                                    g_param_spec_string ("stock-size", NULL, NULL, NULL, G_PARAM_WRITABLE));
   widget_class->button_press_event = menu_button_button_press;
   widget_class->key_press_event = menu_button_key_press;
   widget_class->mnemonic_activate = menu_button_mnemonic_activate;
+  widget_class->hierarchy_changed = menu_button_hierarchy_changed;
   menu_button_signal_changed = g_signal_new ("changed", G_OBJECT_CLASS_TYPE (class),
                                              G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
                                              gtk_signal_default_marshaller, G_TYPE_NONE, 0);

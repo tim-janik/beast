@@ -1,4 +1,13 @@
 FIXME(urgent):
+- remove GxkActionFactory
+- delete BstApp.notebook?
+- hirarchy_changed changes need to propagate across attached menus down to menu factories
+- delete $(<) and similar radget functions
+- turn the bsewave magic into BseWave1
+- replace all g.k_tooltips_set_tip (GXK_TOOLTIPS,...) with gxk_widget_set_tooltip()
+- delete: GxkAction.options, GxkAction.key?
+- s/ActionSet/ActionLink/
+- implement GxkActionFactory like gxk_window_add_assortment_client()
 - bsewavetool: fix per-command docu to properly account for input.bsewave
 - start playback at play pointer position
 - add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
@@ -18,7 +27,8 @@ FIXME(urgent):
 - ensure mixer and track setup for songs created via MIDI import
 - MIDI-import: accept zero-duration notes from God_Is_A_DJ.mid
 - pianoroll: select-all/none
-- menu-button should keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
+- menu-button: keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
+- menu-button: popup the menu at least as wide as the menu-button itself (for combo mode)
 - play + play doesn't reset wave oscillator state
 - use __thread to speed up sfi_thread_self(). configure test:
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205

@@ -20,6 +20,7 @@
 #include "gxkradgetfactory.h"
 #include "gxkauxwidgets.h"
 #include "gxkmenubutton.h"
+#include "gxknotebook.h"
 #include "glewidgets.h"
 #include "gxksimplelabel.h"
 #include "gxkracktable.h"
@@ -115,6 +116,10 @@ static const gchar*    radget_args_lookup_quark (const GxkRadgetArgs *args,
                                                  guint               *nth);
 static GParamSpec*     find_hook                (const gchar         *name,
                                                  GxkRadgetHook       *hook_func_p);
+static void            gxk_adopt_hint_hook      (GxkRadget           *radget,
+                                                 guint                property_id,
+                                                 const GValue        *value,
+                                                 GParamSpec          *pspec);
 
 
 /* --- variables --- */
@@ -1627,6 +1632,16 @@ gxk_radget_data_get_scope_radget (GxkRadgetData *gdgdata)
   return gdgdata->xdef_radget;
 }
 
+gchar*
+gxk_radget_data_dup_expand (GxkRadgetData       *gdgdata,
+                            const gchar         *expression)
+{
+  gboolean skip_property = gdgdata->env->skip_property;
+  gchar *string = expand_expr (expression, gdgdata->env);
+  gdgdata->env->skip_property = skip_property;
+  return string;
+}
+
 GxkRadget*
 gxk_radget_creator (GxkRadget          *radget,
                     const gchar        *domain_name,
@@ -1799,7 +1814,7 @@ _gxk_init_radget_types (void)
   *t++ = GTK_TYPE_WINDOW;       *t++ = GTK_TYPE_ARROW;          *t++ = GTK_TYPE_SCROLLED_WINDOW;
   *t++ = GTK_TYPE_VIEWPORT;     *t++ = GTK_TYPE_HRULER;         *t++ = GTK_TYPE_VRULER;
   *t++ = GTK_TYPE_TABLE;        *t++ = GTK_TYPE_FRAME;          *t++ = GTK_TYPE_ALIGNMENT;
-  *t++ = GTK_TYPE_NOTEBOOK;     *t++ = GTK_TYPE_BUTTON;         *t++ = GTK_TYPE_MENU_BAR;
+  *t++ = GXK_TYPE_NOTEBOOK;     *t++ = GTK_TYPE_BUTTON;         *t++ = GTK_TYPE_MENU_BAR;
   *t++ = GTK_TYPE_TREE_VIEW;    *t++ = GTK_TYPE_LABEL;          *t++ = GTK_TYPE_PROGRESS_BAR;
   *t++ = GTK_TYPE_HPANED;       *t++ = GTK_TYPE_VPANED;         *t++ = GTK_TYPE_SPIN_BUTTON;
   *t++ = GTK_TYPE_EVENT_BOX;    *t++ = GTK_TYPE_IMAGE;          *t++ = GTK_TYPE_OPTION_MENU;
@@ -1817,6 +1832,7 @@ _gxk_init_radget_types (void)
   gxk_radget_define_type (GXK_TYPE_RADGET_FACTORY, _gxk_radget_factory_def);
   gxk_radget_define_type (GXK_TYPE_FACTORY_BRANCH, _gxk_factory_branch_def);
   gxk_radget_define_type (GXK_TYPE_WIDGET_PATCHER, _gxk_widget_patcher_def);
+  gxk_radget_register_hook (g_param_spec_string ("gxk-adopt-hint", NULL, NULL, NULL, G_PARAM_READWRITE), 1, gxk_adopt_hint_hook);
 }
 
 gboolean
@@ -1868,12 +1884,42 @@ widget_create (GType               type,
   return widget;
 }
 
+static void
+gxk_adopt_hint_hook (GxkRadget           *radget,
+                     guint                property_id,
+                     const GValue        *value,
+                     GParamSpec          *pspec)
+{
+  g_object_set_data_full (radget, "gxk-adopt-hint", g_value_dup_string (value), g_free);
+}
+
 static gboolean
 widget_adopt (GxkRadget          *radget,
               GxkRadget          *parent,
               GxkRadgetData      *gdgdata)
 {
-  gtk_container_add (GTK_CONTAINER (parent), GTK_WIDGET (radget));
+  gboolean need_adding = TRUE;
+  gchar *str = gxk_radget_data_dup_expand (gdgdata, "$gxk-adopt-prop");
+  if (str && str[0])
+    {
+      GxkRadgetType tinfo;
+      if (gxk_radget_type_lookup (G_OBJECT_TYPE (parent), &tinfo))
+        {
+          GParamSpec *pspec = tinfo.find_prop ((GTypeClass*) G_OBJECT_GET_CLASS (parent), str);
+          if (pspec && g_type_is_a (G_OBJECT_TYPE (radget), G_PARAM_SPEC_VALUE_TYPE (pspec)))
+            {
+              GValue value = { 0, };
+              g_value_init (&value, G_OBJECT_TYPE (radget));
+              g_value_set_object (&value, radget);
+              tinfo.set_prop (parent, str, &value);
+              g_value_unset (&value);
+              need_adding = FALSE;
+            }
+        }
+    }
+  g_free (str);
+  if (need_adding)
+    gtk_container_add (GTK_CONTAINER (parent), GTK_WIDGET (radget));
   return TRUE;
 }
 
@@ -2107,6 +2153,54 @@ mf_blogic (GSList *args,
   return g_strdup (result ? "1" : "0");
 }
 
+static inline int
+null_strcmp (const gchar *s1,
+             const gchar *s2)
+{
+  if (!s1 || !s2)
+    return s2 ? -1 : s1 != NULL;
+  else
+    return strcmp (s1, s2);
+}
+
+static gchar*
+mf_str_cmp (GSList *args,
+            Env    *env)
+{
+  GSList      *argiter = args;
+  const gchar *name = argiter_pop (&argiter);
+  gchar *arg = argiter_exp (&argiter, env);
+  gchar *last = arg ? arg : g_strdup ("");
+  gboolean result = TRUE;
+  arg = argiter_exp (&argiter, env);
+  while (arg)
+    {
+      gboolean match = FALSE;
+      if (strcmp (name, "strlt") == 0)
+        match = null_strcmp (last, arg) < 0;
+      else if (strcmp (name, "strle") == 0)
+        match = null_strcmp (last, arg) <= 0;
+      else if (strcmp (name, "strgt") == 0)
+        match = null_strcmp (last, arg) > 0;
+      else if (strcmp (name, "strge") == 0)
+        match = null_strcmp (last, arg) >= 0;
+      else if (strcmp (name, "strne") == 0)
+        match = null_strcmp (last, arg) != 0;
+      else if (strcmp (name, "streq") == 0)
+        match = null_strcmp (last, arg) == 0;
+      g_free (last);
+      last = arg;
+      if (!match)
+        {
+          result = match;
+          break;
+        }
+      arg = argiter_exp (&argiter, env);
+    }
+  g_free (last);
+  return g_strdup (result ? "1" : "0");
+}
+
 #define EQ_FLAG 0x80
 
 static gchar*
@@ -2293,6 +2387,12 @@ macro_func_lookup (const gchar *name)
     { "sum",            mf_floatcollect, },
     { "avg",            mf_floatcollect, },
     { "nth",            mf_nth, },
+    { "strlt",          mf_str_cmp, },
+    { "strle",          mf_str_cmp, },
+    { "strgt",          mf_str_cmp, },
+    { "strge",          mf_str_cmp, },
+    { "strne",          mf_str_cmp, },
+    { "streq",          mf_str_cmp, },
     { "ifdef",          mf_ifdef, },
     { "first-occupied", mf_first_occupied, },
     { "null-collapse",  mf_null_collapse, },

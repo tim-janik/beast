@@ -61,7 +61,7 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
   gxk_dialog_set_sizes (GXK_DIALOG (self), 550, 300, 600, 320);
   
   /* notebook */
-  self->notebook = g_object_new (GTK_TYPE_NOTEBOOK,
+  self->notebook = g_object_new (GXK_TYPE_NOTEBOOK,
                                  "visible", TRUE,
                                  "homogeneous", TRUE,
                                  "show_border", TRUE,
@@ -74,9 +74,6 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
                                  "parent", main_box,
                                  "enable_popup", FALSE,
                                  NULL);
-  g_object_connect (self->notebook,
-                    "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
-                    NULL);
   
   /* synth list */
   self->spage = g_object_new (GTK_TYPE_SCROLLED_WINDOW,

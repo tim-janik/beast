@@ -143,44 +143,6 @@ bst_super_shell_finalize (GObject *object)
 }
 
 void
-bst_super_shell_update_label (BstSuperShell *self)
-{
-  g_return_if_fail (BST_IS_SUPER_SHELL (self));
-
-  GtkWidget *widget = GTK_WIDGET (self);
-  GtkWidget *tab = gxk_notebook_descendant_get_tab (widget);
-  if (tab && self->super)
-    {
-      /* discriminate super */
-      const gchar *stock, *name = bse_item_get_name (self->super);
-      gchar *tip;
-      if (BSE_IS_WAVE_REPO (self->super))
-        {
-          name = _("Waves");
-          tip = g_strdup (_("Wave Repository"));
-          stock = BST_STOCK_MINI_WAVE_REPO;
-        }
-      else if (BSE_IS_SONG (self->super))
-        {
-          tip = g_strdup_printf (_("Song: %s"), name);
-          stock = BST_STOCK_MINI_SONG;
-        }
-      else if (BSE_IS_MIDI_SYNTH (self->super))
-        {
-          tip = g_strdup_printf (_("MIDI Synthesizer: %s"), name);
-          stock = BST_STOCK_MINI_MIDI_SYNTH;
-        }
-      else
-        {
-          tip = g_strdup_printf (_("Synthesizer: %s"), name);
-          stock = BST_STOCK_MINI_CSYNTH;
-        }
-      gxk_notebook_change_tabulator (tab, name, stock, tip);
-      g_free (tip);
-    }
-}
-
-void
 bst_super_shell_set_super (BstSuperShell *self,
 			   SfiProxy       super)
 {
@@ -192,9 +154,6 @@ bst_super_shell_set_super (BstSuperShell *self,
     {
       if (self->super)
 	{
-          bse_proxy_disconnect (self->super,
-                                "any_signal::property-notify::uname", bst_super_shell_update_label, self,
-                                NULL);
           gtk_container_foreach (GTK_CONTAINER (self), (GtkCallback) gtk_widget_destroy, NULL);
 	  bse_item_unuse (self->super);
 	}
@@ -202,11 +161,7 @@ bst_super_shell_set_super (BstSuperShell *self,
       if (self->super)
 	{
 	  bse_item_use (self->super);
-          bse_proxy_connect (self->super,
-                             "swapped_signal::property-notify::uname", bst_super_shell_update_label, self,
-                             NULL);
           super_shell_add_views (self);
-	  bst_super_shell_update_label (self);
 	}
     }
 }
@@ -284,7 +239,7 @@ super_shell_build_wave_repo (BstSuperShell *self,
 static GtkNotebook*
 create_notebook (BstSuperShell *self)
 {
-  GtkNotebook *notebook = g_object_new (GTK_TYPE_NOTEBOOK,
+  GtkNotebook *notebook = g_object_new (GXK_TYPE_NOTEBOOK,
                                         "scrollable", FALSE,
                                         "tab_border", 0,
                                         "show_border", TRUE,
@@ -295,7 +250,6 @@ create_notebook (BstSuperShell *self)
                                         "parent", self,
                                         "visible", TRUE,
                                         NULL);
-  g_object_connect (notebook, "signal_after::switch-page", gxk_widget_viewable_changed, NULL, NULL);
   return notebook;
 }
 

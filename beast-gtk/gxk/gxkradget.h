@@ -106,10 +106,10 @@ typedef struct {
                             const gchar        *pack_name,
                             const GValue       *value);
 } GxkRadgetType;
-void           gxk_radget_define_widget_type     (GType                type);
-void           gxk_radget_define_type            (GType                type,
+void     gxk_radget_define_widget_type           (GType                type);
+void     gxk_radget_define_type                  (GType                type,
                                                   const GxkRadgetType *ggtype);
-gboolean       gxk_radget_type_lookup            (GType                type,
+gboolean gxk_radget_type_lookup                  (GType                type,
                                                   GxkRadgetType       *ggtype);
 typedef void (*GxkRadgetHook)                    (GxkRadget           *radget,
                                                   guint                property_id,
@@ -120,6 +120,8 @@ void           gxk_radget_register_hook          (GParamSpec          *pspec,
                                                   GxkRadgetHook        hook_func);
 GxkRadgetArgs* gxk_radget_data_copy_call_args    (GxkRadgetData       *gdgdata);
 GxkRadget*     gxk_radget_data_get_scope_radget  (GxkRadgetData       *gdgdata);
+gchar*         gxk_radget_data_dup_expand        (GxkRadgetData       *gdgdata,
+                                                  const gchar         *expression);
 
 G_END_DECLS
 

@@ -82,7 +82,7 @@ bst_file_dialog_init (BstFileDialog *self)
 		NULL);
   
   /* notebook */
-  self->notebook = g_object_new (GTK_TYPE_NOTEBOOK,
+  self->notebook = g_object_new (GXK_TYPE_NOTEBOOK,
 				 "visible", TRUE,
 				 "show_border", TRUE,
 				 "show_tabs", TRUE,
@@ -94,9 +94,6 @@ bst_file_dialog_init (BstFileDialog *self)
 				 "parent", main_box,
 				 "enable_popup", FALSE,
 				 NULL);
-  g_object_connect (self->notebook,
-		    "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
-		    NULL);
   
   
   /* setup file selection widgets and add to notebook */

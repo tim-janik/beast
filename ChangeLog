@@ -1,3 +1,54 @@
+Wed Jan 19 19:41:12 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.[hc]: added ::attached-hierarchy-changed signal
+	to GtkWidgetClass. this signal is used to proxy the ::hierarchy-changed
+	signal to out-of-branch widgets like an option menu's menu or a submenu.
+	refer to the docs on gxk_widget_attached_hierarchy_changed().
+	added gxk_menu_set_active() as a replacement for gtk_menu_set_active()
+	which doesn't properly emit change notification.
+	gxk_menu_attach*(): proxy ::attached-hierarchy-changed signals, this
+	allowed a lot of internal code cleanups.
+
+	* beast-gtk/gxk/gxkassortment.[hc]: new management and publishing object
+	for administration of notebook pages and other dynamic selection lists.
+
+	* beast-gtk/gxk/gxkmenubutton.[hc]: support assortment publishing.
+
+	* beast-gtk/gxk/gxknotebook.[hc]: new replacement widget for GtkNotebook.
+	GxkNotebook supports page updates through GxkAssortment. 
+	emits ::viewable-changed signal recursively upon page switches.
+
+	* beast-gtk/bstapp.[hc]: publish a GxkAssortment to maintain
+	project pages. added finalize handler. changed 
+	bst_app_reload_supers() to modify the project page assortment.
+
+	* beast-gtk/gxk/gxkradget.[hc]: use GxkNotebook.
+	added gxk_radget_data_dup_expand(), and an internal "gxk-adopt-hint"
+	hook to allow widget packing through property slots (e.g. the
+	"label-widget" property of GtkFrame).
+	added new functions: $(strlt), $(strle), $(strgt), $(strge),
+	$(strne) and $(streq) for string comparisons.
+
+	* beast-gtk/gxk/gxkradgetfactory.c:
+	connect to ::attached-hierarchy-changed on menus and recheck whether
+	the factory is anchored.
+
+	* beast-gtk/bstsupershell. [hc]: use GxkNotebook.
+	removed notebook label hackery.
+
+	* beast-gtk/bstparam-choice.c: use gxk_menu_set_active().
+
+	* beast-gtk/bsttracksynthdialog.c:
+	* beast-gtk/bstpreferences.c: use GxkNotebook.
+
+	* beast-gtk/gxk/gxkaction.[hc]: minor fixes.
+
+	* beast-gtk/dialogs/radgets-beast.xml: provide drop-down boy for 
+	project pages.
+
+	* beast-gtk/dialogs/radgets-standard.xml: support more frame properties.
+	support assortments on menu buttons and notebooks. use only GxkNotebook.
+
 Tue Jan 18 08:43:54 2005  Alexander Shopov  <ash@contact.bg>
 
 	* configure.in (ALL_LINGUAS): Added "bg" (Bulgarian)

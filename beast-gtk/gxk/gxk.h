@@ -24,6 +24,7 @@
 
 #include <gxk/glewidgets.h>
 #include <gxk/gxkaction.h>
+#include <gxk/gxkassortment.h>
 #include <gxk/gxkauxwidgets.h>
 #include <gxk/gxkcanvas.h>
 #include <gxk/gxkcellrendererpopup.h>
@@ -34,6 +35,7 @@
 #include <gxk/gxkled.h>
 #include <gxk/gxklistwrapper.h>
 #include <gxk/gxkmenubutton.h>
+#include <gxk/gxknotebook.h>
 #include <gxk/gxkparam.h>
 #include <gxk/gxklogadjustment.h>
 #include <gxk/gxkpolygon.h>

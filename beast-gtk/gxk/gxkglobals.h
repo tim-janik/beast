@@ -69,6 +69,7 @@ void	_gxk_init_utils		(void);
 void	_gxk_init_params	(void);
 void	_gxk_init_stock		(void);
 void	_gxk_init_actions	(void);
+void	_gxk_init_assortments	(void);
 void	_gxk_init_radget_types	(void);
 
 

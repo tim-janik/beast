@@ -20,6 +20,7 @@
 #define __GXK_MENU_BUTTON_H__
 
 #include "gxkutils.h"
+#include "gxkassortment.h"
 
 G_BEGIN_DECLS
 
@@ -38,15 +39,17 @@ typedef enum
   GXK_MENU_BUTTON_POPUP_MODE,           /* right arrow */
 } GxkMenuButtonMode;
 typedef struct {
-  GtkEventBox parent_instance;
-  GtkWidget  *islot, *cslot, *fframe, *button;
-  GtkMenu    *menu;
-  GtkWidget  *menu_item, *image, *child;
-  GdkWindow  *bwindow;
-  gint        icon_size, old_icon_size;
-  gint        width, height;
-  guint8      mode;
-  guint8      relief;
+  GtkEventBox    parent_instance;
+  GtkWidget     *islot, *cslot, *fframe, *button;
+  GtkMenu       *menu;
+  GtkWidget     *menu_item, *image, *child;
+  GdkWindow     *bwindow;
+  gchar         *assortment_name;
+  GxkAssortment *assortment_object;
+  gint           icon_size, old_icon_size;
+  gint           width, height;
+  guint8         mode;
+  guint8         relief;
 } GxkMenuButton;
 typedef GtkEventBoxClass GxkMenuButtonClass;
 GType   gxk_menu_button_get_type          (void);

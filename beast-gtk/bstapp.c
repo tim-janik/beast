@@ -34,9 +34,6 @@
 
 
 /* --- prototypes --- */
-static void           bst_app_destroy             (GtkObject   *object);
-static gboolean       bst_app_handle_delete_event (GtkWidget   *widget,
-                                                   GdkEventAny *event);
 static void           bst_app_run_script_proc     (gpointer     data,
                                                    gulong       category_id);
 static GxkActionList* demo_entries_create         (BstApp      *app);
@@ -190,21 +187,6 @@ static BstAppClass    *bst_app_class = NULL;
 G_DEFINE_TYPE (BstApp, bst_app, GXK_TYPE_DIALOG);
 
 static void
-bst_app_class_init (BstAppClass *class)
-{
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
-  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-  
-  bst_app_class = class;
-  
-  object_class->destroy = bst_app_destroy;
-  
-  widget_class->delete_event = bst_app_handle_delete_event;
-  
-  class->apps = NULL;
-}
-
-static void
 bst_app_register (BstApp *app)
 {
   if (!g_slist_find (bst_app_class->apps, app))
@@ -300,7 +282,11 @@ bst_app_init (BstApp *self)
   /* setup playback controls */
   self->pcontrols = g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
   gxk_radget_add (self->box, "control-area", self->pcontrols);
-  
+
+  /* setup project pages */
+  self->ppages = gxk_assortment_new ();
+  gxk_widget_publish_assortment (widget, "project-pages", self->ppages);
+
   /* setup WAVE file entry */
   gxk_radget_add (self->box, "control-area", gxk_vseparator_space_new (TRUE));
   self->wave_file = bst_param_new_proxy (bse_proxy_get_pspec (BSE_SERVER, "wave_file"), BSE_SERVER);
@@ -319,7 +305,6 @@ bst_app_init (BstApp *self)
   gxk_nullify_in_object (self, &self->notebook);
   g_object_connect (self->notebook,
                     "swapped_signal_after::switch-page", gxk_widget_update_actions, self,
-                    "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
                     NULL);
 }
 
@@ -349,7 +334,10 @@ bst_app_destroy (GtkObject *object)
       bse_item_unuse (self->project);
       self->project = 0;
     }
-  
+
+  if (self->ppages)
+    gxk_assortment_dispose (self->ppages);
+
   bst_app_unregister (self);
   
   GTK_OBJECT_CLASS (bst_app_parent_class)->destroy (object);
@@ -359,6 +347,30 @@ bst_app_destroy (GtkObject *object)
       bst_app_class->seen_apps = FALSE;
       BST_MAIN_LOOP_QUIT ();
     }
+}
+
+static void
+bst_app_finalize (GObject *object)
+{
+  BstApp *self = BST_APP (object);
+  
+  if (self->project)
+    {
+      bse_proxy_disconnect (self->project,
+                            "any_signal", bst_app_reload_supers, self,
+                            "any_signal", gxk_widget_update_actions, self,
+                            NULL);
+      bse_item_unuse (self->project);
+      self->project = 0;
+    }
+  if (self->ppages)
+    {
+      gxk_assortment_dispose (self->ppages);
+      g_object_unref (self->ppages);
+      self->ppages = NULL;
+    }
+  
+  G_OBJECT_CLASS (bst_app_parent_class)->finalize (object);
 }
 
 BstApp*
@@ -435,7 +447,7 @@ bst_app_get_current_super (BstApp *app)
 }
 
 static gint
-proxy_rate_super (SfiProxy p)
+proxy_rate_item (SfiProxy p)
 {
   if (BSE_IS_WAVE_REPO (p))
     return 1;
@@ -448,93 +460,152 @@ proxy_rate_super (SfiProxy p)
   return 5;
 }
 
+static void
+app_update_page_item (SfiProxy     item,
+                      const gchar *property_name,
+                      BstApp      *self)
+{
+  GxkAssortmentEntry *entry = gxk_assortment_find_data (self->ppages, (void*) item);
+  if (entry)
+    {
+      g_free (entry->label);
+      entry->label = g_strdup (bse_item_get_name_or_type (item));
+      gxk_assortment_changed (self->ppages, entry);
+    }
+}
+
+static void
+ppage_item_free (gpointer user_data,
+                 GObject *object,
+                 gpointer owner)
+{
+  BstApp *self = BST_APP (owner);
+  SfiProxy item = (SfiProxy) user_data;
+  bse_proxy_disconnect (item, "any-signal::property-notify::uname", app_update_page_item, self, NULL);
+  if (GTK_IS_WIDGET (object))
+    gtk_widget_destroy (GTK_WIDGET (object));
+  bse_item_unuse (item);
+}
+
+static void
+bst_app_add_page_item (BstApp  *self,
+                       guint    position,
+                       SfiProxy item)
+{
+  const gchar *stock, *name = bse_item_get_name_or_type (item);
+  bse_item_use (item);
+  bse_proxy_connect (item, "signal::property-notify::uname", app_update_page_item, self, NULL);
+  gchar *tip;
+  if (BSE_IS_WAVE_REPO (item))
+    {
+      name = _("Waves");
+      stock = BST_STOCK_MINI_WAVE_REPO;
+      tip = g_strdup (_("Wave Repository"));
+    }
+  else if (BSE_IS_SONG (item))
+    {
+      stock = BST_STOCK_MINI_SONG;
+      tip = g_strdup_printf (_("Song: %s"), name);
+    }
+  else if (BSE_IS_MIDI_SYNTH (item))
+    {
+      stock = BST_STOCK_MINI_MIDI_SYNTH;
+      tip = g_strdup_printf (_("MIDI Synthesizer: %s"), name);
+    }
+  else
+    {
+      stock = BST_STOCK_MINI_CSYNTH;
+      tip = g_strdup_printf (_("Synthesizer: %s"), name);
+    }
+  GtkWidget *page = NULL;
+  if (BSE_IS_SUPER (item))
+    {
+      page = g_object_new (BST_TYPE_SUPER_SHELL, "super", item, NULL);
+      g_object_ref (page);
+      gtk_object_sink (GTK_OBJECT (page));
+    }
+  gxk_assortment_insert (self->ppages, position, name, stock, tip, (void*) item, (GObject*) page, self, ppage_item_free);
+  if (page)
+    g_object_unref (page);
+  g_free (tip);
+}
+
 static gint
-proxyp_cmp_supers (gconstpointer v1,
-                   gconstpointer v2,
-                   gpointer      data)
+proxyp_cmp_items (gconstpointer v1,
+                  gconstpointer v2,
+                  gpointer      data)
 {
   const SfiProxy *p1 = v1;
   const SfiProxy *p2 = v2;
   if (*p1 == *p2)
     return 0;
-  return proxy_rate_super (*p1) - proxy_rate_super (*p2);
+  return proxy_rate_item (*p1) - proxy_rate_item (*p2);
 }
 
 void
 bst_app_reload_supers (BstApp *self)
 {
-  GtkWidget *old_page, *old_focus, *first_unseen = NULL, *first_synth = NULL;
-  GSList *page_list = NULL;
-  GSList *slist;
-  BseItemSeq *iseq;
-  guint i;
-  
   g_return_if_fail (BST_IS_APP (self));
   
-  old_focus = GTK_WINDOW (self)->focus_widget;
+  GtkWidget *old_focus = GTK_WINDOW (self)->focus_widget;
   if (old_focus)
     gtk_widget_ref (old_focus);
-  old_page = gtk_notebook_current_widget (self->notebook);
+  SfiProxy old_item = self->ppages->selected ? (SfiProxy) self->ppages->selected->user_data : 0;
 
-  gtk_widget_hide (GTK_WIDGET (self->notebook));
-
-  while (gtk_notebook_current_widget (self->notebook))
-    {
-      g_object_ref (gtk_notebook_current_widget (self->notebook));
-      page_list = g_slist_prepend (page_list, gtk_notebook_current_widget (self->notebook));
-      gtk_container_remove (GTK_CONTAINER (self->notebook), page_list->data);
-    }
-  
-  /* get supers */
-  iseq = bse_project_get_supers (self->project);
-  SfiRing *ring, *supers = NULL;
-  /* convert to ring */
+  /* collect page objects */
+  BseItemSeq *iseq = bse_project_get_supers (self->project);
+  SfiRing *ring, *proxies = NULL;
+  guint i;
   for (i = 0; i < iseq->n_items; i++)
-    supers = sfi_ring_append (supers, iseq->items + i);
-  /* sort supers */
-  supers = sfi_ring_sort (supers, proxyp_cmp_supers, NULL);
-  /* update shells */
-  for (ring = supers; ring; ring = sfi_ring_next (ring, supers))
-    {
-      SfiProxy *pp = ring->data, super = *pp;
-      if (bse_item_internal (super) && !BST_DBG_EXT)
-        continue;
+    if (!bse_item_internal (iseq->items[i]) || BST_DBG_EXT)
+      proxies = sfi_ring_append (proxies, iseq->items + i);
+  /* sort proxies */
+  proxies = sfi_ring_sort (proxies, proxyp_cmp_items, NULL);
 
-      GtkWidget *page = NULL;
-      GSList *node;
-      for (node = page_list; node; node = node->next)
-        if (BST_SUPER_SHELL (node->data)->super == super)
-          {
-            page = node->data;
-            page_list = g_slist_remove (page_list, page);
-            break;
-          }
-      if (!page)
+  /* remove outdated project pages */
+  SfiRing *outdated = NULL;
+  GSList *slist;
+  for (slist = self->ppages->entries; slist; slist = slist->next)
+    {
+      GxkAssortmentEntry *entry = slist->data;
+      for (ring = proxies; ring; ring = sfi_ring_next (ring, proxies))
         {
-          page = g_object_new (BST_TYPE_SUPER_SHELL, "super", super, NULL);
-          g_object_ref (page);
-          gtk_object_sink (GTK_OBJECT (page));
-          if (!first_unseen)
-            first_unseen = page;
+          SfiProxy *pp = ring->data, item = *pp;
+          if (item == (SfiProxy) entry->user_data)
+            break;
         }
-      if (!first_synth && BSE_IS_SNET (super))
-        first_synth = page;
-      GtkWidget *label = bst_super_shell_create_label (BST_SUPER_SHELL (page));
-      gtk_notebook_append_page (self->notebook, page, label);
-      gtk_notebook_set_tab_label_packing (self->notebook, page, FALSE, TRUE, GTK_PACK_START);
-      bst_super_shell_update_label (BST_SUPER_SHELL (page));
-      gtk_widget_unref (page);
+      if (!ring)
+        outdated = sfi_ring_append (outdated, entry);
     }
-  /* free ring */
-  sfi_ring_free (ring);
-  
+  while (outdated)
+    {
+      GxkAssortmentEntry *entry = sfi_ring_pop_head (&outdated);
+      gxk_assortment_remove (self->ppages, entry);
+    }
+
+  /* add missing project pages */
+  SfiProxy first_unseen = 0, first_synth = 0;
+  i = 0;
+  for (ring = proxies; ring; ring = sfi_ring_next (ring, proxies), i++)
+    {
+      SfiProxy *pp = ring->data, item = *pp;
+      if (!gxk_assortment_find_data (self->ppages, (void*) item))
+        {
+          bst_app_add_page_item (self, i, item);
+          if (!first_unseen)
+            first_unseen = item;
+        }
+      if (!first_synth && BSE_IS_SNET (item))
+        first_synth = item;
+    }
+
   /* select/restore current page */
   if (first_unseen && self->select_unseen_super)
-    gxk_notebook_set_current_page_widget (self->notebook, first_unseen);
-  else if (old_page && old_page->parent == GTK_WIDGET (self->notebook))
-    gxk_notebook_set_current_page_widget (self->notebook, old_page);
+    gxk_assortment_select_data (self->ppages, (void*) first_unseen);
+  else if (old_item && gxk_assortment_find_data (self->ppages, (void*) old_item))
+    gxk_assortment_select_data (self->ppages, (void*) old_item);
   else if (first_synth)
-    gxk_notebook_set_current_page_widget (self->notebook, first_synth);
+    gxk_assortment_select_data (self->ppages, (void*) first_synth);
   self->select_unseen_super = FALSE;
   /* restore focus */
   if (old_focus)
@@ -544,14 +615,6 @@ bst_app_reload_supers (BstApp *self)
         gtk_widget_grab_focus (old_focus);
       gtk_widget_unref (old_focus);
     }
-  for (slist = page_list; slist; slist = slist->next)
-    {
-      gtk_widget_destroy (slist->data);
-      gtk_widget_unref (slist->data);
-    }
-  g_slist_free (page_list);
-
-  gtk_widget_show (GTK_WIDGET (self->notebook));
 }
 
 static gboolean
@@ -1109,4 +1172,22 @@ app_action_check (gpointer data,
       g_warning ("BstApp: unknown action: %lu", action);
       return FALSE;
     }
+}
+
+static void
+bst_app_class_init (BstAppClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  
+  bst_app_class = class;
+  
+  gobject_class->finalize = bst_app_finalize;
+
+  object_class->destroy = bst_app_destroy;
+  
+  widget_class->delete_event = bst_app_handle_delete_event;
+  
+  class->apps = NULL;
 }

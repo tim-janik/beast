@@ -50,6 +50,8 @@ void            gxk_widget_request_vclient_width   (GtkWidget       *widget,
                                                     GtkWidget       *client);
 gboolean        gxk_widget_has_ancestor            (gpointer         widget,
                                                     gpointer         ancestor);
+void            gxk_menu_set_active                (GtkMenu         *menu,
+                                                    GtkWidget       *child);
 void            gxk_widget_regulate                (GtkWidget       *widget,
                                                     gboolean         sensitive,
                                                     gboolean         active);
@@ -147,8 +149,9 @@ gchar*       gxk_factory_path_unescape_uline (const gchar    *path);
 
 
 /* --- Gtk+ Utilities --- */
-void	 gxk_widget_viewable_changed	(GtkWidget		*widget);
-gboolean gxk_widget_viewable		(GtkWidget		*widget);
+void	 gxk_widget_viewable_changed	        (GtkWidget   *widget);
+gboolean gxk_widget_viewable		        (GtkWidget   *widget);
+void     gxk_widget_attached_hierarchy_changed  (GtkWidget   *widget);
 
 
 /* --- Gdk convenience --- */

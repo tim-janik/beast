@@ -34,7 +34,7 @@
     prop:activates-default="$(ifdef,activates-default,$activates-default,1)"
     prop:text="$(ifdef,text,$text,)"
     />
-  <!-- frame, alignment -->
+  <!-- alignment -->
   <xdef:alignment             inherit="GtkAlignment"
     prop:xalign="$(first-occupied,$xalign,0.5)"
     prop:yalign="$(first-occupied,$yalign,0.5)"
@@ -46,9 +46,14 @@
     prop:shadow-type="$(ifdef,shadow-type,$shadow-type,shadow-etched-in)"
     prop:arrow-type="$(ifdef,arrow-type,$arrow-type,arrow-right)"
     />
+  <!-- frame -->
   <xdef:frame                 inherit="GtkFrame"
     prop:shadow-type="$(ifdef,shadow-type,$shadow-type,shadow-etched-in)"
-    />
+    prop:label-xalign="$(first-occupied,$label-xalign,0)"
+    prop:label-yalign="$(first-occupied,$label-yalign,0.5)"
+    >
+    <!-- frames may contain child widgets with gxk-adopt-prop="label-widget" -->
+  </xdef:frame>
   <xdef:frame-shadow-in       inherit="frame"               prop:shadow-type="shadow-in" />
   <xdef:frame-shadow-out      inherit="frame"               prop:shadow-type="shadow-out" />
   <xdef:frame-etched-in       inherit="frame"               prop:shadow-type="etched-in" />
@@ -127,6 +132,7 @@
     prop:relief="$(ifdef,relief,$relief,normal)"
     prop:stock-size="$(null-collapse,$stock-size)"
     prop:mode="$(first-occupied,$mode,tool-mode)"
+    prop:assortment="$(null-collapse,$assortment)"
     />
   <!-- buttons: stock-label= label= relief= -->
   <xdef:button                inherit="GtkButton"
@@ -154,9 +160,10 @@
     prop:justify="$(first-occupied,$justify,justify-left)"
     prop:use-underline="$(first-occupied,$use-underline,1)" />
   <!-- decks (notebook) -->
-  <xdef:notebook              inherit="GtkNotebook"
+  <xdef:notebook              inherit="GxkNotebook"
     prop:scrollable="1"
     prop:homogeneous="$(first-occupied,$homogeneous,0)"
+    prop:assortment="$(null-collapse,$assortment)"
     />
   <xdef:deck                  inherit="notebook"
     prop:show-tabs="0"

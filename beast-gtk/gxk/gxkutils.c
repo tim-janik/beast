@@ -35,12 +35,16 @@
 
 
 /* --- prototypes --- */
-static void     gxk_traverse_viewable_changed	(GtkWidget      *widget,
-						 gpointer        data);
+static void     gxk_traverse_viewable_changed	        (GtkWidget      *widget,
+                                                         gpointer        data);
+static void     gxk_traverse_attached_hierarchy_changed (GtkWidget      *widget,
+                                                         gpointer        data);
+static void     gxk_menu_refetch_accel_group            (GtkMenu        *menu);
 
 
 /* --- variables --- */
-static gulong viewable_changed_id = 0;
+static guint signal_viewable_changed = 0;
+static guint signal_attached_hierarchy_changed = 0;
 
 
 /* --- functions --- */
@@ -93,18 +97,25 @@ _gxk_init_utils (void)
 {
   /* type registrations */
   gxk_type_register_generated (G_N_ELEMENTS (generated_type_entries), generated_type_entries);
-
+  
   /* Gtk+ patchups */
-  viewable_changed_id = g_signal_newv ("viewable-changed",
-				       G_TYPE_FROM_CLASS (gtk_type_class (GTK_TYPE_WIDGET)),
-				       G_SIGNAL_RUN_LAST,
-				       g_cclosure_new (G_CALLBACK (gxk_traverse_viewable_changed), NULL, NULL),
-				       NULL, NULL,
-				       gtk_marshal_VOID__VOID,
-				       G_TYPE_NONE, 0, NULL);
+  signal_viewable_changed = g_signal_newv ("viewable-changed",
+                                           G_TYPE_FROM_CLASS (gtk_type_class (GTK_TYPE_WIDGET)),
+                                           G_SIGNAL_RUN_LAST,
+                                           g_cclosure_new (G_CALLBACK (gxk_traverse_viewable_changed), NULL, NULL),
+                                           NULL, NULL,
+                                           gtk_marshal_VOID__VOID,
+                                           G_TYPE_NONE, 0, NULL);
+  signal_attached_hierarchy_changed = g_signal_newv ("attached-hierarchy-changed",
+                                                     G_TYPE_FROM_CLASS (gtk_type_class (GTK_TYPE_WIDGET)),
+                                                     G_SIGNAL_RUN_LAST,
+                                                     g_cclosure_new (G_CALLBACK (gxk_traverse_attached_hierarchy_changed), NULL, NULL),
+                                                     NULL, NULL,
+                                                     gtk_marshal_VOID__VOID,
+                                                     G_TYPE_NONE, 0, NULL);
   GtkWidgetClass *widget_class = gtk_type_class (GTK_TYPE_WIDGET);
   widget_class->can_activate_accel = gxk_widget_real_can_activate_accel;
-
+  
   /* patch up scrolling+focus behaviour */
   g_type_class_unref (g_type_class_ref (GTK_TYPE_CONTAINER));   /* create static class */
   g_signal_add_emission_hook (g_signal_lookup ("set-focus-child", GTK_TYPE_CONTAINER), 0,
@@ -333,36 +344,6 @@ gxk_factory_path_unescape_uline (const gchar *path)
 
 /* --- Gtk+ Utilities --- */
 /**
- * gxk_widget_viewable_changed
- * @widget: valid #GtkWidget
- *
- * A widget should call this function if it changed
- * the mapped state of one of its children (or if it
- * is a toplevel and gets show or hidden) to emit the
- * ::viewable-changed signal on the related sub-tree.
- * #GxkDialog properly emits this signal if show or
- * hidden, containers like #GtkNotebook need this
- * function be explicitely connected to their ::switch-page
- * signal, in order for their children to get properly
- * notified.
- */
-void
-gxk_widget_viewable_changed (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  g_signal_emit (widget, viewable_changed_id, 0);
-}
-
-static void
-gxk_traverse_viewable_changed (GtkWidget *widget,
-			       gpointer   data)
-{
-  if (GTK_IS_CONTAINER (widget))
-    gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) gxk_widget_viewable_changed, NULL);
-}
-
-/**
  * gxk_widget_viewable
  * @widget: valid #GtkWidget
  * RETURNS: %TRUE if the widget is viewable, %FALSE otherwise
@@ -385,6 +366,99 @@ gxk_widget_viewable (GtkWidget *widget)
 }
 
 /**
+ * gxk_widget_viewable_changed
+ * @widget: valid #GtkWidget
+ *
+ * A widget should call this function if it changed
+ * the mapped state of one of its children (or if it
+ * is a toplevel and gets show or hidden) to emit the
+ * ::viewable-changed signal on the related sub-tree.
+ * #GxkDialog properly emits this signal if show or
+ * hidden, containers like #GtkNotebook need this
+ * function be explicitely connected to their ::switch-page
+ * signal, in order for their children to get properly
+ * notified.
+ */
+void
+gxk_widget_viewable_changed (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  
+  g_signal_emit (widget, signal_viewable_changed, 0);
+}
+
+static void
+gxk_traverse_viewable_changed (GtkWidget *widget,
+			       gpointer   data)
+{
+  if (GTK_IS_CONTAINER (widget))
+    gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) gxk_widget_viewable_changed, NULL);
+}
+
+/**
+ * gxk_widget_attached_hierarchy_changed
+ * @widget: valid #GtkWidget
+ *
+ * Setting or unsetting a parent on a widget leads to emission
+ * of the ::hirarchy-changed signal on the widget and any children
+ * it contains. However, popup menus which are merely attached to
+ * widgets aren't properly notified upon such hirarchy changes,
+ * for this gxk_widget_attached_hierarchy_changed() is provided.
+ * On menus which got attached to a widget with
+ * gxk_menu_attach_as_popup(), the signal ::attached-hirarchy-changed
+ * is emitted if ::hirarchy-changed is emitted on the widget,
+ * by calling gxk_widget_attached_hierarchy_changed() on the menu.
+ */
+void
+gxk_widget_attached_hierarchy_changed (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  
+  g_signal_emit (widget, signal_attached_hierarchy_changed, 0);
+}
+
+static void
+widget_propagate_hierarchy_changed_to_attached (GtkWidget *widget)
+{
+  if (GTK_IS_OPTION_MENU (widget))
+    {
+      GtkOptionMenu *option_menu = GTK_OPTION_MENU (widget);
+      if (option_menu->menu)
+        gxk_widget_attached_hierarchy_changed (option_menu->menu);
+    }
+  if (GTK_IS_MENU_ITEM (widget))
+    {
+      GtkMenuItem *menu_item = GTK_MENU_ITEM (widget);
+      if (menu_item->submenu)
+        gxk_widget_attached_hierarchy_changed (menu_item->submenu);
+    }
+  GList *menu_list = g_object_get_data (widget, "GxkWidget-popup-menus");
+  for (; menu_list; menu_list = menu_list->next)
+    gxk_widget_attached_hierarchy_changed (menu_list->data);
+}
+
+static void
+gxk_traverse_attached_hierarchy_changed (GtkWidget *widget,
+                                         gpointer   data)
+{
+  if (GTK_IS_CONTAINER (widget))
+    gtk_container_forall (GTK_CONTAINER (widget), (GtkCallback) gxk_widget_attached_hierarchy_changed, NULL);
+  widget_propagate_hierarchy_changed_to_attached (widget);
+
+  /* special attached_hierarchy_changed hooks */
+  if (GTK_IS_MENU (widget))
+    gxk_menu_refetch_accel_group (GTK_MENU (widget));
+}
+
+static void
+gxk_widget_proxy_hierarchy_changed_to_attached (GtkWidget *widget)
+{
+  if (!gxk_signal_handler_exists (widget, "hierarchy-changed", G_CALLBACK (widget_propagate_hierarchy_changed_to_attached), NULL))
+    g_signal_connect_after (widget, "hierarchy-changed", G_CALLBACK (widget_propagate_hierarchy_changed_to_attached), NULL);
+  widget_propagate_hierarchy_changed_to_attached (widget);
+}
+
+/**
  * gxk_window_set_cursor_type
  * @window: valid #GdkWindow*
  * @cursor: #GdkCursorType cursor type
@@ -397,7 +471,7 @@ gxk_window_set_cursor_type (GdkWindow    *window,
 			    GdkCursorType cursor)
 {
   g_return_if_fail (GDK_IS_WINDOW (window));
-
+  
   if (cursor >= GDK_LAST_CURSOR || cursor < 0)
     gdk_window_set_cursor (window, NULL);
   else
@@ -1359,7 +1433,7 @@ gxk_activate_accel_group (GtkWidget     *widget,
  *
  * Activate accelerators within accel group when @widget
  * receives key press events. This function isn't pure
- * convenience, as it works around Gtk 2.2 not exporting
+ * convenience, as it works around Gtk+-2.2 not exporting
  * _gtk_accel_group_activate(), _gtk_accel_group_attach()
  * or _gtk_accel_group_detach().
  */
@@ -2861,6 +2935,40 @@ gxk_widget_has_ancestor (gpointer widget,
 }
 
 /**
+ * gxk_menu_set_active
+ * @menu:   valid #GtkMenu
+ * @child:  an immediate child of @menu
+ *
+ * This function replaces gtk_menu_set_active(). The @child to be
+ * set as last selection is passed in as ordinary child pointer
+ * and if the menu is attached to an option menu or menu button,
+ * the attach widget is updated after the selection changed, due
+ * to the emission of ::selection-done.
+ */
+void
+gxk_menu_set_active (GtkMenu         *menu,
+                     GtkWidget       *child)
+{
+  g_return_if_fail (GTK_IS_MENU (menu));
+  g_return_if_fail (GTK_IS_WIDGET (child));
+
+  gint nth = g_list_index (GTK_MENU_SHELL (menu)->children, child);
+  if (nth >= 0 && child != menu->old_active_menu_item)
+    {
+      gtk_menu_set_active (menu, nth);
+#if 1
+      g_signal_emit_by_name (GTK_MENU_SHELL (menu), "selection-done");
+#else
+      GtkWidget *awidget = gtk_menu_get_attach_widget (menu);
+      if (GTK_IS_OPTION_MENU (awidget))
+        gtk_option_menu_set_history (GTK_OPTION_MENU (awidget), nth);
+      if (GXK_IS_MENU_BUTTON (awidget))
+        gxk_menu_button_update (GXK_MENU_BUTTON (awidget));
+#endif
+    }
+}
+
+/**
  * gxk_widget_regulate
  * @widget:    valid #GtkWidget
  * @sensitive: whether @widget should be sensitive
@@ -2895,16 +3003,7 @@ gxk_widget_regulate (GtkWidget      *widget,
           g_value_unset (&value);
         }
       if (active && GTK_IS_MENU_ITEM (widget) && widget->parent && GTK_IS_MENU (widget->parent))
-        {
-          GtkMenu *menu = GTK_MENU (widget->parent);
-          guint nth = g_list_index (GTK_MENU_SHELL (menu)->children, widget);
-          GtkWidget *awidget = gtk_menu_get_attach_widget (menu);
-          gtk_menu_set_active (menu, nth);
-          if (GTK_IS_OPTION_MENU (awidget))
-            gtk_option_menu_set_history (GTK_OPTION_MENU (awidget), nth);
-          if (GXK_IS_MENU_BUTTON (awidget))
-            gxk_menu_button_update (GXK_MENU_BUTTON (awidget));
-        }
+        gxk_menu_set_active (GTK_MENU (widget->parent), widget);
       g_object_thaw_notify (G_OBJECT (widget));
     }
 }
@@ -3180,21 +3279,11 @@ submenu_adjust_sensitivity (GtkMenu *menu)
 }
 
 static void
-menu_refetch_accel_group (GtkMenu *menu)
+gxk_menu_refetch_accel_group (GtkMenu *menu)
 {
   GtkWidget *toplevel = gxk_widget_get_attach_toplevel ((GtkWidget*) menu);
   if (GTK_IS_WINDOW (toplevel))
     gtk_menu_set_accel_group (menu, gxk_window_get_menu_accel_group ((GtkWindow*) toplevel));
-}
-
-static void     menu_propagate_hierarchy_changed (GtkMenu *menu);
-
-static void
-menu_item_propagate_hierarchy_changed (GtkMenuItem *menu_item)
-{
-  GtkWidget *menu = menu_item->submenu;
-  if (menu)
-    menu_propagate_hierarchy_changed (GTK_MENU (menu));
 }
 
 /**
@@ -3223,9 +3312,7 @@ gxk_menu_attach_as_submenu (GtkMenu     *menu,
 
   gtk_menu_item_set_submenu (menu_item, GTK_WIDGET (menu));
 
-  if (!gxk_signal_handler_exists (menu_item, "hierarchy-changed", G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL))
-    g_signal_connect_after (menu_item, "hierarchy-changed", G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL);
-  menu_item_propagate_hierarchy_changed (menu_item);
+  gxk_widget_proxy_hierarchy_changed_to_attached (GTK_WIDGET (menu_item));
 
   if (!gxk_signal_handler_exists (menu, "parent-set", G_CALLBACK (submenu_adjust_sensitivity), NULL))
     g_object_connect (menu,
@@ -3234,14 +3321,6 @@ gxk_menu_attach_as_submenu (GtkMenu     *menu,
                       "signal_after::remove", submenu_adjust_sensitivity, NULL,
                       NULL);
   submenu_adjust_sensitivity (menu);
-}
-
-static void
-option_menu_propagate_hierarchy_changed (GtkOptionMenu *option_menu)
-{
-  GtkWidget *menu = option_menu->menu;
-  if (menu)
-    menu_propagate_hierarchy_changed (GTK_MENU (menu));
 }
 
 /**
@@ -3266,28 +3345,7 @@ gxk_option_menu_set_menu (GtkOptionMenu *option_menu,
 
   gtk_option_menu_set_menu (option_menu, GTK_WIDGET (menu));
 
-  if (!gxk_signal_handler_exists (option_menu, "hierarchy-changed", G_CALLBACK (option_menu_propagate_hierarchy_changed), NULL))
-    g_signal_connect_after (option_menu, "hierarchy-changed", G_CALLBACK (option_menu_propagate_hierarchy_changed), NULL);
-  option_menu_propagate_hierarchy_changed (option_menu);
-}
-
-static void
-menu_propagate_hierarchy_changed (GtkMenu *menu)
-{
-  GList *list;
-  for (list = GTK_MENU_SHELL (menu)->children; list; list = list->next)
-    if (gxk_signal_handler_pending (list->data, "hierarchy-changed",
-                                    G_CALLBACK (menu_item_propagate_hierarchy_changed), NULL))
-      menu_item_propagate_hierarchy_changed (list->data);
-  menu_refetch_accel_group (menu);
-}
-
-static void
-menu_widget_propagate_hierarchy_changed (GtkWidget *widget)
-{
-  GList *menu_list = g_object_get_data (widget, "GxkWidget-popup-menus");
-  for (; menu_list; menu_list = menu_list->next)
-    menu_propagate_hierarchy_changed (menu_list->data);
+  gxk_widget_proxy_hierarchy_changed_to_attached (GTK_WIDGET (option_menu));
 }
 
 static void
@@ -3341,9 +3399,7 @@ gxk_menu_attach_as_popup_with_func (GtkMenu          *menu,
   g_object_set_data (menu, "gxk-GtkMenuDetachFunc", mdfunc);
   gtk_menu_attach_to_widget (menu, widget, popup_menu_detacher);
 
-  if (!gxk_signal_handler_exists (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL))
-    g_signal_connect_after (widget, "hierarchy-changed", G_CALLBACK (menu_widget_propagate_hierarchy_changed), NULL);
-  menu_widget_propagate_hierarchy_changed (widget);
+  gxk_widget_proxy_hierarchy_changed_to_attached (widget);
 }
 
 /**

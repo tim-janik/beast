@@ -36,7 +36,7 @@ typedef        GObject        GxkActionFactory; /* prototyped */
 typedef struct GxkActionGroup GxkActionGroup;   /* prototyped */
 typedef struct GxkActionList  GxkActionList;
 typedef struct {
-  const gchar  *key;            /* untranslated name */
+  const gchar  *key;            /* untranslated name (used for accel paths) */
   gconstpointer action_data;    /* for gxk_action_activate_callback() */
   const gchar  *name;
   const gchar  *accelerator;

@@ -289,9 +289,22 @@ static gboolean
 match_action_root (GxkRadgetFactory *self,
                    GtkWidget        *publisher)
 {
-  GtkWidget *ancestor;
   if (!self->action_root)
     return TRUE;
+#if 0
+  // FIXME: is requirering publishing by a factory ancestor better than ":xdef" constraint?
+  GtkWidget *widget = self->radget;
+  while (widget)
+    {
+      if (widget == publisher)
+        return TRUE;
+      if (GTK_IS_MENU (widget))
+        widget = gtk_menu_get_attach_widget ((GtkMenu*) widget);
+      else
+        widget = widget->parent;
+    }
+#endif
+  GtkWidget *ancestor;
   if (strcmp (self->action_root, ":xdef") == 0)
     ancestor = self->xdef_radget;
   else
@@ -418,7 +431,7 @@ radget_factory_match_action_list (GxkActionFactory       *afactory,
 static gboolean
 radget_factory_check_anchored (gpointer data)
 {
-  GxkRadgetFactory *self = data;
+  GxkRadgetFactory *self = GXK_RADGET_FACTORY (data);
   GtkWidget *toplevel;
   gboolean is_window;
   GDK_THREADS_ENTER ();
@@ -477,6 +490,8 @@ gxk_radget_factory_attach (GxkRadgetFactory *self,
   g_object_set_qdata_full (radget, quark_radget_factory_hook, slist, destroy_factory_slist);
   self->radget = radget;
   g_signal_connect_object (radget, "hierarchy-changed",
+                           G_CALLBACK (gxk_radget_factory_check_anchored), self, G_CONNECT_SWAPPED);
+  g_signal_connect_object (radget, "attached-hierarchy-changed",
                            G_CALLBACK (gxk_radget_factory_check_anchored), self, G_CONNECT_SWAPPED);
   gxk_radget_factory_check_anchored (self);
 }
