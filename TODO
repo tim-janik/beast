@@ -171,6 +171,50 @@ TODO:
 : gsldatacache.c: nuke blocks upon reopen if mtime changed
 : clone handle caller must be fetched from stack
 
+Logging:
+* stdlog could be log file, syslog, stderr and GUI
+* Severity:
+  - Error   (always GUI)
+  - Report  (always GUI unless extra message suppress) [Notice?]
+  - Warning (stdlog/GUI)
+  - Message (stdlog, maybe GUI)
+  - Info    (stdlog, unlikely GUI)
+  - Debug   (stdlog)
+* Origin:
+  - ... (custom user)
+  - User messages
+  - ... (custom application)
+  - Application messages
+  - Interface (API) layers
+  - ... (custom package specific)
+  - Package (BSE/GTK/GXK/...)
+   /- Service frameworks (e.g. procedure invokations)
+    - Communication Layer
+    - Logic Connection (two way)
+    - Connection
+    - Link primitives
+   /- Generic Input/Output Layer
+    - Logic IO (Device specific)
+    - Physical IO
+  - Ground (physical) (0)
+* Message forewarding:
+  Scheme -> Shell -> wire -> BSE -> Beast
+  - need ability to track originating process
+  - need ability to track originating package
+* Allow message supression list through hash mechanism
+* Example:
+  - #define LOG_DOMAIN "MidiDriver"
+    #define LOG_ORIGIN IO_GENERIC
+    _report ("MIDI", _("Advice about device selections"), _("failed to open %s, using Null MIDI device"), "/dev/midi");
+  : Report: failed to open /dev/midi, using Null MIDI device
+    [ ] suppress future messages of this kind
+  - Message Supression Configuration:
+    -> reenable messages related to MIDI
+       ["MIDI" being kind or class]
+    Enable or disable certain messages types:
+    [ ] Advice about device selections
+   
+
 PianoRoll:
 - implement HFlip selection script
 - play notes when inserted into piano roll
