@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-18 14:55+0100\n"
-"PO-Revision-Date: 2004-10-31 19:50-0400\n"
+"POT-Creation-Date: 2004-11-18 17:48-0500\n"
+"PO-Revision-Date: 2004-11-18 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -2080,18 +2080,19 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:106
 msgid "Enable scopes"
-msgstr ""
+msgstr "Enable scopes"
 
 #: beast-gtk/bstrecords.idl:107 beast-gtk/bstrecords.idl:111
 msgid ""
 "Enables or prevents BEAST from periodically updating the scopes. Disabling "
 "may be desirable especially on slow machines."
 msgstr ""
+"Enables or prevents BEAST from periodically updating the scopes. Disabling "
+"may be desirable especially on slow machines."
 
 #: beast-gtk/bstrecords.idl:110
-#, fuzzy
 msgid "Enable meters"
-msgstr "Parameters"
+msgstr "Enable meters"
 
 #: beast-gtk/bstrecords.idl:119
 msgid "Skin Name"
@@ -4492,7 +4493,6 @@ msgstr "BPM Steps"
 msgid "Step width for beats per minute"
 msgstr "Step width for beats per minute"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsedevice.c:312
 msgid ""
 "Auto is a special driver, it acts as a placeholder for\n"
@@ -4772,7 +4772,6 @@ msgstr "Ctrl Out4"
 msgid "MIDI Signal 4"
 msgstr "MIDI Signal 4"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-null.c:92
 msgid ""
 "Discards all output events and generates no input events. This driver\n"
@@ -4781,7 +4780,6 @@ msgstr ""
 "Discards all output events and generates no input events. This driver\n"
 "is not part of the automatic device selection list for MIDI devices."
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsemididevice-oss.c:270
 msgid ""
 "Open Sound System MIDI driver:\n"
@@ -4918,8 +4916,6 @@ msgstr "Parasite Paths"
 msgid "Parasite"
 msgstr "Parasite"
 
-#. syntax
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-null.c:145
 msgid ""
 "Discard all PCM output and provide zero blocks as input. This\n"
@@ -4932,7 +4928,6 @@ msgstr ""
 msgid "DEVICE,MODE"
 msgstr "DEVICE,MODE"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: bse/bsepcmdevice-oss.c:653
 msgid ""
 "Open Sound System PCM driver:\n"
@@ -5443,7 +5438,6 @@ msgstr "Audio"
 msgid "PLUGIN:CARD,DEV,SUBDEV"
 msgstr "PLUGIN:CARD,DEV,SUBDEV"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-alsa/bsemididevice-alsa.c:311
 #, c-format
 msgid ""
@@ -5473,7 +5467,6 @@ msgstr ""
 "  DEV    - the device number for plugins like 'hw'\n"
 "  SUBDEV - the subdevice number for plugins like 'hw'\n"
 
-#. TRANSLATORS: keep this text to 70 chars in width
 #: drivers/bse-alsa/bsepcmdevice-alsa.c:556
 #, c-format
 msgid ""
