@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.6\n"
 "Report-Msgid-Bugs-To: Duarte Loreto <happyguy_pt@hotmail.com>\n"
-"POT-Creation-Date: 2003-11-18 19:08+0100\n"
-"PO-Revision-Date: 2003-11-19 00:45+0000\n"
+"POT-Creation-Date: 2003-12-11 23:53+0000\n"
+"PO-Revision-Date: 2003-12-11 23:59+0000\n"
 "Last-Translator: Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Language-Team: Portuguese <gnome_pt@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -147,31 +147,31 @@ msgstr "Perguntas _Frequêntes..."
 msgid "GSL Engine..."
 msgstr "Motor GSL..."
 
-#: beast-gtk/bstapp.c:544 beast-gtk/bstapp.c:551 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:545 beast-gtk/bstapp.c:552 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "A abrir projecto `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:714
+#: beast-gtk/bstapp.c:715
 msgid "Rack editor"
 msgstr "Editor pilhas"
 
-#: beast-gtk/bstapp.c:728
+#: beast-gtk/bstapp.c:729
 msgid "Preferences"
 msgstr "Preferências"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:742
+#: beast-gtk/bstapp.c:743
 msgid "Device Monitor"
 msgstr "Monitor Dispositivos"
 
-#: beast-gtk/bstapp.c:757
+#: beast-gtk/bstapp.c:758
 msgid "Procedure Browser"
 msgstr "Navegador Procedimentos"
 
-#: beast-gtk/bstapp.c:814
+#: beast-gtk/bstapp.c:815
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Notas Distribuição BEAST-%s"
@@ -374,7 +374,7 @@ msgid "Add"
 msgstr "Adicionar"
 
 #: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
-#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:182
+#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
 #: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
 #: beast-gtk/bstwaveview.c:45
@@ -397,23 +397,21 @@ msgstr "Comentário"
 msgid "Type"
 msgstr "Tipo"
 
-#. now, we can popup the splash screen
-#.
-#: beast-gtk/bstmain.c:133
+#: beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "Arranque BEAST"
 
-#: beast-gtk/bstmain.c:140
+#: beast-gtk/bstmain.c:141
 msgid "Startup"
 msgstr "Arranque"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:145
+#: beast-gtk/bstmain.c:146
 msgid "Objects"
 msgstr "Objectos"
 
-#: beast-gtk/bstmain.c:149
+#: beast-gtk/bstmain.c:150
 msgid "Language"
 msgstr "Idioma"
 
@@ -450,23 +448,80 @@ msgstr "Scripts"
 msgid "Dialogs"
 msgstr "Diálogos"
 
-#: beast-gtk/bstmain.c:277
+#: beast-gtk/bstmain.c:271
 msgid "Loading..."
 msgstr "A Ler..."
 
-#: beast-gtk/bstmain.c:307 beast-gtk/bstmain.c:309
+#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
 #, c-format
 msgid "Loading \"%s\""
 msgstr "A ler \"%s\""
 
-#: beast-gtk/bstmain.c:326
+#: beast-gtk/bstmain.c:320
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "A ler projecto \"%s\""
 
-#: beast-gtk/bstparam-entry.c:61
+#: beast-gtk/bstmain.c:694
+msgid "BEAST About"
+msgstr "Sobre o BEAST"
+
+#: beast-gtk/bstmain.c:695
+#, c-format
+msgid "BEAST Version %s"
+msgstr "Versão BEAST %s"
+
+#: beast-gtk/bstmain.c:696
+msgid "Contributions made by:"
+msgstr "Contribuições por:"
+
+#: beast-gtk/bstparam-choice.c:144
+msgid "Drop Down Box (Option Menu)"
+msgstr "Caixa de Lista de Selecção (Menu Opções)"
+
+#: beast-gtk/bstparam-choice.c:150
+msgid "Drop Down Button"
+msgstr "Botão de Lista de Selecção"
+
+#: beast-gtk/bstparam-note-sequence.c:61
+msgid "Note Sequence Grid Editor"
+msgstr "Editor de Grelha de Sequência de Notas"
+
+#: beast-gtk/bstparam-note-spinner.c:66
+msgid "Note Entry"
+msgstr "Entrada de Nota"
+
+#: beast-gtk/bstparam-proxy.c:289
+msgid "Object Drop Down Box"
+msgstr "Caixa de Lista de Selecção de Objecto"
+
+#: beast-gtk/bstparam-scale.c:60
+msgid "Knob"
+msgstr "Maçaneta"
+
+#: beast-gtk/bstparam-scale.c:66
+msgid "Knob (Logarithmic"
+msgstr "Maçaneta (Logarítmica"
+
+#: beast-gtk/bstparam-scale.c:78
+msgid "Dial"
+msgstr "Botão Giratório"
+
+#: beast-gtk/bstparam-scale.c:84
+msgid "Dial (Logarithmic"
+msgstr "Botão Giratório (Logarítmico"
+
+#: beast-gtk/bstparam-searchpath.c:52
 msgid "Remove Paths"
 msgstr "Remover Caminhos"
+
+#: beast-gtk/bstparam-searchpath.c:105
+msgid "Searchpath Text Entry"
+msgstr "Entrada de Texto de Procura de Caminho"
+
+#: beast-gtk/bstparam-time.c:55
+msgid "Time Entry"
+msgstr "Entrada de Tempo"
 
 #: beast-gtk/bstpartdialog.c:59
 msgid "Clear"
@@ -686,16 +741,16 @@ msgstr "Reproduzir nota"
 msgid "Playback"
 msgstr "Reproduzir"
 
-#: beast-gtk/bstprocedure.c:213
+#: beast-gtk/bstprocedure.c:212
 msgid "Description"
 msgstr "Descrição"
 
-#: beast-gtk/bstprocedure.c:297
+#: beast-gtk/bstprocedure.c:296
 #, c-format
 msgid "Executing `%s'"
 msgstr "A executar `%s'"
 
-#: beast-gtk/bstprocedure.c:447
+#: beast-gtk/bstprocedure.c:446
 msgid "Procedure"
 msgstr "Procedimento"
 
@@ -718,43 +773,49 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"O editor de pilhas é código ainda muito experimental e é garantido que "
-"irá deixar de funcionar em versões futuras. Assim, não conte que o "
-"conteudo do editor de pilhas seja semelhante em versões futuras e esteja "
-"preparado para contornar possíveis instabilidades no código (isto é, "
-"grave o seu projecto regularmente)."
+"O editor de pilhas é código ainda muito experimental e é garantido que irá "
+"deixar de funcionar em versões futuras. Assim, não conte que o conteudo do "
+"editor de pilhas seja semelhante em versões futuras e esteja preparado para "
+"contornar possíveis instabilidades no código (isto é, grave o seu projecto "
+"regularmente)."
 
-#: beast-gtk/bstrackeditor.c:109 beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
 msgid "_Edit"
 msgstr "_Editar"
 
-#: beast-gtk/bstrackitem.c:172
+#: beast-gtk/bstrackitem.c:206
 msgid "Edit Rack Item"
 msgstr "Editar Item Pilha"
 
-#: beast-gtk/bstrackitem.c:174
+#: beast-gtk/bstrackitem.c:208
 msgid "Controller"
 msgstr "Controlador"
 
-#: beast-gtk/bstrackitem.c:175
+#: beast-gtk/bstrackitem.c:209
 msgid "Duplicate"
 msgstr "Duplicar"
 
-#: beast-gtk/bstrackitem.c:177
+#: beast-gtk/bstrackitem.c:211
 msgid "Grow Horizontally"
 msgstr "Crescer Horizontalmente"
 
-#: beast-gtk/bstrackitem.c:178
+#: beast-gtk/bstrackitem.c:212
 msgid "Grow Vertically"
 msgstr "Crescer Verticalmente"
 
-#: beast-gtk/bstrackitem.c:179
+#: beast-gtk/bstrackitem.c:213
 msgid "Shrink Horizontally"
 msgstr "Encolher Horizontalmente"
 
-#: beast-gtk/bstrackitem.c:180
+#: beast-gtk/bstrackitem.c:214
 msgid "Shrink Vertically"
 msgstr "Encolher Verticalmente"
+
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:55
+#: beast-gtk/gxk/gxksimplelabel.c:133
+msgid "Label"
+msgstr "Etiqueta"
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
@@ -818,8 +879,8 @@ msgid ""
 "properties"
 msgstr ""
 "Ferramenta edição (botões 1-3 rato)\n"
-"Utilize botão 1 para criar atalhos, botão 2 para movimento e botão 3 "
-"para alterar propriedades"
+"Utilize botão 1 para criar atalhos, botão 2 para movimento e botão 3 para "
+"alterar propriedades"
 
 #: beast-gtk/bstsnetrouter.c:77
 msgid "Edit"
@@ -850,8 +911,8 @@ msgid "Standard amplifier module"
 msgstr "Módulo de aplificador standard"
 
 #: beast-gtk/bstsnetrouter.c:199
-msgid "Snoop"
-msgstr "Snoop"
+msgid "Snooper"
+msgstr "Snooper"
 
 #: beast-gtk/bstsnetrouter.c:199
 msgid "Signal debugging module"
@@ -954,26 +1015,30 @@ msgstr "Marcar Sinal (Cabeçalho)"
 msgid "Mark Signal (Tail)"
 msgstr "Marcar Sinal (Cauda)"
 
-#: beast-gtk/bstsupershell.c:172 beast-gtk/bstsupershell.c:285
+#: beast-gtk/bstsupershell.c:173 beast-gtk/bstsupershell.c:290
 msgid "Waves"
 msgstr "Ondas"
 
-#: beast-gtk/bstsupershell.c:235
+#: beast-gtk/bstsupershell.c:236
 msgid "Tracks"
 msgstr "Pistas"
 
-#: beast-gtk/bstsupershell.c:240 beast-gtk/bstsupershell.c:272
-#: beast-gtk/bstsupershell.c:290
+#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
+#: beast-gtk/bstsupershell.c:295
 msgid "Parameters"
 msgstr "Parâmetros"
 
-#: beast-gtk/bstsupershell.c:245
+#: beast-gtk/bstsupershell.c:246
 msgid "Parts"
 msgstr "Partes"
 
-#: beast-gtk/bstsupershell.c:251 beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:252 beast-gtk/bstsupershell.c:271
 msgid "Routing"
 msgstr "Routeamento"
+
+#: beast-gtk/bstsupershell.c:266
+msgid "Rack"
+msgstr "Pilha"
 
 #: beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert/edit/move parts (mouse button 1 and 2)"
@@ -1008,12 +1073,13 @@ msgid "Use the horizontal ruler to adjust the left loop pointer"
 msgstr "Utilizar a régua horizontal para ajustar o ponteiro esquerdo do loop"
 
 #: beast-gtk/bsttrackrollctrl.c:66
-msgid "Pos"
-msgstr "Pos"
+msgid "Position"
+msgstr "Posição"
 
 #: beast-gtk/bsttrackrollctrl.c:66
 msgid "Use the horizontal ruler to adjust the play position pointer"
-msgstr "Utilizar a régua horizontal para ajustar o ponteiro de posição de reprodução"
+msgstr ""
+"Utilizar a régua horizontal para ajustar o ponteiro de posição de reprodução"
 
 #: beast-gtk/bsttrackrollctrl.c:68
 msgid "Right"
@@ -1186,98 +1252,102 @@ msgid "Vertical piano zoom"
 msgstr "Zoom vertical piano"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:16
+msgid "Virtual Rack"
+msgstr "Pilha Virtual"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
 msgid "Wave_s"
 msgstr "Onda_s"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
 msgid "Zoom"
 msgstr "Zoom"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
 msgid "_Audio Sources"
 msgstr "Fontes _Audio"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "_Distortion"
 msgstr "_Distorção"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "_Enhance"
 msgstr "_Melhorar"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
 msgid "_File"
 msgstr "_Ficheiro"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
 msgid "_Filters"
 msgstr "_Filtros"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
 msgid "_Help"
 msgstr "_Ajuda"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
 msgid "_Input & Output"
 msgstr "_Entrada & Saída"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
 msgid "_Misc"
 msgstr "_Misc"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
 msgid "_Other Sources"
 msgstr "_Outras Fontes"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Project"
 msgstr "_Projecto"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
 msgid "_Quantization"
 msgstr "_Quantização"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_Routing"
 msgstr "_Routeamento"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
 msgid "_Song"
 msgstr "_Música"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Spatial"
 msgstr "_Espacial"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Synth"
 msgstr "_Sintetizar"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Synthesizers"
 msgstr "_Sintetizador"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
 msgid "_Tools"
 msgstr "_Ferramentas"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_Utilities"
 msgstr "_Utilitários"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
 msgid "_View"
 msgstr "_Ver"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/gadgets-beast.xml.h:41
 msgid "_Virtualization"
 msgstr "_Virtualização"
 
@@ -1325,6 +1395,108 @@ msgstr "Í_ndice"
 msgid "_Reload"
 msgstr "_Reler"
 
+#: beast-gtk/gxk/gxkparam-label.c:49
+msgid "Property Name"
+msgstr "Nome da Propriedade"
+
+#: beast-gtk/gxk/gxkparam-scale.c:82
+msgid "Horizontal Scale"
+msgstr "Escala Horizontal"
+
+#: beast-gtk/gxk/gxkparam-scale.c:88
+msgid "Vertical Scale"
+msgstr "Escala Vertical"
+
+#: beast-gtk/gxk/gxkparam-scale.c:94
+msgid "Horizontal Scale (Logarithmic)"
+msgstr "Escala Horizontal (Logarítmica)"
+
+#: beast-gtk/gxk/gxkparam-scale.c:100
+msgid "Vertical Scale (Logarithmic)"
+msgstr "Escala Vertical (Logarítmica)"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:66
+msgid "Spin Button"
+msgstr "Botão Giratório"
+
+#: beast-gtk/gxk/gxkparam-spinner.c:72
+msgid "Spin Button (Logarithmic)"
+msgstr "Botão Giratório (Logarítmica)"
+
+#: beast-gtk/gxk/gxkparam-toggle.c:69
+msgid "Toggle Button"
+msgstr "Botão de Alternar"
+
+#: beast-gtk/gxk/gxkparam-entry.c:56
+msgid "Text Entry"
+msgstr "Entrada de Texto"
+
+#: beast-gtk/gxk/gxksimplelabel.c:133
+msgid "The text of the label"
+msgstr "O texto da etiqueta"
+
+#: beast-gtk/gxk/gxksimplelabel.c:137
+msgid "Use underline"
+msgstr "Utilizar sublinhado"
+
+#: beast-gtk/gxk/gxksimplelabel.c:138
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr ""
+"Se definido, um sublinhado no texto indica que o caracter seguinte deverá ser "
+"utilizado para a tecla de atalho"
+
+#: beast-gtk/gxk/gxksimplelabel.c:142
+msgid "Auto cut"
+msgstr "Cortar Automaticamente"
+
+#: beast-gtk/gxk/gxksimplelabel.c:143
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgstr ""
+"Se definido, texto em excesso é cortado e é apresentado no seu lugar \"...\""
+
+#: beast-gtk/gxk/gxksimplelabel.c:147
+msgid "Justification"
+msgstr "Alinhamento"
+
+#: beast-gtk/gxk/gxksimplelabel.c:148
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr ""
+"O alinhamento das linhas no texto da etiqueta. Isto NÃO afecta o alinhamento "
+"da etiqueta na sua alocação."
+
+#: beast-gtk/gxk/gxksimplelabel.c:152
+msgid "Pattern"
+msgstr "Padrão"
+
+#: beast-gtk/gxk/gxksimplelabel.c:153
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
+msgstr ""
+"Uma expressão com caracteres _ em posições corresponde a caracteres no texto "
+"a sublinhar"
+
+#: beast-gtk/gxk/gxksimplelabel.c:157
+msgid "Mnemonic key"
+msgstr "Tecla de atalho"
+
+#: beast-gtk/gxk/gxksimplelabel.c:158
+msgid "The mnemonic accelerator key for this label"
+msgstr "A tecla de atalho para esta etiqueta"
+
+#: beast-gtk/gxk/gxksimplelabel.c:162
+msgid "Mnemonic widget"
+msgstr "Widged de atalho"
+
+#: beast-gtk/gxk/gxksimplelabel.c:163
+msgid "The widget to be activated when the label's mnemonic key is pressed"
+msgstr "O widget a ser activado quando a tecla de atalho da etiqueta é primida"
+
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr "BEAST"
@@ -1348,3 +1520,6 @@ msgstr "Ficheiro Wave BSE Multi-Parte"
 #: data/bse.keys.in.h:3
 msgid "BSE Synthesis File"
 msgstr "Ficheiro Sintetizador BSE"
+
+#~ msgid "Pos"
+#~ msgstr "Pos"
