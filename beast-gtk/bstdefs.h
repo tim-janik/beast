@@ -19,10 +19,9 @@
 #define __BST_DEFS_H__
 
 #include <gxk/gxk.h>
-#include	"gtklistwrapper.h"
-#include	"glewidgets.h"
-#include	"bstzoomedwindow.h"
-#include	"bstfreeradiobutton.h"
+#include "glewidgets.h"
+#include "bstzoomedwindow.h"
+#include "bstfreeradiobutton.h"
 
 #ifdef __cplusplus
 extern "C" {

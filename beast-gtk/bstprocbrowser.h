@@ -47,7 +47,7 @@ struct _BstProcBrowser
   guint		  n_cats;
   BseCategory	 *cats;
   
-  GtkListWrapper *proc_list;
+  GxkListWrapper *proc_list;
   GtkEntry	*entry;
 
   /* buttons */

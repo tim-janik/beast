@@ -43,7 +43,7 @@ struct _BstWaveEditor
   GtkVBox    parent_object;
   GtkWidget *main_vbox;
 
-  GtkListWrapper    *chunk_wrapper;
+  GxkListWrapper    *chunk_wrapper;
   GtkWidget         *tree;
   GtkWidget	    *qsampler_parent;
   GtkWidget	    *gmask_parent;

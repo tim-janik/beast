@@ -128,7 +128,7 @@ bst_wave_editor_init (BstWaveEditor *self)
   self->main_vbox = GTK_WIDGET (self);
 
   /* wave chunk list model */
-  self->chunk_wrapper = gtk_list_wrapper_new (N_COLS,
+  self->chunk_wrapper = gxk_list_wrapper_new (N_COLS,
 					      G_TYPE_STRING,  /* COL_OSC_FREQ */
 					      G_TYPE_STRING,  /* COL_MIX_FREQ */
 					      G_TYPE_STRING,  /* COL_LOOP */
@@ -307,7 +307,7 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
       if (self->wave)
 	{
 	  bse_item_unuse (self->wave);
-	  gtk_list_wrapper_notify_clear (self->chunk_wrapper);
+	  gxk_list_wrapper_notify_clear (self->chunk_wrapper);
 	}
       bst_wave_editor_set_esample (self, 0);
       if (BSE_IS_WAVE (wave))
@@ -318,7 +318,7 @@ bst_wave_editor_set_wave (BstWaveEditor *self,
 	{
 	  bse_item_use (self->wave);
 	  /* add wave's chunks to list */
-	  gtk_list_wrapper_notify_prepend (self->chunk_wrapper, bse_wave_n_wave_chunks (self->wave));
+	  gxk_list_wrapper_notify_prepend (self->chunk_wrapper, bse_wave_n_wave_chunks (self->wave));
 	  /* setup (initial) list selection */
 	  gtk_tree_selection_select_spath (gtk_tree_view_get_selection (GTK_TREE_VIEW (self->tree)), "0");
 	}
@@ -594,7 +594,7 @@ tree_selection_changed (BstWaveEditor    *self,
       gfloat osc_freq, mix_freq;
       SfiProxy esample;
 
-      g_assert (self->chunk_wrapper == (GtkListWrapper*) model);
+      g_assert (self->chunk_wrapper == (GxkListWrapper*) model);
 
       gtk_tree_model_get (model, &iter,
 			  COL_OSC_FREQ, &osc_str,
@@ -605,7 +605,7 @@ tree_selection_changed (BstWaveEditor    *self,
       g_free (osc_str);
       g_free (mix_str);
       
-      esample = bse_wave_use_editable (self->wave, gtk_list_wrapper_get_index (self->chunk_wrapper, &iter));
+      esample = bse_wave_use_editable (self->wave, gxk_list_wrapper_get_index (self->chunk_wrapper, &iter));
       bst_wave_editor_set_esample (self, esample);
       bse_item_unuse (esample);
     }

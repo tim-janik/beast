@@ -26,6 +26,7 @@
 #include <gxk/gxkdialog.h>
 #include <gxk/gxkglobals.h>
 #include <gxk/gxkled.h>
+#include <gxk/gxklistwrapper.h>
 #include <gxk/gxkpolygon.h>
 #include <gxk/gxkstatusbar.h>
 #include <gxk/gxkstock.h>
