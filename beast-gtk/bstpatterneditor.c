@@ -468,7 +468,7 @@ bst_pattern_editor_init (BstPatternEditor *pe)
   pe->focus_channel = 0;
   pe->focus_row = 0;
   pe->last_row = -1;
-  pe->base_octave = 0;
+  pe->base_octave = 1;
   
   pe->vadjustment = NULL;
   pe->hadjustment = NULL;

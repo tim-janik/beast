@@ -412,7 +412,7 @@ MISSING_PYTHON=#
 MISSING_FOLD=#
 MISSING_INDENT=#
 MISSING_ETAGS=#
-if test -n "$PERL" && perl -v | grep 'version 5.' > /dev/null ; then
+if test -n "$PERL" && $PERL -e 'exit !($] >= 5.002)' > /dev/null ; then
     MISSING_PERL5=
 fi
 if test -n "$PYTHON" && python -c "import sys ; print sys.version" | grep '^1.5.' > /dev/null ; then
