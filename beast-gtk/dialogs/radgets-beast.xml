@@ -65,12 +65,11 @@
 
   <!-- modules-popup -->
   <xdef:modules-popup inherit="popup-menu" >
-    <menu-title _label="Utilities" />
-    <menu-factory actions="router-util-actions" >
-      <factory-branch _label="_Utils" stock-image="gtk-execute" hidden="1" />
-    </menu-factory>
+    <menu-title _label="Synthesis Modules" />
     <menu-separator />
-    <menu-title _label="Modules" />
+    <submenu _label="_Utilities" stock-image="gtk-execute" >
+      <menu-factory actions="router-util-actions" />
+    </submenu>
     <menu-factory actions="router-canvas-tools" />
     <menu-factory actions="router-module-actions" >
       <factory-branch _label="_Audio Sources" />
