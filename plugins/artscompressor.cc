@@ -44,22 +44,20 @@ class Compressor : public CompressorBase
       volume = 0;
     }
     
-    void config(CompressorProperties *params)
+    void config (CompressorProperties *params)
     {
       threshold_db = params->threshold_db;
       threshold = comp_db2linear (threshold_db);
       ratio = 1 / params->ratio_to_one;
       output = comp_db2linear (params->output_db);
-      
-      if( params->attack == 0 )
-        attackfactor = 1;
-      else
-	attackfactor = LN2 / ( params->attack / 1000 * mix_freq() );
-      
-      if( params->release == 0 )
-        releasefactor = 1;
-      else
-	releasefactor = LN2 / ( params->release / 1000 * mix_freq() );
+     
+      /* compute half-life times: using max ensures that computing the attack- and releasefactor will
+       *  (a) not result in division by zero
+       *  (b) result in a value <= 1.0, where 1.0 means: adapt volume immediately, without half-life time
+       */
+      attackfactor = LN2 / max (params->attack / 1000 * mix_freq(), LN2);
+      releasefactor = LN2 / max (params->release / 1000 * mix_freq(), LN2);
+      printf ("Compressor::Module: attackfactor = %f, releasefactor = %f\n", attackfactor, releasefactor);
     }
 
     /* conversion doesn't test for linear == 0,
