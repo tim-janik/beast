@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-10-09 18:38+0200\n"
-"PO-Revision-Date: 2004-10-10 00:08+0200\n"
+"POT-Creation-Date: 2004-10-11 10:37+0200\n"
+"PO-Revision-Date: 2004-10-11 15:58+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -829,6 +829,22 @@ msgstr "BEAST verze %s"
 #: beast-gtk/bstmain.c:786
 msgid "Contributions made by:"
 msgstr "Přispěli:"
+
+#: beast-gtk/bstmsgabsorb.c:226
+msgid "Enable or disable message display of a specific message type"
+msgstr "Povolit nebo zakázat zobrazování konkrétního typu zpráv"
+
+#: beast-gtk/bstmsgabsorb.c:228
+msgid "Message Type"
+msgstr "Typ zprávy"
+
+#: beast-gtk/bstmsgabsorb.c:231
+msgid "Version"
+msgstr "Verze"
+
+#: beast-gtk/bstmsgabsorb.c:232
+msgid "The last program version that displayed this message type"
+msgstr "Poslední verze programu, která zobrazila tento typ zprávy"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
 #: beast-gtk/bstparam-automation.c:97
@@ -2508,6 +2524,12 @@ msgstr "Přesunout část"
 msgid "Start Editor"
 msgstr "Spustit editor"
 
+#. TRANSLATORS: this is a dialog title and %s is replaced by an object name
+#: beast-gtk/bsttracksynthdialog.c:264
+#, c-format
+msgid "Synthesizer Selection: %s"
+msgstr "Výběr syntetizéru: %s"
+
 #: beast-gtk/bsttrackview.c:63
 msgid "Add a new track to this song"
 msgstr "Přidat k této skladbě novou stopu"
@@ -2605,6 +2627,10 @@ msgstr "Zpráva byla zopakována %u-krát"
 #: beast-gtk/bstusermessage.c:375 beast-gtk/bstusermessage.c:377
 msgid "processing"
 msgstr "zpracování"
+
+#: beast-gtk/bstutils.c:318 beast-gtk/bstutils.c:340 beast-gtk/bstutils.c:343
+msgid "Updating View"
+msgstr "Aktualizuji pohled"
 
 #: beast-gtk/bstwaveeditor.c:241
 msgid "Scroll None"
@@ -4944,7 +4970,11 @@ msgid ""
 "recording mode. A quiet audio signal is used as input instead of a recorded "
 "signal, so playback operation may produce results not actually intended "
 "(such as reducing the output signal to pure silence)."
-msgstr "Používá se modul pro vstup zvuku, ale zvukové zařízení nebylo otevřeno pro nahrávání. Místo nahrávaného signálu se jako vstup použije tichý signál, takže přehrávání možná bude mít nezamýšlené výsledky (například nahrazení výstupního signálu úplným tichem)."
+msgstr ""
+"Používá se modul pro vstup zvuku, ale zvukové zařízení nebylo otevřeno pro "
+"nahrávání. Místo nahrávaného signálu se jako vstup použije tichý signál, "
+"takže přehrávání možná bude mít nezamýšlené výsledky (například nahrazení "
+"výstupního signálu úplným tichem)."
 
 #: bse/bseserver.c:486
 msgid "Show messages about PCM device selections problems"
@@ -6112,9 +6142,6 @@ msgstr "Pravý výstup"
 
 #~ msgid "Adjust right view boundary"
 #~ msgstr "Upravit pravou hranici zobrazení"
-
-#~ msgid "Question"
-#~ msgstr "Otázka"
 
 #~ msgid "Perform exponential frequency modulationinstead of linear"
 #~ msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
