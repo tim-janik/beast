@@ -78,10 +78,10 @@ show_nodes (GType        type,
   for (i = strlen (g_type_name (type)); i <= strlen (indent_inc); i++)
     fputs (O_KEY_FILL, f_out);
 
-  if (feature_blurb && bse_type_blurb (type))
+  if (feature_blurb && bse_type_get_blurb (type))
     {
       fputs ("\t[", f_out);
-      fputs (bse_type_blurb (type), f_out);
+      fputs (bse_type_get_blurb (type), f_out);
       fputs ("]", f_out);
     }
 

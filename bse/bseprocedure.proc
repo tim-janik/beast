@@ -97,7 +97,7 @@ PROCEDURE (bse-type-blurb, "Type Blurb") {
   type = g_type_from_name (stype);
 
   /* set out params */
-  sfi_value_set_string (out_values++, type ? bse_type_blurb (type) : NULL);
+  sfi_value_set_string (out_values++, type ? bse_type_get_blurb (type) : NULL);
 
   return BSE_ERROR_NONE;
 }

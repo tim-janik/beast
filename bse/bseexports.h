@@ -36,6 +36,8 @@ struct _BseExportNode {
   BseExportNodeType ntype;
   const char       *name;
   const char       *category;
+  const char       *authors;
+  const char       *license;
   const guint8     *pixstream;
   const char       *blurb;
   GType             type;

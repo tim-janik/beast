@@ -23,23 +23,52 @@
 
 /* --- variables --- */
 static GQuark	quark_blurb = 0;
+static GQuark	quark_authors = 0;
+static GQuark	quark_license = 0;
 GType bse_type_id_packed_pointer = 0;
 
 
 /* --- functions --- */
-gchar*
-bse_type_blurb (GType   type)
+const gchar*
+bse_type_get_blurb (GType   type)
 {
   return g_type_get_qdata (type, quark_blurb);
 }
 
 void
-bse_type_set_blurb (GType        type,
+bse_type_add_blurb (GType        type,
 		    const gchar *blurb)
 {
-  g_return_if_fail (bse_type_blurb (type) == NULL);
-  
+  g_return_if_fail (bse_type_get_blurb (type) == NULL);
   g_type_set_qdata (type, quark_blurb, g_strdup (blurb));
+}
+
+const gchar*
+bse_type_get_authors (GType   type)
+{
+  return g_type_get_qdata (type, quark_authors);
+}
+
+void
+bse_type_add_authors (GType        type,
+                      const gchar *authors)
+{
+  g_return_if_fail (bse_type_get_authors (type) == NULL);
+  g_type_set_qdata (type, quark_authors, g_strdup (authors));
+}
+
+const gchar*
+bse_type_get_license (GType   type)
+{
+  return g_type_get_qdata (type, quark_license);
+}
+
+void
+bse_type_add_license (GType        type,
+                      const gchar *license)
+{
+  g_return_if_fail (bse_type_get_license (type) == NULL);
+  g_type_set_qdata (type, quark_license, g_strdup (license));
 }
 
 GType  
@@ -64,7 +93,7 @@ bse_type_register_static (GType            parent_type,
   
   type = g_type_register_static (parent_type, type_name, info, 0);
   
-  bse_type_set_blurb (type, type_blurb);
+  bse_type_add_blurb (type, type_blurb);
   
   return type;
 }
@@ -91,7 +120,7 @@ bse_type_register_abstract (GType            parent_type,
   
   type = g_type_register_static (parent_type, type_name, info, G_TYPE_FLAG_ABSTRACT);
   
-  bse_type_set_blurb (type, type_blurb);
+  bse_type_add_blurb (type, type_blurb);
   
   return type;
 }
@@ -104,7 +133,7 @@ bse_type_register_dynamic (GType        parent_type,
 {
   GType type = g_type_register_dynamic (parent_type, type_name, plugin, 0);
   
-  bse_type_set_blurb (type, type_blurb);
+  bse_type_add_blurb (type, type_blurb);
   
   return type;
 }
@@ -184,7 +213,9 @@ bse_type_init (void)
   
   /* type system initialization
    */
-  quark_blurb = g_quark_from_static_string ("GType-blurb");
+  quark_blurb = g_quark_from_static_string ("BseType-blurb");
+  quark_authors = g_quark_from_static_string ("BseType-authors");
+  quark_license = g_quark_from_static_string ("BseType-license");
   g_type_init ();
   
   /* initialize parameter types */
@@ -200,7 +231,7 @@ bse_type_init (void)
   memset (&info, 0, sizeof (info));
   bse_type_register_procedure_info (&info);
   g_type_register_fundamental (BSE_TYPE_PROCEDURE, "BseProcedure", &info, &finfo, 0);
-  bse_type_set_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type");
+  bse_type_add_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type");
   g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
 
   /* initialize extra types */

@@ -1,3 +1,17 @@
+Tue Dec 16 11:59:43 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecxxplugin.h: assign authors and license fields in BseExportNode.
+
+	* bseexports.h: added authors and license fields.
+
+	* bseitem.proc: provide get-type-authors() and get-type-license()
+	procedures on items.
+
+	* bseplugin.[hc]: register plugin authors and license with types.
+
+	* bsetype.[hc]: provide bse_type_{add|get}_{blurb|authors|license}().
+	_blurb variants got renamed, changed callers.
+
 Tue Dec 16 02:16:25 2003  Tim Janik  <timj@gtk.org>
 
 	* bsesong.c (bse_song_class_init): make playback properties skip-undo.

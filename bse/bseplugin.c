@@ -401,6 +401,10 @@ bse_plugin_init_types (BsePlugin *plugin)
           guint n;
           if (node->category)
             bse_categories_register (node->category, type, node->pixstream);
+          if (node->authors && node->authors[0])
+            bse_type_add_authors (type, node->authors);
+          if (node->license && node->license[0])
+            bse_type_add_license (type, node->license);
           n = plugin->n_types++;
           plugin->types = g_renew (GType, plugin->types, plugin->n_types);
           plugin->types[n] = type;

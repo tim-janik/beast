@@ -116,7 +116,7 @@ bse_procedure_init (BseProcedureClass       *proc,
   memset (out_pspecs, 0, sizeof (out_pspecs));
   
   proc->name = g_type_name (BSE_PROCEDURE_TYPE (proc));
-  proc->blurb = bse_type_blurb (BSE_PROCEDURE_TYPE (proc));
+  proc->blurb = (gchar*) bse_type_get_blurb (BSE_PROCEDURE_TYPE (proc));
   proc->private_id = pnode->private_id;
   
   /* init procedure class from plugin,

@@ -38,24 +38,31 @@ extern GType bse_type_id_packed_pointer;
 
 
 /* --- prototypes --- */
-void   bse_type_init                  (void);
-gchar* bse_type_blurb                 (GType            type);
-void   bse_type_set_blurb             (GType            type,
-                                       const gchar     *blurb);
-GType  bse_type_register_static       (GType            parent_type,
-                                       const gchar     *type_name,
-                                       const gchar     *type_blurb,
-                                       const GTypeInfo *info);
-GType  bse_type_register_abstract     (GType            parent_type,
-                                       const gchar     *type_name,
-                                       const gchar     *type_blurb,
-                                       const GTypeInfo *info);
-GType  bse_type_register_dynamic      (GType            parent_type,
-                                       const gchar     *type_name,
-                                       const gchar     *type_blurb,
-                                       GTypePlugin     *plugin);
-void   bse_type_register_export_chain (BseExportNode   *chain,
-                                       const gchar     *owner);
+void         bse_type_init                  (void);
+void         bse_type_add_blurb             (GType            type,
+                                             const gchar     *blurb);
+const gchar* bse_type_get_blurb             (GType            type);
+void         bse_type_add_authors           (GType            type,
+                                             const gchar     *authors);
+const gchar* bse_type_get_authors           (GType            type);
+void         bse_type_add_license           (GType            type,
+                                             const gchar     *license);
+const gchar* bse_type_get_license           (GType            type);
+GType        bse_type_register_static       (GType            parent_type,
+                                             const gchar     *type_name,
+                                             const gchar     *type_blurb,
+                                             const GTypeInfo *info);
+GType        bse_type_register_abstract     (GType            parent_type,
+                                             const gchar     *type_name,
+                                             const gchar     *type_blurb,
+                                             const GTypeInfo *info);
+GType        bse_type_register_dynamic      (GType            parent_type,
+                                             const gchar     *type_name,
+                                             const gchar     *type_blurb,
+                                             GTypePlugin     *plugin);
+void         bse_type_register_export_chain (BseExportNode   *chain,
+                                             const gchar     *owner);
+
 
 
 /* --- implementation details --- */
