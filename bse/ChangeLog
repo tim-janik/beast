@@ -1,3 +1,11 @@
+Thu Jan 20 04:21:53 2005  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c (restore_item_property): generate proper warnings
+	for non-writable properties.
+
+	* bsestandardosc.c (bse_standard_osc_class_init): disabled self 
+	modulation mode which only produces huge amounts of aliasing.
+
 Thu Jan 20 01:28:59 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bseloader-guspatch.cc: Make more data found in the GUS Patch headers

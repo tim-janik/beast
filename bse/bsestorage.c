@@ -636,8 +636,12 @@ restore_item_property (BseItem    *item,
     }
 
   /* set property value while preserving the object uname */
-  g_object_set_property (G_OBJECT (item), /* no undo */
-                         pspec->name, &value);
+  if ((pspec->flags & G_PARAM_WRITABLE) && !(pspec->flags & G_PARAM_CONSTRUCT_ONLY))
+    g_object_set_property (G_OBJECT (item), /* no undo */
+                           pspec->name, &value);
+  else
+    bse_storage_warn (self, "ignoring non-writable object property \"%s\" of type `%s'",
+                      pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
   g_value_unset (&value);
 
   return G_TOKEN_NONE;

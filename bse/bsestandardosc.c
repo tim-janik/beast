@@ -169,7 +169,7 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      PROP_SELF_PERC,
 			      sfi_pspec_real ("self_perc", _("Self Modulation [%]"), _("Strength of self modulation"),
 					      0.0, 0.0, 100.0, 5.0,
-					      SFI_PARAM_STANDARD ":f:scale:skip-default"));
+					      SFI_PARAM_STANDARD ":f:scale:skip-default:" ":w-:")); // disabled
   bse_object_class_add_param (object_class, _("Pulse Modulation"),
 			      PROP_PULSE_WIDTH,
 			      sfi_pspec_real ("pulse_width", _("Pulse Width"),

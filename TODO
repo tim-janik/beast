@@ -8,7 +8,6 @@ FIXME(urgent):
 - gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
 - fix float saving with de_DE
 - remove num from SfiStoreReadBin()?
-- disable StandardOsc->selfmod
 - add a "Creating Skins" section to the beast manual page
 - provide config-parameter (by engine) which provides 16kHz limit listening-threshold used implicitely in osc-code etc. (important for 48K,84K)
 - skip and retrigger updates for scope visibility changes
