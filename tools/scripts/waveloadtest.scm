@@ -21,8 +21,10 @@
 ;; checks whether wave files load properly with BSE
 ;;
 
-(define (clear-wave-repo w)
-  (map (lambda (arg) (bse-wave-repo-remove-wave w arg)) (bse-container-list-children w)))
+(define (clear-wave-repo wave-repo)
+  (map
+	(lambda (arg) (bse-wave-repo-remove-wave wave-repo arg))
+	(bse-container-list-children wave-repo)))
 
 (define (test-load-wave wave-repo wave-file)
   (let*
@@ -33,7 +35,8 @@
 	      (string-append "FAILED: " wave-file ": " (bse-error-blurb error))
 		  (string-append "OK:     " wave-file)))
 	  (newline)
-	  (flush-all-ports))) ;; allows 'bsesh -s waveloadtest.scm * |tee ...' constructions work properly
+	  (flush-all-ports) ;; allows 'bsesh -s waveloadtest.scm * |tee ...' constructions work properly
+	  (clear-wave-repo wave-repo)))
 
 (define test-load-waves
   (lambda wave-files
