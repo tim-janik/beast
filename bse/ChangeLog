@@ -1,3 +1,13 @@
+Tue May  6 04:17:19 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemain.c (bse_init_intern): 
+	(bse_init_async): don't override previously set prgnames.
+
+	* bserecords.sfidl: added SampleFileInfo record.
+
+	* bsewaverepo.proc: provide bse-sample-file-info() to retrive
+	info about a sample file prior to loading.
+
 Mon May  5 03:52:24 2003  Tim Janik  <timj@gtk.org>
 
 	* bseglue.c (bglue_proxy_request_notify): canonify signal names before

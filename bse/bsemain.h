@@ -21,9 +21,7 @@
 #include	<bse/bseglobals.h>
 #include	<bse/bse.h>	/* initialization */
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 /* --- initialization --- */
@@ -47,18 +45,16 @@ void		bse_init_intern		(gint		*argc,
 #define	BSE_THREADS_LEAVE()			// bse_main_global_unlock ()
 #define	BSE_SEQUENCER_LOCK()			SFI_SYNC_LOCK (&bse_main_sequencer_mutex)
 #define	BSE_SEQUENCER_UNLOCK()			SFI_SYNC_UNLOCK (&bse_main_sequencer_mutex)
-#define	BSE_DVL_EXT				(bse_main_developer_extensions != FALSE)
+#define	BSE_DBG_EXT     			(bse_main_debug_extensions != FALSE)
 
 
 /* --- internal --- */
 extern GMainContext *bse_main_context;
 extern SfiMutex	     bse_main_sequencer_mutex;
-extern gboolean      bse_main_developer_extensions;
+extern gboolean      bse_main_debug_extensions;
 extern SfiThread    *bse_main_thread;
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_MAIN_H__ */

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine	-*-mode: c;-*-
- * Copyright (C) 2000-2002 Tim Janik
+ * Copyright (C) 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -73,7 +73,7 @@ METHOD (BseSNet, can-create-source) {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  if (!BSE_SNET_USER_SYNTH (snet) && !BSE_DVL_EXT)
+  if (!BSE_SNET_USER_SYNTH (snet) && !BSE_DBG_EXT)
     error = BSE_ERROR_NOT_OWNER;
   else if (!g_type_is_a (type, BSE_TYPE_SOURCE) ||
 	   g_type_is_a (type, BSE_TYPE_CONTAINER))
@@ -143,7 +143,7 @@ METHOD (BseSNet, remove-source) {
   
   /* check parameters */
   if (!BSE_IS_SNET (snet) || !BSE_IS_SOURCE (source) || BSE_ITEM (source)->parent != BSE_ITEM (snet) ||
-      (!BSE_SNET_USER_SYNTH (snet) && !BSE_DVL_EXT))
+      (!BSE_SNET_USER_SYNTH (snet) && !BSE_DBG_EXT))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */

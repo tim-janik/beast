@@ -90,6 +90,10 @@ bse_type_register_dynamic (GType        parent_type,
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, min, max, step, hints), group)
 #define	sfidl_pspec_Int_default(group, name)	\
   sfi_pspec_set_group (sfi_pspec_int (name, NULL, NULL, 0, G_MININT, G_MAXINT, 256, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_Num(group, name, nick, blurb, dflt, min, max, step, hints)	\
+  sfi_pspec_set_group (sfi_pspec_num (name, nick, blurb, dflt, min, max, step, hints), group)
+#define	sfidl_pspec_Num_default(group, name)	\
+  sfi_pspec_set_group (sfi_pspec_num (name, NULL, NULL, 0, SFI_MINNUM, SFI_MAXNUM, 1000, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_UInt(group, name, nick, blurb, dflt, hints)	\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, 0, G_MAXINT, 1, hints), group)
 #define	sfidl_pspec_Real(group, name, nick, blurb, dflt, min, max, step, hints)	\

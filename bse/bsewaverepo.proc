@@ -19,8 +19,12 @@
 #include <bse/bseprocedure.h>
 #include <bse/bsewaverepo.h>
 #include <bse/gslloader.h>
-
 #include <bse/bsewave.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <errno.h>
 
 
 /* --- auxlillary functions --- */
@@ -84,7 +88,7 @@ CRIGHTS = "Copyright (C) 2001-2002 Tim Janik";
 
 
 METHOD (BseWaveRepo, load-file) {
-  HELP	= "Load Wave from file";
+  HELP	= "Load wave from file";
   IN    = bse_param_spec_object ("wave_repo", "Wave Repo", NULL,
 				 BSE_TYPE_WAVE_REPO, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_string ("file_name", "File Name", "The file to import waves from",
@@ -111,6 +115,56 @@ BODY (BseProcedureClass *proc,
   /* set output parameters */
   g_value_set_enum (out_values++, error);
   
+  return BSE_ERROR_NONE;
+}
+
+PROCEDURE (bse-sample-file-info, "Utils/Sample File Info") {
+  HELP	= "Load sample file info from file";
+  IN	= sfi_pspec_string ("file_name", "File Name", "The file to load info from",
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("sample_file_info", NULL, NULL, BSE_TYPE_SAMPLE_FILE_INFO, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  gchar *filename = sfi_value_get_string (in_values++);
+  BseSampleFileInfo info = { 0, };
+  GslWaveFileInfo *wfi = NULL;
+  struct stat sbuf = { 0, };
+
+  /* check parameters */
+  if (!filename)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* construct info */
+  info.file = filename;
+  info.waves = bse_string_seq_new ();
+  if (stat (filename, &sbuf) < 0)
+    info.error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+  else
+    {
+      info.size = sbuf.st_size;
+      info.mtime = sbuf.st_mtime * SFI_USEC_FACTOR;
+      wfi = gsl_wave_file_info_load (filename, &info.error);
+      if (wfi)
+	{
+	  guint i;
+	  for (i = 0; i < wfi->n_waves; i++)
+	    bse_string_seq_append (info.waves, wfi->waves[i].name);
+	  info.loader = (gchar*) gsl_wave_file_info_loader (wfi);
+	}
+    }
+
+  /* set output parameters */
+  bse_value_set_boxed (out_values++, &info);
+
+  /* cleanup */
+  bse_string_seq_free (info.waves);
+  if (wfi)
+    gsl_wave_file_info_unref (wfi);
+
   return BSE_ERROR_NONE;
 }
 

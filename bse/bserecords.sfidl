@@ -133,6 +133,15 @@ namespace Bse {
     Int		tpt	    @= ("Ticks per tact", NULL, 384, 1, G_MAXINT, 12, SFI_PARAM_DEFAULT);
   };
 
+  record SampleFileInfo {
+    String	file	@= ("Filename", NULL, NULL, SFI_PARAM_DEFAULT);
+    Int		size	@= ("File Size", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_DEFAULT);
+    Num		mtime	@= ("Modification Time", NULL, 0, 0, SFI_MAXNUM, 0, SFI_PARAM_DEFAULT);
+    String	loader	@= ("Loader", NULL, NULL, SFI_PARAM_DEFAULT);
+    StringSeq	waves	@= (NULL, NULL, SFI_PARAM_DEFAULT);
+    Int		error	@= ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, SFI_PARAM_DEFAULT); // FIXME: use BseErrorType here
+  };
+
   /* BSE Global Config */
   record GConfig {
   group: "Synthesis Settings";

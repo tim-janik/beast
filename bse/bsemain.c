@@ -40,7 +40,7 @@ static void	bse_async_parse_args	(gint	       *argc_p,
 /* --- variables --- */
 GMainContext            *bse_main_context = NULL;
 SfiMutex	         bse_main_sequencer_mutex = { 0, };
-gboolean	         bse_main_developer_extensions = FALSE;
+gboolean	         bse_main_debug_extensions = FALSE;
 SfiThread               *bse_main_thread = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 /* from bse.h */
@@ -75,7 +75,7 @@ bse_init_async (gint    *argc,
   /* early argument handling */
   if (argc && argv)
     {
-      if (*argc)
+      if (*argc && !g_get_prgname ())
 	g_set_prgname (**argv);
       bse_async_parse_args (argc, argv, config);
     }
@@ -234,7 +234,7 @@ bse_init_intern (gint    *argc,
   /* early argument handling */
   if (argc && argv)
     {
-      if (*argc)
+      if (*argc && !g_get_prgname ())
 	g_set_prgname (**argv);
       bse_async_parse_args (argc, argv, config);
     }
@@ -337,6 +337,6 @@ bse_async_parse_args (gint    *argc_p,
   if (e)
     *argc_p = e;
 
-  if (config && sfi_rec_get_bool (config, "developer-extensions"))
-    bse_main_developer_extensions = TRUE;
+  if (config && sfi_rec_get_bool (config, "debug-extensions"))
+    bse_main_debug_extensions = TRUE;
 }
