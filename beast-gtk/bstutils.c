@@ -1122,8 +1122,7 @@ bst_forest_from_bse_icon (BseIcon *bse_icon,
 GtkWidget*
 bst_text_view_from (GString     *gstring,
 		    const gchar *file_name,
-		    const gchar *font_name,
-		    const gchar *font_fallback) /* FIXME: should go into misc.c or utils.c */
+		    const gchar *font_name)
 {
   GtkWidget *hbox, *text, *sb;
   
@@ -1146,23 +1145,15 @@ bst_text_view_from (GString     *gstring,
 			 "height_request", 500,
 			 "parent", hbox,
 			 NULL);
-  
-#if !GTK_CHECK_VERSION (1, 3, 1)
-  font = font_name ? gdk_font_load (font_name) : NULL;
-  if (!font && font_fallback)
-    font = gdk_font_load (font_fallback);
-  if (font)
+
+  if (font_name)
     {
-      GtkRcStyle *rc_style = gtk_rc_style_new();
-      
-      gdk_font_unref (font);
-      g_free (rc_style->font_name);
-      rc_style->font_name = g_strdup (font_name);
-      
-      gtk_widget_modify_style (text, rc_style);
+      PangoFontDescription *pfdesc = pango_font_description_from_string (font_name);
+
+      gtk_widget_modify_font (text, pfdesc);
+      pango_font_description_free (pfdesc);
     }
-#endif
-  
+
   if (gstring)
     gtk_text_insert (GTK_TEXT (text), NULL, NULL, NULL, gstring->str, gstring->len);
   

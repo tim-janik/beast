@@ -357,6 +357,7 @@ beast-gtk/Makefile
 beast-gtk/icons/Makefile
 docs/Makefile
 docs/reference/Makefile
+docs/generated/Makefile
 test/Makefile
 bse/bseconfig.h
 ])

@@ -1,3 +1,49 @@
+Sun Mar  3 04:45:13 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/tags2doc.pl: comment out code that checks input/output
+	file stamps and aborts if the output file is newer. 
+
+Sun Mar  3 04:39:09 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/: new subdir holding generated faq, release notes
+	and GSL master plan.
+
+	* docs/Makefile.am: updates since we moved files and did overall
+	doc file shuffling.
+
+Sat Mar  2 14:01:37 2002  Tim Janik  <timj@gtk.org>
+
+	* applied doc generation patch from alper with some
+	shuffling on my part to keep the directory structure flat.
+
+	* docs/reference/tags2doc.pl: new script from Alper Ersoy
+	<aersoy@tfz.net> to scan .dat files and generate output
+	with various kinds of markup.
+
+	* docs/reference/mkdocs.pl: incorporated changes from
+	alper to output .dat file data.
+
+	* docs/reference/scandocs.pl: renamed file since it only
+	scans for documentation now and has no real backend generation
+	code anymore.
+
+	* docs/reference/man-conf.pl: configuration files
+	for tags2doc.pl to output html or man pages.
+
+Sat Mar  2 13:24:27 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.[hc]: fix font type.
+
+	* beast-gtk/bstitemview.c: optimize clist updates, so we
+	don't change rows if the string contents didn't actually
+	change.
+
+Thu Feb 14 13:46:26 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterneditor.[hc]: GType fixes.
+
+	* beast-gtk/*.h: fix G_TYPE_INSTANCE_GET_CLASS() macro usages.
+
 Wed Feb 13 17:44:59 2002  Tim Janik  <timj@gtk.org>
 
 	* bstcontrollers.[hc]: move controllers from BstRackItem into this

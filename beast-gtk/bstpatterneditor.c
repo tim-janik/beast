@@ -290,29 +290,31 @@ static const gchar	     *class_rc_string =
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_pattern_editor_get_type (void)
 {
-  static GtkType pe_type = 0;
-  
-  if (!pe_type)
+  static GType type = 0;
+
+  if (!type)
     {
-      GtkTypeInfo pe_info =
-      {
-	"BstPatternEditor",
-	sizeof (BstPatternEditor),
+      static const GTypeInfo type_info = {
 	sizeof (BstPatternEditorClass),
-	(GtkClassInitFunc) bst_pattern_editor_class_init,
-	(GtkObjectInitFunc) bst_pattern_editor_init,
-	/* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) bst_pattern_editor_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	sizeof (BstPatternEditor),
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) bst_pattern_editor_init,
       };
-      
-      pe_type = gtk_type_unique (GTK_TYPE_CONTAINER, &pe_info);
+
+      type = g_type_register_static (GTK_TYPE_CONTAINER,
+				     "BstPatternEditor",
+				     &type_info, 0);
     }
-  
-  return pe_type;
+
+  return type;
 }
 
 static void

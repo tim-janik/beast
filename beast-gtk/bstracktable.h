@@ -32,7 +32,7 @@ extern "C" {
 #define BST_RACK_TABLE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_RACK_TABLE, BstRackTableClass))
 #define BST_IS_RACK_TABLE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_RACK_TABLE))
 #define BST_IS_RACK_TABLE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_RACK_TABLE))
-#define BST_RACK_TABLE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_RACK_TABLE, BstRackTable))
+#define BST_RACK_TABLE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_RACK_TABLE, BstRackTableClass))
 
 
 /* --- structures & typedefs --- */

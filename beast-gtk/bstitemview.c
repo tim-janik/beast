@@ -166,15 +166,35 @@ bst_item_view_item_changed (BstItemView *item_view,
   row = gtk_clist_find_row_from_data (clist, (gpointer) item);
   if (row >= 0)
     {
-      gchar *string, *blurb = NULL;
+      gchar *string, *str;
       
       string = g_strdup_printf (item_view->id_format, bse_item_get_seqid (bse_object_from_id (item)));
-      gtk_clist_set_text (clist, row, CLIST_SEQID, string);
+      str = NULL;
+      if (!gtk_clist_get_text (clist, row, CLIST_SEQID, &str) || strcmp (str, string))
+	{
+	  g_print ("clist:seqid: \"%s\" != \"%s\"\n", str, string);
+	  gtk_clist_set_text (clist, row, CLIST_SEQID, string);
+	}
       g_free (string);
-      gtk_clist_set_text (clist, row, CLIST_NAME, bsw_item_get_name (item));
-      g_object_get (bse_object_from_id (item), "blurb", &blurb, NULL);
-      gtk_clist_set_text (clist, row, CLIST_BLURB, blurb);
-      g_free (blurb);
+      string = bsw_item_get_name (item);
+      if (!string)
+	string = "";
+      str = NULL;
+      if (!gtk_clist_get_text (clist, row, CLIST_NAME, &str) || strcmp (str, string))
+	{
+	  g_print ("clist:name: \"%s\" != \"%s\"\n", str, string);
+	  gtk_clist_set_text (clist, row, CLIST_NAME, string);
+	}
+      string = NULL;
+      g_object_get (bse_object_from_id (item), "blurb", &string, NULL);
+      if (!string)
+	string = g_strdup ("");
+      if (!gtk_clist_get_text (clist, row, CLIST_BLURB, &str) || strcmp (str, string))
+	{
+	  g_print ("clist:blurb: \"%s\" != \"%s\"\n", str, string);
+	  gtk_clist_set_text (clist, row, CLIST_BLURB, string);
+	}
+      g_free (string);
     }
 }
 

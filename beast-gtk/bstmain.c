@@ -147,7 +147,7 @@ main (int   argc,
   if (bst_globals->rc_version != this_rc_version)
     {
       static GtkWidget *txt_dialog = NULL;
-      gchar *txt_file = g_strconcat (BST_PATH_DOCS, "/release-notes.txt", NULL);
+      gchar *txt_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
       gchar *dialog_title = g_strdup (txt_file);
       gchar *string;
 
@@ -156,7 +156,7 @@ main (int   argc,
 				    &txt_dialog,
 				    bst_text_view_from (NULL,
 							txt_file,
-							NULL, NULL),
+							NULL),
 				    BST_ADIALOG_DESTROY_ON_HIDE,
 				    "title", string,
 				    NULL);

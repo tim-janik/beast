@@ -92,10 +92,10 @@ static GtkItemFactoryEntry menubar_entries[] =
   // { "/SNet/_Test",			"",		BST_OP (NONE),			"<Item>" },
   { "/_Help",				NULL,		NULL, 0,			"<LastBranch>" },
   { "/Help/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
+  { "/Help/_Release Notes...",		NULL,		BST_OP (HELP_RELEASE_NOTES),	"<Item>" },
   { "/Help/_FAQ...",			NULL,		BST_OP (HELP_FAQ),		"<Item>" },
   { "/Help/_Keytable...",		NULL,		BST_OP (HELP_KEYTABLE),		"<Item>" },
-  { "/Help/_Heart...",			NULL,		BST_OP (HELP_HEART),		"<Item>" },
-  { "/Help/Synthesis _Networks...",	NULL,		BST_OP (HELP_NETWORKS),		"<Item>" },
+  { "/Help/Development/GSL Engine...",	NULL,		BST_OP (HELP_GSL_PLAN),		"<Item>" },
   { "/Help/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Help/_About...",			NULL,		BST_OP (HELP_ABOUT),		"<Item>" },
 #undef	BST_OP
@@ -671,19 +671,19 @@ bst_app_operate (BstApp *app,
       gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
       break;
     case BST_OP_HELP_FAQ:
-      help_file = g_strconcat (BST_PATH_DOCS, "/faq.txt", NULL);
+      help_file = g_strconcat (BST_PATH_DOCS, "/faq.markup", NULL);
       help_title = help_file;
       goto case_help_dialog;
     case BST_OP_HELP_KEYTABLE:
       help_string = bst_pattern_editor_class_keydump (gtk_type_class (BST_TYPE_PATTERN_EDITOR));
       help_title = "Keytable";
       goto case_help_dialog;
-    case BST_OP_HELP_HEART:
-      help_file = g_strconcat (BST_PATH_DOCS, "/bse-heart.txt", NULL);
+    case BST_OP_HELP_RELEASE_NOTES:
+      help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
       help_title = help_file;
       goto case_help_dialog;
-    case BST_OP_HELP_NETWORKS:
-      help_file = g_strconcat (BST_PATH_DOCS, "/bse-networks.txt", NULL);
+    case BST_OP_HELP_GSL_PLAN:
+      help_file = g_strconcat (BST_PATH_DOCS, "/gsl-mplan.markup", NULL);
       help_title = help_file;
       goto case_help_dialog;
     case BST_OP_HELP_ABOUT:
@@ -698,8 +698,7 @@ bst_app_operate (BstApp *app,
 								      &bst_help_dialogs[op - BST_OP_HELP_FIRST],
 								      bst_text_view_from (help_string,
 											  help_file,
-											  "-misc-fixed-*-*-*-*-15-*-*-*-*-*-*-*",
-											  "-misc-fixed-*-*-*-*-*-*-*-*-*-*-*-*"),
+											  "monospace"),
 								      BST_ADIALOG_DESTROY_ON_HIDE,
 								      "title", string,
 								      NULL);
@@ -795,8 +794,8 @@ bst_app_can_operate (BstApp *app,
       // case BST_OP_HELP_ABOUT:
     case BST_OP_HELP_FAQ:
     case BST_OP_HELP_KEYTABLE:
-    case BST_OP_HELP_NETWORKS:
-    case BST_OP_HELP_HEART:
+    case BST_OP_HELP_GSL_PLAN:
+    case BST_OP_HELP_RELEASE_NOTES:
       return TRUE;
     default:
       return shell ? bst_super_shell_can_operate (BST_SUPER_SHELL (shell), bst_op) : FALSE;

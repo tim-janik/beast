@@ -25,16 +25,16 @@
 extern "C" {
 #endif /* __cplusplus */
 
+/* --- type macros --- */
+#define BST_TYPE_PATTERN_EDITOR              (bst_pattern_editor_get_type ())
+#define BST_PATTERN_EDITOR(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_PATTERN_EDITOR, BstPatternEditor))
+#define BST_PATTERN_EDITOR_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_PATTERN_EDITOR, BstPatternEditorClass))
+#define BST_IS_PATTERN_EDITOR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_PATTERN_EDITOR))
+#define BST_IS_PATTERN_EDITOR_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_PATTERN_EDITOR))
+#define BST_PATTERN_EDITOR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_PATTERN_EDITOR, BstPatternEditorClass))
 
-/* --- Gtk+ type macros --- */
-#define BST_TYPE_PATTERN_EDITOR            (bst_pattern_editor_get_type ())
-#define BST_PATTERN_EDITOR(object)         (GTK_CHECK_CAST ((object), BST_TYPE_PATTERN_EDITOR, BstPatternEditor))
-#define BST_PATTERN_EDITOR_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_PATTERN_EDITOR, BstPatternEditorClass))
-#define BST_IS_PATTERN_EDITOR(object)      (GTK_CHECK_TYPE ((object), BST_TYPE_PATTERN_EDITOR))
-#define BST_IS_PATTERN_EDITOR_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_PATTERN_EDITOR))
-#define BST_PATTERN_EDITOR_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_PATTERN_EDITOR, BstPatternEditorClass))
 
-
+/* --- enums --- */
 typedef enum
 {
   BST_CELL_NONE,
@@ -42,7 +42,6 @@ typedef enum
   BST_CELL_INSTRUMENT,
   BST_CELL_EFFECT
 } BstCellType;
-
 typedef enum
 {
   BST_PEA_TYPE_CHANGE_DEFAULTS  = 1, /* change octave & instrument */
@@ -292,7 +291,7 @@ struct _BstPatternEditorClass
 
 
 /* --- prototypes --- */
-GtkType    bst_pattern_editor_get_type        (void);
+GType      bst_pattern_editor_get_type        (void);
 GtkWidget* bst_pattern_editor_new             (BsePattern               *pattern);
 void       bst_pattern_editor_set_hadjustment (BstPatternEditor         *pe,
                                                GtkAdjustment            *adjustment);

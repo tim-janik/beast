@@ -33,7 +33,7 @@ extern "C" {
 #define BST_RACK_EDITOR_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_RACK_EDITOR, BstRackEditorClass))
 #define BST_IS_RACK_EDITOR(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_RACK_EDITOR))
 #define BST_IS_RACK_EDITOR_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_RACK_EDITOR))
-#define BST_RACK_EDITOR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_RACK_EDITOR, BstRackEditor))
+#define BST_RACK_EDITOR_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_RACK_EDITOR, BstRackEditorClass))
 
 
 /* --- structures & typedefs --- */

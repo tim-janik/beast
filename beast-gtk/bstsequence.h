@@ -32,7 +32,7 @@ extern "C" {
 #define BST_SEQUENCE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_SEQUENCE, BstSequenceClass))
 #define BST_IS_SEQUENCE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_SEQUENCE))
 #define BST_IS_SEQUENCE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_SEQUENCE))
-#define BST_SEQUENCE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_SEQUENCE, BstSequence))
+#define BST_SEQUENCE_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_SEQUENCE, BstSequenceClass))
 
 
 /* --- structures --- */

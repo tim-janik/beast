@@ -31,7 +31,7 @@ extern "C" {
 #define BST_LOG_ADJUSTMENT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_LOG_ADJUSTMENT, BstLogAdjustmentClass))
 #define BST_IS_LOG_ADJUSTMENT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_LOG_ADJUSTMENT))
 #define BST_IS_LOG_ADJUSTMENT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_LOG_ADJUSTMENT))
-#define BST_LOG_ADJUSTMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_LOG_ADJUSTMENT, BstLogAdjustment))
+#define BST_LOG_ADJUSTMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_LOG_ADJUSTMENT, BstLogAdjustmentClass))
 
 
 /* --- structures & typedefs --- */

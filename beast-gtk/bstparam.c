@@ -1363,7 +1363,7 @@ dots_area_expose_event (GtkWidget      *widget,
 		    BST_TAG_DIAMETER, BST_TAG_DIAMETER,
 		    0 * 64, 360 *64);
   
-  return TRUE;
+  return FALSE;
 }
 
 static gint
