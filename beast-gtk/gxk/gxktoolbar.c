@@ -182,21 +182,21 @@ button_event_window_lower (GtkButton *button)
  * @tooltip and containing @icon. @icon is usually an image widget,
  * unless %GXK_TOOLBAR_WIDGET or one of its variants was specified
  * as child type. The possible child types are:
- * %GXK_TOOLBAR_SPACE - add a vertical space;
- * %GXK_TOOLBAR_SEPARATOR - add a vertical seperator;
- * %GXK_TOOLBAR_BUTTON - add a button widget;
- * %GXK_TOOLBAR_TRUNC_BUTTON - like %GXK_TOOLBAR_BUTTON, but clip the
+ @* %GXK_TOOLBAR_SPACE - add a vertical space;
+ @* %GXK_TOOLBAR_SEPARATOR - add a vertical seperator;
+ @* %GXK_TOOLBAR_BUTTON - add a button widget;
+ @* %GXK_TOOLBAR_TRUNC_BUTTON - like %GXK_TOOLBAR_BUTTON, but clip the
  * @name label if it width exceeds the button size;
- * %GXK_TOOLBAR_EXTRA_BUTTON - like %GXK_TOOLBAR_BUTTON, but leave the
+ @* %GXK_TOOLBAR_EXTRA_BUTTON - like %GXK_TOOLBAR_BUTTON, but leave the
  * button's size alone, it is not made homogeneous with other toolbar children.
- * %GXK_TOOLBAR_TOGGLE - add a toggle button widget;
- * %GXK_TOOLBAR_TRUNC_TOGGLE - like %GXK_TOOLBAR_TRUNC_BUTTON for toggle buttons;
- * %GXK_TOOLBAR_EXTRA_TOGGLE - like %GXK_TOOLBAR_EXTRA_BUTTON for toggle buttons;
- * %GXK_TOOLBAR_WIDGET - treat @icon as a custom widget, and don't put it into
+ @* %GXK_TOOLBAR_TOGGLE - add a toggle button widget;
+ @* %GXK_TOOLBAR_TRUNC_TOGGLE - like %GXK_TOOLBAR_TRUNC_BUTTON for toggle buttons;
+ @* %GXK_TOOLBAR_EXTRA_TOGGLE - like %GXK_TOOLBAR_EXTRA_BUTTON for toggle buttons;
+ @* %GXK_TOOLBAR_WIDGET - treat @icon as a custom widget, and don't put it into
  * a button, toggle button or other activatable container;
- * GXK_TOOLBAR_TRUNC_WIDGET - like %GXK_TOOLBAR_TRUNC_BUTTON for custom widgets;
- * GXK_TOOLBAR_EXTRA_WIDGET - like %GXK_TOOLBAR_EXTRA_BUTTON for custom widgets;
- * GXK_TOOLBAR_FILL_WIDGET - like %GXK_TOOLBAR_EXTRA_WIDGET but extra unused space
+ @* %GXK_TOOLBAR_TRUNC_WIDGET - like %GXK_TOOLBAR_TRUNC_BUTTON for custom widgets;
+ @* %GXK_TOOLBAR_EXTRA_WIDGET - like %GXK_TOOLBAR_EXTRA_BUTTON for custom widgets;
+ @* %GXK_TOOLBAR_FILL_WIDGET - like %GXK_TOOLBAR_EXTRA_WIDGET but extra unused space
  * of the toolbar is given to this child.
  */
 GtkWidget*

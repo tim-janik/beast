@@ -166,8 +166,14 @@ sub tags_highlight {
 
     my $ident = "[*0-9A-Za-z?][*0-9A-Za-z_?]*";
 
+    # Protect explicit newline indicators @*
+    $t =~ s/ \s \@ \* \s/ :scandocs_pl_QUOTE1:newline:scandocs_pl_QUOTE2:/gx;
+
     # A variable (parameter)
     $t =~ s/ \@ ( $ident ) /\@reference_parameter{$1}/gx;
+
+    # Restore explicit newline indicators
+    $t =~ s/:scandocs_pl_QUOTE1:newline:scandocs_pl_QUOTE2:/\@*/gx;
 
     # A type
     $t =~ s/ \# ( $ident ) /\@reference_type{$1}/gx;

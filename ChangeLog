@@ -1,3 +1,8 @@
+Sun Feb  9 19:05:48 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/scandocs.pl (tags_highlight): protect explicit
+	newlines "@*" from variable markup.
+
 Sun Feb  9 18:33:11 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstradiotools.c (rtools_toggle_toggled): keep current radio
