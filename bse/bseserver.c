@@ -495,7 +495,7 @@ bse_server_open_midi_device (BseServer *server)
   if (error)
     {
       if (choice != BSE_TYPE_MIDI_DEVICE_NULL)
-	sfi_info ("failed to open midi device \"%s\" (reverting to null device): %s",
+	sfi_info ("failed to open midi device %s (reverting to null device): %s",
 		  bse_object_debug_name (server->midi_device), bse_error_blurb (error));
       g_object_unref (server->midi_device);
       server->midi_device = NULL;

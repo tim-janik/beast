@@ -173,7 +173,7 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
 	    }
 	  else
 	    {
-	      g_printerr ("open(\"%s\") failed: %s\n", dname, g_strerror (errno));
+	      // g_printerr ("open(\"%s\") failed: %s\n", dname, g_strerror (errno));
 	      if (!error)
 		error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 	    }
