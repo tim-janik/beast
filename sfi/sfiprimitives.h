@@ -338,9 +338,18 @@ SfiRing* sfi_ring_sort                  (SfiRing        *head,
 SfiRing* sfi_ring_uniq                  (SfiRing        *sorted_ring1,
                                          SfiCompareFunc  cmp,
                                          gpointer        data);
+SfiRing* sfi_ring_uniq_free_deep        (SfiRing        *sorted_ring1,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        data,
+                                         GDestroyNotify  data_destroy);
 SfiRing* sfi_ring_reorder               (SfiRing        *unordered_ring,
                                          const SfiRing  *new_ring_order);
 /* ring-copying cmp-based operations */
+SfiRing* sfi_ring_copy_deep_uniq        (const SfiRing  *sorted_ring1,
+                                         SfiRingDataFunc copy,
+                                         gpointer        copy_data,
+                                         SfiCompareFunc  cmp,
+                                         gpointer        cmp_data);
 SfiRing* sfi_ring_copy_uniq             (const SfiRing  *sorted_ring1,
                                          SfiCompareFunc  cmp,
                                          gpointer        data);

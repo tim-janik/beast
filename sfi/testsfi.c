@@ -930,6 +930,10 @@ test_sfi_ring (void)
   ASSERT (sfi_ring_length (t2) == 8);
   t2 = sfi_ring_sort (t2, sfi_pointer_cmp, NULL);
   ASSERT (sfi_ring_length (t2) == 8);
+  t1 = sfi_ring_copy_uniq (t2, sfi_pointer_cmp, NULL);
+  ASSERT (sfi_ring_length (t1) == 6);
+  ASSERT (sfi_ring_equals (d, t1, sfi_pointer_cmp, NULL));
+  sfi_ring_free (t1);
   t1 = sfi_ring_uniq (t2, sfi_pointer_cmp, NULL);
   ASSERT (sfi_ring_length (t1) == 6);
   ASSERT (sfi_ring_equals (d, t1, sfi_pointer_cmp, NULL));

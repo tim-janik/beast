@@ -1533,6 +1533,23 @@ sfi_ring_split (SfiRing *head1,
   return head2;
 }
 
+static inline SfiRing*
+sfi_ring_unlink_node_dangling (SfiRing *head,
+                               SfiRing *node)
+{
+  g_assert (head && node);
+  /* special case one item ring */
+  if (head->prev == head)
+    return NULL;
+  /* unlink */
+  node->next->prev = node->prev;
+  node->prev->next = node->next;
+  if (head == node)
+    head = node->next;
+  /* node->prev and node->next are dangling now */
+  return head;
+}
+
 SfiRing*
 sfi_ring_remove_node (SfiRing *head,
 		      SfiRing *node)
@@ -1869,9 +1886,86 @@ sfi_ring_uniq (SfiRing        *sorted_ring1,
                gpointer        data)
 {
   /* always preserves the first of a sublist of consequtive equal elements */
-  SfiRing *ring = sfi_ring_copy_uniq (sorted_ring1, cmp, data);
-  sfi_ring_free (sorted_ring1);
-  return ring;
+  SfiRing *r1 = sorted_ring1;
+  SfiRing *r2 = NULL;
+  if (r1)
+    {
+      SfiRing *last = r1;
+      r1 = sfi_ring_unlink_node_dangling (r1, last);
+      r2 = last->next = last->prev = last; /* form new ring */
+      while (r1)
+        {
+          SfiRing *node = r1;
+          r1 = sfi_ring_unlink_node_dangling (r1, node);
+          if (cmp (last->data, node->data, data))
+            {
+              last = node;
+              r2 = sfi_ring_append_link_i (r2, last);
+            }
+          else
+            sfi_delete_struct (SfiRing, node);
+        }
+    }
+  return r2;
+}
+
+SfiRing* /* eliminates duplicate nodes */
+sfi_ring_uniq_free_deep (SfiRing        *sorted_ring1,
+                         SfiCompareFunc  cmp,
+                         gpointer        data,
+                         GDestroyNotify  data_destroy)
+{
+  /* always preserves the first of a sublist of consequtive equal elements */
+  SfiRing *r1 = sorted_ring1;
+  SfiRing *r2 = NULL;
+  if (r1)
+    {
+      SfiRing *last = r1;
+      r1 = sfi_ring_unlink_node_dangling (r1, last);
+      r2 = last->next = last->prev = last; /* form new ring */
+      while (r1)
+        {
+          SfiRing *node = r1;
+          r1 = sfi_ring_unlink_node_dangling (r1, node);
+          if (cmp (last->data, node->data, data))
+            {
+              last = node;
+              r2 = sfi_ring_append_link_i (r2, last);
+            }
+          else
+            {
+              data_destroy (node->data);
+              sfi_delete_struct (SfiRing, node);
+            }
+        }
+    }
+  return r2;
+}
+
+SfiRing* /* eliminates duplicate nodes */
+sfi_ring_copy_deep_uniq (const SfiRing  *sorted_ring1,
+                         SfiRingDataFunc copy,
+                         gpointer        copy_data,
+                         SfiCompareFunc  cmp,
+                         gpointer        cmp_data)
+{
+  /* always preserves the first of a sublist of consequtive equal elements */
+  if (!copy)
+    return sfi_ring_copy_uniq (sorted_ring1, cmp, cmp_data);
+  const SfiRing *r1 = sorted_ring1;
+  SfiRing *r2 = NULL;
+  if (r1)
+    {
+      gpointer last_data = r1->data;
+      r2 = sfi_ring_append (r2, copy (last_data, copy_data));
+      for (r1 = sfi_ring_walk (r1, sorted_ring1); r1; r1 = sfi_ring_walk (r1, sorted_ring1))
+        if (cmp (last_data, r1->data, cmp_data))
+          {
+            last_data = r1->data;
+            r2 = sfi_ring_append (r2, copy (last_data, copy_data));
+          }
+    }
+  return r2;
 }
 
 SfiRing* /* eliminates duplicate nodes */

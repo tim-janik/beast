@@ -1,3 +1,11 @@
+Mon Dec 27 03:42:17 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: added sfi_ring_uniq_free_deep() and
+	sfi_ring_copy_deep_uniq(). made sfi_ring_uniq() more efficient by
+	operating in place.
+
+	* testsfi.c: test sfi_ring_copy_uniq().
+
 Mon Dec 27 01:27:56 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.c: document guaranteed properties (stable-ness,
