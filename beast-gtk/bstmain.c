@@ -114,7 +114,7 @@ main (int   argc,
   /* initialize Gtk+ and go into threading mode */
   bst_early_parse_args (&argc, &argv, bseconfig);
   gtk_init (&argc, &argv);
-  g_set_prgname ("BEAST");	/* overriding Gdk's program name */
+  g_set_prgname ("beast");	/* overriding Gdk's program name */
   GDK_THREADS_ENTER ();
 
   /* initialize Gtk+ Extension Kit */
