@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-11 19:19+0200\n"
-"PO-Revision-Date: 2004-06-12 01:54+0200\n"
+"POT-Creation-Date: 2004-06-18 03:05+0200\n"
+"PO-Revision-Date: 2004-06-18 06:40+0200\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -100,7 +100,7 @@ msgid "Rack Editor"
 msgstr "Rack bewerken"
 
 # wat is een goede vertaling hiervoor?
-#: beast-gtk/bstapp.c:113
+#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Profiler"
 
@@ -1266,6 +1266,69 @@ msgstr "`%s' uitvoeren"
 #: beast-gtk/bstprocedure.c:446
 msgid "Procedure"
 msgstr "Procedure"
+
+#: beast-gtk/bstprofiler.c:167
+msgid "Totals"
+msgstr "Totalen"
+
+# draad?
+#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+msgid "Thread Name"
+msgstr "Thread-naam"
+
+#: beast-gtk/bstprofiler.c:246
+msgid "CPU%"
+msgstr "CPU%"
+
+#: beast-gtk/bstprofiler.c:246
+msgid "Percentage of CPU usage"
+msgstr "Percentage processorgebruik"
+
+# gerbuikerstijd
+#: beast-gtk/bstprofiler.c:247
+msgid "UTime"
+msgstr "Gtijd"
+
+#: beast-gtk/bstprofiler.c:247
+msgid "Milliseconds of user CPU time used by thread"
+msgstr "Milliseconden gebruikers-processortijd gebruikt door de thread"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "STime"
+msgstr "Stijd"
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Milliseconds of system CPU time used by thread"
+msgstr "Milliseconden systeem-processortijd gebruikt door de thread"
+
+#.
+#. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+#. _("Thread State:\n"
+#. "'?' - thread state is unknown\n"
+#. "'R' - thread is running\n"
+#. "'S' - thread is sleeping\n"
+#. "'D' - thread waits on disk\n"
+#. "'T' - thread is traced\n"
+#. "'W' - thread is swapping memory\n"
+#. "'Z' - thread died unexpectedly\n"
+#. "'X' - thread exited"),
+#. NULL, NULL, 0);
+#.
+#: beast-gtk/bstprofiler.c:262
+msgid "Nice"
+msgstr "Nice"
+
+#: beast-gtk/bstprofiler.c:262
+msgid "Thread priority from -20 (high) to +19 (low)"
+msgstr "Thread prioriteit van -20 (hoog) naar +19 (laag)"
+
+#: beast-gtk/bstprofiler.c:263
+msgid "#CPU"
+msgstr "#CPU"
+
+#: beast-gtk/bstprofiler.c:263
+msgid "CPU the thread is currently running on"
+msgstr "Processor waarop momenteel de tread wordt uitgevoerd"
 
 #: beast-gtk/bstprojectctrl.c:38
 msgid "Restarting Playback"
@@ -2828,11 +2891,6 @@ msgstr "Frequentie"
 msgid "Const Out%u"
 msgstr "Const uit%u"
 
-# draad?
-#: bse/bsecore.idl:378
-msgid "Thread Name"
-msgstr "Thread-naam"
-
 #: bse/bsecore.idl:379
 msgid "State"
 msgstr "Status"
@@ -2849,7 +2907,9 @@ msgstr "Prioriteit"
 msgid ""
 "The nice value of a thread, -20 indicates a high priority thread and +19 a "
 "low priority one that is 'nice' to others"
-msgstr "De 'nice'-waarde van een 'thread', -20 beteknt hoge prioriteit en +19 een lage prioriteit, dus eentje die 'aardig' is voor anderen"
+msgstr ""
+"De 'nice'-waarde van een 'thread', -20 beteknt hoge prioriteit en +19 een "
+"lage prioriteit, dus eentje die 'aardig' is voor anderen"
 
 # rekeneenheid
 #: bse/bsecore.idl:383
@@ -2866,7 +2926,9 @@ msgstr "Gebruikerstijd"
 
 #: bse/bsecore.idl:385
 msgid "The CPU time spent executing instructions of this thread"
-msgstr "De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van deze 'thread'"
+msgstr ""
+"De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van deze "
+"'thread'"
 
 #: bse/bsecore.idl:387
 msgid "System Time"
@@ -2882,7 +2944,9 @@ msgstr "Dochter gebruikerstijd"
 
 #: bse/bsecore.idl:389
 msgid "The CPU time spent executing instructions of children of this thread"
-msgstr "De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van de dochters van deze 'thread'"
+msgstr ""
+"De CPU-tijd die wordt gebruikt bij het uitvoeren van de instructies van de "
+"dochters van deze 'thread'"
 
 #: bse/bsecore.idl:391
 msgid "Child System Time"
@@ -2890,7 +2954,8 @@ msgstr "Dochter systeemtijd"
 
 #: bse/bsecore.idl:391
 msgid "The CPU time spent in the system for children of this thread"
-msgstr "De CPU-tijd die wordt gebruikt in het systeem voor dochters van deze 'thread'"
+msgstr ""
+"De CPU-tijd die wordt gebruikt in het systeem voor dochters van deze 'thread'"
 
 #: bse/bsecore.idl:432
 msgid "Latency [ms]"
@@ -3118,20 +3183,28 @@ msgstr "Rechts audio in"
 msgid "Right channel Input"
 msgstr "Rechter kanaalingag"
 
-#: bse/bseserver.c:503
+#: bse/bseserver.c:143
+msgid "WAVE File"
+msgstr "WAVE bestand"
+
+#: bse/bseserver.c:144
+msgid "Name of the WAVE file used for recording BSE sound output"
+msgstr "Naam het WAVE-bestand dat gebruikt wordt voor opname van BSE geluid"
+
+#: bse/bseserver.c:504
 msgid "Advice about MIDI device selections"
 msgstr "Adviseren over MIDI apparaat selectie"
 
-#: bse/bseserver.c:504
+#: bse/bseserver.c:505
 msgid "Alert me about MIDI device selections"
 msgstr "Waarschuw mij bij MIDI apparaatselectie"
 
-#: bse/bseserver.c:505
+#: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr "openen midi apparaat %s mislukt (teruggaan naar null-apparaat): %s"
 
-#: bse/bseserver.c:547
+#: bse/bseserver.c:548
 #, c-format
 msgid "failed to open output file \"%s\": %s"
 msgstr "openen uitvoerbestand \"%s\" mislukt: %s"
