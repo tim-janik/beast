@@ -33,7 +33,8 @@
 
 @keepspaceSTART
 		A good starting point are the test files shipped in the
-		tests/ subdirectory of the source package.
+		tests/ subdirectory of the source package, or the Quick Start
+		Guide in the Help menu.
 @keepspaceEND
 
 @keepspaceSTART
@@ -46,7 +47,7 @@
 		Questions, comments, bug reports and similar stuff should be sent to:
 @keepspaceEND
 
-@center		@uref{!spam-beast@@beast.gtk.org,,beast@@beast.gtk.org}
+@center		@uref{beast@@beast.gtk.org,,beast@@beast.gtk.org}
 
 @*
 @*

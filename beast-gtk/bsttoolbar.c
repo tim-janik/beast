@@ -170,6 +170,7 @@ bst_toolbar_append (BstToolbar     *self,
   GtkWidget *child = NULL;
   gpointer relief_data = NULL, size_data = NULL;
   guint padding = 0;
+  gboolean expand_fill = FALSE;
 
   g_return_val_if_fail (BST_IS_TOOLBAR (self), NULL);
 
@@ -204,6 +205,7 @@ bst_toolbar_append (BstToolbar     *self,
     case BST_TOOLBAR_WIDGET:
     case BST_TOOLBAR_TRUNC_WIDGET:
     case BST_TOOLBAR_EXTRA_WIDGET:
+    case BST_TOOLBAR_FILL_WIDGET:
     case BST_TOOLBAR_TOGGLE:
     case BST_TOOLBAR_TRUNC_TOGGLE:
     case BST_TOOLBAR_EXTRA_TOGGLE:
@@ -215,13 +217,16 @@ bst_toolbar_append (BstToolbar     *self,
 	widget_type = GTK_TYPE_BUTTON;
       filtered = (child_type == BST_TOOLBAR_WIDGET ||
 		  child_type == BST_TOOLBAR_TRUNC_WIDGET ||
-		  child_type == BST_TOOLBAR_EXTRA_WIDGET);
+		  child_type == BST_TOOLBAR_EXTRA_WIDGET ||
+		  child_type == BST_TOOLBAR_FILL_WIDGET);
       trunc = (child_type == BST_TOOLBAR_TRUNC_BUTTON ||
 	       child_type == BST_TOOLBAR_TRUNC_TOGGLE ||
 	       child_type == BST_TOOLBAR_TRUNC_WIDGET);
       extra = (child_type == BST_TOOLBAR_EXTRA_BUTTON ||
 	       child_type == BST_TOOLBAR_EXTRA_TOGGLE ||
-	       child_type == BST_TOOLBAR_EXTRA_WIDGET);
+	       child_type == BST_TOOLBAR_EXTRA_WIDGET ||
+	       child_type == BST_TOOLBAR_FILL_WIDGET);
+      expand_fill = child_type == BST_TOOLBAR_FILL_WIDGET;
       child = g_object_new (widget_type,
 			    "visible", TRUE,
 			    "can_focus", FALSE,
@@ -259,6 +264,7 @@ bst_toolbar_append (BstToolbar     *self,
 	  GtkWidget *label = g_object_new (GTK_TYPE_LABEL,
 					   "visible", TRUE,
 					   "label", name,
+					   "use_underline", TRUE,
 					   trunc ? "xalign" : NULL, 0.0,
 					   NULL);
 	  g_object_set_data (G_OBJECT (child), "bst-toolbar-label", label);
@@ -284,7 +290,7 @@ bst_toolbar_append (BstToolbar     *self,
   g_object_set_data (G_OBJECT (child), "bst-toolbar-size", size_data);
   g_object_set_data (G_OBJECT (child), "bst-toolbar-relief", relief_data);
   update_child (self, child);
-  gtk_box_pack_start (GTK_BOX (self->box), child, FALSE, FALSE, padding);
+  gtk_box_pack_start (GTK_BOX (self->box), child, expand_fill, expand_fill, padding);
   gtk_tooltips_set_tip (BST_TOOLTIPS, child, tooltip, NULL);
 
   return child;

@@ -758,7 +758,11 @@ bst_app_operate (BstApp *app,
     HELP_DIALOG:
       if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
 	{
-	  GtkWidget *sctext = bst_scroll_text_from_file (BST_TEXT_VIEW_PARSE_TSM | BST_TEXT_VIEW_SHEET_BG, help_file);
+	  GtkWidget *sctext = bst_scroll_text_create (BST_TEXT_VIEW_SHEET_BG | BST_TEXT_VIEW_NAVIGATABLE, NULL);
+	  gchar *index = g_strconcat ("file://", BST_PATH_DOCS, "/beast-index.markup", NULL);
+	  bst_scroll_text_set_index (sctext, index);
+	  g_free (index);
+	  bst_scroll_text_enter (sctext, help_file);
 	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
 								     NULL,
 								     BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_DELETE_BUTTON,
@@ -769,6 +773,7 @@ bst_app_operate (BstApp *app,
 			NULL);
 	}
       g_free (help_file);
+      bst_scroll_text_rewind (bst_dialog_get_child (BST_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
       gtk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
       break;
     case BST_OP_HELP_RELEASE_NOTES:
@@ -777,7 +782,8 @@ bst_app_operate (BstApp *app,
 	  GtkWidget *sctext;
 	  help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
 	  help_title = help_file;
-	  sctext = bst_scroll_text_from_file (BST_TEXT_VIEW_PARSE_TSM | BST_TEXT_VIEW_SHEET_BG, help_file);
+	  sctext = bst_scroll_text_create (BST_TEXT_VIEW_SHEET_BG, NULL);
+	  bst_scroll_text_append_file_tsm (sctext, help_file);
 	  help_file = g_strconcat (BST_PATH_DOCS, "/news.markup", NULL);
 	  bst_scroll_text_append_file_tsm (sctext, help_file);
 	  g_free (help_file);
@@ -791,6 +797,7 @@ bst_app_operate (BstApp *app,
 			NULL);
 	  g_free (help_title);
 	}
+      bst_scroll_text_rewind (bst_dialog_get_child (BST_DIALOG (bst_help_dialogs[op - BST_OP_HELP_FIRST])));
       gtk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
       break;
     case BST_OP_HELP_ABOUT:

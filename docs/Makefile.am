@@ -5,6 +5,7 @@ texi_docs = $(strip		\
 	quickstart.texi		\
 	release-notes.texi	\
 	teximacros.texi		\
+	beast-index.texi	\
 )
 private_docs = $(strip		\
 	bse-categories.txt	\

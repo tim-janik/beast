@@ -28,11 +28,11 @@ extern "C" {
 
 typedef enum /*< skip >*/
 {
-  BST_TEXT_VIEW_PARSE_TSM	= 1 << 0, /* TagSpanMarkup */
-  BST_TEXT_VIEW_MONO_SPACED	= 1 << 1,
-  BST_TEXT_VIEW_CENTER          = 1 << 2,
-  BST_TEXT_VIEW_NO_WRAP         = 1 << 3,
-  BST_TEXT_VIEW_SHEET_BG        = 1 << 4
+  BST_TEXT_VIEW_MONO_SPACED	= 1 << 0,
+  BST_TEXT_VIEW_CENTER          = 1 << 1,
+  BST_TEXT_VIEW_NO_WRAP         = 1 << 2,
+  BST_TEXT_VIEW_SHEET_BG        = 1 << 3,
+  BST_TEXT_VIEW_NAVIGATABLE     = 1 << 4
 } BstTextViewFlags;
 
 void		bst_text_view_enter_browse_mode	(GtkTextView		*tview);
@@ -41,8 +41,15 @@ void		bst_text_view_cursor_to_start	(GtkTextView		*tview);
 void		bst_text_view_cursor_to_end	(GtkTextView		*tview);
 GtkWidget*	bst_scroll_text_create		(BstTextViewFlags	 flags,
 						 const gchar		*string);
-GtkWidget*	bst_scroll_text_from_file	(BstTextViewFlags	 flags,
-						 const gchar		*file_name);
+void		bst_scroll_text_set_index	(GtkWidget		*sctext,
+						 const gchar		*uri);
+void		bst_scroll_text_display		(GtkWidget		*sctext,
+						 const gchar		*uri);
+void		bst_scroll_text_enter		(GtkWidget		*sctext,
+						 const gchar		*uri);
+void		bst_scroll_text_advance		(GtkWidget		*sctext,
+						 const gchar		*uri);
+void		bst_scroll_text_rewind		(GtkWidget		*sctext);
 void		bst_scroll_text_set		(GtkWidget		*sctext,
 						 const gchar		*string);
 void		bst_scroll_text_set_tsm		(GtkWidget		*sctext,
@@ -67,6 +74,7 @@ void		bst_scroll_text_aprintf_tsm	(GtkWidget		*sctext,
 void		bst_scroll_text_pop_indent	(GtkWidget		*sctext);
 GtkTextView*	bst_scroll_text_get_text_view	(GtkWidget		*sctext);
 void		bst_text_add_tsm_path		(const gchar		*path);
+void	bst_text_buffer_init_custom			(void);
 void	bst_text_buffer_cursor_to_start			(GtkTextBuffer	*tbuffer);
 void	bst_text_buffer_cursor_to_end			(GtkTextBuffer	*tbuffer);
 void	bst_text_buffer_append_from_string		(GtkTextBuffer	*tbuffer,

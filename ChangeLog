@@ -1,3 +1,34 @@
+Wed Sep  4 00:21:01 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: make documentation text views navigatable, rewind
+	history upon reshow.
+
+	* beast-gtk/bsttexttools.[hc]: implement navigatable portion of the text
+	views, optionally supported with BST_TEXT_VIEW_NAVIGATABLE.
+	removed BST_TEXT_VIEW_PARSE_TSM since we have to figure TSM-parsability
+	anyways.
+	got rid of bst_scroll_text_from_file(), reading input from files
+	should be done via absolute or partial file:// URIs now.
+
+	* beast-gtk/bsttoolbar.[hc]: support expandable toolbar widgets.
+
+	* beast-gtk/tsmview.c: make the browser navigatable.
+
+	* docs/beast-index.texi: new file. this simply links to all the
+	other docu files, it's used as a fallback index for beast's
+	documentation browser.
+
+	* docs/generated/markup.xsl:
+	a bunch of changes:
+	- provide a toplevel <tag-span-markup/> tag
+	- add anchors to section titles (copied from html.xsl), tag
+	  spec: <anchor name="customPointer"/>
+	- tag rename, <activatable data="someURI"/> became <xlink
+	  ref="someURI"/>. (for some _ODD_ reason, GMarkup seems
+	  to be unable to parse <link/>, while <xlink/> doesn't pose
+	  a problem.)
+	- nuke image link deadends.
+
 Mon Sep  2 10:04:38 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/reference/Makefile.am: add $(top_srcdir)/configure as dependency

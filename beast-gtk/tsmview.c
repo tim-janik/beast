@@ -22,8 +22,13 @@
 
 #define PRGNAME "tsmview"
 
-gboolean            bst_dvl_hints = FALSE;
 
+
+/* --- variables --- */
+gboolean          bst_dvl_hints = FALSE;
+
+
+/* --- functions --- */
 int
 main (int   argc,
       char *argv[])
@@ -34,7 +39,7 @@ main (int   argc,
 
   if (argc < 2)
     {
-      g_printerr (PRGNAME ": missing filename arguments\n");
+      g_printerr (PRGNAME ": missing filename argument\n");
       return 1;
     }
 
@@ -47,17 +52,18 @@ main (int   argc,
 
   title = g_strdup (argv[1]);
   bst_text_add_tsm_path (".");
-  sctext = bst_scroll_text_from_file (BST_TEXT_VIEW_PARSE_TSM | BST_TEXT_VIEW_SHEET_BG, argv[1]);
+  sctext = bst_scroll_text_create (BST_TEXT_VIEW_SHEET_BG | BST_TEXT_VIEW_NAVIGATABLE, NULL);
+  bst_scroll_text_enter (sctext, argv[1]);
   for (i = 2; i < argc; i++)
     {
-      bst_scroll_text_append_file_tsm (sctext, argv[i]);
+      bst_scroll_text_enter (sctext, argv[i]);  // FIXME: should append
       str = title;
       title = g_strconcat (title, " ", argv[i], NULL);
       g_free (str);
     }
 
   str = title;
-  title = g_strconcat (title, " - tsmview", NULL);
+  title = g_strdup ("tsmview");	// g_strconcat (title, " - tsmview", NULL);
   g_free (str);
 
   dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_DELETE_BUTTON, title, NULL);

@@ -1,0 +1,16 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@settitle BEAST-INDEX
+@c %**end of header
+
+@include teximacros.texi
+
+@unnumbered Documentation
+
+@itemize
+@item @uref{faq.markup,,	  Frequently Asked Questions}
+@item @uref{quickstart.markup,,	  Quick Start Guide}
+@item @uref{release-notes.markup, BEAST Release Notice}
+@item @uref{news.markup,,	  BEAST NEWS File}
+@item @uref{gsl-mplan.markup,,	  GSL Engine (Development Concepts)}
+@end itemize

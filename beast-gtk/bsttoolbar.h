@@ -64,7 +64,12 @@ typedef enum {
   BST_TOOLBAR_EXTRA_TOGGLE,
   BST_TOOLBAR_WIDGET,
   BST_TOOLBAR_TRUNC_WIDGET,
-  BST_TOOLBAR_EXTRA_WIDGET
+  BST_TOOLBAR_EXTRA_WIDGET,
+  BST_TOOLBAR_FILL_WIDGET
+  /* TRUNC => clip the label
+   * EXTRA => free form widget size (not in size group)
+   * FILL  => expand & fill widget with toolbar resizes
+   */
 } BstToolbarChild;
 typedef void (*BstToolbarChoiceFunc)	(gpointer	data,
 					 guint		choice);

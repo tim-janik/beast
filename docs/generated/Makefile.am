@@ -9,6 +9,7 @@ public_docs = $(strip		\
 	news.markup		\
 	gsl-mplan.markup	\
 	quickstart.markup	\
+	beast-index.markup	\
 )
 build_targets = $(strip		\
 	faq.markup		\
@@ -16,6 +17,7 @@ build_targets = $(strip		\
 	news.markup		\
 	gsl-mplan.markup	\
 	quickstart.markup	\
+	beast-index.markup	\
 )
 html_targets = $(patsubst %.markup, %.html, $(build_targets))
 texi_docs = $(strip			\
