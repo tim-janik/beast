@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-18 00:28+0100\n"
-"PO-Revision-Date: 2004-12-13 22:14+0100\n"
+"POT-Creation-Date: 2004-12-19 10:46+0100\n"
+"PO-Revision-Date: 2004-12-19 12:45+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -407,20 +407,20 @@ msgstr "Spojení modulů: "
 msgid "Module link"
 msgstr "Spojení modulů"
 
-#: beast-gtk/bstcanvassource.c:444
+#: beast-gtk/bstcanvassource.c:450
 msgid "Module Info"
 msgstr "Informace o modulu"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1089
+#: beast-gtk/bstcanvassource.c:978 beast-gtk/bstsnetrouter.c:1089
 msgid "Input"
 msgstr "Vstup"
 
-#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1093
+#: beast-gtk/bstcanvassource.c:987 beast-gtk/bstsnetrouter.c:1093
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Výstup"
 
-#: beast-gtk/bstcanvassource.c:985
+#: beast-gtk/bstcanvassource.c:991
 msgid "(Hint)"
 msgstr "(Nápověda)"
 
@@ -825,9 +825,9 @@ msgid "Loading \"%s\""
 msgstr "Načítám \"%s\""
 
 #: beast-gtk/bstmain.c:310
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load project \"%s\": %s"
-msgstr "Nemohu otevřít výstupní soubor \"%s\": %s"
+msgstr "Nemohu načíst projekt \"%s\": %s"
 
 #: beast-gtk/bstmain.c:811
 msgid "BEAST About"
@@ -2513,22 +2513,20 @@ msgid "PCM Input module"
 msgstr "Modul vstupu PCM"
 
 #: beast-gtk/bstsnetrouter.c:1090
-#, fuzzy
 msgid "Oscillator"
-msgstr "Tvar vlny oscilátoru"
+msgstr "Oscilátor"
 
 #: beast-gtk/bstsnetrouter.c:1090
-#, fuzzy
 msgid "Standard oscillator module"
-msgstr "Standardní modul zesilovače"
+msgstr "Standardní modul oscilátoru"
 
 #: beast-gtk/bstsnetrouter.c:1091
 msgid "ADSR"
-msgstr ""
+msgstr "ADSR"
 
 #: beast-gtk/bstsnetrouter.c:1091
 msgid "ADSR Envelope Generator"
-msgstr ""
+msgstr "Generátor obálky ADSR"
 
 #: beast-gtk/bstsnetrouter.c:1092
 msgid "DCA"
@@ -5373,7 +5371,7 @@ msgstr "Fáze"
 
 #: bse/bsestandardosc.c:137
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
-msgstr ""
+msgstr "Počáteční fáze vlny oscilátoru (posun cyklu ve stupních)"
 
 #: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:148
 msgid "Base Frequency"
@@ -5381,11 +5379,11 @@ msgstr "Základní frekvence"
 
 #: bse/bsestandardosc.c:142
 msgid "Number of oscillator cycles per second"
-msgstr ""
+msgstr "Počet cyklů oscilátoru za sekundu"
 
 #: bse/bsestandardosc.c:146
 msgid "Musical notation corresponding to the oscillator frequency"
-msgstr ""
+msgstr "Hudební notace odpovídající frekvenci oscilátoru"
 
 #: bse/bsestandardosc.c:150
 msgid "Fine Tune"
@@ -5393,7 +5391,7 @@ msgstr "Doladění"
 
 #: bse/bsestandardosc.c:150
 msgid "Amount of detuning in cent (hundredth part of a note)"
-msgstr ""
+msgstr "Úroveň rozladění v centech (setinách noty)"
 
 #: bse/bsestandardosc.c:155 bse/bsewaveosc.c:568
 msgid "Input Modulation [%]"
@@ -6245,7 +6243,7 @@ msgstr ""
 msgid "Set the amount of modified data to mix"
 msgstr "Nastavit množství upravených dat, která mixovat"
 
-#: plugins/davguitar.c:302
+#: plugins/davguitar.c:303
 msgid "Guitar Output"
 msgstr "Výstup kytary"
 
