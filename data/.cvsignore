@@ -1,3 +1,5 @@
 Makefile
 Makefile.in
 beast-images.h
+sfi.pc
+bse.pc

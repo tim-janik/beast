@@ -6,7 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
-"POT-Creation-Date: 2003-10-26 14:25+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-10-26 18:14+0100\n"
 "PO-Revision-Date: 2003-10-26 18:16+0200\n"
 "Last-Translator: Mətin Əmirov <metin@karegen.com>\n"
 "Language-Team: AZ <gnome@azitt.com>\n"
@@ -50,8 +51,7 @@ msgstr ""
 msgid "/File/_Quit"
 msgstr ""
 
-#: beast-gtk/bstapp.c:78
-#: beast-gtk/bstpartdialog.c:78
+#: beast-gtk/bstapp.c:78 beast-gtk/bstpartdialog.c:73
 msgid "/_Edit"
 msgstr ""
 
@@ -187,8 +187,7 @@ msgstr ""
 msgid "/Synthesizers/Save As Instrument"
 msgstr ""
 
-#: beast-gtk/bstapp.c:125
-#: beast-gtk/bstpartdialog.c:72
+#: beast-gtk/bstapp.c:125 beast-gtk/bstpartdialog.c:67
 msgid "/_Tools"
 msgstr ""
 
@@ -232,9 +231,7 @@ msgstr ""
 msgid "/Help/_About..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:631
-#: beast-gtk/bstapp.c:638
-#: beast-gtk/bstfiledialog.c:428
+#: beast-gtk/bstapp.c:631 beast-gtk/bstapp.c:638 beast-gtk/bstfiledialog.c:428
 #: beast-gtk/bstfiledialog.c:435
 #, c-format
 msgid "Opening project `%s'"
@@ -267,8 +264,7 @@ msgstr ""
 msgid "Module Link: "
 msgstr ""
 
-#: beast-gtk/bstcanvaslink.c:233
-#: beast-gtk/bstsnetrouter.c:1055
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:1055
 msgid "Module link"
 msgstr ""
 
@@ -288,65 +284,51 @@ msgstr ""
 msgid "(Hint)"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:259
-#: beast-gtk/bsteventrollctrl.c:266
-#: beast-gtk/bsteventrollctrl.c:330
+#: beast-gtk/bsteventrollctrl.c:344 beast-gtk/bsteventrollctrl.c:351
+#: beast-gtk/bsteventrollctrl.c:415
 msgid "Move Control Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:266
-#: beast-gtk/bsteventrollctrl.c:415
-#: beast-gtk/bsteventrollctrl.c:465
-#: beast-gtk/bstpianorollctrl.c:306
-#: beast-gtk/bstpianorollctrl.c:416
-#: beast-gtk/bstpianorollctrl.c:479
-#: beast-gtk/bsttrackrollctrl.c:448
-#: beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:500
+#: beast-gtk/bsteventrollctrl.c:550 beast-gtk/bstpianorollctrl.c:428
+#: beast-gtk/bstpianorollctrl.c:538 beast-gtk/bstpianorollctrl.c:601
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:468
 #: beast-gtk/bsttrackrollctrl.c:540
 msgid "No target"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:330
-#: beast-gtk/bsteventrollctrl.c:451
+#: beast-gtk/bsteventrollctrl.c:415 beast-gtk/bsteventrollctrl.c:536
 msgid "Lost Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:340
-#: beast-gtk/bsteventrollctrl.c:373
+#: beast-gtk/bsteventrollctrl.c:425 beast-gtk/bsteventrollctrl.c:458
 msgid "Align Control Events"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:373
-#: beast-gtk/bsteventrollctrl.c:499
-#: beast-gtk/bstpianorollctrl.c:537
-#: beast-gtk/bstpianorollctrl.c:573
+#: beast-gtk/bsteventrollctrl.c:458 beast-gtk/bsteventrollctrl.c:584
+#: beast-gtk/bstpianorollctrl.c:659 beast-gtk/bstpianorollctrl.c:695
 msgid "Aborted"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:399
+#: beast-gtk/bsteventrollctrl.c:484
 msgid "Insert Control Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:410
-#: beast-gtk/bsteventrollctrl.c:415
-#: beast-gtk/bsteventrollctrl.c:451
+#: beast-gtk/bsteventrollctrl.c:495 beast-gtk/bsteventrollctrl.c:500
+#: beast-gtk/bsteventrollctrl.c:536
 msgid "Resize Control Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:462
-#: beast-gtk/bsteventrollctrl.c:465
+#: beast-gtk/bsteventrollctrl.c:547 beast-gtk/bsteventrollctrl.c:550
 msgid "Delete Control Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:475
-#: beast-gtk/bsteventrollctrl.c:499
-#: beast-gtk/bstpianorollctrl.c:511
-#: beast-gtk/bstpianorollctrl.c:537
+#: beast-gtk/bsteventrollctrl.c:560 beast-gtk/bsteventrollctrl.c:584
+#: beast-gtk/bstpianorollctrl.c:633 beast-gtk/bstpianorollctrl.c:659
 msgid "Select Region"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:508
-#: beast-gtk/bstpianorollctrl.c:582
+#: beast-gtk/bsteventrollctrl.c:593 beast-gtk/bstpianorollctrl.c:704
 msgid "Abortion"
 msgstr ""
 
@@ -400,14 +382,12 @@ msgstr ""
 msgid "Store references to wave files"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:542
-#: beast-gtk/bstfiledialog.c:552
+#: beast-gtk/bstfiledialog.c:542 beast-gtk/bstfiledialog.c:552
 #, c-format
 msgid "Saving project `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:543
-#: beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:543 beast-gtk/bstfiledialog.c:619
 #: beast-gtk/bstfiledialog.c:695
 #, c-format
 msgid ""
@@ -431,8 +411,7 @@ msgstr ""
 msgid "Save Effect"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:618
-#: beast-gtk/bstfiledialog.c:628
+#: beast-gtk/bstfiledialog.c:618 beast-gtk/bstfiledialog.c:628
 #, c-format
 msgid "Saving effect `%s'"
 msgstr ""
@@ -450,8 +429,7 @@ msgstr ""
 msgid "Save Instrument"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:694
-#: beast-gtk/bstfiledialog.c:704
+#: beast-gtk/bstfiledialog.c:694 beast-gtk/bstfiledialog.c:704
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr ""
@@ -460,23 +438,19 @@ msgstr ""
 msgid "Load Wave"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:732
-#: beast-gtk/bstfiledialog.c:734
+#: beast-gtk/bstfiledialog.c:732 beast-gtk/bstfiledialog.c:734
 #, c-format
 msgid "Loading wave `%s'"
 msgstr ""
 
-#: beast-gtk/bstinstrumentview.c:33
-#: beast-gtk/bstpartview.c:37
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
 #: beast-gtk/bsttrackview.c:61
 msgid "Add"
 msgstr ""
 
-#: beast-gtk/bstinstrumentview.c:34
-#: beast-gtk/bstpartview.c:38
-#: beast-gtk/bstrackitem.c:182
-#: beast-gtk/bstsnetrouter.c:1017
-#: beast-gtk/bstsnetrouter.c:1059
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstmessages.c:81
+#: beast-gtk/bstpartview.c:38 beast-gtk/bstrackitem.c:182
+#: beast-gtk/bstsnetrouter.c:1017 beast-gtk/bstsnetrouter.c:1059
 #: beast-gtk/bsttrackview.c:63
 msgid "Delete"
 msgstr ""
@@ -538,8 +512,7 @@ msgstr ""
 msgid "Loading..."
 msgstr ""
 
-#: beast-gtk/bstmain.c:309
-#: beast-gtk/bstmain.c:311
+#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
 #, c-format
 msgid "Loading \"%s\""
 msgstr ""
@@ -662,63 +635,139 @@ msgstr ""
 msgid "Delete parts"
 msgstr ""
 
+#: beast-gtk/bstmessages.c:77
+msgid "Insert"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:79
+msgid "Insert/resize/move notes (mouse button 1 and 2)"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:83
+msgid "Delete note (mouse button 1)"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:85
+msgid "Align"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:87
+msgid "Draw a line to align events to"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:89
+msgid "Select"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:91
+msgid "Rectangle select notes"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:93
+msgid "VSelect"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:95
+msgid "Select tick range vertically"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:97
+msgid "1/1"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:99
+msgid "Insert full notes"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:101
+msgid "1/2"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:103
+msgid "Insert half notes"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:105
+msgid "1/4"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:107
+msgid "Insert quarter notes"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:109
+msgid "1/8"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:111
+msgid "Insert eighths note"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:113
+msgid "1/16"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:115
+msgid "Insert sixteenth note"
+msgstr ""
+
 #: beast-gtk/bstparam-entry.c:61
 msgid "Remove Paths"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:73
+#: beast-gtk/bstpartdialog.c:68
 msgid "/Tools/Insert"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:74
+#: beast-gtk/bstpartdialog.c:69
 msgid "/Tools/Delete"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:75
+#: beast-gtk/bstpartdialog.c:70
 msgid "/Tools/Align Events"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:76
+#: beast-gtk/bstpartdialog.c:71
 msgid "/Tools/Select"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:77
+#: beast-gtk/bstpartdialog.c:72
 msgid "/Tools/Vertical Select"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:79
+#: beast-gtk/bstpartdialog.c:74
 msgid "/Edit/Cut"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:80
+#: beast-gtk/bstpartdialog.c:75
 msgid "/Edit/Copy"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:81
+#: beast-gtk/bstpartdialog.c:76
 msgid "/Edit/Paste"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:82
+#: beast-gtk/bstpartdialog.c:77
 msgid "/Edit/Clear"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:84
+#: beast-gtk/bstpartdialog.c:79
 msgid "/Edit/Undo"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:85
+#: beast-gtk/bstpartdialog.c:80
 msgid "/Edit/Redo"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:87
+#: beast-gtk/bstpartdialog.c:82
 msgid "/Scripts"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:88
+#: beast-gtk/bstpartdialog.c:83
 msgid "/Test"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:260
+#: beast-gtk/bstpartdialog.c:255
 msgid "Control Type: "
 msgstr ""
 
@@ -726,41 +775,37 @@ msgstr ""
 msgid "Editor"
 msgstr "Editor"
 
-#: beast-gtk/bstpianorollctrl.c:299
-#: beast-gtk/bstpianorollctrl.c:306
-#: beast-gtk/bstpianorollctrl.c:394
+#: beast-gtk/bstpianorollctrl.c:421 beast-gtk/bstpianorollctrl.c:428
+#: beast-gtk/bstpianorollctrl.c:516
 msgid "Move Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:394
-#: beast-gtk/bstpianorollctrl.c:465
+#: beast-gtk/bstpianorollctrl.c:516 beast-gtk/bstpianorollctrl.c:587
 msgid "Lost Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:411
-#: beast-gtk/bstpianorollctrl.c:416
-#: beast-gtk/bstpianorollctrl.c:465
+#: beast-gtk/bstpianorollctrl.c:533 beast-gtk/bstpianorollctrl.c:538
+#: beast-gtk/bstpianorollctrl.c:587
 msgid "Resize Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:476
-#: beast-gtk/bstpianorollctrl.c:479
+#: beast-gtk/bstpianorollctrl.c:598 beast-gtk/bstpianorollctrl.c:601
 msgid "Delete Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:501
+#: beast-gtk/bstpianorollctrl.c:623
 msgid "Insert Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:547
+#: beast-gtk/bstpianorollctrl.c:669
 msgid "Vertical Select"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:573
+#: beast-gtk/bstpianorollctrl.c:695
 msgid "Vertical Region"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:708
+#: beast-gtk/bstpianorollctrl.c:816
 msgid "Play note"
 msgstr ""
 
@@ -768,8 +813,7 @@ msgstr ""
 msgid "Playback"
 msgstr ""
 
-#: beast-gtk/bstprocedure.c:213
-#: beast-gtk/bstradiotools.c:620
+#: beast-gtk/bstprocedure.c:213 beast-gtk/bstradiotools.c:625
 msgid "Description"
 msgstr ""
 
@@ -795,7 +839,11 @@ msgid "Stopping Playback"
 msgstr ""
 
 #: beast-gtk/bstrackeditor.c:95
-msgid "The rack editor is still highly experimental code and guranrteed to be broken by future releases. So don't rely on rack editor contents to look similarly in future versions and be prepared to work around possible instabilities in the code (i.e. save your projects regularly)."
+msgid ""
+"The rack editor is still highly experimental code and guranrteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
 
 #: beast-gtk/bstrackeditor.c:109
@@ -830,13 +878,11 @@ msgstr ""
 msgid "Shrink Vertically"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:477
-#: beast-gtk/bstwaveeditor.c:202
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:488
-#: beast-gtk/bstwaveeditor.c:213
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
 msgid "VScale:"
 msgstr ""
 
@@ -848,43 +894,35 @@ msgstr ""
 msgid "End:"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:516
-#: beast-gtk/bstwaveeditor.c:219
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
 msgid "Shape Range"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:517
-#: beast-gtk/bstwaveeditor.c:220
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
 msgid "Shape Average"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:518
-#: beast-gtk/bstwaveeditor.c:221
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
 msgid "Shape Minimum"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:519
-#: beast-gtk/bstwaveeditor.c:222
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
 msgid "Shape Maximum"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:520
-#: beast-gtk/bstwaveeditor.c:223
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
 msgid "Sketch Range"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:521
-#: beast-gtk/bstwaveeditor.c:224
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
 msgid "Sketch Average"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:522
-#: beast-gtk/bstwaveeditor.c:225
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
 msgid "Sketch Minimum"
 msgstr ""
 
-#: beast-gtk/bstsampleeditor.c:523
-#: beast-gtk/bstwaveeditor.c:226
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
 msgid "Sketch Maximum"
 msgstr ""
 
@@ -903,8 +941,7 @@ msgstr ""
 msgid "Input channel in use"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:953
-#: beast-gtk/bstsnetrouter.c:955
+#: beast-gtk/bstsnetrouter.c:953 beast-gtk/bstsnetrouter.c:955
 #: beast-gtk/bstsnetrouter.c:991
 msgid "Create Link"
 msgstr ""
@@ -933,8 +970,7 @@ msgstr ""
 msgid "Delete Outputs"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:1015
-#: beast-gtk/bstsnetrouter.c:1057
+#: beast-gtk/bstsnetrouter.c:1015 beast-gtk/bstsnetrouter.c:1057
 msgid "Show Info"
 msgstr ""
 
@@ -950,13 +986,11 @@ msgstr "Körpünü Sil"
 msgid "Insert Module"
 msgstr ""
 
-#: beast-gtk/bstsnetshell.c:117
-#: beast-gtk/bstsongshell.c:173
+#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:173
 msgid "Routing"
 msgstr ""
 
-#: beast-gtk/bstsnetshell.c:131
-#: beast-gtk/bstsongshell.c:157
+#: beast-gtk/bstsnetshell.c:131 beast-gtk/bstsongshell.c:157
 #: beast-gtk/bstwavereposhell.c:146
 msgid "Parameters"
 msgstr ""
@@ -1005,8 +1039,7 @@ msgstr ""
 msgid "Mark Signal (Tail)"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:388
-#: beast-gtk/bsttrackrollctrl.c:400
+#: beast-gtk/bsttrackrollctrl.c:388 beast-gtk/bsttrackrollctrl.c:400
 msgid "Edit Part"
 msgstr ""
 
@@ -1014,20 +1047,16 @@ msgstr ""
 msgid "No Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:419
-#: beast-gtk/bsttrackrollctrl.c:421
-#: beast-gtk/bsttrackrollctrl.c:426
-#: beast-gtk/bsttrackrollctrl.c:431
+#: beast-gtk/bsttrackrollctrl.c:419 beast-gtk/bsttrackrollctrl.c:421
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
 msgid "Insert Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:421
-#: beast-gtk/bsttrackrollctrl.c:523
+#: beast-gtk/bsttrackrollctrl.c:421 beast-gtk/bsttrackrollctrl.c:523
 msgid "Lost Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:426
-#: beast-gtk/bsttrackrollctrl.c:431
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
 msgid "Position taken"
 msgstr ""
 
@@ -1039,24 +1068,20 @@ msgstr ""
 msgid "No Track"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:445
-#: beast-gtk/bsttrackrollctrl.c:448
+#: beast-gtk/bsttrackrollctrl.c:445 beast-gtk/bsttrackrollctrl.c:448
 msgid "Delete Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:457
-#: beast-gtk/bsttrackrollctrl.c:491
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
 msgid "Link Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:457
-#: beast-gtk/bsttrackrollctrl.c:491
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
 #: beast-gtk/bsttrackrollctrl.c:523
 msgid "Move Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:535
-#: beast-gtk/bsttrackrollctrl.c:540
+#: beast-gtk/bsttrackrollctrl.c:535 beast-gtk/bsttrackrollctrl.c:540
 msgid "Start Editor"
 msgstr ""
 
@@ -1092,8 +1117,7 @@ msgstr ""
 msgid "Miscellaneous Message"
 msgstr ""
 
-#: beast-gtk/bstusermessage.c:219
-#: beast-gtk/bstusermessage.c:221
+#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
 msgid "processing"
 msgstr ""
 
@@ -1114,8 +1138,6 @@ msgid "Scroll Right"
 msgstr "Sağa Sürüş"
 
 #. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
-#: beast-gtk/bstwavereposhell.c:141
-#: beast-gtk/bstwavereposhell.c:156
+#: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
 msgid "Waves"
 msgstr "Dalğalar"
-

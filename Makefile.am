@@ -3,13 +3,13 @@
 #
 ## Makefile.am for BEAST/BSE
 
-SUBDIRS = . sfi bse plugins bsw shell beast-gtk library docs test po po-bse
-
-site site-upgrade site-update site-preview site-update-con site-update-img site-update-nav:
-	$(MAKE) -C docs/ $(AM_MAKEFLAGS) $@
+SUBDIRS = . data sfi bse plugins bsw shell beast-gtk library docs po po-bse test
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4
+
+site site-upgrade site-update site-preview site-update-con site-update-img site-update-nav:
+	$(MAKE) -C docs/ $(AM_MAKEFLAGS) $@
 
 # extra dependancies
 configure: acbeast.m4
@@ -47,19 +47,13 @@ CLEANFILES += $(strip		\
 	intltool-extract	\
 	intltool-merge		\
 	intltool-update		\
-	)
-
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = sfi.pc bse.pc
-$(pkgconfig_DATA): config.status
+)
 
 EXTRA_DIST += $(strip		\
 	TODO			\
 	COPYING.GPL		\
 	COPYING.LGPL		\
 	acbeast.m4		\
-	sfi.pc.in		\
-	bse.pc.in		\
  	po-helper.sh.in		\
 	topconfig.h		\
 	intltool-extract.in     \

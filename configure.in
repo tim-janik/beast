@@ -30,7 +30,7 @@ dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
 dnl# if backwards compatibility has been broken,
 dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
 dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]+ or nothing
-BST_RELEASE_CANDIDATE=rc3
+BST_RELEASE_CANDIDATE=rc4
 
 # version number setup
 BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
@@ -561,7 +561,6 @@ shell/Makefile
 beast-gtk/Makefile
 beast-gtk/gxk/Makefile
 beast-gtk/icons/Makefile
-beast-gtk/images/Makefile
 docs/Makefile
 docs/generated/Makefile
 bse/bseconfig.h
@@ -570,12 +569,13 @@ library/effects/Makefile
 library/instruments/Makefile
 library/scripts/Makefile
 library/demo/Makefile
+data/Makefile
+data/sfi.pc
+data/bse.pc
 test/Makefile
 po/Makefile.in
 po-bse/Makefile.in
 po-helper.sh
-sfi.pc
-bse.pc
 ])
 
 AC_CONFIG_COMMANDS([sed-po-makefiles], [sed -e "/POTFILES =/r po-bse/POTFILES" po-bse/Makefile.in > po-bse/Makefile])

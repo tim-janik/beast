@@ -1,3 +1,22 @@
+Sun Oct 26 18:13:16 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: generate files in data/.
+	increased version to 0.5.5-rc4.
+	removed beast-gtk/images/ files, generate sfi.pc
+	and bse.pc in data/ and not toplevel.
+
+	* Makefile.am: added data/ subdir.
+
+	* beast-gtk/Makefile.am: removed images/ from subdirs.
+
+	* beast-gtk/bstmain.c: include beast-images.h from data/.
+
+	* data/Makefile.am: added sfi.pc and bse.pc.
+
+	* sfi.pc.in:
+	* bse.pc.in:
+	* beast-gtk/images/: removed.
+
 Sun Oct 26 17:57:43 2003  Tim Janik  <timj@gtk.org>
 
 	* data/bse.pc.in: cvs copied here from ../.

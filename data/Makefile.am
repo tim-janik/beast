@@ -32,3 +32,12 @@ beast-images.h:	Makefile ${public_images}
 	&& echo "/* Generated data ends here */" >> xgen-bstih \
 	&& (cp xgen-bstih $@) \
 	&& rm -f xgen-bstih
+
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = sfi.pc bse.pc
+$(pkgconfig_DATA): $(top_builddir)/config.status
+
+EXTRA_DIST += $(strip           \
+        sfi.pc.in               \
+        bse.pc.in               \
+)

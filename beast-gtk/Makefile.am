@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BEAST
  
-SUBDIRS = gxk icons images
+SUBDIRS = gxk icons
 
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/beast-gtk $(BEAST_CFLAGS) -DG_DISABLE_CONST_RETURNS -DGTK_ENABLE_BROKEN
 # -DGTK_DISABLE_DEPRECATED -DGTK_DISABLE_COMPAT_H
