@@ -188,12 +188,20 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
     )
     AC_SUBST(GSL_HAVE_MUTEXATTR_SETTYPE)
 ])
-AC_DEFUN(AC_BSE_REQUIREMENTS,
+AC_DEFUN(AC_SFI_REQUIREMENTS,
 [
     dnl We need GLib with friends
-    PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.0.0 gobject-2.0 gmodule-2.0 gthread-2.0)
-    BSE_CFLAGS="$GSL_CFLAGS $GLIB_CFLAGS"
-    BSE_LIBS="$GSL_LIBS $GLIB_LIBS"
+    PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.0.6 gobject-2.0 gmodule-2.0 gthread-2.0)
+    SFI_CFLAGS="$GLIB_CFLAGS"
+    SFI_LIBS="$GLIB_LIBS"
+    AC_SUBST(SFI_CFLAGS)
+    AC_SUBST(SFI_LIBS)
+])
+AC_DEFUN(AC_BSE_REQUIREMENTS,
+[
+    dnl We need SFI and GSL
+    BSE_CFLAGS="$GSL_CFLAGS $SFI_CFLAGS"
+    BSE_LIBS="$GSL_LIBS $SFI_LIBS"
     AC_SUBST(BSE_CFLAGS)
     AC_SUBST(BSE_LIBS)
 
@@ -229,9 +237,9 @@ AC_DEFUN(AC_BSW_SHELL_REQUIREMENTS,
     bswscriptdir=$bswsharedir/scripts
     AC_SUBST(bswscriptdir)
 ])
-AC_DEFUN(AC_BEAST_REQUIREMENTS,
+AC_DEFUN(AC_GXK_REQUIREMENTS,
 [
-    dnl Require libraries
+    dnl required libraries
     DEPENDANCIES=
     DEPENDANCIES="$DEPENDANCIES gtk+-2.0 >= 2.0.0"
     DEPENDANCIES="$DEPENDANCIES pangoft2 >= 1.0"
@@ -239,9 +247,17 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     DEPENDANCIES="$DEPENDANCIES libgnomecanvas-2.0 >= 1.112.0"
     dnl define GUI_CFLAGS and GUI_LIBS:
     PKG_CHECK_MODULES(GUI, $DEPENDANCIES)
-
-    BEAST_CFLAGS="$GUI_CFLAGS"
-    BEAST_LIBS="$GUI_LIBS"
+    
+    GXK_CFLAGS="$GUI_CFLAGS"
+    GXK_LIBS="$GUI_LIBS"
+    AC_SUBST(GXK_CFLAGS)
+    AC_SUBST(GXK_LIBS)
+])
+AC_DEFUN(AC_BEAST_REQUIREMENTS,
+[
+    dnl start where GXK left off
+    BEAST_CFLAGS="$GXK_CFLAGS"
+    BEAST_LIBS="$GXK_LIBS"
     AC_SUBST(BEAST_CFLAGS)
     AC_SUBST(BEAST_LIBS)
 
@@ -389,17 +405,14 @@ AC_SUBST(STRIP_END)
 # require pkg-config
 MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
 
-# GSL requirements
+# Check requirements for each subpackage
+AC_SFI_REQUIREMENTS
 AC_GSL_REQUIREMENTS
-# BSE requirements
 AC_BSE_REQUIREMENTS
-# BSW shell requirements
 AC_BSW_SHELL_REQUIREMENTS
-# check for sound devices
 AC_BSE_SNDDEV_CHECK
-# BEAST requirements
+AC_GXK_REQUIREMENTS
 AC_BEAST_REQUIREMENTS
-# Docu requirements
 AC_DOC_REQUIREMENTS
 
 # architecture information
@@ -466,6 +479,7 @@ AC_SUBST(LDFLAGS)
 # create output files
 AC_OUTPUT([
 Makefile
+sfi/Makefile
 bse/Makefile
 bse/icons/Makefile
 plugins/Makefile

@@ -1,3 +1,13 @@
+Thu Oct  3 23:31:26 2002  Tim Janik  <timj@gtk.org>
+
+	* acbeast.m4: when using gcc, compile sources with -O3 (not -O6).
+
+	* configure.in: prepare for sfi/ configuration.
+
+	* sfi/: new subdirectory and library. in preparation for SFK (synthesis
+	fusion kit), this is the underlying interface library SFI (syntheis
+	fusion kit interface).
+
 Wed Sep 18 09:53:56 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/markup.xsl: new version from Alper, fixing table

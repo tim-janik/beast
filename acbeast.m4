@@ -198,7 +198,7 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 		dnl
 		dnl Optimizations
 		dnl
-		MC_EVAR_ADD(CFLAGS, -O, -O6)
+		MC_EVAR_ADD(CFLAGS, -O, -O3)
 		MC_EVAR_ADD(CFLAGS, -pipe, -pipe)
 		MC_EVAR_ADD(CFLAGS, -fstrength-reduce, -fstrength-reduce)
 		MC_EVAR_ADD(CFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)
@@ -291,7 +291,7 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 		dnl
 		dnl Optimizations
 		dnl
-		MC_EVAR_ADD(CXXFLAGS, -O, -O6)
+		MC_EVAR_ADD(CXXFLAGS, -O, -O3)
 		MC_EVAR_ADD(CXXFLAGS, -pipe, -pipe)
 		MC_EVAR_ADD(CXXFLAGS, -fstrength-reduce, -fstrength-reduce)
 		MC_EVAR_ADD(CXXFLAGS, -fexpensive-optimizations, -fexpensive-optimizations)

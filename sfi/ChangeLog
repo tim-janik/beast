@@ -1,0 +1,26 @@
+Thu Oct  3 23:31:26 2002  Tim Janik  <timj@gtk.org>
+
+	* sfi/: new subdirectory and library. in preparation for SFK (synthesis
+	fusion kit), this is the underlying interface library SFI (syntheis
+	fusion kit interface).
+
+	* sfidl.cc: .sfidl code generator by Stefan.
+	* sfidl-namespace.[hc]*: auxillary files for sfidl.cc.
+
+	* sfiserial.[hc]: preliminary parsing/serialization code.
+
+	* sfiparams.[hc]: pspec implementations, corresponding to the Sfi values.
+
+	* sfivalues.[hc]: wrappers for supported GValue types and implementaitons
+	of Sfi specific value types.
+
+	* sfitime.[hc]: some preliminary time handling routines.
+
+	* sfiprimitives.[hc]: fundamental structure implementations, such as
+	record, sequence and float sequences (for performance reasons implemented
+	as a block of floats).
+
+	* sfitypes.[hc]: miscellaneous type decls and yet-to-clean-up auxillary
+	functions.
+
+	* glib-extra.[hc]: GLib compatibility code, add-ons or extensions.
