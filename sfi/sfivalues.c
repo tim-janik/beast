@@ -203,7 +203,7 @@ sfi_value_take_bblock (GValue    *value,
 {
   g_return_if_fail (SFI_VALUE_HOLDS_BBLOCK (value));
   
-  g_value_set_boxed_take_ownership (value, bblock);
+  g_value_take_boxed (value, bblock);
 }
 
 SfiFBlock*
@@ -240,7 +240,7 @@ sfi_value_take_fblock (GValue    *value,
 {
   g_return_if_fail (SFI_VALUE_HOLDS_FBLOCK (value));
   
-  g_value_set_boxed_take_ownership (value, fblock);
+  g_value_take_boxed (value, fblock);
 }
 
 GParamSpec*
@@ -303,7 +303,7 @@ sfi_value_take_seq (GValue *value,
 {
   g_return_if_fail (SFI_VALUE_HOLDS_SEQ (value));
   
-  g_value_set_boxed_take_ownership (value, seq);
+  g_value_take_boxed (value, seq);
 }
 
 SfiRec*
@@ -338,7 +338,7 @@ sfi_value_take_rec (GValue *value,
 {
   g_return_if_fail (SFI_VALUE_HOLDS_REC (value));
   
-  g_value_set_boxed_take_ownership (value, rec);
+  g_value_take_boxed (value, rec);
 }
 
 SfiProxy

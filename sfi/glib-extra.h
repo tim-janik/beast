@@ -37,7 +37,7 @@ G_BEGIN_DECLS
 #define G_HASH_POINTER(p)       ((guint32) (gsize) (p))
 #endif
 /* Provide a string identifying the current function, non-concatenatable */
-#ifndef G_STRFUNC
+#ifndef G_STRFUNC       // GTKFIX: add this to glib
 #  if defined (__GNUC__)
 #    define G_STRFUNC     ((const char*) (__PRETTY_FUNCTION__))
 #  elif defined (G_HAVE_ISO_VARARGS)
@@ -57,9 +57,6 @@ G_BEGIN_DECLS
 #define	g_scanner_remove_symbol( scanner, symbol )	G_STMT_START { \
   g_scanner_scope_remove_symbol ((scanner), 0, (symbol)); \
 } G_STMT_END
-#if GLIB_CHECK_VERSION (2, 4, 0)                // FIXME: remove <=GLib-2.4.0 dependant code
-#define g_value_set_boxed_take_ownership        g_value_take_boxed
-#endif
 
 
 /* --- abandon typesafety for some frequently used functions --- */
@@ -264,52 +261,7 @@ void    g_usignal_notify         (gint8          usignal);
 
 
 /* --- GType boilerplate --- */
-#ifndef G_DEFINE_TYPE
-#define G_DEFINE_TYPE(TN, t_n, T_P)                         G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, {})
-#define G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_)          G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, _C_)
-#define G_DEFINE_ABSTRACT_TYPE(TN, t_n, T_P)                G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, {})
-#define G_DEFINE_ABSTRACT_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, _C_)
-#define G_IMPLEMENT_INTERFACE(TYPE_IFACE, iface_init)       { \
-  static const GInterfaceInfo g_implement_interface_info = { \
-    (GInterfaceInitFunc) iface_init \
-  }; \
-  g_type_add_interface_static (g_define_type_id, TYPE_IFACE, &g_implement_interface_info); \
-}
-#define G_DEFINE_TYPE_EXTENDED(TypeName, type_name, TYPE_PARENT, flags, CODE) \
-\
-static void     type_name##_init              (TypeName        *self); \
-static void     type_name##_class_init        (TypeName##Class *klass); \
-static gpointer type_name##_parent_class = NULL; \
-static void     type_name##_class_intern_init (gpointer klass) \
-{ \
-  type_name##_parent_class = g_type_class_peek_parent (klass); \
-  type_name##_class_init ((TypeName##Class*) klass); \
-} \
-\
-GType \
-type_name##_get_type (void) \
-{ \
-  static GType g_define_type_id = 0; \
-  if (G_UNLIKELY (g_define_type_id == 0)) \
-    { \
-      static const GTypeInfo g_define_type_info = { \
-        sizeof (TypeName##Class), \
-        (GBaseInitFunc) NULL, \
-        (GBaseFinalizeFunc) NULL, \
-        (GClassInitFunc) type_name##_class_intern_init, \
-        (GClassFinalizeFunc) NULL, \
-        NULL,   /* class_data */ \
-        sizeof (TypeName), \
-        0,      /* n_preallocs */ \
-        (GInstanceInitFunc) type_name##_init, \
-      }; \
-      g_define_type_id = g_type_register_static (TYPE_PARENT, #TypeName, &g_define_type_info, flags); \
-      { CODE ; } \
-    } \
-  return g_define_type_id; \
-}
-#endif /* !G_DEFINE_DATA_TYPE */
-#ifndef G_DEFINE_DATA_TYPE
+#ifndef G_DEFINE_DATA_TYPE      // GTKFIX: add this to glib
 #define G_DEFINE_DATA_TYPE(TN, t_n, T_P)                         G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, 0, {})
 #define G_DEFINE_DATA_TYPE_WITH_CODE(TN, t_n, T_P, _C_)          G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, 0, _C_)
 #define G_DEFINE_ABSTRACT_DATA_TYPE(TN, t_n, T_P)                G_DEFINE_DATA_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, {})

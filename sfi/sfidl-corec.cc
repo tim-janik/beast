@@ -557,7 +557,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
         printf ("%s_rec2boxed (const GValue *src_value, GValue *dest_value)\n", name.c_str());
         printf ("{\n");
         printf ("  SfiRec *rec = sfi_value_get_rec (src_value);\n");
-        printf ("  g_value_set_boxed_take_ownership (dest_value,\n");
+        printf ("  g_value_take_boxed (dest_value,\n");
         printf ("    rec ? %s_from_rec (rec) : NULL);\n", name.c_str());
         printf ("}\n");
         
@@ -804,7 +804,7 @@ class CodeGeneratorCoreC : public CodeGenerator {
         printf ("%s_seq2boxed (const GValue *src_value, GValue *dest_value)\n", name.c_str());
         printf ("{\n");
         printf ("  SfiSeq *seq = sfi_value_get_seq (src_value);\n");
-        printf ("  g_value_set_boxed_take_ownership (dest_value,\n");
+        printf ("  g_value_take_boxed (dest_value,\n");
         printf ("    seq ? %s_from_seq (seq) : NULL);\n", name.c_str());
         printf ("}\n");
         

@@ -259,7 +259,7 @@ gint     sfi_compare_pointers           (gconstpointer   value1,
 /* --- ring (circular-list) --- */
 typedef gpointer (*SfiRingDataFunc)	(gpointer	 data,
 					 gpointer	 func_data);
-struct _SfiRing		// FIXME: move rings into their own object files
+struct _SfiRing		// FIXME: move SfiRing into its own object file
 {
   SfiRing  *next;
   SfiRing  *prev;

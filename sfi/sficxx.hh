@@ -1064,7 +1064,7 @@ cxx_boxed_from_rec (const GValue *src_value,
       Type *t = rh.steal();
       boxed = t;
     }
-  g_value_set_boxed_take_ownership (dest_value, boxed);
+  g_value_take_boxed (dest_value, boxed);
 }
 
 template<typename SeqType> void
@@ -1096,7 +1096,7 @@ cxx_boxed_from_seq (const GValue *src_value,
       typename SeqType::CSeq *t = sh.steal();
       boxed = t;
     }
-  g_value_set_boxed_take_ownership (dest_value, boxed);
+  g_value_take_boxed (dest_value, boxed);
 }
 
 template<typename Type> RecordHandle<Type>
