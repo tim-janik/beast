@@ -1,3 +1,9 @@
+2004-06-14  Gustavo Maciel Dias Vieira  <gustavo@sagui.org>
+
+	* configure.in: Added pt_BR to ALL_LINGUAS.
+
+	* docs/site-development.texi: Added pt_BR entry.
+
 Sat Jun 12 19:44:01 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: pack WAVE File entry into expandable areas.

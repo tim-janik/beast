@@ -36,6 +36,7 @@ translations can be obtained from the following pages.
 @uref{http://l10n-status.gnome.org/gnome-2.8/mn/extras/index.html,, mn},
 @uref{http://l10n-status.gnome.org/gnome-2.8/nl/extras/index.html,, nl},
 @uref{http://l10n-status.gnome.org/gnome-2.8/pt/extras/index.html,, pt},
+@uref{http://l10n-status.gnome.org/gnome-2.8/pt_BR/extras/index.html,, pt_BR},
 @uref{http://l10n-status.gnome.org/gnome-2.8/sq/extras/index.html,, sq},
 @uref{http://l10n-status.gnome.org/gnome-2.8/sr/extras/index.html,, sr},
 @uref{http://l10n-status.gnome.org/gnome-2.8/sr/extras/index.html,, sr@@Latn},
