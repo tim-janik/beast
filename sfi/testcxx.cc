@@ -45,7 +45,7 @@ main (int   argc,
   s2 += "huhu";
   ASSERT (strcmp (s1.c_str(), "huhu") == 0);
   ASSERT (s1 == s2);
-  ASSERT (s1 == std::string ("huhu"));
+  ASSERT (s1 + "HAHA" == std::string ("huhuHAHA"));
   s2 += "1";
   ASSERT (s1 != s2);
   String s3 = "huhu1";

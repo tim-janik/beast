@@ -83,13 +83,6 @@ public:
   {
     return cstring;
   }
-  String& operator+= (const std::string &src)
-  {
-    char *old = cstring;
-    cstring = g_strconcat (old ? old : "", src.c_str(), NULL);
-    g_free (old);
-    return *this;
-  }
   String& operator+= (const gchar *cstr)
   {
     char *old = cstring;
@@ -103,6 +96,25 @@ public:
     cstring = g_strconcat (old ? old : "", src.cstring, NULL);
     g_free (old);
     return *this;
+  }
+  String& operator+= (const std::string &src)
+  {
+    char *old = cstring;
+    cstring = g_strconcat (old ? old : "", src.c_str(), NULL);
+    g_free (old);
+    return *this;
+  }
+  String operator+ (const gchar *cstr)
+  {
+    return String (cstring) += cstr;
+  }
+  String operator+ (const String &src)
+  {
+    return String (cstring) += src;
+  }
+  String operator+ (const std::string &src)
+  {
+    return String (cstring) += src;
   }
   bool operator<  (const char *src) const { return cmp (src) < 0; }
   bool operator<= (const char *src) const { return cmp (src) <= 0; }
