@@ -1,3 +1,11 @@
+Fri Feb 27 06:23:36 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: fixed i18n and identifier issues with
+	ichannel/jchannel/ochannel registration.
+
+	* sfi/sfidl-parser.[hc]*: streams have ident, label and blurb, where
+	label and blurb are subject to i18n.
+
 Thu Feb 26 20:37:57 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: removed legacy v_int parsing code from GScanner,

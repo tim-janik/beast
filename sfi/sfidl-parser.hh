@@ -113,9 +113,9 @@ struct Param {
 struct Stream {
   enum Type { IStream, JStream, OStream } type;
   std::string ident;
-  IString     name;
-  std::string file;
+  IString     label;
   IString     blurb;
+  std::string file;
   int         line;
 };
  

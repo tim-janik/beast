@@ -1211,7 +1211,7 @@ Parser::parseStream (Stream&      stream,
   parse_or_return ('=');
 
   parse_or_return ('(');
-  parse_istring_or_return (stream.name);
+  parse_istring_or_return (stream.label);
   parse_or_return (',');
   parse_istring_or_return (stream.blurb);
   parse_or_return (')');

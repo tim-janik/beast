@@ -44,6 +44,16 @@ canonify_name (const string& s,
   return g_intern_string (d.c_str());
 }
 
+static const char*
+intern_escape (const string &s)
+{
+  char *x = g_strescape (s.c_str(), 0);
+  string e = string ("\"") + x + "\"";
+  g_free (x);
+  const char *result = g_intern_string (e.c_str());
+  return result;
+}
+
 static string
 include_relative (string path,
                   string source_file)
@@ -983,14 +993,14 @@ public:
         for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
           printf ("  klass->add_param (PROP_%s, %s);\n", pure_UPPER (pi->name), typed_pspec_constructor (*pi).c_str());
         for (vector<Stream>::const_iterator si = ci->istreams.begin(); si != ci->istreams.end(); si++)
-          printf ("  klass->add_ichannel (%s, %s, ICHANNEL_%s);\n",
-                  si->name.escaped().c_str(), si->blurb.escaped().c_str(), pure_UPPER (si->ident));
+          printf ("  klass->add_ichannel (%s, %s, %s, ICHANNEL_%s);\n",
+                  intern_escape (si->ident), si->label.escaped().c_str(), si->blurb.escaped().c_str(), pure_UPPER (si->ident));
         for (vector<Stream>::const_iterator si = ci->jstreams.begin(); si != ci->jstreams.end(); si++)
-          printf ("  klass->add_jchannel (%s, %s, JCHANNEL_%s);\n",
-                  si->name.escaped().c_str(), si->blurb.escaped().c_str(), pure_UPPER (si->ident));
+          printf ("  klass->add_jchannel (%s, %s, %s, JCHANNEL_%s);\n",
+                  intern_escape (si->ident), si->label.escaped().c_str(), si->blurb.escaped().c_str(), pure_UPPER (si->ident));
         for (vector<Stream>::const_iterator si = ci->ostreams.begin(); si != ci->ostreams.end(); si++)
-          printf ("  klass->add_ochannel (%s, %s, OCHANNEL_%s);\n",
-                  si->name.escaped().c_str(), si->blurb.escaped().c_str(), pure_UPPER (si->ident));
+          printf ("  klass->add_ochannel (%s, %s, %s, OCHANNEL_%s);\n",
+                  intern_escape (si->ident), si->label.escaped().c_str(), si->blurb.escaped().c_str(), pure_UPPER (si->ident));
         for (vector<Method>::const_iterator si = ci->signals.begin(); si != ci->signals.end(); si++)
           {
             const gchar *sig_name = canonify_name (si->name, '_');
