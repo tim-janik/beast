@@ -41,6 +41,10 @@ GtkWidget*      gxk_item_factory_get_item          (GtkItemFactory  *ifactory,
 GtkWidget*      gxk_item_factory_get_widget        (GtkItemFactory  *ifactory,
                                                     const gchar     *path);
 void            gxk_widget_proxy_requisition       (GtkWidget       *widget);
+void            gxk_widget_request_hclient_height  (GtkWidget       *widget,
+                                                    GtkWidget       *client);
+void            gxk_widget_request_vclient_width   (GtkWidget       *widget,
+                                                    GtkWidget       *client);
 gboolean        gxk_widget_has_ancestor            (gpointer         widget,
                                                     gpointer         ancestor);
 void            gxk_widget_regulate                (GtkWidget       *widget,

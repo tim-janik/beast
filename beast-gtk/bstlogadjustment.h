@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,7 @@
 
 #include	<gtk/gtkadjustment.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* --- type macros --- */
 #define BST_TYPE_LOG_ADJUSTMENT              (bst_log_adjustment_get_type ())
@@ -68,8 +66,6 @@ void		bst_log_adjustment_setup	(BstLogAdjustment	*ladj,
 						 gdouble		 base,
 						 gdouble		 n_steps);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_LOG_ADJUSTMENT_H__ */

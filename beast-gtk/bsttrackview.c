@@ -17,6 +17,7 @@
  */
 #include "bsttrackview.h"
 #include "bstparam.h"
+#include "bstgrowbar.h"
 #include "bsttracksynthdialog.h"
 #include <stdlib.h> /* strtol */
 #include <string.h>
@@ -395,7 +396,7 @@ static void
 bst_track_view_init (BstTrackView *self)
 {
   BstItemView *iview = BST_ITEM_VIEW (self);
-  GtkWidget *treehs, *trackhs, *vscroll;
+  GtkWidget *treehs, *trackgb, *vscroll;
   GtkObject *adjustment;
   GtkTreeView *tview;
   GtkTreeSelection *tsel;
@@ -428,7 +429,7 @@ bst_track_view_init (BstTrackView *self)
   
   /* scrollbars */
   treehs = gxk_radget_find (radget, "tree-hscrollbar");
-  trackhs = gxk_radget_find (radget, "track-hscrollbar");
+  trackgb = gxk_radget_find (radget, "track-hgrow-bar");
   vscroll = gxk_radget_find (radget, "tree-vscrollbar");
   
   /* tree view (track list) */
@@ -448,7 +449,7 @@ bst_track_view_init (BstTrackView *self)
 			      "parent", gxk_radget_find (radget, "track-area"),
 			      NULL);
   gxk_nullify_in_object (self, &self->troll);
-  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->troll), gtk_range_get_adjustment (GTK_RANGE (trackhs)));
+  gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->troll), bst_grow_bar_get_adjustment (BST_GROW_BAR (trackgb)));
   gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->troll), gtk_range_get_adjustment (GTK_RANGE (vscroll)));
   bst_track_roll_set_track_callback (self->troll, self, get_track);
   track_view_marks_changed (self);
@@ -528,7 +529,7 @@ track_changed (SfiProxy      track,
   if (self->troll)
     {
       gint row = bst_item_view_get_proxy_row (BST_ITEM_VIEW (self), track);
-      bst_track_roll_queue_draw_row (self->troll, row);
+      bst_track_roll_queue_row_change (self->troll, row);
     }
 }
 

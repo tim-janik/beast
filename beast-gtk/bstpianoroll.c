@@ -223,32 +223,32 @@ static gint
 ticks_to_pixels (BstPianoRoll *self,
 		 gint	       ticks)
 {
-  gfloat ppqn = self->ppqn;
-  gfloat tpixels = QNOTE_HPIXELS;
+  gdouble ppqn = self->ppqn;
+  gdouble tpixels = QNOTE_HPIXELS;
   
   /* compute pixel span of a tick range */
   
-  tpixels *= self->hzoom / ppqn * (gfloat) ticks;
+  tpixels *= self->hzoom / ppqn * (gdouble) ticks;
   if (ticks)
     tpixels = MAX (tpixels, 1);
-  return tpixels;
+  return MIN (G_MAXINT, tpixels);
 }
 
 static gint
 pixels_to_ticks (BstPianoRoll *self,
 		 gint	       pixels)
 {
-  gfloat ppqn = self->ppqn;
-  gfloat ticks = 1.0 / (gfloat) QNOTE_HPIXELS;
-  
+  gdouble ppqn = self->ppqn;
+  gdouble ticks = 1.0 / (gdouble) QNOTE_HPIXELS;
+
   /* compute tick span of a pixel range */
-  
-  ticks = ticks * ppqn / self->hzoom * (gfloat) pixels;
+
+  ticks = ticks * ppqn / self->hzoom * (gdouble) pixels;
   if (pixels > 0)
     ticks = MAX (ticks, 1);
   else
     ticks = 0;
-  return ticks;
+  return MIN (G_MAXINT, ticks);
 }
 
 static gint
@@ -871,8 +871,11 @@ piano_roll_adjustment_changed (GxkScrollCanvas *scc,
   BstPianoRoll *self = BST_PIANO_ROLL (scc);
   if (adj == scc->hadjustment)
     {
-      double umin = ticks_to_pixels (self, self->max_ticks);
-      double umax = MAX (umin, 100e+6);
+      double umin = ticks_to_pixels (self, self->max_ticks);                    /* lower bound for adj->upper based on max_ticks */
+      double umax = pixels_to_ticks (self, 1e+9);
+      umax = ticks_to_pixels (self, MIN (umax, 1e+9));                          /* confine to possible tick range */
+      umax = MIN (umax, 1e+9);                                                  /* upper bound for adj->upper based on pixels */
+      umin = MIN (umin, umax * 1.5), umax = MAX (umin, umax);                   /* properly confine boundaries */
       /* guard against invalid changes */
       if (adj->lower != 0 || adj->upper != CLAMP (adj->upper, umin, umax))
         {
@@ -892,8 +895,16 @@ piano_roll_update_adjustments (GxkScrollCanvas *scc,
   
   if (hadj)
     {
-      double umin = ticks_to_pixels (self, self->max_ticks);
-      double umax = MAX (umin, 100e+6);
+      /* allow free boundary adjustments by the user between last_tick and 1e+9 ticks and pixels.
+       * show rubberband behaviour if last_tick exceeds the 1e+9 boundary, i.e. adj->upper should
+       * grow beyond 1e+9 if and only if last_tick exceeds 1e+9. beyond 1.5 * 1e+9 though, we simply
+       * cut-off to properly constrain all quantities within 2^31 bits.
+       */
+      double umin = ticks_to_pixels (self, self->max_ticks);                    /* lower bound for adj->upper based on max_ticks */
+      double umax = pixels_to_ticks (self, 1e+9);
+      umax = ticks_to_pixels (self, MIN (umax, 1e+9));                          /* confine to possible tick range */
+      umax = MIN (umax, 1e+9);                                                  /* upper bound for adj->upper based on pixels */
+      umin = MIN (umin, umax * 1.5), umax = MAX (umin, umax);                   /* properly confine boundaries */
       scc->hadjustment->lower = 0;
       scc->hadjustment->upper = CLAMP (scc->hadjustment->upper, umin, umax);
       scc->hadjustment->step_increment = ticks_to_pixels (self, self->ppqn);

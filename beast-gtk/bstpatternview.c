@@ -265,8 +265,8 @@ static gint
 tick_to_row (BstPatternView *self,
              gint            tick)
 {
-  gint row = tick / (double) self->vticks;
-  return row;
+  double row = tick / (double) self->vticks;
+  return MIN (row, G_MAXINT);
 }
 
 static gint
@@ -284,7 +284,7 @@ row_to_ticks (BstPatternView *self,
               gint           *tick_p,
               gint           *duration_p)
 {
-  gint tick = row * self->vticks;
+  gint tick = MIN (G_MAXINT - self->vticks, row * (double) self->vticks);
   if (tick_p)
     *tick_p = tick;
   if (duration_p)
@@ -292,14 +292,34 @@ row_to_ticks (BstPatternView *self,
 }
 
 static gint
+pixels_to_row_unscrolled (BstPatternView *self,
+                          gint            y)
+{
+  double row = y / (double) self->row_height;
+  return MIN (G_MAXINT, row);
+}
+
+static gint
 coord_to_row (BstPatternView *self,
               gint            y,
               gboolean       *is_valid)
 {
-  gint row = (y + Y_OFFSET (self)) / self->row_height;
+  gint row = pixels_to_row_unscrolled (self, y + Y_OFFSET (self));
   if (is_valid)
     *is_valid = row >= 0 && row <= last_visible_row (self);
   return row;
+}
+
+static void
+row_to_pixels_unscrolled (BstPatternView *self,
+                          gint            row,
+                          gint           *y_p,
+                          gint           *height_p)
+{
+  if (y_p)
+    *y_p = MIN (G_MAXINT, row * (double) self->row_height);
+  if (height_p)
+    *height_p = self->row_height;
 }
 
 static gboolean
@@ -308,8 +328,9 @@ row_to_coords (BstPatternView *self,
 	       gint           *y_p,
 	       gint           *height_p)
 {
+  row_to_pixels_unscrolled (self, row, y_p, height_p);
   if (y_p)
-    *y_p = row * self->row_height - Y_OFFSET (self);
+    *y_p -= Y_OFFSET (self);
   if (height_p)
     *height_p = self->row_height;
   return row >= 0 && row <= last_visible_row (self);
@@ -730,20 +751,26 @@ pattern_view_adjustment_changed (GxkScrollCanvas *scc,
   BstPatternView *self = BST_PATTERN_VIEW (scc);
   if (adj == scc->vadjustment)
     {
-      gint ry, rh;
-      gint last_row = tick_to_row (self, self->max_ticks - 1);
-      row_to_coords (self, last_row, &ry, &rh);
-      double umin = Y_OFFSET (self) + ry + rh;
-      double umax = MAX (umin, 100e+6);
+      gint ry, rh, tick, duration, row = tick_to_row (self, self->max_ticks);
+      row_to_pixels_unscrolled (self, row, &ry, &rh);
+      double umin = ry + rh;                                            /* lower bound for adj->upper based on max_ticks */
+      row = pixels_to_row_unscrolled (self, 1e+9);
+      row_to_ticks (self, row, &tick, &duration);
+      double umax = MIN (tick + duration, 1e+9);                        /* confine to possible tick range */
+      row = tick_to_row (self, umax);
+      row_to_pixels_unscrolled (self, row, &ry, &rh);
+      umax = MIN (ry + rh, 1e+9);                                       /* upper bound for adj->upper based on pixels */
+      umin = MIN (umin, umax * 1.5), umax = MAX (umin, umax);           /* properly confine boundaries */
       /* quantize to row height */
-      gint n = adj->upper;
+      gint n = CLAMP (adj->upper, umin, umax);
       n = (n + self->row_height - 1) / self->row_height;
-      adj->upper = MAX (n, 1) * self->row_height;
+      gdouble new_upper = MAX (n, 1) * self->row_height;
+      new_upper = CLAMP (new_upper, umin, umax);
       /* guard against invalid changes */
-      if (adj->lower != 0 || adj->upper != CLAMP (adj->upper, umin, umax))
+      if (adj->lower != 0 || adj->upper != new_upper)
         {
           scc->vadjustment->lower = 0;
-          scc->vadjustment->upper = CLAMP (scc->vadjustment->upper, umin, umax);
+          scc->vadjustment->upper = new_upper;
           gtk_adjustment_changed (adj);
         }
       gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -765,12 +792,23 @@ pattern_view_update_adjustments (GxkScrollCanvas *scc,
     }
   if (vadj)
     {
-      gint ry, rh;
-      gint last_row = tick_to_row (self, self->max_ticks - 1);
-      row_to_coords (self, last_row, &ry, &rh);
-      double umin = Y_OFFSET (self) + ry + rh;
-      double umax = MAX (umin, 100e+6);
-      scc->vadjustment->upper = CLAMP (scc->vadjustment->upper, umin, umax);
+      gint ry, rh, tick, duration, row = tick_to_row (self, self->max_ticks);
+      row_to_pixels_unscrolled (self, row, &ry, &rh);
+      double umin = ry + rh;                                            /* lower bound for adj->upper based on max_ticks */
+      row = pixels_to_row_unscrolled (self, 1e+9);
+      row_to_ticks (self, row, &tick, &duration);
+      double umax = MIN (tick + duration, 1e+9);                        /* confine to possible tick range */
+      row = tick_to_row (self, umax);
+      row_to_pixels_unscrolled (self, row, &ry, &rh);
+      umax = MIN (ry + rh, 1e+9);                                       /* upper bound for adj->upper based on pixels */
+      umin = MIN (umin, umax * 1.5), umax = MAX (umin, umax);           /* properly confine boundaries */
+      /* quantize to row height */
+      gint n = CLAMP (scc->vadjustment->upper, umin, umax);
+      n = (n + self->row_height - 1) / self->row_height;
+      gdouble new_upper = MAX (n, 1) * self->row_height;
+      new_upper = CLAMP (new_upper, umin, umax);
+      scc->vadjustment->lower = 0;
+      scc->vadjustment->upper = new_upper;
       scc->hadjustment->step_increment = 4 * rh;        // FIXME rows-per-tact
     }
   GXK_SCROLL_CANVAS_CLASS (bst_pattern_view_parent_class)->update_adjustments (scc, hadj, vadj);

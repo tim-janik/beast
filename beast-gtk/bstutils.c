@@ -25,6 +25,7 @@
 #include "bstpianoroll.h"
 #include "bstpatternview.h"
 #include "bsteventroll.h"
+#include "bstgrowbar.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
@@ -108,6 +109,8 @@ _bst_init_radgets (void)
 {
   gchar *text;
   gxk_radget_define_widget_type (BST_TYPE_TRACK_VIEW);
+  gxk_radget_define_widget_type (BST_TYPE_HGROW_BAR);
+  gxk_radget_define_widget_type (BST_TYPE_VGROW_BAR);
   gxk_radget_define_widget_type (BST_TYPE_WAVE_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_PART_VIEW);
   gxk_radget_define_widget_type (BST_TYPE_PIANO_ROLL);

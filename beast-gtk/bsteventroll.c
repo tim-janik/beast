@@ -241,32 +241,32 @@ static gint
 ticks_to_pixels (BstEventRoll *self,
 		 gint	       ticks)
 {
-  gfloat ppqn = self->ppqn;
-  gfloat tpixels = QNOTE_HPIXELS;
+  gdouble ppqn = self->ppqn;
+  gdouble tpixels = QNOTE_HPIXELS;
 
   /* compute pixel span of a tick range */
 
-  tpixels *= self->hzoom / ppqn * (gfloat) ticks;
+  tpixels *= self->hzoom / ppqn * (gdouble) ticks;
   if (ticks)
     tpixels = MAX (tpixels, 1);
-  return tpixels;
+  return MIN (G_MAXINT, tpixels);
 }
 
 static gint
 pixels_to_ticks (BstEventRoll *self,
 		 gint	       pixels)
 {
-  gfloat ppqn = self->ppqn;
-  gfloat ticks = 1.0 / (gfloat) QNOTE_HPIXELS;
+  gdouble ppqn = self->ppqn;
+  gdouble ticks = 1.0 / (gdouble) QNOTE_HPIXELS;
 
   /* compute tick span of a pixel range */
 
-  ticks = ticks * ppqn / self->hzoom * (gfloat) pixels;
+  ticks = ticks * ppqn / self->hzoom * (gdouble) pixels;
   if (pixels > 0)
     ticks = MAX (ticks, 1);
   else
     ticks = 0;
-  return ticks;
+  return MIN (G_MAXINT, ticks);
 }
 
 static gint
@@ -458,15 +458,16 @@ event_roll_update_adjustments (GxkScrollCanvas *scc,
 			       gboolean         hadj,
 			       gboolean         vadj)
 {
-  BstEventRoll *self = BST_EVENT_ROLL (scc);
-
+  // BstEventRoll *self = BST_EVENT_ROLL (scc);
   if (hadj)
     {
       scc->hadjustment->lower = 0;
-      // FIXME: self->hadjustment->upper = self->max_ticks;
-      // self->hadjustment->page_size = pixels_to_ticks (self, CANVAS_WIDTH (self));
-      // scc->hadjustment->step_increment = self->ppqn;
-      // scc->hadjustment->page_increment = self->ppqn * self->qnpt;
+      /* we're not adjusting adj->upper, adj->step_increment and adj->page_increment here,
+       * because doing so requires notification based max_ticks updating. the piano roll
+       * gets this right, and as long as this widget is scroll-aligned with a piano roll
+       * we'd create races if we tried updating anyway. see piano_roll_update_adjustments()
+       * and piano_roll_adjustment_changed().
+       */
     }
   GXK_SCROLL_CANVAS_CLASS (bst_event_roll_parent_class)->update_adjustments (scc, hadj, vadj);
 }

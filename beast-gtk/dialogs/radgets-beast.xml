@@ -11,6 +11,8 @@
   <xdef:pattern-view  inherit="BstPatternView" />
   <xdef:zoomed-window inherit="BstZoomedWindow" />
   <xdef:event-roll    inherit="BstEventRoll" />
+  <xdef:hgrow-bar     inherit="BstHGrowBar" />
+  <xdef:vgrow-bar     inherit="BstVGrowBar" />
   
   <!-- track view -->
   <xdef:track-view inherit="BstTrackView" border-width="3" >
@@ -56,7 +58,8 @@
 	    </tool-area>
 	  </toolbar>
 	  <frame-shadow-in name="track-area" size:vgroup="tree-size" pack:expand="1" />
-	  <hscrollbar name="track-hscrollbar" size:vgroup="scroll-size" />
+	  <hgrow-bar name="track-hgrow-bar" />
+	  <!--hscrollbar name="track-hscrollbar" size:vgroup="scroll-size" /-->
 	</vbox>
       </hpaned>
       <vbox spacing="3" >
@@ -290,15 +293,7 @@
 	</vpaned>
 	<hbox>
 	  <vbox expand="1" spacing="1" >
-	    <hscrollbar name="piano-roll-hscrollbar" />
-	    <hbox homogeneous="1" spacing="3" >
-	      <hscale name="piano-roll-hzoom-scale" >
-		<tooltip _text="Horizontal piano zoom" />
-	      </hscale>
-	      <hscale name="piano-roll-hscale" >
-		<tooltip _text="Adjust right view boundary" />
-	      </hscale>
-	    </hbox>
+	    <hgrow-bar name="piano-roll-hgrow-bar" />
 	  </vbox>
 	  <alignment size:hgroup="scroll-size" />
 	</hbox>
@@ -316,10 +311,7 @@
 	    <pattern-view />
 	  </frame-shadow-in>
 	  <hbox spacing="1" >
-	    <vscrollbar name="pattern-view-vscrollbar" size:hgroup="scroll-size" />
-	    <vscale name="pattern-view-vscale" size:hgroup="scroll-size" >
-	      <tooltip _text="Adjust pattern length" />
-	    </vscale>
+	    <vgrow-bar name="pattern-view-vgrow-bar" size:hgroup="scroll-size" />
 	  </hbox>
 	</hbox>
 	<hbox >

@@ -1,3 +1,53 @@
+Tue Jun 29 00:47:07 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstgrowbar.[hc]: new widgets h/v grow bars, combining a
+	scrollbar with grow/shrink buttons to alter the scrollable range.
+
+	* beast-gtk/bstpartdialog.c: got rid of resizer adjustments, use
+	grow bars instead. adapted to radget changes, removed zoom scales.
+
+	* beast-gtk/bstpianoroll.c: guard ticks_to_pixels() and pixels_to_ticks()
+	against overflow.
+	piano_roll_adjustment_changed():
+	piano_roll_update_adjustments(): fixed scrolling behaviour to work
+	properly within 1e+9 and show rubberband behaviour beyond that (plus
+	hard scroll area cut-off at 1.5 * 1e+9).
+
+	* beast-gtk/bsttrackroll.[hc]: guard ticks_to_pixels(), coord_to_tick()
+	and pixels_to_ticks_unscrolled() against overflow.
+	bst_track_roll_set_track_callback():
+	bst_track_roll_setup(): properly update track-dependant layout.
+	bst_track_roll_queue_row_change(): renamed, updated horizontal area
+	based on last-tick info from tracks.
+	bst_track_roll_hsetup(): fixed hzoom argument handling.
+	track_roll_adjustment_changed():
+	track_roll_update_adjustments(): implemented scrolling behaviour similar
+	to BstPianoRoll scroll area handling.
+
+	* beast-gtk/bstpatternview.c: guard tick_to_row(), row_to_ticks(),
+	pixels_to_row_unscrolled(), row_to_pixels_unscrolled(), coord_to_row()
+	and row_to_coords() against overflow.
+	pattern_view_adjustment_changed():
+	pattern_view_update_adjustments(): fixed scrolling behaviour similar
+	to BstPianoRoll scroll area handling.
+
+	* beast-gtk/bsteventroll.c: guard ticks_to_pixels() and
+	pixels_to_ticks() against overflow.
+	event_roll_update_adjustments(): update coment.
+
+	* beast-gtk/bsttrackview.c: adapt to growbar/radget changes.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_widget_request_hclient_height()
+	and gxk_widget_request_vclient_width() to let widget size requests
+	correspond to opposite dimensions in other widget size requests (request
+	width of one widget for another widgets height, and vice versa).
+
+	* beast-gtk/bstutils.c: define grow bars as radget types.
+
+	* beast-gtk/dialogs/radgets-beast.xml: turned scrollbars and scroll
+	area scale widgets of track roll, event/piano roll and pattern editor
+	into grow bars.
+
 Tue Jun 22 14:30:21 2004  Tim Janik  <timj@gtk.org>
 
 	* po/*: final gadget -> ragdet changes.

@@ -226,6 +226,7 @@ bst_track_roll_setup (BstTrackRoll   *self,
                          NULL);
     }
   track_roll_update_layout (self, TRUE);
+  bst_track_roll_queue_row_change (self, 0);
   gtk_widget_queue_resize (GTK_WIDGET (self));
 }
 
@@ -256,12 +257,12 @@ ticks_to_pixels (BstTrackRoll *self,
   tpixels *= self->hzoom / tpt * (gdouble) ticks;
   if (ticks)
     tpixels = MAX (tpixels, 1);
-  return tpixels;
+  return MIN (G_MAXINT, tpixels);
 }
 
 static gint
-pixels_to_ticks (BstTrackRoll *self,
-		 gint	       pixels)
+pixels_to_ticks_unscrolled (BstTrackRoll *self,
+                            gint	       pixels)
 {
   gdouble tpt = self->tpt;
   gdouble ticks = 1.0 / (gdouble) TACT_HPIXELS;
@@ -273,7 +274,7 @@ pixels_to_ticks (BstTrackRoll *self,
     ticks = MAX (ticks, 1);
   else
     ticks = 0;
-  return ticks;
+  return MIN (G_MAXINT, ticks);
 }
 
 static gint
@@ -291,10 +292,10 @@ coord_to_tick (BstTrackRoll *self,
   guint tick;
 
   x += X_OFFSET (self);
-  tick = pixels_to_ticks (self, x);
+  tick = pixels_to_ticks_unscrolled (self, x);
   if (right_bound)
     {
-      guint tick2 = pixels_to_ticks (self, x + 1);
+      guint tick2 = pixels_to_ticks_unscrolled (self, x + 1);
 
       if (tick2 > tick)
 	tick = tick2 - 1;
@@ -835,6 +836,28 @@ bst_track_roll_draw_marker (GxkScrollCanvas *scc,
 }
 
 static void
+track_roll_adjustment_changed (GxkScrollCanvas *scc,
+                               GtkAdjustment   *adj)
+{
+  BstTrackRoll *self = BST_TRACK_ROLL (scc);
+  if (adj == scc->hadjustment)
+    {
+      double umin = ticks_to_pixels (self, self->max_ticks);                    /* lower bound for adj->upper based on max_ticks */
+      double umax = pixels_to_ticks_unscrolled (self, 1e+9);
+      umax = ticks_to_pixels (self, MIN (umax, 1e+9));                          /* confine to possible tick range */
+      umax = MIN (umax, 1e+9);                                                  /* upper bound for adj->upper based on pixels */
+      umin = MIN (umin, umax * 1.5), umax = MAX (umin, umax);                   /* properly confine boundaries */
+      /* guard against invalid changes */
+      if (adj->lower != 0 || adj->upper != CLAMP (adj->upper, umin, umax))
+        {
+          scc->hadjustment->lower = 0;
+          scc->hadjustment->upper = CLAMP (scc->hadjustment->upper, umin, umax);
+          gtk_adjustment_changed (adj);
+        }
+    }
+}
+
+static void
 track_roll_update_adjustments (GxkScrollCanvas *scc,
                                gboolean         hadj,
                                gboolean         vadj)
@@ -843,13 +866,15 @@ track_roll_update_adjustments (GxkScrollCanvas *scc,
 
   if (hadj)
     {
-      scc->hadjustment->upper = ticks_to_pixels (self, self->max_ticks);
+      double umin = ticks_to_pixels (self, self->max_ticks);                    /* lower bound for adj->upper based on max_ticks */
+      double umax = pixels_to_ticks_unscrolled (self, 1e+9);
+      umax = ticks_to_pixels (self, MIN (umax, 1e+9));                          /* confine to possible tick range */
+      umax = MIN (umax, 1e+9);                                                  /* upper bound for adj->upper based on pixels */
+      umin = MIN (umin, umax * 1.5), umax = MAX (umin, umax);                   /* properly confine boundaries */
+      scc->hadjustment->lower = 0;
+      scc->hadjustment->upper = CLAMP (scc->hadjustment->upper, umin, umax);
       scc->hadjustment->step_increment = self->tpt;
       scc->hadjustment->page_increment = self->tpt * 4;
-      /* FIXME: hack: artificially confine horizontal scroll range, until
-       * proper time scale support is implemented
-       */
-      scc->hadjustment->upper = MIN (scc->hadjustment->upper, 10000 * MAX (scc->hadjustment->page_increment, 2000));
     }
   GXK_SCROLL_CANVAS_CLASS (bst_track_roll_parent_class)->update_adjustments (scc, hadj, vadj);
 }
@@ -871,8 +896,7 @@ bst_track_roll_hsetup (BstTrackRoll *self,
    */
   self->tpt = MAX (tpt, 1);
   self->max_ticks = MAX (max_ticks, 1);
-  self->hzoom = hzoom / 50;
-
+  self->hzoom = hzoom;
   if (old_tpt != self->tpt ||
       old_max_ticks != self->max_ticks ||
       old_hzoom != self->hzoom)
@@ -892,7 +916,7 @@ bst_track_roll_set_hzoom (BstTrackRoll *self,
   guint i;
 
   hzoom = CLAMP (hzoom, 0.1, 100);
-  bst_track_roll_hsetup (self, self->tpt, self->max_ticks, hzoom);
+  bst_track_roll_hsetup (self, self->tpt, self->max_ticks, hzoom / 50);
   /* readjust markers */
   for (i = 0; i < scc->n_markers; i += 2)
     track_roll_allocate_2markers (self, scc->markers + i);
@@ -969,11 +993,12 @@ bst_track_roll_set_track_callback (BstTrackRoll   *self,
   self->proxy_data = data;
   self->get_track = get_track;
   gtk_widget_queue_draw (GTK_WIDGET (self));
+  bst_track_roll_queue_row_change (self, 0);
 }
 
 void
-bst_track_roll_queue_draw_row (BstTrackRoll *self,
-			       guint         row)
+bst_track_roll_queue_row_change (BstTrackRoll *self,
+                                 guint         row)
 {
   GxkScrollCanvas *scc;
   GdkRectangle rect;
@@ -991,6 +1016,16 @@ bst_track_roll_queue_draw_row (BstTrackRoll *self,
       gdk_window_get_size (VPANEL (self), &rect.width, NULL);
       gdk_window_invalidate_rect (VPANEL (self), &rect, TRUE);
     }
+  guint i, last_tick = 0;
+  for (i = 0; ; i++)
+    {
+      SfiProxy track = row_to_track (self, i);
+      if (!track)
+        break;
+      guint l = bse_track_get_last_tick (track);
+      last_tick = MAX (last_tick, l);
+    }
+  bst_track_roll_hsetup (self, self->tpt, last_tick + 1, self->hzoom);
 }
 
 void
@@ -1003,8 +1038,8 @@ bst_track_roll_set_prelight_row (BstTrackRoll *self,
     {
       gint clear_row = self->prelight_row;
       self->prelight_row = row;
-      bst_track_roll_queue_draw_row (self, clear_row);
-      bst_track_roll_queue_draw_row (self, self->prelight_row);
+      bst_track_roll_queue_row_change (self, clear_row);
+      bst_track_roll_queue_row_change (self, self->prelight_row);
     }
 }
 
@@ -1180,6 +1215,7 @@ bst_track_roll_class_init (BstTrackRollClass *class)
   scroll_canvas_class->colors = colors;
   scroll_canvas_class->get_layout = track_roll_get_layout;
   scroll_canvas_class->update_adjustments = track_roll_update_adjustments;
+  scroll_canvas_class->adjustment_changed = track_roll_adjustment_changed;
   scroll_canvas_class->reallocate_contents = track_roll_reallocate_contents;
   scroll_canvas_class->draw_canvas = bst_track_roll_draw_canvas;
   scroll_canvas_class->draw_top_panel = bst_track_roll_draw_hpanel;

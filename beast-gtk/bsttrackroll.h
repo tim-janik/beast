@@ -128,7 +128,7 @@ void    bst_track_roll_set_track_callback  (BstTrackRoll           *self,
                                             BstTrackRollTrackFunc   get_track);
 void    bst_track_roll_check_update_scopes (BstTrackRoll           *self);
 void    bst_track_roll_reselect            (BstTrackRoll           *self);
-void    bst_track_roll_queue_draw_row      (BstTrackRoll           *self,
+void    bst_track_roll_queue_row_change    (BstTrackRoll           *self,
                                             guint                   row);
 void    bst_track_roll_set_prelight_row    (BstTrackRoll           *self,
                                             guint                   row);

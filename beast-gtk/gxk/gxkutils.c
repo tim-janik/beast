@@ -2311,6 +2311,58 @@ gxk_widget_proxy_requisition (GtkWidget *widget)
   g_signal_connect_after (widget, "size_request", G_CALLBACK (requisition_to_aux_info), NULL);
 }
 
+static void
+request_hclient_height (GtkWidget      *widget,
+                        GtkRequisition *requisition,
+                        GtkWidget      *client)
+{
+  GtkRequisition client_requisition;
+  gtk_widget_size_request (client, &client_requisition);
+  requisition->height = client_requisition.width;
+}
+
+/**
+ * gxk_widget_request_hclient_height
+ * @widget: valid #GtkWidget
+ * @client: valid #GtkWidget
+ *
+ * Request the horizontal size of @client as height
+ * for @widget.
+ */
+void
+gxk_widget_request_hclient_height (GtkWidget       *widget,
+                                   GtkWidget       *client)
+{
+  g_signal_handlers_disconnect_by_func (widget, request_hclient_height, client);
+  g_signal_connect_after (widget, "size_request", G_CALLBACK (request_hclient_height), client);
+}
+
+static void
+request_vclient_width (GtkWidget      *widget,
+                       GtkRequisition *requisition,
+                       GtkWidget      *client)
+{
+  GtkRequisition client_requisition;
+  gtk_widget_size_request (client, &client_requisition);
+  requisition->width = client_requisition.height;
+}
+
+/**
+ * gxk_widget_request_vclient_width
+ * @widget: valid #GtkWidget
+ * @client: valid #GtkWidget
+ *
+ * Request the vertical size of @client as width
+ * for @widget.
+ */
+void
+gxk_widget_request_vclient_width (GtkWidget       *widget,
+                                  GtkWidget       *client)
+{
+  g_signal_handlers_disconnect_by_func (widget, request_vclient_width, client);
+  g_signal_connect_after (widget, "size_request", G_CALLBACK (request_vclient_width), client);
+}
+
 /**
  * gxk_widget_has_ancestor
  * @widget:   valid #GtkWidget
