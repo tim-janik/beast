@@ -14,7 +14,8 @@
 @newsTitle{Monday 14 Apr 2003, BEAST Featuring LADSPA}
 
 BEAST/BSE version 0.5.1 is available in the
-@uref{beast-doc://download,,download section}.
+@uref{beast-doc://download,,download section}, here is the
+@uref{http://www.gnomedesktop.org/article.php?sid=1050,,FootNotes announcement}.
 
 The most exciting new feature in this release is the support for
 @uref{http://www.ladspa.org/,, LADSPA} plugins. With that, @beast
@@ -40,7 +41,8 @@ has been updated, and we got new or updated screen shots
 @newsTitle{Thursday 13 Mar 2003, New Development Release}
 
 BEAST/BSE version 0.5.0 is available in the
-@uref{beast-doc://download,,download section}.
+@uref{beast-doc://download,,download section}, here is the
+@uref{http://www.gnomedesktop.org/article.php?sid=993,,FootNotes announcement}.
 
 This new development series of BEAST comes with a lot of
 the internals redone, many new GUI features and a sound

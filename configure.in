@@ -172,7 +172,7 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     AC_SUBST(BSE_LIBS)
     dnl --- figure stuff for bse.pc ---
     BSE_PC_REQUIRE=
-    if test $GSL_HAVE_LIBMAD == 1 ; then
+    if test $GSL_HAVE_LIBMAD = 1 ; then
 	BSE_PC_REQUIRE=mad
     fi
     BSE_PC_CFLAGS=
@@ -432,7 +432,7 @@ AC_CHECK_PROGS(PERL, perl5 perl)
 AC_MSG_CHECKING(whether develoment build rules can be used)
 TEST_SRCDIR=$(cd $srcdir ; /bin/pwd)
 TEST_BUILDDIR=$(cd . ; /bin/pwd)
-if test "$TEST_SRCDIR" == "$TEST_BUILDDIR" -a -n "$PERL" \
+if test "$TEST_SRCDIR" = "$TEST_BUILDDIR" -a -n "$PERL" \
    && $PERL -e 'exit !($] >= 5.002)' > /dev/null ; then
     DVLBUILD=
     AC_MSG_RESULT(yes)

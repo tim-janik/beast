@@ -76,7 +76,8 @@ look and much improved content.
 @newsTitle{Monday 2 Sep 2002, New Development Release}
 
 BEAST/BSE version 0.4.1 is available in the
-@uref{beast-doc://download,,download section}.
+@uref{beast-doc://download,,download section}, here is the
+@uref{http://www.gnomedesktop.org/article.php?sid=638,,FootNotes announcement}.
 
 Much has changed in the new development version of BEAST.
 In brief (specifics can be found in the NEWS section), the

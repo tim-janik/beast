@@ -1,6 +1,15 @@
+Fri Apr 18 18:40:41 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-oldnews.texi: 
+	* docs/site-news.texi: added link to www.gnomedesktop.org announcements
+	to the last three releases.
+	
+	* configure.in: s/==/=/ for test invocations as == is a non-POSIX
+	extension, reported by Sam Hocevar <sam@zoy.org>.
+
 Wed Apr 16 19:43:36 2003  Tim Janik  <timj@gtk.org>
 
-	* autogen.sh: deamnd automake-1.4 and autoconf-1.3. support version
+	* autogen.sh: demand automake-1.4 and autoconf-1.3. support version
 	concatenation for these tools out of the box if supplied by the host
 	system. return proper exit codes in case of error.
 
