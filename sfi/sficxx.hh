@@ -142,6 +142,16 @@ public:
   {
     g_free (cstring);
   }
+  /* provide GValue accessors */
+  static String value_get (const GValue *value)
+  {
+    return sfi_value_get_string (value);
+  }
+  static void value_set (GValue       *value,
+                         const String& str)
+  {
+    sfi_value_set_string (value, str.c_str());
+  }
 };
 
 typedef enum {
@@ -282,15 +292,6 @@ public:
 };
 
 } // Sfi
-
-/* extending sfi_value functions to C++ types */
-inline Sfi::String sfi_value_get_cxxstring (const GValue *value) {
-  return sfi_value_get_string (value);
-}
-
-inline void sfi_value_set_cxxstring (GValue *value, const Sfi::String& string) {
-  sfi_value_set_string (value, string.c_str());
-}
 
 #endif /* __SFI_CXX_H__ */
 

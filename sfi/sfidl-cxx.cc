@@ -119,7 +119,7 @@ string CodeGeneratorCxxBase::createTypeCode (const std::string& type, const std:
 	switch (model)
 	  {
 	    case MODEL_TO_VALUE:    return "sfi_value_string ("+name+".c_str())";
-	    case MODEL_FROM_VALUE:  return "sfi_value_get_cxxstring ("+name+")";
+	    case MODEL_FROM_VALUE:  return "::Sfi::String::value_get ("+name+")";
 	    case MODEL_VCALL:       return "sfi_glue_vcall_string";
 	    case MODEL_VCALL_ARG:   return "'" + scatId (SFI_SCAT_STRING) + "', "+name+".c_str(),";
 	    case MODEL_VCALL_CARG:  return "";
