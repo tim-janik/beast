@@ -1,3 +1,12 @@
+Wed Feb  4 22:37:56 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfilog.c: Speed optimization: Lookup the GQuark for the sfi log
+	key in the init function instead of during each log message.
+
+	* sfivalues.c: Speed optimization: Use sfi_categorize_type() to find
+	out which type src_value has in sfi_value_copy_deep(), instead of
+	multiple if statements.
+
 Sun Feb  1 16:10:42 2004  Tim Janik  <timj@gtk.org>
 
 	* sfifilecrawler.[hc]: added sfi_make_dirname_path() to easily

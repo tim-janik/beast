@@ -362,39 +362,49 @@ void
 sfi_value_copy_deep (const GValue *src_value,
 		     GValue       *dest_value)
 {
+  SfiSCategory scat;
+
   g_return_if_fail (G_IS_VALUE (src_value));
   g_return_if_fail (G_IS_VALUE (dest_value));
-
-  if (SFI_VALUE_HOLDS_SEQ (src_value))
+  
+  scat = sfi_categorize_type (G_VALUE_TYPE (src_value)) & SFI_SCAT_TYPE_MASK;
+  switch (scat)
     {
-      SfiSeq *seq;
-      g_return_if_fail (SFI_VALUE_HOLDS_SEQ (dest_value));
-      seq = sfi_value_get_seq (src_value);
-      sfi_value_take_seq (dest_value, seq ? sfi_seq_copy_deep (seq) : NULL);
+      case SFI_SCAT_SEQ:
+	{
+	  SfiSeq *seq;
+	  g_return_if_fail (SFI_VALUE_HOLDS_SEQ (dest_value));
+	  seq = sfi_value_get_seq (src_value);
+	  sfi_value_take_seq (dest_value, seq ? sfi_seq_copy_deep (seq) : NULL);
+	}
+	break;
+      case SFI_SCAT_REC:
+	{
+	  SfiRec *rec;
+	  g_return_if_fail (SFI_VALUE_HOLDS_REC (dest_value));
+	  rec = sfi_value_get_rec (src_value);
+	  sfi_value_take_rec (dest_value, rec ? sfi_rec_copy_deep (rec) : NULL);
+	}
+	break;
+      case SFI_SCAT_BBLOCK:
+	{
+	  SfiBBlock *bblock;
+	  g_return_if_fail (SFI_VALUE_HOLDS_BBLOCK (dest_value));
+	  bblock = sfi_value_get_bblock (src_value);
+	  sfi_value_take_bblock (dest_value, bblock ? sfi_bblock_copy_deep (bblock) : NULL);
+	}
+	break;
+      case SFI_SCAT_FBLOCK:
+	{
+	  SfiFBlock *fblock;
+	  g_return_if_fail (SFI_VALUE_HOLDS_FBLOCK (dest_value));
+	  fblock = sfi_value_get_fblock (src_value);
+	  sfi_value_take_fblock (dest_value, fblock ? sfi_fblock_copy_deep (fblock) : NULL);
+	}
+	break;
+      default:
+	g_value_copy (src_value, dest_value);
     }
-  else if (SFI_VALUE_HOLDS_REC (src_value))
-    {
-      SfiRec *rec;
-      g_return_if_fail (SFI_VALUE_HOLDS_REC (dest_value));
-      rec = sfi_value_get_rec (src_value);
-      sfi_value_take_rec (dest_value, rec ? sfi_rec_copy_deep (rec) : NULL);
-    }
-  else if (SFI_VALUE_HOLDS_BBLOCK (src_value))
-    {
-      SfiBBlock *bblock;
-      g_return_if_fail (SFI_VALUE_HOLDS_BBLOCK (dest_value));
-      bblock = sfi_value_get_bblock (src_value);
-      sfi_value_take_bblock (dest_value, bblock ? sfi_bblock_copy_deep (bblock) : NULL);
-    }
-  else if (SFI_VALUE_HOLDS_FBLOCK (src_value))
-    {
-      SfiFBlock *fblock;
-      g_return_if_fail (SFI_VALUE_HOLDS_FBLOCK (dest_value));
-      fblock = sfi_value_get_fblock (src_value);
-      sfi_value_take_fblock (dest_value, fblock ? sfi_fblock_copy_deep (fblock) : NULL);
-    }
-  else
-    g_value_copy (src_value, dest_value);
 }
 
 

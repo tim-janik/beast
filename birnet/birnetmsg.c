@@ -25,20 +25,26 @@
 #include <errno.h>
 
 
+/* --- variables --- */
+
+static GQuark quark_sfi_log_key = 0;
+
 /* --- functions --- */
+
+
 static inline const gchar*
 sfi_log_pop_key (const gchar *fallback)
 {
-  const gchar *key = sfi_thread_get_data ("SFI-log-key");
+  const gchar *key = sfi_thread_get_qdata (quark_sfi_log_key);
   if (key)
-    sfi_thread_set_data ("SFI-log-key", NULL);
+    sfi_thread_set_qdata (quark_sfi_log_key, NULL);
   return key ? key : fallback;
 }
 
 void
 sfi_log_push_key (const gchar *static_key)
 {
-  sfi_thread_set_data ("SFI-log-key", (gchar*) static_key);
+  sfi_thread_set_qdata (quark_sfi_log_key, (gchar*) static_key);
 }
 
 static void
@@ -203,6 +209,7 @@ static KeyList info_klist = { 0, };
 void
 _sfi_init_log (void)
 {
+  quark_sfi_log_key = g_quark_from_string ("SFI-log-key");
   sfi_mutex_init (&key_mutex);
   sfi_log_reset_info ();
   sfi_log_reset_debug ();
