@@ -26,7 +26,7 @@
 SfiBBlock*
 sfi_bblock_new (void)
 {
-  SfiBBlock *bblock = g_new (SfiBBlock, 1);
+  SfiBBlock *bblock = sfi_new_struct (SfiBBlock, 1);
 
   bblock->ref_count = 1;
   bblock->n_bytes = 0;
@@ -62,7 +62,7 @@ sfi_bblock_unref (SfiBBlock *bblock)
   if (bblock->ref_count == 0)
     {
       g_free (bblock->bytes);
-      g_free (bblock);
+      sfi_delete_struct (SfiBBlock, bblock);
     }
 }
 
@@ -147,7 +147,7 @@ sfi_bblock_get (const SfiBBlock *bblock)
 SfiFBlock*
 sfi_fblock_new (void)
 {
-  SfiFBlock *fblock = g_new (SfiFBlock, 1);
+  SfiFBlock *fblock = sfi_new_struct (SfiFBlock, 1);
 
   fblock->ref_count = 1;
   fblock->n_values = 0;
@@ -183,7 +183,7 @@ sfi_fblock_unref (SfiFBlock *fblock)
   if (fblock->ref_count == 0)
     {
       g_free (fblock->values);
-      g_free (fblock);
+      sfi_delete_struct (SfiFBlock, fblock);
     }
 }
 
@@ -270,7 +270,7 @@ sfi_seq_new (void)
 {
   SfiSeq *s;
 
-  s = g_new (SfiSeq, 1);
+  s = sfi_new_struct (SfiSeq, 1);
   s->ref_count = 1;
   s->n_elements = 0;
   s->elements = NULL;
@@ -311,7 +311,7 @@ sfi_seq_unref (SfiSeq *seq)
       while (seq->n_elements)
 	g_value_unset (seq->elements + --seq->n_elements);
       g_free (seq->elements);
-      g_free (seq);
+      sfi_delete_struct (SfiSeq, seq);
     }
 }
 
@@ -709,7 +709,7 @@ sfi_seq_from_strv (gchar **strv)
 SfiRec*
 sfi_rec_new (void)
 {
-  SfiRec *rec = g_new (SfiRec, 1);
+  SfiRec *rec = sfi_new_struct (SfiRec, 1);
   rec->ref_count = 1;
   rec->n_fields = 0;
   rec->sorted = TRUE;
@@ -757,7 +757,7 @@ sfi_rec_unref (SfiRec *rec)
   if (rec->ref_count == 0)
     {
       sfi_rec_empty (rec);
-      g_free (rec);
+      sfi_delete_struct (SfiRec, rec);
     }
 }
 

@@ -568,10 +568,30 @@ sfi_value_seq (SfiSeq *vseq)
 }
 
 GValue*
+sfi_value_seq_take_ref (SfiSeq *vseq)
+{
+  GValue *value = alloc_value (SFI_TYPE_SEQ);
+  sfi_value_set_seq (value, vseq);
+  if (vseq)
+    sfi_seq_unref (vseq);
+  return value;
+}
+
+GValue*
 sfi_value_rec (SfiRec *vrec)
 {
   GValue *value = alloc_value (SFI_TYPE_REC);
   sfi_value_set_rec (value, vrec);
+  return value;
+}
+
+GValue*
+sfi_value_rec_take_ref (SfiRec *vrec)
+{
+  GValue *value = alloc_value (SFI_TYPE_REC);
+  sfi_value_set_rec (value, vrec);
+  if (vrec)
+    sfi_rec_unref (vrec);
   return value;
 }
 

@@ -1065,6 +1065,8 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
 	  decoder->outgoing = sfi_ring_append (decoder->outgoing, sfi_value_seq (seq));
 	  sfi_seq_unref (seq);
 	}
+      else
+	g_assert (rvalue == NULL);
     }
 
   /* queue emitted signals */
@@ -1088,6 +1090,7 @@ sfi_glue_decoder_dispatch (SfiGlueDecoder *decoder)
     }
   sfi_com_port_process_io (decoder->port);
   
+  sfi_glue_gc_run ();
   sfi_glue_context_pop ();
 }
 

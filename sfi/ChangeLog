@@ -1,3 +1,24 @@
+Tue Dec 31 03:01:30 2002  Tim Janik  <timj@gtk.org>
+
+	* toyprof.[hc], toyprof.README, toyprof.pl: moved
+	toyprof code from BSE to here.
+
+	* toyprof-mem.[hc]: added GLibc specific memory profiler.
+
+	* sfiprimitives.c: allocate SfiRec, SfiSeq, SfiBBlock and
+	SfiFBlock via memblocks.
+
+	* sfivalues.[hc]: added sfi_value_rec_take_ref() and
+	sfi_value_seq_take_ref() which are value constructors
+	that take over the intial reference count of a rec or seq,
+	needed by sfidl.
+
+	* sfigluecodec.c (sfi_glue_decoder_dispatch): run gc at the
+	end of dispatch.
+
+	* sfidl.cc (createTypeCode): fix reference counting of records and
+	sequences, so we don't leak upon every conversion in generated code.
+
 Mon Dec 30 00:37:10 2002  Tim Janik  <timj@gtk.org>
 
 	* sfiglueproxy.[hc]: confirm processed notifies.

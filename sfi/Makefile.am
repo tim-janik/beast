@@ -35,6 +35,7 @@ sfi_c_sources = $(strip \
 	sfinote.c	sfiparams.c	sfiprimitives.c	sfiserial.c	\
 	sfitime.c	sfitypes.c	sfivalues.c	sfiustore.c	\
 	sfilog.c	sfithreads.c	sfimemory.c	sficomport.c	\
+	$(TOYPROF_C_SOURCES)	\
 )
 sfi_extra_sources = $(strip \
 	gbsearcharray.h \
@@ -91,6 +92,13 @@ testsfi.c: testidl.h testidl.c
 # TESTS
 #
 TESTS = testsfi
+
+#
+# TOYPROF: ppor man's profiling toy
+#
+TOYPROF_H_SOURCES = toyprof.h toyprof-mem.h
+TOYPROF_C_SOURCES = toyprof.c toyprof-mem.c
+EXTRA_DIST += toyprof.pl toyprof.README $(TOYPROF_H_SOURCES)
 
 
 EXTRA_DIST += $(sfi_public_headers) $(sfi_extra_sources) $(progs_extra_sources) $(sfi_built_sources)

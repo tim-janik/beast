@@ -1,5 +1,5 @@
 /* TOYPROF - Poor man's profiling toy
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001-2002 Tim Janik
  *
  * This code is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +28,7 @@
  *			  undefined symbol error.
  * TOYPROF_EXIT		- exit code to return upon profiler aborts
  */
-#define TOYPROF_PENTIUM		1
+#define TOYPROF_PENTIUM		0	/* not every gcc user has a pentium */
 #define TOYPROF_AUTOSTART	1
 #define TOYPROF_DISABLE		1
 #define TOYPROF_EXIT		-1
@@ -37,13 +37,13 @@
 /* --- implementation --- */
 #define	_GNU_SOURCE
 #include <string.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <execinfo.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <dlfcn.h>
-#include <stdio.h>
 #include <stddef.h>
 #include <fcntl.h>
 #include <link.h>
@@ -345,7 +345,7 @@ toyprof_atexit (void)
   toyprof_dump_stats (2);
 }
 
-static void TOYPROF_GNUC_NO_INSTRUMENT
+static void TOYPROF_GNUC_NO_INSTRUMENT TOYPROF_GNUC_UNUSED
 toyprof_func_enter (void *cur_func,
 		    void *call_site)
 {
@@ -410,7 +410,7 @@ toyprof_func_enter (void *cur_func,
   toyprof_stamp (e->stamp);	/* start timing */
 }
 
-static void TOYPROF_GNUC_NO_INSTRUMENT
+static void TOYPROF_GNUC_NO_INSTRUMENT TOYPROF_GNUC_UNUSED
 toyprof_func_exit (void *cur_func,
 		   void *call_site)
 {

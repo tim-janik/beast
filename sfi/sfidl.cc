@@ -296,7 +296,7 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
       if (parser.isSequence (type))
       {
 	if (model == MODEL_TO_VALUE)
-	  return "sfi_value_seq (" + makeLowerName (type)+"_to_seq ("+name+"))";
+	  return "sfi_value_seq_take_ref (" + makeLowerName (type)+"_to_seq ("+name+"))";
 	if (model == MODEL_FROM_VALUE) 
 	  return makeLowerName (type)+"_from_seq (sfi_value_get_seq ("+name+"))";
 	if (model == MODEL_VCALL) 
@@ -315,7 +315,7 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
       else
       {
 	if (model == MODEL_TO_VALUE)   
-	  return "sfi_value_rec (" + makeLowerName (type)+"_to_rec ("+name+"))";
+	  return "sfi_value_rec_take_ref (" + makeLowerName (type)+"_to_rec ("+name+"))";
 	if (model == MODEL_FROM_VALUE)
 	  return makeLowerName (type)+"_from_rec (sfi_value_get_rec ("+name+"))";
 	if (model == MODEL_VCALL) 

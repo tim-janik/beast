@@ -135,7 +135,9 @@ GValue*	sfi_value_bblock	(SfiBBlock	*vfblock);
 GValue*	sfi_value_fblock	(SfiFBlock	*vfblock);
 GValue*	sfi_value_pspec		(GParamSpec	*pspec);
 GValue*	sfi_value_seq		(SfiSeq		*vseq);
+GValue*	sfi_value_seq_take_ref	(SfiSeq		*vseq);
 GValue*	sfi_value_rec		(SfiRec		*vrec);
+GValue*	sfi_value_rec_take_ref	(SfiRec		*vrec);
 GValue*	sfi_value_proxy		(SfiProxy	 vproxy);
 void	sfi_value_free		(GValue		*value);
 
