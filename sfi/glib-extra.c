@@ -220,13 +220,13 @@ g_strconcat_with_null (const gchar *string1, ...)
 const gchar*
 g_intern_string (const gchar *string)
 {
-  return g_quark_to_string (g_quark_from_string (string));
+  return string ? g_quark_to_string (g_quark_from_string (string)) : NULL;
 }
 
 const gchar*
 g_intern_static_string (const gchar   *string)
 {
-  return g_quark_to_string (g_quark_from_static_string (string));
+  return string ? g_quark_to_string (g_quark_from_static_string (string)) : NULL;
 }
 
 static gchar*

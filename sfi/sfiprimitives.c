@@ -1311,22 +1311,30 @@ SfiRing*
 sfi_ring_prepend_uniq (SfiRing  *head,
 		       gpointer data)
 {
-  SfiRing *walk;
-  
-  for (walk = head; walk; walk = sfi_ring_walk (walk, head))
-    if (walk->data == data)
+  SfiRing *ring;
+  for (ring = head; ring; ring = sfi_ring_walk (ring, head))
+    if (ring->data == data)
       return head;
   return sfi_ring_prepend_i (head, data);
 }
 
 SfiRing*
-sfi_ring_append (SfiRing  *head,
+sfi_ring_append (SfiRing *head,
 		 gpointer data)
 {
+  SfiRing *ring = sfi_ring_prepend_i (head, data);
+  return head ? head : ring;
+}
+
+SfiRing*
+sfi_ring_append_uniq (SfiRing *head,
+                      gpointer data)
+{
   SfiRing *ring;
-  
+  for (ring = head; ring; ring = sfi_ring_walk (ring, head))
+    if (ring->data == data)
+      return head;
   ring = sfi_ring_prepend_i (head, data);
-  
   return head ? head : ring;
 }
 

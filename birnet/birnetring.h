@@ -251,6 +251,8 @@ SfiRing*        sfi_ring_prepend_uniq   (SfiRing        *head,
 					 gpointer        data);
 SfiRing*        sfi_ring_append         (SfiRing        *head,
 					 gpointer        data);
+SfiRing*        sfi_ring_append_uniq    (SfiRing        *head,
+					 gpointer        data);
 SfiRing*        sfi_ring_insert_sorted  (SfiRing        *head,
 					 gpointer        data,
 					 GCompareFunc    func);

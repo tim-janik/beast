@@ -1,3 +1,9 @@
+Fri Dec  5 00:35:24 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.c: handle NULL for intern_string variants.
+
+	* sfiprimitives.[hc]: added sfi_ring_append_uniq().
+
 Tue Dec  2 23:32:12 2003  Tim Janik  <timj@gtk.org>
 
 	* gbsearcharray.h: added g_bsearch_array_remove_node() which is a simple
