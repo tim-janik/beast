@@ -19,7 +19,7 @@
 #define __BSE_STANDARD_OSC_H__
 
 #include <bse/bsesource.h>
-#include <gsl/gsloscillator.h>
+#include <bse/gsloscillator.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -16,8 +16,8 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <gsl/gslmath.h>
-#include <gsl/gslfilter.h>
+#include <bse/gslmath.h>
+#include <bse/gslfilter.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -19,8 +19,8 @@
 #ifndef __GSL_DATA_UTILS_H__
 #define __GSL_DATA_UTILS_H__
 
-#include <gsl/gslmath.h>
-#include <gsl/gsldatahandle.h>
+#include <bse/gslmath.h>
+#include <bse/gsldatahandle.h>
 #include <sfi/sfistore.h>	// FIXME:?
 
 #ifdef __cplusplus

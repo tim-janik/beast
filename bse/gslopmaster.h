@@ -18,7 +18,7 @@
 #ifndef __GSL_ENGINE_MASTER_H__
 #define __GSL_ENGINE_MASTER_H__
 
-#include	<gsl/gslengine.h>
+#include <bse/gslengine.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -20,7 +20,7 @@
 
 #include <bse/bsesource.h>
 #include <bse/bsewave.h>
-#include <gsl/gslwaveosc.h>
+#include <bse/gslwaveosc.h>
 
 #ifdef __cplusplus
 extern "C" {

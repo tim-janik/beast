@@ -5,8 +5,8 @@
 
 SUBDIRS = icons zintern
 
-# need -I$(top_srcdir) for <gsl/gsldefs.h>
-# need -I. for "../PKG_config.h"
+# need -I$(top_srcdir) for <bse/gsldefs.h>
+# need -I$(top_builddir) for <sfi/sficonfig.h>
 INCLUDES = -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #

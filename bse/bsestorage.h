@@ -18,8 +18,8 @@
 #ifndef	__BSE_STORAGE_H__
 #define	__BSE_STORAGE_H__
 
-#include	<bse/bseobject.h>
-#include	<gsl/gsldefs.h>
+#include <bse/bseobject.h>
+#include <bse/gsldefs.h>
 
 G_BEGIN_DECLS
 

@@ -19,9 +19,9 @@
 #ifndef __GSL_SIGNAL_H__
 #define __GSL_SIGNAL_H__
 
-#include <gsl/gsldefs.h>
-#include <gsl/gslieee754.h>
-#include <gsl/gslmath.h>
+#include <bse/gsldefs.h>
+#include <bse/gslieee754.h>
+#include <bse/gslmath.h>
 
 #ifdef __cplusplus
 extern "C" {

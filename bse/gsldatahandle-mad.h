@@ -19,8 +19,8 @@
 #ifndef __GSL_DATA_HANDLE_MAD_H__
 #define __GSL_DATA_HANDLE_MAD_H__
 
-#include <gsl/gslcommon.h>
-#include <gsl/gsldatahandle.h>
+#include <bse/gslcommon.h>
+#include <bse/gsldatahandle.h>
 
 #ifdef __cplusplus
 extern "C" {

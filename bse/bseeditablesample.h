@@ -18,8 +18,8 @@
 #ifndef __BSE_EDITABLE_SAMPLE_H__
 #define __BSE_EDITABLE_SAMPLE_H__
 
-#include        <bse/bsesuper.h>
-#include        <gsl/gslwavechunk.h>
+#include <bse/bsesuper.h>
+#include <bse/gslwavechunk.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -18,8 +18,8 @@
 #ifndef __GSL_FILE_HASH_H__
 #define __GSL_FILE_HASH_H__
 
-#include <gsl/gsldefs.h>
-#include <gsl/gslcommon.h>
+#include <bse/gsldefs.h>
+#include <bse/gslcommon.h>
 
 #ifdef __cplusplus
 extern "C" {

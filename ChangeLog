@@ -1,3 +1,7 @@
+Mon Mar 10 09:24:27 2003  Tim Janik  <timj@gtk.org>
+
+	* remove topdir gsl/ link, fixed includes.
+
 Mon Mar 10 08:54:23 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: added @DVLBUILD@ ac substitution to disable

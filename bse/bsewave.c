@@ -15,16 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bsewave.h"
+#include "bsewave.h"
 
-#include	"bsestorage.h"
-#include	"bseprocedure.h"
-#include	"gslwavechunk.h"
-#include	"gsldatahandle.h"
-#include	"bseserver.h"
-#include        <gsl/gslloader.h>
+#include "bsestorage.h"
+#include "bseprocedure.h"
+#include "gslwavechunk.h"
+#include "gsldatahandle.h"
+#include "bseserver.h"
+#include <bse/gslloader.h>
 
-#include	<string.h>
+#include <string.h>
 
 enum {
   PARAM_0,

@@ -19,8 +19,8 @@
 #ifndef __GSL_MATH_H__
 #define __GSL_MATH_H__
 
-#include <gsl/gslieee754.h>
-#include <gsl/gsldefs.h>
+#include <bse/gslieee754.h>
+#include <bse/gsldefs.h>
 #include <math.h>
 
 #ifdef __cplusplus

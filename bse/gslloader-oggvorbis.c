@@ -16,9 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "gsl/gslloader.h"
+#include "bse/gslloader.h"
 
-#include <gsl/gsldatahandle.h>
+#include <bse/gsldatahandle.h>
 #include "gsldatahandle-vorbis.h"
 
 #include <vorbis/vorbisfile.h>

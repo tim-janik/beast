@@ -19,7 +19,7 @@
 #ifndef __GSL_DATA_CACHE_H__
 #define __GSL_DATA_CACHE_H__
 
-#include <gsl/gslcommon.h>
+#include <bse/gslcommon.h>
 
 #ifdef __cplusplus
 extern "C" {

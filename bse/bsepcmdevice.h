@@ -20,8 +20,8 @@
 #ifndef __BSE_PCM_DEVICE_H__
 #define __BSE_PCM_DEVICE_H__
 
-#include        <bse/bseobject.h>
-#include        <gsl/gsldefs.h>
+#include <bse/bseobject.h>
+#include <bse/gsldefs.h>
 
 
 #ifdef __cplusplus

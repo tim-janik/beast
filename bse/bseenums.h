@@ -20,8 +20,8 @@
 #ifndef __BSE_ENUMS_H__
 #define __BSE_ENUMS_H__
 
-#include	<bse/bsetype.h>
-#include	<gsl/gsldefs.h>
+#include <bse/bsetype.h>
+#include <bse/gsldefs.h>
 
 
 #ifdef __cplusplus

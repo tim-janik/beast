@@ -19,9 +19,9 @@
 #ifndef __GSL_LOADER_H__
 #define __GSL_LOADER_H__
 
-#include <gsl/gsldefs.h>
-#include <gsl/gslcommon.h>
-#include <gsl/gslwavechunk.h>
+#include <bse/gsldefs.h>
+#include <bse/gslcommon.h>
+#include <bse/gslwavechunk.h>
 
 #ifdef __cplusplus
 extern "C" {

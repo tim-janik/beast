@@ -19,7 +19,7 @@
 #ifndef __GSL_FILTER_H__
 #define __GSL_FILTER_H__
 
-#include <gsl/gslmath.h>
+#include <bse/gslmath.h>
 
 #ifdef __cplusplus
 extern "C" {

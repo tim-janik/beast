@@ -20,8 +20,8 @@
 #define __GSL_DATA_HANDLE_VORBIS_H__
 
 
-#include <gsl/gslcommon.h>
-#include <gsl/gsldatahandle.h>
+#include <bse/gslcommon.h>
+#include <bse/gsldatahandle.h>
 
 #ifdef __cplusplus
 extern "C" {

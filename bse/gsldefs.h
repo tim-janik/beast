@@ -24,7 +24,7 @@
 
 
 /* configure checks */
-#include <gsl/gslconfig.h>
+#include <bse/gslconfig.h>
 
 
 #ifdef __cplusplus

@@ -19,7 +19,7 @@
 #ifndef __GSL_MAGIC_H__
 #define __GSL_MAGIC_H__
 
-#include	<gsl/gsldefs.h>
+#include <bse/gsldefs.h>
 
 
 #ifdef __cplusplus

@@ -16,10 +16,10 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <gsl/gsldatahandle-mad.h>
+#include <bse/gsldatahandle-mad.h>
 
 #include "gslfilehash.h"
-#include <gsl/gsldatautils.h>
+#include <bse/gsldatautils.h>
 #include <assert.h>
 #include <stdio.h>
 #include <unistd.h>

@@ -19,8 +19,8 @@
 #ifndef __GSL_WAVE_CHUNK_H__
 #define __GSL_WAVE_CHUNK_H__
 
-#include <gsl/gsldefs.h>
-#include <gsl/gsldatacache.h>
+#include <bse/gsldefs.h>
+#include <bse/gsldatacache.h>
 
 #ifdef __cplusplus
 extern "C" {

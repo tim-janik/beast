@@ -18,7 +18,7 @@
 #ifndef __GSL_ENGINE_SCHEDULE_H__
 #define __GSL_ENGINE_SCHEDULE_H__
 
-#include <gsl/gslopnode.h>
+#include <bse/gslopnode.h>
 
 #ifdef __cplusplus
 extern "C" {

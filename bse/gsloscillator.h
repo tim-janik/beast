@@ -19,8 +19,8 @@
 #ifndef __GSL_OSCILLATOR_H__
 #define __GSL_OSCILLATOR_H__
 
-#include <gsl/gsldefs.h>
-#include <gsl/gslosctable.h>
+#include <bse/gsldefs.h>
+#include <bse/gslosctable.h>
 
 #ifdef __cplusplus
 extern "C" {

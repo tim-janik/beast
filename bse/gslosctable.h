@@ -19,7 +19,7 @@
 #ifndef __GSL_OSC_TABLE_H__
 #define __GSL_OSC_TABLE_H__
 
-#include <gsl/gsldefs.h>
+#include <bse/gsldefs.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -19,8 +19,8 @@
 #ifndef __GSL_DATA_HANDLE_H__
 #define __GSL_DATA_HANDLE_H__
 
-#include <gsl/gsldefs.h>
-#include <gsl/gslcommon.h>	/* GslErrorType */
+#include <bse/gsldefs.h>
+#include <bse/gslcommon.h>	/* GslErrorType */
 
 #ifdef __cplusplus
 extern "C" {

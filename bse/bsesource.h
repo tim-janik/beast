@@ -20,8 +20,8 @@
 #ifndef __BSE_SOURCE_H__
 #define __BSE_SOURCE_H__
 
-#include        <bse/bseitem.h>
-#include        <gsl/gsldefs.h>
+#include <bse/bseitem.h>
+#include <bse/gsldefs.h>
 
 
 #ifdef __cplusplus

@@ -19,8 +19,8 @@
 #ifndef __GSL_WAVE_OSC_H__
 #define __GSL_WAVE_OSC_H__
 
-#include <gsl/gsldefs.h>
-#include <gsl/gslwavechunk.h>
+#include <bse/gsldefs.h>
+#include <bse/gslwavechunk.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -19,7 +19,7 @@
 #ifndef __GSL_IEEE754_H__
 #define __GSL_IEEE754_H__
 
-#include	<gsl/gsldefs.h>
+#include <bse/gsldefs.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -37,16 +37,9 @@ PKG_paths.h: $(top_builddir)/config.status Makefile
 #	&& (cmp -s xgen-pph $@ || cp xgen-pph $@) 
 
 # always built PKG_paths.h and create links
-stamp-h: PKG_paths.h gsl
-
-# create builddir links
-gsl:
-	ln -s bse gsl
-# dist ship the srcdir links
-EXTRA_DIST += gsl
+stamp-h: PKG_paths.h
 
 CLEANFILES += PKG_paths.h
-MAINTAINERCLEANFILES += gsl
 
 EXTRA_DIST += \
 	TODO \

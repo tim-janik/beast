@@ -18,8 +18,8 @@
  */
 #include "bsesnooper.h"
 
-#include <gsl/gslengine.h>
-#include <gsl/gslieee754.h>
+#include <bse/gslengine.h>
+#include <bse/gslieee754.h>
 #include <bse/bsecategories.h>
 
 
