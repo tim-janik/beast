@@ -46,6 +46,7 @@
 @item @uref{http://cvs.gnome.org/viewcvs/beast/,, BEAST in the GNOME CVS repository}
 @item @uref{http://cia.navi.cx/stats/project/gnome/beast,, BEAST at the CIA Open Source Notification System}
 @item @uref{http://linuxaudioblog.jawebada.de/software/synthesis/,, Linux Audio Blog - SYNTHESIS}
+@item @uref{http://packages.qa.debian.org/b/beast.html,, BEAST package for Debian}
 @end itemize
 
 
