@@ -887,7 +887,7 @@ master_process_flow (void)
 	{
 	  EngineNode *tmp = node->mnl_next;
           node->counter = final_counter;
-          master_update_node_state (node, node->counter);
+          master_update_node_state (node, node->counter - 1);
 	  _engine_mnl_node_changed (node);      /* collects trash jobs */
 	  node = tmp;
 	}

@@ -1,3 +1,9 @@
+Fri Jan 16 04:32:05 2004  Tim Janik  <timj@gtk.org>
+
+	* gslopmaster.c (master_process_flow): execute flow jobs scheduled at
+	block boundary at the start of the new block, not at the end of the old
+	block (and with that, *after* corresponding accessor or boundary jobs).
+
 Thu Jan 15 14:54:01 2004  Tim Janik  <timj@gtk.org>
 
 	* gslwavechunk.c: in fill_block() step through the sample with a step
