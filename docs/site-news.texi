@@ -11,6 +11,25 @@
 @unnumbered What's New?
 
 
+@newsTitle{Saturday 10 Jan 2004, BSE Sound Archive}
+
+We just opened up the
+@uref{beast-doc://browse-bse-files,,BSE Sound Archive}.
+Here, users can
+@uref{beast-doc://upload-bse-files,, contribute and exchange}
+BSE songs, samples or instrument and effect files.
+For demonstration purposes, we will also take
+@uref{http://www.xiph.org/ogg/vorbis/,, Ogg/Vorbis}
+files alongside a BSE Song to ease previews.
+For instance, here is the
+@uref{http://beast.gtk.org/beast-ftp/bse-files/partymonster.ogg,, Ogg/Vorbis version}
+of the BEAST demo song
+@uref{http://beast.gtk.org/beast-ftp/bse-files/partymonster.bse,, Party Monster}.
+
+Have fun and
+@uref{beast-doc://upload-bse-files,, start contributing}! ;-)
+
+
 @newsTitle{Monday 29 Dec 2003, intltool add-on for beast-0.5.6}
 
 Aparently intltool 0.28 which the last beast release uses, requires a specific

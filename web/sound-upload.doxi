@@ -1,6 +1,6 @@
 \input texinfo
 @c %**start of header
-@settitle Upload BEAST/BSE Files for our Contribution area
+@settitle BSE Sound Archive File Upload
 @c %**end of header
 
 @include texiutils.texi

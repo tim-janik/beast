@@ -1,3 +1,9 @@
+Sun Jan 11 04:51:53 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-navigation.xml: create BSE sound archive indices.
+
+	* docs/site-news.texi: announce BSE Sound Archive.
+
 Sat Jan 10 10:00:19 2004  Tim Janik  <timj@gtk.org>
 
 	* autogen.sh: major cleanup. downgraded autoconf dependancy to 2.57.

@@ -11,10 +11,15 @@
   >
 ]>
 
+<!-- sync this file with gtk.org:/web/beast/dyn/navigation.xml -->
 <navigation>
   <navigation-node title="News"                    target="news.html"              />
   <navigation-node title="About"                   target="about.html"             />
   <navigation-node title="Screenshots"             target="screenshots/index.html" />
+
+  <navigation-node title="Sound Archive"           target="browse-bse-files.html" >
+    <navigation-node title="Contribute"            target="upload-bse-files.html" />
+  </navigation-node>
 
   <navigation-node title="Documentation"           target="documentation.html">
     <navigation-node title="FAQ"                   target="faq.html" />
@@ -35,8 +40,6 @@
   </navigation-node>
   
   <navigation-node title="Resources"               target="resources.html">
-    <navigation-node title="Contributions"         target="browse-bse-files.html" />
-    <navigation-node title="Contribute"            target="upload-bse-files.html" />
     <navigation-node title="Synthesis Links"       target="links-synthesis.html" />
     <navigation-node title="Related Links"         target="links-related.html" />
   </navigation-node>
