@@ -42,18 +42,18 @@ typedef struct
 } PortAudioPcmHandle;
 
 /* --- prototypes --- */
-static void             bse_pcm_device_portaudio_class_init  (BsePcmDevicePortAudioClass  *klass);
-static void             bse_pcm_device_portaudio_init        (BsePcmDevicePortAudio       *self);
-static gsize            portaudio_device_read                (BsePcmHandle           *handle,
-							      gfloat                 *values);
-static void             portaudio_device_write               (BsePcmHandle           *handle,
-							      const gfloat           *values);
-static gboolean         portaudio_device_check_io            (BsePcmHandle           *handle,
-							      glong                  *tiumeoutp);
-static guint            portaudio_device_latency             (BsePcmHandle           *handle);
+static void             bse_pcm_device_port_audio_class_init  (BsePcmDevicePortAudioClass  *klass);
+static void             bse_pcm_device_port_audio_init        (BsePcmDevicePortAudio       *self);
+static gsize            port_audio_device_read                (BsePcmHandle           *handle,
+							       gfloat                 *values);
+static void             port_audio_device_write               (BsePcmHandle           *handle,
+							       const gfloat           *values);
+static gboolean         port_audio_device_check_io            (BsePcmHandle           *handle,
+							       glong                  *timeoutp);
+static guint            port_audio_device_latency             (BsePcmHandle           *handle);
 
 /* --- define object type and export to BSE --- */
-BSE_REGISTER_OBJECT (BsePcmDevicePortAudio, BsePcmDevice, NULL, NULL, NULL, bse_pcm_device_portaudio_class_init, NULL, bse_pcm_device_portaudio_init);
+BSE_REGISTER_OBJECT (BsePcmDevicePortAudio, BsePcmDevice, NULL, NULL, NULL, bse_pcm_device_port_audio_class_init, NULL, bse_pcm_device_port_audio_init);
 /* BSE_DEFINE_EXPORTS (__FILE__); */
 /* BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME); */
 extern "C" {
@@ -66,13 +66,13 @@ static gpointer parent_class = NULL;
 
 /* --- functions --- */
 static void
-bse_pcm_device_portaudio_init (BsePcmDevicePortAudio *self)
+bse_pcm_device_port_audio_init (BsePcmDevicePortAudio *self)
 {
   Pa_Initialize();
 }
 
 static std::string
-portaudio_host_api_name (PaHostApiIndex host_api_index)
+port_audio_host_api_name (PaHostApiIndex host_api_index)
 {
   const PaHostApiInfo *host_api_info = Pa_GetHostApiInfo (host_api_index);
 
@@ -93,17 +93,17 @@ portaudio_host_api_name (PaHostApiIndex host_api_index)
 /* we build a per-host-api device index, since we hope that this
  * will be a bit more reliable than the global index, so that
  * specifiying a device like alsa:0 results in (more or less)
- * the same portaudio device being used, reliably
+ * the same PortAudio device being used, reliably
  */
 static vector<string>
-portaudio_devices()
+port_audio_devices()
 {
   vector<string> devices (Pa_GetDeviceCount());
 
   for (PaHostApiIndex host_api_index = 0; host_api_index < Pa_GetHostApiCount(); host_api_index++)
     {
       int host_api_device_index = 0; /* host api specific index */
-      string host_api_name = portaudio_host_api_name (host_api_index);
+      string host_api_name = port_audio_host_api_name (host_api_index);
 
       for (PaDeviceIndex device_index = 0; device_index < Pa_GetDeviceCount(); device_index++)
 	{
@@ -121,9 +121,9 @@ portaudio_devices()
 }
 
 static SfiRing*
-bse_pcm_device_portaudio_list_devices (BseDevice *device)
+bse_pcm_device_port_audio_list_devices (BseDevice *device)
 {
-  vector<string> devices = portaudio_devices();
+  vector<string> devices = port_audio_devices();
   SfiRing *ring = NULL;
 
   int default_device_index = Pa_GetDefaultOutputDevice();
@@ -145,22 +145,12 @@ bse_pcm_device_portaudio_list_devices (BseDevice *device)
   return ring;
 }
 
-static void
-silent_error_handler (const char *file,
-                      int         line,
-                      const char *function,
-                      int         err,
-                      const char *fmt,
-                      ...)
-{
-}
-
 static BseErrorType
-bse_pcm_device_portaudio_open (BseDevice     *device,
-			       gboolean       require_readable,
-			       gboolean       require_writable,
-			       guint          n_args,
-			       const gchar  **args)
+bse_pcm_device_port_audio_open (BseDevice     *device,
+			        gboolean       require_readable,
+			        gboolean       require_writable,
+			        guint          n_args,
+			        const gchar  **args)
 {
   PortAudioPcmHandle *portaudio = g_new0 (PortAudioPcmHandle, 1);
   BsePcmHandle *handle = &portaudio->handle;
@@ -180,7 +170,7 @@ bse_pcm_device_portaudio_open (BseDevice     *device,
   /* choose device from string ("alsa:1" means use the second device offered by the alsa host api) */
   if (n_args >= 1)
     {
-      vector<string> devs = portaudio_devices();
+      vector<string> devs = port_audio_devices();
       vector<string>::iterator di = find (devs.begin(), devs.end(), args[0]);
       if (di != devs.end())
 	{
@@ -247,15 +237,15 @@ bse_pcm_device_portaudio_open (BseDevice     *device,
       if (handle->readable)
 	{
 	  BSE_OBJECT_SET_FLAGS (pdev, BSE_DEVICE_FLAG_READABLE);
-	  handle->read = portaudio_device_read;
+	  handle->read = port_audio_device_read;
 	}
       if (handle->writable)
 	{
 	  BSE_OBJECT_SET_FLAGS (pdev, BSE_DEVICE_FLAG_WRITABLE);
-	  handle->write = portaudio_device_write;
+	  handle->write = port_audio_device_write;
 	}
-      handle->check_io = portaudio_device_check_io;
-      handle->latency = portaudio_device_latency;
+      handle->check_io = port_audio_device_check_io;
+      handle->latency = port_audio_device_latency;
       pdev->handle = handle;
     }
 
@@ -263,7 +253,7 @@ bse_pcm_device_portaudio_open (BseDevice     *device,
 }
 
 static void
-bse_pcm_device_portaudio_close (BseDevice *device)
+bse_pcm_device_port_audio_close (BseDevice *device)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) BSE_PCM_DEVICE (device)->handle;
   BSE_PCM_DEVICE (device)->handle = NULL;
@@ -277,7 +267,7 @@ bse_pcm_device_portaudio_close (BseDevice *device)
 }
 
 static void
-bse_pcm_device_portaudio_finalize (GObject *object)
+bse_pcm_device_port_audio_finalize (GObject *object)
 {
   /* BsePcmDevicePortAudio *self = BSE_PCM_DEVICE_PortAudio (object); */
   /* chain parent class' handler */
@@ -285,7 +275,7 @@ bse_pcm_device_portaudio_finalize (GObject *object)
 }
 
 static void
-portaudio_device_retrigger (PortAudioPcmHandle *portaudio)
+port_audio_device_retrigger (PortAudioPcmHandle *portaudio)
 {
   /* silence fill output, to resynchronize output and input streams to the desired latency */
   guint write_frames_avail = Pa_GetStreamWriteAvailable (portaudio->stream);
@@ -300,8 +290,8 @@ portaudio_device_retrigger (PortAudioPcmHandle *portaudio)
 }
 
 static gboolean
-portaudio_device_check_io (BsePcmHandle *handle,
-			   glong        *timeoutp)
+port_audio_device_check_io (BsePcmHandle *handle,
+			    glong        *timeoutp)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) handle;
   guint read_frames_avail = handle->readable ? Pa_GetStreamReadAvailable (portaudio->stream) : 0;
@@ -311,7 +301,7 @@ portaudio_device_check_io (BsePcmHandle *handle,
   if (handle->readable && handle->writable && write_frames_avail >= (2 * handle->block_length) && read_frames_avail == 0)
     {
       /* underrun occured (or stream just initialized) */
-      portaudio_device_retrigger (portaudio);
+      port_audio_device_retrigger (portaudio);
     }
   /* check whether data can be processed */
   if (n_frames_avail >= handle->block_length)
@@ -325,7 +315,7 @@ portaudio_device_check_io (BsePcmHandle *handle,
 }
 
 static guint
-portaudio_device_latency (BsePcmHandle *handle)
+port_audio_device_latency (BsePcmHandle *handle)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) handle;
 
@@ -335,8 +325,8 @@ portaudio_device_latency (BsePcmHandle *handle)
 }
 
 static gsize
-portaudio_device_read (BsePcmHandle *handle,
-		       gfloat       *values)
+port_audio_device_read (BsePcmHandle *handle,
+		        gfloat       *values)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) handle;
   Pa_ReadStream (portaudio->stream, values, handle->block_length);
@@ -344,24 +334,24 @@ portaudio_device_read (BsePcmHandle *handle,
 }
 
 static void
-portaudio_device_write (BsePcmHandle *handle,
-			const gfloat *values)
+port_audio_device_write (BsePcmHandle *handle,
+			 const gfloat *values)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) handle;
   Pa_WriteStream (portaudio->stream, values, handle->block_length);
 }
 
 static void
-bse_pcm_device_portaudio_class_init (BsePcmDevicePortAudioClass *klass)
+bse_pcm_device_port_audio_class_init (BsePcmDevicePortAudioClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   BseDeviceClass *device_class = BSE_DEVICE_CLASS (klass);
   
   parent_class = g_type_class_peek_parent (klass);
   
-  gobject_class->finalize = bse_pcm_device_portaudio_finalize;
+  gobject_class->finalize = bse_pcm_device_port_audio_finalize;
   
-  device_class->list_devices = bse_pcm_device_portaudio_list_devices;
+  device_class->list_devices = bse_pcm_device_port_audio_list_devices;
   const gchar *name = "portaudio";
   const gchar *syntax = _("DEVICE,MODE");
   const gchar *info = g_intern_printf (/* TRANSLATORS: keep this text to 70 chars in width */
@@ -369,7 +359,7 @@ bse_pcm_device_portaudio_class_init (BsePcmDevicePortAudioClass *klass)
                                          "  DEVICE - the PortAudio device to use, 'default' selects a default device\n"
                                          "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"),
                                        Pa_GetVersionText());
-  bse_device_class_setup (klass, BSE_RATING_PREFERRED - 1, name, syntax, info); /* FIXME: rating correct? */
-  device_class->open = bse_pcm_device_portaudio_open;
-  device_class->close = bse_pcm_device_portaudio_close;
+  bse_device_class_setup (klass, BSE_RATING_FALLBACK, name, syntax, info);
+  device_class->open = bse_pcm_device_port_audio_open;
+  device_class->close = bse_pcm_device_port_audio_close;
 }

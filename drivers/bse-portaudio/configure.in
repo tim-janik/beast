@@ -139,7 +139,6 @@ AC_DEFUN(AC_PORTAUDIO_CHECK,
     
     dnl --- check for -lportaudio ---
     found_libportaudio=0
-    dnl snd_asoundlib_version() was introduced in PortAudio 1.0.5
     AC_CHECK_LIB(portaudio, Pa_Initialize, PORTAUDIO_LIBS="-lportaudio"; found_libportaudio=1)
     if test $found_libportaudio = 0; then
 	AC_MSG_ERROR([PortAudioV19 is required to build this package])
