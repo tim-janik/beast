@@ -1374,6 +1374,8 @@ GTokenType Parser::parseInfoOptional (Map<string,IString>& infos)
     parse_istring_or_return (value);
     parse_or_return (';');
 
+    for (guint i = 0; i < key.size(); i++)
+      key[i] = to_lower (key[i]);
     infos[key] = value;
   }
   return G_TOKEN_NONE;
