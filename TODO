@@ -1,17 +1,7 @@
 FIXMES:	(release-critical)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - adjust engine block size (Subject: blocksize vs. cpu)
-- midireceiver: revisit sched_tag as condition, it's probably too weak due to temporary enginescheduler resets
 - midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
-- midireceiver: upon stopping demo song:
-  #0  voice_input_remove_from_table_L (vinput=0x8a47c80) at stl_tree.h:202
-  202           operator->() const { return &(operator*()); }
-  #1  0x401069aa in voice_input_enter_idle_U (data=0x8a47c80) at bsemidireceiver.cc:689
-  #2  0x400e0826 in free_job (job=0x8eab100) at bseengineutils.c:148
-  #3  0x400e046b in free_trans (trans=0x8e89f58) at bseengineutils.c:192
-  #4  0x400df55a in bse_engine_garbage_collect () at bseengineutils.c:372
-  #5  0x400d9034 in bse_engine_wait_on_trans () at bseengine.c:1629
-  #6  0x4011e736 in bse_project_deactivate (self=0x852fbb8) at bseproject.c:903
 TODO:
 - disable probing for invisible scopes
 - implement horizontal dB-meters as BstParam type
