@@ -44,38 +44,6 @@ canonify_name (const string& s,
   return g_intern_string (d.c_str());
 }
 
-static vector<string>
-split_string (const string &ctype)
-{
-  vector<string> vs;
-  string type = ctype;
-  int i;
-  while ((i = type.find (':')) >= 0)
-    {
-      vs.push_back (type.substr (0, i));
-      if (type[i + 1] == ':')
-        type = type.substr (i + 2);
-      else
-        type = type.substr (i + 1);
-    }
-  vs.push_back (type);
-  return vs;
-}
-
-static string
-join_string (const vector<string> &vs,
-             const string         &delim)
-{
-  string r;
-  for (vector<string>::const_iterator vi = vs.begin(); vi != vs.end(); vi++)
-    {
-      if (vi != vs.begin())
-        r += delim;
-      r += *vi;
-    }
-  return r;
-}
-
 static string
 include_relative (string path,
                   string source_file)
@@ -390,26 +358,26 @@ public:
       }
   }
   const char*
-  func_value_set_param (const Param &param)
+  func_value_set_param (const string type)
   {
     string s;
-    switch (parser.typeOf (param.type))
+    switch (parser.typeOf (type))
       {
       case BOOL:        return "sfi_value_set_bool";
       case INT:         return "sfi_value_set_int";
       case NUM:         return "sfi_value_set_num";
       case REAL:        return "sfi_value_set_real";
       case CHOICE:      return intern (s + "sfi_value_set_enum_auto " +
-                                       "SFI_START_ARGS() " + make_TYPE_NAME (param.type) + ", SFI_END_ARGS2");
+                                       "SFI_START_ARGS() " + make_TYPE_NAME (type) + ", SFI_END_ARGS2");
       case STRING:      return "::Sfi::String::value_set_string";
       case BBLOCK:      return "::Sfi::BBlock::value_set_bblock";
       case FBLOCK:      return "::Sfi::FBlock::value_set_fblock";
       case SFIREC:      return "::Sfi::Rec::value_set_rec";
       case RECORD:
-      case SEQUENCE:    return intern (make_fqtn (param.type) + string ("::value_set_boxed"));
+      case SEQUENCE:    return intern (make_fqtn (type) + string ("::value_set_boxed"));
       case OBJECT:
-        if (is_cxx_class (param.type))
-          return intern (string() + "::Bse::CxxBase::value_set_casted< " + param.type + ", " + param.type + "Base>");
+        if (is_cxx_class (type))
+          return intern (string() + "::Bse::CxxBase::value_set_casted< " + type + ", " + type + "Base>");
         else
           return intern (string() + "::Bse::CxxBase::value_set_gobject");
       default:          g_assert_not_reached(); return NULL;
@@ -660,7 +628,7 @@ public:
         for (vector<Param>::const_iterator pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
           {
             printf ("  element = sfi_rec_forced_get (sfi_rec, \"%s\", %s);\n", pi->name.c_str(), make_TYPE_NAME (pi->type));
-            printf ("  %s (element, rec->%s);\n", func_value_set_param (*pi), pi->name.c_str());
+            printf ("  %s (element, rec->%s);\n", func_value_set_param (pi->type), pi->name.c_str());
           }
         printf ("  return sfi_rec;\n");
         printf ("}\n\n");
@@ -734,7 +702,7 @@ public:
         printf ("  for (guint i = 0; i < seq.length(); i++)\n");
         printf ("  {\n");
         printf ("    GValue *element = sfi_seq_append_empty (sfi_seq, %s);\n", make_TYPE_NAME (si->content.type));
-        printf ("    %s (element, seq[i]);\n", func_value_set_param (si->content));
+        printf ("    %s (element, seq[i]);\n", func_value_set_param (si->content.type));
         printf ("  }\n");
         printf ("  return sfi_seq;\n");
         printf ("}\n\n");
@@ -924,7 +892,7 @@ public:
         for (vector<Param>::const_iterator pi = ci->properties.begin(); pi != ci->properties.end(); pi++)
           {
             printf ("    case PROP_%s:\n", pure_UPPER (pi->name));
-            printf ("      %s (&value, %s);\n", func_value_set_param (*pi), pi->name.c_str());
+            printf ("      %s (&value, %s);\n", func_value_set_param (pi->type), pi->name.c_str());
             printf ("    break;\n");
           }
         printf ("    };\n");
@@ -978,7 +946,7 @@ public:
             for (vector<Param>::const_iterator ai = si->params.begin(); ai != si->params.end(); ai++, i++)
               {
                 printf ("    args[%u].g_type = 0, g_value_init (args + %u, %s);\n", i, i, make_TYPE_NAME (ai->type));
-                printf ("    %s (args + %u, %s);\n", func_value_set_param (*ai), i, ai->name.c_str());
+                printf ("    %s (args + %u, %s);\n", func_value_set_param (ai->type), i, ai->name.c_str());
               }
             printf ("    g_signal_emitv (args, static_data.signal_%s, 0, NULL);\n", sig_name);
             for (i = 0; i <= si->params.size(); i++)
@@ -1121,7 +1089,7 @@ public:
                   &(*pi) == &(mi->params.back()) ? ' ' : ',');
         printf ("             );\n");
         if (!is_void)
-          printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result));
+          printf ("      %s (out_values, __return_value);\n", func_value_set_param (mi->result.type));
         printf ("    } catch (std::exception &e) {\n");
         printf ("      sfi_debug (\"%%s: %%s\", \"%s\", e.what());\n", name);
         printf ("      return BSE_ERROR_PROC_EXECUTION;\n");

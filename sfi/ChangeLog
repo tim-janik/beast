@@ -1,3 +1,7 @@
+Tue Jan 27 16:31:13 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: cleaned up some cruft.
+
 Tue Jan 27 16:07:27 2004  Tim Janik  <timj@gtk.org>
 
 	* sficomport.[hc]: support sending value lists, added ability to
