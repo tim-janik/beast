@@ -1,3 +1,14 @@
+Sat Nov 27 07:40:54 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c:
+	(bst_snet_router_set_snet):
+	(bst_snet_router_adjust_zoom): set/get the zoom factor through bse
+	parasites.
+
+	* beast-gtk/bstcanvassource.c:
+	(bst_object_get_coords): 
+	(bst_object_set_coords): set/get the coordinates through bse parasites.
+
 Sat Nov 27 01:14:48 1999  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4: check for support before adding -Wmissing-noreturn

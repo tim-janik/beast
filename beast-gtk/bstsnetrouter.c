@@ -38,6 +38,7 @@ static gboolean	  bst_snet_router_root_event    (BstSNetRouter          *router,
 static void	  bst_snet_router_reset_mode	(BstSNetRouter		*router);
 static void	  bst_snet_router_update_links	(BstSNetRouter		*router,
 						 BstCanvasSource        *csource);
+static void	  bst_snet_router_adjust_zoom	(BstSNetRouter		*router);
 
 
 /* --- static variables --- */
@@ -97,6 +98,7 @@ bst_snet_router_init (BstSNetRouter      *router,
   
   canvas->aa = TRUE;
   router->toolbar = NULL;
+  router->adjustment = NULL;
   router->snet = NULL;
   router->mode = 0;
   router->edit_radio = NULL;
@@ -127,6 +129,11 @@ bst_snet_router_init (BstSNetRouter      *router,
   else
     gtk_object_ref (GTK_OBJECT (class->tooltips));
   
+  router->adjustment = (GtkAdjustment*) gtk_adjustment_new (1.0, 0.20, 5.00, 0.05, 0.50, 0.50);
+  gtk_object_set (GTK_OBJECT (router->adjustment),
+		  "object_signal::value_changed", bst_snet_router_adjust_zoom, router,
+		  "object_signal::destroy", bse_nullify_pointer, &router->adjustment,
+		  NULL);
   router->toolbar = bst_snet_router_build_toolbar (router);
   gtk_widget_set (router->toolbar,
 		  "object_signal::destroy", bse_nullify_pointer, &router->toolbar,
@@ -195,7 +202,7 @@ bst_snet_router_set_snet (BstSNetRouter *router,
       
       bst_snet_router_destroy_contents (router);
       
-      bse_object_remove_notifiers_by_func (BSE_CONTAINER (router->snet),
+      bse_object_remove_notifiers_by_func (object,
 					   bst_snet_router_item_added,
 					   router);
       
@@ -205,6 +212,7 @@ bst_snet_router_set_snet (BstSNetRouter *router,
   if (snet)
     {
       BseObject *object = BSE_OBJECT (snet);
+      gfloat zoom;
       
       bse_object_ref (object);
       router->snet = snet;
@@ -215,6 +223,8 @@ bst_snet_router_set_snet (BstSNetRouter *router,
 				    router);
       
       bst_snet_router_rebuild (BST_SNET_ROUTER (router));
+      if (bse_parasite_get_floats (BSE_OBJECT (router->snet), "BstRouterZoom", 1, &zoom) == 1)
+	gtk_adjustment_set_value (router->adjustment, zoom);
     }
 }
 
@@ -346,11 +356,17 @@ idle_zoom (gpointer data)
 }
 
 static void
-toolbar_set_zoom (GtkAdjustment *adjustment,
-		  BstSNetRouter *router)
+bst_snet_router_adjust_zoom (BstSNetRouter *router)
 {
   GtkObject *object = GTK_OBJECT (router);
   gdouble *d = gtk_object_get_data (object, "zoom_d");
+
+  if (router->snet)
+    {
+      gfloat zoom = router->adjustment->value;
+
+      bse_parasite_set_floats (BSE_OBJECT (router->snet), "BstRouterZoom", 1, &zoom);
+    }
   
   if (!d)
     {
@@ -362,7 +378,7 @@ toolbar_set_zoom (GtkAdjustment *adjustment,
 			  object,
 			  (GDestroyNotify) gtk_object_unref);
     }
-  *d = adjustment->value;
+  *d = router->adjustment->value;
 }
 
 static GtkWidget*
@@ -454,10 +470,8 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
 {
   GtkWidget *bar;
   GtkWidget *radio = NULL;
-  GtkAdjustment *adjustment;
-  guint i;
   BseCategory *cats;
-  guint n_cats;
+  guint i, n_cats;
   
   g_return_val_if_fail (BST_IS_SNET_ROUTER (router), NULL);
   
@@ -507,12 +521,7 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
     }
   
   /* add Zoom: spinner */
-  adjustment = (GtkAdjustment*) gtk_adjustment_new (1.00, 0.20, 5.00, 0.05, 0.50, 0.50);
-  gtk_signal_connect (GTK_OBJECT (adjustment),
-		      "value_changed",
-		      toolbar_set_zoom,
-		      router);
-  radio = gtk_spin_button_new (adjustment, 0.0, 2);
+  radio = gtk_spin_button_new (router->adjustment, 0.0, 2);
   gtk_widget_set_usize (radio, 50, 0);
   gtk_widget_show (radio);
   gtk_toolbar_append_widget (GTK_TOOLBAR (bar), radio, "Zoom Factor", NULL);

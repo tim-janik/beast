@@ -83,7 +83,8 @@ bst_master_init (void)
 
       error = bse_pcm_stream_set_attribs (BSE_PCM_STREAM (stream), attribute_mask, &attributes);
       if (!error &&
-	  attributes.play_frequency == BSE_MIX_FREQ &&
+	  attributes.play_frequency < BSE_MIX_FREQ + 100 &&
+	  attributes.play_frequency > BSE_MIX_FREQ - 100 &&
 	  attributes.n_channels == N_TRACKS)
 	BST_DEBUG (MASTER, {
 	  g_message ("Using %s stream \"%s\" with %uHz in %u channel mode",

@@ -435,14 +435,16 @@ bst_object_set_coords (BseObject *object,
 		       gdouble    x,
 		       gdouble    y)
 {
-  gint ix = x, iy = y;
+  gfloat coords[2];
 
   g_return_if_fail (BSE_IS_OBJECT (object));
-  
-  /* g_print ("set-coords: %p %d %d\n", object, ix, iy); */
-      
-  bse_object_set_data (object, "BstCoord-x", GINT_TO_POINTER (ix));
-  bse_object_set_data (object, "BstCoord-y", GINT_TO_POINTER (iy));
+
+  coords[0] = x;
+  coords[1] = y;
+
+  /* g_print ("set-coords: %p %f %f\n", object, x, y); */
+
+  bse_parasite_set_floats (object, "BstRouterCoords", 2, coords);
 }
 
 gboolean
@@ -450,22 +452,21 @@ bst_object_get_coords (BseObject *object,
 		       gdouble   *x,
 		       gdouble   *y)
 {
-  gpointer p_x, p_y;
+  gfloat coords[2];
 
   g_return_val_if_fail (BSE_IS_OBJECT (object), FALSE);
   g_return_val_if_fail (x != NULL && y != NULL, FALSE);
 
-  p_x = bse_object_get_data (object, "BstCoord-x");
-  p_y = bse_object_get_data (object, "BstCoord-y");
-
-  if (p_x || p_y)
+  if (bse_parasite_get_floats (object, "BstRouterCoords", 2, coords) == 2)
     {
-      *x = GPOINTER_TO_INT (p_x);
-      *y = GPOINTER_TO_INT (p_y);
-      /* g_print ("get-coords: %p %d %d\n", object, GPOINTER_TO_INT (p_x), GPOINTER_TO_INT (p_y)); */
+      *x = coords[0];
+      *y = coords[1];
+      /* g_print ("get-coords: %p %f %f\n", object, *x, *y); */
+
+      return BSE_EPSILON_CMP (coords[0], 0) || BSE_EPSILON_CMP (coords[1], 0);
     }
 
-  return p_x || p_y;
+  return FALSE;
 }
 
 static void
