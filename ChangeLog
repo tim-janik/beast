@@ -1,3 +1,10 @@
+Wed Feb  6 17:32:47 2002  Tim Janik  <timj@gtk.org>
+
+	* test/simple-loop.bse: quick test loop, using the new sequencer
+	sync output.
+
+	* test/freak-noise.bse: make this even freakier ;)
+
 Wed Feb  6 02:40:30 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_param_create): fix option menu handling.

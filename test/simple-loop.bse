@@ -1,0 +1,80 @@
+;BseProjectV0
+
+
+(BseWaveRepo::Wave-Repository
+  (modification-time "2002-02-06 16:06:01")
+  (creation-time "2002-02-06 14:05:19"))
+(BseSNet::Simple-Loop
+  (auto-activate 't)
+  (modification-time "2002-02-06 16:06:01")
+  (creation-time "2002-02-06 14:05:24")
+  (name "Simple-Loop")
+  (BseSimpleOsc::SimpleOsc
+    (wave-form BSE_SIMPLE_OSC_GSAW)
+    (name "SimpleOsc")
+    (source-input "freq_in" BseSNet:1.BseSequencer:1 "freq_out")
+    (parasite f "BstRouterCoords" 2 211.000000 168.000000))
+  (BsePcmOutput::BsePcmOutput-1
+    (name "BsePcmOutput-1")
+    (source-input "left_in" BseSNet:1.BseMixer:1 "mono_out")
+    (source-input "right_in" BseSNet:1.BseMixer:1 "mono_out")
+    (parasite f "BstRouterCoords" 2 -218.000000 16.000000))
+  (BseMixer::Mixer
+    (volume-f1 0.602560)
+    (name "Mixer")
+    (source-input "mono_in1" BseSNet:1.BseIIRFilter:1 "mono_out")
+    (source-input "mono_in2" BseSNet:1.BseMult:2 "mono_out")
+    (parasite f "BstRouterCoords" 2 -110.000000 18.000000))
+  (BseIIRFilter::Tune-Filter
+    (cut-off-freq-2 18716.583984)
+    (cut-off-freq 1069.513428)
+    (name "Tune-Filter")
+    (source-input "mono_in" BseSNet:1.BseMult:1 "mono_out")
+    (parasite f "BstRouterCoords" 2 -20.000000 115.000000))
+  (BseSequencer::Sequencer
+    (counter 123.544830)
+    (transpose -30)
+    (notes 16
+      (a+1) (a+1) (a+2) (a+2)
+      (a+1) (a+1) (d+2) (a+1)
+      (d+2) (a+1) (e+2) (a+1)
+      (e+2) (a+1) (a+2) (a+2))
+    (name "Sequencer")
+    (parasite f "BstRouterCoords" 2 330.000000 122.000000))
+  (BseSimpleADSR::Tune-ADSR
+    (release-time 57.051289)
+    (sustain-level 16.666670)
+    (decay-time 10.256410)
+    (attack-time 1.923080)
+    (name "Tune-ADSR")
+    (source-input "retrigger_in" BseSNet:1.BseSequencer:1 "note_sync")
+    (parasite f "BstRouterCoords" 2 206.000000 72.000000))
+  (BseMult::Tune-VCF
+    (name "Tune-VCF")
+    (source-input "mono_in1" BseSNet:1.BseSimpleOsc:1 "osc_out")
+    (source-input "mono_in2" BseSNet:1.BseSimpleADSR:1 "adsr_out")
+    (parasite f "BstRouterCoords" 2 93.000000 122.000000))
+  (BseNoise::HH-Noise
+    (name "HH-Noise")
+    (parasite f "BstRouterCoords" 2 333.500000 -92.500000))
+  (BseSimpleADSR::HH-Trigger-ADSR
+    (release-time 31.868130)
+    (sustain-level 19.780220)
+    (decay-time 5.596700)
+    (attack-time 1.498900)
+    (name "HH-Trigger-ADSR")
+    (source-input "retrigger_in" BseSNet:1.BseSequencer:1 "note_sync")
+    (parasite f "BstRouterCoords" 2 111.500000 -94.500000))
+  (BseIIRFilter::HH-Filter
+    (cut-off-freq-2 19047.623047)
+    (cut-off-freq 9682.491211)
+    (filter-type BSE_IIR_FILTER_HIGH_PASS)
+    (filter-algorithm BSE_IIR_FILTER_CHEBYCHEFF1)
+    (name "HH-Filter")
+    (source-input "mono_in" BseSNet:1.BseNoise:1 "noise_out")
+    (parasite f "BstRouterCoords" 2 226.500000 -94.500000))
+  (BseMult::HH-VCF
+    (name "HH-VCF")
+    (source-input "mono_in1" BseSNet:1.BseIIRFilter:2 "mono_out")
+    (source-input "mono_in2" BseSNet:1.BseSimpleADSR:2 "adsr_out")
+    (parasite f "BstRouterCoords" 2 -0.500000 -58.500000)))
