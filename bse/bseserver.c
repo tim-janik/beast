@@ -459,7 +459,7 @@ bse_server_open_pcm_device (BseServer *server)
     sfi_warn (SfiLogger ("pcm",
                          _("Advice about PCM device selections problems"),
                          _("Alert me about PCM device selections problems")),
-              _("Failed to open PCM devices, givng up: %s"),
+              _("Failed to open PCM devices, giving up: %s"),
               bse_error_blurb (error));
   return server->pcm_device ? BSE_ERROR_NONE : error;
 }
