@@ -1,3 +1,14 @@
+Sun Aug 15 13:57:56 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/radgets-standard.xml:
+	widget-patcher: support bg-as-base and base-as-bg properties.
+	entry: support activates-default property.
+	frame: support shadow-type property.
+	viewport: support widget type, set the default shadow-type to none.
+	scrolled-window: set the default shadow-type to in.
+	gxk-scroll-text-toolbar: don't activate default widget upon
+	<Return> key press in location entry.
+
 Sun Aug 01 11:41:03 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/splinetest.c: minor cleanups, more testing.

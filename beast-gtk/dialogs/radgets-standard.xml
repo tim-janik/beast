@@ -21,12 +21,15 @@
     prop:force-resize-vsteps="$(ifdef,force-resize-vsteps,$force-resize-vsteps,0)"
     prop:min-resize-hunits="$(ifdef,min-resize-hunits,$min-resize-hunits,0)"
     prop:min-resize-vunits="$(ifdef,min-resize-vunits,$min-resize-vunits,0)"
+    prop:bg-as-base="$(ifdef,bg-as-base,$bg-as-base,0)"
+    prop:base-as-bg="$(ifdef,base-as-bg,$base-as-bg,0)"
     />
 
   <!-- Primitive Gtk+ widget type wrappers -->
   
   <xdef:entry                 inherit="GtkEntry"
-    prop:activates-default="1"
+    prop:activates-default="$(ifdef,activates-default,$activates-default,1)"
+    prop:text="$(ifdef,text,$text,)"
     />
   <!-- frame, alignment -->
   <xdef:alignment             inherit="GtkAlignment"
@@ -37,7 +40,9 @@
     />
   <xdef:event-box             inherit="GtkEventBox"         />
   <xdef:arrow                 inherit="GtkArrow"            prop:shadow-type="$shadow" prop:arrow-type="$arrow" />
-  <xdef:frame                 inherit="GtkFrame"            />
+  <xdef:frame                 inherit="GtkFrame"
+    prop:shadow-type="$(ifdef,shadow-type,$shadow-type,shadow-etched-in)"
+    />
   <xdef:frame-shadow-in       inherit="frame"               prop:shadow-type="shadow-in" />
   <xdef:frame-shadow-out      inherit="frame"               prop:shadow-type="shadow-out" />
   <xdef:frame-etched-in       inherit="frame"               prop:shadow-type="etched-in" />
@@ -161,8 +166,11 @@
   <xdef:hscrollbar            inherit="GtkHScrollbar" prop:can-focus="0" />
   <xdef:vscrollbar            inherit="GtkVScrollbar" prop:can-focus="0" />
   <!-- misc containers -->
-  <xdef:scrolled-window       inherit="GtkScrolledWindow"
+  <xdef:viewport              inherit="GtkViewport"
     prop:shadow-type="$(first-occupied,$shadow-type,shadow-none)"
+    />
+  <xdef:scrolled-window       inherit="GtkScrolledWindow"
+    prop:shadow-type="$(first-occupied,$shadow-type,shadow-in)"
     prop:hscrollbar-policy="$(first-occupied,$hscrollbar-policy,policy-always)"
     prop:vscrollbar-policy="$(first-occupied,$vscrollbar-policy,policy-always)"
     />
@@ -405,7 +413,7 @@
 	_label="Location"
 	_tooltip="Enter document or file location"
 	expand="1" >
-	<entry name="location-entry" />
+	<entry name="location-entry" activates-default="0" />
       </labeled-tool-area>
     </hbox>
   </xdef:gxk-scroll-text-toolbar>
