@@ -524,36 +524,11 @@ bst_snet_router_build_tools (BstSNetRouter *router)
 				  BST_RADIO_TOOLS_EVERYWHERE);
 
   /* add BseSource types from categories */
-  cats = bse_categories_match ("/Source/*", &n_cats);
-  for (i = 0; i < n_cats; i++)
-    {
-      static const gchar *toolbar_categories[] = {
-	"BsePcmOutput", "BseMixer", "BseSnooper", "BsePcmInput",
-      };
-      guint n, n_toolbar_categories = sizeof (toolbar_categories) / sizeof (toolbar_categories[0]);
-      gboolean add_to_toolbar = FALSE;
-
-      for (n = 0; n < n_toolbar_categories; n++)
-	if (strcmp (toolbar_categories[n], g_type_name (cats[i].type)) == 0)
-	  {
-	    add_to_toolbar = TRUE;
-	    break;
-	  }
-      bst_radio_tools_add_category (router->rtools,
-				    cats[i].type,
-				    cats + i,
-				    BST_RADIO_TOOLS_PALETTE |
-				    (add_to_toolbar ? BST_RADIO_TOOLS_TOOLBAR : 0));
-      g_printerr ("FIXME: Module `%s' registered under deprecated `/Source/' category\n", g_type_name (cats[i].type));
-    }
-  g_free (cats);
-
-  /* add BseSource types from categories */
   cats = bse_categories_match ("/Modules/*", &n_cats);
   for (i = 0; i < n_cats; i++)
     {
       static const gchar *toolbar_categories[] = {
-	"BsePcmOutput", "BseMixer", "BseSnooper", "BsePcmInput",
+	"BsePcmOutput", "BseAmplifier", "BseSnooper", "BsePcmInput",
       };
       guint n, n_toolbar_categories = sizeof (toolbar_categories) / sizeof (toolbar_categories[0]);
       gboolean add_to_toolbar = FALSE;

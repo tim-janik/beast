@@ -207,8 +207,14 @@ gpointer	bst_gmask_quick		(GtkWidget     *gmask_container,
 
 
 /* --- BEAST utilities --- */
+void		g_object_set_int		(gpointer	 object,
+						 const gchar	*name,
+						 glong		 v_int);
+glong		g_object_get_int		(gpointer	 object,
+						 const gchar	*name);
 void	        bst_widget_modify_as_title	(GtkWidget	*widget);
 void	        bst_widget_modify_bg_as_base	(GtkWidget	*widget);
+void	        bst_widget_modify_base_as_bg	(GtkWidget	*widget);
 GtkWidget*	bst_text_view_from		(GString        *gstring,
 						 const gchar    *file_name,
 						 const gchar    *font_name);

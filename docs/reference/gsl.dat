@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.1
-date    = 05 May 2002
+date    = 13 May 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 05 May 2002 BEAST-0.4.1
+GSL-Functions 13 May 2002 BEAST-0.4.1
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
@@ -757,10 +757,10 @@ retspace = 6
 @DOC-DESCRIPTION@
 Convenience function which openes up a new transaction, collects the @EMPH NULL@ terminated job list passed to the function, and commits the transaction.  
 @DOC-SYNOPSIS@
-@STRONG gsl_engine_init@ (@EMPH run_threaded@, @EMPH block_size@, @EMPH sample_freq@);
+@STRONG gsl_engine_init@ (@EMPH run_threaded@, @EMPH block_size@, @EMPH sample_freq@, @EMPH sub_sample_mask@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 24
+parspace = 27
 
 @DOC-VARIABLE-DEFINITIONS@
 type = gboolean\ 
@@ -787,7 +787,15 @@ sample_freq
 
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 24
+type = guint\ \ \ \ 
+typeraw = guint    
+@DOC-PARAMETER@
+sub_sample_mask
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 27
 
 
 @DOC-DESCRIPTION@
@@ -1851,7 +1859,29 @@ retspace = 3
 
 
 @DOC-DESCRIPTION@
-Fast conversion of linear frequency modulation factor to exponential frequency modulation factor. This is essentially an approximation of @STRONG exp2f()@. It can be much faster than the glibc function though, by taking advantage of a limited input range and smaller precision requirements.  
+Deprecated in favour of @STRONG gsl_approx_exp2()@.  
+@DOC-SYNOPSIS@
+@STRONG gsl_approx_exp2@ (@EMPH ex@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 11
+
+@DOC-VARIABLE-DEFINITIONS@
+type = float\ 
+typeraw = float 
+@DOC-PARAMETER@
+ex
+@DOC-PARDESC@
+exponent within [-127..127]
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 11
+
+@DOC-RETURNS@
+y approximating 2^x
+
+@DOC-DESCRIPTION@
+Fast approximation of 2 raised to the power of x. Multiplicative error stays below 8e-6 and aproaches zero for integer values of x (i.e. x - floor (x) = 0).  
 @DOC-SYNOPSIS@
 @STRONG gsl_approx_atan1@ (@EMPH x@);
 

@@ -1491,6 +1491,22 @@ style_modify_base_as_bg (GtkWidget *widget)
   gtk_widget_modify_style (widget, rc_style);
 }
 
+void
+bst_widget_modify_base_as_bg (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  if (GTK_WIDGET_REALIZED (widget))
+    style_modify_base_as_bg (widget);
+  if (!gtk_signal_handler_pending_by_func (GTK_OBJECT (widget),
+					   gtk_signal_lookup ("realize", GTK_TYPE_WIDGET),
+					   TRUE,
+					   style_modify_base_as_bg,
+					   NULL))
+    gtk_signal_connect_after (GTK_OBJECT (widget), "realize", GTK_SIGNAL_FUNC (style_modify_base_as_bg), NULL);
+}
+
+#if 0
 static void
 tweak_text_resize (GtkText *text)
 {
@@ -1505,8 +1521,8 @@ tweak_text_resize (GtkText *text)
 }
 
 GtkWidget*
-bst_wrap_text_create (gboolean     duplicate_newlines,
-		      const gchar *string)
+old_bst_wrap_text_create (gboolean     duplicate_newlines,
+			  const gchar *string)
 {
   GtkWidget *text;
   
@@ -1517,10 +1533,10 @@ bst_wrap_text_create (gboolean     duplicate_newlines,
 					 "line_wrap", TRUE,
 					 "can_focus", FALSE,
 					 NULL),
-			   "signal_after::realize", style_modify_base_as_bg, NULL, // FIXME
-			   "signal_after::realize", tweak_text_resize, NULL, // FIXME
-			   "signal_after::size_allocate", tweak_text_resize, NULL, // FIXME
+			   "signal_after::realize", tweak_text_resize, NULL,
+			   "signal_after::size_allocate", tweak_text_resize, NULL,
 			   NULL);
+  bst_widget_modify_base_as_bg (text);
   if (duplicate_newlines)
     g_object_set_data (G_OBJECT (text), "duplicate_newlines", GUINT_TO_POINTER (TRUE));
   bst_wrap_text_set (text, string);
@@ -1529,7 +1545,7 @@ bst_wrap_text_create (gboolean     duplicate_newlines,
 }
 
 void
-bst_wrap_text_clear (GtkWidget *text)
+old_bst_wrap_text_clear (GtkWidget *text)
 {
   g_return_if_fail (GTK_IS_TEXT (text));
 
@@ -1538,7 +1554,7 @@ bst_wrap_text_clear (GtkWidget *text)
 }
 
 void
-bst_wrap_text_set (GtkWidget   *text,
+old_bst_wrap_text_set (GtkWidget   *text,
 		   const gchar *string)
 {
   g_return_if_fail (GTK_IS_TEXT (text));
@@ -1563,7 +1579,40 @@ bst_wrap_text_set (GtkWidget   *text,
 }
 
 void
-bst_wrap_text_append (GtkWidget   *text,
+old_bst_wrap_text_aprintf (GtkWidget   *text,
+		       const gchar *text_fmt,
+		       ...)
+{
+  g_return_if_fail (GTK_IS_TEXT (text));
+
+  if (text_fmt)
+    {
+      va_list args;
+      gchar *buffer;
+      
+      va_start (args, text_fmt);
+      buffer = g_strdup_vprintf (text_fmt, args);
+      va_end (args);
+
+      bst_wrap_text_append (text, buffer);
+      g_free (buffer);
+    }
+}
+
+void
+old_bst_wrap_text_push_indent (GtkWidget   *text,
+			   const gchar *spaces)
+{
+  bst_wrap_text_append (text, spaces);
+}
+
+void
+old_bst_wrap_text_pop_indent (GtkWidget *text)
+{
+}
+
+void
+old_bst_wrap_text_append (GtkWidget   *text,
 		      const gchar *string)
 {
   g_return_if_fail (GTK_IS_TEXT (text));
@@ -1586,13 +1635,130 @@ bst_wrap_text_append (GtkWidget   *text,
     }
   gtk_adjustment_set_value (GTK_TEXT (text)->vadj, 0);
 }
+#endif
+
+static void
+text_view_append (GtkTextView *view,
+		  guint        indent,
+		  const gchar *string)
+{
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (view);
+  GtkTextMark *mark = gtk_text_buffer_get_mark (buffer, "imark");
+  GtkTextIter iter;
+
+  gtk_text_buffer_get_end_iter (buffer, &iter);
+  gtk_text_buffer_move_mark (buffer, mark, &iter);
+  gtk_text_buffer_insert (buffer, &iter, string, strlen (string));
+  if (TRUE)
+    {
+      GtkTextTagTable *table = gtk_text_buffer_get_tag_table (buffer);
+      gchar *name = g_strdup_printf ("indent-%u", indent);
+      GtkTextTag *tag = gtk_text_tag_table_lookup (table, name);
+      GtkTextIter miter;
+      const guint left_margin = 3, right_margin = 3;
+
+      if (!tag)
+	{
+	  tag = g_object_new (GTK_TYPE_TEXT_TAG,
+			      "name", name,
+			      "left_margin", left_margin + indent * 8,
+			      "right_margin", right_margin,
+			      NULL);
+	  gtk_text_tag_table_add (table, tag);
+	  g_object_unref (tag);
+	}
+      g_free (name);
+      gtk_text_buffer_get_iter_at_mark (buffer, &miter, mark);
+      gtk_text_buffer_apply_tag (buffer, tag, &miter, &iter);
+    }
+
+  // gtk_text_buffer_get_start_iter (buffer, &iter);
+  gtk_text_view_get_iter_at_location (view, &iter, 0, 0);
+  gtk_text_buffer_move_mark (buffer, mark, &iter);
+
+  gtk_text_view_scroll_to_mark (view, mark, 0, TRUE, 0, 0);
+}
+
+GtkWidget*
+bst_wrap_text_create (gboolean     junk,
+		      const gchar *string)
+{
+  GtkWidget *tview, *text_view;
+  GtkTextBuffer *buffer;
+  GtkTextIter iter;
+  
+  tview = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
+			"visible", TRUE,
+			"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+			"vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+			NULL);
+  text_view = g_object_new (GTK_TYPE_TEXT_VIEW,
+			    "visible", TRUE,
+			    "editable", FALSE,
+			    "cursor_visible", FALSE,
+			    "wrap_mode", GTK_WRAP_WORD,
+			    "parent", tview,
+			    NULL);
+  bst_widget_modify_base_as_bg (text_view);
+
+  buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (text_view));
+  gtk_text_buffer_get_start_iter (buffer, &iter);
+  gtk_text_buffer_create_mark (buffer, "imark", &iter, TRUE);
+
+  if (string)
+    bst_wrap_text_append (tview, string);
+
+  return tview;
+}
 
 void
-bst_wrap_text_aprintf (GtkWidget   *text,
+bst_wrap_text_clear (GtkWidget *tview)
+{
+  GtkTextView *view;
+  GtkTextBuffer *buffer;
+  GtkTextIter iter1, iter2;
+  
+  g_return_if_fail (GTK_IS_SCROLLED_WINDOW (tview));
+
+  view = GTK_TEXT_VIEW (GTK_BIN (tview)->child);
+  buffer = gtk_text_view_get_buffer (view);
+
+  gtk_text_buffer_get_start_iter (buffer, &iter1);
+  gtk_text_buffer_get_end_iter (buffer, &iter2);
+  gtk_text_buffer_delete (buffer, &iter1, &iter2);
+  g_object_set_int (view, "indent", 0);
+}
+
+void
+bst_wrap_text_set (GtkWidget   *tview,
+		   const gchar *string)
+{
+  g_return_if_fail (GTK_IS_SCROLLED_WINDOW (tview));
+
+  bst_wrap_text_clear (tview);
+  if (string)
+    bst_wrap_text_append (tview, string);
+}
+
+void
+bst_wrap_text_append (GtkWidget   *tview,
+		      const gchar *string)
+{
+  GtkTextView *view;
+
+  g_return_if_fail (GTK_IS_SCROLLED_WINDOW (tview));
+
+  view = GTK_TEXT_VIEW (GTK_BIN (tview)->child);
+  if (string)
+    text_view_append (view, g_object_get_int (view, "indent"), string);
+}
+
+void
+bst_wrap_text_aprintf (GtkWidget   *tview,
 		       const gchar *text_fmt,
 		       ...)
 {
-  g_return_if_fail (GTK_IS_TEXT (text));
+  g_return_if_fail (GTK_IS_SCROLLED_WINDOW (tview));
 
   if (text_fmt)
     {
@@ -1603,21 +1769,56 @@ bst_wrap_text_aprintf (GtkWidget   *text,
       buffer = g_strdup_vprintf (text_fmt, args);
       va_end (args);
 
-      bst_wrap_text_append (text, buffer);
+      bst_wrap_text_append (tview, buffer);
       g_free (buffer);
     }
 }
 
 void
-bst_wrap_text_push_indent (GtkWidget   *text,
+bst_wrap_text_push_indent (GtkWidget   *tview,
 			   const gchar *spaces)
 {
-  bst_wrap_text_append (text, spaces);
+  GtkTextView *view;
+  guint indent;
+
+  g_return_if_fail (GTK_IS_SCROLLED_WINDOW (tview));
+
+  view = GTK_TEXT_VIEW (GTK_BIN (tview)->child);
+  indent = g_object_get_int (view, "indent");
+  g_object_set_int (view, "indent", indent + 2);
 }
 
 void
-bst_wrap_text_pop_indent (GtkWidget *text)
+bst_wrap_text_pop_indent (GtkWidget *tview)
 {
+  GtkTextView *view;
+  guint indent;
+
+  g_return_if_fail (GTK_IS_SCROLLED_WINDOW (tview));
+
+  view = GTK_TEXT_VIEW (GTK_BIN (tview)->child);
+  indent = g_object_get_int (view, "indent");
+  if (indent)
+    g_object_set_int (view, "indent", indent - 2);
+}
+
+void
+g_object_set_int (gpointer     object,
+		  const gchar *name,
+		  glong        v_int)
+{
+  g_return_if_fail (G_IS_OBJECT (object));
+
+  g_object_set_data (object, name, (gpointer) v_int);
+}
+
+glong
+g_object_get_int (gpointer     object,
+		  const gchar *name)
+{
+  g_return_val_if_fail (G_IS_OBJECT (object), 0);
+
+  return (glong) g_object_get_data (object, name);
 }
 
 guint

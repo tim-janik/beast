@@ -1,3 +1,15 @@
+Sun May 12 07:00:38 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstutils.c (bst_wrap_text_create): fix wrap texts by using
+	GtkTextView.
+	
+	* test/midi-test.bse: fix connections.
+
+Mon May  6 13:01:07 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_build_tools): remove compat
+	code, offer BseAmplifier rather than the plugin BseMixer in the toolbar.
+
 Sun May  5 20:57:28 2002  Tim Janik  <timj@gtk.org>
 
 	* bsw/Makefile.am ($(srcdir)/bswgenapi.c): don't invoke
