@@ -70,10 +70,9 @@ class Evaluator : public EvaluatorBase
     }
   };
 public:
-  void set_status(const string& new_status)
+  void set_status(const Sfi::String& new_status)
   {
-    g_free (status);
-    status = g_strdup (new_status.c_str());
+    status = new_status;
     notify ("status");
   }
 
@@ -81,7 +80,7 @@ public:
   {
     if (prop_id == PROP_SOURCE)
       {
-	vector<char>  source_vec(source, source + strlen(source));
+	vector<char>  source_vec (source.c_str(), source.c_str() + source.length());
 	vector<Token> tokens;
 	vector<Instruction> new_instructions;
 	Symbols symbols;
