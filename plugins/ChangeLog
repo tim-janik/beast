@@ -1,3 +1,8 @@
+Tue Jan 20 05:07:57 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* artscompressor.idl bsebalance.idl davbassfilter.idl davchorus.idl:
+	Use "using namespace Bse" in the correct places.
+
 Tue Jan 20 01:01:32 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* evaluator/bseevaluator.cc: Adapted source to the fact that

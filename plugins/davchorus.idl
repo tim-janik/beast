@@ -19,9 +19,10 @@
 #include <bse/bse.idl>
 
 namespace Dav {
-Const STANDARD = Bse::STANDARD;
 
-class Chorus : Bse::Effect {
+using namespace Bse;
+
+class Chorus : Effect {
   Info    icon      = "icons/chorus.png";
   Info    authors   = "David A. Bartold";
   Info    license   = _("GNU Lesser General Public License");

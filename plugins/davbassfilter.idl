@@ -19,9 +19,10 @@
 #include <bse/bse.idl>
 
 namespace Dav {
-Const STANDARD = Bse::STANDARD; // FIXME: need using
 
-class BassFilter : Bse::Effect {
+using namespace Bse;
+
+class BassFilter : Effect {
   Info    icon      = "icons/davbassfilter.png";
   Info    authors   = "David A. Bartold, Tim Janik";
   Info    license   = _("GNU Lesser General Public License");

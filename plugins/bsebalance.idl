@@ -20,7 +20,7 @@
 
 namespace Bse {
 
-class Balance : Bse::Effect {
+class Balance : Effect {
   Info    icon      = "icons/balance.png";
   Info    authors   = "Tim Janik";
   Info    license   = _("GNU Lesser General Public License");
