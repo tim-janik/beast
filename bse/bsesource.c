@@ -387,7 +387,7 @@ bse_source_class_add_ichannel_ident (BseSourceClass *source_class,
 				     const gchar    *name,
 				     const gchar    *blurb)
 {
-  return bse_source_class_add_ijchannel (source_class, name, name, blurb, FALSE);
+  return bse_source_class_add_ijchannel (source_class, ident, name, blurb, FALSE);
 }
 
 guint
@@ -404,7 +404,7 @@ bse_source_class_add_jchannel_ident (BseSourceClass *source_class,
 				     const gchar    *name,
 				     const gchar    *blurb)
 {
-  return bse_source_class_add_ijchannel (source_class, name, name, blurb, TRUE);
+  return bse_source_class_add_ijchannel (source_class, ident, name, blurb, TRUE);
 }
 
 guint

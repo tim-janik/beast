@@ -415,8 +415,10 @@ bse_ladspa_info_port_2str (BseLadspaPort *port)
     strcat (flags, "b");
   if (port->integer_stepping)
     strcat (flags, "i");
+  if (port->rate_relative)
+    strcat (flags, "s");
   if (port->frequency)
-    strcat (flags, "f");
+    strcat (flags, "F");
   if (port->logarithmic)
     strcat (flags, "L");
   if (port->concert_a)

@@ -152,7 +152,7 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
       else if (port->integer_stepping)
 	{
 	  const gchar *hints;
-	  /* ok, try to guess when scales are going to be usefull */
+	  /* try to guess when scales are going to be usefull */
 	  if (port->minimum < 0 ||
 	      port->maximum - port->minimum > 10)
 	    hints = SFI_PARAM_GUI SFI_PARAM_HINT_SCALE;
@@ -165,7 +165,6 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 	}
       else if (port->frequency)
 	{
-	  /* we relate a maximum value of 0.5 (sample_freq/2) to BSE_MAX_OSC_FREQUENCY_f */
 	  gfloat maximum = port->maximum;
 	  gfloat minimum = port->minimum;
 	  gfloat dfvalue = port->default_value;
@@ -186,20 +185,21 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
 				       dfvalue, minimum, maximum, 10.0,
 				       2 * BSE_KAMMER_FREQUENCY_f, 2, 4,
 				       SFI_PARAM_GUI SFI_PARAM_FLOAT SFI_PARAM_HINT_SCALE SFI_PARAM_HINT_DIAL);
-	  if (port->concert_a)	/* probably note-aligned port values */
+	  if (port->concert_a)
 	    {
+	      /* when defaulting to A', we probably have note-aligned port values */
 	      gint min_note = bse_note_from_freq_bounded (minimum);
 	      gint max_note = bse_note_from_freq_bounded (maximum);
-	      gchar *ident2 = g_strconcat (port->ident, "-note", NULL);
 	      if (max_note - min_note > 2)
 		{
+		  gchar *ident2 = g_strconcat (port->ident, "-note", NULL);
 		  pspec2 = sfi_pspec_note (ident2, port->name, NULL,
 					   BSE_KAMMER_NOTE, min_note, max_note, FALSE,
 					   SFI_PARAM_GUI);
 		  g_param_spec_set_qdata (pspec2, quark_notify_sibling, pspec);
 		  g_param_spec_set_qdata (pspec, quark_notify_sibling, pspec2);
+		  g_free (ident2);
 		}
-	      g_free (ident2);
 	    }
 	}
       else /* normal float */
@@ -234,9 +234,9 @@ bse_ladspa_module_class_init_from_info (BseLadspaModuleClass *ladspa_module_clas
     {
       BseLadspaPort *port = bli->aports + i;
       if (port->input)
-	ichannel = bse_source_class_add_ichannel (source_class, port->ident, port->name);
+	ichannel = bse_source_class_add_ichannel_ident (source_class, port->ident, port->name, NULL);
       else /* port->output */
-	ochannel = bse_source_class_add_ochannel (source_class, port->ident, port->name);
+	ochannel = bse_source_class_add_ochannel_ident (source_class, port->ident, port->name, NULL);
     }
 }
 

@@ -1,3 +1,14 @@
+Sun Apr  6 13:56:09 2003  Tim Janik  <timj@gtk.org>
+
+	* bsesource.[hc]: added i/o channel identifier to public API.
+	fixed up bse_source_class_add_jchannel_ident() and
+	bse_source_class_add_ichannel_ident().
+
+	* bseladspamodule.c (bse_ladspa_module_class_init_from_info): 
+	actually *use* the port identifier as identifier for i/o channels.
+
+	* bseladspa.c (bse_ladspa_info_port_2str): complete flag list.
+
 Sat Apr  5 17:48:45 2003  Tim Janik  <timj@gtk.org>
 
 	* bseladspamodule.c: adjust property construction to better hinting
