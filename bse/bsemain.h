@@ -51,8 +51,20 @@ guint           bse_main_getpid         (void);
 #define	BSE_DBG_EXT     			(bse_main_debug_extensions != FALSE)
 
 
+/* --- argc/argv overide settings --- */
+typedef struct {
+  SfiInt   latency;
+  SfiInt   mixing_freq;
+  SfiInt   control_freq;
+  SfiRing *pcm_drivers;
+  SfiRing *midi_drivers;
+  gboolean dump_driver_list;
+} BseMainArgs;
+
+
 /* --- internal --- */
 void    _bse_init_c_wrappers    ();
+extern BseMainArgs  *bse_main_args;
 extern GMainContext *bse_main_context;
 extern SfiMutex	     bse_main_sequencer_mutex;
 extern gboolean      bse_main_debug_extensions;

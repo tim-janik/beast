@@ -36,7 +36,8 @@
 static void	bse_main_loop		(gpointer	data);
 static void	bse_async_parse_args	(gint	       *argc_p,
 					 gchar	     ***argv_p,
-					 SfiRec        *config);
+                                         BseMainArgs   *margs,
+                                         SfiRec        *config);
 
 
 /* --- variables --- */
@@ -47,6 +48,8 @@ const guint		 bse_micro_version = BSE_MICRO_VERSION;
 const guint		 bse_interface_age = BSE_INTERFACE_AGE;
 const guint		 bse_binary_age = BSE_BINARY_AGE;
 const gchar		*bse_version = BSE_VERSION;
+static BseMainArgs       default_main_args = { TRUE, };
+BseMainArgs             *bse_main_args = &default_main_args;
 GMainContext            *bse_main_context = NULL;
 SfiMutex	         bse_main_sequencer_mutex = { 0, };
 gboolean	         bse_main_debug_extensions = FALSE;
@@ -80,18 +83,22 @@ bse_init_async (gint    *argc,
   bind_textdomain_codeset (BSE_GETTEXT_DOMAIN, "UTF-8");
   textdomain_setup = TRUE;
 
-  /* this function is running in the user thread and needs to start the main BSE thread */
+  /* this function is running in the user program and needs to start the main BSE thread */
   
   /* initialize submodules */
   sfi_init ();
   /* paranoid assertions */
   g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
-  /* early argument handling */
+
+  /* handle argument early*/
+  SfiRec *unref_me = NULL;
+  if (!config)
+    config = unref_me = sfi_rec_new();
   if (argc && argv)
     {
       if (*argc && !g_get_prgname ())
 	g_set_prgname (**argv);
-      bse_async_parse_args (argc, argv, config);
+      bse_async_parse_args (argc, argv, bse_main_args, config);
     }
   
   /* start main BSE thread */
@@ -102,6 +109,9 @@ bse_init_async (gint    *argc,
   /* wait for initialization completion of the core thread */
   while (bse_initialization_stage < 2)
     sfi_thread_sleep (-1);
+  /* cleanup */
+  if (unref_me)
+    sfi_rec_unref (unref_me);
 }
 
 gchar*
@@ -233,6 +243,10 @@ bse_init_core (void)
 
   /* make sure the server is alive */
   bse_server_get ();
+
+  /* argument handling */
+  if (bse_main_args->dump_driver_list)
+    g_printerr ("PCM and MIDI drivers: oss and null\n");
 }
 
 void
@@ -262,7 +276,7 @@ bse_init_intern (gint    *argc,
     {
       if (*argc && !g_get_prgname ())
 	g_set_prgname (**argv);
-      bse_async_parse_args (argc, argv, config);
+      bse_async_parse_args (argc, argv, bse_main_args, config);
     }
   
   bse_init_core ();
@@ -319,9 +333,10 @@ bse_main_getpid (void)
 }
 
 static void
-bse_async_parse_args (gint    *argc_p,
-		      gchar ***argv_p,
-		      SfiRec  *config)
+bse_async_parse_args (gint        *argc_p,
+		      gchar     ***argv_p,
+                      BseMainArgs *margs,
+		      SfiRec      *config)
 {
   guint argc = *argc_p;
   gchar **argv = *argv_p;
@@ -343,9 +358,7 @@ bse_async_parse_args (gint    *argc_p,
     {
       if (strcmp (argv[i], "--g-fatal-warnings") == 0)
 	{
-	  GLogLevelFlags fatal_mask;
-	  
-	  fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
+	  GLogLevelFlags fatal_mask = g_log_set_always_fatal (G_LOG_FATAL_MASK);
 	  fatal_mask |= G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL;
 	  g_log_set_always_fatal (fatal_mask);
 	  
@@ -355,7 +368,6 @@ bse_async_parse_args (gint    *argc_p,
 	       strncmp ("--bse-debug=", argv[i], 12) == 0)
 	{
 	  gchar *equal = argv[i] + 11;
-	  
 	  if (*equal == '=')
             sfi_debug_allow (equal + 1);
 	  else if (i + 1 < argc)
@@ -366,16 +378,79 @@ bse_async_parse_args (gint    *argc_p,
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-no-debug", argv[i]) == 0 ||
-	       strncmp ("--bse-no-debug=", argv[i], 12) == 0)
+	       strncmp ("--bse-no-debug=", argv[i], 15) == 0)
 	{
-	  gchar *equal = argv[i] + 11;
-	  
+	  gchar *equal = argv[i] + 14;
 	  if (*equal == '=')
             sfi_debug_deny (equal + 1);
 	  else if (i + 1 < argc)
 	    {
 	      argv[i++] = NULL;
 	      sfi_debug_deny (argv[i]);
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-latency", argv[i]) == 0 ||
+	       strncmp ("--bse-latency=", argv[i], 14) == 0)
+	{
+	  gchar *equal = argv[i] + 13;
+	  if (*equal == '=')
+            margs->latency = g_ascii_strtoull (equal + 1, NULL, 10);
+	  else if (i + 1 < argc)
+	    {
+	      argv[i++] = NULL;
+              margs->latency = g_ascii_strtoull (argv[i], NULL, 10);
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-mixing-freq", argv[i]) == 0 ||
+	       strncmp ("--bse-mixing-freq=", argv[i], 18) == 0)
+	{
+	  gchar *equal = argv[i] + 17;
+	  if (*equal == '=')
+            margs->mixing_freq = g_ascii_strtoull (equal + 1, NULL, 10);
+	  else if (i + 1 < argc)
+	    {
+	      argv[i++] = NULL;
+              margs->mixing_freq = g_ascii_strtoull (argv[i], NULL, 10);
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-control-freq", argv[i]) == 0 ||
+	       strncmp ("--bse-control-freq=", argv[i], 19) == 0)
+	{
+	  gchar *equal = argv[i] + 18;
+	  if (*equal == '=')
+            margs->control_freq = g_ascii_strtoull (equal + 1, NULL, 10);
+	  else if (i + 1 < argc)
+	    {
+	      argv[i++] = NULL;
+              margs->control_freq = g_ascii_strtoull (argv[i], NULL, 10);
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-driver-list", argv[i]) == 0)
+	{
+          margs->dump_driver_list = TRUE;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-pcm-driver", argv[i]) == 0)
+	{
+          if (i + 1 < argc)
+	    {
+	      argv[i++] = NULL;
+              margs->pcm_drivers = sfi_ring_append (margs->pcm_drivers, argv[i]);
+              g_printerr ("PCM += %s\n", argv[i]);
+	    }
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-midi-driver", argv[i]) == 0)
+	{
+          if (i + 1 < argc)
+	    {
+	      argv[i++] = NULL;
+              margs->midi_drivers = sfi_ring_append (margs->midi_drivers, argv[i]);
+              g_printerr ("MIDI += %s\n", argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -391,6 +466,6 @@ bse_async_parse_args (gint    *argc_p,
       }
   *argc_p = e;
 
-  if (config && sfi_rec_get_bool (config, "debug-extensions"))
+  if (sfi_rec_get_bool (config, "debug-extensions"))
     bse_main_debug_extensions = TRUE;
 }

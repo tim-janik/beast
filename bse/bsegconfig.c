@@ -121,3 +121,19 @@ bse_gconfig_locked (void)
 {
   return gconfig_lock_count != 0;
 }
+
+void
+bse_gconfig_merge_args (const BseMainArgs *margs)
+{
+  if (bse_gconfig_locked ())
+    return;
+  SfiRec *rec = bse_gconfig_to_rec (bse_global_config);
+  if (margs->latency > 0)
+    sfi_rec_set_int (rec, "synth_latency", margs->latency);
+  if (margs->mixing_freq >= 1000)
+    sfi_rec_set_int (rec, "synth_mixing_freq", margs->mixing_freq);
+  if (margs->control_freq > 0)
+    sfi_rec_set_int (rec, "synth_control_freq", margs->control_freq);
+  bse_gconfig_apply (rec);
+  sfi_rec_unref (rec);
+}

@@ -1,3 +1,15 @@
+Wed Sep 22 14:28:11 2004  Tim Janik  <timj@gtk.org>
+
+	* bsegconfig.[hc]: added bse_gconfig_merge_args() to merge
+	configuration with command line arguments.
+
+	* bsemain.[hc]: provide BseMainArgs globally, setup from argv parsing.
+	parse --bse-latency, --bse-mixing-freq, --bse-control-freq, 
+	--bse-driver-list, --bse-pcm-driver and --bse-midi-driver.
+
+	* bseserver.c: merge argv arguments into global config after
+	parsing rc file.
+
 Wed Sep 22 02:58:07 2004  Tim Janik  <timj@gtk.org>
 
 	* bsetrack.c:

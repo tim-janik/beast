@@ -224,6 +224,9 @@ bse_server_init (BseServer *self)
       close (fd);
     }
   g_free (file_name);
+
+  /* integrate argv overides */
+  bse_gconfig_merge_args (bse_main_args);
 }
 
 static void
