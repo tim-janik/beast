@@ -151,15 +151,20 @@ bse_pcm_device_oss_open (BsePcmDevice *pdev)
   /* try open */
   if (!error)
     {
-      gint omode = 0;
-      gint fd;
-      
-      omode = (handle->readable && handle->writable ? O_RDWR
-	       : handle->readable ? O_RDONLY
-	       : handle->writable ? O_WRONLY : 0);
-      
-      /* need to open explicitely non-blocking or we'll have to wait untill someone else closes the device */
-      fd = open (BSE_PCM_DEVICE_OSS (pdev)->device_name, omode | O_NONBLOCK, 0);
+      gint omode, fd;
+
+      g_assert (handle->readable && handle->writable);
+      omode = O_RDWR | O_NONBLOCK;
+      /* need to open explicitely non-blocking or we'll have to wait until someone else closes the device */
+      fd = open (BSE_PCM_DEVICE_OSS (pdev)->device_name, omode, 0);
+      if (fd < 0)
+	{
+	  /* retry without recording */
+	  handle->readable = FALSE;
+	  g_assert (handle->readable == FALSE && handle->writable);
+	  omode = O_WRONLY | O_NONBLOCK;
+	  fd = open (BSE_PCM_DEVICE_OSS (pdev)->device_name, omode, 0);
+	}
       if (fd >= 0)
 	oss->fd = fd;
       else

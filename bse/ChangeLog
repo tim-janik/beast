@@ -1,3 +1,10 @@
+Thu Mar 13 21:13:33 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-oss.c (bse_pcm_device_oss_open): if opening in read-write
+	mode fails, try falling back to write-only mode.
+
+	* gslcommon.c (gsl_error_from_errno): return fallback error for EINVAL.
+
 Thu Mar 13 19:42:30 2003  Tim Janik  <timj@gtk.org>
 
 	* bsemidisynth.c (bse_midi_synth_init): set sequencer flag on midi

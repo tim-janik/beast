@@ -270,9 +270,9 @@ gsl_error_from_errno (gint         sys_errno,
     case EBUSY:         return GSL_ERROR_BUSY;
     case EAGAIN:
     case EINTR:		return GSL_ERROR_TEMP;
-    case EINVAL:
     case EFAULT:
     case EBADF:         return GSL_ERROR_INTERNAL;
+    case EINVAL:
     default:            return fallback;
     }
 }
