@@ -75,7 +75,7 @@ BODY (BseProcedureClass *proc,
   if (!pattern)
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  cseq = bse_categories_match (pattern);
+  cseq = bse_categories_match_typed (pattern, 0);
   if (!cseq)
     cseq = bse_category_seq_new ();
   
@@ -103,6 +103,58 @@ BODY (BseProcedureClass *proc,
   
   /* set output parameters */
   bse_value_take_boxed (out_values++, cat);
+  
+  return BSE_ERROR_NONE;
+}
+
+static gboolean
+categories_check_method (BseCategory *cat,
+                         gpointer     data)
+{
+  GType *type_p = data;
+  GType ptype = g_type_from_name (cat->type);
+  gboolean match = FALSE;
+  if (BSE_TYPE_IS_PROCEDURE (ptype))
+    {
+      BseProcedureClass *proc = g_type_class_ref (ptype);
+      if (proc->n_in_pspecs >= 1 &&
+          g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0]), *type_p))
+        match = TRUE;
+      g_type_class_unref (proc);
+      if (match==TRUE)
+        g_print ("method: %s\n", cat->type);
+    }
+  return match;
+}
+
+PROCEDURE (bse-categories-match-method, "Utils/Categories/Match Method") {
+  HELP  = "List BSE categories according to a pattern, of type procedure and applying to a certain object type.";
+  IN	= sfi_pspec_string ("pattern", "Pattern", "Pattern to match category, supports '*' and '?' wildcards.",
+			    "*", SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_string ("type", "Type", "Object base type for methods to conform to.",
+			    NULL, SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("categories", "Categories", NULL, BSE_TYPE_CATEGORY_SEQ, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  gchar *pattern   = sfi_value_get_string (in_values++);
+  gchar *type_name = sfi_value_get_string (in_values++);
+  GType  type      = type_name ? g_type_from_name (type_name) : 0;
+  BseCategorySeq *cseq = NULL;
+  
+  /* check parameters */
+  if (!pattern)
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  cseq = bse_categories_match (pattern, BSE_TYPE_PROCEDURE, categories_check_method, &type);
+  if (!cseq)
+    cseq = bse_category_seq_new ();
+  
+  /* set output parameters */
+  bse_value_take_boxed (out_values++, cseq);
   
   return BSE_ERROR_NONE;
 }

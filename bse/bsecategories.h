@@ -22,13 +22,22 @@
 
 G_BEGIN_DECLS
 
+
+/* --- typedefs --- */
+typedef gboolean (BseCategoryCheck) (BseCategory *category,
+                                     gpointer     data);
+
+
 /* --- prototypes --- */
 void		bse_categories_register      (const gchar      *category,
 					      GType             type);
 void		bse_categories_register_icon (const gchar      *category,
 					      GType             type,
 					      const BsePixdata *pixdata);
-BseCategorySeq*	bse_categories_match         (const gchar      *pattern);
+BseCategorySeq*	bse_categories_match         (const gchar      *pattern,
+					      GType             base_type,
+                                              BseCategoryCheck  check,
+                                              gpointer          data);
 BseCategorySeq*	bse_categories_match_typed   (const gchar      *pattern,
 					      GType             base_type);
 BseCategorySeq*	bse_categories_from_type     (GType             type);

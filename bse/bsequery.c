@@ -128,7 +128,7 @@ show_cats (void)
   BseCategorySeq *cseq;
   guint i;
 
-  cseq = bse_categories_match ("*");
+  cseq = bse_categories_match_typed ("*", 0);
   for (i = 0; i < cseq->n_cats; i++)
     fprintf (f_out, "%s\t(%s)\n",
 	     cseq->cats[i]->category,
