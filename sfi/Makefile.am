@@ -56,13 +56,13 @@ SFIDL = $(top_builddir)/sfi/sfidl
 temp_files =  xgen-tih xgen-tic xgen-sch
 CLEANFILES += $(temp_files)
 CLEANFILES += testidl.h testidl.c
-testidl.h: $(srcdir)/testidl.sfidl sfidl
-	$(SFIDL) --header --implementation --boxed $(srcdir)/testidl.sfidl > xgen-tih \
+testidl.h: $(srcdir)/testidl.idl sfidl
+	$(SFIDL) --header --implementation --boxed $(srcdir)/testidl.idl > xgen-tih \
 	&& mv xgen-tih testidl.h
-testidl.c: $(srcdir)/testidl.sfidl sfidl
-	$(SFIDL) --source --implementation --boxed --init test_types_init $(srcdir)/testidl.sfidl > xgen-tic \
+testidl.c: $(srcdir)/testidl.idl sfidl
+	$(SFIDL) --source --implementation --boxed --init test_types_init $(srcdir)/testidl.idl > xgen-tic \
 	&& mv xgen-tic testidl.c
-EXTRA_DIST += testidl.sfidl
+EXTRA_DIST += testidl.idl
 
 sficonfig.h: $(top_builddir)/config.status Makefile
 	echo "/* Generated data from $< (by make $@) */" > xgen-sch \
