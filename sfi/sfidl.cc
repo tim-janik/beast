@@ -183,6 +183,7 @@ struct RecordDef {
 struct SequenceDef {
   string name;
   string contentType;
+  string contentNameC; /* C binding content name */
 };
 
 struct ClassDef {
@@ -212,7 +213,7 @@ protected:
   void addSequenceTodo(const SequenceDef& sdef);
   void addClassTodo(const ClassDef& cdef);
   
-  GTokenType parseNamespace();
+  GTokenType parseNamespace ();
   GTokenType parseTypeDef ();
   GTokenType parseEnumDef ();
   GTokenType parseEnumComponent (EnumComponent& comp, int& value);
@@ -635,12 +636,21 @@ GTokenType IdlParser::parseParamDefHints (ParamDef &def)
 GTokenType IdlParser::parseSequenceDef ()
 {
   SequenceDef sdef;
-  /* (typedef) sequence<int> IntSeq; */
+  /* (typedef) sequence<Int> IntSeq; */
   
   parse_or_return (TOKEN_SEQUENCE);
   parse_or_return ('<');
   parse_or_return (G_TOKEN_IDENTIFIER);
   sdef.contentType = ModuleHelper::qualify (scanner->value.v_identifier);
+  if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
+  {
+    parse_or_return (G_TOKEN_IDENTIFIER);
+    sdef.contentNameC = scanner->value.v_identifier;
+  }
+  else
+  {
+    sdef.contentNameC = "elements";
+  }
   parse_or_return ('>');
   parse_or_return (G_TOKEN_IDENTIFIER);
   sdef.name = ModuleHelper::define (scanner->value.v_identifier);
@@ -1034,10 +1044,11 @@ void CodeGeneratorC::run (string srcname)
 	{
 	  string mname = makeMixedName (si->name.c_str());
 	  string array = createTypeCode (si->contentType, "", MODEL_ARRAY);
+	  string elements = si->contentNameC;
 	  
 	  printf("struct _%s {\n", mname.c_str());
-	  printf("  guint n_elements;\n");
-	  printf("  %s elements;\n", array.c_str());
+	  printf("  guint n_%s;\n", elements.c_str ());
+	  printf("  %s %s;\n", array.c_str(), elements.c_str());
 	  printf("};\n");
 	}
       for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
@@ -1126,6 +1137,7 @@ void CodeGeneratorC::run (string srcname)
 	  string ret = createTypeCode (si->name, "", MODEL_RET);
 	  string arg = createTypeCode (si->name, "", MODEL_ARG);
 	  string element = createTypeCode (si->contentType, "", MODEL_ARG);
+	  string elements = si->contentNameC;
 	  string lname = makeLowerName (si->name.c_str());
 	  string mname = makeMixedName (si->name.c_str());
 	  
@@ -1141,9 +1153,11 @@ void CodeGeneratorC::run (string srcname)
 	  printf("{\n");
 	  printf("  g_return_if_fail (seq != NULL);\n");
 	  printf("\n");
-	  printf("  seq->elements = g_realloc (seq->elements, "
-		 "(seq->n_elements + 1) * sizeof (seq->elements[0]));\n");
-	  printf("  seq->elements[seq->n_elements++] = %s;\n", elementCopy.c_str());
+	  printf("  seq->%s = g_realloc (seq->%s, "
+		 "(seq->n_%s + 1) * sizeof (seq->%s[0]));\n",
+		 elements.c_str(), elements.c_str(), elements.c_str(), elements.c_str());
+	  printf("  seq->%s[seq->n_%s++] = %s;\n", elements.c_str(), elements.c_str(),
+	         elementCopy.c_str());
 	  printf("}\n\n");
 	  
 	  printf("%s\n", ret.c_str());
@@ -1171,17 +1185,18 @@ void CodeGeneratorC::run (string srcname)
 	  printf("\n");
 	  printf("  length = sfi_seq_length (sfi_seq);\n");
 	  printf("  seq = g_new0 (%s, 1);\n",mname.c_str());
-	  printf("  seq->n_elements = length;\n");
-	  printf("  seq->elements = g_malloc (seq->n_elements * sizeof (seq->elements[0]));\n\n");
+	  printf("  seq->n_%s = length;\n", elements.c_str());
+	  printf("  seq->%s = g_malloc (seq->n_%s * sizeof (seq->%s[0]));\n\n",
+	         elements.c_str(), elements.c_str(), elements.c_str());
 	  printf("  for (i = 0; i < length; i++)\n");
 	  printf("  {\n");
 	  printf("    GValue *element = sfi_seq_get (sfi_seq, i);\n");
-	  printf("    seq->elements[i] = %s;\n", elementFromValue.c_str());
+	  printf("    seq->%s[i] = %s;\n", elements.c_str(), elementFromValue.c_str());
 	  printf("  }\n");
 	  printf("  return seq;\n");
 	  printf("}\n\n");
 
-	  string elementToValue = createTypeCode (si->contentType, "seq->elements[i]", MODEL_TO_VALUE);
+	  string elementToValue = createTypeCode (si->contentType, "seq->" + elements + "[i]", MODEL_TO_VALUE);
 	  printf("SfiSeq *\n");
 	  printf("%s_to_sfi_seq (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
@@ -1191,7 +1206,7 @@ void CodeGeneratorC::run (string srcname)
 	  printf("  g_return_val_if_fail (seq != NULL, NULL);\n");
 	  printf("\n");
 	  printf("  sfi_seq = sfi_seq_new ();\n");
-	  printf("  for (i = 0; i < seq->n_elements; i++)\n");
+	  printf("  for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
 	  printf("  {\n");
 	  printf("    GValue *element = %s;\n", elementToValue.c_str());
 	  printf("    sfi_seq_append (sfi_seq, element);\n");
@@ -1200,7 +1215,7 @@ void CodeGeneratorC::run (string srcname)
 	  printf("  return sfi_seq;\n");
 	  printf("}\n\n");
 
-	  string element_i_free = createTypeCode (si->contentType, "seq->elements[i]", MODEL_FREE);
+	  string element_i_free = createTypeCode (si->contentType, "seq->" + elements + "[i]", MODEL_FREE);
 	  printf("void\n");
 	  printf("%s_free (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
@@ -1209,7 +1224,7 @@ void CodeGeneratorC::run (string srcname)
 	  if (element_i_free != "")
 	    {
 	      printf("      guint i;\n");
-	      printf("      for (i = 0; i < seq->n_elements; i++)\n");
+	      printf("      for (i = 0; i < seq->n_%s; i++)\n", elements.c_str());
 	      printf("        %s;\n", element_i_free.c_str());
 	    }
 	  printf("      g_free (seq);\n");

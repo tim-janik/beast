@@ -1,3 +1,8 @@
+Fri Oct  4 13:08:29 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: support optionally specifying the name of the sequence
+	elements for the C binding (typedef sequence<Int notes> NoteSeq).
+
 Fri Oct  4 12:41:33 2002  Stefan Westerfeld <stefan@space.twc.de>
 
 	* sfidl.cc: generate conversion functions for sequences/records
