@@ -28,6 +28,13 @@ cotan (double x)
   return - tan (x + GSL_PI * 0.5);
 }
 
+static double
+gsl_db_invert (double x)
+{
+  /* db = 20*log(x)/log(10); */
+  return exp (x * log (10) / 20.0);
+}
+
 static void
 band_filter_common (unsigned int iorder,
 		    double       p_freq, /* 0..pi */
@@ -188,6 +195,14 @@ tschebyscheff_eval (unsigned int degree,
   return td;
 }
 
+static double
+tschebyscheff_inverse (unsigned int degree,
+		       double       x)
+{
+  /* note, that thebyscheff_eval(degree,x)=cosh(degree*acosh(x)) */
+  return cosh (acosh (x) / degree);
+}
+
 void
 gsl_filter_tscheb1_rp (unsigned int iorder,
 		       double       freq,  /* 1..pi */
@@ -281,6 +296,49 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
 	root = gsl_complex (-1, 0);
       roots[i - 1] = root;
     }
+}
+
+/**
+ * gsl_filter_tscheb2_steepness_db
+ * @iorder:      filter order
+ * @c_freq:      passband cutoff frequency (0..pi)
+ * @epsilon:     fall off at passband frequency (0..1)
+ * @stopband_db: reduction in stopband in dB (>= 0)
+ * Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter,
+ * based on the ripple residue in the stop band.
+ */
+double
+gsl_filter_tscheb2_steepness_db (unsigned int iorder,
+				 double       c_freq,
+				 double       epsilon,
+				 double       stopband_db)
+{
+  return gsl_filter_tscheb2_steepness (iorder, c_freq, epsilon, gsl_db_invert (-stopband_db));
+}
+
+/**
+ * gsl_filter_tscheb2_steepness
+ * @iorder:    filter order
+ * @c_freq:    passband cutoff frequency (0..pi)
+ * @epsilon:   fall off at passband frequency (0..1)
+ * @residue:   maximum of transfer function in stopband (0..1)
+ * Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter,
+ * based on ripple residue in the stop band.
+ */
+double
+gsl_filter_tscheb2_steepness (unsigned int iorder,
+			      double       c_freq,
+			      double       epsilon,
+			      double       residue)
+{
+  double kappa_c, kappa_r, r_freq;
+
+  epsilon = gsl_trans_zepsilon2ss (epsilon);
+  kappa_c = gsl_trans_freq2s (c_freq);
+  kappa_r = tschebyscheff_inverse (iorder, sqrt (1.0 / (residue * residue) - 1.0) / epsilon) * kappa_c;
+  r_freq = gsl_trans_freq2z (kappa_r);
+
+  return r_freq / c_freq;
 }
 
 
@@ -674,6 +732,7 @@ gsl_filter_tscheb2_bs (unsigned int iorder,
 
 
 /* --- tschebyscheff type 1 via generic root-finding --- */
+#if 0
 static void
 tschebyscheff_poly (unsigned int degree,
 		    double      *v)
@@ -776,6 +835,7 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
     norm /= sqrt (1.0 / (1.0 + epsilon * epsilon));
   gsl_poly_scale (iorder, a, 1.0 / norm);
 }
+#endif
 
 
 /* --- windowed fir approximation --- */

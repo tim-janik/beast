@@ -153,9 +153,6 @@ char*		       gsl_poly_str1		(unsigned int	degree,
 
 
 /* --- transformations --- */
-static inline GslComplex gsl_trans_s2z		(GslComplex	s);
-static inline double	 gsl_trans_freq2s	(double		w);
-static inline double	 gsl_trans_zepsilon2ss	(double		epsilon);
 double			 gsl_temp_freq		(double		kammer_freq,
 						 int		halftone_delta);
 
@@ -495,33 +492,6 @@ gsl_poly_eval (unsigned int degree,
   while (degree--)
     sum = sum * x + a[degree];
   return sum;
-}
-static inline GslComplex
-gsl_trans_s2z (GslComplex s)
-{
-  /*       1 + (Td/2) * s
-   *  z = ----------------
-   *       1 - (Td/2) * s
-   */
-  GslComplex one = { 1, 0 };
-  return gsl_complex_div (gsl_complex_add (one, s), gsl_complex_sub (one, s));
-  /* return gsl_complex_div (gsl_complex_sub (s, one), gsl_complex_add (s, one)); */
-}
-static inline double
-gsl_trans_freq2s (double w)
-{
-  return tan (w / 2.);
-}
-static inline double
-gsl_trans_zepsilon2ss (double zepsilon)
-{
-  double e2 = (1.0 - zepsilon) * (1.0 - zepsilon);
-  /* 1___                                      _________________
-   * |   \                                    |       1.0 
-   * |-----\<---- 1 - zepsilon  zepsilon = \  | ----------------
-   * |_______\________________               \|  1 + sepsilon^2
-   */
-  return sqrt ((1.0 - e2) / e2);
 }
 
 #ifdef __cplusplus

@@ -1,3 +1,14 @@
+Fri Feb  1 02:43:38 2002  Tim Janik  <timj@gtk.org>
+
+	* gslfilter.[hc]: 
+	* gslmath.[hc]: moved frequency/epsilon z/s plane transformations
+	from gslmath.* to gslfilter.*.
+
+	* gslfilter.[hc]: added gsl_filter_tscheb2_steepness_db() and
+	gsl_filter_tscheb2_steepness() from stefan, which calculate the
+	required steepness factor for gsl_filter_tscheb2_rp() and variants
+	thereof.
+
 Fri Feb  1 02:11:07 2002  Tim Janik  <timj@gtk.org>
 
 	* bseconstant.[hc]: support stamped flow jobs to set an output by

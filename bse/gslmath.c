@@ -64,7 +64,6 @@ static void		zrhqr	(double a[], int m, double rtr[], double rti[]);
 static double		rf	(double x, double y, double z);
 static double		ellf	(double phi, double ak);
 static void		sncndn	(double uu, double emmc, double *sn_p, double *cn_p, double *dn_p);
-static double		rf	(double x, double y, double z);
 static void		sncndnC	(GslComplex uu, GslComplex emmc, GslComplex *sn_p, GslComplex *cn_p, GslComplex *dn_p);
 static GslComplex	rfC	(GslComplex x, GslComplex y, GslComplex z);
 
