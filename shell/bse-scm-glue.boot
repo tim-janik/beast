@@ -34,6 +34,9 @@
 	 (bse-glue-set-prop proxy (car list) (cadr list))
 	 (set! list (cddr list))))
 
+(define (bse-item-get proxy pname)
+  (bse-glue-get-prop proxy pname))
+
 (define bse-module-set bse-item-set)
 	
 (define (bse-test-error err) (not (bse-enum-match? err 'error-none)))

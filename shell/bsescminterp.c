@@ -111,6 +111,7 @@ bse_scm_free_gc_cell (SCM scm_gc_cell)
 
 /* --- SCM Glue GC Plateau --- */
 static gulong tc_glue_gc_plateau = 0;
+#define SCM_IS_GLUE_GC_PLATEAU(sval)    (SCM_NIMP (sval) && SCM_CAR (sval) == tc_glue_gc_plateau)
 static guint  scm_glue_gc_plateau_blocker = 0;
 typedef struct {
   guint    size_hint;
@@ -136,7 +137,7 @@ bse_scm_destroy_gc_plateau (SCM s_gcplateau)
 {
   GcPlateau *gp;
 
-  g_assert (SCM_NIMP (s_gcplateau) && SCM_CAR (s_gcplateau) == tc_glue_gc_plateau);
+  g_assert (SCM_IS_GLUE_GC_PLATEAU (s_gcplateau));
 
   gp = (GcPlateau*) SCM_CDR (s_gcplateau);
   if (gp->active_plateau)
@@ -164,6 +165,7 @@ bse_scm_gc_plateau_free (SCM s_gcplateau)
 
 /* --- SCM Glue Record --- */
 static gulong tc_glue_rec = 0;
+#define SCM_IS_GLUE_REC(sval)   (SCM_NIMP (sval) && SCM_CAR (sval) == tc_glue_rec)
 static SCM
 bse_scm_make_glue_rec (SfiRec *rec)
 {
@@ -192,7 +194,7 @@ bse_scm_glue_rec_print (SCM scm_rec)
   SfiRec *rec;
   guint i;
 
-  SCM_ASSERT ((SCM_NIMP (scm_rec) && SCM_CAR (scm_rec) == tc_glue_rec), scm_rec, SCM_ARG1, "bse-record-print");
+  SCM_ASSERT (SCM_IS_GLUE_REC (scm_rec), scm_rec, SCM_ARG1, "bse-record-print");
 
   rec = (SfiRec*) SCM_CDR (scm_rec);
   scm_puts ("'(", port);
@@ -222,7 +224,7 @@ bse_scm_glue_rec_get (SCM scm_rec,
   gchar *name;
   SCM s_val;
 
-  SCM_ASSERT ((SCM_NIMP (scm_rec) && SCM_CAR (scm_rec) == tc_glue_rec), scm_rec, SCM_ARG1, "bse-record-get");
+  SCM_ASSERT (SCM_IS_GLUE_REC (scm_rec), scm_rec, SCM_ARG1, "bse-record-get");
   SCM_ASSERT (SCM_SYMBOLP (s_field),  s_field,  SCM_ARG2, "bse-record-get");
 
   rec = (SfiRec*) SCM_CDR (scm_rec);
@@ -241,6 +243,8 @@ bse_scm_glue_rec_get (SCM scm_rec,
 
 /* --- SCM Glue Proxy --- */
 static gulong tc_glue_proxy = 0;
+#define SCM_IS_GLUE_PROXY(sval)    (SCM_NIMP (sval) && SCM_CAR (sval) == tc_glue_proxy)
+#define SCM_GET_GLUE_PROXY(sval)   (SCM_CDR (sval))
 static SCM    glue_null_proxy;
 static SCM
 bse_scm_make_glue_proxy (SfiProxy proxy)
@@ -265,7 +269,7 @@ bse_scm_proxy_equalp (SCM scm_p1,
 static SCM
 bse_scm_null_proxyp (SCM scm_proxy)
 {
-  if (SCM_NIMP (scm_proxy) && SCM_CAR (scm_proxy) == tc_glue_proxy)
+  if (SCM_IS_GLUE_PROXY (scm_proxy))
     {
       SfiProxy p = SCM_CDR (scm_proxy);
       return SCM_BOOL (p == 0);
@@ -326,12 +330,12 @@ bse_value_from_scm (SCM sval)
       value = sfi_value_seq (seq);
       sfi_seq_unref (seq);
     }
-  else if (SCM_NIMP (sval) && SCM_CAR (sval) == tc_glue_proxy)
+  else if (SCM_IS_GLUE_PROXY (sval))
     {
       SfiProxy proxy = (SfiProxy) SCM_CDR (sval);
       value = sfi_value_proxy (proxy);
     }
-  else if (SCM_NIMP (sval) && SCM_CAR (sval) == tc_glue_rec)
+  else if (SCM_IS_GLUE_REC (sval))
     {
       SfiRec *rec = (SfiRec*) SCM_CDR (sval);
       value = sfi_value_rec (rec);
@@ -418,12 +422,12 @@ bse_scm_glue_set_prop (SCM s_proxy,
   gchar *prop_name;
   GValue *value;
 
-  SCM_ASSERT (SCM_IMP (s_proxy),  s_proxy,  SCM_ARG1, "bse-set-prop");
-  SCM_ASSERT (SCM_STRINGP (s_prop_name), s_prop_name, SCM_ARG2, "bse-set-prop");
+  SCM_ASSERT (SCM_IS_GLUE_PROXY (s_proxy),  s_proxy,  SCM_ARG1, "bse-glue-set-prop");
+  SCM_ASSERT (SCM_STRINGP (s_prop_name), s_prop_name, SCM_ARG2, "bse-glue-set-prop");
 
   BSE_SCM_DEFER_INTS ();
 
-  proxy = gh_scm2long (s_proxy);
+  proxy = SCM_GET_GLUE_PROXY (s_proxy);
   prop_name = g_strndup (SCM_ROCHARS (s_prop_name), SCM_LENGTH (s_prop_name));
   bse_scm_enter_gc (&gclist, prop_name, g_free, SCM_LENGTH (s_prop_name));
 
@@ -453,12 +457,12 @@ bse_scm_glue_get_prop (SCM s_proxy,
   gchar *prop_name;
   const GValue *value;
 
-  SCM_ASSERT (SCM_IMP (s_proxy),  s_proxy,  SCM_ARG1, "bse-get-prop");
-  SCM_ASSERT (SCM_STRINGP (s_prop_name), s_prop_name, SCM_ARG2, "bse-get-prop");
+  SCM_ASSERT (SCM_IS_GLUE_PROXY (s_proxy),  s_proxy,  SCM_ARG1, "bse-glue-get-prop");
+  SCM_ASSERT (SCM_STRINGP (s_prop_name), s_prop_name, SCM_ARG2, "bse-glue-get-prop");
 
   BSE_SCM_DEFER_INTS ();
 
-  proxy = gh_scm2long (s_proxy);
+  proxy = SCM_GET_GLUE_PROXY (s_proxy);
   prop_name = g_strndup (SCM_ROCHARS (s_prop_name), SCM_LENGTH (s_prop_name));
   bse_scm_enter_gc (&gclist, prop_name, g_free, SCM_LENGTH (s_prop_name));
 
@@ -585,7 +589,7 @@ bse_scm_signal_connect (SCM s_proxy,
   gulong proxy, id;
   SigData *sdata;
   
-  SCM_ASSERT (SCM_IMP (s_proxy), s_proxy,  SCM_ARG1, "bse-signal-connect");
+  SCM_ASSERT (SCM_IS_GLUE_PROXY (s_proxy), s_proxy,  SCM_ARG1, "bse-signal-connect");
   SCM_ASSERT (SCM_STRINGP (s_signal), s_signal, SCM_ARG2, "bse-signal-connect");
   SCM_ASSERT (gh_procedure_p (s_lambda), s_lambda,  SCM_ARG3, "bse-signal-connect");
 

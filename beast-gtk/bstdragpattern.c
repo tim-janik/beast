@@ -238,8 +238,7 @@ bst_drag_pattern_new (BsePattern      *pattern,
   drag_pattern = g_new0 (BstDragPattern, 1);
   drag_pattern->pattern = pattern;
   g_object_connect (BSE_OBJECT (pattern),
-		    "swapped_signal::seqid_changed", drag_pattern_changed, drag_pattern,
-		    "swapped_signal::notify", drag_pattern_changed, drag_pattern,
+		    "swapped_signal::property-notify", drag_pattern_changed, drag_pattern,
 		    "swapped_signal::release", bst_drag_pattern_destroy, drag_pattern,
 		    NULL);
   if (pattern_group)

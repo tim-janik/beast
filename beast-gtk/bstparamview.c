@@ -240,7 +240,8 @@ bst_param_view_rebuild (BstParamView *self)
 	GParamSpec *pspec = bse_proxy_get_pspec (self->item, pstrings[i]);
 	const gchar *param_group = sfi_pspec_get_group (pspec);
 
-	if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_GUI) && (pspec->flags & G_PARAM_READABLE))
+	if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_GUI) && (pspec->flags & G_PARAM_READABLE) &&
+            ((pspec->flags & G_PARAM_WRITABLE) || BST_DVL_HINTS))
 	  {
 	    BstParam *bparam = bst_param_proxy_create (pspec, FALSE, NULL, self->item);
 	    if (param_group)

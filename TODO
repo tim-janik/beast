@@ -1,6 +1,5 @@
 FIXMES:
 - fix compillation without texitheque
-- fix seqid property notify
 - indicate directories as dirs in lib-list
 - don't always rebuild lib-list [Rebuild]-button
 - nuke BSE file crawling functions
@@ -8,7 +7,6 @@ FIXMES:
 - redesign object operations and updating object operations
 - fix internal items (snets) being listed as tentative property values
 - fix BST_OP_PROJECT_SAVE
-- export seqid via properties
 - get compilation with guile-1.6 to work
 - add new test song containing a wave track
 - fix saving of internal objects
@@ -52,7 +50,6 @@ FIXMES:
 - allow .bse files to start out with #bsesh ?
 - update /Help index to cover new docs
 - insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
-- export item seqid as readonly property (doesn't need its own notification signal then)
 - fix name of BSE_SNET_FLAG_USER_SYNTH
 - merge snet specifics down to super
 - registering the same script function twice triggers GType assertion
