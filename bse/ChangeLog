@@ -1,3 +1,8 @@
+Fri Sep 24 10:41:18 2004  Tim Janik  <timj@gtk.org>
+
+	* bseserver.c (bse_server_open_pcm_device): fallback to write-only mode
+	if opening in read-write mode failed.
+
 Fri Sep 24 09:14:14 2004  Tim Janik  <timj@gtk.org>
 
 	* bsedevice.[hc]: added groups to device entries. adjusted device

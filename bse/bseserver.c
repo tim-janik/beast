@@ -456,6 +456,9 @@ bse_server_open_pcm_device (BseServer *server)
   server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, TRUE, TRUE, bse_main_args->pcm_drivers,
                                                              pcm_request_callback, &pr, &error);
   if (!server->pcm_device)
+    server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, FALSE, TRUE, bse_main_args->pcm_drivers,
+                                                               pcm_request_callback, &pr, &error);
+  if (!server->pcm_device)
     sfi_warn (SfiLogger ("pcm",
                          _("Advice about PCM device selections problems"),
                          _("Alert me about PCM device selections problems")),
