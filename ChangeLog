@@ -1,3 +1,7 @@
+Fri Dec  5 11:40:22 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxklogadjustment.[hc]: CVS copied here from beast-gtk/.
+
 Fri Dec  5 01:41:00 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkparam-entry.c:
