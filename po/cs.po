@@ -8,183 +8,183 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-06 14:22+0100\n"
-"PO-Revision-Date: 2004-01-06 16:48+0100\n"
+"POT-Creation-Date: 2004-01-24 03:21+0100\n"
+"PO-Revision-Date: 2004-01-27 19:01+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:51
+#: beast-gtk/bstapp.c:49
 msgid "_New"
 msgstr "_Nový"
 
-#: beast-gtk/bstapp.c:51
+#: beast-gtk/bstapp.c:49
 msgid "Create new project"
 msgstr "Vytvořit nový projekt"
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:51
 msgid "_Open..."
 msgstr "_Otevřít..."
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:51
 msgid "Open existing project"
 msgstr "Otevřít existující projekt"
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:53
 msgid "_Merge..."
 msgstr "S_loučit..."
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:53
 msgid "Merge an existing project into the current project"
-msgstr "Součit existující projekt do aktuálního projektu"
+msgstr "Sloučit existující projekt do aktuálního projektu"
 
-#: beast-gtk/bstapp.c:57
+#: beast-gtk/bstapp.c:55
 msgid "_Import MIDI..."
 msgstr "_Importovat MIDI..."
 
-#: beast-gtk/bstapp.c:57
+#: beast-gtk/bstapp.c:55
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importovat standardní soubor MIDI do aktuálního projektu"
 
-#: beast-gtk/bstapp.c:59
+#: beast-gtk/bstapp.c:57
 msgid "_Close"
 msgstr "_Zavřít"
 
-#: beast-gtk/bstapp.c:63
+#: beast-gtk/bstapp.c:61
 msgid "_Save"
 msgstr "_Uložit"
 
-#: beast-gtk/bstapp.c:65
+#: beast-gtk/bstapp.c:63
 msgid "Save _As..."
 msgstr "Uložit _jako..."
 
-#: beast-gtk/bstapp.c:69
+#: beast-gtk/bstapp.c:67
 msgid "_Quit"
 msgstr "U_končit"
 
-#: beast-gtk/bstapp.c:73
+#: beast-gtk/bstapp.c:71
 msgid "_Preferences..."
 msgstr "_Nastaven..."
 
-#: beast-gtk/bstapp.c:76
+#: beast-gtk/bstapp.c:74
 msgid "Rebuild"
 msgstr "Znovu sestavit"
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:77
 msgid "_About..."
 msgstr "O _aplikaci..."
 
-#: beast-gtk/bstapp.c:82
+#: beast-gtk/bstapp.c:80
 msgid "_Undo"
 msgstr "_Zpět"
 
-#: beast-gtk/bstapp.c:84
+#: beast-gtk/bstapp.c:82
 msgid "_Redo"
 msgstr "Z_novu"
 
-#: beast-gtk/bstapp.c:88 beast-gtk/bstpartdialog.c:69
+#: beast-gtk/bstapp.c:86 beast-gtk/bstpartdialog.c:67
 msgid "_Clear Undo"
 msgstr "Vyma_zat historii"
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:90
 msgid "Procedure _Browser"
 msgstr "_Procházeč procedur"
 
-#: beast-gtk/bstapp.c:94
+#: beast-gtk/bstapp.c:92
 msgid "Rack Editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:96
+#: beast-gtk/bstapp.c:94
 msgid "Device _Monitor"
 msgstr "_Sledování zařízení"
 
-#: beast-gtk/bstapp.c:98
+#: beast-gtk/bstapp.c:96
 msgid "New View"
 msgstr "Nový pohled"
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:100
 msgid "_Play"
 msgstr "_Přehrávat"
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:102
 msgid "_Stop"
 msgstr "_Zastavit"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:106
 msgid "New Song"
 msgstr "Nová skladba"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:108
 msgid "New Custom Synthesizer"
 msgstr "Nový vlastní syntetizér"
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:110
 msgid "New MIDI Synthesizer"
 msgstr "Nový syntetizér MIDI"
 
-#: beast-gtk/bstapp.c:114
+#: beast-gtk/bstapp.c:112
 msgid "Remove Song or Synthesizer"
 msgstr "Odstranit skladbu nebo syntetizér"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:116
 msgid "Load _Instrument"
 msgstr "Načíst _nástroj"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:118
 msgid "Load _Effect"
 msgstr "Načíst _efekt"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:120
 msgid "Save As Instrument"
 msgstr "Uložit jako nástroj"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:122
 msgid "Save As Effect"
 msgstr "Uložit jako efekt"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:126
 msgid "_Release Notes..."
 msgstr "_Poznámky o vydání..."
 
-#: beast-gtk/bstapp.c:129
+#: beast-gtk/bstapp.c:127
 msgid "Quick Start..."
 msgstr "Rychlý start..."
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:128
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:133
+#: beast-gtk/bstapp.c:131
 msgid "GSL Engine..."
 msgstr "Engine GSL..."
 
-#: beast-gtk/bstapp.c:549 beast-gtk/bstapp.c:556 beast-gtk/bstfiledialog.c:438
-#: beast-gtk/bstfiledialog.c:445
+#: beast-gtk/bstapp.c:525 beast-gtk/bstapp.c:532 beast-gtk/bstfiledialog.c:410
+#: beast-gtk/bstfiledialog.c:417
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otevírám projekt `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:722
+#: beast-gtk/bstapp.c:698
 msgid "Rack editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:736
+#: beast-gtk/bstapp.c:712
 msgid "Preferences"
 msgstr "Nastavení"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:750
+#: beast-gtk/bstapp.c:726
 msgid "Device Monitor"
 msgstr "Sledování zařízení"
 
-#: beast-gtk/bstapp.c:769
+#: beast-gtk/bstapp.c:745
 msgid "Procedure Browser"
 msgstr "Procházeč procedur"
 
-#: beast-gtk/bstapp.c:826
+#: beast-gtk/bstapp.c:802
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Poznámky o vydání BEAST-%s"
@@ -193,25 +193,25 @@ msgstr "Poznámky o vydání BEAST-%s"
 msgid "Module Link: "
 msgstr "Spojení modulů: "
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:927
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:901
 msgid "Module link"
 msgstr "Spojení modulů"
 
-#: beast-gtk/bstcanvassource.c:487
+#: beast-gtk/bstcanvassource.c:463
 msgid "Module Info"
 msgstr "Informace o modulu"
 
-#: beast-gtk/bstcanvassource.c:986 beast-gtk/bstsnetrouter.c:210
+#: beast-gtk/bstcanvassource.c:962 beast-gtk/bstsnetrouter.c:184
 msgid "Input"
 msgstr "Vstup"
 
-#: beast-gtk/bstcanvassource.c:995 beast-gtk/bstsnetrouter.c:207
-#: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
-#: plugins/artscompressor.idl:57
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
+#: bse/bseamplifier.idl:67 plugins/artscompressor.idl:39
+#: plugins/artscompressor.idl:58
 msgid "Output"
 msgstr "Výstup"
 
-#: beast-gtk/bstcanvassource.c:999
+#: beast-gtk/bstcanvassource.c:975
 msgid "(Hint)"
 msgstr "(Nápověda)"
 
@@ -263,44 +263,44 @@ msgstr "Vyberte oblast"
 msgid "Abortion"
 msgstr "Přerušení"
 
-#: beast-gtk/bstfiledialog.c:197
+#: beast-gtk/bstfiledialog.c:169
 msgid "Contents"
 msgstr "Obsah"
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:229
+#: beast-gtk/bstfiledialog.c:201
 msgid "File Selection"
 msgstr "Výběr souborů"
 
-#: beast-gtk/bstfiledialog.c:410
+#: beast-gtk/bstfiledialog.c:382
 msgid "Open Project"
 msgstr "Otevřít projekt"
 
-#: beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:396
 msgid "Select Directory"
 msgstr "Zvolit adresář"
 
-#: beast-gtk/bstfiledialog.c:463
+#: beast-gtk/bstfiledialog.c:435
 #, c-format
 msgid "Merge: %s"
 msgstr "Sloučit: %s"
 
-#: beast-gtk/bstfiledialog.c:476
+#: beast-gtk/bstfiledialog.c:448
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Slučuji projekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:492
+#: beast-gtk/bstfiledialog.c:464
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Import MIDI: %s"
 
-#: beast-gtk/bstfiledialog.c:503
+#: beast-gtk/bstfiledialog.c:475
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importuji soubor MIDI `%s'"
 
-#: beast-gtk/bstfiledialog.c:523
+#: beast-gtk/bstfiledialog.c:495
 #, c-format
 msgid ""
 "Failed to delete file\n"
@@ -313,27 +313,27 @@ msgstr ""
 "kvůli:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:552
+#: beast-gtk/bstfiledialog.c:524
 #, c-format
 msgid "Save: %s"
 msgstr "Uložit: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:554
+#: beast-gtk/bstfiledialog.c:526
 msgid "Fully include wave files"
 msgstr "Přímo zahrnout soubory vln"
 
-#: beast-gtk/bstfiledialog.c:555
+#: beast-gtk/bstfiledialog.c:527
 msgid "Store references to wave files"
 msgstr "Uložit odkazy na soubory vln"
 
-#: beast-gtk/bstfiledialog.c:576 beast-gtk/bstfiledialog.c:586
+#: beast-gtk/bstfiledialog.c:548 beast-gtk/bstfiledialog.c:558
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Ukládám projekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:577 beast-gtk/bstfiledialog.c:653
-#: beast-gtk/bstfiledialog.c:729
+#: beast-gtk/bstfiledialog.c:549 beast-gtk/bstfiledialog.c:625
+#: beast-gtk/bstfiledialog.c:701
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -348,77 +348,77 @@ msgstr ""
 "`%s':\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:601
+#: beast-gtk/bstfiledialog.c:573
 msgid "Load Effect"
 msgstr "Načíst efekt"
 
-#: beast-gtk/bstfiledialog.c:614
+#: beast-gtk/bstfiledialog.c:586
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Slučuji efekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:631
+#: beast-gtk/bstfiledialog.c:603
 msgid "Save Effect"
 msgstr "Uložit efekt"
 
-#: beast-gtk/bstfiledialog.c:652 beast-gtk/bstfiledialog.c:662
+#: beast-gtk/bstfiledialog.c:624 beast-gtk/bstfiledialog.c:634
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Ukládám efekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:677
+#: beast-gtk/bstfiledialog.c:649
 msgid "Load Instrument"
 msgstr "Načíst nástroj"
 
-#: beast-gtk/bstfiledialog.c:690
+#: beast-gtk/bstfiledialog.c:662
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Slučuji nástroj `%s'"
 
-#: beast-gtk/bstfiledialog.c:707
+#: beast-gtk/bstfiledialog.c:679
 msgid "Save Instrument"
 msgstr "Uložit nástroj"
 
-#: beast-gtk/bstfiledialog.c:728 beast-gtk/bstfiledialog.c:738
+#: beast-gtk/bstfiledialog.c:700 beast-gtk/bstfiledialog.c:710
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Ukládám nástroj `%s'"
 
-#: beast-gtk/bstfiledialog.c:754
+#: beast-gtk/bstfiledialog.c:726
 msgid "Load Wave"
 msgstr "Načíst vlnu"
 
-#: beast-gtk/bstfiledialog.c:766 beast-gtk/bstfiledialog.c:768
+#: beast-gtk/bstfiledialog.c:738 beast-gtk/bstfiledialog.c:740
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Načítám vlnu `%s'"
 
-#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:41
-#: beast-gtk/bsttrackview.c:62
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
+#: beast-gtk/bsttrackview.c:60
 msgid "Add"
 msgstr "Přidat"
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:40
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:889 beast-gtk/bstsnetrouter.c:931
-#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
-#: beast-gtk/bstwaveview.c:47
+#: beast-gtk/bstsnetrouter.c:863 beast-gtk/bstsnetrouter.c:905
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:63
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Odstranit"
 
-#: beast-gtk/bstitemview.c:235
+#: beast-gtk/bstitemview.c:205
 msgid "ID"
 msgstr "ID"
 
-#: beast-gtk/bstitemview.c:238
+#: beast-gtk/bstitemview.c:208
 msgid "Name"
 msgstr "Název"
 
-#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:548
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:520
 msgid "Comment"
 msgstr "Poznámka"
 
-#: beast-gtk/bstitemview.c:245
+#: beast-gtk/bstitemview.c:215
 msgid "Type"
 msgstr "Typ"
 
@@ -548,55 +548,55 @@ msgstr "Pole pro zadání cesty hledání"
 msgid "Time Entry"
 msgstr "Pole pro zadání času"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:57
 msgid "Clear"
 msgstr "Vymazat"
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:57
 msgid "Clear the current selection"
 msgstr "Odstranit aktuální výběr"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:58
 msgid "Cut"
 msgstr "Vyjmout"
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:58
 msgid "Move the current selection into clipboard"
 msgstr "Přesunout aktuální výběr do schránky"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:59
 msgid "Copy"
 msgstr "Kopírovat"
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:59
 msgid "Copy the current selection into clipboard"
 msgstr "Kopírovat aktuální výběr do schránky"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:60
 msgid "Paste"
 msgstr "Vložit"
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:60
 msgid "Insert clipboard contents as current selection"
 msgstr "Vložit obsah schránky jako aktuální výběr"
 
-#: beast-gtk/bstpartdialog.c:65
+#: beast-gtk/bstpartdialog.c:63
 msgid "Undo"
 msgstr "Zpět"
 
-#: beast-gtk/bstpartdialog.c:65
+#: beast-gtk/bstpartdialog.c:63
 msgid "Undo last editing step"
 msgstr "Vrátit poslední krok úprav"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:64
 msgid "Redo"
 msgstr "Znovu"
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:64
 msgid "Redo the last undone editing step"
 msgstr "Zopakovat poslední vrácený krok úprav"
 
-#: beast-gtk/bstpartview.c:43 beast-gtk/bstwaveview.c:49
+#: beast-gtk/bstpartview.c:41 beast-gtk/bstwaveview.c:47
 msgid "Editor"
 msgstr "Editor"
 
@@ -896,7 +896,7 @@ msgstr "Maximum návrhu"
 msgid "Preview"
 msgstr "Náslech"
 
-#: beast-gtk/bstsnetrouter.c:72
+#: beast-gtk/bstsnetrouter.c:69
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
 "Use button1 to create links, button2 for movement and button3 to change "
@@ -906,100 +906,100 @@ msgstr ""
 "Vytvářejte odkazy tlačítkem 1, přesouvejte tlačítkem 2 a měňte vlastnosti "
 "tlačítkem 3"
 
-#: beast-gtk/bstsnetrouter.c:77
+#: beast-gtk/bstsnetrouter.c:74
 msgid "Edit"
 msgstr "Upravit"
 
-#: beast-gtk/bstsnetrouter.c:77
+#: beast-gtk/bstsnetrouter.c:74
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Upravit/přesunout/menu (tlačítka myši 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1082
+#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1056
 msgid "Palette"
 msgstr "Paleta"
 
-#: beast-gtk/bstsnetrouter.c:81
+#: beast-gtk/bstsnetrouter.c:78
 msgid "Toggle visibility of the tool palette"
 msgstr "Přepnout viditelnost palety nástrojů"
 
-#: beast-gtk/bstsnetrouter.c:207
+#: beast-gtk/bstsnetrouter.c:181
 msgid "PCM Output module"
 msgstr "Modul výstupu PCM"
 
-#: beast-gtk/bstsnetrouter.c:208
+#: beast-gtk/bstsnetrouter.c:182
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:208
+#: beast-gtk/bstsnetrouter.c:182
 msgid "Standard amplifier module"
 msgstr "Standardní modul zesilovače"
 
-#: beast-gtk/bstsnetrouter.c:209
+#: beast-gtk/bstsnetrouter.c:183
 msgid "Snooper"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:209
+#: beast-gtk/bstsnetrouter.c:183
 msgid "Signal debugging module"
 msgstr "Modul ladění signálu"
 
-#: beast-gtk/bstsnetrouter.c:210
+#: beast-gtk/bstsnetrouter.c:184
 msgid "PCM Input module"
 msgstr "Modul vstupu PCM"
 
-#: beast-gtk/bstsnetrouter.c:258
+#: beast-gtk/bstsnetrouter.c:232
 msgid "Channel Hints"
 msgstr "Nápovědy kanálů"
 
-#: beast-gtk/bstsnetrouter.c:258
+#: beast-gtk/bstsnetrouter.c:232
 msgid "Toggle channel name hints"
-msgstr "Přepnot nápovědy názvů kanálů"
+msgstr "Přepnout nápovědy názvů kanálů"
 
-#: beast-gtk/bstsnetrouter.c:798
+#: beast-gtk/bstsnetrouter.c:772
 msgid "Input channel in use"
 msgstr "Vstupní kanál se používá"
 
-#: beast-gtk/bstsnetrouter.c:825 beast-gtk/bstsnetrouter.c:827
-#: beast-gtk/bstsnetrouter.c:863
+#: beast-gtk/bstsnetrouter.c:799 beast-gtk/bstsnetrouter.c:801
+#: beast-gtk/bstsnetrouter.c:837
 msgid "Create Link"
 msgstr "Vytvořit spojení"
 
-#: beast-gtk/bstsnetrouter.c:825
+#: beast-gtk/bstsnetrouter.c:799
 msgid "Select output module"
 msgstr "Vybrat výstupní modul"
 
-#: beast-gtk/bstsnetrouter.c:827
+#: beast-gtk/bstsnetrouter.c:801
 msgid "Select input module"
 msgstr "Vybrat vstupní modul"
 
-#: beast-gtk/bstsnetrouter.c:883
+#: beast-gtk/bstsnetrouter.c:857
 msgid "Properties"
 msgstr "Vlastnosti"
 
-#: beast-gtk/bstsnetrouter.c:884
+#: beast-gtk/bstsnetrouter.c:858
 msgid "Reset Properties"
 msgstr "Přenastavit vlastnosti"
 
-#: beast-gtk/bstsnetrouter.c:885
+#: beast-gtk/bstsnetrouter.c:859
 msgid "Delete Inputs"
 msgstr "Odstranit vstupy"
 
-#: beast-gtk/bstsnetrouter.c:886
+#: beast-gtk/bstsnetrouter.c:860
 msgid "Delete Outputs"
 msgstr "Odstranit výstupy"
 
-#: beast-gtk/bstsnetrouter.c:887 beast-gtk/bstsnetrouter.c:929
+#: beast-gtk/bstsnetrouter.c:861 beast-gtk/bstsnetrouter.c:903
 msgid "Show Info"
 msgstr "Zobrazit informace"
 
-#: beast-gtk/bstsnetrouter.c:913
+#: beast-gtk/bstsnetrouter.c:887
 msgid "Remove Module"
 msgstr "Odstranit modul"
 
-#: beast-gtk/bstsnetrouter.c:940
+#: beast-gtk/bstsnetrouter.c:914
 msgid "Delete Link"
 msgstr "Odstranit spojení"
 
-#: beast-gtk/bstsnetrouter.c:994
+#: beast-gtk/bstsnetrouter.c:968
 msgid "Insert Module"
 msgstr "Vložit modul"
 
@@ -1039,30 +1039,30 @@ msgstr "Označit signál (začátek)"
 msgid "Mark Signal (Tail)"
 msgstr "Označit signál (konec)"
 
-#: beast-gtk/bstsupershell.c:173 beast-gtk/bstsupershell.c:290
+#: beast-gtk/bstsupershell.c:149 beast-gtk/bstsupershell.c:266
 msgid "Waves"
 msgstr "Vlny"
 
-#: beast-gtk/bstsupershell.c:236
+#: beast-gtk/bstsupershell.c:212
 msgid "Tracks"
 msgstr "Stopy"
 
-#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
-#: beast-gtk/bstsupershell.c:295 plugins/artscompressor.idl:33
-#: plugins/artscompressor.idl:52 plugins/davbassfilter.idl:35
-#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:34
+#: beast-gtk/bstsupershell.c:217 beast-gtk/bstsupershell.c:253
+#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:34
+#: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
+#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parametry"
 
-#: beast-gtk/bstsupershell.c:246
+#: beast-gtk/bstsupershell.c:222
 msgid "Parts"
 msgstr "Části"
 
-#: beast-gtk/bstsupershell.c:252 beast-gtk/bstsupershell.c:271
+#: beast-gtk/bstsupershell.c:228 beast-gtk/bstsupershell.c:247
 msgid "Routing"
 msgstr "Směrování"
 
-#: beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:242
 msgid "Rack"
 msgstr "Rack"
 
@@ -1160,11 +1160,11 @@ msgstr "Přesunout část"
 msgid "Start Editor"
 msgstr "Spustit editor"
 
-#: beast-gtk/bsttrackview.c:62
+#: beast-gtk/bsttrackview.c:60
 msgid "Add a new track to this song"
 msgstr "Přidat k této skladbě novou stopu"
 
-#: beast-gtk/bsttrackview.c:65
+#: beast-gtk/bsttrackview.c:63
 msgid "Delete the currently selected track"
 msgstr "Odstranit momentálně vybranou stopu"
 
@@ -1209,27 +1209,27 @@ msgstr "Posouvat levý"
 msgid "Scroll Right"
 msgstr "Posouvat pravý"
 
-#: beast-gtk/bstwaveview.c:43
+#: beast-gtk/bstwaveview.c:41
 msgid "Load..."
 msgstr "Načíst..."
 
-#: beast-gtk/bstwaveview.c:43
+#: beast-gtk/bstwaveview.c:41
 msgid "Load a new wave file from disk"
 msgstr "Načíst soubor zvuku z disku"
 
-#: beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstwaveview.c:43
 msgid "Lib..."
 msgstr "Knihovna..."
 
-#: beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstwaveview.c:43
 msgid "Load a new wave file from library paths"
 msgstr "Načíst soubor zvuku z knihovny"
 
-#: beast-gtk/bstwaveview.c:47
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete the currently selected wave"
 msgstr "Odstranit momentálně vybranou vlnu"
 
-#: beast-gtk/bstwaveview.c:49
+#: beast-gtk/bstwaveview.c:47
 msgid "Edit the currently selected wave"
 msgstr "Upravit momentálně vybranou vlnu"
 
@@ -1271,7 +1271,7 @@ msgstr "_Délka noty"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:10
 msgid "Piano Notes"
-msgstr "Noti piána"
+msgstr "Noty piána"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:11
 msgid "Repeat"
@@ -1411,7 +1411,7 @@ msgstr "Jít o stranu vpřed"
 
 #: beast-gtk/dialogs/gadgets-standard.xml.h:5
 msgid "Go to browser index"
-msgstr "Jít do indexu prohlížečře"
+msgstr "Jít do indexu prohlížeče"
 
 #: beast-gtk/dialogs/gadgets-standard.xml.h:6
 msgid "Location"
@@ -1518,7 +1518,7 @@ msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
-msgstr "Zarování"
+msgstr "Zarovnání"
 
 #: beast-gtk/gxk/gxksimplelabel.c:148
 msgid ""
@@ -1555,16 +1555,16 @@ msgstr "Widget mnemoniky"
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr "Widget, který aktivovat, když je stisknuta mnemonická klávesa popisku"
 
-#: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26
-#: plugins/davbassfilter.idl:27 plugins/davchorus.idl:27
+#: bse/bseamplifier.idl:32 plugins/bsebalance.idl:26
+#: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
 msgid "GNU Lesser General Public License"
 msgstr "GNU Lesser General Public License"
 
-#: bse/bseamplifier.idl:32
+#: bse/bseamplifier.idl:33
 msgid "/Routing/Amplifier"
 msgstr "/Směrování/Zesilovač"
 
-#: bse/bseamplifier.idl:33
+#: bse/bseamplifier.idl:34
 msgid ""
 "BseAmplifier provides input signal controlled amplification or attenuation. "
 "It supports two control inputs and two audio inputs which are mixed together "
@@ -1586,178 +1586,178 @@ msgstr ""
 "zesilování zvukových signálů). Konečně hlavní hlasitost ovládá zesilování "
 "výsledného výstupního signálu."
 
-#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
 msgid "Audio In1"
 msgstr "Zvuk In1"
 
-#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:36
 msgid "First audio input"
 msgstr "První vstup zvuku"
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
 msgid "Audio In2"
 msgstr "Zvuk In2"
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:37
 msgid "Second audio input"
 msgstr "Druhý vstup zvuku"
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
+#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:38
 msgid "Ctrl In1"
 msgstr "Říd In1"
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
+#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:38
 msgid "First control input"
 msgstr "První řídicí vstup"
 
-#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:39
 msgid "Ctrl In2"
 msgstr "Říd In2"
 
-#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:39
 msgid "Second control input"
 msgstr "Druhý řídicí vstup"
 
-#: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
-#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: bse/bseamplifier.idl:51 plugins/artscompressor.idl:33
+#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:32
 #: plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
 msgstr "Výstup zvuku"
 
-#: bse/bseamplifier.idl:50
+#: bse/bseamplifier.idl:51
 msgid "Amplified audio output"
 msgstr "Zesílený výstup zvuku"
 
-#: bse/bseamplifier.idl:51 plugins/bsebalance.idl:43
+#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:43
 msgid "Audio Input"
 msgstr "Vstup zvuku"
 
-#: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:44
+#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:44
 #: plugins/bsebalance.idl:49
 msgid "Input 1 [%]"
 msgstr "Vstup 1 [%]"
 
-#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:44
+#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:44
 msgid "Attenuate the level of audio input 1"
 msgstr "Zeslabit úroveň vstupu zvuku 1"
 
-#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:45
+#: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:45
 #: plugins/bsebalance.idl:50
 msgid "Input 2 [%]"
 msgstr "Vstup 2 [%]"
 
-#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:45
+#: bse/bseamplifier.idl:54 plugins/bsebalance.idl:45
 msgid "Attenuate the level of audio input 2"
 msgstr "Zeslabit úroveň vstupu zvuku 2"
 
-#: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:46
+#: bse/bseamplifier.idl:55 bse/bseamplifier.idl:60 plugins/bsebalance.idl:46
 #: plugins/bsebalance.idl:51
 msgid "Balance"
 msgstr "Vyrovnání"
 
-#: bse/bseamplifier.idl:54 plugins/bsebalance.idl:46
+#: bse/bseamplifier.idl:55 plugins/bsebalance.idl:46
 msgid "Balance audio input levels"
 msgstr "Vyrovnání úrovní vstupu zvuku"
 
-#: bse/bseamplifier.idl:56 plugins/bsebalance.idl:48
+#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:48
 msgid "Control Input"
 msgstr "Řídicí vstup"
 
-#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:49
+#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:49
 msgid "Attenuate the level of control input 1"
 msgstr "Zeslabit úroveň řídicího vstupu 1"
 
-#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:50
+#: bse/bseamplifier.idl:59 plugins/bsebalance.idl:50
 msgid "Attenuate the level of control input 2"
 msgstr "Zeslabit úroveň řídicího vstupu 2"
 
-#: bse/bseamplifier.idl:59 plugins/bsebalance.idl:51
+#: bse/bseamplifier.idl:60 plugins/bsebalance.idl:51
 msgid "Balance control input levels"
 msgstr "Vyrovnat úrovně řídicích vstupů"
 
-#: bse/bseamplifier.idl:60
+#: bse/bseamplifier.idl:61
 msgid "Multiply Controls"
 msgstr "Násobit řízení"
 
-#: bse/bseamplifier.idl:61
+#: bse/bseamplifier.idl:62
 msgid ""
 "Switch the two control inputs to work like a chain of gain controls, rather "
 "than mixing them together, weighted by balance."
-msgstr "Přepnout řídicí vstupu, aby fungovaly jako řetěz ovládání zisku místo jejich smíchání važeného podle vyrovnání."
+msgstr "Přepnout řídicí vstupu, aby fungovaly jako řetěz ovládání zisku místo jejich smíchání váženého podle vyrovnání."
 
-#: bse/bseamplifier.idl:64
+#: bse/bseamplifier.idl:65
 msgid "Exponential Control"
 msgstr "Exponenciální řízení"
 
-#: bse/bseamplifier.idl:64
+#: bse/bseamplifier.idl:65
 msgid "Toggle exponential and linear control response"
 msgstr "Přepnout exponenciální a lineární odezvu na řízení"
 
-#: bse/bseamplifier.idl:67 plugins/bsebalance.idl:54
+#: bse/bseamplifier.idl:68 plugins/bsebalance.idl:54
 msgid "Control Strength"
 msgstr "Síla řízení"
 
-#: bse/bseamplifier.idl:67
+#: bse/bseamplifier.idl:68
 msgid "Adjust how much the control signals affect the output volume"
 msgstr "Upravit, jak moc řídicí signály ovlivňují výstupní hlasitost"
 
-#: bse/bseamplifier.idl:68
+#: bse/bseamplifier.idl:69
 msgid "Base Volume"
 msgstr "Základní hlasitost"
 
-#: bse/bseamplifier.idl:68
+#: bse/bseamplifier.idl:69
 msgid "Base amplification (the control signal adds up to this)"
 msgstr "Základní zesílení (k tomuto přidává řídicí signál)"
 
-#: bse/bseamplifier.idl:69
+#: bse/bseamplifier.idl:70
 msgid "Master Volume"
 msgstr "Hlavní hlasitost"
 
-#: bse/bseamplifier.idl:69
+#: bse/bseamplifier.idl:70
 msgid "Output stage amplification"
 msgstr "Zesílení ve výstupní fázi"
 
-#: bse/bseautodoc.c:379 bse/bseautodoc.c:381
+#: bse/bseautodoc.c:397 bse/bseautodoc.c:399
 msgid "BSE-Objects"
 msgstr "BSE-Objekty"
 
-#: bse/bseautodoc.c:381
+#: bse/bseautodoc.c:399
 msgid " Object Reference"
 msgstr " Odkaz na objekt"
 
-#: bse/bseautodoc.c:393
+#: bse/bseautodoc.c:411
 msgid "Authors:"
 msgstr "Autoři:"
 
-#: bse/bseautodoc.c:396
+#: bse/bseautodoc.c:414
 msgid "License:"
 msgstr "Licence:"
 
-#: bse/bseautodoc.c:400
+#: bse/bseautodoc.c:418
 msgid "Properties:"
 msgstr "Vlastnosti:"
 
-#: bse/bseautodoc.c:426 bse/bseautodoc.c:459 bse/bseautodoc.c:476
-msgid "Name:"
-msgstr "Název:"
+#: bse/bseautodoc.c:444 bse/bseautodoc.c:477 bse/bseautodoc.c:494
+msgid "Identifier:"
+msgstr "Identifikátor:"
 
-#: bse/bseautodoc.c:431 bse/bseautodoc.c:437
+#: bse/bseautodoc.c:449 bse/bseautodoc.c:455
 msgid "Range:"
 msgstr "Rozsah:"
 
-#: bse/bseautodoc.c:441 bse/bseautodoc.c:462 bse/bseautodoc.c:479
+#: bse/bseautodoc.c:459 bse/bseautodoc.c:480 bse/bseautodoc.c:497
 msgid "Description:"
 msgstr "Popis:"
 
-#: bse/bseautodoc.c:451
+#: bse/bseautodoc.c:469
 msgid "Input Channels:"
 msgstr "Vstupní kanály:"
 
-#: bse/bseautodoc.c:458
+#: bse/bseautodoc.c:476
 msgid "(Joint Input)"
 msgstr "(Společný vstup)"
 
-#: bse/bseautodoc.c:469
+#: bse/bseautodoc.c:487
 msgid "Output Channels:"
 msgstr "Výstupní kanály:"
 
@@ -1856,7 +1856,9 @@ msgstr "Filtrovaný signál zvuku"
 msgid ""
 "StandardOsc is the BSE basis oscillator which supports various types of wave "
 "forms and modulation inputs."
-msgstr "StandardOsc je základní oscilátor BSE, který podporuje různé typy tvarů vln a vstupů modulace."
+msgstr ""
+"StandardOsc je základní oscilátor BSE, který podporuje různé typy tvarů vln "
+"a vstupů modulace."
 
 #: bse/bsestandardosc.c:114
 msgid "/Modules/Audio Sources/Standard Oscillator"
@@ -1923,7 +1925,9 @@ msgstr "Šířka pulzu"
 msgid ""
 "Proportion of the positive component duration of the pulse wave form (Pulse "
 "has to be selected as wave form for this to take effect)"
-msgstr "Část trvání kladné komponenty pulzové vlny (aby toto mělo vliv, musí být jako tvar vlny vybrán Pulz)"
+msgstr ""
+"Část trvání kladné komponenty pulzové vlny (aby toto mělo vliv, musí být "
+"jako tvar vlny vybrán Pulz)"
 
 #: bse/bsestandardosc.c:193
 msgid "Pulse Modulation [%]"
@@ -1933,7 +1937,9 @@ msgstr "Modulace pulzu [%]"
 msgid ""
 "Strength of pulse wisth modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
-msgstr "Síla vstupu modulace šířky pulzu (aby toto mělo vliv, musí být jako tvar vlny vybrán Pulz)"
+msgstr ""
+"Síla vstupu modulace šířky pulzu (aby toto mělo vliv, musí být jako tvar "
+"vlny vybrán Pulz)"
 
 #: bse/bsestandardosc.c:199
 msgid "Oscillating Frequency Input"
@@ -2003,106 +2009,106 @@ msgstr "Soubor zvuku BSE s více částmi"
 msgid "BSE Synthesis File"
 msgstr "Soubor syntézy BSE"
 
-#: plugins/artscompressor.idl:28 plugins/artscompressor.idl:45
+#: plugins/artscompressor.idl:29 plugins/artscompressor.idl:46
 #: plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
 msgstr "GNU General Public License"
 
-#: plugins/artscompressor.idl:29
+#: plugins/artscompressor.idl:30
 msgid "/Enhance/ArtsCompressor"
 msgstr "/Vylepšit/ArtsCompressor"
 
-#: plugins/artscompressor.idl:30
+#: plugins/artscompressor.idl:31
 msgid "ArtsCompressor compresses the sound."
 msgstr "ArtsCompressor komprimuje zvuk."
 
-#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
+#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio In"
 msgstr "Zvuk In"
 
-#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
+#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr "Vstup zvuku"
 
-#: plugins/artscompressor.idl:32
+#: plugins/artscompressor.idl:33
 msgid "Compressed audio output"
 msgstr "Výstup komprimovaného zvuku"
 
-#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Attack [ms]"
 msgstr "Nástup [ms]"
 
-#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Set the attack time in milli seconds"
 msgstr "Nastavit čas nástupu v milisekundách"
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Release [ms]"
 msgstr "Uvolnění [ms]"
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Set the release time in milli seconds"
 msgstr "Nastavit čas uvolnění v milisekundách"
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Threshold"
 msgstr "Práh"
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Set the threshold"
 msgstr "Nastavit práh"
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Ratio"
 msgstr "Poměr"
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Set the compression ratio"
 msgstr "Nastavit poměr komprese"
 
-#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
+#: plugins/artscompressor.idl:39 plugins/artscompressor.idl:58
 msgid "Set the output amplification"
 msgstr "Nastavit zesílení výstupu"
 
-#: plugins/artscompressor.idl:46
+#: plugins/artscompressor.idl:47
 msgid "/Enhance/ArtsStereoCompressor"
 msgstr "/Vylepšit/ArtsStereoCompressor"
 
-#: plugins/artscompressor.idl:47
+#: plugins/artscompressor.idl:48
 msgid "ArtsStereoCompressor compresses the sound."
 msgstr "ArtsStereoCompressor komprimuje zvuk."
 
-#: plugins/artscompressor.idl:48
+#: plugins/artscompressor.idl:49
 msgid "Left Audio In"
 msgstr "Levý zvuk In"
 
-#: plugins/artscompressor.idl:48
+#: plugins/artscompressor.idl:49
 msgid "Left audio input"
 msgstr "Vstup levého zvuku"
 
-#: plugins/artscompressor.idl:49
+#: plugins/artscompressor.idl:50
 msgid "Right Audio In"
 msgstr "Pravý zvuk In"
 
-#: plugins/artscompressor.idl:49
+#: plugins/artscompressor.idl:50
 msgid "Right audio input"
 msgstr "Vstup pravého zvuku"
 
-#: plugins/artscompressor.idl:50
+#: plugins/artscompressor.idl:51
 msgid "Left Audio Out"
 msgstr "Levý zvuk Out"
 
-#: plugins/artscompressor.idl:50
+#: plugins/artscompressor.idl:51
 msgid "Compressed left audio output"
 msgstr "Výstup komprimovaného levého zvuku"
 
-#: plugins/artscompressor.idl:51
+#: plugins/artscompressor.idl:52
 msgid "Right Audio Out"
 msgstr "Pravý zvuk Out"
 
-#: plugins/artscompressor.idl:51
+#: plugins/artscompressor.idl:52
 msgid "Compressed right audio output"
 msgstr "Výstup komprimovaného pravého zvuku"
 
@@ -2117,12 +2123,7 @@ msgid ""
 "is controlled by a balance adjustment and the sum of the control inputs. To "
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
-msgstr ""
-"BseBalance je modul pro posun sterea se dvěma zvukovými a dvěma řídicími "
-"vstupy. Úroveň každého z nich může být odděleně upravena. Výsledné vyrovnání "
-"výstupu je ovládáno úpravou vyrovnání a součtem řídicích vstupů. Pro "
-"eliminaci artefaktů při rychlých změnách vyrování je řídicí signál "
-"předzpracován jednoduchou dolní propustí s upravitelnou limitní frekvencí."
+msgstr "BseBalance je modul pro posun sterea se dvěma zvukovými a dvěma řídicími vstupy. Úroveň každého z nich může být odděleně upravena. Výsledné vyrovnání výstupu je ovládáno úpravou vyrovnání a součtem řídicích vstupů. Pro eliminaci artefaktů při rychlých změnách vyrovnání je řídicí signál předzpracován jednoduchou dolní propustí s upravitelnou limitní frekvencí."
 
 #: plugins/bsebalance.idl:40
 msgid "Left Out"
@@ -2206,7 +2207,7 @@ msgstr ""
 
 #: plugins/bseiirfilter.c:139 plugins/bseiirfilter.c:144
 msgid "Cutoff Frequency (All Filters)"
-msgstr "Limitní frekfence (všechny filtry)"
+msgstr "Limitní frekvence (všechny filtry)"
 
 #: plugins/bseiirfilter.c:149 plugins/bseiirfilter.c:154
 msgid "Cutoff Frequency 2 (Band Pass/Stop)"
@@ -2220,11 +2221,11 @@ msgstr "Nefiltrovaný vstup"
 msgid "Filtered Output"
 msgstr "Filtrovaný výstup"
 
-#: plugins/davbassfilter.idl:28
+#: plugins/davbassfilter.idl:29
 msgid "/Filters/Bass Filter"
 msgstr "/Filtry/Filtr basů"
 
-#: plugins/davbassfilter.idl:29
+#: plugins/davbassfilter.idl:30
 msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
@@ -2235,63 +2236,63 @@ msgstr ""
 "algoritmu popsaném v \"Musical Applications of Microprocessors\" od Hala "
 "Chamberlina."
 
-#: plugins/davbassfilter.idl:34
+#: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
 msgstr "Výstup filtrovaného zvuku"
 
-#: plugins/davbassfilter.idl:36
+#: plugins/davbassfilter.idl:37
 msgid "Cutoff [%]"
 msgstr "Odříznutí [%]"
 
-#: plugins/davbassfilter.idl:36
+#: plugins/davbassfilter.idl:37
 msgid "Set the cutoff frequency percentage"
 msgstr "Nastavit procenta odříznutí frekvence"
 
-#: plugins/davbassfilter.idl:37
+#: plugins/davbassfilter.idl:38
 msgid "Resonance [%]"
 msgstr "Rezonance [%]"
 
-#: plugins/davbassfilter.idl:37
+#: plugins/davbassfilter.idl:38
 msgid "Set the amount of resonance in percent"
 msgstr "Nastavit úroveň rezonance v procentech"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:39
 msgid "Envelope Modulation [%]"
 msgstr "Modulace obálky [%]"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:39
 msgid "Set the envelope magnitude in percent"
 msgstr "Nastavit úroveň obálky v procentech"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:40
 msgid "Decay [%]"
 msgstr "Útlum [%]"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:40
 msgid "Set the decay length in percent"
 msgstr "Nastavit délku útlumu v procentech"
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:41
 msgid "Trigger filter"
 msgstr "Spustit filtr"
 
-#: plugins/davchorus.idl:28
+#: plugins/davchorus.idl:29
 msgid "/Enhance/Chorus"
 msgstr "/Vylepšit/Sbor"
 
-#: plugins/davchorus.idl:29
+#: plugins/davchorus.idl:30
 msgid "DavChorus adds more depth to sounds"
 msgstr "DavChorus přidává zvukům více hloubky"
 
-#: plugins/davchorus.idl:31
+#: plugins/davchorus.idl:32
 msgid "Chorus audio output"
 msgstr "Výstup zvuku sboru"
 
-#: plugins/davchorus.idl:33
+#: plugins/davchorus.idl:34
 msgid "Wet out [%]"
 msgstr ""
 
-#: plugins/davchorus.idl:33
+#: plugins/davchorus.idl:34
 msgid "Set the amount of modified data to mix"
 msgstr "Nastavit množství upravených dat, která mixovat"
 
@@ -2330,3 +2331,6 @@ msgstr "Stav"
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
 msgstr "Stav používaný pro výstup zpráv o chybách"
+
+#~ msgid "Name:"
+#~ msgstr "Název:"
