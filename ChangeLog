@@ -1,3 +1,7 @@
+Fri Feb 14 07:50:29 2003  Tim Janik  <timj@gtk.org>
+
+	* test/test-song.bse: adoptions.
+
 Thu Feb 13 10:53:59 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: added libz check. require libz for BSE.

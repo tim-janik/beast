@@ -1,10 +1,10 @@
 ;BseProjectV1
 
 
-(bse-project-restore "BseWaveRepo::Wave-Repository"
+(container-child "BseWaveRepo::Wave-Repository"
   (modification-time "2002-09-02 05:18:40")
   (creation-time "2002-07-29 10:00:03")
-  (bse-container-restore "BseWave::drums.gslwave"
+  (container-child "BseWave::drums.gslwave"
     (wave-chunk 195.998 44100
       (wave-handle (BseStorageBinaryV0 0 L:2 42156 21078)))
     (wave-chunk 184.997 44100
@@ -21,21 +21,21 @@
       (wave-handle (BseStorageBinaryV0 203940 L:2 58312 29156)))
     (wave-chunk 130.813 44100
       (wave-handle (BseStorageBinaryV0 262252 L:2 65432 32716)))))
-(bse-project-restore "BseSong::Unnamed"
+(container-child "BseSong::Unnamed"
   (volume-f 1.0034644603729248)
   (modification-time "2002-09-02 05:18:40")
   (creation-time "2002-07-29 10:01:45")
-  (bse-container-restore "BseTrack::Track-01"
+  (container-child "BseTrack::Track-01"
     (n-voices 16)
     (snet (bse-upath-resolve 2 "SimpleTri"))
     (part (bse-upath-resolve 1 "BsePart-1"))
     (blurb "Melodie"))
-  (bse-container-restore "BseTrack::Track-02"
+  (container-child "BseTrack::Track-02"
     (n-voices 16)
     (snet (bse-upath-resolve 2 "DrumWave"))
     (part (bse-upath-resolve 1 "BsePart-2"))
     (blurb "Drums"))
-  (bse-container-restore "BsePart::BsePart-1"
+  (container-child "BsePart::BsePart-1"
     (blurb "Stefan Westerfeld")
     (insert-note 1536 96 33)
     (insert-note 1536 192 57)
@@ -281,7 +281,7 @@
     (insert-note 20736 192 64)
     (insert-note 20928 192 60)
     (insert-note 21120 383 57))
-  (bse-container-restore "BsePart::BsePart-2"
+  (container-child "BsePart::BsePart-2"
     (blurb "Drum Test")
     (insert-note 960 384 48)
     (insert-note 1152 384 49)
@@ -413,28 +413,28 @@
     (insert-note 20736 384 55)
     (insert-note 20928 384 56)
     (insert-note 21120 384 57)))
-(bse-project-restore "BseSNet::SimpleTri"
+(container-child "BseSNet::SimpleTri"
   (modification-time "2002-09-02 05:18:40")
   (creation-time "2002-07-29 10:02:57")
-  (bse-container-restore "BseSubInstrument::BseSubInstrument-1"
+  (container-child "BseSubInstrument::BseSubInstrument-1"
     (source-input "left-audio" (bse-upath-resolve 1 "BseAmplifier-1") "audio-out")
     (source-input "right-audio" (bse-upath-resolve 1 "BseAmplifier-1") "audio-out")
     (source-input "synth-done" (bse-upath-resolve 1 "BseSimpleADSR-1") "done-out")
     (parasite #\f "BstRouterCoords" 2 -82.000000 129.000000))
-  (bse-container-restore "BseSubKeyboard::BseSubKeyboard-1"
+  (container-child "BseSubKeyboard::BseSubKeyboard-1"
     (parasite #\f "BstRouterCoords" 2 430.000000 183.000000))
-  (bse-container-restore "BseStandardOsc::BseStandardOsc-1"
+  (container-child "BseStandardOsc::BseStandardOsc-1"
     (source-input "freq-in" (bse-upath-resolve 1 "BseSubKeyboard-1") "frequency")
     (source-input "sync-in" (bse-upath-resolve 1 "BseSubKeyboard-1") "gate")
     (parasite #\f "BstRouterCoords" 2 214.000000 229.000000))
-  (bse-container-restore "BseSimpleADSR::BseSimpleADSR-1"
+  (container-child "BseSimpleADSR::BseSimpleADSR-1"
     (release-time 52.999996185302734)
     (sustain-level 40.099990844726562)
     (decay-time 27.100000381469727)
     (attack-time 0.10000000149011612)
     (source-input "gate-in" (bse-upath-resolve 1 "BseSubKeyboard-1") "gate")
     (parasite #\f "BstRouterCoords" 2 278.000000 69.000000))
-  (bse-container-restore "BseStandardOsc::BseStandardOsc-2"
+  (container-child "BseStandardOsc::BseStandardOsc-2"
     (pulse-width 22.857139587402344)
     (exponential-fm #t)
     (fine-tune 12)
@@ -443,10 +443,10 @@
     (source-input "freq-mod-in" (bse-upath-resolve 1 "BseConstant-1") "const-out1")
     (source-input "sync-in" (bse-upath-resolve 1 "BseSubKeyboard-1") "gate")
     (parasite #\f "BstRouterCoords" 2 231.000000 363.000000))
-  (bse-container-restore "BseConstant::BseConstant-1"
+  (container-child "BseConstant::BseConstant-1"
     (value-2 0.20000000298023224)
     (parasite #\f "BstRouterCoords" 2 428.000000 376.000000))
-  (bse-container-restore "BseAmplifier::BseAmplifier-1"
+  (container-child "BseAmplifier::BseAmplifier-1"
     (master-gain-f 0.453125)
     (audio-gain-f 0)
     (ctrl-exp #f)
@@ -455,32 +455,32 @@
     (source-input "audio-in2" (bse-upath-resolve 1 "BseStandardOsc-2") "audio-out")
     (source-input "ctrl-in2" (bse-upath-resolve 1 "BseSimpleADSR-1") "ctrl-out")
     (parasite #\f "BstRouterCoords" 2 68.000000 263.500000)))
-(bse-project-restore "BseSNet::DrumWave"
+(container-child "BseSNet::DrumWave"
   (modification-time "2002-09-02 05:18:40")
   (creation-time "2002-08-22 03:42:03")
-  (bse-container-restore "BseSubInstrument::BseSubInstrument-1"
+  (container-child "BseSubInstrument::BseSubInstrument-1"
     (source-input "left-audio" (bse-upath-resolve 1 "BseMult-1") "audio-out")
     (source-input "right-audio" (bse-upath-resolve 1 "BseMult-1") "audio-out")
     (source-input "synth-done" (bse-upath-resolve 1 "BseSimpleADSR-1") "done-out")
     (parasite #\f "BstRouterCoords" 2 -231.000000 45.000000))
-  (bse-container-restore "BseSubKeyboard::BseSubKeyboard-1"
+  (container-child "BseSubKeyboard::BseSubKeyboard-1"
     (parasite #\f "BstRouterCoords" 2 286.000000 77.000000))
-  (bse-container-restore "BseWaveOsc::BseWaveOsc-1"
+  (container-child "BseWaveOsc::BseWaveOsc-1"
     (wave (bse-upath-resolve 2 "Wave-Repository:drums.gslwave"))
     (source-input "freq-in" (bse-upath-resolve 1 "BseSubKeyboard-1") "frequency")
     (parasite #\f "BstRouterCoords" 2 123.000000 110.000000))
-  (bse-container-restore "BseMult::BseMult-1"
+  (container-child "BseMult::BseMult-1"
     (source-input "audio-in1" (bse-upath-resolve 1 "BseWaveOsc-1") "audio-out")
     (source-input "audio-in2" (bse-upath-resolve 1 "BseConstant-1") "const-out1")
     (source-input "audio-in3" (bse-upath-resolve 1 "BseSubKeyboard-1") "velocity")
     (source-input "audio-in4" (bse-upath-resolve 1 "BseSimpleADSR-1") "ctrl-out")
     (parasite #\f "BstRouterCoords" 2 -52.000000 107.000000))
-  (bse-container-restore "BseSimpleADSR::BseSimpleADSR-1"
+  (container-child "BseSimpleADSR::BseSimpleADSR-1"
     (decay-time 26)
     (attack-time 0.10000000149011612)
     (source-input "gate-in" (bse-upath-resolve 1 "BseSubKeyboard-1") "gate")
     (parasite #\f "BstRouterCoords" 2 71.000000 -31.000000))
-  (bse-container-restore "BseConstant::BseConstant-1"
+  (container-child "BseConstant::BseConstant-1"
     (value-1 0.50742000341415405)
     (parasite #\f "BstRouterCoords" 2 127.000000 245.500000)))
 

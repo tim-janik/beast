@@ -1,5 +1,13 @@
 FIXMES:
-- fix part references in tracks
+- part bound for loops?
+- alow snet flagging as aggregate
+- add project_get_wave_snet
+- add developer option
+- show aggregates with BST_DEVEL
+- document -: f-fatal +p-plugins +s-scripts d-develext g-gdb
+- allow .bse files to start out with #bseshell ?
+- implement object uname changes parser lookup table
+- nuke g_datalist usages
 - update /Help index to cover new docs
 - insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
 - export item seqid as readonly property (doesn't need its own notification signal then)
