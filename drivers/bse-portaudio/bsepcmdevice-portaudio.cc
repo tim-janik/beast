@@ -317,7 +317,7 @@ port_audio_device_latency (BsePcmHandle *handle)
 
   /* return total latency in frames */
   /* -> this is probably an estimate, as I don't think the PortAudio API exports a precise value at any place */
-  return max (Pa_GetStreamInfo (portaudio->stream)->inputLatency, Pa_GetStreamInfo (portaudio->stream)->outputLatency) * handle->mix_freq;
+  return guint (max (Pa_GetStreamInfo (portaudio->stream)->inputLatency, Pa_GetStreamInfo (portaudio->stream)->outputLatency) * handle->mix_freq);
 }
 
 static gsize
