@@ -980,6 +980,31 @@ bst_text_view_cursor_to_end (GtkTextView *tview)
   gtk_text_view_scroll_to_mark (tview, gtk_text_buffer_get_insert (tbuffer), 0.0, TRUE, 0.0, 0.0);
 }
 
+static gboolean
+scroll_text_key_event (GtkWidget   *sctext,
+		       GdkEventKey *event)
+{
+  if (event->type == GDK_KEY_PRESS)
+    switch (event->keyval)
+      {
+      case GDK_Left: case GDK_KP_Left:
+	if (event->state & GDK_MOD1_MASK)
+	  {
+	    navigate_back (sctext);
+	    return TRUE;
+	  }
+      break;
+    case GDK_Right: case GDK_KP_Right:
+	if (event->state & GDK_MOD1_MASK)
+	  {
+	    navigate_forward (sctext);
+	    return TRUE;
+	  }
+      break;
+    }
+  return FALSE;
+}
+
 static void
 scroll_text_patchup_size_request (GtkWidget      *scwin,
 				  GtkRequisition *requisition,
@@ -1059,6 +1084,7 @@ bst_scroll_text_create (BstTextViewFlags flags,
 				 NULL);
       g_object_connect (g_object_ref (tnav->refe),
 			"swapped_signal::activate", navigate_goto, sctext,
+			"swapped_signal::key_press_event", scroll_text_key_event, sctext,
 			NULL);
       bst_toolbar_append (tbar, BST_TOOLBAR_FILL_WIDGET, "Location", NULL, tnav->refe);
       gtk_widget_show (GTK_WIDGET (tbar));
@@ -1069,6 +1095,7 @@ bst_scroll_text_create (BstTextViewFlags flags,
   if (TRUE)
     {
       g_object_set (widget, "editable", FALSE, NULL);
+      g_signal_connect_swapped (widget, "key_press_event", G_CALLBACK (scroll_text_key_event), sctext);
       bst_text_view_enter_browse_mode (GTK_TEXT_VIEW (widget));
     }
   if (flags & BST_TEXT_VIEW_NO_WRAP)

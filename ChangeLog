@@ -1,3 +1,8 @@
+Wed Sep  4 01:29:06 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bsttexttools.c (bst_scroll_text_create): add support for
+	Alt+Left as back and Alt+Right as forward (keybindings from netscape).
+
 Wed Sep  4 00:21:01 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.c: make documentation text views navigatable, rewind
