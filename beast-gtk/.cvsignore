@@ -17,6 +17,8 @@ bstrtest
 tsmview
 scankeys
 stamp-bstenum_arrays.c
-stamp-ckeycheck
+stamp-bstgenbseapi.h
+bstgenbseapi.c
+bstgenbseapi.h
 beast-0.*.*
 testgui
