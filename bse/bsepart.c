@@ -543,8 +543,6 @@ bse_part_select_controls (BsePart          *self,
                           BseMidiSignalType ctype,
                           gboolean          selected)
 {
-  BsePartTickNode *node, *last;
-
   g_return_if_fail (BSE_IS_PART (self));
   selected = selected != FALSE;
 
@@ -554,10 +552,10 @@ bse_part_select_controls (BsePart          *self,
       return;
     }
 
-  node = bse_part_controls_lookup_ge (&self->controls, tick);
+  BsePartTickNode *node = bse_part_controls_lookup_ge (&self->controls, tick);
   if (!node)
     return;
-  last = bse_part_controls_lookup_lt (&self->controls, tick + duration);
+  BsePartTickNode *last = bse_part_controls_lookup_lt (&self->controls, tick + duration);
   while (node <= last)
     {
       BsePartEventControl *cev;

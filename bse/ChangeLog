@@ -1,3 +1,7 @@
+Fri Jan 21 00:48:43 2005  Tim Janik  <timj@gtk.org>
+
+	* bsepart.proc: added bse-part-select-controls().
+
 Thu Jan 20 17:52:14 2005  Tim Janik  <timj@gtk.org>
 
 	* bsestorage.c: removed position arguemnt 
