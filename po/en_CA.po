@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-07 08:52-0400\n"
-"PO-Revision-Date: 2004-09-07 19:50-0400\n"
+"POT-Creation-Date: 2004-09-08 12:19-0400\n"
+"PO-Revision-Date: 2004-09-08 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -332,6 +332,14 @@ msgstr "Delete"
 #: beast-gtk/bstwaveview.c:47
 msgid "Editor"
 msgstr "Editor"
+
+#: beast-gtk/bstbusmixer.c:35
+msgid "Add a new bus to the mixer"
+msgstr "Add a new bus to the mixer"
+
+#: beast-gtk/bstbusmixer.c:36
+msgid "Delete the currently selected bus"
+msgstr "Delete the currently selected bus"
 
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
@@ -2158,7 +2166,8 @@ msgstr "Select output module"
 msgid "Select input module"
 msgstr "Select input module"
 
-#: beast-gtk/bstsnetrouter.c:704
+#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsupershell.c:266 beast-gtk/bstsupershell.c:280
 msgid "Properties"
 msgstr "Properties"
 
@@ -2258,72 +2267,72 @@ msgstr "Mark Signal (Head)"
 msgid "Mark Signal (Tail)"
 msgstr "Mark Signal (Tail)"
 
-#: beast-gtk/bstsupershell.c:161 beast-gtk/bstsupershell.c:195
-#: beast-gtk/bstsupershell.c:322
+#: beast-gtk/bstsupershell.c:159 beast-gtk/bstsupershell.c:277
 msgid "Waves"
 msgstr "Waves"
 
-#: beast-gtk/bstsupershell.c:162
+#: beast-gtk/bstsupershell.c:160
 msgid "Wave Repository"
 msgstr "Wave Repository"
 
-#: beast-gtk/bstsupershell.c:167
+#: beast-gtk/bstsupershell.c:165
 #, c-format
 msgid "Song: %s"
 msgstr "Song: %s"
 
-#: beast-gtk/bstsupershell.c:172
+#: beast-gtk/bstsupershell.c:170
 #, c-format
 msgid "MIDI Synthesizer: %s"
 msgstr "MIDI Synthesizer: %s"
 
-#: beast-gtk/bstsupershell.c:177
+#: beast-gtk/bstsupershell.c:175
 #, c-format
 msgid "Synthesizer: %s"
 msgstr "Synthesizer: %s"
 
-#: beast-gtk/bstsupershell.c:268
+#: beast-gtk/bstsupershell.c:228
 msgid "Tracks"
 msgstr "Tracks"
 
-#: beast-gtk/bstsupershell.c:268
+#: beast-gtk/bstsupershell.c:228
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Tracks contain instrument definitions and parts with notes"
 
-#: beast-gtk/bstsupershell.c:271
+#: beast-gtk/bstsupershell.c:231
 msgid "Mixer"
 msgstr "Mixer"
 
-#: beast-gtk/bstsupershell.c:271
+#: beast-gtk/bstsupershell.c:231
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr "Mix track outputs, adjust volume and add effects"
 
-#: beast-gtk/bstsupershell.c:274 beast-gtk/bstsupershell.c:309
-#: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
-#: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
-#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
-msgid "Parameters"
-msgstr "Parameters"
+#: beast-gtk/bstsupershell.c:234
+msgid "Adjust overall song behaviour"
+msgstr "Adjust overall song behaviour"
 
-#: beast-gtk/bstsupershell.c:274
-msgid "Adjust general song parameters"
-msgstr "Adjust general song parameters"
-
-#: beast-gtk/bstsupershell.c:277
+#: beast-gtk/bstsupershell.c:237
 msgid "Parts"
 msgstr "Parts"
 
-#: beast-gtk/bstsupershell.c:281
+#: beast-gtk/bstsupershell.c:241
 msgid "Busses"
 msgstr "Busses"
 
-#: beast-gtk/bstsupershell.c:285 beast-gtk/bstsupershell.c:303
+#: beast-gtk/bstsupershell.c:245 beast-gtk/bstsupershell.c:262
 msgid "Routing"
 msgstr "Routing"
 
-#: beast-gtk/bstsupershell.c:298
+#: beast-gtk/bstsupershell.c:258
 msgid "Rack"
 msgstr "Rack"
+
+#: beast-gtk/bstsupershell.c:262
+msgid "Add, edit and connect synthsizer mesh components"
+msgstr "Add, edit and connect synthsizer mesh components"
+
+#: beast-gtk/bstsupershell.c:266
+msgid "Adjust overall synthesizer behaviour"
+msgstr "Adjust overall synthesizer behaviour"
 
 #: beast-gtk/bsttrackrollctrl.c:45
 msgid "Insert/edit/move parts (mouse button 1 and 2)"
@@ -3479,11 +3488,103 @@ msgstr "Child System Time"
 msgid "The CPU time spent in the system for children of this thread"
 msgstr "The CPU time spent in the system for children of this thread"
 
-#: bse/bsecore.idl:465
+#: bse/bsecore.idl:439
+msgid "Search Paths"
+msgstr "Search Paths"
+
+#: bse/bsecore.idl:440
+msgid "Sample Path"
+msgstr "Sample Path"
+
+#: bse/bsecore.idl:441
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find audio samples."
+msgstr ""
+"Search path of directories, separated by \"%s\", used to find audio samples."
+
+#: bse/bsecore.idl:444
+msgid "Effect Path"
+msgstr "Effect Path"
+
+#: bse/bsecore.idl:445
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE effect "
+"files."
+msgstr ""
+"Search path of directories, separated by \"%s\", used to find BSE effect "
+"files."
+
+#: bse/bsecore.idl:448
+msgid "Instrument Path"
+msgstr "Instrument Path"
+
+#: bse/bsecore.idl:449
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE instrument "
+"files."
+msgstr ""
+"Search path of directories, separated by \"%s\", used to find BSE instrument "
+"files."
+
+#: bse/bsecore.idl:452
+msgid "Script Path"
+msgstr "Script Path"
+
+#: bse/bsecore.idl:453
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE scheme "
+"scripts."
+msgstr ""
+"Search path of directories, separated by \"%s\", used to find BSE scheme "
+"scripts."
+
+#: bse/bsecore.idl:456
+msgid "Plugin Path"
+msgstr "Plugin Path"
+
+#: bse/bsecore.idl:457
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find BSE plugins. "
+"This path is searched for in addition to the standard BSE plugin location on "
+"this system."
+msgstr ""
+"Search path of directories, separated by \"%s\", used to find BSE plugins. "
+"This path is searched in addition to the standard BSE plugin location on "
+"this system."
+
+#: bse/bsecore.idl:461
+msgid "LADSPA Path"
+msgstr "LADSPA Path"
+
+#: bse/bsecore.idl:462
+#, c-format
+msgid ""
+"Search path of directories, seperated by \"%s\", used to find LADSPA "
+"plugins. This path is searched for in addition to the standard LADSPA "
+"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
+"API, more informations about LADSPA plugins can be found at http://www."
+"ladspa.org/."
+msgstr ""
+"Search path of directories, separated by \"%s\", used to find LADSPA "
+"plugins. This path is searched in addition to the standard LADSPA "
+"location on this system. LADSPA is the Linux Audio Developer's Simple Plugin "
+"API. More informations about LADSPA plugins can be found at http://www."
+"ladspa.org/."
+
+#: bse/bsecore.idl:468
+msgid "Synthesis Settings"
+msgstr "Synthesis Settings"
+
+#: bse/bsecore.idl:469
 msgid "Latency [ms]"
 msgstr "Latency [ms]"
 
-#: bse/bsecore.idl:466
+#: bse/bsecore.idl:470
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
@@ -3491,25 +3592,59 @@ msgstr ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 
-#: bse/bsecore.idl:469
+#: bse/bsecore.idl:472
 msgid "Synth Mixing Frequency"
 msgstr "Synth Mixing Frequency"
 
-#: bse/bsecore.idl:470
+#: bse/bsecore.idl:473
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 
-#: bse/bsecore.idl:472
+#: bse/bsecore.idl:475
 msgid "Synth Control Frequency"
 msgstr "Synth Control Frequency"
 
-#: bse/bsecore.idl:473
+#: bse/bsecore.idl:476
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
 msgstr ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
+
+#: bse/bsecore.idl:480
+msgid "MIDI"
+msgstr "MIDI"
+
+#: bse/bsecore.idl:481
+msgid "Invert Sustain Pedal"
+msgstr "Invert Sustain Pedal"
+
+#: bse/bsecore.idl:482
+msgid ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+msgstr ""
+"Invert the state of sustain (damper) pedal so on/off meanings are reversed"
+
+#: bse/bsecore.idl:485
+msgid "Stepping Rates"
+msgstr "Stepping Rates"
+
+#: bse/bsecore.idl:486
+msgid "Volume [dB] Steps"
+msgstr "Volume [dB] Steps"
+
+#: bse/bsecore.idl:486
+msgid "Step width for volume in decibell"
+msgstr "Step width for volume in decibels"
+
+#: bse/bsecore.idl:488
+msgid "BPM Steps"
+msgstr "BPM Steps"
+
+#: bse/bsecore.idl:488
+msgid "Step width for beats per minute"
+msgstr "Step width for beats per minute"
 
 #. GSL
 #: bse/bseenums.c:99
@@ -4332,6 +4467,12 @@ msgstr "Audio input"
 #: plugins/artscompressor.idl:33
 msgid "Compressed audio output"
 msgstr "Compressed audio output"
+
+#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
+#: plugins/davbassfilter.idl:36 plugins/davchorus.idl:33
+#: plugins/evaluator/bseevaluator.idl:34
+msgid "Parameters"
+msgstr "Parameters"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Attack [ms]"
