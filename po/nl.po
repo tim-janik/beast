@@ -3,16 +3,16 @@
 # This file is distributed under the same license as the beast package.
 # Vincent van Adrighem <adrighem@gnome.org>, 2003.
 # Vincent van Adrighem <V.vanAdrighem@dirck.mine.nu>, 2003.
-# Tino Meinen <a.t.meinen@chello.nl>, 2003, 2004.
+# Tino Meinen <a.t.meinen@chello.nl>, 2003, 2004, 2005.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-18 00:28+0100\n"
-"PO-Revision-Date: 2004-12-05 18:42+0100\n"
+"POT-Creation-Date: 2005-01-09 10:37+0100\n"
+"PO-Revision-Date: 2005-01-09 16:18+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
-"Language-Team: Dutch <vertaling@nl.linux.org>\n"
+"Language-Team: Dutch <vertaling@vrijschrift.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -426,20 +426,20 @@ msgstr "Module-link:"
 msgid "Module link"
 msgstr "Module-link"
 
-#: beast-gtk/bstcanvassource.c:444
+#: beast-gtk/bstcanvassource.c:450
 msgid "Module Info"
 msgstr "Module Info"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1089
+#: beast-gtk/bstcanvassource.c:978 beast-gtk/bstsnetrouter.c:1089
 msgid "Input"
 msgstr "Invoer"
 
-#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1093
+#: beast-gtk/bstcanvassource.c:987 beast-gtk/bstsnetrouter.c:1093
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Uitvoer"
 
-#: beast-gtk/bstcanvassource.c:985
+#: beast-gtk/bstcanvassource.c:991
 msgid "(Hint)"
 msgstr "(Hint)"
 
@@ -480,7 +480,7 @@ msgstr "Verplaatsen controlegebeurtenis"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:480 beast-gtk/bsttrackrollctrl.c:500
-#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:134
+#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:169
 msgid "No target"
 msgstr "Geen doel"
 
@@ -577,29 +577,29 @@ msgstr ""
 
 #. error != BSE_ERROR_FILE_EXISTS
 #: beast-gtk/bstfiledialog.c:532 beast-gtk/bstfiledialog.c:546
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Failed to save to file\n"
 "`%s'\n"
 "due to:\n"
 "%s"
 msgstr ""
-"Kon `%s'\n"
-"niet verwijderen\n"
-"wegens:\n"
+"Kon niet in bestand \n"
+"`%s'\n"
+"opslaan wegens:\n"
 "%s"
 
 #: beast-gtk/bstfiledialog.c:537
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Failed to replace file\n"
 "`%s'\n"
 "due to:\n"
 "%s"
 msgstr ""
-"Kon `%s'\n"
-"niet verwijderen\n"
-"wegens:\n"
+"Kon bestand\n"
+"`%s'\n"
+"niet vervangen wegens:\n"
 "%s"
 
 #: beast-gtk/bstfiledialog.c:574
@@ -665,6 +665,12 @@ msgstr "Wave laden"
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Laden van wave `%s'"
+
+#: beast-gtk/bstfiledialog.c:741 beast-gtk/bstmain.c:279
+#: beast-gtk/bstmain.c:296
+#, c-format
+msgid "Failed to load wave file \"%s\": %s"
+msgstr "Laden van wave-bestand \"%s\" mislukt: %s"
 
 #: beast-gtk/bstgrowbar.c:91
 msgid "Shrink the scrollable area"
@@ -851,26 +857,26 @@ msgstr "Dialoogvensters"
 msgid "Loading..."
 msgstr "Bezig met laden..."
 
-#: beast-gtk/bstmain.c:291 beast-gtk/bstmain.c:293
+#: beast-gtk/bstmain.c:275 beast-gtk/bstmain.c:277
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Bezig met laden van \"%s\""
 
-#: beast-gtk/bstmain.c:310
-#, fuzzy, c-format
+#: beast-gtk/bstmain.c:315
+#, c-format
 msgid "Failed to load project \"%s\": %s"
-msgstr "Openen uitvoerbestand \"%s\" mislukt: %s"
+msgstr "Laden van project \"%s\" mislukt: %s"
 
-#: beast-gtk/bstmain.c:811
+#: beast-gtk/bstmain.c:816
 msgid "BEAST About"
 msgstr "BEAST Info"
 
-#: beast-gtk/bstmain.c:812
+#: beast-gtk/bstmain.c:817
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versie %s"
 
-#: beast-gtk/bstmain.c:813
+#: beast-gtk/bstmain.c:818
 msgid "Contributions made by:"
 msgstr "Met dank aan:"
 
@@ -1789,141 +1795,141 @@ msgstr "Omlaag verplaatsen"
 
 #: beast-gtk/bstrecords.idl:42
 msgid "2 Value FFT Window"
-msgstr ""
+msgstr "2-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:42
 msgid "A 2 value FFT window corresponds to a spectrum with 2 frequency peaks"
-msgstr ""
+msgstr "Een 2-waarde FFT-venster correspondeert met een spectrom met 2 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:43
 msgid "4 Value FFT Window"
-msgstr ""
+msgstr "4-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:43
 msgid "A 4 value FFT window corresponds to a spectrum with 3 frequency peaks"
-msgstr ""
+msgstr "Een 4-waarde FFT-venster correspondeert met een spectrom met 3 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:44
 msgid "8 Value FFT Window"
-msgstr ""
+msgstr "8-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:44
 msgid "A 8 value FFT window corresponds to a spectrum with 5 frequency peaks"
-msgstr ""
+msgstr "Een 8-waarde FFT-venster correspondeert met een spectrom met 5 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:45
 msgid "16 Value FFT Window"
-msgstr ""
+msgstr "16-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:45
 msgid "A 16 value FFT window corresponds to a spectrum with 9 frequency peaks"
-msgstr ""
+msgstr "Een 16-waarde FFT-venster correspondeert met een spectrom met 9 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:46
 msgid "32 Value FFT Window"
-msgstr ""
+msgstr "32-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:46
 msgid "A 32 value FFT window corresponds to a spectrum with 17 frequency peaks"
-msgstr ""
+msgstr "Een 32-waarde FFT-venster correspondeert met een spectrum met 17 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "64 Value FFT Window"
-msgstr ""
+msgstr "64-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:47
 msgid "A 64 value FFT window corresponds to a spectrum with 33 frequency peaks"
-msgstr ""
+msgstr "Een 64-waarde FFT-venster correspondeert met een spectrum met 33 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:48
 msgid "128 Value FFT Window"
-msgstr ""
+msgstr "128-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:48
 msgid ""
 "A 128 value FFT window corresponds to a spectrum with 65 frequency peaks"
-msgstr ""
+msgstr "Een 128-waarde FFT-venster correspondeert met een spectrum met 65 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:49
 msgid "256 Value FFT Window"
-msgstr ""
+msgstr "256-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:49
 msgid ""
 "A 256 value FFT window corresponds to a spectrum with 129 frequency peaks"
-msgstr ""
+msgstr "Een 256-waarde FFT-venster correspondeert met een spectrum met 129 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:50
 msgid "512 Value FFT Window"
-msgstr ""
+msgstr "512-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:50
 msgid ""
 "A 512 value FFT window corresponds to a spectrum with 257 frequency peaks"
-msgstr ""
+msgstr "Een 512-waarde FFT-venster correspondeert met een spectrum met 257 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:51
 msgid "1024 Value FFT Window"
-msgstr ""
+msgstr "1024-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:51
 msgid ""
 "A 1024 value FFT window corresponds to a spectrum with 513 frequency peaks"
-msgstr ""
+msgstr "Een 1024-waarde FFT-venster correspondeert met een spectrom met 513 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:52
 msgid "2048 Value FFT Window"
-msgstr ""
+msgstr "2048-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:52
 msgid ""
 "A 2048 value FFT window corresponds to a spectrum with 1025 frequency peaks"
-msgstr ""
+msgstr "Een 2048-waarde FFT-venster correspondeert met een spectrum met 1025 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:53
 msgid "4096 Value FFT Window"
-msgstr ""
+msgstr "4096-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:53
 msgid ""
 "A 4096 value FFT window corresponds to a spectrum with 2049 frequency peaks"
-msgstr ""
+msgstr "Een 4096-waarde FFT-venster correspondeert met een spectrum met 2049 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:54
 msgid "8192 Value FFT Window"
-msgstr ""
+msgstr "8192-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:54
 msgid ""
 "A 8192 value FFT window corresponds to a spectrum with 4097 frequency peaks"
-msgstr ""
+msgstr "Een 8192-waarde FFT-venster correspondeert met een spectrum met 4097 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:55
 msgid "16384 Value FFT Window"
-msgstr ""
+msgstr "16384-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:55
 msgid ""
 "A 16384 value FFT window corresponds to a spectrum with 8193 frequency peaks"
-msgstr ""
+msgstr "Een 16384-waarde FFT-venster correspondeert met een spectrum met 8193 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:56
 msgid "32768 Value FFT Window"
-msgstr ""
+msgstr "32768-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:56
 msgid ""
 "A 32768 value FFT window corresponds to a spectrum with 16385 frequency peaks"
-msgstr ""
+msgstr "Een 32768-waarde FFT-venster correspondeert met een spectrum met 16385 frequentiepieken"
 
 #: beast-gtk/bstrecords.idl:57
 msgid "65536 Value FFT Window"
-msgstr ""
+msgstr "65536-waarde FFT-venster"
 
 #: beast-gtk/bstrecords.idl:57
 msgid ""
 "A 65536 value FFT window corresponds to a spectrum with 32769 frequency peaks"
-msgstr ""
+msgstr "Een 65536-waarde FFT-venster correspondeert met een spectrum met 32769 frequentiepieken"
 
 #. special cased signals
 #: beast-gtk/bstrecords.idl:61 beast-gtk/bstrecords.idl:89 bse/bsecore.idl:244
@@ -2410,11 +2416,11 @@ msgstr "Kleur nulwaarde"
 msgid "Negative Value Color"
 msgstr "Kleur negatieve waarde"
 
-#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:199
 msgid "Zoom:"
 msgstr "Zoomen:"
 
-#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:210
 msgid "VScale:"
 msgstr "Vschaal:"
 
@@ -2426,35 +2432,35 @@ msgstr "Start:"
 msgid "End:"
 msgstr "Eind:"
 
-#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:216
 msgid "Shape Range"
 msgstr "Vorm bereik"
 
-#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:217
 msgid "Shape Average"
 msgstr "Vorm gemiddelde"
 
-#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:218
 msgid "Shape Minimum"
 msgstr "Vorm minimum"
 
-#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:219
 msgid "Shape Maximum"
 msgstr "Vorm maximum"
 
-#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:220
 msgid "Sketch Range"
 msgstr "Klad bereik"
 
-#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:221
 msgid "Sketch Average"
 msgstr "Klad gemiddelde"
 
-#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:222
 msgid "Sketch Minimum"
 msgstr "Klad minimum"
 
-#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:223
 msgid "Sketch Maximum"
 msgstr "Klad maximum"
 
@@ -2469,43 +2475,40 @@ msgstr "Voorbeeld"
 # schuifgrafiek
 #: beast-gtk/bstscrollgraph.c:567 beast-gtk/bstscrollgraph.c:570
 #: beast-gtk/bstscrollgraph.c:573 beast-gtk/bstscrollgraph.c:576
-#, fuzzy
 msgid "Spectrograph"
-msgstr "Scrollgraph"
+msgstr "Spectograaf"
 
 #: beast-gtk/bstscrollgraph.c:568
 msgid "Flip Spectrum"
-msgstr ""
+msgstr "Spectrum omklappen"
 
 #: beast-gtk/bstscrollgraph.c:568
 msgid "Flip Spectrum display,  interchaging low and high frequencies"
-msgstr ""
+msgstr "Spectrum omklappen waardoor lagen en hoge frequenties worden verwisseld"
 
 #: beast-gtk/bstscrollgraph.c:571
 msgid "Choose display scrolling direction"
-msgstr ""
+msgstr "Kies de schuifrichting van de weergave"
 
 #: beast-gtk/bstscrollgraph.c:574
 msgid "Boost"
-msgstr ""
+msgstr "Versterken"
 
 #: beast-gtk/bstscrollgraph.c:574
 msgid "Adjust frequency level threshold"
-msgstr ""
+msgstr "Frequentiedrempelwaarde aanpassen"
 
 #: beast-gtk/bstscrollgraph.c:577
-#, fuzzy
 msgid "Window Size"
-msgstr "Lettertypegrootte"
+msgstr "Vensterrootte"
 
 #: beast-gtk/bstscrollgraph.c:577
 msgid "Adjust FFT window size"
-msgstr ""
+msgstr "FFT-venstergrootte aanpassen"
 
 #: beast-gtk/bstscrollgraph.c:667
-#, fuzzy
 msgid "Unconnected Output Channel"
-msgstr "Uitvoerkanalen:"
+msgstr "Niet verbonden uitvoerkanaal"
 
 #: beast-gtk/bstsnetrouter.c:43
 msgid ""
@@ -2559,10 +2562,12 @@ msgstr "Eigenschappen"
 msgid "Reset Properties"
 msgstr "Eigenschappen resetten"
 
+# ingangen
 #: beast-gtk/bstsnetrouter.c:706
 msgid "Delete Inputs"
 msgstr "Invoerkanalen verwijderen"
 
+# uitgangen
 #: beast-gtk/bstsnetrouter.c:707
 msgid "Delete Outputs"
 msgstr "Uitvoerkanalen verwijderen"
@@ -2572,9 +2577,8 @@ msgid "Show Info"
 msgstr "Info weergeven"
 
 #: beast-gtk/bstsnetrouter.c:710
-#, fuzzy
 msgid "Output Signal Monitor"
-msgstr "Uitgangsignalen"
+msgstr "Uitgangsignaal monitor"
 
 #: beast-gtk/bstsnetrouter.c:737
 msgid "Remove Module"
@@ -2593,22 +2597,21 @@ msgid "PCM Input module"
 msgstr "PCM-invoermodule"
 
 #: beast-gtk/bstsnetrouter.c:1090
-#, fuzzy
 msgid "Oscillator"
-msgstr "Oscillator golfvorm"
+msgstr "Oscillator"
 
 #: beast-gtk/bstsnetrouter.c:1090
-#, fuzzy
 msgid "Standard oscillator module"
-msgstr "Standaard versterkingsmodule"
+msgstr "Standaard oscillatormodule"
 
 #: beast-gtk/bstsnetrouter.c:1091
 msgid "ADSR"
-msgstr ""
+msgstr "ADSR"
 
+# omhullings-generator
 #: beast-gtk/bstsnetrouter.c:1091
 msgid "ADSR Envelope Generator"
-msgstr ""
+msgstr "ADSR Envelope-generator"
 
 #: beast-gtk/bstsnetrouter.c:1092
 msgid "DCA"
@@ -2630,39 +2633,39 @@ msgstr "Kanaalhints"
 msgid "Toggle channel name hints"
 msgstr "Kanaalnaam hints schakelen"
 
-#: beast-gtk/bststest.c:550
+#: beast-gtk/bststest.c:553
 msgid "Selection to Loop"
 msgstr "Selectie naar lus"
 
-#: beast-gtk/bststest.c:558
+#: beast-gtk/bststest.c:561
 msgid "Loop to Selection"
 msgstr "Lus naar selectie"
 
-#: beast-gtk/bststest.c:566
+#: beast-gtk/bststest.c:569
 msgid "Zoom Selection"
 msgstr "Inzoomen op selectie"
 
-#: beast-gtk/bststest.c:574
+#: beast-gtk/bststest.c:577
 msgid "Apply Loop"
 msgstr "Lus activeren"
 
-#: beast-gtk/bststest.c:582
+#: beast-gtk/bststest.c:585
 msgid "Reset Loop"
 msgstr "Lus resetten"
 
-#: beast-gtk/bststest.c:590
+#: beast-gtk/bststest.c:593
 msgid "Score"
 msgstr "Score"
 
-#: beast-gtk/bststest.c:598
+#: beast-gtk/bststest.c:601
 msgid "Find"
 msgstr "Zoeken"
 
-#: beast-gtk/bststest.c:616
+#: beast-gtk/bststest.c:619
 msgid "Mark Signal (Head)"
 msgstr "Markering (begin)"
 
-#: beast-gtk/bststest.c:626
+#: beast-gtk/bststest.c:629
 msgid "Mark Signal (Tail)"
 msgstr "Markering (eind)"
 
@@ -2857,7 +2860,7 @@ msgstr ""
 "genegeerd door de sequencer."
 
 # bij gelijktijdig afspelen
-#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:449 bse/bsetrack.c:973
+#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:449 bse/bsetrack.c:997
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum aantal stemmen voor gelijktijdig afspelen"
 
@@ -2867,7 +2870,7 @@ msgstr ""
 "Het synthese-netwerk of wave dat als instrument gebruikt zal worden bij dit "
 "spoor"
 
-#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:979
+#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:1003
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
 "Midikanaal dat aan dit spoor is toebedeeld, 0 gebruikt privé per-spoor kanaal"
@@ -2878,7 +2881,7 @@ msgstr "Mixerbussen verbonden met de spooruitgang"
 
 # uitleg
 #: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:458 bse/bsesong.c:747
-#: bse/bsetrack.c:984
+#: bse/bsetrack.c:1008
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesenetwerk dat als postprocessor gebruikt zal worden"
 
@@ -2944,19 +2947,19 @@ msgstr "verwerken"
 msgid "Updating View"
 msgstr "Beeld bijwerken"
 
-#: beast-gtk/bstwaveeditor.c:241
+#: beast-gtk/bstwaveeditor.c:238
 msgid "Scroll None"
 msgstr "Niet schuiven"
 
-#: beast-gtk/bstwaveeditor.c:242
+#: beast-gtk/bstwaveeditor.c:239
 msgid "Scroll Both"
 msgstr "Beide schuiven"
 
-#: beast-gtk/bstwaveeditor.c:243
+#: beast-gtk/bstwaveeditor.c:240
 msgid "Scroll Left"
 msgstr "Links schuiven"
 
-#: beast-gtk/bstwaveeditor.c:244
+#: beast-gtk/bstwaveeditor.c:241
 msgid "Scroll Right"
 msgstr "Rechts schuiven"
 
@@ -3589,9 +3592,8 @@ msgid "Description:"
 msgstr "Beschrijving:"
 
 #: bse/bseautodoc.c:460
-#, fuzzy
 msgid "Signals:"
-msgstr "Signaal in"
+msgstr "Signalen:"
 
 #: bse/bseautodoc.c:492
 msgid "Input Channels:"
@@ -3758,7 +3760,7 @@ msgstr ""
 
 #: bse/bsebus.c:839 bse/bsebus.c:841 bse/bsebus.c:843 bse/bsebus.c:845
 #: bse/bsebus.c:849 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
-#: bse/bsemidisynth.c:474 bse/bsetrack.c:957
+#: bse/bsemidisynth.c:474 bse/bsetrack.c:981
 msgid "Adjustments"
 msgstr "Aanpassingen"
 
@@ -3820,11 +3822,11 @@ msgstr "Ingangsignalen"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Synthese-signalen (uit sporen en bussen) gebruikt als bus-ingang"
 
-#: bse/bsebus.c:862 bse/bsetrack.c:986
+#: bse/bsebus.c:862 bse/bsetrack.c:1010
 msgid "Signal Outputs"
 msgstr "Signaal uitvoer"
 
-#: bse/bsebus.c:864 bse/bsetrack.c:988
+#: bse/bsebus.c:864 bse/bsetrack.c:1012
 msgid "Output Signals"
 msgstr "Uitgangsignalen"
 
@@ -4855,160 +4857,277 @@ msgstr ""
 "verzamelnaam voor automatische stuurprogrammaselectie"
 
 # goed verlopen
-#. GSL
 #: bse/bseenums.c:99
 msgid "Everything went well"
 msgstr "Alles is goed gegaan"
 
 #: bse/bseenums.c:100
+msgid "Internal error (please report)"
+msgstr "Interne fout (rapporteren a.u.b)"
+
+#: bse/bseenums.c:101
+msgid "Unknown error"
+msgstr "Onbekende fout"
+
+#: bse/bseenums.c:102
+msgid "Input/output error"
+msgstr "Invoer/uitvoerfout"
+
+#: bse/bseenums.c:103
+msgid "Insufficient permission"
+msgstr "Onvoldoende rechten"
+
+#. file errors
+#: bse/bseenums.c:105
+msgid "Device or resource busy"
+msgstr "Apparaat of bron bezet"
+
+#: bse/bseenums.c:106
+msgid "File exists already"
+msgstr "Bestand bestaat al"
+
+#: bse/bseenums.c:107
+msgid "File empty or premature EOF"
+msgstr "Bestand leeg of voortijdig bestandseinde"
+
+#. case BSE_ERROR_FILE_EMPTY:
+#: bse/bseenums.c:109
+msgid "No such file, device or directory"
+msgstr "Bestand, map of apparaat bestaat niet"
+
+#: bse/bseenums.c:110
+msgid "Is a directory"
+msgstr "Is een map"
+
+#: bse/bseenums.c:111
+msgid "Open failed"
+msgstr "Openen mislukt"
+
+#: bse/bseenums.c:112
+msgid "Seek failed"
+msgstr "Zoeken mislukt"
+
+#: bse/bseenums.c:113
+msgid "Read failed"
+msgstr "Lezen mislukt"
+
+#: bse/bseenums.c:114
+msgid "Write failed"
+msgstr "Schrijven mislukt"
+
+#. out of resource conditions
+#: bse/bseenums.c:116
+msgid "Too many open files"
+msgstr "Te veel geopende bestanden"
+
+#: bse/bseenums.c:117
+msgid "Too many open files in system"
+msgstr "Te veel geopende bestanden in het systeem"
+
+# vrij vertaald
+#: bse/bseenums.c:118
+msgid "No space left on device"
+msgstr "Geen vrije schijfruimte over"
+
+#: bse/bseenums.c:119
+msgid "Out of memory"
+msgstr "Geen vrij geheugen meer"
+
+#. content errors
+#: bse/bseenums.c:121
+msgid "Failed to detect (start of) header"
+msgstr "Detecteren van (begin van) header mislukt"
+
+#: bse/bseenums.c:122
+msgid "Failed to retrieve seek information"
+msgstr "Zoek-informatie ophalen is mislukt"
+
+# data/gegevens
+#: bse/bseenums.c:123
+msgid "No data available"
+msgstr "Geen data beschikbaar"
+
+#: bse/bseenums.c:124
+msgid "Data corrupt"
+msgstr "Data beschadigd"
+
+#: bse/bseenums.c:125
+msgid "Wrong number of channels"
+msgstr "Verkeerd aantal kanalen"
+
+#: bse/bseenums.c:126
+msgid "Invalid format"
+msgstr "Ongeldig formaat"
+
+#: bse/bseenums.c:127
+msgid "Unknown format"
+msgstr "Onbekend formaat"
+
+#. miscellaneous errors
+#: bse/bseenums.c:129
+msgid "Temporary error"
+msgstr "Tijdelijke fout"
+
+#: bse/bseenums.c:130
+msgid "No such wave"
+msgstr "Wave bestaat niet"
+
+#: bse/bseenums.c:131
+msgid "CODEC failure"
+msgstr "CODEC-mislukking"
+
+#: bse/bseenums.c:132
 msgid "Functionality not implemented"
 msgstr "Functionaliteit niet geïmplementeerd"
 
-#: bse/bseenums.c:101
+#: bse/bseenums.c:133
+msgid "Invalid object property"
+msgstr "Ongeldige objecteigenschap"
+
+#: bse/bseenums.c:134
+msgid "Invalid MIDI control type"
+msgstr "Ongeldig Midi-control type"
+
+#: bse/bseenums.c:135
+msgid "Parsing error"
+msgstr "Verwerkingsfout"
+
+#: bse/bseenums.c:136
+msgid "Failed to spawn child process"
+msgstr "Afsplitsen van een dochterproces is mislukt"
+
+#. Device errors
+#: bse/bseenums.c:138
 msgid "No device (driver) available"
 msgstr "Geen apparaat (stuurprogramma) beschikbaar"
 
-#: bse/bseenums.c:102
+#: bse/bseenums.c:139
 msgid "Device not async capable"
 msgstr "Apparaat niet async capabel"
 
-#: bse/bseenums.c:103
+#: bse/bseenums.c:140
 msgid "Device busy"
 msgstr "Apparaat bezet"
 
-#: bse/bseenums.c:104
+#: bse/bseenums.c:141
 msgid "Failed to configure device format"
 msgstr "Apparaat-formaat configureren is mislukt"
 
-#: bse/bseenums.c:105
+#: bse/bseenums.c:142
 msgid "Failed to configure device buffer"
 msgstr "Apparaat-buffer configureren is mislukt"
 
 # traagheid
-#: bse/bseenums.c:106
+#: bse/bseenums.c:143
 msgid "Failed to configure device latency"
 msgstr "Apparaat-'latency' configureren is mislukt"
 
-#: bse/bseenums.c:107
+#: bse/bseenums.c:144
 msgid "Failed to configure number of device channels"
 msgstr "Het aantal apparaat-kanalen configureren is mislukt"
 
-#: bse/bseenums.c:108
+#: bse/bseenums.c:145
 msgid "Failed to configure device frequency"
 msgstr "Apparaat-frequentie configureren is mislukt"
 
-#: bse/bseenums.c:109
+#: bse/bseenums.c:146
 msgid "Device configurations mismatch"
 msgstr "Apparaatconfiguraties komen niet overeen"
 
-#: bse/bseenums.c:110
+#. BseSource errors
+#: bse/bseenums.c:148
 msgid "No such synthesis module"
 msgstr "Zo'n synthesemodule bestaat niet"
 
-#: bse/bseenums.c:111
+#: bse/bseenums.c:149
 msgid "No such input channel"
 msgstr "Zo'n invoerkanaal bestaat niet"
 
-#: bse/bseenums.c:112
+#: bse/bseenums.c:150
 msgid "No such output channel"
 msgstr "Zo'n uitvoerkanaal bestaat niet"
 
-#: bse/bseenums.c:113
+#: bse/bseenums.c:151
 msgid "Input/Output channels not connected"
 msgstr "Invoer/uitvoerkanalen niet verbonden"
 
 # persoonlijk bezit
-#: bse/bseenums.c:114
+#: bse/bseenums.c:152
 msgid "Input channel is private"
 msgstr "Invoerkanaal is privé"
 
-#: bse/bseenums.c:115
+#: bse/bseenums.c:153
 msgid "Input channel already in use"
 msgstr "Invoerkanaal is al in gebruik"
 
-#: bse/bseenums.c:116
+#: bse/bseenums.c:154
 msgid "Input/Output channels already connected"
 msgstr "Invoer/uitvoerkanalen zijn al verbonden"
 
-#: bse/bseenums.c:117
+#: bse/bseenums.c:155
 msgid "Invalid synthesis module connection"
 msgstr "Ongeldige verbinding synthesemodule"
 
-#: bse/bseenums.c:118
+#: bse/bseenums.c:156
 msgid "Parent mismatch"
 msgstr "Ouders komen niet overeen"
 
-#: bse/bseenums.c:119
+#: bse/bseenums.c:157
 msgid "Bad loopback"
 msgstr "Onjuidyr loopback"
 
-#: bse/bseenums.c:120
+#: bse/bseenums.c:158
 msgid "Synthesis module currently busy"
 msgstr "Synthesemodule is momenteel bezet"
 
-#: bse/bseenums.c:121
+#: bse/bseenums.c:159
 msgid "Invalid synthsis module type"
 msgstr "Ongeldig type synthesemodule"
 
-#: bse/bseenums.c:122
+#. BseProcedure errors
+#: bse/bseenums.c:161
 msgid "No such procedure"
 msgstr "Zo'n procedure bestaat niet"
 
-#: bse/bseenums.c:123
+#: bse/bseenums.c:162
 msgid "Procedure currently busy"
 msgstr "Procedure is momenteel bezet"
 
 #. recursion
-#: bse/bseenums.c:124
+#: bse/bseenums.c:163
 msgid "Procedure parameter invalid"
 msgstr "Procedure-parameter ongeldig"
 
-#: bse/bseenums.c:125
+#: bse/bseenums.c:164
 msgid "Procedure execution failed"
 msgstr "Uitvoering procedure mislukt"
 
-#: bse/bseenums.c:126
+#: bse/bseenums.c:165
 msgid "Procedure execution aborted"
 msgstr "Uitvoering procedure afgebroken"
 
-#: bse/bseenums.c:127
-msgid "Invalid object property"
-msgstr "Ongeldige objecteigenschap"
-
-#: bse/bseenums.c:128
-msgid "Invalid MIDI control type"
-msgstr "Ongeldig Midi-control type"
-
-#: bse/bseenums.c:129
-msgid "Parsing error"
-msgstr "Verwerkingsfout"
-
-#: bse/bseenums.c:130
-msgid "Failed to spawn child process"
-msgstr "Afsplitsen van een dochterproces is mislukt"
-
 #. various procedure errors
-#: bse/bseenums.c:132
+#: bse/bseenums.c:167
 msgid "No such entry"
 msgstr "Deze bestaat niet"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.c:168
 msgid "No such event"
 msgstr "Gebeurtenis bestaat niet"
 
-#: bse/bseenums.c:135
+#: bse/bseenums.c:170
 msgid "Ownership mismatch"
 msgstr "Eigenaars komen niet overeen"
 
-#: bse/bseenums.c:136
+#: bse/bseenums.c:171
 msgid "Invalid offset"
 msgstr "Ongeldige verschuiving"
 
-#: bse/bseenums.c:137
+#: bse/bseenums.c:172
 msgid "Invalid duration"
 msgstr "Ongeldige lengte"
 
-#: bse/bseenums.c:138
+#: bse/bseenums.c:173
 msgid "Invalid overlap"
 msgstr "Ongeldige overlap"
 
@@ -5182,12 +5301,12 @@ msgstr ""
 "gekozen"
 
 #: bse/bsemidisynth.c:442 bse/bsemidisynth.c:447 bse/bsemidisynth.c:452
-#: bse/bsemidisynth.c:456 bse/bsesong.c:745 bse/bsetrack.c:976
-#: bse/bsetrack.c:982
+#: bse/bsemidisynth.c:456 bse/bsesong.c:745 bse/bsetrack.c:1000
+#: bse/bsetrack.c:1006
 msgid "MIDI Instrument"
 msgstr "Midi-instrument"
 
-#: bse/bsemidisynth.c:444 bse/bsetrack.c:978
+#: bse/bsemidisynth.c:444 bse/bsetrack.c:1002
 msgid "MIDI Channel"
 msgstr "Midi-kanaal"
 
@@ -5195,7 +5314,7 @@ msgstr "Midi-kanaal"
 msgid "Max Voices"
 msgstr "Max stemmen"
 
-#: bse/bsemidisynth.c:454 bse/bsesubsynth.c:513 bse/bsetrack.c:963
+#: bse/bsemidisynth.c:454 bse/bsesubsynth.c:513 bse/bsetrack.c:987
 msgid "Synthesizer"
 msgstr "Synthesizer"
 
@@ -5205,7 +5324,7 @@ msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Het synthese-netwerk dat als Midi-instrument gebruikt zal worden"
 
 # rekeneenheid
-#: bse/bsemidisynth.c:458 bse/bsesong.c:747 bse/bsetrack.c:984
+#: bse/bsemidisynth.c:458 bse/bsesong.c:747 bse/bsetrack.c:1008
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
@@ -5537,7 +5656,7 @@ msgstr "/Geluidsbronnen/Standaard oscillator"
 msgid "Wave Form"
 msgstr "Golfvorm"
 
-#: bse/bsestandardosc.c:131 bse/bsetrack.c:968 bse/bsewaveosc.c:558
+#: bse/bsestandardosc.c:131 bse/bsetrack.c:992 bse/bsewaveosc.c:558
 #: bse/bsewaveosc.c:560 bse/bsewaveosc.c:562
 msgid "Wave"
 msgstr "Wave"
@@ -5552,7 +5671,7 @@ msgstr "Fase"
 
 #: bse/bsestandardosc.c:137
 msgid "Initial phase of the oscillator wave form (cycle offset in degree)"
-msgstr ""
+msgstr "Beginfase van de oscillator-golfvorm (faseverschuiving in graden)"
 
 #: bse/bsestandardosc.c:140 bse/bsestandardosc.c:144 bse/bsestandardosc.c:148
 msgid "Base Frequency"
@@ -5560,11 +5679,11 @@ msgstr "Basisfrequentie"
 
 #: bse/bsestandardosc.c:142
 msgid "Number of oscillator cycles per second"
-msgstr ""
+msgstr "Aantal oscillator-omwentelingen per seconde"
 
 #: bse/bsestandardosc.c:146
 msgid "Musical notation corresponding to the oscillator frequency"
-msgstr ""
+msgstr "Musikale notatie corresponderend met de oscillatorfrequentie"
 
 #: bse/bsestandardosc.c:150
 msgid "Fine Tune"
@@ -5572,7 +5691,7 @@ msgstr "Fijnstelling"
 
 #: bse/bsestandardosc.c:150
 msgid "Amount of detuning in cent (hundredth part of a note)"
-msgstr ""
+msgstr "Valsheid in cent (honderste deel van een een hele noot)"
 
 #: bse/bsestandardosc.c:155 bse/bsewaveosc.c:568
 msgid "Input Modulation [%]"
@@ -5764,29 +5883,29 @@ msgid "List of available mixer busses to be used as track output"
 msgstr ""
 "Lijst met beschikbare mixerbussen die kunnen worden gebruikt als spooruitgang"
 
-#: bse/bsetrack.c:959
+#: bse/bsetrack.c:983
 msgid "Muted"
 msgstr "Gedempt"
 
 # Synth ingang
-#: bse/bsetrack.c:961 bse/bsetrack.c:966 bse/bsetrack.c:971
+#: bse/bsetrack.c:985 bse/bsetrack.c:990 bse/bsetrack.c:995
 msgid "Synth Input"
 msgstr "Synth invoer"
 
-#: bse/bsetrack.c:963
+#: bse/bsetrack.c:987
 msgid "Synthesis network to be used as instrument"
 msgstr "Het synthese-netwerk dat als instrument gebruikt zal worden"
 
 # uitleg
-#: bse/bsetrack.c:968
+#: bse/bsetrack.c:992
 msgid "Wave to be used as instrument"
 msgstr "Wave dat als instrument gebruikt zal worden"
 
-#: bse/bsetrack.c:973
+#: bse/bsetrack.c:997
 msgid "Max Voixes"
 msgstr "Max stemmen"
 
-#: bse/bsetrack.c:989
+#: bse/bsetrack.c:1013
 msgid "Mixer busses used as output for this track"
 msgstr "Mixerbussen die gebruikt worden als uitgang voor dit spoor"
 
@@ -5932,6 +6051,10 @@ msgid ""
 "  DEVICE - the PortAudio device to use, 'default' selects a default device\n"
 "  MODE   - rw = read/write, ro = readonly, wo = writeonly\n"
 msgstr ""
+"PortAudio PCM stuurprogramma, gebruik %s.\n"
+"  APPARAAT - het PortAudio-apparaat, 'default' selecteert een\n"
+"             standaard apparaat\n"
+"  MODUS    - rw = lezen/schrijven, ro = alleen lezen, wo = alleen schrijven\n"
 
 #: plugins/artscompressor.idl:28 plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
@@ -6450,7 +6573,7 @@ msgstr "Wet uit [%]"
 msgid "Set the amount of modified data to mix"
 msgstr "De hoeveelheid gemodificeerde data voor de mix instellen"
 
-#: plugins/davguitar.c:302
+#: plugins/davguitar.c:303
 msgid "Guitar Output"
 msgstr "Gitaar uitgang"
 
