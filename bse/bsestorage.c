@@ -19,6 +19,7 @@
 #include "bseitem.h"
 #include "gsldatahandle.h"
 #include "gsldatautils.h"
+#include "gslcommon.h"
 #include "bseproject.h"
 #include "bseparasite.h"
 #include <unistd.h>

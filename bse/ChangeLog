@@ -1,3 +1,8 @@
+Wed Dec 29 12:52:01 2004 Stefan Westerfeld <stefan@space.twc.de>
+
+	* bsestorage.c: Include "gslcommon.h" for gsl_byte_order_to_string.
+	This fixes a segfault (and compile warning) on AMD64.
+
 Wed Dec 29 11:37:55 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslloader-pat.cc: Use the new xinfo API.
