@@ -156,7 +156,7 @@ bst_song_router_rebuild (BstSongRouter *router)
 					      "parent", router,
 					      NULL),
 		    NULL);
-  router->canvas->aa = 1;
+  //  router->canvas->aa = 1;
   router->root = gnome_canvas_root (router->canvas);
   bst_object_set (GTK_OBJECT (router->root),
 		  "signal::destroy", gtk_widget_destroyed, &router->root,

@@ -1,12 +1,14 @@
 # BSE - Bedevilled Sound Engine
 # Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
 #
-# Makefile.am for BSE
+## Makefile.am for BSE
 
 
 INCLUDES = -I$(top_srcdir) $(BSE_CFLAGS)
 
-# compile BSE into a libtool library
+#
+# libraries to compile and install
+#
 lib_LTLIBRARIES = libbse.la
 
 # due to automake-1.3 not featuring target specific defines,
@@ -134,15 +136,14 @@ bse_c_sources = $(strip \
 # since automake-1.3 handles BUILT_SOURCES strange and wrong on some
 # occasions (mostly wrt dependancies)
 # we generate frequently rebuild files piggyback on a stamp file, so sources
-# depending on them only get rebuild when their contents actually changed
+# depending on them only get rebuild when the built source actually changed
+# content
 #
 # built sources that don't get installed
 bse_built_sources = $(strip \
 	stamp-bsegentypes.h \
-	bsegentypes.h \
 	stamp-bseenum_arrays.c \
 	bseenum_arrays.c \
-	bseconfigpaths.h \
 	bseenum_list.c \
 	bsenotifier_array.c \
 	bsebuiltin_externs.c \
@@ -150,7 +151,7 @@ bse_built_sources = $(strip \
 	bsegentypes.c \
 	bsegentype_array.c \
 )
-# built sources (from the above) that get installed with the header files
+# built sources that get installed with the header files
 bse_built_public_sources = $(strip \
 	bsegentypes.h \
 	bseconfigpaths.h \
@@ -167,13 +168,12 @@ bse_extra_sources = $(strip \
 )
 
 #
-# setup BSE's sources and their dependancies
+# setup BSE sources and their dependancies
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_public_sources)
 libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_public_sources)
 libbse_la_SOURCES = $(bse_c_sources) $(bse_builtin_c_sources)
 MAINTAINERCLEANFILES += $(bse_built_public_sources) $(bse_built_sources)
-CLEANFILES += $(bse_tmp_files)
 EXTRA_DIST += $(bse_builtin_h_sources) $(bse_private_h_sources)
 EXTRA_DIST += $(bse_built_sources) $(bse_built_public_sources) $(bse_extra_sources)
 
@@ -181,6 +181,7 @@ EXTRA_DIST += $(bse_built_sources) $(bse_built_public_sources) $(bse_extra_sourc
 # rules to generate built sources
 #
 gen_source = gen-source.tmp
+CLEANFILES += $(gen_source)
 COPYING: $(bse_built_public_sources) $(bse_built_sources)
 $(OBJECTS): COPYING # this is our oldest-source-stamp
 bsegentypes.h: @MISSING_PERL5@ # stamp-bsegentypes.h
@@ -282,7 +283,7 @@ testsample_SOURCES = testsample.c
 bsequery_SOURCES = bsequery.c
 testsong_SOURCES = testsong.c
 testmixer_SOURCES = testmixer.c
-# linka all programs against BSE
+# link programs against BSE
 progs_LDADD = libbse.la
 testtypes_LDADD = $(progs_LDADD)
 testrefs_LDADD = $(progs_LDADD)

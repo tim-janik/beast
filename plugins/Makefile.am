@@ -1,7 +1,7 @@
 # BSE-Plugins - Bedevilled Sound Engine dynamic Plugins
 # Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
 #
-# Makefile.am for BSE Plugins
+## Makefile.am for BSE Plugins
 
 INCLUDES = -I$(top_srcdir) $(BSE_CFLAGS)
 

@@ -17,6 +17,8 @@
  */
 #include "bstsamplerepo.h"
 
+#include "bstconfigpaths.h"
+
 #include <fcntl.h>
 #include <errno.h>
 
@@ -180,7 +182,7 @@ bst_sample_repo_init (void)
   g_message ("Scanning sample repositories...");
 
   g_pattern_spec_init (&pspec, "*.bse");
-  sample_names = list_files_rec (sample_names, BEASTDATADIR, &pspec);
+  sample_names = list_files_rec (sample_names, BST_DATA_DIR, &pspec);
   g_pattern_spec_free_segs (&pspec);
   sample_names = g_slist_reverse (sample_names);
 

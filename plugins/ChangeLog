@@ -1,0 +1,5 @@
+Sun Jun 27 10:11:37 1999  Tim Janik  <timj@gtk.org>
+
+	* Makefile.plugins: ugh, oh. all the time this file was empty and
+	wouldn't get remade because of CVS stamps. no it has contents and
+	actually compiles (and installs) the plugins.

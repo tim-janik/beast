@@ -97,7 +97,7 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 	dnl Check for GNOME, we override BEAST_CFLAGS and BEAST_LIBS here,
 	dnl because GNOME already takes care of Gtk+, and we already checked
 	dnl that the Gtk+ version is sufficient.
-	REQUIRED=1.0.2
+	REQUIRED=1.0.10
 	AC_MSG_CHECKING(for GNOME - version >= $REQUIRED)
 	if gnome-config --version >/dev/null 2>&1; then
 		GNOME_VERSION=[`gnome-config --version | sed 's/^[^0-9]*//'`]
@@ -126,12 +126,17 @@ $BEAST_LIBS
 	dnl Default keytable patch
 	dnl we need a clever check here...
 	AC_MSG_CHECKING(what the default keytable looks like)
-	dnl FIXME: AC_DEFINE_UNQUOTED(BST_KEYPATCH, bst_keypatch_de)
+	AC_DEFINE_UNQUOTED(BST_DFL_KEYTABLE, "de")
 	AC_MSG_RESULT(QWERTZ)
 
 	AC_SUBST(BEAST_CFLAGS)
 	AC_SUBST(BEAST_LIBS)
 
+	# BEAST program data
+	beastpdatadir=$datadir/beast/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
+	AC_SUBST(beastpdatadir)
+	
+	# BEAST data from beast-data package
 	beastdatadir=$datadir/beast/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
 	AC_SUBST(beastdatadir)
 ])

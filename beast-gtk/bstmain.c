@@ -17,6 +17,7 @@
  */
 #include        "bstdefs.h"
 
+#include        "bstconfigpaths.h"
 #include        "bstapp.h"
 #include        "bstsamplerepo.h"
 #include        "bstprocedure.h"
@@ -44,7 +45,7 @@ main (int   argc,
       char *argv[])
 {
   GleParserData *pdata;
-  gchar *error, *resource_file = "beast.glr";
+  gchar *error, *resource_file = BST_PDATA_DIR "/beast.glr";
   GSList *slist;
   GSList *unref_list = NULL;
   BstApp *app = NULL;
