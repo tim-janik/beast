@@ -1,5 +1,5 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,244 +16,235 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "bstlogadjustment.h"
-
+#include "gxklogadjustment.h"
 #include <math.h>
 
-
 /* --- prototypes --- */
-static void	bst_log_adjustment_class_init		(BstLogAdjustmentClass	*klass);
-static void	bst_log_adjustment_init			(BstLogAdjustment	*ladj);
-static void	bst_log_adjustment_destroy		(GtkObject		*object);
-static void	bst_log_adjustment_changed		(GtkAdjustment		*adj);
-static void	bst_log_adjustment_value_changed	(GtkAdjustment		*adj);
-static void	ladj_adjust_ranges			(BstLogAdjustment	*ladj);
-static void	ladj_client_value_changed		(BstLogAdjustment	*ladj);
-
+static void log_adjustment_class_init           (GxkLogAdjustmentClass *klass);
+static void log_adjustment_init                 (GxkLogAdjustment      *self);
+static void log_adjustment_destroy              (GtkObject             *object);
+static void log_adjustment_changed              (GtkAdjustment         *adj);
+static void log_adjustment_value_changed        (GtkAdjustment         *adj);
+static void log_adjustment_adjust_ranges        (GxkLogAdjustment      *self);
+static void log_adjustment_client_value_changed (GxkLogAdjustment      *self);
 
 /* --- static variables --- */
 static gpointer		      parent_class = NULL;
 
-
 /* --- functions --- */
 GType
-bst_log_adjustment_get_type (void)
+gxk_log_adjustment_get_type (void)
 {
   static GType type = 0;
-
   if (!type)
     {
       static const GTypeInfo type_info = {
-	sizeof (BstLogAdjustmentClass),
+	sizeof (GxkLogAdjustmentClass),
 	(GBaseInitFunc) NULL,
 	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_log_adjustment_class_init,
+	(GClassInitFunc) log_adjustment_class_init,
 	NULL,   /* class_finalize */
 	NULL,   /* class_data */
-	sizeof (BstLogAdjustment),
+	sizeof (GxkLogAdjustment),
 	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_log_adjustment_init,
+	(GInstanceInitFunc) log_adjustment_init,
       };
-
-      type = g_type_register_static (GTK_TYPE_ADJUSTMENT,
-				     "BstLogAdjustment",
-				     &type_info, 0);
+      type = g_type_register_static (GTK_TYPE_ADJUSTMENT, "GxkLogAdjustment", &type_info, 0);
     }
-
   return type;
 }
 
 static void
-bst_log_adjustment_class_init (BstLogAdjustmentClass *class)
+log_adjustment_class_init (GxkLogAdjustmentClass *class)
 {
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkAdjustmentClass *adjustment_class = GTK_ADJUSTMENT_CLASS (class);
-
+  
   parent_class = g_type_class_peek_parent (class);
-
-  object_class->destroy = bst_log_adjustment_destroy;
-
-  adjustment_class->changed = bst_log_adjustment_changed;
-  adjustment_class->value_changed = bst_log_adjustment_value_changed;
+  
+  object_class->destroy = log_adjustment_destroy;
+  
+  adjustment_class->changed = log_adjustment_changed;
+  adjustment_class->value_changed = log_adjustment_value_changed;
 }
 
 static gdouble
-call_exp (BstLogAdjustment *ladj,
+call_exp (GxkLogAdjustment *self,
 	  gdouble           x)
 {
-  return pow (ladj->base, x);
+  return pow (self->base, x);
 }
 
 static gdouble
-call_log (BstLogAdjustment *ladj,
+call_log (GxkLogAdjustment *self,
 	  gdouble           x)
 {
-  return log (CLAMP (x, ladj->llimit, ladj->ulimit)) / ladj->base_ln;
+  return log (CLAMP (x, self->llimit, self->ulimit)) / self->base_ln;
 }
 
 static void
-bst_log_adjustment_init (BstLogAdjustment *ladj)
+log_adjustment_init (GxkLogAdjustment *self)
 {
-  ladj->block_client = 0;
-  ladj->client = NULL;
-  bst_log_adjustment_setup (ladj, 10000, 10, 4);
+  self->block_client = 0;
+  self->client = NULL;
+  gxk_log_adjustment_setup (self, 10000, 10, 4);
 }
 
 static void
-bst_log_adjustment_destroy (GtkObject *object)
+log_adjustment_destroy (GtkObject *object)
 {
-  BstLogAdjustment *ladj = BST_LOG_ADJUSTMENT (object);
-
-  bst_log_adjustment_set_client (ladj, NULL);
-
+  GxkLogAdjustment *self = GXK_LOG_ADJUSTMENT (object);
+  
+  gxk_log_adjustment_set_client (self, NULL);
+  
   /* chain parent class handler */
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 GtkAdjustment*
-bst_log_adjustment_from_adj (GtkAdjustment *client)
+gxk_log_adjustment_from_adj (GtkAdjustment *client)
 {
-  BstLogAdjustment *ladj;
-
-  g_return_val_if_fail (GTK_IS_ADJUSTMENT (client), NULL);
-
-  ladj = g_object_new (BST_TYPE_LOG_ADJUSTMENT, NULL);
-  bst_log_adjustment_set_client (ladj, client);
+  GxkLogAdjustment *self;
   
-  return GTK_ADJUSTMENT (ladj);
+  g_return_val_if_fail (GTK_IS_ADJUSTMENT (client), NULL);
+  
+  self = g_object_new (GXK_TYPE_LOG_ADJUSTMENT, NULL);
+  gxk_log_adjustment_set_client (self, client);
+  
+  return GTK_ADJUSTMENT (self);
 }
 
 void
-bst_log_adjustment_set_client (BstLogAdjustment *ladj,
+gxk_log_adjustment_set_client (GxkLogAdjustment *self,
 			       GtkAdjustment    *client)
 {
-  g_return_if_fail (BST_IS_LOG_ADJUSTMENT (ladj));
+  g_return_if_fail (GXK_IS_LOG_ADJUSTMENT (self));
   if (client)
     g_return_if_fail (GTK_IS_ADJUSTMENT (client));
-
-  g_object_ref (ladj);
-  if (ladj->client)
+  
+  g_object_ref (self);
+  if (self->client)
     {
-      g_signal_handlers_disconnect_by_func (ladj->client, ladj_adjust_ranges, ladj);
-      g_signal_handlers_disconnect_by_func (ladj->client, ladj_client_value_changed, ladj);
-      g_object_unref (G_OBJECT (ladj->client));
+      g_signal_handlers_disconnect_by_func (self->client, log_adjustment_adjust_ranges, self);
+      g_signal_handlers_disconnect_by_func (self->client, log_adjustment_client_value_changed, self);
+      g_object_unref (G_OBJECT (self->client));
     }
-  ladj->client = client;
-  if (ladj->client)
+  self->client = client;
+  if (self->client)
     {
-      g_object_ref (G_OBJECT (ladj->client));
-      g_object_connect (ladj->client,
-			"swapped_signal::changed", ladj_adjust_ranges, ladj,
-			"swapped_signal::value_changed", ladj_client_value_changed, ladj,
+      g_object_ref (G_OBJECT (self->client));
+      g_object_connect (self->client,
+			"swapped_signal::changed", log_adjustment_adjust_ranges, self,
+			"swapped_signal::value_changed", log_adjustment_client_value_changed, self,
 			NULL);
-      ladj_adjust_ranges (ladj);
+      log_adjustment_adjust_ranges (self);
     }
-  g_object_unref (ladj);
+  g_object_unref (self);
 }
 
 void
-bst_log_adjustment_setup (BstLogAdjustment *ladj,
+gxk_log_adjustment_setup (GxkLogAdjustment *self,
 			  gdouble           center,
 			  gdouble           base,
 			  gdouble           n_steps)
 {
   GtkAdjustment *adj;
-
-  g_return_if_fail (BST_IS_LOG_ADJUSTMENT (ladj));
+  
+  g_return_if_fail (GXK_IS_LOG_ADJUSTMENT (self));
   g_return_if_fail (n_steps > 0);
   g_return_if_fail (base > 0);
-
-  adj = GTK_ADJUSTMENT (ladj);
-  ladj->center = center;
-  ladj->n_steps = n_steps;
-  ladj->base = base;
-  ladj->base_ln = log (ladj->base);
-  ladj->ulimit = pow (ladj->base, ladj->n_steps);
-  ladj->llimit = 1.0 / ladj->ulimit;
-
-  adj->value = ladj->center;
-  ladj_adjust_ranges (ladj);
+  
+  adj = GTK_ADJUSTMENT (self);
+  self->center = center;
+  self->n_steps = n_steps;
+  self->base = base;
+  self->base_ln = log (self->base);
+  self->ulimit = pow (self->base, self->n_steps);
+  self->llimit = 1.0 / self->ulimit;
+  
+  adj->value = self->center;
+  log_adjustment_adjust_ranges (self);
   gtk_adjustment_value_changed (adj);
 }
 
 static void
-bst_log_adjustment_changed (GtkAdjustment *adj)
+log_adjustment_changed (GtkAdjustment *adj)
 {
-  BstLogAdjustment *ladj = BST_LOG_ADJUSTMENT (adj);
-  GtkAdjustment *client = ladj->client;
+  GxkLogAdjustment *self = GXK_LOG_ADJUSTMENT (adj);
+  GtkAdjustment *client = self->client;
   
-  if (client && !ladj->block_client)
+  if (client && !self->block_client)
     {
-      ladj->block_client++;
+      self->block_client++;
       gtk_adjustment_changed (client);
-      ladj->block_client--;
+      self->block_client--;
     }
 }
 
 static void
-bst_log_adjustment_value_changed (GtkAdjustment *adj)
+log_adjustment_value_changed (GtkAdjustment *adj)
 {
-  BstLogAdjustment *ladj = BST_LOG_ADJUSTMENT (adj);
-  GtkAdjustment *client = ladj->client;
+  GxkLogAdjustment *self = GXK_LOG_ADJUSTMENT (adj);
+  GtkAdjustment *client = self->client;
   
   adj->value = CLAMP (adj->value, adj->lower, adj->upper);
-  if (client && !ladj->block_client)
+  if (client && !self->block_client)
     {
-      client->value = call_exp (ladj, adj->value) * ladj->center;
-      ladj->block_client++;
+      client->value = call_exp (self, adj->value) * self->center;
+      self->block_client++;
       gtk_adjustment_value_changed (client);
-      ladj->block_client--;
+      self->block_client--;
     }
 }
 
 static void
-ladj_adjust_ranges (BstLogAdjustment *ladj)
+log_adjustment_adjust_ranges (GxkLogAdjustment *self)
 {
-  GtkAdjustment *adj = GTK_ADJUSTMENT (ladj);
-
-  adj->upper = ladj->n_steps;
-  adj->lower = -ladj->n_steps;
-  adj->page_increment = (adj->upper - adj->lower) / (2.0 * ladj->n_steps);
+  GtkAdjustment *adj = GTK_ADJUSTMENT (self);
+  
+  adj->upper = self->n_steps;
+  adj->lower = -self->n_steps;
+  adj->page_increment = (adj->upper - adj->lower) / (2.0 * self->n_steps);
   adj->step_increment = adj->page_increment / 100.0;
   adj->page_size = 0;
-
+  
   if (0)
     {
-      GtkAdjustment *client = ladj->client;
+      GtkAdjustment *client = self->client;
       g_printerr ("ladj: client-changed: [%f %f] (%f %f %f) center: %g   CLIENT: [%f %f]\n",
                   adj->lower, adj->upper,
                   adj->step_increment, adj->page_increment, adj->page_size,
-                  ladj->center,
+                  self->center,
                   client ? client->lower : -99.777, client ? client->upper : -99.777);
     }
-
-  if (!ladj->block_client)
+  
+  if (!self->block_client)
     {
-      ladj->block_client++;
+      self->block_client++;
       gtk_adjustment_changed (adj);
-      ladj->block_client--;
+      self->block_client--;
     }
 }
 
 static void
-ladj_client_value_changed (BstLogAdjustment *ladj)
+log_adjustment_client_value_changed (GxkLogAdjustment *self)
 {
-  GtkAdjustment *adj = GTK_ADJUSTMENT (ladj);
-  GtkAdjustment *client = ladj->client;
-
+  GtkAdjustment *adj = GTK_ADJUSTMENT (self);
+  GtkAdjustment *client = self->client;
+  
   if (client)
-    adj->value = call_log (ladj, client->value / ladj->center);
+    adj->value = call_log (self, client->value / self->center);
   adj->value = CLAMP (adj->value, adj->lower, adj->upper);
-
+  
   if (0)
     g_printerr ("ladj: client-value-changed: [%f %f] %g   CLIENT: [%f %f] %g\n",
                 adj->lower, adj->upper, adj->value,
                 client->lower, client->upper, client->value);
   
-  if (!ladj->block_client)
+  if (!self->block_client)
     {
-      ladj->block_client++;
+      self->block_client++;
       gtk_adjustment_value_changed (adj);
-      ladj->block_client--;
+      self->block_client--;
     }
 }

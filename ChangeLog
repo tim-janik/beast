@@ -1,3 +1,8 @@
+Fri Dec  5 11:50:46 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxklogadjustment.[hc]: namespace rename and
+	cosmetic changes.
+
 Fri Dec  5 11:40:22 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxklogadjustment.[hc]: CVS copied here from beast-gtk/.

@@ -1,5 +1,5 @@
-/* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+/* GXK - Gtk+ Extension Kit
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,60 +16,53 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __BST_LOG_ADJUSTMENT_H__
-#define __BST_LOG_ADJUSTMENT_H__
+#ifndef __GXK_LOG_ADJUSTMENT_H__
+#define __GXK_LOG_ADJUSTMENT_H__
 
-#include	<gtk/gtkadjustment.h>
+#include <gxk/gxkutils.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* --- type macros --- */
-#define BST_TYPE_LOG_ADJUSTMENT              (bst_log_adjustment_get_type ())
-#define BST_LOG_ADJUSTMENT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), BST_TYPE_LOG_ADJUSTMENT, BstLogAdjustment))
-#define BST_LOG_ADJUSTMENT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), BST_TYPE_LOG_ADJUSTMENT, BstLogAdjustmentClass))
-#define BST_IS_LOG_ADJUSTMENT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), BST_TYPE_LOG_ADJUSTMENT))
-#define BST_IS_LOG_ADJUSTMENT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), BST_TYPE_LOG_ADJUSTMENT))
-#define BST_LOG_ADJUSTMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BST_TYPE_LOG_ADJUSTMENT, BstLogAdjustmentClass))
-
+#define GXK_TYPE_LOG_ADJUSTMENT              (gxk_log_adjustment_get_type ())
+#define GXK_LOG_ADJUSTMENT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_LOG_ADJUSTMENT, GxkLogAdjustment))
+#define GXK_LOG_ADJUSTMENT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_LOG_ADJUSTMENT, GxkLogAdjustmentClass))
+#define GXK_IS_LOG_ADJUSTMENT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_LOG_ADJUSTMENT))
+#define GXK_IS_LOG_ADJUSTMENT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_LOG_ADJUSTMENT))
+#define GXK_LOG_ADJUSTMENT_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_LOG_ADJUSTMENT, GxkLogAdjustmentClass))
 
 /* --- structures & typedefs --- */
-typedef	struct	_BstLogAdjustment	BstLogAdjustment;
-typedef	struct	_BstLogAdjustmentClass	BstLogAdjustmentClass;
-struct _BstLogAdjustment
+typedef	struct	_GxkLogAdjustment	GxkLogAdjustment;
+typedef	struct	_GxkLogAdjustmentClass	GxkLogAdjustmentClass;
+struct _GxkLogAdjustment
 {
   GtkAdjustment	parent_instance;
-
+  
   /* settings */
   gdouble	 center;
   gdouble	 n_steps;
   gdouble	 base;
   GtkAdjustment *client;
-
+  
   guint		 block_client;
   gdouble	 base_ln;
   gdouble	 llimit;
   gdouble	 ulimit;
 };
-struct _BstLogAdjustmentClass
+struct _GxkLogAdjustmentClass
 {
   GtkAdjustmentClass parent_class;
 };
 
-
 /* --- prototypes --- */
-GType		bst_log_adjustment_get_type	(void);
-void		bst_log_adjustment_set_client	(BstLogAdjustment	*ladj,
-						 GtkAdjustment		*client);
-GtkAdjustment*	bst_log_adjustment_from_adj	(GtkAdjustment		*client);
-void		bst_log_adjustment_setup	(BstLogAdjustment	*ladj,
-						 gdouble		 center,
-						 gdouble		 base,
-						 gdouble		 n_steps);
+GType          gxk_log_adjustment_get_type   (void);
+void           gxk_log_adjustment_set_client (GxkLogAdjustment *self,
+                                              GtkAdjustment    *client);
+GtkAdjustment* gxk_log_adjustment_from_adj   (GtkAdjustment    *client);
+void           gxk_log_adjustment_setup      (GxkLogAdjustment *self,
+                                              gdouble           center,
+                                              gdouble           base,
+                                              gdouble           n_steps);
+G_END_DECLS
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#endif /* __BST_LOG_ADJUSTMENT_H__ */
+#endif /* __GXK_LOG_ADJUSTMENT_H__ */

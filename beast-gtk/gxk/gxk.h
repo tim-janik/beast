@@ -33,6 +33,7 @@
 #include <gxk/gxkglobals.h>
 #include <gxk/gxkled.h>
 #include <gxk/gxklistwrapper.h>
+#include <gxk/gxklogadjustment.h>
 #include <gxk/gxkpolygon.h>
 #include <gxk/gxkracktable.h>
 #include <gxk/gxkrackitem.h>
