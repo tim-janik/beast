@@ -373,7 +373,7 @@ record GConfig {
                               "Search path of directories, seperated by \"" G_SEARCHPATH_SEPARATOR_S "\", used to "
                               "find LADSPA plugins. This path is searched for in addition to the standard LADSPA "
                               "location on this system. LADSPA is the Linux Audio Developer's Simple Plugin API, "
-                              "more informations about LADSPA plugins can be found at http:/""/www.ladspa.org/.",
+                              "more informations about LADSPA plugins can be found at http://www.ladspa.org/.",
                               NULL, STANDARD ":searchpath");
   };
   group "Synthesis Settings" {
