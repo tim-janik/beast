@@ -50,11 +50,9 @@ BseModule*       bse_midi_receiver_retrieve_control_module (BseMidiReceiver   *s
 void             bse_midi_receiver_discard_control_module  (BseMidiReceiver   *self,
                                                             BseModule         *cmodule,
                                                             BseTrans          *trans);
-void             bse_midi_receiver_add_control_handler     (BseMidiReceiver   *self,
+gboolean         bse_midi_receiver_add_control_handler     (BseMidiReceiver   *self,
                                                             guint              midi_channel,
                                                             BseMidiSignalType  signal_type,
-                                                            gfloat             minimum,
-                                                            gfloat             maximum,
                                                             BseMidiControlHandler handler_func,
                                                             gpointer           handler_data,
                                                             BseModule         *module);

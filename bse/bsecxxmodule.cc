@@ -26,7 +26,8 @@ using namespace Bse;
 const ClassInfo cinfo (NULL, "BseEffect implements an abstract C++ effect base.");
 BSE_CXX_TYPE_REGISTER_ABSTRACT (Effect, "BseCxxBase", &cinfo);
 
-Effect::Effect()
+Effect::Effect() :
+  last_module_update (0)
 {
 }
 
@@ -72,7 +73,7 @@ Effect::update_modules (BseTrans *trans)
           BseTrans *atrans = trans ? trans : bse_trans_open();
           bse_source_access_modules (source, access_trampoline, clo, access_data_free, atrans);
           if (!trans)
-            bse_trans_commit (atrans);
+            last_module_update = bse_trans_commit (atrans);
         }
     }
 }
@@ -185,11 +186,50 @@ Effect::create_engine_class (SynthesisModule *sample_module,
   return source_class->engine_class;
 }
 
+struct HandlerData {
+  SynthesisModule::AutoUpdate auto_update;
+  double minimum, maximum;
+  bool   bool_quantize;
+  Effect *effect;
+  HandlerData() :
+    auto_update (NULL),
+    minimum (0),
+    maximum (0),
+    bool_quantize (false),
+    effect (NULL)
+  {
+  }
+  static void
+  destroy (gpointer data)
+  {
+    HandlerData *hd = reinterpret_cast<HandlerData*> (data);
+    delete hd;
+  }
+};
+
 static void
-midi_control_handler (gpointer                  handler_data, /* MIDI Device Thread (and possibly others) */
+auto_update_data_free (gpointer data)   /* UserThread */
+{
+  SynthesisModule::AutoUpdateData *adata = static_cast<SynthesisModule::AutoUpdateData*> (data);
+  GObject *object = cast (static_cast<CxxBase*> (adata->effect)); // FIXME: rename cast() and get rid of static_cast<>()
+  GObjectClass *klass = (GObjectClass*) g_type_class_peek (adata->pspec->owner_type);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (klass);
+  if (source_class->property_updated)
+    {
+      GParamSpec *pspec = g_param_spec_get_redirect_target (adata->pspec);
+      if (!pspec)
+        pspec = adata->pspec;
+      source_class->property_updated ((BseSource*) object, adata->prop_id, adata->tick_stamp, adata->prop_value, pspec);
+      g_object_notify (object, pspec->name);
+    }
+  delete adata;
+}
+
+static void
+midi_control_handler (gpointer                  handler_data,  /* MIDI Device Thread (and possibly others) */
                       guint64                   tick_stamp,
                       BseMidiSignalType         signal_type,
-                      gfloat                    control_value,
+                      gfloat                    control_value, /* -1 .. +1 */
                       guint                     n_mcdatas,
                       BseModule          *const*modules,
                       gpointer                  user_data,
@@ -197,31 +237,32 @@ midi_control_handler (gpointer                  handler_data, /* MIDI Device Thr
 {
   GParamSpec *pspec = static_cast<GParamSpec*> (handler_data);
   g_return_if_fail (n_mcdatas > 0);
-  struct Sub {
-    static void
-    auto_update_data_free (gpointer data)
-    {
-      SynthesisModule::AutoUpdateData *adata = static_cast<SynthesisModule::AutoUpdateData*> (data);
-      delete adata;
-    }
-  };
-  SynthesisModule::AutoUpdate accessor = (SynthesisModule::AutoUpdate) (user_data);
+  if (!user_data)
+    return;     /* ignore events before bse_midi_receiver_set_control_handler_data() */
+  HandlerData *hd = static_cast<HandlerData*> (user_data);
   SynthesisModule::AutoUpdateData *adata = new SynthesisModule::AutoUpdateData;
   adata->prop_id = pspec->param_id;
-  adata->control_value = control_value;
+  if (hd->bool_quantize)
+    adata->prop_value = control_value >= 0.5 ? 1 : 0;
+  else
+    adata->prop_value = 0.5 * (hd->minimum + hd->maximum + control_value * (hd->maximum - hd->minimum));
+  adata->tick_stamp = tick_stamp;
+  adata->pspec = pspec;
+  adata->effect = hd->effect;
   for (guint i = 0; i < n_mcdatas; i++)
     bse_trans_add (trans,
                    bse_job_flow_access (modules[i],
                                         tick_stamp,
-                                        accessor,
+                                        hd->auto_update,
                                         adata,
-                                        i + 1 >= n_mcdatas ? Sub::auto_update_data_free : NULL));
+                                        i + 1 >= n_mcdatas ? auto_update_data_free : NULL));
 }
 
 static void
 get_midi_control_range (GParamSpec *pspec,
-                        float      &minimum,
-                        float      &maximum)
+                        double     &minimum,
+                        double     &maximum,
+                        bool       &bool_quantize)
 {
   if (SFI_IS_PSPEC_REAL (pspec))
     {
@@ -239,6 +280,7 @@ get_midi_control_range (GParamSpec *pspec,
     {
       minimum = 0;
       maximum = 1;
+      bool_quantize = true;
     }
   else if (SFI_IS_PSPEC_NUM (pspec))
     {
@@ -255,6 +297,13 @@ struct HandlerSetup {
   BseAutomationProperty *aprops;
   BseMidiReceiver       *midi_receiver;
   guint                  midi_channel;
+  static void
+  free (gpointer data)  /* User Thread */
+  {
+    HandlerSetup *hs = reinterpret_cast<HandlerSetup*> (data);
+    g_free (hs->aprops);
+    g_free (hs);
+  }
 };
 
 static void
@@ -266,23 +315,25 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
   for (i = 0; i < hs->n_aprops; i++)
     if (hs->add_handler)
       {
-        float minimum = 0, maximum = 0;
-        get_midi_control_range (hs->aprops[i].pspec, minimum, maximum);
-        bse_midi_receiver_add_control_handler (hs->midi_receiver,
-                                               hs->aprops[i].midi_channel ? hs->aprops[i].midi_channel : hs->midi_channel,
-                                               hs->aprops[i].signal_type,
-                                               minimum, maximum,
-                                               midi_control_handler,
-                                               hs->aprops[i].pspec,
-                                               module);
-        if (!i)
-          bse_midi_receiver_set_control_handler_data (hs->midi_receiver,
-                                                      hs->aprops[i].midi_channel ? hs->aprops[i].midi_channel : hs->midi_channel,
-                                                      hs->aprops[i].signal_type,
-                                                      midi_control_handler,
-                                                      hs->aprops[i].pspec,
-                                                      (void*) hs->effect->get_module_auto_update(),
-                                                      NULL);
+        bool has_data = bse_midi_receiver_add_control_handler (hs->midi_receiver,
+                                                               hs->aprops[i].midi_channel ? hs->aprops[i].midi_channel : hs->midi_channel,
+                                                               hs->aprops[i].signal_type,
+                                                               midi_control_handler,
+                                                               hs->aprops[i].pspec,
+                                                               module);
+        if (!has_data)
+          {
+            HandlerData *hd = new HandlerData;
+            get_midi_control_range (hs->aprops[i].pspec, hd->minimum, hd->maximum, hd->bool_quantize);
+            hd->auto_update = hs->effect->get_module_auto_update();
+            hd->effect = hs->effect;
+            bse_midi_receiver_set_control_handler_data (hs->midi_receiver,
+                                                        hs->aprops[i].midi_channel ? hs->aprops[i].midi_channel : hs->midi_channel,
+                                                        hs->aprops[i].signal_type,
+                                                        midi_control_handler,
+                                                        hs->aprops[i].pspec,
+                                                        hd, HandlerData::destroy);
+          }
       }
     else
       bse_midi_receiver_remove_control_handler (hs->midi_receiver,
@@ -291,14 +342,6 @@ handler_setup_func (BseModule      *module,   /* Engine Thread */
                                                 midi_control_handler,
                                                 hs->aprops[i].pspec,
                                                 module);
-}
-
-static void
-handler_setup_free (gpointer        data)       /* User Thread */
-{
-  HandlerSetup *hs = reinterpret_cast<HandlerSetup*> (data);
-  g_free (hs->aprops);
-  g_free (hs);
 }
 
 BseModule*
@@ -324,7 +367,7 @@ Effect::integrate_engine_module (unsigned int   context_handle,
       BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
       hs->midi_receiver = mc.midi_receiver;
       hs->midi_channel = mc.midi_channel;
-      bse_trans_add (trans, bse_job_access (engine_module, handler_setup_func, hs, handler_setup_free));
+      bse_trans_add (trans, bse_job_access (engine_module, handler_setup_func, hs, HandlerSetup::free));
     }
   return engine_module;
 }
@@ -350,7 +393,7 @@ Effect::dismiss_engine_module (BseModule       *engine_module,
           BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
           hs->midi_receiver = mc.midi_receiver;
           hs->midi_channel = mc.midi_channel;
-          bse_trans_add (trans, bse_job_access (engine_module, handler_setup_func, hs, handler_setup_free));
+          bse_trans_add (trans, bse_job_access (engine_module, handler_setup_func, hs, HandlerSetup::free));
         }
       /* discard module */
       bse_trans_add (trans, bse_job_discard (engine_module));

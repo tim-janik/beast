@@ -144,7 +144,7 @@ binary_lookup_insertion_pos (RandIter  begin,
 {
   /* return (end,false) for end-begin==0, or return (position,true) for exact match,
    * otherwise return (position,false) where position indicates the location for
-   * the key to be inserted.
+   * the key to be inserted (and may equal end).
    */
   return binary_lookup_fuzzy<RandIter,Cmp,Arg,2> (begin, end, cmp_elements, arg);
 }
@@ -214,19 +214,21 @@ public:
     NONE        = 0,
     ABSTRACT    = G_TYPE_FLAG_ABSTRACT
   };
-  /*Con*/       TypeRegistry (guint             instance_size,
-                              const gchar      *name,
-                              const gchar      *parent,
-                              const ClassInfo  *cinfo,
-                              GBaseInitFunc     binit,
-                              void            (*class_init) (CxxBaseClass*),
-                              GInstanceInitFunc iinit,
-                              Flags             flags);
-  const GType get_type () const
+  TypeRegistry (guint             instance_size,
+                const gchar      *name,
+                const gchar      *parent,
+                const ClassInfo  *cinfo,
+                GBaseInitFunc     binit,
+                void            (*class_init) (CxxBaseClass*),
+                GInstanceInitFunc iinit,
+                Flags             flags);
+  const GType
+  get_type () const
   {
     return gtype_id;
   }
-  static void   init_types ();
+  static void
+  init_types ();
 };
 
 template<class C> const GType
@@ -244,53 +246,14 @@ bse_type_id_wrapper (const char *type_name)
 #define BSE_CXX_TYPE_GET_REGISTERED(NameSpace, ObjectType) \
   (::Bse::bse_type_id_wrapper<ObjectType> (#NameSpace #ObjectType))
 #define BSE_CXX_TYPE_REGISTER_INITIALIZED(ObjectType, parent, cinfo, binit, flags) \
-  BSE_CXX_DEFINE_INSTANCE_INIT (ObjectType);                                       \
   BSE_CXX_TYPE_REGISTER_INTERN (ObjectType, parent, cinfo, binit,                  \
-                                BSE_CXX_SYM(ObjectType,instance_init), flags)
+                                ::Bse::cxx_instance_init_trampoline<ObjectType>, flags)
 #define BSE_CXX_TYPE_REGISTER_INTERN(ObjectType, parent, cinfo, binit, iinit, flags) \
-  BSE_CXX_DEFINE_SET_PROPERTY (ObjectType);                                     \
-  BSE_CXX_DEFINE_GET_PROPERTY (ObjectType);                                     \
-  BSE_CXX_DEFINE_CLASS_INIT (ObjectType, BSE_CXX_SYM(ObjectType,set_property),  \
-                                         BSE_CXX_SYM(ObjectType,get_property)); \
   static Bse::TypeRegistry                                                      \
     ObjectType ## _type_keeper (sizeof (ObjectType), "Bse" #ObjectType, parent, \
                                 cinfo, binit,                                   \
-                                BSE_CXX_SYM(ObjectType,class_init),             \
+                                ::Bse::cxx_class_init_trampoline<ObjectType>,   \
                                 iinit, flags);
-#define BSE_CXX_DEFINE_INSTANCE_INIT(ObjectType)                                \
-  static void                                                                   \
-  BSE_CXX_SYM(ObjectType,instance_init) (GTypeInstance *instance,               \
-                                         gpointer       g_class)                \
-  { /* invoke constructor upon _init of destination type */                     \
-    if (G_TYPE_FROM_INSTANCE (instance) == G_TYPE_FROM_CLASS (g_class))         \
-      new (BSE_CXX_INSTANCE_OFFSET + (char*) instance) ObjectType ();           \
-  }
-#define BSE_CXX_DEFINE_SET_PROPERTY(ObjectType)                                 \
-  static void BSE_CXX_SYM(ObjectType,set_property) (GObject *o, guint prop_id,  \
-                                                    const GValue *value,        \
-                                                    GParamSpec *pspec)          \
-  {                                                                             \
-    CxxBase *cbase = cast (o);                                                  \
-    const Bse::Value *v = (const Bse::Value*) value;                            \
-    static_cast<ObjectType*> (cbase)->set_property (prop_id, *v, pspec);        \
-  }
-#define BSE_CXX_DEFINE_GET_PROPERTY(ObjectType)                                 \
-  static void BSE_CXX_SYM(ObjectType,get_property) (GObject *o, guint prop_id,  \
-                                                    GValue *value,              \
-                                                    GParamSpec *pspec)          \
-  {                                                                             \
-    CxxBase *cbase = cast (o);  Bse::Value *v = (Bse::Value*) value;            \
-    static_cast<ObjectType*> (cbase)->get_property (prop_id, *v, pspec);        \
-  }
-#define BSE_CXX_DEFINE_CLASS_INIT(ObjectType, set_prop, get_prop)               \
-  static void BSE_CXX_SYM(ObjectType,class_init) (CxxBaseClass *klass)          \
-  {                                                                             \
-    GObjectClass *gobject_class = (GObjectClass*) klass;                        \
-    gobject_class->set_property = set_prop;                                     \
-    gobject_class->get_property = get_prop;                                     \
-    ObjectType::class_init (klass);                                             \
-  }
-#define BSE_CXX_SYM(Type, func)         bse_cxx__ ## Type ## __ ## func
 #define BSE_CXX_UTILS_ALIGNMENT         (2 * sizeof (gsize))
 #define BSE_CXX_UTILS_ALIGN(offset)     ((offset + BSE_CXX_UTILS_ALIGNMENT - 1) & -BSE_CXX_UTILS_ALIGNMENT)
 #define BSE_CXX_SIZEOF(Class)           BSE_CXX_UTILS_ALIGN (sizeof (Class))

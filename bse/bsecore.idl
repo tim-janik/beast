@@ -609,19 +609,19 @@ record GConfig {
     String sample_path     = (_("Sample Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find audio samples."),
                                                G_SEARCHPATH_SEPARATOR_S),
-                              BSE_PATH_USER_DATA ("/samples"), STANDARD ":searchpath");
+                              bse_intern_path_user_data ("/samples"), STANDARD ":searchpath");
     String effect_path     = (_("Effect Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE effect files."),
                                                G_SEARCHPATH_SEPARATOR_S),
-                              BSE_PATH_USER_DATA ("/effects"), STANDARD ":searchpath");
+                              bse_intern_path_user_data ("/effects"), STANDARD ":searchpath");
     String instrument_path = (_("Instrument Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE instrument files."),
                                                G_SEARCHPATH_SEPARATOR_S),
-                              BSE_PATH_USER_DATA ("/instruments"), STANDARD ":searchpath");
+                              bse_intern_path_user_data ("/instruments"), STANDARD ":searchpath");
     String script_path     = (_("Script Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE scheme scripts."),
                                                G_SEARCHPATH_SEPARATOR_S),
-                              BSE_PATH_USER_DATA ("/scripts"), STANDARD ":searchpath");
+                              bse_intern_path_user_data ("/scripts"), STANDARD ":searchpath");
     String plugin_path     = (_("Plugin Path"),
                               g_intern_printf (_("Search path of directories, seperated by \"%s\", used to find BSE plugins. This path "
                                                  "is searched for in addition to the standard BSE plugin location on this system."),

@@ -101,7 +101,7 @@ bse_idl_sources = $(strip \
 )
 $(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
 $(srcdir)/bsebusmodule.cc: bsebusmodule.gen-idl.h
-$(srcdir)/bsecore.cc: bsecore.gen-idl.h
+$(srcdir)/bsecxxplugin.h: bsecore.gen-idl.h
 $(srcdir)/bseprobe.cc: bseprobe.gen-idl.h
 $(srcdir)/bsesummation.cc: bsesummation.gen-idl.h
 idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
@@ -207,7 +207,7 @@ $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 # setup sources, their dependancies and commands
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
-libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files)
+libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources) bsehack.idl $(idl_dummy_files) bsecore.gen-idl.h
 libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
 MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)

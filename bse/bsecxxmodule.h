@@ -44,6 +44,8 @@ struct OStream {
   gboolean      connected;
 };
 
+class Effect;
+
 class SynthesisModule {
   template<class T, typename P> class ClosureP1; /* 1-argument member function closure */
   BseModule     *intern_module;
@@ -83,8 +85,12 @@ public:
 public:
   typedef void     (*AutoUpdate)            (BseModule*, gpointer);
   struct AutoUpdateData {
-    guint  prop_id;
-    gfloat control_value;
+    guint       prop_id;
+    double      prop_value;
+    /* required by back propagation */
+    guint64     tick_stamp;
+    GParamSpec *pspec;
+    Effect     *effect;
   };    
   struct NeedAutoUpdateTag {};
 protected:
@@ -103,6 +109,8 @@ protected:
 #define BSE_TYPE_EFFECT         (BSE_CXX_TYPE_GET_REGISTERED (Bse, Effect))
 class EffectBase : public CxxBase {};
 class Effect : public EffectBase {
+private:
+  guint64                   last_module_update;
 public:
   /* BseObject functionality */
   explicit                  Effect               ();
@@ -134,6 +142,7 @@ public:
   virtual SynthesisModule::
   AutoUpdate                get_module_auto_update     () = 0;
   void                      update_modules             (BseTrans        *trans = NULL);
+  guint64                   module_update_tick_stamp   () { return last_module_update; }
   /* prepare & dismiss pre and post invocation hooks */
   virtual void  prepare1()      { /* override this to do something before parent class prepare */ }
   virtual void  prepare2()      { /* override this to do something after parent class prepare */ }
@@ -183,8 +192,8 @@ auto_update_accessor (BseModule *bmodule,      /* Engine Thread */
   AutoUpdateData *au = static_cast<AutoUpdateData*> (data);
   typename P::IDType prop_id = static_cast<typename P::IDType> (au->prop_id);
   if (0)        // check M::auto_update() member and prototype
-    (void) static_cast<void (M::*) (typename P::IDType, float)> (&M::auto_update);
-  m->auto_update (prop_id, au->control_value);
+    (void) static_cast<void (M::*) (typename P::IDType, double)> (&M::auto_update);
+  m->auto_update (prop_id, au->prop_value);
 }
 template<class M, class P>
 void

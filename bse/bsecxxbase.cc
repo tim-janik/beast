@@ -238,7 +238,8 @@ CxxBaseClass::add_param (const char *group,
                          GParamSpec *pspec)
 {
   g_return_if_fail (pspec->owner_type == 0);
-  pspec->flags = (GParamFlags) (pspec->flags | G_PARAM_CONSTRUCT);
+  if (pspec->flags & G_PARAM_WRITABLE)
+    pspec->flags = (GParamFlags) (pspec->flags | G_PARAM_CONSTRUCT);
   bse_object_class_add_property ((BseObjectClass*) this, group, prop_id, pspec);
 }
 
@@ -247,8 +248,27 @@ CxxBaseClass::add_param (guint       prop_id,
                          GParamSpec *grouped_pspec)
 {
   g_return_if_fail (grouped_pspec->owner_type == 0);
-  grouped_pspec->flags = (GParamFlags) (grouped_pspec->flags | G_PARAM_CONSTRUCT);
+  if (grouped_pspec->flags & G_PARAM_WRITABLE)
+    grouped_pspec->flags = (GParamFlags) (grouped_pspec->flags | G_PARAM_CONSTRUCT);
   bse_object_class_add_grouped_property ((BseObjectClass*) this, prop_id, grouped_pspec);
+}
+
+void
+CxxBaseClass::set_accessors (void       (*get_property)      (GObject*,   guint,       GValue*,          GParamSpec*),
+                             void       (*set_property)      (GObject*,   guint, const GValue*,          GParamSpec*),
+                             gboolean   (*editable_property) (BseObject*, guint,                         GParamSpec*),
+                             void       (*get_candidates)    (BseItem*,   guint, BsePropertyCandidates*, GParamSpec*),
+                             void       (*property_updated)  (BseSource*, guint, guint64, double,        GParamSpec*))
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (this);
+  gobject_class->get_property = get_property;
+  gobject_class->set_property = set_property;
+  BseObjectClass *bobject_class = BSE_OBJECT_CLASS (this);
+  bobject_class->editable_property = editable_property;
+  BseItemClass *item_class = BSE_ITEM_CLASS (this);
+  item_class->get_candidates = get_candidates;
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (this);
+  source_class->property_updated = property_updated;
 }
 
 guint

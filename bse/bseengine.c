@@ -953,28 +953,33 @@ bse_trans_merge (BseTrans *trans1,
 
 /**
  * bse_trans_commit
- * @trans: open transaction
+ * @trans:   open transaction
+ * @RETURNS: tick stamp of job execution
  *
  * Close the transaction and commit it to the engine. The engine
  * will execute the jobs contained in this transaction as soon as
- * it has completed its current processing cycle. The jobs will be
- * executed in the exact order they were added to the transaction.
+ * it has completed its current processing cycle, at which point
+ * gsl_tick_stamp() matches the returned tick stamp.
+ * The jobs will be executed in the exact order they were added
+ * to the transaction.
  * This function is MT-safe and may be called from any thread.
  */
-void
+guint64
 bse_trans_commit (BseTrans *trans)
 {
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (trans->comitted == FALSE);
+  g_return_val_if_fail (trans != NULL, 0);
+  g_return_val_if_fail (trans->comitted == FALSE, 0);
   
+  guint64 exec_tick_stamp = 0;
   if (trans->jobs_head)
     {
       trans->comitted = TRUE;
-      _engine_enqueue_trans (trans);
+      exec_tick_stamp = _engine_enqueue_trans (trans);
       wakeup_master ();
     }
   else
     bse_trans_dismiss (trans);
+  return exec_tick_stamp;
 }
 
 typedef struct {

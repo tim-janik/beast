@@ -29,27 +29,32 @@ namespace Bse {
 
 class CxxBaseClass : public BseSourceClass {
 public:
-  void  add_param    (const char  *group,
-                      guint        prop_id,
-                      GParamSpec  *pspec);
-  void  add_param    (guint        prop_id,
-                      GParamSpec  *grouped_pspec);
-  guint add_signal   (const gchar *signal_name,
-                      GSignalFlags flags,
-                      guint        n_params,
-                      ...);
-  void  add_ochannel (const char  *ident,
-                      const char  *label,
-                      const char  *blurb,
-                      int          assert_id = -1);
-  void  add_ichannel (const char  *ident,
-                      const char  *label,
-                      const char  *blurb,
-                      int          assert_id = -1);
-  void  add_jchannel (const char  *ident,
-                      const char  *label,
-                      const char  *blurb,
-                      int          assert_id = -1);
+  void  add_param     (const char  *group,
+                       guint        prop_id,
+                       GParamSpec  *pspec);
+  void  add_param     (guint        prop_id,
+                       GParamSpec  *grouped_pspec);
+  void  set_accessors (void       (*get_property)      (GObject*,   guint,       GValue*,          GParamSpec*),
+                       void       (*set_property)      (GObject*,   guint, const GValue*,          GParamSpec*) = NULL,
+                       gboolean   (*editable_property) (BseObject*, guint,                         GParamSpec*) = NULL,
+                       void       (*get_candidates)    (BseItem*,   guint, BsePropertyCandidates*, GParamSpec*) = NULL,
+                       void       (*property_updated)  (BseSource*, guint, guint64, double,        GParamSpec*) = NULL);
+  guint add_signal    (const gchar *signal_name,
+                       GSignalFlags flags,
+                       guint        n_params,
+                       ...);
+  void  add_ochannel  (const char  *ident,
+                       const char  *label,
+                       const char  *blurb,
+                       int          assert_id = -1);
+  void  add_ichannel  (const char  *ident,
+                       const char  *label,
+                       const char  *blurb,
+                       int          assert_id = -1);
+  void  add_jchannel  (const char  *ident,
+                       const char  *label,
+                       const char  *blurb,
+                       int          assert_id = -1);
 };
 class CxxBase {
   void*           cast_to_gobject   ();
@@ -174,6 +179,81 @@ public:
 static inline CxxBase::Pointer cast (CxxBase *c) { return CxxBase::Pointer (c); }
 /* match from-GObject* casts: */
 template<class T> CxxBase*     cast (T *t)       { return CxxBase::cast (t); }
+
+/* --- trampoline templates --- */
+template<class ObjectType> static void
+cxx_class_init_trampoline (CxxBaseClass *klass)
+{
+  ObjectType::class_init (klass);
+}
+
+template<class ObjectType> static void
+cxx_instance_init_trampoline (GTypeInstance *instance,
+                              gpointer       g_class)
+{ /* invoke C++ constructor upon _init of destination type */
+  if (G_TYPE_FROM_INSTANCE (instance) == G_TYPE_FROM_CLASS (g_class))
+    new (BSE_CXX_INSTANCE_OFFSET + (char*) instance) ObjectType ();
+}
+
+template<class ObjectType, typename PropertyID> static void
+cxx_get_property_trampoline (GObject    *o,
+                             guint       prop_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
+{
+  CxxBase *cbase = cast (o);
+  Value *v = (Value*) value;
+  ObjectType *instance = static_cast<ObjectType*> (cbase);
+  if (0)        // check ObjectType::get_property() member and prototype
+    (void) static_cast<void (ObjectType::*) (PropertyID, Value&, GParamSpec*)> (&ObjectType::get_property);
+  instance->get_property (static_cast<PropertyID> (prop_id), *v, pspec);
+}
+
+template<class ObjectType, typename PropertyID> static void
+cxx_set_property_trampoline (GObject      *o,
+                             guint         prop_id,
+                             const GValue *value,
+                             GParamSpec   *pspec)
+{
+  CxxBase *cbase = cast (o);
+  const Value *v = (const Value*) value;
+  ObjectType *instance = static_cast<ObjectType*> (cbase);
+  if (0)        // check ObjectType::set_property() member and prototype
+    (void) static_cast<void (ObjectType::*) (PropertyID, const Value&, GParamSpec*)> (&ObjectType::set_property);
+  instance->set_property (static_cast<PropertyID> (prop_id), *v, pspec);
+}
+
+template<class ObjectType, typename PropertyID> static gboolean
+cxx_editable_property_trampoline (BseObject    *o,
+                                  guint         prop_id,
+                                  GParamSpec   *pspec)
+{
+  CxxBase *cbase = cast (o);
+  ObjectType *instance = static_cast<ObjectType*> (cbase);
+  if (0)        // check ObjectType::editable_property() member and prototype
+    (void) static_cast<bool (ObjectType::*) (PropertyID, GParamSpec*)> (&ObjectType::editable_property);
+  return instance->editable_property (static_cast<PropertyID> (prop_id), pspec);
+}
+
+template<class ObjectType, typename PropertyID> static void
+cxx_get_candidates_trampoline (BseItem               *item,
+                               guint                  prop_id,
+                               BsePropertyCandidates *pc,
+                               GParamSpec            *pspec);   /* defined in bsecxxplugin.h */
+
+template<class ObjectType, typename PropertyID> static void
+cxx_property_updated_trampoline (BseSource             *source,
+                                 guint                  prop_id,
+                                 guint64                tick_stamp,
+                                 double                 prop_value,
+                                 GParamSpec            *pspec)
+{
+  CxxBase *cbase = cast (source);
+  ObjectType *instance = static_cast<ObjectType*> (cbase);
+  if (0)        // check ObjectType::property_updated() member and prototype
+    (void) static_cast<void (ObjectType::*) (PropertyID, guint64, double, GParamSpec*)> (&ObjectType::property_updated);
+  instance->property_updated (static_cast<PropertyID> (prop_id), tick_stamp, prop_value, pspec);
+}
 
 } // Bse
 

@@ -32,7 +32,7 @@
 
 
 /* --- variables --- */
-volatile guint64     bse_engine_exvar_tick_stamp = 0;
+volatile guint64     bse_engine_exvar_tick_stamp = 0;   /* initialized to 1 upon gsl_init(), so 0==invalid */
 static guint64	     tick_stamp_system_time = 0;
 static guint         global_tick_stamp_leaps = 0;
 

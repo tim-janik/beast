@@ -126,6 +126,11 @@ struct _BseSourceClass
 
   BseSourceChannelDefs	 channel_defs;
   
+  void          (*property_updated)     (BseSource      *source,        /* overridable method */
+                                         guint           property_id,
+                                         guint64         tick_stamp,
+                                         double          value,
+                                         GParamSpec     *pspec);
   void		(*prepare)		(BseSource	*source);
   void		(*context_create)	(BseSource	*source,
 					 guint		 context_handle,

@@ -82,6 +82,7 @@ void	bse_id_free	(gulong	id);
 guint		bse_string_hash			(gconstpointer   string);
 gint		bse_string_equals		(gconstpointer	 string1,
 						 gconstpointer	 string2);
+const gchar*    bse_intern_path_user_data       (const gchar    *dir);
 
 
 /* --- bbuffer utils --- */

@@ -16,13 +16,12 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "topconfig.h"
 #include "bsetype.h"        /* import all required types first */
 #include "bsepart.h"
 #include "bsemain.h"
 #include "bseengine.h"
 #include "bsessequencer.h"
-#include "bsecore.gen-idl.h"
+#include "bsecxxplugin.h" /* includes bsecore.gen-idl.h for us */
 
 namespace Bse {
 

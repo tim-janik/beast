@@ -354,13 +354,27 @@ source_class_collect_properties (BseSourceClass *class)
       GParamSpec **pspecs = g_object_class_list_properties (G_OBJECT_CLASS (class), &n);
       for (i = 0; i < n; i++)
         {
-          gboolean automate = sfi_pspec_check_option (pspecs[i], "automate");
-          gboolean preparation = automate || (sfi_pspec_check_option (pspecs[i], "prepared") ||
-                                              sfi_pspec_check_option (pspecs[i], "unprepared"));
+          GParamSpec *pspec = pspecs[i];
+          gboolean automate = sfi_pspec_check_option (pspec, "automate");
+          gboolean preparation = automate || (sfi_pspec_check_option (pspec, "prepared") ||
+                                              sfi_pspec_check_option (pspec, "unprepared"));
           if (preparation)
-            class->unprepared_properties = sfi_ring_append (class->unprepared_properties, pspecs[i]);
-          if (automate && g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspecs[i]), G_TYPE_DOUBLE))
-            class->automation_properties = sfi_ring_append (class->automation_properties, pspecs[i]);
+            class->unprepared_properties = sfi_ring_append (class->unprepared_properties, pspec);
+          if (automate && (pspec->flags & G_PARAM_WRITABLE) &&
+              g_type_is_a (pspec->owner_type, BSE_TYPE_SOURCE) &&
+              (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), SFI_TYPE_REAL) ||
+               g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), SFI_TYPE_BOOL) ||
+               g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), SFI_TYPE_INT) ||
+               g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), SFI_TYPE_NUM)))
+            {
+              BseSourceClass *source_class = g_type_class_ref (pspec->owner_type);
+              if (!source_class || !source_class->property_updated)
+                g_warning ("%s: ignoring automation property \"%s\" without property_updated() implementation",
+                           g_type_name (pspec->owner_type), pspec->name);
+              else
+                class->automation_properties = sfi_ring_append (class->automation_properties, pspec);
+              g_type_class_unref (source_class);
+            }
         }
       g_free (pspecs);
       class->filtered_properties = TRUE;
@@ -489,24 +503,15 @@ bse_source_set_automation_property (BseSource        *source,
     return BSE_ERROR_INVALID_MIDI_CONTROL;
   source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
-  SfiRing *ring, *aprops = BSE_SOURCE_GET_CLASS (source)->automation_properties;
-  for (ring = aprops; ring; ring = sfi_ring_walk (ring, aprops))
-    if (ring->data == pspec)
-      break;
+  SfiRing *ring = sfi_ring_find (BSE_SOURCE_GET_CLASS (source)->automation_properties, pspec);
   if (!ring)    /* !pspec or pspec not found */
     return BSE_ERROR_INVALID_PROPERTY;
   GBSearchArray *aparray = g_object_get_data (source, "BseSource-AutomationProperties"), *oarray = aparray;
   if (!aparray)
-    {
-      if (!signal_type)         /* unset */
-        return BSE_ERROR_NONE;
-      aparray = g_bsearch_array_create (&aprop_bconfig);
-    }
+    aparray = g_bsearch_array_create (&aprop_bconfig);
   BseAutomationProperty key = { pspec, }, *ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
   if (!ap)
     {
-      if (!signal_type)         /* unset */
-        return BSE_ERROR_NONE;  /* oarray == aparray */
       key.midi_channel = 0;
       key.signal_type = 0;
       aparray = g_bsearch_array_insert (aparray, &aprop_bconfig, &key);
@@ -1887,6 +1892,7 @@ bse_source_class_base_init (BseSourceClass *class)
   class->channel_defs.ochannel_labels = NULL;
   class->channel_defs.ochannel_blurbs = NULL;
   /* reset other class members */
+  class->property_updated = NULL;
   class->engine_class = NULL;
   class->filtered_properties = FALSE;
   class->unprepared_properties = NULL;

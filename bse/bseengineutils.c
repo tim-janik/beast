@@ -207,13 +207,14 @@ static BseTrans       *cqueue_trans_active_head = NULL;
 static BseTrans       *cqueue_trans_active_tail = NULL;
 static EngineUserJob  *cqueue_trash_ujobs = NULL;
 static BseJob         *cqueue_trans_job = NULL;
+static guint64         cqueue_commit_base_stamp = 1;
 
-void
+guint64
 _engine_enqueue_trans (BseTrans *trans)
 {
-  g_return_if_fail (trans != NULL);
-  g_return_if_fail (trans->comitted == TRUE);
-  g_return_if_fail (trans->jobs_head != NULL);
+  g_return_val_if_fail (trans != NULL, 0);
+  g_return_val_if_fail (trans->comitted == TRUE, 0);
+  g_return_val_if_fail (trans->jobs_head != NULL, 0);
   
   GSL_SPIN_LOCK (&cqueue_trans);
   if (cqueue_trans_pending_tail)
@@ -224,8 +225,10 @@ _engine_enqueue_trans (BseTrans *trans)
   else
     cqueue_trans_pending_head = trans;
   cqueue_trans_pending_tail = trans;
+  guint64 base_stamp = cqueue_commit_base_stamp;
   GSL_SPIN_UNLOCK (&cqueue_trans);
   sfi_cond_broadcast (&cqueue_trans_cond);
+  return base_stamp + bse_engine_block_size();  /* returns tick_stamp of when this transaction takes effect */
 }
 
 void
@@ -266,10 +269,14 @@ _engine_free_trans (BseTrans *trans)
 }
 
 BseJob*
-_engine_pop_job (void)
+_engine_pop_job (gboolean update_commit_stamp)
 {
-  /* clean up if necessary and try fetching new jobs
+  /* update_commit_stamp really means "this is the last time _engine_pop_job()
+   * is called during this tick_stamp cycle, unless it returns a job != NULL".
+   * based on that, we can update the time_stamp returned by trans_commit() if
+   * we actually return a NULL job.
    */
+  /* clean up if necessary and try fetching new jobs */
   if (!cqueue_trans_job)	/* no transaction job in communication queue */
     {
       if (cqueue_trans_active_head)	/* currently processing transaction */
@@ -286,6 +293,9 @@ _engine_pop_job (void)
 	  cqueue_trans_active_tail = cqueue_trans_pending_tail;
 	  cqueue_trans_pending_head = NULL;
 	  cqueue_trans_pending_tail = NULL;
+          cqueue_trans_job = cqueue_trans_active_head ? cqueue_trans_active_head->jobs_head : NULL;
+          if (!cqueue_trans_job && update_commit_stamp)
+            cqueue_commit_base_stamp = gsl_tick_stamp();        /* last job has been handed out */
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
 	  sfi_cond_broadcast (&cqueue_trans_cond);
 	}
@@ -297,16 +307,17 @@ _engine_pop_job (void)
 	  cqueue_trans_active_tail = cqueue_trans_pending_tail;
 	  cqueue_trans_pending_head = NULL;
 	  cqueue_trans_pending_tail = NULL;
+          cqueue_trans_job = cqueue_trans_active_head ? cqueue_trans_active_head->jobs_head : NULL;
+          if (!cqueue_trans_job && update_commit_stamp)
+            cqueue_commit_base_stamp = gsl_tick_stamp();        /* last job has been handed out */
 	  GSL_SPIN_UNLOCK (&cqueue_trans);
 	}
-      cqueue_trans_job = cqueue_trans_active_head ? cqueue_trans_active_head->jobs_head : NULL;
     }
   
   /* pick new job and out of here */
   if (cqueue_trans_job)
     {
       BseJob *job = cqueue_trans_job;
-      
       cqueue_trans_job = job->next;
       return job;
     }

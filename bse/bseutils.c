@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
+#include "topconfig.h"
 #include "bseutils.h"
 
 #include <string.h>
@@ -428,6 +429,12 @@ bse_string_equals (gconstpointer string1,
     return strcmp (string1, string2) == 0;
   else
     return string1 == string2;
+}
+
+const gchar*
+bse_intern_path_user_data (const gchar *dir)
+{
+  return g_intern_strconcat (BSE_PATH_USER_DATA ("/"), dir, NULL);
 }
 
 void

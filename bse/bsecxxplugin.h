@@ -234,12 +234,6 @@ EnumValue (int         int_value,
 #define BSE_CXX_DECLARE_CLASS(ClassType)                                        \
   extern ::Bse::ExportTypeKeeper bse_type_keeper__0##ClassType;
 #define BSE_CXX_REGISTER_EFFECT(Effect)                                         \
-  BSE_CXX_DEFINE_SET_PROPERTY (Effect ## Base);                                 \
-  BSE_CXX_DEFINE_GET_PROPERTY (Effect ## Base);                                 \
-  BSE_CXX_DEFINE_CLASS_INIT (Effect,                                            \
-                             BSE_CXX_SYM (Effect ## Base, set_property),        \
-                             BSE_CXX_SYM (Effect ## Base, get_property));       \
-  BSE_CXX_DEFINE_INSTANCE_INIT (Effect);                                        \
   BSE_CXX_DEFINE_STATIC_DATA (Effect##Base);                                    \
   template<class C> static ::BseExportNode* bse_export_node ();                 \
   template<> static ::BseExportNode*                                            \
@@ -248,9 +242,11 @@ EnumValue (int         int_value,
     static ::BseExportNodeClass cnode = {                                       \
       { NULL, ::BSE_EXPORT_NODE_CLASS, NULL, },                                 \
       "BseEffect", BSE_CXX_COMMON_CLASS_SIZE,                                   \
-      (GClassInitFunc) BSE_CXX_SYM (Effect, class_init), NULL,                  \
+      (GClassInitFunc) static_cast <void (*) (::Bse::CxxBaseClass*)>            \
+                                   (::Bse::cxx_class_init_trampoline<Effect>),  \
+      NULL,                                                                     \
       BSE_CXX_INSTANCE_OFFSET + sizeof (Effect),                                \
-      BSE_CXX_SYM (Effect, instance_init),                                      \
+      ::Bse::cxx_instance_init_trampoline<Effect>,                              \
     };                                                                          \
     if (!cnode.node.name) {                                                     \
       struct Sub { static void fill_strings (BseExportStrings *es) {            \
@@ -294,6 +290,34 @@ public:
     return enode->type;
   }
 };
+
+} // Bse
+
+/* include generated C++ core types */
+#include <bse/bsecore.gen-idl.h>        /* includes bsecxxplugin.h itself */
+
+/* define types dependant on bsecore.idl */
+namespace Bse {
+
+/* --- trampoline templates --- */
+template<class ObjectType, typename PropertyID> static void
+cxx_get_candidates_trampoline (BseItem               *item,
+                               guint                  prop_id,
+                               BsePropertyCandidates *pc,
+                               GParamSpec            *pspec)
+{
+  CxxBase *cbase = cast (item);
+  ObjectType *instance = static_cast<ObjectType*> (cbase);
+  if (0)        // check ObjectType::get_candidates() member and prototype
+    (void) static_cast<void (ObjectType::*) (PropertyID, ::Bse::PropertyCandidatesHandle&, GParamSpec*)> (&ObjectType::get_candidates);
+  ::Bse::PropertyCandidatesHandle pch (::Sfi::INIT_NULL);
+  ::Bse::PropertyCandidates *cxxpc = (::Bse::PropertyCandidates*) pc;
+  if (cxxpc)
+    pch.take (cxxpc);   /* take as pointer, not via CopyConstructor */
+  instance->get_candidates (static_cast<PropertyID> (prop_id), pch, pspec);
+  if (cxxpc)
+    pch.steal();        /* steal to avoid destruction */
+}
 
 } // Bse
 

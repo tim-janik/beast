@@ -1064,14 +1064,14 @@ _engine_master_dispatch_jobs (void)
 {
   const guint64 current_stamp = GSL_TICK_STAMP;
   guint64 last_block_tick = current_stamp + bse_engine_block_size() - 1;
-  BseJob *job = _engine_pop_job ();
+  BseJob *job = _engine_pop_job (boundary_node_list == NULL);
   /* here, we have to process _all_ pending jobs in a row. a popped job
    * stays valid until the next call to _engine_pop_job().
    */
   while (job)
     {
       master_process_job (job);
-      job = _engine_pop_job ();
+      job = _engine_pop_job (boundary_node_list == NULL);
     }
   /* process boundary jobs and possibly newly queued jobs after that. */
   if (UNLIKELY (boundary_node_list != NULL))
@@ -1097,11 +1097,11 @@ _engine_master_dispatch_jobs (void)
               }
           }
         /* process newly queued jobs if any */
-        job = _engine_pop_job ();
+        job = _engine_pop_job (!master_new_boundary_jobs);
         while (job)
           {
             master_process_job (job);
-            job = _engine_pop_job ();
+            job = _engine_pop_job (!master_new_boundary_jobs);
           }
         /* need to repeat if master_process_job() just queued a new boundary job */
       }

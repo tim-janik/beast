@@ -183,7 +183,7 @@ void       bse_trans_add                (BseTrans             *trans,
                                          BseJob               *job);
 BseTrans*  bse_trans_merge              (BseTrans             *trans1,
                                          BseTrans             *trans2);
-void       bse_trans_commit             (BseTrans             *trans);
+guint64    bse_trans_commit             (BseTrans             *trans);
 void       bse_trans_commit_delayed     (BseTrans             *trans,
                                          guint64               tick_stamp);
 void       bse_trans_dismiss            (BseTrans             *trans);

@@ -1,3 +1,56 @@
+Mon Sep 20 00:44:12 2004  Tim Janik  <timj@gtk.org>
+
+	* completed infrastructure for automation.
+
+	* bseengine.[hc]: return tick_stamp of transaction execution from
+	bse_trans_commit().
+
+	* bseenginemaster.c: provide a boolean to _engine_pop_job(), indicating
+	whether the internal tick stamp returned by bse_trans_commit() may be
+	updated.
+
+	* bseengineutils.[hc]: implemented tick_stamp return handling for
+	bse_trans_commit().
+
+	* bsemidireceiver.[hc]*: removed minimum and maximum from
+	bse_midi_receiver_add_control_handler(). instead, return whether
+	user data is setup for this handler or not. at the moment, this
+	seems to be sufficient to implement automation.
+
+	* bsesource.[hc]: added property_updated() class function. fixed
+	automation property maintenance.
+
+	* Makefile.am: fixed dependencies, install bsecore.gen-idl.h.
+
+	* bsecxxmodule.cc: include bsecore.gen-idl.h through bsecxxplugin.h,
+	so bsecore.gen-idl.h is publically available.
+
+	* bsecore.idl: use bse_intern_path_user_data() instead of macros from
+	topconfig.h.
+
+	* bseutils.[hc]: provide bse_intern_path_user_data() 
+	for bsecore.gen-idl.h.
+
+	* bsecxxbase.[hc]*: only flag writable properties as G_PARAM_CONSTRUCT.
+	added set_accessors() to setup per inheritance level property
+	handling functions. supplied trampoline templates to generate class
+	method calls.
+
+	* bsecxxmodule.[hc]*: update BSE properties through 
+	BseSourceClass.property_updated() in free() handler of automation
+	property flow accessor. properly quantize automated bool property
+	values. fixed user_data setup of midi control handler.
+	record tick_stamp  of last module update.
+
+	* bsecxxplugin.h: removed function definition macros. instead, use
+	trampoline generation templates. include <bse/bsecore.gen-idl.h>
+	after defining all required macros, implement get_candidate()
+	trampoline template which depends on class PropertyCandidates,
+	supplied by bsecore.gen-idl.h.
+
+	* bsecxxutils.[hc]*: comment updates. removed function definition
+	macros which are replaced by trampoline templates.
+
 Thu Sep 16 15:41:38 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecxxmodule.[hc]*: accessor->closure rename where appropriate.

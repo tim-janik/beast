@@ -52,12 +52,11 @@ EngineNode*	_engine_mnl_head		(void);
 
 /* --- job transactions --- */
 /* UserThread */
-void		_engine_enqueue_trans	(BseTrans	*trans);
+guint64         _engine_enqueue_trans	(BseTrans	*trans);
 BseTrans*	_engine_collect_trans	(void);
 void		_engine_wait_on_trans	(void);
 /* MasterThread */
-/* BseJob*	_engine_pop_job_timed	(glong		 max_useconds); */
-BseJob*		_engine_pop_job		(void);
+BseJob*		_engine_pop_job		(gboolean update_commit_stamp);
 gboolean	_engine_job_pending	(void);
 
 
