@@ -18,7 +18,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "configure.h"
-#include "bsepcmdevice-portaudio.h"
+#include "bsepcmdevice-portaudio.hh"
 #include <portaudio.h>
 #include <bse/gsldatautils.h>
 #include <string.h>

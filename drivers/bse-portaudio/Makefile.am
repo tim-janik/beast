@@ -27,7 +27,7 @@ drivers_LTLIBRARIES = bsepcmdevice-portaudio.la
 bsepcmdevice_portaudio_la_SOURCES = bsepcmdevice-portaudio.cc
 bsepcmdevice_portaudio_la_LDFLAGS = -module $(drivers_ldflags)
 bsepcmdevice_portaudio_la_LIBADD  = $(drivers_libs) $(PORTAUDIO_LIBS)
-EXTRA_HEADERS               += bsepcmdevice-portaudio.h
+EXTRA_HEADERS               += bsepcmdevice-portaudio.hh
 
 EXTRA_DIST += $(strip		\
 	${EXTRA_HEADERS}	\

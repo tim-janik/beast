@@ -1,3 +1,9 @@
+Mon Mar  7 07:55:46 2005  Tim Janik  <timj@gtk.org>
+
+        * removed obsolete .h C++ headers.
+
+        * adapted sources to compile against .hh C++ headers.
+
 Sat Dec 18 23:02:07 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsepcmdevice-portaudio.cc: Fix compiler warning: latency in frames
