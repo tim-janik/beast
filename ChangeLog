@@ -1,3 +1,10 @@
+Fri Mar  7 14:53:17 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/Makefile.am: scan debugging keys and dump
+	them to bstdebugkeys.defs.
+
+	* bstmain.c: debugging options revamp.
+
 Fri Mar  7 03:46:44 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackrollctrl.c: fixup status messages.

@@ -3,7 +3,6 @@ FIXMES:
 - serialization of homogeneous sequences could store the field type code only once
 - storage: data pocket: use typed serialization instead of #-hack for generic values
 - MidiEvent (serialization)
-- save errno across logging/debugging
 - fix "Test column with popup"
 - make bst_catalog_get_action() always return an action, so callers don't need to check
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id

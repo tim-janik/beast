@@ -21,6 +21,28 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+
+/* --- job definitions --- */
+enum {
+  JOB_SKIP_KEYS,
+  JOB_SCAN_KEYS,
+};
+
+
+/* --- variables and global setup --- */
+static GHashTable  *match_key_ht = NULL;
+static GScanner    *scanner = NULL;
+static guint        job = JOB_SCAN_KEYS;
+static GHashTable  *need_key_ht = NULL;
+static GHashTable  *skip_key_ht = NULL;
+static const gchar *template_start = "";
+static const gchar *template_key   = "%s\n";
+static const gchar *template_end   = "";
+static guint        n_printed = 0;
+static gboolean	    count_keys = FALSE;
+
+
+/* --- scanner configuration --- */
 static GScannerConfig scanner_config =
 {
   (
@@ -37,7 +59,7 @@ static GScannerConfig scanner_config =
    G_CSET_A_2_Z
    G_CSET_DIGITS
    )			/* cset_identifier_nth */,
-  ( "#\n" )		/* cpair_comment_single */,
+  ( 0 /*"#\n"*/ )	/* cpair_comment_single */,
 
   FALSE			/* case_sensitive */,
 
@@ -65,21 +87,7 @@ static GScannerConfig scanner_config =
 };
 
 
-enum {
-  JOB_SKIP_KEYS,
-  JOB_SCAN_KEYS,
-};
-
-static const gchar *match_key = "_";
-static GScanner    *scanner = NULL;
-static guint        job = JOB_SCAN_KEYS;
-static GHashTable  *need_key_ht = NULL;
-static GHashTable  *skip_key_ht = NULL;
-static const gchar *template_start = "";
-static const gchar *template_key   = "%s\n";
-static const gchar *template_end   = "";
-static guint        n_printed = 0;
-
+/* --- functions --- */
 static void
 scan_file (const gchar *file)
 {
@@ -97,10 +105,12 @@ scan_file (const gchar *file)
 	    g_scanner_unexp_token (scanner, G_TOKEN_IDENTIFIER, "identifier", "symbol", NULL, NULL, 0);
 #endif
 	  if (token == G_TOKEN_IDENTIFIER &&
-	      strcmp (scanner->value.v_identifier, match_key) == 0 &&
+	      g_scanner_peek_next_token (scanner) == '(' &&
+	      g_hash_table_lookup (match_key_ht, scanner->value.v_identifier) &&
 	      g_scanner_get_next_token (scanner) == '(' &&
 	      g_scanner_get_next_token (scanner) == G_TOKEN_STRING &&
-	      g_scanner_peek_next_token (scanner) == ')')
+	      (g_scanner_peek_next_token (scanner) == ')' ||
+	       scanner->next_token == ','))
 	    {
 	      gchar *key = g_strdup (scanner->value.v_string);
 	      switch (job)
@@ -159,6 +169,7 @@ main (int   argc,
   guint i;
 
   scanner = g_scanner_new (&scanner_config);
+  match_key_ht = g_hash_table_new (g_str_hash, g_str_equal);
   skip_key_ht = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
   need_key_ht = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, g_free);
   for (i = 1; i < argc; i++)
@@ -167,8 +178,13 @@ main (int   argc,
 	job = JOB_SKIP_KEYS;
       else if (strcmp ("--needkeys", argv[i]) == 0)
 	job = JOB_SCAN_KEYS;
+      else if (strcmp ("--count", argv[i]) == 0)
+	count_keys = TRUE;
       else if (strcmp ("--key", argv[i]) == 0 && i + 1 < argc)
-	match_key = argv[++i];
+	{
+	  gchar *key = argv[++i];
+	  g_hash_table_insert (match_key_ht, key, key);
+	}
       else if (strcmp ("--tmpl", argv[i]) == 0 && i + 1 < argc)
 	template_key = g_strcompress (argv[++i]);
       else if (strcmp ("--tmplkey", argv[i]) == 0 && i + 1 < argc)
@@ -185,5 +201,5 @@ main (int   argc,
   if (n_printed)
     g_print ("%s", template_end);
 
-  return n_printed != 0;
+  return count_keys ? n_printed != 0 : 0;
 }

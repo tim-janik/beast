@@ -1090,6 +1090,19 @@ bst_xpm_view_create (const gchar **xpm,
 }
 
 
+/* --- source file key scans --- */
+#include "bstdebugkeys.defs"
+#ifndef BST_DEBUG_KEYS
+#  define BST_DEBUG_KEYS	/* none */
+#endif
+static const gchar *debug_keys[] = { BST_LOG_SCAN_KEYS NULL };
+const gchar**
+bst_log_scan_keys (void)
+{
+  return debug_keys;
+}
+
+
 /* --- generated marshallers --- */
 #include "bstmarshal.c"
 

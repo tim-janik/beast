@@ -40,15 +40,9 @@ static void			bst_print_blurb		(FILE	     *fout,
 
 
 /* --- variables --- */
-BstDebugFlags       bst_debug_flags = 0;
 gboolean            beast_main_loop = TRUE;
 gboolean            bst_dvl_hints = FALSE;
 gboolean            registration_done = FALSE;
-static GDebugKey    bst_debug_keys[] = { /* keep in sync with bstdefs.h */
-  { "keytable",		BST_DEBUG_KEYTABLE, },
-  { "samples",		BST_DEBUG_SAMPLES, },
-};
-static const guint  bst_n_debug_keys = sizeof (bst_debug_keys) / sizeof (bst_debug_keys[0]);
 static gboolean     arg_force_xkb = FALSE;
 static gboolean     bst_load_plugins = TRUE;
 static const gchar *bst_rc_string =
@@ -92,17 +86,23 @@ main (int   argc,
   GSource *source;
   guint i;
 
-  /* GLib's thread and object systems
-   */
+  /* nitialize GLib guts */
   if (toyprof_mem_table && 0)
     g_mem_set_vtable (toyprof_mem_table);
   g_thread_init (NULL);
   g_type_init ();
 
-  /* pre-parse BEAST args
-   */
+  /* initialize Sfi guts */
+  sfi_init ();
+  sfi_log_allow_info ("all");
+  sfi_log_allow_debug ("misc");
+  /* ensure SFI can wake us up */
+  sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
+			 g_main_context_default (), NULL);
+
+  /* pre-parse BEAST args */
   bst_early_parse_args (&argc, &argv);
-  g_message ("BEAST: pid = %u", getpid ());
+  g_printerr ("BEAST: pid = %u", getpid ());
 
   /* initialize Gtk+ and go into threading mode
    */
@@ -129,14 +129,6 @@ main (int   argc,
 		       BST_VERSION, BST_VERSION_HINT);
   bst_splash_update_entity (splash, _("Startup"));
   bst_splash_show_now (splash);
-
-  /* initialize Sfi types
-   */
-  sfi_init ();
-
-  /* ensure SFI can wake us up */
-  sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
-			 g_main_context_default (), NULL);
 
   /* BEAST initialization
    */
@@ -398,17 +390,17 @@ bst_early_parse_args (int    *argc_p,
   
   envar = getenv ("BEAST_DEBUG");
   if (envar)
-    bst_debug_flags |= g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
+    {
+      sfi_log_allow_debug (envar);
+      sfi_log_allow_info (envar);
+    }
   envar = getenv ("BST_DEBUG");
   if (envar)
-    bst_debug_flags |= g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
-  envar = getenv ("BEAST_NO_DEBUG");
-  if (envar)
-    bst_debug_flags &= ~g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
-  envar = getenv ("BST_NO_DEBUG");
-  if (envar)
-    bst_debug_flags &= ~g_parse_debug_string (envar, bst_debug_keys, bst_n_debug_keys);
-  
+    {
+      sfi_log_allow_debug (envar);
+      sfi_log_allow_info (envar);
+    }
+
   for (i = 1; i < argc; i++)
     {
       if (strncmp (argv[i], "-:", 2) == 0)
@@ -426,71 +418,32 @@ bst_early_parse_args (int    *argc_p,
 	    }
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--beast-debug", argv[i]) == 0 ||
-	  strncmp ("--beast-debug=", argv[i], 14) == 0)
+      else if (strcmp ("--debug-list", argv[i]) == 0)
 	{
-	  gchar *equal = argv[i] + 13;
-	  
-	  if (*equal == '=')
-	    bst_debug_flags |= g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
-	  else if (i + 1 < argc)
-	    {
-	      bst_debug_flags |= g_parse_debug_string (argv[i + 1],
-						       bst_debug_keys,
-						       bst_n_debug_keys);
-	      argv[i] = NULL;
-	      i += 1;
-	    }
+	  const gchar **keys = bst_log_scan_keys ();
+	  guint i;
+	  g_print ("debug keys: all");
+	  for (i = 0; keys[i]; i++)
+	    g_print (":%s", keys[i]);
+	  g_print ("\n");
+	  exit (0);
 	  argv[i] = NULL;
 	}
-      else if (strcmp ("--bst-debug", argv[i]) == 0 ||
-	       strncmp ("--bst-debug=", argv[i], 12) == 0)
+      else if (strcmp ("--debug", argv[i]) == 0 ||
+	       strncmp ("--debug=", argv[i], 8) == 0)
 	{
-	  gchar *equal = argv[i] + 11;
+	  gchar *equal = argv[i] + 7;
 	  
 	  if (*equal == '=')
-	    bst_debug_flags |= g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
-	  else if (i + 1 < argc)
 	    {
-	      bst_debug_flags |= g_parse_debug_string (argv[i + 1],
-						       bst_debug_keys,
-						       bst_n_debug_keys);
-	      argv[i] = NULL;
-	      i += 1;
+	      sfi_log_allow_debug (equal + 1);
+	      sfi_log_allow_info (equal + 1);
 	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--beast-no-debug", argv[i]) == 0 ||
-	       strncmp ("--beast-no-debug=", argv[i], 17) == 0)
-	{
-	  gchar *equal = argv[i] + 16;
-	  
-	  if (*equal == '=')
-	    bst_debug_flags &= ~g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
 	  else if (i + 1 < argc)
 	    {
-	      bst_debug_flags &= ~g_parse_debug_string (argv[i + 1],
-							bst_debug_keys,
-							bst_n_debug_keys);
-	      argv[i] = NULL;
-	      i += 1;
-	    }
-	  argv[i] = NULL;
-	}
-      else if (strcmp ("--bst-no-debug", argv[i]) == 0 ||
-	       strncmp ("--bst-no-debug=", argv[i], 15) == 0)
-	{
-	  gchar *equal = argv[i] + 14;
-	  
-	  if (*equal == '=')
-	    bst_debug_flags &= ~g_parse_debug_string (equal + 1, bst_debug_keys, bst_n_debug_keys);
-	  else if (i + 1 < argc)
-	    {
-	      bst_debug_flags &= ~g_parse_debug_string (argv[i + 1],
-							bst_debug_keys,
-							bst_n_debug_keys);
-	      argv[i] = NULL;
-	      i += 1;
+	      argv[i++] = NULL;
+	      sfi_log_allow_debug (argv[i]);
+	      sfi_log_allow_info (argv[i]);
 	    }
 	  argv[i] = NULL;
 	}
@@ -593,10 +546,8 @@ bst_print_blurb (FILE    *fout,
       fprintf (fout, "Usage: beast [options] [files...]\n");
       fprintf (fout, "  --hints                         enrich the GUI with hints usefull for (script) developers\n");
       fprintf (fout, "  --force-xkb                     force XKB keytable queries\n");
-      fprintf (fout, "  --beast-debug=keys              enable certain BEAST debug stages\n");
-      fprintf (fout, "  --beast-no-debug=keys           disable certain BEAST debug stages\n");
-      fprintf (fout, "  --bse-debug=keys                enable certain BSE debug stages\n");
-      fprintf (fout, "  --bse-no-debug=keys             disable certain BSE debug stages\n");
+      fprintf (fout, "  --debug=keys                    enable certain verbosity stages\n");
+      fprintf (fout, "  --debug-list                    list possible debug keys\n");
       fprintf (fout, "  --print-path=resource           print the file path for a specific resource\n");
       fprintf (fout, "  -h, --help                      show this help message\n");
       fprintf (fout, "  -v, --version                   print version and file paths\n");
