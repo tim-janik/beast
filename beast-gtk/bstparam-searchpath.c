@@ -125,8 +125,8 @@ param_searchpath_create (GxkParam    *param,
       gtk_box_pack_end (GTK_BOX (box), ba, FALSE, TRUE, 0);
       g_object_connect (br, "swapped_signal::clicked", param_searchpath_popup_remove, widget, NULL);
       g_object_connect (ba, "swapped_signal::clicked", param_searchpath_popup_add, widget, NULL);
-      gtk_tooltips_set_tip (GXK_TOOLTIPS, br, tooltip, NULL);
-      gtk_tooltips_set_tip (GXK_TOOLTIPS, ba, tooltip, NULL);
+      gtk_tooltips_set_tip (GXK_TOOLTIPS, br, _("Remove directory from searchpath"), NULL);
+      gtk_tooltips_set_tip (GXK_TOOLTIPS, ba, _("Add directory to searchpath"), NULL);
     }
   else if (g_param_spec_check_option (param->pspec, "filename"))
     {
@@ -136,7 +136,7 @@ param_searchpath_create (GxkParam    *param,
       else
         bi = bst_stock_icon_button (BST_STOCK_OPEN);
       gtk_box_pack_end (GTK_BOX (box), bi, FALSE, TRUE, 0);
-      gtk_tooltips_set_tip (GXK_TOOLTIPS, bi, tooltip, NULL);
+      gtk_tooltips_set_tip (GXK_TOOLTIPS, bi, _("Open file browser"), NULL);
       g_object_connect (bi, "swapped_signal::clicked", param_searchpath_popup_replace, widget, NULL);
     }
   gtk_widget_show_all (box);

@@ -29,28 +29,69 @@ static gboolean bus_mixer_action_check          (gpointer                data,
 /* --- bus actions --- */
 enum {
   ACTION_ADD_BUS,
+  ACTION_DELETE_BUS,
 };
 static const GxkStockAction bus_mixer_actions[] = {
   { N_("Add"),          NULL,   NULL,   ACTION_ADD_BUS,        BST_STOCK_MIXER },
+  { N_("Delete"),       NULL,   NULL,   ACTION_DELETE_BUS,     BST_STOCK_TRASHCAN },
 };
 
 
 /* --- functions --- */
 G_DEFINE_TYPE (BstBusMixer, bst_bus_mixer, BST_TYPE_ITEM_VIEW);
+#define HPAD     (3)
+#define HSPACING (1)
+#define YPAD     (2 * HPAD)
+
+static gboolean
+canvas_box_expose_event (GtkWidget      *widget,
+                         GdkEventExpose *event,
+                         BstBusMixer    *self)
+{
+  GtkWidget *child = GTK_CONTAINER (self->hbox)->focus_child;
+  if (GTK_IS_ALIGNMENT (child))
+    {
+      guint tpad, bpad, lpad, rpad;
+      gtk_alignment_get_padding (GTK_ALIGNMENT (child), &tpad, &bpad, &lpad, &rpad);
+      GtkAllocation area = { 0, 0, 0, 0 };
+      gdk_window_get_size (widget->window, &area.width, &area.height);
+      area.x = child->allocation.x - HPAD;
+      area.width = child->allocation.width + HPAD * 2;
+      GdkGC *focus_gc = widget->style->base_gc[GTK_STATE_SELECTED];
+      gdk_draw_rectangle (widget->window, focus_gc, TRUE, area.x, area.y, area.width, area.height);
+      gdk_draw_vline (widget->window, widget->style->light_gc[GTK_STATE_SELECTED], area.x, area.y, area.height);
+      gdk_draw_vline (widget->window, widget->style->dark_gc[GTK_STATE_SELECTED], area.x + area.width - 1, area.y, area.height);
+    }
+  return FALSE;
+}
+
+static void
+bus_mixer_add (BstBusMixer *self,
+               GtkWidget   *widget)
+{
+  if (GTK_IS_ALIGNMENT (widget))
+    g_object_set (widget, "top-padding", YPAD, "bottom-padding", YPAD, "left-padding", HPAD, "right-padding", HPAD, NULL);
+  gtk_box_pack_start (self->hbox, widget, FALSE, TRUE, 0);
+  gxk_widget_update_actions (self);
+}
 
 static void
 bst_bus_mixer_init (BstBusMixer *self)
 {
   /* complete GUI */
   GxkRadget *radget = gxk_radget_complete (GTK_WIDGET (self), "beast", "bus-mixer", NULL);
-  (void) radget;
+  GtkWidget *canvas = gxk_radget_find (radget, "canvas");
+  self->hbox = g_object_new (GTK_TYPE_HBOX, "visible", 1, "parent", canvas, "spacing", HSPACING, NULL);
+  g_signal_connect_after (self->hbox, "set-focus-child", G_CALLBACK (gtk_widget_queue_draw), NULL);
+  g_signal_connect_object (self->hbox, "set-focus-child", G_CALLBACK (gxk_widget_update_actions), self, G_CONNECT_SWAPPED | G_CONNECT_AFTER);
+  g_signal_connect_after (self->hbox, "expose-event", G_CALLBACK (canvas_box_expose_event), self);
   /* create tool actions */
   gxk_widget_publish_actions (self, "bus-mixer-actions",
                               G_N_ELEMENTS (bus_mixer_actions), bus_mixer_actions,
                               NULL, bus_mixer_action_check, bus_mixer_action_exec);
   /* add description */
   GxkRadget *bdesc = gxk_radget_create ("beast", "bus-description", NULL);
-  gxk_radget_add (self, NULL, bdesc);
+  bus_mixer_add (self, bdesc);
 }
 
 GtkWidget*
@@ -77,8 +118,7 @@ bus_mixer_item_added (SfiProxy     container,
       self->unlisteners = g_slist_prepend (self->unlisteners, (gpointer) item);
       BST_ITEM_VIEW_GET_CLASS (self)->listen_on (iview, item);
       GtkWidget *be = bst_bus_editor_new (item);
-      gxk_radget_add (self, NULL, be);
-      gxk_widget_update_actions (self);
+      bus_mixer_add (self, be);
     }
 }
 
@@ -93,8 +133,7 @@ bus_mixer_item_removed (SfiProxy     unused1,
     {
       self->unlisteners = g_slist_remove (self->unlisteners, (gpointer) item);
       BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (iview, item);
-      GtkContainer *container = gxk_radget_find_area (self, NULL);      /* find bus-editor container */
-      GList *node, *list = gtk_container_get_children (container);
+      GList *node, *list = gtk_container_get_children (GTK_CONTAINER (self->hbox));
       for (node = list; node; node = node->next)
         if (BST_IS_BUS_EDITOR (node->data))
           {
@@ -152,9 +191,18 @@ bus_mixer_action_exec (gpointer data,
     {
       SfiProxy item;
     case ACTION_ADD_BUS:
+      bse_song_get_master_bus (song);   /* work around buggy songs (master bus missing) */
       item = bse_song_create_bus (song);
       if (item)
         bst_item_view_select (iview, item);
+      break;
+    case ACTION_DELETE_BUS:
+      if (self->hbox && BST_IS_BUS_EDITOR (GTK_CONTAINER (self->hbox)->focus_child))
+        {
+          BstBusEditor *be = BST_BUS_EDITOR (GTK_CONTAINER (self->hbox)->focus_child);
+          if (be->item != bse_song_get_master_bus (song))
+            bse_song_remove_bus (song, be->item);
+        }
       break;
     }
   gxk_widget_update_actions_downwards (self);
@@ -164,10 +212,21 @@ static gboolean
 bus_mixer_action_check (gpointer data,
                         gulong   action)
 {
+  BstBusMixer *self = BST_BUS_MIXER (data);
+  BstItemView *iview = BST_ITEM_VIEW (self);
+  SfiProxy song = iview->container;
   switch (action)
     {
     case ACTION_ADD_BUS:
       return TRUE;
+    case ACTION_DELETE_BUS:
+      if (self->hbox && BST_IS_BUS_EDITOR (GTK_CONTAINER (self->hbox)->focus_child))
+        {
+          BstBusEditor *be = BST_BUS_EDITOR (GTK_CONTAINER (self->hbox)->focus_child);
+          if (be->item != bse_song_get_master_bus (song))
+            return TRUE;
+        }
+      return FALSE;
     default:
       return FALSE;
     }

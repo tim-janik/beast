@@ -485,6 +485,25 @@ menu_button_create_button (GxkMenuButton *self,
   return self->button;
 }
 
+static gboolean
+focus_frame_expose_event (GtkWidget      *widget,
+                          GdkEventExpose *event)
+{
+  GtkFrame *frame = GTK_FRAME (widget);
+  gint x = frame->child_allocation.x - widget->style->xthickness;
+  gint y = frame->child_allocation.y - widget->style->ythickness;
+  gint width = frame->child_allocation.width + 2 * widget->style->xthickness;
+  gint height =  frame->child_allocation.height + 2 * widget->style->ythickness;
+  if (frame->shadow_type != GTK_SHADOW_NONE)
+    gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
+                     &event->area, widget, "button", x, y, width, height);
+  /* have to expose our child directly */
+  GtkWidget *child = GTK_BIN (frame)->child;
+  if (child)
+    gtk_container_propagate_expose (GTK_CONTAINER (frame), child, event);
+  return TRUE;  /* skip normal frame drawing code */
+}
+
 static void
 menu_button_layout (GxkMenuButton *self)
 {
@@ -594,7 +613,8 @@ menu_button_layout (GxkMenuButton *self)
       gtk_box_pack_start (GTK_BOX (hbox), self->islot, FALSE, TRUE, 0);
       gtk_box_pack_start (GTK_BOX (hbox), gtk_widget_get_toplevel (self->cslot), TRUE, TRUE, 0);
       /* setup focus frame */
-      self->fframe = g_object_new (GXK_TYPE_FOCUS_FRAME, "child", gtk_widget_get_toplevel (hbox), NULL);
+      self->fframe = g_object_new (GTK_TYPE_FRAME, "border-width", 1, "child", gtk_widget_get_toplevel (hbox), NULL);
+      g_signal_connect (self->fframe, "expose-event", G_CALLBACK (focus_frame_expose_event), NULL);
       gxk_nullify_in_object (self, &self->fframe);
       /* setup slots */
       ebox = g_object_new (GTK_TYPE_EVENT_BOX, "child", gtk_widget_get_toplevel (hbox), NULL);

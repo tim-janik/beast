@@ -262,9 +262,9 @@
   </xdef:item-seq-box>
   
   <!-- bus description -->
-  <xdef:bus-description inherit="GtkAlignment" border-width="3" >
+  <xdef:bus-description inherit="GtkAlignment">
     <event-box>
-      <frame shadow-type="shadow-out" >
+      <frame shadow-type="shadow-out">
 	<vbox border-width="3" spacing="3" >
 	  <!-- Name -->
 	  <label _label="Bus Name" size:window-vgroup="bus-name" />
@@ -298,11 +298,11 @@
       </frame>
     </event-box>
   </xdef:bus-description>
-
+  
   <!-- bus editor -->
-  <xdef:bus-editor inherit="BstBusEditor" border-width="3" size:window-hgroup="bus-mixer-busses" >
+  <xdef:bus-editor inherit="BstBusEditor" size:window-hgroup="bus-mixer-busses" >
     <event-box>
-      <frame shadow-type="shadow-out" >
+      <frame shadow-type="shadow-out">
 	<vbox border-width="3" spacing="3" >
 	  <!-- Name -->
 	  <alignment id="name-box" size:window-vgroup="bus-name"/>
@@ -311,7 +311,7 @@
 	  <!-- Reset -->
 	  <button label="Reset" size:window-vgroup="bus-reset" sensitive="0"/>
 	  <!-- Effects -->
-          <frame shadow-type="none" size:window-vgroup="bus-effects" >
+	  <frame shadow-type="none" size:window-vgroup="bus-effects" >
 	    <frame shadow-type="etched-in" sensitive="0">
 	      <vbox homogeneous="1">
 		<label label="Reserved"/>
@@ -335,12 +335,12 @@
 	  <!-- VolumeSpinners -->
 	  <hbox id="spinner-box" homogeneous="1" width="1" spacing="3" size:window-vgroup="bus-spinner-box" />
 	  <!-- Outputs -->
-          <alignment id="outputs-box" size:window-vgroup="bus-outputs" width="10"/>
+	  <alignment id="outputs-box" size:window-vgroup="bus-outputs" width="10"/>
 	</vbox>
       </frame>
     </event-box>
   </xdef:bus-editor>
-
+  
   <!-- bus mixer -->
   <xdef:bus-mixer inherit="BstBusMixer" border-width="3" default-area="bus-area" >
     <hbox spacing="3" >
@@ -351,17 +351,14 @@
       </alignment>
       <scrolled-window pack:expand="1" >
 	<viewport id="mixer-area" >
-	  <widget-patcher bg-as-active="1" />
-	  <alignment xalign="0" xscale="0" > <!-- open non-expanding container -->
-	    <hbox id="bus-area" expand="0" spacing="0" >
-	      <!-- FIXME: children packed here via gxk_radget_add() are still expanded -->
-	    </hbox>
-	  </alignment>
+	  <event-box id="canvas">
+	    <widget-patcher bg-as-active="1"/> <!-- patch up canvas background -->
+	  </event-box>
 	</viewport>
       </scrolled-window>
     </hbox>
   </xdef:bus-mixer>
-
+  
   <!-- bus view -->
   <xdef:bus-view inherit="BstBusView" border-width="3" >
     <vpaned>

@@ -1,3 +1,25 @@
+Tue Sep  7 01:07:31 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbusmixer.[hc]: implemented bus selection indication,
+	based on the current focus widget. allow deletion of the currently
+	selected bus.
+
+	* beast-gtk/bstbuseditor.c: grap focus on the corresponding volume 
+	spinner if a volume scale is being clicked on.
+
+	* beast-gtk/dialogs/radgets-beast.xml: padding fixups. provide an event-
+	box with altered background color as canvas widget for bus-mixer.
+
+	* beast-gtk/gxk/gxkmenubutton.c: implement combo-box focus drawing
+	via a signal handler, got rid of using GxkFocusFrame.
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: removed focus-frame, this can be
+	implemented through a simple signal handler.
+
+	* gxkcellrendererpopup.c: fixup frame colors after focus-out on toplevel.
+
+	* bstparam-searchpath.c: tooltip fixups.
+
 Mon Sep  6 18:42:02 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsttrackrollctrl.c:

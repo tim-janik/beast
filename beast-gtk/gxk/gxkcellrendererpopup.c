@@ -240,7 +240,7 @@ gxk_cell_renderer_popup_render (GtkCellRenderer     *cell,
   GxkCellRendererPopup *self = GXK_CELL_RENDERER_POPUP (cell);
   GtkStateType state = !GTK_WIDGET_IS_SENSITIVE (widget) ? GTK_STATE_INSENSITIVE :
                        !(flags & GTK_CELL_RENDERER_SELECTED) ? GTK_STATE_NORMAL :
-                       GTK_WIDGET_HAS_FOCUS (widget) ? GTK_STATE_SELECTED : GTK_STATE_ACTIVE;
+                       GTK_STATE_SELECTED; // GTK_WIDGET_HAS_FOCUS (widget) ? GTK_STATE_SELECTED : GTK_STATE_ACTIVE;
   GdkRectangle *area = cell_area;
 #if 0
   GdkGC *bg1_gc = widget->style->base_gc[state];
@@ -248,6 +248,7 @@ gxk_cell_renderer_popup_render (GtkCellRenderer     *cell,
     gdk_draw_rectangle (window, bg1_gc, TRUE, area->x, area->y, area->width, area->height);
 #endif
   GTK_CELL_RENDERER_CLASS (parent_class)->render (cell, window, widget, background_area, cell_area, expose_area, flags);
+#if 1
   if (self->popup_editing && (self->auto_popup || !self->text_editing))
     {
       GdkGC *dark_gc = widget->style->dark_gc[state];
@@ -257,6 +258,12 @@ gxk_cell_renderer_popup_render (GtkCellRenderer     *cell,
       gdk_draw_hline (window, light_gc, area->x, area->y, area->width);
       gdk_draw_vline (window, light_gc, area->x, area->y, area->height);
     }
+#else
+  if (self->popup_editing && (self->auto_popup || !self->text_editing))
+    gtk_paint_shadow (widget->style, window, state, GTK_SHADOW_ETCHED_IN,
+                      NULL, widget, NULL,
+                      area->x, area->y, area->width, area->height);
+#endif
 }
 
 void

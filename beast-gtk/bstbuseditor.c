@@ -127,6 +127,13 @@ bus_build_param (BstBusEditor *self,
   return ewidget;
 }
 
+static gboolean
+grab_focus_and_false (GtkWidget *widget)
+{
+  gtk_widget_grab_focus (widget);
+  return FALSE;
+}
+
 void
 bst_bus_editor_set_bus (BstBusEditor *self,
                         SfiProxy      item)
@@ -155,15 +162,19 @@ bst_bus_editor_set_bus (BstBusEditor *self,
       /* create and hook up volume params & scopes */
       pspec = bse_proxy_get_pspec (self->item, "left-volume-db");
       GxkParam *lvolume = bst_param_new_proxy (pspec, self->item);
+      GtkWidget *lspinner = gxk_param_create_editor (lvolume, "spinner");
       pspec = bse_proxy_get_pspec (self->item, "right-volume-db");
       GxkParam *rvolume = bst_param_new_proxy (pspec, self->item);
+      GtkWidget *rspinner = gxk_param_create_editor (rvolume, "spinner");
       BstDBMeter *dbmeter = gxk_radget_find (self, "db-meter");
       if (dbmeter)
         {
           GtkRange *range = bst_db_meter_get_scale (dbmeter, 0);
           bst_db_scale_hook_up_param (range, lvolume);
+          g_signal_connect_object (range, "button-press-event", G_CALLBACK (grab_focus_and_false), lspinner, G_CONNECT_SWAPPED);
           range = bst_db_meter_get_scale (dbmeter, 1);
           bst_db_scale_hook_up_param (range, rvolume);
+          g_signal_connect_object (range, "button-press-event", G_CALLBACK (grab_focus_and_false), rspinner, G_CONNECT_SWAPPED);
           self->lbeam = bst_db_meter_get_beam (dbmeter, 0);
           if (self->lbeam)
             bst_db_beam_set_value (self->lbeam, -G_MAXDOUBLE);
@@ -171,8 +182,8 @@ bst_bus_editor_set_bus (BstBusEditor *self,
           if (self->rbeam)
             bst_db_beam_set_value (self->rbeam, -G_MAXDOUBLE);
         }
-      gxk_radget_add (self, "spinner-box", gxk_param_create_editor (lvolume, "spinner"));
-      gxk_radget_add (self, "spinner-box", gxk_param_create_editor (rvolume, "spinner"));
+      gxk_radget_add (self, "spinner-box", lspinner);
+      gxk_radget_add (self, "spinner-box", rspinner);
       self->params = sfi_ring_prepend (self->params, lvolume);
       self->params = sfi_ring_prepend (self->params, rvolume);
       /* create remaining params */

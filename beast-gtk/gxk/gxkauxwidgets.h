@@ -85,17 +85,6 @@ typedef struct {
 GType   gxk_widget_patcher_get_type     (void);
 extern const GxkRadgetType *_gxk_widget_patcher_def;
 
-/* --- focus frame --- */
-#define GXK_TYPE_FOCUS_FRAME              (gxk_focus_frame_get_type ())
-#define GXK_FOCUS_FRAME(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_FOCUS_FRAME, GxkFocusFrame))
-#define GXK_FOCUS_FRAME_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_FOCUS_FRAME, GxkFocusFrameClass))
-#define GXK_IS_FOCUS_FRAME(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_FOCUS_FRAME))
-#define GXK_IS_FOCUS_FRAME_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_FOCUS_FRAME))
-#define GXK_FOCUS_FRAME_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_FOCUS_FRAME, GxkFocusFrameClass))
-typedef GtkFrame      GxkFocusFrame;
-typedef GtkFrameClass GxkFocusFrameClass;
-GType   gxk_focus_frame_get_type          (void);
-
 /* --- back shade --- */
 #define GXK_TYPE_BACK_SHADE              (gxk_back_shade_get_type ())
 #define GXK_BACK_SHADE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_BACK_SHADE, GxkBackShade))

@@ -38,6 +38,7 @@ struct _BstBusMixer
 {
   BstItemView      parent_object;
   GSList          *unlisteners;
+  GtkBox          *hbox;
 };
 struct _BstBusMixerClass
 {
