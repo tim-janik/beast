@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-08 16:02-0400\n"
-"PO-Revision-Date: 2004-09-08 19:50-0400\n"
+"POT-Creation-Date: 2004-09-12 11:04-0400\n"
+"PO-Revision-Date: 2004-09-12 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -274,31 +274,31 @@ msgstr "Technical description of the multi-threaded synthesis engine innards"
 msgid "Export Audio"
 msgstr "Export Audio"
 
-#: beast-gtk/bstapp.c:613 beast-gtk/bstapp.c:620 beast-gtk/bstfiledialog.c:424
-#: beast-gtk/bstfiledialog.c:431
+#: beast-gtk/bstapp.c:602 beast-gtk/bstapp.c:609 beast-gtk/bstfiledialog.c:423
+#: beast-gtk/bstfiledialog.c:430
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Opening project `%s'"
 
-#: beast-gtk/bstapp.c:680
+#: beast-gtk/bstapp.c:669
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Loading skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:847
+#: beast-gtk/bstapp.c:836
 msgid "Rack editor"
 msgstr "Rack editor"
 
-#: beast-gtk/bstapp.c:861
+#: beast-gtk/bstapp.c:850
 msgid "Preferences"
 msgstr "Preferences"
 
-#: beast-gtk/bstapp.c:888
+#: beast-gtk/bstapp.c:877
 msgid "Procedure Browser"
 msgstr "Procedure Browser"
 
-#: beast-gtk/bstapp.c:945
+#: beast-gtk/bstapp.c:934
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release Notes"
@@ -440,48 +440,48 @@ msgstr "Select Region"
 msgid "Abortion"
 msgstr "Abortion"
 
-#: beast-gtk/bstfiledialog.c:169
+#: beast-gtk/bstfiledialog.c:168
 msgid "Contents"
 msgstr "Contents"
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:201
+#: beast-gtk/bstfiledialog.c:200
 msgid "File Selection"
 msgstr "File Selection"
 
-#: beast-gtk/bstfiledialog.c:382
+#: beast-gtk/bstfiledialog.c:381
 msgid "Open Project"
 msgstr "Open Project"
 
-#: beast-gtk/bstfiledialog.c:396
+#: beast-gtk/bstfiledialog.c:395
 msgid "Select File"
 msgstr "Select File"
 
-#: beast-gtk/bstfiledialog.c:410
+#: beast-gtk/bstfiledialog.c:409
 msgid "Select Directory"
 msgstr "Select Directory"
 
-#: beast-gtk/bstfiledialog.c:449
+#: beast-gtk/bstfiledialog.c:448
 #, c-format
 msgid "Merge: %s"
 msgstr "Merge: %s"
 
-#: beast-gtk/bstfiledialog.c:462
+#: beast-gtk/bstfiledialog.c:461
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Merging project `%s'"
 
-#: beast-gtk/bstfiledialog.c:478
+#: beast-gtk/bstfiledialog.c:477
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Import MIDI: %s"
 
-#: beast-gtk/bstfiledialog.c:489
+#: beast-gtk/bstfiledialog.c:488
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importing MIDI file `%s'"
 
-#: beast-gtk/bstfiledialog.c:509
+#: beast-gtk/bstfiledialog.c:508
 #, c-format
 msgid ""
 "Failed to delete file\n"
@@ -494,27 +494,27 @@ msgstr ""
 "due to:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:538
+#: beast-gtk/bstfiledialog.c:537
 #, c-format
 msgid "Save: %s"
 msgstr "Save: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:540
+#: beast-gtk/bstfiledialog.c:539
 msgid "Fully include wave files"
 msgstr "Fully include wave files"
 
-#: beast-gtk/bstfiledialog.c:541
+#: beast-gtk/bstfiledialog.c:540
 msgid "Store references to wave files"
 msgstr "Store references to wave files"
 
-#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
+#: beast-gtk/bstfiledialog.c:561 beast-gtk/bstfiledialog.c:571
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Saving project `%s'"
 
-#: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
-#: beast-gtk/bstfiledialog.c:715
+#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:638
+#: beast-gtk/bstfiledialog.c:714
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -529,47 +529,47 @@ msgstr ""
 "`%s':\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:587
+#: beast-gtk/bstfiledialog.c:586
 msgid "Load Effect"
 msgstr "Load Effect"
 
-#: beast-gtk/bstfiledialog.c:600
+#: beast-gtk/bstfiledialog.c:599
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Merging effect `%s'"
 
-#: beast-gtk/bstfiledialog.c:617
+#: beast-gtk/bstfiledialog.c:616
 msgid "Save Effect"
 msgstr "Save Effect"
 
-#: beast-gtk/bstfiledialog.c:638 beast-gtk/bstfiledialog.c:648
+#: beast-gtk/bstfiledialog.c:637 beast-gtk/bstfiledialog.c:647
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Saving effect `%s'"
 
-#: beast-gtk/bstfiledialog.c:663
+#: beast-gtk/bstfiledialog.c:662
 msgid "Load Instrument"
 msgstr "Load Instrument"
 
-#: beast-gtk/bstfiledialog.c:676
+#: beast-gtk/bstfiledialog.c:675
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Merging instrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:693
+#: beast-gtk/bstfiledialog.c:692
 msgid "Save Instrument"
 msgstr "Save Instrument"
 
-#: beast-gtk/bstfiledialog.c:714 beast-gtk/bstfiledialog.c:724
+#: beast-gtk/bstfiledialog.c:713 beast-gtk/bstfiledialog.c:723
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Saving instrument `%s'"
 
-#: beast-gtk/bstfiledialog.c:740
+#: beast-gtk/bstfiledialog.c:739
 msgid "Load Wave"
 msgstr "Load Wave"
 
-#: beast-gtk/bstfiledialog.c:752 beast-gtk/bstfiledialog.c:754
+#: beast-gtk/bstfiledialog.c:751 beast-gtk/bstfiledialog.c:753
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Loading wave `%s'"
@@ -630,7 +630,7 @@ msgstr "Change..."
 msgid "Change the currently selected key binding"
 msgstr "Change the currently selected key binding"
 
-#: beast-gtk/bstkeybindings.c:55 beast-gtk/dialogs/radgets-beast.xml.h:24
+#: beast-gtk/bstkeybindings.c:55 beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "Raise"
 msgstr "Raise"
 
@@ -638,7 +638,7 @@ msgstr "Raise"
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr "Raise the currently selected key binding, relative to its neighbours"
 
-#: beast-gtk/bstkeybindings.c:57 beast-gtk/dialogs/radgets-beast.xml.h:18
+#: beast-gtk/bstkeybindings.c:57 beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Lower"
 msgstr "Lower"
 
@@ -1062,7 +1062,7 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Pattern Editor Layout"
 
-#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:29
+#: beast-gtk/bstpatternctrl.c:119 beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "VZoom"
 msgstr "VZoom"
 
@@ -1534,7 +1534,7 @@ msgstr ""
 "instabilities in the code (i.e. save your projects regularly)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/radgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Edit"
 msgstr "_Edit"
 
@@ -1960,18 +1960,10 @@ msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr "Swap input with output channels when displaying synthesis modules?"
 
 #: beast-gtk/bstrecords.idl:102
-msgid "Tab Width"
-msgstr "Tab Width"
-
-#: beast-gtk/bstrecords.idl:102
-msgid "Specify project tab width in pixels"
-msgstr "Specify project tab width in pixels"
-
-#: beast-gtk/bstrecords.idl:104
 msgid "Homogeneous Input Fields"
 msgstr "Homogeneous Input Fields"
 
-#: beast-gtk/bstrecords.idl:105
+#: beast-gtk/bstrecords.idl:103
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -1979,91 +1971,91 @@ msgstr ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
 
-#: beast-gtk/bstrecords.idl:113
+#: beast-gtk/bstrecords.idl:111
 msgid "Skin Name"
 msgstr "Skin Name"
 
-#: beast-gtk/bstrecords.idl:113
+#: beast-gtk/bstrecords.idl:111
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr "Name for the current skin configuration (used for skin selections)."
 
-#: beast-gtk/bstrecords.idl:115 beast-gtk/bstrecords.idl:125
-#: beast-gtk/bstrecords.idl:135
+#: beast-gtk/bstrecords.idl:113 beast-gtk/bstrecords.idl:123
+#: beast-gtk/bstrecords.idl:133
 msgid "Background Image"
 msgstr "Background Image"
 
-#: beast-gtk/bstrecords.idl:115
+#: beast-gtk/bstrecords.idl:113
 msgid "Background image used by the pattern editor."
 msgstr "Background image used by the pattern editor."
 
-#: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
-#: beast-gtk/bstrecords.idl:136
+#: beast-gtk/bstrecords.idl:114 beast-gtk/bstrecords.idl:124
+#: beast-gtk/bstrecords.idl:134
 msgid "Image shade"
 msgstr "Image shade"
 
-#: beast-gtk/bstrecords.idl:116 beast-gtk/bstrecords.idl:126
-#: beast-gtk/bstrecords.idl:136
+#: beast-gtk/bstrecords.idl:114 beast-gtk/bstrecords.idl:124
+#: beast-gtk/bstrecords.idl:134
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Percentage of background image pixel to blend over background colour."
 
-#: beast-gtk/bstrecords.idl:117 beast-gtk/bstrecords.idl:127
-#: beast-gtk/bstrecords.idl:137
+#: beast-gtk/bstrecords.idl:115 beast-gtk/bstrecords.idl:125
+#: beast-gtk/bstrecords.idl:135
 msgid "Background Color"
 msgstr "Background Colour"
 
-#: beast-gtk/bstrecords.idl:118
+#: beast-gtk/bstrecords.idl:116
 msgid "Background Shade 1"
 msgstr "Background Shade 1"
 
-#: beast-gtk/bstrecords.idl:119
+#: beast-gtk/bstrecords.idl:117
 msgid "Background Shade 2"
 msgstr "Background Shade 2"
 
-#: beast-gtk/bstrecords.idl:120
+#: beast-gtk/bstrecords.idl:118
 msgid "Empty Field Color"
 msgstr "Empty Field Colour"
 
-#: beast-gtk/bstrecords.idl:121
+#: beast-gtk/bstrecords.idl:119
 msgid "Text Color"
 msgstr "Text Colour"
 
-#: beast-gtk/bstrecords.idl:122 beast-gtk/bstrecords.idl:129
+#: beast-gtk/bstrecords.idl:120 beast-gtk/bstrecords.idl:127
 msgid "Vertical Bar Color"
 msgstr "Vertical Bar Colour"
 
-#: beast-gtk/bstrecords.idl:125
+#: beast-gtk/bstrecords.idl:123
 msgid "Background image used by the piano-roll editor."
 msgstr "Background image used by the piano-roll editor."
 
-#: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:138
+#: beast-gtk/bstrecords.idl:126 beast-gtk/bstrecords.idl:136
 msgid "Horizontal Bar Color"
 msgstr "Horizontal Bar Colour"
 
-#: beast-gtk/bstrecords.idl:130
+#: beast-gtk/bstrecords.idl:128
 msgid "Horizontal Grid Color"
 msgstr "Horizontal Grid Colour"
 
-#: beast-gtk/bstrecords.idl:131
+#: beast-gtk/bstrecords.idl:129
 msgid "Vertical Grid Color"
 msgstr "Vertical Grid Colour"
 
-#: beast-gtk/bstrecords.idl:132 beast-gtk/bstrecords.idl:139
+#: beast-gtk/bstrecords.idl:130 beast-gtk/bstrecords.idl:137
 msgid "Middle Bar Color"
 msgstr "Middle Bar Colour"
 
-#: beast-gtk/bstrecords.idl:135
+#: beast-gtk/bstrecords.idl:133
 msgid "Background image used by the control events editor."
 msgstr "Background image used by the control events editor."
 
-#: beast-gtk/bstrecords.idl:140
+#: beast-gtk/bstrecords.idl:138
 msgid "Positive Value Color"
 msgstr "Positive Value Colour"
 
-#: beast-gtk/bstrecords.idl:141
+#: beast-gtk/bstrecords.idl:139
 msgid "Zero Value Color"
 msgstr "Zero Value Colour"
 
-#: beast-gtk/bstrecords.idl:142
+#: beast-gtk/bstrecords.idl:140
 msgid "Negative Value Color"
 msgstr "Negative Value Colour"
 
@@ -2535,219 +2527,220 @@ msgstr "Apply configuration changes to the pattern editor layout"
 msgid "Available Items:"
 msgstr "Available Items:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:4
+#. Name
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Bus Name"
 msgstr "Bus Name"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Configure"
 msgstr "Configure"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Configure the column layout of the pattern editor"
 msgstr "Configure the column layout of the pattern editor"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Control Type:"
 msgstr "Control Type:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Current Items:"
 msgstr "Current Items:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "Development"
 msgstr "Development"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Discard changes and close dialog"
 msgstr "Discard changes and close dialog"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "E_xamples"
 msgstr "E_xamples"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Events"
 msgstr "Events"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "HZoom"
 msgstr "HZoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Horizontal piano zoom"
 msgstr "Horizontal piano zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Horizontal track zoom"
 msgstr "Horizontal track zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Inputs"
 msgstr "Inputs"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Layout:"
 msgstr "Layout:"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Move the selection down by one position"
 msgstr "Move the selection down by one position"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "Move the selection up by one position"
 msgstr "Move the selection up by one position"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:21
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Note _Length"
 msgstr "Note _Length"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Outputs"
 msgstr "Outputs"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Piano Notes"
 msgstr "Piano Notes"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "Repeat"
 msgstr "Repeat"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "Repeat playback within loop points"
 msgstr "Repeat playback within loop points"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "Switches"
 msgstr "Switches"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "Synthesis Modules"
 msgstr "Synthesis Modules"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "Vertical piano zoom"
 msgstr "Vertical piano zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "Virtual Rack"
 msgstr "Virtual Rack"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "Wave_s"
 msgstr "Wave_s"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "Zoom"
 msgstr "Zoom"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_Add"
 msgstr "_Add"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Apply"
 msgstr "_Apply"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_Audio Sources"
 msgstr "_Audio Sources"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Cancel"
 msgstr "_Cancel"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Distortion"
 msgstr "_Distortion"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Enhance"
 msgstr "_Enhance"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_File"
 msgstr "_File"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Filters"
 msgstr "_Filters"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Help"
 msgstr "_Help"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Input & Output"
 msgstr "_Input & Output"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Misc"
 msgstr "_Misc"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Other Sources"
 msgstr "_Other Sources"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_Project"
 msgstr "_Project"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Quantization"
 msgstr "_Quantization"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:52
 msgid "_Remove"
 msgstr "_Remove"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:52
+#: beast-gtk/dialogs/radgets-beast.xml.h:53
 msgid "_Routing"
 msgstr "_Routing"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:53
+#: beast-gtk/dialogs/radgets-beast.xml.h:54
 msgid "_Skins"
 msgstr "_Skins"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:54
+#: beast-gtk/dialogs/radgets-beast.xml.h:55
 msgid "_Song"
 msgstr "_Song"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:55
+#: beast-gtk/dialogs/radgets-beast.xml.h:56
 msgid "_Spatial"
 msgstr "_Spatial"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:56
+#: beast-gtk/dialogs/radgets-beast.xml.h:57
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:57
+#: beast-gtk/dialogs/radgets-beast.xml.h:58
 msgid "_Synthesizers"
 msgstr "_Synthesizers"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:58
+#: beast-gtk/dialogs/radgets-beast.xml.h:59
 msgid "_Tools"
 msgstr "_Tools"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:59
+#: beast-gtk/dialogs/radgets-beast.xml.h:60
 msgid "_Utilities"
 msgstr "_Utilities"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:60
+#: beast-gtk/dialogs/radgets-beast.xml.h:61
 msgid "_View"
 msgstr "_View"
 
-#: beast-gtk/dialogs/radgets-beast.xml.h:61
+#: beast-gtk/dialogs/radgets-beast.xml.h:62
 msgid "_Virtualization"
 msgstr "_Virtualization"
 
@@ -2989,7 +2982,7 @@ msgstr "Second control input"
 #: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
 #: bse/bsewaveosc.c:564 plugins/bseadder.c:101 plugins/bseatandistort.c:92
 #: plugins/bseiirfilter.c:162 plugins/bsemixer.c:109 plugins/bsemult.c:68
-#: plugins/davbassfilter.idl:35 plugins/davchorus.idl:32
+#: plugins/davbassfilter.idl:36 plugins/davchorus.idl:32
 #: plugins/davorgan.c:133 plugins/davsyndrum.c:122
 #: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
@@ -4506,9 +4499,9 @@ msgstr ""
 "\". To achieve this, the first step is to reduce the dynamic range like in "
 "the example above. As the loud parts of the music have been reduced in "
 "volume, everything can now be amplified, without risking distortion or "
-"clipping. This has the overall effect of the music sounding louder. In the above "
-"example, an output amplification of 5 dB would be okay, if the input signal "
-"never exceeded 0 dB."
+"clipping. This has the overall effect of the music sounding louder. In the "
+"above example, an output amplification of 5 dB would be okay, if the input "
+"signal never exceeded 0 dB."
 
 #: plugins/artscompressor.idl:50
 msgid "Audio input 1"
@@ -4534,7 +4527,7 @@ msgstr "Audio Out2"
 msgid "Compressed audio output 2"
 msgstr "Compressed audio output 2"
 
-#: plugins/artscompressor.idl:55 plugins/davbassfilter.idl:36
+#: plugins/artscompressor.idl:55 plugins/davbassfilter.idl:37
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parameters"
@@ -4858,43 +4851,52 @@ msgstr ""
 msgid "Audio input"
 msgstr "Audio input"
 
+#: plugins/davbassfilter.idl:35 plugins/davsyndrum.c:120
+#: plugins/davxtalstrings.c:143
+msgid "Trigger In"
+msgstr "Trigger In"
+
 #: plugins/davbassfilter.idl:35
+msgid "Trigger input"
+msgstr "Trigger input"
+
+#: plugins/davbassfilter.idl:36
 msgid "Filtered audio output"
 msgstr "Filtered audio output"
 
-#: plugins/davbassfilter.idl:37
+#: plugins/davbassfilter.idl:38
 msgid "Cutoff [%]"
 msgstr "Cutoff [%]"
 
-#: plugins/davbassfilter.idl:37
+#: plugins/davbassfilter.idl:38
 msgid "Set the cutoff frequency percentage"
 msgstr "Set the cutoff frequency percentage"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:39
 msgid "Resonance [%]"
 msgstr "Resonance [%]"
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:39
 msgid "Set the amount of resonance in percent"
 msgstr "Set the amount of resonance in percent"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:40
 msgid "Envelope Modulation [%]"
 msgstr "Envelope Modulation [%]"
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:40
 msgid "Set the envelope magnitude in percent"
 msgstr "Set the envelope magnitude in percent"
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:41
 msgid "Decay [%]"
 msgstr "Decay [%]"
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:41
 msgid "Set the decay length in percent"
 msgstr "Set the decay length in percent"
 
-#: plugins/davbassfilter.idl:41
+#: plugins/davbassfilter.idl:42
 msgid "Trigger filter"
 msgstr "Trigger filter"
 
@@ -4953,10 +4955,6 @@ msgstr "Ratio In"
 #: plugins/davsyndrum.c:118
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
 msgstr "Frequency shift ratio (assumed 1.0 if not connected)"
-
-#: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
-msgid "Trigger In"
-msgstr "Trigger In"
 
 #: plugins/davsyndrum.c:120
 msgid "Hit the drum on raising edges"
