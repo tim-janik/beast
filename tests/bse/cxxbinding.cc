@@ -39,8 +39,8 @@ int main(int argc, char **argv)
   g_print ("type_blurb(BseContainer)=%s\n", type_blurb("BseContainer").c_str());
 
   const gchar *file_name = "empty.ogg";
-  SampleFileInfoPtr info = sample_file_info (file_name);
-  if (info)
+  SampleFileInfoHandle info = sample_file_info (file_name);
+  if (info.c_ptr())
     {
       g_print ("sample_file_info(\"%s\"): file = %s, loader = %s\n",
                file_name, info->file.c_str(), info->loader.c_str());
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
   g_print ("server.get_custom_instrument_dir()=%s\n", server.get_custom_instrument_dir().c_str());
 
-  GConfigPtr prefs = GConfig::_from_rec (server.bse_preferences ());
+  GConfigHandle prefs = GConfig::_from_rec (server.bse_preferences ());
   prefs->plugin_path = "./.libs/testplugin.so";
   SfiRec *rec = GConfig::_to_rec (prefs);
   server.set_bse_preferences (rec);
