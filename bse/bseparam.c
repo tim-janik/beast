@@ -1190,39 +1190,27 @@ static const struct {
   BseType type2;
   void  (*exchange) (BseParam*, BseParam*);
 } exchange_rules[] = {
-  { BSE_TYPE_PARAM_BOOL,        BSE_TYPE_PARAM_BOOL,            param_exch_copy, },
   { BSE_TYPE_PARAM_BOOL,        BSE_TYPE_PARAM_INT,             param_exch_copy, },
   { BSE_TYPE_PARAM_BOOL,        BSE_TYPE_PARAM_UINT,            param_exch_int_uint, },
   { BSE_TYPE_PARAM_BOOL,        BSE_TYPE_PARAM_ENUM,            param_exch_copy, },
   { BSE_TYPE_PARAM_BOOL,        BSE_TYPE_PARAM_FLAGS,           param_exch_int_uint, },
-  { BSE_TYPE_PARAM_INT,         BSE_TYPE_PARAM_INT,             param_exch_copy, },
   { BSE_TYPE_PARAM_INT,         BSE_TYPE_PARAM_UINT,            param_exch_int_uint, },
   { BSE_TYPE_PARAM_INT,         BSE_TYPE_PARAM_ENUM,            param_exch_copy, },
   { BSE_TYPE_PARAM_INT,         BSE_TYPE_PARAM_FLAGS,           param_exch_int_uint, },
   { BSE_TYPE_PARAM_ENUM,        BSE_TYPE_PARAM_UINT,            param_exch_int_uint, },
-  { BSE_TYPE_PARAM_ENUM,        BSE_TYPE_PARAM_ENUM,            param_exch_copy, },
   { BSE_TYPE_PARAM_ENUM,        BSE_TYPE_PARAM_FLAGS,           param_exch_int_uint, },
   { BSE_TYPE_PARAM_FLAGS,       BSE_TYPE_PARAM_UINT,            param_exch_copy, },
-  { BSE_TYPE_PARAM_FLAGS,       BSE_TYPE_PARAM_FLAGS,           param_exch_copy, },
   { BSE_TYPE_PARAM_FLOAT,       BSE_TYPE_PARAM_BOOL,            param_exch_float_int, },
   { BSE_TYPE_PARAM_FLOAT,       BSE_TYPE_PARAM_INT,             param_exch_float_int, },
   { BSE_TYPE_PARAM_FLOAT,       BSE_TYPE_PARAM_UINT,            param_exch_float_uint, },
   { BSE_TYPE_PARAM_FLOAT,       BSE_TYPE_PARAM_ENUM,            param_exch_float_int, },
   { BSE_TYPE_PARAM_FLOAT,       BSE_TYPE_PARAM_FLAGS,           param_exch_float_uint, },
-  { BSE_TYPE_PARAM_FLOAT,       BSE_TYPE_PARAM_FLOAT,           param_exch_copy, },
   { BSE_TYPE_PARAM_FLOAT,       BSE_TYPE_PARAM_DOUBLE,          param_exch_float_double, },
   { BSE_TYPE_PARAM_DOUBLE,      BSE_TYPE_PARAM_BOOL,            param_exch_double_int, },
   { BSE_TYPE_PARAM_DOUBLE,      BSE_TYPE_PARAM_INT,             param_exch_double_int, },
   { BSE_TYPE_PARAM_DOUBLE,      BSE_TYPE_PARAM_UINT,            param_exch_double_uint, },
   { BSE_TYPE_PARAM_DOUBLE,      BSE_TYPE_PARAM_ENUM,            param_exch_double_int, },
   { BSE_TYPE_PARAM_DOUBLE,      BSE_TYPE_PARAM_FLAGS,           param_exch_double_uint, },
-  { BSE_TYPE_PARAM_DOUBLE,      BSE_TYPE_PARAM_DOUBLE,          param_exch_copy, },
-  { BSE_TYPE_PARAM_TIME,        BSE_TYPE_PARAM_TIME,            param_exch_copy, },
-  { BSE_TYPE_PARAM_NOTE,        BSE_TYPE_PARAM_NOTE,            param_exch_copy, },
-  { BSE_TYPE_PARAM_INDEX_2D,    BSE_TYPE_PARAM_INDEX_2D,        param_exch_copy, },
-  { BSE_TYPE_PARAM_STRING,      BSE_TYPE_PARAM_STRING,          param_exch_copy, },
-  { BSE_TYPE_PARAM_DOTS,        BSE_TYPE_PARAM_DOTS,            param_exch_copy, },
-  { BSE_TYPE_PARAM_ITEM,        BSE_TYPE_PARAM_ITEM,            param_exch_copy, },
 };
 static const guint n_exchange_rules = sizeof (exchange_rules) / sizeof (exchange_rules[0]);
 static inline void
@@ -1233,6 +1221,13 @@ static inline void
 {
   guint i;
   
+  if (type1 == type2)
+    {
+      if (must_swap)
+	*must_swap = FALSE;
+      return param_exch_copy;
+    }
+
   for (i = 0; i < n_exchange_rules; i++)
     {
       if (exchange_rules[i].type1 == type1 &&
@@ -1280,7 +1275,11 @@ bse_param_values_exchange (BseParam *param1,
                                           BSE_FUNDAMENTAL_TYPE (param2->pspec->type),
                                           &must_swap);
   if (exchange_value)
-    exchange_value (must_swap ? param2 : param1, must_swap ? param1 : param2);
+    {
+      exchange_value (must_swap ? param2 : param1, must_swap ? param1 : param2);
+      bse_param_validate (param1);
+      bse_param_validate (param2);
+    }
   
   return exchange_value != NULL;
 }

@@ -1,3 +1,11 @@
+Wed Feb  9 03:17:18 2000  Tim Janik  <timj@gtk.org>
+
+	* bseparam.c (param_exchange_lookup): a conversion rule for
+	BSE_TYPE_PARAM_UINT <=> BSE_TYPE_PARAM_UINT was missing.
+	optimized exchange function table lookups by returning
+	param_exch_copy() right away for equal types.
+	(bse_param_values_exchange): validate parameters after exchanging.
+
 Wed Feb  9 00:53:20 2000  Tim Janik  <timj@gtk.org>
 
 	* bsepattern.h (struct _BsePatternClass): put a comment to not confuse
