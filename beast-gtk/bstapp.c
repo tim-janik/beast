@@ -19,7 +19,6 @@
 
 #include	"../PKG_config.h"
 
-#include	"bstsampleshell.h"
 #include	"bstsongshell.h"
 #include	"bstwavereposhell.h"
 #include	"bstsnetshell.h"
@@ -333,10 +332,6 @@ bst_app_create_super_shell (BstApp  *app,
 			    NULL);
   else if (BSW_IS_WAVE_REPO (super))
     shell = gtk_widget_new (BST_TYPE_WAVE_REPO_SHELL,
-			    "visible", TRUE,
-			    NULL);
-  else if (bsw_object_is_a (super, "BseSample"))
-    shell = gtk_widget_new (BST_TYPE_SAMPLE_SHELL,
 			    "visible", TRUE,
 			    NULL);
   else

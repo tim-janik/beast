@@ -1,3 +1,13 @@
+Tue Feb  5 04:37:13 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsequence.[hc]: new simple widget handling BseSequence
+	editing.
+
+	* beast-gtk/bstsampleshell.[hc]:
+	* beast-gtk/bstsamplerepo.[hc]: get rid of this, outdated.
+
+	* beast-gtk/bstparam.[hc]: support BseSequence.
+
 Sun Feb  3 23:16:31 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstwavedialog.[hc]: new file selection dialog to

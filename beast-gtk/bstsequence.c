@@ -1,0 +1,320 @@
+/* BEAST - Bedevilled Audio System
+ * Copyright (C) 2002 Tim Janik
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include "bstsequence.h"
+
+#include <gtk/gtkdrawingarea.h>
+#include <bse/bseglobals.h>
+
+
+/* --- prototypes --- */
+static void     bst_sequence_class_init	(BstSequenceClass	*class);
+static void     bst_sequence_init	(BstSequence		*sequence);
+static void     bst_sequence_finalize	(GObject		*object);
+static gint	darea_configure_event	(BstSequence		*seq,
+					 GdkEventConfigure	*event);
+static gint	darea_cross_event	(BstSequence		*seq,
+					 GdkEventCrossing	*event);
+static gint	darea_expose_event	(BstSequence		*seq,
+					 GdkEventExpose		*event);
+static gint	darea_button_event	(BstSequence		*seq,
+					 GdkEventButton		*event);
+static gint	darea_motion_event	(BstSequence		*seq,
+					 GdkEventMotion		*event);
+
+
+/* --- varibales --- */
+static GtkWidgetClass *parent_class = NULL;
+static guint           seq_changed_signal = 0;
+
+
+/* --- fucntions --- */
+GtkType
+bst_sequence_get_type (void)
+{
+  static GType type = 0;
+
+  if (!type)
+    {
+      static const GTypeInfo type_info = {
+	sizeof (BstSequenceClass),
+	(GBaseInitFunc) NULL,
+	(GBaseFinalizeFunc) NULL,
+	(GClassInitFunc) bst_sequence_class_init,
+	NULL,   /* class_finalize */
+	NULL,   /* class_data */
+	sizeof (BstSequence),
+	0,      /* n_preallocs */
+	(GInstanceInitFunc) bst_sequence_init,
+      };
+
+      type = g_type_register_static (GTK_TYPE_HBOX,
+				     "BstSequence",
+				     &type_info, 0);
+    }
+
+  return type;
+}
+
+static void
+bst_sequence_class_init (BstSequenceClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  /* GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class); */
+
+  parent_class = g_type_class_peek_parent (class);
+  
+  gobject_class->finalize = bst_sequence_finalize;
+
+  seq_changed_signal = gtk_signal_new ("seq-changed",
+				       GTK_RUN_LAST,
+				       GTK_CLASS_TYPE (object_class),
+				       GTK_SIGNAL_OFFSET (BstSequenceClass, seq_changed),
+				       gtk_signal_default_marshaller,
+				       GTK_TYPE_NONE, 0);
+}
+
+static void
+bst_sequence_init (BstSequence *seq)
+{
+  GtkWidget *frame;
+
+  frame = gtk_widget_new (GTK_TYPE_FRAME,
+			  "visible", TRUE,
+			  "label", NULL,
+			  "shadow", GTK_SHADOW_IN,
+			  "border_width", 0,
+			  "parent", seq,
+			  NULL);
+
+  seq->darea = g_object_new (GTK_TYPE_DRAWING_AREA,
+			     "visible", TRUE,
+			     "height_request", 50,
+			     "parent", frame,
+			     "events", (GDK_EXPOSURE_MASK |
+					GDK_ENTER_NOTIFY_MASK |
+					GDK_LEAVE_NOTIFY_MASK |
+					GDK_BUTTON_PRESS_MASK |
+					GDK_BUTTON_RELEASE_MASK |
+					GDK_BUTTON1_MOTION_MASK),
+			     NULL);
+  g_object_connect (seq->darea,
+		    "swapped_signal::destroy", g_nullify_pointer, &seq->darea,
+		    "swapped_object_signal::configure_event", darea_configure_event, seq,
+		    "swapped_object_signal::expose_event", darea_expose_event, seq,
+		    "swapped_object_signal::enter_notify_event", darea_cross_event, seq,
+		    "swapped_object_signal::leave_notify_event", darea_cross_event, seq,
+		    "swapped_object_signal::button_press_event", darea_button_event, seq,
+		    "swapped_object_signal::button_release_event", darea_button_event, seq,
+		    "swapped_object_signal::motion_notify_event", darea_motion_event, seq,
+		    NULL);
+
+  seq->n_rows = 13;
+  seq->sd = bse_sequence_new (1, BSE_KAMMER_NOTE);
+}
+
+static void
+bst_sequence_finalize (GObject *object)
+{
+  BstSequence *seq = BST_SEQUENCE (object);
+
+  bse_sequence_free (seq->sd);
+
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+void
+bst_sequence_set_seq (BstSequence *seq,
+		      BseSequence *seq_data)
+{
+  g_return_if_fail (BST_IS_SEQUENCE (seq));
+
+  bse_sequence_free (seq->sd);
+  if (seq_data)
+    seq->sd = bse_sequence_copy (seq_data);
+  else
+    seq->sd = bse_sequence_new (1, BSE_KAMMER_NOTE);
+  gtk_widget_queue_draw (seq->darea);
+}
+
+static gint
+darea_configure_event (BstSequence       *seq,
+		       GdkEventConfigure *event)
+{
+  GtkWidget *widget = seq->darea;
+
+  gdk_window_set_background (widget->window, &widget->style->base[GTK_WIDGET_STATE (widget)]);
+
+  return TRUE;
+}
+
+static gint
+darea_cross_event (BstSequence      *seq,
+		   GdkEventCrossing *event)
+{
+  GtkWidget *widget = seq->darea;
+
+  if (event->type == GDK_ENTER_NOTIFY)
+    seq->entered = TRUE;
+  else if (event->type == GDK_LEAVE_NOTIFY)
+    {
+      if (seq->entered)
+	seq->entered = FALSE;
+    }
+
+  gtk_widget_queue_draw (widget);
+
+  return TRUE;
+}
+
+static gint
+darea_expose_event (BstSequence    *seq,
+		    GdkEventExpose *event)
+{
+  GtkWidget *widget = seq->darea;
+  BseSequence *sdata = seq->sd;
+  GdkDrawable *drawable = widget->window;
+  GdkGC *fg_gc = widget->style->black_gc;
+  GdkGC *bg_gc = widget->style->base_gc[GTK_WIDGET_STATE (widget)];
+  GdkGC *hl_gc = widget->style->bg_gc[GTK_STATE_SELECTED];
+  gint width, height, maxx, maxy;
+  gfloat nwidth, row_height;
+  gint i, j;
+
+  gdk_window_get_size (widget->window, &width, &height);
+  maxx = width - 1;
+  maxy = height - 1;
+
+  /* clear background
+   */
+  gdk_draw_rectangle (drawable, bg_gc,
+		      TRUE,
+		      0,
+		      0,
+		      width,
+		      height);
+
+  /* draw rectangles */
+  row_height = maxy / (gfloat) seq->n_rows;
+  nwidth = maxx / (gfloat) sdata->n_notes;
+  for (i = 0; i < sdata->n_notes; i++)
+    for (j = 0; j < seq->n_rows; j++)
+      {
+	gboolean ncheck = sdata->notes[i].note == (seq->n_rows - 1 - j) + sdata->offset;
+	
+	if (ncheck)
+	  gdk_draw_rectangle (drawable, hl_gc, TRUE,
+			      i * nwidth + 0.5, j * row_height + 0.5,
+			      nwidth, row_height);
+	gdk_draw_rectangle (drawable, fg_gc, FALSE,
+			    i * nwidth + 0.5, j * row_height + 0.5,
+			    nwidth, row_height);
+      }
+  
+  return TRUE;
+}
+
+static gint
+darea_button_event (BstSequence    *seq,
+		    GdkEventButton *event)
+{	
+  GtkWidget *widget = seq->darea;
+  BseSequence *sdata = seq->sd;
+  gboolean changed = FALSE;
+
+  if (event->type == GDK_BUTTON_PRESS)
+    {
+      if (event->button == 1)
+	{
+	  gint width, height, maxx, maxy;
+	  gfloat nwidth, row_height;
+	  gint dx, dy;
+	  
+	  gdk_window_get_size (widget->window, &width, &height);
+	  maxx = width - 1;
+	  maxy = height - 1;
+	  row_height = maxy / (gfloat) seq->n_rows;
+	  nwidth = maxx / (gfloat) sdata->n_notes;
+	  
+	  dx = event->x / nwidth;
+	  dy = event->y / row_height;
+	  dy = seq->n_rows - 1 - CLAMP (dy, 0, seq->n_rows - 1);
+	  if (dx >= 0 && dx < sdata->n_notes &&
+	      sdata->notes[dx].note != dy + sdata->offset)
+	    {
+	      sdata->notes[dx].note = dy + sdata->offset;
+	      changed = TRUE;
+	    }
+	}
+      else if (event->button == 2)
+	{
+	  guint i;
+
+	  for (i = 0; i < sdata->n_notes; i++)
+	    sdata->notes[i].note = sdata->offset;
+	  changed = TRUE;
+	}
+    }
+  if (changed)
+    {
+      g_signal_emit (seq, seq_changed_signal, 0);
+      gtk_widget_queue_draw (widget);
+    }
+  
+  return TRUE;
+}
+
+static gint
+darea_motion_event (BstSequence    *seq,
+		    GdkEventMotion *event)
+{
+  GtkWidget *widget = seq->darea;
+  BseSequence *sdata = seq->sd;
+  gboolean changed = FALSE;
+
+  if (event->type == GDK_MOTION_NOTIFY && !event->is_hint)
+    {
+      gint width, height, maxx, maxy;
+      gfloat nwidth, row_height;
+      gint dx, dy;
+
+      gdk_window_get_size (widget->window, &width, &height);
+      maxx = width - 1;
+      maxy = height - 1;
+      row_height = maxy / (gfloat) seq->n_rows;
+      nwidth = maxx / (gfloat) sdata->n_notes;
+
+      dx = event->x / nwidth;
+      dy = event->y / row_height;
+      dy = seq->n_rows - 1 - CLAMP (dy, 0, seq->n_rows - 1);
+      if (dx >= 0 && dx < sdata->n_notes &&
+	  sdata->notes[dx].note != dy + sdata->offset)
+	{
+	  sdata->notes[dx].note = dy + sdata->offset;
+	  changed = TRUE;
+	}
+    }
+  if (changed)
+    {
+      g_signal_emit (seq, seq_changed_signal, 0);
+      gtk_widget_queue_draw (widget);
+    }
+  
+  return TRUE;
+}

@@ -18,9 +18,9 @@
  */
 #include	"bstparam.h"
 
-#include	"bstsamplerepo.h"
 #include	"bstdial.h"
 #include	"bstxframe.h"
+#include	"bstsequence.h"
 #include	<stdlib.h>
 #include	<math.h>
 #include	<string.h>
@@ -152,22 +152,7 @@ bst_param_update_clue_hunter (BstParam *bparam)
   
   g_return_if_fail (G_PARAM_SPEC_TYPE (pspec) == G_TYPE_PARAM_OBJECT && GTK_IS_CLUE_HUNTER (ch));
   
-  if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SAMPLE))
-    {
-      GList *free_list = bst_sample_repo_list_sample_locs (), *list;
-      
-      gtk_clue_hunter_remove_matches (ch, "*");
-      
-      for (list = free_list; list; list = list->next)
-	{
-	  BstSampleLoc *loc = list->data;
-	  
-	  /* FIXME: showing the repo as well would be nice */
-	  gtk_clue_hunter_add_string (ch, loc->name);
-	}
-      g_list_free (free_list);
-    }
-  else if (bparam->is_object && BSE_IS_ITEM (bparam->owner) &&
+  if (bparam->is_object && BSE_IS_ITEM (bparam->owner) &&
 	   g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_ITEM))
     {
       BseItem *item = BSE_ITEM (bparam->owner);
@@ -756,6 +741,31 @@ bst_param_create (gpointer	owner,
       bst_gmask_set_tip (group, tooltip);
       bst_gmask_pack (group);
       break;
+    case G_TYPE_BOXED:
+      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SEQUENCE))
+	{
+	  prompt = gtk_widget_new (GTK_TYPE_LABEL,
+				   "visible", TRUE,
+				   "label", name,
+				   "justify", GTK_JUSTIFY_LEFT,
+				   "xalign", 0.0,
+				   "parent", g_object_new (BST_TYPE_XFRAME,
+							   "visible", TRUE,
+							   NULL),
+				   NULL);
+	  action = g_object_new (BST_TYPE_SEQUENCE,
+				 "visible", TRUE,
+				 NULL);
+	  g_object_connect (action,
+			    "swapped_signal::seq-changed", bst_param_gtk_changed, bparam,
+			    NULL);
+	  group = bst_gmask_form_big (parent_container, action);
+	  bst_gmask_set_prompt (group, prompt);
+	  bst_gmask_set_tip (group, tooltip);
+	  bst_gmask_pack (group);
+	  break;
+	}
+      /* fall through */
     default:
       g_warning ("unknown param type: `%s'", pspec->name);
       group = NULL;
@@ -881,6 +891,15 @@ bst_param_update (BstParam *bparam)
 	    }
 	}
       break;
+    case G_TYPE_BOXED:
+      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SEQUENCE))
+	{
+	  action = bst_gmask_get_action (group);
+	  bst_sequence_set_seq (BST_SEQUENCE (action),
+				g_value_get_boxed (value));
+	  break;
+	}
+      /* fall through */
     case G_TYPE_FLAGS:
     default:
       g_warning ("unknown param type: `%s'", pspec->name);
@@ -1023,19 +1042,6 @@ bst_param_apply (BstParam *bparam,
 	      g_list_free (free_list);
 	    }
 	  
-	  /* check whether this refers to an on-disk sample that we can demand load */
-	  if (!item && g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SAMPLE))
-	    {
-	      BstSampleLoc *loc = bst_sample_repo_find_sample_loc (string);
-	      
-	      if (loc)
-		{
-		  g_message ("demand loading: %s (%s)", loc->name, loc->repo->name);
-		  
-		  item = (BseItem*) bst_sample_repo_load_sample (loc, project);
-		}
-	    }
-	  
 	  /* ok, found one or giving up */
 	  g_value_set_object (value, (GObject*) item);
 	  g_free (string);
@@ -1056,6 +1062,14 @@ bst_param_apply (BstParam *bparam,
 	  g_value_set_enum (value, ev->value);
 	}
       break;
+    case G_TYPE_BOXED:
+      if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_SEQUENCE))
+	{
+	  action = bst_gmask_get_action (group);
+	  g_value_set_boxed (value, BST_SEQUENCE (action)->sd);
+	  break;
+	}
+      /* fall through */
     case G_TYPE_FLAGS:
     default:
       g_warning ("unknown param type: `%s'", pspec->name);

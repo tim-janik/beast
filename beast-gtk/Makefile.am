@@ -63,8 +63,7 @@ beast_headers = $(strip \
 	bstqsampler.h \
 	bstracktable.h \
 	bstradiotools.h \
-	bstsamplerepo.h \
-	bstsampleshell.h \
+	bstsequence.h \
 	bstservermonitor.h \
 	bstsnetshell.h \
 	bstsnetrouter.h \
@@ -108,9 +107,8 @@ beast_sources = $(strip \
 	bstprocedure.c \
 	bstqsampler.c \
 	bstradiotools.c \
+	bstsequence.c \
 	bstracktable.c \
-	bstsamplerepo.c \
-	bstsampleshell.c \
 	bstservermonitor.c \
 	bstsnetshell.c \
 	bstsnetrouter.c \

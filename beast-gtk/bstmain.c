@@ -18,7 +18,6 @@
 #include        "bstdefs.h"
 
 #include        "bstapp.h"
-#include        "bstsamplerepo.h"
 #include	"bstxkb.h"
 #include	"bstkeytables.h"
 #include	"bstgconfig.h"
@@ -224,11 +223,6 @@ main (int   argc,
     g_assert (BSE_IS_PCM_DEVICE (bse_object_from_id (pdev)));
   }
 #endif
-  
-  /* register sample repositories
-   */
-  bst_sample_repo_init ();
-  
   
   /* open files given on command line
    */
