@@ -1,3 +1,15 @@
+Tue Mar  2 22:49:22 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/gadgets-beast.xml: added vscale to pattern views.
+
+	* beast-gtk/bstpartdialog.c: setup vertical resizer for pattern view.
+	constrain resizer proportions to 1:10 instead of 1:20.
+
+	* beast-gtk/bstpatternview.c: handle last-tick changes on the part.
+	properly implemented last_row as a result of vadjustment->upper.
+	improved intra-column focus handling by distance calculation.
+	constrain the vadjustment boundaries on ::adjustment-changed.
+
 Tue Mar  2 16:36:37 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterncolumns.c: draw event values bold, similar

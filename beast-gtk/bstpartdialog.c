@@ -199,7 +199,11 @@ bst_part_dialog_init (BstPartDialog *self)
   srange = gxk_gadget_find (gadget, "pattern-view-hscrollbar");
   gxk_scroll_canvas_set_hadjustment (GXK_SCROLL_CANVAS (self->pview), gtk_range_get_adjustment (srange));
   srange = gxk_gadget_find (gadget, "pattern-view-vscrollbar");
-  gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->pview), gtk_range_get_adjustment (srange));
+  adj = gtk_range_get_adjustment (srange);
+  gxk_scroll_canvas_set_vadjustment (GXK_SCROLL_CANVAS (self->pview), adj);
+  adj = resizer_adjustment_create (adj);
+  srange = gxk_gadget_find (gadget, "pattern-view-vscale");
+  gtk_range_set_adjustment (srange, adj);
   self->pvctrl = bst_pattern_controller_new (self->pview, self->pictrl->quant_rtools);
 
   /* pattern view controls */
@@ -396,7 +400,7 @@ resizer_adjustment_value_changed (GtkAdjustment *adj)
 static GtkAdjustment*
 resizer_adjustment_create (GtkAdjustment *client)
 {
-  GtkAdjustment *adj = (GtkAdjustment*) gtk_adjustment_new (0, 0, 1 - 0.05, 0.0001, 0.1, 0);
+  GtkAdjustment *adj = (GtkAdjustment*) gtk_adjustment_new (0, 0, 1 - 0.1, 0.0001, 0.1, 0);
   g_object_set_data_full (adj, "client", g_object_ref (client), g_object_unref);
   resizer_adjustment_client_changed (adj);
   g_signal_connect_object (client, "changed", G_CALLBACK (resizer_adjustment_client_changed), adj, G_CONNECT_SWAPPED);

@@ -301,11 +301,19 @@
 	  <frame-shadow-in pack:expand="1" >
 	    <pattern-view />
 	  </frame-shadow-in>
-	  <vscrollbar name="pattern-view-vscrollbar" size:hgroup="scroll-size" />
+	  <hbox spacing="1" >
+	    <vscrollbar name="pattern-view-vscrollbar" size:hgroup="scroll-size" />
+	    <vscale name="pattern-view-vscale" size:hgroup="scroll-size" >
+	      <tooltip _text="Adjust pattern length" />
+	    </vscale>
+	  </hbox>
 	</hbox>
 	<hbox >
 	  <hscrollbar name="pattern-view-hscrollbar" expand="1" />
-	  <alignment size:hgroup="scroll-size" />
+          <hbox spacing="1" >
+	    <alignment size:hgroup="scroll-size" />
+	    <alignment size:hgroup="scroll-size" />
+	  </hbox>
 	</hbox>
       </vbox>
     </notebook>
