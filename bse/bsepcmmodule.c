@@ -83,7 +83,7 @@ bse_pcm_omodule_process (BseModule *module,
   const gfloat *src;
   guint i;
   
-  g_return_if_fail (n_values == mdata->n_values >> 1);
+  g_return_if_fail (n_values == mdata->n_values / BSE_PCM_MODULE_N_JSTREAMS);
   
   if (BSE_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_LEFT).n_connections)
     src = BSE_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_LEFT, 0);
@@ -209,19 +209,18 @@ bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
   gfloat *right = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_RIGHT);
   gsize l;
   
-  g_return_if_fail (n_values <= mdata->n_values >> 1);
+  g_return_if_fail (n_values <= mdata->n_values / BSE_PCM_MODULE_N_OSTREAMS);
 
   if (mdata->handle->readable)
     {
-      guint n = mdata->n_values >> 1; /* in frames */
-      l = bse_pcm_handle_read (mdata->handle, n, mdata->buffer);
-      g_return_if_fail (l == n);
+      l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
+      g_return_if_fail (l == mdata->n_values);
     }
   else
     memset (mdata->buffer, 0, mdata->n_values * sizeof (gfloat));
 
   /* due to suspend/resume, we may be called with partial read requests */
-  const gfloat *s = mdata->buffer + mdata->n_values - (n_values << 1);
+  const gfloat *s = mdata->buffer + mdata->n_values - (n_values * BSE_PCM_MODULE_N_OSTREAMS);
   const gfloat *b = mdata->bound;
   do
     {

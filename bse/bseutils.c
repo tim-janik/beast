@@ -141,11 +141,11 @@ bse_note_sequence_length (BseNoteSequence *rec)
 
 void
 bse_property_candidate_relabel (BsePropertyCandidates *pc,
-                                const gchar           *nick,
+                                const gchar           *label,
                                 const gchar           *tooltip)
 {
-  g_free (pc->nick);
-  pc->nick = g_strdup (nick);
+  g_free (pc->label);
+  pc->label = g_strdup (label);
   g_free (pc->tooltip);
   pc->tooltip = g_strdup (tooltip);
 }

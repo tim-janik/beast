@@ -1,3 +1,11 @@
+Fri Oct  8 18:57:40 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepcmmodule.c (bse_pcm_imodule_process): fixed recently broken value
+	count for bse_pcm_handle_read().
+
+	* bsecore.idl: renamed PropertyCandidates.label from nick, 
+	adapted users.
+
 Fri Oct  8 14:21:06 2004  Tim Janik  <timj@gtk.org>
 
 	* bseobject.[hc]: added bse_object_strdup_debug_handle() for 

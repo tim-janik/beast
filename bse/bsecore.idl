@@ -430,7 +430,7 @@ sequence ItemSeq {
 
 record PropertyCandidates {
   Info    BLURB      = ("A strcuture describing tentative property values.");
-  String  nick;
+  String  label;
   String  tooltip;
   ItemSeq items;
   TypeSeq partitions = ("Type Partitions", "List of types which may logically partition the list of items by type discrimination", STANDARD);

@@ -53,7 +53,7 @@ void                bse_note_sequence_resize         (BseNoteSequence       *rec
                                                       guint                  length);
 guint               bse_note_sequence_length         (BseNoteSequence       *rec);
 void                bse_property_candidate_relabel   (BsePropertyCandidates *pc,
-                                                      const gchar           *nick,
+                                                      const gchar           *label,
                                                       const gchar           *tooltip);
 void                bse_item_seq_remove              (BseItemSeq            *iseq,
                                                       BseItem               *item);
