@@ -27,16 +27,16 @@ dang("Config file unreadable!") unless (-r $config);
 do $config;
 dang("Config file error: $@") if $@;
 
-if (defined $doc_input and defined $doc_output) {
-  if ($doc_input ne "stdin" and $doc_output ne "stdout") {
-	if (-r $doc_input and -r $doc_output) {
-	  unless ((stat($doc_input))[9] > (stat($doc_output))[9]) {
-		# print STDERR "Output is up to date\n";
-		exit;
-	  }
-	}
-  }
-}
+#if (defined $doc_input and defined $doc_output) {
+#  if ($doc_input ne "stdin" and $doc_output ne "stdout") {
+#	if (-r $doc_input and -r $doc_output) {
+#	  unless ((stat($doc_input))[9] > (stat($doc_output))[9]) {
+#		# print STDERR "Output is up to date\n";
+#		exit;
+#	  }
+#	}
+#  }
+#}
 
 my ($parsed, $doc_vars) = parse_document($doc_input);
 dang("Document seems to be empty!") unless $parsed;
