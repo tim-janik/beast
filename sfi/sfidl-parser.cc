@@ -25,6 +25,8 @@
 #include "sfidl-namespace.h"
 #include "sfidl-options.h"
 #include <iostream>
+#include <set>
+#include <stack>
 
 namespace {
 using namespace Sfidl;
@@ -288,6 +290,7 @@ void Parser::scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_e
 
 static bool match(vector<char>::iterator start, const char *string)
 {
+  /* FIXME: can we exceed the bounds of the input vector? */
   while(*string && *start)
     if(*string++ != *start++) return false;
 
@@ -331,20 +334,65 @@ bool Parser::haveIncluded (const string& filename) const
   return false;
 }
 
-void Parser::preprocess (const string& input_filename)
+static void collectImplIncludes (set<string>& result,
+				 const string& root,
+				 map<string, set<string> >& implIncludeMap)
+{
+  if (result.count (root) == 0)
+    {
+      result.insert (root);
+
+      set<string>::const_iterator si;
+      for (si = implIncludeMap[root].begin(); si != implIncludeMap[root].end(); si++)
+	collectImplIncludes (result, *si, implIncludeMap);
+    }
+}
+
+void Parser::preprocess (const string& filename, bool includeImpl)
+{
+  static stack<string> includeStack;
+  static map<string, set<string> > implIncludeMap;
+
+  // make a note whenever "file 1" implincludes "file 2"
+  if (!includeStack.empty() && includeImpl)
+    implIncludeMap[includeStack.top()].insert(filename);
+
+  // do the actual preprocessing on the file
+  if (!haveIncluded (filename))
+    {
+      includes.push_back (filename);
+
+      includeStack.push (filename);
+      preprocessContents (filename);
+      includeStack.pop ();
+    }
+
+  // on the outer level compute which code to build
+  if (includeStack.empty())
+    {
+      set<string> implIncludes;
+      collectImplIncludes (implIncludes, filename, implIncludeMap);
+      implIncludeMap.clear();
+
+      vector<LineInfo>::iterator li;
+      for (li = scannerLineInfo.begin(); li != scannerLineInfo.end(); li++)
+	li->isInclude = (implIncludes.count (li->filename) == 0);
+    }
+}
+
+void Parser::preprocessContents (const string& input_filename)
 {
   string filename;
+  bool includeImpl;
   enum
     {
       lineStart, idlCode, commentC, commentCxx,
       filenameFind, filenameIn1, filenameIn2,
       inString, inStringEscape
     } state = lineStart;
-  static int incdepth = 0;
 
   LineInfo linfo;
   linfo.line = 1;
-  linfo.isInclude = (incdepth != 0);
   linfo.filename = input_filename;
 
   vector<char> input;
@@ -443,9 +491,10 @@ void Parser::preprocess (const string& input_filename)
 	      // all #include directives => search includepath with standard include dirs
 	      if (location == "")
 		{
-		  for(vector<string>::const_iterator i = options.includePath.begin(); i != options.includePath.end(); i++)
+		  vector<string>::const_iterator oi;
+		  for(oi = options.includePath.begin(); oi != options.includePath.end(); oi++)
 		    {
-		      string testFilename = *i + "/" + filename;
+		      string testFilename = *oi + "/" + filename;
 		      if (fileExists (testFilename))
 			{
 			  location = testFilename;
@@ -459,15 +508,7 @@ void Parser::preprocess (const string& input_filename)
 	      fprintf(stderr,"include file '%s' not found\n", filename.c_str());
 	      exit(1);
 	    }
-
-	  if(!haveIncluded(location))
-	    {
-	      includes.push_back(location);
-
-	      incdepth++;
-	      preprocess (location);
-	      incdepth--;
-	    }
+	  preprocess (location, includeImpl);
 
 	  state = idlCode;
 	  i++;
@@ -483,11 +524,19 @@ void Parser::preprocess (const string& input_filename)
 	}
       else if(state == lineStart) // check if we're on lineStart
 	{
-	  if(match(i,"#include"))
+	  if(match(i,"#include-impl"))
+	    {
+	      i += 13;
+	      state = filenameFind;
+	      filename = "";
+	      includeImpl = true;
+	    }
+	  else if(match(i,"#include"))
 	    {
 	      i += 8;
 	      state = filenameFind;
 	      filename = "";
+	      includeImpl = false;
 	    }
 	  else
 	    {

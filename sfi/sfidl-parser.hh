@@ -224,7 +224,8 @@ protected:
   static void scannerMsgHandler (GScanner *scanner, gchar *message, gboolean is_error);
   void printError (const gchar *format, ...);
 
-  void preprocess (const std::string& filename);
+  void preprocess (const std::string& filename, bool includeImpl = false);
+  void preprocessContents (const std::string& filename);
   bool haveIncluded (const std::string& filename) const;
   bool insideInclude () const;
   
