@@ -23,6 +23,7 @@
 #include "bstmenus.h"
 #include "bstgconfig.h"
 #include "bstprocedure.h"
+#include "bstscrollgraph.h"
 #include <gdk/gdkkeysyms.h>
 
 
@@ -743,6 +744,7 @@ bst_snet_router_root_event (BstSNetRouter   *self,
                                            GXK_DIALOG_HIDE_ON_DELETE,
                                            _("Scrollgraph"),
                                            gxk_radget_create ("beast", "scrollgraph-dialog", NULL));
+                  bst_scrollgraph_set_source (gxk_radget_find (dialog, "scrollgraph"), csource->source, i - monitor_ids);
                   gtk_widget_show (dialog);
                   break;
                 }

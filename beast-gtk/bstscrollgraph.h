@@ -18,8 +18,7 @@
 #ifndef __BST_SCROLLGRAPH_H__
 #define __BST_SCROLLGRAPH_H__
 
-#include <gtk/gtkadjustment.h>
-#include <gtk/gtkimage.h>
+#include "bstutils.h"
 
 G_BEGIN_DECLS
 
@@ -43,11 +42,16 @@ struct _BstScrollgraph
   guint           bar_offset; /* start of ring-buffer */
   gfloat         *values;     /* [n_points * n_bars] */
   GdkPixbuf      *pixbuf;     /* n_points wide or high */
+  SfiProxy        source;
+  guint           ochannel;
 };
   
 /* --- public methods --- */
 GType	        bst_scrollgraph_get_type	(void);
 void            bst_scrollgraph_clear           (BstScrollgraph *self);
+void            bst_scrollgraph_set_source      (BstScrollgraph *self,
+                                                 SfiProxy        source,
+                                                 guint           ochannel);
 
 G_END_DECLS
 
