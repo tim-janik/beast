@@ -7,7 +7,6 @@ FIXME(release-critical):
 - implement Monitor Output Signal dialogs:
   - histogram
   - edge detector: ...____..__|^^^'----'^^^^^|__.... (using dots for contiguous regions)
-- s/gslwave/bsewave/ (filenames also)  
 - the data/ files need versioning
 - use __thread to speed up sfi_thread_self(). configure test:
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
@@ -184,7 +183,6 @@ TODO:
 - need tact number entry widget
 - fade in/out of samples in sample editor
 - wave editor: provide transpose spinner for wave preview
-- gslwaveosc resp. gslwavechunk occasionally segfaults on ping-pong loops
 - Time Counter: Measure,QuarterNote,SixteenthNote,3840ticks
 
 DOCS:
