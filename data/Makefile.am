@@ -73,9 +73,9 @@ bse.keys: bse.keys.in
 
 # update mime database according to: http://www.freedesktop.org/Standards/shared-mime-info-spec
 install-data-hook:
-	$(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
+	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
 uninstall-local: uninstall-sharedmimepackageDATA
-	$(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
+	test -z "$(UPDATE_MIME_DATABASE)" || $(UPDATE_MIME_DATABASE) "$(DESTDIR)${sharedmimedir}";
 
 
 noinst_build_sources += config-paths.h
