@@ -616,21 +616,27 @@ bse_plugin_lookup (const gchar *name)
 #include "topconfig.h"
 
 SfiRing*
-bse_plugin_path_list_files (void)
+bse_plugin_path_list_files (gboolean include_drivers,
+                            gboolean include_plugins)
 {
-  SfiRing *ring1, *ring2 = NULL, *ring3 = NULL;
-
-  ring1 = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.so", G_FILE_TEST_IS_REGULAR);
-  ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
-
-  if (BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
-    ring2 = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.so", G_FILE_TEST_IS_REGULAR);
-  ring2 = sfi_ring_sort (ring2, (SfiCompareFunc) strcmp, NULL);
-
-  /* allow file names in plugin_path */
-  if (BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
-    ring3 = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), NULL, G_FILE_TEST_IS_REGULAR);
-  ring3 = sfi_ring_sort (ring3, (SfiCompareFunc) strcmp, NULL);
-
-  return sfi_ring_concat (ring1, sfi_ring_concat (ring2, ring3));
+  SfiRing *files, *ring = NULL;
+  if (include_drivers)
+    {
+      files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.so", G_FILE_TEST_IS_REGULAR);
+      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+    }
+  if (include_plugins)
+    {
+      files = sfi_file_crawler_list_files (BSE_PATH_PLUGINS, "*.so", G_FILE_TEST_IS_REGULAR);
+      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+    }
+  if (include_plugins && BSE_GCONFIG (plugin_path) && BSE_GCONFIG (plugin_path)[0])
+    {
+      files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), "*.so", G_FILE_TEST_IS_REGULAR);
+      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+      /* allow file names in plugin_path */
+      files = sfi_file_crawler_list_files (BSE_GCONFIG (plugin_path), NULL, G_FILE_TEST_IS_REGULAR);
+      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+    }
+  return ring;
 }

@@ -101,9 +101,12 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_DEVICE_NOT_AVAILABLE:	return _("No device (driver) available");
     case BSE_ERROR_DEVICE_ASYNC:		return _("Device not async capable");
     case BSE_ERROR_DEVICE_BUSY:			return _("Device busy");
-    case BSE_ERROR_DEVICE_GET_CAPS:		return _("Failed to query device capabilities");
-    case BSE_ERROR_DEVICE_CAPS_MISMATCH:	return _("Device capabilities not sufficient");
-    case BSE_ERROR_DEVICE_SET_CAPS:		return _("Failed to set device capabilities");
+    case BSE_ERROR_DEVICE_FORMAT:               return _("Failed to configure device format");
+    case BSE_ERROR_DEVICE_BUFFER:               return _("Failed to configure device buffer");
+    case BSE_ERROR_DEVICE_LATENCY:              return _("Failed to configure device latency");
+    case BSE_ERROR_DEVICE_CHANNELS:             return _("Failed to configure number of device channels");
+    case BSE_ERROR_DEVICE_FREQUENCY:            return _("Failed to configure device frequency");
+    case BSE_ERROR_DEVICES_MISMATCH:            return _("Device configurations mismatch");
     case BSE_ERROR_SOURCE_NO_SUCH_MODULE:	return _("No such synthesis module");
     case BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL:	return _("No such input channel");
     case BSE_ERROR_SOURCE_NO_SUCH_OCHANNEL:	return _("No such output channel");

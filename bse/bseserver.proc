@@ -458,7 +458,7 @@ BODY (BseProcedureClass *proc,
     }
   registration_done = TRUE;
   
-  ring = bse_plugin_path_list_files ();
+  ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
   g_object_set_data (server, "plugin-registration-queue", ring);
   
   bse_idle_normal (register_core_plugins, server);

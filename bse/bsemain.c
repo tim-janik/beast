@@ -246,12 +246,26 @@ bse_init_core (void)
   /* make sure the server is alive */
   bse_server_get ();
 
-  /* argument handling */
+  /* load drivers early */
+  if (bse_main_args->load_drivers_early)
+    {
+      SfiRing *ring = bse_plugin_path_list_files (TRUE, FALSE);
+      while (ring)
+        {
+          gchar *name = sfi_ring_pop_head (&ring);
+          const char *error = bse_plugin_check_load (name);
+          if (error)
+            sfi_diag ("while loading \"%s\": %s", name, error);
+          g_free (name);
+        }
+    }
+
+  /* dump device list */
   if (bse_main_args->dump_driver_list)
     {
-      g_printerr (_("Available PCM drivers:\n"));
+      g_printerr (_("\nAvailable PCM drivers:\n"));
       bse_device_dump_list (BSE_TYPE_PCM_DEVICE, "  ", TRUE, NULL, NULL);
-      g_printerr (_("Available MIDI drivers:\n"));
+      g_printerr (_("\nAvailable MIDI drivers:\n"));
       bse_device_dump_list (BSE_TYPE_MIDI_DEVICE, "  ", TRUE, NULL, NULL);
     }
 }
@@ -291,7 +305,7 @@ bse_init_intern (gint    *argc,
   /* initialize core plugins */
   if (sfi_rec_get_bool (config, "load-core-plugins"))
     {
-      SfiRing *ring = bse_plugin_path_list_files ();
+      SfiRing *ring = bse_plugin_path_list_files (!bse_main_args->load_drivers_early, TRUE);
       while (ring)
         {
           gchar *name = sfi_ring_pop_head (&ring);
@@ -438,6 +452,7 @@ bse_async_parse_args (gint        *argc_p,
 	}
       else if (strcmp ("--bse-driver-list", argv[i]) == 0)
 	{
+          margs->load_drivers_early = TRUE;
           margs->dump_driver_list = TRUE;
 	  argv[i] = NULL;
 	}

@@ -63,7 +63,8 @@ struct _BsePluginClass
 
 
 /* --- prototypes --- */
-SfiRing*	bse_plugin_path_list_files	(void);
+SfiRing*	bse_plugin_path_list_files	(gboolean        include_drivers,
+                                                 gboolean        include_plugins);
 const gchar*	bse_plugin_check_load		(const gchar	*file_name);
 BsePlugin*	bse_plugin_lookup		(const gchar	*name);
 

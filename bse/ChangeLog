@@ -1,3 +1,21 @@
+Fri Sep 24 09:14:14 2004  Tim Janik  <timj@gtk.org>
+
+	* bsedevice.[hc]: added groups to device entries. adjusted device
+	list dump. 
+
+	* bseenums.[hc]: adapted device errors, so they better correspond
+	to user defined configuration settings.
+
+	* bsemain.[hc]: load drivers from drivers dir before dumping device
+	list. 
+
+	* bseplugin.[hc]: extended bse_plugin_path_list_files() to support
+	BSE_PATH_DRIVERS.
+
+	* bsepcmdevice-oss.c: don't list ENODEV devices.
+
+	* bsemididevice-oss.c: don't list ENODEV devices.
+
 Thu Sep 23 15:43:02 2004  Tim Janik  <timj@gtk.org>
 
 	* bsedevice.[hc]: added base class for BseMidiDevice and BsePcmDevice.

@@ -73,6 +73,7 @@ typedef struct {
   BseDevice      *device;
   gchar          *device_args;
   gchar          *device_blurb;
+  gchar          *device_group; /* usually NULL */
   gchar          *device_error; /* if device_name == NULL */
 } BseDeviceEntry;
 
@@ -91,6 +92,10 @@ BseErrorType    bse_device_open            (BseDevice      *device,
 void            bse_device_close           (BseDevice      *device);
 BseDeviceEntry* bse_device_entry_new       (BseDevice      *device,
                                             gchar          *orphan_args,
+                                            gchar          *orphan_blurb);
+BseDeviceEntry* bse_device_group_entry_new (BseDevice      *device,
+                                            gchar          *orphan_args,
+                                            gchar          *orphan_group,
                                             gchar          *orphan_blurb);
 BseDeviceEntry* bse_device_error_new       (BseDevice      *device,
                                             gchar          *orphan_error);

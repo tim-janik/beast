@@ -116,12 +116,23 @@ bse_device_entry_new (BseDevice      *device,
                       gchar          *orphan_args,
                       gchar          *orphan_blurb)
 {
+  return bse_device_group_entry_new (device, orphan_args, NULL, orphan_blurb);
+}
+
+BseDeviceEntry*
+bse_device_group_entry_new (BseDevice      *device,
+                            gchar          *orphan_args,
+                            gchar          *orphan_group,
+                            gchar          *orphan_blurb)
+{
   BseDeviceEntry *entry = g_new0 (BseDeviceEntry, 1);
   entry->device = g_object_ref (device);
   entry->device_args = g_strdup (orphan_args);
   entry->device_blurb = g_strdup (orphan_blurb);
+  entry->device_group = g_strdup (orphan_group);
   g_free (orphan_args);
   g_free (orphan_blurb);
+  g_free (orphan_group);
   return entry;
 }
 
@@ -143,6 +154,7 @@ bse_device_entry_free (BseDeviceEntry *entry)
     g_object_unref (entry->device);
   g_free (entry->device_args);
   g_free (entry->device_blurb);
+  g_free (entry->device_group);
   g_free (entry->device_error);
   g_free (entry);
 }
@@ -226,7 +238,7 @@ bse_device_dump_list (GType           base_type,
   SfiRing *node, *ring = bse_device_class_list (base_type, NULL, NULL);
   gchar *indent2 = g_strconcat (indent ? indent : "", "  ", NULL);
   BseDeviceClass *last_klass = NULL;
-  gint last_topic = 0; /* 1=Devices, 2=Error */
+  const gchar *last_topic = NULL;
   for (node = ring; node; node = sfi_ring_walk (node, ring))
     {
       BseDeviceEntry *entry = node->data;
@@ -247,21 +259,25 @@ bse_device_dump_list (GType           base_type,
               g_string_free (gstring, TRUE);
             }
           last_klass = klass;
-          last_topic = 0;
+          last_topic = NULL;
         }
       if (entry->device_error)
         {
           g_printerr ("%sError: %s\n", indent2, entry->device_error);
-          last_topic = 2;
+          last_topic = NULL;
         }
       else if (entry->device_blurb)
         {
-          if (last_topic != 1)
+          const gchar *topic = entry->device_group ? entry->device_group : "";
+          if (!last_topic || strcmp (last_topic, topic) != 0)
             {
-              g_printerr ("%sDevices:\n", indent2);
-              last_topic = 1;
+              if (topic[0])
+                g_printerr ("%sDevices (%s):\n", indent2, topic);
+              else
+                g_printerr ("%sDevices:\n", indent2);
+              last_topic = topic;
             }
-          g_printerr ("%s            %s\n", indent2, entry->device_blurb);
+          g_printerr ("%s>         %s\n", indent, entry->device_blurb);
         }
     }
   if (with_auto)
@@ -333,6 +349,8 @@ bse_device_open_auto (GType           base_type,
     {
       BseDeviceClass *class = BSE_DEVICE_CLASS (ring->data);
       device = g_object_new (G_OBJECT_CLASS_TYPE (class), NULL);
+      if (request_callback)
+        request_callback (device, data);
       SfiRing *node, *entries = bse_device_list (device);
       for (node = entries; node; node = sfi_ring_walk (node, entries))
         {

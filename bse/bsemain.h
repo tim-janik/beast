@@ -58,6 +58,7 @@ typedef struct {
   SfiInt   control_freq;
   SfiRing *pcm_drivers;
   SfiRing *midi_drivers;
+  gboolean load_drivers_early;
   gboolean dump_driver_list;
 } BseMainArgs;
 

@@ -64,6 +64,27 @@ bse_midi_device_oss_init (BseMidiDeviceOSS *oss)
   oss->device_name = g_strdup (BSE_MIDI_DEVICE_CONF_OSS);
 }
 
+static BseErrorType
+check_device_usage (const gchar *name,
+                    const gchar *check_mode)
+{
+  BseErrorType error = gsl_check_file (name, check_mode);
+  if (!error)
+    {
+      errno = 0;
+      gint mode = strchr (check_mode, 'w') ? O_WRONLY : O_RDONLY;
+      gint fd = open (name, mode | O_NONBLOCK, 0);      /* open non blocking to avoid waiting for other clients */
+      /* we only check for ENODEV here, since the mode
+       * might be wrong and the device may be busy.
+       */
+      if (errno == ENODEV)
+        error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+      if (fd >= 0)
+        close (fd);
+    }
+  return error;
+}
+
 static SfiRing*
 bse_midi_device_oss_list_devices (BseDevice *device)
 {
@@ -76,17 +97,17 @@ bse_midi_device_oss_list_devices (BseDevice *device)
       gchar *dname = g_strconcat (BSE_MIDI_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
       if (!gsl_check_file_equals (last, dname))
         {
-          if (gsl_check_file (dname, "crw") == GSL_ERROR_NONE)
+          if (check_device_usage (dname, "crw") == GSL_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_printf ("%s,rw", dname),
                                                           g_strdup_printf ("%s (read-write)", dname)));
-          else if (gsl_check_file (dname, "cr") == GSL_ERROR_NONE)
+          else if (check_device_usage (dname, "cr") == GSL_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_printf ("%s,ro", dname),
                                                           g_strdup_printf ("%s (read only)", dname)));
-          else if (gsl_check_file (dname, "cw") == GSL_ERROR_NONE)
+          else if (check_device_usage (dname, "cw") == GSL_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_printf ("%s,wo", dname),
@@ -239,9 +260,9 @@ bse_midi_device_oss_class_init (BseMidiDeviceOSSClass *class)
                           "oss", "DEVICE,MODE",
                           /* TRANSLATORS: keep this text to 70 chars in width */
                           _("Open Sound System MIDI driver:\n"
-                            "DEVICE - MIDI device file name.\n"
-                            "MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
-                            "         read-only, read-write or write-only access."));
+                            "  DEVICE - MIDI device file name.\n"
+                            "  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
+                            "           read-only, read-write or write-only access."));
   device_class->open = bse_midi_device_oss_open;
   device_class->close = bse_midi_device_oss_close;
 }

@@ -88,6 +88,27 @@ bse_pcm_device_oss_init (BsePcmDeviceOSS *oss)
   oss->device_name = g_strdup (BSE_PCM_DEVICE_CONF_OSS);
 }
 
+static BseErrorType
+check_device_usage (const gchar *name,
+                    const gchar *check_mode)
+{
+  BseErrorType error = gsl_check_file (name, check_mode);
+  if (!error && strchr (check_mode, 'w'))
+    {
+      errno = 0;
+      /* beware, some drivers panic on O_RDONLY */
+      gint fd = open (name, O_WRONLY | O_NONBLOCK, 0);  /* open non blocking to avoid waiting for other clients */
+      /* we only check for ENODEV here, since the mode
+       * might be wrong and the device may be busy.
+       */
+      if (errno == ENODEV)
+        error = BSE_ERROR_DEVICE_NOT_AVAILABLE;
+      if (fd >= 0)
+        close (fd);
+    }
+  return error;
+}
+
 static SfiRing*
 bse_pcm_device_oss_list_devices (BseDevice    *device)
 {
@@ -100,12 +121,12 @@ bse_pcm_device_oss_list_devices (BseDevice    *device)
       gchar *dname = g_strconcat (BSE_PCM_DEVICE_OSS (device)->device_name, postfixes[i], NULL);
       if (!gsl_check_file_equals (last, dname))
         {
-          if (gsl_check_file (dname, "crw") == GSL_ERROR_NONE)
+          if (check_device_usage (dname, "crw") == GSL_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_printf ("%s,rw", dname),
                                                           g_strdup_printf ("%s (read-write)", dname)));
-          else if (gsl_check_file (dname, "cw") == GSL_ERROR_NONE)
+          else if (check_device_usage (dname, "cw") == GSL_ERROR_NONE)
             ring = sfi_ring_append (ring,
                                     bse_device_entry_new (device,
                                                           g_strdup_printf ("%s,wo", dname),
@@ -250,23 +271,23 @@ oss_device_setup (OSSHandle *oss)
   
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETFMTS, &d_int) < 0)
-    return BSE_ERROR_DEVICE_GET_CAPS;
+    return BSE_ERROR_DEVICE_FORMAT;
   if ((d_int & AFMT_S16_HE) != AFMT_S16_HE)
-    return BSE_ERROR_DEVICE_CAPS_MISMATCH;
+    return BSE_ERROR_DEVICE_FORMAT;
   d_int = AFMT_S16_HE;
   if (ioctl (fd, SNDCTL_DSP_SETFMT, &d_int) < 0 ||
       d_int != AFMT_S16_HE)
-    return BSE_ERROR_DEVICE_SET_CAPS;
+    return BSE_ERROR_DEVICE_FORMAT;
   oss->bytes_per_value = 2;
   
   d_int = handle->n_channels - 1;
   if (ioctl (fd, SNDCTL_DSP_STEREO, &d_int) < 0)
-    return BSE_ERROR_DEVICE_SET_CAPS;
+    return BSE_ERROR_DEVICE_CHANNELS;
   handle->n_channels = d_int + 1;
   
   d_int = handle->mix_freq;
   if (ioctl (fd, SNDCTL_DSP_SPEED, &d_int) < 0)
-    return BSE_ERROR_DEVICE_SET_CAPS;
+    return BSE_ERROR_DEVICE_FREQUENCY;
   handle->mix_freq = d_int;
   
   /* Note: fragment = n_fragments << 16;
@@ -276,14 +297,14 @@ oss_device_setup (OSSHandle *oss)
   oss->n_frags = CLAMP (oss->n_frags, 128, 65536);
   d_int = (oss->n_frags << 16) | g_bit_storage (oss->frag_size - 1);
   if (ioctl (fd, SNDCTL_DSP_SETFRAGMENT, &d_int) < 0)
-    return BSE_ERROR_DEVICE_SET_CAPS;
+    return BSE_ERROR_DEVICE_LATENCY;
   
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &d_int) < 0 ||
       d_int < 128 ||
       d_int > 131072 ||
       (d_int & 1))
-    return BSE_ERROR_DEVICE_GET_CAPS;
+    return BSE_ERROR_DEVICE_BUFFER;
   /* handle->block_size = d_int; */
   
   if (handle->writable)
@@ -291,7 +312,7 @@ oss_device_setup (OSSHandle *oss)
       audio_buf_info info = { 0, };
       
       if (ioctl (fd, SNDCTL_DSP_GETOSPACE, &info) < 0)
-	return BSE_ERROR_DEVICE_GET_CAPS;
+	return BSE_ERROR_DEVICE_BUFFER;
       oss->frag_size = info.fragsize;
       oss->n_frags = info.fragstotal;
     }
@@ -300,7 +321,7 @@ oss_device_setup (OSSHandle *oss)
       audio_buf_info info = { 0, };
       
       if (ioctl (fd, SNDCTL_DSP_GETISPACE, &info) < 0)
-	return BSE_ERROR_DEVICE_GET_CAPS;
+	return BSE_ERROR_DEVICE_BUFFER;
       oss->frag_size = info.fragsize;
       oss->n_frags = info.fragstotal;
     }
@@ -516,9 +537,9 @@ bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
                           _("DEVICE,MODE"),
                           /* TRANSLATORS: keep this text to 70 chars in width */
                           _("Open Sound System PCM driver:\n"
-                            "DEVICE - PCM device file name\n"
-                            "MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
-                            "         read-only, read-write or write-only access."));
+                            "  DEVICE - PCM device file name\n"
+                            "  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
+                            "           read-only, read-write or write-only access."));
   device_class->open = bse_pcm_device_oss_open;
   device_class->close = bse_pcm_device_oss_close;
 }
