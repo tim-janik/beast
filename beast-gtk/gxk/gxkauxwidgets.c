@@ -725,9 +725,9 @@ static void
 color_shade (GdkColor *color,
              gdouble   k)
 {
-  gdouble r = color->red / 65536.;
-  gdouble g = color->green / 65536.;
-  gdouble b = color->blue / 65536.;
+  gdouble r = color->red / 65535.;
+  gdouble g = color->green / 65535.;
+  gdouble b = color->blue / 65535.;
   gdouble h, l, s;
   rgb_to_hls (r, g, b, &h, &l, &s);
   l = CLAMP (l * k, 0, 1);
@@ -735,7 +735,7 @@ color_shade (GdkColor *color,
   hls_to_rgb (h, l, s, &r, &g, &b);
   color->red = r * 65535.;
   color->green = g * 65535.;
-  color->blue = b * 65535.0;
+  color->blue = b * 65535.;
 }
 
 static GdkGC*
