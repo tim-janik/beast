@@ -65,7 +65,7 @@ bst_item_view_destroy (GtkObject *object)
 
   bst_item_view_set_container (self, 0);
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_item_view_parent_class)->destroy (object);
 }
 
 static void
@@ -79,7 +79,7 @@ bst_item_view_finalize (GObject *object)
   if (self->wlist)
     g_object_unref (self->wlist);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_item_view_parent_class)->finalize (object);
 }
 
 void

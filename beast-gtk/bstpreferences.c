@@ -97,7 +97,7 @@ bst_preferences_destroy (GtkObject *object)
   sfi_ring_free (prefs->bseparams);
   prefs->bseparams = NULL;
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_preferences_parent_class)->destroy (object);
 }
 
 static GtkWidget*

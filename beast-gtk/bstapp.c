@@ -277,7 +277,7 @@ bst_app_destroy (GtkObject *object)
 
   bst_app_unregister (self);
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_app_parent_class)->destroy (object);
 
   if (!bst_app_class->apps && bst_app_class->seen_apps)
     {

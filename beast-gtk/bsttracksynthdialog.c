@@ -142,7 +142,7 @@ bst_track_synth_dialog_finalize (GObject *object)
   bst_track_synth_dialog_setup (self, NULL, NULL, 0);
 
   /* chain parent class' handler */
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_track_synth_dialog_parent_class)->finalize (object);
 }
 
 static gboolean
@@ -153,7 +153,7 @@ bst_track_synth_dialog_delete_event (GtkWidget   *widget,
   if (self->pstore)
     bst_proxy_seq_store_set (self->pstore, NULL);
   /* chain parent class' handler */
-  return GTK_WIDGET_CLASS (parent_class)->delete_event (widget, event);
+  return GTK_WIDGET_CLASS (bst_track_synth_dialog_parent_class)->delete_event (widget, event);
 }
 
 static void

@@ -127,7 +127,7 @@ bst_super_shell_destroy (GtkObject *object)
   if (self->super)
     bst_super_shell_set_super (self, 0);
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_super_shell_parent_class)->destroy (object);
 }
 
 static void
@@ -135,7 +135,7 @@ bst_super_shell_finalize (GObject *object)
 {
   // BstSuperShell *self = BST_SUPER_SHELL (object);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_super_shell_parent_class)->finalize (object);
 }
 
 static void

@@ -76,7 +76,7 @@ bst_param_view_destroy (GtkObject *object)
 
   bst_param_view_set_item (self, 0);
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_param_view_parent_class)->destroy (object);
 }
 
 static void
@@ -100,7 +100,7 @@ bst_param_view_finalize (GObject *object)
       self->match_pattern = NULL;
     }
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_param_view_parent_class)->finalize (object);
 }
 
 GtkWidget*

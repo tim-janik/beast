@@ -213,7 +213,7 @@ bst_file_dialog_finalize (GObject *object)
   bst_file_store_destroy (self->file_store);
   
   /* chain parent class' handler */
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_file_dialog_parent_class)->finalize (object);
 }
 
 static BstFileDialog*

@@ -275,7 +275,7 @@ bst_snet_router_destroy (GtkObject *object)
   if (self->palette)
     gtk_widget_destroy (self->palette);
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_snet_router_parent_class)->destroy (object);
 }
 
 static void
@@ -286,7 +286,7 @@ bst_snet_router_finalize (GObject *object)
   g_object_unref (self->canvas_tool);
   g_object_unref (self->channel_toggle);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_snet_router_parent_class)->finalize (object);
 }
 
 static void
@@ -992,8 +992,8 @@ bst_snet_router_event (GtkWidget *widget,
       break;
     }
   
-  if (!handled && GTK_WIDGET_CLASS (parent_class)->event)
-    handled = GTK_WIDGET_CLASS (parent_class)->event (widget, event);
+  if (!handled && GTK_WIDGET_CLASS (bst_snet_router_parent_class)->event)
+    handled = GTK_WIDGET_CLASS (bst_snet_router_parent_class)->event (widget, event);
   
   return handled;
 }
@@ -1006,7 +1006,7 @@ bst_snet_router_button_press (GtkWidget      *widget,
   gboolean handled;
   
   /* chain parent class' handler */
-  handled = GTK_WIDGET_CLASS (parent_class)->button_press_event (widget, event);
+  handled = GTK_WIDGET_CLASS (bst_snet_router_parent_class)->button_press_event (widget, event);
   
   if (!handled && event->button == 3 && self->canvas_popup)
     gxk_menu_popup (self->canvas_popup,

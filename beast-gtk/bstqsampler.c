@@ -163,7 +163,7 @@ bst_qsampler_size_allocate (GtkWidget     *widget,
 {
   BstQSampler *qsampler = BST_QSAMPLER (widget);
   
-  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+  GTK_WIDGET_CLASS (bst_qsampler_parent_class)->size_allocate (widget, allocation);
 
   if (GTK_WIDGET_REALIZED (widget))
     gdk_window_move_resize (qsampler->canvas,
@@ -234,7 +234,7 @@ bst_qsampler_style_set (GtkWidget *widget,
 {
   BstQSampler *qsampler = BST_QSAMPLER (widget);
 
-  GTK_WIDGET_CLASS (parent_class)->style_set (widget, previous_style);
+  GTK_WIDGET_CLASS (bst_qsampler_parent_class)->style_set (widget, previous_style);
 
   if (GTK_WIDGET_REALIZED (qsampler))
     {
@@ -281,7 +281,7 @@ bst_qsampler_unrealize (GtkWidget *widget)
   gdk_window_set_user_data (qsampler->canvas, NULL);
   gdk_window_destroy (qsampler->canvas);
   qsampler->canvas = NULL;
-  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  GTK_WIDGET_CLASS (bst_qsampler_parent_class)->unrealize (widget);
 }
 
 static gint
@@ -357,7 +357,7 @@ bst_qsampler_destroy (GtkObject *object)
   bst_qsampler_set_source (qsampler, 0, NULL, NULL, NULL);
   bst_qsampler_set_adjustment (qsampler, NULL);
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_qsampler_parent_class)->destroy (object);
 }
 
 static void
@@ -376,7 +376,7 @@ bst_qsampler_finalize (GObject *object)
   else
     qsampler->refresh_queued = TRUE;
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_qsampler_parent_class)->finalize (object);
 }
 
 static void

@@ -227,7 +227,7 @@ bst_part_dialog_finalize (GObject *object)
   bst_piano_roll_controller_unref (self->pctrl);
   bst_event_roll_controller_unref (self->ectrl);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_part_dialog_parent_class)->finalize (object);
 }
 
 void

@@ -119,7 +119,7 @@ bst_xframe_destroy (GtkObject *object)
   if (xframe->cover)
     bst_xframe_set_cover_widget (xframe, NULL, FALSE);
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_xframe_parent_class)->destroy (object);
 }
 
 static void
@@ -193,7 +193,7 @@ bst_xframe_size_allocate (GtkWidget     *widget,
 {
   BstXFrame *xframe = BST_XFRAME (widget);
 
-  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+  GTK_WIDGET_CLASS (bst_xframe_parent_class)->size_allocate (widget, allocation);
 
   bst_xframe_resize (xframe);
 }
@@ -205,7 +205,7 @@ bst_xframe_realize (GtkWidget *widget)
   GdkWindowAttr attributes;
   gint attributes_mask;
   
-  GTK_WIDGET_CLASS (parent_class)->realize (widget);
+  GTK_WIDGET_CLASS (bst_xframe_parent_class)->realize (widget);
 
   attributes.window_type = GDK_WINDOW_CHILD;
   attributes.x = widget->allocation.x;
@@ -235,7 +235,7 @@ bst_xframe_unrealize (GtkWidget *widget)
   gdk_window_destroy (xframe->iwindow);
   xframe->iwindow = NULL;
 
-  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  GTK_WIDGET_CLASS (bst_xframe_parent_class)->unrealize (widget);
 }
 
 static void
@@ -243,7 +243,7 @@ bst_xframe_map (GtkWidget *widget)
 {
   BstXFrame *xframe = BST_XFRAME (widget);
 
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
+  GTK_WIDGET_CLASS (bst_xframe_parent_class)->map (widget);
 
   gdk_window_show (xframe->iwindow);
   gdk_window_lower (xframe->iwindow);
@@ -256,7 +256,7 @@ bst_xframe_unmap (GtkWidget *widget)
 
   gdk_window_hide (xframe->iwindow);
 
-  GTK_WIDGET_CLASS (parent_class)->unmap (widget);
+  GTK_WIDGET_CLASS (bst_xframe_parent_class)->unmap (widget);
 }
 
 static gint

@@ -239,7 +239,7 @@ bst_piano_roll_destroy (GtkObject *object)
   bst_piano_roll_set_hadjustment (self, NULL);
   bst_piano_roll_set_vadjustment (self, NULL);
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_piano_roll_parent_class)->destroy (object);
 }
 
 static void
@@ -249,7 +249,7 @@ bst_piano_roll_dispose (GObject *object)
 
   bst_piano_roll_set_proxy (self, 0);
 
-  G_OBJECT_CLASS (parent_class)->dispose (object);
+  G_OBJECT_CLASS (bst_piano_roll_parent_class)->dispose (object);
 }
 
 static void
@@ -271,7 +271,7 @@ bst_piano_roll_finalize (GObject *object)
     }
   bst_ascii_pixbuf_unref ();
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_piano_roll_parent_class)->finalize (object);
 }
 
 gfloat
@@ -573,8 +573,8 @@ bst_piano_roll_unrealize (GtkWidget *widget)
   self->vpanel = NULL;
   self->init_vpos = TRUE;
 
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  if (GTK_WIDGET_CLASS (bst_piano_roll_parent_class)->unrealize)
+    GTK_WIDGET_CLASS (bst_piano_roll_parent_class)->unrealize (widget);
 }
 
 static gint

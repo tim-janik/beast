@@ -225,7 +225,7 @@ bst_event_roll_destroy (GtkObject *object)
   bst_event_roll_set_proxy (self, 0);
   bst_event_roll_set_hadjustment (self, NULL);
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_event_roll_parent_class)->destroy (object);
 }
 
 static void
@@ -235,7 +235,7 @@ bst_event_roll_dispose (GObject *object)
 
   bst_event_roll_set_proxy (self, 0);
 
-  G_OBJECT_CLASS (parent_class)->dispose (object);
+  G_OBJECT_CLASS (bst_event_roll_parent_class)->dispose (object);
 }
 
 static void
@@ -255,7 +255,7 @@ bst_event_roll_finalize (GObject *object)
     }
   bst_ascii_pixbuf_unref ();
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_event_roll_parent_class)->finalize (object);
 }
 
 void
@@ -541,8 +541,8 @@ bst_event_roll_unrealize (GtkWidget *widget)
   gdk_window_destroy (self->vpanel);
   self->vpanel = NULL;
 
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  if (GTK_WIDGET_CLASS (bst_event_roll_parent_class)->unrealize)
+    GTK_WIDGET_CLASS (bst_event_roll_parent_class)->unrealize (widget);
 }
 
 static gint
@@ -804,7 +804,7 @@ bst_event_roll_expose (GtkWidget      *widget,
       bst_event_roll_draw_canvas (self, area.x, area.y, area.x + area.width, area.y + area.height);
       gdk_window_end_paint (event->window);
     }
-  return GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+  return GTK_WIDGET_CLASS (bst_event_roll_parent_class)->expose_event (widget, event);
 }
 
 static void

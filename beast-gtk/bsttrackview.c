@@ -92,7 +92,7 @@ bst_track_view_finalize (GObject *object)
   if (self->tctrl)
     bst_track_roll_controller_unref (self->tctrl);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_track_view_parent_class)->finalize (object);
 }
 
 GtkWidget*
@@ -551,7 +551,7 @@ track_view_set_container (BstItemView *iview,
 			  "any_signal", track_view_marks_changed, self,
 			  "any_signal", track_view_repeat_changed, self,
 			  NULL);
-  BST_ITEM_VIEW_CLASS (parent_class)->set_container (iview, new_container);
+  BST_ITEM_VIEW_CLASS (bst_track_view_parent_class)->set_container (iview, new_container);
   if (self->troll)
     bst_track_roll_setup (self->troll, iview->container ? iview->tree : NULL, iview->container);
   if (BSE_IS_SONG (iview->container))
@@ -580,7 +580,7 @@ static void
 track_view_listen_on (BstItemView *iview,
 		      SfiProxy     item)
 {
-  BST_ITEM_VIEW_CLASS (parent_class)->listen_on (iview, item);
+  BST_ITEM_VIEW_CLASS (bst_track_view_parent_class)->listen_on (iview, item);
   bse_proxy_connect (item,
 		     "signal::changed", track_changed, iview,
 		     NULL);
@@ -604,7 +604,7 @@ track_view_unlisten_on (BstItemView *iview,
 			"any_signal", track_changed, iview,
 			"any_signal", track_property_changed, iview,
 			NULL);
-  BST_ITEM_VIEW_CLASS (parent_class)->unlisten_on (iview, item);
+  BST_ITEM_VIEW_CLASS (bst_track_view_parent_class)->unlisten_on (iview, item);
 }
 
 static void

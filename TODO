@@ -1,9 +1,4 @@
 FIXMES:
-- static vs. member:
-  static inline Namespace::TestSequence from_seq (SfiSeq *seq);
-  inline SfiSeq *to_seq () const;
-  static inline Namespace::TestRecordHandle from_rec (SfiRec *rec);
-  static inline SfiRec *to_rec (const Namespace::TestRecordHandle& ptr);
 - rc setting for canvas font sizes
 - record classes in c++ need to derive from GNewAllocator
 - put bstrecords.idl generated files into CLEAN files or at least MAINTAINER-CLEAN files

@@ -45,7 +45,7 @@ bst_sniffer_scope_destroy (GtkObject *object)
 
   bst_sniffer_scope_set_sniffer (self, 0);
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_sniffer_scope_parent_class)->destroy (object);
 }
 
 static void
@@ -55,7 +55,7 @@ bst_sniffer_scope_finalize (GObject *object)
 
   bst_sniffer_scope_set_sniffer (self, 0);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_sniffer_scope_parent_class)->finalize (object);
 }
 
 static void
@@ -73,7 +73,7 @@ bst_sniffer_scope_size_allocate (GtkWidget     *widget,
                                  GtkAllocation *allocation)
 {
   // BstSnifferScope *self = BST_SNIFFER_SCOPE (widget);
-  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+  GTK_WIDGET_CLASS (bst_sniffer_scope_parent_class)->size_allocate (widget, allocation);
 }
 
 static gboolean

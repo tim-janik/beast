@@ -75,7 +75,7 @@ bst_log_adjustment_destroy (GtkObject *object)
   bst_log_adjustment_set_client (ladj, NULL);
 
   /* chain parent class handler */
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_log_adjustment_parent_class)->destroy (object);
 }
 
 GtkAdjustment*

@@ -243,7 +243,7 @@ bst_canvas_source_destroy (GtkObject *object)
       csource->source = 0;
     }
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_canvas_source_parent_class)->destroy (object);
 }
 
 #define EPSILON 1e-6
@@ -989,8 +989,8 @@ bst_canvas_source_event (GnomeCanvasItem *item,
       break;
     }
   
-  if (!handled && GNOME_CANVAS_ITEM_CLASS (parent_class)->event)
-    handled = GNOME_CANVAS_ITEM_CLASS (parent_class)->event (item, event);
+  if (!handled && GNOME_CANVAS_ITEM_CLASS (bst_canvas_source_parent_class)->event)
+    handled = GNOME_CANVAS_ITEM_CLASS (bst_canvas_source_parent_class)->event (item, event);
   
   return handled;
 }

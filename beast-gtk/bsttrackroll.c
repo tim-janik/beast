@@ -249,7 +249,7 @@ bst_track_roll_destroy (GtkObject *object)
   self->scopes = NULL;
   self->n_scopes = 0;
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (bst_track_roll_parent_class)->destroy (object);
 }
 
 static void
@@ -280,7 +280,7 @@ bst_track_roll_finalize (GObject *object)
     gtk_widget_unparent (self->scopes[i]);
   g_free (self->scopes);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_track_roll_parent_class)->finalize (object);
 }
 
 void
@@ -785,8 +785,8 @@ bst_track_roll_unrealize (GtkWidget *widget)
   if (self->ecell)
     gtk_widget_set_parent_window (GTK_WIDGET (self->ecell), self->canvas);
 
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  if (GTK_WIDGET_CLASS (bst_track_roll_parent_class)->unrealize)
+    GTK_WIDGET_CLASS (bst_track_roll_parent_class)->unrealize (widget);
 }
 
 static gint
@@ -1245,14 +1245,14 @@ bst_track_roll_expose (GtkWidget      *widget,
     {
       gdk_window_begin_paint_rect (event->window, &area);
       bst_track_roll_draw_window (self, area.x, area.y, area.x + area.width, area.y + area.height);
-      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+      GTK_WIDGET_CLASS (bst_track_roll_parent_class)->expose_event (widget, event);
       gdk_window_end_paint (event->window);
     }
   else if (event->window == self->vpanel)
     {
       gdk_window_begin_paint_rect (event->window, &area);
       bst_track_roll_draw_vpanel (self, area.y, area.y + area.height);
-      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+      GTK_WIDGET_CLASS (bst_track_roll_parent_class)->expose_event (widget, event);
       gdk_window_end_paint (event->window);
     }
   else if (event->window == self->hpanel)
@@ -1261,7 +1261,7 @@ bst_track_roll_expose (GtkWidget      *widget,
       gdk_window_begin_paint_rect (event->window, &area);
       bst_track_roll_overlap_grow_hpanel_area (self, &area);
       bst_track_roll_draw_hpanel (self, area.x, area.x + area.width);
-      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+      GTK_WIDGET_CLASS (bst_track_roll_parent_class)->expose_event (widget, event);
       gdk_window_end_paint (event->window);
     }
   else if (event->window == self->canvas)
@@ -1271,11 +1271,11 @@ bst_track_roll_expose (GtkWidget      *widget,
       bst_track_roll_draw_canvas (self, area.x, area.y, area.x + area.width, area.y + area.height);
       bst_marker_save_backing (&self->vmarker, &area);
       bst_marker_expose (&self->vmarker, &area);
-      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+      GTK_WIDGET_CLASS (bst_track_roll_parent_class)->expose_event (widget, event);
       gdk_window_end_paint (event->window);
     }
   else
-    GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+    GTK_WIDGET_CLASS (bst_track_roll_parent_class)->expose_event (widget, event);
   return FALSE;
 }
 

@@ -1,3 +1,8 @@
+Sat Jan 24 18:24:06 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/*.c: added type_name_ prefix to parent_class variables in
+	files which use G_DEFINE_TYPE().
+
 Sat Jan 24 01:12:44 2004  Tim Janik  <timj@gtk.org>
 
 	* tests/testplugin.cc: fix missing type registration macros.

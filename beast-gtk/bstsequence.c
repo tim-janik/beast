@@ -108,7 +108,7 @@ bst_sequence_finalize (GObject *object)
   bse_note_sequence_free (seq->sdata);
 
   /* chain parent class' handler */
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (bst_sequence_parent_class)->finalize (object);
 }
 
 void
