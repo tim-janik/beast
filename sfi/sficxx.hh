@@ -21,6 +21,7 @@
 
 #include <sfi/sfi.h>
 #include <string>
+#include <new>
 
 namespace Sfi {
 
