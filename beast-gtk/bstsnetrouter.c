@@ -778,8 +778,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 
 	  error = bse_source_set_input (csource->source, ichannel_id,
 					router->ocsource->source,
-					router->ochannel_id,
-					1);
+					router->ochannel_id);
 	  bst_snet_router_reset_mode (router);
 	  bst_status_set (error ? 0 : 100, "Create Link", bse_error_blurb (error));
 	}

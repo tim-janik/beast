@@ -321,9 +321,9 @@ bst_snet_shell_can_operate (BstSuperShell *super_shell,
   switch (op)
     {
     case BST_OP_PLAY:
-      return snet->junk == NULL;
+      return !BSE_SOURCE_PREPARED (snet);
     case BST_OP_STOP:
-      return snet->junk != NULL;
+      return BSE_SOURCE_PREPARED (snet);
     default:
       return FALSE;
     }

@@ -1,3 +1,15 @@
+Mon Nov  8 02:05:10 1999  Tim Janik  <timj@gtk.org>
+
+	* wooho! unbelievable, using BseNoise connected to BseSNet, i just
+	got the first, real (though extremely primitive) synthesis network
+	running ;)
+	yes! that is *something* already.
+
+	* beast-gtk/bstsongshell.c (bst_song_shell_can_operate): 
+	* beast-gtk/bstsnetshell.c (bst_snet_shell_can_operate): 
+	use BSE_SOURCE_PREPARED() to figure whether the supers are currently
+	playing or not.
+
 Sun Nov  7 07:24:36 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmaster.c (bst_master_check): don't return TRUE (as

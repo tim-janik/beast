@@ -312,9 +312,9 @@ bst_song_shell_can_operate (BstSuperShell *super_shell,
       return (song_shell->instrument_view &&
 	      bst_item_view_can_operate (song_shell->instrument_view, op));
     case BST_OP_PLAY:
-      return song->sequencer == NULL;
+      return !BSE_SOURCE_PREPARED (song);
     case BST_OP_STOP:
-      return song->sequencer != NULL;
+      return BSE_SOURCE_PREPARED (song);
     default:
       return FALSE;
     }
