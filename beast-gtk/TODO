@@ -1,16 +1,15 @@
 RELEASE:
-- subsynth cycle search algorithm
-- bsw_item_check_value(item,name,value) to filter non-valid objects property settings
 - terminology: s/pulse/square/, s/growing/rising/, s/shrinking/falling/ (saw), half.tone->semitone
 - remove GenOsc plugin
-- Module Menu: add EDIT
 - help: QuickStart-Samples, QuickStart-Synthesis, QuickStart-Songs
 - disallow creating more than one track as long as playback isn't supported for it
 * add switch to set keytables directly, no-serverquery, which works without rc file
-* fix file selection (open load) dialog
-* plugin loading doesn't work for doc building after make uninstall
+- support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
+- fix sample seek bar updates
+- fix end of wave osc
 
 FEATURES:
+- Module Menu: add EDIT
 - part editor needs play position
 - track editor needs play position
 - piano roll: ctrl+move should copy (DND style modifier)
@@ -33,7 +32,7 @@ FEATURES:
 - snet router: optionally, paint i/o channel names onto background
 
 GENERAL:
-* BLIT, band-limited impulse train
+* BLIT, band-limited impulse train oscillator
 * object clippboard
 * fade in/out of samples (sample editor)
 - device monitor delay should be persistent in .beastrc

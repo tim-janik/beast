@@ -7,7 +7,7 @@
 SRC_SUBDIRS = bse plugins bsw bsw-shell beast-gtk
 
 # other subdirs
-SUBDIRS = $(SRC_SUBDIRS) docs test
+SUBDIRS = . $(SRC_SUBDIRS) docs test
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.4
@@ -42,8 +42,8 @@ gsl:
 # dist ship the srcdir gsl link
 EXTRA_DIST += gsl
 
-MAINTAINERCLEANFILES += PKG_paths.h gsl
+CLEANFILES += PKG_paths.h
+MAINTAINERCLEANFILES += gsl
 
 EXTRA_DIST += \
-	PKG_paths.h \
 	acbeast.m4

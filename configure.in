@@ -30,7 +30,7 @@ dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
 dnl# if backwards compatibility has been broken,
 dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
 dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]* or nothing
-BST_RELEASE_CANDIDATE=rc1
+BST_RELEASE_CANDIDATE=rc2
 
 # version number setup
 BST_VERSION=$BSE_VERSION
@@ -110,21 +110,28 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
 [
     GSL_CFLAGS=
     GSL_LIBS=
-    dnl === Ogg/Vorbis check ===
-    ov_headers=0
-    # check for ogg_stream_reset_serialno() to identify rc4 which changes ov_read_float()
-    AC_CHECK_LIB(vorbisfile, ov_read_float,
-      [AC_CHECK_HEADER(ogg/ogg.h, ov_headers=`expr $ov_headers + 1`)]
-      [AC_CHECK_HEADER(vorbis/vorbisfile.h, ov_headers=`expr $ov_headers + 1`)]
-      [AC_CHECK_HEADER(vorbis/vorbisenc.h, ov_headers=`expr $ov_headers + 1`)]
-      ,
-      ov_headers=0, -lvorbisenc -lvorbis -logg)
-    if test $ov_headers = 3 ; then
-      GSL_LIBS="-lvorbisfile -lvorbisenc -lvorbis -logg $GSL_LIBS"
-    else
-      AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0rc3) or headers])
-    fi
 
+    dnl === Ogg/Vorbis check ===
+    ov_tests=0
+    # check for ogg_stream_reset_serialno() to identify rc4 which changes ov_read_float()
+    GSL_OV_READ_FLOAT_ARGS=0
+    AC_CHECK_LIB(vorbisfile, ov_read_float,
+	[AC_CHECK_HEADER(ogg/ogg.h, ov_tests=`expr $ov_tests + 1`)]
+	[AC_CHECK_HEADER(vorbis/vorbisfile.h, ov_tests=`expr $ov_tests + 1`)]
+	[AC_CHECK_HEADER(vorbis/vorbisenc.h, ov_tests=`expr $ov_tests + 1`)]
+	,
+	ov_tests=0, -lvorbisenc -lvorbis -logg)
+    if test $ov_tests = 3 ; then
+	GSL_LIBS="-lvorbisfile -lvorbisenc -lvorbis -logg $GSL_LIBS"
+	AC_MSG_CHECKING([whether ov_read_float() takes 4 arguments])
+	AC_TRY_COMPILE([#include <vorbis/vorbisfile.h>], [ov_read_float(0,0,0,0);],
+	    GSL_OV_READ_FLOAT_ARGS=4 ; AC_MSG_RESULT(yes),
+	    GSL_OV_READ_FLOAT_ARGS=3 ; AC_MSG_RESULT(no))
+    else
+	AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0rc3) or headers])
+    fi
+    AC_SUBST(GSL_OV_READ_FLOAT_ARGS)
+    
     dnl === libmad MPEG decoder check ===
     mad_detect=0
     AC_CHECK_LIB(mad, mad_synth_frame,
@@ -148,6 +155,7 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
       AC_MSG_RESULT([])
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
+
     AC_SUBST(GSL_CFLAGS)
     AC_SUBST(GSL_LIBS)
 

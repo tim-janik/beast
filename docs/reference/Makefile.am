@@ -34,7 +34,7 @@ bse.dat: $(BSE_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl
                             --package "BEAST-$(VERSION)" \
                             $(BSE_MAN_SRC_GLOBS) >$@
 bsw-procs.dat: $(top_builddir)/bse/bsequery $(srcdir)/scandocs.pl
-	$(top_builddir)/bse/bsequery -p procdoc >temp-bsw-gen1.doc \
+	$(top_builddir)/bse/bsequery procdoc >temp-bsw-gen1.doc \
         && $(srcdir)/scandocs.pl --name "BSW-Procedures" \
                                --blurb "BSE Procedure Reference" \
                                --package "BEAST-$(VERSION)" \

@@ -198,7 +198,7 @@ bst_dial_size_allocate (GtkWidget     *widget,
 static void
 bst_dial_realize (GtkWidget *widget)
 {
-  BstDial *dial = BST_DIAL (widget);
+  // BstDial *dial = BST_DIAL (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
   

@@ -1,3 +1,16 @@
+Sat Aug  3 17:46:41 2002  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am (EXTRA_DIST): don't include and ship PKG_paths.h.
+
+	* docs/reference/Makefile.am (bsw-procs.dat): don't load plugins
+	from bsequery since this might be called while still uninstalled.
+
+	* configure.in: up version to rc2.
+	check whether ov_read_float() from libvorbis has 3 or 4 arguments.
+
+	* beast-gtk/images/beast-splash.png: splash screen update from
+	jimmac which says "Bedevilled Audio System".
+
 Fri Aug  2 20:08:38 2002  Tim Janik  <timj@gtk.org>
 
 	* configure.in: fix libguile check by supporting guile-config.

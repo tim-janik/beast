@@ -20,7 +20,7 @@ gen_sources           = xgen-bstih
 CLEANFILES           += $(gen_sources) beast-images.h
 noinst_DATA           = beast-images.h
 
-beast-images.h:	Makefile
+beast-images.h:	Makefile ${public_images}
 	cd . \
 	&& echo "/* Generated data from $< (by make $@) */" > xgen-bstih \
 	&& echo >> xgen-bstih \
