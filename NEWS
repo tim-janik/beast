@@ -7,6 +7,7 @@ Overview of Changes in BEAST/BSE 0.6.3:
 * Dialog size and resizing adaptions for 800x600 screens
 * Fixed undo/redo handling across playback activation
 * Fixed error handling when users form cyclic connections
+* Consistent support for dialog closing with Escape 
 
 Overview of Changes in BEAST/BSE 0.6.2:
 
