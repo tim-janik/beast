@@ -137,7 +137,7 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
   bse_object_class_add_param (object_class, _("Modulation"),
                               PARAM_FM_EXP,
                               sfi_pspec_bool ("exponential_fm", _("Exponential FM"),
-                                              _("Perform exponential frequency modulation"
+                                              _("Perform exponential frequency modulation "
                                                 "instead of linear"),
                                               FALSE, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Modulation"),

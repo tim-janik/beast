@@ -92,7 +92,7 @@ bst_rack_editor_init (BstRackEditor *ed)
 
   gtk_box_pack_start (GTK_BOX (ed),
                       g_object_new (GTK_TYPE_LABEL,
-                                    "label", _("The rack editor is still highly experimental code and guranrteed "
+                                    "label", _("The rack editor is still highly experimental code and guaranteed "
                                                "to be broken by future releases. So don't rely on rack editor contents "
                                                "to look similarly in future versions and be prepared to work around "
                                                "possible instabilities in the code (i.e. save your projects regularly)."),
