@@ -2,6 +2,9 @@ FIXMES:	(release-critical)
 - commit newly mixed demo song
 - adjust engine block size (Subject: blocksize vs. cpu)
 TODO:
+- reexamine bse_object_lock()
+- remove [dB], [%], [uS] etc... unit specifications from property labels, use hints instead and let the GUI make such indications
+- davsyndrum needs gate-out (or done)
 - midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
 - disable probing for invisible scopes
 - implement horizontal dB-meters as BstParam type
@@ -9,16 +12,13 @@ TODO:
 - note-specific undo per part
 - piano roll interpret scroll events for vertical scrolling
 - implement GxkLogAdjustment in terms of GxkAdapterAdjustment and rename gxklogadjustment.h
-- remove [dB], [%], [uS] etc... unit specifications from property labels, use hints instead and let the GUI make such indications
 - add GxkDialog minimum shrink sizes support
-- preserve part-link ids in tracks across part-tick movement and remove-tick+insert-part undo
+- preserve part-link ids in tracks (API) across part-tick movement and remove-tick+insert-part undo
 - add raise/lower buttons to track view
-- add left/right buttons to bus view (mixer)
+- add toleft/toright buttons to bus view (mixer)
 - add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - add executable versioning to sfidl 
-- davsyndrum needs gate-out (or done)
 - beast --debug=all --no-debug=comport doesn't disable comport messages
-- revisit bse_object_lock()
 - rename cast() to convert()
 - when starting to record events in automation, make sure an event at stamp=0 exists for default setup
 - add controller dialog popup for tracks to alter sliders corresponding to midi controls
@@ -26,7 +26,6 @@ TODO:
 - overshoot LED: ___ 
                  \ |  overshoot: fill triangle
                   \|  fill level shrinks with time
-- BUG: GUI freeze; 1) start Progressor(n-iterations=max), 2) repeatedly generate "failed to open MIDI device" dialog
 - BUG: select events, C+c, C+v, kill-selection. startover => copy is placed above old selection
 - BUG: when selected events overlap not-selected events, give prcedence to selected events when moving                  
 - BUG: delete track + undo doesn't preserve track order
