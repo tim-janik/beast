@@ -176,40 +176,60 @@ TODO:
 Logging:
 * stdlog could be log file, syslog, stderr and GUI
 * Severity:
-  - Error   (always GUI)
-  - Report  (always GUI unless extra message suppress) [Notice?]
-  - Warning (stdlog/GUI)
-  - Message (stdlog, maybe GUI)
-  - Info    (stdlog, unlikely GUI)
-  - Debug   (stdlog)
-* Origin:
-  - ... (custom user)
-  - User messages
-  - ... (custom application)
-  - Application messages
-  - Interface (API) layers
-  - ... (custom package specific)
-  - Package (BSE/GTK/GXK/...)
-   /- Service frameworks (e.g. procedure invokations)
-    - Communication Layer
-    - Logic Connection (two way)
-    - Connection
-    - Link primitives
-   /- Generic Input/Output Layer
-    - Logic IO (Device specific)
-    - Physical IO
-  - Ground (physical) (0)
+  - sfi_error (fwd, stdlog, GUI)
+  - sfi_warn  (fwd, stdlog, GUI unless extra warning suppress)
+  - sfi_info  (fwd, stdlog, GUI unless message suppress)
+  - sfi_diag  (fwd, stdlog, not GUI)
+  - sfi_debug (loc, stdlog)
 * Message forewarding:
   Scheme -> Shell -> wire -> BSE -> Beast
   - need ability to track originating process
   - need ability to track originating package
 * Allow message supression list through hash mechanism
+* Origin: special case "io/" to stdlog
+* GUI handler (thread local), proxy notification via BseServer signals
 * Example:
   - #define LOG_DOMAIN "MidiDriver"
     #define LOG_ORIGIN IO_GENERIC
-    _report ("MIDI", _("Advice about device selections"), _("failed to open %s, using Null MIDI device"), "/dev/midi");
+    _report ("MIDI", _("Advice about MIDI device selections"), _("failed to open %s, using Null MIDI device"), "/dev/midi");
+    _report ("MIDI",
+             _("Advice about MIDI device selections"),
+             _("Alert me about MIDI device selections"),
+             _("failed to open %s, using Null MIDI device"), "/dev/midi");
   : Report: failed to open /dev/midi, using Null MIDI device
     [ ] suppress future messages of this kind
+    
+        FooLogConf foo_log_conf (const char *, ...);
+
+	#define LOG_DOMAIN "AllProtocolsLib"
+	#define RDP_LOG     foo_log_conf ("io/rdp", _("Alert me about unrechable servers"), _("Alert me about unrechable servers"))
+	static FooLogConf RDP_LOG ("io/rdp", _("Alert me about unrechable servers"), _("Alert me about unrechable servers"));
+	foo_error (RDP_LOG, _("Server %s:%u not reachable"), server, port);
+	RDP_LOG.error (_("Server %s:%u not reachable"), server, port);
+
+	#define pcm_null FooLogger ("io/pcm", _("Advice about PCM device selections"))
+	pcm_null.error (_("using NULL device"));
+	
+	#define pcm_avail FooLogger ("io/pcm", _("Advice about PCM device availability"))
+	pcm_avail.warn (_("device disappeared: %s"), "/dev/pcm");
+	pcm_avail.warn (_("device appeared: %s"), "/dev/pcm");
+
+	#define music_log FooLogger ("io/music")
+	music_log.error (_("using NULL device"));
+	music_log.warn (_("device disappeared: %s"), "/dev/music");
+	music_log.warn (_("device appeared: %s"), "/dev/music");
+
+	#define midi_log FooLogger ("io/midi", _("Alert me about MIDI devices"), _("Advice about MIDI devices"))
+	midi_log.error (_("using NULL device"));
+	midi_log.warn (_("device disappeared: %s"), "/dev/midi");
+	midi_log.warn (_("device appeared: %s"), "/dev/midi");
+
+	Show Messages about:
+	[ ] Advice about PCM device selections
+	[ ] Advice about PCM device availability
+	[ ] Advice about MIDI devices
+
+	
   - Message Supression Configuration:
     -> reenable messages related to MIDI
        ["MIDI" being kind or class]
