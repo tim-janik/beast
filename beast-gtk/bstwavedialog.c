@@ -82,7 +82,7 @@ bst_wave_dialog_init (BstWaveDialog *wd)
 		    "signal::delete_event", gtk_widget_hide_on_delete, NULL,
 		    NULL);
   
-  gtk_file_selection_heal (GTK_FILE_SELECTION (wd));
+  gxk_file_selection_heal (GTK_FILE_SELECTION (wd));
 }
 
 static void

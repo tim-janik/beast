@@ -117,7 +117,6 @@ typedef enum {
 
 
 /* --- miscellaneous --- */
-#define	BST_TOOLTIPS		(GXK_TOOLTIPS)
 #define	BST_DVL_HINTS		(bst_developer_hints != FALSE)
 #define	BST_DVL_EXT		(bst_developer_extensions != FALSE)
 #define	BST_MAIN_LOOP_QUIT()	do { bst_main_loop_running = FALSE; } while (0)

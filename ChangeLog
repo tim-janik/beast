@@ -1,3 +1,20 @@
+Tue Apr  1 06:45:33 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdefs.h: removed BST_TOOLTIPS, changed code to make
+	use of GXK_TOOLTIPS.
+
+	* beast-gtk/bstutils.[hc]: removed outdated Gtk+ workarounds
+	and helper code. moved some things into gxkutils.[hc].
+	fixed up BstGMask type usages. documented bst_gmask_*() functions.
+
+	* beast-gtk/gxk/gxkutils.[hc]: don't redefine gtk functions.
+	document gxk_item_factory_get_item() and gxk_item_factory_get_widget().
+	moved and renamed gxk_widget_proxy_requisition(),
+	gtk_notebook_current_widget() and gxk_file_selection_heal() from
+	bstutils.[hc] to here.
+
+	* beast-gtk/*.c: miscellaneous adaptions according to the above changes.
+
 Mon Mar 31 12:05:07 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvassource.c: removed black text border. set text

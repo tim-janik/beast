@@ -293,7 +293,7 @@ bst_param_view_rebuild (BstParamView *self)
 			       "vadjustment", gtk_scrolled_window_get_vadjustment (scrolled_window),
 			       "parent", scrolled_window,
 			       NULL);
-      bst_widget_request_aux_info (viewport);
+      gxk_widget_proxy_requisition (viewport);
       g_object_set (gcontainer,
 		    "visible", TRUE,
 		    "homogeneous", FALSE,

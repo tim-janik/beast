@@ -186,7 +186,7 @@ bst_wave_editor_init (BstWaveEditor *self)
   gtk_paned_pack2 (GTK_PANED (paned), self->qsampler_parent, TRUE, TRUE);
 
   /* GUI mask container */
-  self->gmask_parent = bst_gmask_container_create (BST_TOOLTIPS, 5, TRUE);
+  self->gmask_parent = bst_gmask_container_create (5, TRUE);
   gxk_nullify_on_destroy (self->gmask_parent, &self->gmask_parent);
   gtk_box_pack_start (GTK_BOX (self->main_vbox), self->gmask_parent, FALSE, TRUE, 0);
 

@@ -71,7 +71,7 @@ bst_file_dialog_init (BstFileDialog *fd)
 		  "window_position", GTK_WIN_POS_MOUSE,
 		  NULL);
   
-  gtk_file_selection_heal (GTK_FILE_SELECTION (fd));
+  gxk_file_selection_heal (GTK_FILE_SELECTION (fd));
 }
 
 static void

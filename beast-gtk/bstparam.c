@@ -239,7 +239,7 @@ bparam_make_container (GtkWidget *parent,
   if (!container || !GTK_IS_CONTAINER (container))
     {
       GtkWidget *any;
-      container = bst_gmask_container_create (GXK_TOOLTIPS, quark_group ? 5 : 0, FALSE);
+      container = bst_gmask_container_create (quark_group ? 5 : 0, FALSE);
       if (quark_group)
 	any = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
@@ -612,6 +612,7 @@ bst_param_list_names (gboolean rack_widget,
 	      goto skip_duplicate;
 	  names[k++] = impls[i]->name;
 	skip_duplicate:
+	  ;
 	}
       names[k] = NULL;
       n = k;

@@ -166,7 +166,7 @@ update_dialog (GxkDialog     *dialog,
 							   janitor_action, (gpointer) janitor,
 							   action, GXK_DIALOG_MULTI_SWAPPED);
 	      g_object_set_data_full (G_OBJECT (button), "user_data", g_strdup (action), g_free);
-	      gtk_tooltips_set_tip (BST_TOOLTIPS, button, blurb, NULL);
+	      gtk_tooltips_set_tip (GXK_TOOLTIPS, button, blurb, NULL);
 	    }
 	}
       gxk_dialog_action (dialog, BST_STOCK_CANCEL, gxk_toplevel_delete, NULL);

@@ -9,7 +9,6 @@ FIXMES:
 - default saving (SFI_PARAM_SKIP_DEFAULT)
 - match enum names on word boundaries only
 - master tune slider in preferences (kammer ton)
-- bst_gmask should use typedef struct _BstGMask BstGMask; instead of gpointer
 - bsemididevice-oss throws warnings when compiled without midi support
 - MidiEvent (serialization)
 - make bst_catalog_get_action() always return an action, so callers don't need to check
@@ -63,6 +62,8 @@ DOCS:
   apropriate functions [alper]
 - the beast site is unusable under IE [alper]
 - nroff files need another build step to get final page numbers [alper]
+- the html description for @func from bstutils.c:bst_gmask_foreach()
+  is messed up [alper]
 
 General BSE:
 - level-o-meter visualizer at links (adjustable?)

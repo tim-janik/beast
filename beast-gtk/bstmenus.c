@@ -254,7 +254,7 @@ bst_menu_config_create_items (BstMenuConfig  *config,
 	  ife.extra_data = e->extra_data;
 	}
       gtk_item_factory_create_items (ifactory, 1, &ife, NULL);
-      item = gtk_item_factory_get_item (ifactory, ife.path);
+      item = gxk_item_factory_get_item (ifactory, ife.path);
 
       /* connect callback */
       if (e->callback)

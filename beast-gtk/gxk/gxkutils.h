@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,15 +30,15 @@ G_BEGIN_DECLS
 #include <gxk/gxkmarshal.h>
 
 
-/* --- Gtk bug fixes --- */
+/* --- Gtk+ workarounds and amendments --- */
 gboolean    gxk_cell_editable_focus_out_handler (GtkCellEditable *ecell);
-gboolean	gxk_cell_editable_canceled	(GtkCellEditable *ecell);
-GtkWidget*	gxk_item_factory_get_item	(GtkItemFactory	 *ifactory,
+gboolean    gxk_cell_editable_canceled		(GtkCellEditable *ecell);
+GtkWidget*  gxk_item_factory_get_item		(GtkItemFactory	 *ifactory,
 						 const gchar	 *path);
-GtkWidget*	gxk_item_factory_get_widget	(GtkItemFactory	 *ifactory,
+GtkWidget*  gxk_item_factory_get_widget		(GtkItemFactory	 *ifactory,
 						 const gchar	 *path);
-#define	gtk_item_factory_get_item	gxk_item_factory_get_item
-#define	gtk_item_factory_get_widget	gxk_item_factory_get_widget
+void	    gxk_widget_proxy_requisition	(GtkWidget	 *widget);
+void	    gxk_file_selection_heal		(GtkFileSelection *fs);
 
 
 /* --- GObject convenience --- */
@@ -75,13 +75,14 @@ void	gxk_color_alloc			(GdkColormap		*colormap,
 
 
 /* --- Gtk convenience --- */
+#define GTK_STYLE_THICKNESS(s,xy)	((s)-> xy##thickness)
 void	gxk_widget_make_insensitive	(GtkWidget	*widget);
 void	gxk_widget_make_sensitive	(GtkWidget	*widget);
-#define GTK_STYLE_THICKNESS(s,xy)	((s)-> xy##thickness)
 void	gxk_widget_showraise		(GtkWidget	*widget);
 void	gxk_idle_show_widget		(GtkWidget	*widget);
 void    gxk_notebook_set_current_page_widget (GtkNotebook *notebook,
 					      GtkWidget   *page);
+GtkWidget* gtk_notebook_current_widget       (GtkNotebook *notebook);
 
 /* functions to affect a widget tree's toplevel */
 void	gxk_toplevel_delete		(GtkWidget	*widget);

@@ -461,7 +461,7 @@ bst_sample_editor_rebuild (BstSampleEditor *editor)
   
   /* setup qsampler zoom and vscale
    */
-  mask_parent = bst_gmask_container_create (BST_TOOLTIPS, 5, TRUE);
+  mask_parent = bst_gmask_container_create (5, TRUE);
   gtk_box_pack_start (GTK_BOX (editor->main_vbox), mask_parent, FALSE, TRUE, 0);
   editor->zoom_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (100, 1e-16, 1e+16, 0.1, 10, 0));
   g_object_connect (editor->zoom_adjustment,

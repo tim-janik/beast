@@ -1,5 +1,5 @@
 /* GXK - Gtk+ Extension Kit
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -340,6 +340,20 @@ gxk_notebook_set_current_page_widget (GtkNotebook *notebook,
   gint num = gtk_notebook_page_num (notebook, page);
   if (num >= 0)
     gtk_notebook_set_current_page (notebook, num);
+}
+
+/**
+ * gtk_notebook_current_widget
+ * @notebook: valid #GtkNotebook
+ * @RETURNS:  the widget corresponding to the current page
+ *
+ * This function is essentially a shortcut for
+ * gtk_notebook_get_current_page() and gtk_notebook_get_nth_page().
+ */
+GtkWidget*
+gtk_notebook_current_widget (GtkNotebook *notebook)
+{
+  return gtk_notebook_get_nth_page (notebook, gtk_notebook_get_current_page (notebook));
 }
 
 /**
@@ -1645,7 +1659,15 @@ path_fix_uline (const gchar *str)
   return path;
 }
 
-#undef gtk_item_factory_get_item
+/**
+ * gxk_item_factory_get_item
+ * @ifactory: valid #GtkItemFactory
+ * @path:     item factory path
+ * @RETURNS:  menu item according to @path
+ *
+ * This function strips unescaped underlines ('_') from @path
+ * and then calls gtk_item_factory_get_item().
+ */
 GtkWidget*
 gxk_item_factory_get_item (GtkItemFactory *ifactory,
 			   const gchar    *path)
@@ -1656,7 +1678,15 @@ gxk_item_factory_get_item (GtkItemFactory *ifactory,
   return widget;
 }
 
-#undef gtk_item_factory_get_widget
+/**
+ * gxk_item_factory_get_widget
+ * @ifactory: valid #GtkItemFactory
+ * @path:     item factory path
+ * @RETURNS:  widget according to @path
+ *
+ * This function strips unescaped underlines ('_') from @path
+ * and then calls gtk_item_factory_get_widget().
+ */
 GtkWidget*
 gxk_item_factory_get_widget (GtkItemFactory *ifactory,
 			     const gchar    *path)
@@ -1665,4 +1695,100 @@ gxk_item_factory_get_widget (GtkItemFactory *ifactory,
   GtkWidget *widget = gtk_item_factory_get_widget (ifactory, p);
   g_free (p);
   return widget;
+}
+
+static void
+requisition_to_aux_info (GtkWidget      *widget,
+			 GtkRequisition *requisition)
+{
+  guint width = requisition->width;
+  guint height = requisition->height;
+
+  /* we don't want the requisition to get too big */
+  width = MIN (width, gdk_screen_width () / 2);
+  height = MIN (height, gdk_screen_height () / 2);
+
+  gtk_widget_set_size_request (widget, width, height);
+}
+
+/**
+ * gxk_widget_proxy_requisition
+ * @widget: valid #GtkWidget
+ *
+ * Proxy the size requisition of @widget through the
+ * ::width_request and ::height_request properties.
+ * This is usefull only for immediate children of a
+ * #GtkScrolledWindow, to have the #GtkScrolledWindow
+ * honour the widgets size requisition.
+ */
+void
+gxk_widget_proxy_requisition (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  g_signal_handlers_disconnect_by_func (widget, requisition_to_aux_info, NULL);
+  g_signal_connect_after (widget, "size_request", G_CALLBACK (requisition_to_aux_info), NULL);
+}
+
+/**
+ * gxk_file_selection_heal
+ * @fs: valid #GtkFileSelection
+ *
+ * Fixup various oddities that happened to the Gtk+
+ * file selection widget over time. This function
+ * corrects container border widths, spacing, button
+ * placement and the default and focus widgets.
+ */
+void
+gxk_file_selection_heal (GtkFileSelection *fs)
+{
+  GtkWidget *main_vbox;
+  GtkWidget *hbox;
+  GtkWidget *any;
+
+  g_return_if_fail (GTK_IS_FILE_SELECTION (fs));
+
+  /* button placement
+   */
+  gtk_container_set_border_width (GTK_CONTAINER (fs), 0);
+  gtk_file_selection_hide_fileop_buttons (fs);
+  gtk_widget_ref (fs->main_vbox);
+  gtk_container_remove (GTK_CONTAINER (fs), fs->main_vbox);
+  gtk_box_set_spacing (GTK_BOX (fs->main_vbox), 0);
+  gtk_container_set_border_width (GTK_CONTAINER (fs->main_vbox), 5);
+  main_vbox = gtk_widget_new (GTK_TYPE_VBOX,
+			      "homogeneous", FALSE,
+			      "spacing", 0,
+			      "border_width", 0,
+			      "parent", fs,
+			      "visible", TRUE,
+			      NULL);
+  gtk_box_pack_start (GTK_BOX (main_vbox), fs->main_vbox, TRUE, TRUE, 0);
+  gtk_widget_unref (fs->main_vbox);
+  gtk_widget_hide (fs->ok_button->parent);
+  hbox = gtk_widget_new (GTK_TYPE_HBOX,
+			 "homogeneous", TRUE,
+			 "spacing", 0,
+			 "border_width", 5,
+			 "visible", TRUE,
+			 NULL);
+  gtk_box_pack_end (GTK_BOX (main_vbox), hbox, FALSE, TRUE, 0);
+  gtk_widget_reparent (fs->ok_button, hbox);
+  gtk_widget_reparent (fs->cancel_button, hbox);
+  gtk_widget_grab_default (fs->ok_button);
+  // gtk_label_set_text (GTK_LABEL (GTK_BIN (fs->ok_button)->child), "Ok");
+  // gtk_label_set_text (GTK_LABEL (GTK_BIN (fs->cancel_button)->child), "Cancel");
+
+  /* heal the action_area packing so we can customize children
+   */
+  gtk_box_set_child_packing (GTK_BOX (fs->action_area->parent),
+			     fs->action_area,
+			     FALSE, TRUE,
+			     5, GTK_PACK_START);
+
+  any = gtk_widget_new (GTK_TYPE_HSEPARATOR,
+			"visible", TRUE,
+			NULL);
+  gtk_box_pack_end (GTK_BOX (main_vbox), any, FALSE, TRUE, 0);
+  gtk_widget_grab_focus (fs->selection_entry);
 }

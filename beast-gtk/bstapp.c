@@ -496,20 +496,20 @@ bst_app_update_can_operate (BstApp *app)
     return;
 
   shell = bst_app_get_current_shell (app);
-  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Song");
+  widget = gxk_item_factory_get_item (bst_app_menu_factory (app), "/Song");
   if (widget)
     gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
-  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Waves");
+  widget = gxk_item_factory_get_item (bst_app_menu_factory (app), "/Waves");
   if (widget)
     gtk_widget_set_sensitive (widget, BST_IS_WAVE_REPO_SHELL (shell));
 
-  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/File/Save");	// FIXME: hack
+  widget = gxk_item_factory_get_item (bst_app_menu_factory (app), "/File/Save");	// FIXME: hack
   if (widget)
     gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
-  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Edit/Undo");	// FIXME: hack
+  widget = gxk_item_factory_get_item (bst_app_menu_factory (app), "/Edit/Undo");	// FIXME: hack
   if (widget)
     gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
-  widget = gtk_item_factory_get_item (bst_app_menu_factory (app), "/Edit/Redo");	// FIXME: hack
+  widget = gxk_item_factory_get_item (bst_app_menu_factory (app), "/Edit/Redo");	// FIXME: hack
   if (widget)
     gtk_widget_set_sensitive (widget, BST_IS_SONG_SHELL (shell));
 

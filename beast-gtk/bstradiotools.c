@@ -598,7 +598,7 @@ bst_radio_tools_build_palette (BstRadioTools *self,
 	    gtk_widget_add_accelerator (button, "clicked", self->accel_group,
 					accelerator_key, accelerator_mods, GTK_ACCEL_VISIBLE);
 	}
-      gtk_tooltips_set_tip (BST_TOOLTIPS, button, self->tools[i].tool.tooltip, NULL);
+      gtk_tooltips_set_tip (GXK_TOOLTIPS, button, self->tools[i].tool.tooltip, NULL);
       gtk_object_set_data_full (GTK_OBJECT (button), "blurb", g_strdup (self->tools[i].tool.blurb), g_free);
       self->widgets = g_slist_prepend (self->widgets, button);
       gtk_table_attach (GTK_TABLE (table),

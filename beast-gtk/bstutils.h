@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik and Red Hat, Inc.
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,9 +24,7 @@
 #include "bstdefs.h"
 #include "bstcluehunter.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* --- generated includes --- */
 /* type IDs */
@@ -104,24 +102,13 @@ const gchar**	bst_log_scan_keys		(void);
 
 
 /* --- Gtk+ utilities & workarounds --- */
-#define    GTK_TYPE_VPANED               (gtk_vpaned_get_type ())
-#define    GTK_TYPE_HPANED               (gtk_hpaned_get_type ())
 gboolean   gtk_widget_viewable		 (GtkWidget		*widget);
-void	   bst_widget_request_aux_info	 (GtkWidget		*viewport);
-void	   gtk_file_selection_heal	 (GtkFileSelection	*fs);
-void	   gtk_clist_moveto_selection	 (GtkCList		*clist);
-gpointer   gtk_clist_get_selection_data	 (GtkCList		*clist,
-					  guint                  index);
 void	   gtk_widget_viewable_changed	 (GtkWidget		*widget);
-
-#define gtk_notebook_current_widget(n) \
-    gtk_notebook_get_nth_page ((n), gtk_notebook_get_current_page ((n)))
 
 
 /* --- GUI field mask --- */
 typedef struct _BstGMask BstGMask;
-GtkWidget*   bst_gmask_container_create	(gpointer	tooltips,
-					 guint		border_width,
+GtkWidget*   bst_gmask_container_create	(guint		border_width,
 					 gboolean	dislodge_columns);
 typedef enum /*< skip >*/
 {
@@ -130,41 +117,41 @@ typedef enum /*< skip >*/
   BST_GMASK_INTERLEAVE, /* stretch */
   BST_GMASK_BIG
 } BstGMaskPack;
-gpointer	bst_gmask_form		(GtkWidget     *gmask_container,
+BstGMask*	bst_gmask_form		(GtkWidget     *gmask_container,
 					 GtkWidget     *action,
 					 BstGMaskPack   gpack);
 #define		bst_gmask_form_big(c,a)	bst_gmask_form ((c), (a), BST_GMASK_BIG)
-void		bst_gmask_set_tip	(gpointer	mask,
+void		bst_gmask_set_tip	(BstGMask      *mask,
 					 const gchar   *tip_text);
-void		bst_gmask_set_prompt	(gpointer	mask,
+void		bst_gmask_set_prompt	(BstGMask      *mask,
 					 gpointer	widget);
-void		bst_gmask_set_aux1	(gpointer	mask,
+void		bst_gmask_set_aux1	(BstGMask      *mask,
 					 gpointer	widget);
-void		bst_gmask_set_aux2	(gpointer	mask,
+void		bst_gmask_set_aux2	(BstGMask      *mask,
 					 gpointer	widget);
-void		bst_gmask_set_aux3	(gpointer	mask,
+void		bst_gmask_set_aux3	(BstGMask      *mask,
 					 gpointer	widget);
-void		bst_gmask_set_ahead	(gpointer	mask,
+void		bst_gmask_set_ahead	(BstGMask      *mask,
 					 gpointer	widget);
-void		bst_gmask_set_atail	(gpointer	mask,
+void		bst_gmask_set_atail	(BstGMask      *mask,
 					 gpointer	widget);
-void		bst_gmask_set_column	(gpointer	mask,
+void		bst_gmask_set_column	(BstGMask      *mask,
 					 guint		column);
-GtkWidget*	bst_gmask_get_prompt	(gpointer	mask);
-GtkWidget*	bst_gmask_get_aux1	(gpointer	mask);
-GtkWidget*	bst_gmask_get_aux2	(gpointer	mask);
-GtkWidget*	bst_gmask_get_aux3	(gpointer	mask);
-GtkWidget*	bst_gmask_get_ahead	(gpointer	mask);
-GtkWidget*	bst_gmask_get_action	(gpointer	mask);
-GtkWidget*	bst_gmask_get_atail	(gpointer	mask);
-void		bst_gmask_foreach	(gpointer	mask,
+GtkWidget*	bst_gmask_get_prompt	(BstGMask      *mask);
+GtkWidget*	bst_gmask_get_aux1	(BstGMask      *mask);
+GtkWidget*	bst_gmask_get_aux2	(BstGMask      *mask);
+GtkWidget*	bst_gmask_get_aux3	(BstGMask      *mask);
+GtkWidget*	bst_gmask_get_ahead	(BstGMask      *mask);
+GtkWidget*	bst_gmask_get_action	(BstGMask      *mask);
+GtkWidget*	bst_gmask_get_atail	(BstGMask      *mask);
+void		bst_gmask_foreach	(BstGMask      *mask,
 					 gpointer	func,
 					 gpointer	data);
-void		bst_gmask_pack		(gpointer	mask);
-gpointer	bst_gmask_quick		(GtkWidget     *gmask_container,
+void		bst_gmask_pack		(BstGMask      *mask);
+BstGMask*	bst_gmask_quick		(GtkWidget     *gmask_container,
 					 guint		column,
 					 const gchar   *prompt,
-					 gpointer       action_widget,
+					 gpointer       action,
 					 const gchar   *tip_text);
 #define	bst_gmask_set_sensitive(mask, sensitive)	\
     bst_gmask_foreach ((mask), \
@@ -177,11 +164,6 @@ gpointer	bst_gmask_quick		(GtkWidget     *gmask_container,
 
 
 /* --- BEAST utilities --- */
-guint      bst_container_get_insertion_position (GtkContainer   *container,
-						 gboolean        scan_horizontally,
-						 gint            xy,
-						 GtkWidget      *ignore_child,
-						 gint           *ignore_child_position);
 void		bst_container_set_named_child	(GtkWidget	*container,
 						 GQuark		 qname,
 						 GtkWidget	*child);
@@ -194,12 +176,6 @@ GtkWidget*	bst_xpm_view_create		(const gchar   **xpm,
 /* --- internal --- */
 void	_bst_init_utils		(void);
 
-
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_UTILS_H__ */
