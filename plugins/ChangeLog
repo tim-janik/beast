@@ -1,3 +1,10 @@
+Mon May 27 22:57:09 2002  Tim Janik  <timj@gtk.org>
+
+	* more i/o channel name fixups.
+	
+	* bsecompressor.[hc]:
+	* bsesimpleresonancefilter.[hc]: removed outdated plugins.
+
 Tue May 21 09:24:25 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesequencer.[hc]: changes due to BswNoteSequence changes in BSE.

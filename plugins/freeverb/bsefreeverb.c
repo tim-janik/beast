@@ -122,10 +122,10 @@ bse_free_verb_class_init (BseFreeVerbClass *class)
 						    constants->width_scale * defaults.width,
 						    0.1 * constants->width_scale,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
-  channel = bse_source_class_add_ichannel (source_class, "left_in", "Left Input");
-  channel = bse_source_class_add_ichannel (source_class, "right_in", "Right Input");
-  channel = bse_source_class_add_ochannel (source_class, "left_out", "Left Output");
-  channel = bse_source_class_add_ochannel (source_class, "right_out", "Right Output");
+  channel = bse_source_class_add_ichannel (source_class, "Left Audio In", "Left Input");
+  channel = bse_source_class_add_ichannel (source_class, "Right Audio In", "Right Input");
+  channel = bse_source_class_add_ochannel (source_class, "Left Audio Out", "Left Output");
+  channel = bse_source_class_add_ochannel (source_class, "Right Audio Out", "Right Output");
 }
 
 static void

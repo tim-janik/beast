@@ -107,7 +107,7 @@ bse_mixer_class_init (BseMixerClass *class)
 						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
 						   bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100, 1,
 						   BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
-  ochannel = bse_source_class_add_ochannel (source_class, "Mono Out", "Sole Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", "Sole Output");
   g_assert (ochannel == BSE_MIXER_OCHANNEL_MONO);
   for (i = 1; i <= BSE_MIXER_N_INPUTS; i++)
     {
@@ -145,7 +145,7 @@ bse_mixer_class_init (BseMixerClass *class)
       g_free (group);
       g_free (string);
       g_free (name);
-      name = g_strdup_printf ("Mono In%u", i);
+      name = g_strdup_printf ("Audio In%u", i);
       string = g_strdup_printf ("Input Channel %u", i);
       ichannel = bse_source_class_add_ichannel (source_class, name, string);
       g_assert (ichannel == i - 1);

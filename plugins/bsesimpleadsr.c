@@ -132,7 +132,7 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *class)
   g_assert (ichannel == BSE_SIMPLE_ADSR_ICHANNEL_GATE);
   ichannel = bse_source_class_add_ichannel (source_class, "Retrigger In", "Retrigger input (raising edge retriggers envelope)");
   g_assert (ichannel == BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER);
-  ochannel = bse_source_class_add_ochannel (source_class, "ADSR Out", "Attack-Decay-Sustain-Release envelope output");
+  ochannel = bse_source_class_add_ochannel (source_class, "Ctrl Out", "Attack-Decay-Sustain-Release envelope output");
   g_assert (ochannel == BSE_SIMPLE_ADSR_OCHANNEL_OUT);
 }
 

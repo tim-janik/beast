@@ -98,9 +98,9 @@ bse_adder_class_init (BseAdderClass *class)
 						   FALSE,
 						   BSE_PARAM_DEFAULT));
   
-  channel = bse_source_class_add_jchannel (source_class, "Audio1", "Audio Input 1");
+  channel = bse_source_class_add_jchannel (source_class, "Audio In1", "Audio Input 1");
   g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO1);
-  channel = bse_source_class_add_jchannel (source_class, "Audio2", "Audio Input 2");
+  channel = bse_source_class_add_jchannel (source_class, "Audio In2", "Audio Input 2");
   g_assert (channel == BSE_ADDER_JCHANNEL_AUDIO2);
   channel = bse_source_class_add_ochannel (source_class, "Audio Out", "Audio Output");
   g_assert (channel == BSE_ADDER_OCHANNEL_AUDIO_OUT);

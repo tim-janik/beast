@@ -61,15 +61,15 @@ bse_mult_class_init (BseMultClass *class)
   
   source_class->context_create = bse_mult_context_create;
   
-  ichannel = bse_source_class_add_ichannel (source_class, "mono_in1", "Mono Input 1");
+  ichannel = bse_source_class_add_ichannel (source_class, "Audio In1", "Audio Input 1");
   g_assert (ichannel == BSE_MULT_ICHANNEL_MONO1);
-  ichannel = bse_source_class_add_ichannel (source_class, "mono_in2", "Mono Input 2");
+  ichannel = bse_source_class_add_ichannel (source_class, "Audio In2", "Audio Input 2");
   g_assert (ichannel == BSE_MULT_ICHANNEL_MONO2);
-  ichannel = bse_source_class_add_ichannel (source_class, "mono_in3", "Mono Input 3");
+  ichannel = bse_source_class_add_ichannel (source_class, "Audio In3", "Audio Input 3");
   g_assert (ichannel == BSE_MULT_ICHANNEL_MONO3);
-  ichannel = bse_source_class_add_ichannel (source_class, "mono_in4", "Mono Input 4");
+  ichannel = bse_source_class_add_ichannel (source_class, "Audio In4", "Audio Input 4");
   g_assert (ichannel == BSE_MULT_ICHANNEL_MONO4);
-  ochannel = bse_source_class_add_ochannel (source_class, "mono_out", "Mono Output");
+  ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", "Audio Output");
   g_assert (ochannel == BSE_MULT_OCHANNEL_MONO);
 }
 

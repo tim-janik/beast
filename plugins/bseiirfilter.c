@@ -151,10 +151,10 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
 						   TRUE,
 						   BSE_PARAM_GUI));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "mono_out", _("Filtered Output"));
-  g_assert (ochannel_id == BSE_IIR_FILTER_OCHANNEL_MONO);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "mono_in", _("Unfiltered Input"));
+  ichannel_id = bse_source_class_add_ichannel (source_class, "Audio In", _("Unfiltered Input"));
   g_assert (ichannel_id == BSE_IIR_FILTER_ICHANNEL_MONO);
+  ochannel_id = bse_source_class_add_ochannel (source_class, "Audio Out", _("Filtered Output"));
+  g_assert (ochannel_id == BSE_IIR_FILTER_OCHANNEL_MONO);
 }
 
 static void
