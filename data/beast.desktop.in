@@ -9,3 +9,4 @@ TryExec=beast
 Exec=beast
 Terminal=false
 Categories=GTK;GNOME;Application;AudioVideo;AudioVideoEditing;Music;Player;
+MimeType=audio/x-bse;audio/x-bsewave;

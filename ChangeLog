@@ -1,3 +1,8 @@
+Mon Sep 13 14:10:21 2004  Tim Janik  <timj@gtk.org>
+
+	* data/beast.desktop.in: added mime type for audio/x-bse and
+	audio/x-bsewave, pointed out by Artem Popov.
+
 Sun Sep 12 03:35:46 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparamview.c:
