@@ -1,5 +1,9 @@
 2003-10-15  Christian Rose  <menthos@menthos.com>
 
+	* .cvsignore: Added more entries.
+
+2003-10-15  Christian Rose  <menthos@menthos.com>
+
 	* sv.po: Added Swedish translation.
 
 Wed Oct 15 02:35:15 2003  Tim Janik  <timj@gtk.org>
