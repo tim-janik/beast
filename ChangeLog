@@ -21,7 +21,7 @@ Sat Nov  6 19:04:06 1999  Tim Janik  <timj@gtk.org>
 	we can handle the link updating for the csources.
 
 	* beast-gtk/bstcanvassource.[hc]: introduced ::update_links
-	signal, to be emitted when the BseSource links changed.
+	signal, to be emitted when the BseSource connections change.
 
 Sat Nov  6 05:58:29 1999  Tim Janik  <timj@gtk.org>
 
