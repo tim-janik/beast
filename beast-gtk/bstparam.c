@@ -519,6 +519,7 @@ BstParam*
 bst_param_create (gpointer      owner,
 		  BseType	owner_type,
 		  BseParamSpec *pspec,
+		  GQuark        param_group,
 		  GtkWidget    *parent,
 		  GtkTooltips  *tooltips)
 {
@@ -565,24 +566,24 @@ bst_param_create (gpointer      owner,
   bparam->locked = 1;
   bse_type_class_ref (owner_type);
   
-  parent_container = gtk_object_get_data_by_id (GTK_OBJECT (parent), pspec->any.param_group ? pspec->any.param_group : null_group);
+  parent_container = gtk_object_get_data_by_id (GTK_OBJECT (parent), param_group ? param_group : null_group);
   if (!parent_container ||
       GTK_OBJECT_DESTROYED (parent_container) ||
       !GTK_IS_CONTAINER (parent_container))
     {
       GtkWidget *any;
       
-      any = GROUP_PARENT_CREATE (tooltips, pspec->any.param_group ? 5 : 0);
+      any = GROUP_PARENT_CREATE (tooltips, param_group ? 5 : 0);
       parent_container = any;
       gtk_widget_ref (any);
       gtk_object_set_data_by_id_full (GTK_OBJECT (parent),
-				      pspec->any.param_group ? pspec->any.param_group : null_group,
+				      param_group ? param_group : null_group,
 				      any,
 				      (GtkDestroyNotify) gtk_widget_unref);
-      if (pspec->any.param_group)
+      if (param_group)
 	any = gtk_widget_new (GTK_TYPE_FRAME,
 			      "visible", TRUE,
-			      "label", g_quark_to_string (pspec->any.param_group),
+			      "label", g_quark_to_string (param_group),
 			      "child", any,
 			      NULL);
       if (GTK_IS_BOX (parent))

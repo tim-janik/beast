@@ -51,9 +51,11 @@ static void	 bse_mixer_init			(BseMixer	*mixer);
 static void	 bse_mixer_class_init		(BseMixerClass	*class);
 static void	 bse_mixer_class_destroy	(BseMixerClass	*class);
 static void      bse_mixer_set_param            (BseMixer	*mixer,
-						 BseParam       *param);
+						 BseParam       *param,
+						 guint           param_id);
 static void      bse_mixer_get_param            (BseMixer	*mixer,
-						 BseParam       *param);
+						 BseParam       *param,
+						 guint           param_id);
 static void	 bse_mixer_do_shutdown		(BseObject     	*object);
 static void      bse_mixer_prepare               (BseSource      *source,
 						 BseIndex        index);
@@ -247,9 +249,10 @@ bse_mixer_do_shutdown (BseObject *object)
 
 static void
 bse_mixer_set_param (BseMixer *mixer,
-		     BseParam *param)
+                     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_MVOLUME_f:
       mixer->volume_factor[0] = param->value.v_float;
@@ -327,20 +330,17 @@ bse_mixer_set_param (BseMixer *mixer,
       bse_object_param_changed (BSE_OBJECT (mixer), "volume_dB4");
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (mixer),
-		 BSE_OBJECT_NAME (mixer),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (mixer, param, param_id);
       break;
     }
 }
 
 static void
 bse_mixer_get_param (BseMixer *mixer,
-		     BseParam *param)
+                     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_MVOLUME_f:
       param->value.v_float = mixer->volume_factor[0];
@@ -388,11 +388,7 @@ bse_mixer_get_param (BseMixer *mixer,
       param->value.v_uint = mixer->volume_factor[4] * 100.0 + 0.5;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (mixer),
-		 BSE_OBJECT_NAME (mixer),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (mixer, param, param_id);
       break;
     }
 }

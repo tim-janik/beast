@@ -42,9 +42,11 @@ static void	   bse_fir_filter_class_init    (BseFIRFilterClass *class);
 static void	   bse_fir_filter_class_destroy (BseFIRFilterClass *class);
 static void	   bse_fir_filter_do_shutdown   (BseObject     	   *object);
 static void        bse_fir_filter_set_param     (BseFIRFilter	   *fir_filter,
-						 BseParam          *param);
+						 BseParam          *param,
+						 guint              param_id);
 static void        bse_fir_filter_get_param     (BseFIRFilter	   *fir_filter,
-						 BseParam          *param);
+						 BseParam          *param,
+						 guint              param_id);
 static void        bse_fir_filter_prepare       (BseSource         *source,
 						 BseIndex           index);
 static BseChunk*   bse_fir_filter_calc_chunk    (BseSource         *source,
@@ -269,11 +271,12 @@ bse_fir_filter_update_locals (BseFIRFilter *filter)
 
 static void
 bse_fir_filter_set_param (BseFIRFilter *filter,
-			  BseParam     *param)
+			  BseParam     *param,
+			  guint         param_id)
 {
   BseFIRFilterType filter_type = BSE_FIR_FILTER_ALLPASS;
 
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_DEGREE:
       filter->degree = (param->value.v_uint + (param->value.v_uint > 2 * filter->degree)) / 2;
@@ -317,20 +320,17 @@ bse_fir_filter_set_param (BseFIRFilter *filter,
 	}
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (filter),
-		 BSE_OBJECT_NAME (filter),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (filter, param, param_id);
       break;
     }
 }
 
 static void
 bse_fir_filter_get_param (BseFIRFilter *filter,
-			  BseParam     *param)
+			  BseParam     *param,
+			  guint         param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_DEGREE:
       param->value.v_uint = filter->degree * 2;
@@ -357,11 +357,7 @@ bse_fir_filter_get_param (BseFIRFilter *filter,
       param->value.v_float = filter->filter_type == BSE_FIR_FILTER_HIGHPASS;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (filter),
-		 BSE_OBJECT_NAME (filter),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (filter, param, param_id);
       break;
     }
 }

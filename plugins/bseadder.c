@@ -35,9 +35,11 @@ static void	 bse_adder_init			(BseAdder	*adder);
 static void	 bse_adder_class_init		(BseAdderClass	*class);
 static void	 bse_adder_class_destroy	(BseAdderClass	*class);
 static void      bse_adder_set_param            (BseAdder	*adder,
-						 BseParam       *param);
+						 BseParam       *param,
+						 guint           param_id);
 static void      bse_adder_get_param            (BseAdder	*adder,
-						 BseParam       *param);
+						 BseParam       *param,
+						 guint           param_id);
 static BseIcon*	 bse_adder_do_get_icon		(BseObject     	*object);
 static void	 bse_adder_do_shutdown		(BseObject     	*object);
 static void      bse_adder_prepare               (BseSource      *source,
@@ -150,39 +152,33 @@ bse_adder_do_shutdown (BseObject *object)
 
 static void
 bse_adder_set_param (BseAdder *adder,
-		     BseParam *param)
+		     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_SUBTRACT:
       adder->subtract = param->value.v_bool;
       bse_object_notify_icon_changed (BSE_OBJECT (adder));
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (adder),
-		 BSE_OBJECT_NAME (adder),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (adder, param, param_id);
       break;
     }
 }
 
 static void
 bse_adder_get_param (BseAdder *adder,
-		     BseParam *param)
+		     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_SUBTRACT:
       param->value.v_bool = adder->subtract;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (adder),
-		 BSE_OBJECT_NAME (adder),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (adder, param, param_id);
       break;
     }
 }

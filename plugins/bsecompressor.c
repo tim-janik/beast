@@ -36,9 +36,11 @@ static void	 bse_compressor_init		      (BseCompressor		*compr);
 static void	 bse_compressor_class_init	      (BseCompressorClass	*class);
 static void	 bse_compressor_class_destroy	      (BseCompressorClass	*class);
 static void      bse_compressor_set_param             (BseCompressor		*compr,
-						       BseParam       		*param);
+						       BseParam       		*param,
+						       guint                     param_id);
 static void      bse_compressor_get_param             (BseCompressor		*compr,
-						       BseParam       		*param);
+						       BseParam       		*param,
+						       guint                     param_id);
 static void	 bse_compressor_do_shutdown		(BseObject     		*object);
 static void      bse_compressor_prepare               (BseSource      		*source,
 						       BseIndex       		 index);
@@ -123,38 +125,32 @@ bse_compressor_do_shutdown (BseObject *object)
 
 static void
 bse_compressor_set_param (BseCompressor *compr,
-			  BseParam      *param)
+			  BseParam      *param,
+			  guint          param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_PI_EXP:
       compr->pi_fact = pow (PI, param->value.v_float);
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (compr),
-		 BSE_OBJECT_NAME (compr),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (compr, param, param_id);
       break;
     }
 }
 
 static void
 bse_compressor_get_param (BseCompressor *compr,
-			  BseParam      *param)
+			  BseParam      *param,
+			  guint          param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_PI_EXP:
       param->value.v_float = log (compr->pi_fact) / log (PI);
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (compr),
-		 BSE_OBJECT_NAME (compr),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (compr, param, param_id);
       break;
     }
 }

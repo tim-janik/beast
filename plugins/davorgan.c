@@ -46,9 +46,11 @@ static void        dav_organ_class_init       (DavOrganClass  *class);
 static void        dav_organ_class_destroy    (DavOrganClass  *class);
 static void        dav_organ_do_shutdown      (BseObject      *object);
 static void        dav_organ_set_param        (DavOrgan       *organ,
-					       BseParam       *param);
+					       BseParam       *param,
+					       guint           param_id);
 static void        dav_organ_get_param        (DavOrgan       *organ,
-					       BseParam       *param);
+					       BseParam       *param,
+					       guint           param_id);
 static void        dav_organ_prepare          (BseSource      *source,
 					       BseIndex        index);
 static BseChunk*   dav_organ_calc_chunk       (BseSource      *source,
@@ -178,9 +180,10 @@ dav_organ_do_shutdown (BseObject *object)
 
 static void
 dav_organ_set_param (DavOrgan *organ,
-                     BseParam *param)
+                     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_BASE_FREQ:
       organ->freq = param->value.v_float;
@@ -218,20 +221,17 @@ dav_organ_set_param (DavOrgan *organ,
       organ->harm5 = param->value.v_int;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (organ),
-		 BSE_OBJECT_NAME (organ),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (organ, param, param_id);
       break;
     }
 }
 
 static void
 dav_organ_get_param (DavOrgan *organ,
-                     BseParam *param)
+                     BseParam *param,
+		     guint     param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_BASE_FREQ:
       param->value.v_float = organ->freq;
@@ -268,11 +268,7 @@ dav_organ_get_param (DavOrgan *organ,
       break;
       
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-                 BSE_OBJECT_TYPE_NAME (organ),
-                 BSE_OBJECT_NAME (organ),
-                 param->pspec->any.name,
-                 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (organ, param, param_id);
       break;
     }
 }

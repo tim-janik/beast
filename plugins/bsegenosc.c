@@ -50,9 +50,11 @@ static void	   bse_gen_osc_class_init       (BseGenOscClass	*class);
 static void	   bse_gen_osc_class_destroy    (BseGenOscClass	*class);
 static void	   bse_gen_osc_do_shutdown      (BseObject     	*object);
 static void        bse_gen_osc_set_param        (BseGenOsc	*gen_osc,
-						 BseParam       *param);
+						 BseParam       *param,
+						 guint           param_id);
 static void        bse_gen_osc_get_param        (BseGenOsc	*gen_osc,
-						 BseParam       *param);
+						 BseParam       *param,
+						 guint           param_id);
 static void        bse_gen_osc_prepare          (BseSource      *source,
 						 BseIndex        index);
 static BseChunk*   bse_gen_osc_calc_chunk       (BseSource      *source,
@@ -392,11 +394,12 @@ bse_gen_osc_update_locals (BseGenOsc *gosc)
 
 static void
 bse_gen_osc_set_param (BseGenOsc *gosc,
-		       BseParam  *param)
+		       BseParam  *param,
+		       guint      param_id)
 {
   guint wave = 0;
 
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_WAVE_FORM:
       gosc->wave = param->value.v_enum;
@@ -462,20 +465,17 @@ bse_gen_osc_set_param (BseGenOsc *gosc,
       bse_gen_osc_update_locals (gosc);
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (gosc),
-		 BSE_OBJECT_NAME (gosc),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (gosc, param, param_id);
       break;
     }
 }
 
 static void
 bse_gen_osc_get_param (BseGenOsc *gosc,
-		       BseParam  *param)
+                       BseParam  *param,
+		       guint      param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_WAVE_FORM:
       param->value.v_enum = gosc->wave;
@@ -514,11 +514,7 @@ bse_gen_osc_get_param (BseGenOsc *gosc,
       param->value.v_float = gosc->self_perc;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (gosc),
-		 BSE_OBJECT_NAME (gosc),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (gosc, param, param_id);
       break;
     }
 }

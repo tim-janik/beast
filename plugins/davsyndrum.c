@@ -40,9 +40,11 @@ static void        dav_syn_drum_class_init       (DavSynDrumClass  *class);
 static void        dav_syn_drum_class_destroy    (DavSynDrumClass  *class);
 static void        dav_syn_drum_do_shutdown      (BseObject        *object);
 static void        dav_syn_drum_set_param        (DavSynDrum       *drum,
-						  BseParam         *param);
+						  BseParam         *param,
+						  guint             param_id);
 static void        dav_syn_drum_get_param        (DavSynDrum       *drum,
-						  BseParam         *param);
+						  BseParam         *param,
+						  guint             param_id);
 static void        dav_syn_drum_prepare          (BseSource        *source,
 						  BseIndex          index);
 static BseChunk*   dav_syn_drum_calc_chunk       (BseSource        *source,
@@ -188,9 +190,10 @@ dav_syn_drum_trigger (DavSynDrum *drum)
 
 static void
 dav_syn_drum_set_param (DavSynDrum *drum,
-			BseParam   *param)
+			BseParam   *param,
+			guint       param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_BASE_FREQ:
       drum->freq = param->value.v_float;
@@ -214,20 +217,17 @@ dav_syn_drum_set_param (DavSynDrum *drum,
       dav_syn_drum_update_locals (drum);
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (drum),
-		 BSE_OBJECT_NAME (drum),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (drum, param, param_id);
       break;
     }
 }
 
 static void
 dav_syn_drum_get_param (DavSynDrum *drum,
-			BseParam   *param)
+			BseParam   *param,
+			guint       param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_BASE_FREQ:
       param->value.v_float = drum->freq;
@@ -249,11 +249,7 @@ dav_syn_drum_get_param (DavSynDrum *drum,
       break;
       
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-                 BSE_OBJECT_TYPE_NAME (drum),
-                 BSE_OBJECT_NAME (drum),
-                 param->pspec->any.name,
-                 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (drum, param, param_id);
       break;
     }
 }

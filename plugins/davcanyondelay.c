@@ -40,9 +40,11 @@ static void        dav_canyon_delay_class_init       (DavCanyonDelayClass  *clas
 static void        dav_canyon_delay_class_destroy    (DavCanyonDelayClass  *class);
 static void        dav_canyon_delay_do_shutdown      (BseObject            *object);
 static void        dav_canyon_delay_set_param        (DavCanyonDelay       *delay,
-						      BseParam             *param);
+						      BseParam             *param,
+						      guint                 param_id);
 static void        dav_canyon_delay_get_param        (DavCanyonDelay       *delay,
-						      BseParam             *param);
+						      BseParam             *param,
+						      guint                 param_id);
 static void        dav_canyon_delay_prepare          (BseSource            *source,
 						      BseIndex              index);
 static BseChunk*   dav_canyon_delay_calc_chunk       (BseSource            *source,
@@ -135,32 +137,26 @@ dav_canyon_delay_do_shutdown (BseObject *object)
 
 static void
 dav_canyon_delay_set_param (DavCanyonDelay *delay,
-			    BseParam       *param)
+			    BseParam       *param,
+			    guint           param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (delay),
-		 BSE_OBJECT_NAME (delay),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (delay, param, param_id);
       break;
     }
 }
 
 static void
 dav_canyon_delay_get_param (DavCanyonDelay *delay,
-			    BseParam       *param)
+			    BseParam       *param,
+			    guint           param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-                 BSE_OBJECT_TYPE_NAME (delay),
-                 BSE_OBJECT_NAME (delay),
-                 param->pspec->any.name,
-                 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (delay, param, param_id);
       break;
     }
 }

@@ -740,7 +740,7 @@ bst_subwindow_new (GtkObject        *alive_host,
 
       if (error)
 	{
-	  g_warning (G_STRLOC "%s", error);
+	  g_warning (G_STRLOC ": %s", error);
 	  g_free (error);
 	}
       else

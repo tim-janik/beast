@@ -39,9 +39,11 @@ static void	 bst_gconfig_init		(BstGConfig	  *gconf);
 static void	 bst_gconfig_class_init		(BstGConfigClass  *class);
 static void	 bst_gconfig_class_destroy	(BstGConfigClass  *class);
 static void      bst_gconfig_set_param          (BstGConfig	  *gconf,
-						 BseParam         *param);
+						 BseParam         *param,
+						 guint             param_id);
 static void      bst_gconfig_get_param          (BstGConfig	  *gconf,
-						 BseParam         *param);
+						 BseParam         *param,
+						 guint             param_id);
 static void	 bst_gconfig_do_shutdown	(BseObject     	  *object);
 static void	 bst_gconfig_do_destroy		(BseObject     	  *object);
 static void	 bst_gconfig_do_apply		(BseGConfig	  *bconf);
@@ -209,9 +211,10 @@ bst_gconfig_class_init (BstGConfigClass *class)
 
 static void
 bst_gconfig_set_param (BstGConfig *gconf,
-		       BseParam   *param)
+		       BseParam   *param,
+		       guint       param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_SNET_ANTI_ALIASED:
       gconf->globals.snet_anti_aliased = param->value.v_bool;
@@ -242,20 +245,17 @@ bst_gconfig_set_param (BstGConfig *gconf,
       gconf->globals.pe_key_focus_unselects = param->value.v_bool;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to set parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (gconf),
-		 BSE_OBJECT_NAME (gconf),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (gconf, param, param_id);
       break;
     }
 }
 
 static void
 bst_gconfig_get_param (BstGConfig *gconf,
-		       BseParam   *param)
+		       BseParam   *param,
+		       guint       param_id)
 {
-  switch (param->pspec->any.param_id)
+  switch (param_id)
     {
     case PARAM_SNET_ANTI_ALIASED:
       param->value.v_bool = gconf->globals.snet_anti_aliased;
@@ -286,11 +286,7 @@ bst_gconfig_get_param (BstGConfig *gconf,
       param->value.v_bool = gconf->globals.pe_key_focus_unselects;
       break;
     default:
-      g_warning ("%s(\"%s\"): invalid attempt to get parameter \"%s\" of type `%s'",
-		 BSE_OBJECT_TYPE_NAME (gconf),
-		 BSE_OBJECT_NAME (gconf),
-		 param->pspec->any.name,
-		 bse_type_name (param->pspec->type));
+      BSE_UNHANDLED_PARAM_ID (gconf, param, param_id);
       break;
     }
 }

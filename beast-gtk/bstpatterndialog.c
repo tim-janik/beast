@@ -167,7 +167,7 @@ pe_effect_area_draw (BstPatternEditor *pe,
 		     GdkGC	      *bg_gc,
 		     gpointer	       data)
 {
-  BstPatternDialog *pattern_dialog = BST_PATTERN_DIALOG (data);
+  // BstPatternDialog *pattern_dialog = BST_PATTERN_DIALOG (data);
   GtkWidget *pe_widget = GTK_WIDGET (pe);
   BsePattern *pattern = pe->pattern;
   BsePatternNote *note = bse_pattern_peek_note (pattern, channel, row);

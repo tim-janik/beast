@@ -1,3 +1,7 @@
+Wed Feb  9 13:37:09 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/*.c: some changes due to BSE's parameter mess.
+
 Wed Feb  9 03:23:34 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c (bst_procedure_dialog_preset): be noisy about

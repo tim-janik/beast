@@ -237,35 +237,36 @@ bst_param_view_rebuild (BstParamView *param_view)
   
   for (slist = class_list; slist; slist = slist->next)
     {
-      BseParamSpec **pspec_p;
+      guint i, n;
       
       class = slist->data;
-      
-      pspec_p = class->param_specs;
-      if (pspec_p)
-	while (*pspec_p)
-	  {
-	    if ((*pspec_p)->any.flags & BSE_PARAM_SERVE_GUI &&
-		(*pspec_p)->any.flags & BSE_PARAM_READABLE &&
-		(!param_view->reject_pattern ||
-		 !g_pattern_match_string (param_view->reject_pattern, (*pspec_p)->any.name)) &&
-		(!param_view->match_pattern ||
-		 g_pattern_match_string (param_view->match_pattern, (*pspec_p)->any.name)))
-	      {
-		BstParam *bparam;
-		
-		bparam = bst_param_create (object,
-					   BSE_TYPE_OBJECT,
-					   *pspec_p,
-					   param_box,
-					   GTK_TOOLTIPS (param_view->tooltips));
-		param_view->bparams = g_slist_prepend (param_view->bparams, bparam);
-	      }
-	    pspec_p++;
-	  }
+      n = bse_object_class_get_n_param_specs (class);
+      for (i = 0; i < n; i++)
+	{
+	  GQuark param_group;
+	  BseParamSpec *pspec = bse_object_class_get_param_spec (class, i, &param_group);
+	  
+	  if (pspec->any.flags & BSE_PARAM_SERVE_GUI &&
+	      pspec->any.flags & BSE_PARAM_READABLE &&
+	      (!param_view->reject_pattern ||
+	       !g_pattern_match_string (param_view->reject_pattern, pspec->any.name)) &&
+	      (!param_view->match_pattern ||
+	       g_pattern_match_string (param_view->match_pattern, pspec->any.name)))
+	    {
+	      BstParam *bparam;
+	      
+	      bparam = bst_param_create (object,
+					 BSE_TYPE_OBJECT,
+					 pspec,
+					 param_group,
+					 param_box,
+					 GTK_TOOLTIPS (param_view->tooltips));
+	      param_view->bparams = g_slist_prepend (param_view->bparams, bparam);
+	    }
+	}
     }
   g_slist_free (class_list);
-
+  
   /* FIXME: work around a gtk bug 
    */
   if (GTK_WIDGET_REALIZED (param_view) && !GTK_CHECK_VERSION (1, 2, 7))

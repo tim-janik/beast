@@ -186,6 +186,9 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
 		bparam = bst_param_create (proc,
 					   BSE_TYPE_PROCEDURE,
 					   *pspec_p,
+					   (slist->next
+					    ? g_quark_from_static_string ("Output Parameters")
+					    : g_quark_from_static_string ("Input Parameters")),
 					   param_box,
 					   GTK_TOOLTIPS (procedure_dialog->tooltips));
 		procedure_dialog->bparams = g_slist_append (procedure_dialog->bparams, bparam);
@@ -344,9 +347,10 @@ bst_procedure_dialog_preset (BstProcedureDialog *procedure_dialog,
 		  break;
 		}
 	      else
-		g_warning (G_STRLOC "can't convert preset parameter `%s' (`%s') to `%s' (`%s')",
-			   pparam->pspec->any.name, bse_type_name (pparam->pspec->type),
-			   iparam->pspec->any.name, bse_type_name (iparam->pspec->type));
+		g_warning (G_STRLOC ": can't convert preset parameter `%s' from `%s' to `%s'",
+			   pparam->pspec->any.name,
+			   bse_type_name (pparam->pspec->type),
+			   bse_type_name (iparam->pspec->type));
 	    }
 	}
       
