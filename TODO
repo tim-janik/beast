@@ -1,7 +1,4 @@
 FIXMES:	(release-critical)
-- mv bse_float_sign to *ieee754.h
-- gslmath->bsemath
-- sequencer: dtoull
 - midi csynth does not work anymore (anable multi-voices like in tracks?)
 - a single CSynth with auto-activate and without a song dosn't keep playback
 - pcmmodule input->reset() should queue a server check for !pcm-handle->readable which then throws a warning (dialog)
