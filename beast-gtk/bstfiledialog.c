@@ -68,7 +68,8 @@ static void
 bst_file_dialog_init (BstFileDialog *fd)
 {
   gtk_widget_set (GTK_WIDGET (fd),
-		  "GtkWindow::title", "BEAST FileDialog",
+		  "title", "BEAST FileDialog",
+		  "window_position", GTK_WIN_POS_MOUSE,
 		  NULL);
   
   gtk_file_selection_heal (GTK_FILE_SELECTION (fd));
