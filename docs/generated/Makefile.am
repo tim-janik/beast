@@ -198,7 +198,7 @@ site-update-con: site
 	  "echo Receiving... \
 	   && uudecode \
 	   && echo Extracting... \
-	   && tar jxmpf ${XPREFIX}-beast-site-con.tar.bz2 -C /web/beast/html2 \
+	   && tar jxmpf ${XPREFIX}-beast-site-con.tar.bz2 -C /web/beast/html \
 	   && echo Cleaning up. \
 	   && rm ${XPREFIX}-beast-site-con.tar.bz2"
 site-update-img: site
@@ -208,7 +208,8 @@ site-update-img: site
 	  "echo Receiving... \
 	   && uudecode \
 	   && echo Extracting... \
-	   && tar zxmpf ${XPREFIX}-beast-site-img.tar.gz -C /web/beast/html2 \
+	   && tar zxmpf ${XPREFIX}-beast-site-img.tar.gz -C /web/beast/html \
+	   && chmod g+w /web/beast/html/css /web/beast/html/css/images \
 	   && echo Cleaning up. \
 	   && rm ${XPREFIX}-beast-site-img.tar.gz"
 site-update-nav: site
@@ -218,11 +219,11 @@ site-update-nav: site
 	  "echo Receiving... \
 	   && uudecode \
 	   && echo Extracting... \
-	   && tar zxpf ${XPREFIX}-beast-site-nav.tar.gz -C /web/beast/dyn2 \
+	   && tar zxpf ${XPREFIX}-beast-site-nav.tar.gz -C /web/beast/dyn \
 	   && echo Cleaning up... \
 	   && rm ${XPREFIX}-beast-site-nav.tar.gz \
 	   && echo Rebuilding... \
-	   && (cd /web/beast/dyn2 && make)"
+	   && (cd /web/beast/dyn && make)"
 site-update: site-update-con # site-update-img site-update-nav
 site-upgrade: site-update-con site-update-img site-update-nav
 CLEANFILES += beast-site-*.tar.gz beast-site-*.tar.bz2 index.html

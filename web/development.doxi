@@ -22,13 +22,13 @@ Most of the BEAST website is kept in CVS, to aid development, here're
 various validatior results:
 
 @itemize
-@item @uref{http://jigsaw.w3.org/css-validator/validator?uri=http://beast.gtk.org/html2,
+@item @uref{http://jigsaw.w3.org/css-validator/validator?uri=http://beast.gtk.org,
 	    ,(beast.gtk.org) W3C CSS Validation}
-@item @uref{http://validator.w3.org/check?uri=http://beast.gtk.org/html2,
+@item @uref{http://validator.w3.org/check?uri=http://beast.gtk.org,
 	    ,(beast.gtk.org) W3C Markup Validation}
-@item @uref{http://validator.w3.org/checklink?uri=http://beast.gtk.org/html2/&summary=on&hide_type=all&no_accept_language=on&recursive=on&depth=&check=Check,
+@item @uref{http://validator.w3.org/checklink?uri=http://beast.gtk.org/&summary=on&hide_type=all&no_accept_language=on&recursive=on&depth=&check=Check,
             ,(beast.gtk.org) W3C Link Checker}
-@item @uref{http://www.htmlhelp.com/cgi-bin/validate.cgi?url=http://beast.gtk.org/html2&warnings=yes&spider=yes&hidevalid=yes,
+@item @uref{http://www.htmlhelp.com/cgi-bin/validate.cgi?url=http://beast.gtk.org&warnings=yes&spider=yes&hidevalid=yes,
 	    ,(beast.gtk.org) WDG HTML Validation}
 @end itemize
 

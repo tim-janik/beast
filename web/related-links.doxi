@@ -37,6 +37,7 @@
 @item @uref{http://freshmeat.net/projects/beastbse/,, BEAST at Freshmeat}
 @item @uref{http://www.gnome.org/softwaremap/projects/beast/,, BEAST at the GNOME application repository}
 @c login for GNOME Admin Repo: http://www.gnome.org/account/login.php
+@item @uref{http://cvs.gnome.org/lxr/source/beast/,, BEAST in the GNOME CVS repository}
 @end itemize
 
 

@@ -1,3 +1,13 @@
+Sat Jan 11 17:05:12 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: announce the new website.
+
+	* docs/site-links-related.texi: added CVS repo link.
+
+	* docs/site-development.texi: update website links.
+	
+	* docs/generated/Makefile.am: update website dirs.
+	
 Sat Jan 11 16:36:01 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/Makefile.am (site-update-con): transmit site

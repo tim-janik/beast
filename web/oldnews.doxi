@@ -11,6 +11,30 @@
 @unnumbered What Was New? (Ancient News)
 
 
+@news_title{Monday 2 Sep 2002, New Development Release}
+
+BEAST/BSE version 0.4.1 is available in the
+@uref{beast-doc://download,,download section}.
+
+Much has changed in the new development version of BEAST.
+In brief (specifics can be found in the NEWS section), the
+GUI was majorly polished, many new synthesis features have
+been added and support for various external wave file formats
+was implemented.@*
+The current version is already good enough to perform
+interesting synthesis tasks and to have lots of fun with
+songs, external MIDI devices and samples.
+However, this is still an ALPHA version, so things might
+not always work as expected, reports about misbehaviour
+are welcome.@*
+Be warned though, the .bse file format hasn't fully stabelized
+yet, so incompatibilities whith future versions may occour.
+
+A good starting point are the test files shipped in the
+@path{tests/} subdirectory of the source package or the new
+@uref{beast-doc://quickstart,,Quick Start Guide} in the Help menu.
+
+
 @news_title{Friday 23 Aug 2002, Logo Contest Winner}
 
 And the winner is... @strong{jimmac}!

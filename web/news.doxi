@@ -11,6 +11,16 @@
 @unnumbered What's New?
 
 
+@news_title{Saturday 11 January, Website Switch}
+
+The new website is up, finally! Many thanks go to
+@uref{mailto://dirt@@gtk.org,,Alper Ersoy} for his continued efford to set
+the site up. The new site has a completely redone layout, improved structure
+and a lot more content.
+
+So browse and enjoy! ;-)
+
+
 @news_title{Tuesday 31 Dec 2002, Ongoing Work}
 
 The CVS tree has undergone major shuffeling recently due to integration of a
@@ -21,30 +31,6 @@ couple weeks.
 
 We expect to switch web presence over anytime soon, so stay tuned for a new
 look and much improved content.
-
-
-@news_title{Monday 2 Sep 2002, New Development Release}
-
-BEAST/BSE version 0.4.1 is available in the
-@uref{beast-doc://download,,download section}.
-
-Much has changed in the new development version of BEAST.
-In brief (specifics can be found in the NEWS section), the
-GUI was majorly polished, many new synthesis features have
-been added and support for various external wave file formats
-was implemented.@*
-The current version is already good enough to perform
-interesting synthesis tasks and to have lots of fun with
-songs, external MIDI devices and samples.
-However, this is still an ALPHA version, so things might
-not always work as expected, reports about misbehaviour
-are welcome.@*
-Be warned though, the .bse file format hasn't fully stabelized
-yet, so incompatibilities whith future versions may occour.
-
-A good starting point are the test files shipped in the
-@path{tests/} subdirectory of the source package or the new
-Quick Start Guide in the Help menu.
 
 
 @bye
