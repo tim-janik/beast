@@ -340,19 +340,14 @@ bglue_value_to_serializable (const GValue *svalue)
       dtype = SFI_TYPE_REAL;
       break;
     case G_TYPE_BOXED:
-      if (sfi_boxed_get_record_info (vtype))
-	dtype = SFI_TYPE_REC;
-      else if (sfi_boxed_get_sequence_info (vtype))
-	dtype = SFI_TYPE_SEQ;
-      else
-        {
-          SfiRecFields rfields = sfi_boxed_type_get_rec_fields (vtype);
-          GParamSpec *element = sfi_boxed_type_get_seq_element (vtype);
-          if (rfields.n_fields)
-            dtype = SFI_TYPE_REC;
-          else if (element)
-            dtype = SFI_TYPE_SEQ;
-        }
+      {
+        SfiRecFields rfields = sfi_boxed_type_get_rec_fields (vtype);
+        GParamSpec *element = sfi_boxed_type_get_seq_element (vtype);
+        if (rfields.n_fields)
+          dtype = SFI_TYPE_REC;
+        else if (element)
+          dtype = SFI_TYPE_SEQ;
+      }
       break;
     case G_TYPE_ENUM:
       dtype = SFI_TYPE_CHOICE;

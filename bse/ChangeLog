@@ -1,3 +1,10 @@
+Tue Mar  2 10:23:55 2004  Tim Janik  <timj@gtk.org>
+
+	* bseautodoc.c: changed callers of sfi_boxed_make_record(),
+	sfi_boxed_get_record_info(), sfi_info_string_find(),
+	sfi_boxed_make_sequence() and sfi_boxed_get_sequence_info()
+	which got removed.
+
 Mon Mar  1 20:08:12 2004  Tim Janik  <timj@gtk.org>
 
 	* switched the native C binding for idl types to a C wrapper

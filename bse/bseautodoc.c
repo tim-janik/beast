@@ -57,21 +57,21 @@ tag_all_boxed_pspecs (void)
   children = g_type_children (G_TYPE_BOXED, NULL);
   for (i = 0; children[i]; i++)
     {
-      const SfiBoxedRecordInfo *rinfo = sfi_boxed_get_record_info (children[i]);
-      const SfiBoxedSequenceInfo *sinfo = sfi_boxed_get_sequence_info (children[i]);
+      SfiRecFields rfields = sfi_boxed_type_get_rec_fields (children[i]);
+      GParamSpec *element = sfi_boxed_type_get_seq_element (children[i]);
 
-      if (sinfo && sinfo->element)
+      if (element)
 	{
-	  g_param_spec_ref (sinfo->element);
-	  g_param_spec_set_qdata (sinfo->element, boxed_type_tag, g_type_name (children[i]));
+	  g_param_spec_ref (element);
+	  g_param_spec_set_qdata (element, boxed_type_tag, g_type_name (children[i]));
 	}
-      else if (rinfo)
+      else if (rfields.n_fields)
 	{
 	  guint j;
-	  for (j = 0; j < rinfo->fields.n_fields; j++)
+	  for (j = 0; j < rfields.n_fields; j++)
 	    {
-	      g_param_spec_ref (rinfo->fields.fields[j]);
-	      g_param_spec_set_qdata (rinfo->fields.fields[j], boxed_type_tag, g_type_name (children[i]));
+	      g_param_spec_ref (rfields.fields[j]);
+	      g_param_spec_set_qdata (rfields.fields[j], boxed_type_tag, g_type_name (children[i]));
 	    }
 	}
     }
@@ -296,15 +296,15 @@ show_structdoc (void)
   for (i = 0; children[i]; i++)
     {
       GType type = children[i];
-      const SfiBoxedRecordInfo *rinfo = sfi_boxed_get_record_info (type);
-      const SfiBoxedSequenceInfo *sinfo = sfi_boxed_get_sequence_info (type);
+      SfiRecFields rfields = sfi_boxed_type_get_rec_fields (type);
+      GParamSpec *element = sfi_boxed_type_get_seq_element (type);
 
-      if (rinfo || sinfo)
+      if (element || rfields.n_fields)
 	{
 	  const gchar *name = g_type_name (type);
 	  gchar *cname = g_type_name_to_cname (name);
 	  gchar *sname = g_type_name_to_sname (name);
-	  const gchar *dname = rinfo ? "record" : "sequence";
+	  const gchar *dname = rfields.n_fields ? "record" : "sequence";
 	  const gchar *cstring;
 	  SfiRing *ring, *pspecs = NULL;
 	  guint j;
@@ -312,19 +312,18 @@ show_structdoc (void)
 	  g_print ("@item @anchor{%s}@refStructType{%s} @refStructName{%s} @refStructOpen ", name, dname, name);
 
 	  g_print ("@findex @refStructType{%s}@ @refStructName{%s};", dname, name);
-	  cstring = sfi_info_string_find (rinfo ? rinfo->infos : sinfo->infos, "BLURB");
+	  cstring = bse_type_get_blurb (type);
 	  if (cstring)
 	    g_print (" - @refBlurb{%s}", cstring);
 	  g_print ("\n");
 
-	  if (rinfo)
-	    for (j = 0; j < rinfo->fields.n_fields; j++)
-	      pspecs = sfi_ring_append (pspecs, rinfo->fields.fields[j]);
-	  else
-	    pspecs = sfi_ring_append (pspecs, sinfo->element);
+          for (j = 0; j < rfields.n_fields; j++)
+            pspecs = sfi_ring_append (pspecs, rfields.fields[j]);
+          if (element)
+	    pspecs = sfi_ring_append (pspecs, element);
 
 	  g_print ("@multitable @columnfractions .3 .3 .3\n");
-	  if (sinfo)
+	  if (element)
 	    {
 	      GParamSpec *pspec = pspecs->data;
 	      gchar *carg = g_type_name_to_cname (pspec->name);
@@ -341,7 +340,7 @@ show_structdoc (void)
 	      const gchar *nick = g_param_spec_get_nick (pspec);
 	      gchar *carg = g_type_name_to_cname (pspec->name);
 	      g_print ("@item @refType{%s%s} @tab @refParameter{%s}; @tab %s\n",
-		       tname, sinfo ? "*" : "",
+		       tname, element ? "*" : "",
 		       carg, blurb ? blurb : nick ? nick : "");
 	      g_free (tname);
 	      g_free (carg);
@@ -349,10 +348,20 @@ show_structdoc (void)
 	  g_print ("@end multitable\n");
 	  g_print ("@refStructClose\n");
 
-	  cstring = sfi_info_string_find (rinfo ? rinfo->infos : sinfo->infos, "HELP");
+	  cstring = bse_type_get_blurb (type);
 	  if (cstring)
 	    g_print ("\n%s\n", cstring);
 	  g_print ("\n");
+
+          cstring = bse_type_get_authors (type);
+          if (cstring)
+            g_print ("\nAuthors: %s\n", cstring);
+          g_print ("\n");
+
+          cstring = bse_type_get_license (type);
+          if (cstring)
+            g_print ("\nLicense: %s\n", cstring);
+          g_print ("\n");
 
 	  g_free (cname);
 	  g_free (sname);
