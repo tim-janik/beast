@@ -361,7 +361,6 @@ GUI features:
   _apply_value - set changed_flag=0
   ::focus_out  - only re-apply value if changed_flag!=0
 - XFrames should highlight like buttons in EDIT mode?
-- Module Menu: add EDIT
 - part editor needs play position
 - track editor needs play position
 - Modul BseTranspose, inputs: frequency, outputs: frequency, property: semitones
