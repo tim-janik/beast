@@ -20,7 +20,7 @@
 #include "bsestorage.h"
 #include <sfi/gbsearcharray.h>
 #include "gslcommon.h"
-#include "gslieee754.h"
+#include "bseieee754.h"
 #include <string.h>
 
 /* --- macros --- */
@@ -938,7 +938,7 @@ bse_part_change_control (BsePart           *self,
                   velocity = CLAMP (value, 0, +1);
                   break;
                 case BSE_MIDI_SIGNAL_FINE_TUNE:
-                  fine_tune = gsl_ftoi (value * BSE_MAX_FINE_TUNE);
+                  fine_tune = bse_ftoi (value * BSE_MAX_FINE_TUNE);
                   fine_tune = CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
                   break;
                 default: ;

@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gslvorbis-enc.h"
-#include <bse/gslieee754.h>
+#include <bse/bseieee754.h>
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>

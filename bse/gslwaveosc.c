@@ -18,7 +18,7 @@
  */
 #include "gslwaveosc.h"
 #include "gslfilter.h"
-#include "gslsignal.h"
+#include "bsemathsignal.h"
 #include "bseengine.h"	/* for bse_engine_sample_freq() */
 #include <string.h>
 
@@ -161,7 +161,7 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
   /* auto-trigger after reset */
   if (!sync_in && wosc->last_sync_level < 0.5)
     {
-      gsl_wave_osc_retrigger (wosc, freq_in ? GSL_SIGNAL_TO_FREQ (*freq_in) : wosc->config.cfreq);
+      gsl_wave_osc_retrigger (wosc, freq_in ? BSE_SIGNAL_TO_FREQ (*freq_in) : wosc->config.cfreq);
       wosc->last_sync_level = 1.0;
     }
 
@@ -212,7 +212,7 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
     }
 
   if (wosc->y[0] != 0.0 &&
-      !(fabs (wosc->y[0]) > GSL_SIGNAL_EPSILON && fabs (wosc->y[0]) < GSL_SIGNAL_KAPPA))
+      !(fabs (wosc->y[0]) > BSE_SIGNAL_EPSILON && fabs (wosc->y[0]) < BSE_SIGNAL_KAPPA))
     {
       guint i;
 
@@ -220,14 +220,14 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
       for (i = 0; i < GSL_WAVE_OSC_FILTER_ORDER; i++)
 	{
 	  DEBUG ("%u) %+.38f\n", i, wosc->y[i]);
-	  if (GSL_DOUBLE_IS_INF (wosc->y[0]) || fabs (wosc->y[0]) > GSL_SIGNAL_KAPPA)
-	    wosc->y[i] = GSL_DOUBLE_SIGN (wosc->y[0]) ? -1.0 : 1.0;
+	  if (BSE_DOUBLE_IS_INF (wosc->y[0]) || fabs (wosc->y[0]) > BSE_SIGNAL_KAPPA)
+	    wosc->y[i] = BSE_DOUBLE_SIGN (wosc->y[0]) ? -1.0 : 1.0;
 	  else
 	    wosc->y[i] = 0.0;
 	}
     }
-  g_assert (!GSL_DOUBLE_IS_NANINF (wosc->y[0]));
-  g_assert (!GSL_DOUBLE_IS_SUBNORMAL (wosc->y[0]));
+  g_assert (!BSE_DOUBLE_IS_NANINF (wosc->y[0]));
+  g_assert (!BSE_DOUBLE_IS_SUBNORMAL (wosc->y[0]));
 
   wosc->done = (wosc->block.is_silent &&   /* FIXME, let filter state run out? */
 		((wosc->block.play_dir < 0 && wosc->block.offset < 0) ||
@@ -257,7 +257,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 
   if (istep != wosc->istep)
     {
-      gfloat nyquist_fact = GSL_PI * 2.0 / wosc->mix_freq, cutoff_freq = 18000, stop_freq = 24000;
+      gfloat nyquist_fact = PI * 2.0 / wosc->mix_freq, cutoff_freq = 18000, stop_freq = 24000;
       gfloat empiric_filter_stability_limit = 6.;
       gfloat filt_fact = CLAMP (1. / step,
 				1. / (empiric_filter_stability_limit * zero_padding),
@@ -278,7 +278,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 	  wosc->b[GSL_WAVE_OSC_FILTER_ORDER - i] = wosc->b[i];
 	  wosc->b[i] = t;
 	}
-      DEBUG ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/GSL_PI*2, freq_r/GSL_PI*2, step, wosc->istep);
+      DEBUG ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/PI*2, freq_r/PI*2, step, wosc->istep);
     }
 
   if (clear_state)
@@ -337,7 +337,7 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   DEBUG ("wave lookup: want=%f got=%f length=%lu\n",
 	 base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
 
-  wosc->last_freq_level = GSL_SIGNAL_FROM_FREQ (base_freq);
+  wosc->last_freq_level = BSE_SIGNAL_FROM_FREQ (base_freq);
   wosc->last_mod_level = 0;
   gsl_wave_osc_set_filter (wosc, base_freq, TRUE);
 }

@@ -19,7 +19,7 @@
 #define __BSE_CXX_MODULE_H__
 
 #include <bse/bsecxxbase.h>
-#include <bse/gslieee754.h>
+#include <bse/bseieee754.h>
 
 namespace Bse {
 
@@ -68,8 +68,8 @@ public:
   inline const unsigned int block_size      () const;
   inline guint64            tick_stamp      ();
   inline BseModule*         engine_module   ();
-  static inline int         dtoi            (double d) { return gsl_dtoi (d); }
-  static inline int         ftoi            (float  f) { return gsl_ftoi (f); }
+  static inline int         dtoi            (double d) { return bse_dtoi (d); }
+  static inline int         ftoi            (float  f) { return bse_ftoi (f); }
   /* member functions and closures */
   struct Closure {
     virtual void            operator()      (SynthesisModule*) = 0;

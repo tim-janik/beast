@@ -17,12 +17,11 @@
  */
 
 #include <bse/bseengine.h>
-#include <bse/gslsignal.h>
+#include <bse/bsemathsignal.h>
 
 #include <bse/gsldatautils.h>
 #include <bse/gslloader.h>
 #include <bse/gslfft.h>
-#include <bse/gslsignal.h>
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
@@ -208,7 +207,7 @@ struct SpectrumFeature : public Feature
     gint i;
 
     for (i = 0; i < size; i++)
-      in[i] = gsl_window_blackman (2.0 * i / size - 1.0) * samples[i]; /* gsl blackman window is defined in range [-1, 1] */
+      in[i] = bse_window_blackman (2.0 * i / size - 1.0) * samples[i]; /* the bse blackman window is defined in range [-1, 1] */
 
     gsl_power2_fftar (size, in, c);
     c[size] = c[1];

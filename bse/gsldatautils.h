@@ -19,7 +19,7 @@
 #ifndef __GSL_DATA_UTILS_H__
 #define __GSL_DATA_UTILS_H__
 
-#include <bse/gslmath.h>
+#include <bse/bsemath.h>
 #include <bse/gsldatahandle.h>
 #include <sfi/sfistore.h>	// FIXME:?
 
@@ -167,7 +167,7 @@ gsl_conv_from_float (GslWaveFormatType format,
   
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
-      GslFpuState fpu;
+      BseFpuState fpu;
       gfloat v;
       gint16 vi16;
       guint16 vu16;
@@ -180,15 +180,15 @@ gsl_conv_from_float (GslWaveFormatType format,
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 128.;
-          *i8++ = gsl_ftoi (v);
+          *i8++ = bse_ftoi (v);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -204,27 +204,27 @@ gsl_conv_from_float (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 2048.;
-          *i16++ = gsl_ftoi (v);
+          *i16++ = bse_ftoi (v);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 2048.;
-          vi16 = gsl_ftoi (v);
+          vi16 = bse_ftoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -240,27 +240,27 @@ gsl_conv_from_float (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
 	  v *= 32768.;
-          *i16++ = gsl_ftoi (v);
+          *i16++ = bse_ftoi (v);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 32768.;
-          vi16 = gsl_ftoi (v);
+          vi16 = bse_ftoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
@@ -298,7 +298,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
   
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
-      GslFpuState fpu;
+      BseFpuState fpu;
       gfloat v;
       guint32 vu32;
       gint32 vi32;
@@ -313,16 +313,16 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 128.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           *i8++ = CLAMP (vi32, -128, 127);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -342,29 +342,29 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 2048.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           *i16++ = CLAMP (vi32, -2048, 2047);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 2048.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           vi32 = CLAMP (vi32, -2048, 2047);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -384,30 +384,30 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 32768.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = vi32;
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 32768.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
@@ -614,7 +614,7 @@ gsl_conv_from_double (GslWaveFormatType format,
   
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
-      GslFpuState fpu;
+      BseFpuState fpu;
       gdouble v;
       gint16 vi16;
       guint16 vu16;
@@ -627,15 +627,15 @@ gsl_conv_from_double (GslWaveFormatType format,
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 128.;
-          *i8++ = gsl_ftoi (v);
+          *i8++ = bse_ftoi (v);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -651,27 +651,27 @@ gsl_conv_from_double (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 2048.;
-          *i16++ = gsl_ftoi (v);
+          *i16++ = bse_ftoi (v);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 2048.;
-          vi16 = gsl_ftoi (v);
+          vi16 = bse_ftoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -687,27 +687,27 @@ gsl_conv_from_double (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 32768.;
-          *i16++ = gsl_ftoi (v);
+          *i16++ = bse_ftoi (v);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 32768.;
-          vi16 = gsl_ftoi (v);
+          vi16 = bse_ftoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
@@ -745,7 +745,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
   
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
-      GslFpuState fpu;
+      BseFpuState fpu;
       gdouble v;
       guint32 vu32;
       gint32 vi32;
@@ -760,16 +760,16 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 128.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           *i8++ = CLAMP (vi32, -128, 127);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -789,29 +789,29 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 2048.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           *i16++ = CLAMP (vi32, -2048, 2047);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 2048.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           vi32 = CLAMP (vi32, -2048, 2047);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -831,30 +831,30 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 32768.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = vi32;
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
-      gsl_fpu_setround (&fpu);
+      bse_fpu_setround (&fpu);
       do
         {
           v = *src++;
           v *= 32768.;
-          vi32 = gsl_ftoi (v);
+          vi32 = bse_ftoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
       while (src < bound);
-      gsl_fpu_restore (fpu);
+      bse_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;

@@ -1,5 +1,6 @@
-/* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 1997-2004 Tim Janik
+ * Copyright (C) 2001 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,14 +17,12 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "gslsignal.h"
-
-#include "gslcommon.h"
+#include "bsemathsignal.h"
 
 
 /* --- frequency modulation --- */
 void
-gsl_frequency_modulator (const GslFrequencyModulator *fm,
+bse_frequency_modulator (const BseFrequencyModulator *fm,
 			 guint                        n_values,
 			 const gfloat                *ifreq,
 			 const gfloat                *ifmod,
@@ -32,7 +31,7 @@ gsl_frequency_modulator (const GslFrequencyModulator *fm,
   gfloat *bound, fine_tune, fm_strength;
   gboolean with_fine_tune;
 
-  fine_tune = gsl_cent_factor (fm->fine_tune);
+  fine_tune = bse_cent_factor (fm->fine_tune);
   with_fine_tune = fm->fine_tune != 0;
   fm_strength = fm->fm_strength;
   
@@ -43,11 +42,11 @@ gsl_frequency_modulator (const GslFrequencyModulator *fm,
 	{
 	  if (with_fine_tune)
 	    do {
-	      *fm_buffer++ = *ifreq++ * gsl_approx_exp2 (fm_strength * *ifmod++) * fine_tune;
+	      *fm_buffer++ = *ifreq++ * bse_approx_exp2 (fm_strength * *ifmod++) * fine_tune;
 	    } while (fm_buffer < bound);
 	  else
 	    do {
-	      *fm_buffer++ = *ifreq++ * gsl_approx_exp2 (fm_strength * *ifmod++);
+	      *fm_buffer++ = *ifreq++ * bse_approx_exp2 (fm_strength * *ifmod++);
 	    } while (fm_buffer < bound);
 	}
       else
@@ -68,7 +67,7 @@ gsl_frequency_modulator (const GslFrequencyModulator *fm,
 
       if (fm->exponential_fm)
 	do {
-	  *fm_buffer++ = signal_freq * gsl_approx_exp2 (fm_strength * *ifmod++);
+	  *fm_buffer++ = signal_freq * bse_approx_exp2 (fm_strength * *ifmod++);
 	} while (fm_buffer < bound);
       else
 	do {
@@ -99,7 +98,7 @@ gsl_frequency_modulator (const GslFrequencyModulator *fm,
 
 /* --- windows --- */
 double
-gsl_window_bartlett (double x)	/* triangle */
+bse_window_bartlett (double x)	/* triangle */
 {
   if (fabs (x) > 1)
     return 0;
@@ -108,38 +107,38 @@ gsl_window_bartlett (double x)	/* triangle */
 }
 
 double
-gsl_window_blackman (double x)
+bse_window_blackman (double x)
 {
   if (fabs (x) > 1)
     return 0;
 
-  return 0.42 + 0.5 * cos (GSL_PI * x) + 0.08 * cos (2.0 * GSL_PI * x);
+  return 0.42 + 0.5 * cos (PI * x) + 0.08 * cos (2.0 * PI * x);
 }
 
 double
-gsl_window_cos (double x)	/* von Hann window */
+bse_window_cos (double x)	/* von Hann window */
 {
   if (fabs (x) > 1)
     return 0;
 
-  return 0.5 * cos (x * GSL_PI) + 0.5;
+  return 0.5 * cos (x * PI) + 0.5;
 }
 
 double
-gsl_window_hamming (double x)	/* sharp (rectangle) cutoffs at boundaries */
+bse_window_hamming (double x)	/* sharp (rectangle) cutoffs at boundaries */
 {
   if (fabs (x) > 1)
     return 0;
 
-  return 0.54 + 0.46 * cos (GSL_PI * x);
+  return 0.54 + 0.46 * cos (PI * x);
 }
 
 double
-gsl_window_sinc (double x)	/* noramlied C. Lanczos window */
+bse_window_sinc (double x)	/* noramlied C. Lanczos window */
 {
   if (fabs (x) > 1)
     return 0;
-  x = x * GSL_PI;
+  x = x * PI;
   if (fabs (x) < 1e-12)
     return 1.0;
   else
@@ -147,7 +146,7 @@ gsl_window_sinc (double x)	/* noramlied C. Lanczos window */
 }
 
 double
-gsl_window_rect (double x)	/* a square */
+bse_window_rect (double x)	/* a square */
 {
   if (fabs (x) > 1)
     return 0;
@@ -160,11 +159,11 @@ cos_roll_off(x)= x>fh?0:x<fl?1:cos(pi/2.*((fl-x)/(fh-fl)))
 
 
 /* --- cents & init --- */
-const gdouble *gsl_cent_table = NULL;
-#define GSL_2_RAISED_TO_1_OVER_1200_d     ( /* 2^(1/1200) */ \
+const gdouble *bse_cent_table = NULL;
+#define BSE_2_RAISED_TO_1_OVER_1200_d     ( /* 2^(1/1200) */ \
               1.0005777895065548488418016859213821589946746826171875)
 void
-_gsl_init_signal (void)
+_bse_init_signal (void)
 {
   static gdouble cent_table_space[201];
   gint i;
@@ -172,15 +171,15 @@ _gsl_init_signal (void)
   /* cent table initialization,
    * allow negative indexing within [-100..+100]
    */
-  gsl_cent_table = cent_table_space + 100;
+  bse_cent_table = cent_table_space + 100;
   for (i = -100; i <= 100; i++)
-    cent_table_space[100 + i] = pow (GSL_2_RAISED_TO_1_OVER_1200_d, i);
+    cent_table_space[100 + i] = pow (BSE_2_RAISED_TO_1_OVER_1200_d, i);
 }
 
 
-/* --- gsl_approx_atan1() --- */
+/* --- bse_approx_atan1() --- */
 double
-gsl_approx_atan1_prescale (double boost_amount)
+bse_approx_atan1_prescale (double boost_amount)
 {
   double max_boost_factor = 100;	/* atan1(x*100) gets pretty close to 1 for x=1 */
   double recip_tan_1_div_0_75 = 0.24202942695518667705824990442766; /* 1/tan(1/0.75) */
@@ -209,7 +208,7 @@ exp2coeff (int n)
 
   for (i = 1; i <= n; i++)
     {
-      r *= GSL_LN2;
+      r *= BSE_LN2;
       r /= i;
     }
   return r;
@@ -228,7 +227,7 @@ main (int   argc,
 }
 /* test/bench program */
 #define _GNU_SOURCE
-#include <math.h>
+#include <math.h> /* for main() in testprogram */
 int
 main (int   argc,
       char *argv[])
@@ -239,14 +238,14 @@ main (int   argc,
     for (x = -3; x < 3.01; x += 0.1)
       {
 	g_print ("%+f %+1.20f \t (%.20f - %.20f)\n",
-		 x, exp (x * GSL_LN2) - gsl_signal_exp2 (x),
-		 exp (x * GSL_LN2), gsl_signal_exp2 (x));
+		 x, exp (x * BSE_LN2) - bse_signal_exp2 (x),
+		 exp (x * BSE_LN2), bse_signal_exp2 (x));
       }
 
   if (0)	/* bench test */
     for (x = -l; x < l; x += 0.000001)
       {
-	dummy += gsl_signal_exp2 (x);
+	dummy += bse_signal_exp2 (x);
 	// dummy += exp2f (x);
       }
 

@@ -20,7 +20,7 @@
 #include "bsemain.h"
 #include "gslcommon.h"
 #include "bseengine.h"
-#include "gslsignal.h"
+#include "bsemathsignal.h"
 #include "bsecxxutils.h"
 #include <string.h>
 #include <sfi/gbsearcharray.h>
@@ -715,12 +715,12 @@ voice_input_module_access_U (BseModule *module,
       break;
     case VOICE_PRESSURE:
       if (vinput->vstate == VSTATE_BUSY &&
-          GSL_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))
+          BSE_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))
         vinput->aftertouch = mdata->velocity;
       break;
     case VOICE_SUSTAIN:
       if (vinput->vstate == VSTATE_BUSY &&
-          GSL_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))
+          BSE_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))
         {
           vinput->vstate = VSTATE_SUSTAINED;
           bse_engine_add_garbage (vinput, voice_input_enter_sustain_U);
@@ -728,7 +728,7 @@ voice_input_module_access_U (BseModule *module,
       break;
     case VOICE_OFF:
       if (vinput->vstate == VSTATE_BUSY &&
-          GSL_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))       /* monophonic synths get spurious note-off events */
+          BSE_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))       /* monophonic synths get spurious note-off events */
         goto kill_voice;
       break;
     case VOICE_KILL_SUSTAIN:
@@ -1856,9 +1856,9 @@ update_midi_signal_continuous_msb_L (BseMidiReceiver  *self,
 {
   gint ival;
   /* LSB part */
-  ival = gsl_ftoi (self->get_control (channel, lsb_signal) * 0x7f);
+  ival = bse_ftoi (self->get_control (channel, lsb_signal) * 0x7f);
   /* add MSB part */
-  ival |= gsl_ftoi (value * 0x7f) << 7;
+  ival |= bse_ftoi (value * 0x7f) << 7;
   /* set continuous */
   value = ival / (gfloat) 0x3fff;
   update_midi_signal_L (self, channel, tick_stamp, continuous_signal, value, trans);
@@ -1875,9 +1875,9 @@ update_midi_signal_continuous_lsb_L (BseMidiReceiver  *self,
 {
   gint ival;
   /* LSB part */
-  ival = gsl_ftoi (value * 0x7f);
+  ival = bse_ftoi (value * 0x7f);
   /* add MSB part */
-  ival |= gsl_ftoi (self->get_control (channel, msb_signal) * 0x7f) << 7;
+  ival |= bse_ftoi (self->get_control (channel, msb_signal) * 0x7f) << 7;
   value = ival / (gfloat) 0x3fff;
   update_midi_signal_L (self, channel, tick_stamp, continuous_signal, value, trans);
 }

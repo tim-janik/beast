@@ -85,7 +85,7 @@ bse_wt_add_chunk_midi (BseWtWave     *wave,
   g_return_if_fail (wave != NULL);
   
   i = wave->n_chunks;
-  osc_freq = gsl_temp_freq (gsl_get_config ()->kammer_freq, midi_note - gsl_get_config ()->midi_kammer_note);
+  osc_freq = bse_temp_freq (gsl_get_config ()->kammer_freq, midi_note - gsl_get_config ()->midi_kammer_note);
   bse_wt_add_chunk (wave, mix_freq, osc_freq, dhandle);
   if (i < wave->n_chunks)
     wave->chunks[i].midi_note = midi_note;
@@ -780,7 +780,7 @@ main (int   argc,
       GslDataHandle *dhandle = NULL;
       GslErrorType error;
       if (osc_note)
-        osc_freq = gsl_temp_freq (gsl_get_config ()->kammer_freq, osc_note - gsl_get_config ()->midi_kammer_note);
+        osc_freq = bse_temp_freq (gsl_get_config ()->kammer_freq, osc_note - gsl_get_config ()->midi_kammer_note);
       
       if (raw_chunks[0] == '0')
 	fi = gsl_wave_file_info_load (chunk_file, &error);

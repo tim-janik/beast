@@ -16,10 +16,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsestandardosc.h"
-
 #include "bsecategories.h"
 #include "bseengine.h"
-#include "gslsignal.h"
+#include "bsemathsignal.h"
 
 
 #define	FRAC_N_BITS	(19)
@@ -343,7 +342,7 @@ bse_standard_osc_prepare (BseSource *source)
   
   self->config.table = gsl_osc_table_create (bse_engine_sample_freq (),
 					     self->wave,
-					     gsl_window_blackman,
+					     bse_window_blackman,
 					     G_N_ELEMENTS (osc_table_freqs),
 					     osc_table_freqs);
   
@@ -397,7 +396,7 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
 	  cdata.old_osc_table = self->config.table;
 	  self->config.table = gsl_osc_table_create (bse_engine_sample_freq (),
 						     self->wave,
-						     gsl_window_blackman,
+						     bse_window_blackman,
 						     G_N_ELEMENTS (osc_table_freqs),
 						     osc_table_freqs);
 	  cdata.config.table = self->config.table;

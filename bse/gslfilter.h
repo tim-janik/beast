@@ -19,7 +19,7 @@
 #ifndef __GSL_FILTER_H__
 #define __GSL_FILTER_H__
 
-#include <bse/gslmath.h>
+#include <bse/bsemath.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +27,7 @@ extern "C" {
 
 
 /* --- transformations --- */
-static inline GslComplex bse_trans_s2z          (GslComplex     s);
+static inline BseComplex bse_trans_s2z          (BseComplex     s);
 static inline double     bse_trans_freq2s       (double         w);
 static inline double     bse_trans_zepsilon2ss  (double         epsilon);
 
@@ -36,19 +36,19 @@ static inline double     bse_trans_zepsilon2ss  (double         epsilon);
 void	gsl_filter_butter_rp    (unsigned int iorder,
 				 double       freq,   /* 0..pi */
 				 double       epsilon,
-				 GslComplex  *roots,  /* [0..iorder-1] */
-				 GslComplex  *poles);
+				 BseComplex  *roots,  /* [0..iorder-1] */
+				 BseComplex  *poles);
 void	gsl_filter_tscheb1_rp	(unsigned int iorder,
 				 double       freq,   /* 0..pi */
 				 double       epsilon,
-				 GslComplex  *roots,  /* [0..iorder-1] */
-				 GslComplex  *poles);
+				 BseComplex  *roots,  /* [0..iorder-1] */
+				 BseComplex  *poles);
 void	gsl_filter_tscheb2_rp	(unsigned int iorder,
 				 double       c_freq, /* 0..pi */
 				 double       steepness,
 				 double       epsilon,
-				 GslComplex  *roots,  /* [0..iorder-1] */
-				 GslComplex  *poles);
+				 BseComplex  *roots,  /* [0..iorder-1] */
+				 BseComplex  *poles);
 
 
 /* --- tschebyscheff type II steepness --- */
@@ -239,16 +239,16 @@ gdouble	gsl_filter_sine_scan	(guint		 order,
 
 
 /* --- implementations --- */
-static inline GslComplex
-bse_trans_s2z (GslComplex s)
+static inline BseComplex
+bse_trans_s2z (BseComplex s)
 {
   /*       1 + (Td/2) * s
    *  z = ----------------
    *       1 - (Td/2) * s
    */
-  GslComplex one = { 1, 0 };
-  return gsl_complex_div (gsl_complex_add (one, s), gsl_complex_sub (one, s));
-  /* return gsl_complex_div (gsl_complex_sub (s, one), gsl_complex_add (s, one)); */
+  BseComplex one = { 1, 0 };
+  return bse_complex_div (bse_complex_add (one, s), bse_complex_sub (one, s));
+  /* return bse_complex_div (bse_complex_sub (s, one), bse_complex_add (s, one)); */
 }
 static inline double
 bse_trans_freq2s (double w)

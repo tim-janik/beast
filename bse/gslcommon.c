@@ -477,7 +477,6 @@ gsl_init (const GslConfigValue values[])
 
   /* initialize subsystems */
   sfi_mutex_init (&global_tick_stamp_mutex);
-  _gsl_init_signal ();
   _gsl_init_fd_pool ();
   _gsl_init_data_caches ();
   _gsl_init_loader_gslwave ();

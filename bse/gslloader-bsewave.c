@@ -20,7 +20,7 @@
 
 #include "gsldatahandle.h"
 #include "gsldatahandle-vorbis.h"
-#include "gslmath.h"
+#include "bsemath.h"
 #include <sfi/sfistore.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -365,7 +365,7 @@ gslwave_parse_chunk_dsc (GScanner        *scanner,
       case GSL_WAVE_TOKEN_MIDI_NOTE:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
-	chunk->osc_freq = gsl_temp_freq (gsl_get_config ()->kammer_freq,
+	chunk->osc_freq = bse_temp_freq (gsl_get_config ()->kammer_freq,
 					 scanner->value.v_int64 - gsl_get_config ()->midi_kammer_note);
 	break;
       case GSL_WAVE_TOKEN_LABEL:

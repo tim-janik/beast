@@ -18,7 +18,7 @@
  */
 #include "gslosctable.h"
 #include "gslcommon.h"
-#include "gslmath.h"
+#include "bsemath.h"
 #include "gslfft.h"
 #include <string.h>
 #include <sfi/gbsearcharray.h>
@@ -463,7 +463,7 @@ gsl_osc_wave_fill_buffer (GslOscWaveForm type,
       for (i = 0; i < n_values; i++)
 	{
 	  frac = ((gdouble) i) / max; /* [0..1[ */
-	  pos = frac * 2. * GSL_PI;
+	  pos = frac * 2. * PI;
 	  values[i] = sin (pos);
 	}
       break;
@@ -603,7 +603,7 @@ gsl_osc_wave_adjust_range (guint   n_values,
   max = fabs (max + center);
   if (min > max)
     max = min;
-  if (max > GSL_FLOAT_MIN_NORMAL)
+  if (max > BSE_FLOAT_MIN_NORMAL)
     max = new_max / max;
   else
     max = 0;

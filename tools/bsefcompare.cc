@@ -17,12 +17,11 @@
  */
 
 #include <bse/bseengine.h>
-#include <bse/gslsignal.h>
+#include <bse/bsemathsignal.h>
 
 #include <bse/gsldatautils.h>
 #include <bse/gslloader.h>
 #include <bse/gslfft.h>
-#include <bse/gslsignal.h>
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
@@ -154,8 +153,8 @@ vector_similarity (const vector<double>& f1, const vector<double>& f2)
   double f1len = vector_len (f1);
   double f2len = vector_len (f2);
 
-  bool f1null = f1len < GSL_DOUBLE_MIN_NORMAL;
-  bool f2null = f2len < GSL_DOUBLE_MIN_NORMAL;
+  bool f1null = f1len < BSE_DOUBLE_MIN_NORMAL;
+  bool f2null = f2len < BSE_DOUBLE_MIN_NORMAL;
 
   if (f1null && f2null)
     return 1.0;

@@ -20,7 +20,7 @@
 #include <bse/bseprocedure.h>
 #include <bse/bsesource.h>
 #include <bse/bseundostack.h>
-#include <bse/gslieee754.h>
+#include <bse/bseieee754.h>
 #include <bse/bsemidievent.h>
 
 
@@ -685,7 +685,7 @@ BODY (BseProcedureClass *proc,
   SfiReal epsilon = 1e-5;
 
   /* check parameters */
-  if (!BSE_IS_SOURCE (source) || GSL_DOUBLE_IS_NANINF (xpos) || GSL_DOUBLE_IS_NANINF (ypos))
+  if (!BSE_IS_SOURCE (source) || BSE_DOUBLE_IS_NANINF (xpos) || BSE_DOUBLE_IS_NANINF (ypos))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */

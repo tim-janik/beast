@@ -22,7 +22,7 @@
 #include "bseenginenode.h"
 #include "bseengineutils.h"
 #include "bseengineschedule.h"
-#include "gslieee754.h"
+#include "bseieee754.h"
 #include <string.h>
 #include <unistd.h>
 #include <sys/poll.h>
@@ -895,7 +895,7 @@ master_process_flow (void)
   
   g_return_if_fail (master_need_process == TRUE);
   
-  g_assert (gsl_fpu_okround () == TRUE);
+  g_assert (bse_fpu_okround () == TRUE);
   
   if (master_schedule)
     {

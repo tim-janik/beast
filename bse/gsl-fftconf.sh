@@ -18,7 +18,7 @@
 
 # include files
 echo "#include $2"
-echo "#include <math.h>"
+echo "#include \"bsemath.h\""
 
 MKFFT="$1"
 IEEE_TYPE="double"

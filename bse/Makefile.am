@@ -46,8 +46,8 @@ bse_public_h_sources = $(strip \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
 	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
 	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
-	bsemain.h		bsemath.h		bseladspa.h			bsedevice.h \
-	bsemidicontroller.h	bsemididevice.h \
+	bsemain.h		bsemath.h		bsemathsignal.h			bseladspa.h \
+	bsemidicontroller.h	bsemididevice.h		bsedevice.h 			\
 	bsemididevice-null.h	bsemididevice-oss.h	bsemidievent.h			bsemidinotifier.h \
 	bsemidireceiver.h	bsemidisynth.h		bseobject.h			bsepart.h \
 	bsepcminput.h		bsepcmoutput.h		bseparam.h			bseparasite.h \
@@ -75,8 +75,8 @@ bse_c_sources = $(strip \
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
-	bsemain.c		bsemath.c		bseladspa.c			bsedevice.c \
-	bsemidicontroller.c	bsemididevice.c 	\
+	bsemain.c		bsemath.c		bsemathsignal.c			bseladspa.c \
+	bsemidicontroller.c	bsemididevice.c 	bsedevice.c 			\
 	bsemididevice-null.c	bsemididevice-oss.c	bsemidievent.c			bsemidinotifier.c \
 	bsemidireceiver.cc	bsemidisynth.c		bseobject.c			bsepart.c \
 	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \

@@ -109,7 +109,6 @@ guint            gsl_progress_printerr  (gpointer          message,
 /* --- implementation details --- */
 void	       _gsl_tick_stamp_inc	(void);
 void	       _gsl_tick_stamp_set_leap (guint		 ticks);
-void	_gsl_init_signal		(void);
 void	_gsl_init_fd_pool		(void);
 void	_gsl_init_data_caches		(void);
 void	_gsl_init_loader_gslwave	(void);

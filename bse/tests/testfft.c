@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include <bse/gslcommon.h>
-#include <bse/gslmath.h>
+#include <bse/bsemath.h>
 #include <bse/gslfft.h>
 #include <sys/time.h>
 #include <stdlib.h>

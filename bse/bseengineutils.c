@@ -20,12 +20,11 @@
 #include "gslcommon.h"
 #include "bseenginenode.h"
 #include "bseengineschedule.h"
-#include "gslsignal.h"
+#include "bsemathsignal.h"
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <math.h>
 
 #define LOG_INTERN      SfiLogger ("internals", NULL, NULL)
 
@@ -650,12 +649,12 @@ const_values_lookup_nextmost (ConstValuesArray *array,
 	  i = (n_nodes + 1) >> 1;
 	  check = nodes + i;
 	  cmp = key_value - **check;
-	  if (cmp > GSL_SIGNAL_EPSILON)
+	  if (cmp > BSE_SIGNAL_EPSILON)
 	    {
 	      n_nodes -= i;
 	      nodes = check;
 	    }
-	  else if (cmp < -GSL_SIGNAL_EPSILON)
+	  else if (cmp < -BSE_SIGNAL_EPSILON)
 	    n_nodes = i - 1;
 	  else /* cmp ~==~ 0.0 */
 	    return check;   /* matched */
@@ -723,13 +722,13 @@ bse_engine_const_values (gfloat value)
   extern const gfloat bse_engine_master_zero_block[];
   gfloat **block;
   
-  if (fabs (value) < GSL_SIGNAL_EPSILON)
+  if (fabs (value) < BSE_SIGNAL_EPSILON)
     return (gfloat*) bse_engine_master_zero_block;
   
   block = const_values_lookup_nextmost (&cvalue_array, value);
   
   /* found correct match? */
-  if (block && fabs (**block - value) < GSL_SIGNAL_EPSILON)
+  if (block && fabs (**block - value) < BSE_SIGNAL_EPSILON)
     {
       cvalue_array.nodes_used[block - cvalue_array.nodes] = CONST_VALUES_EXPIRE;
       return *block;

@@ -51,7 +51,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
   gfloat *boundary = mono_out + n_values;
   GslOscWave *wave = &osc->wave;
   
-  pos_inc = gsl_dtoi (osc->last_freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
+  pos_inc = bse_dtoi (osc->last_freq_level * bse_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
   sync_pos = osc->config.phase * wave->phase_to_pos;
   posm_strength = pos_inc * osc->config.fm_strength;
   self_posm_strength = pos_inc * osc->config.self_fm_strength;
@@ -66,14 +66,14 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 #if (ISYNC1_OSYNC0)		/* input sync only */
       {
 	gfloat sync_level = *sync_in++;
-	if (UNLIKELY (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level)))
+	if (UNLIKELY (BSE_SIGNAL_RAISING_EDGE (last_sync_level, sync_level)))
 	  cur_pos = sync_pos;
 	last_sync_level = sync_level;
       }
 #elif (ISYNC1_OSYNC1)		/* input and output sync */
       {
 	gfloat sync_level = *sync_in++;
-	if (UNLIKELY (GSL_SIGNAL_RAISING_EDGE (last_sync_level, sync_level)))
+	if (UNLIKELY (BSE_SIGNAL_RAISING_EDGE (last_sync_level, sync_level)))
 	  {
 	    cur_pos = sync_pos;
 	    *sync_out++ = 1.0;
@@ -98,8 +98,8 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 #if (WITH_FREQ)
       {
 	gdouble freq_level = *ifreq++;
-	freq_level = GSL_SIGNAL_TO_FREQ (freq_level);
-	if (GSL_SIGNAL_FREQ_CHANGED (last_freq_level, freq_level))
+	freq_level = BSE_SIGNAL_TO_FREQ (freq_level);
+	if (BSE_SIGNAL_FREQ_CHANGED (last_freq_level, freq_level))
 	  {
 	    if (UNLIKELY (freq_level <= wave->min_freq || freq_level > wave->max_freq))
 	      {
@@ -114,7 +114,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 		    last_pos = flpos / wave->ifrac_to_float;
 		    cur_pos = fcpos / wave->ifrac_to_float;
 		    sync_pos = osc->config.phase * wave->phase_to_pos;
-		    pos_inc = gsl_dtoi (freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
+		    pos_inc = bse_dtoi (freq_level * bse_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
 #if (PULSE_OSC)
 		    osc->last_pwm_level = 0;
 		    osc_update_pwm_offset (osc, osc->last_pwm_level);
@@ -123,7 +123,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 		  }
 	      }
 	    else
-	      pos_inc = gsl_dtoi (freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
+	      pos_inc = bse_dtoi (freq_level * bse_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
 	    posm_strength = pos_inc * osc->config.fm_strength;
 	    self_posm_strength = pos_inc * osc->config.self_fm_strength;
 	    last_freq_level = freq_level;
@@ -186,7 +186,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 #elif (WITH_EMOD)		/* exponential fm */
       {
 	gfloat mod_level = *mod_in++;
-	cur_pos += pos_inc * gsl_signal_exp2 (osc->config.fm_strength * mod_level);
+	cur_pos += pos_inc * bse_signal_exp2 (osc->config.fm_strength * mod_level);
       }
 #else				/* no modulation */
       cur_pos += pos_inc;

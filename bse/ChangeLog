@@ -1,3 +1,23 @@
+Fri Oct  8 11:38:07 2004  Tim Janik  <timj@gtk.org>
+
+	* bsedefs.h: don't include <math.h>. files needing math functions
+	should include <bse/bsemath.h> instead.
+
+	* bsemath.[hc]: removed BSE_EPSILON_CMP().
+	moved contents from gslmath.h and gslmath.c here and changed namespace
+	to bse. adapted users.
+
+	* bseieee754.h: changed namespace to bse, adapted users.
+	use signbit() if available.
+
+	* bsemathsignal.[hc]: changed namespace to bse, adapted users.
+
+	* gslmath.h, gslmath.c, gslsignal.h, gslsignal.c, gslieee754.h: removed.
+
+	* gsl-fftconf.sh: include bsemath.h in generated source.
+
+	* tests/mathtests.c: disabled ellipsis and complex root finding tests.
+
 Fri Oct  8 10:01:37 2004  Tim Janik  <timj@gtk.org>
 
 	* bseieee754.h: CVS copied from gslieee754.h.

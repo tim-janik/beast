@@ -19,7 +19,7 @@
 
 #include "bseglue.h"
 #include "gslcommon.h"
-#include "gslieee754.h"
+#include "bseieee754.h"
 
 #include <errno.h>
 
@@ -214,7 +214,7 @@ bse_midi_event_signal (guint             midi_channel,
     {
     case BSE_MIDI_SIGNAL_PROGRAM:
       event->status = BSE_MIDI_PROGRAM_CHANGE;
-      event->data.program = gsl_ftoi (CLAMP (value, 0, 1) * 0x7f);
+      event->data.program = bse_ftoi (CLAMP (value, 0, 1) * 0x7f);
       break;
     case BSE_MIDI_SIGNAL_PRESSURE:
       event->status = BSE_MIDI_CHANNEL_PRESSURE;

@@ -23,6 +23,7 @@
 #include "bseplugin.h"
 #include "bsecategories.h"
 #include "bsemidireceiver.h"
+#include "bsemathsignal.h"
 #include "gslcommon.h"
 #include "bsepcmdevice.h"
 #include "bsemididevice.h"
@@ -214,6 +215,7 @@ bse_init_core (void)
   
   /* initialize basic components */
   bse_globals_init ();
+  _bse_init_signal();
   _bse_init_categories ();
   bse_type_init ();
   bse_cxx_init ();

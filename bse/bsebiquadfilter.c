@@ -19,7 +19,7 @@
 
 #include <bse/bsecategories.h>
 #include <bse/bseengine.h>
-#include <bse/gslsignal.h>
+#include <bse/bsemathsignal.h>
 
 #define	DEBUG(...)      sfi_debug ("biquadfilter", __VA_ARGS__)
 #define FREQ_DELTA      0.1
@@ -308,7 +308,7 @@ bse_biquad_filter_get_property (GObject	   *object,
 
 typedef struct {
   GslBiquadFilter       biquad;
-  GslFrequencyModulator fm;
+  BseFrequencyModulator fm;
   GslBiquadConfig       config;
   gfloat		base_freq;
   gfloat		gain;
@@ -346,7 +346,7 @@ bse_biquad_filter_update_modules (BseBiquadFilter *self)
       self->type_change = FALSE;
       cfg->fm.fm_strength = self->exponential_fm ? self->fm_n_octaves : self->fm_strength;
       cfg->fm.exponential_fm = self->exponential_fm;
-      cfg->fm.signal_freq = GSL_SIGNAL_FROM_FREQ (cfg->base_freq);
+      cfg->fm.signal_freq = BSE_SIGNAL_FROM_FREQ (cfg->base_freq);
       cfg->fm.fine_tune = 0;
       gsl_biquad_config_init (&cfg->config, self->filter_type, self->norm_type);
       gsl_biquad_config_setup (&cfg->config, cfg->base_freq / nyquist_freq, cfg->gain, 0);
@@ -402,19 +402,19 @@ biquad_filter_process (BseModule *module,
   
   if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ).connected &&
       BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD).connected)
-    gsl_frequency_modulator (&fmod->fm,
+    bse_frequency_modulator (&fmod->fm,
 			     n_values,
 			     BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ),
 			     BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD),
 			     sig_out);
   else if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ).connected)
-    gsl_frequency_modulator (&fmod->fm,
+    bse_frequency_modulator (&fmod->fm,
 			     n_values,
 			     BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ),
 			     NULL,
 			     sig_out);
   else if (BSE_MODULE_ISTREAM (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD).connected)
-    gsl_frequency_modulator (&fmod->fm,
+    bse_frequency_modulator (&fmod->fm,
 			     n_values,
 			     NULL,
 			     BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_FREQ_MOD),
@@ -427,25 +427,25 @@ biquad_filter_process (BseModule *module,
       const gfloat *gain_in = BSE_MODULE_IBUFFER (module, BSE_BIQUAD_FILTER_ICHANNEL_GAIN_MOD);
       gfloat freq, nyquist = 0.5 * bse_engine_sample_freq ();
       gfloat last_gain = fmod->config.gain / fmod->gain_strength;
-      gfloat last_freq = GSL_SIGNAL_FROM_FREQ (fmod->config.f_fn * nyquist);
+      gfloat last_freq = BSE_SIGNAL_FROM_FREQ (fmod->config.f_fn * nyquist);
       nyquist = 1.0 / nyquist;
       do
 	{
 	  guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
-	  if (UNLIKELY (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq)))
+	  if (UNLIKELY (BSE_SIGNAL_FREQ_CHANGED (*sig_out, last_freq)))
 	    {
 	      last_freq = *sig_out;
-	      freq = GSL_SIGNAL_TO_FREQ (last_freq) * nyquist;
+	      freq = BSE_SIGNAL_TO_FREQ (last_freq) * nyquist;
 	      gsl_biquad_config_approx_freq (&fmod->config, CLAMP (freq, 0.0, 1.0));
-	      if (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain))
+	      if (BSE_SIGNAL_GAIN_CHANGED (*gain_in, last_gain))
 		{
 		  last_gain = *gain_in;
 		  gsl_biquad_config_approx_gain (&fmod->config, fmod->gain * (1.0 + last_gain * fmod->gain_strength));
 		}
 	      gsl_biquad_filter_config (&fmod->biquad, &fmod->config, FALSE);
 	    }
-	  else if (UNLIKELY (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain)))
+	  else if (UNLIKELY (BSE_SIGNAL_GAIN_CHANGED (*gain_in, last_gain)))
 	    {
 	      last_gain = *gain_in;
 	      gsl_biquad_config_approx_gain (&fmod->config, fmod->gain * (1.0 + last_gain * fmod->gain_strength));
@@ -461,16 +461,16 @@ biquad_filter_process (BseModule *module,
   else if (sig_out_as_freq)
     {
       gfloat freq, nyquist = 0.5 * bse_engine_sample_freq ();
-      gfloat last_freq = GSL_SIGNAL_FROM_FREQ (fmod->config.f_fn * nyquist);
+      gfloat last_freq = BSE_SIGNAL_FROM_FREQ (fmod->config.f_fn * nyquist);
       nyquist = 1.0 / nyquist;
       do
 	{
           guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
-          if (UNLIKELY (GSL_SIGNAL_FREQ_CHANGED (*sig_out, last_freq)))
+          if (UNLIKELY (BSE_SIGNAL_FREQ_CHANGED (*sig_out, last_freq)))
 	    {
 	      last_freq = *sig_out;
-	      freq = GSL_SIGNAL_TO_FREQ (last_freq) * nyquist;
+	      freq = BSE_SIGNAL_TO_FREQ (last_freq) * nyquist;
 	      gsl_biquad_config_approx_freq (&fmod->config, CLAMP (freq, 0.0, 1.0));
 	      gsl_biquad_filter_config (&fmod->biquad, &fmod->config, FALSE);
 	    }
@@ -488,7 +488,7 @@ biquad_filter_process (BseModule *module,
 	{
           guint n = MIN (bound - sig_out, bse_engine_control_raster ());
 	  
-	  if (UNLIKELY (GSL_SIGNAL_GAIN_CHANGED (*gain_in, last_gain)))
+	  if (UNLIKELY (BSE_SIGNAL_GAIN_CHANGED (*gain_in, last_gain)))
 	    {
 	      last_gain = *gain_in;
               gsl_biquad_config_approx_gain (&fmod->config, fmod->gain * (1.0 + last_gain * fmod->gain_strength));
@@ -531,7 +531,7 @@ bse_biquad_filter_context_create (BseSource *source,
   fmod->clear_state = TRUE;
   fmod->fm.fm_strength = self->exponential_fm ? self->fm_n_octaves : self->fm_strength;
   fmod->fm.exponential_fm = self->exponential_fm;
-  fmod->fm.signal_freq = GSL_SIGNAL_FROM_FREQ (fmod->base_freq);
+  fmod->fm.signal_freq = BSE_SIGNAL_FROM_FREQ (fmod->base_freq);
   fmod->fm.fine_tune = 0;
   gsl_biquad_config_init (&fmod->config, self->filter_type, self->norm_type);
   gsl_biquad_config_setup (&fmod->config, fmod->base_freq / nyquist_freq, fmod->gain, 0);

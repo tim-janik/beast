@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "bseamplifier.gen-idl.h"
-#include "gslsignal.h"
+#include "bsemathsignal.h"
 
 namespace Bse {
 
@@ -97,7 +97,7 @@ class Amplifier : public AmplifierBase {
               else
                 cv_sum *= ocs;
               if (FLAGS & WITH_EXP_CONTROLS)            /* exponential controls */
-                cv_sum = gsl_approx_qcircle2 (cv_sum);
+                cv_sum = bse_approx_qcircle2 (cv_sum);
               cv_sum += bl;
               if (G_UNLIKELY (cv_sum > 1.0))
                 cv_sum = 1.0;

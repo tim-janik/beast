@@ -18,7 +18,7 @@
  */
 #include "gsloscillator.h"
 
-#include "gslsignal.h"
+#include "bsemathsignal.h"
 
 #define	SIGNAL_LEVEL_INVAL	(-2.0)	/* trigger level-changed checks */
 
@@ -59,7 +59,7 @@ osc_update_pwm_offset (GslOscData *osc,
   min = fabs (min + osc->pwm_center);
   max = fabs (max + osc->pwm_center);
   max = MAX (max, min);
-  if (UNLIKELY (max < GSL_FLOAT_MIN_NORMAL))
+  if (UNLIKELY (max < BSE_FLOAT_MIN_NORMAL))
     {
       osc->pwm_center = foffset < 0.5 ? -1.0 : +1.0;
       osc->pwm_max = 1.0;
@@ -120,9 +120,9 @@ osc_process (GslOscData   *osc,
   mode |= isync ? OSC_FLAG_ISYNC : 0;
   mode |= sync_out ? OSC_FLAG_OSYNC : 0;
   mode |= ifreq ? OSC_FLAG_FREQ : 0;
-  if (osc->config.pulse_mod_strength > GSL_FLOAT_MIN_NORMAL)
+  if (osc->config.pulse_mod_strength > BSE_FLOAT_MIN_NORMAL)
     mode |= ipwm ? OSC_FLAG_PWM_MOD : 0;
-  if (osc->config.self_fm_strength > GSL_FLOAT_MIN_NORMAL)
+  if (osc->config.self_fm_strength > BSE_FLOAT_MIN_NORMAL)
     mode |= OSC_FLAG_SELF_MOD;
   if (imod && osc->config.exponential_fm)
     mode |= OSC_FLAG_EXP_MOD;

@@ -23,7 +23,7 @@
 #include "bseproject.h"
 #include "bsemidireceiver.h"
 #include "bsemain.h"
-#include "gslieee754.h" // FIXME: remove
+#include "bseieee754.h"
 #include <sys/poll.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -34,7 +34,6 @@ namespace { // Anon
 using namespace std;
 
 #define DEBUG(...)      sfi_debug ("sequencer", __VA_ARGS__)
-inline guint64 bse_dtoull (const double v) { return v < -0.0 ? guint64 (v - 0.5) : guint64 (v + 0.5); } // FIXME 
 
 /* --- prototypes --- */
 static void	bse_sequencer_thread_main	(gpointer	 data);
@@ -412,7 +411,7 @@ bse_sequencer_thread_main (gpointer data)
               gdouble stamp_diff = (next_stamp - song->sequencer_start_SL) - song->delta_stamp_SL;
 	      while (stamp_diff > 0)
 		{
-		  guint n_ticks = gsl_dtoi (stamp_diff * song->tpsi_SL);
+		  guint n_ticks = bse_dtoi (stamp_diff * song->tpsi_SL);
 		  if (n_ticks < 1)
 		    break;
 		  bse_sequencer_process_song_SL (song, n_ticks);

@@ -18,16 +18,16 @@
 # make sure gslincludedir= is defined
 # GSL targets
 GSL_H_SRC     = $(strip \
-	gsldefs.h	gslieee754.h	\
+	gsldefs.h \
 	gslfft.h		gsloscillator.h	gsldatahandle.h	gslwavechunk.h \
-	gslfilter.h		gslsignal.h	gslmath.h	gslcommon.h \
+	gslfilter.h		gslcommon.h \
 	gsldatahandle-vorbis.h	gslvorbis-enc.h	gsldatacache.h	gslvorbis-cutter.h \
 	gsldatahandle-mad.h	gslloader.h	gslfilehash.h	gsldatautils.h	\
 	gslwaveosc.h		gslosctable.h	gslmagic.h	\
 )
 GSL_C_SRC     =	$(strip \
 	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
-	gslfilter.c		gslsignal.c	gslmath.c	gslcommon.c \
+	gslfilter.c		gslcommon.c \
 	gslloader-oggvorbis.c	gslloader-wav.c	gslloader-mad.c	gslloader-gslwave.c \
 	gsldatahandle-vorbis.c	gslvorbis-enc.c	gsldatacache.c	gslvorbis-cutter.c \
 	gsldatahandle-mad.c	gslloader.c	gslfilehash.c	gsldatautils.c	\

@@ -19,7 +19,7 @@
 #include "gslloader.h"
 
 #include "gsldatahandle.h"
-#include "gslmath.h"
+#include "bsemath.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -125,7 +125,7 @@ aiff_read_f80 (int      fd,
   mantissa_high = AIFF_ULONG (bytes[2], bytes[3], bytes[4], bytes[5]);
   mantissa_low = AIFF_ULONG (bytes[6], bytes[7], bytes[8], bytes[9]);
   if (biased_exponent == 0x7fff)        /* IS_NANINF() */
-    d = mantissa_high | mantissa_low ? GSL_DOUBLE_NAN : GSL_DOUBLE_INF;
+    d = mantissa_high | mantissa_low ? BSE_DOUBLE_NAN : BSE_DOUBLE_INF;
   else
     {
       biased_exponent -= 0x3fff;
@@ -459,7 +459,7 @@ aiff_load_wave_dsc (gpointer         data,
   dsc->wdsc.n_chunks = 1;
   dsc->wdsc.chunks = g_malloc0 (sizeof (dsc->wdsc.chunks[0]) * dsc->wdsc.n_chunks);
   dsc->wdsc.chunks[0].mix_freq = afile->mix_freq;
-  dsc->wdsc.chunks[0].osc_freq = gsl_temp_freq (gsl_get_config ()->kammer_freq,
+  dsc->wdsc.chunks[0].osc_freq = bse_temp_freq (gsl_get_config ()->kammer_freq,
                                                 afile->instrument.base_note - gsl_get_config ()->midi_kammer_note);
   if (afile->instrument.sustain_loop_mode > 0 && afile->instrument.sustain_loop_mode <= 2 &&
       afile->instrument.sustain_begin_id && afile->instrument.sustain_end_id)

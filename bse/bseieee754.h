@@ -1,5 +1,6 @@
-/* GSL - Generic Sound Layer
- * Copyright (C) 1999-2003 Tim Janik
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 1999-2004 Tim Janik
+ * Copyright (C) 2001 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,13 +17,17 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __GSL_IEEE754_H__
-#define __GSL_IEEE754_H__
+#ifndef __BSE_IEEE754_H__
+#define __BSE_IEEE754_H__
 
-#include <bse/gsldefs.h>
+#include <bse/bsedefs.h>
+#include <math.h> /* signbit */
+
+/* override math.h definition of PI */
+#undef PI
+#define PI                            (3.141592653589793238462643383279502884197)    // pi
 
 G_BEGIN_DECLS
-
 
 /* IEEE 754 single precision floating point layout:
  *        31 30           23 22            0
@@ -40,78 +45,87 @@ G_BEGIN_DECLS
  */
 
 /* floating point type related constants */
-#define GSL_FLOAT_BIAS		 (127)
-#define	GSL_FLOAT_MAX_NORMAL	 (3.40282347e+38)	   /* 7f7fffff */
-#define	GSL_FLOAT_MIN_NORMAL	 (1.17549435e-38)	   /* 00800000 */
-#define	GSL_FLOAT_MAX_SUBNORMAL	 (1.17549421e-38)	   /* 007fffff */
-#define	GSL_FLOAT_MIN_SUBNORMAL	 (1.40129846e-45)	   /* 00000001 */
-#define GSL_DOUBLE_BIAS		 (1023)
-#define	GSL_DOUBLE_MAX_NORMAL	 (1.7976931348623157e+308) /* 7fefffff ffffffff */
-#define	GSL_DOUBLE_MIN_NORMAL	 (2.2250738585072014e-308) /* 00100000 00000000 */
-#define	GSL_DOUBLE_MAX_SUBNORMAL (2.2250738585072009e-308) /* 000fffff ffffffff */
-#define	GSL_DOUBLE_MIN_SUBNORMAL (4.9406564584124654e-324) /* 00000000 00000001 */
-#define	GSL_DOUBLE_INF		 (_gsl_dinf_union.d)
-#define	GSL_DOUBLE_NAN		 (_gsl_dnan_union.d)
-#define	GSL_FLOAT_INF		 (_gsl_finf_union.f)
-#define	GSL_FLOAT_NAN		 (_gsl_fnan_union.f)
+#define BSE_FLOAT_BIAS		 (127)
+#define	BSE_FLOAT_MAX_NORMAL	 (3.40282347e+38)	   /* 7f7fffff */
+#define	BSE_FLOAT_MIN_NORMAL	 (1.17549435e-38)	   /* 00800000 */
+#define	BSE_FLOAT_MAX_SUBNORMAL	 (1.17549421e-38)	   /* 007fffff */
+#define	BSE_FLOAT_MIN_SUBNORMAL	 (1.40129846e-45)	   /* 00000001 */
+#define BSE_DOUBLE_BIAS		 (1023)
+#define	BSE_DOUBLE_MAX_NORMAL	 (1.7976931348623157e+308) /* 7fefffff ffffffff */
+#define	BSE_DOUBLE_MIN_NORMAL	 (2.2250738585072014e-308) /* 00100000 00000000 */
+#define	BSE_DOUBLE_MAX_SUBNORMAL (2.2250738585072009e-308) /* 000fffff ffffffff */
+#define	BSE_DOUBLE_MIN_SUBNORMAL (4.9406564584124654e-324) /* 00000000 00000001 */
+#define	BSE_DOUBLE_INF		 (_bse_dinf_union.d)
+#define	BSE_DOUBLE_NAN		 (_bse_dnan_union.d)
+#define	BSE_FLOAT_INF		 (_bse_finf_union.f)
+#define	BSE_FLOAT_NAN		 (_bse_fnan_union.f)
 
 /* multiply with base2 exponent to get base10 exponent (for nomal numbers) */
-#define GSL_LOG_2_BASE_10         (0.30102999566398119521)
+#define BSE_LOG_2_BASE_10         (0.30102999566398119521)
 
 /* the following macros work only on variables
  * and evaluate arguments multiple times
  */
 
 /* single precision value checks */
-#define	GSL_FLOAT_IS_ZERO(f)		((f) == 0.0)	/* compiler knows this one */
-#define	GSL_FLOAT_IS_NORMAL(f)		(GSL_FLOAT_PARTS (f).mpn.biased_exponent > 0 && \
-				         GSL_FLOAT_PARTS (f).mpn.biased_exponent < 255)
-#define	GSL_FLOAT_IS_SUBNORMAL(f)	(GSL_FLOAT_PARTS (f).mpn.biased_exponent == 0 && \
-					 GSL_FLOAT_PARTS (f).mpn.mantissa != 0)
-#define	GSL_FLOAT_IS_NANINF(f)		(GSL_FLOAT_PARTS (f).mpn.biased_exponent == 255)
-#define	GSL_FLOAT_IS_NAN(f)		(GSL_FLOAT_IS_NANINF (f) && GSL_FLOAT_PARTS (f).mpn.mantissa != 0)
-#define	GSL_FLOAT_IS_INF(f)		(GSL_FLOAT_IS_NANINF (f) && GSL_FLOAT_PARTS (f).mpn.mantissa == 0)
-#define	GSL_FLOAT_IS_INF_POSITIVE(f)	(GSL_FLOAT_IS_INF (f) && GSL_FLOAT_PARTS (f).mpn.sign == 0)
-#define	GSL_FLOAT_IS_INF_NEGATIVE(f)	(GSL_FLOAT_IS_INF (f) && GSL_FLOAT_PARTS (f).mpn.sign == 1)
-#define	GSL_FLOAT_SIGN(f)		(GSL_FLOAT_PARTS (f).mpn.sign)
+#define	BSE_FLOAT_IS_ZERO(f)		((f) == 0.0)	/* compiler knows this one */
+#define	BSE_FLOAT_IS_NORMAL(f)		(BSE_FLOAT_PARTS (f).mpn.biased_exponent > 0 && \
+				         BSE_FLOAT_PARTS (f).mpn.biased_exponent < 255)
+#define	BSE_FLOAT_IS_SUBNORMAL(f)	(BSE_FLOAT_PARTS (f).mpn.biased_exponent == 0 && \
+					 BSE_FLOAT_PARTS (f).mpn.mantissa != 0)
+#define	BSE_FLOAT_IS_NANINF(f)		(BSE_FLOAT_PARTS (f).mpn.biased_exponent == 255)
+#define	BSE_FLOAT_IS_NAN(f)		(BSE_FLOAT_IS_NANINF (f) && BSE_FLOAT_PARTS (f).mpn.mantissa != 0)
+#define	BSE_FLOAT_IS_INF(f)		(BSE_FLOAT_IS_NANINF (f) && BSE_FLOAT_PARTS (f).mpn.mantissa == 0)
+#define	BSE_FLOAT_IS_INF_POSITIVE(f)	(BSE_FLOAT_IS_INF (f) && BSE_FLOAT_PARTS (f).mpn.sign == 0)
+#define	BSE_FLOAT_IS_INF_NEGATIVE(f)	(BSE_FLOAT_IS_INF (f) && BSE_FLOAT_PARTS (f).mpn.sign == 1)
+#ifdef signbit
+#define BSE_FLOAT_SIGN(f)               (signbit (f))
+#else
+#define BSE_FLOAT_SIGN(f)               (BSE_FLOAT_PARTS (f).mpn.sign)
+#endif
 
 /* double precision value checks */
-#define	GSL_DOUBLE_IS_ZERO(d)		((d) == 0.0)	/* compiler knows this one */
-#define	GSL_DOUBLE_IS_NORMAL(d)		(GSL_DOUBLE_PARTS (d).mpn.biased_exponent > 0 && \
-					 GSL_DOUBLE_PARTS (d).mpn.biased_exponent < 2047)
-#define	GSL_DOUBLE_IS_SUBNORMAL(d)	(GSL_DOUBLE_PARTS (d).mpn.biased_exponent == 0 && \
-                                         (GSL_DOUBLE_PARTS (d).mpn.mantissa_low != 0 || \
-					  GSL_DOUBLE_PARTS (d).mpn.mantissa_high != 0))
-#define	GSL_DOUBLE_IS_NANINF(d)		(GSL_DOUBLE_PARTS (d).mpn.biased_exponent == 2047)
-#define	GSL_DOUBLE_IS_NAN(d)		(GSL_DOUBLE_IS_NANINF (d) && \
-					 (GSL_DOUBLE_PARTS (d).mpn.mantissa_low != 0 || \
-					  GSL_DOUBLE_PARTS (d).mpn.mantissa_high != 0))
-#define	GSL_DOUBLE_IS_INF(d)		(GSL_DOUBLE_IS_NANINF (d) && \
-					 GSL_DOUBLE_PARTS (d).mpn.mantissa_low == 0 && \
-					 GSL_DOUBLE_PARTS (d).mpn.mantissa_high == 0)
-#define	GSL_DOUBLE_IS_INF_POSITIVE(d)	(GSL_DOUBLE_IS_INF (d) && GSL_DOUBLE_PARTS (d).mpn.sign == 0)
-#define	GSL_DOUBLE_IS_INF_NEGATIVE(d)	(GSL_DOUBLE_IS_INF (d) && GSL_DOUBLE_PARTS (d).mpn.sign == 1)
-#define	GSL_DOUBLE_SIGN(d)		(GSL_DOUBLE_PARTS (d).mpn.sign)
+#define	BSE_DOUBLE_IS_ZERO(d)		((d) == 0.0)	/* compiler knows this one */
+#define	BSE_DOUBLE_IS_NORMAL(d)		(BSE_DOUBLE_PARTS (d).mpn.biased_exponent > 0 && \
+					 BSE_DOUBLE_PARTS (d).mpn.biased_exponent < 2047)
+#define	BSE_DOUBLE_IS_SUBNORMAL(d)	(BSE_DOUBLE_PARTS (d).mpn.biased_exponent == 0 && \
+                                         (BSE_DOUBLE_PARTS (d).mpn.mantissa_low != 0 || \
+					  BSE_DOUBLE_PARTS (d).mpn.mantissa_high != 0))
+#define	BSE_DOUBLE_IS_NANINF(d)		(BSE_DOUBLE_PARTS (d).mpn.biased_exponent == 2047)
+#define	BSE_DOUBLE_IS_NAN(d)		(BSE_DOUBLE_IS_NANINF (d) && \
+					 (BSE_DOUBLE_PARTS (d).mpn.mantissa_low != 0 || \
+					  BSE_DOUBLE_PARTS (d).mpn.mantissa_high != 0))
+#define	BSE_DOUBLE_IS_INF(d)		(BSE_DOUBLE_IS_NANINF (d) && \
+					 BSE_DOUBLE_PARTS (d).mpn.mantissa_low == 0 && \
+					 BSE_DOUBLE_PARTS (d).mpn.mantissa_high == 0)
+#define	BSE_DOUBLE_IS_INF_POSITIVE(d)	(BSE_DOUBLE_IS_INF (d) && BSE_DOUBLE_PARTS (d).mpn.sign == 0)
+#define	BSE_DOUBLE_IS_INF_NEGATIVE(d)	(BSE_DOUBLE_IS_INF (d) && BSE_DOUBLE_PARTS (d).mpn.sign == 1)
+#ifdef signbit
+#define BSE_DOUBLE_SIGN(d)              (signbit (d))
+#else
+#define BSE_DOUBLE_SIGN(d)              (BSE_DOUBLE_PARTS (d).mpn.sign)
+#endif
 
 /* get structured parts of floating point numbers */
-#define	GSL_FLOAT_PARTS(f)		(((GslFloatIEEE754) (f)))
-#define	GSL_DOUBLE_PARTS(d)		(((GslDoubleIEEE754) (d))) /* (*((GslDoubleIEEE754*) &(d))) */
+#define	BSE_FLOAT_PARTS(f)		(((BseFloatIEEE754) (f)))
+#define	BSE_DOUBLE_PARTS(d)		(((BseDoubleIEEE754) (d))) /* (*((BseDoubleIEEE754*) &(d))) */
 
 /* --- rounding --- */
-typedef	unsigned short int	GslFpuState;
+typedef	unsigned short int	BseFpuState;
 #if defined (__i386__) && defined (__GNUC__)
 /* setting/restoring rounding mode shouldn't actually
  * be necessary as round-to-nearest is the hardware
- * default (can be checked with gsl_fpu_okround()).
+ * default (can be checked with bse_fpu_okround()).
  */
-static inline void	gsl_fpu_setround	(GslFpuState		*cw);
-static inline int	gsl_fpu_okround		(void);
-static inline void	gsl_fpu_restore		(GslFpuState		 cv);
-static inline int	gsl_ftoi /* nearest */	(register float		 f)  G_GNUC_CONST;
-static inline int	gsl_dtoi /* nearest */	(register double	 f)  G_GNUC_CONST;
+static inline void	bse_fpu_setround	(BseFpuState		*cw);
+static inline int	bse_fpu_okround		(void);
+static inline void	bse_fpu_restore		(BseFpuState		 cv);
+static inline int	bse_ftoi /* nearest */	(register float		 f)  G_GNUC_CONST;
+static inline int	bse_dtoi /* nearest */	(register double	 f)  G_GNUC_CONST;
 /* fallbacks for the !386 case are below */
 #endif
-
+static inline guint64   bse_dtoull              (const double            v);
+static inline gint64    bse_dtoll               (const double            v);
 
 /* --- implementation bits --- */
 #if G_BYTE_ORDER == G_LITTLE_ENDIAN
@@ -123,7 +137,7 @@ typedef union
     unsigned int biased_exponent : 8;
     unsigned int sign : 1;
   } mpn;
-} GslFloatIEEE754;
+} BseFloatIEEE754;
 typedef union
 {
   double	v_double;
@@ -133,11 +147,11 @@ typedef union
     unsigned int biased_exponent : 11;
     unsigned int sign : 1;
   } mpn;
-} GslDoubleIEEE754;
-#define	_GSL_DOUBLE_INF_BYTES	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f }
-#define	_GSL_DOUBLE_NAN_BYTES	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x7f }
-#define	_GSL_FLOAT_INF_BYTES	{ 0x00, 0x00, 0x80, 0x7f }
-#define	_GSL_FLOAT_NAN_BYTES	{ 0x00, 0x00, 0xc0, 0x7f }
+} BseDoubleIEEE754;
+#define	_BSE_DOUBLE_INF_BYTES	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x7f }
+#define	_BSE_DOUBLE_NAN_BYTES	{ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x7f }
+#define	_BSE_FLOAT_INF_BYTES	{ 0x00, 0x00, 0x80, 0x7f }
+#define	_BSE_FLOAT_NAN_BYTES	{ 0x00, 0x00, 0xc0, 0x7f }
 #elif G_BYTE_ORDER == G_BIG_ENDIAN
 typedef union
 {
@@ -147,7 +161,7 @@ typedef union
     unsigned int biased_exponent : 8;
     unsigned int mantissa : 23;
   } mpn;
-} GslFloatIEEE754;
+} BseFloatIEEE754;
 typedef union
 {
   double        v_double;
@@ -157,25 +171,25 @@ typedef union
     unsigned int mantissa_high : 20;
     unsigned int mantissa_low : 32;
   } mpn;
-} GslDoubleIEEE754;
-#define	_GSL_DOUBLE_INF_BYTES	{ 0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-#define	_GSL_DOUBLE_NAN_BYTES	{ 0x7f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
-#define	_GSL_FLOAT_INF_BYTES	{ 0x7f, 0x80, 0x00, 0x00 }
-#define	_GSL_FLOAT_NAN_BYTES	{ 0x7f, 0xc0, 0x00, 0x00 }
+} BseDoubleIEEE754;
+#define	_BSE_DOUBLE_INF_BYTES	{ 0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define	_BSE_DOUBLE_NAN_BYTES	{ 0x7f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+#define	_BSE_FLOAT_INF_BYTES	{ 0x7f, 0x80, 0x00, 0x00 }
+#define	_BSE_FLOAT_NAN_BYTES	{ 0x7f, 0xc0, 0x00, 0x00 }
 #else /* !G_LITTLE_ENDIAN && !G_BIG_ENDIAN */
 #error unknown ENDIAN type
 #endif /* !G_LITTLE_ENDIAN && !G_BIG_ENDIAN */
 
-static const union { unsigned char c[8]; double d; } _gsl_dnan_union = { _GSL_DOUBLE_NAN_BYTES };
-static const union { unsigned char c[8]; double d; } _gsl_dinf_union = { _GSL_DOUBLE_INF_BYTES };
-static const union { unsigned char c[4]; float f; }  _gsl_fnan_union = { _GSL_FLOAT_NAN_BYTES };
-static const union { unsigned char c[4]; float f; }  _gsl_finf_union = { _GSL_FLOAT_INF_BYTES };
+static const union { unsigned char c[8]; double d; } _bse_dnan_union = { _BSE_DOUBLE_NAN_BYTES };
+static const union { unsigned char c[8]; double d; } _bse_dinf_union = { _BSE_DOUBLE_INF_BYTES };
+static const union { unsigned char c[4]; float f; }  _bse_fnan_union = { _BSE_FLOAT_NAN_BYTES };
+static const union { unsigned char c[4]; float f; }  _bse_finf_union = { _BSE_FLOAT_INF_BYTES };
 
 #if defined (__i386__) && defined (__GNUC__)
 static inline void
-gsl_fpu_setround (GslFpuState *cw)
+bse_fpu_setround (BseFpuState *cw)
 {
-  GslFpuState cv;
+  BseFpuState cv;
   
   __asm__ ("fnstcw %0"
 	   : "=m" (*&cv));
@@ -186,23 +200,23 @@ gsl_fpu_setround (GslFpuState *cw)
 	   : "m" (*&cv));
 }
 static inline int
-gsl_fpu_okround (void)
+bse_fpu_okround (void)
 {
-  GslFpuState cv;
+  BseFpuState cv;
   
   __asm__ ("fnstcw %0"
 	   : "=m" (*&cv));
   return !(cv & 0x0c00);
 }
 static inline void
-gsl_fpu_restore (GslFpuState cv)
+bse_fpu_restore (BseFpuState cv)
 {
   __asm__ ("fldcw %0"
 	   :
 	   : "m" (*&cv));
 }
 static inline int G_GNUC_CONST
-gsl_ftoi (register float f)
+bse_ftoi (register float f)
 {
   int r;
   
@@ -212,7 +226,7 @@ gsl_ftoi (register float f)
   return r;
 }
 static inline int G_GNUC_CONST
-gsl_dtoi (register double f)
+bse_dtoi (register double f)
 {
   int r;
   
@@ -222,21 +236,31 @@ gsl_dtoi (register double f)
   return r;
 }
 #else   /* !386 */
-#  define gsl_fpu_setround(p)   ((void) (p));
-#  define gsl_fpu_okround()     (1)
-#  define gsl_fpu_restore(x)    /* nop */
+#  define bse_fpu_setround(p)   ((void) (p));
+#  define bse_fpu_okround()     (1)
+#  define bse_fpu_restore(x)    /* nop */
 static inline int G_GNUC_CONST
-gsl_ftoi (register float v)
+bse_ftoi (register float v)
 {
   return v < -0.0 ? v - 0.5 : v + 0.5;
 }
 static inline int G_GNUC_CONST
-gsl_dtoi (register double v)
+bse_dtoi (register double v)
 {
   return v < -0.0 ? v - 0.5 : v + 0.5;
 }
 #endif
+static inline guint64
+bse_dtoull (const double v)
+{
+  return v < -0.0 ? (guint64) (v - 0.5) : (guint64) (v + 0.5);
+}
+static inline gint64
+bse_dtoll (const double v)
+{
+  return v < -0.0 ? (gint64) (v - 0.5) : (gint64) (v + 0.5);
+}
 
 G_END_DECLS
 
-#endif /* __GSL_IEEE754_H__ */		/* vim: set ts=8 sw=2 sts=2: */
+#endif /* __BSE_IEEE754_H__ */		/* vim: set ts=8 sw=2 sts=2: */

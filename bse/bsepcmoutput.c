@@ -255,7 +255,7 @@ bse_pcm_output_context_create (BseSource *source,
   BseModule *module = bse_module_new (&pcm_output_mclass, mdata);
   
   mdata->volume = 1.0;
-  mdata->volume_set = BSE_EPSILON_CMP (mdata->volume, 1.0) != 0;
+  mdata->volume_set = mdata->volume != 1.0;
   
   /* setup module i/o streams with BseSource i/o channels */
   bse_source_set_context_imodule (source, context_handle, module);

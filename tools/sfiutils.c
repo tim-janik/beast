@@ -18,7 +18,7 @@
  */
 #include "sfiutils.h"
 #include <bse/gslcommon.h>
-#include <bse/gslmath.h>
+#include <bse/bsemath.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -413,11 +413,11 @@ str2num (const gchar *str,
       while (*str && !strchr (num_first, *str))
         str++;
       if (!*str)
-        return GSL_DOUBLE_NAN;
+        return BSE_DOUBLE_NAN;
     }
   if (strchr (num_first, *str))
     return atof (str);
-  return GSL_DOUBLE_NAN;
+  return BSE_DOUBLE_NAN;
 }
 
 const gchar*
@@ -486,7 +486,7 @@ sfi_util_file_entry_get_num (SfiUtilFileEntry *entry,
       if (ep && *ep)
         {
           if (*ep == 'm')
-            d = gsl_temp_freq (gsl_get_config ()->kammer_freq,
+            d = bse_temp_freq (gsl_get_config ()->kammer_freq,
                                d - gsl_get_config ()->midi_kammer_note);
           else
             sfi_error ("Invalid chunk format given: postmodifier `%c'", *ep);
@@ -542,7 +542,7 @@ sfi_arguments_extract_num (const gchar *string,
       if (ep && *ep)
         {
           if (*ep == 'm')       /* interpret d as midi note and return freq */
-            d = gsl_temp_freq (gsl_get_config ()->kammer_freq,
+            d = bse_temp_freq (gsl_get_config ()->kammer_freq,
                                d - gsl_get_config ()->midi_kammer_note);
           else
             sfi_error ("Invalid chunk format given: postmodifier `%c'", *ep);

@@ -20,7 +20,7 @@
 #include <bse/bsescripthelper.h>
 #include <bse/bseserver.h>
 #include <bse/gslcommon.h>      /* gsl_get_config */
-#include <bse/gslmath.h>        /* gsl_temp_freq */
+#include <bse/bsemath.h>        /* bse_temp_freq */
 #include <string.h>     /* strchr */
 #include <stdlib.h>     /* strtol */
 
@@ -255,7 +255,7 @@ PROCEDURE (bse-string-extract-number, "String Extract Number") {
           if (ep && *ep)
             {
               if (*ep == 'm')       /* interpret d as midi note and return freq */
-                number = gsl_temp_freq (gsl_get_config ()->kammer_freq,
+                number = bse_temp_freq (gsl_get_config ()->kammer_freq,
                                         number - gsl_get_config ()->midi_kammer_note);
               else /* ("Invalid chunk format given: postmodifier `%c'", *ep) */
                 number = 0;

@@ -17,9 +17,8 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gslfilter.h"
-
 #include "gslfft.h"
-#include "gslsignal.h"
+#include "bsemathsignal.h"
 
 #include <string.h>
 
@@ -28,7 +27,7 @@
 static inline double
 cotan (double x)
 {
-  return - tan (x + GSL_PI * 0.5);
+  return - tan (x + PI * 0.5);
 }
 
 static double
@@ -43,86 +42,86 @@ band_filter_common (unsigned int iorder,
 		    double       p_freq, /* 0..pi */
 		    double       s_freq, /* 0..pi */
 		    double       epsilon,
-		    GslComplex  *roots,
-		    GslComplex  *poles,
+		    BseComplex  *roots,
+		    BseComplex  *poles,
 		    double      *a,      /* [0..iorder] */
 		    double      *b,
 		    gboolean     band_pass,
 		    gboolean     t1_norm)
 {
   unsigned int iorder2 = iorder >> 1;
-  GslComplex *poly = g_newa (GslComplex, iorder + 1);
-  GslComplex fpoly[2 + 1] = { { 0, }, { 0, }, { 1, 0 } };
+  BseComplex *poly = g_newa (BseComplex, iorder + 1);
+  BseComplex fpoly[2 + 1] = { { 0, }, { 0, }, { 1, 0 } };
   double alpha, norm;
   guint i;
   
   epsilon = bse_trans_zepsilon2ss (epsilon);
   alpha = cos ((s_freq + p_freq) * 0.5) / cos ((s_freq - p_freq) * 0.5);
   
-  fpoly[0] = gsl_complex (1, 0);
-  fpoly[1] = gsl_complex (1, 0);
+  fpoly[0] = bse_complex (1, 0);
+  fpoly[1] = bse_complex (1, 0);
   for (i = 0; i < iorder2; i++)
     {
-      fpoly[0] = gsl_complex_mul (fpoly[0], gsl_complex_sub (gsl_complex (1, 0), gsl_complex_reciprocal (roots[i])));
-      fpoly[1] = gsl_complex_mul (fpoly[1], gsl_complex_sub (gsl_complex (1, 0), gsl_complex_reciprocal (poles[i])));
+      fpoly[0] = bse_complex_mul (fpoly[0], bse_complex_sub (bse_complex (1, 0), bse_complex_reciprocal (roots[i])));
+      fpoly[1] = bse_complex_mul (fpoly[1], bse_complex_sub (bse_complex (1, 0), bse_complex_reciprocal (poles[i])));
     }
-  norm = gsl_complex_div (fpoly[1], fpoly[0]).re;
+  norm = bse_complex_div (fpoly[1], fpoly[0]).re;
   
   if ((iorder2 & 1) == 0)      /* norm is fluctuation minimum */
     norm *= sqrt (1.0 / (1.0 + epsilon * epsilon));
   
   /* z numerator polynomial */
-  poly[0] = gsl_complex (norm, 0);
+  poly[0] = bse_complex (norm, 0);
   for (i = 0; i < iorder2; i++)
     {
-      GslComplex t, alphac = gsl_complex (alpha, 0);
+      BseComplex t, alphac = bse_complex (alpha, 0);
       
-      t = band_pass ? gsl_complex_inv (roots[i]) : roots[i];
-      fpoly[1] = gsl_complex_sub (gsl_complex_div (alphac, t), alphac);
-      fpoly[0] = gsl_complex_inv (gsl_complex_reciprocal (t));
-      gsl_cpoly_mul (poly, i * 2, poly, 2, fpoly);
+      t = band_pass ? bse_complex_inv (roots[i]) : roots[i];
+      fpoly[1] = bse_complex_sub (bse_complex_div (alphac, t), alphac);
+      fpoly[0] = bse_complex_inv (bse_complex_reciprocal (t));
+      bse_cpoly_mul (poly, i * 2, poly, 2, fpoly);
     }
   for (i = 0; i <= iorder; i++)
     a[i] = poly[i].re;
   
   /* z denominator polynomial */
-  poly[0] = gsl_complex (1, 0);
+  poly[0] = bse_complex (1, 0);
   for (i = 0; i < iorder2; i++)
     {
-      GslComplex t, alphac = gsl_complex (alpha, 0);
+      BseComplex t, alphac = bse_complex (alpha, 0);
       
-      t = band_pass ? gsl_complex_inv (poles[i]) : poles[i];
-      fpoly[1] = gsl_complex_sub (gsl_complex_div (alphac, t), alphac);
-      fpoly[0] = gsl_complex_inv (gsl_complex_reciprocal (t));
-      gsl_cpoly_mul (poly, i * 2, poly, 2, fpoly);
+      t = band_pass ? bse_complex_inv (poles[i]) : poles[i];
+      fpoly[1] = bse_complex_sub (bse_complex_div (alphac, t), alphac);
+      fpoly[0] = bse_complex_inv (bse_complex_reciprocal (t));
+      bse_cpoly_mul (poly, i * 2, poly, 2, fpoly);
     }
   for (i = 0; i <= iorder; i++)
     b[i] = poly[i].re;
-  gsl_poly_scale (iorder, a, 1.0 / b[0]);
-  gsl_poly_scale (iorder, b, 1.0 / b[0]);
+  bse_poly_scale (iorder, a, 1.0 / b[0]);
+  bse_poly_scale (iorder, b, 1.0 / b[0]);
 }
 
 static void
 filter_rp_to_z (unsigned int iorder,
-		GslComplex  *roots, /* [0..iorder-1] */
-		GslComplex  *poles,
+		BseComplex  *roots, /* [0..iorder-1] */
+		BseComplex  *poles,
 		double      *a,     /* [0..iorder] */
 		double      *b)
 {
-  GslComplex *poly = g_newa (GslComplex, iorder + 1);
+  BseComplex *poly = g_newa (BseComplex, iorder + 1);
   guint i;
   
   /* z numerator polynomial */
-  poly[0] = gsl_complex (1, 0);
+  poly[0] = bse_complex (1, 0);
   for (i = 0; i < iorder; i++)
-    gsl_cpoly_mul_reciprocal (i + 1, poly, roots[i]);
+    bse_cpoly_mul_reciprocal (i + 1, poly, roots[i]);
   for (i = 0; i <= iorder; i++)
     a[i] = poly[i].re;
 
   /* z denominator polynomial */
-  poly[0] = gsl_complex (1, 0);
+  poly[0] = bse_complex (1, 0);
   for (i = 0; i < iorder; i++)
-    gsl_cpoly_mul_reciprocal (i + 1, poly, poles[i]);
+    bse_cpoly_mul_reciprocal (i + 1, poly, poles[i]);
   for (i = 0; i <= iorder; i++)
     b[i] = poly[i].re;
 }
@@ -147,14 +146,14 @@ void
 gsl_filter_butter_rp (unsigned int iorder,
 		      double       freq, /* 0..pi */
 		      double       epsilon,
-		      GslComplex  *roots,    /* [0..iorder-1] */
-		      GslComplex  *poles)
+		      BseComplex  *roots,    /* [0..iorder-1] */
+		      BseComplex  *poles)
 {
-  double pi = GSL_PI, order = iorder;
+  double pi = PI, order = iorder;
   double beta_mul = pi / (2.0 * order);
   /* double kappa = bse_trans_freq2s (freq); */
   double kappa;
-  GslComplex root;
+  BseComplex root;
   unsigned int i;
 
   epsilon = bse_trans_zepsilon2ss (epsilon);
@@ -173,7 +172,7 @@ gsl_filter_butter_rp (unsigned int iorder,
 
   /* z numerator polynomial */
   for (i = 0; i < iorder; i++)
-    roots[i] = gsl_complex (-1, 0);
+    roots[i] = bse_complex (-1, 0);
 }
 
 
@@ -212,14 +211,14 @@ void
 gsl_filter_tscheb1_rp (unsigned int iorder,
 		       double       freq,  /* 1..pi */
 		       double       epsilon,
-		       GslComplex  *roots, /* [0..iorder-1] */
-		       GslComplex  *poles)
+		       BseComplex  *roots, /* [0..iorder-1] */
+		       BseComplex  *poles)
 {
-  double pi = GSL_PI, order = iorder;
+  double pi = PI, order = iorder;
   double alpha;
   double beta_mul = pi / (2.0 * order);
   double kappa = bse_trans_freq2s (freq);
-  GslComplex root;
+  BseComplex root;
   unsigned int i;
 
   epsilon = bse_trans_zepsilon2ss (epsilon);
@@ -238,7 +237,7 @@ gsl_filter_tscheb1_rp (unsigned int iorder,
 
   /* z numerator polynomial */
   for (i = 0; i < iorder; i++)
-    roots[i] = gsl_complex (-1, 0);
+    roots[i] = bse_complex (-1, 0);
 }
 
 
@@ -248,24 +247,24 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
 		       double       c_freq, /* 1..pi */
 		       double       steepness,
 		       double       epsilon,
-		       GslComplex  *roots,  /* [0..iorder-1] */
-		       GslComplex  *poles)
+		       BseComplex  *roots,  /* [0..iorder-1] */
+		       BseComplex  *poles)
 {
-  double pi = GSL_PI, order = iorder;
+  double pi = PI, order = iorder;
   double r_freq = c_freq * steepness;
   double kappa_c = bse_trans_freq2s (c_freq);
   double kappa_r = bse_trans_freq2s (r_freq);
   double tepsilon;
   double alpha;
   double beta_mul = pi / (2.0 * order);
-  GslComplex root;
+  BseComplex root;
   unsigned int i;
 
 #if 0
   /* triggers an internal compiler error with gcc-2.95.4 (and certain
    * combinations of optimization options)
    */
-  g_return_if_fail (c_freq * steepness < GSL_PI);
+  g_return_if_fail (c_freq * steepness < PI);
 #endif
   g_return_if_fail (steepness > 1.0);
 
@@ -281,7 +280,7 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
       
       root.re = sinh (alpha) * cos (beta);
       root.im = cosh (alpha) * sin (beta);
-      root = gsl_complex_div (gsl_complex (kappa_r, 0), root);
+      root = bse_complex_div (bse_complex (kappa_r, 0), root);
       root = bse_trans_s2z (root);
       poles[i - 1] = root;
     }
@@ -290,15 +289,15 @@ gsl_filter_tscheb2_rp (unsigned int iorder,
   for (i = 1; i <= iorder; i++)
     {
       double t = (i << 1) - 1;
-      GslComplex root = gsl_complex (0, cos (t * beta_mul));
+      BseComplex root = bse_complex (0, cos (t * beta_mul));
       
       if (fabs (root.im) > 1e-14)
 	{
-	  root = gsl_complex_div (gsl_complex (kappa_r, 0), root);
+	  root = bse_complex_div (bse_complex (kappa_r, 0), root);
 	  root = bse_trans_s2z (root);
 	}
       else
-	root = gsl_complex (-1, 0);
+	root = bse_complex (-1, 0);
       roots[i - 1] = root;
     }
 }
@@ -364,18 +363,18 @@ gsl_filter_butter_lp (unsigned int iorder,
 		      double      *a,    /* [0..iorder] */
 		      double      *b)
 {
-  GslComplex *roots = g_newa (GslComplex, iorder);
-  GslComplex *poles = g_newa (GslComplex, iorder);
+  BseComplex *roots = g_newa (BseComplex, iorder);
+  BseComplex *poles = g_newa (BseComplex, iorder);
   double norm;
   
-  g_return_if_fail (freq > 0 && freq < GSL_PI);
+  g_return_if_fail (freq > 0 && freq < PI);
 
   gsl_filter_butter_rp (iorder, freq, epsilon, roots, poles);
   filter_rp_to_z (iorder, roots, poles, a, b);
 
   /* scale maximum to 1.0 */
-  norm = gsl_poly_eval (iorder, b, 1) / gsl_poly_eval (iorder, a, 1);
-  gsl_poly_scale (iorder, a, norm);
+  norm = bse_poly_eval (iorder, b, 1) / bse_poly_eval (iorder, a, 1);
+  bse_poly_scale (iorder, a, norm);
 }
 
 /**
@@ -394,23 +393,23 @@ gsl_filter_tscheb1_lp (unsigned int iorder,
 		       double      *a,    /* [0..iorder] */
 		       double      *b)
 {
-  GslComplex *roots = g_newa (GslComplex, iorder);
-  GslComplex *poles = g_newa (GslComplex, iorder);
+  BseComplex *roots = g_newa (BseComplex, iorder);
+  BseComplex *poles = g_newa (BseComplex, iorder);
   double norm;
 
-  g_return_if_fail (freq > 0 && freq < GSL_PI);
+  g_return_if_fail (freq > 0 && freq < PI);
 
   gsl_filter_tscheb1_rp (iorder, freq, epsilon, roots, poles);
   filter_rp_to_z (iorder, roots, poles, a, b);
 
   /* scale maximum to 1.0 */
-  norm = gsl_poly_eval (iorder, b, 1) / gsl_poly_eval (iorder, a, 1);
+  norm = bse_poly_eval (iorder, b, 1) / bse_poly_eval (iorder, a, 1);
   if ((iorder & 1) == 0)      /* norm is fluctuation minimum */
     {
       epsilon = bse_trans_zepsilon2ss (epsilon);
       norm *= sqrt (1.0 / (1.0 + epsilon * epsilon));
     }
-  gsl_poly_scale (iorder, a, norm);
+  bse_poly_scale (iorder, a, norm);
 }
 
 /**
@@ -434,20 +433,20 @@ gsl_filter_tscheb2_lp (unsigned int iorder,
 		       double      *a,      /* [0..iorder] */
 		       double      *b)
 {
-  GslComplex *roots = g_newa (GslComplex, iorder);
-  GslComplex *poles = g_newa (GslComplex, iorder);
+  BseComplex *roots = g_newa (BseComplex, iorder);
+  BseComplex *poles = g_newa (BseComplex, iorder);
   double norm;
 
-  g_return_if_fail (freq > 0 && freq < GSL_PI);
-  g_return_if_fail (freq * steepness < GSL_PI);
+  g_return_if_fail (freq > 0 && freq < PI);
+  g_return_if_fail (freq * steepness < PI);
   g_return_if_fail (steepness > 1.0);
 
   gsl_filter_tscheb2_rp (iorder, freq, steepness, epsilon, roots, poles);
   filter_rp_to_z (iorder, roots, poles, a, b);
   
   /* scale maximum to 1.0 */
-  norm = gsl_poly_eval (iorder, b, 1) / gsl_poly_eval (iorder, a, 1); /* H(z=0):=1, e^(j*omega) for omega=0 => e^0==1 */
-  gsl_poly_scale (iorder, a, norm);
+  norm = bse_poly_eval (iorder, b, 1) / bse_poly_eval (iorder, a, 1); /* H(z=0):=1, e^(j*omega) for omega=0 => e^0==1 */
+  bse_poly_scale (iorder, a, norm);
 }
 
 
@@ -468,9 +467,9 @@ gsl_filter_butter_hp (unsigned int iorder,
 		      double      *a,    /* [0..iorder] */
 		      double      *b)
 {
-  g_return_if_fail (freq > 0 && freq < GSL_PI);
+  g_return_if_fail (freq > 0 && freq < PI);
 
-  freq = GSL_PI - freq;
+  freq = PI - freq;
   gsl_filter_butter_lp (iorder, freq, epsilon, a, b);
   filter_lp_invert (iorder, a, b);
 }
@@ -491,9 +490,9 @@ gsl_filter_tscheb1_hp (unsigned int iorder,
 		       double      *a,    /* [0..iorder] */
 		       double      *b)
 {
-  g_return_if_fail (freq > 0 && freq < GSL_PI);
+  g_return_if_fail (freq > 0 && freq < PI);
 
-  freq = GSL_PI - freq;
+  freq = PI - freq;
   gsl_filter_tscheb1_lp (iorder, freq, epsilon, a, b);
   filter_lp_invert (iorder, a, b);
 }
@@ -516,9 +515,9 @@ gsl_filter_tscheb2_hp   (unsigned int iorder,
 			 double      *a,      /* [0..iorder] */
 			 double      *b)
 {
-  g_return_if_fail (freq > 0 && freq < GSL_PI);
+  g_return_if_fail (freq > 0 && freq < PI);
 
-  freq = GSL_PI - freq;
+  freq = PI - freq;
   gsl_filter_tscheb2_lp (iorder, freq, steepness, epsilon, a, b);
   filter_lp_invert (iorder, a, b);
 }
@@ -544,14 +543,14 @@ gsl_filter_butter_bp (unsigned int iorder,
 		      double      *b)
 {
   unsigned int iorder2 = iorder >> 1;
-  GslComplex *roots = g_newa (GslComplex, iorder2);
-  GslComplex *poles = g_newa (GslComplex, iorder2);
+  BseComplex *roots = g_newa (BseComplex, iorder2);
+  BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
   g_return_if_fail ((iorder & 0x01) == 0);
   g_return_if_fail (freq1 > 0);
   g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < GSL_PI);
+  g_return_if_fail (freq2 < PI);
 
   theta = 2. * atan2 (1., cotan ((freq2 - freq1) * 0.5));
 
@@ -578,14 +577,14 @@ gsl_filter_tscheb1_bp (unsigned int iorder,
 		       double      *b)
 {
   unsigned int iorder2 = iorder >> 1;
-  GslComplex *roots = g_newa (GslComplex, iorder2);
-  GslComplex *poles = g_newa (GslComplex, iorder2);
+  BseComplex *roots = g_newa (BseComplex, iorder2);
+  BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
   g_return_if_fail ((iorder & 0x01) == 0);
   g_return_if_fail (freq1 > 0);
   g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < GSL_PI);
+  g_return_if_fail (freq2 < PI);
   
   theta = 2. * atan2 (1., cotan ((freq2 - freq1) * 0.5));
 
@@ -614,14 +613,14 @@ gsl_filter_tscheb2_bp (unsigned int iorder,
 		       double      *b)
 {
   unsigned int iorder2 = iorder >> 1;
-  GslComplex *roots = g_newa (GslComplex, iorder2);
-  GslComplex *poles = g_newa (GslComplex, iorder2);
+  BseComplex *roots = g_newa (BseComplex, iorder2);
+  BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
   g_return_if_fail ((iorder & 0x01) == 0);
   g_return_if_fail (freq1 > 0);
   g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < GSL_PI);
+  g_return_if_fail (freq2 < PI);
   
   theta = 2. * atan2 (1., cotan ((freq2 - freq1) * 0.5));
 
@@ -650,14 +649,14 @@ gsl_filter_butter_bs (unsigned int iorder,
 		      double      *b)
 {
   unsigned int iorder2 = iorder >> 1;
-  GslComplex *roots = g_newa (GslComplex, iorder2);
-  GslComplex *poles = g_newa (GslComplex, iorder2);
+  BseComplex *roots = g_newa (BseComplex, iorder2);
+  BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
   g_return_if_fail ((iorder & 0x01) == 0);
   g_return_if_fail (freq1 > 0);
   g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < GSL_PI);
+  g_return_if_fail (freq2 < PI);
 
   theta = 2. * atan2 (1., tan ((freq2 - freq1) * 0.5));
 
@@ -684,14 +683,14 @@ gsl_filter_tscheb1_bs (unsigned int iorder,
 		       double      *b)
 {
   unsigned int iorder2 = iorder >> 1;
-  GslComplex *roots = g_newa (GslComplex, iorder2);
-  GslComplex *poles = g_newa (GslComplex, iorder2);
+  BseComplex *roots = g_newa (BseComplex, iorder2);
+  BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
   g_return_if_fail ((iorder & 0x01) == 0);
   g_return_if_fail (freq1 > 0);
   g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < GSL_PI);
+  g_return_if_fail (freq2 < PI);
   
   theta = 2. * atan2 (1., tan ((freq2 - freq1) * 0.5));
 
@@ -720,14 +719,14 @@ gsl_filter_tscheb2_bs (unsigned int iorder,
 		       double      *b)
 {
   unsigned int iorder2 = iorder >> 1;
-  GslComplex *roots = g_newa (GslComplex, iorder2);
-  GslComplex *poles = g_newa (GslComplex, iorder2);
+  BseComplex *roots = g_newa (BseComplex, iorder2);
+  BseComplex *poles = g_newa (BseComplex, iorder2);
   double theta;
 
   g_return_if_fail ((iorder & 0x01) == 0);
   g_return_if_fail (freq1 > 0);
   g_return_if_fail (freq1 < freq2);
-  g_return_if_fail (freq2 < GSL_PI);
+  g_return_if_fail (freq2 < PI);
   
   theta = 2. * atan2 (1., tan ((freq2 - freq1) * 0.5));
 
@@ -758,9 +757,9 @@ tschebyscheff_poly (unsigned int degree,
       
       v[0] = 0;
       tschebyscheff_poly (degree - 1, v + 1);
-      gsl_poly_scale (degree - 1, v + 1, 2);
+      bse_poly_scale (degree - 1, v + 1, 2);
       
-      gsl_poly_sub (degree, v, u);
+      bse_poly_sub (degree, v, u);
     }
 }
 
@@ -771,8 +770,8 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
 			 double      *a,    /* [0..iorder] */
 			 double      *b)
 {
-  GslComplex *roots = g_newa (GslComplex, iorder * 2), *r;
-  GslComplex *zf = g_newa (GslComplex, 1 + iorder);
+  BseComplex *roots = g_newa (BseComplex, iorder * 2), *r;
+  BseComplex *zf = g_newa (BseComplex, 1 + iorder);
   double *vk = g_newa (double, 1 + iorder), norm;
   double *q = g_newa (double, 2 * (1 + iorder));
   double O = bse_trans_freq2s (zomega);
@@ -782,19 +781,19 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
   tschebyscheff_poly (iorder, vk);
   
   /* calc q=1+e^2*Vk()^2 */
-  gsl_poly_mul (q, iorder >> 1, vk, iorder >> 1, vk);
+  bse_poly_mul (q, iorder >> 1, vk, iorder >> 1, vk);
   iorder *= 2;
-  gsl_poly_scale (iorder, q, epsilon * epsilon);
+  bse_poly_scale (iorder, q, epsilon * epsilon);
   q[0] += 1;
 
   /* find roots, fix roots by 1/(jO) */
-  gsl_poly_complex_roots (iorder, q, roots);
+  bse_poly_complex_roots (iorder, q, roots);
   for (i = 0; i < iorder; i++)
-    roots[i] = gsl_complex_mul (roots[i], gsl_complex (0, O));
+    roots[i] = bse_complex_mul (roots[i], bse_complex (0, O));
   
   /* choose roots from the left half-plane */
   if (0)
-    g_print ("zhqr-root:\n%s\n", gsl_complex_list (iorder, roots, "  "));
+    g_print ("zhqr-root:\n%s\n", bse_complex_list (iorder, roots, "  "));
   r = roots;
   for (i = 0; i < iorder; i++)
     if (roots[i].re < 0)
@@ -817,7 +816,7 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
     roots[i] = bse_trans_s2z (roots[i]);
   
   /* z denominator polynomial */
-  gsl_cpoly_from_roots (iorder, zf, roots);
+  bse_cpoly_from_roots (iorder, zf, roots);
   for (i = 0; i <= iorder; i++)
     b[i] = zf[i].re;
   
@@ -827,18 +826,18 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
       roots[i].re = -1;
       roots[i].im = 0;
     }
-  gsl_cpoly_from_roots (iorder, zf, roots);
+  bse_cpoly_from_roots (iorder, zf, roots);
   for (i = 0; i <= iorder; i++)
     a[i] = zf[i].re;
   
   /* scale for b[0]==1.0 */
-  gsl_poly_scale (iorder, b, 1.0 / b[0]);
+  bse_poly_scale (iorder, b, 1.0 / b[0]);
 
   /* scale maximum to 1.0 */
-  norm = gsl_poly_eval (iorder, a, 1) / gsl_poly_eval (iorder, b, 1);
+  norm = bse_poly_eval (iorder, a, 1) / bse_poly_eval (iorder, b, 1);
   if ((iorder & 0x01) == 0)	/* norm is fluctuation minimum */
     norm /= sqrt (1.0 / (1.0 + epsilon * epsilon));
-  gsl_poly_scale (iorder, a, 1.0 / norm);
+  bse_poly_scale (iorder, a, 1.0 / norm);
 }
 #endif
 
@@ -852,7 +851,7 @@ gsl_blackman_window (double x)
     return 0;
   if (x > 1)
     return 0;
-  return 0.42 - 0.5 * cos (GSL_PI * x * 2) + 0.08 * cos (4 * GSL_PI * x);
+  return 0.42 - 0.5 * cos (PI * x * 2) + 0.08 * cos (4 * PI * x);
 }
 
 /**
@@ -893,7 +892,7 @@ gsl_filter_fir_approx (unsigned int  iorder,
   
   fft_in = g_newa (double, fft_size*2);
   fft_out = fft_in+fft_size;
-  ffact = 2.0 * GSL_PI / (double)fft_size;
+  ffact = 2.0 * PI / (double)fft_size;
   
   for (i = 0; i <= fft_size / 2; i++)
     {
@@ -1100,7 +1099,7 @@ gsl_biquad_config_setup (GslBiquadConfig *c,
   c->f_fn = f_fn;			/* nyquist relative (0=DC, 1=nyquist) */
   c->gain = gain;
   c->quality = quality;			/* FIXME */
-  c->k = tan (c->f_fn * GSL_PI / 2.);
+  c->k = tan (c->f_fn * PI / 2.);
   c->v = pow (10, c->gain / 20.);	/* v=10^(gain[dB]/20) */
   c->dirty = TRUE;
   c->approx_values = FALSE;
@@ -1115,7 +1114,7 @@ gsl_biquad_config_approx_freq (GslBiquadConfig *c,
   if (c->type == GSL_BIQUAD_RESONANT_HIGHPASS)
     f_fn = 1.0 - f_fn;
   c->f_fn = f_fn;                       /* nyquist relative (0=DC, 1=nyquist) */
-  c->k = tan (c->f_fn * GSL_PI / 2.);	/* FIXME */
+  c->k = tan (c->f_fn * PI / 2.);	/* FIXME */
   c->dirty = TRUE;
   c->approx_values = TRUE;
 }
@@ -1125,7 +1124,7 @@ gsl_biquad_config_approx_gain (GslBiquadConfig *c,
 			       gfloat           gain)
 {
   c->gain = gain;
-  c->v = gsl_approx_exp2 (c->gain * GSL_LOG2POW20_10);
+  c->v = bse_approx_exp2 (c->gain * BSE_LOG2POW20_10);
   c->dirty = TRUE;
   c->approx_values = TRUE;
 }
@@ -1150,7 +1149,7 @@ biquad_lpreso (GslBiquadConfig *c,
       r2p_norm = kk * sqrt2_reso;
       break;
     case GSL_BIQUAD_NORMALIZE_PEAK_GAIN:
-      r2p_norm = (GSL_SQRT2 * sqrt2_reso - 1.0) / (sqrt2_reso * sqrt2_reso - 0.5);
+      r2p_norm = (BSE_SQRT2 * sqrt2_reso - 1.0) / (sqrt2_reso * sqrt2_reso - 0.5);
       r2p_norm = r2p_norm > 1 ? kk * sqrt2_reso : kk * r2p_norm * sqrt2_reso;
       break;
     }
@@ -1253,13 +1252,13 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
     f_fn = 1.0 - f_fn;
 
   v = pow (10, gain / 20.);		/* v=10^(gain[dB]/20) */
-  k = tan (f_fn * GSL_PI / 2.);
+  k = tan (f_fn * PI / 2.);
   kk = k * k;
   sqrt2_reso = 1 / v;
   denominator = 1 + (k + sqrt2_reso) * k;
 
   if (0)
-    g_printerr ("BIQUAD-lp: R=%f\n", GSL_SQRT2 * sqrt2_reso);
+    g_printerr ("BIQUAD-lp: R=%f\n", BSE_SQRT2 * sqrt2_reso);
 
   switch (normalize)
     {
@@ -1270,7 +1269,7 @@ gsl_biquad_lphp_reso (GslBiquadFilter   *c,
       r2p_norm = kk * sqrt2_reso;
       break;
     case GSL_BIQUAD_NORMALIZE_PEAK_GAIN:
-      r2p_norm = (GSL_SQRT2 * sqrt2_reso - 1.0) / (sqrt2_reso * sqrt2_reso - 0.5);
+      r2p_norm = (BSE_SQRT2 * sqrt2_reso - 1.0) / (sqrt2_reso * sqrt2_reso - 0.5);
       g_print ("BIQUAD-lp: (peak-gain) r2p_norm = %f \n", r2p_norm);
       r2p_norm = r2p_norm > 1 ? kk * sqrt2_reso : kk * r2p_norm * sqrt2_reso;
       break;
@@ -1345,7 +1344,7 @@ gsl_filter_sine_scan (guint order,
   g_return_val_if_fail (order > 0, 0.0);
   g_return_val_if_fail (a != NULL, 0.0);
   g_return_val_if_fail (b != NULL, 0.0);
-  g_return_val_if_fail (freq > 0 && freq < GSL_PI, 0.0);
+  g_return_val_if_fail (freq > 0 && freq < PI, 0.0);
   g_return_val_if_fail (n_values > 0, 0.0);
   
   filter_state = g_newa (double, (order + 1) * 4);

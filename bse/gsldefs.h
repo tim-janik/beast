@@ -30,7 +30,6 @@ G_BEGIN_DECLS
 
 /* --- forward decls --- */
 typedef struct _GslMagic		GslMagic;
-typedef struct _GslComplex		GslComplex;
 typedef struct _GslDataCache		GslDataCache;
 typedef struct _GslDataHandle		GslDataHandle;
 typedef struct _GslDataHandleFuncs	GslDataHandleFuncs;

@@ -1,4 +1,5 @@
 FIXMES:	(release-critical)
+- mv bse_float_sign to *ieee754.h
 - gslmath->bsemath
 - sequencer: dtoull
 - midi csynth does not work anymore (anable multi-voices like in tracks?)

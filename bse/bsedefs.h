@@ -26,7 +26,6 @@
 #include <sfi/sfi.h>
 #include <sfi/sfistore.h>	// FIXME
 #include <sfi/sficomwire.h>	// FIXME
-#include <math.h>
 #include <bse/bseconfig.h>
 
 G_BEGIN_DECLS

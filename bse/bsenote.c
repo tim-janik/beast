@@ -17,7 +17,7 @@
  */
 #include "bsenote.h"
 #include "bseutils.h"
-#include "gslieee754.h"
+#include "bseieee754.h"
 #include <string.h>
 
 
@@ -35,8 +35,8 @@ bse_note_from_freq (gdouble freq)
   gint note;
 
   freq /= BSE_KAMMER_FREQUENCY_f;
-  d = log (freq) / BSE_LN_2_POW_1_DIV_12_d;
-  note = gsl_ftoi (BSE_KAMMER_NOTE + d);
+  d = log (freq) / BSE_LN_2_POW_1_DIV_12;
+  note = bse_ftoi (BSE_KAMMER_NOTE + d);
 
   return note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE ? note : BSE_NOTE_VOID;
 }
@@ -48,8 +48,8 @@ bse_note_from_freq_bounded (gdouble freq)
   gint note;
 
   freq /= BSE_KAMMER_FREQUENCY_f;
-  d = log (freq) / BSE_LN_2_POW_1_DIV_12_d;
-  note = gsl_ftoi (BSE_KAMMER_NOTE + d);
+  d = log (freq) / BSE_LN_2_POW_1_DIV_12;
+  note = bse_ftoi (BSE_KAMMER_NOTE + d);
 
   return CLAMP (note, BSE_MIN_NOTE, BSE_MAX_NOTE);
 }
@@ -63,7 +63,7 @@ bse_note_fine_tune_from_note_freq (gint    note,
   
   freq /= BSE_KAMMER_FREQUENCY_f * BSE_SEMITONE_FACTOR (note);
   d = log (freq) / BSE_LN_2_POW_1_DIV_1200_d;
-  fine_tune = gsl_ftoi (d);
+  fine_tune = bse_ftoi (d);
 
   return CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
 }

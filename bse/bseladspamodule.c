@@ -19,7 +19,7 @@
 
 #include "bsecategories.h"
 #include "bseengine.h"
-#include "gslsignal.h"
+#include "bsemathsignal.h"
 #include <string.h>
 
 
@@ -409,7 +409,7 @@ ladspa_module_process (BseModule *module,
 	guint j;
 	if (bli->aports[i].rate_relative)
 	  for (j = 0; j < n_values; j++)
-	    ibuffer[j] = srcbuf[j] * GSL_SIGNAL_TO_FREQ_FACTOR;
+	    ibuffer[j] = srcbuf[j] * BSE_SIGNAL_TO_FREQ_FACTOR;
 	else
 	  memcpy (ibuffer, srcbuf, sizeof (ibuffer[0]) * n_values);
 	nis++;
@@ -423,7 +423,7 @@ ladspa_module_process (BseModule *module,
 	gfloat *obuf = BSE_MODULE_OBUFFER (module, nos);
 	guint j;
 	for (j = 0; j < n_values; j++)
-	  obuf[j] *= GSL_SIGNAL_FROM_FREQ_FACTOR;
+	  obuf[j] *= BSE_SIGNAL_FROM_FREQ_FACTOR;
 	nos++;
       }
 }
