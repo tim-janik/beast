@@ -1,5 +1,8 @@
 Fri Dec  5 00:28:12 2003  Tim Janik  <timj@gtk.org>
 
+	* beast-gtk/bstrackview.[hc]: started new SynthNet view, based on a
+	user customizable rack view and record parasites.
+
 	* beast-gtk/bstrackeditor.[hc]: disabled code depending on BstRackItem.
 
 	* beast-gtk/bstracktable.[hc]: disabled code depending on BstRackItem.
