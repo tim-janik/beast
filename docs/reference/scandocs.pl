@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl -W
 # Stupid doc scanner
 # Copyright (C) 2001 Tim Janik
 #
@@ -20,26 +20,10 @@ while ($_ = $ARGV[0], defined $_ && /^-/) {
     if (/^--name$/) { $pname = shift; }
     elsif (/^--blurb$/) { $pblurb = shift; }
     elsif (/^--package$/) { $package = shift; }
-    elsif (/^--html/) { $outmode = 'html'; }
-    elsif (/^--man/) { $outmode = 'man'; }
 }
 
 # construct tmpfile name
-my $tmpfile = "$0";
-$tmpfile =~ s@[/.]@_@g;
-$tmpfile = "/tmp/$tmpfile-tmp.$$";
-
-sub array_find_str {
-    my $a = shift;
-    my $s = shift;
-    my $i;
-    for ($i = 0; $i <= $#$a; $i++) {
-	if ($$a[$i] eq $s) {
-	    return $i;
-	}
-    }
-    return -1;
-}
+my $tmpfile = construct_tmpname($0);
 
 # docs
 my @records = ();
@@ -159,32 +143,30 @@ while (<>) {
     }
 }
 
-sub MAX { my $a = shift; my $b = shift; return $a > $b ? $a : $b; }
-sub space { my $i = MAX (shift, 0); my $str = ""; while ($i--) { $str = $str . " "; } return $str; }
-sub man_print_syntax {
+sub tags_print_syntax {
     my $rec = shift;
     my $var_names = $rec->{var_names};
     my $var_blurbs = $rec->{var_blurbs};
     my $returns = $rec->{returns};
     my $i;
 
-    print '\fB'.$rec->{name}.'\fP (';
+    print '@STRONG '.$rec->{name}.'@ (';
     for ($i = 0; $i <= $#$var_names; $i++) {
-	print '\fI'.$$var_names[$i].'\fP';
+	print '@EMPH '.$$var_names[$i].'@';
 	print ", " if $i < $#$var_names;
     }
-    print ");\n";
+    print ");\n\n";
 }
-sub man_highlight {
+sub tags_highlight {
     my $t = shift;
-    $t =~ s/@([A-Za-z0-9_-]+)/\\fI$1\\fP/g;
-    $t =~ s/%([A-Za-z0-9_-]+)/\\fI$1\\fP/g;
-    $t =~ s/#([A-Za-z0-9_-]+)/\\fB$1\\fP/g;
-    # $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/\\fB$1\\fP/g;
-    $t =~ s/([A-Za-z0-9_-]+\([+\/%&|^~!A-Za-z0-9\s,*_-]*\))/\\fB$1\\fP/g;
+    $t =~ s/@([A-Za-z0-9_-]+)/\@EMPH $1@/g;
+    $t =~ s/%([A-Za-z0-9_-]+)/\@EMPH $1@/g;
+    $t =~ s/#([A-Za-z0-9_-]+)/\@STRONG $1@/g;
+    # $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/<strong>$1<\/strong>/g;
+    $t =~ s/([A-Za-z0-9_-]+\([+\/%&|^~!A-Za-z0-9\s,*_-]*\))/\@STRONG $1@/g;
     return $t;
 }
-sub man_print_description {
+sub tags_print_description {
     my $rec = shift;
     my $var_types = $rec->{var_types};
     my $var_names = $rec->{var_names};
@@ -193,135 +175,84 @@ sub man_print_description {
     my $i;
     my $twidth = 0;
     my $nwidth = 0;
-
-    print ".SS ";
-    man_print_syntax ($rec);
-    print ".PD 0\n";
 
     for ($i = 0; $i <= $#$var_names; $i++) {
 	$twidth = MAX ($twidth, length ($$var_types[$i])) if (defined $$var_types[$i]);
 	$nwidth = MAX ($nwidth, length ($$var_names[$i]));
     }
+
     if ($#$returns >= 0) {
 	$nwidth = MAX ($nwidth, MAX (0, length ("RETURNS:") - $twidth));
     }
 
+    print "\@DOC-VARIABLE-DEFINITIONS\@\n";
+    print "parspace = " . ($twidth + 3 + $nwidth) . "\n\n";
+
     for ($i = 0; $i <= $#$var_names; $i++) {
 	my $t = $$var_types[$i];
-	$t = "" if (!defined $t);
+	$t = "" unless defined $t;
 	$t .= space ($twidth - length ($t));
+	my $tr = $t;
 	$t =~ s/\s/\\ /g;
-	printf('.IP \fI%s\ %s\fP ' . ($twidth + 3 + $nwidth) . "\n%s\n",
-	       $t, $$var_names[$i],
-	       man_highlight ($$var_blurbs[$i]));
+
+	print "\@DOC-VARIABLE-DEFINITIONS\@\n";
+	print "type = $t\n";
+	print "typeraw = $tr\n";
+
+	print "\@DOC-PARAMETER\@\n";
+
+	printf ("%s\n", $$var_names[$i]);
+
+	print "\@DOC-PARDESC\@\n";
+	printf ("%s\n\n", tags_highlight ($$var_blurbs[$i]));
     }
-    for my $r (@$returns) {
-	printf ('.IP \fI%s\fP ' . ($twidth + 3 + $nwidth) . "\n%s\n", "RETURNS:", man_highlight ($r));
-    }
-    print ".PD 1\n.PP\n" . man_highlight ($rec->{text}) . "\n.PD\n";
-}
 
-sub html_print_syntax {
-    my $rec = shift;
-    my $var_names = $rec->{var_names};
-    my $var_blurbs = $rec->{var_blurbs};
-    my $returns = $rec->{returns};
-    my $i;
+    print "\@DOC-VARIABLE-DEFINITIONS\@\n";
+    print "retspace = " . ($twidth + 3 + $nwidth) . "\n\n";
 
-    print '<strong>'.$rec->{name}.' (</strong>';
-    for ($i = 0; $i <= $#$var_names; $i++) {
-	print '<u>'.$$var_names[$i].'</u>';
-	print ", " if $i < $#$var_names;
-    }
-    print "<strong>)</strong>;\n";
-}
-sub html_highlight {
-    my $t = shift;
-    $t =~ s/@([A-Za-z0-9_-]+)/<u>$1<\/u>/g;
-    $t =~ s/%([A-Za-z0-9_-]+)/<u>$1<\/u>/g;
-    $t =~ s/#([A-Za-z0-9_-]+)/<strong>$1<\/strong>/g;
-    # $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/<strong>$1<\/strong>/g;
-    $t =~ s/([A-Za-z0-9_-]+\([+\/%&|^~!A-Za-z0-9\s,*_-]*\))/<strong>$1<\/strong>/g;
-    return $t;
-}
-sub html_print_description {
-    my $rec = shift;
-    my $var_types = $rec->{var_types};
-    my $var_names = $rec->{var_names};
-    my $var_blurbs = $rec->{var_blurbs};
-    my $returns = $rec->{returns};
-    my $i;
-    my $twidth = 0;
-    my $nwidth = 0;
-
-    print "<blockquote>\n";
-    html_print_syntax ($rec);
-
-    if (scalar(@$var_names) + scalar(@$returns) > 0) {
-	print "<blockquote>\n";
-	print "<table border=0 summary=\" \">\n";
-	for ($i = 0; $i <= $#$var_names; $i++) {
-	    my $t = $$var_types[$i];
-	    $t = "" if (!defined $t);
-	    printf("<tr><td><u>%s</u><td><u>%s</u><td>%s\n",
-	    $t, $$var_names[$i],
-	    html_highlight ($$var_blurbs[$i]));
-	}
+    if (@$returns) {
 	for my $r (@$returns) {
-	    printf ("<tr><td colspan=2><u>%s</u><td>%s\n", "RETURNS:", html_highlight ($r));
+	    print "\@DOC-RETURNS\@\n";
+	    printf ("%s\n", tags_highlight ($r));
 	}
-	print "</table>\n";
-	print "</blockquote>\n";
     }
-    print "<blockquote>\n" . html_highlight ($rec->{text}) . "\n</blockquote>\n</blockquote>\n";
+    
+    print "\n";
+
+    print "\@DOC-DESCRIPTION@\n" . tags_highlight ($rec->{text}) . "\n";
 }
 
 my %test_hash = ();
 my @dups = ();
 
-if ($outmode eq 'man') {
-#     .TH PRINTF "1" "July 2001" "GNU sh-utils 2.0.11" FSF
-    printf(".TH $pname 3 \"%s\" \"$package\" \n".
-	   ".SH NAME\n".
-	   "$pname \\- $pblurb\n".
-	   ".SH SYNOPSIS\n",
-	   strftime ("%02d %b %Y", localtime ()));
-    for my $rec (@records) {
-	man_print_syntax ($rec);
-	print ".br\n";
-	push (@dups, $rec->{name}) if (defined $test_hash{$rec->{name}});
-	$test_hash{$rec->{name}} = 1;
-    }
-    printf('.SH DESCRIPTION'."\n");
-    for my $rec (@records) {
-	man_print_description ($rec);
-    }
-    print "\n";
-} elsif ($outmode eq 'html') {
-    print "<html>\n<head>\n";
-    printf("<title>$package: $pname</title>\n</head>\n".
-           '<body text="#000000" bgcolor="#ffffff" link="#cc0000" alink="#cc0000" vlink="#990000">'.
-	   "\n<h0>$pname &nbsp &nbsp - &nbsp %s &nbsp - &nbsp $package </h0>\n".
-	   "\n<h1>NAME</h1>\n".
-	   "<blockquote>$pname - $pblurb</blockquote>\n".
-	   "<h1>SYNOPSIS</h1>\n",
-	   strftime ("%02d %b %Y", localtime ()));
-    print "<blockquote>\n";
-    for my $rec (@records) {
-	html_print_syntax ($rec);
-	print "<br>\n";
-	push (@dups, $rec->{name}) if (defined $test_hash{$rec->{name}});
-	$test_hash{$rec->{name}} = 1;
-    }
-    print "</blockquote>\n";
-    printf('<h1>DESCRIPTION</h1>'."\n");
-    for my $rec (@records) {
-	html_print_description ($rec);
-    }
-    print "\n";
-    print "</body>\n</html>\n";
-} else {
-  die "Shite, don't know how to generate a $outmode!";
+my $tname = lc($pname);
+$tname =~ tr/A-Za-z0-9-/_/c;
+
+print "\@DOC-VARIABLE-DEFINITIONS\@\n";
+print "name    = $pname\n";
+print "blurb   = $pblurb\n";
+print "package = $package\n";
+print "date    = " . strftime ("%02d %b %Y", localtime) . "\n";
+print "image   = $tname\n";
+print "\n";
+
+print "\@DOC-TITLE\@\n";
+print "$pname\n\n";
+
+print "\@DOC-HEAD\@\n";
+print "$pname " . strftime ("%02d %b %Y", localtime) . " $package\n\n";
+
+print "\@DOC-NAME\@\n";
+print "$pname - $pblurb\n\n";
+
+for my $rec (@records) {
+    print "\@DOC-SYNOPSIS\@\n";
+
+    tags_print_syntax ($rec);
+    tags_print_description ($rec);
+
+    push (@dups, $rec->{name}) if (defined $test_hash{$rec->{name}});
+    $test_hash{$rec->{name}} = 1;
 }
 
 # provide feedback
@@ -335,3 +266,44 @@ for my $rec (@records) {
 for (@dups) {
     print STDERR "WARNING: duplicate description for \`$_'\n";
 }
+
+sub construct_tmpname {
+    my $tmpfile = shift;
+
+    $tmpfile =~ tr/A-Za-z0-9/_/c;
+    $tmpfile = "/tmp/$tmpfile-tmp.$$";
+
+    return $tmpfile;
+}
+
+sub array_find_str {
+    my $a = shift;
+    my $s = shift;
+    my $i;
+    for ($i = 0; $i <= $#$a; $i++) {
+	if ($$a[$i] eq $s) {
+	    return $i;
+	}
+    }
+    return -1;
+}
+
+sub MAX {
+    my ($a, $b) = @_;
+
+    return $a > $b ? $a : $b;
+}
+
+sub space {
+    my $i = MAX (shift, 0);
+    
+    my $str = "";
+    
+    while ($i--) {
+	$str = $str . " ";
+    }
+    
+    return $str;
+}
+
+# vim: ts=8 sw=4
