@@ -75,8 +75,8 @@ void		bse_wave_add_chunk_with_locator	(BseWave	*wave,
 						 const gchar	*file_name,
 						 const gchar	*wave_name);
 GslWaveChunk*   bse_wave_lookup_chunk           (BseWave        *wave,
-						 gfloat		 osc_freq,
-						 gfloat		 mix_freq);
+						 gfloat		 mix_freq,
+						 gfloat		 osc_freq);
 void            bse_wave_remove_chunk           (BseWave        *wave,
 						 GslWaveChunk   *wchunk);
 BseErrorType	bse_wave_load_wave_file		(BseWave	*wave,

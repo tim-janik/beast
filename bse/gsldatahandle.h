@@ -32,9 +32,11 @@ G_BEGIN_DECLS
 
 /* --- typedefs & structures --- */
 typedef struct {
-  GslLong	n_values;
   guint		n_channels;
   guint		bit_depth;
+  gfloat        mix_freq;
+  gfloat        osc_freq;
+  GslLong	n_values;
 } GslDataHandleSetup;
 struct _GslDataHandle
 {
@@ -85,6 +87,8 @@ GslLong		  gsl_data_handle_length	(GslDataHandle	  *data_handle);
 		                                 gsl_data_handle_length (dh)
 guint		  gsl_data_handle_n_channels	(GslDataHandle	  *data_handle);
 guint		  gsl_data_handle_bit_depth	(GslDataHandle	  *data_handle);
+gfloat		  gsl_data_handle_mix_freq	(GslDataHandle	  *data_handle);
+gfloat		  gsl_data_handle_osc_freq	(GslDataHandle	  *data_handle);
 const gchar*	  gsl_data_handle_name		(GslDataHandle	  *data_handle);
 GslLong		  gsl_data_handle_read		(GslDataHandle	  *data_handle,
 						 GslLong	   value_offset,
@@ -98,13 +102,15 @@ GslDataHandle*	  gsl_data_handle_new_crop	(GslDataHandle	  *src_handle,
 						 GslLong	   n_tail_cut);
 GslDataHandle*	  gsl_data_handle_new_reverse	(GslDataHandle	  *src_handle);
 GslDataHandle*	  gsl_data_handle_new_insert	(GslDataHandle	  *src_handle,
-						 guint             paste_bit_depth,
+						 guint             pasted_bit_depth,
 						 GslLong	   insertion_offset,
 						 GslLong	   n_paste_values,
 						 const gfloat	  *paste_values,
 						 void            (*free) (gpointer values));
 GslDataHandle*	  gsl_data_handle_new_mem	(guint		   n_channels,
 						 guint             bit_depth,
+                                                 gfloat            mix_freq,
+                                                 gfloat            osc_freq,
 						 GslLong	   n_values,
 						 const gfloat	  *values,
 						 void            (*free) (gpointer values));
@@ -135,12 +141,16 @@ GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 						 guint		   n_channels,
 						 GslWaveFormatType format,
 						 guint		   byte_order,
+                                                 gfloat            mix_freq,
+                                                 gfloat            osc_freq,
 						 GslLong	   byte_offset,
 						 GslLong	   n_values);
 GslDataHandle*	  gsl_wave_handle_new_zoffset	(const gchar	  *file_name,
 						 guint		   n_channels,
 						 GslWaveFormatType format,
 						 guint		   byte_order,
+                                                 gfloat            mix_freq,
+                                                 gfloat            osc_freq,
 						 GslLong	   byte_offset,
 						 GslLong	   byte_size);
 guint		  gsl_wave_format_bit_depth	(GslWaveFormatType format);

@@ -80,8 +80,9 @@ struct _BseObjectClass
 						 const gchar	*uname);
   void			(*store_private)	(BseObject	*object,
 						 BseStorage	*storage);
-  BseTokenType		(*restore_private)	(BseObject	*object,
-						 BseStorage	*storage);
+  SfiTokenType		(*restore_private)	(BseObject	*object,
+						 BseStorage	*storage,
+                                                 GScanner       *scanner);
   void			(*unlocked)		(BseObject	*object);
   BseIcon*		(*get_icon)		(BseObject	*object);
 };

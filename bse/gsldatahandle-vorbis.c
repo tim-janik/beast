@@ -38,6 +38,7 @@ typedef struct {
   GslDataHandle dhandle;
 
   guint    stream;
+  gfloat   osc_freq;
   guint    n_streams;
   guint    rfile_byte_offset;
   guint    rfile_byte_length : 31;
@@ -211,8 +212,10 @@ dh_vorbis_open (GslDataHandle      *data_handle,
   if (n > 0 && vi && vi->channels && ov_pcm_seek (&vhandle->ofile, vhandle->soffset) >= 0)
     {
       setup->n_channels = vi->channels;
+      setup->mix_freq = vi->rate;
       setup->n_values = n * setup->n_channels;
       setup->bit_depth = 24;
+      setup->osc_freq = vhandle->osc_freq;
     }
   else
     {
@@ -377,6 +380,7 @@ static GslDataHandleFuncs dh_vorbis_vtable = {
 static GslDataHandle*
 gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
                                     guint        lbitstream,
+                                    gfloat       osc_freq,
                                     gboolean     add_zoffset,
                                     guint        byte_offset,
                                     guint        byte_size)
@@ -390,6 +394,7 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
       vhandle->dhandle.vtable = &dh_vorbis_vtable;
       vhandle->n_streams = 0;
       vhandle->stream = lbitstream;
+      vhandle->osc_freq = osc_freq;
       vhandle->rfile_byte_offset = byte_offset;
       vhandle->rfile_add_zoffset = add_zoffset != FALSE;
       vhandle->rfile_byte_length = byte_size;
@@ -417,15 +422,17 @@ gsl_data_handle_new_ogg_vorbis_any (const gchar *file_name,
 
 GslDataHandle*
 gsl_data_handle_new_ogg_vorbis_muxed (const gchar *file_name,
-                                      guint        lbitstream)
+                                      guint        lbitstream,
+                                      gfloat       osc_freq)
 {
   g_return_val_if_fail (file_name != NULL, NULL);
 
-  return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, FALSE, 0, 0);
+  return gsl_data_handle_new_ogg_vorbis_any (file_name, lbitstream, osc_freq, FALSE, 0, 0);
 }
 
 GslDataHandle*
 gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
+                                        gfloat       osc_freq,
                                         GslLong      byte_offset,
                                         GslLong      byte_size)
 {
@@ -433,5 +440,5 @@ gsl_data_handle_new_ogg_vorbis_zoffset (const gchar *file_name,
   g_return_val_if_fail (byte_offset >= 0, NULL);
   g_return_val_if_fail (byte_size > 0, NULL);
 
-  return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, TRUE, byte_offset, byte_size);
+  return gsl_data_handle_new_ogg_vorbis_any (file_name, 0, osc_freq, TRUE, byte_offset, byte_size);
 }

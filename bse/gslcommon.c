@@ -180,9 +180,9 @@ gsl_byte_order_to_string (guint byte_order)
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
 
   if (byte_order == G_LITTLE_ENDIAN)
-    return "little_endian";
+    return "little-endian";
   if (byte_order == G_BIG_ENDIAN)
-    return "big_endian";
+    return "big-endian";
 
   return NULL;
 }

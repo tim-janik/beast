@@ -66,8 +66,9 @@ static BseProxySeq*   bse_track_list_proxies	(BseItem        	*item,
 						 GParamSpec     	*pspec);
 static void	      bse_track_store_private	(BseObject		*object,
 						 BseStorage		*storage);
-static BseTokenType   bse_track_restore_private	(BseObject		*object,
-						 BseStorage		*storage);
+static SfiTokenType   bse_track_restore_private	(BseObject		*object,
+						 BseStorage		*storage,
+                                                 GScanner               *scanner);
 
 
 /* --- variables --- */
@@ -777,12 +778,12 @@ part_link_resolved (gpointer        data,
     }
 }
 
-static BseTokenType
+static SfiTokenType
 bse_track_restore_private (BseObject  *object,
-			   BseStorage *storage)
+			   BseStorage *storage,
+                           GScanner   *scanner)
 {
   BseTrack *self = BSE_TRACK (object);
-  GScanner *scanner = storage->scanner;
 
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
       bse_string_equals ("insert-part", scanner->next_value.v_identifier))
@@ -801,5 +802,5 @@ bse_track_restore_private (BseObject  *object,
       return G_TOKEN_NONE;
     }
   else /* chain parent class' handler */
-    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
 }

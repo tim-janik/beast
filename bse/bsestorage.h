@@ -8,15 +8,15 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#ifndef	__BSE_STORAGE_H__
-#define	__BSE_STORAGE_H__
+#ifndef __BSE_STORAGE_H__
+#define __BSE_STORAGE_H__
 
 #include <bse/bseobject.h>
 #include <bse/gsldefs.h>
@@ -33,56 +33,51 @@ G_BEGIN_DECLS
 
 
 /* --- macros --- */
-#define	BSE_STORAGE_READABLE(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_READABLE) != 0)
-#define	BSE_STORAGE_WRITABLE(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_WRITABLE) != 0)
-#define	BSE_STORAGE_NEEDS_BREAK(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_NEEDS_BREAK) != 0)
-#define	BSE_STORAGE_AT_BOL(st)		((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_AT_BOL) != 0)
-#define	BSE_STORAGE_PUT_DEFAULTS(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_PUT_DEFAULTS) != 0)
-#define	BSE_STORAGE_SELF_CONTAINED(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_SELF_CONTAINED) != 0)
-
-
-/* --- BseStorage flags --- */
-typedef enum	/*< skip >*/
+#define BSE_STORAGE_VERSION(self, vmaj, min, vmic)      ( /* whether file uses >=vARGS features */ \
+  BSE_VERSION_CMP (self->major_version, self->minor_version, self->micro_version, vmaj, min, vmic) >= 0)
+#define BSE_STORAGE_COMPAT(self, vmaj, min, vmic)       ( /* whether file needs <=vARGS compat code */ \
+  BSE_VERSION_CMP (self->major_version, self->minor_version, self->micro_version, vmaj, min, vmic) <= 0)
+#define BSE_STORAGE_SELF_CONTAINED(st)  ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SELF_CONTAINED) != 0)
+#define BSE_STORAGE_SKIP_DEFAULTS(st)   ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SKIP_DEFAULTS) != 0)
+#define BSE_STORAGE_MODE_MASK           (BSE_STORAGE_SKIP_DEFAULTS | BSE_STORAGE_SELF_CONTAINED)
+typedef enum    /*< skip >*/
 {
-  BSE_STORAGE_FLAG_READABLE	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
-  BSE_STORAGE_FLAG_WRITABLE	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
-  BSE_STORAGE_FLAG_NEEDS_BREAK	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2),
-  BSE_STORAGE_FLAG_AT_BOL	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 3),
-  BSE_STORAGE_FLAG_PUT_DEFAULTS	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 4),
-  BSE_STORAGE_FLAG_SELF_CONTAINED  = 1 << (BSE_OBJECT_FLAGS_USHIFT + 5)
-} BseStorageFlags;
-#define BSE_STORAGE_FLAGS_USHIFT	  (BSE_OBJECT_FLAGS_USHIFT + 7)
-typedef enum	/*< skip >*/
-{
-  BSE_STORAGE_SKIP_DEFAULTS	= 1 << 0,
-  BSE_STORAGE_SKIP_COMPAT	= 1 << 1
+  BSE_STORAGE_SKIP_DEFAULTS     = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
+  BSE_STORAGE_SELF_CONTAINED    = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1)
 } BseStorageMode;
+#define BSE_STORAGE_FLAGS_USHIFT        (BSE_OBJECT_FLAGS_USHIFT + 2)
+
+
+/* --- compatibility --- */
+#define bse_storage_scanner_parse_or_return     sfi_scanner_parse_or_return
+#define bse_storage_scanner_peek_or_return      sfi_scanner_peek_or_return
 
 
 /* --- BseStorage --- */
 typedef struct _BseStorageBBlock   BseStorageBBlock;
 typedef struct _BseStorageItemLink BseStorageItemLink;
-typedef void (*BseStorageRestoreLink)	(gpointer	 data,
-					 BseStorage	*storage,
-					 BseItem	*from_item,
-					 BseItem	*to_item,
-					 const gchar	*error);
+typedef void (*BseStorageRestoreLink)   (gpointer        data,
+                                         BseStorage     *storage,
+                                         BseItem        *from_item,
+                                         BseItem        *to_item,
+                                         const gchar    *error);
 struct _BseStorage
 {
-  BseObject		 parent_instance;
-  /* reading */
-  GScanner		*scanner;
-  gint			 fd;
-  glong			 bin_offset;
-  GHashTable		*path_table;
-  BseStorageItemLink	*item_links;
-  guint                  major_version;
-  guint                  minor_version;
-  guint                  micro_version;
+  BseObject           parent_instance;
   /* writing */
-  GSList		*indent;
-  BseStorageBBlock	*wblocks;	/* keeps ref */
-  GString		*gstring;
+  SfiWStore          *wstore;
+  GSList             *indent;
+  /* parsing */
+  SfiRStore          *rstore;
+  guint               major_version;
+  guint               minor_version;
+  guint               micro_version;
+  GHashTable         *path_table;
+  BseStorageItemLink *item_links;
+  /* compat */ // VERSION-FIXME: remove after 0.5.2
+  gfloat          mix_freq;
+  gfloat          osc_freq;
+  guint           n_channels;
 };
 struct _BseStorageClass
 {
@@ -90,117 +85,106 @@ struct _BseStorageClass
 };
 
 
+/* --- compatibility file parsing --- */
+void         bse_storage_compat_dhreset         (BseStorage             *self);
+void         bse_storage_compat_dhmixf          (BseStorage             *self,
+                                                 gfloat                  mix_freq);
+void         bse_storage_compat_dhoscf          (BseStorage             *self,
+                                                 gfloat                  osc_freq);
+void         bse_storage_compat_dhchannels      (BseStorage             *self,
+                                                 guint                   n_channels);
+GTokenType   bse_storage_compat_dhparse         (BseStorage             *storage,
+                                                 GslDataHandle         **data_handle_p,
+                                                 guint                  *n_channels_p,
+                                                 gfloat                 *mix_freq_p,
+                                                 gfloat                 *osc_freq_p);
+
+
 /* --- prototypes -- */
-void		bse_storage_reset		(BseStorage	*storage);
-void		bse_storage_prepare_write	(BseStorage	*storage,
-						 BseStorageMode  mode);
-BseErrorType	bse_storage_input_file		(BseStorage	*storage,
-						 const gchar	*file_name);
-BseErrorType	bse_storage_input_text		(BseStorage	*storage,
-						 const gchar	*text);
-GTokenType	bse_storage_restore_item	(BseStorage	*storage,
-						 gpointer	 item);
-void		bse_storage_store_item		(BseStorage	*storage,
-						 gpointer	 item);
-void		bse_storage_store_child		(BseStorage	*storage,
-						 gpointer	 item);
+void         bse_storage_reset                  (BseStorage             *storage);
+void         bse_storage_prepare_write          (BseStorage             *storage,
+                                                 BseStorageMode          mode);
+BseErrorType bse_storage_input_file             (BseStorage             *storage,
+                                                 const gchar            *file_name);
+void         bse_storage_input_text             (BseStorage             *storage,
+                                                 const gchar            *text);
+GTokenType   bse_storage_restore_item           (BseStorage             *storage,
+                                                 gpointer                item);
+void         bse_storage_store_item             (BseStorage             *storage,
+                                                 gpointer                item);
+void         bse_storage_store_child            (BseStorage             *storage,
+                                                 gpointer                item);
 
 
 /* --- writing --- */
-void		bse_storage_push_level		(BseStorage	*storage);
-void		bse_storage_pop_level		(BseStorage	*storage);
-void		bse_storage_putc		(BseStorage	*storage,
-						 gchar		 character);
-void		bse_storage_puts		(BseStorage	*storage,
-						 const gchar	*string);
-void		bse_storage_putf		(BseStorage	*storage,
-						 gfloat		 vfloat);
-void		bse_storage_putd		(BseStorage	*storage,
-						 gdouble	 vdouble);
-void		bse_storage_putr		(BseStorage	*storage,
-						 SfiReal	 vreal,
-						 const gchar	*hints);
-void		bse_storage_printf		(BseStorage	*storage,
-						 const gchar	*format,
-						 ...) G_GNUC_PRINTF (2, 3);
-void		bse_storage_needs_break		(BseStorage	*storage);
-void		bse_storage_handle_break	(BseStorage	*storage);
-void		bse_storage_break		(BseStorage	*storage);
-void		bse_storage_put_param		(BseStorage	*storage,
-						 const GValue	*value,
-						 GParamSpec	*pspec);
-void		bse_storage_put_value		(BseStorage	*storage,
-						 const GValue	*value,
-						 GParamSpec	*pspec);
-void		bse_storage_put_item_link	(BseStorage	*storage,
-						 BseItem	*from_item,
-						 BseItem	*to_item);
-void		bse_storage_put_data_handle	(BseStorage	*storage,
-						 guint		 significant_bits,
-						 GslDataHandle	*handle,
-						 GslLong	 vlength);
-void		bse_storage_flush_fd		(BseStorage	*storage,
-						 gint		 fd);
-gchar*		bse_storage_mem_flush		(BseStorage	*storage);
-const gchar*	bse_storage_peek_text		(BseStorage	*storage,
-						 guint		*length);
+void         bse_storage_putf                   (BseStorage             *storage,
+                                                 gfloat                  vfloat);
+void         bse_storage_putd                   (BseStorage             *storage,
+                                                 gdouble                 vdouble);
+void         bse_storage_putr                   (BseStorage             *storage,
+                                                 SfiReal                 vreal,
+                                                 const gchar            *hints);
+void         bse_storage_printf                 (BseStorage             *storage,
+                                                 const gchar            *format,
+                                                 ...) G_GNUC_PRINTF (2, 3);
+void         bse_storage_put_param              (BseStorage             *storage,
+                                                 const GValue           *value,
+                                                 GParamSpec             *pspec);
+void         bse_storage_put_item_link          (BseStorage             *storage,
+                                                 BseItem                *from_item,
+                                                 BseItem                *to_item);
+void         bse_storage_put_data_handle        (BseStorage             *storage,
+                                                 guint                   significant_bits,
+                                                 GslDataHandle          *dhandle);
+void         bse_storage_flush_fd               (BseStorage             *storage,
+                                                 gint                    fd);
+gchar*       bse_storage_mem_flush              (BseStorage             *storage);
 
 
 /* --- reading --- */
-gboolean	bse_storage_input_eof		(BseStorage	*storage);
-void		bse_storage_unexp_token		(BseStorage	*storage,
-						 GTokenType	 expected_token);
-void		bse_storage_error		(BseStorage	*storage,
-						 const gchar	*format,
-						 ...) G_GNUC_PRINTF (2,3);
-void		bse_storage_warn		(BseStorage	*storage,
-						 const gchar	*format,
-						 ...) G_GNUC_PRINTF (2,3);
-GTokenType	bse_storage_warn_skip		(BseStorage	*storage,
-						 const gchar	*format,
-						 ...) G_GNUC_PRINTF (2,3);
-/* use this instead of bse_storage_warn_skip() if the current token
- * hasn't been processed yet (might be the seeked for ')')
- */
-GTokenType	bse_storage_warn_skipc		(BseStorage	*storage,
-						 const gchar	*format,
-						 ...) G_GNUC_PRINTF (2,3);
-GTokenType	bse_storage_parse_rest		(BseStorage     *storage,
-                                                 GTokenType      closing_token,
-						 BseTryStatement try_statement,
-						 gpointer        func_data,
-						 gpointer        user_data);
-GTokenType	bse_storage_parse_note		(BseStorage	*storage,
-						 gint		*note,
-						 gchar           bbuffer[BSE_BBUFFER_SIZE]);
-GTokenType	bse_storage_parse_data_handle	(BseStorage	*storage,
-						 guint           n_channels,
-						 gfloat          osc_freq,
-						 gfloat          mix_freq,
-						 GslDataHandle **data_handle_p);
-GTokenType	bse_storage_parse_param_value	(BseStorage	*storage,
-						 GValue		*value,
-						 GParamSpec	*pspec);
-GTokenType	bse_storage_parse_item_link	(BseStorage	*storage,
-						 BseItem	*from_item,
-						 BseStorageRestoreLink restore_link,
-						 gpointer	  data);
-void		bse_storage_resolve_item_links	(BseStorage	*storage);
+void         bse_storage_error                  (BseStorage             *storage,
+                                                 const gchar            *format,
+                                                 ...) G_GNUC_PRINTF (2,3);
+void         bse_storage_warn                   (BseStorage             *storage,
+                                                 const gchar            *format,
+                                                 ...) G_GNUC_PRINTF (2,3);
+GTokenType   bse_storage_warn_skip              (BseStorage             *storage,
+                                                 const gchar            *format,
+                                                 ...) G_GNUC_PRINTF (2,3);
+GTokenType   bse_storage_parse_param_value      (BseStorage             *storage,
+                                                 GValue                 *value,
+                                                 GParamSpec             *pspec);
+GTokenType   bse_storage_parse_item_link        (BseStorage             *storage,
+                                                 BseItem                *from_item,
+                                                 BseStorageRestoreLink   restore_link,
+                                                 gpointer                data);
+void         bse_storage_resolve_item_links     (BseStorage             *storage);
+GTokenType   bse_storage_parse_data_handle      (BseStorage             *storage,
+                                                 GslDataHandle         **data_handle_p,
+                                                 guint                  *n_channels_p,
+                                                 gfloat                 *mix_freq_p,
+                                                 gfloat                 *osc_freq_p);
+gboolean     bse_storage_match_data_handle      (BseStorage             *storage,
+                                                 GQuark                  quark);
+GTokenType   bse_storage_parse_data_handle_rest (BseStorage             *storage,
+                                                 GslDataHandle         **data_handle_p,
+                                                 guint                  *n_channels_p,
+                                                 gfloat                 *mix_freq_p,
+                                                 gfloat                 *osc_freq_p);
+GTokenType   bse_storage_parse_rest             (BseStorage             *storage,
+                                                 gpointer                context_data,
+                                                 BseTryStatement         try_statement,
+                                                 gpointer                user_data);
 
 
-/* --- helpers --- */
-#define bse_storage_scanner_parse_or_return(scanner, token)  G_STMT_START{ \
-  guint _t = (token); \
-  if (g_scanner_get_next_token (scanner) != _t) \
-    return _t; \
-}G_STMT_END
-#define bse_storage_scanner_peek_or_return(scanner, token)   G_STMT_START{ \
-  GScanner *__s = (scanner); guint _t = (token); \
-  if (g_scanner_peek_next_token (__s) != _t) { \
-    g_scanner_get_next_token (__s); /* advance position for error-handler */ \
-    return _t; \
-  } \
-}G_STMT_END
+/* --- short-hands --- */
+#define bse_storage_get_scanner(s)      ((s)->rstore->scanner)
+#define bse_storage_unexp_token(s,et)   sfi_rstore_unexp_token ((s)->rstore, et)
+#define bse_storage_push_level(s)       sfi_wstore_push_level ((s)->wstore)
+#define bse_storage_pop_level(s)        sfi_wstore_pop_level ((s)->wstore)
+#define bse_storage_break(s)            sfi_wstore_break ((s)->wstore)
+#define bse_storage_putc(s,c)           sfi_wstore_putc ((s)->wstore, c)
+#define bse_storage_puts(s,b)           sfi_wstore_puts ((s)->wstore, b)
 
 
 G_END_DECLS

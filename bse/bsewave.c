@@ -43,15 +43,15 @@ typedef struct
 
 typedef struct
 {
-  guint          n_channels;
-  gfloat         osc_freq;
-  gfloat         mix_freq;
   guint          jump_loop : 1;
   guint          ping_pong_loop : 1;
   GslLong        loop_count;
   GslLong        loop_start;
   GslLong        loop_end;
   GslDataHandle *wave_handle;
+  guint          wh_n_channels;
+  gfloat         wh_mix_freq;
+  gfloat         wh_osc_freq;
 } ParsedWaveChunk;
 
 
@@ -69,8 +69,9 @@ static void	    bse_wave_get_property	(GObject                *object,
 						 GParamSpec             *pspec);
 static void         bse_wave_store_private	(BseObject		*object,
 						 BseStorage		*storage);
-static BseTokenType bse_wave_restore_private	(BseObject		*object,
-						 BseStorage		*storage);
+static SfiTokenType bse_wave_restore_private	(BseObject		*object,
+						 BseStorage		*storage,
+                                                 GScanner               *scanner);
 
 
 /* --- variables --- */
@@ -239,8 +240,8 @@ bse_wave_dispose (GObject *object)
 
 GslWaveChunk*
 bse_wave_lookup_chunk (BseWave *wave,
-		       gfloat   osc_freq,
-		       gfloat   mix_freq)
+		       gfloat   mix_freq,
+		       gfloat   osc_freq)
 {
   BseWaveIndex *index;
   GslWaveChunk *wchunk;
@@ -457,15 +458,7 @@ bse_wave_store_private (BseObject  *object,
 	    }
           bse_storage_break (storage);
 	  bse_storage_puts (storage, "(wave-chunk ");
-	  bse_storage_putf (storage, url->wchunk->osc_freq);
-	  bse_storage_putc (storage, ' ');
-	  bse_storage_putf (storage, url->wchunk->mix_freq);
           bse_storage_push_level (storage);
-	  if (gsl_data_handle_n_channels (url->wchunk->dcache->dhandle) > 1)
-	    {
-	      bse_storage_break (storage);
-	      bse_storage_printf (storage, "(n-channels %u)", gsl_data_handle_n_channels (url->wchunk->dcache->dhandle));
-	    }
 	  switch (url->wchunk->loop_type)
 	    {
 	    case GSL_WAVE_LOOP_JUMP:
@@ -486,40 +479,32 @@ bse_wave_store_private (BseObject  *object,
 	      break;
 	    }
 	  bse_storage_break (storage);
-	  bse_storage_printf (storage, "(wave-handle ");
-	  bse_storage_put_data_handle (storage,
-				       gsl_data_handle_bit_depth (url->wchunk->dcache->dhandle),
-				       url->wchunk->dcache->dhandle,
-				       gsl_data_handle_length (url->wchunk->dcache->dhandle));
+	  bse_storage_put_data_handle (storage, 0, url->wchunk->dcache->dhandle);
 	  gsl_data_handle_close (url->wchunk->dcache->dhandle);
-	  bse_storage_handle_break (storage);
-	  bse_storage_putc (storage, ')');
           bse_storage_pop_level (storage);
 	  bse_storage_putc (storage, ')');
 	}
     }
 }
 
-static BseTokenType
+static SfiTokenType
 parse_wave_chunk (BseWave         *wave,
 		  BseStorage      *storage,
+                  GScanner        *scanner,
 		  ParsedWaveChunk *pwchunk)
      
 {
-  GScanner *scanner = storage->scanner;
   GQuark quark;
   
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return BSE_TOKEN_UNMATCHED;
-  
+    return SFI_TOKEN_UNMATCHED;
+
   quark = g_quark_try_string (scanner->next_value.v_string);
   if (quark == quark_n_channels)
     {
       g_scanner_get_next_token (scanner); /* eat quark identifier */
       parse_or_return (scanner, G_TOKEN_INT);
-      pwchunk->n_channels = scanner->value.v_int;
-      if (pwchunk->n_channels < 1)
-	return G_TOKEN_INT;
+      bse_storage_compat_dhchannels (storage, scanner->value.v_int);
     }
   else if (quark == quark_loop || quark == quark_ping_pong_loop)
     {
@@ -533,25 +518,37 @@ parse_wave_chunk (BseWave         *wave,
       parse_or_return (scanner, G_TOKEN_INT);
       pwchunk->loop_end = scanner->value.v_int;
     }
-  else if (quark == quark_wave_handle)
+  else if (bse_storage_match_data_handle (storage, quark) ||
+           (quark == quark_wave_handle && BSE_STORAGE_COMPAT (storage, 0, 5, 1))) /* VERSION-FIXME: 0.5.1 compat */
     {
       guint expected_token;
-      
-      g_scanner_get_next_token (scanner); /* eat quark identifier */
+
+      if (quark == quark_wave_handle)   /* VERSION-FIXME: 0.5.1 compat */
+        g_scanner_get_next_token (scanner); /* eat quark identifier */
       if (pwchunk->wave_handle)
 	return bse_storage_warn_skip (storage, "duplicate wave data reference");
-      expected_token = bse_storage_parse_data_handle (storage,
-						      pwchunk->n_channels,
-						      pwchunk->osc_freq,
-						      pwchunk->mix_freq,
-						      &pwchunk->wave_handle);
+      if (quark == quark_wave_handle)   /* VERSION-FIXME: 0.5.1 compat */
+        expected_token = bse_storage_parse_data_handle (storage,
+                                                        &pwchunk->wave_handle,
+                                                        &pwchunk->wh_n_channels,
+                                                        &pwchunk->wh_mix_freq,
+                                                        &pwchunk->wh_osc_freq);
+      else
+        expected_token = bse_storage_parse_data_handle_rest (storage,
+                                                             &pwchunk->wave_handle,
+                                                             &pwchunk->wh_n_channels,
+                                                             &pwchunk->wh_mix_freq,
+                                                             &pwchunk->wh_osc_freq);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
       if (!pwchunk->wave_handle)
 	return bse_storage_warn_skip (storage, "invalid wave data reference");
+      /* don't eat closing brace in non-compat case */
+      if (quark != quark_wave_handle) /* VERSION-FIXME: 0.5.1 compat */
+        return G_TOKEN_NONE;
     }
   else
-    return BSE_TOKEN_UNMATCHED;
+    return SFI_TOKEN_UNMATCHED;
   return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
 }
 
@@ -614,18 +611,18 @@ bse_wave_load_wave_file (BseWave     *wave,
   return error;
 }
 
-static BseTokenType
+static SfiTokenType
 bse_wave_restore_private (BseObject  *object,
-			  BseStorage *storage)
+			  BseStorage *storage,
+                          GScanner   *scanner)
 {
   BseWave *wave = BSE_WAVE (object);
-  GScanner *scanner = storage->scanner;
   GTokenType expected_token;
   GQuark quark;
 
   /* chain parent class' handler */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
 
   /* parse storage commands */
   quark = g_quark_try_string (scanner->next_value.v_identifier);
@@ -715,18 +712,33 @@ bse_wave_restore_private (BseObject  *object,
     }
   else if (quark == quark_wave_chunk)
     {
-      ParsedWaveChunk parsed_wchunk = { 1, 0, 0, 0, 0, 0, 0, 0, NULL };
-      
+      ParsedWaveChunk parsed_wchunk = { 0, 0, 0, 0, 0, NULL, 0, 0, 0 };
+
       g_scanner_get_next_token (scanner); /* eat quark identifier */
-      if (g_scanner_get_next_token (scanner) != G_TOKEN_FLOAT && scanner->token != G_TOKEN_INT)
-	return G_TOKEN_FLOAT;
-      parsed_wchunk.osc_freq = scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int;
-      if (g_scanner_get_next_token (scanner) != G_TOKEN_FLOAT && scanner->token != G_TOKEN_INT)
-	return G_TOKEN_FLOAT;
-      parsed_wchunk.mix_freq = scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int;
-      expected_token = bse_storage_parse_rest (storage, ')',
+
+      g_scanner_peek_next_token (scanner);
+
+      bse_storage_compat_dhreset (storage);
+      if (scanner->next_token == G_TOKEN_FLOAT || scanner->next_token == G_TOKEN_INT)
+        {
+          g_scanner_get_next_token (scanner);
+          bse_storage_compat_dhoscf (storage, (scanner->token == G_TOKEN_INT ?
+                                               scanner->value.v_int : scanner->value.v_float));
+          g_scanner_peek_next_token (scanner);
+
+          if (scanner->next_token == G_TOKEN_FLOAT || scanner->next_token == G_TOKEN_INT)
+            {
+              g_scanner_get_next_token (scanner);
+              bse_storage_compat_dhmixf (storage, (scanner->token == G_TOKEN_INT ?
+                                                   scanner->value.v_int : scanner->value.v_float));
+            }
+        }
+
+      expected_token = bse_storage_parse_rest (storage, wave,
 					       (BseTryStatement) parse_wave_chunk,
-					       wave, &parsed_wchunk);
+                                               &parsed_wchunk);
+      bse_storage_compat_dhreset (storage);
+
       if (expected_token == G_TOKEN_NONE && parsed_wchunk.wave_handle)
 	{
 	  GslDataCache *dcache;
@@ -734,16 +746,16 @@ bse_wave_restore_private (BseObject  *object,
 	  
 	  if (0)
 	    g_print ("add_wave_chunk %u %f %f jl%u pl%u c%lu s%lu e%lu w%p\n",
-		     parsed_wchunk.n_channels,
-		     parsed_wchunk.osc_freq, parsed_wchunk.mix_freq,
+		     parsed_wchunk.wh_n_channels,
+		     parsed_wchunk.wh_osc_freq, parsed_wchunk.wh_mix_freq,
 		     parsed_wchunk.jump_loop, parsed_wchunk.ping_pong_loop,
 		     parsed_wchunk.loop_count, parsed_wchunk.loop_start, parsed_wchunk.loop_end,
 		     parsed_wchunk.wave_handle);
 	  dcache = gsl_data_cache_from_dhandle (parsed_wchunk.wave_handle,
-						gsl_get_config ()->wave_chunk_padding * parsed_wchunk.n_channels);
+						gsl_get_config ()->wave_chunk_padding * parsed_wchunk.wh_n_channels);
 	  wchunk = gsl_wave_chunk_new (dcache,
-				       parsed_wchunk.osc_freq,
-				       parsed_wchunk.mix_freq,
+				       parsed_wchunk.wh_mix_freq,
+				       parsed_wchunk.wh_osc_freq,
 				       parsed_wchunk.jump_loop ? GSL_WAVE_LOOP_JUMP :
 				       parsed_wchunk.ping_pong_loop ? GSL_WAVE_LOOP_PINGPONG :
 				       GSL_WAVE_LOOP_NONE,
@@ -757,7 +769,7 @@ bse_wave_restore_private (BseObject  *object,
 	gsl_data_handle_unref (parsed_wchunk.wave_handle);
     }
   else /* chain parent class' handler */
-    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
   
   return expected_token;
 }

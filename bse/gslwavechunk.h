@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001-2002 Tim Janik
+ * Copyright (C) 2001-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,11 +21,9 @@
 
 #include <bse/gsldefs.h>
 #include <bse/gsldatacache.h>
+#include <bse/gsldatahandle.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- typedefs & structures --- */
 typedef enum /*< skip >*/
@@ -76,9 +74,9 @@ struct _GslWaveChunk
   guint           requested_loop_count;
   guint           ref_count;
   guint           open_count;
-  /* legacy */
-  gfloat	  mix_freq;	/* recorded with mix_freq */
-  gfloat	  osc_freq;	/* while oscillating at osc_freq */
+  /* cached data handle setup */
+  gfloat         mix_freq;      /* recorded with mix_freq */
+  gfloat         osc_freq;      /* while oscillating at osc_freq */
 };
 struct _GslWaveChunkBlock
 {
@@ -103,9 +101,9 @@ void		gsl_wave_chunk_use_block	(GslWaveChunk		*wave_chunk,
 void		gsl_wave_chunk_unuse_block	(GslWaveChunk		*wave_chunk,
 						 GslWaveChunkBlock	*block);
 GslWaveChunk*	gsl_wave_chunk_new		(GslDataCache		*dcache,
-						 gfloat			 osc_freq,
-						 gfloat			 mix_freq,
-						 GslWaveLoopType	 loop_type,
+                                                 gfloat                  mix_freq,
+                                                 gfloat                  osc_freq,
+                                                 GslWaveLoopType	 loop_type,
 						 GslLong		 loop_first,
 						 GslLong		 loop_end,
 						 guint			 loop_count);
@@ -122,8 +120,6 @@ const gchar*	gsl_wave_loop_type_to_string	(GslWaveLoopType	 wave_loop);
 GslWaveLoopType	gsl_wave_loop_type_from_string	(const gchar		*string);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GSL_WAVE_CHUNK_H__ */

@@ -52,6 +52,7 @@ typedef struct
   GslDataHandle dhandle;
 
   /* setup data */
+  gfloat        osc_freq;
   guint		sample_rate;
   guint		frame_size;
   guint         stream_options;
@@ -346,14 +347,18 @@ dh_mad_open (GslDataHandle      *dhandle,
     }
 
   /* get n_channels, frame size and sample rate */
-  setup->bit_depth = 24;
   setup->n_channels = MAD_NCHANNELS (&handle->frame.header);
   n = MAD_NSBSAMPLES (&handle->frame.header) * 32;
   seek_invalidated |= n != handle->frame_size;
   handle->frame_size = n;
   handle->sample_rate = handle->frame.header.samplerate;
+  setup->bit_depth = 24;
+  setup->mix_freq = handle->sample_rate;
+  setup->osc_freq = handle->osc_freq;
   if (setup->n_channels < 1 ||
       setup->n_channels > MAX_CHANNELS ||
+      setup->mix_freq < 3999 ||
+      setup->osc_freq <= 0 ||
       handle->frame_size < 1 ||
       handle->sample_rate < 1)
     {
@@ -643,6 +648,7 @@ static GslDataHandleFuncs dh_mad_vtable = {
 
 static GslDataHandle*
 dh_mad_new (const gchar *file_name,
+            gfloat       osc_freq,
 	    gboolean     skip_seek_keep_open)
 {
   MadHandle *handle;
@@ -655,6 +661,7 @@ dh_mad_new (const gchar *file_name,
       GslErrorType error;
 
       handle->dhandle.vtable = &dh_mad_vtable;
+      handle->osc_freq = osc_freq;
       handle->sample_rate = 0;
       handle->frame_size = 0;
       handle->stream_options = MAD_OPTION_IGNORECRC;
@@ -691,11 +698,13 @@ dh_mad_new (const gchar *file_name,
 }
 
 GslDataHandle*
-gsl_data_handle_new_mad (const gchar *file_name)
+gsl_data_handle_new_mad (const gchar *file_name,
+                         gfloat       osc_freq)
 {
   g_return_val_if_fail (file_name != NULL, NULL);
+  g_return_val_if_fail (osc_freq > 0, NULL);
 
-  return dh_mad_new (file_name, FALSE);
+  return dh_mad_new (file_name, osc_freq, FALSE);
 }
 
 GslErrorType
@@ -708,7 +717,7 @@ gsl_data_handle_mad_testopen (const gchar *file_name,
   
   g_return_val_if_fail (file_name != NULL, GSL_ERROR_INTERNAL);
 
-  dhandle = dh_mad_new (file_name, TRUE);
+  dhandle = dh_mad_new (file_name, 439, TRUE);
   if (!dhandle)
     return GSL_ERROR_OPEN_FAILED;
 

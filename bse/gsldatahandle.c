@@ -31,6 +31,8 @@ typedef struct {
   GslDataHandle     dhandle;
   guint             n_channels;
   guint             bit_depth;
+  gfloat            mix_freq;
+  gfloat            osc_freq;
   GslLong           n_values;
   const gfloat     *values;
   void            (*free_values) (gpointer);
@@ -76,6 +78,8 @@ typedef struct {
   GslLong	    byte_offset;
   guint             byte_order;
   guint		    n_channels;
+  gfloat            mix_freq;
+  gfloat            osc_freq;
   GslWaveFormatType format;
   guint		    add_zoffset : 1;
   GslLong	    requested_offset;
@@ -161,10 +165,13 @@ gsl_data_handle_open (GslDataHandle *dhandle)
       error = dhandle->vtable->open (dhandle, &dhandle->setup);
       if (!error && (dhandle->setup.n_values < 0 ||
 		     dhandle->setup.n_channels < 1 ||
-		     dhandle->setup.bit_depth < 1))
+		     dhandle->setup.bit_depth < 1 ||
+                     dhandle->setup.mix_freq < 3999 ||
+                     dhandle->setup.osc_freq <= 0))
 	{
-	  g_warning ("internal error in data handle open() (%p): nv=%ld nc=%u bd=%u",
-		     dhandle->vtable->open, dhandle->setup.n_values, dhandle->setup.n_channels, dhandle->setup.bit_depth);
+	  g_warning ("internal error in data handle open() (%p): nv=%ld nc=%u bd=%u mf=%g of=%g",
+		     dhandle->vtable->open, dhandle->setup.n_values, dhandle->setup.n_channels,
+                     dhandle->setup.bit_depth, dhandle->setup.mix_freq, dhandle->setup.osc_freq);
 	  dhandle->vtable->close (dhandle);
 	  error = GSL_ERROR_INTERNAL;
 	}
@@ -272,6 +279,36 @@ gsl_data_handle_bit_depth (GslDataHandle *dhandle)
   return n;
 }
 
+gfloat
+gsl_data_handle_mix_freq (GslDataHandle *dhandle)
+{
+  gfloat f;
+
+  g_return_val_if_fail (dhandle != NULL, 0);
+  g_return_val_if_fail (dhandle->open_count > 0, 0);
+
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  f = dhandle->open_count ? dhandle->setup.mix_freq : 0;
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+
+  return f;
+}
+
+gfloat
+gsl_data_handle_osc_freq (GslDataHandle *dhandle)
+{
+  gfloat f;
+
+  g_return_val_if_fail (dhandle != NULL, 0);
+  g_return_val_if_fail (dhandle->open_count > 0, 0);
+
+  GSL_SPIN_LOCK (&dhandle->mutex);
+  f = dhandle->open_count ? dhandle->setup.osc_freq : 0;
+  GSL_SPIN_UNLOCK (&dhandle->mutex);
+
+  return f;
+}
+
 const gchar*
 gsl_data_handle_name (GslDataHandle *dhandle)
 {
@@ -348,6 +385,8 @@ mem_handle_open (GslDataHandle      *dhandle,
   setup->n_values = mhandle->n_values;
   setup->n_channels = mhandle->n_channels;
   setup->bit_depth = mhandle->bit_depth;
+  setup->mix_freq = mhandle->mix_freq;
+  setup->osc_freq = mhandle->osc_freq;
 
   return GSL_ERROR_NONE;
 }
@@ -392,6 +431,8 @@ mem_handle_read (GslDataHandle *dhandle,
 GslDataHandle*
 gsl_data_handle_new_mem (guint         n_channels,
 			 guint         bit_depth,
+                         gfloat        mix_freq,
+                         gfloat        osc_freq,
 			 GslLong       n_values,
 			 const gfloat *values,
 			 void        (*free) (gpointer values))
@@ -408,6 +449,8 @@ gsl_data_handle_new_mem (guint         n_channels,
 
   g_return_val_if_fail (n_channels > 0, NULL);
   g_return_val_if_fail (bit_depth > 0, NULL);
+  g_return_val_if_fail (mix_freq >= 4000, NULL);
+  g_return_val_if_fail (osc_freq > 0, NULL);
   g_return_val_if_fail (n_values >= n_channels, NULL);
   if (n_values)
     g_return_val_if_fail (values != NULL, NULL);
@@ -420,6 +463,8 @@ gsl_data_handle_new_mem (guint         n_channels,
       mhandle->dhandle.vtable = &mem_handle_vtable;
       mhandle->n_channels = n_channels;
       mhandle->bit_depth = bit_depth;
+      mhandle->mix_freq = mix_freq;
+      mhandle->osc_freq = osc_freq;
       mhandle->n_values = n_values / mhandle->n_channels;
       mhandle->n_values *= mhandle->n_channels;
       mhandle->values = values;
@@ -1110,6 +1155,8 @@ wave_handle_open (GslDataHandle      *data_handle,
 	setup->n_values = 0;
       setup->n_channels = whandle->n_channels;
       setup->bit_depth = wave_format_bit_depth (whandle->format);
+      setup->mix_freq = whandle->mix_freq;
+      setup->osc_freq = whandle->osc_freq;
       return GSL_ERROR_NONE;
     }
 }
@@ -1269,6 +1316,8 @@ gsl_wave_handle_new (const gchar      *file_name,
 		     guint             n_channels,
 		     GslWaveFormatType format,
 		     guint             byte_order,
+                     gfloat            mix_freq,
+                     gfloat            osc_freq,
 		     GslLong           byte_offset,
 		     GslLong           n_values)
 {
@@ -1285,6 +1334,8 @@ gsl_wave_handle_new (const gchar      *file_name,
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
+  g_return_val_if_fail (mix_freq >= 4000, NULL);
+  g_return_val_if_fail (osc_freq > 0, NULL);
   g_return_val_if_fail (byte_offset >= 0, NULL);
   g_return_val_if_fail (n_channels >= 1, NULL);
   g_return_val_if_fail (n_values >= 1 || n_values == -1, NULL);
@@ -1296,6 +1347,8 @@ gsl_wave_handle_new (const gchar      *file_name,
       whandle->n_channels = n_channels;
       whandle->format = format;
       whandle->byte_order = byte_order;
+      whandle->mix_freq = mix_freq;
+      whandle->osc_freq = osc_freq;
       whandle->requested_offset = byte_offset;
       whandle->requested_length = n_values;
       whandle->hfile = NULL;
@@ -1313,11 +1366,13 @@ gsl_wave_handle_new_zoffset (const gchar      *file_name,
 			     guint             n_channels,
 			     GslWaveFormatType format,
 			     guint             byte_order,
-			     GslLong           byte_offset,
+                             gfloat            mix_freq,
+                             gfloat            osc_freq,
+                             GslLong           byte_offset,
 			     GslLong           byte_size)
 {
   GslDataHandle *dhandle = gsl_wave_handle_new (file_name, n_channels, format,
-						byte_order, byte_offset,
+						byte_order, mix_freq, osc_freq, byte_offset,
 						byte_size / wave_format_byte_width (format));
   if (dhandle)
     ((WaveHandle*) dhandle)->add_zoffset = TRUE;
@@ -1329,12 +1384,12 @@ gsl_wave_format_to_string (GslWaveFormatType format)
 {
   switch (format)
     {
-    case GSL_WAVE_FORMAT_UNSIGNED_8:    return "unsigned_8";
-    case GSL_WAVE_FORMAT_SIGNED_8:      return "signed_8";
-    case GSL_WAVE_FORMAT_UNSIGNED_12:   return "unsigned_12";
-    case GSL_WAVE_FORMAT_SIGNED_12:     return "signed_12";
-    case GSL_WAVE_FORMAT_UNSIGNED_16:   return "unsigned_16";
-    case GSL_WAVE_FORMAT_SIGNED_16:     return "signed_16";
+    case GSL_WAVE_FORMAT_UNSIGNED_8:    return "unsigned-8";
+    case GSL_WAVE_FORMAT_SIGNED_8:      return "signed-8";
+    case GSL_WAVE_FORMAT_UNSIGNED_12:   return "unsigned-12";
+    case GSL_WAVE_FORMAT_SIGNED_12:     return "signed-12";
+    case GSL_WAVE_FORMAT_UNSIGNED_16:   return "unsigned-16";
+    case GSL_WAVE_FORMAT_SIGNED_16:     return "signed-16";
     case GSL_WAVE_FORMAT_FLOAT:         return "float";
     case GSL_WAVE_FORMAT_NONE:
     case GSL_WAVE_FORMAT_LAST:

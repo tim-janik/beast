@@ -1,7 +1,8 @@
 FIXMES:
-- fix newsong/newtrack
-- remove BseBinData
+- rename gsl_strerror()
+- fix 64bit v_int usage of GScanner in BSE?
 - fix undo for: BseWave, BsePart, BseDataPocket
+- popdown piano roll when parts are removed
 - get rid of bse_procedure_execvl
 - get rid of super->mod_time
 - add BEAST_SAMPLE_DIRS, describe env variables in man page
@@ -77,6 +78,7 @@ FIXMES:
 * eliminate everything that fgrep -i fixme/hack reveals
 
 DOCS:
+- add QuickStart section on piano roll usage, esp. copy+pasting
 - try implementing some kind of table layout for tsmview [timj]
 - add QuickStart-Samples docs once we support sample editing [timj]
 - turn off word-wrapping for normal files (e.g. /etc/profile) in

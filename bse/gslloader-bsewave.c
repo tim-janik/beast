@@ -688,6 +688,8 @@ gslwave_create_chunk_handle (gpointer      data,
 				     dsc->wdsc.n_channels,
 				     dsc->format,
 				     dsc->byte_order,
+                                     chunk->mix_freq,
+                                     chunk->osc_freq,
 				     chunk->loader_offset,	/* byte_offset */
 				     chunk->loader_length > 0	/* n_values */
 				     ? chunk->loader_length
@@ -705,6 +707,8 @@ gslwave_create_chunk_handle (gpointer      data,
 						 dsc->wdsc.n_channels,
 						 dsc->format,
 						 dsc->byte_order,
+                                                 chunk->mix_freq,
+                                                 chunk->osc_freq,
 						 chunk->loader_offset,	/* byte_offset */
 						 chunk->loader_length);	/* byte length */
 	  *error_p = dhandle ? GSL_ERROR_NONE : GSL_ERROR_IO;
@@ -719,6 +723,7 @@ gslwave_create_chunk_handle (gpointer      data,
       if (chunk->loader_length) /* inlined binary data */
 	{
 	  dhandle = gsl_data_handle_new_ogg_vorbis_zoffset (fi->wfi.file_name,
+                                                            chunk->osc_freq,
                                                             chunk->loader_offset,	/* byte_offset */
                                                             chunk->loader_length);	/* byte length */
 	  *error_p = dhandle ? GSL_ERROR_NONE : GSL_ERROR_IO;

@@ -50,8 +50,9 @@ static void	    bse_part_dispose		(GObject	*object);
 static void	    bse_part_finalize		(GObject	*object);
 static void	    bse_part_store_private	(BseObject	*object,
 						 BseStorage	*storage);
-static BseTokenType bse_part_restore_private	(BseObject	*object,
-						 BseStorage	*storage);
+static SfiTokenType bse_part_restore_private	(BseObject	*object,
+						 BseStorage	*storage,
+                                                 GScanner       *scanner);
 
 
 /* --- variables --- */
@@ -1106,12 +1107,12 @@ bse_part_store_private (BseObject  *object,
     }
 }
 
-static BseTokenType
+static SfiTokenType
 bse_part_restore_private (BseObject  *object,
-			  BseStorage *storage)
+			  BseStorage *storage,
+                          GScanner   *scanner)
 {
   BsePart *self = BSE_PART (object);
-  GScanner *scanner = storage->scanner;
 
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
       bse_string_equals ("insert-note", scanner->next_value.v_identifier))
@@ -1145,5 +1146,5 @@ bse_part_restore_private (BseObject  *object,
       return G_TOKEN_NONE;
     }
   else /* chain parent class' handler */
-    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
 }

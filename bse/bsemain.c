@@ -71,7 +71,7 @@ bse_init_async (gint    *argc,
   /* initialize submodules */
   sfi_init ();
   /* paranoid assertions */
-  g_assert (BSE_BYTE_ORDER == BSE_LITTLE_ENDIAN || BSE_BYTE_ORDER == BSE_BIG_ENDIAN);
+  g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
   /* early argument handling */
   if (argc && argv)
     {
@@ -230,7 +230,7 @@ bse_init_intern (gint    *argc,
   /* initialize submodules */
   sfi_init ();
   /* paranoid assertions */
-  g_assert (BSE_BYTE_ORDER == BSE_LITTLE_ENDIAN || BSE_BYTE_ORDER == BSE_BIG_ENDIAN);
+  g_assert (G_BYTE_ORDER == G_LITTLE_ENDIAN || G_BYTE_ORDER == G_BIG_ENDIAN);
   /* early argument handling */
   if (argc && argv)
     {

@@ -45,8 +45,9 @@ static void	    bse_data_pocket_dispose		(GObject		*object);
 static void	    bse_data_pocket_finalize		(GObject		*object);
 static void	    bse_data_pocket_do_store_private	(BseObject		*object,
 							 BseStorage		*storage);
-static BseTokenType bse_data_pocket_restore_private	(BseObject		*object,
-							 BseStorage		*storage);
+static SfiTokenType bse_data_pocket_restore_private	(BseObject		*object,
+							 BseStorage		*storage,
+                                                         GScanner               *scanner);
 
 
 /* --- variables --- */
@@ -492,7 +493,6 @@ bse_data_pocket_do_store_private (BseObject  *object,
       
       bse_storage_break (storage);
       bse_storage_printf (storage, "(create-entry");
-      bse_storage_needs_break (storage);
       bse_storage_push_level (storage);
       
       for (j = 0; j < entry->n_items; j++)
@@ -559,12 +559,12 @@ object_entry_resolved (gpointer        data,
   g_free (oentry);
 }
 
-static BseTokenType
+static SfiTokenType
 parse_set_data (BseDataPocket *pocket,
 		guint	       id,
-		BseStorage    *storage)
+		BseStorage    *storage,
+                GScanner      *scanner)
 {
-  GScanner *scanner = storage->scanner;
   BseDataPocketValue value;
   ObjectEntry *oentry = NULL;
   GQuark quark;
@@ -640,12 +640,12 @@ parse_set_data (BseDataPocket *pocket,
   return G_TOKEN_NONE;
 }
 
-static BseTokenType
+static SfiTokenType
 bse_data_pocket_restore_private (BseObject  *object,
-				 BseStorage *storage)
+				 BseStorage *storage,
+                                 GScanner   *scanner)
 {
   BseDataPocket *pocket = BSE_DATA_POCKET (object);
-  GScanner *scanner = storage->scanner;
   GTokenType expected_token;
   
   /* support storage commands */
@@ -664,7 +664,7 @@ bse_data_pocket_restore_private (BseObject  *object,
 	      parse_or_return (scanner, G_TOKEN_IDENTIFIER);
 	      if (g_quark_try_string (scanner->value.v_identifier) == quark_set_data)
 		{
-		  expected_token = parse_set_data (pocket, id, storage);
+		  expected_token = parse_set_data (pocket, id, storage, scanner);
 		  if (expected_token != G_TOKEN_NONE)
 		    return expected_token;
 		}
@@ -678,7 +678,7 @@ bse_data_pocket_restore_private (BseObject  *object,
       expected_token = G_TOKEN_NONE;
     }
   else /* chain parent class' handler */
-    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
 
   return expected_token;
 }

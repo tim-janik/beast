@@ -378,8 +378,8 @@ gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
   /* dcache keeps dhandle alive */
 
   wchunk = gsl_wave_chunk_new (dcache,
-			       wave_dsc->chunks[nth_chunk].osc_freq,
 			       wave_dsc->chunks[nth_chunk].mix_freq,
+			       wave_dsc->chunks[nth_chunk].osc_freq,
 			       wave_dsc->chunks[nth_chunk].loop_type,
 			       wave_dsc->chunks[nth_chunk].loop_start,
 			       wave_dsc->chunks[nth_chunk].loop_end,

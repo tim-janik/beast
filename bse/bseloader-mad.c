@@ -115,7 +115,7 @@ mad_create_chunk_handle (gpointer      data,
 
   g_return_val_if_fail (nth_chunk == 0, NULL);
 
-  dhandle = gsl_data_handle_new_mad (fi->wfi.file_name);
+  dhandle = gsl_data_handle_new_mad (fi->wfi.file_name, wdsc->chunks[0].osc_freq);
 
   if (!dhandle)
     *error_p = GSL_ERROR_OPEN_FAILED;

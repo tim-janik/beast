@@ -57,8 +57,8 @@ struct _GslWaveDsc
 };
 struct _GslWaveChunkDsc
 {
-  gfloat	  osc_freq;
   gfloat	  mix_freq;
+  gfloat	  osc_freq;
   GslWaveLoopType loop_type;
   GslLong	  loop_start;	/* sample offset */
   GslLong	  loop_end;	/* sample offset */

@@ -64,11 +64,11 @@ run_tests (GslWaveLoopType loop_type,
   GslWaveChunk *wchunk;
   GslErrorType error;
 
-  myhandle = gsl_data_handle_new_mem (1, 32, my_data_length, my_data, NULL);
+  myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
   dcache = gsl_data_cache_new (myhandle, 1);
   gsl_data_handle_unref (myhandle);
   wchunk = gsl_wave_chunk_new (dcache,
-			       44.0, 44100.0,
+                               44100.0, 44.0,
 			       loop_type, loop_first, loop_last, loop_count);
   error = gsl_wave_chunk_open (wchunk);
   if (error)
@@ -211,7 +211,7 @@ main (gint   argc,
 
       g_print ("reversed datahandle test:...\n");
       
-      myhandle = gsl_data_handle_new_mem (1, 32, my_data_length, my_data, NULL);
+      myhandle = gsl_data_handle_new_mem (1, 32, 44100, 440, my_data_length, my_data, NULL);
       rhandle1 = gsl_data_handle_new_reverse (myhandle);
       gsl_data_handle_unref (myhandle);
       rhandle2 = gsl_data_handle_new_reverse (rhandle1);

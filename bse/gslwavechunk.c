@@ -620,9 +620,9 @@ wave_chunk_setup_loop (GslWaveChunk *wchunk)
 
 GslWaveChunk*
 gsl_wave_chunk_new (GslDataCache   *dcache,
-		    gfloat          osc_freq,
-		    gfloat          mix_freq,
-		    GslWaveLoopType loop_type,
+                    gfloat          mix_freq,
+                    gfloat          osc_freq,
+                    GslWaveLoopType loop_type,
 		    GslLong         loop_first,
 		    GslLong         loop_last,
 		    guint           loop_count)
@@ -775,9 +775,9 @@ _gsl_wave_chunk_copy (GslWaveChunk *wchunk)
   g_return_val_if_fail (wchunk->ref_count > 0, NULL);
   
   return gsl_wave_chunk_new (wchunk->dcache,
-			     wchunk->osc_freq,
-			     wchunk->mix_freq,
-			     wchunk->loop_type,
+                             wchunk->mix_freq,
+                             wchunk->osc_freq,
+                             wchunk->loop_type,
 			     wchunk->loop_first,
 			     wchunk->loop_last,
 			     wchunk->loop_count);

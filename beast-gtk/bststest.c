@@ -494,7 +494,7 @@ main (int   argc,
   for (i = 1; i < argc; i++)
     {
       view = g_new (WaveView, 1);
-      view->handle = gsl_wave_handle_new (argv[i], 1, GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN, 0, -1);
+      view->handle = gsl_wave_handle_new (argv[i], 1, 44100, 440, GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN, 0, -1);
       if (!view->handle)
 	g_error ("failed to create handle for \"%s\": stat() failed", argv[i]);
       view->qsampler = g_object_new (BST_TYPE_QSAMPLER,

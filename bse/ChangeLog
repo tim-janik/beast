@@ -1,3 +1,42 @@
+Sun Jun  8 17:27:15 2003  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.[hc]: reimplementation on top of SfiRStore and SfiWStore.
+	added compat code for <=0.5.1 binary data handling, removed lots of cruft.
+
+	* bsebindata.[hc]: removed entirely.
+
+	* bseenums.[hc]: removed BseEndianType.
+
+	* gsldatahandle.[hc]: added osc_freq and mix_freq as fixed members to
+	data handles. changed constructors and callers accordingly.
+	cosmetic fixups to wave format strings.
+
+	* *.[hc]: made mix_freq, osc_freq ordering in argument lists consistent.
+
+	* gslloader.[hc]:
+	* gslloader-mad.c:
+	* gslloader-wav.c:
+	* gslloader-gslwave.c:
+	* gslloader-oggvorbis.c:
+	* gsldatahandle-vorbis.[hc]:
+	* gsldatahandle-mad.[hc]: provide osc_freq and mix_freq in datahandles.
+
+	* bse/gslcommon.c: cosmetic fixups to endianess strings.
+
+	* bsewave.[hc]: changed storage format, since bse_storage_parse_data_handle()
+	now stores mix_freq, osc_freq etc. all automatically.
+	left compat code in place to parse <=0.5.1 files.
+
+	* bsesong.proc: fix NULL termination in call to bse_container_new_child().
+
+	* bseproject.c: adapt to BseStorage changes. removed cruft.
+
+	* bsedefs.h: removed BseTokenType, there's SfiTokenType. adapt
+	BseTryStatement() to SfiStoreParser() signature.
+
+	* *.c: fixup code due to removal of BseTokenType and other BseStorage
+	changes.
+
 Wed Jun  4 21:54:51 2003  Tim Janik  <timj@gtk.org>
 
 	* bseproject.c:

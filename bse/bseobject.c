@@ -58,8 +58,9 @@ static void		bse_object_do_set_uname		(BseObject	*object,
 							 const gchar	*uname);
 static void		bse_object_store_private	(BseObject	*object,
 							 BseStorage	*storage);
-static BseTokenType	bse_object_restore_private	(BseObject     *object,
-							 BseStorage    *storage);
+static SfiTokenType	bse_object_restore_private	(BseObject     *object,
+							 BseStorage    *storage,
+                                                         GScanner      *scanner);
 static BseIcon*		bse_object_do_get_icon		(BseObject	*object);
 static guint		eclosure_hash			(gconstpointer	 c);
 static gint		eclosure_equals			(gconstpointer	 c1,
@@ -684,11 +685,12 @@ bse_object_store_private (BseObject	*object,
 {
 }
 
-static BseTokenType
+static SfiTokenType
 bse_object_restore_private (BseObject  *object,
-			    BseStorage *storage)
+			    BseStorage *storage,
+                            GScanner   *scanner)
 {
-  return BSE_TOKEN_UNMATCHED;
+  return SFI_TOKEN_UNMATCHED;
 }
 
 typedef struct {

@@ -198,7 +198,7 @@ GTokenType
 bse_parasite_restore (BseObject  *object,
 		      BseStorage *storage)
 {
-  GScanner *scanner = storage->scanner;
+  GScanner *scanner = bse_storage_get_scanner (storage);
   GQuark quark;
   guint type;
   guint n_values;
@@ -207,7 +207,7 @@ bse_parasite_restore (BseObject  *object,
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
       !bse_string_equals ("parasite", scanner->next_value.v_identifier))
-    return BSE_TOKEN_UNMATCHED;
+    return SFI_TOKEN_UNMATCHED;
 
   /* eat "parasite" identifier */
   g_scanner_get_next_token (scanner);

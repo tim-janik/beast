@@ -44,7 +44,7 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 bse_public_h_sources = $(strip \
 	bse.h	bsedefs.h	bseexports.h	bseconfig.h	ladspa.h \
 	\
-	bseamplifier.h		bsebindata.h		bsebiquadfilter.h		bsecategories.h \
+	bseamplifier.h		            		bsebiquadfilter.h		bsecategories.h \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
 	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
 	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
@@ -68,7 +68,7 @@ bse_private_h_sources = $(strip \
 # BSE C sources to build the library from
 bse_c_sources = $(strip \
 	$(GSL_C_SRC) \
-	bseamplifier.c		bsebindata.c		bsebiquadfilter.c		bsecategories.c \
+	bseamplifier.c		            		bsebiquadfilter.c		bsecategories.c \
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \

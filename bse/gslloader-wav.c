@@ -402,6 +402,8 @@ wav_create_chunk_handle (gpointer      data,
   dhandle = gsl_wave_handle_new (dsc->wdsc.file_info->file_name,
 				 dsc->wdsc.n_channels,
 				 dsc->format, G_LITTLE_ENDIAN,
+                                 dsc->wdsc.chunks[nth_chunk].mix_freq,
+                                 dsc->wdsc.chunks[nth_chunk].osc_freq,
 				 dsc->data_offset, dsc->n_values);
   return dhandle;
 }

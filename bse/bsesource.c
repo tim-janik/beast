@@ -95,8 +95,9 @@ static void	    bse_source_real_remove_input	(BseSource	*source,
 							 guint           ochannel);
 static void	    bse_source_real_store_private	(BseObject	*object,
 							 BseStorage	*storage);
-static BseTokenType bse_source_restore_private		(BseObject      *object,
-							 BseStorage     *storage);
+static SfiTokenType bse_source_restore_private		(BseObject      *object,
+							 BseStorage     *storage,
+                                                         GScanner       *scanner);
 static gint	    contexts_compare			(gconstpointer	 bsearch_node1, /* key */
 							 gconstpointer	 bsearch_node2);
 
@@ -1699,12 +1700,12 @@ resolve_osource_input (gpointer     data,
   g_free (dinput);
 }
 
-static BseTokenType
+static SfiTokenType
 bse_source_restore_private (BseObject  *object,
-			    BseStorage *storage)
+			    BseStorage *storage,
+                            GScanner   *scanner)
 {
   BseSource *source = BSE_SOURCE (object);
-  GScanner *scanner = storage->scanner;
 
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
       bse_string_equals ("source-input", scanner->next_value.v_identifier))
@@ -1742,5 +1743,5 @@ bse_source_restore_private (BseObject  *object,
       return G_TOKEN_NONE;
     }
   else /* chain parent class' handler */
-    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage, scanner);
 }

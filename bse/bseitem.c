@@ -1095,7 +1095,7 @@ undo_restore_item (BseUndoStep  *ustep,
   GScanner *scanner;
 
   bse_storage_input_text (storage, ustep->data[1].v_pointer);
-  scanner = storage->scanner;
+  scanner = bse_storage_get_scanner (storage);
 
   expected_token = bse_storage_restore_item (storage, item);
   if (expected_token != G_TOKEN_NONE)

@@ -30,12 +30,6 @@ G_BEGIN_DECLS
 /* --- enum definitions --- */
 typedef enum
 {
-  BSE_LITTLE_ENDIAN	= G_LITTLE_ENDIAN	/* 1234 */,
-  BSE_BIG_ENDIAN	= G_BIG_ENDIAN		/* 4321 */
-} BseEndianType;
-#define	BSE_BYTE_ORDER	G_BYTE_ORDER
-typedef enum
-{
   BSE_REGISTER_PLUGIN   = 1,
   BSE_REGISTER_SCRIPT   = 2,
   BSE_REGISTER_DONE	= 256

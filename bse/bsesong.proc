@@ -51,7 +51,7 @@ METHOD (BseSong, create-part) {
   
   /* action */
   ustack = bse_item_undo_open (self, "create-part");
-  child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PART, ustack);
+  child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_PART, NULL);
   bse_item_push_undo_proc (self, "remove-part", child);
   bse_item_undo_close (ustack);
   
@@ -124,7 +124,7 @@ METHOD (BseSong, create-track) {
   else
     {
       BseUndoStack *ustack = bse_item_undo_open (self, "create-track");
-      child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_TRACK, ustack);
+      child = bse_container_new_child (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
       bse_item_push_undo_proc (self, "remove-track", child);
       bse_item_undo_close (ustack);
     }

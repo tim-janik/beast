@@ -430,9 +430,7 @@ bse_project_store_bse (BseProject  *self,
   BseStorage *storage;
   gint fd;
   gchar *string;
-  BseMagicFlags mflags;
-  GSList *slist;
-  guint l;
+  guint l, flags;
   
   g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (bse_file != NULL, BSE_ERROR_INTERNAL);
@@ -442,17 +440,13 @@ bse_project_store_bse (BseProject  *self,
     return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
 
   storage = g_object_new (BSE_TYPE_STORAGE, NULL);
-  bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS);
+  flags = BSE_STORAGE_SKIP_DEFAULTS;
   if (self_contained)
-    BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_SELF_CONTAINED);
+    flags |= BSE_STORAGE_SELF_CONTAINED;
+  bse_storage_prepare_write (storage, flags);
   bse_storage_store_item (storage, self);
 
-  mflags = storage->wblocks ? BSE_MAGIC_BSE_BIN_EXTENSION : 0;
-  for (slist = self->supers; slist; slist = slist->next)
-    if (BSE_IS_SONG (slist->data))
-      mflags |= BSE_MAGIC_BSE_SONG;
-
-  string = g_strdup_printf ("; BseProject\n"); /* %010o mflags */
+  string = g_strdup_printf ("; BseProject\n\n"); /* %010o mflags */
   do
     l = write (fd, string, strlen (string));
   while (l < 0 && errno == EINTR);
@@ -474,9 +468,9 @@ bse_project_restore (BseProject *self,
   
   g_return_val_if_fail (BSE_IS_PROJECT (self), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_STORAGE_READABLE (storage), BSE_ERROR_INTERNAL);
 
-  scanner = storage->scanner;
+  scanner = bse_storage_get_scanner (storage);
+  g_return_val_if_fail (scanner != NULL, BSE_ERROR_INTERNAL);
 
   g_object_ref (self);
 
@@ -581,8 +575,9 @@ bse_project_create_intern_synth (BseProject  *self,
   if (bse_synth)
     {
       BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
-      BseErrorType error = bse_storage_input_text (storage, bse_synth);
+      BseErrorType error = BSE_ERROR_NONE;
       StorageTrap strap = { 0, }, *old_strap = g_object_get_qdata (self, quark_storage_trap);
+      bse_storage_input_text (storage, bse_synth);
       g_object_set_qdata (self, quark_storage_trap, &strap);
       strap.max_items = 1;
       strap.base_type = check_type;

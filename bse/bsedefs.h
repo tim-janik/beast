@@ -113,10 +113,6 @@ typedef struct  _BsePluginClass         BsePluginClass;
 /* --- anticipated enums --- */
 typedef enum                    /*< skip >*/
 {
-  BSE_TOKEN_UNMATCHED           = G_TOKEN_LAST + 1
-} BseTokenType;
-typedef enum                    /*< skip >*/
-{
   BSE_PIXDATA_RGB               = 3,
   BSE_PIXDATA_RGBA              = 4,
   BSE_PIXDATA_RGB_MASK          = 0x07,
@@ -151,8 +147,9 @@ struct _BsePixdata
 typedef void          (*BseFunc)             (void);
 typedef void          (*BseIOWatch)	     (gpointer		 data,
 					      GPollFD		*pfd);
-typedef BseTokenType  (*BseTryStatement)     (gpointer           func_data,
+typedef SfiTokenType  (*BseTryStatement)     (gpointer           context_data,
                                               BseStorage        *storage,
+                                              GScanner          *scanner,
                                               gpointer           user_data);
 typedef BseObject*    (*BseUPathResolver)    (gpointer           func_data,
                                               GType              required_type,

@@ -28,8 +28,10 @@ G_BEGIN_DECLS
 /* linear-read handle! needs linbuffer handle wrapper
  */
 GslDataHandle*	gsl_data_handle_new_ogg_vorbis_muxed    (const gchar	*file_name,
-                                                         guint		 lbitstream);
+                                                         guint		 lbitstream,
+                                                         gfloat          osc_freq);
 GslDataHandle*	gsl_data_handle_new_ogg_vorbis_zoffset	(const gchar	*file_name,
+                                                         gfloat          osc_freq,
                                                          GslLong         byte_offset,
                                                          GslLong         byte_size);
 
