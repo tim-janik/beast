@@ -26,39 +26,108 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-void
-gsl_filter_butter       (unsigned int iorder,
-			 double       freq, /* 0..pi */
-			 double       epsilon,
-			 double      *a,    /* [0..iorder] */
-			 double      *b);
+/* --- filter roots and poles --- */
+void	gsl_filter_butter_rp    (unsigned int iorder,
+				 double       freq,   /* 0..pi */
+				 double       epsilon,
+				 GslComplex  *roots,  /* [0..iorder-1] */
+				 GslComplex  *poles);
+void	gsl_filter_tscheb1_rp	(unsigned int iorder,
+				 double       freq,   /* 0..pi */
+				 double       epsilon,
+				 GslComplex  *roots,  /* [0..iorder-1] */
+				 GslComplex  *poles);
+void	gsl_filter_tscheb2_rp	(unsigned int iorder,
+				 double       c_freq, /* 0..pi */
+				 double       r_freq, /* 0..pi */
+				 double       epsilon,
+				 GslComplex  *roots,  /* [0..iorder-1] */
+				 GslComplex  *poles);
 
-void
-gsl_filter_tscheb1	(unsigned int iorder,
-			 double       freq, /* 0..pi */
-			 double       epsilon,
-			 double      *a,    /* [0..iorder] */
-			 double      *b);
-void
-gsl_filter_tscheb2	(unsigned int iorder,
-			 double       c_freq, /* 0..pi */
-			 double       r_freq, /* 0..pi */
-			 double       epsilon,
-			 double      *a,      /* [0..iorder] */
-			 double      *b);
-void
-gsl_filter_tscheb1_test	(unsigned int iorder,
-			 double       zomega,
-			 double       epsilon,
-			 double      *a,    /* [0..iorder] */
-			 double      *b);
 
-/* identische TP <-> HP transformation:
- * GFhp = pi - GFtp
- * a[x] *= x&1 ? -1 : 1;
- * b[x] *= x&1 ? -1 : 1;
- */
- 
+/* --- lowpass filters --- */
+void	gsl_filter_butter_lp    (unsigned int iorder,
+				 double       freq, /* 0..pi */
+				 double       epsilon,
+				 double      *a,    /* [0..iorder] */
+				 double      *b);
+void	gsl_filter_tscheb1_lp	(unsigned int iorder,
+				 double       freq, /* 0..pi */
+				 double       epsilon,
+				 double      *a,    /* [0..iorder] */
+				 double      *b);
+void	gsl_filter_tscheb2_lp	(unsigned int iorder,
+				 double       c_freq, /* 0..pi */
+                                 double       steepness,
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+
+
+/* --- highpass filters --- */
+void	gsl_filter_butter_hp	(unsigned int iorder,
+				 double       freq,   /* 0..pi */
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+void	gsl_filter_tscheb1_hp	(unsigned int iorder,
+				 double       freq,   /* 0..pi */
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+void	gsl_filter_tscheb2_hp	(unsigned int iorder,
+				 double       c_freq, /* 0..pi */
+				 double       steepness,
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+
+
+/* --- bandpass filters --- */
+void	gsl_filter_butter_bp	(unsigned int iorder,
+				 double       freq1,  /* 0..pi */
+				 double       freq2,  /* 0..pi */
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+void	gsl_filter_tscheb1_bp	(unsigned int iorder,
+				 double       freq1,  /* 0..pi */
+				 double       freq2,  /* 0..pi */
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+void	gsl_filter_tscheb2_bp	(unsigned int iorder,
+				 double       freq1,  /* 0..pi */
+				 double       freq2,  /* 0..pi */
+				 double       steepness,
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+
+
+/* --- bandstop filters --- */
+void	gsl_filter_butter_bs	(unsigned int iorder,
+				 double       freq1,  /* 0..pi */
+				 double       freq2,  /* 0..pi */
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+void	gsl_filter_tscheb1_bs	(unsigned int iorder,
+				 double       freq1,  /* 0..pi */
+				 double       freq2,  /* 0..pi */
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+void	gsl_filter_tscheb2_bs	(unsigned int iorder,
+				 double       freq1,  /* 0..pi */
+				 double       freq2,  /* 0..pi */
+				 double       steepness,
+				 double       epsilon,
+				 double      *a,      /* [0..iorder] */
+				 double      *b);
+
+
+
 
 #ifdef __cplusplus
 }

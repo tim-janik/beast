@@ -56,16 +56,17 @@ while (<>) {
         (defined ($new) && ($file_name eq $ARGV)) or die "$file_name:$.: Unmatched comment\n";
         $_ .= $new;
     }
-
+    
     # read lines until function decl is complete
     while (m@^\w[^(]*\([^{;]*$@x) {
         my $new = <>;
         (defined ($new) && ($file_name eq $ARGV)) or die "$file_name:$.: Unmatched function declaration\n";
         $_ .= $new;
     }
-
+		 
     # match docu comment
-    if (m@^/\*\*\s+(([^*]|\*[^/*]|\*\*[^/])*)\*\*/@) {
+    # if (m@^/\*\*\s+(([^*]|\*[^/*]|\*\*[^/])*)\*\*/@) {
+    if (m@^/\*\*\s+(([^*]|\*+[^*/])*)\*+/@) {
 	my @lines = split ('\n', $1);
 	my $line;
 	my $rec = { name => "Unnamed",
@@ -108,14 +109,17 @@ while (<>) {
 	}
 	push @records, $rec;
     }
+		 
 
     # try to match function decls that we know about
-    if (m@([A-Za-z._][A-Za-z0-9._-]*)\s*\(([A-Za-z0-9\s,*_-]*)\)\s*\{@) {
+    # if (m@([A-Za-z._][A-Za-z0-9._-]*)\s*\(([A-Za-z0-9\s,*_-]*)\)\s*\{@) {
+    if (m@([A-Za-z._][A-Za-z0-9._-]*)\s*\(([A-Za-z0-9\s,*_-]*)\)\s*[{]@) {
 	my $name = $1;
 	my $declargs = $2;
 	my $rec = $declhash{$name};
 
         if (defined $rec) {  # have docu record for this decl
+	    # print STDERR "ARGDECL: $name: $declargs\n";
 	    my @args = split (',', $declargs);
 	    $rec->{var_names} = [];
 	    $rec->{var_types} = [];
@@ -173,7 +177,8 @@ sub man_highlight {
     $t =~ s/@([A-Za-z0-9_-]+)/\\fI$1\\fP/g;
     $t =~ s/%([A-Za-z0-9_-]+)/\\fI$1\\fP/g;
     $t =~ s/#([A-Za-z0-9_-]+)/\\fB$1\\fP/g;
-    $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/\\fB$1\\fP/g;
+    # $t =~ s/([A-Za-z0-9_-]+\([A-Za-z0-9\s,*_-]*\))/\\fB$1\\fP/g;
+    $t =~ s/([A-Za-z0-9_-]+\([+\/%&|^~!A-Za-z0-9\s,*_-]*\))/\\fB$1\\fP/g;
     return $t;
 }
 sub man_print_description {
@@ -241,7 +246,7 @@ for my $rec (@records) {
     my $var_hash = $rec->{var_hash};
     next if (!$rec->{found_decl});
     for my $a (keys %$var_hash) {
-	print STDERR "NOTE: omitting description for \`".$rec->{name}."($a)'\n";
+	print STDERR "NOTE: couldn't find declaration for \`".$rec->{name}."($a)'\n";
     }
 }
 for (@dups) {

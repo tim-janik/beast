@@ -378,7 +378,7 @@ score_loop (GslDataHandle *shandle,
   return score;
 }
 
-#include <gsl/gsllooper.h>
+#include <gsl/gsldatautils.h>
 
 static void
 find (WaveView *view)

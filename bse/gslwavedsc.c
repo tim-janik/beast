@@ -38,6 +38,7 @@
 /* --- token types --- */
 typedef enum
 {
+  /* wave tokens */
   GSL_WAVE_TOKEN_WAVE           = 512,
   GSL_WAVE_TOKEN_CHUNK,
   GSL_WAVE_TOKEN_NAME,

@@ -117,6 +117,25 @@ GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 						 GslLong	   n_values);
 
 
+/* --- white-beard guru API --- */
+typedef struct
+{
+  const gchar *name;	   /* "GslWave file" or "WAVE audio, RIFF (little-endian)" */
+  
+  /* at least one of the
+   * following three _should_
+   * be non-NULL
+   */
+  const gchar *magic_spec; /* "0 string RIFF\n8 string WAVE" or "0 string #GslWave\n" */
+  const gchar *mime_type;  /* "audio/x-mpg3" or "audio/x-wav" */
+  const gchar *extension;  /* "mp3" or "ogg" or "gslwave" */
+  
+  GslDataHandle* (*load) (const gchar  *file_name,
+			  GslErrorType *error);
+} GslDataHandleLoader;
+void    gsl_data_handle_register_loader (GslDataHandleLoader *loader);
+
+
 /* --- auxillary functions --- */
 gboolean	  gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
 						 const gchar	  *file_name,

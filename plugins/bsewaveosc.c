@@ -296,7 +296,8 @@ wmod_set_freq (WaveOscModule *wmod,
       gfloat freq_r = stop_freq * nyquist_fact * filt_fact;
 
       wmod->istep = istep;
-      gsl_filter_tscheb2 (ORDER, freq_c, freq_r, gsl_trans_zepsilon2ss (0.18), wmod->a, wmod->b);
+      // FIXME: gsl_filter_tscheb2 (ORDER, freq_c, freq_r, gsl_trans_zepsilon2ss (0.18), wmod->a, wmod->b);
+      gsl_filter_tscheb1_lp (ORDER, freq_c, gsl_trans_zepsilon2ss (0.18), wmod->a, wmod->b);
       for (i = 0; i < ORDER + 1; i++)
 	wmod->a[i] *= wmod->zero_padding;	/* scale to compensate for zero-padding */
       for (i = 0; i < (ORDER + 1) / 2; i++)	/* reverse bs */
