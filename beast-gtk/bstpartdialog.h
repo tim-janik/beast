@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,7 @@
 #include	"bstpianorollctrl.h"
 #include	"bstradiotools.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define BST_TYPE_PART_DIALOG              (bst_part_dialog_get_type ())
@@ -45,7 +42,7 @@ struct _BstPartDialog
 
   GtkWidget	*main_vbox;
   GtkWidget	*scrolled_window;
-  GtkWidget	*proll;
+  BstPianoRoll  *proll;
   BstPianoRollController *proll_ctrl;
   GxkToolbar	*toolbar;
   BstRadioTools	*rtools;
@@ -63,9 +60,6 @@ GType		bst_part_dialog_get_type	(void);
 void		bst_part_dialog_set_proxy	(BstPartDialog	*self,
 						 SfiProxy	 part);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_PART_DIALOG_H__ */

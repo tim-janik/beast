@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bstpartdialog.h"
-
-#include	"bstprocedure.h"
-#include	"bstmenus.h"
+#include "bstpartdialog.h"
+#include "bstprocedure.h"
+#include "bstactivatable.h"
+#include "bstmenus.h"
 
 
 /* --- prototypes --- */
@@ -42,6 +42,10 @@ static void	part_dialog_qnote_choice	(BstPartDialog		*self,
 static void	menu_select_tool		(GtkWidget              *owner,
 						 gulong                  callback_action,
 						 gpointer                popup_data);
+static void     bst_part_dialog_activate        (BstActivatable         *activatable,
+                                                 gulong                  action);
+static gboolean bst_part_dialog_can_activate    (BstActivatable         *activatable,
+                                                 gulong                  action);
 static void	menu_activate_tool		(GtkWidget              *owner,
 						 gulong                  callback_action,
 						 gpointer                popup_data);
@@ -52,7 +56,10 @@ enum {
   ACTION_CLEAR,
   ACTION_CUT,
   ACTION_COPY,
-  ACTION_PASTE
+  ACTION_PASTE,
+  ACTION_UNDO,
+  ACTION_REDO,
+  ACTION_CLEAR_UNDO
 };
 static BstMenuConfigEntry popup_entries[] =
 {
@@ -68,6 +75,10 @@ static BstMenuConfigEntry popup_entries[] =
   { "/Edit/Copy",	"<ctrl>C",	ACTION_CB (COPY),	"<StockItem>",	BST_STOCK_MUSIC_COPY },
   { "/Edit/Paste",	"<ctrl>V",	ACTION_CB (PASTE),	"<StockItem>",	BST_STOCK_MUSIC_PASTE },
   { "/Edit/Clear",	"<ctrl>K",	ACTION_CB (CLEAR),	"<StockItem>",	BST_STOCK_TRASH_SCISSORS },
+  { "/Edit/-----1",	NULL,     	NULL,   0,           	"<Separator>",	0 },
+  { "/Edit/Undo",	"<ctrl>Z",      ACTION_CB (UNDO),	"<StockItem>",	BST_STOCK_UNDO },
+  { "/Edit/Redo",	"<ctrl>R",      ACTION_CB (REDO),	"<StockItem>",	BST_STOCK_REDO },
+  { "/Edit/Clear Undo",	NULL,	        ACTION_CB (CLEAR_UNDO),	"<Item>",	0 },
   { "/-----1",		NULL,		NULL,	0,		"<Separator>",	0 },
   { "/Scripts",		NULL,		NULL,   0,		"<Title>",	0 },
   { "/Test",		NULL,		NULL,	0,		"<Branch>",	0 },
@@ -94,10 +105,13 @@ bst_part_dialog_get_type (void)
 	0,      /* n_preallocs */
 	(GInstanceInitFunc) bst_part_dialog_init,
       };
-      
       type = g_type_register_static (GXK_TYPE_DIALOG,
 				     "BstPartDialog",
 				     &type_info, 0);
+      bst_type_implement_activatable (type,
+                                      bst_part_dialog_activate,
+                                      bst_part_dialog_can_activate,
+                                      NULL);
     }
   
   return type;
@@ -135,7 +149,7 @@ hzoom_changed (BstPartDialog *self,
 	       GtkAdjustment *adjustment)
 {
   if (self->proll)
-    bst_piano_roll_set_hzoom (BST_PIANO_ROLL (self->proll), adjustment->value * 0.08);
+    bst_piano_roll_set_hzoom (self->proll, adjustment->value * 0.08);
 }
 
 static void
@@ -143,7 +157,7 @@ vzoom_changed (BstPartDialog *self,
 	       GtkAdjustment *adjustment)
 {
   if (self->proll)
-    bst_piano_roll_set_vzoom (BST_PIANO_ROLL (self->proll), adjustment->value);
+    bst_piano_roll_set_vzoom (self->proll, adjustment->value);
 }
 
 static void
@@ -182,7 +196,8 @@ bst_part_dialog_init (BstPartDialog *self)
 			      "visible", TRUE,
 			      "parent", self->scrolled_window,
 			      NULL);
-  self->proll_ctrl = bst_piano_roll_controller_new (BST_PIANO_ROLL (self->proll));
+  gxk_nullify_on_destroy (self->proll, &self->proll);
+  self->proll_ctrl = bst_piano_roll_controller_new (self->proll);
   g_object_connect (self->proll,
 		    "swapped_signal::destroy", g_nullify_pointer, &self->proll,
 		    "swapped_signal::canvas-clicked", piano_canvas_clicked, self,
@@ -294,6 +309,8 @@ bst_part_dialog_finalize (GObject *object)
 {
   BstPartDialog *self = BST_PART_DIALOG (object);
 
+  bst_part_dialog_set_proxy (self, 0);
+
   g_object_unref (self->rtools);
   bst_piano_roll_controller_unref (self->proll_ctrl);
   
@@ -308,8 +325,10 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
   if (part)
     g_return_if_fail (BSE_IS_PART (part));
 
-  bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
-  bst_piano_roll_set_proxy (BST_PIANO_ROLL (self->proll), part);
+  if (part)
+    bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
+  if (self->proll)
+    bst_piano_roll_set_proxy (self->proll, part);
 }
 
 static void
@@ -372,7 +391,7 @@ part_dialog_run_proc (GtkWidget *widget,
   BseCategory *cat = bse_category_from_id (category_id);
   
   bst_procedure_exec_auto (cat->type,
-			   "part", SFI_TYPE_PROXY, BST_PIANO_ROLL (self->proll)->proxy,
+			   "part", SFI_TYPE_PROXY, self->proll->proxy,
 			   NULL);
 }
 
@@ -407,7 +426,7 @@ static void
 part_dialog_qnote_choice (BstPartDialog *self,
 			  guint          choice)
 {
-  bst_piano_roll_set_quantization (BST_PIANO_ROLL (self->proll), choice);
+  bst_piano_roll_set_quantization (self->proll, choice);
 }
 
 static void
@@ -424,8 +443,18 @@ menu_activate_tool (GtkWidget *owner,
 		    gulong     callback_action,
 		    gpointer   popup_data)
 {
-  BstPartDialog *self = BST_PART_DIALOG (owner);
-  switch (callback_action)
+  bst_activatable_activate (BST_ACTIVATABLE (owner), callback_action);
+}
+
+static void
+bst_part_dialog_activate (BstActivatable         *activatable,
+                          gulong                  action)
+{
+  BstPartDialog *self = BST_PART_DIALOG (activatable);
+
+  gxk_status_window_push (self);
+
+  switch (action)
     {
     case ACTION_CLEAR:
       bst_piano_roll_controller_clear (self->proll_ctrl);
@@ -439,5 +468,41 @@ menu_activate_tool (GtkWidget *owner,
     case ACTION_PASTE:
       bst_piano_roll_controller_paste (self->proll_ctrl);
       break;
+    case ACTION_UNDO:
+      bse_item_undo (self->proll->proxy);
+      break;
+    case ACTION_REDO:
+      bse_item_redo (self->proll->proxy);
+      break;
+    case ACTION_CLEAR_UNDO:
+      bse_item_clear_undo (self->proll->proxy);
+      break;
+    }
+
+  gxk_status_window_pop ();
+
+  bst_widget_update_activatable (activatable);
+}
+
+static gboolean
+bst_part_dialog_can_activate (BstActivatable         *activatable,
+                              gulong                  action)
+{
+  BstPartDialog *self = BST_PART_DIALOG (activatable);
+  switch (action)
+    {
+    case ACTION_CLEAR:
+    case ACTION_CUT:
+    case ACTION_COPY:
+    case ACTION_PASTE:
+      return TRUE;
+    case ACTION_UNDO:
+      return bse_item_undo_depth (self->proll->proxy) > 0;
+    case ACTION_REDO:
+      return bse_item_redo_depth (self->proll->proxy) > 0;
+    case ACTION_CLEAR_UNDO:
+      return bse_item_undo_depth (self->proll->proxy) + bse_item_undo_depth (self->proll->proxy) > 0;
+    default:
+      return FALSE;
     }
 }

@@ -1,3 +1,8 @@
+Tue Jun 10 22:08:18 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpartdialog.c: added undo/redo/clear-undo menu items,
+	implement activatable interface.
+
 Mon Jun  9 18:07:50 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpianorollctrl.c: undo group selection operations and
