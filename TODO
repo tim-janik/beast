@@ -350,6 +350,7 @@ other stuff:
     libtool
   - Bse::MidiEvent: should be wire-passable
   - Makefile.plugins doesn't get regenerated properly
-
+  - C++ Classes _need_(!) documentation (i.e. Sfi::FBlock, Sfi::String)
+  - add a dependancy to $SFIDL for beast-gtk/bstrecords.idl
 
 vim:set ts=8 sts=2 sw=2:
