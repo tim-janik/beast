@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-20 20:11+0200\n"
-"PO-Revision-Date: 2004-05-19 19:19-0400\n"
+"POT-Creation-Date: 2004-05-25 19:19-0400\n"
+"PO-Revision-Date: 2004-05-25 19:20-0400\n"
 "Last-Translator: Gareth Owen <gowen72@yahoo.comg>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2533,9 +2533,8 @@ msgid "Output Channels:"
 msgstr "Output Channels:"
 
 #: bse/bsebiquadfilter.c:105
-#, fuzzy
 msgid "/Filters/Biquad Types"
-msgstr "Filter Type"
+msgstr "/Filters/Biquad Types"
 
 #: bse/bsebiquadfilter.c:124
 msgid "Filter"
@@ -2652,9 +2651,8 @@ msgid "Filtered Audio Signal"
 msgstr "Filtered Audio Signal"
 
 #: bse/bseconstant.c:84
-#, fuzzy
 msgid "/Other Sources/Constant"
-msgstr "_Other Sources"
+msgstr "/Other Sources/Constant"
 
 #: bse/bseconstant.c:106 bse/bseconstant.c:137
 #, c-format
@@ -2708,9 +2706,8 @@ msgstr ""
 "Synth Mixing Frequency to reduce CPU load"
 
 #: bse/bseinstrumentinput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Voice Input"
-msgstr "_Input & Output"
+msgstr "/Input & Output/Instrument Voice Input"
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 msgid "Note Frequency"
@@ -2741,9 +2738,8 @@ msgid "Velocity while the note is pressed"
 msgstr "Velocity while the note is pressed"
 
 #: bse/bseinstrumentoutput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Output"
-msgstr "_Input & Output"
+msgstr "/Input & Output/Instrument Output"
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2774,9 +2770,8 @@ msgid "High indicates the instrument is done synthesizing"
 msgstr "High indicates the instrument is done synthesising"
 
 #: bse/bsemidicontroller.c:86
-#, fuzzy
 msgid "/Input & Output/MIDI Control Input"
-msgstr "_Input & Output"
+msgstr "/Input & Output/MIDI Control Input"
 
 #: bse/bsemidicontroller.c:137
 msgid "Ctrl Out1"
@@ -2811,9 +2806,8 @@ msgid "MIDI Signal 4"
 msgstr "MIDI Signal 4"
 
 #: bse/bsemidiinput.c:82
-#, fuzzy
 msgid "/Input & Output/MIDI Voice Input"
-msgstr "_Input & Output"
+msgstr "/Input & Output/MIDI Voice Input"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
 msgid "Freq Out"
@@ -2858,9 +2852,8 @@ msgid "Disconnect Out"
 msgstr "Disconnect Out"
 
 #: bse/bsepcminput.c:85
-#, fuzzy
 msgid "/Input & Output/PCM Input"
-msgstr "_Input & Output"
+msgstr "/Input & Output/PCM Input"
 
 #: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
@@ -2881,9 +2874,8 @@ msgid "Right channel output"
 msgstr "Right channel output"
 
 #: bse/bsepcmoutput.c:85
-#, fuzzy
 msgid "/Input & Output/PCM Output"
-msgstr "_Input & Output"
+msgstr "/Input & Output/PCM Output"
 
 #: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
@@ -2905,26 +2897,25 @@ msgstr "Right channel Input"
 
 #: bse/bseserver.c:503
 msgid "Advice about MIDI device selections"
-msgstr ""
+msgstr "Advice about MIDI device selections"
 
 #: bse/bseserver.c:504
 msgid "Alert me about MIDI device selections"
-msgstr ""
+msgstr "Alert me about MIDI device selections"
 
 #: bse/bseserver.c:505
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
-msgstr ""
+msgstr "failed to open midi device %s (reverting to null device): %s"
 
 #: bse/bseserver.c:547
 #, c-format
 msgid "failed to open output file \"%s\": %s"
-msgstr ""
+msgstr "failed to open output file \"%s\": %s"
 
 #: bse/bsesnooper.c:77
-#, fuzzy
 msgid "/Misc/Snooper"
-msgstr "Snooper"
+msgstr "/Misc/Snooper"
 
 #: bse/bsesnooper.c:108
 msgid "Signal In"
@@ -2943,9 +2934,8 @@ msgstr ""
 "forms and modulation inputs."
 
 #: bse/bsestandardosc.c:109
-#, fuzzy
 msgid "/Audio Sources/Standard Oscillator"
-msgstr "/Modules/Audio Sources/Standard Oscillator"
+msgstr "/Audio Sources/Standard Oscillator"
 
 #: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
 msgid "Wave Form"
@@ -3052,9 +3042,8 @@ msgid "Syncronization Output"
 msgstr "Syncronisation Output"
 
 #: bse/bsesubiport.c:90
-#, fuzzy
 msgid "/Virtualization/Virtual Input"
-msgstr "_Virtualisation"
+msgstr "/Virtualisation/Virtual Input"
 
 #: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
 #, c-format
@@ -3077,9 +3066,8 @@ msgid "Virtual input %u"
 msgstr "Virtual input %u"
 
 #: bse/bsesuboport.c:90
-#, fuzzy
 msgid "/Virtualization/Virtual Output"
-msgstr "_Virtualisation"
+msgstr "/Virtualisation/Virtual Output"
 
 #: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
 #, c-format
@@ -3092,9 +3080,8 @@ msgid "Virtual output %u"
 msgstr "Virtual output %u"
 
 #: bse/bsesubsynth.c:97
-#, fuzzy
 msgid "/Virtualization/Virtual Sub Synth"
-msgstr "_Virtualisation"
+msgstr "/Virtualisation/Virtual Sub Synth"
 
 #: bse/bsesubsynth.c:124
 msgid "Synthesis Network"
@@ -3145,9 +3132,8 @@ msgid "Last modification time"
 msgstr "Last modification time"
 
 #: bse/bsewaveosc.c:97
-#, fuzzy
 msgid "/Audio Sources/Wave Oscillator"
-msgstr "/Modules/Audio Sources/Standard Oscillator"
+msgstr "/Audio Sources/Wave Oscillator"
 
 #: bse/bsewaveosc.c:123
 msgid "Wave to play"
