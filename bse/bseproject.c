@@ -479,25 +479,13 @@ bse_project_restore (BseProject *self,
   scanner = storage->scanner;
 
   g_object_ref (self);
-  
-  while (!bse_storage_input_eof (storage) && expected_token == G_TOKEN_NONE)
-    {
-      g_scanner_get_next_token (scanner);
-      if (scanner->token == G_TOKEN_EOF)
-	break;
-      else if (scanner->token == '(')
-	expected_token = bse_storage_parse_statement (storage, self);
-      else
-	expected_token = G_TOKEN_EOF; /* wanted '(' */
-    }
 
+  expected_token = bse_storage_restore_item (storage, BSE_ITEM (self));
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
 
   bse_storage_resolve_item_links (storage);
 
-  expected_token = expected_token != G_TOKEN_NONE;
-  
   g_object_unref (self);
 
   return (scanner->parse_errors >= scanner->max_parse_errors ?

@@ -724,7 +724,7 @@ bse_wave_restore_private (BseObject  *object,
       if (g_scanner_get_next_token (scanner) != G_TOKEN_FLOAT && scanner->token != G_TOKEN_INT)
 	return G_TOKEN_FLOAT;
       parsed_wchunk.mix_freq = scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int;
-      expected_token = bse_storage_parse_rest (storage,
+      expected_token = bse_storage_parse_rest (storage, ')',
 					       (BseTryStatement) parse_wave_chunk,
 					       wave, &parsed_wchunk);
       if (expected_token == G_TOKEN_NONE && parsed_wchunk.wave_handle)

@@ -192,8 +192,7 @@ bse_storage_reset (BseStorage *self)
 			  BSE_STORAGE_FLAG_NEEDS_BREAK |
 			  BSE_STORAGE_FLAG_AT_BOL |
 			  BSE_STORAGE_FLAG_PUT_DEFAULTS |
-			  BSE_STORAGE_FLAG_SELF_CONTAINED |
-			  BSE_STORAGE_FLAG_PROXIES_ENABLED);
+			  BSE_STORAGE_FLAG_SELF_CONTAINED);
 }
 
 void
@@ -427,6 +426,10 @@ item_link_resolved (gpointer     data,
     }
 }
 
+static BseTokenType item_restore_try_statement (gpointer    item,
+                                                BseStorage *storage,
+                                                gpointer    user_data);
+
 static GTokenType
 restore_item_property (BseItem    *item,
 		       BseStorage *storage)
@@ -540,7 +543,9 @@ restore_container_child (BseContainer *container,
   storage_path_table_insert (storage, container, uname, item);
 
   /* restore_item reads out closing parenthesis */
-  expected_token = bse_storage_restore_item (storage, item);
+  g_object_ref (item);
+  expected_token = bse_storage_parse_rest (storage, ')', item_restore_try_statement, item, NULL);
+  g_object_unref (item);
   if (expected_token != G_TOKEN_NONE)
     return expected_token == BSE_TOKEN_UNMATCHED ? G_TOKEN_ERROR : expected_token;
 
@@ -599,35 +604,8 @@ bse_storage_restore_item (BseStorage *self,
   g_object_ref (self);
   g_object_ref (item);
 
-  expected_token = bse_storage_parse_rest (self, item_restore_try_statement, item, NULL);
+  expected_token = bse_storage_parse_rest (self, G_TOKEN_EOF, item_restore_try_statement, item, NULL);
 
-  g_object_unref (item);
-  g_object_unref (self);
-
-  return expected_token;
-}
-
-GTokenType
-bse_storage_parse_statement (BseStorage *self,
-			     gpointer    item)
-{
-  GTokenType expected_token;
-
-  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
-  g_return_val_if_fail (BSE_IS_ITEM (item), G_TOKEN_ERROR);
-
-  g_object_ref (self);
-  g_object_ref (item);
-  expected_token = item_restore_try_statement (item, self, NULL);
-  if (expected_token == BSE_TOKEN_UNMATCHED)
-    {
-      gchar *identifier;
-      if (g_scanner_get_next_token (self->scanner) != G_TOKEN_IDENTIFIER)
-	identifier = "[internal try_statement() error]";
-      else
-	identifier = self->scanner->value.v_identifier;
-      expected_token = bse_storage_warn_skip (self, "unknown identifier: %s", identifier);
-    }
   g_object_unref (item);
   g_object_unref (self);
 
@@ -732,14 +710,6 @@ storage_path_table_resolve_upath (BseStorage   *self,
     }
   else
     return storage_path_table_lookup (self, container, upath);
-}
-
-void
-bse_storage_enable_proxies (BseStorage *storage)
-{
-  g_return_if_fail (BSE_IS_STORAGE (storage));
-
-  BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_PROXIES_ENABLED);
 }
 
 static inline const gchar*
@@ -1236,18 +1206,8 @@ storage_skipc_statement (BseStorage *storage,
 }
 
 GTokenType
-bse_storage_skip_statement (BseStorage *storage)
-{
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
-  g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
-
-  g_scanner_get_next_token (storage->scanner);
-  
-  return storage_skipc_statement (storage, 1);
-}
-
-GTokenType
 bse_storage_parse_rest (BseStorage     *storage,
+                        GTokenType      closing_token,
                         BseTryStatement try_statement,
                         gpointer        func_data,
                         gpointer        user_data)
@@ -1262,54 +1222,46 @@ bse_storage_parse_rest (BseStorage     *storage,
   /* we catch any BSE_TOKEN_UNMATCHED at this level, this is merely
    * a "magic" token value to implement the try_statement() semantics
    */
-  while (!bse_storage_input_eof (storage))
+  while (!bse_storage_input_eof (storage) &&
+         g_scanner_get_next_token (scanner) == '(')
     {
-      g_scanner_get_next_token (scanner);
+      GTokenType expected_token;
       
-      if (scanner->token == '(')
+      /* it is only usefull to feature statements that start
+       * out with an identifier (syntactically)
+       */
+      if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
         {
-          GTokenType expected_token;
-          
-          /* it is only usefull to feature statements that start
-           * out with an identifier (syntactically)
-           */
-          if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
-            {
-              /* eat token and bail out */
-              g_scanner_get_next_token (scanner);
-              return G_TOKEN_IDENTIFIER;
-            }
-
-          /* parse a statement */
-          if (try_statement)
-            expected_token = try_statement (func_data, storage, user_data);
-          else
-            expected_token = BSE_TOKEN_UNMATCHED;
-          
-          /* if there are no matches, skip statement */
-          if (expected_token == BSE_TOKEN_UNMATCHED)
-            {
-              if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
-                {
-                  g_warning (G_STRLOC ": try_statement() implementation <%p> is broken", try_statement);
-                  return G_TOKEN_ERROR;
-                }
-              expected_token = bse_storage_warn_skip (storage,
-                                                      "unknown identifier: %s",
-                                                      scanner->value.v_identifier);
-            }
-          
-          /* bail out on errors */
-          if (expected_token != G_TOKEN_NONE)
-            return expected_token;
+          /* eat token and bail out */
+          g_scanner_get_next_token (scanner);
+          return G_TOKEN_IDENTIFIER;
         }
-      else if (scanner->token == ')')
-        return G_TOKEN_NONE;
+      
+      /* parse a statement */
+      if (try_statement)
+        expected_token = try_statement (func_data, storage, user_data);
       else
-        break;
+        expected_token = BSE_TOKEN_UNMATCHED;
+      
+      /* if there are no matches, skip statement */
+      if (expected_token == BSE_TOKEN_UNMATCHED)
+        {
+          if (g_scanner_get_next_token (scanner) != G_TOKEN_IDENTIFIER)
+            {
+              g_warning (G_STRLOC ": try_statement() implementation <%p> is broken", try_statement);
+              return G_TOKEN_ERROR;
+            }
+          expected_token = bse_storage_warn_skip (storage,
+                                                  "unknown identifier: %s",
+                                                  scanner->value.v_identifier);
+        }
+      
+      /* bail out on errors */
+      if (expected_token != G_TOKEN_NONE)
+        return expected_token;
     }
-  
-  return ')';
+
+  return scanner->token == closing_token ? G_TOKEN_NONE : closing_token;
 }
 
 gboolean
@@ -1317,7 +1269,7 @@ bse_storage_input_eof (BseStorage *storage)
 {
   g_return_val_if_fail (BSE_IS_STORAGE (storage), FALSE);
   g_return_val_if_fail (BSE_STORAGE_READABLE (storage), FALSE);
-  
+
   return (g_scanner_eof (storage->scanner) ||
           storage->scanner->parse_errors >= storage->scanner->max_parse_errors);
 }
@@ -1342,6 +1294,17 @@ bse_storage_warn (BseStorage  *storage,
     g_printerr ("during storage: %s", string);
   
   g_free (string);
+}
+
+static GTokenType
+bse_storage_skip_statement (BseStorage *storage)
+{
+  g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
+  g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
+
+  g_scanner_get_next_token (storage->scanner);
+  
+  return storage_skipc_statement (storage, 1);
 }
 
 GTokenType
@@ -1617,68 +1580,6 @@ bse_storage_parse_note (BseStorage *storage,
   
   return G_TOKEN_NONE;
 }
-
-#if 0 // FIXME: remove
-static GTokenType
-parse_note (BseStorage *storage,
-	    gboolean    maybe_void,
-	    gint       *v_note)
-{
-  gchar bbuffer[BSE_BBUFFER_SIZE];
-  GTokenType token = bse_storage_parse_note (storage, v_note, bbuffer);
-
-  if (token != G_TOKEN_NONE)
-    return token;
-
-  if (*v_note == BSE_NOTE_UNPARSABLE)
-    {
-      bse_storage_error (storage,
-			 "invalid note definition `%s'",
-			 bbuffer);
-      return G_TOKEN_STRING;
-    }
-
-  if (*v_note == BSE_NOTE_VOID && !maybe_void)
-    {
-      *v_note = BSE_KAMMER_NOTE;
-      bse_storage_warn (storage,
-			"note `%s' out of range",
-			bbuffer);
-    }
-  return G_TOKEN_NONE;
-}
-
-BseErrorType
-bse_storage_store_procedure (gpointer          storage,
-			     BseProcedureClass *proc,
-			     const GValue      *ivalues,
-			     GValue            *ovalues)
-{
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_STORAGE_WRITABLE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_STORAGE_PROXIES_ENABLED (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
-
-  bse_storage_handle_break (storage);
-  bse_storage_printf (storage, "(bse-proc-eval \"%s\" ", proc->name);
-  bse_storage_push_level (storage);
-  if (proc->n_in_pspecs)
-    {
-      guint i;
-
-      for (i = 0; i < proc->n_in_pspecs; i++)
-	{
-	  bse_storage_break (storage);
-	  bse_storage_put_value (storage, ivalues + i, proc->in_pspecs[i]);
-	}
-    }
-  bse_storage_pop_level (storage);
-  bse_storage_handle_break (storage);
-  bse_storage_putc (storage, ')');
-
-  return BSE_ERROR_NONE;
-}
-#endif
 
 void
 bse_storage_put_param (BseStorage   *storage,

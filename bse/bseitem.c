@@ -1089,25 +1089,15 @@ static void
 undo_restore_item (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
 {
-  BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
   BseItem *item = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
+  BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
   GTokenType expected_token = G_TOKEN_NONE;
   GScanner *scanner;
 
   bse_storage_input_text (storage, ustep->data[1].v_pointer);
   scanner = storage->scanner;
 
-  while (!bse_storage_input_eof (storage) && expected_token == G_TOKEN_NONE)
-    {
-      g_scanner_get_next_token (scanner);
-      if (scanner->token == G_TOKEN_EOF)
-        break;
-      else if (scanner->token == '(')
-        expected_token = bse_storage_parse_statement (storage, item);
-      else
-        expected_token = G_TOKEN_EOF; /* wanted '(' */
-    }
-
+  expected_token = bse_storage_restore_item (storage, item);
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
 

@@ -1,3 +1,14 @@
+Wed Jun  4 21:54:51 2003  Tim Janik  <timj@gtk.org>
+
+	* bseproject.c:
+	* bseitem.c: simplify code by using BseStorage methods.
+
+	* bseprocedure.[hc]: cleaned up dead/unused code.
+
+	* bsestorage.[hc]: code cleanups. removed unused mechanisms.
+
+	* bsewave.c: adapt to bse_storage_parse_rest() changes.
+
 Fri May 30 18:55:52 2003  Tim Janik  <timj@gtk.org>
 
 	* implemented undo for BSE. We've got unlimited undo/redo for most

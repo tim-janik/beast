@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +20,7 @@
 
 #include	<bse/bseparam.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
-
+G_BEGIN_DECLS
 
 /* --- BSE type macros --- */
 #define	BSE_PROCEDURE_TYPE(proc)	(G_TYPE_FROM_CLASS (proc))
@@ -81,9 +76,6 @@ BseErrorType bse_procedure_exec	  	  (const gchar		*proc_name,
 					   ...);
 BseErrorType bse_procedure_exec_void  	  (const gchar		*proc_name,
 					   ...);
-BseErrorType bse_procedure_store          (const gchar		*proc_name,
-					   BseStorage		*storage,
-					   ...);
 GType	     bse_procedure_lookup	  (const gchar		*proc_name);
 BseErrorType bse_procedure_marshal_valist (GType		 proc_type,
 					   const GValue		*first_value,
@@ -112,21 +104,7 @@ const gchar* bse_procedure_type_register (const gchar		*name,
 					  const gchar		*blurb,
 					  BsePlugin		*plugin,
 					  GType  		*ret_type);
-#if 0
-gchar*	bse_procedure_eval		(const gchar		*expr,
-					 BseErrorType		*error_p,
-					 GValue			*value);
-gchar*	bse_procedure_marshal_retval	(BseErrorType		 error,
-					 GValue			*value,
-					 const gchar		*warnings);
-gchar*	bse_procedure_unmarshal_retval	(const gchar		*string,
-					 BseErrorType		*error_p,
-					 GValue			*value);
-#endif
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_PROCEDURE_H__ */

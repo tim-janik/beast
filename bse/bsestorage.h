@@ -39,7 +39,6 @@ G_BEGIN_DECLS
 #define	BSE_STORAGE_AT_BOL(st)		((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_AT_BOL) != 0)
 #define	BSE_STORAGE_PUT_DEFAULTS(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_PUT_DEFAULTS) != 0)
 #define	BSE_STORAGE_SELF_CONTAINED(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_SELF_CONTAINED) != 0)
-#define	BSE_STORAGE_PROXIES_ENABLED(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_PROXIES_ENABLED) != 0)
 
 
 /* --- BseStorage flags --- */
@@ -50,8 +49,7 @@ typedef enum	/*< skip >*/
   BSE_STORAGE_FLAG_NEEDS_BREAK	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2),
   BSE_STORAGE_FLAG_AT_BOL	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 3),
   BSE_STORAGE_FLAG_PUT_DEFAULTS	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 4),
-  BSE_STORAGE_FLAG_SELF_CONTAINED  = 1 << (BSE_OBJECT_FLAGS_USHIFT + 5),
-  BSE_STORAGE_FLAG_PROXIES_ENABLED = 1 << (BSE_OBJECT_FLAGS_USHIFT + 6)
+  BSE_STORAGE_FLAG_SELF_CONTAINED  = 1 << (BSE_OBJECT_FLAGS_USHIFT + 5)
 } BseStorageFlags;
 #define BSE_STORAGE_FLAGS_USHIFT	  (BSE_OBJECT_FLAGS_USHIFT + 7)
 typedef enum	/*< skip >*/
@@ -102,13 +100,10 @@ BseErrorType	bse_storage_input_text		(BseStorage	*storage,
 						 const gchar	*text);
 GTokenType	bse_storage_restore_item	(BseStorage	*storage,
 						 gpointer	 item);
-GTokenType	bse_storage_parse_statement	(BseStorage	*storage,
-						 gpointer	 item);
 void		bse_storage_store_item		(BseStorage	*storage,
 						 gpointer	 item);
 void		bse_storage_store_child		(BseStorage	*storage,
 						 gpointer	 item);
-void		bse_storage_enable_proxies	(BseStorage	*storage);
 
 
 /* --- writing --- */
@@ -128,15 +123,18 @@ void		bse_storage_putr		(BseStorage	*storage,
 void		bse_storage_printf		(BseStorage	*storage,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2, 3);
+void		bse_storage_needs_break		(BseStorage	*storage);
 void		bse_storage_handle_break	(BseStorage	*storage);
 void		bse_storage_break		(BseStorage	*storage);
-void		bse_storage_needs_break		(BseStorage	*storage);
 void		bse_storage_put_param		(BseStorage	*storage,
 						 const GValue	*value,
 						 GParamSpec	*pspec);
 void		bse_storage_put_value		(BseStorage	*storage,
 						 const GValue	*value,
 						 GParamSpec	*pspec);
+void		bse_storage_put_item_link	(BseStorage	*storage,
+						 BseItem	*from_item,
+						 BseItem	*to_item);
 void		bse_storage_put_data_handle	(BseStorage	*storage,
 						 guint		 significant_bits,
 						 GslDataHandle	*handle,
@@ -146,22 +144,15 @@ void		bse_storage_flush_fd		(BseStorage	*storage,
 gchar*		bse_storage_mem_flush		(BseStorage	*storage);
 const gchar*	bse_storage_peek_text		(BseStorage	*storage,
 						 guint		*length);
-BseErrorType	bse_storage_store_procedure	(gpointer	   storage,
-						 BseProcedureClass *proc,
-						 const GValue      *ivalues,
-						 GValue            *ovalues);
-void		bse_storage_put_item_link	(BseStorage	*storage,
-						 BseItem	*from_item,
-						 BseItem	*to_item);
 
 
 /* --- reading --- */
 gboolean	bse_storage_input_eof		(BseStorage	*storage);
+void		bse_storage_unexp_token		(BseStorage	*storage,
+						 GTokenType	 expected_token);
 void		bse_storage_error		(BseStorage	*storage,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2,3);
-void		bse_storage_unexp_token		(BseStorage	*storage,
-						 GTokenType	 expected_token);
 void		bse_storage_warn		(BseStorage	*storage,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2,3);
@@ -174,8 +165,8 @@ GTokenType	bse_storage_warn_skip		(BseStorage	*storage,
 GTokenType	bse_storage_warn_skipc		(BseStorage	*storage,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2,3);
-GTokenType	bse_storage_skip_statement	(BseStorage	*storage);
 GTokenType	bse_storage_parse_rest		(BseStorage     *storage,
+                                                 GTokenType      closing_token,
 						 BseTryStatement try_statement,
 						 gpointer        func_data,
 						 gpointer        user_data);
