@@ -1,3 +1,7 @@
+Sat Jun 21 19:28:53 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: release 0.5.2, binary & interface ages 0.
+
 Fri Jun 20 07:03:08 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* docs/generated/css/default.css: fixed toc links underlining.
