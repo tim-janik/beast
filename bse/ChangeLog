@@ -1,3 +1,14 @@
+Fri Oct 15 03:55:11 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepart.c: fixed negative control events and fine tune parsing.
+
+	* bsewaveosc.[hc], bsewaveosc.proc: introduced channel property
+	to control playback channel for multi-channel samples (stereo).
+	changed seek-API to support syncronous seeking of multiple wave
+	oscillators.
+
+	* gslwaveosc.c, gslwaveosc-aux.c: properly clamp the configured channel.
+
 Fri Oct 15 01:27:52 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesnet.c: don't serialize auto-activate=#f property value.

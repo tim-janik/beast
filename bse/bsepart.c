@@ -1392,7 +1392,8 @@ bse_part_restore_private (BseObject  *object,
         return bse_storage_warn_skip (storage, "ignoring notes with invalid channel: %u", channel);
       while (g_scanner_peek_next_token (scanner) != ')')
         {
-          guint tick, duration, note, fine_tune = 0;
+          guint tick, duration, note;
+          gint fine_tune = 0;
           gfloat velocity = 1.0;
           gboolean negate;
           parse_or_return (scanner, '(');
@@ -1406,7 +1407,9 @@ bse_part_restore_private (BseObject  *object,
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               g_scanner_get_next_token (scanner);       /* fine_tune */
-              fine_tune = negate ? -scanner->value.v_int64 : scanner->value.v_int64;
+              fine_tune = scanner->value.v_int64;
+              if (negate)
+                fine_tune = -fine_tune;
               negate = bse_storage_check_parse_negate (storage);
               if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
                 {
@@ -1440,7 +1443,9 @@ bse_part_restore_private (BseObject  *object,
           if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
             {
               g_scanner_get_next_token (scanner);       /* value as int */
-              value = negate ? -scanner->value.v_int64 : scanner->value.v_int64;
+              value = scanner->value.v_int64;
+              if (negate)
+                value = -value;
             }
           else if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
             {
@@ -1466,7 +1471,8 @@ bse_part_restore_private (BseObject  *object,
     }
   else if (quark == quark_insert_note)       /* pre-0.6.0 */
     {
-      guint tick, duration, note, fine_tune = 0;
+      guint tick, duration, note;
+      gint fine_tune = 0;
       gfloat velocity = 1.0;
       gboolean negate;
 
@@ -1481,7 +1487,9 @@ bse_part_restore_private (BseObject  *object,
       if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
 	{
 	  g_scanner_get_next_token (scanner);		/* eat int */
-	  fine_tune = negate ? -scanner->value.v_int64 : scanner->value.v_int64;
+	  fine_tune = scanner->value.v_int64;
+	  if (negate)
+            fine_tune = -fine_tune;
           negate = bse_storage_check_parse_negate (storage);
 	  if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
 	    {
@@ -1511,7 +1519,9 @@ bse_part_restore_private (BseObject  *object,
       if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
 	{
 	  g_scanner_get_next_token (scanner);		/* eat int */
-	  value = negate ? -scanner->value.v_int64 : scanner->value.v_int64;
+	  value = scanner->value.v_int64;
+          if (negate)
+            value = -value;
         }
       else if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
         {

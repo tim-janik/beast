@@ -32,6 +32,7 @@ enum
 {
   PARAM_0,
   PARAM_WAVE,
+  PARAM_CHANNEL,
   PARAM_FM_PERC,
   PARAM_FM_EXP,
   PARAM_FM_OCTAVES
@@ -104,6 +105,7 @@ bse_wave_osc_init (BseWaveOsc *self)
   self->n_octaves = 1;
   self->config.start_offset = 0;
   self->config.play_dir = +1;
+  self->config.channel = 0;
   self->config.wchunk_data = NULL;
   self->config.wchunk_from_freq = NULL;
   self->config.fm_strength = self->fm_strength / 100.0;
@@ -240,6 +242,10 @@ bse_wave_osc_set_property (GObject      *object,
             }
         }
       break;
+    case PARAM_CHANNEL:
+      self->config.channel = g_value_get_int (value) - 1;
+      bse_wave_osc_update_modules (self);
+      break;
     case PARAM_FM_PERC:
       self->fm_strength = sfi_value_get_real (value);
       if (!self->config.exponential_fm)
@@ -282,6 +288,9 @@ bse_wave_osc_get_property (GObject    *object,
     {
     case PARAM_WAVE:
       bse_value_set_object (value, self->wave);
+      break;
+    case PARAM_CHANNEL:
+      g_value_set_int (value, self->config.channel + 1);
       break;
     case PARAM_FM_PERC:
       sfi_value_set_real (value, self->fm_strength);
@@ -452,13 +461,11 @@ typedef struct {
 } PcmPos;
 
 static void
-pcm_pos_access (BseModule *module,
+pcm_pos_access (BseModule *module,      /* EngineThread */
                 gpointer   data)
 {
   GslWaveOscData *wosc = module->user_data;
   PcmPos *pos = data;
-  
-  /* this runs in the GSL engine threads */
 
   pos->stamp = GSL_TICK_STAMP;
   pos->module_pcm_position = gsl_wave_osc_cur_pos (wosc);
@@ -471,12 +478,10 @@ pcm_pos_access (BseModule *module,
 }
 
 static void
-pcm_pos_access_free (gpointer data)
+pcm_pos_access_free (gpointer data)     /* UserThread */
 {
   PcmPos *pos = data;
   BseWaveOsc *self = pos->wosc;
-  
-  /* this is guaranteed by the GSL engine to be run in user thread */
   
   if (pos->perc < 0)
     g_signal_emit (self, signal_notify_pcm_position, 0, pos->stamp, pos->module_pcm_position);
@@ -486,18 +491,41 @@ pcm_pos_access_free (gpointer data)
 }
 
 void
-bse_wave_osc_request_pcm_position (BseWaveOsc *self,
-                                   gfloat      perc)
+bse_wave_osc_mass_seek (guint              n_woscs,
+                        BseWaveOsc       **woscs,
+                        gfloat             perc)
+{
+  guint i;
+  g_return_if_fail (perc >= 0 && perc <= 100);
+  BseTrans *trans = bse_trans_open();
+  for (i = 0; i < n_woscs; i++)
+    {
+      BseWaveOsc *wosc = woscs[i];
+      g_return_if_fail (BSE_IS_WAVE_OSC (wosc));
+      if (BSE_SOURCE_PREPARED (wosc))
+        {
+          PcmPos *pos = g_new (PcmPos, 1);
+          pos->perc = perc;
+          pos->wosc = g_object_ref (wosc);
+          bse_source_access_modules (BSE_SOURCE (pos->wosc),
+                                     pcm_pos_access,
+                                     pos,
+                                     pcm_pos_access_free,
+                                     NULL);
+        }
+    }
+  bse_trans_commit (trans);
+}
+
+void
+bse_wave_osc_request_pcm_position (BseWaveOsc *self)
 {
   g_return_if_fail (BSE_IS_WAVE_OSC (self));
-
-  /* we seek for 0 <= perc <= 100 and we emit notification for perc < 0 */
   
   if (BSE_SOURCE_PREPARED (self))
     {
       PcmPos *pos = g_new (PcmPos, 1);
-      
-      pos->perc = perc;
+      pos->perc = -1;
       pos->wosc = g_object_ref (self);
       bse_source_access_modules (BSE_SOURCE (self),
                                  pcm_pos_access,
@@ -531,6 +559,10 @@ bse_wave_osc_class_init (BseWaveOscClass *class)
                               PARAM_WAVE,
                               bse_param_spec_object ("wave", _("Wave"), _("Wave used as oscillator source"),
                                                      BSE_TYPE_WAVE, SFI_PARAM_STANDARD));
+  bse_object_class_add_param (object_class, _("Wave"),
+                              PARAM_CHANNEL,
+                              sfi_pspec_int ("channel", _("Channel"), _("The audio channel to play, usually 1 is left, 2 is right"),
+                                             1, 1, 256, 2, SFI_PARAM_STANDARD));
   bse_object_class_add_param (object_class, _("Modulation"),
                               PARAM_FM_PERC,
                               sfi_pspec_real ("fm_perc", _("Input Modulation [%]"),

@@ -22,7 +22,7 @@
 #define CHECK_FREQ		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_FREQ)
 #define CHECK_MOD		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_MOD)
 #define EXPONENTIAL_FM		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_EXP_FM)
-#define DIRSTRIDE(b)		(b->dirstride)	 /* (1) change for n_channel stepping */
+#define DIRSTRIDE(b)		(b->dirstride)	 /* changes according to n_channels and directions */
 
 
 static void
@@ -60,7 +60,6 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      last_mod_level = wosc->last_mod_level;
 	      wosc_j = wosc->j;
 	      boundary = block->end;
-	      /* FIXME: g_assert (ABS (block->dirstride) == 1); */
 	      last_sync_level = sync_level;
 	    }
 	}
@@ -126,7 +125,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      block->play_dir = wosc->config.play_dir;
 	      block->offset = next_offset;
 	      gsl_wave_chunk_use_block (wosc->wchunk, block);
-	      wosc->x = block->start + wosc->config.channel;
+	      wosc->x = block->start + CLAMP (wosc->config.channel, 0, wosc->wchunk->n_channels - 1);
 	      boundary = block->end;
 	    }
 	  

@@ -332,7 +332,7 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   wosc->block.play_dir = wosc->config.play_dir;
   wosc->block.offset = wosc->config.start_offset;
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
-  wosc->x = wosc->block.start + wosc->config.channel;
+  wosc->x = wosc->block.start + CLAMP (wosc->config.channel, 0, wosc->wchunk->n_channels - 1);
 
   DEBUG ("wave lookup: want=%f got=%f length=%lu\n",
 	 base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);

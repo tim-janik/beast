@@ -53,7 +53,9 @@ struct _BseWaveOscClass
 
 
 /* --- prototypes --- */
-void    bse_wave_osc_request_pcm_position       (BseWaveOsc        *self,
+void    bse_wave_osc_request_pcm_position       (BseWaveOsc        *self);
+void    bse_wave_osc_mass_seek                  (guint              n_woscs,
+                                                 BseWaveOsc       **woscs,
                                                  gfloat             perc);
 void    bse_wave_osc_set_from_esample           (BseWaveOsc        *self,
                                                  BseEditableSample *esample);

@@ -39,15 +39,14 @@ METHOD (BseWaveOsc, request-pcm-position) {
   if (!BSE_IS_WAVE_OSC (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_wave_osc_request_pcm_position (self, -1);
+  bse_wave_osc_request_pcm_position (self);
   
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseWaveOsc, pcm-seek-perc) {
-  HELP	= "Seek oscillator to a given pcm percentage during playback.";
-  IN	= bse_param_spec_object ("wosc", NULL, "Wave Oscilator",
-				 BSE_TYPE_WAVE_OSC, SFI_PARAM_STANDARD);
+PROCEDURE (bse-wave-osc-mass-seek-perc, "Seek Wave Oscillators") {
+  HELP	= "Seek a list of wave oscillators to a pcm position given in percentage. The oscillators will seek to the given position syncronously.";
+  IN    = bse_param_spec_boxed ("wosc-seq", "Wave Oscilators", NULL, BSE_TYPE_ITEM_SEQ, SFI_PARAM_STANDARD); // FIXME: using BseItemSeq because BseWaveOscSeq requires idl+C++
   IN	= sfi_pspec_real ("pos_perc", NULL, NULL,
 			  0, 0, 100, 1,
 			  SFI_PARAM_STANDARD);
@@ -56,14 +55,17 @@ METHOD (BseWaveOsc, pcm-seek-perc) {
 	GValue            *out_values)
 {
   /* extract parameter values */
-  BseWaveOsc *self = bse_value_get_object (in_values++);
+  BseItemSeq *iseq = bse_value_get_boxed (in_values++);
   gfloat      pos  = sfi_value_get_real (in_values++);
-  
-  /* check parameters */
-  if (!BSE_IS_WAVE_OSC (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  bse_wave_osc_request_pcm_position (self, CLAMP (pos, 0, 100));
+  guint i, n = iseq ? iseq->n_items : 0;
+  BseWaveOsc **woscs = g_alloca (sizeof (BseWaveOsc*) * n);
+  for (i = 0; i < n; i++)
+    if (!BSE_IS_WAVE_OSC (iseq->items[i]))      /* check parameters */
+      return BSE_ERROR_PROC_PARAM_INVAL;
+    else
+      woscs[i] = (BseWaveOsc*) iseq->items[i];
+  if (n)
+    bse_wave_osc_mass_seek (n, woscs, pos);
   
   return BSE_ERROR_NONE;
 }
