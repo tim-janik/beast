@@ -70,10 +70,10 @@ beast_sources = $(strip \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
-	bstparam-label.c	bstparam-toggle.c	bstparam-spinner.c \
-	bstparam-scale.c	bstparam-choice.c	bstparam-note-sequence.c \
-	bstparam-entry.c	bstparam-strnum.c	bstparam-note-spinner.c \
-	bstparam-proxy.c	\
+	bstparam-choice.c	bstparam-note-sequence.c	\
+	bstparam-note-spinner.c	bstparam-proxy.c		\
+	bstparam-scale.c	bstparam-searchpath.c		\
+	bstparam-time.c		\
 	bstrackeditor-covers.c	bstmarshal.c \
 )
 beast_extra_files = $(strip \

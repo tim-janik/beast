@@ -31,7 +31,6 @@ $(srcdir)/bseevaluator.cc: bseevaluator.gen-idl.h
 
 plugin_LTLIBRARIES = evaluator.la
 
-EXTRA_DIST += $(strip \
-	bseevaluator.h \
-	bseevaluator.cc \
+EXTRA_DIST += $(strip	\
+	bseevaluator.cc	\
 )
