@@ -1,0 +1,42 @@
+;BseProjectV0
+
+
+(BseWaveRepo::Default
+  (modification-time "2002-01-12 12:42:41")
+  (creation-time "2002-01-12 12:42:41")
+  (BseWave::BseWave-1
+    ;(load-wave "/home/timj/tmp/sample.wave410.gslwave" "sample.wave410")
+    ;(set-locator "/home/timj/tmp/sample.wave410.gslwave" "sample.wave410")
+    (load-wave "/exports/public/sound/wav/koks.wav" "/exports/public/sound/wav/koks.wav")
+    (set-locator "/exports/public/sound/wav/koks.wav" "/exports/public/sound/wav/koks.wav")
+  ))
+(BseMidiSynth::MIDI-Net
+  (snet (BseSNet::MIDI-Instrument))
+  (n-voices 4)
+  (modification-time "2002-01-12 12:42:52")
+  (creation-time "2002-01-12 12:42:52"))
+(BseSNet::MIDI-Instrument
+  (modification-time "2002-01-12 12:42:55")
+  (creation-time "2002-01-12 12:42:55")
+  (BseMidiKeyboard::BseMidiKeyboard-1
+    (parasite f "BstRouterCoords" 2 308.000000 80.000000))
+  (BseOutPort::LeftOut
+    (port-name "left_out")
+    (source-input "input" BseSNet:3.BseMult:5 "mono_out")
+    (parasite f "BstRouterCoords" 2 -247.000000 120.000000))
+  (BseOutPort::RightOut
+    (port-name "right_out")
+    (source-input "input" BseSNet:3.BseMult:5 "mono_out")
+    (parasite f "BstRouterCoords" 2 -248.000000 6.000000))
+  (BseWaveOsc::BseWaveOsc-1
+    (wave (BseWaveRepo::Default.BseWave::BseWave-1))
+    (source-input "freq_in" BseSNet:3.BseMidiKeyboard:1 "frequency")
+    (source-input "sync_in" BseSNet:3.BseMidiKeyboard:1 "gate")
+    (parasite f "BstRouterCoords" 2 134.000000 78.000000))
+  (BseMult::BseMult-1
+    (source-input "mono_in1" BseSNet:3.BseWaveOsc:4 "wave_out")
+    (source-input "mono_in2" BseSNet:3.BseSimpleADSR:6 "adsr_out")
+    (parasite f "BstRouterCoords" 2 -119.000000 118.000000))
+  (BseSimpleADSR::BseSimpleADSR-1
+    (source-input "gate_in" BseSNet:3.BseMidiKeyboard:1 "gate")
+    (parasite f "BstRouterCoords" 2 129.000000 -32.000000)))

@@ -1,3 +1,9 @@
+Sat Feb  2 09:31:42 2002  Tim Janik  <timj@gtk.org>
+
+	* test/midi-test.bse: new test file to use with midi devices.
+
+	* test/*.bse: removed old outdated files.
+
 Sat Feb  2 08:31:42 2002  Tim Janik  <timj@gtk.org>
 
 	* configure.in (AC_GSL_REQUIREMENTS): require Ogg/Vorbis version
