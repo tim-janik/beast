@@ -1,3 +1,9 @@
+
+* New synthesis modules:
+  BseMixer - mix 4->1 channels with adjustable volumes
+  DavOrgan - a modifiable Additive Organ Synthesizer
+* More test files in the test/ subdirectory ;)
+
 Overview of Changes in BEAST/BSE 0.3.1:
 
 * Fixed a dumb major bug in the ALSA backend that could prevent

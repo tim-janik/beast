@@ -18,6 +18,7 @@
 #include "bstsnetrouter.h"
 
 #include <math.h>
+#include <ctype.h>
 #include "bstcanvaslink.h"
 #include "bststatusbar.h"
 #include "bstmenus.h"
@@ -395,12 +396,19 @@ toolbar_add_radio (BstSNetRouter *router,
 		   guint         *radio_active)
 {
   GtkWidget *button, *forest;
+  guint i, next_uc = 0;
   
   if (!icon)
     icon = bst_icon_from_stock (BST_ICON_NOICON);
-  
-  if (name[0] == 'B' && name[1] == 's' && name[2] == 'e')
-    name += 3;
+
+  for (i = 0; name[i] != 0; i++)
+    if (i && toupper(name[i]) == name[i])
+      {
+	next_uc = i;
+	break;
+      }
+  if (toupper(name[0]) == name[0] && next_uc > 0)
+    name += next_uc;
   
   forest = gtk_widget_new (GNOME_TYPE_FOREST,
 			   "visible", TRUE,
