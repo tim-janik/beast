@@ -24,8 +24,9 @@ FIXME(urgent):
 TODO:
 - TrackRoll: support shift/ctrl/alt modifier to copy/link/move parts
 - TrackRoll: disallow instrument field editing or dialog box during playback (simply gdk_beep())
-- PianoRoll: Ctrl+scrollwheel change hzoom
 - TrackRoll: add Lower and Raise buttons to move tracks relative to each other
+- PianoRoll: Ctrl+scrollwheel change hzoom
+- PianoRoll: interpret scrollwheel events for h/v scrolling (according to a toggle menu item)
 - driver interface: support multilpe MIDI devices
 - add more menu tooltips
 - add editable text fields to snet router
