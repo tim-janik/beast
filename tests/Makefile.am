@@ -28,14 +28,14 @@ bsecxxapi.h: $(top_builddir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include <bsw/bswcxxutils.h>\n" > xgen-bcah \
 	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcah \
-	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ testplugin.idl >> xgen-bcah \
+	&& $(SFIDL) $(SFIDL_INC) --cxx --header --interface --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcah \
 	&& cp xgen-bcah $@ \
 	&& rm -f xgen-bcah
 bsecxxapi.cc: bsecxxapi.h $(top_builddir)/bse/bse.idl $(SFIDL)
 	cd . \
 	&& echo -e "#include \"bsecxxapi.h\"\n" > xgen-bcac \
 	&& $(SFIDL) $(SFIDL_INC) --cxx --source --interface --prefix test_ $(top_builddir)/bse/bse.idl >> xgen-bcac \
-	&& $(SFIDL) $(SFIDL_INC) --cxx --source --interface --prefix test_ testplugin.idl >> xgen-bcac \
+	&& $(SFIDL) $(SFIDL_INC) --cxx --source --interface --prefix test_ $(srcdir)/testplugin.idl >> xgen-bcac \
 	&& cp xgen-bcac $@ \
 	&& rm -f xgen-bcac
 CLEANFILES += bsecxxapi.h bsecxxapi.cc
@@ -77,6 +77,7 @@ testplugin_la_SOURCES = testplugin.cc
 testplugin_la_LDFLAGS = -module -avoid-version
 testplugin_la_LIBADD  = $(BSE_LIBS) -lm
 EXTRA_HEADERS += testplugin.idl
+$(srcdir)/testplugin.cc: testplugin.idl
 
 lib_LTLIBRARIES = testplugin.la
 # Prevent those libs from being installed
