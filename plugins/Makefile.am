@@ -39,7 +39,6 @@ PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bsesequencer.[hc]	\
 	davorgan.[hc]		\
 	davxtalstrings.[hc]	\
-	fldbsepattern.[hc]	\
 @STRIP_END@
 EXTRA_CFILES = @STRIP_BEGIN@	\
 	bsesimpleadsr-aux.c	\

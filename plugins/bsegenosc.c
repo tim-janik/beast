@@ -161,11 +161,9 @@ bse_gen_osc_class_init (BseGenOscClass *class)
 						   BSE_PARAM_GUI | BSE_PARAM_HINT_RADIO));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_FREQ,
-			      bse_param_spec_float ("base_freq", "Frequency", NULL,
-						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
-						    BSE_KAMMER_FREQ, 10.0,
-						    BSE_PARAM_DEFAULT |
-						    BSE_PARAM_HINT_DIAL));
+			      bse_param_spec_freq_simple ("base_freq", "Frequency", NULL,
+							  BSE_PARAM_DEFAULT |
+							  BSE_PARAM_HINT_DIAL));
   bse_object_class_set_param_log_scale (object_class, "base_freq", 880.0, 2, 4);
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_NOTE,
@@ -322,7 +320,7 @@ bse_gen_osc_init (BseGenOsc *gosc)
 {
   gosc->wave = BSE_GEN_OSC_SINE;
   gosc->phase = 0.0;
-  gosc->base_freq = BSE_KAMMER_FREQ;
+  gosc->base_freq = BSE_KAMMER_FREQUENCY_f;
   gosc->fm_perc = 10;
   gosc->self_modulation = FALSE;
   gosc->self_perc = 10;
@@ -392,7 +390,7 @@ bse_gen_osc_set_property (GObject      *object,
       break;
     case PARAM_BASE_NOTE:
       self->base_freq = bse_note_to_freq (bse_value_get_note (value));
-      self->base_freq = MAX (self->base_freq, BSE_MIN_OSC_FREQ_d);
+      self->base_freq = MAX (self->base_freq, BSE_MIN_OSC_FREQUENCY_d);
       bse_gen_osc_update_vars (self);
       bse_object_param_changed (BSE_OBJECT (self), "base_freq");
       if (bse_note_from_freq (self->base_freq) != bse_value_get_note (value))

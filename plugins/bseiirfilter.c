@@ -124,30 +124,28 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
 						    BSE_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, _("Cutoff Frequency (All Filters)"),
 			      PARAM_CUT_OFF_FREQ1,
-			      bse_param_spec_float ("cut_off_freq", _("Cutoff [Hz]"), NULL,
-						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d - FREQ_DELTA,
-						    BSE_KAMMER_FREQ / 2, 5.0,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      bse_param_spec_freq ("cut_off_freq", _("Cutoff [Hz]"), NULL,
+						   BSE_KAMMER_FREQUENCY_f / 2,
+						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
   bse_object_class_set_param_log_scale (object_class, "cut_off_freq", 880.0, 2, 4);
   bse_object_class_add_param (object_class, _("Cutoff Frequency (All Filters)"),
 			      PARAM_CUT_OFF_NOTE1,
 			      bse_param_spec_note ("cut_off_note", _("Note"), NULL,
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
-						   bse_note_from_freq (BSE_KAMMER_FREQ / 2), 1,
+						   bse_note_from_freq (BSE_KAMMER_FREQUENCY_f / 2), 1,
 						   TRUE,
 						   BSE_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Cutoff Frequency 2 (Band Pass/Stop)"),
 			      PARAM_CUT_OFF_FREQ2,
-			      bse_param_spec_float ("cut_off_freq_2", _("Cutoff [Hz]"), NULL,
-						    BSE_MIN_OSC_FREQ_d + FREQ_DELTA, BSE_MAX_OSC_FREQ_d,
-						    BSE_KAMMER_FREQ / 2 + FREQ_DELTA, 5.0,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      bse_param_spec_freq ("cut_off_freq_2", _("Cutoff [Hz]"), NULL,
+						   BSE_KAMMER_FREQUENCY_f / 2 + FREQ_DELTA,
+						   BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
   bse_object_class_set_param_log_scale (object_class, "cut_off_freq_2", 880.0, 2, 4);
   bse_object_class_add_param (object_class, _("Cutoff Frequency 2 (Band Pass/Stop)"),
 			      PARAM_CUT_OFF_NOTE2,
 			      bse_param_spec_note ("cut_off_note_2", _("Note"), NULL,
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
-						   bse_note_from_freq (BSE_KAMMER_FREQ / 2 + FREQ_DELTA), 1,
+						   bse_note_from_freq (BSE_KAMMER_FREQUENCY_f / 2 + FREQ_DELTA), 1,
 						   TRUE,
 						   BSE_PARAM_GUI));
   
@@ -169,7 +167,7 @@ bse_iir_filter_init (BseIIRFilter *filt)
   filt->filter_type = BSE_IIR_FILTER_LOW_PASS;
   filt->order = 6;
   filt->epsilon = 0.1;
-  filt->cut_off_freq1 = BSE_KAMMER_FREQ / 2;
+  filt->cut_off_freq1 = BSE_KAMMER_FREQUENCY_f / 2;
   filt->cut_off_freq2 = filt->cut_off_freq1 + FREQ_DELTA;
   filt->filter_type = BSE_IIR_FILTER_BUTTERWORTH;
   bse_iir_filter_update_modules (filt);
@@ -216,7 +214,7 @@ bse_iir_filter_set_property (GObject	  *object,
       break;
     case PARAM_CUT_OFF_NOTE1:
       filt->cut_off_freq1 = bse_note_to_freq (bse_value_get_note (value));
-      filt->cut_off_freq1 = MAX (filt->cut_off_freq1, BSE_MIN_OSC_FREQ_d);
+      filt->cut_off_freq1 = MAX (filt->cut_off_freq1, BSE_MIN_OSC_FREQUENCY_d);
       if (filt->cut_off_freq1 + FREQ_DELTA > filt->cut_off_freq2)
 	{
 	  filt->cut_off_freq2 = filt->cut_off_freq1 + FREQ_DELTA;
@@ -239,7 +237,7 @@ bse_iir_filter_set_property (GObject	  *object,
       break;
     case PARAM_CUT_OFF_NOTE2:
       filt->cut_off_freq2 = bse_note_to_freq (bse_value_get_note (value));
-      filt->cut_off_freq2 = MAX (filt->cut_off_freq2, BSE_MIN_OSC_FREQ_d);
+      filt->cut_off_freq2 = MAX (filt->cut_off_freq2, BSE_MIN_OSC_FREQUENCY_d);
       if (filt->cut_off_freq1 + FREQ_DELTA > filt->cut_off_freq2)
 	{
 	  filt->cut_off_freq1 = filt->cut_off_freq2 - FREQ_DELTA;

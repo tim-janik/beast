@@ -107,19 +107,13 @@ dav_organ_class_init (DavOrganClass *class)
   source_class->reset = dav_organ_reset;
   
   bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
-			      bse_param_spec_float ("base_freq", "Frequency", NULL,
-						    BSE_MIN_OSC_FREQ_d,
-						    BSE_MAX_OSC_FREQ_d,
-						    BSE_KAMMER_FREQ,
-						    10.0,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+			      bse_param_spec_freq_simple ("base_freq", "Frequency", NULL,
+							  BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
   bse_object_class_set_param_log_scale (object_class, "base_freq", 880.0, 2, 4);
   bse_object_class_add_param (object_class, "Base Frequency",
                               PARAM_BASE_NOTE,
-                              bse_param_spec_note ("base_note", "Note", NULL,
-						   BSE_MIN_NOTE, BSE_MAX_NOTE,
-						   BSE_KAMMER_NOTE, 1, TRUE,
-						   BSE_PARAM_GUI));
+                              bse_param_spec_note_simple ("base_note", "Note", NULL,
+							  BSE_PARAM_GUI));
   bse_object_class_add_param (object_class, "Instrument flavour", PARAM_BRASS,
 			      bse_param_spec_bool ("brass", "Brass Sounds", "Changes the organ to sound more brassy",
 						   FALSE, BSE_PARAM_DEFAULT));
@@ -158,7 +152,7 @@ dav_organ_init (DavOrgan *self)
   self->config.flute = FALSE;
   self->config.reed = FALSE;
   
-  self->config.freq = BSE_KAMMER_FREQ;
+  self->config.freq = BSE_KAMMER_FREQUENCY_f;
   self->config.harm0 = 1.0;
   self->config.harm1 = 36. / 127.;
   self->config.harm2 = 100. / 127.;
