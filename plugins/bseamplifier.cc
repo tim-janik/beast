@@ -227,7 +227,7 @@ protected:
                 guint          vmicro)
   {
     if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 6, 2) <= 0)
-      set ("olevel", 100, NULL);
+      set ("olevel", 100.0, NULL);
     if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 5, 4) <= 0)
       set ("ctrl_exp", TRUE,
            "audio_gain_f", 0.5,
