@@ -53,7 +53,7 @@ $ apt-get install beast
 @end example
 should do.
 
-For SuSE 8.2,
+For SuSE,
 @uref{mailto://gwaluga@@computerbraxas.de,,Gregor Waluga}
 has written a small
 @uref{http://linux.waluga.de/beast/beast-install-howto.htm,,HOWTO in english and german}
