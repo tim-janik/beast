@@ -232,6 +232,17 @@ g_bit_matrix_free (GBitMatrix *matrix)
 }
 
 
+/* --- predicate idle --- */
+guint g_predicate_idle_add      (GSourceFunc     predicate,
+                                 GSourceFunc     function,
+                                 gpointer        data);
+guint g_predicate_idle_add_full (gint            priority,
+                                 GSourceFunc     predicate,
+                                 GSourceFunc     function,
+                                 gpointer        data,
+                                 GDestroyNotify  notify);
+
+
 /* --- unix signal queue --- */
 #if 0
 typedef gboolean (*GUSignalFunc) (gint8          usignal,

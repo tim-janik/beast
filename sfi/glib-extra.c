@@ -896,11 +896,72 @@ g_source_simple (gint            priority,
   return source;
 }
 
+/* --- predicate idle --- */
+typedef struct {
+  GSource     source;
+  GSourceFunc predicate;
+} PredicateIdle;
 
+static gboolean
+predicate_idle_prepare (GSource *source,
+                        gint    *timeout)
+{
+  PredicateIdle *p = (PredicateIdle*) source;
+  if (p->predicate)
+    return p->predicate (source->callback_data);
+  else
+    return FALSE;
+}
+
+static gboolean
+predicate_idle_check (GSource *source)
+{
+  PredicateIdle *p = (PredicateIdle*) source;
+  if (p->predicate)
+    return p->predicate (source->callback_data);
+  else
+    return FALSE;
+}
+
+static gboolean
+predicate_idle_dispatch (GSource    *source,
+                         GSourceFunc callback,
+                         gpointer    user_data)
+{
+  if (callback)
+    return callback (user_data);
+  else
+    return FALSE;
+}
+
+guint
+g_predicate_idle_add_full (gint            priority,
+                           GSourceFunc     predicate,
+                           GSourceFunc     function,
+                           gpointer        data,
+                           GDestroyNotify  notify)
+{
+  static GSourceFuncs predicate_idle_funcs = { predicate_idle_prepare, predicate_idle_check, predicate_idle_dispatch, };
+  g_return_val_if_fail (predicate && function, 0);
+  GSource *source = g_source_new (&predicate_idle_funcs, sizeof (PredicateIdle));
+  g_source_set_priority (source, priority);
+  ((PredicateIdle*) source)->predicate = predicate;
+  g_source_set_callback (source, function, data, notify);
+  guint id = g_source_attach (source, NULL);
+  g_source_unref (source);
+  return id;
+}
+
+guint
+g_predicate_idle_add (GSourceFunc     predicate,
+                      GSourceFunc     function,
+                      gpointer        data)
+{
+  return g_predicate_idle_add_full (G_PRIORITY_DEFAULT_IDLE, predicate, function, data, NULL);
+}
+
+/* --- GLib main loop reentrant signal queue --- */
 #if 0
-
-/* GLib main loop reentrant signal queue
- */
 typedef struct _GUSignalData GUSignalData;
 struct _GUSignalData
 {
