@@ -1,3 +1,7 @@
+Mon Sep  8 05:29:43 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c: make icon sizes configurable.
+
 Mon Sep  8 02:02:10 2003  Tim Janik  <timj@gtk.org>
 
 	* acbeast.m4 (ac_vm): add -fmessage-length= compiler option for

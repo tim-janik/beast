@@ -1,4 +1,6 @@
 FIXMES:
+- RENAMES: instrument-input + instrument-output,
+           midi-input       + midi-controller
 - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
 - support records and sequences in bse-plugin-generator and bseprocidl
 - reenable signals i nbseprocidl

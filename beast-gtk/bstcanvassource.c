@@ -24,24 +24,24 @@
 
 
 /* --- defines --- */
-#define	ICON_WIDTH		((gdouble) 64)
-#define	ICON_HEIGHT		((gdouble) 64)
-#define CHANNEL_WIDTH		((gdouble) 10)
-#define CHANNEL_HEIGHT		((gdouble) ICON_HEIGHT)
-#define	ICON_X			((gdouble) CHANNEL_WIDTH)
-#define	ICON_Y			((gdouble) 0)
-#define ICHANNEL_realX		((gdouble) 0)
-#define OCHANNEL_realX		((gdouble) CHANNEL_WIDTH + ICON_WIDTH)
-#define ICHANNEL_X(cs)		(cs->swap_channels ? OCHANNEL_realX : ICHANNEL_realX)
-#define OCHANNEL_X(cs)		(cs->swap_channels ? ICHANNEL_realX : OCHANNEL_realX)
+#define	ICON_WIDTH(cs)		((gdouble) 64)
+#define	ICON_HEIGHT(cs)		((gdouble) 64)
+#define CHANNEL_WIDTH(cs)	((gdouble) 10)
+#define CHANNEL_HEIGHT(cs)	((gdouble) ICON_HEIGHT (cs))
+#define	ICON_X(cs)		((gdouble) CHANNEL_WIDTH (cs))
+#define	ICON_Y(cs)		((gdouble) 0)
+#define ICHANNEL_realX(cs)	((gdouble) 0)
+#define OCHANNEL_realX(cs)	((gdouble) CHANNEL_WIDTH (cs) + ICON_WIDTH (cs))
+#define ICHANNEL_X(cs)		(cs->swap_channels ? OCHANNEL_realX (cs) : ICHANNEL_realX (cs))
+#define OCHANNEL_X(cs)		(cs->swap_channels ? ICHANNEL_realX (cs) : OCHANNEL_realX (cs))
 #define CHANNEL_EAST(cs,isinp)	(cs->swap_channels ^ !isinp)
 #define	BORDER_PAD		((gdouble) 1)
-#define ICHANNEL_Y		((gdouble) 0)
-#define OCHANNEL_Y		((gdouble) 0)
-#define	TOTAL_WIDTH		((gdouble) CHANNEL_WIDTH + ICON_WIDTH + CHANNEL_WIDTH)
-#define	TOTAL_HEIGHT		((gdouble) ICON_HEIGHT)
-#define TEXT_X			((gdouble) CHANNEL_WIDTH + ICON_WIDTH / 2) /* for anchor: center */
-#define TEXT_Y			((gdouble) ICON_HEIGHT)			   /* for anchor: north */
+#define ICHANNEL_Y(cs)		((gdouble) 0)
+#define OCHANNEL_Y(cs)		((gdouble) 0)
+#define	TOTAL_WIDTH(cs)		((gdouble) CHANNEL_WIDTH (cs) + ICON_WIDTH (cs) + CHANNEL_WIDTH (cs))
+#define	TOTAL_HEIGHT(cs)	((gdouble) ICON_HEIGHT (cs))
+#define TEXT_X(cs)		((gdouble) CHANNEL_WIDTH (cs) + ICON_WIDTH (cs) / 2)    /* for anchor: center */
+#define TEXT_Y(cs)		((gdouble) ICON_HEIGHT (cs))                            /* for anchor: north */
 #define TEXT_HEIGHT		((gdouble) FONT_HEIGHT + 2)
 #define	CHANNEL_FONT		("Sans")
 #define	TEXT_FONT		("Serif")
@@ -530,11 +530,11 @@ bst_canvas_source_ichannel_pos (BstCanvasSource *csource,
   
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
   
-  x = ICHANNEL_X (csource) + CHANNEL_WIDTH / 2;
+  x = ICHANNEL_X (csource) + CHANNEL_WIDTH (csource) / 2;
   if (csource->source)
-    y = CHANNEL_HEIGHT / bse_source_n_ichannels (csource->source);
+    y = CHANNEL_HEIGHT (csource) / bse_source_n_ichannels (csource->source);
   y *= ochannel + 0.5;
-  y += ICHANNEL_Y;
+  y += ICHANNEL_Y (csource);
   gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (csource), &x, &y);
   if (x_p)
     *x_p = x;
@@ -552,11 +552,11 @@ bst_canvas_source_ochannel_pos (BstCanvasSource *csource,
   
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
   
-  x = OCHANNEL_X (csource) + CHANNEL_WIDTH / 2;
+  x = OCHANNEL_X (csource) + CHANNEL_WIDTH (csource) / 2;
   if (csource->source)
-    y = CHANNEL_HEIGHT / bse_source_n_ochannels (csource->source);
+    y = CHANNEL_HEIGHT (csource) / bse_source_n_ochannels (csource->source);
   y *= ichannel + 0.5;
-  y += OCHANNEL_Y;
+  y += OCHANNEL_Y (csource);
   gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (csource), &x, &y);
   if (x_p)
     *x_p = x;
@@ -576,12 +576,12 @@ bst_canvas_source_ichannel_at (BstCanvasSource *csource,
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
 
   x -= ICHANNEL_X (csource);
-  y -= ICHANNEL_Y;
-  if (x > 0 && x < CHANNEL_WIDTH &&
-      y > 0 && y < CHANNEL_HEIGHT &&
+  y -= ICHANNEL_Y (csource);
+  if (x > 0 && x < CHANNEL_WIDTH (csource) &&
+      y > 0 && y < CHANNEL_HEIGHT (csource) &&
       bse_source_n_ichannels (csource->source))
     {
-      y /= CHANNEL_HEIGHT / bse_source_n_ichannels (csource->source);
+      y /= CHANNEL_HEIGHT (csource) / bse_source_n_ichannels (csource->source);
       channel = y;
     }
 
@@ -600,12 +600,12 @@ bst_canvas_source_ochannel_at (BstCanvasSource *csource,
   gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (csource), &x, &y);
 
   x -= OCHANNEL_X (csource);
-  y -= OCHANNEL_Y;
-  if (x > 0 && x < CHANNEL_WIDTH &&
-      y > 0 && y < CHANNEL_HEIGHT &&
+  y -= OCHANNEL_Y (csource);
+  if (x > 0 && x < CHANNEL_WIDTH (csource) &&
+      y > 0 && y < CHANNEL_HEIGHT (csource) &&
       bse_source_n_ochannels (csource->source))
     {
-      y /= CHANNEL_HEIGHT / bse_source_n_ochannels (csource->source);
+      y /= CHANNEL_HEIGHT (csource) / bse_source_n_ochannels (csource->source);
       channel = y;
     }
 
@@ -679,16 +679,16 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
     {
       n_channels = bse_source_n_ichannels (csource->source);
       x1 = ICHANNEL_X (csource);
-      y1 = ICHANNEL_Y;
+      y1 = ICHANNEL_Y (csource);
     }
   else
     {
       n_channels = bse_source_n_ochannels (csource->source);
       x1 = OCHANNEL_X (csource);
-      y1 = OCHANNEL_Y;
+      y1 = OCHANNEL_Y (csource);
     }
-  x2 = x1 + CHANNEL_WIDTH;
-  y2 = y1 + CHANNEL_HEIGHT;
+  x2 = x1 + CHANNEL_WIDTH (csource);
+  y2 = y1 + CHANNEL_HEIGHT (csource);
   d_y = y2 - y1;
   d_y /= n_channels;
   if (n_channels > 1)
@@ -751,7 +751,7 @@ bst_canvas_source_build_channels (BstCanvasSource *csource,
 				    "fill_color_rgba", (0x000000 << 8) | 0x80,
 				    "anchor", east_channel ? GTK_ANCHOR_WEST : GTK_ANCHOR_EAST,
 				    "justification", GTK_JUSTIFY_RIGHT,
-				    "x", east_channel ? TOTAL_WIDTH + BORDER_PAD * 2. : -BORDER_PAD,
+				    "x", east_channel ? TOTAL_WIDTH (csource) + BORDER_PAD * 2. : -BORDER_PAD,
 				    "y", (y1 + y2) / 2.,
 				    "font", CHANNEL_FONT,
 				    "text", csource->show_hints ? name : "",
@@ -782,10 +782,10 @@ bst_canvas_source_build (BstCanvasSource *csource)
    */
   csource->icon_item = g_object_connect (gnome_canvas_item_new (group,
 								GNOME_TYPE_CANVAS_PIXBUF,
-								"x", ICON_X,
-								"y", ICON_Y,
-								"width", ICON_WIDTH,
-								"height", ICON_HEIGHT,
+								"x", ICON_X (csource),
+								"y", ICON_Y (csource),
+								"width", ICON_WIDTH (csource),
+								"height", ICON_HEIGHT (csource),
 								NULL),
 					 "signal::destroy", gtk_widget_destroyed, &csource->icon_item,
 					 "swapped_signal::event", bst_canvas_source_child_event, csource,
@@ -799,8 +799,8 @@ bst_canvas_source_build (BstCanvasSource *csource)
 					 "fill_color", "black",
 					 "anchor", GTK_ANCHOR_NORTH,
 					 "justification", GTK_JUSTIFY_CENTER,
-					 "x", TEXT_X,
-					 "y", TEXT_Y,
+					 "x", TEXT_X (csource),
+					 "y", TEXT_Y (csource),
 					 "font", TEXT_FONT,
 					 NULL);
   g_object_connect (csource->text,
@@ -829,7 +829,7 @@ bst_canvas_source_build (BstCanvasSource *csource)
    */
   if (0)
     {
-      gpoints = gnome_canvas_points_newv (2, ICON_X, ICON_Y, ICON_X + ICON_WIDTH, ICON_Y);
+      gpoints = gnome_canvas_points_newv (2, ICON_X (csource), ICON_Y (csource), ICON_X (csource) + ICON_WIDTH (csource), ICON_Y (csource));
       item = g_object_connect (gnome_canvas_item_new (group,
 						      GNOME_TYPE_CANVAS_LINE,
 						      "fill_color_rgba", RGBA_BLACK,
@@ -837,8 +837,8 @@ bst_canvas_source_build (BstCanvasSource *csource)
 						      NULL),
 			       "swapped_signal::event", bst_canvas_source_child_event, csource,
 			       NULL);
-      gpoints->coords[1] += ICON_HEIGHT;
-      gpoints->coords[3] += ICON_HEIGHT;
+      gpoints->coords[1] += ICON_HEIGHT (csource);
+      gpoints->coords[3] += ICON_HEIGHT (csource);
       item = g_object_connect (gnome_canvas_item_new (group,
 						      GNOME_TYPE_CANVAS_LINE,
 						      "fill_color_rgba", RGBA_BLACK,
@@ -855,8 +855,8 @@ bst_canvas_source_build (BstCanvasSource *csource)
    * text bounding rectangle
    */
   gpoints = gnome_canvas_points_newv (2,
-				      CHANNEL_WIDTH, ICON_BOTTOM,
-				      CHANNEL_WIDTH + ICON_WIDTH, ICON_BOTTOM);
+				      CHANNEL_WIDTH (csource), ICON_BOTTOM,
+				      CHANNEL_WIDTH (csource) + ICON_WIDTH, ICON_BOTTOM);
   item = g_object_connect (gnome_canvas_item_new (group,
 						  GNOME_TYPE_CANVAS_LINE,
 						  "fill_color_rgba", RGBA_BLACK,
@@ -875,8 +875,8 @@ bst_canvas_source_build (BstCanvasSource *csource)
 						  "outline_color_rgba", RGBA_BLACK, /* covers buggy canvas lines */
 						  "x1", 0.0,
 						  "y1", 0.0,
-						  "x2", TOTAL_WIDTH,
-						  "y2", TOTAL_HEIGHT,
+						  "x2", TOTAL_WIDTH (csource),
+						  "y2", TOTAL_HEIGHT (csource),
 						  (GNOME_CANVAS_ITEM (csource)->canvas->aa
 						   ? "fill_color_rgba"
 						   : NULL), 0x00000000,
