@@ -1,3 +1,12 @@
+Sat Aug 28 22:14:30 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiprimitives.[hc]: const fixes for SfiRing.
+	added sfi_ring_reorder() to "unsort" a ring.
+
+	* sfifilecrawler.c: caller fixup.
+
+	* testsfi.c: ring reordering tests.
+
 Sat Aug 28 17:53:30 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.[hc]: added SfiRing methods: sfi_ring_insert_before(),

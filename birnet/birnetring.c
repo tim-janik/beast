@@ -1416,11 +1416,11 @@ sfi_ring_insert (SfiRing *head,
 }
 
 gint
-sfi_ring_position (SfiRing        *head,
-                   SfiRing        *node)
+sfi_ring_position (const SfiRing  *head,
+                   const SfiRing  *node)
 {
   guint i = 0;
-  SfiRing *ring;
+  const SfiRing *ring;
   for (ring = head; ring; ring = sfi_ring_walk (ring, head), i++)
     if (ring == node)
       return i;
@@ -1428,11 +1428,11 @@ sfi_ring_position (SfiRing        *head,
 }
 
 gint
-sfi_ring_index (SfiRing        *head,
-                gconstpointer   data)
+sfi_ring_index (const SfiRing *head,
+                gconstpointer  data)
 {
   guint i = 0;
-  SfiRing *ring;
+  const SfiRing *ring;
   for (ring = head; ring; ring = sfi_ring_walk (ring, head), i++)
     if (ring->data == data)
       return i;
@@ -1440,30 +1440,33 @@ sfi_ring_index (SfiRing        *head,
 }
 
 SfiRing*
-sfi_ring_copy (SfiRing *head)
+sfi_ring_copy (const SfiRing *head)
 {
-  SfiRing *walk, *dest = NULL;
+  const SfiRing *walk;
+  SfiRing *dest = NULL;
   for (walk = head; walk; walk = sfi_ring_walk (walk, head))
     dest = sfi_ring_append (dest, walk->data);
   return dest;
 }
 
 SfiRing*
-sfi_ring_copy_deep (SfiRing        *head,
+sfi_ring_copy_deep (const SfiRing  *head,
 		    SfiRingDataFunc copy,
 		    gpointer        func_data)
 {
-  SfiRing *walk, *dest = NULL;
+  const SfiRing *walk;
+  SfiRing *dest = NULL;
   for (walk = head; walk; walk = sfi_ring_walk (walk, head))
     dest = sfi_ring_append (dest, copy (walk->data, func_data));
   return dest;
 }
 
 SfiRing*
-sfi_ring_copy_rest (SfiRing *ring,
-                    SfiRing *head)
+sfi_ring_copy_rest (const SfiRing *ring,
+                    const SfiRing *head)
 {
-  SfiRing *walk, *dest = NULL;
+  const SfiRing *walk;
+  SfiRing *dest = NULL;
   for (walk = ring; walk; walk = sfi_ring_walk (walk, head))
     dest = sfi_ring_append (dest, walk->data);
   return dest;
@@ -1586,9 +1589,9 @@ sfi_ring_remove (SfiRing *head,
 }
 
 guint
-sfi_ring_length (SfiRing *head)
+sfi_ring_length (const SfiRing *head)
 {
-  SfiRing *ring;
+  const SfiRing *ring;
   guint i = 0;
   
   for (ring = head; ring; ring = sfi_ring_walk (ring, head))
@@ -1597,11 +1600,11 @@ sfi_ring_length (SfiRing *head)
   return i;
 }
 
-gboolean
-sfi_ring_test_length (SfiRing *head,
-		      guint    test_length)
+gint    /* essentially compute length(ring) - test_length, clamped to -1..+1 */
+sfi_ring_cmp_length (const SfiRing *head,
+                     guint          test_length)
 {
-  SfiRing *ring = head;
+  const SfiRing *ring = head;
 
   while (test_length && ring)
     {
@@ -1609,44 +1612,40 @@ sfi_ring_test_length (SfiRing *head,
       ring = sfi_ring_walk (ring, head);
     }
 
-  return test_length == 0 && !ring;
+  return test_length > 0 ? -1 : ring != NULL;
 }
 
 SfiRing*
-sfi_ring_find (SfiRing      *head,
+sfi_ring_find (const SfiRing*head,
 	       gconstpointer data)
 {
-  SfiRing *ring;
-
+  const SfiRing *ring;
   for (ring = head; ring; ring = sfi_ring_walk (ring, head))
     if (ring->data == (gpointer) data)
-      return ring;
-
+      return (SfiRing*) ring;
   return NULL;
 }
 
 SfiRing*
-sfi_ring_nth (SfiRing *head,
-	      guint    n)
+sfi_ring_nth (const SfiRing *head,
+	      guint          n)
 {
-  SfiRing *ring = head;
-
+  const SfiRing *ring = head;
   while (n-- && ring)
     ring = sfi_ring_walk (ring, head);
-
-  return ring;
+  return (SfiRing*) ring;
 }
 
 gpointer
-sfi_ring_nth_data (SfiRing *head,
-		   guint    n)
+sfi_ring_nth_data (const SfiRing *head,
+		   guint          n)
 {
-  SfiRing *ring = head;
+  const SfiRing *ring = head;
 
   while (n-- && ring)
     ring = sfi_ring_walk (ring, head);
 
-  return ring ? ring->data : ring;
+  return ring ? ring->data : NULL;
 }
 
 void
@@ -1845,12 +1844,13 @@ sfi_ring_sort (SfiRing        *head,
   return head;
 }
 
-SfiRing*
-sfi_ring_uniq (SfiRing        *sorted_ring1,
+SfiRing* /* eliminates duplicate nodes */
+sfi_ring_uniq (const SfiRing  *sorted_ring1,
                SfiCompareFunc  cmp,
                gpointer        data)
 {
-  SfiRing *r1 = sorted_ring1, *r2 = NULL;
+  const SfiRing *r1 = sorted_ring1;
+  SfiRing *r2 = NULL;
   if (r1)
     {
       gpointer last_data = r1->data;
@@ -1865,13 +1865,14 @@ sfi_ring_uniq (SfiRing        *sorted_ring1,
   return r2;
 }
 
-SfiRing*
-sfi_ring_union (SfiRing        *sorted_set1,
-                SfiRing        *sorted_set2,
+SfiRing* /* merges rings without dups */
+sfi_ring_union (const SfiRing  *sorted_set1,
+                const SfiRing  *sorted_set2,
                 SfiCompareFunc  cmp,
                 gpointer        data)
 {
-  SfiRing *r1 = sorted_set1, *r2 = sorted_set2, *d = NULL;
+  const SfiRing *r1 = sorted_set1, *r2 = sorted_set2;
+  SfiRing *d = NULL;
   while (r1 && r2)
     {
       gint c = cmp (r1->data, r2->data, data);
@@ -1895,13 +1896,14 @@ sfi_ring_union (SfiRing        *sorted_set1,
   return sfi_ring_concat (d, sfi_ring_copy_rest (r1 ? r1 : r2, r1 ? sorted_set1 : sorted_set2));
 }
 
-SfiRing*
-sfi_ring_intersection (SfiRing        *sorted_set1,
-                       SfiRing        *sorted_set2,
+SfiRing* /* returns nodes contained in both rings */
+sfi_ring_intersection (const SfiRing  *sorted_set1,
+                       const SfiRing  *sorted_set2,
                        SfiCompareFunc  cmp,
                        gpointer        data)
 {
-  SfiRing *r1 = sorted_set1, *r2 = sorted_set2, *d = NULL;
+  const SfiRing *r1 = sorted_set1, *r2 = sorted_set2;
+  SfiRing *d = NULL;
   while (r1 && r2)
     {
       gint c = cmp (r1->data, r2->data, data);
@@ -1919,13 +1921,14 @@ sfi_ring_intersection (SfiRing        *sorted_set1,
   return d;
 }
 
-SfiRing*
-sfi_ring_difference (SfiRing        *sorted_set1,
-                     SfiRing        *sorted_set2,
+SfiRing* /* produces set1 without the elements of set2 */
+sfi_ring_difference (const SfiRing  *sorted_set1,
+                     const SfiRing  *sorted_set2,
                      SfiCompareFunc  cmp,
                      gpointer        data)
 {
-  SfiRing *r1 = sorted_set1, *r2 = sorted_set2, *d = NULL;
+  const SfiRing *r1 = sorted_set1, *r2 = sorted_set2;
+  SfiRing *d = NULL;
   while (r1 && r2)
     {
       gint c = cmp (r1->data, r2->data, data);
@@ -1945,13 +1948,14 @@ sfi_ring_difference (SfiRing        *sorted_set1,
   return sfi_ring_concat (d, sfi_ring_copy_rest (r1, sorted_set1));
 }
 
-SfiRing*
-sfi_ring_symmetric_difference (SfiRing        *sorted_set1,
-                               SfiRing        *sorted_set2,
+SfiRing* /* prduces difference (set1, set2) + difference (set2, set1) */
+sfi_ring_symmetric_difference (const SfiRing  *sorted_set1,
+                               const SfiRing  *sorted_set2,
                                SfiCompareFunc  cmp,
                                gpointer        data)
 {
-  SfiRing *r1 = sorted_set1, *r2 = sorted_set2, *d = NULL;
+  const SfiRing *r1 = sorted_set1, *r2 = sorted_set2;
+  SfiRing *d = NULL;
   while (r1 && r2)
     {
       gint c = cmp (r1->data, r2->data, data);
@@ -1974,13 +1978,83 @@ sfi_ring_symmetric_difference (SfiRing        *sorted_set1,
   return sfi_ring_concat (d, sfi_ring_copy_rest (r1 ? r1 : r2, r1 ? sorted_set1 : sorted_set2));
 }
 
+static inline gboolean
+ring_reorder_lookup (guint          n_items,
+                     gpointer      *items,
+                     gpointer       key,
+                     SfiCompareFunc cmpfunc,
+                     gpointer       data,
+                     guint         *indexp)
+{
+  guint offset = 0, n = n_items;
+  while (offset < n)
+    {
+      guint i = (offset + n) >> 1;
+      gint cmp = cmpfunc (key, items[i], data);
+      if (cmp < 0)
+        n = i;
+      else if (cmp > 0)
+        offset = i;
+      else /* match */
+        {
+          *indexp = i;
+          return TRUE;
+        }
+    }
+  return FALSE;
+}
+
+SfiRing* /* reproduce all elements from sorted_ring in the order new_ring_order */
+sfi_ring_reorder (const SfiRing  *sorted_ring,
+                  const SfiRing  *new_ring_order,
+                  SfiCompareFunc  cmp,
+                  gpointer        data)
+{
+  if (!sorted_ring || !new_ring_order)
+    return sfi_ring_copy (sorted_ring);
+  const SfiRing *ring;
+  SfiRing *result = NULL;
+
+  /* construct a sorted array for faster lookups */
+  guint i, n_items = 0, n_alloced = 0;
+  gpointer *items = NULL;
+  for (ring = sorted_ring; ring; ring = sfi_ring_walk (ring, sorted_ring))
+    {
+      i = n_items++;
+      if (n_items > n_alloced)
+        {
+          n_alloced = sfi_alloc_upper_power2 (MAX (n_items, 32));
+          items = g_renew (gpointer, items, n_alloced);
+        }
+      items[i] = ring->data;
+    }
+  guint8 *flags = g_new0 (guint8, n_items);
+
+  /* pick sorted_ring members in the order given by new_ring_order */
+  for (ring = new_ring_order; ring; ring = sfi_ring_walk (ring, new_ring_order))
+    if (ring_reorder_lookup (n_items, items, ring->data, cmp, data, &i) && !flags[i])
+      {
+        flags[i] = TRUE;
+        result = sfi_ring_append (result, ring->data);
+      }
+
+  /* append left-over members from sorted_ring */
+  for (i = 0; i < n_items; i++)
+    if (!flags[i])
+      result = sfi_ring_append (result, items[i]);
+
+  g_free (items);
+  g_free (flags);
+  return result;
+}
+
 gboolean
-sfi_ring_includes (SfiRing        *sorted_super_set,
-                   SfiRing        *sorted_sub_set,
+sfi_ring_includes (const SfiRing  *sorted_super_set,
+                   const SfiRing  *sorted_sub_set,
                    SfiCompareFunc  cmp,
                    gpointer        data)
 {
-  SfiRing *r1 = sorted_super_set, *r2 = sorted_sub_set;
+  const SfiRing *r1 = sorted_super_set, *r2 = sorted_sub_set;
   while (r1 && r2)
     {
       gint c = cmp (r1->data, r2->data, data);
@@ -1994,12 +2068,12 @@ sfi_ring_includes (SfiRing        *sorted_super_set,
 }
 
 gboolean
-sfi_ring_equals (SfiRing        *sorted_ring1,
-                 SfiRing        *sorted_ring2,
+sfi_ring_equals (const SfiRing  *sorted_ring1,
+                 const SfiRing  *sorted_ring2,
                  SfiCompareFunc  cmp,
                  gpointer        data)
 {
-  SfiRing *r1 = sorted_ring1, *r2 = sorted_ring2;
+  const SfiRing *r1 = sorted_ring1, *r2 = sorted_ring2;
   while (r1 && r2)
     {
       if (cmp (r1->data, r2->data, data))
@@ -2034,11 +2108,11 @@ sfi_ring_mismatch (SfiRing       **sorted_ring1_p,
 }
 
 SfiRing*
-sfi_ring_min_node (SfiRing        *head,
+sfi_ring_min_node (const SfiRing  *head,
                    SfiCompareFunc  cmp,
                    gpointer        data)
 {
-  SfiRing *ring = head, *last = NULL;
+  const SfiRing *ring = head, *last = NULL;
   if (ring)
     {
       last = ring;
@@ -2046,15 +2120,15 @@ sfi_ring_min_node (SfiRing        *head,
         if (cmp (last->data, ring->data, data) > 0)
           last = ring;
     }
-  return last;
+  return (SfiRing*) last;
 }
 
 SfiRing*
-sfi_ring_max_node (SfiRing        *head,
+sfi_ring_max_node (const SfiRing  *head,
                    SfiCompareFunc  cmp,
                    gpointer        data)
 {
-  SfiRing *ring = head, *last = NULL;
+  const SfiRing *ring = head, *last = NULL;
   if (ring)
     {
       last = ring;
@@ -2062,11 +2136,11 @@ sfi_ring_max_node (SfiRing        *head,
         if (cmp (last->data, ring->data, data) < 0)
           last = ring;
     }
-  return last;
+  return (SfiRing*) last;
 }
 
 gpointer
-sfi_ring_min (SfiRing        *head,
+sfi_ring_min (const SfiRing  *head,
               SfiCompareFunc  cmp,
               gpointer        data)
 {
@@ -2075,7 +2149,7 @@ sfi_ring_min (SfiRing        *head,
 }
 
 gpointer
-sfi_ring_max (SfiRing        *head,
+sfi_ring_max (const SfiRing  *head,
               SfiCompareFunc  cmp,
               gpointer        data)
 {

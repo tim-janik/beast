@@ -302,7 +302,7 @@ file_crawler_crawl_abs_path (SfiFileCrawler *self)
       file_crawler_crawl_readdir (self);
 #if INCREMENTAL_RESULTS
       /* on final segment, directly return results */
-      if (sfi_ring_test_length (self->pdqueue, 1))
+      if (sfi_ring_cmp_length (self->pdqueue, 1) == 0)
 	{
 	  self->results = sfi_ring_concat (self->results, self->accu);
 	  self->accu = NULL;

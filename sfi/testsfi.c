@@ -833,6 +833,27 @@ print_ring_ints (SfiRing *ring)
 }
 
 static void
+print_rings_side_by_side (SfiRing *ring1,
+                          SfiRing *ring2)
+{
+  SfiRing *r1 = ring1, *r2 = ring2;
+  g_printerr ("\nRing=%p Ring=%p\n", r1, r2);
+  while (r1 || r2)
+    {
+      if (r1 && r2)
+        g_printerr ("  %6d   %6d\n", (gint) r1->data, (gint) r2->data);
+      else if (r1)
+        g_printerr ("  %6d\n", (gint) r1->data);
+      else
+        g_printerr ("           %6d\n", (gint) r2->data);
+      if (r1)
+        r1 = sfi_ring_walk (r1, ring1);
+      if (r2)
+        r2 = sfi_ring_walk (r2, ring2);
+    }
+}
+
+static void
 test_sfi_ring (void)
 {
   MSG ("SfiRing:");
@@ -918,6 +939,30 @@ test_sfi_ring (void)
 
   sfi_ring_free (r1);
   sfi_ring_free (r2);
+
+  r1 = NULL;
+  r1 = sfi_ring_append (r1, (void*) 5);
+  r1 = sfi_ring_append (r1, (void*) 7);
+  r1 = sfi_ring_append (r1, (void*) 4);
+  r1 = sfi_ring_append (r1, (void*) 8);
+  r1 = sfi_ring_append (r1, (void*) 1);
+  r2 = sfi_ring_sort (sfi_ring_copy (r1), sfi_compare_pointers, NULL);
+  t1 = sfi_ring_reorder (r2, r1, sfi_compare_pointers, NULL);
+  if (0)
+    print_rings_side_by_side (t1, r1);
+  ASSERT (sfi_ring_equals (t1, r1, sfi_compare_pointers, NULL));
+  sfi_ring_free (t1);
+  r2 = sfi_ring_remove (r2, (void*) 4);
+  r2 = sfi_ring_append (r2, (void*) 9);
+  t1 = sfi_ring_reorder (r2, r1, sfi_compare_pointers, NULL);
+  r1 = sfi_ring_remove (r1, (void*) 4);
+  r1 = sfi_ring_append (r1, (void*) 9);
+  if (0)
+    print_rings_side_by_side (t1, r1);
+  ASSERT (sfi_ring_equals (t1, r1, sfi_compare_pointers, NULL));
+  sfi_ring_free (r1);
+  sfi_ring_free (r2);
+  sfi_ring_free (t1);
 
   DONE ();
 }
