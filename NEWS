@@ -1,3 +1,12 @@
+Overview of Changes in BEAST/BSE 0.5.2:
+
+* Fixed time zone handling
+* Added WAVE file monitoring ability
+* Fixed sample rate adjustments in preferences
+* Image (Logo) improvements [Alper Ersoy]
+* Documentation improvements [Alper, Timj]
+* Miscellaneous code fixes
+
 Overview of Changes in BEAST/BSE 0.5.1:
 
 * Added support for LADSPA plugins
