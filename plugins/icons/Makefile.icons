@@ -4,13 +4,16 @@ icon_list += any.c
 icon_list += mic.c
 icon_list += noicon.c
 icon_list += pipe.c
+icon_list += prod.c
 icon_list += sine.c
 icon_list += speaker.c
-icon_list += testos.c
+icon_list += sum.c
 icon_list += amp.xcf
 icon_list += mic.xcf
 icon_list += noicon.xcf
 icon_list += pipe.xcf
+icon_list += prod.xcf
 icon_list += sine.xcf
 icon_list += speaker.xcf
+icon_list += sum.xcf
 ## Generated data ends here

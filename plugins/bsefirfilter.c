@@ -111,17 +111,17 @@ bse_fir_filter_class_init (BseFIRFilterClass *class)
 			      bse_param_spec_bool ("lanczos_smooth", "C. Lanczos",
 						   FALSE,
 						   BSE_PARAM_DEFAULT));
-  bse_object_class_add_param (object_class, NULL,
+  bse_object_class_add_param (object_class, "Cut off",
 			      PARAM_CUT_OFF_FREQ,
-			      bse_param_spec_float ("cut_off_freq", "Cut Off Frequency",
+			      bse_param_spec_float ("cut_off_freq", "Frequency",
 						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
 						    5.0,
 						    BSE_KAMMER_FREQ / 2,
 						    BSE_PARAM_DEFAULT |
-						    BSE_PARAM_HINT_DIAL));
-  bse_object_class_add_param (object_class, NULL,
+						    BSE_PARAM_HINT_SCALE));
+  bse_object_class_add_param (object_class, "Cut off",
 			      PARAM_CUT_OFF_NOTE,
-			      bse_param_spec_note ("cut_off_note", "Cut Off Note",
+			      bse_param_spec_note ("cut_off_note", "Note",
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
 						   1,
 						   bse_note_from_freq (BSE_KAMMER_FREQ / 2),

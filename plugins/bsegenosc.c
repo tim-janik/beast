@@ -164,8 +164,6 @@ bse_gen_osc_class_init (BseGenOscClass *class)
   g_assert (ochannel_id == BSE_GEN_OSC_OCHANNEL_MONO);
   ichannel_id = bse_source_class_add_ichannel (source_class, "FreqMod", "Mono Frequency Modulation Input", 1, 1);
   g_assert (ichannel_id == BSE_GEN_OSC_ICHANNEL_FREQ_MOD);
-  ichannel_id = bse_source_class_add_ichannel (source_class, "AmpMod", "Mono Amplitude Modulation Input", 1, 1);
-  g_assert (ichannel_id == BSE_GEN_OSC_ICHANNEL_AMP_MOD);
 }
 
 static void
@@ -477,6 +475,7 @@ bse_gen_osc_sync (BseGenOsc *gosc)
 
   gosc->rate_pos = 0x8000;
   bse_gen_osc_update_locals (gosc);
+  gosc->last_value = 0;
 }
 
 static void
@@ -499,58 +498,35 @@ bse_gen_osc_calc_chunk (BseSource *source,
 {
   BseGenOsc *gosc = BSE_GEN_OSC (source);
   BseSampleValue *table = gosc->table;
-  BseChunk *fmchunk = NULL, *amchunk = NULL;
-  BseSampleValue *hunk, *fmhunk = NULL, *amhunk = NULL;
-  gfloat amp_fact, fm_strength = gosc->fm_strength;
-  BseSourceInput *freq_mod, *amp_mod;
+  BseChunk *fmchunk = NULL;
+  BseSampleValue *hunk, *fmhunk = NULL;
+  gfloat fm_strength = gosc->fm_strength;
+  BseSourceInput *freq_mod;
   guint32 table_size, rate_pos, rate;
   guint i;
   
   g_return_val_if_fail (ochannel_id == BSE_GEN_OSC_OCHANNEL_MONO, NULL);
 
   freq_mod = bse_source_get_input (source, BSE_GEN_OSC_ICHANNEL_FREQ_MOD); /* mono */
-  amp_mod = bse_source_get_input (source, BSE_GEN_OSC_ICHANNEL_AMP_MOD); /* mono */
   if (freq_mod)
     fmchunk = bse_source_ref_chunk (freq_mod->osource, freq_mod->ochannel_id, source->index);
-  if (amp_mod)
-    amchunk = bse_source_ref_chunk (amp_mod->osource, amp_mod->ochannel_id, source->index);
 
   hunk = bse_hunk_alloc (1);
 
   table_size = gosc->table_size << 16;
   rate_pos = gosc->rate_pos % table_size;
   rate = gosc->rate % table_size;
-  amp_fact = BSE_MAX_SAMPLE_VALUE;
-  amp_fact = 1.0 / amp_fact;
 
   if (fmchunk && fmchunk->state_filled)
     rate += fm_strength * fmchunk->state[0];
   else if (fmchunk && fmchunk->hunk_filled)
     fmhunk = fmchunk->hunk;
-  if (amchunk)
-    amhunk = bse_chunk_complete_hunk (amchunk);
 
-  if (fmhunk && amhunk)
-    for (i = 0; i < BSE_TRACK_LENGTH; i++)
-      {
-	hunk[i] = table[rate_pos >> 16] * amp_fact * amhunk[i];
-	rate_pos += rate + fm_strength * fmhunk[i];
-	if (rate_pos >= table_size)
-	  rate_pos -= table_size;
-      }
-  else if (fmhunk)
+  if (fmhunk)
     for (i = 0; i < BSE_TRACK_LENGTH; i++)
       {
 	hunk[i] = table[rate_pos >> 16];
 	rate_pos += rate + fm_strength * fmhunk[i];
-	if (rate_pos >= table_size)
-	  rate_pos -= table_size;
-      }
-  else if (amhunk)
-    for (i = 0; i < BSE_TRACK_LENGTH; i++)
-      {
-	hunk[i] = table[rate_pos >> 16] * amp_fact * amhunk[i];
-	rate_pos += rate;
 	if (rate_pos >= table_size)
 	  rate_pos -= table_size;
       }
@@ -566,8 +542,6 @@ bse_gen_osc_calc_chunk (BseSource *source,
 
   if (fmchunk)
     bse_chunk_unref (fmchunk);
-  if (amchunk)
-    bse_chunk_unref (amchunk);
 
   return bse_chunk_new_orphan (1, hunk);
 }
@@ -580,6 +554,7 @@ bse_gen_osc_reset (BseSource *source)
   gosc->rate_pos = 0;
   gosc->table_size = 1;
   gosc->table = NULL;
+  gosc->last_value = 0;
   bse_gen_osc_class_unref_tables (BSE_GEN_OSC_GET_CLASS (gosc));
 
   /* chain parent class' handler */

@@ -33,6 +33,13 @@ bseloopback_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS += bseloopback.h
 
 ##
+## Plugin bsemult
+##
+bsemult_la_SOURCES = bsemult.c
+bsemult_la_LDFLAGS = -module -avoid-version
+bsemult_la_LIBADD  = $(plugin_libs)
+
+##
 ## Plugin bsenoise
 ##
 bsenoise_la_SOURCES = bsenoise.c
@@ -60,6 +67,7 @@ plugin_LTLIBRARIES += \
 	bsefirfilter.la \
 	bsegenosc.la \
 	bseloopback.la \
+	bsemult.la \
 	bsenoise.la \
 	greeting.la \
 	hello-space.la

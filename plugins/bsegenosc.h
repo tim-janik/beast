@@ -71,6 +71,7 @@ struct _BseGenOsc
   gfloat  fm_strength;
   guint   table_size;
   BseSampleValue *table;
+  BseSampleValue  last_value;
 };
 struct _BseGenOscClass
 {
@@ -100,8 +101,7 @@ enum
 enum
 {
   BSE_GEN_OSC_ICHANNEL_NONE,
-  BSE_GEN_OSC_ICHANNEL_FREQ_MOD,
-  BSE_GEN_OSC_ICHANNEL_AMP_MOD
+  BSE_GEN_OSC_ICHANNEL_FREQ_MOD
 };
 
 
