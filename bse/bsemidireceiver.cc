@@ -241,7 +241,7 @@ typedef struct
 } MidiCModuleData;
 
 static void
-midi_control_module_process (BseModule *module,
+midi_control_module_process (BseModule *module, /* vswitch->smodule */
 			     guint      n_values)
 {
   MidiCModuleData *cdata = (MidiCModuleData *) module->user_data;
@@ -644,7 +644,7 @@ static void
 voice_switch_module_process (BseModule *module,
                              guint      n_values)
 {
-  VoiceSwitch *voice = (VoiceSwitch*) module->user_data;
+  VoiceSwitch *vswitch = (VoiceSwitch*) module->user_data;
   guint i;
   
   /* dumb pass-through task */
@@ -658,9 +658,9 @@ voice_switch_module_process (BseModule *module,
       BseTrans *trans = bse_trans_open ();
       /* disconnect all inputs */
       bse_trans_add (trans, bse_job_suspend_now (module));
-      bse_trans_add (trans, bse_job_kill_inputs (voice->vmodule));
+      bse_trans_add (trans, bse_job_kill_inputs (vswitch->vmodule));
       bse_trans_commit (trans);
-      voice->disconnected = TRUE;       /* hint towards possible reuse */
+      vswitch->disconnected = TRUE;       /* hint towards possible reuse */
     }
 }
 
@@ -668,39 +668,39 @@ static void
 voice_switch_module_boundary_check (BseModule *module,
                                     gpointer   data)
 {
-  VoiceSwitch *voice = (VoiceSwitch*) module->user_data;
-  if (!bse_module_has_source (voice->vmodule, 0))
+  VoiceSwitch *vswitch = (VoiceSwitch*) module->user_data;
+  if (!bse_module_has_source (vswitch->vmodule, 0))
     {
       BseTrans *trans = bse_trans_open ();
       guint i;
-      for (i = 0; i < BSE_MODULE_N_ISTREAMS (voice->vmodule); i++)
-        bse_trans_add (trans, bse_job_connect (voice->smodule, i, voice->vmodule, i));
+      for (i = 0; i < BSE_MODULE_N_ISTREAMS (vswitch->vmodule); i++)
+        bse_trans_add (trans, bse_job_connect (vswitch->smodule, i, vswitch->vmodule, i));
       bse_trans_commit (trans);
-      voice->disconnected = FALSE;      /* reset hint */
+      vswitch->disconnected = FALSE;      /* reset hint */
     }
 }
 
 static void
-activate_voice_switch (VoiceSwitch *voice,
+activate_voice_switch (VoiceSwitch *vswitch,
                        guint64      tick_stamp,
                        BseTrans    *trans)
 {
-  g_return_if_fail (voice->disconnected == TRUE);
+  g_return_if_fail (vswitch->disconnected == TRUE);
   /* make sure the module is connected before tick_stamp */
-  bse_trans_add (trans, bse_job_boundary_access (voice->smodule, tick_stamp, voice_switch_module_boundary_check, NULL, NULL));
+  bse_trans_add (trans, bse_job_boundary_access (vswitch->smodule, tick_stamp, voice_switch_module_boundary_check, NULL, NULL));
   /* make sure the module is not suspended at tick_stamp */
-  bse_trans_add (trans, bse_job_resume_at (voice->smodule, tick_stamp));
-  voice->disconnected = FALSE;  /* reset hint early */
+  bse_trans_add (trans, bse_job_resume_at (vswitch->smodule, tick_stamp));
+  vswitch->disconnected = FALSE;  /* reset hint early */
 }
 
 static void
 voice_switch_module_free (gpointer        data,
                           const BseModuleClass *klass)
 {
-  VoiceSwitch *voice = (VoiceSwitch*) data;
+  VoiceSwitch *vswitch = (VoiceSwitch*) data;
   
-  g_free (voice->vinputs);
-  g_free (voice);
+  g_free (vswitch->vinputs);
+  g_free (vswitch);
 }
 
 static VoiceSwitch*
@@ -716,23 +716,23 @@ create_voice_switch_module (BseTrans *trans)
     voice_switch_module_free,           /* free */
     BSE_COST_CHEAP
   };
-  VoiceSwitch *voice = g_new0 (VoiceSwitch, 1);
+  VoiceSwitch *vswitch = g_new0 (VoiceSwitch, 1);
   
-  voice->disconnected = TRUE;
-  voice->ref_count = 1;
-  voice->smodule = bse_module_new (&switch_module_class, voice);
-  voice->vmodule = bse_module_new_virtual (BSE_MIDI_VOICE_N_CHANNELS, NULL, NULL);
-  bse_trans_add (trans, bse_job_integrate (voice->smodule));
-  bse_trans_add (trans, bse_job_integrate (voice->vmodule));
-  bse_trans_add (trans, bse_job_suspend_now (voice->smodule));
+  vswitch->disconnected = TRUE;
+  vswitch->ref_count = 1;
+  vswitch->smodule = bse_module_new (&switch_module_class, vswitch);
+  vswitch->vmodule = bse_module_new_virtual (BSE_MIDI_VOICE_N_CHANNELS, NULL, NULL);
+  bse_trans_add (trans, bse_job_integrate (vswitch->smodule));
+  bse_trans_add (trans, bse_job_integrate (vswitch->vmodule));
+  bse_trans_add (trans, bse_job_suspend_now (vswitch->smodule));
   
-  return voice;
+  return vswitch;
 }
 
 static inline gboolean
-check_voice_switch_available (VoiceSwitch *voice)
+check_voice_switch_available (VoiceSwitch *vswitch)
 {
-  return voice->disconnected;
+  return vswitch->disconnected;
 }
 
 static void
@@ -744,24 +744,24 @@ voice_switch_module_commit_accessor (BseModule *module,
 }
 
 static void
-destroy_voice_switch (VoiceSwitch *voice,
+destroy_voice_switch (VoiceSwitch *vswitch,
                       BseTrans     *trans)
 {
   BseTrans *tmp_trans;
   
-  g_return_if_fail (voice->ref_count == 0);
-  g_return_if_fail (voice->n_vinputs == 0);
+  g_return_if_fail (vswitch->ref_count == 0);
+  g_return_if_fail (vswitch->n_vinputs == 0);
   
   tmp_trans = bse_trans_open ();
-  bse_trans_add (tmp_trans, bse_job_discard (voice->smodule));
-  bse_trans_add (tmp_trans, bse_job_discard (voice->vmodule));
+  bse_trans_add (tmp_trans, bse_job_discard (vswitch->smodule));
+  bse_trans_add (tmp_trans, bse_job_discard (vswitch->vmodule));
   /* we can't commit the transaction right away, because the switch
    * module might currently be processing and is about to queue
    * disconnection jobs on the modules we're just discarding.
    * so we use a normal accessor to defer destruction which makes
    * sure that pending disconnect jobs have been processed already.
    */
-  bse_trans_add (trans, bse_job_access (voice->smodule, voice_switch_module_commit_accessor, tmp_trans, NULL));
+  bse_trans_add (trans, bse_job_access (vswitch->smodule, voice_switch_module_commit_accessor, tmp_trans, NULL));
 }
 
 
@@ -787,7 +787,7 @@ MidiChannel::start_note (guint64         tick_stamp,
 {
   MidiChannel *mchannel = this;
   gfloat freq_val = BSE_VALUE_FROM_FREQ (freq);
-  VoiceSwitch *voice, *override_candidate = NULL;
+  VoiceSwitch *vswitch, *override_candidate = NULL;
   guint i;
   
   g_return_if_fail (freq > 0);
@@ -797,33 +797,33 @@ MidiChannel::start_note (guint64         tick_stamp,
     change_voice_input (mchannel->vinput, NULL, tick_stamp, VOICE_ON, freq_val, velocity, trans);
   
   /* figure voice from event */
-  voice = NULL; // voice numbers on events not currently supported
+  vswitch = NULL; // voice numbers on events not currently supported
   /* find free poly voice */
-  if (!voice)
+  if (!vswitch)
     for (i = 0; i < mchannel->n_voices; i++)
       if (mchannel->voices[i] && mchannel->voices[i]->n_vinputs)
         {
           override_candidate = mchannel->voices[i];
           if (check_voice_switch_available (mchannel->voices[i]))
             {
-              voice = mchannel->voices[i];
+              vswitch = mchannel->voices[i];
               break;
             }
         }
   /* grab voice to override */
-  if (!voice)
+  if (!vswitch)
     ; // FIXME: voice = override_candidate;
   
-  if (voice && voice->n_vinputs)
+  if (vswitch && vswitch->n_vinputs)
     {
       /* start note */
-      VoiceInput *vinput = voice->vinputs[0];
+      VoiceInput *vinput = vswitch->vinputs[0];
       /* figure mono synth */
-      for (i = 1; i < voice->n_vinputs; i++)
-        if (check_voice_input_improvement (voice->vinputs[i], vinput))
-          vinput = voice->vinputs[i];
+      for (i = 1; i < vswitch->n_vinputs; i++)
+        if (check_voice_input_improvement (vswitch->vinputs[i], vinput))
+          vinput = vswitch->vinputs[i];
       /* setup voice */
-      activate_voice_switch (voice, tick_stamp, trans);
+      activate_voice_switch (vswitch, tick_stamp, trans);
       change_voice_input (vinput, &mchannel->voice_input_table, tick_stamp, VOICE_ON, freq_val, velocity, trans);
     }
   else
@@ -877,14 +877,14 @@ MidiChannel::kill_notes (guint64       tick_stamp,
   /* adjust poly voice inputs */
   for (i = 0; i < mchannel->n_voices; i++)
     {
-      VoiceSwitch *voice = mchannel->voices[i];
-      if (voice)
-        for (j = 0; j < voice->n_vinputs; j++)
-          if (sustained_only && voice->vinputs[j]->queue_state == VSTATE_SUSTAINED)
-            change_voice_input (voice->vinputs[j], &mchannel->voice_input_table,
+      VoiceSwitch *vswitch = mchannel->voices[i];
+      if (vswitch)
+        for (j = 0; j < vswitch->n_vinputs; j++)
+          if (sustained_only && vswitch->vinputs[j]->queue_state == VSTATE_SUSTAINED)
+            change_voice_input (vswitch->vinputs[j], &mchannel->voice_input_table,
                                 tick_stamp, VOICE_KILL_SUSTAIN, 0, 0, trans);
           else if (!sustained_only)
-            change_voice_input (voice->vinputs[j], &mchannel->voice_input_table,
+            change_voice_input (vswitch->vinputs[j], &mchannel->voice_input_table,
                                 tick_stamp, VOICE_KILL, 0, 0, trans);
     }
 }
@@ -897,15 +897,15 @@ MidiChannel::debug_notes (guint64          tick_stamp,
   guint i, j;
   for (i = 0; i < mchannel->n_voices; i++)
     {
-      VoiceSwitch *voice = mchannel->voices[i];
-      if (voice)
-        for (j = 0; j < voice->n_vinputs; j++)
+      VoiceSwitch *vswitch = mchannel->voices[i];
+      if (vswitch)
+        for (j = 0; j < vswitch->n_vinputs; j++)
           sfi_diag ("MidiChannel(%u):Voice<%p>=%c: Synth<%p:%08llx>: State=%s Queued=%s Freq=%.2fHz",
-                    mchannel->midi_channel, voice, voice->disconnected ? 'd' : 'C',
-                    voice->vinputs[j], bse_module_tick_stamp (voice->vinputs[j]->fmodule),
-                    voice_state_to_string (voice->vinputs[j]->vstate),
-                    voice_state_to_string (voice->vinputs[j]->queue_state),
-                    BSE_FREQ_FROM_VALUE (voice->vinputs[j]->freq_value));
+                    mchannel->midi_channel, vswitch, vswitch->disconnected ? 'd' : 'C',
+                    vswitch->vinputs[j], bse_module_tick_stamp (vswitch->vinputs[j]->fmodule),
+                    voice_state_to_string (vswitch->vinputs[j]->vstate),
+                    voice_state_to_string (vswitch->vinputs[j]->queue_state),
+                    BSE_FREQ_FROM_VALUE (vswitch->vinputs[j]->freq_value));
     }
 }
 
@@ -1304,7 +1304,7 @@ bse_midi_receiver_discard_poly_voice (BseMidiReceiver *self,
                                       BseTrans        *trans)
 {
   MidiChannel *mchannel;
-  VoiceSwitch *voice;
+  VoiceSwitch *vswitch;
   
   g_return_if_fail (self != NULL);
   g_return_if_fail (midi_channel > 0);
@@ -1313,19 +1313,19 @@ bse_midi_receiver_discard_poly_voice (BseMidiReceiver *self,
   
   BSE_MIDI_RECEIVER_LOCK (self);
   mchannel = self->get_channel (midi_channel);
-  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
-  if (voice)
+  vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  if (vswitch)
     {
-      g_return_if_fail (voice->ref_count > 0);
-      voice->ref_count--;
-      if (!voice->ref_count)
+      g_return_if_fail (vswitch->ref_count > 0);
+      vswitch->ref_count--;
+      if (!vswitch->ref_count)
         {
-          destroy_voice_switch (voice, trans);
+          destroy_voice_switch (vswitch, trans);
           mchannel->voices[voice_id] = NULL;
         }
     }
   BSE_MIDI_RECEIVER_UNLOCK (self);
-  if (!voice)
+  if (!vswitch)
     g_warning ("MIDI channel %u has no voice %u", midi_channel, voice_id + 1);
 }
 
@@ -1335,7 +1335,7 @@ bse_midi_receiver_get_poly_voice_input (BseMidiReceiver   *self,
                                         guint              voice_id)
 {
   MidiChannel *mchannel;
-  VoiceSwitch *voice;
+  VoiceSwitch *vswitch;
   BseModule *module;
   
   g_return_val_if_fail (self != NULL, NULL);
@@ -1345,8 +1345,8 @@ bse_midi_receiver_get_poly_voice_input (BseMidiReceiver   *self,
   
   BSE_MIDI_RECEIVER_LOCK (self);
   mchannel = self->get_channel (midi_channel);
-  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
-  module = voice ? voice->smodule : NULL;
+  vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  module = vswitch ? vswitch->smodule : NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
   return module;
 }
@@ -1357,7 +1357,7 @@ bse_midi_receiver_get_poly_voice_output (BseMidiReceiver   *self,
                                          guint              voice_id)
 {
   MidiChannel *mchannel;
-  VoiceSwitch *voice;
+  VoiceSwitch *vswitch;
   BseModule *module;
   
   g_return_val_if_fail (self != NULL, NULL);
@@ -1367,8 +1367,8 @@ bse_midi_receiver_get_poly_voice_output (BseMidiReceiver   *self,
   
   BSE_MIDI_RECEIVER_LOCK (self);
   mchannel = self->get_channel (midi_channel);
-  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
-  module = voice ? voice->vmodule : NULL;
+  vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  module = vswitch ? vswitch->vmodule : NULL;
   BSE_MIDI_RECEIVER_UNLOCK (self);
   return module;
 }
@@ -1380,7 +1380,7 @@ bse_midi_receiver_create_sub_voice (BseMidiReceiver   *self,
                                     BseTrans          *trans)
 {
   MidiChannel *mchannel;
-  VoiceSwitch *voice;
+  VoiceSwitch *vswitch;
   BseModule *module = NULL;
   
   g_return_val_if_fail (self != NULL, NULL);
@@ -1390,14 +1390,14 @@ bse_midi_receiver_create_sub_voice (BseMidiReceiver   *self,
   
   BSE_MIDI_RECEIVER_LOCK (self);
   mchannel = self->get_channel (midi_channel);
-  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
-  if (voice)
+  vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  if (vswitch)
     {
-      guint i = voice->n_vinputs++;
-      voice->vinputs = g_renew (VoiceInput*, voice->vinputs, voice->n_vinputs);
-      voice->vinputs[i] = create_voice_input (&mchannel->voice_input_table, trans);
-      voice->ref_count++;
-      module = voice->vinputs[i]->fmodule;
+      guint i = vswitch->n_vinputs++;
+      vswitch->vinputs = g_renew (VoiceInput*, vswitch->vinputs, vswitch->n_vinputs);
+      vswitch->vinputs[i] = create_voice_input (&mchannel->voice_input_table, trans);
+      vswitch->ref_count++;
+      module = vswitch->vinputs[i]->fmodule;
     }
   BSE_MIDI_RECEIVER_UNLOCK (self);
   return module;
@@ -1411,7 +1411,7 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
                                      BseTrans          *trans)
 {
   MidiChannel *mchannel;
-  VoiceSwitch *voice;
+  VoiceSwitch *vswitch;
   guint i, need_unref = FALSE;
   
   g_return_if_fail (self != NULL);
@@ -1422,16 +1422,16 @@ bse_midi_receiver_discard_sub_voice (BseMidiReceiver   *self,
   
   BSE_MIDI_RECEIVER_LOCK (self);
   mchannel = self->get_channel (midi_channel);
-  voice = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
-  if (voice)
-    for (i = 0; i < voice->n_vinputs; i++)
-      if (voice->vinputs[i]->fmodule == fmodule)
+  vswitch = voice_id < mchannel->n_voices ? mchannel->voices[voice_id] : NULL;
+  if (vswitch)
+    for (i = 0; i < vswitch->n_vinputs; i++)
+      if (vswitch->vinputs[i]->fmodule == fmodule)
         {
-          voice->vinputs[i]->ref_count--;
-          if (!voice->vinputs[i]->ref_count)
+          vswitch->vinputs[i]->ref_count--;
+          if (!vswitch->vinputs[i]->ref_count)
             {
-              destroy_voice_input (voice->vinputs[i], &mchannel->voice_input_table, trans);
-              voice->vinputs[i] = voice->vinputs[--voice->n_vinputs];
+              destroy_voice_input (vswitch->vinputs[i], &mchannel->voice_input_table, trans);
+              vswitch->vinputs[i] = vswitch->vinputs[--vswitch->n_vinputs];
               need_unref = TRUE;
             }
           fmodule = NULL;
