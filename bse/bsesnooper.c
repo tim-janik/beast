@@ -211,6 +211,8 @@ bse_snooper_context_create (BseSource *source,
     0,                  	/* n_jstreams */
     0,				/* n_ostreams */
     snooper_process,		/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     (gpointer) g_free,		/* free */
     GSL_COST_CHEAP,		/* flags */
   };

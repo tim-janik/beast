@@ -31,9 +31,9 @@ typedef struct
 } BsePCMModuleData;
 enum
 {
-  BSE_PCM_MODULE_ISTREAM_LEFT,
-  BSE_PCM_MODULE_ISTREAM_RIGHT,
-  BSE_PCM_MODULE_N_ISTREAMS
+  BSE_PCM_MODULE_JSTREAM_LEFT,
+  BSE_PCM_MODULE_JSTREAM_RIGHT,
+  BSE_PCM_MODULE_N_JSTREAMS
 };
 enum
 {
@@ -79,27 +79,27 @@ bse_pcm_module_poll (gpointer         data,
   /* when do we have enough space available? */
   diff = mdata->n_values - status.n_playback_values_left;
   *timeout_p = diff * 1000.0 / mdata->handle->mix_freq;
-
+  
   return *timeout_p == 0;
 #else
   BsePCMModuleData *mdata = data;
   BsePcmHandle *handle = mdata->handle;
   BsePcmStatus status;
   guint fillmark, watermark;
-
+  
   /* get playback status */
   bse_pcm_handle_status (mdata->handle, &status);
-
+  
   watermark = status.total_playback_values - MIN (mdata->n_values, status.total_playback_values);
   watermark = MIN (watermark, handle->playback_watermark);
   fillmark = status.total_playback_values - status.n_playback_values_available;
   if (fillmark <= watermark)
     return TRUE;	/* need to write out stuff now */
-
+  
   fillmark -= watermark;
   fillmark /= handle->n_channels;
   *timeout_p = fillmark * 1000.0 / mdata->handle->mix_freq;
-
+  
   return *timeout_p == 0;
 #endif
 }
@@ -109,19 +109,38 @@ bse_pcm_omodule_process (GslModule *module,
 			 guint      n_values)
 {
   BsePCMModuleData *mdata = module->user_data;
-  const gfloat *left = GSL_MODULE_IBUFFER (module, BSE_PCM_MODULE_ISTREAM_LEFT);
-  const gfloat *right = GSL_MODULE_IBUFFER (module, BSE_PCM_MODULE_ISTREAM_RIGHT);
   gfloat *d = mdata->buffer;
   gfloat *b = mdata->bound;
+  const gfloat *src;
+  guint i;
   
   g_return_if_fail (n_values == mdata->n_values >> 1);
   
-  do
+  if (GSL_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_LEFT).n_connections)
+    src = GSL_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_LEFT, 0);
+  else
+    src = gsl_engine_const_values (0);
+  d = mdata->buffer;
+  do { *d = *src++; d += 2; } while (d < b);
+  for (i = 1; i < GSL_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_LEFT).n_connections; i++)
     {
-      *d++ = *left++;
-      *d++ = *right++;
+      src = GSL_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_LEFT, i);
+      d = mdata->buffer;
+      do { *d += *src++; d += 2; } while (d < b);
     }
-  while (d < b);
+
+  if (GSL_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_RIGHT).n_connections)
+    src = GSL_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_RIGHT, 0);
+  else
+    src = gsl_engine_const_values (0);
+  d = mdata->buffer + 1;
+  do { *d = *src++; d += 2; } while (d < b);
+  for (i = 1; i < GSL_MODULE_JSTREAM (module, BSE_PCM_MODULE_JSTREAM_RIGHT).n_connections; i++)
+    {
+      src = GSL_MODULE_JBUFFER (module, BSE_PCM_MODULE_JSTREAM_RIGHT, i);
+      d = mdata->buffer + 1;
+      do { *d += *src++; d += 2; } while (d < b);
+    }
   
   bse_pcm_handle_write (mdata->handle, mdata->n_values, mdata->buffer);
 }
@@ -141,10 +160,12 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
 			GslTrans     *trans)
 {
   static const GslClass pcm_omodule_class = {
-    BSE_PCM_MODULE_N_ISTREAMS,	/* n_istreams */
-    0,				/* n_jstreams */
+    0,				/* n_istreams */
+    BSE_PCM_MODULE_N_JSTREAMS,	/* n_jstreams */
     0,				/* n_ostreams */
     bse_pcm_omodule_process,	/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     bse_pcm_module_data_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
   };
@@ -156,7 +177,7 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
   g_return_val_if_fail (trans != NULL, NULL);
   
   mdata = g_new (BsePCMModuleData, 1);
-  mdata->n_values = gsl_engine_block_size () * BSE_PCM_MODULE_N_ISTREAMS;
+  mdata->n_values = gsl_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS;
   mdata->buffer = g_new (gfloat, mdata->n_values);
   mdata->bound = mdata->buffer + mdata->n_values;
   mdata->handle = handle;
@@ -222,6 +243,8 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
     0,				/* n_jstreams */
     BSE_PCM_MODULE_N_OSTREAMS,	/* n_ostreams */
     bse_pcm_imodule_process,	/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     bse_pcm_module_data_free,	/* free */
     GSL_COST_EXPENSIVE,		/* cost */
   };

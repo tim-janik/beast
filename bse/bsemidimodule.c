@@ -102,6 +102,8 @@ bse_midi_module_insert (BseMidiDecoder *decoder,
     0,				/* n_jstreams */
     BSE_MIDI_MODULE_N_CHANNELS,	/* n_ostreams */
     bse_midi_module_process,	/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP
   };

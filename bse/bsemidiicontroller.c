@@ -270,12 +270,14 @@ bse_midi_icontroller_context_create (BseSource *source,
 				     GslTrans  *trans)
 {
   static const GslClass midi_icontroller_mclass = {
-    BSE_MIDI_ICONTROLLER_N_OCHANNELS, /* n_istreams */
-    0,				     /* n_jstreams */
-    BSE_MIDI_ICONTROLLER_N_OCHANNELS, /* n_ostreams */
-    midi_icontroller_process,	     /* process */
-    NULL,			     /* free */
-    GSL_COST_CHEAP,		     /* cost */
+    BSE_MIDI_ICONTROLLER_N_OCHANNELS, 	/* n_istreams */
+    0,				     	/* n_jstreams */
+    BSE_MIDI_ICONTROLLER_N_OCHANNELS, 	/* n_ostreams */
+    midi_icontroller_process,	     	/* process */
+    NULL,                       	/* process_defer */
+    NULL,                       	/* reconnect */
+    NULL,			     	/* free */
+    GSL_COST_CHEAP,		     	/* cost */
   };
   GslModule *module = gsl_module_new (&midi_icontroller_mclass, NULL);
   

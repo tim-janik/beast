@@ -36,7 +36,12 @@ gsl_module_new (const GslClass *klass,
   guint i;
 
   g_return_val_if_fail (klass != NULL, NULL);
-  g_return_val_if_fail (klass->process != NULL, NULL);
+  g_return_val_if_fail (klass->process != NULL || klass->process_defer != NULL, NULL);
+  if (klass->process_defer)
+    {
+      g_warning ("%s: Delay cycle processing not yet implemented", G_STRLOC);
+      return NULL;
+    }
   
   node = gsl_new_struct0 (EngineNode, 1);
   
@@ -55,7 +60,10 @@ gsl_module_new (const GslClass *klass,
   node->integrated = FALSE;
   gsl_rec_mutex_init (&node->rec_mutex);
   for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
-    node->outputs[i].buffer = node->module.ostreams[i].values;
+    {
+      node->outputs[i].buffer = node->module.ostreams[i].values;
+      node->module.ostreams[i].sub_sample_pattern = gsl_engine_sub_sample_test (node->module.ostreams[i].values);
+    }
   node->flow_jobs = NULL;
   node->fjob_first = NULL;
   node->fjob_last = NULL;
@@ -627,6 +635,8 @@ static gboolean   gsl_engine_threaded = FALSE;
 static GslThread *master_thread = NULL;
 guint		gsl_externvar_bsize = 0;
 guint		gsl_externvar_sample_freq = 0;
+guint		gsl_externvar_sub_sample_mask = 0;
+guint		gsl_externvar_sub_sample_steps = 0;
 
 /**
  * gsl_engine_init
@@ -641,16 +651,21 @@ guint		gsl_externvar_sample_freq = 0;
 void
 gsl_engine_init (gboolean run_threaded,
 		 guint	  block_size,
-		 guint	  sample_freq)
+		 guint	  sample_freq,
+		 guint    sub_sample_mask)
 {
   g_return_if_fail (gsl_engine_initialized == FALSE);
   g_return_if_fail (block_size > 0 && block_size <= GSL_STREAM_MAX_VALUES);
   g_return_if_fail (sample_freq > 0);
+  g_return_if_fail (sub_sample_mask < block_size);
+  g_return_if_fail ((sub_sample_mask & (sub_sample_mask + 1)) == 0);	/* power of 2 */
   
   gsl_engine_initialized = TRUE;
   gsl_engine_threaded = run_threaded;
   gsl_externvar_bsize = block_size;
   gsl_externvar_sample_freq = sample_freq;
+  gsl_externvar_sub_sample_mask = sub_sample_mask << 2;	/* shift out sizeof (float) alignment */
+  gsl_externvar_sub_sample_steps = sub_sample_mask + 1;
   _gsl_tick_stamp_set_leap (block_size);
   
   ENG_DEBUG ("initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");

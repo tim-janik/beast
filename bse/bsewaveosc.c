@@ -469,6 +469,8 @@ bse_wave_osc_context_create (BseSource *source,
     0,                          /* n_jstreams */
     BSE_WAVE_OSC_N_OCHANNELS,	/* n_ostreams */
     wmod_process,		/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     wmod_free,			/* free */
     GSL_COST_NORMAL,		/* cost */
   };

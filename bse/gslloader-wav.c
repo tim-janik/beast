@@ -232,10 +232,15 @@ wav_read_data_header (gint        fd,
       chunk[4] = 0;
       esc = g_strescape (chunk, NULL);
       
-      WAV_DEBUG ("unmatched token 'data' (found '%s')", esc);
+      /* skip chunk and retry */
+      WAV_DEBUG ("ignoring sub-chunk '%s'", esc);
       g_free (esc);
-      
-      return GSL_ERROR_FORMAT_UNKNOWN;
+      if (lseek (fd, header->data_length, SEEK_CUR) < 0)
+	{
+	  WAV_DEBUG ("failed to seek while skipping sub-chunk");
+	  return GSL_ERROR_IO;
+	}
+      return wav_read_data_header (fd, header, byte_alignment);
     }
   if (header->data_length < 1 || header->data_length % byte_alignment != 0)
     {

@@ -54,6 +54,8 @@ struct _GslOStream
   /* const */ guint connected : 1;
 };
 
+#define	NODE_FLAG_RECONNECT(node)	G_STMT_START { (node)->reconnected = (node)->module.klass->reconnect != NULL; } G_STMT_END
+
 
 /* --- time stamping (debugging) --- */
 #define	ToyprofStamp		struct timeval
@@ -146,6 +148,8 @@ master_idisconnect_node (EngineNode *node,
   src_node->outputs[ostream].n_outputs -= 1;
   src_node->module.ostreams[ostream].connected = src_node->outputs[ostream].n_outputs > 0;
   src_node->output_nodes = gsl_ring_remove (src_node->output_nodes, node);
+  NODE_FLAG_RECONNECT (node);
+  NODE_FLAG_RECONNECT (src_node);
   /* add to consumer list */
   if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
     add_consumer (src_node);
@@ -171,6 +175,8 @@ master_jdisconnect_node (EngineNode *node,
   src_node->outputs[ostream].n_outputs -= 1;
   src_node->module.ostreams[ostream].connected = src_node->outputs[ostream].n_outputs > 0;
   src_node->output_nodes = gsl_ring_remove (src_node->output_nodes, node);
+  NODE_FLAG_RECONNECT (node);
+  NODE_FLAG_RECONNECT (src_node);
   /* add to consumer list */
   if (!was_consumer && ENGINE_NODE_IS_CONSUMER (src_node))
     add_consumer (src_node);
@@ -210,6 +216,7 @@ master_process_job (GslJob *job)
       if (ENGINE_NODE_IS_CONSUMER (node))
 	add_consumer (node);
       node->counter = 0;
+      NODE_FLAG_RECONNECT (node);
       master_need_reflow |= TRUE;
       break;
     case ENGINE_JOB_DISCARD:
@@ -271,6 +278,8 @@ master_process_job (GslJob *job)
       src_node->outputs[ostream].n_outputs += 1;
       src_node->module.ostreams[ostream].connected = TRUE;
       src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
+      NODE_FLAG_RECONNECT (node);
+      NODE_FLAG_RECONNECT (src_node);
       src_node->counter = 0;	// FIXME: counter reset?
       if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
@@ -295,6 +304,8 @@ master_process_job (GslJob *job)
       src_node->outputs[ostream].n_outputs += 1;
       src_node->module.ostreams[ostream].connected = TRUE;
       src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
+      NODE_FLAG_RECONNECT (node);
+      NODE_FLAG_RECONNECT (src_node);
       src_node->counter = 0;	// FIXME: counter reset?
       if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
@@ -501,6 +512,11 @@ master_process_locked_node (EngineNode *node,
 	  }
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	node->module.ostreams[i].values = node->outputs[i].buffer + diff;
+      if_reject (node->reconnected)
+	{
+	  node->module.klass->reconnect (&node->module);
+	  node->reconnected = FALSE;
+	}
       node->module.klass->process (&node->module, new_counter - node->counter);
       for (i = 0; i < ENGINE_NODE_N_OSTREAMS (node); i++)
 	{
@@ -513,15 +529,15 @@ master_process_locked_node (EngineNode *node,
     }
 }
 
-static GslLong gsl_trace_delay = 0;
+static GslLong gsl_profile_modules = 0;	/* set to 1 in gdb to get profile output */
 
 static void
 master_process_flow (void)
 {
   guint64 new_counter = GSL_TICK_STAMP + gsl_engine_block_size ();
-  GslLong trace_slowest = 0;
-  GslLong trace_delay = gsl_trace_delay;
-  EngineNode *trace_node = NULL;
+  GslLong profile_maxtime = 0;
+  GslLong profile_modules = gsl_profile_modules;
+  EngineNode *profile_node = NULL;
   
   g_return_if_fail (master_need_process == TRUE);
   
@@ -538,23 +554,23 @@ master_process_flow (void)
       node = _engine_pop_unprocessed_node ();
       while (node)
 	{
-	  ToyprofStamp trace_stamp1, trace_stamp2;
+	  ToyprofStamp profile_stamp1, profile_stamp2;
 	  
-	  if_reject (trace_delay)
-	    toyprof_stamp (trace_stamp1);
+	  if_reject (profile_modules)
+	    toyprof_stamp (profile_stamp1);
 	  
 	  master_process_locked_node (node, gsl_engine_block_size ());
 	  
-	  if_reject (trace_delay)
+	  if_reject (profile_modules)
 	    {
 	      GslLong duration;
 	      
-	      toyprof_stamp (trace_stamp2);
-	      duration = toyprof_elapsed (trace_stamp1, trace_stamp2);
-	      if (duration > trace_slowest)
+	      toyprof_stamp (profile_stamp2);
+	      duration = toyprof_elapsed (profile_stamp1, profile_stamp2);
+	      if (duration > profile_maxtime)
 		{
-		  trace_slowest = duration;
-		  trace_node = node;
+		  profile_maxtime = duration;
+		  profile_node = node;
 		}
 	    }
 	  
@@ -562,16 +578,16 @@ master_process_flow (void)
 	  node = _engine_pop_unprocessed_node ();
 	}
       
-      if_reject (trace_delay)
+      if_reject (profile_modules)
 	{
-	  if (trace_node)
+	  if (profile_node)
 	    {
-	      if (trace_slowest > trace_delay)
+	      if (profile_maxtime > profile_modules)
 		g_print ("Excess Node: %p  Duration: %lu usecs     ((void(*)())%p)         \n",
-			 trace_node, trace_slowest, trace_node->module.klass->process);
+			 profile_node, profile_maxtime, profile_node->module.klass->process);
 	      else
 		g_print ("Slowest Node: %p  Duration: %lu usecs     ((void(*)())%p)         \r",
-			 trace_node, trace_slowest, trace_node->module.klass->process);
+			 profile_node, profile_maxtime, profile_node->module.klass->process);
 	    }
 	}
       

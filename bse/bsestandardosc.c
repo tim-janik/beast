@@ -184,7 +184,7 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 			      PROP_FM_OCTAVES,
 			      bse_param_spec_float ("fm_n_octaves", "Octaves",
 						    "Number of octaves to be affected by exponential frequency modulation",
-						    0, 3.0,
+						    0, 5.0,
 						    1.0, 0.01,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_SCALE));
@@ -493,6 +493,8 @@ bse_standard_osc_context_create (BseSource *source,
     0,                            /* n_jstreams */
     BSE_STANDARD_OSC_N_OCHANNELS, /* n_ostreams */
     standard_osc_process,	  /* process */
+    NULL,                         /* process_defer */
+    NULL,                         /* reconnect */
     (GslModuleFreeFunc) g_free,	  /* free */
     GSL_COST_NORMAL,		  /* cost */
   };

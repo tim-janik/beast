@@ -1,9 +1,9 @@
-- fix fune-tune settings (from gsl)
-- partials context creation for non-modifiable snets:
+- fix fine-tune settings (from gsl)
+- partials context creation for non-modifiable snets (songs):
   gsl-module: BseContextBus 4in<->4out
   BseSource: BseContextIBus (owns ContextBus) 4in, BseContextOBus 4out
 - BseDisconnectSource with two engine modules
-- fixed amount of contexts (notes) per instrument as song property
+(- fixed amount of contexts (notes) per instrument as song property?)
 - user process collection of done modules + state reset
 Problems:
 - _SL functions have to be revisited and thoroughly implemented
@@ -11,18 +11,19 @@ Problems:
 - multi-channel/note/instantiation???
 - fix context creation recursion in subsynth
 - fix snet propety changes in sub synth and instrument
+- replace gsl_signal_exp2() with gsl_approx_exp2() and audio test result
 
 NEW:
 - re-eval balance defines, provide just MAX_BALANCE
 - provide proper dB functions in GSL
-- implement BSE_PARAM_FORCE_DIRTY (never skip due to value==default)
-- adjust stepping for all percentage settings
+- implement BSE_PARAM_FORCE_DIRTY (never skip save due to value==default)
+- adjust stepping and type for all percentage settings
 - get rid of BseSampleValue
 - get rid of parasites by means of using data pocket
 - alive keeping for waves which are removed, but whose index is in use?
 - loading (restore) may only work when not playing (to keep consistency
   and avoid lock contentions during playback)
-- during playback the set instruments needs to be fixed on a song  
+- during playback the instrument set needs to be fixed on a song  
 - BSE_SOURCE_GET_CLASS (source)->remove_input() add GslTrans* so clear_input removes really in batches
   
 OLD:

@@ -1,3 +1,57 @@
+Mon May 13 22:07:36 2002  Tim Janik  <timj@gtk.org>
+
+	* gslengine.[hc], gslopmaster.c: reserve space for
+	process_defer() in GslClass and provide a reconnect()
+	class function, serving as notifier when a module got
+	reconnected. adapted related code portions.
+	added sub sampling argument to gsl_engine_init().
+
+	* bsestandardosc.c: boost up the range of modulatable
+	octaves to 5.
+
+	* gslfilter.[hc]: fix argument ordering of _eval()
+	functions. added lowpass and highpass biquad types.
+
+	* gslloader-wav.c: skip unknown sub-chunk rather than
+	aborting.
+
+	* gslsignal.[hc]: added implementation of
+	GslFrequencyModulator which can prerender a frequency
+	buffer out of various frequency modulation settings/inputs.
+
+	* bsebiquadfilter.[hc]: new filter implementation, supporting
+	biquad filter types and frequency and gain (modulation) input
+	signals.
+
+Sun May 12 20:48:34 2002  Tim Janik  <timj@gtk.org>
+
+	* bsepcmoutput.c (bse_pcm_output_context_connect): connect to
+	joint channels of the internal PCM output module.
+
+	* bsepcmmodule.c: use joint input channels for the internal PCM
+	output module.
+
+Fri May 10 17:46:01 2002  Tim Janik  <timj@gtk.org>
+
+	* gslsignal.h: provide gsl_approx_exp2() to approximate 2^x.
+	gsl_signal_exp2() is supposed to be deprecated.
+	gsl_approx_exp2() has slightly greater error within -0.5..0.5,
+	but is faster and covers a wider range.
+
+Fri May 10 17:41:11 2002  Tim Janik  <timj@gtk.org>
+
+	* gslieee754.h: make gsl_ftoi() operate on floats and provide
+	gsl_dtoi().
+
+Wed May  8 00:34:09 2002  Tim Janik  <timj@gtk.org>
+
+	* gslmath.h: accuracy fixes of constants, added more constants.
+
+Mon May  6 13:01:28 2002  Tim Janik  <timj@gtk.org>
+
+	* icons/instrument.xcf: use a speaker different from the
+	PcmOutput icon for sub instruments.
+
 Sun May  5 20:31:57 2002  Tim Janik  <timj@gtk.org>
 
 	* bsewaveosc.[hcp]*: moved this here from ../plugins/ because

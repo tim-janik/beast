@@ -349,6 +349,8 @@ bse_sub_synth_context_create (BseSource *source,
     0,				/* n_jstreams */
     BSE_SUB_SYNTH_N_IOPORTS,	/* n_ostreams */
     sub_synths_process,		/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
   };

@@ -144,7 +144,7 @@ void	gsl_filter_tscheb2_bs	(unsigned int iorder,
 				 double      *b);
 
 
-/* --- fir filters --- */
+/* --- FIR Filters --- */
 void	gsl_filter_fir_approx	(unsigned int  iorder,
 				 double       *a,	/* [0..iorder] */
 				 unsigned int  n_points,
@@ -152,7 +152,7 @@ void	gsl_filter_fir_approx	(unsigned int  iorder,
 				 const double *value);
 
 
-/* --- filter evaluation --- */
+/* --- IIR Filter Evaluation --- */
 typedef struct {
   guint order;
   gdouble *a;   /* [0..order] */
@@ -170,9 +170,64 @@ void	gsl_iir_filter_change	(GslIIRFilter	*f,
 				 const gdouble	*b,
 				 gdouble	*buffer); /* 4*(order+1) */
 void	gsl_iir_filter_eval	(GslIIRFilter	*f,
+				 guint		 n_values,
 				 const gfloat	*x,
-				 gfloat		*y,
-				 guint		 n_values);
+				 gfloat		*y);
+
+
+/* --- Biquad Filters --- */
+typedef enum	/*< skip >*/
+{
+  GSL_BIQUAD_NORMALIZE_PASSBAND,
+  GSL_BIQUAD_NORMALIZE_RESONANCE_GAIN,
+  GSL_BIQUAD_NORMALIZE_PEAK_GAIN
+} GslBiquadNormalize;
+
+typedef enum	/*< skip >*/
+{
+  GSL_BIQUAD_RESONANT_LOWPASS = 1,
+  GSL_BIQUAD_RESONANT_HIGHPASS,
+  GSL_BIQUAD_LOWSHELVE,
+  GSL_BIQUAD_HIGHSHELVE,
+  GSL_BIQUAD_PEAK
+} GslBiquadType;
+
+typedef struct {
+  GslBiquadType      type;
+  GslBiquadNormalize normalize;  	/* high/low pass */
+  gfloat             f_fn;
+  gfloat             gain;
+  gfloat	     quality;		/* peak/notch */
+  guint		     dirty : 1;		/* post filter_config() changes? */
+  guint		     approx_values : 1;	/* biquad_config_approx_*() called? */
+  /*< private >*/
+  gdouble	     k, v;
+} GslBiquadConfig;
+
+typedef struct {
+  gdouble xc0, xc1, xc2;
+  gdouble yc1, yc2; /* yc0==1 */
+  gdouble xd1, xd2, yd1, yd2; /* history */
+} GslBiquadFilter;
+
+void	gsl_biquad_config_init		(GslBiquadConfig	*c,
+					 GslBiquadType		 type,
+					 GslBiquadNormalize	 normalize);
+void	gsl_biquad_config_setup		(GslBiquadConfig	*c,
+					 gfloat			 f_fn,
+					 gfloat			 gain,
+					 gfloat			 quality);
+void	gsl_biquad_config_approx_freq	(GslBiquadConfig	*c,
+					 gfloat			 f_fn);
+void	gsl_biquad_config_approx_gain	(GslBiquadConfig	*c,
+					 gfloat			 gain);
+void	gsl_biquad_filter_config	(GslBiquadFilter	*f,
+					 GslBiquadConfig	*c,
+					 gboolean		 reset_state);
+void	gsl_biquad_filter_eval		(GslBiquadFilter	*f,
+					 guint			 n_values,
+					 const gfloat		*x,
+					 gfloat			*y);
 
 
 /* --- filter scanning -- */

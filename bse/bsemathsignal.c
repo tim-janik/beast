@@ -21,6 +21,82 @@
 #include "gslcommon.h"
 
 
+/* --- frequency modulation --- */
+void
+gsl_frequency_modulator (const GslFrequencyModulator *fm,
+			 guint                        n_values,
+			 const gfloat                *ifreq,
+			 const gfloat                *ifmod,
+			 gfloat                      *fm_buffer)
+{
+  gfloat *bound, fine_tune, fm_strength;
+  gboolean with_fine_tune;
+
+  fine_tune = gsl_cent_factor (fm->fine_tune);
+  with_fine_tune = fm->fine_tune != 0;
+  fm_strength = fm->fm_strength;
+  
+  bound = fm_buffer + n_values;
+  if (ifreq && ifmod)
+    {
+      if (fm->exponential_fm)
+	{
+	  if (with_fine_tune)
+	    do {
+	      *fm_buffer++ = *ifreq++ * gsl_approx_exp2 (fm_strength * *ifmod++) * fine_tune;
+	    } while (fm_buffer < bound);
+	  else
+	    do {
+	      *fm_buffer++ = *ifreq++ * gsl_approx_exp2 (fm_strength * *ifmod++);
+	    } while (fm_buffer < bound);
+	}
+      else
+	{
+	  if (with_fine_tune)
+	    do {
+	      *fm_buffer++ = *ifreq++ * (1 + fm_strength * *ifmod++) * fine_tune;
+	    } while (fm_buffer < bound);
+	  else
+	    do {
+	      *fm_buffer++ = *ifreq++ * (1 + fm_strength * *ifmod++);
+	    } while (fm_buffer < bound);
+	}
+    }
+  else if (ifmod)
+    {
+      gfloat signal_freq = fm->signal_freq * fine_tune;
+
+      if (fm->exponential_fm)
+	do {
+	  *fm_buffer++ = signal_freq * gsl_approx_exp2 (fm_strength * *ifmod++);
+	} while (fm_buffer < bound);
+      else
+	do {
+	  *fm_buffer++ = signal_freq * (1 + fm_strength * *ifmod++);
+	} while (fm_buffer < bound);
+    }
+  else if (ifreq)
+    {
+      if (with_fine_tune)
+	do {
+	  *fm_buffer++ = *ifreq++ * fine_tune;
+	} while (fm_buffer < bound);
+      else
+	do {
+	  *fm_buffer++ = *ifreq++;
+	} while (fm_buffer < bound);
+    }
+  else
+    {
+      gfloat signal_freq = fm->signal_freq * fine_tune;
+
+      do {
+	*fm_buffer++ = signal_freq;
+      } while (fm_buffer < bound);
+    }
+}
+
+
 /* --- windows --- */
 double
 gsl_window_bartlett (double x)	/* triangle */
@@ -77,6 +153,10 @@ gsl_window_rect (double x)	/* a square */
     return 0;
   return 1.0;
 }
+
+/*
+cos_roll_off(x)= x>fh?0:x<fl?1:cos(pi/2.*((fl-x)/(fh-fl))) 
+*/
 
 
 /* --- cents & init --- */

@@ -172,6 +172,7 @@ struct _EngineNode		/* fields sorted by order of processing access */
   EngineNode	*mnl_next;
   EngineNode	*mnl_prev;
   guint		 integrated : 1;
+  guint		 reconnected : 1;
 
   guint		 is_consumer : 1;
   

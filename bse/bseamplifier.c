@@ -473,6 +473,8 @@ bse_amplifier_context_create (BseSource *source,
     0,                          /* n_jstreams */
     BSE_AMPLIFIER_N_OCHANNELS,	/* n_ostreams */
     amplifier_process,		/* process */
+    NULL,			/* process_defer */
+    NULL,			/* reconnect */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* flags */
   };

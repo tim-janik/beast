@@ -42,6 +42,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bse.h \
 	bseamplifier.h \
 	bsebindata.h \
+	bsebiquadfilter.h \
 	bsecategories.h \
 	bseconfig.h \
 	bseconstant.h \
@@ -118,6 +119,7 @@ bse_private_h_sources = @STRIP_BEGIN@ \
 bse_c_sources = @STRIP_BEGIN@ \
 	bseamplifier.c \
 	bsebindata.c \
+	bsebiquadfilter.c \
 	bsecategories.c \
 	bseconstant.c \
 	bsecontainer.c \

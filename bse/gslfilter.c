@@ -19,6 +19,7 @@
 #include "gslfilter.h"
 
 #include "gslfft.h"
+#include "gslsignal.h"
 
 
 /* --- common utilities --- */
@@ -1049,9 +1050,9 @@ filter_step_direct_canon_1 (GslIIRFilter *f,
 
 void
 gsl_iir_filter_eval (GslIIRFilter *f,
+		     guint         n_values,
 		     const gfloat *x,
-		     gfloat       *y,
-		     guint         n_values)
+		     gfloat       *y)
 {
   const gfloat *bound;
   
@@ -1066,6 +1067,236 @@ gsl_iir_filter_eval (GslIIRFilter *f,
       y++;
     }
 }
+
+
+/* --- biquad filters --- */
+void
+gsl_biquad_config_init (GslBiquadConfig   *c,
+			GslBiquadType      type,
+			GslBiquadNormalize normalize)
+{
+  g_return_if_fail (c != NULL);
+
+  memset (c, 0, sizeof (*c));
+  c->type = type;
+  c->normalize = normalize;
+  gsl_biquad_config_setup (c, 0.5, 3, 1);
+  c->approx_values = TRUE;	/* need _setup() */
+}
+
+void
+gsl_biquad_config_setup (GslBiquadConfig *c,
+			 gfloat           f_fn,
+			 gfloat           gain,
+			 gfloat           quality)
+{
+  g_return_if_fail (c != NULL);
+  g_return_if_fail (f_fn >= 0 && f_fn <= 1);
+
+  if (c->type == GSL_BIQUAD_RESONANT_HIGHPASS)
+    f_fn = 1.0 - f_fn;
+  c->f_fn = f_fn;			/* nyquist relative (0=DC, 1=nyquist) */
+  c->gain = gain;
+  c->quality = quality;			// FIXME
+  c->k = tan (c->f_fn * GSL_PI / 2.);
+  c->v = pow (10, c->gain / 20.);	/* v=10^(gain[dB]/20) */
+  c->dirty = TRUE;
+  c->approx_values = FALSE;
+}
+
+void
+gsl_biquad_config_approx_freq (GslBiquadConfig *c,
+			       gfloat           f_fn)
+{
+  g_return_if_fail (f_fn >= 0 && f_fn <= 1);
+
+  if (c->type == GSL_BIQUAD_RESONANT_HIGHPASS)
+    f_fn = 1.0 - f_fn;
+  c->f_fn = f_fn;                       /* nyquist relative (0=DC, 1=nyquist) */
+  c->k = tan (c->f_fn * GSL_PI / 2.);	// FIXME
+  c->dirty = TRUE;
+  c->approx_values = TRUE;
+}
+
+void
+gsl_biquad_config_approx_gain (GslBiquadConfig *c,
+			       gfloat           gain)
+{
+  c->gain = gain;
+  c->v = gsl_approx_exp2 (c->gain * GSL_LOG2POW20_10);
+  c->dirty = TRUE;
+  c->approx_values = TRUE;
+}
+
+static void
+biquad_lpreso (GslBiquadConfig *c,
+	       GslBiquadFilter *f)
+{
+  gdouble kk, sqrt2_reso, denominator;
+  gdouble r2p_norm = 0;			/* resonance gain to peak gain (pole: -sqrt2_reso+-j) */
+
+  kk = c->k * c->k;
+  sqrt2_reso = 1 / c->v;
+  denominator = 1 + (c->k + sqrt2_reso) * c->k;
+
+  switch (c->normalize)
+    {
+    case GSL_BIQUAD_NORMALIZE_PASSBAND:
+      r2p_norm = kk;
+      break;
+    case GSL_BIQUAD_NORMALIZE_RESONANCE_GAIN:
+      r2p_norm = kk * sqrt2_reso;
+      break;
+    case GSL_BIQUAD_NORMALIZE_PEAK_GAIN:
+      r2p_norm = (GSL_SQRT2 * sqrt2_reso - 1.0) / (sqrt2_reso * sqrt2_reso - 0.5);
+      r2p_norm = r2p_norm > 1 ? kk * sqrt2_reso : kk * r2p_norm * sqrt2_reso;
+      break;
+    }
+  f->xc0 = r2p_norm / denominator;
+  f->xc1 = 2 * f->xc0;
+  f->xc2 = f->xc0;
+  f->yc1 = 2 * (kk - 1) / denominator;
+  f->yc2 = (1 + (c->k - sqrt2_reso) * c->k) / denominator;
+}
+
+void
+gsl_biquad_filter_config (GslBiquadFilter *f,
+			  GslBiquadConfig *c,
+			  gboolean         reset_state)
+{
+  g_return_if_fail (f != NULL);
+  g_return_if_fail (c != NULL);
+
+  if (c->dirty)
+    {
+      switch (c->type)
+	{
+	case GSL_BIQUAD_RESONANT_LOWPASS:
+	  biquad_lpreso (c, f);
+	  break;
+	case GSL_BIQUAD_RESONANT_HIGHPASS:
+	  biquad_lpreso (c, f);
+	  f->xc1 = -f->xc1;
+	  f->yc1 = -f->yc1;
+	  break;
+	default:
+	  g_assert_not_reached ();
+	}
+      c->dirty = FALSE;
+    }
+
+  if (reset_state)
+    f->xd1 = f->xd2 = f->yd1 = f->yd2 = 0;
+}
+
+void
+gsl_biquad_filter_eval (GslBiquadFilter *f,
+			guint            n_values,
+			const gfloat    *x,
+			gfloat          *y)
+{
+  const gfloat *bound;
+  gdouble xc0, xc1, xc2, yc1, yc2, xd1, xd2, yd1, yd2;
+
+  g_return_if_fail (f != NULL && x != NULL && y != NULL);
+
+  xc0 = f->xc0;
+  xc1 = f->xc1;
+  xc2 = f->xc2;
+  yc1 = f->yc1;
+  yc2 = f->yc2;
+  xd1 = f->xd1;
+  xd2 = f->xd2;
+  yd1 = f->yd1;
+  yd2 = f->yd2;
+  bound = x + n_values;
+  while (x < bound)
+    {
+      gdouble k0, k1, k2;
+
+      k2 = xd2 * xc2;
+      k1 = xd1 * xc1;
+      xd2 = xd1;
+      xd1 = *x++;
+      k2 -= yd2 * yc2;
+      k1 -= yd1 * yc1;
+      yd2 = yd1;
+      k0 = xd1 * xc0;
+      yd1 = k2 + k1;
+      *y++ = yd1 += k0;
+    }
+  f->xd1 = xd1;
+  f->xd2 = xd2;
+  f->yd1 = yd1;
+  f->yd2 = yd2;
+}
+
+#if 0
+void
+gsl_biquad_lphp_reso (GslBiquadFilter   *c,
+		      gfloat             f_fn,	/* nyquist relative (0=DC, 1=nyquist) */
+		      float              gain,
+		      gboolean		 design_highpass,
+		      GslBiquadNormalize normalize)
+{
+  double k, kk, v;
+  double sqrt2_reso;
+  double denominator;
+  double r2p_norm = 0;			/* resonance gain to peak gain (pole: -sqrt2_reso+-j) */
+
+  g_return_if_fail (c != NULL);
+  g_return_if_fail (f_fn >= 0 && f_fn <= 1);
+
+  if (design_highpass)
+    f_fn = 1.0 - f_fn;
+
+  v = pow (10, gain / 20.);		/* v=10^(gain[dB]/20) */
+  k = tan (f_fn * GSL_PI / 2.);
+  kk = k * k;
+  sqrt2_reso = 1 / v;
+  denominator = 1 + (k + sqrt2_reso) * k;
+
+  if (0)
+    g_printerr ("BIQUAD-lp: R=%f\n", GSL_SQRT2 * sqrt2_reso);
+
+  switch (normalize)
+    {
+    case GSL_BIQUAD_NORMALIZE_PASSBAND:
+      r2p_norm = kk;
+      break;
+    case GSL_BIQUAD_NORMALIZE_RESONANCE_GAIN:
+      r2p_norm = kk * sqrt2_reso;
+      break;
+    case GSL_BIQUAD_NORMALIZE_PEAK_GAIN:
+      r2p_norm = (GSL_SQRT2 * sqrt2_reso - 1.0) / (sqrt2_reso * sqrt2_reso - 0.5);
+      g_print ("BIQUAD-lp: (peak-gain) r2p_norm = %f \n", r2p_norm);
+      r2p_norm = r2p_norm > 1 ? kk * sqrt2_reso : kk * r2p_norm * sqrt2_reso;
+      break;
+    }
+  c->xc0 = r2p_norm / denominator;
+  c->xc1 = 2 * c->xc0;
+  c->xc2 = c->xc0;
+  c->yc1 = 2 * (kk - 1) / denominator;
+  c->yc2 = (1 + (k - sqrt2_reso) * k) / denominator;
+
+  if (design_highpass)
+    {
+      c->xc1 = -c->xc1;
+      c->yc1 = -c->yc1;
+    }
+  /* normalization notes:
+   * pole: -sqrt2_reso+-j
+   * freq=0.5: reso->peak gain=8adjust:0.9799887, 9adjust:0.98415
+   * resonance gain = 1/(1-R)=sqrt2_reso
+   * sqrt2_reso*(1-R)=1
+   * 1-R=1/sqrt2_reso
+   * R= 1-1/sqrt2_reso
+   * peak gain = 2/(1-R^2)
+   * = 2 * (1 - (1 - 1 / sqrt2_reso) * (1 - 1 / sqrt2_reso))
+   * = 2 - 2 * (1 - 1 / sqrt2_reso)^2
+   */
+}
+#endif
 
 
 /* --- filter scanning -- */
@@ -1129,7 +1360,7 @@ gsl_filter_sine_scan (guint order,
 	  pos += freq;
 	}
       
-      gsl_iir_filter_eval (&filter, x, y, SINE_SCAN_SIZE);
+      gsl_iir_filter_eval (&filter, SINE_SCAN_SIZE, x, y);
       
       for (i = 0; i < todo; i++)
         if (n_values - i < scan_start)

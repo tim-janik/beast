@@ -109,7 +109,8 @@ typedef	unsigned short int	GslFpuState;
 static inline void	gsl_fpu_setround	(GslFpuState		*cw);
 static inline int	gsl_fpu_okround		(void);
 static inline void	gsl_fpu_restore		(GslFpuState		 cv);
-static inline int	gsl_ftoi		(register double	 f)  G_GNUC_CONST;
+static inline int	gsl_ftoi /* nearest */	(register float		 f)  G_GNUC_CONST;
+static inline int	gsl_dtoi /* nearest */	(register double	 f)  G_GNUC_CONST;
 /* fallbacks for the !386 case are below */
 #endif
 
@@ -177,39 +178,49 @@ static inline void
 gsl_fpu_setround (GslFpuState *cw)
 {
   GslFpuState cv;
-
-  asm ("fnstcw %0"
-       : "=m" (*&cv));
+  
+  __asm__ ("fnstcw %0"
+	   : "=m" (*&cv));
   *cw = cv;
   cv &= ~0x0c00;
-  asm ("fldcw %0"
-       :
-       : "m" (*&cv));
+  __asm__ ("fldcw %0"
+	   :
+	   : "m" (*&cv));
 }
 static inline int
 gsl_fpu_okround (void)
 {
   GslFpuState cv;
-
-  asm ("fnstcw %0"
-       : "=m" (*&cv));
+  
+  __asm__ ("fnstcw %0"
+	   : "=m" (*&cv));
   return !(cv & 0x0c00);
 }
 static inline void
 gsl_fpu_restore (GslFpuState cv)
 {
-  asm ("fldcw %0"
-       :
-       : "m" (*&cv));
+  __asm__ ("fldcw %0"
+	   :
+	   : "m" (*&cv));
 }
 static inline int G_GNUC_CONST
-gsl_ftoi (register double f)
+gsl_ftoi (register float f)
 {
   int r;
-
-  asm ("fistl %0"
-       : "=m" (r)
-       : "t" (f));
+  
+  __asm__ ("fistl %0"
+	   : "=m" (r)
+	   : "t" (f));
+  return r;
+}
+static inline int G_GNUC_CONST
+gsl_dtoi (register double f)
+{
+  int r;
+  
+  __asm__ ("fistl %0"
+	   : "=m" (r)
+	   : "t" (f));
   return r;
 }
 #else   /* !386 */
@@ -217,7 +228,12 @@ gsl_ftoi (register double f)
 #  define gsl_fpu_okround()     (1)
 #  define gsl_fpu_restore(x)    /* nop */
 static inline int G_GNUC_CONST
-gsl_ftoi (register double v)
+gsl_ftoi (register float v)
+{
+  return v < -0.0 ? v - 0.5 : v + 0.5;
+}
+static inline int G_GNUC_CONST
+gsl_dtoi (register double v)
 {
   return v < -0.0 ? v - 0.5 : v + 0.5;
 }

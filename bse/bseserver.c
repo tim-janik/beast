@@ -738,7 +738,7 @@ engine_init (BseServer *server,
   if (!engine_is_initialized)	// FIXME: hack because we can't deinitialize the engine
     {
       engine_is_initialized = TRUE;
-      gsl_engine_init (1, BSE_BLOCK_N_VALUES, mix_freq);
+      gsl_engine_init (1, BSE_BLOCK_N_VALUES, mix_freq, 63);
     }
   else
     g_assert (mix_freq == gsl_engine_sample_freq () && BSE_BLOCK_N_VALUES == gsl_engine_block_size ());

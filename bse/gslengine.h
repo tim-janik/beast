@@ -28,7 +28,7 @@ extern "C" {
 
 
 /* --- constants --- */
-#define	GSL_STREAM_MAX_VALUES		        (16384)	/* FIXME */
+#define	GSL_STREAM_MAX_VALUES		        (8192 /* power of 2, <= 16384 */)	/* FIXME */
 #define	GSL_MODULE_N_OSTREAMS(module)	        ((module)->klass->n_ostreams)
 #define	GSL_MODULE_N_ISTREAMS(module)	        ((module)->klass->n_istreams)
 #define	GSL_MODULE_N_JSTREAMS(module)	        ((module)->klass->n_jstreams)
@@ -49,6 +49,10 @@ typedef gboolean (*GslPollFunc)		(gpointer	  data,
 					 gboolean	  revents_filled);
 typedef void     (*GslProcessFunc)	(GslModule	 *module,
 					 guint		  n_values);
+typedef guint    (*GslProcessDeferFunc)	(GslModule	 *module,
+					 guint		  n_ivalues,
+					 guint		  n_ovalues);
+typedef void     (*GslReconnectFunc)	(GslModule	 *module);
 /* gsldefs.h:
  * typedef void  (*GslAccessFunc)	(GslModule	*module,
  *					 gpointer	 data);
@@ -65,12 +69,14 @@ typedef enum	/*< skip >*/
 /* class, filled out by user */
 struct _GslClass
 {
-  guint		    n_istreams;
-  guint		    n_jstreams;
-  guint		    n_ostreams;
-  GslProcessFunc    process;	/* EngineThread */
-  GslModuleFreeFunc free;	/* UserThread */
-  GslModuleFlags    mflags;
+  guint		      n_istreams;
+  guint		      n_jstreams;
+  guint		      n_ostreams;
+  GslProcessFunc      process;		/* EngineThread */
+  GslProcessDeferFunc process_defer;	/* EngineThread */
+  GslReconnectFunc    reconnect;	/* EngineThread */
+  GslModuleFreeFunc   free;		/* UserThread */
+  GslModuleFlags      mflags;
 };
 /* module, constructed by engine */
 struct _GslModule
@@ -87,18 +93,18 @@ struct _GslJStream
 {
   const gfloat **values;
   const guint    n_connections;
-  guint		 user_flags : 16;
+  guint		 reserved : 16;
 };
 struct _GslIStream
 {
   const gfloat *values;
-  guint		user_flags : 16;
+  guint		reserved : 16;
   const guint	connected : 1;
 };
 struct _GslOStream
 {
   gfloat     *values;
-  guint	      user_flags : 16;
+  guint	      sub_sample_pattern : 16;
   const guint connected : 1;
 };
 #endif	/* !__GSL_MASTER_C__ */
@@ -163,7 +169,8 @@ gfloat*		gsl_engine_const_values	(gfloat		 value);
 /* --- initialization & main loop --- */
 void	        gsl_engine_init		(gboolean	 threaded,
 					 guint		 block_size,
-					 guint		 sample_freq);
+					 guint		 sample_freq,
+					 guint		 sub_sample_mask);
 typedef struct
 {
   glong		timeout;
@@ -180,14 +187,19 @@ void	        gsl_engine_dispatch	(void);
 /* --- miscellaneous --- */
 void	      gsl_engine_garbage_collect	(void);
 void	      gsl_engine_wait_on_trans		(void);
-#define	      gsl_engine_block_size()		(/* guint */	gsl_externvar_bsize + 0)
-#define	      gsl_engine_sample_freq()		(/* guint */	gsl_externvar_sample_freq + 0)
-
+#define	      gsl_engine_block_size()		((const guint)	gsl_externvar_bsize + 0)
+#define	      gsl_engine_sample_freq()		((const guint)	gsl_externvar_sample_freq + 0)
+#define	      gsl_engine_sub_sample_mask()	((const guint)	gsl_externvar_sub_sample_mask + 0)
+#define	      gsl_engine_sub_sample_steps()	((const guint)	gsl_externvar_sub_sample_steps + 0)
+#define	      gsl_engine_sub_sample_test(ptr)	(((guint) (ptr)) & gsl_engine_sub_sample_mask ())
+#define	      GSL_SUB_SAMPLE_MATCH(ptr,sspatrn)	(gsl_engine_sub_sample_test (ptr) == (sspatrn))
 
 
 /*< private >*/
 extern guint	gsl_externvar_bsize;
 extern guint	gsl_externvar_sample_freq;
+extern guint	gsl_externvar_sub_sample_mask;
+extern guint	gsl_externvar_sub_sample_steps;
 
 #ifdef __cplusplus
 }

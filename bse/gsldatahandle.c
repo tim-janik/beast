@@ -224,7 +224,7 @@ static gint
 chain_handle_open (GslDataHandle *data_handle)
 {
   ChainHandle *chandle = (ChainHandle*) data_handle;
-
+  
   if (chandle->src_handle)
     return gsl_data_handle_open (chandle->src_handle);
   else
@@ -243,7 +243,7 @@ chain_handle_close (GslDataHandle *data_handle)
 
 /* --- reversed handle --- */
 static void
-reversed_handle_destroy (GslDataHandle *data_handle)
+reverse_handle_destroy (GslDataHandle *data_handle)
 {
   ReversedHandle *rhandle = (ReversedHandle*) data_handle;
   
@@ -254,10 +254,10 @@ reversed_handle_destroy (GslDataHandle *data_handle)
 }
 
 static GslLong
-reversed_handle_read (GslDataHandle *data_handle,
-		      GslLong        voffset,
-		      GslLong        n_values,
-		      gfloat        *values)
+reverse_handle_read (GslDataHandle *data_handle,
+		     GslLong        voffset,
+		     GslLong        n_values,
+		     gfloat        *values)
 {
   ReversedHandle *rhandle = (ReversedHandle*) data_handle;
   GslLong left, new_offset = data_handle->n_values - (voffset + n_values);
@@ -294,11 +294,11 @@ reversed_handle_read (GslDataHandle *data_handle,
 GslDataHandle*
 gsl_data_handle_new_reverse (GslDataHandle *src_handle)
 {
-  static GslDataHandleFuncs reversed_handle_vtable = {
+  static GslDataHandleFuncs reverse_handle_vtable = {
     chain_handle_open,
-    reversed_handle_read,
+    reverse_handle_read,
     chain_handle_close,
-    reversed_handle_destroy,
+    reverse_handle_destroy,
   };
   ReversedHandle *rhandle;
   gboolean success;
@@ -310,7 +310,7 @@ gsl_data_handle_new_reverse (GslDataHandle *src_handle)
   if (success)
     {
       rhandle->dhandle.name = g_strconcat (src_handle->name, "// #reversed /", NULL);
-      rhandle->dhandle.vtable = &reversed_handle_vtable;
+      rhandle->dhandle.vtable = &reverse_handle_vtable;
       rhandle->dhandle.n_values = src_handle->n_values;
       rhandle->src_handle = gsl_data_handle_ref (src_handle);
     }

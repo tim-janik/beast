@@ -240,7 +240,7 @@ gsl_temp_freq (double kammer_freq,
 {
   double factor;
   
-  factor = pow (GSL_2_RAISED_TO_1_OVER_12_d, halftone_delta);
+  factor = pow (GSL_2_POW_1_DIV_12, halftone_delta);
   
   return kammer_freq * factor;
 }

@@ -2,6 +2,7 @@
 icon_list += ampctrl.c
 icon_list += ball.c
 icon_list += const.c
+icon_list += disconnect.c
 icon_list += inoutport.c
 icon_list += inport.c
 icon_list += instrument.c
@@ -20,6 +21,7 @@ icon_list += waveosc.c
 icon_list += ampctrl.xcf
 icon_list += ball.xcf
 icon_list += const.xcf
+icon_list += disconnect.xcf
 icon_list += inoutport.xcf
 icon_list += inport.xcf
 icon_list += instrument.xcf

@@ -269,6 +269,8 @@ bse_pcm_input_context_create (BseSource *source,
     0,				/* n_jstreams */
     BSE_PCM_INPUT_N_OCHANNELS,	/* n_ostreams */
     pcm_input_process,		/* process */
+    NULL,                       /* process_defer */
+    NULL,                       /* reconnect */
     (GslModuleFreeFunc) g_free,	/* free */
     GSL_COST_CHEAP,		/* cost */
   };

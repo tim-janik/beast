@@ -51,26 +51,57 @@ extern "C" {
  */
 #define GSL_SIGNAL_MOD_CHANGED(v1,v2)	(fabs ((v1) - (v2)) > 1e-8)
 
+/* value changes in signals which represent dB ranges
+ */
+#define GSL_SIGNAL_GAIN_CHANGED(v1,v2)	(fabs ((v1) - (v2)) > 1e-8)
+
 /* convert between literal frequencies and signal values
  */
 #if defined (BSE_COMPILATION) || defined (BSE_PLUGIN_FALLBACK)
 #include <bse/bseglobals.h>
-#  define GSL_SIGNAL_TO_FREQ(value)	(((gfloat) (value)) * BSE_MAX_FREQUENCY_f)
-#  define GSL_SIGNAL_FROM_FREQ(freq)	((gfloat) ((freq) * (1.0 / BSE_MAX_FREQUENCY_f)))
+#  define GSL_SIGNAL_TO_FREQ_FACTOR	(BSE_MAX_FREQUENCY_f)
+#  define GSL_SIGNAL_FROM_FREQ_FACTOR	(1.0 / BSE_MAX_FREQUENCY_f)
+#  define GSL_SIGNAL_TO_FREQ(value)	(((gfloat) (value)) * GSL_SIGNAL_TO_FREQ_FACTOR)
+#  define GSL_SIGNAL_FROM_FREQ(freq)	(((gfloat) (freq)) * GSL_SIGNAL_FROM_FREQ_FACTOR)
 #elif defined (GSL_WANT_ARTS_THREADS)  /* must be aRts */
 #  define GSL_SIGNAL_TO_FREQ(x)		(x)
 #  define GSL_FREQ_TO_SIGNAL(x)		(x)
 #endif
 
+
+/* --- frequency modulation --- */
+typedef struct {
+  gfloat	fm_strength;		/* linear: 0..1, exponential: n_octaves */
+  guint		exponential_fm : 1;
+  gfloat	signal_freq;		/* for ifreq == NULL (as GSL_FREQ_TO_SIGNAL) */
+  gint		fine_tune;		/* -100..+100 */
+} GslFrequencyModulator;
+
+void	gsl_frequency_modulator	(const GslFrequencyModulator	*fm,
+				 guint				 n_values,
+				 const gfloat			*ifreq,
+				 const gfloat			*ifmod,
+				 gfloat				*fm_buffer);
+
+
+/* --- function approximations --- */
+
 /**
  * gsl_signal_exp2
- * Fast conversion of linear frequency modulation factor to
- * exponential frequency modulation factor. This is essentially
- * an approximation of exp2f(). It can be much faster than the
- * glibc function though, by taking advantage of a limited input
- * range and smaller precision requirements.
+ * Deprecated in favour of gsl_approx_exp2().
  */
 static inline float	gsl_signal_exp2 (float x)  G_GNUC_CONST;
+
+/**
+ * gsl_approx_exp2
+ * @ex:      exponent within [-127..127]
+ * @RETURNS: y approximating 2^x
+ * Fast approximation of 2 raised to the power of x.
+ * Multiplicative error stays below 8e-6 and aproaches zero
+ * for integer values of x (i.e. x - floor (x) = 0).
+ */
+static inline double	gsl_approx_exp2	(float ex)	G_GNUC_CONST;
+
 
 /**
  * gsl_approx_atan1
@@ -217,6 +248,27 @@ gsl_approx_qcircle4 (register double x)
   double denominator = x - 1.20460124790369468987715633298929;
   /* R4(x)=-0.2046012479036946898771563 * x / (x - 1.2046012479036946898771563) */
   return numerator / denominator;
+}
+
+static inline double G_GNUC_CONST
+gsl_approx_exp2 (float ex)
+{
+  register GslFloatIEEE754 fp = { 0, };
+  register double numer, denom, x;
+  gint i;
+
+  i = gsl_ftoi (ex);
+  fp.mpn.biased_exponent = GSL_FLOAT_BIAS + i;
+  x = ex - i;
+  numer = x * 1.022782938747283388104723674300322141276;
+  denom = x - 8.72117024533378044415954808601135282456;
+  numer += 8.786902350800703562041965087953613538091;
+  denom *= x;
+  numer *= x;
+  denom += 25.25880955504064143887016455761526606757;
+  numer += 25.2588095552441757401874424757283407864;
+
+  return numer / denom * fp.v_float;
 }
 
 static inline float  G_GNUC_CONST

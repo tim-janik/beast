@@ -53,7 +53,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
   
   /* FIXME: should we do gsl_fpu_setround() here? */
   
-  pos_inc = gsl_ftoi (osc->last_freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
+  pos_inc = gsl_dtoi (osc->last_freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
   sync_pos = osc->config.phase * wave->phase_to_pos;
   posm_strength = pos_inc * osc->config.fm_strength;
   self_posm_strength = pos_inc * osc->config.self_fm_strength;
@@ -116,7 +116,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 		    last_pos = flpos / wave->ifrac_to_float;
 		    cur_pos = fcpos / wave->ifrac_to_float;
 		    sync_pos = osc->config.phase * wave->phase_to_pos;
-		    pos_inc = gsl_ftoi (freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
+		    pos_inc = gsl_dtoi (freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
 #if (PULSE_OSC)
 		    osc->last_pwm_level = 0;
 		    osc_update_pwm_offset (osc, osc->last_pwm_level);
@@ -125,7 +125,7 @@ GSL_INCLUDER_FUNC (GslOscData   *osc,
 		  }
 	      }
 	    else
-	      pos_inc = gsl_ftoi (freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
+	      pos_inc = gsl_dtoi (freq_level * gsl_cent_factor (osc->config.fine_tune) * wave->freq_to_step);
 	    posm_strength = pos_inc * osc->config.fm_strength;
 	    self_posm_strength = pos_inc * osc->config.self_fm_strength;
 	    last_freq_level = freq_level;
