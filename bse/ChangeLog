@@ -1,3 +1,10 @@
+Tue Aug 31 07:13:37 2004  Tim Janik  <timj@gtk.org>
+
+	* bseproject.c (bse_project_activate): disabled timed auto-activate
+	csynth starts. simply commit the transaction before the sequencer
+	is started.
+	this fixes lost notes at song start with mono-synths (BseMidiInput).
+
 Mon Aug 30 01:20:08 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemidireceiver.cc:

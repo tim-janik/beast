@@ -790,7 +790,8 @@ bse_project_start_playback (BseProject *self)
       if (BSE_SUPER_NEEDS_SEQUENCER (super))
 	seq_list = sfi_ring_append (seq_list, super);
     }
-  bse_ssequencer_start_supers (seq_list, trans);
+  bse_trans_commit (trans);
+  bse_ssequencer_start_supers (seq_list, NULL);
   if (seen_synth || seq_list)
     bse_project_state_changed (self, BSE_PROJECT_PLAYING);
 }
