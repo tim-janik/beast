@@ -21,6 +21,8 @@
 #include "gslfft.h"
 #include "gslsignal.h"
 
+#include <string.h>
+
 
 /* --- common utilities --- */
 static inline double

@@ -22,6 +22,7 @@
 #include "gslloader.h"
 #include "gsldatahandle.h"
 #include <stdio.h>
+#include <string.h>
 
 static gint
 help (gchar *arg)

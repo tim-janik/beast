@@ -24,6 +24,7 @@
 #include	"bseserver.h"
 #include        <gsl/gslloader.h>
 
+#include	<string.h>
 
 enum {
   PARAM_0,

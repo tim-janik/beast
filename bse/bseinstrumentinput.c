@@ -22,7 +22,7 @@
 #include "bsesnet.h"
 #include "gslengine.h"
 
-
+#include <string.h>
 
 /* --- parameters --- */
 enum

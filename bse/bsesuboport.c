@@ -21,6 +21,7 @@
 #include "bsecategories.h"
 #include "bsesnet.h"
 
+#include <string.h>
 
 /* --- parameters --- */
 enum

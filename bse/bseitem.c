@@ -22,6 +22,7 @@
 #include        "bseprocedure.h"
 #include	"bsemain.h"
 
+#include	<string.h>
 
 
 enum {

@@ -25,7 +25,7 @@
 #include "./icons/inoutport.c"
 #include "gslengine.h"
 
-
+#include <string.h>
 
 /* --- parameters --- */
 enum

@@ -20,6 +20,7 @@
 #include <gsl/gslfft.h>
 #include <sys/time.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 #define	MAX_FFT_SIZE	(65536 * 2)

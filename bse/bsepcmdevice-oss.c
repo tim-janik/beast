@@ -30,6 +30,7 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #include	<sys/types.h>
 #include	<sys/time.h>
 #include	<unistd.h>
+#include	<string.h>
 #include	<errno.h>
 #include	<fcntl.h>
 

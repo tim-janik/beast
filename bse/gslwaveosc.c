@@ -22,6 +22,7 @@
 #include "gslsignal.h"
 #include "gslengine.h"	/* for gsl_engine_sample_freq() */
 
+#include <string.h>
 
 #define FRAC_SHIFT		(16)
 #define FRAC_MASK		((1 << FRAC_SHIFT) - 1)

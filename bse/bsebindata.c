@@ -20,6 +20,7 @@
 #include        "bseglobals.h"
 #include	<errno.h>
 #include	<unistd.h>
+#include	<string.h>
 
 
 enum

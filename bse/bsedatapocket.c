@@ -20,6 +20,7 @@
 #include "bsemain.h"
 #include "bsestorage.h"
 
+#include <string.h>
 
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return

@@ -22,6 +22,8 @@
 #include "bseserver.h"
 #include "gslengine.h"
 
+#include <string.h>
+
 
 /* --- prototypes --- */
 static void	 bse_context_merger_init		(BseContextMerger	 *self);

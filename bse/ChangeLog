@@ -1,3 +1,13 @@
+Tue Feb 18 17:47:17 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseautodoc.c bsebindata.c bseconstant.c bsecontextmerger.c
+	bsedatapocket.c bseitem.c bsemagictest.c bseparasite.c
+	bsepcmdevice-oss.c bsequery.c bseserver.c bsestandardsynths.c
+	bsesubinstrument.c bsesubiport.c bsesubkeyboard.c bsesuboport.c
+	bsesubsynth.c bsewave.c gslffttest.c gslfilter.c
+	gslloader-oggvorbis.c gslloader-wav.c gslwaveosc.c gslwchunk.c
+	zintern/zintern.c: fixes to build without warnings on gcc-3.2.
+
 Tue Feb 18 16:56:22 2003  Tim Janik  <timj@gtk.org>
 
 	* bsessequencer.c (bse_ssequencer_process_track_SL): don't forget

@@ -20,6 +20,7 @@
 #include "bsestorage.h"
 #include "bsesource.h"	// FIXME: compat include
 
+#include <string.h>
 
 /* --- defines --- */
 #define MAX_PARASITE_VALUES (1024) /* (2 << 24) */
