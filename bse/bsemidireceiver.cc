@@ -93,10 +93,8 @@ struct ControlHandler {
   set_data (gpointer              extra_data,
             BseFreeFunc           extra_free)
   {
-    BseFreeFunc free_func = user_free;
-    user_free = NULL;
-    if (free_func)
-      free_func (user_data);
+    if (user_free)
+      bse_engine_add_garbage (user_data, user_free);
     user_data = extra_data;
     user_free = extra_free;
   }
@@ -114,10 +112,9 @@ struct ControlHandler {
   ~ControlHandler()
   {
     g_return_if_fail (modules.size() == 0);
-    BseFreeFunc free_func = user_free;
+    if (user_free)
+      bse_engine_add_garbage (user_data, user_free);
     user_free = NULL;
-    if (free_func)
-      free_func (user_data);
   }
 };
 struct ControlValue {
@@ -153,7 +150,7 @@ struct ControlValue {
     if (it == handlers.end())
       {
         if (extra_free)
-          extra_free (extra_data);
+          bse_engine_add_garbage (extra_data, extra_free);
       }
     else
       {

@@ -62,7 +62,7 @@ void             bse_midi_receiver_set_control_handler_data(BseMidiReceiver   *s
                                                             BseMidiControlHandler handler_func,
                                                             gpointer           handler_data,
                                                             gpointer           extra_data,
-                                                            BseFreeFunc        extra_free); /* calling thread (MIDI Thread) */
+                                                            BseFreeFunc        extra_free); /* UserThread */
 void             bse_midi_receiver_remove_control_handler  (BseMidiReceiver   *self,
                                                             guint              midi_channel,
                                                             BseMidiSignalType  signal_type,
