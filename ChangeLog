@@ -1,3 +1,20 @@
+Wed Feb 25 14:34:51 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/suidmain.c: added suidwrapper program without dependancies,
+	based on a patch by Stefan Westerfeld. the wrapper renices itself to
+	-19, drops uid (privileges) and then invokes beast-$VERSION.
+
+	* beast-gtk/Makefile.am: build and install suidwrapper 'beast'.
+
+	* beast-gtk/bstmain.c: drop nice-level once BSE is setup.
+
+	* configure.in: new section AC_SUIDMAIN_REQUIREMENTS. check for all functions
+	required to implement renicing in the suidwrapper binary.
+
+	* shell/Makefile.am: build and install suidwrapper 'bsesh'.
+
+	* shell/bsesh.c: drop nice-level once BSE is setup.
+        
 Wed Feb 25 05:52:01 2004  Tim Janik  <timj@gtk.org>
 
 	* configure.in: provide BSESH_BINARY and BEAST_BINARY automake variables

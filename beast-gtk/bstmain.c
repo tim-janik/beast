@@ -30,6 +30,8 @@
 #include "data/beast-images.h"
 #include <unistd.h>
 #include <string.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "sfi/toyprof-mem.h"
 
 
@@ -168,6 +170,9 @@ main (int   argc,
 			    NULL, NULL, NULL);
   g_source_attach (source, NULL);
   g_source_unref (source);
+
+  /* now that the BSE thread runs, drop scheduling priorities if we have any */
+  setpriority (PRIO_PROCESS, getpid(), 0);
 
   /* watch registration notifications on server */
   bse_proxy_connect (BSE_SERVER,

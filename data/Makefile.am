@@ -73,6 +73,7 @@ config-paths.h: $(top_builddir)/config.status Makefile
 	&& echo "#define BSE_PATH_INSTRUMENTS     \"${bseinstrumentdir}\"" >> xgen-cph \
 	&& echo "#define BSE_PATH_SCRIPTS         \"${bsescriptdir}\"" >> xgen-cph \
 	&& echo "#define BSE_PATH_USER_DATA(dir)  \"${bseuserdatadir}\" dir" >> xgen-cph \
+	&& echo "#define BST_PATH_BINARIES        \"${bindir}\"" >> xgen-cph \
 	&& echo "#define BST_PATH_DOCS            \"${beastdocsdir}\"" >> xgen-cph \
 	&& echo "#define BST_PATH_IMAGES          \"${beastimagesdir}\"" >> xgen-cph \
 	&& echo "#define BST_PATH_LOCALE          \"${beastlocaledir}\"" >> xgen-cph \

@@ -3,3 +3,4 @@
 Makefile
 Makefile.in
 bsesh
+suidmain-tmp.c

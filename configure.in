@@ -386,6 +386,12 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
     beastskinsdir=$beastbasedir/v$BSE_VERSION/skins
     AC_SUBST(beastskinsdir)
 ])
+AC_DEFUN(AC_SUIDMAIN_REQUIREMENTS,
+[
+    dnl figure everything required by the suid wrapper
+    AC_CHECK_FUNCS(seteuid)
+    AC_CHECK_FUNCS(setreuid)
+])
 AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 [
     dnl Check for potential pcm devices
@@ -547,6 +553,7 @@ AC_BSE_SHELL_REQUIREMENTS
 AC_BSE_SNDDEV_CHECK
 AC_GXK_REQUIREMENTS
 AC_BEAST_REQUIREMENTS
+AC_SUIDMAIN_REQUIREMENTS
 AC_DOC_REQUIREMENTS
 
 # Automake @VARIABLE@ exports.

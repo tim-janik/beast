@@ -15,14 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#define G_LOG_DOMAIN "BseShell"
-
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <guile/gh.h>
 #include <bse/bse.h>
 #include <sfi/sfistore.h> /* no bin-compat */
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "bsescminterp.h"
 #include "topconfig.h"
 
@@ -97,6 +97,9 @@ main (int   argc,
       bse_init_async (&argc, &argv, NULL);
       bse_scm_context = bse_init_glue_context (PRG_NAME);
     }
+
+  /* now that the BSE thread runs, drop scheduling priorities if we have any */
+  setpriority (PRIO_PROCESS, getpid(), 0);
 
   gh_enter (argc, argv, gh_main);
 
