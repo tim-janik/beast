@@ -361,6 +361,18 @@ log_prefix (const char  *prg_name,
   return g_string_free (gstring, FALSE);
 }
 
+static const gchar*
+prgname (gboolean maystrip)
+{
+  const gchar *pname = g_get_prgname();
+  if (pname && maystrip)
+    {
+      const gchar *p = strrchr (pname, '/');
+      pname = p ? p + 1 : pname;
+    }
+  return pname;
+}
+
 static void
 sfi_log_intern (const char     *log_domain,
                 unsigned char   level,
@@ -407,13 +419,13 @@ sfi_log_intern (const char     *log_domain,
           log_key = key;
           break;
         }
-      gchar *prefix = log_prefix (g_get_prgname(), sfi_thread_self_pid(), print_level, print_domain, lname, log_key);
+      gchar *prefix = log_prefix (prgname (level == SFI_LOG_DEBUG), sfi_thread_self_pid(), print_level, print_domain, lname, log_key);
       fprintf (stderr, "%s: %s\n", prefix, string);
       g_free (prefix);
     }
   if (stdlog_file && (actions & SFI_LOG_TO_STDLOG))
     {
-      char *prefix = log_prefix (g_get_prgname(), sfi_thread_self_pid(), slevel ? 0 : level, log_domain, slevel, key);
+      char *prefix = log_prefix (prgname (FALSE), sfi_thread_self_pid(), slevel ? 0 : level, log_domain, slevel, key);
       fprintf (stdlog_file, "%s: %s\n", prefix, string);
       g_free (prefix);
     }

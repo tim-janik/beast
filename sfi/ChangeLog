@@ -1,3 +1,8 @@
+Sun Dec 26 23:50:16 2004  Tim Janik  <timj@gtk.org>
+
+	* sfilog.c: cosmetics, strip path from executable names if logging
+	debugging info.
+
 Fri Dec 24 22:48:19 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: there's no need to inline the choice 
