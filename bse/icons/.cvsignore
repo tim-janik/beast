@@ -1,6 +1,6 @@
-*.lo
+Makefile.in
+Makefile
 .deps
 _libs
 .libs
-Makefile
-Makefile.in
+*.c

@@ -1,1 +1,1 @@
-BST_GETTEXT_DOMAIN=beast-v0.6.1
+BST_GETTEXT_DOMAIN=beast-v0.6.2-rc1
