@@ -743,14 +743,14 @@ bse_object_set_qdata_full (BseObject     *object,
   g_datalist_id_set_data_full (&object->datalist, quark, data, data ? destroy : NULL);
 }
 
-void
-bse_object_kill_qdata_no_notify (BseObject *object,
-				 GQuark	    quark)
+gpointer
+bse_object_steal_qdata (BseObject *object,
+			GQuark	    quark)
 {
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (quark > 0);
+  g_return_val_if_fail (BSE_IS_OBJECT (object), NULL);
+  g_return_val_if_fail (quark > 0, NULL);
   
-  g_datalist_id_remove_no_notify (&object->datalist, quark);
+  return g_datalist_id_remove_no_notify (&object->datalist, quark);
 }
 
 gpointer

@@ -147,7 +147,7 @@ fetch_parasite (BseObject *object,
 	    quark_parasite_list = g_quark_from_static_string ("BseParasiteList");
 
 	  if (olist)
-	    bse_object_kill_qdata_no_notify (object, quark_parasite_list);
+	    bse_object_steal_qdata (object, quark_parasite_list);
 	  else
 	    bse_object_add_notifier (object,
 				     "store",

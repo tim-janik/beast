@@ -1,3 +1,16 @@
+Thu Feb  3 09:19:49 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]:
+	s/signal/usignal/ for glib's unix (user) signal loop source.
+	compat code to make g_datalist_id_remove_no_notify() return
+	the data for !1.3.1 glib.
+
+	* bseobject.[hc]:
+	* bsesource.c:
+	* bseparasite.c:
+	* bsecontainer.c:
+	qdata_remove_no_notify fixups.
+
 Wed Feb  2 23:59:48 2000  Tim Janik  <timj@gtk.org>
 
 	* builtin_bsepattern.c (multi_select_exec): added Select/All,

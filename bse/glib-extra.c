@@ -191,104 +191,104 @@ g_list_insert_before (GList   *list,
 
 /* GLib main loop reentrant signal queue
  */
-typedef struct _GSignalData GSignalData;
-struct _GSignalData
+typedef struct _GUSignalData GUSignalData;
+struct _GUSignalData
 {
-  guint8      index;
-  guint8      shift;
-  GSignalFunc callback;
+  guint8       index;
+  guint8       shift;
+  GUSignalFunc callback;
 };
 
-static gboolean g_signal_prepare  (gpointer  source_data,
-				   GTimeVal *current_time,
-				   gint     *timeout,
-				   gpointer  user_data);
-static gboolean g_signal_check    (gpointer  source_data,
-				   GTimeVal *current_time,
-				   gpointer  user_data);
-static gboolean g_signal_dispatch (gpointer  source_data,
-				   GTimeVal *current_time,
-				   gpointer  user_data);
+static gboolean g_usignal_prepare  (gpointer  source_data,
+			 	    GTimeVal *current_time,
+				    gint     *timeout,
+				    gpointer  user_data);
+static gboolean g_usignal_check    (gpointer  source_data,
+				    GTimeVal *current_time,
+				    gpointer  user_data);
+static gboolean g_usignal_dispatch (gpointer  source_data,
+				    GTimeVal *dispatch_time,
+				    gpointer  user_data);
 
-static GSourceFuncs signal_funcs = {
-  g_signal_prepare,
-  g_signal_check,
-  g_signal_dispatch,
+static GSourceFuncs usignal_funcs = {
+  g_usignal_prepare,
+  g_usignal_check,
+  g_usignal_dispatch,
   g_free
 };
-static	guint32	signals_notified[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+static	guint32	usignals_notified[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 static gboolean
-g_signal_prepare (gpointer  source_data,
-		  GTimeVal *current_time,
-		  gint     *timeout,
-		  gpointer  user_data)
-{
-  GSignalData *signal_data = source_data;
-  
-  return signals_notified[signal_data->index] & (1 << signal_data->shift);
-}
-
-static gboolean
-g_signal_check (gpointer  source_data,
-		GTimeVal *current_time,
-		gpointer  user_data)
-{
-  GSignalData *signal_data = source_data;
-  
-  return signals_notified[signal_data->index] & (1 << signal_data->shift);
-}
-
-static gboolean
-g_signal_dispatch (gpointer  source_data,
+g_usignal_prepare (gpointer  source_data,
 		   GTimeVal *current_time,
+		   gint     *timeout,
 		   gpointer  user_data)
 {
-  GSignalData *signal_data = source_data;
+  GUSignalData *usignal_data = source_data;
   
-  signals_notified[signal_data->index] &= ~(1 << signal_data->shift);
+  return usignals_notified[usignal_data->index] & (1 << usignal_data->shift);
+}
+
+static gboolean
+g_usignal_check (gpointer  source_data,
+		 GTimeVal *current_time,
+		 gpointer  user_data)
+{
+  GUSignalData *usignal_data = source_data;
   
-  return signal_data->callback (-128 + signal_data->index * 32 + signal_data->shift, user_data);
+  return usignals_notified[usignal_data->index] & (1 << usignal_data->shift);
+}
+
+static gboolean
+g_usignal_dispatch (gpointer  source_data,
+		    GTimeVal *dispatch_time,
+		    gpointer  user_data)
+{
+  GUSignalData *usignal_data = source_data;
+  
+  usignals_notified[usignal_data->index] &= ~(1 << usignal_data->shift);
+  
+  return usignal_data->callback (-128 + usignal_data->index * 32 + usignal_data->shift, user_data);
 }
 
 guint
-g_signal_add (gint8	  signal,
-	      GSignalFunc function,
-	      gpointer    data)
+g_usignal_add (gint8	    usignal,
+	       GUSignalFunc function,
+	       gpointer     data)
 {
-  return g_signal_add_full (G_PRIORITY_DEFAULT, signal, function, data, NULL);
+  return g_usignal_add_full (G_PRIORITY_DEFAULT, usignal, function, data, NULL);
 }
 
 guint
-g_signal_add_full (gint           priority,
-		   gint8          signal,
-		   GSignalFunc    function,
-		   gpointer       data,
-		   GDestroyNotify destroy)
+g_usignal_add_full (gint           priority,
+		    gint8          usignal,
+		    GUSignalFunc   function,
+		    gpointer       data,
+		    GDestroyNotify destroy)
 {
-  GSignalData *signal_data;
-  guint s = 128 + signal;
+  GUSignalData *usignal_data;
+  guint s = 128 + usignal;
   
   g_return_val_if_fail (function != NULL, 0);
   
-  signal_data = g_new (GSignalData, 1);
-  signal_data->index = s / 32;
-  signal_data->shift = s % 32;
-  signal_data->callback = function;
+  usignal_data = g_new (GUSignalData, 1);
+  usignal_data->index = s / 32;
+  usignal_data->shift = s % 32;
+  usignal_data->callback = function;
   
-  return g_source_add (priority, TRUE, &signal_funcs, signal_data, data, destroy);
+  return g_source_add (priority, TRUE, &usignal_funcs, usignal_data, data, destroy);
 }
 
 void
-g_signal_notify (gint8 signal)
+g_usignal_notify (gint8 usignal)
 {
   guint index, shift;
-  guint s = 128 + signal;
+  guint s = 128 + usignal;
   
   index = s / 32;
   shift = s % 32;
   
-  signals_notified[index] |= 1 << shift;
+  usignals_notified[index] |= 1 << shift;
 }
 
 /* Glib pattern matching, featuring "?" and "*" wildcards

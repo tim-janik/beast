@@ -771,7 +771,7 @@ static inline void
 container_set_crefs (gpointer               container,
 		     BseContainerCrossRefs *crefs)
 {
-  bse_object_kill_qdata_no_notify (container, quark_cross_refs);
+  bse_object_steal_qdata (container, quark_cross_refs);
   bse_object_set_qdata_full (container, quark_cross_refs, crefs, destroy_crefs);
 }
 

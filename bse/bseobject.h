@@ -196,7 +196,7 @@ void            bse_object_set_qdata_full       (BseObject      *object,
                                                  GQuark          quark,
                                                  gpointer        data,
                                                  GDestroyNotify  destroy);
-void            bse_object_kill_qdata_no_notify (BseObject      *object,
+gpointer        bse_object_steal_qdata          (BseObject      *object,
                                                  GQuark          quark);
 BseIcon*        bse_object_get_icon             (BseObject      *object);
 void		bse_object_notify_icon_changed  (BseObject      *object);

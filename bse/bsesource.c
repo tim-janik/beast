@@ -917,23 +917,16 @@ bse_source_do_restore_private (BseObject  *object,
   if (!quark_deferred_input)
     quark_deferred_input = g_quark_from_static_string ("BseSourceDeferredInput");
   dinput = g_new (DeferredInput, 1);
-  dinput->next = bse_object_get_qdata (object, quark_deferred_input);
+  dinput->next = bse_object_steal_qdata (object, quark_deferred_input);
   dinput->ichannel_id = ichannel_id;
   dinput->osource_path = osource_path;
   dinput->ochannel_name = g_strdup (scanner->value.v_string);
-  if (dinput->next)
-    {
-      bse_object_kill_qdata_no_notify (object, quark_deferred_input);
-      bse_object_set_qdata_full (object, quark_deferred_input, dinput, deferred_input_free);
-    }
-  else
-    {
-      bse_object_set_qdata_full (object, quark_deferred_input, dinput, deferred_input_free);
-      bse_object_add_data_notifier (BSE_OBJECT (project),
-				    "complete_restore",
-				    resolve_dinput,
-				    source);
-    }
+  bse_object_set_qdata_full (object, quark_deferred_input, dinput, deferred_input_free);
+  if (!dinput->next)
+    bse_object_add_data_notifier (BSE_OBJECT (project),
+				  "complete_restore",
+				  resolve_dinput,
+				  source);
 
   /* read closing brace */
   return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';

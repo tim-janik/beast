@@ -47,17 +47,17 @@ GSList*	g_slist_remove_any	(GSList	       *list,
 
 
 /* --- signal queue --- */
-typedef gboolean (*GSignalFunc) (gint8          signal,
-				 gpointer       data);
-guint   g_signal_add            (gint8          signal,
-				 GSignalFunc    function,
-				 gpointer       data);
-guint   g_signal_add_full       (gint           priority,
-				 gint8          signal,
-				 GSignalFunc    function,
-				 gpointer       data,
-				 GDestroyNotify destroy);
-void    g_signal_notify         (gint8          signal);
+typedef gboolean (*GUSignalFunc) (gint8          usignal,
+			 	  gpointer       data);
+guint   g_usignal_add            (gint8          usignal,
+				  GUSignalFunc   function,
+				  gpointer       data);
+guint   g_usignal_add_full       (gint           priority,
+				  gint8          usignal,
+				  GUSignalFunc   function,
+				  gpointer       data,
+				  GDestroyNotify destroy);
+void    g_usignal_notify         (gint8          usignal);
 
 
 /* --- pattern matching --- */
@@ -92,57 +92,27 @@ gboolean      g_pattern_match_simple   (const gchar  *pattern,
 #if !GLIB_CHECK_VERSION (1, 3, 1)
 #define G_STRINGIFY(macro_or_string)    _G_STRINGIFY_INTERNAL (macro_or_string)
 #define _G_STRINGIFY_INTERNAL(contents) #contents
-/* --- trash stacks --- */
-/* elements need to be >= sizeof (gpointer)
- */
 typedef struct _GTrashStack GTrashStack;
-struct _GTrashStack
-{
-  GTrashStack *next;
-};
-static inline void
-g_trash_stack_push (GTrashStack **stack_p,
-		    gpointer      data_p)
-{
-  GTrashStack *data = data_p;
-
-  data->next = *stack_p;
-  *stack_p = data;
-}
+struct _GTrashStack { GTrashStack *next; };
+static inline void g_trash_stack_push (GTrashStack **stack_p, gpointer data_p)
+{ GTrashStack *data = data_p; data->next = *stack_p; *stack_p = data; }
+static inline gpointer g_trash_stack_pop (GTrashStack **stack_p)
+{ GTrashStack *data; data = *stack_p; if (data)
+  { *stack_p = data->next; data->next = NULL; } return data; }
+static inline gpointer g_trash_stack_peek (GTrashStack **stack_p)
+{ GTrashStack *data; data = *stack_p; return data; }
+static inline guint g_trash_stack_height (GTrashStack **stack_p)
+{ GTrashStack *data; guint i = 0; for (data = *stack_p; data; data = data->next)
+  i++; return i; }
 static inline gpointer
-g_trash_stack_pop (GTrashStack **stack_p)
+_bse_datalist_id_remove_no_notify (GData **datalist,
+				   GQuark  key_id)
 {
-  GTrashStack *data;
-
-  data = *stack_p;
-  if (data)
-    {
-      *stack_p = data->next;
-      data->next = NULL;
-    }
-
-  return data;
+  gpointer ret_data = g_datalist_id_get_data (datalist, key_id);
+  g_datalist_id_remove_no_notify (datalist, key_id);
+  return ret_data;
 }
-static inline gpointer
-g_trash_stack_peek (GTrashStack **stack_p)
-{
-  GTrashStack *data;
-
-  data = *stack_p;
-
-  return data;
-}
-static inline guint
-g_trash_stack_height (GTrashStack **stack_p)
-{
-  GTrashStack *data;
-  guint i = 0;
-
-  for (data = *stack_p; data; data = data->next)
-    i++;
-
-  return i;
-}
+#define g_datalist_id_remove_no_notify _bse_datalist_id_remove_no_notify     
 #endif /* !GLIB_CHECK_VERSION (1, 3, 1) */
 
 #ifdef  __GNUC__
