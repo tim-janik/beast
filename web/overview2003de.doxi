@@ -68,7 +68,7 @@ dem basierend eine Schemeshell BSESH implementiert wurde. Weitere
 Sprachanbindungen (C++, C#) sind zur Zeit in der Planungsphase.
 
 @anchor{BSE-FileFormat}
-BEAST ermöglicht das Erstellen von Syntheseinstrumenten und Liedern unter
+BEAST ermöglicht flexible Klangsynthese und Liedkomposition unter
 Benutzung von Syntheseinstrumenten oder Audiosamples. Zum Abspeichern von
 Liedern und Syntheseeinstellungen wird das BSE Dateiformat benutzt, welches
 volle Integration von Audiosamples, Syntheseinstrumenten und
@@ -86,12 +86,13 @@ werden.
 @anchor{SampleView} @c
 @image{LT-WaveView512,,,BEAST Wave View,png}
 
-Im 0.5er Entwicklungszweig bietet BEAST
-Zeitbereichsanzeige für Audiosamples mit Zoomfunktion und Vorhörmöglichkeiten.
-Audiosamples werden nur stückweise und bei Bedarf in den Speicher geladen,
-selbst bei stark komprimierten Formaten wie OGG/VORBIS und MP3, was die
-Verwendung von sehr großen Dateien ermöglicht wie zum Beispiel 80 Megabyte
-MP3 Daten (bzw. 600 Megabyte WAV), respektive einer Stunde Audiomaterial.
+Im 0.5er Entwicklungszweig bietet BEAST Zeitbereichsanzeige für Audiosamples
+mit Zoomfunktion und Vorhörmöglichkeiten.
+Audiosamples werden zur Laufzeit dekodiert und nur stückweise bei Bedarf in
+den Speicher geladen, selbst bei stark komprimierten Formaten wie OGG/VORBIS
+oder MP3. Dies ermöglicht die Verwendung von sehr großen Dateien wie zum Beispiel
+80 Megabyte MP3 Daten (bzw. 600 Megabyte WAV), respektive einer Stunde
+Audiomaterial.
 
 
 @anchor{BEAST-Blurb}
@@ -179,7 +180,7 @@ Informationen zu LADSPA-Modulparametern verhindert allerdings eine nahtlose
 Eingliederung in die BEAST Oberfläche.
 
 @anchor{Module-Features}
-Die Module sind im Allgemeinen darauf ausgelegt kein Aliasing aufzuweisen,
+Die Module sind im Allgemeinen aliasingfrei implementiert,
 und hoch laufzeitoptimiert um konsequente Echtzeitfähigkeit zu ermöglichen.
 Pro Modul gibt es mehrere Eigenschaften (Phase beim Oszillator,
 Finetune zu Frequenzeingängen in Centschritten u.a.) die verändert
@@ -200,7 +201,7 @@ relativ einfach. Module werden aus einer Palette oder einem Menü ausgewählt
 und auf einer zoombaren Arbeitsfläche frei plaziert. Sie können dann an
 Ein- und Ausgabeschnittstellen miteinander durch einfaches Klicken und Ziehen
 verbunden werden.
-Zu jedem Module gibt es einen Informationsdialog und zum Einstellen der
+Zu jedem Modul gibt es einen Informationsdialog und zum Einstellen der
 modulspezifischen Parameter existieren ebenfalls Dialoge.
 Beide Dialogarten sind über ein Kontextmenü erreichbar.
 In den Parameterdialogen sind Parameter zu funktionellen Gruppen zusammen gefaßt,
@@ -230,7 +231,7 @@ Einsetzen von Noten eines Liedes nicht auf Berechnungsblockgrenzen beschränkt
 ist, können liedspezifisches Zeitvorgaben bestmöglich eingehalten werden.
 
 @anchor{User-Help}
-@unnumbered @center Benutzerführung
+@unnumbered @center Benutzerführung und Dokumentation
 
 Wie bei den meisten Audiosynthese- und Sequenzingapplikationen, erfordert
 auch BEAST eine gewisse Einarbeitung seitens des Benutzers, die allerdings

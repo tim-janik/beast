@@ -85,6 +85,8 @@ void		   bst_procedure_exec_auto	(const gchar    *procedure_name,
 void		   bst_procedure_exec_modal	(const gchar    *procedure_name,
 						 const gchar	*preset_param,
 						 ...);
+GParamSpec*        bst_procedure_ref_pspec      (const gchar    *procedure_name,
+                                                 const gchar    *parameter);
 
 
 #ifdef __cplusplus

@@ -1,3 +1,31 @@
+Thu Jul 17 03:41:55 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.[hc]: added param implementation that operates
+	on BstParam.value only.
+
+	* beast-gtk/bstpartdialog.[hc]: intergrated event roll widget into the
+	dialog.
+
+	* beast-gtk/bstpianoroll.[hc]: fixed up allocation buglet, made
+	number of colors a constant. changed color of horizontal lines.
+	adapt to BsePart renames. added bst_piano_roll_get_vpanel_width().
+
+	* beast-gtk/bstpianorollctrl.[hc]: sync clipboard with event roll clipboard.
+	fixed buglets, added undo grouping. adapted to BsePart renames.
+
+	* beast-gtk/bstprocedure.[hc]: added bst_procedure_ref_pspec() to
+	retrieve and reference the pspec of a procedure parameter.
+
+	* beast-gtk/bsteventroll.[hc]: new widget, similar to the piano roll,
+	for viewing non-note midi events of a BsePart.
+
+	* beast-gtk/bsteventrollctrl.[hc]: controller/editing functionality
+	for BstEventRoll.
+
+	* docs/overview-de.texi: added post-conference fixups.
+	
+	* shell/bsescminterp.c: const fixups.
+
 Mon Jul 14 20:13:05 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.c (bst_part_dialog_init): add shadow around

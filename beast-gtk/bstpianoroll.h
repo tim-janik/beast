@@ -76,7 +76,8 @@ struct _BstPianoRoll
   guint		 hpanel_height;
   GdkWindow	*vpanel, *hpanel, *canvas;
   GdkCursorType	 canvas_cursor, vpanel_cursor, hpanel_cursor;
-  GdkGC		*color_gc[12];
+#define BST_PIANO_ROLL_N_COLORS (12)
+  GdkGC		*color_gc[BST_PIANO_ROLL_N_COLORS];
 
   GtkAdjustment	*hadjustment, *vadjustment;
   guint		 scroll_timer;
@@ -117,31 +118,32 @@ struct _BstPianoRollClass
 
 /* --- prototypes --- */
 GType	bst_piano_roll_get_type			(void);
-void	bst_piano_roll_set_proxy		(BstPianoRoll	*proll,
+void	bst_piano_roll_set_proxy		(BstPianoRoll	*self,
 						 SfiProxy	 proxy);
-void	bst_piano_roll_set_hadjustment		(BstPianoRoll	*proll,
+void	bst_piano_roll_set_hadjustment		(BstPianoRoll	*self,
 						 GtkAdjustment	*adjustment);
-void	bst_piano_roll_set_vadjustment		(BstPianoRoll	*proll,
+void	bst_piano_roll_set_vadjustment		(BstPianoRoll	*self,
 						 GtkAdjustment	*adjustment);
-gfloat	bst_piano_roll_set_hzoom		(BstPianoRoll	*proll,
+gfloat	bst_piano_roll_set_hzoom		(BstPianoRoll	*self,
 						 gfloat		 hzoom);
-gfloat	bst_piano_roll_set_vzoom		(BstPianoRoll	*proll,
+gfloat	bst_piano_roll_set_vzoom		(BstPianoRoll	*self,
 						 gfloat		 vzoom);
-void	bst_piano_roll_set_canvas_cursor	(BstPianoRoll	*proll,
+void	bst_piano_roll_set_canvas_cursor	(BstPianoRoll	*self,
 						 GdkCursorType	 cursor);
-void	bst_piano_roll_set_vpanel_cursor	(BstPianoRoll	*proll,
+void	bst_piano_roll_set_vpanel_cursor	(BstPianoRoll	*self,
 						 GdkCursorType	 cursor);
-void	bst_piano_roll_set_hpanel_cursor	(BstPianoRoll	*proll,
+void	bst_piano_roll_set_hpanel_cursor	(BstPianoRoll	*self,
 						 GdkCursorType	 cursor);
-void	bst_piano_roll_set_quantization		(BstPianoRoll	*proll,
+void	bst_piano_roll_set_quantization		(BstPianoRoll	*self,
 						 guint		 note_fraction);
-void	bst_piano_roll_set_view_selection	(BstPianoRoll	*proll,
+void	bst_piano_roll_set_view_selection	(BstPianoRoll	*self,
 						 guint		 tick,
 						 guint		 duration,
 						 gint		 min_note,
 						 gint		 max_note);
 guint	bst_piano_roll_quantize			(BstPianoRoll	*self,
 						 guint		 fine_tick);
+gint	bst_piano_roll_get_vpanel_width		(BstPianoRoll	*self);
 void    bst_piano_roll_get_paste_pos		(BstPianoRoll	*self,
 						 guint          *tick_p,
 						 gint		*note_p);

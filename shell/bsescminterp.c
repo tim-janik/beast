@@ -821,13 +821,13 @@ bse_scm_context_iteration (SCM s_may_block)
 
 /* --- initialization --- */
 static void
-register_types (gchar **types)
+register_types (const gchar **types)
 {
   SCM gcplateau = bse_scm_make_gc_plateau (2048);
 
   while (*types)
     {
-      gchar **names = sfi_glue_list_method_names (*types);
+      const gchar **names = sfi_glue_list_method_names (*types);
       gchar *sname = g_type_name_to_sname (*types);
       gchar *s;
       guint i;
@@ -859,7 +859,7 @@ register_types (gchar **types)
 void
 bse_scm_interp_init (void)
 {
-  gchar **procs, *procs2[2];
+  const gchar **procs, *procs2[2];
   guint i;
 
   tc_glue_gc_cell = scm_make_smob_type ("BseScmGCCell", 0);

@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstpianorollctrl.h"
+#include "bsteventrollctrl.h"
 
 
 
@@ -38,7 +39,9 @@ bst_piano_roll_controller_set_clipboard (BsePartNoteSeq *pseq)
 {
   if (clipboard_pseq)
     bse_part_note_seq_free (clipboard_pseq);
-  clipboard_pseq = bse_part_note_seq_copy_shallow (pseq);
+  clipboard_pseq = pseq && pseq->n_pnotes ? bse_part_note_seq_copy_shallow (pseq) : NULL;
+  if (clipboard_pseq)
+    bst_event_roll_controller_set_clipboard (NULL);
 }
 
 BsePartNoteSeq*
@@ -161,17 +164,18 @@ bst_piano_roll_controller_cut (BstPianoRollController *self)
   bse_item_ungroup_undo (proxy);
 }
 
-void
+gboolean
 bst_piano_roll_controller_copy (BstPianoRollController *self)
 {
   BsePartNoteSeq *pseq;
   SfiProxy proxy;
 
-  g_return_if_fail (self != NULL);
+  g_return_val_if_fail (self != NULL, FALSE);
 
   proxy = self->proll->proxy;
   pseq = bse_part_list_selected_notes (proxy);
   bst_piano_roll_controller_set_clipboard (pseq);
+  return pseq && pseq->n_pnotes;
 }
 
 void
@@ -183,21 +187,23 @@ bst_piano_roll_controller_paste (BstPianoRollController *self)
   g_return_if_fail (self != NULL);
 
   proxy = self->proll->proxy;
-  bse_part_deselect_rectangle (proxy, 0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
   pseq = bst_piano_roll_controller_get_clipboard ();
   if (pseq)
     {
-      guint i, ptick, ctick = self->proll->max_ticks;
+      guint i, paste_tick, ctick = self->proll->max_ticks;
       gint cnote = 0;
-      gint pnote;
-      bst_piano_roll_get_paste_pos (self->proll, &ptick, &pnote);
+      gint paste_note;
+      bse_item_group_undo (proxy, "Paste Clipboard");
+      bse_part_deselect_notes (proxy, 0, self->proll->max_ticks, self->proll->min_note, self->proll->max_note);
+      bst_piano_roll_get_paste_pos (self->proll, &paste_tick, &paste_note);
+      paste_tick = bst_piano_roll_quantize (self->proll, paste_tick);
       for (i = 0; i < pseq->n_pnotes; i++)
 	{
 	  BsePartNote *pnote = pseq->pnotes[i];
 	  ctick = MIN (ctick, pnote->tick);
 	  cnote = MAX (cnote, pnote->note);
 	}
-      cnote = pnote - cnote;
+      cnote = paste_note - cnote;
       for (i = 0; i < pseq->n_pnotes; i++)
 	{
 	  BsePartNote *pnote = pseq->pnotes[i];
@@ -207,15 +213,15 @@ bst_piano_roll_controller_paste (BstPianoRollController *self)
 	  if (note >= 0)
 	    {
 	      id = bse_part_insert_note (proxy,
-					 pnote->tick - ctick + ptick,
+					 pnote->tick - ctick + paste_tick,
 					 pnote->duration,
 					 note,
 					 pnote->fine_tune,
 					 pnote->velocity);
-	      if (id)
-		bse_part_select_event (proxy, id);
-	    }
+              bse_part_select_event (proxy, id);
+            }
 	}
+      bse_item_ungroup_undo (proxy);
     }
 }
 
@@ -344,7 +350,7 @@ move_motion (BstPianoRollController *self,
 	     BstPianoRollDrag       *drag)
 {
   SfiProxy part = self->proll->proxy;
-  guint new_tick;
+  gint new_tick;
   gboolean note_changed;
 
   if (self->sel_pseq)
@@ -519,7 +525,7 @@ select_motion (BstPianoRollController *self,
   bst_piano_roll_set_view_selection (drag->proll, start_tick, end_tick - start_tick, min_note, max_note);
   if (drag->type == BST_DRAG_DONE)
     {
-      bse_part_select_rectangle_exclusive (part, start_tick, end_tick - start_tick, min_note, max_note);
+      bse_part_select_notes_exclusive (part, start_tick, end_tick - start_tick, min_note, max_note);
       bst_piano_roll_set_view_selection (drag->proll, 0, 0, 0, 0);
     }
 }
@@ -554,8 +560,8 @@ vselect_motion (BstPianoRollController *self,
 				     drag->proll->min_note, drag->proll->max_note);
   if (drag->type == BST_DRAG_DONE)
     {
-      bse_part_select_rectangle_exclusive (part, start_tick, end_tick - start_tick,
-					   drag->proll->min_note, drag->proll->max_note);
+      bse_part_select_notes_exclusive (part, start_tick, end_tick - start_tick,
+                                       drag->proll->min_note, drag->proll->max_note);
       bst_piano_roll_set_view_selection (drag->proll, 0, 0, 0, 0);
     }
 }

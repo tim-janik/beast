@@ -32,7 +32,9 @@
 
 /* layout (requisition) */
 #define	ROW_HEIGHT(self)	((gint) 5)
+#define	HPANEL_Y(self)		(0)
 #define	HPANEL_HEIGHT(self)	(self->area_offset)
+#define VPANEL_X(self)		(0)
 #define	VPANEL_WIDTH(self)	(30)
 #define	CANVAS_X(self)		(VPANEL_WIDTH (self))
 #define	CANVAS_Y(self)		(HPANEL_HEIGHT (self))
@@ -46,10 +48,8 @@
 /* aliases */
 #define VPANEL_HEIGHT(self)	(CANVAS_HEIGHT (self))
 #define	HPANEL_WIDTH(self)	(CANVAS_WIDTH (self))
-#define VPANEL_X(self)		(0)
 #define VPANEL_Y(self)		(CANVAS_Y (self))
 #define	HPANEL_X(self)		(CANVAS_X (self))
-#define	HPANEL_Y(self)		(0)
 
 /* appearance */
 #define VPANEL_BG_GC(self)	(STYLE (self)->bg_gc[GTK_STATE_INSENSITIVE])

@@ -19,7 +19,9 @@
 #define __BST_PART_DIALOG_H__
 
 #include	"bstpianoroll.h"
+#include	"bsteventroll.h"
 #include	"bstpianorollctrl.h"
+#include	"bsteventrollctrl.h"
 #include	"bstradiotools.h"
 
 G_BEGIN_DECLS
@@ -40,10 +42,10 @@ struct _BstPartDialog
 {
   GxkDialog	parent_object;
 
-  GtkWidget	*main_vbox;
-  GtkWidget	*scrolled_window;
   BstPianoRoll  *proll;
-  BstPianoRollController *proll_ctrl;
+  BstPianoRollController *pctrl;
+  BstEventRoll  *eroll;
+  BstEventRollController *ectrl;
   GxkToolbar	*toolbar;
   BstRadioTools	*rtools;
   SfiProxy       project;

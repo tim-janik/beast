@@ -117,11 +117,19 @@ BstParam*	 bst_param_proxy_create	  (GParamSpec	   *pspec,
 					   SfiProxy	    proxy);
 void		 bst_param_set_proxy	  (BstParam	   *bparam,
 					   SfiProxy	    proxy);
-BstParamBinding* bst_param_binding_rec	  (void);
 BstParam*	 bst_param_rec_create	  (GParamSpec	   *pspec,
 					   gboolean	    rack_widget,
 					   const gchar	   *view_name,
 					   SfiRec	   *rec);
+typedef void   (*BstParamValueNotify)     (gpointer         data,
+                                           BstParam        *bparam);
+BstParam*	 bst_param_value_create	  (GParamSpec	   *pspec,
+					   gboolean	    rack_widget,
+					   const gchar	   *view_name,
+                                           BstParamValueNotify notify,
+                                           gpointer            notify_data);
+BstParamBinding* bst_param_binding_rec	  (void);
+BstParamBinding* bst_param_binding_value  (void);
 
 
 /* --- miscellaneous utilities --- */

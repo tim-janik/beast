@@ -393,7 +393,7 @@ piano_roll_reset_backgrounds (BstPianoRoll *self)
 
   if (GTK_WIDGET_REALIZED (self))
     {
-      GdkColor colors[12] = {
+      GdkColor colors[BST_PIANO_ROLL_N_COLORS] = {
 	/* C: */
 	{ 0, 0x8080, 0x0000, 0x0000 },	/* dark red */
 	{ 0, 0xa000, 0x0000, 0xa000 },	/* dark magenta */
@@ -416,7 +416,7 @@ piano_roll_reset_backgrounds (BstPianoRoll *self)
       };
       guint i;
 
-      for (i = 0; i < 12; i++)
+      for (i = 0; i < BST_PIANO_ROLL_N_COLORS; i++)
 	gdk_gc_set_rgb_fg_color (self->color_gc[i], colors + i);
 
       gtk_style_set_background (widget->style, widget->window, GTK_WIDGET_STATE (self));
@@ -465,6 +465,8 @@ bst_piano_roll_size_allocate (GtkWidget	    *widget,
 			      GtkAllocation *allocation)
 {
   BstPianoRoll *self = BST_PIANO_ROLL (widget);
+  guint real_width = allocation->width;
+  guint real_height = allocation->height;
 
   widget->allocation.x = allocation->x;
   widget->allocation.y = allocation->y;
@@ -477,7 +479,7 @@ bst_piano_roll_size_allocate (GtkWidget	    *widget,
     {
       gdk_window_move_resize (widget->window,
 			      widget->allocation.x, widget->allocation.y,
-			      widget->allocation.width, widget->allocation.height);
+			      real_width, real_height);
       gdk_window_move_resize (self->vpanel,
 			      VPANEL_X (self), VPANEL_Y (self),
 			      VPANEL_WIDTH (self), VPANEL_HEIGHT (self));
@@ -559,7 +561,7 @@ bst_piano_roll_realize (GtkWidget *widget)
   gdk_window_show (self->canvas);
 
   /* allocate color GCs */
-  for (i = 0; i < 12; i++)
+  for (i = 0; i < BST_PIANO_ROLL_N_COLORS; i++)
     self->color_gc[i] = gdk_gc_new (self->canvas);
 
   /* style setup */
@@ -584,7 +586,7 @@ bst_piano_roll_unrealize (GtkWidget *widget)
   BstPianoRoll *self = BST_PIANO_ROLL (widget);
   guint i;
 
-  for (i = 0; i < 12; i++)
+  for (i = 0; i < BST_PIANO_ROLL_N_COLORS; i++)
     {
       g_object_unref (self->color_gc[i]);
       self->color_gc[i] = NULL;
@@ -1023,18 +1025,20 @@ bst_piano_roll_draw_canvas (BstPianoRoll *self,
 
       if (info.semitone == 0)	/* C */
 	{
-	  gdk_gc_set_line_attributes (dark_gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
-	  gdk_draw_line (window, dark_gc, x, i, xbound - 1, i);
+          GdkGC *draw_gc = self->color_gc[0 /* C */];
+	  gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+	  gdk_draw_line (window, draw_gc, x, i, xbound - 1, i);
 	}
       else if (info.semitone == 5) /* F */
 	{
+          GdkGC *draw_gc = self->color_gc[6 /* F */];
 	  guint8 dash[3] = { 2, 2, 0 };
 	  
-	  gdk_gc_set_line_attributes (dark_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
+	  gdk_gc_set_line_attributes (draw_gc, line_width, GDK_LINE_ON_OFF_DASH, GDK_CAP_BUTT, GDK_JOIN_MITER);
 	  dlen = dash[0] + dash[1];
-	  gdk_gc_set_dashes (dark_gc, (self->x_offset + x + 1) % dlen, dash, 2);
-	  gdk_draw_line (window, dark_gc, x, i, xbound - 1, i);
-	  gdk_gc_set_line_attributes (dark_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
+	  gdk_gc_set_dashes (draw_gc, (self->x_offset + x + 1) % dlen, dash, 2);
+	  gdk_draw_line (window, draw_gc, x, i, xbound - 1, i);
+	  gdk_gc_set_line_attributes (draw_gc, 0, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
 	}
       else
 	{
@@ -1888,8 +1892,8 @@ piano_roll_queue_region (BstPianoRoll *self,
 			 gint          min_note,
 			 gint          max_note)
 {
-  if (self->proxy && duration)	/* let the part extend the area by spawning notes if necessary */
-    bse_part_queue_notes_within (self->proxy, tick, duration, min_note, max_note);
+  if (self->proxy && duration)	/* let the part extend the area by spanning notes if necessary */
+    bse_part_queue_notes (self->proxy, tick, duration, min_note, max_note);
   piano_roll_update (self, tick, duration, min_note, max_note);
 }
 
@@ -2013,6 +2017,14 @@ bst_piano_roll_quantize (BstPianoRoll *self,
 	fine_tick = qtick;
     }
   return fine_tick;
+}
+
+gint
+bst_piano_roll_get_vpanel_width (BstPianoRoll *self)
+{
+  g_return_val_if_fail (BST_IS_PIANO_ROLL (self), 0);
+
+  return VPANEL_WIDTH (self);
 }
 
 void

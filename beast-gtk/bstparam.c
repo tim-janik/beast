@@ -546,6 +546,63 @@ bst_param_rec_create (GParamSpec  *pspec,
 }
 
 
+/* --- value binding --- */
+static void
+value_binding_set_value (BstParam     *bparam,
+                         const GValue *value)
+{
+  BstParamValueNotify notify = bparam->mdata[0].v_pointer;
+  sfi_value_copy_shallow (value, &bparam->value);
+  if (notify)
+    notify (bparam->mdata[1].v_pointer, bparam);
+}
+
+static void
+value_binding_get_value (BstParam *bparam,
+                         GValue   *value)
+{
+  sfi_value_copy_shallow (&bparam->value, value);
+}
+
+static void
+value_binding_destroy (BstParam *bparam)
+{
+  bparam->mdata[0].v_pointer = NULL;
+  bparam->mdata[1].v_pointer = NULL;
+}
+
+static BstParamBinding bst_value_binding = {
+  value_binding_set_value,
+  value_binding_get_value,
+  value_binding_destroy,
+  /* check_writable */
+};
+
+BstParamBinding*
+bst_param_binding_value (void)
+{
+  return &bst_value_binding;
+}
+
+BstParam*
+bst_param_value_create (GParamSpec         *pspec,
+                        gboolean            rack_widget,
+                        const gchar        *view_name,
+                        BstParamValueNotify notify,
+                        gpointer            notify_data)
+{
+  BstParamImpl *impl;
+  BstParam *bparam;
+
+  impl = bst_param_lookup_impl (pspec, rack_widget, view_name, &bst_value_binding);
+  bparam = bst_param_alloc (impl, pspec);
+  bparam->binding = &bst_value_binding;
+  bparam->mdata[0].v_pointer = notify;
+  bparam->mdata[1].v_pointer = notify_data;
+  return bparam;
+}
+
+
 /* --- param and rack widget implementations --- */
 #include "bstparam-label.c"
 #include "bstparam-toggle.c"

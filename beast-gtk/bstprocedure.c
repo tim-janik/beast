@@ -433,23 +433,6 @@ bst_procedure_shell_preset (BstProcedureShell *self,
   return FALSE;
 }
 
-static void
-shell_modal_selection_done (GtkWidget *widget)
-{
-  BstProcedureShell *shell = BST_PROCEDURE_SHELL (widget);
-  
-  shell->in_modal_selection = FALSE;
-}
-
-static void
-shell_hide_on_demand (GtkWidget *widget)
-{
-  BstProcedureShell *shell = BST_PROCEDURE_SHELL (widget);
-  
-  if (shell->hide_dialog_on_exec)
-    gxk_toplevel_hide (widget);
-}
-
 BstProcedureShell*
 bst_procedure_shell_global (void)
 {
@@ -592,4 +575,23 @@ bst_procedure_exec_auto (const gchar *procedure_name,
   va_start (var_args, preset_param);
   bst_procedure_exec_internal (procedure_name, preset_param, FALSE, TRUE, FALSE, var_args);
   va_end (var_args);
+}
+
+GParamSpec*
+bst_procedure_ref_pspec (const gchar    *procedure_name,
+                         const gchar    *parameter)
+{
+  SfiGlueProc *proc;
+  guint i;
+
+  /* structure setup */
+  proc = sfi_glue_describe_proc (procedure_name);
+  if (!proc)
+    return NULL;
+
+  for (i = 0; i < proc->n_params; i++)
+    if (strcmp (parameter, proc->params[i]->name) == 0)
+      return g_param_spec_ref (proc->params[i]);
+
+  return NULL;
 }

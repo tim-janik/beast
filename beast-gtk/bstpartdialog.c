@@ -19,6 +19,9 @@
 #include "bstprocedure.h"
 #include "bstactivatable.h"
 #include "bstmenus.h"
+#include "bstparam.h"
+
+#define SCROLLBAR_SPACING (3) /* from gtkscrolledwindow.c:DEFAULT_SCROLLBAR_SPACING */
 
 
 /* --- prototypes --- */
@@ -151,6 +154,8 @@ hzoom_changed (BstPartDialog *self,
 {
   if (self->proll)
     bst_piano_roll_set_hzoom (self->proll, adjustment->value * 0.08);
+  if (self->eroll)
+    bst_event_roll_set_hzoom (self->eroll, adjustment->value * 0.08);
 }
 
 static void
@@ -162,11 +167,25 @@ vzoom_changed (BstPartDialog *self,
 }
 
 static void
+eparam_changed (gpointer         data,
+                BstParam        *bparam)
+{
+  BstPartDialog *self = BST_PART_DIALOG (data);
+  if (self->eroll)
+    {
+      BseMidiSignalType midi_signal_type = bse_midi_signal_type_from_choice (sfi_value_get_choice (&bparam->value));
+      bst_event_roll_set_control_type (self->eroll, midi_signal_type);
+    }
+}
+
+static void
 bst_part_dialog_init (BstPartDialog *self)
 {
   BstPartDialogClass *class = BST_PART_DIALOG_GET_CLASS (self);
   GtkWidget *main_vbox, *entry, *choice, *button;
+  GtkWidget *hscroll, *vscroll, *prframe, *erframe, *hb1, *hb2, *vb, *hb3, *hb4, *eb, *align1, *align2, *paned;
   GtkObject *adjustment;
+  GParamSpec *pspec;
 
   /* configure self */
   g_object_set (self,
@@ -175,35 +194,99 @@ bst_part_dialog_init (BstPartDialog *self)
 		"flags", GXK_DIALOG_STATUS_SHELL,
 		NULL);
   main_vbox = GXK_DIALOG (self)->vbox;
+  g_object_set (main_vbox,
+                "spacing", SCROLLBAR_SPACING,
+                NULL);
+
+  /* scrollbars */
+  hscroll = gtk_hscrollbar_new (NULL);
+  vscroll = gtk_vscrollbar_new (NULL);
+  align1 = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
+  align2 = g_object_new (GTK_TYPE_ALIGNMENT, NULL);
+
+  /* piano roll */
+  prframe = g_object_new (GTK_TYPE_FRAME, "shadow_type", GTK_SHADOW_IN, NULL);
+  self->proll = g_object_new (BST_TYPE_PIANO_ROLL, "parent", prframe, "height_request", 200, NULL);
+  gxk_nullify_on_destroy (self->proll, &self->proll);
+  self->pctrl = bst_piano_roll_controller_new (self->proll);
+  g_object_connect (self->proll,
+		    "swapped_signal::canvas-clicked", piano_canvas_clicked, self,
+		    NULL);
+  bst_piano_roll_set_hadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
+  bst_piano_roll_set_vadjustment (self->proll, gtk_range_get_adjustment (GTK_RANGE (vscroll)));
+
+  /* event roll */
+  erframe = g_object_new (GTK_TYPE_FRAME, "shadow_type", GTK_SHADOW_IN, NULL);
+  self->eroll = g_object_new (BST_TYPE_EVENT_ROLL, "parent", erframe, "height_request", 50, NULL);
+  gxk_nullify_on_destroy (self->eroll, &self->eroll);
+  self->ectrl = bst_event_roll_controller_new (self->eroll);
+  g_object_connect (self->eroll,
+		    // "swapped_signal::canvas-clicked", event_canvas_clicked, self,
+		    NULL);
+  bst_event_roll_set_hadjustment (self->eroll, gtk_range_get_adjustment (GTK_RANGE (hscroll)));
+  bst_event_roll_set_vpanel_width_hook (self->eroll, (gpointer) bst_piano_roll_get_vpanel_width, self->proll);
+
+  /* event roll children */
+  g_object_new (GTK_TYPE_LABEL, "label", "C", "parent", self->eroll, NULL);
+
+  /* event roll control type */
+  eb = g_object_new (GTK_TYPE_VBOX, "spacing", SCROLLBAR_SPACING, NULL);
+  pspec = bst_procedure_ref_pspec ("BsePart+change-control", "control-type");
+  if (pspec)
+    {
+      BstParam *bparam = bst_param_value_create (pspec, TRUE, NULL, eparam_changed, self);
+      GtkWidget *rwidget = bst_param_rack_widget (bparam);
+      g_object_set (rwidget, "parent", eb, NULL);
+      g_object_connect (rwidget, "swapped_signal::destroy", bst_param_destroy, bparam, NULL);
+      g_param_spec_unref (pspec);
+      sfi_value_set_choice (&bparam->value, bse_midi_signal_type_to_choice (BSE_MIDI_SIGNAL_VELOCITY));
+      bst_param_update (bparam); /* update GUI */
+      bst_param_apply_value (bparam); /* update model */
+    }
+
+  /* piano roll box */
+  hb1 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
+  gtk_box_pack_start (GTK_BOX (hb1), prframe, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hb1), GTK_WIDGET (vscroll), FALSE, TRUE, 0);
+
+  /* event roll box */
+  vb = g_object_new (GTK_TYPE_VBOX, "spacing", 0, "child", erframe, NULL);
+  hb2 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
+  gtk_box_pack_start (GTK_BOX (hb2), vb, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hb2), align1, FALSE, TRUE, 0);
+
+  /* event roll configure box */
+  hb3 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
+  g_object_new (GTK_TYPE_LABEL, "label", "Control Type: ", "parent", hb3, NULL);
+  gtk_box_pack_start (GTK_BOX (hb3), eb, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vb), hb3, FALSE, TRUE, 0);
+
+  /* hscrollbar box */
+  hb4 = g_object_new (GTK_TYPE_HBOX, "spacing", SCROLLBAR_SPACING, NULL);
+  gtk_box_pack_start (GTK_BOX (hb4), hscroll, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hb4), align2, FALSE, TRUE, 0);
+
+  /* pack boxes, show contents */
+  paned = g_object_new (GTK_TYPE_VPANED,
+                        "height_request", 500,
+                        "border_width", 0,
+                        "position", 400,
+                        NULL);
+  gtk_paned_pack1 (GTK_PANED (paned), hb1, TRUE, TRUE);
+  gtk_paned_pack2 (GTK_PANED (paned), hb2, TRUE, TRUE);
+  gtk_box_pack_start (GTK_BOX (main_vbox), paned, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (main_vbox), hb4, FALSE, TRUE, 0);
+  gtk_widget_show_all (main_vbox);
+
+  /* vscrollbar size grouping */
+  gxk_size_group (GTK_SIZE_GROUP_HORIZONTAL,
+                  vscroll, align1, align2,
+                  NULL);
 
   /* create toolbar */
   self->toolbar = gxk_toolbar_new (&self->toolbar);
   gtk_box_pack_start (GTK_BOX (main_vbox), GTK_WIDGET (self->toolbar), FALSE, TRUE, 0);
-
-  /* create scrolled window */
-  self->scrolled_window = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
-					"visible", TRUE,
-					"hscrollbar_policy", GTK_POLICY_AUTOMATIC,
-					"vscrollbar_policy", GTK_POLICY_AUTOMATIC,
-                                        "shadow_type", GTK_SHADOW_IN,
-					"parent", main_vbox,
-					"border_width", 5,
-					NULL);
-  g_object_connect (self->scrolled_window,
-		    "swapped_signal::destroy", g_nullify_pointer, &self->scrolled_window,
-		    NULL);
-  
-  /* piano roll */
-  self->proll = g_object_new (BST_TYPE_PIANO_ROLL,
-			      "visible", TRUE,
-			      "parent", self->scrolled_window,
-			      NULL);
-  gxk_nullify_on_destroy (self->proll, &self->proll);
-  self->proll_ctrl = bst_piano_roll_controller_new (self->proll);
-  g_object_connect (self->proll,
-		    "swapped_signal::destroy", g_nullify_pointer, &self->proll,
-		    "swapped_signal::canvas-clicked", piano_canvas_clicked, self,
-		    NULL);
+  gtk_box_reorder_child (GTK_BOX (main_vbox), GTK_WIDGET (self->toolbar), 0);
 
   /* radio tools */
   self->rtools = bst_radio_tools_new ();
@@ -230,13 +313,17 @@ bst_part_dialog_init (BstPartDialog *self)
   /* selection ops (copy/cut/...) */
   gxk_toolbar_append_separator (self->toolbar);
   button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Clear", "Clear the current selection", BST_STOCK_TRASH_SCISSORS);
-  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_clear, self->proll_ctrl, NULL);
+  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_clear, self->pctrl, NULL);
+  g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_clear, self->ectrl, NULL);
   button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Cut", "Move the current selection into clipboard", BST_STOCK_MUSIC_CUT);
-  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_cut, self->proll_ctrl, NULL);
+  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_cut, self->pctrl, NULL);
+  g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_cut, self->ectrl, NULL);
   button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Copy", "Copy the current selection into clipboard", BST_STOCK_MUSIC_COPY);
-  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_copy, self->proll_ctrl, NULL);
+  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_copy, self->pctrl, NULL);
+  g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_copy, self->ectrl, NULL);
   button = gxk_toolbar_append_stock (self->toolbar, GXK_TOOLBAR_BUTTON, "Paste", "Insert clipboard contents as current selection", BST_STOCK_MUSIC_PASTE);
-  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_paste, self->proll_ctrl, NULL);
+  g_object_connect (button, "swapped_signal::clicked", bst_piano_roll_controller_paste, self->pctrl, NULL);
+  g_object_connect (button, "swapped_signal::clicked", bst_event_roll_controller_paste, self->ectrl, NULL);
 
   /* note selection */
   gxk_toolbar_append_separator (self->toolbar);
@@ -269,23 +356,8 @@ bst_part_dialog_init (BstPartDialog *self)
   gxk_toolbar_choice_add (choice, "Q: 1/16", "Quantize to sixteenth note boundaries",
 			  gxk_stock_image (BST_STOCK_QNOTE_16, BST_SIZE_TOOLBAR), 16);
 
-  /* vzoom */
-  gxk_toolbar_append_separator (self->toolbar);
-  adjustment = gtk_adjustment_new (4, 1, 16, 1, 4, 0);
-  g_object_connect (adjustment,
-		    "swapped_signal_after::value_changed", vzoom_changed, self,
-		    NULL);
-  entry = g_object_new (GTK_TYPE_SPIN_BUTTON,
-			"visible", TRUE,
-			"adjustment", adjustment,
-			"digits", 0,
-			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
-			NULL);
-  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
-		      "VZoom", "Vertical Zoom", entry);
-
   /* hzoom */
-  // gxk_toolbar_append_space (self->toolbar);
+  gxk_toolbar_append_separator (self->toolbar);
   adjustment = gtk_adjustment_new (13, 0, 100, 1, 5, 0);
   g_object_connect (adjustment,
 		    "swapped_signal_after::value_changed", hzoom_changed, self,
@@ -298,6 +370,21 @@ bst_part_dialog_init (BstPartDialog *self)
 			NULL);
   gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
 		      "HZoom", "Horizontal Zoom", entry);
+
+  /* vzoom */
+  // gxk_toolbar_append_space (self->toolbar);
+  adjustment = gtk_adjustment_new (4, 1, 16, 1, 4, 0);
+  g_object_connect (adjustment,
+		    "swapped_signal_after::value_changed", vzoom_changed, self,
+		    NULL);
+  entry = g_object_new (GTK_TYPE_SPIN_BUTTON,
+			"visible", TRUE,
+			"adjustment", adjustment,
+			"digits", 0,
+			"width_request", 2 * gxk_size_width (BST_SIZE_TOOLBAR),
+			NULL);
+  gxk_toolbar_append (self->toolbar, GXK_TOOLBAR_EXTRA_WIDGET,
+		      "VZoom", "Vertical Zoom", entry);
 
   /* setup the popup menu
    */
@@ -314,7 +401,8 @@ bst_part_dialog_finalize (GObject *object)
   bst_part_dialog_set_proxy (self, 0);
 
   g_object_unref (self->rtools);
-  bst_piano_roll_controller_unref (self->proll_ctrl);
+  bst_piano_roll_controller_unref (self->pctrl);
+  bst_event_roll_controller_unref (self->ectrl);
   
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -344,6 +432,8 @@ bst_part_dialog_set_proxy (BstPartDialog *self,
       bst_window_sync_title_to_proxy (GXK_DIALOG (self), part, "%s");
       if (self->proll)
         bst_piano_roll_set_proxy (self->proll, part);
+      if (self->eroll)
+        bst_event_roll_set_proxy (self->eroll, part);
       self->project = project;
       bse_proxy_connect (self->project,
                          "swapped_signal::property-notify::dirty", bst_widget_update_activatable, self,
@@ -359,44 +449,76 @@ part_dialog_update_tool (BstPartDialog *self)
   switch (self->rtools->tool_id)
     {
     case BST_PIANO_ROLL_TOOL_INSERT:
-      bst_piano_roll_controller_set_obj_tools (self->proll_ctrl,
+      bst_piano_roll_controller_set_obj_tools (self->pctrl,
 					       BST_PIANO_ROLL_TOOL_RESIZE,
 					       BST_PIANO_ROLL_TOOL_MOVE,
 					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->proll_ctrl,
+      bst_piano_roll_controller_set_bg_tools (self->pctrl,
 					      BST_PIANO_ROLL_TOOL_INSERT,
 					      BST_PIANO_ROLL_TOOL_MOVE,		/* error */
 					      BST_PIANO_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_obj_tools (self->ectrl,
+					       BST_EVENT_ROLL_TOOL_RESIZE,
+					       BST_EVENT_ROLL_TOOL_MOVE,
+					       BST_EVENT_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_bg_tools (self->ectrl,
+                                              BST_EVENT_ROLL_TOOL_INSERT,
+                                              BST_EVENT_ROLL_TOOL_MOVE,         /* error */
+                                              BST_EVENT_ROLL_TOOL_NONE);
       break;
     case BST_PIANO_ROLL_TOOL_DELETE:
-      bst_piano_roll_controller_set_obj_tools (self->proll_ctrl,
+      bst_piano_roll_controller_set_obj_tools (self->pctrl,
 					       BST_PIANO_ROLL_TOOL_DELETE,
 					       BST_PIANO_ROLL_TOOL_MOVE,
 					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->proll_ctrl,
+      bst_piano_roll_controller_set_bg_tools (self->pctrl,
 					      BST_PIANO_ROLL_TOOL_DELETE,	/* error */
 					      BST_PIANO_ROLL_TOOL_MOVE,		/* error */
 					      BST_PIANO_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_obj_tools (self->ectrl,
+					       BST_EVENT_ROLL_TOOL_DELETE,
+					       BST_EVENT_ROLL_TOOL_MOVE,
+					       BST_EVENT_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_bg_tools (self->ectrl,
+					      BST_EVENT_ROLL_TOOL_DELETE,	/* error */
+					      BST_EVENT_ROLL_TOOL_MOVE,		/* error */
+					      BST_EVENT_ROLL_TOOL_NONE);
       break;
     case BST_PIANO_ROLL_TOOL_SELECT:
-      bst_piano_roll_controller_set_obj_tools (self->proll_ctrl,
+      bst_piano_roll_controller_set_obj_tools (self->pctrl,
 					       BST_PIANO_ROLL_TOOL_SELECT,
 					       BST_PIANO_ROLL_TOOL_MOVE,
 					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->proll_ctrl,
+      bst_piano_roll_controller_set_bg_tools (self->pctrl,
 					      BST_PIANO_ROLL_TOOL_SELECT,
 					      BST_PIANO_ROLL_TOOL_NONE,
 					      BST_PIANO_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_obj_tools (self->ectrl,
+					       BST_EVENT_ROLL_TOOL_SELECT,
+					       BST_EVENT_ROLL_TOOL_MOVE,
+					       BST_EVENT_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_bg_tools (self->ectrl,
+					      BST_EVENT_ROLL_TOOL_SELECT,
+					      BST_EVENT_ROLL_TOOL_NONE,
+					      BST_EVENT_ROLL_TOOL_NONE);
       break;
     case BST_PIANO_ROLL_TOOL_VSELECT:
-      bst_piano_roll_controller_set_obj_tools (self->proll_ctrl,
+      bst_piano_roll_controller_set_obj_tools (self->pctrl,
 					       BST_PIANO_ROLL_TOOL_VSELECT,
 					       BST_PIANO_ROLL_TOOL_NONE,
 					       BST_PIANO_ROLL_TOOL_NONE);
-      bst_piano_roll_controller_set_bg_tools (self->proll_ctrl,
+      bst_piano_roll_controller_set_bg_tools (self->pctrl,
 					      BST_PIANO_ROLL_TOOL_VSELECT,
 					      BST_PIANO_ROLL_TOOL_NONE,
 					      BST_PIANO_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_obj_tools (self->ectrl,
+					       BST_EVENT_ROLL_TOOL_SELECT,
+					       BST_EVENT_ROLL_TOOL_MOVE,
+					       BST_EVENT_ROLL_TOOL_NONE);
+      bst_event_roll_controller_set_bg_tools (self->ectrl,
+					      BST_EVENT_ROLL_TOOL_SELECT,
+					      BST_EVENT_ROLL_TOOL_NONE,
+					      BST_EVENT_ROLL_TOOL_NONE);
       break;
     default:	/* fallback */
       bst_radio_tools_set_tool (self->rtools, BST_PIANO_ROLL_TOOL_INSERT);
@@ -441,7 +563,7 @@ static void
 part_dialog_note_choice (BstPartDialog *self,
 			 guint          choice)
 {
-  self->proll_ctrl->note_length = choice;
+  self->pctrl->note_length = choice;
 }
 
 static void
@@ -449,6 +571,7 @@ part_dialog_qnote_choice (BstPartDialog *self,
 			  guint          choice)
 {
   bst_piano_roll_set_quantization (self->proll, choice);
+  bst_event_roll_set_quantization (self->eroll, choice);
 }
 
 static void
@@ -479,16 +602,20 @@ bst_part_dialog_activate (BstActivatable         *activatable,
   switch (action)
     {
     case ACTION_CLEAR:
-      bst_piano_roll_controller_clear (self->proll_ctrl);
+      bst_piano_roll_controller_clear (self->pctrl);
+      bst_event_roll_controller_clear (self->ectrl);
       break;
     case ACTION_CUT:
-      bst_piano_roll_controller_cut (self->proll_ctrl);
+      bst_piano_roll_controller_cut (self->pctrl);
+      bst_event_roll_controller_cut (self->ectrl);
       break;
     case ACTION_COPY:
-      bst_piano_roll_controller_copy (self->proll_ctrl);
+      if (!bst_piano_roll_controller_copy (self->pctrl))
+        bst_event_roll_controller_copy (self->ectrl);
       break;
     case ACTION_PASTE:
-      bst_piano_roll_controller_paste (self->proll_ctrl);
+      bst_piano_roll_controller_paste (self->pctrl);
+      bst_event_roll_controller_paste (self->ectrl);
       break;
     case ACTION_UNDO:
       bse_item_undo (self->proll->proxy);
@@ -518,7 +645,8 @@ bst_part_dialog_can_activate (BstActivatable         *activatable,
     case ACTION_COPY:
       return TRUE;
     case ACTION_PASTE:
-      return bst_piano_roll_controler_clipboard_full (self->proll_ctrl);
+      return (bst_piano_roll_controler_clipboard_full (self->pctrl) ||
+              bst_event_roll_controler_clipboard_full (self->ectrl));
     case ACTION_UNDO:
       return self->project && bse_project_undo_depth (self->project) > 0;
     case ACTION_REDO:
