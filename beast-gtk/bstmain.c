@@ -23,6 +23,7 @@
 #include        "bstprocedure.h"
 #include	"bstxkb.h"
 #include	"bstkeytables.h"
+#include	"bstmenus.h"
 #include	<PKG_config.h>
 
 
@@ -395,6 +396,7 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
 #include "./icons/mouse_tool.c"
 #include "./icons/properties.c"
 #include "./icons/trash.c"
+#include "./icons/close.c"
 #include "./icons/no_ilink.c"
 #include "./icons/no_olink.c"
   static const BsePixdata pixdatas[] = {
@@ -416,6 +418,10 @@ bst_icon_from_stock (BstIconId _id) /* static icons, no reference counting neede
     { TRASH_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       TRASH_IMAGE_WIDTH, TRASH_IMAGE_HEIGHT,
       TRASH_IMAGE_RLE_PIXEL_DATA, },
+    /* BST_ICON_CLOSE */
+    { CLOSE_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      CLOSE_IMAGE_WIDTH, CLOSE_IMAGE_HEIGHT,
+      CLOSE_IMAGE_RLE_PIXEL_DATA, },
     /* BST_ICON_NO_ILINK */
     { NO_ILINK_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       NO_ILINK_IMAGE_WIDTH, NO_ILINK_IMAGE_HEIGHT,
@@ -514,12 +520,32 @@ bst_object_set (gpointer     object,
 }
 
 static gint
+subwindow_button_press_event (GtkWidget      *window,
+			      GdkEventButton *event)
+{
+  gboolean handled = FALSE;
+
+  if (event->button == 3 && event->window == window->window)
+    {
+      handled = TRUE;
+      if (bst_choice_modal (gtk_object_get_data (GTK_OBJECT (window), "subwindow-choice"),
+			    event->button,
+			    event->time) == 1)
+	gtk_widget_hide (window);
+    }
+
+  return handled;
+}
+
+static gint
 subwindow_delete_event (GtkWidget *window)
 {
   gtk_widget_hide (window);
 
   return TRUE;
 }
+
+static GtkWidget *subwindow_choice = NULL;
 
 GtkWidget*
 bst_subwindow_new (GtkObject  *alive_host,
@@ -535,14 +561,30 @@ bst_subwindow_new (GtkObject  *alive_host,
   if (ssubwindow_p)
     g_return_val_if_fail (ssubwindow_p != NULL, NULL);
 
+  if (!subwindow_choice)
+    {
+      subwindow_choice = bst_choice_createv (BST_CHOICE (1, "Close", CLOSE),
+					     BST_CHOICE_END);
+      gtk_widget_set (subwindow_choice,
+		      "object_signal::destroy", bse_nullify_pointer, &subwindow_choice,
+		      NULL);
+    }
+  else
+    gtk_widget_ref (subwindow_choice);
+
   window = gtk_widget_new (GTK_TYPE_WINDOW,
 			   "auto_shrink", FALSE,
 			   "allow_shrink", FALSE,
 			   "allow_grow", TRUE,
 			   "signal::delete_event", subwindow_delete_event, NULL,
+			   "signal::button_press_event", subwindow_button_press_event, NULL,
+			   "events", GDK_BUTTON_PRESS_MASK,
 			   "child", child,
 			   ssubwindow_p ? "object_signal::destroy" : NULL, bse_nullify_pointer, ssubwindow_p,
 			   NULL);
+  gtk_widget_ref (child);
+  gtk_object_set_data_full (GTK_OBJECT (window), "subwindow-child", child, (GDestroyNotify) gtk_widget_unref);
+  gtk_object_set_data_full (GTK_OBJECT (window), "subwindow-choice", subwindow_choice, (GDestroyNotify) gtk_widget_unref);
   if (alive_host)
     gtk_signal_connect_object_while_alive (alive_host,
 					   "destroy",
@@ -557,7 +599,7 @@ bst_subwindow_get_child (GtkWidget *subwindow)
 {
   g_return_val_if_fail (GTK_IS_WINDOW (subwindow), NULL);
 
-  return GTK_BIN (subwindow)->child;
+  return gtk_object_get_data (GTK_OBJECT (subwindow), "subwindow-child");
 }
 
 void

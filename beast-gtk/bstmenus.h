@@ -63,7 +63,6 @@ gboolean   bst_choice_selectable	(GtkWidget		*widget);
 guint      bst_choice_modal		(GtkWidget		*widget,
 					 guint                   mouse_button,
 					 guint32                 time);
-void       bst_choice_destroy		(GtkWidget		*widget);
 
 
 /* --- private --- */

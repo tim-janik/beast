@@ -1,3 +1,8 @@
+Tue Dec 21 20:48:45 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (bst_subwindow_new): provide button3 popup by
+	default to close window (should have a close button also i guess).
+
 Tue Dec 21 09:05:01 1999  Tim Janik  <timj@gtk.org>
 
 	* docs/bse-networks.txt: new file that contains (corrected) information

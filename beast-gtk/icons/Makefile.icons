@@ -1,10 +1,12 @@
 ## Generated data (by make Makefile.icons)
+icon_list += close.c
 icon_list += mouse_tool.c
 icon_list += no_ilink.c
 icon_list += no_olink.c
 icon_list += noicon.c
 icon_list += properties.c
 icon_list += trash.c
+icon_list += close.xcf
 icon_list += mouse_tool.xcf
 icon_list += no_olink.xcf
 icon_list += noicon.xcf

@@ -208,6 +208,8 @@ bst_choice_createv (BstChoice *first_choice,
   menu = gtk_widget_new (GTK_TYPE_MENU,
 			 "signal::selection-done", gtk_main_quit, NULL,
 			 NULL);
+  gtk_widget_ref (menu);
+  gtk_object_sink (GTK_OBJECT (menu));
 
   choice = first_choice;
   do
@@ -307,13 +309,4 @@ bst_choice_selectable (GtkWidget *widget)
   g_list_free (children);
 
   return selectable;
-}
-
-void
-bst_choice_destroy (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_MENU (widget));
-
-  gtk_widget_destroy (widget);
-  gtk_widget_unref (widget);
 }

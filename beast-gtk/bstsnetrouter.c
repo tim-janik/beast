@@ -862,7 +862,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      bse_source_clear_ochannels (source);
 	      break;
 	    }
-	  bst_choice_destroy (choice);
+	  gtk_widget_unref (choice);
 	}
       else if (clink)
 	{
@@ -883,7 +883,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      bst_canvas_link_popup_view (clink);
 	      break;
 	    }
-	  bst_choice_destroy (choice);
+	  gtk_widget_unref (choice);
 	}
     }
   
