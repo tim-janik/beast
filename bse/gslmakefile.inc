@@ -18,7 +18,7 @@
 # make sure gslincludedir= is defined
 # GSL targets
 GSL_H_SRC     = $(strip \
-	gslengine.h		gsldefs.h	gslieee754.h	\
+	gsldefs.h	gslieee754.h	\
 	gslfft.h		gsloscillator.h	gsldatahandle.h	gslwavechunk.h \
 	gslfilter.h		gslsignal.h	gslmath.h	gslcommon.h \
 	gsldatahandle-vorbis.h	gslvorbis-enc.h	gsldatacache.h	gslvorbis-cutter.h \
@@ -26,7 +26,6 @@ GSL_H_SRC     = $(strip \
 	gslwaveosc.h		gslosctable.h	gslmagic.h	\
 )
 GSL_C_SRC     =	$(strip \
-	gslengine.c		gsloputil.c	gslopmaster.c	gslopschedule.c \
 	gslfft.c		gsloscillator.c	gsldatahandle.c	gslwavechunk.c \
 	gslfilter.c		gslsignal.c	gslmath.c	gslcommon.c \
 	gslloader-oggvorbis.c	gslloader-wav.c	gslloader-mad.c	gslloader-gslwave.c \
@@ -34,9 +33,8 @@ GSL_C_SRC     =	$(strip \
 	gsldatahandle-mad.c	gslloader.c	gslfilehash.c	gsldatautils.c	\
 	gslwaveosc.c		gslosctable.c	gslmagic.c	gslloader-aiff.c \
 )
-GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h \
-		gslopschedule.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
-GSL_EXTRA_DAT = gsl.gnuplot engine-mplan.txt gslarrows gslwave.header \
+GSL_EXTRA_SRC =	gslconfig.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
+GSL_EXTRA_DAT = gsl.gnuplot gslarrows gslwave.header \
                 gsl-fftgen.pl gsl-fftconf.sh
 EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT) gslmakefile.inc
 

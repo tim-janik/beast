@@ -17,7 +17,7 @@
  */
 #include "bsemididecoder.h"
 #include "bsemidireceiver.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include <string.h>
 
 #define DEBUG(...)      sfi_debug ("midi-decoder", __VA_ARGS__)

@@ -20,7 +20,7 @@
 #include "bsecategories.h"
 #include "bsetrack.h"
 #include "bsesong.h"
-#include "gslengine.h"
+#include "bseengine.h"
 
 
 /* --- parameters --- */

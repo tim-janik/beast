@@ -18,7 +18,7 @@
 #include "bseladspamodule.h"
 
 #include "bsecategories.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include "gslsignal.h"
 #include <string.h>
 

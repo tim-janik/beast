@@ -24,7 +24,7 @@
 #include "bsecategories.h"
 #include "bsemidireceiver.h"
 #include "gslcommon.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include <string.h>
 #include <stdlib.h>
 #include <sys/time.h>

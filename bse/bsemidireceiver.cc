@@ -19,7 +19,7 @@
 
 #include "bsemain.h"
 #include "gslcommon.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include "gslsignal.h"
 #include "bsecxxutils.h"
 #include <string.h>

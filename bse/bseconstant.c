@@ -19,7 +19,7 @@
 #include "bseconstant.h"
 
 #include <bse/bsecategories.h>
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 
 #include <string.h>
 

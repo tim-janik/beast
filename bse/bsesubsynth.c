@@ -22,7 +22,7 @@
 #include "bsecsynth.h"
 #include "bseproject.h"
 #include "bsemidireceiver.h"
-#include "gslengine.h"
+#include "bseengine.h"
 
 #include <string.h>
 

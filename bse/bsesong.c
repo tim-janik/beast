@@ -28,7 +28,7 @@
 #include "bsecsynth.h"
 #include "bsessequencer.h"
 #include "bsesubsynth.h"
-#include "gslengine.h"	// FIXME: for gsl_engine_sample_freq()
+#include "bseengine.h"	// FIXME: for gsl_engine_sample_freq()
 #include <string.h>
 
 

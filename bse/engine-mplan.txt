@@ -206,7 +206,7 @@ Threads, communication, main loops
 
 Thread types:
 * UserThread; for the scope of the engine (the functions exposed in
-  gslengine.h), only one user thread may execute API functions
+  bseengine.h), only one user thread may execute API functions
   at a time.
   i.e. if more than one user thread need to call engine API
   functions, the user has to take measures to avoid concurrency
@@ -281,4 +281,4 @@ May 05 2001	Tim Janik
 	* initial writeup
 
 LocalWords:  GSL API GslModule OpNode istreams ostreams A's B's sync
-LocalWords:  gslengine GslMutex UserThread MasterThread SlaveThread SlaveThreads
+LocalWords:  bseengine GslMutex UserThread MasterThread SlaveThread SlaveThreads

@@ -40,7 +40,8 @@ libbse_la_LIBADD = $(top_builddir)/sfi/libsfi.la $(BSE_LIBS) -lm
 # BSE header files for public installation (non-generated)
 bse_public_h_sources = $(strip \
 	bse.h	bsedefs.h	bseexports.h	bseconfig.h	bsegenclosures.h \
-	bseincluder.h	ladspa.h	\
+	bseincluder.h	ladspa.h	bseenginenode.h \
+	bseengine.h		bseenginemaster.h	bseengineschedule.h		bseengineutils.h \
 	bsebus.h		            		bsebiquadfilter.h		bsecategories.h \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
 	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
@@ -68,6 +69,7 @@ bse_private_h_sources = $(strip \
 # BSE C sources to build the library from
 bse_c_sources = $(strip \
 	$(GSL_C_SRC) \
+	bseengine.c		bseenginemaster.c	bseengineschedule.c		bseengineutils.c \
 	bsebus.c		            		bsebiquadfilter.c		bsecategories.c \
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
@@ -210,7 +212,7 @@ libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
 MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
-EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
+EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources) engine-mplan.txt
 EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
 GLIB_MKENUMS = glib-mkenums
 # WATCH OUT: $(SFIDL) works only builddir relative

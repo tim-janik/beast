@@ -18,7 +18,7 @@
 #include "bsestandardosc.h"
 
 #include "bsecategories.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include "gslsignal.h"
 
 

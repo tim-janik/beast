@@ -15,11 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include "gslengine.h"
+#include "bseengine.h"
 
 #include "gslcommon.h"
-#include "gslopnode.h"
-#include "gslopmaster.h"
+#include "bseenginenode.h"
+#include "bseenginemaster.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>

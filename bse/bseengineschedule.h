@@ -18,7 +18,7 @@
 #ifndef __GSL_ENGINE_SCHEDULE_H__
 #define __GSL_ENGINE_SCHEDULE_H__
 
-#include <bse/gslopnode.h>
+#include <bse/bseenginenode.h>
 
 G_BEGIN_DECLS
 

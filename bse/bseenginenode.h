@@ -18,8 +18,8 @@
 #ifndef __GSL_ENGINE_NODE_H__
 #define __GSL_ENGINE_NODE_H__
 
-#include "gslengine.h"
-#include "gsloputil.h"
+#include "bseengine.h"
+#include "bseengineutils.h"
 #include "gslcommon.h"
 
 G_BEGIN_DECLS
@@ -45,7 +45,8 @@ G_BEGIN_DECLS
 typedef struct _EngineUserJob  EngineUserJob;
 typedef struct _EngineProbeJob EngineProbeJob;
 typedef struct _EngineTimedJob EngineTimedJob;
-typedef enum {
+typedef enum /*< skip >*/
+{
   ENGINE_JOB_NOP,
   ENGINE_JOB_SYNC,
   ENGINE_JOB_INTEGRATE,

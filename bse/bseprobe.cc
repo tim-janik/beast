@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bseprobe.gen-idl.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include "gslcommon.h" /* for gsl_tick_stamp() */
 #include <stdexcept>
 #include <queue>

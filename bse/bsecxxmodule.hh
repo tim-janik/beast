@@ -23,7 +23,7 @@
 
 namespace Bse {
 
-/* enums/structures mirrored from gslengine.h */
+/* enums/structures mirrored from bseengine.h */
 enum ProcessCost {
   NORMAL,
   CHEAP,

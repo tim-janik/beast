@@ -18,7 +18,7 @@
 #include "bsebiquadfilter.h"
 
 #include <bse/bsecategories.h>
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 #include <bse/gslsignal.h>
 
 #define	DEBUG(...)      sfi_debug ("biquadfilter", __VA_ARGS__)

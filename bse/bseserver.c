@@ -17,7 +17,7 @@
  */
 #include "bseserver.h"
 #include "bseproject.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include "gslcommon.h"
 #include "bseglue.h"
 #include "bsegconfig.h"

@@ -30,7 +30,7 @@ typedef struct _EngineSchedule EngineSchedule;
 /* --- UserThread --- */
 void		_engine_free_trans		(GslTrans      *trans);
 GslOStream*	_engine_alloc_ostreams		(guint		n);
-#if 0	/* gslengine.h: */
+#if 0	/* bseengine.h: */
 void            gsl_engine_garbage_collect	(void);
 gfloat*		gsl_engine_const_values		(gfloat		value);
 #endif
@@ -51,7 +51,7 @@ EngineNode*	_engine_mnl_head		(void);
  * MasterThread - op engine control thread
  * SlaveThread  - op engine calculation threads
  *
- * these functions are for _internal_ use of gslop*.c implementations
+ * these functions are for _internal_ use of bseengine*.c implementations
  */
 
 /* --- job transactions --- */

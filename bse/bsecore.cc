@@ -20,7 +20,7 @@
 #include "bsetype.h"        /* import all required types first */
 #include "bsepart.h"
 #include "bsemain.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include "bsessequencer.h"
 #include "bsecore.gen-idl.h"
 

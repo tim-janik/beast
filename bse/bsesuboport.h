@@ -20,7 +20,7 @@
 #define __BSE_SUB_OPORT_H__
 
 #include <bse/bsesource.h>
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 
 #ifdef __cplusplus
 extern "C" {

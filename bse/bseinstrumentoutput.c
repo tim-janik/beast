@@ -20,7 +20,7 @@
 
 #include "bsecategories.h"
 #include "bsesnet.h"
-#include "gslengine.h"
+#include "bseengine.h"
 
 #include <string.h>
 

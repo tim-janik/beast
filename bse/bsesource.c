@@ -22,7 +22,7 @@
 #include "bsecontainer.h"
 #include "bsestorage.h"
 #include "gslcommon.h"
-#include "gslengine.h"
+#include "bseengine.h"
 
 
 /* --- macros --- */

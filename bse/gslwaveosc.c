@@ -19,7 +19,7 @@
 #include "gslwaveosc.h"
 #include "gslfilter.h"
 #include "gslsignal.h"
-#include "gslengine.h"	/* for gsl_engine_sample_freq() */
+#include "bseengine.h"	/* for gsl_engine_sample_freq() */
 #include <string.h>
 
 #define DEBUG(...)      sfi_debug ("waveosc", __VA_ARGS__)

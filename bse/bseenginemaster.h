@@ -18,7 +18,7 @@
 #ifndef __GSL_ENGINE_MASTER_H__
 #define __GSL_ENGINE_MASTER_H__
 
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 
 G_BEGIN_DECLS
 

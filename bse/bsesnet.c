@@ -21,7 +21,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sfi/gbsearcharray.h>
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 #include <bse/gslcommon.h>
 #include "bsesnet.h"
 

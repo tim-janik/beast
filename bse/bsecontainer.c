@@ -21,7 +21,7 @@
 #include "bseproject.h"
 #include "bsestorage.h"
 #include "bsemain.h"
-#include "gslengine.h"
+#include "bseengine.h"
 #include <stdlib.h>
 #include <string.h>
 

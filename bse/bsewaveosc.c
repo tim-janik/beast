@@ -21,7 +21,7 @@
 #include <bse/bseeditablesample.h>
 #include <bse/bsewaverepo.h>
 #include <bse/bseproject.h>
-#include <bse/gslengine.h>
+#include <bse/bseengine.h>
 #include <bse/gslwavechunk.h>
 #include <bse/gslfilter.h>
 

@@ -21,7 +21,7 @@
 #include "bsecategories.h"
 #include "bsemidireceiver.h"
 #include "bsesnet.h"
-#include "gslengine.h"
+#include "bseengine.h"
 
 
 
