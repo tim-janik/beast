@@ -96,11 +96,6 @@ bst_sniffer_scope_expose (GtkWidget      *widget,
   // gdk_window_clear_area (widget->window, area.x, area.y, area.width, area.height);
   gdk_window_begin_paint_rect (event->window, &area);
   // bst_sniffer_scope_draw_window (self, area.x, area.y, area.x + area.width, area.y + area.height);
-  gdk_draw_line (window, dark_gc,
-                 allocation->x,
-                 allocation->y,
-                 allocation->x + allocation->width,
-                 allocation->y + allocation->height);
   gdk_window_end_paint (event->window);
   
   return FALSE;
