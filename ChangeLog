@@ -1,3 +1,13 @@
+Fri Feb 21 19:14:55 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/reference-index.xsl: new file added by
+	Alper Ersoy to extract cross references from existing
+	xml files.
+
+	* docs/generated/reference-filter.pl: new file added by
+	Alper Ersoy to insert fixed cross references into certain
+	xml files.
+
 Thu Feb 20 01:03:35 2003  Alper Ersoy  <dirt@gtk.org>
 
 	* bse/bseautodoc.c:
