@@ -306,26 +306,12 @@ AC_DEFUN(MC_PROG_CXX_WITH_CXXFLAGS,[
 
 		dnl figure current screen width from ncurses to make g++
 		dnl format errors for screensizes!=80 correctly
-		SAVED_LIBS="$LIBS"
-		LIBS="$LIBS -lncurses"
-		AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
-                                    #include <curses.h>
-				    int main()
-				    {
-					FILE *f=fopen("conftestval", "w");
-					int c;
-					if (!f) exit(1);
-					initscr();
-					c = COLS;
-					endwin();
-					fprintf(f, "%d\n",c);
-					exit(0);
-				    }
-				    ]])],
-		    [gxx_columns=`cat conftestval`],
-		    [gxx_columns='80'])
-		LIBS="$SAVED_LIBS"
-		if test -n "$gxx_columns" ; then
+		gxx_columns=0
+		AC_CHECK_PROG(TPUT, tput, yes)
+		if test "$TPUT" = "yes"; then
+		    gxx_columns=$(tput cols)
+		fi
+		if test "$gxx_columns" -gt 1 ; then
 		    MC_PROG_CC_SUPPORTS_OPTION(-fmessage-length=$gxx_columns,
 			MC_EVAR_ADD(CXXFLAGS, -fmessage-length=, -fmessage-length=$gxx_columns))
 		fi
