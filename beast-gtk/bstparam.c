@@ -155,7 +155,11 @@ bst_param_create_gmask_intern (GxkParam    *param,
       sfi_pspec_check_option (param->pspec, "note"))
     {
       GtkWidget *scale = gxk_param_create_editor (param, "hscale");
-      bst_gmask_set_aux2 (gmask, scale);
+      if (scale)
+        bst_gmask_set_aux2 (gmask, scale);
+      else
+        g_message ("failed to create scale/dial widget for parameter \"%s\" of type `%s'",
+                   param->pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (param->pspec)));
     }
   
   tooltip = gxk_param_dup_tooltip (param);

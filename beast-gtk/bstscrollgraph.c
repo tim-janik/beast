@@ -509,7 +509,7 @@ bst_scrollgraph_class_init (BstScrollgraphClass *class)
                                                      1.0, 1.0 / 256., 256, 0.1, SFI_PARAM_STANDARD ":scale:db-range"));
   bst_object_class_install_property (gobject_class, _("Spectrograph"), PROP_WINDOW_SIZE,
                                      sfi_pspec_choice ("window_size", _("Window Size"), _("Adjust FFT window size"),
-                                                       "BST_FFT_SIZE_512", bst_fft_size_get_values(), SFI_PARAM_STANDARD ":scale:db-range"));
+                                                       "BST_FFT_SIZE_512", bst_fft_size_get_values(), SFI_PARAM_STANDARD ":db-range"));
   signal_resize_values = g_signal_new ("resize-values", G_OBJECT_CLASS_TYPE (class),
                                        G_SIGNAL_RUN_LAST, G_STRUCT_OFFSET (BstScrollgraphClass, resize_values),
                                        NULL, NULL,

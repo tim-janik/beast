@@ -1,3 +1,10 @@
+Fri Dec 10 11:29:58 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c: provide proper warning if scale/dial widget 
+	couldn't be created.
+
+	* beast-gtk/bstscrollgraph.c: options fixup.
+
 Fri Dec 10 11:01:28 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstscrollgraph.[hc]: added ::resize-values signal.
