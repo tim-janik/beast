@@ -1,4 +1,7 @@
 
+* Major overhaul of the mixing engine which is now agressively
+  optimized and contains all necessary means for effect
+  implementations
 * Synthesis tools palette for the synthesis network router and
   many other GUI improvements
 * Enabled procedure support for the pattern editor to supply

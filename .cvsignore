@@ -10,3 +10,4 @@ config.cache
 configure
 PKG_config.h
 PKG_paths.h
+bsi

@@ -47,7 +47,8 @@ enum {
   CHILD_ARG_HEXPAND,
   CHILD_ARG_HFILL,
   CHILD_ARG_VEXPAND,
-  CHILD_ARG_VFILL
+  CHILD_ARG_VFILL,
+  CHILD_ARG_WRAPPED
 };
 
 
@@ -171,6 +172,8 @@ gtk_wrap_box_class_init (GtkWrapBoxClass *class)
 				    GTK_TYPE_BOOL, GTK_ARG_READWRITE, CHILD_ARG_VEXPAND);
   gtk_container_add_child_arg_type ("GtkWrapBox::vfill",
 				    GTK_TYPE_BOOL, GTK_ARG_READWRITE, CHILD_ARG_VFILL);
+  gtk_container_add_child_arg_type ("GtkWrapBox::wrapped",
+				    GTK_TYPE_BOOL, GTK_ARG_READWRITE, CHILD_ARG_WRAPPED);
 }
 
 static void
@@ -274,10 +277,10 @@ gtk_wrap_box_set_child_arg (GtkContainer *container,
 			    guint         arg_id)
 {
   GtkWrapBox *wbox = GTK_WRAP_BOX (container);
-  gboolean hexpand = FALSE, hfill = FALSE, vexpand = FALSE, vfill = FALSE;
+  gboolean hexpand = FALSE, hfill = FALSE, vexpand = FALSE, vfill = FALSE, wrapped = FALSE;
   
   if (arg_id != CHILD_ARG_POSITION)
-    gtk_wrap_box_query_child_packing (wbox, child, &hexpand, &hfill, &vexpand, &vfill);
+    gtk_wrap_box_query_child_packing (wbox, child, &hexpand, &hfill, &vexpand, &vfill, &wrapped);
   
   switch (arg_id)
     {
@@ -287,22 +290,32 @@ gtk_wrap_box_set_child_arg (GtkContainer *container,
     case CHILD_ARG_HEXPAND:
       gtk_wrap_box_set_child_packing (wbox, child,
 				      GTK_VALUE_BOOL (*arg), hfill,
-				      vexpand, vfill);
+				      vexpand, vfill,
+				      wrapped);
       break;
     case CHILD_ARG_HFILL:
       gtk_wrap_box_set_child_packing (wbox, child,
 				      hexpand, GTK_VALUE_BOOL (*arg),
-				      vexpand, vfill);
+				      vexpand, vfill,
+				      wrapped);
       break;
     case CHILD_ARG_VEXPAND:
       gtk_wrap_box_set_child_packing (wbox, child,
 				      hexpand, hfill,
-				      GTK_VALUE_BOOL (*arg), vfill);
+				      GTK_VALUE_BOOL (*arg), vfill,
+				      wrapped);
       break;
     case CHILD_ARG_VFILL:
       gtk_wrap_box_set_child_packing (wbox, child,
 				      hexpand, hfill,
-				      vexpand, GTK_VALUE_BOOL (*arg));
+				      vexpand, GTK_VALUE_BOOL (*arg),
+				      wrapped);
+      break;
+    case CHILD_ARG_WRAPPED:
+      gtk_wrap_box_set_child_packing (wbox, child,
+				      hexpand, hfill,
+				      vexpand, vfill,
+				      GTK_VALUE_BOOL (*arg));
       break;
     default:
       break;
@@ -316,10 +329,10 @@ gtk_wrap_box_get_child_arg (GtkContainer *container,
 			    guint         arg_id)
 {
   GtkWrapBox *wbox = GTK_WRAP_BOX (container);
-  gboolean hexpand = FALSE, hfill = FALSE, vexpand = FALSE, vfill = FALSE;
+  gboolean hexpand = FALSE, hfill = FALSE, vexpand = FALSE, vfill = FALSE, wrapped = FALSE;
   
   if (arg_id != CHILD_ARG_POSITION)
-    gtk_wrap_box_query_child_packing (wbox, child, &hexpand, &hfill, &vexpand, &vfill);
+    gtk_wrap_box_query_child_packing (wbox, child, &hexpand, &hfill, &vexpand, &vfill, &wrapped);
   
   switch (arg_id)
     {
@@ -346,6 +359,9 @@ gtk_wrap_box_get_child_arg (GtkContainer *container,
       break;
     case CHILD_ARG_VFILL:
       GTK_VALUE_BOOL (*arg) = vfill;
+      break;
+    case CHILD_ARG_WRAPPED:
+      GTK_VALUE_BOOL (*arg) = wrapped;
       break;
     default:
       arg->type = GTK_TYPE_INVALID;
@@ -450,6 +466,22 @@ gtk_wrap_box_pack (GtkWrapBox *wbox,
 		   gboolean    vexpand,
 		   gboolean    vfill)
 {
+  g_return_if_fail (GTK_IS_WRAP_BOX (wbox));
+  g_return_if_fail (GTK_IS_WIDGET (child));
+  g_return_if_fail (child->parent == NULL);
+
+  gtk_wrap_box_pack_wrapped (wbox, child, hexpand, hfill, vexpand, vfill, FALSE);
+}
+
+void
+gtk_wrap_box_pack_wrapped (GtkWrapBox *wbox,
+			   GtkWidget  *child,
+			   gboolean    hexpand,
+			   gboolean    hfill,
+			   gboolean    vexpand,
+			   gboolean    vfill,
+			   gboolean    wrapped)
+{
   GtkWrapBoxChild *child_info;
   
   g_return_if_fail (GTK_IS_WRAP_BOX (wbox));
@@ -462,6 +494,7 @@ gtk_wrap_box_pack (GtkWrapBox *wbox,
   child_info->hfill = hfill ? TRUE : FALSE;
   child_info->vexpand = vexpand ? TRUE : FALSE;
   child_info->vfill = vfill ? TRUE : FALSE;
+  child_info->wrapped = wrapped ? TRUE : FALSE;
   child_info->next = NULL;
   if (wbox->children)
     {
@@ -546,7 +579,8 @@ gtk_wrap_box_query_child_packing (GtkWrapBox *wbox,
 				  gboolean   *hexpand,
 				  gboolean   *hfill,
 				  gboolean   *vexpand,
-				  gboolean   *vfill)
+				  gboolean   *vfill,
+				  gboolean   *wrapped)
 {
   GtkWrapBoxChild *child_info;
   
@@ -567,6 +601,8 @@ gtk_wrap_box_query_child_packing (GtkWrapBox *wbox,
 	*vexpand = child_info->vexpand;
       if (vfill)
 	*vfill = child_info->vfill;
+      if (wrapped)
+	*wrapped = child_info->wrapped;
     }
 }
 
@@ -576,7 +612,8 @@ gtk_wrap_box_set_child_packing (GtkWrapBox *wbox,
 				gboolean    hexpand,
 				gboolean    hfill,
 				gboolean    vexpand,
-				gboolean    vfill)
+				gboolean    vfill,
+				gboolean    wrapped)
 {
   GtkWrapBoxChild *child_info;
   
@@ -587,19 +624,22 @@ gtk_wrap_box_set_child_packing (GtkWrapBox *wbox,
   hfill = hfill != FALSE;
   vexpand = vexpand != FALSE;
   vfill = vfill != FALSE;
-  
+  wrapped = wrapped != FALSE;
+
   for (child_info = wbox->children; child_info; child_info = child_info->next)
     if (child_info->widget == child)
       break;
   
   if (child_info &&
       (child_info->hexpand != hexpand || child_info->vexpand != vexpand ||
-       child_info->hfill != hfill || child_info->vfill != vfill))
+       child_info->hfill != hfill || child_info->vfill != vfill ||
+       child_info->wrapped != wrapped))
     {
       child_info->hexpand = hexpand;
       child_info->hfill = hfill;
       child_info->vexpand = vexpand;
       child_info->vfill = vfill;
+      child_info->wrapped = wrapped;
       
       if (GTK_WIDGET_VISIBLE (child) && GTK_WIDGET_VISIBLE (wbox))
 	gtk_widget_queue_resize (child);
@@ -2156,7 +2196,8 @@ reverse_list_row_children (GtkWrapBox       *wbox,
 	  if (GTK_WIDGET_VISIBLE (child->widget))
 	    {
 	      get_gtkhwrapbox_child_requisition (wbox, child->widget, &child_requisition);
-	      if (width + wbox->hspacing + child_requisition.width > row_width)
+	      if (width + wbox->hspacing + child_requisition.width > row_width ||
+		  child->wrapped)
 		break;
 	      width += wbox->hspacing + child_requisition.width;
 	      *max_child_size = MAX (*max_child_size, child_requisition.height);
@@ -2453,7 +2494,7 @@ layout_rows (GtkWrapBox    *wbox,
 		      line->children,
 		      children_per_line,
 		      line->expand);
-	  
+
 	  g_slist_free (line->children);
 	  g_free (line);
 	  line = next_line;
@@ -2810,7 +2851,8 @@ reverse_list_col_children (GtkWrapBox       *wbox,
 	  if (GTK_WIDGET_VISIBLE (child->widget))
 	    {
 	      get_gtkvwrapbox_child_requisition (wbox, child->widget, &child_requisition);
-	      if (height + wbox->vspacing + child_requisition.height > col_height)
+	      if (height + wbox->vspacing + child_requisition.height > col_height ||
+		  child->wrapped)
 		break;
 	      height += wbox->vspacing + child_requisition.height;
 	      *max_child_size = MAX (*max_child_size, child_requisition.width);
@@ -3107,7 +3149,7 @@ layout_cols (GtkWrapBox    *wbox,
 		      line->children,
 		      children_per_line,
 		      line->expand);
-	  
+
 	  g_slist_free (line->children);
 	  g_free (line);
 	  line = next_line;

@@ -85,6 +85,7 @@ struct _GtkWrapBoxChild
   guint      hfill : 1;
   guint      vexpand : 1;
   guint      vfill : 1;
+  guint      wrapped : 1;
   
   GtkWrapBoxChild *next;
 };
@@ -112,6 +113,13 @@ void	   gtk_wrap_box_pack	            (GtkWrapBox      *wbox,
 					     gboolean         hfill,
 					     gboolean         vexpand,
 					     gboolean         vfill);
+void	   gtk_wrap_box_pack_wrapped        (GtkWrapBox      *wbox,
+					     GtkWidget       *child,
+					     gboolean         hexpand,
+					     gboolean         hfill,
+					     gboolean         vexpand,
+					     gboolean         vfill,
+					     gboolean         wrapped);
 void       gtk_wrap_box_reorder_child       (GtkWrapBox      *wbox,
 					     GtkWidget       *child,
 					     gint             position);
@@ -120,13 +128,15 @@ void       gtk_wrap_box_query_child_packing (GtkWrapBox      *wbox,
 					     gboolean        *hexpand,
 					     gboolean        *hfill,
 					     gboolean        *vexpand,
-					     gboolean        *vfill);
+					     gboolean        *vfill,
+					     gboolean        *wrapped);
 void       gtk_wrap_box_set_child_packing   (GtkWrapBox      *wbox,
 					     GtkWidget       *child,
 					     gboolean         hexpand,
 					     gboolean         hfill,
 					     gboolean         vexpand,
-					     gboolean         vfill);
+					     gboolean         vfill,
+					     gboolean         wrapped);
 guint*	   gtk_wrap_box_query_line_lengths  (GtkWrapBox	     *wbox,
 					     guint           *n_lines);
 
