@@ -729,5 +729,8 @@ Misc Buglets/Feature Requests:
  - the midi importer doesn't create a master bus
  - silencing out an instrument (in drum maps) should be easier
  - bse_ftoi/bse_dtoi on AMD64 from glibc source
+ - make check for test thingy
+ - move tests from test directory into automated feature test dir
+ - remove test directory
 
 vim:set ts=8 sts=2 sw=2:
