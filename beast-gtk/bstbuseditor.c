@@ -112,6 +112,7 @@ bus_probes_notify (SfiProxy     bus,
       bse_source_queue_probe_request (self->item, 0, 1, 1, 0, 0);
       bse_source_queue_probe_request (self->item, 1, 1, 1, 0, 0);
     }
+  bse_probe_seq_free (pseq);
 }
 
 static GtkWidget*

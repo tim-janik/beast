@@ -1,3 +1,18 @@
+Mon Nov 29 20:55:07 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbuseditor.c:
+	bus_probes_notify(): plugged memory leak.
+
+	* beast-gtk/bstscrollgraph.c: first start at size requisition.
+	altered default display. create an extra window to allow proper
+	scrolling behaviour. display frequencies in deci bell.
+	added frequency shading via GxkColorDots. removed weighting by
+	1/n which is done by BSE now. plugged mem leak.
+	fixed off-by-one error in reverse coord loookup.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added GxkColorDots which implements
+	a linear color interpolator.
+
 Sat Nov 27 18:37:46 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstscrollgraph.[hc]: request and display FFT data.

@@ -157,11 +157,6 @@ void	 gxk_window_set_cursor_type	(GdkWindow		*window,
 					 GdkCursorType		 cursor);
 void	 gxk_window_process_next	(GdkWindow		*window,
 					 gboolean		 update_children);
-void	 gxk_color_alloc		(GdkColormap		*colormap,
-					 GdkColor		*color);
-GdkColor gdk_color_from_rgb             (guint                   rgb_value);
-GdkColor gdk_color_from_argb            (guint                   rgb_value);
-GdkColor gdk_color_from_rgba            (guint                   rgb_value);
 void     gdk_draw_hline                 (GdkDrawable            *drawable,
                                          GdkGC                  *gc,
                                          gint                    x,
@@ -172,6 +167,27 @@ void     gdk_draw_vline                 (GdkDrawable            *drawable,
                                          gint                    x,
                                          gint                    y,
                                          gint                    height);
+void	 gxk_color_alloc		(GdkColormap		*colormap,
+					 GdkColor		*color);
+GdkColor gdk_color_from_rgb             (guint                   rgb_value);
+GdkColor gdk_color_from_argb            (guint                   rgb_value);
+GdkColor gdk_color_from_rgba            (guint                   rgb_value);
+
+/* --- Colors --- */
+typedef struct {
+  double value;
+  guint  rgb;
+} GxkColorDot;
+typedef struct {
+  guint        n_colors;
+  GxkColorDot *colors;
+} GxkColorDots;
+GxkColorDots*   gxk_color_dots_new              (guint               n_dots,
+                                                 const GxkColorDot  *dots);
+guint           gxk_color_dots_interpolate      (GxkColorDots       *cdots,
+                                                 double              value,
+                                                 double              saturation);
+void            gxk_color_dots_destroy          (GxkColorDots       *cdots);
 
 /* --- Gtk convenience --- */
 #define GTK_STYLE_THICKNESS(s,xy)	((s)-> xy##thickness)

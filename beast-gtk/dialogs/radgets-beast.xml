@@ -162,7 +162,7 @@
   <!-- scrollgraph-dialog -->
   <xdef:scrollgraph-dialog inherit="vbox">
     <label label="test1"/>
-    <scrollgraph width="200" height="200" expand="1" />
+    <scrollgraph expand="1" />
     <label label="test2"/>
   </xdef:scrollgraph-dialog>
 

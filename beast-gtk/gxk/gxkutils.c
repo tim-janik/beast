@@ -23,6 +23,7 @@
 #include "gxkcellrendererpopup.h"
 #include "gxkauxwidgets.h"
 #include <string.h>
+#include <stdlib.h>
 
 
 /* --- generated marshallers --- */
@@ -454,6 +455,28 @@ gxk_window_process_next (GdkWindow *window,
     expose_handler_id = g_idle_add_full (G_PRIORITY_DEFAULT, expose_handler, NULL, NULL);
 }
 
+void
+gdk_draw_hline (GdkDrawable            *drawable,
+                GdkGC                  *gc,
+                gint                    x,
+                gint                    y,
+                gint                    width)
+{
+  if (width > 0)
+    gdk_draw_line (drawable, gc, x, y, x + width - 1, y);
+}
+
+void
+gdk_draw_vline (GdkDrawable            *drawable,
+                GdkGC                  *gc,
+                gint                    x,
+                gint                    y,
+                gint                    height)
+{
+  if (height > 0)
+    gdk_draw_line (drawable, gc, x, y, x, y + height - 1);
+}
+
 /**
  * gxk_color_alloc
  * @colormap: valid #GdkColormap
@@ -509,27 +532,78 @@ gdk_color_from_rgba (guint rgb_value)
   return c;
 }
 
-void
-gdk_draw_hline (GdkDrawable            *drawable,
-                GdkGC                  *gc,
-                gint                    x,
-                gint                    y,
-                gint                    width)
+/* --- Colors --- */
+static int
+gxk_color_dot_cmp (const void *v1,
+                   const void *v2)
 {
-  if (width > 0)
-    gdk_draw_line (drawable, gc, x, y, x + width - 1, y);
+  const GxkColorDot *c1 = v1;
+  const GxkColorDot *c2 = v2;
+  return c1->value < c2->value ? -1 : c1->value > c2->value;
+}
+
+GxkColorDots*
+gxk_color_dots_new (guint              n_dots,
+                    const GxkColorDot *dots)
+{
+  g_return_val_if_fail (n_dots >= 2, NULL);
+  GxkColorDots *cdots = g_new0 (GxkColorDots, 1);
+  guint sizeof_color_dot = sizeof (GxkColorDot);
+  cdots->n_colors = n_dots;
+  cdots->colors = g_memdup (dots, sizeof_color_dot * n_dots);
+  qsort (cdots->colors, cdots->n_colors, sizeof_color_dot, gxk_color_dot_cmp);
+  return cdots;
+}
+
+guint
+gxk_color_dots_interpolate (GxkColorDots   *cdots,
+                            double          value,
+                            double          saturation)
+{
+  g_return_val_if_fail (cdots != NULL, 0);
+  /* find segment via bisection */
+  guint offset = 0, n = cdots->n_colors;
+  while (offset + 1 < n)
+    {
+      guint i = (offset + n) >> 1;
+      if (value < cdots->colors[i].value)
+        n = i;
+      else
+        offset = i;
+    }
+  g_assert (offset == 0 || value >= cdots->colors[offset].value);
+  if (value >= cdots->colors[offset].value && offset + 1 < cdots->n_colors)
+    {   /* linear interpolation */
+      guint c1 = cdots->colors[offset].rgb;
+      guint c2 = cdots->colors[offset + 1].rgb;
+      double delta = value - cdots->colors[offset].value;       /* >= 0, see assertion above */
+      double range = cdots->colors[offset + 1].value -
+                     cdots->colors[offset].value;               /* >= 0, ascending sort */
+      double d2 = delta / range;                                /* <= 1, due to bisection */
+      double d1 = 1.0 - d2;
+      guint8 red = saturation * (((c1 >> 16) & 0xff) * d1 + ((c2 >> 16) & 0xff) * d2);
+      guint8 green = saturation * (((c1 >> 8) & 0xff) * d1 + ((c2 >> 8) & 0xff) * d2);
+      guint8 blue = saturation * ((c1 & 0xff) * d1 + (c2 & 0xff) * d2);
+      return (red << 16) | (green << 8) | blue;
+    }
+  else  /* value is out of range on either boundary */
+    {
+      guint8 red = saturation * ((cdots->colors[offset].rgb >> 16) & 0xff);
+      guint8 green = saturation * ((cdots->colors[offset].rgb >> 8) & 0xff);
+      guint8 blue = saturation * (cdots->colors[offset].rgb & 0xff);
+      return (red << 16) | (green << 8) | blue;
+    }
 }
 
 void
-gdk_draw_vline (GdkDrawable            *drawable,
-                GdkGC                  *gc,
-                gint                    x,
-                gint                    y,
-                gint                    height)
+gxk_color_dots_destroy (GxkColorDots *cdots)
 {
-  if (height > 0)
-    gdk_draw_line (drawable, gc, x, y, x, y + height - 1);
+  g_return_if_fail (cdots != NULL);
+  g_free (cdots->colors);
+  g_free (cdots);
 }
+
+/* --- Gtk convenience --- */
 
 /**
  * gxk_widget_make_insensitive
