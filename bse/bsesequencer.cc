@@ -30,6 +30,12 @@
 #include <errno.h>
 #include <vector>
 
+/* due to a linker/compiler bug on SuSE 9.2, we need to
+ * define extern "C" symbols outside of any C++ namespace,
+ * in order for C code to link against it.
+ */
+extern "C" { SfiThread *bse_sequencer_thread = NULL; }
+
 namespace { // Anon
 using namespace std;
 
@@ -44,7 +50,6 @@ static void	bse_sequencer_process_song_SL	(BseSong	*song,
 
 
 /* --- variables --- */
-extern "C" { SfiThread *bse_sequencer_thread = NULL; }
 static BseSequencer    *global_sequencer = NULL;
 static SfiCond          current_watch_cond = { 0, };
 static gint             sequencer_wake_up_pipe[2] = { -1, -1 };

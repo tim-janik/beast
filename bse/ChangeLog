@@ -1,3 +1,7 @@
+Sat Jan 29 16:58:38 2005  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.cc: work around compiler/linker bugs on SuSE 9.2.
+
 Sat Jan 29 01:00:37 2005  Tim Janik  <timj@gtk.org>
 
 	* bseloader-guspatch.cc (bse_init_loader_gus_patch): changed magic to
