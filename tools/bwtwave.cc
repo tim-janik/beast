@@ -196,7 +196,7 @@ Wave::store (const string file_name)
           tmp_handle = gsl_data_handle_get_source (dhandle);
         }
       while (tmp_handle);
-      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle);
+      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle, 0);
       if (!vhandle)
         {
           mf_counters[gsl_data_handle_mix_freq (chunk->dhandle)] += 1;
@@ -261,7 +261,7 @@ Wave::store (const string file_name)
           tmp_handle = gsl_data_handle_get_source (dhandle);
         }
       while (tmp_handle);
-      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle); // FIXME: deamnd certain serialno
+      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle, gsl_vorbis_make_serialno());
       if (vhandle)      /* save already compressed Ogg/Vorbis data */
         {
           sfi_wstore_puts (wstore, "    vorbis-link = ");

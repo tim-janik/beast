@@ -480,7 +480,7 @@ public:
         tmp_handle = gsl_data_handle_get_source (dhandle);
       }
     while (tmp_handle);
-    GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle);
+    GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle, 0);
     if (vhandle)
       gsl_vorbis1_handle_destroy (vhandle);
     return vhandle != NULL;
@@ -500,7 +500,7 @@ public:
         gsl_vorbis_encoder_set_quality (enc, quality);
         gsl_vorbis_encoder_set_n_channels (enc, wave->n_channels);
         gsl_vorbis_encoder_set_sample_freq (enc, guint (gsl_data_handle_mix_freq (dhandle)));
-        BseErrorType error = gsl_vorbis_encoder_setup_stream (enc, (rand () << 16) ^ rand ()); // FIXME: better are deterministic serials
+        BseErrorType error = gsl_vorbis_encoder_setup_stream (enc, gsl_vorbis_make_serialno());
         if (error)
           {
             sfi_error ("chunk % 7.2f/%.0f: failed to encode: %s",
