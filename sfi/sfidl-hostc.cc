@@ -26,19 +26,23 @@
 
 /* --- variables --- */
 static  GScannerConfig  scanner_config_template = {
+  const_cast<gchar *>   /* FIXME: glib should use const gchar* here */
   (
    " \t\r\n"
    )                    /* cset_skip_characters */,
+  const_cast<gchar *>
   (
    G_CSET_a_2_z
    "_"
    G_CSET_A_2_Z
    )                    /* cset_identifier_first */,
+  const_cast<gchar *>
   (
    G_CSET_a_2_z
    "_0123456789"
    G_CSET_A_2_Z
    )                    /* cset_identifier_nth */,
+  const_cast<gchar *>
   ( "#\n" )             /* cpair_comment_single */,
   
   TRUE                  /* case_sensitive */,
@@ -129,31 +133,12 @@ namespace Conf {
 };
 
 struct ParamDef {
-protected:
-  vector<ParamDef> iseq;
-  
-public:
   string type;
-  string name, nick, text;
+  string name;
   
-  bool   bool_dflt;
-  int    int_dflt, int_min, int_max, int_stepping;
-  double float_dflt, float_min, float_max, float_stepping;
-  string string_dflt;
-  int    enum_dflt;
-  
-  string hints;
   string pspec;
   int    line;
   string args;
-  
-  ParamDef& addSeq(const string& contentType) {
-    iseq.resize(1);
-    iseq[0].type = contentType;
-    return iseq[0];
-  }
-  bool hasSeq () const { return iseq.size() == 1; }
-  const ParamDef& seq() const { return iseq[0]; }
 };
 
 struct EnumComponent {
@@ -172,20 +157,17 @@ struct EnumDef {
   string name;
   
   vector<EnumComponent> contents;
-  // FIXME: more hints ? (human readable name)
 };
 
 struct RecordDef {
   string name;
   
   vector<ParamDef> contents;
-  // hints ?
 };
 
 struct SequenceDef {
   string name;
-  string contentType;
-  string contentNameC; /* C binding content name */
+  ParamDef content;
 };
 
 struct ClassDef {
@@ -193,12 +175,12 @@ struct ClassDef {
   string inherits;
   
   vector<ParamDef> contents;
-  // hints ?
 };
 
 class IdlParser {
 protected:
   vector<string>      includedNames;
+  vector<string>      types;
   bool                insideInclude;
   
   vector<EnumDef>     enums;
@@ -214,7 +196,7 @@ protected:
   void addRecordTodo(const RecordDef& rdef);
   void addSequenceTodo(const SequenceDef& sdef);
   void addClassTodo(const ClassDef& cdef);
-  
+
   GTokenType parseNamespace ();
   GTokenType parseTypeDef ();
   GTokenType parseEnumDef ();
@@ -227,14 +209,16 @@ protected:
 public:
   IdlParser (const char *file_name, int fd);
   
-  void parse ();
+  bool parse ();
   
   const vector<EnumDef>& getEnums () const	    { return enums; }
   const vector<SequenceDef>& getSequences () const  { return sequences; }
   const vector<RecordDef>& getRecords () const	    { return records; }
   const vector<ClassDef>& getClasses () const	    { return classes; }
+  const vector<string>& getTypes () const           { return types; }
   
   SequenceDef findSequence (const string& name) const;
+  RecordDef findRecord (const string& name) const;
   
   bool isEnum(const string& type) const;
   bool isSequence(const string& type) const;
@@ -293,6 +277,16 @@ SequenceDef IdlParser::findSequence(const string& name) const
   return SequenceDef();
 }
 
+RecordDef IdlParser::findRecord(const string& name) const
+{
+  vector<RecordDef>::const_iterator i;
+  
+  for(i=records.begin();i != records.end(); i++)
+    if(i->name == name) return *i;
+  
+  return RecordDef();
+}
+
 IdlParser::IdlParser(const char *file_name, int fd)
   : insideInclude (false)
 {
@@ -323,7 +317,7 @@ void IdlParser::printError(const gchar *format, ...)
   g_free (string);
 }
 
-void IdlParser::parse()
+bool IdlParser::parse ()
 {
   /* define primitive types into the basic namespace */
   ModuleHelper::define("Bool");
@@ -350,7 +344,12 @@ void IdlParser::parse()
     }
   
   if (expected_token != G_TOKEN_NONE)
-    g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
+    {
+      g_scanner_unexp_token (scanner, expected_token, NULL, NULL, NULL, NULL, TRUE);
+      return false;
+    }
+
+  return true;
 }
 
 GTokenType IdlParser::parseNamespace()
@@ -363,9 +362,15 @@ GTokenType IdlParser::parseNamespace()
   
   for(;;)
     {
-      if(g_scanner_peek_next_token (scanner) == TOKEN_TYPEDEF)
+      if (g_scanner_peek_next_token (scanner) == TOKEN_TYPEDEF)
 	{
 	  GTokenType expected_token = parseTypeDef ();
+	  if (expected_token != G_TOKEN_NONE)
+	    return expected_token;
+	}
+      else if (g_scanner_peek_next_token (scanner) == TOKEN_CLASS)
+	{
+	  GTokenType expected_token = parseClass ();
 	  if (expected_token != G_TOKEN_NONE)
 	    return expected_token;
 	}
@@ -388,10 +393,9 @@ GTokenType IdlParser::parseTypeDef ()
   
   switch (g_scanner_peek_next_token (scanner))
     {
-    case TOKEN_ENUM:	    return parseEnumDef ();
+    case TOKEN_ENUM:	  return parseEnumDef ();
     case TOKEN_RECORD:    return parseRecordDef (); 
     case TOKEN_SEQUENCE:  return parseSequenceDef (); 
-    case TOKEN_CLASS:     return parseClass ();
     default:
       {
 	printError("typedef must be followed by either enum or record or sequence");
@@ -516,23 +520,6 @@ GTokenType IdlParser::parseRecordField (ParamDef& def)
   return G_TOKEN_NONE;
 }
 
-/*
-static vector<string> getParamDefFields (string type)
-{
-  vector<string> fields;
-
-  if(type == "float") {
-    fields.push_back("nick");
-    fields.push_back("text");
-    fields.push_back("float_dflt");
-    fields.push_back("float_min");
-    fields.push_back("float_max");
-    fields.push_back("float_stepping");
-  }
-  return fields;
-}
-*/
-
 GTokenType IdlParser::parseParamDefHints (ParamDef &def)
 {
   if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
@@ -541,59 +528,8 @@ GTokenType IdlParser::parseParamDefHints (ParamDef &def)
       def.pspec = scanner->value.v_identifier;
     }
   
-  /* handle nested definitions of sequences */
-  if (isSequence (def.type))
-    {
-      parse_or_return ('{');
-      parse_string_or_return (def.nick);
-      parse_or_return (',');
-      parse_string_or_return (def.text);
-      parse_or_return (',');
-      
-      SequenceDef sdef = findSequence (def.type);
-      ParamDef& contentDef = def.addSeq(sdef.contentType);
-      contentDef.pspec = sdef.contentType;
-      contentDef.name = "element";
-      parseParamDefHints (contentDef);
-      
-      parse_or_return (',');
-      parse_string_or_return (def.hints);
-      parse_or_return ('}');
-      
-      return G_TOKEN_NONE;
-    }
   parse_or_return ('(');
-/*
-  bool start = true;
-  vector<string> fields = getParamDefFields (def.type);
-  for(vector<string>::iterator i = fields.begin(); i != fields.end(); i++)
-    {
-      if (!start)			  parse_or_return (',');
-      if (*i == "nick")			  parse_string_or_return (def.nick);
-      else if (*i == "text")		  parse_string_or_return (def.text);
-      else if (*i == "bool_dflt")	  parse_int_or_return (def.bool_dflt); // FIXME: should this be integer?
-      else if (*i == "int_dflt")	  parse_int_or_return (def.int_dflt);
-      else if (*i == "int_min")		  parse_int_or_return (def.int_min);
-      else if (*i == "int_max")		  parse_int_or_return (def.int_max);
-      else if (*i == "int_stepping")	  parse_int_or_return (def.int_stepping);
-      else if (*i == "float_dflt")	  parse_float_or_return (def.float_dflt);
-      else if (*i == "float_min")	  parse_float_or_return (def.float_min);
-      else if (*i == "float_max")	  parse_float_or_return (def.float_max);
-      else if (*i == "float_stepping")	  parse_float_or_return (def.float_stepping);
-      else if (*i == "string_dflt")	  parse_string_or_return (def.string_dflt);
-      else if (*i == "enum_dflt")	  parse_int_or_return (def.enum_dflt);
-      else
-	{
-	  printf("unknown hint: %s\n", i->c_str());
-	}
-      start = false;
-    }
-  if (g_scanner_peek_next_token (scanner) == GTokenType(','))
-  {
-    parse_or_return (',');
-    parse_string_or_return (def.hints);
-  }
-  */
+
   int bracelevel = 1;
   string args;
   while (!g_scanner_eof (scanner) && bracelevel > 0)
@@ -608,22 +544,22 @@ GTokenType IdlParser::parseParamDefHints (ParamDef &def)
 	}
       switch (t)
 	{
-	case '(':			bracelevel++;
+	case '(':		  bracelevel++;
 	  break;
-	case ')':			bracelevel--;
+	case ')':		  bracelevel--;
 	  break;
-	case G_TOKEN_STRING:      x = g_strescape (scanner->value.v_string, 0);
-	  token_as_string = g_strdup_printf ("\"%s\"", x);
-	  g_free (x);
+	case G_TOKEN_STRING:	  x = g_strescape (scanner->value.v_string, 0);
+				  token_as_string = g_strdup_printf ("\"%s\"", x);
+				  g_free (x);
 	  break;
-	case G_TOKEN_INT:	        token_as_string = g_strdup_printf ("%ld", scanner->value.v_int);
+	case G_TOKEN_INT:	  token_as_string = g_strdup_printf ("%ld", scanner->value.v_int);
 	  break;
-	case G_TOKEN_FLOAT:       token_as_string = g_strdup_printf ("%f", scanner->value.v_float);
+	case G_TOKEN_FLOAT:	  token_as_string = g_strdup_printf ("%f", scanner->value.v_float);
 	  break;
 	case G_TOKEN_IDENTIFIER:  token_as_string = g_strdup_printf ("%s", scanner->value.v_identifier);
 	  break;
-	default:		        if (!token_as_string)
-	  printError ("implement me, token is %d\n",t);
+	default:		  if (!token_as_string)
+				    printError ("implement me, token is %d\n",t);
 	}
       if (token_as_string && bracelevel)
 	{
@@ -632,29 +568,22 @@ GTokenType IdlParser::parseParamDefHints (ParamDef &def)
 	}
     }
   def.args = args;
-  /*parse_or_return (')');*/
   return G_TOKEN_NONE;
 }
 
 GTokenType IdlParser::parseSequenceDef ()
 {
   SequenceDef sdef;
-  /* (typedef) sequence<Int> IntSeq; */
+  /*
+   * (typedef) sequence {
+   *   Int ints @= (...);
+   * } IntSeq;
+   */
   
   parse_or_return (TOKEN_SEQUENCE);
-  parse_or_return ('<');
-  parse_or_return (G_TOKEN_IDENTIFIER);
-  sdef.contentType = ModuleHelper::qualify (scanner->value.v_identifier);
-  if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
-  {
-    parse_or_return (G_TOKEN_IDENTIFIER);
-    sdef.contentNameC = scanner->value.v_identifier;
-  }
-  else
-  {
-    sdef.contentNameC = "elements";
-  }
-  parse_or_return ('>');
+  parse_or_return ('{');
+  parseRecordField (sdef.content);
+  parse_or_return ('}');
   parse_or_return (G_TOKEN_IDENTIFIER);
   sdef.name = ModuleHelper::define (scanner->value.v_identifier);
   parse_or_return (';');
@@ -698,11 +627,11 @@ void IdlParser::addEnumTodo(const EnumDef& edef)
   
   if (insideInclude)
     {
-      includedNames.push_back(edef.name);
+      includedNames.push_back (edef.name);
     }
   else
     {
-      // module.interfaces.push_back(iface); FIXME
+      types.push_back (edef.name);
     }
 }
 
@@ -712,11 +641,11 @@ void IdlParser::addRecordTodo(const RecordDef& rdef)
   
   if (insideInclude)
     {
-      includedNames.push_back(rdef.name);
+      includedNames.push_back (rdef.name);
     }
   else
     {
-      // module.interfaces.push_back(iface); FIXME
+      types.push_back (rdef.name);
     }
 }
 
@@ -726,11 +655,11 @@ void IdlParser::addSequenceTodo(const SequenceDef& sdef)
   
   if (insideInclude)
     {
-      includedNames.push_back(sdef.name);
+      includedNames.push_back (sdef.name);
     }
   else
     {
-      // module.interfaces.push_back(iface); FIXME
+      types.push_back (sdef.name);
     }
 }
 
@@ -740,11 +669,11 @@ void IdlParser::addClassTodo(const ClassDef& cdef)
   
   if (insideInclude)
     {
-      includedNames.push_back(cdef.name);
+      includedNames.push_back (cdef.name);
     }
   else
     {
-      // module.interfaces.push_back(iface); FIXME
+      types.push_back (cdef.name);
     }
 }
 
@@ -883,22 +812,13 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
     }
   else if (parser.isSequence (pdef.type))
     {
+      const SequenceDef& sdef = parser.findSequence (pdef.type);
       pspec = "sfi_param_spec_Seq";
-      if (!pdef.hasSeq())
-      {
-	const SequenceDef& sdef = parser.findSequence (pdef.type);
-	ParamDef def;
-	def.name = "content";
-	def.type = sdef.contentType;
-	def.pspec = def.type;
-	def.line = pdef.line;
-	pspec += "_default (\"" + pdef.name + "\"," + makeParamSpec(def) + ")";
-      }
+      if (pdef.args == "")
+	pspec += "_default (\"" + pdef.name + "\",";
       else
-      {
-	pspec += " (\"" + pdef.name + "\",\"" + pdef.nick + "\",\"" + pdef.text + "\",\"" + pdef.hints + "\",";
-        pspec += makeParamSpec (pdef.seq()) + ")";
-      }
+	pspec += " (\"" + pdef.name + "\"," + pdef.args + ",";
+      pspec += makeLowerName (pdef.type) + "_content)";
     }
   else
     {
@@ -1053,8 +973,8 @@ void CodeGeneratorC::run (string srcname)
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
 	  string mname = makeMixedName (si->name.c_str());
-	  string array = createTypeCode (si->contentType, "", MODEL_ARRAY);
-	  string elements = si->contentNameC;
+	  string array = createTypeCode (si->content.type, "", MODEL_ARRAY);
+	  string elements = si->content.name;
 	  
 	  printf("struct _%s {\n", mname.c_str());
 	  printf("  guint n_%s;\n", elements.c_str ());
@@ -1078,7 +998,7 @@ void CodeGeneratorC::run (string srcname)
 	{
 	  string ret = createTypeCode (si->name, "", MODEL_RET);
 	  string arg = createTypeCode (si->name, "", MODEL_ARG);
-	  string element = createTypeCode (si->contentType, "", MODEL_ARG);
+	  string element = createTypeCode (si->content.type, "", MODEL_ARG);
 	  string lname = makeLowerName (si->name.c_str());
 	  
 	  printf("%s %s_new (void);\n", ret.c_str(), lname.c_str());
@@ -1166,14 +1086,15 @@ void CodeGeneratorC::run (string srcname)
 	{
 	  string name = makeLowerName (si->name);
 	  
+	  printf("static GParamSpec *%s_content;\n", name.c_str());
+
 	  if (Conf::generateBoxedTypes)
 	  {
 	    string mname = makeMixedName (si->name);
 
 	    printf("static SfiBoxedSequenceInfo %s_boxed_info = {\n", name.c_str());
 	    printf("  \"%s\",\n", mname.c_str());
-	    /* FIXME: introduce new typedefs for sequences with defaults (as records have) */
-	    printf("  NULL, /* GParamSpec *element */\n");
+	    printf("  NULL, /* %s_content */\n", name.c_str());
 	    printf("  (SfiBoxedToSeq) %s_to_seq,\n", name.c_str());
 	    printf("  (SfiBoxedFromSeq) %s_from_seq\n", name.c_str());
 	    printf("};\n");
@@ -1189,8 +1110,8 @@ void CodeGeneratorC::run (string srcname)
 	{
 	  string ret = createTypeCode (si->name, "", MODEL_RET);
 	  string arg = createTypeCode (si->name, "", MODEL_ARG);
-	  string element = createTypeCode (si->contentType, "", MODEL_ARG);
-	  string elements = si->contentNameC;
+	  string element = createTypeCode (si->content.type, "", MODEL_ARG);
+	  string elements = si->content.name;
 	  string lname = makeLowerName (si->name.c_str());
 	  string mname = makeMixedName (si->name.c_str());
 	  
@@ -1200,7 +1121,7 @@ void CodeGeneratorC::run (string srcname)
 	  printf("  return g_new0 (%s, 1);\n",mname.c_str());
 	  printf("}\n\n");
 	  
-	  string elementCopy = createTypeCode (si->contentType, "element", MODEL_COPY);
+	  string elementCopy = createTypeCode (si->content.type, "element", MODEL_COPY);
 	  printf("void\n");
 	  printf("%s_append (%s seq, %s element)\n", lname.c_str(), arg.c_str(), element.c_str());
 	  printf("{\n");
@@ -1227,7 +1148,7 @@ void CodeGeneratorC::run (string srcname)
 	  printf("  return seq_copy;\n");
 	  printf("}\n\n");
 	  
-	  string elementFromValue = createTypeCode (si->contentType, "element", MODEL_FROM_VALUE);
+	  string elementFromValue = createTypeCode (si->content.type, "element", MODEL_FROM_VALUE);
 	  printf("%s\n", ret.c_str());
 	  printf("%s_from_seq (SfiSeq *sfi_seq)\n", lname.c_str());
 	  printf("{\n");
@@ -1249,7 +1170,7 @@ void CodeGeneratorC::run (string srcname)
 	  printf("  return seq;\n");
 	  printf("}\n\n");
 
-	  string elementToValue = createTypeCode (si->contentType, "seq->" + elements + "[i]", MODEL_TO_VALUE);
+	  string elementToValue = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_TO_VALUE);
 	  printf("SfiSeq *\n");
 	  printf("%s_to_seq (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
@@ -1268,7 +1189,7 @@ void CodeGeneratorC::run (string srcname)
 	  printf("  return sfi_seq;\n");
 	  printf("}\n\n");
 
-	  string element_i_free = createTypeCode (si->contentType, "seq->" + elements + "[i]", MODEL_FREE);
+	  string element_i_free = createTypeCode (si->content.type, "seq->" + elements + "[i]", MODEL_FREE);
 	  printf("void\n");
 	  printf("%s_free (%s seq)\n", lname.c_str(), arg.c_str());
 	  printf("{\n");
@@ -1379,19 +1300,46 @@ void CodeGeneratorC::run (string srcname)
       bool first = true;
       printf("static void\n%s (void)\n", Conf::generateInit);
       printf("{\n");
-      for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+
+      /*
+       * It is important to follow the declaration order of the idl file here, as for
+       * instance a ParamDef inside a record might come from a sequence, and a ParamDef
+       * inside a Sequence might come from a record - to avoid using yet-unitialized
+       * ParamDefs, we follow the getTypes() 
+       */
+      vector<string>::const_iterator ti;
+
+      for(ti = parser.getTypes().begin(); ti != parser.getTypes().end(); ti++)
 	{
-	  if(!first) printf("\n");
-	  first = false;
-	  
-	  string name = makeLowerName (ri->name);
-	  int f = 0;
-	  
-	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++, f++)
+	  if (parser.isRecord (*ti) || parser.isSequence (*ti))
 	    {
+	      if(!first) printf("\n");
+	      first = false;
+	    }
+	  if (parser.isRecord (*ti))
+	    {
+	      const RecordDef& rdef = parser.findRecord (*ti);
+
+	      string name = makeLowerName (rdef.name);
+	      int f = 0;
+
+	      for (pi = rdef.contents.begin(); pi != rdef.contents.end(); pi++, f++)
+		{
+		  if (Conf::generateIdlLineNumbers)
+		    printf("#line %u \"%s\"\n", pi->line, srcname.c_str());
+		  printf("  %s_field[%d] = %s;\n", name.c_str(), f, makeParamSpec (*pi).c_str());
+		}
+	    }
+	  if (parser.isSequence (*ti))
+	    {
+	      const SequenceDef& sdef = parser.findSequence (*ti);
+
+	      string name = makeLowerName (sdef.name);
+	      int f = 0;
+
 	      if (Conf::generateIdlLineNumbers)
-	        printf("#line %u \"%s\"\n", pi->line, srcname.c_str());
-	      printf("  %s_field[%d] = %s;\n", name.c_str(), f, makeParamSpec (*pi).c_str());
+		printf("#line %u \"%s\"\n", sdef.content.line, srcname.c_str());
+	      printf("  %s_content = %s;\n", name.c_str(), makeParamSpec (sdef.content).c_str());
 	    }
 	}
       if (Conf::generateBoxedTypes)
@@ -1410,6 +1358,7 @@ void CodeGeneratorC::run (string srcname)
 	    string gname = makeGTypeName(si->name);
 	    string name = makeLowerName(si->name);
 
+	    printf("  %s_boxed_info.element = %s_content;\n", name.c_str(), name.c_str());
 	    printf("  %s = sfi_boxed_make_sequence (&%s_boxed_info,\n", gname.c_str(), name.c_str());
 	    printf("    (GBoxedCopyFunc) %s_copy_shallow,\n", name.c_str());
 	    printf("    (GBoxedFreeFunc) %s_free);\n", name.c_str());
@@ -1444,7 +1393,7 @@ int main (int argc, char **argv)
    * parse command line options
    */
   int c;
-  while((c = getopt(argc, argv, "xdi:tTn:b")) != -1)
+  while((c = getopt(argc, argv, "xdi:tTn:bl")) != -1)
     {
       switch(c)
 	{
@@ -1484,32 +1433,21 @@ int main (int argc, char **argv)
   if((argc-optind) != 1) exitUsage(argv[0]);
   const char *inputfile = argv[optind];
   
-  /*
-   * find out prefix (filename without .idl)
-   */
-  
-  char *prefix = strdup (inputfile);
-  char *p = strrchr (prefix, '.');
-  if (!p)
-    g_error ("missing file name extension in \"%s\"", inputfile);
-  *p = 0;
-  
-  /*
-   * strip path (sfidl always outputs the result into the current directory)
-   */
-  char *pathless = strrchr(prefix,'/');
-  if(pathless)
-    prefix = pathless+1;
-  
   int fd = open (inputfile, O_RDONLY);
   
   IdlParser parser(inputfile, fd);
-  parser.parse();
+  if (!parser.parse())
+    {
+      /* parse error */
+      return 1;
+    }
   
   printf("\n/*-------- begin %s generated code --------*/\n\n\n",argv[0]);
   CodeGeneratorC codegen(parser);
   codegen.run (inputfile);
   printf("\n\n/*-------- end %s generated code --------*/\n\n\n",argv[0]);
+
+  return 0;
 }
 
 /* vim:set ts=8 sts=2 sw=2: */

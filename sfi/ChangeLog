@@ -1,3 +1,16 @@
+Wed Oct  9 13:59:00 2002  Stefan Westerfeld <stefan@space.twc.de>
+
+	* sfidl.cc: conceptually changed the way setting up defaults for
+	sequences to the way it works for records. you have per-type
+	defaults now, thus the syntax has changed to
+
+	typedef sequence {
+	  Int ids @= ("ID", "", 0, 0, G_MAXINT, 1, ":readwrite");
+	} IDSeq;
+
+	(minor cleanups): make -l work. don't generate code on parse error.
+	parse class Foo {}; properly. removed unused code.
+
 Tue Oct  8 19:25:24 2002  Stefan Westerfeld <stefan@space.twc.de>
 
 	* sfidl.cc: support registering boxed types for each record and
