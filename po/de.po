@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.55\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-16 14:46+0100\n"
-"PO-Revision-Date: 2003-11-16 14:46+0100\n"
+"POT-Creation-Date: 2003-11-22 13:47+0100\n"
+"PO-Revision-Date: 2003-11-22 13:47+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -79,9 +79,10 @@ msgstr "_Rückgängig"
 msgid "_Redo"
 msgstr "_Wiederholen"
 
+# CHECK
 #: beast-gtk/bstapp.c:86
 msgid "_Clear Undo"
-msgstr ""
+msgstr "Rückgängig-Puffer _leeren"
 
 #: beast-gtk/bstapp.c:90
 msgid "Procedure _Browser"
@@ -184,7 +185,7 @@ msgstr "BEAST-%s Release-Hinweise"
 msgid "Module Link: "
 msgstr "Modulverknüpfung: "
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:1055
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:914
 msgid "Module link"
 msgstr "Modulverknüpfung"
 
@@ -192,11 +193,11 @@ msgstr "Modulverknüpfung"
 msgid "Module Info"
 msgstr "Modulinfos"
 
-#: beast-gtk/bstcanvassource.c:971
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:200
 msgid "Input"
 msgstr "Eingabe"
 
-#: beast-gtk/bstcanvassource.c:980
+#: beast-gtk/bstcanvassource.c:980 beast-gtk/bstsnetrouter.c:197
 msgid "Output"
 msgstr "Ausgabe"
 
@@ -375,11 +376,11 @@ msgstr "Wave »%s« wird geladen"
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstmessages.c:81
-#: beast-gtk/bstpartview.c:42 beast-gtk/bstpianorollctrl.c:48
-#: beast-gtk/bstrackitem.c:182 beast-gtk/bstsnetrouter.c:1017
-#: beast-gtk/bstsnetrouter.c:1059 beast-gtk/bsttrackrollctrl.c:51
-#: beast-gtk/bsttrackview.c:65 beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
+#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:182
+#: beast-gtk/bstsnetrouter.c:876 beast-gtk/bstsnetrouter.c:918
+#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr "Löschen"
 
@@ -399,8 +400,6 @@ msgstr "Kommentar"
 msgid "Type"
 msgstr "Typ"
 
-#. now, we can popup the splash screen
-#.
 #: beast-gtk/bstmain.c:134
 msgid "BEAST Startup"
 msgstr "Beast-Startvorgang"
@@ -419,257 +418,65 @@ msgstr "Objekte"
 msgid "Language"
 msgstr "Sprache"
 
-#: beast-gtk/bstmain.c:163
+#: beast-gtk/bstmain.c:162
 msgid "RC File"
 msgstr "RC-Datei"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:170
+#: beast-gtk/bstmain.c:169
 msgid "Splash Image"
 msgstr "Begrüßungsbildschirm"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:182
+#: beast-gtk/bstmain.c:181
 msgid "BSE Core"
 msgstr "BSE-Kern"
 
-#: beast-gtk/bstmain.c:201
+#: beast-gtk/bstmain.c:200
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:220
+#: beast-gtk/bstmain.c:219
 msgid "LADSPA Plugins"
 msgstr "LADSPA-Plugins"
 
-#: beast-gtk/bstmain.c:248
+#: beast-gtk/bstmain.c:247
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:266
+#: beast-gtk/bstmain.c:265
 msgid "Dialogs"
 msgstr "Dialoge"
 
-#: beast-gtk/bstmain.c:279
+#: beast-gtk/bstmain.c:272
 msgid "Loading..."
 msgstr "Ladevorgang..."
 
-#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
+#: beast-gtk/bstmain.c:302 beast-gtk/bstmain.c:304
 #, c-format
 msgid "Loading \"%s\""
 msgstr "»%s« wird geladen"
 
-#: beast-gtk/bstmain.c:328
+#: beast-gtk/bstmain.c:321
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Projekt »%s« wird geladen"
 
-#. catalog_key, name, stock_id, accelerator, tooltip, blurb
-#: beast-gtk/bstmessages.c:21 beast-gtk/bsttrackrollctrl.c:64
-msgid "Left"
-msgstr "Links"
+#: beast-gtk/bstmain.c:694
+msgid "BEAST About"
+msgstr "Info zu BEAST"
 
-#: beast-gtk/bstmessages.c:23 beast-gtk/bsttrackrollctrl.c:64
-msgid "Use the horizontal ruler to adjust the left loop pointer"
-msgstr ""
+#: beast-gtk/bstmain.c:695
+#, c-format
+msgid "BEAST Version %s"
+msgstr "BEAST-Version %s"
 
-#: beast-gtk/bstmessages.c:25 beast-gtk/bsttrackrollctrl.c:66
-msgid "Pos"
-msgstr ""
-
-#: beast-gtk/bstmessages.c:27 beast-gtk/bsttrackrollctrl.c:66
-msgid "Use the horizontal ruler to adjust the play position pointer"
-msgstr ""
-
-#: beast-gtk/bstmessages.c:29 beast-gtk/bsttrackrollctrl.c:68
-msgid "Right"
-msgstr "Rechts"
-
-#: beast-gtk/bstmessages.c:31 beast-gtk/bsttrackrollctrl.c:68
-msgid "Use the horizontal ruler to adjust the right loop pointer"
-msgstr ""
-
-#: beast-gtk/bstmessages.c:33 beast-gtk/bstpianorollctrl.c:88
-#: beast-gtk/bsttrackrollctrl.c:81
-msgid "Q: Tact"
-msgstr "Q: Takt"
-
-#: beast-gtk/bstmessages.c:35 beast-gtk/bstpianorollctrl.c:88
-#: beast-gtk/bsttrackrollctrl.c:81
-msgid "Quantize to tact boundaries"
-msgstr "Auf Taktgrenzen quantifizieren"
-
-#: beast-gtk/bstmessages.c:37 beast-gtk/bstpianorollctrl.c:90
-#: beast-gtk/bsttrackrollctrl.c:83
-msgid "Q: None"
-msgstr "Q: Nein"
-
-#: beast-gtk/bstmessages.c:39 beast-gtk/bstpianorollctrl.c:90
-#: beast-gtk/bsttrackrollctrl.c:83
-msgid "No quantization selected"
-msgstr "Keine Quantifizierung gewählt"
-
-#: beast-gtk/bstmessages.c:41 beast-gtk/bstpianorollctrl.c:92
-#: beast-gtk/bsttrackrollctrl.c:85
-msgid "Q: 1/1"
-msgstr "Q: 1/1"
-
-#: beast-gtk/bstmessages.c:43 beast-gtk/bstpianorollctrl.c:92
-#: beast-gtk/bsttrackrollctrl.c:85
-msgid "Quantize to full note boundaries"
-msgstr "Auf ganze Noten quantifzieren"
-
-#: beast-gtk/bstmessages.c:45 beast-gtk/bstpianorollctrl.c:94
-#: beast-gtk/bsttrackrollctrl.c:87
-msgid "Q: 1/2"
-msgstr "Q: 1/2"
-
-#: beast-gtk/bstmessages.c:47 beast-gtk/bstpianorollctrl.c:94
-#: beast-gtk/bsttrackrollctrl.c:87
-msgid "Quantize to half note boundaries"
-msgstr "Auf halbe Noten quantifizieren"
-
-#: beast-gtk/bstmessages.c:49 beast-gtk/bstpianorollctrl.c:96
-#: beast-gtk/bsttrackrollctrl.c:89
-msgid "Q: 1/4"
-msgstr "Q: 1/4"
-
-#: beast-gtk/bstmessages.c:51 beast-gtk/bstpianorollctrl.c:96
-#: beast-gtk/bsttrackrollctrl.c:89
-msgid "Quantize to quarter note boundaries"
-msgstr "Auf Viertelnoten quantifizieren"
-
-#: beast-gtk/bstmessages.c:53 beast-gtk/bstpianorollctrl.c:98
-#: beast-gtk/bsttrackrollctrl.c:91
-msgid "Q: 1/8"
-msgstr "Q: 1/8"
-
-#: beast-gtk/bstmessages.c:55 beast-gtk/bstpianorollctrl.c:98
-#: beast-gtk/bsttrackrollctrl.c:91
-msgid "Quantize to eighths note boundaries"
-msgstr "Auf Achtelnoten quantifizieren"
-
-#: beast-gtk/bstmessages.c:57 beast-gtk/bstpianorollctrl.c:100
-#: beast-gtk/bsttrackrollctrl.c:93
-msgid "Q: 1/16"
-msgstr "Q: 1/16"
-
-#: beast-gtk/bstmessages.c:59 beast-gtk/bstpianorollctrl.c:100
-#: beast-gtk/bsttrackrollctrl.c:93
-msgid "Quantize to sixteenth note boundaries"
-msgstr "Auf Sechzehntelnoten quantifizieren"
-
-#: beast-gtk/bstmessages.c:61
-msgid "_Insert"
-msgstr "_Einfügen"
-
-#: beast-gtk/bstmessages.c:63 beast-gtk/bsttrackrollctrl.c:45
-msgid "Insert/edit/move parts (mouse button 1 and 2)"
-msgstr "Parts einfügen/bearbeiten/verschieben (Mausknöpfe 1 und 2)"
-
-#: beast-gtk/bstmessages.c:65
-msgid "Lin_k"
-msgstr ""
-
-#: beast-gtk/bstmessages.c:67 beast-gtk/bsttrackrollctrl.c:47
-msgid "Link or move parts (mouse button 1 and 2)"
-msgstr "Parts verknüpfen oder verschieben (Mausknöpfe 1 und 2)"
-
-#: beast-gtk/bstmessages.c:69
-msgid "_Rename"
-msgstr "_Umbenennen"
-
-#: beast-gtk/bstmessages.c:71 beast-gtk/bsttrackrollctrl.c:49
-msgid "Rename parts"
-msgstr "Parts umbenennen"
-
-#: beast-gtk/bstmessages.c:73
-msgid "_Delete"
-msgstr "_Löschen"
-
-#: beast-gtk/bstmessages.c:75 beast-gtk/bsttrackrollctrl.c:51
-msgid "Delete parts"
-msgstr "Parts löschen"
-
-#: beast-gtk/bstmessages.c:77 beast-gtk/bstpianorollctrl.c:46
-#: beast-gtk/bsttrackrollctrl.c:45
-msgid "Insert"
-msgstr "Einfügen"
-
-#: beast-gtk/bstmessages.c:79 beast-gtk/bstpianorollctrl.c:46
-msgid "Insert/resize/move notes (mouse button 1 and 2)"
-msgstr "Noten einfügen/bearbeiten/verschieben (Mausknöpfe 1 und 2)"
-
-#: beast-gtk/bstmessages.c:83 beast-gtk/bstpianorollctrl.c:48
-msgid "Delete note (mouse button 1)"
-msgstr "Note löschen (Mausknopf 1)"
-
-#: beast-gtk/bstmessages.c:85
-msgid "Align"
-msgstr "Ausrichten"
-
-#: beast-gtk/bstmessages.c:87 beast-gtk/bstpianorollctrl.c:50
-msgid "Draw a line to align events to"
-msgstr "Eine Linie zur Ereignisausrichtung zeichnen"
-
-#: beast-gtk/bstmessages.c:89 beast-gtk/bstpianorollctrl.c:52
-msgid "Select"
-msgstr "Auswahl"
-
-#: beast-gtk/bstmessages.c:91 beast-gtk/bstpianorollctrl.c:52
-msgid "Rectangle select notes"
-msgstr "Rechtecksauswahl für Noten"
-
-#: beast-gtk/bstmessages.c:93
-msgid "VSelect"
-msgstr "V-Auswahl"
-
-# CHECK
-#: beast-gtk/bstmessages.c:95 beast-gtk/bstpianorollctrl.c:54
-msgid "Select tick range vertically"
-msgstr "Vertikale Zeitbereichsauswahl"
-
-#: beast-gtk/bstmessages.c:97 beast-gtk/bstpianorollctrl.c:67
-msgid "1/1"
-msgstr "1/1"
-
-#: beast-gtk/bstmessages.c:99 beast-gtk/bstpianorollctrl.c:67
-msgid "Insert full notes"
-msgstr "Ganze Noten einfügen"
-
-#: beast-gtk/bstmessages.c:101 beast-gtk/bstpianorollctrl.c:69
-msgid "1/2"
-msgstr "1/2"
-
-#: beast-gtk/bstmessages.c:103 beast-gtk/bstpianorollctrl.c:69
-msgid "Insert half notes"
-msgstr "Halbe Noten einfügen"
-
-#: beast-gtk/bstmessages.c:105 beast-gtk/bstpianorollctrl.c:71
-msgid "1/4"
-msgstr "1/4"
-
-#: beast-gtk/bstmessages.c:107 beast-gtk/bstpianorollctrl.c:71
-msgid "Insert quarter notes"
-msgstr "Viertelnoten einfügen"
-
-#: beast-gtk/bstmessages.c:109 beast-gtk/bstpianorollctrl.c:73
-msgid "1/8"
-msgstr "1/8"
-
-#: beast-gtk/bstmessages.c:111 beast-gtk/bstpianorollctrl.c:73
-msgid "Insert eighths note"
-msgstr "Achtelnoten einfügen"
-
-#: beast-gtk/bstmessages.c:113 beast-gtk/bstpianorollctrl.c:75
-msgid "1/16"
-msgstr "1/16"
-
-#: beast-gtk/bstmessages.c:115 beast-gtk/bstpianorollctrl.c:75
-msgid "Insert sixteenth note"
-msgstr "Sechzentelnoten einfügen"
+#: beast-gtk/bstmain.c:696
+msgid "Contributions made by:"
+msgstr "Mitwirkende:"
 
 #: beast-gtk/bstparam-entry.c:61
 msgid "Remove Paths"
@@ -730,13 +537,138 @@ msgstr "Den zuletzt rückgängig gemachten Bearbeitungsschritt wiederholen"
 msgid "Editor"
 msgstr "Editor"
 
+#: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert"
+msgstr "Einfügen"
+
+#: beast-gtk/bstpianorollctrl.c:46
+msgid "Insert/resize/move notes (mouse button 1 and 2)"
+msgstr "Noten einfügen/bearbeiten/verschieben (Mausknöpfe 1 und 2)"
+
+#: beast-gtk/bstpianorollctrl.c:48
+msgid "Delete note (mouse button 1)"
+msgstr "Note löschen (Mausknopf 1)"
+
 #: beast-gtk/bstpianorollctrl.c:50
 msgid "Align Events"
 msgstr "Ereignisse ausrichten"
 
+#: beast-gtk/bstpianorollctrl.c:50
+msgid "Draw a line to align events to"
+msgstr "Eine Linie zur Ereignisausrichtung zeichnen"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Select"
+msgstr "Auswahl"
+
+#: beast-gtk/bstpianorollctrl.c:52
+msgid "Rectangle select notes"
+msgstr "Rechtecksauswahl für Noten"
+
 #: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:713
 msgid "Vertical Select"
 msgstr "Vertikale Auswahl"
+
+# CHECK
+#: beast-gtk/bstpianorollctrl.c:54
+msgid "Select tick range vertically"
+msgstr "Vertikale Zeitbereichsauswahl"
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "1\\/1"
+msgstr "1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:67
+msgid "Insert full notes"
+msgstr "Ganze Noten einfügen"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "1\\/2"
+msgstr "1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:69
+msgid "Insert half notes"
+msgstr "Halbe Noten einfügen"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "1\\/4"
+msgstr "1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:71
+msgid "Insert quarter notes"
+msgstr "Viertelnoten einfügen"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "1\\/8"
+msgstr "1\\/8"
+
+#: beast-gtk/bstpianorollctrl.c:73
+msgid "Insert eighths note"
+msgstr "Achtelnoten einfügen"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "1\\/16"
+msgstr "1\\/16"
+
+#: beast-gtk/bstpianorollctrl.c:75
+msgid "Insert sixteenth note"
+msgstr "Sechzentelnoten einfügen"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Q: Tact"
+msgstr "Q: Takt"
+
+#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+msgid "Quantize to tact boundaries"
+msgstr "Auf Taktgrenzen quantifizieren"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "Q: None"
+msgstr "Q: Nein"
+
+#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+msgid "No quantization selected"
+msgstr "Keine Quantifizierung gewählt"
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+msgid "Q: 1\\/1"
+msgstr "Q: 1\\/1"
+
+#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+msgid "Quantize to full note boundaries"
+msgstr "Auf ganze Noten quantifzieren"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+msgid "Q: 1\\/2"
+msgstr "Q: 1\\/2"
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+msgid "Quantize to half note boundaries"
+msgstr "Auf halbe Noten quantifizieren"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+msgid "Q: 1\\/4"
+msgstr "Q: 1\\/4"
+
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+msgid "Quantize to quarter note boundaries"
+msgstr "Auf Viertelnoten quantifizieren"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+msgid "Q: 1\\/8"
+msgstr "Q: 1\\/8"
+
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+msgid "Quantize to eighths note boundaries"
+msgstr "Auf Achtelnoten quantifizieren"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+msgid "Q: 1\\/16"
+msgstr "Q: 1\\/16"
+
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+msgid "Quantize to sixteenth note boundaries"
+msgstr "Auf Sechzehntelnoten quantifizieren"
 
 #: beast-gtk/bstpianorollctrl.c:465 beast-gtk/bstpianorollctrl.c:472
 #: beast-gtk/bstpianorollctrl.c:560
@@ -773,7 +705,7 @@ msgstr "Note wiedergeben"
 msgid "Playback"
 msgstr "Wiedergabe"
 
-#: beast-gtk/bstprocedure.c:213 beast-gtk/bstradiotools.c:625
+#: beast-gtk/bstprocedure.c:213
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -811,7 +743,7 @@ msgstr ""
 "Machen Sie Sich außerdem darauf gefasst, mögliche Instabilitäten zu umgehen "
 "(sprich: Projekte regelmäßig speichern)"
 
-#: beast-gtk/bstrackeditor.c:109 beast-gtk/dialogs/gadgets-beast.xml.h:15
+#: beast-gtk/bstrackeditor.c:109 beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "_Edit"
 msgstr "_Bearbeiten"
 
@@ -819,13 +751,14 @@ msgstr "_Bearbeiten"
 msgid "Edit Rack Item"
 msgstr "Ablageobjekt bearbeiten"
 
+# CHECK
 #: beast-gtk/bstrackitem.c:174
 msgid "Controller"
-msgstr ""
+msgstr "Controller"
 
 #: beast-gtk/bstrackitem.c:175
 msgid "Duplicate"
-msgstr "Doplikat"
+msgstr "Duplizieren"
 
 #: beast-gtk/bstrackitem.c:177
 msgid "Grow Horizontally"
@@ -851,13 +784,15 @@ msgstr "Ansichtsgröße:"
 msgid "VScale:"
 msgstr "VSkalierung:"
 
+# CHECK
 #: beast-gtk/bstsampleeditor.c:499
 msgid "Start:"
-msgstr ""
+msgstr "Anfang:"
 
+# CHECK
 #: beast-gtk/bstsampleeditor.c:506
 msgid "End:"
-msgstr ""
+msgstr "Ende:"
 
 # CHECK
 #: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
@@ -906,56 +841,110 @@ msgstr "Umrissmaximum"
 msgid "Preview"
 msgstr "Vorschau"
 
-#: beast-gtk/bstsnetrouter.c:407
+#: beast-gtk/bstsnetrouter.c:72
+msgid ""
+"Edit tool (mouse buttons 1-3)\n"
+"Use button1 to create links, button2 for movement and button3 to change "
+"properties"
+msgstr ""
+"Bearbeiten-Werkzeug (Mausknöpfe 1-3)\n"
+"Knopf 1: Verknüpfungen angelegen, Knopf 2: Verschieben, Knopf 3: "
+"Eigenschaften festlegen"
+
+#: beast-gtk/bstsnetrouter.c:77
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: beast-gtk/bstsnetrouter.c:77
+msgid "Edit/Move/Menu (mouse buttons 1-3)"
+msgstr "Bearbeiten/Verschieben/Menü (Mausknöpfe 1-3)"
+
+#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1069
 msgid "Palette"
 msgstr "Palette"
 
-#: beast-gtk/bstsnetrouter.c:926
-msgid "Input channel in use"
-msgstr "Zu verwendender Eingangskanal"
+#: beast-gtk/bstsnetrouter.c:81
+msgid "Toggle visibility of the tool palette"
+msgstr "Die Werkzeugpalette anzeigen/verbergen"
 
-#: beast-gtk/bstsnetrouter.c:953 beast-gtk/bstsnetrouter.c:955
-#: beast-gtk/bstsnetrouter.c:991
+#: beast-gtk/bstsnetrouter.c:197
+msgid "PCM Output module"
+msgstr "PCM-Ausgabemodul"
+
+#: beast-gtk/bstsnetrouter.c:198
+msgid "DCA"
+msgstr "DCA"
+
+#: beast-gtk/bstsnetrouter.c:198
+msgid "Standard amplifier module"
+msgstr "Standard-Verstärkermodul"
+
+#: beast-gtk/bstsnetrouter.c:199
+msgid "Snooper"
+msgstr "Schnüffler"
+
+#: beast-gtk/bstsnetrouter.c:199
+msgid "Signal debugging module"
+msgstr "Signal-Fehlerdiagnosemodul"
+
+#: beast-gtk/bstsnetrouter.c:200
+msgid "PCM Input module"
+msgstr "PCM-Eingabemodul"
+
+#: beast-gtk/bstsnetrouter.c:245
+msgid "Channel Hints"
+msgstr "Kanalbeschriftungen"
+
+#: beast-gtk/bstsnetrouter.c:245
+msgid "Toggle channel name hints"
+msgstr "Kanalbeschriftungen anzeigen/verbergen"
+
+#: beast-gtk/bstsnetrouter.c:785
+msgid "Input channel in use"
+msgstr "Zu verwendender Eingabekanal"
+
+#: beast-gtk/bstsnetrouter.c:812 beast-gtk/bstsnetrouter.c:814
+#: beast-gtk/bstsnetrouter.c:850
 msgid "Create Link"
 msgstr "Verknüpfung anlegen"
 
-#: beast-gtk/bstsnetrouter.c:953
+#: beast-gtk/bstsnetrouter.c:812
 msgid "Select output module"
 msgstr "Ausgabemodul wählen"
 
-#: beast-gtk/bstsnetrouter.c:955
+#: beast-gtk/bstsnetrouter.c:814
 msgid "Select input module"
 msgstr "Eingabemodul wählen"
 
-#: beast-gtk/bstsnetrouter.c:1011
+#: beast-gtk/bstsnetrouter.c:870
 msgid "Properties"
 msgstr "Eigenschaften"
 
-#: beast-gtk/bstsnetrouter.c:1012
+#: beast-gtk/bstsnetrouter.c:871
 msgid "Reset Properties"
 msgstr "Eigenschaften zurücksetzen"
 
-#: beast-gtk/bstsnetrouter.c:1013
+#: beast-gtk/bstsnetrouter.c:872
 msgid "Delete Inputs"
 msgstr "Eingabe löschen"
 
-#: beast-gtk/bstsnetrouter.c:1014
+#: beast-gtk/bstsnetrouter.c:873
 msgid "Delete Outputs"
 msgstr "Ausgabe löschen"
 
-#: beast-gtk/bstsnetrouter.c:1015 beast-gtk/bstsnetrouter.c:1057
+#: beast-gtk/bstsnetrouter.c:874 beast-gtk/bstsnetrouter.c:916
 msgid "Show Info"
 msgstr "Infos anzeigen"
 
-#: beast-gtk/bstsnetrouter.c:1041
+#: beast-gtk/bstsnetrouter.c:900
 msgid "Remove Module"
 msgstr "Modul entfernen"
 
-#: beast-gtk/bstsnetrouter.c:1068
+#: beast-gtk/bstsnetrouter.c:927
 msgid "Delete Link"
 msgstr "Verknüpfung löschen"
 
-#: beast-gtk/bstsnetrouter.c:1122
+#: beast-gtk/bstsnetrouter.c:981
 msgid "Insert Module"
 msgstr "Modul einfügen"
 
@@ -967,9 +956,10 @@ msgstr "Loop aus Auswahl"
 msgid "Loop to Selection"
 msgstr "Auswahl aus Loop"
 
+# CHECK
 #: beast-gtk/bststest.c:566
 msgid "Zoom Selection"
-msgstr ""
+msgstr "Ansichtsgröße auf Auswahl"
 
 #: beast-gtk/bststest.c:574
 msgid "Apply Loop"
@@ -988,13 +978,15 @@ msgstr "Punkte"
 msgid "Find"
 msgstr "Suche"
 
+# CHECK
 #: beast-gtk/bststest.c:616
 msgid "Mark Signal (Head)"
-msgstr ""
+msgstr "Signal markieren (Kopf)"
 
+# CHECK
 #: beast-gtk/bststest.c:626
 msgid "Mark Signal (Tail)"
-msgstr ""
+msgstr "Signal markieren (Schweif)"
 
 #: beast-gtk/bstsupershell.c:172 beast-gtk/bstsupershell.c:285
 msgid "Waves"
@@ -1017,13 +1009,58 @@ msgstr "Parts"
 msgid "Routing"
 msgstr "Routing"
 
+#: beast-gtk/bsttrackrollctrl.c:45
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "Parts einfügen/bearbeiten/verschieben (Mausknöpfe 1 und 2)"
+
 #: beast-gtk/bsttrackrollctrl.c:47
 msgid "Link"
-msgstr "Verkn."
+msgstr "Verknüpfen"
+
+#: beast-gtk/bsttrackrollctrl.c:47
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "Parts verknüpfen oder verschieben (Mausknöpfe 1 und 2)"
 
 #: beast-gtk/bsttrackrollctrl.c:49
 msgid "Rename"
-msgstr "Umbenen."
+msgstr "Umbenennen"
+
+#: beast-gtk/bsttrackrollctrl.c:49
+msgid "Rename parts"
+msgstr "Parts umbenennen"
+
+#: beast-gtk/bsttrackrollctrl.c:51
+msgid "Delete parts"
+msgstr "Parts löschen"
+
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr "Links"
+
+# CHECK
+#: beast-gtk/bsttrackrollctrl.c:64
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr "Das horizontale Lineal verwenden, um den linken Loop-Marker anzupassen"
+
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Position"
+msgstr "Position"
+
+# CHECK
+#: beast-gtk/bsttrackrollctrl.c:66
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr ""
+"Das horizontale Lineal verwenden, um den Wiedergabepositionsmarker anzupassen"
+
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr "Rechts"
+
+# CHECK
+#: beast-gtk/bsttrackrollctrl.c:68
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr ""
+"Das horizontale Lineal verwenden, um den rechten Loop-Marker anzupassen"
 
 #: beast-gtk/bsttrackrollctrl.c:408 beast-gtk/bsttrackrollctrl.c:420
 msgid "Edit Part"
@@ -1127,100 +1164,289 @@ msgstr "Laden..."
 
 #: beast-gtk/bstwaveview.c:44
 msgid "Lib..."
-msgstr "Bibl...."
+msgstr "Bibliothek..."
 
+# CHECK
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
+msgid "Adjust the zoom factor of the router display"
+msgstr "Die Ansichtsgröße der Router-Anzeige anpassen"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Control Type:"
 msgstr "Steuerungstyp:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+#: beast-gtk/dialogs/gadgets-beast.xml.h:3
 msgid "Development"
 msgstr "Entwicklung"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+msgid "E_xamples"
+msgstr "_Beispiele"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:5
 msgid "Events"
 msgstr "Ereignisse"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#: beast-gtk/dialogs/gadgets-beast.xml.h:6
 msgid "HZoom"
 msgstr "H-Größe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
-msgid "Horizontal piano zoom"
-msgstr ""
-
-#: beast-gtk/dialogs/gadgets-beast.xml.h:6
-msgid "Horizontal track zoom"
-msgstr ""
-
 #: beast-gtk/dialogs/gadgets-beast.xml.h:7
+msgid "Horizontal piano zoom"
+msgstr "Horizontale Klavier-Ansichtsgröße"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+msgid "Horizontal track zoom"
+msgstr "Horizontale Titel-Ansichtsgröße"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:9
 msgid "Note _Length"
 msgstr "Noten_länge"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/gadgets-beast.xml.h:10
 msgid "Piano Notes"
 msgstr "Klaviernoten"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#: beast-gtk/dialogs/gadgets-beast.xml.h:11
 msgid "Repeat"
-msgstr "Wdh."
+msgstr "Wiederholen"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/gadgets-beast.xml.h:12
 msgid "Repeat playback within loop points"
 msgstr "Wiedergabe innerhalb der Loop-Punkte wiederholen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+msgid "Synthesis Modules"
+msgstr "Synthesemodule"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:14
 msgid "VZoom"
 msgstr "V-Größe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/gadgets-beast.xml.h:15
 msgid "Vertical piano zoom"
-msgstr ""
+msgstr "Vertikale Klavier-Ansichtsgröße"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/gadgets-beast.xml.h:16
 msgid "Wave_s"
 msgstr "_Waves"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+msgid "Zoom"
+msgstr "Größe"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+msgid "_Audio Sources"
+msgstr "_Audio-Quellen"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:19
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+msgid "_Distortion"
+msgstr "_Verzerren"
+
+# CHECK
+#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+msgid "_Enhance"
+msgstr "Auf_bessern"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "_File"
 msgstr "_Datei"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+msgid "_Filters"
+msgstr "_Filter"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:25
 msgid "_Help"
 msgstr "_Hilfe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+msgid "_Input & Output"
+msgstr "_Ein- und Ausgabe"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+msgid "_LADSPA"
+msgstr "_LADSPA"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+msgid "_Misc"
+msgstr "_Verschiedenes"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+msgid "_Other Sources"
+msgstr "_Weitere Quellen"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:30
 msgid "_Project"
 msgstr "_Projekt"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/gadgets-beast.xml.h:31
 msgid "_Quantization"
 msgstr "_Quantifizierung"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+# CHECK
+#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+msgid "_Routing"
+msgstr "_Routing"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:33
 msgid "_Song"
 msgstr "_Titel"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:21
+# CHECK
+#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+msgid "_Spatial"
+msgstr "_Raumklang"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:35
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/gadgets-beast.xml.h:36
 msgid "_Synthesizers"
 msgstr "_Synthesizer"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/gadgets-beast.xml.h:37
 msgid "_Tools"
 msgstr "_Werkzeuge"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+msgid "_Utilities"
+msgstr "_Werkzeuge"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:39
 msgid "_View"
 msgstr "_Ansicht"
+
+#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+msgid "_Virtualization"
+msgstr "_Virtualisierung"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+msgid "Find in current document"
+msgstr "Das momentan angezeigte Dokument durchsuchen"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+msgid "Go back one page"
+msgstr "Eine Seite zurück gehen"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+msgid "Go forward one page"
+msgstr "Eine Seite vor gehen"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+msgid "Go to browser index"
+msgstr "Zum Browser-Index gehen"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+msgid "Location"
+msgstr "Ort"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+msgid "Reload current page"
+msgstr "Momentan angezeigte Seite aktualisieren"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+msgid "_Back"
+msgstr "_Zurück"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+msgid "_Find"
+msgstr "_Suchen"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+msgid "_Forward"
+msgstr "_Vor"
+
+#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+msgid "_Index"
+msgstr "_Index"
+
+# CHECK
+#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+msgid "_Reload"
+msgstr "A_ktualisieren"
+
+#: beast-gtk/gxk/gxksimplelabel.c:132
+msgid "Label"
+msgstr "Beschriftung"
+
+#: beast-gtk/gxk/gxksimplelabel.c:132
+msgid "The text of the label"
+msgstr "Der Beschriftungstext"
+
+#: beast-gtk/gxk/gxksimplelabel.c:136
+msgid "Use underline"
+msgstr "Unterstrich verwenden"
+
+#: beast-gtk/gxk/gxksimplelabel.c:137
+msgid ""
+"If set, an underline in the text indicates the next character should be used "
+"for the mnemonic accelerator key"
+msgstr ""
+"Legt fest, ob ein Unterstrich im Text das folgende Zeichen zum "
+"Kürzelbuchstaben machen soll"
+
+#: beast-gtk/gxk/gxksimplelabel.c:141
+msgid "Auto cut"
+msgstr "Auto-Kürzen"
+
+#: beast-gtk/gxk/gxksimplelabel.c:142
+msgid ""
+"If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
+msgstr ""
+"Legt fest, ob überlanger Text abgeschnitten wird und stattdessen eine "
+"Ellipse (»...«) angezeigt werden soll"
+
+#: beast-gtk/gxk/gxksimplelabel.c:146
+msgid "Justification"
+msgstr "Ausrichtung"
+
+# CHECK
+#: beast-gtk/gxk/gxksimplelabel.c:147
+msgid ""
+"The alignment of the lines in the text of the label relative to each other. "
+"This does NOT affect the alignment of the label within its allocation."
+msgstr ""
+"Die interne, relative Zeilenausrichtung des Beschriftungstexts. Dies "
+"betrifft NICHT die Ausrichtung der Beschriftung innerhalb ihrer Alloziierung"
+
+#: beast-gtk/gxk/gxksimplelabel.c:151
+msgid "Pattern"
+msgstr "Muster"
+
+# CHECK
+#: beast-gtk/gxk/gxksimplelabel.c:152
+msgid ""
+"A string with _ characters in positions correspond to characters in the text "
+"to underline"
+msgstr ""
+"Eine Zeichenkette mit _-Zeichen an bestimmten Positionen entspricht den im "
+"Text zu unterstrichenden Zeichen"
+
+#: beast-gtk/gxk/gxksimplelabel.c:156
+msgid "Mnemonic key"
+msgstr "Kürzelbuchstabe"
+
+#: beast-gtk/gxk/gxksimplelabel.c:157
+msgid "The mnemonic accelerator key for this label"
+msgstr "Der Kürzelbuchstabe dieser Beschriftung"
+
+#: beast-gtk/gxk/gxksimplelabel.c:161
+msgid "Mnemonic widget"
+msgstr "Kürzel-Widget"
+
+# CHECK
+#: beast-gtk/gxk/gxksimplelabel.c:162
+msgid "The widget to be activated when the label's mnemonic key is pressed"
+msgstr ""
+"Das Widget, das aktiviert werden soll, wenn die dem Kürzelbuchstaben der "
+"Beschriftung entsprechende Taste gedrückt wird"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -1230,9 +1456,10 @@ msgstr "BEAST"
 msgid "Music Composer"
 msgstr "Musikkomposition"
 
+# CHECK
 #: data/beast.desktop.in.h:3
 msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
-msgstr ""
+msgstr "Musiksynthese-Werkzeug, MIDI-Tracker und Kompositionshilfe"
 
 #: data/bse.keys.in.h:1
 msgid "Audio"
