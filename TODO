@@ -1,6 +1,9 @@
 FIXMES:
-- add clone tool for csynths
+- implement (GUI for) locked properties
+- apply editable and sensitive to params
 - undo across midi file import is broken
+- destroy piano roll dialog if part is released
+- add clone tool for csynths
 - fix undo for: BseDataPocket
 - BseCategories need to provide an untranslated version (for menu paths)
 - get rid of root_category in idl files once BseCategories has an untranslated version
@@ -8,12 +11,9 @@ FIXMES:
 - closing an app window stops playing songs, even if alternative views exist
 - bsedefs.h should define _() only for BSE_COMPILATION
 - fix procbrowser
+- fix rack editor
 - fix BseSong::denominator SpinButton arrows not working
-- apply editable and sensitive to params
-- implement (GUI for) locked properties
 - insensitive gmasks should keep xframes sensitive for tooltips and rackeditor
-- destroy piano roll dialog if part is released
-- remove hpack and vpack
 - remove bstrack*.[hc] cruft, old parasites and data pocket
 - allow parasite object links only within tree
 - queue action updates upon grouped action execution 
@@ -34,7 +34,7 @@ FIXMES:
 - if Track::Synth is NULL, disconnect post-process-subsynth from track-context-merger
 - add Solo propety to tracks
 - add Volume property to tracks
-- fix nominator/denomiator settings in songs
+- fix numerator/denomiator settings in songs
 - fix glue gc assertion after sfi_glue_describe_proc("")
 - add frequency splitter/multiplier module (plus cent-wise detune?)
 - add frequency output module, offering bpm, 1/1 1/4 1/3 notes frequencies
@@ -123,6 +123,7 @@ TODO:
 - backbones exist only if they have a use_count
 - forcefull alive keeping of objects if they have a use_count
 - how export proxies of parents that don't have a use_count and are no backbones?
+- recode hpack and vpack uses
 - emulate ref_count+::destroy semantics with use_count+::release? ala:
   - use_count prevents ::release emission
   - ::release on containers removes children

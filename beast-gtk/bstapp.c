@@ -900,8 +900,9 @@ app_action_check (gpointer data,
         return TRUE;
       return FALSE;
     case BST_ACTION_RACK_EDITOR:
-    case BST_ACTION_SHOW_PREFERENCES:
     case BST_ACTION_SHOW_PROC_BROWSER:
+      return FALSE;
+    case BST_ACTION_SHOW_PREFERENCES:
     case BST_ACTION_SHOW_DEVICE_MONITOR:
     case BST_ACTION_EXTRA_VIEW:
       return TRUE;

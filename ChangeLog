@@ -1,3 +1,8 @@
+Sun Dec 28 10:28:08 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c (app_action_check): disable non-functional
+	rack editor and procedure browser.
+
 Sun Dec 28 07:04:42 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkdialog.c (gxk_dialog_key_press_event): exploiting a
