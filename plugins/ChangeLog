@@ -1,3 +1,12 @@
+Sat Oct 18 04:48:34 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* artscompressor.idl artscompressor.cc: Ported compressor from aRts.
+	Stereo compression is also supported, and works slightly differently
+	than in aRts because it uses only one volume for both channels, and
+	like this doesn't mess up balance.
+
+	* Makefile.am Makefile.plugins: Added compressor to the Makefiles.
+
 Tue Oct  7 15:05:22 2003  Tim Janik  <timj@gtk.org>
 
 	* icons/balance.*: colorized icon.
