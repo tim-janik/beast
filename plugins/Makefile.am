@@ -38,14 +38,12 @@ PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bsesimpleadsr.[hc]	\
 	bsesimpleresonancefilter.[hc]	\
 	bsesequencer.[hc]	\
-	bsewaveosc.[hc]		\
 	davorgan.[hc]		\
 	davxtalstrings.[hc]	\
 	fldbsepattern.[hc]	\
 @STRIP_END@
 EXTRA_CFILES = @STRIP_BEGIN@	\
 	bsesimpleadsr-aux.c	\
-	bsewaveosc-aux.c	\
 @STRIP_END@
 Makefile.plugins: $(srcdir)/listplugins.sh $(PLUGIN_CFILES) Makefile.am
 	$(srcdir)/listplugins.sh $(PLUGIN_CFILES) >$@

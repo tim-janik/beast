@@ -1,3 +1,8 @@
+Sun May  5 20:31:16 2002  Tim Janik  <timj@gtk.org>
+
+	* bsewaveosc.[hc]: move this into BSE as it's an fundamental
+	component and introduces procedures.
+
 Sun Apr 21 21:18:21 2002  Tim Janik  <timj@gtk.org>
 
 	* bseadder.[hc]: implement input channels as jstreams.
