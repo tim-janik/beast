@@ -1,3 +1,12 @@
+Mon Dec  6 15:37:29 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.cc(splitName): Fix splitting of "Bse::FFTSize" to
+	"Bse", "FFT" and "Size", using the rule that more than two upper case
+	letters followed by a lower case letter indicate a word boundary.
+
+	* testsfidl.cc: Added "Bse::FFTSize", "XWindows::WMHints" to test the
+	new rule.
+
 Fri Dec  3 21:24:34 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-parser.*: Parse #pragma lines into Pragma structures, which can

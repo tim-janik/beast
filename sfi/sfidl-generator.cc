@@ -33,12 +33,19 @@ using namespace std;
 
 /*--- common functions ---*/
 
+static std::string string_tolower (const string& word)
+{
+  std::string lower_word;
+  for (string::const_iterator i = word.begin(); i != word.end(); i++)
+    lower_word += tolower (*i);
+  return lower_word;
+}
+
 vector<string> CodeGenerator::splitName (const string& name)
 {
-  bool lastupper = true, upper = true, lastunder = true, remove_caps = false;
+  bool lastunder = true, remove_caps = false;
   string::const_iterator i;
   vector<string> words;
-  string word;
 
   /*
    * we try to guess here whether we need to remove caps
@@ -53,37 +60,56 @@ vector<string> CodeGenerator::splitName (const string& name)
 	remove_caps = true;
     }
 
+  /*
+   * here, we split "name" into words
+   *
+   * as a rule for what is a word boundary, the following criteria are used
+   *  - two colons denote word boundaries:  "Bse::Container" => "Bse", "Container"
+   *  - underscores denote word boundaries: "audio_channel" => "audio", "channel"
+   *  - single caps are word boundaries:    "AudioChannel" => "Audio", "Channel"
+   *  - double caps followed by single
+   *    constitute a seperate word:         "WMHints" => "WM", "Hints"
+   *  - triple and higher caps are also
+   *    treated this way:                   "FFTSize" => "FFT", "Size"
+   */
+  int caps = 0;
+  string::const_iterator word_start = name.begin(), word_end = name.begin();
   for(i = name.begin(); i != name.end(); i++)
     {
-      lastupper = upper;
-      upper = isupper(*i);
-      if (!lastupper && upper && !lastunder)
+      if (isupper (*i))
+        caps++;
+      else
+        caps = 0;
+
+      if (*i == ':' || *i == '_') /* underscore/colon indicates word boundary */
 	{
-	  words.push_back (word);
-	  word = "";
-	  lastunder = true;
-	}
-      if(*i == ':' || *i == '_')
-	{
-	  if(!lastunder)
+	  if (!lastunder)
 	    {
-	      words.push_back (word);
-	      word = "";
+	      words.push_back (string (word_start, word_end));
 	      lastunder = true;
 	    }
+          word_start = word_end = i + 1;
 	}
       else
-	{
-	  if (remove_caps)
-	    word += tolower(*i);
-	  else
-	    word += *i;
-	  lastunder = false;
-	}
+        {
+          bool next_lower = (i + 1) != name.end() && islower (*(i + 1));
+
+          if ((caps == 1 && word_start != word_end) || (caps > 2 && next_lower)) /* caps indicate word boundary */
+            {
+              words.push_back (string (word_start, word_end));
+              word_start = word_end = i;
+            }
+          word_end++;
+          lastunder = false;
+        }
     }
 
-  if (word != "")
-    words.push_back (word);
+  if (word_start != word_end) /* handle last word in string */
+    words.push_back (string (word_start, word_end));
+
+  if (remove_caps)
+    for (vector<string>::iterator wi = words.begin(); wi != words.end(); wi++)
+      *wi = string_tolower (*wi);
 
   return words;
 }

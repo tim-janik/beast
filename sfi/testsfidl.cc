@@ -90,6 +90,26 @@ public:
 		       type, UPPER, "_"),
 	       "BSE_TYPE_ALPHA_SYNTH");
 
+    ASSERT_EQ (rename (ABSOLUTE, "Bse::FFTSize", Capitalized, "",
+                       empty, Capitalized, ""),
+              "BseFFTSize");
+
+    ASSERT_EQ (rename (ABSOLUTE, "Bse::FFTSize", lower, "_",
+                       empty, lower, "_"),
+              "bse_fft_size");
+
+    ASSERT_EQ (rename (ABSOLUTE, "XWindows::WMHints", Capitalized, "",
+                       empty, Capitalized, ""),
+              "XWindowsWMHints");
+
+    ASSERT_EQ (rename (ABSOLUTE, "XWindows::WMHints", UPPER, "_",
+                       empty, UPPER, "_"),
+              "XWINDOWS_WM_HINTS");
+
+    ASSERT_EQ (rename (ABSOLUTE, "Bse::MIDI_SIGNAL_PROGRAM", UPPER, "_",
+                       empty, UPPER, "_"),
+              "BSE_MIDI_SIGNAL_PROGRAM");
+
     DONE();
     return true;
   }
