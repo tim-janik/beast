@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.6.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-28 18:00+0200\n"
+"POT-Creation-Date: 2004-08-29 14:09+0200\n"
 "PO-Revision-Date: 2004-08-06 19:59+0200\n"
 "Last-Translator: Satoru SATOH <ss@gnome.gr.jp>\n"
 "Language-Team: Japanese <translation@gnome.gr.jp>\n"
@@ -61,7 +61,7 @@ msgstr "保存(_S)"
 
 #: beast-gtk/bstapp.c:80
 msgid "Write project to disk"
-msgstr ""
+msgstr "プロジェクトをディスクに書き込み"
 
 #: beast-gtk/bstapp.c:82
 msgid "Save _As..."
@@ -69,7 +69,7 @@ msgstr "別名で保存(_A)..."
 
 #: beast-gtk/bstapp.c:82
 msgid "Write project to a specific file"
-msgstr ""
+msgstr "指定するファイルにプロジェクトを書き込み"
 
 #: beast-gtk/bstapp.c:86
 msgid "_Quit"
@@ -77,7 +77,7 @@ msgstr "終了(_Q)"
 
 #: beast-gtk/bstapp.c:86
 msgid "Close all windows and quit"
-msgstr ""
+msgstr "すべてのウィンドウを閉じて終了"
 
 #: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
@@ -85,7 +85,7 @@ msgstr "設定(_P)..."
 
 #: beast-gtk/bstapp.c:90
 msgid "Adjust overall program behaviour"
-msgstr ""
+msgstr "プログラム全般の動作を調整"
 
 #: beast-gtk/bstapp.c:94
 msgid "Rebuild"
@@ -97,7 +97,7 @@ msgstr "情報(_A)..."
 
 #: beast-gtk/bstapp.c:97
 msgid "Display developer and contributor credits"
-msgstr ""
+msgstr "開発者と貢献者のクレジットを表示"
 
 #: beast-gtk/bstapp.c:101
 msgid "_Undo"
@@ -105,7 +105,7 @@ msgstr "アンドゥ(_U)"
 
 #: beast-gtk/bstapp.c:101
 msgid "Undo the effect of the last action"
-msgstr ""
+msgstr "最後のアクションのエフェクトをアンドゥ"
 
 #: beast-gtk/bstapp.c:103
 msgid "_Redo"
@@ -121,7 +121,7 @@ msgstr "アンドゥをクリア(_C)"
 
 #: beast-gtk/bstapp.c:107
 msgid "Delete the complete undo history"
-msgstr ""
+msgstr "アンドゥ履歴を完全に削除"
 
 #: beast-gtk/bstapp.c:111
 msgid "Procedure _Browser"
@@ -129,7 +129,7 @@ msgstr "プロセスブラウザ(_B)"
 
 #: beast-gtk/bstapp.c:111
 msgid "Display an overview of all procedures"
-msgstr ""
+msgstr "すべてのプロセスを表示"
 
 #: beast-gtk/bstapp.c:113
 msgid "Rack Editor"
@@ -141,16 +141,15 @@ msgstr "プロファイラ"
 
 #: beast-gtk/bstapp.c:115
 msgid "Display statistics and timing information"
-msgstr ""
+msgstr "状態とタイミング情報を表示"
 
 #: beast-gtk/bstapp.c:117
 msgid "New View"
 msgstr "新しいビュー"
 
 #: beast-gtk/bstapp.c:117
-#, fuzzy
 msgid "Create an extra view of the project"
-msgstr "新しいプロジェクト"
+msgstr "プロジェクトの別のビューを作成"
 
 #: beast-gtk/bstapp.c:121
 msgid "_Play"
@@ -158,7 +157,7 @@ msgstr "演奏(_P)"
 
 #: beast-gtk/bstapp.c:121
 msgid "Play or restart playback of the project"
-msgstr ""
+msgstr "プロジェクトの再生を開始/再開"
 
 #: beast-gtk/bstapp.c:123
 msgid "_Stop"
@@ -166,7 +165,7 @@ msgstr "停止(_S)"
 
 #: beast-gtk/bstapp.c:123
 msgid "Stop playback of the project"
-msgstr ""
+msgstr "プロジェクトの再生を停止"
 
 #: beast-gtk/bstapp.c:127
 msgid "New Song"
@@ -174,7 +173,7 @@ msgstr "新しい曲"
 
 #: beast-gtk/bstapp.c:127
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
-msgstr ""
+msgstr "ミキサー、トラック、パートとノートを含む新しい曲を作成"
 
 #: beast-gtk/bstapp.c:129
 msgid "New Custom Synthesizer"
@@ -184,6 +183,8 @@ msgstr "新しいカスタムシンセサイザ"
 msgid ""
 "Create a new synthesizer mesh to be used as effect or instrument in songs"
 msgstr ""
+"曲でエフェクトまたはインストゥルメントとして使う新しいシンセサイザメッシュを"
+"作成"
 
 #: beast-gtk/bstapp.c:131
 msgid "New MIDI Synthesizer"
@@ -194,13 +195,14 @@ msgid ""
 "Create a new MIDI synthesizer to control an instrument from external MIDI "
 "events"
 msgstr ""
+"外部 MIDI イベントからのインストゥルメントを制御する新しい MIDI シンセサイザ"
+"を作成"
 
 #: beast-gtk/bstapp.c:133
 msgid "Remove Song or Synthesizer"
 msgstr "曲またはシンセサイザを削除"
 
 #: beast-gtk/bstapp.c:133
-#, fuzzy
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "選択したショートカットを削除"
 
@@ -210,7 +212,7 @@ msgstr "インストゥルメントを読み込み(_I)"
 
 #: beast-gtk/bstapp.c:137
 msgid "Load synthesizer mesh from instruments folder"
-msgstr ""
+msgstr "インストゥルメントフォルダからシンセサイザメッシュを読み込み"
 
 #: beast-gtk/bstapp.c:139
 msgid "Load _Effect"
@@ -218,7 +220,7 @@ msgstr "エフェクトを読み込み(_E)"
 
 #: beast-gtk/bstapp.c:139
 msgid "Load synthesizer mesh from effects folder"
-msgstr ""
+msgstr "エフェクトフォルダからシンセサイザメッシュを読み込み"
 
 #: beast-gtk/bstapp.c:141
 msgid "Save As Instrument"
@@ -226,7 +228,7 @@ msgstr "インストゥルメントを別名で保存"
 
 #: beast-gtk/bstapp.c:141
 msgid "Save synthesizer mesh to instruments folder"
-msgstr ""
+msgstr "インストゥルメントフォルダにシンセサイザメッシュを保存"
 
 #: beast-gtk/bstapp.c:143
 msgid "Save As Effect"
@@ -234,7 +236,7 @@ msgstr "エフェクトを別名で保存"
 
 #: beast-gtk/bstapp.c:143
 msgid "Save synthesizer mesh to effects folder"
-msgstr ""
+msgstr "エフェクトフォルダにシンセサイザメッシュを保存"
 
 #: beast-gtk/bstapp.c:147
 msgid "_Release Notes..."
@@ -242,7 +244,7 @@ msgstr "リリースノート(_R)..."
 
 #: beast-gtk/bstapp.c:147
 msgid "Notes and informations about this release cycle"
-msgstr ""
+msgstr "このリリースサイクルについてのノートと情報"
 
 #: beast-gtk/bstapp.c:149
 msgid "Quick Start..."
@@ -250,7 +252,7 @@ msgstr "クィックスタート..."
 
 #: beast-gtk/bstapp.c:149
 msgid "Provides an introduction about how to accomplish the most common tasks"
-msgstr ""
+msgstr "どのようにほとんどの共通タスクをこなすかについての情報を提供します"
 
 #: beast-gtk/bstapp.c:151
 msgid "_FAQ..."
@@ -258,16 +260,15 @@ msgstr "FAQ(_F)..."
 
 #: beast-gtk/bstapp.c:151
 msgid "Frequently asked questions"
-msgstr ""
+msgstr "よくある質問と答え"
 
 #: beast-gtk/bstapp.c:155
-#, fuzzy
 msgid "DSP Engine..."
-msgstr "GSL エンジン..."
+msgstr "DSP エンジン..."
 
 #: beast-gtk/bstapp.c:155
 msgid "Technical description of the multi-threaded synthesis engine innards"
-msgstr ""
+msgstr "マルチスレッドシンセエンジン内部の技術的な説明"
 
 #: beast-gtk/bstapp.c:286
 msgid "Export Audio"
@@ -359,31 +360,29 @@ msgstr "(ヒント)"
 
 #: beast-gtk/bstdbmeter.c:765
 msgid "Draw Values"
-msgstr ""
+msgstr "値を表示"
 
 #: beast-gtk/bstdbmeter.c:765
 msgid "Adjust whether to draw dB values instead of lines"
-msgstr ""
+msgstr "線の代りに dB 値を表示するかどうか設定"
 
 #: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
 #: beast-gtk/bstdbmeter.c:1510
-#, fuzzy
 msgid "Orientation"
 msgstr "方向"
 
 #: beast-gtk/bstdbmeter.c:768 beast-gtk/bstdbmeter.c:1063
 #: beast-gtk/bstdbmeter.c:1510
 msgid "Choose horizontal or vertical orientation"
-msgstr ""
+msgstr "水平または垂直方向を選択"
 
 #: beast-gtk/bstdbmeter.c:771
-#, fuzzy
 msgid "Justify"
 msgstr "調整"
 
 #: beast-gtk/bstdbmeter.c:771
 msgid "Adjust relative alignment of the values or bars to be drawn"
-msgstr ""
+msgstr "ドラムへの値とバーの相対位置を調整"
 
 #: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
 #: beast-gtk/bsteventrollctrl.c:427
@@ -1393,13 +1392,12 @@ msgid "Thread Name"
 msgstr "スレッド名"
 
 #: beast-gtk/bstprofiler.c:248
-#, fuzzy
 msgid "TID"
-msgstr "ID"
+msgstr "TID"
 
 #: beast-gtk/bstprofiler.c:248
 msgid "Thread ID (on some systems the process ID)"
-msgstr ""
+msgstr "スレッド ID (システムによってはプロセス ID)"
 
 #: beast-gtk/bstprofiler.c:249
 msgid "CPU%"
@@ -1469,7 +1467,6 @@ msgid "Stopping Playback"
 msgstr "再生を停止"
 
 #: beast-gtk/bstrackeditor.c:95
-#, fuzzy
 msgid ""
 "The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
@@ -1604,7 +1601,6 @@ msgid "1/32"
 msgstr "1/32"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "Thirty-secondth note"
 msgstr "32 分ノート"
 
@@ -1613,7 +1609,6 @@ msgid "1/64"
 msgstr "1/64"
 
 #: beast-gtk/bstrecords.idl:49
-#, fuzzy
 msgid "Sixty-fourth note"
 msgstr "64 分ノート"
 
@@ -1670,7 +1665,6 @@ msgid "1/32."
 msgstr "1/32."
 
 #: beast-gtk/bstrecords.idl:56
-#, fuzzy
 msgid "Dotted thirty-secondth note"
 msgstr "ドット付き 32 分ノート"
 
@@ -1679,7 +1673,6 @@ msgid "1/64."
 msgstr "1/64."
 
 #: beast-gtk/bstrecords.idl:57
-#, fuzzy
 msgid "Dotted sixty-fourth note"
 msgstr "ドット付き 64 分ノート"
 
@@ -1736,7 +1729,6 @@ msgid "1/32T"
 msgstr "1/32T"
 
 #: beast-gtk/bstrecords.idl:64
-#, fuzzy
 msgid "Triplet thirty-secondth note"
 msgstr "三連 32分ノート"
 
@@ -1745,7 +1737,6 @@ msgid "1/64T"
 msgstr "1/64T"
 
 #: beast-gtk/bstrecords.idl:65
-#, fuzzy
 msgid "Triplet sixty-fourth note"
 msgstr "三連 64分ノート"
 
@@ -1987,9 +1978,8 @@ msgid "Vertical Bar Color"
 msgstr "垂直バーの色"
 
 #: beast-gtk/bstrecords.idl:125
-#, fuzzy
 msgid "Background image used by the piano-roll editor."
-msgstr "ピアノロールウィジェットの背景画像"
+msgstr "ピアノロールエディタの背景画像"
 
 #: beast-gtk/bstrecords.idl:128 beast-gtk/bstrecords.idl:138
 msgid "Horizontal Bar Color"
@@ -2008,9 +1998,8 @@ msgid "Middle Bar Color"
 msgstr "中央バーの色"
 
 #: beast-gtk/bstrecords.idl:135
-#, fuzzy
 msgid "Background image used by the control events editor."
-msgstr "コントロールイベントウィジェットの背景画像"
+msgstr "コントロールイベントエディタの背景画像"
 
 #: beast-gtk/bstrecords.idl:140
 msgid "Positive Value Color"
@@ -2228,22 +2217,22 @@ msgstr "Wave ファイル"
 
 #: beast-gtk/bstsupershell.c:162
 msgid "Wave Repository"
-msgstr ""
+msgstr "Wav リポジトリ"
 
 #: beast-gtk/bstsupershell.c:167
-#, fuzzy, c-format
+#, c-format
 msgid "Song: %s"
-msgstr "保存: %s"
+msgstr "曲: %s"
 
 #: beast-gtk/bstsupershell.c:172
-#, fuzzy, c-format
+#, c-format
 msgid "MIDI Synthesizer: %s"
-msgstr "新しい MIDI シンセサイザ"
+msgstr "MIDI シンセサイザ: %s"
 
 #: beast-gtk/bstsupershell.c:177
-#, fuzzy, c-format
+#, c-format
 msgid "Synthesizer: %s"
-msgstr "シンセサイザー(_S)"
+msgstr "シンセサイザー: %s"
 
 #: beast-gtk/bstsupershell.c:257
 msgid "Tracks"
@@ -2251,7 +2240,7 @@ msgstr "トラック"
 
 #: beast-gtk/bstsupershell.c:262
 msgid "Mixer"
-msgstr ""
+msgstr "ミキサー"
 
 #: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:309
 #: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
@@ -2449,12 +2438,11 @@ msgstr "パターンエディタ配置に設定変更を適用"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Available Items:"
-msgstr ""
+msgstr "利用可能なアイテム:"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:4
-#, fuzzy
 msgid "Bus Name"
-msgstr "名前"
+msgstr "バス名"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Configure"
@@ -2470,7 +2458,7 @@ msgstr "コントロールタイプ:"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Current Items:"
-msgstr ""
+msgstr "現在のアイテム:"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Development"
@@ -2501,7 +2489,6 @@ msgid "Horizontal track zoom"
 msgstr "水平方向トラックズーム"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:16
-#, fuzzy
 msgid "Inputs"
 msgstr "入力"
 
@@ -2510,25 +2497,22 @@ msgid "Layout:"
 msgstr "配置:"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:18
-#, fuzzy
 msgid "Level"
-msgstr "ラベル"
+msgstr "レベル"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:20
-#, fuzzy
 msgid "Move the selection down by one position"
-msgstr "選択領域をクリップボードに移動"
+msgstr "選択領域を一つ分だけ位置を下に移動"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "Move the selection up by one position"
-msgstr ""
+msgstr "選択領域を一つ分だけ位置を上に移動"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Note _Length"
 msgstr "ノート長さ(_L)"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:23
-#, fuzzy
 msgid "Outputs"
 msgstr "出力"
 
@@ -2565,9 +2549,8 @@ msgid "Zoom"
 msgstr "ズーム"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:34
-#, fuzzy
 msgid "_Add"
-msgstr "追加"
+msgstr "追加(_A)"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_Apply"
@@ -2630,9 +2613,8 @@ msgid "_Quantization"
 msgstr "量子化(_Q)"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:51
-#, fuzzy
 msgid "_Remove"
-msgstr "デモ(_D)"
+msgstr "削除(_R)"
 
 #: beast-gtk/dialogs/radgets-beast.xml.h:52
 msgid "_Routing"
@@ -3173,102 +3155,96 @@ msgstr "ゲイン変調の入力"
 msgid "Filtered Audio Signal"
 msgstr "フィルター済みのオーディオ信号"
 
-#: bse/bsebus.c:109
-#, fuzzy
+#: bse/bsebus.c:112
 msgid "Available Inputs"
-msgstr "信号入力"
+msgstr "利用可能な入力"
 
-#: bse/bsebus.c:109
+#: bse/bsebus.c:112
 msgid "List of available synthesis signals to be used as bus input"
-msgstr ""
+msgstr "バス入力として使う、利用可能なシンセ信号のリスト"
 
-#: bse/bsebus.c:483 bse/bsebus.c:488 bse/bsetrack.c:875
-#, fuzzy
+#: bse/bsebus.c:492 bse/bsebus.c:497 bse/bsetrack.c:875
 msgid "Adjustments"
-msgstr "割り当て"
+msgstr "調整"
 
-#: bse/bsebus.c:485
+#: bse/bsebus.c:494
 msgid "Left Volume [dB]"
-msgstr ""
+msgstr "左音量[dB]"
 
-#: bse/bsebus.c:485
+#: bse/bsebus.c:494
 msgid "Volume adjustment of left bus channel"
-msgstr ""
+msgstr "左バスチャネルの音量調整"
 
-#: bse/bsebus.c:490
+#: bse/bsebus.c:499
 msgid "Right Volume [dB]"
-msgstr ""
+msgstr "右音量[dB]"
 
-#: bse/bsebus.c:490
+#: bse/bsebus.c:499
 msgid "Volume adjustment of right bus channel"
-msgstr ""
+msgstr "右バスチャネルの音量調整"
 
-#: bse/bsebus.c:493
-#, fuzzy
+#: bse/bsebus.c:502
 msgid "Signal Inputs"
 msgstr "信号入力"
 
-#: bse/bsebus.c:495
-#, fuzzy
+#: bse/bsebus.c:504
 msgid "Input Signals"
-msgstr "オーディオ入力信号"
+msgstr "入力信号"
 
-#: bse/bsebus.c:495
-#, fuzzy
+#: bse/bsebus.c:504
 msgid "Synthesis signals used as bus input"
-msgstr "インターフェースするシンセネットワーク"
+msgstr "バス入力として使うシンセ信号"
 
-#: bse/bsebus.c:497
+#: bse/bsebus.c:506
 msgid "Internals"
-msgstr ""
+msgstr "内部"
 
-#: bse/bsebus.c:499
-#, fuzzy
+#: bse/bsebus.c:508
 msgid "Master Output"
-msgstr "ゲート出力"
+msgstr "主出力"
 
-#: bse/bsebus.c:502 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: bse/bsebus.c:511 bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
 msgid "Left Audio In"
 msgstr "左オーディオ入力"
 
-#: bse/bsebus.c:502 bse/bsepcmoutput.c:128
+#: bse/bsebus.c:511 bse/bsepcmoutput.c:128
 msgid "Left channel input"
 msgstr "左チャネル入力"
 
-#: bse/bsebus.c:504 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: bse/bsebus.c:513 bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
 msgid "Right Audio In"
 msgstr "右オーディオ入力"
 
-#: bse/bsebus.c:504
+#: bse/bsebus.c:513
 msgid "Right channel input"
 msgstr "右チャネル入力"
 
-#: bse/bsebus.c:506 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: bse/bsebus.c:515 bse/bsepcminput.c:128 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
 msgid "Left Audio Out"
 msgstr "左オーディオ出力"
 
-#: bse/bsebus.c:506 bse/bsepcminput.c:128
+#: bse/bsebus.c:515 bse/bsepcminput.c:128
 msgid "Left channel output"
 msgstr "左チャネル出力"
 
-#: bse/bsebus.c:508 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: bse/bsebus.c:517 bse/bsepcminput.c:130 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
 msgid "Right Audio Out"
 msgstr "右オーディオ出力"
 
-#: bse/bsebus.c:508 bse/bsepcminput.c:130
+#: bse/bsebus.c:517 bse/bsepcminput.c:130
 msgid "Right channel output"
 msgstr "右チャネル出力"
 
-#: bse/bsebus.c:527
-#, fuzzy
+#: bse/bsebus.c:536
 msgid ""
 "Bus implementation for songs, used to route track audio signals to the "
 "master output."
-msgstr "曲のバス。マスタ出力にトラックオーディオ信号をルーティングするのに使用"
+msgstr ""
+"主出力にトラックオーディオ信号をルーティングするのに使用する、曲のバス実装"
 
 #: bse/bseconstant.c:84
 msgid "/Other Sources/Constant"
@@ -3302,13 +3278,12 @@ msgid "The execution state of the thread"
 msgstr "スレッドの実行状態"
 
 #: bse/bsecore.idl:387
-#, fuzzy
 msgid "Thread ID"
-msgstr "スレッド名"
+msgstr "スレッド ID"
 
 #: bse/bsecore.idl:387
 msgid "A unique number identifying this thread"
-msgstr ""
+msgstr "このスレッドを識別する固有な番号"
 
 #: bse/bsecore.idl:389
 msgid "Priority"
@@ -3610,52 +3585,51 @@ msgstr "信号をスヌープ"
 
 #: bse/bsesong.proc:37
 msgid "Create a new mixer bus for a Song."
-msgstr ""
+msgstr "曲のための新しいミキサーバスを作成"
 
-#: bse/bsesong.proc:68
+#: bse/bsesong.proc:74
 msgid "Delete a mixer bus from a Song."
-msgstr ""
+msgstr "曲からミキサーバスを削除"
 
-#: bse/bsesong.proc:121
+#: bse/bsesong.proc:127
 msgid "Retrieve master output bus of a song."
-msgstr ""
+msgstr "曲の主出力バスを取得"
 
-#: bse/bsesong.proc:148
+#: bse/bsesong.proc:154
 msgid "Ensure that each part in a song is inserted into at least one track."
-msgstr ""
+msgstr "曲中の各々のパートが少くとも一つのトラックに挿入されるようにする"
 
-#: bse/bsesong.proc:169
+#: bse/bsesong.proc:175
 msgid "Connect all unconnected track of a song to the master output bus."
-msgstr ""
+msgstr "曲のすべての未接続のトラックを主出力バスに接続"
 
-#: bse/bsesong.proc:209
+#: bse/bsesong.proc:215
 msgid "Create a new Part in a Song."
-msgstr ""
+msgstr "曲中に新しいパートを作成"
 
-#: bse/bsesong.proc:240
+#: bse/bsesong.proc:246
 msgid "Delete a Part from a Song."
-msgstr ""
+msgstr "曲中のパートを削除"
 
-#: bse/bsesong.proc:278
-#, fuzzy
+#: bse/bsesong.proc:284
 msgid "Create a new Track for a Song."
-msgstr "新しいトラックをこの曲に追加"
+msgstr "曲の新しいトラックを作成"
 
-#: bse/bsesong.proc:314
+#: bse/bsesong.proc:320
 msgid "Delete a Track from a Song."
-msgstr ""
+msgstr "曲中のトラックを削除"
 
-#: bse/bsesong.proc:353
+#: bse/bsesong.proc:359
 msgid "Find a track suitable for playing notes of a given part."
-msgstr ""
+msgstr "与えられたパートのノートを演奏するための適切なトラックを検索"
 
-#: bse/bsesong.proc:396
+#: bse/bsesong.proc:402
 msgid "Synthesize a note on a song of an active project."
-msgstr ""
+msgstr "アクティブなプロジェクトの曲のノートをシンセサイズ"
 
-#: bse/bsesong.proc:446
+#: bse/bsesong.proc:452
 msgid "Retrieve song timing information at a specific tick."
-msgstr ""
+msgstr "指定したティックでの曲のタイミング情報を取得"
 
 #: bse/bsestandardosc.c:106
 msgid ""
@@ -3665,7 +3639,6 @@ msgstr ""
 "StandardOsc は様々な種類の波形と変調入力をサポートする BSE 基本発振器です。"
 
 #: bse/bsestandardosc.c:109
-#, fuzzy
 msgid "/Audio Sources/Standard Oscillator"
 msgstr "/オーディオソース/標準発振器"
 
@@ -3735,7 +3708,6 @@ msgid "Pulse Modulation [%]"
 msgstr "パルス変調 [%]"
 
 #: bse/bsestandardosc.c:187
-#, fuzzy
 msgid ""
 "Strength of pulse width modulation input (Pulse has to be selected as wave "
 "form for this to take effect)"
@@ -3816,23 +3788,20 @@ msgid "/Virtualization/Virtual Sub Synth"
 msgstr "/仮想化/仮想サブシンセ"
 
 #: bse/bsesubsynth.c:146 bse/bsetrack.c:275
-#, fuzzy
 msgid "Available Synthesizers"
-msgstr "シンセサイザー(_S)"
+msgstr "利用可能なシンセサイザ"
 
 #: bse/bsesubsynth.c:146
 msgid "List of available synthesis networks to choose a sub network from"
-msgstr ""
+msgstr "副ネットワークを選択するための、利用可能なネットワークのリスト"
 
 #: bse/bsesubsynth.c:494 bse/bsetrack.c:881
-#, fuzzy
 msgid "Synthesizer"
-msgstr "シンセサイザー(_S)"
+msgstr "シンセサイザ"
 
 #: bse/bsesubsynth.c:495
-#, fuzzy
 msgid "Synthesis network to use as embedded sub network"
-msgstr "インターフェースするシンセネットワーク"
+msgstr "組み込み副ネットワークとして使うシンセネットワーク"
 
 #: bse/bsesubsynth.c:504
 msgid "Input Assignments"
@@ -3875,77 +3844,70 @@ msgid "Last modification time"
 msgstr "最終更新日時"
 
 #: bse/bsetrack.c:275
-#, fuzzy
 msgid "List of available synthesis networks to choose a track instrument from"
-msgstr "インターフェースするシンセネットワーク"
+msgstr "トラック情報を選択するための、利用可能なシンセネットワークのリスト"
 
 #: bse/bsetrack.c:279
 msgid "Available Postprocessors"
-msgstr ""
+msgstr "利用可能なポストプロセッサ"
 
 #: bse/bsetrack.c:279
-#, fuzzy
 msgid "List of available synthesis networks to choose a postprocessor from"
-msgstr "インターフェースするシンセネットワーク"
+msgstr "ポストプロセッサを選択するための、利用可能なシンセネットワークのリスト"
 
 #: bse/bsetrack.c:283 bse/bsewaveosc.c:125
 msgid "Available Waves"
-msgstr ""
+msgstr "利用可能な波形"
 
 #: bse/bsetrack.c:283
 msgid "List of available waves to choose as track instrument"
-msgstr ""
+msgstr "トラックインスゥルメントとして選択する、利用可能な波形のリスト"
 
 #: bse/bsetrack.c:877
 msgid "Muted"
-msgstr ""
+msgstr "ミュート"
 
 #: bse/bsetrack.c:879 bse/bsetrack.c:884 bse/bsetrack.c:889
-#, fuzzy
 msgid "Synth Input"
-msgstr "左入力"
+msgstr "シンセ入力"
 
 #: bse/bsetrack.c:881
-#, fuzzy
 msgid "Synthesis network to be used as instrument"
-msgstr "インターフェースするシンセネットワーク"
+msgstr "インストゥルメントとして使うシンセネットワーク"
 
 #: bse/bsetrack.c:886
-#, fuzzy
 msgid "Wave to be used as instrument"
-msgstr "インストゥルメントを別名で保存"
+msgstr "インストゥルメントとして使う波形"
 
 #: bse/bsetrack.c:891
 msgid "Max Voixes"
-msgstr ""
+msgstr "最大音数"
 
 #: bse/bsetrack.c:891
 msgid "Maximum number of voices for simultaneous playback"
-msgstr ""
+msgstr "同時再生する最大音声数"
 
 #: bse/bsetrack.c:894 bse/bsetrack.c:900
-#, fuzzy
 msgid "MIDI Instrument"
-msgstr "インストゥルメントを保存"
+msgstr "MIDI インストゥルメント"
 
 #: bse/bsetrack.c:896
-#, fuzzy
 msgid "MIDI Channel"
-msgstr "チャネル%u"
+msgstr "MIDI チャネル"
 
 #: bse/bsetrack.c:897
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr ""
+"このトラック 0 に割当てられている MIDI チャネルはプライベートパートラックチャ"
+"ネルを使っています"
 
 #: bse/bsetrack.c:902
-#, fuzzy
 msgid "Postprocessor"
-msgstr "プロセッサ"
+msgstr "ポストプロセッサ"
 
 #: bse/bsetrack.c:902
-#, fuzzy
 msgid "Synthesis network to be used as postprocessor"
-msgstr "インターフェースするシンセネットワーク"
+msgstr "ポストプロセッサとして使うシンセネットワーク"
 
 #: bse/bsewaveosc.c:94
 msgid "/Audio Sources/Wave Oscillator"
@@ -3953,12 +3915,11 @@ msgstr "/オーディオソース/波形発振器"
 
 #: bse/bsewaveosc.c:125
 msgid "List of available waves to choose as oscillator source"
-msgstr ""
+msgstr "発振器ソースとして選択する、利用可能な波形のリスト"
 
 #: bse/bsewaveosc.c:532
-#, fuzzy
 msgid "Wave used as oscillator source"
-msgstr "インストゥルメントを別名で保存"
+msgstr "発振器ソースとして使う波形"
 
 #: bse/bsewaveosc.c:537
 msgid "Modulation Strength for linear frequency modulation"
@@ -4031,7 +3992,6 @@ msgid "Attack [ms]"
 msgstr "アタック [ms]"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
-#, fuzzy
 msgid "Set the attack time in milliseconds"
 msgstr "アタック時間 [ms] を設定"
 
@@ -4040,7 +4000,6 @@ msgid "Release [ms]"
 msgstr "リリース [ms]"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
-#, fuzzy
 msgid "Set the release time in milliseconds"
 msgstr "リリース時間 [ms] を設定"
 
@@ -4101,7 +4060,6 @@ msgid "Audio Output"
 msgstr "オーディオ出力"
 
 #: plugins/bseatandistort.c:90
-#, fuzzy
 msgid "Audio Input Signal"
 msgstr "オーディオ入力信号"
 
