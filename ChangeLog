@@ -1,3 +1,9 @@
+Thu Jan 29 03:36:24 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/sfidl-manual.texi: cvs copied from sfidl.texi.
+
+	* docs/sfidl.texi: removed.
+
 Wed Jan 28 16:42:10 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstrecords.idl: added snet_font_size property, defaulting

@@ -5,7 +5,7 @@ texi_docs = $(strip						\
 	quickstart.texi			plugin-devel.texi	\
 	release-notes.texi		faq.texi		\
 	bse-plugin-generator.1.texi	sfidl.1.texi		\
-	sfidl.texi		\
+	sfidl-manual.texi		\
 )
 texi_images = $(strip		\
 	module-voices.png	\
