@@ -708,7 +708,12 @@ bglue_exec_proc (SfiGlueContext *context,
       g_slist_free (clearlist);
       
       if (error)
-        g_message ("while executing \"%s\": %s\n", proc->name, bse_error_blurb (error));
+        {
+          if (BSE_DBG_EXT)
+            g_warning ("while executing \"%s\": %s\n", proc->name, bse_error_blurb (error));
+          else
+            g_message ("while executing \"%s\": %s\n", proc->name, bse_error_blurb (error));
+        }
       if (proc->n_out_pspecs)
 	retval = bglue_value_to_serializable (ovalues + 0);
       for (i = 0; i < proc->n_out_pspecs; i++)
@@ -717,7 +722,12 @@ bglue_exec_proc (SfiGlueContext *context,
       g_type_class_unref (proc);
     }
   else
-    g_message ("failed to execute \"%s\": no such procedure\n", proc_name);
+    {
+      if (BSE_DBG_EXT)
+        g_warning ("failed to execute \"%s\": no such procedure\n", proc_name);
+      else
+        g_message ("failed to execute \"%s\": no such procedure\n", proc_name);
+    }
   
   return retval;
 }

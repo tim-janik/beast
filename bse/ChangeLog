@@ -1,3 +1,7 @@
+Wed Dec 17 19:55:58 2003  Tim Janik  <timj@gtk.org>
+
+	* bseglue.c (bglue_exec_proc): make messages warnings in debugging mode.
+
 Wed Dec 17 19:14:11 2003  Tim Janik  <timj@gtk.org>
 
 	* bse/bsetype.h: allow options argument for Trigger pspecs.
