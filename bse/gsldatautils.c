@@ -102,9 +102,9 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 }
 
 static void
-write_bytes (gint  fd,
-	     guint n_bytes,
-	     void *bytes)
+write_bytes (gint        fd,
+	     guint       n_bytes,
+	     const void *bytes)
 {
   gint errold = errno;
   guint j;

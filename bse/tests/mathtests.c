@@ -1,5 +1,5 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001 Tim Janik and Stefan Westerfeld
+ * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,13 +30,13 @@
 static void	usage (void)	G_GNUC_NORETURN;
 
 
-static guint   shift_argc = 0;
-static gchar **shift_argv = NULL;
+static guint         shift_argc = 0;
+static const gchar **shift_argv = NULL;
 
-static gchar*
+static const gchar*
 shift (void)
 {
-  gchar *arg;
+  const gchar *arg;
   
   if (shift_argc > 1)
     {
@@ -49,10 +49,10 @@ shift (void)
     arg = NULL;
   return arg;
 }
-static gchar*
+static const gchar*
 pshift (void)
 {
-  gchar *arg = shift ();
+  const gchar *arg = shift ();
   
   return arg ? arg : "";
 }
@@ -61,7 +61,7 @@ int
 main (int   argc,
       char *argv[])
 {
-  gchar *arg;
+  const gchar *arg;
   
   /* iir filter parameters */
   enum { FILTER_GNUPLOT, FILTER_SCAN } filter_mode = FILTER_GNUPLOT;
@@ -84,7 +84,7 @@ main (int   argc,
   
   if (strcmp (arg, "wave-scan") == 0)
     {
-      gchar *file = pshift ();
+      const gchar *file = pshift ();
       
       while (file)
 	{
@@ -110,7 +110,7 @@ main (int   argc,
     }
   else if (strcmp (arg, "file-test") == 0)
     {
-      gchar *file = pshift ();
+      const gchar *file = pshift ();
       
       g_print ("file test for \"%s\":\n", file);
       g_print ("  is readable   : %s\n", gsl_strerror (gsl_check_file (file, "r")));

@@ -91,7 +91,7 @@ GslWaveChunk*	       gsl_wave_chunk_create	(GslWaveDsc	 *wave_dsc,
 /* --- loader impl --- */
 struct _GslLoader
 {
-  gchar *name;       /* format/loader name, e.g. "GslWave" or "WAVE audio, RIFF (little-endian)" */
+  const gchar *name;		/* format/loader name, e.g. "GslWave" or "WAVE audio, RIFF (little-endian)" */
 
   /* at least one of the
    * following three must

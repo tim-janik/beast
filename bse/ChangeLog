@@ -1,3 +1,15 @@
+Tue Jul 30 01:20:48 2002  Tim Janik  <timj@gtk.org>
+
+	* bsewaveosc.[hcp]*: support percentual seekage.
+
+	* gslwavechunk.c: fix uint/GslLong bug and non-loop initialization for
+	enter mem block.
+	
+	* gsl*.[hc]: miscellanous const fixes.
+
+	* gslloader-oggvorbis.c (_gsl_init_loader_oggvorbis): add MIME
+	types application/x-ogg and audio/x-vorbis.
+
 Sat Jul 27 18:17:49 2002  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: distcheck-fixing: include -I., prefix

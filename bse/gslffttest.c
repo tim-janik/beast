@@ -37,7 +37,7 @@ static double	diff			(guint   	    m,
 					 guint   	    p,
 					 double 	   *a1,
 					 double 	   *a2,
-					 gchar  	   *str);
+					 const gchar  	   *str);
 
 
 /* --- variables --- */
@@ -110,11 +110,11 @@ fill_rand (guint   n,
 }
 
 static double
-diff (guint   m,
-      guint   p,
-      double *a1,
-      double *a2,
-      gchar  *str)
+diff (guint         m,
+      guint         p,
+      double       *a1,
+      double       *a2,
+      const gchar  *str)
 {
   double d = 0, max = 0, min = 1e+32;
   guint n;

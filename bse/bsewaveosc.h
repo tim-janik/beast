@@ -63,7 +63,8 @@ struct _BseWaveOscClass
 
 
 /* --- prototypes --- */
-void	bse_wave_osc_request_pcm_position	(BseWaveOsc	*self);
+void	bse_wave_osc_request_pcm_position	(BseWaveOsc	*self,
+						 gfloat		 perc);
 
 
 /* --- channels --- */

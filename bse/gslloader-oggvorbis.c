@@ -145,7 +145,7 @@ void
 _gsl_init_loader_oggvorbis (void)
 {
   static const gchar *file_exts[] = { "ogg", NULL, };
-  static const gchar *mime_types[] = { "audio/x-ogg", NULL, };
+  static const gchar *mime_types[] = { "application/x-ogg", "audio/x-vorbis", "audio/x-ogg", NULL, };
   static const gchar *magics[] = { "0 string OggS\n" "29 string vorbis", NULL, };
   static GslLoader loader = {
     "Ogg/Vorbis",

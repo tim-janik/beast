@@ -473,22 +473,35 @@ bse_wave_osc_context_create (BseSource *source,
 }
 
 
+typedef struct {
+  BseWaveOsc *wosc;
+  gfloat      perc;
+} PcmPos;
+
 static void
 pcm_pos_access (GslModule *module,
 		gpointer   data)
 {
   GslWaveOscData *wmod = module->user_data;
-  BseWaveOsc *self = data;
-  
+  PcmPos *pos = data;
+  BseWaveOsc *self = pos->wosc;
+
   /* this runs in the GSL engine threads */
   
   self->module_pcm_position = wmod->block.offset;
+  if (pos->perc >= 0 && wmod->wchunk)
+    {
+      GslWaveOscConfig config = wmod->config;
+      config.start_offset = CLAMP (pos->perc, 0, 100) / 100.0 * wmod->wchunk->length;
+      gsl_wave_osc_config (wmod, &config);
+    }
 }
 
 static void
 pcm_pos_access_free (gpointer data)
 {
-  BseWaveOsc *self = data;
+  PcmPos *pos = data;
+  BseWaveOsc *self = pos->wosc;
   
   /* this is guaranteed by the GSL engine to be run in user thread */
 
@@ -498,14 +511,21 @@ pcm_pos_access_free (gpointer data)
 }
 
 void
-bse_wave_osc_request_pcm_position (BseWaveOsc *self)
+bse_wave_osc_request_pcm_position (BseWaveOsc *self,
+				   gfloat      perc)
 {
   g_return_if_fail (BSE_IS_WAVE_OSC (self));
-  
+
   if (BSE_SOURCE_PREPARED (self))
-    bse_source_access_modules (BSE_SOURCE (self),
-			       pcm_pos_access,
-			       g_object_ref (self),
-			       pcm_pos_access_free,
-			       NULL);
+    {
+      PcmPos *pos = g_new (PcmPos, 1);
+
+      pos->perc = perc;
+      pos->wosc = g_object_ref (self);
+      bse_source_access_modules (BSE_SOURCE (self),
+				 pcm_pos_access,
+				 pos,
+				 pcm_pos_access_free,
+				 NULL);
+    }
 }

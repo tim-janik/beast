@@ -269,7 +269,7 @@ gsl_wave_osc_set_filter (GslWaveOscData *wosc,
 	  wosc->b[GSL_WAVE_OSC_FILTER_ORDER - i] = wosc->b[i];
 	  wosc->b[i] = t;
 	}
-      g_print ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/GSL_PI*2, freq_r/GSL_PI*2, step, wosc->istep);
+      g_printerr ("filter: fc=%f fr=%f st=%f is=%u\n", freq_c/GSL_PI*2, freq_r/GSL_PI*2, step, wosc->istep);
     }
 
   if (clear_state)
@@ -314,8 +314,8 @@ gsl_wave_osc_retrigger (GslWaveOscData *wosc,
   gsl_wave_chunk_use_block (wosc->wchunk, &wosc->block);
   wosc->x = wosc->block.start;
 
-  g_print ("wave lookup: want=%f got=%f length=%lu\n",
-	   base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
+  g_printerr ("wave lookup: want=%f got=%f length=%lu\n",
+	      base_freq, wosc->wchunk->osc_freq, wosc->wchunk->wave_length);
 
   wosc->last_freq_level = GSL_SIGNAL_FROM_FREQ (base_freq);
   wosc->last_mod_level = 0;
@@ -340,11 +340,12 @@ gsl_wave_osc_config (GslWaveOscData   *wosc,
     }
   else
     {
-      wosc->config.start_offset = config->start_offset;
       wosc->config.play_dir = config->play_dir;
       wosc->config.fm_strength = config->fm_strength;
-      if (wosc->config.cfreq != config->cfreq)
+      if (wosc->config.cfreq != config->cfreq ||
+	  wosc->config.start_offset != config->start_offset)
 	{
+	  wosc->config.start_offset = config->start_offset;
 	  wosc->config.cfreq = config->cfreq;
 	  gsl_wave_osc_retrigger (wosc, wosc->config.cfreq);
 	}

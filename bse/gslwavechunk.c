@@ -237,8 +237,13 @@ setup_pblocks (GslWaveChunk *wchunk)
     }
   else
     {
+      /*
       wchunk->enter.start = wchunk->head.end;
       wchunk->enter.end = wchunk->head.end;
+      wchunk->enter.length = 0;
+      */
+      wchunk->enter.start = wchunk->tail.end + 1;
+      wchunk->enter.end = wchunk->head.start - 1;
       wchunk->enter.length = 0;
       wchunk->wrap.start = wchunk->tail.end + 1;
       wchunk->wrap.end = wchunk->head.start - 1;
@@ -455,6 +460,9 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
   g_return_if_fail (block->node == NULL);
   g_return_if_fail (block->play_dir == -1 || block->play_dir == +1);
 
+  block->offset /= wchunk->n_channels;
+  block->offset *= wchunk->n_channels;
+
   one = wchunk->n_channels;
   reverse = block->play_dir < 0;
   iter.pos = block->offset;
@@ -477,7 +485,7 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
 	}
       else
 	{
-	  guint max_length;
+	  GslLong max_length;
 
 	  if (phase == PHASE_NORM_BACKWARD (wchunk))
 	    {
@@ -506,11 +514,6 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
     }
   else
     {
-      if (0)
-	g_print ("phase: head=%u enter=%u wrap=%u leave=%u tail=%u\n",
-		 phase == &wchunk->head, phase == &wchunk->enter,
-		 phase == &wchunk->wrap, phase == &wchunk->leave,
-		 phase == &wchunk->tail);
       block->start = phase->mem + iter.rel_pos;
       if (reverse)
 	block->length = one + iter.rel_pos;
