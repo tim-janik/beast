@@ -183,7 +183,7 @@ bse_init_core (void)
   {
     struct timeval tv;
     gettimeofday (&tv, NULL);
-    srand (tv.tv_sec ^ tv.tv_usec);
+    srand (tv.tv_usec + (tv.tv_sec << 16));
   }
   
   /* initialize basic components */

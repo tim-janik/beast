@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2003 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,9 @@ struct _BseProcedureClass
   GParamSpec	**out_pspecs;
   /* keep type references during class lifetime */
   GTypeClass    **class_refs;
-
+  guint           cache_stamp;
+  gpointer        cache_next;
+  
   BseProcedureExec execute;
 };
 

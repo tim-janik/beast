@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bseprocedure.h"
-
-#include        <gobject/gvaluecollector.h>
-#include        "bseobject.h"
-#include        "bseserver.h"
-#include        "bsestorage.h"
-#include        "bseexports.h"
-#include        <string.h>
+#include "bseprocedure.h"
+#include "bsemain.h"
+#include <gobject/gvaluecollector.h>
+#include "bseobject.h"
+#include "bseserver.h"
+#include "bsestorage.h"
+#include "bseexports.h"
+#include <string.h>
 
 
 /* --- macros --- */
 #define parse_or_return         bse_storage_scanner_parse_or_return
 #define peek_or_return          bse_storage_scanner_peek_or_return
-#define DEBUG                   sfi_debug_keyfunc ("procs")
+#define EXEC_DEBUG              sfi_debug_keyfunc ("proc-exec")
 #define HACK_DEBUG /* very slow and leaks memory */ while (0) g_message
 
 
@@ -38,28 +38,10 @@ static void     bse_procedure_base_init           (BseProcedureClass        *pro
 static void     bse_procedure_base_finalize       (BseProcedureClass        *proc);
 static void     bse_procedure_init                (BseProcedureClass        *proc,
                                                    const BseExportNodeProc  *pnode);
+static void     procedure_class_unref             (BseProcedureClass        *proc);
 
 
 /* --- functions --- */
-extern void
-bse_type_register_procedure_info (GTypeInfo *info)
-{
-  static const GTypeInfo proc_info = {
-    sizeof (BseProcedureClass),
-    
-    (GBaseInitFunc) bse_procedure_base_init,
-    (GBaseFinalizeFunc) bse_procedure_base_finalize,
-    (GClassInitFunc) NULL,
-    (GClassFinalizeFunc) NULL,
-    NULL /* class_data */,
-    
-    /* non classed type stuff */
-    0, 0, NULL,
-  };
-  
-  *info = proc_info;
-}
-
 static void
 bse_procedure_base_init (BseProcedureClass *proc)
 {
@@ -68,6 +50,7 @@ bse_procedure_base_init (BseProcedureClass *proc)
   proc->in_pspecs = NULL;
   proc->n_out_pspecs = 0;
   proc->out_pspecs = NULL;
+  proc->cache_stamp = 0;
   proc->execute = NULL;
 }
 
@@ -285,10 +268,10 @@ call_proc (BseProcedureClass  *proc,
       if (sfi_debug_test_key ("procs"))
         {
           if (proc->n_in_pspecs && G_TYPE_IS_OBJECT (G_PARAM_SPEC_VALUE_TYPE (proc->in_pspecs[0])))
-            DEBUG ("executing procedure \"%s\" on object %s",
+            EXEC_DEBUG ("executing procedure \"%s\" on object %s",
                    BSE_PROCEDURE_NAME (proc), bse_object_debug_name (g_value_get_object (ivalues + 0)));
           else
-            DEBUG ("executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
+            EXEC_DEBUG ("executing procedure \"%s\"", BSE_PROCEDURE_NAME (proc));
         }
       if (marshal)
         error = marshal (marshal_data, proc, ivalues, ovalues);
@@ -367,7 +350,7 @@ bse_procedure_marshal (GType               proc_type,
                    G_VALUE_TYPE_NAME (ovalues + i));
       g_value_unset (tmp_ovalues + i);
     }
-  g_type_class_unref (proc);
+  procedure_class_unref (proc);
   
   return error;
 }
@@ -516,7 +499,7 @@ bse_procedure_marshal_valist (GType               proc_type,
   proc = g_type_class_ref (proc_type);
   error = bse_procedure_call_collect (proc, first_value, marshal, marshal_data,
                                       FALSE, skip_ovalues, tmp_ivalues, tmp_ovalues, var_args);
-  g_type_class_unref (proc);
+  procedure_class_unref (proc);
   return error;
 }
 
@@ -542,10 +525,16 @@ bse_procedure_collect_input_args (BseProcedureClass  *proc,
                                   va_list             var_args,
                                   GValue              ivalues[BSE_PROCEDURE_MAX_IN_PARAMS])
 {
+  BseErrorType error;
   g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
 
-  return bse_procedure_call_collect (proc, first_value, NULL, NULL,
-                                     TRUE, TRUE, ivalues, NULL, var_args);
+  /* add an extra reference count to the class */
+  proc = g_type_class_ref (BSE_PROCEDURE_TYPE (proc));
+  error = bse_procedure_call_collect (proc, first_value, NULL, NULL,
+                                      TRUE, TRUE, ivalues, NULL, var_args);
+  /* so the class can enter the cache here */
+  procedure_class_unref (proc);
+  return error;
 }
 
 BseErrorType
@@ -633,4 +622,135 @@ bse_procedure_execvl (BseProcedureClass  *proc,
   for (i = 0, slist = out_value_list; slist && i < proc->n_out_pspecs; i++, slist = slist->next)
     memcpy (slist->data, tmp_ovalues + i, sizeof (tmp_ivalues[0]));
   return error;
+}
+
+static BseProcedureClass *proc_cache = NULL;
+static guint64            cache_time = 0;
+
+static gboolean
+proc_cache_prepare (GSource *source,
+                    gint    *timeout_p)
+{
+  gboolean need_dispatch = FALSE;
+  if (proc_cache)
+    {
+      const guint delay_msecs = 500;
+      GTimeVal current_time;
+      guint64 stime;
+      g_source_get_current_time (source, &current_time);
+      BSE_THREADS_ENTER ();
+      stime = current_time.tv_sec * 1000 + current_time.tv_usec / 1000; /* milliseconds */
+      if (stime >= cache_time + delay_msecs)
+        need_dispatch = TRUE;
+      else
+        {
+          if (stime < cache_time)       /* handle time warp */
+            cache_time = stime;
+          if (timeout_p)
+            *timeout_p = delay_msecs - (stime - cache_time);
+        }
+      BSE_THREADS_LEAVE ();
+    }
+  return need_dispatch;
+}
+
+static gboolean
+proc_cache_check (GSource *source)
+{
+  return proc_cache_prepare (source, NULL);
+}
+
+static gboolean
+proc_cache_dispatch (GSource    *source,
+                     GSourceFunc callback,
+                     gpointer    user_data)
+{
+  BseProcedureClass *ulist = NULL, *proc, *last = NULL;
+  GTimeVal current_time;
+
+  BSE_THREADS_ENTER ();
+  proc = proc_cache;
+  while (proc)
+    {
+      BseProcedureClass *next = proc->cache_next;
+      if (proc->cache_stamp < 2)        /* purging of old procs */
+        {
+          /* unlink */
+          if (last)
+            last->cache_next = next;
+          else
+            proc_cache = next;
+          /* enter free list */
+          proc->cache_next = ulist;
+          ulist = proc;
+          proc->cache_stamp = 0;
+        }
+      else
+        {
+          proc->cache_stamp = 1;        /* aging of recent procs */
+          last = proc;
+        }
+      proc = next;
+    }
+  while (ulist)
+    {
+      proc = ulist;
+      ulist = proc->cache_next;
+      proc->cache_next = NULL;
+      // g_printerr ("release-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
+      g_type_class_unref (proc);
+    }
+  g_source_get_current_time (source, &current_time);
+  cache_time = current_time.tv_sec * 1000 + current_time.tv_usec / 1000; /* milliseconds */
+  BSE_THREADS_LEAVE ();
+  return TRUE;
+}
+
+static void
+procedure_class_unref (BseProcedureClass *proc)
+{
+  /* we cache procedure class creation here, to avoid recreating
+   * procedure classes over and over per-invocation
+   */
+  if (!proc->cache_stamp)
+    {
+      // g_printerr ("cache-procedure: %s\n", BSE_PROCEDURE_NAME (proc));
+      g_assert (proc->cache_next == NULL);
+      proc->cache_stamp = 2;        /* 'recent' stamp */
+      proc->cache_next = proc_cache;
+      proc_cache = proc;
+    }
+  else  /* cached already */
+    {
+      proc->cache_stamp = 2;        /* 'recent' stamp */
+      g_type_class_unref (proc);
+    }
+}
+
+extern void
+bse_type_register_procedure_info (GTypeInfo *info)
+{
+  static const GTypeInfo proc_info = {
+    sizeof (BseProcedureClass),
+    
+    (GBaseInitFunc) bse_procedure_base_init,
+    (GBaseFinalizeFunc) bse_procedure_base_finalize,
+    (GClassInitFunc) NULL,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    
+    /* non classed type stuff */
+    0, 0, NULL,
+  };
+  static GSourceFuncs proc_cache_source_funcs = {
+    proc_cache_prepare,
+    proc_cache_check,
+    proc_cache_dispatch,
+    NULL
+  };
+  GSource *source = g_source_new (&proc_cache_source_funcs, sizeof (*source));
+  g_source_set_priority (source, BSE_PRIORITY_BACKGROUND);
+  g_source_attach (source, bse_main_context);
+
+  *info = proc_info;
 }
