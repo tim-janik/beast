@@ -17,6 +17,7 @@ bsebuiltin_externs.c
 bsebuiltin_array.c
 bsebuffermixer_gen.c
 bsegentypes.c
+bsegencore.cc
 bsegentype_array.c
 bsequery
 bseautodoc
