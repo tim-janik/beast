@@ -1,361 +1,379 @@
 # Czech translation of beast.
-# Copyright (C) 2003, 2004 beast'S COPYRIGHT HOLDER
-# Copyright (C) 2003, 2004 Miloslav Trmac <mitr@volny.cz>
+# Copyright (C) 2003, 2004, 2005 beast'S COPYRIGHT HOLDER
+# Copyright (C) 2003, 2004, 2005 Miloslav Trmac <mitr@volny.cz>
 # This file is distributed under the same license as the beast package.
-# Miloslav Trmac <mitr@volny.cz>, 2003, 2004.
+# Miloslav Trmac <mitr@volny.cz>, 2003, 2004, 2005.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-14 10:37+0100\n"
-"PO-Revision-Date: 2005-01-14 17:39+0100\n"
+"POT-Creation-Date: 2005-01-20 18:38+0100\n"
+"PO-Revision-Date: 2005-01-20 19:27+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:73
 msgid "_New"
 msgstr "_Nový"
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:73
 msgid "Create new project"
 msgstr "Vytvořit nový projekt"
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:75
 msgid "_Open..."
 msgstr "_Otevřít..."
 
-#: beast-gtk/bstapp.c:77
+#: beast-gtk/bstapp.c:75
 msgid "Open existing project"
 msgstr "Otevřít existující projekt"
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:77
 msgid "_Merge..."
 msgstr "S_loučit..."
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:77
 msgid "Merge an existing project into the current project"
 msgstr "Sloučit existující projekt do aktuálního projektu"
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:79
 msgid "_Import MIDI..."
 msgstr "_Importovat MIDI..."
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:79
 msgid "Import a standard MIDI file into the current project"
 msgstr "Importovat standardní soubor MIDI do aktuálního projektu"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:81
 msgid "_Close"
 msgstr "_Zavřít"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:81
 msgid "Close the project"
 msgstr "Zavřít projekt"
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:85
 msgid "_Save"
 msgstr "_Uložit"
 
-#: beast-gtk/bstapp.c:87
+#: beast-gtk/bstapp.c:85
 msgid "Write project to disk"
 msgstr "Zapsat projekt na disk"
 
-#: beast-gtk/bstapp.c:89
+#: beast-gtk/bstapp.c:87
 msgid "Save _As..."
 msgstr "Uložit _jako..."
 
-#: beast-gtk/bstapp.c:89
+#: beast-gtk/bstapp.c:87
 msgid "Write project to a specific file"
 msgstr "Zapsat projekt do konkrétního souboru"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:91
 msgid "_Quit"
 msgstr "U_končit"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:91
 msgid "Close all windows and quit"
 msgstr "Zavřít všechna okna a skončit"
 
-#: beast-gtk/bstapp.c:97
+#: beast-gtk/bstapp.c:95
 msgid "_Preferences..."
 msgstr "_Nastaven..."
 
-#: beast-gtk/bstapp.c:97
+#: beast-gtk/bstapp.c:95
 msgid "Adjust overall program behaviour"
 msgstr "Upravit obecné chování programu"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:99
 msgid "Rebuild"
 msgstr "Znovu sestavit"
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:102
 msgid "_About..."
 msgstr "O _aplikaci..."
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:102
 msgid "Display developer and contributor credits"
 msgstr "Zobrazit kredity vývojářů a přispěvatelů"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:106
 msgid "_Undo"
 msgstr "_Zpět"
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:106
 msgid "Undo the effect of the last action"
 msgstr "Vrátit zpět efekt předchozí akce"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:108
 msgid "_Redo"
 msgstr "Z_novu"
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:108
 msgid "Redo the last undone action"
 msgstr "Zopakovat poslední vrácenou akci"
 
-#: beast-gtk/bstapp.c:114 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:112 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "Vyma_zat historii"
 
-#: beast-gtk/bstapp.c:114
+#: beast-gtk/bstapp.c:112
 msgid "Delete the complete undo history"
 msgstr "Odstranit celou historii vracení"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:116
 msgid "Procedure _Browser"
 msgstr "_Procházeč procedur"
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:116
 msgid "Display an overview of all procedures"
 msgstr "Zobrazit přehled všech procedur"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:118
 msgid "Rack Editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:122 beast-gtk/bstprofiler.c:225
+#: beast-gtk/bstapp.c:120 beast-gtk/bstprofiler.c:225
 msgid "Profiler"
 msgstr "Profiler"
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:120
 msgid "Display statistics and timing information"
 msgstr "Zobrazit statistiky a informace o časování"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:122
 msgid "New View"
 msgstr "Nový pohled"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:122
 msgid "Create an extra view of the project"
 msgstr "Vytvořit další pohled na projekt"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:126
 msgid "_Play"
 msgstr "_Přehrávat"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:126
 msgid "Play or restart playback of the project"
 msgstr "Přehrávat nebo znovu spustit přehrávání projektu"
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:128
 msgid "_Stop"
 msgstr "_Zastavit"
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:128
 msgid "Stop playback of the project"
 msgstr "Zastavit přehrávání projektu"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:132
 msgid "New Song"
 msgstr "Nová skladba"
 
-#: beast-gtk/bstapp.c:134
+#: beast-gtk/bstapp.c:132
 msgid "Create a new song, consisting of a mixer, tracks, parts and notes"
 msgstr "Vytvořit novou skladbu, skládající se z mixéru, stop, partů a poznámek"
 
+#: beast-gtk/bstapp.c:134
+msgid "Add Custom Synthesizer"
+msgstr "Přidat vlastní syntetizér"
+
+#: beast-gtk/bstapp.c:134
+msgid "Add a new synthesizer mesh to be used as effect or instrument in songs"
+msgstr "Přidat novou síť syntetizéru pro použití jako efekt nebo nástroj ve skladbách"
+
 #: beast-gtk/bstapp.c:136
-msgid "New Custom Synthesizer"
-msgstr "Nový vlastní syntetizér"
+msgid "Add MIDI Synthesizer"
+msgstr "Přidat syntetizér MIDI"
 
 #: beast-gtk/bstapp.c:136
 msgid ""
-"Create a new synthesizer mesh to be used as effect or instrument in songs"
-msgstr ""
-"Vytvořit novou síť syntetizéru pro použití jako efekt nebo nástroj ve "
-"skladbách"
+"Add a new MIDI synthesizer to control an instrument from external MIDI events"
+msgstr "Přidat nový syntetizér MIDI pro ovládání nástroje externími událostmi MIDI"
 
 #: beast-gtk/bstapp.c:138
-msgid "New MIDI Synthesizer"
-msgstr "Nový syntetizér MIDI"
-
-#: beast-gtk/bstapp.c:138
-msgid ""
-"Create a new MIDI synthesizer to control an instrument from external MIDI "
-"events"
-msgstr ""
-"Vytvořit nový syntetizér MIDI pro ovládání nástroje externími událostmi MIDI"
-
-#: beast-gtk/bstapp.c:140
 msgid "Remove Song or Synthesizer"
 msgstr "Odstranit skladbu nebo syntetizér"
 
-#: beast-gtk/bstapp.c:140
+#: beast-gtk/bstapp.c:138
 msgid "Remove the currently selected synthesizer (song)"
 msgstr "Odstranit momentálně vybraný syntetizér (skladbu)"
 
-#: beast-gtk/bstapp.c:144
+#: beast-gtk/bstapp.c:142
 msgid "Load _Instrument..."
 msgstr "Načíst _nástroj..."
 
-#: beast-gtk/bstapp.c:144
+#: beast-gtk/bstapp.c:142
 msgid "Load synthesizer mesh from instruments folder"
 msgstr "Načíst síť syntetizéru z adresáře nástrojů"
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:144
 msgid "Load _Effect..."
 msgstr "Načíst _efekt..."
 
-#: beast-gtk/bstapp.c:146
+#: beast-gtk/bstapp.c:144
 msgid "Load synthesizer mesh from effects folder"
 msgstr "Načíst síť syntetizéru z adresáře efektů"
 
-#: beast-gtk/bstapp.c:148
+#: beast-gtk/bstapp.c:146
 msgid "Save As Instrument..."
 msgstr "Uložit jako nástroj..."
 
-#: beast-gtk/bstapp.c:148
+#: beast-gtk/bstapp.c:146
 msgid "Save synthesizer mesh to instruments folder"
 msgstr "Uložit síť syntetizéru do adresáře nástrojů"
 
-#: beast-gtk/bstapp.c:150
+#: beast-gtk/bstapp.c:148
 msgid "Save As Effect..."
 msgstr "Uložit jako efekt..."
 
-#: beast-gtk/bstapp.c:150
+#: beast-gtk/bstapp.c:148
 msgid "Save synthesizer mesh to effects folder"
 msgstr "Uložit síť syntetizéru do adresáře efektů"
 
-#: beast-gtk/bstapp.c:154
+#: beast-gtk/bstapp.c:152
 msgid "Document _Index..."
 msgstr "_Rejstřík dokumentace..."
 
-#: beast-gtk/bstapp.c:154
+#: beast-gtk/bstapp.c:152
 msgid "Provide an overview of all BEAST documentation contents"
 msgstr "Poskytnout přehled veškeré dokumentace BEAST"
 
-#: beast-gtk/bstapp.c:156
+#: beast-gtk/bstapp.c:154
 msgid "_Quick Start..."
 msgstr "_Rychlý start..."
 
-#: beast-gtk/bstapp.c:156
+#: beast-gtk/bstapp.c:154
 msgid "Provides an introduction about how to accomplish the most common tasks"
 msgstr "Poskytuje úvod o tom, jak provést nejčastější úkony"
 
-#: beast-gtk/bstapp.c:158
+#: beast-gtk/bstapp.c:156
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:158
+#: beast-gtk/bstapp.c:156
 msgid "Answers to frequently asked questions"
 msgstr "Odpovědi na často kladené otázky"
 
-#: beast-gtk/bstapp.c:160
+#: beast-gtk/bstapp.c:158
 msgid "Online _Help Desk..."
 msgstr "_Nápověda online..."
 
-#: beast-gtk/bstapp.c:160
+#: beast-gtk/bstapp.c:158
 msgid ""
 "Start a web browser pointing to the online help desk at the BEAST website"
 msgstr "Spustit WWW prohlížeč s nápovědou online na WWW stránkách BEAST"
 
-#: beast-gtk/bstapp.c:162
+#: beast-gtk/bstapp.c:160
 msgid "_BEAST Website..."
 msgstr "_WWW stránky BEAST..."
 
-#: beast-gtk/bstapp.c:162
+#: beast-gtk/bstapp.c:160
 msgid "Start a web browser pointing to the BEAST website"
 msgstr "Spustit WWW prohlížeč WWW stránkami BEAST"
 
-#: beast-gtk/bstapp.c:165
+#: beast-gtk/bstapp.c:163
 msgid "_Release Notes..."
 msgstr "_Poznámky o vydání..."
 
-#: beast-gtk/bstapp.c:165
+#: beast-gtk/bstapp.c:163
 msgid "Notes and informations about this release cycle"
 msgstr "Poznámky a informace o tomto cyklu vydání"
 
-#: beast-gtk/bstapp.c:167
+#: beast-gtk/bstapp.c:165
 msgid "Developing Plugins..."
 msgstr "Vývoj zásuvných modulů..."
 
-#: beast-gtk/bstapp.c:167
+#: beast-gtk/bstapp.c:165
 msgid "A guide to synthesis plugin development"
 msgstr "Průvodce vývojem zásuvných modulů pro syntézu"
 
-#: beast-gtk/bstapp.c:169
+#: beast-gtk/bstapp.c:167
 msgid "DSP Engine..."
 msgstr "Engine DSP..."
 
-#: beast-gtk/bstapp.c:169
+#: beast-gtk/bstapp.c:167
 msgid "Technical description of the multi-threaded synthesis engine innards"
 msgstr "Technický popis vnitřností vícevláknového engine syntetizéru"
 
-#: beast-gtk/bstapp.c:172
+#: beast-gtk/bstapp.c:170
 msgid "Development..."
 msgstr "Vývoj..."
 
-#: beast-gtk/bstapp.c:172
+#: beast-gtk/bstapp.c:170
 msgid "Provide an overview of development related topics and documents"
 msgstr "Poskytnout přehled témat a dokumentů souvisejících s vývojem"
 
-#: beast-gtk/bstapp.c:176
+#: beast-gtk/bstapp.c:174
 msgid "Online Sound Archive..."
 msgstr "Archiv zvuků online..."
 
-#: beast-gtk/bstapp.c:176
+#: beast-gtk/bstapp.c:174
 msgid "Start a web browser pointing to the online sound archive"
 msgstr "Spustit WWW prohlížeč s archivem zvuků online"
 
-#: beast-gtk/bstapp.c:180
+#: beast-gtk/bstapp.c:178
 msgid "Online Demos..."
 msgstr "Dema online..."
 
-#: beast-gtk/bstapp.c:180
+#: beast-gtk/bstapp.c:178
 msgid "Start a web browser pointing to online demo songs"
 msgstr "Spustit WWW prohlížeč s demonstračními skladbami online"
 
-#: beast-gtk/bstapp.c:312
+#: beast-gtk/bstapp.c:299
 msgid "Export Audio"
 msgstr "Exportovat zvuk"
 
-#: beast-gtk/bstapp.c:642 beast-gtk/bstapp.c:649 beast-gtk/bstfiledialog.c:424
-#: beast-gtk/bstfiledialog.c:431
+#: beast-gtk/bstapp.c:491 beast-gtk/bstsupershell.c:233
+msgid "Waves"
+msgstr "Vlny"
+
+#: beast-gtk/bstapp.c:493
+msgid "Wave Repository"
+msgstr "Úložiště vln"
+
+#: beast-gtk/bstapp.c:498
+#, c-format
+msgid "Song: %s"
+msgstr "Skladba: %s"
+
+#: beast-gtk/bstapp.c:503
+#, c-format
+msgid "MIDI Synthesizer: %s"
+msgstr "Syntetizér MIDI: %s"
+
+#: beast-gtk/bstapp.c:508
+#, c-format
+msgid "Synthesizer: %s"
+msgstr "Syntetizér: %s"
+
+#: beast-gtk/bstapp.c:695 beast-gtk/bstapp.c:702 beast-gtk/bstfiledialog.c:421
+#: beast-gtk/bstfiledialog.c:428
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otevírám projekt `%s'"
 
-#: beast-gtk/bstapp.c:709
+#: beast-gtk/bstapp.c:762
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Načítám skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:879
+#: beast-gtk/bstapp.c:931
 msgid "Rack editor"
 msgstr "Editor racku"
 
-#: beast-gtk/bstapp.c:893
+#: beast-gtk/bstapp.c:945
 msgid "Preferences"
 msgstr "Nastavení"
 
-#: beast-gtk/bstapp.c:920
+#: beast-gtk/bstapp.c:972
 msgid "Procedure Browser"
 msgstr "Procházeč procedur"
 
-#: beast-gtk/bstapp.c:977
+#: beast-gtk/bstapp.c:1029
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Poznámky o vydání BEAST-%s"
@@ -498,48 +516,48 @@ msgstr "Vyberte oblast"
 msgid "Abortion"
 msgstr "Přerušení"
 
-#: beast-gtk/bstfiledialog.c:169
+#: beast-gtk/bstfiledialog.c:166
 msgid "Contents"
 msgstr "Obsah"
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:201
+#: beast-gtk/bstfiledialog.c:198
 msgid "File Selection"
 msgstr "Výběr souborů"
 
-#: beast-gtk/bstfiledialog.c:382
+#: beast-gtk/bstfiledialog.c:379
 msgid "Open Project"
 msgstr "Otevřít projekt"
 
-#: beast-gtk/bstfiledialog.c:396
+#: beast-gtk/bstfiledialog.c:393
 msgid "Select File"
 msgstr "Vyberte soubor"
 
-#: beast-gtk/bstfiledialog.c:410
+#: beast-gtk/bstfiledialog.c:407
 msgid "Select Directory"
 msgstr "Zvolit adresář"
 
-#: beast-gtk/bstfiledialog.c:449
+#: beast-gtk/bstfiledialog.c:446
 #, c-format
 msgid "Merge: %s"
 msgstr "Sloučit: %s"
 
-#: beast-gtk/bstfiledialog.c:462
+#: beast-gtk/bstfiledialog.c:459
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Slučuji projekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:478
+#: beast-gtk/bstfiledialog.c:475
 #, c-format
 msgid "Import MIDI: %s"
 msgstr "Import MIDI: %s"
 
-#: beast-gtk/bstfiledialog.c:489
+#: beast-gtk/bstfiledialog.c:486
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr "Importuji soubor MIDI `%s'"
 
-#: beast-gtk/bstfiledialog.c:508
+#: beast-gtk/bstfiledialog.c:505
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -555,7 +573,7 @@ msgstr ""
 "%s"
 
 #. error != BSE_ERROR_FILE_EXISTS
-#: beast-gtk/bstfiledialog.c:532 beast-gtk/bstfiledialog.c:546
+#: beast-gtk/bstfiledialog.c:529 beast-gtk/bstfiledialog.c:543
 #, c-format
 msgid ""
 "Failed to save to file\n"
@@ -568,7 +586,7 @@ msgstr ""
 "kvůli:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:537
+#: beast-gtk/bstfiledialog.c:534
 #, c-format
 msgid ""
 "Failed to replace file\n"
@@ -581,71 +599,71 @@ msgstr ""
 "kvůli:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:574
+#: beast-gtk/bstfiledialog.c:571
 #, c-format
 msgid "Save: %s"
 msgstr "Uložit: %s"
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:576
+#: beast-gtk/bstfiledialog.c:573
 msgid "Fully include wave files"
 msgstr "Přímo zahrnout soubory vln"
 
-#: beast-gtk/bstfiledialog.c:577
+#: beast-gtk/bstfiledialog.c:574
 msgid "Store references to wave files"
 msgstr "Uložit odkazy na soubory vln"
 
-#: beast-gtk/bstfiledialog.c:591
+#: beast-gtk/bstfiledialog.c:588
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Ukládám projekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:606
+#: beast-gtk/bstfiledialog.c:603
 msgid "Load Effect"
 msgstr "Načíst efekt"
 
-#: beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:616
 #, c-format
 msgid "Merging effect `%s'"
 msgstr "Slučuji efekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:636
+#: beast-gtk/bstfiledialog.c:633
 msgid "Save Effect"
 msgstr "Uložit efekt"
 
-#: beast-gtk/bstfiledialog.c:650
+#: beast-gtk/bstfiledialog.c:647
 #, c-format
 msgid "Saving effect `%s'"
 msgstr "Ukládám efekt `%s'"
 
-#: beast-gtk/bstfiledialog.c:665
+#: beast-gtk/bstfiledialog.c:662
 msgid "Load Instrument"
 msgstr "Načíst nástroj"
 
-#: beast-gtk/bstfiledialog.c:678
+#: beast-gtk/bstfiledialog.c:675
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr "Slučuji nástroj `%s'"
 
-#: beast-gtk/bstfiledialog.c:695
+#: beast-gtk/bstfiledialog.c:692
 msgid "Save Instrument"
 msgstr "Uložit nástroj"
 
-#: beast-gtk/bstfiledialog.c:709
+#: beast-gtk/bstfiledialog.c:706
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr "Ukládám nástroj `%s'"
 
-#: beast-gtk/bstfiledialog.c:725
+#: beast-gtk/bstfiledialog.c:722
 msgid "Load Wave"
 msgstr "Načíst vlnu"
 
-#: beast-gtk/bstfiledialog.c:737 beast-gtk/bstfiledialog.c:739
+#: beast-gtk/bstfiledialog.c:734 beast-gtk/bstfiledialog.c:736
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Načítám vlnu `%s'"
 
-#: beast-gtk/bstfiledialog.c:741 beast-gtk/bstmain.c:279
+#: beast-gtk/bstfiledialog.c:738 beast-gtk/bstmain.c:279
 #: beast-gtk/bstmain.c:296
 #, c-format
 msgid "Failed to load wave file \"%s\": %s"
@@ -1539,19 +1557,19 @@ msgstr "Přehrát notu"
 msgid "Playback"
 msgstr "Přehrávání"
 
-#: beast-gtk/bstpreferences.c:77
+#: beast-gtk/bstpreferences.c:74
 msgid "Piano Keys"
 msgstr "Klávesy klavíru"
 
-#: beast-gtk/bstpreferences.c:84
+#: beast-gtk/bstpreferences.c:81
 msgid "Generic Keys"
 msgstr "Obecné klávesy"
 
-#: beast-gtk/bstpreferences.c:88
+#: beast-gtk/bstpreferences.c:85
 msgid "Messages"
 msgstr "Zprávy"
 
-#: beast-gtk/bstpreferences.c:93
+#: beast-gtk/bstpreferences.c:90
 msgid "Skin"
 msgstr "Skin"
 
@@ -2477,8 +2495,8 @@ msgstr "Vybrat výstupní modul"
 msgid "Select input module"
 msgstr "Vybrat vstupní modul"
 
-#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
-#: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:281
+#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:189
+#: beast-gtk/bstsupershell.c:222 beast-gtk/bstsupershell.c:236
 msgid "Properties"
 msgstr "Vlastnosti"
 
@@ -2590,71 +2608,48 @@ msgstr "Označit signál (začátek)"
 msgid "Mark Signal (Tail)"
 msgstr "Označit signál (konec)"
 
-#: beast-gtk/bstsupershell.c:159 beast-gtk/bstsupershell.c:278
-msgid "Waves"
-msgstr "Vlny"
-
-#: beast-gtk/bstsupershell.c:160
-msgid "Wave Repository"
-msgstr "Úložiště vln"
-
-#: beast-gtk/bstsupershell.c:165
-#, c-format
-msgid "Song: %s"
-msgstr "Skladba: %s"
-
-#: beast-gtk/bstsupershell.c:170
-#, c-format
-msgid "MIDI Synthesizer: %s"
-msgstr "Syntetizér MIDI: %s"
-
-#: beast-gtk/bstsupershell.c:175
-#, c-format
-msgid "Synthesizer: %s"
-msgstr "Syntetizér: %s"
-
-#: beast-gtk/bstsupershell.c:228
+#: beast-gtk/bstsupershell.c:183
 msgid "Tracks"
 msgstr "Stopy"
 
-#: beast-gtk/bstsupershell.c:228
+#: beast-gtk/bstsupershell.c:183
 msgid "Tracks contain instrument definitions and parts with notes"
 msgstr "Stopy obsahují definice nástrojů a party s notami"
 
-#: beast-gtk/bstsupershell.c:231
+#: beast-gtk/bstsupershell.c:186
 msgid "Mixer"
 msgstr "Mixér"
 
-#: beast-gtk/bstsupershell.c:231
+#: beast-gtk/bstsupershell.c:186
 msgid "Mix track outputs, adjust volume and add effects"
 msgstr "Míchat výstupy stop, upravovat hlasitost a přidávat efekty"
 
-#: beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsupershell.c:189
 msgid "Adjust overall song behaviour"
 msgstr "Upravit obecné chování skladby"
 
-#: beast-gtk/bstsupershell.c:238
+#: beast-gtk/bstsupershell.c:193
 msgid "Parts"
 msgstr "Party"
 
-#: beast-gtk/bstsupershell.c:242
+#: beast-gtk/bstsupershell.c:197
 msgid "Busses"
 msgstr "Sběrnice"
 
-#: beast-gtk/bstsupershell.c:246 beast-gtk/bstsupershell.c:263
+#: beast-gtk/bstsupershell.c:201 beast-gtk/bstsupershell.c:218
 msgid "Routing"
 msgstr "Směrování"
 
-#: beast-gtk/bstsupershell.c:259
+#: beast-gtk/bstsupershell.c:214
 msgid "Rack"
 msgstr "Rack"
 
 # FIXME: s/synthsizer/synthesizer/
-#: beast-gtk/bstsupershell.c:263
+#: beast-gtk/bstsupershell.c:218
 msgid "Add, edit and connect synthsizer mesh components"
 msgstr "Přidávat, upravovat a propojovat komponenty sítě syntetizéru"
 
-#: beast-gtk/bstsupershell.c:267
+#: beast-gtk/bstsupershell.c:222
 msgid "Adjust overall synthesizer behaviour"
 msgstr "Upravit obecné chování syntetizéru"
 
@@ -2745,7 +2740,7 @@ msgid "Start Editor"
 msgstr "Spustit editor"
 
 #. TRANSLATORS: this is a dialog title and %s is replaced by an object name
-#: beast-gtk/bsttracksynthdialog.c:264
+#: beast-gtk/bsttracksynthdialog.c:261
 #, c-format
 msgid "Synthesizer Selection: %s"
 msgstr "Výběr syntetizéru: %s"
@@ -5541,6 +5536,7 @@ msgstr "Modulace sebe [%]"
 msgid "Strength of self modulation"
 msgstr "Síla modulace sebe"
 
+#. disabled
 #: bse/bsestandardosc.c:173 bse/bsestandardosc.c:180
 msgid "Pulse Modulation"
 msgstr "Modulace pulzu"
