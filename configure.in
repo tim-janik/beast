@@ -1,0 +1,287 @@
+dnl ************************************
+dnl *** include special BEAST macros ***
+dnl ************************************
+builtin(include, acbeast.m4)dnl
+
+#
+# Configure script for BEAST/BSE
+#
+AC_INIT(bse/bseconfig.h.in)
+AM_CONFIG_HEADER(BEASTconfig.h)
+AC_PREREQ(2.13)
+
+#
+# BSE version numbers
+#
+BSE_MAJOR_VERSION=0
+BSE_MINOR_VERSION=2
+BSE_MICRO_VERSION=0
+BSE_INTERFACE_AGE=0
+BSE_BINARY_AGE=0
+BSE_VERSION=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
+dnl#
+dnl# Making releases:
+dnl#   BSE_MICRO_VERSION += 1;
+dnl#   BSE_INTERFACE_AGE += 1;
+dnl#   BSE_BINARY_AGE += 1;
+dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
+dnl# if backwards compatibility has been broken,
+dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
+dnl#
+AC_SUBST(BSE_MAJOR_VERSION)
+AC_SUBST(BSE_MINOR_VERSION)
+AC_SUBST(BSE_MICRO_VERSION)
+AC_SUBST(BSE_INTERFACE_AGE)
+AC_SUBST(BSE_BINARY_AGE)
+AC_SUBST(BSE_VERSION)
+
+# compute libtool versions
+LT_RELEASE=$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
+LT_CURRENT=`expr $BSE_MICRO_VERSION - $BSE_INTERFACE_AGE`
+LT_REVISION=$BSE_INTERFACE_AGE
+LT_AGE=`expr $BSE_BINARY_AGE - $BSE_INTERFACE_AGE`
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
+# initialize automake, don't define PACKAGE and VERSION
+AM_INIT_AUTOMAKE(beast, $BSE_VERSION, no-define)
+
+# Support porgram name conversion.
+AC_ARG_PROGRAM
+
+# Disable automatic maintainer mode.
+AM_MAINTAINER_MODE
+
+# We have subdirectories.
+AC_PROG_MAKE_SET
+
+# Make sure else configure stuff exists.
+AC_CANONICAL_HOST
+
+dnl Foreign defaults:
+MC_IF_VAR_EQ(enable_static, yes, , enable_static=no)
+MC_IF_VAR_EQ(enable_shared, no, , enable_shared=yes)
+
+dnl
+dnl Define package requirements.
+dnl
+AC_DEFUN(AC_BSE_REQUIREMENTS,
+[
+	AM_PATH_GLIB(1.2.3,
+		GLIB_VERSION=`$GLIB_CONFIG --version`,
+		AC_MSG_ERROR(Cannot find GLib - glib-config missing from path?),
+		gmodule
+	)
+	BSE_CFLAGS="$GLIB_CFLAGS"
+	BSE_LIBS="$GLIB_LIBS"
+	AC_SUBST(BSE_CFLAGS)
+	AC_SUBST(BSE_LIBS)
+	
+	bsedatadir=$datadir/bse
+	bselibdir=$libdir/bse/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
+	AC_SUBST(bsedatadir)
+	AC_SUBST(bselibdir)
+])
+AC_DEFUN(AC_BEAST_REQUIREMENTS,
+[
+	dnl Check for Gtk+
+	AM_PATH_GTK(1.2.3,
+		,
+		AC_MSG_ERROR(Cannot find GTK+ - gtk-config missing from path?)
+	)
+	BEAST_CFLAGS="$GTK_CFLAGS"
+	BEAST_LIBS="$GTK_LIBS"
+
+	dnl Check for GNOME, we override BEAST_CFLAGS and BEAST_LIBS here,
+	dnl because GNOME already takes care of Gtk+, and we already checked
+	dnl that the Gtk+ version is sufficient.
+	REQUIRED=1.0.6
+	AC_MSG_CHECKING(for GNOME - version >= $REQUIRED)
+	if gnome-config --version >/dev/null 2>&1; then
+		GNOME_VERSION=[`gnome-config --version | sed 's/^[^0-9]*//'`]
+		AC_MSG_RESULT([yes ($GNOME_VERSION)])
+		MC_CHECK_VERSION($GNOME_VERSION, $REQUIRED,
+			,
+			AC_MSG_ERROR(BEAST requires at least GNOME v$REQUIRED)
+		)
+		BEAST_CFLAGS=`gnome-config --cflags gnomeui`
+		BEAST_LIBS=`gnome-config --libs gnomeui`
+	else
+		AC_MSG_RESULT(no)
+		AC_MSG_ERROR(Cannot find GNOME - gnome-config missing from path?)
+	fi
+
+	dnl We need GLE also (and asume it is installed in the same
+	dnl prefix as Gtk+ or GNOME)
+	AC_CHECK_LIB(gle, gle_init,
+		BEAST_LIBS="-lgle $BEAST_LIBS"
+		,
+		AC_MSG_ERROR(Unable to find GLE - it is required to build BEAST)
+	)
+	AC_SUBST(GLE_LIBS)
+	
+	dnl Default keytable patch
+	dnl we need a clever check here...
+	AC_MSG_CHECKING(what the default keytable looks like)
+	dnl FIXME: AC_DEFINE_UNQUOTED(BST_KEYPATCH, bst_keypatch_de)
+	AC_MSG_RESULT(QWERTZ)
+
+	AC_SUBST(BEAST_CFLAGS)
+	AC_SUBST(BEAST_LIBS)
+
+	beastdatadir=$datadir/beast/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION
+	AC_SUBST(beastdatadir)
+])
+AC_DEFUN(AC_BSE_SNDDEV_CHECK,
+[
+	dnl Check for possible sound devices
+	
+	bse_have_snddev=
+	
+	dnl OSS-Lite driver check
+	AC_MSG_CHECKING(for OSS-Lite sounddriver device)
+	if test -c /dev/dsp && cat /dev/sndstat >/dev/null; then
+		bseossdevice=\"/dev/dsp\"
+		bse_have_snddev=yes
+		AC_MSG_RESULT(/dev/dsp)
+	#elif test -c /dev/dsp1 && cat /dev/sndstat >/dev/null; then
+	#	bseossdevice=\"/dev/dsp\"
+	#	bse_have_snddev=yes
+	#	AC_MSG_RESULT(/dev/dsp1)
+	else
+		bseossdevice=
+		AC_MSG_RESULT(none)
+	fi
+	AC_SUBST(bseossdevice)
+
+	dnl Feature ALSA with a minimum version requirement
+	have_alsa=
+	REQUIRED=0.3.0
+	AC_MSG_CHECKING(for ALSA - version >= $REQUIRED)
+	if test -e /proc/asound/version; then
+		ALSA_VERSION=[`cat /proc/asound/version | \
+		               sed -e '/Version/!d' \
+		                   -e 's/.*Version[^0-9]*\(.*[0-9]\)[^0-9]*$/\1/' `]
+		MC_CHECK_VERSION($ALSA_VERSION, $REQUIRED,
+			AC_MSG_RESULT([yes ($ALSA_VERSION)])
+			have_alsa=yes
+			,
+			AC_MSG_RESULT([no (found $ALSA_VERSION - version too old)])
+		)
+	else
+		AC_MSG_RESULT(no)
+	fi
+	bsealsadevices=
+	if test "x$have_alsa" = "xyes"; then
+		AC_MSG_CHECKING(for ALSA sounddriver devices)
+		if test -c /dev/snd/pcmC0D0; then
+			tmp=
+			for d in /dev/snd/pcmC?D? ; do
+				if test -z "$tmp"; then
+					tmp="\"$d\""
+				else
+					tmp="$tmp, \"$d\""
+				fi
+			done
+			bsealsadevices=$tmp
+			AC_MSG_RESULT(/dev/snd/pcmC?D?)
+			bse_have_snddev=yes
+		else
+			AC_MSG_RESULT(none - check your /dev/snd/* setup)
+		fi
+	fi
+	AC_SUBST(bsealsadevices)
+	
+	dnl Error out if there is no sound device at all
+	if test "x$bse_have_snddev" \!= "xyes"; then
+		AC_MSG_ERROR(unable to find any sound drivers/devices)
+	fi
+])
+
+# check compilers and their behaviour, setup CFLAGS
+MC_PROG_CC_WITH_CFLAGS
+MC_PROG_CXX_WITH_CXXFLAGS
+AC_PROG_CPP
+AC_PROG_CXXCPP
+AC_C_CONST
+AC_C_INLINE
+AC_HEADER_STDC
+
+# Checks for programs
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+# initialize libtool, we need dynamic module support
+AC_LIBTOOL_DLOPEN
+AM_PROG_LIBTOOL
+
+# Check for package requirements.
+MC_IF_VAR_EQ(GCC, yes,,
+	AC_MSG_ERROR(This package requires GNU gcc)
+)
+dnl MC_IF_VAR_EQ(GXX, yes,,
+dnl	AC_MSG_ERROR(This package requires GNU g++)
+dnl )
+
+# BSE requirements
+AC_BSE_REQUIREMENTS
+# check for sound devices
+AC_BSE_SNDDEV_CHECK
+# BEAST requirements
+AC_BEAST_REQUIREMENTS
+
+# check for awk, perl, etags and indent which are required
+# to build generated sources
+AC_PROG_AWK
+AC_CHECK_PROGS(PERL, perl5 perl)
+AC_CHECK_PROG(INDENT, indent, indent)
+AC_CHECK_PROG(ETAGS, etags, etags)
+MISSING_PERL5=#
+MISSING_AWK=#
+MISSING_INDENT=#
+MISSING_ETAGS=#
+if test -n "$PERL" && perl -v | grep 'version 5.' > /dev/null ; then
+	MISSING_PERL5=
+fi
+if test -n "$AWK" ; then
+	MISSING_AWK=
+fi
+if test -n "$INDENT" ; then
+	MISSING_INDENT=
+fi
+if test -n "$ETAGS" ; then
+	MISSING_ETAGS=
+fi
+AC_MSG_CHECKING(whether this is rambokid's machine)
+if fgrep birgrave.birnet.private /etc/hosts >/dev/null 2>&1; then
+	BIRNET_Y=
+	BIRNET_N=\#
+	AC_MSG_RESULT(yes)
+else
+	BIRNET_Y=\#
+	BIRNET_N=
+	AC_MSG_RESULT(no)
+fi
+AC_SUBST(MISSING_PERL5)
+AC_SUBST(MISSING_AWK)
+AC_SUBST(MISSING_INDENT)
+AC_SUBST(MISSING_ETAGS)
+AC_SUBST(BIRNET_Y)
+AC_SUBST(BIRNET_N)
+
+# Automake @VARIABLE@ exports.
+AC_SUBST(CFLAGS)
+AC_SUBST(CPPFLAGS)
+AC_SUBST(LDFLAGS)
+
+# create output files
+AC_OUTPUT([
+Makefile
+bse/Makefile
+plugins/Makefile
+beast-gtk/Makefile
+docs/Makefile
+bse/bseconfig.h
+])

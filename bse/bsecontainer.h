@@ -1,0 +1,99 @@
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * bsecontainer.h: base type to manage BSE items
+ */
+#ifndef __BSE_CONTAINER_H__
+#define __BSE_CONTAINER_H__
+
+#include	<bse/bsesource.h>
+
+/* --- object type macros --- */
+#define	BSE_TYPE_CONTAINER		(BSE_TYPE_ID (BseContainer))
+#define BSE_CONTAINER(object)		(BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_CONTAINER, BseContainer))
+#define BSE_CONTAINER_CLASS(class)	(BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_CONTAINER, BseContainerClass))
+#define BSE_IS_CONTAINER(object)	(BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_CONTAINER))
+#define BSE_IS_CONTAINER_CLASS(class)	(BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_CONTAINER))
+#define BSE_CONTAINER_GET_CLASS(object) ((BseContainerClass*) (((BseObject*) (object))->bse_struct.bse_class))
+
+
+/* --- BseContainer object --- */
+typedef gboolean (*BseForallItemsFunc) (BseItem	 *item,
+					gpointer  data);
+struct _BseContainer
+{
+  BseSource	parent_object;
+  
+  guint		n_items;	/* paranoid checks */
+};
+struct _BseContainerClass
+{
+  BseSourceClass parent_class;
+  
+  void		(*add_item)		(BseContainer		*container,
+					 BseItem		*item);
+  void		(*remove_item)		(BseContainer		*container,
+					 BseItem		*item);
+  void		(*forall_items)		(BseContainer		*container,
+					 BseForallItemsFunc	 func,
+					 gpointer		 data);
+  guint		(*item_seqid)		(BseContainer		*container,
+					 BseItem		*item);
+  BseItem*	(*get_item)		(BseContainer		*container,
+					 BseType		 item_type,
+					 guint			 seq_id);
+};
+
+
+/* --- prototypes --- */
+void		bse_container_add_item		(BseContainer	*container,
+						 BseItem	*item);
+BseItem*        bse_container_new_item          (BseContainer   *container,
+						 BseType         item_type,
+						 const gchar    *first_param_name,
+						 ...);
+void		bse_container_remove_item	(BseContainer	*container,
+						 BseItem	*item);
+void		bse_container_forall_items	(BseContainer	*container,
+						 BseForallItemsFunc func,
+						 gpointer	 data);
+GList*		bse_container_list_items	(BseContainer	*container);
+guint		bse_container_get_item_seqid	(BseContainer	*container,
+						 BseItem	*item);
+BseItem*	bse_container_get_item		(BseContainer	*container,
+						 BseType	 item_type,
+						 guint		 seq_id);
+void		bse_container_store_items	(BseContainer	*container,
+						 BseStorage	*storage);
+BseItem*	bse_container_lookup_item	(BseContainer	*container,
+						 const gchar	*name);
+BseItem*	bse_container_item_from_handle	(BseContainer	*container,
+						 const gchar	*handle);
+BseItem*	bse_container_item_from_path	(BseContainer	*container,
+						 const gchar	*path);
+gchar*		bse_container_make_item_path	(BseContainer	*container,
+						 BseItem	*item,
+						 gboolean	 persistent);
+
+
+
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* __BSE_CONTAINER_H__ */

@@ -1,0 +1,50 @@
+The overall structure of BSE files
+==================================
+
+*.bse files are ascii files with occasional binary appendix and contain
+various data proccessed by the BSE library.
+the readable (ascii) part of a .bse file is held in lisp syntax and mostly
+build up out of (keyword value) pairs.
+
+Identification Tag
+------------------
+each file has a special identification tag in the first line:
+
+(BSE-Data V1 0000000004);               -*- scheme -*-
+ ^^^^^^^^ ^^ ^^^^^^^^^^
+ |        |  |
+ |        |  ten-digit octal flag
+ |        |
+ |        version tag
+ |
+ BSE data-identifier
+
+and is matched against a regexp pattern (in grep -E syntax):
+
+^\(BSE-Data\ V1\ [0-7]{10}\);.*$
+
+note that the ';' at the end of the right parenthesis is actually part
+of the expression and needs to directly follow the right parenthesis,
+whereas the space inbetween the ';' and the line end '\n' can contain
+any number of, or even no characters at all.
+the ten-digit octal value is a short hand flag to identify the various
+kinds of data held in the current file. its value corresponds to the
+enum definiton BseIoDataFlags in <bse/bseenums.h>.
+
+Main statement keywords
+-----------------------
+possible keywords - prefixed by a left parenthesis - to start a certain
+statement are
+
+value-block		- sample value block definition
+binary-appendix		- holding a specification for possible binary
+			  appendices
+song			- holding a song definition including all of a
+			  songs data, e.g. instrument definitions,
+			  patterns, effects, etc.
+note-munks-sample	- starting a sample definition including
+			  references to certain sample-value-blocks
+effect-munks-sample	- ?
+
+it is convention that all `song' statements need to preceed any
+`sample' stetements, thus forward-referencing samples if needed.

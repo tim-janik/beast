@@ -1,0 +1,18 @@
+
+(BstApp "BstApp"
+  (user-gname)
+  (arg "GtkContainer::resize_mode" queue)
+  (arg "GtkWidget::name" "Main")
+  (arg "GtkWidget::width" 0)
+  (arg "GtkWidget::height" 0)
+  (connect ::delete-event "bst_app_handle_delete_event")
+  (GtkVBox "MainVBox"
+    (user-gname)
+    (arg "GtkWidget::visible" true)
+    (GtkNotebook "Notebook"
+      (user-gname)
+      (arg "GtkNotebook::tab_pos" left)
+      (arg "GtkNotebook::scrollable" true)
+      (arg "GtkWidget::visible" true)
+      (arg "GtkWidget::can_focus" true)
+      (child-arg "GtkBox::position" 1))))

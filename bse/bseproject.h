@@ -1,0 +1,70 @@
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * bseproject.h: Coordinator for distinct super objects
+ */
+#ifndef __BSE_PROJECT_H__
+#define __BSE_PROJECT_H__
+
+#include        <bse/bsecontainer.h>
+
+
+/* --- object type macros --- */
+#define	BSE_TYPE_PROJECT	      (BSE_TYPE_ID (BseProject))
+#define BSE_PROJECT(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_PROJECT, BseProject))
+#define BSE_PROJECT_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_PROJECT, BseProjectClass))
+#define BSE_IS_PROJECT(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_PROJECT))
+#define BSE_IS_PROJECT_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_PROJECT))
+#define BSE_PROJECT_GET_CLASS(object) ((BseProjectClass*) (((BseObject*) (object))->bse_struct.bse_class))
+
+
+/* --- BseProject object --- */
+struct _BseProject
+{
+  BseContainer	 parent_object;
+
+  GSList	*supers;
+};
+struct _BseProjectClass
+{
+  BseContainerClass parent_class;
+};
+
+
+/* --- prototypes --- */
+BseProject*	bse_project_new			(const gchar	*name);
+void		bse_project_add_super		(BseProject	*project,
+						 BseSuper	*super);
+void		bse_project_remove_super	(BseProject	*project,
+						 BseSuper	*super);
+GList*		bse_project_list_supers		(BseProject	*project,
+						 BseType	 super_type);
+BseErrorType	bse_project_restore		(BseProject	*project,
+						 BseStorage	*storage);
+BseErrorType	bse_project_store_bse		(BseProject	*project,
+						 const gchar	*bse_file);
+BseObject*	bse_project_path_resolver	(gpointer        project /* func_data */,
+						 BseStorage     *storage,
+						 BseType         required_type,
+						 const gchar    *path);
+     
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* __BSE_PROJECT_H__ */

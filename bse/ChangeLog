@@ -1,0 +1,42 @@
+Mon May 17 02:52:49 1999  Tim Janik  <timj@gtk.org>
+
+	* bunch of Makefile and configure changes so make distcheck works.
+	BSE is version 0.2.0 now.
+
+Sat May 15 23:23:05 1999  Tim Janik  <timj@gtk.org>
+	* bsesongmixer.c (bse_mixer_activate_voice): don't set notes on inactive
+	voices.
+
+Wed May  5 09:16:41 1999  Tim Janik  <timj@gtk.org>
+
+	* bseeffect*.[hc]: started out on effect objects, they are fairly
+	lightweight (and somewhat uncommon) objects, in that they are managed
+	by BsePattern and in principle serve as simple operators and id
+	containers only. the reason to implement them as real objects, rather
+	than plain auxillary structures is to provide the convenient BseObject
+	facilities, i.e. a generalized parameter interface for GUI generation
+	and state restauration as well as basic locking facilities during
+	playing.
+	next step is to featured effects in the song sequencer.
+
+Wed May  4 16:43:45 1999  Tim Janik  <timj@gtk.org>
+
+	* nuked inappropriate ChangeLog stuff (about 15 entries over the
+	last year). To sum it up, BSE implements its own type system now,
+	which features a bunch of different fundamental types, e.g. the
+	generic parameters, enumeration and flags classes, objects with
+	single inheritance, multiple interfaces and procedure classes.
+	the generic parameter interface is used to route most of the setting
+	and getting of BSE objects through a central point, which serves for
+	object state recording to implement undo facilities and to serialize
+	objects (though there are some tweaks to that since we have to feature
+	inter-object links in the trees). the type system is layed out in a
+	dynamic fashion, so that new types can be registerd by third party
+	plugins and get their implementation loaded (and unloaded) on demand.
+	the basic infra structure for modular synthesis sources and filters
+	is also in place, though BseSong doesn't currently integrate very
+	nicely into that and it deserves some serious testing.
+
+Tue Mar 24 04:28:26 1998  Tim Janik  <timj@gtk.org>
+
+	* started ChangeLog.

@@ -1,0 +1,107 @@
+The BSE type system
+===================
+
+BSE features a single inheritance object hierarchy with multiple interfaces.
+it therefore contains a type system that registers several object and
+non-object types. the type system features unclassed types (parameters),
+classed types (enumerations) and object types (also classed).
+the type system implemented by BSE has several analogies to the Gtk+ type
+system and several type system related code portions have been traded between
+the two projects. however, the BSE type system got furtherly complicated in
+some regards by featuring dynamic types to allow certain implementations to
+reside in dynamic plugins.
+usually, all types get registered with their name, description and inheritance
+information upon startup and for static types the implementation related type
+information is also stored right away. we can't do this for dynamic types since
+the implementation related type information contains function pointers that
+will not remaind valid across the life time of plugins.
+when class or object instances of a dynamic type need to be created, the
+corresponding plugin will be loaded into memory and the required implementation
+related type information will be retrived. upon destruction of the instance,
+the type info is released again and the plugin will be unloaded.
+so for dynamic types, the only things that stay persistent across plugin life
+times are the type's name, description, inheritance information and type id,
+as well as additional information about what plugin this type is implemented
+by.
+parameter types are unclassed and do not feature inheritance, they are merely
+variable type ids to distinguish between e.g. strings and integers.
+enumeration types are classed, with flags being a certain kind of enumerations
+in that their values only feature certain bits. for enumertaions, a flat
+hierarchy is supported, where every enumeration or flags type derives from
+BSE_TYPE_ENUM or BSE_TYPE_FLAGS respectively.
+object types are classed as well, and may exist in multiple instances per type
+id. they feature single inheritance and multiple interfaces, where an interface
+type denotes a certain alternate class-based vtable that is required to adress
+similar object methods from different heirarchy branches with the same API.
+type inheritance can be examined by testing their `is_a' relationships, e.g.
+for a type `parent' and a type `child' deriving from `parent', the following
+holds true: `child' is_a `parent', while the reverse would fail:
+`parent' is_a `child', because `child' inherits all of `parent''s facilities,
+but not the other way around.
+whether a certain object type implements a specific interface, can be tested
+through the `conforms_to' relationship, e.g. for an interface `I' requirering
+a method implementation `foo' and a base type `B', not implementing `foo' with
+it's two child types `C' and `D', both carrying different imlpementations of
+`foo', the following applies:
+`B' conforms_to `I': FALSE
+`C' conforms_to `I': TRUE
+`D' conforms_to `I': TRUE
+
+
+We will now outline the several steps that are taken by the type system to
+create/destroy classes and objects. this is actually the guide line for the
+type system's implementation. in the below, unreferencing of certain objects
+may automatically cause their destruction, info structure retrival and
+releasing may (for dynamic types) accompany plugin loading/unloading.
+
+initialization
+--------------
+all static type ids + type infos get registered
+all dynamic type ids get registered
+(implies: all interface type ids are registered)
+static type infos are persistant
+
+class creation
+--------------
+type info is enforced
+parent class is referenced
+class gets allocated and initialized
+
+object creation
+---------------
+class is referenced
+object is allocated and initialized
+
+object destruction
+------------------
+object gets deallocated (destruction has already been handled
+                         by the object system)
+class gets unreferenced
+
+class destruction
+-----------------
+class gets destructed and deallocated
+type info is released
+parent class is unreferenced
+
+interface registration
+----------------------
+interface id gets embeded in the host type's interface entry list
+the interface is registered for all children as well
+
+interface class creation
+------------------------
+class is assumed
+class is referenced
+interface info is enforced
+interface is referenced
+interface entry info is enforced
+interface class is allocated and initialized (and propagated to children)
+
+interface class destruction
+---------------------------
+interface class gets destructed and deallocated (and propagated to children)
+interface entry info is released
+interface gets unreferenced
+interface info is released
+class gets unreferenced

@@ -1,0 +1,54 @@
+/* BSE - Bedevilled Sound Engine				-*-C-*-
+ * Copyright (C) 1997, 1998, 1999 Olaf Hoehmann and Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ *
+ * bseconfig.h: generated from bseconfig.h.in, contains autoconf values
+ */
+#ifndef __BSE_CONFIG_H__
+#define __BSE_CONFIG_H__
+
+#include	<bse/bseconfigpaths.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+
+/* BSE version
+ */
+#define BSE_MAJOR_VERSION                               (@BSE_MAJOR_VERSION@)
+#define BSE_MINOR_VERSION                               (@BSE_MINOR_VERSION@)
+#define BSE_MICRO_VERSION                               (@BSE_MICRO_VERSION@)
+#define BSE_BINARY_AGE                                  (@BSE_BINARY_AGE@)
+#define BSE_INTERFACE_AGE                               (@BSE_INTERFACE_AGE@)
+#define BSE_VERSION					("@VERSION@")
+
+/* check for header versions
+ */
+#define BSE_CHECK_VERSION(major,minor,micro)    \
+    (BSE_MAJOR_VERSION > (major) || \
+     (BSE_MAJOR_VERSION == (major) && BSE_MINOR_VERSION > (minor)) || \
+     (BSE_MAJOR_VERSION == (major) && BSE_MINOR_VERSION == (minor) && \
+      BSE_MICRO_VERSION >= (micro)))
+
+
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* __BSE_CONFIG_H__ */

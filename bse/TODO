@@ -1,0 +1,77 @@
+general:
+-	rework undo, gotta decide on what hirarchy and function level undo
+	should be implemented.
+-	finish up the ALSA interface (especially before complaining about CPU
+	usage!)
+-	param_changed(): update modified stamp and record undo
+-	instead of parser hooks, we need to announce per class try_statement()
+	implementations
+-	nuke BseText, or so...
+-	BseStorage must not contain type references above BSE_TYPE_ITEM (cleanlyness)
+-	maybe merge BseMaster and BseProject?
+-	bse_object_do_store_private() should not save equally named params (from
+	different heirarchy levels), actually this is a general problem with GUIs
+	as well.
+	possible solution:
+	GList* bse_object_class_list_pspecs (BseObjectClass *class,
+	                                     BseParamFlags   required_flags);
+	/* how to handle groups here? */
+-	delay class destruction and plugin unloading through timeout handlers
+*	eliminate everything that fgrep -i fixme/hack reveals ;)
+
+Song/Pattern
+-	mutable channels! (make them silent)
+	use procedure types for this
+
+Identifier
+-	we need a string conversion routine, which converts invalid characters
+
+Mixer/Sequencer
+-	bse_mixer_add_voice_to_buffer:	balance asserts
+
+Instrument
+-	smooth up the dot array behaviour, editing is somewhat sluggish
+
+Voice
+-	we need refrencing/locking here, sample can be pulled under our ass
+-	make sample_munk_index a BseMunk* pointer
+-	substitute guint n_ochannels; q  guint         *ochannel_volume;
+  
+loaders
+-	we need AIFF
+-	we need .wav, desperatedly
+
+loadwav.c:
+-	read_data(): read sample data by blocks not as a whole
+
+Balance
+-	durch 3d raum position ersetzen
+
+Munks
+-	automatische munk berechnung durch frequenz transformation
+	hm, koennte nen memory hog werden...
+
+BseLfo
+-	wave_form, speed, intensity, modulation (through other LFO)
+
+Effects
+-	there is no code at all yet ;)
+	(take a look at the *.mod effects)
+	pattern-break
+	set-volume	(voice-volume)
+	vibrato
+	-	buffer-sync
+	-	lfo as freq-mod
+	tremolo
+	-	buffer-sync
+	-	lfo as freq-mod
+
+	fine-tune
+	-	1/24 of halftone
+
+	pitch-bend
+	-	slides
+	
+	portamento
+	-	nahtloser uebergang zur naechsten note
+	-	buffer-sync

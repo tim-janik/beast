@@ -1,0 +1,27 @@
+general:
+-	need file-exists dialog
+-	get File/Save to work
+-	quit/close needs to feature mod-time vs. creation-time handling
+-	reevaluate bstmaster if project+master are merged
+-	feature "Dirty updates", i.e. fill buffer in emission hooks
+	candidates: ::parent_set ::show ::destroy, since most lags happen
+	during widget building phase
+
+sample repo:
+-	this needs to be moved into BSE in a clean fashion
+
+Procedure dialog:
+-	optimize rebuilding, don't destroy status bar (this confuses the
+	last-dialog keeping of bststatusbar)!
+-	figure work around for button is hidden while depressed bug.
+
+File Dialog
+-	need FILE-EXISTS handling
+
+Pattern Editor
+-	the popup menu should be attached/detached instead of the ref/sink pair
+-	feature pattern params
+
+instrument editor
+-	update the samples in the combo popup...
+-	sample fetching needs to be moved back into BSE anyways

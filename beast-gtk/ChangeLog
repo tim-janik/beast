@@ -1,0 +1,51 @@
+Mon May 17 02:49:23 1999  Tim Janik  <timj@gtk.org>
+
+	* bunch of Makefile and configure changes so make distcheck works.
+	BEAST package has version 0.2.0 now.
+
+Sat May 15 23:23:05 1999  Tim Janik  <timj@gtk.org>
+
+	* bstsamplerepo.[hc]: adaptions so we can load samples from
+	$(prefix)/share/beast/v0.2/*, which is where beast-data-0.2.tar.gz
+	installs default samples.
+
+Wed May  5 08:47:51 1999  Tim Janik  <timj@gtk.org>
+
+	* bstpatterneditor.[hc]: added drag selections, revamp the
+	layout code completely. on the one hand this was long overdue,
+	and on the other it was required for drag selections anyways ;)
+
+Wed May  4 07:52:33 1999  Tim Janik  <timj@gtk.org>
+
+	* We provide som limited BSE Procedure support now, the
+	next step is to dynamically create per-object menu's for
+	for it's procedures. All BEAST windows should now have a
+	status bar at the lower border to keep the user informed
+	on procedure failures and similar things.
+
+Son Apr 25 16:47:21 1999  Tim Janik  <timj@gtk.org>
+
+	* over that past 5 months, pretty much all of the initial BEAST
+	code got revamped to suit the evolving BSE. apart from that, the
+	code had to undergo some serious redoing to work with Gtk+ 1.2,
+	the pattern editor is now only scrollable as a GtkScrolledWindow
+	child.
+	the old dialogs with static GUIs are gone now, we create 90% of
+	the GUI from BSE's generic parameter interface.
+
+Fri May 15 05:12:00 1998  Tim Janik  <timj@gtk.org>
+
+	* lotsa stuff. we have a ~/.beastrc now, a shel, a songshell
+	and an instrument editor.
+
+Mon Apr  6 19:36:45 1998  Tim Janik  <timj@gtk.org>
+
+	* bstpatterneditor.h: 
+	* bstpatterneditor.c: scrolling, keytables.
+
+Thu Apr  2 05:31:37 1998  Tim Janik  <timj@gtk.org>
+
+	* bstpatterneditor.h:
+	* bstpatterneditor.c:
+ 	ok, we have the basic layout working now.
+	keyboard navigation and note editing works as well.

@@ -1,0 +1,32 @@
+Bse Chunk
+=========
+A BseChunk contains header informations for sample value blocks passed
+around during sound processing, and a pointer to the associated sample
+data itself. The pure sample data blocks are referred to as "Hunk"s.
+A hunk's size is determined by the size of each sample value: sizeof
+(BseSampleValue), the number of tracks contained in a hunk (for instance
+a stereo hunk contains 2 tracks) and a global variable that designates
+the block size (hunk) size for the current sound processing run:
+bse_globals->hunk_length.
+The sample values themselves are layed out intermixed within the hunk,
+e.g. a 2 track stereo hunk with a hunk_length of 16 would contain:
+L - left track (1)
+R - right track (2)
+LRLRLRLRLRLRLRLRLRLRLRLRLRLRLRLR
+Each chunk is associated with a certain output channel of a specific source,
+and applies to a distinct time frame. The actuall time frame length is
+determined through bse_globals->hunk_length and the current mixing frequency
+bse_globals->mixing_freq.
+
+BSE Pool
+========
+
+BSE Sources
+===========
+(see also bse-ep-net.txt)
+Each source can have an (conceptually) infinite amount of input channels and
+serve an EPNet with multiple output channels.
+Per source, a list of input channels is kept (source pointer and output
+channel id, along with an associated history hint). Sources also keep back
+links to other sources using its output channels, this is required to maintain
+automated history updates and purging.

@@ -1,0 +1,59 @@
+#!/bin/sh
+
+[ -z "$1" ] && {
+	(
+		echo "raw2bse - create a BSE conform header and append raw audio data"
+		echo -n "Usage: raw2bse <SAMPLE_NOTE> <RECORDING_FREQUENCY> "
+		echo "<SAMPLE_FILE_NAME> <BIT_SIZE> <N_CHANNELS> [big-endian?]"
+		echo "example: raw2bse c 22150 say-what.raw 16 1 >say-what.bse"
+	) >&2
+	exit -1
+}
+
+[ -z "$1" ] && { echo missing SAMPLE_NOTE >&2; exit -1; }
+NOTE="$1"
+shift 1
+
+    [ -z "$1" ] && { echo missing RECORDING_FREQUENCY >&2; exit -1; }
+REC_FREQ="$1"
+shift 1
+
+[ -z "$1" ] && { echo missing SAMPLE_FILE_NAME  >&2; exit -1; }
+FILE_NAME="$1"
+shift 1
+
+FILE_SIZE="`find "$FILE_NAME" -printf '%s' 2>/dev/null `"
+[ -z "$FILE_SIZE" ] && { echo "$FILE_NAME: no such file"  >&2; exit -1; }
+SAMPLE_NAME=`basename $FILE_NAME | sed 's/\(.\+\)\(\.[^.]\+\)$/\1/'`
+
+[ -z "$1" ] && { echo missing BIT_SIZE  >&2; exit -1; }
+BIT_SIZE="$1"
+shift 1
+
+[ "$BIT_SIZE" != 16 ] && { echo unsupported bit size  >&2; exit -1; }
+
+[ -z "$1" ] && { echo missing N_CHANNELS  >&2; exit -1; }
+N_CHANNELS="$1"
+shift 1
+
+[ -z "$1" ] && { ENDIAN=little; } || { ENDIAN=big; }
+
+cat <<EOF
+(BSE-Data V1 0000000003);               -*- lisp -*-
+    
+(BseSampleData "1"
+               (record-note $NOTE)
+               (n-bits 16)
+               (byte-order $ENDIAN-endian)
+               (n-values $(($FILE_SIZE/2))))
+
+(BseSample "$SAMPLE_NAME"
+           (recording-freq $REC_FREQ)
+           (n-channels $N_CHANNELS)
+           (munk 'c-4
+                 (sample-data "1")))
+			    
+
+EOF
+echo -ne '\000'
+cat "$FILE_NAME"
