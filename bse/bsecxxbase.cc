@@ -27,6 +27,17 @@ BSE_CXX_TYPE_REGISTER_INITIALIZED (CxxBase, "BseSource", NULL, bse_cxx_base_clas
 static gpointer bse_cxx_base_parent_class = NULL;
 
 static void
+bse_cxx_base_compat_setup (BseItem         *item,
+                           guint            vmajor,
+                           guint            vminor,
+                           guint            vmicro)
+{
+  CxxBase *self = cast (item);
+
+  self->compat_setup (vmajor, vminor, vmicro);
+}
+
+static void
 bse_cxx_base_instance_finalize (GObject *object)
 {
   CxxBase *self = cast (object);
@@ -47,8 +58,10 @@ void
 CxxBase::class_init (CxxBaseClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
+  BseItemClass *item_class = BSE_ITEM_CLASS (klass);
   bse_cxx_base_parent_class = g_type_class_peek_parent (object_class);
   object_class->finalize = bse_cxx_base_instance_finalize;
+  item_class->compat_setup = bse_cxx_base_compat_setup;
 }
 
 /*Con*/
@@ -67,6 +80,13 @@ void
 CxxBase::get_property (guint       prop_id,
                        Value      &value,
                        GParamSpec *pspec)
+{
+}
+
+void
+CxxBase::compat_setup (guint          vmajor,
+                       guint          vminor,
+                       guint          vmicro)
 {
 }
 

@@ -91,7 +91,8 @@ BsePlugin*	bse_plugin_lookup		(const gchar	*name);
 
 
 /* --- implementation details --- */
-void		bse_plugin_init_builtins	(void);
+void		         bse_plugin_init_builtins     (void);
+extern BseExportIdentity bse_builtin_export_identity; /* sync with bsecxxplugin.h */
 
 G_END_DECLS
 

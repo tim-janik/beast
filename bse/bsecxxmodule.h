@@ -66,6 +66,9 @@ public:
   inline const IStream&     istream         (unsigned int istream_index) const;
   inline const JStream&     jstream         (unsigned int jstream_index) const;
   inline const OStream&     ostream         (unsigned int ostream_index) const;
+  void                      ostream_set     (unsigned int ostream_index,
+                                             const float *values);
+  const float*              const_values    (float  value);
   inline const unsigned int mix_freq        () const;
   static inline int         dtoi            (double d) { return gsl_dtoi (d); }
   static inline int         ftoi            (float  f) { return gsl_ftoi (f); }

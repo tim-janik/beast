@@ -1,0 +1,73 @@
+/* BSE - Bedevilled Sound Engine                        -*-mode: c++;-*-
+ * Copyright (C) 2002, 2003 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+#include <bse/bse.idl>
+
+namespace Bse {
+
+class Amplifier : Bse::Effect {
+  Info    icon      = "icons/ampctrl.png";
+  Info    category  = "/Modules/Routing/Amplifier";
+  Info    blurb     = ("BseAmplifier provides input signal controlled amplification or "
+                       "attenuation. "
+                       "It supports two control inputs and two audio inputs which "
+                       "are mixed together after balance and level adjustments. "
+                       "The gain setting controls preamplification of the mixed audio "
+                       "signal. The mixed control signal, weighted by a strength "
+                       "setting, determines additional amplification, allowing for "
+                       "external sources to modulate the overall volume (tremolo). "
+                       "The mixed control signal can influence the amplification "
+                       "linearly (to amplify other control signals) or exponentially "
+                       "(to amplify audio signals). "
+                       "Finally, the master volume controls amplification of the "
+                       "resulting output signal.");
+  IStream audio_in1  = ("Audio In1", "First audio input");
+  IStream audio_in2  = ("Audio In2", "Second audio input");
+  IStream ctrl_in1   = ("Ctrl In1", "First control input");
+  IStream ctrl_in2   = ("Ctrl In2", "Second control input");
+  OStream audio_out  = ("Audio Out", "Amplified audio output");
+  group "Audio Input" {
+    Real  alevel1    = Perc ("Input 1 [%]", "Attenuate the level of audio input 1", 100, SFI_PARAM_DEFAULT);
+    Real  alevel2    = Perc ("Input 2 [%]", "Attenuate the level of audio input 2", 100, SFI_PARAM_DEFAULT);
+    Real  abalance   = Balance ("Balance", "Balance audio input levels", 0, SFI_PARAM_GUI);
+  };
+  group "Control Input" {
+    Real  clevel1    = Perc ("Input 1 [%]", "Attenuate the level of control input 1", 100, SFI_PARAM_DEFAULT);
+    Real  clevel2    = Perc ("Input 2 [%]", "Attenuate the level of control input 2", 100, SFI_PARAM_DEFAULT);
+    Real  cbalance   = Balance ("Balance", "Balance control input levels", 0, SFI_PARAM_GUI);
+    Bool  ctrl_mul   = Bool ("Multiply Controls",
+                             "Multiply the two control inputs with each other, "
+                             "rather than weighting them by balance",
+                             FALSE, SFI_PARAM_DEFAULT);
+    Bool  ctrl_exp   = Bool ("Exponential Control", "Toggle exponential and linear control response", FALSE, SFI_PARAM_DEFAULT);
+  };
+  group "Output" {
+    Real  ostrength  = Perc ("Control Strength", "Adjust how much the control signals affect the output volume", 100, SFI_PARAM_DEFAULT);
+    Real  base_level = Perc ("Base Volume", "Base amplification (the control signal adds up to this)", 100, SFI_PARAM_DEFAULT);
+    Real  olevel     = Perc ("Master Volume", "Output stage amplification", 100, SFI_PARAM_DEFAULT);
+  };
+  group "Compat" { // FIXME: remove properties around 0.6.0
+    Real  audio_balance   = Perc (NULL, NULL, 0, SFI_PARAM_WRITABLE); /* -> abalance */
+    Real  ctrl_balance    = Perc (NULL, NULL, 0, SFI_PARAM_WRITABLE); /* -> cbalance */
+    Real  ctrl_strength_f = Real (NULL, NULL, 1, 0, 1, 0.1, SFI_PARAM_WRITABLE); /* *100 -> ostrength */
+    Real  master_gain_f   = Real (NULL, NULL, 1, 0, 1, 0.1, SFI_PARAM_WRITABLE); /* *100 -> olevel */
+    Real  audio_gain_f    = Real (NULL, NULL, 0, 0, 1, 0.1, SFI_PARAM_WRITABLE); /* *100 -> base_level */
+  };
+};
+
+};

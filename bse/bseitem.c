@@ -298,6 +298,18 @@ bse_item_needs_storage (BseItem    *self,
   return BSE_ITEM_GET_CLASS (self)->needs_storage (self, storage);
 }
 
+void
+bse_item_compat_setup (BseItem         *self,
+                       guint            vmajor,
+                       guint            vminor,
+                       guint            vmicro)
+{
+  g_return_if_fail (BSE_IS_ITEM (self));
+
+  if (BSE_ITEM_GET_CLASS (self)->compat_setup)
+    BSE_ITEM_GET_CLASS (self)->compat_setup (self, vmajor, vminor, vmicro);
+}
+
 typedef struct {
   BseItem              *item;
   gpointer              data;

@@ -45,7 +45,9 @@ static void         bse_plugin_reinit_types     (BsePlugin        *plugin);
 static void	    type_plugin_iface_init	(GTypePluginClass *iface);
 
 /* --- variables --- */
-static GSList    *bse_plugins = NULL;
+static GSList       *bse_plugins = NULL;
+static BseExportNode builtin_export_chain_head = { NULL, BSE_EXPORT_NODE_LINK, };
+BseExportIdentity    bse_builtin_export_identity = BSE_EXPORT_IDENTITY (NULL, builtin_export_chain_head);
 
 
 /* --- functions --- */
@@ -139,7 +141,6 @@ bse_plugin_init_builtins (void)
           BseExportNode *chain = builtin_inits[i] ();
           if (chain)
             {
-              const gchar *name = NULL;
               /* create resident plugin struct */
               BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
               g_object_ref (plugin);
@@ -149,11 +150,21 @@ bse_plugin_init_builtins (void)
               plugin->chain = chain;
               bse_plugins = g_slist_prepend (bse_plugins, plugin);
               bse_plugin_init_types (plugin);
-              if (name == plugin->name)
-                g_warning ("builtin plugin initializer (%p) doesn't assign plugin name",
-                           builtin_inits[i]);
             }
 	}
+      /* initialize builtin export nodes (used for C++ modules) */
+      if (bse_builtin_export_identity.export_chain)
+        {
+          /* create resident plugin struct */
+          BsePlugin *plugin = g_object_new (BSE_TYPE_PLUGIN, NULL);
+          g_object_ref (plugin);
+          plugin->use_count = 1;
+          g_free (plugin->name);
+          plugin->name = g_strdup ("BSE-CXX-BUILTIN");
+          plugin->chain = bse_builtin_export_identity.export_chain;
+          bse_plugins = g_slist_prepend (bse_plugins, plugin);
+          bse_plugin_init_types (plugin);
+        }
     }
 }
 

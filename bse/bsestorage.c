@@ -666,6 +666,9 @@ restore_container_child (BseContainer *container,
     return bse_storage_warn_skip (self, "failed to create object from (invalid?) handle: \"%s\"",
                                   scanner->value.v_string);
 
+  /* provide compatibility setup (e.g. property defaults) */
+  bse_item_compat_setup (item, self->major_version, self->minor_version, self->micro_version);
+
   storage_path_table_insert (self, container, uname, item);
 
   /* restore_item reads out closing parenthesis */

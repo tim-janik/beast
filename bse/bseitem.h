@@ -67,6 +67,10 @@ struct _BseItemClass
                                   BseItem       *parent);
   gboolean      (*needs_storage) (BseItem       *item,
                                   BseStorage    *storage);
+  void          (*compat_setup)  (BseItem       *item,
+                                  guint          vmajor,
+                                  guint          vminor,
+                                  guint          vmicro);
   guint         (*get_seqid)     (BseItem       *item);
   BseUndoStack* (*get_undo)      (BseItem       *item);
 };
@@ -99,6 +103,10 @@ void            bse_item_set_internal        (gpointer         item,
                                               gboolean         internal);
 gboolean        bse_item_needs_storage       (BseItem         *item,
                                               BseStorage      *storage);
+void            bse_item_compat_setup        (BseItem         *item,
+                                              guint            vmajor,
+                                              guint            vminor,
+                                              guint            vmicro);
 guint           bse_item_get_seqid           (BseItem         *item);
 void            bse_item_queue_seqid_changed (BseItem         *item);
 BseSuper*       bse_item_get_super           (BseItem         *item);

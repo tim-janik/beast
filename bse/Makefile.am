@@ -20,7 +20,7 @@ lib_LTLIBRARIES = libbse.la
 # the source file sets ;(
 DEFS += $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
-	              $(filter $(<F), $(bse_c_sources))) \
+	              $(filter $(<F), $(bse_c_sources) $(bse_cc_sources))) \
 )
 
 # libtool stuff: set version and export symbols for resolving
@@ -38,9 +38,9 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 #
 # BSE header files for public installation (non-generated)
 bse_public_h_sources = $(strip \
-	bse.h	bsedefs.h	bseexports.h	bseconfig.h	ladspa.h	bsegenclosures.h \
-	\
-	bseamplifier.h		            		bsebiquadfilter.h		bsecategories.h \
+	bse.h	bsedefs.h	bseexports.h	bseconfig.h	bsegenclosures.h \
+	bseincluder.h	ladspa.h	\
+				            		bsebiquadfilter.h		bsecategories.h \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
 	bsedatapocket.h		bseeditablesample.h	bseenums.h			bsegconfig.h \
 	bseglobals.h		bseglue.h		bseitem.h			bsejanitor.h \
@@ -67,7 +67,7 @@ bse_private_h_sources = $(strip \
 # BSE C sources to build the library from
 bse_c_sources = $(strip \
 	$(GSL_C_SRC) \
-	bseamplifier.c		            		bsebiquadfilter.c		bsecategories.c \
+				            		bsebiquadfilter.c		bsecategories.c \
 	bseconstant.c		bseconstvalues.c	bsecontainer.c			bsecontextmerger.c \
 	bsedatapocket.c		bseeditablesample.c	bseenums.c			bsegconfig.c \
 	bseglobals.c		bseglue.c		bseitem.c			bsejanitor.c \
@@ -87,6 +87,15 @@ bse_c_sources = $(strip \
 	bsenote.c		\
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
 	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			examplepeakfilter.cc \
+)
+# Synthesis Modules
+bse_idl_sources = $(strip \
+	bseamplifier.idl	\
+)
+$(srcdir)/bseamplifier.cc: bseamplifier.gen-idl.h
+idl_built_sources += $(bse_idl_sources:.idl=.gen-idl.h)
+bse_cc_sources = $(strip \
+	bseamplifier.cc		\
 )
 # procedure sources
 bse_proc_sources = $(strip \
@@ -144,7 +153,6 @@ bse_extra_sources = $(strip \
 	mktypes.pl \
 	mkcalls.pl \
 	mkcproc.pl \
-	bseamplifier-aux.c \
 	bseconfig.h.in \
 	bsepcmmodule.c \
 	bserecords.idl \
@@ -179,8 +187,9 @@ $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
 libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl
-libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources)
-MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
+libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
+MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources) $(idl_built_sources)
+CLEANFILES += $(idl_built_sources)
 EXTRA_HEADERS +=
 EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
 EXTRA_DIST += $(bse_built_c_sources) $(bse_built_h_sources) $(bse_extra_sources)
@@ -257,6 +266,10 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	&& rm -f xgen-bbac
 %.gen-proc.c: %.proc mkcproc.pl
 	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
+# setup generation of C++ objects from idl files
+BSEPGEN = ../sfi/bse-plugin-generator
+%.gen-idl.h: %.idl $(BSEPGEN)
+	$(BSEPGEN) --nostdinc -I$(top_builddir) $< > $@ || (rm $@ ; exit 1 )
 
 
 #
@@ -278,8 +291,8 @@ noinst_DATA = bse.idl
 #
 .PHONY: builtsources clean-builtsources
 clean-builtsources:
-	rm -f $(bse_built_c_sources) $(bse_built_h_sources) stamp-*
-builtsources: $(bse_built_h_sources) $(bse_built_c_sources)
+	rm -f $(bse_built_c_sources) $(bse_built_h_sources) $(idl_built_sources) stamp-*
+builtsources: clean-builtsources $(bse_built_h_sources) $(bse_built_c_sources) $(idl_built_sources)
 
 
 #

@@ -1,3 +1,37 @@
+Thu Oct  9 23:28:10 2003  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: added rules to build C++ modules from idl files.
+
+	* bsecxxbase.[hc]*: wrap BseItem.compat_setup().
+
+	* bsecxxmodule.[hc]*: allow setting the output buffer of a module.
+
+	* bsecxxplugin.[hc]*: support in core "plugins", i.e. builtins.
+
+	* bseitem.[hc]: added a method bse_item_compat_setup() to patch up
+	object state during parsing according to an old *.bse version.
+
+	* bseplugin.[hc]: provide export identity node for builtin types
+	and initialize them.
+
+	* bsestorage.[hc]: compat_setup() items after creation.
+
+	* bseamplifier.cc, bseamplifier.idl: ported bseamplifier.[hc] to
+	idl based C++ code. changed property setup to match BseBalance
+	where appropriate. optimized inner loop, used C++ templates and
+	bseincluder.h to generate processing loop special cases.
+	added compat code to ensure compatibility with <=0.5.4 stored
+	BseAmplifier setups.
+
+	* bseamplifier.[hc]: removed.
+
+	* bseincluder.h: generate switch()-able function calls with
+	a constant integer argument (usefull for C++ templates) in
+	the range 0..4096.
+
+	* bse/icons/ampctrl.c: removed.
+	* bse/icons/ampctrl.png: added.
+
 2003-10-08  Christian Neumair  <chris@gnome-de.org>
 
 	* tests/.cvsignore: Added missing file.

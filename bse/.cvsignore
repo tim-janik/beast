@@ -23,6 +23,7 @@ bseautodoc
 bseprocidl
 
 *.gen-proc.c
+*.gen-idl.h
 bseinfo
 bsemarshal.c
 bsemarshal.h

@@ -83,6 +83,9 @@ public:
                                      CxxClosure    *closure) { return connect (signal, closure, false); }
   const String    tokenize_signal   (const gchar   *signal);
   GType           type              ();
+  virtual void    compat_setup      (guint          vmajor,
+                                     guint          vminor,
+                                     guint          vmicro);
   virtual         ~CxxBase          ();
 
   static void     class_init        (CxxBaseClass *klass);

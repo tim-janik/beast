@@ -1,6 +1,10 @@
 FIXMES:
+- bse.idl defines bseamplifier, for which there is an idl file
+  (touch bseamplifier.idl; make breaks)
+- remove examplepeakfilter
+- introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
 - fix syndrum parameter scale
-- adapt BseBalance audio-in-balance for BseAmplifier
+- adapt BseAmplifier balance from BseBalance audio-in-balance
 - nuke frequency fine-tune for biquad filter
 - add toplevel menu /Synthesizers/:
   /Synthesizers/Load from Effect Library
@@ -274,6 +278,8 @@ Effects:
   (main source for http://zynaddsubfx.sourceforge.net)
 
 sfidl:
+  - error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
+    indicate where the previous definition was
   - support records and sequences in bse-plugin-generator and bseprocidl
   - reenable signals in bseprocidl
   fixes:

@@ -26,7 +26,7 @@ class Balance : public BalanceBase {
     /* coefficients: */
     double al1, al2;    // audio input levels
     double cl1, cl2;    // control input levels
-    double ob, ol;      // output balance and strength
+    double ob, ocs;     // output balance and strength
     double lp;          // lowpass ascent
     /* state: */
     float xd1;
@@ -39,7 +39,7 @@ class Balance : public BalanceBase {
       cl1 = params->clevel1 * 0.01;
       cl2 = params->clevel2 * 0.01;
       ob = params->obalance * 0.5 * 0.01;
-      ol = params->ostrength * 0.5 * 0.01;
+      ocs = params->ostrength * 0.5 * 0.01;
       lp = mix_freq() / params->lowpass;
     }
     void
@@ -66,7 +66,7 @@ class Balance : public BalanceBase {
         {
           double c = *c1++ * cl1 + *c2++ * cl2;
           double a = *a1++ * al1 + *a2++ * al2;
-          double b = ob + c * ol;
+          double b = ob + c * ocs;
           b = CLAMP (b, -0.5, 0.5);
           w = w * lpifrac + b * lpfrac;
           *mix++ = a;

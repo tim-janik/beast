@@ -35,6 +35,7 @@ namespace Bse {
 
 /* -- export identity --- */
 /* provide plugin export identity, preceeding all type exports */
+#ifndef BSE_COMPILATION
 #define BSE_CXX_DEFINE_EXPORTS()                                                \
   static ::BseExportNode __export_chain_head = { NULL, BSE_EXPORT_NODE_LINK, }; \
   static ::BseExportIdentity __export_identity =                                \
@@ -43,6 +44,14 @@ namespace Bse {
     extern ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL;               \
     ::BseExportIdentity *const BSE_EXPORT_IDENTITY_SYMBOL = &__export_identity; \
   }
+#define BSE_CXX_EXPORT_IDENTITY    __export_identity
+#else   /* BSE internal "Plugins" */
+#define BSE_CXX_DEFINE_EXPORTS()
+#define BSE_CXX_EXPORT_IDENTITY    bse_builtin_export_identity
+extern "C" {
+extern ::BseExportIdentity bse_builtin_export_identity; /* sync with bseplugin.h */
+};
+#endif
 
 
 /* --- enum registration --- */
@@ -75,7 +84,7 @@ namespace Bse {
 #define BSE_CXX_REGISTER_ENUM(EnumType)                                 \
   ::Bse::ExportTypeKeeper                                               \
          bse_type_keeper__3##EnumType (bse_export_node<EnumType>,       \
-                                       &__export_identity);
+                                       &BSE_CXX_EXPORT_IDENTITY);
 /* convenience creator to allow easy assignments of GEnumValue structs */
 inline const GEnumValue
 EnumValue (int         int_value,
@@ -115,7 +124,7 @@ EnumValue (int         int_value,
   }                                                                             \
   ::Bse::ExportTypeKeeper                                                       \
          bse_type_keeper__9##ProcType (bse_export_node<Procedure_##ProcType>,   \
-                                   &__export_identity);
+                                   &BSE_CXX_EXPORT_IDENTITY);
 
 
 /* --- class registration --- */
@@ -157,7 +166,7 @@ EnumValue (int         int_value,
   }                                                                             \
   ::Bse::ExportTypeKeeper                                                       \
          bse_type_keeper__0##Effect (bse_export_node<Effect>,                   \
-                                     &__export_identity);
+                                     &BSE_CXX_EXPORT_IDENTITY);
 /* effect method: create_module(); */
 #define BSE_CXX_DEFINE_CREATE_MODULE(ObjectType,ModuleType,ParamType)           \
   Bse::SynthesisModule*                                                         \
