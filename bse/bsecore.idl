@@ -37,6 +37,7 @@ Const MAXINT = +2147483647;
 Const MININT = -2147483648;
 Const MAXNUM = +9223372036854775807;
 Const MINNUM = -9223372036854775808;
+Const MINDB = -96; /* 32bit:-192 24bit:-144 16bit:-96 */
 /* note numbers */
 ConstIdent NOTE_C   = SFI_NOTE_C;
 ConstIdent NOTE_Cis = SFI_NOTE_Cis;
@@ -668,7 +669,7 @@ record GConfig {
                            FALSE, STANDARD);
   };
   group _("Stepping Rates") {
-    Real step_volume_dB = (_("Volume [dB] Steps"), _("Step width for volume in decibell"),
+    Real step_volume_dB = (_("Volume [dB] Steps"), _("Step width for volume in decibel"),
                            0.1, 0.001, 5, 0.01, STANDARD);
     Int  step_bpm       = (_("BPM Steps"), _("Step width for beats per minute"),
                            10, 1, 50, 1, STANDARD);

@@ -28,7 +28,7 @@ class Amplifier : public AmplifierBase {
     double al1, al2, cl1, cl2;
     double ocs, bl;
     double base_level;
-    double olevel;
+    double master_volume;
     bool ctrl_mul, ctrl_exp;
   public:
     void
@@ -42,7 +42,7 @@ class Amplifier : public AmplifierBase {
       ctrl_exp = params->ctrl_exp;
       ocs = params->ostrength * 0.5 * 0.01;
       bl = params->base_level * 0.01;
-      float master = params->olevel * 0.01;
+      float master = params->master_volume;
       al1 *= master;
       al2 *= master;
     }
@@ -163,7 +163,8 @@ class Amplifier : public AmplifierBase {
     }
   };
 protected:
-  void property_changed (AmplifierPropertyID prop_id)
+  void
+  property_changed (AmplifierPropertyID prop_id)
   {
     switch (prop_id)
       {
@@ -208,6 +209,10 @@ protected:
       case PROP_MASTER_GAIN_F:
         olevel = master_gain_f * 100.0;
         notify ("olevel");
+        /* fall through */
+      case PROP_OLEVEL:
+        master_volume = olevel * 0.01;
+        notify ("master_volume");
         break;
       case PROP_AUDIO_GAIN_F:
         base_level = audio_gain_f * 100.0;
@@ -216,11 +221,14 @@ protected:
       default: ;
       }
   }
-  void compat_setup (guint          vmajor,
-                     guint          vminor,
-                     guint          vmicro)
+  void
+  compat_setup (guint          vmajor,
+                guint          vminor,
+                guint          vmicro)
   {
-    if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 5, 4) <= 0) // COMPAT-FIXME: remove around 0.7.0
+    if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 6, 2) <= 0)
+      set ("olevel", 100, NULL);
+    if (BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 5, 4) <= 0)
       set ("ctrl_exp", TRUE,
            "audio_gain_f", 0.5,
            "ctrl_mul", FALSE,

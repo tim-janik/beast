@@ -1,3 +1,23 @@
+Sat Oct 30 13:40:13 2004  Tim Janik  <timj@gtk.org>
+
+	* bsebusmodule.idl:
+	* bsebusmodule.cc:
+	* bsebus.c: turned left and right volume properties into real-valued
+	db-volume properties.
+
+	* bseglobals.h:
+	* bsecore.idl: provide MINDB constant.
+	got rid of unused constants.
+
+	* bsesong.hc]: removed unused volume properties.
+
+	* bsetype.h: provide DBVolume pspec constructor.
+
+	* bseamplifier.idl: 
+	* bseamplifier.cc: added db-volume property ::master_volume. turned 
+	::olevel into a compat property. documented last supporting version
+	for compat properties.
+
 Sat Oct 16 11:17:21 2004  Tim Janik  <timj@gtk.org>
 
 	* bsetrack.proc: provide ensure-output() which connects to master bus.

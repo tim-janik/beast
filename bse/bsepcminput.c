@@ -107,21 +107,21 @@ bse_pcm_input_class_init (BsePcmInputClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_f,
 			      sfi_pspec_real ("gain_volume_f", "Input Gain [float]", NULL,
-					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+					      bse_db_to_factor (0),
 					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB),
 					      0.1,
 					      SFI_PARAM_STORAGE ":skip-default")); // FIXME: don't skip-default
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_dB,
 			      sfi_pspec_real ("gain_volume_dB", "Input Gain [dB]", NULL,
-					      BSE_DFL_MASTER_VOLUME_dB,
+					      0,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
 					      SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_PERC,
 			      sfi_pspec_int ("gain_volume_perc", "input Gain [%]", NULL,
-					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+					     bse_db_to_factor (0) * 100,
 					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100,
 					     1, SFI_PARAM_GUI ":dial"));
   
@@ -139,7 +139,7 @@ bse_pcm_input_class_finalize (BsePcmInputClass *class)
 static void
 bse_pcm_input_init (BsePcmInput *iput)
 {
-  iput->volume_factor = bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB);
+  iput->volume_factor = bse_db_to_factor (0);
 }
 
 static void

@@ -35,9 +35,6 @@
 enum
 {
   PROP_0,
-  PROP_VOLUME_f,
-  PROP_VOLUME_dB,
-  PROP_VOLUME_PERC,
   PROP_TPQN,
   PROP_NUMERATOR,
   PROP_DENOMINATOR,
@@ -168,33 +165,9 @@ bse_song_set_property (GObject      *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
-      gfloat volume_factor;
       gboolean vbool;
       SfiInt vint;
       SfiRing *ring;
-    case PROP_VOLUME_f:
-    case PROP_VOLUME_dB:
-    case PROP_VOLUME_PERC:
-      volume_factor = 0; /* silence gcc */
-      switch (param_id)
-	{
-	case PROP_VOLUME_f:
-	  volume_factor = sfi_value_get_real (value);
-	  break;
-	case PROP_VOLUME_dB:
-	  volume_factor = bse_db_to_factor (sfi_value_get_real (value));
-	  break;
-	case PROP_VOLUME_PERC:
-	  volume_factor = sfi_value_get_int (value) / 100.0;
-	  break;
-	}
-      BSE_SEQUENCER_LOCK ();
-      self->volume_factor = volume_factor;
-      BSE_SEQUENCER_UNLOCK ();
-      g_object_notify (self, "volume_dB");
-      g_object_notify (self, "volume_perc");
-      g_object_notify (self, "volume_f");
-      break;
     case PROP_BPM:
       self->bpm = sfi_value_get_real (value);
       bse_song_update_tpsi_SL (self);
@@ -302,15 +275,6 @@ bse_song_get_property (GObject     *object,
   BseSong *self = BSE_SONG (object);
   switch (param_id)
     {
-    case PROP_VOLUME_f:
-      sfi_value_set_real (value, self->volume_factor);
-      break;
-    case PROP_VOLUME_dB:
-      sfi_value_set_real (value, bse_db_from_factor (self->volume_factor, BSE_MIN_VOLUME_dB));
-      break;
-    case PROP_VOLUME_PERC:
-      sfi_value_set_int (value, self->volume_factor * 100.0 + 0.5);
-      break;
     case PROP_BPM:
       sfi_value_set_real (value, self->bpm);
       break;
@@ -626,7 +590,6 @@ bse_song_init (BseSong *self)
   self->numerator = timing.numerator;
   self->denominator = timing.denominator;
   self->bpm = timing.bpm;
-  self->volume_factor = bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB);
   
   self->parts = NULL;
   self->busses = NULL;
@@ -760,25 +723,6 @@ bse_song_class_init (BseSongClass *class)
 
   bse_song_timing_get_default (&timing);
 
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_VOLUME_f,
-			      sfi_pspec_real ("volume_f", _("Master [float]"), NULL,
-					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
-					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB),
-					      0.1, SFI_PARAM_STORAGE ":skip-default")); // FIXME: fix volume
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_VOLUME_dB,
-			      sfi_pspec_real ("volume_dB", _("Master [dB]"), NULL,
-					      BSE_DFL_MASTER_VOLUME_dB,
-					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-					      BSE_GCONFIG (step_volume_dB),
-					      SFI_PARAM_GUI ":dial"));
-  bse_object_class_add_param (object_class, _("Adjustments"),
-			      PROP_VOLUME_PERC,
-			      sfi_pspec_int ("volume_perc", _("Master [%]"), NULL,
-					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
-					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-					     SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, _("Timing"),
 			      PROP_TPQN,
 			      sfi_pspec_int ("tpqn", _("Ticks"), _("Number of ticks per quarter note"),

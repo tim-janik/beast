@@ -42,8 +42,8 @@ enum
   PROP_MUTE,
   PROP_SOLO,
   PROP_SYNC,
-  PROP_LEFT_VOLUME_dB,
-  PROP_RIGHT_VOLUME_dB,
+  PROP_LEFT_VOLUME,
+  PROP_RIGHT_VOLUME,
   PROP_MASTER_OUTPUT,
 };
 
@@ -210,27 +210,42 @@ song_connect_master (BseSong        *song,
     }
 }
 
+static gdouble
+center_volume (gdouble volume1,
+               gdouble volume2)
+{
+  if (volume1 > 0 && volume2 > 0)
+    {
+      /* center volumes in decibel */
+      volume1 = bse_db_from_factor (volume1, -200);
+      volume2 = bse_db_from_factor (volume2, -200);
+      return bse_db_to_factor ((volume1 + volume2) * 0.5);
+    }
+  else
+    return (volume1 + volume2) * 0.5;
+}
+
 static void
 bus_volume_changed (BseBus *self)
 {
   if (self->bmodule)
     {
-      double db1, db2;
+      double v1, v2;
       if (self->muted || self->solo_muted)
         {
-          db1 = BSE_MIN_VOLUME_dB;
-          db2 = BSE_MIN_VOLUME_dB;
+          v1 = 0;
+          v2 = 0;
         }
       else
         {
           double lvolume = self->left_volume;
           double rvolume = self->right_volume;
           if (self->synced)
-            lvolume = rvolume = (lvolume + rvolume) * 0.5;
-          db1 = bse_db_from_factor (lvolume, BSE_MIN_VOLUME_dB);
-          db2 = bse_db_from_factor (rvolume, BSE_MIN_VOLUME_dB);
+            lvolume = rvolume = center_volume (lvolume, rvolume);
+          v1 = lvolume;
+          v2 = rvolume;
         }
-      g_object_set (self->bmodule, "volume1db", db1, "volume2db", db2, NULL);
+      g_object_set (self->bmodule, "volume1", v1, "volume2", v2, NULL);
     }
 }
 
@@ -341,26 +356,26 @@ bse_bus_set_property (GObject      *object,
     case PROP_SYNC:
       self->synced = sfi_value_get_bool (value);
       if (self->synced)
-        self->right_volume = self->left_volume = (self->right_volume + self->left_volume) * 0.5;
+        self->right_volume = self->left_volume = center_volume (self->right_volume, self->left_volume);
       bus_volume_changed (self);
-      g_object_notify (self, "left-volume-db");
-      g_object_notify (self, "right-volume-db");
+      g_object_notify (self, "left-volume");
+      g_object_notify (self, "right-volume");
       break;
-    case PROP_LEFT_VOLUME_dB:
-      self->left_volume = bse_db_to_factor (sfi_value_get_real (value));
+    case PROP_LEFT_VOLUME:
+      self->left_volume = sfi_value_get_real (value);
       if (self->synced)
         {
           self->right_volume = self->left_volume;
-          g_object_notify (self, "right-volume-db");
+          g_object_notify (self, "right-volume");
         }
       bus_volume_changed (self);
       break;
-    case PROP_RIGHT_VOLUME_dB:
-      self->right_volume = bse_db_to_factor (sfi_value_get_real (value));
+    case PROP_RIGHT_VOLUME:
+      self->right_volume = sfi_value_get_real (value);
       if (self->synced)
         {
           self->left_volume = self->right_volume;
-          g_object_notify (self, "left-volume-db");
+          g_object_notify (self, "left-volume");
         }
       bus_volume_changed (self);
       break;
@@ -440,11 +455,11 @@ bse_bus_get_property (GObject    *object,
     case PROP_SYNC:
       g_value_set_boolean (value, self->synced);
       break;
-    case PROP_LEFT_VOLUME_dB:
-      sfi_value_set_real (value, bse_db_from_factor (self->synced ? (self->left_volume + self->right_volume) * 0.5 : self->left_volume, BSE_MIN_VOLUME_dB));
+    case PROP_LEFT_VOLUME:
+      sfi_value_set_real (value, self->synced ? center_volume (self->left_volume, self->right_volume) : self->left_volume);
       break;
-    case PROP_RIGHT_VOLUME_dB:
-      sfi_value_set_real (value, bse_db_from_factor (self->synced ? (self->left_volume + self->right_volume) * 0.5 : self->right_volume, BSE_MIN_VOLUME_dB));
+    case PROP_RIGHT_VOLUME:
+      sfi_value_set_real (value, self->synced ? center_volume (self->left_volume, self->right_volume) : self->right_volume);
       break;
     case PROP_MASTER_OUTPUT:
       parent = BSE_ITEM (self)->parent;
@@ -564,8 +579,8 @@ bse_bus_get_stack (BseBus        *self,
       self->bmodule = bse_container_new_child_bname (BSE_CONTAINER (snet), g_type_from_name ("BseBusModule"), "%Volume", NULL);
       bse_snet_intern_child (snet, self->bmodule);
       g_object_set (self->bmodule,
-                    "volume1db", bse_db_from_factor (self->left_volume, BSE_MIN_VOLUME_dB),
-                    "volume2db", bse_db_from_factor (self->right_volume, BSE_MIN_VOLUME_dB),
+                    "volume1", self->left_volume,
+                    "volume2", self->right_volume,
                     NULL);
       bse_source_must_set_input (vout, 0, self->bmodule, 0);
       bse_source_must_set_input (vout, 1, self->bmodule, 1);
@@ -826,15 +841,15 @@ bse_bus_class_init (BseBusClass *class)
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_SOLO,
                               sfi_pspec_bool ("solo", _("Solo"), _("Solo: mute all other busses"), FALSE, SFI_PARAM_STANDARD ":skip-default"));
   bse_object_class_add_param (object_class, _("Adjustments"), PROP_SYNC,
-                              sfi_pspec_bool ("sync", _("Sync"), _("Sync: enforce the same volume left and right"), TRUE, SFI_PARAM_STANDARD ":skip-default"));
-  bse_object_class_add_param (object_class, _("Adjustments"), PROP_LEFT_VOLUME_dB,
-			      sfi_pspec_real ("left-volume-db", _("Left Volume [dB]"), _("Volume adjustment of left bus channel"),
-                                              0, BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-					      0.1, SFI_PARAM_GUI ":dial"));
-  bse_object_class_add_param (object_class, _("Adjustments"), PROP_RIGHT_VOLUME_dB,
-			      sfi_pspec_real ("right-volume-db", _("Right Volume [dB]"), _("Volume adjustment of right bus channel"),
-                                              0, BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-					      0.1, SFI_PARAM_GUI ":dial"));
+                              sfi_pspec_bool ("sync", _("Sync"), _("Syncronize left and right volume"), TRUE, SFI_PARAM_STANDARD ":skip-default"));
+  bse_object_class_add_param (object_class, _("Adjustments"), PROP_LEFT_VOLUME,
+			      sfi_pspec_real ("left-volume", _("Left Volume"), _("Volume adjustment in decibel of left bus channel"),
+                                              bse_db_to_factor (0), bse_db_to_factor (BSE_MINDB), bse_db_to_factor (+24),
+                                              bse_db_to_factor (0.1), SFI_PARAM_STANDARD ":scale:db-volume"));
+  bse_object_class_add_param (object_class, _("Adjustments"), PROP_RIGHT_VOLUME,
+			      sfi_pspec_real ("right-volume", _("Right Volume"), _("Volume adjustment in decibel of right bus channel"),
+                                              bse_db_to_factor (0), bse_db_to_factor (BSE_MINDB), bse_db_to_factor (+24),
+                                              bse_db_to_factor (0.1), SFI_PARAM_STANDARD ":scale:db-volume"));
   bse_object_class_add_param (object_class, _("Signal Inputs"),
                               PROP_INPUTS,
                               /* SYNC: type partitions determine the order of displayed objects */

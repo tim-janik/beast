@@ -63,16 +63,17 @@ class Amplifier : Effect {
     Bool  ctrl_exp   = Bool (_("Exponential Control"), _("Toggle exponential and linear control response"), FALSE, STANDARD);
   };
   group _("Output") {
-    Real  ostrength  = Perc (_("Control Strength"), _("Adjust how much the control signals affect the output volume"), 100, STANDARD);
-    Real  base_level = Perc (_("Base Volume"), _("Base amplification (the control signal adds up to this)"), 0, STANDARD);
-    Real  olevel     = Perc (_("Master Volume"), _("Output stage amplification"), 100, STANDARD);
+    Real  ostrength     = Perc (_("Control Strength"), _("Adjust how much the control signals affect the output volume"), 100, STANDARD);
+    Real  base_level    = Perc (_("Base Volume"), _("Base amplification (the control signal adds up to this)"), 0, STANDARD);
+    Real  master_volume = DBVolume (_("Master Volume"), _("Output stage amplification in decibel"), 0, MINDB, +24, STANDARD);
   };
-  group "compat" { // FIXME: remove properties around 0.6.0
-    Real  audio_balance   = Balance (NULL, NULL, 0, "w"); /* -> abalance */
-    Real  ctrl_balance    = Balance (NULL, NULL, 0, "w"); /* -> cbalance */
-    Real  ctrl_strength_f = Real (NULL, NULL, 1, 0, 1, 0.1, "w"); /* *100 -> ostrength */
-    Real  master_gain_f   = Real (NULL, NULL, 1, 0, 1, 0.1, "w"); /* *100 -> olevel */
-    Real  audio_gain_f    = Real (NULL, NULL, 0, 0, 1, 0.1, "w"); /* *100 -> base_level */
+  group "compat" {
+    Real  audio_balance   = Balance (NULL, NULL, 0, "w");               /* -> abalance (v0.5.4) */
+    Real  ctrl_balance    = Balance (NULL, NULL, 0, "w");               /* -> cbalance (v0.5.4) */
+    Real  ctrl_strength_f = Real (NULL, NULL, 1, 0, 1, 0.1, "w");       /* *100 -> ostrength (v0.5.4) */
+    Real  master_gain_f   = Real (NULL, NULL, 1, 0, 1, 0.1, "w");       /* *100 -> olevel (v0.5.4) */
+    Real  audio_gain_f    = Real (NULL, NULL, 0, 0, 1, 0.1, "w");       /* *100 -> base_level (v0.5.4) */
+    Real  olevel          = Perc (NULL, NULL, 100, "w");                /* -> master_volume (v0.6.2) */
   };
 };
 

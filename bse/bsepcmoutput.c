@@ -107,21 +107,21 @@ bse_pcm_output_class_init (BsePcmOutputClass *class)
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_f,
 			      sfi_pspec_real ("master_volume_f", "Master [float]", NULL,
-					      bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB),
+					      bse_db_to_factor (0),
 					      0, bse_db_to_factor (BSE_MAX_VOLUME_dB),
 					      0.1,
                                               SFI_PARAM_STORAGE ":skip-default")); // FIXME: don't skip-default
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_dB,
 			      sfi_pspec_real ("master_volume_dB", "Master [dB]", NULL,
-					      BSE_DFL_MASTER_VOLUME_dB,
+					      0,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
 					      SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_MVOLUME_PERC,
 			      sfi_pspec_int ("master_volume_perc", "Master [%]", NULL,
-					     bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
+					     bse_db_to_factor (0) * 100,
 					     0, bse_db_to_factor (BSE_MAX_VOLUME_dB) * 100,
 					     1, SFI_PARAM_GUI ":dial"));
   
@@ -139,7 +139,7 @@ bse_pcm_output_class_finalize (BsePcmOutputClass *class)
 static void
 bse_pcm_output_init (BsePcmOutput *oput)
 {
-  oput->volume_factor = bse_db_to_factor (BSE_DFL_MASTER_VOLUME_dB);
+  oput->volume_factor = bse_db_to_factor (0);
 }
 
 static void

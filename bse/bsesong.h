@@ -46,7 +46,6 @@ struct _BseSong
   guint		    numerator;
   guint		    denominator;
   gfloat            bpm;
-  gfloat            volume_factor;      /* 1-based factor */
   
   SfiRing          *parts;              /* of type BsePart* */
   SfiRing          *busses;             /* of type BseBus* */

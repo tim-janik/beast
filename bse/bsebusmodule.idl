@@ -32,8 +32,10 @@ class BusModule : Effect {
   OStream audio_out1 = (_("Audio Out1"), _("First audio output"));
   OStream audio_out2 = (_("Audio Out2"), _("Second audio output"));
   group _("Volume") {
-    Real  volume1db  = DB (_("Left [dB]"), _("Volume adjustment of left channel"), 0, STANDARD);
-    Real  volume2db  = DB (_("Right [dB]"), _("Volume adjustment of right channel"), 0, STANDARD);
+    // Real  volume1    = DBVolume (_("Left"), _("Volume adjustment of left channel"), 0, -96, +24, STANDARD);
+    // Real  volume2    = DBVolume (_("Right"), _("Volume adjustment of right channel"), 0, -96, +24, STANDARD);
+    Real  volume1    = (NULL, NULL, 1, 0, 1000, 10, STANDARD); /* volume factor */
+    Real  volume2    = (NULL, NULL, 1, 0, 1000, 10, STANDARD); /* volume factor */
   };
 };
 

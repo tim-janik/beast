@@ -29,14 +29,8 @@ class BusModule : public BusModuleBase {
     void
     config (BusModuleProperties *params)
     {
-      if (params->volume1db <= BSE_MIN_VOLUME_dB)
-        level1 = 0;
-      else
-        level1 = bse_db_to_factor (params->volume1db);
-      if (params->volume2db <= BSE_MIN_VOLUME_dB)
-        level2 = 0;
-      else
-        level2 = bse_db_to_factor (params->volume2db);
+      level1 = params->volume1;
+      level2 = params->volume2;
     }
     void
     reset ()
