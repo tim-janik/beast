@@ -52,11 +52,12 @@ struct _BsePattern
   
   guint   n_channels		/* mirrored from BseSong */;
   guint   n_rows		/* mirrored from BseSong.pattern_length */;
-  
-  guint	  current_channel;
-  guint   current_row;
 
   BsePatternNote *notes		/* ->notes [ row * n_channels + channel] */;
+
+  /* only used during parsing phase */
+  guint	  current_channel;
+  guint   current_row;
 };
 struct _BsePatternClass
 {

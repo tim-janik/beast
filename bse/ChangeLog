@@ -1,3 +1,8 @@
+Wed Feb  9 00:53:20 2000  Tim Janik  <timj@gtk.org>
+
+	* bsepattern.h (struct _BsePatternClass): put a comment to not confuse
+	people about current_channel and current_row.
+
 Tue Feb  8 09:23:25 2000  Tim Janik  <timj@gtk.org>
 
 	* bseutils.[hc]: return the referenced icon from bse_icon_static_ref()
