@@ -339,14 +339,14 @@ bse_path_pattern_list_matches (const gchar *file_pattern,
       free_me = g_get_current_dir ();
       cwd = free_me;
     }
-  if (cwd[0] != G_DIR_SEPARATOR)	/* breaks on windows */
+  if (cwd[0] != G_DIR_SEPARATOR)	/* FIXME: breaks on windows */
     {
       cwdbuf[0] = G_DIR_SEPARATOR;
       cwdbuf[1] = 0;
       cwd = cwdbuf;
     }
 
-  if (file_pattern[0] == G_DIR_SEPARATOR)	/* breaks on windows */
+  if (file_pattern[0] == G_DIR_SEPARATOR)	/* FIXME: breaks on windows */
     tmp = g_strdup (file_pattern);
   else
     tmp = g_strconcat (cwd, G_DIR_SEPARATOR_S, file_pattern, NULL);
