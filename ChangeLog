@@ -1,3 +1,7 @@
+Thu Jan 31 01:17:31 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstwaveeditor.c: fix number of channels displayed.
+
 Tue Jan 29 15:19:20 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdial.[hc]: fix adjustment value handling and

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-1999, 2000-2001 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@ extern "C" {
 
 
 /* --- Gtk+ type macros --- */
-#define	BST_TYPE_WAVE_EDITOR		   (bst_wave_editor_get_type ())
-#define	BST_WAVE_EDITOR(object)	   (GTK_CHECK_CAST ((object), BST_TYPE_WAVE_EDITOR, BstWaveEditor))
-#define	BST_WAVE_EDITOR_CLASS(klass)	   (GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_WAVE_EDITOR, BstWaveEditorClass))
-#define	BST_IS_WAVE_EDITOR(object)	   (GTK_CHECK_TYPE ((object), BST_TYPE_WAVE_EDITOR))
+#define	BST_TYPE_WAVE_EDITOR		(bst_wave_editor_get_type ())
+#define	BST_WAVE_EDITOR(object)	        (GTK_CHECK_CAST ((object), BST_TYPE_WAVE_EDITOR, BstWaveEditor))
+#define	BST_WAVE_EDITOR_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), BST_TYPE_WAVE_EDITOR, BstWaveEditorClass))
+#define	BST_IS_WAVE_EDITOR(object)	(GTK_CHECK_TYPE ((object), BST_TYPE_WAVE_EDITOR))
 #define	BST_IS_WAVE_EDITOR_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), BST_TYPE_WAVE_EDITOR))
 #define BST_WAVE_EDITOR_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), BST_TYPE_WAVE_EDITOR, BstWaveEditorClass))
 

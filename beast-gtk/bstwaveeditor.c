@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-1999, 2000-2001 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -254,7 +254,7 @@ bst_wave_editor_set_wave (BstWaveEditor *wave_editor,
       if (wave_editor->wave)
 	{
 	  bsw_item_use (wave_editor->wave);
-	  wave_editor->n_channels = 2;
+	  wave_editor->n_channels = bsw_wave_n_channels (wave_editor->wave);
 	}
       bst_wave_editor_rebuild (wave_editor);
       g_object_notify (G_OBJECT (wave_editor), "wave");

@@ -46,7 +46,7 @@ bst_play_back_init (void)
       bsw_source_set_input (speaker, 1, mixer, 0);
       wave_repo = bsw_project_ensure_wave_repo (project);
       const_one = bsw_snet_create_source (snet, "BseConstant");
-      bsw_proxy_set (const_one, "value", 1.0, NULL);
+      bsw_proxy_set (const_one, "value_1", 1.0, NULL);
     }
 }
 
@@ -89,7 +89,7 @@ bst_play_back_handle_set (BstPlayBackHandle *handle,
 
   bse_wave_add_chunk (bse_object_from_id (handle->wave),
 		      gsl_wave_chunk_copy (wave_chunk));
-  bsw_proxy_set (handle->const_freq, "freq", osc_freq, NULL);
+  bsw_proxy_set (handle->const_freq, "frequency_1", osc_freq, NULL);
   
   bsw_proxy_set (handle->wave_osc, "wave", handle->wave, NULL);
 }
