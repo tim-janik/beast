@@ -597,6 +597,7 @@ modules:
       - port me
   freeverb:
     - parameters are broken (it _says_ dB, but it definitely _is not_ dB)
+    - parameters don't appear to change sound (bug?)
 
 gui:
   general:
