@@ -212,8 +212,7 @@ pe_cell_clicked (BstPatternEditor *pe,
 		 guint		   time,
 		 BstPatternDialog *pattern_dialog)
 {
-  printf ("cell click: %d (%d)\n", cell_type, button);
-  if (button == 3)
+  if (0 && button == 3) /* FIXME: menu popups disabled */
     {
       GtkItemFactory *popup_factory = gtk_object_get_data (GTK_OBJECT (pattern_dialog),
 								bst_pattern_dialog_factories_path);

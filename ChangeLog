@@ -1,3 +1,11 @@
+Thu Dec 30 03:25:43 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterndialog.c (pe_cell_clicked): disabled procedure
+	menu, still test code currently.
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_build_toolbar): removed
+	test hackery (useless song test icon).
+
 Wed Dec 29 23:38:15 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (bst_param_create): don't provide spinners if

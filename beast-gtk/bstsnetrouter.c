@@ -507,20 +507,6 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
 				  &router->mode);
   g_free (cats);
   
-  /* FIXME: test hackery
-   */
-  if (1)
-    {
-#include "../bse/icons/song.c"
-      BseIcon icon = { gimp_image.bytes_per_pixel, ~0,
-		       gimp_image.width, gimp_image.height,
-		       (void*) gimp_image.pixel_data };
-      radio = toolbar_add_radio (router, bar, radio, 0, "Song", NULL,
-				 &icon,
-				 BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
-				 &router->mode);
-    }
-  
   /* add Zoom: spinner */
   radio = gtk_spin_button_new (router->adjustment, 0.0, 2);
   gtk_widget_set_usize (radio, 50, 0);
