@@ -262,7 +262,7 @@ TODO:
 - load control for slave threads
 
 
-Jul 15 2002	TimJanik
+Jul 15 2002	Tim Janik
 	* describe virtual modules
 Jun 30 2002	Tim Janik
 	* describe reset()

@@ -446,7 +446,7 @@ bse_standard_osc_update_modules (BseStandardOsc *self,
 				 standard_osc_access,
 				 g_memdup (&cdata, sizeof (cdata)),
 				 standard_osc_access_free,
-				 NULL);
+				 trans);
     }
 }
 

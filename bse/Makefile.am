@@ -236,6 +236,7 @@ bse_extra_sources = $(strip \
 	mkbuiltinlist.pl \
 	mktypes.pl \
 	mkcalls.pl \
+	mkcproc.pl \
 	bseamplifier-aux.c \
 	bseconfig.h.in \
 	bsepcmmodule.c \

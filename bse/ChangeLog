@@ -1,3 +1,10 @@
+Thu Aug 15 21:21:46 2002  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: add mkcproc.pl to EXTRA_DIST.
+
+	* bsestandardosc.c (bse_standard_osc_update_modules):
+	pass on transaction.
+
 Thu Aug  8 18:14:48 2002  Tim Janik  <timj@gtk.org>
 
 	* gslmagic.c (magic_create): fix out-of-bound string access.
