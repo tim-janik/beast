@@ -2,6 +2,8 @@ Overview of Changes in BEAST/BSE 0.5.1:
 
 * Added support for LADSPA plugins
 * Improved synthesis network router display
+* Documentation fixes
+* Added support for dsp[0-3] and midi[0-3] devices
 * Fixed memory leaks during playback
 
 Overview of Changes in BEAST/BSE 0.5.0:
