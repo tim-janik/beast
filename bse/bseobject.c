@@ -509,19 +509,29 @@ bse_object_do_shutdown (GObject *gobject)
 {
   BseObject *object = BSE_OBJECT (gobject);
 
+  g_return_if_fail (gobject->ref_count == 1);
+
   /* complete shutdown process, by chaining
    * parent class' shutdown handler
    */
   G_OBJECT_CLASS (parent_class)->shutdown (gobject);
 
+  g_return_if_fail (gobject->ref_count == 1);
+
   /* perform destroy notification */
   BSE_NOTIFY_CHECK (object, destroy, NOTIFY (OBJECT, DATA), /* always */);
+
+  g_return_if_fail (gobject->ref_count == 1);
 
   /* remove all notifiers */
   g_datalist_id_set_data (&gobject->qdata, quark_hook_list, NULL);
   
+  g_return_if_fail (gobject->ref_count == 1);
+
   /* invoke destroy method */
   BSE_OBJECT_GET_CLASS (object)->destroy (object);
+
+  g_return_if_fail (gobject->ref_count == 1);
 }
 
 static void

@@ -1,3 +1,8 @@
+Thu Apr 13 01:11:22 2000  Tim Janik  <timj@gtk.org>
+
+	* bseobject.c (bse_object_do_shutdown): assert no further ref_count
+	increments.
+
 Tue Apr 11 04:02:47 2000  Tim Janik  <timj@gtk.org>
 
 	* ported everything BSE over to the new GLib type system.
