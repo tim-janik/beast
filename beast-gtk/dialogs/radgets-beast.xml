@@ -27,35 +27,33 @@
 	  <hscrollbar name="tree-hscrollbar" size:vgroup="scroll-size" />
 	</vbox>
 	<vbox spacing="3" >
-	  <frame-shadow-out name="toolbar-area" size:vgroup="toolbar-size" >
-	    <hbox name="toolbar" >
-	      <tool-toggle-factory actions="tctrl-canvas-tools" relief="none" />
-	      <tool-separator pack:padding="2" />
-	      <action-toggle name="repeat-toggle" comment="FIXME: this should really be done via pspec publishing"
-		_action-name="Repeat"
-		_action-tooltip="Repeat playback within loop points"
-		image-size="big-button"
-		action-stock="BST_STOCK_REPEAT"
-		relief="none"
-		/>
-	      <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
-		<popup-menu >
-		  <menu-factory actions="tctrl-hpanel-tools" />
-		</popup-menu>
-	      </menu-button>
-              <tool-separator pack:padding="2" />
-	      <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
-		<popup-menu >
-		  <menu-factory actions="tctrl-quant-tools" />
-		</popup-menu>
-	      </menu-button>
-	      <tool-separator pack:padding="2" />
-	      <tool-area name="hzoom-area" _tooltip="Horizontal track zoom" >
-		<label area="label-area"
-		  _label="HZoom" />
-	      </tool-area>
-	    </hbox>
-	  </frame-shadow-out>
+	  <toolbar size:vgroup="toolbar-size" >
+	    <tool-toggle-factory actions="tctrl-canvas-tools" relief="none" />
+	    <tool-separator pack:padding="2" />
+	    <action-toggle name="repeat-toggle" comment="FIXME: this should really be done via pspec publishing"
+	      _action-name="Repeat"
+	      _action-tooltip="Repeat playback within loop points"
+	      image-size="big-button"
+	      action-stock="BST_STOCK_REPEAT"
+	      relief="none"
+	      />
+	    <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	      <popup-menu >
+		<menu-factory actions="tctrl-hpanel-tools" />
+	      </popup-menu>
+	    </menu-button>
+	    <tool-separator pack:padding="2" />
+	    <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	      <popup-menu >
+		<menu-factory actions="tctrl-quant-tools" />
+	      </popup-menu>
+	    </menu-button>
+	    <tool-separator pack:padding="2" />
+	    <tool-area name="hzoom-area" _tooltip="Horizontal track zoom" >
+	      <ulabel area="label-area"
+		_label="HZoom" />
+	    </tool-area>
+	  </toolbar>
 	  <frame-shadow-in name="track-area" size:vgroup="tree-size" pack:expand="1" />
 	  <hscrollbar name="track-hscrollbar" size:vgroup="scroll-size" />
 	</vbox>
@@ -67,7 +65,7 @@
       </vbox>
     </hbox>
   </xdef:track-view>
-
+  
   <!-- modules-popup -->
   <xdef:modules-popup inherit="popup-menu" >
     <menu-title _label="Synthesis Modules" />
@@ -95,20 +93,18 @@
   <!-- snet view -->
   <xdef:snet-view inherit="vbox" prop:border-width="3" >
     <vbox spacing="3" expand="1" >
-      <frame-shadow-out name="toolbar-area" size:vgroup="toolbar-size" >
-	<hbox name="toolbar" >
-	  <tool-toggle-factory actions="router-canvas-tools" relief="none" />
-	  <tool-toggle-factory actions="router-toolbar-modules" relief="none" />
-	  <tool-separator pack:padding="2" />
-	  <tool-button-factory actions="router-toolbar-actions" relief="none" />
-	  <tool-separator pack:padding="2" />
-	  <tool-area name="zoom-area" _tooltip="Adjust the zoom factor of the router display" >
-	    <label area="label-area" _label="Zoom" />
-	  </tool-area>
-	  <tool-separator pack:padding="2" />
-          <tool-text-toggle-factory actions="router-channel-toggle" relief="none" y-align="1" />
-	</hbox>
-      </frame-shadow-out>
+      <toolbar size:vgroup="toolbar-size" >
+	<tool-toggle-factory actions="router-canvas-tools" relief="none" />
+	<tool-toggle-factory actions="router-toolbar-modules" relief="none" />
+	<tool-separator pack:padding="2" />
+	<tool-button-factory actions="router-toolbar-actions" relief="none" />
+	<tool-separator pack:padding="2" />
+	<tool-area name="zoom-area" _tooltip="Adjust the zoom factor of the router display" >
+	  <ulabel area="label-area" _label="Zoom" />
+	</tool-area>
+	<tool-separator pack:padding="2" />
+	<tool-text-toggle-factory actions="router-channel-toggle" relief="none" y-align="1" />
+      </toolbar>
       <zoomed-window expand="1" >
 	<modules-popup name="snet-popup" />
       </zoomed-window>
@@ -171,33 +167,31 @@
   <!-- piano-roll-box -->
   <xdef:piano-roll-box inherit="vbox" prop:spacing="3" >
     <vbox name="toolbar-area" area="north" >
-      <frame-shadow-out >
-	<hbox name="toolbar" >
-	  <tool-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
-	  <tool-separator pack:padding="2" />
-	  <tool-button-factory action-root="" actions="piano-edit-actions" relief="none" />
-	  <tool-separator pack:padding="2" />
-	  <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
-	    <popup-menu >
-	      <menu-factory action-root="" actions="pctrl-quant-tools" />
-	    </popup-menu>
-	  </menu-button>
-	  <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
-	    <popup-menu >
-	      <menu-factory action-root="" actions="pctrl-note-tools" />
-	    </popup-menu>
-	  </menu-button>
-          <tool-separator pack:padding="2" />
-	  <tool-area name="hzoom-area" _tooltip="Horizontal piano zoom" >
-            <label area="label-area"
-	      _label="HZoom" />
-	  </tool-area>
-          <tool-area name="vzoom-area" _tooltip="Vertical piano zoom" >
-	    <label area="label-area"
-	      _label="VZoom" />
-	  </tool-area>
-	</hbox>
-      </frame-shadow-out>
+      <toolbar >
+	<tool-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
+	<tool-separator pack:padding="2" />
+	<tool-button-factory action-root="" actions="piano-edit-actions" relief="none" />
+	<tool-separator pack:padding="2" />
+	<menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	  <popup-menu >
+	    <menu-factory action-root="" actions="pctrl-quant-tools" />
+	  </popup-menu>
+	</menu-button>
+	<menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	  <popup-menu >
+	    <menu-factory action-root="" actions="pctrl-note-tools" />
+	  </popup-menu>
+	</menu-button>
+	<tool-separator pack:padding="2" />
+	<tool-area name="hzoom-area" _tooltip="Horizontal piano zoom" >
+	  <ulabel area="label-area"
+	    _label="HZoom" />
+	</tool-area>
+	<tool-area name="vzoom-area" _tooltip="Vertical piano zoom" >
+	  <ulabel area="label-area"
+	    _label="VZoom" />
+	</tool-area>
+      </toolbar>
     </vbox>
     <vpaned name="piano-paned" prop:height-request="500" prop:position="400" pack:expand="1" >
       <!--! child1 of the vpaned is meant to expand, but only gtk+-2.4 has

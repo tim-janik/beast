@@ -1,3 +1,16 @@
+Fri Nov 21 03:48:58 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c: adapt to the palette now using a GxkSimpleLabel
+	instead of a GtkLabel.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: switched from hand-written frames and
+	hboxes to using <toolbar/>, switched labels to ulabels where apropriate.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: define toolbar stencil. added an
+	event box to toolbars so contents get properly clipped.
+	defined <ulabel/> to auto-use-underline, turned <label/> to not
+	auto-use-underline.
+
 Fri Nov 21 01:48:34 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/dialogs/gadgets-standard.xml: use GxkSimpleLabel for <label/>,

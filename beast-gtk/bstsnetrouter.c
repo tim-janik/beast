@@ -1046,7 +1046,7 @@ snet_router_tool2text (BstSNetRouter *self)
           name = router_canvas_tools[i].name;
     }
   gxk_scroll_text_set (self->palette_text, blurb);
-  gtk_label_set (label, name);
+  g_object_set (label, "label", name, NULL);
 }
 
 static void

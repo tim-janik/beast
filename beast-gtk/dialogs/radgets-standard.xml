@@ -106,7 +106,9 @@
     prop:draw-indicator="0" />
   <!-- label: label= -->
   <xdef:label                 inherit="GxkSimpleLabel"
-    prop:label="$label" prop:use-underline="1" prop:auto-cut="1" />
+    prop:label="$label" prop:use-underline="0" prop:auto-cut="1" />
+  <xdef:ulabel                inherit="label"
+    prop:use-underline="1" />
   <!-- decks (notebook) -->
   <xdef:notebook              inherit="GtkNotebook"         />
   <xdef:deck                  inherit="notebook"
@@ -224,7 +226,7 @@
     </vbox>
   </xdef:action-image-button>
   <xdef:action-button inherit="action-image-button" >
-    <label label="$action-name" />
+    <ulabel label="$action-name" />
   </xdef:action-button>
   <xdef:action-image-toggle inherit="toggle-button" focus="0" default-area="vbox" >
     <tooltip text="$action-tooltip" />
@@ -244,7 +246,7 @@
     </vbox>
   </xdef:action-image-toggle>
   <xdef:action-toggle inherit="action-image-toggle" >
-    <label label="$action-name" />
+    <ulabel label="$action-name" />
   </xdef:action-toggle>
   <!-- muted-button: button-args -->
   <xdef:muted-button inherit="button" focus="0" >
@@ -252,6 +254,13 @@
   </xdef:muted-button>
   
   <xdef:big-button-factory  inherit="button-factory" image-size="big-button" />
+  <!-- toolbar -->
+  <xdef:toolbar             inherit="frame-shadow-out"
+    default-area="toolbar-hbox" >
+    <event-box>
+      <hbox name="toolbar-hbox" />
+    </event-box>
+  </xdef:toolbar>
   <!-- toolbar factories -->
   <xdef:tool-button-factory inherit="button-factory" image-size="big-button" relief="none" width-from-height="1.2" />
   <xdef:tool-toggle-factory inherit="toggle-factory" image-size="big-button" relief="none" width-from-height="1.2" />
@@ -277,7 +286,7 @@
     <vbox>
       <vbox name="image-area" expand="1" />
       <vbox name="label-area" pack:pack-type="end" >
-	<label area="label-area"
+	<ulabel area="label-area"
 	  prop:label="$label" />
       </vbox>
     </vbox>
@@ -290,7 +299,7 @@
     <tooltip text="$action-tooltip" />
     <widget-patcher />
     <alignment prop:yalign="$(ifdef,y-align,$y-align,0.5)" >
-      <label label="$action-name" prop:justify="center" />
+      <ulabel label="$action-name" prop:justify="center" />
     </alignment>
   </xdef:action-text-toggle>
   <xdef:tool-text-toggle-factory   inherit="text-toggle-factory" image-size="big-button" relief="none" />
@@ -307,7 +316,7 @@
   </xdef:image-button>
   <!-- label-image-button: image-button, label= -->
   <xdef:label-image-button inherit="image-button" >
-    <label prop:label="$label" />
+    <ulabel prop:label="$label" />
   </xdef:label-image-button>
   <!-- big-button: label-image-button -->
   <xdef:big-button inherit="label-image-button" image-size="big-button" />
