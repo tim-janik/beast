@@ -678,6 +678,7 @@ beast_show_about_box (void)
     _("Christian Rose"),
     //_("Christian Neumair"),
     _("Miloslav Trmac"),
+    _("Duarte Loreto"),
     _("Vincent van Adrighem"),
     _("Danilo Segan"),
     _("Xavier Conde Rueda"),
