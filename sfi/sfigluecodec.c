@@ -155,10 +155,10 @@ sfi_glue_encode_message (guint        log_level,
   return value;
 }
 
-static GValue*
+static gboolean
 encoder_process_message (SfiGlueEncoder *encoder,
-			 gboolean        allow_return,
-			 GValue		*value)
+			 GValue		*value,
+			 GValue	       **rvalue)
 {
   if (SFI_VALUE_HOLDS_SEQ (value))
     {
@@ -167,15 +167,13 @@ encoder_process_message (SfiGlueEncoder *encoder,
       switch (cmd)
 	{
 	case SFI_GLUE_CODEC_ASYNC_RETURN:
-	  if (allow_return)
+	  if (rvalue)
 	    {
-	      GValue *rvalue = NULL;
+	      *rvalue = NULL;
 	      if (seq->n_elements >= 2)
-		rvalue = sfi_value_clone_shallow (sfi_seq_get (seq, 1));
-	      else
-		rvalue = sfi_value_int (0);	/* void return dummy */
+		*rvalue = sfi_value_clone_shallow (sfi_seq_get (seq, 1));
 	      sfi_value_free (value);
-	      return rvalue;
+	      return TRUE;
 	    }
 	  else
 	    sfi_warn ("Encoder: ignoring message with spurious return value");
@@ -204,7 +202,7 @@ encoder_process_message (SfiGlueEncoder *encoder,
     sfi_warn ("Encoder: ignoring message of invalid type: %s", G_VALUE_TYPE_NAME (value));
   sfi_value_free (value);
   
-  return NULL;
+  return FALSE;
 }
 
 static void
@@ -225,7 +223,7 @@ encoder_exec_one_way (SfiGlueContext *context,
     {
       value = sfi_com_port_recv (encoder->port);
       if (value)
-	encoder_process_message (encoder, FALSE, value);
+	encoder_process_message (encoder, value, NULL);
     }
   while (value);
 }
@@ -246,8 +244,8 @@ encoder_exec_round_trip (SfiGlueContext *context,
   while (!rvalue)
     {
       GValue *value = sfi_com_port_recv_blocking (encoder->port);
-      if (value)
-	rvalue = encoder_process_message (encoder, TRUE, value);
+      if (value && encoder_process_message (encoder, value, &rvalue))
+	break;
     }
   
   sfi_seq_clear (seq);
@@ -845,7 +843,7 @@ encoder_fetch_events (SfiGlueContext *context)
   GValue *value = sfi_com_port_recv (encoder->port);
   while (value)		/* spin until queue is empty */
     {
-      encoder_process_message (encoder, FALSE, value);
+      encoder_process_message (encoder, value, NULL);
       value = sfi_com_port_recv (encoder->port);
     }
   events = encoder->events;
