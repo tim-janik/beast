@@ -1,3 +1,9 @@
+Fri Nov 19 00:47:50 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-news.texi: announce release.
+
+	* docs/site-oldnews.texi: rotation.
+
 Thu Nov 18 18:07:21 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/site-about.texi: update on new features.

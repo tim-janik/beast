@@ -27,6 +27,29 @@
 @c ----------------------------- START -----------------------------
 
 
+@newsTitle{Thursday 18 Nov 2004, The ``Legends may sleep@comma{} but they never die!'' Release}
+
+BEAST/BSE version 0.6.3 and BSE-ALSA version 0.6.3 are available from the
+@uref{beast-doc://download,,download section}.
+@c , here is the @uref{http://www.gnomedesktop.org/article.php?sid=1870,,FootNotes announcement}.
+
+BEAST tarball:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/beast-0.6.3.tar.gz,, beast-0.6.3.tar.gz}
+@* BEAST patch:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/patch-beast-0.6.2-0.6.3.bz2,, patch-beast-0.6.2-0.6.3.bz2}
+@* @uref{http://alsa-project.org,, ALSA} driver:
+@uref{http://beast.gtk.org/beast-ftp/v0.6/bse-alsa-0.6.3.tar.gz,, bse-alsa-0.6.3.tar.gz}
+
+It took a long time to get this release out, but the new features and the bug fixes
+are definitely worth it! As usual, we've had lots of language updates, many GUI
+fixes, but also some critical stability fixes. Major new features are: a stereo mixer
+for songs, DB meters, MIDI automation and a new sample-and-hold module by Artem Popov.
+As always, the
+@uref{beast-doc://release-news,,NEWS section} has the exact changes, enjoy the new code and
+please report bugs to our
+@uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list}.
+
+
 @newsTitle{Wednesday 07 Jul 2004, The ``small but steady steps'' Release}
 
 BEAST/BSE version 0.6.2 is available from the
@@ -46,15 +69,6 @@ As always, the
 @uref{beast-doc://release-news,,NEWS section} has the exact changes, enjoy the new code and
 please report bugs to our
 @uref{http://mail.gnome.org/mailman/listinfo/beast/,, mailing list}.
-
-
-@newsTitle{Sunday 04 Jul 2004, Mailing List Back Up}
-
-Thanks to Owen Taylor, a configuration error of the
-@uref{http://mail.gnome.org/archives/beast/,, beast mailing list}
-was fixed, so the list is up again and reports about the new
-@uref{http://beast.gtk.org/beast-ftp/v0.6/testing/beast-0.6.2-rc2.tar.gz,, release candidate}
-(as well as ordinary beast stuff) can be discussed on list again.
 
 
 @c ----------------------------- END -----------------------------
