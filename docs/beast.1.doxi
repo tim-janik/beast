@@ -45,6 +45,10 @@ beast -- Graphical program to simulate audio synthesis and compose music.
 	Shows a brief help message.
 @item -v, ---version
 	Prints out @beast and component versions and file paths.
+@item -n=@var{NICELEVEL}
+        Execute with priority NICELEVEL, this option only takes effect for the root suid wrapper ``beast''.
+@item -N
+        Disables renicing to execute with existing priority.
 @item ---display=@var{DISPLAY}
 	X server for the GUI; see @uref{man://1/X}.
 @item ---bse-latency=@var{USECONDS}

@@ -264,6 +264,17 @@ shell_parse_args (gint    *argc_p,
           boot_script_path = argv[i];
           argv[i] = NULL;
         }
+      else if (strcmp (argv[i], "-n") == 0 && i + 1 < argc)
+        { /* handled by priviledged launcher */
+          argv[i++] = NULL;
+          argv[i] = NULL;
+        }
+      else if (strncmp (argv[i], "-n=", 3) == 0 ||
+               (strncmp (argv[i], "-n", 2) == 0 && argv[i][3] >= '0' && argv[i][3] <= '9') ||
+               strcmp (argv[i], "-N") == 0)
+        { /* handled by priviledged launcher */
+          argv[i] = NULL;
+        }
       else if (strcmp ("-h", argv[i]) == 0 ||
                strcmp ("--help", argv[i]) == 0)
         {
@@ -314,6 +325,8 @@ shell_print_usage (void)
   g_print ("Play BSE files and evaluate Scheme code, interactively or from a script.\n");
   g_print ("  -h, --help              show this help message\n");
   g_print ("  -v, --version           print version and exit\n");
+  g_print ("  -n NICELEVEL            run with priority NICELEVEL (for suid wrapper bsesh)\n");
+  g_print ("  -N                      disable renicing\n");
   g_print ("  --bse-pipe INFD OUTFD   remote operation filedescriptors\n");
   g_print ("  --bse-eval STRING       execute (eval-string STRING) and exit\n");
   g_print ("  --bse-enable-register   allow registration of BSE procedures\n");

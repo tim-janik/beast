@@ -1,4 +1,5 @@
 FIXME(release-critical):
+- bseprocidl: generate "Info blurb" not "Info BLURB"
 - play + play doesn't reset wave oscillator state
 - implement Monitor Output Signal dialogs:
   - histogram
@@ -38,7 +39,6 @@ TODO:
 - preserve part-link ids in tracks (API) across part-tick movement and remove-tick+insert-part undo
 - add raise/lower buttons to track view
 - add toleft/toright buttons to bus view (mixer)
-- add -n <nicelevel> and -N for not nicing to beast and bsesh launchers
 - add executable versioning to sfidl 
 - beast --debug=all --no-debug=comport doesn't disable comport messages
 - rename cast() to convert()

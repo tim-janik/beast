@@ -1,3 +1,7 @@
+Overview of Changes in BEAST/BSE 0.6.4:
+
+* Added -N and -n=<nicelevel> options to drop nice level priorities
+
 Overview of Changes in BEAST/BSE 0.6.3:
 
 * The package now depends on GLib-2.4 and Gtk+-2.4

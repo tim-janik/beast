@@ -56,6 +56,10 @@ bsesh -- A Guile based scheme shell for @beast and @bse{}.
 	Describe command line options and exit.
 @item -v, ---version
 	Display version and exit.
+@item -n=@var{NICELEVEL}
+        Execute with priority NICELEVEL, this option only takes effect for the root suid wrapper ``beast''.
+@item -N
+        Disables renicing to execute with existing priority.
 @item ---bse-latency=@var{USECONDS}
 	Set the allowed synthesis latency for @bse in milliseconds.
 @item ---bse-mixing-freq=@var{FREQUENCY}

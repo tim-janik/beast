@@ -500,6 +500,17 @@ bst_early_parse_args (int    *argc_p,
 	  arg_force_xkb = TRUE;
           argv[i] = NULL;
 	}
+      else if (strcmp (argv[i], "-n") == 0 && i + 1 < argc)
+        { /* handled by priviledged launcher */
+          argv[i++] = NULL;
+          argv[i] = NULL;
+        }
+      else if (strncmp (argv[i], "-n=", 3) == 0 ||
+               (strncmp (argv[i], "-n", 2) == 0 && argv[i][3] >= '0' && argv[i][3] <= '9') ||
+               strcmp (argv[i], "-N") == 0)
+        { /* handled by priviledged launcher */
+          argv[i] = NULL;
+        }
       else if (strcmp ("-h", argv[i]) == 0 ||
 	       strcmp ("--help", argv[i]) == 0)
 	{
@@ -683,6 +694,8 @@ bst_print_blurb (void)
   g_print ("                          enable unstable plugins and experimental code\n");
   g_print ("  -h, --help              show this help message\n");
   g_print ("  -v, --version           print version and file paths\n");
+  g_print ("  -n NICELEVEL            run with priority NICELEVEL (for suid wrapper beast)\n");
+  g_print ("  -N                      disable renicing\n");
   g_print ("  --display=DISPLAY       X server for the GUI; see X(1)\n");
   g_print ("  --bse-latency=USECONDS  specify synthesis latency in milliseconds\n");
   g_print ("  --bse-mixing-freq=FREQ  specify synthesis mixing frequency in Hz \n");

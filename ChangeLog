@@ -1,3 +1,13 @@
+Fri Dec  3 18:49:28 2004  Tim Janik  <timj@gtk.org>
+
+	* launchers/suidmain.c (main): removed nice level printf from
+	unpriviledged code.
+
+	* shell/bsesh.c (shell_parse_args): 
+	* beast-gtk/bstmain.c (bst_early_parse_args): simply ignore -N and
+	-n NICELEVEL options which are handled by the suid launchers.
+	added documentation for both options.
+
 Fri Dec  3 18:32:33 2004  Tim Janik  <timj@gtk.org>
 
 	* launchers/suidmain.c:

@@ -120,8 +120,6 @@ main (int    argc,
   if (dropped_priority != -2147483647)
     setpriority (PRIO_PROCESS, getpid(), dropped_priority);
 
-  dprintf (2,"nicelevel: %d\n", getpriority (PRIO_PROCESS, getpid()));
-
   /* find executable */
   executable = custom_find_executable (&argc, &argv);
 
