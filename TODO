@@ -1,4 +1,6 @@
 FIXMES:	(release-critical)
+- disable scroll_text_patchup_size_request() for message boxes
+- add extra flag to GxkDialog to prevent Escape, use it only for bstapp
 - sequencer: export asserts
 - gslmath->bsemath
 - sequencer: dtoull
@@ -37,6 +39,7 @@ TODO:
 - overshoot LED: ___ 
                  \ |  overshoot: fill triangle
                   \|  fill level shrinks with time
+- BUG: GUI freeze; 1) start Progressor(n-iterations=max), 2) repeatedly generate "failed to open MIDI device" dialog
 - BUG: undo -guards around moving events                  
 - BUG: select events, C+c, C+v, kill-selection. startover => copy is placed above old selection
 - BUG: when selected events overlap not-selected events, give prcedence to selected events when moving                  
@@ -520,6 +523,8 @@ GSL:
   - [timj]        7 6 Async DCache read-ahead thread creation
 
 sfidl:
+  - there's no generic way to retrieve sequence pspecs with the hostc binding,
+    e.g. compare beast-skin-config-v1 (record) to beast-msg-absorb-config-v1 (sequence)
   - remove cTypeField() from cbase
   - typeArg(), typeField(), typeRet() and typeArray() in sfidl-cbase.[hc]*
     must throw an assertion for unknown types

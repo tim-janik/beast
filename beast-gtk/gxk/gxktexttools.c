@@ -1303,6 +1303,8 @@ tnav_update_vpos (GtkAdjustment  *a,
  @* GXK_SCROLL_TEXT_NAVIGATABLE - add a navigation bar and allow
  * the user to navigate through clickable links;
  @* GXK_SCROLL_TEXT_EDITABLE - permit modifications of the text;
+ @* GXK_SCROLL_TEXT_HFIXED - make horizontal dimension unscrollable
+ @* GXK_SCROLL_TEXT_VFIXED - make vertical dimension unscrollable
  @* GXK_SCROLL_TEXT_WIDGET_LOOK - this is a combination of flags
  * to adjust the scroll text to look like an ordinary #GtkLabel,
  * which amounts to using a sans serif font, normal widget
@@ -1334,8 +1336,8 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   /* scrollable text area */
   scwin = g_object_new (GTK_TYPE_SCROLLED_WINDOW,
                         "visible", TRUE,
-                        "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
-                        "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+                        "hscrollbar_policy", (flags & GXK_SCROLL_TEXT_HFIXED) ? GTK_POLICY_NEVER : GTK_POLICY_AUTOMATIC,
+                        "vscrollbar_policy", (flags & GXK_SCROLL_TEXT_VFIXED) ? GTK_POLICY_NEVER : GTK_POLICY_AUTOMATIC,
                         NULL);
   g_signal_connect_after (scwin, "size_request", G_CALLBACK (scroll_text_patchup_size_request), sctext);
   gtk_box_pack_start (GTK_BOX (sctext), scwin, TRUE, TRUE, 0);

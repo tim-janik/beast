@@ -48,6 +48,8 @@ struct _BstPreferences
   GtkWidget            *box_piano_keys;
   GtkWidget            *box_generic_keys;
 
+  GtkWidget            *box_msg_absorb_config;
+
   SfiRec               *rec_skin;
   SfiRing              *params_skin;
 

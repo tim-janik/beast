@@ -141,6 +141,16 @@ record SkinConfig {
   };
 };
 
+/* message filter */
+record MsgAbsorbString {
+  String version;
+  String cstring;
+  Bool   enabled;
+};
+sequence MsgAbsorbStringSeq {
+  MsgAbsorbString strings;
+};
+
 /* pattern editor key bindings */
 record KeyBindingItem {
   String key_name   = (NULL, NULL, NULL, STANDARD);

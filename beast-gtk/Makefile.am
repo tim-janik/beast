@@ -46,7 +46,8 @@ beast_headers = $(strip \
 	bstrackeditor.h		bstrackitem.h	bstracktable.h		bstsequence.h	    \
 	bstsnetrouter.h		bstsplash.h	bsttrackview.h		bstsupershell.h	    \
 	bstusermessage.h	bstdial.h	bsttracksynthdialog.h	bstwaveeditor.h	    \
-	bstzoomedwindow.h	bstskinconfig.h	bsttrackrollctrl.h	bstxframe.h	    \
+	bstzoomedwindow.h	bstskinconfig.h	bstmsgabsorb.h		\
+	bsttrackrollctrl.h	bstxframe.h	\
 	bstsampleeditor.h	bstrackview.h	bsttreestores.h		bstutils.h	    \
 	bstmarshal.h bstdefs.h \
 )
@@ -66,7 +67,8 @@ beast_sources = $(strip \
 	bstrackeditor.c		bstrackitem.c	bstracktable.c		bstsequence.c	    \
 	bstsnetrouter.c		bstsplash.c	bsttrackview.c		bstsupershell.c	    \
 	bstusermessage.c	bstdial.c	bsttracksynthdialog.c	bstwaveeditor.c	    \
-	bstzoomedwindow.c	bstskinconfig.c	bsttrackrollctrl.c	bstxframe.c	    \
+	bstzoomedwindow.c	bstskinconfig.c	bstmsgabsorb.c		\
+	bsttrackrollctrl.c	bstxframe.c	\
 	bstsampleeditor.c	bstrackview.c	bsttreestores.c		bstutils.c	    \
 	$(PROFILE_SOURCE) \
 )

@@ -588,7 +588,11 @@ bst_key_binding_item_pspec (void)
 {
   static GParamSpec *pspec = NULL;
   if (!pspec)
-    pspec = sfi_pspec_rec ("key", NULL, NULL, bst_key_binding_item_fields, SFI_PARAM_STANDARD);
+    {
+      pspec = sfi_pspec_rec ("key", NULL, NULL, bst_key_binding_item_fields, SFI_PARAM_STANDARD);
+      g_param_spec_ref (pspec);
+      g_param_spec_sink (pspec);
+    }
   return pspec;
 }
 

@@ -23,6 +23,7 @@
 #include "bstgconfig.h"
 #include "bstkeybindings.h"
 #include "bstskinconfig.h"
+#include "bstmsgabsorb.h"
 #include "bstusermessage.h"
 #include "bstparam.h"
 #include "bstpreferences.h"
@@ -143,7 +144,8 @@ main (int   argc,
   _bst_init_params ();
   _bst_gconfig_init ();
   _bst_skin_config_init ();
-
+  _bst_msg_absorb_config_init ();
+  
   /* parse rc file */
   bst_splash_update_item (beast_splash, _("RC Files"));
   bst_preferences_load_rc_files();
@@ -334,7 +336,7 @@ main (int   argc,
   /* release splash grab, install message dialog handler */
   gtk_widget_hide (beast_splash);
   bst_splash_release_grab (beast_splash);
-  sfi_log_set_handler ((SfiLogHandler) bst_user_message_log_handler, NULL);
+  sfi_log_set_thread_handler (bst_user_message_log_handler);
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -343,18 +345,12 @@ main (int   argc,
       g_main_iteration (TRUE);
       GDK_THREADS_ENTER ();
     }
-  sfi_log_set_handler (NULL, NULL);
+  sfi_log_set_thread_handler (NULL);
   
-  /* stop everything playing
-   */
-  // bse_heart_reset_all_attach ();
-  
-  /* take down GUI leftovers
-   */
+  /* take down GUI leftovers */
   bst_user_messages_kill ();
   
-  /* perform necessary cleanup cycles
-   */
+  /* perform necessary cleanup cycles */
   GDK_THREADS_LEAVE ();
   while (g_main_iteration (FALSE))
     {

@@ -20,6 +20,7 @@
 #include "bstgconfig.h"
 #include "bstskinconfig.h"
 #include "bstkeybindings.h"
+#include "bstmsgabsorb.h"
 #include "bstpatternctrl.h"
 #include "topconfig.h" /* BST_VERSION */
 #include "bstparam.h"
@@ -81,6 +82,10 @@ bst_preferences_init (BstPreferences *self)
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
   gxk_notebook_append (self->notebook, self->box_generic_keys, _("Generic Keys"), FALSE);
+
+  self->box_msg_absorb_config = bst_msg_absorb_config_box();
+  bst_msg_absorb_config_box_set (self->box_msg_absorb_config, bst_msg_absorb_config_get_global());
+  gxk_notebook_append (self->notebook, self->box_msg_absorb_config, _("Messages"), FALSE);
   
   pspec = bst_skin_config_pspec ();
   self->rec_skin = bst_skin_config_to_rec (bst_skin_config_get_global ());
@@ -204,6 +209,8 @@ bst_preferences_revert (BstPreferences *self)
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
 
+  bst_msg_absorb_config_box_set (self->box_msg_absorb_config, bst_msg_absorb_config_get_global());
+
   rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
   crec = sfi_rec_copy_deep (rec);
   sfi_rec_unref (rec);
@@ -243,6 +250,9 @@ bst_preferences_default_revert (BstPreferences *self)
   bst_key_binding_box_set (self->box_generic_keys, iseq);
   bst_key_binding_item_seq_free (iseq);
 
+  BstMsgAbsorbStringSeq empty_mas_seq = { 0, };
+  bst_msg_absorb_config_box_set (self->box_msg_absorb_config, &empty_mas_seq);
+
   rec = sfi_rec_new ();
   sfi_rec_validate (rec, sfi_pspec_get_rec_fields (bst_skin_config_pspec ()));
   sfi_rec_swap_fields (self->rec_skin, rec);
@@ -275,6 +285,11 @@ bst_preferences_apply (BstPreferences *self)
   bst_key_binding_set_item_seq (kbinding, iseq);
   bst_key_binding_item_seq_free (iseq);
 
+  BstMsgAbsorbStringSeq *mass = bst_msg_absorb_config_box_get (self->box_msg_absorb_config);
+  SfiSeq *seq = bst_msg_absorb_string_seq_to_seq (mass);
+  bst_msg_absorb_config_apply (seq);
+  sfi_seq_unref (seq);
+  
   bst_skin_config_apply (self->rec_skin, NULL);
 
   bse_proxy_set (BSE_SERVER, "bse-preferences", self->bserec, NULL);
@@ -339,8 +354,10 @@ bst_preferences_save (BstPreferences *self)
   // slist = g_slist_append (slist, bst_pattern_controller_generic_keys());
   error = bst_key_binding_dump (file_name, slist);
   if (error)
-    g_warning ("failed to save skinrc \"%s\": %s", file_name, bse_error_blurb (error));
+    g_warning ("failed to save keyrc \"%s\": %s", file_name, bse_error_blurb (error));
   g_slist_free (slist);
+
+  bst_msg_absorb_config_save();
 
   file_name = g_strdup (bst_skin_config_rcfile ());
   error = bst_skin_dump (file_name);

@@ -547,6 +547,16 @@
     </vbox>
   </xdef:key-bindings-box>
 
+  <!-- message-absorb-config editor -->
+  <xdef:message-absorb-config-box inherit="vbox" >
+    <vbox spacing="3" expand="1" >
+      <scrolled-window pack:expand="1"
+	hscrollbar-policy="automatic" >
+	<tree-view id="message-tree-view" />
+      </scrolled-window>
+    </vbox>
+  </xdef:message-absorb-config-box>
+
   <!-- beast-menubar -->
   <xdef:beast-menubar inherit="menubar" >
     <submenu _label="_File">

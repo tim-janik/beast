@@ -1,3 +1,33 @@
+Mon Oct  4 03:50:32 2004  Tim Janik  <timj@gtk.org>
+
+	* bstrecords.idl: provide MsgAbsorbString sequence.
+
+	* beast-gtk/bstmsgabsorb.[hc]: implemented message filter logic with
+	rc-file and preferences dialog.
+
+	* beast-gtk/dialogs/radgets-beast.xml: define message-absorb-config-box.
+
+	* beast-gtk/bstusermessage.[hc]: adapt to new logging API. added
+	details and repitition counting to mesage dialogs. added support 
+	for message filtering.
+
+	* beast-gtk/bstpreferences.[hc]: integrate bst_msg_absorb_config_box().
+
+	* beast-gtk/bstdefs.h: provide _DOMAIN, the gettext domain, alongside
+	_() and N_(). this is needed for calls to dngettext().
+
+	* beast-gtk/bstmain.c: setup logging handler for main thread.
+
+	* beast-gtk/bstkeybindings.c: keep refcounts on static pspecs.
+
+	* beast-gtk/gxk/gxkutils.[hc]: return the newly added GtkTreeViewColumn*
+	from tree view column convenience functions.
+	added gxk_expander_connect_to_widget() to hookup the neccessary code to 
+	control widget visibility with a GtkExpander.
+
+	* beast-gtk/gxk/gxktexttools.[hc]: added GXK_SCROLL_TEXT_HFIXED and
+	GXK_SCROLL_TEXT_VFIXED flags to affect scrolling ability.
+
 Sat Oct  2 21:12:45 2004  Tim Janik  <timj@gtk.org>
 
 	* *.c, *.cc: adaptions to logging API changes.

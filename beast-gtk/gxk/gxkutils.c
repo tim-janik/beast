@@ -1532,7 +1532,7 @@ gxk_tree_view_append_text_columns (GtkTreeView *tree_view,
   va_end (var_args);
 }
 
-static void
+static GtkTreeViewColumn*
 tree_view_add_column (GtkTreeView  *tree_view,
 		      guint	     model_column,
 		      gdouble       xalign,
@@ -1651,6 +1651,7 @@ tree_view_add_column (GtkTreeView  *tree_view,
     gxk_tree_view_column_set_tip_title (tcol, title, tooltip);
   gtk_tree_view_column_set_alignment (tcol, xalign);
   g_free (column_flags);
+  return tcol;
 }
 
 /**
@@ -1664,6 +1665,7 @@ tree_view_add_column (GtkTreeView  *tree_view,
  * @edited_callback:  notification callback 
  * @data:             data passed in to toggled_callback
  * @cflags:           connection flags
+ * @RETURNS:          a newly added #GtkTreeViewColumn
  *
  * Add a new column with text cell to a @tree_view.
  * The @model_column indicates the column number
@@ -1678,7 +1680,7 @@ tree_view_add_column (GtkTreeView  *tree_view,
  * "::edited" signal of the text cell and the cell is
  * made editable.
  */
-void
+GtkTreeViewColumn*
 gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
                                guint         model_column,
 			       const gchar  *column_flags,
@@ -1689,7 +1691,7 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
                                gpointer      data,
                                GConnectFlags cflags)
 {
-  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
 
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
                                edited_callback, NULL, data, cflags,
@@ -1707,6 +1709,7 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
  * @popup_callback:   popup notification callback 
  * @data:             data passed in to toggled_callback
  * @cflags:           connection flags
+ * @RETURNS:          a newly added #GtkTreeViewColumn
  *
  * Add a text column with popup facility, similar to
  * gxk_tree_view_add_text_column(). This function takes
@@ -1714,7 +1717,7 @@ gxk_tree_view_add_text_column (GtkTreeView  *tree_view,
  * called when the user clicks on the cells "popup"
  * button.
  */
-void
+GtkTreeViewColumn*
 gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 				guint	      model_column,
 				const gchar  *column_flags,
@@ -1726,7 +1729,7 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
 				gpointer      data,
 				GConnectFlags cflags)
 {
-  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
 
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
 			       edited_callback, popup_callback, data, cflags,
@@ -1743,16 +1746,18 @@ gxk_tree_view_add_popup_column (GtkTreeView  *tree_view,
  * @toggled_callback: notification callback 
  * @data:             data passed in to toggled_callback
  * @cflags:           connection flags
+ * @RETURNS:          a newly added #GtkTreeViewColumn
  *
  * Add a toggle button column, similar
  * to gxk_tree_view_add_text_column(), however
  * the model column is expected to be of type
  * %G_TYPE_BOOLEAN, and instead of an @edited_callback(),
- * this function has a @toggled_callback(@data) callback
- * which is connected to the "toggled" signal of
+ * this function has a
+ * void @toggled_callback(#GtkCellRendererToggle*, const gchar *strpath, @data)
+ * callback which is connected to the "toggled" signal of
  * the new cell.
  */
-void
+GtkTreeViewColumn*
 gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
 				 guint         model_column,
 				 const gchar  *column_flags,
@@ -1763,7 +1768,7 @@ gxk_tree_view_add_toggle_column (GtkTreeView  *tree_view,
 				 gpointer      data,
 				 GConnectFlags cflags)
 {
-  g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tree_view), NULL);
 
   return tree_view_add_column (tree_view, model_column, xalign, title, tooltip,
 			       toggled_callback, NULL, data, cflags,
@@ -2929,6 +2934,36 @@ gxk_window_set_geometry_height_inc (GtkWindow       *window,
       geometry->height_inc = height_increment;
       gtk_window_set_geometry_hints (GTK_WINDOW (window), NULL, geometry, GDK_HINT_MIN_SIZE | GDK_HINT_RESIZE_INC);
     }
+}
+
+static void
+adjust_visibility (GtkWidget  *expander,
+                   GParamSpec *pspec,
+                   GtkWidget  *widget)
+{
+  gboolean expanded;
+  g_return_if_fail (G_IS_PARAM_SPEC_BOOLEAN (pspec));
+  g_object_get (expander, "expanded", &expanded, NULL);
+  if (expanded)
+    gtk_widget_show (widget);
+  else
+    gtk_widget_hide (widget);
+}
+
+/**
+ * gxk_expander_connect_to_widget
+ * @expander: valid #GtkWidget with boolean ::expanded property
+ * @widget:   valid #GtkWidget
+ * Setup signal connections, so that the visibility of @widget
+ * is controlled by the ::expanded property of @expander.
+ */
+void
+gxk_expander_connect_to_widget (GtkWidget       *expander,
+                                GtkWidget       *widget)
+{
+  if (!gxk_signal_handler_pending (expander, "notify::expanded", G_CALLBACK (adjust_visibility), widget))
+    g_signal_connect_object (expander, "notify::expanded", G_CALLBACK (adjust_visibility), widget, 0);
+  g_object_notify (expander, "expanded");
 }
 
 guint

@@ -93,6 +93,8 @@ void            gxk_window_set_geometry_width_inc  (GtkWindow       *window,
                                                     guint            width_increment);
 void            gxk_window_set_geometry_height_inc (GtkWindow       *window,
                                                     guint            height_increment);
+void            gxk_expander_connect_to_widget     (GtkWidget       *expander,
+                                                    GtkWidget       *widget);
 
 guint           gxk_container_get_insertion_slot   (GtkContainer    *container);
 void            gxk_container_slot_reorder_child   (GtkContainer    *container,
@@ -231,54 +233,53 @@ void         gxk_size_group                       (GtkSizeGroupMode  sgmode,
                                                    ...);
 
 /* tree view convenience */
-gint	 gxk_tree_spath_index0			(const gchar		*strpath);
-gboolean gxk_tree_model_get_iter                (GtkTreeModel           *tree_model,
-                                                 GtkTreeIter            *iter,
-                                                 GtkTreePath            *path);
-gboolean gxk_tree_path_prev			(GtkTreePath		*path);
-guint	 gxk_tree_view_add_column		(GtkTreeView		*tree_view,
-						 gint			 position,
-						 GtkTreeViewColumn	*column,
-						 GtkCellRenderer	*cell,
-						 const gchar		*attrib_name,
-						 ...);
-void	 gxk_tree_view_append_text_columns	(GtkTreeView		*tree_view,
-						 guint			 n_cols,
-						 ...);
-void	 gxk_tree_view_add_text_column		(GtkTreeView  *tree_view,
-						 guint	       model_column,
-						 const gchar  *column_flags,
-						 gdouble       xalign,
-						 const gchar  *title,
-						 const gchar  *tooltip,
-						 gpointer      edited_callback,
-						 gpointer      data,
-						 GConnectFlags cflags);
-void	 gxk_tree_view_add_popup_column		(GtkTreeView  *tree_view,
-						 guint	       model_column,
-						 const gchar  *column_flags,
-						 gdouble       xalign,
-						 const gchar  *title,
-						 const gchar  *tooltip,
-						 gpointer      edited_callback,
-						 gpointer      popup_callback,
-						 gpointer      data,
-						 GConnectFlags cflags);
-void	gxk_tree_view_add_toggle_column		(GtkTreeView  *tree_view,
-						 guint	       model_column,
-						 const gchar  *column_flags,
-						 gdouble       xalign,
-						 const gchar  *title,
-						 const gchar  *tooltip,
-						 gpointer      toggled_callback,
-						 gpointer      data,
-						 GConnectFlags cflags);
-void	gxk_tree_view_column_set_tip_title	(GtkTreeViewColumn   *tree_column,
-						 const gchar         *title,
-						 const gchar	     *tooltip);
-void	gxk_tree_view_set_editable      	(GtkTreeView         *tview,
-                                                 gboolean             maybe_editable);
-
+gint	           gxk_tree_spath_index0		(const gchar		*strpath);
+gboolean           gxk_tree_model_get_iter              (GtkTreeModel           *tree_model,
+                                                         GtkTreeIter            *iter,
+                                                         GtkTreePath            *path);
+gboolean           gxk_tree_path_prev			(GtkTreePath		*path);
+guint	           gxk_tree_view_add_column		(GtkTreeView		*tree_view,
+                                                         gint			 position,
+                                                         GtkTreeViewColumn	*column,
+                                                         GtkCellRenderer	*cell,
+                                                         const gchar		*attrib_name,
+                                                         ...);
+void               gxk_tree_view_append_text_columns    (GtkTreeView		*tree_view,
+                                                         guint			 n_cols,
+                                                         ...);
+GtkTreeViewColumn* gxk_tree_view_add_text_column	(GtkTreeView            *tree_view,
+                                                         guint	                 model_column,
+                                                         const gchar            *column_flags,
+                                                         gdouble                 xalign,
+                                                         const gchar            *title,
+                                                         const gchar            *tooltip,
+                                                         gpointer                edited_callback,
+                                                         gpointer                data,
+                                                         GConnectFlags           cflags);
+GtkTreeViewColumn* gxk_tree_view_add_popup_column	(GtkTreeView            *tree_view,
+                                                         guint	                 model_column,
+                                                         const gchar            *column_flags,
+                                                         gdouble                 xalign,
+                                                         const gchar            *title,
+                                                         const gchar            *tooltip,
+                                                         gpointer                edited_callback,
+                                                         gpointer                popup_callback,
+                                                         gpointer                data,
+                                                         GConnectFlags           cflags);
+GtkTreeViewColumn* gxk_tree_view_add_toggle_column	(GtkTreeView            *tree_view,
+                                                         guint	                 model_column,
+                                                         const gchar            *column_flags,
+                                                         gdouble                 xalign,
+                                                         const gchar            *title,
+                                                         const gchar            *tooltip,
+                                                         gpointer                toggled_callback,
+                                                         gpointer                data,
+                                                         GConnectFlags           cflags);
+void	           gxk_tree_view_column_set_tip_title	(GtkTreeViewColumn      *tree_column,
+                                                         const gchar            *title,
+                                                         const gchar	        *tooltip);
+void	           gxk_tree_view_set_editable      	(GtkTreeView            *tview,
+                                                         gboolean                maybe_editable);
 
 /* tree selection convenience */
 void   gxk_tree_selection_select_spath   (GtkTreeSelection      *selection,
