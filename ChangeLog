@@ -1,3 +1,8 @@
+Fri Jan 14 13:04:20 2005  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.cc: added parse_str_option() and parse_bool_option(),
+	got rid of parse_arg_option(). adapted option parsers.
+
 Fri Jan 14 12:30:06 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.cc: added chunk selection options to clip command.

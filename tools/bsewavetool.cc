@@ -245,6 +245,47 @@ wavetool_print_blurb (bool bshort)
     }
 }
 
+static bool
+parse_str_option (char        **argv,
+                  guint        &i,
+                  const gchar  *arg,
+                  const gchar *&str,
+                  guint         argc)
+{
+  guint length = strlen (arg);
+  if (strncmp (argv[i], arg, length) == 0)
+    {
+      const gchar *equal = argv[i] + length;
+      if (*equal == '=')              /* -x=Arg */
+        str = equal + 1;
+      else if (*equal)                /* -xArg */
+        str = equal;
+      else if (i + 1 < argc)          /* -x Arg */
+        {
+          argv[i++] = NULL;
+          str = argv[i];
+        }
+      argv[i] = NULL;
+      if (str)
+        return true;
+    }
+  return false;
+}
+
+static bool
+parse_bool_option (char        **argv,
+                   guint        &i,
+                   const gchar  *arg)
+{
+  guint length = strlen (arg);
+  if (strncmp (argv[i], arg, length) == 0)
+    {
+      argv[i] = NULL;
+      return true;
+    }
+  return false;
+}
+
 static void
 wavetool_parse_args (int    *argc_p,
                      char ***argv_p)
@@ -260,86 +301,43 @@ wavetool_parse_args (int    *argc_p,
   envar = getenv ("BSEWAVETOOL_NO_DEBUG");
   if (envar)
     sfi_debug_deny (envar);
-
+  
   for (i = 1; i < argc; i++)
     {
+      const gchar *str;
       if (strcmp (argv[i], "--") == 0)
         {
           argv[i] = NULL;
           break;
         }
-      else if (strcmp ("--debug-list", argv[i]) == 0)
+      else if (parse_bool_option (argv, i, "--debug-list"))
         {
           g_print ("debug keys: all");
           g_print ("\n");
           exit (0);
-          argv[i] = NULL;
         }
-      else if (strcmp ("--debug", argv[i]) == 0 ||
-               strncmp ("--debug=", argv[i], 8) == 0)
-        {
-          gchar *equal = argv[i] + 7;
-          if (*equal == '=')
-            sfi_debug_allow (equal + 1);
-          else if (i + 1 < argc)
-            {
-              argv[i++] = NULL;
-              sfi_debug_allow (argv[i]);
-            }
-          argv[i] = NULL;
-        }
-      else if (strcmp ("--no-debug", argv[i]) == 0 ||
-               strncmp ("--no-debug=", argv[i], 8) == 0)
-        {
-          gchar *equal = argv[i] + 7;
-          if (*equal == '=')
-            sfi_debug_deny (equal + 1);
-          else if (i + 1 < argc)
-            {
-              argv[i++] = NULL;
-              sfi_debug_deny (argv[i]);
-            }
-          argv[i] = NULL;
-        }
-      else if (strcmp ("-h", argv[i]) == 0 ||
-               strcmp ("--help", argv[i]) == 0)
+      else if (parse_str_option (argv, i, "--debug", str, argc))
+        sfi_debug_allow (str);
+      else if (parse_str_option (argv, i, "--no-debug", str, argc))
+        sfi_debug_deny (str);
+      else if (parse_bool_option (argv, i, "-h") ||
+               parse_bool_option (argv, i, "--help"))
         {
           wavetool_print_blurb (false);
-          argv[i] = NULL;
           exit (0);
         }
-      else if (strcmp ("-v", argv[i]) == 0 ||
-               strcmp ("--version", argv[i]) == 0)
+      else if (parse_bool_option (argv, i, "-v") ||
+               parse_bool_option (argv, i, "--version"))
         {
           wavetool_print_version ();
-          argv[i] = NULL;
           exit (0);
         }
-      else if (strcmp ("-k", argv[i]) == 0)
-        {
-          continue_on_error = true;
-          argv[i] = NULL;
-        }
-      else if (strcmp ("-q", argv[i]) == 0)
-        {
-          quiet_infos = true;
-          argv[i] = NULL;
-        }
-      else if (strcmp ("-o", argv[i]) == 0 ||
-               strncmp ("-o", argv[i], 2) == 0)
-        {
-          gchar *equal = argv[i] + 2;
-          if (*equal == '=')            /* -o=Arg */
-            output_file = equal + 1;
-          else if (*equal)              /* -oArg */
-            output_file = equal;
-          else if (i + 1 < argc)        /* -o Arg */
-            {
-              argv[i++] = NULL;
-              output_file = argv[i];
-            }
-          argv[i] = NULL;
-        }
+      else if (parse_bool_option (argv, i, "-k"))
+        continue_on_error = true;
+      else if (parse_bool_option (argv, i, "-q"))
+        quiet_infos = true;
+      else if (parse_str_option (argv, i, "-o", str, argc))
+        output_file = str;
       else /* command & file names */
         {
           if (command_name == "")
@@ -423,17 +421,11 @@ public:
   {
     for (guint i = 1; i < argc; i++)
       {
-        if (strcmp (argv[i], "-N") == 0 && i + 1 < argc) // FIXME: use arg parser
-          {
-            argv[i++] = NULL;
-            wave_name = argv[i];
-            argv[i] = NULL;
-          }
-        else if (strcmp (argv[i], "-f") == 0)
-          {
-            force_creation = true;
-            argv[i] = NULL;
-          }
+        const gchar *str;
+        if (parse_str_option (argv, i, "-N", str, argc))
+          wave_name = str;
+        else if (parse_bool_option (argv, i, "-f"))
+          force_creation = true;
         else if (channel_str == "")
           {
             channel_str = argv[i];
@@ -502,12 +494,9 @@ public:
   {
     for (guint i = 1; i < argc; i++)
       {
-        if (strcmp (argv[i], "-Q") == 0 && i + 1 < argc)
-          {
-            argv[i++] = NULL;
-            quality = g_ascii_strtod (argv[i], NULL);
-            argv[i] = NULL;
-          }
+        const gchar *str;
+        if (parse_str_option (argv, i, "-Q", str, argc))
+          quality = g_ascii_strtod (str, NULL);
       }
     return 0; // no missing args
   }
@@ -642,33 +631,6 @@ public:
   }
 } cmd_oggenc ("oggenc");
 
-static inline bool
-parse_arg_option (char        **argv,
-                  guint        &i,
-                  guint         argc,
-                  const gchar  *arg,
-                  const gchar *&str)
-{
-  guint length = strlen (arg);
-  if (strncmp (argv[i], arg, length) == 0)
-    {
-      const gchar *equal = argv[i] + length;
-      if (*equal == '=')              /* -x=Arg */
-        str = equal + 1;
-      else if (*equal)                /* -xArg */
-        str = equal;
-      else if (i + 1 < argc)          /* -x Arg */
-        {
-          argv[i++] = NULL;
-          str = argv[i];
-        }
-      argv[i] = NULL;
-      if (str)
-        return true;
-    }
-  return false;
-}
-
 class AddChunk : public Command {
   struct OptChunk {
     const gchar *midi_note;
@@ -759,41 +721,41 @@ public:
     for (guint i = 1; i < argc; i++)
       {
         const gchar *str;
-        if (parse_arg_option (argv, i, argc, "--auto-extract-midi-note", str))
+        if (parse_str_option (argv, i, "--auto-extract-midi-note", str, argc))
           {
             OptChunk &ochunk = create_opt_chunk();
             ochunk.auto_extract_type = 1;
             ochunk.auto_extract_str = str;
           }
-        else if (parse_arg_option (argv, i, argc, "--auto-extract-osc-freq", str))
+        else if (parse_str_option (argv, i, "--auto-extract-osc-freq", str, argc))
           {
             OptChunk &ochunk = create_opt_chunk();
             ochunk.auto_extract_type = 2;
             ochunk.auto_extract_str = str;
           }
-        else if (parse_arg_option (argv, i, argc, "-m", str))
+        else if (parse_str_option (argv, i, "-m", str, argc))
           {
             OptChunk &ochunk = create_opt_chunk();
             ochunk.osc_freq = 0;
             ochunk.midi_note = str;
           }
-        else if (parse_arg_option (argv, i, argc, "-f", str))
+        else if (parse_str_option (argv, i, "-f", str, argc))
           {
             OptChunk &ochunk = create_opt_chunk();
             ochunk.osc_freq = g_ascii_strtod (str, NULL);
             ochunk.midi_note = NULL;
           }
-        else if (load_raw && parse_arg_option (argv, i, argc, "-R", str))
+        else if (load_raw && parse_str_option (argv, i, "-R", str, argc))
           {
             OptChunk &ochunk = top_empty_opt_chunk();
             ochunk.load_mix_freq = g_ascii_strtoull (str, NULL, 10);
           }
-        else if (load_raw && parse_arg_option (argv, i, argc, "-F", str))
+        else if (load_raw && parse_str_option (argv, i, "-F", str, argc))
           {
             OptChunk &ochunk = top_empty_opt_chunk();
             ochunk.load_format = gsl_wave_format_from_string (str);
           }
-        else if (load_raw && parse_arg_option (argv, i, argc, "-B", str))
+        else if (load_raw && parse_str_option (argv, i, "-B", str, argc))
           {
             OptChunk &ochunk = top_empty_opt_chunk();
             ochunk.load_byte_order = gsl_byte_order_from_string (str);
@@ -1166,35 +1128,34 @@ public:
     for (guint i = 1; i < argc; i++)
       {
         const gchar *str;
-        if (strcmp (argv[i], "--all-chunks") == 0)
+        if (parse_bool_option (argv, i, "--all-chunks"))
           {
             all_chunks = true;
-            argv[i] = NULL;
             seen_selection = true;
           }
-        else if (parse_arg_option (argv, i, argc, "-f", str))
+        else if (parse_str_option (argv, i, "-f", str, argc))
           {
             freq_list.push_back (g_ascii_strtod (str, NULL));
             seen_selection = true;
           }
-        else if (parse_arg_option (argv, i, argc, "-m", str))
+        else if (parse_str_option (argv, i, "-m", str, argc))
           {
             SfiNum num = g_ascii_strtoull (str, NULL, 10);
             gfloat osc_freq = 440.0 /* MIDI standard pitch */ * pow (BSE_2_POW_1_DIV_12, num - 69 /* MIDI kammer note */);
             freq_list.push_back (osc_freq);
             seen_selection = true;
           }
-        else if (parse_arg_option (argv, i, argc, "-s", str))
+        else if (parse_str_option (argv, i, "-s", str, argc))
           threshold = g_ascii_strtod (str, NULL);
-        else if (parse_arg_option (argv, i, argc, "-h", str))
+        else if (parse_str_option (argv, i, "-h", str, argc))
           head_samples = g_ascii_strtoull (str, NULL, 10);
-        else if (parse_arg_option (argv, i, argc, "-t", str))
+        else if (parse_str_option (argv, i, "-t", str, argc))
           tail_samples = g_ascii_strtoull (str, NULL, 10);
-        else if (parse_arg_option (argv, i, argc, "-f", str))
+        else if (parse_str_option (argv, i, "-f", str, argc))
           fade_samples = g_ascii_strtoull (str, NULL, 10);
-        else if (parse_arg_option (argv, i, argc, "-p", str))
+        else if (parse_str_option (argv, i, "-p", str, argc))
           pad_samples = g_ascii_strtoull (str, NULL, 10);
-        else if (parse_arg_option (argv, i, argc, "-r", str))
+        else if (parse_str_option (argv, i, "-r", str, argc))
           tail_silence = g_ascii_strtoull (str, NULL, 10);
       }
     return !seen_selection ? 1 : 0; /* # args missing */
