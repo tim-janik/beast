@@ -31,20 +31,25 @@ extern "C" {
 
 /* --- plugin export macros --- */
 /* (implementations reside in bseplugin.h) */
-/* start export section,
- * provide a unique plugin here
+/* start export section, provide a unique plugin name here
  */
 #define BSE_EXPORTS_BEGIN(UniqueName)   BSE_EXPORT_IMPL_B (UniqueName)
-/* list procedure types as BseExportProcedure array
+/* list procedure types in BseExportProcedure array
  */
 #define BSE_EXPORT_PROCEDURES           BSE_EXPORT_IMPL_A (Procedure)
-/* list object types as BseExportObject array
+/* list object types in BseExportObject array
  */
 #define BSE_EXPORT_OBJECTS              BSE_EXPORT_IMPL_A (Object)
-/* list enum types as BseExportEnum array
+/* qualify exported procedure types as load handlers
+ */
+#define BSE_EXPORT_LOAD_HANDLERS        BSE_EXPORT_IMPL_A (LoadHandler)
+/* list enum types as BseExportEnum array (mere internal use)
  */
 #define BSE_EXPORT_STATIC_ENUMS		static const BseExportEnum \
                                         BSE_EXPORT_IMPL_S (MkEnums_built) []
+/* directive, used to trigger automated enum generation from
+ * plugin's .h file. also auto-exports them to BSE
+ */
 #define BSE_EXPORT_AND_GENERATE_ENUMS() BSE_EXPORT_IMPL_P (Enum) = \
                                         BSE_EXPORT_IMPL_S (MkEnums_built)
 /* end export section
@@ -55,14 +60,14 @@ extern "C" {
 /* --- typedefs --- */
 typedef const gchar*                        BseExportBegin;
 typedef union  _BseExportSpec               BseExportSpec;
-typedef struct _BseExportAny                BseExportAny;
 typedef struct _BseExportObject             BseExportObject;
 typedef struct _BseExportEnum               BseExportEnum;
+typedef struct _BseExportLoadHandler   	    BseExportLoadHandler;
 typedef struct _BseExportProcedure     	    BseExportProcedure;
 typedef guint                               BseExportEnd;
 typedef void         (*BseProcedureInit)   (BseProcedureClass *proc,
-					    BseParamSpec     **ipspecs,
-					    BseParamSpec     **opspecs);
+					    GParamSpec	     **in_pspecs,
+					    GParamSpec	     **out_pspecs);
 typedef void         (*BseProcedureUnload) (BseProcedureClass *procedure);
 
 
@@ -71,16 +76,12 @@ typedef enum			/*< skip >*/
 {
   BSE_EXPORT_TYPE_PROCS		= 1,
   BSE_EXPORT_TYPE_OBJECTS	= 2,
-  BSE_EXPORT_TYPE_ENUMS		= 3
+  BSE_EXPORT_TYPE_ENUMS		= 3,
+  BSE_EXPORT_TYPE_LOAD_HANDLER	= 4
 } BseExportType;
 
 
 /* --- export declarations --- */
-struct _BseExportAny
-{
-  GType              *type_p;
-  const gchar  	     *name;
-};
 struct _BseExportProcedure
 {
   GType              *type_p;	   /* obligatory */
@@ -114,16 +115,23 @@ struct _BseExportEnum
   GType               parent_type; /* obligatory */
   gpointer            values;      /* obligatory */
 };
+struct _BseExportLoadHandler
+{
+  GType              *type_p;      /* obligatory, referring to procedure type */
+  const gchar        *prefix;	   /* optional */
+  const gchar	     *extension;   /* optional */
+  const gchar        *magic;	   /* optional, prerequisite if given */
+};
 
 
 /* --- export union --- */
 union _BseExportSpec
 {
   GType  		 *type_p; /* common to all members */
-  BseExportAny		  any;
   BseExportProcedure	  s_proc;
   BseExportObject	  s_object;
   BseExportEnum		  s_enum;
+  BseExportLoadHandler	  s_load_handler;
 };
 
 

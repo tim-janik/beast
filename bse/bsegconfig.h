@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  *
- * bseglobals.h: globals definitions and values for BSE
+ * bsegconfig.h: BSE global configuration value object
  */
 #ifndef __BSE_GCONFIG_H__
 #define __BSE_GCONFIG_H__

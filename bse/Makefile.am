@@ -94,10 +94,6 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsesuper.h \
 	bsetype.h \
 	bseutils.h \
-	glib-extra.h \
-	glib-genums.h \
-	glib-gobject.h \
-	glib-gtype.h \
 @STRIP_END@
 # BSE header files that don't get installed
 bse_private_h_sources = @STRIP_BEGIN@ \
@@ -149,10 +145,6 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsetype.c \
 	bseutils.c \
 	bsevoice.c \
-	glib-extra.c \
-	glib-genums.c \
-	glib-gobject.c \
-	glib-gtype.c \
 @STRIP_END@
 # we use our own built_sources variable rules instead of BUILT_SOURCES,
 # since handles BUILT_SOURCES strange and wrong on some occasions (mostly
@@ -187,7 +179,6 @@ bse_extra_sources = @STRIP_BEGIN@ \
 	mktypes.pl \
 	mkcalls.pl \
 	bseconfig.h.in \
-	bseparamcol.c \
 	bsebuffermixercore.c \
 @STRIP_END@
 
@@ -317,19 +308,21 @@ all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
 #
 # other programs, we want to compile
 #
-noinst_PROGRAMS = bsequery testtypes testsample testsong testrefs
+noinst_PROGRAMS = bsequery bsemagic testtypes testsample testsong testrefs
 # source files
 testtypes_SOURCES = testtypes.c
 testrefs_SOURCES = testrefs.c
 testsample_SOURCES = testsample.c
 bsequery_SOURCES = bsequery.c
+bsemagic_SOURCES = bsemagictest.c
 testsong_SOURCES = testsong.c
 # link programs against BSE
-progs_LDADD = libbse.la
+progs_LDADD = libbse.la $(top_builddir)/blib/libblib.la
 testtypes_LDADD = $(progs_LDADD)
 testrefs_LDADD = $(progs_LDADD)
 testsample_LDADD = $(progs_LDADD)
 bsequery_LDADD = $(progs_LDADD)
+bsemagic_LDADD = $(progs_LDADD)
 testsong_LDADD = $(progs_LDADD)
 
 

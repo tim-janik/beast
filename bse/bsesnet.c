@@ -43,13 +43,17 @@ enum
 static void      bse_snet_class_init             (BseSNetClass   *class);
 static void      bse_snet_init                   (BseSNet        *snet);
 static BseIcon*  bse_snet_do_get_icon            (BseObject      *object);
-static void      bse_snet_do_shutdown            (BseObject      *object);
+static void      bse_snet_do_destroy             (BseObject      *object);
 static void      bse_snet_set_param              (BseSNet        *snet,
-						  BseParam       *param,
-						  guint           param_id);
+						  guint           param_id,
+						  GValue         *value,
+						  GParamSpec     *pspec,
+						  const gchar    *trailer);
 static void      bse_snet_get_param              (BseSNet        *snet,
-						  BseParam       *param,
-						  guint           param_id);
+						  guint           param_id,
+						  GValue         *value,
+						  GParamSpec     *pspec,
+						  const gchar    *trailer);
 static void      bse_snet_add_item               (BseContainer   *container,
 						  BseItem        *item);
 static void      bse_snet_forall_items           (BseContainer   *container,
@@ -77,9 +81,9 @@ BSE_BUILTIN_TYPE (BseSNet)
     sizeof (BseSNetClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_snet_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSNet),
@@ -104,22 +108,19 @@ bse_snet_class_init (BseSNetClass *class)
     SNET_PIXDATA_WIDTH, SNET_PIXDATA_HEIGHT,
     SNET_PIXDATA_RLE_PIXEL_DATA,
   };
-  BseObjectClass *object_class;
-  BseSourceClass *source_class;
-  BseContainerClass *container_class;
-  BseSuperClass *super_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
+  BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
+  BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
   guint ichannel_id, ochannel_id;
   
   parent_class = g_type_class_peek (BSE_TYPE_SUPER);
-  object_class = BSE_OBJECT_CLASS (class);
-  source_class = BSE_SOURCE_CLASS (class);
-  container_class = BSE_CONTAINER_CLASS (class);
-  super_class = BSE_SUPER_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) bse_snet_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_snet_get_param;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_snet_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_snet_get_param;
+
   object_class->get_icon = bse_snet_do_get_icon;
-  object_class->shutdown = bse_snet_do_shutdown;
+  object_class->destroy = bse_snet_do_destroy;
   
   source_class->prepare = bse_snet_prepare;
   source_class->calc_chunk = bse_snet_calc_chunk;
@@ -130,30 +131,27 @@ bse_snet_class_init (BseSNetClass *class)
   container_class->forall_items = bse_snet_forall_items;
   
   class->icon = bse_icon_ref_static (bse_icon_from_pixdata (&snet_pixdata));
-
+  
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
-			      bse_param_spec_float ("volume_f", "Master [float]", NULL,
-						    0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
-						    0.1,
-						    bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
-						    BSE_PARAM_STORAGE));
+			      b_param_spec_float ("volume_f", "Master [float]", NULL,
+						  0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
+						  bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB), 0.1,
+						  B_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_dB,
-			      bse_param_spec_float ("volume_dB", "Master [dB]", NULL,
-						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-						    BSE_STP_VOLUME_dB,
-						    BSE_DFL_MASTER_VOLUME_dB,
-						    BSE_PARAM_GUI |
-						    BSE_PARAM_HINT_DIAL));
+			      b_param_spec_float ("volume_dB", "Master [dB]", NULL,
+						  BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+						  BSE_DFL_MASTER_VOLUME_dB, BSE_STP_VOLUME_dB,
+						  B_PARAM_GUI |
+						  B_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_PERC,
-			      bse_param_spec_uint ("volume_perc", "Master [%]", NULL,
-						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-						   1,
-						   bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
-						   BSE_PARAM_GUI |
-						   BSE_PARAM_HINT_DIAL));
+			      b_param_spec_uint ("volume_perc", "Master [%]", NULL,
+						 0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
+						 bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100, 1,
+						 B_PARAM_GUI |
+						 B_PARAM_HINT_DIAL));
 
   ichannel_id = bse_source_class_add_ichannel (source_class, "multi_in", "Multi Track In", 1, 2);
   g_assert (ichannel_id == BSE_SNET_ICHANNEL_MULTI);
@@ -169,15 +167,15 @@ bse_snet_init (BseSNet *snet)
 }
 
 static void
-bse_snet_do_shutdown (BseObject *object)
+bse_snet_do_destroy (BseObject *object)
 {
   BseSNet *snet = BSE_SNET (object);
   
   while (snet->sources)
     bse_container_remove_item (BSE_CONTAINER (snet), snet->sources->data);
 
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static BseIcon*
@@ -189,51 +187,55 @@ bse_snet_do_get_icon (BseObject *object)
 }
 
 static void
-bse_snet_set_param (BseSNet  *snet,
-                    BseParam *param,
-		    guint     param_id)
+bse_snet_set_param (BseSNet     *snet,
+		    guint        param_id,
+		    GValue      *value,
+		    GParamSpec  *pspec,
+		    const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_VOLUME_f:
-      snet->volume_factor = param->value.v_float;
+      snet->volume_factor = b_value_get_float (value);
       bse_object_param_changed (BSE_OBJECT (snet), "volume_dB");
       bse_object_param_changed (BSE_OBJECT (snet), "volume_perc");
       break;
     case PARAM_VOLUME_dB:
-      snet->volume_factor = bse_dB_to_factor (param->value.v_float);
+      snet->volume_factor = bse_dB_to_factor (b_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (snet), "volume_f");
       bse_object_param_changed (BSE_OBJECT (snet), "volume_perc");
       break;
     case PARAM_VOLUME_PERC:
-      snet->volume_factor = param->value.v_uint / 100.0;
+      snet->volume_factor = b_value_get_uint (value) / 100.0;
       bse_object_param_changed (BSE_OBJECT (snet), "volume_f");
       bse_object_param_changed (BSE_OBJECT (snet), "volume_dB");
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (snet, param, param_id);
+      G_WARN_INVALID_PARAM_ID (snet, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_snet_get_param (BseSNet  *snet,
-                    BseParam *param,
-		    guint     param_id)
+bse_snet_get_param (BseSNet     *snet,
+		    guint        param_id,
+		    GValue      *value,
+		    GParamSpec  *pspec,
+		    const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_VOLUME_f:
-      param->value.v_float = snet->volume_factor;
+      b_value_set_float (value, snet->volume_factor);
       break;
     case PARAM_VOLUME_dB:
-      param->value.v_float = bse_dB_from_factor (snet->volume_factor, BSE_MIN_VOLUME_dB);
+      b_value_set_float (value, bse_dB_from_factor (snet->volume_factor, BSE_MIN_VOLUME_dB));
       break;
     case PARAM_VOLUME_PERC:
-      param->value.v_uint = snet->volume_factor * 100.0 + 0.5;
+      b_value_set_uint (value, snet->volume_factor * 100.0 + 0.5);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (snet, param, param_id);
+      G_WARN_INVALID_PARAM_ID (snet, param_id, pspec);
       break;
     }
 }

@@ -17,7 +17,7 @@
  */
 #include        "bseprocedure.h"
 
-#include	"bseparamcol.c"
+#include	<blib/glib-gvaluecollector.h>
 #include	"bseitem.h"
 #include	"bseexports.h"
 #include	<string.h>
@@ -39,7 +39,7 @@ struct _ShareNode
 /* --- prototypes --- */
 extern void	bse_type_register_procedure_info  (GTypeInfo		    *info);
 static void     bse_procedure_base_init		  (BseProcedureClass	    *proc);
-static void     bse_procedure_base_destroy	  (BseProcedureClass	    *proc);
+static void     bse_procedure_base_finalize	  (BseProcedureClass	    *proc);
 static void     bse_procedure_init		  (BseProcedureClass	    *proc,
 						   const BseExportProcedure *pspec);
 
@@ -58,9 +58,9 @@ bse_type_register_procedure_info (GTypeInfo *info)
     sizeof (BseProcedureClass),
 
     (GBaseInitFunc) bse_procedure_base_init,
-    (GBaseDestroyFunc) bse_procedure_base_destroy,
+    (GBaseFinalizeFunc) bse_procedure_base_finalize,
     (GClassInitFunc) NULL,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
 
     /* non classed type stuff */
@@ -92,7 +92,7 @@ bse_procedure_base_init (BseProcedureClass *proc)
 }
 
 static void
-bse_procedure_base_destroy (BseProcedureClass *proc)
+bse_procedure_base_finalize (BseProcedureClass *proc)
 {
   guint i;
 
@@ -104,10 +104,10 @@ bse_procedure_base_destroy (BseProcedureClass *proc)
   proc->date = NULL;
 
   for (i = 0; i < proc->n_in_params; i++)
-    bse_param_spec_free (proc->in_param_specs[i]);
+    g_param_spec_unref (proc->in_param_specs[i]);
   g_free (proc->in_param_specs);
   for (i = 0; i < proc->n_out_params; i++)
-    bse_param_spec_free (proc->out_param_specs[i]);
+    g_param_spec_unref (proc->out_param_specs[i]);
   g_free (proc->out_param_specs);
 
   proc->execute = NULL;
@@ -117,8 +117,8 @@ static void
 bse_procedure_init (BseProcedureClass        *proc,
 		    const BseExportProcedure *pspec)
 {
-  BseParamSpec *in_param_specs[BSE_PROCEDURE_MAX_IN_PARAMS + 1];
-  BseParamSpec *out_param_specs[BSE_PROCEDURE_MAX_OUT_PARAMS + 1];
+  GParamSpec *in_param_specs[BSE_PROCEDURE_MAX_IN_PARAMS + 8];
+  GParamSpec *out_param_specs[BSE_PROCEDURE_MAX_OUT_PARAMS + 8];
   guint i;
   gchar *const_name, *const_blurb;
 
@@ -162,10 +162,10 @@ bse_procedure_init (BseProcedureClass        *proc,
   for (i = 0; i < BSE_PROCEDURE_MAX_IN_PARAMS; i++)
     if (in_param_specs[i])
       {
-	if ((in_param_specs[i]->any.flags & BSE_PARAM_READWRITE) != BSE_PARAM_READWRITE)
+	if ((in_param_specs[i]->flags & B_PARAM_READWRITE) != B_PARAM_READWRITE)
 	  g_warning ("procedure \"%s\": input parameter \"%s\" has invalid flags",
 		     proc->name,
-		     in_param_specs[i]->any.name);
+		     in_param_specs[i]->name);
       }
     else
       break;
@@ -173,7 +173,7 @@ bse_procedure_init (BseProcedureClass        *proc,
     g_warning ("procedure \"%s\" exceeds maximum number of input parameters (%u)",
 	       proc->name, BSE_PROCEDURE_MAX_IN_PARAMS);
   proc->n_in_params = i;
-  proc->in_param_specs = g_new (BseParamSpec*, proc->n_in_params + 1);
+  proc->in_param_specs = g_new (GParamSpec*, proc->n_in_params + 1);
   memcpy (proc->in_param_specs, in_param_specs, sizeof (in_param_specs[0]) * proc->n_in_params);
   proc->in_param_specs[proc->n_in_params] = NULL;
 
@@ -182,10 +182,10 @@ bse_procedure_init (BseProcedureClass        *proc,
   for (i = 0; i < BSE_PROCEDURE_MAX_OUT_PARAMS; i++)
     if (out_param_specs[i])
       {
-        if ((out_param_specs[i]->any.flags & BSE_PARAM_READWRITE) != BSE_PARAM_READWRITE)
+        if ((out_param_specs[i]->flags & B_PARAM_READWRITE) != B_PARAM_READWRITE)
 	  g_warning ("procedure \"%s\": output parameter \"%s\" has invalid flags",
 		     proc->name,
-		     out_param_specs[i]->any.name);
+		     out_param_specs[i]->name);
       }
     else
       break;
@@ -193,7 +193,7 @@ bse_procedure_init (BseProcedureClass        *proc,
     g_warning ("procedure \"%s\" exceeds maximum number of output parameters (%u)",
 	       proc->name, BSE_PROCEDURE_MAX_OUT_PARAMS);
   proc->n_out_params = i;
-  proc->out_param_specs = g_new (BseParamSpec*, proc->n_out_params + 1);
+  proc->out_param_specs = g_new (GParamSpec*, proc->n_out_params + 1);
   memcpy (proc->out_param_specs, out_param_specs, sizeof (out_param_specs[0]) * proc->n_out_params);
   proc->out_param_specs[proc->n_out_params] = NULL;
   
@@ -208,7 +208,7 @@ bse_procedure_complete_info (const BseExportSpec *spec,
 
   info->class_size = sizeof (BseProcedureClass);
   info->class_init = (GClassInitFunc) bse_procedure_init;
-  info->class_destroy = (GClassDestroyFunc) pspec->unload;
+  info->class_finalize = (GClassFinalizeFunc) pspec->unload;
   info->class_data = pspec;
 }
 
@@ -254,11 +254,11 @@ proc_notifier_marshaller (GHook   *hook,
 
 BseErrorType
 bse_procedure_execvl (BseProcedureClass *proc,
-		      GSList            *iparam_list,
-		      GSList            *oparam_list)
+		      GSList            *in_value_list,
+		      GSList            *out_value_list)
 {
-  BseParam in_params[BSE_PROCEDURE_MAX_IN_PARAMS] = { { NULL, }, };
-  BseParam out_params[BSE_PROCEDURE_MAX_OUT_PARAMS] = { { NULL, }, };
+  GValue in_values[BSE_PROCEDURE_MAX_IN_PARAMS] = { { 0, }, };
+  GValue out_values[BSE_PROCEDURE_MAX_OUT_PARAMS] = { { 0, }, };
   BseErrorType error;
   GSList *slist;
   gpointer mdata[2];
@@ -269,126 +269,55 @@ bse_procedure_execvl (BseProcedureClass *proc,
   if (g_slist_find (called_procs, proc))
     return BSE_ERROR_PROC_BUSY;
 
-  for (i = 0, slist = iparam_list; i < proc->n_in_params; i++, slist = slist->next)
+  for (i = 0, slist = in_value_list; i < proc->n_in_params; i++, slist = slist->next)
     {
-      BseParam *lparam, *param = in_params + i;
+      GParamSpec *pspec = proc->in_param_specs[i];
+      GValue *lvalue, *value = in_values + i;
 
-      lparam = slist ? slist->data : NULL;
-      if (!lparam || lparam->pspec != proc->in_param_specs[i])
+      lvalue = slist ? slist->data : NULL;
+      if (!lvalue || !g_value_types_exchangable (G_VALUE_TYPE (lvalue), G_PARAM_SPEC_TYPE (pspec)))
 	{
-	  g_warning (G_STRLOC ": input parameter \"%s\" of procedure \"%s\" is invalid or unspecified",
-		     proc->in_param_specs[i]->any.name,
-		     proc->name);
+          g_warning ("%s: `%s' %s value %u of procedure \"%s\" is invalid or "
+		     "unspecified (should be `%s' for \"%s\")",
+		     G_STRLOC,
+		     g_type_name (lvalue ? G_VALUE_TYPE (lvalue) : G_TYPE_NONE),
+		     "input",
+		     i,
+		     proc->name,
+		     g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+		     pspec->name);
 	  return BSE_ERROR_INTERNAL;
 	}
-      memcpy (param, lparam, sizeof (*param));
+      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
+      g_value_convert (lvalue, value);
+      g_value_validate (value, pspec);
     }
-  for (i = 0, slist = oparam_list; i < proc->n_out_params; i++, slist = slist->next)
+  for (i = 0, slist = out_value_list; i < proc->n_out_params; i++, slist = slist->next)
     {
-      BseParam *lparam, *param = out_params + i;
+      GParamSpec *pspec = proc->out_param_specs[i];
+      GValue *lvalue, *value = out_values + i;
 
-      lparam = slist ? slist->data : NULL;
-      if (!lparam || lparam->pspec != proc->out_param_specs[i])
+      lvalue = slist ? slist->data : NULL;
+      if (!lvalue || !g_value_types_exchangable (G_VALUE_TYPE (lvalue), G_PARAM_SPEC_TYPE (pspec)))
 	{
-	  g_warning (G_STRLOC ": output parameter \"%s\" of procedure \"%s\" is invalid or unspecified",
-		     proc->out_param_specs[i]->any.name,
-		     proc->name);
+          g_warning ("%s: `%s' %s value %u of procedure \"%s\" is invalid or "
+		     "unspecified (should be `%s' for \"%s\")",
+		     G_STRLOC,
+		     g_type_name (lvalue ? G_VALUE_TYPE (lvalue) : G_TYPE_NONE),
+		     "output",
+		     i,
+		     proc->name,
+		     g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+		     pspec->name);
 	  return BSE_ERROR_INTERNAL;
 	}
-      bse_param_init (param, proc->out_param_specs[i]);
+      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
     }
 
   bse_procedure_ref (proc);
 
   called_procs = g_slist_prepend (called_procs, proc);
-  error = proc->execute (proc,
-			 in_params,
-			 out_params);
-  mdata[0] = proc->name;
-  mdata[1] = GINT_TO_POINTER (error);
-  g_hook_list_marshal_check (&proc_notifiers,
-			     FALSE,
-			     proc_notifier_marshaller,
-			     mdata);
-  called_procs = g_slist_remove (called_procs, proc);
-
-  for (i = 0, slist = iparam_list; i < proc->n_in_params; i++, slist = slist->next)
-    {
-      BseParam *lparam, *param = in_params + i;
-
-      lparam = slist->data;
-      memcpy (&lparam->value, &param->value, sizeof (param->value));
-    }
-  for (i = 0, slist = oparam_list; i < proc->n_out_params; i++, slist = slist->next)
-    {
-      BseParam *lparam, *param = out_params + i;
-
-      lparam = slist->data;
-
-      bse_param_values_exchange (lparam, param);
-      bse_param_free_value (param);
-    }
-
-  bse_procedure_unref (proc);
-  
-  return error;
-}
-
-static inline BseErrorType
-bse_procedure_execva_i (BseProcedureClass *proc,
-			guint		   n_ovr_params,
-			BseParam	  *ovr_params,
-			va_list            var_args,
-			gboolean           skip_oparams)
-{
-  BseParam in_params[BSE_PROCEDURE_MAX_IN_PARAMS] = { { NULL, }, };
-  BseParam out_params[BSE_PROCEDURE_MAX_OUT_PARAMS] = { { NULL, }, };
-  gpointer out_locs[BSE_PROCEDURE_MAX_OUT_PARAMS] = { NULL, };
-  BseErrorType error;
-  gpointer mdata[2];
-  guint i;
-
-  g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (n_ovr_params <= proc->n_in_params, BSE_ERROR_INTERNAL);
-
-  if (g_slist_find (called_procs, proc))
-    return BSE_ERROR_PROC_BUSY;
-
-  for (i = 0; i < n_ovr_params; i++)
-    {
-      BseParam *param = in_params + i;
-      
-      bse_param_init (param, proc->in_param_specs[i]);
-      bse_param_copy_value (ovr_params + i, param);
-    }
-  for (i = n_ovr_params; i < proc->n_in_params; i++)
-    {
-      BseParam *param = in_params + i;
-      gchar *error_msg;
-
-      bse_param_init (param, proc->in_param_specs[i]);
-      BSE_PARAM_COLLECT_VALUE (param, var_args, error_msg);
-      if (error_msg)
-	{
-	  g_warning (G_STRLOC ": %s", error_msg);
-	  g_free (error_msg);
-	  va_end (var_args);
-
-	  return BSE_ERROR_PROC_PARAM_INVAL;
-	}
-    }
-  for (i = 0; i < proc->n_out_params; i++)
-    {
-      BseParam *param = out_params + i;
-      
-      bse_param_init (param, proc->out_param_specs[i]);
-      out_locs[i] = skip_oparams ? NULL : va_arg (var_args, gpointer);
-    }
-  
-  bse_procedure_ref (proc);
-
-  called_procs = g_slist_prepend (called_procs, proc);
-  error = proc->execute (proc, in_params, out_params);
+  error = proc->execute (proc, in_values, out_values);
   mdata[0] = proc->name;
   mdata[1] = GINT_TO_POINTER (error);
   g_hook_list_marshal_check (&proc_notifiers,
@@ -398,12 +327,127 @@ bse_procedure_execva_i (BseProcedureClass *proc,
   called_procs = g_slist_remove (called_procs, proc);
 
   for (i = 0; i < proc->n_in_params; i++)
-    bse_param_free_value (in_params + i);
+    {
+      GValue *value = in_values + i;
+
+      g_value_unset (value);
+    }
+  for (i = 0, slist = out_value_list; i < proc->n_out_params; i++, slist = slist->next)
+    {
+      GParamSpec *pspec = proc->out_param_specs[i];
+      GValue *lvalue, *value = out_values + i;
+
+      lvalue = slist->data;
+      g_value_validate (value, pspec);
+      g_value_convert (value, lvalue);
+      g_value_unset (value);
+    }
+
+  bse_procedure_unref (proc);
+  
+  return error;
+}
+
+static inline BseErrorType
+bse_procedure_execva_i (BseProcedureClass *proc,
+			guint		   n_preset_values,
+			GValue		  *preset_values,
+			va_list            var_args,
+			gboolean           skip_out_values)
+{
+  GValue in_values[BSE_PROCEDURE_MAX_IN_PARAMS] = { { 0, }, };
+  GValue out_values[BSE_PROCEDURE_MAX_OUT_PARAMS] = { { 0, }, };
+  BseErrorType error;
+  gpointer mdata[2];
+  guint i;
+
+  g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (n_preset_values <= proc->n_in_params, BSE_ERROR_INTERNAL);
+  if (n_preset_values)
+    g_return_val_if_fail (preset_values != NULL, BSE_ERROR_INTERNAL);
+
+  if (g_slist_find (called_procs, proc))
+    return BSE_ERROR_PROC_BUSY;
+
+  for (i = 0; i < n_preset_values; i++)
+    {
+      GParamSpec *pspec = proc->in_param_specs[i];
+      GValue *value = in_values + i;
+
+      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
+      if (!g_value_convert (preset_values + 1, value))
+	g_warning ("%s: failed to convert `%s' preset value %u to `%s' for \"%s\"",
+		   G_STRLOC,
+		   g_type_name (G_VALUE_TYPE (preset_values + 1)),
+		   i,
+		   g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+		   pspec->name);
+      g_value_validate (value, pspec);
+    }
+  for (; i < proc->n_in_params; i++)
+    {
+      GParamSpec *pspec = proc->in_param_specs[i];
+      GValue *value = in_values + i;
+      gchar *error_msg = NULL;
+
+      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
+      G_PARAM_COLLECT_VALUE (value, pspec, var_args, &error_msg);
+      if (error_msg)
+	{
+	  g_warning (G_STRLOC ": failed to collect `%s' value for \"%s\": %s",
+		     g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+		     pspec->name,
+		     error_msg);
+	  g_free (error_msg);
+
+	  return BSE_ERROR_PROC_PARAM_INVAL;
+	}
+      g_value_validate (value, pspec);
+    }
   for (i = 0; i < proc->n_out_params; i++)
     {
-      if (!skip_oparams)
-	bse_param_move_value (out_params + i, out_locs[i]);
-      bse_param_free_value (out_params + i);
+      GParamSpec *pspec = proc->out_param_specs[i];
+      GValue *value = out_values + i;
+
+      g_value_init (value, G_PARAM_SPEC_TYPE (pspec));
+    }
+
+  bse_procedure_ref (proc);
+
+  called_procs = g_slist_prepend (called_procs, proc);
+  error = proc->execute (proc, in_values, out_values);
+  mdata[0] = proc->name;
+  mdata[1] = GINT_TO_POINTER (error);
+  g_hook_list_marshal_check (&proc_notifiers,
+			     FALSE,
+			     proc_notifier_marshaller,
+			     mdata);
+  called_procs = g_slist_remove (called_procs, proc);
+
+  for (i = 0; i < proc->n_in_params; i++)
+    g_value_unset (in_values + i);
+  for (i = 0; i < proc->n_out_params; i++)
+    {
+      GParamSpec *pspec = proc->out_param_specs[i];
+      GValue *value = out_values + i;
+      
+      if (!skip_out_values)
+	{
+	  gchar *error_msg = NULL;
+
+	  g_value_validate (value, pspec);
+	  G_PARAM_LCOPY_VALUE (value, pspec, var_args, &error_msg);
+	  if (error_msg)
+	    {
+	      g_warning (G_STRLOC ": failed to lcopy `%s' value for \"%s\": %s",
+			 g_type_name (G_PARAM_SPEC_TYPE (pspec)),
+			 pspec->name,
+			 error_msg);
+	      g_free (error_msg);
+	      skip_out_values = TRUE;
+	    }
+	}
+      g_value_unset (value);
     }
 
   bse_procedure_unref (proc);
@@ -475,27 +519,26 @@ bse_procedure_execva_item (BseProcedureClass *proc,
 			   va_list            var_args,
 			   gboolean           skip_oparams)
 {
-  BseParam param = { NULL, };
+  GValue preset_value = { 0, };
   BseErrorType ret_val;
 
   g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (proc->n_in_params >= 1, BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (proc->in_param_specs[0]->type == BSE_TYPE_PARAM_ITEM,
-			BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (G_IS_PARAM_SPEC_OBJECT (proc->in_param_specs[0]), BSE_ERROR_INTERNAL);
   if (item)
     {
       g_return_val_if_fail (BSE_IS_ITEM (item), BSE_ERROR_INTERNAL);
       g_return_val_if_fail (g_type_is_a (BSE_OBJECT_TYPE (item),
-					   proc->in_param_specs[0]->s_item.item_type),
+					 G_PARAM_SPEC_OBJECT (proc->in_param_specs[0])->object_type),
 			    BSE_ERROR_INTERNAL);
     }
 
-  bse_param_init (&param, proc->in_param_specs[0]);
-  bse_param_set_item (&param, item);
+  g_value_init (&preset_value, G_PARAM_SPEC_TYPE (proc->in_param_specs[0]));
+  g_value_set_object (&preset_value, G_OBJECT (item));
 
-  ret_val = bse_procedure_execva_i (proc, 1, &param, var_args, skip_oparams);
+  ret_val = bse_procedure_execva_i (proc, 1, &preset_value, var_args, skip_oparams);
 
-  bse_param_free_value (&param);
+  g_value_unset (&preset_value);
 
   return ret_val;
 }

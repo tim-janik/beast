@@ -34,11 +34,15 @@ static void	    bse_pattern_group_class_init	(BsePatternGroupClass	*class);
 static void	    bse_pattern_group_init		(BsePatternGroup	*pattern_group);
 static void	    bse_pattern_group_destroy		(BseObject		*object);
 static void         bse_pattern_group_set_param 	(BsePatternGroup	*pattern_group,
-							 BseParam               *param,
-							 guint                   param_id);
+							 guint                   param_id,
+							 GValue                 *value,
+							 GParamSpec             *pspec,
+							 const gchar            *trailer);
 static void         bse_pattern_group_get_param 	(BsePatternGroup        *pattern_group,
-							 BseParam               *param,
-							 guint                   param_id);
+							 guint                   param_id,
+							 GValue                 *value,
+							 GParamSpec             *pspec,
+							 const gchar            *trailer);
 static void	    bse_pattern_group_store_private	(BseObject              *object,
 							 BseStorage             *storage);
 static BseTokenType bse_pattern_group_restore_private	(BseObject         	*object,
@@ -57,9 +61,9 @@ BSE_BUILTIN_TYPE (BsePatternGroup)
     sizeof (BsePatternGroupClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pattern_group_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_group */,
     
     sizeof (BsePatternGroup),
@@ -76,13 +80,14 @@ BSE_BUILTIN_TYPE (BsePatternGroup)
 static void
 bse_pattern_group_class_init (BsePatternGroupClass *class)
 {
-  BseObjectClass *object_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek (BSE_TYPE_ITEM);
-  object_class = BSE_OBJECT_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) bse_pattern_group_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_pattern_group_get_param;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_pattern_group_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_pattern_group_get_param;
+
   object_class->store_private = bse_pattern_group_store_private;
   object_class->restore_private = bse_pattern_group_restore_private;
   object_class->destroy = bse_pattern_group_destroy;
@@ -112,26 +117,30 @@ bse_pattern_group_destroy (BseObject *object)
 
 static void
 bse_pattern_group_set_param (BsePatternGroup *pgroup,
-			     BseParam        *param,
-			     guint            param_id)
+			     guint            param_id,
+			     GValue          *value,
+			     GParamSpec      *pspec,
+			     const gchar     *trailer)
 {
   switch (param_id)
     {
     default:
-      BSE_UNHANDLED_PARAM_ID (pgroup, param, param_id);
+      G_WARN_INVALID_PARAM_ID (pgroup, param_id, pspec);
       break;
     }
 }
 
 static void
 bse_pattern_group_get_param (BsePatternGroup *pgroup,
-			     BseParam        *param,
-			     guint            param_id)
+			     guint            param_id,
+			     GValue          *value,
+			     GParamSpec      *pspec,
+			     const gchar     *trailer)
 {
   switch (param_id)
     {
     default:
-      BSE_UNHANDLED_PARAM_ID (pgroup, param, param_id);
+      G_WARN_INVALID_PARAM_ID (pgroup, param_id, pspec);
       break;
     }
 }

@@ -149,6 +149,7 @@ extern "C" {
 #define	BSE_STP_BPM			(bse_globals->step_bpm)
 #define	BSE_STP_N_CHANNELS		(bse_globals->step_n_channels)
 #define	BSE_STP_PATTERN_LENGTH		(bse_globals->step_pattern_length)
+#define	BSE_STP_N_ROWS			(BSE_STP_PATTERN_LENGTH)
 #define	BSE_STP_BALANCE			(bse_globals->step_balance)
 #define	BSE_STP_TRANSPOSE		(bse_globals->step_transpose)
 #define	BSE_STP_FINE_TUNE		(bse_globals->step_fine_tune)

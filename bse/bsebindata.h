@@ -62,6 +62,10 @@ BseErrorType	bse_bin_data_set_values_from_fd	(BseBinData	*bin_data,
 						 glong		 offset,
 						 guint		 n_bytes,
 						 BseEndianType   byte_order);
+void		bse_bin_data_init_values	(BseBinData	*bin_data,
+						 guint		 bits_per_value,
+						 guint		 n_values);
+
 
 
 

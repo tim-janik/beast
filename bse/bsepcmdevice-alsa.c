@@ -54,7 +54,7 @@ struct _BsePcmDeviceAlsaClass
 /* --- prototypes --- */
 static void         bse_pcm_device_alsa_class_init       (BsePcmDeviceAlsaClass   *class);
 static void         bse_pcm_device_alsa_init             (BsePcmDeviceAlsa        *pcm_device_alsa);
-static void         bse_pcm_device_alsa_shutdown         (BseObject              *object);
+static void         bse_pcm_device_alsa_destroy         (BseObject              *object);
 static gchar*       bse_pcm_device_alsa_device_name      (BseDevice              *dev,
 							  gboolean                descriptive);
 static BseErrorType bse_pcm_device_alsa_update_caps      (BsePcmDevice           *pdev);
@@ -98,9 +98,9 @@ BSE_BUILTIN_TYPE (BsePcmDeviceAlsa)
     sizeof (BsePcmDeviceAlsaClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pcm_device_alsa_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BsePcmDeviceAlsa),
@@ -129,7 +129,7 @@ bse_pcm_device_alsa_class_init (BsePcmDeviceAlsaClass *class)
   device_class = BSE_DEVICE_CLASS (class);
   pcm_device_class = BSE_PCM_DEVICE_CLASS (class);
   
-  object_class->shutdown = bse_pcm_device_alsa_shutdown;
+  object_class->destroy = bse_pcm_device_alsa_destroy;
   
   device_class->close = bse_pcm_device_alsa_close;
   device_class->device_name = bse_pcm_device_alsa_device_name;
@@ -153,7 +153,7 @@ bse_pcm_device_alsa_init (BsePcmDeviceAlsa *alsa)
 }
 
 static void
-bse_pcm_device_alsa_shutdown (BseObject *object)
+bse_pcm_device_alsa_destroy (BseObject *object)
 {
   BsePcmDeviceAlsa *alsa = BSE_PCM_DEVICE_ALSA (object);
   
@@ -162,8 +162,8 @@ bse_pcm_device_alsa_shutdown (BseObject *object)
   g_free (alsa->card_name);
   alsa->card_name = NULL;
   
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static gchar*

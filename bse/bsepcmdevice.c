@@ -25,7 +25,7 @@
 static void	   bse_pcm_device_init			(BsePcmDevice      *pdev);
 static void	   bse_pcm_device_class_init		(BsePcmDeviceClass *class);
 static inline void bse_pcm_device_reset_device  	(BsePcmDevice      *pdev);
-static void	   bse_pcm_device_shutdown		(BseObject         *object);
+static void	   bse_pcm_device_destroy		(BseObject         *object);
 static void	   bse_pcm_device_close			(BseDevice	   *dev);
 
 
@@ -40,9 +40,9 @@ BSE_BUILTIN_TYPE (BsePcmDevice)
     sizeof (BsePcmDeviceClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pcm_device_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BsePcmDevice),
@@ -68,7 +68,7 @@ bse_pcm_device_class_init (BsePcmDeviceClass *class)
   object_class = BSE_OBJECT_CLASS (class);
   device_class = BSE_DEVICE_CLASS (class);
   
-  object_class->shutdown = bse_pcm_device_shutdown;
+  object_class->destroy = bse_pcm_device_destroy;
   
   device_class->close = bse_pcm_device_close;
 
@@ -112,14 +112,14 @@ bse_pcm_device_time_warp (BsePcmDevice *pdev)
 }
 
 static void
-bse_pcm_device_shutdown (BseObject *object)
+bse_pcm_device_destroy (BseObject *object)
 {
   BsePcmDevice *pdev;
 
   pdev = BSE_PCM_DEVICE (object);
   
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 BseErrorType

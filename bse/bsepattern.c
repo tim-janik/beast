@@ -39,7 +39,7 @@ enum
 /* --- prototypes --- */
 static void	    bse_pattern_class_init	 (BsePatternClass	*class);
 static void	    bse_pattern_init		 (BsePattern		*pattern);
-static void	    bse_pattern_do_shutdown	 (BseObject		*object);
+static void	    bse_pattern_do_destroy	 (BseObject		*object);
 static void	    bse_pattern_do_set_parent    (BseItem		*item,
 						  BseItem		*parent);
 static void	    bse_pattern_reset_note	 (BsePattern		*pattern,
@@ -64,9 +64,9 @@ BSE_BUILTIN_TYPE (BsePattern)
     sizeof (BsePatternClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pattern_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BsePattern),
@@ -93,7 +93,7 @@ bse_pattern_class_init (BsePatternClass	*class)
   object_class->restore = bse_pattern_restore;
   object_class->store_private = bse_pattern_store_private;
   object_class->restore_private = bse_pattern_restore_private;
-  object_class->shutdown = bse_pattern_do_shutdown;
+  object_class->destroy = bse_pattern_do_destroy;
   
   item_class->set_parent = bse_pattern_do_set_parent;
 }
@@ -109,7 +109,7 @@ bse_pattern_init (BsePattern *pattern)
 }
 
 static void
-bse_pattern_do_shutdown (BseObject *object)
+bse_pattern_do_destroy (BseObject *object)
 {
   BsePattern *pattern;
   guint c, r;
@@ -120,9 +120,12 @@ bse_pattern_do_shutdown (BseObject *object)
     for (r = 0; r < pattern->n_rows; r++)
       bse_pattern_reset_note (pattern, c, r);
   g_free (pattern->notes);
+  pattern->n_channels = 0;
+  pattern->n_rows = 0;
+  pattern->notes = NULL;
   
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void

@@ -30,8 +30,8 @@
 /* --- prototypes --- */
 static void	 bse_capture_init		(BseCapture	 *capture);
 static void	 bse_capture_class_init		(BseCaptureClass *class);
-static void	 bse_capture_class_destroy	(BseCaptureClass *class);
-static void	 bse_capture_do_shutdown	(BseObject     	 *object);
+static void	 bse_capture_class_finalize	(BseCaptureClass *class);
+static void	 bse_capture_do_destroy		(BseObject     	 *object);
 static void      bse_capture_prepare            (BseSource       *source,
 						 BseIndex         index);
 static BseChunk* bse_capture_calc_chunk         (BseSource       *source,
@@ -52,9 +52,9 @@ BSE_BUILTIN_TYPE (BseCapture)
     sizeof (BseCaptureClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_capture_class_init,
-    (GClassDestroyFunc) bse_capture_class_destroy,
+    (GClassFinalizeFunc) bse_capture_class_finalize,
     NULL /* class_data */,
     
     sizeof (BseCapture),
@@ -87,7 +87,7 @@ bse_capture_class_init (BseCaptureClass *class)
   object_class = BSE_OBJECT_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
 
-  object_class->shutdown = bse_capture_do_shutdown;
+  object_class->destroy = bse_capture_do_destroy;
 
   source_class->prepare = bse_capture_prepare;
   source_class->calc_chunk = bse_capture_calc_chunk;
@@ -98,7 +98,7 @@ bse_capture_class_init (BseCaptureClass *class)
 }
 
 static void
-bse_capture_class_destroy (BseCaptureClass *class)
+bse_capture_class_finalize (BseCaptureClass *class)
 {
 }
 
@@ -111,7 +111,7 @@ bse_capture_init (BseCapture *capture)
 }
 
 static void
-bse_capture_do_shutdown (BseObject *object)
+bse_capture_do_destroy (BseObject *object)
 {
   BseCapture *capture;
 
@@ -120,8 +120,8 @@ bse_capture_do_shutdown (BseObject *object)
   g_free (capture->idevice);
   capture->idevice = NULL;
 
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void

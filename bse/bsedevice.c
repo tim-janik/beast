@@ -31,7 +31,7 @@ static guint       bse_device_default_write	 	(BseDevice         *dev,
 							 guint              n_bytes,
 							 guint8            *bytes);
 static inline void bse_device_reset_device	  	(BseDevice         *dev);
-static void	   bse_device_shutdown			(BseObject         *object);
+static void	   bse_device_destroy			(BseObject         *object);
 
 
 /* --- variables --- */
@@ -45,9 +45,9 @@ BSE_BUILTIN_TYPE (BseDevice)
     sizeof (BseDeviceClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_device_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseDevice),
@@ -71,7 +71,7 @@ bse_device_class_init (BseDeviceClass *class)
   parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
   object_class = BSE_OBJECT_CLASS (class);
   
-  object_class->shutdown = bse_device_shutdown;
+  object_class->destroy = bse_device_destroy;
   
   class->device_name = NULL;
   class->read = bse_device_default_read;
@@ -95,15 +95,15 @@ bse_device_init (BseDevice *dev)
 }
 
 static void
-bse_device_shutdown (BseObject *object)
+bse_device_destroy (BseObject *object)
 {
   BseDevice *dev = BSE_DEVICE (object);
   
   if (BSE_DEVICE_OPEN (dev))
     bse_device_close (dev);
   
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 gchar*

@@ -66,7 +66,7 @@
 extern void        bse_gconfig_notify_lock_changed (void);			/* from bsegconfig.c */
 extern void        bse_globals_copy                (const BseGlobals *globals_src,
 						    BseGlobals       *globals); /* for bsegconfig.c */
-extern void        bse_globals_reset               (BseGlobals       *globals); /* for bsegconfig.c */
+extern void        bse_globals_unset               (BseGlobals       *globals); /* for bsegconfig.c */
 
 
 /* --- extern variables --- */
@@ -187,7 +187,7 @@ bse_globals_copy (const BseGlobals *globals_src,
     {
       g_return_if_fail (bse_globals_locked () == FALSE);
 
-      bse_globals_reset (&bse_globals_current);
+      bse_globals_unset (&bse_globals_current);
       globals = &bse_globals_current;
     }
 
@@ -196,7 +196,7 @@ bse_globals_copy (const BseGlobals *globals_src,
 }
 
 void
-bse_globals_reset (BseGlobals *globals)
+bse_globals_unset (BseGlobals *globals)
 {
   g_return_if_fail (globals != NULL);
 

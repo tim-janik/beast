@@ -33,7 +33,7 @@ extern "C" {
 #define BSE_MICRO_VERSION                               (@BSE_MICRO_VERSION@)
 #define BSE_BINARY_AGE                                  (@BSE_BINARY_AGE@)
 #define BSE_INTERFACE_AGE                               (@BSE_INTERFACE_AGE@)
-#define BSE_VERSION					("@VERSION@")
+#define BSE_VERSION					("@BSE_VERSION@")
 
 /* check for header versions
  */

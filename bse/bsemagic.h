@@ -38,12 +38,45 @@ typedef enum
 } BseMagicFlags;
 
 
-/* --- prototypes --- */
-BseErrorType	bse_magic_identify_bse_string	(const gchar	*string,
-						 BseMagicFlags	*flags);
-BseErrorType	bse_magic_identify_bse_fd	(gint		 fd,
-						 BseMagicFlags	*flags);
+/* --- typedefs --- */
+typedef struct _BseMagic BseMagic;
 
+
+/* --- structures --- */
+struct _BseMagic
+{
+  GType    proc_type;
+  GQuark   prefix;
+  GQuark   qextension;
+
+  /*< private >*/
+  gpointer match_list;
+};
+
+
+/* match entity with:
+ * prefix,
+ * extension,
+ * magic_spec
+ *
+ * where prefix has absolute preference, and extension is just
+ * a _hint_ for magic_spec match order, unless magic_spec==NULL
+ *
+ * no prefix for save handlers. (?) just extension matches.
+ *
+ * need pre-parse functionality, to figure name and type of a
+ * file's contents.
+ */
+
+
+/* --- prototypes --- */
+BseMagic*	bse_magic_new			(GType		 proc_type,
+						 GQuark          qextension,
+						 const gchar	*magic_spec);
+BseMagic*	bse_magic_match_file		(const gchar	*file_name,
+						 GSList         *magic_list);
+void		bse_magic_list_append		(BseMagic	*magic);
+BseMagic*	bse_magic_list_match_file	(const gchar    *file_name);
 
 
 

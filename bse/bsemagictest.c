@@ -1,0 +1,102 @@
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 2000 Tim Janik
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include        "bse.h"
+
+#include        "../PKG_config.h"
+#include        <stdio.h>
+
+static gint
+help (gchar *arg)
+{
+  fprintf (stderr, "usage: bsemagic [-{h|p|}] [files...]\n");
+  fprintf (stderr, "       -p       include plugins\n");
+  fprintf (stderr, "       -h       guess what ;)\n");
+
+  return arg != NULL;
+}
+
+int
+main (gint   argc,
+      gchar *argv[])
+{
+  static const gchar *magic_presets[][2] = {
+    /* some test entries, order is important for some cases */
+    { "Berkeley DB 2.X Hash/Little Endian",	"12 lelong 0x061561", },
+    { "MS-DOS executable (EXE)",		"0 string MZ", },
+    { "ELF object file",			"0 string \177ELF", },
+    { "Bourne shell script text",		"0,string,#!/bin/sh", },
+    { "Bourne shell script text",		"0,string,#!\\ /bin/sh", },
+    { "Bourne shell script text",		"0,string,#!\\t/bin/sh", },
+    { "GIF image data",				"0,string,GIF8", },
+    { "X window image dump (v7)",		("# .xwd files\n"
+						 "4,belong,0x0000007"), },
+    { "RIFF (little-endian), WAVE audio",	("0 string RIFF\n"
+						 "8 string WAVE"), },
+    { "RIFF (little-endian) data",		"0 string RIFF", },
+  };
+  static const guint n_magic_presets = sizeof (magic_presets) / sizeof (magic_presets[0]);
+  guint i;
+
+  bse_init (&argc, &argv);
+
+  for (i = 0; i < n_magic_presets; i++)
+    bse_magic_list_append (bse_magic_new (0, g_quark_from_static_string (magic_presets[i][0]),
+					  magic_presets[i][1]));
+  
+  for (i = 1; i < argc; i++)
+    {
+      if (strcmp ("-p", argv[i]) == 0)
+	{
+	  GList *free_list, *list;
+
+	  /* check load BSE plugins to register types */
+	  free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
+	  for (list = free_list; list; list = list->next)
+	    {
+	      gchar *error, *string = list->data;
+	      
+	      error = bse_plugin_check_load (string);
+	      if (error)
+		g_error ("failed to load plugin \"%s\": %s", string, error);
+	      g_free (string);
+	    }
+	  g_list_free (free_list);
+	}
+      else if (strcmp ("-h", argv[i]) == 0)
+	{
+	  return help (NULL);
+	}
+      else
+	{
+	  BseMagic *magic = bse_magic_list_match_file (argv[i]);
+	  guint l = strlen (argv[i]);
+	  gchar *pad;
+
+	  g_print ("%s:", argv[i]);
+	  pad = g_strnfill (MAX (40, l) - l, ' ');
+	  g_print (pad);
+	  g_free (pad);
+	  if (magic)
+	    g_print (" %s [%s]\n", g_quark_to_string (magic->qextension), g_type_name (magic->proc_type));
+	  else
+	    g_print (" no match\n");
+	}
+    }
+
+  return 0;
+}

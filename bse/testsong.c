@@ -24,7 +24,7 @@ main (int argc, char *argv[])
 {
   BseErrorType error;
   BseSample *sample;
-  gchar *f_name;
+  gchar *f_name, *blurb;
   BsePcmDevice *pdev;
 
 
@@ -67,8 +67,9 @@ main (int argc, char *argv[])
   sample = bse_sample_lookup (NULL, "bolingo");
   g_assert (sample != NULL);
   
+  g_object_get (G_OBJECT (sample), "blurb", &blurb, NULL);
   g_print ("Sample to play: blurb-\"%s\" n_channels(%d) rec_freq(%d)\n",
-	   bse_object_get_blurb (BSE_OBJECT (sample)),
+	   blurb,
 	   sample->n_tracks,
 	   sample->rec_freq);
   

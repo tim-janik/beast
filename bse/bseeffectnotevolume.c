@@ -28,11 +28,15 @@ enum {
 static void bse_effect_note_volume_class_init (BseEffectClass      *class);
 static void bse_effect_note_volume_init       (BseEffectNoteVolume *effect);
 static void bse_effect_note_volume_set_param  (BseEffectNoteVolume *effect,
-					       BseParam            *param,
-					       guint                param_id);
+					       guint                param_id,
+					       GValue              *value,
+					       GParamSpec          *pspec,
+					       const gchar         *trailer);
 static void bse_effect_note_volume_get_param  (BseEffectNoteVolume *effect,
-					       BseParam            *param,
-					       guint                param_id);
+					       guint                param_id,
+					       GValue              *value,
+					       GParamSpec          *pspec,
+					       const gchar         *trailer);
      
 
 /* --- functions --- */
@@ -42,9 +46,9 @@ BSE_BUILTIN_TYPE (BseEffectNoteVolume)
     sizeof (BseEffectClass),
 
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_effect_note_volume_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseEffectNoteVolume),
@@ -61,29 +65,30 @@ BSE_BUILTIN_TYPE (BseEffectNoteVolume)
 static void
 bse_effect_note_volume_class_init (BseEffectClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
-  object_class->set_param = (BseObjectSetParamFunc) bse_effect_note_volume_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_effect_note_volume_get_param;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_effect_note_volume_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_effect_note_volume_get_param;
 
   class->effect_type = BSE_EFFECT_TYPE_NOTE_VOLUME;
-
+  
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_VOLUME_PERC,
-			      bse_param_spec_uint ("volume_perc", "Volume [%]", NULL,
-						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-						   1,
-						   bse_dB_to_factor (0) * 100,
-						   BSE_PARAM_GUI |
-						   BSE_PARAM_HINT_DIAL));
+			      b_param_spec_uint ("volume_perc", "Volume [%]", NULL,
+						 0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
+						 bse_dB_to_factor (0) * 100,
+						 1,
+						 B_PARAM_GUI |
+						 B_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_VOLUME_dB,
-			      bse_param_spec_float ("volume_dB", "Volume [dB]", NULL,
-						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-						    BSE_STP_VOLUME_dB,
-						    0,
-						    BSE_PARAM_GUI |
-						    BSE_PARAM_HINT_DIAL));
+			      b_param_spec_float ("volume_dB", "Volume [dB]", NULL,
+						  BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+						  0,
+						  BSE_STP_VOLUME_dB,
+						  B_PARAM_GUI |
+						  B_PARAM_HINT_DIAL));
 }
 
 static void
@@ -94,40 +99,44 @@ bse_effect_note_volume_init (BseEffectNoteVolume *effect)
 
 static void
 bse_effect_note_volume_set_param (BseEffectNoteVolume *effect,
-				  BseParam            *param,
-				  guint                param_id)
+				  guint                param_id,
+				  GValue              *value,
+				  GParamSpec          *pspec,
+				  const gchar         *trailer)
 {
   switch (param_id)
     {
     case PARAM_VOLUME_PERC:
-      effect->volume_factor = ((gfloat) param->value.v_uint) / 100;
+      effect->volume_factor = ((gfloat) b_value_get_uint (value)) / 100;
       bse_object_param_changed (BSE_OBJECT (effect), "volume_dB");
       break;
     case PARAM_VOLUME_dB:
-      effect->volume_factor = bse_dB_to_factor (param->value.v_float);
+      effect->volume_factor = bse_dB_to_factor (b_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (effect), "volume_perc");
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (effect, param, param_id);
+      G_WARN_INVALID_PARAM_ID (effect, param_id, pspec);
       break;
     }
 }
 
 static void
 bse_effect_note_volume_get_param (BseEffectNoteVolume *effect,
-				  BseParam            *param,
-				  guint                param_id)
+				  guint                param_id,
+				  GValue              *value,
+				  GParamSpec          *pspec,
+				  const gchar         *trailer)
 {
   switch (param_id)
     {
-    case PARAM_VOLUME_dB:
-      param->value.v_float = bse_dB_from_factor (effect->volume_factor, BSE_MIN_VOLUME_dB);
-      break;
     case PARAM_VOLUME_PERC:
-      param->value.v_uint = effect->volume_factor * ((gfloat) 100) + 0.5;
+      b_value_set_uint (value, effect->volume_factor * ((gfloat) 100) + 0.5);
+      break;
+    case PARAM_VOLUME_dB:
+      b_value_set_float (value, bse_dB_from_factor (effect->volume_factor, BSE_MIN_VOLUME_dB));
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (effect, param, param_id);
+      G_WARN_INVALID_PARAM_ID (effect, param_id, pspec);
       break;
     }
 }

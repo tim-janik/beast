@@ -31,14 +31,17 @@ enum
 /* --- prototypes --- */
 static void        bse_heart_init          (BseHeart      *heart);
 static void        bse_heart_class_init    (BseHeartClass *class);
-static void        bse_heart_shutdown      (BseObject     *object);
 static void        bse_heart_destroy       (BseObject     *object);
 static void        bse_heart_set_param     (BseHeart	  *heart,
-					    BseParam      *param,
-					    guint          param_id);
+					    guint          param_id,
+					    GValue        *value,
+					    GParamSpec    *pspec,
+					    const gchar   *trailer);
 static void        bse_heart_get_param     (BseHeart	  *heart,
-					    BseParam      *param,
-					    guint          param_id);
+					    guint          param_id,
+					    GValue        *value,
+					    GParamSpec    *pspec,
+					    const gchar   *trailer);
 static gboolean	   bse_heart_prepare	   (gpointer       source_data,
 					    GTimeVal      *current_time,
 					    gint          *timeout,
@@ -70,9 +73,9 @@ BSE_BUILTIN_TYPE (BseHeart)
     sizeof (BseHeartClass),
 
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_heart_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseHeart),
@@ -89,23 +92,22 @@ BSE_BUILTIN_TYPE (BseHeart)
 static void
 bse_heart_class_init (BseHeartClass *class)
 {
-  BseObjectClass *object_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
   parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
-  object_class = BSE_OBJECT_CLASS (class);
 
-  object_class->set_param = (BseObjectSetParamFunc) bse_heart_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_heart_get_param;
-  object_class->shutdown = bse_heart_shutdown;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_heart_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_heart_get_param;
+
   object_class->destroy = bse_heart_destroy;
-
+  
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_LATENCY,
-			      bse_param_spec_uint ("latency", "Latency [msecs]", NULL,
-						   2, 2 * 1000,
-						   50,
-						   1000,
-						   BSE_PARAM_GUI | BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("latency", "Latency [msecs]", NULL,
+						 2, 2 * 1000,
+						 1000, 50,
+						 B_PARAM_GUI | B_PARAM_HINT_SCALE));
 }
 
 static void
@@ -130,24 +132,15 @@ bse_heart_init (BseHeart *heart)
 }
 
 static void
-bse_heart_shutdown (BseObject *object)
-{
-  BseHeart *heart = BSE_HEART (object);
-
-  g_source_remove (heart->gsource_id);
-  heart->gsource_id = 0;
-
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
-}
-
-static void
 bse_heart_destroy (BseObject *object)
 {
   BseHeart *heart = BSE_HEART (object);
 
   if (bse_global_heart == heart)
     bse_global_heart = NULL;
+
+  g_source_remove (heart->gsource_id);
+  heart->gsource_id = 0;
 
   if (heart->device_open_handler_id)
     {
@@ -175,33 +168,37 @@ bse_heart_destroy (BseObject *object)
 }
 
 static void
-bse_heart_set_param (BseHeart *heart,
-		     BseParam *param,
-		     guint     param_id)
+bse_heart_set_param (BseHeart    *heart,
+		     guint        param_id,
+		     GValue      *value,
+		     GParamSpec  *pspec,
+		     const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_LATENCY:
-      heart->latency = param->value.v_uint;
+      heart->latency = b_value_get_uint (value);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (heart, param, param_id);
+      G_WARN_INVALID_PARAM_ID (heart, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_heart_get_param (BseHeart *heart,
-                     BseParam *param,
-		     guint     param_id)
+bse_heart_get_param (BseHeart    *heart,
+		     guint        param_id,
+		     GValue      *value,
+		     GParamSpec  *pspec,
+		     const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_LATENCY:
-      param->value.v_uint = heart->latency;
+      b_value_set_uint (value, heart->latency);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (heart, param, param_id);
+      G_WARN_INVALID_PARAM_ID (heart, param_id, pspec);
       break;
     }
 }

@@ -26,7 +26,7 @@
 /* --- prototypes --- */
 static void	bse_item_class_init		(BseItemClass	*class);
 static void	bse_item_init			(BseItem		*item);
-static void	bse_item_do_shutdown		(BseObject		*object);
+static void	bse_item_do_shutdown		(GObject		*object);
 static void	bse_item_do_destroy		(BseObject		*object);
 static void	bse_item_do_set_name		(BseObject		*object,
 						 const gchar		*name);
@@ -48,9 +48,9 @@ BSE_BUILTIN_TYPE (BseItem)
     sizeof (BseItemClass),
 
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_item_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseItem),
@@ -69,12 +69,14 @@ BSE_BUILTIN_TYPE (BseItem)
 static void
 bse_item_class_init (BseItemClass *class)
 {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
 
   parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
 
+  gobject_class->shutdown = bse_item_do_shutdown;
+
   object_class->set_name = bse_item_do_set_name;
-  object_class->shutdown = bse_item_do_shutdown;
   object_class->destroy = bse_item_do_destroy;
 
   class->set_parent = bse_item_do_set_parent;
@@ -88,14 +90,15 @@ bse_item_init (BseItem *item)
 }
 
 static void
-bse_item_do_shutdown (BseObject *object)
+bse_item_do_shutdown (GObject *gobject)
 {
-  BseItem *item = BSE_ITEM (object);
+  BseItem *item = BSE_ITEM (gobject);
 
+  /* if parent could be != NULL here, we had to force removement */
   g_return_if_fail (item->parent == NULL);
 
   /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  G_OBJECT_CLASS (parent_class)->shutdown (gobject);
 }
 
 static void

@@ -54,12 +54,12 @@ bse_type_register_static (GType              parent_type,
   /* some builtin types have destructors eventhough they are registered
    * statically, compensate for that
    */
-  if (G_TYPE_IS_INSTANTIATABLE (parent_type) && info->class_destroy)
+  if (G_TYPE_IS_INSTANTIATABLE (parent_type) && info->class_finalize)
     {
       GTypeInfo tmp_info;
 
       tmp_info = *info;
-      tmp_info.class_destroy = NULL;
+      tmp_info.class_finalize = NULL;
       info = &tmp_info;
     }
 
@@ -96,26 +96,6 @@ bse_type_init (void)
 {
   GTypeInfo info;
   static const struct {
-    GType        type;
-    const gchar *name;
-    const gchar *blurb;
-  } param_types[] = {
-    { BSE_TYPE_PARAM_BOOL,      "BseParamSpecBool",     "Boolean parameter", },
-    { BSE_TYPE_PARAM_INT,       "BseParamSpecInt",      "Integer parameter", },
-    { BSE_TYPE_PARAM_UINT,      "BseParamSpecUInt",     "Unsigned integer parameter", },
-    { BSE_TYPE_PARAM_ENUM,      "BseParamSpecEnum",     "Enumeration parameter", },
-    { BSE_TYPE_PARAM_FLAGS,     "BseParamSpecFlags",    "Flag enumeration parameter", },
-    { BSE_TYPE_PARAM_FLOAT,     "BseParamSpecFloat",    "Floating point parameter", },
-    { BSE_TYPE_PARAM_DOUBLE,    "BseParamSpecDouble",   "Double precision floating point parameter", },
-    { BSE_TYPE_PARAM_TIME,      "BseParamSpecTime",     "Time parameter", },
-    { BSE_TYPE_PARAM_NOTE,      "BseParamSpecNote",     "Note parameter", },
-    { BSE_TYPE_PARAM_INDEX_2D,  "BseParamSpecIndex2D",  "Packed 2D index parameter", },
-    { BSE_TYPE_PARAM_STRING,    "BseParamSpecString",   "String parameter", },
-    { BSE_TYPE_PARAM_DOTS,      "BseParamSpecDots",     "Line graph parameter", },
-    { BSE_TYPE_PARAM_ITEM,      "BseParamSpecItem",     "Item object reference", },
-  };
-  const guint n_param_types = sizeof (param_types) / sizeof (param_types[0]);
-  static const struct {
     GType   *const type_p;
     GType   (*register_type) (void);
   } builtin_types[] = {
@@ -124,7 +104,6 @@ bse_type_init (void)
   };
   const guint n_builtin_types = sizeof (builtin_types) / sizeof (builtin_types[0]);
   static GTypeFundamentalInfo finfo = { 0, 0, NULL, };
-  GType type;
   guint i;
 
   g_return_if_fail (quark_blurb == 0);
@@ -132,21 +111,7 @@ bse_type_init (void)
   /* type system initialization
    */
   quark_blurb = g_quark_from_static_string ("GType  -blurb");
-  g_type_init ();
-
-  /* BSE_TYPE_PARAM types
-   */
-  memset (&info, 0, sizeof (info));
-  finfo.type_flags = G_TYPE_FLAG_DERIVABLE;
-  g_type_register_fundamental (BSE_TYPE_PARAM, "BseParam", &finfo, &info);
-  bse_type_set_blurb (BSE_TYPE_PARAM, "BSE Parameter base type");
-  g_assert (BSE_TYPE_PARAM == g_type_from_name ("BseParam"));
-  for (i = 0; i < n_param_types; i++)
-    {
-      memset (&info, 0, sizeof (info));
-      type = bse_type_register_static (BSE_TYPE_PARAM, param_types[i].name, param_types[i].blurb, &info);
-      g_assert (param_types[i].type == type);
-    }
+  blib_init ();
 
   /* BSE_TYPE_PROCEDURE
    */
@@ -158,6 +123,9 @@ bse_type_init (void)
   bse_type_set_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type");
   g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
 
+#if 0
+  /* BSE_TYPE_OBJECT
+   */
   memset (&finfo, 0, sizeof (finfo));
   finfo.type_flags = G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_INSTANTIATABLE | G_TYPE_FLAG_DERIVABLE | G_TYPE_FLAG_DEEP_DERIVABLE;
   memset (&info, 0, sizeof (info));
@@ -165,7 +133,8 @@ bse_type_init (void)
   g_type_register_fundamental (BSE_TYPE_OBJECT, "BseObject", &finfo, &info);
   bse_type_set_blurb (BSE_TYPE_OBJECT, "BSE Object Hierarchy base type");
   g_assert (BSE_TYPE_OBJECT == g_type_from_name ("BseObject"));
-
+#endif
+  
   /* initialize builtin enumerations */
   bse_type_register_enums ();
   

@@ -61,7 +61,7 @@ enum {
 #define	ENV_DECAY_TIME(dots)	(dots[3].x)
 #define	ENV_SUSTAIN_TIME(dots)	(dots[4].x)
 #define	ENV_RELEASE_TIME(dots)	(dots[5].x)
-static BseDot env_dots[ENV_N_DOTS] = {
+static BDot env_dflt_dots[ENV_N_DOTS] = {
   /* x (time)	y (level) */
   { 0.0,	0.0 }	/* 0) 0,		0	      */,
   { 0.0,	0.0 }	/* 1) delay_time,	0	      */,
@@ -80,13 +80,17 @@ static BseDot env_dots[ENV_N_DOTS] = {
 /* --- prototypes --- */
 static void	bse_instrument_class_init	(BseInstrumentClass	*class);
 static void	bse_instrument_init		(BseInstrument		*instrument);
-static void	bse_instrument_do_shutdown	(BseObject		*object);
+static void	bse_instrument_do_destroy	(BseObject		*object);
 static void	bse_instrument_set_param	(BseInstrument		*instrument,
-						 BseParam		*param,
-						 guint                   param_id);
+						 guint                   param_id,
+						 GValue                 *value,
+						 GParamSpec             *pspec,
+						 const gchar            *trailer);
 static void	bse_instrument_get_param	(BseInstrument		*instrument,
-						 BseParam		*param,
-						 guint                   param_id);
+						 guint                   param_id,
+						 GValue                 *value,
+						 GParamSpec             *pspec,
+						 const gchar            *trailer);
 static void	bse_instrument_unlocked		(BseObject		*object);
 
 
@@ -101,9 +105,9 @@ BSE_BUILTIN_TYPE (BseInstrument)
     sizeof (BseInstrumentClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_instrument_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseInstrument),
@@ -120,157 +124,156 @@ BSE_BUILTIN_TYPE (BseInstrument)
 static void
 bse_instrument_class_init (BseInstrumentClass *class)
 {
-  BseObjectClass *object_class;
-  BseItemClass *item_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek (BSE_TYPE_ITEM);
-  object_class = BSE_OBJECT_CLASS (class);
-  item_class = BSE_ITEM_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) bse_instrument_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_instrument_get_param;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_instrument_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_instrument_get_param;
+
   object_class->unlocked = bse_instrument_unlocked;
-  object_class->shutdown = bse_instrument_do_shutdown;
+  object_class->destroy = bse_instrument_do_destroy;
   
   bse_object_class_add_param (object_class, "Synthesis Input",
 			      PARAM_SYNTH,
-			      bse_param_spec_item ("sinstrument", "Synth", NULL,
+			      g_param_spec_object ("sinstrument", "Synth", NULL,	// FIXME
 						   BSE_TYPE_SINSTRUMENT,
-						   (BSE_PARAM_DEFAULT) & ~BSE_PARAM_SERVE_GUI));
+						   (B_PARAM_DEFAULT) & ~B_PARAM_SERVE_GUI));
   bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_SAMPLE,
-			      bse_param_spec_item ("sample", "Sample", NULL,
+			      g_param_spec_object ("sample", "Sample", NULL,	// FIXME
 						   BSE_TYPE_SAMPLE,
-						   BSE_PARAM_DEFAULT));
+						   B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_INTERPOLATION,
-			      bse_param_spec_bool ("interpolation", "Use interpolation?", NULL /* FIXME */,
-						   TRUE,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("interpolation", "Use interpolation?", NULL /* FIXME */,
+						 TRUE,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Sample Input",
 			      PARAM_POLYPHONY,
-			      bse_param_spec_bool ("polyphony", "Polyphony instrument?", NULL,
-						   FALSE,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_bool ("polyphony", "Polyphony instrument?", NULL,
+						 FALSE,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_f,
-			      bse_param_spec_float ("volume_f", "Volume [float]", NULL,
-						    0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
-						    0.1,
-						    bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB),
-						    BSE_PARAM_STORAGE));
+			      b_param_spec_float ("volume_f", "Volume [float]", NULL,
+						  0, bse_dB_to_factor (BSE_MAX_VOLUME_dB),
+						  bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB), 0.1,
+						  B_PARAM_STORAGE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_dB,
-			      bse_param_spec_float ("volume_dB", "Volume [dB]", NULL,
-						    BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
-						    BSE_STP_VOLUME_dB,
-						    BSE_DFL_INSTRUMENT_VOLUME_dB,
-						    BSE_PARAM_GUI |
-						    BSE_PARAM_HINT_DIAL));
+			      b_param_spec_float ("volume_dB", "Volume [dB]", NULL,
+						  BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
+						  BSE_DFL_INSTRUMENT_VOLUME_dB, BSE_STP_VOLUME_dB,
+						  B_PARAM_GUI |
+						  B_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_VOLUME_PERC,
-			      bse_param_spec_uint ("volume_perc", "Volume [%]", NULL,
-						   0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
-						   1,
-						   bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB) * 100,
-						   BSE_PARAM_GUI |
-						   BSE_PARAM_HINT_DIAL));
+			      b_param_spec_uint ("volume_perc", "Volume [%]", NULL,
+						 0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100,
+						 bse_dB_to_factor (BSE_DFL_INSTRUMENT_VOLUME_dB) * 100, 1,
+						 B_PARAM_GUI |
+						 B_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_BALANCE,
-			      bse_param_spec_int ("balance", "Balance", NULL,
-						  BSE_MIN_BALANCE, BSE_MAX_BALANCE,
-						  BSE_STP_BALANCE,
-						  BSE_DFL_INSTRUMENT_BALANCE,
-						  BSE_PARAM_DEFAULT |
-						  BSE_PARAM_HINT_SCALE));
+			      b_param_spec_int ("balance", "Balance", NULL,
+						BSE_MIN_BALANCE, BSE_MAX_BALANCE,
+						BSE_DFL_INSTRUMENT_BALANCE, BSE_STP_BALANCE,
+						B_PARAM_DEFAULT |
+						B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_TRANSPOSE,
-			      bse_param_spec_int ("transpose", "Transpose", NULL,
-						  BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE,
-						  BSE_STP_TRANSPOSE,
-						  BSE_DFL_INSTRUMENT_TRANSPOSE,
-						  BSE_PARAM_DEFAULT |
-						  BSE_PARAM_HINT_SCALE));
+			      b_param_spec_int ("transpose", "Transpose", NULL,
+						BSE_MIN_TRANSPOSE, BSE_MAX_TRANSPOSE,
+						BSE_DFL_INSTRUMENT_TRANSPOSE, BSE_STP_TRANSPOSE,
+						B_PARAM_DEFAULT |
+						B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PARAM_FINE_TUNE,
-			      bse_param_spec_int ("fine_tune", "Fine tune", NULL,
-						  BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
-						  BSE_STP_FINE_TUNE,
-						  BSE_DFL_INSTRUMENT_FINE_TUNE,
-						  BSE_PARAM_DEFAULT |
-						  BSE_PARAM_HINT_SCALE));
+			      b_param_spec_int ("fine_tune", "Fine tune", NULL,
+						BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
+						BSE_DFL_INSTRUMENT_FINE_TUNE, BSE_STP_FINE_TUNE,
+						B_PARAM_DEFAULT |
+						B_PARAM_HINT_SCALE));
   /* envelope
    */
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ENVELOPE,
-			      bse_param_spec_dots ("envelope", "Envelope", NULL,
-						   ENV_N_DOTS, env_dots,
-						   BSE_PARAM_GUI));
+			      b_param_spec_dots ("envelope", "Envelope", NULL,
+						 ENV_N_DOTS, env_dflt_dots,
+						 B_PARAM_GUI));
   /* envelope parameters
    */
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DELAY_TIME,
-			      bse_param_spec_uint ("delay_time", "Delay Time", NULL,
-						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
-						   ENV_DELAY_TIME (env_dots) * BSE_MAX_ENV_TIME,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("delay_time", "Delay Time", NULL,
+						 0, BSE_MAX_ENV_TIME,
+						 ENV_DELAY_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
+						 BSE_STP_ENV_TIME,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ATTACK_TIME,
-			      bse_param_spec_uint ("attack_time", "Attack Time", NULL,
-						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
-						   ENV_ATTACK_TIME (env_dots) * BSE_MAX_ENV_TIME,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("attack_time", "Attack Time", NULL,
+						 0, BSE_MAX_ENV_TIME,
+						 ENV_ATTACK_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
+						 BSE_STP_ENV_TIME,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ATTACK_LEVEL,
-			      bse_param_spec_uint ("attack_level", "Attack Level", NULL,
-						   0, 100, 1,
-						   ENV_ATTACK_LEVEL (env_dots) * 100,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("attack_level", "Attack Level", NULL,
+						 0, 100,
+						 ENV_ATTACK_LEVEL (env_dflt_dots) * 100, 1,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DECAY_TIME,
-			      bse_param_spec_uint ("decay_time", "Decay Time", NULL,
-						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
-						   ENV_DECAY_TIME (env_dots) * BSE_MAX_ENV_TIME,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("decay_time", "Decay Time", NULL,
+						 0, BSE_MAX_ENV_TIME,
+						 ENV_DECAY_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
+						 BSE_STP_ENV_TIME,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_LEVEL,
-			      bse_param_spec_uint ("sustain_level", "Sustain Level", NULL,
-						   0, 100, 1,
-						   ENV_SUSTAIN_LEVEL (env_dots) * 100,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("sustain_level", "Sustain Level", NULL,
+						 0, 100,
+						 ENV_SUSTAIN_LEVEL (env_dflt_dots) * 100, 1,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_TIME,
-			      bse_param_spec_uint ("sustain_time", "Sustain Time", NULL,
-						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
-						   ENV_SUSTAIN_TIME (env_dots) * BSE_MAX_ENV_TIME,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("sustain_time", "Sustain Time", NULL,
+						 0, BSE_MAX_ENV_TIME,
+						 ENV_SUSTAIN_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
+						 BSE_STP_ENV_TIME,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_LEVEL,
-			      bse_param_spec_uint ("release_level", "Release Level", NULL,
-						   0, 100, 1,
-						   ENV_RELEASE_LEVEL (env_dots) * 100,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("release_level", "Release Level", NULL,
+						 0, 100,
+						 ENV_RELEASE_LEVEL (env_dflt_dots) * 100, 1,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_TIME,
-			      bse_param_spec_uint ("release_time", "Release Time", NULL,
-						   0, BSE_MAX_ENV_TIME, BSE_STP_ENV_TIME,
-						   ENV_RELEASE_TIME (env_dots) * BSE_MAX_ENV_TIME,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("release_time", "Release Time", NULL,
+						 0, BSE_MAX_ENV_TIME,
+						 ENV_RELEASE_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME,
+						 BSE_STP_ENV_TIME,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_SCALE));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DURATION,
-			      bse_param_spec_uint ("duration", "Duration [ms]", NULL,
-						   0, BSE_MAX_ENV_TIME * 5, BSE_STP_ENV_TIME * 5,
-						   BSE_MAX_ENV_TIME,
-						   BSE_PARAM_GUI |
-						   BSE_PARAM_HINT_SCALE));
+			      b_param_spec_uint ("duration", "Duration [ms]", NULL,
+						 0, BSE_MAX_ENV_TIME * 5,
+						 BSE_MAX_ENV_TIME,
+						 BSE_STP_ENV_TIME * 5,
+						 B_PARAM_GUI |
+						 B_PARAM_HINT_SCALE));
 }
 
 static void
@@ -283,25 +286,25 @@ bse_instrument_init (BseInstrument *instrument)
   instrument->transpose = BSE_DFL_INSTRUMENT_TRANSPOSE;
   instrument->fine_tune = BSE_DFL_INSTRUMENT_FINE_TUNE;
   
-  instrument->env.delay_time = ENV_DELAY_TIME (env_dots) * BSE_MAX_ENV_TIME;
-  instrument->env.attack_time = ENV_ATTACK_TIME (env_dots) * BSE_MAX_ENV_TIME;
-  instrument->env.attack_level = ENV_ATTACK_LEVEL (env_dots);
-  instrument->env.decay_time = ENV_DECAY_TIME (env_dots) * BSE_MAX_ENV_TIME;
-  instrument->env.sustain_level = ENV_SUSTAIN_LEVEL (env_dots);
-  instrument->env.sustain_time = ENV_SUSTAIN_TIME (env_dots) * BSE_MAX_ENV_TIME;
-  instrument->env.release_level = ENV_RELEASE_LEVEL (env_dots);
-  instrument->env.release_time = ENV_RELEASE_TIME (env_dots) * BSE_MAX_ENV_TIME;
+  instrument->env.delay_time = ENV_DELAY_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME;
+  instrument->env.attack_time = ENV_ATTACK_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME;
+  instrument->env.attack_level = ENV_ATTACK_LEVEL (env_dflt_dots);
+  instrument->env.decay_time = ENV_DECAY_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME;
+  instrument->env.sustain_level = ENV_SUSTAIN_LEVEL (env_dflt_dots);
+  instrument->env.sustain_time = ENV_SUSTAIN_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME;
+  instrument->env.release_level = ENV_RELEASE_LEVEL (env_dflt_dots);
+  instrument->env.release_time = ENV_RELEASE_TIME (env_dflt_dots) * BSE_MAX_ENV_TIME;
 }
 
 static void
-bse_instrument_do_shutdown (BseObject *object)
+bse_instrument_do_destroy (BseObject *object)
 {
   BseInstrument *instrument = BSE_INSTRUMENT (object);
   
   g_assert (instrument->type == BSE_INSTRUMENT_NONE); /* paranoid */
   
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
@@ -387,8 +390,10 @@ instrument_set_input (BseInstrument  *instrument,
 
 static void
 bse_instrument_set_param (BseInstrument *instrument,
-			  BseParam	*param,
-			  guint          param_id)
+			  guint          param_id,
+			  GValue        *value,
+			  GParamSpec    *pspec,
+			  const gchar   *trailer)
 {
   BseEnvelope *env = &instrument->env;
   
@@ -396,105 +401,114 @@ bse_instrument_set_param (BseInstrument *instrument,
     {
       guint total;
     case PARAM_SAMPLE:
-      instrument_set_input (instrument, (BseSample*) param->value.v_item, NULL);
+      instrument_set_input (instrument, (BseSample*) g_value_get_object (value), NULL);
       bse_object_param_changed (BSE_OBJECT (instrument), "sinstrument");
       break;
     case PARAM_SYNTH:
-      instrument_set_input (instrument, NULL, (BseSInstrument*) param->value.v_item);
+      instrument_set_input (instrument, NULL, (BseSInstrument*) g_value_get_object (value));
       bse_object_param_changed (BSE_OBJECT (instrument), "sample");
       break;
     case PARAM_INTERPOLATION:
-      instrument->interpolation = param->value.v_bool;
+      instrument->interpolation = b_value_get_bool (value);
       break;
     case PARAM_POLYPHONY:
-      instrument->polyphony = param->value.v_bool;
+      instrument->polyphony = b_value_get_bool (value);
       break;
     case PARAM_VOLUME_f:
-      instrument->volume_factor = param->value.v_float;
+      instrument->volume_factor = b_value_get_float (value);
       bse_object_param_changed (BSE_OBJECT (instrument), "volume_dB");
       bse_object_param_changed (BSE_OBJECT (instrument), "volume_perc");
       break;
     case PARAM_VOLUME_dB:
-      instrument->volume_factor = bse_dB_to_factor (param->value.v_float);
+      instrument->volume_factor = bse_dB_to_factor (b_value_get_float (value));
       bse_object_param_changed (BSE_OBJECT (instrument), "volume_f");
       bse_object_param_changed (BSE_OBJECT (instrument), "volume_perc");
       break;
     case PARAM_VOLUME_PERC:
-      instrument->volume_factor = ((gfloat) param->value.v_uint) / 100;
+      instrument->volume_factor = ((gfloat) b_value_get_uint (value)) / 100;
       bse_object_param_changed (BSE_OBJECT (instrument), "volume_f");
       bse_object_param_changed (BSE_OBJECT (instrument), "volume_dB");
       break;
     case PARAM_BALANCE:
-      instrument->balance = param->value.v_int;
+      instrument->balance = b_value_get_int (value);
       break;
     case PARAM_TRANSPOSE:
-      instrument->transpose = param->value.v_int;
+      instrument->transpose = b_value_get_int (value);
       break;
     case PARAM_FINE_TUNE:
-      instrument->fine_tune = param->value.v_int;
+      instrument->fine_tune = b_value_get_int (value);
       break;
     case PARAM_ATTACK_LEVEL:
-      env->attack_level = ((gfloat) param->value.v_uint) / 100;
+      env->attack_level = ((gfloat) b_value_get_uint (value)) / 100;
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       break;
     case PARAM_SUSTAIN_LEVEL:
-      env->sustain_level = ((gfloat) param->value.v_uint) / 100;
+      env->sustain_level = ((gfloat) b_value_get_uint (value)) / 100;
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       break;
     case PARAM_RELEASE_LEVEL:
-      env->release_level = ((gfloat) param->value.v_uint) / 100;
+      env->release_level = ((gfloat) b_value_get_uint (value)) / 100;
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       break;
     case PARAM_ENVELOPE:
-      total = ENVELOPE_TIME_TOTAL (instrument->env);
-      env->attack_level = ENV_ATTACK_LEVEL (param->value.v_dots);
-      bse_object_param_changed (BSE_OBJECT (instrument), "attack_level");
-      env->sustain_level = ENV_SUSTAIN_LEVEL (param->value.v_dots);
-      bse_object_param_changed (BSE_OBJECT (instrument), "sustain_level");
-      env->release_level = ENV_RELEASE_LEVEL (param->value.v_dots);
-      bse_object_param_changed (BSE_OBJECT (instrument), "release_level");
-      env->delay_time = ENV_DELAY_TIME (param->value.v_dots) * total + 0.5;
-      env->attack_time = CLAMP ((ENV_ATTACK_TIME (param->value.v_dots) -
-				 ENV_DELAY_TIME (param->value.v_dots)) * total + 0.5,
-				0, BSE_MAX_ENV_TIME);
-      env->decay_time = CLAMP ((ENV_DECAY_TIME (param->value.v_dots) -
-				ENV_ATTACK_TIME (param->value.v_dots)) * total + 0.5,
-			       0, BSE_MAX_ENV_TIME);
-      env->sustain_time = CLAMP ((ENV_SUSTAIN_TIME (param->value.v_dots) -
-				  ENV_DECAY_TIME (param->value.v_dots)) * total + 0.5,
-				 0, BSE_MAX_ENV_TIME);
-      env->release_time = CLAMP ((1.0 /* ENV_RELEASE_TIME (param->value.v_dots) */ -
-				  ENV_SUSTAIN_TIME (param->value.v_dots)) * total + 0.5,
-				 0, BSE_MAX_ENV_TIME);
-      bse_object_param_changed (BSE_OBJECT (instrument), "delay_time");
-      bse_object_param_changed (BSE_OBJECT (instrument), "attack_time");
-      bse_object_param_changed (BSE_OBJECT (instrument), "decay_time");
-      bse_object_param_changed (BSE_OBJECT (instrument), "sustain_time");
-      bse_object_param_changed (BSE_OBJECT (instrument), "release_time");
-      bse_object_param_changed (BSE_OBJECT (instrument), "duration");
+      if (b_value_get_n_dots (value) != ENV_N_DOTS)
+	  G_WARN_INVALID_PARAM_ID (instrument, param_id, pspec);
+      else
+	{
+	  BDot *dots;
+	  guint n_dots;
+	  
+	  total = ENVELOPE_TIME_TOTAL (instrument->env);
+	  dots = b_value_get_dots (value, &n_dots);
+	  env->attack_level = ENV_ATTACK_LEVEL (dots);
+	  bse_object_param_changed (BSE_OBJECT (instrument), "attack_level");
+	  env->sustain_level = ENV_SUSTAIN_LEVEL (dots);
+	  bse_object_param_changed (BSE_OBJECT (instrument), "sustain_level");
+	  env->release_level = ENV_RELEASE_LEVEL (dots);
+	  bse_object_param_changed (BSE_OBJECT (instrument), "release_level");
+	  env->delay_time = ENV_DELAY_TIME (dots) * total + 0.5;
+	  env->attack_time = CLAMP ((ENV_ATTACK_TIME (dots) -
+				     ENV_DELAY_TIME (dots)) * total + 0.5,
+				    0, BSE_MAX_ENV_TIME);
+	  env->decay_time = CLAMP ((ENV_DECAY_TIME (dots) -
+				    ENV_ATTACK_TIME (dots)) * total + 0.5,
+				   0, BSE_MAX_ENV_TIME);
+	  env->sustain_time = CLAMP ((ENV_SUSTAIN_TIME (dots) -
+				      ENV_DECAY_TIME (dots)) * total + 0.5,
+				     0, BSE_MAX_ENV_TIME);
+	  env->release_time = CLAMP ((1.0 /* ENV_RELEASE_TIME (dots) */ -
+				      ENV_SUSTAIN_TIME (dots)) * total + 0.5,
+				     0, BSE_MAX_ENV_TIME);
+	  bse_object_param_changed (BSE_OBJECT (instrument), "delay_time");
+	  bse_object_param_changed (BSE_OBJECT (instrument), "attack_time");
+	  bse_object_param_changed (BSE_OBJECT (instrument), "decay_time");
+	  bse_object_param_changed (BSE_OBJECT (instrument), "sustain_time");
+	  bse_object_param_changed (BSE_OBJECT (instrument), "release_time");
+	  bse_object_param_changed (BSE_OBJECT (instrument), "duration");
+	}
       break;
     case PARAM_DELAY_TIME:
-      env->delay_time = param->value.v_uint;
+      env->delay_time = b_value_get_uint (value);
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       bse_object_param_changed (BSE_OBJECT (instrument), "duration");
       break;
     case PARAM_ATTACK_TIME:
-      env->attack_time = param->value.v_uint;
+      env->attack_time = b_value_get_uint (value);
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       bse_object_param_changed (BSE_OBJECT (instrument), "duration");
       break;
     case PARAM_SUSTAIN_TIME:
-      env->sustain_time = param->value.v_uint;
+      env->sustain_time = b_value_get_uint (value);
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       bse_object_param_changed (BSE_OBJECT (instrument), "duration");
       break;
     case PARAM_DECAY_TIME:
-      env->decay_time = param->value.v_uint;
+      env->decay_time = b_value_get_uint (value);
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       bse_object_param_changed (BSE_OBJECT (instrument), "duration");
       break;
     case PARAM_RELEASE_TIME:
-      env->release_time = param->value.v_uint;
+      env->release_time = b_value_get_uint (value);
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       bse_object_param_changed (BSE_OBJECT (instrument), "duration");
       break;
@@ -502,138 +516,132 @@ bse_instrument_set_param (BseInstrument *instrument,
       total = ENVELOPE_TIME_TOTAL (instrument->env);
       if (env->delay_time)
 	env->delay_time = CLAMP (((gfloat) env->delay_time) /
-				 total * param->value.v_uint + 0.5,
+				 total * b_value_get_uint (value) + 0.5,
 				 1, BSE_MAX_ENV_TIME);
       bse_object_param_changed (BSE_OBJECT (instrument), "delay_time");
       if (env->attack_time)
 	env->attack_time = CLAMP (((gfloat) env->attack_time) /
-				  total * param->value.v_uint + 0.5,
+				  total * b_value_get_uint (value) + 0.5,
 				  1, BSE_MAX_ENV_TIME);
       bse_object_param_changed (BSE_OBJECT (instrument), "attack_time");
       if (env->decay_time)
 	env->decay_time = CLAMP (((gfloat) env->decay_time) /
-				 total * param->value.v_uint + 0.5,
+				 total * b_value_get_uint (value) + 0.5,
 				 1, BSE_MAX_ENV_TIME);
       bse_object_param_changed (BSE_OBJECT (instrument), "decay_time");
       if (env->sustain_time)
 	env->sustain_time = CLAMP (((gfloat) env->sustain_time) /
-				   total * param->value.v_uint + 0.5,
+				   total * b_value_get_uint (value) + 0.5,
 				   1, BSE_MAX_ENV_TIME);
       bse_object_param_changed (BSE_OBJECT (instrument), "sustain_time");
       if (env->release_time)
 	env->release_time = CLAMP (((gfloat) env->release_time) /
-				   total * param->value.v_uint + 0.5,
+				   total * b_value_get_uint (value) + 0.5,
 				   1, BSE_MAX_ENV_TIME);
       bse_object_param_changed (BSE_OBJECT (instrument), "release_time");
       bse_object_param_changed (BSE_OBJECT (instrument), "envelope");
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (instrument, param, param_id);
+      G_WARN_INVALID_PARAM_ID (instrument, param_id, pspec);
       break;
     }
 }
 
 static void
 bse_instrument_get_param (BseInstrument *instrument,
-			  BseParam      *param,
-			  guint          param_id)
+			  guint          param_id,
+			  GValue        *value,
+			  GParamSpec    *pspec,
+			  const gchar   *trailer)
 {
   BseEnvelope *env = &instrument->env;
   
   switch (param_id)
     {
+      BDot dots[ENV_N_DOTS];
       guint total;
     case PARAM_SAMPLE:
-      if (param->value.v_item)
-	bse_object_unref (BSE_OBJECT (param->value.v_item));
       if (instrument->type == BSE_INSTRUMENT_SAMPLE && instrument->input)
-	{
-	  param->value.v_item = (BseItem*) instrument->input;
-	  bse_object_ref (BSE_OBJECT (param->value.v_item));
-	}
+	g_value_set_object (value, G_OBJECT (instrument->input));
       else
-	param->value.v_item = NULL;
+	g_value_set_object (value, NULL);
       break;
     case PARAM_SYNTH:
-      if (param->value.v_item)
-	bse_object_unref (BSE_OBJECT (param->value.v_item));
       if (instrument->type == BSE_INSTRUMENT_SYNTH && instrument->input)
-	{
-	  param->value.v_item = (BseItem*) instrument->input;
-	  bse_object_ref (BSE_OBJECT (param->value.v_item));
-	}
+	g_value_set_object (value, G_OBJECT (instrument->input));
       else
-	param->value.v_item = NULL;
+	g_value_set_object (value, NULL);
       break;
     case PARAM_INTERPOLATION:
-      param->value.v_bool = instrument->interpolation;
+      b_value_set_bool (value, instrument->interpolation);
       break;
     case PARAM_POLYPHONY:
-      param->value.v_bool = instrument->polyphony;
+      b_value_set_bool (value, instrument->polyphony);
       break;
     case PARAM_VOLUME_f:
-      param->value.v_float = instrument->volume_factor;
+      b_value_set_float (value, instrument->volume_factor);
       break;
     case PARAM_VOLUME_dB:
-      param->value.v_float = bse_dB_from_factor (instrument->volume_factor, BSE_MIN_VOLUME_dB);
+      b_value_set_float (value, bse_dB_from_factor (instrument->volume_factor, BSE_MIN_VOLUME_dB));
       break;
     case PARAM_VOLUME_PERC:
-      param->value.v_uint = instrument->volume_factor * ((gfloat) 100) + 0.5;
+      b_value_set_uint (value, instrument->volume_factor * ((gfloat) 100) + 0.5);
       break;
     case PARAM_BALANCE:
-      param->value.v_int = instrument->balance;
+      b_value_set_int (value, instrument->balance);
       break;
     case PARAM_TRANSPOSE:
-      param->value.v_int = instrument->transpose;
+      b_value_set_int (value, instrument->transpose);
       break;
     case PARAM_FINE_TUNE:
-      param->value.v_int = instrument->fine_tune;
+      b_value_set_int (value, instrument->fine_tune);
       break;
     case PARAM_ATTACK_LEVEL:
-      param->value.v_int = env->attack_level * 100;
+      b_value_set_uint (value, env->attack_level * 100);
       break;
     case PARAM_SUSTAIN_LEVEL:
-      param->value.v_int = env->sustain_level * 100;
+      b_value_set_uint (value, env->sustain_level * 100);
       break;
     case PARAM_RELEASE_LEVEL:
-      param->value.v_int = env->release_level * 100;
+      b_value_set_uint (value, env->release_level * 100);
       break;
     case PARAM_ENVELOPE:
-      bse_param_reset_value (param); /* ensure the param contains a valid dot array */
+      memcpy (&dots, &env_dflt_dots, sizeof (dots));
       total = ENVELOPE_TIME_TOTAL (instrument->env);
-      ENV_DELAY_TIME  (param->value.v_dots) = ((gfloat) env->delay_time) / total;
-      ENV_ATTACK_TIME  (param->value.v_dots) = (ENV_DELAY_TIME	(param->value.v_dots) +
-						((gfloat) env->attack_time) / total);
-      ENV_DECAY_TIME  (param->value.v_dots) = (ENV_ATTACK_TIME	(param->value.v_dots) +
-					       ((gfloat) env->decay_time) / total);
-      ENV_SUSTAIN_TIME	(param->value.v_dots) = (ENV_DECAY_TIME	 (param->value.v_dots) +
-						 ((gfloat) env->sustain_time) / total);
-      ENV_RELEASE_TIME	(param->value.v_dots) = (ENV_SUSTAIN_TIME  (param->value.v_dots) +
-						 ((gfloat) env->release_time) / total);
-      ENV_ATTACK_LEVEL	(param->value.v_dots) = env->attack_level;
-      ENV_SUSTAIN_LEVEL (param->value.v_dots) = env->sustain_level;
-      ENV_RELEASE_LEVEL (param->value.v_dots) = env->release_level;
+      ENV_DELAY_TIME  (dots) = ((gfloat) env->delay_time) / total;
+      ENV_ATTACK_TIME (dots) = (ENV_DELAY_TIME (dots) +
+				((gfloat) env->attack_time) / total);
+      ENV_DECAY_TIME (dots) = (ENV_ATTACK_TIME (dots) +
+			       ((gfloat) env->decay_time) / total);
+      ENV_SUSTAIN_TIME (dots) = (ENV_DECAY_TIME (dots) +
+				 ((gfloat) env->sustain_time) / total);
+      ENV_RELEASE_TIME (dots) = (ENV_SUSTAIN_TIME (dots) +
+				 ((gfloat) env->release_time) / total);
+      ENV_ATTACK_LEVEL (dots) = env->attack_level;
+      ENV_SUSTAIN_LEVEL (dots) = env->sustain_level;
+      ENV_RELEASE_LEVEL (dots) = env->release_level;
+      b_value_set_dots (value, ENV_N_DOTS, dots);
       break;
     case PARAM_DELAY_TIME:
-      param->value.v_uint = env->delay_time;
+      b_value_set_uint (value, env->delay_time);
       break;
     case PARAM_ATTACK_TIME:
-      param->value.v_uint = env->attack_time;
+      b_value_set_uint (value, env->attack_time);
       break;
     case PARAM_DECAY_TIME:
-      param->value.v_uint = env->decay_time;
+      b_value_set_uint (value, env->decay_time);
       break;
     case PARAM_SUSTAIN_TIME:
-      param->value.v_uint = env->sustain_time;
+      b_value_set_uint (value, env->sustain_time);
       break;
     case PARAM_RELEASE_TIME:
-      param->value.v_uint = env->release_time;
+      b_value_set_uint (value, env->release_time);
       break;
     case PARAM_DURATION:
-      param->value.v_uint = ENVELOPE_TIME_TOTAL (instrument->env);
+      b_value_set_uint (value, ENVELOPE_TIME_TOTAL (instrument->env));
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (instrument, param, param_id);
+      G_WARN_INVALID_PARAM_ID (instrument, param_id, pspec);
       break;
     }
 }

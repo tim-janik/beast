@@ -39,13 +39,17 @@ enum
 /* --- prototypes --- */
 static void	    bse_sample_class_init		(BseSampleClass *class);
 static void	    bse_sample_init			(BseSample	*sample);
-static void	    bse_sample_do_shutdown		(BseObject	*object);
+static void	    bse_sample_do_destroy		(BseObject	*object);
 static void	    bse_sample_set_param		(BseSample	*sample,
-							 BseParam	*param,
-							 guint           param_id);
+							 guint           param_id,
+							 GValue         *value,
+							 GParamSpec     *pspec,
+							 const gchar    *trailer);
 static void	    bse_sample_get_param		(BseSample	*sample,
-							 BseParam	*param,
-							 guint           param_id);
+							 guint           param_id,
+							 GValue         *value,
+							 GParamSpec     *pspec,
+							 const gchar    *trailer);
 static void	    bse_sample_do_store_private		(BseObject	*object,
 							 BseStorage	*storage);
 static GTokenType   bse_sample_do_restore		(BseObject	*object,
@@ -65,9 +69,9 @@ BSE_BUILTIN_TYPE (BseSample)
     sizeof (BseSampleClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_sample_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSample),
@@ -84,39 +88,36 @@ BSE_BUILTIN_TYPE (BseSample)
 static void
 bse_sample_class_init (BseSampleClass *class)
 {
-  BseObjectClass *object_class;
-  BseContainerClass *container_class;
-  BseSuperClass *super_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek (BSE_TYPE_SUPER);
-  object_class = BSE_OBJECT_CLASS (class);
-  container_class = BSE_CONTAINER_CLASS (class);
-  super_class = BSE_SUPER_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) bse_sample_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_sample_get_param;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_sample_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_sample_get_param;
+
   object_class->store_private = bse_sample_do_store_private;
   object_class->restore = bse_sample_do_restore;
   object_class->restore_private = bse_sample_do_restore_private;
-  object_class->shutdown = bse_sample_do_shutdown;
+  object_class->destroy = bse_sample_do_destroy;
   
   /* add BseSample memebers as class parameters, we use the structure
    * offset of the fields as parameter identifiers.
    */
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_N_TRACKS,
-			      bse_param_spec_uint ("n_tracks", "Number of Tracks", NULL,
-						   1, BSE_MAX_N_TRACKS,
-						   1, 1,
-						   BSE_PARAM_READWRITE |
-						   BSE_PARAM_SERVE_STORAGE));
+			      b_param_spec_uint ("n_tracks", "Number of Tracks", NULL,
+						 1, BSE_MAX_N_TRACKS,
+						 1, 1,
+						 B_PARAM_READWRITE |
+						 B_PARAM_SERVE_STORAGE));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_REC_FREQ,
-			      bse_param_spec_uint ("recording_frequency", "Recording Frequency", NULL,
-						   BSE_MIN_MIX_FREQ, BSE_MAX_MIX_FREQ,
-						   1024, BSE_DFL_SAMPLE_REC_FREQ,
-						   BSE_PARAM_READWRITE |
-						   BSE_PARAM_SERVE_STORAGE));
+			      b_param_spec_uint ("recording_frequency", "Recording Frequency", NULL,
+						 BSE_MIN_MIX_FREQ, BSE_MAX_MIX_FREQ,
+						 BSE_DFL_SAMPLE_REC_FREQ, 1024,
+						 B_PARAM_READWRITE |
+						 B_PARAM_SERVE_STORAGE));
 }
 
 static void
@@ -137,7 +138,7 @@ bse_sample_init (BseSample *sample)
 }
 
 static void
-bse_sample_do_shutdown (BseObject *object)
+bse_sample_do_destroy (BseObject *object)
 {
   BseSample *sample;
   guint i;
@@ -156,44 +157,48 @@ bse_sample_do_shutdown (BseObject *object)
 	}
     }
   
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
-bse_sample_set_param (BseSample *sample,
-		      BseParam  *param,
-		      guint      param_id)
+bse_sample_set_param (BseSample   *sample,
+		      guint        param_id,
+		      GValue      *value,
+		      GParamSpec  *pspec,
+		      const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_N_TRACKS:
-      sample->n_tracks = param->value.v_uint;
+      sample->n_tracks = b_value_get_uint (value);
       break;
     case PARAM_REC_FREQ:
-      sample->rec_freq = param->value.v_uint;
+      sample->rec_freq = b_value_get_uint (value);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (sample, param, param_id);
+      G_WARN_INVALID_PARAM_ID (sample, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_sample_get_param (BseSample *sample,
-		      BseParam  *param,
-		      guint      param_id)
+bse_sample_get_param (BseSample   *sample,
+		      guint        param_id,
+		      GValue      *value,
+		      GParamSpec  *pspec,
+		      const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_N_TRACKS:
-      param->value.v_uint = sample->n_tracks;
+      b_value_set_uint (value, sample->n_tracks);
       break;
     case PARAM_REC_FREQ:
-      param->value.v_uint = sample->rec_freq;
+      b_value_set_uint (value, sample->rec_freq);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (sample, param, param_id);
+      G_WARN_INVALID_PARAM_ID (sample, param_id, pspec);
       break;
     }
 }

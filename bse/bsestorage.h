@@ -105,7 +105,8 @@ void		bse_storage_handle_break	(BseStorage	*storage);
 void		bse_storage_break		(BseStorage	*storage);
 void		bse_storage_needs_break		(BseStorage	*storage);
 void		bse_storage_put_param		(BseStorage	*storage,
-						 BseParam	*param);
+						 GValue		*value,
+						 GParamSpec	*pspec);
 void		bse_storage_put_bin_data	(BseStorage	*storage,
 						 BseBinData	*bdata);
 void		bse_storage_flush_fd		(BseStorage	*storage,
@@ -139,7 +140,8 @@ GTokenType	bse_storage_parse_note		(BseStorage	*storage,
 GTokenType	bse_storage_parse_bin_data	(BseStorage	*storage,
 						 BseBinData    **bdata_p);
 GTokenType	bse_storage_parse_param_value	(BseStorage	*storage,
-						 BseParam	*param);
+						 GValue		*value,
+						 GParamSpec	*pspec);
 
 
 

@@ -65,30 +65,40 @@ void		bse_plugin_unref		(BsePlugin	*plugin);
 
 /* --- implementation details --- */
 void		bse_plugin_init			(void);
-extern void	bse_plugin_complete_info	(BsePlugin      *plugin,
-                                                 GType           type,
-                                                 GTypeInfo    *type_info);
+/* _SYMBOL - stringified c-SYMBOL
+ * _IMPL_B - EXPORTS_BEGIN magic
+ * _IMPL_S - c-Symbol (variable name)
+ * _IMPL_V - Variable declaration
+ * _IMPL_R - declaration of a _IMPL_V Reference (pointer)
+ * _IMPL_A - export Array declaration
+ * _IMPL_P - export Pointer declaration
+ * _IMPL_E - EXPORTS_END magic
+ * _IMPL_L - builtin type Launcher symbol (function name)
+ * _IMPL_F - builtin type launcher Function declaration
+ * _IMPL_T - builtin plugin initialization Trampoline
+ * _IMPL_D - system-specific (variable) Declaration stubs
+ * _IMPL_I - system-specific (variable) Implementation stubs
+ */
 #define BSE_EXPORT_SYMBOL(y)		"bse_export__" G_STRINGIFY (y) "__symbol"
 #ifndef	BSE_COMPILATION
 #  define BSE_EXPORT_IMPL_S(y)		bse_export__##y##__symbol
 #  define BSE_EXPORT_IMPL_V(y)		BseExport##y BSE_EXPORT_IMPL_S (y)
-#  define BSE_EXPORT_IMPL_W(y)		BseExport##y * BSE_EXPORT_IMPL_S (y)
+#  define BSE_EXPORT_IMPL_R(y)		BseExport##y * BSE_EXPORT_IMPL_S (y)
 #  define BSE_EXPORT_IMPL_B(y)		BSE_EXPORT_CHECK_INIT \
                                         BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_V (Begin); \
                                         BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_V (Begin) = y
 #  define BSE_EXPORT_IMPL_A(y)		BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_V (y) []; \
                                         BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_V (y) []
-#  define BSE_EXPORT_IMPL_P(y)		BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_W (y); \
-                                        BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_W (y)
+#  define BSE_EXPORT_IMPL_P(y)		BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_R (y); \
+                                        BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_R (y)
 #  define BSE_EXPORT_IMPL_E		BSE_EXPORT_IMPL_D BSE_EXPORT_IMPL_V (End); \
                                         BSE_EXPORT_IMPL_I BSE_EXPORT_IMPL_V (End) = BSE_MAGIC
 #else  /* BSE_COMPILATION */
 #  define BSE_EXPORT_IMPL_S(y)		bse_builtin__##y##__symbol
 #  define BSE_EXPORT_IMPL_V(y)		static const BseExport##y BSE_EXPORT_IMPL_S (y)
 #  define BSE_EXPORT_IMPL_L(y)		bse_builtin__##y##__init
-#  define BSE_EXPORT_IMPL_F(y)		const gchar* BSE_EXPORT_IMPL_L (y) ( \
-                                                       BsePlugin* BSE_EXPORT_IMPL_S (plugin))
-#  define BSE_EXPORT_IMPL_C             const gchar* (*bse_plugin_builtin_init) (BsePlugin*, \
+#  define BSE_EXPORT_IMPL_F(y)		const gchar* BSE_EXPORT_IMPL_L (y) (BsePlugin* __bplugin)
+#  define BSE_EXPORT_IMPL_T             const gchar* (*bse_plugin_builtin_init) (BsePlugin*, \
 										 gconstpointer, \
                                                                                  BseExportType)
 #  define BSE_EXPORT_IMPL_A(y)		BSE_EXPORT_IMPL_V (y) []
@@ -98,23 +108,25 @@ extern gconstpointer BSE_EXPORT_IMPL_S (Procedure); \
 extern gconstpointer BSE_EXPORT_IMPL_S (Object); \
 BSE_EXPORT_IMPL_F (BSE_BUILTIN_NAME) \
 { \
-  const gchar* BSE_EXPORT_IMPL_S (error) = NULL; \
-  gchar* BSE_EXPORT_IMPL_S (plugin_name) = "BSE-Builtin-" y; \
-  extern BSE_EXPORT_IMPL_C
+  const gchar* __error = NULL; \
+  gchar* __plugin_name = "BSE-Builtin-" y; \
+  extern BSE_EXPORT_IMPL_T
 #  define BSE_EXPORT_IMPL_E             \
-  BSE_EXPORT_IMPL_S (plugin)->name = BSE_EXPORT_IMPL_S (plugin_name); \
+  __bplugin->name = __plugin_name; \
   if (BSE_EXPORT_IMPL_S (Procedure)) \
-    BSE_EXPORT_IMPL_S (error) = bse_plugin_builtin_init (BSE_EXPORT_IMPL_S (plugin), \
-							 BSE_EXPORT_IMPL_S (Procedure), \
-							 BSE_EXPORT_TYPE_PROCS); \
+    __error = bse_plugin_builtin_init (__bplugin, \
+				       BSE_EXPORT_IMPL_S (Procedure), \
+				       BSE_EXPORT_TYPE_PROCS); \
+  if (__error) \
+    return __error; \
   if (BSE_EXPORT_IMPL_S (Object)) \
-    BSE_EXPORT_IMPL_S (error) = bse_plugin_builtin_init (BSE_EXPORT_IMPL_S (plugin), \
-							 BSE_EXPORT_IMPL_S (Object), \
-							 BSE_EXPORT_TYPE_OBJECTS); \
-  if (BSE_EXPORT_IMPL_S (error)) \
-    return BSE_EXPORT_IMPL_S (error); \
+    __error = bse_plugin_builtin_init (__bplugin, \
+				       BSE_EXPORT_IMPL_S (Object), \
+				       BSE_EXPORT_TYPE_OBJECTS); \
+  if (__error) \
+    return __error; \
   return NULL; \
-} extern BSE_EXPORT_IMPL_C /* eat ; */
+} extern BSE_EXPORT_IMPL_T /* eat ; */
 #endif /* BSE_COMPILATION */
 
 /* default plugin name specification (if omitted in plugin)

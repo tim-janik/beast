@@ -26,11 +26,11 @@
 
 /* --- prototypes --- */
 static void         bse_source_class_base_init		(BseSourceClass	*class);
-static void         bse_source_class_base_destroy	(BseSourceClass	*class);
+static void         bse_source_class_base_finalize	(BseSourceClass	*class);
 static void         bse_source_class_init		(BseSourceClass	*class);
 static void         bse_source_init			(BseSource	*source,
 							 BseSourceClass	*class);
-static void         bse_source_do_shutdown		(BseObject	*object);
+static void         bse_source_do_destroy		(BseObject	*object);
 static void         bse_source_calc_history		(BseSource	*source,
 							 guint		 ochannel_id);
 static void         bse_source_do_prepare		(BseSource	*source,
@@ -65,9 +65,9 @@ BSE_BUILTIN_TYPE (BseSource)
     sizeof (BseSourceClass),
     
     (GBaseInitFunc) bse_source_class_base_init,
-    (GBaseDestroyFunc) bse_source_class_base_destroy,
+    (GBaseFinalizeFunc) bse_source_class_base_finalize,
     (GClassInitFunc) bse_source_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSource),
@@ -93,7 +93,7 @@ bse_source_class_base_init (BseSourceClass *class)
 }
 
 static void
-bse_source_class_base_destroy (BseSourceClass *class)
+bse_source_class_base_finalize (BseSourceClass *class)
 {
   guint i;
   
@@ -126,7 +126,7 @@ bse_source_class_init (BseSourceClass *class)
   
   object_class->store_private = bse_source_do_store_private;
   object_class->restore_private = bse_source_do_restore_private;
-  object_class->shutdown = bse_source_do_shutdown;
+  object_class->destroy = bse_source_do_destroy;
 
   class->prepare = bse_source_do_prepare;
   class->calc_chunk = bse_source_default_calc_chunk;
@@ -157,7 +157,7 @@ bse_source_init (BseSource      *source,
 }
 
 static void
-bse_source_do_shutdown (BseObject *object)
+bse_source_do_destroy (BseObject *object)
 {
   BseSource *source;
   guint i;
@@ -171,7 +171,7 @@ bse_source_do_shutdown (BseObject *object)
 
   if (BSE_SOURCE_PREPARED (source))
     {
-      g_warning (G_STRLOC ": Uhh ohh, source still prepared during shutdown");
+      g_warning (G_STRLOC ": Uhh ohh, source still prepared during destruction");
       bse_source_reset (source);
     }
 
@@ -191,8 +191,8 @@ bse_source_do_shutdown (BseObject *object)
   g_free (source->ochannels);
   source->ochannels = NULL;
 
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 guint
@@ -383,7 +383,7 @@ bse_source_cycle (BseSource *source)
 {
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
-  g_return_if_fail (!BSE_OBJECT_DESTROYED (source));
+  /* g_return_if_fail (!BSE_OBJECT_DESTROYED (source)); */
   
   bse_object_ref (BSE_OBJECT (source));
   BSE_SOURCE_GET_CLASS (source)->cycle (source);
@@ -560,7 +560,7 @@ bse_source_reset (BseSource *source)
 {
   g_return_if_fail (BSE_IS_SOURCE (source));
   g_return_if_fail (BSE_SOURCE_PREPARED (source));
-  g_return_if_fail (!BSE_OBJECT_DESTROYED (source));
+  /* g_return_if_fail (!BSE_OBJECT_DESTROYED (source)); */
   
   bse_object_ref (BSE_OBJECT (source));
   BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
@@ -580,8 +580,8 @@ bse_source_set_input (BseSource *source,
   
   g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_SOURCE (input), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_OBJECT_DESTROYED (source), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_OBJECT_DESTROYED (input), BSE_ERROR_INTERNAL);
+  /* g_return_val_if_fail (!BSE_OBJECT_DESTROYED (source), BSE_ERROR_INTERNAL); */
+  /* g_return_val_if_fail (!BSE_OBJECT_DESTROYED (input), BSE_ERROR_INTERNAL); */
 
   if (ichannel_id < 1 || ichannel_id > BSE_SOURCE_N_ICHANNELS (source))
     return BSE_ERROR_SOURCE_NO_SUCH_ICHANNEL;

@@ -26,7 +26,7 @@
 static gchar *indent_inc = NULL;
 static guint spacing = 1;
 static FILE *f_out = NULL;
-static GType   root = BSE_TYPE_OBJECT;
+static GType root = 0;
 static gboolean recursion = TRUE;
 static gboolean feature_blurb = FALSE;
 static gboolean feature_channels = FALSE;
@@ -132,18 +132,18 @@ static gint
 help (gchar *arg)
 {
   fprintf (stderr, "usage: query <qualifier> [-r <type>] [-{i|b} \"\"] [-s #] [-{h|x|y}]\n");
-  fprintf (stderr, "       -r       specifiy root object type\n");
+  fprintf (stderr, "       -r       specifiy root type\n");
+  fprintf (stderr, "       -n       don't descend type tree\n");
+  fprintf (stderr, "       -p       include plugins\n");
+  fprintf (stderr, "       -x       show type blurbs\n");
+  fprintf (stderr, "       -y       show source channels\n");
+  fprintf (stderr, "       -h       guess what ;)\n");
   fprintf (stderr, "       -b       specifiy indent string\n");
   fprintf (stderr, "       -i       specifiy incremental indent string\n");
   fprintf (stderr, "       -s       specifiy line spacing\n");
-  fprintf (stderr, "       -n       no recursion\n");
-  fprintf (stderr, "       -p       include plugins\n");
-  fprintf (stderr, "       -h       guess what ;)\n");
-  fprintf (stderr, "       -x       show type blurbs\n");
-  fprintf (stderr, "       -y       show source channels\n");
   fprintf (stderr, "qualifiers:\n");
   fprintf (stderr, "       froots   iterate over fundamental roots\n");
-  fprintf (stderr, "       tree     print BSE object tree\n");
+  fprintf (stderr, "       tree     print BSE type tree\n");
   fprintf (stderr, "       cats     print categories\n");
 
   return arg != NULL;
@@ -162,6 +162,8 @@ main (gint   argc,
   f_out = stdout;
 
   bse_init (&argc, &argv);
+
+  root = BSE_TYPE_OBJECT;
 
   for (i = 1; i < argc; i++)
     {
@@ -240,7 +242,7 @@ main (gint   argc,
 	      
 	      error = bse_plugin_check_load (string);
 	      if (error)
-		g_error ("failed to load plugin \"%s\": %s", string, error);
+		g_warning ("failed to load plugin \"%s\": %s", string, error);
 	      g_free (string);
 	    }
 	  g_list_free (free_list);

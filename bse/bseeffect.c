@@ -35,9 +35,9 @@ BSE_BUILTIN_TYPE (BseEffect)
     sizeof (BseEffectClass),
 
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_effect_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseEffect),

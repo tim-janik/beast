@@ -1,3 +1,72 @@
+Tue Apr 11 04:02:47 2000  Tim Janik  <timj@gtk.org>
+
+	* ported everything BSE over to the new GLib type system.
+
+	* BseParam* got nuked.
+
+	* *.[hc]: port over to use GValue instead of BseParam, use
+	GParamSpec* and BParamSpec structures instead of BseParamSpec*
+	and BseObjectParamSpec.
+	pitfall: [bg]_param_spec_* () creation functions in general
+	take minimum, maximum, default_value, stepping_rate now (swapped
+	stepping_rate and default_value from the old bse_param_spec_*()
+	functions).
+
+	* *.[hc]: port objects over to GType and GObject, most objects
+	perform their cleanups in BseObjectClass.destroy() now.
+	finalize() got moved to GObject.
+	shutdown() got moved to GObject and shouldn't normally be
+	used by object implementations.
+	BseObject is a derived type of GObject now.
+
+	* bseobject.[hc]: apart from porting this over to GObject derivation,
+	a bunch of its implementation vanished, such as parameter set/get
+	facilities, reference counting and finalization.
+	nuked old BseInterface cruft.
+
+	* bseprocedure.[hc]: port over to GValue from BseParam, that means
+	in/out values are now matched by position, and automated value
+	conversion is performed where applicable.
+
+	* bsestorage.[hc]: port over from BseParam to GValue. we still
+	provide all means for loading and saving in this place, rather
+	than implementing it as virtual functions in the ParamSpec
+	classes. to switch() identify the non-fundamental param types,
+	we now use BLib's B_SEQ_PARAM_* id facility.
+
+	* bsetype.[hc]: nuked most of the rest of the file contents,
+	all param types are now introduced and implemented in BLib.
+
+	* miscellaneous related code cleanups.
+
+Mon Apr  3 17:05:32 2000  Tim Janik  <timj@gtk.org>
+
+	* bsemagic.[hc]: file magic implementation to figure file types
+	from contents. provides simple TRUE/FALSE match results, optimized
+	for running multiple match types on a single file.
+
+	* bseexports.h:
+	* bseplugin.[hc]: started out on load/save handler plugin
+	facilities.
+
+	* bseplugin.h: provided one liner descriptions for the complex
+	macro magic we use for loading plugins.
+
+Sun Apr  2 04:53:12 2000  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: removed glib-* entries that went into blib.
+	* glib-*.[hc]: files removed.
+
+Tue Mar 28 14:39:38 2000  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.c (bse_storage_put_bin_data): corrected byte order
+	bugs when saving.
+
+	* bsebindata.c (bse_bin_data_set_values_from_fd): correct some
+	byte order bugs. this object still needs some clean ups.
+	(bse_bin_data_init_values): new function to pre-initialize the
+	object with a specified number of 0 values.
+
 Tue Mar 28 05:38:07 2000  Tim Janik  <timj@gtk.org>
 
 	* glib-gobject.[hc]: GObject implementation.

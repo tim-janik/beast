@@ -37,8 +37,8 @@ static GType   type_id_select_none = 0;
 /* --- clear-content --- */
 static void
 clear_content_setup (BseProcedureClass *proc,
-		     BseParamSpec     **ipspecs,
-		     BseParamSpec     **opspecs)
+		     GParamSpec	      **in_pspecs,
+		     GParamSpec	      **out_pspecs)
 {
   proc->help      = ("Reset note and instrument contents of the selection"
 		     "to none");
@@ -47,22 +47,22 @@ clear_content_setup (BseProcedureClass *proc,
   proc->date      = "2000";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern", NULL,
-				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
+					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
   /* output parameters */
 }
 
 static BseErrorType
 clear_content_exec (BseProcedureClass *proc,
-		    BseParam          *iparams,
-		    BseParam          *oparams)
+		    GValue	      *in_values,
+		    GValue	      *out_values)
 {
   /* extract parameter values */
-  BsePattern *pattern	= (BsePattern*) (iparams++)->value.v_item;
+  BsePattern *pattern	= (BsePattern*) g_value_get_object (in_values++);
   guint c, r;
 
   /* check parameters */
-  if (!pattern)
+  if (!BSE_IS_PATTERN (pattern))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* FIXME: start undo */
@@ -88,38 +88,38 @@ clear_content_exec (BseProcedureClass *proc,
 /* --- random-fill --- */
 static void
 random_fill_setup (BseProcedureClass *proc,
-		   BseParamSpec     **ipspecs,
-		   BseParamSpec     **opspecs)
+		   GParamSpec	    **in_pspecs,
+		   GParamSpec	    **out_pspecs)
 {
   proc->help      = ("Reset note and instrument contents of the selection"
 		     "to none");
   proc->author    = "Tim Janik <timj@gtk.org>";
   proc->copyright = "Tim Janik <timj@gtk.org>";
   proc->date      = "2000";
-
+  
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern", NULL,
-				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
-  *(ipspecs++) = bse_param_spec_int ("seed_value", "Random Seed Value",
+  *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
+					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
+  *(in_pspecs++) = b_param_spec_int ("seed_value", "Random Seed Value",
 				     "Enter any number here, it will be used "
 				     "as seed value for the note generator",
 				     0, 1000, 1, 1,
-				     BSE_PARAM_DEFAULT);
+				     B_PARAM_DEFAULT);
   /* output parameters */
 }
 
 static BseErrorType
 random_fill_exec (BseProcedureClass *proc,
-		  BseParam          *iparams,
-		  BseParam          *oparams)
+		  GValue            *in_values,
+		  GValue            *out_values)
 {
   /* extract parameter values */
-  BsePattern *pattern       = (BsePattern*) (iparams++)->value.v_item;
-  gint        seed_value    = (iparams++)->value.v_int;
+  BsePattern *pattern	    = (BsePattern*) g_value_get_object (in_values++);
+  gint        seed_value    = b_value_get_int (in_values++);
   guint c, r;
 
   /* check parameters */
-  if (!pattern)
+  if (!BSE_IS_PATTERN (pattern))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* initialize from seed value */
@@ -155,8 +155,8 @@ enum {
 };
 static void
 multi_select_setup (BseProcedureClass *proc,
-		    BseParamSpec     **ipspecs,
-		    BseParamSpec     **opspecs)
+		    GParamSpec       **in_pspecs,
+		    GParamSpec       **out_pspecs)
 {
   switch (proc->private_id)
     {
@@ -175,22 +175,22 @@ multi_select_setup (BseProcedureClass *proc,
   proc->date      = "2000";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_item ("pattern", "Pattern", NULL,
-				      BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  *(in_pspecs++) = g_param_spec_object ("pattern", "Pattern", NULL,
+					BSE_TYPE_PATTERN, B_PARAM_DEFAULT);
   /* output parameters */
 }
 
 static BseErrorType
 multi_select_exec (BseProcedureClass *proc,
-		   BseParam          *iparams,
-		   BseParam          *oparams)
+		   GValue            *in_values,
+		   GValue            *out_values)
 {
   /* extract parameter values */
-  BsePattern *pattern	= (BsePattern*) (iparams++)->value.v_item;
+  BsePattern *pattern = (BsePattern*) g_value_get_object (in_values++);
   guint32 *selection;
   
   /* check parameters */
-  if (!pattern)
+  if (!BSE_IS_PATTERN (pattern))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* iterate over the whole selection */

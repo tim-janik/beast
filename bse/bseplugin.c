@@ -33,12 +33,15 @@
 static const gchar* bse_plugin_register_types	(BsePlugin      *plugin,
 						 gconstpointer   array_p,
 						 BseExportType   exp_type);
+static void	    bse_plugin_complete_info	(BsePlugin	*plugin,
+						 GType       	 type,
+						 GTypeInfo 	*type_info);
 
 
 /* --- variables --- */
-gconstpointer BSE_EXPORT_IMPL_S (Procedure) = NULL;
-gconstpointer BSE_EXPORT_IMPL_S (Object) = NULL;
-BSE_EXPORT_IMPL_C = NULL;
+gconstpointer BSE_EXPORT_IMPL_S (Procedure) = NULL;	/* placeholder for proc-less builtins */
+gconstpointer BSE_EXPORT_IMPL_S (Object) = NULL;	/* placeholder for obj-less builtins */
+BSE_EXPORT_IMPL_T = NULL;				/* bse_plugin_builtin_init() declaration */
 static GSList    *bse_plugins = NULL;
 static GTypePluginVTable bse_plugin_vtable = {
   (GTypePluginRef) bse_plugin_ref,
@@ -412,7 +415,6 @@ bse_plugin_unref (BsePlugin *plugin)
   
   plugin->module_refs--;
   if (!plugin->module_refs)
-    /* FIXME: need timeout handler for module unloading */
     bse_plugin_unload (plugin);
 }
 
@@ -424,7 +426,7 @@ bse_plugin_get_export_spec (BsePlugin    *plugin,
 			    gconstpointer export_specs,
 			    guint         spec_size)
 {
-  g_return_val_if_fail (export_specs && spec_size > sizeof (BseExportAny), NULL);
+  g_return_val_if_fail (export_specs && spec_size > sizeof (GType*), NULL);
 
   if (export_specs)
     {
@@ -453,7 +455,7 @@ enum_flags_complete_info (const BseExportSpec *spec,
     g_assert_not_reached ();
 }
 
-void
+static void
 bse_plugin_complete_info (BsePlugin   *plugin,
 			  GType        type,
 			  GTypeInfo *type_info)
@@ -478,7 +480,7 @@ bse_plugin_complete_info (BsePlugin   *plugin,
       spec_size = sizeof (BseExportProcedure);
       complete_info = bse_procedure_complete_info;
       break;
-    case BSE_TYPE_OBJECT:
+    case G_TYPE_OBJECT:
       specs_p = plugin->e_objects;
       spec_size = sizeof (BseExportObject);
       complete_info = bse_object_complete_info;
@@ -564,7 +566,7 @@ bse_plugin_check_load (const gchar *_file_name)
       g_scanner_destroy (scanner);
       close (fd);
       
-      return "Plugin broken";
+      return "Plugin's dlname broken";
     }
 
   /* construct real module name

@@ -29,7 +29,8 @@
 /* --- prototypes --- */
 static void	    bse_container_class_init		(BseContainerClass	*class);
 static void	    bse_container_init			(BseContainer		*container);
-static void	    bse_container_shutdown		(BseObject		*object);
+static void	    bse_container_shutdown		(GObject		*object);
+static void	    bse_container_finalize		(GObject		*object);
 static void	    bse_container_destroy		(BseObject		*object);
 static void	    bse_container_store_after		(BseObject		*object,
 							 BseStorage		*storage);
@@ -58,9 +59,9 @@ BSE_BUILTIN_TYPE (BseContainer)
     sizeof (BseContainerClass),
 
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_container_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
 
     sizeof (BseContainer),
@@ -77,11 +78,13 @@ BSE_BUILTIN_TYPE (BseContainer)
 static void
 bse_container_class_init (BseContainerClass *class)
 {
+  GObjectClass *gobject_class;
   BseObjectClass *object_class;
   BseItemClass *item_class;
   BseSourceClass *source_class;
   
   parent_class = g_type_class_peek (BSE_TYPE_SOURCE);
+  gobject_class = G_OBJECT_CLASS (class);
   object_class = BSE_OBJECT_CLASS (class);
   item_class = BSE_ITEM_CLASS (class);
   source_class = BSE_SOURCE_CLASS (class);
@@ -89,9 +92,11 @@ bse_container_class_init (BseContainerClass *class)
   if (!quark_cross_refs)
     quark_cross_refs = g_quark_from_static_string ("BseContainerCrossRefs");
   
+  gobject_class->shutdown = bse_container_shutdown;
+  gobject_class->finalize = bse_container_finalize;
+
   object_class->store_after = bse_container_store_after;
   object_class->try_statement = bse_container_try_statement;
-  object_class->shutdown = bse_container_shutdown;
   object_class->destroy = bse_container_destroy;
 
   source_class->prepare = bse_container_prepare;
@@ -111,14 +116,15 @@ bse_container_init (BseContainer *container)
 }
 
 static void
-bse_container_shutdown (BseObject *object)
+bse_container_shutdown (GObject *gobject)
 {
-  // BseContainer *container = BSE_CONTAINER (object);
+  BseContainer *container = BSE_CONTAINER (gobject);
 
-  bse_object_set_qdata (object, quark_cross_refs, NULL);
+  /* remove any existing cross-references (with notification) */
+  bse_object_set_qdata (container, quark_cross_refs, NULL);
 
   /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  G_OBJECT_CLASS (parent_class)->shutdown (gobject);
 }
 
 static void
@@ -133,13 +139,21 @@ bse_container_destroy (BseObject *object)
   
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
+}
 
-  /* bse_object_destroy() clears the datalist, which may cause
-   * container to end up in the containers_cross_changes list
-   * again, so we make sure it is removed *after* the datalist
-   * has been cleared
+static void
+bse_container_finalize (GObject *gobject)
+{
+  /* chain parent class' finalize handler */
+  G_OBJECT_CLASS (parent_class)->finalize (gobject);
+
+  /* gobject->finalize() clears the datalist, which may cause this
+   * container to end up in the containers_cross_changes list again,
+   * so we make sure it is removed *after* the datalist has been
+   * cleared. though gobject is an invalid pointer at this time,
+   * we can still use it for list removal.
    */
-  containers_cross_changes = g_slist_remove_any (containers_cross_changes, container);
+  containers_cross_changes = g_slist_remove_any (containers_cross_changes, gobject);
 }
 
 static void
@@ -202,7 +216,7 @@ bse_container_add_item (BseContainer *container,
 			BseItem      *item)
 {
   g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (!BSE_OBJECT_DESTROYED (container));
+  /* FIXME: g_return_if_fail (!BSE_OBJECT_DESTROYED (container)); */
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (item->parent == NULL);
   g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
@@ -216,10 +230,10 @@ bse_container_add_item_unrefed (BseContainer *container,
 				BseItem      *item)
 {
   g_return_if_fail (BSE_IS_CONTAINER (container));
-  g_return_if_fail (!BSE_OBJECT_DESTROYED (container));
+  /* FIXME: g_return_if_fail (!BSE_OBJECT_DESTROYED (container)); */
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (item->parent == NULL);
-  g_return_if_fail (!BSE_OBJECT_DESTROYED (item));
+  /* FIXME: g_return_if_fail (!BSE_OBJECT_DESTROYED (item)); */
   g_return_if_fail (BSE_CONTAINER_GET_CLASS (container)->add_item != NULL); /* paranoid */
 
   /* we don't want the item to stay around, due to *our* ref count,

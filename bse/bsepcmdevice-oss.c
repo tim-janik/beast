@@ -48,7 +48,7 @@ struct _BsePcmDeviceOSSClass
 /* --- prototypes --- */
 static void	    bse_pcm_device_oss_class_init	(BsePcmDeviceOSSClass	*class);
 static void	    bse_pcm_device_oss_init		(BsePcmDeviceOSS	*pcm_device_oss);
-static void	    bse_pcm_device_oss_shutdown		(BseObject		*object);
+static void	    bse_pcm_device_oss_destroy		(BseObject		*object);
 static gchar*	    bse_pcm_device_oss_device_name	(BseDevice              *dev,
 							 gboolean                descriptive);
 static BseErrorType bse_pcm_device_oss_update_caps	(BsePcmDevice		*pdev);
@@ -83,9 +83,9 @@ BSE_BUILTIN_TYPE (BsePcmDeviceOSS)
     sizeof (BsePcmDeviceOSSClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_pcm_device_oss_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BsePcmDeviceOSS),
@@ -114,7 +114,7 @@ bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
   device_class = BSE_DEVICE_CLASS (class);
   pcm_device_class = BSE_PCM_DEVICE_CLASS (class);
   
-  object_class->shutdown = bse_pcm_device_oss_shutdown;
+  object_class->destroy = bse_pcm_device_oss_destroy;
   
   device_class->close = bse_pcm_device_oss_close;
   device_class->device_name = bse_pcm_device_oss_device_name;
@@ -132,7 +132,7 @@ bse_pcm_device_oss_init (BsePcmDeviceOSS *oss)
 }
 
 static void
-bse_pcm_device_oss_shutdown (BseObject *object)
+bse_pcm_device_oss_destroy (BseObject *object)
 {
   BsePcmDeviceOSS *oss = BSE_PCM_DEVICE_OSS (object);
   BsePcmDevice *pdev;
@@ -142,8 +142,8 @@ bse_pcm_device_oss_shutdown (BseObject *object)
   g_free (oss->device_name);
   oss->device_name = NULL;
   
-  /* chain parent class' shutdown handler */
-  BSE_OBJECT_CLASS (parent_class)->shutdown (object);
+  /* chain parent class' destroy handler */
+  BSE_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static gchar*

@@ -22,9 +22,7 @@
 
 #undef          G_DISABLE_ASSERT
 #undef          G_DISABLE_CHECKS
-#include        <bse/glib-gtype.h>	/* FIXME: <glib.h> */
-#include        <bse/glib-genums.h>	/* FIXME: <glib.h> */
-#include        <bse/glib-gobject.h>	/* FIXME: <glib.h> */
+#include        <blib/blib.h>
 #include        <math.h>
 
 
@@ -51,26 +49,6 @@ typedef gint32                          BseMixValue;
 typedef gint16                          BseSampleValue;
 typedef gulong                          BseTime;
 typedef guint                           BseIndex2D;
-
-
-/* --- BSE parameters (and values) --- */
-typedef struct  _BseParam               BseParam;
-typedef union   _BseParamValue          BseParamValue;
-typedef union   _BseParamSpec           BseParamSpec;
-typedef struct  _BseParamSpecAny        BseParamSpecAny;
-typedef struct  _BseParamSpecBool       BseParamSpecBool;
-typedef struct  _BseParamSpecIndex2D    BseParamSpecIndex2D;
-typedef struct  _BseParamSpecInt        BseParamSpecInt;
-typedef struct  _BseParamSpecUInt       BseParamSpecUInt;
-typedef struct  _BseParamSpecEnum       BseParamSpecEnum;
-typedef struct  _BseParamSpecFlags      BseParamSpecFlags;
-typedef struct  _BseParamSpecFloat      BseParamSpecFloat;
-typedef struct  _BseParamSpecDouble     BseParamSpecDouble;
-typedef struct  _BseParamSpecTime       BseParamSpecTime;
-typedef struct  _BseParamSpecNote       BseParamSpecNote;
-typedef struct  _BseParamSpecString     BseParamSpecString;
-typedef struct  _BseParamSpecDots       BseParamSpecDots;
-typedef struct  _BseParamSpecItem       BseParamSpecItem;
 
 
 /* --- BSE objects, classes & interfaces --- */
@@ -114,7 +92,6 @@ typedef struct  _BseSuperClass          BseSuperClass;
 /* --- BSE aux structures --- */
 typedef struct  _BseCategory            BseCategory;
 typedef struct  _BseChunk               BseChunk;
-typedef struct  _BseDot                 BseDot;
 typedef struct  _BseGlobals             BseGlobals;
 typedef struct  _BseIcon                BseIcon;
 typedef struct  _BsePixdata             BsePixdata;
@@ -241,7 +218,7 @@ typedef void   (*BseNotify_destroy)                (BseObject       *object,
 typedef void   (*BseNotify_name_set)               (BseObject       *object,
                                                     gpointer         data);
 typedef void   (*BseNotify_param_changed)          (BseObject       *object,
-                                                    BseParamSpec    *pspec,
+                                                    GParamSpec      *pspec,
                                                     gpointer         data);
 typedef void   (*BseNotify_store)                  (BseObject       *object,
                                                     BseStorage      *storage,

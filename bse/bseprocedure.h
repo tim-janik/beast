@@ -41,11 +41,11 @@ extern "C" {
 
 /* --- BseProcedureClass --- */
 typedef BseErrorType  (*BseProcedureExec)    (BseProcedureClass *procedure,
-					      BseParam          *iparams,
-					      BseParam          *oparams);
+					      GValue		*in_values,
+					      GValue		*out_values);
 struct _BseProcedureClass
 {
-  GTypeClass    bse_class;
+  GTypeClass      bse_class;
   gchar          *name;
   gchar          *blurb;
   guint           private_id;
@@ -58,9 +58,9 @@ struct _BseProcedureClass
   
   /* implementation */
   guint           n_in_params;
-  BseParamSpec	**in_param_specs;
+  GParamSpec	**in_param_specs;
   guint           n_out_params;
-  BseParamSpec  **out_param_specs;
+  GParamSpec	**out_param_specs;
 
   BseProcedureExec execute;
 };
@@ -84,8 +84,8 @@ BseErrorType	bse_procedure_exec	  (const gchar		*name,
 BseErrorType	bse_procedure_void_exec	  (const gchar		*name,
 					   ...);
 BseErrorType	bse_procedure_execvl	  (BseProcedureClass	*proc,
-					   GSList		*iparam_list,
-					   GSList		*oparam_list);
+					   GSList		*in_value_list,
+					   GSList		*out_value_list);
 /* functions to call from very time consuming procedures to keep the
  * main program (and playback) alive.
  * "progress"    - value in the range from 0...1 to indicate how far

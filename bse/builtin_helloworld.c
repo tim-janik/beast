@@ -28,8 +28,8 @@
 static GType   type_id_hello_world = 0;
 static void
 hello_world_setup (BseProcedureClass *proc,
-		   BseParamSpec     **ipspecs,
-		   BseParamSpec     **opspecs)
+		   GParamSpec       **in_pspecs,
+		   GParamSpec       **out_pspecs)
 {
   proc->help      = ("Hello World - First Plugin ever executed by BSE. "
 		     "Its purpose is to say \"Hello World\" to BSE and the "
@@ -44,8 +44,8 @@ hello_world_setup (BseProcedureClass *proc,
 
 static BseErrorType
 hello_world_exec (BseProcedureClass *proc,
-		  BseParam          *iparams,
-		  BseParam          *oparams)
+		  GValue            *in_values,
+		  GValue            *out_values)
 {
   /* issue a message */
   g_message ("Hello World");
@@ -58,8 +58,8 @@ hello_world_exec (BseProcedureClass *proc,
 static GType   type_id_randomizer = 0;
 static void
 randomizer_setup (BseProcedureClass *proc,
-		  BseParamSpec    **ipspecs,
-		  BseParamSpec    **opspecs)
+		  GParamSpec       **in_pspecs,
+		  GParamSpec       **out_pspecs)
 {
   proc->help      = ("Randomizer will take on integer as input parameter, "
 		     "use it as seed value and return a string containing "
@@ -70,28 +70,28 @@ randomizer_setup (BseProcedureClass *proc,
   proc->date      = "1999";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_bool ("use-seed", "Use seed value?", NULL,
-				      FALSE, BSE_PARAM_PROCEDURE);
-  *(ipspecs++) = bse_param_spec_int ("seed", "Random Seed", NULL,
-				     -32768, 32767, 1, 42, BSE_PARAM_PROCEDURE);
-
+  *(in_pspecs++) = b_param_spec_bool ("use-seed", "Use seed value?", NULL,
+				      FALSE, B_PARAM_PROCEDURE);
+  *(in_pspecs++) = b_param_spec_int ("seed", "Random Seed", NULL,
+				     -32768, 32767, 42, 1, B_PARAM_PROCEDURE);
+  
   /* output parameters */
-  *(opspecs++) = bse_param_spec_string ("text", "Random Text", NULL,
-					NULL, BSE_PARAM_DEFAULT);
+  *(out_pspecs++) = b_param_spec_string ("text", "Random Text", NULL,
+					 NULL, B_PARAM_DEFAULT);
 }
 
 static BseErrorType
 randomizer_exec (BseProcedureClass *proc,
-		 BseParam          *iparams,
-		 BseParam          *oparams)
+		 GValue            *in_values,
+		 GValue            *out_values)
 {
   /* extract parameter values */
-  gint use_seed = (iparams++)->value.v_bool;
-  gint seed = (iparams++)->value.v_int;
+  gint use_seed = b_value_get_bool (in_values++);
+  gint seed     = b_value_get_int (in_values++);
   gchar *string;
 
   /* check parameters */
-  if (use_seed && !seed)
+  if (use_seed && seed == 0)
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* perform our duty */
@@ -101,7 +101,8 @@ randomizer_exec (BseProcedureClass *proc,
   string = g_strdup_printf ("Random Number: %d", rand ());
 
   /* set output parameters */
-  (oparams++)->value.v_string = string;
+  b_value_set_string (out_values++, string);
+  g_free (string);
 
   return BSE_ERROR_NONE;
 }
@@ -112,8 +113,8 @@ randomizer_exec (BseProcedureClass *proc,
 static GType   type_id_progressor = 0;
 static void
 progressor_setup (BseProcedureClass *proc,
-		  BseParamSpec     **ipspecs,
-		  BseParamSpec     **opspecs)
+                  GParamSpec       **in_pspecs,
+		  GParamSpec       **out_pspecs)
 {
   proc->help      = ("Progressor takes two seed values and then starts progressing. "
 		     "It doesn't do anything particularly usefull, other than "
@@ -123,29 +124,29 @@ progressor_setup (BseProcedureClass *proc,
   proc->date      = "1999";
   
   /* input parameters */
-  *(ipspecs++) = bse_param_spec_uint ("n-iterations", "Iterations", "Number of total Iterations",
-				      0, 1024*1024, 512, 1000, BSE_PARAM_PROCEDURE);
-  *(ipspecs++) = bse_param_spec_uint ("n-wait-spins", "Cycles", "Number of internal iterations",
-				      0, 1024*1024, 512, 1000, BSE_PARAM_PROCEDURE);
-  *(ipspecs++) = bse_param_spec_bool ("update-progress", "Update Progress Value?", NULL,
-				      TRUE, BSE_PARAM_PROCEDURE);
+  *(in_pspecs++) = b_param_spec_uint ("n-iterations", "Iterations", "Number of total Iterations",
+				      0, 1024*1024, 1000, 512, B_PARAM_PROCEDURE);
+  *(in_pspecs++) = b_param_spec_uint ("n-wait-spins", "Cycles", "Number of internal iterations",
+				      0, 1024*1024, 1000, 512, B_PARAM_PROCEDURE);
+  *(in_pspecs++) = b_param_spec_bool ("update-progress", "Update Progress Value?", NULL,
+				      TRUE, B_PARAM_PROCEDURE);
 
   /* output parameters */
-  *(opspecs++) = bse_param_spec_string ("text1", "Status1", NULL,
-					NULL, BSE_PARAM_DEFAULT);
-  *(opspecs++) = bse_param_spec_string ("text2", "Status2", NULL,
-					NULL, BSE_PARAM_DEFAULT);
+  *(out_pspecs++) = b_param_spec_string ("text1", "Status1", NULL,
+					 NULL, B_PARAM_DEFAULT);
+  *(out_pspecs++) = b_param_spec_string ("text2", "Status2", NULL,
+					 NULL, B_PARAM_DEFAULT);
 }
 
 static BseErrorType
 progressor_exec (BseProcedureClass *proc,
-		 BseParam          *iparams,
-		 BseParam          *oparams)
+                 GValue            *in_values,
+		 GValue            *out_values)
 {
   /* extract parameter values */
-  guint n_iter = (iparams++)->value.v_uint;
-  guint n_spin = (iparams++)->value.v_uint;
-  gint progress = (iparams++)->value.v_bool;
+  guint n_iter  = b_value_get_uint (in_values++);
+  guint n_spin  = b_value_get_uint (in_values++);
+  gint progress = b_value_get_bool (in_values++);
   gfloat total = n_iter;
 
   /* check parameters */
@@ -174,8 +175,8 @@ progressor_exec (BseProcedureClass *proc,
     }
 
   /* set output parameters */
-  (oparams++)->value.v_string = g_strdup ("Hooh, that was good!");
-  (oparams++)->value.v_string = g_strdup ("Now gimme a break...");
+  b_value_set_string (out_values++, "Hooh, that was good!");
+  b_value_set_string (out_values++, "Now gimme a break...");
 
   return BSE_ERROR_NONE;
 }

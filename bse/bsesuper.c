@@ -37,11 +37,15 @@ static void	bse_super_init		(BseSuper		*super,
 					 gpointer		 rclass);
 static void	bse_super_destroy	(BseObject		*object);
 static void	bse_super_set_param	(BseSuper		*super,
-					 BseParam		*param,
-					 guint			 param_id);
+					 guint                   param_id,
+					 GValue                 *value,
+					 GParamSpec             *pspec,
+					 const gchar            *trailer);
 static void	bse_super_get_param	(BseSuper		*super,
-					 BseParam		*param,
-					 guint			 param_id);
+					 guint                   param_id,
+					 GValue                 *value,
+					 GParamSpec             *pspec,
+					 const gchar            *trailer);
 static gboolean	bse_super_do_is_dirty	(BseSuper		*super);
 static void	bse_super_do_modified	(BseSuper		*super,
 					 BseTime		 stamp);
@@ -61,9 +65,9 @@ BSE_BUILTIN_TYPE (BseSuper)
     sizeof (BseSuperClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_super_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseSuper),
@@ -80,20 +84,17 @@ BSE_BUILTIN_TYPE (BseSuper)
 static void
 bse_super_class_init (BseSuperClass *class)
 {
-  BseObjectClass *object_class;
-  BseItemClass *item_class;
-  BseContainerClass *container_class;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek (BSE_TYPE_CONTAINER);
-  object_class = BSE_OBJECT_CLASS (class);
-  item_class = BSE_ITEM_CLASS (class);
-  container_class = BSE_CONTAINER_CLASS (class);
   
   quark_author = g_quark_from_static_string ("author");
   quark_copyright = g_quark_from_static_string ("copyright");
   
-  object_class->set_param = (BseObjectSetParamFunc) bse_super_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_super_get_param;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_super_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_super_get_param;
+
   object_class->destroy = bse_super_destroy;
 
   class->is_dirty = bse_super_do_is_dirty;
@@ -101,27 +102,27 @@ bse_super_class_init (BseSuperClass *class)
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_AUTHOR,
-			      bse_param_spec_fstring ("author", "Author", NULL,
-						      NULL,
-						      BSE_PARAM_DEFAULT));
+			      b_param_spec_string ("author", "Author", NULL,
+						   NULL,
+						   B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_COPYRIGHT,
-			      bse_param_spec_fstring ("copyright", "Copyright", NULL,
-						      NULL,
-						      BSE_PARAM_DEFAULT));
+			      b_param_spec_string ("copyright", "Copyright", NULL,
+						   NULL,
+						   B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_CREATION_TIME,
-			      bse_param_spec_time ("creation_time", "Creation Time", NULL,
-						   0,
-						   BSE_PARAM_DEFAULT |
-						   BSE_PARAM_HINT_RDONLY));
+			      b_param_spec_time ("creation_time", "Creation Time", NULL,
+						 0,
+						 B_PARAM_DEFAULT |
+						 B_PARAM_HINT_RDONLY));
   bse_object_class_add_param (object_class, "Time Stamps",
 			      PARAM_MOD_TIME,
-			      bse_param_spec_time ("modification_time", "Last modification time", NULL,
-						   0,
-						   BSE_PARAM_READWRITE |
-						   BSE_PARAM_HINT_RDONLY |
-						   BSE_PARAM_SERVE_STORAGE));
+			      b_param_spec_time ("modification_time", "Last modification time", NULL,
+						 0,
+						 B_PARAM_READWRITE |
+						 B_PARAM_HINT_RDONLY |
+						 B_PARAM_SERVE_STORAGE));
 }
 
 static void
@@ -156,29 +157,31 @@ bse_super_destroy (BseObject *object)
 }
 
 static void
-bse_super_set_param (BseSuper *super,
-		     BseParam *param,
-		     guint     param_id)
+bse_super_set_param (BseSuper    *super,
+		     guint        param_id,
+		     GValue      *value,
+		     GParamSpec  *pspec,
+		     const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_AUTHOR:
       bse_object_set_qdata_full (BSE_OBJECT (super),
 				 quark_author,
-				 bse_strdup_stripped (param->value.v_string),
+				 bse_strdup_stripped (b_value_get_string (value)),
 				 g_free);
       break;
     case PARAM_COPYRIGHT:
       bse_object_set_qdata_full (BSE_OBJECT (super),
 				 quark_copyright,
-				 bse_strdup_stripped (param->value.v_string),
+				 bse_strdup_stripped (b_value_get_string (value)),
 				 g_free);
       break;
     case PARAM_MOD_TIME:
-      super->mod_time = MAX (super->creation_time, param->value.v_time);
+      super->mod_time = MAX (super->creation_time, b_value_get_time (value));
       break;
     case PARAM_CREATION_TIME:
-      super->creation_time = param->value.v_time;
+      super->creation_time = b_value_get_time (value);
       /* we have to ensure that mod_time is always >= creation_time */
       if (super->creation_time > super->mod_time)
 	{
@@ -187,34 +190,34 @@ bse_super_set_param (BseSuper *super,
 	}
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (super, param, param_id);
+      G_WARN_INVALID_PARAM_ID (super, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_super_get_param (BseSuper *super,
-		     BseParam *param,
-		     guint     param_id)
+bse_super_get_param (BseSuper    *super,
+		     guint        param_id,
+		     GValue      *value,
+		     GParamSpec  *pspec,
+		     const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_AUTHOR:
-      g_free (param->value.v_string);
-      param->value.v_string = g_strdup (bse_object_get_qdata (BSE_OBJECT (super), quark_author));
+      b_value_set_string (value, bse_object_get_qdata (BSE_OBJECT (super), quark_author));
       break;
     case PARAM_COPYRIGHT:
-      g_free (param->value.v_string);
-      param->value.v_string = g_strdup (bse_object_get_qdata (BSE_OBJECT (super), quark_copyright));
+      b_value_set_string (value, bse_object_get_qdata (BSE_OBJECT (super), quark_copyright));
       break;
     case PARAM_MOD_TIME:
-      param->value.v_time = super->mod_time;
+      b_value_set_time (value, super->mod_time);
       break;
     case PARAM_CREATION_TIME:
-      param->value.v_time = super->creation_time;
+      b_value_set_time (value, super->creation_time);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (super, param, param_id);
+      G_WARN_INVALID_PARAM_ID (super, param_id, pspec);
       break;
     }
 }

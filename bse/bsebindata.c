@@ -35,11 +35,15 @@ static void	bse_bin_data_class_init		(BseBinDataClass	*class);
 static void	bse_bin_data_init		(BseBinData		*bin_data);
 static void	bse_bin_data_destroy		(BseObject		*object);
 static void     bse_bin_data_set_param          (BseBinData		*bin_data,
-						 BseParam               *param,
-						 guint                   param_id);
+						 guint          	 param_id,
+						 GValue         	*value,
+						 GParamSpec     	*pspec,
+						 const gchar    	*trailer);
 static void     bse_bin_data_get_param 		(BseBinData        	*bin_data,
-						 BseParam               *param,
-						 guint                   param_id);
+						 guint          	 param_id,
+						 GValue         	*value,
+						 GParamSpec     	*pspec,
+						 const gchar    	*trailer);
 static void	bse_bin_data_free_values	(BseBinData		*bin_data);
 
 
@@ -54,9 +58,9 @@ BSE_BUILTIN_TYPE (BseBinData)
     sizeof (BseBinDataClass),
     
     (GBaseInitFunc) NULL,
-    (GBaseDestroyFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_bin_data_class_init,
-    (GClassDestroyFunc) NULL,
+    (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
     
     sizeof (BseBinData),
@@ -73,28 +77,31 @@ BSE_BUILTIN_TYPE (BseBinData)
 static void
 bse_bin_data_class_init (BseBinDataClass *class)
 {
+  GObjectClass *gobject_class;
   BseObjectClass *object_class;
   
   parent_class = g_type_class_peek (BSE_TYPE_OBJECT);
+  gobject_class = G_OBJECT_CLASS (class);
   object_class = BSE_OBJECT_CLASS (class);
   
-  object_class->set_param = (BseObjectSetParamFunc) bse_bin_data_set_param;
-  object_class->get_param = (BseObjectGetParamFunc) bse_bin_data_get_param;
+  gobject_class->set_param = (GObjectSetParamFunc) bse_bin_data_set_param;
+  gobject_class->get_param = (GObjectGetParamFunc) bse_bin_data_get_param;
+
   object_class->destroy = bse_bin_data_destroy;
   
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_N_BITS,
-			      bse_param_spec_uint ("n_bits", "# Bits", "Value size in bits",
-						   BSE_MIN_BIT_SIZE, BSE_MAX_BIT_SIZE,
-						   8, BSE_DFL_BIN_DATA_BITS,
-						   BSE_PARAM_DEFAULT));
+			      b_param_spec_uint ("n_bits", "# Bits", "Value size in bits",
+						 BSE_MIN_BIT_SIZE, BSE_MAX_BIT_SIZE,
+						 BSE_DFL_BIN_DATA_BITS, 8,
+						 B_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, NULL,
 			      PARAM_BYTE_SIZE,
-			      bse_param_spec_uint ("byte_size", "Byte Size", "Value size in bytes",
-						   BSE_MIN_BIT_SIZE / 8, BSE_MAX_BIT_SIZE / 8,
-						   1, BSE_DFL_BIN_DATA_BITS / 8,
-						   BSE_PARAM_READWRITE |
-						   BSE_PARAM_SERVE_GUI));
+			      b_param_spec_uint ("byte_size", "Byte Size", "Value size in bytes",
+						 BSE_MIN_BIT_SIZE / 8, BSE_MAX_BIT_SIZE / 8,
+						 BSE_DFL_BIN_DATA_BITS / 8, 1,
+						 B_PARAM_READWRITE |
+						 B_PARAM_SERVE_GUI));
 }
 
 static void
@@ -120,41 +127,45 @@ bse_bin_data_destroy (BseObject *object)
 }
 
 static void
-bse_bin_data_set_param (BseBinData *bin_data,
-			BseParam   *param,
-			guint       param_id)
+bse_bin_data_set_param (BseBinData  *bin_data,
+			guint        param_id,
+			GValue      *value,
+			GParamSpec  *pspec,
+			const gchar *trailer)
 {
   if (bin_data->values)
     bse_bin_data_free_values (bin_data);
   switch (param_id)
     {
     case PARAM_N_BITS:
-      bin_data->bits_per_value = param->value.v_uint;
+      bin_data->bits_per_value = b_value_get_uint (value);
       break;
     case PARAM_BYTE_SIZE:
-      bin_data->bits_per_value = param->value.v_uint * 8;
+      bin_data->bits_per_value = b_value_get_uint (value);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (bin_data, param, param_id);
+      G_WARN_INVALID_PARAM_ID (bin_data, param_id, pspec);
       break;
     }
 }
 
 static void
-bse_bin_data_get_param (BseBinData *bin_data,
-                        BseParam   *param,
-			guint       param_id)
+bse_bin_data_get_param (BseBinData  *bin_data,
+                        guint        param_id,
+			GValue      *value,
+			GParamSpec  *pspec,
+			const gchar *trailer)
 {
   switch (param_id)
     {
     case PARAM_N_BITS:
-      param->value.v_uint = bin_data->bits_per_value;
+      b_value_set_uint (value, bin_data->bits_per_value);
       break;
     case PARAM_BYTE_SIZE:
-      param->value.v_uint = bin_data->bits_per_value * 8;
+      b_value_set_uint (value, bin_data->bits_per_value * 8);
       break;
     default:
-      BSE_UNHANDLED_PARAM_ID (bin_data, param, param_id);
+      G_WARN_INVALID_PARAM_ID (bin_data, param_id, pspec);
       break;
     }
 }
@@ -198,9 +209,9 @@ bse_bin_data_set_values_from_fd (BseBinData   *bin_data,
 
   bin_data->n_values = n_bytes / ((bin_data->bits_per_value + 7) / 8);
   bin_data->n_bytes = bin_data->n_values * ((bin_data->bits_per_value + 7) / 8);
-  bin_data->values = g_new (guint8, bin_data->n_bytes + 32);
-  for (l = bin_data->n_bytes; l < bin_data->n_bytes + 32; l++)
-    bin_data->values[l] = 0;
+  bse_object_param_changed (BSE_OBJECT (bin_data), "n_bits");
+  bse_object_param_changed (BSE_OBJECT (bin_data), "byte_size");
+  bin_data->values = g_new (guint8, bin_data->n_bytes);
 
   do
     {
@@ -216,10 +227,9 @@ bse_bin_data_set_values_from_fd (BseBinData   *bin_data,
       return l < 1 ? BSE_ERROR_FILE_IO : BSE_ERROR_FILE_TOO_SHORT;
     }
 
-  /* internally, we enforce LE representation of data
+  /* if necessary, convert LE/BE
    */
-  if (byte_order == BSE_BIG_ENDIAN &&
-      bin_data->bits_per_value > 8)
+  if (byte_order != G_BYTE_ORDER && bin_data->bits_per_value > 8)
     {
       guint16 *v16_f, *v16_l; /* first, last */
 
@@ -234,4 +244,22 @@ bse_bin_data_set_values_from_fd (BseBinData   *bin_data,
     }
 
   return BSE_ERROR_NONE;
+}
+
+void
+bse_bin_data_init_values (BseBinData *bin_data,
+			  guint       bits_per_value,
+			  guint       n_values)
+{
+  g_return_if_fail (BSE_IS_BIN_DATA (bin_data));
+  g_return_if_fail (!BSE_OBJECT_IS_LOCKED (bin_data));
+
+  bse_bin_data_free_values (bin_data);
+
+  bin_data->bits_per_value = CLAMP (bits_per_value, BSE_MIN_BIT_SIZE, BSE_MIN_BIT_SIZE);
+  bin_data->n_values = n_values;
+  bin_data->n_bytes = bin_data->n_values * ((bin_data->bits_per_value + 7) / 8);
+  bse_object_param_changed (BSE_OBJECT (bin_data), "n_bits");
+  bse_object_param_changed (BSE_OBJECT (bin_data), "byte_size");
+  bin_data->values = g_new0 (guint8, bin_data->n_bytes + 32);
 }
