@@ -1,3 +1,9 @@
+Sun Feb 22 01:57:36 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsw/Makefile.am:
+	* beast-gtk/Makefile.am:
+	* tests/Makefile.am: Use new sfidl options.
+
 Fri Feb 20 21:31:44 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/scripts/part-harmonic-transposer.scm: Support dorian,

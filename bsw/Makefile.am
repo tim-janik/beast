@@ -86,13 +86,13 @@ bswgenapi.h: stamp-bswgenapi.h ;
 # normal autogeneration rules
 stamp-bswgenapi.h: $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	echo -e "#include <sfi/sfi.h>\n" > xgen-sbpah \
-	&& $(SFIDL) $(SFIDL_INC) --header --interface --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-sbpah \
+	&& $(SFIDL) $(SFIDL_INC) --client-c --header --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-sbpah \
 	&& (cmp -s xgen-sbpah bswgenapi.h || cp xgen-sbpah bswgenapi.h) \
 	&& rm -f xgen-sbpah \
 	&& echo timestamp > $@
 bswgenapi.c: bswgenapi.h $(top_srcdir)/bse/*.idl $(top_builddir)/bse/*.idl $(SFIDL)
 	echo -e "#include \"bswgenapi.h\"\n" > xgen-sbpac \
-	&& $(SFIDL) $(SFIDL_INC) --source --interface --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-sbpac \
+	&& $(SFIDL) $(SFIDL_INC) --client-c --source --prefix beast_ $(top_srcdir)/bse/bse.idl >> xgen-sbpac \
 	&& cp xgen-sbpac $@ \
 	&& rm -f xgen-sbpac
 

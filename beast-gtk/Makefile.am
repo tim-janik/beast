@@ -118,7 +118,7 @@ bstgentypes.h: stamp-bstenum_arrays.c $(srcdir)/bstrecords.idl $(SFIDL)
 	  --eprod "#define BST_TYPE_@ENUMSHORT@\t    (bst__type_id__@EnumName@)\n" \
 	  --eprod "extern GType bst__type_id__@EnumName@;" \
 	    $(beast_headers) ) > xgen-bgth \
-	&& $(SFIDL) --header --implementation ${srcdir}/bstrecords.idl >> xgen-bgth \
+	&& $(SFIDL) --host-c --header ${srcdir}/bstrecords.idl >> xgen-bgth \
 	&& cp xgen-bgth $@ \
 	&& rm -f xgen-bgth
 bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
@@ -126,7 +126,7 @@ bstgentypes.c: stamp-bstenum_arrays.c ${srcdir}/bstrecords.idl $(SFIDL)
 	&& ( cd $(srcdir) && $(GLIB_MKENUMS) \
 	  --eprod "\nGType bst__type_id__@EnumName@ = 0;" \
 	    $(beast_headers) ) > xgen-bgtc \
-	&& $(SFIDL) --source --implementation --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-bgtc \
+	&& $(SFIDL) --host-c --source --init _bst_init_idl ${srcdir}/bstrecords.idl >> xgen-bgtc \
         && cp xgen-bgtc $@ \
 	&& rm -f xgen-bgtc
 bstenum_list.c: stamp-bstenum_arrays.c
