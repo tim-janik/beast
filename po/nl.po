@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-18 14:55+0100\n"
-"PO-Revision-Date: 2004-10-19 21:53+0200\n"
+"POT-Creation-Date: 2004-12-05 10:40+0100\n"
+"PO-Revision-Date: 2004-12-05 18:42+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -274,8 +274,8 @@ msgid "_FAQ..."
 msgstr "_Vaak gestelde vragen..."
 
 #: beast-gtk/bstapp.c:157
-msgid "Frequently asked questions"
-msgstr "Vaak gestelde vragen"
+msgid "Answers to frequently asked questions"
+msgstr "Antwoorden op veelgestelde vragen"
 
 #: beast-gtk/bstapp.c:159
 msgid "Online _Help Desk..."
@@ -398,7 +398,7 @@ msgstr "Toevoegen"
 #: beast-gtk/bstbusview.c:35 beast-gtk/bstinstrumentview.c:34
 #: beast-gtk/bstkeybindings.c:59 beast-gtk/bstpartview.c:40
 #: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:701 beast-gtk/bstsnetrouter.c:743
+#: beast-gtk/bstsnetrouter.c:712 beast-gtk/bstsnetrouter.c:764
 #: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:66
 #: beast-gtk/bstwaveview.c:45
 msgid "Delete"
@@ -422,7 +422,7 @@ msgstr "De nu geselecteerde bus verwijderen"
 msgid "Module Link: "
 msgstr "Module-link:"
 
-#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:739
+#: beast-gtk/bstcanvaslink.c:184 beast-gtk/bstsnetrouter.c:760
 msgid "Module link"
 msgstr "Module-link"
 
@@ -430,11 +430,11 @@ msgstr "Module-link"
 msgid "Module Info"
 msgstr "Module Info"
 
-#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1076
+#: beast-gtk/bstcanvassource.c:972 beast-gtk/bstsnetrouter.c:1097
 msgid "Input"
 msgstr "Invoer"
 
-#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1073
+#: beast-gtk/bstcanvassource.c:981 beast-gtk/bstsnetrouter.c:1094
 #: bse/bseamplifier.idl:65
 msgid "Output"
 msgstr "Uitvoer"
@@ -849,16 +849,16 @@ msgstr "Bezig met laden van \"%s\""
 msgid "Loading project \"%s\""
 msgstr "Laden van project \"%s\""
 
-#: beast-gtk/bstmain.c:792
+#: beast-gtk/bstmain.c:811
 msgid "BEAST About"
 msgstr "BEAST Info"
 
-#: beast-gtk/bstmain.c:793
+#: beast-gtk/bstmain.c:812
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Versie %s"
 
-#: beast-gtk/bstmain.c:794
+#: beast-gtk/bstmain.c:813
 msgid "Contributions made by:"
 msgstr "Met dank aan:"
 
@@ -2153,18 +2153,18 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:106
 msgid "Enable scopes"
-msgstr ""
+msgstr "Oscilloscoop aanzetten"
 
+# enigszins vrij vertaald.
 #: beast-gtk/bstrecords.idl:107 beast-gtk/bstrecords.idl:111
 msgid ""
 "Enables or prevents BEAST from periodically updating the scopes. Disabling "
 "may be desirable especially on slow machines."
-msgstr ""
+msgstr "De oscilloscopen in BEAST aanzetten of niet. Op langzame computers is het raadzaam om de oscilloscopen uit te zetten."
 
 #: beast-gtk/bstrecords.idl:110
-#, fuzzy
 msgid "Enable meters"
-msgstr "Parameters"
+msgstr "Meters aanzetten"
 
 #: beast-gtk/bstrecords.idl:119
 msgid "Skin Name"
@@ -2313,7 +2313,7 @@ msgstr "Klad maximum"
 msgid "Preview"
 msgstr "Voorbeeld"
 
-#: beast-gtk/bstsnetrouter.c:42
+#: beast-gtk/bstsnetrouter.c:43
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
 "Use button1 to create links, button2 for movement and button3 to change "
@@ -2323,101 +2323,112 @@ msgstr ""
 "Gebruik knop1 voor het aanmaken van links, knop3 voor beweging en knop3 om "
 "eigenschappen aan te passen"
 
-#: beast-gtk/bstsnetrouter.c:47
+#: beast-gtk/bstsnetrouter.c:48
 msgid "Edit"
 msgstr "Bewerken"
 
-#: beast-gtk/bstsnetrouter.c:47
+#: beast-gtk/bstsnetrouter.c:48
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr "Bewerken/Verplaatsen/Menu (muisknop 1-3)"
 
-#: beast-gtk/bstsnetrouter.c:51 beast-gtk/bstsnetrouter.c:915
+#: beast-gtk/bstsnetrouter.c:52 beast-gtk/bstsnetrouter.c:936
 msgid "Palette"
 msgstr "Palet"
 
-#: beast-gtk/bstsnetrouter.c:51
+#: beast-gtk/bstsnetrouter.c:52
 msgid "Toggle visibility of the tool palette"
 msgstr "Het werkpalet tonen/verbergen"
 
-#: beast-gtk/bstsnetrouter.c:610
+#: beast-gtk/bstsnetrouter.c:611
 msgid "Input channel in use"
 msgstr "Invoerkanaal in gebruik"
 
-#: beast-gtk/bstsnetrouter.c:637 beast-gtk/bstsnetrouter.c:639
-#: beast-gtk/bstsnetrouter.c:675
+#: beast-gtk/bstsnetrouter.c:638 beast-gtk/bstsnetrouter.c:640
+#: beast-gtk/bstsnetrouter.c:676
 msgid "Create Link"
 msgstr "Koppeling maken"
 
-#: beast-gtk/bstsnetrouter.c:637
+#: beast-gtk/bstsnetrouter.c:638
 msgid "Select output module"
 msgstr "Uitvoer kiezen"
 
-#: beast-gtk/bstsnetrouter.c:639
+#: beast-gtk/bstsnetrouter.c:640
 msgid "Select input module"
 msgstr "Invoer kiezen"
 
-#: beast-gtk/bstsnetrouter.c:695 beast-gtk/bstsupershell.c:234
+#: beast-gtk/bstsnetrouter.c:704 beast-gtk/bstsupershell.c:234
 #: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:281
 msgid "Properties"
 msgstr "Eigenschappen"
 
-#: beast-gtk/bstsnetrouter.c:696
+#: beast-gtk/bstsnetrouter.c:705
 msgid "Reset Properties"
 msgstr "Eigenschappen resetten"
 
-#: beast-gtk/bstsnetrouter.c:697
+#: beast-gtk/bstsnetrouter.c:706
 msgid "Delete Inputs"
 msgstr "Invoerkanalen verwijderen"
 
-#: beast-gtk/bstsnetrouter.c:698
+#: beast-gtk/bstsnetrouter.c:707
 msgid "Delete Outputs"
 msgstr "Uitvoerkanalen verwijderen"
 
-#: beast-gtk/bstsnetrouter.c:699 beast-gtk/bstsnetrouter.c:741
+#: beast-gtk/bstsnetrouter.c:709 beast-gtk/bstsnetrouter.c:762
 msgid "Show Info"
 msgstr "Info weergeven"
 
-#: beast-gtk/bstsnetrouter.c:725
+# monitoren/meten
+#: beast-gtk/bstsnetrouter.c:710
+msgid "Monitor Output Signal"
+msgstr "Uitgangsignaal meten"
+
+#: beast-gtk/bstsnetrouter.c:737
 msgid "Remove Module"
 msgstr "Module verwijderen"
 
-#: beast-gtk/bstsnetrouter.c:752
+# moeten we dit vertalen?
+# schuifgrafiek
+#: beast-gtk/bstsnetrouter.c:744
+msgid "Scrollgraph"
+msgstr "Scrollgraph"
+
+#: beast-gtk/bstsnetrouter.c:773
 msgid "Delete Link"
 msgstr "Koppeling verwijderen"
 
-#: beast-gtk/bstsnetrouter.c:806
+#: beast-gtk/bstsnetrouter.c:827
 msgid "Insert Module"
 msgstr "Module invoegen"
 
-#: beast-gtk/bstsnetrouter.c:1073
+#: beast-gtk/bstsnetrouter.c:1094
 msgid "PCM Output module"
 msgstr "PCM uitvoermodule"
 
-#: beast-gtk/bstsnetrouter.c:1074
+#: beast-gtk/bstsnetrouter.c:1095
 msgid "DCA"
 msgstr "DCA"
 
-#: beast-gtk/bstsnetrouter.c:1074
+#: beast-gtk/bstsnetrouter.c:1095
 msgid "Standard amplifier module"
 msgstr "Standaard versterkingsmodule"
 
-#: beast-gtk/bstsnetrouter.c:1075
+#: beast-gtk/bstsnetrouter.c:1096
 msgid "Snooper"
 msgstr "Snooper"
 
-#: beast-gtk/bstsnetrouter.c:1075
+#: beast-gtk/bstsnetrouter.c:1096
 msgid "Signal debugging module"
 msgstr "Singaal-debug module"
 
-#: beast-gtk/bstsnetrouter.c:1076
+#: beast-gtk/bstsnetrouter.c:1097
 msgid "PCM Input module"
 msgstr "PCM-invoermodule"
 
-#: beast-gtk/bstsnetrouter.c:1124
+#: beast-gtk/bstsnetrouter.c:1145
 msgid "Channel Hints"
 msgstr "Kanaalhints"
 
-#: beast-gtk/bstsnetrouter.c:1124
+#: beast-gtk/bstsnetrouter.c:1145
 msgid "Toggle channel name hints"
 msgstr "Kanaalnaam hints schakelen"
 
@@ -2731,7 +2742,7 @@ msgstr "Bericht werd %u keer herhaald"
 msgid "processing"
 msgstr "verwerken"
 
-#: beast-gtk/bstutils.c:318 beast-gtk/bstutils.c:340 beast-gtk/bstutils.c:343
+#: beast-gtk/bstutils.c:320 beast-gtk/bstutils.c:342 beast-gtk/bstutils.c:345
 msgid "Updating View"
 msgstr "Beeld bijwerken"
 
@@ -3351,9 +3362,8 @@ msgid "Master Volume"
 msgstr "Master-volume"
 
 #: bse/bseamplifier.idl:68
-#, fuzzy
 msgid "Output stage amplification in decibel"
-msgstr "Versterking op uitgang"
+msgstr "Versterkingstrap op uitgang in decibel"
 
 #: bse/bseautodoc.c:360 bse/bseautodoc.c:422
 msgid "Authors:"
@@ -3571,27 +3581,23 @@ msgstr "Sync"
 
 #: bse/bsebus.c:844
 msgid "Syncronize left and right volume"
-msgstr ""
+msgstr "Geluidssterkte links en rechts synchroniseren"
 
 #: bse/bsebus.c:846
-#, fuzzy
 msgid "Left Volume"
-msgstr "Volume links [dB]"
+msgstr "Volume links"
 
 #: bse/bsebus.c:846
-#, fuzzy
 msgid "Volume adjustment in decibel of left bus channel"
-msgstr "Geluidsterkte van het linker buskanaal"
+msgstr "Aanpassing geluidsterkte in decibel van het linker buskanaal"
 
 #: bse/bsebus.c:850
-#, fuzzy
 msgid "Right Volume"
-msgstr "Volume rechts [dB]"
+msgstr "Volume rechts"
 
 #: bse/bsebus.c:850
-#, fuzzy
 msgid "Volume adjustment in decibel of right bus channel"
-msgstr "Geluidsterkte van het rechter buskanaal"
+msgstr "Aanpassing geluidsterkte in decibel van het rechter buskanaal"
 
 #: bse/bsebus.c:853
 msgid "Signal Inputs"
@@ -4621,9 +4627,8 @@ msgid "Volume [dB] Steps"
 msgstr "Volume-stappen [dB]"
 
 #: bse/bsecore.idl:672
-#, fuzzy
 msgid "Step width for volume in decibel"
-msgstr "Stapgrootte voor geluidsterkte in decibell"
+msgstr "Stapgrootte voor geluidsterkte in decibel"
 
 #: bse/bsecore.idl:674
 msgid "BPM Steps"
