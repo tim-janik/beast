@@ -2,8 +2,8 @@ FIXMES:
 - mixer icon
 - get rid of FIXMEs in beast-gtk/testgui.c
 - seqid changed notification *only* works for non-source children of BseSong
-- delte+undo on tracks kills connections? (busses?)
-- rename bsesnifferscop.* to bsescope.*
+- delete+undo on tracks kills connections (busses?)
+- rename bsesnifferscope.* to bsescope.*
 - rename snifferscope to trackscope
 - skip no-voice found for snet==NULL tracks
 - check sfi_debug_check ("sched") in --debug-list
