@@ -1,4 +1,6 @@
 FIXMES:
+- enable Clear Undo only for --hints
+- alias --hints to --devel
 - flag voices in midi receiver for monosynth tracks as monosynth
 - queue note-on and note-off as voice-changes on mono-synth voices
 - ignore note-off for monosynth voices if note-off-freq!=voice->freq

@@ -94,7 +94,8 @@ if test "${LANG+set}" = set; then
 fi
 
 # Make sure IFS has a sensible default
-: ${IFS=" 	"}
+: ${IFS=" 	
+"}
 
 if test "$build_libtool_libs" != yes && test "$build_old_libs" != yes; then
   echo "$modename: not configured to build any kind of library" 1>&2
@@ -1013,12 +1014,14 @@ compiler."
       # The native IRIX linker understands -LANG:*, -LIST:* and -LNO:*
       # so, if we see these flags be careful not to treat them like -L
       -L[A-Z][A-Z]*:*)
-	case $with_gcc/$host in
-	no/*-*-irix* | no/*-*-nonstopux*)
-	  compile_command="$compile_command $arg"
-	  finalize_command="$finalize_command $arg"
-	  ;;
-	esac
+        if test -z "$with_gcc"; then
+	  case $host in
+	  *-*-irix* | *-*-nonstopux*)
+	    compile_command="$compile_command $arg"
+	    finalize_command="$finalize_command $arg"
+	    ;;
+	  esac
+	fi
 	continue
 	;;
 

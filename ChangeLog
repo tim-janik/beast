@@ -1,3 +1,11 @@
+Mon Jul 28 04:07:08 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/tsmview.c: add test textget handler.
+
+	* beast-gtk/gxk/gxktexttools.[hc]: add textget functionality.
+	the ability to place widgets created by special handlers from
+	tags in tsm files.
+
 Sun Jul 27 02:39:05 2003  Tim Janik  <timj@gtk.org>
 
 	* incremented version to 0.5.5-rc1, binary age 0, interface age 0.

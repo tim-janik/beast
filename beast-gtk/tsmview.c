@@ -25,6 +25,18 @@
 #define PRGNAME "tsmview"
 
 /* --- functions --- */
+static GtkWidget*
+textget_handler (gpointer              user_data,
+                 const gchar          *element_name,
+                 const gchar         **attribute_names,
+                 const gchar         **attribute_values)
+{
+  return g_object_new (GTK_TYPE_LABEL,
+                       "visible", TRUE,
+                       "label", element_name,
+                       NULL);
+}
+
 int
 main (int   argc,
       char *argv[])
@@ -38,6 +50,8 @@ main (int   argc,
   g_type_init ();
   gtk_init (&argc, &argv);
   gxk_init ();
+
+  gxk_text_register_textget_handler ("textget-label", textget_handler, NULL);
 
   for (i = 1; i < argc; i++)
     if (!flags && strcmp (argv[i], "--edit") == 0)

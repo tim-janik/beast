@@ -90,6 +90,18 @@ void	gxk_text_buffer_append_from_file		(GtkTextBuffer	*tbuffer,
 							 const gchar	*file_name);
 
 
+/* --- special tag handlers --- */
+typedef GtkWidget* (*GxkTextTextgetHandler)  (gpointer              user_data,
+                                              const gchar          *element_name,
+                                              const gchar         **attribute_names,
+                                              const gchar         **attribute_values);
+void    gxk_text_register_textget_handler    (const gchar          *element_name,
+                                              GxkTextTextgetHandler handler,
+                                              gpointer              user_data);
+void    gxk_text_buffer_add_textgets_to_view (GtkTextBuffer        *tbuffer,
+                                              GtkTextView          *tview);
+
+
 G_END_DECLS
 
 #endif /* __GXK_TEXT_TOOLS_H__ */
