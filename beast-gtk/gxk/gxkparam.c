@@ -82,7 +82,12 @@ param_call_update (GxkParam *param,
 {
   GxkParamUpdateFunc ufunc = g_object_get_data (object, "GxkParamUpdateFunc");
   if (ufunc)
-    ufunc (param, object);
+    {
+      gboolean updating = param->updating;
+      param->updating = TRUE;   /* protect value from change-notifications during setup */
+      ufunc (param, object);
+      param->updating = updating;
+    }
 }
 
 void
@@ -533,7 +538,7 @@ gxk_param_create_editor (GxkParam               *param,
   gchar *tooltip = gxk_param_dup_tooltip (param);
   GtkWidget *widget;
   gboolean updating = param->updating;
-  param->updating = TRUE;       /* protect value from setup-notifications */
+  param->updating = TRUE;       /* protect value from change-notifications during setup */
   widget = editor->create_widget (param, tooltip, editor->variant);
   param->updating = updating;
   g_free (tooltip);

@@ -132,9 +132,9 @@ param_choice_update (GxkParam  *param,
 	  GtkWidget *item = list->data;
 	  SfiChoiceValue *cv = g_object_get_qdata (G_OBJECT (item), quark_param_choice_values);
 	  if (sfi_choice_match (cv->choice_name, string))
-	    {
+            {
               param_choice_item_activated (item, widget);
-	      break;
+              break;
 	    }
 	}
     }

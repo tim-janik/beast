@@ -1,3 +1,9 @@
+Sun Dec 28 05:07:08 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkparam.c: protect parameter from change notification
+	during GUI updates. (fixes option menus changing object properties
+	seemingly randomly).
+
 Tue Dec 23 06:06:54 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstprocedure.c: fixed minor GUI quirks.
