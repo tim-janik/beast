@@ -69,12 +69,23 @@ static string
 TypeName (const string &str)
 {
   int pos = str.rfind (':');
-  string s;
   if (pos < 0)  // not fully qualified, prolly an Sfi type
     return str == "void" ? "void" : "Sfi" + str;
   return str.substr (pos + 1);
 }
 #define cTypeName(s)    TypeName (s).c_str()
+
+static string
+canonify_type (const string s)
+{
+  /* canonify type names which contain e.g. underscores (procedures) */
+  gchar *tmp = g_strcanon (g_strdup (s.c_str()),
+                           G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "+",
+                           '-');
+  string d = tmp;
+  g_free (tmp);
+  return d;
+}
 
 static string
 Qualified (const string &str)
@@ -363,6 +374,7 @@ CodeGeneratorModule::run ()
   for (vector<Class>::const_iterator ci = parser.getClasses().begin(); ci != parser.getClasses().end(); ci++)
     {
       string ctName = TypeName (ci->name);
+      string ctFullName = nspace + ctName;
       string ctNameBase = TypeName (ci->name) + "Base";
       string ctProperties = TypeName (ci->name) + "Properties";
       string ctPropertyID = TypeName (ci->name) + "PropertyID";
@@ -392,9 +404,10 @@ CodeGeneratorModule::run ()
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* category () { return \"%s\"; }\n", ci->infos.get("category").c_str());
-      printf ("  static inline const char* blurb    () { return \"%s\"; }\n", ci->infos.get("blurb").c_str());
-
+      printf ("  static inline const char* category  () { return \"%s\"; }\n", ci->infos.get("category").c_str());
+      printf ("  static inline const char* blurb     () { return \"%s\"; }\n", ci->infos.get("blurb").c_str());
+      printf ("  static inline const char* type_name () { return \"%s\"; }\n", ctFullName.c_str());
+      
       /* i/j/o channel names */
       int is_public = 0;
       if (ci->istreams.size())
@@ -563,6 +576,7 @@ CodeGeneratorModule::run ()
       const Method *mi = *ppi;  // FIXME: things containing maps shouldn't be constant
       const Map<std::string, std::string> &infos = mi->infos;
       string ptName = string ("Procedure_") + TypeName (mi->name);
+      string ptFullName = canonify_type (nspace + ptName);
       bool is_void = mi->result.type == "void";
       if (parser.fromInclude (mi->name))
         continue;
@@ -589,8 +603,9 @@ CodeGeneratorModule::run ()
         }
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
-      printf ("  static inline const char* category () { return \"%s\"; }\n", infos.get("category").c_str());
-      printf ("  static inline const char* blurb    () { return \"%s\"; }\n", infos.get("blurb").c_str());
+      printf ("  static inline const char* category  () { return \"%s\"; }\n", infos.get("category").c_str());
+      printf ("  static inline const char* blurb     () { return \"%s\"; }\n", infos.get("blurb").c_str());
+      printf ("  static inline const char* type_name () { return \"%s\"; }\n", ptFullName.c_str());
       
       /* return type */
       printf ("  static %s exec (", cTypeRef (mi->result.type));

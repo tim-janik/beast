@@ -1,3 +1,8 @@
+Mon Oct  6 03:00:01 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: provide type_name() method for effects and
+	procedures which returns a fully namespace prefixed type name.
+
 Sun Oct  5 07:02:00 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: changed generated code to contain a virtual
