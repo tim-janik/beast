@@ -19,6 +19,7 @@
 #include <bse/bsecxxmodule.idl>
 
 namespace Bse {
+class Wave;
 namespace Standard {
 
 class GusPatchEnvelope : Effect {
@@ -35,7 +36,7 @@ class GusPatchEnvelope : Effect {
 			  "module.");
 
   group _("Properties") {
-    String  wave_name      = (_("Wave Name"),    _("Name of the BseWave of the GUS Patch with the Envelope Data"), "", STANDARD);
+    Wave    wave; // FIXME         = (_("Wave"),         _("GUS Patch to use for the Envelope Data"), NULL, STANDARD);
   };
 
   // inputs

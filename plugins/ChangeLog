@@ -1,3 +1,9 @@
+Sun Jan  2 15:30:19 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* standardguspatchenvelope.idl:
+	* standardguspatchenvelope.cc: Retrieve envelope from chunk specific
+	xinfos string.
+
 Sun Jan  2 12:19:36 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* standardguspatchenvelope.cc: Fixed code of the last change.

@@ -16,6 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include <bse/bsecxxplugin.h>
+#include <bse/bsewave.h>
+#include <bse/gslwavechunk.h>
 #include "standardguspatchenvelope.gen-idl.h"
 
 using namespace std;
@@ -27,7 +30,11 @@ namespace Standard {
 class GusPatchEnvelope : public GusPatchEnvelopeBase {
   /* properties (used to pass "global" envelope data into the modules) */
   struct Properties : public GusPatchEnvelopeProperties {
-    Properties (GusPatchEnvelope *envelope) : GusPatchEnvelopeProperties (envelope)
+    BseWaveIndex *wave_index;
+
+    Properties (GusPatchEnvelope *envelope)
+      : GusPatchEnvelopeProperties (envelope),
+        wave_index (envelope->wave_index)
     {
     }
   };
@@ -35,19 +42,45 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
   class Module : public SynthesisModule {
   private:
     gfloat envelope_value;
+    BseWaveIndex *wave_index;
+    GslWaveChunk *wave_chunk;
+    gboolean retrigger;
+
   public:
     void
     config (Properties *properties)
     {
+      wave_index = properties->wave_index;
     }
     void
     reset()
     {
       envelope_value = 0;
+      retrigger = true;
+      wave_chunk = 0;
+    }
+    void
+    update_envelope (gfloat frequency)
+    {
+      const gchar *envelope = NULL;
+
+      wave_chunk = bse_wave_index_lookup_best (wave_index, frequency);
+      if (wave_chunk)
+	envelope = bse_xinfos_get_value (wave_chunk->dcache->dhandle->setup.xinfos, "gus-patch-envelope");
+
+      if (envelope)
+	fprintf (stderr, "gus envelope from wave_chunk: %s\n", envelope);
     }
     void
     process (unsigned int n_values)
     {
+      if (retrigger)
+	{
+	  const gfloat *frequency = istream (ICHANNEL_FREQUENCY).values;
+	  update_envelope (frequency[0]);
+	  retrigger = false;
+	}
+
       /* optimize me: we need 4 cases */
       if (ostream (OCHANNEL_AUDIO_OUT1).connected || ostream (OCHANNEL_AUDIO_OUT2).connected)
         {
@@ -90,6 +123,24 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
   };
 
 public:
+  BseWaveIndex *wave_index;
+
+  GusPatchEnvelope() : wave_index (NULL)
+  {
+  }
+
+  bool
+  property_changed (GusPatchEnvelopePropertyID prop_id)
+  {
+    switch (prop_id)
+      {
+      case PROP_WAVE:
+	wave_index = wave ? bse_wave_get_index_for_modules (wave) : NULL;
+      default: ;
+      }
+    return false;
+  }
+
   /* implement creation and config methods for synthesis Module */
   BSE_EFFECT_INTEGRATE_MODULE (GusPatchEnvelope, Module, Properties);
 };
