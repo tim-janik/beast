@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-11 23:30+0200\n"
-"PO-Revision-Date: 2004-04-28 21:48+0300\n"
-"Last-Translator: Alexandre Prokoudine <techwriter@land.ru>\n"
+"POT-Creation-Date: 2004-06-14 17:57+0200\n"
+"PO-Revision-Date: 2004-06-11 19:19+0300\n"
+"Last-Translator: Alexandre Prokoudine <avp@altlinux.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -173,6 +173,7 @@ msgstr "Загружается проект '%s'"
 msgid "Loading skin `%s'"
 msgstr "Загружается файл темы '%s'"
 
+#  FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #: beast-gtk/bstapp.c:791
 msgid "Rack editor"
@@ -278,6 +279,7 @@ msgstr "Прерывание"
 msgid "Contents"
 msgstr "Содержимое"
 
+#  setup remaining bits
 #. setup remaining bits
 #: beast-gtk/bstfiledialog.c:201
 msgid "File Selection"
@@ -333,6 +335,7 @@ msgstr ""
 msgid "Save: %s"
 msgstr "Сохранить: %s"
 
+#  setup radio buttons
 #. setup radio buttons
 #: beast-gtk/bstfiledialog.c:540
 msgid "Fully include wave files"
@@ -507,11 +510,11 @@ msgstr "Параметр"
 
 #: beast-gtk/bstkeybindings.c:439
 msgid "Parameter to pass to functions upon activation"
-msgstr ""
+msgstr "Параметр, передаваемый функциям при активации"
 
 #: beast-gtk/bstkeybindings.c:460
 msgid "Function used to create new key bindings"
-msgstr ""
+msgstr "Функция, используемая для создания новых горячих клавиш"
 
 #: beast-gtk/bstkeybindings.c:462 beast-gtk/bstprocedure.c:206
 msgid "Description"
@@ -598,11 +601,11 @@ msgstr "Параметры подсказок"
 
 #: beast-gtk/bstparam-choice.c:148
 msgid "Drop Down Combo"
-msgstr ""
+msgstr "Ниспадающий список"
 
 #: beast-gtk/bstparam-choice.c:154
 msgid "Drop Down Button"
-msgstr ""
+msgstr "Ниспадающая кнопка"
 
 #: beast-gtk/bstparam-choice.c:160
 msgid "Standard Option Menu"
@@ -613,18 +616,16 @@ msgid "Select Color"
 msgstr "Выберите цвет"
 
 #: beast-gtk/bstparam-color-spinner.c:116
-#, fuzzy
 msgid "Color Entry"
-msgstr "Потерянное событие"
+msgstr "Цвет события"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
-msgstr ""
+msgstr "Матричный редактор последовательности нот"
 
 #: beast-gtk/bstparam-note-spinner.c:74
-#, fuzzy
 msgid "Note Entry"
-msgstr "Потерянное событие"
+msgstr "Нота события"
 
 #: beast-gtk/bstparam-proxy.c:290
 msgid "Object Drop Down Box"
@@ -639,9 +640,8 @@ msgid "Knob (Logarithmic"
 msgstr "Кнопка (Лог."
 
 #: beast-gtk/bstparam-scale.c:78
-#, fuzzy
 msgid "Dial"
-msgstr "Диалоги"
+msgstr ""
 
 #: beast-gtk/bstparam-scale.c:84
 msgid "Dial (Logarithmic"
@@ -653,11 +653,11 @@ msgstr "Удалить пути"
 
 #: beast-gtk/bstparam-searchpath.c:148
 msgid "Searchpath Text Entry"
-msgstr ""
+msgstr "Поле ввода пути для поиска"
 
 #: beast-gtk/bstparam-searchpath.c:154
 msgid "Filename Text Entry"
-msgstr ""
+msgstr "Поле ввода имени файла"
 
 #: beast-gtk/bstparam-time.c:55
 msgid "Time Entry"
@@ -769,7 +769,7 @@ msgstr ""
 
 #: beast-gtk/bstpatterncolumns.c:697
 msgid "  display solid vertical bar"
-msgstr ""
+msgstr " отображать вертикальную тактовую черту"
 
 #  !!! LEAVE UNTRANSLATED !!!
 #  !!! LEAVE UNTRANSLATED !!!
@@ -780,7 +780,7 @@ msgstr ""
 
 #: beast-gtk/bstpatterncolumns.c:700
 msgid "  display dotted vertical bar"
-msgstr ""
+msgstr " отображать пунктирную тактовую черту"
 
 #  !!! LEAVE UNTRANSLATED !!!
 #  !!! LEAVE UNTRANSLATED !!!
@@ -791,7 +791,7 @@ msgstr ""
 
 #: beast-gtk/bstpatterncolumns.c:703
 msgid "  insert vertical space"
-msgstr ""
+msgstr " вставить знак пробела"
 
 #: beast-gtk/bstpatterncolumns.c:704
 msgid "EVENTS:"
@@ -1434,7 +1434,7 @@ msgstr "1/64 нота"
 #: beast-gtk/bstrecords.idl:50
 #, fuzzy
 msgid "1/128"
-msgstr "1\\/1"
+msgstr "1/1"
 
 #: beast-gtk/bstrecords.idl:50
 #, fuzzy
@@ -1502,12 +1502,12 @@ msgstr "Увеличенная 1/64 нота"
 #: beast-gtk/bstrecords.idl:58
 #, fuzzy
 msgid "1/128."
-msgstr "1\\/1"
+msgstr "1/1."
 
 #: beast-gtk/bstrecords.idl:58
 #, fuzzy
 msgid "Dotted hundred twenty-eighth note"
-msgstr "Вставить восьмушки"
+msgstr "Увеличенная восьмушка"
 
 #: beast-gtk/bstrecords.idl:59
 msgid "1/1T"
@@ -1522,36 +1522,32 @@ msgid "1/2T"
 msgstr "1/2T"
 
 #: beast-gtk/bstrecords.idl:60
-#, fuzzy
 msgid "Triplet half note"
-msgstr "Вставить ноту"
+msgstr "Триоль из 1/2"
 
 #: beast-gtk/bstrecords.idl:61
 msgid "1/4T"
 msgstr "1/4T"
 
 #: beast-gtk/bstrecords.idl:61
-#, fuzzy
 msgid "Triplet quarter note"
-msgstr "Вставить ноту"
+msgstr "Триоль из 1/4"
 
 #: beast-gtk/bstrecords.idl:62
 msgid "1/8T"
 msgstr "1/8T"
 
 #: beast-gtk/bstrecords.idl:62
-#, fuzzy
 msgid "Triplet eighths note"
-msgstr "Вставить ноту"
+msgstr "Триоль из 1/8"
 
 #: beast-gtk/bstrecords.idl:63
 msgid "1/16T"
 msgstr "1/16T"
 
 #: beast-gtk/bstrecords.idl:63
-#, fuzzy
 msgid "Triplet sixteenth note"
-msgstr "Вставить ноту"
+msgstr "Триоль из 1/16"
 
 #: beast-gtk/bstrecords.idl:64
 msgid "1/32T"
@@ -1569,17 +1565,17 @@ msgstr " 1/64Т"
 #: beast-gtk/bstrecords.idl:65
 #, fuzzy
 msgid "Triplet sixty-fourth note"
-msgstr "Вставить ноту"
+msgstr "Триоль из 1/64"
 
 #: beast-gtk/bstrecords.idl:66
 #, fuzzy
 msgid "1/128T"
-msgstr "1\\/1"
+msgstr "1/1Т"
 
 #: beast-gtk/bstrecords.idl:66
 #, fuzzy
 msgid "Triplet hundred twenty-eighth note"
-msgstr "Вставить восьмушки"
+msgstr "Триоль из 1/8"
 
 #: beast-gtk/bstrecords.idl:71
 msgid "Release counter"
@@ -1619,11 +1615,11 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:83
 msgid "Tab Width"
-msgstr ""
+msgstr "Ширина вкладки"
 
 #: beast-gtk/bstrecords.idl:83
 msgid "Specify project tab width in pixels"
-msgstr ""
+msgstr "Задать ширину вкладки проекта в пикселях"
 
 #: beast-gtk/bstrecords.idl:85
 msgid "Homogeneous Input Fields"
@@ -1668,18 +1664,16 @@ msgid "Horizontal Bar Color"
 msgstr "Цвет такта по горизонтали"
 
 #: beast-gtk/bstrecords.idl:100
-#, fuzzy
 msgid "Vertical Bar Color"
-msgstr "Верт. область"
+msgstr "Цвет вертикальной тактовой черты"
 
 #: beast-gtk/bstrecords.idl:101
 msgid "Horizontal Grid Color"
-msgstr ""
+msgstr "Цвет горизонт. сетки"
 
 #: beast-gtk/bstrecords.idl:102
-#, fuzzy
 msgid "Vertical Grid Color"
-msgstr "Верт. область"
+msgstr "Цвет вертикальной сетки"
 
 #: beast-gtk/bstrecords.idl:103 beast-gtk/bstrecords.idl:110
 msgid "Middle Bar Color"
@@ -2077,9 +2071,8 @@ msgid "Load a new wave file from disk"
 msgstr "Добавить новый звук. файл с диска"
 
 #: beast-gtk/bstwaveview.c:43
-#, fuzzy
 msgid "Lib..."
-msgstr "Идёт загрузка..."
+msgstr "Библ..."
 
 #: beast-gtk/bstwaveview.c:43
 msgid "Load a new wave file from library paths"
@@ -2144,10 +2137,14 @@ msgstr "ГМасшт"
 #: beast-gtk/dialogs/gadgets-beast.xml.h:13
 msgid "Horizontal piano zoom"
 msgstr ""
+"Масштабирование матрицы \n"
+"по горизонтали"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:14
 msgid "Horizontal track zoom"
 msgstr ""
+"Масштабирование дорожки \n"
+"по горизонтали"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:15
 msgid "Layout:"
@@ -2174,9 +2171,8 @@ msgid "Synthesis Modules"
 msgstr "Модули синтеза"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:22
-#, fuzzy
 msgid "Vertical piano zoom"
-msgstr "Верт. область"
+msgstr ""
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "Virtual Rack"
@@ -2367,18 +2363,16 @@ msgid "Horizontal Scale"
 msgstr ""
 
 #: beast-gtk/gxk/gxkparam-scale.c:88
-#, fuzzy
 msgid "Vertical Scale"
-msgstr "Верт. выделение"
+msgstr "Масштаб по вертикали"
 
 #: beast-gtk/gxk/gxkparam-scale.c:94
 msgid "Horizontal Scale (Logarithmic)"
 msgstr ""
 
 #: beast-gtk/gxk/gxkparam-scale.c:100
-#, fuzzy
 msgid "Vertical Scale (Logarithmic)"
-msgstr "Верт. выделение"
+msgstr "Масштаб по вертикали (логарифм.)"
 
 #: beast-gtk/gxk/gxkparam-spinner.c:82
 msgid "Spin Button"
@@ -2408,7 +2402,7 @@ msgstr ""
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
-msgstr ""
+msgstr "Автовырезание"
 
 #: beast-gtk/gxk/gxksimplelabel.c:143
 msgid ""
@@ -2505,9 +2499,8 @@ msgid "Ctrl In1"
 msgstr ""
 
 #: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
-#, fuzzy
 msgid "First control input"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
 msgid "Ctrl In2"
@@ -2562,9 +2555,8 @@ msgid "Balance audio input levels"
 msgstr "Баланс уровней на звуковом входе"
 
 #: bse/bseamplifier.idl:55 plugins/bsebalance.idl:48
-#, fuzzy
 msgid "Control Input"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bseamplifier.idl:56 plugins/bsebalance.idl:49
 msgid "Attenuate the level of control input 1"
@@ -2580,7 +2572,7 @@ msgstr ""
 
 #: bse/bseamplifier.idl:59
 msgid "Multiply Controls"
-msgstr ""
+msgstr "Несколько регуляторов"
 
 #: bse/bseamplifier.idl:60
 msgid ""
@@ -2590,16 +2582,15 @@ msgstr ""
 
 #: bse/bseamplifier.idl:63
 msgid "Exponential Control"
-msgstr ""
+msgstr "Экспоненциальный регулятор"
 
 #: bse/bseamplifier.idl:63
 msgid "Toggle exponential and linear control response"
 msgstr ""
 
 #: bse/bseamplifier.idl:66 plugins/bsebalance.idl:54
-#, fuzzy
 msgid "Control Strength"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bseamplifier.idl:66
 msgid "Adjust how much the control signals affect the output volume"
@@ -2658,9 +2649,8 @@ msgid "Input Channels:"
 msgstr "Входные каналы:"
 
 #: bse/bseautodoc.c:487
-#, fuzzy
 msgid "(Joint Input)"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bseautodoc.c:498
 msgid "Output Channels:"
@@ -2891,9 +2881,8 @@ msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
 #: bse/bsecore.idl:439
-#, fuzzy
 msgid "Synth Control Frequency"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bsecore.idl:440
 msgid ""
@@ -2902,18 +2891,16 @@ msgid ""
 msgstr ""
 
 #: bse/bseinstrumentinput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Voice Input"
-msgstr "_Вход и выход"
+msgstr ""
 
 #: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
 msgid "Note Frequency"
 msgstr ""
 
 #: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
-#, fuzzy
 msgid "Gate"
-msgstr "/Правка/_Повторить"
+msgstr ""
 
 #: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
 msgid "High if the note is currently being pressed"
@@ -2936,9 +2923,8 @@ msgid "Velocity while the note is pressed"
 msgstr ""
 
 #: bse/bseinstrumentoutput.c:68
-#, fuzzy
 msgid "/Input & Output/Instrument Output"
-msgstr "_Вход и выход"
+msgstr ""
 
 #: bse/bseinstrumentoutput.c:101
 msgid "Left Audio"
@@ -2961,69 +2947,60 @@ msgid "Unused"
 msgstr "Не используется"
 
 #: bse/bseinstrumentoutput.c:107
-#, fuzzy
 msgid "Synth Done"
-msgstr "/_Синтезатор"
+msgstr ""
 
 #: bse/bseinstrumentoutput.c:107
 msgid "High indicates the instrument is done synthesizing"
 msgstr ""
 
 #: bse/bsemidicontroller.c:86
-#, fuzzy
 msgid "/Input & Output/MIDI Control Input"
-msgstr "_Вход и выход"
+msgstr ""
 
 #: bse/bsemidicontroller.c:137
-#, fuzzy
 msgid "Ctrl Out1"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bsemidicontroller.c:137
 msgid "MIDI Signal 1"
 msgstr "MIDI Signal 1"
 
 #: bse/bsemidicontroller.c:139
-#, fuzzy
 msgid "Ctrl Out2"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bsemidicontroller.c:139
 msgid "MIDI Signal 2"
 msgstr "MIDI Signal 2"
 
 #: bse/bsemidicontroller.c:141
-#, fuzzy
 msgid "Ctrl Out3"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bsemidicontroller.c:141
 msgid "MIDI Signal 3"
 msgstr "MIDI Signal 3"
 
 #: bse/bsemidicontroller.c:143
-#, fuzzy
 msgid "Ctrl Out4"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: bse/bsemidicontroller.c:143
 msgid "MIDI Signal 4"
 msgstr "MIDI Signal 4"
 
 #: bse/bsemidiinput.c:82
-#, fuzzy
 msgid "/Input & Output/MIDI Voice Input"
-msgstr "_Вход и выход"
+msgstr ""
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
-#, fuzzy
 msgid "Freq Out"
-msgstr "Левый"
+msgstr ""
 
 #: bse/bsemidivoice.c:111 bse/bsewaveosc.c:157
-#, fuzzy
 msgid "Gate Out"
-msgstr "Левый"
+msgstr ""
 
 #: bse/bsemidivoice.c:113
 msgid "Velocity Out"
@@ -3034,14 +3011,12 @@ msgid "Aftertouch Out"
 msgstr ""
 
 #: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
-#, fuzzy
 msgid "Left In"
-msgstr "Левый"
+msgstr ""
 
 #: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
-#, fuzzy
 msgid "Right In"
-msgstr "Правый"
+msgstr ""
 
 #: bse/bsemidivoice.c:137
 msgid "Disconnect In"
@@ -3049,15 +3024,13 @@ msgstr ""
 
 #: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
 #: plugins/davcanyondelay.c:120
-#, fuzzy
 msgid "Left Out"
-msgstr "Левый"
+msgstr ""
 
 #: bse/bsemidivoice.c:141 plugins/bsebalance.idl:42
 #: plugins/davcanyondelay.c:122
-#, fuzzy
 msgid "Right Out"
-msgstr "Правый"
+msgstr ""
 
 #: bse/bsemidivoice.c:143
 msgid "Disconnect Out"
@@ -3109,20 +3082,28 @@ msgstr ""
 msgid "Right channel Input"
 msgstr ""
 
-#: bse/bseserver.c:503
-msgid "Advice about MIDI device selections"
+#: bse/bseserver.c:143
+msgid "WAVE File"
+msgstr ""
+
+#: bse/bseserver.c:144
+msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr ""
 
 #: bse/bseserver.c:504
-msgid "Alert me about MIDI device selections"
+msgid "Advice about MIDI device selections"
 msgstr ""
 
 #: bse/bseserver.c:505
+msgid "Alert me about MIDI device selections"
+msgstr ""
+
+#: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr ""
 
-#: bse/bseserver.c:547
+#: bse/bseserver.c:548
 #, c-format
 msgid "failed to open output file \"%s\": %s"
 msgstr ""
@@ -3176,9 +3157,8 @@ msgid "Fine Tune"
 msgstr "Точная настройка"
 
 #: bse/bsestandardosc.c:155 bse/bsewaveosc.c:127
-#, fuzzy
 msgid "Input Modulation [%]"
-msgstr "Вход"
+msgstr "Модуляция на входе [%]"
 
 #: bse/bsestandardosc.c:161 bse/bsewaveosc.c:133
 msgid "Exponential FM"
@@ -3237,9 +3217,8 @@ msgid "Sync In"
 msgstr ""
 
 #: bse/bsestandardosc.c:198 bse/bsewaveosc.c:151
-#, fuzzy
 msgid "Syncronization Input"
-msgstr "Вставить контрольное событие"
+msgstr "Вход синхронизации"
 
 #: bse/bsestandardosc.c:200
 msgid "Oscillated Output"
@@ -3264,9 +3243,8 @@ msgid "Input Port %u"
 msgstr "Порт входа %u"
 
 #: bse/bsesubiport.c:124 bse/bsesuboport.c:124 bse/bsesubsynth.c:122
-#, fuzzy
 msgid "Assignments"
-msgstr "/Инструменты/Звуковые_файлы"
+msgstr "Назначения"
 
 #: bse/bsesubiport.c:126 bse/bsesuboport.c:126
 msgid ""
@@ -3294,14 +3272,12 @@ msgid "Virtual output %u"
 msgstr "Виртуальный выход %u"
 
 #: bse/bsesubsynth.c:97
-#, fuzzy
 msgid "/Virtualization/Virtual Sub Synth"
-msgstr "_Виртуализация"
+msgstr ""
 
 #: bse/bsesubsynth.c:124
-#, fuzzy
 msgid "Synthesis Network"
-msgstr "/_Синтезатор"
+msgstr "Синтезаторная сеть"
 
 #: bse/bsesubsynth.c:125
 msgid "The synthesis network to interface to"
@@ -3365,24 +3341,20 @@ msgid "Frequency Input"
 msgstr ""
 
 #: bse/bsewaveosc.c:153
-#, fuzzy
 msgid "Mod In"
-msgstr "О модуле"
+msgstr ""
 
 #: bse/bsewaveosc.c:153
-#, fuzzy
 msgid "Modulation Input"
-msgstr "Вход"
+msgstr "Вход модуляции"
 
 #: bse/bsewaveosc.c:155
-#, fuzzy
 msgid "Wave Output"
-msgstr "Выход"
+msgstr "Wave выход"
 
 #: bse/bsewaveosc.c:157
-#, fuzzy
 msgid "Gate Output"
-msgstr "Выход"
+msgstr ""
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -3436,18 +3408,16 @@ msgid "Attack [ms]"
 msgstr "Атака [мс]"
 
 #: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
-#, fuzzy
 msgid "Set the attack time in milliseconds"
-msgstr "Установить значение атаки в миллисекундах"
+msgstr "Установить время атаки в миллисекундах"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Release [ms]"
 msgstr "Затухание [мс]"
 
 #: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
-#, fuzzy
 msgid "Set the release time in milliseconds"
-msgstr "Установить значение затухания в миллисекундах"
+msgstr "Установить время затухания в миллисекундах"
 
 #: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Threshold"
@@ -3494,23 +3464,20 @@ msgid "Compressed right audio output"
 msgstr ""
 
 #: plugins/bseadder.c:97 plugins/bsemult.c:60
-#, fuzzy
 msgid "Audio Input 1"
-msgstr "Вход"
+msgstr "Звуковой вход 1"
 
 #: plugins/bseadder.c:99 plugins/bsemult.c:62
-#, fuzzy
 msgid "Audio Input 2"
-msgstr "Вход"
+msgstr "Звуковой вход 2"
 
 #: plugins/bseadder.c:101 plugins/bsemult.c:68
 msgid "Audio Output"
 msgstr "Звуковой выход"
 
 #: plugins/bseatandistort.c:90
-#, fuzzy
 msgid "Audio Input SIgnal"
-msgstr "Вход"
+msgstr "Входной звуковой сигнал"
 
 #: plugins/bseatandistort.c:92
 msgid "Distorted Audio Output"
@@ -3562,9 +3529,8 @@ msgid "Lowpass filter frequency for the control signal"
 msgstr ""
 
 #: plugins/bsebalance.idl:56
-#, fuzzy
 msgid "Output Balance"
-msgstr "Выход"
+msgstr "Баланс на выходе"
 
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
@@ -3583,9 +3549,8 @@ msgid "Mono In"
 msgstr "Моно вх."
 
 #: plugins/bsefirfilter.c:145
-#, fuzzy
 msgid "Mono Signal Input"
-msgstr "Вставить контрольное событие"
+msgstr "Вход моно-сигнала"
 
 #: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
 msgid "Filter Choice"
@@ -3600,9 +3565,8 @@ msgid "The type of filter to use"
 msgstr "Тип используемого фильтра"
 
 #: plugins/bseiirfilter.c:129 plugins/bseiirfilter.c:134
-#, fuzzy
 msgid "Filter Specification"
-msgstr "Выбор файлов"
+msgstr "Спецификация фильтра"
 
 #: plugins/bseiirfilter.c:131
 msgid "Order"
@@ -3637,9 +3601,8 @@ msgid "Filtered Output"
 msgstr ""
 
 #: plugins/bsemixer.c:109
-#, fuzzy
 msgid "Sole Output"
-msgstr "Выход"
+msgstr ""
 
 #: plugins/bsemixer.c:115
 #, c-format
@@ -3672,24 +3635,20 @@ msgid "Input Channel %u"
 msgstr "Канал входа %u"
 
 #: plugins/bsemult.c:64
-#, fuzzy
 msgid "Audio In3"
-msgstr "Вход"
+msgstr "Звук. вх.3"
 
 #: plugins/bsemult.c:64
-#, fuzzy
 msgid "Audio Input 3"
-msgstr "Вход"
+msgstr "Звуковой вход 3"
 
 #: plugins/bsemult.c:66
-#, fuzzy
 msgid "Audio In4"
-msgstr "Вход"
+msgstr "Звук. вх.4"
 
 #: plugins/bsemult.c:66
-#, fuzzy
 msgid "Audio Input 4"
-msgstr "Вход"
+msgstr "Звуковой вход 4"
 
 #: plugins/bsenoise.c:64
 msgid "Noise Out"
@@ -3704,9 +3663,8 @@ msgid "Frequency Signal"
 msgstr ""
 
 #: plugins/bsesequencer.c:109
-#, fuzzy
 msgid "Note Sync"
-msgstr "Потерянное событие"
+msgstr ""
 
 #: plugins/bsesequencer.c:109
 msgid "Note Sync Signal"
@@ -3729,18 +3687,16 @@ msgid "Retrigger input (raising edge retriggers envelope)"
 msgstr ""
 
 #: plugins/bsesimpleadsr.c:122
-#, fuzzy
 msgid "Ctrl Out"
-msgstr "Вставить контрольное событие"
+msgstr ""
 
 #: plugins/bsesimpleadsr.c:122
 msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr ""
 
 #: plugins/bsesimpleadsr.c:124
-#, fuzzy
 msgid "Done Out"
-msgstr "Левый"
+msgstr ""
 
 #: plugins/bsesimpleadsr.c:124
 msgid "This signal goes high after the release phase has completed"
@@ -3798,24 +3754,20 @@ msgid "Trigger filter"
 msgstr ""
 
 #: plugins/davcanyondelay.c:116
-#, fuzzy
 msgid "Left Audio Input"
-msgstr "Вход"
+msgstr "Левый канал звукового входа"
 
 #: plugins/davcanyondelay.c:118
-#, fuzzy
 msgid "Right Audio Input"
-msgstr "Вход"
+msgstr "Правый канал звукового входа"
 
 #: plugins/davcanyondelay.c:120
-#, fuzzy
 msgid "Left Audio Output"
-msgstr "Вход"
+msgstr "Левый канал звукового выхода"
 
 #: plugins/davcanyondelay.c:122
-#, fuzzy
 msgid "Right Audio Output"
-msgstr "Правый"
+msgstr "Правый канал звукового выхода"
 
 #: plugins/davchorus.idl:29
 msgid "/Enhance/Chorus"
@@ -3850,9 +3802,8 @@ msgid "Drum Frequency Input"
 msgstr ""
 
 #: plugins/davsyndrum.c:118
-#, fuzzy
 msgid "Ratio In"
-msgstr "Коэфф."
+msgstr "Коэфф. вх."
 
 #: plugins/davsyndrum.c:118
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
