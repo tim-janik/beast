@@ -1,3 +1,7 @@
+Fri Nov 28 03:37:16 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.h: preserve type safety in convenience functions for c++.
+
 Fri Nov 28 02:57:56 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-cxx.cc: remove bogus generated includes.

@@ -52,6 +52,7 @@ G_BEGIN_DECLS
 
 
 /* --- abandon typesafety for some frequently used functions --- */
+#ifndef __cplusplus
 #define g_object_notify(o,s)		  g_object_notify ((gpointer) o, s)
 #define	g_object_get_qdata(o,q)		  g_object_get_qdata ((gpointer) o, q)
 #define	g_object_set_qdata(o,q,d)	  g_object_set_qdata ((gpointer) o, q, d)
@@ -61,6 +62,7 @@ G_BEGIN_DECLS
 #define	g_object_set_data(o,k,d)	  g_object_set_data ((gpointer) o, k, d)
 #define	g_object_set_data_full(o,k,d,f)	  g_object_set_data_full ((gpointer) o, k, d, (gpointer) f)
 #define	g_object_steal_data(o,k)	  g_object_steal_data ((gpointer) o, k)
+#endif  /* !__cplusplus */
 
 
 /* --- string functions --- */
