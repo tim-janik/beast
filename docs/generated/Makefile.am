@@ -36,6 +36,8 @@ build_tools = $(strip		\
 if HAVE_XMLMAKEINFO_AND_XSLTPROC
 %.xml: $(srcdir)/../%.texi
 	$(XMLMAKEINFO) -I $(srcdir)/.. --xml $< -o $@
+%.xml: %.texi
+	$(XMLMAKEINFO) -I $(srcdir)/.. --xml $< -o $@
 %.markup: %.xml $(srcdir)/markup.xsl $(srcdir)/texinfo.dtd
 	$(XSLTPROC) --stringparam revision "`date -r $<`" $(srcdir)/markup.xsl $< >$@
 %.html: %.xml $(srcdir)/html.xsl $(srcdir)/texinfo.dtd

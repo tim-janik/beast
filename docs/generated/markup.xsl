@@ -41,10 +41,22 @@
       <tagdef name="dline"          underline="double" weight="bold" />
       <tagdef name="sline"          underline="single" weight="bold" />
       <tagdef name="nowrap"         wrap_mode="none" />
-      <tagdef name="indented"	  left_margin="20" />
-      <tagdef name="tableterm"	  family="mono"/>
-      <tagdef name="tableitem"	  indent="45" />
-      <tagdef name="multitable"     family="mono" />
+      <tagdef name="indented"	    left_margin="20" />
+      <tagdef name="tableterm"	    family="mono"/>
+      <tagdef name="tableitem"	    left_margin="45" />
+
+      <!-- Sucks but hey -->
+      <tagdef name="table_entry_1"  left_margin="0"   />
+      <tagdef name="table_entry_2"  left_margin="20"  />
+      <tagdef name="table_entry_3"  left_margin="40"  />
+      <tagdef name="table_entry_4"  left_margin="60"  />
+      <tagdef name="table_entry_5"  left_margin="80"  />
+      <tagdef name="table_entry_6"  left_margin="100" />
+      <tagdef name="table_entry_7"  left_margin="120" />
+      <tagdef name="table_entry_8"  left_margin="140" />
+      <tagdef name="table_entry_9"  left_margin="160" />
+
+      <tagdef name="multitable"     />
 
       <tagdef name="title_page"     justification="center" />
       <tagdef name="doc_title"      underline="double" />
@@ -145,25 +157,25 @@
   </xsl:template>
 
   <xsl:template match="para/table-of-contents">
-    <newline/><breakline/>
-    <newline/><breakline/>
+    <newline/>
+    <newline/>
     <span tag="dline">
       <span tag="center">
 	<xsl:text>Table Of Contents</xsl:text>
       </span>
     </span>
-    <newline/><breakline/>
-    <newline/><breakline/>
+    <newline/>
+    <newline/>
 
     <xsl:for-each select="/texinfo/chapter|/texinfo/unnumbered|/texinfo/appendix">
       <xsl:if test="local-name() = 'chapter'">
 	<xsl:call-template name="toc_chapter"/>
       </xsl:if>
       <xsl:if test="local-name() = 'unnumbered'">
-	<!-- <xsl:call-template name="toc_unnumbered"/> -->
+	<xsl:call-template name="toc_unnumbered"/>
       </xsl:if>
       <xsl:if test="local-name() = 'appendix'">
-	<!-- <xsl:call-template name="toc_appendix"/> -->
+	<xsl:call-template name="toc_appendix"/>
       </xsl:if>
     </xsl:for-each>
   </xsl:template>
@@ -731,7 +743,17 @@
 
   <xsl:template match="multitable/row">
     <xsl:apply-templates/>
-    <breakline/>
+    <newline/>
+  </xsl:template>
+
+  <xsl:template match="multitable/row/entry">
+    <span>
+      <xsl:attribute name="tag">
+        <xsl:text>table_entry_</xsl:text><xsl:number/>
+      </xsl:attribute>
+      <xsl:apply-templates/>
+    </span>
+    <newline/>
   </xsl:template>
 
   <xsl:template match="para/indexterm">
@@ -754,7 +776,7 @@
 	  <xsl:apply-templates/>
 	</xlink>
       </span>
-      <xsl:text> (</xsl:text><xsl:value-of select="../../title"/><xsl:text>)</xsl:text>
+      <keep-space>    (<xsl:value-of select="../../title"/>)</keep-space>
       <breakline/>
     </xsl:for-each>
   </xsl:template>

@@ -198,6 +198,8 @@ bsw_scm_glue_rec_get (SCM scm_rec,
   rec = (GslGlueRec*) SCM_CDR (scm_rec);
   name = g_strndup (SCM_ROCHARS (s_field), SCM_LENGTH (s_field));
   val = gsl_glue_rec_get (rec, name);
+  if (!val)
+    val = gsl_glue_value_inval ();
   g_free (name);
   s_val = bsw_scm_from_glue_value (val);
 

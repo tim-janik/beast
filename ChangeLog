@@ -1,3 +1,12 @@
+Wed Sep 18 09:53:56 2002  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/markup.xsl: new version from Alper, fixing table
+	indentation, toc generation, spacing in indices and improved table
+	generation.
+
+	* docs/generated/Makefile.am: add generic rule for *.texi -> *.markup
+	generation.
+
 Sun Sep 15 07:23:39 2002  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/html.xsl:
