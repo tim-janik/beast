@@ -563,6 +563,7 @@ bse_track_insert_part (BseTrack *self,
       gint i = entry ? entry - self->entries_SL : 0;
       entry = track_add_entry (self, entry ? i + 1 : 0, tick, part);
     }
+  bse_part_links_changed (part);
   g_signal_emit (self, signal_changed, 0);
   return entry ? entry->id : 0;
 }
@@ -578,31 +579,29 @@ bse_track_remove_tick (BseTrack *self,
   entry = track_lookup_entry (self, tick);
   if (entry && entry->tick == tick)
     {
+      BsePart *part = entry->part;
       track_delete_entry (self, entry - self->entries_SL);
+      bse_part_links_changed (part);
       g_signal_emit (self, signal_changed, 0);
     }
 }
 
-BseTrackPartSeq*
-bse_track_list_parts (BseTrack *self)
+static BseTrackPartSeq*
+bse_track_list_parts_intern (BseTrack *self,
+                             BsePart  *part)
 {
-  BseTrackPartSeq *tps;
-  BseSongTiming timing;
+  BseItem *item = BSE_ITEM (self);
   BseSong *song = NULL;
-  BseItem *item;
-  gint i;
-
-  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
-
-  item = BSE_ITEM (self);
   if (BSE_IS_SONG (item->parent))
     song = BSE_SONG (item->parent);
+  BseSongTiming timing;
   bse_song_timing_get_default (&timing);
-  tps = bse_track_part_seq_new ();
+  BseTrackPartSeq *tps = bse_track_part_seq_new ();
+  gint i;
   for (i = 0; i < self->n_entries_SL; i++)
     {
       BseTrackEntry *entry = self->entries_SL + i;
-      if (entry->part)
+      if (entry->part && (entry->part == part || !part))
 	{
 	  BseTrackPart tp = { 0, };
 	  tp.tick = entry->tick;
@@ -616,6 +615,22 @@ bse_track_list_parts (BseTrack *self)
 	}
     }
   return tps;
+}
+
+BseTrackPartSeq*
+bse_track_list_parts (BseTrack *self)
+{
+  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  return bse_track_list_parts_intern (self, NULL);
+}
+
+BseTrackPartSeq*
+bse_track_list_part (BseTrack *self,
+                     BsePart  *part)
+{
+  g_return_val_if_fail (BSE_IS_TRACK (self), NULL);
+  g_return_val_if_fail (BSE_IS_PART (part), NULL);
+  return bse_track_list_parts_intern (self, part);
 }
 
 gboolean

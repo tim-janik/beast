@@ -1034,3 +1034,26 @@ METHOD (BsePart, get-timing) {
 
   return BSE_ERROR_NONE;
 }
+
+METHOD (BsePart, list-links) {
+  HELP  = "List all places where parts are used (linked) from tracks, sorted by tick.";
+  IN    = bse_param_spec_object ("part", "Part", NULL, BSE_TYPE_PART, SFI_PARAM_STANDARD);
+  OUT   = bse_param_spec_boxed ("link_list", "Link List", NULL,
+                                BSE_TYPE_PART_LINK_SEQ, SFI_PARAM_STANDARD);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self = bse_value_get_object (in_values++);
+
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* action */
+  bse_value_take_boxed (out_values++, bse_part_list_links (self));
+
+  return BSE_ERROR_NONE;
+}

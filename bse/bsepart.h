@@ -57,6 +57,7 @@ struct _BsePart
   guint               last_tick_SL;
 
   /* queued updates */
+  guint               links_queued : 1;
   guint               range_queued : 1;
   guint               range_tick;
   guint               range_bound;
@@ -82,6 +83,8 @@ typedef enum    /*< skip >*/
 
 
 /* --- functions --- */
+void               bse_part_links_changed             (BsePart           *self);
+BsePartLinkSeq*    bse_part_list_links                (BsePart           *self);
 gboolean           bse_part_delete_control            (BsePart           *self,
                                                        guint              id);
 gboolean           bse_part_delete_note               (BsePart           *self,

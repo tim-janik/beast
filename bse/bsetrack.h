@@ -92,6 +92,8 @@ guint        	 bse_track_insert_part	(BseTrack		*self,
 void		 bse_track_remove_tick	(BseTrack		*self,
 					 guint			 tick);
 BseTrackPartSeq* bse_track_list_parts	(BseTrack		*self);
+BseTrackPartSeq* bse_track_list_part	(BseTrack		*self,
+                                         BsePart                *part);
 gboolean	 bse_track_find_part	(BseTrack		*self,
 					 BsePart		*part,
 					 guint			*start_p);

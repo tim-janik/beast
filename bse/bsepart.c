@@ -18,9 +18,12 @@
 #include "bsepart.h"
 #include "bsemain.h"
 #include "bsestorage.h"
+#include "bsesong.h"
+#include "bsetrack.h"
 #include <sfi/gbsearcharray.h>
 #include "gslcommon.h"
 #include "bseieee754.h"
+#include <stdlib.h>
 #include <string.h>
 
 /* --- macros --- */
@@ -62,7 +65,10 @@ static SfiTokenType bse_part_restore_private	(BseObject	*object,
 static gpointer parent_class = NULL;
 static guint    signal_range_changed = 0;
 static guint	handler_id_range_changed = 0;
-static GSList  *plist_range_changed = NULL;
+static SfiRing *plist_range_changed = NULL;
+static guint    signal_links_changed = 0;
+static guint	handler_id_links_changed = 0;
+static SfiRing *plist_links_changed = NULL;
 static GQuark   quark_insert_note = 0;
 static GQuark   quark_insert_notes = 0;
 static GQuark   quark_insert_control = 0;
@@ -129,6 +135,7 @@ bse_part_class_init (BsePartClass *class)
 						      G_TYPE_NONE, 4,
 						      G_TYPE_INT, G_TYPE_INT,
 						      G_TYPE_INT, G_TYPE_INT);
+  signal_links_changed = bse_object_class_add_signal (object_class, "links-changed", G_TYPE_NONE, 0);
 }
 
 static void
@@ -138,6 +145,7 @@ bse_part_init (BsePart *self)
   self->ids = NULL;
   self->last_id = 0;
   self->last_tick_SL = 0;
+  self->links_queued = FALSE;
   self->range_queued = FALSE;
   self->range_tick = BSE_PART_MAX_TICK;
   self->range_bound = 0;
@@ -211,7 +219,9 @@ bse_part_dispose (GObject *object)
 {
   BsePart *self = BSE_PART (object);
 
-  plist_range_changed = g_slist_remove (plist_range_changed, self);
+  plist_links_changed = sfi_ring_remove (plist_links_changed, self);
+  self->links_queued = FALSE;
+  plist_range_changed = sfi_ring_remove (plist_range_changed, self);
   self->range_queued = FALSE;
   self->range_tick = BSE_PART_MAX_TICK;
   self->range_bound = 0;
@@ -228,8 +238,10 @@ bse_part_finalize (GObject *object)
   BsePart *self = BSE_PART (object);
   guint i;
   
+  self->links_queued = TRUE;
+  plist_links_changed = sfi_ring_remove (plist_links_changed, self);
   self->range_queued = TRUE;
-  plist_range_changed = g_slist_remove (plist_range_changed, self);
+  plist_range_changed = sfi_ring_remove (plist_range_changed, self);
 
   self->n_ids = 0;
   g_free (self->ids);
@@ -330,6 +342,7 @@ part_update_last_tick (BsePart *self)
   self->last_tick_SL = last_tick;
   BSE_SEQUENCER_UNLOCK ();
   g_object_notify (self, "last-tick");
+  bse_part_links_changed (self);
 }
 
 static gboolean
@@ -337,12 +350,10 @@ range_changed_notify_handler (gpointer data)
 {
   while (plist_range_changed)
     {
-      GSList *slist = plist_range_changed;
-      BsePart *self = slist->data;
+      BsePart *self = sfi_ring_pop_head (&plist_range_changed);
+      self->range_queued = FALSE;
       guint tick = self->range_tick, duration = self->range_bound - tick;
       gint min_note = self->range_min_note, max_note = self->range_max_note;
-      plist_range_changed = slist->next;
-      g_slist_free_1 (slist);
       
       self->range_tick = BSE_PART_MAX_TICK;
       self->range_bound = 0;
@@ -368,14 +379,17 @@ queue_update (BsePart *self,
   
   if (!BSE_OBJECT_DISPOSING (self))
     {
-      if (self->range_tick >= self->range_bound)
-	plist_range_changed = g_slist_prepend (plist_range_changed, self);
+      if (self->range_tick >= self->range_bound && !self->range_queued)
+        {
+          self->range_queued = TRUE;
+          plist_range_changed = sfi_ring_append (plist_range_changed, self);
+          if (!handler_id_range_changed)
+            handler_id_range_changed = bse_idle_update (range_changed_notify_handler, NULL);
+        }
       self->range_tick = MIN (self->range_tick, tick);
       self->range_bound = MAX (self->range_bound, bound);
       self->range_min_note = MIN (self->range_min_note, note);
       self->range_max_note = MAX (self->range_max_note, note);
-      if (!handler_id_range_changed)
-	handler_id_range_changed = bse_idle_update (range_changed_notify_handler, NULL);
     }
 }
 
@@ -394,15 +408,95 @@ queue_control_update (BsePart *self,
   
   if (!BSE_OBJECT_DISPOSING (self))
     {
-      if (self->range_tick >= self->range_bound)
-	plist_range_changed = g_slist_prepend (plist_range_changed, self);
+      if (self->range_tick >= self->range_bound && !self->range_queued)
+        {
+          self->range_queued = TRUE;
+          plist_range_changed = sfi_ring_append (plist_range_changed, self);
+          if (!handler_id_range_changed)
+            handler_id_range_changed = bse_idle_update (range_changed_notify_handler, NULL);
+        }
       self->range_tick = MIN (self->range_tick, tick);
       self->range_bound = MAX (self->range_bound, bound);
       self->range_min_note = BSE_MIN_NOTE;
       self->range_max_note = BSE_MAX_NOTE;
-      if (!handler_id_range_changed)
-	handler_id_range_changed = bse_idle_update (range_changed_notify_handler, NULL);
     }
+}
+
+static gboolean
+links_changed_notify_handler (gpointer data)
+{
+  while (plist_links_changed)
+    {
+      BsePart *self = sfi_ring_pop_head (&plist_links_changed);
+      self->links_queued = FALSE;
+      g_signal_emit (self, signal_links_changed, 0);
+    }
+  handler_id_links_changed = 0;
+  
+  return FALSE;
+}
+
+void
+bse_part_links_changed (BsePart *self)
+{
+  g_return_if_fail (BSE_IS_PART (self));
+  if (!BSE_OBJECT_DISPOSING (self) && !self->links_queued)
+    {
+      self->links_queued = TRUE;
+      plist_links_changed = sfi_ring_append (plist_links_changed, self);
+      if (!handler_id_links_changed)
+        handler_id_links_changed = bse_idle_update (links_changed_notify_handler, NULL);
+    }
+}
+
+static int
+part_link_compare (const void *p1,
+                   const void *p2)
+{
+  const BsePartLink *const*lp1 = p1;
+  const BsePartLink *const*lp2 = p2;
+  const BsePartLink *l1 = lp1[0];
+  const BsePartLink *l2 = lp2[0];
+  if (l1->tick == l2->tick)
+    {
+      if (l1->duration == l2->duration)
+        return l1->track < l2->track ? -1 : l1->track > l2->track;
+      else
+        return l1->duration < l2->duration ? -1 : 1;
+    }
+  else
+    return l1->tick < l2->tick ? -1 : 1;
+}
+
+BsePartLinkSeq*
+bse_part_list_links (BsePart *self)
+{
+  g_return_val_if_fail (BSE_IS_PART (self), NULL);
+  BsePartLinkSeq *pls = bse_part_link_seq_new ();
+  BseSong *song = (BseSong*) bse_item_get_super (BSE_ITEM (self));
+  if (BSE_IS_SONG (song))
+    {
+      SfiRing *ring;
+      for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
+        {
+          BseTrack *track = ring->data;
+          BseTrackPartSeq *tps = bse_track_list_part (track, self);
+          gint i;
+          for (i = 0; i < tps->n_tparts; i++)
+            {
+              BseTrackPart *tp = tps->tparts[i];
+              BsePartLink pl;
+              pl.track = track;
+              pl.tick = tp->tick;
+              pl.part = self;
+              pl.duration = tp->duration;
+              bse_part_link_seq_append (pls, &pl);
+            }
+          bse_track_part_seq_free (tps);
+        }
+      qsort (pls->plinks, pls->n_plinks, sizeof (pls->plinks[0]), part_link_compare);
+    }
+  return pls;
 }
 
 void

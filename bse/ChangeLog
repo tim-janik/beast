@@ -1,3 +1,14 @@
+Wed Jan 12 02:08:21 2005  Tim Janik  <timj@gtk.org>
+
+	* bsecore.idl: added part link structure and sequence.
+
+	* bsepart.[hcp]*: added ::links-changed signal for asyncronous
+	notification of part link changes. added procedurte to list all
+	part links, sorted by tick stamps. fixed idle handler maintenance. 
+
+	* bsetrack.c: properly notify parts about part link changes.
+	added bse_track_list_part().
+
 Sat Jan  8 04:44:14 2005  Tim Janik  <timj@gtk.org>
 
 	* gslloader-pat.cc: removed.

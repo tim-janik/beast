@@ -529,9 +529,23 @@ sequence DotSeq {
   Dot dots;
 };
 
+/* BSE Part structures */
+class Part;
+class Track;
+
+record PartLink {
+  Track track;
+  Int   tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  Part  part;
+  Int   duration = ("Duration", NULL, 0, 0, G_MAXINT, 384, STANDARD);
+  // Int   count; /* 1 + repetitions */
+};
+sequence PartLinkSeq {
+  PartLink plinks;
+};
+
 /* BSE Track structures */
 
-class Part;
 record TrackPart {
   Int           tick     = ("Tick", NULL, 0, 0, G_MAXINT, 384, STANDARD);
   Part          part;
