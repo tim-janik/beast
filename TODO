@@ -1,5 +1,4 @@
 FIXMES:	(release-critical)
-- commit newly mixed demo song
 - adjust engine block size (Subject: blocksize vs. cpu)
 TODO:
 - reexamine bse_object_lock()
