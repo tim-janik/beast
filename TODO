@@ -1,6 +1,5 @@
 FIXME(urgent):
 - bsewavetool: fix per-command docu to properly account for input.bsewave
-- bsewavetool: allow clipping of single chunks
 - start playback at play pointer position
 - add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
 - write script which resizes 0-length notes to 1/4 note or similar length (those notes occour from MIDI drum pattern imports)
