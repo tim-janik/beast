@@ -702,30 +702,6 @@ bse_song_get_pattern_from_list (BseSong	*song,
   return pgroup ? bse_pattern_group_get_nth_pattern (pgroup, pattern_index) : NULL;
 }
 
-
-
-
-
-#if 0
-BsePattern*
-bse_song_get_pattern_from_list (BseSong	*song,
-				guint	 pattern_index)
-{
-  GList *list;
-  
-  g_return_val_if_fail (BSE_IS_SONG (song), NULL);
-  
-  // FIXME (bse_song_get_pattern_from_list(): test implementation);
-  
-  list = g_list_nth (song->patterns, pattern_index);
-  
-  if (list)
-    return list->data;
-  else
-    return NULL;
-}
-#endif
-
 BseInstrument*
 bse_song_get_instrument (BseSong *song,
 			 guint	  seqid)
@@ -876,70 +852,6 @@ bse_song_restore (BseObject  *object,
   return expected_token;
 }
 
-#if 0
-#include	"bseio.h"
-void
-bse_song_reload_instrument_samples (BseSong	     *song,
-				    BseSampleLookupCB cb_func,
-				    gpointer	      cb_data)
-{
-  GList *list;
-  
-  g_return_if_fail (BSE_IS_SONG (song));
-  
-  for (list = song->instruments; list; list = list->next)
-    {
-      BseInstrument *instrument;
-      
-      instrument = list->data;
-      if (instrument->type == BSE_INSTRUMENT_SAMPLE &&
-	  instrument->deferred_sample_name)
-	{
-	  BseSample *sample;
-	  
-	  sample = bse_sample_lookup (BSE_SUPER_PROJECT (song), instrument->deferred_sample_name);
-	  if (sample && sample != instrument->sample)
-	    bse_instrument_set_sample (instrument, sample);
-	  else if (!sample && cb_func)
-	    {
-	      BseIoData *io_data;
-	      
-	      io_data = cb_func (cb_data,
-				 instrument->deferred_sample_name,
-				 instrument->deferred_sample_path);
-	      sample = bse_sample_lookup (BSE_SUPER_PROJECT (song), instrument->deferred_sample_name);
-	      if (!sample)
-		{
-		  gchar *path;
-		  
-		  if (io_data)
-		    bse_io_data_destroy (io_data);
-		  io_data = NULL;
-		  
-		  path = NULL; FIXME (bse_sample_lookup_path (instrument->deferred_sample_name););
-		  if (path && !g_str_equal (path, instrument->deferred_sample_path))
-		    io_data = cb_func (cb_data,
-				       instrument->deferred_sample_name,
-				       path);
-		  sample = bse_sample_lookup (BSE_SUPER_PROJECT (song), instrument->deferred_sample_name);
-		}
-	      if (sample && sample != instrument->sample)
-		bse_instrument_set_sample (instrument, sample);
-	      if (io_data)
-		bse_io_data_destroy (io_data);
-	    }
-	  if (sample)
-	    {
-	      g_free (instrument->deferred_sample_name);
-	      instrument->deferred_sample_name = NULL;
-	      g_free (instrument->deferred_sample_path);
-	      instrument->deferred_sample_path = NULL;
-	    }
-	}
-    }
-}
-#endif
-
 static void
 song_set_n_channels (BseSong *song,
 		     guint    n_channels)
@@ -1034,56 +946,13 @@ bse_song_prepare (BseSource *source)
   BseSong *song = BSE_SONG (source);
 
   bse_object_lock (BSE_OBJECT (song));
-  
-  song->sequencer_index = 0;
-  song->sequencer = bse_song_sequencer_setup (song);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source);
+  
+  song->sequencer_index = 0;
+  song->sequencer = bse_song_sequencer_setup (song);
 }
-
-#if 0
-void
-bse_song_update_sequencer (BseSong *song)
-{
-  g_return_if_fail (BSE_IS_SONG (song));
-
-  if (song->sequencer)
-    {
-      BseSource *source = BSE_SOURCE (song);
-
-      if (song->sequencer_index < 0) // FIXME: source->index
-	{
-	  song->sequencer_index++;
-	  bse_song_sequencer_step (song);
-	}
-    }
-}
-
-static BseChunk*
-bse_song_calc_chunk (BseSource *source,
-		     guint	ochannel_id)
-{
-  BseSong *song = BSE_SONG (source);
-  BseSampleValue *hunk;
-  
-  g_return_val_if_fail (ochannel_id == BSE_SONG_OCHANNEL_STEREO, NULL);
-  
-  /* FIXME: we need some kinda notification mechanism on sources when
-   * the source stopped playing
-   */
-  if (song->sequencer_index < source->index)
-    {
-      song->sequencer_index++;
-      bse_song_sequencer_step (song);
-    }
-  
-  hunk = bse_hunk_alloc0 (2);
-  bse_song_sequencer_fill_hunk (song, hunk);
-  
-  return bse_chunk_new_orphan (2, hunk);
-}
-#endif
 
 static void
 bse_song_reset (BseSource *source)

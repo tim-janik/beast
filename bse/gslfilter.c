@@ -855,7 +855,7 @@ gsl_blackman_window (double x)
 /**
  * gsl_filter_fir_approx
  *
- * @iorder: order of the filter (must be odd, >= 3)
+ * @iorder: order of the filter (must be oven, >= 2)
  * @freq:   the frequencies of the transfer function
  * @value:  the desired value of the transfer function
  *
