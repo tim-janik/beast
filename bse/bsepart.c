@@ -1411,7 +1411,13 @@ bse_part_restore_private (BseObject  *object,
               if (negate)
                 fine_tune = -fine_tune;
               negate = bse_storage_check_parse_negate (storage);
-              if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
+              if (g_scanner_peek_next_token (scanner) == G_TOKEN_INT)
+                {
+                  g_scanner_get_next_token (scanner);   /* velocity */
+                  velocity = scanner->value.v_int64;
+                  velocity = negate ? -velocity : velocity;
+                }
+              else if (g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
                 {
                   g_scanner_get_next_token (scanner);   /* velocity */
                   velocity = negate ? -scanner->value.v_float : scanner->value.v_float;

@@ -1,3 +1,7 @@
+Sat Dec 11 22:45:46 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepart.c (bse_part_restore_private): parse velocity as int as well as float.
+
 Sat Dec 11 15:35:16 2004  Tim Janik  <timj@gtk.org>
 
 	* bseengine.[hc]: added block-size argument to probe callback.
