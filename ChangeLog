@@ -1,3 +1,12 @@
+Mon Jan 20 11:36:41 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstprojectctrl.c:
+	(bst_project_ctrl_stop): 
+	(bst_project_ctrl_play): properly update status lines.
+
+	* beast-gtk/bstapp.c (bst_app_operate): use BstProjectCtrl to start
+	and stop project playback.
+
 Mon Jan 20 11:13:14 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkpolygon.c: support ETCHED_IN/OUT and _IN/OUT

@@ -633,23 +633,10 @@ bst_app_operate (BstApp *app,
       super_shell = bst_super_shell_from_super (proxy);
       break;
     case BST_OP_PROJECT_PLAY:
-      {
-	gchar *starting;
-	BseErrorType error;
-
-	if (bse_project_is_playing (app->project))
-	  starting = "Restarting Playback";
-	else
-	  starting = "Starting Playback";
-
-	error = bse_project_play (app->project);
-	bse_project_auto_deactivate (app->project, 0);
-	bst_status_eprintf (error, starting);
-      }
+      bst_project_ctrl_play (BST_PROJECT_CTRL (app->pcontrols));
       break;
     case BST_OP_PROJECT_STOP:
-      bse_project_stop (app->project);
-      gxk_status_set (GXK_STATUS_DONE, "Stopping Playback", NULL);
+      bst_project_ctrl_stop (BST_PROJECT_CTRL (app->pcontrols));
       break;
     case BST_OP_PROJECT_RACK_EDITOR:
       if (!app->rack_dialog)

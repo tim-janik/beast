@@ -31,8 +31,16 @@ bst_project_ctrl_play (BstProjectCtrl *self)
 {
   if (self && self->project)
     {
-      bse_project_play (self->project);
+      gchar *starting;
+      BseErrorType error;
+
+      if (bse_project_is_playing (self->project))
+	starting = "Restarting Playback";
+      else
+	starting = "Starting Playback";
       bse_project_auto_deactivate (self->project, 0);
+      error = bse_project_play (self->project);
+      bst_status_eprintf (error, starting);
     }
 }
 
@@ -40,7 +48,10 @@ void
 bst_project_ctrl_stop (BstProjectCtrl *self)
 {
   if (self && self->project)
-    bse_project_stop (self->project);
+    {
+      bse_project_stop (self->project);
+      gxk_status_set (GXK_STATUS_DONE, "Stopping Playback", NULL);
+    }
 }
 
 static void
