@@ -1,3 +1,9 @@
+Mon Dec 15 16:00:48 2003  Tim Janik  <timj@gtk.org>
+
+	* bseamplifier.idl: stripped "/Module" prefix from categories as this
+	is auto-prepended by the idl compiler now and shouldn't be translated.
+	completed i18n markup of info strings, streams and parameter groups.
+
 Tue Dec  2 23:28:37 2003  Tim Janik  <timj@gtk.org>
 
 	* bse/bseprocidl.cc: don't error out on SfiRec arguments.
