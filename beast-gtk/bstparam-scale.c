@@ -63,7 +63,7 @@ static GxkParamEditor param_scale1 = {
   param_scale_create,   NULL,   PARAM_SCALE_KNOB,
 };
 static GxkParamEditor param_scale2 = {
-  { "knob-log",         N_("Knob (Logarithmic"), },
+  { "knob-log",         N_("Knob (Logarithmic)"), },
   { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
   { "log-scale",  +5,   TRUE, },        /* options, rating, editing */
   param_scale_create,   NULL,   PARAM_SCALE_KNOB | PARAM_SCALE_LOGARITHMIC,
@@ -81,7 +81,7 @@ static GxkParamEditor param_scale3 = {
   param_scale_create,   NULL,   PARAM_SCALE_DIAL,
 };
 static GxkParamEditor param_scale4 = {
-  { "dial-log",         N_("Dial (Logarithmic"), },
+  { "dial-log",         N_("Dial (Logarithmic)"), },
   { G_TYPE_NONE,  NULL, TRUE, TRUE, },  /* all int types and all float types */
   { "log-scale",  +5,   TRUE, },        /* options, rating, editing */
   param_scale_create,   NULL,   PARAM_SCALE_DIAL | PARAM_SCALE_LOGARITHMIC,

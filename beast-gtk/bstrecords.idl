@@ -35,7 +35,7 @@ choice Direction {
   UP    = (_("Up"), _("Move upwards")),
   LEFT  = (_("Left"), _("Move to the left")),
   RIGHT = (_("Right"), _("Move to the right")),
-  DOWN  = (_("Down"), _("Step downwards"))
+  DOWN  = (_("Down"), _("Move downwards"))
 };
 
 choice NoteLength {

@@ -533,7 +533,7 @@
     <hseparator/>
     <hbox spacing="3" homogeneous="1" >
       <hstock-button id="apply-button" _label="_Apply" stock-image="gtk-apply" can-default="1"
-	_tooltip="Aplly configuration changes to the pattern editor layout" />
+	_tooltip="Apply configuration changes to the pattern editor layout" />
       <hstock-button id="cancel-button" _label="_Cancel" stock-image="gtk-cancel" can-default="1"
 	_tooltip="Discard changes and close dialog" />
     </hbox>
