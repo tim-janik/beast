@@ -19,6 +19,7 @@
 #include "bstprocedure.h"
 #include "bstwaveeditor.h"
 #include "bstfiledialog.h"
+#include "bstactivatable.h"
 #include "bstsampleeditor.h"
 
 
@@ -26,18 +27,18 @@
 /* --- prototypes --- */
 static void	bst_wave_view_class_init	(BstWaveViewClass	*klass);
 static void	bst_wave_view_init		(BstWaveView		*wave_view);
-static void	bst_wave_view_operate		(BstItemView		*item_view,
-						 BstOps			 op);
-static gboolean	bst_wave_view_can_operate	(BstItemView		*item_view,
-						 BstOps			 op);
+static void     bst_wave_view_activate          (BstActivatable         *activatable,
+                                                 gulong                  action);
+static gboolean bst_wave_view_can_activate      (BstActivatable         *activatable,
+                                                 gulong                  action);
 
 
 /* --- wave ops --- */
 static BstItemViewOp wave_view_ops[] = {
-  { "Load...",		BST_OP_WAVE_LOAD,	BST_STOCK_LOAD,	},
-  { "Lib...",		BST_OP_WAVE_LOAD_LIB,	BST_STOCK_LOAD_LIB,	},
-  { "Delete",		BST_OP_WAVE_DELETE,	BST_STOCK_TRASHCAN,	},
-  { "Editor",		BST_OP_WAVE_EDITOR,	BST_STOCK_EDIT_TOOL,	},
+  { "Load...",	      BST_ACTION_LOAD_WAVE,	BST_STOCK_LOAD,	},
+  { "Lib...",	      BST_ACTION_LOAD_WAVE_LIB,	BST_STOCK_LOAD_LIB,	},
+  { "Delete",	      BST_ACTION_DELETE_WAVE,	BST_STOCK_TRASHCAN,	},
+  { "Editor",	      BST_ACTION_EDIT_WAVE,	BST_STOCK_EDIT_TOOL,	},
 };
 static guint n_wave_view_ops = sizeof (wave_view_ops) / sizeof (wave_view_ops[0]);
 
@@ -65,6 +66,10 @@ bst_wave_view_get_type (void)
 	(GInstanceInitFunc) bst_wave_view_init,
       };
       type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstWaveView", &type_info, 0);
+      bst_type_implement_activatable (type,
+                                      bst_wave_view_activate,
+                                      bst_wave_view_can_activate,
+                                      NULL);
     }
   return type;
 }
@@ -76,8 +81,6 @@ bst_wave_view_class_init (BstWaveViewClass *class)
   
   parent_class = g_type_class_peek_parent (class);
 
-  item_view_class->can_operate = bst_wave_view_can_operate;
-  item_view_class->operate = bst_wave_view_operate;
   item_view_class->n_ops = n_wave_view_ops;
   item_view_class->ops = wave_view_ops;
   item_view_class->item_type = "BseWave";
@@ -150,54 +153,53 @@ bst_wave_view_set_editable (BstWaveView *self,
   if (iview->tree)
     gxk_tree_view_set_editable (iview->tree, self->editable);
 
-  bst_update_can_operate (GTK_WIDGET (self));
+  bst_widget_update_activatable (self);
 }
 
-void
-bst_wave_view_operate (BstItemView *item_view,
-		       BstOps       op)
+static void
+bst_wave_view_activate (BstActivatable *activatable,
+                        gulong          action)
 {
-  BstWaveView *self = BST_WAVE_VIEW (item_view);
+  BstWaveView *self = BST_WAVE_VIEW (activatable);
+  BstItemView *item_view = BST_ITEM_VIEW (self);
   SfiProxy wrepo = item_view->container;
-  
-  g_return_if_fail (bst_wave_view_can_operate (item_view, op));
-  
-  switch (op)
+
+  switch (action)
     {
       SfiProxy item;
-    case BST_OP_WAVE_LOAD:
+    case BST_ACTION_LOAD_WAVE:
       bst_file_dialog_popup_load_wave (item_view, BST_ITEM_VIEW (self)->container, FALSE);
       break;
-    case BST_OP_WAVE_LOAD_LIB:
+    case BST_ACTION_LOAD_WAVE_LIB:
       bst_file_dialog_popup_load_wave (item_view, BST_ITEM_VIEW (self)->container, TRUE);
       break;
-    case BST_OP_WAVE_DELETE:
+    case BST_ACTION_DELETE_WAVE:
       item = bst_item_view_get_current (BST_ITEM_VIEW (self));
       bse_wave_repo_remove_wave (wrepo, item);
       break;
-    case BST_OP_WAVE_EDITOR:
+    case BST_ACTION_EDIT_WAVE:
       popup_wave_dialog (self);
       break;
     default:
       break;
     }
-  
-  bst_update_can_operate (GTK_WIDGET (self));
+  bst_widget_update_activatable (activatable);
 }
 
-gboolean
-bst_wave_view_can_operate (BstItemView *item_view,
-			   BstOps	op)
+static gboolean
+bst_wave_view_can_activate (BstActivatable *activatable,
+                            gulong          action)
 {
-  BstWaveView *self = BST_WAVE_VIEW (item_view);
-  switch (op)
+  BstWaveView *self = BST_WAVE_VIEW (activatable);
+  BstItemView *item_view = BST_ITEM_VIEW (self);
+  switch (action)
     {
-    case BST_OP_WAVE_LOAD:
-    case BST_OP_WAVE_LOAD_LIB:
+    case BST_ACTION_LOAD_WAVE:
+    case BST_ACTION_LOAD_WAVE_LIB:
       return TRUE;
-    case BST_OP_WAVE_DELETE:
+    case BST_ACTION_DELETE_WAVE:
       return bst_item_view_get_current (item_view) != 0;
-    case BST_OP_WAVE_EDITOR:
+    case BST_ACTION_EDIT_WAVE:
       return bst_item_view_get_current (item_view) != 0 && self->editable;
     default:
       return FALSE;

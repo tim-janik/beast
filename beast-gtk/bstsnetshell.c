@@ -26,10 +26,6 @@
 static void	bst_snet_shell_class_init	(BstSNetShellClass	*klass);
 static void	bst_snet_shell_init		(BstSNetShell		*pe);
 static void	bst_snet_shell_rebuild		(BstSuperShell		*super_shell);
-static void	bst_snet_shell_operate		(BstSuperShell		*super_shell,
-						 BstOps			 sop);
-static gboolean	bst_snet_shell_can_operate	(BstSuperShell		*super_shell,
-						 BstOps			 sop);
 
 
 /* --- static variables --- */
@@ -71,8 +67,6 @@ bst_snet_shell_class_init (BstSNetShellClass *class)
   bst_snet_shell_class = class;
   parent_class = g_type_class_peek_parent (class);
 
-  super_shell_class->operate = bst_snet_shell_operate;
-  super_shell_class->can_operate = bst_snet_shell_can_operate;
   super_shell_class->rebuild = bst_snet_shell_rebuild;
 
   class->factories_path = "<BstSNetShell>";
@@ -138,36 +132,4 @@ bst_snet_shell_rebuild (BstSuperShell *super_shell)
 					    "label", "Parameters",
 					    "visible", TRUE,
 					    NULL));
-}
-
-static void
-bst_snet_shell_operate (BstSuperShell *super_shell,
-			BstOps         op)
-{
-  // BseSNet *snet = BSE_SNET (super_shell->super);
-  BstSNetShell *snet_shell = BST_SNET_SHELL (super_shell);
-
-  g_return_if_fail (bst_snet_shell_can_operate (super_shell, op));
-  
-  switch (op)
-    {
-    default:
-      break;
-    }
-
-  bst_update_can_operate (GTK_WIDGET (snet_shell));
-}
-
-static gboolean
-bst_snet_shell_can_operate (BstSuperShell *super_shell,
-			    BstOps	   op)
-{
-  // BstSNetShell *snet_shell = BST_SNET_SHELL (super_shell);
-  // BseSNet *snet = BSE_SNET (super_shell->super);
-
-  switch (op)
-    {
-    default:
-      return FALSE;
-    }
 }

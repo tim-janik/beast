@@ -1,12 +1,12 @@
 FIXMES:
 - get compilation with guile-1.6 to work (scm_i_long_long2big)
+- fix saving of internal objects
 - rename gslwave files appropriately
 - need detailed "ladspa" info/debug messages which tell when what plugin file is being loaded
 - add option to disable ladspa plugin loading
 - don't always rebuild lib-list [Rebuild]-button
 - nuke BSE file crawling functions
 - fix API for file matching in SFI
-- redesign object operations and updating object operations
 - show aggregates with BST_DBG_EXT
 - mark intern synths as INTERNAL (track's mono-synth)
 - alow snet flagging as aggregate
@@ -19,7 +19,6 @@ FIXMES:
 - never gather INTERNAL items in bse_item_gather_proxies()
 - fix BST_OP_PROJECT_SAVE
 - add new test song containing a wave track
-- fix saving of internal objects
 - implement (GUI for) locked properties
 - fixup filemenu/dialog for WAVE recording
 - loading cmt LADSPA plugins from the cmt debian package causes beast abort:

@@ -18,14 +18,18 @@
 #include "bstitemview.h"
 #include "bstparamview.h"
 #include "bsttreestores.h"
+#include "bstactivatable.h"
 
 
 /* --- prototypes --- */
 static void	bst_item_view_class_init	(BstItemViewClass	*klass);
+static void     bst_item_view_init_activatable  (BstActivatableIface    *iface,
+                                                 gpointer                iface_data);
 static void	bst_item_view_init		(BstItemView		*self,
 						 BstItemViewClass	*real_class);
 static void	bst_item_view_destroy		(GtkObject		*object);
 static void	bst_item_view_finalize		(GObject		*object);
+static void	bst_item_view_update_activatable(BstActivatable         *activatable);
 static void	bst_item_view_create_tree	(BstItemView		*self);
 static void	item_view_listen_on		(BstItemView		*self,
 						 SfiProxy		 item);
@@ -57,9 +61,13 @@ bst_item_view_get_type (void)
 	0,      /* n_preallocs */
 	(GInstanceInitFunc) bst_item_view_init,
       };
-      type = g_type_register_static (GTK_TYPE_ALIGNMENT,
-				     "BstItemView",
-				     &type_info, 0);
+      static const GInterfaceInfo activatable_info = {
+        (GInterfaceInitFunc) bst_item_view_init_activatable,    /* interface_init */
+        NULL,                                                   /* interface_finalize */
+        NULL                                                    /* interface_data */
+      };
+      type = g_type_register_static (GTK_TYPE_ALIGNMENT, "BstItemView", &type_info, 0);
+      g_type_add_interface_static (type, BST_TYPE_ACTIVATABLE, &activatable_info);
     }
   return type;
 }
@@ -81,8 +89,6 @@ bst_item_view_class_init (BstItemViewClass *class)
   class->ops = NULL;
   class->show_properties = TRUE;
   
-  class->operate = NULL;
-  class->can_operate = NULL;
   class->create_tree = bst_item_view_create_tree;
   class->listen_on = item_view_listen_on;
   class->unlisten_on = item_view_unlisten_on;
@@ -91,12 +97,19 @@ bst_item_view_class_init (BstItemViewClass *class)
 }
 
 static void
+bst_item_view_init_activatable (BstActivatableIface *iface,
+                                gpointer             iface_data)
+{
+  iface->update = bst_item_view_update_activatable;
+}
+
+static void
 button_action (GtkWidget *widget,
 	       gpointer	  op)
 {
   while (!BST_IS_ITEM_VIEW (widget))
     widget = widget->parent;
-  bst_item_view_operate (BST_ITEM_VIEW (widget), GPOINTER_TO_UINT (op));
+  bst_activatable_activate (BST_ACTIVATABLE (widget), GPOINTER_TO_UINT (op));
 }
 
 static void
@@ -179,11 +192,11 @@ bst_item_view_destroy (GtkObject *object)
 
   bst_item_view_set_container (self, 0);
   
-  bst_update_can_operate (GTK_WIDGET (object));
+  bst_activatable_update_enqueue (BST_ACTIVATABLE (object));
 
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 
-  bst_update_can_operate_unqueue (GTK_WIDGET (object));
+  bst_activatable_update_dequeue (BST_ACTIVATABLE (object));
 }
 
 static void
@@ -194,7 +207,8 @@ bst_item_view_finalize (GObject *object)
   bst_item_view_set_container (self, 0);
 
   g_free (self->op_widgets);
-  g_object_unref (self->wlist);
+  if (self->wlist)
+    g_object_unref (self->wlist);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -241,7 +255,7 @@ item_view_listener (GtkTreeModel *model,
     BST_ITEM_VIEW_GET_CLASS (self)->listen_on (self, item);
   else
     BST_ITEM_VIEW_GET_CLASS (self)->unlisten_on (self, item);
-  bst_update_can_operate (GTK_WIDGET (self));
+  bst_widget_update_activatable (self);
 }
 
 GtkTreeModel*
@@ -308,7 +322,7 @@ bst_item_view_create_tree (BstItemView *self)
 
   /* make widgets visible */
   gtk_widget_show_all (scwin);
-  bst_update_can_operate (GTK_WIDGET (self));
+  bst_widget_update_activatable (self);
 }
 
 static void
@@ -317,7 +331,7 @@ pview_selection_changed (BstItemView *self)
   if (self->pview)
     bst_param_view_set_item (BST_PARAM_VIEW (self->pview),
 			     bst_item_view_get_current (self));
-  bst_update_can_operate (GTK_WIDGET (self));
+  bst_widget_update_activatable (self);
 }
 
 void
@@ -366,7 +380,7 @@ static void
 item_view_listen_on (BstItemView *self,
 		     SfiProxy     item)
 {
-  bse_proxy_connect (item, "swapped_signal::property-notify", bst_update_can_operate, self, NULL);
+  bse_proxy_connect (item, "swapped_signal::property-notify", bst_widget_update_activatable, self, NULL);
   bse_proxy_connect (item, "swapped_signal::property-notify", gtk_true, self, NULL);
   if (self->auto_select == item)
     bst_item_view_select (self, item);
@@ -377,7 +391,7 @@ static void
 item_view_unlisten_on (BstItemView *self,
 		       SfiProxy     item)
 {
-  bse_proxy_disconnect (item, "any_signal", bst_update_can_operate, self, NULL);
+  bse_proxy_disconnect (item, "any_signal", bst_widget_update_activatable, self, NULL);
   bse_proxy_disconnect (item, "any_signal", gtk_true, self, NULL);
 }
 
@@ -423,7 +437,7 @@ bst_item_view_set_container (BstItemView *self,
 
   BST_ITEM_VIEW_GET_CLASS (self)->set_container (self, new_container);
 
-  bst_update_can_operate (GTK_WIDGET (self));
+  bst_widget_update_activatable (self);
 }
 
 void
@@ -544,56 +558,21 @@ bst_item_view_enable_param_view (BstItemView *self,
       else
         gtk_widget_hide (self->pview);
     }
-  bst_update_can_operate (GTK_WIDGET (self));
+  bst_widget_update_activatable (self);
 }
 
-void
-bst_item_view_operate (BstItemView *item_view,
-		       BstOps	    op)
+static void
+bst_item_view_update_activatable (BstActivatable *activatable)
 {
-  g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
-  g_return_if_fail (bst_item_view_can_operate (item_view, op));
-  
-  gtk_widget_ref (GTK_WIDGET (item_view));
-  
-  BST_ITEM_VIEW_GET_CLASS (item_view)->operate (item_view, op);
-  
-  bst_update_can_operate (GTK_WIDGET (item_view));
-  
-  gtk_widget_unref (GTK_WIDGET (item_view));
-}
+  BstItemView *self = BST_ITEM_VIEW (activatable);
+  BstItemViewClass *ivclass = BST_ITEM_VIEW_GET_CLASS (self);
+  gulong i;
 
-gboolean
-bst_item_view_can_operate (BstItemView *item_view,
-			   BstOps	op)
-{
-  gboolean can_do;
-  guint i;
-  
-  g_return_val_if_fail (BST_IS_ITEM_VIEW (item_view), FALSE);
-  
-  gtk_widget_ref (GTK_WIDGET (item_view));
-  
-  if (BST_ITEM_VIEW_GET_CLASS (item_view)->operate &&
-      BST_ITEM_VIEW_GET_CLASS (item_view)->can_operate)
-    can_do = BST_ITEM_VIEW_GET_CLASS (item_view)->can_operate (item_view, op);
-  else
-    can_do = FALSE;
-  
   /* update action buttons */
-  for (i = 0; i < BST_ITEM_VIEW_GET_CLASS (item_view)->n_ops; i++)
+  for (i = 0; i < ivclass->n_ops; i++)
     {
-      BstItemViewOp *bop = BST_ITEM_VIEW_GET_CLASS (item_view)->ops + i;
-      
-      if (bop->op == op &&
-	  item_view->op_widgets[i])
-	{
-	  gtk_widget_set_sensitive (item_view->op_widgets[i], can_do);
-	  break;
-	}
+      BstItemViewOp *bop = ivclass->ops + i;
+      if (self->op_widgets[i])
+        gtk_widget_set_sensitive (self->op_widgets[i], bst_activatable_can_activate (activatable, bop->op));
     }
-  
-  gtk_widget_unref (GTK_WIDGET (item_view));
-  
-  return can_do;
 }

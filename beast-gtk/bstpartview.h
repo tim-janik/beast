@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,7 @@
 
 #include	"bstitemview.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- type macros --- */
 #define BST_TYPE_PART_VIEW              (bst_part_view_get_type ())
@@ -48,13 +44,18 @@ struct _BstPartViewClass
 };
 
 
+/* --- actions --- */
+enum {
+  BST_ACTION_ADD_PART           = BST_ACTION_PART_FIRST,
+  BST_ACTION_DELETE_PART,
+  BST_ACTION_EDIT_PART,
+  BST_ACTION_PART_LAST
+};
+
+
 /* --- prototypes --- */
-GtkType		bst_part_view_get_type	(void);
+GType		bst_part_view_get_type	(void);
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_PART_VIEW_H__ */

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,7 @@
 #include	"bstpartview.h"
 #include	"bstsnetrouter.h"
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- Gtk+ type macros --- */
 #define	BST_TYPE_SONG_SHELL	       (bst_song_shell_get_type ())
@@ -61,13 +57,8 @@ struct _BstSongShellClass
 
 
 /* --- prototypes --- */
-GtkType		bst_song_shell_get_type		(void);
+GType		bst_song_shell_get_type		(void);
 
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BST_SONG_SHELL_H__ */

@@ -52,20 +52,12 @@ struct _BstSuperShellClass
 				  SfiProxy	  super);
   void		(*release_super) (BstSuperShell  *super_shell,
 				  SfiProxy	  super);
-  void		(*operate)	 (BstSuperShell  *super_shell,
-				  BstOps          op);
-  gboolean	(*can_operate)	 (BstSuperShell  *super_shell,
-				  BstOps          op);
   void		(*rebuild)	 (BstSuperShell  *super_shell);
 };
 
 
 /* --- prototypes --- */
 GType		bst_super_shell_get_type	(void);
-void		bst_super_shell_operate		(BstSuperShell	*super_shell,
-						 BstOps		 op);
-gboolean	bst_super_shell_can_operate	(BstSuperShell	*super_shell,
-						 BstOps		 op);
 void		bst_super_shell_set_super	(BstSuperShell	*super_shell,
 						 SfiProxy	 super);
 void            bst_super_shell_update_label    (BstSuperShell  *super_shell);

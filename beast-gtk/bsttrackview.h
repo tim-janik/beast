@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,16 @@ struct _BstTrackViewClass
 };
 
 
+/* --- actions --- */
+enum {
+  BST_ACTION_ADD_TRACK          = BST_ACTION_TRACK_FIRST,
+  BST_ACTION_DELETE_TRACK,
+  BST_ACTION_TRACK_LAST
+};
+
+
 /* --- prototypes --- */
-GtkType		bst_track_view_get_type	(void);
+GType		bst_track_view_get_type	(void);
 GtkWidget*	bst_track_view_new	(SfiProxy	song);
 
 

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,24 @@
 
 #include "bstpartdialog.h"
 #include "bstpianoroll.h"
+#include "bstactivatable.h"
 
 
 
 /* --- prototypes --- */
 static void	bst_part_view_class_init	(BstPartViewClass	*klass);
 static void	bst_part_view_init		(BstPartView		*part_view);
-static void	bst_part_view_operate		(BstItemView		*item_view,
-						 BstOps			 op);
-static gboolean	bst_part_view_can_operate	(BstItemView		*item_view,
-						 BstOps			 op);
+static void     bst_part_view_activate          (BstActivatable         *activatable,
+                                                 gulong                  action);
+static gboolean bst_part_view_can_activate      (BstActivatable         *activatable,
+                                                 gulong                  action);
 
 
 /* --- variables --- */
 static BstItemViewOp part_view_ops[] = {
-  { "Add",		BST_OP_PART_ADD,	BST_STOCK_PART,		},
-  { "Delete",		BST_OP_PART_DELETE,	BST_STOCK_TRASHCAN,	},
-  { "Editor",		BST_OP_PART_EDITOR,	BST_STOCK_PART_EDITOR,	},
+  { "Add",		BST_ACTION_ADD_PART,	BST_STOCK_PART,		},
+  { "Delete",		BST_ACTION_DELETE_PART,	BST_STOCK_TRASHCAN,	},
+  { "Editor",		BST_ACTION_EDIT_PART,	BST_STOCK_PART_EDITOR,	},
 };
 static gpointer	parent_class = NULL;
 
@@ -45,26 +46,25 @@ GType
 bst_part_view_get_type (void)
 {
   static GType type = 0;
-
   if (!type)
     {
       static const GTypeInfo type_info = {
-	sizeof (BstPartViewClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_part_view_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstPartView),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_part_view_init,
+        sizeof (BstPartViewClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) bst_part_view_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (BstPartView),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) bst_part_view_init,
       };
-
-      type = g_type_register_static (BST_TYPE_ITEM_VIEW,
-				     "BstPartView",
-				     &type_info, 0);
+      type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstPartView", &type_info, 0);
+      bst_type_implement_activatable (type,
+                                      bst_part_view_activate,
+                                      bst_part_view_can_activate,
+                                      NULL);
     }
-
   return type;
 }
 
@@ -76,8 +76,6 @@ bst_part_view_class_init (BstPartViewClass *class)
   
   parent_class = g_type_class_peek_parent (class);
 
-  item_view_class->can_operate = bst_part_view_can_operate;
-  item_view_class->operate = bst_part_view_operate;
   item_view_class->n_ops = G_N_ELEMENTS (part_view_ops);
   item_view_class->ops = part_view_ops;
   item_view_class->item_type = "BsePart";
@@ -102,59 +100,49 @@ popup_part_dialog (BstPartView *part_view)
   gtk_widget_show (pdialog);
 }
 
-void
-bst_part_view_operate (BstItemView *item_view,
-		       BstOps       op)
+static void
+bst_part_view_activate (BstActivatable         *activatable,
+                        gulong                  action)
 {
-  BstPartView *part_view = BST_PART_VIEW (item_view);
-  SfiProxy song;
-  
-  g_return_if_fail (bst_part_view_can_operate (item_view, op));
+  BstPartView *self = BST_PART_VIEW (activatable);
+  BstItemView *item_view = BST_ITEM_VIEW (self);
+  SfiProxy song = item_view->container;
 
-  song = item_view->container;
-  
-  switch (op)
+  switch (action)
     {
       SfiProxy item;
-    case BST_OP_PART_ADD:
+    case BST_ACTION_ADD_PART:
       item = bse_song_create_part (song);
       bst_item_view_select (item_view, item);
       break;
-    case BST_OP_PART_DELETE:
-      item = bst_item_view_get_current (BST_ITEM_VIEW (part_view));
+    case BST_ACTION_DELETE_PART:
+      item = bst_item_view_get_current (item_view);
       bse_song_remove_part (song, item);
       break;
-    case BST_OP_PART_EDITOR:
-      popup_part_dialog (part_view);
-      break;
-    default:
+    case BST_ACTION_EDIT_PART:
+      popup_part_dialog (self);
       break;
     }
-  
-  bst_update_can_operate (GTK_WIDGET (part_view));
+  bst_widget_update_activatable (activatable);
 }
 
-gboolean
-bst_part_view_can_operate (BstItemView *item_view,
-			   BstOps	op)
+static gboolean
+bst_part_view_can_activate (BstActivatable *activatable,
+                            gulong          action)
 {
-  BstPartView *part_view = BST_PART_VIEW (item_view);
-  SfiProxy song;
+  BstPartView *self = BST_PART_VIEW (activatable);
+  BstItemView *item_view = BST_ITEM_VIEW (self);
 
-  g_return_val_if_fail (BST_IS_PART_VIEW (part_view), FALSE);
-  
-  song = item_view->container;
-
-  switch (op)
+  switch (action)
     {
       SfiProxy item;
-    case BST_OP_PART_ADD:
+    case BST_ACTION_ADD_PART:
       return TRUE;
-    case BST_OP_PART_DELETE:
-      item = bst_item_view_get_current (BST_ITEM_VIEW (part_view));
+    case BST_ACTION_DELETE_PART:
+      item = bst_item_view_get_current (item_view);
       return item != 0;
-    case BST_OP_PART_EDITOR:
-      item = bst_item_view_get_current (BST_ITEM_VIEW (part_view));
+    case BST_ACTION_EDIT_PART:
+      item = bst_item_view_get_current (item_view);
       return item != 0;
     default:
       return FALSE;

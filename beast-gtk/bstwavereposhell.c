@@ -18,18 +18,24 @@
 #include "bstwavereposhell.h"
 
 #include "bstparamview.h"
+#include "bstactivatable.h"
 #include "bstapp.h"
 
 
 /* --- prototypes --- */
-static void	bst_wave_repo_shell_class_init	(BstWaveRepoShellClass	*klass);
-static void	bst_wave_repo_shell_init	(BstWaveRepoShell	*wshell);
-static void	bst_wave_repo_shell_rebuild	(BstSuperShell		*super_shell);
-static void	bst_wave_repo_shell_operate	(BstSuperShell		*super_shell,
-						 BstOps			 sop);
-static gboolean	bst_wave_repo_shell_can_operate	(BstSuperShell		*super_shell,
-						 BstOps			 sop);
-static gchar*   bst_wave_repo_shell_get_title   (BstSuperShell          *super_shell);
+static void     bst_wave_repo_shell_class_init          (BstWaveRepoShellClass  *klass);
+static void     bst_wave_repo_shell_init_activatable    (BstActivatableIface    *iface,
+                                                         gpointer                iface_data);
+static void     bst_wave_repo_shell_init                (BstWaveRepoShell       *wshell);
+static void     bst_wave_repo_shell_rebuild             (BstSuperShell          *super_shell);
+static gchar*   bst_wave_repo_shell_get_title           (BstSuperShell          *super_shell);
+static void     bst_wave_repo_shell_activate            (BstActivatable         *activatable,
+                                                         gulong                  action);
+static gboolean bst_wave_repo_shell_can_activate        (BstActivatable         *activatable,
+                                                         gulong                  action);
+static void     bst_wave_repo_shell_request_update      (BstActivatable         *activatable);
+static void     bst_wave_repo_shell_update_activatable  (BstActivatable         *activatable);
+
 
 
 /* --- static variables --- */
@@ -44,17 +50,23 @@ bst_wave_repo_shell_get_type (void)
   if (!type)
     {
       static const GTypeInfo type_info = {
-	sizeof (BstWaveRepoShellClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) bst_wave_repo_shell_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (BstWaveRepoShell),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) bst_wave_repo_shell_init,
+        sizeof (BstWaveRepoShellClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) bst_wave_repo_shell_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (BstWaveRepoShell),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) bst_wave_repo_shell_init,
+      };
+      static const GInterfaceInfo activatable_info = {
+        (GInterfaceInitFunc) bst_wave_repo_shell_init_activatable,      /* interface_init */
+        NULL,                                                           /* interface_finalize */
+        NULL                                                            /* interface_data */
       };
       type = g_type_register_static (BST_TYPE_SUPER_SHELL, "BstWaveRepoShell", &type_info, 0);
+      g_type_add_interface_static (type, BST_TYPE_ACTIVATABLE, &activatable_info);
     }
   return type;
 }
@@ -67,9 +79,17 @@ bst_wave_repo_shell_class_init (BstWaveRepoShellClass *class)
   parent_class = g_type_class_peek_parent (class);
 
   super_shell_class->get_title = bst_wave_repo_shell_get_title;
-  super_shell_class->operate = bst_wave_repo_shell_operate;
-  super_shell_class->can_operate = bst_wave_repo_shell_can_operate;
   super_shell_class->rebuild = bst_wave_repo_shell_rebuild;
+}
+
+static void
+bst_wave_repo_shell_init_activatable (BstActivatableIface *iface,
+                                      gpointer             iface_data)
+{
+  iface->activate = bst_wave_repo_shell_activate;
+  iface->can_activate = bst_wave_repo_shell_can_activate;
+  iface->request_update = bst_wave_repo_shell_request_update;
+  iface->update = bst_wave_repo_shell_update_activatable;
 }
 
 static void
@@ -90,42 +110,42 @@ bst_wave_repo_shell_rebuild (BstSuperShell *super_shell)
 
   wshell->param_view = (BstParamView*) bst_param_view_new (wrepo);
   g_object_set (GTK_WIDGET (wshell->param_view),
-		"visible", TRUE,
-		NULL);
+                "visible", TRUE,
+                NULL);
   g_object_connect (GTK_WIDGET (wshell->param_view),
-		    "signal::destroy", gtk_widget_destroyed, &wshell->param_view,
-		    NULL);
+                    "signal::destroy", gtk_widget_destroyed, &wshell->param_view,
+                    NULL);
   wshell->wave_view = (BstItemView*) bst_wave_view_new (wrepo);
   g_object_set (GTK_WIDGET (wshell->wave_view),
-		"visible", TRUE,
-		NULL);
+                "visible", TRUE,
+                NULL);
   g_object_connect (GTK_WIDGET (wshell->wave_view),
-		    "signal::destroy", gtk_widget_destroyed, &wshell->wave_view,
-		    NULL);
+                    "signal::destroy", gtk_widget_destroyed, &wshell->wave_view,
+                    NULL);
   
   notebook = g_object_connect (g_object_new (GTK_TYPE_NOTEBOOK,
-					     "scrollable", FALSE,
-					     "tab_border", 0,
-					     "show_border", TRUE,
-					     "enable_popup", FALSE,
-					     "show_tabs", TRUE,
-					     "tab_pos", GTK_POS_TOP,
-					     "border_width", 5,
-					     "parent", wshell,
-					     "visible", TRUE,
-					     NULL),
-			       "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
-			       NULL);
+                                             "scrollable", FALSE,
+                                             "tab_border", 0,
+                                             "show_border", TRUE,
+                                             "enable_popup", FALSE,
+                                             "show_tabs", TRUE,
+                                             "tab_pos", GTK_POS_TOP,
+                                             "border_width", 5,
+                                             "parent", wshell,
+                                             "visible", TRUE,
+                                             NULL),
+                               "signal_after::switch-page", gxk_widget_viewable_changed, NULL,
+                               NULL);
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (wshell->wave_view),
-			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Waves",
-					    "visible", TRUE,
-					    NULL));
+                            gtk_widget_new (GTK_TYPE_LABEL,
+                                            "label", "Waves",
+                                            "visible", TRUE,
+                                            NULL));
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (wshell->param_view),
-			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Parameters",
-					    "visible", TRUE,
-					    NULL));
+                            gtk_widget_new (GTK_TYPE_LABEL,
+                                            "label", "Parameters",
+                                            "visible", TRUE,
+                                            NULL));
 }
 
 static gchar*
@@ -137,43 +157,38 @@ bst_wave_repo_shell_get_title (BstSuperShell *super_shell)
 }
 
 static void
-bst_wave_repo_shell_operate (BstSuperShell *super_shell,
-			     BstOps         op)
+bst_wave_repo_shell_activate (BstActivatable *activatable,
+                              gulong          action)
 {
-  BstWaveRepoShell *wshell = BST_WAVE_REPO_SHELL (super_shell);
-
-  g_return_if_fail (bst_wave_repo_shell_can_operate (super_shell, op));
-  
-  switch (op)
-    {
-    case BST_OP_WAVE_LOAD:
-    case BST_OP_WAVE_LOAD_LIB:
-    case BST_OP_WAVE_DELETE:
-    case BST_OP_WAVE_EDITOR:
-      bst_item_view_operate (wshell->wave_view, op);
-      break;
-    default:
-      break;
-    }
-
-  bst_update_can_operate (GTK_WIDGET (wshell));
+  BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (activatable);
+  if (self->wave_view)
+    bst_activatable_activate (BST_ACTIVATABLE (self->wave_view), action);
+  bst_widget_update_activatable (activatable);
 }
 
 static gboolean
-bst_wave_repo_shell_can_operate (BstSuperShell *super_shell,
-				 BstOps	        op)
+bst_wave_repo_shell_can_activate (BstActivatable *activatable,
+                                  gulong          action)
 {
-  BstWaveRepoShell *wshell = BST_WAVE_REPO_SHELL (super_shell);
+  BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (activatable);
+  return self->wave_view && bst_activatable_can_activate (BST_ACTIVATABLE (self->wave_view), action);
+}
 
-  switch (op)
-    {
-    case BST_OP_WAVE_LOAD:
-    case BST_OP_WAVE_LOAD_LIB:
-    case BST_OP_WAVE_DELETE:
-    case BST_OP_WAVE_EDITOR:
-      return (wshell->wave_view &&
-              bst_item_view_can_operate (wshell->wave_view, op));
-    default:
-      return FALSE;
-    }
+static void
+bst_wave_repo_shell_request_update (BstActivatable *activatable)
+{
+  BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (activatable);
+  /* chain to normal handler */
+  bst_activatable_default_request_update (activatable);
+  /* add activatable children */
+  if (self->wave_view)
+    bst_activatable_update_enqueue (BST_ACTIVATABLE (self->wave_view));
+}
+
+static void
+bst_wave_repo_shell_update_activatable (BstActivatable *activatable)
+{
+  // BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (activatable);
+
+  /* no original actions to update */
 }

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsttrackview.h"
+#include "bstactivatable.h"
 #include "bstparam.h"
 #include "bsttracksynthdialog.h"
 
@@ -28,10 +29,10 @@
 static void	bst_track_view_class_init	(BstTrackViewClass	*klass);
 static void	bst_track_view_init		(BstTrackView		*self);
 static void	bst_track_view_finalize		(GObject		*object);
-static void	bst_track_view_operate		(BstItemView		*item_view,
-						 BstOps			 op);
-static gboolean	bst_track_view_can_operate	(BstItemView		*item_view,
-						 BstOps			 op);
+static void     bst_track_view_activate         (BstActivatable         *activatable,
+                                                 gulong                  action);
+static gboolean bst_track_view_can_activate     (BstActivatable         *activatable,
+                                                 gulong                  action);
 static void	bst_track_view_create_tree	(BstItemView		*iview);
 static void     track_view_set_container        (BstItemView            *self,
 						 SfiProxy                new_container);
@@ -55,9 +56,9 @@ enum {
 
 /* --- track ops --- */
 static BstItemViewOp track_view_ops[] = {
-  { "Add",		BST_OP_TRACK_ADD,	BST_STOCK_TRACK,
+  { "Add",		BST_ACTION_ADD_TRACK,   	BST_STOCK_TRACK,
     "Add a new track to this song" },
-  { "Delete",		BST_OP_TRACK_DELETE,	BST_STOCK_TRASHCAN,
+  { "Delete",		BST_ACTION_DELETE_TRACK,	BST_STOCK_TRASHCAN,
     "Delete the currently selected track" },
 };
 static guint n_track_view_ops = sizeof (track_view_ops) / sizeof (track_view_ops[0]);
@@ -68,29 +69,30 @@ static gpointer parent_class = NULL;
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_track_view_get_type (void)
 {
-  static GtkType track_view_type = 0;
-  
-  if (!track_view_type)
+  static GType type = 0;
+  if (!type)
     {
-      GtkTypeInfo track_view_info =
-      {
-	"BstTrackView",
-	sizeof (BstTrackView),
-	sizeof (BstTrackViewClass),
-	(GtkClassInitFunc) bst_track_view_class_init,
-	(GtkObjectInitFunc) bst_track_view_init,
-	/* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+      static const GTypeInfo type_info = {
+        sizeof (BstTrackViewClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) bst_track_view_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (BstTrackView),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) bst_track_view_init,
       };
-      
-      track_view_type = gtk_type_unique (BST_TYPE_ITEM_VIEW, &track_view_info);
+      type = g_type_register_static (BST_TYPE_ITEM_VIEW, "BstTrackView", &type_info, 0);
+      bst_type_implement_activatable (type,
+                                      bst_track_view_activate,
+                                      bst_track_view_can_activate,
+                                      NULL);
     }
-  
-  return track_view_type;
+  return type;
 }
 
 static void
@@ -107,8 +109,6 @@ bst_track_view_class_init (BstTrackViewClass *class)
   item_view_class->ops = track_view_ops;
   item_view_class->horizontal_ops = TRUE;
   item_view_class->show_properties = FALSE;
-  item_view_class->operate = bst_track_view_operate;
-  item_view_class->can_operate = bst_track_view_can_operate;
   item_view_class->create_tree = bst_track_view_create_tree;
   item_view_class->set_container = track_view_set_container;
   item_view_class->listen_on = track_view_listen_on;
@@ -619,19 +619,18 @@ track_view_unlisten_on (BstItemView *iview,
   BST_ITEM_VIEW_CLASS (parent_class)->unlisten_on (iview, item);
 }
 
-void
-bst_track_view_operate (BstItemView *item_view,
-			BstOps       op)
+static void
+bst_track_view_activate (BstActivatable         *activatable,
+                         gulong                  action)
 {
-  BstTrackView *track_view = BST_TRACK_VIEW (item_view);
+  BstTrackView *self = BST_TRACK_VIEW (activatable);
+  BstItemView *item_view = BST_ITEM_VIEW (self);
   SfiProxy song = item_view->container;
 
-  g_return_if_fail (bst_track_view_can_operate (item_view, op));
-
-  switch (op)
+  switch (action)
     {
       SfiProxy item;
-    case BST_OP_TRACK_ADD:
+    case BST_ACTION_ADD_TRACK:
       item = bse_song_create_track (song);
       if (item)
 	{
@@ -641,31 +640,27 @@ bst_track_view_operate (BstItemView *item_view,
 	  bst_item_view_select (item_view, item);
 	}
       break;
-    case BST_OP_TRACK_DELETE:
+    case BST_ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
       bse_song_remove_track (song, item);
       break;
-    default:
-      break;
     }
-  
-  bst_update_can_operate (GTK_WIDGET (track_view));
+  bst_widget_update_activatable (activatable);
 }
 
-gboolean
-bst_track_view_can_operate (BstItemView *item_view,
-			    BstOps	   op)
+static gboolean
+bst_track_view_can_activate (BstActivatable *activatable,
+                             gulong          action)
 {
-  BstTrackView *track_view = BST_TRACK_VIEW (item_view);
+  BstTrackView *self = BST_TRACK_VIEW (activatable);
+  BstItemView *item_view = BST_ITEM_VIEW (self);
   
-  g_return_val_if_fail (BST_IS_TRACK_VIEW (track_view), FALSE);
-  
-  switch (op)
+  switch (action)
     {
       SfiProxy item;
-    case BST_OP_TRACK_ADD:
+    case BST_ACTION_ADD_TRACK:
       return TRUE;
-    case BST_OP_TRACK_DELETE:
+    case BST_ACTION_DELETE_TRACK:
       item = bst_item_view_get_current (item_view);
       return item != 0;
     default:

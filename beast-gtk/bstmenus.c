@@ -238,7 +238,7 @@ bst_menu_config_create_items (BstMenuConfig  *config,
       ife.path = e->path;
       ife.accelerator = e->accelerator;
       ife.callback = NULL;
-      ife.callback_action = 0;
+      ife.callback_action = e->callback_action; /* gtk_item_factory_get_widget_by_action() */
       if (e->item_type && strcmp (e->item_type, bstmenu_category_item) == 0)
 	{
 	  ife.item_type = "<ImageItem>";

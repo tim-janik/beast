@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,22 @@
 #include "bstsongshell.h"
 
 #include "bstparamview.h"
+#include "bstactivatable.h"
 #include "bstapp.h"
 
 
 /* --- prototypes --- */
-static void	bst_song_shell_class_init	(BstSongShellClass	*klass);
-static void	bst_song_shell_init		(BstSongShell		*pe);
-static void	bst_song_shell_rebuild		(BstSuperShell		*super_shell);
-static void	bst_song_shell_operate		(BstSuperShell		*super_shell,
-						 BstOps			 sop);
-static gboolean	bst_song_shell_can_operate	(BstSuperShell		*super_shell,
-						 BstOps			 sop);
+static void	bst_song_shell_class_init	  (BstSongShellClass	  *klass);
+static void     bst_song_shell_init_activatable   (BstActivatableIface    *iface,
+                                                   gpointer                iface_data);
+static void	bst_song_shell_init		  (BstSongShell		  *pe);
+static void	bst_song_shell_rebuild		  (BstSuperShell          *super_shell);
+static void	bst_song_shell_activate		  (BstActivatable         *activatable,
+                                                   gulong                  action);
+static gboolean	bst_song_shell_can_activate	  (BstActivatable         *activatable,
+                                                   gulong                  action);
+static void     bst_song_shell_request_update     (BstActivatable         *activatable);
+static void     bst_song_shell_update_activatable (BstActivatable         *activatable);
 
 
 /* --- static variables --- */
@@ -37,29 +42,32 @@ static BstSongShellClass *bst_song_shell_class = NULL;
 
 
 /* --- functions --- */
-GtkType
+GType
 bst_song_shell_get_type (void)
 {
-  static GtkType song_shell_type = 0;
-  
-  if (!song_shell_type)
+  static GType type = 0;
+  if (!type)
     {
-      GtkTypeInfo song_shell_info =
-      {
-	"BstSongShell",
-	sizeof (BstSongShell),
-	sizeof (BstSongShellClass),
-	(GtkClassInitFunc) bst_song_shell_class_init,
-	(GtkObjectInitFunc) bst_song_shell_init,
-        /* reserved_1 */ NULL,
-	/* reserved_2 */ NULL,
-	(GtkClassInitFunc) NULL,
+      static const GTypeInfo type_info = {
+        sizeof (BstSongShellClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) bst_song_shell_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (BstSongShell),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) bst_song_shell_init,
       };
-      
-      song_shell_type = gtk_type_unique (BST_TYPE_SUPER_SHELL, &song_shell_info);
+      static const GInterfaceInfo activatable_info = {
+        (GInterfaceInitFunc) bst_song_shell_init_activatable,           /* interface_init */
+        NULL,                                                           /* interface_finalize */
+        NULL                                                            /* interface_data */
+      };
+      type = g_type_register_static (BST_TYPE_SUPER_SHELL, "BstSongShell", &type_info, 0);
+      g_type_add_interface_static (type, BST_TYPE_ACTIVATABLE, &activatable_info);
     }
-  
-  return song_shell_type;
+  return type;
 }
 
 static void
@@ -70,11 +78,19 @@ bst_song_shell_class_init (BstSongShellClass *class)
   bst_song_shell_class = class;
   parent_class = g_type_class_peek_parent (class);
 
-  super_shell_class->operate = bst_song_shell_operate;
-  super_shell_class->can_operate = bst_song_shell_can_operate;
   super_shell_class->rebuild = bst_song_shell_rebuild;
 
   class->factories_path = "<BstSongShell>";
+}
+
+static void
+bst_song_shell_init_activatable (BstActivatableIface *iface,
+                                 gpointer             iface_data)
+{
+  iface->activate = bst_song_shell_activate;
+  iface->can_activate = bst_song_shell_can_activate;
+  iface->request_update = bst_song_shell_request_update;
+  iface->update = bst_song_shell_update_activatable;
 }
 
 static void
@@ -161,51 +177,51 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 }
 
 static void
-bst_song_shell_operate (BstSuperShell *super_shell,
-			BstOps         op)
+bst_song_shell_activate (BstActivatable *activatable,
+                         gulong          action)
 {
+  BstSongShell *self = BST_SONG_SHELL (activatable);
   // BseSong *song = BSE_SONG (super_shell->super);
-  BstSongShell *song_shell = BST_SONG_SHELL (super_shell);
 
-  g_return_if_fail (bst_song_shell_can_operate (super_shell, op));
-  
-  switch (op)
-    {
-    case BST_OP_PART_ADD:
-    case BST_OP_PART_DELETE:
-    case BST_OP_PART_EDITOR:
-      bst_item_view_operate (song_shell->part_view, op);
-      break;
-    case BST_OP_TRACK_ADD:
-    case BST_OP_TRACK_DELETE:
-      bst_item_view_operate (song_shell->track_view, op);
-      break;
-    default:
-      break;
-    }
-
-  bst_update_can_operate (GTK_WIDGET (song_shell));
+  if (action >= BST_ACTION_PART_FIRST && action <= BST_ACTION_PART_LAST)
+    bst_activatable_activate (BST_ACTIVATABLE (self->part_view), action);
+  else if (action >= BST_ACTION_TRACK_FIRST && action <= BST_ACTION_TRACK_LAST)
+    bst_activatable_activate (BST_ACTIVATABLE (self->track_view), action);
+  bst_widget_update_activatable (activatable);
 }
 
 static gboolean
-bst_song_shell_can_operate (BstSuperShell *super_shell,
-			    BstOps	   op)
+bst_song_shell_can_activate (BstActivatable *activatable,
+                             gulong          action)
 {
-  BstSongShell *song_shell = BST_SONG_SHELL (super_shell);
+  BstSongShell *self = BST_SONG_SHELL (activatable);
   // BseSong *song = BSE_SONG (super_shell->super);
 
-  switch (op)
-    {
-    case BST_OP_PART_ADD:
-    case BST_OP_PART_DELETE:
-    case BST_OP_PART_EDITOR:
-      return (song_shell->part_view &&
-	      bst_item_view_can_operate (song_shell->part_view, op));
-    case BST_OP_TRACK_ADD:
-    case BST_OP_TRACK_DELETE:
-      return (song_shell->track_view &&
-	      bst_item_view_can_operate (song_shell->track_view, op));
-    default:
-      return FALSE;
-    }
+  if (action >= BST_ACTION_PART_FIRST && action <= BST_ACTION_PART_LAST && self->part_view)
+    return bst_activatable_can_activate (BST_ACTIVATABLE (self->part_view), action);
+  else if (action >= BST_ACTION_TRACK_FIRST && action <= BST_ACTION_TRACK_LAST && self->track_view)
+    return bst_activatable_can_activate (BST_ACTIVATABLE (self->track_view), action);
+  else
+    return FALSE;
+}
+
+static void
+bst_song_shell_request_update (BstActivatable *activatable)
+{
+  BstSongShell *self = BST_SONG_SHELL (activatable);
+  /* chain to normal handler */
+  bst_activatable_default_request_update (activatable);
+  /* add activatable children */
+  if (self->part_view)
+    bst_activatable_update_enqueue (BST_ACTIVATABLE (self->part_view));
+  if (self->track_view)
+    bst_activatable_update_enqueue (BST_ACTIVATABLE (self->track_view));
+}
+
+static void
+bst_song_shell_update_activatable (BstActivatable *activatable)
+{
+  // BstSongShell *self = BST_SONG_SHELL (activatable);
+
+  /* no original actions to update */
 }

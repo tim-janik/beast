@@ -20,6 +20,7 @@
 #include "bstapp.h"
 #include "bstsplash.h"
 #include "bstxkb.h"
+#include "bstactivatable.h"
 #include "bstgconfig.h"
 #include "bstusermessage.h"
 #include "bstcatalog.h"
@@ -318,7 +319,7 @@ main (int   argc,
    */
   if (!BST_RC_VERSION || strcmp (BST_RC_VERSION, BST_VERSION))
     {
-      bst_app_operate (app, BST_OP_HELP_RELEASE_NOTES);
+      bst_activatable_activate (BST_ACTIVATABLE (app), BST_ACTION_HELP_RELEASE_NOTES);
       bst_gconfig_set_rc_version (BST_VERSION);
     }
 

@@ -1,3 +1,30 @@
+Mon May 26 01:52:10 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.[hc]: nuke operate/can_operate cruft, implement
+	activatable interface and majorly cleanup activation logic.
+
+	* beast-gtk/bstpartview.[hc]:
+	* beast-gtk/bstsongshell.[hc]:
+	* beast-gtk/bsttrackview.[hc]:
+	* beast-gtk/bstwaveview.[hc]:
+	* beast-gtk/bstwavereposhell.[hc]:
+	* beast-gtk/bstitemview.[hc]: switch over to a proper implementation
+	of BstActivatable.
+
+	* beast-gtk/bstdefs.h: remove BST_OP_ enumeration. only assign ID
+	regions for the different activatable widgets now.
+
+	* beast-gtk/bstsupershell.[hc]: provide dummy implementation of
+	BstActivatable so super shells can generically be activated.
+
+	* beast-gtk/bstactivatable.[hc]: new interface, meant to be implemented
+	by widgets that can perform enumerated actions.
+
+	* bstsnetshell.c: removed cruft.
+
+	* beast-gtk/bstmenus.c: fixup setting callback_action for GtkItemFactory
+	items, so gtk_item_factory_get_widget_by_action() works again.
+
 Sun May 25 15:01:40 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstapp.[hc]: update menu entries to say "Custom Synth"

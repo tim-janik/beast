@@ -29,66 +29,16 @@ G_BEGIN_DECLS
 /* --- BEAST mainmenu operations --- */
 typedef enum
 {
-  BST_OP_NONE,
-
-  /* project operations
-   */
-  BST_OP_PROJECT_NEW,
-  BST_OP_PROJECT_OPEN,
-  BST_OP_PROJECT_MERGE,
-  BST_OP_PROJECT_SAVE,
-  BST_OP_PROJECT_SAVE_AS,
-  BST_OP_PROJECT_NEW_SONG,
-  BST_OP_PROJECT_NEW_CSYNTH,
-  BST_OP_PROJECT_NEW_MIDI_SYNTH,
-  BST_OP_PROJECT_CLOSE,
-  BST_OP_PROJECT_PLAY,
-  BST_OP_PROJECT_STOP,
-  BST_OP_PROJECT_RACK_EDITOR,
-
-  /* spawn new dialogs
-   */
-  BST_OP_DIALOG_PREFERENCES,
-  BST_OP_DIALOG_PROC_BROWSER,
-  BST_OP_DIALOG_DEVICE_MONITOR,
-
-  /* debugging */
-  BST_OP_REBUILD,
-
-  /* song operations
-   */
-  BST_OP_PART_ADD,
-  BST_OP_PART_DELETE,
-  BST_OP_PART_EDITOR,
-  BST_OP_WAVE_LOAD,
-  BST_OP_WAVE_LOAD_LIB,
-  BST_OP_WAVE_DELETE,
-  BST_OP_WAVE_EDITOR,
-  BST_OP_TRACK_ADD,
-  BST_OP_TRACK_DELETE,
-
-  /* super operations
-   */
-  BST_OP_UNDO_LAST,
-  BST_OP_REDO_LAST,
-
-  /* application wide
-   */
-  BST_OP_EXIT,
-
-  /* help dialogs
-   */
-#define BST_OP_HELP_FIRST	BST_OP_HELP_FAQ
-  BST_OP_HELP_FAQ,
-  BST_OP_HELP_KEYTABLE,
-  BST_OP_HELP_RELEASE_NOTES,
-  BST_OP_HELP_GSL_PLAN,
-  BST_OP_HELP_QUICK_START,
-  BST_OP_HELP_ABOUT,
-#define	BST_OP_HELP_LAST	BST_OP_HELP_ABOUT
-
-  BST_OP_LAST
-} BstOps;
+  BST_ACTION_NONE,
+  /* app actions */
+  BST_ACTION_APP_FIRST          = 0x0001 << 16,
+  /* wave view actions */
+  BST_ACTION_WAVE_FIRST         = 0x0002 << 16,
+  /* (song) part view actions */
+  BST_ACTION_PART_FIRST         = 0x0003 << 16,
+  /* (song) track view actions */
+  BST_ACTION_TRACK_FIRST        = 0x0004 << 16,
+} BstActionRegions;
 
 typedef enum {
   BST_QUANTIZE_NONE		= 0,
@@ -125,8 +75,6 @@ typedef enum {
     if (GTK_IS_OBJECT (object)) \
       g_signal_emit_by_name (object, "notify::generic-change", NULL); \
 } G_STMT_END
-extern void bst_update_can_operate (GtkWidget   *some_widget);
-extern void bst_update_can_operate_unqueue (GtkWidget   *some_widget);
 
 
 /* --- i18n and gettext helpers --- */

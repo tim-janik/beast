@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstsupershell.h"
+#include "bstactivatable.h"
 
 
 enum {
@@ -42,6 +43,10 @@ static void	bst_super_shell_setup_super	(BstSuperShell		*super_shell,
 						 SfiProxy     		 super);
 static void	bst_super_shell_release_super	(BstSuperShell		*super_shell,
 						 SfiProxy		 super);
+static void     bst_super_shell_activate        (BstActivatable         *activatable,
+                                                 gulong                  action);
+static gboolean bst_super_shell_can_activate    (BstActivatable         *activatable,
+                                                 gulong                  action);
 
 
 /* --- static variables --- */
@@ -68,6 +73,10 @@ bst_super_shell_get_type (void)
         (GInstanceInitFunc) bst_super_shell_init,
       };
       type = g_type_register_static (GTK_TYPE_VBOX, "BstSuperShell", &type_info, 0);
+      bst_type_implement_activatable (type,
+                                      bst_super_shell_activate,
+                                      bst_super_shell_can_activate,
+                                      NULL);
     }
   return type;
 }
@@ -90,8 +99,6 @@ bst_super_shell_class_init (BstSuperShellClass *class)
   class->get_title = bst_super_shell_get_title;
   class->setup_super = bst_super_shell_setup_super;
   class->release_super = bst_super_shell_release_super;
-  class->operate = NULL;
-  class->can_operate = NULL;
   class->rebuild = NULL;
 
   g_object_class_install_property (gobject_class,
@@ -256,39 +263,16 @@ bst_super_shell_update_label (BstSuperShell *self)
   bst_super_shell_name_set (self);
 }
 
-void
-bst_super_shell_operate (BstSuperShell *self,
-			 BstOps         op)
+static void
+bst_super_shell_activate (BstActivatable *activatable,
+                          gulong          action)
 {
-  g_return_if_fail (BST_IS_SUPER_SHELL (self));
-  g_return_if_fail (bst_super_shell_can_operate (self, op));
-  
-  gtk_widget_ref (GTK_WIDGET (self));
-
-  BST_SUPER_SHELL_GET_CLASS (self)->operate (self, op);
-
-  bst_update_can_operate (GTK_WIDGET (self));
-
-  gtk_widget_unref (GTK_WIDGET (self));
+  bst_widget_update_activatable (activatable);
 }
 
-gboolean
-bst_super_shell_can_operate (BstSuperShell *self,
-			     BstOps         op)
+static gboolean
+bst_super_shell_can_activate (BstActivatable *activatable,
+                              gulong          action)
 {
-  gboolean can_do;
-
-  g_return_val_if_fail (BST_IS_SUPER_SHELL (self), FALSE);
-
-  gtk_widget_ref (GTK_WIDGET (self));
-
-  if (BST_SUPER_SHELL_GET_CLASS (self)->operate &&
-      BST_SUPER_SHELL_GET_CLASS (self)->can_operate)
-    can_do = BST_SUPER_SHELL_GET_CLASS (self)->can_operate (self, op);
-  else
-    can_do = FALSE;
-
-  gtk_widget_unref (GTK_WIDGET (self));
-
-  return can_do;
+  return FALSE;
 }

@@ -64,10 +64,6 @@ struct _BstItemViewClass
 
   void	      (*set_container)	(BstItemView	*self,
 				 SfiProxy	 new_container);
-  void        (*operate)	(BstItemView	*item_view,
-				 BstOps	 	 op);
-  gboolean    (*can_operate)	(BstItemView	*item_view,
-				 BstOps          op);
   void	      (*create_tree)	(BstItemView	*self);
   void	      (*listen_on)	(BstItemView	*self,
 				 SfiProxy	 item);
@@ -94,10 +90,6 @@ gint            bst_item_view_get_proxy_row     (BstItemView    *self,
                                                  SfiProxy        item);
 void		bst_item_view_set_container	(BstItemView	*item_view,
 						 SfiProxy	 new_container);
-void		bst_item_view_operate		(BstItemView	*item_view,
-						 BstOps		 op);
-gboolean	bst_item_view_can_operate	(BstItemView	*item_view,
-						 BstOps		 op);
 void		bst_item_view_name_edited	(BstItemView    *self,
 						 const gchar    *strpath,
 						 const gchar    *text);

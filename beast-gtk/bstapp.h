@@ -41,36 +41,72 @@ struct _BstApp
 {
   GxkDialog       window;
 
-  SfiProxy	  project;
+  SfiProxy        project;
 
-  GtkWidget	 *main_vbox;
-  GtkNotebook	 *notebook;
+  GtkWidget      *main_vbox;
+  GtkNotebook    *notebook;
 
-  GtkWidget	 *rack_dialog;
-  GtkWidget	 *rack_editor;
-  GtkWidget	 *pcontrols;
+  GtkWidget      *rack_dialog;
+  GtkWidget      *rack_editor;
+  GtkWidget      *pcontrols;
 };
 struct _BstAppClass
 {
   GxkDialogClass        parent_class;
-  gboolean		seen_apps;
+  gboolean              seen_apps;
   GSList               *apps;
 };
 
 
+/* --- actions --- */
+enum {
+  /* dialogs */
+  BST_ACTION_SHOW_PREFERENCES   = BST_ACTION_APP_FIRST,
+  BST_ACTION_SHOW_PROC_BROWSER,
+  BST_ACTION_SHOW_DEVICE_MONITOR,
+  /* help dialogs */
+#define BST_ACTION_HELP_FIRST   BST_ACTION_HELP_FAQ
+  BST_ACTION_HELP_FAQ,
+  BST_ACTION_HELP_KEYTABLE,
+  BST_ACTION_HELP_RELEASE_NOTES,
+  BST_ACTION_HELP_GSL_PLAN,
+  BST_ACTION_HELP_QUICK_START,
+  BST_ACTION_HELP_ABOUT,
+#define BST_ACTION_HELP_LAST    BST_ACTION_HELP_ABOUT
+  /* project dialogs */
+  BST_ACTION_RACK_EDITOR,
+  /* project actions */
+  BST_ACTION_NEW_PROJECT,
+  BST_ACTION_OPEN_PROJECT,
+  BST_ACTION_MERGE_PROJECT,
+  BST_ACTION_SAVE_PROJECT,
+  BST_ACTION_SAVE_PROJECT_AS,
+  BST_ACTION_CLOSE_PROJECT,
+  /* creating supers */
+  BST_ACTION_NEW_SONG,
+  BST_ACTION_NEW_CSYNTH,
+  BST_ACTION_NEW_MIDI_SYNTH,
+  /* playback */
+  BST_ACTION_START_PLAYBACK,
+  BST_ACTION_STOP_PLAYBACK,
+  /* misc */
+  BST_ACTION_REBUILD,
+  BST_ACTION_UNDO,
+  BST_ACTION_REDO,
+  /* and shutdown */
+  BST_ACTION_EXIT,
+  BST_ACTION_APP_LAST
+};
+
+
 /* --- prototypes --- */
-GtkType		bst_app_get_type		(void);
-BstApp*		bst_app_new			(SfiProxy	 project);
-gboolean	bst_app_can_operate		(BstApp         *app,
-						 BstOps		 op);
-void		bst_app_operate			(BstApp         *app,
-						 BstOps		 op);
-void		bst_app_reload_supers		(BstApp		*app);
-void		bst_app_create_default		(BstApp		*app);
-GtkWidget*	bst_app_get_current_shell	(BstApp		*app);
-GtkItemFactory*	bst_app_menu_factory		(BstApp		*app);
-void		bst_app_update_can_operate	(BstApp		*app);
-BstApp*		bst_app_find			(SfiProxy	 project);
+GType           bst_app_get_type                (void);
+BstApp*         bst_app_new                     (SfiProxy        project);
+void            bst_app_reload_supers           (BstApp         *app);
+void            bst_app_create_default          (BstApp         *app);
+GtkWidget*      bst_app_get_current_shell       (BstApp         *app);
+GtkItemFactory* bst_app_menu_factory            (BstApp         *app);
+BstApp*         bst_app_find                    (SfiProxy        project);
 
 G_END_DECLS
 
