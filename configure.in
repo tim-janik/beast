@@ -16,7 +16,7 @@ AC_PREREQ(2.13)
 AC_DIVERT_PUSH(AC_DIVERSION_NOTICE)dnl
 BSE_MAJOR_VERSION=0
 BSE_MINOR_VERSION=5
-BSE_MICRO_VERSION=0
+BSE_MICRO_VERSION=1
 BSE_INTERFACE_AGE=0
 BSE_BINARY_AGE=0
 AC_DIVERT_POP()dnl
@@ -119,58 +119,67 @@ AC_DEFUN(AC_SFI_REQUIREMENTS,
     AC_SUBST(SFI_CFLAGS)
     AC_SUBST(SFI_LIBS)
 ])
-AC_DEFUN(AC_GSL_REQUIREMENTS,
+AC_DEFUN(AC_BSE_REQUIREMENTS,
 [
-    GSL_CFLAGS=
-    GSL_LIBS=
-
     dnl === Ogg/Vorbis check ===
+    OV_LIBS=
     ov_tests=0
-    # check for ogg_stream_reset_serialno() to identify rc4 which changes ov_read_float()
-    GSL_OV_READ_FLOAT_ARGS=0
-    AC_CHECK_LIB(vorbisfile, ov_read_float,
+    AC_CHECK_LIB(vorbisfile, ogg_stream_reset_serialno,
 	[AC_CHECK_HEADER(ogg/ogg.h, ov_tests=`expr $ov_tests + 1`)]
 	[AC_CHECK_HEADER(vorbis/vorbisfile.h, ov_tests=`expr $ov_tests + 1`)]
 	[AC_CHECK_HEADER(vorbis/vorbisenc.h, ov_tests=`expr $ov_tests + 1`)]
 	,
 	ov_tests=0, -lvorbisenc -lvorbis -logg)
     if test $ov_tests = 3 ; then
-	GSL_LIBS="-lvorbisfile -lvorbisenc -lvorbis -logg $GSL_LIBS"
-	AC_MSG_CHECKING([whether ov_read_float() takes 4 arguments])
-	AC_TRY_COMPILE([#include <vorbis/vorbisfile.h>], [ov_read_float(0,0,0,0);],
-	    GSL_OV_READ_FLOAT_ARGS=4 ; AC_MSG_RESULT(yes),
-	    GSL_OV_READ_FLOAT_ARGS=3 ; AC_MSG_RESULT(no))
+	OV_LIBS="-lvorbisfile -lvorbisenc -lvorbis -logg"
     else
 	AC_MSG_WARN([failed to detect Ogg/Vorbis library (>=1.0rc3) or headers])
     fi
-    AC_SUBST(GSL_OV_READ_FLOAT_ARGS)
     
     dnl === libmad MPEG decoder check ===
-    mad_detect=0
-    AC_CHECK_LIB(mad, mad_synth_frame,
-      [AC_CHECK_HEADER(mad.h, mad_detect=1)]
-      ,
-      mad_detect=0, -lmad)
-    if test $mad_detect = 1 ; then
-      GSL_LIBS="-lmad $GSL_LIBS"
-      GSL_HAVE_LIBMAD=1
-    else
-      AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
-      GSL_HAVE_LIBMAD=0
-    fi
+    PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
+	GSL_HAVE_LIBMAD=1
+	,
+	GSL_HAVE_LIBMAD=0
+	AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
+    )
     AC_SUBST(GSL_HAVE_LIBMAD)
 
-    dnl === Check library requirements ===
+    dnl === check codec requirements ===
     AC_MSG_CHECKING([the required GSL-Loader library set])
-    if echo $GSL_LIBS | grep ".*-lvorbis.*" >/dev/null ; then
+    if echo " $OV_LIBS" | grep ".*-lvorbis.*" >/dev/null ; then
       AC_MSG_RESULT([complete])
     else
       AC_MSG_RESULT([])
       AC_MSG_ERROR([Ogg/Vorbis is missing, but required])
     fi
 
-    AC_SUBST(GSL_CFLAGS)
-    AC_SUBST(GSL_LIBS)
+    dnl == require libz ===
+    if test -z "$LIBZ"; then
+	AC_CHECK_LIB(z, gzsetparams,
+	    [AC_CHECK_HEADER(zlib.h, LIBZ='-lz', LIBZ='')],
+	    LIBZ='')
+    fi
+    if test -z "$LIBZ"; then
+	AC_MSG_ERROR([Compression library libz is missing, but required])
+    fi
+    AC_SUBST(LIBZ)
+
+    dnl === complete CFLAGS/LIBS setup ===
+    BSE_CFLAGS="$MAD_CFLAGS $SFI_CFLAGS"
+    BSE_LIBS="$OV_LIBS $MAD_LIBS $SFI_LIBS $LIBZ"
+    AC_SUBST(BSE_CFLAGS)
+    AC_SUBST(BSE_LIBS)
+    dnl --- figure stuff for bse.pc ---
+    BSE_PC_REQUIRE=
+    if test $GSL_HAVE_LIBMAD == 1 ; then
+	BSE_PC_REQUIRE=mad
+    fi
+    BSE_PC_CFLAGS=
+    BSE_PC_LIBS="$OV_LIBS $LIBZ"
+    AC_SUBST(BSE_PC_REQUIRE)
+    AC_SUBST(BSE_PC_CFLAGS)
+    AC_SUBST(BSE_PC_LIBS)
 
     dnl === sizeof types ===
     GLIB_SIZEOF([#include <pthread.h>], pthread_mutex_t, pth_mutex_t)
@@ -200,27 +209,8 @@ AC_DEFUN(AC_GSL_REQUIREMENTS,
       AC_MSG_RESULT(no)
     )
     AC_SUBST(SFI_HAVE_MUTEXATTR_SETTYPE)
-])
-AC_DEFUN(AC_BSE_REQUIREMENTS,
-[
-    dnl Require libz
-    if test -z "$LIBZ"; then
-	AC_CHECK_LIB(z, gzsetparams,
-	    [AC_CHECK_HEADER(zlib.h, LIBZ='-lz', LIBZ='')],
-	    LIBZ='')
-    fi
-    if test -z "$LIBZ"; then
-	AC_MSG_ERROR([Compression library libz is missing, but required])
-    fi
-    AC_SUBST(LIBZ)
 
-    dnl We need SFI and GSL
-    BSE_CFLAGS="$GSL_CFLAGS $SFI_CFLAGS"
-    BSE_LIBS="$GSL_LIBS $SFI_LIBS $LIBZ"
-    AC_SUBST(BSE_CFLAGS)
-    AC_SUBST(BSE_LIBS)
-
-    # setup BSE install paths
+    dnl === setup BSE install paths ===
     bselibdir=\${libdir}/bse/v$BSE_MAJOR_VERSION.$BSE_MINOR_VERSION.$BSE_MICRO_VERSION
     bseplugindir=$bselibdir/plugins
     AC_SUBST(bseplugindir)
@@ -455,7 +445,6 @@ AM_CONDITIONAL(IF_DVLBUILD, test -z "$DVLBUILD")
 
 # Check requirement sets
 AC_SFI_REQUIREMENTS
-AC_GSL_REQUIREMENTS
 AC_BSE_REQUIREMENTS
 AC_BSE_SHELL_REQUIREMENTS
 AC_BSE_SNDDEV_CHECK
@@ -493,4 +482,6 @@ docs/utils/Makefile
 docs/generated/Makefile
 test/Makefile
 bse/bseconfig.h
+sfi.pc
+bse.pc
 ])

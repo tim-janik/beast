@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+# sfidl=@exec_prefix@/sfidl
+
+Name: BSE
+Description: Bedevilled Sound Engine (Plugin Interface)
+Requires: sfi @BSE_PC_REQUIRE@ gmodule-2.0
+Version: @VERSION@
+Libs: -L${libdir} -lbse @BSE_PC_LIBS@
+Cflags: -I${includedir} @BSE_PC_CFLAGS@

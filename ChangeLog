@@ -1,3 +1,13 @@
+Fri Apr  4 19:22:58 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: version update to 0.5.1.
+
+	* Makefile.am: install sfi.pc and bse.pc files.
+
+	* configure.in: merged AC_GSL_REQUIREMENTS and AC_BSE_REQUIREMENTS
+	macros. use pkg-config to detect libmad. require ogg/vorbis >= 1.0.0rc4
+	now. sort out library requirements to create sfi.pc and bse.pc.
+
 Fri Apr  4 09:55:42 2003  Tim Janik  <timj@gtk.org>
 
 	* bstmain.c:

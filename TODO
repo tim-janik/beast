@@ -1,4 +1,7 @@
 FIXMES:
+- ladspa logarithmic default values low/high/middle are broken
+- fix palette (LADSPA)
+- update quickstart
 - fix button sensitivity
 - implement snet removal
 - fix AM pitchshifter and Analougue Osc and bse_ladspa_info_free()

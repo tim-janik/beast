@@ -370,7 +370,7 @@ csource_info_update (BstCanvasSource *csource)
           string = bse_source_ichannel_blurb (csource->source, i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
 				   bse_source_ichannel_name (csource->source, i),
-				   bse_source_ichannel_cname (csource->source, i),
+				   bse_source_ichannel_ident (csource->source, i),
 				   string ? ":" : "");
 	  if (string)
 	    {
@@ -393,7 +393,7 @@ csource_info_update (BstCanvasSource *csource)
 	  string = bse_source_ochannel_blurb (csource->source, i);
 	  gxk_scroll_text_aprintf (text, "%s[%s]%s\n",
 				   bse_source_ochannel_name (csource->source, i),
-				   bse_source_ochannel_cname (csource->source, i),
+				   bse_source_ochannel_ident (csource->source, i),
 				   string ? ":" : "");
           if (string)
 	    {
@@ -913,7 +913,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	  if (channel != ~0)
 	    {
 	      name = bse_source_ichannel_name (csource->source, channel);
-	      cname = bse_source_ichannel_cname (csource->source, channel);
+	      cname = bse_source_ichannel_ident (csource->source, channel);
 	      prefix = "Input";
 	    }
 	  else
@@ -922,7 +922,7 @@ bst_canvas_source_event (GnomeCanvasItem *item,
 	      if (channel != ~0)
 		{
 		  name = bse_source_ochannel_name (csource->source, channel);
-		  cname = bse_source_ochannel_cname (csource->source, channel);
+		  cname = bse_source_ochannel_ident (csource->source, channel);
 		  prefix = "Output";
 		}
 	    }

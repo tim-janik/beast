@@ -2,7 +2,7 @@ Overview of Changes in BEAST/BSE 0.5.1:
 
 * Improved synthesis network router display
 * Added support for LADSPA plugins
-* Fixed memory leaks during plaback.
+* Fixed memory leaks during playback
 
 Overview of Changes in BEAST/BSE 0.5.0:
 

@@ -42,8 +42,15 @@ stamp-h: PKG_paths.h
 
 CLEANFILES += PKG_paths.h
 
-EXTRA_DIST += \
-	TODO \
-	COPYING.GPL \
-	COPYING.LGPL \
-	acbeast.m4
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = sfi.pc bse.pc
+$(pkgconfig_DATA): config.status
+
+EXTRA_DIST += $(strip	\
+	TODO		\
+	COPYING.GPL	\
+	COPYING.LGPL	\
+	acbeast.m4	\
+	sfi.pc.in	\
+	bse.pc.in	\
+)
