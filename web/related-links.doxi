@@ -10,6 +10,7 @@
 
 @itemize
 @item @uref{http://www.ladspa.org/,, LADSPA - Linux Audio Developer's Simple Plugin API}
+@item @uref{http://www.alsa-project.org,, ALSA - Advanced Linux Sound Architecture}
 @item @uref{http://www.arts-project.org,, aRts - analog Realtime Synthesizer}
 @item @uref{http://www.gstreamer.net,, GStreamer - Media Component Framework}
 @item @uref{http://www.glame.de,, GLAME - GNU/Linux Audio Mechanics}
