@@ -95,6 +95,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsetype.h \
 	bseutils.h \
 	glib-extra.h \
+	glib-genums.h \
 	glib-gtype.h \
 @STRIP_END@
 # BSE header files that don't get installed
@@ -148,6 +149,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseutils.c \
 	bsevoice.c \
 	glib-extra.c \
+	glib-genums.c \
 	glib-gtype.c \
 @STRIP_END@
 # we use our own built_sources variable rules instead of BUILT_SOURCES,
@@ -241,7 +243,7 @@ stamp-bseenum_arrays.c: @MISSING_PERL5@ $(bse_h_sources) $(srcdir)/mkenums.pl
 	&& $(PERL) $(srcdir)/mkenums.pl \
 	  --iprod "\n/* --- @filename@ --- */\n#include\t\"@filename@\"" \
 	  --vhead "/* @EnumName@\n */\n" \
-	  --vhead "static Bse@Type@Value @enum_name@_values[] = {" \
+	  --vhead "static G@Type@Value @enum_name@_values[] = {" \
 	  --vprod "  { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 	  --vtail "  { 0, NULL, NULL }\n};\n" \
 	    $(bse_h_sources) > xgen-sbeac \
@@ -252,7 +254,7 @@ bseenum_list.c: @MISSING_PERL5@ bseenum_arrays.c $(srcdir)/mkenums.pl
 	cd $(srcdir) \
 	&& $(PERL) $(srcdir)/mkenums.pl \
 	  --iprod "\n/* --- @filename@ --- */" \
-	  --eprod "  { \"@EnumName@\", BSE_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
+	  --eprod "  { \"@EnumName@\", G_TYPE_@TYPE@, &BSE_TYPE_ID (@EnumName@), @enum_name@_values }," \
 	    $(bse_h_sources) > xgen-belc \
 	&& cp xgen-belc $@ \
 	&& rm -f xgen-belc

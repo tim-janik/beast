@@ -358,8 +358,8 @@ bse_storage_put_param (BseStorage *storage,
   switch (param->pspec->type)
     {
       gchar *string;
-      BseEnumValue *ev;
-      BseFlagsValue *fv;
+      GEnumValue *ev;
+      GFlagsValue *fv;
       
     case BSE_TYPE_PARAM_BOOL:
       /* bse_storage_puts (storage, 
@@ -376,14 +376,14 @@ bse_storage_put_param (BseStorage *storage,
       bse_storage_printf (storage, "%u", param->value.v_uint);
       break;
     case BSE_TYPE_PARAM_ENUM:
-      ev = bse_enum_get_value (param->pspec->s_enum.enum_class, param->value.v_enum);
+      ev = g_enum_get_value (param->pspec->s_enum.enum_class, param->value.v_enum);
       if (ev)
 	bse_storage_puts (storage, ev->value_name);
       else
 	bse_storage_printf (storage, "%d", param->value.v_enum);
       break;
     case BSE_TYPE_PARAM_FLAGS:
-      fv = bse_flags_get_first_value (param->pspec->s_flags.flags_class, param->value.v_flags);
+      fv = g_flags_get_first_value (param->pspec->s_flags.flags_class, param->value.v_flags);
       if (fv)
 	{
 	  guint value;
@@ -399,7 +399,7 @@ bse_storage_put_param (BseStorage *storage,
 	      
 	      bse_storage_puts (storage, fv->value_name);
 	      
-	      fv = bse_flags_get_first_value (param->pspec->s_flags.flags_class, value);
+	      fv = g_flags_get_first_value (param->pspec->s_flags.flags_class, value);
 	    }
 	  if (value)
 	    bse_storage_printf (storage, " %u", value);
@@ -1131,13 +1131,13 @@ bse_storage_parse_param_value (BseStorage *storage,
 	return G_TOKEN_INT;
       else if (scanner->token == G_TOKEN_IDENTIFIER)
 	{
-	  BseEnumValue *ev;
+	  GEnumValue *ev;
 	  
-	  ev = bse_enum_get_value_by_nick (pspec->s_enum.enum_class,
-					   scanner->value.v_identifier);
+	  ev = g_enum_get_value_by_nick (pspec->s_enum.enum_class,
+					 scanner->value.v_identifier);
 	  if (!ev)
-	    ev = bse_enum_get_value_by_name (pspec->s_enum.enum_class,
-					     scanner->value.v_identifier);
+	    ev = g_enum_get_value_by_name (pspec->s_enum.enum_class,
+					   scanner->value.v_identifier);
 	  if (ev)
 	    v_enum = ev->value;
 	  else
@@ -1163,13 +1163,13 @@ bse_storage_parse_param_value (BseStorage *storage,
 	    v_flags |= scanner->value.v_int;
 	  else if (scanner->token == G_TOKEN_IDENTIFIER)
 	    {
-	      BseFlagsValue *fv;
+	      GFlagsValue *fv;
 	      
-	      fv = bse_flags_get_value_by_nick (param->pspec->s_flags.flags_class,
-						scanner->value.v_identifier);
+	      fv = g_flags_get_value_by_nick (param->pspec->s_flags.flags_class,
+					      scanner->value.v_identifier);
 	      if (!fv)
-		bse_flags_get_value_by_name (param->pspec->s_flags.flags_class,
-					     scanner->value.v_identifier);
+		g_flags_get_value_by_name (param->pspec->s_flags.flags_class,
+					   scanner->value.v_identifier);
 	      if (fv)
 		v_flags |= fv->value;
 	      else

@@ -23,6 +23,7 @@
 #undef          G_DISABLE_ASSERT
 #undef          G_DISABLE_CHECKS
 #include        <bse/glib-gtype.h>	/* FIXME: <glib.h> */
+#include        <bse/glib-genums.h>	/* FIXME: <glib.h> */
 #include        <math.h>
 
 
@@ -52,8 +53,6 @@ typedef guint                           BseIndex2D;
 
 
 /* --- BSE parameters (and values) --- */
-typedef struct  _BseEnumValue           BseEnumValue;
-typedef struct  _BseFlagsValue          BseFlagsValue;
 typedef struct  _BseParam               BseParam;
 typedef union   _BseParamValue          BseParamValue;
 typedef union   _BseParamSpec           BseParamSpec;
@@ -80,10 +79,8 @@ typedef struct  _BseCapture             BseCapture;
 typedef struct  _BseCaptureClass        BseCaptureClass;
 typedef struct  _BseContainer           BseContainer;
 typedef struct  _BseContainerClass      BseContainerClass;
-typedef struct  _BseEnumClass           BseEnumClass;
 typedef struct  _BseEffect              BseEffect;
 typedef struct  _BseEffectClass         BseEffectClass;
-typedef struct  _BseFlagsClass          BseFlagsClass;
 typedef struct  _BseGConfig             BseGConfig;
 typedef struct  _BseGConfigClass        BseGConfigClass;
 typedef struct  _BseInstrument          BseInstrument;

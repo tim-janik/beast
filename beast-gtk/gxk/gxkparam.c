@@ -703,7 +703,7 @@ bst_param_create (gpointer      owner,
     {
       GtkWidget *action, *prompt, *pre_action, *post_action, *frame, *any, *group;
       DotAreaData *dot_data;
-      BseEnumValue *ev;
+      GEnumValue *ev;
       guint width;
 
     case BSE_TYPE_PARAM_BOOL:

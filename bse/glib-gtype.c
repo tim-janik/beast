@@ -17,9 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 #undef		G_LOG_DOMAIN
-#define		G_LOG_DOMAIN	"GOSYS"
+#define		G_LOG_DOMAIN	"GOSys"
 #include	"glib-gtype.h"
 
+#include	"glib-genums.h"
 #include	<string.h>
 
 #define FIXME_DISABLE_PREALLOCATIONS
@@ -34,6 +35,9 @@
  * TODO:
  * - g_type_from_name() should do an ordered array lookup after fetching the
  *   the quark, instead of a second hashtable lookup.
+ *
+ * FIXME:
+ * - force interface initialization for already existing classes
  */
 
 #define G_TYPE_FLAG_MASK	(G_TYPE_FLAG_CLASSED | \
@@ -1396,7 +1400,7 @@ g_type_name (GType type)
 }
 
 GQuark
-g_type_quark (GType type)
+g_type_qname (GType type)
 {
   TypeNode *node = LOOKUP_TYPE_NODE (type);
 
@@ -1800,4 +1804,6 @@ g_type_init (void)
   type = NODE_TYPE (node);
   type_data_make (node, &info);
   g_assert (type == G_TYPE_INTERFACE);
+
+  g_enums_init ();
 }

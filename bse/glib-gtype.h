@@ -47,9 +47,8 @@ typedef enum
 
   /* the following reserved ids should vanish soon */
   G_TYPE_GTK_OBJECT,
+  G_TYPE_GTK_ARG,
   G_TYPE_BSE_OBJECT,
-  G_TYPE_BSE_ENUM,
-  G_TYPE_BSE_FLAGS,
   G_TYPE_BSE_PARAM,
 
   G_TYPE_LAST_RESERVED_FUNDAMENTAL
@@ -110,7 +109,7 @@ struct _GTypeInterface
 /* --- prototypes --- */
 void	 g_type_init			(void);
 gchar*	 g_type_name			(GType			 type);
-GQuark	 g_type_quark			(GType			 type);
+GQuark	 g_type_qname			(GType			 type);
 GType	 g_type_from_name		(const gchar		*name);
 GType	 g_type_parent			(GType			 type);
 GType	 g_type_next_base		(GType			 type,

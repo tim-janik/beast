@@ -1,3 +1,16 @@
+Sat Mar 25 10:31:40 2000  Tim Janik  <timj@gtk.org>
+
+	* glib-genums.h: new file, takling over most of the bseenum.[hc]
+	functionality.
+
+	* bsequery.c: quickly added facility to iterate over the
+	fundamental types.
+
+	* bseplugin.c (bse_plugin_register_types): register enums and flags
+	types inline.
+
+	* *.[hc]: port over to G_TYPE_ENUM and G_TYPE_FLAGS.
+
 Fri Mar 24 09:19:55 2000  Tim Janik  <timj@gtk.org>
 
 	* bsetype.[hc]: ported the BSE type system over to use the GLib

@@ -163,7 +163,7 @@ struct _BseParamSpecEnum
   gchar         *blurb;
   BseParamBits   flags;
   
-  BseEnumClass  *enum_class;
+  GEnumClass    *enum_class;
   gint           default_value;
 };
 struct _BseParamSpecFlags
@@ -174,7 +174,7 @@ struct _BseParamSpecFlags
   gchar         *blurb;
   BseParamBits   flags;
   
-  BseFlagsClass *flags_class;
+  GFlagsClass   *flags_class;
   guint          default_value;
 };
 struct _BseParamSpecFloat

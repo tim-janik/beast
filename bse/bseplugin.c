@@ -125,7 +125,7 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      
 	      type = g_type_from_name (pspec->name);
 	      if (type)
-		return "Attempt to register known symbol";
+		return "Attempt to register known procedure";
 	      
 	      error = bse_procedure_type_register (pspec->name,
 						   pspec->blurb,
@@ -165,7 +165,7 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      
 	      type = g_type_from_name (ospec->name);
 	      if (type)
-		return "Attempt to register known symbol";
+		return "Attempt to register known object";
 	      
 	      error = bse_object_type_register (ospec->name,
 						ospec->parent_type,
@@ -201,22 +201,20 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	    {
 	      GType   type;
 	      guint on = plugin->n_enum_types;
-	      const gchar *error;
 	      
 	      BSE_IF_DEBUG (PLUGINS)
 		g_message ("register-enum: \"%s\"", espec->name);
 	      
 	      type = g_type_from_name (espec->name);
 	      if (type)
-		return "Attempt to register known symbol";
-	      
-	      error = bse_enum_type_register (espec->name,
-					      espec->parent_type,
-					      plugin,
-					      &type);
-	      if (error)
-		return error;
-	      
+		return "Attempt to register known type";
+	      if (!G_TYPE_IS_ENUM (espec->parent_type) && !G_TYPE_IS_FLAGS (espec->parent_type))
+		return "Invalid enum/flags registration attempt";
+
+	      type = bse_type_register_dynamic (espec->parent_type,
+						espec->name, NULL,
+						plugin);
+
 	      plugin->n_enum_types++;
 	      plugin->enum_types = g_renew (GType  ,
 					    plugin->enum_types,
@@ -440,6 +438,21 @@ bse_plugin_get_export_spec (BsePlugin    *plugin,
   return NULL;
 }
 
+static void
+enum_flags_complete_info (const BseExportSpec *spec,
+			  GTypeInfo           *info)
+{
+  const BseExportEnum *espec = &spec->s_enum;
+  GType type = *(espec->type_p);
+
+  if (G_TYPE_IS_ENUM (type))
+    g_enum_complete_type_info (type, info, espec->values);
+  else if (G_TYPE_IS_FLAGS (type))
+    g_flags_complete_type_info (type, info, espec->values);
+  else
+    g_assert_not_reached ();
+}
+
 void
 bse_plugin_complete_info (BsePlugin   *plugin,
 			  GType        type,
@@ -470,11 +483,11 @@ bse_plugin_complete_info (BsePlugin   *plugin,
       spec_size = sizeof (BseExportObject);
       complete_info = bse_object_complete_info;
       break;
-    case BSE_TYPE_ENUM:
-    case BSE_TYPE_FLAGS:
+    case G_TYPE_ENUM:
+    case G_TYPE_FLAGS:
       specs_p = plugin->e_enums;
       spec_size = sizeof (BseExportEnum);
-      complete_info = bse_enum_complete_info;
+      complete_info = enum_flags_complete_info;
       break;
     default:
       g_assert_not_reached ();

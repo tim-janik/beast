@@ -409,7 +409,7 @@ bse_param_validate (BseParam *param)
       CLAMP_VAL (uint, param, pspec);
       break;
     case BSE_TYPE_PARAM_ENUM:
-      if (!bse_enum_get_value (pspec->s_enum.enum_class, param->value.v_enum))
+      if (!g_enum_get_value (pspec->s_enum.enum_class, param->value.v_enum))
         param->value.v_enum = pspec->s_enum.default_value;
       break;
     case BSE_TYPE_PARAM_FLAGS:
@@ -736,7 +736,7 @@ bse_param_spec_enum (const gchar *name,
 {
   BseParamSpec *pspec;
   
-  g_return_val_if_fail (g_type_is_a (enum_type, BSE_TYPE_ENUM), NULL);
+  g_return_val_if_fail (G_TYPE_IS_ENUM (enum_type), NULL);
   
   pspec = bse_param_spec_alloc (BSE_TYPE_PARAM_ENUM, name, nick, blurb, flags);
   pspec->s_enum.enum_class = g_type_class_ref (enum_type);
@@ -755,7 +755,7 @@ bse_param_spec_flags (const gchar *name,
 {
   BseParamSpec *pspec;
   
-  g_return_val_if_fail (g_type_is_a (flags_type, BSE_TYPE_FLAGS), NULL);
+  g_return_val_if_fail (G_TYPE_IS_FLAGS (flags_type), NULL);
   
   pspec = bse_param_spec_alloc (BSE_TYPE_PARAM_FLAGS, name, nick, blurb, flags);
   pspec->s_flags.flags_class = g_type_class_ref (flags_type);

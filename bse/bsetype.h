@@ -33,8 +33,6 @@ extern "C" {
 typedef enum	/*< skip >*/
 {
   BSE_TYPE_PROCEDURE		= G_TYPE_BSE_PROCEDURE,
-  BSE_TYPE_ENUM			= G_TYPE_BSE_ENUM,
-  BSE_TYPE_FLAGS		= G_TYPE_BSE_FLAGS,
 
   /* param types, order synced with bseparams.c */
   BSE_TYPE_PARAM		= G_TYPE_BSE_PARAM,
@@ -100,7 +98,7 @@ void		bse_type_set_blurb	  (GType  	      type,
 GType  		bse_type_register_static  (GType  	      parent_type,
 					   const gchar	     *type_name,
 					   const gchar	     *type_blurb,
-					   const GTypeInfo *info);
+					   const GTypeInfo   *info);
 GType  		bse_type_register_dynamic (GType              parent_type,
 					   const gchar       *type_name,
 					   const gchar       *type_blurb,

@@ -40,8 +40,8 @@ static void
 bse_parse_args (gint    *argc_p,
 		gchar ***argv_p)
 {
-  extern BseFlagsValue *bse_debug_key_flag_values;	/* bseenums.c feature */
-  extern guint          bse_debug_key_n_flag_values;	/* bseenums.c feature */
+  extern GFlagsValue *bse_debug_key_flag_values;	/* bseenums.c feature */
+  extern guint        bse_debug_key_n_flag_values;	/* bseenums.c feature */
   GDebugKey *debug_keys;
   guint n_debug_keys;
   guint argc = *argc_p;

@@ -28,45 +28,6 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- type macros --- */
-#define BSE_ENUM_CLASS(class)     (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_ENUM, BseEnumClass))
-#define BSE_IS_ENUM_CLASS(class)  (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_ENUM))
-#define BSE_FLAGS_CLASS(class)    (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_FLAGS, BseFlagsClass))
-#define BSE_IS_FLAGS_CLASS(class) (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_FLAGS))
-
-
-/* --- enum/flag values & classes --- */
-struct	_BseEnumClass
-{
-  GTypeClass	bse_class;
-  
-  gint		 minimum;
-  gint		 maximum;
-  guint		 n_values;
-  BseEnumValue	*values;
-};
-struct	_BseFlagsClass
-{
-  GTypeClass	bse_class;
-  
-  guint		 mask;
-  guint		 n_values;
-  BseFlagsValue	*values;
-};
-struct _BseEnumValue
-{
-  gint	 value;
-  gchar *value_name;
-  gchar *value_nick;
-};
-struct _BseFlagsValue
-{
-  guint  value;
-  gchar *value_name;
-  gchar *value_nick;
-};
-
-
 /* --- enum definitions --- */
 typedef enum
 {
@@ -140,34 +101,12 @@ typedef enum
 } BseErrorType;
 
 
-/* --- prototypes --- */
-BseEnumValue*	bse_enum_get_value		(BseEnumClass	*enum_class,
-						 gint		 value);
-BseEnumValue*	bse_enum_get_value_by_name	(BseEnumClass	*enum_class,
-						 const gchar	*name);
-BseEnumValue*	bse_enum_get_value_by_nick	(BseEnumClass	*enum_class,
-						 const gchar	*nick);
-BseFlagsValue*	bse_flags_get_first_value	(BseFlagsClass	*flags_class,
-						 guint		 value);
-BseFlagsValue*	bse_flags_get_value_by_name	(BseFlagsClass	*flags_class,
-						 const gchar	*name);
-BseFlagsValue*	bse_flags_get_value_by_nick	(BseFlagsClass	*flags_class,
-						 const gchar	*nick);
-
-
 /* --- convenience functions --- */
 gchar*		bse_error_name			(BseErrorType	 error_value);
 gchar*		bse_error_nick			(BseErrorType	 error_value);
 gchar*		bse_error_blurb			(BseErrorType	 error_value);
 BseErrorType	bse_error_from_errno		(gint		 v_errno,
 						 BseErrorType    fallback);
-
-
-/* --- implementation details --- */
-const gchar*    bse_enum_type_register          (const gchar *name,
-						 GType        parent_type,
-						 BsePlugin   *plugin,
-						 GType       *ret_type);
 
 
 #ifdef __cplusplus

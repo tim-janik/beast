@@ -1075,7 +1075,7 @@ bse_object_ensure_interface_data (BseObject          *object,
   if (!new_func)
     g_return_val_if_fail (destroy_func == NULL, NULL);
 
-  quark = g_type_quark (interface_type);
+  quark = g_type_qname (interface_type);
 
   data = g_datalist_id_get_data (&object->datalist, quark);
   if (!data && new_func)

@@ -17,7 +17,6 @@
  */
 #include        "bsetype.h"
 
-#include        "bseenums.h"
 #include        "bseplugin.h"
 #include        <string.h>
 
@@ -159,28 +158,6 @@ bse_type_init (void)
   bse_type_set_blurb (BSE_TYPE_PROCEDURE, "BSE Procedure base type");
   g_assert (BSE_TYPE_PROCEDURE == g_type_from_name ("BseProcedure"));
 
-  /* BSE_TYPE_ENUM
-   */
-  memset (&finfo, 0, sizeof (finfo));
-  finfo.type_flags = G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_DERIVABLE;
-  memset (&info, 0, sizeof (info));
-  info.class_size = sizeof (BseEnumClass);
-  info.class_init = (GClassInitFunc) NULL;
-  g_type_register_fundamental (BSE_TYPE_ENUM, "BseEnum", &finfo, &info);
-  bse_type_set_blurb (BSE_TYPE_ENUM, "Enumeration base type");
-  g_assert (BSE_TYPE_ENUM == g_type_from_name ("BseEnum"));
-
-  /* BSE_TYPE_FLAGS
-   */
-  memset (&finfo, 0, sizeof (finfo));
-  finfo.type_flags = G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_DERIVABLE;
-  memset (&info, 0, sizeof (info));
-  info.class_size = sizeof (BseFlagsClass);
-  info.class_init = (GClassInitFunc) NULL;
-  g_type_register_fundamental (BSE_TYPE_FLAGS, "BseFlags", &finfo, &info);
-  bse_type_set_blurb (BSE_TYPE_FLAGS, "Flag enumeration base type");
-  g_assert (BSE_TYPE_FLAGS == g_type_from_name ("BseFlags"));
-
   memset (&finfo, 0, sizeof (finfo));
   finfo.type_flags = G_TYPE_FLAG_CLASSED | G_TYPE_FLAG_INSTANTIATABLE | G_TYPE_FLAG_DERIVABLE | G_TYPE_FLAG_DEEP_DERIVABLE;
   memset (&info, 0, sizeof (info));
@@ -189,7 +166,7 @@ bse_type_init (void)
   bse_type_set_blurb (BSE_TYPE_OBJECT, "BSE Object Hierarchy base type");
   g_assert (BSE_TYPE_OBJECT == g_type_from_name ("BseObject"));
 
-  /* initialize assistant fundamentals */
+  /* initialize builtin enumerations */
   bse_type_register_enums ();
   
   /* initialize builtin types */

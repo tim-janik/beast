@@ -48,8 +48,8 @@ static gboolean feature_channels = FALSE;
 #define	O_KEY_FILL "_"
 
 static void
-show_nodes (GType   type,
-	    GType   sibling,
+show_nodes (GType        type,
+	    GType        sibling,
 	    const gchar *indent)
 {
   GType   *children;
@@ -142,7 +142,8 @@ help (gchar *arg)
   fprintf (stderr, "       -x       show type blurbs\n");
   fprintf (stderr, "       -y       show source channels\n");
   fprintf (stderr, "qualifiers:\n");
-  fprintf (stderr, "       tree     print object tree\n");
+  fprintf (stderr, "       froots   iterate over fundamental roots\n");
+  fprintf (stderr, "       tree     print BSE object tree\n");
   fprintf (stderr, "       cats     print categories\n");
 
   return arg != NULL;
@@ -152,6 +153,7 @@ int
 main (gint   argc,
       gchar *argv[])
 {
+  gboolean gen_froots = 0;
   gboolean gen_tree = 0;
   gboolean gen_cats = 0;
   guint i;
@@ -214,6 +216,10 @@ main (gint   argc,
 	{
 	  feature_channels = TRUE;
 	}
+      else if (strcmp ("froots", argv[i]) == 0)
+	{
+	  gen_froots = 1;
+	}
       else if (strcmp ("tree", argv[i]) == 0)
 	{
 	  gen_tree = 1;
@@ -250,7 +256,7 @@ main (gint   argc,
       else
 	return help (argv[i]);
     }
-  if (!gen_tree && !gen_cats)
+  if (!gen_froots && !gen_tree && !gen_cats)
     return help (argv[i-1]);
 
   if (!indent_inc)
@@ -264,8 +270,19 @@ main (gint   argc,
 
   if (gen_tree)
     show_nodes (root, 0, iindent);
+  if (gen_froots)
+    {
+      root = ~0;
+      for (i = 0; i < 256; i++)
+	{
+	  gchar *name = g_type_name (i);
+	  
+	  if (name)
+	    show_nodes (i, 0, iindent);
+	}
+    }
   if (gen_cats)
     show_cats ();
-
+  
   return 0;
 }
