@@ -365,7 +365,10 @@ dh_mad_open (GslDataHandle      *dhandle,
       error = GSL_ERROR_FORMAT_INVALID;
       goto OPEN_FAILED;
     }
-  
+
+  /* our code already uses dhandle->setup */
+  dhandle->setup = *setup;
+
   /* seek through the stream to collect frame positions */
   if (seek_invalidated || !handle->n_seeks)
     {
@@ -402,12 +405,15 @@ dh_mad_open (GslDataHandle      *dhandle,
       goto OPEN_FAILED;
     }
 
+  /* our code already uses dhandle->setup */
+  dhandle->setup = *setup;
+
   if (dh_mad_coarse_seek (&handle->dhandle, 0) != 0)
     {
       error = GSL_ERROR_SEEK_FAILED;
       goto OPEN_FAILED;
     }
-
+  
   return GSL_ERROR_NONE;
 
  OPEN_FAILED:

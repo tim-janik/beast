@@ -579,7 +579,7 @@ BODY (BseProcedureClass *proc,
 }
 
 METHOD (BsePart, get-controls) {
-  HELP	= "Retrieve all control events of a specific type within range.";
+  HELP	= "Retrieve all control events of a specific type at specified tick.";
   IN	= bse_param_spec_object ("part", "Part", NULL,
 				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("tick", "Tick", NULL,
@@ -605,6 +605,40 @@ BODY (BseProcedureClass *proc,
   
   /* action */
   bse_value_take_boxed (out_values++, bse_part_list_controls (self, tick, 1, ctype));
+  
+  return BSE_ERROR_NONE;
+}
+
+METHOD (BsePart, get-range-controls) {
+  HELP	= "Retrieve all control events of a specific type within range.";
+  IN	= bse_param_spec_object ("part", "Part", NULL,
+				 BSE_TYPE_PART, SFI_PARAM_DEFAULT);
+  IN	= sfi_pspec_int ("tick", "Tick", NULL,
+			 0, 0, BSE_PART_MAX_TICK - 1, 384, SFI_PARAM_DEFAULT);
+  IN    = sfi_pspec_int ("duration", "Tick Duration", NULL,
+                         1, 1, BSE_PART_MAX_TICK, 384, SFI_PARAM_DEFAULT);
+  IN    = bse_param_spec_genum ("control_type", "Control Type", NULL,
+                                BSE_TYPE_MIDI_SIGNAL_TYPE, BSE_MIDI_SIGNAL_PITCH_BEND,
+                                SFI_PARAM_DEFAULT);
+  OUT   = bse_param_spec_boxed ("control_list", "Control List", NULL,
+                                BSE_TYPE_PART_CONTROL_SEQ, SFI_PARAM_DEFAULT);
+}
+BODY (BseProcedureClass *proc,
+      const GValue      *in_values,
+      GValue            *out_values)
+{
+  /* extract parameter values */
+  BsePart *self     = bse_value_get_object (in_values++);
+  guint    tick	    = sfi_value_get_int (in_values++);
+  guint    duration = sfi_value_get_int (in_values++);
+  guint    ctype    = g_value_get_enum (in_values++);
+  
+  /* check parameters */
+  if (!BSE_IS_PART (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+  
+  /* action */
+  bse_value_take_boxed (out_values++, bse_part_list_controls (self, tick, duration, ctype));
   
   return BSE_ERROR_NONE;
 }
