@@ -480,7 +480,7 @@ bse_job_access (BseModule    *module,
 }
 
 /**
- * bse_engine_add_garbage
+ * bse_engine_add_user_callback
  * @data:      Data passed in to the free_func
  * @free_func: Function to free @data (executed in user thread)
  *
@@ -490,8 +490,8 @@ bse_job_access (BseModule    *module,
  * This function is MT-safe and may be called from any thread.
  */
 void
-bse_engine_add_garbage (gpointer      data,
-                        BseFreeFunc   free_func)
+bse_engine_add_user_callback (gpointer      data,
+                              BseFreeFunc   free_func)
 {
   g_return_if_fail (free_func != NULL);
 

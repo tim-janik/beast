@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1996-1999, 2000-2004 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ static SfiMutex                         global_midi_mutex = { 0, };
 
 /********************************************************************************
  *
- * Busy/idle states of a voice inputs and correspondance with table entries:
+ * Busy/idle states of a voice input and correspondance with table entries:
  *      Events          QS      Communication           VS      Table
  *                      Idle                            Idle    0
  *                      |                               |       0
@@ -73,10 +73,10 @@ static SfiMutex                         global_midi_mutex = { 0, };
  * Cases (b) and (c) can occour simultaneously, and sustain is handled
  * similarly to note off events.
  *
- * QS   - voice input queued state (simulated voice state)
- * VS   - voice input state
+ * QS   - queued voice state (anticipated voice state)
+ * VS   - voice state
  *
- * Note that vocie switch modules are connected upon Job:activate, but will
+ * Note that voice switch modules are connected upon Job:activate, but will
  * *only* disconnect upon Done=1. Thus a Done=const(0) mesh can block voices
  * forever.
  *******************************************************************************/
@@ -137,7 +137,7 @@ struct ControlHandler {
             BseFreeFunc           extra_free)
   {
     if (user_free)
-      bse_engine_add_garbage (user_data, user_free);
+      bse_engine_add_user_callback (user_data, user_free);
     user_data = extra_data;
     user_free = extra_free;
   }
@@ -156,7 +156,7 @@ struct ControlHandler {
   {
     g_return_if_fail (modules.size() == 0);
     if (user_free)
-      bse_engine_add_garbage (user_data, user_free);
+      bse_engine_add_user_callback (user_data, user_free);
     user_free = NULL;
   }
 };
@@ -193,7 +193,7 @@ struct ControlValue {
     if (it == handlers.end())
       {
         if (extra_free)
-          bse_engine_add_garbage (extra_data, extra_free);
+          bse_engine_add_user_callback (extra_data, extra_free);
       }
     else
       {
@@ -723,7 +723,7 @@ voice_input_module_access_U (BseModule *module,
           BSE_SIGNAL_FREQ_EQUALS (vinput->freq_value, mdata->freq_value))
         {
           vinput->vstate = VSTATE_SUSTAINED;
-          bse_engine_add_garbage (vinput, voice_input_enter_sustain_U);
+          bse_engine_add_user_callback (vinput, voice_input_enter_sustain_U);
         }
       break;
     case VOICE_OFF:
@@ -739,7 +739,7 @@ voice_input_module_access_U (BseModule *module,
     kill_voice:
       vinput->vstate = VSTATE_IDLE;
       vinput->gate = 0.0;
-      bse_engine_add_garbage (vinput, voice_input_enter_idle_U);
+      bse_engine_add_user_callback (vinput, voice_input_enter_idle_U);
       break;
     }
 }
@@ -904,9 +904,9 @@ voice_switch_module_process_U (BseModule *module,
         if (vswitch->vinputs[i]->vstate == VSTATE_BUSY)
           {
             vswitch->vinputs[i]->vstate = VSTATE_IDLE;
-            bse_engine_add_garbage (vswitch->vinputs[i], voice_input_enter_idle_U);
+            bse_engine_add_user_callback (vswitch->vinputs[i], voice_input_enter_idle_U);
           }
-      bse_engine_add_garbage (vswitch, voice_switch_module_reuse_U);
+      bse_engine_add_user_callback (vswitch, voice_switch_module_reuse_U);
     }
 }
 

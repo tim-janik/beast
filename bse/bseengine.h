@@ -209,7 +209,7 @@ gboolean   bse_engine_configure         (guint                 latency_ms,
 /* --- miscellaneous --- */
 gboolean   bse_engine_has_garbage             (void);
 void       bse_engine_garbage_collect         (void);
-void       bse_engine_add_garbage             (gpointer      data,
+void       bse_engine_add_user_callback       (gpointer      data,
                                                BseFreeFunc   free_func);        /* UserThread */
 void       bse_engine_wait_on_trans           (void);
 guint64    bse_engine_tick_stamp_from_systime (guint64       systime);

@@ -51,7 +51,7 @@ _engine_alloc_ostreams (guint n)
 }
 
 static void
-free_user_job (EngineUserJob *ujob)
+bse_engine_free_user_job (EngineUserJob *ujob)
 {
   switch (ujob->job_type)
     {
@@ -81,7 +81,7 @@ free_user_job (EngineUserJob *ujob)
 }
 
 static void
-free_node (EngineNode *node)
+bse_engine_free_node (EngineNode *node)
 {
   const BseModuleClass *klass;
   gpointer user_data;
@@ -98,7 +98,7 @@ free_node (EngineNode *node)
     {
       EngineProbeJob *ujob = node->probe_jobs;
       node->probe_jobs = ujob->next;
-      free_user_job ((EngineUserJob*) ujob);
+      bse_engine_free_user_job ((EngineUserJob*) ujob);
     }
   
   sfi_rec_mutex_destroy (&node->rec_mutex);
@@ -132,7 +132,7 @@ free_node (EngineNode *node)
 }
 
 static void
-free_job (BseJob *job)
+bse_engine_free_job (BseJob *job)
 {
   g_return_if_fail (job != NULL);
   
@@ -141,7 +141,7 @@ free_job (BseJob *job)
     case ENGINE_JOB_INTEGRATE:
     case ENGINE_JOB_DISCARD:
       if (job->data.node)
-        free_node (job->data.node);
+        bse_engine_free_node (job->data.node);
       break;
     case ENGINE_JOB_ACCESS:
       if (job->data.access.free_func)
@@ -159,12 +159,12 @@ free_job (BseJob *job)
       break;
     case ENGINE_JOB_PROBE_JOB:
       if (job->data.probe_job.pjob)
-        free_user_job ((EngineUserJob*) job->data.probe_job.pjob);
+        bse_engine_free_user_job ((EngineUserJob*) job->data.probe_job.pjob);
       break;
     case ENGINE_JOB_FLOW_JOB:
     case ENGINE_JOB_BOUNDARY_JOB:
       if (job->data.timed_job.tjob)
-        free_user_job ((EngineUserJob*) job->data.timed_job.tjob);
+        bse_engine_free_user_job ((EngineUserJob*) job->data.timed_job.tjob);
       break;
     case ENGINE_JOB_MESSAGE:
       g_free (job->data.message);
@@ -175,7 +175,7 @@ free_job (BseJob *job)
 }
 
 static void
-free_trans (BseTrans *trans)
+bse_engine_free_transaction (BseTrans *trans)
 {
   BseJob *job;
   
@@ -189,7 +189,7 @@ free_trans (BseTrans *trans)
     {
       BseJob *tmp = job->next;
       
-      free_job (job);
+      bse_engine_free_job (job);
       job = tmp;
     }
   sfi_delete_struct (BseTrans, trans);
@@ -357,7 +357,7 @@ bse_engine_garbage_collect (void)
       EngineUserJob *ujob = jlist;
       jlist = ujob->next;
       ujob->next = NULL;
-      free_user_job (ujob);
+      bse_engine_free_user_job (ujob);
     }
   
   while (trans)
@@ -369,7 +369,7 @@ bse_engine_garbage_collect (void)
       if (t->jobs_tail)
 	t->jobs_tail->next = NULL;
       t->comitted = FALSE;
-      free_trans (t);
+      bse_engine_free_transaction (t);
     }
 }
 
