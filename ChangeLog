@@ -1,3 +1,7 @@
+2003-11-03  Jordi Mallach  <jordi@sindominio.net>
+
+	* configure.in (ALL_LINGUAS): Added "ca" (Catalan).
+
 Sun Nov  2 15:01:42 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/faq.texi: added note about C++ compilation problems.

@@ -111,7 +111,7 @@ AC_DEFUN(AC_I18N_REQUIREMENTS,
 [
     dnl TRANSLATORS: <LANG>.po files are required in both the po/ _and_ po-bse/
     dnl directories before <LANG> may be added to ALL_LINGUAS.
-    ALL_LINGUAS="az de nl sr sr@Latn sv ru"
+    ALL_LINGUAS="az ca de nl sr sr@Latn sv ru"
     dnl TRANSLATORS: <LANG>.po files are required in both the po/ _and_ po-bse/
     dnl directories before <LANG> may be added to ALL_LINGUAS.
     AC_SUBST(ALL_LINGUAS)
