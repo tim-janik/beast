@@ -24,7 +24,7 @@ It has excellent technical abilities like multitrack editing, unlimited
 undo/redo support, real-time synthesis support, 32bit audio rendering,
 full duplex support, multiprocessor support, precise timing down to sample
 granularity, on demand and partial loading of wave files, on the fly decoding,
-stereo mixing, MIDI automation and full scriptability in scheme.
+stereo mixing, FFT scopes, MIDI automation and full scriptability in scheme.
 The plugins, synthesis core and the user interface are actively being developed
 and translated into a variety of languages, regularly assimilating user feedback
 such as from our
