@@ -1,3 +1,9 @@
+Mon Oct 13 12:29:48 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added convenience functions g_quark_intern()
+	and g_quark_intern_static() which return the constant quark
+	string stored in glib for a given string.
+
 Sun Oct 12 16:37:29 2003  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: added g_path_concat() to concatenate

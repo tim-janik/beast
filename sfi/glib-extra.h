@@ -67,6 +67,9 @@ gchar*		g_strdup_stripped (const gchar	 *string);
 gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
 
+const gchar*    g_quark_intern        (const gchar   *string);
+const gchar*    g_quark_intern_static (const gchar   *string);
+
 gchar*          g_path_concat     (const gchar   *first_path,
                                    ...);
 

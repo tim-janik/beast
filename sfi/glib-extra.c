@@ -126,6 +126,17 @@ g_strdup_lstrip (const gchar *string)
   return NULL;
 }
 
+const gchar*
+g_quark_intern (const gchar *string)
+{
+  return g_quark_to_string (g_quark_from_string (string));
+}
+
+const gchar*
+g_quark_intern_static (const gchar   *string)
+{
+  return g_quark_to_string (g_quark_from_static_string (string));
+}
 
 gchar*
 g_path_concat (const gchar *first_path,
