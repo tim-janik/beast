@@ -52,8 +52,13 @@ typedef gint		gint32;
 typedef guint		guint32;
 typedef gint		gboolean;
 typedef gint32		GTime;
+#ifdef __alpha
+typedef long int		gint64;
+typedef unsigned long int	guint64;
+#else
 typedef long long int	gint64;
-typedef unsigned long long int	guint64;
+typedef unsigned long long int  guint64;
+#endif
 typedef struct _GString GString;
 
 
@@ -142,6 +147,32 @@ typedef struct _GString GString;
 #define g_assert_not_reached()	g_assert(!G_STRLOC": should not be reached")
 #define	g_return_if_fail(foo)		do { if (!(foo)) g_message (G_STRLOC ": assertion failed `%s'", #foo); } while (0)
 #define	g_return_val_if_fail(foo,v)		do { if (!(foo)) { g_message (G_STRLOC ": assertion failed `%s'", #foo); return(v);}} while (0)
+
+/* from galloca.h */
+
+#ifdef  __GNUC__
+/* GCC does the right thing */
+# undef alloca
+# define alloca(size)   __builtin_alloca (size)
+#elif defined (GLIB_HAVE_ALLOCA_H)
+/* a native and working alloca.h is there */ 
+# include <alloca.h>
+#else /* !__GNUC__ && !GLIB_HAVE_ALLOCA_H */
+# ifdef _MSC_VER
+#  include <malloc.h>
+#  define alloca _alloca
+# else /* !_MSC_VER */
+#  ifdef _AIX
+ #pragma alloca
+#  else /* !_AIX */
+#   ifndef alloca /* predefined by HP cc +Olibcalls */
+char *alloca ();
+#   endif /* !alloca */
+#  endif /* !_AIX */
+# endif /* !_MSC_VER */
+#endif /* !__GNUC__ && !GLIB_HAVE_ALLOCA_H */
+
+#define g_alloca (size) alloca (size)
 
 #ifdef __GNUC__
 #define inline __inline__

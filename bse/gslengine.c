@@ -435,26 +435,26 @@ gsl_transact (GslJob *job,
 
 
 /* --- debugging --- */
-static volatile OpDebugLevel op_debug_levels = 0;
+static volatile GslEngineDebugLevel op_debug_levels = 0;
 
 void
-op_debug_enable (OpDebugLevel level)
+gsl_engine_debug_enable (GslEngineDebugLevel level)
 {
   level |= op_debug_levels;
   op_debug_levels = level;
 }
 
 void
-op_debug_disable (OpDebugLevel level)
+gsl_engine_debug_disable (GslEngineDebugLevel level)
 {
   level = op_debug_levels & ~level;
   op_debug_levels = level;
 }
 
 void
-_op_debug (OpDebugLevel lvl,
-	   const gchar *format,
-	   ...)
+_gsl_op_debug (GslEngineDebugLevel lvl,
+	       const gchar        *format,
+	       ...)
 {
   if (lvl & op_debug_levels)
     {
@@ -463,12 +463,12 @@ _op_debug (OpDebugLevel lvl,
       
       switch (lvl)
 	{
-	case OP_DEBUG_ENGINE:	l = "ENGINE";	break;
-	case OP_DEBUG_JOBS:	l = "JOBS";	break;
-	case OP_DEBUG_SCHED:	l = "SCHED";	break;
-	case OP_DEBUG_MASTER:	l = "MASTER";	break;
-	case OP_DEBUG_SLAVE:	l = "SLAVE";	break;
-	default:		l = "UNKNOWN";	break;
+	case GSL_ENGINE_DEBUG_ENGINE:	l = "ENGINE";	break;
+	case GSL_ENGINE_DEBUG_JOBS:	l = "JOBS";	break;
+	case GSL_ENGINE_DEBUG_SCHED:	l = "SCHED";	break;
+	case GSL_ENGINE_DEBUG_MASTER:	l = "MASTER";	break;
+	case GSL_ENGINE_DEBUG_SLAVE:	l = "SLAVE";	break;
+	default:			l = "UNKNOWN";	break;
 	}
       va_start (var_args, format);
       s = g_strdup_vprintf (format, var_args);
@@ -531,7 +531,7 @@ gsl_engine_init (gboolean run_threaded,
   gsl_externvar_lcounter = 0;
   gsl_externvar_sample_freq = sample_freq;
   
-  OP_DEBUG (ENGINE, "initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
+  OP_DEBUG (GSL_ENGINE_DEBUG_ENGINE, "initialization: threaded=%s", gsl_engine_threaded ? "TRUE" : "FALSE");
   
   if (gsl_engine_threaded)
     {

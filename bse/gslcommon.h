@@ -106,7 +106,7 @@ typedef enum	/*< skip >*/
   GSL_ERROR_IO,
   GSL_ERROR_NOT_FOUND,
   GSL_ERROR_READ_FAILED,
-  GSL_ERROR_SEEK_FAILED,
+  GSL_ERROR_SEEK_FAILED
 } GslErrorType;
 void		gsl_message_send	(GslMsgType	msgtype,
 					 GslErrorType	error,
@@ -157,9 +157,9 @@ void	 gsl_cond_destroy	(GslCond	*cond);
 void		gsl_mutex_spin_lock	(GslMutex	*mutex);
 void		gsl_mutex_sync_lock	(GslMutex	*mutex);
 void		gsl_mutex_unlock	(GslMutex	*mutex);
-gpointer	gsl_alloc_memblock	(guint		 size);
-gpointer	gsl_alloc_memblock0	(guint		 size);
-void		gsl_free_memblock	(guint		 size,
+gpointer	gsl_alloc_memblock	(gsize		 size);
+gpointer	gsl_alloc_memblock0	(gsize		 size);
+void		gsl_free_memblock	(gsize		 size,
 					 gpointer	 memblock);
 void		gsl_alloc_report	(void);
 const guint	gsl_alloc_upper_power2	(const gulong	 number);

@@ -45,11 +45,11 @@ bse_parse_args (gint    *argc_p,
   extern GFlagsValue *bse_debug_key_flag_values;	/* bseenums.c feature */
   extern guint        bse_debug_key_n_flag_values;	/* bseenums.c feature */
   static const GDebugKey op_debug_keys[] = {
-    { "engine",	OP_DEBUG_ENGINE },
-    { "jobs",	OP_DEBUG_JOBS },
-    { "sched",	OP_DEBUG_SCHED },
-    { "master",	OP_DEBUG_MASTER },
-    { "slave",	OP_DEBUG_SLAVE },
+    { "engine",	GSL_ENGINE_DEBUG_ENGINE },
+    { "jobs",	GSL_ENGINE_DEBUG_JOBS },
+    { "sched",	GSL_ENGINE_DEBUG_SCHED },
+    { "master",	GSL_ENGINE_DEBUG_MASTER },
+    { "slave",	GSL_ENGINE_DEBUG_SLAVE },
   };
   static const guint op_n_debug_keys = sizeof (op_debug_keys) / sizeof (op_debug_keys[0]);
   GDebugKey *debug_keys;
@@ -74,7 +74,7 @@ bse_parse_args (gint    *argc_p,
 
       bse_debug_flags |= g_parse_debug_string (envar, debug_keys, n_debug_keys);
       op_lvl = g_parse_debug_string (envar, op_debug_keys, op_n_debug_keys);
-      op_debug_enable (op_lvl);
+      gsl_engine_debug_enable (op_lvl);
     }
   envar = getenv ("BSE_NO_DEBUG");
   if (envar)
@@ -83,7 +83,7 @@ bse_parse_args (gint    *argc_p,
       
       bse_debug_flags &= ~g_parse_debug_string (envar, debug_keys, n_debug_keys);
       op_lvl = g_parse_debug_string (envar, op_debug_keys, op_n_debug_keys);
-      op_debug_disable (op_lvl);
+      gsl_engine_debug_disable (op_lvl);
     }
 
   for (i = 1; i < argc; i++)
@@ -118,7 +118,7 @@ bse_parse_args (gint    *argc_p,
 	      argv[i] = NULL;
 	      i += 1;
 	    }
-	  op_debug_enable (op_lvl);
+	  gsl_engine_debug_enable (op_lvl);
 	  argv[i] = NULL;
 	}
       else if (strcmp ("--bse-no-debug", argv[i]) == 0 ||
@@ -141,7 +141,7 @@ bse_parse_args (gint    *argc_p,
 	      argv[i] = NULL;
 	      i += 1;
 	    }
-	  op_debug_disable (op_lvl);
+	  gsl_engine_debug_disable (op_lvl);
 	  argv[i] = NULL;
 	}
     }

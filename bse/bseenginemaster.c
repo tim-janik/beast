@@ -130,7 +130,7 @@ master_process_job (GslJob *job)
       guint istream, ostream;
     case OP_JOB_INTEGRATE:
       node = job->data.node;
-      OP_DEBUG (JOBS, "integrate(%p)", node);
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "integrate(%p)", node);
       g_return_if_fail (node->mnl_contained == FALSE);
       g_return_if_fail (node->mnl_prev == NULL && node->mnl_next == NULL);
       node->mnl_contained = TRUE;
@@ -145,7 +145,7 @@ master_process_job (GslJob *job)
       break;
     case OP_JOB_DISCARD:
       node = job->data.node;
-      OP_DEBUG (JOBS, "discard(%p)", node);
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "discard(%p)", node);
       g_return_if_fail (node->mnl_contained == TRUE);
       /* disconnect inputs */
       for (istream = 0; istream < OP_NODE_N_ISTREAMS (node); istream++)
@@ -176,7 +176,7 @@ master_process_job (GslJob *job)
       src_node = job->data.connection.src_node;
       istream = job->data.connection.dest_istream;
       ostream = job->data.connection.src_ostream;
-      OP_DEBUG (JOBS, "connect(%p,%u,%p,%u)", node, istream, src_node, ostream);
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "connect(%p,%u,%p,%u)", node, istream, src_node, ostream);
       g_return_if_fail (node->mnl_contained == TRUE);
       g_return_if_fail (src_node->mnl_contained == TRUE);
       g_return_if_fail (node->inputs[istream].src_node == NULL);
@@ -194,18 +194,18 @@ master_process_job (GslJob *job)
       break;
     case OP_JOB_DISCONNECT:
       node = job->data.connection.dest_node;
-      OP_DEBUG (JOBS, "disconnect(%p,%u)", node, job->data.connection.dest_istream);
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "disconnect(%p,%u)", node, job->data.connection.dest_istream);
       g_return_if_fail (node->mnl_contained == TRUE);
       g_return_if_fail (node->inputs[job->data.connection.dest_istream].src_node != NULL);
       op_node_disconnect (node, job->data.connection.dest_istream);
       master_need_reflow |= TRUE;
       break;
     case OP_JOB_DEBUG:
-      OP_DEBUG (JOBS, "debug");
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "debug");
       g_print ("JOB-DEBUG: %s\n", job->data.debug); /* FIXME: stderr */
       break;
     case OP_JOB_ADD_POLL:
-      OP_DEBUG (JOBS, "add poll %p(%p,%u)", job->data.poll.poll_func, job->data.poll.data, job->data.poll.n_fds);
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "add poll %p(%p,%u)", job->data.poll.poll_func, job->data.poll.data, job->data.poll.n_fds);
       if (job->data.poll.n_fds + master_n_pollfds > GSL_ENGINE_MAX_POLLFDS)
 	g_error ("adding poll job exceeds maximum number of poll-fds (%u > %u)",
 		 job->data.poll.n_fds + master_n_pollfds, GSL_ENGINE_MAX_POLLFDS);
@@ -224,7 +224,7 @@ master_process_job (GslJob *job)
       master_poll_list = poll;
       break;
     case OP_JOB_REMOVE_POLL:
-      OP_DEBUG (JOBS, "remove poll %p(%p)", job->data.poll.poll_func, job->data.poll.data);
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "remove poll %p(%p)", job->data.poll.poll_func, job->data.poll.data);
       for (poll = master_poll_list, poll_last = NULL; poll; poll_last = poll, poll = poll_last->next)
 	if (poll->poll_func == job->data.poll.poll_func && poll->data == job->data.poll.data)
 	  {
@@ -257,14 +257,14 @@ master_process_job (GslJob *job)
       break;
     case OP_JOB_ACCESS:
       node = job->data.access.node;
-      OP_DEBUG (JOBS, "access (%p)", node);
+      OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "access (%p)", node);
       g_return_if_fail (node->mnl_contained == TRUE);
       job->data.access.access_func (&node->module, job->data.access.data);
       break;
     default:
       g_assert_not_reached ();
     }
-  OP_DEBUG (JOBS, "done");
+  OP_DEBUG (GSL_ENGINE_DEBUG_JOBS, "done");
 }
 
 static void
@@ -336,7 +336,7 @@ master_process_flow (void)
 {
   g_return_if_fail (master_need_process == TRUE);
 
-  OP_DEBUG (MASTER, "process_flow");
+  OP_DEBUG (GSL_ENGINE_DEBUG_MASTER, "process_flow");
   if (master_schedule)
     {
       OpNode *node;
@@ -370,7 +370,7 @@ master_reschedule_flow (void)
 
   g_return_if_fail (master_need_reflow == TRUE);
 
-  OP_DEBUG (MASTER, "flow_reschedule");
+  OP_DEBUG (GSL_ENGINE_DEBUG_MASTER, "flow_reschedule");
   if (!master_schedule)
     master_schedule = _op_schedule_new ();
   else
@@ -431,7 +431,7 @@ _gsl_master_prepare (GslEngineLoop *loop)
   if (need_dispatch)
     loop->timeout = 0;
 
-  OP_DEBUG (MASTER, "PREPARE: need_dispatch=%u timeout=%6ld n_fds=%u",
+  OP_DEBUG (GSL_ENGINE_DEBUG_MASTER, "PREPARE: need_dispatch=%u timeout=%6ld n_fds=%u",
 	    need_dispatch,
 	    loop->timeout, loop->n_fds);
 
@@ -463,7 +463,7 @@ _gsl_master_check (const GslEngineLoop *loop)
       need_dispatch = master_need_process;
     }
 
-  OP_DEBUG (MASTER, "CHECK: need_dispatch=%u", need_dispatch);
+  OP_DEBUG (GSL_ENGINE_DEBUG_MASTER, "CHECK: need_dispatch=%u", need_dispatch);
 
   return need_dispatch;
 }
@@ -519,8 +519,6 @@ _gsl_master_thread (gpointer data)
 
       if (!need_dispatch)
 	{
-	  gint r;
-
 	  if (poll ((struct pollfd*) loop.fds, loop.n_fds, loop.timeout) >= 0)
 	    loop.revents_filled = TRUE;
 

@@ -52,7 +52,7 @@ unschedule_node (OpSchedule *sched,
   g_return_if_fail (leaf_level <= sched->leaf_levels);
   g_return_if_fail (sched->n_items > 0);
   
-  OP_DEBUG (SCHED, "unschedule_node(%p,%u)", node, leaf_level);
+  OP_DEBUG (GSL_ENGINE_DEBUG_SCHED, "unschedule_node(%p,%u)", node, leaf_level);
   sched->nodes[leaf_level] = gsl_ring_remove (sched->nodes[leaf_level], node);
   node->sched_tag = FALSE;
   node->sched_leaf_level = 0;
@@ -71,7 +71,7 @@ unschedule_cycle (OpSchedule *sched,
   g_return_if_fail (leaf_level <= sched->leaf_levels);
   g_return_if_fail (sched->n_items > 0);
 
-  OP_DEBUG (SCHED, "unschedule_cycle(%p,%u,%p)", ring->data, leaf_level, ring);
+  OP_DEBUG (GSL_ENGINE_DEBUG_SCHED, "unschedule_cycle(%p,%u,%p)", ring->data, leaf_level, ring);
   sched->nodes[leaf_level] = gsl_ring_remove (sched->nodes[leaf_level], ring);
   for (walk = ring; walk; walk = gsl_ring_walk (ring, walk))
     {
@@ -180,7 +180,7 @@ _op_schedule_node (OpSchedule *sched,
   g_return_if_fail (node != NULL);
   g_return_if_fail (!OP_NODE_IS_SCHEDULED (node));
 
-  OP_DEBUG (SCHED, "schedule_node(%p,%u)", node, leaf_level);
+  OP_DEBUG (GSL_ENGINE_DEBUG_SCHED, "schedule_node(%p,%u)", node, leaf_level);
   node->sched_tag = TRUE;
   node->sched_leaf_level = leaf_level;
   _op_schedule_grow (sched, leaf_level);
@@ -469,7 +469,7 @@ subschedule_query_node (OpSchedule *schedule,
 
   g_return_if_fail (node->sched_router_tag == FALSE);
 
-  OP_DEBUG (SCHED, "start_query(%p)", node);
+  OP_DEBUG (GSL_ENGINE_DEBUG_SCHED, "start_query(%p)", node);
   node->sched_router_tag = TRUE;
   for (i = 0; i < OP_NODE_N_ISTREAMS (node); i++)
     {
@@ -512,7 +512,7 @@ subschedule_query_node (OpSchedule *schedule,
   query->leaf_level = leaf_level;
   node->counter = gsl_engine_last_counter ();
   node->sched_router_tag = FALSE;
-  OP_DEBUG (SCHED, "end_query(%p)", node);
+  OP_DEBUG (GSL_ENGINE_DEBUG_SCHED, "end_query(%p)", node);
 }
 
 void

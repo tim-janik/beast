@@ -30,7 +30,7 @@ gsl_filter_butter (unsigned int iorder,
   double pi = GSL_PI, order = iorder, norm;
   double beta_mul = pi / (2.0 * order);
   double kappa = gsl_trans_freq2s (freq);
-  GslComplex root, poly[iorder + 1];
+  GslComplex root, *poly = g_newa (GslComplex, iorder + 1);
   unsigned int i;
 
   /* construct poles for butterworth filter */
@@ -75,7 +75,7 @@ gsl_filter_butter (unsigned int iorder,
   double beta_mul = pi / (2.0 * order);
   //  double kappa = gsl_trans_freq2s (freq);
   double kappa = gsl_trans_freq2s (freq) * pow (epsilon, -1.0 / order);
-  GslComplex root, poly[iorder + 1];
+  GslComplex root, *poly = g_newa (GslComplex, iorder + 1);
   unsigned int i;
 
   /* construct poles for butterworth filter */
@@ -143,7 +143,7 @@ gsl_filter_tscheb1 (unsigned int iorder,
   double alpha = asinh (1.0 / epsilon) / order;
   double beta_mul = pi / (2.0 * order);
   double kappa = gsl_trans_freq2s (freq);
-  GslComplex root, poly[iorder + 1];
+  GslComplex root, *poly = g_newa (GslComplex, iorder + 1);
   unsigned int i;
 
   /* construct poles polynomial from tschebyscheff polynomial */
@@ -195,7 +195,7 @@ gsl_filter_tscheb2 (unsigned int iorder,
   double tepsilon = epsilon * tschebyscheff_eval (iorder, kappa_r / kappa_c);
   double alpha = asinh (tepsilon) / order;
   double beta_mul = pi / (2.0 * order);
-  GslComplex root, poly[iorder + 1];
+  GslComplex root, *poly = g_newa (GslComplex, iorder + 1);
   unsigned int i;
 
   /* construct poles polynomial from tschebyscheff polynomial */
@@ -256,7 +256,7 @@ tschebyscheff_poly (unsigned int degree,
     }
   else
     {
-      double u[1 + degree];
+      double *u = g_alloca ((1 + degree) * sizeof (double));
       
       u[degree] = 0; u[degree - 1] = 0;
       tschebyscheff_poly (degree - 2, u);
@@ -276,10 +276,10 @@ gsl_filter_tscheb1_test	(unsigned int iorder,
 			 double      *a,    /* [0..iorder] */
 			 double      *b)
 {
-  GslComplex roots[iorder * 2], *r;
-  GslComplex zf[1 + iorder];
-  double vk[1 + iorder], norm;
-  double q[2 * (1 + iorder)];
+  GslComplex *roots = g_alloca ((iorder * 2) * sizeof (GslComplex)), *r;
+  GslComplex *zf = g_alloca ((1 + iorder) * sizeof (GslComplex));
+  double *vk = g_alloca ((1 + iorder) * sizeof (double)), norm;
+  double *q = g_alloca ((2 * (1 + iorder)) * sizeof (double));
   double O = gsl_trans_freq2s (zomega);
   unsigned int i;
   
