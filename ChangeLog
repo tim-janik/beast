@@ -1,3 +1,7 @@
+Tue Dec 16 02:20:42 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: support opening new views for a project.
+
 Mon Dec 15 23:21:56 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkparam.c (gxk_param_create_editor): prevent

@@ -93,6 +93,8 @@ static const GxkStockAction dialog_actions[] = {
     BST_ACTION_RACK_EDITOR, },
   { N_("Device _Monitor"),      NULL,           NULL,
     BST_ACTION_SHOW_DEVICE_MONITOR, },
+  { N_("New View"),             NULL,           NULL,
+    BST_ACTION_EXTRA_VIEW, },
 };
 static const GxkStockAction playback_actions[] = {
   { N_("_Play"),                "<ctrl>P",      NULL,
@@ -742,7 +744,11 @@ app_action_exec (gpointer data,
                             GXK_DIALOG_DELETE_BUTTON, // FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
                             _("Device Monitor"),
                             any);
-      gtk_widget_show (any);
+      gxk_idle_show_widget (any);
+      break;
+    case BST_ACTION_EXTRA_VIEW:
+      any = (GtkWidget*) bst_app_new (self->project);
+      gxk_idle_show_widget (any);
       break;
     case BST_ACTION_SHOW_PROC_BROWSER:
 #if 0 // FIXME
@@ -759,7 +765,7 @@ app_action_exec (gpointer data,
                                              widget);
           bst_proc_browser_create_buttons (BST_PROC_BROWSER (widget), GXK_DIALOG (bst_proc_browser));
         }
-      gxk_widget_showraise (bst_proc_browser);
+      gxk_idle_show_widget (bst_proc_browser);
 #endif
       sfi_alloc_report ();
 #if 0 // FIXME
@@ -891,6 +897,7 @@ app_action_check (gpointer data,
     case BST_ACTION_SHOW_PREFERENCES:
     case BST_ACTION_SHOW_PROC_BROWSER:
     case BST_ACTION_SHOW_DEVICE_MONITOR:
+    case BST_ACTION_EXTRA_VIEW:
       return TRUE;
     case BST_ACTION_MERGE_EFFECT:
     case BST_ACTION_MERGE_INSTRUMENT:
