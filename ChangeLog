@@ -1,3 +1,8 @@
+Fri Jul  2 01:33:00 2004  Tim Janik  <timj@gtk.org>
+
+	* test/velocity-test.bse: fixed gross disharmonies,
+	0.6.2 version updates.
+
 Thu Jul  1 23:00:03 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkutils.c: work around widget_class->can_activate_accel

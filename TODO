@@ -35,7 +35,7 @@ FIXMES:
 - document options: :filename, :rgb, :hex
 - make sample editor play stereo
 - allow inverted synth-done (i.e. suitable for gate connecitons)
-- let the ADSR provide Gate-Out
+- add gate-out to ADSR
 - default-initialize authors field of objects with user name
 - add default-settings config preference (authors, license)
 - evaluate elimination of seqid
