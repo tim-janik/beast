@@ -190,21 +190,21 @@ static void
 bst_item_view_build_param_view (BstItemView *item_view)
 {
   BswProxy container = item_view->container;
-  GList *list, *free_list;
-  BseItem *item = NULL;
+  BswProxy item = 0;
+  BswVIter *iter;
   
   g_return_if_fail (item_view->param_view == NULL);
   
-  free_list = bse_container_list_items (bse_object_from_id (container));
-  for (list = free_list; list; list = list->next)
-    if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
-      item = list->data;
-  g_list_free (free_list);
-  if (BSE_IS_ITEM (item))
+  for (iter = bsw_container_list_items (container); bsw_viter_n_left (iter); bsw_viter_next (iter))
+    if (g_type_is_a (bsw_proxy_type (bsw_viter_get_proxy (iter)), item_view->item_type))
+      item = bsw_viter_get_proxy (iter);
+  bsw_viter_free (iter);
+
+  if (BSW_IS_ITEM (item))
     {
       gint default_param_view_height = BST_ITEM_VIEW_GET_CLASS (item_view)->default_param_view_height;
 
-      item_view->param_view = bst_param_view_new (BSE_OBJECT_ID (item));
+      item_view->param_view = bst_param_view_new (item);
       g_object_set (item_view->param_view,
 		    "visible", TRUE,
 		    default_param_view_height > 0 ? "height_request" : NULL, default_param_view_height,
@@ -281,7 +281,7 @@ bst_item_view_set_container (BstItemView *item_view,
 			     BswProxy     new_container)
 {
   BswProxy container;
-  GList *list;
+  BswVIter* iter;
   
   g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
   if (new_container)
@@ -289,22 +289,19 @@ bst_item_view_set_container (BstItemView *item_view,
 
   if (item_view->container)
     {
-      GList *free_list;
-      
       container = item_view->container;
       item_view->container = 0;
       
       bst_item_view_destroy_contents (item_view);
       
-      free_list = bse_container_list_items (bse_object_from_id (container));
-      for (list = free_list; list; list = list->next)
-	if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
-	  bsw_proxy_disconnect (BSE_OBJECT_ID (list->data),
+      for (iter = bsw_container_list_items (container); bsw_viter_n_left (iter); bsw_viter_next (iter))
+	if (g_type_is_a (bsw_proxy_type (bsw_viter_get_proxy (iter)), item_view->item_type))
+	  bsw_proxy_disconnect (bsw_viter_get_proxy (iter),
 				"any_signal", bst_item_view_item_changed, item_view,
 				"any_signal", bst_item_view_item_param_changed, item_view,
 				NULL);
-      g_list_free (free_list);
-      
+      bsw_viter_free (iter);
+
       g_object_disconnect (bse_object_from_id (container),
 			   "any_signal", bst_item_view_item_removed, item_view,
 			   "any_signal", bst_item_view_item_added, item_view,
@@ -319,8 +316,6 @@ bst_item_view_set_container (BstItemView *item_view,
 
   if (item_view->container)
     {
-      GList *free_list;
-      
       container = item_view->container;
       
       g_object_connect (bse_object_from_id (container),
@@ -328,14 +323,13 @@ bst_item_view_set_container (BstItemView *item_view,
 			"swapped_signal::item_added", bst_item_view_item_added, item_view,
 			"swapped_signal::item_removed", bst_item_view_item_removed, item_view,
 			NULL);
-      free_list = bse_container_list_items (bse_object_from_id (container));
-      for (list = free_list; list; list = list->next)
-	if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
-	  bsw_proxy_connect (BSE_OBJECT_ID (list->data),
+      for (iter = bsw_container_list_items (container); bsw_viter_n_left (iter); bsw_viter_next (iter))
+	if (g_type_is_a (bsw_proxy_type (bsw_viter_get_proxy (iter)), item_view->item_type))
+	  bsw_proxy_connect (bsw_viter_get_proxy (iter),
 			     "swapped_signal::seqid_changed", bst_item_view_item_changed, item_view,
 			     "swapped_signal::notify", bst_item_view_item_param_changed, item_view,
 			     NULL);
-      g_list_free (free_list);
+      bsw_viter_free (iter);
 
       bst_item_view_rebuild (item_view);
     }
@@ -479,11 +473,10 @@ bst_item_view_rebuild (BstItemView *item_view)
 void
 bst_item_view_update (BstItemView *item_view)
 {
-  GList *list;
-  GtkCList *clist;
   BswProxy container;
-  GList *free_list;
-  
+  GtkCList *clist;
+  BswVIter *iter;
+
   g_return_if_fail (BST_IS_ITEM_VIEW (item_view));
   
   container = item_view->container;
@@ -492,18 +485,21 @@ bst_item_view_update (BstItemView *item_view)
   gtk_clist_freeze (clist);
   gtk_clist_clear (clist);
   
-  free_list = bse_container_list_items (bse_object_from_id (container));
-  for (list = free_list; list; list = list->next)
-    if (g_type_is_a (BSE_OBJECT_TYPE (list->data), item_view->item_type))
-      {
-	static gchar *text[CLIST_N_COLUMNS] = { NULL, };
-	gint row;
-	
-	row = gtk_clist_insert (clist, 0, text);
-	gtk_clist_set_row_data (clist, row, (gpointer) BSE_OBJECT_ID (list->data));
-	bst_item_view_item_changed (item_view, BSE_OBJECT_ID (list->data));
-      }
-  g_list_free (free_list);
+  for (iter = bsw_container_list_items (container); bsw_viter_n_left (iter); bsw_viter_next (iter))
+    {
+      BswProxy item = bsw_viter_get_proxy (iter);
+
+      if (g_type_is_a (bsw_proxy_type (item), item_view->item_type))
+	{
+	  static gchar *text[CLIST_N_COLUMNS] = { NULL, };
+	  gint row;
+	  
+	  row = gtk_clist_insert (clist, 0, text);
+	  gtk_clist_set_row_data (clist, row, (gpointer) item);
+	  bst_item_view_item_changed (item_view, item);
+	}
+    }
+  bsw_viter_free (iter);
   
   gtk_clist_thaw (clist);
   

@@ -109,6 +109,9 @@ GtkWidget* bst_choice_menu_createv        (const gchar		  *menu_path,
 					   ...);
 void bst_choice_menu_add_choice_and_free  (GtkWidget		  *menu,
 					   BstChoice		  *choice);
+void bst_choice_menu_set_item_sensitive	  (GtkWidget		  *menu,
+					   gulong		   id,
+					   gboolean		   sensitive);
 GtkWidget* bst_choice_dialog_createv      (BstChoice              *first_choice,
 					   ...);
 gboolean   bst_choice_selectable          (GtkWidget              *widget);

@@ -139,8 +139,7 @@ bst_dial_destroy (GtkObject *object)
     }
   
   /* chain parent class' handler */
-  if (GTK_OBJECT_CLASS (parent_class)->destroy)
-    (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+  GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
 
 static void
@@ -174,12 +173,7 @@ static void
 bst_dial_size_allocate (GtkWidget     *widget,
                         GtkAllocation *allocation)
 {
-  BstDial *dial;
-
-  g_return_if_fail (BST_IS_DIAL (widget));
-  g_return_if_fail (allocation != NULL);
-  
-  dial = BST_DIAL (widget);
+  BstDial *dial = BST_DIAL (widget);
 
   /* center widget within given allocation
    */
@@ -204,13 +198,9 @@ bst_dial_size_allocate (GtkWidget     *widget,
 static void
 bst_dial_realize (GtkWidget *widget)
 {
-  BstDial *dial;
+  BstDial *dial = BST_DIAL (widget);
   GdkWindowAttr attributes;
   gint attributes_mask;
-  
-  g_return_if_fail (BST_IS_DIAL (widget));
-  
-  dial = BST_DIAL (widget);
   
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
   
@@ -372,12 +362,7 @@ static gint
 bst_dial_button_press (GtkWidget      *widget,
                        GdkEventButton *event)
 {
-  BstDial *dial;
-  
-  g_return_val_if_fail (BST_IS_DIAL (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-  
-  dial = BST_DIAL (widget);
+  BstDial *dial = BST_DIAL (widget);
 
   if (!dial->button)
     {
@@ -393,12 +378,7 @@ static gint
 bst_dial_motion_notify (GtkWidget      *widget,
                         GdkEventMotion *event)
 {
-  BstDial *dial;
-  
-  g_return_val_if_fail (BST_IS_DIAL (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-  
-  dial = BST_DIAL (widget);
+  BstDial *dial = BST_DIAL (widget);
   
   if (dial->button != 0 && event->window == widget->window)
     {
@@ -415,12 +395,7 @@ static gint
 bst_dial_button_release (GtkWidget      *widget,
                          GdkEventButton *event)
 {
-  BstDial *dial;
-  
-  g_return_val_if_fail (BST_IS_DIAL (widget), FALSE);
-  g_return_val_if_fail (event != NULL, FALSE);
-  
-  dial = BST_DIAL (widget);
+  BstDial *dial = BST_DIAL (widget);
   
   if (dial->button == event->button)
     {
@@ -512,12 +487,18 @@ bst_dial_mouse_update (BstDial *dial,
 static gboolean
 bst_dial_timer (gpointer data)
 {
-  BstDial *dial = BST_DIAL (data);
+  BstDial *dial;
   
+  GDK_THREADS_ENTER ();
+
+  dial = BST_DIAL (data);
+
   gtk_adjustment_value_changed (GTK_ADJUSTMENT (dial->adjustment));
 
   dial->timer = 0;
   
+  GDK_THREADS_LEAVE ();
+
   return FALSE;
 }
 
@@ -586,6 +567,7 @@ bst_dial_set_adjustment (BstDial       *dial,
   dial->adjustment = GTK_OBJECT (adjustment);
   
   gtk_object_ref (dial->adjustment);
+  gtk_object_sink (dial->adjustment);
   
   gtk_signal_connect (dial->adjustment,
                       "changed",

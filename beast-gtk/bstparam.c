@@ -145,6 +145,20 @@ bst_entry_key_press (GtkEntry	 *entry,
   return intercept;
 }
 
+static inline gchar*
+str_diff (gchar *s,
+	  gchar *m)
+{
+  while (*s && *m)
+    {
+      if (*s != *m)
+	break;
+      s++;
+      m++;
+    }
+  return s;
+}
+
 static void
 bst_param_update_clue_hunter (BstParam *bparam)
 {
@@ -156,22 +170,43 @@ bst_param_update_clue_hunter (BstParam *bparam)
   g_return_if_fail (G_PARAM_SPEC_TYPE (pspec) == G_TYPE_PARAM_OBJECT && GTK_IS_CLUE_HUNTER (ch));
   
   if (bparam->is_object && BSE_IS_ITEM (bparam->owner) &&
-	   g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_ITEM))
+      g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_ITEM))
     {
       BseItem *item = BSE_ITEM (bparam->owner);
       BseProject *project = bse_item_get_project (item);
-      GList *nick_list, *list;
+      gchar *p, *prefix = NULL;
+      guint l;
+      BswVIter *iter;
       
       gtk_clue_hunter_remove_matches (ch, "*");
-      
-      nick_list = bse_project_list_nick_paths (project, G_PARAM_SPEC_VALUE_TYPE (pspec));
-      
-      for (list = nick_list; list; list = list->next)
+
+      iter = bsw_project_list_uloc_paths (BSE_OBJECT_ID (project), G_PARAM_SPEC_VALUE_TYPE (pspec));
+      if (bsw_viter_n_left (iter) > 1)
 	{
-	  gtk_clue_hunter_add_string (ch, list->data);
-	  g_free (list->data);
+	  prefix = g_strdup (bsw_viter_get_string (iter));
+
+	  for (bsw_viter_next (iter); bsw_viter_n_left (iter); bsw_viter_next (iter))
+	    {
+	      p = str_diff (prefix, bsw_viter_get_string (iter));
+	      *p = 0;
+	    }
+	  p = strrchr (prefix, '.');
+	  if (p)
+	    *(++p) = 0;
+	  else
+	    {
+	      g_free (prefix);
+	      prefix = NULL;
+	    }
 	}
-      g_list_free (nick_list);
+      l = prefix ? strlen (prefix) : 0;
+
+      for (bsw_viter_rewind (iter); bsw_viter_n_left (iter); bsw_viter_next (iter))
+	gtk_clue_hunter_add_string (ch, bsw_viter_get_string (iter) + l);
+      for (bsw_viter_rewind (iter); bsw_viter_n_left (iter); bsw_viter_next (iter))
+	g_print (" %s %s\n", prefix, bsw_viter_get_string (iter) + l);
+      g_object_set_data_full (G_OBJECT (ch), "prefix", prefix, g_free);
+      bsw_viter_free (iter);
     }
 }
 
@@ -924,7 +959,7 @@ bst_param_update (BstParam *bparam)
     case G_TYPE_OBJECT:
       action = bst_gmask_get_action (group);
       string = (BSE_IS_ITEM (g_value_get_object (value))
-		? bse_item_make_nick_path (BSE_ITEM (g_value_get_object (value)))
+		? bsw_item_get_uloc_path (BSE_OBJECT_ID (g_value_get_object (value)))
 		: NULL);
       if (!bse_string_equals (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	gtk_entry_set_text (GTK_ENTRY (action), string ? string : "");
@@ -1081,32 +1116,32 @@ bst_param_apply (BstParam *bparam,
       string = bse_strdup_stripped (gtk_entry_get_text (GTK_ENTRY (action)));
       if (string && bparam->is_object && BSE_IS_ITEM (bparam->owner))
 	{
-	  BseProject *project = bse_item_get_project (BSE_ITEM (bparam->owner));
-	  BseItem *item = NULL;
+	  BswProxy item = 0, project = bsw_item_get_project (BSE_OBJECT_ID (bparam->owner));
 	  
-	  /* check whether this is a nick path */
+	  /* check whether this is an uloc path */
 	  if (!item && strchr (string, '.'))
 	    {
-	      item = bse_project_item_from_nick_path (project, string);
+	      item = bsw_project_find_item (project, string);
 	      
-	      if (item && !g_type_is_a (BSE_OBJECT_TYPE (item), G_PARAM_SPEC_VALUE_TYPE (pspec)))
-		item = NULL;
+	      if (item && !g_type_is_a (bsw_proxy_type (item), G_PARAM_SPEC_VALUE_TYPE (pspec)))
+		item = 0;
 	    }
-	  else if (!item) /* try generic lookup for pure name (brute force actually) */
+	  else if (!item) /* try generic lookup for uloc (ambiguous lookup) */
 	    {
-	      GList *list, *free_list = bse_objects_list_by_uloc (G_PARAM_SPEC_VALUE_TYPE (pspec), string);
-	      
-	      for (list = free_list; list; list = list->next)
-		if (bse_item_get_project (list->data) == project)
+	      BswVIter *iter = bsw_project_list_items_by_uloc (project,
+							       G_PARAM_SPEC_VALUE_TYPE (pspec),
+							       string);
+	      for (bsw_viter_rewind (iter); bsw_viter_n_left (iter); bsw_viter_next (iter))
+		if (bsw_item_get_project (bsw_viter_get_proxy (iter)) == project)
 		  {
-		    item = BSE_ITEM (list->data);
+		    item = bsw_viter_get_proxy (iter);
 		    break;
 		  }
-	      g_list_free (free_list);
+	      bsw_viter_free (iter);
 	    }
-	  
+
 	  /* ok, found one or giving up */
-	  g_value_set_object (value, (GObject*) item);
+	  g_value_set_object (value, bse_object_from_id (item));
 	  g_free (string);
 	  
 	  /* enforce redisplay of the entry's string with the correct name */

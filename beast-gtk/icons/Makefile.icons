@@ -1,6 +1,7 @@
 ## Generated data (by make Makefile.icons)
 icon_list += cdrom.c
 icon_list += close.c
+icon_list += knob.c
 icon_list += mouse_tool.c
 icon_list += no_ilink.c
 icon_list += no_olink.c

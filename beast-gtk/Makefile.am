@@ -40,6 +40,7 @@ beast_headers = $(strip \
 	bstapp.h \
 	bstcanvaslink.h \
 	bstcanvassource.h \
+	bstcontrollers.h \
 	bstdefs.h \
 	bstdial.h \
 	bsteffectview.h \
@@ -49,6 +50,7 @@ beast_headers = $(strip \
 	bstinstrumentview.h \
 	bstitemview.h \
 	bstkeytables.h \
+	bstknob.h \
 	bstlogadjustment.h \
 	bstmarshal.h \
 	bstmenus.h \
@@ -89,6 +91,7 @@ beast_sources = $(strip \
 	bstapp.c \
 	bstcanvaslink.c \
 	bstcanvassource.c \
+	bstcontrollers.c \
 	bstdial.c \
 	bsteffectview.c \
 	bstfiledialog.c \
@@ -97,6 +100,7 @@ beast_sources = $(strip \
 	bstinstrumentview.c \
 	bstitemview.c \
 	bstkeytables.c \
+	bstknob.c \
 	bstlogadjustment.c \
 	bstmain.c \
 	bstmenus.c \
@@ -137,7 +141,6 @@ beast_sources = $(strip \
 beast_extra_sources = $(strip \
 	bstpatterneditorselection.c \
 	bstrackeditor-covers.c \
-	bstrackitem-controllers.c \
 	bstkeytable-base.c \
 	bstkeytable-us.c \
 	bstkeytable-de.c \

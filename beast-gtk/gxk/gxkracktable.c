@@ -75,6 +75,8 @@ static void		bst_rack_table_on_area		(BstRackTable		*rtable,
 static void		bst_rtable_update_child_map	(BstRackTable		*rtable);
 static void		widget_reparent			(GtkWidget		*child,
 							 GtkWidget		*parent);
+static void		rtable_abort_drag		(BstRackTable		*rtable,
+							 guint32		 etime);
 
 
 /* --- static variables --- */
@@ -182,6 +184,8 @@ static void
 bst_rack_table_destroy (GtkObject *object)
 {
   BstRackTable *rtable = BST_RACK_TABLE (object);
+
+  rtable_abort_drag (rtable, GDK_CURRENT_TIME);
 
   if (rtable->drag_window)
     {
@@ -332,6 +336,8 @@ bst_rack_table_unmap (GtkWidget *widget)
 {
   BstRackTable *rtable = BST_RACK_TABLE (widget);
   
+  rtable_abort_drag (rtable, GDK_CURRENT_TIME);
+
   GTK_WIDGET_CLASS (parent_class)->unmap (widget);
   
   gdk_window_hide (rtable->iwindow);
@@ -357,8 +363,9 @@ bst_rack_table_button_press (GtkWidget      *widget,
   if (!rtable->edit_mode)
     return FALSE;
 
-  if (event->type == GDK_BUTTON_PRESS && event->button == 1)
+  if (event->type == GDK_BUTTON_PRESS && event->button == 2)
     {
+      gboolean was_dragging = rtable->in_drag;
       guint h, v;
 
       if (bst_rack_table_iwindow_translate (rtable, event->x, event->y, &h, &v))
@@ -366,6 +373,20 @@ bst_rack_table_button_press (GtkWidget      *widget,
       rtable->in_drag = rtable->child != NULL;
       if (rtable->in_drag)
 	{
+	  if (!was_dragging)
+	    {
+	      GdkCursor *cursor = gdk_cursor_new (GDK_FLEUR);
+
+	      rtable->in_drag_and_grabbing = gdk_pointer_grab (rtable->iwindow, FALSE,
+							       (GDK_BUTTON_PRESS_MASK |
+								GDK_BUTTON_RELEASE_MASK |
+								GDK_ENTER_NOTIFY_MASK |
+								GDK_LEAVE_NOTIFY_MASK |
+								GDK_POINTER_MOTION_MASK |
+								GDK_POINTER_MOTION_HINT_MASK),
+							       NULL, cursor, event->time) == GDK_GRAB_SUCCESS;
+	      gdk_cursor_destroy (cursor);
+	    }
 	  bst_rack_child_get_info (rtable->child, &rtable->drag_info);
 	  rtable->xofs = event->x - GTK_CONTAINER (rtable)->border_width;
 	  rtable->yofs = event->y - GTK_CONTAINER (rtable)->border_width;
@@ -464,11 +485,15 @@ bst_rack_table_motion_notify (GtkWidget      *widget,
 }
 
 static void
-rtable_abort_drag (BstRackTable *rtable)
+rtable_abort_drag (BstRackTable *rtable,
+		   guint32       etime)
 {
   if (rtable->in_drag)
     {
+      if (rtable->in_drag_and_grabbing && rtable->iwindow)
+	gdk_pointer_ungrab (etime);
       rtable->in_drag = FALSE;
+      rtable->in_drag_and_grabbing = FALSE;
       gtk_widget_hide (rtable->drag_window);
       bst_rack_child_set_info (rtable->child,
 			       rtable->drag_info.col,
@@ -486,8 +511,8 @@ bst_rack_table_button_release (GtkWidget      *widget,
 {
   BstRackTable *rtable = BST_RACK_TABLE (widget);
 
-  if (rtable->in_drag && event->button == 1)
-    rtable_abort_drag (rtable);
+  if (rtable->in_drag && event->button == 2)
+    rtable_abort_drag (rtable, event->time);
 
   return TRUE;
 }
@@ -905,7 +930,7 @@ bst_rack_table_set_edit_mode (BstRackTable *rtable,
 	gdk_window_show (rtable->iwindow);
       else
 	{
-	  rtable_abort_drag (rtable);
+	  rtable_abort_drag (rtable, GDK_CURRENT_TIME);
 	  gdk_window_hide (rtable->iwindow);
 	}
       gtk_widget_queue_draw (GTK_WIDGET (rtable));

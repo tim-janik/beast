@@ -22,12 +22,16 @@
 
 
 /* --- prototypes --- */
-static void	bst_rack_item_class_init	(BstRackItemClass	*klass);
-static void	bst_rack_item_init		(BstRackItem		*item);
-static void	bst_rack_item_destroy		(GtkObject		*object);
-static void	bst_rack_item_button_press	(BstRackItem		*item,
+static void	  bst_rack_item_class_init	(BstRackItemClass	*klass);
+static void	  bst_rack_item_init		(BstRackItem		*item);
+static void	  bst_rack_item_destroy		(GtkObject		*object);
+static void	  bst_rack_item_parent_set	(GtkWidget		*widget,
+						 GtkWidget		*previous_parent);
+static void	  bst_rack_item_button_press	(BstRackItem		*item,
 						 GdkEventButton		*event);
-GtkWidget*	create_controller_menu		(void);
+static GtkWidget* create_controller_menu	(void);
+static void	  sensitize_controller_menu	(GtkWidget		*menu,
+						 GParamSpec		*pspec);
 static BstControllerInfo* controller_info_from_menu_id (guint id);
 
 
@@ -66,13 +70,14 @@ bst_rack_item_get_type (void)
 static void
 bst_rack_item_class_init (BstRackItemClass *class)
 {
-  GtkObjectClass *object_class;
-
-  object_class = GTK_OBJECT_CLASS (class);
+  GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
 
   object_class->destroy = bst_rack_item_destroy;
+
+  widget_class->parent_set = bst_rack_item_parent_set;
 
   class->button_press = bst_rack_item_button_press;
 
@@ -115,6 +120,7 @@ bst_rack_item_destroy (GtkObject *object)
   if (item->choice)
     {
       bst_choice_destroy (item->choice);
+      item->controller_choice = NULL;
       item->choice = NULL;
     }
 
@@ -123,25 +129,61 @@ bst_rack_item_destroy (GtkObject *object)
 }
 
 static void
+update_frame (GtkWidget *widget)
+{
+  /* BstRackItem *item = BST_RACK_ITEM (widget); */
+  BstRackTable *rtable = BST_RACK_TABLE (widget->parent);
+
+  g_object_set (widget,
+		"shadow_type", rtable->edit_mode ? GTK_SHADOW_ETCHED_OUT : GTK_SHADOW_NONE,
+		NULL);
+}
+
+static void
+bst_rack_item_parent_set (GtkWidget *widget,
+			  GtkWidget *previous_parent)
+{
+  if (BST_IS_RACK_TABLE (widget->parent))
+    {
+      g_object_connect (widget->parent, "swapped_signal::edit_mode_changed", update_frame, widget, NULL);
+      update_frame (widget);
+    }
+  else if (BST_IS_RACK_TABLE (previous_parent))
+    g_object_disconnect (previous_parent, "any_signal", update_frame, widget, NULL);
+
+  /* chain parent class' handler */
+  if (GTK_WIDGET_CLASS (parent_class)->parent_set)
+    GTK_WIDGET_CLASS (parent_class)->parent_set (widget, previous_parent);
+}
+
+static void
 bst_rack_item_button_press (BstRackItem    *item,
 			    GdkEventButton *event)
 {
   if (event->button == 3)
     {
+      gboolean can_clone = item->pocket && item->cinfo && item->proxy && item->pspec;
       guint id;
 
       if (!item->choice)
 	{
+	  item->controller_choice = create_controller_menu ();
 	  item->choice = bst_choice_menu_createv ("<BEAST-RackItem>/EditPopup",
 						  BST_CHOICE_TITLE ("Edit Rack Item"),
+						  BST_CHOICE_SEPERATOR,
+						  BST_CHOICE_SUBMENU ("Controller", item->controller_choice),
+						  BST_CHOICE_S (1005, "Duplicate", NONE, FALSE),
 						  BST_CHOICE_SEPERATOR,
 						  BST_CHOICE_S (1001, "Grow Horizontally", NONE, TRUE),
 						  BST_CHOICE_S (1002, "Grow Vertically", NONE, TRUE),
 						  BST_CHOICE_S (1003, "Shrink Horizontally", NONE, TRUE),
 						  BST_CHOICE_S (1004, "Shrink Vertically", NONE, TRUE),
-						  BST_CHOICE_SUBMENU ("Controller", create_controller_menu ()),
+						  BST_CHOICE_SEPERATOR,
+						  BST_CHOICE (1006, "Delete", DELETE),
 						  BST_CHOICE_END);
 	}
+      bst_choice_menu_set_item_sensitive (item->choice, 1005, can_clone);
+      sensitize_controller_menu (item->controller_choice, item->pspec);
       id = bst_choice_modal (item->choice, event->button, event->time);
       switch (id)
 	{
@@ -151,10 +193,8 @@ bst_rack_item_button_press (BstRackItem    *item,
 	  /* menu aborted */
 	  break;
 	default: /* 1.. are from controller submenu */
-	  g_print ("id: %u\n", id);
 	  cinfo = controller_info_from_menu_id (id);
 	  bsw_data_pocket_set_string (item->pocket, item->entry, "property-controller", cinfo->name);
-	  g_printerr("controller: %s\n", cinfo->name);
 	  break;
 	case 1001:
 	  t = bsw_data_pocket_get_int (item->pocket, item->entry, "property-hspan");
@@ -180,14 +220,17 @@ bst_rack_item_button_press (BstRackItem    *item,
 	  t = MAX (t, 1);
 	  bsw_data_pocket_set_int (item->pocket, item->entry, "property-vspan", t);
 	  break;
+	case 1005:
+	  id = bsw_data_pocket_create_entry (item->pocket);
+	  bsw_data_pocket_set_string (item->pocket, id, "property-controller", item->cinfo->name);
+	  bsw_data_pocket_set_object (item->pocket, id, "property-object", item->proxy);
+	  bsw_data_pocket_set_string (item->pocket, id, "property-name", item->pspec->name);
+	  break;
+	case 1006:
+	  bsw_data_pocket_delete_entry (item->pocket, item->entry);
+	  break;
 	}
     }
-}
-
-static void
-rack_item_remove (BstRackItem *item)
-{
-  bst_rack_item_set_property (item, 0, 0);
 }
 
 static void
@@ -197,33 +240,44 @@ pocket_entry_changed (BstRackItem *item,
   if (item->entry == entry && !item->block_updates)
     {
       BstControllerInfo *cinfo = NULL;
-      BstRackChildInfo info;
       GParamSpec *pspec = NULL;
-      BswProxy proxy;
-      gchar *name;
+      BswProxy proxy = 0;
+      gchar *controller;
 
-      proxy = bsw_data_pocket_get_object (item->pocket, item->entry, "property-object");
-      name = bsw_data_pocket_get_string (item->pocket, item->entry, "property-name");
-      if (proxy && name)
-	pspec = bsw_proxy_get_pspec (proxy, name);
-      if (pspec)
+      controller = bsw_data_pocket_get_string (item->pocket, item->entry, "property-controller");
+      cinfo = bst_controller_lookup (controller, NULL);
+      if (cinfo)
 	{
-	  name = bsw_data_pocket_get_string (item->pocket, item->entry, "property-controller");
-	  cinfo = bst_controller_lookup (name, pspec);
-	}
-      bst_rack_item_set_proxy (item, proxy, pspec, cinfo);
+	  gchar *name = bsw_data_pocket_get_string (item->pocket, item->entry, "property-name");
 
-      info.col = bsw_data_pocket_get_int (item->pocket, item->entry, "property-x");
-      info.row = bsw_data_pocket_get_int (item->pocket, item->entry, "property-y");
-      info.hspan = bsw_data_pocket_get_int (item->pocket, item->entry, "property-hspan");
-      info.vspan = bsw_data_pocket_get_int (item->pocket, item->entry, "property-vspan");
-      if ((info.col != item->rack_child_info.col ||
-	   info.row != item->rack_child_info.row ||
-	   info.hspan != item->rack_child_info.hspan ||
-	   info.vspan != item->rack_child_info.vspan) &&
-	  info.hspan > 0 && info.vspan > 0)
-	bst_rack_child_set_info (GTK_WIDGET (item), info.col, info.row, info.hspan, info.vspan);
+	  proxy = bsw_data_pocket_get_object (item->pocket, item->entry, "property-object");
+	  if (proxy && name)
+	    pspec = bsw_proxy_get_pspec (proxy, name);
+	}
+      bst_rack_item_set_proxy (item, pspec ? proxy : 0, pspec, cinfo);
+
+      if (item->cinfo)
+	{
+	  BstRackChildInfo info;
+
+	  info.col = bsw_data_pocket_get_int (item->pocket, item->entry, "property-x");
+	  info.row = bsw_data_pocket_get_int (item->pocket, item->entry, "property-y");
+	  info.hspan = bsw_data_pocket_get_int (item->pocket, item->entry, "property-hspan");
+	  info.vspan = bsw_data_pocket_get_int (item->pocket, item->entry, "property-vspan");
+	  if ((info.col != item->rack_child_info.col ||
+	       info.row != item->rack_child_info.row ||
+	       info.hspan != item->rack_child_info.hspan ||
+	       info.vspan != item->rack_child_info.vspan) &&
+	      info.hspan > 0 && info.vspan > 0)
+	    bst_rack_child_set_info (GTK_WIDGET (item), info.col, info.row, info.hspan, info.vspan);
+	}
     }
+}
+
+static void
+rack_item_remove (BstRackItem *item)
+{
+  bst_rack_item_set_property (item, 0, 0);
 }
 
 void
@@ -244,6 +298,7 @@ bst_rack_item_set_property (BstRackItem *item,
 			    "any_signal", rack_item_remove, item,
 			    "any_signal", pocket_entry_changed, item,
 			    NULL);
+      bst_rack_item_set_proxy (item, 0, NULL, NULL);
     }
   item->pocket = pocket;
   item->entry = entry_id;
@@ -253,11 +308,9 @@ bst_rack_item_set_property (BstRackItem *item,
 			 "swapped_signal::set_parent", rack_item_remove, item,
 			 "swapped_signal::entry-changed", pocket_entry_changed, item,
 			 NULL);
-      if (item->entry)
-	pocket_entry_changed (item, item->entry);
-      else
-	bst_rack_item_set_proxy (item, 0, NULL, NULL);
     }
+  if (item->entry)
+    pocket_entry_changed (item, item->entry);
 }
 
 void
@@ -270,18 +323,22 @@ bst_rack_item_set_proxy (BstRackItem       *item,
   if (pspec)
     g_return_if_fail (G_IS_PARAM_SPEC (pspec));
 
+  /* have to optimize this for non-changes */
   if (item->proxy != proxy || item->pspec != pspec || item->cinfo != cinfo)
     {
+      if (pspec && !bst_controller_check (cinfo, pspec))
+	cinfo = NULL;
+
       if (item->cwidget)
 	gtk_widget_destroy (item->cwidget);
       item->cinfo = cinfo;
       
       if (item->proxy)
-	bsw_proxy_disconnect (item->pocket,
+	bsw_proxy_disconnect (item->proxy,
 			      "any_signal", bst_rack_item_model_changed, item,
 			      NULL);
       item->proxy = pspec && cinfo ? proxy : 0;
-      item->pspec = item->proxy && cinfo ? pspec : 0;
+      item->pspec = item->proxy ? pspec : NULL;
       if (item->proxy)
 	{
 	  gchar *name = g_strdup_printf ("swapped_signal::notify::%s", item->pspec->name);
@@ -290,10 +347,9 @@ bst_rack_item_set_proxy (BstRackItem       *item,
 			     name, bst_rack_item_model_changed, item,
 			     NULL);
 	  g_free (name);
-	  item->cwidget = item->cinfo->create (item->pspec,
-					       (GCallback) bst_rack_item_controler_changed,
-					       item,
-					       item->cinfo->name);
+	  item->cwidget = bst_controller_create (cinfo, item->pspec,
+						 (GCallback) bst_rack_item_controler_changed,
+						 item);
 	  g_object_connect (item->cwidget,
 			    "swapped_signal::destroy", g_nullify_pointer, &item->cwidget,
 			    NULL);
@@ -317,7 +373,7 @@ bst_rack_item_gui_changed (BstRackItem *item)
 {
   g_return_if_fail (BST_IS_RACK_ITEM (item));
 
-  if (item->pocket && item->entry && item->proxy && item->pspec && !item->block_updates)
+  if (item->pocket && item->entry && item->cinfo && !item->block_updates)
     {
       item->block_updates++;
       bsw_data_pocket_set_int (item->pocket, item->entry, "property-x", item->rack_child_info.col);
@@ -333,15 +389,16 @@ bst_rack_item_controler_changed (BstRackItem *item)
 {
   g_return_if_fail (BST_IS_RACK_ITEM (item));
 
-  if (item->pocket && item->entry && item->proxy && item->pspec && !item->block_updates)
+  if (item->cwidget && item->proxy && item->pspec && !item->block_updates)
     {
       item->block_updates++;
       if (item->cinfo->fetch)
 	{
 	  GValue value = { 0, };
-
-	  g_value_init (&value, item->cinfo->value_type);
-	  item->cinfo->fetch (item->cwidget, item->pspec, &value);
+	  GType type = item->cinfo->value_type ? item->cinfo->value_type : G_PARAM_SPEC_VALUE_TYPE (item->pspec);
+	  
+	  g_value_init (&value, type);
+	  bst_controller_fetch (item->cwidget, &value);
 	  g_object_set_property (bse_object_from_id (item->proxy), item->pspec->name, &value);
 	  g_value_unset (&value);
 	}
@@ -354,70 +411,55 @@ bst_rack_item_model_changed (BstRackItem *item)
 {
   g_return_if_fail (BST_IS_RACK_ITEM (item));
 
-  if (item->cinfo && item->cwidget && item->proxy && item->pspec)
+  if (item->cwidget && item->proxy && item->pspec)
     {
       GValue value = { 0, };
+      GType type = item->cinfo->value_type ? item->cinfo->value_type : G_PARAM_SPEC_VALUE_TYPE (item->pspec);
 
-      g_value_init (&value, item->cinfo->value_type);
+      g_value_init (&value, type);
       g_object_get_property (bse_object_from_id (item->proxy), item->pspec->name, &value);
       item->block_updates++;
-      item->cinfo->update (item->cwidget, item->pspec, &value);
+      bst_controller_update (item->cwidget, &value);
       item->block_updates--;
       g_value_unset (&value);
     }
-}
-
-
-/* --- controllers --- */
-#include "bstrackitem-controllers.c"
-
-static guint n_controllers = G_N_ELEMENTS (controllers);
-
-BstControllerInfo*
-bst_controller_lookup (const gchar *name,
-		       GParamSpec  *pspec)
-{
-  guint i;
-
-  if (pspec)
-    g_return_val_if_fail (G_IS_PARAM_SPEC (pspec), NULL);
-  if (!pspec)
-    return NULL;
-
-  if (name)
-    for (i = 0; i < n_controllers; i++)
-      if (strcmp (name, controllers[i]->name) == 0 &&
-	  g_value_type_transformable (G_PARAM_SPEC_VALUE_TYPE (pspec), controllers[i]->value_type) &&
-	  (!controllers[i]->fetch || g_value_type_transformable (controllers[i]->value_type, G_PARAM_SPEC_VALUE_TYPE (pspec))))
-	return controllers[i];
-
-  /* fallback */
-  for (i = 0; i < n_controllers; i++)
-    if (g_value_type_transformable (G_PARAM_SPEC_VALUE_TYPE (pspec), controllers[i]->value_type) &&
-	(!controllers[i]->fetch || g_value_type_transformable (controllers[i]->value_type, G_PARAM_SPEC_VALUE_TYPE (pspec))))
-      return controllers[i];
-
-  return NULL;
 }
 
 GtkWidget*
 create_controller_menu (void)
 {
   GtkWidget *menu;
+  GSList *slist = bst_controller_list ();
   guint i;
 
   menu = g_object_new (GTK_TYPE_MENU,
 		       "visible", TRUE,
 		       NULL);
-  for (i = 0; i < n_controllers; i++)
-    bst_choice_menu_add_choice_and_free (menu, BST_CHOICE (i + 1, controllers[i]->name, NONE));
+  for (i = 1; slist; slist = slist->next, i++)
+    {
+      BstControllerInfo *cinfo = slist->data;
+
+      bst_choice_menu_add_choice_and_free (menu, BST_CHOICE (i, cinfo->name, NONE));
+    }
+
   return menu;
+}
+
+static void
+sensitize_controller_menu (GtkWidget  *menu,
+			   GParamSpec *pspec)
+{
+  GSList *slist;
+  guint id = 1;
+
+  for (slist = bst_controller_list (); slist; slist = slist->next)
+    bst_choice_menu_set_item_sensitive (menu, id++, bst_controller_check (slist->data, pspec));
 }
 
 static BstControllerInfo*
 controller_info_from_menu_id (guint id)
 {
-  g_return_val_if_fail (id > 0 && id < n_controllers, NULL);
+  g_return_val_if_fail (id > 0, NULL);
 
-  return controllers[id - 1];
+  return g_slist_nth_data (bst_controller_list (), id - 1);
 }

@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Olaf Hoehmann and Tim Janik
+ * Copyright (C) 2002 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 #include	"bstdefs.h"
 #include	"bstracktable.h"
+#include	"bstcontrollers.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,12 +39,12 @@ extern "C" {
 /* --- structures & typedefs --- */
 typedef	struct	_BstRackItem		BstRackItem;
 typedef	struct	_BstRackItemClass	BstRackItemClass;
-typedef	struct	_BstControllerInfo	BstControllerInfo;
 struct _BstRackItem
 {
   GtkFrame	parent_instance;
 
   guint		 block_updates;
+  GtkWidget	*controller_choice;
   GtkWidget	*choice;
 
   BswProxy	pocket;
@@ -68,21 +69,6 @@ struct _BstRackItemClass
   void		(*button_press)	(BstRackItem	*item,
 				 GdkEventButton	*event);
 };
-struct _BstControllerInfo
-{
-  gchar		 *name;
-  GType		  value_type;
-  GtkWidget*	(*create)	(GParamSpec	*pspec,
-				 GCallback	 notify,
-				 gpointer	 data,
-				 const gchar	*name);
-  void		(*update)	(GtkWidget	*widget,
-				 GParamSpec	*pspec,
-				 const GValue	*value);
-  void		(*fetch)	(GtkWidget	*widget,
-				 GParamSpec	*pspec,
-				 GValue		*value);
-};
 
 
 /* --- prototypes --- */
@@ -97,11 +83,6 @@ void		bst_rack_item_set_proxy		(BstRackItem	*item,
 void		bst_rack_item_controler_changed	(BstRackItem	*item);
 void		bst_rack_item_gui_changed	(BstRackItem	*item);
 void		bst_rack_item_model_changed	(BstRackItem	*item);
-
-
-/* --- controllers --- */
-BstControllerInfo*	bst_controller_lookup	(const gchar *name,
-						 GParamSpec  *pspec);
 
 
 #ifdef __cplusplus

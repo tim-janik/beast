@@ -512,7 +512,7 @@ bst_play_list_set_song (BstPlayList *plist,
   plist->song = song;
   if (plist->song)
     {
-      GList *free_list, *list;
+      BswVIter *iter;
       guint i;
 
       /* setup pattern list
@@ -520,10 +520,14 @@ bst_play_list_set_song (BstPlayList *plist,
       g_object_connect (BSE_OBJECT (plist->song),
 			"signal::item_added", song_item_added, plist,
 			NULL);
-      free_list = g_list_reverse (bse_container_list_items (BSE_CONTAINER (plist->song)));
-      for (list = free_list; list; list = list->next)
-	song_item_added (plist->song, list->data, plist);
-      g_list_free (free_list);
+
+      for (iter = bsw_container_list_items (BSE_OBJECT_ID (plist->song)); bsw_viter_n_left (iter); bsw_viter_next (iter))
+	{
+	  BswProxy item = bsw_viter_get_proxy (iter);
+
+	  song_item_added (plist->song, bse_object_from_id (item), plist);
+	}
+      bsw_viter_free (iter);
 
       /* setup pattern groups
        */

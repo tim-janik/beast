@@ -92,9 +92,14 @@ bst_rack_editor_init (BstRackEditor *ed)
 
   ed->button_edit = g_object_new (GTK_TYPE_TOGGLE_BUTTON,
 				  "visible", TRUE,
-				  "label", "Edit",
-				  "parent", ed,
 				  NULL);
+  gtk_box_pack_start (GTK_BOX (ed), ed->button_edit, FALSE, TRUE, 0);
+  g_object_new (GTK_TYPE_LABEL,
+		"label", "_Edit",
+		"use_underline", TRUE,
+		"visible", TRUE,
+		"parent", ed->button_edit,
+		NULL);
   g_object_connect (ed->button_edit,
 		    "swapped_signal::destroy", g_nullify_pointer, &ed->button_edit,
 		    "swapped_signal::clicked", toggle_edit_mode, ed,
@@ -108,7 +113,7 @@ bst_rack_editor_init (BstRackEditor *ed)
 		    "swapped_signal::destroy", g_nullify_pointer, &ed->rtable,
 		    "swapped_signal::edit-mode-changed", update_covers, ed,
 		    NULL);
-  gtk_table_resize (GTK_TABLE (ed->rtable), 40, 60);
+  gtk_table_resize (GTK_TABLE (ed->rtable), 20, 30);
   update_covers (ed);
 }
 
@@ -145,16 +150,24 @@ pocket_entry_changed (BstRackEditor *ed,
 		      guint	     entry_id)
 {
   GSList *slist;
+  BstRackItem *item = NULL;
+  gchar *controller;
 
   for (slist = ed->item_list; slist; slist = slist->next)
     {
-      BstRackItem *item = slist->data;
-
+      item = slist->data;
       if (item->entry == entry_id)
-	return;
+	break;
     }
-  if (bsw_data_pocket_get_object (ed->pocket, entry_id, "property-object") &&
-      bsw_data_pocket_get_string (ed->pocket, entry_id, "property-name"))
+  if (!slist)
+    item = NULL;
+  controller = bsw_data_pocket_get_string (ed->pocket, entry_id, "property-controller");
+  if (item && !controller)
+    {
+      ed->item_list = g_slist_remove (ed->item_list, item);
+      gtk_widget_destroy (GTK_WIDGET (item));
+    }
+  else if (!item && controller)
     create_rack_item (ed, entry_id);
 }
 
@@ -202,10 +215,21 @@ bst_rack_editor_add_property (BstRackEditor *ed,
 
   if (ed->pocket)
     {
-      guint id = bsw_data_pocket_create_entry (ed->pocket);
+      GParamSpec *pspec = bsw_proxy_get_pspec (item, property_name);
 
-      bsw_data_pocket_set_object (ed->pocket, id, "property-object", item);
-      bsw_data_pocket_set_string (ed->pocket, id, "property-name", property_name);
+      if (pspec)
+	{
+	  BstControllerInfo *cinfo = bst_controller_lookup (NULL, pspec);
+
+	  if (cinfo)
+	    {
+	      guint id = bsw_data_pocket_create_entry (ed->pocket);
+
+	      bsw_data_pocket_set_string (ed->pocket, id, "property-controller", cinfo->name);
+	      bsw_data_pocket_set_object (ed->pocket, id, "property-object", item);
+	      bsw_data_pocket_set_string (ed->pocket, id, "property-name", property_name);
+	    }
+	}
     }
 }
 
@@ -230,6 +254,9 @@ update_covers (BstRackEditor *ed)
 static void
 update_items (BstRackEditor *ed)
 {
+  GSList *slist = NULL;
+  guint i;
+
   while (ed->item_list)
     {
       GSList *slist = ed->item_list;
@@ -240,14 +267,20 @@ update_items (BstRackEditor *ed)
     }
 
   bst_rack_table_set_edit_mode (ed->rtable, TRUE);
-  while (0)
+  i = bsw_data_pocket_get_n_entries (ed->pocket);
+  while (i--)
+    slist = g_slist_prepend (slist, GUINT_TO_POINTER (bsw_data_pocket_get_nth_entry_id (ed->pocket, i)));
+  while (slist)
     {
-      GtkWidget *item = g_object_new (BST_TYPE_RACK_ITEM,
-				      "visible", TRUE,
-				      NULL);
-      bst_rack_child_set_info (item, 1, 2, 3, 4);
-      gtk_container_add (GTK_CONTAINER (ed->rtable), item);
-      ed->item_list = g_slist_prepend (ed->item_list, item);
+      GSList *tmp = slist;
+      guint entry_id = GPOINTER_TO_UINT (tmp->data);
+      gchar *controller;
+
+      slist = tmp->next;
+      controller = bsw_data_pocket_get_string (ed->pocket, entry_id, "property-controller");
+      if (controller)
+	create_rack_item (ed, entry_id);
+      g_slist_free_1 (tmp);
     }
   bst_rack_table_set_edit_mode (ed->rtable, FALSE);
 }
@@ -256,17 +289,17 @@ static void
 create_rack_item (BstRackEditor *ed,
 		  guint          entry_id)
 {
-  gboolean edit_mdoe = ed->rtable->edit_mode;
+  gboolean edit_mode = ed->rtable->edit_mode;
   GtkWidget *item = g_object_new (BST_TYPE_RACK_ITEM,
 				  "visible", TRUE,
 				  NULL);
 
-  if (!edit_mdoe)
+  if (!edit_mode)
     bst_rack_table_set_edit_mode (ed->rtable, TRUE);
-  bst_rack_child_set_info (item, 1, 2, 3, 4);
-  gtk_container_add (GTK_CONTAINER (ed->rtable), item);
+  bst_rack_child_set_info (item, -1, -2, 4, 4);
   bst_rack_item_set_property (BST_RACK_ITEM (item), ed->pocket, entry_id);
+  gtk_container_add (GTK_CONTAINER (ed->rtable), item);
   ed->item_list = g_slist_prepend (ed->item_list, item);
-  if (!edit_mdoe)
+  if (!edit_mode)
     bst_rack_table_set_edit_mode (ed->rtable, FALSE);
 }

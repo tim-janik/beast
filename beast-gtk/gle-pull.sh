@@ -3,6 +3,7 @@ set -v
 
 GLE=/usr/src/gle/gle
 SOURCES="gtkwrapbox gtkcluehunter gtkhwrapbox gtkvwrapbox"
+TEMPH=glewidgets.h-tmp
 
 # pull together glewidgets.h body
 echo >glewidgets.tmp
@@ -11,7 +12,7 @@ for i in $SOURCES; do
 done
 
 # put guarding header with includes
-cat >glewidgets.h <<EOF
+cat >$TEMPH <<EOF
 #ifndef __GLE_WIDGETS_H__
 #define __GLE_WIDGETS_H__
 #include <gtk/gtk.h>
@@ -21,15 +22,19 @@ extern "C" {
 EOF
 
 # disable includes and put body
-sed >>glewidgets.h <glewidgets.tmp -e 's,^\(#include.*\),/* \1 */,'
+sed >>$TEMPH <glewidgets.tmp -e 's,^\(#include.*\),/* \1 */,'
 
 # put trailer
-cat >>glewidgets.h <<EOF
+cat >>$TEMPH <<EOF
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 #endif /* __GLE_WIDGETS_H__ */
 EOF
+
+cmp -s $TEMPH glewidgets.h || mv $TEMPH glewidgets.h
+rm -f $TEMPH
+
 
 # pull together glewidgets.c body
 echo >glewidgets.tmp

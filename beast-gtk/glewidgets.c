@@ -1566,14 +1566,16 @@ gtk_clue_hunter_do_popup (GtkClueHunter *clue_hunter)
 
   if (!clue_hunter->cstring)
     clue_hunter->cstring = g_strdup ("");
-  
+
   gtk_clist_columns_autosize (GTK_CLIST (clue_hunter->clist));
+  gtk_widget_queue_resize (clue_hunter->clist);	/* work around gtk+ optimizations */
   gtk_widget_size_request (clue_hunter->clist, NULL);
-  gtk_widget_set_usize (clue_hunter->clist,
-			clue_hunter->clist->requisition.width,
-			clue_hunter->clist->requisition.height);
-  gtk_widget_size_request (widget, NULL);
-  
+  gtk_widget_set_size_request (clue_hunter->clist,
+			       clue_hunter->clist->requisition.width,
+			       clue_hunter->clist->requisition.height +
+			       2 * widget->style->ythickness);
+  g_print ("clist height: %d\n", clue_hunter->clist->requisition.height);
+
   gdk_window_get_origin (clue_hunter->entry->window, &x, &y);
   gdk_window_get_size (clue_hunter->entry->window, &width, &height);
 
@@ -1609,7 +1611,7 @@ gtk_clue_hunter_do_popup (GtkClueHunter *clue_hunter)
   else
     {
       y += height;
-      height = 0;
+      height = -1;
     }
   
   if (!clue_hunter->align_width && widget->requisition.width > width)
@@ -1627,7 +1629,7 @@ gtk_clue_hunter_do_popup (GtkClueHunter *clue_hunter)
     }
 
   gtk_widget_set_uposition (widget, x, y);
-  gtk_widget_set_usize (widget, width, height);
+  gtk_widget_set_size_request (widget, width, height);
 
   gtk_grab_add (widget);
   

@@ -346,6 +346,28 @@ bst_choice_menu_add_choice_and_free (GtkWidget *menu,
   g_free (choice);
 }
 
+void
+bst_choice_menu_set_item_sensitive (GtkWidget *menu,
+				    gulong     id,
+				    gboolean   sensitive)
+{
+  GtkMenuShell *shell;
+  GList *list;
+
+  g_return_if_fail (GTK_IS_MENU (menu));
+
+  shell = GTK_MENU_SHELL (menu);
+  for (list = shell->children; list; list = list->next)
+    {
+      if (id == (gulong) gtk_object_get_user_data (GTK_OBJECT (list->data)))
+	{
+	  gtk_widget_set_sensitive (list->data, sensitive);
+	  return;
+	}
+    }
+  g_warning ("unable to find item with id %lu in menu %p", id, menu);
+}
+
 GtkWidget*
 bst_choice_menu_createv (const gchar *menu_path,
 			 BstChoice *first_choice,

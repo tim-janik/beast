@@ -62,6 +62,7 @@ struct _BstRackTable
   GdkWindow	   *iwindow;
   guint		    edit_mode : 1;
   guint		    in_drag : 2;
+  guint		    in_drag_and_grabbing : 1;
   BstRackChildInfo  drag_info;
   guint		    drag_col;
   guint		    drag_row;
