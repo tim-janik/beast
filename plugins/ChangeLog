@@ -1,3 +1,7 @@
+Sat Nov 13 20:26:45 1999  Tim Janik  <timj@gtk.org>
+
+	* bsegenosc.[hc]: started out on a generic oscillator implementation.
+
 Thu Nov 11 03:51:21 1999  Tim Janik  <timj@gtk.org>
 
 	* bsenoise.c: ugh oh, a BseNoise structure amounts to sizeof (BseNoise),

@@ -43,7 +43,7 @@ extern "C" {
 #define BSE_NOISE_GET_CLASS(object) ((BseNoiseClass*) (((BseObject*) (object))->bse_struct.bse_class))
 
 
-/* --- BseNoise object --- */
+/* --- BseNoise source --- */
 typedef struct _BseNoise      BseNoise;
 typedef struct _BseNoiseClass BseNoiseClass;
 struct _BseNoise

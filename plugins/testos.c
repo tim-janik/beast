@@ -58,7 +58,6 @@ static const BseTypeInfo testos_type_info = {
   (BseObjectInitFunc) foo,
 };
 static BseType           type_id_mic = 0;
-static BseType           type_id_sine = 0;
 static BseType           type_id_amp = 0;
 static BseType           type_id_speaker = 0;
 static BseType           type_id_broken = 0;
@@ -67,7 +66,6 @@ static BseType           type_id_broken = 0;
 /* --- Export to BSE --- */
 #include "./icons/testos.c"
 #include "./icons/mic.c"
-#include "./icons/sine.c"
 #include "./icons/amp.c"
 #include "./icons/speaker.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
@@ -87,14 +85,6 @@ BSE_EXPORT_OBJECTS = {
     { MIC_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       MIC_WIDTH, MIC_HEIGHT,
       MIC_RLE_PIXEL_DATA, },
-  },
-  { &type_id_sine, "BseSine", "BseSource",
-    "Sine is a test object",
-    &testos_type_info,
-    "/Source/Sine",
-    { SINE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      SINE_WIDTH, SINE_HEIGHT,
-      SINE_RLE_PIXEL_DATA, },
   },
   { &type_id_amp, "BseAmp", "BseSource",
     "Amp is a test object",

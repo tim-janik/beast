@@ -43,7 +43,7 @@ extern "C" {
 #define BSE_CAPTURE_GET_CLASS(object) ((BseCaptureClass*) (((BseObject*) (object))->bse_struct.bse_class))
 
 
-/* --- BseCapture object --- */
+/* --- BseCapture source --- */
 typedef struct _BseCapture      BseCapture;
 typedef struct _BseCaptureClass BseCaptureClass;
 struct _BseCapture
