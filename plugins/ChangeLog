@@ -1,3 +1,8 @@
+Sat Nov 20 08:57:38 1999  Tim Janik  <timj@gtk.org>
+
+	* bsegenosc.c (bse_gen_osc_set_param): added phase, base_note and
+	base_freq parameters.
+
 Sat Nov 13 20:26:45 1999  Tim Janik  <timj@gtk.org>
 
 	* bsegenosc.[hc]: started out on a generic oscillator implementation.

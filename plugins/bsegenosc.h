@@ -43,6 +43,17 @@ extern "C" {
 #define BSE_GEN_OSC_GET_CLASS(object) ((BseGenOscClass*) (((BseObject*) (object))->bse_struct.bse_class))
 
 
+/* --- wave forms --- */
+enum {
+  BSE_GEN_OSC_NOWAVE,
+  BSE_GEN_OSC_SINE,
+  BSE_GEN_OSC_GSAW,
+  BSE_GEN_OSC_SSAW,
+  BSE_GEN_OSC_PULSE,
+  BSE_GEN_OSC_TRIANGLE
+};
+
+
 /* --- BseGenOsc source --- */
 typedef struct _BseGenOsc      BseGenOsc;
 typedef struct _BseGenOscClass BseGenOscClass;
@@ -50,6 +61,15 @@ struct _BseGenOsc
 {
   BseSource       parent_object;
 
+  guint   wave;
+  gfloat  phase;
+  gfloat  base_freq;
+  gfloat  fm_perc;
+
+  guint32 rate_pos;
+  guint32 rate;
+  gfloat  fm_strength;
+  guint   table_size;
   BseSampleValue *table;
 };
 struct _BseGenOscClass
@@ -57,7 +77,17 @@ struct _BseGenOscClass
   BseSourceClass parent_class;
 
   guint           ref_count;
+
+  guint           sine_table_size;
   BseSampleValue *sine_table;
+  guint           gsaw_table_size;
+  BseSampleValue *gsaw_table;
+  guint           ssaw_table_size;
+  BseSampleValue *ssaw_table;
+  guint           pulse_table_size;
+  BseSampleValue *pulse_table;
+  guint           triangle_table_size;
+  BseSampleValue *triangle_table;
 };
 
 
