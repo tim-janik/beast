@@ -1,3 +1,7 @@
+Fri Apr 25 18:35:09 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/images/beast16.png: updated to a version supplied by Alper.
+
 Mon Apr 21 03:55:45 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/faq.texi: insert an anchor #gnome-canvas-idle-id-crash.
