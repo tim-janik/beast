@@ -604,7 +604,7 @@ int main (int argc, char **argv)
       exit (1);
     }
 
-  GslWaveDsc *waveDsc = gsl_wave_dsc_load (waveFileInfo, 0, &error);
+  GslWaveDsc *waveDsc = gsl_wave_dsc_load (waveFileInfo, 0, FALSE, &error);
   if (!waveDsc)
     {
       fprintf (stderr, "%s: can't open the input file %s: %s\n", options.programName.c_str(), argv[1], bse_error_blurb (error));

@@ -18,6 +18,7 @@
 #include "bwtwave.h"
 #include <bse/bsemath.h>
 #include <bse/gsldatautils.h>
+#include <bse/gsldatahandle-vorbis.h>
 #include <bse/gslloader.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -106,13 +107,26 @@ Wave::sort ()
 }
 
 BseErrorType
-Wave::store (const gchar *file_name)
+Wave::store (const string file_name)
 {
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (file_name.c_str() != NULL, BSE_ERROR_INTERNAL);
 
-  gint fd = open (file_name, O_WRONLY | O_CREAT | O_EXCL, 0666);
+  /* save to temporary file */
+  gint fd;
+  gchar *temp_file = NULL;
+  do
+    {
+      g_free (temp_file);
+      temp_file = g_strdup_printf ("%s.tmp%06xyXXXXXX", file_name.c_str(), rand() & 0xfffffd);
+      mktemp (temp_file); /* this is save, due to use of: O_CREAT | O_EXCL */
+      fd = open (temp_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
+    }
+  while (fd < 0 && errno == EEXIST);
   if (fd < 0)
-    return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    {
+      g_free (temp_file);
+      return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+    }
 
   SfiWStore *wstore = sfi_wstore_new ();
   wstore->comment_start = '#';
@@ -121,6 +135,7 @@ Wave::store (const gchar *file_name)
   gchar *str = g_strescape (name.c_str(), NULL);
   sfi_wstore_printf (wstore, "  name = \"%s\"\n", str);
   g_free (str);
+  sfi_wstore_printf (wstore, "  n_channels = %u\n", n_channels);
   sfi_wstore_printf (wstore, "  byte_order = %s\n", gsl_byte_order_to_string (BYTE_ORDER));
 
   for (list<WaveChunk>::iterator it = chunks.begin(); it != chunks.end(); it++)
@@ -133,30 +148,38 @@ Wave::store (const gchar *file_name)
       else
         sfi_wstore_printf (wstore, "    osc_freq = %.3f\n", chunk->dhandle->setup.osc_freq);
 
-#if 0
-      if (chunk->oggname)
+      GslDataHandle *dhandle, *tmp_handle = chunk->dhandle;
+      do        /* skip comment or cache handles */
+        {
+          dhandle = tmp_handle;
+          tmp_handle = gsl_data_handle_get_source (dhandle);
+        }
+      while (tmp_handle);
+      GslVorbis1Handle *vhandle = gsl_vorbis1_handle_new (dhandle);
+      if (vhandle)      /* save already compressed Ogg/Vorbis data */
         {
           sfi_wstore_puts (wstore, "    ogglink = ");
-          if (chunk->loop_type)
+          struct Sub {
+            static void
+            vhandle_destroy (gpointer data)
             {
-              OggStoreContext *oc = g_new0 (OggStoreContext, 1);
-              oc->fd = -1;
-              oc->oggfile = g_strdup (chunk->oggname);
-              oc->cutter = gsl_vorbis_cutter_new ();
-              gsl_vorbis_cutter_set_cutpoint (oc->cutter, chunk->loop_end + 1, GSL_VORBIS_CUTTER_PACKET_BOUNDARY);
-              sfi_wstore_put_binary (wstore, ogg_store_context_reader, oc, ogg_store_context_destroy);
+              GslVorbis1Handle *vhandle = static_cast<GslVorbis1Handle*> (data);
+              gsl_vorbis1_handle_destroy (vhandle);
             }
-          else
+            static gint /* -errno || length */
+            vhandle_reader (gpointer data,
+                            SfiNum   pos,
+                            void    *buffer,
+                            guint    blength)
             {
-              TmpStoreContext *tc = g_new0 (TmpStoreContext, 1);
-              tc->fd = -1;
-              tc->tmpfile = g_strdup (chunk->oggname);
-              sfi_wstore_put_binary (wstore, tmp_store_context_reader, tc, tmp_store_context_destroy);
+              GslVorbis1Handle *vhandle = static_cast<GslVorbis1Handle*> (data);
+              return gsl_vorbis1_handle_reader (vhandle, (guint8*) buffer, blength);
             }
+          };
+          sfi_wstore_put_binary (wstore, Sub::vhandle_reader, vhandle, Sub::vhandle_destroy);
           sfi_wstore_puts (wstore, "\n");
         }
       else
-#endif
         {
           sfi_wstore_puts (wstore, "    rawlink = ");
           gsl_data_handle_dump_wstore (chunk->dhandle, wstore, GSL_WAVE_FORMAT_SIGNED_16, G_LITTLE_ENDIAN);
@@ -195,7 +218,23 @@ Wave::store (const gchar *file_name)
   sfi_wstore_destroy (wstore);
   close (fd);
 
-  return BSE_ERROR_NONE;
+  /* replace output file by temporary file */
+  BseErrorType error;
+  if (0 /* in case of error */)
+    {
+      unlink (temp_file);
+      error = BSE_ERROR_FILE_WRITE_FAILED;
+    }
+  else if (rename (temp_file, file_name.c_str()) < 0)
+    {
+      error = bse_error_from_errno (errno, BSE_ERROR_FILE_WRITE_FAILED);
+      unlink (temp_file);
+    }
+  else /* success */
+    error = BSE_ERROR_NONE;
+  g_free (temp_file);
+
+  return error;
 }
 
 Wave::~Wave ()

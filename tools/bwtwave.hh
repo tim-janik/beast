@@ -15,6 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
+#ifndef __BWT_WAVE_H__
+#define __BWT_WAVE_H__
+
 #include <bse/gsldatahandle.h>
 #include <bse/gslwavechunk.h>
 #include <bse/bseenums.h>
@@ -49,8 +52,10 @@ public:
   void          add_chunk       (GslDataHandle  *dhandle);
   void          remove          (list<WaveChunk>::iterator it);
   void          sort            ();
-  BseErrorType  store           (const gchar    *file_name);
+  BseErrorType  store           (const string    file_name);
   /*Des*/       ~Wave           ();
 };
 
 } // BseWaveTool
+
+#endif /* __BWT_WAVE_H__ */

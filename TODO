@@ -1,4 +1,8 @@
 FIXME(urgent):
+- consolidate bsewave tokens
+- fix float saving with de_DE
+- remove num from SfiStoreReadBin()?
+- gslloader-pat.cc -> bseloader-guspatch.cc && bse_init_loader_gus_patch()
 - improve cutvorbis: add boundaries, non-cut, comment filter and comment adder
 - add gsl_data_handle_is_vorbis()
 - add gsl_data_handle_store_vorbis()
@@ -31,6 +35,7 @@ FIXME(urgent):
 - provide script to render bse file to WAV. then add File/Export function which:
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
 - close pianoroll window in response to part::release  
+- add dialog to ask the user whether he really wants to delete the last link to a part.
 TODO:
 - provide a color/dB reference scale, next to the fft-scope view
 - add "..." to new dialog items in View/
@@ -259,6 +264,7 @@ DRIVER DIALOG:
 - Driver NAme
 
 TASKS:
+- TrackRoll: provide contextmenu for parts to set loopmarker to start/end
 - InputDevices: use a webcam to extract 2D position, usable as e.g. filter input (filter input which changes rythm)
 - TableSynth(note mapping): allow multiple synths and presets per
   track, configurable via table, e.g.:

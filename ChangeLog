@@ -1,3 +1,14 @@
+Fri Dec 31 01:49:02 2004  Tim Janik  <timj@gtk.org>
+
+	* tools/bsewavetool.cc: properly initialize random numbers.
+	support command implementations. support arg parsing for
+	commands and command execution. support loading and creation
+	of empty bsewave files. support storing of bsewave files,
+	preserving Ogg/Vorbis compression.
+
+	* tools/bwtwave.cc: support overwriting of existing files.
+	store Ogg/Vorbis data handles as Ogg/Vorbis (i.e. don't unpack).
+
 Wed Dec 29 03:45:52 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* library/scripts/Makefile.am:

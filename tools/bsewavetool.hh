@@ -1,4 +1,4 @@
-/* BseWaveTool - BSE Wave creation tool
+/* BseWaveTool - BSE Wave creation tool                 -*-mode: c++;-*-
  * Copyright (C) 2001-2004 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,9 +17,44 @@
  */
 #include <bse/gsldatahandle.h>
 #include <bse/gslwavechunk.h>
-
 #include "bseloopfuncs.h"
+#include "bwtwave.h"
+#include <typeinfo>
+#include <string>
 
+namespace BseWaveTool {
+using namespace std;
+
+/* --- command + registry --- */
+class Command {
+public:
+  const string name;
+  Command (const char *command_name) :
+    name (command_name)
+  {
+    registry.push_back (this);
+  }
+  virtual guint
+  parse_args (int    argc,
+              char **argv)
+  { return 0; }
+  virtual Wave*
+  create ()
+  {
+    return NULL;
+  }
+  virtual void
+  exec (Wave *wave) = 0;
+  virtual void
+  blurb()
+  {
+    g_print ("\n");
+  }
+  virtual
+  ~Command()
+  {}
+  static list<Command*> registry;
+};
 
 /* --- structures --- */
 typedef struct
@@ -68,3 +103,5 @@ typedef enum
   GSL_LEVEL_CLIPPED_TAIL,
   GSL_LEVEL_CLIPPED_HEAD_TAIL
 } GslLevelClipStatus;
+
+} // BseWaveTool
