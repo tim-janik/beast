@@ -197,6 +197,8 @@ template<class ValPtr>
 class Sequence {
   std::vector<ValPtr> values;
 public:
+  typedef size_t size_type;
+
   class Iter : public ValPtr {
     friend class Sequence;
     Sequence *seq;
@@ -257,6 +259,11 @@ public:
   }
   int
   length ()
+  {
+    return values.size();
+  }
+  size_type
+  size ()
   {
     return values.size();
   }

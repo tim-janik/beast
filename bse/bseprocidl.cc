@@ -307,25 +307,45 @@ void printInterface (const std::string& iface, const std::string& parent = "")
 	    {
 	      GSignalQuery query;
 	      g_signal_query (sids[s], &query);
+
+	      // FIXME: how to deal with Bse::MidiEvent?
+	      if (signalName (query.signal_name) == "midi_event")
+		continue;
+
 	      printIndent();
-              // FIXME: disabled signals, since it currently breaks
-	      // print ("signal %s (", signalName (query.signal_name).c_str());
+	      print ("signal %s (", signalName (query.signal_name).c_str());
 	      for (guint p = 0; p < query.n_params; p++)
 		{
 		  std::string ptype = idlType (query.param_types[p]);
 		  std::string pname = ""; pname += char('a' + p);
 		  if (p != 0)
-                    ; // print(", ");
-		  //print ("%s %s", ptype.c_str(), pname.c_str());
+                    print(", ");
+		  print ("%s %s", ptype.c_str(), pname.c_str());
                 }
-	      //print(");\n");
+	      print(");\n");
 	    }
 	}
       else
 	{
 	  print("/* type %s (%s) is not instantiatable */\n", g_type_name (type_id), iface.c_str());
 	}
-      
+     
+      /* properties */
+      GObjectClass *klass = (GObjectClass *)g_type_class_ref (type_id);
+      if (klass)
+	{
+	  guint n_properties = 0;
+	  GParamSpec **properties = g_object_class_list_properties (klass, &n_properties);
+	 
+	  for (guint i = 0; i < n_properties; i++)
+	    {
+	      if (properties[i]->owner_type == type_id)
+		printPSpec (("property "+idlType(properties[i]->value_type)+" ").c_str(), properties[i]);
+	    }
+	  g_free (properties);
+	  g_type_class_unref (klass);
+	}
+
       const gchar **children = sfi_glue_iface_children (iface.c_str());
       while (*children)
         printInterface (*children++, idliface);
