@@ -68,7 +68,7 @@ See previous item.
 
 @section Why can't I get @beast to load my .mp3, .aiff, .something sample files?
 Import functionality for foreign sample types is always being worked on, but due
-to the shear multitude of formats out there chances are that a specific format
+to the sheer multitude of formats out there chances are that a specific format
 is not yet supported.
 However, sample file loaders have much improved in the last versions, and at
 this point exist for Ogg/Vorbis, MPEG Audio 1.0/2.0/2.5 Layer I/II/III,
