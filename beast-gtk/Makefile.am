@@ -108,8 +108,8 @@ beast_extra_sources = $(strip \
 	bstdragpattern.c \
 )
 # BEAST built sources that don't get installed
-beast_built_sources = $(strip \
-)
+beast_built_sources = @STRIP_BEGIN@ \
+@STRIP_END@
 
 #
 # setup BEAST sources and their dependancies

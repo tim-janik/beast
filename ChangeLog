@@ -1,3 +1,8 @@
+Thu May  4 02:04:46 2000  Tim Janik  <timj@gtk.org>
+
+	* configure.in (STRIP_DUMMY): some Make 3.79 $(strip ) versions are
+	broken and require an empty arg, give it to them.
+
 Sun Apr 30 04:35:18 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterneditor.c (bst_pattern_editor_init): the
