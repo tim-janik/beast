@@ -1,11 +1,8 @@
 FIXMES:	(release-critical)
+- pcmmodule input->reset() should queue a server check for !pcm-handle->readable which then throws a warning (dialog)
+- a single CSynth with auto-activate and without a song dosn't keep playback
 - implement sequencer underrun detection
-- provide auto-conection API for drivers, so that not its device list is tried, but the
-  devices meant for auto connection. (for alsa, that'd be just "default"
-- adapt pcm rates to rates provided by alsa
 - don't record samples to WAV file before *any* song is processed by sequencer
-- fix ssequencer super list length>1 for one song
-- bse_project_stop_playback: add nop job
 - midireceiver: vswitch with note-off + disconnected (due to mixer) should become idle
 - midireceiver: revisit sched_tag as condition, it's probably too weak due to temporary enginescheduler resets
 - implement solo for master
