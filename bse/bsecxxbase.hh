@@ -32,6 +32,8 @@ public:
   void add          (const char *group,
                      guint       prop_id,
                      GParamSpec *pspec);
+  void add          (guint       prop_id,
+                     GParamSpec *grouped_pspec);
   void add_ochannel (const char *name,
                      const char *blurb,
                      int         assert_id = -1);

@@ -1,28 +1,55 @@
 #!/usr/bin/perl -w
 
+my $gen_preprocess = 0;
 my $gen_externs = 0;
-my $gen_interns = 0;
-my $gen_export_proto = 0;
-my $gen_array = 0;
+my $gen_funcs = 0;
+my $funcname = 0;
 
 # parse options
-while ($_ = $ARGV[0], /^-/) {
+while ($_ = $ARGV[0], defined $_ && /^-/) {
     shift;
     last if /^--$/;
-    if (/^--externs$/) { $gen_externs = 1 }
-    if (/^--interns$/) { $gen_interns = 1 }
-    if (/^--export-proto$/) { $gen_export_proto = 1 }
-    elsif (/^--array$/) { $gen_array = 1 }
+    if (/^--preprocess$/) { $gen_preprocess = 1 }
+    elsif (/^--externs$/) { $gen_externs = 1 }
+    elsif (/^--funcname$/) { $funcname = shift }
+    elsif (/^--functions$/) { $gen_funcs = 1 }
 }
 
-print "\n/**\n ** Generated data (by mkcproc.pl";
-print ")\n **/\n";
+if (@ARGV < 1) {
+    die "$0: missing file name\n";
+}
 
 sub ncanon {
     my $name = shift;
     $name =~ s/[^a-zA-Z0-9]/_/g;
     return $name;
 }
+
+sub func_name {
+    my $name = shift;
+    return "bse__builtin_init_". ncanon ($name) ."";
+}
+
+if ($gen_externs) {
+    for (@ARGV) {
+	print "BseExportNode* ". func_name ($_) ." (void);\n";
+    }
+    exit 0;
+} elsif ($gen_funcs) {
+    for (@ARGV) {
+	print "  ". func_name ($_) .",\n";
+    }
+    exit 0;
+} elsif (!$gen_preprocess) {
+    exit 0;
+}
+
+if (@ARGV > 1) {
+    die "$0: too many file names\n";
+}
+
+print "\n/**\n ** Generated data (by mkcproc.pl";
+print ")\n **/\n";
 
 sub has_semicolon {
     my $line = shift;
@@ -34,16 +61,6 @@ sub has_semicolon {
 
     return m/;/;
 }
-
-my $var_pattern = "HELP|BLURB|AUTHORS|CRIGHTS";
-my %var_defs = ();
-my %proc_defs = ();
-my $line_jump = 1;
-my $proc_name;
-my $proc_method;
-my $proc_category;
-my $match_contents = 1;
-my $externs = "";
 
 sub print_assignment {
     my $assignment = shift;
@@ -78,10 +95,22 @@ sub get_variable {
     return "$val";
 }
 
+my $var_pattern = "HELP|BLURB|AUTHORS|CRIGHTS";
+my %var_defs = ();
+my %proc_defs = ();
+my $proc_name;
+my $proc_method;
+my $proc_category;
+my $match_contents = 1;
+my $externs = "";
+my $last_node = "NULL";
+my $line_jump = 1;
+my $file = "";
+
 while (<>) {
     my $type = 0;
-    my $file = $ARGV;
     my $line = $.;
+    $file = $ARGV;
     
     if (eof) {
 	close (ARGV);          # reset line numbering
@@ -143,7 +172,6 @@ while (<>) {
 	}
 
 	print "/* --- $proc_name --- */\n";
-	print "static GType type_id_" . ncanon ($proc_name) . " = 0;\n";
 	print "static void\n";
 	print ncanon ($proc_name) . "_setup (BseProcedureClass *proc, ";
 	print "GParamSpec **in_pspecs, GParamSpec **out_pspecs) {\n";
@@ -165,18 +193,15 @@ while (<>) {
 	if (!m@^(.*)BODY\s*\( ([^\)]*) \)\s*@x) {
 	    die "$file:$.: Invalid BODY() directive\n";
 	}
-	
-	$externs .= "  { ";
-	$externs .= "&type_id_" . ncanon ($proc_name) . ", ";
-	$externs .= $proc_method . ", ";                   # name
-	$externs .= get_variable ("BLURB", "NULL") . ", "; # blurb
-	$externs .= "0, ";                                 # private_id
+
+	$externs .= "static BseExportNodeProc __enode_". ncanon ($proc_name) ." = {\n";
+	$externs .= "  { $last_node, BSE_EXPORT_NODE_PROC,\n";
+	$externs .= "    $proc_method, $proc_category, ". get_variable ("BLURB", "NULL") ." },\n";
+	$externs .= "  0, ";                               # private_id
 	$externs .= ncanon ($proc_name) . "_setup, ";      # init
 	$externs .= ncanon ($proc_name) . "_exec, ";       # exec
-	$externs .= "NULL, ";                              # unload
-	$externs .= $proc_category . ", ";                 # category
-	$externs .= "{ 0, }, ";                            # pixdata
-	$externs .= "},\n";
+	$externs .= "\n};\n";
+	$last_node = "(BseExportNode*) &__enode_". ncanon ($proc_name);
 
 	print_assignment ("proc->help", "HELP");
 	print_assignment ("proc->authors", "AUTHORS");
@@ -185,7 +210,7 @@ while (<>) {
 	print "static BseErrorType\n";
 	print "#line $line \"$file\"\n";
 	print ncanon ($proc_name) . "_exec (" . $2 . ")\n";
-
+	
 	undef %proc_defs;
 	undef $proc_name;
 	
@@ -222,7 +247,7 @@ while (<>) {
 	$_ =~ s/^\s*IN\s/  \*\(in_pspecs++\) /;
 	$_ =~ s/^\s*OUT\s/  \*\(out_pspecs++\) /;
     }
-
+    
     # normal line dump
     if ($line_jump) {
 	print "#line $line \"$file\"\n";
@@ -233,16 +258,15 @@ while (<>) {
 
 
 # BSE export stuff
-{
-    print "\n";
-    print "/* --- Export to BSE --- */\n";
-    print "BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);\n";
-    print "BSE_EXPORT_PROCEDURES = {\n";
-    print $externs;
-    print "  { NULL, },\n";
-    print "};\n";
-    print "BSE_EXPORTS_END;\n";
+print "\n";
+print "/* --- Export to BSE --- */\n";
+print $externs;
+my $func = func_name ($file);
+if ($funcname) {
+    $func = func_name ($funcname);
 }
+print "BseExportNode* $func (void);\n";
+print "BseExportNode* $func (void)\n{\n  return $last_node;\n}\n";
 
 
 print "\n/**\n ** Generated data ends here\n **/\n";

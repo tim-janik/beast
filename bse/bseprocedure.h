@@ -33,9 +33,12 @@ G_BEGIN_DECLS
 
 
 /* --- BseProcedureClass --- */
-typedef BseErrorType  (*BseProcedureExec)    (BseProcedureClass *procedure,
-					      const GValue	*in_values,
-					      GValue		*out_values);
+typedef void          (*BseProcedureInit)   (BseProcedureClass *proc,
+                                             GParamSpec       **in_pspecs,
+                                             GParamSpec       **out_pspecs);
+typedef BseErrorType  (*BseProcedureExec)   (BseProcedureClass *procedure,
+                                             const GValue      *in_values,
+                                             GValue	       *out_values);
 struct _BseProcedureClass
 {
   GTypeClass      bse_class;

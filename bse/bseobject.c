@@ -102,48 +102,6 @@ BSE_BUILTIN_TYPE (BseObject)
                                      &object_info);
 }
 
-void
-bse_object_complete_info (const BseExportSpec *spec,
-			  GTypeInfo	    *info)
-{
-  const BseExportObject *ospec = &spec->s_object;
-  
-  *info = *ospec->object_info;
-}
-
-const gchar*
-bse_object_type_register (const gchar *name,
-			  const gchar *parent_name,
-			  const gchar *blurb,
-			  BsePlugin   *plugin,
-			  GType	      *ret_type)
-{
-  GType	  type;
-  
-  g_return_val_if_fail (ret_type != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
-  *ret_type = 0;
-  g_return_val_if_fail (name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
-  g_return_val_if_fail (parent_name != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
-  g_return_val_if_fail (plugin != NULL, bse_error_blurb (BSE_ERROR_INTERNAL));
-  
-  type = g_type_from_name (name);
-  if (type)
-    return "Object already registered";
-  type = g_type_from_name (parent_name);
-  if (!type)
-    return "Parent type unknown";
-  if (!BSE_TYPE_IS_OBJECT (type))
-    return "Parent type is non-object type";
-  
-  type = bse_type_register_dynamic (type,
-				    name,
-				    blurb,
-				    G_TYPE_PLUGIN (plugin));
-  *ret_type = type;
-  
-  return NULL;
-}
-
 static void
 bse_object_class_base_init (BseObjectClass *class)
 {
@@ -398,6 +356,18 @@ bse_object_do_get_property (GObject     *gobject,
 }
 
 void
+bse_object_class_add_grouped_property (BseObjectClass *class,
+                                       guint	       property_id,
+                                       GParamSpec     *pspec)
+{
+  g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  g_return_if_fail (property_id > 0);
+  
+  g_object_class_install_property (G_OBJECT_CLASS (class), property_id, pspec);
+}
+
+void
 bse_object_class_add_property (BseObjectClass *class,
 			       const gchar    *property_group,
 			       guint	       property_id,
@@ -406,10 +376,9 @@ bse_object_class_add_property (BseObjectClass *class,
   g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
   g_return_if_fail (G_IS_PARAM_SPEC (pspec));
   g_return_if_fail (sfi_pspec_get_group (pspec) == NULL);
-  g_return_if_fail (property_id > 0);
   
   sfi_pspec_set_group (pspec, property_group);
-  g_object_class_install_property (G_OBJECT_CLASS (class), property_id, pspec);
+  bse_object_class_add_grouped_property (class, property_id, pspec);
 }
 
 static void

@@ -44,25 +44,6 @@ print_fine_tune (const gchar *tune_name,
 	   BSE_FINE_TUNE_FACTOR (tune));
 }
 
-static void
-print_freq (const gchar *freq_name,
-	    gdouble      freq)
-{
-  g_print ("%s =%"FLF"f\n", freq_name, freq);
-}
-
-static void
-print_rate (const gchar *freq_name,
-	    gdouble      freq,
-	    const gchar *blurb)
-{
-  g_print ("%s =%"FLF"f \t(%-10Lu>>%u)%s%s\n",
-	   freq_name, freq, (guint64) (freq * (1<<PREC_SHIFT)), PREC_SHIFT,
-	   blurb ? "  // " : "",
-	   blurb ? blurb : "");
-}
-
-
 int
 main (gint   argc,
       gchar *argv[])

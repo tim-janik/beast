@@ -95,7 +95,7 @@ TypeRegistry::init_types()
       TypeRegistry *self = li->reg;
       GTypeInfo info = { 0, };
 
-      info.class_size = sizeof (CxxBaseClass);
+      info.class_size = BSE_CXX_COMMON_CLASS_SIZE;
       info.base_init = li->binit;
       info.class_init = li->cinit;
       info.instance_size = BSE_CXX_INSTANCE_OFFSET + li->instance_size;
@@ -105,7 +105,7 @@ TypeRegistry::init_types()
       if (li->cinfo)
         {
           if (li->cinfo->category != "")
-            bse_categories_register (li->cinfo->category, self->gtype_id);
+            bse_categories_register (li->cinfo->category, self->gtype_id, NULL);
           if (li->cinfo->blurb != "")
             bse_type_set_blurb (self->gtype_id, li->cinfo->blurb);
         }

@@ -93,6 +93,9 @@ void	bse_object_class_add_property		(BseObjectClass *oclass,
 						 const gchar	*property_group,
 						 guint		 property_id,
 						 GParamSpec	*pspec);
+void	bse_object_class_add_grouped_property	(BseObjectClass *oclass,
+						 guint		 property_id,
+						 GParamSpec	*pspec);
 #define	bse_object_class_add_param	bse_object_class_add_property
 guint		bse_object_class_add_signal	(BseObjectClass	*oclass,
 						 const gchar	*signal_name,
@@ -149,11 +152,6 @@ bse_object_unproxy_notifies	(gpointer	 src_object,
 
 
 /* --- implementation details --- */
-const gchar*	bse_object_type_register	(const gchar *name,
-						 const gchar *parent_name,
-						 const gchar *blurb,
-						 BsePlugin   *plugin,
-						 GType	     *ret_type);
 extern GQuark bse_quark_uname;
 
 G_END_DECLS

@@ -139,7 +139,7 @@ bse_type_init (void)
     GType   *const type_p;
     GType   (*register_type) (void);
   } builtin_types[] = {
-    /* include type id builtin variable declarations */
+    /* include class type id builtin variable declarations */
 #include "bsegentype_array.c"
   };
   const guint n_builtin_types = sizeof (builtin_types) / sizeof (builtin_types[0]);
@@ -175,7 +175,7 @@ bse_type_init (void)
     bse_type_id_packed_pointer = g_type_register_static (G_TYPE_STRING, "BseTypePackedPointer", &dummy, 0);
   }
 
-  /* initialize builtin types */
+  /* initialize builtin class types */
   for (i = 0; i < n_builtin_types; i++)
     *(builtin_types[i].type_p) = builtin_types[i].register_type ();
   

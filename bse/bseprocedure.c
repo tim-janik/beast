@@ -37,7 +37,7 @@ extern void     bse_type_register_procedure_info  (GTypeInfo                *inf
 static void     bse_procedure_base_init           (BseProcedureClass        *proc);
 static void     bse_procedure_base_finalize       (BseProcedureClass        *proc);
 static void     bse_procedure_init                (BseProcedureClass        *proc,
-                                                   const BseExportProcedure *pspec);
+                                                   const BseExportNodeProc  *pnode);
 
 
 /* --- functions --- */
@@ -98,8 +98,8 @@ bse_procedure_base_finalize (BseProcedureClass *proc)
 }
 
 static void
-bse_procedure_init (BseProcedureClass        *proc,
-                    const BseExportProcedure *pspec)
+bse_procedure_init (BseProcedureClass       *proc,
+                    const BseExportNodeProc *pnode)
 {
   GParamSpec *in_pspecs[BSE_PROCEDURE_MAX_IN_PARAMS + 8];
   GParamSpec *out_pspecs[BSE_PROCEDURE_MAX_OUT_PARAMS + 8];
@@ -111,14 +111,14 @@ bse_procedure_init (BseProcedureClass        *proc,
   
   proc->name = g_type_name (BSE_PROCEDURE_TYPE (proc));
   proc->blurb = bse_type_blurb (BSE_PROCEDURE_TYPE (proc));
-  proc->private_id = pspec->private_id;
+  proc->private_id = pnode->private_id;
   
   /* init procedure class from plugin,
    * paranoia check certain class members
    */
   const_name = proc->name;
   const_blurb = proc->blurb;
-  pspec->init (proc, in_pspecs, out_pspecs);
+  pnode->init (proc, in_pspecs, out_pspecs);
   if (proc->name != const_name)
     {
       proc->name = const_name;
@@ -185,19 +185,17 @@ bse_procedure_init (BseProcedureClass        *proc,
   memcpy (proc->out_pspecs, out_pspecs, sizeof (out_pspecs[0]) * proc->n_out_pspecs);
   proc->out_pspecs[proc->n_out_pspecs] = NULL;
   
-  proc->execute = pspec->exec;
+  proc->execute = pnode->exec;
 }
 
 void
-bse_procedure_complete_info (const BseExportSpec *spec,
-                             GTypeInfo         *info)
+bse_procedure_complete_info (const BseExportNodeProc *pnode,
+                             GTypeInfo               *info)
 {
-  const BseExportProcedure *pspec = &spec->s_proc;
-  
   info->class_size = sizeof (BseProcedureClass);
   info->class_init = (GClassInitFunc) bse_procedure_init;
-  info->class_finalize = (GClassFinalizeFunc) pspec->unload;
-  info->class_data = pspec;
+  info->class_finalize = (GClassFinalizeFunc) NULL;
+  info->class_data = pnode;
 }
 
 const gchar*

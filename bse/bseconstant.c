@@ -271,18 +271,6 @@ typedef struct {
 } FlowAccessData;
 
 static void
-flow_access (GslModule *module,
-	     gpointer   data)
-{
-  ConstantModule *cmod = module->user_data;
-  FlowAccessData *fdata = data;
-  
-  g_print("FLOWJOBINCONSTANT(%u): %f (%lld)\n", fdata->index, fdata->constants[0], gsl_module_tick_stamp (module));
-  
-  memcpy (cmod->constants + fdata->index, fdata->constants, sizeof (cmod->constants[0]) * fdata->n_values);
-}
-
-static void
 constant_process (GslModule *module,
 		  guint      n_values)
 {

@@ -219,7 +219,16 @@ CxxBaseClass::add (const char *group,
 {
   g_return_if_fail (pspec->owner_type == 0);
   pspec->flags = (GParamFlags) (pspec->flags | G_PARAM_CONSTRUCT);
-  bse_object_class_add_param ((BseObjectClass*) this, group, prop_id, pspec);
+  bse_object_class_add_property ((BseObjectClass*) this, group, prop_id, pspec);
+}
+
+void
+CxxBaseClass::add (guint       prop_id,
+                   GParamSpec *grouped_pspec)
+{
+  g_return_if_fail (grouped_pspec->owner_type == 0);
+  grouped_pspec->flags = (GParamFlags) (grouped_pspec->flags | G_PARAM_CONSTRUCT);
+  bse_object_class_add_grouped_property ((BseObjectClass*) this, prop_id, grouped_pspec);
 }
 
 void

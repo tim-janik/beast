@@ -172,8 +172,9 @@ check_type (GType type)
 }
 
 void
-bse_categories_register (const gchar *category,
-			 GType        type)
+bse_categories_register (const gchar  *category,
+			 GType         type,
+                         const guint8 *pixstream)
 {
   CEntry *centry;
   
@@ -184,7 +185,10 @@ bse_categories_register (const gchar *category,
   if (centry)
     {
       centry->type = type;
-      centry->icon = NULL;
+      if (pixstream)
+        centry->icon = bse_icon_from_pixstream (pixstream);
+      else
+        centry->icon = NULL;
     }
 }
 

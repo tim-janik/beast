@@ -23,142 +23,62 @@
 #include	<bse/bseprocedure.h>
 #include	<bse/bseconfig.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
-
-
-/* --- plugin export macros --- */
-/* (implementations reside in bseplugin.h) */
-/* start export section, provide a unique plugin name here
- */
-#define BSE_EXPORTS_BEGIN(UniqueName)   BSE_EXPORT_IMPL_B (UniqueName)
-/* list procedure types in BseExportProcedure array
- */
-#define BSE_EXPORT_PROCEDURES           BSE_EXPORT_IMPL_A (Procedure)
-/* list object types in BseExportObject array
- */
-#define BSE_EXPORT_OBJECTS              BSE_EXPORT_IMPL_A (Object)
-/* qualify exported procedure types as file handlers
- */
-#define BSE_EXPORT_FILE_HANDLERS        BSE_EXPORT_IMPL_A (FileHandler)
-/* list enum types as BseExportEnum array (mere internal use)
- */
-#define BSE_EXPORT_STATIC_ENUMS		static const BseExportEnum \
-                                        BSE_EXPORT_IMPL_S (MkEnums_built) []
-/* directive, used to trigger automated enum generation from
- * plugin's .h file. also auto-exports them to BSE
- */
-#define BSE_EXPORT_AND_GENERATE_ENUMS() BSE_EXPORT_IMPL_P (Enum) = \
-                                        BSE_EXPORT_IMPL_S (MkEnums_built)
-/* end export section
- */
-#define BSE_EXPORTS_END                 BSE_EXPORT_IMPL_E
-
-
-/* --- typedefs --- */
-typedef const gchar*                        BseExportBegin;
-typedef union  _BseExportSpec               BseExportSpec;
-typedef struct _BseExportObject             BseExportObject;
-typedef struct _BseExportEnum               BseExportEnum;
-typedef struct _BseExportFileHandler   	    BseExportFileHandler;
-typedef struct _BseExportProcedure     	    BseExportProcedure;
-typedef guint                               BseExportEnd;
-typedef void         (*BseProcedureInit)   (BseProcedureClass *proc,
-					    GParamSpec	     **in_pspecs,
-					    GParamSpec	     **out_pspecs);
-typedef void         (*BseProcedureUnload) (BseProcedureClass *procedure);
-
-
-/* --- export types --- */
-typedef enum			/*< skip >*/
-{
-  BSE_EXPORT_TYPE_PROCS		= 1,
-  BSE_EXPORT_TYPE_OBJECTS	= 2,
-  BSE_EXPORT_TYPE_ENUMS		= 3,
-  BSE_EXPORT_TYPE_FILE_HANDLERS	= 4
-} BseExportType;
-
-
-/* --- File Handler Types --- */
-typedef enum
-{
-  BSE_FILE_CUSTOM_LOADER	= -100,
-  BSE_FILE_STANDARD_LOADER	= 0,
-  BSE_FILE_FALLBACK_LOADER	= 100,
-} BseFileHandlerType;
-
-
-/* --- export declarations --- */
-struct _BseExportProcedure
-{
-  GType              *type_p;	   /* obligatory */
-  const gchar  	     *name;	   /* obligatory */
-  const gchar  	     *blurb;	   /* optional */
-  guint  	      private_id;  /* optional */
-
-  BseProcedureInit    init;	   /* obligatory */
-  BseProcedureExec    exec;	   /* obligatory */
-  BseProcedureUnload  unload;	   /* optional */
-  
-  const gchar  	     *category;	   /* recommended */
-  BsePixdata	      pixdata;     /* optional */
+typedef enum {
+  BSE_EXPORT_NODE_NONE,
+  BSE_EXPORT_NODE_LINK,
+  BSE_EXPORT_NODE_ENUM,
+  BSE_EXPORT_NODE_CLASS,
+  BSE_EXPORT_NODE_PROC
+} BseExportNodeType;
+struct _BseExportNode {
+  BseExportNode    *next;
+  BseExportNodeType ntype;
+  const char       *name;
+  const char       *category;
+  const guint8     *pixstream;
+  const char       *blurb;
+  GType             type;
 };
-struct _BseExportObject
-{
-  GType              *type_p;	   /* obligatory */
-  const gchar  	     *name;	   /* obligatory */
-  const gchar  	     *parent_type; /* obligatory */
-  const gchar  	     *blurb;	   /* optional */
+typedef struct {
+  BseExportNode node;
+  GEnumValue   *values;
+} BseExportNodeEnum;
+typedef struct {
+  BseExportNode      node;
+  const char        *parent;
+  /* GTypeInfo fields */
+  guint16            class_size;
+  GClassInitFunc     class_init;
+  GClassFinalizeFunc class_finalize;
+  guint16            instance_size;
+  GInstanceInitFunc  instance_init;
+} BseExportNodeClass;
+typedef struct {
+  BseExportNode     node;
+  guint             private_id;
+  BseProcedureInit  init;
+  BseProcedureExec  exec;
+} BseExportNodeProc;
 
-  const GTypeInfo  *object_info; /* obligatory */
-
-  const gchar  	     *category;	   /* recommended */
-  BsePixdata	      pixdata;     /* optional */
-};
-struct _BseExportEnum
-{
-  GType              *type_p;	   /* obligatory */
-  const gchar  	     *name;	   /* obligatory */
-  GType               parent_type; /* obligatory */
-  gconstpointer       values;      /* obligatory */
-};
-struct _BseExportFileHandler
-{
-  GType              *type_p;      /* obligatory, referring to procedure type */
-  BseFileHandlerType  fh_type;
-  const gchar        *prefix;	   /* optional */
-  const gchar	     *extension;   /* optional */
-  const gchar        *magic;	   /* optional, prerequisite if given */
-};
+void	bse_procedure_complete_info	(const BseExportNodeProc *pnode,
+					 GTypeInfo               *info);
 
 
-/* --- export union --- */
-union _BseExportSpec
-{
-  GType  		 *type_p; /* common to all members */
-  BseExportProcedure	  s_proc;
-  BseExportObject	  s_object;
-  BseExportEnum		  s_enum;
-  BseExportFileHandler	  s_file_handler;
-};
+/* export identity (name and version) */
+#define BSE_EXPORT_IDENTITY_SYMBOL      bse_export__identity
+#define BSE_EXPORT_IDENTITY_STRING     "bse_export__identity"
+typedef struct {
+  const gchar   *name;
+  guint          major, minor, micro;
+  guint          binary_age, interface_age;
+  BseExportNode *type_chain;
+} BseExportIdentity;
+#define BSE_EXPORT_IDENTITY(Name, HEAD)                                 \
+  { Name, BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION,      \
+    BSE_BINARY_AGE, BSE_INTERFACE_AGE, &HEAD }
 
-
-/* --- internal prototypes --- */
-void	bse_procedure_complete_info	(const BseExportSpec *spec,
-					 GTypeInfo         *info);
-void	bse_object_complete_info	(const BseExportSpec *spec,
-					 GTypeInfo         *info);
-void	bse_enum_complete_info		(const BseExportSpec *spec,
-					 GTypeInfo         *info);
-
-
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_EXPORTS_H__ */

@@ -38,22 +38,24 @@ extern GType bse_type_id_packed_pointer;
 
 
 /* --- prototypes --- */
-void		bse_type_init		  (void);
-gchar*		bse_type_blurb		  (GType  	      type);
-void		bse_type_set_blurb	  (GType  	      type,
-					   const gchar	     *blurb);
-GType  		bse_type_register_static  (GType  	      parent_type,
-					   const gchar	     *type_name,
-					   const gchar	     *type_blurb,
-					   const GTypeInfo   *info);
-GType  		bse_type_register_abstract(GType  	      parent_type,
-					   const gchar	     *type_name,
-					   const gchar	     *type_blurb,
-					   const GTypeInfo   *info);
-GType  		bse_type_register_dynamic (GType              parent_type,
-					   const gchar       *type_name,
-					   const gchar       *type_blurb,
-					   GTypePlugin       *plugin);
+void   bse_type_init                  (void);
+gchar* bse_type_blurb                 (GType            type);
+void   bse_type_set_blurb             (GType            type,
+                                       const gchar     *blurb);
+GType  bse_type_register_static       (GType            parent_type,
+                                       const gchar     *type_name,
+                                       const gchar     *type_blurb,
+                                       const GTypeInfo *info);
+GType  bse_type_register_abstract     (GType            parent_type,
+                                       const gchar     *type_name,
+                                       const gchar     *type_blurb,
+                                       const GTypeInfo *info);
+GType  bse_type_register_dynamic      (GType            parent_type,
+                                       const gchar     *type_name,
+                                       const gchar     *type_blurb,
+                                       GTypePlugin     *plugin);
+void   bse_type_register_export_chain (BseExportNode   *chain,
+                                       const gchar     *owner);
 
 
 /* --- implementation details --- */
@@ -109,7 +111,11 @@ extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 #define	sfidl_pspec_Octave(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, dflt, BSE_MIN_OCTAVE, BSE_MAX_OCTAVE, 4, hints), group)
 #define	sfidl_pspec_Freq(group, name, nick, blurb, dflt, hints)			\
-  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f, 10.0, hints), group)
+  sfi_pspec_set_group (bse_param_spec_freq (name, nick, blurb, dflt, hints), group)
+#define sfidl_pspec_Frequency(group, name, nick, blurb, hints) \
+  sfidl_pspec_Freq (group, name, nick, blurb, BSE_KAMMER_FREQUENCY_f, hints)
+#define sfidl_pspec_Gain(group, name, nick, blurb, dflt, min, max, step, hints) \
+  sfi_pspec_set_group (sfi_pspec_real (name, nick, blurb, dflt, min, max, step, hints), group)
 #define	sfidl_pspec_FineTune(group, name, nick, blurb, hints)			\
   sfi_pspec_set_group (sfi_pspec_int (name, nick, blurb, 0, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE, 10, hints), group)
 #define	sfidl_pspec_String(group, name, nick, blurb, dflt, hints)			\

@@ -677,6 +677,48 @@ bse_icon_from_pixdata (const BsePixdata *pixdata)
   return icon;
 }
 
+static inline const guint8 *
+get_uint32 (const guint8 *stream, guint *result)
+{
+  *result = (stream[0] << 24) + (stream[1] << 16) + (stream[2] << 8) + stream[3];
+  return stream + 4;
+}
+
+BseIcon*
+bse_icon_from_pixstream (const guint8 *pixstream)
+{
+  BsePixdata pixd;
+  const guint8 *s = pixstream;
+  guint len, type, rowstride, width, height;
+
+  g_return_val_if_fail (pixstream != NULL, NULL);
+
+  if (strncmp (s, "GdkP", 4) != 0)
+    return NULL;
+  s += 4;
+
+  s = get_uint32 (s, &len);
+  if (len < 24)
+    return NULL;
+
+  s = get_uint32 (s, &type);
+  if (type != 0x02010002 &&     /* RLE/8bit/RGBA */
+      type != 0x01010002)       /* RAW/8bit/RGBA */
+    return NULL;
+
+  s = get_uint32 (s, &rowstride);
+  s = get_uint32 (s, &width);
+  s = get_uint32 (s, &height);
+  if (width < 1 || height < 1)
+    return NULL;
+
+  pixd.type = BSE_PIXDATA_RGBA | (type >> 24 == 2 ? BSE_PIXDATA_1BYTE_RLE : 0);
+  pixd.width = width;
+  pixd.height = height;
+  pixd.encoded_pix_data = s;
+  return bse_icon_from_pixdata (&pixd);
+}
+
 
 /* --- ID allocator --- */
 #define	ID_WITHHOLD_BUFFER_SIZE		59

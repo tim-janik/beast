@@ -213,7 +213,7 @@ bse_init_core (void)
   
   /* remaining BSE components */
   _bse_midi_init ();
-  bse_plugins_init ();
+  bse_plugin_init_builtins ();
   /* make sure the server is alive */
   bse_server_get ();
 }

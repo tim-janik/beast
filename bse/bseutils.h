@@ -78,7 +78,8 @@ gboolean        bse_darrays_match_freq	        (gfloat          match_freq,
 
 
 /* --- icons --- */
-BseIcon* bse_icon_from_pixdata (const BsePixdata *pixdata);
+BseIcon* bse_icon_from_pixdata   (const BsePixdata *pixdata);
+BseIcon* bse_icon_from_pixstream (const guint8     *pixstream);
 
 
 /* --- ID allocator --- */

@@ -30,7 +30,8 @@ typedef gboolean (BseCategoryCheck) (BseCategory *category,
 
 /* --- prototypes --- */
 void		bse_categories_register      (const gchar      *category,
-					      GType             type);
+					      GType             type,
+                                              const guint8     *pixstream);
 void		bse_categories_register_icon (const gchar      *category,
 					      GType             type,
 					      const BsePixdata *pixdata);

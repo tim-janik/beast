@@ -166,10 +166,10 @@ METHOD (BseEditableSample, read-samples) {
 				 BSE_TYPE_EDITABLE_SAMPLE, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("voffset", NULL, "Value offset",
 			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_fblock ("sample_block", NULL, "Block of samples", SFI_PARAM_DEFAULT),
-	  } BODY (BseProcedureClass *proc,
-		  const GValue      *in_values,
-		  GValue            *out_values)
+  OUT	= sfi_pspec_fblock ("sample_block", NULL, "Block of samples", SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseEditableSample *esample = bse_value_get_object (in_values++);
@@ -218,10 +218,10 @@ METHOD (BseEditableSample, collect-stats) {
 			 0, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
   IN	= sfi_pspec_int ("max_pairs", NULL, "Maximum number of (min, max) pairs to collect",
 			 1, 0, G_MAXINT, 1, SFI_PARAM_DEFAULT);
-  OUT	= sfi_pspec_fblock ("sample_block", NULL, "Block of samples", SFI_PARAM_DEFAULT),
-	  } BODY (BseProcedureClass *proc,
-		  const GValue      *in_values,
-		  GValue            *out_values)
+  OUT	= sfi_pspec_fblock ("sample_block", NULL, "Block of samples", SFI_PARAM_DEFAULT);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
 {
   /* extract parameter values */
   BseEditableSample *esample    = bse_value_get_object (in_values++);

@@ -131,7 +131,7 @@ bse_script_proc_register (const gchar *script_file,
   type = g_type_register_static (BSE_TYPE_PROCEDURE, tname, &script_info, 0);
   g_free (tname);
   if (type && category && category[0])
-    bse_categories_register (category, type);
+    bse_categories_register (category, type, NULL);
   return type;
 }
 

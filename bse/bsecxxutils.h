@@ -120,48 +120,61 @@ public:
 };
 
 #define BSE_CXX_TYPE_REGISTER_INITIALIZED(ObjectType, parent, cinfo, binit, flags) \
-  static void                                                                      \
-  bse_cxx_ ## ObjectType ## _instance_init (GTypeInstance *instance,               \
-                                            gpointer       g_class)                \
-  { /* invoke constructor upon _init of destination type */                        \
-    if (G_TYPE_FROM_INSTANCE (instance) == G_TYPE_FROM_CLASS (g_class))            \
-      new (BSE_CXX_INSTANCE_OFFSET + (char*) instance) ObjectType ();              \
-  }                                                                                \
+  BSE_CXX_DEFINE_INSTANCE_INIT (ObjectType);                                       \
   BSE_CXX_TYPE_REGISTER_INTERN (ObjectType, parent, cinfo, binit,                  \
-                                bse_cxx_ ## ObjectType ## _instance_init, flags)
+                                BSE_CXX_SYM(ObjectType,instance_init), flags)
 #define BSE_CXX_TYPE_REGISTER_INTERN(ObjectType, parent, cinfo, binit, iinit, flags) \
-  static void bse_cxx_ ## ObjectType ## _set_property (GObject *o, guint prop_id,  \
-                                           const GValue *value, GParamSpec *pspec) \
-  {                                                                                \
-    CxxBase *cbase = cast (o);  const Bse::Value *v = (const Bse::Value*) value;   \
-    static_cast<ObjectType*> (cbase)->set_property (prop_id, *v, pspec);           \
-  }                                                                                \
-  static void bse_cxx_ ## ObjectType ## _get_property (GObject *o, guint prop_id,  \
-                                                 GValue *value, GParamSpec *pspec) \
-  {                                                                                \
-    CxxBase *cbase = cast (o);  Bse::Value *v = (Bse::Value*) value;               \
-    static_cast<ObjectType*> (cbase)->get_property (prop_id, *v, pspec);           \
-  }                                                                                \
-  static void bse_cxx_ ## ObjectType ## _class_init (CxxBaseClass *klass)          \
-  {                                                                                \
-    GObjectClass *gobject_class = (GObjectClass*) klass;                           \
-    gobject_class->set_property = bse_cxx_ ## ObjectType ## _set_property;         \
-    gobject_class->get_property = bse_cxx_ ## ObjectType ## _get_property;         \
-    ObjectType::class_init (klass);                                                \
-  }                                                                                \
-  static Bse::TypeRegistry                                                         \
-    ObjectType ## _type_keeper (sizeof (ObjectType), "Bse" #ObjectType, parent,    \
-                                cinfo, binit,                                      \
-                                bse_cxx_ ## ObjectType ## _class_init,             \
-                                iinit, flags);                                     \
-  GType ObjectType::get_type ()                                                    \
-  {                                                                                \
-    return ObjectType ## _type_keeper . get_type ();                               \
+  BSE_CXX_DEFINE_SET_PROPERTY (ObjectType);                                     \
+  BSE_CXX_DEFINE_GET_PROPERTY (ObjectType);                                     \
+  BSE_CXX_DEFINE_CLASS_INIT (ObjectType, BSE_CXX_SYM(ObjectType,set_property),  \
+                                        BSE_CXX_SYM(ObjectType,get_property));  \
+  static Bse::TypeRegistry                                                      \
+    ObjectType ## _type_keeper (sizeof (ObjectType), "Bse" #ObjectType, parent, \
+                                cinfo, binit,                                   \
+                                BSE_CXX_SYM(ObjectType,class_init),             \
+                                iinit, flags);                                  \
+  GType ObjectType::get_type ()                                                 \
+  {                                                                             \
+    return ObjectType ## _type_keeper . get_type ();                            \
   }
-
+#define BSE_CXX_DEFINE_INSTANCE_INIT(ObjectType)                                \
+  static void                                                                   \
+  BSE_CXX_SYM(ObjectType,instance_init) (GTypeInstance *instance,               \
+                                         gpointer       g_class)                \
+  { /* invoke constructor upon _init of destination type */                     \
+    if (G_TYPE_FROM_INSTANCE (instance) == G_TYPE_FROM_CLASS (g_class))         \
+      new (BSE_CXX_INSTANCE_OFFSET + (char*) instance) ObjectType ();           \
+  }
+#define BSE_CXX_DEFINE_SET_PROPERTY(ObjectType)                                 \
+  static void BSE_CXX_SYM(ObjectType,set_property) (GObject *o, guint prop_id,  \
+                                                    const GValue *value,        \
+                                                    GParamSpec *pspec)          \
+  {                                                                             \
+    CxxBase *cbase = cast (o);                                                  \
+    const Bse::Value *v = (const Bse::Value*) value;                            \
+    static_cast<ObjectType*> (cbase)->set_property (prop_id, *v, pspec);        \
+  }
+#define BSE_CXX_DEFINE_GET_PROPERTY(ObjectType)                                 \
+  static void BSE_CXX_SYM(ObjectType,get_property) (GObject *o, guint prop_id,  \
+                                                    GValue *value,              \
+                                                    GParamSpec *pspec)          \
+  {                                                                             \
+    CxxBase *cbase = cast (o);  Bse::Value *v = (Bse::Value*) value;            \
+    static_cast<ObjectType*> (cbase)->get_property (prop_id, *v, pspec);        \
+  }
+#define BSE_CXX_DEFINE_CLASS_INIT(ObjectType, set_prop, get_prop)               \
+  static void BSE_CXX_SYM(ObjectType,class_init) (CxxBaseClass *klass)          \
+  {                                                                             \
+    GObjectClass *gobject_class = (GObjectClass*) klass;                        \
+    gobject_class->set_property = set_prop;                                     \
+    gobject_class->get_property = get_prop;                                     \
+    ObjectType::class_init (klass);                                             \
+  }
+#define BSE_CXX_SYM(Type, func)         bse_cxx__ ## Type ## __ ## func
 #define BSE_CXX_UTILS_ALIGNMENT         (2 * sizeof (gsize))
 #define BSE_CXX_UTILS_ALIGN(offset)     ((offset + BSE_CXX_UTILS_ALIGNMENT - 1) & -BSE_CXX_UTILS_ALIGNMENT)
 #define BSE_CXX_SIZEOF(Class)           BSE_CXX_UTILS_ALIGN (sizeof (Class))
+#define BSE_CXX_COMMON_CLASS_SIZE       sizeof (CxxBaseClass)
 
 } // Bse
 

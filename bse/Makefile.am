@@ -21,10 +21,6 @@ lib_LTLIBRARIES = libbse.la
 DEFS += $(strip \
 	$(patsubst %, -DG_LOG_DOMAIN=\"BSE\" -DBSE_COMPILATION, \
 	              $(filter $(<F), $(bse_c_sources))) \
-	$(patsubst %, -DBSE_BUILTIN_NAME=$(strip $(subst -,_, $(subst .,_,$(basename $(<F))))) \
-                      -DBSE_PLUGIN_NAME="\"$(strip $(basename $(<F)))\"" \
-	              -DG_LOG_DOMAIN=BSE_PLUGIN_NAME -DBSE_COMPILATION, \
-	              $(filter $(<F), $(bse_builtin_c_sources))) \
 )
 
 # libtool stuff: set version and export symbols for resolving
@@ -62,7 +58,7 @@ bse_public_h_sources = $(strip \
 	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
 	bsecompat.h		bseundostack.h		bsemonokeyboard.c		bsemididecoder.h \
 	bsecxxvalue.h		bsecxxutils.h		bsecxxbase.h			bsecxxclosure.h \
-	bsecxxarg.h		bsecxxmodule.h		examplepeakfilter.h \
+	bsecxxarg.h		bsecxxmodule.h		bsecxxplugin.h			examplepeakfilter.h \
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -88,7 +84,7 @@ bse_c_sources = $(strip \
 	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
 	bsecompat.c		bseundostack.c		bsemonokeyboard.c		bsemididecoder.c \
 	bsecxxvalue.cc		bsecxxutils.cc		bsecxxbase.cc			bsecxxclosure.cc \
-	bsecxxarg.cc		bsecxxmodule.cc		examplepeakfilter.cc \
+	bsecxxarg.cc		bsecxxmodule.cc		bsecxxplugin.cc			examplepeakfilter.cc \
 )
 # procedure sources
 bse_proc_sources = $(strip \
@@ -141,13 +137,8 @@ bse_proc_gen_sources = $(strip \
 	bsewaveosc.gen-proc.c \
 	bsewaverepo.gen-proc.c \
 )
-# c sources for builtin plugins
-bse_builtin_c_sources = $(strip \
-	$(bse_proc_gen_sources) \
-)
 # non-compile and non-install sources required
 bse_extra_sources = $(strip \
-	mkbuiltinlist.pl \
 	mktypes.pl \
 	mkcalls.pl \
 	mkcproc.pl \
@@ -186,7 +177,7 @@ $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
 libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources)
-libbse_la_SOURCES = $(bse_c_sources) $(bse_builtin_c_sources)
+libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources)
 MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 EXTRA_HEADERS +=
 EXTRA_DIST += $(bse_private_h_sources) $(bse_proc_sources)
@@ -219,7 +210,7 @@ stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.idl $(SFIDL)
 	&& (cmp -s xgen-sbgth bsegentypes.h || cp xgen-sbgth bsegentypes.h) \
 	&& rm -f xgen-sbgth \
 	&& echo timestamp > $(@F)
-bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bserecords.idl $(SFIDL) $(bse_builtin_c_sources) # $(bse_c_sources)
+bsegentypes.c: @DVLBUILD@ bsegentypes.h mktypes.pl $(srcdir)/bserecords.idl $(SFIDL) # $(bse_c_sources)
 	cd $(srcdir) \
 	&& $(GLIB_MKENUMS) \
 	  --eprod "\nGType BSE_TYPE_ID (@EnumName@) = 0;" \
@@ -252,18 +243,18 @@ bseenum_list.c: @DVLBUILD@ bseenum_arrays.c
 	    $(bse_public_h_sources) > xgen-belc \
 	&& cp xgen-belc $(@F) \
 	&& rm -f xgen-belc
-bsebuiltin_externs.c: @DVLBUILD@ $(bse_builtin_c_sources) mkbuiltinlist.pl
+bsebuiltin_externs.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
-	&& $(PERL) mkbuiltinlist.pl --externs $(bse_builtin_c_sources) > xgen-bbec \
+	&& $(PERL) mkcproc.pl --externs $(bse_proc_gen_sources) > xgen-bbec \
 	&& cp xgen-bbec $(@F) \
 	&& rm -f xgen-bbec
-bsebuiltin_array.c: @DVLBUILD@ $(bse_builtin_c_sources) mkbuiltinlist.pl
+bsebuiltin_array.c: @DVLBUILD@ $(bse_proc_gen_sources) mkcproc.pl
 	cd $(srcdir) \
-	&& $(PERL) mkbuiltinlist.pl --array $(bse_builtin_c_sources) > xgen-bbac \
+	&& $(PERL) mkcproc.pl --functions $(bse_proc_gen_sources) > xgen-bbac \
 	&& cp xgen-bbac $(@F) \
 	&& rm -f xgen-bbac
 %.gen-proc.c: %.proc mkcproc.pl
-	$(srcdir)/mkcproc.pl $< >$@
+	$(srcdir)/mkcproc.pl --funcname $@ --preprocess $< >$@
 
 
 #
