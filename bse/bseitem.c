@@ -1090,28 +1090,23 @@ undo_restore_item (BseUndoStep  *ustep,
                    BseUndoStack *ustack)
 {
   BseItem *item = bse_undo_pointer_unpack (ustep->data[0].v_pointer, ustack);
-  BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+  BseStorage *storage = ustep->data[1].v_pointer;
   GTokenType expected_token = G_TOKEN_NONE;
-  GScanner *scanner;
-
-  bse_storage_input_text (storage, ustep->data[1].v_pointer, "<undo-storage>");
-  scanner = bse_storage_get_scanner (storage);
 
   expected_token = bse_storage_restore_item (storage, item);
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
 
   bse_storage_resolve_item_links (storage);
-
-  bse_storage_reset (storage);
-  g_object_unref (storage);
 }
 
 static void
 unde_free_item (BseUndoStep *ustep)
 {
+  BseStorage *storage = ustep->data[1].v_pointer;
   g_free (ustep->data[0].v_pointer);
-  g_free (ustep->data[1].v_pointer);
+  bse_storage_reset (storage);
+  g_object_unref (storage);
 }
 
 void
@@ -1120,11 +1115,10 @@ bse_item_push_undo_storage (BseItem         *self,
                             BseStorage      *storage)
 {
   BseUndoStep *ustep;
-  gpointer mem = bse_storage_mem_flush (storage);
-  bse_storage_reset (storage);
+  bse_storage_turn_readable (storage, "<undo-storage>");
   ustep = bse_undo_step_new (undo_restore_item, unde_free_item, 2);
   ustep->data[0].v_pointer = bse_undo_pointer_pack (self, ustack);
-  ustep->data[1].v_pointer = mem;
+  ustep->data[1].v_pointer = g_object_ref (storage);
   bse_undo_stack_push (ustack, ustep);
 }
 
@@ -1135,7 +1129,9 @@ bse_item_backup_to_undo (BseItem      *self,
   if (!BSE_UNDO_STACK_VOID (ustack))
     {
       BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
-      bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS | BSE_STORAGE_SELF_CONTAINED);
+      bse_storage_prepare_write (storage, (BSE_STORAGE_SKIP_DEFAULTS |
+                                           BSE_STORAGE_DBLOCK_CONTAINED |
+                                           BSE_STORAGE_SELF_CONTAINED));
       bse_storage_store_item (storage, self);
       
       bse_item_push_undo_storage (self, ustack, storage);

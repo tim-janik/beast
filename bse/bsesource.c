@@ -1626,7 +1626,7 @@ bse_source_input_backup_to_undo (BseSource      *source,
   ustack = bse_item_undo_open (source, "unset-input %s", bse_object_debug_name (source));
 
   storage = g_object_new (BSE_TYPE_STORAGE, NULL);
-  bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS);
+  bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS | BSE_STORAGE_DBLOCK_CONTAINED);
 
   bse_storage_break (storage);
   bse_storage_printf (storage,

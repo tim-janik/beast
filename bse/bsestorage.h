@@ -24,12 +24,12 @@
 G_BEGIN_DECLS
 
 /* --- object type macros --- */
-#define BSE_TYPE_STORAGE               (BSE_TYPE_ID (BseStorage))
-#define BSE_STORAGE(object)            (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_STORAGE, BseStorage))
-#define BSE_STORAGE_CLASS(class)       (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_STORAGE, BseStorageClass))
-#define BSE_IS_STORAGE(object)         (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_STORAGE))
-#define BSE_IS_STORAGE_CLASS(class)    (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_STORAGE))
-#define BSE_STORAGE_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_STORAGE, BseStorageClass))
+#define BSE_TYPE_STORAGE                 (BSE_TYPE_ID (BseStorage))
+#define BSE_STORAGE(object)              (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_STORAGE, BseStorage))
+#define BSE_STORAGE_CLASS(class)         (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_STORAGE, BseStorageClass))
+#define BSE_IS_STORAGE(object)           (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_STORAGE))
+#define BSE_IS_STORAGE_CLASS(class)      (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_STORAGE))
+#define BSE_STORAGE_GET_CLASS(object)    (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_STORAGE, BseStorageClass))
 
 
 /* --- macros --- */
@@ -37,15 +37,17 @@ G_BEGIN_DECLS
   BSE_VERSION_CMP (self->major_version, self->minor_version, self->micro_version, vmaj, min, vmic) >= 0)
 #define BSE_STORAGE_COMPAT(self, vmaj, min, vmic)       ( /* whether file needs <=vARGS compat code */ \
   BSE_VERSION_CMP (self->major_version, self->minor_version, self->micro_version, vmaj, min, vmic) <= 0)
-#define BSE_STORAGE_SELF_CONTAINED(st)  ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SELF_CONTAINED) != 0)
-#define BSE_STORAGE_SKIP_DEFAULTS(st)   ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SKIP_DEFAULTS) != 0)
-#define BSE_STORAGE_MODE_MASK           (BSE_STORAGE_SKIP_DEFAULTS | BSE_STORAGE_SELF_CONTAINED)
+#define BSE_STORAGE_SKIP_DEFAULTS(st)    ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SKIP_DEFAULTS) != 0)
+#define BSE_STORAGE_SELF_CONTAINED(st)   ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_SELF_CONTAINED) != 0)
+#define BSE_STORAGE_DBLOCK_CONTAINED(st) ((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_DBLOCK_CONTAINED) != 0)
 typedef enum    /*< skip >*/
 {
-  BSE_STORAGE_SKIP_DEFAULTS     = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
-  BSE_STORAGE_SELF_CONTAINED    = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1)
+  BSE_STORAGE_SKIP_DEFAULTS       = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
+  BSE_STORAGE_SELF_CONTAINED      = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
+  BSE_STORAGE_DBLOCK_CONTAINED    = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2)
 } BseStorageMode;
-#define BSE_STORAGE_FLAGS_USHIFT        (BSE_OBJECT_FLAGS_USHIFT + 2)
+#define BSE_STORAGE_FLAGS_USHIFT         (BSE_OBJECT_FLAGS_USHIFT + 3)
+#define BSE_STORAGE_MODE_MASK            (BSE_STORAGE_SKIP_DEFAULTS | BSE_STORAGE_SELF_CONTAINED | BSE_STORAGE_DBLOCK_CONTAINED)
 
 
 /* --- compatibility --- */
@@ -54,7 +56,7 @@ typedef enum    /*< skip >*/
 
 
 /* --- BseStorage --- */
-typedef struct _BseStorageBBlock   BseStorageBBlock;
+typedef struct _BseStorageDBlock   BseStorageDBlock;
 typedef struct _BseStorageItemLink BseStorageItemLink;
 typedef void (*BseStorageRestoreLink)   (gpointer        data,
                                          BseStorage     *storage,
@@ -66,7 +68,6 @@ struct _BseStorage
   BseObject           parent_instance;
   /* writing */
   SfiWStore          *wstore;
-  GSList             *indent;
   /* parsing */
   SfiRStore          *rstore;
   guint               major_version;
@@ -74,6 +75,10 @@ struct _BseStorage
   guint               micro_version;
   GHashTable         *path_table;
   BseStorageItemLink *item_links;
+  /* internal data */
+  guint               n_dblocks;
+  BseStorageDBlock   *dblocks;
+  gchar              *free_me;
   /* compat */ // VERSION-FIXME: remove after 0.5.2
   gfloat          mix_freq;
   gfloat          osc_freq;
@@ -93,86 +98,82 @@ void         bse_storage_compat_dhoscf          (BseStorage             *self,
                                                  gfloat                  osc_freq);
 void         bse_storage_compat_dhchannels      (BseStorage             *self,
                                                  guint                   n_channels);
-GTokenType   bse_storage_compat_dhparse         (BseStorage             *storage,
-                                                 GslDataHandle         **data_handle_p,
-                                                 guint                  *n_channels_p,
-                                                 gfloat                 *mix_freq_p,
-                                                 gfloat                 *osc_freq_p);
 
 
 /* --- prototypes -- */
-void         bse_storage_reset                  (BseStorage             *storage);
-void         bse_storage_prepare_write          (BseStorage             *storage,
+void         bse_storage_reset                  (BseStorage             *self);
+void         bse_storage_prepare_write          (BseStorage             *self,
                                                  BseStorageMode          mode);
-BseErrorType bse_storage_input_file             (BseStorage             *storage,
+void         bse_storage_turn_readable          (BseStorage             *self,
+                                                 const gchar            *storage_name);
+BseErrorType bse_storage_input_file             (BseStorage             *self,
                                                  const gchar            *file_name);
-void         bse_storage_input_text             (BseStorage             *storage,
+void         bse_storage_input_text             (BseStorage             *self,
                                                  const gchar            *text,
                                                  const gchar            *text_name);
-GTokenType   bse_storage_restore_item           (BseStorage             *storage,
+GTokenType   bse_storage_restore_item           (BseStorage             *self,
                                                  gpointer                item);
-void         bse_storage_store_item             (BseStorage             *storage,
+void         bse_storage_store_item             (BseStorage             *self,
                                                  gpointer                item);
-void         bse_storage_store_child            (BseStorage             *storage,
+void         bse_storage_store_child            (BseStorage             *self,
                                                  gpointer                item);
 
 
 /* --- writing --- */
-void         bse_storage_putf                   (BseStorage             *storage,
+void         bse_storage_putf                   (BseStorage             *self,
                                                  gfloat                  vfloat);
-void         bse_storage_putd                   (BseStorage             *storage,
+void         bse_storage_putd                   (BseStorage             *self,
                                                  gdouble                 vdouble);
-void         bse_storage_putr                   (BseStorage             *storage,
+void         bse_storage_putr                   (BseStorage             *self,
                                                  SfiReal                 vreal,
                                                  const gchar            *hints);
-void         bse_storage_printf                 (BseStorage             *storage,
+void         bse_storage_printf                 (BseStorage             *self,
                                                  const gchar            *format,
                                                  ...) G_GNUC_PRINTF (2, 3);
-void         bse_storage_put_param              (BseStorage             *storage,
+void         bse_storage_put_param              (BseStorage             *self,
                                                  const GValue           *value,
                                                  GParamSpec             *pspec);
-void         bse_storage_put_item_link          (BseStorage             *storage,
+void         bse_storage_put_item_link          (BseStorage             *self,
                                                  BseItem                *from_item,
                                                  BseItem                *to_item);
-void         bse_storage_put_data_handle        (BseStorage             *storage,
+void         bse_storage_put_data_handle        (BseStorage             *self,
                                                  guint                   significant_bits,
                                                  GslDataHandle          *dhandle);
-void         bse_storage_flush_fd               (BseStorage             *storage,
+void         bse_storage_flush_fd               (BseStorage             *self,
                                                  gint                    fd);
-gchar*       bse_storage_mem_flush              (BseStorage             *storage);
 
 
 /* --- reading --- */
-void         bse_storage_error                  (BseStorage             *storage,
+void         bse_storage_error                  (BseStorage             *self,
                                                  const gchar            *format,
                                                  ...) G_GNUC_PRINTF (2,3);
-void         bse_storage_warn                   (BseStorage             *storage,
+void         bse_storage_warn                   (BseStorage             *self,
                                                  const gchar            *format,
                                                  ...) G_GNUC_PRINTF (2,3);
-GTokenType   bse_storage_warn_skip              (BseStorage             *storage,
+GTokenType   bse_storage_warn_skip              (BseStorage             *self,
                                                  const gchar            *format,
                                                  ...) G_GNUC_PRINTF (2,3);
-GTokenType   bse_storage_parse_param_value      (BseStorage             *storage,
+GTokenType   bse_storage_parse_param_value      (BseStorage             *self,
                                                  GValue                 *value,
                                                  GParamSpec             *pspec);
-GTokenType   bse_storage_parse_item_link        (BseStorage             *storage,
+GTokenType   bse_storage_parse_item_link        (BseStorage             *self,
                                                  BseItem                *from_item,
                                                  BseStorageRestoreLink   restore_link,
                                                  gpointer                data);
-void         bse_storage_resolve_item_links     (BseStorage             *storage);
-GTokenType   bse_storage_parse_data_handle      (BseStorage             *storage,
+void         bse_storage_resolve_item_links     (BseStorage             *self);
+GTokenType   bse_storage_parse_data_handle      (BseStorage             *self,
                                                  GslDataHandle         **data_handle_p,
                                                  guint                  *n_channels_p,
                                                  gfloat                 *mix_freq_p,
                                                  gfloat                 *osc_freq_p);
-gboolean     bse_storage_match_data_handle      (BseStorage             *storage,
+gboolean     bse_storage_match_data_handle      (BseStorage             *self,
                                                  GQuark                  quark);
-GTokenType   bse_storage_parse_data_handle_rest (BseStorage             *storage,
+GTokenType   bse_storage_parse_data_handle_rest (BseStorage             *self,
                                                  GslDataHandle         **data_handle_p,
                                                  guint                  *n_channels_p,
                                                  gfloat                 *mix_freq_p,
                                                  gfloat                 *osc_freq_p);
-GTokenType   bse_storage_parse_rest             (BseStorage             *storage,
+GTokenType   bse_storage_parse_rest             (BseStorage             *self,
                                                  gpointer                context_data,
                                                  BseTryStatement         try_statement,
                                                  gpointer                user_data);

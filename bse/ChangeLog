@@ -1,3 +1,22 @@
+Mon Jun  9 03:50:49 2003  Tim Janik  <timj@gtk.org>
+
+	* BseWave undo fixup, we now support full undo on waves by keeping
+	referenced data handles in memory.
+
+	* bseitem.c:
+	(bse_item_backup_to_undo): backup to BSE_STORAGE_DBLOCK_CONTAINED storage,
+	so it may later be turned readable.
+	(bse_item_push_undo_storage): turn the undo storage readable instead of
+	just handing on text, this keeps data handles intact.
+	(undo_restore_item): restore item from BseStorage instead of just text.
+
+	* bsestorage.[hc]: added DBLOCK storage mode which keeps data handle
+	references in memory.
+	added bse_storage_turn_readable() to read out a previously written to
+	storage (requires DBLOCK mdoe).
+	reorganized data handle parsing code somewhat, got rid of half-baked
+	bse_storage_mem_flush().
+
 Sun Jun  8 19:56:27 2003  Tim Janik  <timj@gtk.org>
 
 	* bseitem.c:
