@@ -1,3 +1,16 @@
+Mon Feb 11 18:18:09 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesimpleresonancefilter.[hc]: quick and simple resonance filter,
+	needs property tweaking still.
+
+	* bsegenosc.c (bse_gen_osc_class_init): provide logarithmic parameters
+	for the frequency scale.
+
+	* bsesimpleosc.c (bse_simple_osc_class_init): same here.
+
+	* bseiirfilter.c (bse_iir_filter_class_init): provide log scale params
+	for scales here as well.
+
 Wed Feb  6 17:30:53 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesequencer.[hc]: provide per-note sync signal.

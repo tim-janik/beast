@@ -164,6 +164,7 @@ bse_simple_osc_class_init (BseSimpleOscClass *class)
 						    BSE_KAMMER_FREQ, 10.0,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
+  bse_object_class_set_param_log_scale (object_class, "base_freq", 880.0, 2, 4);
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PARAM_BASE_NOTE,
 			      bse_param_spec_note ("base_note", "Note", NULL,

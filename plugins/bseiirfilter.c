@@ -1,5 +1,5 @@
 /* BseIIRFilter - BSE Infinite Impulse Response Filter
- * Copyright (C) 1999, 2001 Tim Janik
+ * Copyright (C) 1999-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -127,7 +127,8 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
 			      bse_param_spec_float ("cut_off_freq", _("Cutoff [Hz]"), NULL,
 						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d - FREQ_DELTA,
 						    BSE_KAMMER_FREQ / 2, 5.0,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+  bse_object_class_set_param_log_scale (object_class, "cut_off_freq", 880.0, 2, 4);
   bse_object_class_add_param (object_class, _("Cutoff Frequency (All Filters)"),
 			      PARAM_CUT_OFF_NOTE1,
 			      bse_param_spec_note ("cut_off_note", _("Note"), NULL,
@@ -140,7 +141,8 @@ bse_iir_filter_class_init (BseIIRFilterClass *class)
 			      bse_param_spec_float ("cut_off_freq_2", _("Cutoff [Hz]"), NULL,
 						    BSE_MIN_OSC_FREQ_d + FREQ_DELTA, BSE_MAX_OSC_FREQ_d,
 						    BSE_KAMMER_FREQ / 2 + FREQ_DELTA, 5.0,
-						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
+						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
+  bse_object_class_set_param_log_scale (object_class, "cut_off_freq_2", 880.0, 2, 4);
   bse_object_class_add_param (object_class, _("Cutoff Frequency 2 (Band Pass/Stop)"),
 			      PARAM_CUT_OFF_NOTE2,
 			      bse_param_spec_note ("cut_off_note_2", _("Note"), NULL,
@@ -453,7 +455,7 @@ BSE_EXPORT_OBJECTS = {
   { &type_id_iir_filter, "BseIIRFilter", "BseSource",
     "BseIIRFilter is an infinite impulse response filter of variable order",
     &type_info_iir_filter,
-    "/Modules/IIRFilter",
+    "/Modules/IIR Filter",
     { FILTER_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       FILTER_IMAGE_WIDTH, FILTER_IMAGE_HEIGHT,
       FILTER_IMAGE_RLE_PIXEL_DATA, },
