@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-10 02:34+0200\n"
+"POT-Creation-Date: 2004-06-11 23:30+0200\n"
 "PO-Revision-Date: 2004-04-28 21:48+0300\n"
 "Last-Translator: Alexandre Prokoudine <techwriter@land.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -17,171 +17,176 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "_New"
 msgstr "_Новый"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "Create new project"
 msgstr "Создать новый проект"
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "_Open..."
 msgstr "_Открыть..."
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "Open existing project"
 msgstr "Открыть существующий проект"
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "_Merge..."
 msgstr "О_бъединить..."
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "Merge an existing project into the current project"
 msgstr "Объединить существующий проект с открытым сейчас"
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "_Import MIDI..."
 msgstr "_Импортировать MIDI..."
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "Import a standard MIDI file into the current project"
 msgstr "Импортировать MIDI-файл в этот проект"
 
-#: beast-gtk/bstapp.c:58
+#: beast-gtk/bstapp.c:76
 msgid "_Close"
 msgstr "_Закрыть"
 
-#: beast-gtk/bstapp.c:62
+#: beast-gtk/bstapp.c:80
 msgid "_Save"
 msgstr "_Сохранить"
 
-#: beast-gtk/bstapp.c:64
+#: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr "Сохранить·_как..."
 
-#: beast-gtk/bstapp.c:68
+#: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr "В_ыйти"
 
-#: beast-gtk/bstapp.c:72
+#: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
 msgstr "_Настроить..."
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:93
 msgid "Rebuild"
 msgstr "Перестроить"
 
-#: beast-gtk/bstapp.c:78
+#: beast-gtk/bstapp.c:96
 msgid "_About..."
 msgstr "_О программе..."
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:99
 msgid "_Undo"
 msgstr "О_тменить"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:101
 msgid "_Redo"
 msgstr "_Повторить"
 
-#: beast-gtk/bstapp.c:87 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Забыть историю правок"
 
-#: beast-gtk/bstapp.c:91
+#: beast-gtk/bstapp.c:109
 msgid "Procedure _Browser"
 msgstr "Обозреватель _процедур"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:111
 msgid "Rack Editor"
 msgstr "Редактор рэков"
 
-#: beast-gtk/bstapp.c:95
+#: beast-gtk/bstapp.c:113
+#, fuzzy
+msgid "Profiler"
+msgstr "Очерёдность фильтров"
+
+#: beast-gtk/bstapp.c:115
 msgid "New View"
 msgstr "Новый вид"
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:119
 msgid "_Play"
 msgstr "_Воспроизвести"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:121
 msgid "_Stop"
 msgstr "О_становить"
 
-#: beast-gtk/bstapp.c:105
+#: beast-gtk/bstapp.c:125
 msgid "New Song"
 msgstr "Новая композиция"
 
-#: beast-gtk/bstapp.c:107
+#: beast-gtk/bstapp.c:127
 msgid "New Custom Synthesizer"
 msgstr "Новый синтезатор"
 
-#: beast-gtk/bstapp.c:109
+#: beast-gtk/bstapp.c:129
 msgid "New MIDI Synthesizer"
 msgstr "Новый·MIDI-синтезатор"
 
-#: beast-gtk/bstapp.c:111
+#: beast-gtk/bstapp.c:131
 msgid "Remove Song or Synthesizer"
 msgstr "Удалить композицию или синтезатор"
 
-#: beast-gtk/bstapp.c:115
+#: beast-gtk/bstapp.c:135
 msgid "Load _Instrument"
 msgstr "Загрузить _инструмент"
 
-#: beast-gtk/bstapp.c:117
+#: beast-gtk/bstapp.c:137
 msgid "Load _Effect"
 msgstr "Загрузить _эффект"
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:139
 msgid "Save As Instrument"
 msgstr "Сохранить как инструмент"
 
-#: beast-gtk/bstapp.c:121
+#: beast-gtk/bstapp.c:141
 msgid "Save As Effect"
 msgstr "Сохранить как эффект"
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:145
 msgid "_Release Notes..."
 msgstr "_Заметки к версии..."
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:146
 msgid "Quick Start..."
 msgstr "Быстрый старт..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:147
 msgid "_FAQ..."
 msgstr "_ЧаВО..."
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:150
 msgid "GSL Engine..."
 msgstr "GSL-движок..."
 
-#: beast-gtk/bstapp.c:543 beast-gtk/bstapp.c:550 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Загружается проект '%s'"
 
-#: beast-gtk/bstapp.c:610
+#: beast-gtk/bstapp.c:630
 #, c-format
 msgid "Loading skin `%s'"
 msgstr "Загружается файл темы '%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:772
+#: beast-gtk/bstapp.c:791
 msgid "Rack editor"
 msgstr "Редактор рэков"
 
-#: beast-gtk/bstapp.c:786
+#: beast-gtk/bstapp.c:805
 msgid "Preferences"
 msgstr "Настройки"
 
-#: beast-gtk/bstapp.c:809
+#: beast-gtk/bstapp.c:832
 msgid "Procedure Browser"
 msgstr "Обозреватель процедур"
 
-#: beast-gtk/bstapp.c:866
+#: beast-gtk/bstapp.c:889
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "Заметки к версии BEAST-%s"
@@ -512,78 +517,78 @@ msgstr ""
 msgid "Description"
 msgstr "Описание"
 
-#: beast-gtk/bstmain.c:128
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr "Запуск BEAST"
 
-#: beast-gtk/bstmain.c:135
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr "Запуск"
 
 #  BEAST initialization
 #  BEAST initialization
 #. BEAST initialization
-#: beast-gtk/bstmain.c:139
+#: beast-gtk/bstmain.c:140
 msgid "Initializers"
 msgstr "Инициализация"
 
 #. parse rc file
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:147
 msgid "RC Files"
 msgstr "RC-файлы"
 
 #. show splash images
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr "Стартовый логотип"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:162
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr "Основа BSE"
 
-#: beast-gtk/bstmain.c:184
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr "Модули"
 
-#: beast-gtk/bstmain.c:203
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr "LADSPA-модули"
 
-#: beast-gtk/bstmain.c:231
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Сценарии"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:249
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr "Диалоги"
 
-#: beast-gtk/bstmain.c:256
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr "Идёт загрузка..."
 
-#: beast-gtk/bstmain.c:286 beast-gtk/bstmain.c:288
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Загружается \"%s\""
 
-#: beast-gtk/bstmain.c:305
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Загружается проект\"%s\""
 
-#: beast-gtk/bstmain.c:719
+#: beast-gtk/bstmain.c:720
 msgid "BEAST About"
 msgstr "О программе BEAST"
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:721
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST версии %s"
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:722
 msgid "Contributions made by:"
 msgstr "Свой вклад в программу сделали:"
 
@@ -2803,30 +2808,94 @@ msgstr "Частота"
 msgid "Const Out%u"
 msgstr ""
 
-#: bse/bsecore.idl:395
+#: bse/bsecore.idl:378
+msgid "Thread Name"
+msgstr ""
+
+#: bse/bsecore.idl:379
+#, fuzzy
+msgid "State"
+msgstr "Запуск:"
+
+#: bse/bsecore.idl:379
+msgid "The execution state of the thread"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid "Priority"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+msgstr ""
+
+#: bse/bsecore.idl:383
+#, fuzzy
+msgid "Processor"
+msgstr "Процедура"
+
+#: bse/bsecore.idl:383
+msgid "The processor that this thread is currently being executed on"
+msgstr ""
+
+#: bse/bsecore.idl:385
+msgid "User Time"
+msgstr ""
+
+#: bse/bsecore.idl:385
+msgid "The CPU time spent executing instructions of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:387
+msgid "System Time"
+msgstr ""
+
+#: bse/bsecore.idl:387
+msgid "The CPU time spent in the system for this thread"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "Child User Time"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "The CPU time spent executing instructions of children of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:391
+msgid "Child System Time"
+msgstr ""
+
+#: bse/bsecore.idl:391
+msgid "The CPU time spent in the system for children of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:432
 msgid "Latency [ms]"
 msgstr "Задержка [мс]"
 
-#: bse/bsecore.idl:396
+#: bse/bsecore.idl:433
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr ""
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:436
 msgid "Synth Mixing Frequency"
 msgstr ""
 
-#: bse/bsecore.idl:400
+#: bse/bsecore.idl:437
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: bse/bsecore.idl:402
+#: bse/bsecore.idl:439
 #, fuzzy
 msgid "Synth Control Frequency"
 msgstr "Вставить контрольное событие"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:440
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
