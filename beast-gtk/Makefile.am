@@ -93,7 +93,6 @@ beast_built_sources = @STRIP_BEGIN@ \
 CLEANFILES += $(beast_built_sources)
 GLIB_MKENUMS = glib-mkenums
 
-# WATCH OUT: $(SFIDL) works only builddir relative
 SFIDL = ../sfi/sfidl
 
 # gen-sources

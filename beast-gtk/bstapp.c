@@ -380,7 +380,7 @@ bst_app_reload_supers (BstApp *app)
   GtkWidget *old_page, *old_focus, *song_page = NULL, *synth_page = NULL;
   GSList *page_list = NULL;
   GSList *slist;
-  BseProxySeq *pseq;
+  BseItemSeq *iseq;
   guint i;
   
   g_return_if_fail (BST_IS_APP (app));
@@ -396,17 +396,17 @@ bst_app_reload_supers (BstApp *app)
       gtk_container_remove (GTK_CONTAINER (app->notebook), page_list->data);
     }
 
-  pseq = bse_project_get_supers (app->project);
-  for (i = 0; i < pseq->n_proxies; i++)
+  iseq = bse_project_get_supers (app->project);
+  for (i = 0; i < iseq->n_items; i++)
     {
       GtkWidget *label, *page = NULL;
       GSList *node;
 
-      if (!BST_DBG_EXT && bse_item_internal (pseq->proxies[i]))
+      if (!BST_DBG_EXT && bse_item_internal (iseq->items[i]))
         continue;
 
       for (node = page_list; node; node = node->next)
-        if (BST_SUPER_SHELL (node->data)->super == pseq->proxies[i])
+        if (BST_SUPER_SHELL (node->data)->super == iseq->items[i])
           {
             page = node->data;
             page_list = g_slist_remove (page_list, page);
@@ -414,15 +414,15 @@ bst_app_reload_supers (BstApp *app)
           }
       if (!page)
         {
-          page = g_object_new (BST_TYPE_SUPER_SHELL, "super", pseq->proxies[i], NULL);
+          page = g_object_new (BST_TYPE_SUPER_SHELL, "super", iseq->items[i], NULL);
           g_object_ref (page);
           gtk_object_sink (GTK_OBJECT (page));
         }
       if (page)
         {
-          if (!song_page && BSE_IS_SONG (pseq->proxies[i]))
+          if (!song_page && BSE_IS_SONG (iseq->items[i]))
             song_page = page;
-          else if (!synth_page && BSE_IS_SNET (pseq->proxies[i]))
+          else if (!synth_page && BSE_IS_SNET (iseq->items[i]))
             synth_page = page;
           label = g_object_new (GTK_TYPE_LABEL,
                                 "visible", TRUE,

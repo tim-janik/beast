@@ -115,12 +115,12 @@ all: # TAGS
 #
 # other programs, we want to compile
 #
-noinst_PROGRAMS = mkapi testbsw
+noinst_PROGRAMS = testbsw # mkapi
 # link programs against BSW
 progs_LDADD = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
 # source files
-mkapi_SOURCES = mkapi.c cxxdummy.cc
-mkapi_LDADD = $(progs_LDADD)
+#mkapi_SOURCES = mkapi.c cxxdummy.cc
+#mkapi_LDADD = $(progs_LDADD)
 $(srcdir)/testbsw.c: bswgenapi.h
 testbsw_SOURCES = testbsw.c cxxdummy.cc
 testbsw_LDADD = libbsw.la $(progs_LDADD)

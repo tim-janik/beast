@@ -63,12 +63,12 @@ struct _BstTrackSynthDialogClass
 GType           bst_track_synth_dialog_get_type (void);
 GtkWidget*      bst_track_synth_dialog_popup    (gpointer             parent_widget,
                                                  SfiProxy             track,
-                                                 BseProxySeq         *pseq,
+                                                 BseItemSeq          *iseq,
                                                  SfiProxy             wrepo,
                                                  gpointer             selected_callback,
                                                  gpointer             data);
 void            bst_track_synth_dialog_set      (BstTrackSynthDialog *self,
-                                                 BseProxySeq         *pseq,
+                                                 BseItemSeq          *iseq,
                                                  SfiProxy             wrepo);
 
 

@@ -20,7 +20,7 @@
 
 /* --- SfiProxy parameter editors --- */
 typedef struct {
-  BseProxySeq *pseq;
+  BseItemSeq *iseq;
   gchar      **paths;
   gchar       *prefix;
 } ParamProxyPopulation;
@@ -30,7 +30,7 @@ param_proxy_free_population (gpointer p)
   ParamProxyPopulation *pop = p;
   g_strfreev (pop->paths);
   g_free (pop->prefix);
-  bse_proxy_seq_free (pop->pseq);
+  bse_item_seq_free (pop->iseq);
   g_free (pop);
 }
 
@@ -40,7 +40,7 @@ param_proxy_populate (GtkWidget *chunter,
 {
   BstClueHunter *ch = BST_CLUE_HUNTER (chunter);
   ParamProxyPopulation *pop = NULL;
-  BseProxySeq *pseq = NULL;
+  BseItemSeq *iseq = NULL;
   SfiProxy proxy;
   gchar *p;
   guint i, l;
@@ -51,16 +51,16 @@ param_proxy_populate (GtkWidget *chunter,
   /* list candidates */
   proxy = bst_param_get_proxy (param);
   if (proxy)
-    pseq = bse_item_list_proxies (proxy, param->pspec->name);
-  if (pseq)
+    iseq = bse_item_list_items (proxy, param->pspec->name);
+  if (iseq)
     {
       pop = g_new (ParamProxyPopulation, 1);
-      pop->pseq = bse_proxy_seq_copy_shallow (pseq);
+      pop->iseq = bse_item_seq_copy_shallow (iseq);
       pop->paths = NULL;
       pop->prefix = NULL;
       /* go from object to path name */
-      for (i = 0; i < pseq->n_proxies; i++)
-	pop->paths = g_straddv (pop->paths, g_strdup (bse_item_get_uname_path (pseq->proxies[i])));
+      for (i = 0; i < iseq->n_items; i++)
+	pop->paths = g_straddv (pop->paths, g_strdup (bse_item_get_uname_path (iseq->items[i])));
       if (!pop->paths || !pop->paths[0])
 	{
 	  param_proxy_free_population (pop);
@@ -123,7 +123,7 @@ param_proxy_changed (GtkWidget *entry,
 	      for (i = 0; pop->paths[i]; i++)
 		if (strcmp (string, pop->paths[i] + j) == 0)
 		  {
-		    item = pop->pseq->proxies[i];
+		    item = pop->iseq->items[i];
 		    break;
 		  }
 	    }
@@ -133,7 +133,7 @@ param_proxy_changed (GtkWidget *entry,
 		guint j = strlen (pop->paths[i]);
 		if (j >= l && strcmp (string, pop->paths[i] + j - l) == 0)
 		  {
-		    item = pop->pseq->proxies[i];
+		    item = pop->iseq->items[i];
 		    break;
 		  }
 	      }
@@ -143,7 +143,7 @@ param_proxy_changed (GtkWidget *entry,
 	      for (i = 0; pop->paths[i]; i++)
 		if (g_ascii_strcasecmp (string, pop->paths[i] + j) == 0)
 		  {
-		    item = pop->pseq->proxies[i];
+		    item = pop->iseq->items[i];
 		    break;
 		  }
 	    }
@@ -153,7 +153,7 @@ param_proxy_changed (GtkWidget *entry,
 		guint j = strlen (pop->paths[i]);
 		if (j >= l && g_ascii_strcasecmp (string, pop->paths[i] + j - l) == 0)
 		  {
-		    item = pop->pseq->proxies[i];
+		    item = pop->iseq->items[i];
 		    break;
 		  }
 	      }
@@ -171,8 +171,8 @@ param_proxy_changed (GtkWidget *entry,
 }
 
 SfiProxy
-bst_proxy_seq_list_match (GSList      *proxy_seq_slist,
-			  const gchar *text)
+bst_item_seq_list_match (GSList      *item_seq_slist,
+                         const gchar *text)
 {
   SfiProxy cmatch = 0, tmatch = 0, tcmatch = 0;
   GSList *slist;
@@ -180,21 +180,21 @@ bst_proxy_seq_list_match (GSList      *proxy_seq_slist,
   if (!text || !text[0])
     return 0;
   l = strlen (text);
-  for (slist = proxy_seq_slist; slist; slist = slist->next)
+  for (slist = item_seq_slist; slist; slist = slist->next)
     {
-      BseProxySeq *pseq = slist->data;
-      for (i = 0; i < pseq->n_proxies; i++)
+      BseItemSeq *iseq = slist->data;
+      for (i = 0; i < iseq->n_items; i++)
 	{
-	  const gchar *path = bse_item_get_uname_path (pseq->proxies[i]);
+	  const gchar *path = bse_item_get_uname_path (iseq->items[i]);
 	  guint j = path ? strlen (path) : 0;
 	  if (j == l && strcmp (text, path) == 0)
-	    return pseq->proxies[i];	/* found exact match */
+	    return iseq->items[i];	/* found exact match */
 	  else if (!cmatch && j == l && g_strcasecmp (text, path) == 0)
-	    cmatch = pseq->proxies[i];	/* remember first case insensitive match */
+	    cmatch = iseq->items[i];	/* remember first case insensitive match */
 	  else if (!tmatch && j > l && strcmp (text, path + j - l) == 0)
-	    tmatch = pseq->proxies[i];	/* remember first tail match */
+	    tmatch = iseq->items[i];	/* remember first tail match */
 	  else if (!tcmatch && j > l && g_strcasecmp (text, path + j - l) == 0)
-	    tcmatch = pseq->proxies[i];	/* remember first case insensitive tail match */
+	    tcmatch = iseq->items[i];	/* remember first case insensitive tail match */
 	}
     }
   /* fallback to tail match, then case insensitive matches */

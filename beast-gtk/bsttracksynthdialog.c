@@ -89,7 +89,7 @@ bst_track_synth_dialog_init (BstTrackSynthDialog *self)
   gxk_notebook_add_page (GTK_NOTEBOOK (self->notebook), self->spage, "Synthesis Network Selection", TRUE);
 
   /* synth selection store and tree */
-  self->pstore = bst_proxy_seq_store_new ();
+  self->pstore = bst_item_seq_store_new ();
   smodel = gtk_tree_model_sort_new_with_model (self->pstore);
   self->tview = g_object_new (GTK_TYPE_TREE_VIEW,
                               "visible", TRUE,
@@ -151,7 +151,7 @@ bst_track_synth_dialog_delete_event (GtkWidget   *widget,
 {
   BstTrackSynthDialog *self = BST_TRACK_SYNTH_DIALOG (widget);
   if (self->pstore)
-    bst_proxy_seq_store_set (self->pstore, NULL);
+    bst_item_seq_store_set (self->pstore, NULL);
   /* chain parent class' handler */
   return GTK_WIDGET_CLASS (bst_track_synth_dialog_parent_class)->delete_event (widget, event);
 }
@@ -216,7 +216,7 @@ bst_track_synth_dialog_singleton (void)
 GtkWidget*
 bst_track_synth_dialog_popup (gpointer     parent_widget,
                               SfiProxy     track,
-                              BseProxySeq *pseq,
+                              BseItemSeq  *iseq,
                               SfiProxy     wrepo,
                               gpointer     selected_callback,
                               gpointer     data)
@@ -224,7 +224,7 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
   BstTrackSynthDialog *self = bst_track_synth_dialog_singleton ();
   GtkWidget *widget = GTK_WIDGET (self);
 
-  bst_track_synth_dialog_set (self, pseq, wrepo);
+  bst_track_synth_dialog_set (self, iseq, wrepo);
   bst_track_synth_dialog_setup (self, parent_widget, "Synth Selection: %s", track);
   self->selected_callback = selected_callback;
   self->selected_data = data;
@@ -235,15 +235,15 @@ bst_track_synth_dialog_popup (gpointer     parent_widget,
 
 void
 bst_track_synth_dialog_set (BstTrackSynthDialog *self,
-                            BseProxySeq         *pseq,
+                            BseItemSeq          *iseq,
                             SfiProxy             wrepo)
 {
   g_return_if_fail (BST_IS_TRACK_SYNTH_DIALOG (self));
 
   bst_item_view_set_container (BST_ITEM_VIEW (self->wpage), wrepo);
-  bst_proxy_seq_store_set (self->pstore, pseq);
+  bst_item_seq_store_set (self->pstore, iseq);
   g_object_set (self->wpage, "visible", wrepo != 0, NULL);
-  g_object_set (self->spage, "visible", pseq != NULL, NULL);
+  g_object_set (self->spage, "visible", iseq != NULL, NULL);
 }
 
 static void
@@ -265,7 +265,7 @@ bst_track_synth_dialog_activate (BstTrackSynthDialog *self)
             gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (smodel), &piter, &siter);
           else
             piter = siter;
-          proxy = bst_proxy_seq_store_get_from_iter (self->pstore, &piter);
+          proxy = bst_item_seq_store_get_from_iter (self->pstore, &piter);
         }
     }
   else if (self->wpage)

@@ -1,3 +1,17 @@
+Mon Mar  1 20:00:57 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-proxy.c:
+	* beast-gtk/bstparam.h:
+	* beast-gtk/bstsnetrouter.c: 
+	* beast-gtk/bsttracksynthdialog.[hc]: 
+	* bsttrackview.c:
+	* bsttreestores.c: 
+	* beast-gtk/bstapp.c: adapt to BseItemSeq changes. 
+
+	* bsw/Makefile.am: stop building mkapi which is broken and unused.
+
+	* tests/Makefile.am: added SFIDL dependancy for sfidl generated sources.
+
 Tue Mar  2 01:07:55 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkdialog.c:

@@ -188,10 +188,10 @@ track_view_synth_edited (BstTrackView *self,
 	  SfiProxy proxy = 0;
 	  GSList *slist = NULL;
 	  /* list possible snet/wave candidates */
-	  slist = g_slist_append (slist, bse_item_list_proxies (item, "snet"));
-	  slist = g_slist_append (slist, bse_item_list_proxies (item, "wave"));
+	  slist = g_slist_append (slist, bse_item_list_items (item, "snet"));
+	  slist = g_slist_append (slist, bse_item_list_items (item, "wave"));
 	  /* find best match */
-	  proxy = bst_proxy_seq_list_match (slist, text);
+	  proxy = bst_item_seq_list_match (slist, text);
 	  g_slist_free (slist);
 	  if (proxy && BSE_IS_SNET (proxy))
 	    bse_proxy_set (item, "snet", proxy, NULL);
@@ -221,9 +221,9 @@ track_view_post_synth_edited (BstTrackView *self,
 	  SfiProxy proxy = 0;
 	  GSList *slist = NULL;
 	  /* list possible snet candidates */
-	  slist = g_slist_append (slist, bse_item_list_proxies (item, "pnet"));
+	  slist = g_slist_append (slist, bse_item_list_items (item, "pnet"));
 	  /* find best match */
-	  proxy = bst_proxy_seq_list_match (slist, text);
+	  proxy = bst_item_seq_list_match (slist, text);
 	  g_slist_free (slist);
 	  if (proxy && BSE_IS_SNET (proxy))
 	    bse_proxy_set (item, "pnet", proxy, NULL);
@@ -258,9 +258,9 @@ track_view_synth_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      BseProxySeq *pseq = bse_item_list_proxies (item, "snet");
+      BseItemSeq *iseq = bse_item_list_items (item, "snet");
       GtkWidget *dialog = bst_track_synth_dialog_popup (self, item,
-                                                        pseq,
+                                                        iseq,
                                                         bse_project_get_wave_repo (bse_item_get_project (item)),
                                                         track_view_synth_popup_cb, pcell);
       gxk_cell_renderer_popup_dialog (pcell, dialog);
@@ -279,8 +279,8 @@ track_view_post_synth_popup (BstTrackView         *self,
     {
       gint row = gxk_tree_spath_index0 (strpath);
       SfiProxy item = bst_item_view_get_proxy (BST_ITEM_VIEW (self), row);
-      BseProxySeq *pseq = bse_item_list_proxies (item, "pnet");
-      GtkWidget *dialog = bst_track_synth_dialog_popup (self, item, pseq, 0,
+      BseItemSeq *iseq = bse_item_list_items (item, "pnet");
+      GtkWidget *dialog = bst_track_synth_dialog_popup (self, item, iseq, 0,
                                                         track_view_synth_popup_cb, pcell);
       gxk_cell_renderer_popup_dialog (pcell, dialog);
     }

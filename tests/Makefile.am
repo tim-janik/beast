@@ -73,7 +73,7 @@ $(srcdir)/perftest.cc: bsecxxapi.h
 noinst_PROGRAMS = $(TESTS)
 
 # test plugin: setup generation of C++ plugins from idl files
-%.gen-idl.h: %.idl $(BSEPGEN)
+%.gen-idl.h: %.idl $(BSEPGEN) $(SFIDL)
 	$(SFIDL) --core-cxx $(SFIDL_INC) $< > $@ || (rm $@ ; exit 1 )
 
 # test plugin: library

@@ -416,7 +416,7 @@ bst_snet_router_update (BstSNetRouter *self)
 {
   GnomeCanvasItem *csource;
   GnomeCanvas *canvas;
-  BseProxySeq *pseq;
+  BseItemSeq *iseq;
   GSList *slist, *csources = NULL;
   guint i;
   
@@ -439,10 +439,10 @@ bst_snet_router_update (BstSNetRouter *self)
     }
   
   /* walk all child sources */
-  pseq = bse_container_list_items (self->snet);
-  for (i = 0; i < pseq->n_proxies; i++)
+  iseq = bse_container_list_items (self->snet);
+  for (i = 0; i < iseq->n_items; i++)
     {
-      SfiProxy item = pseq->proxies[i];
+      SfiProxy item = iseq->items[i];
       
       if (BSE_IS_SOURCE (item))
 	{

@@ -52,15 +52,15 @@ enum {
   BST_PROXY_STORE_TYPE,
   BST_PROXY_STORE_N_COLS
 };
-/* store based on a BseProxySeq */
-GtkTreeModel*   bst_proxy_seq_store_new                 (void);
-void            bst_proxy_seq_store_set                 (GtkTreeModel   *self,
-                                                         BseProxySeq    *pseq);
-SfiProxy        bst_proxy_seq_store_get_proxy           (GtkTreeModel   *self,
+/* store based on a BseItemSeq */
+GtkTreeModel*   bst_item_seq_store_new                  (void);
+void            bst_item_seq_store_set                  (GtkTreeModel   *self,
+                                                         BseItemSeq     *iseq);
+SfiProxy        bst_item_seq_store_get_proxy            (GtkTreeModel   *self,
                                                          gint            row);
-SfiProxy        bst_proxy_seq_store_get_from_iter       (GtkTreeModel   *self,
+SfiProxy        bst_item_seq_store_get_from_iter        (GtkTreeModel   *self,
                                                          GtkTreeIter    *iter);
-gboolean        bst_proxy_seq_store_get_iter            (GtkTreeModel   *self,
+gboolean        bst_item_seq_store_get_iter             (GtkTreeModel   *self,
                                                          GtkTreeIter    *iter,
                                                          SfiProxy        proxy);
 /* store based on the child list of a container */

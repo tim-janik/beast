@@ -1,4 +1,5 @@
 FIXMES:
+- remove bse_glue_make_rorecord() and siblings
 - fix bse_gettext()
 - piano roll/align events: does insert notes with wrong cursor
 - event roll: align events: outline colors don't honour skin colorization
@@ -298,6 +299,12 @@ GSL:
   - [timj]        7 6 Async DCache read-ahead thread creation
 
 sfidl:
+  - remove cTypeField() from cbase
+  - typeArg(), typeField(), typeRet() and typeArray() in sfidl-cbase.[hc]*
+    must throw an assertion for unknown types
+  - typeArg(), typeField(), typeRet() and typeArray() in sfidl-cbase.[hc]*
+    should be moved into the non-base class that needs them (i.e. out of
+    cbase)
   - sfidl-manual.texi: complete the documentation
 80- handle Procedure {} namespace in namespacehelper
 85- rename nspace.printableForm() to something that expresses namespace relativity
