@@ -63,13 +63,9 @@ typedef enum				/*< skip >*/
 #define BSE_OBJECT_FLAGS_USHIFT	    (2)
 #define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
 
-typedef struct _BseObjectParser	   BseObjectParser;
 
 
 /* --- typedefs & structures --- */
-typedef GTokenType (*BseObjectParseStatement) (BseObject     *object,
-					       BseStorage    *storage,
-					       gpointer	      user_data);
 struct _BseObject
 {
   GObject		 parent_instance;
@@ -82,24 +78,6 @@ struct _BseObject
 struct _BseObjectClass
 {
   GObjectClass		 parent_class;
-
-  /* internal stuff */
-  guint			 n_parsers;
-  BseObjectParser	*parsers;
-  void			(*store_property)	(BseObject	*object,
-						 BseStorage	*storage,
-						 GValue		*value,
-						 GParamSpec	*pspec);
-  GTokenType		(*restore_property)	(BseObject	*object,
-						 BseStorage	*storage,
-						 GValue		*value,
-						 GParamSpec	*pspec);
-  void			(*store_after)		(BseObject	*object,
-						 BseStorage	*storage);
-  BseTokenType		(*try_statement)	(BseObject	*object,
-						 BseStorage	*storage);
-  GTokenType		(*restore)		(BseObject	*object,
-						 BseStorage	*storage);
 
   /* custom methods for specific object needs, most of them require chaining */
   void			(*set_uname)		(BseObject	*object,
@@ -119,10 +97,6 @@ void	bse_object_class_add_property		(BseObjectClass *oclass,
 						 guint		 property_id,
 						 GParamSpec	*pspec);
 #define	bse_object_class_add_param	bse_object_class_add_property
-void		bse_object_class_add_parser	(BseObjectClass *oclass,
-						 const gchar	*token,
-						 BseObjectParseStatement parse_func,
-						 gpointer	 user_data);
 guint		bse_object_class_add_signal	(BseObjectClass	*oclass,
 						 const gchar	*signal_name,
 						 GType           return_type,
@@ -149,10 +123,6 @@ gpointer	bse_object_from_id		(guint		 unique_id);
 GList*		bse_objects_list		(GType		 type);
 GList*		bse_objects_list_by_uname	(GType		 type,
 						 const gchar	*uname);
-void		bse_object_store		(BseObject	*object,
-						 BseStorage	*storage);
-GTokenType	bse_object_restore		(BseObject	*object,
-						 BseStorage	*storage);
 void		bse_object_debug_leaks		(void);
 const gchar*	bse_object_debug_name		(gpointer	 object);
 void		bse_object_reemit_signal	(gpointer	 src_object,

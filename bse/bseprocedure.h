@@ -108,6 +108,7 @@ const gchar* bse_procedure_type_register (const gchar		*name,
 					  const gchar		*blurb,
 					  BsePlugin		*plugin,
 					  GType  		*ret_type);
+#if 0
 gchar*	bse_procedure_eval		(const gchar		*expr,
 					 BseErrorType		*error_p,
 					 GValue			*value);
@@ -117,6 +118,7 @@ gchar*	bse_procedure_marshal_retval	(BseErrorType		 error,
 gchar*	bse_procedure_unmarshal_retval	(const gchar		*string,
 					 BseErrorType		*error_p,
 					 GValue			*value);
+#endif
 
 
 #ifdef __cplusplus

@@ -45,10 +45,6 @@ static void	    bse_container_class_finalize	(BseContainerClass	*class);
 static void	    bse_container_init			(BseContainer		*container);
 static void	    bse_container_dispose		(GObject		*object);
 static void	    bse_container_finalize		(GObject		*object);
-static void	    bse_container_store_after		(BseObject		*object,
-							 BseStorage		*storage);
-static BseTokenType bse_container_try_statement		(BseObject		*object,
-							 BseStorage		*storage);
 static void	    bse_container_do_add_item		(BseContainer		*container,
 							 BseItem		*item);
 static void	    bse_container_do_remove_item	(BseContainer		*container,
@@ -121,9 +117,6 @@ bse_container_class_init (BseContainerClass *class)
   
   gobject_class->dispose = bse_container_dispose;
   gobject_class->finalize = bse_container_finalize;
-  
-  object_class->store_after = bse_container_store_after;
-  object_class->try_statement = bse_container_try_statement;
   
   source_class->prepare = bse_container_prepare;
   source_class->context_create = bse_container_context_create;
@@ -505,119 +498,24 @@ bse_container_get_item (BseContainer *container,
 
 static gboolean
 store_forall (BseItem *item,
-	      gpointer data_p)
+	      gpointer data)
 {
-  gpointer *data = data_p;
-  // BseContainer *container = data[0];
-  BseStorage *storage = data[1];
-  const gchar *restore_func = data[2];
-  
+  BseStorage *storage = data;
   if (!BSE_ITEM_AGGREGATE (item))
-    {
-      gchar *uname = g_strescape (BSE_OBJECT_UNAME (item), NULL);
-      gchar *type_uname = g_strconcat (G_OBJECT_TYPE_NAME (item),
-				       "::",
-				       uname,
-				       NULL);
-      g_free (uname);
-      bse_storage_break (storage);
-      bse_storage_printf (storage, "(%s \"%s\"", restore_func, type_uname);
-      bse_storage_needs_break (storage);
-      g_free (type_uname);
-      
-      bse_storage_push_level (storage);
-      bse_object_store (BSE_OBJECT (item), storage);
-      bse_storage_pop_level (storage);
-    }
-  
+    bse_storage_store_child (storage, item);
   return TRUE;
 }
 
 void
-bse_container_store_items (BseContainer *container,
-			   BseStorage   *storage,
-			   const gchar	*restore_func)
+bse_container_store_children (BseContainer *container,
+			      BseStorage   *storage)
 {
-  gpointer data[3];
-  
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (BSE_IS_STORAGE (storage));
-  g_return_if_fail (restore_func != NULL);
   
   g_object_ref (container);
-  data[0] = container;
-  data[1] = storage;
-  data[2] = (gpointer) restore_func;
-  bse_container_forall_items (container, store_forall, data);
+  bse_container_forall_items (container, store_forall, storage);
   g_object_unref (container);
-}
-
-static void
-bse_container_store_after (BseObject  *object,
-			   BseStorage *storage)
-{
-  /* we *append* items to our normal container stuff, so they
-   * come _after_ private stuff, stored by derived containers
-   * (which usually store their stuff through store_private())
-   */
-  bse_container_store_items (BSE_CONTAINER (object), storage, "bse-storage-restore");
-  
-  /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->store_after)
-    BSE_OBJECT_CLASS (parent_class)->store_after (object, storage);
-}
-
-static BseTokenType
-bse_container_try_statement (BseObject  *object,
-			     BseStorage *storage)
-{
-  GScanner *scanner = storage->scanner;
-  GTokenType expected_token;
-  
-  /* chain parent class' handler */
-  expected_token = BSE_OBJECT_CLASS (parent_class)->try_statement (object, storage);
-  
-  /* one of the few reason to overload try_statement() is for this
-   * case, where we attempt to parse items as a last resort
-   */
-  if (expected_token == BSE_TOKEN_UNMATCHED &&
-      g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
-    {
-      BseContainer *container = BSE_CONTAINER (object);
-      BseItem *item;
-      
-      if (strcmp ("bse-container-restore", scanner->next_value.v_identifier) == 0)
-	{
-	  // FIXME: compat code, remove
-	  bse_storage_warn (storage, "encountered deprecated statement: %s", "bse-container-restore");
-	  goto storage_restore;
-	}
-      else if (strcmp ("bse-storage-restore", scanner->next_value.v_identifier) == 0)
-	{
-	storage_restore:
-	  parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat identifier */
-	  parse_or_return (scanner, G_TOKEN_STRING);		/* type_uname argument */
-	  
-	  item = bse_container_retrieve_child (container, scanner->value.v_string);
-	  if (!item)
-	    return bse_storage_warn_skip (storage, "unable to create object from (invalid) reference: %s",
-					  scanner->value.v_string);
-	}
-      else	/* deprecated compat, the uname is an identifier */
-	{
-	  item = bse_container_retrieve_child (container, scanner->next_value.v_identifier);
-	  if (!item)						/* probably not a compat case */
-	    return expected_token;
-	  parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat identifier */
-	  bse_storage_warn (storage, "deprecated syntax: non-string uname path: %s", scanner->value.v_identifier);
-	}
-      
-      /* now let the item restore itself
-       */
-      expected_token = bse_object_restore (BSE_OBJECT (item), storage);
-    }
-  
-  return expected_token;
 }
 
 static gboolean
@@ -661,11 +559,14 @@ bse_container_real_retrieve_child (BseContainer *container,
   
   if (uname)
     {
+#if 0
       item = bse_container_lookup_item (container, uname);
       if (item && !g_type_is_a (G_OBJECT_TYPE (item), child_type))
 	item = NULL;
       else if (!item)
 	item = bse_container_new_item (container, child_type, "uname", uname, NULL);
+#endif
+      item = bse_container_new_item (container, child_type, "uname", uname, NULL);
     }
   else
     item = bse_container_new_item (container, child_type, NULL);
@@ -690,8 +591,8 @@ bse_container_retrieve_child (BseContainer *container,
    * "BseItem"		generic item	-> create item of type BseItem
    * "BseItem::foo"	unamed item	-> create/get item of type BseItem with uname "foo"
    *
-   * to get unique matches for unames, items of a specific
-   * container need to have unique names (enforced in bse_container_add_item()
+   * to get unique matches for unames, items of a container need
+   * to have unique names (enforced in bse_container_add_item()
    * and bse_item_do_set_uname()).
    */
   
@@ -724,7 +625,7 @@ bse_container_resolve_upath (BseContainer *container,
   g_return_val_if_fail (BSE_IS_CONTAINER (container), NULL);
   g_return_val_if_fail (upath != NULL, NULL);
   
-  /* upaths consist of a colon seperated unames from the item's ancestry */
+  /* upaths consist of colon seperated unames from the item's ancestry */
   
   next_uname = strchr (upath, ':');
   if (next_uname)

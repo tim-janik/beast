@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bsestorage.h: BSE storage for (re-)storing objects and certain values
  */
 #ifndef	__BSE_STORAGE_H__
 #define	__BSE_STORAGE_H__
@@ -23,37 +21,39 @@
 #include	<bse/bseobject.h>
 #include	<gsl/gsldefs.h>
 
+G_BEGIN_DECLS
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+/* --- object type macros --- */
+#define BSE_TYPE_STORAGE               (BSE_TYPE_ID (BseStorage))
+#define BSE_STORAGE(object)            (G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_STORAGE, BseStorage))
+#define BSE_STORAGE_CLASS(class)       (G_TYPE_CHECK_CLASS_CAST ((class), BSE_TYPE_STORAGE, BseStorageClass))
+#define BSE_IS_STORAGE(object)         (G_TYPE_CHECK_INSTANCE_TYPE ((object), BSE_TYPE_STORAGE))
+#define BSE_IS_STORAGE_CLASS(class)    (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_STORAGE))
+#define BSE_STORAGE_GET_CLASS(object)  (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_STORAGE, BseStorageClass))
 
 
 /* --- macros --- */
-#define	BSE_IS_STORAGE(st)		(((BseStorage*) (st)) != NULL)
-#define	BSE_STORAGE_FLAGS(st)		(((BseStorage*) (st))->flags)
-#define	BSE_STORAGE_SET_FLAGS(st,f)	(BSE_STORAGE_FLAGS (st) |= (f))
-#define	BSE_STORAGE_UNSET_FLAGS(st,f)	(BSE_STORAGE_FLAGS (st) &= ~(f))
-#define	BSE_STORAGE_READABLE(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_READABLE) != 0)
-#define	BSE_STORAGE_WRITABLE(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_WRITABLE) != 0)
-#define	BSE_STORAGE_NEEDS_BREAK(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_NEEDS_BREAK) != 0)
-#define	BSE_STORAGE_AT_BOL(st)		((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_AT_BOL) != 0)
-#define	BSE_STORAGE_PUT_DEFAULTS(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_PUT_DEFAULTS) != 0)
-#define	BSE_STORAGE_SELF_CONTAINED(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_SELF_CONTAINED) != 0)
-#define	BSE_STORAGE_PROXIES_ENABLED(st)	((BSE_STORAGE_FLAGS (st) & BSE_STORAGE_FLAG_PROXIES_ENABLED) != 0)
+#define	BSE_STORAGE_READABLE(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_READABLE) != 0)
+#define	BSE_STORAGE_WRITABLE(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_WRITABLE) != 0)
+#define	BSE_STORAGE_NEEDS_BREAK(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_NEEDS_BREAK) != 0)
+#define	BSE_STORAGE_AT_BOL(st)		((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_AT_BOL) != 0)
+#define	BSE_STORAGE_PUT_DEFAULTS(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_PUT_DEFAULTS) != 0)
+#define	BSE_STORAGE_SELF_CONTAINED(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_SELF_CONTAINED) != 0)
+#define	BSE_STORAGE_PROXIES_ENABLED(st)	((BSE_OBJECT_FLAGS (st) & BSE_STORAGE_FLAG_PROXIES_ENABLED) != 0)
 
 
 /* --- BseStorage flags --- */
 typedef enum	/*< skip >*/
 {
-  BSE_STORAGE_FLAG_READABLE	   = 1 << 0,
-  BSE_STORAGE_FLAG_WRITABLE	   = 1 << 1,
-  BSE_STORAGE_FLAG_NEEDS_BREAK	   = 1 << 2,
-  BSE_STORAGE_FLAG_AT_BOL	   = 1 << 3,
-  BSE_STORAGE_FLAG_PUT_DEFAULTS	   = 1 << 4,
-  BSE_STORAGE_FLAG_SELF_CONTAINED  = 1 << 5,
-  BSE_STORAGE_FLAG_PROXIES_ENABLED = 1 << 6
+  BSE_STORAGE_FLAG_READABLE	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 0),
+  BSE_STORAGE_FLAG_WRITABLE	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 1),
+  BSE_STORAGE_FLAG_NEEDS_BREAK	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 2),
+  BSE_STORAGE_FLAG_AT_BOL	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 3),
+  BSE_STORAGE_FLAG_PUT_DEFAULTS	   = 1 << (BSE_OBJECT_FLAGS_USHIFT + 4),
+  BSE_STORAGE_FLAG_SELF_CONTAINED  = 1 << (BSE_OBJECT_FLAGS_USHIFT + 5),
+  BSE_STORAGE_FLAG_PROXIES_ENABLED = 1 << (BSE_OBJECT_FLAGS_USHIFT + 6)
 } BseStorageFlags;
+#define BSE_STORAGE_FLAGS_USHIFT	  (BSE_OBJECT_FLAGS_USHIFT + 7)
 typedef enum	/*< skip >*/
 {
   BSE_STORAGE_SKIP_DEFAULTS	= 1 << 0,
@@ -71,33 +71,39 @@ typedef void (*BseStorageRestoreLink)	(gpointer	 data,
 					 const gchar	*error);
 struct _BseStorage
 {
-  BseStorageFlags	 flags;
-  guint			 indent_width;
-  
+  BseObject		 parent_instance;
   /* reading */
   GScanner		*scanner;
   gint			 fd;
   glong			 bin_offset;
   BseStorageItemLink	*item_links;
-  
   /* writing */
   GSList		*indent;
   BseStorageBBlock	*wblocks;	/* keeps ref */
   GString		*gstring;
 };
+struct _BseStorageClass
+{
+  BseObjectClass parent_class;
+};
 
 
 /* --- prototypes -- */
-BseStorage*	bse_storage_new			(void);
-BseStorage*	bse_storage_from_scanner	(GScanner	*scanner);
-void		bse_storage_destroy		(BseStorage	*storage);
+void		bse_storage_reset		(BseStorage	*storage);
 void		bse_storage_prepare_write	(BseStorage	*storage,
 						 BseStorageMode  mode);
 BseErrorType	bse_storage_input_file		(BseStorage	*storage,
 						 const gchar	*file_name);
 BseErrorType	bse_storage_input_text		(BseStorage	*storage,
 						 const gchar	*text);
-void		bse_storage_reset		(BseStorage	*storage);
+GTokenType	bse_storage_restore_item	(BseStorage	*storage,
+						 gpointer	 item);
+GTokenType	bse_storage_parse_statement	(BseStorage	*storage,
+						 gpointer	 item);
+void		bse_storage_store_item		(BseStorage	*storage,
+						 gpointer	 item);
+void		bse_storage_store_child		(BseStorage	*storage,
+						 gpointer	 item);
 void		bse_storage_enable_proxies	(BseStorage	*storage);
 
 
@@ -196,8 +202,7 @@ void		bse_storage_resolve_item_links	(BseStorage	*storage);
   } \
 }G_STMT_END
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+
+G_END_DECLS
 
 #endif /* __BSE_STORAGE_H__ */

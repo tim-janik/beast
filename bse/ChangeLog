@@ -1,3 +1,34 @@
+Fri Feb 14 07:50:29 2003  Tim Janik  <timj@gtk.org>
+
+	* bsestorage.[hc]: major overhaul. made BseStorage an object.
+	moved GObject property storage and parsing logic to here.
+	provide highlevel storage and parsing primitives and keep the
+	basic storage/parsing logic in a single place (bse_storage_store_item()
+	and item_restore_try_statement()). use sfi_storage_scanner_config.
+
+	* bseproject.[hcp]*: adapt to new BseStorage code, simplified parsing
+	logic.
+
+	* bsesong.c: removed uneccessary parsing hooks.
+
+	* bseparasite.[hc]: just provide bse_parasite_restore() amd
+	bse_parasite_store() and rely on BseStorage to invoke parasite
+	parsing/storage code when apropriate.
+
+	* bseobject.[hc]:
+	* bseitem.[hc]: removed lots of the complicated parsing and storage
+	logic.
+
+	* bsecontainer.[hc]: removed serialization methods.
+	just provide bse_container_store_children() to loop over all children
+	that need to be stored.
+
+	* bsewave.c:
+	* bsepart.c:
+	* bsetrack.c:
+	* bsesource.c:
+	* bsedatapocket.c: cleanup and fix restore_private() implementation.
+
 Thu Feb 13 10:43:23 2003  Tim Janik  <timj@gtk.org>
 
 	* bsequery.c: support "synthlist" and "synth" qualifiers to retrieve

@@ -79,15 +79,16 @@ METHOD (BseProject, restore-from-file, "File/Restore") {
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  storage = bse_storage_new ();
-  
+  storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+
   error = bse_storage_input_file (storage, file_name);
   if (!error)
     {
       // bse_storage_set_upath_resolver (storage, bse_project_upath_resolver, project);
       error = bse_project_restore (project, storage);
     }
-  bse_storage_destroy (storage);
+  bse_storage_reset (storage);
+  g_object_unref (storage);
   
   /* set output parameters */
   bse_value_set_enum (out_values++, error);

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,16 +20,20 @@
 #include "bseitem.h"
 #include "bsebindata.h"
 #include "bseproject.h"
-#include "bseserver.h"
-#include "bsesong.h"
+#include "bseparasite.h"
 #include "bseconfig.h"
-#include "bseprocedure.h"
 #include "gsldatahandle.h"
 #include "gsldatautils.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
+
+
+/* --- macros --- */
+#define parse_or_return		bse_storage_scanner_parse_or_return
+#define peek_or_return		bse_storage_scanner_peek_or_return
 
 
 /* --- typedefs --- */
@@ -56,96 +60,495 @@ struct _BseStorageItemLink
 };
 
 
-/* --- macros --- */
-#define parse_or_return		bse_storage_scanner_parse_or_return
-#define peek_or_return		bse_storage_scanner_peek_or_return
+/* --- prototypes --- */
+static void	bse_storage_init	(BseStorage	 *self);
+static void	bse_storage_class_init	(BseStorageClass *class);
+static void	bse_storage_finalize	(GObject	 *object);
 
 
 /* --- variables --- */
-static  GScannerConfig  bse_scanner_config_template = {
-  (
-   " \t\r\n"
-   )                    /* cset_skip_characters */,
-  (
-   G_CSET_a_2_z
-   "_"
-   G_CSET_A_2_Z
-   )                    /* cset_identifier_first */,
-  (
-   G_CSET_a_2_z
-   ".:-+_0123456789*!?"
-   G_CSET_A_2_Z
-   G_CSET_LATINS
-   G_CSET_LATINC
-   )                    /* cset_identifier_nth */,
-  ( ";\n" )             /* cpair_comment_single */,
-  
-  FALSE                 /* case_sensitive */,
-  
-  TRUE                  /* skip_comment_multi */,
-  TRUE                  /* skip_comment_single */,
-  FALSE                 /* scan_comment_multi */,
-  TRUE                  /* scan_identifier */,
-  FALSE                 /* scan_identifier_1char */,
-  FALSE                 /* scan_identifier_NULL */,
-  TRUE                  /* scan_symbols */,
-  TRUE                  /* scan_binary */,
-  TRUE                  /* scan_octal */,
-  TRUE                  /* scan_float */,
-  TRUE                  /* scan_hex */,
-  FALSE                 /* scan_hex_dollar */,
-  FALSE                 /* scan_string_sq */,
-  TRUE                  /* scan_string_dq */,
-  TRUE                  /* numbers_2_int */,
-  FALSE                 /* int_2_float */,
-  FALSE                 /* identifier_2_string */,
-  TRUE                  /* char_2_token */,
-  TRUE                  /* symbol_2_token */,
-  FALSE                 /* scope_0_fallback */,
-};
+static gpointer parent_class = NULL;
 
 
 /* --- functions --- */
-BseStorage*
-bse_storage_new (void)
+BSE_BUILTIN_TYPE (BseStorage)
 {
-  BseStorage *storage;
-  
-  storage = g_new0 (BseStorage, 1);
-  storage->flags = 0;
-  storage->indent_width = 2;
-  
-  storage->scanner = NULL;
-  storage->fd = -1;
-  storage->bin_offset = 0;
-  
-  storage->indent = NULL;
-  storage->wblocks = NULL;
-  storage->gstring = NULL;
-  
-  return storage;
+  static const GTypeInfo storage_info = {
+    sizeof (BseStorageClass),
+    (GBaseInitFunc) NULL,
+    (GBaseFinalizeFunc) NULL,
+    (GClassInitFunc) bse_storage_class_init,
+    (GClassFinalizeFunc) NULL,
+    NULL /* class_data */,
+    sizeof (BseStorage),
+    0 /* n_preallocs */,
+    (GInstanceInitFunc) bse_storage_init,
+  };
+
+  g_assert (BSE_STORAGE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+
+  return bse_type_register_static (BSE_TYPE_OBJECT, "BseStorage",
+				   "Storage object for object serialization",
+				   &storage_info);
 }
 
-BseStorage*
-bse_storage_from_scanner (GScanner *scanner)
+static void
+bse_storage_class_init (BseStorageClass *class)
 {
-  gpointer storage;
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
 
-  g_return_val_if_fail (scanner != NULL, NULL);
+  parent_class = g_type_class_peek_parent (class);
+
+  gobject_class->finalize = bse_storage_finalize;
+}
+
+static void
+bse_storage_init (BseStorage *self)
+{
+  /* reading */
+  self->scanner = NULL;
+  self->fd = -1;
+  self->bin_offset = 0;
+  self->item_links = NULL;
+  /* writing */
+  self->indent = NULL;
+  self->wblocks = NULL;
+  self->gstring = NULL;
+}
+
+static void
+bse_storage_finalize (GObject *object)
+{
+  BseStorage *self = BSE_STORAGE (object);
+
+  bse_storage_reset (self);
   
-  storage = g_datalist_get_data (&scanner->qdata, "BseStorage");
-
-  return BSE_IS_STORAGE (storage) ? storage : NULL;
+  /* chain parent class' handler */
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 void
-bse_storage_destroy (BseStorage *storage)
+bse_storage_reset (BseStorage *self)
 {
-  g_return_if_fail (storage != NULL);
+  g_return_if_fail (BSE_IS_STORAGE (self));
   
-  bse_storage_reset (storage);
+  if (BSE_STORAGE_READABLE (self))
+    {
+      bse_storage_resolve_item_links (self);
+      g_free ((gchar*) self->scanner->input_name);
+      g_scanner_destroy (self->scanner);
+      if (self->fd >= 0)
+        close (self->fd);
+      self->scanner = NULL;
+      self->fd = -1;
+      self->bin_offset = 0;
+    }
   
-  g_free (storage);
+  if (BSE_STORAGE_WRITABLE (self))
+    {
+      GSList *slist;
+      
+      for (slist = self->indent; slist; slist = slist->next)
+        g_free (slist->data);
+      g_slist_free (self->indent);
+      self->indent = NULL;
+      
+      while (self->wblocks)
+        {
+          BseStorageBBlock *bblock = self->wblocks;
+          self->wblocks = bblock->next;
+	  gsl_data_handle_unref (bblock->data_handle);
+          g_free (bblock);
+        }
+      
+      g_string_free (self->gstring, TRUE);
+      self->gstring = NULL;
+    }
+
+  BSE_OBJECT_UNSET_FLAGS (self,
+			  BSE_STORAGE_FLAG_READABLE |
+			  BSE_STORAGE_FLAG_WRITABLE |
+			  BSE_STORAGE_FLAG_NEEDS_BREAK |
+			  BSE_STORAGE_FLAG_AT_BOL |
+			  BSE_STORAGE_FLAG_PUT_DEFAULTS |
+			  BSE_STORAGE_FLAG_SELF_CONTAINED |
+			  BSE_STORAGE_FLAG_PROXIES_ENABLED);
+}
+
+void
+bse_storage_prepare_write (BseStorage    *self,
+                           BseStorageMode mode)
+{
+  g_return_if_fail (BSE_IS_STORAGE (self));
+
+  bse_storage_reset (self);
+  self->indent = g_slist_prepend (NULL, g_strdup (""));
+  self->gstring = g_string_sized_new (8192);
+  BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_FLAG_WRITABLE);
+  BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_FLAG_AT_BOL);
+  if (mode & BSE_STORAGE_SKIP_DEFAULTS)
+    BSE_OBJECT_UNSET_FLAGS (self, BSE_STORAGE_FLAG_PUT_DEFAULTS);
+  else
+    BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_FLAG_PUT_DEFAULTS);
+  bse_storage_break (self);
+  if (!(mode & BSE_STORAGE_SKIP_COMPAT))
+    {
+      bse_storage_printf (self, "(bse-storage-support \"v%s\")", BSE_VERSION);
+      bse_storage_break (self);
+    }
+}
+
+BseErrorType
+bse_storage_input_file (BseStorage  *self,
+                        const gchar *file_name)
+{
+  gint fd;
+  
+  g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
+
+  bse_storage_reset (self);
+  fd = open (file_name, O_RDONLY, 0);
+  if (fd < 0)
+    return bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+  self->fd = fd;
+  self->scanner = g_scanner_new (sfi_storage_scanner_config);
+  g_datalist_set_data (&self->scanner->qdata, "BseStorage", self);
+  g_scanner_input_file (self->scanner, fd);
+  self->scanner->input_name = g_strdup (file_name);
+  self->scanner->max_parse_errors = 1;
+  self->scanner->parse_errors = 0;
+  BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_FLAG_READABLE);
+  
+  return BSE_ERROR_NONE;
+}
+
+BseErrorType
+bse_storage_input_text (BseStorage  *self,
+                        const gchar *text)
+{
+  g_return_val_if_fail (BSE_IS_STORAGE (self), BSE_ERROR_INTERNAL);
+  if (!text)
+    text = "";
+
+  bse_storage_reset (self);
+  self->fd = -1;
+  self->scanner = g_scanner_new (sfi_storage_scanner_config);
+  g_datalist_set_data (&self->scanner->qdata, "BseStorage", self);
+  g_scanner_input_text (self->scanner, text, strlen (text));
+  self->scanner->input_name = g_strdup ("InternalString");
+  self->scanner->max_parse_errors = 1;
+  self->scanner->parse_errors = 0;
+  BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_FLAG_READABLE);
+  
+  return BSE_ERROR_NONE;
+}
+
+static void
+bse_item_store_property (BseItem    *item,
+			 BseStorage *storage,
+			 GValue     *value,
+			 GParamSpec *pspec)
+{
+  if (g_type_is_a (G_VALUE_TYPE (value), BSE_TYPE_ITEM))
+    {
+      bse_storage_break (storage);
+      bse_storage_putc (storage, '(');
+      bse_storage_puts (storage, pspec->name);
+      bse_storage_putc (storage, ' ');
+      bse_storage_put_item_link (storage, item, g_value_get_object (value));
+      bse_storage_putc (storage, ')');
+    }
+  else if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
+    g_warning ("%s: unable to store object property \"%s\" of type `%s'",
+	       G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+  else
+    bse_storage_put_param (storage, value, pspec);
+}
+
+static void
+store_item_properties (BseItem    *item,
+		       BseStorage *storage)
+{
+  GParamSpec **pspecs;
+  guint n;
+
+  /* dump the object properties, starting out at the base class */
+  pspecs = g_object_class_list_properties (G_OBJECT_GET_CLASS (item), &n);
+  while (n--)
+    {
+      GParamSpec *pspec = pspecs[n];
+
+      if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_STORAGE))
+	{
+	  GValue value = { 0, };
+
+	  g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+	  g_object_get_property (G_OBJECT (item), pspec->name, &value);
+	  if (!g_param_value_defaults (pspec, &value) || BSE_STORAGE_PUT_DEFAULTS (storage))
+	    bse_item_store_property (item, storage, &value, pspec);
+	  g_value_unset (&value);
+	}
+    }
+  g_free (pspecs);
+}
+
+void
+bse_storage_store_item (BseStorage *self,
+			gpointer    item)
+{
+  g_return_if_fail (BSE_IS_STORAGE (self));
+  g_return_if_fail (BSE_IS_ITEM (item));
+
+  g_object_ref (self);
+  g_object_ref (item);
+
+  store_item_properties (item, self);
+
+  BSE_OBJECT_GET_CLASS (item)->store_private (BSE_OBJECT (item), self);
+
+  bse_parasite_store (BSE_OBJECT (item), self);
+
+  if (BSE_IS_CONTAINER (item))
+    bse_container_store_children (item, self);
+
+  g_object_unref (item);
+  g_object_unref (self);
+}
+
+void
+bse_storage_store_child (BseStorage *self,
+			 gpointer    item)
+{
+  gchar *uname;
+
+  g_return_if_fail (BSE_IS_STORAGE (self));
+  g_return_if_fail (BSE_IS_ITEM (item));
+
+  uname = g_strescape (BSE_OBJECT_UNAME (item), NULL);
+  bse_storage_break (self);
+  bse_storage_printf (self, "(%s \"%s::%s\"", "container-child", G_OBJECT_TYPE_NAME (item), uname);
+  bse_storage_needs_break (self);
+  g_free (uname);
+
+  bse_storage_push_level (self);
+  bse_storage_store_item (self, item);
+  bse_storage_pop_level (self);
+  bse_storage_handle_break (self);
+  bse_storage_putc (self, ')');
+}
+
+static void
+item_link_resolved (gpointer     data,
+		    BseStorage  *storage,
+		    BseItem     *item,
+		    BseItem     *dest_item,
+		    const gchar *error)
+{
+  if (error)
+    bse_storage_warn (storage, error);
+  else
+    {
+      GParamSpec *pspec = data;
+      GValue value = { 0, };
+      gboolean fixed_uname;
+
+      g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      g_value_set_object (&value, dest_item);
+      fixed_uname = BSE_OBJECT_FLAGS (item) & BSE_OBJECT_FLAG_FIXED_UNAME;
+      BSE_OBJECT_SET_FLAGS (item, BSE_OBJECT_FLAG_FIXED_UNAME);
+      g_object_set_property (G_OBJECT (item), pspec->name, &value);
+      if (!fixed_uname)
+	BSE_OBJECT_UNSET_FLAGS (item, BSE_OBJECT_FLAG_FIXED_UNAME);
+      g_value_unset (&value);
+    }
+}
+
+static GTokenType
+restore_item_property (BseItem    *item,
+		       BseStorage *storage)
+{
+  GScanner *scanner = storage->scanner;
+  GTokenType expected_token;
+  GParamSpec *pspec;
+  GValue value = { 0, };
+  gboolean fixed_uname;
+
+  /* check identifier */
+  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
+    return BSE_TOKEN_UNMATCHED;
+
+  /* in theory, we should only find SFI_PARAM_SERVE_STORAGE
+   * properties here, but due to version changes or even
+   * users editing their files, we will simply parse all
+   * kinds of properties (we might want to at least restrict
+   * them to SFI_PARAM_SERVE_STORAGE and SFI_PARAM_SERVE_GUI
+   * at some point...)
+   */
+  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (item), scanner->next_value.v_identifier);
+  if (!pspec)
+    return BSE_TOKEN_UNMATCHED;
+  parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat pspec name */
+
+  /* parse value, special casing object references */
+  if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_ITEM))
+    {
+      expected_token = bse_storage_parse_item_link (storage, item, item_link_resolved, pspec);
+      if (expected_token != G_TOKEN_NONE)
+	return expected_token;
+      parse_or_return (scanner, ')');
+      /* we cannot provide the object value at this time */
+      g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      g_value_set_object (&value, NULL);
+    }
+  else if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), G_TYPE_OBJECT))
+    return bse_storage_warn_skip (storage, "unable to restore object property \"%s\" of type `%s'",
+				  pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
+  else
+    {
+      /* parse the value for this pspec, including the closing ')' */
+      g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+      expected_token = bse_storage_parse_param_value (storage, &value, pspec);
+      if (expected_token != G_TOKEN_NONE)
+	{
+	  g_value_unset (&value);
+	  return expected_token;
+	}
+    }
+
+  /* set property value while preserving the object uname */
+  fixed_uname = BSE_OBJECT_FLAGS (item) & BSE_OBJECT_FLAG_FIXED_UNAME;
+  BSE_OBJECT_SET_FLAGS (item, BSE_OBJECT_FLAG_FIXED_UNAME);
+  g_object_set_property (G_OBJECT (item), pspec->name, &value);
+  if (!fixed_uname)
+    BSE_OBJECT_UNSET_FLAGS (item, BSE_OBJECT_FLAG_FIXED_UNAME);
+  g_value_unset (&value);
+
+  return G_TOKEN_NONE;
+}
+
+static GTokenType
+restore_container_child (BseContainer *container,
+			 BseStorage   *storage)
+{
+  GScanner *scanner = storage->scanner;
+  GTokenType expected_token;
+  BseItem *item;
+  const gchar *uname;
+
+  /* check identifier */
+  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
+      !bse_string_equals ("container-child", scanner->next_value.v_identifier))
+    return BSE_TOKEN_UNMATCHED;
+  parse_or_return (scanner, G_TOKEN_IDENTIFIER);        /* eat identifier */
+
+  /* parse and validate type::uname argument */
+  parse_or_return (scanner, G_TOKEN_STRING);
+  uname = strchr (scanner->value.v_string, ':');
+  if (!uname || uname[1] != ':')
+    {
+      bse_storage_error (storage, "invalid object handle: \"%s\"", uname);
+      return G_TOKEN_ERROR;
+    }
+
+  /* create container child */
+  item = bse_container_retrieve_child (container, scanner->value.v_string);
+  if (!item)
+    return bse_storage_warn_skip (storage, "failed to create object from (invalid) handle: \"%s\"",
+				  scanner->value.v_string);
+
+  /* FIXME: validate uname vs. item->uname */
+
+  /* restore_item reads out closing parenthesis */
+  expected_token = bse_storage_restore_item (storage, item);
+  if (expected_token != G_TOKEN_NONE)
+    return expected_token == BSE_TOKEN_UNMATCHED ? G_TOKEN_ERROR : expected_token;
+
+  return G_TOKEN_NONE;
+}
+
+static BseTokenType
+item_restore_try_statement (gpointer    item,
+			    BseStorage *storage,
+			    gpointer    user_data)
+{
+  GScanner *scanner = storage->scanner;
+  GTokenType expected_token = BSE_TOKEN_UNMATCHED;
+
+  /* ensure that the statement starts out with an identifier */
+  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
+    {
+      g_scanner_get_next_token (scanner);
+      return G_TOKEN_IDENTIFIER;
+    }
+
+  /* this is pretty much the *only* place where something else than
+   * G_TOKEN_NONE may be returned without erroring out. return values:
+   * G_TOKEN_NONE	 - statement got parsed, advance to next statement
+   * BSE_TOKEN_UNMATCHED - statement not recognized, try further
+   * anything else	 - encountered (syntax/semantic) error during parsing
+   */
+
+  if (expected_token == BSE_TOKEN_UNMATCHED)
+    expected_token = restore_item_property (item, storage);
+
+  if (expected_token == BSE_TOKEN_UNMATCHED)
+    expected_token = BSE_OBJECT_GET_CLASS (item)->restore_private (item, storage);
+
+  if (expected_token == BSE_TOKEN_UNMATCHED)
+    expected_token = bse_parasite_restore (item, storage);
+
+  if (expected_token == BSE_TOKEN_UNMATCHED && BSE_IS_CONTAINER (item))
+    expected_token = restore_container_child (item, storage);
+
+  return expected_token;
+}
+
+GTokenType
+bse_storage_restore_item (BseStorage *self,
+			  gpointer    item)
+{
+  GTokenType expected_token;
+
+  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  g_return_val_if_fail (BSE_IS_ITEM (item), G_TOKEN_ERROR);
+
+  g_object_ref (self);
+  g_object_ref (item);
+
+  expected_token = bse_storage_parse_rest (self, item_restore_try_statement, item, NULL);
+
+  g_object_unref (item);
+  g_object_unref (self);
+
+  return expected_token;
+}
+
+GTokenType
+bse_storage_parse_statement (BseStorage *self,
+			     gpointer    item)
+{
+  GTokenType expected_token;
+
+  g_return_val_if_fail (BSE_IS_STORAGE (self), G_TOKEN_ERROR);
+  g_return_val_if_fail (BSE_IS_ITEM (item), G_TOKEN_ERROR);
+
+  g_object_ref (self);
+  g_object_ref (item);
+  expected_token = item_restore_try_statement (item, self, NULL);
+  if (expected_token == BSE_TOKEN_UNMATCHED)
+    {
+      gchar *identifier;
+      if (g_scanner_get_next_token (self->scanner) != G_TOKEN_IDENTIFIER)
+	identifier = "<internal try_statement() error>";
+      else
+	identifier = self->scanner->value.v_identifier;
+      expected_token = bse_storage_warn_skip (self, "unknown identifier: %s", identifier);
+    }
+  g_object_unref (item);
+  g_object_unref (self);
+
+  return expected_token;
 }
 
 void
@@ -153,168 +556,49 @@ bse_storage_enable_proxies (BseStorage *storage)
 {
   g_return_if_fail (BSE_IS_STORAGE (storage));
 
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_PROXIES_ENABLED);
-}
-
-void
-bse_storage_reset (BseStorage *storage)
-{
-  g_return_if_fail (BSE_IS_STORAGE (storage));
-  
-  if (BSE_STORAGE_READABLE (storage))
-    {
-      g_free ((gchar*) storage->scanner->input_name);
-      g_scanner_destroy (storage->scanner);
-      if (storage->fd >= 0)
-        close (storage->fd);
-      storage->scanner = NULL;
-      storage->fd = -1;
-      storage->bin_offset = 0;
-      bse_storage_resolve_item_links (storage);
-    }
-  
-  if (BSE_STORAGE_WRITABLE (storage))
-    {
-      GSList *slist;
-      
-      for (slist = storage->indent; slist; slist = slist->next)
-        g_free (slist->data);
-      g_slist_free (storage->indent);
-      storage->indent = NULL;
-      
-      while (storage->wblocks)
-        {
-          BseStorageBBlock *bblock = storage->wblocks;
-          
-          storage->wblocks = bblock->next;
-	  gsl_data_handle_unref (bblock->data_handle);
-          g_free (bblock);
-        }
-      
-      g_string_free (storage->gstring, TRUE);
-      storage->gstring = NULL;
-    }
-  
-  storage->flags = 0;
-}
-
-void
-bse_storage_prepare_write (BseStorage    *storage,
-                           BseStorageMode mode)
-{
-  g_return_if_fail (BSE_IS_STORAGE (storage));
-  g_return_if_fail (!BSE_STORAGE_WRITABLE (storage));
-  g_return_if_fail (!BSE_STORAGE_READABLE (storage));
-  
-  storage->indent = g_slist_prepend (NULL, g_strdup (""));
-  storage->gstring = g_string_sized_new (1024);
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_WRITABLE);
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
-  if (mode & BSE_STORAGE_SKIP_DEFAULTS)
-    BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_PUT_DEFAULTS);
-  else
-    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_PUT_DEFAULTS);
-  bse_storage_break (storage);
-  if (!(mode & BSE_STORAGE_SKIP_COMPAT))
-    {
-      bse_storage_printf (storage, "(bse-storage-support \"v%s\")", BSE_VERSION);
-      bse_storage_break (storage);
-    }
-}
-
-BseErrorType
-bse_storage_input_file (BseStorage     *storage,
-                        const gchar    *file_name)
-{
-  gint fd;
-  
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_STORAGE_WRITABLE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_STORAGE_READABLE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (file_name != NULL, BSE_ERROR_INTERNAL);
-  
-  fd = open (file_name, O_RDONLY, 0);
-  
-  if (fd < 0)
-    return (errno == ENOENT || errno == ENOTDIR || errno == ELOOP ?
-            BSE_ERROR_FILE_NOT_FOUND : BSE_ERROR_FILE_IO);
-  
-  storage->fd = fd;
-  storage->scanner = g_scanner_new (&bse_scanner_config_template);
-  g_datalist_set_data (&storage->scanner->qdata, "BseStorage", storage);
-  g_scanner_add_symbol (storage->scanner, "nil", GUINT_TO_POINTER (BSE_TOKEN_NIL));
-  g_scanner_input_file (storage->scanner, fd);
-  storage->scanner->input_name = g_strdup (file_name);
-  storage->scanner->max_parse_errors = 1;
-  storage->scanner->parse_errors = 0;
-  
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_READABLE);
-  
-  return BSE_ERROR_NONE;
-}
-
-BseErrorType
-bse_storage_input_text (BseStorage     *storage,
-                        const gchar    *text)
-{
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_STORAGE_WRITABLE (storage), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (!BSE_STORAGE_READABLE (storage), BSE_ERROR_INTERNAL);
-  if (!text)
-    text = "";
-
-  storage->fd = -1;
-  storage->scanner = g_scanner_new (&bse_scanner_config_template);
-  g_datalist_set_data (&storage->scanner->qdata, "BseStorage", storage);
-  g_scanner_add_symbol (storage->scanner, "nil", GUINT_TO_POINTER (BSE_TOKEN_NIL));
-  g_scanner_input_text (storage->scanner, text, strlen (text));
-  storage->scanner->input_name = g_strdup ("InstantString");
-  storage->scanner->max_parse_errors = 1;
-  storage->scanner->parse_errors = 0;
-  
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_READABLE);
-  
-  return BSE_ERROR_NONE;
+  BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_PROXIES_ENABLED);
 }
 
 static inline const gchar*
-bse_storage_get_indent (BseStorage *storage)
+bse_storage_get_indent (BseStorage *self)
 {
-  return storage->indent->data;
+  return self->indent->data;
 }
 
 static inline void
-bse_storage_indent (BseStorage *storage)
+bse_storage_indent (BseStorage *self)
 {
-  bse_storage_puts (storage, bse_storage_get_indent (storage));
+  bse_storage_puts (self, bse_storage_get_indent (self));
 }
 
 void
-bse_storage_push_level (BseStorage *storage)
+bse_storage_push_level (BseStorage *self)
 {
-  g_return_if_fail (BSE_IS_STORAGE (storage));
-  g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
-  
-  storage->indent = g_slist_prepend (storage->indent,
-                                     g_strnfill (storage->indent_width +
-                                                 strlen (bse_storage_get_indent (storage)),
-                                                 ' '));
+  guint indent_width = 2;
+
+  g_return_if_fail (BSE_IS_STORAGE (self));
+  g_return_if_fail (BSE_STORAGE_WRITABLE (self));
+
+  self->indent = g_slist_prepend (self->indent,
+				  g_strnfill (indent_width +
+					      strlen (bse_storage_get_indent (self)),
+					      ' '));
 }
 
 void
-bse_storage_pop_level (BseStorage *storage)
+bse_storage_pop_level (BseStorage *self)
 {
   GSList *next;
-  
-  g_return_if_fail (BSE_IS_STORAGE (storage));
-  g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
-  
-  next = storage->indent->next;
+
+  g_return_if_fail (BSE_IS_STORAGE (self));
+  g_return_if_fail (BSE_STORAGE_WRITABLE (self));
+
+  next = self->indent->next;
   if (next)
     {
-      g_free (storage->indent->data);
-      g_slist_free_1 (storage->indent);
-      storage->indent = next;
+      g_free (self->indent->data);
+      g_slist_free_1 (self->indent);
+      self->indent = next;
     }
 }
 
@@ -337,9 +621,9 @@ bse_storage_puts (BseStorage  *storage,
     g_string_append (storage->gstring, string);
   
   if (string[l - 1] == '\n')
-    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+    BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
   else
-    BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+    BSE_OBJECT_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
 }
 
 void
@@ -353,9 +637,9 @@ bse_storage_putc (BseStorage *storage,
     g_string_append_c (storage->gstring, character);
   
   if (character == '\n')
-    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+    BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
   else
-    BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
+    BSE_OBJECT_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_AT_BOL);
 }
 
 void
@@ -386,7 +670,7 @@ bse_storage_break (BseStorage *storage)
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
   
   bse_storage_putc (storage, '\n');
-  BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);
+  BSE_OBJECT_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);
   bse_storage_indent (storage);
 }
 
@@ -406,7 +690,7 @@ bse_storage_needs_break (BseStorage *storage)
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
   
-  BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);
+  BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);
 }
 
 static BseStorageBBlock*
@@ -754,7 +1038,7 @@ bse_storage_parse_rest (BseStorage     *storage,
               g_scanner_get_next_token (scanner);
               return G_TOKEN_IDENTIFIER;
             }
-          
+
           /* parse a statement */
           if (try_statement)
             expected_token = try_statement (func_data, storage, user_data);
@@ -770,7 +1054,7 @@ bse_storage_parse_rest (BseStorage     *storage,
                   return G_TOKEN_ERROR;
                 }
               expected_token = bse_storage_warn_skip (storage,
-                                                      "unable to handle identifier \"%s\"",
+                                                      "unknown identifier: %s",
                                                       scanner->value.v_identifier);
             }
           
@@ -1069,7 +1353,7 @@ bse_storage_parse_data_handle (BseStorage     *storage,
 	bse_storage_warn (storage, "no device to retrieve binary data from");
       else
 	bse_storage_error (storage, "failed to retrieve binary data: %s", bse_error_blurb (error));
-      return G_TOKEN_NONE;
+      return G_TOKEN_ERROR;
     }
 
   *data_handle_p = gsl_wave_handle_new (storage->scanner->input_name, n_channels,
@@ -1145,6 +1429,7 @@ parse_note (BseStorage *storage,
   return G_TOKEN_NONE;
 }
 
+#if 0 // FIXME: remove
 BseErrorType
 bse_storage_store_procedure (gpointer          storage,
 			     BseProcedureClass *proc,
@@ -1175,6 +1460,7 @@ bse_storage_store_procedure (gpointer          storage,
 
   return BSE_ERROR_NONE;
 }
+#endif
 
 void
 bse_storage_put_param (BseStorage   *storage,
@@ -1204,11 +1490,7 @@ bse_storage_put_item_link (BseStorage     *storage,
 
   if (!to_item)						/* special case (1) */
     {
-      bse_storage_puts (storage, "nil");
-    }
-  else if (to_item == (BseItem*) bse_server_get ())	/* special case (2) */
-    {
-      bse_storage_printf (storage, "(bse-server)");
+      bse_storage_puts (storage, SFI_SERIAL_NULL_TOKEN);
     }
   else		/* ordiniary object link within a project or other container */
     {
@@ -1280,7 +1562,7 @@ bse_storage_put_value (BseStorage   *storage,
       cstring = bse_storage_get_indent (storage);
       indent_len = cstring ? strlen (cstring) : 0;
 
-      BSE_STORAGE_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);  // Sfi inserts newline and indent
+      BSE_OBJECT_UNSET_FLAGS (storage, BSE_STORAGE_FLAG_NEEDS_BREAK);  // Sfi inserts newline and indent
       sfi_value_store_param (svalue, gstring, pspec, indent_len);
       
     cleanup:
@@ -1389,7 +1671,7 @@ bse_storage_parse_item_link (BseStorage           *storage,
 
   g_scanner_get_next_token (scanner);
 
-  if (scanner->token == BSE_TOKEN_NIL)
+  if (sfi_serial_check_parse_null_token (scanner))
     {
       ilink = storage_add_item_link (storage, from_item, restore_link, data, NULL);
     }
@@ -1397,14 +1679,7 @@ bse_storage_parse_item_link (BseStorage           *storage,
     {
       parse_or_goto (G_TOKEN_IDENTIFIER, error_parse_link);
 
-      if (strcmp (scanner->value.v_identifier, "bse-server") == 0)
-	{
-	  peek_or_goto (')', error_parse_link);
-
-	  ilink = storage_add_item_link (storage, from_item, restore_link, data, NULL);
-	  ilink->to_item = g_object_ref (bse_server_get ());
-	}
-      else if (strcmp (scanner->value.v_identifier, "bse-upath-resolve") == 0)
+      if (strcmp (scanner->value.v_identifier, "bse-upath-resolve") == 0)
 	{
 	  guint pbackup = 0;
 

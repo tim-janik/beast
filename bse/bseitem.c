@@ -45,14 +45,6 @@ static void		bse_item_do_set_uname		(BseObject		*object,
 static guint		bse_item_do_get_seqid		(BseItem		*item);
 static void		bse_item_do_set_parent		(BseItem                *item,
 							 BseItem                *parent);
-static void             bse_item_store_property		(BseObject		*object,
-							 BseStorage		*storage,
-							 GValue			*value,
-							 GParamSpec		*pspec);
-static GTokenType       bse_item_restore_property	(BseObject		*object,
-							 BseStorage		*storage,
-							 GValue			*value,
-							 GParamSpec		*pspec);
 
 
 /* --- variables --- */
@@ -108,8 +100,6 @@ bse_item_class_init (BseItemClass *class)
   gobject_class->dispose = bse_item_do_dispose;
   gobject_class->finalize = bse_item_do_finalize;
   
-  object_class->store_property = bse_item_store_property;
-  object_class->restore_property = bse_item_restore_property;
   object_class->set_uname = bse_item_do_set_uname;
   
   class->set_parent = bse_item_do_set_parent;
@@ -612,73 +602,4 @@ bse_item_close_undo (BseItem    *item,
 {
   g_return_if_fail (BSE_IS_ITEM (item));
   g_return_if_fail (BSE_IS_STORAGE (storage));
-}
-
-static void
-bse_item_store_property (BseObject  *object,
-			 BseStorage *storage,
-			 GValue     *value,
-			 GParamSpec *pspec)
-{
-  if (g_type_is_a (G_VALUE_TYPE (value), BSE_TYPE_ITEM))
-    {
-      BseItem *item = BSE_ITEM (object);
-      
-      bse_storage_break (storage);
-      
-      bse_storage_handle_break (storage);
-      bse_storage_putc (storage, '(');
-      bse_storage_puts (storage, pspec->name);
-      bse_storage_putc (storage, ' ');
-      bse_storage_put_item_link (storage, item, g_value_get_object (value));
-      bse_storage_putc (storage, ')');
-    }
-  else
-    BSE_OBJECT_CLASS (parent_class)->store_property (object, storage, value, pspec);
-}
-
-static void
-object_link_resolved (gpointer     data,
-		      BseStorage  *storage,
-		      BseItem     *item,
-		      BseItem     *dest_item,
-		      const gchar *error)
-{
-  if (error)
-    bse_storage_warn (storage, error);
-  else
-    {
-      GParamSpec *pspec = data;
-      GValue value = { 0, };
-      
-      g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
-      g_value_set_object (&value, dest_item);
-      g_object_set_property (G_OBJECT (item), pspec->name, &value);
-      g_value_unset (&value);
-    }
-}
-
-static GTokenType
-bse_item_restore_property (BseObject  *object,
-			   BseStorage *storage,
-			   GValue     *value,
-			   GParamSpec *pspec)
-{
-  if (g_type_is_a (G_VALUE_TYPE (value), BSE_TYPE_ITEM))
-    {
-      BseItem *item = BSE_ITEM (object);
-      GTokenType token;
-      
-      /* parse the value for this pspec, including the trailing closing ')' */
-      token = bse_storage_parse_item_link (storage, item, object_link_resolved, pspec);
-      bse_storage_scanner_parse_or_return (storage->scanner, ')');
-      
-      /* we cannot provide the object value at this time */
-      g_value_set_object (value, NULL);
-      g_object_set_property (G_OBJECT (object), pspec->name, value);
-      
-      return token;
-    }
-  else
-    return BSE_OBJECT_CLASS (parent_class)->restore_property (object, storage, value, pspec);
 }

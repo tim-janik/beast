@@ -44,7 +44,7 @@ static void	    bse_data_pocket_dispose		(GObject		*object);
 static void	    bse_data_pocket_finalize		(GObject		*object);
 static void	    bse_data_pocket_do_store_private	(BseObject		*object,
 							 BseStorage		*storage);
-static BseTokenType bse_data_pocket_do_restore_private	(BseObject		*object,
+static BseTokenType bse_data_pocket_restore_private	(BseObject		*object,
 							 BseStorage		*storage);
 
 
@@ -54,7 +54,6 @@ static guint	signal_entry_added = 0;
 static guint	signal_entry_removed = 0;
 static guint	signal_entry_changed = 0;
 static Notify  *changed_notify_list = NULL;
-static GQuark	quark_create_entry = 0;
 static GQuark	quark_set_data = 0;
 
 
@@ -88,14 +87,13 @@ bse_data_pocket_class_init (BseDataPocketClass *class)
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
-  quark_create_entry = g_quark_from_static_string ("create-entry");
   quark_set_data = g_quark_from_static_string ("set-data");
   
   gobject_class->dispose = bse_data_pocket_dispose;
   gobject_class->finalize = bse_data_pocket_finalize;
   
   object_class->store_private = bse_data_pocket_do_store_private;
-  object_class->restore_private = bse_data_pocket_do_restore_private;
+  object_class->restore_private = bse_data_pocket_restore_private;
   
   signal_entry_added = bse_object_class_add_signal (object_class, "entry-added",
 						    G_TYPE_NONE, 1, G_TYPE_INT);
@@ -644,25 +642,21 @@ parse_set_data (BseDataPocket *pocket,
 }
 
 static BseTokenType
-bse_data_pocket_do_restore_private (BseObject  *object,
-				    BseStorage *storage)
+bse_data_pocket_restore_private (BseObject  *object,
+				 BseStorage *storage)
 {
   BseDataPocket *pocket = BSE_DATA_POCKET (object);
   GScanner *scanner = storage->scanner;
-  GTokenType expected_token = BSE_TOKEN_UNMATCHED;
-  
-  /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
-    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+  GTokenType expected_token;
   
   /* support storage commands */
-  if (expected_token == BSE_TOKEN_UNMATCHED &&
-      g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
-      g_quark_try_string (scanner->next_value.v_identifier) == quark_create_entry)
+  if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+      bse_string_equals ("create-entry", scanner->next_value.v_identifier))
     {
       guint id = _bse_data_pocket_create_entry (pocket);
       
-      g_scanner_get_next_token (scanner); /* eat quark */
+      parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat identifier */
+
       while (g_scanner_peek_next_token (scanner) != ')')
 	{
 	  g_scanner_get_next_token (scanner); /* read token */
@@ -682,7 +676,10 @@ bse_data_pocket_do_restore_private (BseObject  *object,
 	    return ')';
 	}
       parse_or_return (scanner, ')');
+      expected_token = G_TOKEN_NONE;
     }
-  
+  else /* chain parent class' handler */
+    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+
   return expected_token;
 }

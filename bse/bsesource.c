@@ -95,7 +95,7 @@ static void	    bse_source_real_remove_input	(BseSource	*source,
 							 guint           ochannel);
 static void	    bse_source_real_store_private	(BseObject	*object,
 							 BseStorage	*storage);
-static BseTokenType bse_source_real_restore_private	(BseObject      *object,
+static BseTokenType bse_source_restore_private		(BseObject      *object,
 							 BseStorage     *storage);
 static gint	    contexts_compare			(gconstpointer	 bsearch_node1, /* key */
 							 gconstpointer	 bsearch_node2);
@@ -201,7 +201,7 @@ bse_source_class_init (BseSourceClass *class)
   gobject_class->finalize = bse_source_finalize;
 
   object_class->store_private = bse_source_real_store_private;
-  object_class->restore_private = bse_source_real_restore_private;
+  object_class->restore_private = bse_source_restore_private;
 
   class->prepare = bse_source_real_prepare;
   class->context_create = bse_source_real_context_create;
@@ -1557,50 +1557,47 @@ resolve_osource_input (gpointer     data,
 }
 
 static BseTokenType
-bse_source_real_restore_private (BseObject  *object,
-				 BseStorage *storage)
+bse_source_restore_private (BseObject  *object,
+			    BseStorage *storage)
 {
   BseSource *source = BSE_SOURCE (object);
   GScanner *scanner = storage->scanner;
-  GTokenType expected_token = BSE_TOKEN_UNMATCHED;
-  DeferredInput *dinput;
-  
-  /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
-    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
-  
-  /* feature source-input keywords */
-  if (expected_token != BSE_TOKEN_UNMATCHED ||
-      g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
-      !bse_string_equals ("source-input", scanner->next_value.v_identifier))
-    return expected_token;
-  
-  g_scanner_get_next_token (scanner); /* eat "source-input" */
 
-  /* parse ichannel name */
-  parse_or_return (scanner, G_TOKEN_STRING);
-  dinput = g_new0 (DeferredInput, 1);
-  dinput->ichannel_name = g_strdup (scanner->value.v_string);
-
-  /* parse osource upath and queue handler */
-  if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)	/* bad, bad, hack */
+  if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+      bse_string_equals ("source-input", scanner->next_value.v_identifier))
     {
-      dinput->osource_path = g_strdup (scanner->next_value.v_identifier);
-      /* error = */ bse_storage_parse_item_link (storage, BSE_ITEM (source), resolve_osource_input, dinput);
-      bse_storage_warn (storage, "deprecated syntax: non-string uname path: %s", dinput->osource_path);
-    }
-  else
-    {
-      expected_token = bse_storage_parse_item_link (storage, BSE_ITEM (source), resolve_osource_input, dinput);
-      if (expected_token != G_TOKEN_NONE)
-	return expected_token;
-    }
+      DeferredInput *dinput;
 
-  /* parse ochannel name */
-  parse_or_return (scanner, G_TOKEN_STRING);
-  peek_or_return (scanner, ')');
-  dinput->ochannel_name = g_strdup (scanner->value.v_string);
+      parse_or_return (scanner, G_TOKEN_IDENTIFIER);	/* eat identifier */
 
-  /* read closing brace */
-  return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
+      /* parse ichannel name */
+      parse_or_return (scanner, G_TOKEN_STRING);
+      dinput = g_new0 (DeferredInput, 1);
+      dinput->ichannel_name = g_strdup (scanner->value.v_string);
+      
+      /* parse osource upath and queue handler */
+      if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)	/* bad, bad, hack */
+	{
+	  dinput->osource_path = g_strdup (scanner->next_value.v_identifier);
+	  /* error = */ bse_storage_parse_item_link (storage, BSE_ITEM (source), resolve_osource_input, dinput);
+	  bse_storage_warn (storage, "deprecated syntax: non-string uname path: %s", dinput->osource_path); // FIXME
+	}
+      else
+	{
+	  GTokenType token = bse_storage_parse_item_link (storage, BSE_ITEM (source), resolve_osource_input, dinput);
+	  if (token != G_TOKEN_NONE)
+	    return token;
+	}
+      
+      /* parse ochannel name */
+      parse_or_return (scanner, G_TOKEN_STRING);
+      peek_or_return (scanner, ')');
+      dinput->ochannel_name = g_strdup (scanner->value.v_string);
+      
+      /* close statement */
+      parse_or_return (scanner, ')');
+      return G_TOKEN_NONE;
+    }
+  else /* chain parent class' handler */
+    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
 }

@@ -66,12 +66,6 @@ static void	 bse_song_forall_items		(BseContainer	   *container,
 						 gpointer	    data);
 static void	 bse_song_remove_item		(BseContainer	   *container,
 						 BseItem	   *item);
-static BseTokenType bse_song_restore_private    (BseObject         *object,
-						 BseStorage        *storage);
-static void      bse_song_store_after		(BseObject         *object,
-						 BseStorage        *storage);
-static GTokenType bse_song_restore              (BseObject         *object,
-						 BseStorage        *storage);
 static void	 bse_song_prepare		(BseSource	   *source);
 static void      bse_song_context_create        (BseSource         *source,
 						 guint              context_handle,
@@ -120,10 +114,6 @@ bse_song_class_init (BseSongClass *class)
   gobject_class->set_property = bse_song_set_property;
   gobject_class->get_property = bse_song_get_property;
   gobject_class->finalize = bse_song_finalize;
-  
-  object_class->store_after = bse_song_store_after;
-  object_class->restore = bse_song_restore;
-  object_class->restore_private = bse_song_restore_private;
   
   source_class->prepare = bse_song_prepare;
   source_class->context_create = bse_song_context_create;
@@ -455,51 +445,6 @@ bse_song_ht_foreach (gpointer key,
   
   list_p = user_data;
   *list_p = g_list_prepend (*list_p, value);
-}
-
-static void
-bse_song_store_after (BseObject  *object,
-		      BseStorage *storage)
-{
-  // BseSong *song = BSE_SONG (object);
-
-  /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->store_after)
-    BSE_OBJECT_CLASS (parent_class)->store_after (object, storage);
-}
-
-static BseTokenType
-bse_song_restore_private (BseObject  *object,
-			  BseStorage *storage)
-{
-  // BseSong *song = BSE_SONG (object);
-  GScanner *scanner = storage->scanner;
-  GTokenType expected_token;
-  
-  /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
-    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
-  else
-    expected_token = BSE_TOKEN_UNMATCHED;
-
-  if (expected_token != BSE_TOKEN_UNMATCHED ||
-      g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return expected_token;
-
-  return expected_token;
-}
-
-static GTokenType
-bse_song_restore (BseObject  *object,
-		  BseStorage *storage)
-{
-  // BseSong *song = BSE_SONG (object);
-  GTokenType expected_token;
-  
-  /* chain parent class' handler */
-  expected_token = BSE_OBJECT_CLASS (parent_class)->restore (object, storage);
-
-  return expected_token;
 }
 
 static void

@@ -56,10 +56,9 @@ static GQuark quark_parasite_list = 0;
 
 
 /* --- functions --- */
-static void
-store_parasite_list (BseObject  *object,
-		     BseStorage *storage,
-		     gpointer    data)
+void
+bse_parasite_store (BseObject  *object,
+		    BseStorage *storage)
 {
   ParasiteList *list;
   guint n;
@@ -78,7 +77,7 @@ store_parasite_list (BseObject  *object,
       
       bse_storage_break (storage);
       name = g_strescape (g_quark_to_string (parasite->quark), NULL);
-      bse_storage_printf (storage, "(parasite #\\%c \"%s\"",
+      bse_storage_printf (storage, "(parasite %c \"%s\"",
 			  parasite->type,
 			  name);
       switch (parasite->type)
@@ -151,10 +150,6 @@ fetch_parasite (BseObject *object,
 	  
 	  if (olist)
 	    g_object_steal_qdata (object, quark_parasite_list);
-	  else
-	    g_object_connect (object,
-			      "signal::store", store_parasite_list, NULL,
-			      NULL);
 	  g_object_set_qdata_full (object, quark_parasite_list, list, parasite_list_free);
 	}
       
@@ -195,18 +190,12 @@ delete_parasite (BseObject *object,
   if (i < list->n_parasites)
     list->parasites[i] = list->parasites[list->n_parasites];
   else if (list->n_parasites == 0)
-    {
-      g_object_disconnect (object,
-			   "any_signal", store_parasite_list, NULL,
-			   NULL);
-      g_object_set_qdata (object, quark_parasite_list, NULL);
-    }
+    g_object_set_qdata (object, quark_parasite_list, NULL);
 }
 
-static GTokenType
-parasite_parser (BseObject  *object,
-		 BseStorage *storage,
-		 gpointer    user_data)
+GTokenType
+bse_parasite_restore (BseObject  *object,
+		      BseStorage *storage)
 {
   GScanner *scanner = storage->scanner;
   gboolean char_2_token;
@@ -216,13 +205,20 @@ parasite_parser (BseObject  *object,
   gpointer data;
   
   /* check identifier */
-  if (scanner->token != G_TOKEN_IDENTIFIER ||
-      !bse_string_equals ("parasite", scanner->value.v_identifier))
-    return G_TOKEN_IDENTIFIER;
-  
+  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
+      !bse_string_equals ("parasite", scanner->next_value.v_identifier))
+    return BSE_TOKEN_UNMATCHED;
+
+  /* eat "parasite" identifier */
+  g_scanner_get_next_token (scanner);
+
+  /* ignore these for compat reasons (FIXME: remove post 0.4.2) */
+  if (g_scanner_peek_next_token (scanner) == '#')
+    g_scanner_get_next_token (scanner);
+  if (g_scanner_peek_next_token (scanner) == '\\')
+    g_scanner_get_next_token (scanner);
+
   /* parse parasite type */
-  parse_or_return (scanner, '#');
-  parse_or_return (scanner, '\\');
   char_2_token = scanner->config->char_2_token;
   scanner->config->char_2_token = FALSE;
   g_scanner_get_next_token (scanner);
@@ -302,14 +298,6 @@ parasite_parser (BseObject  *object,
   
   /* read closing brace */
   return g_scanner_get_next_token (scanner) == ')' ? G_TOKEN_NONE : ')';
-}
-
-void
-bse_parasite_install_parsers (BseObjectClass *oclass)
-{
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (oclass));
-  
-  bse_object_class_add_parser (oclass, "parasite", parasite_parser, NULL);
 }
 
 void

@@ -70,7 +70,6 @@ static BseTokenType   bse_track_restore_private	(BseObject		*object,
 /* --- variables --- */
 static GTypeClass *parent_class = NULL;
 static guint	   signal_changed = 0;
-static GQuark      quark_insert_part = 0;
 
 
 /* --- functions --- */
@@ -105,8 +104,6 @@ bse_track_class_init (BseTrackClass *class)
   
   parent_class = g_type_class_peek_parent (class);
   
-  quark_insert_part = g_quark_from_static_string ("insert-part");
-
   gobject_class->set_property = bse_track_set_property;
   gobject_class->get_property = bse_track_get_property;
   gobject_class->dispose = bse_track_dispose;
@@ -354,7 +351,7 @@ bse_track_set_property (GObject      *object,
       BSE_SEQUENCER_UNLOCK ();
       break;
     case PROP_PART:
-      if (!self->n_entries_SL)
+      if (!self->n_entries_SL && bse_value_get_object (value))
 	bse_track_insert_part (self, 0, bse_value_get_object (value));
       break;
     case PROP_SYNTH_NET:
@@ -696,25 +693,13 @@ bse_track_restore_private (BseObject  *object,
 {
   BseTrack *self = BSE_TRACK (object);
   GScanner *scanner = storage->scanner;
-  GTokenType token;
-  GQuark token_quark;
-  
-  /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
-    token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
-  else
-    token = BSE_TOKEN_UNMATCHED;
-  
-  if (token != BSE_TOKEN_UNMATCHED ||
-      g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return token;
-  
-  token_quark = g_quark_try_string (scanner->next_value.v_identifier);
-  
-  if (token_quark == quark_insert_part)
-    {
-      guint tick;
 
+  if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER &&
+      bse_string_equals ("insert-part", scanner->next_value.v_identifier))
+    {
+      GTokenType token;
+      guint tick;
+      
       g_scanner_get_next_token (scanner);       /* eat quark */
       
       parse_or_return (scanner, G_TOKEN_INT);
@@ -722,10 +707,9 @@ bse_track_restore_private (BseObject  *object,
       token = bse_storage_parse_item_link (storage, BSE_ITEM (self), part_link_resolved, GUINT_TO_POINTER (tick));
       if (token != G_TOKEN_NONE)
 	return token;
-      if (g_scanner_get_next_token (scanner) != ')')
-	return ')';
+      parse_or_return (scanner, ')');
       return G_TOKEN_NONE;
     }
-  else
-    return BSE_TOKEN_UNMATCHED;
+  else /* chain parent class' handler */
+    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
 }

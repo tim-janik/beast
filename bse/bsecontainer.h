@@ -83,9 +83,8 @@ guint		bse_container_get_item_seqid	(BseContainer	*container,
 BseItem*	bse_container_get_item		(BseContainer	*container,
 						 GType  	 item_type,
 						 guint		 seq_id);
-void		bse_container_store_items	(BseContainer	*container,
-						 BseStorage	*storage,
-						 const gchar	*restore_func);
+void		bse_container_store_children	(BseContainer	*container,
+						 BseStorage	*storage);
 BseItem*	bse_container_lookup_item	(BseContainer	*container,
 						 const gchar	*uname);
 BseItem*	bse_container_retrieve_child	(BseContainer	*container,

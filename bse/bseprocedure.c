@@ -530,35 +530,6 @@ bse_procedure_exec_void (const gchar *proc_name,
 }
 
 BseErrorType
-bse_procedure_store (const gchar *proc_name,
-		     BseStorage  *storage,
-		     ...)
-{
-  GType proc_type;
-  
-  g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
-  
-  proc_type = bse_procedure_lookup (proc_name);
-  if (!proc_type)
-    {
-      g_warning ("%s: no such procedure", proc_name);
-      return BSE_ERROR_PROC_NOT_FOUND;
-    }
-  else
-    {
-      BseErrorType error;
-      va_list var_args;
-      
-      va_start (var_args, storage);
-      error = bse_procedure_marshal_valist (proc_type, NULL,
-					    bse_storage_store_procedure, storage,
-					    TRUE, var_args);
-      va_end (var_args);
-      return error;
-    }
-}
-
-BseErrorType
 bse_procedure_execvl (BseProcedureClass  *proc,
 		      GSList             *in_value_list,
 		      GSList             *out_value_list,
@@ -594,6 +565,35 @@ bse_procedure_execvl (BseProcedureClass  *proc,
 }
 
 #if 0
+BseErrorType
+bse_procedure_store (const gchar *proc_name,
+		     BseStorage  *storage,
+		     ...)
+{
+  GType proc_type;
+  
+  g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
+  
+  proc_type = bse_procedure_lookup (proc_name);
+  if (!proc_type)
+    {
+      g_warning ("%s: no such procedure", proc_name);
+      return BSE_ERROR_PROC_NOT_FOUND;
+    }
+  else
+    {
+      BseErrorType error;
+      va_list var_args;
+      
+      va_start (var_args, storage);
+      error = bse_procedure_marshal_valist (proc_type, NULL,
+					    bse_storage_store_procedure, storage,
+					    TRUE, var_args);
+      va_end (var_args);
+      return error;
+    }
+}
+
 static GTokenType
 bse_procedure_eval_storage (BseStorage   *storage,
 			    BseErrorType *error_p,
@@ -676,9 +676,7 @@ bse_procedure_eval_storage (BseStorage   *storage,
   
   return token;
 }
-#endif
 
-#if 0
 gchar*
 bse_procedure_eval (const gchar  *expr,
 		    BseErrorType *error_p,
@@ -712,7 +710,6 @@ bse_procedure_eval (const gchar  *expr,
   
   return warnings;
 }
-#endif
 
 gchar*
 bse_procedure_marshal_retval (BseErrorType error,
@@ -771,7 +768,6 @@ bse_procedure_marshal_retval (BseErrorType error,
   return str;
 }
 
-#if 0
 gchar*
 bse_procedure_unmarshal_retval (const gchar  *string,
 				BseErrorType *error_p,

@@ -66,11 +66,9 @@ static void	    bse_wave_get_property	(GObject                *object,
 						 guint                   param_id,
 						 GValue                 *value,
 						 GParamSpec             *pspec);
-static void         bse_wave_do_store_private	(BseObject		*object,
+static void         bse_wave_store_private	(BseObject		*object,
 						 BseStorage		*storage);
-static GTokenType   bse_wave_do_restore		(BseObject		*object,
-						 BseStorage		*storage);
-static BseTokenType bse_wave_do_restore_private	(BseObject		*object,
+static BseTokenType bse_wave_restore_private	(BseObject		*object,
 						 BseStorage		*storage);
 
 
@@ -120,9 +118,8 @@ bse_wave_class_init (BseWaveClass *class)
   gobject_class->get_property = bse_wave_get_property;
   gobject_class->dispose = bse_wave_dispose;
   
-  object_class->store_private = bse_wave_do_store_private;
-  object_class->restore = bse_wave_do_restore;
-  object_class->restore_private = bse_wave_do_restore_private;
+  object_class->store_private = bse_wave_store_private;
+  object_class->restore_private = bse_wave_restore_private;
   
   quark_n_channels = g_quark_from_static_string ("n-channels");
   quark_loop = g_quark_from_static_string ("loop");
@@ -386,16 +383,15 @@ bse_wave_set_locator (BseWave     *wave,
                                         }
 
 static void
-bse_wave_do_store_private (BseObject  *object,
-			   BseStorage *storage)
+bse_wave_store_private (BseObject  *object,
+			BseStorage *storage)
 {
   BseWave *wave = BSE_WAVE (object);
   GSList *slist;
   
   /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->store_private)
-    BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
-  
+  BSE_OBJECT_CLASS (parent_class)->store_private (object, storage);
+
   if (wave->locator_set && !BSE_STORAGE_SELF_CONTAINED (storage))
     {
       bse_storage_break (storage);
@@ -614,171 +610,149 @@ bse_wave_load_wave_file (BseWave     *wave,
 }
 
 static BseTokenType
-bse_wave_do_restore_private (BseObject  *object,
-			     BseStorage *storage)
+bse_wave_restore_private (BseObject  *object,
+			  BseStorage *storage)
 {
   BseWave *wave = BSE_WAVE (object);
   GScanner *scanner = storage->scanner;
-  GTokenType expected_token = BSE_TOKEN_UNMATCHED;
-  
+  GTokenType expected_token;
+  GQuark quark;
+
   /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->restore_private)
-    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
-  
-  /* support storage commands */
-  if (expected_token == BSE_TOKEN_UNMATCHED &&
-      g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
+  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
+    return BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
+
+  /* parse storage commands */
+  quark = g_quark_try_string (scanner->next_value.v_identifier);
+  if (quark == quark_load_wave)
     {
-      GQuark quark = g_quark_try_string (scanner->next_value.v_identifier);
+      GDArray *skip_list, *load_list, *array;
+      gchar *file_name, *wave_name;
+      BseErrorType error;
       
-      if (quark == quark_load_wave)
+      g_scanner_get_next_token (scanner); /* eat quark identifier */
+      parse_or_return (scanner, G_TOKEN_STRING);
+      file_name = g_strdup (scanner->value.v_string);
+      if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
 	{
-	  GDArray *skip_list, *load_list, *array;
-	  gchar *file_name, *wave_name;
-	  BseErrorType error;
-	  
-	  g_scanner_get_next_token (scanner); /* eat quark identifier */
-	  parse_or_return (scanner, G_TOKEN_STRING);
-	  file_name = g_strdup (scanner->value.v_string);
-	  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
+	  g_free (file_name);
+	  return G_TOKEN_STRING;
+	}
+      wave_name = g_strdup (scanner->value.v_string);
+      skip_list = g_darray_new (1024);
+      load_list = g_darray_new (1024);
+      while (g_scanner_get_next_token (scanner) != ')')
+	{
+	  if (scanner->token == G_TOKEN_IDENTIFIER)
 	    {
-	      g_free (file_name);
-	      return G_TOKEN_STRING;
-	    }
-	  wave_name = g_strdup (scanner->value.v_string);
-	  skip_list = g_darray_new (1024);
-	  load_list = g_darray_new (1024);
-	  while (g_scanner_get_next_token (scanner) != ')')
-	    {
-	      if (scanner->token == G_TOKEN_IDENTIFIER)
-		{
-		  if (strcmp (scanner->value.v_identifier, "list") == 0)
-		    array = load_list;
-		  else if (strcmp (scanner->value.v_identifier, "skip") == 0)
-		    array = skip_list;
-		  else
-		    {
-		      expected_token = G_TOKEN_IDENTIFIER; /* want _valid_ identifier */
-		      goto out_of_load_wave;
-		    }
-		  g_scanner_peek_next_token (scanner);
-		  if (scanner->next_token != G_TOKEN_INT && scanner->next_token != G_TOKEN_FLOAT)
-		    {
-		      g_scanner_get_next_token (scanner); /* eat invalid token */
-		      expected_token = G_TOKEN_FLOAT;
-		      goto out_of_load_wave;
-		    }
-		  while (g_scanner_peek_next_token (scanner) == G_TOKEN_INT ||
-			 g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
-		    {
-		      g_scanner_get_next_token (scanner); /* int or float */
-		      g_darray_append (array, scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int);
-		    }
-		}
+	      if (strcmp (scanner->value.v_identifier, "list") == 0)
+		array = load_list;
+	      else if (strcmp (scanner->value.v_identifier, "skip") == 0)
+		array = skip_list;
 	      else
 		{
-		  expected_token = ')';
+		  expected_token = G_TOKEN_IDENTIFIER; /* want _valid_ identifier */
 		  goto out_of_load_wave;
 		}
+	      g_scanner_peek_next_token (scanner);
+	      if (scanner->next_token != G_TOKEN_INT && scanner->next_token != G_TOKEN_FLOAT)
+		{
+		  g_scanner_get_next_token (scanner); /* eat invalid token */
+		  expected_token = G_TOKEN_FLOAT;
+		  goto out_of_load_wave;
+		}
+	      while (g_scanner_peek_next_token (scanner) == G_TOKEN_INT ||
+		     g_scanner_peek_next_token (scanner) == G_TOKEN_FLOAT)
+		{
+		  g_scanner_get_next_token (scanner); /* int or float */
+		  g_darray_append (array, scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int);
+		}
 	    }
-	  error = bse_wave_load_wave_file (wave, file_name, wave_name, load_list->n_values ? load_list : 0, skip_list);
-	  if (error)
-	    bse_storage_warn (storage, "failed to load wave \"%s\" from \"%s\": %s",
-			      wave_name, file_name, bse_error_blurb (error));
-	  expected_token = G_TOKEN_NONE; /* got ')' */
-	out_of_load_wave:
+	  else
+	    {
+	      expected_token = ')';
+	      goto out_of_load_wave;
+	    }
+	}
+      error = bse_wave_load_wave_file (wave, file_name, wave_name, load_list->n_values ? load_list : 0, skip_list);
+      if (error)
+	bse_storage_warn (storage, "failed to load wave \"%s\" from \"%s\": %s",
+			  wave_name, file_name, bse_error_blurb (error));
+      expected_token = G_TOKEN_NONE; /* got ')' */
+    out_of_load_wave:
+      g_free (file_name);
+      g_free (wave_name);
+      g_darray_free (skip_list);
+      g_darray_free (load_list);
+    }
+  else if (quark == quark_set_locator)
+    {
+      gchar *file_name, *wave_name;
+      
+      g_scanner_get_next_token (scanner); /* eat quark identifier */
+      parse_or_return (scanner, G_TOKEN_STRING);
+      file_name = g_strdup (scanner->value.v_string);
+      if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
+	{
+	  g_free (file_name);
+	  return G_TOKEN_STRING;
+	}
+      wave_name = g_strdup (scanner->value.v_string);
+      if (g_scanner_get_next_token (scanner) != ')')
+	{
 	  g_free (file_name);
 	  g_free (wave_name);
-	  g_darray_free (skip_list);
-	  g_darray_free (load_list);
+	  return ')';
 	}
-      else if (quark == quark_set_locator)
-	{
-	  gchar *file_name, *wave_name;
-	  
-	  g_scanner_get_next_token (scanner); /* eat quark identifier */
-	  parse_or_return (scanner, G_TOKEN_STRING);
-	  file_name = g_strdup (scanner->value.v_string);
-	  if (g_scanner_get_next_token (scanner) != G_TOKEN_STRING)
-	    {
-	      g_free (file_name);
-	      return G_TOKEN_STRING;
-	    }
-	  wave_name = g_strdup (scanner->value.v_string);
-	  if (g_scanner_get_next_token (scanner) != ')')
-	    {
-	      g_free (file_name);
-	      g_free (wave_name);
-	      return ')';
-	    }
-	  // g_print ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
-	  bse_wave_set_locator (wave, file_name, wave_name);
-	  expected_token = G_TOKEN_NONE; /* got ')' */
-	}
-      else if (quark == quark_wave_chunk)
-	{
-	  ParsedWaveChunk parsed_wchunk = { 1, 0, 0, 0, 0, 0, 0, 0, NULL };
-	  
-	  g_scanner_get_next_token (scanner); /* eat quark identifier */
-	  if (g_scanner_get_next_token (scanner) != G_TOKEN_FLOAT && scanner->token != G_TOKEN_INT)
-	    return G_TOKEN_FLOAT;
-	  parsed_wchunk.osc_freq = scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int;
-	  if (g_scanner_get_next_token (scanner) != G_TOKEN_FLOAT && scanner->token != G_TOKEN_INT)
-	    return G_TOKEN_FLOAT;
-	  parsed_wchunk.mix_freq = scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int;
-	  expected_token = bse_storage_parse_rest (storage,
-						   (BseTryStatement) parse_wave_chunk,
-						   wave, &parsed_wchunk);
-	  if (expected_token == G_TOKEN_NONE && parsed_wchunk.wave_handle)
-	    {
-	      GslDataCache *dcache;
-	      GslWaveChunk *wchunk;
-	      
-	      if (0)
-		g_print ("add_wave_chunk %u %f %f jl%u pl%u c%lu s%lu e%lu w%p\n",
-			 parsed_wchunk.n_channels,
-			 parsed_wchunk.osc_freq, parsed_wchunk.mix_freq,
-			 parsed_wchunk.jump_loop, parsed_wchunk.ping_pong_loop,
-			 parsed_wchunk.loop_count, parsed_wchunk.loop_start, parsed_wchunk.loop_end,
-			 parsed_wchunk.wave_handle);
-	      dcache = gsl_data_cache_from_dhandle (parsed_wchunk.wave_handle,
-						    gsl_get_config ()->wave_chunk_padding * parsed_wchunk.n_channels);
-	      wchunk = gsl_wave_chunk_new (dcache,
-					   parsed_wchunk.osc_freq,
-					   parsed_wchunk.mix_freq,
-					   parsed_wchunk.jump_loop ? GSL_WAVE_LOOP_JUMP :
-					   parsed_wchunk.ping_pong_loop ? GSL_WAVE_LOOP_PINGPONG :
-					   GSL_WAVE_LOOP_NONE,
-					   parsed_wchunk.loop_start,
-					   parsed_wchunk.loop_end,
-					   parsed_wchunk.loop_count);
-	      gsl_data_cache_unref (dcache);
-	      bse_wave_add_chunk (wave, wchunk);
-	    }
-	  if (parsed_wchunk.wave_handle)
-	    gsl_data_handle_unref (parsed_wchunk.wave_handle);
-	}
-      else
-	expected_token = BSE_TOKEN_UNMATCHED;
+      // g_print ("set-locator \"%s\" \"%s\"\n", file_name, wave_name);
+      bse_wave_set_locator (wave, file_name, wave_name);
+      expected_token = G_TOKEN_NONE; /* got ')' */
     }
-  
-  return expected_token;
-}
-
-static GTokenType
-bse_wave_do_restore (BseObject  *object,
-		     BseStorage *storage)
-{
-  BseWave *wave = BSE_WAVE (object);
-  GTokenType expected_token = G_TOKEN_NONE;
-  
-  /* chain parent class' handler */
-  if (BSE_OBJECT_CLASS (parent_class)->restore)
-    expected_token = BSE_OBJECT_CLASS (parent_class)->restore (object, storage);
-  
-  if (0)
-    g_printerr ("BseWave: post parsing: %u wave chunks locator_set=%u\n",
-		wave->n_wchunks, wave->locator_set);
+  else if (quark == quark_wave_chunk)
+    {
+      ParsedWaveChunk parsed_wchunk = { 1, 0, 0, 0, 0, 0, 0, 0, NULL };
+      
+      g_scanner_get_next_token (scanner); /* eat quark identifier */
+      if (g_scanner_get_next_token (scanner) != G_TOKEN_FLOAT && scanner->token != G_TOKEN_INT)
+	return G_TOKEN_FLOAT;
+      parsed_wchunk.osc_freq = scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int;
+      if (g_scanner_get_next_token (scanner) != G_TOKEN_FLOAT && scanner->token != G_TOKEN_INT)
+	return G_TOKEN_FLOAT;
+      parsed_wchunk.mix_freq = scanner->token == G_TOKEN_FLOAT ? scanner->value.v_float : scanner->value.v_int;
+      expected_token = bse_storage_parse_rest (storage,
+					       (BseTryStatement) parse_wave_chunk,
+					       wave, &parsed_wchunk);
+      if (expected_token == G_TOKEN_NONE && parsed_wchunk.wave_handle)
+	{
+	  GslDataCache *dcache;
+	  GslWaveChunk *wchunk;
+	  
+	  if (0)
+	    g_print ("add_wave_chunk %u %f %f jl%u pl%u c%lu s%lu e%lu w%p\n",
+		     parsed_wchunk.n_channels,
+		     parsed_wchunk.osc_freq, parsed_wchunk.mix_freq,
+		     parsed_wchunk.jump_loop, parsed_wchunk.ping_pong_loop,
+		     parsed_wchunk.loop_count, parsed_wchunk.loop_start, parsed_wchunk.loop_end,
+		     parsed_wchunk.wave_handle);
+	  dcache = gsl_data_cache_from_dhandle (parsed_wchunk.wave_handle,
+						gsl_get_config ()->wave_chunk_padding * parsed_wchunk.n_channels);
+	  wchunk = gsl_wave_chunk_new (dcache,
+				       parsed_wchunk.osc_freq,
+				       parsed_wchunk.mix_freq,
+				       parsed_wchunk.jump_loop ? GSL_WAVE_LOOP_JUMP :
+				       parsed_wchunk.ping_pong_loop ? GSL_WAVE_LOOP_PINGPONG :
+				       GSL_WAVE_LOOP_NONE,
+				       parsed_wchunk.loop_start,
+				       parsed_wchunk.loop_end,
+				       parsed_wchunk.loop_count);
+	  gsl_data_cache_unref (dcache);
+	  bse_wave_add_chunk (wave, wchunk);
+	}
+      if (parsed_wchunk.wave_handle)
+	gsl_data_handle_unref (parsed_wchunk.wave_handle);
+    }
+  else /* chain parent class' handler */
+    expected_token = BSE_OBJECT_CLASS (parent_class)->restore_private (object, storage);
   
   return expected_token;
 }

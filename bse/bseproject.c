@@ -325,82 +325,32 @@ bse_project_store_bse (BseProject  *project,
   g_return_val_if_fail (BSE_IS_PROJECT (project), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (bse_file != NULL, BSE_ERROR_INTERNAL);
 
-  /* FIXME: this should integrate with the object system better */
-
-  fd = open (bse_file,
-	     O_WRONLY | O_CREAT | O_EXCL,
-	     0666);
-
+  fd = open (bse_file, O_WRONLY | O_CREAT | O_EXCL, 0666);
   if (fd < 0)
     return (errno == EEXIST ? BSE_ERROR_FILE_EXISTS : BSE_ERROR_FILE_IO);
 
-  storage = bse_storage_new ();
-  if (self_contained)
-    BSE_STORAGE_SET_FLAGS (storage, BSE_STORAGE_FLAG_SELF_CONTAINED);
+  storage = g_object_new (BSE_TYPE_STORAGE, NULL);
   bse_storage_prepare_write (storage, BSE_STORAGE_SKIP_DEFAULTS);
-  bse_container_store_items (BSE_CONTAINER (project), storage, "bse-storage-restore");
+  if (self_contained)
+    BSE_OBJECT_SET_FLAGS (storage, BSE_STORAGE_FLAG_SELF_CONTAINED);
+  bse_storage_store_item (storage, project);
 
   mflags = storage->wblocks ? BSE_MAGIC_BSE_BIN_EXTENSION : 0;
   for (slist = project->supers; slist; slist = slist->next)
     if (BSE_IS_SONG (slist->data))
       mflags |= BSE_MAGIC_BSE_SONG;
 
-  string = g_strdup_printf (";BseProjectV1\n\n"); /* %010o mflags */
+  string = g_strdup_printf ("; BSE project\n"); /* %010o mflags */
   do
     l = write (fd, string, strlen (string));
   while (l < 0 && errno == EINTR);
   g_free (string);
 
   bse_storage_flush_fd (storage, fd);
-  bse_storage_destroy (storage);
+  bse_storage_reset (storage);
+  g_object_unref (storage);
 
   return close (fd) < 0 ? BSE_ERROR_FILE_IO : BSE_ERROR_NONE;
-}
-
-static inline GTokenType
-parse_statement (BseProject *project,
-		 BseStorage *storage)
-{
-  GScanner *scanner = storage->scanner;
-  BseItem *item;
-
-  parse_or_return (scanner, G_TOKEN_IDENTIFIER);
-
-  if (strcmp ("bse-storage-support", scanner->value.v_identifier) == 0)   // FIXME: handled in wrong place
-    {
-      parse_or_return (scanner, G_TOKEN_STRING);	/* version argument */
-      parse_or_return (scanner, ')');
-      return G_TOKEN_NONE;
-    }
-  else if (strcmp ("bse-project-restore", scanner->value.v_identifier) == 0)
-    {
-      // FIXME: compat code, remove
-      bse_storage_warn (storage, "encountered deprecated statement: %s", "bse-project-restore");
-      goto storage_restore;
-    }
-  else if (strcmp ("bse-storage-restore", scanner->value.v_identifier) == 0)
-    {
-    storage_restore:
-      parse_or_return (scanner, G_TOKEN_STRING);	/* type_uname argument */
-
-      item = bse_container_retrieve_child (BSE_CONTAINER (project), scanner->value.v_string);
-      if (!item)
-	return bse_storage_warn_skip (storage, "unable to create object from (invalid) reference: %s",
-				      scanner->value.v_string);
-    }
-  else		/* deprecated compat, the uname path is an identifier */
-    {
-      item = bse_container_retrieve_child (BSE_CONTAINER (project), scanner->value.v_identifier);
-
-      if (!item)	/* probably not a compat case */
-	return G_TOKEN_IDENTIFIER;
-
-      bse_storage_warn (storage, "deprecated syntax: non-string uname path: %s", scanner->value.v_identifier);
-    }
-
-  /* now let the child restore itself
-   */
-  return bse_object_restore (BSE_OBJECT (item), storage);
 }
 
 BseErrorType
@@ -414,25 +364,21 @@ bse_project_restore (BseProject *project,
   g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_STORAGE_READABLE (storage), BSE_ERROR_INTERNAL);
 
-  /* FIXME: this should integrate with the object system better */
-  
   scanner = storage->scanner;
 
   g_object_ref (project);
   
-  while (!bse_storage_input_eof (storage) &&
-	 expected_token == G_TOKEN_NONE)
+  while (!bse_storage_input_eof (storage) && expected_token == G_TOKEN_NONE)
     {
       g_scanner_get_next_token (scanner);
-      
       if (scanner->token == G_TOKEN_EOF)
 	break;
       else if (scanner->token == '(')
-	expected_token = parse_statement (project, storage);
+	expected_token = bse_storage_parse_statement (storage, project);
       else
-	expected_token = G_TOKEN_EOF; /* '('; */
+	expected_token = G_TOKEN_EOF; /* wanted '(' */
     }
-  
+
   if (expected_token != G_TOKEN_NONE)
     bse_storage_unexp_token (storage, expected_token);
 

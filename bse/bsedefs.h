@@ -89,6 +89,8 @@ typedef struct  _BseSongClass           BseSongClass;
 typedef struct  _BseSongSequencer       BseSongSequencer;
 typedef struct  _BseSource              BseSource;
 typedef struct  _BseSourceClass         BseSourceClass;
+typedef struct  _BseStorage             BseStorage;
+typedef struct  _BseStorageClass        BseStorageClass;
 typedef struct  _BseSubSynth            BseSubSynth;
 typedef struct  _BseSubSynthClass       BseSubSynthClass;
 typedef struct  _BseSuper               BseSuper;
@@ -106,7 +108,6 @@ typedef struct  _BseGlobals             BseGlobals;
 typedef struct  _BsePixdata             BsePixdata;
 typedef struct  _BsePlugin              BsePlugin;
 typedef struct  _BsePluginClass         BsePluginClass;
-typedef struct  _BseStorage             BseStorage;
 
 
 /* --- anticipated enums --- */
@@ -125,8 +126,7 @@ typedef enum
 } BseDebugFlags;
 typedef enum                    /*< skip >*/
 {
-  BSE_TOKEN_UNMATCHED           = G_TOKEN_LAST + 1,
-  BSE_TOKEN_NIL                 = G_TOKEN_LAST + 2
+  BSE_TOKEN_UNMATCHED           = G_TOKEN_LAST + 1
 } BseTokenType;
 typedef enum                    /*< skip >*/
 {

@@ -35,11 +35,10 @@ void	   bse_parasite_set_floats	(BseObject      *object,
 					 gfloat		*float_values);
 SfiFBlock* bse_parasite_get_floats	(BseObject      *object,
 					 const gchar	*name);
-
-
-/* --- internal --- */
-void	bse_parasite_install_parsers	(BseObjectClass	*oclass);
-
+void	   bse_parasite_store		(BseObject	*object,
+					 BseStorage	*storage);
+GTokenType bse_parasite_restore		(BseObject	*object,
+					 BseStorage	*storage);
 
 
 #ifdef __cplusplus

@@ -34,18 +34,8 @@ enum
 enum
 {
   SIGNAL_RELEASE,
-  SIGNAL_STORE,
   SIGNAL_ICON_CHANGED,
   SIGNAL_LAST
-};
-
-
-/* -- structures --- */
-struct _BseObjectParser
-{
-  gchar			 *token;
-  BseObjectParseStatement parser;
-  gpointer		  user_data;
 };
 
 
@@ -66,24 +56,10 @@ static void		bse_object_do_get_property	(GObject        *gobject,
 							 GParamSpec     *pspec);
 static void		bse_object_do_set_uname		(BseObject	*object,
 							 const gchar	*uname);
-static void		bse_object_do_store_private	(BseObject	*object,
+static void		bse_object_store_private	(BseObject	*object,
 							 BseStorage	*storage);
-static void		bse_object_do_store_after	(BseObject	*object,
-							 BseStorage	*storage);
-static void		bse_object_store_property	(BseObject	*object,
-							 BseStorage	*storage,
-							 GValue		*value,
-							 GParamSpec	*pspec);
-static GTokenType	bse_object_restore_property	(BseObject	*object,
-							 BseStorage	*storage,
-							 GValue		*value,
-							 GParamSpec	*pspec);
-static BseTokenType	bse_object_do_restore_private	(BseObject     *object,
+static BseTokenType	bse_object_restore_private	(BseObject     *object,
 							 BseStorage    *storage);
-static BseTokenType	bse_object_do_try_statement	(BseObject	*object,
-							 BseStorage	*storage);
-static GTokenType	bse_object_do_restore		(BseObject	*object,
-							 BseStorage	*storage);
 static BseIcon*		bse_object_do_get_icon		(BseObject	*object);
 static guint		eclosure_hash			(gconstpointer	 c);
 static gint		eclosure_equals			(gconstpointer	 c1,
@@ -170,18 +146,11 @@ bse_object_type_register (const gchar *name,
 static void
 bse_object_class_base_init (BseObjectClass *class)
 {
-  class->n_parsers = 0;
-  class->parsers = NULL;
 }
 
 static void
 bse_object_class_base_finalize (BseObjectClass *class)
 {
-  guint i;
-  
-  for (i = 0; i < class->n_parsers; i++)
-    g_free (class->parsers[i].token);
-  g_free (class->parsers);
 }
 
 static void
@@ -204,15 +173,9 @@ bse_object_class_init (BseObjectClass *class)
   gobject_class->dispose = bse_object_do_dispose;
   gobject_class->finalize = bse_object_do_finalize;
   
-  class->store_property = bse_object_store_property;
-  class->restore_property = bse_object_restore_property;
-  class->store_after = bse_object_do_store_after;
-  class->try_statement = bse_object_do_try_statement;
-  class->restore = bse_object_do_restore;
-  
   class->set_uname = bse_object_do_set_uname;
-  class->store_private = bse_object_do_store_private;
-  class->restore_private = bse_object_do_restore_private;
+  class->store_private = bse_object_store_private;
+  class->restore_private = bse_object_restore_private;
   class->unlocked = NULL;
   class->get_icon = bse_object_do_get_icon;
   
@@ -234,13 +197,8 @@ bse_object_class_init (BseObjectClass *class)
   
   object_signals[SIGNAL_RELEASE] = bse_object_class_add_signal (class, "release",
 								G_TYPE_NONE, 0);
-  object_signals[SIGNAL_STORE] = bse_object_class_add_signal (class, "store",
-							      G_TYPE_NONE, 1, G_TYPE_POINTER); // FIXME: G_TYPE_STORAGE);
   object_signals[SIGNAL_ICON_CHANGED] = bse_object_class_add_signal (class, "icon_changed",
 								     G_TYPE_NONE, 0);
-  
-  /* feature parasites */
-  bse_parasite_install_parsers (class);
 }
 
 void
@@ -664,46 +622,6 @@ bse_objects_list (GType	  type)
 }
 
 void
-bse_object_class_add_parser (BseObjectClass	    *class,
-			     const gchar	    *token,
-			     BseObjectParseStatement parse_func,
-			     gpointer		     user_data)
-{
-  guint n;
-  
-  g_return_if_fail (BSE_IS_OBJECT_CLASS (class));
-  g_return_if_fail (token != NULL);
-  g_return_if_fail (parse_func != NULL);
-  
-  n = class->n_parsers++;
-  class->parsers = g_renew (BseObjectParser, class->parsers, class->n_parsers);
-  class->parsers[n].token = g_strdup (token);
-  class->parsers[n].parser = parse_func;
-  class->parsers[n].user_data = user_data;
-}
-
-static BseObjectParser*
-bse_object_class_get_parser (BseObjectClass *class,
-			     const gchar    *token)
-{
-  g_return_val_if_fail (token != NULL, NULL);
-  
-  do
-    {
-      guint i;
-      
-      for (i = 0; i < class->n_parsers; i++)
-	if (strcmp (class->parsers[i].token, token) == 0)
-	  return class->parsers + i;
-      
-      class = g_type_class_peek_parent (class);
-    }
-  while (BSE_IS_OBJECT_CLASS (class));
-  
-  return NULL;
-}
-
-void
 bse_object_notify_icon_changed (BseObject *object)
 {
   g_return_if_fail (BSE_IS_OBJECT (object));
@@ -756,228 +674,17 @@ bse_object_do_get_icon (BseObject *object)
   return icon;
 }
 
-void
-bse_object_store (BseObject  *object,
-		  BseStorage *storage)
-{
-  g_return_if_fail (BSE_IS_OBJECT (object));
-  g_return_if_fail (BSE_IS_STORAGE (storage));
-  
-  g_object_ref (object);
-  
-  if (BSE_OBJECT_GET_CLASS (object)->store_private)
-    BSE_OBJECT_GET_CLASS (object)->store_private (object, storage);
-  
-  g_signal_emit (object, object_signals[SIGNAL_STORE], 0, storage);
-  
-  if (BSE_OBJECT_GET_CLASS (object)->store_after)
-    BSE_OBJECT_GET_CLASS (object)->store_after (object, storage);
-  
-  bse_storage_handle_break (storage);
-  bse_storage_putc (storage, ')');
-  
-  g_object_unref (object);
-}
-
 static void
-bse_object_do_store_after (BseObject  *object,
-			   BseStorage *storage)
+bse_object_store_private (BseObject	*object,
+			  BseStorage *storage)
 {
-}
-
-static void
-bse_object_store_property (BseObject  *object,
-			   BseStorage *storage,
-			   GValue     *value,
-			   GParamSpec *pspec)
-{
-  if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
-    g_warning ("%s: unable to store object property \"%s\" of type `%s'",
-	       G_STRLOC, pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
-  else
-    bse_storage_put_param (storage, value, pspec);
-}
-
-static void
-bse_object_do_store_private (BseObject	*object,
-			     BseStorage *storage)
-{
-  GParamSpec **pspecs;
-  guint n;
-  
-  /* dump the object paramters, starting out
-   * at the base class
-   */
-  pspecs = g_object_class_list_properties (G_OBJECT_GET_CLASS (object), &n);
-  while (n--)
-    {
-      GParamSpec *pspec = pspecs[n];
-      
-      if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_STORAGE))
-	{
-	  GValue value = { 0, };
-	  
-	  g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
-	  g_object_get_property (G_OBJECT (object), pspec->name, &value);
-	  if (!g_param_value_defaults (pspec, &value) || BSE_STORAGE_PUT_DEFAULTS (storage))
-	    BSE_OBJECT_GET_CLASS (object)->store_property (object, storage, &value, pspec);
-	  g_value_unset (&value);
-	}
-    }
-  g_free (pspecs);
-}
-
-GTokenType
-bse_object_restore (BseObject  *object,
-		    BseStorage *storage)
-{
-  g_return_val_if_fail (BSE_IS_OBJECT (object), G_TOKEN_ERROR);
-  g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
-  
-  if (BSE_OBJECT_GET_CLASS (object)->restore)
-    {
-      GTokenType expected_token;
-      
-      g_object_ref (object);
-      expected_token = BSE_OBJECT_GET_CLASS (object)->restore (object, storage);
-      g_object_unref (object);
-      
-      return expected_token;
-    }
-  else
-    return bse_storage_warn_skip (storage,
-				  "`restore' functionality unimplemented for `%s'",
-				  BSE_OBJECT_TYPE_NAME (object));
 }
 
 static BseTokenType
-bse_object_do_try_statement (BseObject	*object,
-			     BseStorage *storage)
+bse_object_restore_private (BseObject  *object,
+			    BseStorage *storage)
 {
-  GScanner *scanner = storage->scanner;
-  GTokenType expected_token;
-  BseObjectParser *parser;
-  
-  /* ensure that the statement starts out with an identifier
-   */
-  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    {
-      g_scanner_get_next_token (scanner);
-      return G_TOKEN_IDENTIFIER;
-    }
-  
-  /* this is pretty much the *only* place where
-   * something else than G_TOKEN_NONE may be returned
-   * without erroring out.
-   *
-   * expected_token:
-   * G_TOKEN_NONE)	  statement got parsed, advance
-   *			  to next statement
-   * BSE_TOKEN_UNMATCHED) couldn't parse statement, try further
-   * everything else)	  encountered (syntax/semantic) error during parsing,
-   *			  bail out
-   */
-  
-  /* ok, lets figure whether the usual object methods can parse
-   * this statement
-   */
-  if (BSE_OBJECT_GET_CLASS (object)->restore_private)
-    {
-      expected_token = BSE_OBJECT_GET_CLASS (object)->restore_private (object, storage);
-      if (expected_token != BSE_TOKEN_UNMATCHED)
-	return expected_token;
-    }
-  
-  /* hm, try custom parsing hooks now */
-  parser = bse_object_class_get_parser (BSE_OBJECT_GET_CLASS (object),
-					scanner->next_value.v_identifier);
-  if (parser)
-    {
-      g_scanner_get_next_token (scanner); /* eat up the identifier */
-      
-      return parser->parser (object, storage, parser->user_data);
-    }
-  
-  /* no matches
-   */
   return BSE_TOKEN_UNMATCHED;
-}
-
-static GTokenType
-bse_object_do_restore (BseObject  *object,
-		       BseStorage *storage)
-{
-  return bse_storage_parse_rest (storage,
-				 (BseTryStatement) BSE_OBJECT_GET_CLASS (object)->try_statement,
-				 object,
-				 NULL);
-}
-
-static GTokenType
-bse_object_restore_property (BseObject  *object,
-			     BseStorage *storage,
-			     GValue     *value,
-			     GParamSpec *pspec)
-{
-  GTokenType expected_token;
-  gboolean fixed_uname;
-  
-  if (g_type_is_a (G_VALUE_TYPE (value), G_TYPE_OBJECT))
-    return bse_storage_warn_skip (storage, "unable to restore object property \"%s\" of type `%s'",
-				  pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
-  
-  /* parse the value for this pspec, including the trailing closing ')' */
-  expected_token = bse_storage_parse_param_value (storage, value, pspec);
-  if (expected_token != G_TOKEN_NONE)
-    return expected_token;	/* failed to parse the parameter value */
-  
-  /* preserve the uname during restoring */
-  fixed_uname = object->flags & BSE_OBJECT_FLAG_FIXED_UNAME;
-  BSE_OBJECT_SET_FLAGS (object, BSE_OBJECT_FLAG_FIXED_UNAME);
-  g_object_set_property (G_OBJECT (object), pspec->name, value);
-  if (!fixed_uname)
-    BSE_OBJECT_UNSET_FLAGS (object, BSE_OBJECT_FLAG_FIXED_UNAME);
-  
-  return G_TOKEN_NONE;
-}
-
-static BseTokenType
-bse_object_do_restore_private (BseObject  *object,
-			       BseStorage *storage)
-{
-  GScanner *scanner = storage->scanner;
-  GParamSpec *pspec;
-  GValue value = { 0, };
-  GTokenType expected_token;
-  
-  /* we only support property parsing here,
-   * so lets figure whether there is something to parse for us
-   */
-  if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
-    return BSE_TOKEN_UNMATCHED;
-  
-  /* ok, we got an identifier, try object property lookup
-   * we should in theory only get BSE_PARAM_SERVE_STORAGE
-   * properties here, but due to version changes or even
-   * users editing their files, we will simply parse all
-   * kinds of properties (we might want to at least
-   * restrict them to BSE_PARAM_SERVE_STORAGE and
-   * BSE_PARAM_SERVE_GUI at some point...)
-   */
-  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (object),
-					scanner->next_value.v_identifier);
-  if (!pspec)
-    return BSE_TOKEN_UNMATCHED;
-  
-  /* ok we got a pspec for this, so eat the token */
-  g_scanner_get_next_token (scanner);
-  
-  /* and away with the property parsing... */
-  g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
-  expected_token = BSE_OBJECT_GET_CLASS (object)->restore_property (object, storage, &value, pspec);
-  g_value_unset (&value);
-  
-  return expected_token;
 }
 
 typedef struct {
