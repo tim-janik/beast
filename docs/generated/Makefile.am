@@ -18,7 +18,7 @@ markup_targets = $(strip		\
 	faq.markup			\
 	release-notes.markup		\
 	release-news.markup		\
-	gsl-mplan.markup		\
+	engine-mplan.markup		\
 	quickstart.markup		\
 	beast-index.markup		\
 	$(man1_MANS:.1=.1.markup)	\
@@ -50,7 +50,7 @@ html_targets = $(strip		\
 	faq.html		\
 	quickstart.html		\
 	overview-de.html	\
-	gsl-mplan.html		\
+	engine-mplan.html	\
 )
 
 # extra dist
@@ -156,7 +156,7 @@ index.lst: $(REFERENCE_XMLS)
 %.texi: $(srcdir)/../site-%.texi
 	cp -p $< $@
 # plain text generation rules
-gsl-mplan.texi: $(top_srcdir)/bse/gsl-mplan.txt Makefile
+engine-mplan.texi: $(top_srcdir)/bse/engine-mplan.txt Makefile
 	cd . \
 	&& echo "\input texinfo"		 >$@ \
 	&& echo "@settitle GSL Flow Engine"	>>$@ \
@@ -179,7 +179,7 @@ release-news.texi: $(top_srcdir)/NEWS Makefile
 # cleanup
 conditional_clean = $(strip \
 	navigation.xml		gnome-index.lst		\
-	gsl-mplan.texi		release-news.texi	\
+	engine-mplan.texi	release-news.texi	\
 	$(temp_ref_docu)	$(temp_log2texi)	\
 	$(distdocs)		texiutils.texi		\
 	$(REFERENCE_XMLS)				\
@@ -275,7 +275,7 @@ MAINTAINERCLEANFILES +=
 
 # intermediate files we don't need to keep
 .INTERMEDIATE: $(strip \
-	release-news.texi gsl-mplan.texi navigation.xml index.html	\
+	release-news.texi engine-mplan.texi navigation.xml index.html	\
 	log-beast.texi log-bse.texi log-plugins.texi log-sfi.texi	\
 	$(REFERENCE_XMLS)						\
 )

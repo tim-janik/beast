@@ -802,7 +802,7 @@ app_action_exec (gpointer data,
       help_title = g_strdup (help_file);
       goto HELP_DIALOG;
     case BST_ACTION_HELP_GSL_PLAN:
-      help_file = g_strconcat (BST_PATH_DOCS, "/gsl-mplan.markup", NULL);
+      help_file = g_strconcat (BST_PATH_DOCS, "/engine-mplan.markup", NULL);
       help_title = g_strdup (help_file);
       goto HELP_DIALOG;
     case BST_ACTION_HELP_QUICK_START:

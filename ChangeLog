@@ -1,3 +1,9 @@
+Tue Nov 18 19:46:13 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: 
+	* beast-gtk/bstapp.c (app_action_exec): renamed gsl-mplan to
+	engine-mplan.
+
 Tue Nov 18 18:38:37 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxktexttools.c (text_buffer_tagdef): fix ref-count leak.

@@ -25,7 +25,7 @@
 @item @uref{beast-man://3/sfi,,         	 Synthesis Fusion Kit Interface}
 @item @uref{beast-man://3/bse,,         	 Bedevilled Sound Engine}
 @item @uref{beast-man://3/beast-gxk,,   	 BEAST's Gtk+ Extension Kit}
-@item @uref{beast-doc://gsl-mplan,,     	 GSL Engine (Development Concepts)}
+@item @uref{beast-doc://engine-mplan,,     	 GSL Engine (Development Concepts)}
 @end itemize
 
 @bye

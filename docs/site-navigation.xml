@@ -52,7 +52,7 @@
       <navigation-node title="Plugin Generator"    target="bse-plugin-generator.1.html"   />
       <navigation-node title="GXK Functions"       target="beast-gxk.3.html"   />
       <navigation-node title="BSE Functions"       target="bse.3.html"         />
-      <navigation-node title="Synth Engine"        target="gsl-mplan.html"     />
+      <navigation-node title="Synth Engine"        target="engine-mplan.html"  />
     </navigation-node>
   </navigation-node>
 

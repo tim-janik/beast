@@ -6,7 +6,6 @@ FIXMES:
 - add one-shot property to factories
 
 - extend module info dialog to cover author license etc.
-- rename gsl-mplan.txt to engine-mplan.txt
 - remove/rename test-string.bse
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
@@ -80,7 +79,6 @@ FIXMES:
 DOCS:
 - pressing browsing hotkeys in release-notes dialog does stuff
 - Ctrl+'+' and Ctrl+'-' should change font sizes in doc browser
-- don't generate .markup files for NEWS and gsl-mplan.txt
 - update /Help index to cover new docs
 - add bse-categories.txt to /Help menu (probably rewrite to .texi)
 - add tag to load/play bse files
@@ -91,8 +89,6 @@ DOCS:
 - implement Playback facility in doc browser for .bse file links
 - try implementing some kind of table layout for tsmview [timj]
 - add QuickStart-Samples docs once we support sample editing [timj]
-- turn off word-wrapping for normal files (e.g. /etc/profile) in
-  tsmview. then, gsl-mplan.txt and NEWS don't need anymore markup. [timj]
 - report mising underline to havoc, alper has a tsmview example in
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
 - what kind of texi macros should be used to markup manual page contents?
