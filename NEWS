@@ -1,17 +1,45 @@
 Overview of Changes in BEAST/BSE 0.6.3:
 
 * The package now depends on GLib-2.4 and Gtk+-2.4
-* New/improved Effects:
+* New/ported/improved Effects:
   BseContribSampleAndHold - a sample and hold module by Artem Popov
   BseSummation            - a replacement for multiple BseAdder effects
-  DavBassFilter           - added trigger input for use in instruments
-* Dialog size and resizing adaptions for 800x600 screens
-* Consistent support for dialog closing with Escape 
+  DavBassFilter           - added trigger input for use in instruments and
+                            implemented MIDI automation for all parameters
+  BseNoise                - ported to IDL/C++ [Stefan Westerfeld]
+  ArtsCompressor          - cleanups, major usability improvements
+                            [Stefan Westerfeld]
+* Added song mixer with freely connectable busses
+* Added spline-scale-based DB meters
+* Added MIDI event automation framework
+* Added null PCM driver and command line options for driver selection
+* Added plugin development guide
+* Added audio-feature extractor for automated test suit [Stefan Westerfeld]
+* Fixed dangling part handling by adding them to an extra track
 * Fixed parsing of negative control events and note fine tune
 * Fixed stereo playback in sample editor
 * Fixed undo/redo handling across playback activation
 * Fixed error handling when users form cyclic connections
-* Lots of miscellaneous bug fixes
+* Lots of icon updates [Artem Popov]
+* Mime type fixes [Artem Popov, Tim Janik]
+* Improved GUI responsiveness
+* Made message dialog appearance configurable
+* Consistent support for dialog closing with Escape 
+* Dialog size and resizing adaptions for 800x600 screens
+* Lots of miscellaneous bug fixes and refactoring
+- Punjabi
+* Updated Brazilian Portuguese translation [Raphael Higino]
+* Updated Czech translation [Miloslav Trmac]
+* Updated Dutch translation [Tino Meinen]
+* Updated British English translation [David Lodge]
+* Updated Canadian English translation [Adam Weinberger]
+* Updated Albanian translation [Laurent Dhima]
+* Updated Spanish translation [Francisco Javier F. Serrador, Jorge Gonzalez]
+* Updated German translation [Dirk Janik, Moritz Mekelburger]
+* Updated Russian translation [Artem Popov]
+* Added Japanese translation [Satoru SATOH]
+* Added Esperanto translation [Artem Popov]
+* Added Italian translation [Petrecca Michele]
 
 Overview of Changes in BEAST/BSE 0.6.2:
 

@@ -1,3 +1,4 @@
-Initial Release: BSE-ALSA 0.6.3:
+Initial Release of BSE-ALSA 0.6.3:
 
-* Provide an ALSA PCM driver for BSE.
+* Provide an ALSA PCM driver for BSE
+* Provide an ALSA MIDI driver for BSE
