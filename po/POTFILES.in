@@ -41,8 +41,8 @@ beast-gtk/bsttrackview.c
 beast-gtk/bstusermessage.c
 beast-gtk/bstwaveeditor.c
 beast-gtk/bstwaveview.c
-beast-gtk/dialogs/gadgets-beast.xml
-beast-gtk/dialogs/gadgets-standard.xml
+beast-gtk/dialogs/radgets-beast.xml
+beast-gtk/dialogs/radgets-standard.xml
 beast-gtk/gxk/gxklistwrapper.c
 beast-gtk/gxk/gxkparam-entry.c
 beast-gtk/gxk/gxkparam-label.c

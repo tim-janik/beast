@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-10 02:34+0200\n"
+"POT-Creation-Date: 2004-06-22 14:28+0200\n"
 "PO-Revision-Date: 2003-12-08 17:11+0800\n"
 "Last-Translator: Dulmandakh Sukhbaatar <sdulmandakh@yahoo.com>\n"
 "Language-Team: Mongolian <openmn-core@lists.sf.net>\n"
@@ -16,173 +16,177 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.0.2\n"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "_New"
 msgstr "_Шинэ"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "Create new project"
 msgstr "Шинэ төсөл үүсгэ"
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "_Open..."
 msgstr "_Нээ..."
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "Open existing project"
 msgstr "Байгаа төслийг нээ"
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "_Merge..."
 msgstr "_Нэгтгэ..."
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "Merge an existing project into the current project"
 msgstr "Байгаа төслийг энэ төсөл рүү нэгтгэ"
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "_Import MIDI..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 #, fuzzy
 msgid "Import a standard MIDI file into the current project"
 msgstr "Байгаа төслийг энэ төсөл рүү нэгтгэ"
 
-#: beast-gtk/bstapp.c:58
+#: beast-gtk/bstapp.c:76
 msgid "_Close"
 msgstr "_Хаа"
 
-#: beast-gtk/bstapp.c:62
+#: beast-gtk/bstapp.c:80
 msgid "_Save"
 msgstr "_Хадгал"
 
-#: beast-gtk/bstapp.c:64
+#: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr "_гэж хадгал"
 
-#: beast-gtk/bstapp.c:68
+#: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr "_Унтраа"
 
-#: beast-gtk/bstapp.c:72
+#: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
 msgstr "_Тохиргоонууд"
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:93
 msgid "Rebuild"
 msgstr "_Ахин босго"
 
-#: beast-gtk/bstapp.c:78
+#: beast-gtk/bstapp.c:96
 msgid "_About..."
 msgstr "_Тухай..."
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:99
 msgid "_Undo"
 msgstr "_Буцаа"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:101
 msgid "_Redo"
 msgstr "_Дахи"
 
-#: beast-gtk/bstapp.c:87 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "_Буцаалтыг арилга"
 
-#: beast-gtk/bstapp.c:91
+#: beast-gtk/bstapp.c:109
 msgid "Procedure _Browser"
 msgstr ""
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:111
 msgid "Rack Editor"
 msgstr ""
 
-#: beast-gtk/bstapp.c:95
+#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
+msgid "Profiler"
+msgstr ""
+
+#: beast-gtk/bstapp.c:115
 #, fuzzy
 msgid "New View"
 msgstr "_Үзэмж"
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:119
 msgid "_Play"
 msgstr "_Тоглуул"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:121
 msgid "_Stop"
 msgstr "_Зогсоо"
 
-#: beast-gtk/bstapp.c:105
+#: beast-gtk/bstapp.c:125
 msgid "New Song"
 msgstr "Шинэ дуу"
 
-#: beast-gtk/bstapp.c:107
+#: beast-gtk/bstapp.c:127
 msgid "New Custom Synthesizer"
 msgstr ""
 
-#: beast-gtk/bstapp.c:109
+#: beast-gtk/bstapp.c:129
 msgid "New MIDI Synthesizer"
 msgstr ""
 
-#: beast-gtk/bstapp.c:111
+#: beast-gtk/bstapp.c:131
 msgid "Remove Song or Synthesizer"
 msgstr ""
 
-#: beast-gtk/bstapp.c:115
+#: beast-gtk/bstapp.c:135
 msgid "Load _Instrument"
 msgstr "Зэмсгийг ачаалла"
 
-#: beast-gtk/bstapp.c:117
+#: beast-gtk/bstapp.c:137
 msgid "Load _Effect"
 msgstr ""
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:139
 msgid "Save As Instrument"
 msgstr ""
 
-#: beast-gtk/bstapp.c:121
+#: beast-gtk/bstapp.c:141
 msgid "Save As Effect"
 msgstr ""
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:145
 msgid "_Release Notes..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:146
 msgid "Quick Start..."
 msgstr "Түргэн гараа..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:147
 msgid "_FAQ..."
 msgstr "_ТАА..."
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:150
 msgid "GSL Engine..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:543 beast-gtk/bstapp.c:550 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "`%s' төслийг нээ"
 
-#: beast-gtk/bstapp.c:610
+#: beast-gtk/bstapp.c:630
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "\"%s\"-г ачааллаж байна"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:772
+#: beast-gtk/bstapp.c:791
 msgid "Rack editor"
 msgstr ""
 
-#: beast-gtk/bstapp.c:786
+#: beast-gtk/bstapp.c:805
 msgid "Preferences"
 msgstr "Тохиргоонууд"
 
-#: beast-gtk/bstapp.c:809
+#: beast-gtk/bstapp.c:832
 msgid "Procedure Browser"
 msgstr ""
 
-#: beast-gtk/bstapp.c:866
+#: beast-gtk/bstapp.c:889
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr ""
@@ -513,77 +517,77 @@ msgstr ""
 msgid "Description"
 msgstr "Тайлбар"
 
-#: beast-gtk/bstmain.c:128
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:135
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr ""
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:139
+#: beast-gtk/bstmain.c:140
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:147
 #, fuzzy
 msgid "RC Files"
 msgstr "_Шүүлтүүрүүд"
 
 #. show splash images
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr ""
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:162
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr ""
 
-#: beast-gtk/bstmain.c:184
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr "Плагинууд"
 
-#: beast-gtk/bstmain.c:203
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr ""
 
-#: beast-gtk/bstmain.c:231
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Скриптүүд"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:249
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr "Харилцахууд"
 
-#: beast-gtk/bstmain.c:256
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr "Ачааллаж байна..."
 
-#: beast-gtk/bstmain.c:286 beast-gtk/bstmain.c:288
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr "\"%s\"-г ачааллаж байна"
 
-#: beast-gtk/bstmain.c:305
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "\"%s\" төслийг ачааллаж байна"
 
-#: beast-gtk/bstmain.c:719
+#: beast-gtk/bstmain.c:720
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:721
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:722
 msgid "Contributions made by:"
 msgstr ""
 
@@ -857,7 +861,7 @@ msgstr ""
 msgid "Pattern Editor Layout"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "VZoom"
 msgstr ""
 
@@ -1236,6 +1240,68 @@ msgstr "`%s'-г ажилуулж байна"
 msgid "Procedure"
 msgstr "Процедур"
 
+#: beast-gtk/bstprofiler.c:167
+#, fuzzy
+msgid "Totals"
+msgstr "_Хэрэгслүүд"
+
+#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+msgid "Thread Name"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:246
+msgid "CPU%"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:246
+msgid "Percentage of CPU usage"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:247
+msgid "UTime"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:247
+msgid "Milliseconds of user CPU time used by thread"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:248
+msgid "STime"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Milliseconds of system CPU time used by thread"
+msgstr ""
+
+#.
+#. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+#. _("Thread State:\n"
+#. "'?' - thread state is unknown\n"
+#. "'R' - thread is running\n"
+#. "'S' - thread is sleeping\n"
+#. "'D' - thread waits on disk\n"
+#. "'T' - thread is traced\n"
+#. "'W' - thread is swapping memory\n"
+#. "'Z' - thread died unexpectedly\n"
+#. "'X' - thread exited"),
+#. NULL, NULL, 0);
+#.
+#: beast-gtk/bstprofiler.c:262
+msgid "Nice"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:262
+msgid "Thread priority from -20 (high) to +19 (low)"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:263
+msgid "#CPU"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:263
+msgid "CPU the thread is currently running on"
+msgstr ""
+
 #: beast-gtk/bstprojectctrl.c:38
 msgid "Restarting Playback"
 msgstr ""
@@ -1257,7 +1323,7 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_Edit"
 msgstr "_Засварла"
 
@@ -2089,248 +2155,248 @@ msgstr "Энэ сонголтыг цэвэрлэ"
 msgid "Edit the currently selected wave"
 msgstr "Энэ сонголтыг цэвэрлэ"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:1
+#: beast-gtk/dialogs/radgets-beast.xml.h:1
 msgid "Adjust pattern length"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+#: beast-gtk/dialogs/radgets-beast.xml.h:2
 msgid "Adjust right view boundary"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Adjust the zoom factor of the router display"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Configure"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Configure the column layout of the pattern editor"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Control Type:"
 msgstr "Удирдлагын төрөл:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Development"
 msgstr "Хөгжүүлэлт"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Discard changes and close dialog"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "E_xamples"
 msgstr "Ж_ишээнүүд"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Events"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "HZoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Horizontal piano zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "Horizontal track zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Layout:"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Note _Length"
 msgstr "Нотын урт"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Piano Notes"
 msgstr "Төгөлдөр хуурын нот"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Repeat"
 msgstr "Давт"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Repeat playback within loop points"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Synthesis Modules"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Vertical piano zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Virtual Rack"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Wave_s"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "Zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "_Apply"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "_Audio Sources"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 #, fuzzy
 msgid "_Cancel"
 msgstr "_Өсгө"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Demo"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Distortion"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Enhance"
 msgstr "_Өсгө"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_File"
 msgstr "_Файл"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Filters"
 msgstr "_Шүүлтүүрүүд"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_Help"
 msgstr "_Тусламж"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Input & Output"
 msgstr "_Орол ба гаралт"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_LADSPA"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Misc"
 msgstr "_Төрөл бүр"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Other Sources"
 msgstr "_Бусад эхүүд"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Project"
 msgstr "_Төсөл"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Quantization"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Routing"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Skins"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Song"
 msgstr "_Дуу"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Spatial"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Synth"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Synthesizers"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Tools"
 msgstr "_Хэрэгслүүд"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Utilities"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_View"
 msgstr "_Үзэмж"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Virtualization"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+#: beast-gtk/dialogs/radgets-standard.xml.h:1
 msgid "Enter document or file location"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+#: beast-gtk/dialogs/radgets-standard.xml.h:2
 msgid "Find in current document"
 msgstr "Энэ баримтанд ол"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+#: beast-gtk/dialogs/radgets-standard.xml.h:3
 msgid "Go back one page"
 msgstr "Нэг хуудсаар хойшло"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+#: beast-gtk/dialogs/radgets-standard.xml.h:4
 msgid "Go forward one page"
 msgstr "Нэг хуудас урагшла"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+#: beast-gtk/dialogs/radgets-standard.xml.h:5
 msgid "Go to browser index"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+#: beast-gtk/dialogs/radgets-standard.xml.h:6
 msgid "Location"
 msgstr "Байрлал"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+#: beast-gtk/dialogs/radgets-standard.xml.h:7
 msgid "Reload current page"
 msgstr "Энэ хуудсыг ахин ачаалла"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+#: beast-gtk/dialogs/radgets-standard.xml.h:8
 msgid "_Back"
 msgstr "_Буц"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+#: beast-gtk/dialogs/radgets-standard.xml.h:9
 msgid "_Find"
 msgstr "_Ол"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+#: beast-gtk/dialogs/radgets-standard.xml.h:10
 msgid "_Forward"
 msgstr "_Урагш"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+#: beast-gtk/dialogs/radgets-standard.xml.h:11
 msgid "_Index"
 msgstr "_Индекс"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:12
+#: beast-gtk/dialogs/radgets-standard.xml.h:12
 msgid "_Reload"
 msgstr "_Ахин ачаалла"
 
@@ -2821,29 +2887,89 @@ msgstr ""
 msgid "Const Out%u"
 msgstr ""
 
-#: bse/bsecore.idl:395
+#: bse/bsecore.idl:379
+#, fuzzy
+msgid "State"
+msgstr "Гараа:"
+
+#: bse/bsecore.idl:379
+msgid "The execution state of the thread"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid "Priority"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+msgstr ""
+
+#: bse/bsecore.idl:383
+#, fuzzy
+msgid "Processor"
+msgstr "Процедур"
+
+#: bse/bsecore.idl:383
+msgid "The processor that this thread is currently being executed on"
+msgstr ""
+
+#: bse/bsecore.idl:385
+msgid "User Time"
+msgstr ""
+
+#: bse/bsecore.idl:385
+msgid "The CPU time spent executing instructions of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:387
+msgid "System Time"
+msgstr ""
+
+#: bse/bsecore.idl:387
+msgid "The CPU time spent in the system for this thread"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "Child User Time"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "The CPU time spent executing instructions of children of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:391
+msgid "Child System Time"
+msgstr ""
+
+#: bse/bsecore.idl:391
+msgid "The CPU time spent in the system for children of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:432
 msgid "Latency [ms]"
 msgstr ""
 
-#: bse/bsecore.idl:396
+#: bse/bsecore.idl:433
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr ""
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:436
 msgid "Synth Mixing Frequency"
 msgstr ""
 
-#: bse/bsecore.idl:400
+#: bse/bsecore.idl:437
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: bse/bsecore.idl:402
+#: bse/bsecore.idl:439
 msgid "Synth Control Frequency"
 msgstr ""
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:440
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3063,20 +3189,28 @@ msgstr ""
 msgid "Right channel Input"
 msgstr "Оролтын суваг ашиглагдаж байна"
 
-#: bse/bseserver.c:503
-msgid "Advice about MIDI device selections"
+#: bse/bseserver.c:143
+msgid "WAVE File"
+msgstr ""
+
+#: bse/bseserver.c:144
+msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr ""
 
 #: bse/bseserver.c:504
-msgid "Alert me about MIDI device selections"
+msgid "Advice about MIDI device selections"
 msgstr ""
 
 #: bse/bseserver.c:505
+msgid "Alert me about MIDI device selections"
+msgstr ""
+
+#: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr ""
 
-#: bse/bseserver.c:547
+#: bse/bseserver.c:548
 #, c-format
 msgid "failed to open output file \"%s\": %s"
 msgstr ""

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-21 09:53+0200\n"
+"POT-Creation-Date: 2004-06-22 14:28+0200\n"
 "PO-Revision-Date: 2004-06-19 14:21+0100\n"
 "Last-Translator: Xavier Conde Rueda <xaviconde@eresmas.com>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -865,7 +865,7 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Disposició de l'editor de patrons"
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "VZoom"
 msgstr "Ampliació vertical"
 
@@ -1328,7 +1328,7 @@ msgstr ""
 "inestabilitats al codi (deseu els vostres projectes regularment)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_Edit"
 msgstr "_Edita"
 
@@ -2119,248 +2119,248 @@ msgstr "Esborra l'ona seleccionada actualment"
 msgid "Edit the currently selected wave"
 msgstr "Esborra l'ona seleccionada actualment"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:1
+#: beast-gtk/dialogs/radgets-beast.xml.h:1
 msgid "Adjust pattern length"
 msgstr "Ajuta la longitud del patró"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+#: beast-gtk/dialogs/radgets-beast.xml.h:2
 msgid "Adjust right view boundary"
 msgstr "Ajusta la profunditat de visualització esquerre"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Adjust the zoom factor of the router display"
 msgstr "Ajusta el factor d'ampliació de la visualització de l'encaminador"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr ""
 "Aplica els canvis de configuració a la disposició de l'editor de patrons"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Configure"
 msgstr "Configura"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Configure the column layout of the pattern editor"
 msgstr "Configura la disposició de les columnes de l'editor de patrons"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Control Type:"
 msgstr "Tipus de control:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Development"
 msgstr "Desenvolupament"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Discard changes and close dialog"
 msgstr "Ignora els canvis i tanca el diàleg"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "E_xamples"
 msgstr "E_xemples"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Events"
 msgstr "Esdeveniments"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "HZoom"
 msgstr "Ampliació horitzontal"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Horizontal piano zoom"
 msgstr "Ampliació horitzontal del piano"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "Horizontal track zoom"
 msgstr "Ampliació horitzontal de la pista"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Layout:"
 msgstr "Disposició:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Note _Length"
 msgstr "Durada de _la nota"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Piano Notes"
 msgstr "Notes de piano"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Repeat"
 msgstr "Repeteix"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Repeat playback within loop points"
 msgstr "Repeteix la reproducció entre punts del bucle"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Synthesis Modules"
 msgstr "Mòduls de síntesi"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Vertical piano zoom"
 msgstr "Ampliació vertical del piano"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Virtual Rack"
 msgstr "Rack virtual"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Wave_s"
 msgstr "O_na"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "Zoom"
 msgstr "Ampliació"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 msgid "_Apply"
 msgstr "_Aplica"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "_Audio Sources"
 msgstr "_Fonts de so"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 msgid "_Cancel"
 msgstr "_Cancel·la"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Demo"
 msgstr "_Demostració"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Distortion"
 msgstr "_Distorsió"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Enhance"
 msgstr "_Millora"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_File"
 msgstr "_Fitxer"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Filters"
 msgstr "_Filtres"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_Help"
 msgstr "_Ajuda"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Input & Output"
 msgstr "_Entrada i sortida"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Misc"
 msgstr "_Miscel·lània"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Other Sources"
 msgstr "Altres f_onts"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Project"
 msgstr "_Projecte"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Quantization"
 msgstr "_Quantització"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Routing"
 msgstr "Encaminamen_t"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Skins"
 msgstr "Aparence_s"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Song"
 msgstr "Ca_nçó"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Spatial"
 msgstr "_Espaial"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Synth"
 msgstr "_Sintetitzador"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Synthesizers"
 msgstr "_Sintetitzadors"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Tools"
 msgstr "_Eines"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Utilities"
 msgstr "_Utilitats"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_View"
 msgstr "_Visualitza"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Virtualization"
 msgstr "_Virtualització"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+#: beast-gtk/dialogs/radgets-standard.xml.h:1
 msgid "Enter document or file location"
 msgstr "Introduïu la ubicació d'un document o d'un fitxer"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+#: beast-gtk/dialogs/radgets-standard.xml.h:2
 msgid "Find in current document"
 msgstr "Cerca en el document actual"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+#: beast-gtk/dialogs/radgets-standard.xml.h:3
 msgid "Go back one page"
 msgstr "Mou una pàgina endarrere"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+#: beast-gtk/dialogs/radgets-standard.xml.h:4
 msgid "Go forward one page"
 msgstr "Mou una pàgina endavant"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+#: beast-gtk/dialogs/radgets-standard.xml.h:5
 msgid "Go to browser index"
 msgstr "Vés a l'índex del navegador"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+#: beast-gtk/dialogs/radgets-standard.xml.h:6
 msgid "Location"
 msgstr "Ubicació"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+#: beast-gtk/dialogs/radgets-standard.xml.h:7
 msgid "Reload current page"
 msgstr "Torna a carregar la pàgina actual"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+#: beast-gtk/dialogs/radgets-standard.xml.h:8
 msgid "_Back"
 msgstr "_Endarrere"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+#: beast-gtk/dialogs/radgets-standard.xml.h:9
 msgid "_Find"
 msgstr "_Cerca"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+#: beast-gtk/dialogs/radgets-standard.xml.h:10
 msgid "_Forward"
 msgstr "_Endavant"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+#: beast-gtk/dialogs/radgets-standard.xml.h:11
 msgid "_Index"
 msgstr "Índe_x"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:12
+#: beast-gtk/dialogs/radgets-standard.xml.h:12
 msgid "_Reload"
 msgstr "To_rna a carregar"
 

@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast 0.5.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-10 02:34+0200\n"
+"POT-Creation-Date: 2004-06-22 14:28+0200\n"
 "PO-Revision-Date: 2004-01-04 22:01+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -18,173 +18,179 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "_New"
 msgstr "_Neu"
 
-#: beast-gtk/bstapp.c:50
+#: beast-gtk/bstapp.c:68
 msgid "Create new project"
 msgstr "Ein neues Projekt anlegen"
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "_Open..."
 msgstr "Ö_ffnen..."
 
-#: beast-gtk/bstapp.c:52
+#: beast-gtk/bstapp.c:70
 msgid "Open existing project"
 msgstr "Ein vorhandenes Projekt öffnen"
 
 # CHECK
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "_Merge..."
 msgstr "_Einbinden..."
 
-#: beast-gtk/bstapp.c:54
+#: beast-gtk/bstapp.c:72
 msgid "Merge an existing project into the current project"
 msgstr "Ein vorhandenes Projekt in das momentan geöffnete einbinden"
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "_Import MIDI..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:56
+#: beast-gtk/bstapp.c:74
 msgid "Import a standard MIDI file into the current project"
 msgstr "Eine Standard-MIDI-Datei in das momentan geöffnete Projekt importieren"
 
-#: beast-gtk/bstapp.c:58
+#: beast-gtk/bstapp.c:76
 msgid "_Close"
 msgstr "S_chließen"
 
-#: beast-gtk/bstapp.c:62
+#: beast-gtk/bstapp.c:80
 msgid "_Save"
 msgstr "_Speichern"
 
-#: beast-gtk/bstapp.c:64
+#: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr "Speichern _unter..."
 
-#: beast-gtk/bstapp.c:68
+#: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr "_Beenden"
 
-#: beast-gtk/bstapp.c:72
+#: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
 msgstr "_Einstellungen..."
 
-#: beast-gtk/bstapp.c:75
+#: beast-gtk/bstapp.c:93
 msgid "Rebuild"
 msgstr "Auffrischen"
 
-#: beast-gtk/bstapp.c:78
+#: beast-gtk/bstapp.c:96
 msgid "_About..."
 msgstr "_Info..."
 
-#: beast-gtk/bstapp.c:81
+#: beast-gtk/bstapp.c:99
 msgid "_Undo"
 msgstr "_Rückgängig"
 
-#: beast-gtk/bstapp.c:83
+#: beast-gtk/bstapp.c:101
 msgid "_Redo"
 msgstr "_Wiederholen"
 
 # CHECK
-#: beast-gtk/bstapp.c:87 beast-gtk/bstpartdialog.c:70
+#: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr "Rückgängig-Chronik _löschen"
 
-#: beast-gtk/bstapp.c:91
+#: beast-gtk/bstapp.c:109
 msgid "Procedure _Browser"
 msgstr "Prozedur-_Browser"
 
-#: beast-gtk/bstapp.c:93
+#: beast-gtk/bstapp.c:111
 msgid "Rack Editor"
 msgstr "Ablageeditor"
 
-#: beast-gtk/bstapp.c:95
+# CHECK
+#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
+#, fuzzy
+msgid "Profiler"
+msgstr "Filter-Ordnung"
+
+#: beast-gtk/bstapp.c:115
 msgid "New View"
 msgstr "Neue Ansicht"
 
-#: beast-gtk/bstapp.c:99
+#: beast-gtk/bstapp.c:119
 msgid "_Play"
 msgstr "_Wiedergabe"
 
-#: beast-gtk/bstapp.c:101
+#: beast-gtk/bstapp.c:121
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: beast-gtk/bstapp.c:105
+#: beast-gtk/bstapp.c:125
 msgid "New Song"
 msgstr "Neuer Titel"
 
-#: beast-gtk/bstapp.c:107
+#: beast-gtk/bstapp.c:127
 msgid "New Custom Synthesizer"
 msgstr "Neuer benutzerdef. Synthesizer"
 
-#: beast-gtk/bstapp.c:109
+#: beast-gtk/bstapp.c:129
 msgid "New MIDI Synthesizer"
 msgstr "Neuer MIDI-Synthesizer"
 
-#: beast-gtk/bstapp.c:111
+#: beast-gtk/bstapp.c:131
 msgid "Remove Song or Synthesizer"
 msgstr "Titel oder Synthesizer entfernen"
 
-#: beast-gtk/bstapp.c:115
+#: beast-gtk/bstapp.c:135
 msgid "Load _Instrument"
 msgstr "_Instrument laden"
 
-#: beast-gtk/bstapp.c:117
+#: beast-gtk/bstapp.c:137
 msgid "Load _Effect"
 msgstr "_Effekt laden"
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:139
 msgid "Save As Instrument"
 msgstr "Als Instrument speichern"
 
-#: beast-gtk/bstapp.c:121
+#: beast-gtk/bstapp.c:141
 msgid "Save As Effect"
 msgstr "Als Effekt speichern"
 
-#: beast-gtk/bstapp.c:125
+#: beast-gtk/bstapp.c:145
 msgid "_Release Notes..."
 msgstr "_Release-Hinweise..."
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:146
 msgid "Quick Start..."
 msgstr "Schnelleinstieg..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:147
 msgid "_FAQ..."
 msgstr "_FAQ..."
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:150
 msgid "GSL Engine..."
 msgstr "GSL-Engine..."
 
-#: beast-gtk/bstapp.c:543 beast-gtk/bstapp.c:550 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
 #: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Projekt »%s« wird geöffnet"
 
-#: beast-gtk/bstapp.c:610
+#: beast-gtk/bstapp.c:630
 #, fuzzy, c-format
 msgid "Loading skin `%s'"
 msgstr "Wave »%s« wird geladen"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:772
+#: beast-gtk/bstapp.c:791
 msgid "Rack editor"
 msgstr "Ablageeditor"
 
-#: beast-gtk/bstapp.c:786
+#: beast-gtk/bstapp.c:805
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: beast-gtk/bstapp.c:809
+#: beast-gtk/bstapp.c:832
 msgid "Procedure Browser"
 msgstr "Prozedur-Browser"
 
-#: beast-gtk/bstapp.c:866
+#: beast-gtk/bstapp.c:889
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release-Hinweise"
@@ -522,77 +528,77 @@ msgstr ""
 msgid "Description"
 msgstr "Beschreibung"
 
-#: beast-gtk/bstmain.c:128
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr "Beast-Startvorgang"
 
-#: beast-gtk/bstmain.c:135
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr "Startvorgang"
 
 #. BEAST initialization
-#: beast-gtk/bstmain.c:139
+#: beast-gtk/bstmain.c:140
 msgid "Initializers"
 msgstr ""
 
 #. parse rc file
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:147
 #, fuzzy
 msgid "RC Files"
 msgstr "RC-Datei"
 
 #. show splash images
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr "Begrüßungsbildschirm"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:162
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr "BSE-Kern"
 
-#: beast-gtk/bstmain.c:184
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr "Plugins"
 
-#: beast-gtk/bstmain.c:203
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr "LADSPA-Plugins"
 
-#: beast-gtk/bstmain.c:231
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:249
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr "Dialoge"
 
-#: beast-gtk/bstmain.c:256
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr "Ladevorgang..."
 
-#: beast-gtk/bstmain.c:286 beast-gtk/bstmain.c:288
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr "»%s« wird geladen"
 
-#: beast-gtk/bstmain.c:305
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Projekt »%s« wird geladen"
 
-#: beast-gtk/bstmain.c:719
+#: beast-gtk/bstmain.c:720
 msgid "BEAST About"
 msgstr "Info zu BEAST"
 
-#: beast-gtk/bstmain.c:720
+#: beast-gtk/bstmain.c:721
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST-Version %s"
 
-#: beast-gtk/bstmain.c:721
+#: beast-gtk/bstmain.c:722
 msgid "Contributions made by:"
 msgstr "Mitwirkende:"
 
@@ -870,7 +876,7 @@ msgstr ""
 msgid "Pattern Editor Layout"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:21
 msgid "VZoom"
 msgstr "V-Größe"
 
@@ -1254,6 +1260,69 @@ msgstr "»%s« wird ausgeführt"
 msgid "Procedure"
 msgstr "Prozedur"
 
+#: beast-gtk/bstprofiler.c:167
+#, fuzzy
+msgid "Totals"
+msgstr "_Werkzeuge"
+
+#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+msgid "Thread Name"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:246
+msgid "CPU%"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:246
+msgid "Percentage of CPU usage"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:247
+msgid "UTime"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:247
+msgid "Milliseconds of user CPU time used by thread"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:248
+msgid "STime"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Milliseconds of system CPU time used by thread"
+msgstr ""
+
+#.
+#. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+#. _("Thread State:\n"
+#. "'?' - thread state is unknown\n"
+#. "'R' - thread is running\n"
+#. "'S' - thread is sleeping\n"
+#. "'D' - thread waits on disk\n"
+#. "'T' - thread is traced\n"
+#. "'W' - thread is swapping memory\n"
+#. "'Z' - thread died unexpectedly\n"
+#. "'X' - thread exited"),
+#. NULL, NULL, 0);
+#.
+#: beast-gtk/bstprofiler.c:262
+#, fuzzy
+msgid "Nice"
+msgstr "Hinweis"
+
+#: beast-gtk/bstprofiler.c:262
+msgid "Thread priority from -20 (high) to +19 (low)"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:263
+msgid "#CPU"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:263
+msgid "CPU the thread is currently running on"
+msgstr ""
+
 #: beast-gtk/bstprojectctrl.c:38
 msgid "Restarting Playback"
 msgstr "Wiedergabe wird neu gestartet"
@@ -1281,7 +1350,7 @@ msgstr ""
 "(sprich: Projekte regelmäßig speichern)"
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_Edit"
 msgstr "_Bearbeiten"
 
@@ -2136,256 +2205,256 @@ msgstr "Die momentan gewählte Wave löschen"
 msgid "Edit the currently selected wave"
 msgstr "Die momentan gewählte Wave bearbeiten"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:1
+#: beast-gtk/dialogs/radgets-beast.xml.h:1
 msgid "Adjust pattern length"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+#: beast-gtk/dialogs/radgets-beast.xml.h:2
 msgid "Adjust right view boundary"
 msgstr ""
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Adjust the zoom factor of the router display"
 msgstr "Die Ansichtsgröße der Router-Anzeige anpassen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
 msgid "Aplly configuration changes to the pattern editor layout"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
 msgid "Configure"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
 msgid "Configure the column layout of the pattern editor"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Control Type:"
 msgstr "Steuerungstyp:"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Development"
 msgstr "Entwicklung"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
 msgid "Discard changes and close dialog"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "E_xamples"
 msgstr "_Beispiele"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Events"
 msgstr "Ereignisse"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "HZoom"
 msgstr "H-Größe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Horizontal piano zoom"
 msgstr "Horizontale Klavier-Ansichtsgröße"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "Horizontal track zoom"
 msgstr "Horizontale Titel-Ansichtsgröße"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
 msgid "Layout:"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Note _Length"
 msgstr "Noten_länge"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Piano Notes"
 msgstr "Klaviernoten"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Repeat"
 msgstr "Wiederholen"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Repeat playback within loop points"
 msgstr "Wiedergabe innerhalb der Loop-Punkte wiederholen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Synthesis Modules"
 msgstr "Synthesemodule"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Vertical piano zoom"
 msgstr "Vertikale Klavier-Ansichtsgröße"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Virtual Rack"
 msgstr "Virtuelle Ablage"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Wave_s"
 msgstr "_Waves"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "Zoom"
 msgstr "Größe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
 #, fuzzy
 msgid "_Apply"
 msgstr "Loop anwenden"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "_Audio Sources"
 msgstr "_Audio-Quellen"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
 #, fuzzy
 msgid "_Cancel"
 msgstr "Auf_bessern"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Demo"
 msgstr "_Demo"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Distortion"
 msgstr "_Verzerren"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Enhance"
 msgstr "Auf_bessern"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_File"
 msgstr "_Datei"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Filters"
 msgstr "_Filter"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_Help"
 msgstr "_Hilfe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Input & Output"
 msgstr "_Ein- und Ausgabe"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_LADSPA"
 msgstr "_LADSPA"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Misc"
 msgstr "_Verschiedenes"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Other Sources"
 msgstr "_Weitere Quellen"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Project"
 msgstr "_Projekt"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Quantization"
 msgstr "_Quantisierung"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:42
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Routing"
 msgstr "_Routing"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:43
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
 msgid "_Skins"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:44
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Song"
 msgstr "_Titel"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-beast.xml.h:45
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Spatial"
 msgstr "_Raumklang"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:46
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Synth"
 msgstr "_Synth"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:47
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Synthesizers"
 msgstr "_Synthesizer"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:48
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Tools"
 msgstr "_Werkzeuge"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:49
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Utilities"
 msgstr "_Werkzeuge"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:50
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_View"
 msgstr "_Ansicht"
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:51
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Virtualization"
 msgstr "_Virtualisierung"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+#: beast-gtk/dialogs/radgets-standard.xml.h:1
 msgid "Enter document or file location"
 msgstr "Einen Dokument- oder Dateiort eingeben"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+#: beast-gtk/dialogs/radgets-standard.xml.h:2
 msgid "Find in current document"
 msgstr "Das momentan angezeigte Dokument durchsuchen"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+#: beast-gtk/dialogs/radgets-standard.xml.h:3
 msgid "Go back one page"
 msgstr "Eine Seite zurück gehen"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+#: beast-gtk/dialogs/radgets-standard.xml.h:4
 msgid "Go forward one page"
 msgstr "Eine Seite vor gehen"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+#: beast-gtk/dialogs/radgets-standard.xml.h:5
 msgid "Go to browser index"
 msgstr "Zum Browser-Index gehen"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+#: beast-gtk/dialogs/radgets-standard.xml.h:6
 msgid "Location"
 msgstr "Ort"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+#: beast-gtk/dialogs/radgets-standard.xml.h:7
 msgid "Reload current page"
 msgstr "Momentan angezeigte Seite aktualisieren"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+#: beast-gtk/dialogs/radgets-standard.xml.h:8
 msgid "_Back"
 msgstr "_Zurück"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+#: beast-gtk/dialogs/radgets-standard.xml.h:9
 msgid "_Find"
 msgstr "_Suchen"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+#: beast-gtk/dialogs/radgets-standard.xml.h:10
 msgid "_Forward"
 msgstr "_Vor"
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+#: beast-gtk/dialogs/radgets-standard.xml.h:11
 msgid "_Index"
 msgstr "_Index"
 
 # CHECK
-#: beast-gtk/dialogs/gadgets-standard.xml.h:12
+#: beast-gtk/dialogs/radgets-standard.xml.h:12
 msgid "_Reload"
 msgstr "A_ktualisieren"
 
@@ -2881,32 +2950,93 @@ msgstr "Frequenz"
 msgid "Const Out%u"
 msgstr ""
 
-#: bse/bsecore.idl:395
+# CHECK
+#: bse/bsecore.idl:379
+#, fuzzy
+msgid "State"
+msgstr "Anfang:"
+
+#: bse/bsecore.idl:379
+msgid "The execution state of the thread"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid "Priority"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+msgstr ""
+
+#: bse/bsecore.idl:383
+#, fuzzy
+msgid "Processor"
+msgstr "Prozedur"
+
+#: bse/bsecore.idl:383
+msgid "The processor that this thread is currently being executed on"
+msgstr ""
+
+#: bse/bsecore.idl:385
+msgid "User Time"
+msgstr ""
+
+#: bse/bsecore.idl:385
+msgid "The CPU time spent executing instructions of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:387
+msgid "System Time"
+msgstr ""
+
+#: bse/bsecore.idl:387
+msgid "The CPU time spent in the system for this thread"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "Child User Time"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "The CPU time spent executing instructions of children of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:391
+msgid "Child System Time"
+msgstr ""
+
+#: bse/bsecore.idl:391
+msgid "The CPU time spent in the system for children of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:432
 #, fuzzy
 msgid "Latency [ms]"
 msgstr "Ansprechzeit [ms]"
 
-#: bse/bsecore.idl:396
+#: bse/bsecore.idl:433
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
 msgstr ""
 
-#: bse/bsecore.idl:399
+#: bse/bsecore.idl:436
 #, fuzzy
 msgid "Synth Mixing Frequency"
 msgstr "Frequenz zentrieren"
 
-#: bse/bsecore.idl:400
+#: bse/bsecore.idl:437
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
 msgstr ""
 
-#: bse/bsecore.idl:402
+#: bse/bsecore.idl:439
 #, fuzzy
 msgid "Synth Control Frequency"
 msgstr "Frequenz zentrieren"
 
-#: bse/bsecore.idl:403
+#: bse/bsecore.idl:440
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
@@ -3129,20 +3259,28 @@ msgstr "Audio-Ein, rechts"
 msgid "Right channel Input"
 msgstr "Rechte Audio-Eingabe"
 
-#: bse/bseserver.c:503
-msgid "Advice about MIDI device selections"
+#: bse/bseserver.c:143
+msgid "WAVE File"
+msgstr ""
+
+#: bse/bseserver.c:144
+msgid "Name of the WAVE file used for recording BSE sound output"
 msgstr ""
 
 #: bse/bseserver.c:504
-msgid "Alert me about MIDI device selections"
+msgid "Advice about MIDI device selections"
 msgstr ""
 
 #: bse/bseserver.c:505
+msgid "Alert me about MIDI device selections"
+msgstr ""
+
+#: bse/bseserver.c:506
 #, c-format
 msgid "failed to open midi device %s (reverting to null device): %s"
 msgstr ""
 
-#: bse/bseserver.c:547
+#: bse/bseserver.c:548
 #, c-format
 msgid "failed to open output file \"%s\": %s"
 msgstr ""

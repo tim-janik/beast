@@ -1,5 +1,4 @@
 FIXMES:
-- rename GxkGadget to GxkRadget
 - add DSP engine module stats to profiler dialog
 - add tooltips to categories and use that for bst_action_list_add_cat()
 - remove docs/generated/bse-plugin-generator.1
@@ -50,8 +49,8 @@ FIXMES:
 - allow parasite object links only within tree
 - queue action updates upon grouped action execution 
 - introduce gxk_action_group_select()-freeze/thaw to surround select/exec pair
-- auto-connect viewable-changed to gadget notebooks
-- add one-shot property to gxk-gadget-factories
+- auto-connect viewable-changed to radget notebooks
+- add one-shot property to gxk-radget-factories
 - remove/rename test-string.bse
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
 - fix syndrum parameter scale

@@ -5,7 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: x\n"
-"POT-Creation-Date: 2003-12-30 19:12+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-06-22 14:33+0200\n"
 "PO-Revision-Date: 2003-12-30 19:12+0100\n"
 "Last-Translator: Gorkem Cetin <gorkem@bahcesehir.edu.tr>\n"
 "Language-Team: Turkish <gnome-turk@gnome.org>\n"
@@ -13,291 +14,304 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: beast-gtk/bstapp.c:51
+#: beast-gtk/bstapp.c:68
 msgid "_New"
 msgstr ""
 
-#: beast-gtk/bstapp.c:51
+#: beast-gtk/bstapp.c:68
 msgid "Create new project"
 msgstr ""
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:70
 msgid "_Open..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:53
+#: beast-gtk/bstapp.c:70
 msgid "Open existing project"
 msgstr ""
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:72
 msgid "_Merge..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:55
+#: beast-gtk/bstapp.c:72
 msgid "Merge an existing project into the current project"
 msgstr ""
 
-#: beast-gtk/bstapp.c:57
+#: beast-gtk/bstapp.c:74
 msgid "_Import MIDI..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:57
+#: beast-gtk/bstapp.c:74
 msgid "Import a standard MIDI file into the current project"
 msgstr ""
 
-#: beast-gtk/bstapp.c:59
+#: beast-gtk/bstapp.c:76
 msgid "_Close"
 msgstr ""
 
-#: beast-gtk/bstapp.c:63
+#: beast-gtk/bstapp.c:80
 msgid "_Save"
 msgstr ""
 
-#: beast-gtk/bstapp.c:65
+#: beast-gtk/bstapp.c:82
 msgid "Save _As..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:69
+#: beast-gtk/bstapp.c:86
 msgid "_Quit"
 msgstr ""
 
-#: beast-gtk/bstapp.c:73
+#: beast-gtk/bstapp.c:90
 msgid "_Preferences..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:76
+#: beast-gtk/bstapp.c:93
 msgid "Rebuild"
 msgstr ""
 
-#: beast-gtk/bstapp.c:79
+#: beast-gtk/bstapp.c:96
 msgid "_About..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:82
+#: beast-gtk/bstapp.c:99
 msgid "_Undo"
 msgstr ""
 
-#: beast-gtk/bstapp.c:84
+#: beast-gtk/bstapp.c:101
 msgid "_Redo"
 msgstr ""
 
-#: beast-gtk/bstapp.c:88 beast-gtk/bstpartdialog.c:69
+#: beast-gtk/bstapp.c:105 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
 msgstr ""
 
-#: beast-gtk/bstapp.c:92
+#: beast-gtk/bstapp.c:109
 msgid "Procedure _Browser"
 msgstr ""
 
-#: beast-gtk/bstapp.c:94
+#: beast-gtk/bstapp.c:111
 msgid "Rack Editor"
 msgstr ""
 
-#: beast-gtk/bstapp.c:96
-msgid "Device _Monitor"
+#: beast-gtk/bstapp.c:113 beast-gtk/bstprofiler.c:225
+msgid "Profiler"
 msgstr ""
 
-#: beast-gtk/bstapp.c:98
+#: beast-gtk/bstapp.c:115
 msgid "New View"
 msgstr ""
 
-#: beast-gtk/bstapp.c:102
+#: beast-gtk/bstapp.c:119
 msgid "_Play"
 msgstr ""
 
-#: beast-gtk/bstapp.c:104
+#: beast-gtk/bstapp.c:121
 msgid "_Stop"
 msgstr ""
 
-#: beast-gtk/bstapp.c:108
+#: beast-gtk/bstapp.c:125
 msgid "New Song"
 msgstr ""
 
-#: beast-gtk/bstapp.c:110
+#: beast-gtk/bstapp.c:127
 msgid "New Custom Synthesizer"
 msgstr ""
 
-#: beast-gtk/bstapp.c:112
+#: beast-gtk/bstapp.c:129
 msgid "New MIDI Synthesizer"
 msgstr ""
 
-#: beast-gtk/bstapp.c:114
+#: beast-gtk/bstapp.c:131
 msgid "Remove Song or Synthesizer"
 msgstr ""
 
-#: beast-gtk/bstapp.c:118
+#: beast-gtk/bstapp.c:135
 msgid "Load _Instrument"
 msgstr ""
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:137
 msgid "Load _Effect"
 msgstr ""
 
-#: beast-gtk/bstapp.c:122
+#: beast-gtk/bstapp.c:139
 msgid "Save As Instrument"
 msgstr ""
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:141
 msgid "Save As Effect"
 msgstr ""
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:145
 msgid "_Release Notes..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:129
+#: beast-gtk/bstapp.c:146
 msgid "Quick Start..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:130
+#: beast-gtk/bstapp.c:147
 msgid "_FAQ..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:133
+#: beast-gtk/bstapp.c:150
 msgid "GSL Engine..."
 msgstr ""
 
-#: beast-gtk/bstapp.c:549 beast-gtk/bstapp.c:556 beast-gtk/bstfiledialog.c:438
-#: beast-gtk/bstfiledialog.c:445
+#: beast-gtk/bstapp.c:563 beast-gtk/bstapp.c:570 beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:431
 #, c-format
 msgid "Opening project `%s'"
 msgstr ""
 
+#: beast-gtk/bstapp.c:630
+#, c-format
+msgid "Loading skin `%s'"
+msgstr ""
+
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:722
+#: beast-gtk/bstapp.c:791
 msgid "Rack editor"
 msgstr ""
 
-#: beast-gtk/bstapp.c:736
+#: beast-gtk/bstapp.c:805
 msgid "Preferences"
 msgstr ""
 
-#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:750
-msgid "Device Monitor"
-msgstr ""
-
-#: beast-gtk/bstapp.c:769
+#: beast-gtk/bstapp.c:832
 msgid "Procedure Browser"
 msgstr ""
 
-#: beast-gtk/bstapp.c:826
+#: beast-gtk/bstapp.c:889
 #, c-format
 msgid "BEAST-%s Release Notes"
+msgstr ""
+
+#: beast-gtk/bstauxdialogs.c:389
+#, c-format
+msgid "Please press the keyboard shortcut to be installed for function: %s"
+msgstr ""
+
+#: beast-gtk/bstauxdialogs.c:394
+msgid "Please press the keyboard shortcut to be installed..."
 msgstr ""
 
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
 msgstr ""
 
-#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:927
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:901
 msgid "Module link"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.c:487
+#: beast-gtk/bstcanvassource.c:463
 msgid "Module Info"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.c:986 beast-gtk/bstsnetrouter.c:210
+#: beast-gtk/bstcanvassource.c:962 beast-gtk/bstsnetrouter.c:184
 msgid "Input"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.c:995 beast-gtk/bstsnetrouter.c:207
-#: bse/bseamplifier.idl:66 plugins/artscompressor.idl:38
-#: plugins/artscompressor.idl:57
+#: beast-gtk/bstcanvassource.c:971 beast-gtk/bstsnetrouter.c:181
+#: bse/bseamplifier.idl:65 plugins/artscompressor.idl:39
+#: plugins/artscompressor.idl:58
 msgid "Output"
 msgstr ""
 
-#: beast-gtk/bstcanvassource.c:999
+#: beast-gtk/bstcanvassource.c:975
 msgid "(Hint)"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:350 beast-gtk/bsteventrollctrl.c:357
-#: beast-gtk/bsteventrollctrl.c:421
+#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:358
+#: beast-gtk/bsteventrollctrl.c:427
 msgid "Move Control Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:357 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:556 beast-gtk/bstpianorollctrl.c:472
-#: beast-gtk/bstpianorollctrl.c:582 beast-gtk/bstpianorollctrl.c:645
-#: beast-gtk/bsttrackrollctrl.c:468 beast-gtk/bsttrackrollctrl.c:488
-#: beast-gtk/bsttrackrollctrl.c:560
+#: beast-gtk/bsteventrollctrl.c:358 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
+#: beast-gtk/bsttrackrollctrl.c:476 beast-gtk/bsttrackrollctrl.c:496
+#: beast-gtk/bsttrackrollctrl.c:568
 msgid "No target"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:421 beast-gtk/bsteventrollctrl.c:542
+#: beast-gtk/bsteventrollctrl.c:427 beast-gtk/bsteventrollctrl.c:548
 msgid "Lost Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:431 beast-gtk/bsteventrollctrl.c:464
+#: beast-gtk/bsteventrollctrl.c:437 beast-gtk/bsteventrollctrl.c:470
 msgid "Align Control Events"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:464 beast-gtk/bsteventrollctrl.c:590
-#: beast-gtk/bstpianorollctrl.c:703 beast-gtk/bstpianorollctrl.c:739
+#: beast-gtk/bsteventrollctrl.c:470 beast-gtk/bsteventrollctrl.c:596
+#: beast-gtk/bstpianorollctrl.c:716 beast-gtk/bstpianorollctrl.c:752
 msgid "Aborted"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:490
+#: beast-gtk/bsteventrollctrl.c:496
 msgid "Insert Control Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:501 beast-gtk/bsteventrollctrl.c:506
-#: beast-gtk/bsteventrollctrl.c:542
+#: beast-gtk/bsteventrollctrl.c:507 beast-gtk/bsteventrollctrl.c:512
+#: beast-gtk/bsteventrollctrl.c:548
 msgid "Resize Control Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:553 beast-gtk/bsteventrollctrl.c:556
+#: beast-gtk/bsteventrollctrl.c:559 beast-gtk/bsteventrollctrl.c:562
 msgid "Delete Control Event"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:566 beast-gtk/bsteventrollctrl.c:590
-#: beast-gtk/bstpianorollctrl.c:677 beast-gtk/bstpianorollctrl.c:703
+#: beast-gtk/bsteventrollctrl.c:572 beast-gtk/bsteventrollctrl.c:596
+#: beast-gtk/bstpianorollctrl.c:690 beast-gtk/bstpianorollctrl.c:716
 msgid "Select Region"
 msgstr ""
 
-#: beast-gtk/bsteventrollctrl.c:599 beast-gtk/bstpianorollctrl.c:748
+#: beast-gtk/bsteventrollctrl.c:605 beast-gtk/bstpianorollctrl.c:761
 msgid "Abortion"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:197
+#: beast-gtk/bstfiledialog.c:169
 msgid "Contents"
 msgstr ""
 
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:229
+#: beast-gtk/bstfiledialog.c:201
 msgid "File Selection"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:410
+#: beast-gtk/bstfiledialog.c:382
 msgid "Open Project"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:424
+#: beast-gtk/bstfiledialog.c:396
+msgid "Select File"
+msgstr ""
+
+#: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:463
+#: beast-gtk/bstfiledialog.c:449
 #, c-format
 msgid "Merge: %s"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:476
+#: beast-gtk/bstfiledialog.c:462
 #, c-format
 msgid "Merging project `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:492
+#: beast-gtk/bstfiledialog.c:478
 #, c-format
 msgid "Import MIDI: %s"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:503
+#: beast-gtk/bstfiledialog.c:489
 #, c-format
 msgid "Importing MIDI file `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:523
+#: beast-gtk/bstfiledialog.c:509
 #, c-format
 msgid ""
 "Failed to delete file\n"
@@ -306,27 +320,27 @@ msgid ""
 "%s"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:552
+#: beast-gtk/bstfiledialog.c:538
 #, c-format
 msgid "Save: %s"
 msgstr ""
 
 #. setup radio buttons
-#: beast-gtk/bstfiledialog.c:554
+#: beast-gtk/bstfiledialog.c:540
 msgid "Fully include wave files"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:555
+#: beast-gtk/bstfiledialog.c:541
 msgid "Store references to wave files"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:576 beast-gtk/bstfiledialog.c:586
+#: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
 #, c-format
 msgid "Saving project `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:577 beast-gtk/bstfiledialog.c:653
-#: beast-gtk/bstfiledialog.c:729
+#: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
+#: beast-gtk/bstfiledialog.c:715
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -336,164 +350,255 @@ msgid ""
 "%s"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:601
+#: beast-gtk/bstfiledialog.c:587
 msgid "Load Effect"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:614
+#: beast-gtk/bstfiledialog.c:600
 #, c-format
 msgid "Merging effect `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:631
+#: beast-gtk/bstfiledialog.c:617
 msgid "Save Effect"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:652 beast-gtk/bstfiledialog.c:662
+#: beast-gtk/bstfiledialog.c:638 beast-gtk/bstfiledialog.c:648
 #, c-format
 msgid "Saving effect `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:677
+#: beast-gtk/bstfiledialog.c:663
 msgid "Load Instrument"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:690
+#: beast-gtk/bstfiledialog.c:676
 #, c-format
 msgid "Merging instrument `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:707
+#: beast-gtk/bstfiledialog.c:693
 msgid "Save Instrument"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:728 beast-gtk/bstfiledialog.c:738
+#: beast-gtk/bstfiledialog.c:714 beast-gtk/bstfiledialog.c:724
 #, c-format
 msgid "Saving instrument `%s'"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:754
+#: beast-gtk/bstfiledialog.c:740
 msgid "Load Wave"
 msgstr ""
 
-#: beast-gtk/bstfiledialog.c:766 beast-gtk/bstfiledialog.c:768
+#: beast-gtk/bstfiledialog.c:752 beast-gtk/bstfiledialog.c:754
 #, c-format
 msgid "Loading wave `%s'"
 msgstr ""
 
-#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:41
-#: beast-gtk/bsttrackview.c:62
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:39
+#: beast-gtk/bsttrackview.c:60
 msgid "Add"
 msgstr ""
 
-#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstpartview.c:42
-#: beast-gtk/bstpianorollctrl.c:48 beast-gtk/bstrackitem.c:216
-#: beast-gtk/bstsnetrouter.c:889 beast-gtk/bstsnetrouter.c:931
-#: beast-gtk/bsttrackrollctrl.c:51 beast-gtk/bsttrackview.c:65
-#: beast-gtk/bstwaveview.c:47
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstkeybindings.c:59
+#: beast-gtk/bstpartview.c:40 beast-gtk/bstpianorollctrl.c:48
+#: beast-gtk/bstrackitem.c:216 beast-gtk/bstsnetrouter.c:863
+#: beast-gtk/bstsnetrouter.c:905 beast-gtk/bsttrackrollctrl.c:51
+#: beast-gtk/bsttrackview.c:63 beast-gtk/bstwaveview.c:45
 msgid "Delete"
 msgstr ""
 
-#: beast-gtk/bstitemview.c:235
+#: beast-gtk/bstitemview.c:205
 msgid "ID"
 msgstr ""
 
-#: beast-gtk/bstitemview.c:238
+#: beast-gtk/bstitemview.c:208
 msgid "Name"
 msgstr ""
 
-#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:572
+#: beast-gtk/bstitemview.c:211 beast-gtk/bsttrackview.c:520
 msgid "Comment"
 msgstr ""
 
-#: beast-gtk/bstitemview.c:245
+#: beast-gtk/bstitemview.c:215
 msgid "Type"
 msgstr ""
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstkeybindings.c:51
+msgid "Add..."
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:51
+msgid "Bind a new key combination to a program function"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:53
+msgid "Change..."
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:53
+msgid "Change the currently selected key binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:55
+msgid "Raise"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:55
+msgid "Raise the currently selected key binding, relative to its neighbours"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:57
+msgid "Lower"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:57
+msgid "Lower the currently selected key binding, relative to its neighbours"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:59
+msgid "Delete the currently selected key binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:61
+msgid "Load a key binding set"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:237
+msgid "Load Key Binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:432
+msgid "Key Binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:433
+msgid "Key combinations used to activate a function"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
+msgid "Function"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:436
+msgid "Functions to be activated for a key binding"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:438
+msgid "Parameter"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:439
+msgid "Parameter to pass to functions upon activation"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:460
+msgid "Function used to create new key bindings"
+msgstr ""
+
+#: beast-gtk/bstkeybindings.c:462 beast-gtk/bstprocedure.c:206
+msgid "Description"
+msgstr ""
+
+#: beast-gtk/bstmain.c:129
 msgid "BEAST Startup"
 msgstr ""
 
-#: beast-gtk/bstmain.c:141
+#: beast-gtk/bstmain.c:136
 msgid "Startup"
 msgstr ""
 
 #. BEAST initialization
-#.
-#: beast-gtk/bstmain.c:146
-msgid "Objects"
+#: beast-gtk/bstmain.c:140
+msgid "Initializers"
 msgstr ""
 
-#: beast-gtk/bstmain.c:150
-msgid "Language"
-msgstr ""
-
-#: beast-gtk/bstmain.c:161
-msgid "RC File"
+#. parse rc file
+#: beast-gtk/bstmain.c:147
+msgid "RC Files"
 msgstr ""
 
 #. show splash images
-#.
-#: beast-gtk/bstmain.c:168
+#: beast-gtk/bstmain.c:151
 msgid "Splash Image"
 msgstr ""
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:180
+#: beast-gtk/bstmain.c:163
 msgid "BSE Core"
 msgstr ""
 
-#: beast-gtk/bstmain.c:199
+#: beast-gtk/bstmain.c:185
 msgid "Plugins"
 msgstr ""
 
-#: beast-gtk/bstmain.c:218
+#: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
 msgstr ""
 
-#: beast-gtk/bstmain.c:246
+#: beast-gtk/bstmain.c:232
 msgid "Scripts"
 msgstr ""
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:264
+#: beast-gtk/bstmain.c:250
 msgid "Dialogs"
 msgstr ""
 
-#: beast-gtk/bstmain.c:271
+#: beast-gtk/bstmain.c:257
 msgid "Loading..."
 msgstr ""
 
-#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
+#: beast-gtk/bstmain.c:287 beast-gtk/bstmain.c:289
 #, c-format
 msgid "Loading \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:320
+#: beast-gtk/bstmain.c:306
 #, c-format
 msgid "Loading project \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:695
+#: beast-gtk/bstmain.c:720
 msgid "BEAST About"
 msgstr ""
 
-#: beast-gtk/bstmain.c:696
+#: beast-gtk/bstmain.c:721
 #, c-format
 msgid "BEAST Version %s"
 msgstr ""
 
-#: beast-gtk/bstmain.c:697
+#: beast-gtk/bstmain.c:722
 msgid "Contributions made by:"
 msgstr ""
 
-#: beast-gtk/bstparam-choice.c:144
-msgid "Drop Down Box (Option Menu)"
+#: beast-gtk/bstparam-choice.c:142
+msgid "Popup Options"
 msgstr ""
 
-#: beast-gtk/bstparam-choice.c:150
+#: beast-gtk/bstparam-choice.c:148
+msgid "Drop Down Combo"
+msgstr ""
+
+#: beast-gtk/bstparam-choice.c:154
 msgid "Drop Down Button"
+msgstr ""
+
+#: beast-gtk/bstparam-choice.c:160
+msgid "Standard Option Menu"
+msgstr ""
+
+#: beast-gtk/bstparam-color-spinner.c:67
+msgid "Select Color"
+msgstr ""
+
+#: beast-gtk/bstparam-color-spinner.c:116
+msgid "Color Entry"
 msgstr ""
 
 #: beast-gtk/bstparam-note-sequence.c:61
@@ -524,68 +629,347 @@ msgstr ""
 msgid "Dial (Logarithmic"
 msgstr ""
 
-#: beast-gtk/bstparam-searchpath.c:54
+#: beast-gtk/bstparam-searchpath.c:55
 msgid "Remove Paths"
 msgstr ""
 
-#: beast-gtk/bstparam-searchpath.c:111
+#: beast-gtk/bstparam-searchpath.c:148
 msgid "Searchpath Text Entry"
+msgstr ""
+
+#: beast-gtk/bstparam-searchpath.c:154
+msgid "Filename Text Entry"
 msgstr ""
 
 #: beast-gtk/bstparam-time.c:55
 msgid "Time Entry"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:59
+#: beast-gtk/bstpartdialog.c:60
 msgid "Clear the current selection"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:61
 msgid "Cut"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:60
+#: beast-gtk/bstpartdialog.c:61
 msgid "Move the current selection into clipboard"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:61
+#: beast-gtk/bstpartdialog.c:62
 msgid "Copy the current selection into clipboard"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:63
 msgid "Paste"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:62
+#: beast-gtk/bstpartdialog.c:63
 msgid "Insert clipboard contents as current selection"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:65
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:65
+#: beast-gtk/bstpartdialog.c:66
 msgid "Undo last editing step"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo"
 msgstr ""
 
-#: beast-gtk/bstpartdialog.c:66
+#: beast-gtk/bstpartdialog.c:67
 msgid "Redo the last undone editing step"
 msgstr ""
 
-#: beast-gtk/bstpartview.c:43 beast-gtk/bstwaveview.c:49
+#: beast-gtk/bstpartview.c:41 beast-gtk/bstwaveview.c:47
 msgid "Editor"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:683
+msgid ""
+"The pattern editor column layout is specified by listing column types with "
+"possible modifiers in display order."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:685
+msgid "COLUMN TYPES:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:687
+msgid "note-1, note-2, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:688
+msgid "  display notes of the first, second, ... channel"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:690
+msgid "offset-1, length-2, velocity-3, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:691
+msgid ""
+"  display offset, length or velocity of notes in the first, second, ... "
+"channel"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:693
+msgid "control-0, ..., control-63, cc-0, cc-31"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:694
+msgid "  select various event types (controls, continuous controllers)"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:696
+msgid "bar, |"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:697
+msgid "  display solid vertical bar"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:699
+msgid "dbar, :"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:700
+msgid "  display dotted vertical bar"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:702
+msgid "space, _"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:703
+msgid "  insert vertical space"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:704
+msgid "EVENTS:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:706
+msgid "  balance, volume, cc-8, ..."
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:707
+msgid "MODIFIERS:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:709
+msgid "hex2, hex4"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:710
+msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:712
+msgid "shex2, shex4"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:713
+msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:715
+msgid "dec2, dec3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:716
+msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:718
+msgid "sdec2, sdec3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:719
+msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:721
+msgid "col1, col2, col3"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:722
+msgid "  selects one of 3 predefined colors"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:724
+msgid "lfold, rfold"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:725
+msgid "  allow folding the column into left/right neighbour"
+msgstr ""
+
+#: beast-gtk/bstpatterncolumns.c:726
+msgid "EXAMPLE:"
+msgstr ""
+
+#. !!! LEAVE UNTRANSLATED !!!
+#: beast-gtk/bstpatterncolumns.c:728
+msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
+msgstr ""
+
+#. GXK_DIALOG_MODAL
+#: beast-gtk/bstpatterncolumns.c:738
+msgid "Pattern Editor Layout"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/radgets-beast.xml.h:21
+msgid "VZoom"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:83
+msgid "The tick/note length per line"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:86
+msgid "Steps"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:87
+msgid ""
+"The number of cells to move across each time an event or note was edited"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:91
+msgid "Direction"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:92
+msgid "The direction of cell movement each time an event or note was edited"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:96
+msgid "HWrap"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:97
+msgid ""
+"Toggle whether horizontal movement of the focus cell will wrap around edges"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:100
+msgid "Base Octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:101
+msgid "Controls the octave relative to which notes are entered"
+msgstr ""
+
+#. movement
+#: beast-gtk/bstpatternctrl.c:271
+msgid ""
+"Move focus to the next cell (up/left/right/down according to configuration)"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:272
+msgid "Move focus cell upwards"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:273
+msgid "Move focus cell to the left"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:274
+msgid "Move focus cell to the right"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:275
+msgid "Move focus cell downwards"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:276
+msgid "Move focus cell upwards page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:277
+msgid "Move focus cell to the left page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:278
+msgid "Move focus cell to the right page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:279
+msgid "Move focus cell downwards page-wise"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:280
+msgid "Set the focus cell to the topmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:281
+msgid "Set the focus cell to the leftmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:282
+msgid "Set the focus cell to the rightmost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:283
+msgid "Set the focus cell to the bottommost position possible"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:286
+msgid "Set the number of steps to make when moving to the next cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:290
+msgid "Set the base octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:293
+msgid "Change the base octave by a given amount"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:297
+msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:301
+msgid "Set the focus cell octave"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:305 beast-gtk/bstpatternctrl.c:319
+msgid "Remove any events in the focus cell"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:309 beast-gtk/bstpatternctrl.c:323
+msgid "Set the focus cell note"
+msgstr ""
+
+#: beast-gtk/bstpatternctrl.c:313 beast-gtk/bstpatternctrl.c:327
+msgid "Sets the value of the focus digit"
 msgstr ""
 
 #: beast-gtk/bstpianorollctrl.c:46 beast-gtk/bsttrackrollctrl.c:45
@@ -616,7 +1000,7 @@ msgstr ""
 msgid "Rectangle select notes"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:713
+#: beast-gtk/bstpianorollctrl.c:54 beast-gtk/bstpianorollctrl.c:726
 msgid "Vertical Select"
 msgstr ""
 
@@ -629,7 +1013,7 @@ msgid "1\\/1"
 msgstr ""
 
 #: beast-gtk/bstpianorollctrl.c:67
-msgid "Insert full notes"
+msgid "Insert whole notes"
 msgstr ""
 
 #: beast-gtk/bstpianorollctrl.c:69
@@ -664,89 +1048,137 @@ msgstr ""
 msgid "Insert sixteenth note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:77
+msgid "1\\/32"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:77
+msgid "Insert thirty-second note"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:79
+msgid "1\\/64"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:79
+msgid "Insert sixty-fourth note"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:81
+msgid "1\\/128"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:81
+msgid "Insert hundred twenty-eighth note"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Q: Tact"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:88 beast-gtk/bsttrackrollctrl.c:81
+#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:81
 msgid "Quantize to tact boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "Q: None"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:90 beast-gtk/bsttrackrollctrl.c:83
+#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:83
 msgid "No quantization selected"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
 msgid "Q: 1\\/1"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:92 beast-gtk/bsttrackrollctrl.c:85
-msgid "Quantize to full note boundaries"
+#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:85
+msgid "Quantize to whole note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Q: 1\\/2"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:94 beast-gtk/bsttrackrollctrl.c:87
+#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:87
 msgid "Quantize to half note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Q: 1\\/4"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:96 beast-gtk/bsttrackrollctrl.c:89
+#: beast-gtk/bstpianorollctrl.c:102 beast-gtk/bsttrackrollctrl.c:89
 msgid "Quantize to quarter note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Q: 1\\/8"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:98 beast-gtk/bsttrackrollctrl.c:91
+#: beast-gtk/bstpianorollctrl.c:104 beast-gtk/bsttrackrollctrl.c:91
 msgid "Quantize to eighths note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Q: 1\\/16"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:100 beast-gtk/bsttrackrollctrl.c:93
+#: beast-gtk/bstpianorollctrl.c:106 beast-gtk/bsttrackrollctrl.c:93
 msgid "Quantize to sixteenth note boundaries"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:465 beast-gtk/bstpianorollctrl.c:472
-#: beast-gtk/bstpianorollctrl.c:560
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+msgid "Q: 1\\/32"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:108 beast-gtk/bsttrackrollctrl.c:95
+msgid "Quantize to thirty-second note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+msgid "Q: 1\\/64"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:110 beast-gtk/bsttrackrollctrl.c:97
+msgid "Quantize to sixty-fourth note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+msgid "Q: 1\\/128"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:112 beast-gtk/bsttrackrollctrl.c:99
+msgid "Quantize to hundred twenty-eighth note boundaries"
+msgstr ""
+
+#: beast-gtk/bstpianorollctrl.c:478 beast-gtk/bstpianorollctrl.c:485
+#: beast-gtk/bstpianorollctrl.c:573
 msgid "Move Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:560 beast-gtk/bstpianorollctrl.c:631
+#: beast-gtk/bstpianorollctrl.c:573 beast-gtk/bstpianorollctrl.c:644
 msgid "Lost Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:577 beast-gtk/bstpianorollctrl.c:582
-#: beast-gtk/bstpianorollctrl.c:631
+#: beast-gtk/bstpianorollctrl.c:590 beast-gtk/bstpianorollctrl.c:595
+#: beast-gtk/bstpianorollctrl.c:644
 msgid "Resize Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:642 beast-gtk/bstpianorollctrl.c:645
+#: beast-gtk/bstpianorollctrl.c:655 beast-gtk/bstpianorollctrl.c:658
 msgid "Delete Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:667
+#: beast-gtk/bstpianorollctrl.c:680
 msgid "Insert Note"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:739
+#: beast-gtk/bstpianorollctrl.c:752
 msgid "Vertical Region"
 msgstr ""
 
-#: beast-gtk/bstpianorollctrl.c:860
+#: beast-gtk/bstpianorollctrl.c:873
 msgid "Play note"
 msgstr ""
 
@@ -754,8 +1186,16 @@ msgstr ""
 msgid "Playback"
 msgstr ""
 
-#: beast-gtk/bstprocedure.c:206
-msgid "Description"
+#: beast-gtk/bstpreferences.c:76
+msgid "Piano Keys"
+msgstr ""
+
+#: beast-gtk/bstpreferences.c:83
+msgid "Generic Keys"
+msgstr ""
+
+#: beast-gtk/bstpreferences.c:88
+msgid "Skin"
 msgstr ""
 
 #: beast-gtk/bstprocedure.c:296
@@ -765,6 +1205,67 @@ msgstr ""
 
 #: beast-gtk/bstprocedure.c:446
 msgid "Procedure"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:167
+msgid "Totals"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:245 bse/bsecore.idl:378
+msgid "Thread Name"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:246
+msgid "CPU%"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:246
+msgid "Percentage of CPU usage"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:247
+msgid "UTime"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:247
+msgid "Milliseconds of user CPU time used by thread"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:248
+msgid "STime"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:248
+msgid "Milliseconds of system CPU time used by thread"
+msgstr ""
+
+#.
+#. gxk_tree_view_add_text_column (tview, TCOL_STATE, "F", 0.5, _("S"),
+#. _("Thread State:\n"
+#. "'?' - thread state is unknown\n"
+#. "'R' - thread is running\n"
+#. "'S' - thread is sleeping\n"
+#. "'D' - thread waits on disk\n"
+#. "'T' - thread is traced\n"
+#. "'W' - thread is swapping memory\n"
+#. "'Z' - thread died unexpectedly\n"
+#. "'X' - thread exited"),
+#. NULL, NULL, 0);
+#.
+#: beast-gtk/bstprofiler.c:262
+msgid "Nice"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:262
+msgid "Thread priority from -20 (high) to +19 (low)"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:263
+msgid "#CPU"
+msgstr ""
+
+#: beast-gtk/bstprofiler.c:263
+msgid "CPU the thread is currently running on"
 msgstr ""
 
 #: beast-gtk/bstprojectctrl.c:38
@@ -781,14 +1282,14 @@ msgstr ""
 
 #: beast-gtk/bstrackeditor.c:95
 msgid ""
-"The rack editor is still highly experimental code and guranrteed to be "
+"The rack editor is still highly experimental code and guaranteed to be "
 "broken by future releases. So don't rely on rack editor contents to look "
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
-#: beast-gtk/dialogs/gadgets-beast.xml.h:22
+#: beast-gtk/dialogs/radgets-beast.xml.h:31
 msgid "_Edit"
 msgstr ""
 
@@ -820,9 +1321,359 @@ msgstr ""
 msgid "Shrink Vertically"
 msgstr ""
 
-#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:55
+#: beast-gtk/bstrackview.c:46 beast-gtk/gxk/gxkparam-label.c:78
 #: beast-gtk/gxk/gxksimplelabel.c:133
 msgid "Label"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:35
+msgid "Up"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:35
+msgid "Move upwards"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
+msgid "Left"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:36
+msgid "Move to the left"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
+msgid "Right"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:37
+msgid "Move to the right"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Down"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:38
+msgid "Step downwards"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:42
+msgid "None"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:42
+msgid "Unspecified length"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:43
+msgid "1/1"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:43
+msgid "Whole note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:44
+msgid "1/2"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:44
+msgid "Half note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:45
+msgid "1/4"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:45
+msgid "Quarter note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:46
+msgid "1/8"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:46
+msgid "Eighths note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:47
+msgid "1/16"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:47
+msgid "Sixteenth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:48
+msgid "1/32"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:48
+msgid "Thirty-secondth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:49
+msgid "1/64"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:49
+msgid "Sixty-fourth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:50
+msgid "1/128"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:50
+msgid "Hundred twenty-eighth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:51
+msgid "1/1."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:51
+msgid "Dotted whole note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:52
+msgid "1/2."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:52
+msgid "Dotted half note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:53
+msgid "1/4."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:53
+msgid "Dotted quarter note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:54
+msgid "1/8."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:54
+msgid "Dotted eighths note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:55
+msgid "1/16."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:55
+msgid "Dotted sixteenth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:56
+msgid "1/32."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:56
+msgid "Dotted thirty-secondth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:57
+msgid "1/64."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:57
+msgid "Dotted sixty-fourth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:58
+msgid "1/128."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:58
+msgid "Dotted hundred twenty-eighth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:59
+msgid "1/1T"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:59
+msgid "Triplet whole note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:60
+msgid "1/2T"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:60
+msgid "Triplet half note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:61
+msgid "1/4T"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:61
+msgid "Triplet quarter note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:62
+msgid "1/8T"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:62
+msgid "Triplet eighths note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:63
+msgid "1/16T"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:63
+msgid "Triplet sixteenth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:64
+msgid "1/32T"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:64
+msgid "Triplet thirty-secondth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:65
+msgid "1/64T"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:65
+msgid "Triplet sixty-fourth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:66
+msgid "1/128T"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:66
+msgid "Triplet hundred twenty-eighth note"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:71
+msgid "Release counter"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:73
+msgid "Font Size"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:73
+msgid "Font size in pixels for labels displayed in synthesis networks"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:75
+msgid "Anti-Alias"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:75
+msgid "Draw synthesis networks anti-aliased?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:77
+msgid "Single Edit"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:77
+msgid "Fallback into Edit mode after creating synthesis modules?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:79
+msgid "Swap IO"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:79
+msgid "Swap input with output channels when displaying synthesis modules?"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:83
+msgid "Tab Width"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:83
+msgid "Specify project tab width in pixels"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:85
+msgid "Homogeneous Input Fields"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:86
+msgid ""
+"Enable homogeneous sizes for most (numeric and text) input fields. For some "
+"fields, this will only take effect after a restart."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:94
+msgid "Skin Name"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:94
+msgid "Name for the current skin configuration (used for skin selections)."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
+msgid "Background Image"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:96
+msgid "Background image used by the piano-roll widget."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
+msgid "Image shade"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
+msgid "Percentage of background image pixel to blend over background color."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:98 beast-gtk/bstrecords.idl:108
+msgid "Background Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:99 beast-gtk/bstrecords.idl:109
+msgid "Horizontal Bar Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:100
+msgid "Vertical Bar Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:101
+msgid "Horizontal Grid Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:102
+msgid "Vertical Grid Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:103 beast-gtk/bstrecords.idl:110
+msgid "Middle Bar Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:106
+msgid "Background image used by the control events widget."
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:111
+msgid "Positive Value Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:112
+msgid "Zero Value Color"
+msgstr ""
+
+#: beast-gtk/bstrecords.idl:113
+msgid "Negative Value Color"
 msgstr ""
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
@@ -880,107 +1731,107 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:72
+#: beast-gtk/bstsnetrouter.c:69
 msgid ""
 "Edit tool (mouse buttons 1-3)\n"
 "Use button1 to create links, button2 for movement and button3 to change "
 "properties"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:77
+#: beast-gtk/bstsnetrouter.c:74
 msgid "Edit"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:77
+#: beast-gtk/bstsnetrouter.c:74
 msgid "Edit/Move/Menu (mouse buttons 1-3)"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:81 beast-gtk/bstsnetrouter.c:1082
+#: beast-gtk/bstsnetrouter.c:78 beast-gtk/bstsnetrouter.c:1077
 msgid "Palette"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:81
+#: beast-gtk/bstsnetrouter.c:78
 msgid "Toggle visibility of the tool palette"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:207
+#: beast-gtk/bstsnetrouter.c:181
 msgid "PCM Output module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:208
+#: beast-gtk/bstsnetrouter.c:182
 msgid "DCA"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:208
+#: beast-gtk/bstsnetrouter.c:182
 msgid "Standard amplifier module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:209
+#: beast-gtk/bstsnetrouter.c:183
 msgid "Snooper"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:209
+#: beast-gtk/bstsnetrouter.c:183
 msgid "Signal debugging module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:210
+#: beast-gtk/bstsnetrouter.c:184
 msgid "PCM Input module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:258
+#: beast-gtk/bstsnetrouter.c:232
 msgid "Channel Hints"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:258
+#: beast-gtk/bstsnetrouter.c:232
 msgid "Toggle channel name hints"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:798
+#: beast-gtk/bstsnetrouter.c:772
 msgid "Input channel in use"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:825 beast-gtk/bstsnetrouter.c:827
-#: beast-gtk/bstsnetrouter.c:863
+#: beast-gtk/bstsnetrouter.c:799 beast-gtk/bstsnetrouter.c:801
+#: beast-gtk/bstsnetrouter.c:837
 msgid "Create Link"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:825
+#: beast-gtk/bstsnetrouter.c:799
 msgid "Select output module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:827
+#: beast-gtk/bstsnetrouter.c:801
 msgid "Select input module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:883
+#: beast-gtk/bstsnetrouter.c:857
 msgid "Properties"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:884
+#: beast-gtk/bstsnetrouter.c:858
 msgid "Reset Properties"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:885
+#: beast-gtk/bstsnetrouter.c:859
 msgid "Delete Inputs"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:886
+#: beast-gtk/bstsnetrouter.c:860
 msgid "Delete Outputs"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:887 beast-gtk/bstsnetrouter.c:929
+#: beast-gtk/bstsnetrouter.c:861 beast-gtk/bstsnetrouter.c:903
 msgid "Show Info"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:913
+#: beast-gtk/bstsnetrouter.c:887
 msgid "Remove Module"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:940
+#: beast-gtk/bstsnetrouter.c:914
 msgid "Delete Link"
 msgstr ""
 
-#: beast-gtk/bstsnetrouter.c:994
+#: beast-gtk/bstsnetrouter.c:968
 msgid "Insert Module"
 msgstr ""
 
@@ -1020,30 +1871,30 @@ msgstr ""
 msgid "Mark Signal (Tail)"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:173 beast-gtk/bstsupershell.c:290
+#: beast-gtk/bstsupershell.c:149 beast-gtk/bstsupershell.c:266
 msgid "Waves"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:236
+#: beast-gtk/bstsupershell.c:212
 msgid "Tracks"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:241 beast-gtk/bstsupershell.c:277
-#: beast-gtk/bstsupershell.c:295 plugins/artscompressor.idl:33
-#: plugins/artscompressor.idl:52 plugins/davbassfilter.idl:35
-#: plugins/davchorus.idl:32 plugins/evaluator/bseevaluator.idl:34
+#: beast-gtk/bstsupershell.c:217 beast-gtk/bstsupershell.c:253
+#: beast-gtk/bstsupershell.c:271 plugins/artscompressor.idl:34
+#: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
+#: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:246
+#: beast-gtk/bstsupershell.c:222
 msgid "Parts"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:252 beast-gtk/bstsupershell.c:271
+#: beast-gtk/bstsupershell.c:228 beast-gtk/bstsupershell.c:247
 msgid "Routing"
 msgstr ""
 
-#: beast-gtk/bstsupershell.c:266
+#: beast-gtk/bstsupershell.c:242
 msgid "Rack"
 msgstr ""
 
@@ -1072,10 +1923,6 @@ msgid "Delete parts"
 msgstr ""
 
 #: beast-gtk/bsttrackrollctrl.c:64
-msgid "Left"
-msgstr ""
-
-#: beast-gtk/bsttrackrollctrl.c:64
 msgid "Use the horizontal ruler to adjust the left loop pointer"
 msgstr ""
 
@@ -1088,88 +1935,89 @@ msgid "Use the horizontal ruler to adjust the play position pointer"
 msgstr ""
 
 #: beast-gtk/bsttrackrollctrl.c:68
-msgid "Right"
-msgstr ""
-
-#: beast-gtk/bsttrackrollctrl.c:68
 msgid "Use the horizontal ruler to adjust the right loop pointer"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:408 beast-gtk/bsttrackrollctrl.c:420
+#: beast-gtk/bsttrackrollctrl.c:416 beast-gtk/bsttrackrollctrl.c:428
 msgid "Edit Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:408
+#: beast-gtk/bsttrackrollctrl.c:416
 msgid "No Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:439 beast-gtk/bsttrackrollctrl.c:441
-#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+#: beast-gtk/bsttrackrollctrl.c:447 beast-gtk/bsttrackrollctrl.c:449
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
 msgid "Insert Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:441 beast-gtk/bsttrackrollctrl.c:543
+#: beast-gtk/bsttrackrollctrl.c:449 beast-gtk/bsttrackrollctrl.c:551
 msgid "Lost Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:446 beast-gtk/bsttrackrollctrl.c:451
+#: beast-gtk/bsttrackrollctrl.c:454 beast-gtk/bsttrackrollctrl.c:459
 msgid "Position taken"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:461
 msgid "Insert part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:453
+#: beast-gtk/bsttrackrollctrl.c:461
 msgid "No Track"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:465 beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsttrackrollctrl.c:473 beast-gtk/bsttrackrollctrl.c:476
 msgid "Delete Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
 msgid "Link Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:477 beast-gtk/bsttrackrollctrl.c:511
-#: beast-gtk/bsttrackrollctrl.c:543
+#: beast-gtk/bsttrackrollctrl.c:485 beast-gtk/bsttrackrollctrl.c:519
+#: beast-gtk/bsttrackrollctrl.c:551
 msgid "Move Part"
 msgstr ""
 
-#: beast-gtk/bsttrackrollctrl.c:555 beast-gtk/bsttrackrollctrl.c:560
+#: beast-gtk/bsttrackrollctrl.c:563 beast-gtk/bsttrackrollctrl.c:568
 msgid "Start Editor"
 msgstr ""
 
-#: beast-gtk/bsttrackview.c:62
+#: beast-gtk/bsttrackview.c:60
 msgid "Add a new track to this song"
 msgstr ""
 
-#: beast-gtk/bsttrackview.c:65
+#: beast-gtk/bsttrackview.c:63
 msgid "Delete the currently selected track"
 msgstr ""
 
 #: beast-gtk/bstusermessage.c:91
-msgid "Notice"
-msgstr ""
-
-#: beast-gtk/bstusermessage.c:95
-msgid "Question"
-msgstr ""
-
-#: beast-gtk/bstusermessage.c:99
-msgid "Warning"
-msgstr ""
-
-#: beast-gtk/bstusermessage.c:103
 msgid "Error"
 msgstr ""
 
+#: beast-gtk/bstusermessage.c:95
+msgid "Warning"
+msgstr ""
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Notice"
+msgstr ""
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Diagnostic"
+msgstr ""
+
+#. shouldn't end up in dialogs
 #: beast-gtk/bstusermessage.c:107
+msgid "Debug"
+msgstr ""
+
+#: beast-gtk/bstusermessage.c:111
 msgid "Miscellaneous Message"
 msgstr ""
 
-#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
+#: beast-gtk/bstusermessage.c:242 beast-gtk/bstusermessage.c:244
 msgid "processing"
 msgstr ""
 
@@ -1189,235 +2037,271 @@ msgstr ""
 msgid "Scroll Right"
 msgstr ""
 
-#: beast-gtk/bstwaveview.c:43
+#: beast-gtk/bstwaveview.c:41
 msgid "Load..."
 msgstr ""
 
-#: beast-gtk/bstwaveview.c:43
+#: beast-gtk/bstwaveview.c:41
 msgid "Load a new wave file from disk"
 msgstr ""
 
-#: beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstwaveview.c:43
 msgid "Lib..."
 msgstr ""
 
-#: beast-gtk/bstwaveview.c:45
+#: beast-gtk/bstwaveview.c:43
 msgid "Load a new wave file from library paths"
 msgstr ""
 
-#: beast-gtk/bstwaveview.c:47
+#: beast-gtk/bstwaveview.c:45
 msgid "Delete the currently selected wave"
 msgstr ""
 
-#: beast-gtk/bstwaveview.c:49
+#: beast-gtk/bstwaveview.c:47
 msgid "Edit the currently selected wave"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:1
+#: beast-gtk/dialogs/radgets-beast.xml.h:1
+msgid "Adjust pattern length"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:2
+msgid "Adjust right view boundary"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:3
 msgid "Adjust the zoom factor of the router display"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:2
+#: beast-gtk/dialogs/radgets-beast.xml.h:4
+msgid "Aplly configuration changes to the pattern editor layout"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:5
+msgid "Configure"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:6
+msgid "Configure the column layout of the pattern editor"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:7
 msgid "Control Type:"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:3
+#: beast-gtk/dialogs/radgets-beast.xml.h:8
 msgid "Development"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:4
+#: beast-gtk/dialogs/radgets-beast.xml.h:9
+msgid "Discard changes and close dialog"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:10
 msgid "E_xamples"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:5
+#: beast-gtk/dialogs/radgets-beast.xml.h:11
 msgid "Events"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:6
+#: beast-gtk/dialogs/radgets-beast.xml.h:12
 msgid "HZoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:7
+#: beast-gtk/dialogs/radgets-beast.xml.h:13
 msgid "Horizontal piano zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:8
+#: beast-gtk/dialogs/radgets-beast.xml.h:14
 msgid "Horizontal track zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:9
+#: beast-gtk/dialogs/radgets-beast.xml.h:15
+msgid "Layout:"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:16
 msgid "Note _Length"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:10
+#: beast-gtk/dialogs/radgets-beast.xml.h:17
 msgid "Piano Notes"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:11
+#: beast-gtk/dialogs/radgets-beast.xml.h:18
 msgid "Repeat"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:12
+#: beast-gtk/dialogs/radgets-beast.xml.h:19
 msgid "Repeat playback within loop points"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:13
+#: beast-gtk/dialogs/radgets-beast.xml.h:20
 msgid "Synthesis Modules"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:14
-msgid "VZoom"
-msgstr ""
-
-#: beast-gtk/dialogs/gadgets-beast.xml.h:15
+#: beast-gtk/dialogs/radgets-beast.xml.h:22
 msgid "Vertical piano zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:16
+#: beast-gtk/dialogs/radgets-beast.xml.h:23
 msgid "Virtual Rack"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:17
+#: beast-gtk/dialogs/radgets-beast.xml.h:24
 msgid "Wave_s"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:18
+#: beast-gtk/dialogs/radgets-beast.xml.h:25
 msgid "Zoom"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:19
+#: beast-gtk/dialogs/radgets-beast.xml.h:26
+msgid "_Apply"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:27
 msgid "_Audio Sources"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:20
+#: beast-gtk/dialogs/radgets-beast.xml.h:28
+msgid "_Cancel"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:29
 msgid "_Demo"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/dialogs/radgets-beast.xml.h:30
 msgid "_Distortion"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:23
+#: beast-gtk/dialogs/radgets-beast.xml.h:32
 msgid "_Enhance"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:24
+#: beast-gtk/dialogs/radgets-beast.xml.h:33
 msgid "_File"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:25
+#: beast-gtk/dialogs/radgets-beast.xml.h:34
 msgid "_Filters"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:26
+#: beast-gtk/dialogs/radgets-beast.xml.h:35
 msgid "_Help"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:27
+#: beast-gtk/dialogs/radgets-beast.xml.h:36
 msgid "_Input & Output"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:28
+#: beast-gtk/dialogs/radgets-beast.xml.h:37
 msgid "_LADSPA"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:29
+#: beast-gtk/dialogs/radgets-beast.xml.h:38
 msgid "_Misc"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:30
+#: beast-gtk/dialogs/radgets-beast.xml.h:39
 msgid "_Other Sources"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:31
+#: beast-gtk/dialogs/radgets-beast.xml.h:40
 msgid "_Project"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:32
+#: beast-gtk/dialogs/radgets-beast.xml.h:41
 msgid "_Quantization"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:33
+#: beast-gtk/dialogs/radgets-beast.xml.h:42
 msgid "_Routing"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:34
+#: beast-gtk/dialogs/radgets-beast.xml.h:43
+msgid "_Skins"
+msgstr ""
+
+#: beast-gtk/dialogs/radgets-beast.xml.h:44
 msgid "_Song"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:35
+#: beast-gtk/dialogs/radgets-beast.xml.h:45
 msgid "_Spatial"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:36
+#: beast-gtk/dialogs/radgets-beast.xml.h:46
 msgid "_Synth"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:37
+#: beast-gtk/dialogs/radgets-beast.xml.h:47
 msgid "_Synthesizers"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:38
+#: beast-gtk/dialogs/radgets-beast.xml.h:48
 msgid "_Tools"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:39
+#: beast-gtk/dialogs/radgets-beast.xml.h:49
 msgid "_Utilities"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:40
+#: beast-gtk/dialogs/radgets-beast.xml.h:50
 msgid "_View"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-beast.xml.h:41
+#: beast-gtk/dialogs/radgets-beast.xml.h:51
 msgid "_Virtualization"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:1
+#: beast-gtk/dialogs/radgets-standard.xml.h:1
 msgid "Enter document or file location"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:2
+#: beast-gtk/dialogs/radgets-standard.xml.h:2
 msgid "Find in current document"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:3
+#: beast-gtk/dialogs/radgets-standard.xml.h:3
 msgid "Go back one page"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:4
+#: beast-gtk/dialogs/radgets-standard.xml.h:4
 msgid "Go forward one page"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:5
+#: beast-gtk/dialogs/radgets-standard.xml.h:5
 msgid "Go to browser index"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:6
+#: beast-gtk/dialogs/radgets-standard.xml.h:6
 msgid "Location"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:7
+#: beast-gtk/dialogs/radgets-standard.xml.h:7
 msgid "Reload current page"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:8
+#: beast-gtk/dialogs/radgets-standard.xml.h:8
 msgid "_Back"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:9
+#: beast-gtk/dialogs/radgets-standard.xml.h:9
 msgid "_Find"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:10
+#: beast-gtk/dialogs/radgets-standard.xml.h:10
 msgid "_Forward"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:11
+#: beast-gtk/dialogs/radgets-standard.xml.h:11
 msgid "_Index"
 msgstr ""
 
-#: beast-gtk/dialogs/gadgets-standard.xml.h:12
+#: beast-gtk/dialogs/radgets-standard.xml.h:12
 msgid "_Reload"
 msgstr ""
 
@@ -1437,7 +2321,11 @@ msgstr ""
 msgid "Text Entry"
 msgstr ""
 
-#: beast-gtk/gxk/gxkparam-label.c:49
+#: beast-gtk/gxk/gxkparam-label.c:66
+msgid "Property Identifier"
+msgstr ""
+
+#: beast-gtk/gxk/gxkparam-label.c:72
 msgid "Property Name"
 msgstr ""
 
@@ -1457,11 +2345,11 @@ msgstr ""
 msgid "Vertical Scale (Logarithmic)"
 msgstr ""
 
-#: beast-gtk/gxk/gxkparam-spinner.c:74
+#: beast-gtk/gxk/gxkparam-spinner.c:82
 msgid "Spin Button"
 msgstr ""
 
-#: beast-gtk/gxk/gxkparam-spinner.c:80
+#: beast-gtk/gxk/gxkparam-spinner.c:88
 msgid "Spin Button (Logarithmic)"
 msgstr ""
 
@@ -1528,16 +2416,23 @@ msgstr ""
 msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 
-#: bse/bseamplifier.idl:31 plugins/bsebalance.idl:26
-#: plugins/davbassfilter.idl:27 plugins/davchorus.idl:27
+#. TRANSLATORS: this is the string that is appended to the end
+#. * of a clipped label if it does not fit its assigned width.
+#.
+#: beast-gtk/gxk/gxksimplelabel.c:575
+msgid "..."
+msgstr ""
+
+#: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26
+#: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
 msgid "GNU Lesser General Public License"
 msgstr ""
 
-#: bse/bseamplifier.idl:32
+#: bse/bseamplifier.idl:31
 msgid "/Routing/Amplifier"
 msgstr ""
 
-#: bse/bseamplifier.idl:33
+#: bse/bseamplifier.idl:32
 msgid ""
 "BseAmplifier provides input signal controlled amplification or attenuation. "
 "It supports two control inputs and two audio inputs which are mixed together "
@@ -1550,224 +2445,813 @@ msgid ""
 "the master volume controls amplification of the resulting output signal."
 msgstr ""
 
-#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:45 plugins/bseadder.c:97 plugins/bsebalance.idl:36
+#: plugins/bsemult.c:60
 msgid "Audio In1"
 msgstr ""
 
-#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:36
+#: bse/bseamplifier.idl:45 plugins/bsebalance.idl:36
 msgid "First audio input"
 msgstr ""
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:46 plugins/bseadder.c:99 plugins/bsebalance.idl:37
+#: plugins/bsemult.c:62
 msgid "Audio In2"
 msgstr ""
 
-#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:37
+#: bse/bseamplifier.idl:46 plugins/bsebalance.idl:37
 msgid "Second audio input"
 msgstr ""
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
 msgid "Ctrl In1"
 msgstr ""
 
-#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:38
+#: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
 msgid "First control input"
 msgstr ""
 
-#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
 msgid "Ctrl In2"
 msgstr ""
 
-#: bse/bseamplifier.idl:49 plugins/bsebalance.idl:39
+#: bse/bseamplifier.idl:48 plugins/bsebalance.idl:39
 msgid "Second control input"
 msgstr ""
 
-#: bse/bseamplifier.idl:50 plugins/artscompressor.idl:32
-#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
-#: plugins/evaluator/bseevaluator.idl:33
+#: bse/bseamplifier.idl:49 bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:200
+#: bse/bsewaveosc.c:155 plugins/artscompressor.idl:33 plugins/bseadder.c:101
+#: plugins/bseatandistort.c:92 plugins/bseiirfilter.c:162
+#: plugins/bsemixer.c:109 plugins/bsemult.c:68 plugins/davbassfilter.idl:35
+#: plugins/davchorus.idl:32 plugins/davorgan.c:133 plugins/davsyndrum.c:122
+#: plugins/davxtalstrings.c:145 plugins/evaluator/bseevaluator.idl:33
 msgid "Audio Out"
 msgstr ""
 
-#: bse/bseamplifier.idl:50
+#: bse/bseamplifier.idl:49
 msgid "Amplified audio output"
 msgstr ""
 
-#: bse/bseamplifier.idl:51 plugins/bsebalance.idl:43
+#: bse/bseamplifier.idl:50 plugins/bsebalance.idl:43
 msgid "Audio Input"
 msgstr ""
 
-#: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:44
+#: bse/bseamplifier.idl:51 bse/bseamplifier.idl:56 plugins/bsebalance.idl:44
 #: plugins/bsebalance.idl:49
 msgid "Input 1 [%]"
 msgstr ""
 
-#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:44
+#: bse/bseamplifier.idl:51 plugins/bsebalance.idl:44
 msgid "Attenuate the level of audio input 1"
 msgstr ""
 
-#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:45
+#: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:45
 #: plugins/bsebalance.idl:50
 msgid "Input 2 [%]"
 msgstr ""
 
-#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:45
+#: bse/bseamplifier.idl:52 plugins/bsebalance.idl:45
 msgid "Attenuate the level of audio input 2"
 msgstr ""
 
-#: bse/bseamplifier.idl:54 bse/bseamplifier.idl:59 plugins/bsebalance.idl:46
+#: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:46
 #: plugins/bsebalance.idl:51
 msgid "Balance"
 msgstr ""
 
-#: bse/bseamplifier.idl:54 plugins/bsebalance.idl:46
+#: bse/bseamplifier.idl:53 plugins/bsebalance.idl:46
 msgid "Balance audio input levels"
 msgstr ""
 
-#: bse/bseamplifier.idl:56 plugins/bsebalance.idl:48
+#: bse/bseamplifier.idl:55 plugins/bsebalance.idl:48
 msgid "Control Input"
 msgstr ""
 
-#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:49
+#: bse/bseamplifier.idl:56 plugins/bsebalance.idl:49
 msgid "Attenuate the level of control input 1"
 msgstr ""
 
-#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:50
+#: bse/bseamplifier.idl:57 plugins/bsebalance.idl:50
 msgid "Attenuate the level of control input 2"
 msgstr ""
 
-#: bse/bseamplifier.idl:59 plugins/bsebalance.idl:51
+#: bse/bseamplifier.idl:58 plugins/bsebalance.idl:51
 msgid "Balance control input levels"
 msgstr ""
 
-#: bse/bseamplifier.idl:60
+#: bse/bseamplifier.idl:59
 msgid "Multiply Controls"
 msgstr ""
 
-#: bse/bseamplifier.idl:61
+#: bse/bseamplifier.idl:60
 msgid ""
-"Multiply the two control inputs with each other, rather than weighting them "
-"by balance"
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
 msgstr ""
 
-#: bse/bseamplifier.idl:64
+#: bse/bseamplifier.idl:63
 msgid "Exponential Control"
 msgstr ""
 
-#: bse/bseamplifier.idl:64
+#: bse/bseamplifier.idl:63
 msgid "Toggle exponential and linear control response"
 msgstr ""
 
-#: bse/bseamplifier.idl:67 plugins/bsebalance.idl:54
+#: bse/bseamplifier.idl:66 plugins/bsebalance.idl:54
 msgid "Control Strength"
 msgstr ""
 
-#: bse/bseamplifier.idl:67
+#: bse/bseamplifier.idl:66
 msgid "Adjust how much the control signals affect the output volume"
 msgstr ""
 
-#: bse/bseamplifier.idl:68
+#: bse/bseamplifier.idl:67
 msgid "Base Volume"
 msgstr ""
 
-#: bse/bseamplifier.idl:68
+#: bse/bseamplifier.idl:67
 msgid "Base amplification (the control signal adds up to this)"
 msgstr ""
 
-#: bse/bseamplifier.idl:69
+#: bse/bseamplifier.idl:68
 msgid "Master Volume"
 msgstr ""
 
-#: bse/bseamplifier.idl:69
+#: bse/bseamplifier.idl:68
 msgid "Output stage amplification"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:130
+#: bse/bseautodoc.c:360 bse/bseautodoc.c:422
+msgid "Authors:"
+msgstr ""
+
+#: bse/bseautodoc.c:365 bse/bseautodoc.c:425
+msgid "License:"
+msgstr ""
+
+#: bse/bseautodoc.c:408 bse/bseautodoc.c:410
+msgid "BSE-Objects"
+msgstr ""
+
+#: bse/bseautodoc.c:410
+msgid " Object Reference"
+msgstr ""
+
+#: bse/bseautodoc.c:429
+msgid "Properties:"
+msgstr ""
+
+#: bse/bseautodoc.c:455 bse/bseautodoc.c:488 bse/bseautodoc.c:505
+msgid "Identifier:"
+msgstr ""
+
+#: bse/bseautodoc.c:460 bse/bseautodoc.c:466
+msgid "Range:"
+msgstr ""
+
+#: bse/bseautodoc.c:470 bse/bseautodoc.c:491 bse/bseautodoc.c:508
+msgid "Description:"
+msgstr ""
+
+#: bse/bseautodoc.c:480
+msgid "Input Channels:"
+msgstr ""
+
+#: bse/bseautodoc.c:487
+msgid "(Joint Input)"
+msgstr ""
+
+#: bse/bseautodoc.c:498
+msgid "Output Channels:"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:105
+msgid "/Filters/Biquad Types"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:124
 msgid "Filter"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:125
+#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:125
 msgid "Filter Type"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:119
+#: bse/bsebiquadfilter.c:126 plugins/bseiirfilter.c:119
 msgid "The filter design type"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:136 bse/bsebiquadfilter.c:144
+#: bse/bsebiquadfilter.c:130 bse/bsebiquadfilter.c:138
 msgid "Center Frequency"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:138 plugins/bseiirfilter.c:141
+#: bse/bsebiquadfilter.c:132 plugins/bseiirfilter.c:141
 #: plugins/bseiirfilter.c:151
 msgid "Cutoff [Hz]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:146
-#: plugins/bseiirfilter.c:156
+#: bse/bsebiquadfilter.c:140 bse/bseconstant.c:128 bse/bsestandardosc.c:147
+#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:151 bse/bsebiquadfilter.c:156
+#: bse/bsebiquadfilter.c:145 bse/bsebiquadfilter.c:150
 msgid "Emphasis"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:153
+#: bse/bsebiquadfilter.c:147
 msgid "Gain [dB]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:158
+#: bse/bsebiquadfilter.c:152
 msgid "Norm Type"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:159
+#: bse/bsebiquadfilter.c:153
 msgid ""
 "The filter gain normalization type (supported only by highpass and lowpass)"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
-#: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+#: bse/bsebiquadfilter.c:158 bse/bsebiquadfilter.c:164
+#: bse/bsebiquadfilter.c:170 bse/bsebiquadfilter.c:176
+#: bse/bsestandardosc.c:153 bse/bsestandardosc.c:159 bse/bsestandardosc.c:165
+#: bse/bsestandardosc.c:171 bse/bsewaveosc.c:125 bse/bsewaveosc.c:131
+#: bse/bsewaveosc.c:137
 msgid "Modulation"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:167
+#: bse/bsebiquadfilter.c:161 bse/bsestandardosc.c:156
 msgid "Strength of linear frequency modulation"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:173
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:162 bse/bsewaveosc.c:134
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:179
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:168 bse/bsewaveosc.c:140
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:185
+#: bse/bsebiquadfilter.c:179
 #, no-c-format
 msgid "Gain Modulation [%]"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:186
+#: bse/bsebiquadfilter.c:180
 msgid "Strength of gain modulation"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:190
+#: bse/bsebiquadfilter.c:184 plugins/artscompressor.idl:32
+#: plugins/bseatandistort.c:90 plugins/bseiirfilter.c:160
+#: plugins/davbassfilter.idl:34 plugins/davchorus.idl:31
+#: plugins/evaluator/bseevaluator.idl:32
+msgid "Audio In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:184
 msgid "Unfiltered Audio Signal"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:192
+#: bse/bsebiquadfilter.c:186 bse/bsestandardosc.c:192 bse/bsewaveosc.c:149
+#: plugins/davorgan.c:132 plugins/davsyndrum.c:116
+#: plugins/davxtalstrings.c:141
+msgid "Freq In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:186
 msgid "Center Frequency Input"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
+msgid "Freq Mod In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:188 bse/bsestandardosc.c:194
 msgid "Frequency Modulation Input"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:196
+#: bse/bsebiquadfilter.c:190
+msgid "Gain Mod In"
+msgstr ""
+
+#: bse/bsebiquadfilter.c:190
 msgid "Gain Modulation Input"
 msgstr ""
 
-#: bse/bsebiquadfilter.c:198
+#: bse/bsebiquadfilter.c:192
 msgid "Filtered Audio Signal"
+msgstr ""
+
+#: bse/bseconstant.c:84
+msgid "/Other Sources/Constant"
+msgstr ""
+
+#: bse/bseconstant.c:106 bse/bseconstant.c:137
+#, c-format
+msgid "Constant Output %u"
+msgstr ""
+
+#: bse/bseconstant.c:109
+msgid "Value [float]"
+msgstr ""
+
+#: bse/bseconstant.c:117 bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
+#: bse/bsestandardosc.c:143
+msgid "Frequency"
+msgstr ""
+
+#: bse/bseconstant.c:136
+#, c-format
+msgid "Const Out%u"
+msgstr ""
+
+#: bse/bsecore.idl:379
+msgid "State"
+msgstr ""
+
+#: bse/bsecore.idl:379
+msgid "The execution state of the thread"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid "Priority"
+msgstr ""
+
+#: bse/bsecore.idl:380
+msgid ""
+"The nice value of a thread, -20 indicates a high priority thread and +19 a "
+"low priority one that is 'nice' to others"
+msgstr ""
+
+#: bse/bsecore.idl:383
+msgid "Processor"
+msgstr ""
+
+#: bse/bsecore.idl:383
+msgid "The processor that this thread is currently being executed on"
+msgstr ""
+
+#: bse/bsecore.idl:385
+msgid "User Time"
+msgstr ""
+
+#: bse/bsecore.idl:385
+msgid "The CPU time spent executing instructions of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:387
+msgid "System Time"
+msgstr ""
+
+#: bse/bsecore.idl:387
+msgid "The CPU time spent in the system for this thread"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "Child User Time"
+msgstr ""
+
+#: bse/bsecore.idl:389
+msgid "The CPU time spent executing instructions of children of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:391
+msgid "Child System Time"
+msgstr ""
+
+#: bse/bsecore.idl:391
+msgid "The CPU time spent in the system for children of this thread"
+msgstr ""
+
+#: bse/bsecore.idl:432
+msgid "Latency [ms]"
+msgstr ""
+
+#: bse/bsecore.idl:433
+msgid ""
+"Processing duration between input and output of a single sample, smaller "
+"values increase CPU load"
+msgstr ""
+
+#: bse/bsecore.idl:436
+msgid "Synth Mixing Frequency"
+msgstr ""
+
+#: bse/bsecore.idl:437
+msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
+msgstr ""
+
+#: bse/bsecore.idl:439
+msgid "Synth Control Frequency"
+msgstr ""
+
+#: bse/bsecore.idl:440
+msgid ""
+"Frequency at which control values are evaluated, should be much smaller than "
+"Synth Mixing Frequency to reduce CPU load"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:68
+msgid "/Input & Output/Instrument Voice Input"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:101 bse/bsemidiinput.c:109
+msgid "Note Frequency"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
+msgid "Gate"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:103 bse/bsemidiinput.c:111
+msgid "High if the note is currently being pressed"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
+msgid "Velocity"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:105 bse/bsemidiinput.c:113
+msgid "Velocity of the note press"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
+msgid "Aftertouch"
+msgstr ""
+
+#: bse/bseinstrumentinput.c:107 bse/bsemidiinput.c:115
+msgid "Velocity while the note is pressed"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:68
+msgid "/Input & Output/Instrument Output"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:101
+msgid "Left Audio"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:101
+msgid "Left Channel Output"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:103
+msgid "Right Audio"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:103
+msgid "Right Channel Output"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:105
+msgid "Unused"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:107
+msgid "Synth Done"
+msgstr ""
+
+#: bse/bseinstrumentoutput.c:107
+msgid "High indicates the instrument is done synthesizing"
+msgstr ""
+
+#: bse/bsemidicontroller.c:86
+msgid "/Input & Output/MIDI Control Input"
+msgstr ""
+
+#: bse/bsemidicontroller.c:137
+msgid "Ctrl Out1"
+msgstr ""
+
+#: bse/bsemidicontroller.c:137
+msgid "MIDI Signal 1"
+msgstr ""
+
+#: bse/bsemidicontroller.c:139
+msgid "Ctrl Out2"
+msgstr ""
+
+#: bse/bsemidicontroller.c:139
+msgid "MIDI Signal 2"
+msgstr ""
+
+#: bse/bsemidicontroller.c:141
+msgid "Ctrl Out3"
+msgstr ""
+
+#: bse/bsemidicontroller.c:141
+msgid "MIDI Signal 3"
+msgstr ""
+
+#: bse/bsemidicontroller.c:143
+msgid "Ctrl Out4"
+msgstr ""
+
+#: bse/bsemidicontroller.c:143
+msgid "MIDI Signal 4"
+msgstr ""
+
+#: bse/bsemidiinput.c:82
+msgid "/Input & Output/MIDI Voice Input"
+msgstr ""
+
+#: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
+msgid "Freq Out"
+msgstr ""
+
+#: bse/bsemidivoice.c:111 bse/bsewaveosc.c:157
+msgid "Gate Out"
+msgstr ""
+
+#: bse/bsemidivoice.c:113
+msgid "Velocity Out"
+msgstr ""
+
+#: bse/bsemidivoice.c:115
+msgid "Aftertouch Out"
+msgstr ""
+
+#: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
+msgid "Left In"
+msgstr ""
+
+#: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
+msgid "Right In"
+msgstr ""
+
+#: bse/bsemidivoice.c:137
+msgid "Disconnect In"
+msgstr ""
+
+#: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
+#: plugins/davcanyondelay.c:120
+msgid "Left Out"
+msgstr ""
+
+#: bse/bsemidivoice.c:141 plugins/bsebalance.idl:42
+#: plugins/davcanyondelay.c:122
+msgid "Right Out"
+msgstr ""
+
+#: bse/bsemidivoice.c:143
+msgid "Disconnect Out"
+msgstr ""
+
+#: bse/bsepcminput.c:85
+msgid "/Input & Output/PCM Input"
+msgstr ""
+
+#: bse/bsepcminput.c:128 plugins/artscompressor.idl:51
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Audio Out"
+msgstr ""
+
+#: bse/bsepcminput.c:128
+msgid "Left channel output"
+msgstr ""
+
+#: bse/bsepcminput.c:130 plugins/artscompressor.idl:52
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Audio Out"
+msgstr ""
+
+#: bse/bsepcminput.c:130
+msgid "Right channel output"
+msgstr ""
+
+#: bse/bsepcmoutput.c:85
+msgid "/Input & Output/PCM Output"
+msgstr ""
+
+#: bse/bsepcmoutput.c:128 plugins/artscompressor.idl:49
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Audio In"
+msgstr ""
+
+#: bse/bsepcmoutput.c:128
+msgid "Left channel input"
+msgstr ""
+
+#: bse/bsepcmoutput.c:130 plugins/artscompressor.idl:50
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Audio In"
+msgstr ""
+
+#: bse/bsepcmoutput.c:130
+msgid "Right channel Input"
+msgstr ""
+
+#: bse/bseserver.c:143
+msgid "WAVE File"
+msgstr ""
+
+#: bse/bseserver.c:144
+msgid "Name of the WAVE file used for recording BSE sound output"
+msgstr ""
+
+#: bse/bseserver.c:504
+msgid "Advice about MIDI device selections"
+msgstr ""
+
+#: bse/bseserver.c:505
+msgid "Alert me about MIDI device selections"
+msgstr ""
+
+#: bse/bseserver.c:506
+#, c-format
+msgid "failed to open midi device %s (reverting to null device): %s"
+msgstr ""
+
+#: bse/bseserver.c:548
+#, c-format
+msgid "failed to open output file \"%s\": %s"
+msgstr ""
+
+#: bse/bsesnooper.c:77
+msgid "/Misc/Snooper"
+msgstr ""
+
+#: bse/bsesnooper.c:108
+msgid "Signal In"
+msgstr ""
+
+#: bse/bsesnooper.c:108
+msgid "Snoop Signal"
+msgstr ""
+
+#: bse/bsestandardosc.c:106
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr ""
+
+#: bse/bsestandardosc.c:109
+msgid "/Audio Sources/Standard Oscillator"
+msgstr ""
+
+#: bse/bsestandardosc.c:130 bse/bsestandardosc.c:136
+msgid "Wave Form"
+msgstr ""
+
+#: bse/bsestandardosc.c:132 bse/bsewaveosc.c:121 bse/bsewaveosc.c:123
+msgid "Wave"
+msgstr ""
+
+#: bse/bsestandardosc.c:132
+msgid "Oscillator wave form"
+msgstr ""
+
+#: bse/bsestandardosc.c:138
+msgid "Phase"
+msgstr ""
+
+#: bse/bsestandardosc.c:141 bse/bsestandardosc.c:145 bse/bsestandardosc.c:148
+msgid "Base Frequency"
+msgstr ""
+
+#: bse/bsestandardosc.c:150
+msgid "Fine Tune"
+msgstr ""
+
+#: bse/bsestandardosc.c:155 bse/bsewaveosc.c:127
+msgid "Input Modulation [%]"
+msgstr ""
+
+#: bse/bsestandardosc.c:161 bse/bsewaveosc.c:133
+msgid "Exponential FM"
+msgstr ""
+
+#: bse/bsestandardosc.c:167 bse/bsewaveosc.c:139
+msgid "Octaves"
+msgstr ""
+
+#: bse/bsestandardosc.c:173
+msgid "Self Modulation [%]"
+msgstr ""
+
+#: bse/bsestandardosc.c:174
+msgid "Strength of self modulation"
+msgstr ""
+
+#: bse/bsestandardosc.c:177 bse/bsestandardosc.c:184
+msgid "Pulse Modulation"
+msgstr ""
+
+#: bse/bsestandardosc.c:179
+msgid "Pulse Width"
+msgstr ""
+
+#: bse/bsestandardosc.c:180
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr ""
+
+#: bse/bsestandardosc.c:186
+msgid "Pulse Modulation [%]"
+msgstr ""
+
+#: bse/bsestandardosc.c:187
+msgid ""
+"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr ""
+
+#: bse/bsestandardosc.c:192
+msgid "Oscillating Frequency Input"
+msgstr ""
+
+#: bse/bsestandardosc.c:196
+msgid "PWM In"
+msgstr ""
+
+#: bse/bsestandardosc.c:196
+msgid "Pulse Width Modulation Input"
+msgstr ""
+
+#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:151
+msgid "Sync In"
+msgstr ""
+
+#: bse/bsestandardosc.c:198 bse/bsewaveosc.c:151
+msgid "Syncronization Input"
+msgstr ""
+
+#: bse/bsestandardosc.c:200
+msgid "Oscillated Output"
+msgstr ""
+
+#: bse/bsestandardosc.c:202
+msgid "Sync Out"
+msgstr ""
+
+#: bse/bsestandardosc.c:202
+msgid "Syncronization Output"
+msgstr ""
+
+#: bse/bsesubiport.c:90
+msgid "/Virtualization/Virtual Input"
+msgstr ""
+
+#: bse/bsesubiport.c:122 bse/bsesubsynth.c:132
+#, c-format
+msgid "Input Port %u"
+msgstr ""
+
+#: bse/bsesubiport.c:124 bse/bsesuboport.c:124 bse/bsesubsynth.c:122
+msgid "Assignments"
+msgstr ""
+
+#: bse/bsesubiport.c:126 bse/bsesuboport.c:126
+msgid ""
+"The port name is a unique name to establish input<->output port relationships"
+msgstr ""
+
+#: bse/bsesubiport.c:134 bse/bsesubsynth.c:152
+#, c-format
+msgid "Virtual input %u"
+msgstr ""
+
+#: bse/bsesuboport.c:90
+msgid "/Virtualization/Virtual Output"
+msgstr ""
+
+#: bse/bsesuboport.c:122 bse/bsesubsynth.c:142
+#, c-format
+msgid "Output Port %u"
+msgstr ""
+
+#: bse/bsesuboport.c:134 bse/bsesubsynth.c:159
+#, c-format
+msgid "Virtual output %u"
+msgstr ""
+
+#: bse/bsesubsynth.c:97
+msgid "/Virtualization/Virtual Sub Synth"
+msgstr ""
+
+#: bse/bsesubsynth.c:124
+msgid "Synthesis Network"
+msgstr ""
+
+#: bse/bsesubsynth.c:125
+msgid "The synthesis network to interface to"
+msgstr ""
+
+#: bse/bsesubsynth.c:134
+msgid "Input Assignments"
+msgstr ""
+
+#: bse/bsesubsynth.c:135
+msgid "Output port name to interface from"
+msgstr ""
+
+#: bse/bsesubsynth.c:144
+msgid "Output Assignments"
+msgstr ""
+
+#: bse/bsesubsynth.c:145
+msgid "Input port name to interface to"
 msgstr ""
 
 #: bse/bsesuper.c:101
@@ -1794,16 +3278,48 @@ msgstr ""
 msgid "Last modification time"
 msgstr ""
 
+#: bse/bsewaveosc.c:97
+msgid "/Audio Sources/Wave Oscillator"
+msgstr ""
+
+#: bse/bsewaveosc.c:123
+msgid "Wave to play"
+msgstr ""
+
+#: bse/bsewaveosc.c:128
+msgid "Modulation Strength for linear frequency modulation"
+msgstr ""
+
+#: bse/bsewaveosc.c:149 plugins/davorgan.c:132
+msgid "Frequency Input"
+msgstr ""
+
+#: bse/bsewaveosc.c:153
+msgid "Mod In"
+msgstr ""
+
+#: bse/bsewaveosc.c:153
+msgid "Modulation Input"
+msgstr ""
+
+#: bse/bsewaveosc.c:155
+msgid "Wave Output"
+msgstr ""
+
+#: bse/bsewaveosc.c:157
+msgid "Gate Output"
+msgstr ""
+
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
 msgstr ""
 
 #: data/beast.desktop.in.h:2
-msgid "Music Composer"
+msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
 msgstr ""
 
 #: data/beast.desktop.in.h:3
-msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
+msgid "Music Composer"
 msgstr ""
 
 #: data/bse.keys.in.h:1
@@ -1818,107 +3334,106 @@ msgstr ""
 msgid "BSE Synthesis File"
 msgstr ""
 
-#: plugins/artscompressor.idl:28 plugins/artscompressor.idl:45
+#: plugins/artscompressor.idl:29 plugins/artscompressor.idl:46
 #: plugins/evaluator/bseevaluator.idl:27
 msgid "GNU General Public License"
 msgstr ""
 
-#: plugins/artscompressor.idl:29
+#: plugins/artscompressor.idl:30
 msgid "/Enhance/ArtsCompressor"
 msgstr ""
 
-#: plugins/artscompressor.idl:30
+#: plugins/artscompressor.idl:31
 msgid "ArtsCompressor compresses the sound."
 msgstr ""
 
-#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
-msgid "Audio In"
-msgstr ""
-
-#: plugins/artscompressor.idl:31 plugins/davbassfilter.idl:33
-#: plugins/davchorus.idl:30 plugins/evaluator/bseevaluator.idl:32
+#: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
+#: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
 msgstr ""
 
-#: plugins/artscompressor.idl:32
+#: plugins/artscompressor.idl:33
 msgid "Compressed audio output"
 msgstr ""
 
-#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
 msgid "Attack [ms]"
 msgstr ""
 
-#: plugins/artscompressor.idl:34 plugins/artscompressor.idl:53
-msgid "Set the attack time in milli seconds"
+#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+msgid "Set the attack time in milliseconds"
 msgstr ""
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
 msgid "Release [ms]"
 msgstr ""
 
-#: plugins/artscompressor.idl:35 plugins/artscompressor.idl:54
-msgid "Set the release time in milli seconds"
+#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+msgid "Set the release time in milliseconds"
 msgstr ""
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Threshold"
 msgstr ""
 
-#: plugins/artscompressor.idl:36 plugins/artscompressor.idl:55
+#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
 msgid "Set the threshold"
 msgstr ""
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Ratio"
 msgstr ""
 
-#: plugins/artscompressor.idl:37 plugins/artscompressor.idl:56
+#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
 msgid "Set the compression ratio"
 msgstr ""
 
-#: plugins/artscompressor.idl:38 plugins/artscompressor.idl:57
+#: plugins/artscompressor.idl:39 plugins/artscompressor.idl:58
 msgid "Set the output amplification"
 msgstr ""
 
-#: plugins/artscompressor.idl:46
+#: plugins/artscompressor.idl:47
 msgid "/Enhance/ArtsStereoCompressor"
 msgstr ""
 
-#: plugins/artscompressor.idl:47
+#: plugins/artscompressor.idl:48
 msgid "ArtsStereoCompressor compresses the sound."
 msgstr ""
 
-#: plugins/artscompressor.idl:48
-msgid "Left Audio In"
-msgstr ""
-
-#: plugins/artscompressor.idl:48
+#: plugins/artscompressor.idl:49
 msgid "Left audio input"
 msgstr ""
 
-#: plugins/artscompressor.idl:49
-msgid "Right Audio In"
-msgstr ""
-
-#: plugins/artscompressor.idl:49
+#: plugins/artscompressor.idl:50
 msgid "Right audio input"
 msgstr ""
 
-#: plugins/artscompressor.idl:50
-msgid "Left Audio Out"
-msgstr ""
-
-#: plugins/artscompressor.idl:50
+#: plugins/artscompressor.idl:51
 msgid "Compressed left audio output"
 msgstr ""
 
-#: plugins/artscompressor.idl:51
-msgid "Right Audio Out"
+#: plugins/artscompressor.idl:52
+msgid "Compressed right audio output"
 msgstr ""
 
-#: plugins/artscompressor.idl:51
-msgid "Compressed right audio output"
+#: plugins/bseadder.c:97 plugins/bsemult.c:60
+msgid "Audio Input 1"
+msgstr ""
+
+#: plugins/bseadder.c:99 plugins/bsemult.c:62
+msgid "Audio Input 2"
+msgstr ""
+
+#: plugins/bseadder.c:101 plugins/bsemult.c:68
+msgid "Audio Output"
+msgstr ""
+
+#: plugins/bseatandistort.c:90
+msgid "Audio Input SIgnal"
+msgstr ""
+
+#: plugins/bseatandistort.c:92
+msgid "Distorted Audio Output"
 msgstr ""
 
 #: plugins/bsebalance.idl:27
@@ -1935,10 +3450,6 @@ msgid ""
 msgstr ""
 
 #: plugins/bsebalance.idl:40
-msgid "Left Out"
-msgstr ""
-
-#: plugins/bsebalance.idl:40
 msgid "Left audio output"
 msgstr ""
 
@@ -1948,10 +3459,6 @@ msgstr ""
 
 #: plugins/bsebalance.idl:41
 msgid "Mixed audio output"
-msgstr ""
-
-#: plugins/bsebalance.idl:42
-msgid "Right Out"
 msgstr ""
 
 #: plugins/bsebalance.idl:42
@@ -1980,6 +3487,22 @@ msgstr ""
 
 #: plugins/bsebalance.idl:56
 msgid "Adjust output balance between left and right"
+msgstr ""
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Out"
+msgstr ""
+
+#: plugins/bsefirfilter.c:143
+msgid "Mono Filtered Output"
+msgstr ""
+
+#: plugins/bsefirfilter.c:145
+msgid "Mono In"
+msgstr ""
+
+#: plugins/bsefirfilter.c:145
+msgid "Mono Signal Input"
 msgstr ""
 
 #: plugins/bseiirfilter.c:117 plugins/bseiirfilter.c:123
@@ -2030,75 +3553,237 @@ msgstr ""
 msgid "Filtered Output"
 msgstr ""
 
-#: plugins/davbassfilter.idl:28
-msgid "/Filters/Bass Filter"
+#: plugins/bsemixer.c:109
+msgid "Sole Output"
+msgstr ""
+
+#: plugins/bsemixer.c:115
+#, c-format
+msgid "Channel%u"
+msgstr ""
+
+#: plugins/bsemixer.c:117
+#, c-format
+msgid "Channel%u [float]"
+msgstr ""
+
+#: plugins/bsemixer.c:127
+#, c-format
+msgid "Channel%u [dB]"
+msgstr ""
+
+#: plugins/bsemixer.c:138
+#, c-format
+msgid "Channel%u [%%]"
+msgstr ""
+
+#: plugins/bsemixer.c:149
+#, c-format
+msgid "Audio In%u"
+msgstr ""
+
+#: plugins/bsemixer.c:150
+#, c-format
+msgid "Input Channel %u"
+msgstr ""
+
+#: plugins/bsemult.c:64
+msgid "Audio In3"
+msgstr ""
+
+#: plugins/bsemult.c:64
+msgid "Audio Input 3"
+msgstr ""
+
+#: plugins/bsemult.c:66
+msgid "Audio In4"
+msgstr ""
+
+#: plugins/bsemult.c:66
+msgid "Audio Input 4"
+msgstr ""
+
+#: plugins/bsenoise.c:64
+msgid "Noise Out"
+msgstr ""
+
+#: plugins/bsenoise.c:64
+msgid "Noise Output"
+msgstr ""
+
+#: plugins/bsesequencer.c:107
+msgid "Frequency Signal"
+msgstr ""
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync"
+msgstr ""
+
+#: plugins/bsesequencer.c:109
+msgid "Note Sync Signal"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate In"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:118
+msgid "Gate input (activates/deactivates envelope)"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger In"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:120
+msgid "Retrigger input (raising edge retriggers envelope)"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Ctrl Out"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:122
+msgid "Attack-Decay-Sustain-Release envelope output"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:124
+msgid "Done Out"
+msgstr ""
+
+#: plugins/bsesimpleadsr.c:124
+msgid "This signal goes high after the release phase has completed"
 msgstr ""
 
 #: plugins/davbassfilter.idl:29
+msgid "/Filters/Bass Filter"
+msgstr ""
+
+#: plugins/davbassfilter.idl:30
 msgid ""
 "DavBassFilter is a low-pass resonant TB-303 style filter based on the VCF303 "
 "portions of gsyn v0.2. The filter algorithm is partly based on the one "
 "described in \"Musical Applications of Microprocessors\" by Hal Chamberlin."
 msgstr ""
 
-#: plugins/davbassfilter.idl:34
+#: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
 msgstr ""
 
-#: plugins/davbassfilter.idl:36
+#: plugins/davbassfilter.idl:37
 msgid "Cutoff [%]"
 msgstr ""
 
-#: plugins/davbassfilter.idl:36
+#: plugins/davbassfilter.idl:37
 msgid "Set the cutoff frequency percentage"
 msgstr ""
 
-#: plugins/davbassfilter.idl:37
+#: plugins/davbassfilter.idl:38
 msgid "Resonance [%]"
 msgstr ""
 
-#: plugins/davbassfilter.idl:37
+#: plugins/davbassfilter.idl:38
 msgid "Set the amount of resonance in percent"
 msgstr ""
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:39
 msgid "Envelope Modulation [%]"
 msgstr ""
 
-#: plugins/davbassfilter.idl:38
+#: plugins/davbassfilter.idl:39
 msgid "Set the envelope magnitude in percent"
 msgstr ""
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:40
 msgid "Decay [%]"
 msgstr ""
 
-#: plugins/davbassfilter.idl:39
+#: plugins/davbassfilter.idl:40
 msgid "Set the decay length in percent"
 msgstr ""
 
-#: plugins/davbassfilter.idl:40
+#: plugins/davbassfilter.idl:41
 msgid "Trigger filter"
 msgstr ""
 
-#: plugins/davchorus.idl:28
-msgid "/Enhance/Chorus"
+#: plugins/davcanyondelay.c:116
+msgid "Left Audio Input"
+msgstr ""
+
+#: plugins/davcanyondelay.c:118
+msgid "Right Audio Input"
+msgstr ""
+
+#: plugins/davcanyondelay.c:120
+msgid "Left Audio Output"
+msgstr ""
+
+#: plugins/davcanyondelay.c:122
+msgid "Right Audio Output"
 msgstr ""
 
 #: plugins/davchorus.idl:29
+msgid "/Enhance/Chorus"
+msgstr ""
+
+#: plugins/davchorus.idl:30
 msgid "DavChorus adds more depth to sounds"
 msgstr ""
 
-#: plugins/davchorus.idl:31
+#: plugins/davchorus.idl:32
 msgid "Chorus audio output"
 msgstr ""
 
-#: plugins/davchorus.idl:33
+#: plugins/davchorus.idl:34
 msgid "Wet out [%]"
 msgstr ""
 
-#: plugins/davchorus.idl:33
+#: plugins/davchorus.idl:34
 msgid "Set the amount of modified data to mix"
+msgstr ""
+
+#: plugins/davguitar.c:302
+msgid "Guitar Output"
+msgstr ""
+
+#: plugins/davorgan.c:133
+msgid "Organ Output"
+msgstr ""
+
+#: plugins/davsyndrum.c:116
+msgid "Drum Frequency Input"
+msgstr ""
+
+#: plugins/davsyndrum.c:118
+msgid "Ratio In"
+msgstr ""
+
+#: plugins/davsyndrum.c:118
+msgid "Frequency shift ratio (assumed 1.0 if not connected)"
+msgstr ""
+
+#: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
+msgid "Trigger In"
+msgstr ""
+
+#: plugins/davsyndrum.c:120
+msgid "Hit the drum on raising edges"
+msgstr ""
+
+#: plugins/davsyndrum.c:122
+msgid "SynDrum Output"
+msgstr ""
+
+#: plugins/davxtalstrings.c:141
+msgid "Pluck frequency input"
+msgstr ""
+
+#: plugins/davxtalstrings.c:143
+msgid "Pluck strings on raising edge"
+msgstr ""
+
+#: plugins/davxtalstrings.c:145
+msgid "XtalStrings Output"
 msgstr ""
 
 #: plugins/evaluator/bseevaluator.idl:28
@@ -2131,4 +3816,20 @@ msgstr ""
 
 #: plugins/evaluator/bseevaluator.idl:36
 msgid "Status used to output error messages"
+msgstr ""
+
+#: plugins/freeverb/bsefreeverb.c:123
+msgid "Left Input"
+msgstr ""
+
+#: plugins/freeverb/bsefreeverb.c:124
+msgid "Right Input"
+msgstr ""
+
+#: plugins/freeverb/bsefreeverb.c:125
+msgid "Left Output"
+msgstr ""
+
+#: plugins/freeverb/bsefreeverb.c:126
+msgid "Right Output"
 msgstr ""
