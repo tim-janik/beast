@@ -1,3 +1,10 @@
+Wed Feb 11 01:43:49 2004  Tim Janik  <timj@gtk.org>
+
+	* bseamplifier.idl: let base_level properly default to 0.
+	
+	* bseprocedure.proc: implement accessors for authors and license
+	about types.
+
 Sun Feb  8 03:32:11 2004  Tim Janik  <timj@gtk.org>
 
 	* bseconstvalues.h: provide float and double versions of 
