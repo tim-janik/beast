@@ -184,6 +184,10 @@ DOCS:
 - plugin-devel: mention possibility of deriving from BassFilterProperties() for expensive
   table etc. calculations
 
+FEATURE-EXTRACT/-COMPARE:
+- silence cut should examine all channels
+
+
 MONITORING DIALOG:
 * Frame "Thread Info"
 - tree view

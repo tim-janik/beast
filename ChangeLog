@@ -1,3 +1,8 @@
+Fri Oct 15 16:01:42 2004  Tim Janik  <timj@gtk.org>
+
+	* tests/audio/Makefile.am: perform time-sensitive spectrum tests for
+	the balance test.
+
 Fri Oct 15 11:53:40 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* tests/audio/balance.bse:

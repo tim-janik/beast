@@ -40,9 +40,9 @@ test-bseadder: beastconf.sh
 
 test-balance-left: beastconf.sh
 	@$(FEATURE_TEST_SH) balance.bse balance-left.reference \
-	               --channel=0 --avg-spectrum --avg-energy \
+	               --channel=0 --avg-spectrum --avg-energy --spectrum \
 	            -- --threshold=99.99
 test-balance-right: beastconf.sh
 	@$(FEATURE_TEST_SH) balance.bse balance-right.reference \
-	               --channel=1 --avg-spectrum --avg-energy \
+	               --channel=1 --avg-spectrum --avg-energy --spectrum \
 	            -- --threshold=99.99
