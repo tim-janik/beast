@@ -1,3 +1,5 @@
+# List of source files containing translatable strings.
+# Please keep this file sorted alphabetically
 beast-gtk/bstapp.c
 beast-gtk/bstcanvaslink.c
 beast-gtk/bstcanvassource.c
@@ -26,3 +28,5 @@ beast-gtk/bsttrackview.c
 beast-gtk/bstusermessage.c
 beast-gtk/bstwaveeditor.c
 beast-gtk/bstwavereposhell.c
+beast-gtk/gxk/gxklistwrapper.c
+plugins/bseiirfilter.c

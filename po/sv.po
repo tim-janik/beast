@@ -2,13 +2,13 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.1 2003/10/15 17:36:34 menthos Exp $
+# $Id: sv.po,v 1.2 2003/10/16 17:41:11 menthos Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
-"POT-Creation-Date: 2003-10-15 19:31+0200\n"
-"PO-Revision-Date: 2003-10-15 19:34+0200\n"
+"POT-Creation-Date: 2003-10-16 19:38+0200\n"
+"PO-Revision-Date: 2003-10-16 19:39+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -959,6 +959,82 @@ msgstr "Rulla höger"
 msgid "Waves"
 msgstr "Vågor"
 
+#: beast-gtk/gxk/gxklistwrapper.c:101
+msgid "Number of Columns"
+msgstr "Antal kolumner"
+
+#: beast-gtk/gxk/gxklistwrapper.c:105
+msgid "Array of column types"
+msgstr "Vektor med kolumntyper"
+
+#: beast-gtk/gxk/gxklistwrapper.c:109
+msgid "Number of Rows"
+msgstr "Antal rader"
+
+#: plugins/bseiirfilter.c:116 plugins/bseiirfilter.c:122
+msgid "Filter Choice"
+msgstr "Filterval"
+
+#: plugins/bseiirfilter.c:118
+msgid "Filter Algorithm"
+msgstr "Filteralgoritm"
+
+#: plugins/bseiirfilter.c:118
+msgid "The filter design type"
+msgstr "Filterdesigntypen"
+
+#: plugins/bseiirfilter.c:124
+msgid "Filter Type"
+msgstr "Filtertyp"
+
+#: plugins/bseiirfilter.c:124
+msgid "The type of filter to use"
+msgstr "Typen av filter att använda"
+
+#: plugins/bseiirfilter.c:128 plugins/bseiirfilter.c:133
+msgid "Filter Specification"
+msgstr "Filterspecifikation"
+
+#: plugins/bseiirfilter.c:130
+msgid "Order"
+msgstr "Ordning"
+
+#: plugins/bseiirfilter.c:130
+msgid "Order of Filter"
+msgstr "Filtrets ordning"
+
+#: plugins/bseiirfilter.c:135
+msgid "Epsilon"
+msgstr "Epsilon"
+
+#: plugins/bseiirfilter.c:135
+msgid "Passband falloff at cutoff frequency"
+msgstr "Passbandsavskärning vid avskärningsfrekvens"
+
+#: plugins/bseiirfilter.c:138 plugins/bseiirfilter.c:143
+msgid "Cutoff Frequency (All Filters)"
+msgstr "Avskärningsfrekvens (alla filter)"
+
+#: plugins/bseiirfilter.c:140 plugins/bseiirfilter.c:150
+msgid "Cutoff [Hz]"
+msgstr "Avskärning [Hz]"
+
+#: plugins/bseiirfilter.c:145 plugins/bseiirfilter.c:155
+msgid "Note"
+msgstr "Not"
+
+#: plugins/bseiirfilter.c:148 plugins/bseiirfilter.c:153
+msgid "Cutoff Frequency 2 (Band Pass/Stop)"
+msgstr "Avskärningsfrekvens 2 (bandpass/-stopp)"
+
+#: plugins/bseiirfilter.c:159
+msgid "Unfiltered Input"
+msgstr "Ofiltrerad inmatning"
+
+#: plugins/bseiirfilter.c:161
+msgid "Filtered Output"
+msgstr "Filtrerad utmatning"
+
 #~ msgid "/File/_New..."
 #~ msgstr "/Arkiv/_Ny..."
 
@@ -1494,9 +1570,6 @@ msgstr "Vågor"
 
 #~ msgid "Stop"
 #~ msgstr "Stoppa"
-
-#~ msgid "Number of Channels:"
-#~ msgstr "Antal kanaler:"
 
 #~ msgid "Pattern"
 #~ msgstr "Mönster"
