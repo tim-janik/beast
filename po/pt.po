@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-09 21:38+0200\n"
+"POT-Creation-Date: 2004-06-10 02:34+0200\n"
 "PO-Revision-Date: 2004-05-16 16:35+0000\n"
 "Last-Translator: Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Language-Team: Portuguese <gnome_pt@yahoogroups.com>\n"
@@ -863,136 +863,136 @@ msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 msgid "Pattern Editor Layout"
 msgstr "Disposição do Editor de Padrões"
 
-#: beast-gtk/bstpatternctrl.c:79 beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "VZoom"
 msgstr "ZoomV"
 
-#: beast-gtk/bstpatternctrl.c:80
+#: beast-gtk/bstpatternctrl.c:83
 msgid "The tick/note length per line"
 msgstr "O comprimento por linha da nota/compasso"
 
-#: beast-gtk/bstpatternctrl.c:83
+#: beast-gtk/bstpatternctrl.c:86
 msgid "Steps"
 msgstr "Passos"
 
-#: beast-gtk/bstpatternctrl.c:84
+#: beast-gtk/bstpatternctrl.c:87
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr "O número de células a mover a cada edição de uma nota ou evento"
 
-#: beast-gtk/bstpatternctrl.c:88
+#: beast-gtk/bstpatternctrl.c:91
 msgid "Direction"
 msgstr "Direcção"
 
-#: beast-gtk/bstpatternctrl.c:89
+#: beast-gtk/bstpatternctrl.c:92
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr "A direcção do movimento da célula a cada edição de uma nota ou evento"
 
-#: beast-gtk/bstpatternctrl.c:93
+#: beast-gtk/bstpatternctrl.c:96
 msgid "HWrap"
 msgstr "QuebraH"
 
-#: beast-gtk/bstpatternctrl.c:94
+#: beast-gtk/bstpatternctrl.c:97
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
 "Alternar se o movimento horizontal da célula com foco irá quebrar nas margens"
 
-#: beast-gtk/bstpatternctrl.c:97
+#: beast-gtk/bstpatternctrl.c:100
 msgid "Base Octave"
 msgstr "Oitava Base"
 
-#: beast-gtk/bstpatternctrl.c:98
+#: beast-gtk/bstpatternctrl.c:101
 msgid "Controls the octave relative to which notes are entered"
 msgstr "Controla a oitava em relação à qual as notas são introduzidas"
 
 #. movement
-#: beast-gtk/bstpatternctrl.c:268
+#: beast-gtk/bstpatternctrl.c:271
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 "Movo o foco para a célula seguinte (superior/esquerda/direita/inferior de "
 "acordo com a configuração)"
 
-#: beast-gtk/bstpatternctrl.c:269
+#: beast-gtk/bstpatternctrl.c:272
 msgid "Move focus cell upwards"
 msgstr "Mover a célula com foco acima"
 
-#: beast-gtk/bstpatternctrl.c:270
+#: beast-gtk/bstpatternctrl.c:273
 msgid "Move focus cell to the left"
 msgstr "Mover a célula com foco para a esquerda"
 
-#: beast-gtk/bstpatternctrl.c:271
+#: beast-gtk/bstpatternctrl.c:274
 msgid "Move focus cell to the right"
 msgstr "Mover a célula com foco para a direita"
 
-#: beast-gtk/bstpatternctrl.c:272
+#: beast-gtk/bstpatternctrl.c:275
 msgid "Move focus cell downwards"
 msgstr "Mover a célula com foco abaixo"
 
-#: beast-gtk/bstpatternctrl.c:273
+#: beast-gtk/bstpatternctrl.c:276
 msgid "Move focus cell upwards page-wise"
 msgstr "Mover a célula com foco acima de acordo com a página"
 
-#: beast-gtk/bstpatternctrl.c:274
+#: beast-gtk/bstpatternctrl.c:277
 msgid "Move focus cell to the left page-wise"
 msgstr "Mover a célula com foco para a esquerda de acordo com a página"
 
-#: beast-gtk/bstpatternctrl.c:275
+#: beast-gtk/bstpatternctrl.c:278
 msgid "Move focus cell to the right page-wise"
 msgstr "Mover a célula com foco para a direita de acordo com a página"
 
-#: beast-gtk/bstpatternctrl.c:276
+#: beast-gtk/bstpatternctrl.c:279
 msgid "Move focus cell downwards page-wise"
 msgstr "Mover a célula com foco abaixo de acordo com a página"
 
-#: beast-gtk/bstpatternctrl.c:277
+#: beast-gtk/bstpatternctrl.c:280
 msgid "Set the focus cell to the topmost position possible"
 msgstr "Colocar o foco na célula o mais acima possível"
 
-#: beast-gtk/bstpatternctrl.c:278
+#: beast-gtk/bstpatternctrl.c:281
 msgid "Set the focus cell to the leftmost position possible"
 msgstr "Colocar o foco na célula o mais à esquerda possível"
 
-#: beast-gtk/bstpatternctrl.c:279
+#: beast-gtk/bstpatternctrl.c:282
 msgid "Set the focus cell to the rightmost position possible"
 msgstr "Colocar o foco na célula o mais à direita possível"
 
-#: beast-gtk/bstpatternctrl.c:280
+#: beast-gtk/bstpatternctrl.c:283
 msgid "Set the focus cell to the bottommost position possible"
 msgstr "Colocar o foco na célula o mais abaixo possível"
 
-#: beast-gtk/bstpatternctrl.c:283
+#: beast-gtk/bstpatternctrl.c:286
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr "Definir o número de passos a dar ao mover para a célula seguinte"
 
-#: beast-gtk/bstpatternctrl.c:287
+#: beast-gtk/bstpatternctrl.c:290
 msgid "Set the base octave"
 msgstr "Definir a oitava base"
 
-#: beast-gtk/bstpatternctrl.c:290
+#: beast-gtk/bstpatternctrl.c:293
 msgid "Change the base octave by a given amount"
 msgstr "Alterar a oitava base por um determinado valor"
 
-#: beast-gtk/bstpatternctrl.c:294
+#: beast-gtk/bstpatternctrl.c:297
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 "Alterar por um determinado valor o conteúdo da célula numérica com o foco "
 "(por ex. oitava)"
 
-#: beast-gtk/bstpatternctrl.c:298
+#: beast-gtk/bstpatternctrl.c:301
 msgid "Set the focus cell octave"
 msgstr "Definir a oitava da célula com o foco"
 
-#: beast-gtk/bstpatternctrl.c:302 beast-gtk/bstpatternctrl.c:316
+#: beast-gtk/bstpatternctrl.c:305 beast-gtk/bstpatternctrl.c:319
 msgid "Remove any events in the focus cell"
 msgstr "Remover quaisquer eventos na célula com o foco"
 
-#: beast-gtk/bstpatternctrl.c:306 beast-gtk/bstpatternctrl.c:320
+#: beast-gtk/bstpatternctrl.c:309 beast-gtk/bstpatternctrl.c:323
 msgid "Set the focus cell note"
 msgstr "Definir a nota da célula com o foco"
 
-#: beast-gtk/bstpatternctrl.c:310 beast-gtk/bstpatternctrl.c:324
+#: beast-gtk/bstpatternctrl.c:313 beast-gtk/bstpatternctrl.c:327
 msgid "Sets the value of the focus digit"
 msgstr "Define o valor do dígito com o foco"
 
@@ -1393,7 +1393,8 @@ msgid "1/32"
 msgstr "1/32"
 
 #: beast-gtk/bstrecords.idl:48
-msgid "Thirtysecondth note"
+#, fuzzy
+msgid "Thirty-secondth note"
 msgstr "Um trinta e dois avos de nota"
 
 #: beast-gtk/bstrecords.idl:49
@@ -1401,173 +1402,208 @@ msgid "1/64"
 msgstr "1/64"
 
 #: beast-gtk/bstrecords.idl:49
-msgid "Sixtyfourth note"
+#, fuzzy
+msgid "Sixty-fourth note"
 msgstr "Um sessenta e dois avos de nota"
 
 #: beast-gtk/bstrecords.idl:50
+#, fuzzy
+msgid "1/128"
+msgstr "1\\/1"
+
+#: beast-gtk/bstrecords.idl:50
+#, fuzzy
+msgid "Hundred twenty-eighth note"
+msgstr "Inserir oitavos de notas"
+
+#: beast-gtk/bstrecords.idl:51
 msgid "1/1."
 msgstr "1/1."
 
-#: beast-gtk/bstrecords.idl:50
+#: beast-gtk/bstrecords.idl:51
 msgid "Dotted whole note"
 msgstr "Nota completa com ponto"
 
-#: beast-gtk/bstrecords.idl:51
+#: beast-gtk/bstrecords.idl:52
 msgid "1/2."
 msgstr "1/2."
 
-#: beast-gtk/bstrecords.idl:51
+#: beast-gtk/bstrecords.idl:52
 msgid "Dotted half note"
 msgstr "Meia nota com ponto"
 
-#: beast-gtk/bstrecords.idl:52
+#: beast-gtk/bstrecords.idl:53
 msgid "1/4."
 msgstr "1/4."
 
-#: beast-gtk/bstrecords.idl:52
+#: beast-gtk/bstrecords.idl:53
 msgid "Dotted quarter note"
 msgstr "Quarto de nota com ponto"
 
-#: beast-gtk/bstrecords.idl:53
+#: beast-gtk/bstrecords.idl:54
 msgid "1/8."
 msgstr "1/8."
 
-#: beast-gtk/bstrecords.idl:53
+#: beast-gtk/bstrecords.idl:54
 msgid "Dotted eighths note"
 msgstr "Oitavo de nota com ponto"
 
-#: beast-gtk/bstrecords.idl:54
+#: beast-gtk/bstrecords.idl:55
 msgid "1/16."
 msgstr "1/16."
 
-#: beast-gtk/bstrecords.idl:54
+#: beast-gtk/bstrecords.idl:55
 msgid "Dotted sixteenth note"
 msgstr "Um dezasseis avos de nota com ponto"
 
-#: beast-gtk/bstrecords.idl:55
+#: beast-gtk/bstrecords.idl:56
 msgid "1/32."
 msgstr "1/32."
 
-#: beast-gtk/bstrecords.idl:55
-msgid "Dotted thirtysecondth note"
+#: beast-gtk/bstrecords.idl:56
+#, fuzzy
+msgid "Dotted thirty-secondth note"
 msgstr "Um trinta e dois avos de nota com ponto"
 
-#: beast-gtk/bstrecords.idl:56
+#: beast-gtk/bstrecords.idl:57
 msgid "1/64."
 msgstr "1/64."
 
-#: beast-gtk/bstrecords.idl:56
-msgid "Dotted sixtyfourth note"
+#: beast-gtk/bstrecords.idl:57
+#, fuzzy
+msgid "Dotted sixty-fourth note"
 msgstr "Um sessenta e quatro avos de nota com ponto"
 
-#: beast-gtk/bstrecords.idl:57
+#: beast-gtk/bstrecords.idl:58
+#, fuzzy
+msgid "1/128."
+msgstr "1\\/1"
+
+#: beast-gtk/bstrecords.idl:58
+#, fuzzy
+msgid "Dotted hundred twenty-eighth note"
+msgstr "Inserir oitavos de notas"
+
+#: beast-gtk/bstrecords.idl:59
 msgid "1/1T"
 msgstr "1/1T"
 
-#: beast-gtk/bstrecords.idl:57
+#: beast-gtk/bstrecords.idl:59
 msgid "Triplet whole note"
 msgstr "Nota completa com triplo"
 
-#: beast-gtk/bstrecords.idl:58
+#: beast-gtk/bstrecords.idl:60
 msgid "1/2T"
 msgstr "1/2T"
 
-#: beast-gtk/bstrecords.idl:58
+#: beast-gtk/bstrecords.idl:60
 msgid "Triplet half note"
 msgstr "Meia nota com triplo"
 
-#: beast-gtk/bstrecords.idl:59
+#: beast-gtk/bstrecords.idl:61
 msgid "1/4T"
 msgstr "1/4T"
 
-#: beast-gtk/bstrecords.idl:59
+#: beast-gtk/bstrecords.idl:61
 msgid "Triplet quarter note"
 msgstr "Quarto de nota com triplo"
 
-#: beast-gtk/bstrecords.idl:60
+#: beast-gtk/bstrecords.idl:62
 msgid "1/8T"
 msgstr "1/8T"
 
-#: beast-gtk/bstrecords.idl:60
+#: beast-gtk/bstrecords.idl:62
 msgid "Triplet eighths note"
 msgstr "Oitavo de nota com triplo"
 
-#: beast-gtk/bstrecords.idl:61
+#: beast-gtk/bstrecords.idl:63
 msgid "1/16T"
 msgstr "1/16T"
 
-#: beast-gtk/bstrecords.idl:61
+#: beast-gtk/bstrecords.idl:63
 msgid "Triplet sixteenth note"
 msgstr "Um dezasseis avos de nota com triplo"
 
-#: beast-gtk/bstrecords.idl:62
+#: beast-gtk/bstrecords.idl:64
 msgid "1/32T"
 msgstr "1/32T"
 
-#: beast-gtk/bstrecords.idl:62
-msgid "Triplet thirtysecondth note"
+#: beast-gtk/bstrecords.idl:64
+#, fuzzy
+msgid "Triplet thirty-secondth note"
 msgstr "Um trinta e dois avos de nota com triplo"
 
-#: beast-gtk/bstrecords.idl:63
+#: beast-gtk/bstrecords.idl:65
 msgid "1/64T"
 msgstr "1/64T"
 
-#: beast-gtk/bstrecords.idl:63
-msgid "Triplet sixtyfourth note"
+#: beast-gtk/bstrecords.idl:65
+#, fuzzy
+msgid "Triplet sixty-fourth note"
 msgstr "Um sessenta e quatro avos de nota com triplo"
 
-#: beast-gtk/bstrecords.idl:68
+#: beast-gtk/bstrecords.idl:66
+#, fuzzy
+msgid "1/128T"
+msgstr "1\\/1"
+
+#: beast-gtk/bstrecords.idl:66
+#, fuzzy
+msgid "Triplet hundred twenty-eighth note"
+msgstr "Inserir oitavos de notas"
+
+#: beast-gtk/bstrecords.idl:71
 msgid "Release counter"
 msgstr "Contador de distribuição"
 
-#: beast-gtk/bstrecords.idl:70
+#: beast-gtk/bstrecords.idl:73
 msgid "Font Size"
 msgstr "Tamanho da Fonte"
 
-#: beast-gtk/bstrecords.idl:70
+#: beast-gtk/bstrecords.idl:73
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr ""
 "Tamanho da fonte em pixels para etiquetas apresentadas em redes de "
 "sintetização"
 
-#: beast-gtk/bstrecords.idl:72
+#: beast-gtk/bstrecords.idl:75
 msgid "Anti-Alias"
 msgstr "Anti-Alias"
 
-#: beast-gtk/bstrecords.idl:72
+#: beast-gtk/bstrecords.idl:75
 msgid "Draw synthesis networks anti-aliased?"
 msgstr "Desenhar as redes de sintetização com anti-alias?"
 
-#: beast-gtk/bstrecords.idl:74
+#: beast-gtk/bstrecords.idl:77
 msgid "Single Edit"
 msgstr "Edição Única"
 
-#: beast-gtk/bstrecords.idl:74
+#: beast-gtk/bstrecords.idl:77
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr "Recorrer ao modo de Edição após criar módulos de sintetização?"
 
-#: beast-gtk/bstrecords.idl:76
+#: beast-gtk/bstrecords.idl:79
 msgid "Swap IO"
 msgstr "Trocar IO"
 
-#: beast-gtk/bstrecords.idl:76
+#: beast-gtk/bstrecords.idl:79
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr ""
 "Trocar os canais de entrada e saída ao apresentar os módulos de sintetização?"
 
-#: beast-gtk/bstrecords.idl:80
+#: beast-gtk/bstrecords.idl:83
 msgid "Tab Width"
 msgstr "Largura da Tabulação"
 
-#: beast-gtk/bstrecords.idl:80
+#: beast-gtk/bstrecords.idl:83
 msgid "Specify project tab width in pixels"
 msgstr "Especificar a largura em pixels da tabulação no projecto"
 
-#: beast-gtk/bstrecords.idl:82
+#: beast-gtk/bstrecords.idl:85
 msgid "Homogeneous Input Fields"
 msgstr "Campos de Entrada Homogéneos"
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstrecords.idl:86
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
@@ -1575,69 +1611,69 @@ msgstr ""
 "Activar tamanhos homogéneos para a maioria dos campos de entrada (numéricos "
 "e texto). Para alguns campos, apenas terá efeito após reiniciar a aplicação."
 
-#: beast-gtk/bstrecords.idl:91
+#: beast-gtk/bstrecords.idl:94
 msgid "Skin Name"
 msgstr "Nome da Aparência"
 
-#: beast-gtk/bstrecords.idl:91
+#: beast-gtk/bstrecords.idl:94
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr ""
 "Nome para a configuração de aparência actual (utilizada para as selecções de "
 "aparência)."
 
-#: beast-gtk/bstrecords.idl:93 beast-gtk/bstrecords.idl:103
+#: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
 msgid "Background Image"
 msgstr "Imagem de Fundo"
 
-#: beast-gtk/bstrecords.idl:93
+#: beast-gtk/bstrecords.idl:96
 msgid "Background image used by the piano-roll widget."
 msgstr "Imagem de fundo utilizada pelo widget de piano-rolante."
 
-#: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
+#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
 msgid "Image shade"
 msgstr "Sombreado da imagem"
 
-#: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
+#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
 msgid "Percentage of background image pixel to blend over background color."
 msgstr "Percentagem de pixel da imagem de fundo a misturar com a cor de fundo."
 
-#: beast-gtk/bstrecords.idl:95 beast-gtk/bstrecords.idl:105
+#: beast-gtk/bstrecords.idl:98 beast-gtk/bstrecords.idl:108
 msgid "Background Color"
 msgstr "Cor de Fundo"
 
-#: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
+#: beast-gtk/bstrecords.idl:99 beast-gtk/bstrecords.idl:109
 msgid "Horizontal Bar Color"
 msgstr "Cor da Barra Horizontal"
 
-#: beast-gtk/bstrecords.idl:97
+#: beast-gtk/bstrecords.idl:100
 msgid "Vertical Bar Color"
 msgstr "Cor da Barra Vertical"
 
-#: beast-gtk/bstrecords.idl:98
+#: beast-gtk/bstrecords.idl:101
 msgid "Horizontal Grid Color"
 msgstr "Cor da Grelha Horizontal"
 
-#: beast-gtk/bstrecords.idl:99
+#: beast-gtk/bstrecords.idl:102
 msgid "Vertical Grid Color"
 msgstr "Cor da Grelha Vertical"
 
-#: beast-gtk/bstrecords.idl:100 beast-gtk/bstrecords.idl:107
+#: beast-gtk/bstrecords.idl:103 beast-gtk/bstrecords.idl:110
 msgid "Middle Bar Color"
 msgstr "Cor da Barra Central"
 
-#: beast-gtk/bstrecords.idl:103
+#: beast-gtk/bstrecords.idl:106
 msgid "Background image used by the control events widget."
 msgstr "Imagem de fundo utilizada pelo widget de controlo de eventos."
 
-#: beast-gtk/bstrecords.idl:108
+#: beast-gtk/bstrecords.idl:111
 msgid "Positive Value Color"
 msgstr "Cor de Valor Positivo"
 
-#: beast-gtk/bstrecords.idl:109
+#: beast-gtk/bstrecords.idl:112
 msgid "Zero Value Color"
 msgstr "Cor de Valor Zero"
 
-#: beast-gtk/bstrecords.idl:110
+#: beast-gtk/bstrecords.idl:113
 msgid "Negative Value Color"
 msgstr "Cor de Valor Negativo"
 

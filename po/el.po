@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-09 21:38+0200\n"
+"POT-Creation-Date: 2004-06-10 02:34+0200\n"
 "PO-Revision-Date: 2003-11-09 18:32+0200\n"
 "Last-Translator: Kostas Papadimas <pkst@gnome.org>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
@@ -900,135 +900,135 @@ msgstr ""
 msgid "Pattern Editor Layout"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:79 beast-gtk/dialogs/gadgets-beast.xml.h:21
+#: beast-gtk/bstpatternctrl.c:82 beast-gtk/dialogs/gadgets-beast.xml.h:21
 #, fuzzy
 msgid "VZoom"
 msgstr "Μεγέθυνση"
 
-#: beast-gtk/bstpatternctrl.c:80
+#: beast-gtk/bstpatternctrl.c:83
 msgid "The tick/note length per line"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:83
+#: beast-gtk/bstpatternctrl.c:86
 msgid "Steps"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:84
+#: beast-gtk/bstpatternctrl.c:87
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:88
+#: beast-gtk/bstpatternctrl.c:91
 #, fuzzy
 msgid "Direction"
 msgstr "Περιγραφή"
 
-#: beast-gtk/bstpatternctrl.c:89
+#: beast-gtk/bstpatternctrl.c:92
 msgid "The direction of cell movement each time an event or note was edited"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:93
+#: beast-gtk/bstpatternctrl.c:96
 msgid "HWrap"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:94
+#: beast-gtk/bstpatternctrl.c:97
 msgid ""
 "Toggle whether horizontal movement of the focus cell will wrap around edges"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:97
+#: beast-gtk/bstpatternctrl.c:100
 #, fuzzy
 msgid "Base Octave"
 msgstr "Waves"
 
-#: beast-gtk/bstpatternctrl.c:98
+#: beast-gtk/bstpatternctrl.c:101
 msgid "Controls the octave relative to which notes are entered"
 msgstr ""
 
 #. movement
-#: beast-gtk/bstpatternctrl.c:268
+#: beast-gtk/bstpatternctrl.c:271
 msgid ""
 "Move focus to the next cell (up/left/right/down according to configuration)"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:269
+#: beast-gtk/bstpatternctrl.c:272
 msgid "Move focus cell upwards"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:270
+#: beast-gtk/bstpatternctrl.c:273
 msgid "Move focus cell to the left"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:271
+#: beast-gtk/bstpatternctrl.c:274
 msgid "Move focus cell to the right"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:272
+#: beast-gtk/bstpatternctrl.c:275
 msgid "Move focus cell downwards"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:273
+#: beast-gtk/bstpatternctrl.c:276
 msgid "Move focus cell upwards page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:274
+#: beast-gtk/bstpatternctrl.c:277
 msgid "Move focus cell to the left page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:275
+#: beast-gtk/bstpatternctrl.c:278
 msgid "Move focus cell to the right page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:276
+#: beast-gtk/bstpatternctrl.c:279
 msgid "Move focus cell downwards page-wise"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:277
+#: beast-gtk/bstpatternctrl.c:280
 msgid "Set the focus cell to the topmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:278
+#: beast-gtk/bstpatternctrl.c:281
 msgid "Set the focus cell to the leftmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:279
+#: beast-gtk/bstpatternctrl.c:282
 msgid "Set the focus cell to the rightmost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:280
+#: beast-gtk/bstpatternctrl.c:283
 msgid "Set the focus cell to the bottommost position possible"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:283
+#: beast-gtk/bstpatternctrl.c:286
 msgid "Set the number of steps to make when moving to the next cell"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:287
+#: beast-gtk/bstpatternctrl.c:290
 msgid "Set the base octave"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:290
+#: beast-gtk/bstpatternctrl.c:293
 msgid "Change the base octave by a given amount"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:294
+#: beast-gtk/bstpatternctrl.c:297
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:298
+#: beast-gtk/bstpatternctrl.c:301
 msgid "Set the focus cell octave"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:302 beast-gtk/bstpatternctrl.c:316
+#: beast-gtk/bstpatternctrl.c:305 beast-gtk/bstpatternctrl.c:319
 msgid "Remove any events in the focus cell"
 msgstr ""
 
-#: beast-gtk/bstpatternctrl.c:306 beast-gtk/bstpatternctrl.c:320
+#: beast-gtk/bstpatternctrl.c:309 beast-gtk/bstpatternctrl.c:323
 #, fuzzy
 msgid "Set the focus cell note"
 msgstr "Εισαγωγή πλήρεις νότες"
 
-#: beast-gtk/bstpatternctrl.c:310 beast-gtk/bstpatternctrl.c:324
+#: beast-gtk/bstpatternctrl.c:313 beast-gtk/bstpatternctrl.c:327
 msgid "Sets the value of the focus digit"
 msgstr ""
 
@@ -1457,7 +1457,7 @@ msgstr "1/2"
 
 #: beast-gtk/bstrecords.idl:48
 #, fuzzy
-msgid "Thirtysecondth note"
+msgid "Thirty-secondth note"
 msgstr "Εισαγωγή δεκάτων έκτων"
 
 #: beast-gtk/bstrecords.idl:49
@@ -1466,266 +1466,300 @@ msgid "1/64"
 msgstr "1/4"
 
 #: beast-gtk/bstrecords.idl:49
-msgid "Sixtyfourth note"
-msgstr ""
+#, fuzzy
+msgid "Sixty-fourth note"
+msgstr "Εισαγωγή δεκάτων έκτων"
 
 #: beast-gtk/bstrecords.idl:50
+#, fuzzy
+msgid "1/128"
+msgstr "1/1"
+
+#: beast-gtk/bstrecords.idl:50
+#, fuzzy
+msgid "Hundred twenty-eighth note"
+msgstr "Εισαγωγή ογδόων"
+
+#: beast-gtk/bstrecords.idl:51
 #, fuzzy
 msgid "1/1."
 msgstr "1/1"
 
-#: beast-gtk/bstrecords.idl:50
+#: beast-gtk/bstrecords.idl:51
 msgid "Dotted whole note"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:51
+#: beast-gtk/bstrecords.idl:52
 #, fuzzy
 msgid "1/2."
 msgstr "1/2"
 
-#: beast-gtk/bstrecords.idl:51
+#: beast-gtk/bstrecords.idl:52
 #, fuzzy
 msgid "Dotted half note"
 msgstr "Εισαγωγή ήμισεων"
 
-#: beast-gtk/bstrecords.idl:52
+#: beast-gtk/bstrecords.idl:53
 #, fuzzy
 msgid "1/4."
 msgstr "1/4"
 
-#: beast-gtk/bstrecords.idl:52
+#: beast-gtk/bstrecords.idl:53
 #, fuzzy
 msgid "Dotted quarter note"
 msgstr "Εισαγωγή τετάρτων"
 
-#: beast-gtk/bstrecords.idl:53
+#: beast-gtk/bstrecords.idl:54
 #, fuzzy
 msgid "1/8."
 msgstr "1/8"
 
-#: beast-gtk/bstrecords.idl:53
+#: beast-gtk/bstrecords.idl:54
 #, fuzzy
 msgid "Dotted eighths note"
 msgstr "Εισαγωγή ογδόων"
 
-#: beast-gtk/bstrecords.idl:54
+#: beast-gtk/bstrecords.idl:55
 #, fuzzy
 msgid "1/16."
 msgstr "1/16"
 
-#: beast-gtk/bstrecords.idl:54
+#: beast-gtk/bstrecords.idl:55
 #, fuzzy
 msgid "Dotted sixteenth note"
 msgstr "Εισαγωγή δεκάτων έκτων"
 
-#: beast-gtk/bstrecords.idl:55
+#: beast-gtk/bstrecords.idl:56
 #, fuzzy
 msgid "1/32."
 msgstr "1/2"
 
-#: beast-gtk/bstrecords.idl:55
-msgid "Dotted thirtysecondth note"
-msgstr ""
-
 #: beast-gtk/bstrecords.idl:56
+#, fuzzy
+msgid "Dotted thirty-secondth note"
+msgstr "Εισαγωγή δεκάτων έκτων"
+
+#: beast-gtk/bstrecords.idl:57
 #, fuzzy
 msgid "1/64."
 msgstr "1/4"
 
-#: beast-gtk/bstrecords.idl:56
-msgid "Dotted sixtyfourth note"
-msgstr ""
-
 #: beast-gtk/bstrecords.idl:57
+#, fuzzy
+msgid "Dotted sixty-fourth note"
+msgstr "Εισαγωγή δεκάτων έκτων"
+
+#: beast-gtk/bstrecords.idl:58
+#, fuzzy
+msgid "1/128."
+msgstr "1/1"
+
+#: beast-gtk/bstrecords.idl:58
+#, fuzzy
+msgid "Dotted hundred twenty-eighth note"
+msgstr "Εισαγωγή ογδόων"
+
+#: beast-gtk/bstrecords.idl:59
 #, fuzzy
 msgid "1/1T"
 msgstr "1/1"
 
-#: beast-gtk/bstrecords.idl:57
+#: beast-gtk/bstrecords.idl:59
 msgid "Triplet whole note"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:58
+#: beast-gtk/bstrecords.idl:60
 #, fuzzy
 msgid "1/2T"
 msgstr "1/2"
 
-#: beast-gtk/bstrecords.idl:58
+#: beast-gtk/bstrecords.idl:60
 #, fuzzy
 msgid "Triplet half note"
 msgstr "Εισαγωγή ήμισεων"
 
-#: beast-gtk/bstrecords.idl:59
+#: beast-gtk/bstrecords.idl:61
 #, fuzzy
 msgid "1/4T"
 msgstr "1/4"
 
-#: beast-gtk/bstrecords.idl:59
+#: beast-gtk/bstrecords.idl:61
 #, fuzzy
 msgid "Triplet quarter note"
 msgstr "Εισαγωγή τετάρτων"
 
-#: beast-gtk/bstrecords.idl:60
+#: beast-gtk/bstrecords.idl:62
 #, fuzzy
 msgid "1/8T"
 msgstr "1/8"
 
-#: beast-gtk/bstrecords.idl:60
+#: beast-gtk/bstrecords.idl:62
 #, fuzzy
 msgid "Triplet eighths note"
 msgstr "Εισαγωγή ογδόων"
 
-#: beast-gtk/bstrecords.idl:61
+#: beast-gtk/bstrecords.idl:63
 #, fuzzy
 msgid "1/16T"
 msgstr "1/16"
 
-#: beast-gtk/bstrecords.idl:61
+#: beast-gtk/bstrecords.idl:63
 #, fuzzy
 msgid "Triplet sixteenth note"
 msgstr "Εισαγωγή δεκάτων έκτων"
 
-#: beast-gtk/bstrecords.idl:62
+#: beast-gtk/bstrecords.idl:64
 #, fuzzy
 msgid "1/32T"
 msgstr "1/2"
 
-#: beast-gtk/bstrecords.idl:62
-msgid "Triplet thirtysecondth note"
-msgstr ""
+#: beast-gtk/bstrecords.idl:64
+#, fuzzy
+msgid "Triplet thirty-secondth note"
+msgstr "Εισαγωγή δεκάτων έκτων"
 
-#: beast-gtk/bstrecords.idl:63
+#: beast-gtk/bstrecords.idl:65
 #, fuzzy
 msgid "1/64T"
 msgstr "1/4"
 
-#: beast-gtk/bstrecords.idl:63
+#: beast-gtk/bstrecords.idl:65
 #, fuzzy
-msgid "Triplet sixtyfourth note"
+msgid "Triplet sixty-fourth note"
 msgstr "Εισαγωγή δεκάτων έκτων"
 
-#: beast-gtk/bstrecords.idl:68
+#: beast-gtk/bstrecords.idl:66
+#, fuzzy
+msgid "1/128T"
+msgstr "1/1"
+
+#: beast-gtk/bstrecords.idl:66
+#, fuzzy
+msgid "Triplet hundred twenty-eighth note"
+msgstr "Εισαγωγή ογδόων"
+
+#: beast-gtk/bstrecords.idl:71
 #, fuzzy
 msgid "Release counter"
 msgstr "/Βοήθεια/Ση_μειώσεις έκδοσης"
 
-#: beast-gtk/bstrecords.idl:70
+#: beast-gtk/bstrecords.idl:73
 msgid "Font Size"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:70
+#: beast-gtk/bstrecords.idl:73
 msgid "Font size in pixels for labels displayed in synthesis networks"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:72
+#: beast-gtk/bstrecords.idl:75
 msgid "Anti-Alias"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:72
+#: beast-gtk/bstrecords.idl:75
 msgid "Draw synthesis networks anti-aliased?"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:74
+#: beast-gtk/bstrecords.idl:77
 msgid "Single Edit"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:74
+#: beast-gtk/bstrecords.idl:77
 msgid "Fallback into Edit mode after creating synthesis modules?"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:76
+#: beast-gtk/bstrecords.idl:79
 msgid "Swap IO"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:76
+#: beast-gtk/bstrecords.idl:79
 msgid "Swap input with output channels when displaying synthesis modules?"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:80
+#: beast-gtk/bstrecords.idl:83
 msgid "Tab Width"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:80
+#: beast-gtk/bstrecords.idl:83
 msgid "Specify project tab width in pixels"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:82
+#: beast-gtk/bstrecords.idl:85
 msgid "Homogeneous Input Fields"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:83
+#: beast-gtk/bstrecords.idl:86
 msgid ""
 "Enable homogeneous sizes for most (numeric and text) input fields. For some "
 "fields, this will only take effect after a restart."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:91
+#: beast-gtk/bstrecords.idl:94
 #, fuzzy
 msgid "Skin Name"
 msgstr "Όνομα"
 
-#: beast-gtk/bstrecords.idl:91
+#: beast-gtk/bstrecords.idl:94
 msgid "Name for the current skin configuration (used for skin selections)."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:93 beast-gtk/bstrecords.idl:103
+#: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
 msgid "Background Image"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:93
+#: beast-gtk/bstrecords.idl:96
 msgid "Background image used by the piano-roll widget."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
+#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
 msgid "Image shade"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
+#: beast-gtk/bstrecords.idl:97 beast-gtk/bstrecords.idl:107
 msgid "Percentage of background image pixel to blend over background color."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:95 beast-gtk/bstrecords.idl:105
+#: beast-gtk/bstrecords.idl:98 beast-gtk/bstrecords.idl:108
 msgid "Background Color"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
+#: beast-gtk/bstrecords.idl:99 beast-gtk/bstrecords.idl:109
 #, fuzzy
 msgid "Horizontal Bar Color"
 msgstr "Οριζόντια μεγέθυνση"
 
-#: beast-gtk/bstrecords.idl:97
+#: beast-gtk/bstrecords.idl:100
 #, fuzzy
 msgid "Vertical Bar Color"
 msgstr "Κάθετη περιοχή"
 
-#: beast-gtk/bstrecords.idl:98
+#: beast-gtk/bstrecords.idl:101
 #, fuzzy
 msgid "Horizontal Grid Color"
 msgstr "Οριζόντια μεγέθυνση"
 
-#: beast-gtk/bstrecords.idl:99
+#: beast-gtk/bstrecords.idl:102
 #, fuzzy
 msgid "Vertical Grid Color"
 msgstr "Κάθετη περιοχή"
 
-#: beast-gtk/bstrecords.idl:100 beast-gtk/bstrecords.idl:107
+#: beast-gtk/bstrecords.idl:103 beast-gtk/bstrecords.idl:110
 msgid "Middle Bar Color"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:103
+#: beast-gtk/bstrecords.idl:106
 msgid "Background image used by the control events widget."
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:108
+#: beast-gtk/bstrecords.idl:111
 msgid "Positive Value Color"
 msgstr ""
 
-#: beast-gtk/bstrecords.idl:109
+#: beast-gtk/bstrecords.idl:112
 #, fuzzy
 msgid "Zero Value Color"
 msgstr "Επιλογή"
 
-#: beast-gtk/bstrecords.idl:110
+#: beast-gtk/bstrecords.idl:113
 msgid "Negative Value Color"
 msgstr ""
 
