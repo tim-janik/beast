@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-06 18:46+0100\n"
-"PO-Revision-Date: 2004-01-24 04:05+0100\n"
+"POT-Creation-Date: 2004-03-07 14:16+0100\n"
+"PO-Revision-Date: 2004-03-07 23:09+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -89,7 +89,7 @@ msgstr "O_pnieuw"
 # schonen wissen
 #: beast-gtk/bstapp.c:87 beast-gtk/bstpartdialog.c:70
 msgid "_Clear Undo"
-msgstr "Herstelbuffer _opschonen"
+msgstr "Herstelbuffer _wissen"
 
 #: beast-gtk/bstapp.c:91
 msgid "Procedure _Browser"
@@ -166,9 +166,9 @@ msgid "Opening project `%s'"
 msgstr "Openen van project `%s'"
 
 #: beast-gtk/bstapp.c:610
-#, fuzzy, c-format
+#, c-format
 msgid "Loading skin `%s'"
-msgstr "Laden van wave `%s'"
+msgstr "Laden van skin `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
 #: beast-gtk/bstapp.c:772
@@ -191,11 +191,11 @@ msgstr "BEAST-%s Release Notes"
 #: beast-gtk/bstauxdialogs.c:389
 #, c-format
 msgid "Please press the keyboard shortcut to be installed for function: %s"
-msgstr ""
+msgstr "Druk de sneltoets in die geïnstalleerd moet worden voor functie: %s"
 
 #: beast-gtk/bstauxdialogs.c:394
 msgid "Please press the keyboard shortcut to be installed..."
-msgstr ""
+msgstr "Druk de sneltoets in die geïnstalleerd moet worden..."
 
 #: beast-gtk/bstcanvaslink.c:177
 msgid "Module Link: "
@@ -285,9 +285,8 @@ msgid "Open Project"
 msgstr "Project openen"
 
 #: beast-gtk/bstfiledialog.c:396
-#, fuzzy
 msgid "Select File"
-msgstr "Selecteren"
+msgstr "Bestand selecteren"
 
 #: beast-gtk/bstfiledialog.c:410
 msgid "Select Directory"
@@ -329,7 +328,7 @@ msgstr ""
 #: beast-gtk/bstfiledialog.c:538
 #, c-format
 msgid "Save: %s"
-msgstr "Opslaan %s"
+msgstr "Opslaan: %s"
 
 #. setup radio buttons
 #: beast-gtk/bstfiledialog.c:540
@@ -338,12 +337,12 @@ msgstr "Wave-bestanden volledig bijvoegen"
 
 #: beast-gtk/bstfiledialog.c:541
 msgid "Store references to wave files"
-msgstr "Refenties naar Wave-bestanden opslaan"
+msgstr "Refenties naar wave-bestanden opslaan"
 
 #: beast-gtk/bstfiledialog.c:562 beast-gtk/bstfiledialog.c:572
 #, c-format
 msgid "Saving project `%s'"
-msgstr "Opslaan van project: `%s'"
+msgstr "Opslaan van project `%s'"
 
 #: beast-gtk/bstfiledialog.c:563 beast-gtk/bstfiledialog.c:639
 #: beast-gtk/bstfiledialog.c:715
@@ -436,37 +435,37 @@ msgid "Type"
 msgstr "Type"
 
 #: beast-gtk/bstkeybindings.c:51
-#, fuzzy
 msgid "Add..."
-msgstr "Toevoegen"
+msgstr "Toevoegen..."
 
+# binden
 #: beast-gtk/bstkeybindings.c:51
 msgid "Bind a new key combination to a program function"
-msgstr ""
+msgstr "Een nieuwe toetscombinatie aan een programmafunctie koppelen"
 
 #: beast-gtk/bstkeybindings.c:53
-#, fuzzy
 msgid "Change..."
-msgstr "Bezig met laden..."
+msgstr "Aanpassen..."
 
-# huidige geselecteerde golf? wave-bestand?
 #: beast-gtk/bstkeybindings.c:53
-#, fuzzy
 msgid "Change the currently selected key binding"
-msgstr "De geselecteerde wave verwijderen"
+msgstr "De huidige toetsbinding aanpassen"
 
+# verhogen
+# opwaarts
 #: beast-gtk/bstkeybindings.c:55
-#, fuzzy
 msgid "Raise"
-msgstr "Verhouding"
+msgstr "Naar boven"
 
 #: beast-gtk/bstkeybindings.c:55
 msgid "Raise the currently selected key binding, relative to its neighbours"
 msgstr ""
 
+# verlagen
+# neerwaarts
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower"
-msgstr "Verlaag"
+msgstr "Naar beneden"
 
 #: beast-gtk/bstkeybindings.c:57
 msgid "Lower the currently selected key binding, relative to its neighbours"
@@ -474,30 +473,29 @@ msgstr ""
 
 # huidige geselecteerde golf? wave-bestand?
 #: beast-gtk/bstkeybindings.c:59
-#, fuzzy
 msgid "Delete the currently selected key binding"
-msgstr "De geselecteerde wave verwijderen"
+msgstr "De toetsbinding verwijderen"
 
 #: beast-gtk/bstkeybindings.c:61
-#, fuzzy
 msgid "Load"
-msgstr "Laden..."
+msgstr "Laden"
 
 #: beast-gtk/bstkeybindings.c:61
 msgid "Load a key binding set"
-msgstr ""
+msgstr "Een toetsbindingenverzameling laden"
 
 #: beast-gtk/bstkeybindings.c:237
 msgid "Load Key Binding"
-msgstr ""
+msgstr "Toetsbinding laden"
 
 #: beast-gtk/bstkeybindings.c:432
 msgid "Key Binding"
-msgstr ""
+msgstr "Toetsbinding"
 
+# aan te roepen/te gebruiken
 #: beast-gtk/bstkeybindings.c:433
 msgid "Key combinations used to activate a function"
-msgstr ""
+msgstr "Gebruikte toetscombinaties om een functie te activeren"
 
 #: beast-gtk/bstkeybindings.c:435 beast-gtk/bstkeybindings.c:459
 msgid "Function"
@@ -505,20 +503,19 @@ msgstr "Functie"
 
 #: beast-gtk/bstkeybindings.c:436
 msgid "Functions to be activated for a key binding"
-msgstr ""
+msgstr "Functies die bij een toetsbinding geactiveerd worden"
 
 #: beast-gtk/bstkeybindings.c:438
-#, fuzzy
 msgid "Parameter"
-msgstr "Parameters"
+msgstr "Parameter"
 
 #: beast-gtk/bstkeybindings.c:439
 msgid "Parameter to pass to functions upon activation"
-msgstr ""
+msgstr "Parameter die aan functies wordt gegeven bij actieveren"
 
 #: beast-gtk/bstkeybindings.c:460
 msgid "Function used to create new key bindings"
-msgstr ""
+msgstr "Functie die gebruikt wordt bij nieuwe toetsbindingen"
 
 #: beast-gtk/bstkeybindings.c:462 beast-gtk/bstprocedure.c:206
 msgid "Description"
@@ -535,15 +532,13 @@ msgstr "Opstarten"
 # betere vertaling?
 #. BEAST initialization
 #: beast-gtk/bstmain.c:140
-#, fuzzy
 msgid "Initializers"
-msgstr "Identificatie:"
+msgstr "Initialisators"
 
 #. parse rc file
 #: beast-gtk/bstmain.c:147
-#, fuzzy
 msgid "RC Files"
-msgstr "RC Bestand"
+msgstr "RC bestanden"
 
 #. show splash images
 #: beast-gtk/bstmain.c:151
@@ -553,7 +548,7 @@ msgstr "Intro-afbeelding"
 #. start BSE core and connect
 #: beast-gtk/bstmain.c:163
 msgid "BSE Core"
-msgstr "BSE Kern"
+msgstr "BSE kern"
 
 #: beast-gtk/bstmain.c:185
 msgid "Plugins"
@@ -561,7 +556,7 @@ msgstr "Plugins"
 
 #: beast-gtk/bstmain.c:204
 msgid "LADSPA Plugins"
-msgstr "LADSPA Plugins"
+msgstr "LADSPA plugins"
 
 #: beast-gtk/bstmain.c:232
 msgid "Scripts"
@@ -602,30 +597,28 @@ msgstr "Met dank aan:"
 
 #: beast-gtk/bstparam-choice.c:142
 msgid "Popup Options"
-msgstr ""
+msgstr "Popup-opties"
 
 #: beast-gtk/bstparam-choice.c:148
-#, fuzzy
 msgid "Drop Down Combo"
-msgstr "Drop Down Button"
+msgstr "Drop-down combo"
 
 #: beast-gtk/bstparam-choice.c:154
 msgid "Drop Down Button"
-msgstr "Drop Down Button"
+msgstr "Drop-down knop"
 
 #: beast-gtk/bstparam-choice.c:160
 msgid "Standard Option Menu"
-msgstr ""
+msgstr "Standaard optiemenu"
 
+# kleurselectie
 #: beast-gtk/bstparam-color-spinner.c:67
-#, fuzzy
 msgid "Select Color"
-msgstr "Selecteren"
+msgstr "Kleur selecteren"
 
 #: beast-gtk/bstparam-color-spinner.c:116
-#, fuzzy
 msgid "Color Entry"
-msgstr "Noot invoer"
+msgstr "Kleurinvoer"
 
 #: beast-gtk/bstparam-note-sequence.c:61
 msgid "Note Sequence Grid Editor"
@@ -665,9 +658,8 @@ msgid "Searchpath Text Entry"
 msgstr "Zoekpad tekstinvoer"
 
 #: beast-gtk/bstparam-searchpath.c:154
-#, fuzzy
 msgid "Filename Text Entry"
-msgstr "Tekstinvoer"
+msgstr "Bestandsnaam tekstinvoer"
 
 #: beast-gtk/bstparam-time.c:55
 msgid "Time Entry"
@@ -733,21 +725,21 @@ msgstr ""
 
 #: beast-gtk/bstpatterncolumns.c:685
 msgid "COLUMN TYPES:"
-msgstr ""
+msgstr "COLUMN TYPES:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:687
 msgid "note-1, note-2, ..."
-msgstr ""
+msgstr "note-1, note-2, ..."
 
 #: beast-gtk/bstpatterncolumns.c:688
 msgid "  display notes of the first, second, ... channel"
-msgstr ""
+msgstr "  noten weergeven van het eerste, tweede, ... kanaal"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:690
 msgid "offset-1, length-2, velocity-3, ..."
-msgstr ""
+msgstr "offset-1, length-2, velocity-3, ..."
 
 #: beast-gtk/bstpatterncolumns.c:691
 msgid ""
@@ -758,7 +750,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:693
 msgid "control-0, ..., control-63, cc-0, cc-31"
-msgstr ""
+msgstr "control-0, ..., control-63, cc-0, cc-31"
 
 #: beast-gtk/bstpatterncolumns.c:694
 msgid "  select various event types (controls, continuous controllers)"
@@ -767,47 +759,47 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:696
 msgid "bar, |"
-msgstr ""
+msgstr "bar, |"
 
 #: beast-gtk/bstpatterncolumns.c:697
 msgid "  display solid vertical bar"
-msgstr ""
+msgstr "  verticale balk solide weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:699
 msgid "dbar, :"
-msgstr ""
+msgstr "dbar, :"
 
 #: beast-gtk/bstpatterncolumns.c:700
 msgid "  display dotted vertical bar"
-msgstr ""
+msgstr "  verticale balk met puntjes weergeven"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:702
 msgid "space, _"
-msgstr ""
+msgstr "space, _"
 
 #: beast-gtk/bstpatterncolumns.c:703
 msgid "  insert vertical space"
-msgstr ""
+msgstr "  verticale ruimte invoegen"
 
 #: beast-gtk/bstpatterncolumns.c:704
 msgid "EVENTS:"
-msgstr ""
+msgstr "EVENTS:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:706
 msgid "  balance, volume, cc-8, ..."
-msgstr ""
+msgstr "  balance, volume, cc-8, ..."
 
 #: beast-gtk/bstpatterncolumns.c:707
 msgid "MODIFIERS:"
-msgstr ""
+msgstr "MODIFIERS:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:709
 msgid "hex2, hex4"
-msgstr ""
+msgstr "hex2, hex4"
 
 #: beast-gtk/bstpatterncolumns.c:710
 msgid "  display 2 (00..FF) or 4 (0000..FFFF) digit hex numbers"
@@ -816,7 +808,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:712
 msgid "shex2, shex4"
-msgstr ""
+msgstr "shex2, shex4"
 
 #: beast-gtk/bstpatterncolumns.c:713
 msgid "  display 2 (-FF..+FF) or 4 (-FFFF..+FFFF) digit signed hex numbers"
@@ -825,7 +817,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:715
 msgid "dec2, dec3"
-msgstr ""
+msgstr "dec2, dec3"
 
 #: beast-gtk/bstpatterncolumns.c:716
 msgid "  display 2 (00..99) or 3 (000..999) digit decimal numbers"
@@ -834,7 +826,7 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:718
 msgid "sdec2, sdec3"
-msgstr ""
+msgstr "sdec2, sdec3"
 
 #: beast-gtk/bstpatterncolumns.c:719
 msgid "  display 2 (-99..+99) or 3 (-999..+999) digit signed decimal numbers"
@@ -843,16 +835,16 @@ msgstr ""
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:721
 msgid "col1, col2, col3"
-msgstr ""
+msgstr "col1, col2, col3"
 
 #: beast-gtk/bstpatterncolumns.c:722
 msgid "  selects one of 3 predefined colors"
-msgstr ""
+msgstr "  selecteerd een van 3 voorgedefinieerde kleuren"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:724
 msgid "lfold, rfold"
-msgstr ""
+msgstr "lfold, rfold"
 
 #: beast-gtk/bstpatterncolumns.c:725
 msgid "  allow folding the column into left/right neighbour"
@@ -860,17 +852,17 @@ msgstr ""
 
 #: beast-gtk/bstpatterncolumns.c:726
 msgid "EXAMPLE:"
-msgstr ""
+msgstr "EXAMPLE:"
 
 #. !!! LEAVE UNTRANSLATED !!!
 #: beast-gtk/bstpatterncolumns.c:728
 msgid "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
-msgstr ""
+msgstr "note-1 | velocity-1=hex2 | note-2 | volume=hex4"
 
 #. GXK_DIALOG_MODAL
 #: beast-gtk/bstpatterncolumns.c:738
 msgid "Pattern Editor Layout"
-msgstr ""
+msgstr "Patroon-editor indeling"
 
 #: beast-gtk/bstpatternctrl.c:79 beast-gtk/dialogs/gadgets-beast.xml.h:21
 msgid "VZoom"
@@ -881,20 +873,17 @@ msgid "The tick/note length per line"
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:83
-#, fuzzy
 msgid "Steps"
-msgstr "_Stoppen"
+msgstr "Stappen"
 
 #: beast-gtk/bstpatternctrl.c:84
 msgid ""
 "The number of cells to move across each time an event or note was edited"
 msgstr ""
 
-# of gitaar 'distortion'
 #: beast-gtk/bstpatternctrl.c:88
-#, fuzzy
 msgid "Direction"
-msgstr "_Vervorming"
+msgstr "Richting"
 
 #: beast-gtk/bstpatternctrl.c:89
 msgid "The direction of cell movement each time an event or note was edited"
@@ -902,7 +891,7 @@ msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:93
 msgid "HWrap"
-msgstr ""
+msgstr "HWrap"
 
 #: beast-gtk/bstpatternctrl.c:94
 msgid ""
@@ -910,9 +899,8 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:97
-#, fuzzy
 msgid "Base Octave"
-msgstr "Octaven"
+msgstr "Bas-octaaf"
 
 #: beast-gtk/bstpatternctrl.c:98
 msgid "Controls the octave relative to which notes are entered"
@@ -978,11 +966,11 @@ msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:287
 msgid "Set the base octave"
-msgstr ""
+msgstr "Het basoctaaf instellen"
 
 #: beast-gtk/bstpatternctrl.c:290
 msgid "Change the base octave by a given amount"
-msgstr ""
+msgstr "Het basoctaaf met een gegeven hoeveelheid aanpassen"
 
 #: beast-gtk/bstpatternctrl.c:294
 msgid "Change the numeric focus cell contents (e.g. octave) by a given amount"
@@ -997,9 +985,8 @@ msgid "Remove any events in the focus cell"
 msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:306 beast-gtk/bstpatternctrl.c:320
-#, fuzzy
 msgid "Set the focus cell note"
-msgstr "Hele noten invoegen"
+msgstr ""
 
 #: beast-gtk/bstpatternctrl.c:310 beast-gtk/bstpatternctrl.c:324
 msgid "Sets the value of the focus digit"
@@ -1175,15 +1162,13 @@ msgstr "Noot afspelen"
 msgid "Playback"
 msgstr "Afspelen"
 
-# noten
 #: beast-gtk/bstpreferences.c:76
-#, fuzzy
 msgid "Piano Keys"
-msgstr "Pianotonen"
+msgstr "Pianotoetsen"
 
 #: beast-gtk/bstpreferences.c:83
 msgid "Generic Keys"
-msgstr ""
+msgstr "Generieke toetsen"
 
 #: beast-gtk/bstpreferences.c:88
 msgid "Skin"
@@ -1266,253 +1251,215 @@ msgid "Up"
 msgstr "Omhoog"
 
 #: beast-gtk/bstrecords.idl:35
-#, fuzzy
 msgid "Move upwards"
-msgstr "Deel verplaatsen"
+msgstr "Omhoog verplaatsen"
 
 #: beast-gtk/bstrecords.idl:36 beast-gtk/bsttrackrollctrl.c:64
 msgid "Left"
 msgstr "Links"
 
 #: beast-gtk/bstrecords.idl:36
-#, fuzzy
 msgid "Move to the left"
-msgstr "Noot verplaatsen"
+msgstr "Naar links verplaatsen"
 
 #: beast-gtk/bstrecords.idl:37 beast-gtk/bsttrackrollctrl.c:68
 msgid "Right"
 msgstr "Rechts"
 
 #: beast-gtk/bstrecords.idl:37
-#, fuzzy
 msgid "Move to the right"
-msgstr "Noot verplaatsen"
+msgstr "Naar rechts verplaatsen"
 
 #: beast-gtk/bstrecords.idl:38
 msgid "Down"
 msgstr "Omlaag"
 
+# moet waarschijnlijk zijn: move downwards
 #: beast-gtk/bstrecords.idl:38
 msgid "Step downwards"
-msgstr ""
+msgstr "Omlaag verplaatsen"
 
 #: beast-gtk/bstrecords.idl:42
-#, fuzzy
 msgid "None"
-msgstr "Noot"
+msgstr "Geen"
 
+# niet gespecificeerde duur
+# duur niet gegeven/gespecificeerd
 #: beast-gtk/bstrecords.idl:42
 msgid "Unspecified length"
-msgstr ""
+msgstr "Ongespecificeerde lengte"
 
 #: beast-gtk/bstrecords.idl:43
-#, fuzzy
 msgid "1/1"
-msgstr "1\\/1"
+msgstr "1/1"
 
 #: beast-gtk/bstrecords.idl:43
-#, fuzzy
 msgid "Whole note"
-msgstr "Noot afspelen"
+msgstr "Hele noot"
 
 #: beast-gtk/bstrecords.idl:44
-#, fuzzy
 msgid "1/2"
-msgstr "1\\/2"
+msgstr "1/2"
 
 #: beast-gtk/bstrecords.idl:44
-#, fuzzy
 msgid "Half note"
-msgstr "Noot afspelen"
+msgstr "Halve noot"
 
 #: beast-gtk/bstrecords.idl:45
-#, fuzzy
 msgid "1/4"
-msgstr "1\\/4"
+msgstr "1/4"
 
 #: beast-gtk/bstrecords.idl:45
-#, fuzzy
 msgid "Quarter note"
-msgstr "Kwarten invoegen"
+msgstr "Kwartnoot"
 
 #: beast-gtk/bstrecords.idl:46
-#, fuzzy
 msgid "1/8"
-msgstr "1\\/8"
+msgstr "1/8"
 
 #: beast-gtk/bstrecords.idl:46
-#, fuzzy
 msgid "Eighths note"
-msgstr "Achtsten invoegen"
+msgstr "Achtste noot"
 
 #: beast-gtk/bstrecords.idl:47
-#, fuzzy
 msgid "1/16"
-msgstr "1\\/16"
+msgstr "1/16"
 
 #: beast-gtk/bstrecords.idl:47
-#, fuzzy
 msgid "Sixteenth note"
-msgstr "Zestienden invoegen"
+msgstr "Zestiende noot"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "1/32"
-msgstr "1\\/2"
+msgstr "1/32"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "Thirtysecondth note"
-msgstr "Zestienden invoegen"
+msgstr "Tweeëndertigste noot"
 
 #: beast-gtk/bstrecords.idl:49
-#, fuzzy
 msgid "1/64"
-msgstr "1\\/4"
+msgstr "1/64"
 
 #: beast-gtk/bstrecords.idl:49
 msgid "Sixtyfourth note"
-msgstr ""
+msgstr "Vierenzestigste noot"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "1/1."
-msgstr "1\\/1"
+msgstr "1/1."
 
 #: beast-gtk/bstrecords.idl:50
 msgid "Dotted whole note"
-msgstr ""
+msgstr "Hele noot met punt"
 
 #: beast-gtk/bstrecords.idl:51
-#, fuzzy
 msgid "1/2."
-msgstr "1\\/2"
+msgstr "1/2."
 
 #: beast-gtk/bstrecords.idl:51
-#, fuzzy
 msgid "Dotted half note"
-msgstr "Halve noten invoegen"
+msgstr "Halve noot met punt"
 
 #: beast-gtk/bstrecords.idl:52
-#, fuzzy
 msgid "1/4."
-msgstr "1\\/4"
+msgstr "1/4."
 
 #: beast-gtk/bstrecords.idl:52
-#, fuzzy
 msgid "Dotted quarter note"
-msgstr "Kwarten invoegen"
+msgstr "Kwartnoot met punt"
 
 #: beast-gtk/bstrecords.idl:53
-#, fuzzy
 msgid "1/8."
-msgstr "1\\/8"
+msgstr "1/8."
 
 #: beast-gtk/bstrecords.idl:53
-#, fuzzy
 msgid "Dotted eighths note"
-msgstr "Achtsten invoegen"
+msgstr "Achtste noot met punt"
 
 #: beast-gtk/bstrecords.idl:54
-#, fuzzy
 msgid "1/16."
-msgstr "1\\/16"
+msgstr "1/16."
 
 #: beast-gtk/bstrecords.idl:54
-#, fuzzy
 msgid "Dotted sixteenth note"
-msgstr "Zestienden invoegen"
+msgstr "Zestiende noot met punt"
 
 #: beast-gtk/bstrecords.idl:55
-#, fuzzy
 msgid "1/32."
-msgstr "1\\/2"
+msgstr "1/32."
 
 #: beast-gtk/bstrecords.idl:55
 msgid "Dotted thirtysecondth note"
-msgstr ""
+msgstr "Tweeëndertigste noot met punt"
 
 #: beast-gtk/bstrecords.idl:56
-#, fuzzy
 msgid "1/64."
-msgstr "1\\/4"
+msgstr "1/64."
 
 #: beast-gtk/bstrecords.idl:56
 msgid "Dotted sixtyfourth note"
-msgstr ""
+msgstr "Vierenzestigste noot met punt"
 
 #: beast-gtk/bstrecords.idl:57
-#, fuzzy
 msgid "1/1T"
-msgstr "1\\/1"
+msgstr "1/1T"
 
 #: beast-gtk/bstrecords.idl:57
 msgid "Triplet whole note"
-msgstr ""
+msgstr "Triool met hele noten"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "1/2T"
-msgstr "1\\/2"
+msgstr "1/2T"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "Triplet half note"
-msgstr "Halve noten invoegen"
+msgstr "Triool met hHalve noten"
 
 #: beast-gtk/bstrecords.idl:59
-#, fuzzy
 msgid "1/4T"
-msgstr "1\\/4"
+msgstr "1/4T"
 
 #: beast-gtk/bstrecords.idl:59
-#, fuzzy
 msgid "Triplet quarter note"
-msgstr "Kwarten invoegen"
+msgstr "Triool met kwarten"
 
 #: beast-gtk/bstrecords.idl:60
-#, fuzzy
 msgid "1/8T"
-msgstr "1\\/8"
+msgstr "1/8T"
 
 #: beast-gtk/bstrecords.idl:60
-#, fuzzy
 msgid "Triplet eighths note"
-msgstr "Achtsten invoegen"
+msgstr "Triool met achtsten"
 
 #: beast-gtk/bstrecords.idl:61
-#, fuzzy
 msgid "1/16T"
-msgstr "1\\/16"
+msgstr "1/16T"
 
 #: beast-gtk/bstrecords.idl:61
-#, fuzzy
 msgid "Triplet sixteenth note"
-msgstr "Zestienden invoegen"
+msgstr "Triool met zestienden"
 
 #: beast-gtk/bstrecords.idl:62
-#, fuzzy
 msgid "1/32T"
-msgstr "1\\/2"
+msgstr "1/32T"
 
 #: beast-gtk/bstrecords.idl:62
 msgid "Triplet thirtysecondth note"
-msgstr ""
+msgstr "Triool met tweeëndertigsten"
 
 #: beast-gtk/bstrecords.idl:63
-#, fuzzy
 msgid "1/64T"
-msgstr "1\\/4"
+msgstr "1/64T"
 
 #: beast-gtk/bstrecords.idl:63
-#, fuzzy
 msgid "Triplet sixtyfourth note"
-msgstr "Zestienden invoegen"
+msgstr "Triool met vierenzestigsten"
 
 #: beast-gtk/bstrecords.idl:68
-#, fuzzy
 msgid "Release counter"
-msgstr "_Release notes..."
+msgstr "Uitgave teller"
 
 #: beast-gtk/bstrecords.idl:70
 msgid "Font Size"
@@ -1520,36 +1467,35 @@ msgstr "Lettertypegrootte"
 
 #: beast-gtk/bstrecords.idl:70
 msgid "Font size in pixels for labels displayed in synthesis networks"
-msgstr ""
+msgstr "Groote van lettertype in beeldpunten voor weergegeven labels in sythese netwerken"
 
 #: beast-gtk/bstrecords.idl:72
 msgid "Anti-Alias"
-msgstr ""
+msgstr "Anti-alias"
 
 #: beast-gtk/bstrecords.idl:72
 msgid "Draw synthesis networks anti-aliased?"
-msgstr ""
+msgstr "Synthese-netwerken met anti-alias weergeven?"
 
 #: beast-gtk/bstrecords.idl:74
 msgid "Single Edit"
-msgstr ""
+msgstr "Enkele edit"
 
 #: beast-gtk/bstrecords.idl:74
 msgid "Fallback into Edit mode after creating synthesis modules?"
-msgstr ""
+msgstr "Terugvallen naar edit-modus na het aanmaken van synthese-modules?"
 
 #: beast-gtk/bstrecords.idl:76
 msgid "Swap IO"
-msgstr ""
+msgstr "IO wisselen"
 
 #: beast-gtk/bstrecords.idl:76
 msgid "Swap input with output channels when displaying synthesis modules?"
-msgstr ""
+msgstr "Uitvoer<"
 
 #: beast-gtk/bstrecords.idl:80
-#, fuzzy
 msgid "Tab Width"
-msgstr "Pulsbreedte"
+msgstr "Tabbreedte"
 
 #: beast-gtk/bstrecords.idl:80
 msgid "Specify project tab width in pixels"
@@ -1557,7 +1503,7 @@ msgstr ""
 
 #: beast-gtk/bstrecords.idl:82
 msgid "Homogeneous Input Fields"
-msgstr ""
+msgstr "Homogene invoervelden"
 
 #: beast-gtk/bstrecords.idl:83
 msgid ""
@@ -1566,13 +1512,12 @@ msgid ""
 msgstr ""
 
 #: beast-gtk/bstrecords.idl:91
-#, fuzzy
 msgid "Skin Name"
-msgstr "Naam"
+msgstr "Naam skin"
 
 #: beast-gtk/bstrecords.idl:91
 msgid "Name for the current skin configuration (used for skin selections)."
-msgstr ""
+msgstr "Naam voor de huidige skin-configuratie (gebruikt voor skin-selecties)."
 
 #: beast-gtk/bstrecords.idl:93 beast-gtk/bstrecords.idl:103
 msgid "Background Image"
@@ -1580,60 +1525,56 @@ msgstr "Achtergrondafbeelding"
 
 #: beast-gtk/bstrecords.idl:93
 msgid "Background image used by the piano-roll widget."
-msgstr ""
+msgstr "Achtergrondafbeelding gebruikt voor de pianorol."
 
 #: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
 msgid "Image shade"
-msgstr ""
+msgstr "Afbeeldingschaduw"
 
+# percentage menging van achtergrondafbeelding met achtergrondkleur
 #: beast-gtk/bstrecords.idl:94 beast-gtk/bstrecords.idl:104
 msgid "Percentage of background image pixel to blend over background color."
-msgstr ""
+msgstr "Percentage van achtergrondafbeelding dat met de achtergrondkleur gemengd wordt."
 
 #: beast-gtk/bstrecords.idl:95 beast-gtk/bstrecords.idl:105
 msgid "Background Color"
 msgstr "Achtergrondkleur"
 
 #: beast-gtk/bstrecords.idl:96 beast-gtk/bstrecords.idl:106
-#, fuzzy
 msgid "Horizontal Bar Color"
-msgstr "Horizontale trackzoom"
+msgstr "Kleur horizontale balk"
 
 #: beast-gtk/bstrecords.idl:97
-#, fuzzy
 msgid "Vertical Bar Color"
-msgstr "Verticaale pianozoom"
+msgstr "Kleur verticale balk"
 
 #: beast-gtk/bstrecords.idl:98
-#, fuzzy
 msgid "Horizontal Grid Color"
-msgstr "Horizontale pianozoom"
+msgstr "Kleur horizontaal rooster"
 
 #: beast-gtk/bstrecords.idl:99
-#, fuzzy
 msgid "Vertical Grid Color"
-msgstr "Verticaale pianozoom"
+msgstr "Kleur verticale rooster"
 
 #: beast-gtk/bstrecords.idl:100 beast-gtk/bstrecords.idl:107
 msgid "Middle Bar Color"
-msgstr ""
+msgstr "Kleur middenbalk"
 
 #: beast-gtk/bstrecords.idl:103
 msgid "Background image used by the control events widget."
-msgstr ""
+msgstr "Gebruikte achtergrondafbeelding voor de control-events."
 
 #: beast-gtk/bstrecords.idl:108
 msgid "Positive Value Color"
-msgstr ""
+msgstr "Kleur positieve waarde"
 
 #: beast-gtk/bstrecords.idl:109
-#, fuzzy
 msgid "Zero Value Color"
-msgstr "Selecteren"
+msgstr "Kleur nulwaarde"
 
 #: beast-gtk/bstrecords.idl:110
 msgid "Negative Value Color"
-msgstr ""
+msgstr "Kleur negatieve waarde"
 
 #: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
 msgid "Zoom:"
@@ -2026,11 +1967,11 @@ msgstr "De geselecteerde wave bewerken"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
 msgid "Adjust pattern length"
-msgstr ""
+msgstr "Patroonlengte aanpassen"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Adjust right view boundary"
-msgstr ""
+msgstr "Rechter weergavegrens aanpassen"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:3
 msgid "Adjust the zoom factor of the router display"
@@ -2038,7 +1979,7 @@ msgstr "Zoomfactor van de router-weergave aanpassen "
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:4
 msgid "Aplly configuration changes to the pattern editor layout"
-msgstr ""
+msgstr "Configuratieaanpassingen toepassen op de patroon-editor indeling"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:5
 msgid "Configure"
@@ -2046,7 +1987,7 @@ msgstr "Configureren"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:6
 msgid "Configure the column layout of the pattern editor"
-msgstr ""
+msgstr "De kolomindeling van de patroon-editor configureren"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:7
 msgid "Control Type:"
@@ -2058,7 +1999,7 @@ msgstr "Ontwikkeling"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:9
 msgid "Discard changes and close dialog"
-msgstr ""
+msgstr "Aanpassingen negeren en dialoogvenster sluiten"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:10
 msgid "E_xamples"
@@ -2107,7 +2048,7 @@ msgstr "Synthesemodules"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:22
 msgid "Vertical piano zoom"
-msgstr "Verticaale pianozoom"
+msgstr "Verticale pianozoom"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:23
 msgid "Virtual Rack"
@@ -2292,9 +2233,8 @@ msgstr "Tekstinvoer"
 
 # betere vertaling?
 #: beast-gtk/gxk/gxkparam-label.c:66
-#, fuzzy
 msgid "Property Identifier"
-msgstr "Identificatie:"
+msgstr "Eigenschap-identificatie"
 
 #: beast-gtk/gxk/gxkparam-label.c:72
 msgid "Property Name"
@@ -2396,14 +2336,12 @@ msgid "The widget to be activated when the label's mnemonic key is pressed"
 msgstr ""
 "Het te activeren widget wanneer de sneltoets van het label wordt gebruikt"
 
-# huh?
 #. TRANSLATORS: this is the string that is appended to the end
 #. * of a clipped label if it does not fit its assigned width.
 #.
 #: beast-gtk/gxk/gxksimplelabel.c:575
-#, fuzzy
 msgid "..."
-msgstr "Lib..."
+msgstr "..."
 
 #: bse/bseamplifier.idl:30 plugins/bsebalance.idl:26
 #: plugins/davbassfilter.idl:28 plugins/davchorus.idl:28
@@ -2444,7 +2382,7 @@ msgstr "Audio in1"
 
 #: bse/bseamplifier.idl:45 plugins/bsebalance.idl:36
 msgid "First audio input"
-msgstr "Eerste audioingang"
+msgstr "Eerste audio ingang"
 
 #: bse/bseamplifier.idl:46 plugins/bseadder.c:102 plugins/bsebalance.idl:37
 #: plugins/bsemult.c:62
@@ -2453,7 +2391,7 @@ msgstr "Audio in2"
 
 #: bse/bseamplifier.idl:46 plugins/bsebalance.idl:37
 msgid "Second audio input"
-msgstr "Tweede audioingang"
+msgstr "Tweede audio ingang"
 
 #: bse/bseamplifier.idl:47 plugins/bsebalance.idl:38
 msgid "Ctrl In1"
@@ -2482,11 +2420,11 @@ msgstr "Audio uit"
 
 #: bse/bseamplifier.idl:49
 msgid "Amplified audio output"
-msgstr "Versterkte audiouitgang"
+msgstr "Versterkte audio uitgang"
 
 #: bse/bseamplifier.idl:50 plugins/bsebalance.idl:43
 msgid "Audio Input"
-msgstr "Audioingang"
+msgstr "Audio ingang"
 
 #: bse/bseamplifier.idl:51 bse/bseamplifier.idl:56 plugins/bsebalance.idl:44
 #: plugins/bsebalance.idl:49
@@ -2496,7 +2434,7 @@ msgstr "Ingang 1 [%]"
 # attenuate=verzachten, afzwakken, verdunnen
 #: bse/bseamplifier.idl:51 plugins/bsebalance.idl:44
 msgid "Attenuate the level of audio input 1"
-msgstr "Het niveau van audioingang 1 verzwakken"
+msgstr "Het niveau van audio ingang 1 verzwakken"
 
 #: bse/bseamplifier.idl:52 bse/bseamplifier.idl:57 plugins/bsebalance.idl:45
 #: plugins/bsebalance.idl:50
@@ -2505,7 +2443,7 @@ msgstr "Ingang 2 [%]"
 
 #: bse/bseamplifier.idl:52 plugins/bsebalance.idl:45
 msgid "Attenuate the level of audio input 2"
-msgstr "Het niveau van audioingang 2 verzwakken"
+msgstr "Het niveau van audio ingang 2 verzwakken"
 
 #: bse/bseamplifier.idl:53 bse/bseamplifier.idl:58 plugins/bsebalance.idl:46
 #: plugins/bsebalance.idl:51
@@ -2514,7 +2452,7 @@ msgstr "Balans"
 
 #: bse/bseamplifier.idl:53 plugins/bsebalance.idl:46
 msgid "Balance audio input levels"
-msgstr "Audioingang balans"
+msgstr "Audio ingang balans"
 
 #: bse/bseamplifier.idl:55 plugins/bsebalance.idl:48
 msgid "Control Input"
@@ -2713,30 +2651,28 @@ msgstr "Ongefilterd audiosignaal"
 #: bse/bsebiquadfilter.c:192 bse/bsestandardosc.c:199 bse/bsewaveosc.c:155
 #: plugins/davorgan.c:132 plugins/davsyndrum.c:116
 #: plugins/davxtalstrings.c:141
-#, fuzzy
 msgid "Freq In"
-msgstr "Frequentie"
+msgstr "Freq in"
 
 #: bse/bsebiquadfilter.c:192
 msgid "Center Frequency Input"
-msgstr "Ingang centrale frequentie"
+msgstr "Centrale frequentie ingang"
 
 #: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Freq Mod In"
-msgstr ""
+msgstr "Freq mod in"
 
 #: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Frequency Modulation Input"
-msgstr "Ingang frequentiemodulatie"
+msgstr "Frequentiemodulatie ingang"
 
 #: bse/bsebiquadfilter.c:196
-#, fuzzy
 msgid "Gain Mod In"
-msgstr "Ingang Gain modulatie"
+msgstr "Gain mod ingang"
 
 #: bse/bsebiquadfilter.c:196
 msgid "Gain Modulation Input"
-msgstr "Ingang Gain modulatie"
+msgstr "Gain modulatie ingang"
 
 #: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
@@ -2745,11 +2681,11 @@ msgstr "Gefilterd audiosignaal"
 #: bse/bseconstant.c:111 bse/bseconstant.c:142
 #, c-format
 msgid "Constant Output %u"
-msgstr ""
+msgstr "Constante uitgang %u"
 
 #: bse/bseconstant.c:114
 msgid "Value [float]"
-msgstr ""
+msgstr "Waarde [float]"
 
 #: bse/bseconstant.c:122 bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
 #: bse/bsestandardosc.c:150
@@ -2759,140 +2695,124 @@ msgstr "Frequentie"
 #: bse/bseconstant.c:141
 #, c-format
 msgid "Const Out%u"
-msgstr ""
+msgstr "Const uit%u"
 
+# frequentie van de toets
 #: bse/bseinstrumentinput.c:106 bse/bsemidiinput.c:114
-#, fuzzy
 msgid "Note Frequency"
-msgstr "Centrale frequentie"
+msgstr "Frequentie noot"
 
 #: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
-#, fuzzy
 msgid "Gate"
-msgstr "Plakken"
+msgstr "Gate"
 
 #: bse/bseinstrumentinput.c:108 bse/bsemidiinput.c:116
 msgid "High if the note is currently being pressed"
-msgstr ""
+msgstr "Hoog indien de toets momenteel wordt ingedrukt"
 
 #: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
 msgid "Velocity"
-msgstr ""
+msgstr "Velocity"
 
 #: bse/bseinstrumentinput.c:110 bse/bsemidiinput.c:118
 msgid "Velocity of the note press"
-msgstr ""
+msgstr "Velocity van de toetsaanslag"
 
 #: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
 msgid "Aftertouch"
-msgstr ""
+msgstr "Naslag"
 
 #: bse/bseinstrumentinput.c:112 bse/bsemidiinput.c:120
 msgid "Velocity while the note is pressed"
-msgstr ""
+msgstr "Velocity terwijl de toets wordt ingedrukt"
 
 #: bse/bseinstrumentoutput.c:106
-#, fuzzy
 msgid "Left Audio"
-msgstr "Links audio in"
+msgstr "Audio links"
 
 #: bse/bseinstrumentoutput.c:106
-#, fuzzy
 msgid "Left Channel Output"
-msgstr "Linker audiouitgang"
+msgstr "Linker kanaaluitgang"
 
 #: bse/bseinstrumentoutput.c:108
-#, fuzzy
 msgid "Right Audio"
-msgstr "Rechts audio in"
+msgstr "Audio rechts"
 
 #: bse/bseinstrumentoutput.c:108
-#, fuzzy
 msgid "Right Channel Output"
-msgstr "Rechter audiouitgang"
+msgstr "Rechter kanaaluitgang"
 
 #: bse/bseinstrumentoutput.c:110
-#, fuzzy
 msgid "Unused"
-msgstr "Ongedaan maken"
+msgstr "Ongebruikt"
 
 #: bse/bseinstrumentoutput.c:112
-#, fuzzy
 msgid "Synth Done"
-msgstr "_Synth"
+msgstr "Synth voltooid"
 
 #: bse/bseinstrumentoutput.c:112
 msgid "High indicates the instrument is done synthesizing"
-msgstr ""
+msgstr "Hoog geeft aan dat het instrument klaar is met de synthese"
 
 #: bse/bsemidicontroller.c:142
-#, fuzzy
 msgid "Ctrl Out1"
-msgstr "Ctrl in1"
+msgstr "Ctrl Out1"
 
 #: bse/bsemidicontroller.c:142
 msgid "MIDI Signal 1"
-msgstr ""
+msgstr "MIDI signaal 1"
 
 #: bse/bsemidicontroller.c:144
-#, fuzzy
 msgid "Ctrl Out2"
-msgstr "Ctrl in2"
+msgstr "Ctrl Out2"
 
 #: bse/bsemidicontroller.c:144
 msgid "MIDI Signal 2"
-msgstr ""
+msgstr "MIDI signaal 2"
 
 #: bse/bsemidicontroller.c:146
-#, fuzzy
 msgid "Ctrl Out3"
-msgstr "Controle-ingang"
+msgstr "Ctrl Out3"
 
 #: bse/bsemidicontroller.c:146
 msgid "MIDI Signal 3"
-msgstr ""
+msgstr "MIDI signaal 3"
 
 #: bse/bsemidicontroller.c:148
-#, fuzzy
 msgid "Ctrl Out4"
-msgstr "Controle-ingang"
+msgstr "Ctrl Out4"
 
 #: bse/bsemidicontroller.c:148
 msgid "MIDI Signal 4"
-msgstr ""
+msgstr "MIDI signaal 4"
 
 #: bse/bsemidivoice.c:109 plugins/bsesequencer.c:107
-#, fuzzy
 msgid "Freq Out"
-msgstr "Links uit"
+msgstr "Freq uit"
 
 #: bse/bsemidivoice.c:111 bse/bsewaveosc.c:163
-#, fuzzy
 msgid "Gate Out"
-msgstr "Links uit"
+msgstr "Gate uit"
 
 #: bse/bsemidivoice.c:113
-#, fuzzy
 msgid "Velocity Out"
-msgstr "Links uit"
+msgstr "Velocity uit"
 
 #: bse/bsemidivoice.c:115
 msgid "Aftertouch Out"
-msgstr ""
+msgstr "Naslag uit"
 
 #: bse/bsemidivoice.c:133 plugins/davcanyondelay.c:116
-#, fuzzy
 msgid "Left In"
-msgstr "Links"
+msgstr "Links in"
 
 #: bse/bsemidivoice.c:135 plugins/davcanyondelay.c:118
-#, fuzzy
 msgid "Right In"
-msgstr "Rechts"
+msgstr "Rechts in"
 
 #: bse/bsemidivoice.c:137
 msgid "Disconnect In"
-msgstr ""
+msgstr "Disconnect in"
 
 #: bse/bsemidivoice.c:139 plugins/bsebalance.idl:40
 #: plugins/davcanyondelay.c:120
@@ -2906,7 +2826,7 @@ msgstr "Rechts uit"
 
 #: bse/bsemidivoice.c:143
 msgid "Disconnect Out"
-msgstr ""
+msgstr "Disconnect uit"
 
 #: bse/bsepcminput.c:133 plugins/artscompressor.idl:51
 #: plugins/freeverb/bsefreeverb.c:125
@@ -2914,9 +2834,8 @@ msgid "Left Audio Out"
 msgstr "Links audio uit"
 
 #: bse/bsepcminput.c:133
-#, fuzzy
 msgid "Left channel output"
-msgstr "Linker audiouitgang"
+msgstr "Linker kanaaluitgang"
 
 #: bse/bsepcminput.c:135 plugins/artscompressor.idl:52
 #: plugins/freeverb/bsefreeverb.c:126
@@ -2924,9 +2843,8 @@ msgid "Right Audio Out"
 msgstr "Rechts audio uit"
 
 #: bse/bsepcminput.c:135
-#, fuzzy
 msgid "Right channel output"
-msgstr "Rechter audiouitgang"
+msgstr "Rechter kanaaluitgang"
 
 #: bse/bsepcmoutput.c:133 plugins/artscompressor.idl:49
 #: plugins/freeverb/bsefreeverb.c:123
@@ -2934,9 +2852,8 @@ msgid "Left Audio In"
 msgstr "Links audio in"
 
 #: bse/bsepcmoutput.c:133
-#, fuzzy
 msgid "Left channel input"
-msgstr "Linker audioingang"
+msgstr "Linker kanaalingang"
 
 #: bse/bsepcmoutput.c:135 plugins/artscompressor.idl:50
 #: plugins/freeverb/bsefreeverb.c:124
@@ -2944,14 +2861,12 @@ msgid "Right Audio In"
 msgstr "Rechts audio in"
 
 #: bse/bsepcmoutput.c:135
-#, fuzzy
 msgid "Right channel Input"
-msgstr "Rechter audioingag"
+msgstr "Rechter kanaalingag"
 
 #: bse/bsecore.idl:395
-#, fuzzy
 msgid "Latency [ms]"
-msgstr "Attack [ms]"
+msgstr "Vertraging [ms]"
 
 #: bse/bsecore.idl:396
 msgid ""
@@ -2981,7 +2896,7 @@ msgstr ""
 
 #: bse/bsesnooper.c:113
 msgid "Signal In"
-msgstr ""
+msgstr "Signaal in"
 
 #: bse/bsesnooper.c:113
 msgid "Snoop Signal"
@@ -3078,7 +2993,7 @@ msgstr "Oscillerende frequentie-ingang"
 
 #: bse/bsestandardosc.c:203
 msgid "PWM In"
-msgstr ""
+msgstr "PWM In"
 
 #: bse/bsestandardosc.c:203
 msgid "Pulse Width Modulation Input"
@@ -3086,7 +3001,7 @@ msgstr "Pulsbreedte modulatie-ingang"
 
 #: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
 msgid "Sync In"
-msgstr ""
+msgstr "Sync In"
 
 #: bse/bsestandardosc.c:205 bse/bsewaveosc.c:157
 msgid "Syncronization Input"
@@ -3098,54 +3013,52 @@ msgstr "Oscillerende uitgang"
 
 #: bse/bsestandardosc.c:209
 msgid "Sync Out"
-msgstr ""
+msgstr "Sync uit"
 
 #: bse/bsestandardosc.c:209
 msgid "Syncronization Output"
 msgstr "Synchronisatie-uitgang"
 
 #: bse/bsesubiport.c:127 bse/bsesubsynth.c:137
-#, fuzzy, c-format
+#, c-format
 msgid "Input Port %u"
-msgstr "Ingang 2 [%]"
+msgstr "Ingangspoort %u"
 
 #: bse/bsesubiport.c:129 bse/bsesuboport.c:129 bse/bsesubsynth.c:127
-#, fuzzy
 msgid "Assignments"
-msgstr "Gebeurtenissen uitlijnen"
+msgstr "Toewijzingen"
 
 #: bse/bsesubiport.c:131 bse/bsesuboport.c:131
 msgid ""
 "The port name is a unique name to establish input<->output port relationships"
-msgstr ""
+msgstr "De poortnaam is een unieke naam om een relatie ingangspoort<->uitgangspoort tot stand te brengen"
 
 #: bse/bsesubiport.c:139 bse/bsesubsynth.c:157
-#, fuzzy, c-format
+#, c-format
 msgid "Virtual input %u"
-msgstr "Eerste audioingang"
+msgstr "Virtuele ingang %u"
 
 #: bse/bsesuboport.c:127 bse/bsesubsynth.c:147
-#, fuzzy, c-format
+#, c-format
 msgid "Output Port %u"
-msgstr "Uitvoer"
+msgstr "Uitgangspoort %u"
 
 #: bse/bsesuboport.c:139 bse/bsesubsynth.c:164
 #, c-format
 msgid "Virtual output %u"
-msgstr ""
+msgstr "Virtuele uitgang %u"
 
 #: bse/bsesubsynth.c:129
-#, fuzzy
 msgid "Synthesis Network"
-msgstr "_Synthesizers"
+msgstr "Synthese netwerk"
 
 #: bse/bsesubsynth.c:130
 msgid "The synthesis network to interface to"
-msgstr ""
+msgstr "Het synthese-netwerk waarmee gewerkt wordt"
 
 #: bse/bsesubsynth.c:139
 msgid "Input Assignments"
-msgstr ""
+msgstr "Ingangs-toewijzingen"
 
 #: bse/bsesubsynth.c:140
 msgid "Output port name to interface from"
@@ -3153,7 +3066,7 @@ msgstr ""
 
 #: bse/bsesubsynth.c:149
 msgid "Output Assignments"
-msgstr ""
+msgstr "Uitgangs-toewijzingen"
 
 #: bse/bsesubsynth.c:150
 msgid "Input port name to interface to"
@@ -3165,7 +3078,7 @@ msgstr "Auteur"
 
 #: bse/bsesuper.c:101
 msgid "Person changing or creating this object"
-msgstr "Persoon die dit object aanmaakt of veranderd"
+msgstr "Persoon die dit object aanmaakt of verandert"
 
 #: bse/bsesuper.c:106
 msgid "License"
@@ -3185,7 +3098,7 @@ msgstr "Laatste modificatietijd"
 
 #: bse/bsewaveosc.c:129
 msgid "Wave to play"
-msgstr ""
+msgstr "Af te spelen wav"
 
 #: bse/bsewaveosc.c:134
 #, fuzzy
@@ -3198,29 +3111,24 @@ msgid "Perform exponential frequency modulationinstead of linear"
 msgstr "Exponentiële frequentiemodulatie uitvoeren in plaats van lineaire"
 
 #: bse/bsewaveosc.c:155 plugins/davorgan.c:132
-#, fuzzy
 msgid "Frequency Input"
-msgstr "Ingang centrale frequentie"
+msgstr "Frequentie ingang"
 
 #: bse/bsewaveosc.c:159
-#, fuzzy
 msgid "Mod In"
-msgstr "Module Info"
+msgstr "Mod In"
 
 #: bse/bsewaveosc.c:159
-#, fuzzy
 msgid "Modulation Input"
-msgstr "Ingang Gain modulatie"
+msgstr "Modulatie ingang"
 
 #: bse/bsewaveosc.c:161
-#, fuzzy
 msgid "Wave Output"
-msgstr "Uitvoer"
+msgstr "Wave uitgang"
 
 #: bse/bsewaveosc.c:163
-#, fuzzy
 msgid "Gate Output"
-msgstr "Uitvoerkanalen verwijderen"
+msgstr "Gate uitgang"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
@@ -3228,7 +3136,7 @@ msgstr "BEAST"
 
 #: data/beast.desktop.in.h:2
 msgid "MIDI Tracker, Music Composition and Modular Synthesis Application"
-msgstr ""
+msgstr "MIDI tracker, muziekcompositie en modulaire synthese"
 
 #: data/beast.desktop.in.h:3
 msgid "Music Composer"
@@ -3262,7 +3170,7 @@ msgstr "ArtsCompressor comprimeert het geluid"
 #: plugins/artscompressor.idl:32 plugins/davbassfilter.idl:34
 #: plugins/davchorus.idl:31 plugins/evaluator/bseevaluator.idl:32
 msgid "Audio input"
-msgstr "Audioingang"
+msgstr "Audio ingang"
 
 #: plugins/artscompressor.idl:33
 msgid "Compressed audio output"
@@ -3314,7 +3222,7 @@ msgstr "ArtsStereoCompressor comprimeert het geluid."
 
 #: plugins/artscompressor.idl:49
 msgid "Left audio input"
-msgstr "Linker audioingang"
+msgstr "Linker audio ingang"
 
 #: plugins/artscompressor.idl:50
 msgid "Right audio input"
@@ -3322,36 +3230,36 @@ msgstr "Rechter audioingag"
 
 #: plugins/artscompressor.idl:51
 msgid "Compressed left audio output"
-msgstr "Gecomprimeerde linker audiouitgang"
+msgstr "Gecomprimeerde linker audio uitgang"
 
 #: plugins/artscompressor.idl:52
 msgid "Compressed right audio output"
-msgstr "Gecomprimeerde rechter audiouitgang"
+msgstr "Gecomprimeerde rechter audio uitgang"
 
 #: plugins/bseadder.c:100 plugins/bsemult.c:60
 #, fuzzy
 msgid "Audio Input 1"
-msgstr "Audioingang"
+msgstr "Audio ingang 1"
 
 #: plugins/bseadder.c:102 plugins/bsemult.c:62
 #, fuzzy
 msgid "Audio Input 2"
-msgstr "Audioingang"
+msgstr "Audio ingang 2"
 
 #: plugins/bseadder.c:104 plugins/bsemult.c:68
 #, fuzzy
 msgid "Audio Output"
-msgstr "Audiouitgang"
+msgstr "Audio uitgang"
 
 #: plugins/bseatandistort.c:90
 #, fuzzy
 msgid "Audio Input SIgnal"
-msgstr "Audioingang"
+msgstr "Audio ingang"
 
 #: plugins/bseatandistort.c:92
 #, fuzzy
 msgid "Distorted Audio Output"
-msgstr "Gefilterde audiouitgang"
+msgstr "Gefilterde audio uitgang"
 
 #: plugins/bsebalance.idl:27
 msgid "/Spatial/Balance"
@@ -3365,7 +3273,7 @@ msgid ""
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
 msgstr ""
-"BseBalance is een stereo panning module met twee audioingangen en twee "
+"BseBalance is een stereo panning module met twee audio ingangen en twee "
 "controle-ingangen die elk apart kunnen worden ingesteld. De resulterende "
 "uitvoerbalans wordt bepaalt door een balansinstelling en de som van de "
 "controle-ingangen. Om bij snelle balanswisselingen aliasing artefacten te "
@@ -3374,7 +3282,7 @@ msgstr ""
 
 #: plugins/bsebalance.idl:40
 msgid "Left audio output"
-msgstr "Linker audiouitgang"
+msgstr "Linker audio uitgang"
 
 #: plugins/bsebalance.idl:41
 msgid "Mix Out"
@@ -3382,11 +3290,11 @@ msgstr "Mix uit"
 
 #: plugins/bsebalance.idl:41
 msgid "Mixed audio output"
-msgstr "Gemixte audiouitgang"
+msgstr "Gemixte audio uitgang"
 
 #: plugins/bsebalance.idl:42
 msgid "Right audio output"
-msgstr "Rechter audiouitgang"
+msgstr "Rechter audio uitgang"
 
 #: plugins/bsebalance.idl:53
 msgid "Output Panning"
@@ -3479,7 +3387,7 @@ msgstr "Ongefilterde ingang"
 
 #: plugins/bseiirfilter.c:162
 msgid "Filtered Output"
-msgstr "Gefilterde uitgan"
+msgstr "Gefilterde uitgang"
 
 #: plugins/bsemixer.c:109
 #, fuzzy
@@ -3487,112 +3395,102 @@ msgid "Sole Output"
 msgstr "Uitvoerkanalen verwijderen"
 
 #: plugins/bsemixer.c:115
-#, fuzzy, c-format
+#, c-format
 msgid "Channel%u"
-msgstr "Kanaalhints"
+msgstr "Kanaal%u"
 
 #: plugins/bsemixer.c:117
-#, fuzzy, c-format
+#, c-format
 msgid "Channel%u [float]"
-msgstr "Kanaalhints"
+msgstr "Kanaal%u [float]"
 
 #: plugins/bsemixer.c:127
-#, fuzzy, c-format
+#, c-format
 msgid "Channel%u [dB]"
-msgstr "Gain [dB]"
+msgstr "Kanaal%u [dB]"
 
 #: plugins/bsemixer.c:138
 #, c-format
 msgid "Channel%u [%%]"
-msgstr ""
+msgstr "Kanaal%u [%%]"
 
 #: plugins/bsemixer.c:149
-#, fuzzy, c-format
+#, c-format
 msgid "Audio In%u"
-msgstr "Audio in"
+msgstr "Audio in%u"
 
 #: plugins/bsemixer.c:150
-#, fuzzy, c-format
+#, c-format
 msgid "Input Channel %u"
-msgstr "Invoerkanalen:"
+msgstr "Ingangskanaal %u"
 
 #: plugins/bsemult.c:64
-#, fuzzy
 msgid "Audio In3"
-msgstr "Audio in"
+msgstr "Audio In3"
 
 #: plugins/bsemult.c:64
-#, fuzzy
 msgid "Audio Input 3"
-msgstr "Audioingang"
+msgstr "Audio ingang 3"
 
 #: plugins/bsemult.c:66
-#, fuzzy
 msgid "Audio In4"
-msgstr "Audio in"
+msgstr "Audio In4"
 
 #: plugins/bsemult.c:66
-#, fuzzy
 msgid "Audio Input 4"
-msgstr "Audioingang"
+msgstr "Audio ingang 4"
 
 #: plugins/bsenoise.c:64
-#, fuzzy
 msgid "Noise Out"
-msgstr "Mix uit"
+msgstr "Ruis uit"
 
 #: plugins/bsenoise.c:64
-#, fuzzy
 msgid "Noise Output"
-msgstr "Gefilterde uitgan"
+msgstr "Ruis uitgang"
 
 #: plugins/bsesequencer.c:107
-#, fuzzy
 msgid "Frequency Signal"
-msgstr "Frequentie"
+msgstr "Frequentie signaal"
 
 #: plugins/bsesequencer.c:109
-#, fuzzy
 msgid "Note Sync"
-msgstr "Noot invoer"
+msgstr "Noot sync"
 
 #: plugins/bsesequencer.c:109
 msgid "Note Sync Signal"
-msgstr ""
+msgstr "Note sync signaal"
 
 #: plugins/bsesimpleadsr.c:118
 msgid "Gate In"
-msgstr ""
+msgstr "Gate in"
 
 #: plugins/bsesimpleadsr.c:118
 msgid "Gate input (activates/deactivates envelope)"
-msgstr ""
+msgstr "Gate ingang (activeert/deactiveert envelope)"
 
 #: plugins/bsesimpleadsr.c:120
 msgid "Retrigger In"
-msgstr ""
+msgstr "Retrigger in"
 
 #: plugins/bsesimpleadsr.c:120
 msgid "Retrigger input (raising edge retriggers envelope)"
-msgstr ""
+msgstr "Retrigger ingang (stijgende kant reactiveert envelope)"
 
 #: plugins/bsesimpleadsr.c:122
-#, fuzzy
 msgid "Ctrl Out"
-msgstr "Controle-ingang"
+msgstr "Ctrl-uit"
 
 #: plugins/bsesimpleadsr.c:122
 msgid "Attack-Decay-Sustain-Release envelope output"
 msgstr ""
 
 #: plugins/bsesimpleadsr.c:124
-#, fuzzy
 msgid "Done Out"
-msgstr "Links uit"
+msgstr "Voltooid uit"
 
 #: plugins/bsesimpleadsr.c:124
 msgid "This signal goes high after the release phase has completed"
-msgstr ""
+msgstr "Dit signaal gaat op hoog nadat de release-fase is voltooid"
 
 #: plugins/davbassfilter.idl:29
 msgid "/Filters/Bass Filter"
@@ -3611,7 +3509,7 @@ msgstr ""
 
 #: plugins/davbassfilter.idl:35
 msgid "Filtered audio output"
-msgstr "Gefilterde audiouitgang"
+msgstr "Gefilterde audio uitgang"
 
 #: plugins/davbassfilter.idl:37
 msgid "Cutoff [%]"
@@ -3652,24 +3550,20 @@ msgid "Trigger filter"
 msgstr "Trigger filter"
 
 #: plugins/davcanyondelay.c:116
-#, fuzzy
 msgid "Left Audio Input"
-msgstr "Links audio in"
+msgstr "Linker audio ingang"
 
 #: plugins/davcanyondelay.c:118
-#, fuzzy
 msgid "Right Audio Input"
-msgstr "Rechts audio in"
+msgstr "Rechter audio ingang"
 
 #: plugins/davcanyondelay.c:120
-#, fuzzy
 msgid "Left Audio Output"
-msgstr "Links audio uit"
+msgstr "Linker audio uitgang"
 
 #: plugins/davcanyondelay.c:122
-#, fuzzy
 msgid "Right Audio Output"
-msgstr "Rechts audio uit"
+msgstr "Rechter audio uitgang"
 
 # verhelderen
 #: plugins/davchorus.idl:29
@@ -3682,7 +3576,7 @@ msgstr "DavChorus voegt extra diepte toe aan geluiden"
 
 #: plugins/davchorus.idl:32
 msgid "Chorus audio output"
-msgstr "Chorus audiouitgang"
+msgstr "Chorus audio uitgang"
 
 #: plugins/davchorus.idl:34
 msgid "Wet out [%]"
@@ -3693,42 +3587,36 @@ msgid "Set the amount of modified data to mix"
 msgstr "De hoeveelheid gemodificeerde data voor de mix instellen"
 
 #: plugins/davguitar.c:302
-#, fuzzy
 msgid "Guitar Output"
-msgstr "Gefilterde uitgan"
+msgstr "Gitaar uitgang"
 
 #: plugins/davorgan.c:133
-#, fuzzy
 msgid "Organ Output"
-msgstr "Uitvoer"
+msgstr "Orgel uitgang"
 
 #: plugins/davsyndrum.c:116
-#, fuzzy
 msgid "Drum Frequency Input"
-msgstr "Ingang centrale frequentie"
+msgstr "Drumfrequentie ingang"
 
 #: plugins/davsyndrum.c:118
-#, fuzzy
 msgid "Ratio In"
-msgstr "Verhouding"
+msgstr "Verhouding in"
 
 #: plugins/davsyndrum.c:118
 msgid "Frequency shift ratio (assumed 1.0 if not connected)"
-msgstr ""
+msgstr "Frequentieverschuiving verhouding (aangenomen wordt 1,0 indien niet verbonden)"
 
 #: plugins/davsyndrum.c:120 plugins/davxtalstrings.c:143
-#, fuzzy
 msgid "Trigger In"
-msgstr "Trigger filter"
+msgstr "Trigger in"
 
 #: plugins/davsyndrum.c:120
 msgid "Hit the drum on raising edges"
-msgstr ""
+msgstr "De drum slaan op de stijgende kant"
 
 #: plugins/davsyndrum.c:122
-#, fuzzy
 msgid "SynDrum Output"
-msgstr "Synchronisatie-uitgang"
+msgstr "SynDrum uitgang"
 
 #: plugins/davxtalstrings.c:141
 #, fuzzy
@@ -3737,12 +3625,11 @@ msgstr "Ingang centrale frequentie"
 
 #: plugins/davxtalstrings.c:143
 msgid "Pluck strings on raising edge"
-msgstr ""
+msgstr "De snaar tokkelen op de stijgende kant"
 
 #: plugins/davxtalstrings.c:145
-#, fuzzy
 msgid "XtalStrings Output"
-msgstr "Gefilterde uitgan"
+msgstr "XtalStrings uitgang"
 
 #: plugins/evaluator/bseevaluator.idl:28
 msgid "/Misc/Evaluator"
@@ -3762,7 +3649,7 @@ msgstr ""
 
 #: plugins/evaluator/bseevaluator.idl:33
 msgid "Audio output"
-msgstr "Audiouitgang"
+msgstr "Audio uitgang"
 
 #: plugins/evaluator/bseevaluator.idl:35
 msgid "Source code"
@@ -3781,24 +3668,20 @@ msgid "Status used to output error messages"
 msgstr "Status waarmee foutmeldingen worden uitgevoerd"
 
 #: plugins/freeverb/bsefreeverb.c:123
-#, fuzzy
 msgid "Left Input"
-msgstr "Links uit"
+msgstr "Linker ingang"
 
 #: plugins/freeverb/bsefreeverb.c:124
-#, fuzzy
 msgid "Right Input"
-msgstr "Rechts uit"
+msgstr "Rechter ingang"
 
 #: plugins/freeverb/bsefreeverb.c:125
-#, fuzzy
 msgid "Left Output"
-msgstr "Links uit"
+msgstr "Linker uitgang"
 
 #: plugins/freeverb/bsefreeverb.c:126
-#, fuzzy
 msgid "Right Output"
-msgstr "Rechts uit"
+msgstr "Rechter uitgang"
 
 #~ msgid "Device _Monitor"
 #~ msgstr "_Apparaatbeheer"
@@ -3883,57 +3766,3 @@ msgstr "Rechts uit"
 
 #~ msgid "/Synthesizers/Save As Effect"
 #~ msgstr "/Synthesizers/Opslaan als effect"
-
-#~ msgid "/Synthesizers/Save As Instrument"
-#~ msgstr "/Synthesizers/Opslaan als instrument"
-
-#~ msgid "/Tools/_Song"
-#~ msgstr "/Hulpmiddelen/_Nummer"
-
-#~ msgid "/Tools/_Synth"
-#~ msgstr "/Hulpmiddelen/_Synth"
-
-#~ msgid "/Tools/Wave_s"
-#~ msgstr "/Hulpmiddelen/Wave_s"
-
-#~ msgid "/Help/Development/GSL Engine..."
-#~ msgstr "/Hulp/Ontwikkeling/GSL Engine..."
-
-#~ msgid "Pos"
-#~ msgstr "Pos"
-
-#~ msgid "_Delete"
-#~ msgstr "_Verwijderen"
-
-#~ msgid "/Tools/Insert"
-#~ msgstr "/Hulpmiddelen/Invoegen"
-
-#~ msgid "/Tools/Delete"
-#~ msgstr "/Hulpmiddelen/Verwijderen"
-
-#~ msgid "/Tools/Select"
-#~ msgstr "/Hulpmiddelen/Selecteren"
-
-#~ msgid "/Tools/Vertical Select"
-#~ msgstr "/Hulpmiddelen/Verticaal selecteren"
-
-#~ msgid "/Edit/Cut"
-#~ msgstr "/Bewerken/Knippen"
-
-#~ msgid "/Edit/Copy"
-#~ msgstr "/Bewerken/Kopiëren"
-
-#~ msgid "/Edit/Paste"
-#~ msgstr "/Bewerken/Plakken"
-
-#~ msgid "/Edit/Undo"
-#~ msgstr "/Bewerken/Ongedaan maken"
-
-#~ msgid "/Edit/Redo"
-#~ msgstr "/Bewerken/Herhalen"
-
-#~ msgid "/Scripts"
-#~ msgstr "/Scripts"
-
-#~ msgid "/Test"
-#~ msgstr "/Test"
