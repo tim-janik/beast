@@ -153,7 +153,7 @@ METHOD (BseServer, describe-note) {
   IN    = bse_pspec_note_simple ("note", "Note", NULL, SFI_PARAM_STANDARD);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
-			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
+                                BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -183,7 +183,7 @@ METHOD (BseServer, note-from-freq) {
 			  0, BSE_MAX_FREQUENCY_f,
 			  10.0, SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
-			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
+                                BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -212,7 +212,7 @@ METHOD (BseServer, note-from-string) {
   IN    = sfi_pspec_string ("name", "Name", NULL,
 			    "", SFI_PARAM_STANDARD);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
-			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
+                                BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -244,7 +244,7 @@ METHOD (BseServer, construct-note) {
   IN    = bse_param_spec_octave ("octave", NULL, NULL);
   IN    = bse_param_spec_fine_tune ("fine_tune", "Fine Tune", NULL);
   OUT   = bse_param_spec_boxed ("note-description", "Note Description", NULL,
-			 BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
+                                BSE_TYPE_NOTE_DESCRIPTION, SFI_PARAM_STANDARD);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -350,14 +350,14 @@ register_scripts (gpointer data)
   ScriptRegistration *scr = g_object_get_data (server, "script-registration-queue");
   BseJanitor *janitor = NULL;
   BseErrorType error;
-
+  
   if (!scr)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return FALSE;
     }
   g_object_set_data (server, "script-registration-queue", scr->next);
-
+  
   error = scr->register_func (scr->script, &janitor);
   if (!janitor)
     bse_server_registration (server, BSE_REGISTER_SCRIPT, scr->script, bse_error_blurb (error));
@@ -382,18 +382,18 @@ BODY (BseProcedureClass *proc,
   BseServer *server	       = bse_value_get_object (in_values++);
   ScriptRegistration *scr_list = NULL;
   SfiRing *ring;
-
+  
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   if (registration_done)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return BSE_ERROR_NONE;
     }
   registration_done = TRUE;
-
+  
   ring = bse_script_path_list_files ();
   while (ring)
     {
@@ -403,10 +403,10 @@ BODY (BseProcedureClass *proc,
       scr->next = scr_list;
       scr_list = scr;
     }
-
+  
   g_object_set_data (server, "script-registration-queue", scr_list);
   bse_idle_normal (register_scripts, server);
-
+  
   return BSE_ERROR_NONE;
 }
 
@@ -416,7 +416,7 @@ register_core_plugins (gpointer data)
   BseServer *server = data;
   SfiRing *plugins = g_object_get_data (server, "plugin-registration-queue");
   const gchar *error;
-
+  
   if (plugins)
     {
       gchar *name = sfi_ring_pop_head (&plugins);
@@ -446,23 +446,23 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseServer *server	= bse_value_get_object (in_values++);
   SfiRing *ring;
-
+  
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   if (registration_done)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return BSE_ERROR_NONE;
     }
   registration_done = TRUE;
-
+  
   ring = bse_plugin_path_list_files ();
   g_object_set_data (server, "plugin-registration-queue", ring);
-
+  
   bse_idle_normal (register_core_plugins, server);
-
+  
   return BSE_ERROR_NONE;
 }
 
@@ -472,13 +472,13 @@ register_ladspa_plugins (gpointer data)
   BseServer *server = data;
   SfiRing *lplugins = g_object_get_data (server, "ladspa-registration-queue");
   const gchar *error;
-
+  
   if (g_object_get_data (server, "plugin-registration-queue"))
     {
       /* give precedence to core plugins until they're done registering */
       return TRUE;
     }
-
+  
   if (lplugins)
     {
       gchar *name = sfi_ring_pop_head (&lplugins);
@@ -508,23 +508,23 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BseServer *server	= bse_value_get_object (in_values++);
   SfiRing *ring;
-
+  
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   if (registration_done)
     {
       bse_server_registration (server, BSE_REGISTER_DONE, NULL, NULL);
       return BSE_ERROR_NONE;
     }
   registration_done = TRUE;
-
+  
   ring = bse_ladspa_plugin_path_list_files ();
   g_object_set_data (server, "ladspa-registration-queue", ring);
-
+  
   bse_idle_normal (register_ladspa_plugins, server);
-
+  
   return BSE_ERROR_NONE;
 }
 
@@ -553,7 +553,7 @@ BODY (BseProcedureClass *proc,
   /* check parameters */
   if (!BSE_IS_SERVER (server))
     return BSE_ERROR_PROC_PARAM_INVAL;
-
+  
   file_name = g_strconcat (g_get_home_dir (), "/.bserc", NULL);
   fd = open (file_name,
 	     O_WRONLY | O_CREAT | O_TRUNC, /* O_EXCL, */
@@ -561,10 +561,10 @@ BODY (BseProcedureClass *proc,
   g_free (file_name);
   if (fd < 0)
     return BSE_ERROR_NONE;
-
+  
   wstore = sfi_wstore_new ();
   sfi_wstore_printf (wstore, "; rc-file for BSE v%s\n", BSE_VERSION);
-
+  
   /* store BseGConfig */
   sfi_wstore_puts (wstore, "\n; BseGConfig Dump\n");
   rec = bse_gconfig_to_rec (bse_global_config);
@@ -573,12 +573,12 @@ BODY (BseProcedureClass *proc,
   sfi_value_free (value);
   sfi_rec_unref (rec);
   sfi_wstore_puts (wstore, "\n");
-
+  
   /* flush stuff to rc file */
   sfi_wstore_flush_fd (wstore, fd);
   sfi_wstore_destroy (wstore);
   close (fd);
-
+  
   return BSE_ERROR_NONE;
 }
 
