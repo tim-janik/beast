@@ -1,3 +1,8 @@
+Tue Jul 13 22:59:21 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstbusview.c:
+	* beast-gtk/bstbusview.h: CVS copied from beast-gtk/bstsongbusview.[hc].
+
 Tue Jul 13 22:42:24 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (main): raised the priority of the BSE context
