@@ -765,23 +765,24 @@ gsl_init (const GslConfigValue values[])
   g_assert (gsl_config++ == NULL);	/* dumb concurrency prevention */
 
   /* configure permanent config record */
-  while (config->value_name)
-    {
-      if (strcmp ("wave_chunk_padding", config->value_name) == 0)
-	pconfig.wave_chunk_padding = ROUND (config->value);
-      else if (strcmp ("wave_chunk_big_pad", config->value_name) == 0)
-	pconfig.wave_chunk_big_pad = ROUND (config->value);
-      else if (strcmp ("dcache_cache_memory", config->value_name) == 0)
-	pconfig.dcache_cache_memory = ROUND (config->value);
-      else if (strcmp ("dcache_block_size", config->value_name) == 0)
-	pconfig.dcache_block_size = ROUND (config->value);
-      else if (strcmp ("midi_kammer_note", config->value_name) == 0)
-	pconfig.midi_kammer_note = ROUND (config->value);
-      else if (strcmp ("kammer_freq", config->value_name) == 0)
-	pconfig.kammer_freq = config->value;
-      config++;
-    }
-
+  if (config)
+    while (config->value_name)
+      {
+	if (strcmp ("wave_chunk_padding", config->value_name) == 0)
+	  pconfig.wave_chunk_padding = ROUND (config->value);
+	else if (strcmp ("wave_chunk_big_pad", config->value_name) == 0)
+	  pconfig.wave_chunk_big_pad = ROUND (config->value);
+	else if (strcmp ("dcache_cache_memory", config->value_name) == 0)
+	  pconfig.dcache_cache_memory = ROUND (config->value);
+	else if (strcmp ("dcache_block_size", config->value_name) == 0)
+	  pconfig.dcache_block_size = ROUND (config->value);
+	else if (strcmp ("midi_kammer_note", config->value_name) == 0)
+	  pconfig.midi_kammer_note = ROUND (config->value);
+	else if (strcmp ("kammer_freq", config->value_name) == 0)
+	  pconfig.kammer_freq = config->value;
+	config++;
+      }
+  
   /* constrain (user) config */
   pconfig.wave_chunk_padding = MAX (1, pconfig.wave_chunk_padding);
   pconfig.wave_chunk_big_pad = MAX (2 * pconfig.wave_chunk_padding, pconfig.wave_chunk_big_pad);

@@ -21,8 +21,7 @@
 #include "gsldatahandle.h"
 #include "gsldatacache.h"
 
-
-#define	SCORER_BLOCK	(8192)
+#define BSIZE		(8192)
 #define	PERC_TICKS	(100)
 
 
@@ -40,8 +39,8 @@ score_loop (GslDataHandle *shandle,
 
   for (l = start; l < length; )
     {
-      gfloat v1[SCORER_BLOCK], v2[SCORER_BLOCK];
-      GslLong b = MIN (SCORER_BLOCK, length - l);
+      gfloat v1[BSIZE], v2[BSIZE];
+      GslLong b = MIN (BSIZE, length - l);
 
       b = gsl_data_handle_read (shandle, l, b, v1);
       b = gsl_data_handle_read (dhandle, l, b, v2);
@@ -59,7 +58,7 @@ score_loop (GslDataHandle *shandle,
 }
 
 gboolean
-gsl_loop_find_tailmatch (GslDataHandle     *dhandle,
+gsl_data_find_tailmatch (GslDataHandle     *dhandle,
 			 const GslLoopSpec *lspec,
 			 GslLong           *loop_start_p,
 			 GslLong           *loop_end_p)
@@ -137,4 +136,71 @@ gsl_loop_find_tailmatch (GslDataHandle     *dhandle,
   return TRUE;
 }
 
+gfloat
+gsl_data_peek_value_f (GslDataHandle     *dhandle,
+		       GslLong            pos,
+		       GslDataPeekBuffer *peekbuf)
+{
+  if (pos < peekbuf->start || pos >= peekbuf->end)
+    {
+      GslLong inc, k, bsize = GSL_DATA_HANDLE_PEEK_BUFFER;
 
+      peekbuf->start = peekbuf->dir > 0 ? pos : peekbuf->dir < 0 ? pos - bsize + 1: pos - bsize / 2;
+      peekbuf->end = MIN (peekbuf->start + bsize, dhandle->n_values);
+      for (k = peekbuf->start; k < peekbuf->end; k += inc)
+	{
+	  guint n_retries = 5;
+	  
+	  do
+	    inc = gsl_data_handle_read (dhandle, k, peekbuf->end - k, peekbuf->data + k - peekbuf->start);
+	  while (inc < 1 && n_retries-- && GSL_DATA_HANDLE_OPENED (dhandle));
+	  if (inc < 1)
+	    {	/* pathologic */
+	      peekbuf->data[k - peekbuf->start] = 0;
+	      inc = 1;
+	    }
+	}
+    }
+  return peekbuf->data[pos - peekbuf->start];
+}
+
+GslLong
+gsl_data_find_sample (GslDataHandle *dhandle,
+		      gfloat         min_value,
+		      gfloat         max_value,
+		      GslLong        start_offset,
+		      gint           direction)
+{
+  GslDataPeekBuffer peekbuf = { 0, 0, 0, };
+  GslLong i;
+
+  g_return_val_if_fail (dhandle != NULL, -1);
+  g_return_val_if_fail (direction == -1 || direction == 1, -1);
+
+  if (gsl_data_handle_open (dhandle) != 0)
+    return -1;
+
+  peekbuf.dir = direction;
+  if (min_value <= max_value)
+    for (i = start_offset; i < dhandle->n_values; i += direction)
+      {
+	gfloat val = gsl_data_peek_value (dhandle, i, &peekbuf);
+	
+	// g_print ("(%lu): %f <= %f <= %f\n", i, min_value, val, max_value);
+	if (val >= min_value && val <= max_value)
+	  break;
+      }
+  else
+    for (i = start_offset; i < dhandle->n_values; i += direction)
+      {
+	gfloat val = gsl_data_peek_value (dhandle, i, &peekbuf);
+	
+	// g_print ("(%lu): %f > %f || %f < %f\n", i, val, max_value, val, min_value);
+	if (val > min_value || val < max_value)
+	  break;
+      }
+
+  gsl_data_handle_close (dhandle);
+
+  return i >= dhandle->n_values ? -1: i;
+}

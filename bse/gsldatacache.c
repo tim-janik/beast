@@ -122,16 +122,17 @@ gsl_data_cache_open (GslDataCache *dcache)
   GSL_SPIN_LOCK (&dcache->mutex);
   if (!dcache->open_count)
     {
-      GslErrorType error;
+      gint error;
 
       error = gsl_data_handle_open (dcache->handle);
       if (error)
 	{
 	  /* FIXME: this is pretty fatal, throw out zero blocks now? */
 	  gsl_message_send (GSL_MSG_DATA_CACHE,
-			    error,
-			    "opening \"%s\"",
-			    dcache->handle->name);
+			    GSL_ERROR_IO,
+			    "failed to open \"%s\": %s",
+			    dcache->handle->name,
+			    g_strerror (error));
 	}
       else
 	{

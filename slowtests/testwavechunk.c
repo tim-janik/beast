@@ -52,13 +52,13 @@ my_handle_destroy (GslDataHandle *handle)
 {
   gsl_data_handle_common_free (handle);
 }
-static GslErrorType
+static gint
 my_handle_open (GslDataHandle *data_handle)
 {
   MyHandle *handle = (MyHandle*) data_handle;
 
   handle->offset = 0;
-  return GSL_ERROR_NONE;
+  return 0;
 }
 static GslLong
 my_handle_read (GslDataHandle *data_handle,
@@ -161,11 +161,13 @@ run_tests (GslWaveLoopType loop_type,
   GslWaveChunkBlock block = { 0, };
   GslWaveChunk *wchunk;
 
-  gsl_data_handle_common_init (&myhandle.handle, NULL);
+
+  gsl_data_handle_common_init (&myhandle.handle, NULL, 32);
   myhandle.handle.vtable = &my_handle_vtable;
   myhandle.handle.name = g_strdup ("inlined-test-sample");
   myhandle.handle.n_values = my_data_length;
   dcache = gsl_data_cache_new ((GslDataHandle*) &myhandle, 1);
+  gsl_data_handle_unref (&myhandle.handle);
   wchunk = _gsl_wave_chunk_create (dcache, 0, my_data_length,
 				   1, 44.0, 44100.0,
 				   loop_type, loop_start, loop_end, loop_count);
@@ -229,6 +231,7 @@ int
 main (gint   argc,
       gchar *argv[])
 {
+  gfloat tmpstorage[1024*1024];
   GslConfigValue gslconfig[] = {
     { "wave_chunk_padding",     1, },
     { "wave_chunk_big_pad",     2, },
@@ -238,9 +241,51 @@ main (gint   argc,
   gint i, j, k;
 
   verbosity = VERBOSITY_SETUP;
-  
+  printf("bar\n");  
   g_thread_init (NULL);
   gsl_init (gslconfig);
+
+  if (1)
+    {
+      MyHandle myhandle = { { 0, }, };
+      GslDataHandle *rhandle1, *rhandle2;
+      GslLong o, l, i, e;
+      
+      g_print ("short datahandle test:...\n");
+      
+      gsl_data_handle_common_init (&myhandle.handle, NULL, 32);
+      myhandle.handle.vtable = &my_handle_vtable;
+      myhandle.handle.name = g_strdup ("nonreversed-test-sample");
+      myhandle.handle.n_values = my_data_length;
+      rhandle1 = gsl_data_handle_new_reversed (&myhandle.handle);
+      gsl_data_handle_unref (&myhandle.handle);
+      rhandle2 = gsl_data_handle_new_reversed (rhandle1);
+      gsl_data_handle_unref (rhandle1);
+      gsl_data_handle_open (rhandle2);
+      gsl_data_handle_unref (rhandle2);
+      
+      g_assert (rhandle2->n_values == myhandle.handle.n_values);
+      
+      for (i = 1; i < 8; i++)
+	{
+	  o = 0;
+	  l = rhandle2->n_values;
+	  while (l)
+	    {
+	      gfloat d1[8], d2[8];
+	      
+	      e = gsl_data_handle_read (&myhandle.handle, o, MIN (i, l), d1);
+	      g_assert (e == MIN (i, l));
+	      e = gsl_data_handle_read (rhandle2, o, MIN (i, l), d2);
+	      g_assert (e == MIN (i, l));
+	      g_assert (memcmp (d1, d2, sizeof (d1[0]) * e) == 0);
+	      l -= e;
+	      o += e;
+	    }
+	}
+      gsl_data_handle_close (rhandle2);
+      g_print ("passed.\n");
+    }
   
   run_tests (GSL_WAVE_LOOP_NONE, -1, 0, 0, 0);
 

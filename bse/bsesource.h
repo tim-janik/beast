@@ -187,7 +187,7 @@ void		bse_source_access_imodules	(BseSource	*source,
 						 GslFreeFunc	 data_free_func,
 						 GslTrans	*trans);
 void		bse_source_access_omodules	(BseSource	*source,
-						 guint		 ichannel,
+						 guint		 ochannel,
 						 GslAccessFunc   access_func,
 						 gpointer	 data,
 						 GslFreeFunc	 data_free_func,

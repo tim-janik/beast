@@ -181,7 +181,8 @@ parse_wave_chunk_dsc (GScanner        *scanner,
       case GSL_WAVE_TOKEN_MIDI_NOTE:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
-	chunk->osc_freq = gsl_temp_freq (440., scanner->value.v_int - gsl_get_config ()->midi_kammer_note);	/* FIXME */
+	chunk->osc_freq = gsl_temp_freq (gsl_get_config ()->kammer_freq,
+					 scanner->value.v_int - gsl_get_config ()->midi_kammer_note);
 	break;
       case GSL_WAVE_TOKEN_BOFFSET:
 	parse_or_return (scanner, '=');

@@ -26,6 +26,28 @@ extern "C" {
 #endif /* __cplusplus */
 
 
+/* --- cache single sample access --- */
+#define GSL_DATA_HANDLE_PEEK_BUFFER	(8192)
+typedef struct {
+  gint    dir;		/* initialize this to -1 or 1 (or 0 if random access) */
+  GslLong start;	/* initialize to 0 */
+  GslLong end;		/* initialize to 0 */
+  gfloat  data[GSL_DATA_HANDLE_PEEK_BUFFER];
+} GslDataPeekBuffer;
+
+/* carefull, this macro evaluates arguments multiple times */
+#define	gsl_data_peek_value(dhandle, pos, peekbuf)	(	\
+  ((pos) >= (peekbuf)->start && (pos) < (peekbuf)->end) ?	\
+    (peekbuf)->data[(pos) - (peekbuf)->start] :			\
+    gsl_data_peek_value_f ((dhandle), (pos), (peekbuf)))
+
+/* macro fallback */
+gfloat	gsl_data_peek_value_f	(GslDataHandle     *dhandle,
+				 GslLong            pos,
+				 GslDataPeekBuffer *peekbuf);
+
+
+/* --- loop/sample finder --- */
 typedef struct {
   GslLong head_skip;
   GslLong tail_cut;
@@ -33,10 +55,15 @@ typedef struct {
   GslLong max_loop;
 } GslLoopSpec;
 
-gboolean	gsl_loop_find_tailmatch	(GslDataHandle		*dhandle,
+gboolean	gsl_data_find_tailmatch	(GslDataHandle		*dhandle,
 					 const GslLoopSpec	*lspec,
 					 GslLong		*loop_start_p,
 					 GslLong		*loop_end_p);
+GslLong		gsl_data_find_sample	(GslDataHandle		*dhandle,
+					 gfloat			 min_value,
+					 gfloat			 max_value,
+					 GslLong		 start_offset,
+					 gint			 direction);
 
 
 

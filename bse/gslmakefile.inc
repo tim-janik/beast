@@ -14,4 +14,5 @@ gsltests_SOURCES = gsltests.c
 gsltests_LDADD = $(progs_LDADD)
 gslglibhashtest_SOURCES = gslglibhashtest.cc
 gslglibhashtest_LDADD = $(progs_LDADD)
-EXTRA_DIST += gsl.gnuplot gsl-mplan.txt gslarrows gslglibhash.cc gsl/gslglib.c gsl/gslglib.h
+EXTRA_DIST += gsl.gnuplot gsl-mplan.txt gslarrows gslglibhash.cc
+EXTRA_DIST += gslwave.header gsl/gslglib.c gsl/gslglib.h

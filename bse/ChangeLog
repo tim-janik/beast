@@ -1,3 +1,43 @@
+Mon Oct 29 22:45:37 2001  Tim Janik  <timj@gtk.org>
+
+	* gsldatahandle.h: provide GSL_DATA_HANDLE_OPENED() to
+	check whether a handle is open.
+	added bit_depth member to GslDataHandle, so the information
+	about the number of significant bits doesn't get lost by using
+	floats.
+
+	* gsldatahandle.c: implement reversed data handle.
+	gsl_data_handle_open(): return errno instead of GslErrorType
+	(so code portions that want to, can produce more elaborate
+	messages).
+	(gsl_data_handle_read): fixed a bug with boundary alignment.
+	(gsl_data_handle_common_init): added bit_Depth argument, so
+	an apropriate format can be choosen at save time.
+	
+	* gsldefs.h: nuke GSL_BYTE_ORDER, we have G_BYTE_ORDER even
+	in the glib-compat code.
+
+	* gsllooper.[hc]: renamed gsl_loop_find_tailmatch to
+	gsl_data_find_tailmatch() should probably have a gsldata.[hc]
+	file for this.
+	added gsl_data_find_sample() to search for a certain sample
+	in a GslDataHandle.
+	provide gsl_data_peek_value() which is a macro to be used to
+	extract single data samples from a GslDataHandle (it needs a
+	user supplied stack buffer GslDataPeekBuffer which needs to be
+	0-initialized). this avoids wiritng custom buffering code
+	over and over when looping over a data handle's values.
+
+	* gslwave.header: provide a sample for how gslwave headers
+	are structured.
+
+	* gsltests.c: add midi2freq function.
+
+Mon Oct 29 22:40:52 2001  Tim Janik  <timj@gtk.org>
+
+	* gslcommon.c (gsl_init): don't crash on NULL options.
+	
+
 Sat Oct  6 14:27:39 2001  Tim Janik  <timj@gtk.org>
 
 	* gslglibhash.cc: new GHashTable implementation in c++ from

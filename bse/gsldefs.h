@@ -87,7 +87,6 @@ typedef struct
 #define GSL_SIZEOF_GTIME        (4)
 #define GSL_SIZEOF_GUINT        (4)
 #define GSL_SIZEOF_GSIZE        (4)
-#define GSL_BYTE_ORDER          (G_BYTE_ORDER)
 #define GSL_SIZEOF_INTMAX	(8)
 union _GslMutex
 {
