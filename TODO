@@ -12,6 +12,8 @@ FIXME(release-critical):
   implement time parser for this in beast, merge with travelad parser
 - driver interface: support multilpe MIDI channels
 TODO:
+- support various fft windows for fft probes
+- implement float-ffts
 - test engine block size changes (Subject: blocksize vs. cpu)
 - probes only need to deliver (sample frames) 25 times per second, and need not be continuous
 - change per-track scopes to stereo volume meters
