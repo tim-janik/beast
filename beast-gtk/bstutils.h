@@ -90,7 +90,9 @@ void       bst_stock_register_icon      (const gchar  *stock_id,
 
 
 /* --- file utils --- */
-gchar*  bst_file_scan_song_name         (const gchar    *file);
+gchar*  bst_file_scan_find_key          (const gchar  *file,
+                                         const gchar  *key,
+                                         const gchar  *value_prefix);
 
 
 /* --- GUI field mask --- */

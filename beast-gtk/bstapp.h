@@ -107,6 +107,10 @@ enum {
   /* loading demo songs */
   BST_ACTION_LOAD_DEMO_0000,
   BST_ACTION_LOAD_DEMO_ffff = BST_ACTION_LOAD_DEMO_0000 + 0xffff,
+  /* loading skins */
+  BST_ACTION_LOAD_SKIN_0000,
+  BST_ACTION_LOAD_SKIN_ffff = BST_ACTION_LOAD_SKIN_0000 + 0xffff,
+  /* last value */
   BST_ACTION_APP_LAST
 };
 

@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BEAST/BSE
 
-SUBDIRS = effects instruments scripts demo
+SUBDIRS = effects instruments scripts demo skins
 
 EXTRA_DIST = $(strip \
 )

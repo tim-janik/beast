@@ -16,9 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bstapp.h"
-
 #include "topconfig.h"
-
+#include "bstskinconfig.h"
 #include "bstsupershell.h"
 #include "bstfiledialog.h"
 #include "bstgconfig.h"
@@ -32,16 +31,17 @@
 
 
 /* --- prototypes --- */
-static void     bst_app_destroy                 (GtkObject      *object);
-static gboolean bst_app_handle_delete_event     (GtkWidget      *widget,
-                                                 GdkEventAny    *event);
-static void     bst_app_run_script_proc         (gpointer        data,
-                                                 gulong          category_id);
-static GxkActionList* demo_entries_create       (BstApp         *app);
-static void     app_action_exec                 (gpointer        data,
-                                                 gulong          action);
-static gboolean app_action_check                (gpointer        data,
-                                                 gulong          action);
+static void           bst_app_destroy             (GtkObject   *object);
+static gboolean       bst_app_handle_delete_event (GtkWidget   *widget,
+                                                   GdkEventAny *event);
+static void           bst_app_run_script_proc     (gpointer     data,
+                                                   gulong       category_id);
+static GxkActionList* demo_entries_create         (BstApp      *app);
+static GxkActionList* skin_entries_create         (BstApp      *app);
+static void           app_action_exec             (gpointer     data,
+                                                   gulong       action);
+static gboolean       app_action_check            (gpointer     data,
+                                                   gulong       action);
 
 
 /* --- menus --- */
@@ -241,6 +241,10 @@ bst_app_init (BstApp *app)
   al1 = demo_entries_create (app);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (widget, "demo-songs", al1);
+  /* add skins */
+  al1 = skin_entries_create (app);
+  gxk_action_list_sort (al1);
+  gxk_widget_publish_action_list (widget, "skin-options", al1);
 
   /* setup playback controls */
   app->pcontrols = g_object_new (BST_TYPE_PROJECT_CTRL, NULL);
@@ -485,6 +489,7 @@ typedef struct {
   gchar *file;
   gchar *name;
 } DemoEntry;
+
 static DemoEntry *demo_entries = NULL;
 static guint     n_demo_entries = 0;
 
@@ -497,7 +502,7 @@ demo_entries_setup (void)
       while (files)
         {
           gchar *file = sfi_ring_pop_head (&files);
-          gchar *name = bst_file_scan_song_name (file);
+          gchar *name = bst_file_scan_find_key (file, "container-child", "BseSong::");
           if (name && n_demo_entries < 0xffff)
             {
               guint i = n_demo_entries++;
@@ -546,6 +551,60 @@ demo_entries_create (BstApp *app)
     gxk_action_list_add_translated (alist, demo_entries[i].name, demo_entries[i].name,
                                     NULL, NULL, BST_ACTION_LOAD_DEMO_0000 + i, BST_STOCK_NOTE_ICON,
                                     NULL, demo_play_song, app);
+  return alist;
+}
+
+static DemoEntry *skin_entries = NULL;
+static guint     n_skin_entries = 0;
+
+static void
+skin_entries_setup (void)
+{
+  if (!skin_entries)
+    {
+      SfiRing *files = sfi_file_crawler_list_files (BST_PATH_SKINS, "*.skin", 0);
+      while (files)
+        {
+          gchar *file = sfi_ring_pop_head (&files);
+          gchar *name = bst_file_scan_find_key (file, "skin-name", "");
+          static guint statici = 1;
+          if (!name)
+            name = g_strdup_printf ("skin-%u", statici++);
+          if (name && n_skin_entries < 0xffff)
+            {
+              guint i = n_skin_entries++;
+              skin_entries = g_renew (DemoEntry, skin_entries, n_skin_entries);
+              skin_entries[i].file = file;
+              skin_entries[i].name = name;
+            }
+          else
+            {
+              g_free (name);
+              g_free (file);
+            }
+        }
+    }
+}
+
+static void
+load_skin (gpointer data,
+           gulong   callback_action)
+{
+  const gchar *file_name = skin_entries[callback_action - BST_ACTION_LOAD_SKIN_0000].file;
+  BseErrorType error = bst_skin_parse (file_name);
+  bst_status_eprintf (error, _("Loading skin `%s'"), file_name);
+}
+
+static GxkActionList*
+skin_entries_create (BstApp *app)
+{
+  GxkActionList *alist = gxk_action_list_create ();
+  guint i;
+  skin_entries_setup ();
+  for (i = 0; i < n_skin_entries; i++)
+    gxk_action_list_add_translated (alist, skin_entries[i].name, skin_entries[i].name,
+                                    NULL, NULL, BST_ACTION_LOAD_SKIN_0000 + i, BST_STOCK_BROWSE_IMAGE,
+                                    NULL, load_skin, app);
   return alist;
 }
 

@@ -1,0 +1,13 @@
+; skin-file for BEAST v0.5.6
+
+; BstSkinConfig Dump
+(beast-skin-config-v1 
+  ((skin-name "White")
+   (piano-image #f)
+   (piano-shade 0)
+   (piano-color 0x00ffffff)
+   (piano-hbar 0x007f7f7f)
+   (piano-vbar 0x007f7f7f)
+   (piano-hgrid 0x00bfbfbf)
+   (piano-vgrid 0x00bfbfbf)
+   (piano-mbar 0x00a0a0a0)))

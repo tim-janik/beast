@@ -229,6 +229,7 @@ bst_skin_dump (const gchar *file_name)
   rec = bst_skin_config_to_rec (bst_skin_config_get_global ());
   if (1)
     {
+      /* make path names relative */
       gchar *dirname = g_path_get_dirname (file_name);
       rec_make_relative_pathnames (rec, dirname, sfi_pspec_get_rec_fields (bst_skin_config_pspec()));
       g_free (dirname);
@@ -300,18 +301,23 @@ bst_skin_parse (const gchar *file_name)
   return error;
 }
 
-static const gchar *skinrc_name = NULL;
+static gchar  *skinrc_name = NULL;
+
+void
+bst_skin_config_set_rcfile (const gchar *file_name)
+{
+  /* maybe used before _bst_skin_config_init() */
+  if (file_name && strlen (file_name))
+    {
+      g_free (skinrc_name);
+      skinrc_name = sfi_path_get_filename (file_name, NULL);
+    }
+}
 
 const gchar*
 bst_skin_config_rcfile (void)
 {
   if (!skinrc_name)
-    {
-      const gchar *fname = g_getenv ("BEAST_SKINRC");
-      if (fname && strlen (fname))
-        skinrc_name = sfi_path_get_filename (fname, NULL);
-      else
-        skinrc_name = sfi_path_get_filename (".beast/skinrc", "~");
-    }
+    skinrc_name = sfi_path_get_filename (".beast/skinrc", "~");
   return skinrc_name;
 }

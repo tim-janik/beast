@@ -1194,25 +1194,10 @@ bst_xpm_view_create (const gchar **xpm,
 /* --- file utils --- */
 #include <sfi/sfistore.h>
 
-static gboolean
-song_name_scanner (SfiRStore      *rstore,
-                   gpointer        data)
-{
-  if (g_scanner_peek_next_token (rstore->scanner) == G_TOKEN_STRING)
-    {
-      g_scanner_get_next_token (rstore->scanner);
-      if (strncmp (rstore->scanner->value.v_string, "BseSong::", 9) == 0)
-        {
-          gchar **rval = data;
-          *rval = g_strdup (rstore->scanner->value.v_string + 9);
-          return FALSE;
-        }
-    }
-  return TRUE;
-}
-
 gchar*
-bst_file_scan_song_name (const gchar *file)
+bst_file_scan_find_key (const gchar *file,
+                        const gchar *key,
+                        const gchar *value_prefix)
 {
   SfiRStore *rstore;
   
@@ -1221,8 +1206,26 @@ bst_file_scan_song_name (const gchar *file)
   rstore = sfi_rstore_new_open (file);
   if (rstore)
     {
+      guint l = value_prefix ? strlen (value_prefix) : 0;
       gchar *name = NULL;
-      sfi_rstore_quick_scan (rstore, "container-child", song_name_scanner, &name);
+      while (!g_scanner_eof (rstore->scanner))
+        {
+          if (g_scanner_get_next_token (rstore->scanner) == '(' &&
+              g_scanner_peek_next_token (rstore->scanner) == G_TOKEN_IDENTIFIER)
+            {
+              g_scanner_get_next_token (rstore->scanner);
+              if (strcmp (rstore->scanner->value.v_identifier, key) == 0 &&
+                  g_scanner_peek_next_token (rstore->scanner) == G_TOKEN_STRING)
+                {
+                  g_scanner_get_next_token (rstore->scanner);
+                  if (!l || strncmp (rstore->scanner->value.v_string, value_prefix, l) == 0)
+                    {
+                      name = g_strdup (rstore->scanner->value.v_string + l);
+                      break;
+                    }
+                }
+            }
+        }
       sfi_rstore_destroy (rstore);
       return name;
     }

@@ -40,6 +40,7 @@ void            bst_skin_config_add_notify      (BstSkinConfigNotify func,
 
 
 /* --- skin file --- */
+void            bst_skin_config_set_rcfile      (const gchar    *file_name);
 const gchar*    bst_skin_config_rcfile          (void);
 const gchar*    bst_skin_config_dirname         (void);
 BseErrorType    bst_skin_dump                   (const gchar    *file_name);

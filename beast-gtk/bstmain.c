@@ -515,16 +515,24 @@ bst_early_parse_args (int    *argc_p,
 	  argv[i] = NULL;
 	  exit (0);
 	}
+      else if (strcmp ("--skinrc", argv[i]) == 0 ||
+	       strncmp ("--skinrc=", argv[i], 9) == 0)
+        {
+          gchar *arg = argv[i][9 - 1] == '=' ? argv[i] + 9 : (argv[i + 1] ? argv[i + 1] : "");
+          bst_skin_config_set_rcfile (arg);
+        }
       else if (strcmp ("--print-dir", argv[i]) == 0 ||
-	       strncmp ("--print-dir=", argv[i], 13) == 0)
+	       strncmp ("--print-dir=", argv[i], 12) == 0)
 	{
-	  gchar *arg = argv[i][13 - 1] == '=' ? argv[i] + 13 : (argv[i + 1] ? argv[i + 1] : "");
+	  gchar *arg = argv[i][12 - 1] == '=' ? argv[i] + 12 : (argv[i + 1] ? argv[i + 1] : "");
 	  if (strcmp (arg, "docs") == 0)
 	    g_print ("%s\n", BST_PATH_DOCS);
 	  else if (strcmp (arg, "images") == 0)
 	    g_print ("%s\n", BST_PATH_IMAGES);
 	  else if (strcmp (arg, "locale") == 0)
 	    g_print ("%s\n", BST_PATH_LOCALE);
+	  else if (strcmp (arg, "skins") == 0)
+	    g_print ("%s\n", BST_PATH_SKINS);
 	  else if (strcmp (arg, "ladspa") == 0)
 	    g_print ("%s\n", BSE_PATH_LADSPA);
 	  else if (strcmp (arg, "plugins") == 0)
@@ -537,11 +545,13 @@ bst_early_parse_args (int    *argc_p,
 	    g_print ("%s\n", bse_server_get_script_path (BSE_SERVER));
 	  else if (strcmp (arg, "instruments") == 0)
 	    g_print ("%s\n", bse_server_get_instrument_path (BSE_SERVER));
+	  else if (strcmp (arg, "demo") == 0)
+	    g_print ("%s\n", bse_server_get_demo_path (BSE_SERVER));
 	  else
 	    {
 	      if (arg[0])
                 g_message ("no such resource path: %s", arg);
-	      g_message ("supported resource paths: docs, images, locale, ladspa, plugins, scripts, effects, instruments, samples");
+	      g_message ("supported resource paths: docs, images, locale, skins, ladspa, plugins, scripts, effects, instruments, demo, samples");
 	    }
 	  exit (0);
 	}
@@ -591,13 +601,15 @@ bst_exit_print_version (void)
   g_print ("\n");
   g_print ("Compiled for: %s\n", BST_ARCH_NAME);
   g_print ("\n");
-  g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
   g_print ("Doc Path:        %s\n", BST_PATH_DOCS);
   g_print ("Image Path:      %s\n", BST_PATH_IMAGES);
+  g_print ("Locale Path:     %s\n", BST_PATH_LOCALE);
+  g_print ("Skin Path:       %s\n", BST_PATH_SKINS);
   g_print ("Sample Path:     %s\n", bse_server_get_sample_path (BSE_SERVER));
   g_print ("Script Path:     %s\n", bse_server_get_script_path (BSE_SERVER));
   g_print ("Effect Path:     %s\n", bse_server_get_effect_path (BSE_SERVER));
   g_print ("Instrument Path: %s\n", bse_server_get_instrument_path (BSE_SERVER));
+  g_print ("Demo Path:       %s\n", bse_server_get_demo_path (BSE_SERVER));
   g_print ("Plugin Path:     %s\n", bse_server_get_plugin_path (BSE_SERVER));
   g_print ("LADSPA Path:     %s:$LADSPA_PATH\n", bse_server_get_ladspa_path (BSE_SERVER));
   g_print ("\n");
@@ -616,6 +628,7 @@ bst_print_blurb (void)
 #ifdef BST_WITH_XKB
   g_print ("  --force-xkb             force XKB keytable queries\n");
 #endif
+  g_print ("  --skinrc[=FILENAME]     skin resource file name\n");
   g_print ("  --print-dir[=RESOURCE]  print the directory for a specific resource\n");
   g_print ("  --devel                 enrich the GUI with hints useful for developers,\n");
   g_print ("                          enable unstable plugins and experimental code\n");

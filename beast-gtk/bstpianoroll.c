@@ -884,6 +884,10 @@ piano_roll_update_adjustments (GxkScrollCanvas *scc,
       scc->hadjustment->upper = ticks_to_pixels (self, self->max_ticks);
       scc->hadjustment->step_increment = self->ppqn;
       scc->hadjustment->page_increment = self->ppqn * self->qnpt;
+      /* FIXME: hack: artificially confine horizontal scroll range, until
+       * proper time scale support is implemented
+       */
+      scc->hadjustment->upper = MIN (scc->hadjustment->upper, 10000 * MAX (scc->hadjustment->page_increment, 2000));
     }
   if (vadj)
     {

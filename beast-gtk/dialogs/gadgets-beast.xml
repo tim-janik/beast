@@ -290,6 +290,11 @@
     <submenu _label="_View">
       <menu-tearoff />
       <menu-factory action-root="" actions="dialog" />
+      <menu-separator/>
+      <submenu _label="_Skins" separator="1">
+	<menu-tearoff />
+	<menu-factory action-root="" actions="skin-options" />
+      </submenu>
       <menu-factory action-root="" actions="preference" separator="1" />
       <menu-factory action-root="" actions="rebuild" separator="1" />
     </submenu>

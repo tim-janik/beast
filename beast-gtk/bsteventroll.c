@@ -849,7 +849,7 @@ event_roll_update_adjustments (BstEventRoll *self,
   if (hadj)
     {
       self->hadjustment->lower = 0;
-      self->hadjustment->upper = self->max_ticks;
+      // FIXME: self->hadjustment->upper = self->max_ticks;
       // self->hadjustment->page_size = pixels_to_ticks (self, CANVAS_WIDTH (self));
       self->hadjustment->page_size = CANVAS_WIDTH (self);
       self->hadjustment->step_increment = self->ppqn;

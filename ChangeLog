@@ -1,3 +1,35 @@
+Sun Feb  1 18:38:15 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.[hc]: provide action list for available skins.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: put skin actions
+	under View/Skins.
+
+	* beast-gtk/bstrecords.idl: added some tooltips, support skin name.
+
+	* beast-gtk/bstmain.c: added --skinrc=... option to set skinrc file
+	name. added "demo" and "skins" directory print-out.
+
+	* beast-gtk/bstskinconfig.[hc]: support setting skin file names
+	via command line options, got rid of BEAST_SKINRC env hack.
+
+	* configure.in: added skins/ and skins/images/ directories,
+	define isntallation path for skins.
+
+	* beast-gtk/bstutils.[hc]: renamed and rewrote bst_file_scan_song_name()
+	into bst_file_scan_find_key() to be used with files other than songs.
+
+	* data/Makefile.am: generate BST_PATH_SKINS config setting.
+
+	* library/skins/: new directory for skins shipped with beast.
+	* library/skins/images: new directory holding images needed by skins.
+
+	* library/skins/white.skin: plain white skin, coming close to the
+	pianor roll look from 0.5.6.
+
+	* library/skins/images/moonpaper.png:
+	* library/skins/moonpaper.skin: added Moon Paper skin.
+
 Sun Feb  1 16:46:45 2004  Robert Sedak  <robert.sedak@sk.htnet.hr>
 
         * configure.in: Added "hr" (Croatian) to ALL_LINGUAS.
