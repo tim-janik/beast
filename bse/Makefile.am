@@ -7,7 +7,8 @@ SUBDIRS = icons zintern
 
 # need -I$(top_srcdir) for <bse/gsldefs.h>
 # need -I$(top_builddir) for <sfi/sficonfig.h>
-INCLUDES = -I$(top_srcdir) -I$(top_builddir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
+# need -I$(srcdir) for "bseserver.h" in .gen-proc.c
+INCLUDES = -I$(top_srcdir) -I$(top_builddir) -I$(srcdir) $(BSE_CFLAGS) -DG_DISABLE_DEPRECATED -DG_DISABLE_CONST_RETURNS
 
 #
 # libraries to compile and install
@@ -281,12 +282,12 @@ SFIDL = ../sfi/sfidl	# WATCH OUT: $(SFIDL) works only for srcdir==builddir with 
 # rules to generate built sources
 #
 # setup autogeneration dependancies
-gen_sources = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
-	      xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi
-CLEANFILES += $(gen_sources) @DVLBUILD@ $(bse_proc_gen_sources)
+tmp_files = xgen-sbgth xgen-bgtc xgen-bgtac xgen-sbeac xgen-belc xgen-bbec xgen-bbac \
+	    xgen-bnac xgen-bmx xgen-bmh xgen-bmc xgen-bgasi
+CLEANFILES += $(tmp_files) @DVLBUILD@ $(bse_proc_gen_sources)
 $(OBJECTS): $(bse_built_h_sources)
 # piggyback generation through sideeffects, needs NOP-rule for dep-tracking, must be in srcdir
-$(srcdir)/bsegentypes.h: stamp-bsegentypes.h ;
+$(srcdir)/bsegentypes.h: @DVLBUILD@ stamp-bsegentypes.h ;
 # normal autogeneration rules
 stamp-bsegentypes.h: @DVLBUILD@ mktypes.pl $(bse_c_sources) $(bse_public_h_sources)
 stamp-bsegentypes.h: @DVLBUILD@ $(srcdir)/bserecords.sfidl $(SFIDL)
@@ -352,7 +353,7 @@ bsebuiltin_array.c: @DVLBUILD@ $(bse_builtin_c_sources) mkbuiltinlist.pl
 # this file describes the BSE public API and needs to be generated at the
 # end of the build process
 #
-bse.sfidl: $(srcdir)/bserecords.sfidl $(SFIDL) bseprocidl
+bse.sfidl: $(srcdir)/bserecords.sfidl bseprocidl
 	echo "/* this file was generated from make $< */" > xgen-bgasi \
 	&& cat $(srcdir)/bserecords.sfidl >> xgen-bgasi \
 	&& ./bseprocidl >> xgen-bgasi \
