@@ -36,7 +36,7 @@ GSL_C_SRC     =	$(strip \
 )
 GSL_EXTRA_SRC =	gslconfig.h gsloputil.h gslopmaster.h gslopnode.h \
 		gslopschedule.h gslincluder.c gslwaveosc-aux.c gsloscillator-aux.c
-GSL_EXTRA_DAT = gsl.gnuplot gsl-mplan.txt gslarrows gslwave.header \
+GSL_EXTRA_DAT = gsl.gnuplot engine-mplan.txt gslarrows gslwave.header \
                 gsl-fftgen.pl gsl-fftconf.sh
 EXTRA_DIST   +=	$(GSL_H_SRC) $(GSL_EXTRA_SRC) $(GSL_EXTRA_DAT) gslmakefile.inc
 
