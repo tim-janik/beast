@@ -1,3 +1,9 @@
+Mon Dec  6 22:47:48 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsepcmdevice-portaudio.cc: Use BSE_DEFINE_EXPORTS, which now works
+	thanks to a libbse fix. Do proper deinitialization of libportaudio
+	in the finalize method.
+
 Tue Nov 30 10:30:51 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsepcmdevice-portaudio.cc: Since the driver class is called

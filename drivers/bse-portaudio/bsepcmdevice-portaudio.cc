@@ -54,12 +54,7 @@ static guint            port_audio_device_latency             (BsePcmHandle     
 
 /* --- define object type and export to BSE --- */
 BSE_REGISTER_OBJECT (BsePcmDevicePortAudio, BsePcmDevice, NULL, NULL, NULL, bse_pcm_device_port_audio_class_init, NULL, bse_pcm_device_port_audio_init);
-/* BSE_DEFINE_EXPORTS (__FILE__); */
-/* BSE_DEFINE_EXPORTS (BSE_PLUGIN_NAME); */
-extern "C" {
-static BseExportIdentity __bse_export_identity = { "bsepcmdevice-portaudio", (0), (6), (3), (0), (0), &__enode_chain_head };
-BseExportIdentity *bse_export__identity = &__bse_export_identity;
-};
+BSE_DEFINE_EXPORTS (__FILE__);
 
 /* --- variables --- */
 static gpointer parent_class = NULL;
@@ -257,7 +252,7 @@ bse_pcm_device_port_audio_close (BseDevice *device)
 {
   PortAudioPcmHandle *portaudio = (PortAudioPcmHandle*) BSE_PCM_DEVICE (device)->handle;
   BSE_PCM_DEVICE (device)->handle = NULL;
-  
+
   if (portaudio->stream)
     {
       Pa_StopStream (portaudio->stream);
@@ -269,7 +264,8 @@ bse_pcm_device_port_audio_close (BseDevice *device)
 static void
 bse_pcm_device_port_audio_finalize (GObject *object)
 {
-  /* BsePcmDevicePortAudio *self = BSE_PCM_DEVICE_PortAudio (object); */
+  Pa_Terminate();
+  /* BsePcmDevicePortAudio *self = BSE_PCM_DEVICE_PORT_AUDIO (object); */
   /* chain parent class' handler */
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
