@@ -37,13 +37,6 @@ guint               bse_debug_key_n_flag_values = (sizeof (bse_debug_flags_value
 
 
 /* --- functions --- */
-static void
-choice2enum (const GValue *src_value,
-	     GValue       *dest_value)
-{
-  sfi_value_choice2enum (src_value, dest_value, NULL);
-}
-
 void
 bse_type_register_enums (void)
 {
@@ -64,7 +57,7 @@ bse_type_register_enums (void)
       if (enums[i].parent_type == G_TYPE_ENUM)
 	{
 	  *(enums[i].type_p) = g_enum_register_static (enums[i].name, enums[i].values);
-	  g_value_register_transform_func (SFI_TYPE_CHOICE, *(enums[i].type_p), choice2enum);
+	  g_value_register_transform_func (SFI_TYPE_CHOICE, *(enums[i].type_p), sfi_value_choice2enum_simple);
 	  g_value_register_transform_func (*(enums[i].type_p), SFI_TYPE_CHOICE, sfi_value_enum2choice);
 	}
       else if (enums[i].parent_type == G_TYPE_FLAGS)

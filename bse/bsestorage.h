@@ -76,6 +76,7 @@ struct _BseStorage
   GScanner		*scanner;
   gint			 fd;
   glong			 bin_offset;
+  GHashTable		*path_table;
   BseStorageItemLink	*item_links;
   /* writing */
   GSList		*indent;

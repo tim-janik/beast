@@ -31,6 +31,9 @@
 #include <errno.h>
 
 
+#define	DEBUG	sfi_nodebug
+
+
 /* --- macros --- */
 #define parse_or_return		bse_storage_scanner_parse_or_return
 #define peek_or_return		bse_storage_scanner_peek_or_return
@@ -61,9 +64,20 @@ struct _BseStorageItemLink
 
 
 /* --- prototypes --- */
-static void	bse_storage_init	(BseStorage	 *self);
-static void	bse_storage_class_init	(BseStorageClass *class);
-static void	bse_storage_finalize	(GObject	 *object);
+static void	bse_storage_init			(BseStorage	 *self);
+static void	bse_storage_class_init			(BseStorageClass *class);
+static void	bse_storage_finalize			(GObject	 *object);
+static void	storage_path_table_insert		(BseStorage	*self,
+							 BseContainer	*container,
+							 const gchar	*uname,
+							 BseItem	*item);
+static BseItem*	storage_path_table_resolve_upath	(BseStorage	*self,
+							 BseContainer	*container,
+							 gchar		*upath);
+static guint	uname_child_hash			(gconstpointer	 uc);
+static gint	uname_child_equals			(gconstpointer   uc1,
+							 gconstpointer   uc2);
+static void	uname_child_free			(gpointer	 uc);
 
 
 /* --- variables --- */
@@ -135,6 +149,8 @@ bse_storage_reset (BseStorage *self)
   if (BSE_STORAGE_READABLE (self))
     {
       bse_storage_resolve_item_links (self);
+      g_hash_table_destroy (self->path_table);
+      self->path_table = NULL;
       g_free ((gchar*) self->scanner->input_name);
       g_scanner_destroy (self->scanner);
       if (self->fd >= 0)
@@ -147,7 +163,7 @@ bse_storage_reset (BseStorage *self)
   if (BSE_STORAGE_WRITABLE (self))
     {
       GSList *slist;
-      
+
       for (slist = self->indent; slist; slist = slist->next)
         g_free (slist->data);
       g_slist_free (self->indent);
@@ -218,6 +234,7 @@ bse_storage_input_file (BseStorage  *self,
   self->scanner->input_name = g_strdup (file_name);
   self->scanner->max_parse_errors = 1;
   self->scanner->parse_errors = 0;
+  self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
   BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_FLAG_READABLE);
   
   return BSE_ERROR_NONE;
@@ -239,6 +256,7 @@ bse_storage_input_text (BseStorage  *self,
   self->scanner->input_name = g_strdup ("InternalString");
   self->scanner->max_parse_errors = 1;
   self->scanner->parse_errors = 0;
+  self->path_table = g_hash_table_new_full (uname_child_hash, uname_child_equals, NULL, uname_child_free);
   BSE_OBJECT_SET_FLAGS (self, BSE_STORAGE_FLAG_READABLE);
   
   return BSE_ERROR_NONE;
@@ -351,15 +369,10 @@ item_link_resolved (gpointer     data,
     {
       GParamSpec *pspec = data;
       GValue value = { 0, };
-      gboolean fixed_uname;
 
       g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (pspec));
       g_value_set_object (&value, dest_item);
-      fixed_uname = BSE_OBJECT_FLAGS (item) & BSE_OBJECT_FLAG_FIXED_UNAME;
-      BSE_OBJECT_SET_FLAGS (item, BSE_OBJECT_FLAG_FIXED_UNAME);
       g_object_set_property (G_OBJECT (item), pspec->name, &value);
-      if (!fixed_uname)
-	BSE_OBJECT_UNSET_FLAGS (item, BSE_OBJECT_FLAG_FIXED_UNAME);
       g_value_unset (&value);
     }
 }
@@ -372,7 +385,6 @@ restore_item_property (BseItem    *item,
   GTokenType expected_token;
   GParamSpec *pspec;
   GValue value = { 0, };
-  gboolean fixed_uname;
 
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER)
@@ -417,11 +429,7 @@ restore_item_property (BseItem    *item,
     }
 
   /* set property value while preserving the object uname */
-  fixed_uname = BSE_OBJECT_FLAGS (item) & BSE_OBJECT_FLAG_FIXED_UNAME;
-  BSE_OBJECT_SET_FLAGS (item, BSE_OBJECT_FLAG_FIXED_UNAME);
   g_object_set_property (G_OBJECT (item), pspec->name, &value);
-  if (!fixed_uname)
-    BSE_OBJECT_UNSET_FLAGS (item, BSE_OBJECT_FLAG_FIXED_UNAME);
   g_value_unset (&value);
 
   return G_TOKEN_NONE;
@@ -447,9 +455,10 @@ restore_container_child (BseContainer *container,
   uname = strchr (scanner->value.v_string, ':');
   if (!uname || uname[1] != ':')
     {
-      bse_storage_error (storage, "invalid object handle: \"%s\"", uname);
+      bse_storage_error (storage, "invalid object handle: \"%s\"", scanner->value.v_string);
       return G_TOKEN_ERROR;
     }
+  uname += 2;
 
   /* create container child */
   item = bse_container_retrieve_child (container, scanner->value.v_string);
@@ -457,7 +466,7 @@ restore_container_child (BseContainer *container,
     return bse_storage_warn_skip (storage, "failed to create object from (invalid) handle: \"%s\"",
 				  scanner->value.v_string);
 
-  /* FIXME: validate uname vs. item->uname */
+  storage_path_table_insert (storage, container, uname, item);
 
   /* restore_item reads out closing parenthesis */
   expected_token = bse_storage_restore_item (storage, item);
@@ -549,6 +558,105 @@ bse_storage_parse_statement (BseStorage *self,
   g_object_unref (self);
 
   return expected_token;
+}
+
+typedef struct {
+  BseContainer *container;
+  gchar        *uname;
+  BseItem      *item;
+} UNameChild;
+
+static guint
+uname_child_hash (gconstpointer uc)
+{
+  const UNameChild *uchild = uc;
+  guint h = g_str_hash (uchild->uname);
+  h ^= G_HASH_LONG ((long) uchild->container);
+  return h;
+}
+
+static gint
+uname_child_equals (gconstpointer uc1,
+		    gconstpointer uc2)
+{
+  const UNameChild *uchild1 = uc1;
+  const UNameChild *uchild2 = uc2;
+  return (bse_string_equals (uchild1->uname, uchild2->uname) &&
+	  uchild1->container == uchild2->container);
+}
+
+static void
+uname_child_free (gpointer uc)
+{
+  UNameChild *uchild = uc;
+  g_object_unref (uchild->container);
+  g_free (uchild->uname);
+  g_object_unref (uchild->item);
+  g_free (uchild);
+}
+
+static void
+storage_path_table_insert (BseStorage   *self,
+			   BseContainer *container,
+			   const gchar  *uname,
+			   BseItem	*item)
+{
+  UNameChild key, *uchild;
+  key.container = container;
+  key.uname = (gchar*) uname;
+  uchild = g_hash_table_lookup (self->path_table, &key);
+  if (!uchild)
+    {
+      uchild = g_new (UNameChild, 1);
+      uchild->container = g_object_ref (container);
+      uchild->uname = g_strdup (uname);
+      uchild->item = NULL;
+      g_hash_table_insert (self->path_table, uchild, uchild);
+    }
+  if (uchild->item)
+    g_object_unref (uchild->item);
+  uchild->item = g_object_ref (item);
+  DEBUG ("INSERT: (%p,%s) => %p", container, uname, item);
+}
+
+static inline BseItem*
+storage_path_table_lookup (BseStorage   *self,
+			   BseContainer *container,
+			   const gchar  *uname)
+{
+  UNameChild key, *uchild;
+  key.container = container;
+  key.uname = (gchar*) uname;
+  uchild = g_hash_table_lookup (self->path_table, &key);
+  DEBUG ("LOOKUP: (%p,%s) => %p", container, uname, uchild ? uchild->item : NULL);
+  if (uchild)
+    return uchild->item;
+  /* we resort to container lookups, though the uname
+   * reference is most probably broken
+   */
+  return bse_container_lookup_item (container, uname);
+}
+
+static BseItem*
+storage_path_table_resolve_upath (BseStorage   *self,
+				  BseContainer *container,
+				  gchar        *upath)
+{
+  gchar *next_uname = strchr (upath, ':');
+  /* upaths consist of colon seperated unames from the item's ancestry */
+  if (next_uname)
+    {
+      BseItem *item;
+      next_uname[0] = 0;
+      item = storage_path_table_lookup (self, container, upath);
+      next_uname[0] = ':';
+      if (BSE_IS_CONTAINER (item))
+	return storage_path_table_lookup (self, BSE_CONTAINER (item), next_uname + 1);
+      else
+	return NULL;
+    }
+  else
+    return storage_path_table_lookup (self, container, upath);
 }
 
 void
@@ -907,7 +1015,7 @@ bse_storage_resolve_item_links (BseStorage *storage)
 
       if (ilink->error)
 	{
-	  gchar *error = g_strdup_printf ("unable to resolve upath for item `%s': %s",
+	  gchar *error = g_strdup_printf ("unable to resolve link path for item `%s': %s",
 					  BSE_OBJECT_UNAME (ilink->from_item),
 					  ilink->error);
 	  ilink->restore_link (ilink->data, storage, ilink->from_item, NULL, error);
@@ -937,17 +1045,17 @@ bse_storage_resolve_item_links (BseStorage *storage)
 	      parent = parent->parent;
 	    }
 	  if (!parent)
-	    error = g_strdup_printf ("failed to chain to ancestor of item `%s' (chain length: %u, "
-				     "number of parents: %u) while resolving upath: %s",
+	    error = g_strdup_printf ("failed to find ancestor of item `%s' (branch depth: -%u, "
+				     "number of parents: %u) while resolving link path: %s",
 				     BSE_OBJECT_UNAME (ilink->from_item),
 				     ilink->pbackup,
 				     ilink->pbackup - pbackup + 1,
 				     ilink->upath);
 	  else
 	    {
-	      child = bse_container_resolve_upath (BSE_CONTAINER (parent), ilink->upath);
+	      child = storage_path_table_resolve_upath (storage, BSE_CONTAINER (parent), ilink->upath);
 	      if (!child)
-		error = g_strdup_printf ("failed to find object for item `%s' while resolving upath from ancestor `%s': %s",
+		error = g_strdup_printf ("failed to find object for item `%s' while resolving link path from ancestor `%s': %s",
 					 BSE_OBJECT_UNAME (ilink->from_item),
 					 BSE_OBJECT_UNAME (parent),
 					 ilink->upath);
@@ -1511,7 +1619,7 @@ bse_storage_put_item_link (BseStorage     *storage,
 
       /* store path reference */
       epath = g_strescape (upath, NULL);
-      bse_storage_printf (storage, "(bse-upath-resolve %u \"%s\")", pbackup, epath);
+      bse_storage_printf (storage, "(link %u \"%s\")", pbackup, epath);
       g_free (epath);
       g_free (upath);
     }
@@ -1546,7 +1654,7 @@ bse_storage_put_value (BseStorage   *storage,
       gstring = g_string_new (NULL);
       svalue = sfi_value_empty ();
       g_value_init (svalue, G_PARAM_SPEC_VALUE_TYPE (pspec));
-      if (!g_value_transform (value, svalue))
+      if (!sfi_value_transform (value, svalue))
 	{
 	  g_warning ("unable to transform \"%s\" of type `%s' to `%s'",
 		     bsepspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (bsepspec)),
@@ -1603,15 +1711,16 @@ bse_storage_parse_param_value (BseStorage *storage,
   token = sfi_value_parse_param_rest (pvalue, scanner, pspec);
   if (token == G_TOKEN_NONE)
     {
-      gboolean fixed = FALSE;
-      fixed = g_param_value_validate (pspec, pvalue);
-      if (!g_value_transform (pvalue, value))
-	g_warning ("unable to transform \"%s\" of type `%s' to `%s'",
-		   pspec->name, g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+      gboolean fixup = FALSE;
+      fixup = g_param_value_validate (pspec, pvalue);
+      if (!sfi_value_transform (pvalue, value))
+	g_warning ("unable to value of type `%s' for \"%s\" to `%s'",
+		   g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+		   pspec->name,
 		   g_type_name (G_VALUE_TYPE (value)));
       else if (G_VALUE_TYPE (pvalue) != G_VALUE_TYPE (value))
-	fixed |= g_param_value_validate (bsepspec, value);
-      if (fixed)
+	fixup |= g_param_value_validate (bsepspec, value);
+      if (fixup)
 	g_scanner_warn (scanner, "fixing up contents of \"%s\"", pspec->name);
     }
   g_param_spec_unref (pspec);
@@ -1679,7 +1788,7 @@ bse_storage_parse_item_link (BseStorage           *storage,
     {
       parse_or_goto (G_TOKEN_IDENTIFIER, error_parse_link);
 
-      if (strcmp (scanner->value.v_identifier, "bse-upath-resolve") == 0)
+      if (strcmp (scanner->value.v_identifier, "link") == 0)
 	{
 	  guint pbackup = 0;
 
@@ -1715,6 +1824,6 @@ bse_storage_parse_item_link (BseStorage           *storage,
 #undef	peek_or_goto
 
  error_parse_link:
-  ilink = storage_add_item_link (storage, from_item, restore_link, data, g_strdup ("failed to parse upath"));
+  ilink = storage_add_item_link (storage, from_item, restore_link, data, g_strdup ("failed to parse link path"));
   return expected_token;
 }

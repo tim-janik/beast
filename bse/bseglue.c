@@ -291,7 +291,7 @@ bglue_value_from_serializable (const GValue *svalue,
       value = sfi_value_empty ();
       g_value_init (value, dtype);
     }
-  if (!dtype || !g_value_transform (svalue, value))
+  if (!dtype || !sfi_value_transform (svalue, value))
     g_warning ("unable to convert to value type `%s' from serializable (`%s')",
 	       g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
 	       g_type_name (stype));
@@ -347,7 +347,7 @@ bglue_value_to_serializable (const GValue *svalue)
   if (!dtype)
     g_warning ("unable to convert value type `%s' to serializable type",
 	       g_type_name (vtype));
-  else if (!g_value_transform (svalue, value))
+  else if (!sfi_value_transform (svalue, value))
     g_warning ("unable to convert value type `%s' to serializable (`%s')",
 	       g_type_name (vtype), g_type_name (dtype));
   return value;
@@ -826,7 +826,7 @@ bglue_proxy_set_property (SfiGlueContext *context,
 	  GValue tmp_value = { 0, };
 	  /* we do conversion and validation here, so we can roll our own warnings */
 	  g_value_init (&tmp_value, G_PARAM_SPEC_VALUE_TYPE (pspec));
-	  if (!g_value_transform (pvalue ? pvalue : value, &tmp_value))
+	  if (!sfi_value_transform (pvalue ? pvalue : value, &tmp_value))
 	    sfi_warn ("property `%s' (%s) of \"%s\" cannot be set from value of type `%s'",
 		      pspec->name,
 		      g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),

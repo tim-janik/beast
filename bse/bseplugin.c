@@ -298,7 +298,11 @@ bse_plugin_register_exports (BsePlugin    *plugin,
 	      type = bse_type_register_dynamic (espec->parent_type,
 						espec->name, NULL,
 						plugin);
-	      
+	      /* FIXME: can't register dynamic type transforms with glib-2.2.1
+	       * g_value_register_transform_func (SFI_TYPE_CHOICE, type, sfi_value_choice2enum_simple);
+	       * g_value_register_transform_func (type, SFI_TYPE_CHOICE, sfi_value_enum2choice);
+	       */
+
 	      plugin->n_enum_types++;
 	      plugin->enum_types = g_renew (GType,
 					    plugin->enum_types,

@@ -339,7 +339,7 @@ bse_procedure_marshal (GType               proc_type,
       
       tmp_ivalues[i].g_type = 0;
       g_value_init (tmp_ivalues + i, G_PARAM_SPEC_VALUE_TYPE (pspec));
-      if (!g_value_transform (ivalues + i, tmp_ivalues + i))
+      if (!sfi_value_transform (ivalues + i, tmp_ivalues + i))
 	{
 	  g_warning ("%s: input arg `%s' has invalid type `%s' (expected `%s')",
 		     proc->name,
@@ -367,7 +367,7 @@ bse_procedure_marshal (GType               proc_type,
     {
       GParamSpec *pspec = proc->out_pspecs[i];
       
-      if (!g_value_transform (tmp_ovalues + i, ovalues + i))
+      if (!sfi_value_transform (tmp_ovalues + i, ovalues + i))
 	g_warning ("%s: output arg `%s' of type `%s' cannot be converted into `%s'",
 		   proc->name,
 		   pspec->name,
@@ -408,7 +408,7 @@ bse_procedure_marshal_valist (GType               proc_type,
 	  
 	  tmp_ivalues[0].g_type = 0;
 	  g_value_init (tmp_ivalues + 0, G_PARAM_SPEC_VALUE_TYPE (pspec));
-	  if (!g_value_transform (first_value, tmp_ivalues + 0))
+	  if (!sfi_value_transform (first_value, tmp_ivalues + 0))
 	    {
 	      g_warning ("%s: input arg `%s' has invalid type `%s' (expected `%s')",
 			 proc->name,
@@ -659,7 +659,7 @@ bse_procedure_eval_storage (BseStorage   *storage,
 	{
 	  GValue pvalue = { 0, };
 	  g_value_init (&pvalue, SFI_TYPE_PROXY);
-	  g_value_transform (retval, &pvalue);
+	  sfi_value_transform (retval, &pvalue);
 	  g_value_unset (retval);
 	  memcpy (retval, &pvalue, sizeof (pvalue));    /* values are relocatable */
 	}
