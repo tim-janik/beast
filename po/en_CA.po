@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-06 10:12-0400\n"
+"POT-Creation-Date: 2004-09-06 17:17-0400\n"
 "PO-Revision-Date: 2004-09-06 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
@@ -2269,30 +2269,42 @@ msgstr "MIDI Synthesizer: %s"
 msgid "Synthesizer: %s"
 msgstr "Synthesizer: %s"
 
-#: beast-gtk/bstsupershell.c:257
+#: beast-gtk/bstsupershell.c:268
 msgid "Tracks"
 msgstr "Tracks"
 
-#: beast-gtk/bstsupershell.c:262
+#: beast-gtk/bstsupershell.c:268
+msgid "Tracks contain instrument definitions and parts with notes"
+msgstr "Tracks contain instrument definitions and parts with notes"
+
+#: beast-gtk/bstsupershell.c:271
 msgid "Mixer"
 msgstr "Mixer"
 
-#: beast-gtk/bstsupershell.c:267 beast-gtk/bstsupershell.c:309
+#: beast-gtk/bstsupershell.c:271
+msgid "Mix track outputs, adjust volume and add effects"
+msgstr "Mix track outputs, adjust volume and add effects"
+
+#: beast-gtk/bstsupershell.c:274 beast-gtk/bstsupershell.c:309
 #: beast-gtk/bstsupershell.c:327 plugins/artscompressor.idl:34
 #: plugins/artscompressor.idl:53 plugins/davbassfilter.idl:36
 #: plugins/davchorus.idl:33 plugins/evaluator/bseevaluator.idl:34
 msgid "Parameters"
 msgstr "Parameters"
 
-#: beast-gtk/bstsupershell.c:272
+#: beast-gtk/bstsupershell.c:274
+msgid "Adjust general song parameters"
+msgstr "Adjust general song parameters"
+
+#: beast-gtk/bstsupershell.c:277
 msgid "Parts"
 msgstr "Parts"
 
-#: beast-gtk/bstsupershell.c:278
+#: beast-gtk/bstsupershell.c:281
 msgid "Busses"
 msgstr "Busses"
 
-#: beast-gtk/bstsupershell.c:284 beast-gtk/bstsupershell.c:303
+#: beast-gtk/bstsupershell.c:285 beast-gtk/bstsupershell.c:303
 msgid "Routing"
 msgstr "Routing"
 
