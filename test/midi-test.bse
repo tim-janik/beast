@@ -5,10 +5,8 @@
   (modification-time "2002-01-12 12:42:41")
   (creation-time "2002-01-12 12:42:41")
   (BseWave::BseWave-1
-    ;(load-wave "/home/timj/tmp/sample.wave410.gslwave" "sample.wave410")
-    ;(set-locator "/home/timj/tmp/sample.wave410.gslwave" "sample.wave410")
-    (load-wave "/exports/public/sound/wav/koks.wav" "/exports/public/sound/wav/koks.wav")
-    (set-locator "/exports/public/sound/wav/koks.wav" "/exports/public/sound/wav/koks.wav")
+    (load-wave "test.wav" "test.wav")
+    (set-locator "test.wav" "test.wav")
   ))
 (BseMidiSynth::MIDI-Net
   (snet (BseSNet::MIDI-Instrument))
