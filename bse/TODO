@@ -58,6 +58,8 @@ NEW:
 - during playback the instrument set needs to be fixed on a song  
 - BSE_SOURCE_GET_CLASS (source)->remove_input() add GslTrans* so clear_input removes really in batches
 - add pre-amplification (0..1) to freeverb for clip prevention
+- fix scanner error messages for deferred channel resolution to include the *correct* line number
+- fix update_suspension_state() recursion for ordninary cycles
   
 OLD:
 general:

@@ -1,3 +1,11 @@
+Thu Aug 22 04:24:58 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesongthread.c: support multiple tracks per song.
+
+	* gslopschedule.c (update_suspension_state): update
+	suspension flag before recursing into cycles that may
+	lead back to an object up in the stack trace.
+
 Thu Aug 15 21:21:46 2002  Tim Janik  <timj@gtk.org>
 
 	* Makefile.am: add mkcproc.pl to EXTRA_DIST.

@@ -146,14 +146,21 @@ seq_init_SL (BseSongSequencer *seq,
   seq->beat_tick = 0;
   if (seq->song->tracks)
     {
-      BseTrack *track = seq->song->tracks->data;
-      if (track->part_SL)
+      GList *list = seq->song->tracks;
+      guint i = g_list_length (list);
+      seq->n_tracks = 0;
+      seq->tracks = g_new (BseSongSequencerTrack, i);
+      while (list)
 	{
-	  seq->n_tracks = 1;
-	  seq->tracks = g_new (BseSongSequencerTrack, seq->n_tracks);
-	  seq->tracks[0].part = track->part_SL;
-	  seq->tracks[0].midi_receiver = track->midi_receiver_SL;
-	  seq->tracks[0].tick = 0;
+	  BseTrack *track = list->data;
+	  if (track->part_SL)
+	    {
+	      seq->tracks[seq->n_tracks].part = track->part_SL;
+	      seq->tracks[seq->n_tracks].midi_receiver = track->midi_receiver_SL;
+	      seq->tracks[seq->n_tracks].tick = 0;
+	      seq->n_tracks++;
+	    }
+	  list = list->next;
 	}
     }
 }
@@ -163,7 +170,7 @@ seq_step_SL (BseSongSequencer *seq,
 	     const guint64     stamp_diff)
 {
   gdouble pps, stamp_inc, ticks2stamp, ppqn = 384; // FIXME: track->ppqn
-  guint beat_ticks;
+  guint beat_ticks, i;
 
   /* calc bpm tick increment */
   pps = ppqn * seq->beats_per_second;
@@ -171,8 +178,8 @@ seq_step_SL (BseSongSequencer *seq,
   beat_ticks = stamp_diff / ticks2stamp;
 
   /* process bpm ticks */
-  if (seq->n_tracks)
-    track_step_SL (seq, seq->tracks + 0, beat_ticks, ticks2stamp);
+  for (i = 0; i < seq->n_tracks; i++)
+    track_step_SL (seq, seq->tracks + i, beat_ticks, ticks2stamp);
 
   /* advance bpm ticks */
   seq->beat_tick += beat_ticks;

@@ -403,6 +403,7 @@ update_suspension_state (EngineNode *node)
   GslRing *ring;
   guint seen_suspended = 0, seen_active = 0;
 
+  node->suspension_update = FALSE;
   for (ring = node->output_nodes; ring && !seen_active; ring = gsl_ring_walk (node->output_nodes, ring))
     {
       EngineNode *dest_node = ring->data;
@@ -417,7 +418,6 @@ update_suspension_state (EngineNode *node)
 	}
     }
   node->outputs_suspended = seen_suspended && !seen_active;
-  node->suspension_update = FALSE;
 }
 
 static GslRing*
