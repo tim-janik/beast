@@ -4,6 +4,8 @@
 ## Makefile.am for BEAST/BSE
 
 
-scripts_DATA = $(strip \
+scripts_DATA = $(strip		\
+	progressor-example.scm	\
+	modules2grid.scm	\
 )
 scriptsdir = $(bsescriptdir)
