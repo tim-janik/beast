@@ -151,4 +151,14 @@ $(srcdir)/davbassfilter.cc: davbassfilter.gen-idl.h
 plugins_built_sources += davbassfilter.gen-idl.h
 plugin_LTLIBRARIES    += davbassfilter.la
 
+##
+## Plugin bsecontribsampleandhold
+##
+bsecontribsampleandhold_la_SOURCES = bsecontribsampleandhold.cc
+bsecontribsampleandhold_la_LDFLAGS = -module $(plugin_ldflags)
+bsecontribsampleandhold_la_LIBADD  = $(plugin_libs)
+$(srcdir)/bsecontribsampleandhold.cc: bsecontribsampleandhold.gen-idl.h
+plugins_built_sources += bsecontribsampleandhold.gen-idl.h
+plugin_LTLIBRARIES    += bsecontribsampleandhold.la
+
 ## Generated data ends here

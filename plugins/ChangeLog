@@ -1,3 +1,9 @@
+Tue Aug 31 08:11:50 2004  Tim Janik  <timj@gtk.org>
+
+	* bsecontribsampleandhold.idl:
+	* bsecontribsampleandhold.cc: added new plugin from Artem Popov.
+	added license information and changed namespace to Bse::Contrib.
+
 Mon Aug 30 01:50:16 2004  Tim Janik  <timj@gtk.org>
 
 	* bsesimpleadsr.c (simple_adsr_reset): added missing reset method,

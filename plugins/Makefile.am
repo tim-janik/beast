@@ -14,11 +14,12 @@ plugindir = $(bseplugindir)
 #
 # C++ Plugins
 #
-plugin_idl_files = $(strip	\
-	davchorus.idl		\
-	bsebalance.idl		\
-	artscompressor.idl	\
-	davbassfilter.idl	\
+plugin_idl_files = $(strip		\
+	davchorus.idl			\
+	bsebalance.idl			\
+	artscompressor.idl		\
+	davbassfilter.idl		\
+	bsecontribsampleandhold.idl	\
 )
 EXTRA_HEADERS += $(plugin_idl_files)
 # setup generation of C++ plugins from idl files

@@ -1,0 +1,30 @@
+/* BseContribSampleAndHold                              -*-mode: c++;-*-
+ * Copyright (C) 2004 Artem Popov <tfwo@mail.ru>
+ *
+ * This plugin is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This plugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
+#include <bse/bse.idl>
+
+namespace Bse { namespace Contrib {
+class SampleAndHold: Effect {
+  Info authors		= _("Artem Popov");
+  Info license		= _("GNU General Public License");
+  Info category		= _("/Routing/Sample and Hold");
+  Info blurb		= _("SampleAndHold samples the input signal when triggered and holds it until triggered again.");
+  IStream audio_in	= (_("Audio In"), _("Audio Input"));
+  IStream trigger_in	= (_("Trigger In"), _("Trigger Input"));
+  OStream audio_out	= (_("Audio Out"), _("Audio Output"));
+};
+} } // Bse::Contrib
