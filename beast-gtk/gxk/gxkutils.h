@@ -312,7 +312,7 @@ void     gxk_tree_view_focus_row	 (GtkTreeView		*tree,
 gboolean gxk_tree_view_is_row_selected	 (GtkTreeView		*tree,
 					  gint			 row);
 gint     gxk_tree_view_get_selected_row	 (GtkTreeView		*tree);
-
+gboolean gxk_show_url                    (const gchar           *url);
 
 /* --- signal convenience --- */
 gboolean	gxk_signal_handler_exists	(gpointer	 instance,

@@ -55,14 +55,20 @@ enum {
   ACTION_SHOW_PROFILER,
   ACTION_EXTRA_VIEW,
   ACTION_RACK_EDITOR,
-#define ACTION_HELP_FIRST   ACTION_HELP_FAQ
+#define ACTION_HELP_FIRST   ACTION_HELP_INDEX
+  ACTION_HELP_INDEX,
   ACTION_HELP_FAQ,
-  ACTION_HELP_KEYTABLE,
   ACTION_HELP_RELEASE_NOTES,
-  ACTION_HELP_GSL_PLAN,
   ACTION_HELP_QUICK_START,
+  ACTION_HELP_PLUGIN_DEVEL,
+  ACTION_HELP_DSP_ENGINE,
+  ACTION_HELP_DEVELOPMENT,
   ACTION_HELP_ABOUT,
 #define ACTION_HELP_LAST    ACTION_HELP_ABOUT
+  ACTION_URL_HELP_DESK,
+  ACTION_URL_BEAST_SITE,
+  ACTION_URL_ONLINE_SYNTHESIZERS,
+  ACTION_URL_ONLINE_DEMOS,
 };
 static const GxkStockAction file_open_actions[] = {
   { N_("_New"),                 "<ctrl>N",      N_("Create new project"),
@@ -134,26 +140,44 @@ static const GxkStockAction project_actions[] = {
     BST_ACTION_REMOVE_SYNTH,    BST_STOCK_REMOVE_SYNTH },
 };
 static const GxkStockAction library_files_actions[] = {
-  { N_("Load _Instrument"),     NULL,           N_("Load synthesizer mesh from instruments folder"),
-    BST_ACTION_MERGE_INSTRUMENT, },
-  { N_("Load _Effect"),         NULL,           N_("Load synthesizer mesh from effects folder"),
-    BST_ACTION_MERGE_EFFECT, },
-  { N_("Save As Instrument"),   NULL,           N_("Save synthesizer mesh to instruments folder"),
-    BST_ACTION_SAVE_INSTRUMENT, },
-  { N_("Save As Effect"),       NULL,           N_("Save synthesizer mesh to effects folder"),
-    BST_ACTION_SAVE_EFFECT, },
+  { N_("Load _Instrument..."),  NULL,           N_("Load synthesizer mesh from instruments folder"),
+    BST_ACTION_MERGE_INSTRUMENT,BST_STOCK_OPEN },
+  { N_("Load _Effect..."),      NULL,           N_("Load synthesizer mesh from effects folder"),
+    BST_ACTION_MERGE_EFFECT,    BST_STOCK_OPEN },
+  { N_("Save As Instrument..."),NULL,           N_("Save synthesizer mesh to instruments folder"),
+    BST_ACTION_SAVE_INSTRUMENT, BST_STOCK_SAVE_AS },
+  { N_("Save As Effect..."),    NULL,           N_("Save synthesizer mesh to effects folder"),
+    BST_ACTION_SAVE_EFFECT,     BST_STOCK_SAVE_AS },
 };
 static const GxkStockAction simple_help_actions[] = {
-  { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),
-    ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
-  { N_("Quick Start..."),       NULL,           N_("Provides an introduction about how to accomplish the most common tasks"),
+  { N_("Document _Index..."),   NULL,           N_("Provide an overview of all BEAST documentation contents"),
+    ACTION_HELP_INDEX,          BST_STOCK_DOC_INDEX },
+  { N_("_Quick Start..."),      NULL,           N_("Provides an introduction about how to accomplish the most common tasks"),
     ACTION_HELP_QUICK_START,    BST_STOCK_HELP },
   { N_("_FAQ..."),              NULL,           N_("Frequently asked questions"),
     ACTION_HELP_FAQ,            BST_STOCK_DOC_FAQ },
-};
-static const GxkStockAction devel_help_actions[] = {
+  { N_("Online _Help Desk..."), NULL,           N_("Start a web browser pointing to the online help desk at the BEAST website"),
+    ACTION_URL_HELP_DESK,       BST_STOCK_ONLINE_HELP_DESK },
+  { N_("_BEAST Web Site..."),   NULL,           N_("Start a web browser pointing to the BEAST website"),
+    ACTION_URL_BEAST_SITE,      BST_STOCK_ONLINE_BEAST_SITE },
+#if 0
+  { N_("_Release Notes..."),    NULL,           N_("Notes and informations about this release cycle"),
+    ACTION_HELP_RELEASE_NOTES,  BST_STOCK_DOC_NEWS },
+  { N_("Developing Plugins..."),NULL,           N_("A guide to synthesis plugin development"),
+    ACTION_HELP_PLUGIN_DEVEL,   BST_STOCK_DOC_DEVEL },
   { N_("DSP Engine..."),        NULL,           N_("Technical description of the multi-threaded synthesis engine innards"),
-    ACTION_HELP_GSL_PLAN,       BST_STOCK_DOC_DEVEL },
+    ACTION_HELP_DSP_ENGINE,     BST_STOCK_DOC_DEVEL },
+#endif
+  { N_("Development..."),       NULL,           N_("Provide an overview of development related topics and documents"),
+    ACTION_HELP_DEVELOPMENT,    BST_STOCK_DOC_DEVEL },
+};
+static const GxkStockAction online_synthesizers[] = {
+  { N_("Online Sound Archive..."),  NULL,        N_("Start a web browser pointing to the online sound archive"),
+    ACTION_URL_ONLINE_SYNTHESIZERS, BST_STOCK_ONLINE_SOUND_ARCHIVE },
+};
+static const GxkStockAction online_demos[] = {
+  { N_("Online Demos..."),          NULL,           N_("Start a web browser pointing to online demo songs"),
+    ACTION_URL_ONLINE_DEMOS,        BST_STOCK_ONLINE_SOUND_ARCHIVE },
 };
 
 
@@ -236,7 +260,9 @@ bst_app_init (BstApp *self)
                               NULL, app_action_check, app_action_exec);
   gxk_widget_publish_actions (self, "simple-help", G_N_ELEMENTS (simple_help_actions), simple_help_actions,
                               NULL, app_action_check, app_action_exec);
-  gxk_widget_publish_actions (self, "devel-help", G_N_ELEMENTS (devel_help_actions), devel_help_actions,
+  gxk_widget_publish_actions (self, "online-synthesizers", G_N_ELEMENTS (online_synthesizers), online_synthesizers,
+                              NULL, app_action_check, app_action_exec);
+  gxk_widget_publish_actions (self, "online-demos", G_N_ELEMENTS (online_demos), online_demos,
                               NULL, app_action_check, app_action_exec);
   /* Project utilities */
   cseq = bse_categories_match ("/Project/*");
@@ -917,12 +943,12 @@ app_action_exec (gpointer data,
                              NULL);
       gtk_widget_queue_draw (GTK_WIDGET (self->notebook));
       break;
-    case ACTION_HELP_FAQ:
-      help_file = g_strconcat (BST_PATH_DOCS, "/faq.markup", NULL);
+    case ACTION_HELP_INDEX:
+      help_file = g_strconcat (BST_PATH_DOCS, "/beast-index.markup", NULL);
       help_title = g_strdup (help_file);
       goto HELP_DIALOG;
-    case ACTION_HELP_GSL_PLAN:
-      help_file = g_strconcat (BST_PATH_DOCS, "/engine-mplan.markup", NULL);
+    case ACTION_HELP_FAQ:
+      help_file = g_strconcat (BST_PATH_DOCS, "/faq.markup", NULL);
       help_title = g_strdup (help_file);
       goto HELP_DIALOG;
     case ACTION_HELP_QUICK_START:
@@ -932,6 +958,18 @@ app_action_exec (gpointer data,
     case ACTION_HELP_RELEASE_NOTES:
       help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
       help_title = g_strdup_printf (_("BEAST-%s Release Notes"), BST_VERSION);
+      goto HELP_DIALOG;
+    case ACTION_HELP_DSP_ENGINE:
+      help_file = g_strconcat (BST_PATH_DOCS, "/engine-mplan.markup", NULL);
+      help_title = g_strdup (help_file);
+      goto HELP_DIALOG;
+    case ACTION_HELP_PLUGIN_DEVEL:
+      help_file = g_strconcat (BST_PATH_DOCS, "/plugin-devel.markup", NULL);
+      help_title = g_strdup (help_file);
+      goto HELP_DIALOG;
+    case ACTION_HELP_DEVELOPMENT:
+      help_file = g_strconcat (BST_PATH_DOCS, "/beast-index.markup#development", NULL);
+      help_title = g_strdup (help_file);
       goto HELP_DIALOG;
     HELP_DIALOG:
       if (!bst_help_dialogs[action - ACTION_HELP_FIRST])
@@ -954,6 +992,18 @@ app_action_exec (gpointer data,
       break;
     case ACTION_HELP_ABOUT:
       beast_show_about_box ();
+      break;
+    case ACTION_URL_HELP_DESK:
+      gxk_show_url ("http://beast.gtk.org/wiki:HelpDesk");
+      break;
+    case ACTION_URL_BEAST_SITE:
+      gxk_show_url ("http://beast.gtk.org/");
+      break;
+    case ACTION_URL_ONLINE_SYNTHESIZERS:
+      gxk_show_url ("http://beast.gtk.org/browse-bse-files.html");
+      break;
+    case ACTION_URL_ONLINE_DEMOS:
+      gxk_show_url ("http://beast.gtk.org/browse-bse-files.html");
       break;
     default:
       g_assert_not_reached ();
@@ -1018,11 +1068,18 @@ app_action_check (gpointer data,
     case BST_ACTION_SAVE_INSTRUMENT:
       super = bst_app_get_current_super (self);
       return BSE_IS_CSYNTH (super) && !bse_project_is_active (self->project);
-    case ACTION_HELP_ABOUT:
-    case ACTION_HELP_FAQ:
-    case ACTION_HELP_GSL_PLAN:
+    case ACTION_HELP_INDEX:
     case ACTION_HELP_RELEASE_NOTES:
     case ACTION_HELP_QUICK_START:
+    case ACTION_HELP_FAQ:
+    case ACTION_HELP_DSP_ENGINE:
+    case ACTION_HELP_PLUGIN_DEVEL:
+    case ACTION_HELP_DEVELOPMENT:
+    case ACTION_HELP_ABOUT:
+    case ACTION_URL_HELP_DESK:
+    case ACTION_URL_BEAST_SITE:
+    case ACTION_URL_ONLINE_SYNTHESIZERS:
+    case ACTION_URL_ONLINE_DEMOS:
       return TRUE;
     case BST_ACTION_EXIT:
       /* abuse generic "Exit" update to sync Tools menu items */

@@ -61,6 +61,8 @@ static void             navigate_reload         (GtkWidget      *sctext);
 static void             navigate_index          (GtkWidget      *sctext);
 static void             navigate_find           (GtkWidget      *sctext);
 static void             navigate_goto           (GtkWidget      *sctext);
+static void             navigate_link           (GtkWidget      *sctext,
+                                                 const gchar    *uri);
 static void             text_buffer_add_error   (GtkTextBuffer  *tbuffer,
                                                  const gchar    *format,
                                                  ...) G_GNUC_PRINTF (2, 3);
@@ -1351,7 +1353,7 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
       TextNavigation *tnav = navigation_from_sctext (sctext);
       tnav->vadjustment = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (scwin));
       g_object_connect (tnav->vadjustment, "signal::value_changed", tnav_update_vpos, tnav, NULL);
-      g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (gxk_scroll_text_advance), sctext);
+      g_signal_connect_swapped (tbuffer, "custom-activate", G_CALLBACK (navigate_link), sctext);
       tnav->backb = gxk_radget_find (toolbar, "back-button");
       g_object_connect (g_object_ref (tnav->backb), "swapped_signal::clicked", navigate_back, sctext, NULL);
       gtk_widget_set_sensitive (tnav->backb, FALSE);
@@ -2296,4 +2298,17 @@ navigate_goto (GtkWidget *sctext)
   const gchar *text = gtk_entry_get_text (GTK_ENTRY (tnav->refe));
   if (text && text[0])
     gxk_scroll_text_enter (sctext, text);
+}
+
+static void
+navigate_link (GtkWidget   *sctext,
+               const gchar *uri)
+{
+  if (strncmp (uri, "ftp:", 4) == 0 ||
+      strncmp (uri, "http:", 5) == 0 ||
+      strncmp (uri, "https:", 6) == 0 ||
+      strncmp (uri, "mailto:", 7) == 0)
+    gxk_show_url (uri);
+  else
+    gxk_scroll_text_advance (sctext, uri);
 }

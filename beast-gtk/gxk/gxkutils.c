@@ -3712,6 +3712,49 @@ gxk_file_selection_heal (GtkFileSelection *fs)
   return main_box;
 }
 
+/* --- www browser support --- */
+gboolean
+gxk_show_url (const gchar *url)
+{
+  static struct { const gchar *prg, *arg1, *prefix, *postfix; gboolean disabled; } www_browsers[] = {
+    /* program */               /* arg1 */      /* prefix+URL+postfix */
+    { "sensible-browser",       NULL,           "", "" },
+    { "x-www-browser",          NULL,           "", "" },
+    { "gnome-moz-remote",       "--newwin"      "", "" },
+    { "kfmclient",              "openURL",      "", "" },
+    { "mozilla",                NULL,           "", "" },
+  };
+  guint i;
+  for (i = 0; i < G_N_ELEMENTS (www_browsers); i++)
+    if (!www_browsers[i].disabled)
+      {
+        gchar *args[128] = { 0, };
+        guint n = 0;
+        args[n++] = (char*) www_browsers[i].prg;
+        if (www_browsers[i].arg1)
+          args[n++] = (char*) www_browsers[i].arg1;
+        gchar *string = g_strconcat (www_browsers[i].prefix, url, www_browsers[i].postfix, NULL);
+        args[n] = string;
+        GError *error = NULL;
+        gboolean success = g_spawn_async (NULL, /* cwd */
+                                          args,
+                                          NULL, /* envp */
+                                          G_SPAWN_SEARCH_PATH,
+                                          NULL, /* child_setup() */
+                                          NULL, /* user_data */
+                                          NULL, /* child_pid */
+                                          &error);
+        g_free (string);
+        g_printerr ("show \"%s\": %s: %s\n", url, args[0], error ? error->message : "Ok");
+        g_clear_error (&error);
+        if (success)
+          return TRUE;
+        www_browsers[i].disabled = TRUE;
+      }
+  return FALSE;
+}
+
+
 /* --- zlib support --- */
 #include <zlib.h>
 gchar*

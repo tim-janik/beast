@@ -1,3 +1,17 @@
+Mon Sep 13 21:24:40 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/beast-index.texi: document list and link list updates.
+
+	* beast-gtk/bstapp.[hc]: help menu revamp, and other menu improvements.
+
+	* beast-gtk/dialogs/radgets-beast.xml: BstApp menu adaptions.
+
+	* beast-gtk/gxk/gxktexttools.c: open external web browser when links
+	are activated that use the protocols: http, https, ftp or mailto.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_show_url(), a function to
+	invoke an external web browser.
+
 Mon Sep 13 14:10:21 2004  Tim Janik  <timj@gtk.org>
 
 	* data/beast.desktop.in: added mime type for audio/x-bse and
