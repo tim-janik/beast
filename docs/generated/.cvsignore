@@ -3,6 +3,7 @@ Makefile.in
 *.xml
 *.markup
 *.html
+*.php
 *.[13]
 *.texi
 *.ps
