@@ -1,3 +1,10 @@
+Thu Jan  2 06:05:26 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: support additional rules
+	site-update-contents and site-update-navigation or just site-update
+	to auto upload generated website contents and regenerate website
+	files.
+
 Wed Jan  1 17:07:36 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/site-links-related.texi:

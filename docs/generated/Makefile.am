@@ -183,12 +183,37 @@ CLEANFILES += $(conditional_clean)
 #
 # website generation
 #
+ACCOUNT=${USER}@beast.gtk.org
+XPREFIX=_tmpFile~
 index.html: news.html
 	ln -s $< $@
 site:	$(html_targets) navigation.xsl navigation.xml index.html
-	tar zcf beast-site.tar.gz $(html_targets) index.html
-	tar zcf beast-site-nav.tar.gz navigation.xml navigation.xsl
-CLEANFILES += beast-site.tar.gz beast-site-nav.tar.gz index.html $(html_targets)
+	tar zcf beast-site-con.tar.gz --mode=0664 $(html_targets) index.html
+	tar zcf beast-site-nav.tar.gz --mode=0664 navigation.xml navigation.xsl
+site-update-contents: site
+	echo Connecting to ${ACCOUNT}... \
+	&& uuencode ${XPREFIX}-beast-site-con.tar.gz < beast-site-con.tar.gz \
+	| ssh ${ACCOUNT} \
+	  "echo Receiving... \
+	   && uudecode \
+	   && echo Extracting... \
+	   && tar zxmpf ${XPREFIX}-beast-site-con.tar.gz -C /web/beast/html2 \
+	   && echo Cleaning up. \
+	   && rm ${XPREFIX}-beast-site-con.tar.gz"
+site-update-navigation: site
+	echo Connecting to ${ACCOUNT}... \
+	&& uuencode ${XPREFIX}-beast-site-nav.tar.gz < beast-site-nav.tar.gz \
+	| ssh ${ACCOUNT} \
+	  "echo Receiving... \
+	   && uudecode \
+	   && echo Extracting... \
+	   && tar zxmpf ${XPREFIX}-beast-site-nav.tar.gz -C /web/beast/dyn2 \
+	   && echo Cleaning up... \
+	   && rm ${XPREFIX}-beast-site-nav.tar.gz \
+	   && echo Rebuilding... \
+	   && (cd /web/beast/dyn2 && make)"
+site-update: site-update-contents site-update-navigation
+CLEANFILES += beast-site-con.tar.gz beast-site-nav.tar.gz index.html $(html_targets)
 
 
 #
