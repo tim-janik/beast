@@ -1,4 +1,6 @@
 FIXMES:
+- print info about authors and license of plugins in info window
+- s/copyright/license/ for scripts and plugins
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
 - amplifier: audio_balance and ctrl_balance range: -100..+100
