@@ -64,6 +64,8 @@ void            gxk_menu_popup                     (GtkMenu         *menu,
 GtkWidget*      gxk_widget_find_level_ordered      (GtkWidget       *toplevel,
                                                     const gchar     *name);
 GtkWidget*      gxk_widget_get_attach_toplevel     (GtkWidget       *widget);
+void            gxk_window_set_menu_accel_group    (GtkWindow       *window,
+                                                    GtkAccelGroup   *agroup);
 GtkAccelGroup*  gxk_window_get_menu_accel_group    (GtkWindow       *window);
 void            gxk_window_set_geometry_min_width  (GtkWindow       *window,
                                                     guint            min_width);
@@ -109,9 +111,10 @@ glong	g_object_get_long		(gpointer		 object,
 
 
 /* --- UTF8 helpers --- */
-gchar*	     gxk_convert_latin1_to_utf8	(const gchar	*string);
-gchar*	     gxk_filename_to_utf8	(const gchar	*string);
-const gchar* gxk_factory_path_get_leaf  (const gchar    *path);
+gchar*	     gxk_convert_latin1_to_utf8	     (const gchar    *string);
+gchar*	     gxk_filename_to_utf8	     (const gchar    *string);
+const gchar* gxk_factory_path_get_leaf       (const gchar    *path);
+gchar*       gxk_factory_path_unescape_uline (const gchar    *path);
 
 
 /* --- Gtk+ Utilities --- */

@@ -1496,6 +1496,7 @@ _gxk_init_gadget_types (void)
     gxk_gadget_define_widget_type (*t);
   gadget_define_gtk_menu ();
   gxk_gadget_define_type (GXK_TYPE_GADGET_FACTORY, _gxk_gadget_factory_def);
+  gxk_gadget_define_type (GXK_TYPE_FACTORY_BRANCH, _gxk_factory_branch_def);
   gxk_gadget_define_type (GXK_TYPE_WIDGET_PATCHER, _gxk_widget_patcher_def);
 }
 

@@ -51,7 +51,8 @@ typedef struct {
   gchar           *activatable;
   gchar           *regulate;
   GxkGadgetOpt    *pass_options;
-  GData           *branches;
+  GData           *branch_widgets;
+  GSList          *branches;
 } GxkGadgetFactory;
 typedef GxkActionFactoryClass GxkGadgetFactoryClass;
 
@@ -66,8 +67,26 @@ void    gxk_gadget_factory_match                (GxkGadgetFactory       *self,
                                                  GxkActionList          *alist);
 
 
+/* --- GxkFactoryBranch --- */
+#define GXK_TYPE_FACTORY_BRANCH              (gxk_factory_branch_get_type ())
+#define GXK_FACTORY_BRANCH(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_FACTORY_BRANCH, GxkFactoryBranch))
+#define GXK_FACTORY_BRANCH_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_FACTORY_BRANCH, GxkFactoryBranchClass))
+#define GXK_IS_FACTORY_BRANCH(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_FACTORY_BRANCH))
+#define GXK_IS_FACTORY_BRANCH_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_FACTORY_BRANCH))
+#define GXK_FACTORY_BRANCH_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_FACTORY_BRANCH, GxkFactoryBranchClass))
+typedef struct {
+  GObject parent_instance;
+  gchar  *uline_label;
+  guint   hidden : 1;
+  guint   last_branch : 1;
+} GxkFactoryBranch;
+typedef GObjectClass GxkFactoryBranchClass;
+GType   gxk_factory_branch_get_type          (void);
+
+
 /* --- implementation details --- */
 extern const GxkGadgetType *_gxk_gadget_factory_def;
+extern const GxkGadgetType *_gxk_factory_branch_def;
 
 
 G_END_DECLS

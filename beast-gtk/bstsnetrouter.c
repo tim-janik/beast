@@ -73,7 +73,7 @@ struct { gulong action_id; const gchar *blurb; } tool_blurbs[] = {
                            "Use button1 to create links, button2 "
                            "for movement and button3 to change properties"), },
 };
-static const GxkStockAction router_toolbar_tools[] = {
+static const GxkStockAction router_canvas_tools[] = {
   { N_("Edit"),         "<ctrl>E",      N_("Edit/Move/Menu (mouse buttons 1-3)"),
     ROUTER_TOOL_EDIT,                   BST_STOCK_MOUSE_TOOL },
 };
@@ -136,7 +136,7 @@ bst_snet_router_init (BstSNetRouter      *self,
 		      BstSNetRouterClass *class)
 {
   GnomeCanvas *canvas = GNOME_CANVAS (self);
-  GxkActionList *al1, *al2, *canvas_modules, *toolbar_modules;
+  GxkActionList *al1, *al2, *canvas_modules, *toolbar_modules, *palette_modules;
   BseCategorySeq *cseq;
   guint i, n;
   
@@ -179,8 +179,8 @@ bst_snet_router_init (BstSNetRouter      *self,
   gxk_widget_publish_action_list (GTK_WIDGET (self), "router-util-actions", al1);
 
   /* publish canvas toolbar tools & actions */
-  gxk_widget_publish_actions_grouped (self, self->canvas_tool, "router-toolbar-tools",
-                                      G_N_ELEMENTS (router_toolbar_tools), router_toolbar_tools,
+  gxk_widget_publish_actions_grouped (self, self->canvas_tool, "router-canvas-tools",
+                                      G_N_ELEMENTS (router_canvas_tools), router_canvas_tools,
                                       NULL, NULL, bst_router_popup_select);
   gxk_widget_publish_actions (self, "router-toolbar-actions",
                               G_N_ELEMENTS (router_toolbar_actions), router_toolbar_actions,
@@ -188,7 +188,7 @@ bst_snet_router_init (BstSNetRouter      *self,
   
   /* construct module type action lists */
   canvas_modules = gxk_action_list_create_grouped (self->canvas_tool);
-  self->palette_modules = gxk_action_list_create_grouped (self->canvas_tool);
+  palette_modules = gxk_action_list_create_grouped (self->canvas_tool);
   toolbar_modules = gxk_action_list_create_grouped (self->canvas_tool);
   cseq = bse_categories_match ("/Modules/*");
   for (i = 0; i < cseq->n_cats; i++)
@@ -207,7 +207,7 @@ bst_snet_router_init (BstSNetRouter      *self,
       bst_action_list_add_cat (canvas_modules, cat, NULL, bst_router_popup_select, self, 1, stock_fallback);
       /* provide selected modules in the palette */
       if (cat->icon && (cat->icon->width + cat->icon->height) > 0)
-        bst_action_list_add_cat (self->palette_modules, cat, NULL, bst_router_popup_select, self, 1, stock_fallback);
+        bst_action_list_add_cat (palette_modules, cat, NULL, bst_router_popup_select, self, 1, stock_fallback);
       /* provide certain variants in the toolbar */
       for (n = 0; n < G_N_ELEMENTS (toolbar_types); n++)
 	if (strcmp (toolbar_types[n].type, cat->type) == 0)
@@ -234,7 +234,8 @@ bst_snet_router_init (BstSNetRouter      *self,
     }
   gxk_action_list_sort (canvas_modules);
   gxk_widget_publish_action_list (self, "router-module-actions", canvas_modules);
-  gxk_action_list_sort (self->palette_modules);
+  gxk_action_list_sort (palette_modules);
+  gxk_widget_publish_action_list (self, "router-palette-modules", palette_modules);
   gxk_widget_publish_action_list (self, "router-toolbar-modules", toolbar_modules);
 
   /* channel hints toggle */
@@ -308,8 +309,6 @@ bst_snet_router_finalize (GObject *object)
   
   g_object_unref (self->canvas_tool);
   g_object_unref (self->channel_toggle);
-  if (self->palette_modules)
-    gxk_action_list_free (self->palette_modules);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -1053,9 +1052,9 @@ snet_router_tool2text (BstSNetRouter *self)
       for (i = 0; i < G_N_ELEMENTS (tool_blurbs); i++)
         if (tool_blurbs[i].action_id == ROUTER_TOOL (self))
           blurb = tool_blurbs[i].blurb;
-      for (i = 0; i < G_N_ELEMENTS (router_toolbar_tools); i++)
-        if (router_toolbar_tools[i].action_id == ROUTER_TOOL (self))
-          name = router_toolbar_tools[i].name;
+      for (i = 0; i < G_N_ELEMENTS (router_canvas_tools); i++)
+        if (router_canvas_tools[i].action_id == ROUTER_TOOL (self))
+          name = router_canvas_tools[i].name;
     }
   gxk_scroll_text_set (self->palette_text, blurb);
   gtk_label_set (label, name);
@@ -1080,10 +1079,11 @@ snet_router_action_exec (gpointer        user_data,
                                           GXK_DIALOG_HIDE_ON_DELETE,
                                           _("Palette"),
                                           gxk_gadget_create ("beast", "snet-palette", NULL));
-          gtk_widget_set_name (self->palette, "BEAST-Module-Palette");
           /* add actions to palette */
-          gxk_widget_publish_action_list (self->palette, "router-palette-actions", self->palette_modules);
-          self->palette_modules = NULL;
+          gxk_widget_republish_actions (self->palette, "router-util-actions", self);
+          gxk_widget_republish_actions (self->palette, "router-canvas-tools", self);
+          gxk_widget_republish_actions (self->palette, "router-module-actions", self);
+          gxk_widget_republish_actions (self->palette, "router-palette-modules", self);
           /* add text handling to palette */
           self->palette_text = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL);
           gxk_gadget_add (self->palette, "text-area", self->palette_text);

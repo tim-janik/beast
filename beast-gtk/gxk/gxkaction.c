@@ -672,6 +672,23 @@ gxk_widget_publish_action_list (gpointer       widget,
 }
 
 void
+gxk_widget_republish_actions (gpointer                widget,
+                              const gchar            *prefix,
+                              gpointer                source_widget)
+{
+  GSList *slist, *asets = g_object_get_qdata (source_widget, quark_widget_actions);
+  for (slist = asets; slist; slist = slist->next)
+    {
+      ActionSet *aset = slist->data;
+      if (strcmp (aset->prefix, prefix) == 0)
+        {
+          gxk_widget_publish_action_list (widget, prefix, gxk_action_list_copy (aset->alist));
+          return;
+        }
+    }
+}
+
+void
 gxk_widget_publish_actions_grouped (gpointer                widget,
                                     GxkActionGroup         *group,
                                     const gchar            *prefix,

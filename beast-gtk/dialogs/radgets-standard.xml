@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
 <gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
   
+  <!-- widget-patcher -->
+  <xdef:widget-patcher inherit="GxkWidgetPatcher" />
+
   <!-- Primitive Gtk+ widget type wrappers -->
   
   <xdef:entry                 inherit="GtkEntry"        />
@@ -61,11 +64,12 @@
   <xdef:submenu               inherit="GxkMenuItem"
     default-area="menu"
     prop:uline-label="$label"
-    prop:stock-image="$stock-image" >
+    prop:stock-image="$stock-image"
+    prop:right-justify="$(ifdef,last,$last,0)" >
+    <widget-patcher prop:hide-insensitive="$hide-insensitive" />
     <GtkMenu name="menu" tearoff-title="$label" />
   </xdef:submenu>
-  <xdef:submenu-last          inherit="submenu"
-    prop:right-justify="1" />
+  <xdef:submenu-last          inherit="submenu" last="1" />
   <!-- option-menu -->
   <xdef:option-menu           inherit="GtkOptionMenu" />
   <!-- menu-button default= focus= arrow= relief= -->
@@ -146,8 +150,6 @@
 
   <!-- Gxk builtin types -->
 
-  <!-- widget-patcher -->
-  <xdef:widget-patcher inherit="GxkWidgetPatcher" />
   <!-- tooltip: text= -->
   <xdef:tooltip inherit="widget-patcher"
     prop:tooltip="$(null-collapse,$text)"
@@ -159,12 +161,17 @@
     prop:per-list="$(null-collapse,$per-list)"
     prop:per-action="$(null-collapse,$per-action)"
     prop:activatable="$(null-collapse,$per-action)" prop:regulate="$(null-collapse,$per-action)" />
+  <xdef:factory-branch        inherit="GxkFactoryBranch"
+    prop:uline-label="$label"
+    prop:hidden="$hidden"
+    prop:last-branch="$last"
+    />
   <!-- menu-factory: actions= separator= -->
   <xdef:menu-factory inherit="gadget-factory"
     prop:per-branch="menu-factory-branch"
     per-list="$(if,$separator,menu-factory-per-list,)"
     per-action="menu-factory-per-action" />
-  <xdef:menu-factory-branch inherit="submenu" label="$action-name" />
+  <xdef:menu-factory-branch inherit="submenu" label="$action-name" hide-insensitive="$action-hidden" last="$action-last" />
   <xdef:menu-factory-per-list inherit="GxkMenuItem" prop:sensitive="0" />
   <xdef:menu-factory-per-action inherit="menu-item"
     label="$action-name"

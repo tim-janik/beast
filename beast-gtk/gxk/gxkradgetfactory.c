@@ -224,7 +224,12 @@ gxk_gadget_factory_finalize (GObject *object)
   g_free (self->activatable);
   g_free (self->regulate);
   gxk_gadget_free_options (self->pass_options);
-  g_datalist_clear (&self->branches);
+  g_datalist_clear (&self->branch_widgets);
+  while (self->branches)
+    {
+      GxkFactoryBranch *b = g_slist_pop_head (&self->branches);
+      g_object_unref (b);
+    }
 
   g_return_if_fail (self->timer == 0);
   
@@ -236,20 +241,26 @@ static GxkGadget*
 gadget_factory_retrieve_branch (GxkGadgetFactory *self,
                                 const gchar      *path,
                                 GxkGadget        *parent,
-                                const gchar      *path_prefix)
+                                const gchar      *path_prefix,
+                                const gchar      *action_last,
+                                const gchar      *action_hidden)
 {
-  GxkGadget *gadget = g_datalist_get_data (&self->branches, path);
+  gchar *bwpath = gxk_factory_path_unescape_uline (path);
+  GxkGadget *gadget = g_datalist_get_data (&self->branch_widgets, bwpath);
   if (!gadget)
     {
       const gchar *leaf = gxk_factory_path_get_leaf (path);
       gchar *action_path = g_strconcat (path_prefix, path, NULL);
       GxkGadgetOpt *options = gxk_gadget_options ("action-path", action_path,
-                                                  "action-name", leaf, NULL);
+                                                  "action-name", leaf,
+                                                  "action-hidden", action_hidden,
+                                                  "action-last", action_last,
+                                                  NULL);
       g_free (action_path);
       if (leaf > path)
         {
           gchar *ppath = g_strndup (path, leaf - path - 1);
-          parent = gadget_factory_retrieve_branch (self, ppath, parent, path_prefix);
+          parent = gadget_factory_retrieve_branch (self, ppath, parent, path_prefix, action_last, action_hidden);
           g_free (ppath);
         }
       gadget = gxk_gadget_creator (NULL, gxk_gadget_get_domain (self),
@@ -258,8 +269,9 @@ gadget_factory_retrieve_branch (GxkGadgetFactory *self,
         gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
       gxk_gadget_free_options (options);
       gadget = gxk_gadget_find_area (gadget, NULL);
-      g_datalist_set_data (&self->branches, path, gadget);
+      g_datalist_set_data (&self->branch_widgets, bwpath, gadget);
     }
+  g_free (bwpath);
   return gadget;
 }
 
@@ -289,30 +301,37 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
     {
       const gchar *domain = gxk_gadget_get_domain (self);
       const gchar *wname = GTK_WIDGET (self->window)->name;
-      gchar *path_prefix = g_strdup_printf ("<%s>/%s/", wname ? wname : "xUNNAMEDx", prefix);
+      gchar *path_prefix = wname ? g_strdup_printf ("<%s>/%s/", wname, prefix) : NULL;
       guint i, n = self->per_action ? gxk_action_list_get_n_actions (alist) : 0;
+      GSList *slist;
       if (self->per_list)
         {
-          GxkGadgetOpt *options;
-          GxkGadget *gadget;
-          options = gxk_gadget_options ("action-path", path_prefix, NULL);
-          gadget = gxk_gadget_creator (NULL, domain, self->per_list, self->gadget, self->pass_options, options);
+          GxkGadgetOpt *options = gxk_gadget_options ("action-path", path_prefix, NULL);
+          GxkGadget *gadget = gxk_gadget_creator (NULL, domain, self->per_list, self->gadget, self->pass_options, options);
           gxk_container_slot_reorder_child (GTK_CONTAINER (self->gadget), gadget, self->cslot);
           gxk_gadget_free_options (options);
         }
+      for (slist = self->branches; slist; slist = slist->next)
+        {
+          GxkFactoryBranch *branch = slist->data;
+          gadget_factory_retrieve_branch (self, branch->uline_label, self->gadget, path_prefix,
+                                          branch->last_branch ? "1" : "0", branch->hidden ? "1" : "0");
+        }
       for (i = self->per_action ? 0 : n; i < n; i++)
         {
-          GxkGadgetOpt *options;
           GxkGadget *gadget, *parent;
-          gchar *path;
-          GxkAction action;
           const gchar *action_name;
+          GxkGadgetOpt *options;
+          GxkAction action;
+          gchar *path;
           gxk_action_list_get_action (alist, i, &action);
           action_name = self->per_branch ? gxk_factory_path_get_leaf (action.name) : action.name;
           if (action_name > action.name)
             {
-              path = g_strndup (action.name, action_name - action.name - 1);
-              parent = gadget_factory_retrieve_branch (self, path, self->gadget, path_prefix);
+              gchar *str = g_strndup (action.name, action_name - action.name - 1);
+              path = gxk_factory_path_unescape_uline (str);
+              g_free (str);
+              parent = gadget_factory_retrieve_branch (self, path, self->gadget, path_prefix, "0", "0");
               g_free (path);
             }
           else
@@ -346,8 +365,6 @@ gadget_factory_match_action_list (GxkActionFactory       *afactory,
             }
         }
       g_free (path_prefix);
-      if (!wname && n)
-        g_warning ("GxkGadgetFactory: factory toplevel has NULL name: %p", self->window);
     }
 }
 
@@ -461,3 +478,101 @@ static const GxkGadgetType gadget_factory_def = {
   NULL, /* set_pack */
 };
 const GxkGadgetType *_gxk_gadget_factory_def = &gadget_factory_def;
+
+
+/* --- GxkFactoryBranch --- */
+enum {
+  FACTORY_BRANCH_PROP_0,
+  FACTORY_BRANCH_PROP_ULINE_LABEL,
+  FACTORY_BRANCH_PROP_HIDDEN,
+  FACTORY_BRANCH_PROP_LAST_BRANCH
+};
+static void
+gxk_factory_branch_set_property (GObject      *object,
+                                 guint         param_id,
+                                 const GValue *value,
+                                 GParamSpec   *pspec)
+{
+  GxkFactoryBranch *self = GXK_FACTORY_BRANCH (object);
+  switch (param_id)
+    {
+    case FACTORY_BRANCH_PROP_ULINE_LABEL:
+      g_free (self->uline_label);
+      self->uline_label = g_value_dup_string (value);
+      break;
+    case FACTORY_BRANCH_PROP_HIDDEN:
+      self->hidden = g_value_get_boolean (value);
+      break;
+    case FACTORY_BRANCH_PROP_LAST_BRANCH:
+      self->last_branch = g_value_get_boolean (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+}
+static void
+gxk_factory_branch_class_init (GxkFactoryBranchClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  gobject_class->set_property = gxk_factory_branch_set_property;
+  g_object_class_install_property (gobject_class, FACTORY_BRANCH_PROP_ULINE_LABEL,
+                                   g_param_spec_string ("uline-label", NULL, NULL, NULL, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, FACTORY_BRANCH_PROP_LAST_BRANCH,
+                                   g_param_spec_boolean ("last-branch", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, FACTORY_BRANCH_PROP_HIDDEN,
+                                   g_param_spec_boolean ("hidden", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+}
+GType
+gxk_factory_branch_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      static const GTypeInfo type_info = {
+        sizeof (GxkFactoryBranchClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) gxk_factory_branch_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (GxkFactoryBranch),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) NULL,
+      };
+      type = g_type_register_static (G_TYPE_OBJECT, "GxkFactoryBranch", &type_info, 0);
+    }
+  return type;
+}
+/* --- GxkFactoryBranch gadget type hooks --- */
+static GxkGadget*
+factory_branch_create (GType               type,
+                       const gchar        *name,
+                       GxkGadgetData      *gdgdata)
+{
+  return g_object_new (type, NULL);
+}
+static GParamSpec*
+factory_branch_find_prop (GxkGadget    *gadget,
+                          const gchar  *prop_name)
+{
+  return g_object_class_find_property (G_OBJECT_GET_CLASS (gadget), prop_name);
+}
+static gboolean
+factory_branch_adopt (GxkGadget          *gadget,
+                      GxkGadget          *parent,
+                      GxkGadgetData      *gdgdata)
+{
+  GxkGadgetFactory *factory = GXK_GADGET_FACTORY (parent);
+  factory->branches = g_slist_append (factory->branches, gadget);
+  return FALSE; /* no support for packing options */
+}
+static const GxkGadgetType factory_branch_def = {
+  factory_branch_create,
+  factory_branch_find_prop,
+  (void(*)(GxkGadget*,const gchar*,const GValue*)) g_object_set_property,
+  factory_branch_adopt,
+  NULL, /* find_pack */
+  NULL, /* set_pack */
+};
+const GxkGadgetType *_gxk_factory_branch_def = &factory_branch_def;

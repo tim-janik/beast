@@ -231,6 +231,20 @@ gxk_factory_path_get_leaf (const gchar *path)
   return last ? last : path;
 }
 
+gchar*
+gxk_factory_path_unescape_uline (const gchar *path)
+{
+  gchar *str = g_strdup (path), *d = str, *p = d;
+  while (*p)
+    {
+      if (*p == '_')
+        p++;
+      *d++ = *p++;
+    }
+  *d = 0;
+  return str;
+}
+
 
 /* --- Gtk+ Utilities --- */
 /**

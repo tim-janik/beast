@@ -1,3 +1,29 @@
+Mon Nov 17 00:40:11 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_factory_path_unescape_uline()
+	to parse away under lines in menu paths.
+
+	* beast-gtk/gxk/gxkgadgetfactory.[hc]: added GxkFactoryBranch which can
+	be used to cause a gadget factory to create branch nodes in advance.
+	don't warn for windows with NULL name, but path on an accel-path of NULL
+	instead (possibly resulting in locked accelerators).
+
+	* beast-gtk/bstsnetrouter.[hc]: republish all actions on the palette
+	window. lock accelerators in the palette window.
+
+	* beast-gtk/gxk/gxkaction.[hc]: added gxk_widget_republish_actions().
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: added ::hide-insensitive property
+	to widget patcher to cause a widget to be hidden while it is
+	insensitive (usefull for menu items which are insensitive because
+	they have empty submenus).
+
+	* beast-gtk/dialogs/gadgets-beast.xml: sort out snet-popup into its
+	own definition.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: small changes wrg left menu
+	item justification, and widget-patcher. defined factory-branch.
+
 Sun Nov 16 21:49:39 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstdefs.h: added T_() as a short hand for text translations.

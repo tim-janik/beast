@@ -265,6 +265,7 @@ enum {
   PATCHER_PROP_TOOLTIP_VISIBLE,
   PATCHER_PROP_MUTE_EVENTS,
   PATCHER_PROP_LOWER_WINDOWS,
+  PATCHER_PROP_HIDE_INSENSITIVE,
   PATCHER_PROP_WIDTH_FROM_HEIGHT,
   PATCHER_PROP_HEIGHT_FROM_WIDTH,
   PATCHER_PROP_FORCE_RESIZE_HSTEPS,
@@ -292,6 +293,9 @@ gxk_widget_patcher_set_property (GObject      *object,
       break;
     case PATCHER_PROP_LOWER_WINDOWS:
       self->lower_windows = g_value_get_boolean (value);
+      break;
+    case PATCHER_PROP_HIDE_INSENSITIVE:
+      self->hide_insensitive = g_value_get_boolean (value);
       break;
     case PATCHER_PROP_WIDTH_FROM_HEIGHT:
       self->width_from_height = g_value_get_double (value);
@@ -339,6 +343,8 @@ gxk_widget_patcher_class_init (GxkWidgetPatcherClass *class)
                                    g_param_spec_boolean ("mute-events", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_LOWER_WINDOWS,
                                    g_param_spec_boolean ("lower-windows", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, PATCHER_PROP_HIDE_INSENSITIVE,
+                                   g_param_spec_boolean ("hide-insensitive", NULL, NULL, FALSE, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_WIDTH_FROM_HEIGHT,
                                    g_param_spec_double ("width_from_height", NULL, NULL, -G_MAXDOUBLE, G_MAXDOUBLE, 0, G_PARAM_WRITABLE));
   g_object_class_install_property (gobject_class, PATCHER_PROP_HEIGHT_FROM_WIDTH,
@@ -401,6 +407,14 @@ widget_lower_windows (GtkWidget *widget)
     }
 }
 static void
+widget_hide_insensitive (GtkWidget *widget)
+{
+  if (!GTK_WIDGET_SENSITIVE (widget) && GTK_WIDGET_VISIBLE (widget))
+    gtk_widget_hide (widget);
+  else if (GTK_WIDGET_SENSITIVE (widget) && !GTK_WIDGET_VISIBLE (widget))
+    gtk_widget_show (widget);
+}
+static void
 widget_patcher_hint_resize_inc (GtkWidget *widget)
 {
   GtkWidget *window = gtk_widget_get_toplevel (widget);
@@ -440,6 +454,9 @@ widget_patcher_adopt (GxkGadget          *gadget,
   if (self->lower_windows &&
       !gxk_signal_handler_pending (parent, "map", G_CALLBACK (widget_lower_windows), NULL))
     g_object_connect (parent, "signal_after::map", widget_lower_windows, NULL, NULL);
+  if (self->hide_insensitive &&
+      !gxk_signal_handler_pending (parent, "state-changed", G_CALLBACK (widget_hide_insensitive), NULL))
+    g_object_connect (parent, "signal_after::state-changed", widget_hide_insensitive, NULL, NULL);
   if (self->width_from_height &&
       !gxk_signal_handler_pending (parent, "size-request", G_CALLBACK (widget_patcher_width_from_height), NULL))
     g_object_connect (parent, "signal_after::size-request", widget_patcher_width_from_height, NULL, NULL);

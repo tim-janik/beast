@@ -15,6 +15,7 @@ FIXMES:
 - clean up bstmenus.[hc]
 - remove bstcatalog.[hc]
 
+- put evaluator under Misc/
 - rename gsl-mplan.txt to engine-mplan.txt
 - gxktexttools.c does eclass = g_type_class_ref (vtype); without unref
 - remove/rename test-string.bse

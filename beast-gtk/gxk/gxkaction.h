@@ -129,6 +129,9 @@ void      gxk_widget_publish_grouped_translated (gpointer                widget,
                                                  const gchar            *stock_icon,
                                                  GxkActionCheck          acheck,
                                                  GxkActionExec           aexec);
+void      gxk_widget_republish_actions          (gpointer                widget,
+                                                 const gchar            *prefix,
+                                                 gpointer                source_widget);
 void      gxk_widget_update_actions_upwards     (gpointer                widget);
 void      gxk_widget_update_actions_downwards   (gpointer                widget);
 void      gxk_widget_update_actions             (gpointer                widget);

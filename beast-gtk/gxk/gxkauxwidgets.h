@@ -63,6 +63,7 @@ typedef struct {
   guint   tooltip_visible : 1;
   guint   mute_events : 1;
   guint   lower_windows : 1;
+  guint   hide_insensitive : 1;
   gdouble resize_hsteps, resize_vsteps;
   gdouble resize_hunits, resize_vunits;
   gdouble width_from_height;

@@ -62,13 +62,36 @@
       </vbox>
     </hbox>
   </xdef:track-view>
-  
+
+  <!-- modules-popup -->
+  <xdef:modules-popup inherit="popup-menu" >
+    <menu-title _label="Utilities" />
+    <menu-factory action-root="" actions="router-util-actions" />
+    <menu-separator />
+    <menu-title _label="Modules" />
+    <menu-factory action-root="" actions="router-canvas-tools" />
+    <menu-factory action-root="" actions="router-module-actions" >
+      <factory-branch _label="_Audio Sources" />
+      <factory-branch _label="_Other Sources" />
+      <factory-branch _label="_Routing" />
+      <factory-branch _label="_Spatial" />
+      <factory-branch _label="_Filters" />
+      <factory-branch _label="_Enhance" />
+      <factory-branch _label="_Distortion" />
+      <factory-branch _label="_LADSPA" hidden="1" />
+      <factory-branch _label="_Virtualization" />
+      <factory-branch _label="_Input &amp; Output" />
+      <factory-branch _label="E_xamples" hidden="1" />
+      <factory-branch _label="_Misc" hidden="1" />
+    </menu-factory>
+  </xdef:modules-popup>
+
   <!-- snet view -->
   <xdef:snet-view inherit="vbox" prop:border-width="3" >
     <vbox spacing="3" expand="1" >
       <frame-shadow-out name="toolbar-area" size:vgroup="toolbar-size" >
 	<hbox name="toolbar" >
-	  <tool-toggle-factory actions="router-toolbar-tools" relief="none" />
+	  <tool-toggle-factory actions="router-canvas-tools" relief="none" />
 	  <tool-toggle-factory actions="router-toolbar-modules" relief="none" />
 	  <tool-separator pack:padding="2" />
 	  <tool-button-factory actions="router-toolbar-actions" relief="none" />
@@ -77,16 +100,7 @@
 	</hbox>
       </frame-shadow-out>
       <zoomed-window expand="1" >
-	<popup-menu name="snet-popup" >
-	  <menu-title _label="Utilities" />
-	  <menu-factory action-root="" actions="router-util-actions" />
-	  <menu-separator />
-	  <menu-title _label="Module" />
-	  <menu-factory action-root="" actions="router-module-actions" >
-	    <!--submenu _label="Audio Sources" />
-	    <submenu _label="Other Sources" /-->
-	  </menu-factory>
-	</popup-menu>
+	<modules-popup name="snet-popup" />
       </zoomed-window>
     </vbox>
   </xdef:snet-view>
@@ -94,18 +108,15 @@
   <!-- snet-palette -->
   <xdef:snet-palette inherit="vbox" >
     <hwrap expand="1" prop:aspect-ratio="0.5" >
-      <palette-toggle-factory action-root="" actions="router-palette-actions"
-	force-resize-hsteps="1"
-	force-resize-vsteps="1"
-	min-resize-hunits="2"
-	min-resize-vunits="3" />
+      <palette-toggle-factory action-root="" actions="router-canvas-tools"
+	force-resize-hsteps="1" force-resize-vsteps="1"
+	min-resize-hunits="2" min-resize-vunits="3" />
+      <palette-toggle-factory action-root="" actions="router-palette-modules" />
       <vbox wrapped="1" expand="1" >
 	<hbox>
 	  <menu-button prop:show-selection="0" focus="0" >
 	    <arrow arrow="right" />
-	    <popup-menu>
-	      <menu-factory action-root="" actions="router-palette-actions" />
-	    </popup-menu>
+	    <modules-popup name="snet-popup" />
 	  </menu-button>
 	  <label name="type-label" expand="1" />
 	</hbox>

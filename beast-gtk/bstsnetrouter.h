@@ -49,7 +49,6 @@ struct _BstSNetRouter
 
   GxkActionGroup   *canvas_tool;
   GxkActionGroup   *channel_toggle;
-  GxkActionList    *palette_modules;
 
   gdouble           world_x, world_y;
   guint		    reshow_palette : 1;
