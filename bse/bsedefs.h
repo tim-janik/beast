@@ -38,9 +38,9 @@ extern "C" {
 #define FIXME_SKIP(code)  g_message ("%s:%d:FIXME(%s): code portion skipped", \
 				     __FILE__, __LINE__, G_GNUC_PRETTY_FUNCTION)
 #ifdef G_ENABLE_DEBUG
-#define BSE_IF_DEBUG(type)	if (!(bse_debug_flags & BSE_DEBUG_##type)) {} else
+#  define BSE_IF_DEBUG(type)	if (!(bse_debug_flags & BSE_DEBUG_ ## type)) { } else
 #else  /* !G_ENABLE_DEBUG */
-#define BSE_IF_DEBUG(type)	while (0) /* don't exec */
+#  define BSE_IF_DEBUG(type)	while (0) /* don't exec */
 #endif /* !G_ENABLE_DEBUG */
 
 

@@ -166,8 +166,11 @@ bse_heart_destroy (BseObject *object)
   /* chain parent class' destroy handler */
   BSE_OBJECT_CLASS (parent_class)->destroy (object);
 
-  g_message ("BseIndex: %lld", bse_heart_beat_index);
-  bse_chunk_debug ();
+  BSE_IF_DEBUG (CHUNKS)
+    {
+      g_message ("BseIndex: %lld", bse_heart_beat_index);
+      bse_chunk_debug ();
+    }
 }
 
 static void
@@ -366,6 +369,19 @@ bse_heart_get_default_idevice (void)
   BseHeart *heart = bse_heart_get_global (FALSE);
 
   return heart ? heart->default_idevice : NULL;
+}
+
+void
+bse_heart_unregister_all_devices (void)
+{
+  BseHeart *heart = bse_heart_get_global (TRUE);
+
+  if (heart->n_sources)
+    g_warning ("BseHeart: can't unregister all devices while in playback mode");
+  else while (heart->n_devices)
+    bse_heart_unregister_device (heart->devices[0].device);
+      
+  bse_object_unref (BSE_OBJECT (heart));
 }
 
 void

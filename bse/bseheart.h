@@ -8,7 +8,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -20,8 +20,8 @@
 #ifndef __BSE_HEART_H__
 #define __BSE_HEART_H__
 
-#include        <bse/bseproject.h>
-#include        <bse/bsepcmdevice.h>
+#include	<bse/bseproject.h>
+#include	<bse/bsepcmdevice.h>
 
 
 #ifdef __cplusplus
@@ -30,10 +30,10 @@ extern "C" {
 
 
 /* --- object type macros --- */
-#define BSE_TYPE_HEART              (BSE_TYPE_ID (BseHeart))
-#define BSE_HEART(object)           (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_HEART, BseHeart))
-#define BSE_HEART_CLASS(class)      (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_HEART, BseHeartClass))
-#define BSE_IS_HEART(object)        (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_HEART))
+#define BSE_TYPE_HEART		    (BSE_TYPE_ID (BseHeart))
+#define BSE_HEART(object)	    (BSE_CHECK_STRUCT_CAST ((object), BSE_TYPE_HEART, BseHeart))
+#define BSE_HEART_CLASS(class)	    (BSE_CHECK_CLASS_CAST ((class), BSE_TYPE_HEART, BseHeartClass))
+#define BSE_IS_HEART(object)	    (BSE_CHECK_STRUCT_TYPE ((object), BSE_TYPE_HEART))
 #define BSE_IS_HEART_CLASS(class)   (BSE_CHECK_CLASS_TYPE ((class), BSE_TYPE_HEART))
 #define BSE_HEART_GET_CLASS(object) ((BseHeartClass*) (((BseObject*) (object))->bse_struct.bse_class))
 
@@ -45,9 +45,9 @@ typedef struct _BseHeartDevice BseHeartDevice;
 struct _BseHeart
 {
   BseObject	  parent_object;
-
+  
   guint		   latency;
-
+  
   guint		   n_sources;
   BseSource	 **sources;
   guint		   n_devices;
@@ -55,13 +55,13 @@ struct _BseHeart
   guint		   n_open_devices;
   gchar		  *default_odevice;
   gchar		  *default_idevice;
-
-  guint            device_open_handler_id;
+  
+  guint		   device_open_handler_id;
   GSList	  *device_open_list;
-
-  BseMixValue     *mix_buffer;
-
-  guint 	   gsource_id;
+  
+  BseMixValue	  *mix_buffer;
+  
+  guint		   gsource_id;
 };
 struct _BseHeartClass
 {
@@ -70,7 +70,7 @@ struct _BseHeartClass
 struct _BseHeartDevice
 {
   BsePcmDevice	*device;
-  gchar         *name;
+  gchar		*name;
   guint		 n_isources;
   BseSource    **isources;
   guint		 n_osources;
@@ -80,39 +80,40 @@ struct _BseHeartDevice
 
 
 /* --- prototypes --- */
-void            bse_heart_register_device	(const gchar    *symbolic_name,
-						 BsePcmDevice   *pdev);
-void            bse_heart_unregister_device	(BsePcmDevice   *pdev);
-void            bse_heart_set_default_odevice	(const gchar	*symbolic_name);
-void            bse_heart_set_default_idevice	(const gchar	*symbolic_name);
-BsePcmDevice*   bse_heart_get_device            (const gchar    *symbolic_name);
-gchar*		bse_heart_get_default_odevice	(void);
-gchar*		bse_heart_get_default_idevice	(void);
-gchar*		bse_heart_get_device_name	(BsePcmDevice	*pdev);
-void		bse_heart_attach		(BseSource	*source);
-void		bse_heart_detach		(BseSource	*source);
-void		bse_heart_reset_all_attach	(void);
-void		bse_heart_source_add_idevice	(BseSource	*source,
-						 BsePcmDevice	*idev);
-void		bse_heart_source_add_odevice	(BseSource	*source,
-						 BsePcmDevice	*odev);
-void		bse_heart_source_remove_idevice	(BseSource	*source,
-						 BsePcmDevice	*idev);
-void		bse_heart_source_remove_odevice	(BseSource	*source,
-						 BsePcmDevice	*odev);
+void		bse_heart_register_device	 (const gchar	 *symbolic_name,
+						  BsePcmDevice	 *pdev);
+void		bse_heart_unregister_device	 (BsePcmDevice	 *pdev);
+void		bse_heart_unregister_all_devices (void);
+void		bse_heart_set_default_odevice	 (const gchar	 *symbolic_name);
+void		bse_heart_set_default_idevice	 (const gchar	 *symbolic_name);
+BsePcmDevice*	bse_heart_get_device		 (const gchar	 *symbolic_name);
+gchar*		bse_heart_get_default_odevice	 (void);
+gchar*		bse_heart_get_default_idevice	 (void);
+gchar*		bse_heart_get_device_name	 (BsePcmDevice	 *pdev);
+void		bse_heart_attach		 (BseSource	 *source);
+void		bse_heart_detach		 (BseSource	 *source);
+void		bse_heart_reset_all_attach	 (void);
+void		bse_heart_source_add_idevice	 (BseSource	 *source,
+						  BsePcmDevice	 *idev);
+void		bse_heart_source_add_odevice	 (BseSource	 *source,
+						  BsePcmDevice	 *odev);
+void		bse_heart_source_remove_idevice	 (BseSource	 *source,
+						  BsePcmDevice	 *idev);
+void		bse_heart_source_remove_odevice	 (BseSource	 *source,
+						  BsePcmDevice	 *odev);
 
 
 /* --- private --- */
-BseHeart*	bse_heart_get_global		(gboolean	 with_ref);
-BseIndex	bse_heart_get_beat_index	(void);
-void		bse_heart_beat			(BseHeart	*heart);
-GSList* /*fr*/	bse_heart_collect_chunks	(BseHeart	*heart,
-						 BseHeartDevice *odevice);
-BseChunk*/*fr*/	bse_heart_mix_chunks		(BseHeart	*heart,
-						 GSList /*af*/	*chunk_list,
-						 guint           n_tracks);
-void		bse_heart_queue_device		(BseHeart	*heart,
-						 BseHeartDevice	*hdevice);
+BseHeart*	bse_heart_get_global		 (gboolean	  with_ref);
+BseIndex	bse_heart_get_beat_index	 (void);
+void		bse_heart_beat			 (BseHeart	 *heart);
+GSList* /*fr*/	bse_heart_collect_chunks	 (BseHeart	 *heart,
+						  BseHeartDevice *odevice);
+BseChunk*/*fr*/ bse_heart_mix_chunks		 (BseHeart	 *heart,
+						  GSList /*af*/	 *chunk_list,
+						  guint		  n_tracks);
+void		bse_heart_queue_device		 (BseHeart	 *heart,
+						  BseHeartDevice *hdevice);
 
 
 
