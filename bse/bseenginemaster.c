@@ -1157,10 +1157,7 @@ _engine_master_thread (EngineMasterData *mdata)
       
       if (!need_dispatch)
 	{
-	  gint err;
-	  
-	  err = poll ((struct pollfd*) loop.fds, loop.n_fds, loop.timeout);
-	  
+	  gint err = poll ((struct pollfd*) loop.fds, loop.n_fds, loop.timeout);
 	  if (err >= 0)
 	    loop.revents_filled = TRUE;
 	  else if (errno != EINTR)

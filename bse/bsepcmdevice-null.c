@@ -22,20 +22,18 @@
 
 typedef struct
 {
-  BsePcmHandle	handle;
-  guint         buffer_size;
-  guint         fill_level;
+  BsePcmHandle handle;
+  guint        busy_us;
 } NullHandle;
 
 /* --- prototypes --- */
 static gsize        null_device_read      (BsePcmHandle *handle,
-                                           gsize         n_values,
                                            gfloat       *values);
 static void         null_device_write     (BsePcmHandle *handle,
-                                           gsize         n_values,
                                            const gfloat *values);
-static void         null_device_status    (BsePcmHandle *handle,
-                                           BsePcmStatus *status);
+static gboolean     null_device_check_io  (BsePcmHandle *handle,
+                                           glong        *timeoutp);
+static guint        null_device_latency   (BsePcmHandle *handle);
 
 
 /* --- functions --- */
@@ -66,14 +64,7 @@ bse_pcm_device_null_open (BseDevice     *device,
   handle->readable = require_readable;
   handle->writable = require_writable;
   handle->n_channels = 2;
-  handle->mix_freq = bse_pcm_freq_from_freq_mode (BSE_PCM_DEVICE (device)->req_freq_mode);
-  handle->read = NULL;
-  handle->write = NULL;
-  handle->status = NULL;
-  null->buffer_size = 4096 * handle->n_channels;
-  null->fill_level = 0;
-  handle->minimum_watermark = null->buffer_size;
-  handle->playback_watermark = null->buffer_size;
+  handle->mix_freq = BSE_PCM_DEVICE (device)->req_mix_freq;
   BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
   if (handle->readable)
     BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_READABLE);
@@ -81,7 +72,9 @@ bse_pcm_device_null_open (BseDevice     *device,
   if (handle->writable)
     BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
   handle->write = null_device_write;
-  handle->status = null_device_status;
+  handle->check_io = null_device_check_io;
+  handle->latency = null_device_latency;
+  null->busy_us = 0;
   BSE_PCM_DEVICE (device)->handle = handle;
   return BSE_ERROR_NONE;
 }
@@ -94,57 +87,45 @@ bse_pcm_device_null_close (BseDevice *device)
   g_free (null);
 }
 
-static void
-null_device_status (BsePcmHandle *handle,
-                    BsePcmStatus *status)
+static gboolean
+null_device_check_io (BsePcmHandle *handle,
+                      glong        *timeoutp)
 {
-  NullHandle *null = (NullHandle*) handle;
-  if (handle->readable)
-    {
-      status->total_capture_values = null->buffer_size;
-      status->n_capture_values_available = null->buffer_size;
-    }
-  else
-    {
-      status->total_capture_values = 0;
-      status->n_capture_values_available = 0;
-    }
-  if (handle->writable)
-    {
-      status->total_playback_values = null->buffer_size;
-      null->fill_level = MIN (null->fill_level, null->buffer_size);
-      /* ensure sequencer fairness */
-      if (bse_sequencer_thread_lagging ())
-        {       /* sequencer keep up */
-          sfi_thread_wakeup (bse_ssequencer_thread);
-        }
-      else      /* drain buffer */
-        null->fill_level -= MIN (null->fill_level, handle->n_channels * BSE_SSEQUENCER_PREPROCESS / 2);
-      status->n_playback_values_available = null->buffer_size - null->fill_level;
-    }
-  else
-    {
-      status->total_playback_values = 0;
-      status->n_playback_values_available = 0;
-    }
+  /* keep the sequencer busy or we will constantly timeout */
+  sfi_thread_wakeup (bse_ssequencer_thread);
+  *timeoutp = 1;
+  /* ensure sequencer fairness */
+  return !bse_sequencer_thread_lagging (2);
+}
+
+static guint
+null_device_latency (BsePcmHandle *handle)
+{
+  /* total latency in frames */
+  return handle->mix_freq / 10;
 }
 
 static gsize
 null_device_read (BsePcmHandle *handle,
-		 gsize         n_values,
-		 gfloat       *values)
+                  gfloat       *values)
 {
+  const gsize n_values = handle->n_channels * handle->block_length;
   memset (values, 0, sizeof (values[0]) * n_values);
   return n_values;
 }
 
 static void
 null_device_write (BsePcmHandle *handle,
-		  gsize         n_values,
-		  const gfloat *values)
+                   const gfloat *values)
 {
   NullHandle *null = (NullHandle*) handle;
-  null->fill_level += n_values;
+  null->busy_us += handle->block_length * 1000000 / handle->mix_freq;
+  if (null->busy_us >= 100 * 1000)
+    {
+      null->busy_us = 0;
+      /* give cpu to other applications (we might run at nice level -20) */
+      g_usleep (10 * 1000);
+    }
 }
 
 static void

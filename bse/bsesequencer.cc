@@ -144,7 +144,7 @@ bse_ssequencer_thread_main (gpointer data)
   do
     {
       const guint64 cur_stamp = gsl_tick_stamp ();
-      guint64 next_stamp = cur_stamp + BSE_SSEQUENCER_PREPROCESS;
+      guint64 next_stamp = cur_stamp + BSE_SSEQUENCER_FUTURE_BLOCKS * bse_engine_block_size();
       SfiRing *ring;
       
       BSE_SEQUENCER_LOCK ();
@@ -176,10 +176,11 @@ bse_ssequencer_thread_main (gpointer data)
 }
 
 gboolean
-bse_sequencer_thread_lagging (void)
+bse_sequencer_thread_lagging (guint n_blocks)
 {
+  /* return whether the sequencer lags for n_blocks future stamps */
   const guint64 cur_stamp = gsl_tick_stamp ();
-  guint64 next_stamp = cur_stamp + BSE_SSEQUENCER_PREPROCESS;
+  guint64 next_stamp = cur_stamp + n_blocks * bse_engine_block_size();
   BSE_SEQUENCER_LOCK ();
   gboolean lagging = global_sequencer->stamp < next_stamp;
   BSE_SEQUENCER_UNLOCK ();

@@ -1,3 +1,58 @@
+Sun Sep 26 06:00:46 2004  Tim Janik  <timj@gtk.org>
+
+	* bsedevice.c: fixed logic that collapses multiple 'auto' drivers.
+	don't skip auto-list drivers after trying to open 'auto', users
+	may have provided special device arguments.
+
+	* bsepcmdevice-oss.c: API updates. added underrun detection and handling.
+	added hs - hard-sync option to initiate retriggers on underruns.
+	fixed read/write opening mode logic. moved poll timeout calculation
+	logic from bsepcmmodule.c here. simplified code by using number of
+	frames all over the place. take latency settings into account
+	and honour them if the device has been opened readable. ensure block
+	writing is always paired with a previous block read to stabelize
+	latency queue length.
+
+	* bsepcmdevice.[hc]: added req_block_length field for a tentative
+	block_length request and req_queue_length field to request queue
+	lengths according to the current latency settings.
+	bse_pcm_device_request(): allow latency and block-length requisitions.
+	bse_pcm_device_get_mix_freq(): mix frequency accessor.
+	bse_pcm_device_get_handle(): require block_length specification.
+	bse_pcm_handle_read():
+	bse_pcm_handle_write(): removed n_values argument, which is now always
+	handle->block_length, as setup from bse_pcm_device_get_handle().
+	bse_pcm_handle_status(): removed status() method alltogether.
+	bse_pcm_handle_check_io(): introduced check_io() which to some extend
+	merges logic from the former status() and bse_pcm_module_poll()
+	functions. check_io() returns whether a block may be read or
+	needs to be written and the timeout until arrival of such an event
+	if data may not immeditely be processed.
+	bse_pcm_handle_latency() added latency() method which is used to
+	return the current full amount of latency introduced by the device.
+	bse_pcm_handle_set_watermark(): removed watermarks, handled internally
+	by check_io() now.
+	bse_pcm_freq_mode_from_freq():
+	bse_pcm_freq_from_freq_mode(): removed frequency mode indirection.
+	bse_pcm_device_frequency_align(): new function to align mix frequencies
+	to common device values.
+
+	* bsepcmmodule.c: removed watermark based timeout calculation, the
+	pcm layer handles stuff now. work around non-readable device handles.
+
+	* bseserver.c: added latency and block_size to pcm device requests.
+	keep the first device error we encounterted. allow free-form mix
+	frequencies at first, fallback to aligned frequencies if no device
+	could be opened.
+
+	* bsessequencer.[hc]: allow queries about how bad the sequencer
+	is lagging behind his scheduled future stamp.
+
+	* bsepcmdevice-null.c: adapt to new BsePcmDevice API, sleep 
+	cooperatively since we might run at nice level -20.
+
+	* bseengine.c: docu updates.
+
 Fri Sep 24 10:41:18 2004  Tim Janik  <timj@gtk.org>
 
 	* bseserver.c (bse_server_open_pcm_device): fallback to write-only mode

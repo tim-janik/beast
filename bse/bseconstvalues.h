@@ -105,6 +105,7 @@ extern "C" {
 #define	BSE_RATING_PREFERRED		(100)
 #define	BSE_RATING_DEFAULT		(50)
 #define	BSE_RATING_FALLBACK		(1)
+#define	BSE_RATING_NO_AUTO		(-1)
 
 
 

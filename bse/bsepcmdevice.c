@@ -29,23 +29,30 @@ static gpointer parent_class = NULL;
 static void
 bse_pcm_device_init (BsePcmDevice *pdev)
 {
-  pdev->req_freq_mode = BSE_PCM_FREQ_44100;
   pdev->req_n_channels = 2;
+  pdev->req_mix_freq = 44100;
+  pdev->req_block_length = 1024;
+  pdev->req_queue_length = 4096;
   pdev->handle = NULL;
 }
 
 void
 bse_pcm_device_request (BsePcmDevice  *self,
-			guint          n_channels,
-			BsePcmFreqMode freq_mode)
+                        guint	       n_channels,
+                        guint          mix_freq,
+                        guint          latency_ms,
+                        guint          block_length) /* in frames */
 {
   g_return_if_fail (BSE_IS_PCM_DEVICE (self));
   g_return_if_fail (!BSE_DEVICE_OPEN (self));
   g_return_if_fail (n_channels >= 1 && n_channels <= 128);
-  g_return_if_fail (freq_mode >= BSE_PCM_FREQ_8000 && freq_mode <= BSE_PCM_FREQ_192000);
+  g_return_if_fail (mix_freq >= 1000 && mix_freq <= 192000);
 
   self->req_n_channels = n_channels;
-  self->req_freq_mode = freq_mode;
+  self->req_mix_freq = mix_freq;
+  self->req_block_length = MAX (block_length, 2);
+  guint latency = self->req_mix_freq / 1000.0 * CLAMP (latency_ms, 1, 5000); /* in frames */
+  self->req_queue_length = MAX (latency, 2 * self->req_block_length);
 }
 
 static void
@@ -70,6 +77,7 @@ pcm_device_post_open (BseDevice *device)
 {
   BsePcmDevice *self = BSE_PCM_DEVICE (device);
   g_return_if_fail (BSE_DEVICE_OPEN (self) && self->handle);
+  g_return_if_fail (BSE_DEVICE_OPEN (self) && self->handle->block_length == 0);
   sfi_mutex_init (&self->handle->mutex);
 }
 
@@ -80,13 +88,33 @@ pcm_device_pre_close (BseDevice *device)
   sfi_mutex_destroy (&self->handle->mutex);
 }
 
+guint
+bse_pcm_device_get_mix_freq (BsePcmDevice *pdev)
+{
+  g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), 0);
+  if (BSE_DEVICE_OPEN (pdev))
+    return pdev->handle->mix_freq;
+  else
+    return 0;
+}
+
 BsePcmHandle*
-bse_pcm_device_get_handle (BsePcmDevice *pdev)
+bse_pcm_device_get_handle (BsePcmDevice *pdev,
+                           guint         block_length)
 {
   g_return_val_if_fail (BSE_IS_PCM_DEVICE (pdev), NULL);
   g_return_val_if_fail (BSE_DEVICE_OPEN (pdev), NULL);
-  
-  return pdev->handle;
+  g_return_val_if_fail (block_length > 0, NULL);
+
+  GSL_SPIN_LOCK (&pdev->handle->mutex);
+  if (!pdev->handle->block_length)
+    pdev->handle->block_length = block_length;
+  GSL_SPIN_UNLOCK (&pdev->handle->mutex);
+
+  if (pdev->handle->block_length == block_length)
+    return pdev->handle;
+  else
+    return NULL;
 }
 
 gsize
@@ -98,15 +126,13 @@ bse_pcm_handle_read (BsePcmHandle *handle,
   
   g_return_val_if_fail (handle != NULL, 0);
   g_return_val_if_fail (handle->readable, 0);
-  if (n_values)
-    g_return_val_if_fail (values != NULL, 0);
-  else
-    return 0;
+  g_return_val_if_fail (n_values == handle->block_length * handle->n_channels, 0);
   
   GSL_SPIN_LOCK (&handle->mutex);
-  n = handle->read (handle, n_values, values);
+  n = handle->read (handle, values);
   GSL_SPIN_UNLOCK (&handle->mutex);
   
+  g_return_val_if_fail (n == handle->block_length * handle->n_channels, n);
   return n;
 }
 
@@ -117,78 +143,59 @@ bse_pcm_handle_write (BsePcmHandle *handle,
 {
   g_return_if_fail (handle != NULL);
   g_return_if_fail (handle->writable);
-  if (n_values)
-    g_return_if_fail (values != NULL);
-  else
-    return;
-  
+  g_return_if_fail (values != NULL);
+  g_return_if_fail (n_values == handle->block_length * handle->n_channels);
+
   GSL_SPIN_LOCK (&handle->mutex);
-  handle->write (handle, n_values, values);
+  handle->write (handle, values);
   GSL_SPIN_UNLOCK (&handle->mutex);
 }
 
-void
-bse_pcm_handle_status (BsePcmHandle *handle,
-		       BsePcmStatus *status)
+gboolean
+bse_pcm_handle_check_io (BsePcmHandle           *handle,
+                         glong                  *timeoutp)
 {
-  g_return_if_fail (handle != NULL);
-  g_return_if_fail (status != NULL);
-  
+  g_return_val_if_fail (handle != NULL, 0);
+
+  glong dummy;
+  if (!timeoutp)
+    timeoutp = &dummy;
   GSL_SPIN_LOCK (&handle->mutex);
-  handle->status (handle, status);
+  gboolean can_read_write = handle->check_io (handle, timeoutp);
   GSL_SPIN_UNLOCK (&handle->mutex);
+  return can_read_write;
 }
 
-void
-bse_pcm_handle_set_watermark (BsePcmHandle *handle,
-			      guint         watermark)
+guint
+bse_pcm_handle_latency (BsePcmHandle *handle)
 {
-  g_return_if_fail (handle != NULL);
-  
-  watermark = handle->mix_freq / 1000. * watermark * handle->n_channels;
+  g_return_val_if_fail (handle != NULL, 0);
   GSL_SPIN_LOCK (&handle->mutex);
-  handle->playback_watermark = MAX (watermark, handle->minimum_watermark);
+  guint n_frames = handle->latency (handle);
   GSL_SPIN_UNLOCK (&handle->mutex);
+  return n_frames;
 }
 
 
 /* --- frequency utilities --- */
-gfloat
-bse_pcm_freq_from_freq_mode (BsePcmFreqMode freq_mode)
+guint
+bse_pcm_device_frequency_align (gint mix_freq)
 {
-  switch (freq_mode)
+  static const gint frequency_list[] = {
+    5512, 8000, 11025, 16000, 22050, 32000,
+    44100, 48000, 64000, 88200, 96000, 176400, 192000
+  };
+  guint i, best = frequency_list[0], diff = ABS (mix_freq - frequency_list[0]);
+  for (i = 1; i < G_N_ELEMENTS (frequency_list); i++)
     {
-    case BSE_PCM_FREQ_8000:	return   8000;
-    case BSE_PCM_FREQ_11025:	return  11025;
-    case BSE_PCM_FREQ_16000:	return  16000;
-    case BSE_PCM_FREQ_22050:	return  22050;
-    case BSE_PCM_FREQ_32000:	return  32000;
-    case BSE_PCM_FREQ_44100:	return  44100;
-    case BSE_PCM_FREQ_48000:	return  48000;
-    case BSE_PCM_FREQ_88200:	return  88200;
-    case BSE_PCM_FREQ_96000:	return  96000;
-    case BSE_PCM_FREQ_176400:	return 176400;
-    case BSE_PCM_FREQ_192000:	return 192000;
-    default:			return      0;
+      guint diff2 = ABS (mix_freq - frequency_list[i]);
+      if (diff2 <= diff)
+        {
+          best = frequency_list[i];
+          diff = diff2;
+        }
     }
-}
-
-BsePcmFreqMode
-bse_pcm_freq_mode_from_freq (gfloat freq)
-{
-  if (freq < (0      +   8000) / 2) return 0;
-  if (freq < (8000   +  11025) / 2) return BSE_PCM_FREQ_8000;
-  if (freq < (11025  +  16000) / 2) return BSE_PCM_FREQ_11025;
-  if (freq < (16000  +  22050) / 2) return BSE_PCM_FREQ_16000;
-  if (freq < (22050  +  32000) / 2) return BSE_PCM_FREQ_22050;
-  if (freq < (32000  +  44100) / 2) return BSE_PCM_FREQ_32000;
-  if (freq < (44100  +  48000) / 2) return BSE_PCM_FREQ_44100;
-  if (freq < (48000  +  88200) / 2) return BSE_PCM_FREQ_48000;
-  if (freq < (88200  +  96000) / 2) return BSE_PCM_FREQ_88200;
-  if (freq < (96000  + 176400) / 2) return BSE_PCM_FREQ_96000;
-  if (freq < (176400 + 192000) / 2) return BSE_PCM_FREQ_176400;
-  if (freq < (192000 + 200000) / 2) return BSE_PCM_FREQ_192000;
-  return 0;
+  return best;
 }
 
 static void

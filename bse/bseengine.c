@@ -1269,13 +1269,14 @@ guint			bse_engine_exvar_control_mask = 0;
  * @control_raster_p: location of number of values to skip between control values
  *
  * Calculate a suitable block size and control raster for a
- * @sample_freq at a specific @latency_ms (the latency shouldn't be 0).
+ * @sample_freq at a specific @latency_ms (the latency should be > 0).
  * The @control_freq if specified should me much smaller than the
  * @sample_freq. It determines how often control values are to be
  * checked when calculating blocks of sample values.
  * The block size determines the amount by which the global tick
  * stamp (see gsl_tick_stamp()) is updated everytime the whole
  * module network completed processing block size values.
+ * This function is MT-safe and may be called prior to engine initialization.
  */
 void
 bse_engine_constrain (guint            latency_ms,
@@ -1286,15 +1287,26 @@ bse_engine_constrain (guint            latency_ms,
 {
   guint tmp, block_size, control_raster;
   g_return_if_fail (sample_freq >= 100);
-  
+
+  /* depending on how stable the overall system (cpu, kernel scheduler, etc.)
+   * behaves, calculating a single block may take longer than expected,
+   * block_jitter is meant to compensate for that. for an expected worst case
+   * block calculation scenario, lasting 1.5 * block-playback-time, we choose
+   * a suitable upper bound of 2 as ratio for block-calculation-time per
+   * block-playback-time. if heavier jitter is to be expected, this value
+   * should be increased (short of increasing overall latency of course).
+   */
+  const guint block_jitter = 2; 
   /* constrain latency to avoid overflow */
   latency_ms = CLAMP (latency_ms, 1, 10000);
-  /* derive block size from latency and sample frequency,
-   * account for an effective latency split of 3 buffers
+  /* derive block size from latency and sample frequency. for a perfect
+   * capture->calc->playback setup, the playback time of a single block may
+   * at most last latency/2 time. in practice, we need extra padding blocks,
+   * which are accounted for by block_jitter.
    */
-  block_size = latency_ms * sample_freq / 1000 / 3;
+  block_size = latency_ms * sample_freq / 1000 / (1 + block_jitter);
   /* constrain block size */
-  block_size = CLAMP (block_size, 8, MIN (BSE_STREAM_MAX_VALUES / 2, sample_freq / 3));
+  block_size = CLAMP (block_size, 8, MIN (BSE_STREAM_MAX_VALUES / 2, sample_freq / (2 * 3)));
   /* shrink block size to a 2^n boundary */
   tmp = sfi_alloc_upper_power2 (block_size);
   block_size = block_size < tmp ? tmp >> 1 : tmp;

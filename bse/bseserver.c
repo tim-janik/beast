@@ -432,8 +432,10 @@ bse_server_find_project (BseServer   *server,
 }
 
 typedef struct {
-  guint          n_channels;
-  BsePcmFreqMode freq_mode;
+  guint      n_channels;
+  guint      mix_freq;
+  guint      latency;
+  guint      block_size;
 } PcmRequest;
 
 static void
@@ -441,23 +443,30 @@ pcm_request_callback (BseDevice *device,
                       gpointer   data)
 {
   PcmRequest *pr = data;
-  bse_pcm_device_request (BSE_PCM_DEVICE (device), pr->n_channels, pr->freq_mode);
+  bse_pcm_device_request (BSE_PCM_DEVICE (device), pr->n_channels, pr->mix_freq, pr->latency, pr->block_size);
 }
 
 static BseErrorType
-bse_server_open_pcm_device (BseServer *server)
+server_open_pcm_device (BseServer *server,
+                        guint      mix_freq,
+                        guint      latency,
+                        guint      block_size)
 {
   g_return_val_if_fail (server->pcm_device == NULL, BSE_ERROR_INTERNAL);
-
+  
+  BseErrorType error = 0;
   PcmRequest pr;
   pr.n_channels = 2;
-  pr.freq_mode = bse_pcm_freq_mode_from_freq (BSE_GCONFIG (synth_mixing_freq));
-  BseErrorType error;
-  server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, TRUE, TRUE, bse_main_args->pcm_drivers,
-                                                             pcm_request_callback, &pr, &error);
+  pr.mix_freq = mix_freq;
+  pr.latency = latency;
+  pr.block_size = block_size;
+  server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, TRUE, TRUE,
+                                                             bse_main_args->pcm_drivers,
+                                                             pcm_request_callback, &pr, error ? NULL : &error);
   if (!server->pcm_device)
-    server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, FALSE, TRUE, bse_main_args->pcm_drivers,
-                                                               pcm_request_callback, &pr, &error);
+    server->pcm_device = (BsePcmDevice*) bse_device_open_best (BSE_TYPE_PCM_DEVICE, FALSE, TRUE,
+                                                               bse_main_args->pcm_drivers,
+                                                               pcm_request_callback, &pr, error ? NULL : &error);
   if (!server->pcm_device)
     sfi_warn (SfiLogger ("pcm",
                          _("Advice about PCM device selections problems"),
@@ -468,7 +477,7 @@ bse_server_open_pcm_device (BseServer *server)
 }
 
 static BseErrorType
-bse_server_open_midi_device (BseServer *server)
+server_open_midi_device (BseServer *server)
 {
   g_return_val_if_fail (server->midi_device == NULL, BSE_ERROR_INTERNAL);
 
@@ -503,16 +512,30 @@ bse_server_open_devices (BseServer *self)
       return BSE_ERROR_NONE;
     }
 
+  /* lock playback/capture/latency settings */
+  bse_gconfig_lock ();
+  /* calculate block_size for pcm setup */
+  guint block_size, latency = BSE_GCONFIG (synth_latency), mix_freq = BSE_GCONFIG (synth_mixing_freq);
+  bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
+  /* try opening devices */
   if (!error)
-    error = bse_server_open_pcm_device (self);
+    error = server_open_pcm_device (self, mix_freq, latency, block_size);
+  guint aligned_freq = bse_pcm_device_frequency_align (mix_freq);
+  if (error && aligned_freq != mix_freq)
+    {
+      mix_freq = aligned_freq;
+      bse_engine_constrain (latency, mix_freq, BSE_GCONFIG (synth_control_freq), &block_size, NULL);
+      BseErrorType new_error = server_open_pcm_device (self, mix_freq, latency, block_size);
+      error = new_error ? error : 0;
+    }
   if (!error)
-    error = bse_server_open_midi_device (self);
+    error = server_open_midi_device (self);
   if (!error)
     {
       BseTrans *trans = bse_trans_open ();
-      bse_pcm_handle_set_watermark (bse_pcm_device_get_handle (self->pcm_device), BSE_GCONFIG (synth_latency));
-      engine_init (self, bse_pcm_device_get_handle (self->pcm_device)->mix_freq);
-      self->pcm_imodule = bse_pcm_imodule_insert (bse_pcm_device_get_handle (self->pcm_device), trans);
+      engine_init (self, bse_pcm_device_get_mix_freq (self->pcm_device));
+      BsePcmHandle *pcm_handle = bse_pcm_device_get_handle (self->pcm_device, bse_engine_block_size());
+      self->pcm_imodule = bse_pcm_imodule_insert (pcm_handle, trans);
       if (self->wave_file)
 	{
 	  BseErrorType error;
@@ -527,8 +550,7 @@ bse_server_open_devices (BseServer *self)
 	      self->pcm_writer = NULL;
 	    }
 	}
-      self->pcm_omodule = bse_pcm_omodule_insert (bse_pcm_device_get_handle (self->pcm_device),
-						  self->pcm_writer, trans);
+      self->pcm_omodule = bse_pcm_omodule_insert (pcm_handle, self->pcm_writer, trans);
       bse_trans_commit (trans);
       self->dev_use_count++;
     }
@@ -547,6 +569,7 @@ bse_server_open_devices (BseServer *self)
 	  self->pcm_device = NULL;
 	}
     }
+  bse_gconfig_unlock ();        /* engine_init() holds another lock count on success */
   return error;
 }
 
@@ -1032,7 +1055,7 @@ engine_init (BseServer *server,
   
   g_return_if_fail (server->engine_source == NULL);
   
-  bse_gconfig_lock ();		// FIXME: globals mix_freq
+  bse_gconfig_lock ();
   server->engine_source = g_source_new (&engine_gsource_funcs, sizeof (PSource));
   g_source_set_priority (server->engine_source, BSE_PRIORITY_HIGH);
   

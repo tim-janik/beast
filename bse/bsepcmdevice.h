@@ -34,20 +34,6 @@ G_BEGIN_DECLS
 
 
 /* --- capabilities --- */
-typedef enum	/*< skip >*/
-{
-  BSE_PCM_FREQ_8000	= 1,
-  BSE_PCM_FREQ_11025,
-  BSE_PCM_FREQ_16000,
-  BSE_PCM_FREQ_22050,
-  BSE_PCM_FREQ_32000,
-  BSE_PCM_FREQ_44100,
-  BSE_PCM_FREQ_48000,
-  BSE_PCM_FREQ_88200,
-  BSE_PCM_FREQ_96000,
-  BSE_PCM_FREQ_176400,
-  BSE_PCM_FREQ_192000
-} BsePcmFreqMode;
 #define	BSE_PCM_FREQ_MIN	BSE_PCM_FREQ_8000
 #define	BSE_PCM_FREQ_MAX	BSE_PCM_FREQ_192000
 typedef enum	/*< skip >*/
@@ -62,38 +48,32 @@ typedef struct _BsePcmStatus		BsePcmStatus;
 typedef struct _BsePcmHandle		BsePcmHandle;
 typedef struct _BsePcmDevice		BsePcmDevice;
 typedef struct _BsePcmDeviceClass	BsePcmDeviceClass;
-struct _BsePcmStatus
-{
-  guint	total_playback_values;
-  guint	n_playback_values_available;
-  guint	total_capture_values;
-  guint	n_capture_values_available;
-};
 struct _BsePcmHandle
 {
-  guint			 writable : 1;
   guint			 readable : 1;
-  guint			 n_channels;
-  gfloat		 mix_freq;
-  guint			 playback_watermark;
-  guint			 minimum_watermark;
+  guint			 writable : 1;
+  guint			 n_channels;    /* should be req_n_channels */
+  guint 		 mix_freq;      /* should be req_mix_freq within 1% tolerance */
+  guint                  queue_length;  /* usually <= req_queue_length */
+  guint                  block_length;  /* in frames, filled in after open() before i/o */
   SfiMutex		 mutex;
-  gsize	(*read)		(BsePcmHandle		*handle,
-			 gsize			 n_values,
-			 gfloat			*values);
-  void	(*write)	(BsePcmHandle		*handle,
-			 gsize			 n_values,
-			 const gfloat		*values);
-  void	(*status)	(BsePcmHandle		*handle,
-			 BsePcmStatus		*status);
+  gsize	   (*read)	(BsePcmHandle		*handle,
+			 gfloat			*values);       /* n_channels * block_length values */
+  void	   (*write)	(BsePcmHandle		*handle,
+			 const gfloat		*values);       /* n_channels * block_length values */
+  gboolean (*check_io)	(BsePcmHandle		*handle,
+                         glong                  *timeoutp);
+  guint    (*latency)   (BsePcmHandle           *handle);
 };
 struct _BsePcmDevice
 {
   BseDevice		parent_instance;
 
   /* requested caps */
-  BsePcmFreqMode	req_freq_mode;
   guint			req_n_channels;
+  guint                 req_mix_freq;
+  guint                 req_queue_length; /* latency in frames */
+  guint                 req_block_length; /* in frames, a guess at block_length after open() */
 
   /* operational handle */
   BsePcmHandle	       *handle;
@@ -107,23 +87,25 @@ struct _BsePcmDeviceClass
 /* --- prototypes --- */
 void		bse_pcm_device_request		(BsePcmDevice		*pdev,
 						 guint			 n_channels,
-						 BsePcmFreqMode		 freq_mode);
-BsePcmHandle*	bse_pcm_device_get_handle	(BsePcmDevice		*pdev);
+                                                 guint                   mix_freq,
+                                                 guint                   latency_ms,
+                                                 guint                   block_length); /* in frames */
+guint           bse_pcm_device_get_mix_freq     (BsePcmDevice           *pdev);
+BsePcmHandle*	bse_pcm_device_get_handle	(BsePcmDevice		*pdev,
+                                                 guint                   block_length);
 gsize		bse_pcm_handle_read		(BsePcmHandle		*handle,
 						 gsize			 n_values,
 						 gfloat			*values);
 void		bse_pcm_handle_write		(BsePcmHandle		*handle,
 						 gsize			 n_values,
 						 const gfloat		*values);
-void		bse_pcm_handle_status		(BsePcmHandle		*handle,
-						 BsePcmStatus		*status);
-void		bse_pcm_handle_set_watermark	(BsePcmHandle		*handle,
-						 guint			 watermark);
+gboolean        bse_pcm_handle_check_io		(BsePcmHandle		*handle,
+                                                 glong                  *timeoutp);
+guint           bse_pcm_handle_latency          (BsePcmHandle           *handle);
 
 
 /* --- misc utils --- */
-gfloat		bse_pcm_freq_from_freq_mode	(BsePcmFreqMode	freq_mode);
-BsePcmFreqMode	bse_pcm_freq_mode_from_freq	(gfloat		freq);
+guint		bse_pcm_device_frequency_align 	(gint                    mix_freq);
      
 
 G_END_DECLS

@@ -67,66 +67,9 @@ bse_pcm_module_poll (gpointer       data,
 		     const GPollFD *fds,
 		     gboolean       revents_filled)
 {
-#if 0
-  /* written for full OSS buffer fills */
-  BsePCMModuleData *mdata = data;
-  BsePcmStatus status;
-  gfloat diff;
-  
-  /* get playback status */
-  bse_pcm_handle_status (mdata->handle, &status);
-  
-  /* already enough space for another write? */
-  if (status.n_playback_values_left >= mdata->n_values)
-    return TRUE;
-  
-  /* when do we have enough space available? */
-  diff = mdata->n_values - status.n_playback_values_left;
-  *timeout_p = diff * 1000.0 / mdata->handle->mix_freq;
-  
-  return *timeout_p == 0;
-#else
   BsePCMModuleData *mdata = data;
   BsePcmHandle *handle = mdata->handle;
-  BsePcmStatus status;
-  guint fillmark, watermark;
-  static gint debug_hint = 0;
-
-  /* get playback status */
-  bse_pcm_handle_status (mdata->handle, &status);
-
-  /* calculate minimum acceptable watermark for required buffer fill level */
-  watermark = status.total_playback_values - MIN (mdata->n_values, status.total_playback_values);
-  watermark = MIN (watermark, handle->playback_watermark);
-  /* calculate current fill level */
-  fillmark = status.total_playback_values - status.n_playback_values_available;
-  /* fill if required */
-  if (fillmark <= watermark)
-    {
-      if (!debug_hint++)
-	{
-	  gfloat perc = status.n_playback_values_available * 100. / status.total_playback_values;
-	  DEBUG ("free=%f%% latency=%f %s",
-		 perc,
-		 (status.total_playback_values - status.n_playback_values_available) /
-		 (handle->mix_freq * (gfloat) handle->n_channels),
-		 perc >= 97.0 ? "**" : "");
-	}
-      return TRUE;	/* need to write out stuff now */
-    }
-  
-  fillmark -= watermark;
-  fillmark /= handle->n_channels;
-  *timeout_p = fillmark * 1000.0 / mdata->handle->mix_freq;
-
-  DEBUG ("free=%f%% latency=%f",
-	 status.n_playback_values_available * 100. / status.total_playback_values,
-	 (status.total_playback_values - status.n_playback_values_available) /
-	 (handle->mix_freq * (gfloat) handle->n_channels));
-  debug_hint = 0;
-
-  return *timeout_p == 0;
-#endif
+  return bse_pcm_handle_check_io (handle, timeout_p);
 }
 
 static void
@@ -250,17 +193,21 @@ bse_pcm_imodule_process (BseModule *module,
   gsize l;
   
   g_return_if_fail (n_values == mdata->n_values >> 1);
-  
-  l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
-  
+
+  if (mdata->handle->readable)
+    {
+      l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
+      g_return_if_fail (l == mdata->n_values);
+    }
+  else
+    memset (mdata->buffer, 0, mdata->n_values * sizeof (gfloat));
+
   do
     {
       *left++ = *s++;
       *right++ = *s++;
     }
   while (s < b);
-  
-  g_return_if_fail (l == mdata->n_values);
 }
 
 static BseModule*

@@ -407,19 +407,18 @@ bse_device_open_best (GType           base_type,
       const gchar *driverconf = ring->data;
       const gchar *args = strchr (driverconf, '=');
       gchar *driver = g_strndup (driverconf, args ? args - driverconf : strlen (driverconf));
-      if (!seen_auto && strcmp (driver, "auto") == 0)
+      if (strcmp (driver, "auto") == 0)
         {
+          if (!seen_auto)       /* collapse multiple 'auto's */
+            device = bse_device_open_auto (base_type, need_readable, need_writable, request_callback, data, errorp);
           seen_auto = TRUE;
-          device = bse_device_open_auto (base_type, need_readable, need_writable, request_callback, data, errorp);
+          g_free (driver);
           if (device)
-            {
-              g_free (driver);
-              break;
-            }
+            break;
+          continue;
         }
       for (node = class_list; node; node = sfi_ring_walk (node, class_list))
-        if (strcmp (BSE_DEVICE_CLASS (node->data)->driver_name, driver) == 0 &&
-            (!seen_auto || BSE_DEVICE_CLASS (node->data)->driver_rating < 0))
+        if (strcmp (BSE_DEVICE_CLASS (node->data)->driver_name, driver) == 0)   /* find named driver */
           break;
       g_free (driver);
       if (node)

@@ -46,7 +46,7 @@ BSE_DUMMY_TYPE (BsePcmDeviceOSS);
 #error	unsupported byte order in G_BYTE_ORDER
 #endif
 
-#define OSS_DEBUG(...)          sfi_debug ("oss", __VA_ARGS__)
+#define PCM_DEBUG(...)          sfi_debug ("pcm", __VA_ARGS__)
 #define LATENCY_DEBUG(...)      sfi_debug ("latency", __VA_ARGS__)
 
 
@@ -57,24 +57,27 @@ typedef struct
   gint		fd;
   guint		n_frags;
   guint		frag_size;
-  guint		bytes_per_value;
+  guint		frame_size;
+  guint         queue_length; /* in frames */
   gint16       *frag_buf;
+  guint         read_write_count;
   gboolean      needs_trigger;
+  gboolean      hard_sync;
 } OSSHandle;
 #define	FRAG_BUF_SIZE(oss)	((oss)->frag_size * 4)
 
 
 /* --- prototypes --- */
-static BseErrorType oss_device_setup			(OSSHandle		*oss);
+static BseErrorType oss_device_setup			(OSSHandle		*oss,
+                                                         guint                   req_queue_length);
 static void	    oss_device_retrigger		(OSSHandle		*oss);
 static gsize	    oss_device_read			(BsePcmHandle		*handle,
-							 gsize			 n_values,
 							 gfloat			*values);
 static void	    oss_device_write			(BsePcmHandle		*handle,
-							 gsize			 n_values,
 							 const gfloat		*values);
-static void	    oss_device_status			(BsePcmHandle		*handle,
-							 BsePcmStatus		*status);
+static gboolean     oss_device_check_io                 (BsePcmHandle           *handle,
+                                                         glong                  *timeoutp);
+static guint        oss_device_latency                  (BsePcmHandle           *handle);
 
 
 /* --- variables --- */
@@ -153,60 +156,58 @@ bse_pcm_device_oss_open (BseDevice     *device,
     dname = args[0];
   else
     dname = BSE_PCM_DEVICE_OSS (device)->device_name;
-  gint omode, retry_mode = 0;
+  gint omode;
+  gboolean hard_sync = FALSE;
   if (n_args >= 2)      /* MODE */
-    omode = strcmp (args[1], "rw") == 0 ? O_RDWR : strcmp (args[1], "ro") == 0 ? O_RDONLY : O_WRONLY;   /* parse: ro rw wo */
-  else
     {
-      omode = O_RDWR;
-      retry_mode = O_WRONLY;
+      if (strstr (args[1], "rw"))
+        omode = require_readable ? O_RDWR : O_WRONLY;
+      else if (strstr (args[1], "wo"))
+        omode = O_WRONLY;
+      else if (strstr (args[1], "ro"))
+        omode = O_RDONLY;
+      else
+        omode = require_readable ? O_RDWR : O_WRONLY;
+      hard_sync = strstr (args[1], "hs") != NULL;
     }
+  else
+    omode = require_readable && require_writable ? O_RDWR : require_readable ? O_RDONLY : O_WRONLY;
   OSSHandle *oss = g_new0 (OSSHandle, 1);
   BsePcmHandle *handle = &oss->handle;
   
   /* setup request */
   handle->n_channels = 2;
-  handle->mix_freq = bse_pcm_freq_from_freq_mode (BSE_PCM_DEVICE (device)->req_freq_mode);
-  handle->read = NULL;
-  handle->write = NULL;
-  handle->status = NULL;
+  handle->mix_freq = BSE_PCM_DEVICE (device)->req_mix_freq;
   oss->n_frags = 1024;
   oss->frag_size = 128;
-  oss->bytes_per_value = 2;
   oss->frag_buf = NULL;
   oss->fd = -1;
   oss->needs_trigger = TRUE;
+  oss->hard_sync = hard_sync;
 
   /* try open */
   BseErrorType error;
   gint fd = -1;
-  handle->readable = (omode & O_RDWR) == O_RDWR || (omode & O_RDONLY) == O_RDONLY;
-  handle->writable = (omode & O_RDWR) == O_RDWR || (omode & O_WRONLY) == O_WRONLY;
+  handle->readable = omode == O_RDWR || omode == O_RDONLY;      /* O_RDONLY maybe defined to 0 */
+  handle->writable = omode == O_RDWR || omode == O_WRONLY;
   if ((handle->readable || !require_readable) && (handle->writable || !require_writable))
-    fd = open (dname, omode | O_NONBLOCK, 0);           /* open non blocking to avoid waiting for other clients */
-  if (fd < 0 && retry_mode)
-    {
-      omode = retry_mode;
-      handle->writable = (omode & O_RDWR) == O_RDWR || (omode & O_WRONLY) == O_WRONLY;
-      handle->readable = (omode & O_RDWR) == O_RDWR || (omode & O_RDONLY) == O_RDONLY;
-      if ((handle->readable || !require_readable) && (handle->writable || !require_writable))
-        fd = open (dname, omode | O_NONBLOCK, 0);       /* open non blocking to avoid waiting for other clients */
-    }
+    fd = open (dname, omode | O_NONBLOCK, 0);                   /* open non blocking to avoid waiting for other clients */
   if (fd >= 0)
     {
       oss->fd = fd;
       /* try setup */
-      error = oss_device_setup (oss);
+      guint frag_length = BSE_PCM_DEVICE (device)->req_block_length;
+      oss->frag_size = frag_length * handle->n_channels * 2;
+      error = oss_device_setup (oss, BSE_PCM_DEVICE (device)->req_queue_length);
     }
   else
     error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
-  
+
   /* setup pdev or shutdown */
   if (!error)
     {
       oss->frag_buf = g_malloc (FRAG_BUF_SIZE (oss));
-      handle->minimum_watermark = oss->frag_size / oss->bytes_per_value;
-      handle->playback_watermark = MIN (oss->n_frags, 5) * oss->frag_size / oss->bytes_per_value;
+      handle->block_length = 0; /* setup after open */
       BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_OPEN);
       if (handle->readable)
 	{
@@ -218,17 +219,19 @@ bse_pcm_device_oss_open (BseDevice     *device,
 	  BSE_OBJECT_SET_FLAGS (device, BSE_DEVICE_FLAG_WRITABLE);
 	  handle->write = oss_device_write;
 	}
-      handle->status = oss_device_status;
+      handle->check_io = oss_device_check_io;
+      handle->latency = oss_device_latency;
       BSE_PCM_DEVICE (device)->handle = handle;
     }
   else
     {
+      PCM_DEBUG ("OSS: opening \"%s\" readable=%d writable=%d failed: %s", dname, require_readable, require_writable, bse_error_blurb (error));
       if (oss->fd >= 0)
 	close (oss->fd);
       g_free (oss->frag_buf);
       g_free (oss);
     }
-  
+              
   return error;
 }
 
@@ -257,18 +260,23 @@ bse_pcm_device_oss_finalize (GObject *object)
 }
 
 static BseErrorType
-oss_device_setup (OSSHandle *oss)
+oss_device_setup (OSSHandle *oss,
+                  guint      req_queue_length)
 {
   BsePcmHandle *handle = &oss->handle;
   gint fd = oss->fd;
   glong d_long;
   gint d_int;
-  
+
+  /* to get usable low-latency behaviour with OSS, we
+   * make the device blocking, choose small fragments
+   * and read() the first fragment once available.
+   */
   d_long = fcntl (fd, F_GETFL);
   d_long &= ~O_NONBLOCK;
   if (fcntl (fd, F_SETFL, d_long))
     return BSE_ERROR_DEVICE_ASYNC;
-  
+
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETFMTS, &d_int) < 0)
     return BSE_ERROR_DEVICE_FORMAT;
@@ -278,62 +286,82 @@ oss_device_setup (OSSHandle *oss)
   if (ioctl (fd, SNDCTL_DSP_SETFMT, &d_int) < 0 ||
       d_int != AFMT_S16_HE)
     return BSE_ERROR_DEVICE_FORMAT;
-  oss->bytes_per_value = 2;
+  guint bytes_per_value = 2;
   
   d_int = handle->n_channels - 1;
   if (ioctl (fd, SNDCTL_DSP_STEREO, &d_int) < 0)
     return BSE_ERROR_DEVICE_CHANNELS;
   handle->n_channels = d_int + 1;
-  
+  oss->frame_size = handle->n_channels * bytes_per_value;
+
   d_int = handle->mix_freq;
   if (ioctl (fd, SNDCTL_DSP_SPEED, &d_int) < 0)
     return BSE_ERROR_DEVICE_FREQUENCY;
   handle->mix_freq = d_int;
-  
+  if (MAX (d_int, handle->mix_freq) - MIN (d_int, handle->mix_freq) > handle->mix_freq / 100)
+    return BSE_ERROR_DEVICE_FREQUENCY;
+
   /* Note: fragment = n_fragments << 16;
    *       fragment |= g_bit_storage (fragment_size - 1);
    */
   oss->frag_size = CLAMP (oss->frag_size, 128, 65536);
   oss->n_frags = CLAMP (oss->n_frags, 128, 65536);
+  if (handle->readable)
+    {
+      /* don't allow fragments to be too large, to get
+       * low latency behaviour (hack)
+       */
+      oss->frag_size = MIN (oss->frag_size, 512);
+    }
   d_int = (oss->n_frags << 16) | g_bit_storage (oss->frag_size - 1);
   if (ioctl (fd, SNDCTL_DSP_SETFRAGMENT, &d_int) < 0)
     return BSE_ERROR_DEVICE_LATENCY;
   
   d_int = 0;
   if (ioctl (fd, SNDCTL_DSP_GETBLKSIZE, &d_int) < 0 ||
-      d_int < 128 ||
-      d_int > 131072 ||
-      (d_int & 1))
+      d_int < 128 || d_int > 131072 || (d_int & 1))
     return BSE_ERROR_DEVICE_BUFFER;
-  /* handle->block_size = d_int; */
-  
-  if (handle->writable)
+
+  audio_buf_info info = { 0, };
+  if (handle->writable && ioctl (fd, SNDCTL_DSP_GETOSPACE, &info) < 0)
+    return BSE_ERROR_DEVICE_BUFFER;
+  else if (!handle->writable && ioctl (fd, SNDCTL_DSP_GETISPACE, &info) < 0)
+    return BSE_ERROR_DEVICE_BUFFER;
+  oss->n_frags = info.fragstotal;
+  oss->frag_size = info.fragsize;
+  handle->queue_length = info.bytes / oss->frame_size;
+  if (handle->queue_length != oss->frag_size * oss->n_frags / oss->frame_size)
     {
-      audio_buf_info info = { 0, };
-      
-      if (ioctl (fd, SNDCTL_DSP_GETOSPACE, &info) < 0)
-	return BSE_ERROR_DEVICE_BUFFER;
-      oss->frag_size = info.fragsize;
-      oss->n_frags = info.fragstotal;
+      /* return BSE_ERROR_DEVICE_BUFFER; */
+      sfi_diag ("OSS: buffer size (%d) differs from fragment space (%d)", info.bytes, info.fragstotal * info.fragsize);
+      handle->queue_length = oss->n_frags * oss->frag_size / oss->frame_size;
     }
-  else if (handle->readable)
+
+  if (handle->readable)
     {
-      audio_buf_info info = { 0, };
-      
-      if (ioctl (fd, SNDCTL_DSP_GETISPACE, &info) < 0)
-	return BSE_ERROR_DEVICE_BUFFER;
-      oss->frag_size = info.fragsize;
-      oss->n_frags = info.fragstotal;
+      req_queue_length = MAX (req_queue_length, 3 * info.fragsize / oss->frame_size);   /* can't get better than 3 fragments */
+      handle->queue_length = MIN (handle->queue_length, req_queue_length);
     }
-  
-  OSS_DEBUG ("OSS-SETUP: w=%d r=%d n_channels=%d sample_freq=%.0f fsize=%u nfrags=%u bufsz=%u\n",
+  else  /* only writable */
+    {
+      /* give up on low latency for write-only handles, there's no reliable
+       * way to achieve this with OSS. so we set a lower bound of enough milli
+       * seconds for the latency, to not force the suer to adjust latency if
+       * he catches a write-only OSS device temporarily.
+       */
+      req_queue_length = MIN (req_queue_length, handle->queue_length);
+      handle->queue_length = CLAMP (25 * handle->mix_freq / 1000, req_queue_length, handle->queue_length);
+    }
+
+  PCM_DEBUG ("OSS: setup: w=%d r=%d n_channels=%d mix_freq=%u queue=%u nfrags=%u fsize=%u bufsz=%u\n",
 	     handle->writable,
 	     handle->readable,
 	     handle->n_channels,
 	     handle->mix_freq,
-	     oss->frag_size,
+             handle->queue_length,
 	     oss->n_frags,
-	     oss->n_frags * oss->frag_size);
+	     oss->frag_size / oss->frame_size,
+	     info.bytes / oss->frame_size);
   
   return BSE_ERROR_NONE;
 }
@@ -341,15 +369,17 @@ oss_device_setup (OSSHandle *oss)
 static void
 oss_device_retrigger (OSSHandle *oss)
 {
-  gint d_int;
-  
+  BsePcmHandle *handle = &oss->handle;
+
+  /* first, clear io buffers */
+  (void) ioctl (oss->fd, SNDCTL_DSP_RESET, NULL);
+
   /* it should be enough to select() on the fd to trigger
    * capture/playback, but with some new OSS drivers
    * (clones) this is not the case anymore, so we also
    * use the SNDCTL_DSP_SETTRIGGER ioctl to achive this.
    */
-  
-  d_int = 0;
+  gint d_int = 0;
   if (oss->handle.readable)
     d_int |= PCM_ENABLE_INPUT;
   if (oss->handle.writable)
@@ -366,101 +396,177 @@ oss_device_retrigger (OSSHandle *oss)
    * we write two fragments to playback
    * software latency is:
    *   2 * frag_size + delay between capture start & playback start
-   *
-   * TIMJ:
-   *   we only need to ensure that input is actually triggered, Bse's engine
-   *   takes care of the latency and at this point probably already has
-   *   output buffers pending.
    */
   if (oss->handle.readable)
     {
       struct timeval tv = { 0, 0, };
-      fd_set in_fds;
-      fd_set out_fds;
-      
+      fd_set in_fds, out_fds;
       FD_ZERO (&in_fds);
       FD_ZERO (&out_fds);
       FD_SET (oss->fd, &in_fds);
-      /* FD_SET (dev->pfd.fd, &out_fds); */
+      FD_SET (oss->fd, &out_fds);
       select (oss->fd + 1, &in_fds, &out_fds, NULL, &tv);
     }
+
+  /* provide latency buffering */
+  gint size = handle->queue_length * oss->frame_size, n;
+  guint8 *silence = g_malloc0 (size);
+  do
+    n = write (oss->fd, silence, size);
+  while (n < 0 && errno == EAGAIN); /* retry on signals */
+  g_free (silence);
+
+  glong d_long = fcntl (oss->fd, F_GETFL);
+  PCM_DEBUG ("OSS: retriggering device (blocking=%u, r=%d, w=%d)...", (int) !(d_long & O_NONBLOCK), handle->readable, handle->writable);
 
   oss->needs_trigger = FALSE;
 }
 
-static void
-oss_device_status (BsePcmHandle *handle,
-		   BsePcmStatus *status)
+static gboolean
+oss_device_check_io (BsePcmHandle *handle,
+                     glong        *timeoutp)
 {
   OSSHandle *oss = (OSSHandle*) handle;
-  gint fd = oss->fd;
-  audio_buf_info info;
-  
-  if (handle->writable && oss->needs_trigger)
-    oss_device_retrigger (oss);
 
+  /* query device status and handle underruns */
+  gboolean checked_underrun = FALSE;
+ handle_underrun:
+  if (handle->readable && oss->needs_trigger)
+    oss_device_retrigger (oss);
+  guint n_capture_avail; /* in n_frames */
   if (handle->readable)
     {
-      memset (&info, 0, sizeof (info));
-      (void) ioctl (fd, SNDCTL_DSP_GETISPACE, &info);
-      status->total_capture_values = info.fragstotal * info.fragsize / oss->bytes_per_value;
-      status->n_capture_values_available = info.fragments * info.fragsize / oss->bytes_per_value;
+      audio_buf_info info = { 0, };
+      (void) ioctl (oss->fd, SNDCTL_DSP_GETISPACE, &info);
+      guint n_total_frames = info.fragstotal * info.fragsize / oss->frame_size;
+      n_capture_avail = info.fragments * info.fragsize / oss->frame_size;
       /* probably more accurate: */
-      status->n_capture_values_available = info.bytes / oss->bytes_per_value;
+      n_capture_avail = info.bytes / oss->frame_size;
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
-      status->n_capture_values_available = MIN (status->total_capture_values, status->n_capture_values_available);
-      LATENCY_DEBUG ("OSS-ISPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
-		     status->n_capture_values_available,
-		     status->total_capture_values,
-		     info.fragstotal,
-		     info.fragsize,
-		     info.fragments,
-		     info.bytes);
+      n_capture_avail = MIN (n_capture_avail, n_total_frames);
     }
   else
-    {
-      status->total_capture_values = 0;
-      status->n_capture_values_available = 0;
-    }
+    n_capture_avail = 0;
+  guint n_total_playback, n_playback_avail; /* in n_frames */
   if (handle->writable)
     {
-      guint value_count, frag_fill;
-      memset (&info, 0, sizeof (info));
-      (void) ioctl (fd, SNDCTL_DSP_GETOSPACE, &info);
-      status->total_playback_values = info.fragstotal * info.fragsize / oss->bytes_per_value;
-      frag_fill = info.fragments * info.fragsize / oss->bytes_per_value;
-      value_count = info.bytes / oss->bytes_per_value;  /* probably more accurate */
-      status->n_playback_values_available = MAX (frag_fill, value_count);
+      audio_buf_info info = { 0, };
+      (void) ioctl (oss->fd, SNDCTL_DSP_GETOSPACE, &info);
+      n_total_playback = info.fragstotal * info.fragsize / oss->frame_size;
+      n_playback_avail = info.fragments * info.fragsize / oss->frame_size;
+      /* probably more accurate: */
+      n_playback_avail = info.bytes / oss->frame_size;
       /* OSS-bug fix, at least for es1371 in 2.3.34 */
-      status->n_playback_values_available = MIN (status->total_playback_values, status->n_playback_values_available);
-      LATENCY_DEBUG ("OSS-OSPACE: left=%5d/%d frags: total=%d size=%d count=%d bytes=%d\n",
-		     status->n_playback_values_available,
-		     status->total_playback_values,
-		     info.fragstotal,
-		     info.fragsize,
-		     info.fragments,
-		     info.bytes);
+      n_playback_avail = MIN (n_playback_avail, n_total_playback);
     }
   else
+    n_playback_avail = n_total_playback = 0;
+  if (!checked_underrun && handle->readable && handle->writable)
     {
-      status->total_playback_values = 0;
-      status->n_playback_values_available = 0;
+      checked_underrun = TRUE;
+      if (n_capture_avail > handle->queue_length + oss->frag_size / oss->frame_size)
+        {
+          if (oss->hard_sync)
+            {
+              g_printerr ("OSS: underrung detected (diff=%d), forcing hard sync (retrigger)\n", n_capture_avail - handle->queue_length);
+              oss->needs_trigger = TRUE;
+            }
+          else /* soft-sync */
+            {
+              g_printerr ("OSS: underrung detected (diff=%d), skipping data\n", n_capture_avail - handle->queue_length);
+              /* soft sync, throw away extra data */
+              guint n_bytes = oss->frame_size * (n_capture_avail - handle->queue_length);
+              do
+                {
+                  gssize l, n = MIN (FRAG_BUF_SIZE (oss), n_bytes);
+                  do
+                    l = read (oss->fd, oss->frag_buf, n);
+                  while (l < 0 && errno == EINTR); /* don't mind signals */
+                  if (l < 0)
+                    n_bytes = 0; /* error, bail out */
+                  else
+                    n_bytes -= l;
+                }
+              while (n_bytes);
+            }
+          goto handle_underrun;
+        }
     }
+
+  /* check whether processing is possible */
+  if (n_capture_avail >= handle->block_length)
+    return TRUE;        /* can process */
+
+  /* check immediate processing need */
+  guint fill_frames = n_total_playback - n_playback_avail;
+  if (fill_frames <= handle->queue_length)
+    return TRUE;        /* need process */
+
+  /* calculate timeout until processing is possible/needed */
+  guint diff_frames;
+  if (handle->readable)
+    diff_frames = handle->block_length - n_capture_avail;
+  else /* only writable */
+    diff_frames = fill_frames - handle->queue_length;
+  *timeoutp = diff_frames * 1000 / handle->mix_freq;
+  /* OSS workaround for low latency */
+  if (handle->readable)
+    *timeoutp = 0;      /* prevent waiting in poll(), to force blocking read() */
+
+  return *timeoutp == 0;
+}
+
+static guint
+oss_device_latency (BsePcmHandle *handle)
+{
+  OSSHandle *oss = (OSSHandle*) handle;
+  /* query device status */
+  guint n_capture_avail; /* in n_frames */
+  if (handle->readable)
+    {
+      audio_buf_info info = { 0, };
+      (void) ioctl (oss->fd, SNDCTL_DSP_GETISPACE, &info);
+      guint n_total_frames = info.fragstotal * info.fragsize / oss->frame_size;
+      n_capture_avail = info.fragments * info.fragsize / oss->frame_size;
+      /* probably more accurate: */
+      n_capture_avail = info.bytes / oss->frame_size;
+      /* OSS-bug fix, at least for es1371 in 2.3.34 */
+      n_capture_avail = MIN (n_capture_avail, n_total_frames);
+    }
+  else
+    n_capture_avail = 0;
+  guint n_playback_filled; /* in n_frames */
+  if (handle->writable)
+    {
+      audio_buf_info info = { 0, };
+      (void) ioctl (oss->fd, SNDCTL_DSP_GETOSPACE, &info);
+      guint n_total_playback = info.fragstotal * info.fragsize / oss->frame_size;
+      guint n_playback_avail = info.fragments * info.fragsize / oss->frame_size;
+      /* probably more accurate: */
+      n_playback_avail = info.bytes / oss->frame_size;
+      /* OSS-bug fix, at least for es1371 in 2.3.34 */
+      n_playback_avail = MIN (n_playback_avail, n_total_playback);
+      n_playback_filled = n_total_playback - n_playback_avail;
+    }
+  else
+    n_playback_filled = 0;
+  /* return total latency in frames */
+  return n_capture_avail + n_playback_filled;
 }
 
 static gsize
 oss_device_read (BsePcmHandle *handle,
-		 gsize         n_values,
 		 gfloat       *values)
 {
+  const gsize n_values = handle->n_channels * handle->block_length;
   OSSHandle *oss = (OSSHandle*) handle;
   gint fd = oss->fd;
   gsize buf_size = FRAG_BUF_SIZE (oss);
   gpointer buf = oss->frag_buf;
-  gfloat *d = values;
+  gfloat *dest = values;
   gsize n_left = n_values;
   
-  g_return_val_if_fail (oss->bytes_per_value == 2, 0);
+  g_return_val_if_fail (oss->frame_size == 4, 0);
   
   do
     {
@@ -477,27 +583,33 @@ oss_device_read (BsePcmHandle *handle,
 	  l = n;
 	}
       l >>= 1;
-      for (b = s + l; s < b; s++)
-	*d++ = *s * (1.0 / 32768.0);
+      if (values)       /* don't convert on dummy reads */
+        for (b = s + l; s < b; s++)
+          *dest++ = *s * (1.0 / 32768.0);
       n_left -= l;
     }
   while (n_left);
-  
+  oss->read_write_count += 1;
+
   return n_values;
 }
 
 static void
 oss_device_write (BsePcmHandle *handle,
-		  gsize         n_values,
 		  const gfloat *values)
 {
+  gsize n_values = handle->n_channels * handle->block_length;
   OSSHandle *oss = (OSSHandle*) handle;
   gint fd = oss->fd;
   gsize buf_size = FRAG_BUF_SIZE (oss);
   gpointer buf = oss->frag_buf;
   const gfloat *s = values;
+
+  if (handle->readable)
+    while (oss->read_write_count < 1)
+      oss_device_read (handle, NULL);   /* dummy read to sync device */
   
-  g_return_if_fail (oss->bytes_per_value == 2);
+  g_return_if_fail (oss->frame_size == 4);
   
   do
     {
@@ -518,6 +630,7 @@ oss_device_write (BsePcmHandle *handle,
       n_values -= l >> 1;
     }
   while (n_values);
+  oss->read_write_count -= 1;
 }
 
 static void
@@ -538,8 +651,9 @@ bse_pcm_device_oss_class_init (BsePcmDeviceOSSClass *class)
                           /* TRANSLATORS: keep this text to 70 chars in width */
                           _("Open Sound System PCM driver:\n"
                             "  DEVICE - PCM device file name\n"
-                            "  MODE   - one of \"ro\", \"rw\" or \"wo\" for\n"
-                            "           read-only, read-write or write-only access."));
+                            "  MODE   - may contain \"rw\", \"ro\" or \"wo\" for\n"
+                            "           read-only, read-write or write-only access;\n"
+                            "           adding \"hs\" forces hard sync on underruns.\n"));
   device_class->open = bse_pcm_device_oss_open;
   device_class->close = bse_pcm_device_oss_close;
 }
