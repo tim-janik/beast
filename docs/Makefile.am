@@ -12,7 +12,7 @@ texi_images = $(strip		\
 	beast-components.png	\
 	beast-progs.png		\
 )
-EXTRA_DIST = $(strip		\
+EXTRA_DIST += $(strip		\
 	beast-components.dia	\
 	beast-progs.dia		\
 	module-voices.dia	\

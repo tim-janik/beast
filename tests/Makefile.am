@@ -68,6 +68,7 @@ progs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/sfi/libsfi.la
 cxxbinding_SOURCES = cxxbinding.cc bsecxxapi.cc
 cxxbinding_LDADD = $(progs_ldadd)
 $(srcdir)/cxxbinding.cc: bsecxxapi.h
+EXTRA_DIST += empty.ogg
 
 perftest_SOURCES = perftest.cc bsecxxapi.cc
 perftest_LDADD = $(progs_ldadd)

@@ -5,5 +5,5 @@
 
 SUBDIRS = effects instruments scripts demo keys skins
 
-EXTRA_DIST = $(strip \
+EXTRA_DIST += $(strip \
 )

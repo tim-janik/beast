@@ -47,7 +47,7 @@ test-balance-right: beastconf.sh
 	               --channel=1 --avg-spectrum --avg-energy --spectrum \
 	            -- --threshold=99.99
 
-EXTRA_DIST = $(strip		\
+EXTRA_DIST += $(strip		\
 	balance-left.reference	\
 	balance-right.reference	\
 	bsetowav.scm		\
