@@ -369,12 +369,6 @@ string_versions_compare (const gchar *version1,
   glong vmajor1 = 0, vminor1 = 0, vmicro1 = 0, vmajor2 = 0, vminor2 = 0, vmicro2 = 0;
   parse_version (version1, &vmajor1, &vminor1, &vmicro1);
   parse_version (version2, &vmajor2, &vminor2, &vmicro2);
-  g_printerr ("vcompare: %s=%lu.%lu.%lu %s=%lu.%lu.%lu : %d\n",
-              version1, vmajor1,vminor1,vmicro1,
-              version2, vmajor2,vminor2,vmicro2,
-              ((vmajor1 != vmajor2) ? (vmajor1 > vmajor2 ? +1 : -1) :
-               (vminor1 != vminor2) ? (vminor1 > vminor2 ? +1 : -1) :
-               (vmicro1 < vmicro2 ? -1 : vmicro1 > vmicro2)));
   return ((vmajor1 != vmajor2) ? (vmajor1 > vmajor2 ? +1 : -1) :
           (vminor1 != vminor2) ? (vminor1 > vminor2 ? +1 : -1) :
           (vmicro1 < vmicro2 ? -1 : vmicro1 > vmicro2));

@@ -1,5 +1,4 @@
 FIXMES:	(release-critical)
-- disable scroll_text_patchup_size_request() for message boxes
 - add extra flag to GxkDialog to prevent Escape, use it only for bstapp
 - sequencer: export asserts
 - gslmath->bsemath
@@ -19,9 +18,6 @@ FIXMES:	(release-critical)
 - move and add compat for Dav::*Name -> Bse::Dav::*Name
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - support candidate tooltip in bst_track_synth_dialog_popup() similar to bst_item_seq_dialog_popup()
-- add a "[_] never show this warning" toggle button to warnings
-  (not having /dev/midi gets really annoying)
-  or disable "/dev/midi": no such device dialog
 - update gtk/glib dependency to 2.4 in README and configure.in
 - add srcdir==builddir requirement for CVS builds to download area
 TODO:

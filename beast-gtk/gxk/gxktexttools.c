@@ -1270,11 +1270,14 @@ scroll_text_patchup_size_request (GtkWidget      *scwin,
                                   GtkRequisition *requisition,
                                   GtkWidget      *sctext)
 {
+  GxkScrollTextFlags flags = g_object_get_long (sctext, "GxkScrollTextFlags");
   if (!GTK_WIDGET_MAPPED (scwin))
     {
       /* provide initial size */
-      requisition->width += 220;
-      requisition->height += 100;
+      if (!(flags & GXK_SCROLL_TEXT_HFIXED))
+        requisition->width += 220;
+      if (!(flags & GXK_SCROLL_TEXT_VFIXED))
+        requisition->height += 100;
     }
 }
 
@@ -1324,6 +1327,7 @@ gxk_scroll_text_create (GxkScrollTextFlags flags,
   sctext = g_object_new (GTK_TYPE_VBOX,
                          "visible", TRUE,
                          NULL);
+  g_object_set_long (sctext, "GxkScrollTextFlags", flags);
   /* navigation toolbar */
   if (flags & GXK_SCROLL_TEXT_NAVIGATABLE)
     {

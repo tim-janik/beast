@@ -1,3 +1,10 @@
+Mon Oct  4 04:51:01 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstusermessage.c: spacing fixes.
+
+	* beast-gtk/gxk/gxktexttools.c: don't patch up size requests when 
+	unmapped for VFIXED or HFIXED.
+
 Mon Oct  4 03:50:32 2004  Tim Janik  <timj@gtk.org>
 
 	* bstrecords.idl: provide MsgAbsorbString sequence.

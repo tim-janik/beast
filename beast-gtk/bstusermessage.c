@@ -140,8 +140,6 @@ right_space_message (const gchar *message)
     g_string_erase (gstring, gstring->len-1, 1);
   /* now, place deliberate whitespaces */
   g_string_insert (gstring, 0, "\n");
-  if (gstring->len && gstring->str[gstring->len - 1] != '\n')
-    g_string_append (gstring, "\n");
   return g_string_free (gstring, FALSE);
 }
 
@@ -156,7 +154,10 @@ update_dialog (GxkDialog        *dialog,
   gxk_dialog_remove_actions (dialog);
 
   GtkWidget *table = gtk_table_new (1, 1, FALSE);
-  gtk_widget_show (table);
+  g_object_set (table,
+                "visible", TRUE,
+                "border-width", 5,
+                NULL);
   if (stock)
     gtk_table_attach (GTK_TABLE (table), gxk_stock_image (stock, GXK_ICON_SIZE_INFO_SIGN),
                       0, 1, 0, 1, /* left/right, top/bottom */
@@ -168,8 +169,8 @@ update_dialog (GxkDialog        *dialog,
                                   "yalign", 0.5,
                                   "xscale", 1.0,
                                   "yscale", 1.0,
-                                  "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK |
-                                                                   GXK_SCROLL_TEXT_CENTER |
+                                  "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_CENTER |
+                                                                   GXK_SCROLL_TEXT_WIDGET_LOOK |
                                                                    GXK_SCROLL_TEXT_VFIXED,
                                                                    text_message),
                                   NULL);
@@ -182,7 +183,7 @@ update_dialog (GxkDialog        *dialog,
       g_object_set_int (dialog, "BEAST-user-message-type", msg_type);
       g_object_set_int (dialog, "BEAST-user-message-pid", umsg ? umsg->pid : 0);
       g_object_set_data_full (dialog, "BEAST-user-message-text", g_strdup (message), g_free);
-      GtkWidget *label = g_object_new (GTK_TYPE_LABEL, "visible", FALSE, "xalign", 1.0, NULL);
+      GtkWidget *label = g_object_new (GTK_TYPE_LABEL, "visible", FALSE, "xalign", 1.0, "label", "", NULL);
       gtk_table_attach (GTK_TABLE (table), label,
                         1, 2, 1, 2, /* left/right, top/bottom */
                         GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
@@ -210,13 +211,18 @@ update_dialog (GxkDialog        *dialog,
                            "yalign", 0.5,
                            "xscale", 1.0,
                            "yscale", 1.0,
-                           "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_BG | GXK_SCROLL_TEXT_MONO, gstring->str),
+                           "child", gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_BG | GXK_SCROLL_TEXT_MONO | GXK_SCROLL_TEXT_VFIXED, gstring->str),
                            NULL);
       g_string_free (gstring, TRUE);
-      gtk_table_attach (GTK_TABLE (table), text,
-                        1, 2, 3, 4, /* left/right, top/bottom */
-                        GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
-      gxk_expander_connect_to_widget (exp, text);
+      if (0) // GTKFIX: the expander child isn't properly visible with container_add in gtk+2.4.9
+        gtk_container_add (GTK_CONTAINER (exp), text);
+      else
+        {
+          gtk_table_attach (GTK_TABLE (table), text,
+                            1, 2, 3, 4, /* left/right, top/bottom */
+                            GTK_FILL | GTK_EXPAND, GTK_FILL, 5, 5);
+          gxk_expander_connect_to_widget (exp, text);
+        }
     }
   if (umsg && umsg->config_blurb)
     {
