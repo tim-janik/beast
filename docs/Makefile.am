@@ -5,11 +5,17 @@ texi_docs = $(strip						\
 	quickstart.texi			plugin-devel.texi	\
 	release-notes.texi		faq.texi		\
 	sfidl.1.texi			sfidl-manual.texi	\
+	architecture.texi					\
 )
 texi_images = $(strip		\
 	module-voices.png	\
+	beast-components.png	\
+	beast-progs.png		\
 )
 EXTRA_DIST = $(strip		\
+	beast-components.dia	\
+	beast-progs.dia		\
+	module-voices.dia	\
 	bse-categories.txt	\
 	interpolation.txt	\
 	${texi_docs}		\

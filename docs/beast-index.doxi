@@ -24,6 +24,7 @@
 @anchor{development}
 @unnumbered Development Documents
 @itemize
+@item @uref{beast-doc://architecture,,  BEAST Architecture}
 @item @uref{beast-doc://plugin-devel,,  BSE Plugin Development}
 @item @uref{beast-doc://sfidl-manual,,  SFIDL - Manual}
 @item @uref{beast-doc://engine-mplan,,  DSP Synthesis Engine (Concepts)}

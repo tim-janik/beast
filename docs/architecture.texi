@@ -1,0 +1,56 @@
+\input texinfo   @c emacs: -*-texinfo-*-
+@c %**start of header
+@settitle BEAST Architecture
+@footnotestyle end
+@c %**end of header
+@c revision-date: $Id: architecture.texi,v 1.1 2004/12/17 14:58:49 timj Exp $
+
+@include texiutils.texi
+
+@doctitle @beast Architecture
+@docauthor Tim Janik
+
+@center @revision{Document revised:}
+
+This document provides an architectural overview of the @beast
+audio synthesis package and related components.
+
+@contents
+
+
+@chapter Programs and Libraries
+
+@center @image{./beast-progs,,,Programs and Libraries,png}
+
+@enumerate
+@item SFIDL - The IDL compiler (@uref{beast-man://1/sfidl,,sfidl}) used for language bindings and plugins
+@item BseWaveTool - A small program to generate multi-sample .BSEWAVE files
+@item BEAST - a Gtk+ based GUI front-end (@uref{beast-man://1/beast,,beast}) for @bse
+@item GXK - a library containing extensions to Gtk+, such as XML-parser for widget templates or an action administration system
+@item BSESH - a Guile based scheme shell (@uref{beast-man://1/bsesh,,bsesh}) for @bse
+@item @bse - synthesis and sequencing library
+@item @sfi - Interface library, consisting of:
+@itemize
+@item a value abstractiong SfiValue (based on GValue)
+@item a serializable parameter abstraction based on GParamSpec
+@item a threading abstraction SfiThread (based on GThread)
+@item primitive type implementations (record, sequenzes, rings)
+@item a glue layer to allow function calls and signals across process boundaries
+@item a simple communication layer based on SfiValue for process boundaries
+@item basic serialization mechanisms to allow implementations of persistent object storage
+@item miscellaneous utilities.
+@end itemize
+@item GLib-Extra - utility functions which are subject to be folded back into GLib at some point.
+@end enumerate
+
+@chapter Components
+
+@center @image{./beast-components,,,Components,png}
+
+@enumerate
+@item BSE-Shell - a Guile based scheme shell (@uref{beast-man://1/bsesh,,bsesh}) for @bse used for scripting @beast and to run standalone scripts
+@item @beast - a Gtk+ based GUI front-end (@uref{beast-man://1/beast,,beast}) for @bse
+@item @bse - the sequencing and synthesis core
+@end enumerate
+
+@bye

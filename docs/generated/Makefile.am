@@ -19,6 +19,7 @@ markup_targets = $(strip		\
 	release-notes.markup		\
 	release-news.markup		\
 	engine-mplan.markup		\
+	architecture.markup		\
 	plugin-devel.markup		\
 	sfidl-manual.markup		\
 	quickstart.markup		\
@@ -57,6 +58,7 @@ html_targets = $(strip		\
 	$(man1_MANS:.1=.1.html)	\
 	$(man3_MANS:.3=.3.html)	\
 	faq.html		\
+	architecture.html	\
 	plugin-devel.html	\
 	sfidl-manual.html	\
 	plugin-devel.html	\
