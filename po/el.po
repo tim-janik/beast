@@ -1,0 +1,1202 @@
+# translation of el.po to Greek
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Kostas Papadimas <pkst@gnome.org>, 2003
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: el\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-11-04 14:11+0100\n"
+"PO-Revision-Date: 2003-11-09 18:32+0200\n"
+"Last-Translator: Kostas Papadimas <pkst@gnome.org>\n"
+"Language-Team: Greek <nls@tux.hellug.gr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.0\n"
+
+#: beast-gtk/bstapp.c:65
+msgid "/_File"
+msgstr "/_Αρχείο"
+
+#: beast-gtk/bstapp.c:67
+msgid "/File/_New"
+msgstr "/Αρχείο/_Νέο"
+
+#: beast-gtk/bstapp.c:68
+msgid "/File/_Open..."
+msgstr "/Αρχείο/Άνοι_γμα..."
+
+#: beast-gtk/bstapp.c:69
+msgid "/File/_Merge..."
+msgstr "/Αρχείο/Συγ_χώνευση..."
+
+#: beast-gtk/bstapp.c:70
+msgid "/File/_Close"
+msgstr "/Αρχείο/_Κλείσιμο"
+
+#: beast-gtk/bstapp.c:72
+msgid "/File/_Save"
+msgstr "/Αρχείο/Αποθήκευ_ση"
+
+#: beast-gtk/bstapp.c:73
+msgid "/File/Save _As..."
+msgstr "/Αρχείο/Αποθήκευση._ως..."
+
+#: beast-gtk/bstapp.c:75
+msgid "/File/Preferences..."
+msgstr "/Αρχείο/Προτιμήσεις..."
+
+#: beast-gtk/bstapp.c:77
+msgid "/File/_Quit"
+msgstr "/Αρχείο/Έ_ξοδος"
+
+#: beast-gtk/bstapp.c:78 beast-gtk/bstpartdialog.c:73
+msgid "/_Edit"
+msgstr "/_Επεξεργασία"
+
+#: beast-gtk/bstapp.c:80
+msgid "/Edit/_Undo"
+msgstr "/Επεξεργασία/Α_ναίρεση"
+
+#: beast-gtk/bstapp.c:81
+msgid "/Edit/_Redo"
+msgstr "/Επεξεργασία/Ακύ_ρωση αναίρεσης"
+
+#: beast-gtk/bstapp.c:82
+msgid "/Edit/_Clear Undo"
+msgstr "/Επεξεργασία/Εκκα_θάριση αναίρεσης"
+
+#: beast-gtk/bstapp.c:84
+msgid "/Edit/Preferences..."
+msgstr "/Επεξεργασία/Προτιμήσεις..."
+
+#: beast-gtk/bstapp.c:85
+msgid "/_View"
+msgstr "/_Προβολή"
+
+#: beast-gtk/bstapp.c:87
+msgid "/View/Procedure _Browser"
+msgstr "/Προβολή/_Browser Διαδικασίας"
+
+#: beast-gtk/bstapp.c:88
+msgid "/View/Rack Editor"
+msgstr "/Προβολή/Επεξεργαστής Rack"
+
+#: beast-gtk/bstapp.c:89
+msgid "/View/Device _Monitor"
+msgstr "/Προβολή/Παρακολούθηση συσ_κευής"
+
+#: beast-gtk/bstapp.c:91
+msgid "/View/Preferences"
+msgstr "/Προβολή/Προτιμήσεις"
+
+#: beast-gtk/bstapp.c:93
+msgid "/View/Rebuild"
+msgstr "/Προβολή/Κτίσιμο ξανά"
+
+#: beast-gtk/bstapp.c:94
+msgid "/_Project"
+msgstr "/Ε_ργασία"
+
+#: beast-gtk/bstapp.c:96
+msgid "/Project/_Play"
+msgstr "/Εργασία/Ανα_παραγωγή"
+
+#: beast-gtk/bstapp.c:97
+msgid "/Project/_Stop"
+msgstr "/Εργασία/_Διακοπή"
+
+#: beast-gtk/bstapp.c:99
+msgid "/Project/New Song"
+msgstr "/Εργασία/Νέο τραγούδι"
+
+#: beast-gtk/bstapp.c:100
+msgid "/Project/New Custom Synthesizer"
+msgstr "/Εργασία/Νέο προσαρμοσμένο Synthesizer"
+
+#: beast-gtk/bstapp.c:101
+msgid "/Project/New MIDI Synthesizer"
+msgstr "/Εργασία/Νέο MIDI Synthesizer"
+
+#: beast-gtk/bstapp.c:102
+msgid "/Project/Remove Song or Synthesizer"
+msgstr "/Εργασία/Απομάκρυνση τραγουδιού ή Synthesizer"
+
+#: beast-gtk/bstapp.c:104
+msgid "/_Song"
+msgstr "/Τρα_γούδι"
+
+#: beast-gtk/bstapp.c:106
+msgid "/Song/Add _Part"
+msgstr "/Τραγούδι/Προσθήκη _μέρους"
+
+#: beast-gtk/bstapp.c:107
+msgid "/Song/Delete _Part"
+msgstr "/Τραγούδι/Διαγραφή _μέρους"
+
+#: beast-gtk/bstapp.c:108
+msgid "/Song/Add _Track"
+msgstr "/Τραγούδι/Προσθήκη κομμα_τιού"
+
+#: beast-gtk/bstapp.c:109
+msgid "/Song/_Delete Track"
+msgstr "/Τραγούδι/_Διαγραφή κομματιού"
+
+#: beast-gtk/bstapp.c:110
+msgid "/_Synth"
+msgstr "/_Synth"
+
+#: beast-gtk/bstapp.c:112
+msgid "/Synth/_Test"
+msgstr "/Synth/Δοκι_μή"
+
+#: beast-gtk/bstapp.c:113
+msgid "/Wave_s"
+msgstr "/Wave_s"
+
+#: beast-gtk/bstapp.c:115
+msgid "/Waves/_Load Wave..."
+msgstr "/Waves/_Φόρτωση Wave..."
+
+#: beast-gtk/bstapp.c:116
+msgid "/Waves/Delete Wave"
+msgstr "/Waves/Διαγραφή Wave"
+
+#: beast-gtk/bstapp.c:117
+msgid "/Waves/_Edit Wave..."
+msgstr "/Waves/_Επεξεργασία Wave"
+
+#: beast-gtk/bstapp.c:119
+msgid "/_Synthesizers"
+msgstr "/_Synthesizers"
+
+#: beast-gtk/bstapp.c:121
+msgid "/Synthesizers/Load _Effect"
+msgstr "/Synthesizers/Φόρτωση _Εφέ"
+
+#: beast-gtk/bstapp.c:122
+msgid "/Synthesizers/Load _Instrument"
+msgstr "/Synthesizers/Φόρτωση ορ_γάνου"
+
+#: beast-gtk/bstapp.c:123
+msgid "/Synthesizers/Save As Effect"
+msgstr "/Synthesizers/Αποθήκευση ως εφέ"
+
+#: beast-gtk/bstapp.c:124
+msgid "/Synthesizers/Save As Instrument"
+msgstr "/Synthesizers/Αποθήκευση ως οργάνου"
+
+#: beast-gtk/bstapp.c:125 beast-gtk/bstpartdialog.c:67
+msgid "/_Tools"
+msgstr "/Ερ_γαλεία"
+
+#: beast-gtk/bstapp.c:127
+msgid "/Tools/_Song"
+msgstr "/Εργαλεία/Τραγού_δι"
+
+#: beast-gtk/bstapp.c:128
+msgid "/Tools/_Synth"
+msgstr "/Εργαλεία/_Synth"
+
+#: beast-gtk/bstapp.c:129
+msgid "/Tools/Wave_s"
+msgstr "/Εργαλεία/Wave_s"
+
+#: beast-gtk/bstapp.c:130
+msgid "/_Demo"
+msgstr "/_Demo"
+
+#: beast-gtk/bstapp.c:134
+msgid "/_Help"
+msgstr "/_Βοήθεια"
+
+#: beast-gtk/bstapp.c:136
+msgid "/Help/_Release Notes..."
+msgstr "/Βοήθεια/Ση_μειώσεις έκδοσης"
+
+#: beast-gtk/bstapp.c:137
+msgid "/Help/Quick Start..."
+msgstr "/Βοήθεια/Γρήγορη Έναρ_ξη..."
+
+#: beast-gtk/bstapp.c:138
+msgid "/Help/_FAQ..."
+msgstr "/Βοήθεια/_FAQ..."
+
+#: beast-gtk/bstapp.c:139
+msgid "/Help/Development/GSL Engine..."
+msgstr "/Βοήθεια/Ανάπτυξη Εφαρμογών/Μηχανή GSL..."
+
+#: beast-gtk/bstapp.c:141
+msgid "/Help/_About..."
+msgstr "/Βοήθεια/Πε_ρί..."
+
+#: beast-gtk/bstapp.c:605 beast-gtk/bstapp.c:612 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstfiledialog.c:445
+#, c-format
+msgid "Opening project `%s'"
+msgstr "Άνοιγμα εργασίας `%s'"
+
+#. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
+#: beast-gtk/bstapp.c:784
+msgid "Rack editor"
+msgstr "Επεξεργαστής Rack"
+
+#: beast-gtk/bstapp.c:798
+msgid "Preferences"
+msgstr "Προτιμήσεις"
+
+#. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
+#: beast-gtk/bstapp.c:812
+msgid "Device Monitor"
+msgstr "Παραολούθηση συσκευής"
+
+#: beast-gtk/bstapp.c:827
+msgid "Procedure Browser"
+msgstr "Browser διαδικασίας"
+
+#: beast-gtk/bstapp.c:884
+#, c-format
+msgid "BEAST-%s Release Notes"
+msgstr "BEAST-%s Σημειώσεις έκδοσης"
+
+#: beast-gtk/bstcanvaslink.c:177
+msgid "Module Link: "
+msgstr "Δεσμός λειτουργικής μονάδας: "
+
+#: beast-gtk/bstcanvaslink.c:233 beast-gtk/bstsnetrouter.c:1055
+msgid "Module link"
+msgstr "Δεσμός λειτουργικής μονάδας"
+
+#: beast-gtk/bstcanvassource.c:483
+msgid "Module Info"
+msgstr "Πληροφορίες λειτουργικής μονάδας"
+
+#: beast-gtk/bstcanvassource.c:971
+msgid "Input"
+msgstr "Εισαγωγή"
+
+#: beast-gtk/bstcanvassource.c:980
+msgid "Output"
+msgstr "'Εξοδος"
+
+#: beast-gtk/bstcanvassource.c:984
+msgid "(Hint)"
+msgstr "(Υπόδειξη)"
+
+#: beast-gtk/bsteventrollctrl.c:344 beast-gtk/bsteventrollctrl.c:351
+#: beast-gtk/bsteventrollctrl.c:415
+msgid "Move Control Event"
+msgstr "Μετακίνηση γεγονότος ελέγχου"
+
+#: beast-gtk/bsteventrollctrl.c:351 beast-gtk/bsteventrollctrl.c:500
+#: beast-gtk/bsteventrollctrl.c:550 beast-gtk/bstpianorollctrl.c:428
+#: beast-gtk/bstpianorollctrl.c:538 beast-gtk/bstpianorollctrl.c:601
+#: beast-gtk/bsttrackrollctrl.c:448 beast-gtk/bsttrackrollctrl.c:468
+#: beast-gtk/bsttrackrollctrl.c:540
+msgid "No target"
+msgstr "Όχι στόχος"
+
+#: beast-gtk/bsteventrollctrl.c:415 beast-gtk/bsteventrollctrl.c:536
+msgid "Lost Event"
+msgstr "Χαμένο γεγονός"
+
+#: beast-gtk/bsteventrollctrl.c:425 beast-gtk/bsteventrollctrl.c:458
+msgid "Align Control Events"
+msgstr "Στοίχιση γεγονότων ελέγχου"
+
+#: beast-gtk/bsteventrollctrl.c:458 beast-gtk/bsteventrollctrl.c:584
+#: beast-gtk/bstpianorollctrl.c:659 beast-gtk/bstpianorollctrl.c:695
+msgid "Aborted"
+msgstr "Εγκαταλείφθηκε"
+
+#: beast-gtk/bsteventrollctrl.c:484
+msgid "Insert Control Event"
+msgstr "Εισαγωγή ελέγχου γεγονότος"
+
+#: beast-gtk/bsteventrollctrl.c:495 beast-gtk/bsteventrollctrl.c:500
+#: beast-gtk/bsteventrollctrl.c:536
+msgid "Resize Control Event"
+msgstr "Αλλαγή μεγέθους ελέγχου γεγονότος"
+
+#: beast-gtk/bsteventrollctrl.c:547 beast-gtk/bsteventrollctrl.c:550
+msgid "Delete Control Event"
+msgstr "Διαγραφή ελέγχου γεγονότος"
+
+#: beast-gtk/bsteventrollctrl.c:560 beast-gtk/bsteventrollctrl.c:584
+#: beast-gtk/bstpianorollctrl.c:633 beast-gtk/bstpianorollctrl.c:659
+msgid "Select Region"
+msgstr "Επιλογή περιοχής"
+
+#: beast-gtk/bsteventrollctrl.c:593 beast-gtk/bstpianorollctrl.c:704
+msgid "Abortion"
+msgstr "Εγκατάλειψη"
+
+#: beast-gtk/bstfiledialog.c:197
+msgid "Contents"
+msgstr "Περιεχόμενα"
+
+#. setup remaining bits
+#: beast-gtk/bstfiledialog.c:229
+msgid "File Selection"
+msgstr "Επιλογή αρχείου"
+
+#: beast-gtk/bstfiledialog.c:410
+msgid "Open Project"
+msgstr "Άνοιγμα εργασίας"
+
+#: beast-gtk/bstfiledialog.c:424
+msgid "Select Directory"
+msgstr "Επιλογή καταλόγου"
+
+#: beast-gtk/bstfiledialog.c:463
+#, c-format
+msgid "Merge: %s"
+msgstr "Συγχώνευση: %s"
+
+#: beast-gtk/bstfiledialog.c:476
+#, c-format
+msgid "Merging project `%s'"
+msgstr "Συγχώνευση εργασίας %s"
+
+#: beast-gtk/bstfiledialog.c:499
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Αποτυχία διαγραφής αρχείου\n"
+"`%s'\n"
+"λόγω:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:528
+#, c-format
+msgid "Save: %s"
+msgstr "Αποθήκευση: %s"
+
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:530
+msgid "Fully include wave files"
+msgstr "Πλήρης συμπερίληψη αρχείων wave "
+
+#: beast-gtk/bstfiledialog.c:531
+msgid "Store references to wave files"
+msgstr "Αποθήκευση αναφορών σε αρχεία wave "
+
+#: beast-gtk/bstfiledialog.c:552 beast-gtk/bstfiledialog.c:562
+#, c-format
+msgid "Saving project `%s'"
+msgstr "Αποθήκευση εργασίας `%s'"
+
+#: beast-gtk/bstfiledialog.c:553 beast-gtk/bstfiledialog.c:629
+#: beast-gtk/bstfiledialog.c:705
+#, c-format
+msgid ""
+"Failed to save\n"
+"`%s'\n"
+"to\n"
+"`%s':\n"
+"%s"
+msgstr ""
+"Αποτυχία αποθήκευσης\n"
+"`%s'\n"
+"σε\n"
+"`%s':\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:577
+msgid "Load Effect"
+msgstr "Φόρτωση εφέ"
+
+#: beast-gtk/bstfiledialog.c:590
+#, c-format
+msgid "Merging effect `%s'"
+msgstr "Συγχώνευση εφέ`%s'"
+
+#: beast-gtk/bstfiledialog.c:607
+msgid "Save Effect"
+msgstr "Αποθήκευση εφέ"
+
+#: beast-gtk/bstfiledialog.c:628 beast-gtk/bstfiledialog.c:638
+#, c-format
+msgid "Saving effect `%s'"
+msgstr "Αποθήκευση εφέ `%s'"
+
+#: beast-gtk/bstfiledialog.c:653
+msgid "Load Instrument"
+msgstr "Φόρτωση οργάνου"
+
+#: beast-gtk/bstfiledialog.c:666
+#, c-format
+msgid "Merging instrument `%s'"
+msgstr "Συγχώνευση οργάνου `%s'"
+
+#: beast-gtk/bstfiledialog.c:683
+msgid "Save Instrument"
+msgstr "Αποθήκευση οργάνου"
+
+#: beast-gtk/bstfiledialog.c:704 beast-gtk/bstfiledialog.c:714
+#, c-format
+msgid "Saving instrument `%s'"
+msgstr "Αποθήκευση οργάνου `%s'"
+
+#: beast-gtk/bstfiledialog.c:730
+msgid "Load Wave"
+msgstr "Φόρτωση Wave"
+
+#: beast-gtk/bstfiledialog.c:742 beast-gtk/bstfiledialog.c:744
+#, c-format
+msgid "Loading wave `%s'"
+msgstr "Φόρτωση Wave `%s'"
+
+#: beast-gtk/bstinstrumentview.c:33 beast-gtk/bstpartview.c:37
+#: beast-gtk/bsttrackview.c:60
+msgid "Add"
+msgstr "Προσθήκη"
+
+#: beast-gtk/bstinstrumentview.c:34 beast-gtk/bstmessages.c:81
+#: beast-gtk/bstpartview.c:38 beast-gtk/bstrackitem.c:182
+#: beast-gtk/bstsnetrouter.c:1017 beast-gtk/bstsnetrouter.c:1059
+#: beast-gtk/bsttrackview.c:62
+msgid "Delete"
+msgstr "Διαγραφή"
+
+#: beast-gtk/bstitemview.c:267
+msgid "ID"
+msgstr "ID"
+
+#: beast-gtk/bstitemview.c:270
+msgid "Name"
+msgstr "Όνομα"
+
+#: beast-gtk/bstitemview.c:273 beast-gtk/bsttrackview.c:589
+msgid "Comment"
+msgstr "Σχόλιο"
+
+#: beast-gtk/bstitemview.c:277
+msgid "Type"
+msgstr "Τύπος"
+
+#. now, we can popup the splash screen
+#.
+#: beast-gtk/bstmain.c:135
+msgid "BEAST Startup"
+msgstr "Εκκίνηση BEAST"
+
+#: beast-gtk/bstmain.c:142
+msgid "Startup"
+msgstr "Εκκίνηση "
+
+#. BEAST initialization
+#.
+#: beast-gtk/bstmain.c:147
+msgid "Objects"
+msgstr "Αντικείμενα"
+
+#: beast-gtk/bstmain.c:151
+msgid "Language"
+msgstr "Γλώσσα"
+
+#: beast-gtk/bstmain.c:164
+msgid "RC File"
+msgstr "Αρχείο RC"
+
+#. show splash images
+#.
+#: beast-gtk/bstmain.c:171
+msgid "Splash Image"
+msgstr "Εικόνα εκκίνησης"
+
+#. start BSE core and connect
+#: beast-gtk/bstmain.c:183
+msgid "BSE Core"
+msgstr "BSE Core"
+
+#: beast-gtk/bstmain.c:202
+msgid "Plugins"
+msgstr "Πρόσθετες Λειτουργίες"
+
+#: beast-gtk/bstmain.c:221
+msgid "LADSPA Plugins"
+msgstr "Πρόσθετες λειτουργίες LADSPA"
+
+#: beast-gtk/bstmain.c:249
+msgid "Scripts"
+msgstr "Δέσμες ενεργειών"
+
+#. listen to BseServer notification
+#.
+#: beast-gtk/bstmain.c:267
+msgid "Dialogs"
+msgstr "Διάλογοι"
+
+#: beast-gtk/bstmain.c:280
+msgid "Loading..."
+msgstr "Γίνεται φόρτωση..."
+
+#: beast-gtk/bstmain.c:310 beast-gtk/bstmain.c:312
+#, c-format
+msgid "Loading \"%s\""
+msgstr "Φόρτωση \"%s\""
+
+#: beast-gtk/bstmain.c:329
+#, c-format
+msgid "Loading project \"%s\""
+msgstr "Φόρτωση εργασίας\"%s\""
+
+#. catalog_key, name, stock_id, accelerator, tooltip, blurb
+#: beast-gtk/bstmessages.c:21
+msgid "Left"
+msgstr "Αριστερά"
+
+#: beast-gtk/bstmessages.c:23
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr "Χρήση του οριζόντιου χάρακα για την ρύθμιση του  left loop pointer"
+
+#: beast-gtk/bstmessages.c:25
+msgid "Pos"
+msgstr "Pos"
+
+#: beast-gtk/bstmessages.c:27
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr "Χρήση του οριζόντιου χάρακα για την ρύθμιση του σημείου κατάδειξης θέσης αναπαραγωγής"
+
+#: beast-gtk/bstmessages.c:29
+msgid "Right"
+msgstr "Δεξιά"
+
+#: beast-gtk/bstmessages.c:31
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr "Χρήση του οριζόντιου χάρακα για την ρύθμιση του right loop pointer"
+
+#: beast-gtk/bstmessages.c:33
+msgid "Q: Tact"
+msgstr "Q: Tact"
+
+#: beast-gtk/bstmessages.c:35
+msgid "Quantize to tact boundaries"
+msgstr "Quantize to tact boundaries"
+
+#: beast-gtk/bstmessages.c:37
+msgid "Q: None"
+msgstr "Q: Κανένα"
+
+#: beast-gtk/bstmessages.c:39
+msgid "No quantization selected"
+msgstr "Δεν έχει επιλεχθεί quantization"
+
+#: beast-gtk/bstmessages.c:41
+msgid "Q: 1/1"
+msgstr "Q: 1/1"
+
+#: beast-gtk/bstmessages.c:43
+msgid "Quantize to full note boundaries"
+msgstr "Quantize to full note boundaries"
+
+#: beast-gtk/bstmessages.c:45
+msgid "Q: 1/2"
+msgstr "Q: 1/2"
+
+#: beast-gtk/bstmessages.c:47
+msgid "Quantize to half note boundaries"
+msgstr "Quantize to half note boundaries"
+
+#: beast-gtk/bstmessages.c:49
+msgid "Q: 1/4"
+msgstr "Q: 1/4"
+
+#: beast-gtk/bstmessages.c:51
+msgid "Quantize to quarter note boundaries"
+msgstr "Quantize to quarter note boundaries"
+
+#: beast-gtk/bstmessages.c:53
+msgid "Q: 1/8"
+msgstr "Q: 1/8"
+
+#: beast-gtk/bstmessages.c:55
+msgid "Quantize to eighths note boundaries"
+msgstr "Quantize to eighths note boundaries"
+
+#: beast-gtk/bstmessages.c:57
+msgid "Q: 1/16"
+msgstr "Q: 1/16"
+
+#: beast-gtk/bstmessages.c:59
+msgid "Quantize to sixteenth note boundaries"
+msgstr "Quantize to sixteenth note boundaries"
+
+#: beast-gtk/bstmessages.c:61
+msgid "_Insert"
+msgstr "Εισα_γωγή"
+
+#: beast-gtk/bstmessages.c:63
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr "Εισαγωγή/επεξεργασία/μετακίνηση μερών (κουμπί ποντικιού 1 και 2)"
+
+#: beast-gtk/bstmessages.c:65
+msgid "Lin_k"
+msgstr "Σύ_νδεση"
+
+#: beast-gtk/bstmessages.c:67
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr "Σύνδεση ή μετακίνηση μερών (κουμπί ποντικιού 1 και 2)"
+
+#: beast-gtk/bstmessages.c:69
+msgid "_Rename"
+msgstr "_Μετονομασία"
+
+#: beast-gtk/bstmessages.c:71
+msgid "Rename parts"
+msgstr "Μετονομασία μερών"
+
+#: beast-gtk/bstmessages.c:73
+msgid "_Delete"
+msgstr "_Διαγραφή"
+
+#: beast-gtk/bstmessages.c:75
+msgid "Delete parts"
+msgstr "Διαγραφή κομματιών"
+
+#: beast-gtk/bstmessages.c:77
+msgid "Insert"
+msgstr "Εισαγωγή"
+
+#: beast-gtk/bstmessages.c:79
+msgid "Insert/resize/move notes (mouse button 1 and 2)"
+msgstr "Εισαγωγή/αλλαφή μεγέθους/μετακίνηση νότας (κουμπί ποντικιού 1 και 2)"
+
+#: beast-gtk/bstmessages.c:83
+msgid "Delete note (mouse button 1)"
+msgstr "Διαγραφή νότας (κουμπί ποντικιού 1)"
+
+#: beast-gtk/bstmessages.c:85
+msgid "Align"
+msgstr "Στοίχιση"
+
+#: beast-gtk/bstmessages.c:87
+msgid "Draw a line to align events to"
+msgstr "Σχεδιασμός γραμμής για στοίχιση γεγονότων πάνω της"
+
+#: beast-gtk/bstmessages.c:89
+msgid "Select"
+msgstr "Επιλογή"
+
+#: beast-gtk/bstmessages.c:91
+msgid "Rectangle select notes"
+msgstr "Rectangle select notes"
+
+#: beast-gtk/bstmessages.c:93
+msgid "VSelect"
+msgstr "VSelect"
+
+#: beast-gtk/bstmessages.c:95
+msgid "Select tick range vertically"
+msgstr "Επιλογή κάθετου εύρους τικ"
+
+#: beast-gtk/bstmessages.c:97
+msgid "1/1"
+msgstr "1/1"
+
+#: beast-gtk/bstmessages.c:99
+msgid "Insert full notes"
+msgstr "Εισαγωγή πλήρεις νότες"
+
+#: beast-gtk/bstmessages.c:101
+msgid "1/2"
+msgstr "1/2"
+
+#: beast-gtk/bstmessages.c:103
+msgid "Insert half notes"
+msgstr "Εισαγωγή ήμισεων"
+
+#: beast-gtk/bstmessages.c:105
+msgid "1/4"
+msgstr "1/4"
+
+#: beast-gtk/bstmessages.c:107
+msgid "Insert quarter notes"
+msgstr "Εισαγωγή τετάρτων"
+
+#: beast-gtk/bstmessages.c:109
+msgid "1/8"
+msgstr "1/8"
+
+#: beast-gtk/bstmessages.c:111
+msgid "Insert eighths note"
+msgstr "Εισαγωγή ογδόων"
+
+#: beast-gtk/bstmessages.c:113
+msgid "1/16"
+msgstr "1/16"
+
+#: beast-gtk/bstmessages.c:115
+msgid "Insert sixteenth note"
+msgstr "Εισαγωγή δεκάτων έκτων"
+
+#: beast-gtk/bstparam-entry.c:61
+msgid "Remove Paths"
+msgstr "Αφαίρεση διαδρομών"
+
+#: beast-gtk/bstpartdialog.c:68
+msgid "/Tools/Insert"
+msgstr "/Εργαλεία/Εισαγωγή"
+
+#: beast-gtk/bstpartdialog.c:69
+msgid "/Tools/Delete"
+msgstr "/Εργαλεία/Διαγραφή"
+
+#: beast-gtk/bstpartdialog.c:70
+msgid "/Tools/Align Events"
+msgstr "/Εργαλεία/Στοίχιση γεγονότων"
+
+#: beast-gtk/bstpartdialog.c:71
+msgid "/Tools/Select"
+msgstr "/Εργαλεία/Επιλογή"
+
+#: beast-gtk/bstpartdialog.c:72
+msgid "/Tools/Vertical Select"
+msgstr "/Εργαλεία/Κάθετη επιλογή"
+
+#: beast-gtk/bstpartdialog.c:74
+msgid "/Edit/Cut"
+msgstr "/Επεξεργασία/Αποκοπή"
+
+#: beast-gtk/bstpartdialog.c:75
+msgid "/Edit/Copy"
+msgstr "/Επεξεργασία/Αντιγραφή"
+
+#: beast-gtk/bstpartdialog.c:76
+msgid "/Edit/Paste"
+msgstr "/Επεξεργασία/Επικόλληση"
+
+#: beast-gtk/bstpartdialog.c:77
+msgid "/Edit/Clear"
+msgstr "/Επεξεργασία/Εκκαθάριση"
+
+#: beast-gtk/bstpartdialog.c:79
+msgid "/Edit/Undo"
+msgstr "/Επεξεργασία/Αναίρεση"
+
+#: beast-gtk/bstpartdialog.c:80
+msgid "/Edit/Redo"
+msgstr "/Επεξεργασία/Ακύρωση αναίρεσης"
+
+#: beast-gtk/bstpartdialog.c:255
+msgid "Control Type: "
+msgstr "Τύπος ελέγχου"
+
+#: beast-gtk/bstpartview.c:39
+msgid "Editor"
+msgstr "Επεξεργαστής"
+
+#: beast-gtk/bstpianorollctrl.c:421 beast-gtk/bstpianorollctrl.c:428
+#: beast-gtk/bstpianorollctrl.c:516
+msgid "Move Note"
+msgstr "Μετακίνηση νότας"
+
+#: beast-gtk/bstpianorollctrl.c:516 beast-gtk/bstpianorollctrl.c:587
+msgid "Lost Note"
+msgstr "Χαμένη νότα"
+
+#: beast-gtk/bstpianorollctrl.c:533 beast-gtk/bstpianorollctrl.c:538
+#: beast-gtk/bstpianorollctrl.c:587
+msgid "Resize Note"
+msgstr "Αλλαγή μεγέθους νότας"
+
+#: beast-gtk/bstpianorollctrl.c:598 beast-gtk/bstpianorollctrl.c:601
+msgid "Delete Note"
+msgstr "Διαγραφή νότας"
+
+#: beast-gtk/bstpianorollctrl.c:623
+msgid "Insert Note"
+msgstr "Εισαγωγή νότας"
+
+#: beast-gtk/bstpianorollctrl.c:669
+msgid "Vertical Select"
+msgstr "Κάθετη επιλογή"
+
+#: beast-gtk/bstpianorollctrl.c:695
+msgid "Vertical Region"
+msgstr "Κάθετη περιοχή"
+
+#: beast-gtk/bstpianorollctrl.c:816
+msgid "Play note"
+msgstr "Αναπαραγωγή νότας"
+
+#: beast-gtk/bstplayback.c:76
+msgid "Playback"
+msgstr "Αναπαραγωγή"
+
+#: beast-gtk/bstprocedure.c:213 beast-gtk/bstradiotools.c:625
+msgid "Description"
+msgstr "Περιγραφή"
+
+#: beast-gtk/bstprocedure.c:297
+#, c-format
+msgid "Executing `%s'"
+msgstr "Εκτέλεση  `%s'"
+
+#: beast-gtk/bstprocedure.c:447
+msgid "Procedure"
+msgstr "Διαδικασία"
+
+#: beast-gtk/bstprojectctrl.c:38
+msgid "Restarting Playback"
+msgstr "Επανέναρξη αναπαραγωγής"
+
+#: beast-gtk/bstprojectctrl.c:40
+msgid "Starting Playback"
+msgstr "Έναρξη αναπαραγωγής"
+
+#: beast-gtk/bstprojectctrl.c:53
+msgid "Stopping Playback"
+msgstr "Διακοπή αναπαραγωγής"
+
+#: beast-gtk/bstrackeditor.c:95
+msgid ""
+"The rack editor is still highly experimental code and guranrteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
+msgstr ""
+"The rack editor is still highly experimental code and guranrteed to be "
+"broken by future releases. So don't rely on rack editor contents to look "
+"similarly in future versions and be prepared to work around possible "
+"instabilities in the code (i.e. save your projects regularly)."
+
+#: beast-gtk/bstrackeditor.c:109
+msgid "_Edit"
+msgstr "_Επεξεργασία"
+
+#: beast-gtk/bstrackitem.c:172
+msgid "Edit Rack Item"
+msgstr "Επεξεργασία αντικειμένου rack"
+
+#: beast-gtk/bstrackitem.c:174
+msgid "Controller"
+msgstr "Ελεγκτής"
+
+#: beast-gtk/bstrackitem.c:175
+msgid "Duplicate"
+msgstr "Αντίγραφο"
+
+#: beast-gtk/bstrackitem.c:177
+msgid "Grow Horizontally"
+msgstr "Οριζόντια αύξηση"
+
+#: beast-gtk/bstrackitem.c:178
+msgid "Grow Vertically"
+msgstr "Κάθετη αύξηση"
+
+#: beast-gtk/bstrackitem.c:179
+msgid "Shrink Horizontally"
+msgstr "Οριζόντια σμίκρυνση"
+
+#: beast-gtk/bstrackitem.c:180
+msgid "Shrink Vertically"
+msgstr "Κάθετη σμίκρυνση"
+
+#: beast-gtk/bstsampleeditor.c:477 beast-gtk/bstwaveeditor.c:202
+msgid "Zoom:"
+msgstr "Μεγέθυνση:"
+
+#: beast-gtk/bstsampleeditor.c:488 beast-gtk/bstwaveeditor.c:213
+msgid "VScale:"
+msgstr "VΚλίμακα:"
+
+#: beast-gtk/bstsampleeditor.c:499
+msgid "Start:"
+msgstr "Έναρξη:"
+
+#: beast-gtk/bstsampleeditor.c:506
+msgid "End:"
+msgstr "Τέλος:"
+
+#: beast-gtk/bstsampleeditor.c:516 beast-gtk/bstwaveeditor.c:219
+msgid "Shape Range"
+msgstr "Εύρος σχήματος"
+
+#: beast-gtk/bstsampleeditor.c:517 beast-gtk/bstwaveeditor.c:220
+msgid "Shape Average"
+msgstr "Μέσο μέγεθος"
+
+#: beast-gtk/bstsampleeditor.c:518 beast-gtk/bstwaveeditor.c:221
+msgid "Shape Minimum"
+msgstr "Ελάχιστο μέγεθος"
+
+#: beast-gtk/bstsampleeditor.c:519 beast-gtk/bstwaveeditor.c:222
+msgid "Shape Maximum"
+msgstr "Μέγιστο μέγεθος"
+
+#: beast-gtk/bstsampleeditor.c:520 beast-gtk/bstwaveeditor.c:223
+msgid "Sketch Range"
+msgstr "Εύρος σχεδίου "
+
+#: beast-gtk/bstsampleeditor.c:521 beast-gtk/bstwaveeditor.c:224
+msgid "Sketch Average"
+msgstr "Μέσο σχέδιο"
+
+#: beast-gtk/bstsampleeditor.c:522 beast-gtk/bstwaveeditor.c:225
+msgid "Sketch Minimum"
+msgstr "Ελάχιστο σχέδιο"
+
+#: beast-gtk/bstsampleeditor.c:523 beast-gtk/bstwaveeditor.c:226
+msgid "Sketch Maximum"
+msgstr "Μέγιστο σχέδιο"
+
+#. TRANSLATORS: here "Preview" is meant audible, i.e. to
+#. * playback the current sample version and listen to it.
+#.
+#: beast-gtk/bstsampleeditor.c:539
+msgid "Preview"
+msgstr "Προεπισκόπηση"
+
+#: beast-gtk/bstsnetrouter.c:407
+msgid "Palette"
+msgstr "Παλέτα"
+
+#: beast-gtk/bstsnetrouter.c:926
+msgid "Input channel in use"
+msgstr "Κανάλι εισόδου σε χρήση"
+
+#: beast-gtk/bstsnetrouter.c:953 beast-gtk/bstsnetrouter.c:955
+#: beast-gtk/bstsnetrouter.c:991
+msgid "Create Link"
+msgstr "Δημιουργία σύνδεσης"
+
+#: beast-gtk/bstsnetrouter.c:953
+msgid "Select output module"
+msgstr "Επιλογή μονάδας εξόδου"
+
+#: beast-gtk/bstsnetrouter.c:955
+msgid "Select input module"
+msgstr "Επιλογή μονάδας εισόδου"
+
+#: beast-gtk/bstsnetrouter.c:1011
+msgid "Properties"
+msgstr "Ιδιότητες"
+
+#: beast-gtk/bstsnetrouter.c:1012
+msgid "Reset Properties"
+msgstr "Αρχικοποίηση ιδιοτήτων"
+
+#: beast-gtk/bstsnetrouter.c:1013
+msgid "Delete Inputs"
+msgstr "Διαγραφή εισόδων"
+
+#: beast-gtk/bstsnetrouter.c:1014
+msgid "Delete Outputs"
+msgstr "Διαγραφή εξόδων"
+
+#: beast-gtk/bstsnetrouter.c:1015 beast-gtk/bstsnetrouter.c:1057
+msgid "Show Info"
+msgstr "Προβολή πληροφοριών"
+
+#: beast-gtk/bstsnetrouter.c:1041
+msgid "Remove Module"
+msgstr "Αφαίρεση μονάδας"
+
+#: beast-gtk/bstsnetrouter.c:1068
+msgid "Delete Link"
+msgstr "Διαγραφή σύνδεσης"
+
+#: beast-gtk/bstsnetrouter.c:1122
+msgid "Insert Module"
+msgstr "Εισαγωγή μονάδας"
+
+#: beast-gtk/bstsnetshell.c:117 beast-gtk/bstsongshell.c:165
+msgid "Routing"
+msgstr "Δρομολόγηση"
+
+#: beast-gtk/bstsnetshell.c:128 beast-gtk/bstsongshell.c:149
+#: beast-gtk/bstwavereposhell.c:143
+msgid "Parameters"
+msgstr "Παράμετροι"
+
+#: beast-gtk/bstsongshell.c:144
+msgid "Tracks"
+msgstr "Κομμάτια"
+
+#: beast-gtk/bstsongshell.c:154
+msgid "Parts"
+msgstr "Μέρη"
+
+#: beast-gtk/bststest.c:550
+msgid "Selection to Loop"
+msgstr "Selection to Loop"
+
+#: beast-gtk/bststest.c:558
+msgid "Loop to Selection"
+msgstr "Loop to Selection"
+
+#: beast-gtk/bststest.c:566
+msgid "Zoom Selection"
+msgstr "Μεγέθυνση επιλογής"
+
+#: beast-gtk/bststest.c:574
+msgid "Apply Loop"
+msgstr "Εφαρμογή Loop"
+
+#: beast-gtk/bststest.c:582
+msgid "Reset Loop"
+msgstr "Αρχικοποίηση Loop"
+
+#: beast-gtk/bststest.c:590
+msgid "Score"
+msgstr "Παρτιτούρα"
+
+#: beast-gtk/bststest.c:598
+msgid "Find"
+msgstr "Εύρεση"
+
+#: beast-gtk/bststest.c:616
+msgid "Mark Signal (Head)"
+msgstr "Σημείωση σήματος (Head)"
+
+#: beast-gtk/bststest.c:626
+msgid "Mark Signal (Tail)"
+msgstr "Σημείωση σήματος  (Tail)"
+
+#: beast-gtk/bsttrackrollctrl.c:388 beast-gtk/bsttrackrollctrl.c:400
+msgid "Edit Part"
+msgstr "Επεξεργασία μέρους"
+
+#: beast-gtk/bsttrackrollctrl.c:388
+msgid "No Part"
+msgstr "Δεν υπάρχει μέρος"
+
+#: beast-gtk/bsttrackrollctrl.c:419 beast-gtk/bsttrackrollctrl.c:421
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+msgid "Insert Part"
+msgstr "Εισαγωγή μέρους"
+
+#: beast-gtk/bsttrackrollctrl.c:421 beast-gtk/bsttrackrollctrl.c:523
+msgid "Lost Part"
+msgstr "Χαμένο μέρος"
+
+#: beast-gtk/bsttrackrollctrl.c:426 beast-gtk/bsttrackrollctrl.c:431
+msgid "Position taken"
+msgstr "Θέση κατειλημένη"
+
+#: beast-gtk/bsttrackrollctrl.c:433
+msgid "Insert part"
+msgstr "Εισαγωγή μέρους"
+
+#: beast-gtk/bsttrackrollctrl.c:433
+msgid "No Track"
+msgstr "Δεν υπάρχει κομμάτι"
+
+#: beast-gtk/bsttrackrollctrl.c:445 beast-gtk/bsttrackrollctrl.c:448
+msgid "Delete Part"
+msgstr "Διαγραφή μέρους"
+
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+msgid "Link Part"
+msgstr "Σύνδεση μέρους"
+
+#: beast-gtk/bsttrackrollctrl.c:457 beast-gtk/bsttrackrollctrl.c:491
+#: beast-gtk/bsttrackrollctrl.c:523
+msgid "Move Part"
+msgstr "Μετακίνηση μέρους"
+
+#: beast-gtk/bsttrackrollctrl.c:535 beast-gtk/bsttrackrollctrl.c:540
+msgid "Start Editor"
+msgstr "Έναρξη επεξεργαστή"
+
+#: beast-gtk/bsttrackview.c:61
+msgid "Add a new track to this song"
+msgstr "Προσθήκη νέου κομματιού σε αυτό το τραγούδι"
+
+#: beast-gtk/bsttrackview.c:63
+msgid "Delete the currently selected track"
+msgstr "Διαγραφή του επιλεγμένου κομματιού"
+
+#: beast-gtk/bsttrackview.c:538
+msgid "Repeat"
+msgstr "Επανάληψη"
+
+#: beast-gtk/bsttrackview.c:538
+msgid "Repeat playback within loop points"
+msgstr "Επανάληψη αναπαραγωγής ανάμεσα σε σημεία loop"
+
+#: beast-gtk/bsttrackview.c:558
+msgid "Zoom"
+msgstr "Μεγέθυνση"
+
+#: beast-gtk/bsttrackview.c:558
+msgid "Horizontal Zoom"
+msgstr "Οριζόντια μεγέθυνση"
+
+#: beast-gtk/bstusermessage.c:91
+msgid "Notice"
+msgstr "Αναγγελία"
+
+#: beast-gtk/bstusermessage.c:95
+msgid "Question"
+msgstr "Ερώτηση"
+
+#: beast-gtk/bstusermessage.c:99
+msgid "Warning"
+msgstr "Προειδοποίηση"
+
+#: beast-gtk/bstusermessage.c:103
+msgid "Error"
+msgstr "Σφάλμα"
+
+#: beast-gtk/bstusermessage.c:107
+msgid "Miscellaneous Message"
+msgstr "Διάφορα μηνύματα"
+
+#: beast-gtk/bstusermessage.c:219 beast-gtk/bstusermessage.c:221
+msgid "processing"
+msgstr "processing"
+
+#: beast-gtk/bstwaveeditor.c:241
+msgid "Scroll None"
+msgstr "Καμμία κύλιση"
+
+#: beast-gtk/bstwaveeditor.c:242
+msgid "Scroll Both"
+msgstr "Κύλιση και των δυο"
+
+#: beast-gtk/bstwaveeditor.c:243
+msgid "Scroll Left"
+msgstr "Κύλιση αριστερά"
+
+#: beast-gtk/bstwaveeditor.c:244
+msgid "Scroll Right"
+msgstr "Κύλιση δεξιά"
+
+#. BstWaveRepoShell *self = BST_WAVE_REPO_SHELL (super_shell);
+#: beast-gtk/bstwavereposhell.c:138 beast-gtk/bstwavereposhell.c:153
+msgid "Waves"
+msgstr "Waves"
+
+#: data/beast.desktop.in.h:1
+msgid "BEAST"
+msgstr "BEAST"
+
+#: data/beast.desktop.in.h:2
+msgid "Music Composer"
+msgstr "Εφαρμογή σύνθεσης μουσικής"
+
+#: data/beast.desktop.in.h:3
+msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
+msgstr "Εργαλείο σύνθεσης μουσικής, τραγουδιού και MIDI Tracker"
+
+#: data/bse.keys.in.h:1
+msgid "Audio"
+msgstr "Ήχος"
+
+#: data/bse.keys.in.h:2
+msgid "BSE Multi-Part Wave File"
+msgstr "Αρχείο BSE Wave με πολλά μέρη"
+
+#: data/bse.keys.in.h:3
+msgid "BSE Synthesis File"
+msgstr "Αρχείο σύνθεσης BSE"
+
