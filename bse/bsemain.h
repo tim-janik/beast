@@ -42,6 +42,8 @@ void		bse_init_intern		(gint		*argc,
 /* BSE thread pid (or 0) */
 guint           bse_main_getpid         (void);
 
+/* MT-safe log handler */
+void            bse_log_handler         (SfiLogMessage  *message);
 
 /* --- global macros --- */
 #define	BSE_THREADS_ENTER()			// bse_main_global_lock ()
@@ -49,7 +51,6 @@ guint           bse_main_getpid         (void);
 #define	BSE_SEQUENCER_LOCK()			SFI_SYNC_LOCK (&bse_main_sequencer_mutex)
 #define	BSE_SEQUENCER_UNLOCK()			SFI_SYNC_UNLOCK (&bse_main_sequencer_mutex)
 #define	BSE_DBG_EXT     			(bse_main_debug_extensions != FALSE)
-
 
 /* --- argc/argv overide settings --- */
 typedef struct {

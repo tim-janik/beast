@@ -150,9 +150,7 @@ bse_server_class_init (BseServerClass *class)
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE,
 						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_user_message = bse_object_class_add_signal (object_class, "user-message",
-						     G_TYPE_NONE, 2,
-						     BSE_TYPE_USER_MSG_TYPE,
-						     G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
+						     G_TYPE_NONE, 1, BSE_TYPE_USER_MSG | G_SIGNAL_TYPE_STATIC_SCOPE);
   signal_script_start = bse_object_class_add_signal (object_class, "script-start",
 						     G_TYPE_NONE, 1,
 						     BSE_TYPE_JANITOR);
@@ -706,15 +704,26 @@ bse_server_script_error (BseServer   *server,
 }
 
 void
-bse_server_user_message (BseServer     *server,
-			 BseUserMsgType msg_type,
-			 const gchar   *message)
+bse_server_user_message (BseServer          *server,
+                         const gchar        *log_domain,
+                         BseUserMsgType      msg_type,
+                         const gchar        *config_blurb,
+                         const gchar        *message,
+                         gint                pid,
+                         const gchar        *process_name)
 {
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (message != NULL);
-  
-  g_signal_emit (server, signal_user_message, 0,
-		 msg_type, message);
+
+  BseUserMsg umsg = { 0, };
+  umsg.log_domain = (char*) log_domain;
+  umsg.msg_type = msg_type;
+  umsg.config_blurb = (char*) config_blurb;
+  umsg.message = (char*) message;
+  umsg.pid = pid;
+  umsg.process = (char*) process_name;
+
+  g_signal_emit (server, signal_user_message, 0, &umsg);
 }
 
 void

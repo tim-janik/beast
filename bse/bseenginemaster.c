@@ -18,6 +18,7 @@
 #include "bseenginemaster.h"
 
 #include "gslcommon.h"
+#include "bsemain.h" /* bse_log_handler */
 #include "bseenginenode.h"
 #include "bseengineutils.h"
 #include "bseengineschedule.h"
@@ -1132,6 +1133,8 @@ _engine_master_dispatch (void)
 void
 bse_engine_master_thread (EngineMasterData *mdata)
 {
+  sfi_log_set_thread_handler (bse_log_handler);
+
   /* assert sane configuration checks, since we're simply casting structures */
   g_assert (sizeof (struct pollfd) == sizeof (GPollFD) &&
 	    G_STRUCT_OFFSET (GPollFD, fd) == G_STRUCT_OFFSET (struct pollfd, fd) &&

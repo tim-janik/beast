@@ -55,15 +55,6 @@ typedef enum
 } BseMagicFlags;
 typedef enum
 {
-  BSE_USER_MSG_UNSPECIFIED,
-  BSE_USER_MSG_DEBUG,
-  BSE_USER_MSG_DIAG,
-  BSE_USER_MSG_INFO,
-  BSE_USER_MSG_WARNING,
-  BSE_USER_MSG_ERROR
-} BseUserMsgType;
-typedef enum
-{
   /* GSL errors are mirrored into BSE */
   BSE_ERROR_NONE		= GSL_ERROR_NONE,	/* 0 */
   BSE_ERROR_INTERNAL		= GSL_ERROR_INTERNAL,

@@ -563,6 +563,22 @@ record SampleFileInfo {
   Int           error   = ("BseErrorType", NULL, 0, 0, G_MAXINT, 0, STANDARD); // FIXME: use BseErrorType here
 };
 
+/* user messages */
+choice UserMsgType {
+  USER_MSG_MISC = Neutral,
+  USER_MSG_INFO,
+  USER_MSG_WARNING,
+  USER_MSG_ERROR
+};
+record UserMsg {
+  String      log_domain;
+  UserMsgType msg_type;
+  String      config_blurb;
+  String      message;
+  Int         pid;
+  String      process;
+};
+
 /* thread info */
 choice ThreadState {
   THREAD_STATE_UNKNOWN,

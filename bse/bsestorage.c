@@ -325,7 +325,7 @@ storage_parse_bse_version (BseStorage *self)
         vminor = strtol (pminor, &ep, 10);
       if (!ep || *ep == 0)
         vmicro = strtol (pmicro, &ep, 10);
-      if ((!ep || *ep == 0) && vmajor >= 0 && vminor >= 0 && vmicro >= 0 &&
+      if ((!ep || *ep == 0 || ep > pmicro) && vmajor >= 0 && vminor >= 0 && vmicro >= 0 &&
           BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 0, 0) > 0)
         {
           parsed_version = TRUE;

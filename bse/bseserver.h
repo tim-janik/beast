@@ -99,24 +99,28 @@ void		bse_server_registration			(BseServer          *server,
 							 BseRegistrationType rtype,
 							 const gchar	    *what,
 							 const gchar	    *error);
-void		bse_server_script_start			(BseServer       *server,
-							 BseJanitor	 *janitor);
-void		bse_server_script_error			(BseServer	 *server,
-							 const gchar	 *script_name,
-							 const gchar	 *proc_name,
-							 const gchar     *reason);
-void		bse_server_user_message			(BseServer	*server,
-							 BseUserMsgType  msg_type,
-							 const gchar    *message);
-BseErrorType	bse_server_run_remote			(BseServer	   *server,
-							 const gchar	   *process_name,
-							 SfiRing	   *params,
-							 const gchar       *script_name,
-							 const gchar       *proc_name,
-							 BseJanitor	  **janitor_p);
-void		bse_server_queue_kill_wire		(BseServer	*server,
-							 SfiComWire	*wire);
-void		bse_server_notify_gconfig		(BseServer	*server);
+void		bse_server_script_start			(BseServer          *server,
+							 BseJanitor	    *janitor);
+void		bse_server_script_error			(BseServer	    *server,
+							 const gchar	    *script_name,
+							 const gchar	    *proc_name,
+							 const gchar        *reason);
+void		bse_server_user_message		        (BseServer	    *server,
+                                                         const gchar        *log_domain,
+                                                         BseUserMsgType      msg_type,
+                                                         const gchar        *config_blurb,
+                                                         const gchar        *message,
+                                                         gint                pid,
+                                                         const gchar        *process_name);
+BseErrorType	bse_server_run_remote			(BseServer	    *server,
+							 const gchar	    *process_name,
+							 SfiRing	    *params,
+							 const gchar        *script_name,
+							 const gchar        *proc_name,
+							 BseJanitor	   **janitor_p);
+void		bse_server_queue_kill_wire		(BseServer	    *server,
+							 SfiComWire	    *wire);
+void		bse_server_notify_gconfig		(BseServer	    *server);
 
 G_END_DECLS
 

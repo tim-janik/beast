@@ -511,6 +511,17 @@ bse_time_range_to_ms (BseTimeRangeType time_range)
  * G_PRIORITY_LOW		(300)
  * BSE_PRIORITY_BACKGROUND	= G_PRIORITY_LOW + 500
  */
+
+/**
+ * bse_idle_now
+ * @function: user function
+ * @data:     user data
+ * @RETURNS:  idle handler id, suitable for bse_idle_remove()
+ * Execute @function(@data) inside the main BSE thread as soon as possible.
+ * This funciton is intended to be used by code which for some reason has
+ * to be executed asyncronously.
+ * This funciton is MT-safe and may be called from any thread.
+ */
 guint
 bse_idle_now (GSourceFunc function,
 	      gpointer    data)
@@ -524,6 +535,17 @@ bse_idle_now (GSourceFunc function,
   return id;
 }
 
+/**
+ * bse_idle_notify
+ * @function: user function
+ * @data:     user data
+ * @RETURNS:  idle handler id, suitable for bse_idle_remove()
+ * Queue @function(@data) for execution inside the main BSE thread,
+ * similar to bse_idle_now(), albeit with a lower priority.
+ * This funciton is intended to be used by code which emits
+ * asyncronous notifications.
+ * This funciton is MT-safe and may be called from any thread.
+ */
 guint
 bse_idle_notify (GSourceFunc function,
 		 gpointer    data)
@@ -576,6 +598,16 @@ bse_idle_background (GSourceFunc function,
   return id;
 }
 
+/**
+ * bse_idle_timed
+ * @usec_delay: microsecond delay
+ * @function:   user function
+ * @data:       user data
+ * @RETURNS:    idle handler id, suitable for bse_idle_remove()
+ * Execute @function(@data) with the main BSE thread, similar to
+ * bse_idle_now(), after a delay period of @usec_delay has passed.
+ * This funciton is MT-safe and may be called from any thread.
+ */
 guint
 bse_idle_timed (guint64     usec_delay,
 		GSourceFunc function,
@@ -590,6 +622,13 @@ bse_idle_timed (guint64     usec_delay,
   return id;
 }
 
+/**
+ * bse_idle_remove
+ * @id: idle handler id
+ * Remove or unqueue an idle handler queued by bse_idle_now()
+ * or one of its variants.
+ * This funciton is MT-safe and may be called from any thread.
+ */
 gboolean
 bse_idle_remove (guint id)
 {

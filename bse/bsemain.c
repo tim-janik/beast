@@ -203,6 +203,7 @@ bse_init_core (void)
   bse_main_context = g_main_context_new ();
   sfi_thread_set_wakeup ((SfiThreadWakeup) g_main_context_wakeup,
 			 bse_main_context, NULL);
+  sfi_log_set_thread_handler (bse_log_handler);
 
   /* initialize random numbers */
   {
@@ -353,6 +354,51 @@ bse_main_getpid (void)
     return sfi_thread_self_pid ();
   else
     return 0;
+}
+
+static gboolean
+core_thread_send_message (gpointer data)
+{
+  BseUserMsg *umsg = data;
+  bse_server_user_message (bse_server_get(),
+                           umsg->log_domain,
+                           umsg->msg_type,
+                           umsg->config_blurb,
+                           umsg->message,
+                           umsg->pid,
+                           umsg->process);
+  bse_user_msg_free (umsg);
+  return FALSE;
+}
+
+/**
+ * bse_log_handler
+ * BSE log handler, suitable for sfi_log_set_thread_handler().
+ * This function is MT-safe and may be called from any thread.
+ */
+void
+bse_log_handler (SfiLogMessage *message)
+{
+  if (!message->message)
+    return;
+  BseUserMsg *umsg = bse_user_msg_new();
+  g_free (umsg->log_domain);
+  umsg->log_domain = g_strdup (message->log_domain);
+  switch (message->level)
+    {
+    case SFI_LOG_ERROR:   umsg->msg_type = BSE_USER_MSG_ERROR;   break;
+    case SFI_LOG_WARNING: umsg->msg_type = BSE_USER_MSG_WARNING; break;
+    case SFI_LOG_INFO:    umsg->msg_type = BSE_USER_MSG_INFO;    break;
+    default:              umsg->msg_type = BSE_USER_MSG_MISC;    break;
+    }
+  g_free (umsg->config_blurb);
+  umsg->config_blurb = g_strdup (message->config_blurb);
+  g_free (umsg->message);
+  umsg->message = g_strdup (message->message);
+  umsg->pid = sfi_thread_get_pid (NULL);
+  g_free (umsg->process);
+  umsg->process = g_strdup (sfi_thread_get_name (NULL));
+  bse_idle_now (core_thread_send_message, umsg);
 }
 
 static void
