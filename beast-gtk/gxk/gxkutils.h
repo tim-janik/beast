@@ -73,6 +73,8 @@ void	gxk_widget_make_sensitive	(GtkWidget	*widget);
 #define GTK_STYLE_THICKNESS(s,xy)	((s)-> xy##thickness)
 void	gxk_widget_showraise		(GtkWidget	*widget);
 void	gxk_idle_show_widget		(GtkWidget	*widget);
+void    gxk_notebook_set_current_page_widget (GtkNotebook *notebook,
+					      GtkWidget   *page);
 
 /* functions to affect a widget tree's toplevel */
 void	gxk_toplevel_delete		(GtkWidget	*widget);

@@ -397,7 +397,7 @@ bst_app_create_super_shell (BstApp  *app,
 void
 bst_app_reload_supers (BstApp *app)
 {
-  GtkWidget *old_page, *old_focus;
+  GtkWidget *old_page, *old_focus, *song_page = NULL, *synth_page = NULL;
   GSList *page_list = NULL;
   GSList *slist;
   BseProxySeq *pseq;
@@ -433,6 +433,10 @@ bst_app_reload_supers (BstApp *app)
 	page = bst_app_create_super_shell (app, pseq->proxies[i]);
       if (page)
 	{
+	  if (!song_page && BSE_IS_SONG (pseq->proxies[i]))
+	    song_page = page;
+	  else if (!synth_page && BSE_IS_SNET (pseq->proxies[i]))
+	    synth_page = page;
 	  label = g_object_new (GTK_TYPE_LABEL,
 				"visible", TRUE,
 				"width_request", BST_TAB_WIDTH ? BST_TAB_WIDTH : -1,
@@ -444,9 +448,12 @@ bst_app_reload_supers (BstApp *app)
 	}
     }
   if (old_page && old_page->parent == GTK_WIDGET (app->notebook))
-    gtk_notebook_set_current_page (app->notebook,
-				   gtk_notebook_page_num (app->notebook,
-							  old_page));
+    gxk_notebook_set_current_page_widget (app->notebook, old_page);
+  else if (song_page)
+    gxk_notebook_set_current_page_widget (app->notebook, song_page);
+  else if (synth_page)
+    gxk_notebook_set_current_page_widget (app->notebook, synth_page);
+
   if (old_focus)
     {
       if (old_page && gtk_widget_is_ancestor (old_focus, old_page) &&

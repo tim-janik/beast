@@ -260,6 +260,23 @@ gxk_idle_show_widget (GtkWidget *widget)
 }
 
 /**
+ * gxk_notebook_set_current_page_widget
+ * @notebook: valid #GtkNotebook
+ * @page:     @notebook page widget
+ *
+ * Set the current notebook page from a page widget, instead
+ * of a page number.
+ */
+void
+gxk_notebook_set_current_page_widget (GtkNotebook *notebook,
+				      GtkWidget   *page)
+{
+  gint num = gtk_notebook_page_num (notebook, page);
+  if (num >= 0)
+    gtk_notebook_set_current_page (notebook, num);
+}
+
+/**
  * gxk_widget_showraise
  * @widget: a valid widget
  *

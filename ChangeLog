@@ -1,3 +1,12 @@
+Mon Feb 17 19:33:19 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstapp.c: make the first song page the default notebook
+	page if the project cotains a song. otherwise, make the first snet
+	page the default notebook page if the project contains one.
+
+	* beast-gtk/gxk/gxkutils.[hc]:
+	added gxk_notebook_set_current_page_widget().
+
 Mon Feb 17 18:38:11 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetshell.c (bst_snet_shell_rebuild): make the synth
