@@ -32,7 +32,7 @@ A new release candidate
 @uref{http://beast.gtk.org/beast-ftp/v0.6/testing/beast-0.6.2-rc2.tar.gz,, beast-0.6.2-rc2.tar.gz}
 is up in the download area. The mailing list is currently non-functional so please send
 problems and success stories about the candidate to
-@uref{mailto://timj@@beast.gtk.org,,email}.
+@uref{mailto://timj@@beast.gtk.org,,Tim Janik}.
 
 
 @newsTitle{Sunday 07 Mar 2004, The low latency BEAST Release}
