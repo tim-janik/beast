@@ -1,3 +1,12 @@
+Sun Nov 30 16:15:40 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkrackcovers.c: CVS copied here.
+
+Sun Nov 30 12:51:05 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkracktable.c (gxk_rack_table_style_set): set a lower
+	boundary of 8 pixels to cell size requests.
+
 Sun Nov 30 02:44:27 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/gxk/gxkrackeditor.[hc]: shrink resize anchors to 3/4 of the
