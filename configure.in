@@ -118,7 +118,8 @@ AC_DEFUN(AC_BEAST_REQUIREMENTS,
 	AC_CHECK_LIB(gle, gle_init,
 		BEAST_LIBS="-lgle $BEAST_LIBS"
 		,
-		AC_MSG_ERROR(Unable to find GLE - it is required to build BEAST)
+		AC_MSG_ERROR(Unable to find GLE - it is required to build BEAST),
+$BEAST_LIBS
 	)
 	AC_SUBST(GLE_LIBS)
 	
