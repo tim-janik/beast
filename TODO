@@ -1,4 +1,5 @@
 FIXMES:
+- if mmap() is available, write autosave.bse to it every couple minutes (no need to flush unless crashes take the data with them)
 - work around "/opt/bin/beast-0.6.1: relocation error: /opt/bin/beast-0.6.1: undefined symbol: _gtk_window_activate_key" with gtk+-2.4
 - make VIew/Rebuild --devel or -:d only
 - provide "+"/"-" buttons for "path" property editors with own tooltips
