@@ -1,3 +1,8 @@
+Fri Nov 28 03:34:15 2003  Tim Janik  <timj@gtk.org>
+
+	* tests/testcxx.cc: reenabled closure test, use BSE_TYPE_AMPLIFIER as
+	test object which is implemented in c++.
+
 Fri Nov 28 00:53:37 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsecxxsmart.h: Added resize() for sequences.
