@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-17 21:42+0200\n"
-"PO-Revision-Date: 2003-10-16 00:11+0200\n"
+"POT-Creation-Date: 2003-10-18 14:55+0200\n"
+"PO-Revision-Date: 2003-10-18 14:59+0200\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -122,8 +122,8 @@ msgid "/Project/New MIDI Synthesizer"
 msgstr "/Projekat/Novi MIDI sintetizator"
 
 #: beast-gtk/bstapp.c:101
-msgid "/Project/Remove Synthesizer"
-msgstr "/Projekat/Ukloni sintetizator"
+msgid "/Project/Remove Song or Synthesizer"
+msgstr "/Projekat/Ukloni pesmu ili sintetizator"
 
 #: beast-gtk/bstapp.c:103
 msgid "/_Song"
@@ -169,65 +169,90 @@ msgstr "/Talasi/Obriši talas"
 msgid "/Waves/_Edit Wave..."
 msgstr "/Talasi/_Uredi talas..."
 
-#: beast-gtk/bstapp.c:118 beast-gtk/bstpartdialog.c:72
+#: beast-gtk/bstapp.c:118
+msgid "/_Synthesizers"
+msgstr "/_Sintetizatori"
+
+#: beast-gtk/bstapp.c:120
+msgid "/Synthesizers/Load _Effect"
+msgstr "/Sintetizatori/Učitaj _efekat"
+
+#: beast-gtk/bstapp.c:121
+msgid "/Synthesizers/Load _Instrument"
+msgstr "/Sintetizatori/Učitaj _instrument"
+
+#: beast-gtk/bstapp.c:122
+msgid "/Synthesizers/Save As Effect"
+msgstr "/Sintetizatori/Sačuvaj kao efekat"
+
+#: beast-gtk/bstapp.c:123
+msgid "/Synthesizers/Save As Instrument"
+msgstr "/Sintetizatori/Sačuvaj kao instrument"
+
+# Hteo sam „proba“, ali imamo i „Test“, pa je bolje tu iskoristiti
+#: beast-gtk/bstapp.c:124
+msgid "/_Demo"
+msgstr "/_Demo"
+
+#: beast-gtk/bstapp.c:126 beast-gtk/bstpartdialog.c:72
 msgid "/_Tools"
 msgstr "/_Alati"
 
-#: beast-gtk/bstapp.c:119
+#: beast-gtk/bstapp.c:127
 msgid "/Tools/_Song"
 msgstr "/Alati/_Pesma"
 
-#: beast-gtk/bstapp.c:120
+#: beast-gtk/bstapp.c:128
 msgid "/Tools/_Synth"
 msgstr "/Alati/_Sintetizator"
 
-#: beast-gtk/bstapp.c:121
+#: beast-gtk/bstapp.c:129
 msgid "/Tools/Wave_s"
 msgstr "/Alati/_Talasi"
 
-#: beast-gtk/bstapp.c:124
+#: beast-gtk/bstapp.c:132
 msgid "/_Help"
 msgstr "/_Pomoć"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:134
 msgid "/Help/_Release Notes..."
 msgstr "/Pomoć/_Objava izdanja..."
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:135
 msgid "/Help/Quick Start..."
 msgstr "/Pomoć/Brzi početak..."
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:136
 msgid "/Help/_FAQ..."
 msgstr "/Pomoć/Pitanja i _odgovori"
 
-#: beast-gtk/bstapp.c:129
+#: beast-gtk/bstapp.c:137
 msgid "/Help/Development/GSL Engine..."
 msgstr "/Pomoć/Razvoj/GSL struktura..."
 
-#: beast-gtk/bstapp.c:131
+#: beast-gtk/bstapp.c:139
 msgid "/Help/_About..."
 msgstr "/Pomoć/_O programu..."
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:710
+#: beast-gtk/bstapp.c:730
 msgid "Rack editor"
 msgstr "Uređivač polica"
 
-#: beast-gtk/bstapp.c:724
+#: beast-gtk/bstapp.c:744
 msgid "Preferences"
 msgstr "Postavke"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:738
+#: beast-gtk/bstapp.c:758
 msgid "Device Monitor"
 msgstr "Praćenje uređaja"
 
-#: beast-gtk/bstapp.c:753
+#: beast-gtk/bstapp.c:773
 msgid "Procedure Browser"
 msgstr "Razgledač procedura"
 
-#: beast-gtk/bstapp.c:810
+#: beast-gtk/bstapp.c:830
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ZVER-%s Objava izdanja"
@@ -304,57 +329,72 @@ msgstr "Izaberi područje"
 msgid "Abortion"
 msgstr "Prekid"
 
-#: beast-gtk/bstfiledialog.c:196
+#: beast-gtk/bstfiledialog.c:197
 msgid "Contents"
 msgstr "Sadržaj"
 
-#: beast-gtk/bstfiledialog.c:204
-msgid "Store references to wave files"
-msgstr "Smesti reference u Wave datoteke"
-
-#: beast-gtk/bstfiledialog.c:211
-msgid "Include wave files"
-msgstr "Uključi Wave datoteke"
-
 #. setup remaining bits
-#: beast-gtk/bstfiledialog.c:228
+#: beast-gtk/bstfiledialog.c:229
 msgid "File Selection"
 msgstr "Izbor datoteka"
 
-#: beast-gtk/bstfiledialog.c:343
+#: beast-gtk/bstfiledialog.c:400
 msgid "Open Project"
 msgstr "Otvori projekat"
 
-#: beast-gtk/bstfiledialog.c:357
+#: beast-gtk/bstfiledialog.c:414
 msgid "Select Directory"
 msgstr "Izaberi direktorijum"
 
-#: beast-gtk/bstfiledialog.c:371 beast-gtk/bstfiledialog.c:378
+#: beast-gtk/bstfiledialog.c:428 beast-gtk/bstfiledialog.c:435
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otvara projekat „%s“"
 
-#: beast-gtk/bstfiledialog.c:396
+#: beast-gtk/bstfiledialog.c:453
 #, c-format
 msgid "Merge: %s"
 msgstr "Spoji: %s"
 
-#: beast-gtk/bstfiledialog.c:409
+#: beast-gtk/bstfiledialog.c:466
 #, c-format
 msgid "Merging project `%s'"
 msgstr "Spaja projekat „%s“"
 
-#: beast-gtk/bstfiledialog.c:425
+#: beast-gtk/bstfiledialog.c:489
+#, c-format
+msgid ""
+"Failed to delete file\n"
+"`%s'\n"
+"due to:\n"
+"%s"
+msgstr ""
+"Nisam uspeo da uklonim datoteku\n"
+"„%s“\n"
+"zbog:\n"
+"%s"
+
+#: beast-gtk/bstfiledialog.c:518
 #, c-format
 msgid "Save: %s"
 msgstr "Sačuvaj: %s"
 
-#: beast-gtk/bstfiledialog.c:446 beast-gtk/bstfiledialog.c:481
+#. setup radio buttons
+#: beast-gtk/bstfiledialog.c:520
+msgid "Fully include wave files"
+msgstr "U potpunosti uključi Wave datoteke"
+
+#: beast-gtk/bstfiledialog.c:521
+msgid "Store references to wave files"
+msgstr "Smesti reference u Wave datoteke"
+
+#: beast-gtk/bstfiledialog.c:542 beast-gtk/bstfiledialog.c:552
 #, c-format
 msgid "Saving project `%s'"
 msgstr "Snima projekat „%s“"
 
-#: beast-gtk/bstfiledialog.c:447
+#: beast-gtk/bstfiledialog.c:543 beast-gtk/bstfiledialog.c:619
+#: beast-gtk/bstfiledialog.c:695
 #, c-format
 msgid ""
 "Failed to save\n"
@@ -369,29 +409,47 @@ msgstr ""
 "„%s“:\n"
 "%s"
 
-#: beast-gtk/bstfiledialog.c:463
-#, c-format
-msgid "Deleting file `%s'"
-msgstr "Briše datoteku „%s“"
+#: beast-gtk/bstfiledialog.c:567
+msgid "Load Effect"
+msgstr "Učitaj efekat"
 
-#: beast-gtk/bstfiledialog.c:464
+#: beast-gtk/bstfiledialog.c:580
 #, c-format
-msgid ""
-"Failed to delete file\n"
-"`%s'\n"
-"due to:\n"
-"%s"
-msgstr ""
-"Nisam uspeo da uklonim datoteku\n"
-"„%s“\n"
-"zbog:\n"
-"%s"
+msgid "Merging effect `%s'"
+msgstr "Spaja efekat „%s“"
 
-#: beast-gtk/bstfiledialog.c:497
+#: beast-gtk/bstfiledialog.c:597
+msgid "Save Effect"
+msgstr "Sačuvaj efekat"
+
+#: beast-gtk/bstfiledialog.c:618 beast-gtk/bstfiledialog.c:628
+#, c-format
+msgid "Saving effect `%s'"
+msgstr "Snima efekat „%s“"
+
+#: beast-gtk/bstfiledialog.c:643
+msgid "Load Instrument"
+msgstr "Učitaj instrument"
+
+#: beast-gtk/bstfiledialog.c:656
+#, c-format
+msgid "Merging instrument `%s'"
+msgstr "Spaja instrument „%s“"
+
+#: beast-gtk/bstfiledialog.c:673
+msgid "Save Instrument"
+msgstr "Sačuvaj instrument"
+
+#: beast-gtk/bstfiledialog.c:694 beast-gtk/bstfiledialog.c:704
+#, c-format
+msgid "Saving instrument `%s'"
+msgstr "Snima instrument „%s“"
+
+#: beast-gtk/bstfiledialog.c:720
 msgid "Load Wave"
 msgstr "Učitaj Wave"
 
-#: beast-gtk/bstfiledialog.c:509 beast-gtk/bstfiledialog.c:511
+#: beast-gtk/bstfiledialog.c:732 beast-gtk/bstfiledialog.c:734
 #, c-format
 msgid "Loading wave `%s'"
 msgstr "Učitavam Wave „%s“"
@@ -592,68 +650,56 @@ msgid "Remove Paths"
 msgstr "Ukloni putanje"
 
 #: beast-gtk/bstpartdialog.c:73
-#, fuzzy
 msgid "/Tools/Insert"
-msgstr "/Alati/_Sintetizator"
+msgstr "/Alati/Umetni"
 
 #: beast-gtk/bstpartdialog.c:74
-#, fuzzy
 msgid "/Tools/Delete"
-msgstr "Obriši"
+msgstr "/Alati/Obriši"
 
 #: beast-gtk/bstpartdialog.c:75
-#, fuzzy
 msgid "/Tools/Align Events"
-msgstr "/Alati/_Talasi"
+msgstr "/Alati/Uskladi događaje"
 
 #: beast-gtk/bstpartdialog.c:76
-#, fuzzy
 msgid "/Tools/Select"
-msgstr "/Alati/_Sintetizator"
+msgstr "/Alati/Izaberi"
 
 #: beast-gtk/bstpartdialog.c:77
-#, fuzzy
 msgid "/Tools/Vertical Select"
-msgstr "Uspravan izbor"
+msgstr "/Alati/Uspravan izbor"
 
 #: beast-gtk/bstpartdialog.c:79
-#, fuzzy
 msgid "/Edit/Cut"
-msgstr "/_Uređivanje"
+msgstr "/Uređivanje/Iseci"
 
 #: beast-gtk/bstpartdialog.c:80
-#, fuzzy
 msgid "/Edit/Copy"
-msgstr "/Uređivanje/Po_novi"
+msgstr "/Uređivanje/Umnoži"
 
 #: beast-gtk/bstpartdialog.c:81
-#, fuzzy
 msgid "/Edit/Paste"
-msgstr "Uredi deo"
+msgstr "/Uređivanje/Ubaci"
 
 #: beast-gtk/bstpartdialog.c:82
-#, fuzzy
 msgid "/Edit/Clear"
-msgstr "/Uređivanje/_Očisti vraćanje"
+msgstr "/Uređivanje/Očisti"
 
 #: beast-gtk/bstpartdialog.c:84
-#, fuzzy
 msgid "/Edit/Undo"
-msgstr "/Uređivanje/Opo_zovi"
+msgstr "/Uređivanje/Opozovi"
 
 #: beast-gtk/bstpartdialog.c:85
-#, fuzzy
 msgid "/Edit/Redo"
-msgstr "/Uređivanje/Po_novi"
+msgstr "/Uređivanje/Ponovi"
 
 #: beast-gtk/bstpartdialog.c:87
-#, fuzzy
 msgid "/Scripts"
-msgstr "Skripte"
+msgstr "/Skripte"
 
 #: beast-gtk/bstpartdialog.c:88
 msgid "/Test"
-msgstr ""
+msgstr "/Proba"
 
 #: beast-gtk/bstpartdialog.c:260
 msgid "Control Type: "
@@ -1021,6 +1067,9 @@ msgstr "Klizaj desno"
 #: beast-gtk/bstwavereposhell.c:141 beast-gtk/bstwavereposhell.c:156
 msgid "Waves"
 msgstr "Talasi"
+
+#~ msgid "Deleting file `%s'"
+#~ msgstr "Briše datoteku „%s“"
 
 #~ msgid "Number of Columns"
 #~ msgstr "Broj kolona"
