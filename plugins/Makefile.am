@@ -54,11 +54,6 @@ EXTRA_DIST += $(strip \
 	TODO \
 )
 
-# rules to auto-build built sources, we need an
-# oldest-source-stamp for this that is never touched
-COPYING: $(plugins_built_sources)
-$(OBJECTS): COPYING # this is our oldest-source-stamp
-
 # *.enums generation rule
 missing_perl = @MISSING_PERL5@ yes
 

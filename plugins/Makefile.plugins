@@ -21,6 +21,7 @@ EXTRA_HEADERS         += bseatandistort.h
 ##
 bsegenosc.enums: bsegenosc.h 
 plugins_built_sources += bsegenosc.enums
+$(srcdir)/bsegenosc.c: bsegenosc.enums
 bsegenosc_la_SOURCES = bsegenosc.c
 bsegenosc_la_LDFLAGS = -module -avoid-version
 bsegenosc_la_LIBADD  = $(plugin_libs)
@@ -31,6 +32,7 @@ EXTRA_HEADERS         += bsegenosc.h
 ##
 bseiirfilter.enums: bseiirfilter.h 
 plugins_built_sources += bseiirfilter.enums
+$(srcdir)/bseiirfilter.c: bseiirfilter.enums
 bseiirfilter_la_SOURCES = bseiirfilter.c
 bseiirfilter_la_LDFLAGS = -module -avoid-version
 bseiirfilter_la_LIBADD  = $(plugin_libs)

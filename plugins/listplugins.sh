@@ -48,6 +48,7 @@ for file in $LFILES ; do
 	test -n "$efile" && {
 	    echo "$efile: $hfile "
 	    echo "plugins_built_sources += $efile"
+	    echo '$(srcdir)/'"$cfile: $efile"
 	}
 	echo "$_name""_la_SOURCES = $cfile"
 	echo "$_name""_la_LDFLAGS = -module -avoid-version"

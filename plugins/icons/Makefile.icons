@@ -24,10 +24,10 @@ icon_list += adsr.xcf
 icon_list += ampmix.xcf
 icon_list += atan.xcf
 icon_list += canyon.xcf
+icon_list += chorus.xcf
 icon_list += cyria-filter.xcf
 icon_list += drum.xcf
 icon_list += filter.xcf
-icon_list += foo.xcf
 icon_list += genosc.xcf
 icon_list += noise.xcf
 icon_list += organ.xcf
@@ -40,5 +40,4 @@ icon_list += speaker.xcf
 icon_list += strings.xcf
 icon_list += sub.xcf
 icon_list += sum.xcf
-icon_list += test.xcf
 ## Generated data ends here
