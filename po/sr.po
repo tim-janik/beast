@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:06+0100\n"
-"PO-Revision-Date: 2003-12-29 12:46+0100\n"
+"POT-Creation-Date: 2004-01-05 23:02+0100\n"
+"PO-Revision-Date: 2004-01-05 23:10+0100\n"
 "Last-Translator: Данило Шеган <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -415,7 +415,7 @@ msgstr "ИД"
 msgid "Name"
 msgstr "Име"
 
-#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:572
+#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:548
 msgid "Comment"
 msgstr "Примедба"
 
@@ -423,81 +423,81 @@ msgstr "Примедба"
 msgid "Type"
 msgstr "Врста"
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:127
 msgid "BEAST Startup"
 msgstr "Покретање Звери"
 
-#: beast-gtk/bstmain.c:141
+#: beast-gtk/bstmain.c:134
 msgid "Startup"
 msgstr "Покретање"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:139
 msgid "Objects"
 msgstr "Објекти"
 
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:143
 msgid "Language"
 msgstr "Језик"
 
-#: beast-gtk/bstmain.c:161
+#: beast-gtk/bstmain.c:150
 msgid "RC File"
 msgstr "RC датотека"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:168
+#: beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Уводна слика"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:180
+#: beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "BSE језгро"
 
-#: beast-gtk/bstmain.c:199
+#: beast-gtk/bstmain.c:188
 msgid "Plugins"
 msgstr "Додаци"
 
-#: beast-gtk/bstmain.c:218
+#: beast-gtk/bstmain.c:207
 msgid "LADSPA Plugins"
 msgstr "LADSPA додаци"
 
-#: beast-gtk/bstmain.c:246
+#: beast-gtk/bstmain.c:235
 msgid "Scripts"
 msgstr "Скрипте"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:264
+#: beast-gtk/bstmain.c:253
 msgid "Dialogs"
 msgstr "Прозорчићи"
 
-#: beast-gtk/bstmain.c:271
+#: beast-gtk/bstmain.c:260
 msgid "Loading..."
 msgstr "Учитавам..."
 
-#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
+#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Учитавам „%s“"
 
-#: beast-gtk/bstmain.c:320
+#: beast-gtk/bstmain.c:309
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Учитавам пројекат „%s“"
 
-#: beast-gtk/bstmain.c:695
+#: beast-gtk/bstmain.c:684
 msgid "BEAST About"
 msgstr "О Звери"
 
-#: beast-gtk/bstmain.c:696
+#: beast-gtk/bstmain.c:685
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ЗВЕР, издање %s"
 
-#: beast-gtk/bstmain.c:697
+#: beast-gtk/bstmain.c:686
 msgid "Contributions made by:"
 msgstr "Такође допринели:"
 
@@ -1686,9 +1686,9 @@ msgstr "Умножи контролне"
 
 #: bse/bseamplifier.idl:61
 msgid ""
-"Multiply the two control inputs with each other, rather than weighting them "
-"by balance"
-msgstr "Умножи два контролна улаза један са другим, уместо тежинске употребе"
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr "Замени два контролна улаза тако да раде као низ појачивачких контрола, уместо тежинског мешања по равнотежи."
 
 #: bse/bseamplifier.idl:64
 msgid "Exponential Control"
@@ -1722,6 +1722,50 @@ msgstr "Главна јачина"
 msgid "Output stage amplification"
 msgstr "Појачање излазне сцене"
 
+#: bse/bseautodoc.c:379 bse/bseautodoc.c:381
+msgid "BSE-Objects"
+msgstr "БСЕ-објекти"
+
+#: bse/bseautodoc.c:381
+msgid " Object Reference"
+msgstr " Референца објекта"
+
+#: bse/bseautodoc.c:393
+msgid "Authors:"
+msgstr "Аутори:"
+
+#: bse/bseautodoc.c:396
+msgid "License:"
+msgstr "Лиценца:"
+
+#: bse/bseautodoc.c:400
+msgid "Properties:"
+msgstr "Особине:"
+
+#: bse/bseautodoc.c:426 bse/bseautodoc.c:459 bse/bseautodoc.c:476
+msgid "Name:"
+msgstr "Име:"
+
+#: bse/bseautodoc.c:431 bse/bseautodoc.c:437
+msgid "Range:"
+msgstr "Опсег:"
+
+#: bse/bseautodoc.c:441 bse/bseautodoc.c:462 bse/bseautodoc.c:479
+msgid "Description:"
+msgstr "Опис:"
+
+#: bse/bseautodoc.c:451
+msgid "Input Channels:"
+msgstr "Улазни канали:"
+
+#: bse/bseautodoc.c:458
+msgid "(Joint Input)"
+msgstr "(Заједнички улаз)"
+
+#: bse/bseautodoc.c:469
+msgid "Output Channels:"
+msgstr "Излазни канали:"
+
 #: bse/bsebiquadfilter.c:130
 msgid "Filter"
 msgstr "Филтер"
@@ -1743,8 +1787,8 @@ msgstr "Средишња учестаност"
 msgid "Cutoff [Hz]"
 msgstr "Исецање [Hz]"
 
-#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:146
-#: plugins/bseiirfilter.c:156
+#: bse/bsebiquadfilter.c:146 bse/bsestandardosc.c:154
+#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr "Напомена"
 
@@ -1769,18 +1813,20 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
 #: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+#: bse/bsestandardosc.c:160 bse/bsestandardosc.c:166 bse/bsestandardosc.c:172
+#: bse/bsestandardosc.c:178
 msgid "Modulation"
 msgstr "Модулација"
 
-#: bse/bsebiquadfilter.c:167
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:163
 msgid "Strength of linear frequency modulation"
 msgstr "Снага линеарне модулације фреквенције"
 
-#: bse/bsebiquadfilter.c:173
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Изведи експоненцијалну модулацију фреквенције уместо лиенарне"
 
-#: bse/bsebiquadfilter.c:179
+#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Број октава на које утиче експоненцијална модулација фреквенција"
 
@@ -1801,7 +1847,7 @@ msgstr "Нефилтрирани звучни сигнал"
 msgid "Center Frequency Input"
 msgstr "Средишњи фреквентни улаз"
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Frequency Modulation Input"
 msgstr "Улаз модулације фреквенције"
 
@@ -1812,6 +1858,109 @@ msgstr "Улаз за појачање модулацијом"
 #: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
 msgstr "Филтрирани звучни сигнал"
+
+#: bse/bsestandardosc.c:111
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr "StandardOsc је основни БСЕ-ов осцилатор који подржава разне облике таласа и модулационе улазе."
+
+#: bse/bsestandardosc.c:114
+msgid "/Modules/Audio Sources/Standard Oscillator"
+msgstr "/Модули/Извори звука/Стандардни осцилатор"
+
+#: bse/bsestandardosc.c:137 bse/bsestandardosc.c:143
+msgid "Wave Form"
+msgstr "Облик таласа"
+
+#: bse/bsestandardosc.c:139
+msgid "Wave"
+msgstr "Талас"
+
+#: bse/bsestandardosc.c:139
+msgid "Oscillator wave form"
+msgstr "Облик таласа осцилатора"
+
+#: bse/bsestandardosc.c:145
+msgid "Phase"
+msgstr "Фаза"
+
+#: bse/bsestandardosc.c:148 bse/bsestandardosc.c:152 bse/bsestandardosc.c:155
+msgid "Base Frequency"
+msgstr "Основна учестаност"
+
+#: bse/bsestandardosc.c:150
+msgid "Frequency"
+msgstr "Учестаност"
+
+#: bse/bsestandardosc.c:157
+msgid "Fine Tune"
+msgstr "Мала подешавања"
+
+#: bse/bsestandardosc.c:162
+msgid "Input Modulation [%]"
+msgstr "Модулација улаза [%]"
+
+#: bse/bsestandardosc.c:168
+msgid "Exponential FM"
+msgstr "Експоненцијални ФМ"
+
+#: bse/bsestandardosc.c:174
+msgid "Octaves"
+msgstr "Октаве"
+
+#: bse/bsestandardosc.c:180
+msgid "Self Modulation [%]"
+msgstr "Самомодулација [%]"
+
+#: bse/bsestandardosc.c:181
+msgid "Strength of self modulation"
+msgstr "Снага самомодулације"
+
+#: bse/bsestandardosc.c:184 bse/bsestandardosc.c:191
+msgid "Pulse Modulation"
+msgstr "Модулација пулса"
+
+#: bse/bsestandardosc.c:186
+msgid "Pulse Width"
+msgstr "Ширина пулса"
+
+#: bse/bsestandardosc.c:187
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr "Однос позитивне компоненте трајања пулсног облика таласа (неопходно је да облик таласа буде постављен на пулсни да би ово узело маха)"
+
+#: bse/bsestandardosc.c:193
+msgid "Pulse Modulation [%]"
+msgstr "Модулација пулса [%]"
+
+# bug: wisth -> width
+#: bse/bsestandardosc.c:194
+msgid ""
+"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr "Снага ширине пулсног улаза модулацијом (неопходно је да облик таласа буде постављен на пулсни да би ово узело маха)"
+
+#: bse/bsestandardosc.c:199
+msgid "Oscillating Frequency Input"
+msgstr "Осцилаторни фреквентни улаз"
+
+#: bse/bsestandardosc.c:203
+msgid "Pulse Width Modulation Input"
+msgstr "Ширина пулсног улаза модулацијом"
+
+#: bse/bsestandardosc.c:205
+msgid "Syncronization Input"
+msgstr "Усклађени улаз"
+
+#: bse/bsestandardosc.c:207
+msgid "Oscillated Output"
+msgstr "Осцилаторни улаз"
+
+#: bse/bsestandardosc.c:209
+msgid "Syncronization Output"
+msgstr "Усклађени излаз"
 
 #: bse/bsesuper.c:101
 msgid "Author"

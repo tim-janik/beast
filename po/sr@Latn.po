@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-28 13:06+0100\n"
-"PO-Revision-Date: 2003-12-29 12:46+0100\n"
+"POT-Creation-Date: 2004-01-05 23:02+0100\n"
+"PO-Revision-Date: 2004-01-05 23:10+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -415,7 +415,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Ime"
 
-#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:572
+#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:548
 msgid "Comment"
 msgstr "Primedba"
 
@@ -423,81 +423,81 @@ msgstr "Primedba"
 msgid "Type"
 msgstr "Vrsta"
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:127
 msgid "BEAST Startup"
 msgstr "Pokretanje Zveri"
 
-#: beast-gtk/bstmain.c:141
+#: beast-gtk/bstmain.c:134
 msgid "Startup"
 msgstr "Pokretanje"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:139
 msgid "Objects"
 msgstr "Objekti"
 
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:143
 msgid "Language"
 msgstr "Jezik"
 
-#: beast-gtk/bstmain.c:161
+#: beast-gtk/bstmain.c:150
 msgid "RC File"
 msgstr "RC datoteka"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:168
+#: beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Uvodna slika"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:180
+#: beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "BSE jezgro"
 
-#: beast-gtk/bstmain.c:199
+#: beast-gtk/bstmain.c:188
 msgid "Plugins"
 msgstr "Dodaci"
 
-#: beast-gtk/bstmain.c:218
+#: beast-gtk/bstmain.c:207
 msgid "LADSPA Plugins"
 msgstr "LADSPA dodaci"
 
-#: beast-gtk/bstmain.c:246
+#: beast-gtk/bstmain.c:235
 msgid "Scripts"
 msgstr "Skripte"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:264
+#: beast-gtk/bstmain.c:253
 msgid "Dialogs"
 msgstr "Prozorčići"
 
-#: beast-gtk/bstmain.c:271
+#: beast-gtk/bstmain.c:260
 msgid "Loading..."
 msgstr "Učitavam..."
 
-#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
+#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Učitavam „%s“"
 
-#: beast-gtk/bstmain.c:320
+#: beast-gtk/bstmain.c:309
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Učitavam projekat „%s“"
 
-#: beast-gtk/bstmain.c:695
+#: beast-gtk/bstmain.c:684
 msgid "BEAST About"
 msgstr "O Zveri"
 
-#: beast-gtk/bstmain.c:696
+#: beast-gtk/bstmain.c:685
 #, c-format
 msgid "BEAST Version %s"
 msgstr "ZVER, izdanje %s"
 
-#: beast-gtk/bstmain.c:697
+#: beast-gtk/bstmain.c:686
 msgid "Contributions made by:"
 msgstr "Takođe doprineli:"
 
@@ -801,10 +801,9 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
-"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih "
-"izdanja. Znači, ne pouzdajte se da će izgled uređivača ostati isti u "
-"budućnosti, i budite spremni na nestabilnost u kodu (tj. redovno snimajte "
-"vaše projekte)."
+"Uređivač polica je probni kod i sigurno će biti pokvaren do narednih izdanja. "
+"Znači, ne pouzdajte se da će izgled uređivača ostati isti u budućnosti, i "
+"budite spremni na nestabilnost u kodu (tj. redovno snimajte vaše projekte)."
 
 #: beast-gtk/bstrackeditor.c:109 beast-gtk/bstrackview.c:43
 #: beast-gtk/dialogs/gadgets-beast.xml.h:22
@@ -1507,8 +1506,8 @@ msgid ""
 "If set, an underline in the text indicates the next character should be used "
 "for the mnemonic accelerator key"
 msgstr ""
-"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak "
-"predstavlja prečicu"
+"Ukoliko je postavljeno, podvlaka u tekstu označava da sledeći znak predstavlja "
+"prečicu"
 
 #: beast-gtk/gxk/gxksimplelabel.c:142
 msgid "Auto cut"
@@ -1518,8 +1517,8 @@ msgstr "Samo-iseci"
 msgid ""
 "If set, overfull text is cut-off and an ellipsis \"...\" is displayed instead"
 msgstr ""
-"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju "
-"tri tačke „...“"
+"Ukoliko je postavljeno, prepuni tekst se iseca i umesto njega se prikazuju tri "
+"tačke „...“"
 
 #: beast-gtk/gxk/gxksimplelabel.c:147
 msgid "Justification"
@@ -1586,9 +1585,9 @@ msgstr ""
 "signala. Podržava dva kontrolna ulaza i dva zvučna ulaza koji se mešaju "
 "zajedno prema prilagođivanju ravnoteže i nivoa. Dobitak kontroliše "
 "prepojačanje mešanog zvučnog singala. Mešani kontrolni signal, uz težinski "
-"koeficijent, određuje pojačanje programa, dozvoljavajući da spoljašnji "
-"izvori programa razdele opšti promet (tremolo). Mešani kontrolni signal ne "
-"može da utiče linearno na pojačivanje (ostalih kontrolnih signala) ili "
+"koeficijent, određuje pojačanje programa, dozvoljavajući da spoljašnji izvori "
+"programa razdele opšti promet (tremolo). Mešani kontrolni signal ne može da "
+"utiče linearno na pojačivanje (ostalih kontrolnih signala) ili "
 "eksponencijalno (za pojačanje zvučnih zignala). Konačno, glavna jačina "
 "upravlja pojačanje izlaznog signala."
 
@@ -1687,9 +1686,9 @@ msgstr "Umnoži kontrolne"
 
 #: bse/bseamplifier.idl:61
 msgid ""
-"Multiply the two control inputs with each other, rather than weighting them "
-"by balance"
-msgstr "Umnoži dva kontrolna ulaza jedan sa drugim, umesto težinske upotrebe"
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr "Zameni dva kontrolna ulaza tako da rade kao niz pojačivačkih kontrola, umesto težinskog mešanja po ravnoteži."
 
 #: bse/bseamplifier.idl:64
 msgid "Exponential Control"
@@ -1723,6 +1722,50 @@ msgstr "Glavna jačina"
 msgid "Output stage amplification"
 msgstr "Pojačanje izlazne scene"
 
+#: bse/bseautodoc.c:379 bse/bseautodoc.c:381
+msgid "BSE-Objects"
+msgstr "BSE-objekti"
+
+#: bse/bseautodoc.c:381
+msgid " Object Reference"
+msgstr " Referenca objekta"
+
+#: bse/bseautodoc.c:393
+msgid "Authors:"
+msgstr "Autori:"
+
+#: bse/bseautodoc.c:396
+msgid "License:"
+msgstr "Licenca:"
+
+#: bse/bseautodoc.c:400
+msgid "Properties:"
+msgstr "Osobine:"
+
+#: bse/bseautodoc.c:426 bse/bseautodoc.c:459 bse/bseautodoc.c:476
+msgid "Name:"
+msgstr "Ime:"
+
+#: bse/bseautodoc.c:431 bse/bseautodoc.c:437
+msgid "Range:"
+msgstr "Opseg:"
+
+#: bse/bseautodoc.c:441 bse/bseautodoc.c:462 bse/bseautodoc.c:479
+msgid "Description:"
+msgstr "Opis:"
+
+#: bse/bseautodoc.c:451
+msgid "Input Channels:"
+msgstr "Ulazni kanali:"
+
+#: bse/bseautodoc.c:458
+msgid "(Joint Input)"
+msgstr "(Zajednički ulaz)"
+
+#: bse/bseautodoc.c:469
+msgid "Output Channels:"
+msgstr "Izlazni kanali:"
+
 #: bse/bsebiquadfilter.c:130
 msgid "Filter"
 msgstr "Filter"
@@ -1744,8 +1787,8 @@ msgstr "Središnja učestanost"
 msgid "Cutoff [Hz]"
 msgstr "Isecanje [Hz]"
 
-#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:146
-#: plugins/bseiirfilter.c:156
+#: bse/bsebiquadfilter.c:146 bse/bsestandardosc.c:154
+#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr "Napomena"
 
@@ -1770,18 +1813,20 @@ msgstr ""
 
 #: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
 #: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+#: bse/bsestandardosc.c:160 bse/bsestandardosc.c:166 bse/bsestandardosc.c:172
+#: bse/bsestandardosc.c:178
 msgid "Modulation"
 msgstr "Modulacija"
 
-#: bse/bsebiquadfilter.c:167
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:163
 msgid "Strength of linear frequency modulation"
 msgstr "Snaga linearne modulacije frekvencije"
 
-#: bse/bsebiquadfilter.c:173
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Izvedi eksponencijalnu modulaciju frekvencije umesto lienarne"
 
-#: bse/bsebiquadfilter.c:179
+#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Broj oktava na koje utiče eksponencijalna modulacija frekvencija"
 
@@ -1802,7 +1847,7 @@ msgstr "Nefiltrirani zvučni signal"
 msgid "Center Frequency Input"
 msgstr "Središnji frekventni ulaz"
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Frequency Modulation Input"
 msgstr "Ulaz modulacije frekvencije"
 
@@ -1813,6 +1858,109 @@ msgstr "Ulaz za pojačanje modulacijom"
 #: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
 msgstr "Filtrirani zvučni signal"
+
+#: bse/bsestandardosc.c:111
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr "StandardOsc je osnovni BSE-ov oscilator koji podržava razne oblike talasa i modulacione ulaze."
+
+#: bse/bsestandardosc.c:114
+msgid "/Modules/Audio Sources/Standard Oscillator"
+msgstr "/Moduli/Izvori zvuka/Standardni oscilator"
+
+#: bse/bsestandardosc.c:137 bse/bsestandardosc.c:143
+msgid "Wave Form"
+msgstr "Oblik talasa"
+
+#: bse/bsestandardosc.c:139
+msgid "Wave"
+msgstr "Talas"
+
+#: bse/bsestandardosc.c:139
+msgid "Oscillator wave form"
+msgstr "Oblik talasa oscilatora"
+
+#: bse/bsestandardosc.c:145
+msgid "Phase"
+msgstr "Faza"
+
+#: bse/bsestandardosc.c:148 bse/bsestandardosc.c:152 bse/bsestandardosc.c:155
+msgid "Base Frequency"
+msgstr "Osnovna učestanost"
+
+#: bse/bsestandardosc.c:150
+msgid "Frequency"
+msgstr "Učestanost"
+
+#: bse/bsestandardosc.c:157
+msgid "Fine Tune"
+msgstr "Mala podešavanja"
+
+#: bse/bsestandardosc.c:162
+msgid "Input Modulation [%]"
+msgstr "Modulacija ulaza [%]"
+
+#: bse/bsestandardosc.c:168
+msgid "Exponential FM"
+msgstr "Eksponencijalni FM"
+
+#: bse/bsestandardosc.c:174
+msgid "Octaves"
+msgstr "Oktave"
+
+#: bse/bsestandardosc.c:180
+msgid "Self Modulation [%]"
+msgstr "Samomodulacija [%]"
+
+#: bse/bsestandardosc.c:181
+msgid "Strength of self modulation"
+msgstr "Snaga samomodulacije"
+
+#: bse/bsestandardosc.c:184 bse/bsestandardosc.c:191
+msgid "Pulse Modulation"
+msgstr "Modulacija pulsa"
+
+#: bse/bsestandardosc.c:186
+msgid "Pulse Width"
+msgstr "Širina pulsa"
+
+#: bse/bsestandardosc.c:187
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr "Odnos pozitivne komponente trajanja pulsnog oblika talasa (neophodno je da oblik talasa bude postavljen na pulsni da bi ovo uzelo maha)"
+
+#: bse/bsestandardosc.c:193
+msgid "Pulse Modulation [%]"
+msgstr "Modulacija pulsa [%]"
+
+# bug: wisth -> width
+#: bse/bsestandardosc.c:194
+msgid ""
+"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr "Snaga širine pulsnog ulaza modulacijom (neophodno je da oblik talasa bude postavljen na pulsni da bi ovo uzelo maha)"
+
+#: bse/bsestandardosc.c:199
+msgid "Oscillating Frequency Input"
+msgstr "Oscilatorni frekventni ulaz"
+
+#: bse/bsestandardosc.c:203
+msgid "Pulse Width Modulation Input"
+msgstr "Širina pulsnog ulaza modulacijom"
+
+#: bse/bsestandardosc.c:205
+msgid "Syncronization Input"
+msgstr "Usklađeni ulaz"
+
+#: bse/bsestandardosc.c:207
+msgid "Oscillated Output"
+msgstr "Oscilatorni ulaz"
+
+#: bse/bsestandardosc.c:209
+msgid "Syncronization Output"
+msgstr "Usklađeni izlaz"
 
 #: bse/bsesuper.c:101
 msgid "Author"
@@ -1977,12 +2125,11 @@ msgid ""
 "avoid aliasing artefacts for rapid balance changes, the control signal is "
 "preprocessed by a simple lowpass filter with adjustable cutoff frequency."
 msgstr ""
-"BseBalance je moduo za stereo ravnanje sa dva zvučna i dva kontrolna ulaza, "
-"i na svakom se može odvojeno prilagoditi nivo. Izlazna ravnoteža se "
-"kontroliše ravnotežom prilagođenja i zbirom kontrolnih ulaza. Radi "
-"izbegavanja šuma za brzu izmenu ravnoteže, kontrolni signal se predobrađuje "
-"jednostavnim niskoprolaznim filterom sa prilagodljivom frekvencijom "
-"odsecanja."
+"BseBalance je moduo za stereo ravnanje sa dva zvučna i dva kontrolna ulaza, i "
+"na svakom se može odvojeno prilagoditi nivo. Izlazna ravnoteža se kontroliše "
+"ravnotežom prilagođenja i zbirom kontrolnih ulaza. Radi izbegavanja šuma za "
+"brzu izmenu ravnoteže, kontrolni signal se predobrađuje jednostavnim "
+"niskoprolaznim filterom sa prilagodljivom frekvencijom odsecanja."
 
 #: plugins/bsebalance.idl:40
 msgid "Left Out"
