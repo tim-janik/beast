@@ -13,4 +13,7 @@ extra_docs = $(strip					\
 	bse-categories.txt	interpolation.txt	\
 )
 
+site site-update site-update-contents site-update-navigation:
+	$(MAKE) -C generated/ $(AM_MAKEFLAGS) $@
+
 EXTRA_DIST = ${texi_docs} ${extra_docs}
