@@ -53,13 +53,16 @@ guint           bse_main_getpid         (void);
 
 /* --- argc/argv overide settings --- */
 typedef struct {
-  SfiInt   latency;
-  SfiInt   mixing_freq;
-  SfiInt   control_freq;
-  SfiRing *pcm_drivers;
-  SfiRing *midi_drivers;
-  gboolean load_drivers_early;
-  gboolean dump_driver_list;
+  SfiInt       latency;
+  SfiInt       mixing_freq;
+  SfiInt       control_freq;
+  SfiRing     *pcm_drivers;
+  SfiRing     *midi_drivers;
+  gboolean     load_drivers_early;
+  gboolean     dump_driver_list;
+  const gchar *override_plugin_globs;
+  const gchar *override_script_path;
+  const gchar *path_binaries;
 } BseMainArgs;
 
 

@@ -50,14 +50,16 @@ const guint		 bse_micro_version = BSE_MICRO_VERSION;
 const guint		 bse_interface_age = BSE_INTERFACE_AGE;
 const guint		 bse_binary_age = BSE_BINARY_AGE;
 const gchar		*bse_version = BSE_VERSION;
-static BseMainArgs       default_main_args = { 0, };
-BseMainArgs             *bse_main_args = &default_main_args;
 GMainContext            *bse_main_context = NULL;
 SfiMutex	         bse_main_sequencer_mutex = { 0, };
 gboolean	         bse_main_debug_extensions = FALSE;
 SfiThread               *bse_main_thread = NULL;
 static volatile gboolean bse_initialization_stage = 0;
 static gboolean          textdomain_setup = FALSE;
+static BseMainArgs       default_main_args = {
+  .path_binaries = BSE_PATH_BINARIES,
+};
+BseMainArgs             *bse_main_args = &default_main_args;
 
 
 /* --- functions --- */
@@ -474,6 +476,26 @@ bse_async_parse_args (gint        *argc_p,
 	    }
 	  argv[i] = NULL;
 	}
+      else if (strcmp ("--bse-override-plugin-globs", argv[i]) == 0 && i + 1 < argc)
+	{
+          argv[i++] = NULL;
+          margs->override_plugin_globs = argv[i];
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--bse-override-script-path", argv[i]) == 0 && i + 1 < argc)
+	{
+          argv[i++] = NULL;
+          margs->override_script_path = argv[i];
+	  argv[i] = NULL;
+	}
+#if 0
+      else if (strcmp ("--bse-override-binaries-path", argv[i]) == 0 && i + 1 < argc)
+	{
+          argv[i++] = NULL;
+          margs->path_binaries = argv[i];
+	  argv[i] = NULL;
+	}
+#endif
     }
 
   e = 1;

@@ -15,17 +15,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bseplugin.h"
+#include "bseplugin.h"
 
-#include	"bsecategories.h"
-#include	"bseprocedure.h"
-#include	"bseobject.h"
-#include	"bseenums.h"
-#include	<gmodule.h>
-#include	<string.h>
-#include	<fcntl.h>
-#include	<errno.h>
-#include	<unistd.h>
+#include "bsecategories.h"
+#include "bseprocedure.h"
+#include "bseobject.h"
+#include "bseenums.h"
+#include "bsemain.h"
+#include <gmodule.h>
+#include <string.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
 
 
 #define DEBUG(...)      sfi_debug ("plugins", __VA_ARGS__)
@@ -620,6 +621,13 @@ bse_plugin_path_list_files (gboolean include_drivers,
                             gboolean include_plugins)
 {
   SfiRing *files, *ring = NULL;
+  if (bse_main_args->override_plugin_globs)
+    {
+      /* expect filename globs */
+      files = sfi_file_crawler_list_files (bse_main_args->override_plugin_globs, NULL, G_FILE_TEST_IS_REGULAR);
+      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+      return ring;      /* override */
+    }
   if (include_drivers)
     {
       files = sfi_file_crawler_list_files (BSE_PATH_DRIVERS, "*.so", G_FILE_TEST_IS_REGULAR);

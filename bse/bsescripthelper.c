@@ -19,9 +19,10 @@
 
 #include "topconfig.h"
 #include "bsecategories.h"
+#include "bsejanitor.h"
 #include "bseserver.h"
 #include "bseglue.h"
-#include "bsejanitor.h"
+#include "bsemain.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -156,7 +157,7 @@ bse_script_procedure_exec (BseProcedureClass *proc,
 						     "(apply %s (bse-script-fetch-args))",
 						     sdata->script_file,
 						     sdata->name));
-  shellpath = g_strdup_printf ("%s/%s-%s", BSE_PATH_BINARIES, "bsesh", BSE_VERSION);
+  shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsesh", BSE_VERSION);
   error = bse_server_run_remote (server, shellpath,
 				 params, sdata->script_file, BSE_PROCEDURE_NAME (proc), &janitor);
   g_free (shellpath);
@@ -232,16 +233,24 @@ bse_script_check_client_msg (SfiGlueDecoder *decoder,
 SfiRing*
 bse_script_path_list_files (void)
 {
-  SfiRing *ring1, *ring2 = NULL;
-
-  ring1 = sfi_file_crawler_list_files (BSE_PATH_SCRIPTS, "*.scm", G_FILE_TEST_IS_REGULAR);
-  ring1 = sfi_ring_sort (ring1, (SfiCompareFunc) strcmp, NULL);
-
+  SfiRing *files, *ring = NULL;
+  if (bse_main_args->override_script_path)
+    {
+      files = sfi_file_crawler_list_files (bse_main_args->override_script_path, "*.scm", G_FILE_TEST_IS_REGULAR);
+      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+      return ring;      /* override */
+    }
+  if (1)
+    {
+      files = sfi_file_crawler_list_files (BSE_PATH_SCRIPTS, "*.scm", G_FILE_TEST_IS_REGULAR);
+      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+    }
   if (BSE_GCONFIG (script_path) && BSE_GCONFIG (script_path)[0])
-    ring2 = sfi_file_crawler_list_files (BSE_GCONFIG (script_path), "*.scm", G_FILE_TEST_IS_REGULAR);
-  ring2 = sfi_ring_sort (ring2, (SfiCompareFunc) strcmp, NULL);
-
-  return sfi_ring_concat (ring1, ring2);
+    {
+      files = sfi_file_crawler_list_files (BSE_GCONFIG (script_path), "*.scm", G_FILE_TEST_IS_REGULAR);
+      ring = sfi_ring_concat (ring, sfi_ring_sort (files, (SfiCompareFunc) strcmp, NULL));
+    }
+  return ring;
 }
 
 BseErrorType
@@ -256,7 +265,7 @@ bse_script_file_register (const gchar *file_name,
   params = sfi_ring_append (params, g_strdup ("--bse-enable-register"));
   params = sfi_ring_append (params, g_strdup ("--bse-eval"));
   params = sfi_ring_append (params, g_strdup_printf ("(load \"%s\")", file_name));
-  shellpath = g_strdup_printf ("%s/%s-%s", BSE_PATH_BINARIES, "bsesh", BSE_VERSION);
+  shellpath = g_strdup_printf ("%s/%s-%s", bse_main_args->path_binaries, "bsesh", BSE_VERSION);
   *janitor_p = NULL;
   error = bse_server_run_remote (server, shellpath,
 				 params, file_name, proc_name, janitor_p);

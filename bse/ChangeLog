@@ -1,3 +1,12 @@
+Tue Sep 28 23:01:23 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemain.[hc]: added --bse-override-plugin-globs <glob> and
+	--bse-override-script-path <path> options. 
+
+	* bseplugin.c: allow plugin path overriding.
+
+	* bsescripthelper.c: allow script path overriding.
+
 Tue Sep 28 20:38:45 2004  Tim Janik  <timj@gtk.org>
 
 	* gslcommon.[hc]: moved file tests to sfi:
