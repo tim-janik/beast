@@ -1,3 +1,9 @@
+Thu Apr 20 00:35:20 2000  Tim Janik  <timj@gtk.org>
+
+	* bsecontainer.c (bse_container_do_remove_item): remove child source's
+	input/output channels, regardless of the prepared state of the
+	container.
+
 Thu Apr 13 01:11:22 2000  Tim Janik  <timj@gtk.org>
 
 	* bseobject.c (bse_object_do_shutdown): assert no further ref_count

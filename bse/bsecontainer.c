@@ -280,11 +280,14 @@ bse_container_do_remove_item (BseContainer *container,
     }
   while (anchestor);
 
-  if (BSE_IS_SOURCE (item) && BSE_SOURCE_PREPARED (container))
+  if (BSE_IS_SOURCE (item))
     {
-      g_return_if_fail (BSE_SOURCE_PREPARED (item) == TRUE);
+      if (BSE_SOURCE_PREPARED (container))
+	{
+	  g_return_if_fail (BSE_SOURCE_PREPARED (item) == TRUE);
 
-      bse_source_reset (BSE_SOURCE (item));
+	  bse_source_reset (BSE_SOURCE (item));
+	}
 
       if (!BSE_IS_CONTAINER (item))
 	{

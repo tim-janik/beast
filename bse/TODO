@@ -14,6 +14,14 @@ general:
 -	rework undo, gotta decide on what hirarchy and function level undo
 	should be implemented.
 
+!	sources need to disconnect their links ala xrefs, and need to notify of
+	that *before* destroy is invoked.
+	effectively, this has to work like so:
+	channels installed on a source need to be xref-linked if the i/o sources
+	don#t have the same parent. if their parents are the same, we can simply
+	have bsecontainer.c care about destructing those channels (as an optimization
+	to keep xref-links low).
+
 Song/Pattern
 -	removal of instruments needs to scratch instrument references from all patterns
 -	mutable channels! (make them silent)
