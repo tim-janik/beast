@@ -284,6 +284,11 @@ bse_ssequencer_process_song_SL (BseSong *song,
 	  n_done_tracks++;
 	  continue;
 	}
+      if (track->muted_SL)
+	{
+	  bse_midi_receiver_process_events (midi_receiver, next_stamp);
+	  continue;
+	}
       i = bse_part_node_lookup_SL (part, current_tick);
       while (i < part->n_nodes && part->nodes[i].tick < tick_bound)
 	{

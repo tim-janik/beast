@@ -817,22 +817,34 @@ bglue_proxy_set_property (SfiGlueContext *context,
 {
   GObject *object = bse_object_from_id (proxy);
   
-  if (BSE_IS_OBJECT (object) && prop && G_IS_VALUE (value))
+  if (BSE_IS_OBJECT (object) && G_IS_VALUE (value))
     {
-      GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (object), prop);
-      
+      GParamSpec *pspec = prop ? g_object_class_find_property (G_OBJECT_GET_CLASS (object), prop) : NULL;
       if (pspec)
 	{
 	  GValue *pvalue = bglue_value_from_serializable (value, pspec);
-	  
-	  if (pvalue)
-	    {
-	      g_object_set_property (object, prop, pvalue);
-	      sfi_value_free (pvalue);
-	    }
+	  GValue tmp_value = { 0, };
+	  /* we do conversion and validation here, so we can roll our own warnings */
+	  g_value_init (&tmp_value, G_PARAM_SPEC_VALUE_TYPE (pspec));
+	  if (!g_value_transform (pvalue ? pvalue : value, &tmp_value))
+	    sfi_warn ("property `%s' (%s) of \"%s\" cannot be set from value of type `%s'",
+		      pspec->name,
+		      g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)),
+		      bse_object_debug_name (object),
+		      G_VALUE_TYPE_NAME (value));
 	  else
-	    g_object_set_property (object, prop, value);
+	    {
+	      /* silent validation */
+	      g_param_value_validate (pspec, &tmp_value);
+	      g_object_set_property (object, prop, &tmp_value);
+	    }
+	  g_value_unset (&tmp_value);
+	  if (pvalue)
+	    sfi_value_free (pvalue);
 	}
+      else
+	sfi_warn ("object \"%s\" has no property `%s'",
+		  bse_object_debug_name (object), prop ? prop : "<NULL>");
     }
 }
 

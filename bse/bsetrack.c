@@ -38,10 +38,11 @@
 
 
 enum {
-  PARAM_0,
-  PARAM_PART,
-  PARAM_SYNTH_NET,
-  PARAM_N_SYNTH_VOICES
+  PROP_0,
+  PROP_PART,
+  PROP_MUTED,
+  PROP_SYNTH_NET,
+  PROP_N_SYNTH_VOICES
 };
 
 /* --- prototypes --- */
@@ -117,16 +118,20 @@ bse_track_class_init (BseTrackClass *class)
   item_class->list_proxies = bse_track_list_proxies;
   
   bse_object_class_add_param (object_class, "Play List",
-			      PARAM_PART,
+			      PROP_PART,
 			      bse_param_spec_object ("part", "Part", NULL,
 						     BSE_TYPE_PART, SFI_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Adjustments",
+			      PROP_MUTED,
+			      sfi_pspec_bool ("muted", "Muted", NULL,
+					      FALSE, SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synth Input",
-			      PARAM_SYNTH_NET,
+			      PROP_SYNTH_NET,
 			      bse_param_spec_object ("snet", "Custom Synth Net", "Synthesis network to be used as instrument",
 						     BSE_TYPE_SNET,
 						     SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synth Input",
-			      PARAM_N_SYNTH_VOICES,
+			      PROP_N_SYNTH_VOICES,
 			      sfi_pspec_int ("n_voices", "Max Voixes", "Maximum number of voices for simultaneous playback",
 					     8, 1, 256, 1,
 					     SFI_PARAM_GUI SFI_PARAM_STORAGE SFI_PARAM_HINT_SCALE));
@@ -139,6 +144,7 @@ bse_track_init (BseTrack *self)
 {
   self->snet = NULL;
   self->max_voices = 8;
+  self->muted_SL = FALSE;
   self->n_entries_SL = 0;
   self->entries_SL = g_renew (BseTrackEntry, NULL, upper_power2 (self->n_entries_SL));
   self->part_SL = NULL;
@@ -281,13 +287,13 @@ bse_track_list_proxies (BseItem    *item,
   BseProxySeq *pseq = bse_proxy_seq_new ();
   switch (param_id)
     {
-    case PARAM_PART:
+    case PROP_PART:
       bse_item_gather_proxies (item, pseq, BSE_TYPE_PART,
 			       (BseItemCheckContainer) check_song,
 			       (BseItemCheckProxy) NULL,
 			       NULL);
       break;
-    case PARAM_SYNTH_NET:
+    case PROP_SYNTH_NET:
       bse_item_gather_proxies (item, pseq, BSE_TYPE_SNET,
 			       (BseItemCheckContainer) check_project,
 			       (BseItemCheckProxy) check_synth,
@@ -350,7 +356,12 @@ bse_track_set_property (GObject      *object,
   
   switch (param_id)
     {
-    case PARAM_PART:
+    case PROP_MUTED:
+      BSE_SEQUENCER_LOCK ();
+      self->muted_SL = sfi_value_get_bool (value);
+      BSE_SEQUENCER_UNLOCK ();
+      break;
+    case PROP_PART:
       if (self->part_SL)
 	{
 	  bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->part_SL));
@@ -368,7 +379,7 @@ bse_track_set_property (GObject      *object,
 			    NULL);
 	}
       break;
-    case PARAM_SYNTH_NET:
+    case PROP_SYNTH_NET:
       if (self->snet)
 	{
 	  bse_item_uncross (BSE_ITEM (self), BSE_ITEM (self->snet));
@@ -387,7 +398,7 @@ bse_track_set_property (GObject      *object,
 		      "snet", self->snet,
 		      NULL);
       break;
-    case PARAM_N_SYNTH_VOICES:
+    case PROP_N_SYNTH_VOICES:
       self->max_voices = sfi_value_get_int (value);
       break;
     default:
@@ -406,13 +417,16 @@ bse_track_get_property (GObject    *object,
   
   switch (param_id)
     {
-    case PARAM_PART:
+    case PROP_MUTED:
+      sfi_value_set_bool (value, self->muted_SL);
+      break;
+    case PROP_PART:
       bse_value_set_object (value, self->part_SL);
       break;
-    case PARAM_SYNTH_NET:
+    case PROP_SYNTH_NET:
       bse_value_set_object (value, self->snet);
       break;
-    case PARAM_N_SYNTH_VOICES:
+    case PROP_N_SYNTH_VOICES:
       sfi_value_set_int (value, self->max_voices);
       break;
     default:

@@ -53,7 +53,8 @@ struct _BseTrack
   BseSource       *context_merger;
 
   /* fields protected by sequencer mutex */
-  guint		   n_entries_SL;
+  guint		   n_entries_SL : 30;
+  guint		   muted_SL : 1;
   BseTrackEntry	  *entries_SL;
   BsePart	  *part_SL;
   BseMidiReceiver *midi_receiver_SL;

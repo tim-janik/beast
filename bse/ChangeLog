@@ -1,3 +1,14 @@
+Mon Feb 10 21:37:54 2003  Tim Janik  <timj@gtk.org>
+
+	* bseglue.c (bglue_proxy_set_property): handle invalid value
+	types with sfi_warn() and do lax value validation.
+
+	* bsessequencer.c (bse_ssequencer_process_song_SL): don't play
+	notes of muted tracks.
+
+	* bsetrack.[hc]: added ::muted property to silence a track during
+	playback.
+
 Thu Feb  6 20:29:00 2003  Tim Janik  <timj@gtk.org>
 
 	* bseprocidl.cc: g++-3.2 wants std:: namespacing for strings and sets.
