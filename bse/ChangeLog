@@ -1,3 +1,7 @@
+Thu Jan  6 23:02:30 2005  Tim Janik  <timj@gtk.org>
+
+	* zintern/gus-patch.bse: CVS copied from gus-patch-mono.bse.
+
 Thu Jan  6 22:27:53 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* gslloader-pat.cc: Fix compilation: reintroduce data_offsets, as the
