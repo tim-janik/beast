@@ -140,6 +140,7 @@ public:
   
   string hints;
   string pspec;
+  int    line;
   string args;
   
   ParamDef& addSeq(const string& contentType) {
@@ -488,6 +489,7 @@ GTokenType IdlParser::parseRecordField (ParamDef& def)
   parse_or_return (G_TOKEN_IDENTIFIER);
   def.type = ModuleHelper::qualify (scanner->value.v_identifier);
   def.pspec = def.type;
+  def.line = scanner->line;
   
   parse_or_return (G_TOKEN_IDENTIFIER);
   def.name = scanner->value.v_identifier;
@@ -545,7 +547,7 @@ GTokenType IdlParser::parseParamDefHints (ParamDef &def)
       SequenceDef sdef = findSequence (def.type);
       ParamDef& contentDef = def.addSeq(sdef.contentType);
       contentDef.pspec = sdef.contentType;
-      contentDef.name = "content";
+      contentDef.name = "element";
       parseParamDefHints (contentDef);
       
       parse_or_return (',');
@@ -745,7 +747,7 @@ protected:
 public:
   CodeGeneratorC(IdlParser& parser) : parser(parser) {
   }
-  void run();
+  void run (string srcname);
 };
 
 string CodeGeneratorC::makeLowerName (const string& name)
@@ -856,6 +858,7 @@ string CodeGeneratorC::makeParamSpec(const ParamDef& pdef)
 	def.name = "content";
 	def.type = sdef.contentType;
 	def.pspec = def.type;
+	def.line = pdef.line;
 	pspec += "_default (\"" + pdef.name + "\"," + makeParamSpec(def) + ")";
       }
       else
@@ -968,7 +971,7 @@ string CodeGeneratorC::createTypeCode(const string& type, const string &name, in
   return "*createTypeCode*unknown*";
 }
 
-void CodeGeneratorC::run()
+void CodeGeneratorC::run (string srcname)
 {
   vector<SequenceDef>::const_iterator si;
   vector<RecordDef>::const_iterator ri;
@@ -977,6 +980,7 @@ void CodeGeneratorC::run()
   
   if (Conf::generateTypeH)
     {
+      printf("\n");
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
 	  string mname = makeMixedName (si->name);
@@ -999,6 +1003,29 @@ void CodeGeneratorC::run()
 	  printf("} %s;\n", mname.c_str());
 	}
       
+      printf("\n");
+      for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
+	{
+	  string mname = makeMixedName (si->name.c_str());
+	  string array = createTypeCode (si->contentType, "", MODEL_ARRAY);
+	  
+	  printf("struct _%s {\n", mname.c_str());
+	  printf("  guint n_elements;\n");
+	  printf("  %s elements;\n", array.c_str());
+	  printf("};\n");
+	}
+      for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
+	{
+	  string mname = makeMixedName (ri->name.c_str());
+	  
+	  printf("struct _%s {\n", mname.c_str());
+	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
+	    {
+	      printf("  %s %s;\n", createTypeCode(pi->type, "", MODEL_ARG).c_str(), pi->name.c_str());
+	    }
+	  printf("};\n");
+	}
+
       printf("\n");
       for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
 	{
@@ -1027,27 +1054,6 @@ void CodeGeneratorC::run()
 	  printf("GValue *%s_to_value (%s rec);\n", lname.c_str(), arg.c_str());
 	  printf("void %s_free (%s rec);\n", lname.c_str(), arg.c_str());
 	  printf("\n");
-	}
-      for (si = parser.getSequences().begin(); si != parser.getSequences().end(); si++)
-	{
-	  string mname = makeMixedName (si->name.c_str());
-	  string array = createTypeCode (si->contentType, "", MODEL_ARRAY);
-	  
-	  printf("struct _%s {\n", mname.c_str());
-	  printf("  guint n_elements;\n");
-	  printf("  %s elements;\n", array.c_str());
-	  printf("};\n");
-	}
-      for (ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
-	{
-	  string mname = makeMixedName (ri->name.c_str());
-	  
-	  printf("struct _%s {\n", mname.c_str());
-	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++)
-	    {
-	      printf("  %s %s;\n", createTypeCode(pi->type, "", MODEL_ARG).c_str(), pi->name.c_str());
-	    }
-	  printf("};\n");
 	}
       printf("\n");
     }
@@ -1286,7 +1292,7 @@ void CodeGeneratorC::run()
   if (Conf::generateInit)
     {
       bool first = true;
-      printf("static void %s (void)\n", Conf::generateInit);
+      printf("static void\n%s (void)\n", Conf::generateInit);
       printf("{\n");
       for(ri = parser.getRecords().begin(); ri != parser.getRecords().end(); ri++)
 	{
@@ -1298,6 +1304,7 @@ void CodeGeneratorC::run()
 	  
 	  for (pi = ri->contents.begin(); pi != ri->contents.end(); pi++, f++)
 	    {
+	      printf("#line %u \"%s\"\n", pi->line, srcname.c_str());
 	      printf("  %s_field[%d] = %s;\n", name.c_str(), f, makeParamSpec (*pi).c_str());
 	    }
 	}
@@ -1351,22 +1358,11 @@ int main (int argc, char **argv)
    * find out prefix (filename without .idl)
    */
   
-#if 0
-  char *prefix = strdup(inputfile);
-  
-  if(strlen(prefix) < 4 || strcmp(&prefix[strlen(prefix)-4],".idl")) {
-    fprintf(stderr,"filename must end in .idl\n");
-    exit(1);
-  } else {
-    prefix[strlen(prefix)-4] = 0;
-  }
-#else	/* allow any file name postfix, TIMJ */
   char *prefix = strdup (inputfile);
   char *p = strrchr (prefix, '.');
   if (!p)
     g_error ("missing file name extension in \"%s\"", inputfile);
   *p = 0;
-#endif
   
   /*
    * strip path (sfidl always outputs the result into the current directory)
@@ -1382,7 +1378,7 @@ int main (int argc, char **argv)
   
   printf("\n/*-------- begin %s generated code --------*/\n\n\n",argv[0]);
   CodeGeneratorC codegen(parser);
-  codegen.run ();
+  codegen.run (inputfile);
   printf("\n\n/*-------- end %s generated code --------*/\n\n\n",argv[0]);
 }
 

@@ -1,3 +1,11 @@
+Fri Oct  4 05:13:39 2002  Tim Janik  <timj@gtk.org>
+
+	* sfidl.cc: call sequence elements "element" not
+	"content" in the generated pspecs.
+	(run): print seq/rec prototypes after structure definitions.
+	generate "#line" directive before param_spec creation to make
+	compiler warnings somewhat meaningfull.
+
 Fri Oct  4 02:06:15 2002  Tim Janik  <timj@gtk.org>
 
 	* sfidl.cc (createTypeCode): support SfiBBlock.
