@@ -1,3 +1,41 @@
+Fri Aug 16 02:11:00 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in: add AC_DOC_REQUIREMENTS() which checks for
+	all things neccessary to build texi docs. (currently, we
+	need a patched makeinfo, but that'll hopefully change with
+	the next makeinfo release).
+	up release candidate to 3.
+
+	* beast-gtk/Makefile.am: sort out beast sources. added build
+	rules for tsmview.
+
+	* beast-gtk/tsmview.c: a small noinst program to view TagSpanMarkup
+	docs with GtkTextView.
+
+	* beast-gtk/bstapp.c: added QuickStart help file popup to menu.
+
+	* beast-gtk/bstdialog.[hc]: renamed BST_DIALOG_STATUS flag to
+	BST_DIALOG_STATUS_SHELL, since this flag really indicates a
+	different type of window.
+	(bst_dialog_key_press_event): support Escape as a shortcut
+	for delete-event (for normal windows).
+	(bst_dialog_action_multi): catch addition of STOCK_CLOSE or
+	STOCK_CANCEL to update BST_DIALOG_DELETE_BUTTON flag.
+
+	* bstmain.c: moved some stuff into bstutils.c and bstapp.c to
+	avoid dependancies from the rest of the sources on bstmain.c.
+
+	* bstutils.[hc]: get rid of text widget or text display related
+	stuff.
+
+	* bsttexttools.[hc]: new files, containing code to deal with
+	text view/buffer objects, text display and markup.
+	beyond the functionality of text display related code from
+	bstutils.[hc], this code parses TagSpanMarkup xml tags, offers
+	utilities to move the cursor in text view/buffer, and offers
+	text browsing mode key bindings for GtkTextView.
+	also, the initial GtkTextView size requisition got fixed.
+
 Tue Aug  6 23:18:33 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (bst_key_table_from_xkb): don't perform Xkb

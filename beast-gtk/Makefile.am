@@ -78,6 +78,7 @@ beast_headers = $(strip \
 	bstsongshell.h \
 	bstsplash.h \
 	bststatusbar.h \
+	bsttexttools.h \
 	bsttoolbar.h \
 	bsttrackview.h \
 	bstsupershell.h \
@@ -113,7 +114,6 @@ beast_sources = $(strip \
 	bstkeytables.c \
 	bstknob.c \
 	bstlogadjustment.c \
-	bstmain.c \
 	bstmenus.c \
 	bstparam.c \
 	bstparamview.c \
@@ -138,6 +138,7 @@ beast_sources = $(strip \
 	bstsongshell.c \
 	bstsplash.c \
 	bststatusbar.c \
+	bsttexttools.c \
 	bsttoolbar.c \
 	bsttrackview.c \
 	bstsupershell.c \
@@ -229,10 +230,12 @@ $(srcdir)/bstmarshal.c: bstmarshal.list
 #
 # setup BEAST sources and their dependancies
 #
-beast_SOURCES = $(beast_sources)
-noinst_PROGRAMS = bststest
+beast_SOURCES = bstmain.c $(beast_sources)
+noinst_PROGRAMS = bststest tsmview
 bststest_SOURCES = bststest.c bstutils.c bstqsampler.c
 bststest_LDADD = $(progs_LDADD)
+tsmview_SOURCES = tsmview.c $(beast_sources)
+tsmview_LDADD = $(progs_LDADD)
 
 EXTRA_DIST += $(beast_headers) $(beast_extra_sources)
 MAINTAINERCLEANFILES += $(beast_built_sources)

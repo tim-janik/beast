@@ -19,6 +19,7 @@
 
 #include "bstdialog.h"
 #include "bststatusbar.h"
+#include "bsttexttools.h"
 
 
 /* --- prototypes --- */
@@ -119,16 +120,12 @@ update_dialog (BstDialog     *dialog,
 				    "yalign", 0.5,
 				    "xscale", 1.0,
 				    "yscale", 0.75,
-				    "child", bst_text_view_create (BST_TEXT_VIEW_CENTER, message),
+				    "child", bst_scroll_text_create (BST_TEXT_VIEW_CENTER, message),
 				    NULL),
 		      TRUE, TRUE, 5);
   g_free (xmessage);	/* grrr, the new text widget is still enormously buggy */
   bst_dialog_set_child (dialog, hbox);
   bst_dialog_set_title (dialog, title);
-  g_object_set (dialog,
-		"default_width", 320,
-		"default_height", 200,
-		NULL);
   if (BSW_IS_SCRIPT_CONTROL (sctrl))
     {
       guint i, n = bsw_script_control_n_actions (sctrl);
@@ -204,7 +201,7 @@ sctrl_window_destroyed (gpointer data)
 GtkWidget*
 bst_user_message_dialog_new (BswProxy script_control)
 {
-  BstDialog *dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_STATUS, NULL, NULL);
+  BstDialog *dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_STATUS_SHELL, NULL, NULL);
 
   g_object_set_data (G_OBJECT (dialog), "user-data", (gpointer) script_control);
   bsw_proxy_connect (script_control,

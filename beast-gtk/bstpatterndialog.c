@@ -171,7 +171,7 @@ bst_pattern_dialog_init (BstPatternDialog *pattern_dialog)
   g_object_set (pattern_dialog,
 		"default_width", 600,
 		"default_height", 450,
-		"flags", BST_DIALOG_STATUS,
+		"flags", BST_DIALOG_STATUS_SHELL,
 		NULL);
   main_vbox = BST_DIALOG (pattern_dialog)->vbox;
   

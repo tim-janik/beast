@@ -85,6 +85,7 @@ typedef enum
   BST_OP_HELP_KEYTABLE,
   BST_OP_HELP_RELEASE_NOTES,
   BST_OP_HELP_GSL_PLAN,
+  BST_OP_HELP_QUICK_START,
   BST_OP_HELP_ABOUT,
 #define	BST_OP_HELP_LAST	BST_OP_HELP_ABOUT
 
@@ -141,8 +142,7 @@ extern void bst_update_can_operate (GtkWidget   *some_widget);
 #define bst_nullify_on_destroy(obj, location) \
   g_signal_connect_swapped ((obj), "destroy", G_CALLBACK (g_nullify_pointer), (location))
 
-extern GtkTooltips *bst_global_tooltips;
-#define	BST_TOOLTIPS	(*&bst_global_tooltips)
+#define	BST_TOOLTIPS	(bst_global_tooltips ())
 
 
 

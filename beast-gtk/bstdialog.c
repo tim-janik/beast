@@ -18,6 +18,7 @@
 #include	"bstdialog.h"
 
 #include	"bststatusbar.h"
+#include	<gdk/gdkkeysyms.h>
 #include	<string.h>
 
 #define	DEFAULT_TITLE	"Auxillary Dialog"
@@ -40,6 +41,8 @@ static void	bst_dialog_destroy		(GtkObject	  *object);
 static void	bst_dialog_finalize		(GObject	  *object);
 static void	bst_dialog_show			(GtkWidget	  *widget);
 static void	bst_dialog_hide			(GtkWidget	  *widget);
+static gboolean bst_dialog_key_press_event	(GtkWidget	  *widget,
+						 GdkEventKey	  *event);
 static gboolean bst_dialog_delete_event		(GtkWidget	  *widget,
 						 GdkEventAny	  *event);
 static gboolean	bst_dialog_enter_notify_event	(GtkWidget	  *widget,
@@ -102,6 +105,7 @@ bst_dialog_class_init (BstDialogClass *class)
 
   widget_class->show = bst_dialog_show;
   widget_class->hide = bst_dialog_hide;
+  widget_class->key_press_event = bst_dialog_key_press_event;
   widget_class->delete_event = bst_dialog_delete_event;
   widget_class->enter_notify_event = bst_dialog_enter_notify_event;
 
@@ -222,13 +226,13 @@ bst_dialog_set_property (GObject      *object,
       dialog->flags = g_value_get_flags (value);
       if (dialog->status_bar)
 	{
-	  if (dialog->flags & BST_DIALOG_STATUS)
+	  if (dialog->flags & BST_DIALOG_STATUS_SHELL)
 	    gtk_widget_show (dialog->status_bar);
 	  else
 	    gtk_widget_hide (dialog->status_bar);
 	}
       gtk_window_set_modal (GTK_WINDOW (dialog), dialog->flags & BST_DIALOG_MODAL);
-      /* this is a bit hackish, we feature flags that can't be unset */
+      /* some flags can't be unset */
       if (!(old_flags & BST_DIALOG_DELETE_BUTTON) &&
 	  (dialog->flags & BST_DIALOG_DELETE_BUTTON))
 	{
@@ -237,6 +241,8 @@ bst_dialog_set_property (GObject      *object,
 	   */
 	  bst_dialog_default_action (dialog, BST_STOCK_CLOSE, gtk_toplevel_delete, NULL);
 	}
+      else if (old_flags & BST_DIALOG_DELETE_BUTTON)
+	dialog->flags |= BST_DIALOG_DELETE_BUTTON;
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -415,6 +421,28 @@ bst_dialog_hide (GtkWidget *widget)
 }
 
 static gboolean
+bst_dialog_key_press_event (GtkWidget   *widget,
+			    GdkEventKey *event)
+{
+  BstDialog *dialog = BST_DIALOG (widget);
+
+  /* decide whether we close the window upon Escape:
+   * - we provide Escape as a short cut for the BST_DIALOG_DELETE_BUTTON
+   * - we offer Escape for normal dialogs, i.e. non status-shell ones.
+   */
+  if (event->keyval == GDK_Escape &&
+      ((dialog->flags & BST_DIALOG_DELETE_BUTTON) ||
+       !(dialog->flags & BST_DIALOG_STATUS_SHELL)))
+    {
+      /* trigger delete event */
+      gtk_toplevel_delete (widget);
+      return TRUE;
+    }
+
+  return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
+}
+
+static gboolean
 bst_dialog_delete_event (GtkWidget   *widget,
 			 GdkEventAny *event)
 {
@@ -543,6 +571,11 @@ bst_dialog_action_multi (BstDialog          *dialog,
 
       if (!image)
 	image = bst_image_from_stock (action, BST_SIZE_BUTTON);
+
+      /* catch installation of a Close button */
+      if (strcmp (action, BST_STOCK_CLOSE) == 0 ||
+	  strcmp (action, GTK_STOCK_CLOSE) == 0)
+	dialog->flags |= BST_DIALOG_DELETE_BUTTON;
 
       /* setup button */
       button = g_object_new (GTK_TYPE_BUTTON,

@@ -42,7 +42,6 @@ static void			bst_print_blurb		(FILE	     *fout,
 
 /* --- variables --- */
 BstDebugFlags       bst_debug_flags = 0;
-GtkTooltips        *bst_global_tooltips = NULL;
 gboolean            bst_dvl_hints = FALSE;
 static GDebugKey    bst_debug_keys[] = { /* keep in sync with bstdefs.h */
   { "keytable",		BST_DEBUG_KEYTABLE, },
@@ -98,7 +97,6 @@ main (int   argc,
   g_type_init ();
   bsw_init (&argc, &argv, &lfuncs);
   bst_globals_init ();
-  _bst_utils_init ();
 
   /* pre-parse BEAST args
    */
@@ -126,13 +124,11 @@ main (int   argc,
 
   /* BEAST initialization
    */
+  _bst_utils_init ();
   bst_splash_update_item (splash, "Objects");
   bst_init_gentypes ();
   gtk_rc_parse_string (bst_rc_string);
   g_type_name (bst_free_radio_button_get_type ());	/* urg, GCC_CONST */
-  bst_global_tooltips = gtk_tooltips_new ();
-  g_object_ref (bst_global_tooltips);
-  gtk_object_sink (GTK_OBJECT (bst_global_tooltips));
   
   /* parse rc file
    */
@@ -177,6 +173,9 @@ main (int   argc,
   bst_splash_update_entity (splash, "Plugins");
   if (bst_load_plugins)
     bsw_register_plugins (NULL, TRUE, NULL, splash_update_item, splash);
+  bst_text_add_tsm_path (BST_PATH_DOCS);
+  bst_text_add_tsm_path (BST_PATH_IMAGES);
+  bst_text_add_tsm_path (".");
 
   /* debugging hook
    */
@@ -699,22 +698,4 @@ bst_key_table_from_xkb (const gchar *display)
   bst_globals_set_xkb_symbol (patch->identifier);
   
   return patch;
-}
-
-/* read bstdefs.h on this */
-void
-bst_update_can_operate (GtkWidget *widget)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  
-  /* FIXME, we need to queue a high prioritized idle here as
-   * this function can be called multiple times in a row
-   */
-  
-  /* figure toplevel app, and update it
-   */
-  widget = gtk_widget_get_ancestor (widget, BST_TYPE_APP);
-  g_return_if_fail (BST_IS_APP (widget));
-  
-  bst_app_update_can_operate (BST_APP (widget));
 }

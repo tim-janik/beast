@@ -16,9 +16,9 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include	"bstmenus.h"
+#include "bstmenus.h"
 
-#include	"bstdialog.h"
+#include "bstdialog.h"
 
 
 /* --- structures --- */
@@ -488,7 +488,7 @@ bst_choice_dialog_createv (BstChoice *first_choice,
 	{
 	  GtkWidget *any;
 	case BST_CHOICE_TYPE_TEXT:
-	  /* any = bst_text_view_create (BST_TEXT_VIEW_CENTER, choice->name); */
+	  /* any = bst_scroll_text_create (BST_TEXT_VIEW_CENTER, choice->name); */
 	  any = gtk_widget_new (GTK_TYPE_LABEL,
 				"visible", TRUE,
 				"justify", GTK_JUSTIFY_CENTER,

@@ -30,7 +30,7 @@ dnl# if any functions have been added, set BSE_INTERFACE_AGE to 0.
 dnl# if backwards compatibility has been broken,
 dnl# set BSE_BINARY_AGE _and_ BSE_INTERFACE_AGE to 0.
 dnl# BST_RELEASE_CANDIDATE may contain rc[0-9]* or nothing
-BST_RELEASE_CANDIDATE=rc2
+BST_RELEASE_CANDIDATE=rc3
 
 # version number setup
 BST_VERSION=$BSE_VERSION
@@ -327,6 +327,21 @@ AC_DEFUN(AC_BSE_SNDDEV_CHECK,
 	AC_MSG_ERROR([unable to find any sound drivers/devices])
     fi
 ])
+AC_DEFUN(AC_DOC_REQUIREMENTS,
+[
+    AC_MSG_CHECKING([for makeinfo-4.2xmlpatch])
+    XMLMAKEINFO=
+    if test -x ./docs/generated/../../makeinfo-4.2xmlpatch ; then
+	XMLMAKEINFO='$(top_builddir)/makeinfo-4.2xmlpatch'
+        AC_MSG_RESULT(yes)
+    else
+        AC_MSG_RESULT(no)
+    fi
+    AC_SUBST(XMLMAKEINFO)
+    XSLTPROC=
+    AC_CHECK_PROGS(XSLTPROC,xsltproc)
+    AM_CONDITIONAL(HAVE_XMLMAKEINFO_AND_XSLTPROC, test -n "$XSLTPROC" && test -n "$XMLMAKEINFO")
+])
 
 # check compilers and their behaviour, setup CFLAGS
 MC_PROG_CC_WITH_CFLAGS
@@ -384,6 +399,8 @@ AC_BSW_SHELL_REQUIREMENTS
 AC_BSE_SNDDEV_CHECK
 # BEAST requirements
 AC_BEAST_REQUIREMENTS
+# Docu requirements
+AC_DOC_REQUIREMENTS
 
 # architecture information
 AC_DEFINE_UNQUOTED(BST_ARCH_NAME, "${host_alias}")

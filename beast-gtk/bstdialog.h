@@ -42,10 +42,10 @@ typedef struct  _BstDialogClass  BstDialogClass;
 typedef enum
 {
   BST_DIALOG_HIDE_ON_DELETE	= 1 << 0,	/* skips destroy upon delete event */
-  BST_DIALOG_STATUS		= 1 << 1,
+  BST_DIALOG_STATUS_SHELL	= 1 << 1,
   BST_DIALOG_MODAL		= 1 << 2,
   BST_DIALOG_POPUP_POS		= 1 << 3,
-  BST_DIALOG_DELETE_BUTTON	= 1 << 4	/* auto-add "Close" button */
+  BST_DIALOG_DELETE_BUTTON	= 1 << 4	/* have "Close" button */
 } BstDialogFlags;
 
 

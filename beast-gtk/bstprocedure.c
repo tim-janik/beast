@@ -15,12 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include        "bstprocedure.h"
+#include "bstprocedure.h"
 
-#include        "bststatusbar.h"
-#include        "bstdialog.h"
-#include        <gobject/gvaluecollector.h>
-#include        <string.h>
+#include "bststatusbar.h"
+#include "bstdialog.h"
+#include "bsttexttools.h"
+#include <gobject/gvaluecollector.h>
+#include <string.h>
 
 
 /* --- prototypes --- */
@@ -198,8 +199,8 @@ bst_procedure_shell_rebuild (BstProcedureShell *shell)
    */
   if (proc->blurb)
     {
-      GtkWidget *hbox, *text = bst_text_view_create (BST_TEXT_VIEW_CENTER, proc->blurb);
-      
+      GtkWidget *hbox, *text = bst_scroll_text_create (BST_TEXT_VIEW_CENTER, proc->blurb);
+
       hbox = gtk_widget_new (GTK_TYPE_HBOX,
                              "visible", TRUE,
                              NULL);
@@ -425,7 +426,7 @@ bst_procedure_shell_global (void)
       global_proc_shell = (BstProcedureShell*) bst_procedure_shell_new (NULL);
       g_object_ref (global_proc_shell);
       gtk_object_sink (GTK_OBJECT (global_proc_shell));
-      dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_STATUS | BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_MODAL,
+      dialog = bst_dialog_new (NULL, NULL, BST_DIALOG_STATUS_SHELL | BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_MODAL,
 			       "Procedure", NULL);
 
       /* we're the best window to indicate procedure/script progress */

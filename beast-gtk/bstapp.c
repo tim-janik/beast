@@ -15,23 +15,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bstapp.h"
+#include "bstapp.h"
 
-#include	"../PKG_config.h"
+#include "../PKG_config.h"
 
-#include	"bstsongshell.h"
-#include	"bstwavereposhell.h"
-#include	"bstsnetshell.h"
-#include	"bstfiledialog.h"
-#include	"bststatusbar.h"
-#include	"bstgconfig.h"
-#include	"bstpreferences.h"
-#include	"bstprocbrowser.h"
-#include	"bstservermonitor.h"
-#include	"bstrackeditor.h"
-#include	"bstmenus.h"
-#include	"bstprocedure.h"
-
+#include "bstsongshell.h"
+#include "bstwavereposhell.h"
+#include "bstsnetshell.h"
+#include "bstfiledialog.h"
+#include "bststatusbar.h"
+#include "bstgconfig.h"
+#include "bstpreferences.h"
+#include "bstprocbrowser.h"
+#include "bstservermonitor.h"
+#include "bstrackeditor.h"
+#include "bstmenus.h"
+#include "bstprocedure.h"
+#include "bsttexttools.h"
 
 
 /* --- prototypes --- */
@@ -102,6 +102,7 @@ static GtkItemFactoryEntry menubar_help_entries[] = {
   { "/_Help",				NULL,		NULL, 0,			"<LastBranch>" },
   { "/Help/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Help/_Release Notes...",		NULL,		BST_OP (HELP_RELEASE_NOTES),	"<Item>" },
+  { "/Help/Quick Start...",		NULL,		BST_OP (HELP_QUICK_START),	"<Item>" },
   { "/Help/_FAQ...",			NULL,		BST_OP (HELP_FAQ),		"<Item>" },
   { "/Help/Development/GSL Engine...",	NULL,		BST_OP (HELP_GSL_PLAN),		"<Item>" },
   { "/Help/-----",			NULL,		NULL, 0,			"<Separator>" },
@@ -183,7 +184,7 @@ bst_app_init (BstApp *app)
   g_object_set (app,
 		"allow_shrink", TRUE,
 		"allow_grow", TRUE,
-		"flags", BST_DIALOG_STATUS,
+		"flags", BST_DIALOG_STATUS_SHELL,
 		NULL);
   bst_app_register (app);
   if (0)
@@ -544,7 +545,6 @@ bst_app_operate (BstApp *app,
   static GtkWidget *bst_proc_browser = NULL;
   GtkWidget *widget, *shell;
   gchar *help_file = NULL, *help_title = NULL;
-  GString *help_string = NULL;
 
   g_return_if_fail (BST_IS_APP (app));
   g_return_if_fail (bst_app_can_operate (app, op));
@@ -561,7 +561,6 @@ bst_app_operate (BstApp *app,
       BstSuperShell *super_shell;
       BswProxy proxy;
       GtkWidget *any;
-
     case BST_OP_PROJECT_NEW:
       if (1)
 	{
@@ -747,30 +746,54 @@ bst_app_operate (BstApp *app,
     case BST_OP_HELP_FAQ:
       help_file = g_strconcat (BST_PATH_DOCS, "/faq.markup", NULL);
       help_title = help_file;
-      goto case_help_dialog;
-    case BST_OP_HELP_RELEASE_NOTES:
-      help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
-      help_title = help_file;
-      goto case_help_dialog;
+      goto HELP_DIALOG;
     case BST_OP_HELP_GSL_PLAN:
       help_file = g_strconcat (BST_PATH_DOCS, "/gsl-mplan.markup", NULL);
       help_title = help_file;
-      goto case_help_dialog;
-    case BST_OP_HELP_ABOUT:
-      break;
-    case_help_dialog:
+      goto HELP_DIALOG;
+    case BST_OP_HELP_QUICK_START:
+      help_file = g_strconcat (BST_PATH_DOCS, "/quickstart.markup", NULL);
+      help_title = help_file;
+      goto HELP_DIALOG;
+    HELP_DIALOG:
       if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
-	bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
-								   NULL,
-								   BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_DELETE_BUTTON,
-								   help_title,
-								   bst_text_view_from (help_string,
-										       help_file,
-										       "mono"));
+	{
+	  GtkWidget *sctext = bst_scroll_text_from_file (BST_TEXT_VIEW_PARSE_TSM | BST_TEXT_VIEW_SHEET_BG, help_file);
+	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
+								     NULL,
+								     BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_DELETE_BUTTON,
+								     help_title, sctext);
+	  g_object_set (bst_help_dialogs[op - BST_OP_HELP_FIRST],
+			"default_width", 560,
+			"default_height", 640,
+			NULL);
+	}
       g_free (help_file);
-      if (help_string)
-	g_string_free (help_string, TRUE);
       gtk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
+      break;
+    case BST_OP_HELP_RELEASE_NOTES:
+      if (!bst_help_dialogs[op - BST_OP_HELP_FIRST])
+	{
+	  GtkWidget *sctext;
+	  help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
+	  help_title = help_file;
+	  sctext = bst_scroll_text_from_file (BST_TEXT_VIEW_PARSE_TSM | BST_TEXT_VIEW_SHEET_BG, help_file);
+	  help_file = g_strconcat (BST_PATH_DOCS, "/news.markup", NULL);
+	  bst_scroll_text_append_file_tsm (sctext, help_file);
+	  g_free (help_file);
+	  bst_help_dialogs[op - BST_OP_HELP_FIRST] = bst_dialog_new (&bst_help_dialogs[op - BST_OP_HELP_FIRST],
+								     NULL,
+								     BST_DIALOG_HIDE_ON_DELETE | BST_DIALOG_DELETE_BUTTON,
+								     help_title, sctext);
+	  g_object_set (bst_help_dialogs[op - BST_OP_HELP_FIRST],
+			"default_width", 560,
+			"default_height", 640,
+			NULL);
+	  g_free (help_title);
+	}
+      gtk_widget_showraise (bst_help_dialogs[op - BST_OP_HELP_FIRST]);
+      break;
+    case BST_OP_HELP_ABOUT:
       break;
     default:
       if (shell)
@@ -859,8 +882,47 @@ bst_app_can_operate (BstApp *app,
     case BST_OP_HELP_FAQ:
     case BST_OP_HELP_GSL_PLAN:
     case BST_OP_HELP_RELEASE_NOTES:
+    case BST_OP_HELP_QUICK_START:
       return TRUE;
     default:
       return shell ? bst_super_shell_can_operate (BST_SUPER_SHELL (shell), bst_op) : FALSE;
     }
+}
+
+static GSList *op_update_list = NULL;
+static guint op_update_id = 0;
+static gboolean
+op_update_handler (gpointer data)
+{
+  GDK_THREADS_ENTER ();
+  while (op_update_list)
+    {
+      GSList *tmp = op_update_list->next;
+      BstApp *app = op_update_list->data;
+      op_update_list = tmp;
+      bst_app_update_can_operate (app);
+      g_object_unref (app);
+    }
+  op_update_id = 0;
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
+void            /* read bstdefs.h on this */
+bst_update_can_operate (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  /* this function can be called multiple times in a row
+   */
+
+  /* figure toplevel app, and update it
+   */
+  widget = gtk_widget_get_ancestor (widget, BST_TYPE_APP);
+  g_return_if_fail (BST_IS_APP (widget));
+
+  op_update_list = g_slist_prepend (op_update_list, g_object_ref (widget));
+
+  if (!op_update_id)
+    op_update_id = g_idle_add_full (-1000, op_update_handler, NULL, NULL);
 }

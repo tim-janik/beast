@@ -242,31 +242,10 @@ void		g_object_set_int		(gpointer	 object,
 						 glong		 v_int);
 glong		g_object_get_int		(gpointer	 object,
 						 const gchar	*name);
+GtkTooltips*	bst_global_tooltips		(void);
 void	        bst_widget_modify_as_title	(GtkWidget	*widget);
 void	        bst_widget_modify_bg_as_base	(GtkWidget	*widget);
 void	        bst_widget_modify_base_as_bg	(GtkWidget	*widget);
-GtkWidget*	bst_text_view_from		(GString        *gstring,
-						 const gchar    *file_name,
-						 const gchar    *font_name);
-typedef enum /*< skip >*/
-{
-  BST_TEXT_VIEW_CENTER		= 1 << 0,
-  BST_TEXT_VIEW_NO_WRAP		= 1 << 1,
-  BST_TEXT_VIEW_SHEET_BG	= 1 << 2,
-} BstTextViewFlags;
-GtkWidget*	bst_text_view_create		(BstTextViewFlags flags,
-						 const gchar    *string);
-void		bst_text_view_set		(GtkWidget      *text,
-						 const gchar    *string);
-void		bst_text_view_clear		(GtkWidget      *text);
-void		bst_text_view_push_indent	(GtkWidget	*text,
-						 const gchar	*spaces);
-void		bst_text_view_append		(GtkWidget      *text,
-						 const gchar    *string);
-void		bst_text_view_aprintf		(GtkWidget      *text,
-						 const gchar    *text_fmt,
-						 ...) G_GNUC_PRINTF (2, 3);
-void		bst_text_view_pop_indent	(GtkWidget	*text);
 guint      bst_container_get_insertion_position (GtkContainer   *container,
 						 gboolean        scan_horizontally,
 						 gint            xy,

@@ -159,7 +159,7 @@ bst_part_dialog_init (BstPartDialog *self)
   g_object_set (self,
 		"default_width", 600,
 		"default_height", 450,
-		"flags", BST_DIALOG_STATUS,
+		"flags", BST_DIALOG_STATUS_SHELL,
 		NULL);
   main_vbox = BST_DIALOG (self)->vbox;
 

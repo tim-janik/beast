@@ -15,14 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
-#include	"bstcanvassource.h"
+#include "bstcanvassource.h"
 
-#include	"../PKG_config.h"
+#include "../PKG_config.h"
 
-#include	"bstparamview.h"
-#include	"bstgconfig.h"
-#include	"bstdialog.h"
-#include	"bststatusbar.h"
+#include "bstparamview.h"
+#include "bstgconfig.h"
+#include "bstdialog.h"
+#include "bststatusbar.h"
+#include "bsttexttools.h"
 
 
 /* --- defines --- */
@@ -354,65 +355,65 @@ csource_info_update (BstCanvasSource *csource)
       guint i;
 
       /* construct information */
-      bst_text_view_clear (text);
-      bst_text_view_aprintf (text, "%s (%s):\n",
-			     bsw_item_get_name_or_type (csource->source),
-			     bsw_item_get_type_name (csource->source));
+      bst_scroll_text_clear (text);
+      bst_scroll_text_aprintf (text, "%s (%s):\n",
+			       bsw_item_get_name_or_type (csource->source),
+			       bsw_item_get_type_name (csource->source));
 
       /* input channels */
       if (bsw_source_n_ichannels (csource->source))
 	{
-	  bst_text_view_aprintf (text, "\nInput Channels:\n");
-	  bst_text_view_push_indent (text, "  ");
+	  bst_scroll_text_aprintf (text, "\nInput Channels:\n");
+	  bst_scroll_text_push_indent (text, "  ");
 	}
       for (i = 0; i < bsw_source_n_ichannels (csource->source); i++)
 	{
           string = bsw_source_ichannel_blurb (csource->source, i);
-	  bst_text_view_aprintf (text, "%s[%s]%s\n",
-				 bsw_source_ichannel_name (csource->source, i),
-				 bsw_source_ichannel_cname (csource->source, i),
-				 string ? ":" : "");
+	  bst_scroll_text_aprintf (text, "%s[%s]%s\n",
+				   bsw_source_ichannel_name (csource->source, i),
+				   bsw_source_ichannel_cname (csource->source, i),
+				   string ? ":" : "");
 	  if (string)
 	    {
-	      bst_text_view_push_indent (text, "  ");
-	      bst_text_view_aprintf (text, "%s\n", string);
-	      bst_text_view_pop_indent (text);
+	      bst_scroll_text_push_indent (text, "  ");
+	      bst_scroll_text_aprintf (text, "%s\n", string);
+	      bst_scroll_text_pop_indent (text);
 	    }
 	}
       if (bsw_source_n_ichannels (csource->source))
-	bst_text_view_pop_indent (text);
+	bst_scroll_text_pop_indent (text);
 
       /* output channels */
       if (bsw_source_n_ochannels (csource->source))
 	{
-	  bst_text_view_aprintf (text, "\nOutput Channels:\n");
-	  bst_text_view_push_indent (text, "  ");
+	  bst_scroll_text_aprintf (text, "\nOutput Channels:\n");
+	  bst_scroll_text_push_indent (text, "  ");
 	}
       for (i = 0; i < bsw_source_n_ochannels (csource->source); i++)
 	{
 	  string = bsw_source_ochannel_blurb (csource->source, i);
-	  bst_text_view_aprintf (text, "%s[%s]%s\n",
-				 bsw_source_ochannel_name (csource->source, i),
-				 bsw_source_ochannel_cname (csource->source, i),
-				 string ? ":" : "");
+	  bst_scroll_text_aprintf (text, "%s[%s]%s\n",
+				   bsw_source_ochannel_name (csource->source, i),
+				   bsw_source_ochannel_cname (csource->source, i),
+				   string ? ":" : "");
           if (string)
 	    {
-	      bst_text_view_push_indent (text, "  ");
-	      bst_text_view_aprintf (text, "%s\n", string);
-	      bst_text_view_pop_indent (text);
+	      bst_scroll_text_push_indent (text, "  ");
+	      bst_scroll_text_aprintf (text, "%s\n", string);
+	      bst_scroll_text_pop_indent (text);
 	    }
 	}
       if (bsw_source_n_ochannels (csource->source))
-	bst_text_view_pop_indent (text);
+	bst_scroll_text_pop_indent (text);
 
       /* description */
       string = bsw_item_get_type_blurb (csource->source);
       if (string)
 	{
-	  bst_text_view_aprintf (text, "\nDescription:\n");
-	  bst_text_view_push_indent (text, "  ");
-	  bst_text_view_aprintf (text, "%s\n", string);
-	  bst_text_view_pop_indent (text);
+	  bst_scroll_text_aprintf (text, "\nDescription:\n");
+	  bst_scroll_text_push_indent (text, "  ");
+	  bst_scroll_text_aprintf (text, "%s\n", string);
+	  bst_scroll_text_pop_indent (text);
 	}
     }
 }
@@ -432,12 +433,8 @@ bst_canvas_source_popup_info (BstCanvasSource *csource)
 							     "visible", TRUE,
 							     "border_width", 5,
 							     "label", "Module Info",
-							     "child", bst_text_view_create (0, NULL),
+							     "child", bst_scroll_text_create (0, NULL),
 							     NULL));
-      g_object_set (csource->source_info,
-		    "default_width", 320,
-		    "default_height", 200,
-		    NULL);
     }
   csource_info_update (csource);
   source_name_changed (csource);
