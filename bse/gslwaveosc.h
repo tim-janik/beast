@@ -1,4 +1,4 @@
-/* GslWaveOsc - GSL Wave Oscillator
+/* GSL - Generic Sound Layer
  * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or modify

@@ -70,23 +70,7 @@ typedef struct {
 } WaveHandle;
 
 
-/* --- variables --- */
-static GslRing *wave_handles = NULL;
-static GslMutex dhandle_global = { 0, };
-
-
 /* --- standard functions --- */
-void
-_gsl_init_data_handles (void)
-{
-  static gboolean initialized = FALSE;
-  
-  g_assert (initialized == FALSE);
-  initialized = TRUE;
-  
-  gsl_mutex_init (&dhandle_global);
-}
-
 GslDataHandle*
 gsl_data_handle_ref (GslDataHandle *dhandle)
 {
@@ -330,7 +314,7 @@ gsl_data_handle_new_reversed (GslDataHandle *src_handle)
       rhandle->dhandle.n_values = src_handle->n_values;
       rhandle->src_handle = gsl_data_handle_ref (src_handle);
     }
-  if (!success)
+  else
     {
       gsl_delete_struct (ReversedHandle, rhandle);
       return NULL;
@@ -418,7 +402,7 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
       chandle->cut_offset = n_cut_values ? cut_offset : 0;
       chandle->n_cut_values = n_cut_values;
     }
-  if (!success)
+  else
     {
       gsl_delete_struct (CutHandle, chandle);
       return NULL;
@@ -538,7 +522,7 @@ gsl_data_handle_new_insert (GslDataHandle *src_handle,
       ihandle->paste_values = paste_values;
       ihandle->free_values = free;
     }
-  if (!success)
+  else
     {
       gsl_delete_struct (InsertHandle, ihandle);
       return NULL;
@@ -614,7 +598,7 @@ gsl_data_handle_new_looped (GslDataHandle *src_handle,
       lhandle->loop_start = loop_start;
       lhandle->loop_width = loop_end - loop_start + 1;
     }
-  if (!success)
+  else
     {
       gsl_delete_struct (LoopHandle, lhandle);
       return NULL;
@@ -694,7 +678,7 @@ gsl_data_handle_new_dcached (GslDataCache *dcache)
       dhandle->dcache = gsl_data_cache_ref (dcache);
       dhandle->node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
     }
-  if (!success)
+  else
     {
       gsl_delete_struct (DCacheHandle, dhandle);
       return NULL;
@@ -730,11 +714,7 @@ static void
 wave_handle_destroy (GslDataHandle *data_handle)
 {
   WaveHandle *whandle = (WaveHandle*) data_handle;
-  
-  GSL_SPIN_LOCK (&dhandle_global);
-  wave_handles = gsl_ring_remove (wave_handles, whandle);
-  GSL_SPIN_UNLOCK (&dhandle_global);
-  
+
   gsl_data_handle_common_free (data_handle);
   gsl_delete_struct (WaveHandle, whandle);
 }
@@ -889,9 +869,8 @@ wave_handle_read (GslDataHandle *data_handle,
   return l;
 }
 
-GslDataHandle*
-gsl_wave_handle_new_cached (const gchar      *file_name,
-			    GTime             mtime,
+static GslDataHandle*
+raw_wave_handle_new_cached (const gchar      *file_name,
 			    GslWaveFormatType format,
 			    guint	      byte_order,
 			    guint	      boffset_reminder)
@@ -902,41 +881,25 @@ gsl_wave_handle_new_cached (const gchar      *file_name,
     wave_handle_close,
     wave_handle_destroy,
   };
+  GslDataHandleHash hash = { 0, };
+  GslDataHandle *cache_handle;
   WaveHandle *whandle;
-  GslRing *ring;
   gboolean success;
   
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
   g_return_val_if_fail (boffset_reminder < wave_format_byte_width (format), NULL);
-  
-  if (mtime == 0)	/* don't need mtime match */
-    {
-      struct stat statbuf = { 0, };
-      
-      if (stat (file_name, &statbuf) < 0 || statbuf.st_size < 1)
-	return NULL;
-      mtime = statbuf.st_mtime;
-    }
-  
-  GSL_SPIN_LOCK (&dhandle_global);
-  for (ring = wave_handles; ring; ring = gsl_ring_walk (wave_handles, ring))
-    {
-      whandle = ring->data;
-      
-      if (whandle->dhandle.mtime == mtime &&
-	  strcmp (whandle->dhandle.name, file_name) == 0 &&
-	  whandle->format == format && whandle->byte_order == byte_order &&
-	  whandle->boffset_reminder == boffset_reminder)
-	{
-	  gsl_data_handle_ref (&whandle->dhandle);
-	  GSL_SPIN_UNLOCK (&dhandle_global);
-	  return &whandle->dhandle;
-	}
-    }
-  GSL_SPIN_UNLOCK (&dhandle_global);
-  
+
+  hash.fpointer = &wave_handle_vtable;
+  hash.strings[0] = (gchar*) file_name;
+  hash.data[0].v_long = format;
+  hash.data[1].v_long = byte_order;
+  hash.data[2].v_long = boffset_reminder;
+  cache_handle = gsl_data_handle_cached (hash);
+  if (cache_handle)
+    return cache_handle;
+
   whandle = gsl_new_struct0 (WaveHandle, 1);
   success = gsl_data_handle_common_init (&whandle->dhandle, file_name, wave_format_bit_depth (format));
   if (success)
@@ -962,16 +925,17 @@ gsl_wave_handle_new_cached (const gchar      *file_name,
 	}
       else
 	success = FALSE;
+
+      if (!success)
+	gsl_data_handle_common_free (&whandle->dhandle);
     }
   if (!success)
     {
       gsl_delete_struct (WaveHandle, whandle);
       return NULL;
     }
-  GSL_SPIN_LOCK (&dhandle_global);
-  wave_handles = gsl_ring_append (wave_handles, whandle);
-  GSL_SPIN_UNLOCK (&dhandle_global);
-  
+  gsl_data_handle_enter_cache (&whandle->dhandle, hash); /* FIXME: we never leave or handle mtime */
+
   return &whandle->dhandle;
 }
 
@@ -992,20 +956,29 @@ gsl_wave_handle_new (const gchar      *file_name,
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
   g_return_val_if_fail (byte_offset >= 0, NULL);
   g_return_val_if_fail (n_values >= 1 || n_values == -1, NULL);
-  
+
+  /* FIXME: handle mtime */
+
   fwidth = wave_format_byte_width (format);
   boffset_reminder = byte_offset % fwidth;
-  whandle = gsl_wave_handle_new_cached (file_name, mtime, format, byte_order, boffset_reminder);
+  whandle = raw_wave_handle_new_cached (file_name, format, byte_order, boffset_reminder);
   if (!whandle)
     return NULL;
+
   offset = (byte_offset - boffset_reminder) / fwidth;
   if (n_values == -1)
     n_values = whandle->n_values - offset;
+
   if (offset + n_values > whandle->n_values)
     {
       gsl_data_handle_unref (whandle);
       return NULL;
     }
+
+  /* do we need a translation handle? */
+  if (offset == 0 && whandle->n_values == n_values)
+    return whandle;
+
   thandle = gsl_data_handle_new_translate (whandle,
 					   0, offset,
 					   whandle->n_values - offset - n_values);
@@ -1013,4 +986,182 @@ gsl_wave_handle_new (const gchar      *file_name,
   g_assert (thandle->n_values == n_values);	/* paranoid */
   
   return thandle;
+}
+
+const gchar*
+gsl_wave_format_to_string (GslWaveFormatType format)
+{
+  switch (format)
+    {
+    case GSL_WAVE_FORMAT_UNSIGNED_8:    return "unsigned_8";
+    case GSL_WAVE_FORMAT_SIGNED_8:      return "signed_8";
+    case GSL_WAVE_FORMAT_UNSIGNED_12:   return "unsigned_12";
+    case GSL_WAVE_FORMAT_SIGNED_12:     return "signed_12";
+    case GSL_WAVE_FORMAT_UNSIGNED_16:   return "unsigned_16";
+    case GSL_WAVE_FORMAT_SIGNED_16:     return "signed_16";
+    case GSL_WAVE_FORMAT_FLOAT:         return "float";
+    case GSL_WAVE_FORMAT_NONE:
+    case GSL_WAVE_FORMAT_LAST:
+    default:
+      g_return_val_if_fail (format >= GSL_WAVE_FORMAT_UNSIGNED_8 && format <= GSL_WAVE_FORMAT_FLOAT, NULL);
+      return NULL;
+    }
+}
+
+GslWaveFormatType
+gsl_wave_format_from_string (const gchar *string)
+{
+  gboolean is_unsigned = FALSE;
+
+  g_return_val_if_fail (string != NULL, GSL_WAVE_FORMAT_NONE);
+
+  while (*string == ' ')
+    string++;
+  if (strncasecmp (string, "float", 5) == 0)
+    return GSL_WAVE_FORMAT_FLOAT;
+  if ((string[0] == 'u' || string[0] == 'U') &&
+      (string[1] == 'n' || string[1] == 'N'))
+    {
+      is_unsigned = TRUE;
+      string += 2;
+    }
+  if (strncasecmp (string, "signed", 6) != 0)
+    return GSL_WAVE_FORMAT_NONE;
+  string += 6;
+  if (string[0] != '-' && string[0] != '_')
+    return GSL_WAVE_FORMAT_NONE;
+  string += 1;
+  if (string[0] == '8')
+    return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_8 : GSL_WAVE_FORMAT_SIGNED_8;
+  if (string[0] != '1')
+    return GSL_WAVE_FORMAT_NONE;
+  string += 1;
+  if (string[0] == '2')
+    return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_12 : GSL_WAVE_FORMAT_SIGNED_12;
+  if (string[0] == '6')
+    return is_unsigned ? GSL_WAVE_FORMAT_UNSIGNED_16 : GSL_WAVE_FORMAT_SIGNED_16;
+  return GSL_WAVE_FORMAT_NONE;
+}
+
+
+/* --- datahandle cache --- */
+typedef struct _DHCSlot DHCSlot;
+struct _DHCSlot
+{
+  DHCSlot *next;
+  GslDataHandle *dhandle;
+  GslDataHandleHash hash;
+};
+static DHCSlot *dhc_slots = NULL;
+static GslMutex dhc_mutex = { 0, };
+
+void
+gsl_data_handle_enter_cache (GslDataHandle    *dhandle,
+			     GslDataHandleHash hash)
+{
+  DHCSlot *slot;
+
+  g_return_if_fail (dhandle != NULL);
+  g_return_if_fail (dhandle->ref_count > 0);
+  g_return_if_fail (gsl_data_handle_cached (hash) == NULL);
+
+  slot = gsl_new_struct (DHCSlot, 1);
+  slot->hash = hash;
+  slot->hash.strings[0] = g_strdup (hash.strings[0]);
+  slot->hash.strings[1] = g_strdup (hash.strings[1]);
+  slot->hash.strings[2] = g_strdup (hash.strings[2]);
+  slot->hash.strings[3] = g_strdup (hash.strings[3]);
+  slot->dhandle = gsl_data_handle_ref (dhandle);
+
+  GSL_SPIN_LOCK (&dhc_mutex);
+  slot->next = dhc_slots;
+  dhc_slots = slot;
+  GSL_SPIN_UNLOCK (&dhc_mutex);
+}
+
+void
+gsl_data_handle_leave_cache (GslDataHandle *dhandle)
+{
+  DHCSlot *slot, *last;
+  
+  g_return_if_fail (dhandle != NULL);
+  g_return_if_fail (dhandle->ref_count > 0);
+
+  GSL_SPIN_LOCK (&dhc_mutex);
+  for (last = NULL, slot = dhc_slots; slot; last = slot, slot = last->next)
+    if (slot->dhandle == dhandle)
+      break;
+  if (slot)
+    {
+      if (last)
+	last->next = slot->next;
+      else
+	dhc_slots->next = slot->next;
+    }
+  GSL_SPIN_UNLOCK (&dhc_mutex);
+
+  if (slot)
+    {
+      g_free (slot->hash.strings[0]);
+      g_free (slot->hash.strings[1]);
+      g_free (slot->hash.strings[2]);
+      g_free (slot->hash.strings[3]);
+      gsl_data_handle_ref (slot->dhandle);
+      gsl_delete_struct (DHCSlot, slot);
+    }
+  else
+    g_warning (G_STRLOC ": data handle %p not in cache", dhandle);
+}
+
+static gboolean
+dhhash_match (GslDataHandleHash *hash1,
+	      GslDataHandleHash *hash2)
+{
+  if (hash1->fpointer != hash2->fpointer)
+    return FALSE;
+  if (memcmp (&hash1->data, &hash2->data, sizeof (hash1->data)) != 0)
+    return FALSE;
+  if ((hash1->strings[0] != NULL) ^ (hash2->strings[0] != NULL))
+    return FALSE;
+  if ((hash1->strings[1] != NULL) ^ (hash2->strings[1] != NULL))
+    return FALSE;
+  if ((hash1->strings[2] != NULL) ^ (hash2->strings[2] != NULL))
+    return FALSE;
+  if ((hash1->strings[3] != NULL) ^ (hash2->strings[3] != NULL))
+    return FALSE;
+  if (hash1->strings[0] && strcmp (hash1->strings[0], hash2->strings[0]) != 0)
+    return FALSE;
+  if (hash1->strings[1] && strcmp (hash1->strings[1], hash2->strings[1]) != 0)
+    return FALSE;
+  if (hash1->strings[2] && strcmp (hash1->strings[2], hash2->strings[2]) != 0)
+    return FALSE;
+  if (hash1->strings[3] && strcmp (hash1->strings[3], hash2->strings[3]) != 0)
+    return FALSE;
+  return TRUE;
+}
+
+GslDataHandle*
+gsl_data_handle_cached (GslDataHandleHash hash)
+{
+  DHCSlot *slot;
+
+  GSL_SPIN_LOCK (&dhc_mutex);
+  for (slot = dhc_slots; slot; slot = slot->next)
+    if (dhhash_match (&slot->hash, &hash))
+      break;
+  GSL_SPIN_UNLOCK (&dhc_mutex);
+  return slot ? gsl_data_handle_ref (slot->dhandle) : NULL;
+}
+
+
+/* --- initialization --- */
+void
+_gsl_init_data_handles (void)
+{
+  static gboolean initialized = FALSE;
+  
+  g_assert (initialized == FALSE);
+  initialized = TRUE;
+  
+  gsl_mutex_init (&dhc_mutex);
 }

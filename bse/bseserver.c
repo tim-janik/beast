@@ -20,8 +20,9 @@
 
 #include "bseproject.h"
 #include "gslengine.h"
+#include "gslmagic.h"
+#include "gslcommon.h"
 #include "bsemidimodule.h"
-#include "bsemagic.h"
 #include "bsemain.h"		/* threads enter/leave */
 
 
@@ -249,30 +250,30 @@ bse_server_register_loader (BseServer   *server,
 			    const gchar *extension,
 			    const gchar *magic_spec)
 {
-  BseMagic *magic;
+  GslMagic *magic;
 
   g_return_if_fail (BSE_IS_SERVER (server));
   g_return_if_fail (BSE_TYPE_IS_PROCEDURE (proc_type));
   g_return_if_fail (magic_spec != NULL);
 
-  magic = bse_magic_create ((gpointer) proc_type,
+  magic = gsl_magic_create ((gpointer) proc_type,
 			    G_PRIORITY_DEFAULT,
-			    extension ? g_quark_from_string (extension) : 0,
+			    extension,
 			    magic_spec);
   if (magic)
-    server->loader_magics = g_slist_prepend (server->loader_magics, magic);
+    server->loader_magics = gsl_ring_prepend (server->loader_magics, magic);
 }
 
 GType
 bse_server_find_loader (BseServer *server,
 			const gchar    *file_name)
 {
-  BseMagic *magic;
+  GslMagic *magic;
 
   g_return_val_if_fail (BSE_IS_SERVER (server), 0);
   g_return_val_if_fail (file_name != NULL, 0);
 
-  magic = bse_magic_list_match_file (server->loader_magics, file_name);
+  magic = gsl_magic_list_match_file (server->loader_magics, file_name);
 
   return magic ? GPOINTER_TO_UINT (magic->data) : 0;
 }

@@ -15,7 +15,7 @@ while ($_ = $ARGV[0], /^-/) {
     elsif (/^--array$/) { $gen_array = 1 }
 }
 
-print "\n/**\n ** Generated data (by mkproc.pl";
+print "\n/**\n ** Generated data (by mkcproc.pl";
 print ")\n **/\n";
 
 sub ncanon {
@@ -78,7 +78,9 @@ while (<>) {
         $_ .= $new; $line_jump = 1;
     }
     # strip comments
-    s@/\*([^*]|\*[^/*])*\**\*/@@gx;
+    if (s@/\*([^*]|\*[^/*])*\**\*/@@gx) {
+	$line_jump = 1;
+    }
 
     # find PROCEDURE() directive
     if (m@^\s*(METHOD|PROCEDURE)\s*\(@) {

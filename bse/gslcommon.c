@@ -1062,6 +1062,7 @@ gsl_strerror (GslErrorType error)
     {
     case GSL_ERROR_NONE:		return "Everything went well";
     case GSL_ERROR_INTERNAL:		return "Internal error (please report)";
+    case GSL_ERROR_LAST:
     case GSL_ERROR_UNKNOWN:		return "Unknown error";
     case GSL_ERROR_IO:			return "I/O error";
     case GSL_ERROR_NOT_FOUND:		return "Not found";
@@ -1069,8 +1070,9 @@ gsl_strerror (GslErrorType error)
     case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
     case GSL_ERROR_READ_FAILED:		return "Read failed";
     case GSL_ERROR_WRITE_FAILED:	return "Write failed";
-    case GSL_ERROR_PREMATURE_EOF:	return "Premature EOF";
+    case GSL_ERROR_EOF:			return "File empty or premature EOF";
     case GSL_ERROR_FORMAT_INVALID:	return "Invalid format";
+    case GSL_ERROR_FORMAT_UNKNOWN:	return "Unknown format";
     case GSL_ERROR_DATA_CORRUPT:        return "data corrupt";
     case GSL_ERROR_CODEC_FAILURE:	return "CODEC failure";
     default:				return NULL;
@@ -1117,6 +1119,35 @@ gsl_message_send (const gchar *reporter,
 
   /* in current lack of a decent message queue, do nothing here */
   ;
+}
+
+
+/* --- misc --- */
+const gchar*
+gsl_byte_order_to_string (guint byte_order)
+{
+  g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
+
+  if (byte_order == G_LITTLE_ENDIAN)
+    return "little_endian";
+  if (byte_order == G_BIG_ENDIAN)
+    return "big_endian";
+
+  return NULL;
+}
+
+guint
+gsl_byte_order_from_string (const gchar *string)
+{
+  g_return_val_if_fail (string != NULL, 0);
+
+  while (*string == ' ')
+    string++;
+  if (strncasecmp (string, "little", 6) == 0)
+    return G_LITTLE_ENDIAN;
+  if (strncasecmp (string, "big", 3) == 0)
+    return G_BIG_ENDIAN;
+  return 0;
 }
 
 
@@ -1204,6 +1235,7 @@ gsl_init (const GslConfigValue values[])
   global_thread_cond = gsl_cond_new ();
   _gsl_init_data_handles ();
   _gsl_init_data_caches ();
-  _gsl_init_wave_dsc ();
   _gsl_init_engine_utils ();
+  _gsl_init_loader_gslwave ();
+  _gsl_init_loader_wav ();
 }

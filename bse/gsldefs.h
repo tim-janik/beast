@@ -32,6 +32,7 @@ extern "C" {
 
 
 /* --- forward decls --- */
+typedef struct _GslMagic		GslMagic;
 typedef struct _GslClass		GslClass;
 typedef struct _GslComplex		GslComplex;
 typedef struct _GslCond			GslCond;
@@ -42,19 +43,43 @@ typedef struct _GslJob			GslJob;
 typedef struct _GslModule		GslModule;
 typedef struct _GslIStream		GslIStream;
 typedef struct _GslJStream		GslJStream;
+typedef struct _GslLoader		GslLoader;
 typedef struct _GslOStream		GslOStream;
 typedef struct _GslThread		GslThread;
 typedef struct _GslTrans		GslTrans;
-typedef struct _GslWaveDsc		GslWaveDsc;
 typedef struct _GslWaveChunk		GslWaveChunk;
 typedef struct _GslWaveChunkBlock	GslWaveChunkBlock;
-typedef struct _GslWaveChunkDsc		GslWaveChunkDsc;
 typedef struct _GslRecMutex		GslRecMutex;
 typedef struct _GslRing			GslRing;
 typedef union _GslMutex			GslMutex;
 /* ssize_t/off_t type used within Gsl */
 typedef glong			  GslLong;
 #define	GSL_MAXLONG		  G_MAXLONG
+
+
+/* --- GSL errors --- */
+typedef enum    /*< skip >*/
+{
+  GSL_ERROR_NONE,
+  GSL_ERROR_INTERNAL,
+  GSL_ERROR_UNKNOWN,
+  /* I/O errors */
+  GSL_ERROR_IO,
+  GSL_ERROR_EOF,
+#define GSL_ERROR_FILE_EMPTY	GSL_ERROR_EOF
+  GSL_ERROR_NOT_FOUND,
+  GSL_ERROR_OPEN_FAILED,
+  GSL_ERROR_SEEK_FAILED,
+  GSL_ERROR_READ_FAILED,
+  GSL_ERROR_WRITE_FAILED,
+  /* content errors */
+  GSL_ERROR_FORMAT_INVALID,
+  GSL_ERROR_FORMAT_UNKNOWN,
+  GSL_ERROR_DATA_CORRUPT,
+  /* miscellaneous errors */
+  GSL_ERROR_CODEC_FAILURE,
+  GSL_ERROR_LAST        /* administrative */
+} GslErrorType;
 
 
 /* --- functions --- */

@@ -1,7 +1,20 @@
-
-
-
-
+/* BSE - Bedevilled Sound Engine
+ * Copyright (C) 2001, 2002 Tim Janik
+ *
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ */
 #include "bse/bse.h"
 
 #define	PREC_SHIFT	16
@@ -79,12 +92,12 @@ main (gint   argc,
   
   if (argc == 2)
     {
-      GSList *plist, *flist, *slist, *tlist;
+      GSList *plist, *slist;
 
       g_print ("search path: \"%s\"\n", argv[1]);
       plist = bse_search_path_list_files (argv[1], NULL);
       for (slist = plist; slist; slist = slist->next)
-	g_print ("%s\n", slist->data);
+	g_print ("%s\n", (char*) slist->data);
       bse_str_slist_free (plist);
     }
 

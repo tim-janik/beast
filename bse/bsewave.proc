@@ -18,7 +18,7 @@
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>
 #include        <bse/bsewave.h>
-#include        <gsl/gslwavedsc.h>
+#include        <gsl/gslloader.h>
 
 
 AUTHOR  = "Tim Janik <timj@gtk.org>";
@@ -26,11 +26,11 @@ CRIGHTS = "Tim Janik <timj@gtk.org>";
 DATE    = "2001";
 
 
-METHOD (BseWave, gslwave-loader) {
-  HELP  = "Load wave chunks from a .gslwave file";
+METHOD (BseWave, load-wave) {
+  HELP  = "Load sample chunks from a wave file";
   IN    = g_param_spec_object ("wave", "Wave", "Wave object to store loaded contents",
                                BSE_TYPE_WAVE, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_string ("file_name", "File Name", "The gslwave file to read wave chunks from",
+  IN    = g_param_spec_string ("file_name", "File Name", "The wave file to read wave chunks from",
                                NULL, BSE_PARAM_DEFAULT);
   IN    = g_param_spec_string ("wave_name", "Wave Name", "The name of the wave to read wave chunks from",
                                NULL, BSE_PARAM_DEFAULT);
@@ -63,36 +63,49 @@ BODY (BseProcedureClass *proc,
   GValueArray *list_array = g_value_get_boxed (in_values++);
   GValueArray *skip_array = g_value_get_boxed (in_values++);
   BseErrorType error = BSE_ERROR_NONE;
-  GslWaveDsc *wdsc;
+  GslWaveFileInfo *fi;
 
   /* check parameters */
-  if (!BSE_IS_WAVE (wave) || !file_name)
+  if (!BSE_IS_WAVE (wave) || !file_name || !wave_name)
     return BSE_ERROR_PROC_PARAM_INVAL;
 
-  wdsc = gsl_wave_dsc_read (file_name);
-  if (wdsc)
+  fi = gsl_wave_file_info_load (file_name, &error);
+  if (fi)
     {
-      if (wdsc->n_chunks)
+      guint i;
+
+      for (i = 0; i < fi->n_waves; i++)
+	if (strcmp (wave_name, fi->waves[i].name) == 0)
+	  break;
+      if (i < fi->n_waves)
 	{
-	  guint i;
-	  
-	  for (i = 0; i < wdsc->n_chunks; i++)
-	    if (bse_value_arrays_match_freq (wdsc->chunks[i].osc_freq,
-					     list_array && list_array->n_values ? list_array : NULL,
-					     skip_array))
-	      {
-		GslWaveChunk *wchunk = gsl_wave_chunk_from_dsc (wdsc, i);
-		
-		if (!wchunk)
-		  g_message ("wave \"%s\": failed to load wave chunk (%f/%f)", // FIXME
-			     wdsc->name, wdsc->chunks[i].osc_freq, wdsc->chunks[i].mix_freq);
-		else
-		  bse_wave_add_chunk (wave, wchunk);
-	      }
+	  GslWaveDsc *wdsc = gsl_wave_dsc_load (fi, i, &error);
+
+	  if (wdsc)
+	    {
+	      for (i = 0; i < wdsc->n_chunks; i++)
+		if (bse_value_arrays_match_freq (wdsc->chunks[i].osc_freq,
+						 list_array && list_array->n_values ? list_array : NULL,
+						 skip_array))
+		  {
+		    BseErrorType tmp_error;
+		    GslWaveChunk *wchunk = gsl_wave_chunk_create (wdsc, i, &tmp_error);
+
+		    if (!wchunk)
+		      {
+			error = tmp_error;
+			g_message ("wave \"%s\": failed to load wave chunk (%f/%f): %s", // FIXME
+				   wdsc->name, wdsc->chunks[i].osc_freq, wdsc->chunks[i].mix_freq,
+				   bse_error_blurb (error));
+		      }
+		    else
+		      bse_wave_add_chunk (wave, wchunk);
+		  }
+	      gsl_wave_dsc_free (wdsc);
+	    }
 	}
       else
-	g_message ("wave \"%s\" appears to be empty", wdsc->name); // FIXME
-      gsl_wave_dsc_free (wdsc);
+	error = GSL_ERROR_NOT_FOUND;
     }
   else if (!g_file_test (file_name, G_FILE_TEST_IS_REGULAR))
     error = BSE_ERROR_FILE_NOT_FOUND;

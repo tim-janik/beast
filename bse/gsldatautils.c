@@ -141,7 +141,9 @@ gsl_data_detect_signal (GslDataHandle *handle,
 	  if (maxsamp < k)
 	    maxsamp = k;
 	}
-      // if (minsamp >= 0 && xcheck >= 0) 	break;
+      /* if (minsamp >= 0 && xcheck >= 0)
+       *   break;
+       */
     }
   if (xcheck-minsamp > 0)
     g_printerr("###################");
@@ -183,7 +185,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
       {
 	gfloat val = gsl_data_handle_peek_value (dhandle, i, &peekbuf);
 
-	// g_print ("(%lu): %f <= %f <= %f\n", i, min_value, val, max_value);
+	/* g_print ("(%lu): %f <= %f <= %f\n", i, min_value, val, max_value); */
 	if (val >= min_value && val <= max_value)
 	  break;
       }
@@ -192,7 +194,7 @@ gsl_data_find_sample (GslDataHandle *dhandle,
       {
 	gfloat val = gsl_data_handle_peek_value (dhandle, i, &peekbuf);
 
-	// g_print ("(%lu): %f > %f || %f < %f\n", i, val, max_value, val, min_value);
+	/* g_print ("(%lu): %f > %f || %f < %f\n", i, val, max_value, val, min_value); */
 	if (val > min_value || val < max_value)
 	  break;
       }

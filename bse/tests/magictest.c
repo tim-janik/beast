@@ -17,6 +17,11 @@
  */
 #include        "bse.h"
 
+#include        "gslmagic.h"
+#include        "gslcommon.h"
+#include        "gslloader.h"
+#include        "gsldatahandle.h"
+
 #include        "../PKG_config.h"
 #include        <stdio.h>
 
@@ -52,18 +57,18 @@ main (gint   argc,
   };
   static const guint n_magic_presets = sizeof (magic_presets) / sizeof (magic_presets[0]);
   guint i;
-  GSList *magic_list = NULL;
+  GslRing *magic_list = NULL;
 
   g_thread_init (NULL);
   bse_init (&argc, &argv, NULL);
 
   for (i = 0; i < n_magic_presets; i++)
-    magic_list = g_slist_append (magic_list,
-				 bse_magic_create (magic_presets[i][0],
-						   0,
-						   0,
-						   magic_presets[i][1]));
-
+    magic_list = gsl_ring_append (magic_list,
+				  gsl_magic_create (magic_presets[i][0],
+						    0,
+						    0,
+						    magic_presets[i][1]));
+  
   for (i = 1; i < argc; i++)
     {
       if (strcmp ("-p", argv[i]) == 0)
@@ -89,7 +94,8 @@ main (gint   argc,
 	}
       else
 	{
-	  BseMagic *magic = bse_magic_list_match_file (magic_list, argv[i]);
+	  GslLoader *loader = gsl_loader_match (argv[i]);
+	  GslMagic *magic = gsl_magic_list_match_file (magic_list, argv[i]);
 	  guint l = strlen (argv[i]);
 	  gchar *pad;
 
@@ -98,9 +104,12 @@ main (gint   argc,
 	  g_print (pad);
 	  g_free (pad);
 	  if (magic)
-	    g_print (" %s\n", (char*) magic->data);
+	    g_print (" %s", (char*) magic->data);
 	  else
-	    g_print (" no match\n");
+	    g_print (" no match");
+	  if (loader)
+	    g_print ("   ***Loader: %s", loader->name);
+	  g_print ("\n");
 	}
     }
 

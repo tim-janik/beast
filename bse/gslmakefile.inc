@@ -1,19 +1,18 @@
 # GSL targets
 GSL_H_SOURCES =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h gslwavechunk.h \
-		gslwavedsc.h gslmath.h gslfilter.h gsldatautils.h \
-		gslconvert.h gslfft.h gslieee754.h gslsignal.h \
+		gslmath.h gslfilter.h gsldatautils.h \
+		gslconvert.h gslfft.h gslieee754.h gslsignal.h gslmagic.h \
 		gslengine.h gslwaveosc.h
-GSL_PRIVATE_H_SOURCES = gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h
-GSL_C_SOURCES = gsldatacache.c gsldatahandle.c gslwavechunk.c gslwavedsc.c \
-		gslmath.c gslfilter.c gslcommon.c gsldatautils.c \
-		gslconvert.c gslfft.c gslsignal.c gslwaveosc.c \
+GSL_PRIVATE_H_SOURCES = gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h gslloader.h
+GSL_C_SOURCES = gsldatacache.c gsldatahandle.c gslwavechunk.c \
+		gslmath.c gslfilter.c gslcommon.c gsldatautils.c gslmagic.c \
+		gslloader-wav.c gslloader-gslwave.c \
+		gslconvert.c gslfft.c gslsignal.c gslloader.c gslwaveosc.c \
 		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c
 EXTRA_DIST += gslwaveosc-aux.c
-GSL_NOINST_PROGS = gslwchunk gslloader gsltests gslglibhashtest gslffttest
+GSL_NOINST_PROGS = gslwchunk gsltests gslglibhashtest gslffttest
 gslwchunk_SOURCES = gslwchunk.c
 gslwchunk_LDADD = $(progs_LDADD)
-gslloader_SOURCES = gslloader.c
-gslloader_LDADD = $(progs_LDADD)
 gsltests_SOURCES = gsltests.c
 gsltests_LDADD = $(progs_LDADD)
 gslffttest_SOURCES = gslffttest.c

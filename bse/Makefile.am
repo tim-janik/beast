@@ -62,7 +62,6 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseinport.h \
 	bseinstrument.h \
 	bseitem.h \
-	bsemagic.h \
 	bsemain.h \
 	bsemath.h \
 	bsehunkmixer.h \
@@ -128,7 +127,6 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseinport.c \
 	bseinstrument.c \
 	bseitem.c \
-	bsemagic.c \
 	bsemain.c \
 	bsemath.c \
 	bsehunkmixer.c \

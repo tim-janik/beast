@@ -19,7 +19,6 @@
 
 #include	"bsesuper.h"
 #include	"bsestorage.h"
-#include	"bsemagic.h"
 #include	"bsesample.h"
 #include	"bsesong.h"
 #include	"bsesnet.h"

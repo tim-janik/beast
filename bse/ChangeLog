@@ -1,3 +1,84 @@
+Thu Jan 24 01:13:47 2002  Tim Janik  <timj@gtk.org>
+
+	* mkcproc.pl: output #line directives after stripping a comment.
+
+	* gslwchunk.c: don't implement your own data handle. reduce
+	stack size usage so this works in threading mode as well.
+	fix ping-pong loop specification.
+
+	* gslwavechunk.c: fix ping-pong loop assertions.
+
+	* gsltests.c: use new loader API for wave file scan.
+	
+	* gslmagic.[hc]: new implementation of a magic(5) matcher,
+	required by GslLoader. (formerly, this code was in bsemagic.[hc]).
+
+	* gslloader.[hc]: new loader API implementation.
+	(gslloader.c used to be a non-functional test program, removed
+	that setup.)
+	FIXME: should we fallback to other loaders after the first failed?
+	FIXME: datahandle/dcache integration is somewhat suboptimal currently.
+
+	* gsldefs.h: moved GslErrorType enum to here, added a couple
+	of new structure prototypes.
+
+	* gslglib.h: provide "GSL" log domain.
+
+	* gsldatautils.c: fix gcc-isms.
+
+	* gsldatahandle.[hc]: redid cache implementation, made it generic
+	by supporting a hash structure filled in by data handle implementations
+	to use as cache keys. provide public API cache entry points.
+	fixed logic in data handle creation functions that could cause leaks
+	under rare circumstances.
+	provide gsl_wave_format_to_string() and gsl_wave_format_from_string(),
+	formerly in gslwavedsc.[hc]).
+	removed GslDataHandleLoader proposal API.
+	FIXME: there needs to be decided how to handle mtime correctly.
+	(gsl_wave_handle_new_cached): removed this as public API.
+	(gsl_wave_handle_new): don't create a translation handle if not
+	required.
+
+	* gslcommon.[hc]: updated errors. provide gsl_byte_order_to_string()
+	and gsl_byte_order_from_string() (formerly in gslwavedsc.[hc]).
+	bootup .gslwave and .wav loaders.
+
+	* bsewaverepo.proc: use new GslLoader API to load waves.
+
+	* bsewaverepo.c: strip junk.
+
+	* bsewave.proc: use new GslLoader API to load waves.
+	renamed gslwave-loader to load-wave.
+
+	* bsewave.c: use new load-wave procedure.
+
+	* bseserver.[hc]: use GSL magics now.
+
+	* bsemagictest.c: use GSL magics now, loader adaptions.
+
+	* bseinfo.c: silence compiler.
+
+	* bseenums.[hc]: merged GSL errors into BSE errors.
+
+	* bsecategories.c: support new /Modules/ toplevel category.
+
+	* bsemagic.[hc]: files removed.
+
+	* gslwavedsc.[hc]: nuked files.
+
+	* gslloader-wav.c: new file, implementing a RIFF/WAVE file loader.
+
+	* gslloader-gslwave.c: new file, implementing a .gslwave file loader,
+	most code migrated from gslwavedsc.[hc].
+
+	* gslwave.header: updated this to reflect syntax changes, mainly, for
+	raw sample chunks, byte_order, format and n_channels have to be the
+	same for all chunks.
+
+	* gslwaveosc-aux.c: don't abort on non-mono dirstrides. the oscillator
+	still needs fixing to let the user specify the channel to use for
+	playback.
+
 Tue Jan 15 17:27:02 2002  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.c (forall_prepare): ignore already prepared

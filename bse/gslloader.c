@@ -1,68 +1,325 @@
 /* GSL - Generic Sound Layer
- * Copyright (C) 2001 Tim Janik
+ * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General
- * Public License along with this program; if not, write to the
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include        "gslloader.h"
+
 #include        "gslcommon.h"
+#include        "gsldatahandle.h"
+#include        "gslmagic.h"
 
-#include        "gslwavedsc.h"
-#include        "gsldatacache.h"
-#include        "gslwavechunk.h"
-#include	<stdio.h>
-#include	<stdlib.h>
-#include	<unistd.h>
-#include	<sys/stat.h>
-#include	<fcntl.h>
+#define	USER_REFCOUNT	(1 << 31)
 
-enum {
-  VERBOSITY_NONE,
-  VERBOSITY_SETUP,
-  VERBOSITY_BLOCKS,
-  VERBOSITY_DATA,
-  VERBOSITY_PADDING,
-  VERBOSITY_CHECKS,
-};
-static guint verbosity = VERBOSITY_SETUP;
 
-int
-main (gint   argc,
-      gchar *argv[])
+/* --- variables --- */
+static GslLoader *gsl_loader_list = NULL;
+static GslRing   *gsl_magic_list = NULL;
+
+
+/* --- functions --- */
+static GslLoader*
+loader_find_by_name (const gchar *name)
 {
-  GslWaveDsc *wave;
+  GslLoader *loader;
+
+  for (loader = gsl_loader_list; loader != NULL; loader = loader->next)
+    if (strcmp (name, loader->name) == 0)
+      return loader;
+  return NULL;
+}
+
+void
+gsl_loader_register (GslLoader *loader)
+{
+  GslMagic *magic = NULL;
+
+  g_return_if_fail (loader != NULL);
+  g_return_if_fail (loader->name != NULL);
+  g_return_if_fail (loader->extension || loader->mime_type || loader->magic_spec);
+  g_return_if_fail (loader_find_by_name (loader->name) == NULL);
+  g_return_if_fail (loader->next == NULL);
+  g_return_if_fail (loader->load_file_info != NULL);
+  g_return_if_fail (loader->free_file_info != NULL);
+  g_return_if_fail (loader->load_wave_dsc != NULL);
+  g_return_if_fail (loader->free_wave_dsc != NULL);
+  g_return_if_fail (loader->create_chunk_handle != NULL);
+  
+  loader->next = gsl_loader_list;
+  gsl_loader_list = loader;
+
+  if (loader->magic_spec)
+    {
+      magic = gsl_magic_create (loader,
+				loader->priority,
+				loader->extension,
+				loader->magic_spec);
+      g_return_if_fail (magic != NULL);
+    }
+  
+  if (magic)
+    gsl_magic_list = gsl_ring_append (gsl_magic_list, magic);
+}
+
+GslLoader*
+gsl_loader_match (const gchar *file_name)
+{
+  GslMagic *magic;
+
+  g_return_val_if_fail (file_name != NULL, NULL);
+
+  magic = gsl_magic_list_match_file (gsl_magic_list, file_name);
+  if (magic)
+    return magic->data;
+
+  return NULL;
+}
+
+GslWaveFileInfo*
+gsl_wave_file_info_load (const gchar  *file_name,
+			 GslErrorType *error_p)
+{
+  GslWaveFileInfo *finfo = NULL;
+  GslErrorType error = GSL_ERROR_NONE;
+  GslLoader *loader;
+  
+  if (error_p)
+    *error_p = GSL_ERROR_INTERNAL;
+  g_return_val_if_fail (file_name != NULL, NULL);
+
+  loader = gsl_loader_match (file_name);
+  if (loader)
+    {
+      finfo = loader->load_file_info (loader->data, file_name, &error);
+      if (error && finfo)
+	{
+	  /* loaders shouldn't do this */
+	  loader->free_file_info (loader->data, finfo);
+	  finfo = NULL;
+	}
+      if (!finfo && !error)
+	error = GSL_ERROR_FILE_EMPTY;	/* FIXME: try next loader */
+      if (finfo)
+	{
+	  if (finfo->n_waves > 0)
+	    {
+	      guint i;
+
+	      g_return_val_if_fail (finfo->loader == NULL, NULL);
+	      g_return_val_if_fail (finfo->file_name == NULL, NULL);
+	      
+	      for (i = 0; i < finfo->n_waves; i++)
+		g_return_val_if_fail (finfo->waves[i].name != NULL, NULL);
+	      
+	      finfo->file_name = g_strdup (file_name);
+	      finfo->loader = loader;
+	      finfo->ref_count = USER_REFCOUNT;
+	    }
+	  else
+	    {
+	      loader->free_file_info (loader->data, finfo);
+	      finfo = NULL;
+	      error = GSL_ERROR_FILE_EMPTY;   /* FIXME: try next loader */
+	    }
+	}
+    }
+  else
+    error = GSL_ERROR_FORMAT_UNKNOWN;
+
+  if (error_p)
+    *error_p = error;
+
+  return finfo;
+}
+
+static void
+wave_file_info_unref (GslWaveFileInfo *wave_file_info)
+{
+  g_return_if_fail (wave_file_info->ref_count > 0);
+
+  wave_file_info->ref_count--;
+  if (!wave_file_info->ref_count)
+    {
+      GslLoader *loader = wave_file_info->loader;
+
+      g_free (wave_file_info->file_name);
+      wave_file_info->file_name = NULL;
+      wave_file_info->loader = NULL;
+
+      loader->free_file_info (loader->data, wave_file_info);
+    }
+}
+
+void
+gsl_wave_file_info_free (GslWaveFileInfo *wave_file_info)
+{
+  g_return_if_fail (wave_file_info != NULL);
+  g_return_if_fail (wave_file_info->loader != NULL);
+  g_return_if_fail (wave_file_info->ref_count >= USER_REFCOUNT);
+
+  wave_file_info->ref_count++;
+  wave_file_info->ref_count -= USER_REFCOUNT;
+  wave_file_info_unref (wave_file_info);
+}
+
+GslWaveDsc*
+gsl_wave_dsc_load (GslWaveFileInfo *wave_file_info,
+		   guint            nth_wave,
+		   GslErrorType    *error_p)
+{
+  GslErrorType error = GSL_ERROR_NONE;
+  GslWaveDsc *wdsc;
+  GslLoader *loader;
+
+  if (error_p)
+    *error_p = GSL_ERROR_INTERNAL;
+  g_return_val_if_fail (wave_file_info != NULL, NULL);
+  g_return_val_if_fail (wave_file_info->loader != NULL, NULL);
+  g_return_val_if_fail (nth_wave < wave_file_info->n_waves, NULL);
+
+  loader = wave_file_info->loader;
+  wdsc = loader->load_wave_dsc (loader->data, wave_file_info, nth_wave,&error);
+
+  if (error && wdsc)
+    {
+      /* loaders shouldn't do this */
+      loader->free_wave_dsc (loader->data, wdsc);
+      wdsc = NULL;
+    }
+  if (!wdsc && !error)
+    error = GSL_ERROR_FILE_EMPTY;
+  if (wdsc)
+    {
+      if (wdsc->n_chunks > 0)
+	{
+	  g_return_val_if_fail (wdsc->file_info == NULL, NULL);
+	  g_return_val_if_fail (wdsc->name && strcmp (wdsc->name, wave_file_info->waves[nth_wave].name) == 0, NULL);
+	  
+	  wdsc->file_info = wave_file_info;
+	  wave_file_info->ref_count++;
+	}
+      else
+	{
+	  loader->free_wave_dsc (loader->data, wdsc);
+	  wdsc = NULL;
+	  error = GSL_ERROR_FILE_EMPTY;
+	}
+    }
+
+  if (error_p)
+    *error_p = error;
+  
+  return wdsc;
+}
+
+void
+gsl_wave_dsc_free (GslWaveDsc *wave_dsc)
+{
+  GslWaveFileInfo *file_info;
+
+  g_return_if_fail (wave_dsc != NULL);
+  g_return_if_fail (wave_dsc->file_info != NULL);
+
+  file_info = wave_dsc->file_info;
+  wave_dsc->file_info = NULL;
+  
+  file_info->loader->free_wave_dsc (file_info->loader->data, wave_dsc);
+
+  wave_file_info_unref (file_info);
+}
+
+GslDataHandle*
+gsl_wave_handle_create (GslWaveDsc   *wave_dsc,
+			guint	      nth_chunk,
+			GslErrorType *error_p)
+{
+  GslErrorType error = GSL_ERROR_NONE;
+  GslDataHandle *dhandle;
+  GslLoader *loader;
+
+  if (error_p)
+    *error_p = GSL_ERROR_INTERNAL;
+  g_return_val_if_fail (wave_dsc != NULL, NULL);
+  g_return_val_if_fail (wave_dsc->file_info != NULL, NULL);
+  g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
+
+  loader = wave_dsc->file_info->loader;
+
+  dhandle = loader->create_chunk_handle (loader->data,
+					 wave_dsc,
+					 nth_chunk,
+					 &error);
+  if (error && dhandle)
+    {
+      /* loaders shouldn't do this */
+      gsl_data_handle_unref (dhandle);
+      dhandle = NULL;
+    }
+  if (!dhandle && !error)
+    error = GSL_ERROR_FORMAT_INVALID;
+
+  if (error_p)
+    *error_p = error;
+
+  return dhandle;
+}
+
+GslWaveChunk*
+gsl_wave_chunk_create (GslWaveDsc   *wave_dsc,
+		       guint         nth_chunk,
+		       GslErrorType *error_p)
+{
+  GslDataHandle *dhandle;
+  GslDataCache *dcache;
   GslWaveChunk *wchunk;
 
-  verbosity = VERBOSITY_SETUP;
-  
-  g_thread_init (NULL);
-  gsl_init (NULL);
+  if (error_p)
+    *error_p = GSL_ERROR_INTERNAL;
+  g_return_val_if_fail (wave_dsc != NULL, NULL);
+  g_return_val_if_fail (nth_chunk < wave_dsc->n_chunks, NULL);
 
-  if (argc != 2)
-    g_error ("need *.gslwave file");
+  dhandle = gsl_wave_handle_create (wave_dsc, nth_chunk, error_p);
+  if (!dhandle)
+    return NULL;
 
-  wave = gsl_wave_dsc_read (argv[1]);
-  if (!wave || !wave->n_chunks)
-    g_error ("failed to read wave file with chunks from \"%s\"",
-	     argv[1]);
+  if (error_p)
+    *error_p = GSL_ERROR_IO;
 
-  wchunk = gsl_wave_chunk_from_dsc (wave, 0);
-  if (!wchunk)
-    g_error ("failed to create wchunk from \"%s\"", wave->chunks[0].file_name);
-					   
+  /* FIXME: we essentially create a dcache for each wchunk here ;( */
 
-  g_print ("wavechunk=%p\n", wchunk);
-  
-  return 0;
+  dcache = gsl_data_cache_from_dhandle (dhandle, gsl_get_config ()->wave_chunk_padding * wave_dsc->n_channels);
+  gsl_data_handle_unref (dhandle);
+  if (!dcache)
+    return NULL;
+  /* dcache keeps dhandle alive */
+
+  wchunk = _gsl_wave_chunk_create (dcache,
+				   0,
+				   dhandle->n_values / wave_dsc->n_channels,
+				   wave_dsc->n_channels,
+				   wave_dsc->chunks[nth_chunk].osc_freq,
+				   wave_dsc->chunks[nth_chunk].mix_freq,
+				   wave_dsc->chunks[nth_chunk].loop_type,
+				   wave_dsc->chunks[nth_chunk].loop_start,
+				   wave_dsc->chunks[nth_chunk].loop_end,
+				   wave_dsc->chunks[nth_chunk].loop_count);
+  gsl_data_cache_unref (dcache);
+
+  if (error_p && wchunk)
+    *error_p = GSL_ERROR_NONE;
+
+  return wchunk;
 }

@@ -49,7 +49,7 @@ struct _BseServer
 
   GList	         *projects;
 
-  GSList	 *loader_magics;
+  GslRing	 *loader_magics;
 
   guint		  dev_use_count;
 

@@ -17,6 +17,8 @@
  */
 #include	"bseenums.h"
 
+#include	"gslcommon.h"
+
 #include	<errno.h>
 
 /* --- prototypes --- */
@@ -95,29 +97,18 @@ bse_error_blurb (BseErrorType error_value)
   
   if (!bse_error_class)
     bse_error_class = g_type_class_ref (BSE_TYPE_ERROR_TYPE);
-  
+
   switch (error_value)
     {
-    case BSE_ERROR_NONE:			return "Everything went well";
-    case BSE_ERROR_IGNORE:			return "Temporary headache...";
-    case BSE_ERROR_UNKNOWN:			return "Unknown error";
-    case BSE_ERROR_INTERNAL:			return "Internal error (please report)";
+    case BSE_ERROR_NONE:	/* GSL */	return "Everything went well";
     case BSE_ERROR_UNIMPLEMENTED:		return "Functionality not imlemented";
-    case BSE_ERROR_IO:				return "Device/file I/O error";
     case BSE_ERROR_PERMS:			return "Insufficient permissions";
     case BSE_ERROR_NOT_OWNER:			return "Ownership mismatch";
     case BSE_ERROR_FILE_EXISTS:			return "File exists";
-    case BSE_ERROR_FILE_NOT_FOUND:		return "File not found";
     case BSE_ERROR_FILE_TOO_SHORT:		return "File too short";
     case BSE_ERROR_FILE_TOO_LONG:		return "File too long";
-    case BSE_ERROR_NO_LOADER:			return "No such loader";
-    case BSE_ERROR_FORMAT_UNKNOWN:		return "Unknown format";
-    case BSE_ERROR_FORMAT_MISMATCH:		return "Format mismatch";
-    case BSE_ERROR_FORMAT_TOO_NEW:		return "Format too new";
-    case BSE_ERROR_FORMAT_TOO_OLD:		return "Format too old";
     case BSE_ERROR_HEADER_CORRUPT:		return "Header corrupt";
     case BSE_ERROR_SUB_HEADER_CORRUPT:		return "Sub-header corrupt";
-    case BSE_ERROR_DATA_CORRUPT:		return "Data corrupt";
     case BSE_ERROR_BINARY_DATA_CORRUPT:		return "Binary data corrupt";
     case BSE_ERROR_DEVICE_ASYNC:		return "Device not async capable";
     case BSE_ERROR_DEVICE_BUSY:			return "Device busy";
@@ -139,6 +130,8 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_NO_PCM_DEVICE:		return "No active PCM device present";
     case BSE_ERROR_PCM_DEVICE_ACTIVE:		return "PCM device is active";
     default:
+      if (error_value < GSL_ERROR_LAST)
+	return (gchar*) gsl_strerror (error_value);
       break;
     }
   

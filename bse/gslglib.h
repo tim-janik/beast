@@ -19,6 +19,11 @@
 #ifndef __GSL_GLIB_H__
 #define __GSL_GLIB_H__
 
+#ifndef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "GSL"
+#endif
+
+
 #include <limits.h>
 #include <float.h>
 #include <stddef.h>

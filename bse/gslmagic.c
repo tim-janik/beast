@@ -1,21 +1,24 @@
-/* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998, 1999 Olaf Hoehmann and Tim Janik
+/* GSL - Generic Sound Layer
+ * Copyright (C) 2000-2002 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU Library General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
-#include	"bsemagic.h"
+#include	"gslmagic.h"
+
+#include	"gslcommon.h"
 
 #include	<string.h>
 #include	<unistd.h>
@@ -59,11 +62,11 @@ static guint	bfile_get_size		(BFile		*bfile);
 
 
 /* --- functions --- */
-BseMagic*
-bse_magic_list_match_file (GSList      *magic_list,
+GslMagic*
+gsl_magic_list_match_file (GslRing     *magic_list,
 			   const gchar *file_name)
 {
-  BseMagic *rmagic = NULL;
+  GslMagic *rmagic = NULL;
   BFile bfile = { -1, };
   
   g_return_val_if_fail (file_name != NULL, NULL);
@@ -71,19 +74,19 @@ bse_magic_list_match_file (GSList      *magic_list,
   if (bfile_open (&bfile, file_name))
     {
       gchar *extension = strrchr (file_name, '.');
-      GQuark qext = extension ? g_quark_try_string (extension) : 0;
       gint rpriority = G_MAXINT;
-      GSList *node;
+      GslRing *node;
       
       /* we do a quick scan by extension first */
-      if (!rmagic && qext)
-	for (node = magic_list; node; node = node->next)
+      if (!rmagic && extension)
+	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
 	  {
-	    BseMagic *magic = node->data;
+	    GslMagic *magic = node->data;
 	    
-	    if (magic->qextension != qext ||
-		rpriority < magic->priority ||
-		(rmagic && rpriority == magic->priority))
+	    if (!magic->extension
+		|| strcmp (magic->extension, extension) != 0
+		|| rpriority < magic->priority
+		|| (rmagic && rpriority == magic->priority))
 	      continue;
 	    if (magic_match_file (&bfile, magic->match_list))
 	      {
@@ -92,14 +95,14 @@ bse_magic_list_match_file (GSList      *magic_list,
 	      }
 	  }
       /* then we do a normal walk but skip extension matches */
-      if (!rmagic && qext)
-	for (node = magic_list; node; node = node->next)
+      if (!rmagic && extension)
+	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
 	  {
-	    BseMagic *magic = node->data;
+	    GslMagic *magic = node->data;
 	    
-	    if (magic->qextension == qext ||
-		rpriority < magic->priority ||
-		(rmagic && rpriority == magic->priority))
+	    if ((magic->extension && strcmp (magic->extension, extension) == 0)
+		|| rpriority < magic->priority
+		|| (rmagic && rpriority == magic->priority))
 	      continue;
 	    if (magic_match_file (&bfile, magic->match_list))
               {
@@ -108,10 +111,10 @@ bse_magic_list_match_file (GSList      *magic_list,
 	      }
 	  }
       /* for no extension, we do a full walk */
-      if (!rmagic && !qext)
-	for (node = magic_list; node; node = node->next)
+      if (!rmagic && !extension)
+	for (node = magic_list; node; node = gsl_ring_walk (magic_list, node))
 	  {
-	    BseMagic *magic = node->data;
+	    GslMagic *magic = node->data;
 	    
 	    if (rpriority < magic->priority ||
 		(rmagic && rpriority == magic->priority))
@@ -128,13 +131,13 @@ bse_magic_list_match_file (GSList      *magic_list,
   return rmagic;
 }
 
-BseMagic*
-bse_magic_create (gpointer     data,
-		  gint	    priority,
-		  GQuark       qextension,
+GslMagic*
+gsl_magic_create (gpointer     data,
+		  gint	       priority,
+		  const gchar *extension,
 		  const gchar *magic_spec)
 {
-  BseMagic *magic;
+  GslMagic *magic;
   Magic *match_list;
   gchar *magic_string;
 
@@ -146,9 +149,9 @@ bse_magic_create (gpointer     data,
   if (!match_list)
     return NULL;
 
-  magic = g_new (BseMagic, 1);
+  magic = g_new (GslMagic, 1);
   magic->data = data;
-  magic->qextension = qextension;
+  magic->extension = g_strdup (extension);
   magic->priority = priority;
   magic->match_list = match_list;
 
@@ -392,7 +395,7 @@ magic_create (gchar *magic_string)
   Magic *magics = NULL;
   gchar *p = magic_string;
   
-  do
+  while (p && *p)
     {
       gchar *next_line;
       
@@ -437,8 +440,7 @@ magic_create (gchar *magic_string)
 	}
       p = next_line;
     }
-  while (p && *p);
-
+  
   return magics;
 }
 

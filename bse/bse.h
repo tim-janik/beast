@@ -37,7 +37,6 @@
 #include        <bse/bseglobals.h>
 #include        <bse/bseinstrument.h>
 #include        <bse/bseitem.h>
-#include        <bse/bsemagic.h>
 #include        <bse/bsemain.h>
 #include        <bse/bsemath.h>
 #include        <bse/bsehunkmixer.h>

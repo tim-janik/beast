@@ -1,4 +1,4 @@
-/* GslWaveOsc - GSL Wave Oscillator
+/* GSL - Generic Sound Layer
  * Copyright (C) 2001-2002 Tim Janik and Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #define CHECK_FREQ		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_FREQ)
 #define CHECK_MOD		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_MOD)
 #define EXPONENTIAL_FM		(WOSC_MIX_VARIANT & WOSC_MIX_WITH_EXP_FM)
-#define DIRSTRIDE		(1)	/* change for n_channel stepping */
+#define DIRSTRIDE(b)		(b->dirstride)	 /* (1) change for n_channel stepping */
 
 
 static void
@@ -71,7 +71,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      last_mod_level = wosc->last_mod_level;
 	      wosc_j = wosc->j;
 	      boundary = block->end;
-	      g_assert (ABS (block->dirstride) == 1);   /* paranoid */
+	      /* FIXME: g_assert (ABS (block->dirstride) == 1); */
 	    }
 	  last_sync_level = sync_level;
 	}
@@ -119,7 +119,7 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      gsl_wave_chunk_use_block (wosc->wchunk, block);
 	      wosc->x = block->start;
 	      boundary = block->end;
-	      g_assert (ABS (block->dirstride) == 1);   /* paranoid */
+	      /* FIXME: g_assert (ABS (block->dirstride) == 1); */
 	    }
 	  
 	  if_expect (block->dirstride > 0)
@@ -133,11 +133,11 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	      d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	      d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      c8 = a[8] * x[-4 * DIRSTRIDE];
-	      c6 = a[6] * x[-3 * DIRSTRIDE];
-	      c4 = a[4] * x[-2 * DIRSTRIDE];
-	      c2 = a[2] * x[-1 * DIRSTRIDE];
-	      c0 = a[0] * x[0 * DIRSTRIDE];
+	      c8 = a[8] * x[-4 * DIRSTRIDE (block)];
+	      c6 = a[6] * x[-3 * DIRSTRIDE (block)];
+	      c4 = a[4] * x[-2 * DIRSTRIDE (block)];
+	      c2 = a[2] * x[-1 * DIRSTRIDE (block)];
+	      c0 = a[0] * x[0 * DIRSTRIDE (block)];
 	      d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
 	      c = c0 + c2 + c4 + c6 + c8;
 	      y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
@@ -149,14 +149,14 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	      d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	      d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      c7 = a[7] * x[-3 * DIRSTRIDE];
-	      c5 = a[5] * x[-2 * DIRSTRIDE];
-	      c3 = a[3] * x[-1 * DIRSTRIDE];
-	      c1 = a[1] * x[0 * DIRSTRIDE];
+	      c7 = a[7] * x[-3 * DIRSTRIDE (block)];
+	      c5 = a[5] * x[-2 * DIRSTRIDE (block)];
+	      c3 = a[3] * x[-1 * DIRSTRIDE (block)];
+	      c1 = a[1] * x[0 * DIRSTRIDE (block)];
 	      d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
 	      c = c1 + c3 + c5 + c7;
 	      y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
-	      wosc->x += DIRSTRIDE;
+	      wosc->x += DIRSTRIDE (block);
 	    }
           else /* dirstride < 0 */
 	    {
@@ -169,11 +169,11 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	      d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	      d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      c8 = a[8] * x[-4 * -DIRSTRIDE];
-	      c6 = a[6] * x[-3 * -DIRSTRIDE];
-	      c4 = a[4] * x[-2 * -DIRSTRIDE];
-	      c2 = a[2] * x[-1 * -DIRSTRIDE];
-	      c0 = a[0] * x[0 * -DIRSTRIDE];
+	      c8 = a[8] * x[-4 * -DIRSTRIDE (block)];
+	      c6 = a[6] * x[-3 * -DIRSTRIDE (block)];
+	      c4 = a[4] * x[-2 * -DIRSTRIDE (block)];
+	      c2 = a[2] * x[-1 * -DIRSTRIDE (block)];
+	      c0 = a[0] * x[0 * -DIRSTRIDE (block)];
 	      d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
 	      c = c0 + c2 + c4 + c6 + c8;
 	      y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
@@ -185,14 +185,14 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
 	      d5 = b[5] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	      d6 = b[6] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
 	      d7 = b[7] * y[wosc_j]; wosc_j++; wosc_j &= 0x7;
-	      c7 = a[7] * x[-3 * -DIRSTRIDE];
-	      c5 = a[5] * x[-2 * -DIRSTRIDE];
-	      c3 = a[3] * x[-1 * -DIRSTRIDE];
-	      c1 = a[1] * x[0 * -DIRSTRIDE];
+	      c7 = a[7] * x[-3 * -DIRSTRIDE (block)];
+	      c5 = a[5] * x[-2 * -DIRSTRIDE (block)];
+	      c3 = a[3] * x[-1 * -DIRSTRIDE (block)];
+	      c1 = a[1] * x[0 * -DIRSTRIDE (block)];
 	      d = d0 + d1 + d2 + d3 + d4 + d5 + d6 + d7;
 	      c = c1 + c3 + c5 + c7;
 	      y[wosc_j] = c - d; wosc_j++; wosc_j &= 0x7;
-	      wosc->x += -DIRSTRIDE;
+	      wosc->x += -DIRSTRIDE (block);
 	    }
 
 	  wosc->cur_pos -= (FRAC_MASK + 1) << 1;

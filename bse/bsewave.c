@@ -141,7 +141,7 @@ bse_wave_class_init (BseWaveClass *class)
   quark_wave_chunk = g_quark_from_static_string ("wave-chunk");
 
   bse_server_register_loader (bse_server_get (),
-			      g_type_from_name ("BseWave+gslwave-loader"),
+			      g_type_from_name ("BseWave+load-wave"),
 			      ".gslwave",
 			      "0 string #GslWave\n");
   bse_object_class_add_param (object_class, "Locator",
@@ -469,7 +469,7 @@ bse_wave_do_store_private (BseObject  *object,
           bse_storage_break (storage);
 	  bse_storage_printf (storage, "(wave-chunk %g %g", url->wchunk->osc_freq, url->wchunk->mix_freq);
           bse_storage_push_level (storage);
-	  if (1||url->wchunk->n_channels > 1)
+	  if (1||url->wchunk->n_channels > 1) // FIXME
 	    {
 	      bse_storage_break (storage);
 	      bse_storage_printf (storage, "(n-channels %u)", url->wchunk->n_channels);
@@ -634,7 +634,7 @@ call_wave_chunk_loader (GType        proc_type,
 
   proc = g_type_class_ref (proc_type);
   if (!bse_procedure_signature_is_loader (proc))
-    error = BSE_ERROR_NO_LOADER;	/* actually, this is a bad mismatch, FIXME? */
+    error = BSE_ERROR_FORMAT_UNKNOWN;	/* actually, this is a bad mismatch, FIXME? */
   else
     error = bse_procedure_exec (g_type_name (proc_type),
 				wave, file_name, wave_name,
@@ -724,7 +724,7 @@ bse_wave_do_restore_private (BseObject  *object,
 	  if (proc_type)
 	    error = call_wave_chunk_loader (proc_type, wave, file_name, wave_name, load_list, skip_list);
 	  else
-	    error = BSE_ERROR_NO_LOADER;
+	    error = BSE_ERROR_FORMAT_UNKNOWN;
 	  if (error)
 	    bse_storage_warn (storage, "failed to load wave \"%s\" from \"%s\": %s",
 			      wave_name, file_name, bse_error_blurb (error));

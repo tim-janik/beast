@@ -691,10 +691,10 @@ wave_chunk_set_loop (GslWaveChunk   *wchunk,
       break;
     case GSL_WAVE_LOOP_PINGPONG:
       g_return_if_fail (loop_start >= 0 && loop_start < wchunk->length);
-      g_return_if_fail (loop_end <= wchunk->length);
+      g_return_if_fail (loop_end < wchunk->length);
       loop_start /= wchunk->n_channels;
       loop_end /= wchunk->n_channels;
-      g_return_if_fail (loop_start + 1 < loop_end);
+      g_return_if_fail (loop_start < loop_end);
       wchunk->loop_type = loop_type;
       wchunk->loop_start = loop_start * wchunk->n_channels;
       wchunk->loop_end = loop_end * wchunk->n_channels;

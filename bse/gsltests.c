@@ -17,10 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 #include <gsl/gslmath.h>
-#include <gsl/gslwavedsc.h>
 #include <gsl/gslcommon.h>
 #include <gsl/gslmath.h>
 #include <gsl/gslfilter.h>
+#include <gsl/gslloader.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -74,17 +74,24 @@ main (int   argc,
     usage ();
   
  restart:
-  if (strcmp (arg, "gslwave-scan") == 0)
+  if (strcmp (arg, "wave-scan") == 0)
     {
+      GslWaveFileInfo *fi;
+      GslErrorType error;
       gchar *file = pshift ();
-      GslRing *node, *ring = gsl_wave_file_scan (file);
-      guint i = 0;
-      
-      g_print ("waves scanned from \"%s\": ", file);
-      for (node = ring; node; node = gsl_ring_walk (ring, node), i++)
-	g_print ("%s%s", i % 4 ? " " : "\n  ", (gchar*) node->data);
-      g_print ("\n");
-      gsl_wave_file_scan_free (ring);
+
+      fi = gsl_wave_file_info_load (file, &error);
+      if (fi)
+	{
+	  guint i;
+
+	  g_print ("Loader \"%s\" found %u waves in \"%s\":\n", fi->loader->name, fi->n_waves, file);
+	  for (i = 0; i < fi->n_waves; i++)
+	    g_print ("%u) %s\n", i + 1, fi->waves[i].name);
+	  gsl_wave_file_info_free (fi);
+	}
+      else
+	g_print ("Failed to scan \"%s\": %s\n", file, gsl_strerror (error));
     }
   else if (strcmp (arg, "file-test") == 0)
     {
@@ -561,7 +568,7 @@ usage (void)
 {
   g_print ("usage: gsltests {test} [args...]\n");
   g_print ("tests:\n");
-  g_print ("  gslwave-scan <file>       scan a gslwave file for waves\n");
+  g_print ("  wave-scan <file>          scan a wave file for waves\n");
   g_print ("  file-test <file>          test file properties\n");
   g_print ("  rf <x> <y> <z>            Carlson's elliptic integral of the first kind\n");
   g_print ("  F <phi> <ak>              Legendre elliptic integral of the 1st kind\n");

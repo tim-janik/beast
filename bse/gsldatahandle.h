@@ -104,11 +104,8 @@ typedef enum    /*< skip >*/
   GSL_WAVE_FORMAT_LAST
 } GslWaveFormatType;
 
-GslDataHandle*	  gsl_wave_handle_new_cached	(const gchar      *file_name,
-						 GTime             mtime, /* may be 0 */
-						 GslWaveFormatType format,
-						 guint             byte_order,
-						 guint             boffset_reminder);
+const gchar*      gsl_wave_format_to_string     (GslWaveFormatType format);
+GslWaveFormatType gsl_wave_format_from_string   (const gchar      *string);
 GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 						 GTime		   mtime, /* may be 0 */
 						 GslWaveFormatType format,
@@ -117,33 +114,25 @@ GslDataHandle*	  gsl_wave_handle_new		(const gchar	  *file_name,
 						 GslLong	   n_values);
 
 
-/* --- white-beard guru API --- */
-typedef struct
-{
-  const gchar *name;	   /* "GslWave file" or "WAVE audio, RIFF (little-endian)" */
-  
-  /* at least one of the
-   * following three _should_
-   * be non-NULL
-   */
-  const gchar *magic_spec; /* "0 string RIFF\n8 string WAVE" or "0 string #GslWave\n" */
-  const gchar *mime_type;  /* "audio/x-mpg3" or "audio/x-wav" */
-  const gchar *extension;  /* "mp3" or "ogg" or "gslwave" */
-  
-  GslDataHandle* (*load) (const gchar  *file_name,
-			  GslErrorType *error);
-} GslDataHandleLoader;
-void    gsl_data_handle_register_loader (GslDataHandleLoader *loader);
-
-
 /* --- auxillary functions --- */
 gboolean	  gsl_data_handle_common_init	(GslDataHandle	  *dhandle,
 						 const gchar	  *file_name,
 						 guint		   bit_depth);
 void		  gsl_data_handle_common_free	(GslDataHandle	  *dhandle);
-
-
-						 
+typedef struct
+{
+  GslDataHandleFuncs *fpointer;
+  gchar *strings[4];
+  union {
+    gpointer v_pointer;
+    GslLong  v_long;
+    gfloat   v_float;
+  } data[4];
+} GslDataHandleHash;
+void		  gsl_data_handle_enter_cache	(GslDataHandle	  *dhandle,
+						 GslDataHandleHash hash);
+void		  gsl_data_handle_leave_cache	(GslDataHandle	  *dhandle);
+GslDataHandle*	  gsl_data_handle_cached	(GslDataHandleHash hash);
 
 #ifdef __cplusplus
 }
