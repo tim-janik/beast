@@ -132,6 +132,7 @@ DRIVER DIALOG:
 - Driver NAme
 
 TODO:
+- support sequencer input from and to ALSA and JACK
 - Icons: delete-track and delete-part shouldn't have the same item in track-roll
 - Main: make beast recognize and view .markup files from the command line
 - DocBrowser: pressing browsing hotkeys in release-notes dialog does stuff
