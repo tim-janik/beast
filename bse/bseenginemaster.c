@@ -519,8 +519,13 @@ _gsl_master_thread (gpointer data)
 
       if (!need_dispatch)
 	{
-	  if (poll ((struct pollfd*) loop.fds, loop.n_fds, loop.timeout) >= 0)
+	  gint err;
+
+	  err = poll ((struct pollfd*) loop.fds, loop.n_fds, loop.timeout);
+	  if (err >= 0)
 	    loop.revents_filled = TRUE;
+	  else
+	    g_printerr (G_STRLOC ": poll() error: %s\n", g_strerror (err));
 
 	  if (loop.revents_filled)
 	    need_dispatch = _gsl_master_check (&loop);

@@ -1,3 +1,9 @@
+Fri Dec 14 04:09:52 2001  Tim Janik  <timj@gtk.org>
+
+	* gslengine.c (gsl_engine_prepare): fix loop filling for the
+	threaded case, we don't need to be processed at all, so return
+	a timeout of -1.
+
 Wed Dec 12 04:44:08 2001  Tim Janik  <timj@gtk.org>
 
 	* fft.h: added tentative float convenience wrapers.

@@ -68,7 +68,7 @@ bse_pcm_module_poll (gpointer         data,
   /* when do we have enough space available? */
   diff = mdata->n_values - status.n_playback_values_left;
   *timeout_p = diff * 1000.0 / mdata->handle->mix_freq;
-  
+
   return *timeout_p == 0;
 #else
   /* check if less than 3 fragments are supplied */
@@ -76,7 +76,7 @@ bse_pcm_module_poll (gpointer         data,
   BsePcmStatus status;
   gfloat diff;
   guint need_values;
-  
+
   /* get playback status */
   bse_pcm_handle_status (mdata->handle, &status);
   

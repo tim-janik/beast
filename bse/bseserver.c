@@ -533,9 +533,12 @@ engine_prepare (GSource *source,
 	  g_source_add_poll (source, pfd);
 	}
     }
-  BSE_THREADS_LEAVE ();
-
   *timeout_p = psource->loop.timeout;
+
+  /* bad hack to get midi to work temporarily */
+  if (*timeout_p >= 25 || *timeout_p < 0)
+    *timeout_p = 25;
+  BSE_THREADS_LEAVE ();
 
   return need_dispatch;
 }
@@ -552,6 +555,9 @@ engine_check (GSource *source)
     psource->loop.fds[i].revents = gslpoll_from_gio (psource->fds[i].revents);
   psource->loop.revents_filled = TRUE;
   need_dispatch = gsl_engine_check (&psource->loop);
+
+  /* bad hack to get midi to work temporarily */
+  need_dispatch = TRUE;
   BSE_THREADS_LEAVE ();
 
   return need_dispatch;
@@ -566,7 +572,7 @@ engine_dispatch (GSource    *source,
 
   BSE_THREADS_ENTER ();
   server = bse_server_get ();
-  if (server->midi_device)
+  if (server->midi_device)	/* get midi to work for now */
     bse_midi_device_trigger (server->midi_device);
   gsl_engine_dispatch ();
   BSE_THREADS_LEAVE ();

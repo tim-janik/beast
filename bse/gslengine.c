@@ -566,7 +566,13 @@ gsl_engine_prepare (GslEngineLoop *loop)
   if (!gsl_engine_threaded)
     return _gsl_master_prepare (loop);
   else
-    return FALSE;
+    {
+      loop->timeout = -1;
+      loop->fds_changed = FALSE;
+      loop->n_fds = 0;
+      loop->revents_filled = FALSE;
+      return FALSE;
+    }
 }
 
 gboolean
