@@ -414,7 +414,7 @@ METHOD (BseSong, synthesize-note) {
       gfloat freq = BSE_KAMMER_FREQUENCY_f *
 		    BSE_SEMITONE_FACTOR (note) *
 		    BSE_FINE_TUNE_FACTOR (fine_tune);
-      SfiTime tstamp = gsl_tick_stamp () + gsl_engine_block_size () * 2;
+      SfiTime tstamp = gsl_tick_stamp () + bse_engine_block_size () * 2;
       BseMidiEvent *eon, *eoff;
       eon  = bse_midi_event_note_on (track->midi_channel_SL, tstamp, freq, velocity);
       eoff = bse_midi_event_note_off (track->midi_channel_SL, tstamp + duration, freq);
