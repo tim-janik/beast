@@ -411,10 +411,7 @@
 	</vbox>
 	<!-- PianoRoll-vpaned -->
 	<vpaned id="piano-paned" pack:expand="1" >
-	  <!--! child1 of the vpaned is meant to expand, but only gtk+-2.4 has
-	  !   ! child properties on paned, so C code patches up "piano-paned"
-	  -->
-	  <event-box>
+	  <event-box resize="1">
 	    <hbox>
 	      <frame-shadow-in pack:expand="1" >
 		<piano-roll>
@@ -446,7 +443,7 @@
 	      <vscrollbar id="piano-roll-vscrollbar" size:hgroup="scroll-size" />
 	    </hbox>
 	  </event-box>
-	  <event-box>
+	  <event-box resize="0">
 	    <hbox>
 	      <vbox spacing="3" pack:expand="1" >
 		<frame-shadow-in pack:expand="1" >

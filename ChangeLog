@@ -1,3 +1,21 @@
+Tue Oct  5 22:36:05 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/dialogs/radgets-standard.xml: added support for paned
+	pack properties introduced in Gtk+-2.4.
+
+	* beast-gtk/dialogs/radgets-beast.xml: use Gtk+-2.4 paned 
+	pack properties for piano-roll-box.
+
+	* beast-gtk/bstpartdialog.c (bst_part_dialog_init):
+	removed paned patchup code, needed for Gtk+-2.2.
+
+	* beast-gtk/gxk/gxkdialog.c: properly add GxkDialog to window group,
+	this used to be broken in Gtk+-2.2.1.
+	removed key press handling code for the Gtk+-2.2 case.
+
+	* beast-gtk/gxk/gxkcellrendererpopup.c: removed unused Gtk+-2.2
+	bug triggering code.
+
 Tue Oct  5 21:58:32 2004  Tim Janik  <timj@gtk.org>
 
 	* site-download.texi:

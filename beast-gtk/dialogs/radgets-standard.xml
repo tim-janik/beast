@@ -203,10 +203,14 @@
   <xdef:hpaned                inherit="GtkHPaned"
     prop:position="$(max,$position,0)"
     prop:position-set="$(if,$(le,$position,0),0,1)"
+    default-pack:resize="$(ifdef,resize,$resize,1)"
+    default-pack:shrink="$(ifdef,shrink,$shrink,1)"
     />
   <xdef:vpaned                inherit="GtkVPaned"
     prop:position="$(max,$position,0)"
     prop:position-set="$(if,$(le,$position,0),0,1)"
+    default-pack:resize="$(ifdef,resize,$resize,1)"
+    default-pack:shrink="$(ifdef,shrink,$shrink,1)"
     />
   <!-- rack table & items -->
   <xdef:rack-table            inherit="GxkRackTable" />

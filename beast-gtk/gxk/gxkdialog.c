@@ -227,7 +227,7 @@ gxk_dialog_set_property (GObject      *object,
 	  GtkWindowGroup *wgroup = gtk_window_group_new ();
 	  if (window->group)
 	    gtk_window_group_remove_window (window->group, window);
-	  /* gtk_window_group_add_window (wgroup, window); GTKFIX: Gtk+-2.2.1 window groups seem to be broken wrt menus */
+          gtk_window_group_add_window (wgroup, window); // GTKFIX: Gtk+-2.2.1 window groups seem to be broken wrt menus, but we're using Gtk+-2.4 now */
 	  g_object_unref (wgroup);
 	  if (self->status_bar)
 	    gtk_widget_show (self->status_bar);
@@ -589,36 +589,6 @@ gxk_dialog_hide (GtkWidget *widget)
     gxk_idle_unrealize_widget (widget);
 }
 
-#include <gmodule.h>    // FIXME: remove when depending on Gtk+-2.4
-static gboolean
-call_gtk_window_activate_key (GtkWindow   *window,      // FIXME: remove when depending on Gtk+-2.4
-                              GdkEventKey *event)
-{
-#if     GTK_CHECK_VERSION (2, 3, 4)
-  return gtk_window_activate_key (window, event);
-#elif   defined (__linux__)     /* on linux, Gtk+-2.2 exports _gtk_window_activate_key() */
-  /* Gtk+-2.2 case. we need to go through some hoops, to allow beast to
-   * continue to work, even if built against Gtk+-2.2 and later used
-   * with Gtk+-2.4 which doesn't have _gtk_window_activate_key() anymore.
-   */
-  if (gtk_check_version (2, 3, 4) == NULL)
-    {
-      static gboolean (*window_activate_key) (GtkWindow*, GdkEventKey*) = NULL;
-      if (!window_activate_key)
-        {
-          GModule *main_module = g_module_open (NULL, 0);
-          if (!g_module_symbol (main_module, "gtk_window_activate_key", (gpointer) &window_activate_key))
-            window_activate_key = NULL;
-          g_module_close (main_module);
-        }
-      return window_activate_key (window, event);
-    }
-  return _gtk_window_activate_key (window, event);
-#else
-  return FALSE;
-#endif
-}
-
 static gboolean
 gxk_dialog_key_press_event (GtkWidget   *widget,
 			    GdkEventKey *event)
@@ -644,52 +614,19 @@ gxk_dialog_key_press_event (GtkWidget   *widget,
    * the focus widget precedence over unmodified accelerators
    * before the accelerator activation scheme.
    */
-#if     GTK_CHECK_VERSION (2, 3, 4)
+
   /* invoke control/alt accelerators */
   if (!handled && event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))
-    handled = call_gtk_window_activate_key (window, event);
+    handled = gtk_window_activate_key (window, event);
   /* invoke focus widget handlers */
   if (!handled)
     handled = gtk_window_propagate_key_event (window, event);
   /* invoke non-(control/alt) accelerators */
   if (!handled && !(event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
-    handled = call_gtk_window_activate_key (window, event);
+    handled = gtk_window_activate_key (window, event);
   /* chain up, bypassing gtk_window_key_press(), to invoke binding set */
   if (!handled)
     handled = GTK_WIDGET_CLASS (g_type_class_peek (g_type_parent (GTK_TYPE_WINDOW)))->key_press_event (widget, event);
-#elif   defined (__linux__)     /* on linux we can circumvent gtk+-2.2 also */
-  /* invoke control/alt accelerators */
-  if (!handled && event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK))
-    handled = call_gtk_window_activate_key (window, event); /* available due to broken libtool */
-  /* invoke focus widget handlers */
-  if (!handled)
-    {
-      GtkWidget *focus = window->focus_widget;
-      if (focus)
-        g_object_ref (focus);
-      while (!handled && focus && focus != widget && gtk_widget_get_toplevel (focus) == widget)
-        {
-          GtkWidget *parent;
-          if (GTK_WIDGET_IS_SENSITIVE (focus))
-            handled = gtk_widget_event (focus, (GdkEvent*) event);
-          parent = focus->parent;
-          if (parent)
-            g_object_ref (parent);
-          g_object_unref (focus);
-          focus = parent;
-        }
-      if (focus)
-        g_object_unref (focus);
-    }
-  /* invoke non-(control/alt) accelerators */
-  if (!handled && !(event->state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)))
-    handled = call_gtk_window_activate_key (window, event);
-  /* chain up, bypassing gtk_window_key_press(), to invoke binding set */
-  if (!handled)
-    handled = GTK_WIDGET_CLASS (g_type_class_peek (g_type_parent (GTK_TYPE_WINDOW)))->key_press_event (widget, event);
-#else   /* gtk+ <= 2.2, non-linux */
-  handled = GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
-#endif
 
   return handled;
 }

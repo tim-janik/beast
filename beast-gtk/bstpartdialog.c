@@ -116,11 +116,10 @@ eparam_changed (gpointer  data,
 static void
 bst_part_dialog_init (BstPartDialog *self)
 {
-  GtkWidget *eb, *child, *box;
+  GtkWidget *eb, *box;
   GtkRange *srange;
   BseCategorySeq *cseq;
   GxkActionList *al1;
-  GtkPaned *paned;
   GtkObject *adjustment;
   GtkAdjustment *adj;
   GParamSpec *pspec;
@@ -153,17 +152,6 @@ bst_part_dialog_init (BstPartDialog *self)
   al1 = bst_action_list_from_cats (cseq, 1, BST_STOCK_EXECUTE, NULL, part_dialog_run_script_proc, self);
   gxk_action_list_sort (al1);
   gxk_widget_publish_action_list (self, "part-scripts", al1);
-
-  /* FIXME: use paned child-properties after gtk+-2.4 */
-  paned = gxk_radget_find (radget, "piano-paned");
-  child = g_object_ref (paned->child1);
-  gtk_container_remove (GTK_CONTAINER (paned), child);
-  gtk_paned_pack1 (paned, child, TRUE, TRUE);
-  g_object_unref (child);
-  child = g_object_ref (paned->child2);
-  gtk_container_remove (GTK_CONTAINER (paned), child);
-  gtk_paned_pack2 (paned, child, FALSE, TRUE);
-  g_object_unref (child);
 
   BstGrowBar *grow_bar = gxk_radget_find (radget, "piano-roll-hgrow-bar");
 

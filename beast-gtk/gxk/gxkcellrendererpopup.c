@@ -388,21 +388,12 @@ gxk_cell_renderer_popup_start_editing (GtkCellRenderer      *cell,
                                       "parent", eproxy,
                                       "child", entry,
                                       NULL);
-#if 0	/* GTKFIX: this exhibits tree view scrolling+resizing bug in gtk+2.2 */
-      GtkWidget *popup_area = g_object_new (GTK_TYPE_BUTTON, "visible", self->popup_editing,
-                                            "can_focus", FALSE, "width_request", ARROW_WIDTH,
-                                            "child", g_object_new (GTK_TYPE_ARROW, "visible", TRUE,
-                                                                   "arrow_type", GTK_ARROW_DOWN, NULL),
-                                            NULL);
-      g_object_connect (popup_area, "swapped_signal::clicked", gxk_cell_renderer_popup_clicked, cell, NULL);
-#else
       GtkWidget *popup_area = g_object_new (GTK_TYPE_FRAME, "visible", self->popup_editing,
                                             "width_request", ARROW_WIDTH, "shadow_type", GTK_SHADOW_OUT,
                                             "child", g_object_new (GTK_TYPE_LABEL, "visible", TRUE,
                                                                    "label", "...", NULL),
                                             NULL);
       g_object_connect (eproxy, "swapped_signal::button_press_event", gxk_cell_renderer_popup_clicked, cell, NULL);
-#endif
       if (!g_signal_has_handler_pending (self, signal_popup, 0, FALSE))
         gtk_widget_set_sensitive (popup_area, FALSE);
       gtk_box_pack_start (GTK_BOX (hbox), popup_area, FALSE, FALSE, 0);
