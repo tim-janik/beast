@@ -1,3 +1,8 @@
+Tue Nov 16 14:59:40 2004  Tim Janik  <timj@gtk.org>
+
+	* library/demo/partymonster.bse: added busses to properly mix up the
+	individual channels. format update to 0.6.3.
+
 Mon Nov 15 16:48:40 2004    <timj@birnet.org>
 
 	* beast-gtk/gxk/gxkutils.c (browse_selection_handler): create extra path
