@@ -168,6 +168,8 @@ void	 gsl_cond_destroy	(GslCond	*cond);
 /* --- misc --- */
 const gchar* gsl_byte_order_to_string   (guint           byte_order);
 guint        gsl_byte_order_from_string (const gchar    *string);
+GslErrorType gsl_check_file		(const gchar	*file_name,
+					 const gchar	*mode);
 
 
 /* --- implementation details --- */
@@ -181,13 +183,14 @@ void		gsl_free_memblock	(gsize		 size,
 void		gsl_alloc_report	(void);
 const guint	gsl_alloc_upper_power2	(const gulong	 number);
 gboolean	gsl_rec_mutex_test_self	(GslRecMutex	*rec_mutex);
-void	       _gsl_init_data_handles	(void);
-void	       _gsl_init_data_caches	(void);
-void	       _gsl_init_engine_utils	(void);
-void	       _gsl_init_loader_gslwave (void);
-void	       _gsl_init_loader_wav     (void);
 void	       _gsl_tick_stamp_inc	(void);
 void	       _gsl_tick_stamp_set_leap (guint		 ticks);
+void	_gsl_init_data_handles		(void);
+void	_gsl_init_data_caches		(void);
+void	_gsl_init_engine_utils		(void);
+void	_gsl_init_loader_gslwave	(void);
+void	_gsl_init_loader_wav		(void);
+void	_gsl_init_loader_oggvorbis	(void);
 #define		GSL_N_IO_RETRIES	(5)
 #define		_GSL_TICK_STAMP_VAL()	(gsl_externvar_tick_stamp + 0)
 extern volatile guint64	gsl_externvar_tick_stamp;

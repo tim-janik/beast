@@ -28,7 +28,8 @@ extern "C" {
 
 
 /* --- macros --- */
-#define	GSL_DATA_HANDLE_OPENED(handle)	(((GslDataHandle*) (handle))->open_count > 0)
+#define	GSL_DATA_HANDLE_OPENED(handle)	 (((GslDataHandle*) (handle))->open_count > 0)
+#define	GSL_DATA_HANDLE_READ_LINEAR(hdl) (((GslDataHandle*) (handle))->vtable->coarse_seek != NULL)
 
 
 /* --- typedefs & structures --- */
@@ -53,7 +54,10 @@ struct _GslDataHandleFuncs
 					 GslLong		 n_values,
 					 gfloat			*values);
   void		(*close)		(GslDataHandle		*data_handle);
-  void          (*destroy)		(GslDataHandle		*handle);
+  void          (*destroy)		(GslDataHandle		*data_handle);
+  /* optional (for codecs) */
+  GslLong	(*coarse_seek)		(GslDataHandle		*data_handle,
+					 GslLong		 position);
 };
 
 

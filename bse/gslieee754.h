@@ -97,7 +97,22 @@ extern "C" {
 #define	GSL_FLOAT_PARTS(f)		(*((GslFloatIEEE754*) &(f)))
 #define	GSL_DOUBLE_PARTS(d)		(*((GslDoubleIEEE754*) &(d)))
 
+/* --- rounding --- */
+typedef	unsigned short int	GslFpuState;
+#if defined (__i386__) && defined (__GNUC__)
+/* setting/restoring rounding mode shouldn't actually
+ * be necessary as round-to-nearest is the hardware
+ * default (can be checked with gsl_fpu_okround()).
+ */
+extern inline void	gsl_fpu_setround	(GslFpuState		*cw);
+extern inline int	gsl_fpu_okround		(void);
+extern inline void	gsl_fpu_restore		(GslFpuState		 cv);
+extern inline int	gsl_ftoi		(register double	 f);
+/* fallbacks for the !386 case are below */
+#endif
 
+
+/* --- implementation bits --- */
 #if G_BYTE_ORDER == G_LITTLE_ENDIAN
 typedef union
 {
@@ -154,6 +169,57 @@ static const union { unsigned char c[8]; double d; } _gsl_dnan_union = { _GSL_DO
 static const union { unsigned char c[8]; double d; } _gsl_dinf_union = { _GSL_DOUBLE_INF_BYTES };
 static const union { unsigned char c[4]; float f; }  _gsl_fnan_union = { _GSL_FLOAT_NAN_BYTES };
 static const union { unsigned char c[4]; float f; }  _gsl_finf_union = { _GSL_FLOAT_INF_BYTES };
+
+#if defined (__i386__) && defined (__GNUC__)
+extern inline void
+gsl_fpu_setround (GslFpuState *cw)
+{
+  GslFpuState cv;
+
+  asm ("fnstcw %0"
+       : "=m" (*&cv));
+  *cw = cv;
+  cv &= ~0x0c00;
+  asm ("fldcw %0"
+       :
+       : "m" (*&cv));
+}
+extern inline int
+gsl_fpu_okround (void)
+{
+  GslFpuState cv;
+
+  asm ("fnstcw %0"
+       : "=m" (*&cv));
+  return !(cv & 0x0c00);
+}
+extern inline void
+gsl_fpu_restore (GslFpuState cv)
+{
+  asm ("fldcw %0"
+       :
+       : "m" (*&cv));
+}
+extern inline int
+gsl_ftoi (register double f)
+{
+  int r;
+
+  asm ("fistl %0"
+       : "=m" (r)
+       : "t" (f));
+  return r;
+}
+#else   /* !386 */
+#  define gsl_fpu_setround(p)   ((void) (p));
+#  define gsl_fpu_okround()     (1)
+#  define gsl_fpu_restore(x)    /* nop */
+static inline int
+gsl_ftoi (register double v)
+{
+  return v < -0.0 ? v - 0.5 : v + 0.5;
+}
+#endif
 
 #ifdef __cplusplus
 }

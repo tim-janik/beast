@@ -26,6 +26,7 @@
 #include <sched.h>
 #include <errno.h>
 #include <sys/poll.h>
+#include <sys/stat.h>
 
 /* some systems don't have ERESTART (which is what linux returns for system
  * calls on pipes which are being interrupted). most propably just use EINTR,
@@ -1065,6 +1066,7 @@ gsl_strerror (GslErrorType error)
     case GSL_ERROR_LAST:
     case GSL_ERROR_UNKNOWN:		return "Unknown error";
     case GSL_ERROR_IO:			return "I/O error";
+    case GSL_ERROR_PERMS:		return "Insufficient permission";
     case GSL_ERROR_NOT_FOUND:		return "Not found";
     case GSL_ERROR_OPEN_FAILED:		return "Open failed";
     case GSL_ERROR_SEEK_FAILED:		return "Seek failed";
@@ -1149,6 +1151,56 @@ gsl_byte_order_from_string (const gchar *string)
   if (strncasecmp (string, "big", 3) == 0)
     return G_BIG_ENDIAN;
   return 0;
+}
+
+GslErrorType
+gsl_check_file (const gchar *file_name,
+		const gchar *mode)
+{
+  guint access_mask = 0;
+  guint check_file, check_dir, check_link;
+  
+  if (strchr (mode, 'r'))	/* readable */
+    access_mask |= R_OK;
+  if (strchr (mode, 'w'))	/* writable */
+    access_mask |= W_OK;
+  if (strchr (mode, 'x'))	/* executable */
+    access_mask |= X_OK;
+
+  if (access_mask && access (file_name, access_mask) < 0)
+    goto have_errno;
+  
+  check_file = strchr (mode, 'f') != NULL;	/* open as file */
+  check_dir  = strchr (mode, 'd') != NULL;	/* open as directory */
+  check_link = strchr (mode, 'l') != NULL;	/* open as link */
+
+  if (check_file || check_dir || check_link)
+    {
+      struct stat st;
+      
+      if (stat (file_name, &st) < 0)
+	goto have_errno;
+      
+      if ((check_file && !S_ISREG (st.st_mode)) ||
+	  (check_dir && !S_ISDIR (st.st_mode)) ||
+	  (check_link && !S_ISLNK (st.st_mode)))
+	return GSL_ERROR_OPEN_FAILED;
+    }
+
+  return GSL_ERROR_NONE;
+  
+ have_errno:
+  switch (errno)
+    {
+    case ELOOP:
+    case ENAMETOOLONG:
+    case ENOENT:	return GSL_ERROR_NOT_FOUND;
+    case EROFS:
+    case EPERM:
+    case EACCES:	return GSL_ERROR_PERMS;
+    case EIO:		return GSL_ERROR_IO;
+    default:		return GSL_ERROR_OPEN_FAILED;
+    }
 }
 
 
@@ -1239,4 +1291,5 @@ gsl_init (const GslConfigValue values[])
   _gsl_init_engine_utils ();
   _gsl_init_loader_gslwave ();
   _gsl_init_loader_wav ();
+  _gsl_init_loader_oggvorbis ();
 }

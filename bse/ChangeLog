@@ -1,3 +1,45 @@
+Sat Feb  2 09:21:39 2002  Tim Janik  <timj@gtk.org>
+
+	* gslcommon.[hc] (gsl_check_file): new function for elaborate
+	error messages.
+
+	* gsldatautils.[hc] (gsl_data_handle_dump_wav): dump a data handle
+	as .wav file.
+	const fixes for gsl_conv_*().
+
+	* bsepcmdevice-oss.c (oss_device_write): use
+	gsl_conv_from_float_clip() to improve accuracy and speed.
+
+	* gsldatahandle.h: add hooks for linear read data handles,
+	provide GSL_DATA_HANDLE_READ_LINEAR() to identify them and
+	introduce GslDataHandleFuncs.coarse_seek() to reposition
+	such handles.
+
+	* gsldatahandle-vorbis.[hc]: Ogg/Vorbis data handle. using this
+	with dcaches is suboptimal currently as dcaches warp back in pcm
+	positions on block boundaries. so this should be used in conjunction
+	with a linear-read-buffer handle only (which is of course not yet
+	implemented ;).
+
+	* gslloader-gslwave.c: GslLoader implementation for Ogg/Vorbis files.
+
+	* gslopmaster.c (master_process_flow): assert that rounding mode is
+	round-to-nearest, if this assertion is triggered, some software
+	didn't cleanup after itself and should be fixed.
+
+	* gsldatautils.c (gsl_data_handle_dump): clip values before saving,
+	to avoid nasty value wraps.
+
+	* gsldatautils.h: gsl_conv_from_{float|double}*() use gsl_ftoi()
+	for the rounding now, which is more accurate and, at least on i386,
+	slightly faster.
+
+	* gslieee754.h: provide fpu rounding functions, most importantly
+	gsl_ftoi() to round a float to interger in round-to-nearest mode.
+	we also have gsl_fpu_setround()/gsl_fpu_restore() now, to force
+	round-to-nearest mode, but that shouldn't be necessary as it's
+	the default for ieee754 (and on i387).
+
 Fri Feb  1 02:43:38 2002  Tim Janik  <timj@gtk.org>
 
 	* gslfilter.[hc]: 

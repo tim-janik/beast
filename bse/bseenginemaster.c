@@ -22,6 +22,7 @@
 #include "gslopnode.h"
 #include "gsloputil.h"
 #include "gslopschedule.h"
+#include "gslieee754.h"
 #include <string.h>
 #include <sys/poll.h>
 #include <sys/time.h>
@@ -410,6 +411,8 @@ master_process_flow (void)
   OpNode *trace_node = NULL;
   
   g_return_if_fail (master_need_process == TRUE);
+
+  g_assert (gsl_fpu_okround () == TRUE);
 
   OP_DEBUG (GSL_ENGINE_DEBUG_MASTER, "process_flow");
   if (master_schedule)

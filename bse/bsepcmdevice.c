@@ -159,7 +159,7 @@ bse_pcm_handle_read (BsePcmHandle *handle,
   if (n_values)
     g_return_val_if_fail (values != NULL, 0);
   else
-    return;
+    return 0;
 
   GSL_SPIN_LOCK (&handle->mutex);
   n = handle->read (handle, n_values, values);

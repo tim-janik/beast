@@ -88,7 +88,7 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
       l -= n;
       offs += n;
 
-      n = gsl_conv_from_float (format, byte_order, src, src, n);
+      n = gsl_conv_from_float_clip (format, byte_order, src, src, n);
 
       do
 	j = write (fd, src, n);
@@ -97,6 +97,84 @@ gsl_data_handle_dump (GslDataHandle    *dhandle,
 	return errno ? errno : EIO;
     }
   return 0;
+}
+
+static void
+write_bytes (gint  fd,
+	     guint n_bytes,
+	     void *bytes)
+{
+  gint errold = errno;
+  guint j;
+
+  do
+    j = write (fd, bytes, n_bytes);
+  while (j < 0 && errno == EINTR);
+
+  if (!errno)
+    errno = errold;
+}
+
+static void
+write_uint32_le (gint    fd,
+		 guint32 val)
+{
+  val = GUINT32_TO_LE (val);
+  write_bytes (fd, 4, &val);
+}
+
+static void
+write_uint16_le (gint    fd,
+		 guint16 val)
+{
+  val = GUINT16_TO_LE (val);
+  write_bytes (fd, 2, &val);
+}
+
+gint /* errno */
+gsl_data_handle_dump_wav (GslDataHandle *dhandle,
+			  gint           fd,
+			  guint          n_bits,
+			  guint          n_channels,
+			  guint          sample_freq)
+{
+  guint data_length, file_length, byte_per_sample, byte_per_second;
+
+  g_return_val_if_fail (dhandle != NULL, EINVAL);
+  g_return_val_if_fail (GSL_DATA_HANDLE_OPENED (dhandle), EINVAL);
+  g_return_val_if_fail (fd >= 0, EINVAL);
+  g_return_val_if_fail (n_bits == 16 || n_bits == 8, EINVAL);
+  g_return_val_if_fail (n_channels >= 1, EINVAL);
+
+  data_length = dhandle->n_values * (n_bits == 16 ? 2 : 1);
+  file_length = data_length;
+  file_length += 4 + 4;				/* 'RIFF' header */
+  file_length += 4 + 4 + 2 + 2 + 4 + 4 + 2 + 2;	/* 'fmt ' header */
+  file_length += 4 + 4;				/* 'data' header */
+  byte_per_sample = (n_bits == 16 ? 2 : 1) * n_channels;
+  byte_per_second = byte_per_sample * sample_freq;
+
+  errno = 0;
+  write_bytes (fd, 4, "RIFF");		/* main_chunk */
+  write_uint32_le (fd, file_length);
+  write_bytes (fd, 4, "WAVE");		/* chunk_type */
+  write_bytes (fd, 4, "fmt ");		/* sub_chunk */
+  write_uint32_le (fd, 16);		/* sub chunk length */
+  write_uint16_le (fd, 1);		/* format (1=PCM) */
+  write_uint16_le (fd, n_channels);
+  write_uint32_le (fd, sample_freq);
+  write_uint32_le (fd, byte_per_second);
+  write_uint16_le (fd, byte_per_sample);
+  write_uint16_le (fd, n_bits);
+  write_bytes (fd, 4, "data");		/* data chunk */
+  write_uint32_le (fd, data_length);
+
+  if (errno)
+    return errno;
+
+  return gsl_data_handle_dump (dhandle, fd,
+			       n_bits == 16 ? GSL_WAVE_FORMAT_SIGNED_16 : GSL_WAVE_FORMAT_UNSIGNED_8,
+			       G_LITTLE_ENDIAN);
 }
 
 gboolean

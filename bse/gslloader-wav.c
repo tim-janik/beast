@@ -91,7 +91,7 @@ read_header (gint       fd,
 
 typedef struct
 {
-  DWord sub_chunk;              /* 'fmt ', bg endian as int */
+  DWord sub_chunk;              /* 'fmt ', big endian as int */
   DWord length;                 /* sub chunk length, must be 16 */
   Word  format;                 /* 1 for PCM */
   Word  n_channels;             /* 1 = Mono, 2 = Stereo */

@@ -65,6 +65,7 @@ typedef enum    /*< skip >*/
   GSL_ERROR_UNKNOWN,
   /* I/O errors */
   GSL_ERROR_IO,
+  GSL_ERROR_PERMS,
   GSL_ERROR_EOF,
 #define GSL_ERROR_FILE_EMPTY	GSL_ERROR_EOF
   GSL_ERROR_NOT_FOUND,

@@ -68,38 +68,43 @@ gint /* errno */     gsl_data_handle_dump	(GslDataHandle		*dhandle,
 						 gint			 fd,
 						 GslWaveFormatType	 format,
 						 guint			 byte_order);
+gint /* errno */     gsl_data_handle_dump_wav	(GslDataHandle		*dhandle,
+						 gint			 fd,
+						 guint			 n_bits,
+						 guint			 n_channels,
+						 guint			 sample_freq);
 
 
 /* --- conversion utils --- */
 static inline guint   gsl_conv_from_float	(GslWaveFormatType format,
 						 guint             byte_order,
-						 gfloat           *src,
+						 const gfloat     *src,
 						 gpointer          dest,
 						 guint             n_values);
 static inline guint   gsl_conv_from_float_clip	(GslWaveFormatType format,
 						 guint             byte_order,
-						 gfloat           *src,
+						 const gfloat     *src,
 						 gpointer          dest,
 						 guint             n_values);
 static inline void    gsl_conv_to_float		(GslWaveFormatType format,
 						 guint             byte_order,
-						 gpointer          src,
+						 gconstpointer     src,
 						 gfloat           *dest,
 						 guint             n_values);
 static inline guint   gsl_conv_from_double	(GslWaveFormatType format,
 						 guint             byte_order,
-						 gdouble          *src,
+						 const gdouble    *src,
 						 gpointer          dest,
 						 guint             n_values);
 static inline guint   gsl_conv_from_double_clip	(GslWaveFormatType format,
 						 guint             byte_order,
-						 gdouble          *src,
+						 const gdouble    *src,
 						 gpointer          dest,
 						 guint             n_values);
 static inline void    gsl_conv_to_double	(GslWaveFormatType format,
 						 guint             byte_order,
-						 gpointer          src,
-						 gdouble           *dest,
+						 gconstpointer     src,
+						 gdouble          *dest,
 						 guint             n_values);
 
 
@@ -124,7 +129,7 @@ gsl_data_handle_peek_value (GslDataHandle     *dhandle,
 static inline guint     /* returns number of bytes used in dest */
 gsl_conv_from_float (GslWaveFormatType format,
                      guint             byte_order,
-                     gfloat           *src,
+                     const gfloat     *src,
                      gpointer          dest,
                      guint             n_values)
 {
@@ -133,7 +138,7 @@ gsl_conv_from_float (GslWaveFormatType format,
   gint16 *i16 = (gint16*) dest;
   guint16 *u16 = (guint16*) dest;
   guint32 *u32dest = (guint32*) dest;
-  gfloat *bound = src + n_values;
+  const gfloat *bound = src + n_values;
   guint32 *u32src = (guint32*) src, *u32bound = (guint32*) bound;
   
   if (!n_values)
@@ -141,7 +146,7 @@ gsl_conv_from_float (GslWaveFormatType format,
   
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
-      gboolean fsign;
+      GslFpuState fpu;
       gfloat v;
       gint16 vi16;
       guint16 vu16;
@@ -154,15 +159,15 @@ gsl_conv_from_float (GslWaveFormatType format,
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 128.;
-          v += fsign ? -0.5 : 0.5;
-          *i8++ = v;
+          *i8++ = gsl_ftoi (v);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -178,27 +183,27 @@ gsl_conv_from_float (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 2048.;
-          v += fsign ? -0.5 : 0.5;
-          *i16++ = v;
+          *i16++ = gsl_ftoi (v);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 2048.;
-          v += fsign ? -0.5 : 0.5;
-          vi16 = v;
+          vi16 = gsl_ftoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -214,27 +219,27 @@ gsl_conv_from_float (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
-          v *= 32768.;
-          v += fsign ? -0.5 : 0.5;
-          *i16++ = v;
+	  v *= 32768.;
+          *i16++ = gsl_ftoi (v);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 32768.;
-          v += fsign ? -0.5 : 0.5;
-          vi16 = v;
+          vi16 = gsl_ftoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
@@ -255,7 +260,7 @@ gsl_conv_from_float (GslWaveFormatType format,
 static inline guint     /* returns number of bytes used in dest */
 gsl_conv_from_float_clip (GslWaveFormatType format,
                           guint             byte_order,
-                          gfloat           *src,
+                          const gfloat     *src,
                           gpointer          dest,
                           guint             n_values)
 {
@@ -264,7 +269,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
   gint16 *i16 = (gint16*) dest;
   guint16 *u16 = (guint16*) dest;
   guint32 *u32dest = (guint32*) dest;
-  gfloat *bound = src + n_values;
+  const gfloat *bound = src + n_values;
   guint32 *u32src = (guint32*) src, *u32bound = (guint32*) bound;
   
   if (!n_values)
@@ -272,7 +277,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
   
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
-      gboolean fsign;
+      GslFpuState fpu;
       gfloat v;
       guint32 vu32;
       gint32 vi32;
@@ -287,16 +292,16 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 128.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           *i8++ = CLAMP (vi32, -128, 127);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -316,29 +321,29 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 2048.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           *i16++ = CLAMP (vi32, -2048, 2047);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 2048.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           vi32 = CLAMP (vi32, -2048, 2047);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -358,30 +363,30 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 32768.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = vi32;
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 32768.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
@@ -402,7 +407,7 @@ gsl_conv_from_float_clip (GslWaveFormatType format,
 static inline void
 gsl_conv_to_float (GslWaveFormatType format,
                    guint             byte_order,
-                   gpointer          src,
+                   gconstpointer     src,
                    gfloat           *dest,
                    guint             n_values)
 {
@@ -509,7 +514,7 @@ gsl_conv_to_float (GslWaveFormatType format,
 static inline guint     /* returns number of bytes used in dest */
 gsl_conv_from_double (GslWaveFormatType format,
                       guint             byte_order,
-                      gdouble          *src,
+                      const gdouble    *src,
                       gpointer          dest,
                       guint             n_values)
 {
@@ -518,7 +523,7 @@ gsl_conv_from_double (GslWaveFormatType format,
   gint16 *i16 = (gint16*) dest;
   guint16 *u16 = (guint16*) dest;
   guint32 *u32dest = (guint32*) dest;
-  gdouble *bound = src + n_values;
+  const gdouble *bound = src + n_values;
   guint32 *u32src = (guint32*) src, *u32bound = (guint32*) bound;
   
   if (!n_values)
@@ -526,7 +531,7 @@ gsl_conv_from_double (GslWaveFormatType format,
   
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
-      gboolean fsign;
+      GslFpuState fpu;
       gdouble v;
       gint16 vi16;
       guint16 vu16;
@@ -539,15 +544,15 @@ gsl_conv_from_double (GslWaveFormatType format,
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 128.;
-          v += fsign ? -0.5 : 0.5;
-          *i8++ = v;
+          *i8++ = gsl_ftoi (v);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -563,27 +568,27 @@ gsl_conv_from_double (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 2048.;
-          v += fsign ? -0.5 : 0.5;
-          *i16++ = v;
+          *i16++ = gsl_ftoi (v);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 2048.;
-          v += fsign ? -0.5 : 0.5;
-          vi16 = v;
+          vi16 = gsl_ftoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -599,27 +604,27 @@ gsl_conv_from_double (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 32768.;
-          v += fsign ? -0.5 : 0.5;
-          *i16++ = v;
+          *i16++ = gsl_ftoi (v);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 32768.;
-          v += fsign ? -0.5 : 0.5;
-          vi16 = v;
+          vi16 = gsl_ftoi (v);
           *i16++ = GUINT16_SWAP_LE_BE (vi16);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
@@ -640,7 +645,7 @@ gsl_conv_from_double (GslWaveFormatType format,
 static inline guint     /* returns number of bytes used in dest */
 gsl_conv_from_double_clip (GslWaveFormatType format,
 			   guint             byte_order,
-			   gdouble          *src,
+			   const gdouble    *src,
 			   gpointer          dest,
 			   guint             n_values)
 {
@@ -649,7 +654,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
   gint16 *i16 = (gint16*) dest;
   guint16 *u16 = (guint16*) dest;
   guint32 *u32dest = (guint32*) dest;
-  gdouble *bound = src + n_values;
+  const gdouble *bound = src + n_values;
   guint32 *u32src = (guint32*) src, *u32bound = (guint32*) bound;
   
   if (!n_values)
@@ -657,7 +662,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
   
   switch (GSL_CONV_FORMAT (format, byte_order == G_BYTE_ORDER))
     {
-      gboolean fsign;
+      GslFpuState fpu;
       gdouble v;
       guint32 vu32;
       gint32 vi32;
@@ -672,16 +677,16 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER == G_BYTE_ORDER):
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_8, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 128.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           *i8++ = CLAMP (vi32, -128, 127);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -701,29 +706,29 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER == G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 2048.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           *i16++ = CLAMP (vi32, -2048, 2047);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_12, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 2048.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           vi32 = CLAMP (vi32, -2048, 2047);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_UNSIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
       do
@@ -743,30 +748,30 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
       while (src < bound);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER == G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 32768.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = vi32;
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_SIGNED_16, G_BYTE_ORDER != G_BYTE_ORDER):
+      gsl_fpu_setround (&fpu);
       do
         {
           v = *src++;
-          fsign = gsl_float_sign (v);   /* extract prior to multiplication */
           v *= 32768.;
-          v += fsign ? -0.5 : 0.5;
-          vi32 = v;
+          vi32 = gsl_ftoi (v);
           vi32 = CLAMP (vi32, -32768, 32767);
           *i16++ = GUINT16_SWAP_LE_BE (vi32);
         }
       while (src < bound);
+      gsl_fpu_restore (fpu);
       return n_values << 1;
     case GSL_CONV_FORMAT (GSL_WAVE_FORMAT_FLOAT, G_BYTE_ORDER == G_BYTE_ORDER):
       return n_values << 2;
@@ -787,7 +792,7 @@ gsl_conv_from_double_clip (GslWaveFormatType format,
 static inline void
 gsl_conv_to_double (GslWaveFormatType format,
 		    guint             byte_order,
-		    gpointer          src,
+		    gconstpointer     src,
 		    gdouble          *dest,
 		    guint             n_values)
 {
