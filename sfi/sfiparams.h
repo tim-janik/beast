@@ -78,9 +78,9 @@ typedef GParamSpecParam   SfiParamSpecPSpec;
 
 /* --- Sfi param specs --- */
 typedef struct {
-  gchar *choice_ident;
-  gchar *choice_label;
-  gchar *choice_blurb;
+  const gchar *choice_ident;
+  const gchar *choice_label;
+  const gchar *choice_blurb;
 } SfiChoiceValue;	// auxillary
 typedef struct {
   guint                 n_values;

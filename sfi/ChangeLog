@@ -1,3 +1,7 @@
+Tue Sep 14 19:10:07 2004  Tim Janik  <timj@gtk.org>
+
+	* sfiparams.[hc]: const fixups.
+
 Wed Sep  8 15:36:41 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: added g_intern_printf() to return a static printf-

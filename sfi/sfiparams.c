@@ -931,9 +931,9 @@ tmp_choice_values_unref (TmpChoiceValues *tcv)
       else
 	for (i = 0; i < tcv->cvalues.n_values; i++)
           {
-            g_free (tcv->cvalues.values[i].choice_ident);
-            g_free (tcv->cvalues.values[i].choice_label);
-            g_free (tcv->cvalues.values[i].choice_blurb);
+            g_free ((char*) tcv->cvalues.values[i].choice_ident);
+            g_free ((char*) tcv->cvalues.values[i].choice_label);
+            g_free ((char*) tcv->cvalues.values[i].choice_blurb);
           }
       g_free ((gpointer) tcv->cvalues.values);
       g_free (tcv);
