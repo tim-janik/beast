@@ -1,3 +1,17 @@
+Sat Nov 20 23:24:25 1999  Tim Janik  <timj@gtk.org>
+
+	* bsefirfilter.[hc]: started out on an FIR (finite impulse response)
+	filter. it supports variable degree setting, cut off frequency,
+	C. Lanczos and von Hann smoothing. only lowpass mode is implemented
+	currently though.
+
+	* bsegenosc.c (bse_gen_osc_calc_chunk): take modulo operations out
+	of the inner loop.
+	
+	* testos.c: removed some more test code.
+	
+	* bsecapture.c: use the Mic icon for now.
+
 Sat Nov 20 08:57:38 1999  Tim Janik  <timj@gtk.org>
 
 	* bsegenosc.c (bse_gen_osc_set_param): added phase, base_note and

@@ -182,16 +182,16 @@ bse_capture_reset (BseSource *source)
 
 
 /* --- Export to BSE --- */
-#include "./icons/noicon.c"
+#include "./icons/mic.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_capture, "BseCapture", "BseSource",
     "BseCapture puts out sound recorded from the soundcard",
     &type_info_capture,
     "/Source/Capture",
-    { NOICON_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      NOICON_WIDTH, NOICON_HEIGHT,
-      NOICON_RLE_PIXEL_DATA, },
+    { MIC_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      MIC_WIDTH, MIC_HEIGHT,
+      MIC_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };

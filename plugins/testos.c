@@ -35,13 +35,6 @@ static void
 testos_class_init (BseSourceClass *class)
 {
   BseSourceClass *source_class = class;
-  
-  bse_source_class_add_ichannel (source_class,
-				 "Any In", "A Test Input Channel",
-				 1, 1);
-  bse_source_class_add_ochannel (source_class,
-                                 "Any Out", "A Test Output Channel",
-				 1);
 }
 static BseType           type_id_testos = 0;
 static const BseTypeInfo testos_type_info = {
@@ -57,7 +50,6 @@ static const BseTypeInfo testos_type_info = {
   0 /* n_preallocs */,
   (BseObjectInitFunc) foo,
 };
-static BseType           type_id_mic = 0;
 static BseType           type_id_amp = 0;
 static BseType           type_id_speaker = 0;
 static BseType           type_id_broken = 0;
@@ -65,7 +57,6 @@ static BseType           type_id_broken = 0;
 
 /* --- Export to BSE --- */
 #include "./icons/testos.c"
-#include "./icons/mic.c"
 #include "./icons/amp.c"
 #include "./icons/speaker.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
@@ -77,14 +68,6 @@ BSE_EXPORT_OBJECTS = {
     { TESTOS_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
       TESTOS_WIDTH, TESTOS_HEIGHT,
       TESTOS_RLE_PIXEL_DATA, },
-  },
-  { &type_id_mic, "BseMic", "BseSource",
-    "Mic is a test object",
-    &testos_type_info,
-    "/Source/Mic",
-    { MIC_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
-      MIC_WIDTH, MIC_HEIGHT,
-      MIC_RLE_PIXEL_DATA, },
   },
   { &type_id_amp, "BseAmp", "BseSource",
     "Amp is a test object",

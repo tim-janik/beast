@@ -399,6 +399,7 @@ bse_gen_osc_set_param (BseGenOsc *gosc,
       break;
     case PARAM_BASE_NOTE:
       gosc->base_freq = bse_note_to_freq (param->value.v_note);
+      gosc->base_freq = MAX (gosc->base_freq, BSE_MIN_OSC_FREQ_d);
       bse_gen_osc_update_locals (gosc);
       bse_object_param_changed (BSE_OBJECT (gosc), "base_freq");
       if (bse_note_from_freq (gosc->base_freq) != param->value.v_note)
@@ -511,8 +512,8 @@ bse_gen_osc_calc_chunk (BseSource *source,
   hunk = bse_hunk_alloc (1);
 
   table_size = gosc->table_size << 16;
-  rate_pos = gosc->rate_pos;
-  rate = gosc->rate;
+  rate_pos = gosc->rate_pos % table_size;
+  rate = gosc->rate % table_size;
 
   if (fmchunk && fmchunk->state_filled)
     rate += fm_strength * fmchunk->state[0];
@@ -524,14 +525,16 @@ bse_gen_osc_calc_chunk (BseSource *source,
       {
 	hunk[i] = table[rate_pos >> 16];
 	rate_pos += rate + fm_strength * fmhunk[i];
-	rate_pos %= table_size;
+	if (rate_pos >= table_size)
+	  rate_pos -= table_size;
       }
   else
     for (i = 0; i < BSE_TRACK_LENGTH; i++)
       {
 	hunk[i] = table[rate_pos >> 16];
 	rate_pos += rate;
-	rate_pos %= table_size;
+	if (rate_pos >= table_size)
+	  rate_pos -= table_size;
       }
   gosc->rate_pos = rate_pos;
 
@@ -546,6 +549,7 @@ bse_gen_osc_reset (BseSource *source)
 {
   BseGenOsc *gosc = BSE_GEN_OSC (source);
 
+  gosc->rate_pos = 0;
   gosc->table_size = 1;
   gosc->table = NULL;
   bse_gen_osc_class_unref_tables (BSE_GEN_OSC_GET_CLASS (gosc));
