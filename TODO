@@ -1,11 +1,8 @@
 FIXMES:
 - add one-shot property to factories
-- implement toolbar separator
-- implement menubutton
 - implement menu title
 - move bst_action_list_add_cat() to bstutils.[hc]
 - recreate partdialog toolbar
-- recreate partdialog popup menu
 - delete BstActionRegions
 - i18n in xml
 - Tools, Demo

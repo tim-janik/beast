@@ -1,3 +1,36 @@
+Fri Nov 14 18:42:25 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/gxk/gxkauxwidgets.[hc]: added tooltip-visible and
+	height-from-width properties to widget patcher. export
+	gxk_widget_get_latent_tooltip() for arbitrary widgets.
+	added GxkMenuButton which is much like GtkOptionMenu but
+	doesn't push-in, properly grabs focus, shows images of
+	image menu items, allowes updates triggered from outside,
+	supports stock-sizes for icons, properly max-sizes over
+	all menu item possibilities (to avoid resizes) and shows
+	tooltips.
+
+	* beast-gtk/gxk/gxkaction.[hc]: use gxk_widget_regulate() and
+	gxk_widget_regulate_uses_active(), remove special casing.
+
+	* beast-gtk/gxk/gxkutils.[hc]: added gxk_widget_regulate_uses_active(),
+	moved gxk_widget_regulate() here.
+
+	* beast-gtk/gxk/gxkgadget.[hc]: register GxkMenuButton,
+	GtkHSeparator and GtkVSeparator, adapted menu_adopt() and
+	implemented logic macro functions: not, or, nor, exor, and, nand.
+
+	* beast-gtk/dialogs/gadgets-beast.xml: adjusted factory button sizes.
+	added quantization and note length menu-buttons, added toolbar
+	spaces/separators.
+
+	* beast-gtk/dialogs/gadgets-standard.xml: added h/v separators.
+	added option-menu and menu-button (an option menu with constant
+	size for image menu items). added relief= to buttons. 
+	added toolbar-space. support latent-tooltip= on tooltip.
+	added latent tooltips to menu-items (so they don't show the
+	tooltips, but the tips are shown by e.g. menu-button).
+
 Fri Nov 14 11:20:03 2003  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsteventroll.[hc]: fix canvas-clicked signal.

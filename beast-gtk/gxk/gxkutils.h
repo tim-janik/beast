@@ -43,6 +43,10 @@ GtkWidget*      gxk_item_factory_get_widget        (GtkItemFactory  *ifactory,
 void            gxk_widget_proxy_requisition       (GtkWidget       *widget);
 gboolean        gxk_widget_has_ancestor            (gpointer         widget,
                                                     gpointer         ancestor);
+void            gxk_widget_regulate                (GtkWidget       *widget,
+                                                    gboolean         sensitive,
+                                                    gboolean         active);
+gboolean        gxk_widget_regulate_uses_active    (GtkWidget       *widget);
 gboolean        gxk_menu_check_sensitive           (GtkMenu         *menu);
 void            gxk_menu_attach_as_submenu         (GtkMenu         *menu,
                                                     GtkMenuItem     *menu_item);

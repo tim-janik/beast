@@ -60,10 +60,36 @@ typedef GObjectClass GxkWidgetPatcherClass;
 typedef struct {
   GObject parent_instance;
   gchar  *tooltip;
-  guint   width_from_height : 1;
+  guint   tooltip_visible : 1;
+  gdouble width_from_height;
+  gdouble height_from_width;
 } GxkWidgetPatcher;
 GType   gxk_widget_patcher_get_type     (void);
 extern const GxkGadgetType *_gxk_widget_patcher_def;
+
+const gchar*    gxk_widget_get_latent_tooltip (GtkWidget *widget);
+
+
+/* --- menu button --- */
+#define GXK_TYPE_MENU_BUTTON              (gxk_menu_button_get_type ())
+#define GXK_MENU_BUTTON(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GXK_TYPE_MENU_BUTTON, GxkMenuButton))
+#define GXK_MENU_BUTTON_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GXK_TYPE_MENU_BUTTON, GxkMenuButtonClass))
+#define GXK_IS_MENU_BUTTON(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GXK_TYPE_MENU_BUTTON))
+#define GXK_IS_MENU_BUTTON_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GXK_TYPE_MENU_BUTTON))
+#define GXK_MENU_BUTTON_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), GXK_TYPE_MENU_BUTTON, GxkMenuButtonClass))
+typedef struct {
+  GtkButton  parent_instance;
+  GtkWidget *cslot, *islot;
+  GtkMenu   *menu;
+  GtkWidget *menu_item;
+  GtkWidget *image;
+  gint       icon_size, old_icon_size;
+  gint       width, height;
+  GtkWidget *child;
+} GxkMenuButton;
+typedef GtkButtonClass GxkMenuButtonClass;
+GType   gxk_menu_button_get_type          (void);
+void    gxk_menu_button_update            (GxkMenuButton *self);
 
 
 G_END_DECLS

@@ -17,6 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #include "gxkutils.h"
+#include "gxkauxwidgets.h"
 #include "gxkcellrendererpopup.h"
 #include <string.h>
 
@@ -2084,6 +2085,71 @@ gxk_widget_has_ancestor (gpointer widget,
   return FALSE;
 }
 
+/**
+ * gxk_widget_regulate
+ * @widget:    valid #GtkWidget
+ * @sensitive: whether @widget should be sensitive
+ * @active:    whether @widget should be active
+ *
+ * Regulate a widgets state. The @sensitive parameter
+ * controls sensitivity like gtk_widget_set_sensitive()
+ * and @active controls whether the widget is active
+ * like gtk_toggle_button_set_active() or
+ * gtk_check_menu_item_set_active().
+ * For menu items, the menu item is also made the
+ * active widget in its parent menu, possibly affecting
+ * option menus.
+ */
+void
+gxk_widget_regulate (GtkWidget      *widget,
+                     gboolean        sensitive,
+                     gboolean        active)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (((GObject*) widget)->ref_count > 0)
+    {
+      GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (widget), "active");
+      g_object_freeze_notify (G_OBJECT (widget));
+      gtk_widget_set_sensitive (widget, sensitive);
+      if (pspec && pspec->value_type == G_TYPE_BOOLEAN)
+        {
+          GValue value = { 0, };
+          g_value_init (&value, G_TYPE_BOOLEAN);
+          g_value_set_boolean (&value, active);
+          g_object_set_property ((GObject*) widget, "active", &value);
+          g_value_unset (&value);
+        }
+      if (active && GTK_IS_MENU_ITEM (widget) && widget->parent && GTK_IS_MENU (widget->parent))
+        {
+          GtkMenu *menu = GTK_MENU (widget->parent);
+          guint nth = g_list_index (GTK_MENU_SHELL (menu)->children, widget);
+          GtkWidget *awidget = gtk_menu_get_attach_widget (menu);
+          gtk_menu_set_active (menu, nth);
+          if (GTK_IS_OPTION_MENU (awidget))
+            gtk_option_menu_set_history (GTK_OPTION_MENU (awidget), nth);
+          if (GXK_IS_MENU_BUTTON (awidget))
+            gxk_menu_button_update (GXK_MENU_BUTTON (awidget));
+        }
+      g_object_thaw_notify (G_OBJECT (widget));
+    }
+}
+
+/**
+ * gxk_widget_regulate_uses_active
+ * @widget:  valid #GtkWidget
+ * @RETURNS: %TRUE if gxk_widget_regulate() uses @active for @widget
+ *
+ * Check whether gxk_widget_regulate() will actually make
+ * use of its @active argument for @widget. If not,
+ * %FALSE is returned, and gxk_widget_regulate() is
+ * fully equivalent to just gtk_widget_set_sensitive().
+ */
+gboolean
+gxk_widget_regulate_uses_active (GtkWidget *widget)
+{
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (widget), "active");
+  return GTK_IS_MENU_ITEM (widget) || (pspec && pspec->value_type == G_TYPE_BOOLEAN);
+}
 
 /**
  * gxk_window_get_menu_accel_group

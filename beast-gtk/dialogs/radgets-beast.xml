@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>		<!--*-mode: xml;-*-->
 <gxk-gadget-definitions xmlns:xdef="http://beast.gtk.org/xmlns:xdef" >
   
-  <!-- factory contents: relief= action-*= -->
+  <!-- factory contents: button-args, action-*= -->
   <xdef:factory-button inherit="button"
-    focus="0"
-    prop:relief="$(ifdef,relief,$relief,normal)" >
+    focus="0" >
     <tooltip text="$action-tooltip" />
-    <widget-patcher prop:width-from-height="1" />
+    <widget-patcher prop:width-from-height="1.25" />
     <vbox>
       <image
 	expand="1"
@@ -17,9 +16,9 @@
     </vbox>
   </xdef:factory-button>
   <xdef:factory-toggle-button inherit="toggle-button"
-    focus="0" prop:relief="$(ifdef,relief,$relief,normal)" >
+    focus="0" >
     <tooltip text="$action-tooltip" />
-    <widget-patcher prop:width-from-height="1" />
+    <widget-patcher prop:width-from-height="1.25" />
     <vbox>
       <image
 	expand="1"
@@ -111,7 +110,20 @@
       <frame-shadow-out >
 	<hbox name="toolbar" >
 	  <big-toggle-factory action-root="" actions="pctrl-canvas-tools" relief="none" />
+	  <toolbar-space pack:padding="3" vseparator="1" />
 	  <big-button-factory action-root="" actions="piano-edit-actions" relief="none" />
+	  <toolbar-space pack:padding="3" vseparator="1" />
+	  <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	    <popup-menu >
+	      <menu-factory action-root="" actions="pctrl-quant-tools" />
+	    </popup-menu>
+	  </menu-button>
+	  <menu-button focus="0" relief="none" size:hgroup="menu-buttons" stock-size="big-button" >
+	    <popup-menu >
+	      <menu-factory action-root="" actions="pctrl-note-tools" />
+	    </popup-menu>
+	  </menu-button>
+	  <toolbar-space pack:padding="3" vseparator="1" />
 	</hbox>
       </frame-shadow-out>
     </vbox>

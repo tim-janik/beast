@@ -105,9 +105,6 @@ void            gxk_widget_publish_actions      (gpointer                widget,
 void            gxk_widget_update_actions_upwards       (gpointer        widget);
 void            gxk_widget_update_actions_downwards     (gpointer        widget);
 void            gxk_widget_update_actions               (gpointer        widget);
-void            gxk_widget_regulate                     (GtkWidget      *widget,
-                                                         gboolean        sensitive,
-                                                         gboolean        active);
 
 
 /* --- action groups --- */

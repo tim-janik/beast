@@ -226,7 +226,7 @@ boolean_from_string (const gchar *value)
            value[0] == 'n' || value[0] == 'N');
 }
 
-static inline guint64
+static inline gdouble
 float_from_string (const gchar *value)
 {
   gdouble v_float = value ? g_strtod (value, NULL) : 0;
@@ -1471,10 +1471,11 @@ _gxk_init_gadget_types (void)
   *t++ = GTK_TYPE_TREE_VIEW;    *t++ = GTK_TYPE_LABEL;  *t++ = GTK_TYPE_PROGRESS_BAR;
   *t++ = GTK_TYPE_HPANED;       *t++ = GTK_TYPE_VPANED; *t++ = GTK_TYPE_SPIN_BUTTON;
   *t++ = GTK_TYPE_EVENT_BOX;    *t++ = GTK_TYPE_IMAGE;  *t++ = GTK_TYPE_OPTION_MENU;
-  *t++ = GTK_TYPE_HBOX;         *t++ = GTK_TYPE_VBOX;
+  *t++ = GTK_TYPE_HBOX;         *t++ = GTK_TYPE_VBOX;   *t++ = GXK_TYPE_MENU_BUTTON;
   *t++ = GTK_TYPE_CHECK_BUTTON; *t++ = GTK_TYPE_ENTRY;  *t++ = GXK_TYPE_MENU_ITEM;
   *t++ = GTK_TYPE_HSCROLLBAR;   *t++ = GTK_TYPE_HSCALE; *t++ = GTK_TYPE_TEAROFF_MENU_ITEM;
   *t++ = GTK_TYPE_VSCROLLBAR;   *t++ = GTK_TYPE_VSCALE; *t++ = GXK_TYPE_IMAGE;
+  *t++ = GTK_TYPE_VSEPARATOR;   *t++ = GTK_TYPE_HSEPARATOR;
   while (t-- > types)
     gxk_gadget_define_widget_type (*t);
   gadget_define_gtk_menu ();
@@ -1583,9 +1584,13 @@ menu_adopt (GxkGadget          *gadget,
             GxkGadgetData      *gdgdata)
 {
   if (GTK_IS_MENU_ITEM (parent))
-    gxk_menu_attach_as_submenu (GTK_MENU (gadget), GTK_MENU_ITEM (parent));
+    gxk_menu_attach_as_submenu (gadget, parent);
+  else if (GTK_IS_OPTION_MENU (parent))
+    gtk_option_menu_set_menu (parent, gadget);
+  else if (GXK_IS_MENU_BUTTON (parent))
+    g_object_set (parent, "menu", gadget, NULL);
   else
-    gxk_menu_attach_as_popup (GTK_MENU (gadget), parent);
+    gxk_menu_attach_as_popup (gadget, parent);
   return TRUE;
 }
 
@@ -1647,6 +1652,41 @@ mf_if (GSList *args,
     return then ? expand_expr (then, env) : g_strdup ("1");
   else
     return elze ? expand_expr (elze, env) : g_strdup ("0");
+}
+
+static gchar*
+mf_not (GSList *args,
+        Env    *env)
+{
+  GSList      *argiter = args->next; /* skip func name */
+  gchar       *cond = argiter_exp (&argiter, env);
+  gboolean b = boolean_from_string (cond);
+  g_free (cond);
+  return g_strdup (b ? "0" : "1");
+}
+
+static gchar*
+mf_blogic (GSList *args,
+           Env    *env)
+{
+  GSList      *argiter = args;
+  const gchar *name = argiter_pop (&argiter);
+  gboolean result = strcmp (name, "and") == 0 || strcmp (name, "nand") == 0;
+  while (argiter)
+    {
+      gchar *vbool = argiter_exp (&argiter, env);
+      gboolean b = boolean_from_string (vbool), result;
+      g_free (vbool);
+      if (strcmp (name, "xor") == 0)
+        result ^= b;
+      else if (strcmp (name, "or") == 0 || strcmp (name, "nor") == 0)
+        result |= b;
+      else if (strcmp (name, "and") == 0 || strcmp (name, "nand") == 0)
+        result &= b;
+    }
+  if (strcmp (name, "nor") == 0 || strcmp (name, "nand") == 0)
+    result = !result;
+  return g_strdup (result ? "1" : "0");
 }
 
 static gchar*
@@ -1715,6 +1755,12 @@ macro_func_lookup (const gchar *name)
 {
   static const struct { const gchar *name; MacroFunc mfunc; } macros[] = {
     { "if",             mf_if, },
+    { "not",            mf_not, },
+    { "xor",            mf_blogic, },
+    { "or",             mf_blogic, },
+    { "nor",            mf_blogic, },
+    { "and",            mf_blogic, },
+    { "nand",           mf_blogic, },
     { "nth",            mf_nth, },
     { "ifdef",          mf_ifdef, },
     { "null-collapse",  mf_null_collapse, },

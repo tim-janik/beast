@@ -296,13 +296,9 @@ widget_set_active (GxkActionGroup *agroup,
 {
   ActionEntry *e = g_object_get_qdata (widget, quark_action_entry);
   if (e)
-    {
-      GValue value = { 0, };
-      g_value_init (&value, G_TYPE_BOOLEAN);
-      g_value_set_boolean (&value, agroup->action_id == e->action.action_id);
-      g_object_set_property ((GObject*) widget, "active", &value);
-      g_value_unset (&value);
-    }
+    gxk_widget_regulate (widget,
+                         GTK_WIDGET_SENSITIVE (widget), /* preserves sensitivity */
+                         agroup->action_id == e->action.action_id);
 }
 
 void
@@ -315,12 +311,8 @@ gxk_action_list_regulate_widget (GxkActionList          *alist,
   e = alist->entries[nth];
   e->widgets = g_slist_prepend (e->widgets, g_object_ref (widget));
   g_object_set_qdata (widget, quark_action_entry, e);
-  if (e->klass->agroup)
-    {
-      GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (widget), "active");
-      if (pspec && pspec->value_type == G_TYPE_BOOLEAN)
-        g_signal_connect_object (e->klass->agroup, "changed", G_CALLBACK (widget_set_active), widget, 0);
-    }
+  if (e->klass->agroup && gxk_widget_regulate_uses_active (widget))
+    g_signal_connect_object (e->klass->agroup, "changed", G_CALLBACK (widget_set_active), widget, 0);
 }
 
 void
@@ -694,27 +686,6 @@ gxk_widget_update_actions (gpointer widget)
   g_return_if_fail (GTK_IS_WIDGET (widget));
   if (GTK_IS_WINDOW (toplevel))
     window_queue_action_updates (toplevel, widget, widget);
-}
-
-void
-gxk_widget_regulate (GtkWidget      *widget,
-                     gboolean        sensitive,
-                     gboolean        active)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  if (((GObject*) widget)->ref_count > 0)
-    {
-      GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (widget), "active");
-      gtk_widget_set_sensitive (widget, sensitive);
-      if (pspec && pspec->value_type == G_TYPE_BOOLEAN)
-        {
-          GValue value = { 0, };
-          g_value_init (&value, G_TYPE_BOOLEAN);
-          g_value_set_boolean (&value, active);
-          g_object_set_property ((GObject*) widget, "active", &value);
-          g_value_unset (&value);
-        }
-    }
 }
 
 

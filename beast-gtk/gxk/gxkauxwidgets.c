@@ -233,7 +233,7 @@ static void   gxk_widget_patcher_set_property   (GObject                *object,
                                                  guint                   param_id,
                                                  const GValue           *value,
                                                  GParamSpec             *pspec);
-static gpointer gxk_widget_patcher_parent_class = NULL;
+static gpointer widget_patcher_parent_class = NULL;
 static gboolean
 widget_patcher_unref (gpointer data)
 {
@@ -246,7 +246,9 @@ widget_patcher_unref (gpointer data)
 enum {
   PATCHER_PROP_0,
   PATCHER_PROP_TOOLTIP,
+  PATCHER_PROP_TOOLTIP_VISIBLE,
   PATCHER_PROP_WIDTH_FROM_HEIGHT,
+  PATCHER_PROP_HEIGHT_FROM_WIDTH
 };
 static void
 gxk_widget_patcher_set_property (GObject      *object,
@@ -260,8 +262,14 @@ gxk_widget_patcher_set_property (GObject      *object,
     case PATCHER_PROP_TOOLTIP:
       self->tooltip = g_value_dup_string (value);
       break;
+    case PATCHER_PROP_TOOLTIP_VISIBLE:
+      self->tooltip_visible = g_value_get_boolean (value);
+      break;
     case PATCHER_PROP_WIDTH_FROM_HEIGHT:
-      self->width_from_height = g_value_get_boolean (value);
+      self->width_from_height = g_value_get_double (value);
+      break;
+    case PATCHER_PROP_HEIGHT_FROM_WIDTH:
+      self->height_from_width = g_value_get_double (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -269,29 +277,44 @@ gxk_widget_patcher_set_property (GObject      *object,
     }
 }
 static void
-gxk_widget_patcher_finlize (GObject *object)
+gxk_widget_patcher_finalize (GObject *object)
 {
   GxkWidgetPatcher *self = GXK_WIDGET_PATCHER (object);
   g_free (self->tooltip);
-  G_OBJECT_CLASS (gxk_widget_patcher_parent_class)->finalize (object);
+  G_OBJECT_CLASS (widget_patcher_parent_class)->finalize (object);
 }
 static void
 gxk_widget_patcher_class_init (GxkWidgetPatcherClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  gxk_widget_patcher_parent_class = g_type_class_peek_parent (class);
+  widget_patcher_parent_class = g_type_class_peek_parent (class);
   gobject_class->set_property = gxk_widget_patcher_set_property;
-  gobject_class->finalize = gxk_widget_patcher_finlize;
+  gobject_class->finalize = gxk_widget_patcher_finalize;
   g_object_class_install_property (gobject_class, PATCHER_PROP_TOOLTIP,
                                    g_param_spec_string ("tooltip", NULL, NULL, NULL, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, PATCHER_PROP_TOOLTIP_VISIBLE,
+                                   g_param_spec_boolean ("tooltip_visible", NULL, NULL,
+                                                         TRUE, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT));
   g_object_class_install_property (gobject_class, PATCHER_PROP_WIDTH_FROM_HEIGHT,
-                                   g_param_spec_boolean ("width_from_height", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+                                   g_param_spec_double ("width_from_height", NULL, NULL, -G_MAXDOUBLE, G_MAXDOUBLE, 0, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, PATCHER_PROP_HEIGHT_FROM_WIDTH,
+                                   g_param_spec_double ("height_from_width", NULL, NULL, -G_MAXDOUBLE, G_MAXDOUBLE, 0, G_PARAM_WRITABLE));
+}
+static void
+widget_patcher_height_from_width (GtkWidget      *widget,
+                                  GtkRequisition *requisition)
+{
+  gdouble factor = g_object_get_double (widget, "height-from-width");
+  if (factor)
+    requisition->height = requisition->width * factor;
 }
 static void
 widget_patcher_width_from_height (GtkWidget      *widget,
                                   GtkRequisition *requisition)
 {
-  requisition->width = requisition->height;
+  gdouble factor = g_object_get_double (widget, "width-from-height");
+  if (factor)
+    requisition->width = requisition->height * factor;
 }
 static gboolean
 widget_patcher_adopt (GxkGadget          *gadget,
@@ -300,11 +323,27 @@ widget_patcher_adopt (GxkGadget          *gadget,
 {
   GxkWidgetPatcher *self = GXK_WIDGET_PATCHER (gadget);
   if (self->tooltip)
-    gtk_tooltips_set_tip (GXK_TOOLTIPS, parent, self->tooltip, NULL);
-  if (self->width_from_height)
-    g_object_connect (parent, "signal_after::size_request", widget_patcher_width_from_height, NULL, NULL);
+    {
+      g_object_set_data_full (parent, "gxk-widget-patcher-latent-tooltip", g_strdup (self->tooltip), g_free);
+      if (self->tooltip_visible)
+        gtk_tooltips_set_tip (GXK_TOOLTIPS, parent, self->tooltip, NULL);
+    }
+  if (self->width_from_height &&
+      !gxk_signal_handler_pending (parent, "size-request", G_CALLBACK (widget_patcher_width_from_height), NULL))
+    g_object_connect (parent, "signal_after::size-request", widget_patcher_width_from_height, NULL, NULL);
+  g_object_set_double (parent, "width-from-height", self->width_from_height);
+  if (self->height_from_width &&
+      !gxk_signal_handler_pending (parent, "size-request", G_CALLBACK (widget_patcher_height_from_width), NULL))
+    g_object_connect (parent, "signal_after::size-request", widget_patcher_height_from_width, NULL, NULL);
+  g_object_set_double (parent, "height-from-width", self->height_from_width);
   g_idle_add (widget_patcher_unref, self);      /* takes over initial ref count */
   return FALSE; /* no support for packing options */
+}
+
+const gchar*
+gxk_widget_get_latent_tooltip (GtkWidget *widget)
+{
+  return g_object_get_data (widget, "gxk-widget-patcher-latent-tooltip");
 }
 
 GType
@@ -353,3 +392,314 @@ static const GxkGadgetType widget_patcher_def = {
   NULL,         /* set_pack */
 };
 const GxkGadgetType *_gxk_widget_patcher_def = &widget_patcher_def;
+
+
+/* --- GxkMenuButton --- */
+enum {
+  MENU_BUTTON_PROP_0,
+  MENU_BUTTON_PROP_MENU,
+  MENU_BUTTON_PROP_COMBO_ARROW,
+  MENU_BUTTON_PROP_STOCK_SIZE
+};
+
+static void     menu_button_remove_contents          (GxkMenuButton       *self);
+static void
+menu_button_popup (GxkMenuButton *self,
+                   guint          button,
+                   guint32        time)
+{
+  GdkEvent *event = gtk_get_current_event ();
+  GtkWidget *menu_item, *widget = GTK_WIDGET (self);
+  gint x, y;
+  gtk_widget_grab_focus (widget);
+  /* fixate sizes across removing child */
+  g_object_set (self->islot,
+                "width-request", self->islot->requisition.width,
+                "height-request", self->islot->requisition.height,
+                NULL);
+  menu_button_remove_contents (self);
+  gdk_window_get_origin (widget->window, &x, &y);
+  x += widget->allocation.x;
+  y += widget->allocation.y;
+  gxk_menu_popup (self->menu, x, y, FALSE, button, event ? gdk_event_get_time (event) : 0);
+  menu_item = gtk_menu_get_active (self->menu);
+  if (menu_item)
+    gtk_menu_shell_select_item (GTK_MENU_SHELL (self->menu), menu_item);
+}
+static gboolean
+menu_button_button_press (GtkWidget      *widget,
+                          GdkEventButton *event)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (widget);
+  gtk_widget_grab_focus (GTK_WIDGET (self));
+  if (self->menu && event->type == GDK_BUTTON_PRESS && event->button == 1)
+    menu_button_popup (self, event->button, event->time);
+  return TRUE;
+}
+static gboolean
+menu_button_key_press (GtkWidget   *widget,
+                       GdkEventKey *event)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (widget);
+  switch (event->keyval)
+    {
+    case GDK_KP_Space: case GDK_space:
+      menu_button_popup (self, 0, event->time);
+      return TRUE;
+    }
+  return FALSE;
+}
+static gboolean
+menu_button_mnemonic_activate (GtkWidget *widget,
+                               gboolean   group_cycling)
+{
+  gtk_widget_grab_focus (widget);
+  return TRUE;
+}
+
+static void
+menu_button_proxy_state (GxkMenuButton *self)
+{
+  if (self->child)
+    gtk_widget_set_sensitive (self->child, GTK_WIDGET_IS_SENSITIVE (self->menu_item));
+  if (self->image)
+    gtk_widget_set_sensitive (self->image, GTK_WIDGET_IS_SENSITIVE (self->menu_item));
+}
+static void
+menu_button_max_size (GxkMenuButton *self)
+{
+  if (self->child)
+    {
+      GList *list, *children = GTK_MENU_SHELL (self->menu)->children;
+      GtkRequisition child_requisition = { 0, };
+      guint width = 0, height = 0;
+      for (list = children; list; list = list->next)
+        {
+          GtkWidget *mitem = list->data;
+          if (GTK_WIDGET_VISIBLE (mitem))
+            {
+              GtkWidget *child = GTK_BIN (mitem)->child;
+              if (child && GTK_WIDGET_VISIBLE (child))
+                {
+                  gtk_widget_size_request (child, &child_requisition);
+                  width = MAX (width, child_requisition.width);
+                  height = MAX (height, child_requisition.height);
+                }
+            }
+        }
+      gtk_widget_size_request (self->child, &child_requisition);
+      width = MAX (width, child_requisition.width);
+      height = MAX (height, child_requisition.height);
+      g_object_set (self->cslot,
+                    "width-request", width,
+                    "height-request", height,
+                    NULL);
+    }
+}
+static void
+menu_button_remove_contents (GxkMenuButton *self)
+{
+  if (self->menu_item)
+    {
+      if (self->child)
+        {
+          gtk_widget_set_sensitive (self->child, TRUE);
+          gtk_widget_reparent (self->child, self->menu_item);
+          self->child = NULL;
+        }
+      if (self->image)
+        {
+          g_object_ref (self->image);
+          g_object_set (self->image, "sensitive", TRUE, "icon-size", self->old_icon_size, NULL);
+          gtk_container_remove (GTK_CONTAINER (self->image->parent), self->image);
+          gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (self->menu_item), self->image);
+          g_object_unref (self->image);
+        }
+      self->image = NULL;
+      g_signal_handlers_disconnect_by_func (self->menu_item, menu_button_proxy_state, self);
+      g_object_unref (self->menu_item);
+      self->menu_item = NULL;
+      gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (self), NULL, NULL);
+    }
+}
+void
+gxk_menu_button_update (GxkMenuButton *self)
+{
+  if (self->menu)
+    {
+      menu_button_remove_contents (self);
+      self->menu_item = gtk_menu_get_active (self->menu);
+      if (self->menu_item)
+        {
+          GtkTooltipsData *tipdata;
+          g_object_ref (self->menu_item);
+          self->child = GTK_BIN (self->menu_item)->child;
+          if (self->child)
+            gtk_widget_reparent (self->child, self->cslot);
+          if (GTK_IS_IMAGE_MENU_ITEM (self->menu_item))
+            self->image = gtk_image_menu_item_get_image (GTK_IMAGE_MENU_ITEM (self->menu_item));
+          if (self->image)
+            {
+              g_object_get (self->image, "icon-size", &self->old_icon_size, NULL);
+              gtk_widget_reparent (self->image, self->islot);
+              if (self->icon_size)
+                g_object_set (self->image, "icon-size", self->icon_size, NULL);
+            }
+          g_object_connect (self->menu_item, "swapped_signal::state_changed", menu_button_proxy_state, self, NULL);
+          menu_button_proxy_state (self);
+          gtk_widget_queue_resize (GTK_WIDGET (self));
+          tipdata = gtk_tooltips_data_get (self->menu_item);
+          if (tipdata && tipdata->tip_text)
+            gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (self), tipdata->tip_text, tipdata->tip_private);
+          else
+            gtk_tooltips_set_tip (GXK_TOOLTIPS, GTK_WIDGET (self),
+                                  gxk_widget_get_latent_tooltip (self->menu_item), NULL);
+          /* restore slot sizes */
+          g_object_set (self->islot,
+                        "width-request", -1,
+                        "height-request", -1,
+                        NULL);
+          menu_button_max_size (self);
+        }
+    }
+}
+
+static void
+menu_button_detacher (GtkWidget *widget,
+                      GtkMenu   *menu)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (widget);
+  menu_button_remove_contents (self);
+  g_signal_handlers_disconnect_by_func (self->menu, gxk_menu_button_update, self);
+  g_signal_handlers_disconnect_by_func (self->menu, menu_button_max_size, self);
+  self->menu = NULL;
+  g_object_notify (self, "menu");
+}
+
+static void
+gxk_menu_button_set_property (GObject      *object,
+                              guint         param_id,
+                              const GValue *value,
+                              GParamSpec   *pspec)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (object);
+  switch (param_id)
+    {
+    const gchar *cstr;
+    case MENU_BUTTON_PROP_MENU:
+      if (self->menu)
+        gtk_menu_detach (self->menu);
+      self->menu = g_value_get_object (value);
+      if (self->menu)
+        {
+          gtk_menu_attach_to_widget (self->menu, GTK_WIDGET (self), menu_button_detacher);
+          g_object_connect (self->menu,
+                            "swapped_signal_after::selection_done", gxk_menu_button_update, self,
+                            "swapped_signal_after::size-request", menu_button_max_size, self,
+                            NULL);
+          gtk_widget_queue_resize (GTK_WIDGET (self));
+          gxk_menu_button_update (self);
+        }
+      break;
+    case MENU_BUTTON_PROP_COMBO_ARROW:
+      if (g_value_get_boolean (value))
+        gtk_box_pack_end (GTK_BOX (GTK_BIN (self)->child),
+                          g_object_new (GTK_TYPE_ARROW,
+                                        "visible", TRUE,
+                                        "arrow-type", GTK_ARROW_DOWN,
+                                        NULL),
+                          FALSE, TRUE, 0);
+      break;
+    case MENU_BUTTON_PROP_STOCK_SIZE:
+      cstr = g_value_get_string (value);
+      if (cstr)
+        self->icon_size = gtk_icon_size_from_name (cstr);
+      else
+        self->icon_size = 0;
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+}
+static void
+gxk_menu_button_get_property (GObject    *object,
+                              guint       param_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (object);
+  switch (param_id)
+    {
+    case MENU_BUTTON_PROP_MENU:
+      g_value_set_object (value, self->menu);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
+      break;
+    }
+}
+static void
+gxk_menu_button_init (GxkMenuButton *self)
+{
+  GtkWidget *hbox = gtk_hbox_new (FALSE, 0);
+  GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
+  self->islot = gtk_alignment_new (0.5, 0.5, 1, 1);
+  gtk_box_pack_start (GTK_BOX (vbox), self->islot, TRUE, TRUE, 0);
+  self->cslot = gtk_alignment_new (0.5, 0.5, 0, 0);
+  gtk_box_pack_end (GTK_BOX (vbox), self->cslot, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+  gtk_container_add (GTK_CONTAINER (self), hbox);
+  gtk_widget_show_all (GTK_WIDGET (self));
+}
+static gpointer menu_button_parent_class = NULL;
+static void
+menu_button_dispose (GObject *object)
+{
+  GxkMenuButton *self = GXK_MENU_BUTTON (object);
+  if (self->menu)
+    gtk_menu_detach (self->menu);
+  G_OBJECT_CLASS (menu_button_parent_class)->dispose (object);
+}
+
+static void
+gxk_menu_button_class_init (GxkMenuButtonClass *class)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+  menu_button_parent_class = g_type_class_peek_parent (class);
+  gobject_class->set_property = gxk_menu_button_set_property;
+  gobject_class->get_property = gxk_menu_button_get_property;
+  gobject_class->dispose = menu_button_dispose;
+  g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_MENU,
+                                   g_param_spec_object ("menu", NULL, NULL, GTK_TYPE_MENU, G_PARAM_READWRITE));
+  g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_COMBO_ARROW,
+                                   g_param_spec_boolean ("combo-arrow", NULL, NULL, FALSE, G_PARAM_WRITABLE));
+  g_object_class_install_property (gobject_class, MENU_BUTTON_PROP_STOCK_SIZE,
+                                   g_param_spec_string ("stock-size", NULL, NULL, NULL, G_PARAM_WRITABLE));
+  widget_class->button_press_event = menu_button_button_press;
+  widget_class->key_press_event = menu_button_key_press;
+  widget_class->mnemonic_activate = menu_button_mnemonic_activate;
+}
+
+GType
+gxk_menu_button_get_type (void)
+{
+  static GType type = 0;
+  if (!type)
+    {
+      static const GTypeInfo type_info = {
+        sizeof (GxkMenuButtonClass),
+        (GBaseInitFunc) NULL,
+        (GBaseFinalizeFunc) NULL,
+        (GClassInitFunc) gxk_menu_button_class_init,
+        NULL,   /* class_finalize */
+        NULL,   /* class_data */
+        sizeof (GxkMenuButton),
+        0,      /* n_preallocs */
+        (GInstanceInitFunc) gxk_menu_button_init,
+      };
+      type = g_type_register_static (GTK_TYPE_BUTTON, "GxkMenuButton", &type_info, 0);
+    }
+  return type;
+}
