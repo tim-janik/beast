@@ -1,3 +1,74 @@
+Sat Dec  4 23:48:57 1999  Tim Janik  <timj@gtk.org>
+
+	* bseproject.[hc]: added functions
+	(bse_project_start_playback): retrigger playback for all supers.
+	(bse_project_stop_playback): reset all currently playing supers.
+
+	* bsesnet.c:
+	(bse_snet_prepare): lock object (and globals).
+	(bse_snet_reset): unlock object (and globals).
+
+	* bsesong.c:
+	(bse_song_prepare): lock object (and globals).
+	(bse_song_reset): unlock object (and globals).
+
+	* bsesongsequencer.c: no need to do locking in
+	bse_song_sequencer_destroy() and bse_song_sequencer_setup() that's what
+	the BseSource PREPARED state cares about.
+
+	* bsesource.c (bse_source_reset): finally got around to implement
+	this function ;)
+
+Sat Dec  4 20:59:22 1999  Tim Janik  <timj@gtk.org>
+
+	* got rid of a bunch of dead sources: bsetext.[hc], bsestream.[hc],
+	bsefilestream.[hc], bsenullstream.[hc], bsepcmstream.[hc],
+	bsepcmstream-oss.[hc] and bsemaster.[hc].
+	removed olaf's testmixer.c, look at ../test/testmixer.bse.
+
+Sat Dec  4 16:30:14 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesource.[hc]: introduce (*skip_chunk)() member function. per cycle
+	we now guarrantee that either calc_chunk() or skip_chunk() gets called
+	per output channel. even if no output sources are connected to this
+	channel.
+	(bse_source_do_prepare): 
+	(bse_source_do_reset): attach/detach to from BseHeart.
+
+Fri Dec  3 23:44:22 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesource.[hc]: source flag cleanups, introduced *attached flags for
+	BseHeart.
+
+	* bsemain.c (bse_parse_args): construct the debug keys from generated
+	enum list.
+
+	* *.[hc]: generic objetc flags cleanups, s/BSE_DEBUG/BSE_IF_DEBUG/.
+
+Thu Dec  2 21:36:00 1999  Tim Janik  <timj@gtk.org>
+
+	* bsesource.[hc]: removed pausing junk.
+	(bse_source_do_cycle): don't cycle input sources, this is done
+	centrally by BseHeart now.
+
+	* bseheart.[hc]: added pcm device registry.
+
+Wed Dec  1 23:53:23 1999  Tim Janik  <timj@gtk.org>
+
+	* bseheart.[hc]: started out on a new bse core engine, based on
+	bstmaster.[hc] and bsemaster.[hc].
+
+	* bseenums.[hc] (BseErrorType): cleaned up some of the stream error
+	enums, added device errors enums.
+
+Wed Dec  1 22:57:24 1999  Tim Janik  <timj@gtk.org>
+	
+	* bsepcmdevice-oss.[hc]: pcm device backend for OSS (based on
+	duplex.c and bsepcmstream-oss.[hc]).
+	
+	* bsepcmdevice.[hc]: new base type for dealing with pcm devices
+	(code redesigned, based on bsestream.[hc] and bsepcmstream.[hc]).
+
 Sat Nov 27 09:11:32 1999  Tim Janik  <timj@gtk.org>
 
 	* bseobject.c (bse_object_class_init): install parasite parsers.

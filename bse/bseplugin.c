@@ -73,9 +73,8 @@ bse_plugin_init (void)
 	  plugin->gmodule = NULL;
 	  plugin->module_refs = 42;
 
-	  BSE_DEBUG (PLUGINS, {
+	  BSE_IF_DEBUG (PLUGINS)
 	    g_message ("register-builtin-plugin \"%s\"", plugin->name);
-	  });
 
 	  name = plugin->name;
 	  error = builtin_inits[i] (plugin);
@@ -113,9 +112,8 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      guint on = plugin->n_proc_types;
 	      const gchar *error;
 	      
-	      BSE_DEBUG (REGS, {
+	      BSE_IF_DEBUG (REGS)
 		g_message ("register-procedure: \"%s\"", pspec->name);
-	      });
 	      
 	      type = bse_type_from_name (pspec->name);
 	      if (type)
@@ -154,9 +152,8 @@ bse_plugin_register_types (BsePlugin    *plugin,
 	      guint on = plugin->n_object_types;
 	      const gchar *error;
 	      
-	      BSE_DEBUG (REGS, {
+	      BSE_IF_DEBUG (REGS)
 		g_message ("register-object: \"%s\"", ospec->name);
-	      });
 	      
 	      type = bse_type_from_name (ospec->name);
 	      if (type)
@@ -258,9 +255,8 @@ bse_plugin_ref (BsePlugin *plugin)
     {
       const gchar *error = NULL;
       
-      BSE_DEBUG (PLUGINS, {
+      BSE_IF_DEBUG (PLUGINS)
 	g_message ("reloading-plugin \"%s\"", plugin->name);
-      });
       
       plugin->gmodule = g_module_open (plugin->fname, 0);
       if (!plugin->gmodule)
@@ -315,9 +311,8 @@ bse_plugin_unload (BsePlugin *plugin)
   plugin->e_procs = NULL;
   plugin->e_objects = NULL;
 
-  BSE_DEBUG (PLUGINS, {
+  BSE_IF_DEBUG (PLUGINS)
     g_message ("unloaded-plugin \"%s\"", plugin->name);
-  });
 }
 
 void

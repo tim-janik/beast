@@ -38,12 +38,9 @@ extern "C" {
 #define FIXME_SKIP(code)  g_message ("%s:%d:FIXME(%s): code portion skipped", \
 				     __FILE__, __LINE__, G_GNUC_PRETTY_FUNCTION)
 #ifdef G_ENABLE_DEBUG
-#define BSE_DEBUG(type, code)	G_STMT_START { \
-  if (bse_debug_flags & BSE_DEBUG_##type) \
-    { code ; } \
-} G_STMT_END
+#define BSE_IF_DEBUG(type)	if (!(bse_debug_flags & BSE_DEBUG_##type)) {} else
 #else  /* !G_ENABLE_DEBUG */
-#define BSE_DEBUG(type, code)	/* do nothing */
+#define BSE_IF_DEBUG(type)	while (0) /* don't exec */
 #endif /* !G_ENABLE_DEBUG */
 
 
@@ -90,20 +87,14 @@ typedef struct	_BseEnumClass		BseEnumClass;
 typedef struct	_BseEffect		BseEffect;
 typedef struct	_BseEffectClass		BseEffectClass;
 typedef struct	_BseFlagsClass		BseFlagsClass;
-typedef	struct	_BseFileStream		BseFileStream;
-typedef	struct	_BseFileStreamClass	BseFileStreamClass;
 typedef struct	_BseInstrument		BseInstrument;
 typedef struct	_BseInstrumentClass	BseInstrumentClass;
 typedef struct	_BseItem		BseItem;
 typedef struct	_BseItemClass		BseItemClass;
-typedef	struct	_BseNullStream		BseNullStream;
-typedef	struct	_BseNullStreamClass	BseNullStreamClass;
 typedef struct	_BseObject		BseObject;
 typedef struct	_BseObjectClass		BseObjectClass;
 typedef struct	_BsePattern		BsePattern;
 typedef struct	_BsePatternClass	BsePatternClass;
-typedef	struct	_BsePcmStream		BsePcmStream;
-typedef	struct	_BsePcmStreamClass	BsePcmStreamClass;
 typedef struct  _BseProcedureClass      BseProcedureClass;
 typedef	struct	_BseProject		BseProject;
 typedef	struct	_BseProjectClass	BseProjectClass;
@@ -115,12 +106,8 @@ typedef struct	_BseSong		BseSong;
 typedef struct	_BseSongClass		BseSongClass;
 typedef struct	_BseSource		BseSource;
 typedef struct	_BseSourceClass		BseSourceClass;
-typedef	struct	_BseStream		BseStream;
-typedef	struct	_BseStreamClass		BseStreamClass;
 typedef struct	_BseSuper		BseSuper;
 typedef struct	_BseSuperClass		BseSuperClass;
-typedef struct	_BseText		BseText;
-typedef struct	_BseTextInterface	BseTextInterface;
 
 
 /* --- BSE aux structures --- */
@@ -146,7 +133,7 @@ typedef struct	_BseNotifyHook		BseNotifyHook;
 
 
 /* --- anticipated enums --- */
-typedef enum			/* <skip> */
+typedef enum
 { /* keep in sync with bsemain.c */
   BSE_DEBUG_TABLES		= (1 << 0),
   BSE_DEBUG_CLASSES		= (1 << 1),
@@ -154,7 +141,9 @@ typedef enum			/* <skip> */
   BSE_DEBUG_NOTIFY		= (1 << 3),
   BSE_DEBUG_PLUGINS		= (1 << 4),
   BSE_DEBUG_REGS		= (1 << 5),
-  BSE_DEBUG_CHUNKS		= (1 << 6)
+  BSE_DEBUG_CHUNKS		= (1 << 6),
+  BSE_DEBUG_HEART		= (1 << 7),
+  BSE_DEBUG_PCM			= (1 << 8)
 } BseDebugFlags;
 typedef enum			/* <skip> */
 {
@@ -254,10 +243,6 @@ typedef	void	(*BseNotify_store)		(BseObject	*object,
 						 gpointer	 data);
 typedef	void	(*BseNotify_io_changed)		(BseSource	*source,
 						 gpointer	 data);
-typedef void	(*BseNotify_write_chars)	(BseText	*text,
-						 guint		 n_chars,
-						 const gchar	*chars,
-						 gpointer	 user_data);
 typedef	void	(*BseNotify_item_added)		(BseContainer	*container,
 						 BseItem	*item,
 						 gpointer	 data);

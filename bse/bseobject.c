@@ -98,13 +98,12 @@ bse_object_debug_foreach (gpointer key,
 {
   BseObject *object = value;
 
-  BSE_DEBUG (OBJECTS, {
+  BSE_IF_DEBUG (OBJECTS)
     g_message ("[%p] stale %s\tref_count=%d%s",
 	       object,
 	       BSE_OBJECT_TYPE_NAME (object),
 	       object->ref_count,
 	       BSE_OBJECT_DESTROYED (object) ? " (destroyed)" : "");
-  });
 }
 
 static void
@@ -112,11 +111,11 @@ bse_object_debug (void)
 {
   if (debug_objects_ht)
     {
-      BSE_DEBUG (OBJECTS, {
-	g_message ("stale BseObjects: %u", bse_object_count);
-	
-	g_hash_table_foreach (debug_objects_ht, bse_object_debug_foreach, NULL);
-      });
+      BSE_IF_DEBUG (OBJECTS)
+	{
+	  g_message ("stale BseObjects: %u", bse_object_count);
+	  g_hash_table_foreach (debug_objects_ht, bse_object_debug_foreach, NULL);
+	}
     }
 }
 
@@ -203,13 +202,14 @@ bse_object_class_base_init (BseObjectClass *class)
 	class->notifiers = g_renew (GQuark, class->notifiers, class->n_notifiers + 1);
 	class->notifiers[class->n_notifiers] = g_quark_from_static_string (bse_notifiers[i].notifier);
 	class->n_notifiers++;
-
-	BSE_DEBUG (NOTIFY, g_message ("%s: + %s::%s",
-				      BSE_CLASS_NAME (class),
-				      bse_notifiers[i].object,
-				      bse_notifiers[i].notifier));
+	
+	BSE_IF_DEBUG (NOTIFY)
+	  g_message ("%s: + %s::%s",
+		     BSE_CLASS_NAME (class),
+		     bse_notifiers[i].object,
+		     bse_notifiers[i].notifier);
       }
-  
+
   class->n_parsers = 0;
   class->parsers = NULL;
   
@@ -318,12 +318,13 @@ bse_object_init (BseObject *object)
 
   bse_object_names_ht_insert (object);
 
-  BSE_DEBUG (OBJECTS, {
-    if (!debug_objects_ht)
-      debug_objects_ht = g_hash_table_new (g_direct_hash, NULL);
-    bse_object_count++;
-    g_hash_table_insert (debug_objects_ht, object, object);
-  });
+  BSE_IF_DEBUG (OBJECTS)
+    {
+      if (!debug_objects_ht)
+	debug_objects_ht = g_hash_table_new (g_direct_hash, NULL);
+      bse_object_count++;
+      g_hash_table_insert (debug_objects_ht, object, object);
+    }
 }
 
 static inline void
@@ -571,13 +572,14 @@ bse_object_unref (BseObject *object)
 
       g_return_if_fail (object->ref_count == 0);
 
-      BSE_DEBUG (OBJECTS, {
-	g_assert (g_hash_table_lookup (debug_objects_ht, object) == object);
-	
-	g_hash_table_remove (debug_objects_ht, object);
-	bse_object_count--;
-      });
-
+      BSE_IF_DEBUG (OBJECTS)
+	{
+	  g_assert (g_hash_table_lookup (debug_objects_ht, object) == object);
+	  
+	  g_hash_table_remove (debug_objects_ht, object);
+	  bse_object_count--;
+	}
+      
       bse_type_free_object (object);
     }
 }

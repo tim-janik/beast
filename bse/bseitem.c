@@ -55,6 +55,8 @@ BSE_BUILTIN_TYPE (BseItem)
     (BseObjectInitFunc) bse_item_init,
   };
 
+  g_assert (BSE_ITEM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+
   return bse_type_register_static (BSE_TYPE_OBJECT,
 				   "BseItem",
 				   "Base type for objects managed by a container",

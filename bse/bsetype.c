@@ -176,13 +176,16 @@ LOOKUP_TYPE_NODE (register BseType utype)
 static void
 bse_type_debug (void)
 {
-  if (bse_debug_classes)
-    BSE_DEBUG (CLASSES, {
-      GSList *slist;
-      
-      for (slist = bse_debug_classes; slist; slist = slist->next)
-	g_message ("stale class: `%s'", BSE_CLASS_NAME (slist->data));
-    });
+  BSE_IF_DEBUG (CLASSES)
+    {
+      if (bse_debug_classes)
+	{
+	  GSList *slist;
+	  
+	  for (slist = bse_debug_classes; slist; slist = slist->next)
+	    g_message ("stale class: `%s'", BSE_CLASS_NAME (slist->data));
+	}
+    }
 }
 
 static inline gchar*
@@ -504,7 +507,8 @@ type_class_init (BseType       type,
   class = g_malloc0 (node->data->classed.class_size);
   node->data->classed.class = class;
 
-  BSE_DEBUG (CLASSES, bse_debug_classes = g_slist_prepend (bse_debug_classes, class));
+  BSE_IF_DEBUG (CLASSES)
+    bse_debug_classes = g_slist_prepend (bse_debug_classes, class);
   
   if (pclass)
     {
@@ -564,12 +568,13 @@ type_class_destroy (TypeNode *node)
   type = NODE_TYPE (node);
   class = node->data->classed.class;
 
-  BSE_DEBUG (CLASSES, {
-    bse_debug_classes = g_slist_remove (bse_debug_classes, class);
-    g_message ("destroying %sClass `%s'",
-	       type_descriptive_name (BSE_FUNDAMENTAL_TYPE (type)),
-	       type_descriptive_name (type));
-  });
+  BSE_IF_DEBUG (CLASSES)
+    {
+      bse_debug_classes = g_slist_remove (bse_debug_classes, class);
+      g_message ("destroying %sClass `%s'",
+		 type_descriptive_name (BSE_FUNDAMENTAL_TYPE (type)),
+		 type_descriptive_name (type));
+    }
   
   if (node->data->classed.class_destroy)
     node->data->classed.class_destroy (class, (gpointer) node->data->classed.class_data);

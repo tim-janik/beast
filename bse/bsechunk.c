@@ -494,9 +494,6 @@ bse_chunk_complete_hunk (BseChunk *chunk)
 void
 bse_chunk_debug (void)
 {
-  extern BseIndex bse_index; /* FIXME */
-  
-  g_message ("BseIndex: %lld", bse_index);
   g_message ("n_state_blocks: %d", g_slist_length (state_blocks));
   g_message ("hunk_count: %d", hunk_count);
   g_message ("chunk_count: %d", chunk_count);
@@ -510,11 +507,7 @@ bse_chunk_debug (void)
 void
 bse_chunks_nuke (void)
 {
-  extern BseIndex bse_index;
-
   bse_nuke_state_allocs ();
   bse_nuke_chunk_allocs ();
   bse_nuke_hunk_allocs ();
-
-  bse_index = -1;
 }

@@ -39,9 +39,9 @@
 /* --- bse item flags --- */
 typedef enum                            /* <skip> */
 {
-  BSE_ITEM_FLAG_PARENT_REF	= 1 << BSE_OBJECT_FLAGS_USER_SHIFT
+  BSE_ITEM_FLAG_PARENT_REF	= 1 << (BSE_OBJECT_FLAGS_USHIFT + 0)
 } BseItemFlags;
-#define BSE_ITEM_FLAGS_USER_SHIFT	(BSE_OBJECT_FLAGS_USER_SHIFT + 1)
+#define BSE_ITEM_FLAGS_USHIFT	       (BSE_OBJECT_FLAGS_USHIFT + 1)
 
 
 /* --- BseItem object --- */

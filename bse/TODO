@@ -1,4 +1,5 @@
 general:
+-	get rid of pcm stream
 -	rework undo, gotta decide on what hirarchy and function level undo
 	should be implemented.
 -	finish up the ALSA interface (especially before complaining about CPU

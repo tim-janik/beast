@@ -70,7 +70,8 @@ typedef enum                            /* <skip> */
   BSE_OBJECT_FLAG_DESTROYED             = 1 << 1,
   BSE_OBJECT_FLAG_IN_PARAM_CHANGED      = 1 << 2
 } BseObjectFlags;
-#define BSE_OBJECT_FLAGS_USER_SHIFT     (3)
+#define BSE_OBJECT_FLAGS_USHIFT     (3)
+#define BSE_OBJECT_FLAGS_MAX_SHIFT  (16)
 
 typedef struct _BseObjectParser BseObjectParser;
 

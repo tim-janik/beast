@@ -92,6 +92,7 @@ static const BseGlobals	 bse_globals_defaults =
   
   256		/* track_length (hunk_size) */,
   44100		/* mixing_frequency */,
+  G_PRIORITY_HIGH_IDLE + 20	/* heart_priority */,
 };
 
 
@@ -135,12 +136,13 @@ bse_globals_init (void)
       ht_factor_table_d[i] = pow (BSE_2_RAISED_TO_1_OVER_12_d,
 				  ((gdouble) i) - BSE_KAMMER_NOTE);
       ht_factor_table_fixed_ui[i] = 0.5 + ht_factor_table_d[i] * 65536;
-      BSE_DEBUG (TABLES, {
-	if (i == BSE_MIN_NOTE || i == BSE_MAX_NOTE ||
-	    (i >= BSE_KAMMER_NOTE - 6 && i <= BSE_KAMMER_NOTE + 12))
-	  g_message ("ht-table: [%d] -> %.20f (%d)",
-		     i, ht_factor_table_d[i], ht_factor_table_fixed_ui[i]);
-      });
+      BSE_IF_DEBUG (TABLES)
+	{
+	  if (i == BSE_MIN_NOTE || i == BSE_MAX_NOTE ||
+	      (i >= BSE_KAMMER_NOTE - 6 && i <= BSE_KAMMER_NOTE + 12))
+	    g_message ("ht-table: [%d] -> %.20f (%d)",
+		       i, ht_factor_table_d[i], ht_factor_table_fixed_ui[i]);
+	}
     }
   _bse_halftone_factor_table = ht_factor_table_d;
   _bse_halftone_factor_table_fixed = ht_factor_table_fixed_ui;
@@ -157,10 +159,9 @@ bse_globals_init (void)
   for (i = -BSE_MAX_FINE_TUNE; i <= BSE_MAX_FINE_TUNE; i++)
     {
       ft_factor_table_d[BSE_MAX_FINE_TUNE + i] = pow (BSE_2_RAISED_TO_1_OVER_72_d, i);
-      BSE_DEBUG (TABLES, {
+      BSE_IF_DEBUG (TABLES)
 	g_message ("ft-table: [%d] -> %.20f",
 		   i, ft_factor_table_d[BSE_MAX_FINE_TUNE + i]);
-      });
     }
   _bse_fine_tune_factor_table = ft_factor_table_d + BSE_MAX_FINE_TUNE;
   

@@ -20,6 +20,7 @@
 #include        "bsechunk.h"
 #include        "bsecontainer.h"
 #include        "bsestorage.h"
+#include        "bseheart.h"
 
 
 
@@ -34,8 +35,12 @@ static void         bse_source_calc_history		(BseSource	*source,
 							 guint		 ochannel_id);
 static void         bse_source_do_prepare		(BseSource	*source,
 							 BseIndex	 index);
-static void         bse_source_do_reset			(BseSource	*source);
 static void         bse_source_do_cycle			(BseSource	*source);
+static void         bse_source_do_reset			(BseSource	*source);
+static BseChunk*    bse_source_default_calc_chunk	(BseSource      *source,
+							 guint           ochannel_id);
+static BseChunk*    bse_source_default_skip_chunk	(BseSource      *source,
+							 guint           ochannel_id);
 static void	    bse_source_do_add_input		(BseSource	*source,
 							 guint     	 ichannel_id,
 							 BseSource 	*input,
@@ -69,6 +74,8 @@ BSE_BUILTIN_TYPE (BseSource)
     0 /* n_preallocs */,
     (BseObjectInitFunc) bse_source_init,
   };
+
+  g_assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   
   return bse_type_register_static (BSE_TYPE_ITEM,
 				   "BseSource",
@@ -122,7 +129,8 @@ bse_source_class_init (BseSourceClass *class)
   object_class->shutdown = bse_source_do_shutdown;
 
   class->prepare = bse_source_do_prepare;
-  class->calc_chunk = NULL;
+  class->calc_chunk = bse_source_default_calc_chunk;
+  class->skip_chunk = bse_source_default_skip_chunk;
   class->reset = bse_source_do_reset;
 
   class->cycle = bse_source_do_cycle;
@@ -136,11 +144,6 @@ bse_source_init (BseSource      *source,
 {
   guint i;
 
-  if (class->n_ichannels)
-    BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_HAS_INPUT);
-  if (class->n_ochannels)
-    BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_HAS_OUTPUT);
-  
   source->n_inputs = 0;
   source->inputs = NULL;
   source->outputs = NULL;
@@ -290,18 +293,113 @@ bse_source_get_ochannel_id (BseSource   *source,
   return 0;
 }
 
+static inline BseChunk*
+bse_source_fetch_chunk (BseSource *source,
+			guint      ochannel_id,
+			BseIndex   index)
+{
+  BseSourceOChannel *oc;
+  BseChunk *chunk;
+  guint n_tracks;
+
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  g_return_val_if_fail (BSE_SOURCE_PREPARED (source), NULL);
+  g_return_val_if_fail (ochannel_id >= 1 && ochannel_id <= BSE_SOURCE_N_OCHANNELS (source), NULL);
+  g_return_val_if_fail (index <= source->index, NULL);
+
+  n_tracks = BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id)->n_tracks;
+  oc = BSE_SOURCE_OCHANNEL (source, ochannel_id);
+  index = source->index - index;
+  if (index > oc->history || index < 0)
+    {
+      g_warning ("%s (\"%s\"): invalid (%lld - %lld = %lld) history chunk requested on %u",
+		 BSE_OBJECT_TYPE_NAME (source),
+		 BSE_OBJECT_NAME (source) ? BSE_OBJECT_NAME (source) : "",
+		 source->index,
+		 source->index - index,
+		 index,
+		 ochannel_id);
+      return bse_chunk_new_static_zero (n_tracks);
+    }
+
+  if (index || oc->in_calc)
+    {
+      chunk = oc->chunks[(index + oc->ring_offset) % oc->history];
+      if (!chunk)
+	chunk = bse_chunk_new_static_zero (n_tracks);
+      else
+	bse_chunk_ref (chunk);
+    }
+  else
+    {
+      if (!oc->chunks[oc->ring_offset])
+	{
+	  oc->in_calc = TRUE;
+	  oc->chunks[oc->ring_offset] = BSE_SOURCE_GET_CLASS (source)->calc_chunk (source,
+										   ochannel_id);
+	  oc->in_calc = FALSE;
+	}
+      chunk = oc->chunks[oc->ring_offset];
+      bse_chunk_ref (chunk);
+    }
+
+  return chunk;
+}
+
+BseChunk*
+bse_source_ref_chunk (BseSource *source,
+		      guint      ochannel_id,
+		      BseIndex   index)
+{
+  BseChunk *chunk;
+
+  chunk = bse_source_fetch_chunk (source, ochannel_id, index);
+
+  bse_chunk_complete_hunk (chunk);
+
+  return chunk;
+}
+
+BseChunk*
+bse_source_ref_state_chunk (BseSource *source,
+			    guint      ochannel_id,
+			    BseIndex   index)
+{
+  BseChunk *chunk;
+
+  chunk = bse_source_fetch_chunk (source, ochannel_id, index);
+
+  bse_chunk_complete_state (chunk);
+
+  return chunk;
+}
+
+void
+bse_source_cycle (BseSource *source)
+{
+  g_return_if_fail (BSE_IS_SOURCE (source));
+  g_return_if_fail (BSE_SOURCE_PREPARED (source));
+  g_return_if_fail (!BSE_OBJECT_DESTROYED (source));
+  
+  bse_object_ref (BSE_OBJECT (source));
+  BSE_SOURCE_GET_CLASS (source)->cycle (source);
+  bse_object_unref (BSE_OBJECT (source));
+}
+
 static void
 bse_source_calc_history (BseSource *source,
 			 guint      ochannel_id)
 {
   BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, ochannel_id);
-  guint history = 0;
+  guint history;
   BseChunk **chunks;
   GSList *slist;
   guint i, n;
   
   g_return_if_fail (oc->in_calc == FALSE); /* paranoid */
-  
+
+  history = 0;	/* FIXME */
+  history = 1;
   for (slist = source->outputs; slist; slist = slist->next)
     {
       BseSource *output = slist->data;
@@ -345,179 +443,167 @@ bse_source_calc_history (BseSource *source,
   oc->ring_offset = 0;
 }
 
-static inline BseChunk*
-bse_source_fetch_chunk (BseSource *source,
-			guint      ochannel_id,
-			BseIndex   index)
+static void
+bse_source_do_prepare (BseSource *source,
+		       BseIndex   index)
 {
-  BseSourceOChannel *oc;
-  BseChunk *chunk;
-  guint n_tracks;
+  guint i;
 
-  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
-  g_return_val_if_fail (BSE_SOURCE_PREPARED (source), NULL);
-  g_return_val_if_fail (ochannel_id >= 1 && ochannel_id <= BSE_SOURCE_N_OCHANNELS (source), NULL);
-  g_return_val_if_fail (index <= source->index, NULL);
-
-  n_tracks = BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id)->n_tracks;
-  oc = BSE_SOURCE_OCHANNEL (source, ochannel_id);
-  index = source->index - index;
-  if (index > oc->history || index < 0)
-    {
-      g_warning ("%s (\"%s\"): invalid (%lld - %lld = %lld) history chunk requested on %u",
-		 BSE_OBJECT_TYPE_NAME (source),
-		 BSE_OBJECT_NAME (source) ? BSE_OBJECT_NAME (source) : "",
-		 source->index,
-		 source->index - index,
-		 index,
-		 ochannel_id);
-      return bse_chunk_new_static_zero (n_tracks);
-    }
-
-  if (index || oc->in_calc)
-    {
-      chunk = oc->chunks[(index + oc->ring_offset) % oc->history];
-      if (!chunk)
-	chunk = bse_chunk_new_static_zero (n_tracks);
-      else
-	bse_chunk_ref (chunk);
-    }
-  else
-    {
-      if (!oc->chunks[oc->ring_offset])
-	{
-	  BseChunk* (*calc_chunk) (BseSource *source,
-				   guint      ochannel_id) = BSE_SOURCE_GET_CLASS (source)->calc_chunk;
-
-	  oc->in_calc = TRUE;
-	  if (!calc_chunk) /* FIXME: paranoid */
-	    {
-	      g_warning ("`%s' doesn't implement ->calc_chunk() memeber function",
-			 bse_type_name (BSE_OBJECT_TYPE (source)));
-	      oc->chunks[oc->ring_offset] = bse_chunk_new_static_zero (n_tracks);
-	    }
-	  else
-	    oc->chunks[oc->ring_offset] = BSE_SOURCE_GET_CLASS (source)->calc_chunk (source, ochannel_id);
-	  oc->in_calc = FALSE;
-	}
-      chunk = oc->chunks[oc->ring_offset];
-      bse_chunk_ref (chunk);
-    }
-
-  return chunk;
-}
-
-BseChunk*
-bse_source_ref_chunk (BseSource *source,
-		      guint      ochannel_id,
-		      BseIndex   index)
-{
-  BseChunk *chunk;
-
-  chunk = bse_source_fetch_chunk (source, ochannel_id, index);
-
-  bse_chunk_complete_hunk (chunk);
-
-  return chunk;
-}
-
-BseChunk*
-bse_source_ref_state_chunk (BseSource *source,
-			    guint      ochannel_id,
-			    BseIndex   index)
-{
-  BseChunk *chunk;
-
-  chunk = bse_source_fetch_chunk (source, ochannel_id, index);
-
-  bse_chunk_complete_state (chunk);
-
-  return chunk;
-}
-
-void
-bse_source_set_paused (BseSource *source,
-		       gboolean   paused)
-{
-  g_return_if_fail (BSE_IS_SOURCE (source));
-
-  paused = paused != FALSE;
-
-  if (BSE_SOURCE_PAUSED (source) != paused)
-    {
-      if (paused)
-	BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PAUSED);
-      else
-	BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_PAUSED);
-    }
-}
-
-void
-bse_source_cycle (BseSource *source)
-{
-  g_return_if_fail (BSE_IS_SOURCE (source));
-  g_return_if_fail (BSE_SOURCE_PREPARED (source));
-  g_return_if_fail (!BSE_OBJECT_DESTROYED (source));
+  source->start = index;
+  source->index = index;
   
-  bse_object_ref (BSE_OBJECT (source));
-  BSE_SOURCE_GET_CLASS (source)->cycle (source);
-  bse_object_unref (BSE_OBJECT (source));
+  for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
+    {
+      BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
+      BseSourceOChannelDef *ocd = BSE_SOURCE_OCHANNEL_DEF (source, i + 1);
+
+      bse_source_calc_history (source, i + 1);
+      
+      if (oc->history && !oc->chunks[oc->ring_offset])
+	oc->chunks[oc->ring_offset] = bse_chunk_new_static_zero (ocd->n_tracks);
+    }
+
+  bse_heart_attach (source);
+
+  for (i = 0; i < source->n_inputs; i++)
+    {
+      BseSource *input = source->inputs[i].osource;
+      
+      if (!BSE_SOURCE_PREPARED (input))
+	{
+	  BSE_OBJECT_SET_FLAGS (input, BSE_SOURCE_FLAG_PREPARED);
+	  BSE_SOURCE_GET_CLASS (input)->prepare (input, index);
+	}
+    }
 }
 
 static void
 bse_source_do_cycle (BseSource *source)
 {
+  BseChunk* (*calc_chunk) (BseSource *source,
+			   guint      ochannel_id) = BSE_SOURCE_GET_CLASS (source)->calc_chunk;
+  BseChunk* (*skip_chunk) (BseSource *source,
+			   guint      ochannel_id) = BSE_SOURCE_GET_CLASS (source)->skip_chunk;
   guint i;
   
   for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
     {
       BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
       
-      if (oc->history)
+      if (!oc->history)
+	continue;
+
+      if (!oc->chunks[oc->ring_offset])
 	{
-	  oc->ring_offset = (oc->ring_offset + 1) % oc->history;
-	  if (oc->chunks[oc->ring_offset])
-	    {
-	      bse_chunk_unref (oc->chunks[oc->ring_offset]);
-	      oc->chunks[oc->ring_offset] = NULL;
-	    }
+          oc->in_calc = TRUE;
+	  oc->chunks[oc->ring_offset] = skip_chunk (source, i + 1);
+	  oc->in_calc = FALSE;
+	}
+      if (oc->chunks[oc->ring_offset])
+	{
+	  bse_chunk_unref (oc->chunks[oc->ring_offset]);
+	  oc->chunks[oc->ring_offset] = NULL;
 	}
     }
   
   source->index++;
 
+#if 0
+  for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
+    {
+      BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
+      
+      if (oc->history && !oc->chunks[oc->ring_offset])
+	{
+	  oc->in_calc = TRUE;
+	  oc->chunks[oc->ring_offset] = calc_chunk (source, i + 1);
+	  oc->in_calc = FALSE;
+	}
+    }
+#endif
+}
+
+static void
+bse_source_do_reset (BseSource *source)
+{
+  guint i;
+  
+  for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
+    {
+      BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
+      guint n;
+
+      if (oc->in_calc)
+	{
+	  g_warning ("can't reset ochannel contents for %s \"%s\", in_calc flag not cleared",
+		     BSE_OBJECT_TYPE_NAME (source),
+		     BSE_OBJECT_NAME (source));
+	  continue;
+	}
+
+      for (n = 0; n < oc->history; n++)
+	if (oc->chunks[n])
+	  {
+	    bse_chunk_unref (oc->chunks[n]);
+	    oc->chunks[n] = NULL;
+	  }
+      oc->ring_offset = 0;
+      oc->history = 0;
+    }
+  
+  bse_heart_detach (source);
+
+  source->start = -1;
+  source->index = 0;
+  
+  /* reset all input sources for which we are the sole prepared output
+   */
   for (i = 0; i < source->n_inputs; i++)
     {
       BseSource *input = source->inputs[i].osource;
-
-      while (input->index < source->index)
-	bse_source_cycle (input);
-    }
-
-  if (!BSE_SOURCE_PAUSED (source))
-    {
-      BseChunk* (*calc_chunk) (BseSource *source,
-			       guint      ochannel_id) = BSE_SOURCE_GET_CLASS (source)->calc_chunk;
-
-      if (!calc_chunk && BSE_SOURCE_N_OCHANNELS (source)) /* FIXME: paranoid */
+      GSList *slist;
+      
+      for (slist = input->outputs; slist && input; slist = slist->next)
+	if (slist->data != source && BSE_SOURCE_PREPARED (slist->data))
+	  input = NULL;
+      
+      if (input)
 	{
-	  g_warning ("`%s' doesn't implement ->calc_chunk() memeber function",
-		     bse_type_name (BSE_OBJECT_TYPE (source)));
-	  return;
-	}
-
-      for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
-	{
-	  BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
-	  
-	  if (oc->history && !oc->chunks[oc->ring_offset])
-	    {
-	      oc->in_calc = TRUE;
-	      oc->chunks[oc->ring_offset] = calc_chunk (source, i + 1);
-	      oc->in_calc = FALSE;
-	    }
+	  if (BSE_SOURCE_PREPARED (input))
+	    bse_source_reset (input);
+	  else
+	    g_warning ("source's `%s' input `%s' ought to be prepared", /* paranoid */
+		       BSE_OBJECT_TYPE_NAME (source),
+		       BSE_OBJECT_TYPE_NAME (input));
 	}
     }
+}
+
+static BseChunk*
+bse_source_default_calc_chunk (BseSource *source,
+			       guint      ochannel_id)
+{
+  return bse_chunk_new_static_zero (BSE_SOURCE_OCHANNEL_DEF (source, ochannel_id)->n_tracks);
+}
+
+static BseChunk*
+bse_source_default_skip_chunk (BseSource *source,
+			       guint      ochannel_id)
+{
+  return BSE_SOURCE_GET_CLASS (source)->calc_chunk (source, ochannel_id);
+}
+
+void
+bse_source_reset (BseSource *source)
+{
+  g_return_if_fail (BSE_IS_SOURCE (source));
+  g_return_if_fail (BSE_SOURCE_PREPARED (source));
+  g_return_if_fail (!BSE_OBJECT_DESTROYED (source));
+  
+  bse_object_ref (BSE_OBJECT (source));
+  BSE_SOURCE_GET_CLASS (source)->reset (source);
+  BSE_OBJECT_UNSET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
+  bse_object_unref (BSE_OBJECT (source));
 }
 
 BseErrorType
@@ -531,9 +617,7 @@ bse_source_set_input (BseSource *source,
   guint i;
   
   g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_SOURCE_HAS_INPUT (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (BSE_IS_SOURCE (input), BSE_ERROR_INTERNAL);
-  g_return_val_if_fail (BSE_SOURCE_HAS_OUTPUT (input), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_OBJECT_DESTROYED (source), BSE_ERROR_INTERNAL);
   g_return_val_if_fail (!BSE_OBJECT_DESTROYED (input), BSE_ERROR_INTERNAL);
   
@@ -654,8 +738,7 @@ bse_source_do_remove_input (BseSource *source,
        * FIXME: this whole concept still has issues with sources that
        * serve as outputs for themselves.
        */
-      BSE_OBJECT_UNSET_FLAGS (osource, BSE_SOURCE_FLAG_PREPARED);
-      BSE_SOURCE_GET_CLASS (osource)->reset (osource);
+      bse_source_reset (osource);
     }
   BSE_NOTIFY (osource, io_changed, NOTIFY (OBJECT, DATA));
   bse_object_unref (BSE_OBJECT (osource));
@@ -711,89 +794,6 @@ bse_source_clear_ochannels (BseSource *source)
     bse_source_remove_input (source->outputs->data, source);
 
   bse_object_unref (BSE_OBJECT (source));
-}
-
-static void
-bse_source_do_prepare (BseSource *source,
-		       BseIndex   index)
-{
-  guint i;
-
-  source->start = index;
-  source->index = index;
-  
-  for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
-    bse_source_calc_history (source, i + 1);
-
-  for (i = 0; i < source->n_inputs; i++)
-    {
-      BseSource *input = source->inputs[i].osource;
-      
-      if (!BSE_SOURCE_PREPARED (input))
-	{
-	  BSE_OBJECT_SET_FLAGS (input, BSE_SOURCE_FLAG_PREPARED);
-	  BSE_SOURCE_GET_CLASS (input)->prepare (input, index);
-	}
-    }
-}
-
-static void
-bse_source_do_reset (BseSource *source)
-{
-  guint i;
-  
-  for (i = 0; i < BSE_SOURCE_N_OCHANNELS (source); i++)
-    {
-      BseSourceOChannel *oc = BSE_SOURCE_OCHANNEL (source, i + 1);
-      guint n;
-
-      if (oc->in_calc)
-	{
-	  g_warning ("can't reset ochannel contents for %s \"%s\", in_calc flag not cleared",
-		     BSE_OBJECT_TYPE_NAME (source),
-		     BSE_OBJECT_NAME (source));
-	  continue;
-	}
-
-      for (n = 0; n < oc->history; n++)
-	if (oc->chunks[n])
-	  {
-	    bse_chunk_unref (oc->chunks[n]);
-	    oc->chunks[n] = NULL;
-	  }
-      oc->ring_offset = 0;
-      oc->history = 0;
-    }
-  
-  source->start = -1;
-  source->index = 0;
-  
-  /* reset all input sources for which we are the sole prepared output
-   */
-  for (i = 0; i < source->n_inputs; i++)
-    {
-      BseSource *input = source->inputs[i].osource;
-      GSList *slist;
-      
-      for (slist = input->outputs; slist && input; slist = slist->next)
-	if (slist->data != source && BSE_SOURCE_PREPARED (slist->data))
-	  input = NULL;
-      
-      if (input)
-	{
-	  if (BSE_SOURCE_PREPARED (input))
-	    {
-	      bse_object_ref (BSE_OBJECT (input));
-	      BSE_OBJECT_UNSET_FLAGS (input, BSE_SOURCE_FLAG_PREPARED);
-	      BSE_SOURCE_GET_CLASS (input)->reset (input);
-	      bse_object_unref (BSE_OBJECT (input));
-	    }
-	  else
-	    g_warning ("source's `%s' input `%s' ought to be prepared", /* paranoid */
-		       BSE_OBJECT_TYPE_NAME (source),
-		       BSE_OBJECT_TYPE_NAME (input));
-	}
-    }
 }
 
 GList*

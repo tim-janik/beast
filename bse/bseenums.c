@@ -28,6 +28,12 @@ static void	bse_flags_class_init		(BseFlagsClass	*class,
 
 /* include generated enum value arrays and *.h files the enums steam from */
 #include "bseenum_arrays.c"
+/* special hook for bse_init() */
+extern BseFlagsValue *bse_debug_key_flag_values;
+extern guint          bse_debug_key_n_flag_values;
+BseFlagsValue        *bse_debug_key_flag_values = bse_debug_flags_values;
+guint                 bse_debug_key_n_flag_values = (sizeof (bse_debug_flags_values) /
+						     sizeof (bse_debug_flags_values[0]));
 
 
 /* --- functions --- */
@@ -290,10 +296,14 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_SUB_HEADER_CORRUPT:		return "Sub-header corrupt";
     case BSE_ERROR_DATA_CORRUPT:		return "Data corrupt";
     case BSE_ERROR_BINARY_DATA_CORRUPT:		return "Binary data corrupt";
-    case BSE_ERROR_STREAM_INVALID:		return "Stream handle invalid";
+    case BSE_ERROR_DEVICE_PERMS:		return "Device permissions insufficient";
+    case BSE_ERROR_DEVICE_ASYNC:		return "Device not async capable";
+    case BSE_ERROR_DEVICE_BUSY:			return "Device busy";
+    case BSE_ERROR_DEVICE_IO:			return "Device I/O error";
+    case BSE_ERROR_DEVICE_GET_CAPS:		return "Failed to query device capabilities";
+    case BSE_ERROR_DEVICE_SET_CAPS:		return "Failed to set device capabilities";
     case BSE_ERROR_STREAM_PERM:			return "Stream permissions insufficient";
     case BSE_ERROR_STREAM_ASYNC:		return "Stream not async capable";
-    case BSE_ERROR_STREAM_SUSPENDED:		return "Stream suspended";
     case BSE_ERROR_STREAM_DEVICE_BUSY:		return "Stream device busy";
     case BSE_ERROR_STREAM_READ_DENIED:		return "Stream read access denied";
     case BSE_ERROR_STREAM_READ_FAILED:		return "Filed to read from stream";

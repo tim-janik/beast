@@ -38,8 +38,6 @@ bse_song_sequencer_setup (BseSong *song,
   g_return_if_fail (song->sequencer == NULL);
   g_return_if_fail (n_tracks == 2);
   
-  bse_object_lock (BSE_OBJECT (song));
-  
   sequencer = g_new0 (BseSongSequencer, 1);
   sequencer->loop_type = BSE_LOOP_NONE;
   sequencer->next_pattern_row = 0;
@@ -193,8 +191,6 @@ bse_song_sequencer_destroy (BseSong *song)
   bse_voice_allocator_destroy (sequencer->va);
   
   g_free (sequencer->mix_buffer);
-  
-  bse_object_unlock (BSE_OBJECT (song));
   
   g_free (sequencer);
 }

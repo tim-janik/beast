@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bse.h"
+#include	"bsepcmdevice-oss.h"
 
 
 int
@@ -24,22 +25,17 @@ main (int argc, char *argv[])
   BseErrorType error;
   BseSample *sample;
   gchar *f_name;
-  BseStream *stream;
+  BsePcmDevice *pdev;
 
 
   /* BSE Initialization
    */
   bse_init (&argc, &argv);
 
-  /* Setup output stream, we use the soundcard (PCM).
+  /* Setup output pcm device, we use the OSS PCM Driver.
    */
-  if (!bse_pcm_stream_default_type ())
-    {
-      g_warning ("No PCM Streams available on this platform");
-      return -1;
-    }
-  /* PCM streams provide a default device name, when NULL is passed in */
-  stream = bse_pcm_stream_new (bse_pcm_stream_default_type (), NULL);
+  pdev = (BsePcmDevice*) bse_object_new (BSE_TYPE_PCM_DEVICE_OSS, NULL);
+  bse_pcm_device_set_device_name (pdev, "/dev/dsp");
   
   /* Read samples
    */
@@ -48,7 +44,7 @@ main (int argc, char *argv[])
   f_name = "./song.bss";
   f_name = "./bolingo-cut.bse";
   f_name = "/samples/bolingo.bse";
-  printf ("start reading...\n");
+  g_print ("start reading...\n");
 #if 0
   {
     BseIoData *io_data;
@@ -68,72 +64,58 @@ main (int argc, char *argv[])
     // bse_io_data_destroy (io_data);
   }
 #endif
-
-  /* Open output stream
-   */
-  error = bse_stream_open (stream, FALSE, TRUE);
-  if (!error)
-    {
-      BsePcmStreamAttribs attributes;
-      BsePcmStreamAttribMask attribute_mask = BSE_PCMSA_NONE;
-      
-      attributes.n_channels = 1;
-      attributes.play_frequency = 22150;
-      attributes.play_frequency = 44100;
-      attribute_mask |= BSE_PCMSA_N_CHANNELS | BSE_PCMSA_PLAY_FREQUENCY;
-      
-      error = bse_pcm_stream_set_attribs (BSE_PCM_STREAM (stream), attribute_mask, &attributes);
-      if (!error)
-	{
-	  g_print ("Using %s stream \"%s\" with %uHz in %u channel mode\n",
-		   BSE_OBJECT_TYPE_NAME (stream),
-		   stream->file_name,
-		   attributes.play_frequency,
-		   attributes.n_channels);
-	  g_print ("output buffer size: %d\n", bse_globals->pcm_buffer_size);
-	}
-    }
-  if (error)
-    {
-      g_warning ("Opening PCM stream `%s' failed: %s\n",
-		 stream->file_name,
-		 bse_error_blurb (error));
-      return -1;
-    }
-
-
-
+  
   sample = bse_sample_lookup (NULL, "bolingo");
   g_assert (sample != NULL);
-
+  
   g_print ("Sample to play: blurb-\"%s\" n_channels(%d) rec_freq(%d)\n",
 	   bse_object_get_blurb (BSE_OBJECT (sample)),
 	   sample->n_tracks,
 	   sample->rec_freq);
   
-  bse_stream_start (stream);
-
+  /* Open output stream
+   */
+  error = bse_pcm_device_open (pdev, FALSE, TRUE, 2, 44100, 1024);
+  if (error)
+    {
+      g_warning ("Opening %s \"%s\" failed: %s\n",
+		 BSE_OBJECT_TYPE_NAME (pdev),
+		 pdev->device_name,
+		 bse_error_blurb (error));
+      return -1;
+    }
+  else
+    {
+      g_print ("Using %s \"%s\" with %uHz in %u channel mode, fragment size %d\n",
+	       BSE_OBJECT_TYPE_NAME (pdev),
+	       pdev->device_name,
+	       (guint) pdev->sample_freq,
+	       pdev->n_channels,
+	       pdev->fragment_size);
+      g_print ("output buffer size: %d\n", bse_globals->pcm_buffer_size);
+    }
+  
   FIXME ({
     BseSampleValue *v = sample->munk[0].values;
     gint left = sample->munk[0].n_values;
     gint n;
     
-    n = BSE_PCM_STREAM (stream)->attribs.fragment_size * 2;
+    n = pdev->fragment_size * 2;
     
     if (n > left)
       n = left;
     while (left > 0)
       {
-	if (bse_stream_would_block (stream, n))
+	if (!bse_pcm_device_oready (pdev, n))
 	  {
 	    do
 	      {
 		printf ("waiting...\n");
 		usleep (100 * 1000);
 	      }
-	    while (bse_stream_would_block (stream, n));
+	    while (!bse_pcm_device_oready (pdev, n));
 	  }
-	bse_stream_write_sv (stream, n, v);
+	bse_pcm_device_write (stream, n, v);
 	
 	v += n;
 	left -= n;
@@ -142,28 +124,8 @@ main (int argc, char *argv[])
       }
   });
 
-  bse_object_unref (BSE_OBJECT (stream));
+  bse_pcm_device_close (pdev);
+  bse_object_unref (BSE_OBJECT (pdev));
 
   return 0;
 }
-
-/*
-x()
-{
-  gboolean break = FALSE;
-  
-  bse_song_play_init(song);
-  while (bse_song_elapses() && !break)
-  {
-    while (!bse_pcm_would_block())
-    {
-      BseSampleValue *values;
-      
-      bse_fill_buffer (n_values, values);
-      bse_pcm_play(n_values, values);
-    }
-    
-  }
-  bse_song_play_shutdown();
-}
-*/

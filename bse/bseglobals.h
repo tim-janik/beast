@@ -101,7 +101,7 @@ extern "C" {
 #define	BSE_MAX_SEQ_ID			(65535)
 #define	BSE_BBUFFER_SIZE		(128)
 
-/* --- BseSource & BseMaster limits --- */
+/* --- BseSource limits --- */
 #define	BSE_MAX_HISTORY			(128)
 #define	BSE_MAX_N_ICHANNELS		(128)
 #define	BSE_MAX_N_OCHANNELS		(128)
@@ -140,6 +140,7 @@ extern "C" {
 #define	BSE_STP_ENV_TIME		(bse_globals->step_env_time)
 #define	BSE_TRACK_LENGTH		(bse_globals->track_length)
 #define	BSE_MIX_FREQ			(bse_globals->mixing_frequency)
+#define BSE_HEART_PRIORITY              (bse_globals->heart_priority)
 
 
 /* --- FIXME --- */
@@ -195,6 +196,7 @@ struct _BseGlobals
    */
   guint	track_length;
   guint mixing_frequency;
+  gint  heart_priority;
 };
 extern const BseGlobals	*bse_globals;
 

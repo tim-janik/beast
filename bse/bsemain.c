@@ -19,7 +19,6 @@
 
 #include	"bsesong.h"
 #include	"bsesongsequencer.h"
-#include	"bsestream.h"
 #include	"bseplugin.h"
 #include	<string.h>
 #include	<stdlib.h>
@@ -28,16 +27,6 @@
 /* --- variables --- */
 static gboolean        bse_is_initialized = FALSE;
 BseDebugFlags          bse_debug_flags = 0;
-static GDebugKey       bse_debug_keys[] = { /* keep in sync with bsedefs.h */
-  { "tables",		BSE_DEBUG_TABLES, },
-  { "classes",		BSE_DEBUG_CLASSES, },
-  { "objects",		BSE_DEBUG_OBJECTS, },
-  { "notify",		BSE_DEBUG_NOTIFY, },
-  { "plugins",		BSE_DEBUG_PLUGINS, },
-  { "regs",		BSE_DEBUG_REGS, },
-  { "chunks",		BSE_DEBUG_CHUNKS, },
-};
-static const guint bse_n_debug_keys = sizeof (bse_debug_keys) / sizeof (bse_debug_keys[0]);
 
 
 /* --- functions --- */
@@ -51,17 +40,29 @@ static void
 bse_parse_args (gint    *argc_p,
 		gchar ***argv_p)
 {
+  extern BseFlagsValue *bse_debug_key_flag_values;	/* bseenums.c feature */
+  extern guint          bse_debug_key_n_flag_values;	/* bseenums.c feature */
+  GDebugKey *debug_keys;
+  guint n_debug_keys;
   guint argc = *argc_p;
   gchar **argv = *argv_p;
   gchar *envar;
   guint i, e;
+
+  debug_keys = g_new (GDebugKey, bse_debug_key_n_flag_values);
+  for (i = 0; i < bse_debug_key_n_flag_values && bse_debug_key_flag_values[i].value_nick; i++)
+    {
+      debug_keys[i].key = bse_debug_key_flag_values[i].value_nick;
+      debug_keys[i].value = bse_debug_key_flag_values[i].value;
+    }
+  n_debug_keys = i;
   
   envar = getenv ("BSE_DEBUG");
   if (envar)
-    bse_debug_flags |= g_parse_debug_string (envar, bse_debug_keys, bse_n_debug_keys);
+    bse_debug_flags |= g_parse_debug_string (envar, debug_keys, n_debug_keys);
   envar = getenv ("BSE_NO_DEBUG");
   if (envar)
-    bse_debug_flags &= ~g_parse_debug_string (envar, bse_debug_keys, bse_n_debug_keys);
+    bse_debug_flags &= ~g_parse_debug_string (envar, debug_keys, n_debug_keys);
 
   for (i = 1; i < argc; i++)
     {
@@ -81,12 +82,12 @@ bse_parse_args (gint    *argc_p,
 	  gchar *equal = argv[i] + 11;
 
 	  if (*equal == '=')
-	    bse_debug_flags |= g_parse_debug_string (equal + 1, bse_debug_keys, bse_n_debug_keys);
+	    bse_debug_flags |= g_parse_debug_string (equal + 1, debug_keys, n_debug_keys);
 	  else if (i + 1 < argc)
 	    {
 	      bse_debug_flags |= g_parse_debug_string (argv[i + 1],
-						       bse_debug_keys,
-						       bse_n_debug_keys);
+						       debug_keys,
+						       n_debug_keys);
 	      argv[i] = NULL;
 	      i += 1;
 	    }
@@ -98,12 +99,12 @@ bse_parse_args (gint    *argc_p,
 	  gchar *equal = argv[i] + 14;
 
 	  if (*equal == '=')
-	    bse_debug_flags &= ~g_parse_debug_string (equal + 1, bse_debug_keys, bse_n_debug_keys);
+	    bse_debug_flags &= ~g_parse_debug_string (equal + 1, debug_keys, n_debug_keys);
 	  else if (i + 1 < argc)
 	    {
 	      bse_debug_flags &= ~g_parse_debug_string (argv[i + 1],
-							bse_debug_keys,
-							bse_n_debug_keys);
+							debug_keys,
+							n_debug_keys);
 	      argv[i] = NULL;
 	      i += 1;
 	    }
@@ -127,6 +128,8 @@ bse_parse_args (gint    *argc_p,
     }
   if (e)
     *argc_p = e;
+
+  g_free (debug_keys);
 }
 
 void

@@ -18,7 +18,6 @@
 #include	"bsemagic.h"
 #include	"bsesong.h"
 #include	"bsesongsequencer.h"
-#include	"bsestream.h"
 #include	<string.h>
 #include	<unistd.h>
 #include	<errno.h>

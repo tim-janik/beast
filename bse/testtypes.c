@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include	"bse.h"
+#include	"bsepcmdevice-oss.h"
 
 
 int
@@ -42,31 +43,30 @@ main (int   argc,
   type1 = BSE_TYPE_SUPER;	type2 = 0;			g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
   type1 = BSE_TYPE_CONTAINER;	type2 = BSE_TYPE_SUPER;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
 
-  type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_OBJECT;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_STREAM;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_STREAM;	type2 = BSE_TYPE_CONTAINER;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_STREAM;	type2 = BSE_TYPE_OBJECT;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_PCM_STREAM;	type2 = BSE_TYPE_STREAM;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_OBJECT;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_STREAM;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  type1 = BSE_TYPE_PCM_DEVICE;	type2 = BSE_TYPE_CONTAINER;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  type1 = BSE_TYPE_PCM_DEVICE;	type2 = BSE_TYPE_OBJECT;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  type1 = BSE_TYPE_PCM_DEVICE_OSS; type2 = BSE_TYPE_PCM_DEVICE;	g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
 
   type1 = BSE_TYPE_OBJECT;	g_message ("%d ==> `%s' ==> %d", type1, bse_type_name (type1), bse_type_from_name (bse_type_name (type1)));
   type1 = BSE_TYPE_SAMPLE;	g_message ("%d ==> `%s' ==> %d", type1, bse_type_name (type1), bse_type_from_name (bse_type_name (type1)));
-  type1 = BSE_TYPE_TEXT;	g_message ("%d ==> `%s' ==> %d", type1, bse_type_name (type1), bse_type_from_name (bse_type_name (type1)));
+  // type1 = BSE_TYPE_TEXT;	g_message ("%d ==> `%s' ==> %d", type1, bse_type_name (type1), bse_type_from_name (bse_type_name (type1)));
 
-  type1 = BSE_TYPE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_PCM_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_NULL_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_FILE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_PCM_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_NULL_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_FILE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_TEXT;		g_message ("%s is_a %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_is_a (type1, type2) ? "TRUE" : "FALSE");
 
-  type1 = BSE_TYPE_STREAM;	type2 = BSE_TYPE_OBJECT;	g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_SUPER;	type2 = BSE_TYPE_SOURCE;	g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_OBJECT;	g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_FILE_STREAM;	type2 = BSE_TYPE_FILE_STREAM;	g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_PCM_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_NULL_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_FILE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
-  type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
+  type1 = BSE_TYPE_PCM_DEVICE;	type2 = BSE_TYPE_SOURCE;	g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_OBJECT;	g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_FILE_STREAM;	type2 = BSE_TYPE_FILE_STREAM;	g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_PCM_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_NULL_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_FILE_STREAM;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
+  // type1 = BSE_TYPE_TEXT;	type2 = BSE_TYPE_TEXT;		g_message ("%s conforms_to %s: %s", bse_type_name (type1), bse_type_name (type2), bse_type_conforms_to (type1, type2) ? "TRUE" : "FALSE");
 
   g_message ("zero time (%d) -> %s", 0, bse_time_to_str (0));
   g_message ("minimum time (%d) -> %s", BSE_MIN_TIME, bse_time_to_bbuffer (BSE_MIN_TIME, bbuffer));

@@ -39,10 +39,10 @@ extern "C" {
 
 
 /* --- BseSource member macros --- */
-#define BSE_SOURCE_PREPARED(object)     ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_PREPARED) != 0)
-#define BSE_SOURCE_PAUSED(object)       ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_PAUSED) != 0)
-#define BSE_SOURCE_HAS_INPUT(object)    ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_HAS_INPUT) != 0)
-#define BSE_SOURCE_HAS_OUTPUT(object)   ((BSE_OBJECT_FLAGS (object) & BSE_SOURCE_FLAG_HAS_OUTPUT) != 0)
+#define BSE_SOURCE_PREPARED(src)        ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_PREPARED) != 0)
+#define BSE_SOURCE_ATTACHED(src)        ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_ATTACHED) != 0)
+#define BSE_SOURCE_IATTACHED(src)       ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_IATTACHED) != 0)
+#define BSE_SOURCE_OATTACHED(src)       ((BSE_OBJECT_FLAGS (src) & BSE_SOURCE_FLAG_OATTACHED) != 0)
 #define	BSE_SOURCE_ICHANNEL_DEF(src,id) (BSE_SOURCE_CLASS_ICHANNEL_DEF (BSE_SOURCE_GET_CLASS (src), id))
 #define	BSE_SOURCE_OCHANNEL_DEF(src,id) (BSE_SOURCE_CLASS_OCHANNEL_DEF (BSE_SOURCE_GET_CLASS (src), id))
 #define	BSE_SOURCE_N_ICHANNELS(src)     (BSE_SOURCE_GET_CLASS (src)->n_ichannels)
@@ -56,12 +56,12 @@ extern "C" {
 /* --- BseSource flags --- */
 typedef enum
 {
-  BSE_SOURCE_FLAG_PREPARED	= 1 << BSE_ITEM_FLAGS_USER_SHIFT,
-  BSE_SOURCE_FLAG_PAUSED	= 1 << (BSE_ITEM_FLAGS_USER_SHIFT + 1),
-  BSE_SOURCE_FLAG_HAS_INPUT	= 1 << (BSE_ITEM_FLAGS_USER_SHIFT + 2),
-  BSE_SOURCE_FLAG_HAS_OUTPUT	= 1 << (BSE_ITEM_FLAGS_USER_SHIFT + 3)
+  BSE_SOURCE_FLAG_PREPARED	= 1 << (BSE_ITEM_FLAGS_USHIFT + 0),
+  BSE_SOURCE_FLAG_ATTACHED	= 1 << (BSE_ITEM_FLAGS_USHIFT + 1),
+  BSE_SOURCE_FLAG_IATTACHED	= 1 << (BSE_ITEM_FLAGS_USHIFT + 2),
+  BSE_SOURCE_FLAG_OATTACHED	= 1 << (BSE_ITEM_FLAGS_USHIFT + 3)
 } BseSourceFlags;
-#define BSE_SOURCE_FLAGS_USER_SHIFT     (BSE_ITEM_FLAGS_USER_SHIFT + 4)
+#define BSE_SOURCE_FLAGS_USHIFT        (BSE_ITEM_FLAGS_USHIFT + 4)
 
 
 /* --- structures --- */
@@ -125,6 +125,8 @@ struct _BseSourceClass
 				 BseIndex	 index);
   BseChunk*	(*calc_chunk)	(BseSource	*source,
 				 guint		 ochannel_id);
+  BseChunk*	(*skip_chunk)	(BseSource	*source,
+				 guint		 ochannel_id);
   void		(*reset)	(BseSource	*source);
 
   /*< private >*/
@@ -151,12 +153,8 @@ void		bse_source_clear_ichannel	(BseSource	*source,
 						 guint		 ichannel_id);
 void		bse_source_clear_ichannels	(BseSource	*source);
 void		bse_source_clear_ochannels	(BseSource	*source);
-void		bse_source_prepare		(BseSource	*source,
-						 BseIndex	 index);
 void		bse_source_reset		(BseSource	*source);
 void		bse_source_cycle		(BseSource	*source);
-void		bse_source_set_paused		(BseSource	*source,
-						 gboolean	 paused);
 BseChunk*	bse_source_ref_chunk		(BseSource	*source,
 						 guint		 ochannel_id,
 						 BseIndex	 index);

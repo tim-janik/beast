@@ -41,21 +41,18 @@
 #include        <bse/bseeffectvolumedelta.h>
 #include        <bse/bseenums.h>
 #include        <bse/bseexports.h>
-#include        <bse/bsefilestream.h>
 #include        <bse/bseglobals.h>
+#include        <bse/bseheart.h>
 #include        <bse/bseinstrument.h>
 #include        <bse/bseitem.h>
 #include        <bse/bsemagic.h>
 #include        <bse/bsemain.h>
-#include        <bse/bsemaster.h>
 #include        <bse/bsemixer.h>
-#include        <bse/bsenullstream.h>
 #include        <bse/bseobject.h>
 #include        <bse/bseparam.h>
 #include        <bse/bseparasite.h>
 #include        <bse/bsepattern.h>
-#include        <bse/bsepcmstream.h>
-#include        <bse/bsepcmstream-oss.h>
+#include        <bse/bsepcmdevice.h>
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>
 #include        <bse/bseproject.h>
@@ -64,9 +61,7 @@
 #include        <bse/bsesong.h>
 #include        <bse/bsesource.h>
 #include	<bse/bsestorage.h>
-#include        <bse/bsestream.h>
 #include        <bse/bsesuper.h>
-#include        <bse/bsetext.h>
 #include        <bse/bsetype.h>
 #include        <bse/bseutils.h>
 /* #include        <bse/bsevoice.h> */

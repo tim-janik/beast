@@ -62,21 +62,19 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bseeffectvolumedelta.h \
 	bseenums.h \
 	bseexports.h \
-	bsefilestream.h \
 	bseglobals.h \
+	bseheart.h \
 	bseinstrument.h \
 	bseitem.h \
 	bsemagic.h \
 	bsemain.h \
-	bsemaster.h \
 	bsemixer.h \
-	bsenullstream.h \
 	bseobject.h \
 	bseparam.h \
 	bseparasite.h \
 	bsepattern.h \
-	bsepcmstream.h \
-	bsepcmstream-oss.h \
+	bsepcmdevice.h \
+	bsepcmdevice-oss.h \
 	bseplugin.h \
 	bseprocedure.h \
 	bseproject.h \
@@ -86,9 +84,7 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsesongsequencer.h \
 	bsesource.h \
 	bsestorage.h \
-	bsestream.h \
 	bsesuper.h \
-	bsetext.h \
 	bsetype.h \
 	bseutils.h \
 	glib-extra.h \
@@ -110,22 +106,20 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bseeffectpatternjump.c \
 	bseeffectvolumedelta.c \
 	bseenums.c \
-	bsefilestream.c \
 	bseglobals.c \
+	bseheart.c \
 	bseinstrument.c \
 	bseitem.c \
 	bsemagic.c \
 	bsemain.c \
-	bsemaster.c \
 	bsemixer.c \
-	bsenullstream.c \
 	bseobject.c \
 	bseparam.c \
 	bseparasite.c \
 	bseparamcol.c \
 	bsepattern.c \
-	bsepcmstream.c \
-	bsepcmstream-oss.c \
+	bsepcmdevice.c \
+	bsepcmdevice-oss.c \
 	bseplugin.c \
 	bseprocedure.c \
 	bseproject.c \
@@ -135,9 +129,7 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsesongsequencer.c \
 	bsesource.c \
 	bsestorage.c \
-	bsestream.c \
 	bsesuper.c \
-	bsetext.c \
 	bsetype.c \
 	bseutils.c \
 	bsevoice.c \
@@ -297,14 +289,13 @@ all: @MISSING_ETAGS@ @BIRNET_Y@ TAGS
 #
 # other programs, we want to compile
 #
-noinst_PROGRAMS = bsequery testtypes testsample testsong testmixer testrefs
+noinst_PROGRAMS = bsequery testtypes testsample testsong testrefs
 # source files
 testtypes_SOURCES = testtypes.c
 testrefs_SOURCES = testrefs.c
 testsample_SOURCES = testsample.c
 bsequery_SOURCES = bsequery.c
 testsong_SOURCES = testsong.c
-testmixer_SOURCES = testmixer.c
 # link programs against BSE
 progs_LDADD = libbse.la
 testtypes_LDADD = $(progs_LDADD)
@@ -312,7 +303,6 @@ testrefs_LDADD = $(progs_LDADD)
 testsample_LDADD = $(progs_LDADD)
 bsequery_LDADD = $(progs_LDADD)
 testsong_LDADD = $(progs_LDADD)
-testmixer_LDADD = $(progs_LDADD)
 
 
 #

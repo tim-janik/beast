@@ -22,6 +22,7 @@
 #include	"bsemagic.h"
 #include	"bsesample.h"
 #include	"bsesong.h"
+#include	"bseheart.h"
 #include	<string.h>
 #include	<stdlib.h>
 #include	<fcntl.h>
@@ -375,4 +376,40 @@ bse_project_path_resolver (gpointer     func_data,
     item = bse_container_item_from_path (BSE_CONTAINER (project), path);
 
   return item;
+}
+
+void
+bse_project_start_playback (BseProject *project)
+{
+  GSList *slist;
+  
+  g_return_if_fail (BSE_IS_PROJECT (project));
+  
+  for (slist = project->supers; slist; slist = slist->next)
+    {
+      BseSource *source = BSE_SOURCE (slist->data);
+      
+      if (BSE_SOURCE_PREPARED (source))
+	bse_source_reset (source);
+
+      /* FIXME: make sure the super got an odevice */
+      BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
+      BSE_SOURCE_GET_CLASS (source)->prepare (source, bse_heart_get_beat_index ());
+    }
+}
+
+void
+bse_project_stop_playback (BseProject *project)
+{
+  GSList *slist;
+  
+  g_return_if_fail (BSE_IS_PROJECT (project));
+  
+  for (slist = project->supers; slist; slist = slist->next)
+    {
+      BseSource *source = BSE_SOURCE (slist->data);
+      
+      if (BSE_SOURCE_PREPARED (source))
+	bse_source_reset (source);
+    }
 }

@@ -55,13 +55,13 @@ struct	_BseFlagsClass
 };
 struct _BseEnumValue
 {
-  gint	value;
+  gint	 value;
   gchar *value_name;
   gchar *value_nick;
 };
 struct _BseFlagsValue
 {
-  guint value;
+  guint  value;
   gchar *value_name;
   gchar *value_nick;
 };
@@ -110,11 +110,16 @@ typedef enum
   BSE_ERROR_DATA_CORRUPT,
   BSE_ERROR_BINARY_DATA_CORRUPT,
   BSE_ERROR_PARSE_ERROR,
+  /* Device errors */
+  BSE_ERROR_DEVICE_PERMS,
+  BSE_ERROR_DEVICE_ASYNC,
+  BSE_ERROR_DEVICE_BUSY,
+  BSE_ERROR_DEVICE_IO,
+  BSE_ERROR_DEVICE_GET_CAPS,
+  BSE_ERROR_DEVICE_SET_CAPS,
   /* BseStream errors */
-  BSE_ERROR_STREAM_INVALID,
   BSE_ERROR_STREAM_PERM,
   BSE_ERROR_STREAM_ASYNC,
-  BSE_ERROR_STREAM_SUSPENDED,
   BSE_ERROR_STREAM_DEVICE_BUSY,
   BSE_ERROR_STREAM_READ_DENIED,
   BSE_ERROR_STREAM_READ_FAILED,

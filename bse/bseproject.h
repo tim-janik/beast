@@ -47,6 +47,8 @@ struct _BseProjectClass
 
 /* --- prototypes --- */
 BseProject*	bse_project_new			(const gchar	*name);
+void		bse_project_start_playback	(BseProject	*project);
+void		bse_project_stop_playback	(BseProject	*project);
 void		bse_project_add_super		(BseProject	*project,
 						 BseSuper	*super);
 void		bse_project_remove_super	(BseProject	*project,

@@ -21,6 +21,7 @@
 #include        "bsecategories.h"
 #include        "bsemixer.h"
 #include        "bsestorage.h"
+#include        "bseheart.h"
 #include        <string.h>
 #include        <time.h>
 #include        <fcntl.h>
@@ -322,10 +323,15 @@ static void
 bse_snet_prepare (BseSource *source,
 		  BseIndex   index)
 {
-  // BseSNet *snet = BSE_SNET (source);
+  BseSNet *snet = BSE_SNET (source);
+
+  bse_object_lock (BSE_OBJECT (snet));
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+
+  /* FIXME: odevice hack */
+  bse_heart_source_add_odevice (source, bse_heart_get_device (bse_heart_get_default_odevice ()));
 }
 
 static BseChunk*
@@ -360,8 +366,10 @@ bse_snet_calc_chunk (BseSource *source,
 static void
 bse_snet_reset (BseSource *source)
 {
-  // BseSNet *snet = BSE_SNET (source);
+  BseSNet *snet = BSE_SNET (source);
 
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
+
+  bse_object_unlock (BSE_OBJECT (snet));
 }

@@ -23,6 +23,7 @@
 #include	"bsesongsequencer.h"
 #include	"bseproject.h"
 #include	"bsechunk.h"
+#include	"bseheart.h"
 #include	<math.h>
 
 
@@ -639,11 +640,16 @@ bse_song_prepare (BseSource *source,
 		  BseIndex   index)
 {
   BseSong *song = BSE_SONG (source);
+
+  bse_object_lock (BSE_OBJECT (song));
   
   bse_song_sequencer_setup (song, 2);
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->prepare (source, index);
+
+  /* FIXME: odevice hack */
+  bse_heart_source_add_odevice (source, bse_heart_get_device (bse_heart_get_default_odevice ()));
 }
 
 static BseChunk*
@@ -674,4 +680,6 @@ bse_song_reset (BseSource *source)
   
   /* chain parent class' handler */
   BSE_SOURCE_CLASS (parent_class)->reset (source);
+
+  bse_object_unlock (BSE_OBJECT (song));
 }
