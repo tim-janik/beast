@@ -17,6 +17,12 @@ FIXME(urgent):
 - driver interface: support multilpe MIDI devices
 - add Left and Right channels to BseAmplifier to allow stereo amplification
 TODO:
+- menus: s/New Custom Synthesizer/Add Custom Synthesizer/
+         s/New MIDI Synthesizer/Add MIDI Synthesizer/  (might get removed)
+- add mini-keyboard to Router toolbar to test instrument designs
+- implement hirarchical topc selector instead of notebook-tabs for preferences:
+  - move BSE paths into their own "paths" categorie
+  - rename BEAST tab to "appearance" or similar
 - the instruments selection dialog for tracks should default-select the currently used instrument
 - the "Export Audio" file dialog should not share state with the save/load dialogs (to avoid suggesting .bse files as WAV targets)
 - center vscrollbar of piano-roll upon realization
