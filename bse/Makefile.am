@@ -185,7 +185,7 @@ $(srcdir)/bsetype.c: bsegentypes.c bsegentype_array.c
 # setup sources, their dependancies and commands
 #
 bse_h_sources = $(bse_private_h_sources) $(bse_public_h_sources) $(bse_built_h_sources)
-libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl
+libbseinclude_HEADERS = $(bse_public_h_sources) $(bse_built_h_sources) bse.idl $(bse_idl_sources)
 libbse_la_SOURCES = $(bse_c_sources) $(bse_proc_gen_sources) $(bse_cc_sources)
 MAINTAINERCLEANFILES += $(bse_built_h_sources) $(bse_built_c_sources)
 CLEANFILES += $(idl_built_sources)
