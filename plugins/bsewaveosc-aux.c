@@ -64,7 +64,7 @@ WMOD_MIX_VARIANT_NAME (GslModule *module,
 	  gfloat freq_level = *freq_in++;
 
 	  freq_level *= BSE_MAX_FREQUENCY_d;
-	  if (FREQ_CHANGED (last_freq_level, freq_level))
+	  if_reject (FREQ_CHANGED (last_freq_level, freq_level))
 	    wmod_set_freq (wmod, freq_level, FALSE);
 	  last_freq_level = freq_level;
 	}
@@ -72,7 +72,7 @@ WMOD_MIX_VARIANT_NAME (GslModule *module,
 	{
 	  gfloat sync_level = *sync_in++;
 
-	  if (RAISING_EDGE (last_sync_level, sync_level))
+	  if_reject (RAISING_EDGE (last_sync_level, sync_level))
 	    {
 	      block->next_offset = 0;
 	      wmod_set_freq (wmod, wmod->play_freq, TRUE);
@@ -106,7 +106,7 @@ WMOD_MIX_VARIANT_NAME (GslModule *module,
 	  gfloat d, d0, d1, d2, d3, d4, d5, d6, d7;
 	  gfloat *x;
 	  
-	  if (wmod->x == boundary)	/* wchunk block boundary */
+	  if_reject (wmod->x == boundary)	/* wchunk block boundary */
 	    {
 	      GslLong next_offset = block->next_offset;
 	      
@@ -118,7 +118,7 @@ WMOD_MIX_VARIANT_NAME (GslModule *module,
 	      g_assert (ABS (block->dirstride) == 1);	/* paranoid */
 	    }
 
-	  if (block->dirstride > 0)
+	  if_expect (block->dirstride > 0)
 	    {
 	      x = wmod->x;
 	      d0 = b[0] * y[wmod_j]; wmod_j++; wmod_j &= 0x7;

@@ -296,8 +296,7 @@ wmod_set_freq (WaveOscModule *wmod,
       gfloat freq_r = stop_freq * nyquist_fact * filt_fact;
 
       wmod->istep = istep;
-      // FIXME: gsl_filter_tscheb2 (ORDER, freq_c, freq_r, gsl_trans_zepsilon2ss (0.18), wmod->a, wmod->b);
-      gsl_filter_tscheb1_lp (ORDER, freq_c, gsl_trans_zepsilon2ss (0.18), wmod->a, wmod->b);
+      gsl_filter_tscheb2_lp (ORDER, freq_c, freq_r / freq_c, 0.18, wmod->a, wmod->b);
       for (i = 0; i < ORDER + 1; i++)
 	wmod->a[i] *= wmod->zero_padding;	/* scale to compensate for zero-padding */
       for (i = 0; i < (ORDER + 1) / 2; i++)	/* reverse bs */
@@ -422,9 +421,9 @@ bse_wave_osc_context_create (BseSource *source,
 			     GslTrans  *trans)
 {
   static const GslClass wmod_class = {
-    3,				/* n_istreams */
+    BSE_WAVE_OSC_N_ICHANNELS,	/* n_istreams */
     0,                          /* n_jstreams */
-    3,				/* n_ostreams */
+    BSE_WAVE_OSC_N_OCHANNELS,	/* n_ostreams */
     wmod_process,		/* process */
     wmod_free,			/* free */
     GSL_COST_NORMAL,		/* cost */

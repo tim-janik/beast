@@ -1,3 +1,9 @@
+Sat Jan 12 13:36:12 2002  Tim Janik  <timj@gtk.org>
+
+	* bsewaveosc.[hc]: fixed GslModule channel allocations.
+	use if_reject/if_expect where apropriate.
+	use tschebyscheff type II again.
+
 Thu Dec 20 07:01:32 2001  Tim Janik  <timj@gtk.org>
 
 	* bsewaveosc.c (wmod_process): removed commented reference
