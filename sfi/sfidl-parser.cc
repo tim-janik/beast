@@ -26,6 +26,7 @@
 #include "sfidl-options.h"
 #include <iostream>
 
+namespace {
 using namespace Sfidl;
 using namespace std;
 
@@ -75,20 +76,31 @@ static  GScannerConfig  scanner_config_template = {
 
 /* --- defines --- */
 
-#define debug(x)         /* nothing */
+#define DEBUG(x)         // dprintf(2,"%s",x)
 
-#define TOKEN_CHOICE     GTokenType(G_TOKEN_LAST + 1)
-#define TOKEN_CLASS      GTokenType(G_TOKEN_LAST + 2)
-#define TOKEN_CONST      GTokenType(G_TOKEN_LAST + 3)
-#define TOKEN_GROUP      GTokenType(G_TOKEN_LAST + 4)
-#define TOKEN_INFO       GTokenType(G_TOKEN_LAST + 5)
-#define TOKEN_NAMESPACE  GTokenType(G_TOKEN_LAST + 6)
-#define TOKEN_PROPERTY   GTokenType(G_TOKEN_LAST + 7)
-#define TOKEN_RECORD     GTokenType(G_TOKEN_LAST + 8)
-#define TOKEN_SEQUENCE   GTokenType(G_TOKEN_LAST + 9)
-#define TOKEN_ISTREAM    GTokenType(G_TOKEN_LAST + 10)
-#define TOKEN_JSTREAM    GTokenType(G_TOKEN_LAST + 11)
-#define TOKEN_OSTREAM    GTokenType(G_TOKEN_LAST + 12)
+enum ExtraToken {
+  TOKEN_NAMESPACE = G_TOKEN_LAST + 1,
+  TOKEN_CLASS,
+  TOKEN_CHOICE,
+  TOKEN_RECORD,
+  TOKEN_SEQUENCE,
+  TOKEN_PROPERTY,
+  TOKEN_GROUP,
+  TOKEN_CONST,
+  TOKEN_INFO,
+  TOKEN_ISTREAM,
+  TOKEN_JSTREAM,
+  TOKEN_OSTREAM,
+};
+
+const char *token_symbols[] = {
+  "namespace", "class", "choice", "record", "sequence",
+  "property", "group",
+  "Const", "Info", "IStream", "JStream", "OStream",
+  0
+};
+
+bool operator== (GTokenType t, ExtraToken e) { return (int) t == (int) e; }
 
 #define parse_or_return(token)  G_STMT_START{ \
   GTokenType _t = GTokenType(token); \
@@ -197,23 +209,8 @@ Parser::Parser () : options (*Options::the())
 {
   scanner = g_scanner_new (&scanner_config_template);
   
-  const char *syms[] = {
-    "choice",
-    "class",
-    "Const",
-    "group",
-    "Info",
-    "namespace",
-    "property",
-    "record",
-    "sequence",
-    "IStream",
-    "JStream",
-    "OStream",
-    0
-  };
-  for (int n = 0; syms[n]; n++)
-    g_scanner_add_symbol (scanner, syms[n], GUINT_TO_POINTER (G_TOKEN_LAST + 1 + n));
+  for (int n = 0; token_symbols[n]; n++)
+    g_scanner_add_symbol (scanner, token_symbols[n], GUINT_TO_POINTER (G_TOKEN_LAST + 1 + n));
   
   scanner->max_parse_errors = 10;
   scanner->parse_errors = 0;
@@ -503,7 +500,7 @@ bool Parser::parse (const string& filename)
 
 GTokenType Parser::parseNamespace()
 {
-  debug("parse namespace\n");
+  DEBUG("parse namespace\n");
   parse_or_return (G_TOKEN_IDENTIFIER);
   ModuleHelper::enter (scanner->value.v_identifier);
   
@@ -699,7 +696,7 @@ GTokenType Parser::parseChoice ()
 {
   Choice choice;
   int value = 0;
-  debug("parse choice\n");
+  DEBUG("parse choice\n");
   
   parse_or_return (TOKEN_CHOICE);
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -728,6 +725,13 @@ GTokenType Parser::parseChoice ()
   return G_TOKEN_NONE;
 }
 
+void
+skip_ascii_at (GScanner *scanner)
+{
+  if (g_scanner_peek_next_token (scanner) == '@')
+    g_scanner_get_next_token (scanner);
+}
+
 GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value)
 {
   /* MASTER @= (25, "Master Volume"), */
@@ -737,11 +741,11 @@ GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value)
   comp.neutral = false;
 
   /* the hints are optional */
-  if (g_scanner_peek_next_token (scanner) == GTokenType('@'))
+  skip_ascii_at (scanner);
+  if (g_scanner_peek_next_token (scanner) == '=')
     {
       g_scanner_get_next_token (scanner);
       
-      parse_or_return ('=');
       if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
 	{
 	  g_scanner_get_next_token (scanner);
@@ -773,11 +777,29 @@ GTokenType Parser::parseChoiceValue (ChoiceValue& comp, int& value)
   return G_TOKEN_NONE;
 }
 
+GTokenType
+parse_dot_group (GScanner *scanner,
+                 string   *group)
+{
+  if (g_scanner_peek_next_token (scanner) == '$')
+    {
+      parse_or_return ('$');
+      parse_or_return (G_TOKEN_IDENTIFIER);
+      if (strcmp (scanner->value.v_identifier, "GROUP") != 0)
+        return G_TOKEN_IDENTIFIER;
+      parse_or_return ('=');
+      parse_or_return (G_TOKEN_STRING);
+      *group = scanner->value.v_string;
+      parse_or_return (';');
+    }
+  return G_TOKEN_NONE;
+}
+
 GTokenType Parser::parseRecord ()
 {
   string group = "";
   Record record;
-  debug("parse record\n");
+  DEBUG("parse record\n");
   
   parse_or_return (TOKEN_RECORD);
   parse_or_return (G_TOKEN_IDENTIFIER);
@@ -789,48 +811,73 @@ GTokenType Parser::parseRecord ()
       return G_TOKEN_NONE;
     }
   parse_or_return (G_TOKEN_LEFT_CURLY);
-
+  
   bool ready = false;
-  do
+  while (!ready)
     {
+      GTokenType expected_token;
       switch (g_scanner_peek_next_token (scanner))
-	{
-	  case TOKEN_GROUP:
-	    {
-	      parse_or_return (TOKEN_GROUP);
-	      parse_or_return (':');
-	      parse_string_or_return (group);
-	      parse_or_return (';');
-	    }
-	    break;
-
-	  case G_TOKEN_IDENTIFIER:
-	    {
-	      Param def;
-
-	      GTokenType expected_token = parseRecordField (def, group);
-	      if (expected_token != G_TOKEN_NONE)
-		return expected_token;
-
-	      if (def.type != "")
-		record.contents.push_back(def);
-	    }
-	    break;
-
-	  case TOKEN_INFO:
-	    {
-	      GTokenType expected_token = parseInfoOptional (record.infos);
-	      if (expected_token != G_TOKEN_NONE)
-		return expected_token;
-	    }
-	  break;
-	  
-	default:
-	    ready = true;
-	  break;
-      }
+        {
+#if 0
+        case '$':
+          expected_token = parse_dot_group (scanner, &group);
+          if (expected_token != G_TOKEN_NONE)
+            return expected_token;
+          break;
+#endif
+        case G_TOKEN_IDENTIFIER:
+          {
+            Param def;
+            
+            expected_token = parseRecordField (def, group);
+            if (expected_token != G_TOKEN_NONE)
+              return expected_token;
+            
+            if (def.type != "")
+              record.contents.push_back(def);
+          }
+          break;
+        case TOKEN_GROUP:
+          {
+            string local_group = group;
+            parse_or_return (TOKEN_GROUP);
+            if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
+              {
+                g_scanner_get_next_token (scanner);
+                local_group = scanner->value.v_string;
+              }
+            parse_or_return ('{');
+            while (g_scanner_peek_next_token (scanner) != '}' && !g_scanner_eof (scanner))
+              {
+                Param property;
+#if 0
+                if (g_scanner_peek_next_token (scanner) == '$')
+                  expected_token = parse_dot_group (scanner, &local_group);
+                else
+#endif
+                  {
+                    expected_token = parseRecordField (property, local_group);
+                    if (expected_token == G_TOKEN_NONE)
+                      record.contents.push_back (property);
+                  }
+                if (expected_token != G_TOKEN_NONE)
+                  return expected_token;
+              }
+            parse_or_return ('}');
+            parse_or_return (';');
+          }
+          break;
+        case TOKEN_INFO:
+          expected_token = parseInfoOptional (record.infos);
+          if (expected_token != G_TOKEN_NONE)
+            return expected_token;
+          break;
+        default:
+          expected_token = g_scanner_peek_next_token (scanner);
+          ready = true;
+          break;
+        }
     }
-  while (!ready);
   parse_or_return (G_TOKEN_RIGHT_CURLY);
   parse_or_return (';');
   
@@ -857,11 +904,10 @@ GTokenType Parser::parseRecordField (Param& def, const string& group)
   def.name = scanner->value.v_identifier;
   
   /* the hints are optional */
-  if (g_scanner_peek_next_token (scanner) == GTokenType('@'))
+  skip_ascii_at (scanner);
+  if (g_scanner_peek_next_token (scanner) == '=')
     {
       g_scanner_get_next_token (scanner);
-      
-      parse_or_return ('=');
       
       GTokenType expected_token = parseParamHints (def);
       if (expected_token != G_TOKEN_NONE)
@@ -884,7 +930,7 @@ Parser::parseStream (Stream&      stream,
   parse_or_return (G_TOKEN_IDENTIFIER);
   stream.ident = scanner->value.v_identifier;
 
-  parse_or_return ('@');
+  skip_ascii_at (scanner);
   parse_or_return ('=');
 
   parse_or_return ('(');
@@ -977,7 +1023,6 @@ GTokenType Parser::parseSequence ()
 {
   GTokenType expected_token;
   Sequence sequence;
-  string group;
 
   /*
    * sequence IntSeq {
@@ -1018,13 +1063,13 @@ GTokenType Parser::parseSequence ()
 GTokenType Parser::parseClass ()
 {
   Class cdef;
-  string group;
-  debug("parse class\n");
+  string group = "";
+  DEBUG("parse class\n");
   
   parse_or_return (TOKEN_CLASS);
   parse_or_return (G_TOKEN_IDENTIFIER);
   cdef.name = ModuleHelper::define (scanner->value.v_identifier);
-
+  
   if (g_scanner_peek_next_token (scanner) == GTokenType(';'))
     {
       parse_or_return (';');
@@ -1034,24 +1079,25 @@ GTokenType Parser::parseClass ()
   if (g_scanner_peek_next_token (scanner) == GTokenType(':'))
     {
       parse_or_return (':');
-
+      
       GTokenType expected_token = parseTypeName (cdef.inherits);
       if (expected_token != G_TOKEN_NONE)
 	return expected_token;
     }
-
+  
   parse_or_return ('{');
   while (g_scanner_peek_next_token (scanner) != G_TOKEN_RIGHT_CURLY)
     {
+      GTokenType expected_token;
       switch (g_scanner_peek_next_token (scanner))
-      {
+        {
 	case G_TOKEN_IDENTIFIER:
 	  {
 	    Method method;
 	    GTokenType expected_token = parseMethod (method);
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
-
+            
 	    if (method.result.type == "signal")
 	      cdef.signals.push_back(method);
 	    else
@@ -1065,43 +1111,84 @@ GTokenType Parser::parseClass ()
 	      return expected_token;
 	  }
 	  break;
-	case TOKEN_PROPERTY:
+#if 0
+        case '$':
+          parse_dot_group (scanner, &group);
+          break;
+#endif
+        case TOKEN_PROPERTY:
 	  {
 	    parse_or_return (TOKEN_PROPERTY);
 
 	    Param property;
-	    GTokenType expected_token = parseRecordField (property, "");
+            string local_group = group;
+            if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
+              {
+                g_scanner_get_next_token (scanner);
+                local_group = scanner->value.v_string;
+              }
+	    expected_token = parseRecordField (property, local_group);
 	    if (expected_token != G_TOKEN_NONE)
 	      return expected_token;
-
+            
 	    cdef.properties.push_back (property);
 	  }
 	  break;
-      case TOKEN_ISTREAM:
-      case TOKEN_JSTREAM:
-      case TOKEN_OSTREAM:
-        {
-          Stream::Type stype = Stream::IStream;
-          switch ((int) scanner->next_token) {
-          case TOKEN_JSTREAM:   stype = Stream::JStream; break;
-          case TOKEN_OSTREAM:   stype = Stream::OStream; break;
+        case TOKEN_GROUP:
+          {
+            string local_group = group;
+	    parse_or_return (TOKEN_GROUP);
+            if (g_scanner_peek_next_token (scanner) == G_TOKEN_STRING)
+              {
+                g_scanner_get_next_token (scanner);
+                local_group = scanner->value.v_string;
+              }
+	    parse_or_return ('{');
+            while (g_scanner_peek_next_token (scanner) != '}' && !g_scanner_eof (scanner))
+              {
+                Param property;
+#if 0
+                if (g_scanner_peek_next_token (scanner) == '$')
+                  expected_token = parse_dot_group (scanner, &local_group);
+                else
+#endif
+                  {
+                    expected_token = parseRecordField (property, local_group);
+                    if (expected_token == G_TOKEN_NONE)
+                      cdef.properties.push_back (property);
+                  }
+                if (expected_token != G_TOKEN_NONE)
+                  return expected_token;
+              }
+            parse_or_return ('}');
+            parse_or_return (';');
+	  }
+	  break;
+        case TOKEN_ISTREAM:
+        case TOKEN_JSTREAM:
+        case TOKEN_OSTREAM:
+          {
+            Stream::Type stype = Stream::IStream;
+            switch ((int) scanner->next_token) {
+            case TOKEN_JSTREAM:   stype = Stream::JStream; break;
+            case TOKEN_OSTREAM:   stype = Stream::OStream; break;
+            }
+            g_scanner_get_next_token (scanner); /* eat *Stream */
+            Stream stream;
+            GTokenType expected_token = parseStream (stream, stype);
+            if (expected_token != G_TOKEN_NONE)
+              return expected_token;
+            
+            switch (stream.type) {
+            case Stream::IStream: cdef.istreams.push_back (stream); break;
+            case Stream::JStream: cdef.jstreams.push_back (stream); break;
+            case Stream::OStream: cdef.ostreams.push_back (stream); break;
+            }
           }
-          g_scanner_get_next_token (scanner); /* eat *Stream */
-          Stream stream;
-          GTokenType expected_token = parseStream (stream, stype);
-          if (expected_token != G_TOKEN_NONE)
-            return expected_token;
-
-          switch (stream.type) {
-          case Stream::IStream: cdef.istreams.push_back (stream); break;
-          case Stream::JStream: cdef.jstreams.push_back (stream); break;
-          case Stream::OStream: cdef.ostreams.push_back (stream); break;
-          }
-        }
-        break;
+          break;
 	default:
 	  parse_or_return (G_TOKEN_IDENTIFIER); /* will fail; */
-      }
+        }
     }
   parse_or_return ('}');
   parse_or_return (';');
@@ -1212,7 +1299,7 @@ GTokenType Parser::parseMethod (Method& method)
 
 	  pd->line = scanner->line;
 
-	  parse_or_return ('@');
+          skip_ascii_at (scanner);
 	  parse_or_return ('=');
 
 	  GTokenType expected_token = parseParamHints (*pd);
@@ -1367,5 +1454,7 @@ void Parser::addPrototype (const std::string& type, TypeDeclaration typeDecl)
       printError ("double definition of '%s' as different types", type.c_str());
     }
 }
+
+}; // anon namespace
 
 /* vim:set ts=8 sts=2 sw=2: */

@@ -1,3 +1,25 @@
+Fri Aug 22 07:48:14 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-parser.cc: move everything into an anonymous namespace to
+	avoid unwanted symbol exports.
+	declare extra tokens as enum values, move token strings next to
+	the enum definition as ordering is important here.
+	provide operator== for enum comparisons.
+	make the @ in '@=' statements in idl files optional.
+	prototyped $GROUP=""; syntax for property group assignments,
+	this code is disabled however because the syntax looks somewhat
+	odd. removed code for oddball 'group: "Foo";' statements which
+	interferes with the way 'private:' or 'public:' are used in C++.
+	introduced new syntax for property grouping, supported in records
+	_and_ classes, which simply block groups the property definitions:
+	'group "Property Group" { ... };'. also allow a property group
+	name after the 'property' keyword for singly property definitions
+	in classes. however this syntax should probably go, as it differs
+	from property declarations as used in records.
+	fixed some indentation problems.
+
+	* testidl.sfidl: adapt and test syntax changes.
+
 Tue Aug 19 04:21:32 2003  Tim Janik  <timj@gtk.org>
 
 	* gbsearcharray.h: sync with gbsearcharray.h in newer glib (2.3.0).

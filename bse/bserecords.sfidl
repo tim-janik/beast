@@ -342,24 +342,27 @@ namespace Bse {
 
   /* BSE Global Config */
   record GConfig {
-  group: "Synthesis Settings";
-    Int  synth_block_size	@= ("Synth Block Size",
+    group "Synthesis Settings" {
+      Int  synth_block_size	@= ("Synth Block Size",
 				    "Synthesis buffer size, smaller values may reduce latency but "
 				    "increase CPU overhead",
 				    256, 4, 4096, 4,
 				    SFI_PARAM_DEFAULT""/*FIXME*/ SFI_PARAM_HINT_SCALE);
-    Int  synth_mixing_freq	@= ("Synth Mixing Frequency",
+      Int  synth_mixing_freq	@= ("Synth Mixing Frequency",
 				    "Synthesis mixing frequency, common values are: 22050, 44100, 48000",
 				    44100, 8000, 192000, 0, SFI_PARAM_DEFAULT);
-  group: "MIDI";
-    Bool invert_sustain		@= ("Invert Sustain Pedal",
+    };
+    group "MIDI" {
+      Bool invert_sustain	@= ("Invert Sustain Pedal",
 				    "Invert the state of sustain (damper) pedal so on/off meanings are reversed",
 				    FALSE, SFI_PARAM_DEFAULT);
-  group: "Stepping Rates";
-    Real step_volume_dB		@= ("Volume [dB] Steps", "Step width for volume in decibell",
+    };
+    group "Stepping Rates" {
+      Real step_volume_dB	@= ("Volume [dB] Steps", "Step width for volume in decibell",
 				    0.1, 0.001, 5, 0.01, SFI_PARAM_DEFAULT);
-    Int  step_bpm		@= ("BPM Steps", "Step width for beats per minute",
+      Int  step_bpm		@= ("BPM Steps", "Step width for beats per minute",
 				    10, 1, 50, 1, SFI_PARAM_DEFAULT);
+    };
   };
 };
 

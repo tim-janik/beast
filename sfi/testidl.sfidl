@@ -1,30 +1,40 @@
+/*   -*-mode: c++;-*- */
 namespace Test  // this comment tests C++ style comments
 {
-  /* test string stuff */
-  Const ANSWER_A = "the answer to all questions";
-  Const ANSWER_B = 42;
-  Const ULTIMATE_ANSWER = (ANSWER_A " is " ANSWER_B);
+/* test string stuff */
+Const ANSWER_A = "the answer to all questions";
+Const ANSWER_B = 42;
+Const ULTIMATE_ANSWER = (ANSWER_A " is " ANSWER_B);
 
-  choice YesNoUndecided {
-    Undecided @= Neutral(0, "Undecided"),
-    Yes @= (1, "Yes"),
-    No @= (2, "No")
-  };
+choice YesNoUndecided {
+  Undecided @= Neutral(0, "Undecided"),
+        Yes @= (1, "Yes"),
+         No @= (2, "No")
+};
 
-  record Position {
-    Real x @= ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
-    Real y @= ("Y", "", 3.0, -10.0, 10.0, 1, ":readwrite");
-    YesNoUndecided relevant @= ("Relevant", "", "test-yes", ":readwrite");
-  };
+record Position {
+  Real x @= ("X", "", 2.0, -10.0, 10.0, 1, ":readwrite");
+  Real y @= ("Y", "", 3.0, -10.0, 10.0, 1, ":readwrite");
+  YesNoUndecided relevant @= ("Relevant", "", "test-yes", ":readwrite");
+};
 
-  record SickGenericThings {
-  group: "foo";
-    Rec   rec   @= ("Rec", "", ":readwrite");
-    PSpec pspec @= ("Param Spec", "", ":readwrite");
-  };
+record SickGenericThings {
+  // $GROUP = "foo";
+  Rec   rec   = ("Rec", "", ":readwrite");
+  PSpec pspec = ("Param Spec", "", ":readwrite");
+};
 
-  sequence PositionSeq {
-    Position positions @= ("Position", "", ":readwrite");
+class Blub {
+  property Real x;
+  property "X-Group" Real y;
+  group "Other Properties" {
+    Num z;
   };
+};
+
+sequence PositionSeq {
+  Position positions @= ("Position", "", ":readwrite");
+};
+
 };
 /* vim:set ts=8 sts=2 sw=2: */
