@@ -20,8 +20,10 @@
 #include "bseitem.h"
 #include "bsebindata.h"
 #include "bseproject.h"
+#include "bseserver.h"
 #include "bsesong.h"
 #include "bsesequence.h"
+#include "bseprocedure.h"
 #include "gsldatahandle.h"
 #include "gsldatautils.h"
 #include <fcntl.h>
@@ -429,6 +431,20 @@ bse_storage_put_wave_handle (BseStorage    *storage,
 		      bblock->vlength);
 }
 
+const gchar*
+bse_storage_peek_text (BseStorage *storage,
+		       guint      *length)
+{
+  g_return_val_if_fail (BSE_IS_STORAGE (storage), NULL);
+  g_return_val_if_fail (BSE_STORAGE_WRITABLE (storage), NULL);
+
+  bse_storage_handle_break (storage);
+
+  if (length)
+    *length = storage->gstring->len;
+  return storage->gstring->str;
+}
+
 void
 bse_storage_flush_fd (BseStorage *storage,
                       gint        fd)
@@ -438,6 +454,8 @@ bse_storage_flush_fd (BseStorage *storage,
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
   g_return_if_fail (fd >= 0);
+
+  bse_storage_handle_break (storage);
   
   /* dump text storage
    */
@@ -936,10 +954,39 @@ bse_storage_parse_note (BseStorage *storage,
   return G_TOKEN_NONE;
 }
 
+BseErrorType
+bse_storage_store_procedure (gpointer          storage,
+			     BseProcedureClass *proc,
+			     const GValue      *ivalues,
+			     GValue            *ovalues)
+{
+  g_return_val_if_fail (BSE_IS_STORAGE (storage), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_STORAGE_WRITABLE (storage), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (BSE_IS_PROCEDURE_CLASS (proc), BSE_ERROR_INTERNAL);
+
+  bse_storage_handle_break (storage);
+  bse_storage_printf (storage, "(bse-proc-call \"%s\"", proc->name);
+  bse_storage_push_level (storage);
+  if (proc->n_in_pspecs)
+    {
+      guint i;
+
+      for (i = 0; i < proc->n_in_pspecs; i++)
+	{
+	  bse_storage_break (storage);
+	  bse_storage_put_param_value (storage, ivalues + i, proc->in_pspecs[i]);
+	}
+    }
+  bse_storage_pop_level (storage);
+  bse_storage_putc (storage, ')');
+
+  return BSE_ERROR_NONE;
+}
+
 void
-bse_storage_put_param (BseStorage *storage,
-                       GValue     *value,
-                       GParamSpec *pspec)
+bse_storage_put_param (BseStorage   *storage,
+                       const GValue *value,
+                       GParamSpec   *pspec)
 {
   g_return_if_fail (BSE_IS_STORAGE (storage));
   g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
@@ -951,12 +998,30 @@ bse_storage_put_param (BseStorage *storage,
   bse_storage_putc (storage, '(');
   bse_storage_puts (storage, pspec->name);
   bse_storage_putc (storage, ' ');
+
+  bse_storage_put_param_value (storage, value, pspec);
+
+  bse_storage_putc (storage, ')');
+}
+
+void
+bse_storage_put_param_value (BseStorage   *storage,
+			     const GValue *value,
+			     GParamSpec   *pspec)
+{
+  g_return_if_fail (BSE_IS_STORAGE (storage));
+  g_return_if_fail (BSE_STORAGE_WRITABLE (storage));
+  g_return_if_fail (G_IS_VALUE (value));
+  g_return_if_fail (G_IS_PARAM_SPEC (pspec));
+  
+  bse_storage_handle_break (storage);
   
   switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec)))
     {
       gchar *string;
       GEnumValue *ev;
       GFlagsValue *fv;
+      gpointer object, server;
       
     case G_TYPE_BOOLEAN:
       bse_storage_puts (storage, g_value_get_boolean (value) ? "'t" : "'f");
@@ -1018,11 +1083,17 @@ bse_storage_put_param (BseStorage *storage,
         bse_storage_puts (storage, "nil");
       break;
     case G_TYPE_OBJECT:
-      if (BSE_IS_ITEM (g_value_get_object (value)))
+      object = g_value_get_object (value);
+      server = bse_server_get ();
+      if (object == server)	/* special case */
+	{
+	  bse_storage_printf (storage, "(bse-server)");
+	}
+      else if (BSE_IS_ITEM (object))	/* item's here have to have a project */
         {
-          BseProject *project = bse_item_get_project (BSE_ITEM (g_value_get_object (value)));
+          BseProject *project = bse_item_get_project (object);
           gchar *path = bse_container_make_item_path (BSE_CONTAINER (project),
-                                                      BSE_ITEM (g_value_get_object (value)),
+                                                      object,
                                                       TRUE);
           
           bse_storage_printf (storage, "(%s)", path);
@@ -1077,8 +1148,6 @@ bse_storage_put_param (BseStorage *storage,
                  g_type_name (G_PARAM_SPEC_VALUE_TYPE (pspec)));
       break;
     }
-  
-  bse_storage_putc (storage, ')');
 }
 
 static GTokenType
@@ -1350,15 +1419,20 @@ bse_storage_parse_param_value (BseStorage *storage,
               g_scanner_get_next_token (scanner);
               return ')';
             }
-          
-          if (!storage->resolver)
-            return bse_storage_warn_skip (storage,
-                                          "unable to resolve reference `%s'",
-                                          scanner->value.v_identifier);
-          item = storage->resolver (storage->resolver_data,
-                                    storage,
-                                    BSE_TYPE_ITEM,
-                                    scanner->value.v_identifier);
+
+	  if (strcmp (scanner->value.v_identifier, "bse-server") == 0)
+	    item = bse_server_get ();
+	  else
+	    {
+	      if (!storage->resolver)
+		return bse_storage_warn_skip (storage,
+					      "unable to resolve reference `%s'",
+					      scanner->value.v_identifier);
+	      item = storage->resolver (storage->resolver_data,
+					storage,
+					BSE_TYPE_ITEM,
+					scanner->value.v_identifier);
+	    }
           g_value_set_object (value, item);
           
           g_scanner_get_next_token (scanner);

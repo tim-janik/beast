@@ -62,7 +62,11 @@ gslconfig.h: $(top_srcdir)/configure Makefile
 	&& (cmp -s xgen-gch $@ || cp xgen-gch $@) \
 	&& rm -f xgen-gch
 CLEANFILES += gslconfig.h xgen-gch
-$(OBJECTS): gslconfig.h
+$(srcdir)/gslwchunk.c: gslconfig.h
+$(srcdir)/gsltests.c: gslconfig.h
+$(srcdir)/gslffttest.c: gslconfig.h
+$(srcdir)/gslglibhashtest.cc: gslconfig.h
+# $(OBJECTS): gslconfig.h
 
 gsl_public_headers = $(GSL_H_SRC) gslconfig.h
 
@@ -74,7 +78,7 @@ gsl-install-data-local:
 	  if test -f "$$hfile"; then d= ; else d="$(srcdir)/"; fi; \
 	  echo " $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile"; \
 	  $(INSTALL_DATA) $$d$$hfile $(DESTDIR)$(gslincludedir)/$$hfile; \
-        done
+	done
 
 .PHONY:	gsltestoutput gsl-install-data-local
 

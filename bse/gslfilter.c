@@ -1097,7 +1097,7 @@ gsl_biquad_config_setup (GslBiquadConfig *c,
     f_fn = 1.0 - f_fn;
   c->f_fn = f_fn;			/* nyquist relative (0=DC, 1=nyquist) */
   c->gain = gain;
-  c->quality = quality;			// FIXME
+  c->quality = quality;			/* FIXME */
   c->k = tan (c->f_fn * GSL_PI / 2.);
   c->v = pow (10, c->gain / 20.);	/* v=10^(gain[dB]/20) */
   c->dirty = TRUE;
@@ -1113,7 +1113,7 @@ gsl_biquad_config_approx_freq (GslBiquadConfig *c,
   if (c->type == GSL_BIQUAD_RESONANT_HIGHPASS)
     f_fn = 1.0 - f_fn;
   c->f_fn = f_fn;                       /* nyquist relative (0=DC, 1=nyquist) */
-  c->k = tan (c->f_fn * GSL_PI / 2.);	// FIXME
+  c->k = tan (c->f_fn * GSL_PI / 2.);	/* FIXME */
   c->dirty = TRUE;
   c->approx_values = TRUE;
 }

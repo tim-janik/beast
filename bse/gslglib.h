@@ -80,6 +80,12 @@ struct _GDebugKey
   gchar *key;
   guint  value;
 };
+typedef struct _GTimeVal        GTimeVal;
+struct _GTimeVal
+{
+  glong tv_sec;
+  glong tv_usec;
+};
 
 
 /* --- standard macros --- */
@@ -135,6 +141,7 @@ struct _GDebugKey
 #define G_PATH_LENGTH   2048
 #endif
 
+#define G_N_ELEMENTS(arr)          (sizeof (arr) / sizeof ((arr)[0]))
 #define G_STRINGIFY(macro_or_string)    G_STRINGIFY_ARG (macro_or_string)
 #define G_STRINGIFY_ARG(contents)       #contents
 #if  defined __GNUC__ && !defined __cplusplus
@@ -259,6 +266,15 @@ g_message (const gchar *format,
   va_list args;
   va_start (args, format);
   gsl_g_log ("**MESSAGE**", format, args);
+  va_end (args);
+}
+static inline void
+g_critical (const gchar *format,
+	    ...)
+{
+  va_list args;
+  va_start (args, format);
+  gsl_g_log ("**CRITICAL**", format, args);
   va_end (args);
 }
 static inline void
@@ -472,7 +488,7 @@ gboolean g_path_is_absolute (const gchar *file_name);
  * glibconfig.h may have already defined G_VA_COPY as va_copy or __va_copy.
  */
 #if !defined (G_VA_COPY)
-#  if defined (__GNUC__) && defined (__PPC__) && (defined (_CALL_SYSV) || defined (_WIN32))
+#  if defined (__GNUC__) && ( defined (__PPC__) || defined (__s390__) ) && (defined (_CALL_SYSV) || defined (_WIN32) || defined (__s390__) )
 #    define G_VA_COPY(ap1, ap2)   (*(ap1) = *(ap2))
 #  elif defined (G_VA_COPY_AS_ARRAY)
 #    define G_VA_COPY(ap1, ap2)   g_memmove ((ap1), (ap2), sizeof (va_list))

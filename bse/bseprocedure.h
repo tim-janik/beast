@@ -68,10 +68,10 @@ struct _BseProcedureClass
 typedef gboolean (*BseProcedureNotify) (gpointer     func_data,
 					const gchar *proc_name,
 					BseErrorType exit_status);
-typedef BseErrorType (*BseProcedureMarshal) (BseProcedureClass *proc,
+typedef BseErrorType (*BseProcedureMarshal) (gpointer		marshal_data,
+					     BseProcedureClass *proc,
 					     const GValue      *ivalues,
-					     GValue	       *ovalues,
-					     gpointer	        marshal_data);
+					     GValue	       *ovalues);
 
 
 /* --- prototypes --- */
@@ -79,6 +79,11 @@ typedef BseErrorType (*BseProcedureMarshal) (BseProcedureClass *proc,
  * values and n_out_pspecs param value locations for out values
  */
 BseErrorType bse_procedure_exec	  	  (const gchar		*proc_name,
+					   ...);
+BseErrorType bse_procedure_exec_void  	  (const gchar		*proc_name,
+					   ...);
+BseErrorType bse_procedure_store          (const gchar		*proc_name,
+					   BseStorage		*storage,
 					   ...);
 GType	     bse_procedure_lookup	  (const gchar		*proc_name);
 BseErrorType bse_procedure_marshal_valist (GType		 proc_type,

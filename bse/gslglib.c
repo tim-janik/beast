@@ -204,7 +204,31 @@ gsl_g_convert (const gchar  *str,
 
 /* --- GScanner --- */
 
+#ifdef HAVE_SNPRINTF
+/* FIXME: might want to do the configure test in gsl instead of arts */
 #define g_snprintf snprintf
+#else
+#define g_snprintf gsl_g_snprintf
+static void
+gsl_g_snprintf (gchar        *out_buffer,
+		size_t        size,
+		const gchar  *format,
+		...)
+{
+  gchar *buffer;
+  va_list args;
+  
+  /* print string into large enough buffer */
+  va_start (args, format);
+  buffer = g_strdup_printf (format, args);
+  va_end (args);
+  
+  /* copy the first size bytes into out_buffer */
+  strncpy (out_buffer, buffer, size);
+  g_free (buffer);
+}
+#endif
+
 
 struct _GString
 {

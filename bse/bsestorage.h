@@ -100,7 +100,10 @@ void		bse_storage_handle_break	(BseStorage	*storage);
 void		bse_storage_break		(BseStorage	*storage);
 void		bse_storage_needs_break		(BseStorage	*storage);
 void		bse_storage_put_param		(BseStorage	*storage,
-						 GValue		*value,
+						 const GValue	*value,
+						 GParamSpec	*pspec);
+void		bse_storage_put_param_value	(BseStorage	*storage,
+						 const GValue	*value,
 						 GParamSpec	*pspec);
 void		bse_storage_put_wave_handle	(BseStorage	*storage,
 						 guint		 significant_bits,
@@ -109,7 +112,13 @@ void		bse_storage_put_wave_handle	(BseStorage	*storage,
 						 GslLong	 vlength);
 void		bse_storage_flush_fd		(BseStorage	*storage,
 						 gint		 fd);
-     
+const gchar*	bse_storage_peek_text		(BseStorage	*storage,
+						 guint		*length);
+BseErrorType	bse_storage_store_procedure	(gpointer	   storage,
+						 BseProcedureClass *proc,
+						 const GValue      *ivalues,
+						 GValue            *ovalues);
+
 
 /* --- reading --- */
 void		bse_storage_set_path_resolver	(BseStorage	*storage,

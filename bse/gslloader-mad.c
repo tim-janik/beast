@@ -58,7 +58,7 @@ mad_load_file_info (gpointer      data,
   fi->wfi.waves[0].name = g_strdup (file_name);
   fi->n_channels = n_channels;
   fi->mix_freq = mix_freq;
-  fi->osc_freq = 440.0;	// FIXME
+  fi->osc_freq = 440.0;	/* FIXME */
 
   return &fi->wfi;
 }

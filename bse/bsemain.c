@@ -311,6 +311,8 @@ call_gsl_init (const GslConfigValue values[])
 #endif /* !GSL_HAVE_MUTEXATTR_SETTYPE */
   
   gsl_init (values, mtable);
+#if 0
   if (mtable)
     g_message ("using Unix98 pthreads directly for mutexes and conditions\n");
+#endif
 }

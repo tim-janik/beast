@@ -1,3 +1,7 @@
+Fri May 17 20:56:39 2002  Tim Janik  <timj@gtk.org>
+
+	* gsl*.*: incorporate fixes from stefan.
+
 Thu May 16 23:15:33 2002  Tim Janik  <timj@gtk.org>
 
 	* bseserver.h: introduced ::script_status signal for GUI notification,
@@ -5,6 +9,8 @@ Thu May 16 23:15:33 2002  Tim Janik  <timj@gtk.org>
 	to notify about procedure exit codes via BSE_SCRIPT_STATUS_PROC_END.
 
 	* bseprocedure.[hc]: procedure API and implementation cleanups.
+	
+	* bsestorage.[hc]: some additions to store procedures.
 	
 	* *.c: misc fixes due to procedure changes.
 

@@ -280,7 +280,7 @@ master_process_job (GslJob *job)
       src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
       NODE_FLAG_RECONNECT (node);
       NODE_FLAG_RECONNECT (src_node);
-      src_node->counter = 0;	// FIXME: counter reset?
+      src_node->counter = 0;	/* FIXME: counter reset? */
       if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
       master_need_reflow |= TRUE;
@@ -306,7 +306,7 @@ master_process_job (GslJob *job)
       src_node->output_nodes = gsl_ring_append (src_node->output_nodes, node);
       NODE_FLAG_RECONNECT (node);
       NODE_FLAG_RECONNECT (src_node);
-      src_node->counter = 0;	// FIXME: counter reset?
+      src_node->counter = 0;	/* FIXME: counter reset? */
       if (was_consumer && !ENGINE_NODE_IS_CONSUMER (src_node))
 	remove_consumer (src_node);
       master_need_reflow |= TRUE;

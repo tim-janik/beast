@@ -107,7 +107,7 @@ oggv_load_wave_dsc (gpointer         data,
   wdsc->n_channels = vi->channels;
   wdsc->n_chunks = 1;
   wdsc->chunks = g_new0 (GslWaveChunkDsc, 1);
-  wdsc->chunks[0].osc_freq = 440.0; // FIXME
+  wdsc->chunks[0].osc_freq = 440.0; /* FIXME */
   wdsc->chunks[0].mix_freq = vi->rate;
   wdsc->chunks[0].loader_offset = nth_wave;	/* lbitstream */
 

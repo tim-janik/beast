@@ -215,9 +215,9 @@ main (gint   argc,
 					     my_data_length,
 					     my_data,
 					     NULL);
-      rhandle1 = gsl_data_handle_new_reversed (myhandle);
+      rhandle1 = gsl_data_handle_new_reverse (myhandle);
       gsl_data_handle_unref (myhandle);
-      rhandle2 = gsl_data_handle_new_reversed (rhandle1);
+      rhandle2 = gsl_data_handle_new_reverse (rhandle1);
       gsl_data_handle_unref (rhandle1);
       gsl_data_handle_open (rhandle2);
       gsl_data_handle_unref (rhandle2);

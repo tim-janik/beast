@@ -20,6 +20,7 @@
 #include	<gobject/gvaluecollector.h>
 #include	"bseobject.h"
 #include	"bseserver.h"
+#include	"bsestorage.h"
 #include	"bseexports.h"
 #include	<string.h>
 
@@ -280,7 +281,7 @@ call_proc (BseProcedureClass  *proc,
   else
     {
       if (marshal)
-	error = marshal (proc, ivalues, ovalues, marshal_data);
+	error = marshal (marshal_data, proc, ivalues, ovalues);
       else
 	error = proc->execute (proc, ivalues, ovalues);
       bse_server_script_status (bse_server_get (), BSE_SCRIPT_STATUS_PROC_END, proc->name, error ? 0 : 1, error);
@@ -478,6 +479,61 @@ bse_procedure_exec (const gchar *proc_name,
 
       va_start (var_args, proc_name);
       error = bse_procedure_marshal_valist (proc_type, NULL, NULL, NULL, FALSE, var_args);
+      va_end (var_args);
+      return error;
+    }
+}
+
+BseErrorType
+bse_procedure_exec_void (const gchar *proc_name,
+			 ...)
+{
+  GType proc_type;
+
+  g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
+
+  proc_type = bse_procedure_lookup (proc_name);
+  if (!proc_type)
+    {
+      g_warning ("%s: no such procedure", proc_name);
+      return BSE_ERROR_NOT_FOUND;
+    }
+  else
+    {
+      BseErrorType error;
+      va_list var_args;
+
+      va_start (var_args, proc_name);
+      error = bse_procedure_marshal_valist (proc_type, NULL, NULL, NULL, TRUE, var_args);
+      va_end (var_args);
+      return error;
+    }
+}
+
+BseErrorType
+bse_procedure_store (const gchar *proc_name,
+		     BseStorage  *storage,
+		     ...)
+{
+  GType proc_type;
+
+  g_return_val_if_fail (proc_name != NULL, BSE_ERROR_INTERNAL);
+
+  proc_type = bse_procedure_lookup (proc_name);
+  if (!proc_type)
+    {
+      g_warning ("%s: no such procedure", proc_name);
+      return BSE_ERROR_NOT_FOUND;
+    }
+  else
+    {
+      BseErrorType error;
+      va_list var_args;
+
+      va_start (var_args, storage);
+      error = bse_procedure_marshal_valist (proc_type, NULL,
+					    bse_storage_store_procedure, storage,
+					    TRUE, var_args);
       va_end (var_args);
       return error;
     }

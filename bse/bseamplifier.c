@@ -21,6 +21,23 @@
 #include <bse/gslengine.h>
 #include <bse/gslsignal.h>
 
+/* BseAmplifier, schematic structure:
+ *
+ * CV1>>------*-------\         Strength   Linear->Exponential    Clip>1
+ *            |         \          |             |                   |
+ *       CV-Balance       +--------*------#------^------+------------#--+
+ *            |         /                 |             |               |
+ * CV2>>------*-------/             Clip Negative     Gain              |
+ *                                                                      |
+ *                                                                      |
+ * Au1>>------*-------\                       +-------------------------+
+ *            |         \                     |
+ *    Audio-Balance       +-------------------*-----------*--------------->>Out
+ *            |         /                                 |
+ * Au2>>------*-------/                                Master
+ *
+ */
+
 
 /* --- parameters --- */
 enum
