@@ -53,6 +53,7 @@ bse/bseamplifier.idl
 bse/bseautodoc.c
 bse/bsebiquadfilter.c
 bse/bseconstant.c
+bse/bsecore.idl
 bse/bseinstrumentinput.c
 bse/bseinstrumentoutput.c
 bse/bsemidicontroller.c
@@ -60,7 +61,7 @@ bse/bsemidiinput.c
 bse/bsemidivoice.c
 bse/bsepcminput.c
 bse/bsepcmoutput.c
-bse/bsecore.idl
+bse/bseserver.c
 bse/bsesnooper.c
 bse/bsestandardosc.c
 bse/bsesubiport.c
