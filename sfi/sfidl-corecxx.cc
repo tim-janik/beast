@@ -940,7 +940,7 @@ public:
           }
         
         /* "Properties" structure for synthesis modules */
-        if (ci->properties.size() && ci->istreams.size() + ci->jstreams.size() + ci->ostreams.size())
+        if (ci->istreams.size() + ci->jstreams.size() + ci->ostreams.size())
           {
             if (!is_public++)
               printf ("public:\n");
@@ -962,15 +962,15 @@ public:
           printf ("  %s %s;\n", TypeField (pi->type), pi->name.c_str());
         
         /* property IDs */
+        printf ("protected:\n  enum %s {\n", ctPropertyID);
         if (ci->properties.begin() != ci->properties.end())
           {
-            printf ("protected:\n  enum %s {\n", ctPropertyID);
             vector<Param>::const_iterator pi = ci->properties.begin();
             printf ("    PROP_%s = 1,\n", pure_UPPER (pi->name));
             for (pi++; pi != ci->properties.end(); pi++)
               printf ("    PROP_%s,\n", pure_UPPER (pi->name));
-            printf ("  };\n");
           }
+        printf ("  };\n");
         
         /* property setter */
         printf ("public:\n");

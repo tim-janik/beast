@@ -1,3 +1,10 @@
+Sat Jul 10 18:23:25 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: generate *Properties structure for synthesis modules
+	regardless of whether the object has properties or not (since the module
+	API depends on the structure's presence).
+	similar for the *PropertyID numeration.
+
 Wed Jul  7 13:49:30 2004  Tim Janik  <timj@gtk.org>
 
 	* glib-extra.[hc]: added g_predicate_idle_add() and *full() variant, to
