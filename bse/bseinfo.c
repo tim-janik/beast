@@ -18,6 +18,7 @@
 #include "bse/bse.h"
 
 #define	PREC_SHIFT	16
+#define	FLF	"26.20"
 
 static void
 print_note (const gchar *note_name,
@@ -26,10 +27,9 @@ print_note (const gchar *note_name,
   gchar *string;
 
   string = bse_note_to_string (note);
-  g_print ("%s =%-4d \tfactor=%-10f (%-10u>>%u) [%-5s] (freq=%-15f)\n",
+  g_print ("%s =%-4d \tfactor=%"FLF"f [%-5s] (freq=%"FLF"f)\n",
 	   note_name, note,
 	   BSE_HALFTONE_FACTOR (note),
-	   BSE_HALFTONE_FACTOR_FIXED (note), PREC_SHIFT,
 	   string, bse_note_to_freq (note));
   g_free (string);
 }
@@ -38,7 +38,7 @@ static void
 print_fine_tune (const gchar *tune_name,
 		 gint         tune)
 {
-  g_print ("%s =%-4d \tfactor=%-10f\n",
+  g_print ("%s =%-4d \tfactor=%"FLF"f\n",
 	   tune_name, tune,
 	   BSE_FINE_TUNE_FACTOR (tune));
 }
@@ -47,7 +47,7 @@ static void
 print_freq (const gchar *freq_name,
 	    gdouble      freq)
 {
-  g_print ("%s =%-15.3f\n", freq_name, freq);
+  g_print ("%s =%"FLF"f\n", freq_name, freq);
 }
 
 static void
@@ -55,7 +55,7 @@ print_rate (const gchar *freq_name,
 	    gdouble      freq,
 	    const gchar *blurb)
 {
-  g_print ("%s =%-15.10f \t(%-10Lu>>%u)%s%s\n",
+  g_print ("%s =%"FLF"f \t(%-10Lu>>%u)%s%s\n",
 	   freq_name, freq, (guint64) (freq * (1<<PREC_SHIFT)), PREC_SHIFT,
 	   blurb ? "  // " : "",
 	   blurb ? blurb : "");
@@ -66,6 +66,8 @@ int
 main (gint   argc,
       gchar *argv[])
 {
+  gint j, k;
+  
   g_thread_init (NULL);
   bse_init (&argc, &argv, NULL);
 
@@ -73,23 +75,45 @@ main (gint   argc,
   print_note      ("BSE_MIN_NOTE     ", BSE_MIN_NOTE);
   print_note      ("BSE_KAMMER_NOTE  ", BSE_KAMMER_NOTE);
   print_note      ("BSE_MAX_NOTE     ", BSE_MAX_NOTE);
+  print_note      ("BSE_KAMMER_NOTE-1", BSE_KAMMER_NOTE - 1);
   print_fine_tune ("BSE_MIN_FINE_TUNE", BSE_MIN_FINE_TUNE);
+  print_fine_tune ("bse-mid-fine-tune", (BSE_MIN_FINE_TUNE + BSE_MAX_FINE_TUNE) / 2);
   print_fine_tune ("BSE_MAX_FINE_TUNE", BSE_MAX_FINE_TUNE);
-  print_freq      ("BSE_MIN_MIX_FREQ ",  BSE_MIN_MIX_FREQ);
-  print_freq      ("BSE_MAX_MIX_FREQ ",  BSE_MAX_MIX_FREQ);
-  print_rate      ("min_freq_factor  ",  BSE_MIN_MIX_FREQ_d / BSE_MAX_MIX_FREQ_d, "min_mix_freq/max_mix_freq");
-  print_rate      ("max_freq_factor  ",  BSE_MAX_MIX_FREQ_d / BSE_MIN_MIX_FREQ_d, "max_mix_freq/min_mix_freq");
-  print_rate      ("min rate factor  ",
-		   ((BSE_MIN_MIX_FREQ_d / BSE_MAX_MIX_FREQ_d) *
-		    BSE_FINE_TUNE_FACTOR (BSE_MIN_FINE_TUNE) *
-		    BSE_HALFTONE_FACTOR (BSE_MIN_NOTE)),
-		   "min_freq_factor*min_fine_tune*min_note");
-  print_rate      ("max rate factor  ",
-		   ((BSE_MAX_MIX_FREQ_d / BSE_MIN_MIX_FREQ_d) *
-		    BSE_FINE_TUNE_FACTOR (BSE_MAX_FINE_TUNE) *
-		    BSE_HALFTONE_FACTOR (BSE_MAX_NOTE)),
-		   "max_freq_factor*max_fine_tune*max_note");
-  
+  print_note      ("BSE_KAMMER_NOTE+1", BSE_KAMMER_NOTE + 1);
+
+  if (0)
+    for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 3)
+      print_note (":", j);
+  if (0)
+    for (j = BSE_MIN_FINE_TUNE; j <= BSE_MAX_FINE_TUNE; j += 10)
+      print_fine_tune (":", j);
+
+  if (0)
+    for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 3)
+      for (k = BSE_MIN_FINE_TUNE / 2; k <= BSE_MAX_FINE_TUNE / 2; k += 10)
+	{
+	  gdouble f, freq = bse_note_to_tuned_freq (j, k);
+	  gint note, fine_tune;
+	  g_print ("compose  : note=%4d fine_tune=%4d freq=%"FLF"f\n", j, k, freq);
+	  f = freq;
+	  note = bse_note_from_freq (freq);
+	  fine_tune = bse_note_fine_tune_from_note_freq (note, freq);
+	  freq = bse_note_to_tuned_freq (note, fine_tune);
+	  g_print ("decompose: note=%4d fine_tune=%4d freq=%"FLF"f   (diff=%g)\n", note, fine_tune, freq, freq - f);
+	}
+  if (0)
+    for (j = BSE_MIN_NOTE; j <= BSE_MAX_NOTE; j += 1)
+      {
+	gint octave = BSE_NOTE_OCTAVE (j);
+	gint semitone = BSE_NOTE_HALF_TONE (j);
+	gint note = BSE_NOTE_GENERIC (octave, semitone);
+	gchar *name = bse_note_to_string (j);
+
+	g_print ("note[%3d]: name=%-8s octave=%3d semitone=%3d note=%3d match=%u\n",
+		 j, name, octave, semitone, note, j == note);
+	g_free (name);
+      }
+
   if (argc == 2)
     {
       GSList *plist, *slist;

@@ -47,24 +47,17 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsecomwire.h \
 	bseconfig.h \
 	bseconstant.h \
+	bseconstvalues.h \
 	bsecontainer.h \
 	bsecontextmerger.h \
 	bsedatapocket.h \
 	bsedefs.h \
 	bseeditablesample.h \
-	bseeffect.h \
-	bseeffectbalance.h \
-	bseeffectfinetune.h \
-	bseeffectnotevolume.h \
-	bseeffectpatternbreak.h \
-	bseeffectpatternjump.h \
-	bseeffectvolumedelta.h \
 	bseenums.h \
 	bseexports.h \
 	bsegconfig.h \
 	bseglobals.h \
 	bseglue.h \
-	bseinstrument.h \
 	bseitem.h \
 	bsemain.h \
 	bsemath.h \
@@ -82,8 +75,6 @@ bse_public_h_sources = @STRIP_BEGIN@ \
 	bsepcmoutput.h \
 	bseparam.h \
 	bseparasite.h \
-	bsepattern.h \
-	bsepatterngroup.h \
 	bsepcmdevice.h \
 	bsepcmdevice-oss.h \
 	bseplugin.h \
@@ -129,22 +120,15 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsecategories.c \
 	bsecomwire.c \
 	bseconstant.c \
+	bseconstvalues.c \
 	bsecontainer.c \
 	bsecontextmerger.c \
 	bsedatapocket.c \
 	bseeditablesample.c \
-	bseeffect.c \
-	bseeffectbalance.c \
-	bseeffectfinetune.c \
-	bseeffectnotevolume.c \
-	bseeffectpatternbreak.c \
-	bseeffectpatternjump.c \
-	bseeffectvolumedelta.c \
 	bseenums.c \
 	bsegconfig.c \
 	bseglobals.c \
 	bseglue.c \
-	bseinstrument.c \
 	bseitem.c \
 	bsemain.c \
 	bsemath.c \
@@ -162,8 +146,6 @@ bse_c_sources = @STRIP_BEGIN@ \
 	bsepcmoutput.c \
 	bseparam.c \
 	bseparasite.c \
-	bsepattern.c \
-	bsepatterngroup.c \
 	bsepcmdevice.c \
 	bsepcmdevice-oss.c \
 	bseplugin.c \
@@ -245,7 +227,6 @@ bse_proc_gen_sources = @STRIP_BEGIN@ \
 @STRIP_END@
 # c sources for builtin plugins
 bse_builtin_c_sources = @STRIP_BEGIN@ \
-	bsepattern.proc.c \
 	$(bse_proc_gen_sources) \
 @STRIP_END@
 # non-compile and non-install sources required

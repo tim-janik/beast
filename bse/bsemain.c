@@ -217,8 +217,8 @@ bse_init (int	             *argc_p,
       { "wave_chunk_big_pad",		256, },
       { "dcache_block_size",		8192, },
       { "dcache_cache_memory",		10 * 1024 * 1024, },
-      // { "midi_kammer_note",		57, },
-      { "kammer_freq",			BSE_KAMMER_FREQ, },
+      { "midi_kammer_note",		BSE_KAMMER_NOTE, },
+      { "kammer_freq",			BSE_KAMMER_FREQUENCY_f, },
     };
 
     call_gsl_init (gslconfig);

@@ -71,9 +71,15 @@ static void	bse_standard_osc_update_modules	(BseStandardOsc		*standard_osc,
 /* --- variables --- */
 static gpointer	    parent_class = NULL;
 static const gfloat osc_table_freqs[] = {
-  BSE_KAMMER_FREQ,
-  BSE_KAMMER_FREQ / 2.0, BSE_KAMMER_FREQ / 4.0, BSE_KAMMER_FREQ / 8.0, BSE_KAMMER_FREQ / 16.0,
-  BSE_KAMMER_FREQ * 2.0, BSE_KAMMER_FREQ * 4.0, BSE_KAMMER_FREQ * 8.0, BSE_KAMMER_FREQ * 16.0
+  BSE_KAMMER_FREQUENCY_f,
+  BSE_KAMMER_FREQUENCY_f / 2.0,
+  BSE_KAMMER_FREQUENCY_f / 4.0,
+  BSE_KAMMER_FREQUENCY_f / 8.0,
+  BSE_KAMMER_FREQUENCY_f / 16.0,
+  BSE_KAMMER_FREQUENCY_f * 2.0,
+  BSE_KAMMER_FREQUENCY_f * 4.0,
+  BSE_KAMMER_FREQUENCY_f * 8.0,
+  BSE_KAMMER_FREQUENCY_f * 16.0
 };
 
 
@@ -146,18 +152,13 @@ bse_standard_osc_class_init (BseStandardOscClass *class)
 						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PROP_BASE_FREQ,
-			      bse_param_spec_float ("base_freq", "Frequency", NULL,
-						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
-						    BSE_KAMMER_FREQ, 10.0,
-						    BSE_PARAM_DEFAULT |
-						    BSE_PARAM_HINT_DIAL));
-  bse_object_class_set_param_log_scale (object_class, "base_freq", 880.0, 2, 4);
+			      bse_param_spec_freq_simple ("base_freq", "Frequency", NULL,
+							  BSE_PARAM_DEFAULT |
+							  BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PROP_BASE_NOTE,
-			      bse_param_spec_note ("base_note", "Note", NULL,
-						   BSE_MIN_NOTE, BSE_MAX_NOTE,
-						   BSE_KAMMER_NOTE, 1, TRUE,
-						   BSE_PARAM_GUI));
+			      bse_param_spec_note_simple ("base_note", "Note", NULL,
+							  BSE_PARAM_GUI));
   bse_object_class_add_param (object_class, "Base Frequency",
 			      PROP_FINE_TUNE,
 			      bse_param_spec_int ("fine_tune", "Fine Tune", NULL,
@@ -239,7 +240,7 @@ bse_standard_osc_init (BseStandardOsc *self)
 {
   self->wave = BSE_STANDARD_OSC_SAW_FALL;
   self->config.phase = 0.0;
-  self->config.cfreq = BSE_KAMMER_FREQ;
+  self->config.cfreq = BSE_KAMMER_FREQUENCY_f;
   self->config.exponential_fm = FALSE;
   self->config.self_fm_strength = 0;
   self->config.pulse_width = 0.5;
@@ -284,7 +285,7 @@ bse_standard_osc_set_property (GObject      *object,
       break;
     case PROP_BASE_NOTE:
       self->config.cfreq = bse_note_to_freq (bse_value_get_note (value));
-      self->config.cfreq = MAX (self->config.cfreq, BSE_MIN_OSC_FREQ_d);
+      self->config.cfreq = MAX (self->config.cfreq, BSE_MIN_OSC_FREQUENCY_d);
       bse_standard_osc_update_modules (self, FALSE, NULL);
       bse_object_param_changed (BSE_OBJECT (self), "base_freq");
       if (bse_note_from_freq (self->config.cfreq) != bse_value_get_note (value))

@@ -483,11 +483,6 @@ bse_script_param_stringify (GString      *gstring,
     case G_TYPE_FLOAT:
       g_string_printfa (gstring, "%.17g", g_value_get_float (value));
       break;
-    case BSE_TYPE_NOTE:
-      str = bse_note_to_string (bse_value_get_note (value));
-      g_string_printfa (gstring, "\"%s\"", str);
-      g_free (str);
-      break;
     case G_TYPE_OBJECT:
       obj = g_value_get_object (value);
       g_string_printfa (gstring, "%u", BSE_IS_ITEM (obj) ? BSE_OBJECT_ID (obj) : 0);

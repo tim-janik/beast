@@ -491,8 +491,10 @@ part_note_to_record (gpointer crecord)
   gsl_glue_rec_take (rec, "tick", &val);
   val = gsl_glue_value_int (note->duration);	// FIXME: uint
   gsl_glue_rec_take (rec, "duration", &val);
-  val = gsl_glue_value_float (note->freq);
-  gsl_glue_rec_take (rec, "frequency", &val);
+  val = gsl_glue_value_int (note->note);
+  gsl_glue_rec_take (rec, "note", &val);
+  val = gsl_glue_value_int (note->fine_tune);
+  gsl_glue_rec_take (rec, "fine-tune", &val);
   val = gsl_glue_value_float (note->velocity);
   gsl_glue_rec_take (rec, "velocity", &val);
   val = gsl_glue_value_bool (note->selected);
@@ -511,10 +513,11 @@ bsw_part_note_get_type (void)
 }
 
 BswPartNote*
-bsw_part_note (guint    id,
+bsw_part_note (guint	id,
 	       guint    tick,
 	       guint    duration,
-	       gfloat   freq,
+	       gint     note,
+	       gint     fine_tune,
 	       gfloat   velocity,
 	       gboolean selected)
 {
@@ -522,11 +525,12 @@ bsw_part_note (guint    id,
 
   pnote->id = id;
   pnote->tick = tick;
-  pnote->freq = freq;
   pnote->duration = duration;
+  pnote->note = note;
+  pnote->fine_tune = fine_tune;
   pnote->velocity = velocity;
   pnote->selected = selected != FALSE;
-
+  
   return pnote;
 }
 

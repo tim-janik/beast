@@ -32,12 +32,10 @@
 #include        <bse/bsedatapocket.h>
 #include        <bse/bsedefs.h>
 #include        <bse/bseeditablesample.h>
-#include        <bse/bseeffect.h>
 #include        <bse/bseenums.h>
 #include        <bse/bseexports.h>
 #include        <bse/bsegconfig.h>
 #include        <bse/bseglobals.h>
-#include        <bse/bseinstrument.h>
 #include        <bse/bseitem.h>
 #include        <bse/bsemain.h>
 #include        <bse/bsemath.h>
@@ -47,8 +45,6 @@
 #include        <bse/bseparam.h>
 #include        <bse/bseparasite.h>
 #include        <bse/bsepart.h>
-#include        <bse/bsepattern.h>
-#include        <bse/bsepatterngroup.h>
 #include        <bse/bsepcmdevice.h>
 #include        <bse/bseplugin.h>
 #include        <bse/bseprocedure.h>

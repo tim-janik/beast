@@ -34,10 +34,6 @@ extern "C" {
 #define BSE_IS_SONG_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), BSE_TYPE_SONG))
 #define BSE_SONG_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), BSE_TYPE_SONG, BseSongClass))
 
-/* legacy */
-#define	BSE_SONG_N_CHANNELS(song)	((void) (song), 16)
-#define	BSE_SONG_PATTERN_LENGTH(song)	((void) (song), 64)
-
 
 /* --- BseSong object --- */
 typedef struct {
@@ -51,7 +47,6 @@ struct _BseSong
   guint             bpm;
   gfloat            volume_factor;      /* 1-based factor */
   
-  GList            *instruments;        /* of type BseInstrument* */
   GList            *parts;              /* of type BsePart* */
   GList            *tracks;             /* of type BseTrack* */
 
@@ -60,12 +55,6 @@ struct _BseSong
 
   /*< private >*/
   BseSongSequencer *sequencer;
-
-  /* legacy */
-  GList            *patterns;           /* of type BsePattern* */
-  GList            *pattern_groups;     /* of type BsePatternGroup* */
-  guint             n_pgroups;
-  BsePatternGroup **pgroups;		/* play list */
 };
 struct _BseSongClass
 {
@@ -78,21 +67,6 @@ void             bse_song_set_bpm                    (BseSong         *song,
 						      guint            bpm);
 BseSong*         bse_song_lookup                     (BseProject      *project,
 						      const gchar     *name);
-BsePattern*      bse_song_get_pattern                (BseSong         *song,
-						      guint            seqid);
-BseInstrument*   bse_song_get_instrument             (BseSong         *song,
-						      guint            seqid);
-BsePatternGroup* bse_song_get_default_pattern_group  (BseSong         *song);
-void             bse_song_insert_pattern_group_link  (BseSong         *song,
-						      BsePatternGroup *pgroup,
-						      gint             position);
-void             bse_song_insert_pattern_group_copy  (BseSong         *song,
-						      BsePatternGroup *pgroup,
-						      gint             position);
-void             bse_song_remove_pattern_group_entry (BseSong         *song,
-                                                      gint             position);
-BsePattern*      bse_song_get_pattern_from_list      (BseSong         *song,
-						      guint            pattern_index);
 
 
 

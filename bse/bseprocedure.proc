@@ -36,7 +36,7 @@ PROCEDURE (bse-note-to-freq, "Utils/Notes/Note to Freq") {
 			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
 			      0, 1, BSE_PARAM_DEFAULT);
   OUT   = bse_param_spec_float ("frequency", "Frequency", NULL,
-				0, BSE_MAX_FREQUENCY, 440.0, 0.1,
+				0, BSE_MAX_FREQUENCY_f, BSE_KAMMER_FREQUENCY_f, 0.1,
 				BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
         const GValue      *in_values,
@@ -65,7 +65,7 @@ PROCEDURE (bse-note-to-freq, "Utils/Notes/Note to Freq") {
 PROCEDURE (bse-note-from-freq, "Utils/Notes/Note from Freq") {
   HELP  = "Retrive the note of a certain frequency.";
   IN    = bse_param_spec_float ("frequency", "Frequency", NULL,
-				0, BSE_MAX_FREQUENCY, 440.0, 0.1,
+				0, BSE_MAX_FREQUENCY_f, BSE_KAMMER_FREQUENCY_f, 0.1,
 				BSE_PARAM_DEFAULT);
   OUT   = bse_param_spec_uint ("note", "Note", NULL,
 			       BSE_MIN_NOTE, BSE_MAX_NOTE,

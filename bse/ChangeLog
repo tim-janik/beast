@@ -1,3 +1,49 @@
+Tue Jul 23 07:47:55 2002  Tim Janik  <timj@gtk.org>
+
+	* bse.h:
+	* Makefile.am: remove (currently) unused code from build setup:
+	BseInstrument, BseEffect*, BsePattern*.
+
+	* bseconstvalues.[hc]: new files, taking over many constants and note
+	related macro definitions from bseglobals.[hc].
+
+	* bsemain.c: initialize GSL with proper kammer frequency/note.
+
+	* bseutils.[hc]: removed duplicated constants, added
+	bse_note_fine_tune_from_note_freq ().
+
+	* bswcommon.[hc] bswprivate.h: change BswPartNote to have a note
+	and a fine_tune field instead of frequency.
+
+	* bsetype.h:
+	* bseparam.[hc]: don't introduce BSE_TYPE_NOTE as fundamental
+	type, having a pspec variant is sufficient. added convnience
+	function to easily create pspecs for notes and frequencies.
+
+	* bsesongthread.c:
+	* bsepart.[hcp]*: ported this over from using frequencies to
+	using notes.
+
+	* bsesong.[hcp]*: remove dependancies on unused code.
+
+	* bsemath.h: added more accurate constants for 2^(1/12),
+	ln(2^(1/12)) and ln(2^(1/1200)), minor cleanups.
+
+	* bseglobals.[hc]: removed math constants. provide a constant,
+	high-accuracy semitone factor table and fine tune factor table
+	at compile time. got rid of 16bit-fixed semitone factor table.
+	removed lots of MIN/MAX defines, note, fine tune and frequency
+	macros.
+
+	* bseglue.c: BseNote fixes.
+
+	* bseconstant.[hc]: remove unused sequencer methods.
+
+	* *.c: constant fixes/adaptions, use new param spec constructors.
+
+	* bseinfo.c: added lots of (inactive) debugging code to check
+	note/frequency/table validity.
+
 Sun Jul 21 04:39:59 2002  Tim Janik  <timj@gtk.org>
 
 	* bseglobals.[hc]: provide saner (and clearer) GSource priorities

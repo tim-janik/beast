@@ -50,8 +50,8 @@ struct _BsePart
 
   guint	       range_tick;
   guint	       range_bound;
-  gfloat       range_min_freq;
-  gfloat       range_max_freq;
+  gint         range_min_note;
+  gint         range_max_note;
 };
 struct _BsePartClass
 {
@@ -60,8 +60,8 @@ struct _BsePartClass
   void	(*range_changed)	(BsePart	*part,
 				 guint		 tick,
 				 guint		 duration,
-				 gfloat		 min_freq,
-				 gfloat		 max_freq);
+				 gint		 range_min_note,
+				 gint		 range_max_note);
 };
 
 
@@ -69,13 +69,15 @@ struct _BsePartClass
 guint		 bse_part_insert_note		(BsePart	*self,
 						 guint		 tick,
 						 guint		 duration,
-						 gfloat		 freq,
+						 gint		 note,
+						 gint		 fine_tune,
 						 gfloat		 velocity);
 gboolean	 bse_part_change_note		(BsePart	*self,
 						 guint		 id,
 						 guint		 tick,
 						 guint		 duration,
-						 gfloat		 freq,
+						 gint		 note,
+						 gint		 fine_tune,
 						 gfloat		 velocity);
 gboolean	 bse_part_delete_event		(BsePart	*self,
 						 guint		 id);
@@ -84,32 +86,32 @@ gboolean	 bse_part_is_selected_event	(BsePart	*self,
 BswIterPartNote* bse_part_list_notes_around	(BsePart	*self,
 						 guint		 tick,
 						 guint		 duration,
-						 gfloat		 min_freq,
-						 gfloat		 max_freq);
+						 gint		 min_note,
+						 gint		 max_note);
 void		 bse_part_queue_notes_within	(BsePart	*self,
 						 guint		 tick,
 						 guint		 duration,
-						 gfloat		 min_freq,
-						 gfloat		 max_freq);
+						 gint		 min_note,
+						 gint		 max_note);
 BswIterPartNote* bse_part_list_selected_notes	(BsePart	*self);
 BswIterPartNote* bse_part_list_notes_at		(BsePart	*self,
 						 guint		 tick,
-						 gfloat		 freq);
+						 gint		 note);
 void		 bse_part_select_rectangle	(BsePart	*self,
 						 guint		 tick,
 						 guint		 duration,
-						 gfloat		 min_freq,
-						 gfloat		 max_freq);
+						 gint		 min_note,
+						 gint		 max_note);
 void		 bse_part_deselect_rectangle	(BsePart	*self,
 						 guint		 tick,
 						 guint		 duration,
-						 gfloat		 min_freq,
-						 gfloat		 max_freq);
+						 gint		 min_note,
+						 gint		 max_note);
 void		 bse_part_select_rectangle_ex	(BsePart	*self,
 						 guint		 tick,
 						 guint		 duration,
-						 gfloat		 min_freq,
-						 gfloat		 max_freq);
+						 gint		 min_note,
+						 gint		 max_note);
 gboolean	 bse_part_select_event		(BsePart	*self,
 						 guint		 id);
 gboolean	 bse_part_deselect_event	(BsePart	*self,
@@ -126,18 +128,11 @@ typedef enum	/*< skip >*/
   BSE_PART_EVENT_CONTROL
 } BsePartEventType;
 
-/* to speed up comparisons, we store frequencies as integers.
- * for forward conversion int = BSE_PART_FREQ_FACTOR * float + 0.5,
- * and for backward conversion float = int * BSE_PART_FREQ_IFACTOR_f
- * are used.
- */
-#define	BSE_PART_FREQ_FACTOR		(65536)	/* preserve 16bit of fraction */
-#define	BSE_PART_FREQ_IFACTOR_f		(1.0 / (gfloat) BSE_PART_FREQ_FACTOR)
-#define	BSE_PART_IFREQ(float_freq)	((guint) (BSE_PART_FREQ_FACTOR * (float_freq) + 0.5))
-#define	BSE_PART_FREQ(ifreq)		(BSE_PART_FREQ_IFACTOR_f * (ifreq))
 #define	BSE_PART_MAX_TICK		(0x7fffffff)
 #define	BSE_PART_INVAL_TICK_FLAG	(0x80000000)
-
+#define	BSE_PART_NOTE_EVENT_FREQ(nev)	(BSE_KAMMER_FREQUENCY_f * \
+                                         BSE_HALFTONE_FACTOR ((nev)->note) * \
+                                         BSE_FINE_TUNE_FACTOR ((nev)->fine_tune))
 typedef union  _BsePartEvent BsePartEvent;
 typedef struct
 {
@@ -152,8 +147,9 @@ typedef struct
   BsePartEvent    *next;
   guint		   id : 31;
   guint		   selected : 1; // FIXME
-  guint		   ifreq;
   guint		   duration;	/* in ticks */
+  gint		   note;
+  gint		   fine_tune;
   gfloat	   velocity;	/* 0 .. 1 */
 } BsePartEventNote;
 typedef struct

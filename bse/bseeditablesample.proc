@@ -77,10 +77,8 @@ METHOD (BseEditableSample, get-osc-freq) {
   HELP	= ("Return the oscillator frequency for the sample.");
   IN	= g_param_spec_object ("esample", "Editable Sample", NULL,
 			       BSE_TYPE_EDITABLE_SAMPLE, BSE_PARAM_DEFAULT);
-  OUT	= g_param_spec_float ("osc-freq", NULL, "Oscillator Frequency",
-			      BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
-			      BSE_KAMMER_FREQ,
-			      BSE_PARAM_DEFAULT);
+  OUT	= bse_param_spec_freq_simple ("osc-freq", NULL, "Oscillator Frequency",
+				      BSE_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -93,7 +91,7 @@ METHOD (BseEditableSample, get-osc-freq) {
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* set output parameters */
-  g_value_set_float (out_values++, esample->wchunk ? esample->wchunk->osc_freq : BSE_KAMMER_FREQ);
+  g_value_set_float (out_values++, esample->wchunk ? esample->wchunk->osc_freq : BSE_KAMMER_FREQUENCY_f);
 
   return BSE_ERROR_NONE;
 }

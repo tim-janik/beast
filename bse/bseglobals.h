@@ -22,6 +22,7 @@
 
 #include	<bse/bsedefs.h>
 #include	<bse/bsemath.h>
+#include	<bse/bseconstvalues.h>
 
 
 #ifdef __cplusplus
@@ -30,63 +31,13 @@ extern "C" {
 
 
 
-/* these are BSE wide defines to set certain limits or
- * give hard default values. most of them may not be adjusted
- * without corresponding code adjustments.
- * eventually tunable parameters can be found in the BseGlobals
- * structure.
- */
-
-
-
-/* --- notes & note based frequencies --- */
-#define	BSE_KAMMER_FREQ_f		(440.0)
-#define	BSE_KAMMER_FREQ			((gint) BSE_KAMMER_FREQ_f)
-#define	BSE_KAMMER_FREQ_d		((gdouble) BSE_KAMMER_FREQ_f)
-#define	BSE_MIN_NOTE			(0)
-#define	BSE_MAX_NOTE			(127 /* 123 */)
-#define	BSE_NOTE_VOID			(1024)
-#define	BSE_NOTE_UNPARSABLE		(BSE_NOTE_VOID + 1)
-#define	BSE_KAMMER_NOTE			((gint) (69) /* A' */)
-#define	BSE_KAMMER_OCTAVE		((gint) (+1))
-#define	BSE_NOTE_OCTAVE(n)		((((gint) (n)) - (BSE_KAMMER_NOTE - 9)) / 12 + BSE_KAMMER_OCTAVE)
-#define	BSE_MIN_OCTAVE			(BSE_NOTE_OCTAVE (BSE_MIN_NOTE))
-#define	BSE_MAX_OCTAVE			(BSE_NOTE_OCTAVE (BSE_MAX_NOTE))
-#define	BSE_NOTE_C(o)			(CLAMP (BSE_KAMMER_NOTE - 9 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Cis(o)			(CLAMP (BSE_KAMMER_NOTE - 8 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Des(o)			(BSE_NOTE_Cis (o))
-#define	BSE_NOTE_D(o)			(CLAMP (BSE_KAMMER_NOTE - 7 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Dis(o)			(CLAMP (BSE_KAMMER_NOTE - 6 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Es(o)			(BSE_NOTE_Dis (o))
-#define	BSE_NOTE_E(o)			(CLAMP (BSE_KAMMER_NOTE - 5 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_F(o)			(CLAMP (BSE_KAMMER_NOTE - 4 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Fis(o)			(CLAMP (BSE_KAMMER_NOTE - 3 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Ges(o)			(BSE_NOTE_Fis (o))
-#define	BSE_NOTE_G(o)			(CLAMP (BSE_KAMMER_NOTE - 2 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Gis(o)			(CLAMP (BSE_KAMMER_NOTE - 1 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_As(o)			(BSE_NOTE_Gis (o))
-#define	BSE_NOTE_A(o)			(CLAMP (BSE_KAMMER_NOTE + 0 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Ais(o)			(CLAMP (BSE_KAMMER_NOTE + 1 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_Bes(o)			(BSE_NOTE_Ais (o))
-#define	BSE_NOTE_B(o)			(CLAMP (BSE_KAMMER_NOTE + 2 + ((o) - BSE_KAMMER_OCTAVE) * 12, BSE_MIN_NOTE, BSE_MAX_NOTE))
-#define	BSE_NOTE_GENERIC(ht_i,o)	(BSE_NOTE_C (o) + (ht_i) >= BSE_MIN_NOTE && BSE_NOTE_C (o) + (ht_i) <= BSE_MAX_NOTE ? BSE_NOTE_C (o) + (ht_i) : BSE_NOTE_VOID)
-#define	BSE_NOTE_OCTAVE_UP(n)		((n) + 12 <= BSE_MAX_NOTE && (n) + 12 >= BSE_MIN_NOTE ? (n) + 12 : (n))
-#define	BSE_NOTE_OCTAVE_DOWN(n)		((n) >= BSE_MIN_NOTE + 12 && (n) - 12 <= BSE_MAX_NOTE ? (n) - 12 : (n))
-#define	BSE_NOTE_VALID(n)		((n) >= BSE_MIN_NOTE && (n) <= (BSE_MAX_NOTE))
-
-
 /* --- signal ranges --- */
 /* min..max sample value: -1.0 .. 1.0
  * notes<->sample value: 0 .. 127 (BSE_VALUE_FROM_NOTE)
  * freq<->sample value: 0 .. 24000 (BSE_FREQ_FROM_VALUE)
  */
-#define	BSE_VALUE_FROM_BOUNDED_UINT(k,b) ((gfloat) ((k) * (1.0 / ((gfloat) (b)))))
-#define	BSE_MAX_FREQUENCY		 (24000 /* don't change this, used for scaling to 0.0 .. 1.0 */)
-#define	BSE_MAX_FREQUENCY_f		 ((gfloat) BSE_MAX_FREQUENCY)
-#define	BSE_MAX_FREQUENCY_d		 ((gdouble) BSE_MAX_FREQUENCY)
 #define	BSE_FREQ_FROM_VALUE(value)	 (((gfloat) (value)) * BSE_MAX_FREQUENCY_f)
 #define	BSE_VALUE_FROM_FREQ(freq)	 ((gfloat) ((freq) * (1.0 / BSE_MAX_FREQUENCY_f)))
-#define	BSE_FREQUENCY_EPSILON		 ((gdouble) 0.001)
 
 
 /* --- time ranges --- */
@@ -102,41 +53,15 @@ typedef enum
 glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 
 
-/* --- limits & defaults --- */
-#define	BSE_MIN_VOLUME_dB		(-40) /* theoretically: -48.165 */
-#define	BSE_MAX_VOLUME_dB		(+10)
-#define	BSE_MIN_BPM			(1)
-#define	BSE_MAX_BPM			(1024)
+/* --- FIXME: deprecated constants --- */
 #define	BSE_MAX_N_TRACKS		(256)
-#define	BSE_MIN_BALANCE_f		(-BSE_MAX_BALANCE_f)
-#define	BSE_MAX_BALANCE_f		(100.0)
-#define	BSE_MIN_TRANSPOSE		(-12)
-#define	BSE_MAX_TRANSPOSE		(12)	/* 1 octave */
-#define	BSE_MIN_FINE_TUNE		(- BSE_MAX_FINE_TUNE)
-#define	BSE_MAX_FINE_TUNE		(100)	/* inter-note divisor */
 #define	BSE_MAX_ENV_TIME		(10000) /* ms */
-#define	BSE_MIN_MIX_FREQ		(1378)
-#define	BSE_MAX_MIX_FREQ		(96000)
-#define	BSE_MIN_MIX_FREQ_d		((gdouble) BSE_MIN_MIX_FREQ)
-#define	BSE_MAX_MIX_FREQ_d		((gdouble) BSE_MAX_MIX_FREQ)
-#define	BSE_MIN_OSC_FREQ_d		((gdouble) 1.0 / BSE_MAX_OSC_FREQ_d)
-#define	BSE_MAX_OSC_FREQ_d		((gdouble) 20000)
-#define BSE_MIN_TIME			(631148400)	/* 1990-01-01 00:00:00 */
-#define	BSE_MAX_TIME			(2147483647)	/* 2038-01-19 04:14:07 */
-#define	BSE_MIN_BIT_SIZE		(8)
-#define	BSE_MAX_BIT_SIZE		(16)
-#define	BSE_MIN_N_VALUES		(1)
-#define	BSE_MAX_N_VALUES		(128 * 1024 * 1024)
-#define	BSE_MAX_SEQ_ID			(65535)
 #define	BSE_BBUFFER_SIZE		(128)	// FIXME
-#define BSE_DFL_OCHANNEL_ID		(1)	// FIXME
 #define	BSE_DFL_BIN_DATA_PADDING	(16 * sizeof (BseSampleValue)) // FIXME
 #define	BSE_MAX_BLOCK_PADDING		(64) /* Gsl wave_chunk_padding */
-
-
-/* --- BseSource limits --- */
-#define	BSE_MAX_N_ICHANNELS		(128)
-#define	BSE_MAX_N_OCHANNELS		(128)
+#define BSE_MIN_BIT_SIZE                (8)
+#define BSE_MAX_BIT_SIZE                (16)
+#define BSE_DFL_BIN_DATA_BITS		(16)	// FIXME
 
 
 /* --- hard defaults (used for saving) --- */
@@ -146,27 +71,32 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 #define BSE_DFL_INSTRUMENT_BALANCE	(0)
 #define BSE_DFL_INSTRUMENT_TRANSPOSE	(0)
 #define BSE_DFL_INSTRUMENT_FINE_TUNE	(0)
-#define BSE_DFL_BIN_DATA_BITS		(16)	// FIXME
 #define BSE_DFL_SAMPLE_REC_FREQ		(44100)
 #define BSE_DFL_SAMPLE_REC_NOTE		(BSE_KAMMER_NOTE)
 
 
-/* --- memory preallocations --- */
-#define	BSE_PREALLOC_N_EFFECTS		(32)
-#define	BSE_PREALLOC_N_SAMPLES		(8)
-#define	BSE_PREALLOC_N_INSTRUMENTS	(4)
-#define	BSE_PREALLOC_N_SUPERS		(4)
-#define	BSE_PREALLOC_N_PROJECTS		(0)
-
-
-/* --- miscellaneous --- */
-#define BSE_MAGIC                       (('B' << 24) | ('S' << 16) | \
-	    /* 1112753441 0x42534521 */	 ('E' <<  8) | ('!' <<  0))
-#define BSE_FADE_OUT_TIME_ms            (30)
-#define BSE_VOICES_POLY_OVER_FIXED	(1)
-#define BSE_NOTIFY_PRIORITY		(G_PRIORITY_HIGH_IDLE + 5 /* object notify + cross changes */)
-#define BSE_MIX_VALUE_BYTES_EQUAL(val)	(BSE_UINT32_BYTES_EQUAL (val))
-#define	BSE_DEFAULT_RATING		(500)
+/* --- async handlers --- */
+/* very important, used for io/engine handlers */
+#define	BSE_PRIORITY_HIGH		(G_PRIORITY_HIGH - 10)
+/* still very important, used for need-to-be-async operations */
+#define	BSE_PRIORITY_NOW		(G_PRIORITY_HIGH - 5)
+/* important, delivers async signals */
+#define	BSE_PRIORITY_NOTIFY		(G_PRIORITY_DEFAULT - 1)
+/* normal importantance, interfaces to glue layer */
+#define	BSE_PRIORITY_PROG_IFACE		(G_PRIORITY_DEFAULT)
+/* mildly important, used for GUI updates or user information */
+#define	BSE_PRIORITY_UPDATE		(G_PRIORITY_HIGH_IDLE + 5)
+/* unimportant, used when everything else done */
+#define BSE_PRIORITY_BACKGROUND		(G_PRIORITY_LOW + 500)
+guint	bse_idle_now		(GSourceFunc    function,
+				 gpointer       data);
+guint	bse_idle_notify		(GSourceFunc    function,
+				 gpointer       data);
+guint	bse_idle_update		(GSourceFunc    function,
+				 gpointer       data);
+guint	bse_idle_background	(GSourceFunc    function,
+				 gpointer       data);
+#define	bse_idle_remove		g_source_remove
 
 
 /* --- BseGlobals - configurable defaults --- */
@@ -186,24 +116,18 @@ glong	bse_time_range_to_ms		(BseTimeRangeType	time_range);
 
 
 /* halftone factorization tables, i.e.
- * Index                     Factor	Fixed
- * (BSE_KAMMER_NOTE - 12) -> 0.5	32768
- * BSE_KAMMER_NOTE	  -> 1.0	65536
- * (BSE_KAMMER_NOTE + 12) -> 2.0	131072
+ * Index                     Factor
+ * (BSE_KAMMER_NOTE - 12) -> 0.5
+ * BSE_KAMMER_NOTE	  -> 1.0
+ * (BSE_KAMMER_NOTE + 12) -> 2.0
  * etc...
  */
 extern const gdouble* _bse_halftone_factor_table;
-extern const guint*   _bse_halftone_factor_table_fixed;
 #define	BSE_HALFTONE_FACTOR(ht)		((ht) > BSE_MAX_NOTE ? \
 				         _bse_halftone_factor_table[BSE_MAX_NOTE] : \
 				         (ht) < BSE_MIN_NOTE ? \
 				         _bse_halftone_factor_table[BSE_MIN_NOTE] : \
 				         _bse_halftone_factor_table[(ht)])
-#define	BSE_HALFTONE_FACTOR_FIXED(ht)	((ht) > BSE_MAX_NOTE ? \
-				         _bse_halftone_factor_table_fixed[BSE_MAX_NOTE] : \
-				         (ht) < BSE_MIN_NOTE ? \
-				         _bse_halftone_factor_table_fixed[BSE_MIN_NOTE] : \
-				         _bse_halftone_factor_table_fixed[(ht)])
 extern const gdouble* _bse_fine_tune_factor_table;
 #define	BSE_FINE_TUNE_FACTOR(ft)	((ft) > BSE_MAX_FINE_TUNE ? \
                                          _bse_fine_tune_factor_table[BSE_MAX_FINE_TUNE] : \
@@ -256,28 +180,7 @@ gdouble		bse_dB_to_factor	(gfloat		dB);
 gfloat		bse_dB_from_factor	(gdouble	factor,
 					 gfloat		min_dB);
 
-/* --- async handlers --- */
-/* very important, used for io/engine handlers */
-#define BSE_PRIORITY_HIGH               (G_PRIORITY_HIGH - 10)
-/* still very important, used for need-to-be-async operations */
-#define BSE_PRIORITY_NOW                (G_PRIORITY_HIGH - 5)
-/* important, delivers async signals */
-#define BSE_PRIORITY_NOTIFY             (G_PRIORITY_DEFAULT - 1)
-/* normal importantance, interfaces to glue layer */
-#define BSE_PRIORITY_PROG_IFACE         (G_PRIORITY_DEFAULT)
-/* mildly important, used for GUI updates or user information */
-#define BSE_PRIORITY_UPDATE             (G_PRIORITY_HIGH_IDLE + 5)
-/* unimportant, used when everything else done */
-#define BSE_PRIORITY_BACKGROUND         (G_PRIORITY_LOW + 500)
-guint   bse_idle_now            (GSourceFunc    function,
-				 gpointer       data);
-guint   bse_idle_notify         (GSourceFunc    function,
-				 gpointer       data);
-guint   bse_idle_update         (GSourceFunc    function,
-				 gpointer       data);
-guint   bse_idle_background     (GSourceFunc    function,
-				 gpointer       data);
-#define bse_idle_remove         g_source_remove
+
 
 
 

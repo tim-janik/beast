@@ -137,15 +137,15 @@ bse_biquad_filter_class_init (BseBiquadFilterClass *class)
   bse_object_class_add_param (object_class, _("Center Frequency"),
 			      PROP_FREQ,
 			      bse_param_spec_float ("freq", _("Cutoff [Hz]"), NULL,
-						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d - FREQ_DELTA,
-						    BSE_KAMMER_FREQ * 2, 5.0,
+						    BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f - FREQ_DELTA,
+						    BSE_KAMMER_FREQUENCY_f * 2, 5.0,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
-  bse_object_class_set_param_log_scale (object_class, "freq", 880.0, 2, 4);
+  bse_object_class_set_param_log_scale (object_class, "freq", BSE_KAMMER_FREQUENCY_f * 2, 2, 4);
   bse_object_class_add_param (object_class, _("Center Frequency"),
 			      PROP_NOTE,
 			      bse_param_spec_note ("note", _("Note"), NULL,
 						   BSE_MIN_NOTE, BSE_MAX_NOTE,
-						   bse_note_from_freq (BSE_KAMMER_FREQ * 2), 1,
+						   bse_note_from_freq (BSE_KAMMER_FREQUENCY_f * 2), 1,
 						   TRUE,
 						   BSE_PARAM_GUI));
   bse_object_class_add_param (object_class, _("Center Frequency"),
@@ -215,7 +215,7 @@ bse_biquad_filter_init (BseBiquadFilter *self)
   self->filter_type = BSE_BIQUAD_FILTER_RESONANT_LOWPASS;
   self->type_change = TRUE;
   self->exponential_fm = FALSE;
-  self->freq = BSE_KAMMER_FREQ * 2;
+  self->freq = BSE_KAMMER_FREQUENCY_f * 2;
   self->fine_tune = 0;
   self->fm_strength = 0.25;
   self->fm_n_octaves = 1;

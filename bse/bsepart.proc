@@ -33,10 +33,12 @@ METHOD (BsePart, insert-note) {
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
 			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_float ("freq", "Frequency", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_note_simple ("note", "Note", NULL,
+				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_int ("fine_tune", "Fine Tune", "Fine tune in cents per semitone",
+			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
+			      0, 10,
+			      BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_float ("velocity", "Velocity", NULL,
 				0, 1.0,
 				1.0, 0.01,
@@ -52,7 +54,8 @@ BODY (BseProcedureClass *proc,
   BsePart *self      = g_value_get_object (in_values++);
   guint    tick	     = g_value_get_uint (in_values++);
   guint    duration  = g_value_get_uint (in_values++);
-  gfloat   freq      = g_value_get_float (in_values++);
+  gint     note	     = bse_value_get_note (in_values++);
+  gint     fine_tune = g_value_get_int (in_values++);
   gfloat   velocity  = g_value_get_float (in_values++);
   guint id;
   
@@ -61,7 +64,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  id = bse_part_insert_note (self, tick, duration, freq, velocity);
+  id = bse_part_insert_note (self, tick, duration, note, fine_tune, velocity);
 
   /* set output parameters */
   g_value_set_uint (out_values++, id);
@@ -79,10 +82,12 @@ METHOD (BsePart, change-note) {
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
 			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
-  IN    = bse_param_spec_float ("freq", "Frequency", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_note_simple ("note", "Note", NULL,
+				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_int ("fine_tune", "Fine Tune", "Fine tune in cents per semitone",
+			      BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE,
+			      0, 10,
+			      BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_float ("velocity", "Velocity", NULL,
 				0, 1.0,
 				1.0, 0.01,
@@ -100,7 +105,8 @@ BODY (BseProcedureClass *proc,
   guint    id	     = g_value_get_uint (in_values++);
   guint    tick	     = g_value_get_uint (in_values++);
   guint    duration  = g_value_get_uint (in_values++);
-  gfloat   freq      = g_value_get_float (in_values++);
+  gint     note	     = bse_value_get_note (in_values++);
+  gint     fine_tune = g_value_get_int (in_values++);
   gfloat   velocity  = g_value_get_float (in_values++);
   gboolean success;
 
@@ -109,7 +115,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  success = bse_part_change_note (self, id, tick, duration, freq, velocity);
+  success = bse_part_change_note (self, id, tick, duration, note, fine_tune, velocity);
 
   /* set output parameters */
   g_value_set_enum (out_values++, success ? BSE_ERROR_NONE : BSE_ERROR_NOT_FOUND);
@@ -208,7 +214,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_notes_around (self, tick, duration, BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d); // FIXME
+  iter = bse_part_list_notes_around (self, tick, duration, BSE_MIN_NOTE, BSE_MAX_NOTE);
 
   /* set output parameters */
   g_value_set_boxed_take_ownership (out_values++, iter);
@@ -224,14 +230,10 @@ METHOD (BsePart, queue-notes-within) {
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
 			       1, BSE_PART_MAX_TICK, 1, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("min_freq", "Minimum Frequency", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
-  IN	= bse_param_spec_float ("max_freq", "Maximum Frequency", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_note_simple ("min_note", "Minimum Note", NULL,
+				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_note_simple ("max_note", "Maximum Note", NULL,
+				      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -241,15 +243,15 @@ BODY (BseProcedureClass *proc,
   BsePart *self     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   guint    duration = g_value_get_uint (in_values++);
-  gfloat   min_freq = g_value_get_float (in_values++);
-  gfloat   max_freq = g_value_get_float (in_values++);
+  gint     min_note = bse_value_get_note (in_values++);
+  gint     max_note = bse_value_get_note (in_values++);
 
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  bse_part_queue_notes_within (self, tick, duration, min_freq, max_freq);
+  bse_part_queue_notes_within (self, tick, duration, min_note, max_note);
 
   return BSE_ERROR_NONE;
 }
@@ -291,10 +293,8 @@ METHOD (BsePart, check-overlap) {
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Tick Duration", NULL,
 			       1, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("freq", "Frequency", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_note_simple ("note", "Note", NULL,
+				      BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
 			      BSW_TYPE_ITER_PART_NOTE,
 			      BSE_PARAM_DEFAULT);
@@ -307,7 +307,7 @@ BODY (BseProcedureClass *proc,
   BsePart *self     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
   guint    duration = g_value_get_uint (in_values++);
-  gfloat   freq     = g_value_get_float (in_values++);
+  gint     note     = bse_value_get_note (in_values++);
   BswIterPartNote *iter;
 
   /* check parameters */
@@ -315,44 +315,10 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_notes_around (self, tick, duration, freq, freq);
+  iter = bse_part_list_notes_around (self, tick, duration, note, note);
 
   /* set output parameters */
   g_value_set_boxed_take_ownership (out_values++, iter);
-
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BsePart, freq-equals) {
-  HELP	= "Check whether two frequencies are equal.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("freq1", "Frequency1", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
-  IN	= bse_param_spec_float ("freq2", "Frequency2", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
-  OUT   = g_param_spec_boolean ("equals", NULL, NULL,
-				FALSE, BSE_PARAM_DEFAULT);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-  gfloat   freq1    = g_value_get_float (in_values++);
-  gfloat   freq2    = g_value_get_float (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-
-  /* set output parameters */
-  g_value_set_boolean (out_values++, BSE_PART_IFREQ (freq1) == BSE_PART_IFREQ (freq2));
 
   return BSE_ERROR_NONE;
 }
@@ -363,10 +329,8 @@ METHOD (BsePart, get-notes) {
  			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("tick", "Tick", NULL,
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("freq", "Frequency", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_note_simple ("note", "Note", NULL,
+				      BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_boxed ("note_list", NULL, NULL,
 			      BSW_TYPE_ITER_PART_NOTE,
 			      BSE_PARAM_DEFAULT);
@@ -378,7 +342,7 @@ BODY (BseProcedureClass *proc,
   /* extract parameter values */
   BsePart *self     = g_value_get_object (in_values++);
   guint    tick	    = g_value_get_uint (in_values++);
-  gfloat   freq     = g_value_get_float (in_values++);
+  gint     note     = bse_value_get_note (in_values++);
   BswIterPartNote *iter;
 
   /* check parameters */
@@ -386,7 +350,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  iter = bse_part_list_notes_at (self, tick, freq);
+  iter = bse_part_list_notes_at (self, tick, note);
 
   /* set output parameters */
   g_value_set_boxed_take_ownership (out_values++, iter);
@@ -394,12 +358,12 @@ BODY (BseProcedureClass *proc,
   return BSE_ERROR_NONE;
 }
 
-METHOD (BsePart, get-min-octave) {
-  HELP	= "Retrive the minimum octave supported.";
+METHOD (BsePart, get-min-note) {
+  HELP	= "Retrive the minimum note supported in this part.";
   IN	= g_param_spec_object ("part", "Part", NULL,
  			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  OUT	= bse_param_spec_int ("octave", "Octave", NULL,
-			      -G_MAXINT, G_MAXINT, 0, 1, BSE_PARAM_DEFAULT);
+  OUT	= bse_param_spec_note_simple ("note", "Note", NULL,
+				      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -412,18 +376,18 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  /* it doesn't make much sense to support more than our standard note range covers */
-  g_value_set_int (out_values++, BSE_MIN_OCTAVE);
+  /* it doesn't currently make sense to restrict the standard note range */
+  g_value_set_int (out_values++, BSE_MIN_NOTE);
 
   return BSE_ERROR_NONE;
 }
 
-METHOD (BsePart, get-max-octave) {
-  HELP	= "Retrive the maximum octave supported.";
+METHOD (BsePart, get-max-note) {
+  HELP	= "Retrive the maximum note supported in this part.";
   IN	= g_param_spec_object ("part", "Part", NULL,
  			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  OUT	= bse_param_spec_int ("octave", "Octave", NULL,
-			      -G_MAXINT, G_MAXINT, 0, 1, BSE_PARAM_DEFAULT);
+  OUT	= bse_param_spec_note_simple ("note", "Note", NULL,
+				      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -436,56 +400,8 @@ BODY (BseProcedureClass *proc,
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  /* it doesn't make much sense to support more than our standard note range covers */
-  g_value_set_int (out_values++, BSE_MAX_OCTAVE);
-
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BsePart, get-max-half-tone) {
-  HELP	= "Retrive the maximum half tone of the maximum octave supported.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  OUT	= bse_param_spec_uint ("half-tone", "Half Tone", NULL,
-			       0, 11, 0, 1, BSE_PARAM_DEFAULT);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  /* it doesn't make much sense to support more than our standard note range covers */
-  g_value_set_uint (out_values++, BSE_MAX_NOTE - BSE_NOTE_C (BSE_MAX_OCTAVE));
-
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BsePart, get-min-half-tone) {
-  HELP	= "Retrive the minimum half tone of the minimum octave supported.";
-  IN	= g_param_spec_object ("part", "Part", NULL,
- 			       BSE_TYPE_PART, BSE_PARAM_DEFAULT);
-  OUT	= bse_param_spec_uint ("half-tone", "Half Tone", NULL,
-			       0, 11, 0, 1, BSE_PARAM_DEFAULT);
-}
-BODY (BseProcedureClass *proc,
-      const GValue      *in_values,
-      GValue            *out_values)
-{
-  /* extract parameter values */
-  BsePart *self     = g_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_PART (self))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-  
-  /* it doesn't make much sense to support more than our standard note range covers */
-  g_value_set_uint (out_values++, BSE_MIN_NOTE + 12 - BSE_NOTE_C (BSE_MIN_OCTAVE + 1));
+  /* it doesn't currently make sense to restrict the standard note range */
+  g_value_set_int (out_values++, BSE_MAX_NOTE);
 
   return BSE_ERROR_NONE;
 }
@@ -522,14 +438,10 @@ METHOD (BsePart, select-rectangle-exclusive) {
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Duration", "Selection Duration",
 			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("min_freq", "Frequency", "Minimum Selection Frequency",
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
-  IN	= bse_param_spec_float ("max_freq", "Frequency", "Maximum Selection Frequency",
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_note_simple ("min_note", "Minimum Selection Note", NULL,
+				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_note_simple ("max_note", "Maximum Selection Note", NULL,
+				      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -539,14 +451,14 @@ BODY (BseProcedureClass *proc,
   BsePart *self   = g_value_get_object (in_values++);
   guint tick      = g_value_get_uint (in_values++);
   guint duration  = g_value_get_uint (in_values++);
-  gfloat min_freq = g_value_get_float (in_values++);
-  gfloat max_freq = g_value_get_float (in_values++);
+  gint  min_note  = bse_value_get_note (in_values++);
+  gint  max_note  = bse_value_get_note (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_rectangle_ex (self, tick, duration, min_freq, max_freq);
+  bse_part_select_rectangle_ex (self, tick, duration, min_note, max_note);
 
   return BSE_ERROR_NONE;
 }
@@ -559,14 +471,10 @@ METHOD (BsePart, select-rectangle) {
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Duration", "Selection Duration",
 			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("min_freq", "Frequency", "Minimum Selection Frequency",
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
-  IN	= bse_param_spec_float ("max_freq", "Frequency", "Maximum Selection Frequency",
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_note_simple ("min_note", "Minimum Selection Note", NULL,
+				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_note_simple ("max_note", "Maximum Selection Note", NULL,
+				      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -576,14 +484,14 @@ BODY (BseProcedureClass *proc,
   BsePart *self   = g_value_get_object (in_values++);
   guint tick      = g_value_get_uint (in_values++);
   guint duration  = g_value_get_uint (in_values++);
-  gfloat min_freq = g_value_get_float (in_values++);
-  gfloat max_freq = g_value_get_float (in_values++);
+  gint  min_note  = bse_value_get_note (in_values++);
+  gint  max_note  = bse_value_get_note (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_select_rectangle (self, tick, duration, min_freq, max_freq);
+  bse_part_select_rectangle (self, tick, duration, min_note, max_note);
 
   return BSE_ERROR_NONE;
 }
@@ -596,14 +504,10 @@ METHOD (BsePart, deselect-rectangle) {
 			       0, BSE_PART_MAX_TICK - 1, 0, 384, BSE_PARAM_DEFAULT);
   IN	= bse_param_spec_uint ("duration", "Duration", "Selection Duration",
 			       0, BSE_PART_MAX_TICK, 0, 384, BSE_PARAM_DEFAULT);
-  IN	= bse_param_spec_float ("min_freq", "Frequency", "Minimum Selection Frequency",
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
-  IN	= bse_param_spec_float ("max_freq", "Frequency", "Maximum Selection Frequency",
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ, 10.0,
-				BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL);
+  IN	= bse_param_spec_note_simple ("min_note", "Minimum Selection Note", NULL,
+				      BSE_PARAM_DEFAULT);
+  IN	= bse_param_spec_note_simple ("max_note", "Maximum Selection Note", NULL,
+				      BSE_PARAM_DEFAULT);
 }
 BODY (BseProcedureClass *proc,
       const GValue      *in_values,
@@ -613,14 +517,14 @@ BODY (BseProcedureClass *proc,
   BsePart *self   = g_value_get_object (in_values++);
   guint tick      = g_value_get_uint (in_values++);
   guint duration  = g_value_get_uint (in_values++);
-  gfloat min_freq = g_value_get_float (in_values++);
-  gfloat max_freq = g_value_get_float (in_values++);
+  gint  min_note  = bse_value_get_note (in_values++);
+  gint  max_note  = bse_value_get_note (in_values++);
   
   /* check parameters */
   if (!BSE_IS_PART (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
-  bse_part_deselect_rectangle (self, tick, duration, min_freq, max_freq);
+  bse_part_deselect_rectangle (self, tick, duration, min_note, max_note);
 
   return BSE_ERROR_NONE;
 }

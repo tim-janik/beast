@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
- *
- * bsemath.h: math functions for bse
  */
 #ifndef __BSE_MATH_H__
 #define __BSE_MATH_H__
@@ -27,6 +25,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+
+/* --- constants --- */
+#define BSE_2_POW_1_DIV_12_d          ( /* 2^(1/12) */ \
+              1.0594630943592952645618252949463417008)
+#define BSE_LN_2_POW_1_DIV_12_d       ( /* ln(2^(1/12)) */ \
+              5.776226504666210911810267678818138067296e-2)
+#define BSE_LN_2_POW_1_DIV_1200_d     ( /* ln(2^(1/1200)) */ \
+              5.776226504666210911810267678818138067296e-4)
 
 
 /* --- functions --- */
@@ -48,10 +55,6 @@ gint		bse_rand_bool		(void); /* random bit */
 #else /* !math.h M_PIl */
 #  define PI    (3.1415926535897932384626433832795029)
 #endif
-#define	BSE_UINT16_BYTES_EQUAL(val)	(_bse_uint16_bytes_equal (val))
-#define	BSE_UINT32_BYTES_EQUAL(val)	(_bse_uint32_bytes_equal (val))
-#define	BSE_QUICK_DIV(divd, divs)	(_BSE_QDV ((divd), (divs)))
-#define	BSE_QUICK_MUL(x, y)		(_BSE_QML ((x), (y)))
 
 
 /* --- implementation details --- */
@@ -63,23 +66,6 @@ _bse_epsilon_cmp (gdouble double1,
 
   return diff > BSE_EPSILON ? 1 : diff < - BSE_EPSILON ? -1 : 0;
 }
-static inline gboolean
-_bse_uint16_bytes_equal (guint16 val)
-{
-  return (val & 0xff) == (val >> 8);
-}
-static inline gboolean
-_bse_uint32_bytes_equal (guint32 val)
-{
-  guint32 lbyte = (val & 0xff);
-
-  return ((lbyte <<  0) == (val & 0x000000ff) &&
-	  (lbyte <<  8) == (val & 0x0000ff00) &&
-	  (lbyte << 16) == (val & 0x00ff0000) &&
-	  (lbyte << 24) == (val & 0xff000000));
-}
-#define	_BSE_QDV(divd, divs)	(divd / divs)	// FIXME
-#define	_BSE_QML(x, y)		(x * y)		// FIXME
 
 
 #ifdef __cplusplus

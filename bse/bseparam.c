@@ -159,7 +159,7 @@ param_spec_note_class_init (gpointer g_class,
 {
   GParamSpecClass *class = g_class;
   
-  class->value_type = BSE_TYPE_NOTE;
+  class->value_type = G_TYPE_INT;
   class->value_set_default = param_note_set_default;
   class->value_validate = param_note_validate;
   class->values_cmp = param_note_values_cmp;
@@ -465,24 +465,6 @@ bse_param_types_init (void)	/* sync with btype.c */
     g_assert (type == BSE_TYPE_TIME);
   }
   
-  /* BSE_TYPE_NOTE
-   */
-  {
-    static const GTypeValueTable value_table = {
-      value_note_init,          /* value_init */
-      NULL,                     /* value_free */
-      value_note_copy,          /* value_copy */
-      NULL,                     /* value_peek_pointer */
-      "i",			/* collect_format */
-      value_note_collect_value, /* collect_value */
-      "p",			/* lcopy_format */
-      value_note_lcopy_value,   /* lcopy_value */
-    };
-    info.value_table = &value_table;
-    type = g_type_register_fundamental (BSE_TYPE_NOTE, "BseNote", &info, &finfo, 0);
-    g_assert (type == BSE_TYPE_NOTE);
-  }
-  
   /* BSE_TYPE_DOTS
    */
   {
@@ -585,23 +567,6 @@ bse_value_get_time (const GValue *value)
   g_return_val_if_fail (BSE_IS_VALUE_TIME (value), 0);
   
   return value->data[0].v_ulong;
-}
-
-void
-bse_value_set_note (GValue *value,
-		    gint    v_note)
-{
-  g_return_if_fail (BSE_IS_VALUE_NOTE (value));
-  
-  value->data[0].v_int = v_note;
-}
-
-gint
-bse_value_get_note (const GValue *value)
-{
-  g_return_val_if_fail (BSE_IS_VALUE_NOTE (value), 0);
-  
-  return value->data[0].v_int;
 }
 
 void
@@ -931,6 +896,48 @@ bse_param_spec_note (const gchar *name,
   nspec->allow_void = allow_void != FALSE;
   
   return G_PARAM_SPEC (nspec);
+}
+
+GParamSpec*
+bse_param_spec_note_simple (const gchar  *name,
+			    const gchar  *nick,
+			    const gchar  *blurb,
+			    BseParamFlags flags)
+{
+  return bse_param_spec_note (name, nick, blurb,
+			      BSE_MIN_NOTE, BSE_MAX_NOTE,
+			      BSE_KAMMER_NOTE, 7,
+			      FALSE,
+			      flags);
+}
+
+GParamSpec*
+bse_param_spec_freq (const gchar  *name,
+		     const gchar  *nick,
+		     const gchar  *blurb,
+		     gfloat        default_freq,
+		     BseParamFlags flags)
+{
+  GParamSpec *pspec;
+
+  g_return_val_if_fail (default_freq >= BSE_MIN_OSC_FREQUENCY_f && default_freq <= BSE_MAX_OSC_FREQUENCY_f, NULL);
+
+  pspec = bse_param_spec_float (name, nick, blurb,
+				BSE_MIN_OSC_FREQUENCY_f, BSE_MAX_OSC_FREQUENCY_f,
+				default_freq, 10.0,
+				flags);
+  bse_param_spec_set_log_scale (pspec, 2 * BSE_KAMMER_FREQUENCY_f, 2, 4);
+  
+  return pspec;
+}
+
+GParamSpec*
+bse_param_spec_freq_simple (const gchar  *name,
+			    const gchar  *nick,
+			    const gchar  *blurb,
+			    BseParamFlags flags)
+{
+  return bse_param_spec_freq (name, nick, blurb, BSE_KAMMER_FREQUENCY_f, flags);
 }
 
 GParamSpec*

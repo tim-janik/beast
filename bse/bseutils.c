@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include "gslieee754.h"
 
 
 /* --- file utils --- */
@@ -815,13 +816,6 @@ bse_time_from_string (const gchar *time_string,
 
 
 /* --- notes --- */
-/* defines from bseglobals.c, keep files in sync */
-#define BSE_2_RAISED_TO_1_OVER_12_d     ( /* 2^(1/12) */ \
-              1.0594630943592953098431053149397484958171844482421875)
-#define BSE_LN_OF_2_RAISED_TO_1_OVER_12_d       ( /* ln(2^(1/12)) */ \
-              0.05776226504666215344485635796445421874523162841796875)
-#define BSE_2_RAISED_TO_1_OVER_72_d     ( /* 2^(1/72) */ \
-              1.009673533228510944326217213529162108898162841796875)
 static const struct {
   gchar *name;
   gint note;
@@ -979,18 +973,32 @@ bse_note_from_freq (gdouble freq)
   gdouble d;
   gint note;
 
-  freq /= BSE_KAMMER_FREQ_d;
-  d = log (freq) / BSE_LN_OF_2_RAISED_TO_1_OVER_12_d;
-  note = BSE_KAMMER_NOTE + 0.5 + d;
+  freq /= BSE_KAMMER_FREQUENCY_f;
+  d = log (freq) / BSE_LN_2_POW_1_DIV_12_d;
+  note = gsl_ftoi (BSE_KAMMER_NOTE + d);
 
   return note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE ? note : BSE_NOTE_VOID;
+}
+
+gint
+bse_note_fine_tune_from_note_freq (gint    note,
+				   gdouble freq)
+{
+  gdouble d;
+  gint fine_tune;
+  
+  freq /= BSE_KAMMER_FREQUENCY_f * BSE_HALFTONE_FACTOR (note);
+  d = log (freq) / BSE_LN_2_POW_1_DIV_1200_d;
+  fine_tune = gsl_ftoi (d);
+
+  return CLAMP (fine_tune, BSE_MIN_FINE_TUNE, BSE_MAX_FINE_TUNE);
 }
 
 gdouble
 bse_note_to_freq (gint note)
 {
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    return BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (note);
+    return BSE_KAMMER_FREQUENCY_f * BSE_HALFTONE_FACTOR (note);
   else
     return 0.0;
 }
@@ -1000,7 +1008,7 @@ bse_note_to_tuned_freq (gint note,
 			gint fine_tune)
 {
   if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
-    return BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
+    return BSE_KAMMER_FREQUENCY_f * BSE_HALFTONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
   else
     return 0.0;
 }

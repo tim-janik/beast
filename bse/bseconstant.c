@@ -120,19 +120,17 @@ bse_constant_class_init (BseConstantClass *class)
       name = g_strdup_printf ("Frequency");
       bse_object_class_add_param (object_class, group, PARAM_FREQ + (i - 1) * 3,
 				  bse_param_spec_float (string, name, NULL,
-							0, BSE_MAX_FREQUENCY,
-							BSE_MAX_FREQUENCY, 10.0,
+							0, BSE_MAX_FREQUENCY_f,
+							BSE_MAX_FREQUENCY_f, 10.0,
 							BSE_PARAM_GUI | BSE_PARAM_HINT_DIAL));
-      bse_object_class_set_param_log_scale (object_class, string, 880.0, 2, 4);
+      bse_object_class_set_param_log_scale (object_class, string, BSE_KAMMER_FREQUENCY_f * 2, 2, 4);
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("note_%u", i);
       name = g_strdup_printf ("Note");
       bse_object_class_add_param (object_class, group, PARAM_NOTE + (i - 1) * 3,
-				  bse_param_spec_note (string, name, NULL,
-						       BSE_MIN_NOTE, BSE_MAX_NOTE,
-						       BSE_NOTE_VOID, 1, TRUE,
-						       BSE_PARAM_GUI));
+				  bse_param_spec_note_simple (string, name, NULL,
+							      BSE_PARAM_GUI));
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("Const Out%u", i);
@@ -317,52 +315,4 @@ bse_constant_context_create (BseSource *source,
   
   /* update (initialize) module data */
   bse_constant_update_modules (BSE_CONSTANT (source), trans);
-}
-
-void
-bse_constant_stamped_set_float_SL (BseConstant *constant,
-				   guint64      tick_stamp,
-				   guint	nth,
-				   gfloat       value)
-{
-  FlowAccessData *fdata;
-  
-  g_return_if_fail (BSE_IS_CONSTANT (constant));
-  g_return_if_fail (nth < BSE_CONSTANT_N_OUTPUTS);
-  g_return_if_fail (value >= -1.0 && value <= 1.0);
-  
-  fdata = g_new (FlowAccessData, 1);
-  fdata->index = nth;
-  fdata->n_values = 1;
-  fdata->constants[0] = value;
-  
-  bse_source_flow_access_modules (BSE_SOURCE (constant),
-				  tick_stamp,
-				  flow_access,
-				  fdata,
-				  g_free,
-				  NULL);
-}
-
-void
-bse_constant_stamped_set_freq_SL (BseConstant *constant,
-				  guint64      tick_stamp,
-				  guint        nth,
-				  gfloat       freq)
-{
-  g_return_if_fail (freq >= 0 && freq <= BSE_MAX_FREQUENCY);
-
-  bse_constant_stamped_set_float_SL (constant, tick_stamp, nth, BSE_VALUE_FROM_FREQ (freq));
-}
-
-void
-bse_constant_stamped_set_note_SL (BseConstant *constant,
-				  guint64      tick_stamp,
-				  guint        nth,
-				  gint         note)
-{
-  g_return_if_fail (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE);
-
-  bse_constant_stamped_set_float_SL (constant, tick_stamp, nth,
-				     BSE_VALUE_FROM_FREQ (bse_note_to_freq (note)));
 }

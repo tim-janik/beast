@@ -53,21 +53,6 @@ struct _BseConstantClass
 };
 
 
-void bse_constant_stamped_set_float_SL	(BseConstant	*constant,
-					 guint64	 tick_stamp,
-					 guint		 nth,
-					 gfloat		 value);
-void bse_constant_stamped_set_freq_SL	(BseConstant	*constant,
-					 guint64	 tick_stamp,
-					 guint		 nth,
-					 gfloat		 freq);
-void bse_constant_stamped_set_note_SL	(BseConstant	*constant,
-					 guint64	 tick_stamp,
-					 guint		 nth,
-					 gint		 note);
-
-
-
 
 #ifdef __cplusplus
 }

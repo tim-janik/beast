@@ -193,7 +193,6 @@ track_step_SL (BseSongSequencer      *seq,
 {
   BsePart *part = track->part;
   guint i, tick_bound = track->tick + n_ticks;
-  gboolean need_debug;
   
   i = bse_part_node_lookup_SL (part, track->tick);
   while (i < part->n_nodes && part->nodes[i].tick < tick_bound)
@@ -207,23 +206,19 @@ track_step_SL (BseSongSequencer      *seq,
 	    bse_midi_receiver_push_event (track->midi_receiver,
 					  bse_midi_event_note_on (0,
 								  seq->start_stamp + tick * ticks2stamp,
-								  BSE_PART_FREQ (ev->note.ifreq), 1.0));
+								  BSE_PART_NOTE_EVENT_FREQ (&ev->note), 1.0));
 	    bse_midi_receiver_push_event (track->midi_receiver,
 					  bse_midi_event_note_off (0,
 								   seq->start_stamp + (tick + ev->note.duration) * ticks2stamp,
-								   BSE_PART_FREQ (ev->note.ifreq)));
-	    g_print ("note: %f till %f freq=%f\n",
+								   BSE_PART_NOTE_EVENT_FREQ (&ev->note)));
+	    g_print ("note: %f till %f freq=%f (note=%d)\n",
 		     seq->start_stamp + tick * ticks2stamp,
 		     seq->start_stamp + (tick + ev->note.duration) * ticks2stamp,
-		     BSE_PART_FREQ (ev->note.ifreq));
+		     BSE_PART_NOTE_EVENT_FREQ (&ev->note),
+		     ev->note.note);
 	  }
       i = bse_part_node_lookup_SL (part, tick + 1);
     }
   track->tick += n_ticks;
-  need_debug=track->midi_receiver->events!= NULL;
   bse_midi_receiver_process_events (track->midi_receiver, seq->start_stamp + tick_bound * ticks2stamp);
-if (need_debug)  g_print ("process until: %f (current=%llu next=%llu)\n",
-	   seq->start_stamp + tick_bound * ticks2stamp,
-	   gsl_tick_stamp (),
-	   gsl_tick_stamp () + gsl_engine_block_size ());
 }

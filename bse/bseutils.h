@@ -62,6 +62,8 @@ gchar*	bse_note_to_string	(gint		 note);
  */
 gint	bse_note_from_string	(const gchar	*note_string);
 gint	bse_note_from_freq	(gdouble	 freq);
+gint    bse_note_fine_tune_from_note_freq (gint    note,
+					   gdouble freq);
 gdouble	bse_note_to_freq	(gint		 note);
 gdouble	bse_note_to_tuned_freq	(gint		 note,
 				 gint            fine_tune);

@@ -1202,7 +1202,14 @@ bse_storage_put_value (BseStorage   *storage,
       bse_storage_puts (storage, g_value_get_boolean (value) ? "#t" : "#f");
       break;
     case G_TYPE_INT:
-      bse_storage_printf (storage, "%d", g_value_get_int (value));
+      if (pspec && BSE_IS_PARAM_SPEC_NOTE (pspec))
+	{
+	  string = bse_note_to_string (bse_value_get_note (value));
+	  bse_storage_printf (storage, "\"%s\"", string);
+	  g_free (string);
+	}
+      else
+	bse_storage_printf (storage, "%d", g_value_get_int (value));
       break;
     case G_TYPE_UINT:
       bse_storage_printf (storage, "%u", g_value_get_uint (value));
@@ -1282,11 +1289,6 @@ bse_storage_put_value (BseStorage   *storage,
       bse_storage_putc (storage, '"');
       bse_storage_puts (storage, string);
       bse_storage_putc (storage, '"');
-      g_free (string);
-      break;
-    case BSE_TYPE_NOTE:
-      string = bse_note_to_string (bse_value_get_note (value));
-      bse_storage_printf (storage, "\"%s\"", string);
       g_free (string);
       break;
     case G_TYPE_OBJECT:
@@ -1578,6 +1580,26 @@ bse_storage_parse_param_value (BseStorage *storage,
 	}
       break;
     case G_TYPE_INT:
+      if (pspec && BSE_IS_PARAM_SPEC_NOTE (pspec))
+	{
+	  token = parse_note (storage, pspec ? BSE_PARAM_SPEC_NOTE (pspec)->allow_void : TRUE, &v_note);
+	  if (token != G_TOKEN_NONE)
+	    return token;
+	  else
+	    {
+	      bse_value_set_note (value, v_note);
+	      if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
+		{
+		  string = bse_note_to_string (v_note);
+		  return storage_errwarn_skip (storage, close_statement, FALSE,
+					       "note value `%s' out of bounds for parameter `%s'",
+					       string,
+					       pname);
+		  g_free (string);
+		}
+	    }
+	}
+      /* fall through */
     case G_TYPE_LONG:
       g_scanner_get_next_token (scanner);
       v_bool = FALSE;
@@ -1791,24 +1813,6 @@ bse_storage_parse_param_value (BseStorage *storage,
 					 pname);
 	  }
       }
-      break;
-    case BSE_TYPE_NOTE:
-      token = parse_note (storage, pspec ? BSE_PARAM_SPEC_NOTE (pspec)->allow_void : TRUE, &v_note);
-      if (token != G_TOKEN_NONE)
-	return token;
-      else
-	{
-	  bse_value_set_note (value, v_note);
-          if (pspec && g_param_value_validate (pspec, value) && !(pspec->flags & G_PARAM_LAX_VALIDATION))
-	    {
-	      string = bse_note_to_string (v_note);
-	      return storage_errwarn_skip (storage, close_statement, FALSE,
-					   "note value `%s' out of bounds for parameter `%s'",
-					   string,
-					   pname);
-	      g_free (string);
-	    }
-	}
       break;
     case G_TYPE_OBJECT:
       if (BSE_STORAGE_PROXIES_ENABLED (storage) && g_type_is_a (vtype, BSE_TYPE_OBJECT))

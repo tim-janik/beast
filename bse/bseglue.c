@@ -279,12 +279,24 @@ param_from_pspec (GslGlueParam *param,
                              1);
       break;
     case G_TYPE_INT:
-      istepping = BSE_IS_PARAM_SPEC_INT (pspec) ? BSE_PARAM_SPEC_INT (pspec)->stepping_rate : 1;
-      gsl_glue_param_irange (param, pspec->name,
-                             G_PARAM_SPEC_INT (pspec)->default_value,
-                             G_PARAM_SPEC_INT (pspec)->minimum,
-                             G_PARAM_SPEC_INT (pspec)->maximum,
-                             istepping);
+      if (BSE_IS_PARAM_SPEC_INT (pspec))
+	gsl_glue_param_irange (param, pspec->name,
+			       G_PARAM_SPEC_INT (pspec)->default_value,
+			       G_PARAM_SPEC_INT (pspec)->minimum,
+			       G_PARAM_SPEC_INT (pspec)->maximum,
+			       BSE_PARAM_SPEC_INT (pspec)->stepping_rate);
+      else if (BSE_IS_PARAM_SPEC_NOTE (pspec))
+	gsl_glue_param_irange (param, pspec->name,
+			       BSE_PARAM_SPEC_NOTE (pspec)->default_value,
+			       BSE_PARAM_SPEC_NOTE (pspec)->minimum,
+			       BSE_PARAM_SPEC_NOTE (pspec)->maximum,
+			       BSE_PARAM_SPEC_NOTE (pspec)->stepping_rate);
+      else
+	gsl_glue_param_irange (param, pspec->name,
+			       G_PARAM_SPEC_INT (pspec)->default_value,
+			       G_PARAM_SPEC_INT (pspec)->minimum,
+			       G_PARAM_SPEC_INT (pspec)->maximum,
+			       1);
       break;
     case G_TYPE_UINT:
       istepping = BSE_IS_PARAM_SPEC_UINT (pspec) ? BSE_PARAM_SPEC_UINT (pspec)->stepping_rate : 1;
@@ -330,13 +342,6 @@ param_from_pspec (GslGlueParam *param,
                              0,
                              G_MAXINT,
                              1);
-      break;
-    case BSE_TYPE_NOTE:
-      gsl_glue_param_irange (param, pspec->name,
-                             BSE_PARAM_SPEC_NOTE (pspec)->default_value,
-                             BSE_PARAM_SPEC_NOTE (pspec)->minimum,
-                             MAX (BSE_PARAM_SPEC_NOTE (pspec)->maximum, BSE_NOTE_VOID),
-                             BSE_PARAM_SPEC_NOTE (pspec)->stepping_rate);
       break;
     case G_TYPE_ENUM:
       gsl_glue_param_enum (param, pspec->name,

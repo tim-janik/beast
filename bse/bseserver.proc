@@ -264,8 +264,8 @@ METHOD (BseServer, note-from-freq) {
   IN	= g_param_spec_object ("server", "Server", NULL,
  			       BSE_TYPE_SERVER, BSE_PARAM_DEFAULT);
   IN    = bse_param_spec_float ("freq", "Frequency", NULL,
-				0, BSE_MAX_FREQUENCY,
-				BSE_KAMMER_FREQ_f, 10.0,
+				0, BSE_MAX_FREQUENCY_f,
+				BSE_KAMMER_FREQUENCY_f, 10.0,
 				BSE_PARAM_DEFAULT);
   OUT   = g_param_spec_boxed ("note-description", NULL, NULL,
 			      BSW_TYPE_NOTE_DESCRIPTION, BSE_PARAM_DEFAULT);
@@ -360,7 +360,7 @@ BODY (BseProcedureClass *proc,
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* describe note */
-  note = BSE_NOTE_GENERIC (half_tone, octave);
+  note = BSE_NOTE_GENERIC (octave, half_tone);
   info = bsw_note_description (note, fine_tune);
 
   /* set output parameters */

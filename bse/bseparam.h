@@ -44,7 +44,6 @@ extern "C" {
 #define BSE_IS_VALUE_TIME(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), BSE_TYPE_TIME))
 #define BSE_IS_PARAM_SPEC_TIME(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), BSE_TYPE_PARAM_TIME))
 #define BSE_PARAM_SPEC_TIME(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), BSE_TYPE_PARAM_TIME, BseParamSpecTime))
-#define BSE_IS_VALUE_NOTE(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), BSE_TYPE_NOTE))
 #define BSE_IS_PARAM_SPEC_NOTE(pspec)	(G_TYPE_CHECK_INSTANCE_TYPE ((pspec), BSE_TYPE_PARAM_NOTE))
 #define BSE_PARAM_SPEC_NOTE(pspec)	(G_TYPE_CHECK_INSTANCE_CAST ((pspec), BSE_TYPE_PARAM_NOTE, BseParamSpecNote))
 #define BSE_IS_VALUE_DOTS(value)	(G_TYPE_CHECK_VALUE_TYPE ((value), BSE_TYPE_DOTS))
@@ -113,9 +112,8 @@ struct _BseParamSpecDots
 void	bse_value_set_time	(GValue		*value,
 				 BseTime	 v_time);
 BseTime	bse_value_get_time	(const GValue	*value);
-void	bse_value_set_note	(GValue		*value,
-				 gint            v_note);
-gint	bse_value_get_note	(const GValue	*value);
+#define	bse_value_set_note	g_value_set_int
+#define	bse_value_get_note	g_value_get_int
 void	bse_value_set_n_dots	(GValue		*value,
 				 guint  	 n_dots);
 void	bse_value_set_dot	(GValue		*value,
@@ -191,6 +189,19 @@ GParamSpec* bse_param_spec_note	(const gchar    *name,
 				 gint            stepping_rate,
 				 gboolean        allow_void,
 				 BseParamFlags   flags);
+GParamSpec* bse_param_spec_note_simple	(const gchar  *name,
+					 const gchar  *nick,
+					 const gchar  *blurb,
+					 BseParamFlags flags);
+GParamSpec* bse_param_spec_freq         (const gchar  *name,
+					 const gchar  *nick,
+					 const gchar  *blurb,
+					 gfloat        default_freq,
+					 BseParamFlags flags);
+GParamSpec* bse_param_spec_freq_simple  (const gchar  *name,
+					 const gchar  *nick,
+					 const gchar  *blurb,
+					 BseParamFlags flags);
 GParamSpec* bse_param_spec_dots	(const gchar    *name,
 				 const gchar    *nick,
 				 const gchar    *blurb,

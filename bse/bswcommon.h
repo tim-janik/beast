@@ -80,10 +80,11 @@ BswProxy	bsw_iter_get_proxy		(BswIterProxy	*iter);
 #define		BSW_TYPE_PART_NOTE		(bsw_part_note_get_type ())
 typedef struct
 {
-  guint    id;
+  guint	   id;
   guint    tick;
   guint	   duration;	/* in ticks */
-  gfloat   freq;
+  gint     note;
+  gint     fine_tune;
   gfloat   velocity;	/* 0 .. 1 */
   gboolean selected;
 } BswPartNote;

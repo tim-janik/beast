@@ -94,7 +94,7 @@ bse_midi_device_oss_class_init (BseMidiDeviceOSSClass *class)
 
   object_class->destroy = bse_midi_device_oss_destroy;
 
-  midi_device_class->driver_rating = BSE_DEFAULT_RATING;
+  midi_device_class->driver_rating = BSE_RATING_DEFAULT;
   midi_device_class->open = bse_midi_device_oss_open;
   midi_device_class->suspend = bse_midi_device_oss_close;
 }

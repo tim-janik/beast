@@ -20,7 +20,6 @@
 #include        <bse/bseprocedure.h>
 #include        <bse/bsesong.h>
 #include        <bse/bsepart.h>
-#include        <bse/bseinstrument.h>
 #include        <bse/bsetrack.h>
 
 AUTHOR  = "Tim Janik <timj@gtk.org>";
@@ -69,72 +68,21 @@ METHOD (BseSong, remove-part) {
         GValue            *out_values)
 {
   /* extract parameter values */
-  BseSong *song = g_value_get_object (in_values++);
+  BseSong *self = g_value_get_object (in_values++);
   BsePart *part = g_value_get_object (in_values++);
-
+  BseErrorType error = BSE_ERROR_NONE;
+  
   /* check parameters */
-  if (!BSE_IS_SONG (song) || !BSE_IS_PART (part) || BSE_ITEM (part)->parent != BSE_ITEM (song))
+  if (!BSE_IS_SONG (self) || !BSE_IS_PART (part) || BSE_ITEM (part)->parent != BSE_ITEM (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  bse_container_remove_item (BSE_CONTAINER (song), BSE_ITEM (part));
+  if (BSE_SOURCE_PREPARED (self))
+    error = BSE_ERROR_SOURCE_BUSY;
+  else
+    bse_container_remove_item (BSE_CONTAINER (self), BSE_ITEM (part));
 
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseSong, create-instrument) {
-  HELP  = "Create a new Instrument in a Song";
-  IN    = g_param_spec_object ("song", "Song", NULL,
-                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
-  OUT   = g_param_spec_object ("instrument", "Instrument", NULL,
-                               BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-        const GValue      *in_values,
-        GValue            *out_values)
-{
-  /* extract parameter values */
-  BseSong *song = g_value_get_object (in_values++);
-  BseInstrument *instrument;
-
-  /* check parameters */
-  if (!BSE_IS_SONG (song))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-
-  /* action */
-  instrument = bse_object_new (BSE_TYPE_INSTRUMENT,
-			       NULL);
-  bse_container_add_item (BSE_CONTAINER (song), BSE_ITEM (instrument));
-
-  /* set output parameters */
-  g_value_set_object (out_values++, G_OBJECT (instrument));
-  g_object_unref (instrument);
-
-  return BSE_ERROR_NONE;
-}
-
-METHOD (BseSong, remove-instrument) {
-  HELP  = "Delete an Instrument from a Song";
-  IN    = g_param_spec_object ("song", "Song", NULL,
-                               BSE_TYPE_SONG, BSE_PARAM_DEFAULT);
-  IN    = g_param_spec_object ("instrument", "Instrument", NULL,
-                               BSE_TYPE_INSTRUMENT, BSE_PARAM_DEFAULT);
-} BODY (BseProcedureClass *proc,
-        const GValue      *in_values,
-        GValue            *out_values)
-{
-  /* extract parameter values */
-  BseSong *song             = g_value_get_object (in_values++);
-  BseInstrument *instrument = g_value_get_object (in_values++);
-
-  /* check parameters */
-  if (!BSE_IS_SONG (song) || !BSE_IS_INSTRUMENT (instrument) ||
-      BSE_ITEM (instrument)->parent != BSE_ITEM (song))
-    return BSE_ERROR_PROC_PARAM_INVAL;
-
-  /* action */
-  bse_container_remove_item (BSE_CONTAINER (song), BSE_ITEM (instrument));
-
-  return BSE_ERROR_NONE;
+  return error;
 }
 
 METHOD (BseSong, create-track) {
@@ -149,19 +97,23 @@ METHOD (BseSong, create-track) {
 {
   /* extract parameter values */
   BseSong *self = g_value_get_object (in_values++);
-  BseTrack *track;
+  BseErrorType error = BSE_ERROR_NONE;
+  GObject *track = NULL;
 
   /* check parameters */
   if (!BSE_IS_SONG (self))
     return BSE_ERROR_PROC_PARAM_INVAL;
 
   /* action */
-  track = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
+  if (BSE_SOURCE_PREPARED (self))
+    error = BSE_ERROR_SOURCE_BUSY;
+  else
+    track = bse_container_new_item (BSE_CONTAINER (self), BSE_TYPE_TRACK, NULL);
 
   /* set output parameters */
-  g_value_set_object (out_values++, G_OBJECT (track));
+  g_value_set_object (out_values++, track);
 
-  return BSE_ERROR_NONE;
+  return error;
 }
 
 METHOD (BseSong, remove-track) {
