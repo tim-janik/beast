@@ -30,9 +30,12 @@ testrefs
 bseinfo
 bsemarshal.c
 bsemarshal.h
+
 gslloader
 gsltests
 gslwchunk
 gsl.3
 gslfft.c
 gslconfig.h
+gslffttest
+gslglibhashtest
