@@ -1,3 +1,17 @@
+Tue Jan  7 19:01:25 2003  Tim Janik  <timj@gtk.org>
+
+	* README: fix libgnomecanvas link.
+	* docs/site-download.texi: same here.
+
+	* docs/site-documentation.texi: make link validator happy.
+	* docs/site-links-related.texi:
+	* docs/site-links-synthesis.texi: same here.
+
+	* docs/site-links-related.texi: added foreign project sites.
+
+	* docs/site-development.texi: add validator urls to aid website
+	development.
+
 Tue Jan  7 17:04:11 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/scandocs.pl (print header): remove texi

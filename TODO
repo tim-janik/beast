@@ -40,16 +40,15 @@ URGENT:
 - support pspec groups in idl files [stefan]
 
 DOCS:
-- keep old news item links working after the site move (docs/cvs-news.html)
 - try implementing some kind of table layout for tsmview [timj]
 - add QuickStart-Samples docs once we support sample editing [timj]
 - turn off word-wrapping for normal files (e.g. /etc/profile) in
   tsmview. then, gsl-mplan.txt and NEWS don't need anymore markup. [timj]
 - report mising underline to havoc, alper has a tsmview example in
   Re: uref macro, document font Date: Thu, 5 Dec 2002 00:23:38 +0200
-- @verbatiminclude doesn't seem to support makeinfo @value{} variable
-  substitutions (alper, can you tell karl about this?). so i had to
-  revert to an sed hack to make this work
+- fix black backgrounds in logo contest thumbnails
+  (occours on entries with alpha channel) [alper]
+- keep old news item links working after the site move (e.g. docs/cvs-news.html)
 
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq

@@ -40,7 +40,7 @@ For C specifically,
 @uref{http://gtk.org,, GLib} based framework to deal with
 threads, notes, parameters (properties), records, sequences, time stamps
 and generic values. Users of SFI will probably also appreciate the
-@uref{http://developer.gnome.org/doc/API,, GLib and GObject API Reference}.
+@uref{http://developer.gnome.org/doc/API/,, GLib and GObject API Reference}.
 
 
 

@@ -11,13 +11,13 @@
 @itemize
 @item @uref{http://www.arts-project.org,, aRts - analog Realtime Synthesizer}
 @item @uref{http://www.gstreamer.net,, GStreamer - Media Component Framework}
-@item @uref{http://www.xiph.org/ogg/vorbis,, Ogg/Vorbis - Open Audio Codec}
-@item @uref{http://www.mars.org/home/rob/proj/mpeg,, MAD - MPEG Audio Decoder}
+@item @uref{http://www.xiph.org/ogg/vorbis/,, Ogg/Vorbis - Open Audio Codec}
+@item @uref{http://www.mars.org/home/rob/proj/mpeg/,, MAD - MPEG Audio Decoder}
 @item @uref{http://www.dreampoint.co.uk,, Freeverb - Public Domain Reverb}
 @item @uref{http://www.glame.de,, GLAME - GNU/Linux Audio Mechanics}
 @item @uref{http://www.gtk.org,, GTK+ - The GIMP Toolkit}
 @item @uref{http://www.gnome.org,, GNOME Project}
-@item @uref{http://www.gnu.org/software/texinfo,, Texinfo - BEAST and BSE documentation format}
+@item @uref{http://www.gnu.org/software/texinfo/,, Texinfo - BEAST and BSE documentation format}
 @item @uref{http://www.gnu.org/software/guile/guile.html,, Guile - Scheme Scipting Language}
 @item @uref{http://www.gnu.org,, GNU - GNU's Not Unix!}
 @end itemize
@@ -27,6 +27,16 @@
 
 @itemize
 @item @uref{http://linux-sound.org, Sound & MIDI Software For Linux}
+@end itemize
+
+
+@unnumbered Miscellaneous related pages
+
+@itemize
+@item @uref{http://www.advogato.org/proj/BEAST%20-%20BSE/,, BEAST at Advogato}
+@item @uref{http://freshmeat.net/projects/beastbse/,, BEAST at Freshmeat}
+@item @uref{http://www.gnome.org/softwaremap/projects/beast/,, BEAST at the GNOME application repository}
+@c login for GNOME Admin Repo: http://www.gnome.org/account/login.php
 @end itemize
 
 

@@ -12,10 +12,24 @@
 
 There are various documents in CVS that track the current development state.
 Every major part has it's own ChangeLog (see links in the sidebar) and for
-overall track keeping, the release specific NEWS are also maintained:
+overall track keeping, the release specific
+@uref{beast-doc://release-news,, NEWS file} is used.
 
-@example
-@verbatiminclude @sedfix{top_srcdir}/NEWS
-@end example
+
+@unnumbered Web Site Development
+
+Most of the BEAST website is kept in CVS, to aid development, here're
+various validatior results:
+
+@itemize
+@item @uref{http://jigsaw.w3.org/css-validator/validator?uri=http://beast.gtk.org/html2,
+	    ,(beast.gtk.org) W3C CSS Validation}
+@item @uref{http://validator.w3.org/check?uri=http://beast.gtk.org/html2,
+	    ,(beast.gtk.org) W3C Markup Validation}
+@item @uref{http://validator.w3.org/checklink?uri=http://beast.gtk.org/html2/&summary=on&hide_type=all&no_accept_language=on&recursive=on&depth=&check=Check,
+            ,(beast.gtk.org) W3C Link Checker}
+@item @uref{http://www.htmlhelp.com/cgi-bin/validate.cgi?url=http://beast.gtk.org/html2&warnings=yes&spider=yes&hidevalid=yes,
+	    ,(beast.gtk.org) WDG HTML Validation}
+@end itemize
 
 @bye

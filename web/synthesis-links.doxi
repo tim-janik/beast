@@ -86,8 +86,8 @@ Selected @uref{http://www.sospubs.co.uk,,Sound On Sound} Articles:
 @item @uref{http://www.musicdsp.org, Music-DSP}
 @item @uref{http://www.dspguide.com, Guide to Digital Signal Processing}
 @item @uref{http://www.harmony-central.com,, Harmony Central}:
-	@uref{http://www.harmony-central.com/Effects,,Effects}
-	@uref{http://www.harmony-central.com/MIDI,,MIDI}
+	@uref{http://www.harmony-central.com/Effects/,,Effects}
+	@uref{http://www.harmony-central.com/MIDI/,,MIDI}
 @item @uref{http://www.chipcenter.com,,ChipCenter}:
 	@uref{http://www.chipcenter.com/dsp/colarch.html,,DSP Features Archive}
 @end itemize
