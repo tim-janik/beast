@@ -311,7 +311,11 @@ Wave::store (const string file_name)
   if (n_raw_handles)
     sfi_wstore_printf (wstore, "  byte-order = %s\n", gsl_byte_order_to_string (byte_order));
   if (n_raw_handles && dfl_mix_freq > 0)
-    sfi_wstore_printf (wstore, "  mix-freq = %.3f\n", dfl_mix_freq);
+    {
+      sfi_wstore_printf (wstore, "  mix-freq = ");
+      sfi_wstore_putf (wstore, dfl_mix_freq);
+      sfi_wstore_puts (wstore, "\n");
+    }
   gchar **xinfos = bse_xinfos_dup_consolidated (wave_xinfos, FALSE);
   if (xinfos)
     for (guint i = 0; xinfos[i]; i++)
@@ -336,8 +340,12 @@ Wave::store (const string file_name)
       if (midi_note)
         sfi_wstore_printf (wstore, "    midi-note = %u\n", midi_note);
       else
-        sfi_wstore_printf (wstore, "    osc-freq = %.3f\n", gsl_data_handle_osc_freq (chunk->dhandle));
-
+        {
+          sfi_wstore_printf (wstore, "    osc-freq = ");
+          sfi_wstore_putf (wstore, gsl_data_handle_osc_freq (chunk->dhandle));
+          sfi_wstore_puts (wstore, "\n");
+        }
+      
       GslDataHandle *dhandle, *tmp_handle = chunk->dhandle;
       do        /* skip comment or cache handles */
         {
@@ -359,7 +367,11 @@ Wave::store (const string file_name)
           sfi_wstore_puts (wstore, "\n");
           gfloat mix_freq = gsl_data_handle_mix_freq (chunk->dhandle);
           if (mix_freq != dfl_mix_freq)
-            sfi_wstore_printf (wstore, "    mix-freq = %.3f\n", mix_freq);
+            {
+              sfi_wstore_printf (wstore, "    mix-freq = ");
+              sfi_wstore_putf (wstore, mix_freq);
+              sfi_wstore_puts (wstore, "\n");
+            }
         }
 
       if (chunk->dhandle->setup.xinfos)
