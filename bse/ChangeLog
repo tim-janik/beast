@@ -1,3 +1,13 @@
+Fri Oct  8 13:37:40 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepcmmodule.c: check for a readable pcm device upon resetting the
+	PCM input module. handle partial read requests. properly zero initialize
+	newly allocated structures. 
+
+	* bseserver.[hc]: implemented bse_server_require_pcm_input(), which
+	issues an appropriate warning if PCM recordingis reduced to a silent
+	input stream.
+
 Fri Oct  8 11:38:07 2004  Tim Janik  <timj@gtk.org>
 
 	* bsedefs.h: don't include <math.h>. files needing math functions

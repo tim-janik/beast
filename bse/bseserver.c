@@ -429,6 +429,23 @@ bse_server_find_project (BseServer   *server,
   return NULL;
 }
 
+void
+bse_server_require_pcm_input (BseServer *server)
+{
+  if (server->pcm_device && !server->pcm_input_checked)
+    {
+      server->pcm_input_checked = TRUE;
+      if (!BSE_DEVICE_READABLE (server->pcm_device))
+        sfi_warning_msg (_("Show messages about audio recording problems"),
+                         _("An audio input module is in use, but the audio device "
+                           "has not been opened in recording mode. "
+                           "A quiet audio signal is used as input instead of a "
+                           "recorded signal, so playback operation may produce "
+                           "results not actually intended (such as reducing the "
+                           "output signal to pure silence)."));
+    }
+}
+
 typedef struct {
   guint      n_channels;
   guint      mix_freq;
@@ -469,6 +486,7 @@ server_open_pcm_device (BseServer *server,
     sfi_error_msg (_("Show messages about PCM device selections problems"),
                    _("Failed to open PCM devices, giving up: %s"),
                    bse_error_blurb (error));
+  server->pcm_input_checked = FALSE;
   return server->pcm_device ? BSE_ERROR_NONE : error;
 }
 

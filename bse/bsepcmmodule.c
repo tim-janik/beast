@@ -31,6 +31,7 @@ typedef struct
   gfloat       *bound;
   BsePcmHandle *handle;
   BsePcmWriter *pcm_writer;
+  gboolean      pcm_input_checked;
 } BsePCMModuleData;
 enum
 {
@@ -147,9 +148,9 @@ bse_pcm_omodule_insert (BsePcmHandle *handle,
   g_return_val_if_fail (handle->write != NULL, NULL);
   g_return_val_if_fail (trans != NULL, NULL);
   
-  mdata = g_new (BsePCMModuleData, 1);
+  mdata = g_new0 (BsePCMModuleData, 1);
   mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_JSTREAMS;
-  mdata->buffer = g_new (gfloat, mdata->n_values);
+  mdata->buffer = g_new0 (gfloat, mdata->n_values);
   mdata->bound = mdata->buffer + mdata->n_values;
   mdata->handle = handle;
   mdata->pcm_writer = writer;
@@ -181,27 +182,47 @@ bse_pcm_omodule_remove (BseModule *pcm_module,
 		 bse_job_discard (pcm_module));
 }
 
+static gboolean
+pcm_imodule_check_input (gpointer data)         /* UserThread */
+{
+  bse_server_require_pcm_input (bse_server_get());
+  return FALSE;
+}
+
 static void
-bse_pcm_imodule_process (BseModule *module,
+bse_pcm_imodule_reset (BseModule *module)       /* EngineThread */
+{
+  BsePCMModuleData *mdata = module->user_data;
+  if (!mdata->pcm_input_checked)
+    {
+      mdata->pcm_input_checked = TRUE;
+      bse_idle_now (pcm_imodule_check_input, NULL);
+    }
+}
+
+static void
+bse_pcm_imodule_process (BseModule *module,     /* EngineThread */
 			 guint      n_values)
 {
   BsePCMModuleData *mdata = module->user_data;
   gfloat *left = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_LEFT);
   gfloat *right = BSE_MODULE_OBUFFER (module, BSE_PCM_MODULE_OSTREAM_RIGHT);
-  const gfloat *s = mdata->buffer;
-  const gfloat *b = mdata->bound;
   gsize l;
   
-  g_return_if_fail (n_values == mdata->n_values >> 1);
+  g_return_if_fail (n_values <= mdata->n_values >> 1);
 
   if (mdata->handle->readable)
     {
-      l = bse_pcm_handle_read (mdata->handle, mdata->n_values, mdata->buffer);
-      g_return_if_fail (l == mdata->n_values);
+      guint n = mdata->n_values >> 1; /* in frames */
+      l = bse_pcm_handle_read (mdata->handle, n, mdata->buffer);
+      g_return_if_fail (l == n);
     }
   else
     memset (mdata->buffer, 0, mdata->n_values * sizeof (gfloat));
 
+  /* due to suspend/resume, we may be called with partial read requests */
+  const gfloat *s = mdata->buffer + mdata->n_values - (n_values << 1);
+  const gfloat *b = mdata->bound;
   do
     {
       *left++ = *s++;
@@ -220,7 +241,7 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
     BSE_PCM_MODULE_N_OSTREAMS,	/* n_ostreams */
     bse_pcm_imodule_process,	/* process */
     NULL,                       /* process_defer */
-    NULL,                       /* reset */
+    bse_pcm_imodule_reset,      /* reset */
     bse_pcm_module_data_free,	/* free */
     BSE_COST_EXPENSIVE,		/* cost */
   };
@@ -231,7 +252,7 @@ bse_pcm_imodule_insert (BsePcmHandle *handle,
   g_return_val_if_fail (handle->write != NULL, NULL);
   g_return_val_if_fail (trans != NULL, NULL);
   
-  mdata = g_new (BsePCMModuleData, 1);
+  mdata = g_new0 (BsePCMModuleData, 1);
   mdata->n_values = bse_engine_block_size () * BSE_PCM_MODULE_N_OSTREAMS;
   mdata->buffer = g_new0 (gfloat, mdata->n_values);
   mdata->bound = mdata->buffer + mdata->n_values;

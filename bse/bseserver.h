@@ -47,6 +47,7 @@ struct _BseServer
   
   guint		   dev_use_count;
   BsePcmDevice    *pcm_device;
+  guint            pcm_input_checked : 1;
   BseModule       *pcm_imodule;
   BseModule       *pcm_omodule;
   BsePcmWriter	  *pcm_writer;
@@ -78,6 +79,7 @@ BseModule*	bse_server_retrieve_pcm_input_module	(BseServer	*server,
 							 const gchar	*uplink_name);
 void		bse_server_discard_pcm_input_module	(BseServer	*server,
 							 BseModule	*module);
+void		bse_server_require_pcm_input    	(BseServer	*server);
 BseModule*	bse_server_retrieve_midi_input_module	(BseServer	*server,
 							 const gchar	*downlink_name,
 							 guint		 midi_channel_id,
