@@ -1860,7 +1860,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
   GtkWidget *widget = GTK_WIDGET (pe);
   BsePatternNote *note;
   guint tone_x, tone_y, tone_width, tone_height;
-  GdkGC *fg_gc, *bg_gc;
+  GdkGC *fg_gc, *bg_gc, *light_gc;
   gchar buffer[64], *p;
   
   g_return_if_fail (channel < N_CHANNELS (pe));
@@ -1877,6 +1877,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
       fg_gc = widget->style->fg_gc[GTK_WIDGET_STATE (pe)];
       bg_gc = widget->style->base_gc[GTK_WIDGET_STATE (pe)];
     }
+  light_gc = widget->style->dark_gc[GTK_WIDGET_STATE (pe)];
   
   /* base allocation
    */
@@ -1914,7 +1915,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
     g_snprintf (buffer, 64, NOTE_EMPTY);
   gdk_draw_string (pe->panel,
 		   widget->style->font,
-		   fg_gc,
+		   note->note != BSE_NOTE_VOID ? fg_gc : light_gc,
 		   tone_x + NOTE_X (pe),
 		   tone_y + NOTE_Y (pe),
 		   buffer);
@@ -1933,7 +1934,7 @@ bst_pattern_editor_draw_tone (BstPatternEditor *pe,
     *(p++) = '-';
   gdk_draw_string (pe->panel,
 		   widget->style->font,
-		   fg_gc,
+		   note->instrument ? fg_gc : light_gc,
 		   tone_x + INSTRUMENT_X (pe),
 		   tone_y + INSTRUMENT_Y (pe),
 		   buffer);
@@ -1992,20 +1993,25 @@ bst_pattern_editor_set_focus (BstPatternEditor *pe,
   pe->focus_channel = channel;
   pe->focus_row = row;
   
-  if ((old_channel != pe->focus_channel ||
-       old_row != pe->focus_row) &&
-      GTK_WIDGET_DRAWABLE (pe))
+  if (old_channel != pe->focus_channel ||
+      old_row != pe->focus_row)
     {
-      if (old_channel < N_CHANNELS (pe) &&
-	  old_row < N_ROWS (pe))
+      // bse_pattern_select_note (pe->pattern, pe->focus_channel, pe->focus_row);
+      bse_pattern_unselect_except (pe->pattern, pe->focus_channel, pe->focus_row);
+
+      if (GTK_WIDGET_DRAWABLE (pe))
 	{
-	  bst_pattern_editor_draw_tone (pe, old_channel, old_row);
-	  bst_pattern_editor_draw_grid (pe, old_channel, old_row, 0, 0);
+	  if (old_channel < N_CHANNELS (pe) &&
+	      old_row < N_ROWS (pe))
+	    {
+	      bst_pattern_editor_draw_tone (pe, old_channel, old_row);
+	      bst_pattern_editor_draw_grid (pe, old_channel, old_row, 0, 0);
+	    }
+	  bst_pattern_editor_draw_grid (pe, pe->focus_channel, pe->focus_row, 0, 0);
+	  bst_pattern_editor_draw_grid (pe, pe->focus_channel, pe->focus_row, 0, 0);
 	}
-      bst_pattern_editor_draw_grid (pe, pe->focus_channel, pe->focus_row, 0, 0);
-      bst_pattern_editor_draw_grid (pe, pe->focus_channel, pe->focus_row, 0, 0);
     }
-  
+
   bst_pattern_editor_adjust_sas (pe, FALSE);
 }
 

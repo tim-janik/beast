@@ -556,8 +556,8 @@ bst_canvas_icon_set (GnomeCanvasItem *item,
   pixbuf = gdk_pixbuf_new_from_art_pixbuf (apixbuf);
   bst_object_set (GTK_OBJECT (item),
 		  "pixbuf", pixbuf,
-		  "x_set", TRUE,
-		  "y_set", TRUE,
+		  "x_in_pixels", TRUE,
+		  "y_in_pixels", TRUE,
 		  NULL);
   gtk_object_set_data_full (GTK_OBJECT (item),
 			    "BseIcon",

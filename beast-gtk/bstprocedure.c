@@ -75,6 +75,8 @@ static void
 bst_procedure_dialog_init (BstProcedureDialog *procedure_dialog)
 {
   procedure_dialog->proc = NULL;
+  procedure_dialog->n_in_params = 0;
+  procedure_dialog->n_out_params = 0;
   procedure_dialog->bparams = NULL;
   procedure_dialog->_params = NULL;
   procedure_dialog->tooltips = gtk_tooltips_new ();
@@ -87,6 +89,8 @@ bst_procedure_dialog_destroy_contents (BstProcedureDialog *procedure_dialog)
 {
   gtk_container_foreach (GTK_CONTAINER (procedure_dialog), (GtkCallback) gtk_widget_destroy, NULL);
   g_slist_free (procedure_dialog->bparams);
+  procedure_dialog->n_in_params = 0;
+  procedure_dialog->n_out_params = 0;
   procedure_dialog->bparams = NULL;
   procedure_dialog->_params = NULL;
 }
@@ -143,7 +147,7 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
   BseProcedureClass *proc;
   GtkWidget *param_box, *any, *sbar;
   GSList *slist, *pspec_array_list = NULL;
-  guint hackval = 0;
+  guint is_out_param = 0;
 
   g_return_if_fail (BST_IS_PROCEDURE_DIALOG (procedure_dialog));
 
@@ -186,13 +190,14 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
 					   param_box,
 					   GTK_TOOLTIPS (procedure_dialog->tooltips));
 		procedure_dialog->bparams = g_slist_append (procedure_dialog->bparams, bparam);
-		bst_param_set_editable (bparam, !hackval);
-		if (hackval && !procedure_dialog->_params)
+		(is_out_param ? procedure_dialog->n_out_params : procedure_dialog->n_in_params) += 1;
+		bst_param_set_editable (bparam, !is_out_param);
+		if (is_out_param && !procedure_dialog->_params)
 		  procedure_dialog->_params = g_slist_last (procedure_dialog->bparams);
 	      }
 	    pspec_p++;
 	  }
-      hackval++;
+      is_out_param++;
     }
   g_slist_free (pspec_array_list);
   
@@ -282,28 +287,49 @@ bst_procedure_dialog_preset (BstProcedureDialog *procedure_dialog,
 			     GSList             *preset_params)
 {
   BseProcedureClass *proc;
-  GSList *slist;
-  guint n = 0;
+  GSList *bparam_slist;
+  guint n, u = 0;
 
   g_return_val_if_fail (BST_IS_PROCEDURE_DIALOG (procedure_dialog), 0);
   g_return_val_if_fail (procedure_dialog->proc != NULL, 0);
 
   proc = procedure_dialog->proc;
-  slist = procedure_dialog->bparams;
+  bparam_slist = procedure_dialog->bparams;
+  n = preset_params ? procedure_dialog->n_in_params : 0;
 
-  while (n < proc->n_in_params && preset_params)
+  /* ok, this is the really interesting part!
+   * we walk the preset_params list and try to unificate those
+   * parameters with the procedure's in parameters. if we find
+   * a name match and type conversion is sucessfull, the procedure
+   * gets invoced with a predefined parameter
+   */
+
+  while (n--)
     {
-      if (!bst_param_set_from_other (preset_params->data, slist->data))
-	break;
+      BstParam *bparam = bparam_slist->data;
+      BseParam *iparam = &bparam->param;
+      GSList *slist;
+      
+      for (slist = preset_params; slist; slist = slist->next)
+	{
+	  BseParam *pparam = slist->data;
 
-      n++;
-      if (lock_presets)
-	bst_param_set_editable (preset_params->data, FALSE);
-      preset_params = preset_params->next;
-      slist = slist->next;
+	  if (strcmp (iparam->pspec->any.name, pparam->pspec->any.name) == 0)
+	    {
+	      if (bst_param_set_from_other (bparam, pparam))
+		{
+		  u++;
+		  if (lock_presets)
+		    bst_param_set_editable (bparam, FALSE);
+		  break;
+		}
+	    }
+	}
+      
+      bparam_slist = bparam_slist->next;
     }
 
-  return n;
+  return u;
 }
 
 

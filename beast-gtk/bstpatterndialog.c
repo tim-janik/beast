@@ -40,6 +40,7 @@ static GtkItemFactoryEntry popup_entries[] =
 {
 #define BST_OP(op) (pattern_dialog_operate), (BST_PATTERN_OP_ ## op)
   { "/<<<<<<",			NULL,		NULL, 0,		"<Tearoff>" },
+#if 0
   { "/_Pattern",		NULL,		NULL, 0,		"<Branch>" },
   { "/Pattern/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
   { "/Pattern/_Huhu",		"<ctrl>H",	BST_OP (HUHU),		"<Item>" },
@@ -47,6 +48,7 @@ static GtkItemFactoryEntry popup_entries[] =
   { "/Basic/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
   { "/_Test",			NULL,		NULL, 0,		"<Branch>" },
   { "/Test/<<<<<<",		NULL,		NULL, 0,		"<Tearoff>" },
+#endif
 #undef	BST_OP
 };
 static guint n_popup_entries = sizeof (popup_entries) / sizeof (popup_entries[0]);
@@ -97,8 +99,7 @@ bst_pattern_dialog_class_init (BstPatternDialogClass *class)
   bst_pattern_dialog_class = class;
   parent_class = gtk_type_class (GTK_TYPE_WINDOW);
 
-  cats = bse_categories_match_typed ("*", BSE_TYPE_PROCEDURE, &n_cats);
-  g_free (cats); cats = bse_categories_match ("*", &n_cats);
+  cats = bse_categories_match_typed ("/Method/BsePattern/*", BSE_TYPE_PROCEDURE, &n_cats);
   class->popup_entries = bst_menu_entries_compose (n_popup_entries,
 						   popup_entries,
 						   n_cats,
@@ -212,11 +213,13 @@ pe_cell_clicked (BstPatternEditor *pe,
 		 guint		   time,
 		 BstPatternDialog *pattern_dialog)
 {
-  if (0 && button == 3) /* FIXME: menu popups disabled */
+  if (button == 3)
     {
       GtkItemFactory *popup_factory = gtk_object_get_data (GTK_OBJECT (pattern_dialog),
 								bst_pattern_dialog_factories_path);
       guint index = (channel + 1) << 16 | (row + 1);
+
+      bst_pattern_editor_set_focus (pe, channel, row);
       
       gtk_item_factory_popup_with_data (popup_factory,
 					GUINT_TO_POINTER (index),
@@ -261,20 +264,61 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
 			  BseType           proc_type,
 			  GtkWidget        *menu_item)
 {
+  BseParamSpec *pspec_pattern, *pspec_focus_channel, *pspec_focus_row; /* FIXME: cache these */
+  BseParam param_pattern = { NULL, }, param_focus_channel = { NULL, }, param_focus_row = { NULL, };
+  BstPatternEditor *pattern_editor;
   BseProcedureClass *proc;
   BsePattern *pattern;
   GtkWidget *widget;
+  GSList *slist = NULL;
   guint channel, row;
 
   widget = GTK_WIDGET (pattern_dialog);
-  pattern = BSE_PATTERN (BST_PATTERN_EDITOR (pattern_dialog->pattern_editor)->pattern);
+  pattern_editor = BST_PATTERN_EDITOR (pattern_dialog->pattern_editor);
+  pattern = BSE_PATTERN (pattern_editor->pattern);
   pe_channel_row_from_popup (pattern_dialog, menu_item, &channel, &row);
 
   gtk_widget_ref (widget);
   bse_object_ref (BSE_OBJECT (pattern));
 
+
   proc = bse_type_class_ref (proc_type);
-  bst_procedure_void_execpl (proc, NULL);
+
+  /* ok, now we buld a list of possible preset parameters to
+   * pass into the procedure
+   */
+  pspec_pattern = bse_param_spec_item ("pattern", NULL, NULL,
+				       BSE_TYPE_PATTERN, BSE_PARAM_DEFAULT);
+  pspec_focus_channel = bse_param_spec_uint ("focus_channel", NULL, NULL,
+					     0, BSE_MAX_N_CHANNELS - 1, 1, 0, BSE_PARAM_DEFAULT);
+  pspec_focus_row = bse_param_spec_uint ("focus_row", NULL, NULL,
+					 0, BSE_MAX_N_ROWS - 1, 1, 0, BSE_PARAM_DEFAULT);
+  bse_param_init (&param_pattern, pspec_pattern);
+  bse_param_init (&param_focus_channel, pspec_focus_channel);
+  bse_param_init (&param_focus_row, pspec_focus_row);
+  bse_param_set_item (&param_pattern, BSE_ITEM (pattern));
+  bse_param_set_uint (&param_focus_channel, pattern_editor->focus_channel);
+  bse_param_set_uint (&param_focus_row, pattern_editor->focus_row);
+  slist = g_slist_prepend (slist, &param_pattern);
+  slist = g_slist_prepend (slist, &param_focus_channel);
+  slist = g_slist_prepend (slist, &param_focus_row);
+  
+  /* invoke procedure */
+  bse_pattern_select_note (pattern, pattern_editor->focus_channel, pattern_editor->focus_row);
+  bst_procedure_void_execpl (proc, slist);
+
+  /* free preset params and destroy their specs again */
+  while (slist)
+    {
+      BseParam *param = slist->data;
+      GSList *tmp = slist->next;
+
+      bse_param_free_value (param);
+      bse_param_spec_free (param->pspec);
+      g_slist_free_1 (slist);
+      slist = tmp;
+    }
+
   bse_type_class_unref (proc);
   
   bst_pattern_dialog_update (pattern_dialog);

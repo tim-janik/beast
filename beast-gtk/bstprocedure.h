@@ -45,8 +45,10 @@ struct _BstProcedureDialog
 
   BseProcedureClass *proc;
 
-  GSList	    *bparams;
-  GSList	    *_params;
+  guint		     n_in_params;
+  guint		     n_out_params;
+  GSList	    *bparams; /* n_in_params + n_out_params bparams */
+  GSList	    *_params; /* first out param */
 
   GtkTooltips	    *tooltips;
 };

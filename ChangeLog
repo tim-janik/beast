@@ -1,3 +1,32 @@
+Wed Feb  2 06:42:41 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_set_editable): make prompt, pre- and
+	post-action widgets insensitive for !editable.
+
+	* beast-gtk/bstprocedure.c (bst_procedure_dialog_preset): unificate
+	preset parameters with procedure's in parameters.
+
+	* beast-gtk/bstpatterndialog.c: pattern procedure menu fixups.
+	(pattern_dialog_exec_proc): provide preset parameters "pattern",
+	"focus_channel" and "focus_row" for procedure invocation, make
+	sure the focus cell is selected.
+	(pe_cell_clicked): readjust focus cell for button3 clicks.
+
+	* beast-gtk/bstpatterneditor.c (bst_pattern_editor_draw_tone): draw
+	empty note contents with a light gc.
+	(bst_pattern_editor_set_focus): readjust selection.
+
+Tue Feb  1 00:49:16 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.c (bst_canvas_icon_set):
+	s/x_set/x_in_pixels/ and s/y_set/y_in_pixels/ for new gdk-pixbuf
+	release.
+
+Mon Jan 31 23:13:58 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterndialog.c (pe_cell_clicked): re-enable per-note
+	popup menu.
+
 Mon Jan 31 19:05:40 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterneditor.c:

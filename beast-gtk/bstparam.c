@@ -135,6 +135,7 @@ GROUP_FORM_BIG (GtkWidget *parent,
 #define GROUP_ADD_SCALE(g, w)             (_GROUP_ADD_NAMED_OBJECT ((g), "group_scale", (w)))
 #define GROUP_GET_ACTION(g)	          (GTK_WIDGET (g))
 #define GROUP_GET_PRE_ACTION(g)	          (_GROUP_GET_NAMED_WIDGET ((g), "group_pre_action"))
+#define GROUP_GET_POST_ACTION(g)	  (_GROUP_GET_NAMED_WIDGET ((g), "group_post_action"))
 #define GROUP_GET_PROMPT(g)	          (_GROUP_GET_NAMED_WIDGET ((g), "group_prompt"))
 static void
 GROUP_SET_TIP (GtkWidget   *group,
@@ -1302,12 +1303,21 @@ bst_param_set_editable (BstParam *bparam,
 
   if (bparam->group)
     {
+      GtkWidget *prompt = GROUP_GET_PROMPT (bparam->group);
       GtkWidget *action = GROUP_GET_ACTION (bparam->group);
+      GtkWidget *pre_action = GROUP_GET_PRE_ACTION (bparam->group);
+      GtkWidget *post_action = GROUP_GET_POST_ACTION (bparam->group);
       
+      if (GTK_IS_WIDGET (prompt))
+	gtk_widget_set_sensitive (prompt, editable);
       if (GTK_IS_EDITABLE (action))
 	gtk_editable_set_editable (GTK_EDITABLE (action), editable);
       else
 	gtk_widget_set_sensitive (action, editable);
+      if (GTK_IS_BUTTON (pre_action))
+	gtk_widget_set_sensitive (pre_action, editable);
+      if (GTK_IS_BUTTON (post_action))
+	gtk_widget_set_sensitive (post_action, editable);
     }
 }
 
