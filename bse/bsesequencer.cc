@@ -24,7 +24,7 @@
 #include "bsemain.h"
 
 
-#define DEBUG	sfi_debug_with_key ("sequencer")
+#define DEBUG	sfi_nodebug_with_key ("sequencer")
 
 
 /* --- prototypes --- */
@@ -316,9 +316,13 @@ bse_ssequencer_process_track_SL (BseTrack *track,
   BsePart *part = bse_track_get_part_SL (track, start_tick, &start, &next);
   /* advance to first part */
   if (!part && next)
-    part = bse_track_get_part_SL (track, next, &start, &next);
-  if (!part || start + part->last_tick_SL < start_tick)
     {
+      part = bse_track_get_part_SL (track, next, &start, &next);
+      DEBUG ("track[%u]: advancing to first part: %p", start_tick, part);
+    }
+  if (!part || (next == 0 && start + part->last_tick_SL < start_tick))
+    {
+      DEBUG ("track[%u]: could be done: %p==NULL || %u < %u (next=%u)", start_tick, part, start + (part ? part->last_tick_SL : 0), start_tick, next);
       track->track_done_SL = !bse_midi_receiver_voices_pending (track->midi_receiver_SL);
       part = NULL;
     }

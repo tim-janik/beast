@@ -1,3 +1,8 @@
+Tue Feb 18 16:56:22 2003  Tim Janik  <timj@gtk.org>
+
+	* bsessequencer.c (bse_ssequencer_process_track_SL): don't forget
+	following parts when checking whether a track is done.
+
 Tue Feb 18 16:29:34 2003  Tim Janik  <timj@gtk.org>
 
 	* bsecontainer.c:
