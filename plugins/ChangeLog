@@ -1,3 +1,9 @@
+Tue May 14 02:56:23 2002  Tim Janik  <timj@gtk.org>
+
+	* davxtalstrings.c: some cleanups, provide sane trigger facility
+	via input signal and frequency input. finally provide an icon for
+	this plugin.
+
 Mon May 13 22:17:17 2002  Tim Janik  <timj@gtk.org>
 
 	* freeverb/bsefreeverb.[hc] (free_verb_reconnect): reset

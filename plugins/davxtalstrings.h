@@ -16,7 +16,6 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #ifndef __DAV_XTAL_STRINGS_H__
 #define __DAV_XTAL_STRINGS_H__
 
@@ -46,6 +45,7 @@ typedef struct {
   gfloat      tension_decay;
   gfloat      metallic_factor;
   gfloat      snap_factor;
+  guint	      trigger_now : 1;
 } DavXtalStringsParams;
 struct _DavXtalStrings
 {
@@ -63,7 +63,14 @@ struct _DavXtalStringsClass
 /* --- channels --- */
 enum
 {
-  DAV_XTAL_STRINGS_OCHANNEL_MONO
+  DAV_XTAL_STRINGS_ICHANNEL_FREQ,
+  DAV_XTAL_STRINGS_ICHANNEL_TRIGGER,
+  DAV_XTAL_STRINGS_N_ICHANNELS
+};
+enum
+{
+  DAV_XTAL_STRINGS_OCHANNEL_MONO,
+  DAV_XTAL_STRINGS_N_OCHANNELS
 };
 
 

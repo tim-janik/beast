@@ -33,6 +33,7 @@
 #include "davxtalstrings.h"
 
 #include <bse/gslengine.h>
+#include <bse/gslsignal.h>
 
 
 /* --- parameters --- */
@@ -51,21 +52,21 @@ enum
 
 
 /* --- prototypes --- */
-static void	   dav_xtal_strings_init	     (DavXtalStrings	   *strings);
+static void	   dav_xtal_strings_init	     (DavXtalStrings	   *self);
 static void	   dav_xtal_strings_class_init	     (DavXtalStringsClass  *class);
-static void	   dav_xtal_strings_class_finalize   (DavXtalStringsClass  *class);
-static void	   dav_xtal_strings_set_property     (DavXtalStrings	   *strings,
+static void	   dav_xtal_strings_set_property     (DavXtalStrings	   *self,
 						      guint                 param_id,
 						      GValue               *value,
 						      GParamSpec           *pspec);
-static void	   dav_xtal_strings_get_property     (DavXtalStrings	   *strings,
+static void	   dav_xtal_strings_get_property     (DavXtalStrings	   *self,
 						      guint                 param_id,
 						      GValue               *value,
 						      GParamSpec           *pspec);
 static void	   dav_xtal_strings_context_create   (BseSource		   *source,
 						      guint		    context_handle,
 						      GslTrans		   *trans);
-static void	   dav_xtal_strings_trigger	     (DavXtalStrings	   *strings);
+static void	   dav_xtal_strings_update_modules   (DavXtalStrings	   *self,
+						      gboolean		    trigger_now);
 
 
 /* --- variables --- */
@@ -77,7 +78,7 @@ static const GTypeInfo type_info_xtal_strings = {
   (GBaseInitFunc) NULL,
   (GBaseFinalizeFunc) NULL,
   (GClassInitFunc) dav_xtal_strings_class_init,
-  (GClassFinalizeFunc) dav_xtal_strings_class_finalize,
+  (GClassFinalizeFunc) NULL,
   NULL /* class_data */,
   
   sizeof (DavXtalStrings),
@@ -93,7 +94,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   BseObjectClass *object_class = BSE_OBJECT_CLASS (class);
   BseSourceClass *source_class = BSE_SOURCE_CLASS (class);
-  guint ochannel_id;
+  guint channel_id;
   
   parent_class = g_type_class_peek_parent (class);
   
@@ -101,85 +102,79 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   gobject_class->get_property = (GObjectGetPropertyFunc) dav_xtal_strings_get_property;
   
   source_class->context_create = dav_xtal_strings_context_create;
-  
-  bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
+
+  bse_object_class_add_param (object_class, "Frequency",
+			      PARAM_BASE_FREQ,
 			      bse_param_spec_float ("base_freq", "Frequency", NULL,
-						    27.5, 4000.0,
-						    BSE_KAMMER_FREQ_f, 10.0,
+						    BSE_MIN_OSC_FREQ_d, BSE_MAX_OSC_FREQ_d,
+						    BSE_KAMMER_FREQ, 10.0,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_DIAL));
-  
-  bse_object_class_add_param (object_class, "Base Frequency",
+  bse_object_class_set_param_log_scale (object_class, "base_freq", 880.0, 2, 4);
+  bse_object_class_add_param (object_class, "Frequency",
 			      PARAM_BASE_NOTE,
 			      bse_param_spec_note ("base_note", "Note", NULL,
-						   BSE_NOTE_A(-3), BSE_NOTE_B (3),
-						   BSE_NOTE_VOID, 1, FALSE,
+						   BSE_MIN_NOTE, BSE_MAX_NOTE,
+						   BSE_KAMMER_NOTE, 1, TRUE,
 						   BSE_PARAM_GUI));
-  
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_VEL,
 			      bse_param_spec_float ("trigger_vel", "Trigger Velocity [%]",
-						    "Set the velocity of the string pluck",
+						    "Velocity of the string pluck",
 						    0.0, 100.0, 100.0, 1,
 						    BSE_PARAM_GUI | BSE_PARAM_HINT_SCALE));
-  
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_HIT,
 			      bse_param_spec_bool ("trigger_pulse", "Trigger Hit", "Pluck the string",
 						   FALSE, BSE_PARAM_GUI));
-  
   bse_object_class_add_param (object_class, "Decay", PARAM_NOTE_DECAY,
 			      bse_param_spec_float ("note_decay", "Note Decay",
-						    "Set the 'half-life' of the note's decay in seconds",
+						    "Note decay is the 'half-life' of the note's decay in seconds",
 						    0.001, 4.0, 0.4, 0.01,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  
   bse_object_class_add_param (object_class, "Decay", PARAM_TENSION_DECAY,
 			      bse_param_spec_float ("tension_decay", "Tension Decay",
-						    "Set the tension of the string",
+						    "Tension of the string",
 						    0.001, 1.0, 0.04, 0.01,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  
   bse_object_class_add_param (object_class, "Flavour", PARAM_METALLIC_FACTOR,
 			      bse_param_spec_float ("metallic_factor", "Metallic Factor [%]",
-						    "Set the metallicness of the string",
+						    "Metallicness of the string",
 						    0.0, 100.0, 16.0, 1,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
-  
   bse_object_class_add_param (object_class, "Flavour", PARAM_SNAP_FACTOR,
 			      bse_param_spec_float ("snap_factor", "Snap Factor [%]",
-						    "Set the snappiness of the string",
+						    "Snappiness of the string",
 						    0.0, 100.0, 34.0, 1,
 						    BSE_PARAM_DEFAULT | BSE_PARAM_HINT_SCALE));
   
-  ochannel_id = bse_source_class_add_ochannel (source_class, "xtal_strings_out", "XtalStringsOutput");
-  g_assert (ochannel_id == DAV_XTAL_STRINGS_OCHANNEL_MONO);
+  channel_id = bse_source_class_add_ichannel (source_class, "Freq Input", "Pluck frequency input");
+  g_assert (channel_id == DAV_XTAL_STRINGS_ICHANNEL_FREQ);
+  channel_id = bse_source_class_add_ichannel (source_class, "Trigger Input", "Pluck strings on raising edge");
+  g_assert (channel_id == DAV_XTAL_STRINGS_ICHANNEL_TRIGGER);
+  channel_id = bse_source_class_add_ochannel (source_class, "Audio Out", "XtalStrings Output");
+  g_assert (channel_id == DAV_XTAL_STRINGS_OCHANNEL_MONO);
 }
 
 static void
-dav_xtal_strings_class_finalize (DavXtalStringsClass *class)
+dav_xtal_strings_init (DavXtalStrings *self)
 {
-}
-
-static void
-dav_xtal_strings_init (DavXtalStrings *strings)
-{
-  strings->params.freq = 440.0;
-  strings->params.trigger_vel = 1.0;
-  strings->params.note_decay = 0.4;
-  strings->params.tension_decay = 0.04;
-  strings->params.metallic_factor = 0.16;
-  strings->params.snap_factor = 0.34;
+  self->params.freq = BSE_KAMMER_FREQ;
+  self->params.trigger_vel = 1.0;
+  self->params.note_decay = 0.4;
+  self->params.tension_decay = 0.04;
+  self->params.metallic_factor = 0.16;
+  self->params.snap_factor = 0.34;
 #if 0
-  strings->string = NULL;
-  strings->size = 1;
-  strings->pos = 0;
-  strings->count = 0;
+  self->string = NULL;
+  self->size = 1;
+  self->pos = 0;
+  self->count = 0;
   
-  strings->a = 0.0;
-  strings->damping_factor = 0.0;
+  self->a = 0.0;
+  self->damping_factor = 0.0;
 #endif
 }
 
 static void
-dav_xtal_strings_set_property (DavXtalStrings *strings,
+dav_xtal_strings_set_property (DavXtalStrings *self,
 			       guint           param_id,
 			       GValue         *value,
 			       GParamSpec     *pspec)
@@ -187,39 +182,46 @@ dav_xtal_strings_set_property (DavXtalStrings *strings,
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      strings->params.freq = g_value_get_float (value);
-      bse_object_param_changed (BSE_OBJECT (strings), "base_note");
+      self->params.freq = g_value_get_float (value);
+      dav_xtal_strings_update_modules (self, FALSE);
+      g_object_notify (G_OBJECT (self), "base_note");
       break;
     case PARAM_BASE_NOTE:
-      strings->params.freq = bse_note_to_freq (bse_value_get_note (value));
-      bse_object_param_changed (BSE_OBJECT (strings), "base_freq");
+      self->params.freq = bse_note_to_freq (bse_value_get_note (value));
+      dav_xtal_strings_update_modules (self, FALSE);
+      g_object_notify (G_OBJECT (self), "base_freq");
       break;
-    case PARAM_TRIGGER_HIT:
-      dav_xtal_strings_trigger (strings);
+    case PARAM_TRIGGER_HIT:	/* GUI hack */
+      dav_xtal_strings_update_modules (self, TRUE);
       break;
     case PARAM_TRIGGER_VEL:
-      strings->params.trigger_vel = g_value_get_float (value) / 100.0;
+      self->params.trigger_vel = g_value_get_float (value) / 100.0;
+      dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_NOTE_DECAY:
-      strings->params.note_decay = g_value_get_float (value);
+      self->params.note_decay = g_value_get_float (value);
+      dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_TENSION_DECAY:
-      strings->params.tension_decay = g_value_get_float (value);
+      self->params.tension_decay = g_value_get_float (value);
+      dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_METALLIC_FACTOR:
-      strings->params.metallic_factor = g_value_get_float (value) / 100.0;
+      self->params.metallic_factor = g_value_get_float (value) / 100.0;
+      dav_xtal_strings_update_modules (self, FALSE);
       break;
     case PARAM_SNAP_FACTOR:
-      strings->params.snap_factor = g_value_get_float (value) / 100.0;
+      self->params.snap_factor = g_value_get_float (value) / 100.0;
+      dav_xtal_strings_update_modules (self, FALSE);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (strings, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
 
 static void
-dav_xtal_strings_get_property (DavXtalStrings *strings,
+dav_xtal_strings_get_property (DavXtalStrings *self,
 			       guint           param_id,
 			       GValue         *value,
 			       GParamSpec     *pspec)
@@ -227,31 +229,31 @@ dav_xtal_strings_get_property (DavXtalStrings *strings,
   switch (param_id)
     {
     case PARAM_BASE_FREQ:
-      g_value_set_float (value, strings->params.freq);
+      g_value_set_float (value, self->params.freq);
       break;
     case PARAM_BASE_NOTE:
-      bse_value_set_note (value, bse_note_from_freq (strings->params.freq));
+      bse_value_set_note (value, bse_note_from_freq (self->params.freq));
       break;
     case PARAM_TRIGGER_HIT:
       g_value_set_boolean (value, FALSE);
       break;
     case PARAM_TRIGGER_VEL:
-      g_value_set_float (value, strings->params.trigger_vel * 100.0);
+      g_value_set_float (value, self->params.trigger_vel * 100.0);
       break;
     case PARAM_NOTE_DECAY:
-      g_value_set_float (value, strings->params.note_decay);
+      g_value_set_float (value, self->params.note_decay);
       break;
     case PARAM_TENSION_DECAY:
-      g_value_set_float (value, strings->params.tension_decay);
+      g_value_set_float (value, self->params.tension_decay);
       break;
     case PARAM_METALLIC_FACTOR:
-      g_value_set_float (value, strings->params.metallic_factor * 100.0);
+      g_value_set_float (value, self->params.metallic_factor * 100.0);
       break;
     case PARAM_SNAP_FACTOR:
-      g_value_set_float (value, strings->params.snap_factor * 100.0);
+      g_value_set_float (value, self->params.snap_factor * 100.0);
       break;
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (strings, param_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
       break;
     }
 }
@@ -267,78 +269,53 @@ calc_factor (gfloat freq,
  * modules per DavXtalStrings object
  */
 typedef struct {
-  gfloat      trigger_freq;
-  gfloat      a;
-  gfloat      damping_factor;
-  gfloat      d;
-  gint        pos;
-  gint	      size;
-  guint	      count;
-  gfloat     *string;
+  gfloat               a, d;
+  gfloat               damping_factor;
+  gint                 pos, size;
+  guint	               count;
+  gfloat              *string;
+  gfloat	       last_trigger_level;
+  gfloat	       last_trigger_freq;
+  DavXtalStringsParams tparams;
 } XtalStringsModule;
 
-/* trigger a XtalStringsModule by altering its state, this function
- * gets called subsequently for all modules of a XtalStringsModule object
+/* trigger a XtalStringsModule by altering its state.
  */
-static void
-xmod_access (GslModule *module,
-	     gpointer   data)
+static inline void
+xmod_trigger (XtalStringsModule *xmod,
+	      gfloat             trigger_freq)
 {
-  XtalStringsModule *xmod = module->user_data;
-  DavXtalStringsParams *params = data;
   guint i;
   guint pivot;
 
-  xmod->trigger_freq = params->freq;
+  trigger_freq = CLAMP (trigger_freq, 27.5, 4000.0);
+  xmod->last_trigger_freq = trigger_freq;
+
   xmod->pos = 0;
   xmod->count = 0;
-  xmod->size = (int) ((BSE_MIX_FREQ + xmod->trigger_freq - 1) / xmod->trigger_freq);
+  xmod->size = (int) ((BSE_MIX_FREQ + trigger_freq - 1) / trigger_freq);
   
-  xmod->a = calc_factor (xmod->trigger_freq, params->tension_decay);
-  xmod->damping_factor = calc_factor (xmod->trigger_freq, params->note_decay);
-  
+  xmod->a = calc_factor (trigger_freq, xmod->tparams.tension_decay);
+  xmod->damping_factor = calc_factor (trigger_freq, xmod->tparams.note_decay);
+
   /* Create envelope. */
   pivot = xmod->size / 5;
-  
   for (i = 0; i <= pivot; i++)
     xmod->string[i] = ((float) i) / pivot;
-  
   for (; i < xmod->size; i++)
     xmod->string[i] = ((float) (xmod->size - i - 1)) / (xmod->size - pivot - 1);
   
   /* Add some snap. */
   for (i = 0; i < xmod->size; i++)
-    xmod->string[i] = pow (xmod->string[i], params->snap_factor * 10.0F + 1.0F);
-  
+    xmod->string[i] = pow (xmod->string[i], xmod->tparams.snap_factor * 10.0 + 1.0);
+
   /* Add static to displacements. */
   for (i = 0; i < xmod->size; i++)
-    xmod->string[i] = xmod->string[i] * (1.0F - params->metallic_factor) +
-      (bse_rand_bool () ? -1.0F : 1.0F) * params->metallic_factor;
-  
+    xmod->string[i] = (xmod->string[i] * (1.0F - xmod->tparams.metallic_factor) +
+		       (bse_rand_bool () ? -1.0F : 1.0F) * xmod->tparams.metallic_factor);
   /* Set velocity. */
   for (i = 0; i < xmod->size; i++)
-    xmod->string[i] *= params->trigger_vel;
-}
-
-static void
-dav_xtal_strings_trigger (DavXtalStrings *strings)
-{
-  if (BSE_SOURCE_PREPARED (strings))
-    {
-      /* trigger all XtalStringsModules associated with the
-       * output channel DAV_XTAL_STRINGS_OCHANNEL_MONO. we
-       * have to copy the parameters to this function since
-       * it's called in another thread than the one our
-       * DavXtalStrings object lives in. also, this function
-       * will be called multiple times for all XtalStringsModules,
-       * the data will be freed after the last execution occoured
-       */
-      bse_source_access_modules (BSE_SOURCE (strings),
-				 xmod_access,
-				 g_memdup (&strings->params, sizeof (strings->params)),
-				 g_free,
-				 NULL);
-    }
+    xmod->string[i] *= xmod->tparams.trigger_vel;
 }
 
 static void
@@ -346,17 +323,28 @@ xmod_process (GslModule *module,
 	      guint      n_values)
 {
   XtalStringsModule *xmod = module->user_data;
-  BseSampleValue *wave_out = GSL_MODULE_OBUFFER (module, 0);
-  guint i;
+  const gfloat *freq_in, *trigger_in = GSL_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_TRIGGER);
+  gfloat *wave_out = GSL_MODULE_OBUFFER (module, DAV_XTAL_STRINGS_OCHANNEL_MONO);
   gint32 pos2;
-  gfloat sample;
+  gfloat sample, last_trigger_level;
   guint real_freq_256, actual_freq_256;
+  guint i;
 
-  real_freq_256 = (int) (xmod->trigger_freq * 256);
+  real_freq_256 = (int) (xmod->last_trigger_freq * 256);
   actual_freq_256 = (int) (BSE_MIX_FREQ_f * 256 / xmod->size);
   
+  if (GSL_MODULE_ISTREAM (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ).connected)
+    freq_in = GSL_MODULE_IBUFFER (module, DAV_XTAL_STRINGS_ICHANNEL_FREQ);
+  else
+    freq_in = NULL;
+  last_trigger_level = xmod->last_trigger_level;
   for (i = 0; i < n_values; i++)
     {
+      /* check input triggers */
+      if_reject (GSL_SIGNAL_RAISING_EDGE (trigger_in[i], last_trigger_level))
+	xmod_trigger (xmod, freq_in ? GSL_SIGNAL_TO_FREQ (freq_in[i]) : xmod->tparams.freq);
+      last_trigger_level = trigger_in[i];
+
       /* Get next position. */
       pos2 = xmod->pos + 1;
       if (pos2 >= xmod->size)
@@ -367,8 +355,8 @@ xmod_process (GslModule *module,
       sample += xmod->string[pos2] * (((float) xmod->count) / actual_freq_256);
       
       /* Store sample. */
-      wave_out[i] = CLAMP (sample, -1.0, 1.0);
-      
+      wave_out[i] = sample;
+
       /* Use Bresenham's algorithm to advance to the next position. */
       xmod->count += real_freq_256;
       while (xmod->count >= actual_freq_256)
@@ -383,6 +371,19 @@ xmod_process (GslModule *module,
 	  xmod->count -= actual_freq_256;
 	}
     }
+  xmod->last_trigger_level = last_trigger_level;
+}
+
+static void
+xmod_reconnect (GslModule *module)
+{
+  XtalStringsModule *xmod = module->user_data;
+
+  /* this function is called whenever an input or output
+   * connection changed
+   */
+  if (!GSL_MODULE_ISTREAM (module, DAV_XTAL_STRINGS_ICHANNEL_TRIGGER).connected)
+    xmod->last_trigger_level = 0;
 }
 
 static void
@@ -401,16 +402,16 @@ dav_xtal_strings_context_create (BseSource *source,
 				 GslTrans  *trans)
 {
   static const GslClass xmod_class = {
-    0,				/* n_istreams */
-    0,                          /* n_jstreams */
-    1,				/* n_ostreams */
-    xmod_process,		/* process */
-    NULL,                       /* process_defer */
-    NULL,                       /* reconnect */
-    xmod_free,			/* free */
-    GSL_COST_NORMAL,		/* cost */
+    DAV_XTAL_STRINGS_N_ICHANNELS,	/* n_istreams */
+    0,					/* n_jstreams */
+    DAV_XTAL_STRINGS_N_OCHANNELS,	/* n_ostreams */
+    xmod_process,			/* process */
+    NULL,				/* process_defer */
+    xmod_reconnect,			/* reconnect */
+    xmod_free,				/* free */
+    GSL_COST_NORMAL,			/* cost */
   };
-  // DavXtalStrings *strings = DAV_XTAL_STRINGS (source);
+  DavXtalStrings *self = DAV_XTAL_STRINGS (source);
   XtalStringsModule *xmod = g_new0 (XtalStringsModule, 1);
   GslModule *module;
 
@@ -421,7 +422,9 @@ dav_xtal_strings_context_create (BseSource *source,
   xmod->count = 0;
   xmod->a = 0.0;
   xmod->damping_factor = 0.0;
-  xmod->trigger_freq = 440.0;
+  xmod->last_trigger_freq = 440.0;	/* just _some_ valid freq for the stepping */
+  xmod->last_trigger_level = 0;
+  xmod->tparams = self->params;
   module = gsl_module_new (&xmod_class, xmod);
 
   /* setup module i/o streams with BseSource i/o channels */
@@ -434,14 +437,59 @@ dav_xtal_strings_context_create (BseSource *source,
   BSE_SOURCE_CLASS (parent_class)->context_create (source, context_handle, trans);
 }
 
+/* update module configuration from a new set of DavXtalStringsParams
+ */
+static void
+xmod_access (GslModule *module,
+	     gpointer   data)
+{
+  XtalStringsModule *xmod = module->user_data;
+  DavXtalStringsParams *params = data;
+
+  xmod->tparams = *params;
+  if (params->trigger_now)
+    xmod_trigger (xmod, params->freq);
+}
+
+static void
+dav_xtal_strings_update_modules (DavXtalStrings *self,
+				 gboolean	 trigger_now)
+{
+  if (BSE_SOURCE_PREPARED (self))
+    {
+      /* update all XtalStringsModules that this object created
+       * with the new parameter set.
+       * we have to copy the parameters to this function since
+       * it's called in different thread than the one the
+       * DavXtalStrings object lives in. also, this function
+       * will be called multiple times for all XtalStringsModules,
+       * the data will be freed after the last execution occoured.
+       * the trigger_now assignment is merely a hack to allow easy
+       * test triggers from the GUI.
+       */
+      self->params.trigger_now = trigger_now;
+      bse_source_access_modules (BSE_SOURCE (self),
+				 xmod_access,
+				 g_memdup (&self->params, sizeof (self->params)),
+				 g_free,
+				 NULL);
+    }
+}
+
 
 /* --- Export to BSE --- */
+#include "./icons/strings.c"
 BSE_EXPORTS_BEGIN (BSE_PLUGIN_NAME);
 BSE_EXPORT_OBJECTS = {
   { &type_id_xtal_strings, "DavXtalStrings", "BseSource",
-    "DavXtalStrings is a string synthesizer - Any commercial use of this module requires a license from Stanford University",
+    "DavXtalStrings is a plucked string synthesizer, using the "
+    "Karplus-Strong Algorithm. Commercial use of this module "
+    "until 2004 requires a license from Stanford University.",
     &type_info_xtal_strings,
     "/Modules/Audio Sources/XtalStrings",
+    { STRINGS_IMAGE_BYTES_PER_PIXEL | BSE_PIXDATA_1BYTE_RLE,
+      STRINGS_IMAGE_WIDTH, STRINGS_IMAGE_HEIGHT,
+      STRINGS_IMAGE_RLE_PIXEL_DATA, },
   },
   { NULL, },
 };
