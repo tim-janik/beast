@@ -315,6 +315,7 @@ bst_background_handlers_timeout (gpointer timeout_data)
   GDK_THREADS_ENTER();
   if (background_handlers1 || background_handlers2)
     {
+      gxk_status_set (GXK_STATUS_PROGRESS, _("Updating View"), NULL);
       BackgroundHandler *bgh = sfi_ring_pop_head (&background_handlers1);
       gint prio = 1;
       if (!bgh)
@@ -335,11 +336,16 @@ bst_background_handlers_timeout (gpointer timeout_data)
             bgh->free_func (bgh->data);
           g_free (bgh);
         }
+      if (background_handlers1 || background_handlers2)
+        gxk_status_set (GXK_STATUS_PROGRESS, _("Updating View"), NULL);
     }
+  if (!background_handlers1 && !background_handlers2)
+    gxk_status_set (100, _("Updating View"), NULL); /* done */
   GDK_THREADS_LEAVE();
+  /* re-queue instead of returning TRUE to start a new delay cycle */
   if (background_handlers1 || background_handlers2)
     g_timeout_add_full (G_PRIORITY_LOW - 100,
-                        20, /* milliseconds */
+                        30, /* milliseconds */
                         bst_background_handlers_timeout, NULL, NULL);
   return FALSE;
 }

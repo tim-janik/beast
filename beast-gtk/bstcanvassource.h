@@ -53,6 +53,10 @@ struct _BstCanvasSource
   guint            in_move : 1;
   guint		   show_hints : 1;
   guint            idle_reposition : 1;
+  guint            built_ichannels : 1;
+  guint            built_ochannels : 1;
+  guint            built_ihints : 1;
+  guint            built_ohints : 1;
   gdouble	   move_dx, move_dy;
 };
 struct _BstCanvasSourceClass
