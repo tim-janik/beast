@@ -1,15 +1,15 @@
 # Czech translation of beast.
-# Copyright (C) 2003 beast'S COPYRIGHT HOLDER
-# Copyright (C) 2003 Miloslav Trmac <mitr@volny.cz>
+# Copyright (C) 2003, 2004 beast'S COPYRIGHT HOLDER
+# Copyright (C) 2003, 2004 Miloslav Trmac <mitr@volny.cz>
 # This file is distributed under the same license as the beast package.
-# Miloslav Trmac <mitr@volny.cz>, 2003.
+# Miloslav Trmac <mitr@volny.cz>, 2003, 2004.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-29 14:12+0100\n"
-"PO-Revision-Date: 2003-12-29 19:11+0100\n"
+"POT-Creation-Date: 2004-01-06 14:22+0100\n"
+"PO-Revision-Date: 2004-01-06 16:48+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -414,7 +414,7 @@ msgstr "ID"
 msgid "Name"
 msgstr "Název"
 
-#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:572
+#: beast-gtk/bstitemview.c:241 beast-gtk/bsttrackview.c:548
 msgid "Comment"
 msgstr "Poznámka"
 
@@ -422,81 +422,81 @@ msgstr "Poznámka"
 msgid "Type"
 msgstr "Typ"
 
-#: beast-gtk/bstmain.c:134
+#: beast-gtk/bstmain.c:127
 msgid "BEAST Startup"
 msgstr "Spuštění BEAST"
 
-#: beast-gtk/bstmain.c:141
+#: beast-gtk/bstmain.c:134
 msgid "Startup"
 msgstr "Spuštění"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:146
+#: beast-gtk/bstmain.c:139
 msgid "Objects"
 msgstr "Objekty"
 
-#: beast-gtk/bstmain.c:150
+#: beast-gtk/bstmain.c:143
 msgid "Language"
 msgstr "Jazyk"
 
-#: beast-gtk/bstmain.c:161
+#: beast-gtk/bstmain.c:150
 msgid "RC File"
 msgstr "Soubor RC"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:168
+#: beast-gtk/bstmain.c:157
 msgid "Splash Image"
 msgstr "Obrázek při spuštění"
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:180
+#: beast-gtk/bstmain.c:169
 msgid "BSE Core"
 msgstr "Jádro BSE"
 
-#: beast-gtk/bstmain.c:199
+#: beast-gtk/bstmain.c:188
 msgid "Plugins"
 msgstr "Zásuvné moduly"
 
-#: beast-gtk/bstmain.c:218
+#: beast-gtk/bstmain.c:207
 msgid "LADSPA Plugins"
 msgstr "Zásuvné moduly LADSPA"
 
-#: beast-gtk/bstmain.c:246
+#: beast-gtk/bstmain.c:235
 msgid "Scripts"
 msgstr "Skripty"
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:264
+#: beast-gtk/bstmain.c:253
 msgid "Dialogs"
 msgstr "Dialogy"
 
-#: beast-gtk/bstmain.c:271
+#: beast-gtk/bstmain.c:260
 msgid "Loading..."
 msgstr "Načítám..."
 
-#: beast-gtk/bstmain.c:301 beast-gtk/bstmain.c:303
+#: beast-gtk/bstmain.c:290 beast-gtk/bstmain.c:292
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Načítám \"%s\""
 
-#: beast-gtk/bstmain.c:320
+#: beast-gtk/bstmain.c:309
 #, c-format
 msgid "Loading project \"%s\""
 msgstr "Načítám projekt \"%s\""
 
-#: beast-gtk/bstmain.c:695
+#: beast-gtk/bstmain.c:684
 msgid "BEAST About"
 msgstr "BEAST O aplikaci"
 
-#: beast-gtk/bstmain.c:696
+#: beast-gtk/bstmain.c:685
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST verze %s"
 
-#: beast-gtk/bstmain.c:697
+#: beast-gtk/bstmain.c:686
 msgid "Contributions made by:"
 msgstr "Přispěli:"
 
@@ -1681,9 +1681,9 @@ msgstr "Násobit řízení"
 
 #: bse/bseamplifier.idl:61
 msgid ""
-"Multiply the two control inputs with each other, rather than weighting them "
-"by balance"
-msgstr "Navzájem vynásobit řídicí vstupy místo vážení podle vyrovnání"
+"Switch the two control inputs to work like a chain of gain controls, rather "
+"than mixing them together, weighted by balance."
+msgstr "Přepnout řídicí vstupu, aby fungovaly jako řetěz ovládání zisku místo jejich smíchání važeného podle vyrovnání."
 
 #: bse/bseamplifier.idl:64
 msgid "Exponential Control"
@@ -1717,6 +1717,50 @@ msgstr "Hlavní hlasitost"
 msgid "Output stage amplification"
 msgstr "Zesílení ve výstupní fázi"
 
+#: bse/bseautodoc.c:379 bse/bseautodoc.c:381
+msgid "BSE-Objects"
+msgstr "BSE-Objekty"
+
+#: bse/bseautodoc.c:381
+msgid " Object Reference"
+msgstr " Odkaz na objekt"
+
+#: bse/bseautodoc.c:393
+msgid "Authors:"
+msgstr "Autoři:"
+
+#: bse/bseautodoc.c:396
+msgid "License:"
+msgstr "Licence:"
+
+#: bse/bseautodoc.c:400
+msgid "Properties:"
+msgstr "Vlastnosti:"
+
+#: bse/bseautodoc.c:426 bse/bseautodoc.c:459 bse/bseautodoc.c:476
+msgid "Name:"
+msgstr "Název:"
+
+#: bse/bseautodoc.c:431 bse/bseautodoc.c:437
+msgid "Range:"
+msgstr "Rozsah:"
+
+#: bse/bseautodoc.c:441 bse/bseautodoc.c:462 bse/bseautodoc.c:479
+msgid "Description:"
+msgstr "Popis:"
+
+#: bse/bseautodoc.c:451
+msgid "Input Channels:"
+msgstr "Vstupní kanály:"
+
+#: bse/bseautodoc.c:458
+msgid "(Joint Input)"
+msgstr "(Společný vstup)"
+
+#: bse/bseautodoc.c:469
+msgid "Output Channels:"
+msgstr "Výstupní kanály:"
+
 #: bse/bsebiquadfilter.c:130
 msgid "Filter"
 msgstr "Filtr"
@@ -1738,8 +1782,8 @@ msgstr "Střední frekvence"
 msgid "Cutoff [Hz]"
 msgstr "Odříznutí [Hz]"
 
-#: bse/bsebiquadfilter.c:146 plugins/bseiirfilter.c:146
-#: plugins/bseiirfilter.c:156
+#: bse/bsebiquadfilter.c:146 bse/bsestandardosc.c:154
+#: plugins/bseiirfilter.c:146 plugins/bseiirfilter.c:156
 msgid "Note"
 msgstr "Upozornění"
 
@@ -1762,18 +1806,20 @@ msgstr "Typ filtru normalizace zisku (podporováno jen horní a dolní propustí
 
 #: bse/bsebiquadfilter.c:164 bse/bsebiquadfilter.c:170
 #: bse/bsebiquadfilter.c:176 bse/bsebiquadfilter.c:182
+#: bse/bsestandardosc.c:160 bse/bsestandardosc.c:166 bse/bsestandardosc.c:172
+#: bse/bsestandardosc.c:178
 msgid "Modulation"
 msgstr "Modulace"
 
-#: bse/bsebiquadfilter.c:167
+#: bse/bsebiquadfilter.c:167 bse/bsestandardosc.c:163
 msgid "Strength of linear frequency modulation"
 msgstr "Síla lineární frekvenční modulace"
 
-#: bse/bsebiquadfilter.c:173
+#: bse/bsebiquadfilter.c:173 bse/bsestandardosc.c:169
 msgid "Perform exponential frequency modulation instead of linear"
 msgstr "Provádět exponenciální frekvenční modulaci místo lineární"
 
-#: bse/bsebiquadfilter.c:179
+#: bse/bsebiquadfilter.c:179 bse/bsestandardosc.c:175
 msgid "Number of octaves to be affected by exponential frequency modulation"
 msgstr "Počet oktáv, na které má mít vliv exponenciální frekvenční modulace"
 
@@ -1794,7 +1840,7 @@ msgstr "Nefiltrovaný signál zvuku"
 msgid "Center Frequency Input"
 msgstr "Vstup střední frekvence"
 
-#: bse/bsebiquadfilter.c:194
+#: bse/bsebiquadfilter.c:194 bse/bsestandardosc.c:201
 msgid "Frequency Modulation Input"
 msgstr "Vstup frekvenční modulace"
 
@@ -1805,6 +1851,109 @@ msgstr "Vstup modulace zisku"
 #: bse/bsebiquadfilter.c:198
 msgid "Filtered Audio Signal"
 msgstr "Filtrovaný signál zvuku"
+
+#: bse/bsestandardosc.c:111
+msgid ""
+"StandardOsc is the BSE basis oscillator which supports various types of wave "
+"forms and modulation inputs."
+msgstr "StandardOsc je základní oscilátor BSE, který podporuje různé typy tvarů vln a vstupů modulace."
+
+#: bse/bsestandardosc.c:114
+msgid "/Modules/Audio Sources/Standard Oscillator"
+msgstr "/Moduly/Zdroje zvuku/Standardní oscilátor"
+
+#: bse/bsestandardosc.c:137 bse/bsestandardosc.c:143
+msgid "Wave Form"
+msgstr "Tvar vlny"
+
+#: bse/bsestandardosc.c:139
+msgid "Wave"
+msgstr "Vlna"
+
+#: bse/bsestandardosc.c:139
+msgid "Oscillator wave form"
+msgstr "Tvar vlny oscilátoru"
+
+#: bse/bsestandardosc.c:145
+msgid "Phase"
+msgstr "Fáze"
+
+#: bse/bsestandardosc.c:148 bse/bsestandardosc.c:152 bse/bsestandardosc.c:155
+msgid "Base Frequency"
+msgstr "Základní frekvence"
+
+#: bse/bsestandardosc.c:150
+msgid "Frequency"
+msgstr "Frekvence"
+
+#: bse/bsestandardosc.c:157
+msgid "Fine Tune"
+msgstr "Doladění"
+
+#: bse/bsestandardosc.c:162
+msgid "Input Modulation [%]"
+msgstr "Modulace vstupu [%]"
+
+#: bse/bsestandardosc.c:168
+msgid "Exponential FM"
+msgstr "Exponenciální FM"
+
+#: bse/bsestandardosc.c:174
+#, fuzzy
+msgid "Octaves"
+msgstr "Vlny"
+
+#: bse/bsestandardosc.c:180
+msgid "Self Modulation [%]"
+msgstr "Modulace sebe [%]"
+
+#: bse/bsestandardosc.c:181
+msgid "Strength of self modulation"
+msgstr "Síla modulace sebe"
+
+#: bse/bsestandardosc.c:184 bse/bsestandardosc.c:191
+msgid "Pulse Modulation"
+msgstr "Modulace pulzu"
+
+#: bse/bsestandardosc.c:186
+msgid "Pulse Width"
+msgstr "Šířka pulzu"
+
+#: bse/bsestandardosc.c:187
+msgid ""
+"Proportion of the positive component duration of the pulse wave form (Pulse "
+"has to be selected as wave form for this to take effect)"
+msgstr "Část trvání kladné komponenty pulzové vlny (aby toto mělo vliv, musí být jako tvar vlny vybrán Pulz)"
+
+#: bse/bsestandardosc.c:193
+msgid "Pulse Modulation [%]"
+msgstr "Modulace pulzu [%]"
+
+#: bse/bsestandardosc.c:194
+msgid ""
+"Strength of pulse wisth modulation input (Pulse has to be selected as wave "
+"form for this to take effect)"
+msgstr "Síla vstupu modulace šířky pulzu (aby toto mělo vliv, musí být jako tvar vlny vybrán Pulz)"
+
+#: bse/bsestandardosc.c:199
+msgid "Oscillating Frequency Input"
+msgstr "Vstup oscilující frekvence"
+
+#: bse/bsestandardosc.c:203
+msgid "Pulse Width Modulation Input"
+msgstr "Vstup modulace šířky pulzu"
+
+#: bse/bsestandardosc.c:205
+msgid "Syncronization Input"
+msgstr "Vstup synchronizace"
+
+#: bse/bsestandardosc.c:207
+msgid "Oscillated Output"
+msgstr "Oscilovaný výstup"
+
+#: bse/bsestandardosc.c:209
+msgid "Syncronization Output"
+msgstr "Výstup synchronizace"
 
 #: bse/bsesuper.c:101
 msgid "Author"
