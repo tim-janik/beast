@@ -1928,8 +1928,8 @@ gxk_widget_proxy_requisition (GtkWidget *widget)
 
 /**
  * gxk_file_selection_heal
- * @fs:     valid #GtkFileSelection
- * RETURNS: new toplevel VBox of the file selection
+ * @fs:      valid #GtkFileSelection
+ * @RETURNS: new toplevel VBox of the file selection
  *
  * Fixup various oddities that happened to the Gtk+
  * file selection widget over time. This function

@@ -655,7 +655,7 @@ gxk_toolbar_choice_select (GtkWidget *item)
 /**
  * gxk_toolbar_choice_is_selected
  * @item:      a toolbar choice child as returned from gxk_toolbar_choice_add()
- * RETURNS:    either %TRUE or %FALSE depending on whether @item is selected
+ * @RETURNS:   either %TRUE or %FALSE depending on whether @item is selected
  *
  * Check whether the passed in choice item is currently selected.
  */
@@ -676,7 +676,7 @@ gxk_toolbar_choice_is_selected (GtkWidget *item)
 /**
  * gxk_toolbar_choice_is_item
  * @item:      a valid #GtkWidget
- * RETURNS:    either %TRUE or %FALSE
+ * @RETURNS:   either %TRUE or %FALSE
  *
  * Check whether the passed in widget is a choice item as
  * returned from gxk_toolbar_choice_add() (so calling e.g.
