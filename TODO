@@ -9,7 +9,6 @@ FIXME(urgent):
 - implement Monitor Output Signal dialogs:
   - histogram
   - edge detector: ...____..__|^^^'----'^^^^^|__.... (using dots for contiguous regions)
-- the data/ files need versioning
 - use __thread to speed up sfi_thread_self(). configure test:
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
   compiler support and missing libc support will fail on accessing a __thread variable
