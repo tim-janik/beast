@@ -1,3 +1,7 @@
+Wed Oct 22 19:47:58 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* davxtalstrings.c: Fixed bug in triggering code inside inner loop.
+
 Sat Oct 18 04:48:34 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* artscompressor.idl artscompressor.cc: Ported compressor from aRts.

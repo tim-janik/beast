@@ -336,7 +336,11 @@ xmod_process (GslModule *module,
     {
       /* check input triggers */
       if_reject (GSL_SIGNAL_RAISING_EDGE (last_trigger_level, trigger_in[i]))
-	xmod_trigger (xmod, freq_in ? GSL_SIGNAL_TO_FREQ (freq_in[i]) : xmod->tparams.freq);
+      	{
+	  xmod_trigger (xmod, freq_in ? GSL_SIGNAL_TO_FREQ (freq_in[i]) : xmod->tparams.freq);
+	  real_freq_256 = (int) (xmod->last_trigger_freq * 256);
+	  actual_freq_256 = (int) (BSE_MIX_FREQ_f * 256 / xmod->size);
+	}
       last_trigger_level = trigger_in[i];
 
       /* Get next position. */
