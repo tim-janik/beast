@@ -1,4 +1,4 @@
-/* BseNoise - BSE Latency Test
+/* BseLatencyTest - BSE Latency Test		-*-mode: c++;-*-
  * Copyright (C) 2004 Stefan Westerfeld
  *
  * This library is free software; you can redistribute it and/or
