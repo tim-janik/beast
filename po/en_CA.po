@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-12-28 05:40-0500\n"
-"PO-Revision-Date: 2004-12-28 19:50-0400\n"
+"POT-Creation-Date: 2005-01-05 22:41-0500\n"
+"PO-Revision-Date: 2005-01-05 19:50-0400\n"
 "Last-Translator: Adam Weinberger <adamw@gnome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -458,7 +458,7 @@ msgstr "Move Control Event"
 #: beast-gtk/bsteventrollctrl.c:562 beast-gtk/bstpianorollctrl.c:485
 #: beast-gtk/bstpianorollctrl.c:595 beast-gtk/bstpianorollctrl.c:658
 #: beast-gtk/bsttrackrollctrl.c:480 beast-gtk/bsttrackrollctrl.c:500
-#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:168
+#: beast-gtk/bsttrackrollctrl.c:572 bse/bseenums.c:169
 msgid "No target"
 msgstr "No target"
 
@@ -644,6 +644,12 @@ msgstr "Load Wave"
 msgid "Loading wave `%s'"
 msgstr "Loading wave `%s'"
 
+#: beast-gtk/bstfiledialog.c:741 beast-gtk/bstmain.c:279
+#: beast-gtk/bstmain.c:296
+#, c-format
+msgid "Failed to load wave file \"%s\": %s"
+msgstr "Failed to load wave file \"%s\": %s"
+
 #: beast-gtk/bstgrowbar.c:91
 msgid "Shrink the scrollable area"
 msgstr "Shrink the scrollable area"
@@ -818,26 +824,26 @@ msgstr "Dialogues"
 msgid "Loading..."
 msgstr "Loading..."
 
-#: beast-gtk/bstmain.c:291 beast-gtk/bstmain.c:293
+#: beast-gtk/bstmain.c:275 beast-gtk/bstmain.c:277
 #, c-format
 msgid "Loading \"%s\""
 msgstr "Loading \"%s\""
 
-#: beast-gtk/bstmain.c:310
+#: beast-gtk/bstmain.c:315
 #, c-format
 msgid "Failed to load project \"%s\": %s"
 msgstr "Failed to load project \"%s\": %s"
 
-#: beast-gtk/bstmain.c:811
+#: beast-gtk/bstmain.c:816
 msgid "BEAST About"
 msgstr "BEAST About"
 
-#: beast-gtk/bstmain.c:812
+#: beast-gtk/bstmain.c:817
 #, c-format
 msgid "BEAST Version %s"
 msgstr "BEAST Version %s"
 
-#: beast-gtk/bstmain.c:813
+#: beast-gtk/bstmain.c:818
 msgid "Contributions made by:"
 msgstr "Contributions made by:"
 
@@ -2773,7 +2779,7 @@ msgid ""
 msgstr ""
 "Notes from unchecked tracks are ignored by the sequencer during playback"
 
-#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:449 bse/bsetrack.c:973
+#: beast-gtk/bsttrackview.c:614 bse/bsemidisynth.c:449 bse/bsetrack.c:997
 msgid "Maximum number of voices for simultaneous playback"
 msgstr "Maximum number of voices for simultaneous playback"
 
@@ -2781,7 +2787,7 @@ msgstr "Maximum number of voices for simultaneous playback"
 msgid "Synthesis network or wave to be used as instrument by this track"
 msgstr "Synthesis network or wave to be used as instrument by this track"
 
-#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:979
+#: beast-gtk/bsttrackview.c:620 bse/bsetrack.c:1003
 msgid "Midi channel assigned to this track, 0 uses private per-track channel"
 msgstr "Midi channel assigned to this track. 0 uses private per-track channel."
 
@@ -2790,7 +2796,7 @@ msgid "Mixer busses connected to track output"
 msgstr "Mixer busses connected to track output"
 
 #: beast-gtk/bsttrackview.c:626 bse/bsemidisynth.c:458 bse/bsesong.c:747
-#: bse/bsetrack.c:984
+#: bse/bsetrack.c:1008
 msgid "Synthesis network to be used as postprocessor"
 msgstr "Synthesis network to be used as postprocessor"
 
@@ -3643,7 +3649,7 @@ msgstr "List of available mixer busses to be used as bus output"
 
 #: bse/bsebus.c:839 bse/bsebus.c:841 bse/bsebus.c:843 bse/bsebus.c:845
 #: bse/bsebus.c:849 bse/bsemidisynth.c:461 bse/bsemidisynth.c:467
-#: bse/bsemidisynth.c:474 bse/bsetrack.c:957
+#: bse/bsemidisynth.c:474 bse/bsetrack.c:981
 msgid "Adjustments"
 msgstr "Adjustments"
 
@@ -3703,11 +3709,11 @@ msgstr "Input Signals"
 msgid "Synthesis signals (from tracks and busses) used as bus input"
 msgstr "Synthesis signals (from tracks and busses) used as bus input"
 
-#: bse/bsebus.c:862 bse/bsetrack.c:986
+#: bse/bsebus.c:862 bse/bsetrack.c:1010
 msgid "Signal Outputs"
 msgstr "Signal Outputs"
 
-#: bse/bsebus.c:864 bse/bsetrack.c:988
+#: bse/bsebus.c:864 bse/bsetrack.c:1012
 msgid "Output Signals"
 msgstr "Output Signals"
 
@@ -4811,176 +4817,180 @@ msgid "Data corrupt"
 msgstr "Data corrupt"
 
 #: bse/bseenums.c:125
+msgid "Wrong number of channels"
+msgstr "Wrong number of channels"
+
+#: bse/bseenums.c:126
 msgid "Invalid format"
 msgstr "Invalid format"
 
-#: bse/bseenums.c:126
+#: bse/bseenums.c:127
 msgid "Unknown format"
 msgstr "Unknown format"
 
 #. miscellaneous errors
-#: bse/bseenums.c:128
+#: bse/bseenums.c:129
 msgid "Temporary error"
 msgstr "Temporary error"
 
-#: bse/bseenums.c:129
+#: bse/bseenums.c:130
 msgid "No such wave"
 msgstr "No such wave"
 
-#: bse/bseenums.c:130
+#: bse/bseenums.c:131
 msgid "CODEC failure"
 msgstr "CODEC failure"
 
-#: bse/bseenums.c:131
+#: bse/bseenums.c:132
 msgid "Functionality not implemented"
 msgstr "Functionality not implemented"
 
-#: bse/bseenums.c:132
+#: bse/bseenums.c:133
 msgid "Invalid object property"
 msgstr "Invalid object property"
 
-#: bse/bseenums.c:133
+#: bse/bseenums.c:134
 msgid "Invalid MIDI control type"
 msgstr "Invalid MIDI control type"
 
-#: bse/bseenums.c:134
+#: bse/bseenums.c:135
 msgid "Parsing error"
 msgstr "Parsing error"
 
-#: bse/bseenums.c:135
+#: bse/bseenums.c:136
 msgid "Failed to spawn child process"
 msgstr "Failed to spawn child process"
 
 #. Device errors
-#: bse/bseenums.c:137
+#: bse/bseenums.c:138
 msgid "No device (driver) available"
 msgstr "No device (driver) available"
 
-#: bse/bseenums.c:138
+#: bse/bseenums.c:139
 msgid "Device not async capable"
 msgstr "Device not async capable"
 
-#: bse/bseenums.c:139
+#: bse/bseenums.c:140
 msgid "Device busy"
 msgstr "Device busy"
 
-#: bse/bseenums.c:140
+#: bse/bseenums.c:141
 msgid "Failed to configure device format"
 msgstr "Failed to configure device format"
 
-#: bse/bseenums.c:141
+#: bse/bseenums.c:142
 msgid "Failed to configure device buffer"
 msgstr "Failed to configure device buffer"
 
-#: bse/bseenums.c:142
+#: bse/bseenums.c:143
 msgid "Failed to configure device latency"
 msgstr "Failed to configure device latency"
 
-#: bse/bseenums.c:143
+#: bse/bseenums.c:144
 msgid "Failed to configure number of device channels"
 msgstr "Failed to configure number of device channels"
 
-#: bse/bseenums.c:144
+#: bse/bseenums.c:145
 msgid "Failed to configure device frequency"
 msgstr "Failed to configure device frequency"
 
-#: bse/bseenums.c:145
+#: bse/bseenums.c:146
 msgid "Device configurations mismatch"
 msgstr "Device configuration mismatch"
 
 #. BseSource errors
-#: bse/bseenums.c:147
+#: bse/bseenums.c:148
 msgid "No such synthesis module"
 msgstr "No such synthesis module"
 
-#: bse/bseenums.c:148
+#: bse/bseenums.c:149
 msgid "No such input channel"
 msgstr "No such input channel"
 
-#: bse/bseenums.c:149
+#: bse/bseenums.c:150
 msgid "No such output channel"
 msgstr "No such output channel"
 
-#: bse/bseenums.c:150
+#: bse/bseenums.c:151
 msgid "Input/Output channels not connected"
 msgstr "Input/Output channels not connected"
 
-#: bse/bseenums.c:151
+#: bse/bseenums.c:152
 msgid "Input channel is private"
 msgstr "Input channel is private"
 
-#: bse/bseenums.c:152
+#: bse/bseenums.c:153
 msgid "Input channel already in use"
 msgstr "Input channel already in use"
 
-#: bse/bseenums.c:153
+#: bse/bseenums.c:154
 msgid "Input/Output channels already connected"
 msgstr "Input/Output channels already connected"
 
-#: bse/bseenums.c:154
+#: bse/bseenums.c:155
 msgid "Invalid synthesis module connection"
 msgstr "Invalid synthesis module connection"
 
-#: bse/bseenums.c:155
+#: bse/bseenums.c:156
 msgid "Parent mismatch"
 msgstr "Parent mismatch"
 
-#: bse/bseenums.c:156
+#: bse/bseenums.c:157
 msgid "Bad loopback"
 msgstr "Bad loopback"
 
-#: bse/bseenums.c:157
+#: bse/bseenums.c:158
 msgid "Synthesis module currently busy"
 msgstr "Synthesis module currently busy"
 
-#: bse/bseenums.c:158
+#: bse/bseenums.c:159
 msgid "Invalid synthsis module type"
 msgstr "Invalid synthsis module type"
 
 #. BseProcedure errors
-#: bse/bseenums.c:160
+#: bse/bseenums.c:161
 msgid "No such procedure"
 msgstr "No such procedure"
 
-#: bse/bseenums.c:161
+#: bse/bseenums.c:162
 msgid "Procedure currently busy"
 msgstr "Procedure currently busy"
 
 #. recursion
-#: bse/bseenums.c:162
+#: bse/bseenums.c:163
 msgid "Procedure parameter invalid"
 msgstr "Procedure parameter invalid"
 
-#: bse/bseenums.c:163
+#: bse/bseenums.c:164
 msgid "Procedure execution failed"
 msgstr "Procedure execution failed"
 
-#: bse/bseenums.c:164
+#: bse/bseenums.c:165
 msgid "Procedure execution aborted"
 msgstr "Procedure execution aborted"
 
 #. various procedure errors
-#: bse/bseenums.c:166
+#: bse/bseenums.c:167
 msgid "No such entry"
 msgstr "No such entry"
 
-#: bse/bseenums.c:167
+#: bse/bseenums.c:168
 msgid "No such event"
 msgstr "No such event"
 
-#: bse/bseenums.c:169
+#: bse/bseenums.c:170
 msgid "Ownership mismatch"
 msgstr "Ownership mismatch"
 
-#: bse/bseenums.c:170
+#: bse/bseenums.c:171
 msgid "Invalid offset"
 msgstr "Invalid offset"
 
-#: bse/bseenums.c:171
+#: bse/bseenums.c:172
 msgid "Invalid duration"
 msgstr "Invalid duration"
 
-#: bse/bseenums.c:172
+#: bse/bseenums.c:173
 msgid "Invalid overlap"
 msgstr "Invalid overlap"
 
@@ -5145,12 +5155,12 @@ msgstr ""
 "List of available synthesis networks from which to choose a postprocessor"
 
 #: bse/bsemidisynth.c:442 bse/bsemidisynth.c:447 bse/bsemidisynth.c:452
-#: bse/bsemidisynth.c:456 bse/bsesong.c:745 bse/bsetrack.c:976
-#: bse/bsetrack.c:982
+#: bse/bsemidisynth.c:456 bse/bsesong.c:745 bse/bsetrack.c:1000
+#: bse/bsetrack.c:1006
 msgid "MIDI Instrument"
 msgstr "MIDI Instrument"
 
-#: bse/bsemidisynth.c:444 bse/bsetrack.c:978
+#: bse/bsemidisynth.c:444 bse/bsetrack.c:1002
 msgid "MIDI Channel"
 msgstr "MIDI Channel"
 
@@ -5158,7 +5168,7 @@ msgstr "MIDI Channel"
 msgid "Max Voices"
 msgstr "Max Voices"
 
-#: bse/bsemidisynth.c:454 bse/bsesubsynth.c:513 bse/bsetrack.c:963
+#: bse/bsemidisynth.c:454 bse/bsesubsynth.c:513 bse/bsetrack.c:987
 msgid "Synthesizer"
 msgstr "Synthesizer"
 
@@ -5166,7 +5176,7 @@ msgstr "Synthesizer"
 msgid "Synthesis network to be used as MIDI instrument"
 msgstr "Synthesis network to be used as MIDI instrument"
 
-#: bse/bsemidisynth.c:458 bse/bsesong.c:747 bse/bsetrack.c:984
+#: bse/bsemidisynth.c:458 bse/bsesong.c:747 bse/bsetrack.c:1008
 msgid "Postprocessor"
 msgstr "Postprocessor"
 
@@ -5474,7 +5484,7 @@ msgstr "/Audio Sources/Standard Oscillator"
 msgid "Wave Form"
 msgstr "Wave Form"
 
-#: bse/bsestandardosc.c:131 bse/bsetrack.c:968 bse/bsewaveosc.c:558
+#: bse/bsestandardosc.c:131 bse/bsetrack.c:992 bse/bsewaveosc.c:558
 #: bse/bsewaveosc.c:560 bse/bsewaveosc.c:562
 msgid "Wave"
 msgstr "Wave"
@@ -5695,27 +5705,27 @@ msgstr ""
 msgid "List of available mixer busses to be used as track output"
 msgstr "List of available mixer busses to be used as track output"
 
-#: bse/bsetrack.c:959
+#: bse/bsetrack.c:983
 msgid "Muted"
 msgstr "Muted"
 
-#: bse/bsetrack.c:961 bse/bsetrack.c:966 bse/bsetrack.c:971
+#: bse/bsetrack.c:985 bse/bsetrack.c:990 bse/bsetrack.c:995
 msgid "Synth Input"
 msgstr "Synth Input"
 
-#: bse/bsetrack.c:963
+#: bse/bsetrack.c:987
 msgid "Synthesis network to be used as instrument"
 msgstr "Synthesis network to be used as instrument"
 
-#: bse/bsetrack.c:968
+#: bse/bsetrack.c:992
 msgid "Wave to be used as instrument"
 msgstr "Wave to be used as instrument"
 
-#: bse/bsetrack.c:973
+#: bse/bsetrack.c:997
 msgid "Max Voixes"
 msgstr "Max Voices"
 
-#: bse/bsetrack.c:989
+#: bse/bsetrack.c:1013
 msgid "Mixer busses used as output for this track"
 msgstr "Mixer busses used as output for this track"
 
