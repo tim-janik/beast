@@ -1,3 +1,11 @@
+Mon Oct 13 12:18:11 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcatalog.[hc]: return BstCatalogTool by value, so we
+	can perform gettext() translations beforehand.
+
+	* beast-gtk/bstmessages.c: renamed message catalog. added i18n
+	markup.
+
 Sun Oct 12 16:37:29 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: fix BST_ARCH_NAME with newer autoconf.

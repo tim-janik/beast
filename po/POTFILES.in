@@ -1,3 +1,4 @@
 beast-gtk/bstmain.c
 beast-gtk/bstapp.c
 beast-gtk/bstwavereposhell.c
+beast-gtk/bstmessages.c

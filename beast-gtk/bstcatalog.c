@@ -19,7 +19,7 @@
 
 
 /* -- catalogs --- */
-#include "catalog-en.c"
+#include "bstmessages.c"
 
 
 /* --- variables --- */
@@ -45,10 +45,27 @@ _bst_catalog_init (void)
 			 (gchar*) (bst_catalog->tools + i));
 }
 
-const BstCatalogTool*
+const BstCatalogTool
 bst_catalog_get_tool (const gchar *cat_key)
 {
-  g_return_val_if_fail (cat_key != NULL, NULL);
+  BstCatalogTool *t;
+  BstCatalogTool tool = { 0, };
 
-  return g_hash_table_lookup (bst_catalog->tools_ht, cat_key);
+  g_return_val_if_fail (cat_key != NULL, tool);
+
+  t = g_hash_table_lookup (bst_catalog->tools_ht, cat_key);
+  if (t)
+    {
+      tool = *t;
+      tool.name = gettext (tool.name);
+      tool.tooltip = gettext (tool.tooltip);
+      tool.blurb = gettext (tool.blurb);
+    }
+  else
+    {
+      tool.cat_key = g_quark_intern (cat_key);
+      tool.name = tool.cat_key;
+      tool.tooltip = "PROGRAMMING ERROR: category missing from bstmessages.c";
+    }
+  return tool;
 }

@@ -58,7 +58,6 @@ FIXMES:
 - master tune slider in preferences (kammer ton)
 - bsemididevice-oss throws warnings when compiled without midi support
 - MidiEvent (serialization)
-- make bst_catalog_get_action() always return an action, so callers don't need to check
 - gxk_toolbar_append_stock() and bst_radio_tools_add_stock_tool() need context help id
 - create modules via category identifier, not type name
 - add IDs to part links in tracks

@@ -252,24 +252,14 @@ bst_radio_tools_add_catalog_tool (BstRadioTools     *self,
 				  const gchar       *cat_key,
 				  BstRadioToolsFlags flags)
 {
-  const BstCatalogTool *tool;
-  BstCatalogTool dummy = { 0, };
   guint i;
 
-  tool = bst_catalog_get_tool (cat_key);
-  if (tool)
-    flags &= ~BST_RADIO_TOOLS_FREE_FLAG;
-  else
-    {
-      dummy.name = g_strdup (cat_key);
-      tool = &dummy;
-      flags |= ~BST_RADIO_TOOLS_FREE_FLAG;
-    }
+  flags &= ~BST_RADIO_TOOLS_FREE_FLAG;
 
   i = self->n_tools++;
   self->tools = g_renew (BstRadioToolEntry, self->tools, self->n_tools);
   self->tools[i].tool_id = tool_id;
-  self->tools[i].tool = *tool;
+  self->tools[i].tool = bst_catalog_get_tool (cat_key);
   self->tools[i].tool.cat_key = NULL;
   self->tools[i].icon = NULL;
   self->tools[i].flags = flags;

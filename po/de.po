@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast vUNSPECIFIED\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-12 15:32+0200\n"
+"POT-Creation-Date: 2003-10-13 12:36+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,67 +18,67 @@ msgstr ""
 
 #. now, we can popup the splash screen
 #.
-#: beast-gtk/bstmain.c:133
+#: beast-gtk/bstmain.c:135
 msgid "BEAST Startup"
 msgstr "BEAST Start"
 
-#: beast-gtk/bstmain.c:140
+#: beast-gtk/bstmain.c:142
 msgid "Startup"
 msgstr "Starten"
 
 #. BEAST initialization
 #.
-#: beast-gtk/bstmain.c:145
+#: beast-gtk/bstmain.c:147
 msgid "Objects"
 msgstr "Objekte"
 
-#: beast-gtk/bstmain.c:149
+#: beast-gtk/bstmain.c:151
 msgid "Language"
 msgstr "Sprachen"
 
-#: beast-gtk/bstmain.c:162
+#: beast-gtk/bstmain.c:164
 msgid "RC File"
 msgstr "Einstellungsdatei"
 
 #. show splash images
 #.
-#: beast-gtk/bstmain.c:169
+#: beast-gtk/bstmain.c:171
 msgid "Splash Image"
 msgstr ""
 
 #. start BSE core and connect
-#: beast-gtk/bstmain.c:181
+#: beast-gtk/bstmain.c:183
 msgid "BSE Core"
 msgstr ""
 
-#: beast-gtk/bstmain.c:200
+#: beast-gtk/bstmain.c:202
 msgid "Plugins"
 msgstr ""
 
-#: beast-gtk/bstmain.c:219
+#: beast-gtk/bstmain.c:221
 msgid "LADSPA Plugins"
 msgstr "LADSPA Module"
 
-#: beast-gtk/bstmain.c:247
+#: beast-gtk/bstmain.c:249
 msgid "Scripts"
 msgstr ""
 
 #. listen to BseServer notification
 #.
-#: beast-gtk/bstmain.c:265
+#: beast-gtk/bstmain.c:267
 msgid "Dialogs"
 msgstr ""
 
-#: beast-gtk/bstmain.c:277
+#: beast-gtk/bstmain.c:279
 msgid "Loading..."
 msgstr ""
 
-#: beast-gtk/bstmain.c:307 beast-gtk/bstmain.c:309
+#: beast-gtk/bstmain.c:309 beast-gtk/bstmain.c:311
 #, c-format
 msgid "Loading \"%s\""
 msgstr ""
 
-#: beast-gtk/bstmain.c:326
+#: beast-gtk/bstmain.c:328
 #, c-format
 msgid "Loading project \"%s\""
 msgstr ""
@@ -282,3 +282,116 @@ msgstr ""
 #: beast-gtk/bstwavereposhell.c:146
 msgid "Parameters"
 msgstr "Eigenschaften"
+
+#. catalog_key, name, stock_id, accelerator, tooltip, blurb
+#: beast-gtk/bstmessages.c:21
+msgid "Left"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:23
+msgid "Use the horizontal ruler to adjust the left loop pointer"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:25
+msgid "Pos"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:27
+msgid "Use the horizontal ruler to adjust the play position pointer"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:29
+msgid "Right"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:31
+msgid "Use the horizontal ruler to adjust the right loop pointer"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:33
+msgid "Q: Tact"
+msgstr "Q: Takt"
+
+#: beast-gtk/bstmessages.c:35
+msgid "Quantize to tact boundaries"
+msgstr "Auf Taktgrenzen quantisieren"
+
+#: beast-gtk/bstmessages.c:37
+msgid "Q: None"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:39
+msgid "No quantization selected"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:41
+msgid "Q: 1/1"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:43
+msgid "Quantize to full note boundaries"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:45
+msgid "Q: 1/2"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:47
+msgid "Quantize to half note boundaries"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:49
+msgid "Q: 1/4"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:51
+msgid "Quantize to quarter note boundaries"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:53
+msgid "Q: 1/8"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:55
+msgid "Quantize to eighths note boundaries"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:57
+msgid "Q: 1/16"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:59
+msgid "Quantize to sixteenth note boundaries"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:61
+msgid "_Insert"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:63
+msgid "Insert/edit/move parts (mouse button 1 and 2)"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:65
+msgid "Lin_k"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:67
+msgid "Link or move parts (mouse button 1 and 2)"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:69
+msgid "_Rename"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:71
+msgid "Rename parts"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:73
+msgid "_Delete"
+msgstr ""
+
+#: beast-gtk/bstmessages.c:75
+msgid "Delete parts"
+msgstr ""

@@ -41,7 +41,7 @@ typedef struct {
 
 /* --- API --- */
 void			_bst_catalog_init	(void);
-const BstCatalogTool*	bst_catalog_get_tool	(const gchar	*cat_key);
+const BstCatalogTool	bst_catalog_get_tool	(const gchar	*cat_key);
 
 G_END_DECLS
 
