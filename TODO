@@ -3,12 +3,11 @@ FIXMES:
            midi-input       + midi-controller
 - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
 - upon project playback-stop, discard all pending events (at least note-on+note-off) on its midi receiver
-- supply man page for bse-plugin-generator
 - add "bypass" option to audio output channels
 - enable Clear Undo only for --hints
 - alias --hints to --devel
 - if Track::Synth is NULL, disconnect post-process-subsynth from track-context-merger
-- show Messgae: progress seen 19/15 items only with -:d
+- show Message: progress seen 19/15 items only with -:d
 - fix nominator/denomiator settings in songs
 - fix forcing unique names for children of a project 
 - fix glue gc assertion after sfi_glue_describe_proc("")
