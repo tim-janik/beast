@@ -1,6 +1,7 @@
 FIXME(urgent):
 - bsewavetool: fix arg parser issues (missing in some places)
 - bsewavetool: fix per-command docu to properly account for input.bsewave
+- bsewavetool: allow clipping of single chunks
 - start playback at play pointer position
 - add shift-up/shift-down buttons to piano roll to pitch up/dopwn the selected notes
 - write script which resizes 0-length notes to 1/4 note or similar length (those notes occour from MIDI drum pattern imports)
@@ -21,9 +22,6 @@ FIXME(urgent):
 - pianoroll: select-all/none
 - menu-button should keep scroll position if screen edge distance is > 2*menuitem.height + 2*scrollarrow
 - play + play doesn't reset wave oscillator state
-- implement Monitor Output Signal dialogs:
-  - histogram
-  - edge detector: ...____..__|^^^'----'^^^^^|__.... (using dots for contiguous regions)
 - use __thread to speed up sfi_thread_self(). configure test:
   http://cvs.sourceforge.net/viewcvs.py/firebird/firebird2/configure.in?rev=1.205
   compiler support and missing libc support will fail on accessing a __thread variable
@@ -35,8 +33,8 @@ FIXME(urgent):
   1) saves the current bse file, 2) renders the saved file to WAV with progress indication
 - close pianoroll window in response to part::release  
 - add dialog to ask the user whether he really wants to delete the last link to a part.
-TODO:
 - make sfi_wstore_flush_fd() return -errno on errors and handle those in Wave::store()
+TODO:
 - add editable text fields to snet router
 - implement ResetAll according to: http://www.midi.org/about-midi/rp15.shtml (more: http://www.midi.org/about-midi/specinfo.shtml)
 - provide a color/dB reference scale, next to the fft-scope view
@@ -47,6 +45,9 @@ TODO:
 - need note-specific undo per part in pianoroll
 - change projectname in accordance to file name (and change beast-project-window-title accordingly)
 - add "Help on Skins" button to skin settings dialog, describing --skinrc option
+- implement Monitor Output Signal dialogs:
+  - histogram
+  - edge detector: ...____..__|^^^'----'^^^^^|__.... (using dots for contiguous regions)
 - menus: s/New Custom Synthesizer/Add Custom Synthesizer/
          s/New MIDI Synthesizer/Add MIDI Synthesizer/  (might get removed)
 - add mini-keyboard to Router toolbar to test instrument designs
