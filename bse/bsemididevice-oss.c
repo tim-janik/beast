@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-2002 Tim Janik
+ * Copyright (C) 1996-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,21 +120,39 @@ bse_midi_device_oss_open (BseMidiDevice *mdev)
   /* try open */
   if (!error)
     {
-      gint omode = 0;
-      gint fd;
-      
-      omode = (handle->readable && handle->writable ? O_RDWR
-	       : handle->readable ? O_RDONLY
-	       : handle->writable ? O_WRONLY : 0);
-      
-      /* need to open explicitely non-blocking or we'll have to wait untill someone else closes the device */
-      fd = open (BSE_MIDI_DEVICE_OSS (mdev)->device_name, omode | O_NONBLOCK, 0);
-      if (fd >= 0)
-	oss->fd = fd;
-      else
-	error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+      gint fd, extra_id = -1;
+      BseErrorType first_error = 0;
+      do
+	{
+	  gint omode = (handle->readable && handle->writable ? O_RDWR
+			: handle->readable ? O_RDONLY
+			: handle->writable ? O_WRONLY : 0);
+	  gchar *dname;
+	  if (extra_id >= 0)
+	    dname = g_strdup_printf ("%s%u", BSE_MIDI_DEVICE_OSS (mdev)->device_name, extra_id);
+	  else
+	    dname = g_strdup (BSE_MIDI_DEVICE_OSS (mdev)->device_name);
+
+	  /* need to open explicitely non-blocking or we'll have to wait untill someone else closes the device */
+	  fd = open (dname, omode | O_NONBLOCK, 0);
+	  if (fd >= 0)
+	    {
+	      oss->fd = fd;
+	      error = 0;
+	    }
+	  else
+	    {
+	      // g_printerr ("open(\"%s\") failed: %s\n", dname, g_strerror (errno));
+	      error = bse_error_from_errno (errno, BSE_ERROR_FILE_OPEN_FAILED);
+	      if (!first_error)
+		first_error = error;
+	    }
+	  g_free (dname);
+	}
+      while (error && extra_id++ < 3);
+      error = error && first_error ? first_error : error;
     }
-  
+
   /* setup mdev or shutdown */
   if (!error)
     {

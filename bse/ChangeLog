@@ -1,3 +1,8 @@
+Fri Apr 11 14:10:07 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemididevice-oss.c (bse_midi_device_oss_open): fallback to check
+	/dev/midi[0-3] if /dev/midi couldn't be opened.
+
 Sun Apr  6 13:56:09 2003  Tim Janik  <timj@gtk.org>
 
 	* bsesource.[hc]: added i/o channel identifier to public API.
