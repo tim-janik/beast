@@ -21,59 +21,6 @@
 #include "glib-extra.h"
 
 
-/* --- ref-counted strings --- */
-static GHashTable *refstrings_ht = NULL;
-G_LOCK_DEFINE_STATIC (refstrings_mutex);
-
-const gchar*
-g_strref (const gchar *string)
-{
-  guint32 *refp;
-  gpointer p;
-  if (!string)
-    return NULL;
-  G_LOCK (refstrings_mutex);
-  if (!refstrings_ht)
-    refstrings_ht = g_hash_table_new (g_str_hash, g_str_equal);
-  p = g_hash_table_lookup (refstrings_ht, string);
-  if (!p)
-    {
-      guint l = strlen (string);
-      p = g_new (char, 4 + l + 1);
-      refp = p;
-      *refp = 0;
-      refp++;
-      memcpy (refp, string, l + 1);
-    }
-  refp = p;
-  *refp = *refp + 1;
-  p = refp + 1;
-  G_UNLOCK (refstrings_mutex);
-  return p;
-}
-
-void
-g_strunref (const gchar *string)
-{
-  gpointer p;
-  if (!string)
-    return;
-  G_LOCK (refstrings_mutex);
-  p = refstrings_ht ? g_hash_table_lookup (refstrings_ht, string) : NULL;
-  if (p)
-    {
-      guint32 *refp = p;
-      *refp = *refp - 1;
-      if (!*refp)
-        g_hash_table_remove (refstrings_ht, string);
-      g_free (p);
-    }
-  G_UNLOCK (refstrings_mutex);
-  if (!p)
-    g_warning ("%s: invalid (non-ref-counted) string: %s", G_STRFUNC, string);
-}
-
-
 /* --- string functions --- */
 gchar**
 g_straddv (gchar      **str_array,
@@ -247,7 +194,7 @@ delim_concat_varargs (const gchar *first_string,
       if (s[0])
         {
           if (gstring->len && gstring->str[gstring->len - 1] != delim &&
-              s[0] != delim)
+              s[0] != delim && delim)
             g_string_append_c (gstring, delim);
           g_string_append (gstring, s);
         }
@@ -255,6 +202,24 @@ delim_concat_varargs (const gchar *first_string,
     }
 
   return g_string_free (gstring, FALSE);
+}
+
+const gchar*
+g_intern_strconcat (const gchar *first_string,
+                    ...)
+{
+  const gchar *c = NULL;
+  if (first_string)
+    {
+      gchar *s;
+      va_list args;
+      va_start (args, first_string);
+      s = delim_concat_varargs (first_string, 0, args);
+      va_end (args);
+      c = g_intern_string (s);
+      g_free (s);
+    }
+  return c;
 }
 
 gchar*

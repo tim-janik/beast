@@ -1,3 +1,14 @@
+Thu Dec 18 00:56:55 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl-module.cc: use g_intern_strconcat() in generated static member
+	functions to construct translated plugin categories, so plugins don't
+	leak across reloads.
+
+	* glib-extra.[hc]: added g_intern_strconcat() which is a convenience
+	wrapper around g_strconcat() and g_intern_string().
+	removed g_strref() and g_strunref() because that'd be yet another
+	string allocation case that has to be paid attention to.
+
 Wed Dec 17 23:58:05 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-generator.cc: allow NULL rec/seq on _copy_shallow().

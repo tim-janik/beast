@@ -86,8 +86,8 @@ gchar*		g_strdup_lstrip   (const gchar	 *string);
 
 const gchar*    g_intern_string         (const gchar   *string);
 const gchar*    g_intern_static_string  (const gchar   *string);
-const gchar*    g_strref                (const gchar   *string);
-void            g_strunref              (const gchar   *string);
+const gchar*    g_intern_strconcat      (const gchar   *first_string,
+                                         ...);
 
 gchar*          g_strconcat_with_null  (const gchar   *string1, ...);
 #define         g_strconcat             g_strconcat_with_null

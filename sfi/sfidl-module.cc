@@ -478,7 +478,7 @@ CodeGeneratorModule::run ()
       printf ("public:\n");
       printf ("  static inline const unsigned char* pixstream () { return %s; }\n", pstream.c_str());
       printf ("  static inline const char* category  () { static const char *c = NULL; const char *pcat = %s; \n", ci->infos.get("category").escaped().c_str());
-      printf ("    if (!c) c = g_strconcat (\"/Modules\", pcat[0] == '/' ? \"\" : \"/\", pcat, NULL);\n");
+      printf ("    if (!c) c = g_intern_strconcat (\"/Modules\", pcat[0] == '/' ? \"\" : \"/\", pcat, NULL);\n");
       printf ("    return c; }\n");
       printf ("  static inline const char* blurb     () { return %s; }\n", ci->infos.get("blurb").escaped().c_str());
       printf ("  static inline const char* authors   () { return %s; }\n", ci->infos.get("authors").escaped().c_str());
