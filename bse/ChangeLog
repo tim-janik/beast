@@ -1,3 +1,13 @@
+Sat Jul 24 19:53:33 2004  Tim Janik  <timj@gtk.org>
+
+        * bstsnifferscope.[hc]: fixed up drawing code to show time-scrolling
+        peak values. overshoot values are drawn in red.
+
+        * bsttrackroll.c: arrenged for more scope space, fixed left-panel layout.
+
+        * beast-gtk/gxk/gxkutils.[hc]: added convenience functions
+        gdk_draw_hline() and gdk_draw_vline().
+
 Sat Jul 24 20:00:22 2004  Tim Janik  <timj@gtk.org>
 
 	* bseprobe.idl: 
