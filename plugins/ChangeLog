@@ -35,7 +35,7 @@ Sun Dec 12 04:55:13 1999  Tim Janik  <timj@gtk.org>
 	* bseloopback.[hc]: channel history related recoding. this is
 	still a somewhat dubious module, we can effectively only delay
 	stuff by some multitude of the bse track length,
-	i.e. z^(n*BSE_TRACK_LENGTH), which provides questionable benefits.
+	i.e. z^-(n*BSE_TRACK_LENGTH), which provides questionable benefits.
 
 Thu Dec  9 03:56:24 1999  Tim Janik  <timj@gtk.org>
 
