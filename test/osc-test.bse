@@ -1,0 +1,38 @@
+;BseProjectV0
+
+
+(BseSNet::Oscillator_test
+  (author "Tim Janik")
+  (creation-time "1999-12-31 03:01:29")
+  (modification-time "1999-12-31 03:01:29")
+  (source-input "multi_in" BseSNet:1.BseMult:5 "Mult")
+  (parasite f "BstRouterCoords" 2 -176.000000 -11.000000)
+  (BseGenOsc::BseGenOsc-1
+    (base-freq 350.000000)
+    (fm-perc 67.900002)
+    (self-perc 0.000000)
+    (source-input "FreqMod" BseSNet:1.BseAdder:3 "Adder")
+    (parasite f "BstRouterCoords" 2 40.000000 13.000000))
+  (BseGenOsc::BseGenOsc-2
+    (base-freq 44.000000)
+    (self-modulation 't)
+    (parasite f "BstRouterCoords" 2 256.000000 33.000000))
+  (BseAdder::BseAdder-1
+    (subtract 'f)
+    (source-input "mono_in1" BseSNet:1.BseGenOsc:2 "OscOut")
+    (source-input "mono_in2" BseSNet:1.BseGenOsc:4 "OscOut")
+    (parasite f "BstRouterCoords" 2 144.000000 19.000000))
+  (BseGenOsc::BseGenOsc-3
+    (sine-table 'f)
+    (triangle-table 't)
+    (base-freq 0.440000)
+    (parasite f "BstRouterCoords" 2 272.000000 -57.000000))
+  (BseMult::BseMult-1
+    (source-input "mono_in1" BseSNet:1.BseGenOsc:1 "OscOut")
+    (source-input "mono_in2" BseSNet:1.BseGenOsc:6 "OscOut")
+    (parasite f "BstRouterCoords" 2 -77.000000 -17.000000))
+  (BseGenOsc::BseGenOsc-4
+    (sine-table 'f)
+    (triangle-table 't)
+    (base-freq 0.200000)
+    (parasite f "BstRouterCoords" 2 66.000000 -74.000000)))
