@@ -104,7 +104,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
   bse_object_class_add_param (object_class, "Frequency",
 			      PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
-						   BSE_KAMMER_FREQUENCY,
+						   BSE_KAMMER_FREQUENCY, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
 						   SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, "Frequency",
 			      PARAM_BASE_NOTE,

@@ -108,7 +108,7 @@ dav_canyon_delay_class_init (DavCanyonDelayClass *class)
   bse_object_class_add_param (object_class, "IIR Low-Pass Filter", PROP_FILTER_FREQ,
                               bse_param_spec_freq ("filter_freq", "Frequency",
                                                    "Set cutoff frequency for reflection filter",
-                                                   bse_note_to_freq (SFI_NOTE_C (+3)),
+                                                   bse_note_to_freq (SFI_NOTE_C (+3)), BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
                                                    SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, "IIR Low-Pass Filter", PROP_FILTER_NOTE,
                               bse_pspec_note_simple ("filter_note", "Note", NULL, SFI_PARAM_GUI));

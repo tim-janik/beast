@@ -67,17 +67,26 @@ bse_param_spec_freq (const gchar *name,
 		     const gchar *nick,
 		     const gchar *blurb,
 		     SfiReal      default_freq,
+                     SfiReal      min_freq,
+                     SfiReal      max_freq,
 		     const gchar *hints)
 {
-  GParamSpec *pspec;
-  
-  g_return_val_if_fail (default_freq >= BSE_MIN_OSC_FREQUENCY && default_freq <= BSE_MAX_OSC_FREQUENCY, NULL);
-  
-  pspec = sfi_pspec_log_scale (name, nick, blurb,
-			       default_freq, BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY, 10.0,
-			       2 * BSE_KAMMER_FREQUENCY, 2, 4,
-			       hints);
-  
+#if 0
+  if (!(default_freq >= min_freq && default_freq <= max_freq &&
+        max_freq - min_freq >= 10 &&
+        max_freq >= 15053 &&
+        min_freq <= 51.9))
+    g_printerr ("bse_param_spec_freq(\"%s\",\"%s\",\"%s\") assertion:\n", name, nick, blurb);
+#endif
+  g_return_val_if_fail (default_freq >= min_freq && default_freq <= max_freq, NULL);
+  g_return_val_if_fail (max_freq - min_freq >= 10, NULL); /* check stepping */
+  gdouble center = 2 * BSE_KAMMER_FREQUENCY, base = 2, n_steps = 4;
+  g_return_val_if_fail (max_freq >= 15053, NULL); /* Ais+6 with A+1=444Hz */
+  g_return_val_if_fail (min_freq <= 51.9, NULL);  /* As-1 with A+1=440Hz */
+
+  GParamSpec *pspec = sfi_pspec_log_scale (name, nick, blurb,
+                                           default_freq, min_freq, max_freq, 10.0,
+                                           center, base, n_steps, hints);
   return pspec;
 }
 

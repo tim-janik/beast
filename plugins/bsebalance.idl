@@ -52,7 +52,7 @@ class Balance : Effect {
   };
   group _("Output Panning") {
     Real  ostrength  = Perc (_("Control Strength"), _("Adjust how much the control signals affect the output balance"), 100, STANDARD);
-    Real  lowpass    = Frequency (_("Lowpass [Hz]"), _("Lowpass filter frequency for the control signal"), 100, 100, 1000, STANDARD);
+    Real  lowpass    = Real (_("Lowpass [Hz]"), _("Lowpass filter frequency for the control signal"), 100, 100, 1000, 10, "scale:" STANDARD);
     Real  obalance   = Balance (_("Output Balance"), _("Adjust output balance between left and right"), 0, STANDARD);
   };
 };

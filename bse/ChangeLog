@@ -1,3 +1,10 @@
+Sun Dec 19 13:44:43 2004  Tim Janik  <timj@gtk.org>
+
+	* bseparam.[hc]: added minimum and maximum parameters to 
+	bse_param_spec_freq().
+
+	* bsetype.h: turned Frequency() parameters into logarithmic properties.
+
 Sat Dec 18 23:58:04 2004  Tim Janik  <timj@gtk.org>
 
 	* bseconstvalues.h: constant cleanups, removed _f and _d postfixes and

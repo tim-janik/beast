@@ -88,7 +88,7 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
 
   bse_object_class_add_param (object_class, "Frequency", PROP_BASE_FREQ,
                               bse_param_spec_freq ("base_freq", "Frequency", NULL,
-                                                   bse_note_to_freq (SFI_NOTE_Gis (-1)),
+                                                   bse_note_to_freq (SFI_NOTE_Gis (-1)), BSE_MIN_OSC_FREQUENCY, BSE_MAX_OSC_FREQUENCY,
                                                    SFI_PARAM_STANDARD ":dial"));
   bse_object_class_add_param (object_class, "Frequency", PROP_BASE_NOTE,
                               bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));

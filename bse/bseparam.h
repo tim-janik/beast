@@ -67,6 +67,8 @@ GParamSpec* bse_param_spec_freq         (const gchar  *name,
 					 const gchar  *nick,
 					 const gchar  *blurb,
 					 SfiReal       default_freq,
+                                         SfiReal       min_freq,
+                                         SfiReal       max_freq,
 					 const gchar  *hints);
 
 
