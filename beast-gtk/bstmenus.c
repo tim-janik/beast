@@ -18,6 +18,7 @@
  */
 #include "bstmenus.h"
 
+#include <string.h>
 
 /* --- structures --- */
 struct _BstChoice

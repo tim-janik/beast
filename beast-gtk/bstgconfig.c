@@ -18,6 +18,7 @@
  */
 #include	"bstgconfig.h"
 
+#include	<string.h>
 
 /* --- variables --- */
 BstGConfig        *bst_global_config = NULL;

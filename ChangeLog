@@ -1,3 +1,10 @@
+Tue Feb 18 17:54:40 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* beast-gtk/bstgconfig.c beast-gtk/bstmenus.c beast-gtk/bstrackitem.c
+	beast-gtk/bstsnetrouter.c beast-gtk/tsmview.c
+	beast-gtk/gxk/gxkstock.c docs/utils/xmlantispace.c: fixes to build
+	without warnings on gcc-3.2.
+
 Tue Feb 18 01:11:12 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* configure.in: cleanups of the libcsl configure stuff.

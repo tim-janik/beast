@@ -19,6 +19,7 @@
 
 #include "bstmenus.h"
 
+#include <string.h>
 
 /* --- prototypes --- */
 static void	  bst_rack_item_class_init	(BstRackItemClass	*klass);

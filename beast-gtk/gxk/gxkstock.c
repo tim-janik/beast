@@ -18,7 +18,7 @@
  */
 #include "gxkstock.h"
 
-
+#include <string.h>
 
 /* --- variables --- */
 guint  gxk_size_button = 0;

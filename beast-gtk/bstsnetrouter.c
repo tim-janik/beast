@@ -18,6 +18,7 @@
 #include "bstsnetrouter.h"
 
 #include <math.h>
+#include <string.h>
 #include "bstcanvaslink.h"
 #include "bstmenus.h"
 #include "bstgconfig.h"

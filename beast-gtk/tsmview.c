@@ -20,6 +20,8 @@
 
 #include "../PKG_paths.h"
 
+#include <string.h>
+
 #define PRGNAME "tsmview"
 
 /* --- functions --- */
