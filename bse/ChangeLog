@@ -1,3 +1,15 @@
+Thu Mar 13 19:42:30 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidisynth.c (bse_midi_synth_init): set sequencer flag on midi
+	synths.
+
+	* bsesong.[hc]:
+	* bsesuper.[hc]: move sequencer_pending_SL field from song to super.
+
+	* bsessequencer.[hc]: handle sequencing of supers (there's nothing
+	to do for non-song supers, but we need to allow having them in the
+	sequencer loop).
+
 Thu Mar 13 18:39:10 2003  Tim Janik  <timj@gtk.org>
 
 	* bseproject.c (bse_project_finalize): urgs, remove project from

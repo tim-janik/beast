@@ -67,7 +67,6 @@ struct _BseSong
   gdouble	    delta_stamp_SL;	/* start + delta_stamp => tick */
   guint		    tick_SL;		/* tick at stamp_SL */
   guint		    song_done_SL : 1;
-  guint		    sequencer_pending_SL : 1;
   guint		    loop_enabled_SL : 1;
   SfiInt	    loop_left_SL;	/* left loop tick */
   SfiInt	    loop_right_SL;	/* left loop tick */

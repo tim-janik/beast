@@ -58,15 +58,14 @@ bse_ssequencer_init_thread (void)
 static BseSSequencerJob*
 bse_ssequencer_add_super (BseSuper *super)
 {
-  BseSong *song = BSE_SONG (super);	// FIXME
   BseSSequencerJob *job;
 
-  g_return_val_if_fail (song->sequencer_pending_SL == FALSE, NULL);
+  g_return_val_if_fail (super->sequencer_pending_SL == FALSE, NULL);
 
   job = sfi_new_struct0 (BseSSequencerJob, 1);
   job->type = BSE_SSEQUENCER_JOB_ADD;
   job->super = super;
-  song->sequencer_pending_SL = TRUE;
+  super->sequencer_pending_SL = TRUE;
   job->stamp = 0;
   return job;
 }
@@ -79,13 +78,11 @@ bse_ssequencer_start_supers (SfiRing  *supers,
   for (ring = supers; ring; ring = sfi_ring_walk (ring, supers))
     {
       BseSuper *super = ring->data;
-      if (BSE_IS_SONG (super))
-	{
-	  if (BSE_SONG (super)->sequencer_pending_SL)
-	    g_warning ("%s: song (%p) already in sequencer", G_STRLOC, super);
-	  else
-	    jobs = sfi_ring_append (jobs, bse_ssequencer_add_super (super));
-	}
+      g_return_if_fail (BSE_IS_SUPER (super));
+      if (super->sequencer_pending_SL)
+	g_warning ("%s: module %s already in sequencer", G_STRLOC, bse_object_debug_name (super));
+      else
+	jobs = sfi_ring_append (jobs, bse_ssequencer_add_super (super));
     }
   if (jobs)
     {
@@ -107,15 +104,11 @@ bse_ssequencer_job_stop_super (BseSuper *super)
 
   job = sfi_new_struct0 (BseSSequencerJob, 1);
   job->type = BSE_SSEQUENCER_JOB_NOP;
-  if (BSE_IS_SONG (super))
+  if (super->sequencer_pending_SL == TRUE)
     {
-      BseSong *song = BSE_SONG (super); // FIXME: use supers here
-      if (song->sequencer_pending_SL == TRUE)
-	{
-	  job->type = BSE_SSEQUENCER_JOB_REMOVE;
-	  job->super = super;
-	  job->stamp = 0;
-	}
+      job->type = BSE_SSEQUENCER_JOB_REMOVE;
+      job->super = super;
+      job->stamp = 0;
     }
   return job;
 }
@@ -132,9 +125,9 @@ jobs_cmp (gconstpointer a,
 void
 bse_ssequencer_remove_super_SL (BseSuper *super)
 {
-  BseSong *song = BSE_SONG (super);	// FIXME
+  g_return_if_fail (BSE_IS_SUPER (super));
   self->supers = sfi_ring_remove (self->supers, super);
-  song->sequencer_pending_SL = FALSE;
+  super->sequencer_pending_SL = FALSE;
 }
 
 static void
@@ -148,22 +141,24 @@ bse_ssequencer_handle_jobs_SL (SfiTime next_stamp)
       job = sfi_ring_pop_head (&self->jobs); /* same job, but remove from list */
       switch (job->type)
 	{
-	  BseSong *song;
 	  BseSuper *super;
 	  SfiRing *ring;
 	case BSE_SSEQUENCER_JOB_NOP:
 	  break;
 	case BSE_SSEQUENCER_JOB_ADD:
 	  super = job->super;
-	  song = BSE_SONG (super); // FIXME
-	  song->start_SL = job->stamp;
-	  song->delta_stamp_SL = 0;
-	  song->tick_SL = 0;
-	  song->song_done_SL = FALSE;
-	  for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
+	  if (BSE_IS_SONG (super))	// FIXME
 	    {
-	      BseTrack *track = ring->data;
-	      track->track_done_SL = FALSE;
+	      BseSong *song = BSE_SONG (super);
+	      song->start_SL = job->stamp;
+	      song->delta_stamp_SL = 0;
+	      song->tick_SL = 0;
+	      song->song_done_SL = FALSE;
+	      for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
+		{
+		  BseTrack *track = ring->data;
+		  track->track_done_SL = FALSE;
+		}
 	    }
 	  self->supers = sfi_ring_push_tail (self->supers, super);
 	  break;
@@ -236,17 +231,23 @@ bse_ssequencer_thread (gpointer data)
       bse_ssequencer_handle_jobs_SL (next_stamp);
       for (ring = self->supers; ring; )
 	{
-	  BseSong *song = ring->data;
-	  gdouble stamp_diff = (next_stamp - song->start_SL) - song->delta_stamp_SL;
-	  ring = sfi_ring_walk (ring, self->supers);	/* list may be modified */
-	  while (stamp_diff > 0)
+	  BseSuper *super = ring->data;
+	  if (BSE_IS_SONG (super))
 	    {
-	      guint n_ticks = stamp_diff * song->tpsi_SL;
-	      if (n_ticks < 1)
-		break;
-	      bse_ssequencer_process_song_SL (song, n_ticks);
-	      stamp_diff = (next_stamp - song->start_SL) - song->delta_stamp_SL;
+	      BseSong *song = BSE_SONG (super);
+	      gdouble stamp_diff = (next_stamp - song->start_SL) - song->delta_stamp_SL;
+	      ring = sfi_ring_walk (ring, self->supers);	/* list may be modified */
+	      while (stamp_diff > 0)
+		{
+		  guint n_ticks = stamp_diff * song->tpsi_SL;
+		  if (n_ticks < 1)
+		    break;
+		  bse_ssequencer_process_song_SL (song, n_ticks);
+		  stamp_diff = (next_stamp - song->start_SL) - song->delta_stamp_SL;
+		}
 	    }
+	  else
+	    ring = sfi_ring_walk (ring, self->supers);
 	}
       BSE_SEQUENCER_UNLOCK ();
 

@@ -57,6 +57,9 @@ struct _BseSuper
 
   /* for BseProject */
   guint          context_handle;
+
+  /* sequencer stuff */
+  guint          sequencer_pending_SL : 1;
 };
 struct _BseSuperClass
 {
