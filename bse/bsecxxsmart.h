@@ -234,4 +234,18 @@ public:
 };
 
 }
+
+/* FIXME: where to put this (should probably go somewhere in sfi/sfi*.h)? */
+
+namespace Sfi {
+  typedef SfiBool   Bool;    // FIXME: use bool instead?
+  typedef SfiInt    Int;
+  typedef SfiNum    Num;
+  typedef SfiReal   Real;
+  typedef SfiString String;  // FIXME: use std::string directly?
+  typedef SfiBBlock BBlock;
+  typedef SfiFBlock FBlock;
+  typedef SfiRec    Rec;
+}
+
 #endif /* __BSE_CXX_SMART_H__ */
