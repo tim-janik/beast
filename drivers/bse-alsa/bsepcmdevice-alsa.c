@@ -500,13 +500,10 @@ alsa_device_write (BsePcmHandle *handle,
   
   if (alsa->read_handle && alsa->read_write_count < 1)
     {
-      if (0)    /* snd_pcm_forward() throws warnings instead of returning -EPIPE */
-        {
-          snd_pcm_forward (alsa->read_handle, handle->block_length);
-          alsa->read_write_count += 1;
-        }
-      else /* need blocking read() */
-        alsa_device_read (handle, NULL);
+      snd_lib_error_set_handler (silent_error_handler); /* silence libALSA about -EPIPE */
+      snd_pcm_forward (alsa->read_handle, handle->block_length);
+      alsa->read_write_count += 1;
+      snd_lib_error_set_handler (NULL);
     }
   
   alsa->read_write_count -= 1;

@@ -1,3 +1,8 @@
+Mon Oct  4 09:16:16 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepcmdevice-alsa.c (alsa_device_write): use snd_pcm_forward() and
+	silence libALSA with snd_lib_error_set_handler().
+
 Mon Oct  4 08:59:13 2004  Tim Janik  <timj@gtk.org>
 
 	* bsemididevice-alsa.c (bse_midi_device_alsa_open): 
