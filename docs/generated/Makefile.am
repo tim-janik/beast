@@ -28,6 +28,11 @@ markup_targets = $(strip		\
 	$(man3_MANS:.3=.3.markup)	\
 )
 
+php_targets = $(strip          	\
+	wiki.php		\
+	search.php		\
+)
+
 # website html targets
 html_targets = $(strip		\
 	news.html		\
@@ -153,6 +158,12 @@ index.lst: $(REFERENCE_XMLS)
 %.html: %.xml navigation.xml
 	$(XML2HTML) --output=$@ --images="cvs-images/" \
 		--banner="beast" --icon="beast16.png" $<
+%.php: %.html
+	$(PERL) -pe 'while (s/PHPX(.*?)<br>(.*?)XPHP/PHPX$$1$$2XPHP/) {}'	\
+	         -e 'while (s/PHPX(.*?)&lt;(.*?)XPHP/PHPX$$1<$$2XPHP/ ||'	\
+                 -e        's/PHPX(.*?)&gt;(.*?)XPHP/PHPX$$1>$$2XPHP/) {}'	\
+	         -e 's/PHPX(.*)XPHP/$$1/g'					\
+                <$< >$@
 # postscript rules
 %.nroff: %.xml
 	$(XML2NROFF) --output=$@ $<
@@ -205,8 +216,8 @@ index.html: news.html
 	ln -s $< $@
 navigation.xml: $(srcdir)/../site-navigation.xml
 	cp $< $@
-site:	$(html_targets) index.html navigation.xml
-	tar jcf beast-site-con.tar.bz2 --mode=0664 $(html_targets) index.html css/*.css
+site:	$(html_targets) $(php_targets) index.html navigation.xml
+	tar jcf beast-site-con.tar.bz2 --mode=0664 $(html_targets) $(php_targets) index.html css/*.css
 	tar zcf beast-site-cgi.tar.gz  --mode=0775 cgi-bin/*.cgi
 	tar zcf beast-site-img.tar.gz  --mode=0664 css/images/*.png
 	tar zcf beast-site-nav.tar.gz  --mode=0664 navigation.xml
@@ -268,7 +279,7 @@ CLEANFILES += beast-site-*.tar.gz beast-site-*.tar.bz2 index.html
 # extra rules
 #
 clean-all-targets:	# clean targets that aren't shipped with tarballs
-	rm -f *.xml *.ps *.pdf *.html index.lst
+	rm -f *.xml *.ps *.pdf *.html *.php index.lst
 # postscript and pdf variants
 ps-targets:	$(man1_MANS:.1=.1.ps) $(man1_MANS:.3=.3.ps)
 pdf-targets:	$(man1_MANS:.1=.1.pdf) $(man1_MANS:.3=.3.pdf)

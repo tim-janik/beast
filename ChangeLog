@@ -1,3 +1,16 @@
+Thu Jan 22 03:40:51 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/site-navigation.xml: added search and wiki pages.
+
+	* docs/site-news.texi: rotate news, announce wiki.
+
+	* docs/generated/Makefile.am: support php targets, using a perl
+	script hack to embedd php code in PHPX...XPHP in .texi files.
+
+	* docs/search.texi: new page to search the website.
+
+	* docs/wiki.texi: new page to embedd a beast wiki, based on ErfurtWiki.
+
 Wed Jan 21 03:34:54 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstutils.c (sfidl_pspec_BoxedRec): implement BoxedRec pspec
