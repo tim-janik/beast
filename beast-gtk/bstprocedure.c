@@ -24,6 +24,7 @@
 static void	bst_procedure_dialog_class_init	(BstProcedureDialogClass *klass);
 static void	bst_procedure_dialog_init	(BstProcedureDialog	 *pe);
 static void	bst_procedure_dialog_destroy	(GtkObject		 *object);
+static void     procedure_dialog_button_execute (BstProcedureDialog      *procedure_dialog);
 
 
 /* --- static variables --- */
@@ -52,7 +53,7 @@ bst_procedure_dialog_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
       
-      procedure_dialog_type = gtk_type_unique (GTK_TYPE_WINDOW, &procedure_dialog_info);
+      procedure_dialog_type = gtk_type_unique (GTK_TYPE_VBOX, &procedure_dialog_info);
     }
   
   return procedure_dialog_type;
@@ -66,7 +67,7 @@ bst_procedure_dialog_class_init (BstProcedureDialogClass *class)
   object_class = GTK_OBJECT_CLASS (class);
 
   bst_procedure_dialog_class = class;
-  parent_class = gtk_type_class (GTK_TYPE_WINDOW);
+  parent_class = gtk_type_class (GTK_TYPE_VBOX);
 
   object_class->destroy = bst_procedure_dialog_destroy;
 }
@@ -74,6 +75,7 @@ bst_procedure_dialog_class_init (BstProcedureDialogClass *class)
 static void
 bst_procedure_dialog_init (BstProcedureDialog *procedure_dialog)
 {
+  procedure_dialog->one_shot_exec = FALSE;
   procedure_dialog->proc = NULL;
   procedure_dialog->n_in_params = 0;
   procedure_dialog->n_out_params = 0;
@@ -145,7 +147,7 @@ void
 bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
 {
   BseProcedureClass *proc;
-  GtkWidget *param_box, *any, *sbar;
+  GtkWidget *param_box, *any;
   GSList *slist, *pspec_array_list = NULL;
   guint is_out_param = 0;
 
@@ -156,12 +158,9 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
   if (!procedure_dialog->proc)
     return;
 
-  bst_status_bar_ensure (GTK_WINDOW (procedure_dialog));
-  sbar = bst_status_bar_from_window (GTK_WINDOW (procedure_dialog));
-
   proc = procedure_dialog->proc;
   param_box = gtk_widget_new (GTK_TYPE_VBOX,
-			      "parent", GTK_BIN (procedure_dialog)->child,
+			      "parent", procedure_dialog,
 			      "homogeneous", FALSE,
 			      "spacing", 0,
 			      "border_width", 5,
@@ -206,7 +205,7 @@ bst_procedure_dialog_rebuild (BstProcedureDialog *procedure_dialog)
   any = gtk_widget_new (GTK_TYPE_BUTTON,
 			"label", "Execute",
 			"visible", TRUE,
-			"object_signal::clicked", bst_procedure_dialog_execute, procedure_dialog,
+			"object_signal::clicked", procedure_dialog_button_execute, procedure_dialog,
 			NULL);
 
   gtk_box_pack_end (GTK_BOX (param_box), any, FALSE, TRUE, 5);
@@ -266,16 +265,36 @@ bst_procedure_dialog_execute (BstProcedureDialog *procedure_dialog)
   gtk_widget_unref (widget);
 }
 
+static void
+procedure_dialog_button_execute (BstProcedureDialog *procedure_dialog)
+{
+  GtkWidget *window = gtk_widget_get_toplevel (GTK_WIDGET (procedure_dialog));
+
+  gtk_widget_ref (GTK_WIDGET (procedure_dialog));
+
+  if (procedure_dialog->one_shot_exec)
+    {
+      gtk_widget_ref (window);
+      gtk_container_remove (GTK_CONTAINER (GTK_WIDGET (procedure_dialog)->parent), GTK_WIDGET (procedure_dialog));
+      gtk_widget_destroy (window);
+      gtk_widget_unref (window);
+    }
+
+  bst_procedure_dialog_execute (procedure_dialog);
+
+  gtk_widget_unref (GTK_WIDGET (procedure_dialog));
+}
+
 GtkWidget*
 bst_procedure_dialog_get_global (void)
 {
   if (!global_procedure_dialog)
     {
-      global_procedure_dialog = bst_procedure_dialog_new (NULL);
-      gtk_widget_set (global_procedure_dialog,
-		      "signal::destroy", gtk_widget_destroyed, &global_procedure_dialog,
-		      "window_position", GTK_WIN_POS_MOUSE,
-		      NULL);
+      global_procedure_dialog = bst_subwindow_new (NULL,
+						   &global_procedure_dialog,
+						   bst_procedure_dialog_new (NULL),
+						   BST_SUB_POPUP_POS);
+      bst_status_bar_ensure (GTK_WINDOW (global_procedure_dialog));
     }
   
   return global_procedure_dialog;
@@ -335,8 +354,8 @@ bst_procedure_dialog_preset (BstProcedureDialog *procedure_dialog,
 
 /* --- BST procedure stuff --- */
 void
-bst_procedure_void_execpl (BseProcedureClass *proc,
-			   GSList            *preset_params)
+bst_procedure_void_execpl_modal (BseProcedureClass *proc,
+				 GSList            *preset_params)
 {
   GtkWidget *widget;
   BstProcedureDialog *proc_dialog;
@@ -346,10 +365,11 @@ bst_procedure_void_execpl (BseProcedureClass *proc,
 
   bse_procedure_ref (proc);
 
-  widget = bst_procedure_dialog_get_global ();
+  widget = bst_procedure_dialog_new (proc);
+  gtk_widget_ref (widget);
+  gtk_object_sink (GTK_OBJECT (widget));
   proc_dialog = BST_PROCEDURE_DIALOG (widget);
-
-  bst_procedure_dialog_set_proc (proc_dialog, proc);
+  gtk_widget_show (widget);
 
   if (preset_params)
     n_preset = bst_procedure_dialog_preset (proc_dialog, TRUE, preset_params);
@@ -357,7 +377,20 @@ bst_procedure_void_execpl (BseProcedureClass *proc,
   if (n_preset >= proc->n_in_params)
     bst_procedure_dialog_execute (proc_dialog);
   else
-    gtk_widget_show (widget);
+    {
+      GtkWidget *dialog = bst_subwindow_new (NULL, &dialog,
+					     widget,
+					     BST_SUB_DESTROY_ON_HIDE | BST_SUB_POPUP_POS | BST_SUB_MODAL);
+      proc_dialog->one_shot_exec = TRUE;
+      gtk_widget_show (dialog);
+
+      do
+	g_main_iteration (TRUE);
+      while (dialog != NULL);
+    }
+
+  gtk_widget_destroy (widget);
+  gtk_widget_unref (widget);
   
   bse_procedure_unref (proc);
 }

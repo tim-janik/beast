@@ -18,6 +18,8 @@
 #include	"bststatusbar.h"
 
 
+#define	STATUS_LASTS_ms		(7*1000)
+#define	STATUS_ERROR_LASTS_ms	(25*1000)
 
 /* --- prototypes --- */
 static void	status_bar_remove_timer		(GtkWidget	*sbar);
@@ -25,6 +27,7 @@ static void	status_bar_remove_timer		(GtkWidget	*sbar);
 
 /* --- variables --- */
 static GSList	 *status_windows = NULL;
+static GSList	 *status_window_stack = NULL;
 static guint	  proc_notifier = 0;
 static GtkWidget *proc_window = NULL;
 
@@ -35,7 +38,7 @@ widget_fully_visible (GtkWidget *widget)
 {
   do
     {
-      if (!GTK_WIDGET_VISIBLE (widget))
+      if (!GTK_WIDGET_VISIBLE (widget) && widget->parent)
 	return FALSE;
       widget = widget->parent;
     }
@@ -48,12 +51,28 @@ GtkWidget*
 bst_status_bar_get_current (void)
 {
   GtkWidget *sbar = NULL;
-  
-  if (status_windows)
+
+  if (!sbar && status_window_stack)
     {
-      GtkWidget *window = status_windows->data;
-      
-      sbar = bst_status_bar_from_window (GTK_WINDOW (window));
+      GtkWindow *window = status_window_stack->data;
+
+      if (!GTK_OBJECT_DESTROYED (window))
+	sbar = bst_status_bar_from_window (window);
+
+      if (!sbar || !widget_fully_visible (sbar))
+	{
+	  status_window_stack = g_slist_remove (status_window_stack, window);
+	  sbar = bst_status_bar_get_current ();
+	  status_window_stack = g_slist_prepend (status_window_stack, window);
+	}
+    }
+  
+  if (!sbar && status_windows)
+    {
+      GtkWindow *window = status_windows->data;
+
+      if (GTK_WIDGET_DRAWABLE (window))
+	sbar = bst_status_bar_from_window (window);
       
       if (!sbar || !widget_fully_visible (sbar))
 	{
@@ -64,6 +83,27 @@ bst_status_bar_get_current (void)
     }
   
   return sbar;
+}
+
+void
+bst_status_window_push (gpointer widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  widget = gtk_widget_get_toplevel (widget);
+  g_return_if_fail (GTK_IS_WINDOW (widget) == TRUE);
+
+  gtk_widget_ref (widget);
+  status_window_stack = g_slist_prepend (status_window_stack, widget);
+}
+
+void
+bst_status_window_pop (void)
+{
+  g_return_if_fail (status_window_stack != NULL);
+
+  gtk_widget_unref (status_window_stack->data);
+
+  status_window_stack = g_slist_remove (status_window_stack, status_window_stack->data);
 }
 
 GtkWidget*
@@ -212,11 +252,10 @@ procedure_finished (gpointer	 func_data,
       gchar *text = strrchr (proc_name, ':');
       
       if (text)
-	bst_status_bar_set (sbar, exit_status ? 0 : 100, text + 1, bse_error_blurb (exit_status));
+	bst_status_bar_set_permanent (sbar, exit_status ? 0 : 100, text + 1, bse_error_blurb (exit_status));
       else
-	bst_status_bar_set (sbar, exit_status ? 0 : 100, proc_name, bse_error_blurb (exit_status));
-      
-      bst_status_bar_queue_clear (sbar, exit_status ? 30000 : 5000);
+	bst_status_bar_set_permanent (sbar, exit_status ? 0 : 100, proc_name, bse_error_blurb (exit_status));
+      bst_status_bar_queue_clear (sbar, exit_status ? STATUS_ERROR_LASTS_ms : STATUS_LASTS_ms);
     }
   
   if (proc_window)
@@ -278,8 +317,7 @@ bst_status_bar_ensure (GtkWindow *window)
   
   g_return_if_fail (GTK_IS_WINDOW (window));
   
-  if (GTK_OBJECT_DESTROYED (window) ||
-      bst_status_bar_from_window (window))
+  if (GTK_OBJECT_DESTROYED (window) || bst_status_bar_from_window (window))
     return;
 
   if (status_bar_rc_string)
@@ -387,7 +425,7 @@ status_bar_remove_timer (GtkWidget *sbar)
 static gboolean
 status_bar_queue_clear (GtkWidget *sbar)
 {
-  bst_status_bar_set (sbar, 0, NULL, NULL);
+  bst_status_bar_set_permanent (sbar, 0, NULL, NULL);
   
   return FALSE;
 }
@@ -414,7 +452,7 @@ bst_status_bar_queue_clear (GtkWidget *sbar,
     }
   
   if (!msecs)
-    bst_status_bar_set (sbar, 0, NULL, NULL);
+    bst_status_bar_set_permanent (sbar, 0, NULL, NULL);
   else
     {
       gtk_object_ref (object);
@@ -428,21 +466,19 @@ bst_status_bar_queue_clear (GtkWidget *sbar,
 }
 
 void
-bst_status_bar_set (GtkWidget	*sbar,
-		    gfloat	 percentage,
-		    const gchar *message,
-		    const gchar *status_msg)
+bst_status_bar_set_permanent (GtkWidget	  *sbar,
+			      gfloat	   percentage,
+			      const gchar *message,
+			      const gchar *status_msg)
 {
   GtkObject *object;
   
   g_return_if_fail (GTK_IS_WIDGET (sbar));
   
   object = GTK_OBJECT (sbar);
-  
   gtk_object_ref (object);
   
   status_bar_remove_timer (sbar);
-  
   if (!GTK_OBJECT_DESTROYED (sbar))
     {
       GtkWidget *progress = gtk_object_get_data (object, "bst-progress");
@@ -465,6 +501,25 @@ bst_status_bar_set (GtkWidget	*sbar,
 }
 
 void
+bst_status_bar_set (GtkWidget	*sbar,
+		    gfloat	 percentage,
+		    const gchar *message,
+		    const gchar *status_msg)
+{
+  GtkObject *object;
+  
+  g_return_if_fail (GTK_IS_WIDGET (sbar));
+  
+  object = GTK_OBJECT (sbar);
+  gtk_object_ref (object);
+
+  bst_status_bar_set_permanent (sbar, percentage, message, status_msg);
+  bst_status_bar_queue_clear (sbar, status_msg ? STATUS_ERROR_LASTS_ms : STATUS_LASTS_ms);
+
+  gtk_object_unref (object);
+}
+
+void
 bst_status_set (gfloat	     percentage,
 		const gchar *message,
 		const gchar *status_msg)
@@ -473,6 +528,23 @@ bst_status_set (gfloat	     percentage,
   
   if (sbar)
     bst_status_bar_set (sbar, percentage, message, status_msg);
+}
+
+void
+bst_status_printf (gfloat          percentage,
+		   const gchar    *status_msg,
+		   const gchar    *message_fmt,
+		   ...)
+{
+  gchar *buffer;
+  va_list args;
+
+  va_start (args, message_fmt);
+  buffer = g_strdup_vprintf (message_fmt, args);
+  va_end (args);
+
+  bst_status_set (percentage, buffer, status_msg);
+  g_free (buffer);
 }
 
 void

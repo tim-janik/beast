@@ -1,3 +1,37 @@
+Sun Feb  6 09:54:12 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstpatterndialog.c (pattern_dialog_exec_proc): push
+	status window around procedure invocation.
+
+	* beast-gtk/bststatusbar.[hc]: provide bst_status_window_push() and
+	bst_status_window_pop() to contrain status messages to a certain window.
+
+	* beast-gtk/bstapp.c (bst_app_operate): arg, fixed recently introduced
+	bug where playback wasn't restarted when Play is hit for an already
+	playing project. provide status messages.
+
+	* beast-gtk/bststatusbar.c (bst_status_bar_set): always clear status
+	messages after a certain delay.
+
+	* beast-gtk/bstpatterndialog.c (pattern_dialog_exec_proc): use
+	bst_procedure_void_execpl_modal() now.
+
+	* beast-gtk/bstprocedure.[hc]: fixed one of the most often used mistake
+	when assembling new dialogs through a composite widget: derivation
+	from GtkWindow. we derive from GtkVBox now, so the procedure dialog
+	is pluggable.
+	(bst_procedure_void_execpl_modal): new function superceeding
+	bst_procedure_void_execpl(), executes a procedure and pops up a modal
+	parameter input dialog if necessary.
+
+	* beast-gtk/bstdefs.h (BstSubWindowFlags): added BST_SUB_POPUP_POS flag
+	for popup window positioning such as GTK_WIN_POS_MOUSE or
+	GTK_WIN_POS_CENTER (which one to choose should actually be due to some
+	BEAST or gnome configuration value).
+
+	* beast-gtk/bstfiledialog.c (bst_file_dialog_open): 
+	(bst_file_dialog_save): provide status messages.
+
 Wed Feb  2 23:14:18 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterneditor.[hc]: selection fixups, each view can have

@@ -90,15 +90,7 @@ typedef enum
 } BstOps;
 
 
-/* --- sub window flags --- */
-typedef enum
-{
-  BST_SUB_DESTROY_ON_HIDE	= 1 << 0
-} BstSubWindowFlags;
-
-
 #define	BST_TAG_DIAMETER	(20)
-
 
 
 /* --- pixmap stock --- */
@@ -144,6 +136,16 @@ extern void bst_object_set         (gpointer     object,
     if (!GTK_OBJECT_DESTROYED (object)) \
       gtk_signal_emit_by_name ((GtkObject*) (object), "args-changed"); \
 } G_STMT_END
+
+
+/* --- sub window flags --- */
+typedef enum
+{
+  BST_SUB_DESTROY_ON_HIDE	= (1 << 0),
+  BST_SUB_POPUP_POS		= (1 << 1),
+  BST_SUB_MODAL			= (1 << 2)
+} BstSubWindowFlags;
+
 
 GtkWidget* bst_subwindow_new       (GtkObject	     *alive_host,
 				    GtkWidget	    **ssubwindow_p,

@@ -17,6 +17,7 @@
  */
 #include	"bstfiledialog.h"
 
+#include	"bststatusbar.h"
 #include	<stdio.h>
 #include	<fcntl.h>
 #include	<errno.h>
@@ -94,9 +95,12 @@ bst_file_dialog_open (BstFileDialog *fd)
   error = bse_storage_input_file (storage, file_name);
 
   if (error)
-    g_message ("failed to open `%s': %s", /* FIXME */
-	       file_name,
-	       bse_error_blurb (error));
+    {
+      g_message ("failed to open `%s': %s", /* FIXME */
+		 file_name,
+		 bse_error_blurb (error));
+      bst_status_printf (0, bse_error_blurb (error), "Failed to open `%s'", file_name);
+    }
   else
     {
       BseProject *project = bse_project_new (file_name);
@@ -109,7 +113,13 @@ bst_file_dialog_open (BstFileDialog *fd)
 		   file_name,
 		   bse_error_blurb (error));
       app = bst_app_new (project);
+      bst_status_window_push (app);
       bse_object_unref (BSE_OBJECT (project));
+      bst_status_printf (error ? 0 : 100,
+			 error ? "Failed" : "Done",
+			 "Loading project `%s'",
+			 file_name);
+      bst_status_window_pop ();
       gtk_idle_show_widget (GTK_WIDGET (app));
     }
   
@@ -135,6 +145,7 @@ bst_file_dialog_save (BstFileDialog *fd)
   if (radio && GTK_TOGGLE_BUTTON (radio)->active)
     ;
 
+  bst_status_window_push (app);
   error = bse_project_store_bse (app->project, file_name);
   
   if (error)
@@ -143,10 +154,17 @@ bst_file_dialog_save (BstFileDialog *fd)
 		 BSE_OBJECT_NAME (app->project),
 		 file_name,
 		 bse_error_blurb (error));
+      bst_status_printf (error ? 0 : 100,
+			 error ? "Failed" : "Done",
+			 "Saving project `%s'",
+			 file_name);
+      bst_status_window_pop ();
       g_free (file_name);
+
       return;
     }
 
+  bst_status_window_pop ();
   g_free (file_name);
   gtk_widget_destroy (GTK_WIDGET (fd));
 }

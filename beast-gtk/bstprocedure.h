@@ -41,7 +41,9 @@ typedef	struct	_BstProcedureDialog		BstProcedureDialog;
 typedef	struct	_BstProcedureDialogClass	BstProcedureDialogClass;
 struct _BstProcedureDialog
 {
-  GtkWindow	     parent_object;
+  GtkVBox	     parent_object;
+
+  guint              one_shot_exec : 1;
 
   BseProcedureClass *proc;
 
@@ -54,7 +56,7 @@ struct _BstProcedureDialog
 };
 struct _BstProcedureDialogClass
 {
-  GtkWindowClass     parent_class;
+  GtkVBoxClass       parent_class;
 };
 
 
@@ -73,7 +75,7 @@ GtkWidget*	bst_procedure_dialog_get_global	(void);
 
 
 /* --- BST procedure stuff --- */
-void		bst_procedure_void_execpl	(BseProcedureClass  *proc,
+void		bst_procedure_void_execpl_modal	(BseProcedureClass  *proc,
 						 GSList		    *preset_params);
 
 

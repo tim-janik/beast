@@ -486,6 +486,8 @@ bst_app_operate (BstApp *app,
 
   gtk_widget_ref (widget);
 
+  bst_status_window_push (widget);
+
   switch (op)
     {
       BstSuperShell *super_shell;
@@ -552,10 +554,18 @@ bst_app_operate (BstApp *app,
       bse_object_unref (BSE_OBJECT (snet));
       break;
     case BST_OP_PROJECT_PLAY:
+      if (BSE_SOURCE_PREPARED (app->project))
+	{
+	  bse_project_stop_playback (app->project);
+	  bst_status_set (0, "Restarting Playback", NULL);
+	}
+      else
+	bst_status_set (0, "Starting Playback", NULL);
       bse_project_start_playback (app->project);
       break;
     case BST_OP_PROJECT_STOP:
       bse_project_stop_playback (app->project);
+      bst_status_set (0, "Stopping Playback", NULL);
       break;
     case BST_OP_DIALOG_PREFERENCES:
       if (!bst_preferences)
@@ -649,6 +659,8 @@ bst_app_operate (BstApp *app,
 	bst_super_shell_operate (BST_SUPER_SHELL (shell), op);
       break;
     }
+
+  bst_status_window_pop ();
 
   bst_update_can_operate (widget);
 

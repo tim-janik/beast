@@ -39,10 +39,20 @@ void		bst_status_bar_set		(GtkWidget	*sbar,
 						 gfloat		 percentage,
 						 const gchar	*message,
 						 const gchar	*status_msg);
+void		bst_status_bar_set_permanent	(GtkWidget	*sbar,
+						 gfloat		 percentage,
+						 const gchar	*message,
+						 const gchar	*status_msg);
 void		bst_status_set			(gfloat		 percentage,
 						 const gchar	*message,
 						 const gchar	*status_msg);
+void		bst_status_printf		(gfloat		 percentage,
+						 const gchar	*status_msg,
+						 const gchar	*message_fmt,
+						 ...) G_GNUC_PRINTF (3, 4);
 void		bst_status_clear		(void);
+void		bst_status_window_push		(gpointer        widget);
+void		bst_status_window_pop		(void);
 
 
 

@@ -659,14 +659,13 @@ subwindow_delete_event (GtkWidget *window)
   return TRUE;
 }
 
-static GtkWidget *subwindow_choice = NULL;
-
 GtkWidget*
 bst_subwindow_new (GtkObject        *alive_host,
 		   GtkWidget       **ssubwindow_p,
 		   GtkWidget        *child,
 		   BstSubWindowFlags flags)
 {
+  static GtkWidget *subwindow_choice = NULL;
   GtkWidget *window;
 
   g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
@@ -695,8 +694,11 @@ bst_subwindow_new (GtkObject        *alive_host,
 			   "signal::button_press_event", subwindow_button_press_event, NULL,
 			   "events", GDK_BUTTON_PRESS_MASK,
 			   "child", child,
+			   "modal", flags & BST_SUB_MODAL,
 			   ssubwindow_p ? "object_signal::destroy" : NULL, bse_nullify_pointer, ssubwindow_p,
 			   NULL);
+  if (flags & BST_SUB_POPUP_POS)
+    gtk_widget_set (window, "window_position", GTK_WIN_POS_MOUSE, NULL);
   if (flags & BST_SUB_DESTROY_ON_HIDE)
     gtk_signal_connect_after (GTK_OBJECT (window),
 			      "hide",

@@ -304,9 +304,11 @@ pattern_dialog_exec_proc (BstPatternDialog *pattern_dialog,
   slist = g_slist_prepend (slist, &param_focus_row);
   
   /* invoke procedure with selection from pattern editor */
+  bst_status_window_push (widget);
   bst_pattern_editor_apply_selection (pattern_editor);
-  bst_procedure_void_execpl (proc, slist);
+  bst_procedure_void_execpl_modal (proc, slist);
   bst_pattern_editor_resync_selection (pattern_editor);
+  bst_status_window_pop ();
 
   /* free preset params and destroy their specs again */
   while (slist)
