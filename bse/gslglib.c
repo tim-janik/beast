@@ -96,6 +96,31 @@ gsl_g_log (const gchar*msg,const char *format, va_list ap)
   if (msg) printf ("\n");
 }
 
+void
+gsl_g_print_fd (int fd, const char *format, va_list ap)
+{
+  g_return_if_fail (fd == 1 || fd == 2);
+  if (fd == 1)
+    vprintf (format, ap);
+  else
+    vfprintf (stderr, format, ap);
+}
+
+gchar*
+gsl_g_convert (const gchar  *str,
+	       gsize        len,            /* gssize */
+	       const gchar  *to_codeset,
+	       const gchar  *from_codeset,
+	       gsize        *bytes_read,
+	       gsize        *bytes_written,
+	       void         **error)        /* GError */
+{
+  g_error ("g_convert not implemented");
+  
+  /* not reached: */
+  return 0;
+}
+
 
 /* --- GScanner --- */
 
@@ -2194,3 +2219,6 @@ g_printf_string_upper_bound (const gchar *format,
 {
   return printf_string_upper_bound (format, TRUE, args);
 }
+
+
+/* vim:set ts=8 sw=2 sts=2: */

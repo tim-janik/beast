@@ -360,24 +360,19 @@ builtsources: $(bse_built_h_sources) $(bse_built_c_sources)
 all: @MISSING_ETAGS@ @BIRNET_Y@ # TAGS
 
 
-# GSL targets
+# --- GSL targets ---
+GSL_progs_ldadd = $(progs_LDADD)
 include gslmakefile.inc
-#GSL_H_SOURCES =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h gslwavechunk.h \
-#		gslwavedsc.h gslmath.h gslengine.h gslfilter.h
-#GSL_PRIVATE_H_SOURCES = gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h
-#GSL_C_SOURCES = gslcommon.c gsldatacache.c gsldatahandle.c gslwavechunk.c gslwavedsc.c \
-#		gslmath.c gslengine.c gsloputil.c gslopmaster.c \
-#		gslopschedule.c gslfilter.c
-#GSL_NOINST_PROGS = gslwchunk gslloader gsltests
-#gslwchunk_SOURCES = gslwchunk.c
-#gslwchunk_LDADD = $(progs_LDADD)
-#gslloader_SOURCES = gslloader.c
-#gslloader_LDADD = $(progs_LDADD)
-#gsltests_SOURCES = gsltests.c
-#gsltests_LDADD = $(progs_LDADD)
-#EXTRA_DIST += gsl.gnuplot gsl-mplan.txt
+# GSL_H_SOURCES = gslcommon.h ...
+# GSL_PRIVATE_H_SOURCES = gsloputil.h ...
+# GSL_C_SOURCES = gslcommon.c ...
+# GSL_NOINST_PROGS = gsltests ...
+# gsltests_SOURCES = gsltests.c
+# gsltests_LDADD = $(GSL_progs_ldadd)
+# EXTRA_DIST += gsl.gnuplot gsl-mplan.txt
 
-# TOYPROF: ppor man's profiling toy
+
+# TOYPROF: poor man's profiling toy
 TOYPROF_H_SOURCES = toyprof.h
 TOYPROF_C_SOURCES = toyprof.c
 EXTRA_DIST += toyprof.pl toyprof.README

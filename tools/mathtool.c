@@ -512,6 +512,33 @@ main (int   argc,
 		 gsl_poly_str (order, b, "z"));
       }
     }
+  else if (strcmp (arg, "fir") == 0)
+    {
+      unsigned int iorder = atoi (pshift ());
+      unsigned int n_points = 0, i = 0;
+      
+      double *freq = g_newa (double, argc / 2 + 1);
+      double *value = g_newa (double, argc / 2 + 1);
+      double *a = g_newa (double, iorder);
+      const char *f, *v;
+      
+      do
+	{
+	  f = pshift ();
+	  v = pshift ();
+	  
+	  if (f[0] && v[0])
+	    {
+	      freq[n_points] = atof (f) * GSL_PI;
+	      value[n_points] = atof (v);
+	      n_points++;
+	    }
+	}
+      while (f[0] && v[0]);
+      
+      gsl_filter_fir_approx (iorder, a, freq, value, n_points);
+      g_print ("FIR%u(z)=%s\n", iorder, gsl_poly_str (iorder - 1, a, "z")); /* FIXME: order-1 ?? */
+    }
   else if (strncmp (arg, "poly", 4) == 0)
     {
       guint order;
@@ -596,6 +623,7 @@ usage (void)
   g_print ("  t1p <order> <freqc> <freqr> <epsilon>     type1 tschebyscheff bandpass filter\n");
   g_print ("  t2l <order> <freqc> <steepn> <epsilon>    type2 tschebyscheff lowpass filter\n");
   g_print ("  t2h <order> <freqc> <steepn> <epsilon>    type2 tschebyscheff highpass filter\n");
+  g_print ("  fir <order> <freq1> <value1> ...          fir approximation\n");
   g_print ("  poly | polyr | polyp                      polynom test (+roots or +poles)\n");
   exit (1);
 }

@@ -12,13 +12,13 @@ GSL_C_SOURCES = gsldatacache.c gsldatahandle.c gslwavechunk.c \
 EXTRA_DIST += gslwaveosc-aux.c
 GSL_NOINST_PROGS = gslwchunk gsltests gslglibhashtest gslffttest
 gslwchunk_SOURCES = gslwchunk.c
-gslwchunk_LDADD = $(progs_LDADD)
+gslwchunk_LDADD = $(GSL_progs_ldadd)
 gsltests_SOURCES = gsltests.c
-gsltests_LDADD = $(progs_LDADD)
+gsltests_LDADD = $(GSL_progs_ldadd)
 gslffttest_SOURCES = gslffttest.c
-gslffttest_LDADD = $(progs_LDADD)
+gslffttest_LDADD = $(GSL_progs_ldadd)
 gslglibhashtest_SOURCES = gslglibhashtest.cc
-gslglibhashtest_LDADD = $(progs_LDADD)
+gslglibhashtest_LDADD = $(GSL_progs_ldadd)
 EXTRA_DIST += gsl.gnuplot gsl-mplan.txt gslarrows gslglibhash.cc
 EXTRA_DIST += gslwave.header gsl/gslglib.c gsl/gslglib.h gsl-fftgen.pl
 

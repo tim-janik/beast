@@ -1,3 +1,10 @@
+Thu Jan 24 05:59:45 2002  Tim Janik  <timj@gtk.org>
+
+	* gsl*.*: applied a good bunch of build fixes, and gcc-ism fixes
+	and aRts special casing patches from stefan.
+
+	* gsltests.c: feature fir aproximation, this still needs fixing though.
+
 Thu Jan 24 01:13:47 2002  Tim Janik  <timj@gtk.org>
 
 	* mkcproc.pl: output #line directives after stripping a comment.

@@ -48,17 +48,6 @@ WOSC_MIX_VARIANT_NAME (GslWaveOscData *wosc,
     {
       gfloat ffrac;
 
-#if 0	// FIXME
-      if (CHECK_FREQ)
-	{
-	  gfloat freq_level = *freq_in++;
-
-	  freq_level = GSL_FREQ_FROM_VALUE (freq_level);
-	  if_reject (FREQ_CHANGED (last_freq_level, freq_level))
-	    wosc_set_freq (wosc, freq_level, FALSE);
-	  last_freq_level = freq_level;
-	}
-#endif
       if (CHECK_SYNC)
 	{
 	  gfloat sync_level = *sync_in++;

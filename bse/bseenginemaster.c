@@ -28,78 +28,20 @@
 #include <errno.h>
 
 
-/* --- time stamping --- */
-#if	defined (__GNUC__) && defined (__i586__)
-#define ToyprofStamp 		unsigned long long int
-#define	toyprof_clock_name()	("Pentium(R) RDTSC - CPU clock cycle counter")
-/* capturing time stamps via rdtsc can produce inaccurate results due
- * to parallel instruction execution. so we issue cpuid as serializaion
- * barrier first.
- */
-#define toyprof_stamp(stamp)	({ unsigned int low, high;				\
-                                   __asm__ __volatile__ ("pushl %%ebx\n"		\
-							 "cpuid\n" /* serialization */	\
-							 "rdtsc\n"			\
-							 "popl %%ebx\n"			\
-							 : "=a" (low), "=d" (high)	\
-							 : "a" (0)			\
-							 : "cx", "cc");			\
-                                   (stamp) = high;					\
-                                   (stamp) <<= 32;					\
-                                   (stamp) += low;					\
-})
-#define toyprof_stamp_ticks()			(toyprof_stampfreq)
-/* special case (fstamp) > (lstamp), this should never happen
- * because we always stamp fstamp first, and invoke rdtsc after
- * a serialization barrier (cpuid). in case this still happens
- * that's probably due to running on an SMP system.
- */
-#define toyprof_elapsed(fstamp, lstamp)        ({ \
-  ToyprofStamp diff;								\
-  if ((fstamp) > (lstamp))							\
-  dprintf(2, "%llu > %llu\n",fstamp,lstamp); \
-  if ((fstamp) > (lstamp))							\
-    TOYPROF_ABORT ("pentium CPU clock warped backwards, running on SMP?");	\
-  diff = (lstamp) - (fstamp); diff;						\
-})
-static unsigned long long int toyprof_stampfreq = 0;
-static void
-toyprof_stampinit (void)
-{	/* grep "cpu MHz         : 551.256" from /proc/cpuinfo */
-  int fd = open ("/proc/cpuinfo", O_RDONLY);
-  if (fd >= 0) {
-    char *val, buf[8192]; unsigned int l;
-    l = read (fd, buf, sizeof (buf));
-    buf[CLAMP (l, 0, sizeof (buf) - 1)] = 0;
-    close (fd);
-    val = l > 10 ? strstr (buf, "cpu MHz") : NULL;
-    val = val ? strpbrk (val, "0123456789\n") : NULL;
-    if (val && *val >= '0' && *val <= '9') {
-      int frac = 6;
-      while (*val >= '0' && *val <= '9')
-	toyprof_stampfreq = toyprof_stampfreq * 10 + *val++ - '0';
-      if (*val++ == '.')
-	while (*val >= '0' && *val <= '9' && frac-- > 0)
-	  toyprof_stampfreq = toyprof_stampfreq * 10 + *val++ - '0';
-      while (frac-- > 0)
-	toyprof_stampfreq *= 10;
-    }
-  }
-  TOYPROF_ASSERT (toyprof_stampfreq > 0);
-}
-#else	/* !(GCC && PENTIUM) */
+/* --- time stamping (debugging) --- */
 #define	ToyprofStamp		struct timeval
 #define	toyprof_clock_name()	("Glibc gettimeofday(2)")
 #define toyprof_stampinit()	/* nothing */
 #define	toyprof_stamp(st)	gettimeofday (&(st), 0)
 #define	toyprof_stamp_ticks()	(1000000)
-#define	toyprof_elapsed(fstamp, lstamp)	({							\
-  unsigned long long int first = (fstamp).tv_sec * toyprof_stamp_ticks () + (fstamp).tv_usec;	\
-  unsigned long long int last  = (lstamp).tv_sec * toyprof_stamp_ticks () + (lstamp).tv_usec;	\
-  last -= first;										\
-  last;												\
-})
-#endif  /* !(GCC && PENTIUM) */
+static inline guint64
+toyprof_elapsed (ToyprofStamp fstamp,
+		 ToyprofStamp lstamp)
+{
+  guint64 first = fstamp.tv_sec * toyprof_stamp_ticks () + fstamp.tv_usec;
+  guint64 last  = lstamp.tv_sec * toyprof_stamp_ticks () + lstamp.tv_usec;
+  return last - first;
+}
 
 
 /* --- typedefs & structures --- */
@@ -123,7 +65,7 @@ static void	master_schedule_discard	(void);
 static gboolean	    master_need_reflow = FALSE;
 static gboolean	    master_need_process = FALSE;
 static OpNode	   *master_consumer_list = NULL;
-const gfloat        gsl_engine_master_zero_block[GSL_STREAM_MAX_VALUES] = { 0, }; // FIXME
+const gfloat        gsl_engine_master_zero_block[GSL_STREAM_MAX_VALUES] = { 0, }; /* FIXME */
 static Poll	   *master_poll_list = NULL;
 static guint        master_n_pollfds = 0;
 static guint        master_pollfds_changed = FALSE;

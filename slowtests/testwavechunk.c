@@ -124,7 +124,7 @@ run_tests (GslWaveLoopType loop_type,
       gsl_wave_chunk_unuse_block (wchunk, &block);
 
       block.offset = block.next_offset;
-      // block.offset += block.play_dir;
+      /* block.offset += block.play_dir; */
     }
   _gsl_wave_chunk_destroy (wchunk);
   gsl_data_cache_unref (dcache);

@@ -45,9 +45,11 @@ static void	wave_osc_transform_filter	(GslWaveOscData *wosc,
 #define WOSC_MIX_VARIANT_NAME	wosc_process_sfm_
 #define WOSC_MIX_VARIANT	(WOSC_MIX_WITH_SYNC | WOSC_MIX_WITH_FREQ | WOSC_MIX_WITH_MOD | 0                   )
 #include "gslwaveosc-aux.c"
-//#define WOSC_MIX_VARIANT_NAME	wosc_process_sf_e
-//#define WOSC_MIX_VARIANT	(WOSC_MIX_WITH_SYNC | WOSC_MIX_WITH_FREQ | 0                 | WOSC_MIX_WITH_EXP_FM)
-//#include "gslwaveosc-aux.c"
+#if 0
+#define WOSC_MIX_VARIANT_NAME	wosc_process_sf_e
+#define WOSC_MIX_VARIANT	(WOSC_MIX_WITH_SYNC | WOSC_MIX_WITH_FREQ | 0                 | WOSC_MIX_WITH_EXP_FM)
+#include "gslwaveosc-aux.c"
+#endif
 #define WOSC_MIX_VARIANT_NAME	wosc_process_sf__
 #define WOSC_MIX_VARIANT	(WOSC_MIX_WITH_SYNC | WOSC_MIX_WITH_FREQ | 0                 | 0                   )
 #include "gslwaveosc-aux.c"
@@ -57,9 +59,11 @@ static void	wave_osc_transform_filter	(GslWaveOscData *wosc,
 #define WOSC_MIX_VARIANT_NAME	wosc_process_s_m_
 #define WOSC_MIX_VARIANT	(WOSC_MIX_WITH_SYNC | 0                  | WOSC_MIX_WITH_MOD | 0                   )
 #include "gslwaveosc-aux.c"
-//#define WOSC_MIX_VARIANT_NAME	wosc_process_s__e
-//#define WOSC_MIX_VARIANT	(WOSC_MIX_WITH_SYNC | 0                  | 0                 | WOSC_MIX_WITH_EXP_FM)
-//#include "gslwaveosc-aux.c"
+#if 0
+#define WOSC_MIX_VARIANT_NAME	wosc_process_s__e
+#define WOSC_MIX_VARIANT	(WOSC_MIX_WITH_SYNC | 0                  | 0                 | WOSC_MIX_WITH_EXP_FM)
+#include "gslwaveosc-aux.c"
+#endif
 #define WOSC_MIX_VARIANT_NAME	wosc_process_s___
 #define WOSC_MIX_VARIANT	(WOSC_MIX_WITH_SYNC | 0                  | 0                 | 0                   )
 #include "gslwaveosc-aux.c"
@@ -69,9 +73,11 @@ static void	wave_osc_transform_filter	(GslWaveOscData *wosc,
 #define WOSC_MIX_VARIANT_NAME	wosc_process__fm_
 #define WOSC_MIX_VARIANT	(0                  | WOSC_MIX_WITH_FREQ | WOSC_MIX_WITH_MOD | 0                   )
 #include "gslwaveosc-aux.c"
-//#define WOSC_MIX_VARIANT_NAME	wosc_process__f_e
-//#define WOSC_MIX_VARIANT	(0                  | WOSC_MIX_WITH_FREQ | 0                 | WOSC_MIX_WITH_EXP_FM)
-//#include "gslwaveosc-aux.c"
+#if 0
+#define WOSC_MIX_VARIANT_NAME	wosc_process__f_e
+#define WOSC_MIX_VARIANT	(0                  | WOSC_MIX_WITH_FREQ | 0                 | WOSC_MIX_WITH_EXP_FM)
+#include "gslwaveosc-aux.c"
+#endif
 #define WOSC_MIX_VARIANT_NAME	wosc_process__f__
 #define WOSC_MIX_VARIANT	(0                  | WOSC_MIX_WITH_FREQ | 0                 | 0                   )
 #include "gslwaveosc-aux.c"
@@ -81,9 +87,11 @@ static void	wave_osc_transform_filter	(GslWaveOscData *wosc,
 #define WOSC_MIX_VARIANT_NAME	wosc_process___m_
 #define WOSC_MIX_VARIANT	(0                  | 0                  | WOSC_MIX_WITH_MOD | 0                   )
 #include "gslwaveosc-aux.c"
-//#define WOSC_MIX_VARIANT_NAME	wosc_process____e
-//#define WOSC_MIX_VARIANT	(0                  | 0                  | 0                 | WOSC_MIX_WITH_EXP_FM)
-//#include "gslwaveosc-aux.c"
+#if 0
+#define WOSC_MIX_VARIANT_NAME	wosc_process____e
+#define WOSC_MIX_VARIANT	(0                  | 0                  | 0                 | WOSC_MIX_WITH_EXP_FM)
+#include "gslwaveosc-aux.c"
+#endif
 #define WOSC_MIX_VARIANT_NAME	wosc_process_____
 #define WOSC_MIX_VARIANT	(0                  | 0                  | 0                 | 0                   )
 #include "gslwaveosc-aux.c"
@@ -212,7 +220,7 @@ gsl_wave_osc_process (GslWaveOscData *wosc,
   g_assert (!GSL_DOUBLE_IS_NANINF (wosc->y[0]));
   g_assert (!GSL_DOUBLE_IS_SUBNORMAL (wosc->y[0]));
 
-  wosc->done = (wosc->block.is_silent &&   // FIXME, let filter state run out?
+  wosc->done = (wosc->block.is_silent &&   /* FIXME, let filter state run out? */
 		((wosc->block.play_dir < 0 && wosc->block.offset < 0) ||
 		 (wosc->block.play_dir > 0 && wosc->block.offset > wosc->wchunk->wave_length)));
 

@@ -105,7 +105,7 @@ typedef struct
 } GslPollFD;
 
 
-#if defined (BSE_COMPILATION) || defined (BSE_PLUGIN_FALLBACK)
+#if defined (BSE_COMPILATION) || defined (BSE_PLUGIN_FALLBACK) || defined (GSL_WANT_GLIB_WRAPPER)
 #  define if_expect(cond)		if (GSL_GCC_EXPECT (cond))
 #  define if_reject(cond)		if (GSL_GCC_REJECT (cond))
 #endif

@@ -220,11 +220,20 @@ g_warning (const gchar *format,
 }
 static inline void
 g_print (const gchar *format,
-	   ...)
+	 ...)
 {
   va_list args;
   va_start (args, format);
-  gsl_g_log (NULL, format, args);
+  gsl_g_print_fd (1, format, args);
+  va_end (args);
+}
+static inline void
+g_printerr (const gchar *format,
+	    ...)
+{
+  va_list args;
+  va_start (args, format);
+  gsl_g_print_fd (2, format, args);
   va_end (args);
 }
 typedef struct _GTrashStack     GTrashStack;
@@ -340,6 +349,7 @@ typedef struct { int fd; short events, revents; } GPollFD;
 #define	g_strconcat		gsl_g_strconcat
 #define	g_usleep		gsl_g_usleep
 #define	g_strerror		gsl_g_strerror
+#define	g_convert		gsl_g_convert
 #define g_direct_hash 	gsl_g_direct_hash 
 #define g_direct_equal 	gsl_g_direct_equal 
 #define g_str_equal 	gsl_g_str_equal 
@@ -365,6 +375,13 @@ gchar*                g_strndup        (const gchar *str,
 					gsize        n);
 gchar*                g_strconcat      (const gchar *string1,
 					...); /* NULL terminated */
+gchar*		      g_convert	       (const gchar  *str,
+					gsize        len,            /* gssize */
+					const gchar  *to_codeset,
+					const gchar  *from_codeset,
+					gsize        *bytes_read,
+					gsize        *bytes_written,
+					void         **error);        /* GError */
 void g_usleep(unsigned long usec);
 char* g_strerror(int e);
 guint g_direct_hash (gconstpointer v);

@@ -57,6 +57,9 @@ extern "C" {
 #include <bse/bseglobals.h>
 #  define GSL_SIGNAL_TO_FREQ(value)	(((gfloat) (value)) * BSE_MAX_FREQUENCY_f)
 #  define GSL_SIGNAL_FROM_FREQ(freq)	((gfloat) ((freq) * (1.0 / BSE_MAX_FREQUENCY_f)))
+#elif defined (GSL_WANT_ARTS_THREADS)  /* must be aRts */
+#  define GSL_SIGNAL_TO_FREQ(x)		(x)
+#  define GSL_FREQ_TO_SIGNAL(x)		(x)
 #endif
 
 /**
