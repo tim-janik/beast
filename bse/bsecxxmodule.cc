@@ -17,6 +17,8 @@
  */
 #include "bsecxxmodule.h"
 #include "bseengine.h"
+#include "bsemidireceiver.h"
+#include "bsesnet.h"
 
 namespace {
 using namespace Bse;
@@ -183,15 +185,81 @@ Effect::create_engine_class (SynthesisModule *sample_module,
   return source_class->engine_class;
 }
 
+static void
+midi_control_handler (gpointer           handler_data, /* MIDI Device Thread (and possibly others) */
+                      guint64            tick_stamp,
+                      BseMidiSignalType  signal_type,
+                      gfloat             control_value,
+                      GSList            *modules,
+                      BseTrans          *trans)
+{
+  g_printerr ("midi_control_handler: CC[%d]=%f (modules=%u stamp=%llu)\n",
+              signal_type, control_value, g_slist_length (modules), tick_stamp);
+}
+
+struct HandlerSetup {
+  bool                   add_handler;
+  guint                  n_aprops;
+  BseAutomationProperty *aprops;
+  BseMidiReceiver       *midi_receiver;
+  guint                  midi_channel;
+};
+
+static void
+handler_setup_func (BseModule      *module,   /* Engine Thread */
+                    gpointer        data)
+{
+  HandlerSetup *hs = static_cast<HandlerSetup*> (data);
+  guint i;
+  for (i = 0; i < hs->n_aprops; i++)
+    if (hs->add_handler)
+      bse_midi_receiver_add_control_handler (hs->midi_receiver,
+                                             hs->midi_channel,
+                                             hs->aprops[i].signal_type,
+                                             midi_control_handler,
+                                             hs->aprops[i].pspec,
+                                             module);
+    else
+      bse_midi_receiver_remove_control_handler (hs->midi_receiver,
+                                                hs->midi_channel,
+                                                hs->aprops[i].signal_type,
+                                                midi_control_handler,
+                                                hs->aprops[i].pspec,
+                                                module);
+}
+
+static void
+handler_setup_free (gpointer        data)       /* User Thread */
+{
+  HandlerSetup *hs = reinterpret_cast<HandlerSetup*> (data);
+  g_free (hs->aprops);
+  g_free (hs);
+}
+
 BseModule*
 Effect::integrate_engine_module (unsigned int   context_handle,
                                  BseTrans      *trans)
 {
+  BseSource *source = cast (this);
   SynthesisModule *cxxmodule = create_module (context_handle, trans);
   BseModule *engine_module = bse_module_new (create_engine_class (cxxmodule), cxxmodule);
   cxxmodule->set_module (engine_module);
   /* intergrate module into engine */
   bse_trans_add (trans, bse_job_integrate (engine_module));
+  /* register MIDI control handlers */
+  guint n_props = 0;
+  BseAutomationProperty *aprops = bse_source_get_automation_properties (source, &n_props);
+  if (n_props)
+    {
+      HandlerSetup *hs = g_new0 (HandlerSetup, 1);
+      hs->add_handler = true;
+      hs->n_aprops = n_props;
+      hs->aprops = aprops;
+      BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
+      hs->midi_receiver = mc.midi_receiver;
+      hs->midi_channel = mc.midi_channel;
+      bse_trans_add (trans, bse_job_access (engine_module, handler_setup_func, hs, handler_setup_free));
+    }
   return engine_module;
 }
 
@@ -200,8 +268,26 @@ Effect::dismiss_engine_module (BseModule       *engine_module,
                                guint            context_handle,
                                BseTrans        *trans)
 {
+  BseSource *source = cast (this);
   if (engine_module)
-    bse_trans_add (trans, bse_job_discard (engine_module));
+    {
+      /* unregister MIDI control handlers */
+      guint n_props = 0;
+      BseAutomationProperty *aprops = bse_source_get_automation_properties (source, &n_props);
+      if (n_props)
+        {
+          HandlerSetup *hs = g_new0 (HandlerSetup, 1);
+          hs->add_handler = false;
+          hs->n_aprops = n_props;
+          hs->aprops = aprops;
+          BseMidiContext mc = bse_snet_get_midi_context (bse_item_get_snet (BSE_ITEM (source)), context_handle);
+          hs->midi_receiver = mc.midi_receiver;
+          hs->midi_channel = mc.midi_channel;
+          bse_trans_add (trans, bse_job_access (engine_module, handler_setup_func, hs, handler_setup_free));
+        }
+      /* discard module */
+      bse_trans_add (trans, bse_job_discard (engine_module));
+    }
 }
 
 unsigned int

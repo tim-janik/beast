@@ -121,6 +121,8 @@ bse_error_blurb (BseErrorType error_value)
     case BSE_ERROR_PROC_PARAM_INVAL:		return _("Procedure parameter invalid");
     case BSE_ERROR_PROC_EXECUTION:		return _("Procedure execution failed");
     case BSE_ERROR_PROC_ABORT:			return _("Procedure execution aborted");
+    case BSE_ERROR_INVALID_PROPERTY:	        return _("Invalid object property");
+    case BSE_ERROR_INVALID_MIDI_CONTROL:	return _("Invalid MIDI control type");
     case BSE_ERROR_PARSE_ERROR:			return _("Parsing error");
     case BSE_ERROR_SPAWN:			return _("Failed to spawn child process");
       /* various procedure errors */

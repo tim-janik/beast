@@ -346,20 +346,31 @@ bse_source_find_ochannel (BseSource   *source,
 }
 
 static void
-source_notify_properties (BseSource *self)
+source_class_collect_properties (BseSourceClass *class)
 {
-  BseSourceClass *class = BSE_SOURCE_GET_CLASS (self);
   if (!class->filtered_properties)
     {
       guint n, i;
       GParamSpec **pspecs = g_object_class_list_properties (G_OBJECT_CLASS (class), &n);
       for (i = 0; i < n; i++)
-        if (sfi_pspec_check_option (pspecs[i], "prepared") ||
-            sfi_pspec_check_option (pspecs[i], "unprepared"))
-          class->unprepared_properties = sfi_ring_append (class->unprepared_properties, pspecs[i]);
+        {
+          if (sfi_pspec_check_option (pspecs[i], "prepared") ||
+              sfi_pspec_check_option (pspecs[i], "unprepared"))
+            class->unprepared_properties = sfi_ring_append (class->unprepared_properties, pspecs[i]);
+          if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspecs[i]), G_TYPE_DOUBLE) &&
+              sfi_pspec_check_option (pspecs[i], "automate"))
+            class->automation_properties = sfi_ring_append (class->automation_properties, pspecs[i]);
+        }
       g_free (pspecs);
       class->filtered_properties = TRUE;
     }
+}
+
+static void
+source_notify_properties (BseSource *self)
+{
+  BseSourceClass *class = BSE_SOURCE_GET_CLASS (self);
+  source_class_collect_properties (BSE_SOURCE_GET_CLASS (self));
   SfiRing *ring;
   for (ring = class->unprepared_properties; ring; ring = sfi_ring_walk (ring, class->unprepared_properties))
     g_object_notify (self, G_PARAM_SPEC (ring->data)->name);
@@ -389,6 +400,7 @@ bse_source_prepare (BseSource *source)
   
   g_object_ref (source);
   g_object_freeze_notify (G_OBJECT (source));
+  source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
   source->contexts = g_bsearch_array_create (&context_config);
   BSE_OBJECT_SET_FLAGS (source, BSE_SOURCE_FLAG_PREPARED);
   BSE_SOURCE_GET_CLASS (source)->prepare (source);
@@ -435,6 +447,112 @@ bse_source_reset (BseSource *source)
   source_notify_properties (source);
   g_object_thaw_notify (G_OBJECT (source));
   g_object_unref (source);
+}
+
+static gint
+automation_properties_cmp (gconstpointer bsearch_node1, /* key */
+                           gconstpointer bsearch_node2)
+{
+  const BseAutomationProperty *ap1 = bsearch_node1;
+  const BseAutomationProperty *ap2 = bsearch_node2;
+  return G_BSEARCH_ARRAY_CMP (ap1->pspec, ap2->pspec);
+}
+
+static const GBSearchConfig aprop_bconfig = { sizeof (BseAutomationProperty), automation_properties_cmp, 0 };
+
+static void
+aprop_array_free (gpointer data)
+{
+  GBSearchArray *aparray = data;
+  g_bsearch_array_free (aparray, &aprop_bconfig);
+}
+
+BseErrorType
+bse_source_set_automation_property (BseSource        *source,
+                                    const gchar      *prop_name,
+                                    BseMidiSignalType signal_type)
+{
+  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (prop_name != NULL, BSE_ERROR_INTERNAL);
+  if (BSE_SOURCE_PREPARED (source))
+    return BSE_ERROR_SOURCE_BUSY;
+  if (signal_type &&
+      (signal_type < BSE_MIDI_SIGNAL_CONTINUOUS_0 || signal_type > BSE_MIDI_SIGNAL_CONTINUOUS_31) &&
+      (signal_type < BSE_MIDI_SIGNAL_CONTROL_0 || signal_type > BSE_MIDI_SIGNAL_CONTROL_127))
+    return BSE_ERROR_INVALID_MIDI_CONTROL;
+  source_class_collect_properties (BSE_SOURCE_GET_CLASS (source));
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
+  SfiRing *ring, *aprops = BSE_SOURCE_GET_CLASS (source)->automation_properties;
+  for (ring = aprops; ring; ring = sfi_ring_walk (ring, aprops))
+    if (ring->data == pspec)
+      break;
+  if (!ring)    /* !pspec or pspec not found */
+    return BSE_ERROR_INVALID_PROPERTY;
+  GBSearchArray *aparray = g_object_get_data (source, "BseSource-AutomationProperties"), *oarray = aparray;
+  if (!aparray)
+    {
+      if (!signal_type)         /* unset */
+        return BSE_ERROR_NONE;
+      aparray = g_bsearch_array_create (&aprop_bconfig);
+    }
+  BseAutomationProperty key = { pspec, }, *ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
+  if (!ap)
+    {
+      if (!signal_type)         /* unset */
+        return BSE_ERROR_NONE;  /* oarray == aparray */
+      key.signal_type = 0;
+      aparray = g_bsearch_array_insert (aparray, &aprop_bconfig, &key);
+      ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
+    }
+  if (oarray != aparray)
+    {
+      g_object_steal_data (source, "BseSource-AutomationProperties");
+      g_object_set_data_full (source, "BseSource-AutomationProperties", aparray, aprop_array_free);
+    }
+  if (ap->signal_type != signal_type)
+    {
+      ap->signal_type = signal_type;
+      g_object_notify (source, pspec->name);
+    }
+  return BSE_ERROR_NONE;
+}
+
+BseMidiSignalType
+bse_source_get_automation_property (BseSource        *source,
+                                    const gchar      *prop_name)
+{
+  g_return_val_if_fail (BSE_IS_SOURCE (source), BSE_ERROR_INTERNAL);
+  g_return_val_if_fail (prop_name != NULL, BSE_ERROR_INTERNAL);
+  GParamSpec *pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (source), prop_name);
+  if (pspec)
+    {
+      GBSearchArray *aparray = g_object_get_data (source, "BseSource-AutomationProperties");
+      if (aparray)
+        {
+          BseAutomationProperty key = { pspec, }, *ap = g_bsearch_array_lookup (aparray, &aprop_bconfig, &key);
+          if (ap)
+            return ap->signal_type;
+        }
+    }
+  return 0;
+}
+
+BseAutomationProperty* /* g_free() result */
+bse_source_get_automation_properties (BseSource        *source,
+                                      guint            *n_props)
+{
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+  if (n_props)
+    {
+      GBSearchArray *aparray = g_object_get_data (source, "BseSource-AutomationProperties");
+      if (aparray)
+        {
+          *n_props = g_bsearch_array_get_n_nodes (aparray);
+          return g_memdup (g_bsearch_array_get_nth (aparray, &aprop_bconfig, 0), sizeof (BseAutomationProperty) * *n_props);
+        }
+      *n_props = 0;
+    }
+  return NULL;
 }
 
 static void
@@ -1754,6 +1872,7 @@ bse_source_class_base_init (BseSourceClass *class)
   class->engine_class = NULL;
   class->filtered_properties = FALSE;
   class->unprepared_properties = NULL;
+  class->automation_properties = NULL;
 }
 
 void
@@ -1834,6 +1953,7 @@ bse_source_class_base_finalize (BseSourceClass *class)
   g_free (class->engine_class);
   class->engine_class = NULL;
   sfi_ring_free (class->unprepared_properties);
+  sfi_ring_free (class->automation_properties);
 }
 
 static void

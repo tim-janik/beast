@@ -125,6 +125,8 @@ typedef enum
   BSE_ERROR_PROC_EXECUTION,
   BSE_ERROR_PROC_ABORT,
   /* miscellaneous errors */
+  BSE_ERROR_INVALID_PROPERTY,
+  BSE_ERROR_INVALID_MIDI_CONTROL,
   BSE_ERROR_PARSE_ERROR,
   BSE_ERROR_SPAWN,
   /* various procedure errors */

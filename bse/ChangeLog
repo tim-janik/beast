@@ -1,3 +1,22 @@
+Mon Sep 13 02:37:28 2004  Tim Janik  <timj@gtk.org>
+
+	* bsemidireceiver.h:
+	* bsemidireceiver.cc: provide a mechanism to register, unregister and
+	notify handlers about midi control changes.
+
+	* bsesource.[hc]: collect :automate: properties, and maintain an
+	automate-property => midi-control-number association.
+
+	* bsecxxmodule.cc: first steps in implementing automation 
+	infrastructure, currently only debugging messages are generated.
+	integrate_engine_module():
+	dismiss_engine_module(): queue job with accessor function to register
+	and unregister a midi receiver control handler for the module.
+
+	* bseitem.[hc]: added bse_item_get_snet().
+
+	* bseenums.[hc]: more errors.
+
 Wed Sep  8 21:50:10 2004  Tim Janik  <timj@gtk.org>
 
 	* bsecompat.[hc]: added bse_compat_rewrite_ichannel_ident() and

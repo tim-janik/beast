@@ -112,6 +112,7 @@ void            bse_item_compat_setup        (BseItem         *item,
 guint           bse_item_get_seqid           (BseItem         *item);
 void            bse_item_queue_seqid_changed (BseItem         *item);
 BseSuper*       bse_item_get_super           (BseItem         *item);
+BseSNet*        bse_item_get_snet            (BseItem         *item);
 BseProject*     bse_item_get_project         (BseItem         *item);
 BseItem*        bse_item_get_toplevel        (BseItem         *item);
 gboolean        bse_item_has_ancestor        (BseItem         *item,

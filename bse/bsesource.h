@@ -150,8 +150,8 @@ struct _BseSourceClass
   BseModuleClass *engine_class;
   gboolean        filtered_properties;
   SfiRing        *unprepared_properties;
+  SfiRing        *automation_properties;
 };
-
 
 /* --- prototypes -- */
 guint		bse_source_find_ichannel	(BseSource	*source,
@@ -245,6 +245,18 @@ void	   bse_source_update_modules	        (BseSource	*source,
 void	   bse_source_clear_ichannels	        (BseSource	*source);
 void	   bse_source_clear_ochannels	        (BseSource	*source);
 
+/* automation */
+typedef struct {
+  GParamSpec       *pspec;
+  BseMidiSignalType signal_type;
+} BseAutomationProperty;
+BseErrorType                 bse_source_set_automation_property   (BseSource         *source,
+                                                                   const gchar       *prop_name,
+                                                                   BseMidiSignalType  signal_type);
+BseMidiSignalType            bse_source_get_automation_property   (BseSource         *source,
+                                                                   const gchar       *prop_name);
+BseAutomationProperty*       bse_source_get_automation_properties (BseSource         *source,
+                                                                   guint             *n_props);
 
 /* --- internal --- */
 SfiRing* bse_source_collect_inputs_flat 	(BseSource	*source);       /* sets mark */

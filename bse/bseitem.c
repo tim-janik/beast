@@ -17,6 +17,7 @@
  */
 #include "bseitem.h"
 #include "bsesuper.h"
+#include "bsesnet.h"
 #include "bsestorage.h"
 #include "bseprocedure.h"
 #include "bsemain.h"
@@ -662,6 +663,17 @@ bse_item_get_super (BseItem *item)
     item = item->parent;
   
   return item ? BSE_SUPER (item) : NULL;
+}
+
+BseSNet*
+bse_item_get_snet (BseItem *item)
+{
+  g_return_val_if_fail (BSE_IS_ITEM (item), NULL);
+  
+  while (!BSE_IS_SNET (item) && item)
+    item = item->parent;
+  
+  return item ? BSE_SNET (item) : NULL;
 }
 
 BseItem*
