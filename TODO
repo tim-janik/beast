@@ -1,4 +1,5 @@
 FIXMES:
+- rename gsl-mplan.txt to engine-mplan.txt
 - gxktexttools.c does eclass = g_type_class_ref (vtype); without unref
 - remove/rename test-string.bse
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
