@@ -54,7 +54,9 @@ typedef enum
   BSE_MIDI_SONG_CONTINUE        = 0xFB,
   BSE_MIDI_SONG_STOP            = 0xFC,
   BSE_MIDI_ACTIVE_SENSING       = 0xFE,
-  BSE_MIDI_SYSTEM_RESET         = 0xFF
+  BSE_MIDI_SYSTEM_RESET         = 0xFF,
+  /* internally used extra events */
+  BSE_MIDI_X_CONTINUOUS_CHANGE  = 512
 } BseMidiEventType;
 
 
@@ -72,7 +74,7 @@ typedef struct
     }       note;
     struct {
       guint   control;          /* 0..0x7f */
-      gfloat  value;            /* 0..+1 */
+      gfloat  value;            /* -1..+1 */
     }       control;
     guint   program;            /* 0..0x7f */
     gfloat  intensity;          /* 0..+1 */
@@ -88,24 +90,31 @@ typedef struct
 
 
 /* --- API --- */
-GType		bse_midi_event_get_type		(void);	/* boxed */
-void		bse_midi_free_event		(BseMidiEvent	*event);
-BseMidiEvent*	bse_midi_event_note_on		(guint		 midi_channel,
-						 guint64	 tick_stamp,
-						 gfloat		 frequency,
-						 gfloat		 velocity);
-BseMidiEvent*	bse_midi_event_note_off		(guint		 midi_channel,
-						 guint64	 tick_stamp,
-						 gfloat		 frequency);
+GType		 bse_midi_event_get_type	(void);	/* boxed */
+void		 bse_midi_free_event		(BseMidiEvent	  *event);
+BseMidiEvent*	 bse_midi_event_note_on		(guint		   midi_channel,
+						 guint64	   tick_stamp,
+						 gfloat		   frequency,
+						 gfloat		   velocity);
+BseMidiEvent*	 bse_midi_event_note_off	(guint		   midi_channel,
+						 guint64	   tick_stamp,
+						 gfloat		   frequency);
+BseMidiEvent*    bse_midi_event_signal          (guint             midi_channel,
+                                                 guint64           tick_stamp,
+                                                 BseMidiSignalType signal_type,
+                                                 gfloat            value);
 
 
 /* --- MIDI Signals --- */
-typedef enum	/*< prefix=BSE_MIDI_SIGNAL >*/
+#if 0
+typeNOTdef enum	/*< prefix=BSE_MIDI_SIGNAL >*/  /* FIXME: sync to bserecords.sfidl */
 {
   /* special cased signals */
-  BSE_MIDI_SIGNAL_PROGRAM	= 1,	/*< nick=Program Change >*/		/* 14bit */
+  BSE_MIDI_SIGNAL_PROGRAM	= 1,	/*< nick=Program Change >*/		/* 7bit */
   BSE_MIDI_SIGNAL_PRESSURE,		/*< nick=Channel Pressure >*/		/* 7bit */
   BSE_MIDI_SIGNAL_PITCH_BEND,		/*< nick=Pitch Bend >*/			/* 14bit */
+  BSE_MIDI_SIGNAL_VELOCITY,             /*< nick=Note Velocity >*/
+  BSE_MIDI_SIGNAL_FINE_TUNE,            /*< nick=Note Fine Tune >*/
   /* 14bit, continuous controls */
   BSE_MIDI_SIGNAL_CONTINUOUS_0	= 64,	/*< nick=Bank Select >*/
   BSE_MIDI_SIGNAL_CONTINUOUS_1,		/*< nick=Modulation Wheel >*/
@@ -279,6 +288,7 @@ typedef enum	/*< prefix=BSE_MIDI_SIGNAL >*/
   BSE_MIDI_SIGNAL_CONTROL_126,		/*< nick=Control 126 Monophonic Voices Mode >*/
   BSE_MIDI_SIGNAL_CONTROL_127		/*< nick=Control 127 Polyphonic Mode On ITrigger >*/
 } BseMidiSignalType;
+#endif
 
 gfloat		bse_midi_signal_default	(BseMidiSignalType signal);
 const gchar*	bse_midi_signal_name	(BseMidiSignalType signal);

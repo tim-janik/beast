@@ -1,3 +1,45 @@
+Thu Jul 17 03:50:23 2003  Tim Janik  <timj@gtk.org>
+
+	* bsemidievent.[hc]: added bse_midi_event_signal() to create
+	non-note events. disabled enum BseMidiSignalType typedef which
+	is in idl file now. added internal MIDI event type
+	BSE_MIDI_X_CONTINUOUS_CHANGE to better facilitate continuous controls.
+
+	* bsemidireceiver.[hc]: buglet fixups.
+	support BSE_MIDI_X_CONTINUOUS_CHANGE events.
+
+	* bsepart.[hc]: major API cleanup. added functions for control events.
+	added support to save and load control events.
+
+	* bsepart.proc: API cleanup. added procedures for control events.
+
+	* bseprocidl.cc: hacked around BSE_TYPE_MIDI_SIGNAL_TYPE definition
+	in idl file. improved overall code readability.
+
+	* bserecords.sfidl: added control event definition, sependant sequence
+	and MidiSignalType choice definition.
+
+	* bsessequencer.c: fixup of velocity handling. added support for
+	control events.
+
+	* bsestorage.[hc]: added small helper bse_storage_check_parse_negate().
+
+	* bsetype.c: support default Choice pspecs.
+
+	* bseutils.[hc]: added convenience functions bse_part_control() and
+	bse_part_control_seq_take_append().
+
+Wed Jul 16 18:05:09 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepart.c (bse_part_restore_private): fix parsing bug wrg negative
+	fine-tune values.
+
+Tue Jul 15 03:34:24 2003  Tim Janik  <timj@gtk.org>
+
+	* bsepart.[hcp]*: removed bse_part_find_note_at() which caused us to
+	fail to find long overlapped notes. bse_part_list_notes_crossing() does
+	find all required notes without bugs.
+
 Mon Jul 14 14:37:19 2003  Tim Janik  <timj@gtk.org>
 
 	* bsepcmdevice-oss.c (bse_pcm_device_oss_close): added third argument

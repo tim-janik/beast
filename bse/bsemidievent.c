@@ -19,6 +19,7 @@
 
 #include "bseglue.h"
 #include "gslcommon.h"
+#include "gslieee754.h"
 
 #include <errno.h>
 
@@ -145,6 +146,62 @@ bse_midi_event_note_off (guint   midi_channel,
   event->data.note.frequency = frequency;
   event->data.note.velocity = 0.0;
   
+  return event;
+}
+
+BseMidiEvent*
+bse_midi_event_signal (guint             midi_channel,
+                       guint64           tick_stamp,
+                       BseMidiSignalType signal_type,
+                       gfloat            value)
+{
+  BseMidiEvent *event;
+
+  g_return_val_if_fail (midi_channel < BSE_MIDI_MAX_CHANNELS, NULL);
+  g_return_val_if_fail (value >= -1 && value <= +1, NULL);
+
+  event = sfi_new_struct (BseMidiEvent, 1);
+  switch (signal_type)
+    {
+    case BSE_MIDI_SIGNAL_PROGRAM:
+      event->status = BSE_MIDI_PROGRAM_CHANGE;
+      event->data.program = gsl_ftoi (CLAMP (value, 0, 1) * 0x7f);
+      break;
+    case BSE_MIDI_SIGNAL_PRESSURE:
+      event->status = BSE_MIDI_CHANNEL_PRESSURE;
+      event->data.intensity = MAX (value, 0);
+      break;
+    case BSE_MIDI_SIGNAL_PITCH_BEND:
+      event->status = BSE_MIDI_PITCH_BEND;
+      event->data.pitch_bend = value;
+      break;
+    case BSE_MIDI_SIGNAL_VELOCITY:
+    case BSE_MIDI_SIGNAL_FINE_TUNE:
+    case BSE_MIDI_SIGNAL_CONSTANT_HIGH:
+    case BSE_MIDI_SIGNAL_CONSTANT_CENTER:
+    case BSE_MIDI_SIGNAL_CONSTANT_LOW:
+    case BSE_MIDI_SIGNAL_CONSTANT_NEGATIVE_CENTER:
+    case BSE_MIDI_SIGNAL_CONSTANT_NEGATIVE_HIGH:
+      /* these are special signals that don't map to MIDI events */
+      sfi_delete_struct (BseMidiEvent, event);
+      return NULL;
+    default:
+      if (signal_type >= 128)   /* literal controls */
+        {
+          event->status = BSE_MIDI_CONTROL_CHANGE;
+          event->data.control.control = signal_type - 128;
+          event->data.control.value = value;
+        }
+      else /* continuous controls */
+        {
+          event->status = BSE_MIDI_X_CONTINUOUS_CHANGE;
+          event->data.control.control = signal_type - 64;
+          event->data.control.value = value;
+        }
+      break;
+    }
+  event->channel = midi_channel;
+  event->tick_stamp = tick_stamp;
   return event;
 }
 

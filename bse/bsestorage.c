@@ -755,6 +755,20 @@ bse_storage_parse_rest (BseStorage     *self,
   return sfi_rstore_parse_until (self->rstore, ')', context_data, (SfiStoreParser) try_statement, user_data);
 }
 
+gboolean
+bse_storage_check_parse_negate (BseStorage *self)
+{
+  g_return_val_if_fail (BSE_IS_STORAGE (self), FALSE);
+
+  if (g_scanner_peek_next_token (bse_storage_get_scanner (self)) == '-')
+    {
+      g_scanner_get_next_token (bse_storage_get_scanner (self));
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
 void
 bse_storage_put_param (BseStorage   *self,
                        const GValue *value,

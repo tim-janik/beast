@@ -132,6 +132,8 @@ bse_type_register_dynamic (GType        parent_type,
   sfi_pspec_set_group (sfi_pspec_bool (name, nick, blurb, dflt, hints), group)
 #define	sfidl_pspec_Bool_default(group, name)	\
   sfi_pspec_set_group (sfi_pspec_bool (name, NULL, NULL, FALSE, SFI_PARAM_DEFAULT), group)
+#define	sfidl_pspec_Choice_default(group, name, cvalues)	\
+  sfi_pspec_set_group (sfi_pspec_choice (name, NULL, NULL, NULL, cvalues, SFI_PARAM_DEFAULT), group)
 #define	sfidl_pspec_Note(group, name, nick, blurb, dflt, hints)			\
   sfi_pspec_set_group (sfi_pspec_note (name, nick, blurb, dflt, SFI_MIN_NOTE, SFI_MAX_NOTE, FALSE, hints), group)
 #define	sfidl_pspec_Octave(group, name, nick, blurb, dflt, hints)			\

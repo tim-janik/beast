@@ -28,20 +28,27 @@ extern "C" {
 
 
 /* --- record utils --- */
-BseNoteDescription*	bse_note_description	(SfiInt note,
-						 gint   fine_tune);
-BsePartNote*		bse_part_note		(guint    id,
-						 guint    tick,
-						 guint    duration,
-						 gint     note,
-						 gint     fine_tune,
-						 gfloat   velocity,
-						 gboolean selected);
-void			bse_part_note_seq_take_append	(BsePartNoteSeq *seq,
-							 BsePartNote    *element);
-void             bse_note_sequence_resize	(BseNoteSequence *rec,
-						 guint            length);
-guint            bse_note_sequence_length	(BseNoteSequence *rec);
+BseNoteDescription* bse_note_description             (SfiInt             note,
+                                                      gint               fine_tune);
+BsePartNote*        bse_part_note                    (guint              id,
+                                                      guint              tick,
+                                                      guint              duration,
+                                                      gint               note,
+                                                      gint               fine_tune,
+                                                      gfloat             velocity,
+                                                      gboolean           selected);
+void                bse_part_note_seq_take_append    (BsePartNoteSeq    *seq,
+                                                      BsePartNote       *element);
+BsePartControl*     bse_part_control                 (guint              id,
+                                                      guint              tick,
+                                                      BseMidiSignalType  ctype,
+                                                      gfloat             value,
+                                                      gboolean           selected);
+void                bse_part_control_seq_take_append (BsePartControlSeq *seq,
+                                                      BsePartControl    *element);
+void                bse_note_sequence_resize         (BseNoteSequence   *rec,
+                                                      guint              length);
+guint               bse_note_sequence_length         (BseNoteSequence   *rec);
 
 
 /* --- notes & frequencies --- */

@@ -383,21 +383,30 @@ bse_ssequencer_process_part_SL (BsePart         *part,
   guint i = bse_part_node_lookup_SL (part, start_tick);
   while (i < part->n_nodes && part->nodes[i].tick < bound)
     {
-      BsePartEvent *ev = part->nodes[i].events;
+      BsePartEventUnion *ev = part->nodes[i].events;
       guint etick = part->nodes[i].tick - start_tick;
       for (ev = part->nodes[i].events; ev; ev = ev->any.next)
 	if (ev && ev->type == BSE_PART_EVENT_NOTE)
 	  {
 	    BseMidiEvent *eon, *eoff;
 	    eon  = bse_midi_event_note_on (0, start_stamp + etick * stamps_per_tick,
-					   BSE_PART_NOTE_EVENT_FREQ (&ev->note), 1.0);
+					   BSE_PART_NOTE_EVENT_FREQ (&ev->note), ev->note.velocity);
 	    eoff = bse_midi_event_note_off (0, start_stamp + (etick + ev->note.duration) * stamps_per_tick,
 					    BSE_PART_NOTE_EVENT_FREQ (&ev->note));
 	    bse_midi_receiver_push_event (midi_receiver, eon);
 	    bse_midi_receiver_push_event (midi_receiver, eoff);
-	    DEBUG ("note: %llu till %llu freq=%f (note=%d)",
-		   eon->tick_stamp, eoff->tick_stamp, BSE_PART_NOTE_EVENT_FREQ (&ev->note), ev->note.note);
+	    DEBUG ("note: %llu till %llu freq=%f (note=%d velocity=%f)",
+		   eon->tick_stamp, eoff->tick_stamp, BSE_PART_NOTE_EVENT_FREQ (&ev->note),
+                   ev->note.note, ev->note.velocity);
 	  }
+        else if (ev && ev->type == BSE_PART_EVENT_CONTROL)
+          {
+            BseMidiEvent *event = bse_midi_event_signal (0, start_stamp + etick * stamps_per_tick,
+                                                         ev->control.ctype, ev->control.value);
+            bse_midi_receiver_push_event (midi_receiver, event);
+            DEBUG ("control: %llu signal=%d (value=%f)",
+                   event->tick_stamp, ev->control.ctype, ev->control.value);
+          }
       i = bse_part_node_lookup_SL (part, part->nodes[i].tick + 1);
     }
 }

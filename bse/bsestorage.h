@@ -178,6 +178,7 @@ GTokenType   bse_storage_parse_rest             (BseStorage             *self,
                                                  gpointer                context_data,
                                                  BseTryStatement         try_statement,
                                                  gpointer                user_data);
+gboolean     bse_storage_check_parse_negate     (BseStorage             *self);
 
 
 /* --- short-hands --- */

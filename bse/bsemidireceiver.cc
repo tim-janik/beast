@@ -1099,8 +1099,8 @@ activate_voice_L (BseMidiReceiver *self,
   BseMidiVoice *voice;
   guint i;
   
-  g_return_if_fail (freq > 0 && velocity > 0);
-  
+  g_return_if_fail (freq > 0);
+
   /* find free voice */
   for (i = 0; i < self->n_voices; i++)
     {
@@ -1275,16 +1275,25 @@ process_midi_control_L (BseMidiReceiver *self,
 			guint64          tick_stamp,
 			guint            control,
 			gfloat           value,
+                        gboolean         extra_continuous,
 			GslTrans        *trans)
 {
   /* here, we need to translate midi control numbers
    * into BSE MIDI signals. some control numbers affect
-   * multiple MIDI signals.
+   * multiple MIDI signals. extra_continuous are used
+   * internally to update only continuous signals.
    */
-  
-  /* all controls are passed literally as BSE_MIDI_SIGNAL_CONTROL_* */
+
+  if (extra_continuous)
+    {
+      /* internal BSE_MIDI_SIGNAL_CONTINUOUS_* change */
+      update_midi_signal_L (self, channel, tick_stamp, 64 + control, value, trans);
+      return;
+    }
+
+  /* all MIDI controls are passed literally as BSE_MIDI_SIGNAL_CONTROL_* */
   update_midi_signal_L (self, channel, tick_stamp, 128 + control, value, trans);
-  
+
   if (control < 32)		/* MSB part of continuous 14bit signal */
     update_midi_signal_continuous_msb_L (self, channel, tick_stamp,
 					 control + 64,		/* continuous signal */
@@ -1382,6 +1391,15 @@ midi_receiver_process_event_L (BseMidiReceiver *self,
 		 event->data.control.control, event->data.control.value, event->tick_stamp);
 	  process_midi_control_L (self, event->channel, event->tick_stamp,
 				  event->data.control.control, event->data.control.value,
+				  FALSE,
+                                  trans);
+	  break;
+	case BSE_MIDI_X_CONTINUOUS_CHANGE:
+	  DEBUG ("Receiver<%s:%u>: X Continuous Control %2u Value=%f (stamp:%llu)\n", self->receiver_name, event->channel,
+		 event->data.control.control, event->data.control.value, event->tick_stamp);
+	  process_midi_control_L (self, event->channel, event->tick_stamp,
+				  event->data.control.control, event->data.control.value,
+                                  TRUE,
 				  trans);
 	  break;
 	case BSE_MIDI_PROGRAM_CHANGE:

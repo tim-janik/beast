@@ -65,74 +65,6 @@ struct _BsePartClass
 				 gint		 range_min_note,
 				 gint		 range_max_note);
 };
-
-
-/* --- functions --- */
-guint           bse_part_insert_note         (BsePart           *self,
-                                              guint              tick,
-                                              guint              duration,
-                                              gint               note,
-                                              gint               fine_tune,
-                                              gfloat             velocity);
-gboolean        bse_part_change_note         (BsePart           *self,
-                                              guint              id,
-                                              guint              tick,
-                                              guint              duration,
-                                              gint               note,
-                                              gint               fine_tune,
-                                              gfloat             velocity);
-gboolean        bse_part_query_note          (BsePart           *self,
-                                              guint              id,
-                                              guint             *tick_p,
-                                              guint             *duration_p,
-                                              gint              *note_p,
-                                              gint              *fine_tune_p,
-                                              gfloat            *velocity_p,
-                                              gboolean          *selected_p);
-gboolean        bse_part_delete_event        (BsePart           *self,
-                                              guint              id);
-gboolean        bse_part_is_selected_event   (BsePart           *self,
-                                              guint              id);
-BsePartNoteSeq* bse_part_list_notes_around   (BsePart           *self,
-                                              guint              tick,
-                                              guint              duration,
-                                              gint               min_note,
-                                              gint               max_note);
-void            bse_part_queue_notes_within  (BsePart           *self,
-                                              guint              tick,
-                                              guint              duration,
-                                              gint               min_note,
-                                              gint               max_note);
-BsePartNoteSeq* bse_part_list_selected_notes (BsePart           *self);
-BsePartNoteSeq* bse_part_list_notes_at       (BsePart           *self,
-                                              guint              tick,
-                                              gint               note);
-void            bse_part_select_rectangle    (BsePart           *self,
-                                              guint              tick,
-                                              guint              duration,
-                                              gint               min_note,
-                                              gint               max_note);
-void            bse_part_deselect_rectangle  (BsePart           *self,
-                                              guint              tick,
-                                              guint              duration,
-                                              gint               min_note,
-                                              gint               max_note);
-void            bse_part_select_rectangle_ex (BsePart           *self,
-                                              guint              tick,
-                                              guint              duration,
-                                              gint               min_note,
-                                              gint               max_note);
-gboolean        bse_part_select_event        (BsePart           *self,
-                                              guint              id);
-gboolean        bse_part_deselect_event      (BsePart           *self,
-                                              guint              id);
-guint           bse_part_node_lookup_SL      (BsePart           *self,
-                                              guint              tick);
-
-
-
-
-/* --- implementation details --- */
 typedef enum	/*< skip >*/
 {
   BSE_PART_EVENT_NONE,
@@ -140,40 +72,143 @@ typedef enum	/*< skip >*/
   BSE_PART_EVENT_CONTROL
 } BsePartEventType;
 
+
+/* --- functions --- */
+gboolean           bse_part_delete_event              (BsePart           *self,
+                                                       guint              id);
+guint              bse_part_insert_note               (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       gint               note,
+                                                       gint               fine_tune,
+                                                       gfloat             velocity);
+guint              bse_part_insert_control            (BsePart           *self,
+                                                       guint              tick,
+                                                       BseMidiSignalType  ctype,
+                                                       gfloat             value);
+gboolean           bse_part_change_note               (BsePart           *self,
+                                                       guint              id,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       gint               note,
+                                                       gint               fine_tune,
+                                                       gfloat             velocity);
+gboolean           bse_part_change_control            (BsePart           *self,
+                                                       guint              id,
+                                                       guint              tick,
+                                                       BseMidiSignalType  ctype,
+                                                       gfloat             value);
+gboolean           bse_part_is_selected_event         (BsePart           *self,
+                                                       guint              id);
+BsePartNoteSeq*    bse_part_list_notes_crossing       (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       gint               min_note,
+                                                       gint               max_note);
+BsePartControlSeq* bse_part_list_controls             (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       BseMidiSignalType  ctype);
+void               bse_part_queue_notes_within        (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       gint               min_note,
+                                                       gint               max_note);
+void               bse_part_queue_controls            (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration);
+BsePartNoteSeq*    bse_part_list_selected_notes       (BsePart           *self);
+BsePartControlSeq* bse_part_list_selected_controls    (BsePart           *self,
+                                                       BseMidiSignalType  ctype);
+void               bse_part_select_notes              (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       gint               min_note,
+                                                       gint               max_note);
+void               bse_part_select_controls           (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       BseMidiSignalType  ctype);
+void               bse_part_select_notes_exclusive    (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       gint               min_note,
+                                                       gint               max_note);
+void               bse_part_select_controls_exclusive (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       BseMidiSignalType  ctype);
+void               bse_part_deselect_notes            (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       gint               min_note,
+                                                       gint               max_note);
+void               bse_part_deselect_controls         (BsePart           *self,
+                                                       guint              tick,
+                                                       guint              duration,
+                                                       BseMidiSignalType  ctype);
+gboolean           bse_part_select_event              (BsePart           *self,
+                                                       guint              id);
+gboolean           bse_part_deselect_event            (BsePart           *self,
+                                                       guint              id);
+typedef struct {
+  guint             id;
+  BsePartEventType  event_type;
+  guint             tick;
+  gboolean          selected;
+  /* note */
+  guint             duration;
+  gint              note;
+  gint              fine_tune;
+  gfloat            velocity;
+  /* note control */
+  gfloat            fine_tune_value;
+  gfloat            velocity_value;
+  /* control */
+  BseMidiSignalType control_type;
+  gfloat            control_value;
+} BsePartQueryEvent;
+BsePartEventType   bse_part_query_event               (BsePart           *self,
+                                                       guint              id,
+                                                       BsePartQueryEvent *equery);
+guint              bse_part_node_lookup_SL            (BsePart           *self,
+                                                       guint              tick);
+
+
+
+
+
+/* --- implementation details --- */
 #define	BSE_PART_MAX_TICK		(0x7fffffff)
 #define	BSE_PART_INVAL_TICK_FLAG	(0x80000000)
 #define	BSE_PART_NOTE_EVENT_FREQ(nev)	(BSE_KAMMER_FREQUENCY_f * \
                                          BSE_SEMITONE_FACTOR ((nev)->note) * \
                                          BSE_FINE_TUNE_FACTOR ((nev)->fine_tune))
-typedef union  _BsePartEvent BsePartEvent;
+#define BSE_PART_NOTE_CONTROL(ctype)    ((ctype) == BSE_MIDI_SIGNAL_VELOCITY || \
+                                         (ctype) == BSE_MIDI_SIGNAL_FINE_TUNE)
+typedef union  _BsePartEventUnion BsePartEventUnion;
 typedef struct
 {
-  BsePartEventType type;
-  BsePartEvent    *next;
-  guint		   id : 31;
-  guint		   selected : 1; // FIXME
+  BsePartEventType   type;
+  BsePartEventUnion *next;
+  guint		     id : 31;
+  guint		     selected : 1; // FIXME
 } BsePartEventAny;
 typedef struct
 {
-  BsePartEventType type;	/* BSE_PART_EVENT_NOTE */
-  BsePartEvent    *next;
-  guint		   id : 31;
-  guint		   selected : 1; // FIXME
-  guint		   duration;	/* in ticks */
-  gint		   note;
-  gint		   fine_tune;
-  gfloat	   velocity;	/* 0 .. 1 */
+  BsePartEventAny    any;       /* BSE_PART_EVENT_NOTE */
+  guint		     duration;	/* in ticks */
+  gint		     note;
+  gint		     fine_tune;
+  gfloat	     velocity;	/* 0 .. 1 */
 } BsePartEventNote;
 typedef struct
 {
-  BsePartEventType type;	/* BSE_PART_EVENT_CONTROL */
-  guint		   id : 31;
-  guint		   selected : 1; // FIXME
-  BsePartEvent	  *next;
-  guint		   control;	/* BsePartControlType */
-  gfloat	   value;	/* 0 .. 1 */
+  BsePartEventAny    any;       /* BSE_PART_EVENT_CONTROL */
+  guint		     ctype;	/* BseMidiSignalType */
+  gfloat	     value;	/* 0 .. 1 */
 } BsePartEventControl;
-union _BsePartEvent
+union _BsePartEventUnion
 {
   BsePartEventType    type;
   BsePartEventAny     any;
@@ -182,18 +217,9 @@ union _BsePartEvent
 };
 struct _BsePartNode
 {
-  guint	        tick;
-  BsePartEvent *events;
+  guint	             tick;
+  BsePartEventUnion *events;
 };
-
-
-/* --- proposed --- */
-typedef enum	/*< skip >*/
-{
-  BSE_PART_CONTROL_NONE		= 0x00,
-  BSE_PART_CONTROL_VOLUME	= 0x07,
-  BSE_PART_CONTROL_BALANCE	= 0x08,
-} BsePartControlType;
 
 
 G_END_DECLS

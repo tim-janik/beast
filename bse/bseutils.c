@@ -391,6 +391,35 @@ bse_part_note_seq_take_append (BsePartNoteSeq *seq,
   bse_part_note_free (element);
 }
 
+BsePartControl*
+bse_part_control (guint              id,
+                  guint              tick,
+                  BseMidiSignalType  ctype,
+                  gfloat             value,
+                  gboolean           selected)
+{
+  BsePartControl *pctrl = bse_part_control_new ();
+
+  pctrl->id = id;
+  pctrl->tick = tick;
+  pctrl->control_type = ctype;
+  pctrl->value = value;
+  pctrl->selected = selected != FALSE;
+
+  return pctrl;
+}
+
+void
+bse_part_control_seq_take_append (BsePartControlSeq *seq,
+                                  BsePartControl    *element)
+{
+  g_return_if_fail (seq != NULL);
+  g_return_if_fail (element != NULL);
+
+  bse_part_control_seq_append (seq, element);
+  bse_part_control_free (element);
+}
+
 BseNoteDescription*
 bse_note_description (SfiInt note,
 		      gint   fine_tune)
