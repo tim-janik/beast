@@ -36,11 +36,10 @@ G_BEGIN_DECLS
 /* --- structures & typedefs --- */
 typedef enum
 {
-  BST_RADIO_TOOLS_DEFAULT	= 0,
+  BST_RADIO_TOOLS_NONE		= 0,
   BST_RADIO_TOOLS_TOOLBAR	= 1 << 0,
   BST_RADIO_TOOLS_PALETTE	= 1 << 1,
-  /* FIXME: compat flag */
-#define	BST_RADIO_TOOLS_EVERYWHERE	BST_RADIO_TOOLS_TOOLBAR|BST_RADIO_TOOLS_PALETTE
+#define	BST_RADIO_TOOLS_EVERYWHERE	(BST_RADIO_TOOLS_TOOLBAR | BST_RADIO_TOOLS_PALETTE)
 } BstRadioToolsFlags;
 typedef	struct	_BstRadioToolEntry	BstRadioToolEntry;
 typedef	struct	_BstRadioTools		BstRadioTools;
@@ -61,7 +60,7 @@ struct _BstRadioToolsClass
 {
   GObjectClass parent_class;
   
-  void         (*set_tool)	(BstRadioTools*	rtools,
+  void         (*set_tool)	(BstRadioTools *rtools,
 				 guint          tool_id);
 };
 
@@ -108,6 +107,7 @@ void            bst_radio_tools_build_toolbar_choice (BstRadioTools	*rtools,
 void            bst_radio_tools_build_menu	     (BstRadioTools	*rtools,
 						      GtkMenu		*menu);
 GtkWidget*      bst_radio_tools_build_palette	     (BstRadioTools	*rtools,
+						      GtkWidget		*selector,
 						      gboolean		 show_descriptions,
 						      GtkReliefStyle	 relief);
 

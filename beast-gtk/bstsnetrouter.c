@@ -65,7 +65,7 @@ static BstMenuConfigEntry popup_entries[] =
   { "/_Other Sources",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Routing",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Filters",	NULL,		NULL,	0,	"<Branch>",	0 },
-  { "/_Enhance",	NULL,		NULL,	0,	"<Branch>",	0 },
+  // { "/_Enhance",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Distortion",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_Input & Output",	NULL,		NULL,	0,	"<Branch>",	0 },
   { "/_MIDI",		NULL,		NULL,	0,	"<Branch>",	0 },
@@ -288,8 +288,6 @@ bst_snet_router_set_snet (BstSNetRouter *router,
     }
   if (snet)
     {
-      gfloat zoom;
-      
       router->snet = snet;
       bse_item_unuse (router->snet);
       
@@ -299,6 +297,7 @@ bst_snet_router_set_snet (BstSNetRouter *router,
       
       bst_snet_router_rebuild (BST_SNET_ROUTER (router));
 #if 0
+      gfloat zoom;
       if (bse_parasite_get_floats (router->snet, "BstRouterZoom", 1, &zoom) == 1)
 	gtk_adjustment_set_value (router->adjustment, zoom);
 #endif
@@ -333,25 +332,55 @@ palette_reset (BstSNetRouter *router)
     bst_radio_tools_set_tool (router->rtools, 0);
 }
 
-void
-bst_snet_router_toggle_palette (BstSNetRouter *router)
+static gboolean
+palette_ebox_button (BstSNetRouter  *self,
+		     GdkEventButton *event)
 {
-  g_return_if_fail (BST_IS_SNET_ROUTER (router));
+  GtkItemFactory *popup_factory = BST_SNET_ROUTER_GET_CLASS (self)->popup_factory;
 
-  if (!router->palette || !GTK_WIDGET_VISIBLE (router->palette))
+  bst_menu_popup (popup_factory,
+		  self,
+		  NULL, NULL,
+		  event->x_root, event->y_root,
+		  event->button, event->time);
+  return TRUE;
+}
+
+void
+bst_snet_router_toggle_palette (BstSNetRouter *self)
+{
+  g_return_if_fail (BST_IS_SNET_ROUTER (self));
+  
+  if (!self->palette || !GTK_WIDGET_VISIBLE (self->palette))
     {
-      if (!router->palette)
-	router->palette = g_object_connect (gxk_dialog_new (&router->palette,
-							    GTK_OBJECT (router),
+      if (!self->palette)
+	{
+	  GtkWidget *ebox = g_object_new (GTK_TYPE_EVENT_BOX,
+					  "visible", TRUE,
+					  "child", g_object_new (GTK_TYPE_FRAME,
+								 "visible", TRUE,
+								 "shadow_type", GTK_SHADOW_OUT,
+								 "child", g_object_new (GTK_TYPE_ARROW,
+											"visible", TRUE,
+											"arrow_type", GTK_ARROW_RIGHT,
+											"shadow_type", GTK_SHADOW_OUT,
+											NULL),
+								 NULL),
+					  NULL);
+	  g_object_connect (ebox, "swapped_signal::button_press_event", palette_ebox_button, self, NULL);
+	  self->palette = g_object_connect (gxk_dialog_new (&self->palette,
+							    GTK_OBJECT (self),
 							    GXK_DIALOG_HIDE_ON_DELETE,
 							    "Palette",
-							    bst_radio_tools_build_palette (router->rtools, TRUE, GTK_RELIEF_NORMAL)),
-					    "swapped_signal::hide", palette_reset, router,
+							    bst_radio_tools_build_palette (self->rtools, ebox,
+											   TRUE, GTK_RELIEF_NORMAL)),
+					    "swapped_signal::hide", palette_reset, self,
 					    NULL);
-      gxk_widget_showraise (router->palette);
+	}
+      gxk_widget_showraise (self->palette);
     }
   else
-    gtk_widget_hide (router->palette);
+    gtk_widget_hide (self->palette);
 }
 
 static void
@@ -457,9 +486,8 @@ bst_snet_router_adjust_zoom (BstSNetRouter *router)
 
   if (router->snet)
     {
-      gfloat zoom = router->adjustment->value;
-
 #if 0
+      gfloat zoom = router->adjustment->value;
       bse_parasite_set_floats (router->snet, "BstRouterZoom", 1, &zoom);
 #endif
     }
@@ -510,27 +538,42 @@ bst_snet_router_build_tools (BstSNetRouter *self)
   cseq = bse_categories_match ("/Modules/*");
   for (i = 0; i < cseq->n_cats; i++)
     {
-      static struct { gchar *type, *name, *tip; } toolbar_cats[] = {
+      static struct { gchar *type, *name, *tip; } toolbar_types[] = {
 	{ "BsePcmOutput", "Output", "PCM Output" },
 	{ "BseAmplifier", "DCA", "Amplifier" },
 	{ "BseSnooper", "Snoop", "Signal Debugging Tool" },
 	{ "BsePcmInput", "Input", "PCM Input" },
       };
-      guint n;
-      
-      for (n = 0; n < G_N_ELEMENTS (toolbar_cats); n++)
-	if (strcmp (toolbar_cats[n].type, cseq->cats[i]->type) == 0)
+      static const gchar *palette_cats[] = {
+	"/Modules/Audio Sources/", "/Modules/Filters/",
+	"/Modules/Input & Output/", "/Modules/MIDI/",
+	"/Modules/Other Sources/", "/Modules/Routing/",
+	"/Modules/Virtualization/", "/Modules/Distortion/",
+      };
+      guint n, is_palette = 0;
+
+      /* decide whether this tool is displayed in the palette */
+      for (n = 0; n < G_N_ELEMENTS (palette_cats); n++)
+	if (strncmp (palette_cats[n], cseq->cats[i]->category, strlen (palette_cats[n])) == 0)
 	  {
-	    bst_radio_tools_add_tool (self->rtools, cseq->cats[i]->category_id,
-				      toolbar_cats[n].name,
-				      toolbar_cats[n].tip, NULL,
-				      cseq->cats[i]->icon, BST_RADIO_TOOLS_TOOLBAR);
+	    is_palette = TRUE;
 	    break;
 	  }
+      /* add (all) tools */
       bst_radio_tools_add_category (self->rtools,
 				    cseq->cats[i]->category_id,
 				    cseq->cats[i],
-				    BST_RADIO_TOOLS_PALETTE);
+				    is_palette ? BST_RADIO_TOOLS_PALETTE : BST_RADIO_TOOLS_NONE);
+      /* add toolbar variants */
+      for (n = 0; n < G_N_ELEMENTS (toolbar_types); n++)
+	if (strcmp (toolbar_types[n].type, cseq->cats[i]->type) == 0)
+	  {
+	    bst_radio_tools_add_tool (self->rtools, cseq->cats[i]->category_id,
+				      toolbar_types[n].name,
+				      toolbar_types[n].tip, NULL,
+				      cseq->cats[i]->icon, BST_RADIO_TOOLS_TOOLBAR);
+	    break;
+	  }
     }
   
   /* create toolbar

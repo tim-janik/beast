@@ -1,3 +1,14 @@
+Sun Apr  6 15:10:42 2003  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_toggle_palette): add tool
+	selection menu popup facility to the palette.
+
+	* beast-gtk/bstradiotools.c (bst_radio_tools_build_palette): added tool
+	name label.
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_build_tools): constrain
+	the categories that are added to the palette.
+
 Fri Apr  4 19:22:58 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: version update to 0.5.1.

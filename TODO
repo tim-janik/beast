@@ -1,10 +1,7 @@
 FIXMES:
-- ladspa logarithmic default values low/high/middle are broken
-- fix palette (LADSPA)
 - update quickstart
 - fix button sensitivity
 - implement snet removal
-- fix AM pitchshifter and Analougue Osc and bse_ladspa_info_free()
 - nuke SFI memblocks, malloc() is good enough
 - update QuickStart to match 0.5 behaviour
 - fix BSE mime logo to say BSE instead of BEAST

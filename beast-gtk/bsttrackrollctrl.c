@@ -65,10 +65,10 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
 		    NULL);
   {
     BstTool radio_tools[] = {
-      { CKEY ("TrackRoll/Insert"),	BST_TRACK_ROLL_TOOL_INSERT,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("TrackRoll/Link"),	BST_TRACK_ROLL_TOOL_LINK,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("TrackRoll/Delete"),	BST_TRACK_ROLL_TOOL_DELETE,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("TrackRoll/Editor"),	BST_TRACK_ROLL_TOOL_EDITOR_ONCE, BST_RADIO_TOOLS_DEFAULT },
+      { CKEY ("TrackRoll/Insert"),	BST_TRACK_ROLL_TOOL_INSERT,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/Link"),	BST_TRACK_ROLL_TOOL_LINK,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/Delete"),	BST_TRACK_ROLL_TOOL_DELETE,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/Editor"),	BST_TRACK_ROLL_TOOL_EDITOR_ONCE, BST_RADIO_TOOLS_EVERYWHERE },
     };
     bst_radio_tools_add_tools (self->canvas_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
     bst_radio_tools_set_tool (self->canvas_rtools, BST_TRACK_ROLL_TOOL_INSERT);
@@ -80,9 +80,9 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
 		    NULL);
   {
     BstTool radio_tools[] = {
-      { CKEY ("TrackRoll/TickLeft"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("TrackRoll/TickPos"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("TrackRoll/TickRight"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,	BST_RADIO_TOOLS_DEFAULT },
+      { CKEY ("TrackRoll/TickLeft"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_LEFT,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/TickPos"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("TrackRoll/TickRight"),	BST_TRACK_ROLL_TOOL_MOVE_TICK_RIGHT,	BST_RADIO_TOOLS_EVERYWHERE },
     };
     bst_radio_tools_add_tools (self->hpanel_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
     bst_radio_tools_set_tool (self->hpanel_rtools, BST_TRACK_ROLL_TOOL_MOVE_TICK_POINTER);
@@ -91,13 +91,13 @@ bst_track_roll_controller_new (BstTrackRoll *troll)
   self->quant_rtools = bst_radio_tools_new ();
   {
     BstTool radio_tools[] = {
-      { CKEY ("Quant/Tact"),	BST_QUANTIZE_TACT,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("Quant/None"),	BST_QUANTIZE_NONE,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("Quant/1"),	BST_QUANTIZE_NOTE_1,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("Quant/2"),	BST_QUANTIZE_NOTE_2,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("Quant/4"),	BST_QUANTIZE_NOTE_4,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("Quant/8"),	BST_QUANTIZE_NOTE_8,	BST_RADIO_TOOLS_DEFAULT },
-      { CKEY ("Quant/16"),	BST_QUANTIZE_NOTE_16,	BST_RADIO_TOOLS_DEFAULT },
+      { CKEY ("Quant/Tact"),	BST_QUANTIZE_TACT,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/None"),	BST_QUANTIZE_NONE,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/1"),	BST_QUANTIZE_NOTE_1,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/2"),	BST_QUANTIZE_NOTE_2,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/4"),	BST_QUANTIZE_NOTE_4,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/8"),	BST_QUANTIZE_NOTE_8,	BST_RADIO_TOOLS_EVERYWHERE },
+      { CKEY ("Quant/16"),	BST_QUANTIZE_NOTE_16,	BST_RADIO_TOOLS_EVERYWHERE },
     };
     bst_radio_tools_add_tools (self->quant_rtools, G_N_ELEMENTS (radio_tools), radio_tools);
     bst_radio_tools_set_tool (self->quant_rtools, BST_QUANTIZE_TACT);

@@ -199,22 +199,6 @@ bst_radio_tools_add_category (BstRadioTools     *rtools,
   
   g_return_if_fail (BST_IS_RADIO_TOOLS (rtools));
   g_return_if_fail (category != NULL);
-  g_return_if_fail (flags != 0);
-  
-#if 0
-  guint i, next_uc = 0;
-  
-  /* strip first namespace prefix from type name */
-  name = g_type_name (category->type);
-  for (i = 0; name[i] != 0; i++)
-    if (i && toupper (name[i]) == name[i])
-      {
-        next_uc = i;
-        break;
-      }
-  if (toupper (name[0]) == name[0] && next_uc > 0)
-    name += next_uc;
-#endif
   
   tip = g_strconcat (category->category + category->lindex + 1,
                      " [", category->type, "]",
@@ -242,8 +226,6 @@ bst_radio_tools_add_tool_generic (BstRadioTools     *self,
 {
   guint i;
 
-  if (flags == BST_RADIO_TOOLS_DEFAULT)
-    flags = BST_RADIO_TOOLS_EVERYWHERE;
   if (!tool_tip)
     tool_tip = tool_name;
   if (!tool_blurb)
@@ -273,9 +255,6 @@ bst_radio_tools_add_catalog_tool (BstRadioTools     *self,
   const BstCatalogTool *tool;
   BstCatalogTool dummy = { 0, };
   guint i;
-
-  if (flags == BST_RADIO_TOOLS_DEFAULT)
-    flags = BST_RADIO_TOOLS_EVERYWHERE;
 
   tool = bst_catalog_get_tool (cat_key);
   if (tool)
@@ -320,7 +299,6 @@ bst_radio_tools_add_tool (BstRadioTools     *self,
 {
   g_return_if_fail (BST_IS_RADIO_TOOLS (self));
   g_return_if_fail (tool_name != NULL);
-  g_return_if_fail (flags != 0);
   
   bst_radio_tools_add_tool_generic (self, tool_id, tool_name, NULL, NULL, tool_tip, tool_blurb, tool_icon, flags);
 }
@@ -519,30 +497,42 @@ bst_radio_tools_build_toolbar_choice (BstRadioTools *self,
 }
 
 static void
-toggle_apply_blurb (GtkToggleButton *toggle,
-                    GtkWidget       *text)
+tool2text (BstRadioTools *self,
+	   guint          tool_id,
+	   GtkWidget	 *text)
 {
-  gpointer tool_id = gtk_object_get_data (GTK_OBJECT (toggle), "user_data");
-  gpointer blurb_id = gtk_object_get_data (GTK_OBJECT (text), "user_data");
-  
-  if (tool_id == blurb_id && !toggle->active)
-    {
-      gxk_scroll_text_set (text, NULL);
-      g_object_set_data (G_OBJECT (text), "user_data", GUINT_TO_POINTER (~0));
-    }
-  else if (toggle->active && tool_id != blurb_id)
-    {
-      gxk_scroll_text_set (text, gtk_object_get_data (GTK_OBJECT (toggle), "blurb"));
-      g_object_set_data (G_OBJECT (text), "user_data", tool_id);
-    }
+  guint i;
+  gxk_scroll_text_set (text, NULL);
+  for (i = 0; i < self->n_tools; i++)
+    if (self->tools[i].tool_id == tool_id)
+      {
+	gxk_scroll_text_set (text, self->tools[i].tool.blurb);
+	break;
+      }
+}
+
+static void
+tool2label (BstRadioTools *self,
+	    guint          tool_id,
+	    GtkWidget	  *label)
+{
+  guint i;
+  gtk_label_set (GTK_LABEL (label), NULL);
+  for (i = 0; i < self->n_tools; i++)
+    if (self->tools[i].tool_id == tool_id)
+      {
+	gtk_label_set (GTK_LABEL (label), self->tools[i].tool.name);
+	break;
+      }
 }
 
 GtkWidget*
 bst_radio_tools_build_palette (BstRadioTools *self,
+			       GtkWidget     *selector,
                                gboolean       show_descriptions,
                                GtkReliefStyle relief)
 {
-  GtkWidget *vbox, *table, *text = NULL;
+  GtkWidget *vbox, *table, *hbox, *label, *text = NULL;
   guint i, n = 0, column = 5;
   
   g_return_val_if_fail (BST_IS_RADIO_TOOLS (self), NULL);
@@ -550,19 +540,37 @@ bst_radio_tools_build_palette (BstRadioTools *self,
   vbox = gtk_widget_new (GTK_TYPE_VBOX,
                          "visible", TRUE,
                          "homogeneous", FALSE,
-                         "resize_mode", GTK_RESIZE_QUEUE,
+			 "spacing", 3,
                          NULL);
   table = gtk_widget_new (GTK_TYPE_TABLE,
                           "visible", TRUE,
                           "homogeneous", TRUE,
                           NULL);
   gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, TRUE, 0);
+  /* add tool name label */
+  hbox = gtk_widget_new (GTK_TYPE_HBOX,
+			 "visible", TRUE,
+			 "homogeneous", FALSE,
+			 "spacing", 3,
+			 NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, TRUE, 0);
+  if (selector)
+    gtk_box_pack_start (GTK_BOX (hbox), selector, FALSE, TRUE, 0);
+  label = gtk_widget_new (GTK_TYPE_LABEL,
+			  "visible", TRUE,
+			  "parent", hbox,
+			  "width_request", 1,	/* packed auto-expand */
+			  NULL);
+  g_signal_connect_object (self, "set_tool", G_CALLBACK (tool2label), label, G_CONNECT_AFTER);
+  tool2label (self, self->tool_id, label);
+  /* create description view */
   if (show_descriptions)
     {
       text = gxk_scroll_text_create (GXK_SCROLL_TEXT_WIDGET_LOOK, NULL);
-      g_object_set_data (G_OBJECT (text), "user_data", GUINT_TO_POINTER (~0));
       gtk_widget_ref (text);
       gtk_object_sink (GTK_OBJECT (text));
+      g_signal_connect_object (self, "set_tool", G_CALLBACK (tool2text), text, G_CONNECT_AFTER);
+      tool2text (self, self->tool_id, text);
     }
   
   for (i = 0; i < self->n_tools; i++)
@@ -587,7 +595,6 @@ bst_radio_tools_build_palette (BstRadioTools *self,
                                                  NULL),
                                  "swapped_signal::toggled", rtools_toggle_toggled, self,
                                  "swapped_signal::destroy", rtools_widget_destroyed, self,
-                                 text ? "signal_after::toggled" : NULL, toggle_apply_blurb, text,
                                  NULL);
       if (self->tools[i].tool.accelerator)
 	{
