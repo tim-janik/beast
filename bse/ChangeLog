@@ -1,3 +1,9 @@
+Mon May  5 03:52:24 2003  Tim Janik  <timj@gtk.org>
+
+	* bseglue.c (bglue_proxy_request_notify): canonify signal names before
+	attempting matches, fixes remaining "spurious signal" warnings. minor
+	optimizations.
+
 Mon Apr 28 22:15:52 2003  Tim Janik  <timj@gtk.org>
 
 	* gsltests.c (main): added exp() timing loops.

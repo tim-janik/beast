@@ -29,8 +29,6 @@ extern "C" {
  * by a janitor constructor
  */
 
-GSource*	bse_glue_context_create	(SfiComPort	*port);
-
 SfiGlueContext*	bse_glue_context_intern	 (const gchar	*user);
 
 typedef SfiRec*	(*BseGlueBoxedToRec)	 (gpointer	    boxed);

@@ -111,6 +111,8 @@ static void		bglue_destroy			(SfiGlueContext *context);
 
 /* --- variables --- */
 static GQuark quark_original_enum = 0;
+static GQuark quark_property_notify = 0;
+static GQuark quark_notify = 0;
 
 
 /* --- functions --- */
@@ -144,7 +146,11 @@ bse_glue_context_intern (const gchar *user)
 
   g_return_val_if_fail (user != NULL, NULL);
   if (!quark_original_enum)
-    quark_original_enum = g_quark_from_static_string ("bse-glue-original-enum");
+    {
+      quark_original_enum = g_quark_from_static_string ("bse-glue-original-enum");
+      quark_property_notify = g_quark_from_static_string ("property-notify");
+      quark_notify = g_quark_from_static_string ("notify");
+    }
 
   /* create server-side glue context */
   bcontext = g_new0 (BContext, 1);
@@ -996,7 +1002,7 @@ bclosure_notify_marshal (GClosure       *closure,
   bcontext_notify_ref_add_item (bcontext, nref_id, item);
   pspec = sfi_value_get_pspec (param_values + 1);
   sfi_seq_append_string (args, pspec->name);
-  signal = g_strconcat ("property_", signal, NULL);
+  signal = g_strconcat ("property-", signal, NULL);
   bcontext_queue_signal (bcontext, nref_id, signal, args);
   g_free (signal);
   sfi_seq_unref (args);
@@ -1026,21 +1032,27 @@ bglue_proxy_request_notify (SfiGlueContext *context,
   if (!p)
     return FALSE;
 
+  /* get canonified signal name quark */
+  qsignal = sfi_glue_proxy_get_signal_quark (signal);
+
   /* special case ::notify, which we don't export through the glue layer */
-  if (strcmp (signal, "notify") == 0 ||
-      strncmp (signal, "notify:", 7) == 0)
+  if (qsignal == quark_notify || strncmp (signal, "notify:", 7) == 0)
     return FALSE;
-  /* special case ::property_notify, which we implement on top of ::notify */
-  if (strcmp (signal, "property_notify") == 0 || strcmp (signal, "property-notify") == 0 ||
-      strncmp (signal, "property_notify:", 16) == 0 || strncmp (signal, "property-notify:", 16) == 0)
+  /* special case ::property-notify, which we implement on top of ::notify */
+  if (qsignal == quark_property_notify || (strncmp (signal, "property", 8) == 0 &&
+					   (signal[8] == '_' || signal[8] == '-') &&
+					   strncmp (signal + 9, "notify:", 7) == 0))
     {
-      signal += 9; /* skip "property_" */
+      signal += 9; /* skip "property-" */
+      qsignal = sfi_glue_proxy_get_signal_quark (signal);
       sig_closure_marshal = bclosure_notify_marshal;
     }
   else
     sig_closure_marshal = bclosure_marshal;
 
-  qsignal = g_quark_from_string (signal);
+  /* canonify signal name */
+  signal = g_quark_to_string (qsignal);
+
   for (slist = p->closures; slist; last = slist, slist = last->next)
     {
       bclosure = slist->data;
@@ -1048,7 +1060,7 @@ bglue_proxy_request_notify (SfiGlueContext *context,
 	{
 	  if (enable_notify)
 	    {
-	      g_warning ("%s: redundant signal \"%s\" connection on proxy (%lu)", bcontext->user, signal, proxy);
+	      g_message ("%s: redundant signal \"%s\" connection on proxy (%lu)", bcontext->user, signal, proxy);
 	      return TRUE;
 	    }
 	  closure = (GClosure*) bclosure;
