@@ -24,6 +24,7 @@ translations can be obtained from the following pages.
 @uref{http://l10n-status.gnome.org/HEAD/index.html,, Translation statistics for the GNOME release: }
 @c status page links to all translations listed in ALL_LINGUAS:
 @uref{http://l10n-status.gnome.org/HEAD/az/extras/index.html,, az},
+@uref{http://l10n-status.gnome.org/HEAD/bg/extras/index.html,, bg},
 @uref{http://l10n-status.gnome.org/HEAD/ca/extras/index.html,, ca},
 @uref{http://l10n-status.gnome.org/HEAD/cs/extras/index.html,, cs},
 @uref{http://l10n-status.gnome.org/HEAD/de/extras/index.html,, de},

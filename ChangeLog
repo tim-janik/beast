@@ -1,3 +1,7 @@
+Tue Jan 18 08:43:54 2005  Alexander Shopov  <ash@contact.bg>
+
+	* configure.in (ALL_LINGUAS): Added "bg" (Bulgarian)
+
 Fri Jan 14 13:30:41 2005  Tim Janik  <timj@gtk.org>
 
 	* tools/bsewavetool.cc: cleanups, added loop command skeleton.
