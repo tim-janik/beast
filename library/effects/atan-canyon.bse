@@ -1,0 +1,39 @@
+; BseProject
+
+(bse-version "0.5.5")
+
+(container-child "BseCSynth::Atan Canyon"
+  (modification-time "2003-10-27 21:33:59")
+  (creation-time "2003-10-25 21:02:35")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY")
+  (author "Stefan Westerfeld, Tim Janik")
+  (blurb "")
+  (container-child "DavCanyonDelay::DavCanyonDelay-1"
+    (filter-freq 4035.5310277491708)
+    (pos-x -2)
+    (source-input "left-in" (link 1 "AtanDistort-1") "audio-out")
+    (source-input "right-in" (link 1 "AtanDistort-2") "audio-out"))
+  (container-child "BseSubIPort::SubIPort-1"
+    (pos-x -5))
+  (container-child "BseSubOPort::SubOPort-1"
+    (pos-x 1)
+    (source-input "input-1" (link 1 "Adder-1") "audio-out")
+    (source-input "input-2" (link 1 "Adder-2") "audio-out"))
+  (container-child "BseAdder::Adder-1"
+    (pos-y 1)
+    (source-input "audio-in1" (link 1 "SubIPort-1") "output-1")
+    (source-input "audio-in2" (link 1 "DavCanyonDelay-1") "left-out"))
+  (container-child "BseAdder::Adder-2"
+    (pos-y -1)
+    (source-input "audio-in1" (link 1 "DavCanyonDelay-1") "right-out")
+    (source-input "audio-in2" (link 1 "SubIPort-1") "output-2"))
+  (container-child "BseAtanDistort::AtanDistort-1"
+    (boost-amount 75)
+    (pos-y 1)
+    (pos-x -3)
+    (source-input "audio-in" (link 1 "SubIPort-1") "output-1"))
+  (container-child "BseAtanDistort::AtanDistort-2"
+    (boost-amount 75)
+    (pos-y -1)
+    (pos-x -3)
+    (source-input "audio-in" (link 1 "SubIPort-1") "output-2")))

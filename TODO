@@ -1,6 +1,5 @@
 FIXMES:
-- provide proper stock effect
-- provide proper stock instrument
+- remove/rename test-string.bse
 - compressor gui: http://www.samsonwireless.net/store/product.asp?sku=EM.CLX-440&nav=m
 - migrate artscompressor threshold/output to dB (keep compat code)
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for

@@ -1,3 +1,9 @@
+Mon Oct 27 22:39:57 2003  Tim Janik  <timj@gtk.org>
+
+	* library/effects/atan-canyon.bse: new effect.
+
+	* library/instruments/synth-lead.bse: add license information.
+
 Mon Oct 27 22:24:27 2003  Tim Janik  <timj@gtk.org>
 
 	* library/instruments/synth-lead.bse: new instrument.

@@ -5,7 +5,7 @@
 (container-child "BseCSynth::Synth Lead"
   (modification-time "2003-10-27 21:00:14")
   (creation-time "1990-07-20 07:09:22")
-  (license "")
+  (license "Provided \"as is\", WITHOUT ANY WARRANTY")
   (author "Stefan Westerfeld, Tim Janik")
   (blurb "")
   (container-child "BseInstrumentInput::BseSubKeyboard-1"

@@ -4,7 +4,8 @@
 ## Makefile.am for BEAST/BSE
 
 
-effects_DATA = $(strip \
+effects_DATA = $(strip	\
+	atan-canyon.bse	\
 )
 effectsdir = $(bseeffectdir)
 
