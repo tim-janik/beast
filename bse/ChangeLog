@@ -1,3 +1,10 @@
+Tue Jun 29 01:51:29 2004  Tim Janik  <timj@gtk.org>
+
+	* bsepart.c: flag fixes.
+
+	* bsetrack.proc: provide get-last-tick() to calc the last tick
+	in a track.
+
 Sat Jun 12 19:46:42 2004  Tim Janik  <timj@gtk.org>
 
 	* bseserver.c (bse_server_class_init): provide wave_file property

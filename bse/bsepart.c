@@ -123,7 +123,7 @@ bse_part_class_init (BsePartClass *class)
 			      PROP_LAST_TICK,
 			      sfi_pspec_int ("last_tick", "Last Tick", NULL,
 					     0, 0, BSE_PART_MAX_TICK, 384,
-					     "G:r"));
+					     SFI_PARAM_GUI_READABLE));
 
   signal_range_changed = bse_object_class_add_signal (object_class, "range-changed",
 						      G_TYPE_NONE, 4,

@@ -252,3 +252,51 @@ METHOD (BseTrack, create-sniffer) {
 
   return BSE_ERROR_NONE;
 }
+
+METHOD (BseTrack, get-last-tick) {
+  HELP  = "Retrieve the last tick for this track.";
+  IN    = bse_param_spec_object ("track", "Track", NULL,
+                                 BSE_TYPE_TRACK, SFI_PARAM_STANDARD);
+  OUT   = sfi_pspec_int ("last_tick", "Last Tick", NULL,
+                         0, 0, G_MAXINT, 384, SFI_PARAM_STANDARD);
+} BODY (BseProcedureClass *proc,
+        const GValue      *in_values,
+        GValue            *out_values)
+{
+  /* extract parameter values */
+  BseTrack *self = bse_value_get_object (in_values++);
+  int last_tick = 0;
+
+  /* check parameters */
+  if (!BSE_IS_TRACK (self))
+    return BSE_ERROR_PROC_PARAM_INVAL;
+
+  /* find last part */
+  BsePart *part = NULL;
+  guint i, offset = 0;
+  for (i = 0; i < self->n_entries_SL; i++)
+    if (self->entries_SL[i].part)
+      {
+        part = self->entries_SL[i].part;
+        offset = self->entries_SL[i].tick;
+      }
+  if (part)
+    {
+      BseItem *item = BSE_ITEM (self);
+      BseSongTiming timing;
+      g_object_get (part, "last-tick", &last_tick, NULL);
+      if (BSE_IS_SONG (item->parent))
+        bse_song_get_timing (BSE_SONG (item->parent), offset, &timing);
+      else
+        bse_song_timing_get_default (&timing);
+      last_tick = MAX (last_tick, timing.tpt);  /* MAX duration with tact size, see bse_track_list_parts() */
+      last_tick += offset;
+    }
+  else
+    last_tick += 1;     /* always return one after */
+  
+  /* set output parameters */
+  sfi_value_set_int (out_values++, last_tick);
+
+  return BSE_ERROR_NONE;
+}
