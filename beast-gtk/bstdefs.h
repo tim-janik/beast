@@ -96,6 +96,7 @@ typedef enum /*< skip >*/
 
 
 /* --- internal stuff --- */
+void    beast_show_about_box (void);
 extern gboolean bst_developer_hints;
 extern gboolean bst_debug_extensions;
 extern gboolean bst_main_loop_running;

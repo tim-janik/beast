@@ -43,6 +43,7 @@ static void			bst_exit_print_version	(void);
 gboolean            bst_developer_hints = FALSE;
 gboolean            bst_debug_extensions = FALSE;
 gboolean            bst_main_loop_running = TRUE;
+static GtkWidget   *beast_splash = NULL;
 static gboolean     registration_done = FALSE;
 static gboolean     arg_force_xkb = FALSE;
 static gboolean     register_core_plugins = TRUE;
@@ -83,7 +84,6 @@ main (int   argc,
       char *argv[])
 {
   GdkPixbufAnimation *anim;
-  GtkWidget *splash;
   BstApp *app = NULL;
   SfiRec *bseconfig;
   gchar *string;
@@ -130,23 +130,24 @@ main (int   argc,
 
   /* now, we can popup the splash screen
    */
-  splash = bst_splash_new (_("BEAST Startup"), BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
-  gtk_object_set_user_data (GTK_OBJECT (splash), NULL);	/* fix for broken user_data in 2.2 */
-  bst_splash_set_text (splash,
+  beast_splash = bst_splash_new ("BEAST-Splash", BST_SPLASH_WIDTH, BST_SPLASH_HEIGHT, 15);
+  bst_splash_set_title (beast_splash, _("BEAST Startup"));
+  gtk_object_set_user_data (GTK_OBJECT (beast_splash), NULL);	/* fix for broken user_data in 2.2 */
+  bst_splash_set_text (beast_splash,
 		       "<b><big>BEAST</big></b>\n"
 		       "<b>The Bedevilled Audio System</b>\n"
 		       "<b>Version %s (%s)</b>\n",
 		       BST_VERSION, BST_VERSION_HINT);
-  bst_splash_update_entity (splash, _("Startup"));
-  bst_splash_show_now (splash);
+  bst_splash_update_entity (beast_splash, _("Startup"));
+  bst_splash_show_grab (beast_splash);
 
   /* BEAST initialization
    */
-  bst_splash_update_item (splash, _("Objects"));
+  bst_splash_update_item (beast_splash, _("Objects"));
   _bst_init_utils ();
   _bst_init_params ();
   _bst_gconfig_init ();
-  bst_splash_update_item (splash, _("Language"));
+  bst_splash_update_item (beast_splash, _("Language"));
 
   /* GUI patchups
    */
@@ -158,26 +159,26 @@ main (int   argc,
   if (TRUE)
     {
       gchar *file_name = BST_STRDUP_RC_FILE ();
-      bst_splash_update_item (splash, _("RC File"));
+      bst_splash_update_item (beast_splash, _("RC File"));
       bst_rc_parse (file_name);
       g_free (file_name);
     }
 
   /* show splash images
    */
-  bst_splash_update_item (splash, _("Splash Image"));
+  bst_splash_update_item (beast_splash, _("Splash Image"));
   string = g_strconcat (BST_PATH_IMAGES, G_DIR_SEPARATOR_S, BST_SPLASH_IMAGE, NULL);
   anim = gdk_pixbuf_animation_new_from_file (string, NULL);
   g_free (string);
   bst_splash_update ();
   if (anim)
     {
-      bst_splash_set_animation (splash, anim);
+      bst_splash_set_animation (beast_splash, anim);
       g_object_unref (anim);
     }
 
   /* start BSE core and connect */
-  bst_splash_update_item (splash, _("BSE Core"));
+  bst_splash_update_item (beast_splash, _("BSE Core"));
   bse_init_async (&argc, &argv, bseconfig);
   sfi_rec_unref (bseconfig);
   sfi_glue_context_push (bse_init_glue_context ("BEAST"));
@@ -190,13 +191,13 @@ main (int   argc,
 
   /* watch registration notifications on server */
   bse_proxy_connect (BSE_SERVER,
-		     "signal::registration", server_registration, splash,
+		     "signal::registration", server_registration, beast_splash,
 		     NULL);
 
   /* register core plugins */
   if (register_core_plugins)
     {
-      bst_splash_update_entity (splash, _("Plugins"));
+      bst_splash_update_entity (beast_splash, _("Plugins"));
 
       /* plugin registration, this is done asyncronously,
        * so we wait until all are done
@@ -215,7 +216,7 @@ main (int   argc,
   /* register LADSPA plugins */
   if (register_ladspa_plugins)
     {
-      bst_splash_update_entity (splash, _("LADSPA Plugins"));
+      bst_splash_update_entity (beast_splash, _("LADSPA Plugins"));
 
       /* plugin registration, this is done asyncronously,
        * so we wait until all are done
@@ -235,7 +236,7 @@ main (int   argc,
   string = g_getenv ("BEAST_SLEEP4GDB");
   if (string && atoi (string) > 0)
     {
-      bst_splash_update_entity (splash, "Debugging Hook");
+      bst_splash_update_entity (beast_splash, "Debugging Hook");
       g_message ("going into sleep mode due to debugging request (pid=%u)", getpid ());
       g_usleep (2147483647);
     }
@@ -243,7 +244,7 @@ main (int   argc,
   /* register BSE scripts */
   if (register_scripts)
     {
-      bst_splash_update_entity (splash, _("Scripts"));
+      bst_splash_update_entity (beast_splash, _("Scripts"));
 
       /* script registration, this is done asyncronously,
        * so we wait until all are done
@@ -261,20 +262,14 @@ main (int   argc,
 
   /* listen to BseServer notification
    */
-  bst_splash_update_entity (splash, _("Dialogs"));
+  bst_splash_update_entity (beast_splash, _("Dialogs"));
   bst_catch_scripts_and_msgs ();
   _bst_init_gadgets ();
-
-  /* grab events on the splash to keep the user away
-   * from application windows during loading.
-   * we hide the splash as soon as a real app window appears.
-   */
-  gtk_grab_add (splash);
 
   /* open files given on command line
    */
   if (argc > 1)
-    bst_splash_update_entity (splash, _("Loading..."));
+    bst_splash_update_entity (beast_splash, _("Loading..."));
   for (i = 1; i < argc; i++)
     {
       SfiProxy project, wrepo;
@@ -295,7 +290,7 @@ main (int   argc,
 		  app = bst_app_new (project);
 		  gxk_idle_show_widget (GTK_WIDGET (app));
 		  bse_item_unuse (project);
-		  gtk_widget_hide (splash);
+		  gtk_widget_hide (beast_splash);
 		  continue;
 		}
 	      bse_item_unuse (project);
@@ -318,7 +313,7 @@ main (int   argc,
 	{
 	  app = bst_app_new (project);
 	  gxk_idle_show_widget (GTK_WIDGET (app));
-	  gtk_widget_hide (splash);
+	  gtk_widget_hide (beast_splash);
 	}
       bse_item_unuse (project);
       
@@ -336,7 +331,7 @@ main (int   argc,
       app = bst_app_new (project);
       bse_item_unuse (project);
       gxk_idle_show_widget (GTK_WIDGET (app));
-      gtk_widget_hide (splash);
+      gtk_widget_hide (beast_splash);
     }
   /* splash screen is definitely hidden here (still grabbing) */
 
@@ -348,8 +343,9 @@ main (int   argc,
       bst_gconfig_set_rc_version (BST_VERSION);
     }
 
-  /* destroy splash to release grab */
-  gtk_widget_destroy (splash);
+  /* release splash grab */
+  gtk_widget_hide (beast_splash);
+  bst_splash_release_grab (beast_splash);
   /* away into the main loop */
   while (bst_main_loop_running)
     {
@@ -653,4 +649,46 @@ bst_print_blurb (void)
       g_print ("  --g-fatal-warnings      make warnings fatal (abort)\n");
       g_print ("  --sync                  do all X calls synchronously\n");
     }
+}
+
+void
+beast_show_about_box (void)
+{
+  const gchar *contributors[] = {
+    /* graphics */
+    "Cyria Arweiler",
+    "Tuomas Kuosmanen",
+    "Jakub Steiner",
+    /* general code and fixes */
+    "Christian Neumair",
+    "Tim Janik",
+    "Stefan Westerfeld",
+    "Sam Hocevar",
+    "Alper Ersoy",
+    "Ben Collver",
+    /* plugins */
+    "David A. Bartold",
+    "Tim Janik",
+    "Stefan Westerfeld",
+    /* languages */
+    "Metin Amiroff",
+    "Alexandre Prokoudine",
+    "Danilo Segan",
+    "Christian Rose",
+    "Christian Neumair",
+    "Miloslav Trmac",
+    "Vincent van Adrighem",
+    "Danilo Segan",
+    "Xavier Conde Rueda",
+    "Kostas Papadimas",
+    NULL
+  };
+  if (!GTK_WIDGET_VISIBLE (beast_splash))
+    {
+      bst_splash_set_title (beast_splash, _("BEAST About"));
+      bst_splash_update_entity (beast_splash, _("BEAST Version %s"), BST_VERSION);
+      bst_splash_update_item (beast_splash, _("Contributions made by:"));
+      bst_splash_animate_strings (beast_splash, contributors);
+    }
+  gxk_widget_showraise (beast_splash);
 }

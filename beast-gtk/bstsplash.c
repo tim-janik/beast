@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,10 @@
 static void	bst_splash_class_init		(BstSplashClass	  *class);
 static void	bst_splash_init			(BstSplash	  *splash);
 static void	bst_splash_finalize		(GObject	  *object);
+static gint     bst_splash_button_press         (GtkWidget        *widget,
+                                                 GdkEventButton   *event);
+static void     bst_splash_hide                 (GtkWidget        *widget);
 static void	bst_splash_show			(GtkWidget	  *widget);
-static void	bst_splash_hide			(GtkWidget	  *widget);
 static void	bst_splash_unrealize		(GtkWidget	  *widget);
 static gboolean bst_splash_delete_event		(GtkWidget	  *widget,
 						 GdkEventAny	  *event);
@@ -74,8 +76,9 @@ bst_splash_class_init (BstSplashClass *class)
   gobject_class->finalize = bst_splash_finalize;
   
   widget_class->delete_event = bst_splash_delete_event;
-  widget_class->show = bst_splash_show;
+  widget_class->button_press_event = bst_splash_button_press;
   widget_class->hide = bst_splash_hide;
+  widget_class->show = bst_splash_show;
   widget_class->unrealize = bst_splash_unrealize;
 }
 
@@ -88,12 +91,12 @@ bst_splash_init (BstSplash *self)
   /* window setup */
   g_object_set (window,
 		"window_position", GTK_WIN_POS_CENTER,
+                "events", GDK_BUTTON_PRESS_MASK,
 		NULL);
 
   /* main vbox */
   self->vbox = g_object_new (GTK_TYPE_VBOX,
 			     "visible", TRUE,
-			     "homogeneous", FALSE,
 			     "spacing", 0,
 			     "parent", window,
 			     NULL);
@@ -102,7 +105,6 @@ bst_splash_init (BstSplash *self)
   /* splash vbox */
   self->splash_box = g_object_new (GTK_TYPE_VBOX,
 				   "visible", TRUE,
-				   "homogeneous", FALSE,
 				   "spacing", 0,
 				   NULL);
   gxk_nullify_on_destroy (self->splash_box, &self->splash_box);
@@ -115,13 +117,13 @@ bst_splash_init (BstSplash *self)
   gxk_nullify_on_destroy (self->pbar, &self->pbar);
   gtk_box_pack_end (GTK_BOX (self->vbox), GTK_WIDGET (self->pbar), FALSE, TRUE, 0);
   gtk_progress_set_show_text (GTK_PROGRESS (self->pbar), FALSE);
-  
+
   /* item label */
   any = g_object_new (GTK_TYPE_ALIGNMENT,
 		      "visible", TRUE,
 		      "xscale", 1.0,
 		      NULL);
-  gtk_box_pack_end (GTK_BOX (self->vbox), any, FALSE, TRUE, 5);
+  gtk_box_pack_end (GTK_BOX (self->vbox), any, FALSE, TRUE, 3);
   self->item = g_object_new (GTK_TYPE_LABEL,
 			     "visible", TRUE,
 			     "label", "Item",           /* untranslated template name */
@@ -135,7 +137,7 @@ bst_splash_init (BstSplash *self)
 		      "visible", TRUE,
 		      "xscale", 1.0,
 		      NULL);
-  gtk_box_pack_end (GTK_BOX (self->vbox), any, FALSE, TRUE, 10);
+  gtk_box_pack_end (GTK_BOX (self->vbox), any, FALSE, TRUE, 5);
   self->entity = g_object_new (GTK_TYPE_LABEL,
 			       "visible", TRUE,
 			       "label", "Entity",       /* untranslated template name */
@@ -162,21 +164,37 @@ bst_splash_delete_event (GtkWidget   *widget,
   return TRUE;
 }
 
+static gint
+bst_splash_button_press (GtkWidget        *widget,
+                         GdkEventButton   *event)
+{
+  gtk_widget_hide (widget);
+
+  return TRUE;
+}
+
+static void
+bst_splash_hide (GtkWidget *widget)
+{
+  BstSplash *self = BST_SPLASH (widget);
+  gtk_progress_bar_set_text (self->pbar, NULL);
+  gtk_progress_bar_set_orientation (self->pbar, GTK_PROGRESS_LEFT_TO_RIGHT);
+  gtk_progress_bar_set_fraction (self->pbar, 0);
+  if (self->timer_id)
+    {
+      g_source_remove (self->timer_id);
+      self->timer_id = 0;
+    }
+  GTK_WIDGET_CLASS (parent_class)->hide (widget);
+}
+
 static void
 bst_splash_show (GtkWidget *widget)
 {
   BstSplash *self = BST_SPLASH (widget);
 
   self->item_count = 0;
-  gtk_grab_add (widget);
   GTK_WIDGET_CLASS (parent_class)->show (widget);
-}
-
-static void
-bst_splash_hide (GtkWidget *widget)
-{
-  gtk_grab_remove (widget);
-  GTK_WIDGET_CLASS (parent_class)->hide (widget);
 }
 
 static void
@@ -192,8 +210,15 @@ bst_splash_unrealize (GtkWidget *widget)
   GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
 }
 
+void
+bst_splash_set_title (GtkWidget      *widget,
+                      const gchar    *title)
+{
+  gtk_window_set_title (GTK_WINDOW (widget), title);
+}
+
 GtkWidget*
-bst_splash_new (const gchar *title,
+bst_splash_new (const gchar *role,
 		guint        splash_width,
 		guint        splash_height,
 		guint        max_items)
@@ -201,8 +226,8 @@ bst_splash_new (const gchar *title,
   GtkWidget *splash = g_object_new (BST_TYPE_SPLASH, NULL);
   
   /* set title and role */
-  gtk_window_set_role (GTK_WINDOW (splash), title);
-  gtk_window_set_title (GTK_WINDOW (splash), title);
+  gtk_window_set_role (GTK_WINDOW (splash), role);
+  gtk_window_set_title (GTK_WINDOW (splash), role);
   BST_SPLASH (splash)->max_items = max_items;
   g_object_set (BST_SPLASH (splash)->splash_box,
 		"width_request", splash_width,
@@ -213,12 +238,17 @@ bst_splash_new (const gchar *title,
 }
 
 void
-bst_splash_show_now (GtkWidget *widget)
+bst_splash_show_grab (GtkWidget *widget)
 {
-  g_return_if_fail (BST_IS_SPLASH (widget));
+  BstSplash *self = BST_SPLASH (widget);
 
   if (!GTK_WIDGET_VISIBLE (widget))
     {
+      if (!self->has_grab)
+        {
+          self->has_grab = TRUE;
+          gtk_grab_add (widget);
+        }
       gtk_widget_show (widget);
 
       GDK_THREADS_LEAVE ();
@@ -227,6 +257,17 @@ bst_splash_show_now (GtkWidget *widget)
       while (g_main_pending ())
 	g_main_iteration (FALSE);
       GDK_THREADS_ENTER ();
+    }
+}
+
+void
+bst_splash_release_grab (GtkWidget      *widget)
+{
+  BstSplash *self = BST_SPLASH (widget);
+  if (self->has_grab)
+    {
+      self->has_grab = FALSE;
+      gtk_grab_remove (widget);
     }
 }
 
@@ -344,8 +385,12 @@ bst_splash_set_animation (GtkWidget          *widget,
     {
       GtkWidget *image = g_object_new (GTK_TYPE_IMAGE,
 				       "visible", TRUE,
+                                       "parent", g_object_new (GTK_TYPE_FRAME,
+                                                               "visible", TRUE,
+                                                               "shadow-type", GTK_SHADOW_IN,
+                                                               NULL),
 				       NULL);
-      gtk_box_pack_start (GTK_BOX (self->splash_box), image, TRUE, TRUE, 0);
+      gtk_box_pack_start (GTK_BOX (self->splash_box), gtk_widget_get_toplevel (image), TRUE, TRUE, 0);
       if (gdk_pixbuf_animation_is_static_image (anim))
 	gtk_image_set_from_pixbuf (GTK_IMAGE (image), gdk_pixbuf_animation_get_static_image (anim));
       else
@@ -353,4 +398,40 @@ bst_splash_set_animation (GtkWidget          *widget,
     }
   if (GTK_WIDGET_VISIBLE (self))
     bst_splash_update ();
+}
+
+static gboolean
+about_timer (gpointer data)
+{
+  BstSplash *self = data;
+  float delta = 0.02;
+  GDK_THREADS_ENTER ();
+  self->aprogress += delta;
+  if (self->aprogress >= 2)
+    {
+      gtk_progress_bar_set_text (self->pbar, self->strings[rand () % self->n_strings]);
+      self->aprogress = 0;
+    }
+  gtk_progress_bar_set_orientation (self->pbar, self->aprogress < 1 ? GTK_PROGRESS_LEFT_TO_RIGHT : GTK_PROGRESS_RIGHT_TO_LEFT);
+  gtk_progress_bar_set_fraction (self->pbar, self->aprogress < 1 ? self->aprogress : 2 - self->aprogress);
+  GDK_THREADS_LEAVE ();
+  return TRUE;
+}
+
+void
+bst_splash_animate_strings (GtkWidget      *splash,
+                            const gchar   **strings)
+{
+  BstSplash *self = BST_SPLASH (splash);
+  g_strfreev (self->strings);
+  self->strings = g_strdupv ((gchar**) strings);
+  self->n_strings = 0;
+  while (self->strings[self->n_strings])
+    self->n_strings++;
+  if (!self->timer_id)
+    self->timer_id = g_timeout_add (40, about_timer, self);
+  self->aprogress = 0;
+  gtk_progress_bar_set_orientation (self->pbar, GTK_PROGRESS_LEFT_TO_RIGHT);
+  gtk_progress_bar_set_fraction (self->pbar, self->aprogress);
+  gtk_progress_bar_set_text (self->pbar, self->strings[rand () % self->n_strings]);
 }

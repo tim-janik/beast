@@ -836,6 +836,7 @@ app_action_exec (gpointer data,
       gxk_widget_showraise (bst_help_dialogs[action - BST_ACTION_HELP_FIRST]);
       break;
     case BST_ACTION_HELP_ABOUT:
+      beast_show_about_box ();
       break;
     default:
       g_assert_not_reached ();
@@ -897,7 +898,7 @@ app_action_check (gpointer data,
     case BST_ACTION_SAVE_INSTRUMENT:
       super = bst_app_get_current_super (self);
       return BSE_IS_CSYNTH (super) && !bse_project_is_active (self->project);
-      // case BST_OP_HELP_ABOUT:
+    case BST_ACTION_HELP_ABOUT:
     case BST_ACTION_HELP_FAQ:
     case BST_ACTION_HELP_GSL_PLAN:
     case BST_ACTION_HELP_RELEASE_NOTES:
@@ -910,8 +911,6 @@ app_action_check (gpointer data,
       gxk_gadget_sensitize (self, "synth-submenu", BSE_IS_SNET (super) && !BSE_IS_SONG (super));
       gxk_gadget_sensitize (self, "waves-submenu", BSE_IS_WAVE_REPO (super));
       return TRUE;
-    case BST_ACTION_HELP_ABOUT:
-      return FALSE;
     default:
       g_warning ("BstApp: unknown action: %lu", action);
       return FALSE;

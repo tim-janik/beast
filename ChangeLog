@@ -1,3 +1,14 @@
+Tue Nov 18 22:38:29 2003  Tim Janik  <timj@gtk.org>
+
+	* configure.in: up version to 0.5.6-rc1.
+
+	* beast-gtk/bstapp.c: show beast about box.
+
+	* beast-gtk/bstmain.c: implement about box with contributor names
+	based on the splash screen.
+
+	* beast-gtk/bstsplash.[hc]: added about-box feats.
+
 Tue Nov 18 19:46:13 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/Makefile.am: 

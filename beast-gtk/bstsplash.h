@@ -1,5 +1,5 @@
 /* BEAST - Bedevilled Audio System
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002-2003 Tim Janik
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include        "bstutils.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- type macros --- */
 #define BST_TYPE_SPLASH              (bst_splash_get_type ())
@@ -53,6 +50,11 @@ struct _BstSplash
   GtkProgressBar *pbar;
   guint		  item_count;
   guint		  max_items;
+  guint           has_grab : 1;
+  guint           timer_id;
+  gchar         **strings;
+  guint           n_strings;
+  gfloat          aprogress;
 };
 struct _BstSplashClass
 {
@@ -62,11 +64,14 @@ struct _BstSplashClass
 
 /* --- prototypes --- */
 GtkType		bst_splash_get_type		(void);
-GtkWidget*	bst_splash_new			(const gchar	*title,
+GtkWidget*	bst_splash_new			(const gchar	*role,
 						 guint		 splash_width,
 						 guint		 splash_height,
 						 guint		 max_items);
-void		bst_splash_show_now		(GtkWidget	*widget);
+void		bst_splash_set_title		(GtkWidget	*widget,
+						 const gchar	*title);
+void		bst_splash_show_grab		(GtkWidget	*widget);
+void		bst_splash_release_grab 	(GtkWidget	*widget);
 void		bst_splash_set_text		(GtkWidget	*widget,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2, 3);
@@ -79,10 +84,10 @@ void		bst_splash_update_entity	(GtkWidget	*widget,
 void		bst_splash_update_item		(GtkWidget	*widget,
 						 const gchar	*format,
 						 ...) G_GNUC_PRINTF (2, 3);
+void            bst_splash_animate_strings      (GtkWidget      *splash,
+                                                 const gchar   **strings);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif  /* __BST_SPLASH_H__ */
