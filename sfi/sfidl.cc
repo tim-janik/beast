@@ -1172,19 +1172,22 @@ void CodeGeneratorC::run ()
 	  if (options.generateBoxedTypes)
 	    {
 	      string mname = makeMixedName (ri->name);
-	      
+
+	      // FIXME: stefan might want to implement the transforms differently
+
 	      printf("static void\n");
 	      printf("%s_boxed2rec (const GValue *src_value, GValue *dest_value)\n", name.c_str());
 	      printf("{\n");
-	      printf("  sfi_value_take_rec (dest_value,\n");
-	      printf("    %s_to_rec (g_value_get_boxed (src_value)));\n", name.c_str());
+	      printf("  gpointer boxed = g_value_get_boxed (src_value);\n");
+	      printf("  sfi_value_take_rec (dest_value, boxed ? %s_to_rec (boxed) : NULL);\n", name.c_str());
 	      printf("}\n");
 	      
 	      printf("static void\n");
 	      printf("%s_rec2boxed (const GValue *src_value, GValue *dest_value)\n", name.c_str());
 	      printf("{\n");
+	      printf("  SfiRec *rec = sfi_value_get_rec (src_value);\n", name.c_str());
 	      printf("  g_value_set_boxed_take_ownership (dest_value,\n");
-	      printf("    %s_from_rec (sfi_value_get_rec (src_value)));\n", name.c_str());
+	      printf("    rec ? %s_from_rec (rec) : NULL);\n", name.c_str());
 	      printf("}\n");
 	      
 	      printInfoStrings (name + "_info_strings", ri->infos);
@@ -1211,18 +1214,21 @@ void CodeGeneratorC::run ()
 	    {
 	      string mname = makeMixedName (si->name);
 	      
+              // FIXME: stefan might want to implement the transforms differently
+
 	      printf("static void\n");
 	      printf("%s_boxed2seq (const GValue *src_value, GValue *dest_value)\n", name.c_str());
 	      printf("{\n");
-	      printf("  sfi_value_take_seq (dest_value,\n");
-	      printf("    %s_to_seq (g_value_get_boxed (src_value)));\n", name.c_str());
+              printf("  gpointer boxed = g_value_get_boxed (src_value);\n");
+	      printf("  sfi_value_take_seq (dest_value, boxed ? %s_to_seq (boxed) : NULL);\n", name.c_str());
 	      printf("}\n");
 	      
 	      printf("static void\n");
 	      printf("%s_seq2boxed (const GValue *src_value, GValue *dest_value)\n", name.c_str());
 	      printf("{\n");
+              printf("  SfiSeq *seq = sfi_value_get_seq (src_value);\n", name.c_str());
 	      printf("  g_value_set_boxed_take_ownership (dest_value,\n");
-	      printf("    %s_from_seq (sfi_value_get_seq (src_value)));\n", name.c_str());
+	      printf("    seq ? %s_from_seq (seq) : NULL);\n", name.c_str());
 	      printf("}\n");
 	      
 	      printInfoStrings (name + "_info_strings", si->infos);

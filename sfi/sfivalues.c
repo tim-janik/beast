@@ -358,23 +358,31 @@ sfi_value_copy_deep (const GValue *src_value,
 
   if (SFI_VALUE_HOLDS_SEQ (src_value))
     {
+      SfiSeq *seq;
       g_return_if_fail (SFI_VALUE_HOLDS_SEQ (dest_value));
-      sfi_value_take_seq (dest_value, sfi_seq_copy_deep (sfi_value_get_seq (src_value)));
+      seq = sfi_value_get_seq (src_value);
+      sfi_value_take_seq (dest_value, seq ? sfi_seq_copy_deep (seq) : NULL);
     }
   else if (SFI_VALUE_HOLDS_REC (src_value))
     {
+      SfiRec *rec;
       g_return_if_fail (SFI_VALUE_HOLDS_REC (dest_value));
-      sfi_value_take_rec (dest_value, sfi_rec_copy_deep (sfi_value_get_rec (src_value)));
+      rec = sfi_value_get_rec (src_value);
+      sfi_value_take_rec (dest_value, rec ? sfi_rec_copy_deep (rec) : NULL);
     }
   else if (SFI_VALUE_HOLDS_BBLOCK (src_value))
     {
+      SfiBBlock *bblock;
       g_return_if_fail (SFI_VALUE_HOLDS_BBLOCK (dest_value));
-      sfi_value_take_bblock (dest_value, sfi_bblock_copy_deep (sfi_value_get_bblock (src_value)));
+      bblock = sfi_value_get_bblock (src_value);
+      sfi_value_take_bblock (dest_value, bblock ? sfi_bblock_copy_deep (bblock) : NULL);
     }
   else if (SFI_VALUE_HOLDS_FBLOCK (src_value))
     {
+      SfiFBlock *fblock;
       g_return_if_fail (SFI_VALUE_HOLDS_FBLOCK (dest_value));
-      sfi_value_take_fblock (dest_value, sfi_fblock_copy_deep (sfi_value_get_fblock (src_value)));
+      fblock = sfi_value_get_fblock (src_value);
+      sfi_value_take_fblock (dest_value, fblock ? sfi_fblock_copy_deep (fblock) : NULL);
     }
   else
     g_value_copy (src_value, dest_value);

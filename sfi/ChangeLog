@@ -1,3 +1,9 @@
+Sun Mar  9 14:45:50 2003  Tim Janik  <timj@gtk.org>
+
+	* sfidl.cc: added NULL guards to value transforms.
+
+	* sfivalues.c (sfi_value_copy_deep): fix NULL GValue handling.
+
 Sun Mar  9 07:06:16 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl.cc: fixed double quotes in sfidl
