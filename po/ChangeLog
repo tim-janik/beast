@@ -1,3 +1,7 @@
+2003-11-16  Abel Cheung  <maddog@linux.org.hk>
+
+	* POTFILES.in: Add missing file and remove non-existant ones.
+
 2003-11-14  Danilo Šegan  <dsegan@gmx.net>
 
 	* sr.po, sr@Latn.po: Updated Serbian translation.

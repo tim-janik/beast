@@ -21,14 +21,12 @@ beast-gtk/bstrackitem.c
 beast-gtk/bstradiotools.c
 beast-gtk/bstsampleeditor.c
 beast-gtk/bstsnetrouter.c
-beast-gtk/bstsnetshell.c
-beast-gtk/bstsongshell.c
 beast-gtk/bststest.c
+beast-gtk/bstsupershell.c
 beast-gtk/bsttrackrollctrl.c
 beast-gtk/bsttrackview.c
 beast-gtk/bstusermessage.c
 beast-gtk/bstwaveeditor.c
-beast-gtk/bstwavereposhell.c
 beast-gtk/bstwaveview.c
 beast-gtk/dialogs/gadgets-beast.xml
 beast-gtk/dialogs/gadgets-standard.xml
