@@ -1,3 +1,8 @@
+Sat Nov 27 23:03:37 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstmain.c (main): urg! load plugins from BSE_PATH_PLUGINS
+	not from some hardcoded path that only works on my system.
+
 Sat Nov 27 22:36:24 1999  Tim Janik  <timj@gtk.org>
 
 	* test/geekworld.bse: added test file, hacked up during geekworld.

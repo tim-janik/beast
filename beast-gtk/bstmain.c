@@ -91,7 +91,7 @@ main (int   argc,
     {
       GList *free_list, *list;
       
-      free_list = bse_plugin_dir_list_files ("/usr/src/beast/plugins/.libs"); // BSE_PATH_PLUGINS);
+      free_list = bse_plugin_dir_list_files (BSE_PATH_PLUGINS);
       for (list = free_list; list; list = list->next)
 	{
 	  gchar *error, *string = list->data;
@@ -103,6 +103,8 @@ main (int   argc,
 	  g_free (string);
 	}
       g_list_free (free_list);
+      if (!free_list)
+	g_warning ("strange, can't find any plugins, please check %s", BSE_PATH_PLUGINS);
     }
   
   
