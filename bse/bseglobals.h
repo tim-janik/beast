@@ -42,7 +42,7 @@ extern "C" {
 #define	BSE_KAMMER_FREQ			(440)
 #define	BSE_KAMMER_FREQ_d		((gdouble) 440)
 #define	BSE_MIN_NOTE			(0)
-#define	BSE_MAX_NOTE			(127)
+#define	BSE_MAX_NOTE			(123)
 #define	BSE_NOTE_VOID			(1024)
 #define	BSE_NOTE_UNPARSABLE		(BSE_NOTE_VOID + 1)
 #define	BSE_KAMMER_NOTE			((gint) (57) /* A' */)
@@ -67,6 +67,7 @@ extern "C" {
 #define	BSE_NOTE_GENERIC(ht_i,o)	(BSE_NOTE_C(o)+(ht_i)-1 >= BSE_MIN_NOTE && BSE_NOTE_C(o)+(ht_i)-1 <= BSE_MAX_NOTE ? BSE_NOTE_C(o)+(ht_i)-1 : BSE_NOTE_VOID)
 #define	BSE_NOTE_OCTAVE_UP(n)		((n)+12 <= BSE_MAX_NOTE && (n)+12 >= BSE_MIN_NOTE ? (n)+12 : (n))
 #define	BSE_NOTE_OCTAVE_DOWN(n)		((n) >= BSE_MIN_NOTE+12 && (n)-12 <= BSE_MAX_NOTE ? (n)-12 : (n))
+#define	BSE_NOTE_VALID(n)		((n) >= BSE_MIN_NOTE && (n) <= (BSE_MAX_NOTE))
 
 
 /* --- limits & defaults --- */
@@ -87,6 +88,8 @@ extern "C" {
 #define	BSE_MAX_ENV_TIME		(10000) /* ms */
 #define	BSE_MIN_MIX_FREQ		(1378)
 #define	BSE_MAX_MIX_FREQ		(96000)
+#define	BSE_MIN_OSC_FREQ_d		((gdouble) 1.0 / BSE_MAX_OSC_FREQ_d)
+#define	BSE_MAX_OSC_FREQ_d		((gdouble) 20000)
 #define BSE_MIN_TIME			(631148400)	/* 1990-01-01 00:00:00 */
 #define	BSE_MAX_TIME			(2147483647)	/* 2038-01-19 04:14:07 */
 #define	BSE_MAX_SAMPLE_CHANNELS		(2)

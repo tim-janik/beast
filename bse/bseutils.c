@@ -480,6 +480,13 @@ bse_time_from_string (const gchar *time_string,
 
 
 /* --- notes --- */
+/* defines from bseglobals.c, keep files in sync */
+#define BSE_2_RAISED_TO_1_OVER_12_d     ( /* 2^(1/12) */ \
+              1.0594630943592953098431053149397484958171844482421875)
+#define BSE_LN_OF_2_RAISED_TO_1_OVER_12_d       ( /* ln(2^(1/12)) */ \
+              0.05776226504666215344485635796445421874523162841796875)
+#define BSE_2_RAISED_TO_1_OVER_72_d     ( /* 2^(1/72) */ \
+              1.009673533228510944326217213529162108898162841796875)
 static const struct {
   gchar *s;
   guint v;
@@ -505,6 +512,7 @@ static const struct {
   { "bes",	BSE_KAMMER_NOTE +  1 - BSE_KAMMER_OCTAVE * 12 },
   { "bis",	BSE_KAMMER_NOTE +  3 - BSE_KAMMER_OCTAVE * 12 },
   { "b",	BSE_KAMMER_NOTE +  2 - BSE_KAMMER_OCTAVE * 12 },
+  // { "h",	BSE_KAMMER_NOTE +  2 - BSE_KAMMER_OCTAVE * 12 }, /* german alias */
 };
 static guint  bse_note_table_length = sizeof (bse_note_table) / sizeof (bse_note_table[0]);
 static gchar *bse_note_name_table[12] = {
@@ -628,6 +636,38 @@ bse_note_examine (guint     note,
     *ht_up_p = ht_flags[half_tone];
   if (letter_p)
     *letter_p = bse_note_name_table[half_tone][0];
+}
+
+guint
+bse_note_from_freq (gdouble freq)
+{
+  gdouble d;
+  gint n;
+
+  freq /= BSE_KAMMER_FREQ_d;
+  d = log (freq) / BSE_LN_OF_2_RAISED_TO_1_OVER_12_d;
+  n = BSE_KAMMER_NOTE + 0.5 + d;
+
+  return n >= BSE_MIN_NOTE && n <= BSE_MAX_NOTE ? n : BSE_NOTE_VOID;
+}
+
+gdouble
+bse_note_to_freq (guint note)
+{
+  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
+    return BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (note);
+  else
+    return 0.0;
+}
+
+gdouble
+bse_note_to_tuned_freq (guint note,
+			gint  fine_tune)
+{
+  if (note >= BSE_MIN_NOTE && note <= BSE_MAX_NOTE)
+    return BSE_KAMMER_FREQ_d * BSE_HALFTONE_FACTOR (note) * BSE_FINE_TUNE_FACTOR (fine_tune);
+  else
+    return 0.0;
 }
 
 

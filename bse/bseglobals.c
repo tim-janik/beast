@@ -22,33 +22,41 @@
 
 
 /* --- defines --- */
-/* factorization constants: 2^(1/12) and 2^(1/(12*6))
+/* factorization constants: 2^(1/12), ln(2^(1/12)) and 2^(1/(12*6))
  * retrived with:
- * #include <stl.h>
- * #include <complex.h>
- * typedef long double ld;
- *
- * int main (void)
- * {
- *   ld r;
- *
- *   cout.precision(256);
- *
- *   r = pow ((ld) 2, (ld) 1 / (ld) 12);
- *   cout << "2^(1/12) =\n";
- *   cout << "2^" << (ld) 1 / (ld) 12 << " =\n";
- *   cout << r << "\n";
- *
- *   r = pow ((ld) 2, (ld) 1 / (ld) 72);
- *   cout << "2^(1/72) =\n";
- *   cout << "2^" << (ld) 1 / (ld) 72 << " =\n";
- *   cout << r << "\n";
- *
- *   return 0;
- * }
- */
+ #include <stl.h>
+ #include <complex.h>
+ typedef long double ld;
+ 
+ int main (void)
+ {
+ ld r, l;
+ 
+ cout.precision(256);
+ 
+ r = pow ((ld) 2, (ld) 1 / (ld) 12);
+ cout << "2^(1/12) =\n";
+ cout << "2^" << (ld) 1 / (ld) 12 << " =\n";
+ cout << r << "\n";
+ 
+ l = log (r);
+ cout << "ln(2^(1/12)) =\n";
+ cout << "ln(" << r << ") =\n";
+ cout << l << "\n";
+ 
+ r = pow ((ld) 2, (ld) 1 / (ld) 72);
+ cout << "2^(1/72) =\n";
+ cout << "2^" << (ld) 1 / (ld) 72 << " =\n";
+ cout << r << "\n";
+ 
+ return 0;
+ }
+*/
+/* keep these defines in sync with bseutils.c */
 #define	BSE_2_RAISED_TO_1_OVER_12_d	( /* 2^(1/12) */ \
               1.0594630943592953098431053149397484958171844482421875)
+#define	BSE_LN_OF_2_RAISED_TO_1_OVER_12_d	( /* ln(2^(1/12)) */ \
+              0.05776226504666215344485635796445421874523162841796875)
 #define	BSE_2_RAISED_TO_1_OVER_72_d	( /* 2^(1/72) */ \
               1.009673533228510944326217213529162108898162841796875)
 

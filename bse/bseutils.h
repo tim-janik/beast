@@ -61,6 +61,10 @@ gchar*	bse_note_to_string	(guint		 note);
  * this function will return BSE_NOTE_UNPARSABLE if the conversation failed.
  */
 guint	bse_note_from_string	(const gchar	*note_string);
+guint	bse_note_from_freq	(gdouble	 freq);
+gdouble	bse_note_to_freq	(guint		 note);
+gdouble	bse_note_to_tuned_freq	(guint		 note,
+				 gint            fine_tune);
 
 
 /* --- icons --- */

@@ -50,9 +50,10 @@ typedef enum			/* <skip> */
   
   /* GUI hints */
   BSE_PARAM_HINT_RDONLY		= 1 <<  8,
-  BSE_PARAM_HINT_SCALE		= 1 <<  9,
-  BSE_PARAM_HINT_DIAL		= 1 << 10,
-  BSE_PARAM_HINT_CHECK_NULL	= 1 << 11,
+  BSE_PARAM_HINT_RADIO		= 1 <<  9,
+  BSE_PARAM_HINT_SCALE		= 1 << 10,
+  BSE_PARAM_HINT_DIAL		= 1 << 11,
+  BSE_PARAM_HINT_CHECK_NULL	= 1 << 12,
   BSE_PARAM_HINT_MASK		= 0xff00,
   
   /* aliases */

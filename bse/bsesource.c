@@ -136,7 +136,7 @@ bse_source_init (BseSource      *source,
   source->outputs = NULL;
 
   source->start = -1;
-  source->index = -1;
+  source->index = 0;
 
   source->ochannels = g_new0 (BseSourceOChannel, class->n_ochannels);
   for (i = 0; i < class->n_ochannels; i++)
@@ -713,7 +713,7 @@ bse_source_do_reset (BseSource *source)
     }
   
   source->start = -1;
-  source->index = -1;
+  source->index = 0;
   
   /* reset all input sources for which we are the sole prepared output
    */

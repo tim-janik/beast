@@ -1,3 +1,21 @@
+Sat Nov 20 12:27:21 1999  Tim Janik  <timj@gtk.org>
+
+	* bseparam.h (BseParamBits): added BSE_PARAM_HINT_RADIO.
+
+	* bseutils.[hc]: added bse_note_from_freq(), bse_note_to_freq() and
+	bse_note_to_tuned_freq(), we use the constants from bseglobals.c.
+
+	* bseglobals.h (BSE_MAX_NOTE): changed this to 123=dis+7=19912.127Hz,
+	so we stay below BSE_MAX_OSC_FREQ_d (and below 22050).
+	added BSE_MAX_OSC_FREQ_d=20000 and BSE_MIN_OSC_FREQ_d=1/20000.
+
+	* bseglobals.c (BSE_LN_OF_2_RAISED_TO_1_OVER_12_d): added constant for
+	ln(2^(1/12)).
+
+	* bsesource.c (bse_source_do_reset): 
+	* bsesource.c (bse_source_init): defualt initialize ->index with 0 not
+	-1, so we are always greater than ->start.
+
 Sun Nov 14 19:44:51 1999  Tim Janik  <timj@gtk.org>
 
 	* bseglobals.h: eeeek, bad change necessary: BSE_KAMMER_NOTE is actually
