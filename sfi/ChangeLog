@@ -1,3 +1,7 @@
+Tue Mar  2 11:09:48 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: fixed choice serialization type in to_rec() impls.
+
 Tue Mar  2 10:33:55 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-parser.cc (parseInfoOptional): lowercase info keys before

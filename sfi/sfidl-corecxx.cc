@@ -471,6 +471,7 @@ public:
   {
     switch (parser.typeOf (type))
       {
+      case CHOICE:      return "SFI_TYPE_CHOICE";
       case RECORD:      return "SFI_TYPE_REC";
       case SEQUENCE:    return "SFI_TYPE_SEQ";
       case OBJECT:      return "SFI_TYPE_PROXY";
