@@ -343,8 +343,6 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
       freq1 *= nyquist_fact;
       freq2 *= nyquist_fact;
       
-      g_print ("%f %f\n", freq1, freq2);
-      
       switch (filt->filter_algo << 16 | filt->filter_type)
 	{
 	case BSE_IIR_FILTER_BUTTERWORTH << 16 | BSE_IIR_FILTER_LOW_PASS:
@@ -386,10 +384,6 @@ bse_iir_filter_update_modules (BseIIRFilter *filt)
 	default:
 	  g_assert_not_reached ();
 	}
-      if (0)
-	g_print ("F(z)=%s/%s\n",
-		 bse_poly_str (filt->order, filt->a, "z"),
-		 bse_poly_str (filt->order, filt->b, "z"));
       
       fmod->iir.order = filt->order;
       fmod->iir.a = fmod->dummy;
