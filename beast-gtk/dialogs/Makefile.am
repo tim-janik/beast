@@ -5,10 +5,10 @@
 
 
 ZFILE_DEFS = $(strip \
-	BST_RADGETS_STANDARD	$(srcdir)/radgets-standard.xml	\
-	BST_RADGETS_BEAST	$(srcdir)/radgets-beast.xml	\
+	bst-radgets-standard	$(srcdir)/radgets-standard.xml	\
+	bst-radgets-beast	$(srcdir)/radgets-beast.xml	\
 )
-XML_FILES  = $(filter-out BST_%, $(ZFILE_DEFS))
+XML_FILES  = $(filter-out bst-%, $(ZFILE_DEFS))
 EXTRA_DIST += $(XML_FILES)
 
 ZINTERN=$(top_builddir)/bse/zintern/zintern
