@@ -2,19 +2,19 @@
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Christian Rose <menthos@menthos.com>, 2003.
 #
-# $Id: sv.po,v 1.6 2003/10/27 00:07:26 timj Exp $
+# $Id: sv.po,v 1.7 2003/10/27 01:07:17 menthos Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-27 00:53+0100\n"
-"PO-Revision-Date: 2003-10-18 12:10+0200\n"
+"POT-Creation-Date: 2003-10-27 02:05+0100\n"
+"PO-Revision-Date: 2003-10-27 02:06+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 
 #: beast-gtk/bstapp.c:65
 msgid "/_File"
@@ -654,92 +654,77 @@ msgid "Insert"
 msgstr "Infoga"
 
 #: beast-gtk/bstmessages.c:79
-#, fuzzy
 msgid "Insert/resize/move notes (mouse button 1 and 2)"
-msgstr "Infoga/redigera/flytta delar (musknapp 1 och 2)"
+msgstr "Infoga/redigera/flytta noter (musknapp 1 och 2)"
 
 #: beast-gtk/bstmessages.c:83
-#, fuzzy
 msgid "Delete note (mouse button 1)"
-msgstr "Infoga/redigera/flytta delar (musknapp 1 och 2)"
+msgstr "Ta bort not (musknapp 1)"
 
 #: beast-gtk/bstmessages.c:85
-#, fuzzy
 msgid "Align"
-msgstr "Amiga"
+msgstr "Justera"
 
 #: beast-gtk/bstmessages.c:87
 msgid "Draw a line to align events to"
-msgstr ""
+msgstr "Rita en linje som händelser kan justeras till"
 
 #: beast-gtk/bstmessages.c:89
-#, fuzzy
 msgid "Select"
-msgstr "_Markering"
+msgstr "Markera"
 
 #: beast-gtk/bstmessages.c:91
-#, fuzzy
 msgid "Rectangle select notes"
-msgstr "Utgåvenoteringar"
+msgstr "Rektangelmarkera noter"
 
 #: beast-gtk/bstmessages.c:93
-#, fuzzy
 msgid "VSelect"
-msgstr "_Markering"
+msgstr "Vmarkera"
 
+# Hur ska "tick" översättas?
 #: beast-gtk/bstmessages.c:95
 msgid "Select tick range vertically"
-msgstr ""
+msgstr "Markera tickintervall vertikalt"
 
 #: beast-gtk/bstmessages.c:97
-#, fuzzy
 msgid "1/1"
-msgstr "K: 1/1"
+msgstr "1/1"
 
 #: beast-gtk/bstmessages.c:99
-#, fuzzy
 msgid "Insert full notes"
-msgstr "Infoga not"
+msgstr "Infoga helnoter"
 
 #: beast-gtk/bstmessages.c:101
-#, fuzzy
 msgid "1/2"
-msgstr "K: ½"
+msgstr "½"
 
 #: beast-gtk/bstmessages.c:103
-#, fuzzy
 msgid "Insert half notes"
-msgstr "Infoga not"
+msgstr "Infoga halvnoter"
 
 #: beast-gtk/bstmessages.c:105
-#, fuzzy
 msgid "1/4"
-msgstr "K: 1/4"
+msgstr "1/4"
 
 #: beast-gtk/bstmessages.c:107
-#, fuzzy
 msgid "Insert quarter notes"
-msgstr "Infoga del"
+msgstr "Infoga fjärdedelsnoter"
 
 #: beast-gtk/bstmessages.c:109
-#, fuzzy
 msgid "1/8"
-msgstr "K: 1/8"
+msgstr "1/8"
 
 #: beast-gtk/bstmessages.c:111
-#, fuzzy
 msgid "Insert eighths note"
-msgstr "Infoga not"
+msgstr "Infoga åttondelsnot"
 
 #: beast-gtk/bstmessages.c:113
-#, fuzzy
 msgid "1/16"
-msgstr "K: 1/16"
+msgstr "1/16"
 
 #: beast-gtk/bstmessages.c:115
-#, fuzzy
 msgid "Insert sixteenth note"
-msgstr "Infoga not"
+msgstr "Infoga sextondelsnot"
 
 #: beast-gtk/bstparam-entry.c:61
 msgid "Remove Paths"
@@ -875,6 +860,11 @@ msgid ""
 "similarly in future versions and be prepared to work around possible "
 "instabilities in the code (i.e. save your projects regularly)."
 msgstr ""
+"Rackredigeraren är fortfarande i allra högsta grad experimentell kod och är "
+"garanterad att vara trasig i framtida utgåvor. Lita alltså inte på att "
+"innehåll i rackredigeraren ser likadant ut i framtida versioner och var "
+"förberedd på att behöva kringgå instabilitet i koden (dvs spara dina projekt "
+"regelbundet)."
 
 #: beast-gtk/bstrackeditor.c:109
 msgid "_Edit"
@@ -1174,28 +1164,57 @@ msgstr "Vågor"
 
 #: data/beast.desktop.in.h:1
 msgid "BEAST"
-msgstr ""
+msgstr "BEAST"
 
 #: data/beast.desktop.in.h:2
 msgid "Music Composer"
-msgstr ""
+msgstr "Musikkompositör"
 
 #: data/beast.desktop.in.h:3
 msgid "Music Synthesis Tool, MIDI Tracker and Song Composer"
-msgstr ""
+msgstr "Verktyg för musiksyntes, MIDI-tracker och låtkompositör"
 
 #: data/bse.keys.in.h:1
 msgid "Audio"
-msgstr ""
+msgstr "Ljud"
 
 #: data/bse.keys.in.h:2
 msgid "BSE Multi-Part Wave File"
-msgstr ""
+msgstr "Flerdelars BSE-vågfil"
 
 #: data/bse.keys.in.h:3
-#, fuzzy
 msgid "BSE Synthesis File"
-msgstr "Synthesizer"
+msgstr "BSE-syntesfil"
+
+#~ msgid "Insert full note"
+#~ msgstr "Infoga helnot"
+
+#~ msgid "Insert half note"
+#~ msgstr "Infoga halvnot"
+
+#~ msgid "Insert quarter note"
+#~ msgstr "Infoga fjärdedelsnot"
+
+#~ msgid "Insert eighths notes"
+#~ msgstr "Infoga åttondelsnoter"
+
+#~ msgid "Insert sixteenth notes"
+#~ msgstr "Infoga sextondelsnoter"
+
+#~ msgid ""
+#~ "The rack editor is still highly experimental code and guaranteed to be "
+#~ "broken by future releases. So don't rely on rack editor contents to look "
+#~ "similarly in future versions and be prepared to work around possible "
+#~ "instabilities in the code (i.e. save your projects regularly)."
+#~ msgstr ""
+#~ "Rackredigeraren är fortfarande i allra högsta grad experimentell kod och "
+#~ "är garanterad att vara trasig i framtida utgåvor. Lita alltså inte på att "
+#~ "innehåll i rackredigeraren ser likadant ut i framtida versioner och var "
+#~ "förberedd på att behöva kringgå instabilitet i koden (dvs spara dina "
+#~ "projekt regelbundet)."
+
+#~ msgid "Synthesis File"
+#~ msgstr "Syntesfil"
 
 #~ msgid "/Project/Remove Synthesizer"
 #~ msgstr "/Projekt/Ta bort synthesizer"
