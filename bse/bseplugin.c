@@ -298,7 +298,7 @@ bse_plugin_complete_info (GTypePlugin     *gplugin,
             break;
           case BSE_EXPORT_NODE_RECORD:
           case BSE_EXPORT_NODE_SEQUENCE:
-            bse_type_complete_boxed ((BseExportNodeBoxed*) node, value_vtable);
+            /* nothing to do, since boxed types are static to the type system */
             break;
           default: ;
           }
@@ -403,7 +403,7 @@ bse_plugin_init_types (BsePlugin *plugin)
           break;
         case BSE_EXPORT_NODE_RECORD:
         case BSE_EXPORT_NODE_SEQUENCE:
-          type = bse_type_register_dynamic_boxed ((BseExportNodeBoxed*) node, G_TYPE_PLUGIN (plugin));
+          type = bse_type_register_loadable_boxed ((BseExportNodeBoxed*) node, G_TYPE_PLUGIN (plugin));
           node->type = type;
           bse_type_reinit_boxed ((BseExportNodeBoxed*) node);
           break;

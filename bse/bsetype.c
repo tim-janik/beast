@@ -163,7 +163,10 @@ bse_boxed_value_free (GValue *value)
   if (value->data[0].v_pointer && !(value->data[1].v_uint & G_VALUE_NOCOPY_CONTENTS))
     {
       BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (value), quark_boxed_export_node);
-      bnode->free (value->data[0].v_pointer);
+      if (bnode)
+        bnode->free (value->data[0].v_pointer);
+      else
+        g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "leaking boxed structure", g_type_name (G_VALUE_TYPE (value)));
     }
 }
 
@@ -171,13 +174,15 @@ static void
 bse_boxed_value_copy (const GValue *src_value,
                       GValue       *dest_value)
 {
+  dest_value->data[0].v_pointer = NULL;
   if (src_value->data[0].v_pointer)
     {
       BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (src_value), quark_boxed_export_node);
-      dest_value->data[0].v_pointer = bnode->copy (src_value->data[0].v_pointer);
+      if (bnode)
+        dest_value->data[0].v_pointer = bnode->copy (src_value->data[0].v_pointer);
+      else
+        g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not copying boxed structure", g_type_name (G_VALUE_TYPE (src_value)));
     }
-  else
-    dest_value->data[0].v_pointer = src_value->data[0].v_pointer;
 }
 
 static gpointer
@@ -204,7 +209,10 @@ bse_boxed_collect_value (GValue      *value,
       else
         {
           BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (value), quark_boxed_export_node);
-          value->data[0].v_pointer = bnode->copy (collect_values[0].v_pointer);
+          if (bnode)
+            value->data[0].v_pointer = bnode->copy (collect_values[0].v_pointer);
+          else
+            g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not copying boxed structure", g_type_name (G_VALUE_TYPE (value)));
         }
     }
   return NULL;
@@ -226,14 +234,39 @@ bse_boxed_lcopy_value (const GValue *value,
   else
     {
       BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (value), quark_boxed_export_node);
-      *boxed_p = bnode->copy (value->data[0].v_pointer);
+      if (bnode)
+        *boxed_p = bnode->copy (value->data[0].v_pointer);
+      else
+        g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not copying boxed structure", g_type_name (G_VALUE_TYPE (value)));
     }
   return NULL;
 }
 
-void
-bse_type_complete_boxed (BseExportNodeBoxed *bnode,
-                         GTypeValueTable    *value_vtable)
+static void
+bse_boxed_to_record (const GValue *src_value,
+                     GValue       *dest_value)
+{
+  BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (src_value), quark_boxed_export_node);
+  if (bnode)
+    bnode->boxed2recseq (src_value, dest_value);
+  else
+    g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not converting boxed structure", g_type_name (G_VALUE_TYPE (src_value)));
+}
+
+static void
+bse_boxed_from_record (const GValue *src_value,
+                       GValue       *dest_value)
+{
+  BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (dest_value), quark_boxed_export_node);
+  if (bnode)
+    bnode->seqrec2boxed (src_value, dest_value);
+  else
+    g_critical ("%s: %s due to missing implementation: %s", G_STRFUNC, "not converting boxed structure", g_type_name (G_VALUE_TYPE (dest_value)));
+}
+
+GType
+bse_type_register_loadable_boxed (BseExportNodeBoxed *bnode,
+                                  GTypePlugin        *plugin)
 {
   static const GTypeValueTable boxed_vtable = {
     bse_boxed_value_init,
@@ -245,36 +278,25 @@ bse_type_complete_boxed (BseExportNodeBoxed *bnode,
     "p",
     bse_boxed_lcopy_value,
   };
-  *value_vtable = boxed_vtable;
-}
-
-static void
-bse_boxed_to_record (const GValue *src_value,
-                     GValue       *dest_value)
-{
-  BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (src_value), quark_boxed_export_node);
-  bnode->boxed2recseq (src_value, dest_value);
-}
-
-static void
-bse_boxed_from_record (const GValue *src_value,
-                       GValue       *dest_value)
-{
-  BseExportNodeBoxed *bnode = g_type_get_qdata (G_VALUE_TYPE (dest_value), quark_boxed_export_node);
-  bnode->seqrec2boxed (src_value, dest_value);
-}
-
-GType
-bse_type_register_dynamic_boxed (BseExportNodeBoxed *bnode,
-                                 GTypePlugin        *plugin)
-{
+  static const GTypeInfo info = {
+    0,                          /* class_size */
+    NULL,                       /* base_init */
+    NULL,                       /* base_destroy */
+    NULL,                       /* class_init */
+    NULL,                       /* class_destroy */
+    NULL,                       /* class_data */
+    0,                          /* instance_size */
+    0,                          /* n_preallocs */
+    NULL,                       /* instance_init */
+    &boxed_vtable,              /* value_table */
+  };
   GType type;
   g_return_val_if_fail (bnode->node.name != NULL, 0);
   g_return_val_if_fail (bnode->copy != NULL, 0);
   g_return_val_if_fail (bnode->free != NULL, 0);
   g_return_val_if_fail (g_type_from_name (bnode->node.name) == 0, 0);
-
-  type = g_type_register_dynamic (G_TYPE_BOXED, bnode->node.name, plugin, 0);
+  
+  type = g_type_register_static (G_TYPE_BOXED, bnode->node.name, &info, 0);
   if (bnode->boxed2recseq)
     g_value_register_transform_func (SFI_TYPE_REC, type, bse_boxed_to_record);
   if (bnode->seqrec2boxed)
