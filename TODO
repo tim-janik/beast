@@ -240,6 +240,28 @@ BseWaveChunk:
 OPTIMIZATIONS:
 - optimize BseBalance process()
 
+GUI features:
+- entry focus watcher: for property editing entries, do:
+  ::focus_in   - set changed_flag=0
+  ::changed    - set changed_flag=1
+  _apply_value - set changed_flag=0
+  ::focus_out  - only re-apply value if changed_flag!=0
+- XFrames should highlight like buttons in EDIT mode?
+- Module Menu: add EDIT
+- part editor needs play position
+- track editor needs play position
+- Modul BseTranspose, inputs: frequency, outputs: frequency, property: semitones
+- part-view: double click on list items should fire up editor
+- BstToolbar, drop-down selections work only after button release
+- support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
+- fix data cache seeks to skip the -64 byte offset at block boundaries
+
+Effects:
+* BLIT, band-limited impulse train oscillator
+- device monitor latency setting should be persistent in .bserc
+- implement filters from http://www.harmony-central.com/Computer/Programming/Audio-EQ-Cookbook.txt
+  (main source for http://zynaddsubfx.sourceforge.net)
+
 GSL:
 * sample loader currently hard codes 440.0 for osc_freq
   Person        S T
@@ -268,28 +290,6 @@ GSL:
 - [timj]        7 6 Async DCache read-ahead thread creation
 - [stw/timj]    6 5 filter evaluate function (to draw graph)
 
-GUI features:
-- entry focus watcher: for property editing entries, do:
-  ::focus_in   - set changed_flag=0
-  ::changed    - set changed_flag=1
-  _apply_value - set changed_flag=0
-  ::focus_out  - only re-apply value if changed_flag!=0
-- XFrames should highlight like buttons in EDIT mode?
-- Module Menu: add EDIT
-- part editor needs play position
-- track editor needs play position
-- Modul BseTranspose, inputs: frequency, outputs: frequency, property: semitones
-- part-view: double click on list items should fire up editor
-- BstToolbar, drop-down selections work only after button release
-- support GUI info about what PCM device is opened r/w and about midi devices (some have just PCM)
-- fix data cache seeks to skip the -64 byte offset at block boundaries
-
-Effects:
-* BLIT, band-limited impulse train oscillator
-- device monitor latency setting should be persistent in .bserc
-- implement filters from http://www.harmony-central.com/Computer/Programming/Audio-EQ-Cookbook.txt
-  (main source for http://zynaddsubfx.sourceforge.net)
-
 sfidl:
   - sfidl.1: document the command line options sfidl offers
   - sfidl-manual.texi: complete the documentation
@@ -297,11 +297,11 @@ sfidl:
   - handle Procedure {} namesace in namespacehelper
   - rename nspace.printableForm() to something that expresses namespace relativity
 90- bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
-85- support records and sequences in bse-plugin-generator and bseprocidl
+    (at least SfiRec will probably not do a deep copy)
 60- bse.idl defines bseamplifier, for which there is an idl file
     (touch bseamplifier.idl; make breaks)
-59- Const lookups don't honour namespacing
-59- namespace prefixing in ParamHints doesn't work:
+98- Const lookups don't honour namespacing
+98- namespace prefixing in ParamHints doesn't work:
     namespace Dav {
     Num x = (::Bse::STANDARD);
     Num y = (Bse::STANDARD);
@@ -310,50 +310,34 @@ sfidl:
 51- reenable signals in bseprocidl
 50- error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
     indicate where the previous definition was
-49- support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
+49- support Neutral choice values, currently hardcoded for BseErrorType in bseprocidl
   - choice type should have validation function
   - handle non-validated sequences and records in generation code (things
     can be demarshalled in non-validated form after incompatible changes)
   - finish Sfidl::CodeGenerator::rename (relative naming)
-  - what about bswcxxutils.h? is this now obsolete (I think it is -- stw)
+99- what about bswcxxutils.h? is this now obsolete (I think it is -- stw)
   parser:
   - sfidl-parser.cc: property keyword should be nuked
-  - sfidl-parser.cc: choices i18n
-  - sfidl-parser should assign increemental numbers to enum values as they are
-    parsed (starting at 1). i.e. implement the C++ enum numeration mechanism
-  - why is Value.value always 0? you actually generate the choice value integers
-    on the fly, instead of applying them to Value so other code generators don't
-    need to duplicate logic (it's already special cased multiple times in the
-    C code generator)
+  - clean up enum code to use ChoiceValue value or sequentialValue, without
+    doing computations
   - sfidl-parser.cc: should report file/line with the error message of missing
     includes instead of include file 'bse/bsecxxmodule.idl' not found
   extensions:
-30- choices need support for icons per value
-30- choices need support for tooltips per value
 20- signals should be specified in idl files (and have to be documentable)
-  - beautify procedure skeletons
   - sfidl --output=foo.cc should be implemented
   code generation:
     - extra namespace for C++ client code
-    - restructure name generation to example-based output:
-      foo-bar, foo_bar, fooBar, FOO_BAR, FooBar
   C language binding:
-99  - review Rec primitive types
     - NULL pointer handling is broken
-  Qt language binding:
-05  - everything
   C++ language binding:
     - defaults for records (should be fetched remotely ; missing type blurb)
     - serialization: can we _really_ only use a template thing?
       => reorganization of the createTypeCode function
     - should objects _really_ be values?
-    - eliminate bse-plugin-generator as extra binary? (use sfidl --plugin)
-    - bindings miss testing.
-    - set bse-preferences BSE::GConfig property.
+    - bindings lack testing.
     - records in bseprocidl: how can we figure out the type?
     - dynamic invocation interface missing in C++ binding (properties, methods)
     - later: introduce iterators into sequences
-    - optional conversion routines C++ -> C (and back)
     - createTypeCode refactoring
       funcFromValue, funcToValue,
       codeVCallArgs
@@ -364,7 +348,8 @@ bseprocidl:
   - doesn't really work when it comes to implementing _some_ objects yourself
   - should output lower case vars (Info help instead of Info HELP)
 
-other stuff:
+STEFAN TODO:
+  - BseServer::bse-preferences should be of type Bse::GConfig instead of Sfi::Rec
   - bseplugin.c doesn't use libtool properly ; probably gmodule should be ported to
     libtool
   - Bse::MidiEvent: should be wire-passable
