@@ -1,5 +1,4 @@
 FIXME(urgent):
-- keep inlined wave handles open to survive /file/Save
 - test xinfo saving and parsing for raw-links in bse and bsewave files for chunks
 - remove leftovers in : bse/zintern/
 - remove bsewave compat code
