@@ -3,17 +3,17 @@
 # Copyright (C) 2003 THE beast'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the beast package.
 # Vincent van Adrighem <adrighem@gnome.org>, 2003.
-# Vincent van Adrighem <V.vanAdrighem@dirck.mine.nu>, 2003.
+# Vincent van Adrighem <adrighem@gnome.org>, 2003.
 #
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-24 03:35+0100\n"
+"POT-Creation-Date: 2003-12-04 03:10+0100\n"
 "PO-Revision-Date: 2003-11-24 03:45+0100\n"
-"Last-Translator: Vincent van Adrighem <V.vanAdrighem@dirck.mine.nu>\n"
-"Language-Team: Dutch <vertaling@nl.linux.org>\n"
+"Last-Translator: Vincent van Adrighem <adrighem@gnome.org>\n"
+"Language-Team: Dutch <adrighem@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -152,31 +152,31 @@ msgstr "Veel _gestelde vragen..."
 msgid "GSL Engine..."
 msgstr "GSL Engine..."
 
-#: beast-gtk/bstapp.c:544 beast-gtk/bstapp.c:551 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:545 beast-gtk/bstapp.c:552 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Openen van project `%s'"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:714
+#: beast-gtk/bstapp.c:715
 msgid "Rack editor"
 msgstr "Rack bewerken"
 
-#: beast-gtk/bstapp.c:728
+#: beast-gtk/bstapp.c:729
 msgid "Preferences"
 msgstr "Voorkeuren"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:742
+#: beast-gtk/bstapp.c:743
 msgid "Device Monitor"
 msgstr "Apparaatbeheer"
 
-#: beast-gtk/bstapp.c:757
+#: beast-gtk/bstapp.c:758
 msgid "Procedure Browser"
 msgstr "Procedurebeheer"
 
-#: beast-gtk/bstapp.c:814
+#: beast-gtk/bstapp.c:815
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "BEAST-%s Release Notes"
