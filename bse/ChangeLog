@@ -1,3 +1,10 @@
+Tue Jan 20 03:05:25 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bsecxxsmart.h Makefile.am: Removed obsolete code.
+
+	* tests/testsmart.cc tests/Makefile.am: Removed test for obsolete
+	code.
+
 Tue Jan 20 00:58:49 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsecxxsmart.h: Remove redundant typedefs (now in sfi/sficxx.h).
