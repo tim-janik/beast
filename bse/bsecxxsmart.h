@@ -260,6 +260,11 @@ public:
   {
     return values.size();
   }
+  void
+  resize (guint newsize)
+  {
+    return values.resize (newsize);
+  }
   Iter
   rend()
   {
