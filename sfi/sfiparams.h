@@ -211,32 +211,35 @@ GParamSpec* 	 sfi_pspec_proxy_from_object (GParamSpec *object_pspec);
 GParamSpec*      sfi_pspec_to_serializable   (GParamSpec *pspec);
 
 
-/* --- Sfi param hints --- */
-#define	SFI_PARAM_READABLE	  "r:"
-#define	SFI_PARAM_WRITABLE	  "w:"
-#define	SFI_PARAM_READWRITE	  SFI_PARAM_READABLE SFI_PARAM_WRITABLE
-#define	SFI_PARAM_LAX_VALIDATION  "lxv:"
-#define	SFI_PARAM_SERVE_GUI	  "gui:"	/* GUI representation */
-#define	SFI_PARAM_SERVE_STORAGE	  "storage:"	/* gets serialized */
-/* storage flags */
-#define	SFI_PARAM_SKIP_DEFAULT	  "skipd:"	/* don't store defaulting values */
-#define	SFI_PARAM_FLOAT		  "float:"	/* reduce precision to IEEE 754 Single */
-/* GUI hints */
-#define	SFI_PARAM_HINT_RDONLY	  "rdonly:"	/* not modifyable for GUI */
-#define	SFI_PARAM_HINT_RADIO	  "radio:"
-#define	SFI_PARAM_HINT_DIAL	  "dial:"
-#define	SFI_PARAM_HINT_SCALE	  "scale:"
-#define	SFI_PARAM_HINT_LOG_SCALE  "log-scale:"
-#define	SFI_PARAM_HINT_TRIGGER    "trigger"     /* boolean hint for trigger buttons */
-/* readable and writable */
-#define	SFI_PARAM_DEFAULT	  SFI_PARAM_READWRITE SFI_PARAM_SERVE_GUI SFI_PARAM_SERVE_STORAGE
-#define	SFI_PARAM_GUI		  SFI_PARAM_READWRITE SFI_PARAM_SERVE_GUI
-#define	SFI_PARAM_GUI_READABLE	  SFI_PARAM_READABLE SFI_PARAM_SERVE_GUI
-#define	SFI_PARAM_GUI_WRITABLE	  SFI_PARAM_WRITABLE SFI_PARAM_SERVE_GUI
-#define	SFI_PARAM_STORAGE	  SFI_PARAM_READWRITE SFI_PARAM_SERVE_STORAGE
-/* readable and for non-GUI writable */
-#define SFI_PARAM_DEFAULT_RDONLY  SFI_PARAM_DEFAULT SFI_PARAM_HINT_RDONLY
-#define	SFI_PARAM_GUI_RDONLY	  SFI_PARAM_GUI SFI_PARAM_HINT_RDONLY
+/* --- Sfi PSpec Options --- */
+/* conventional pspec hints:
+ * Legacy GParamFlags:
+ * "r"                  - readable (G_PARAM_READABLE)
+ * "w"                  - writable (G_PARAM_WRITABLE)
+ * "construct"          - construct (G_PARAM_CONSTRUCT)
+ * "construct-only"     - construct only (G_PARAM_CONSTRUCT_ONLY)
+ * "lax-validation"     - lax validation (G_PARAM_LAX_VALIDATION)
+ * Serialization Options:
+ * "S"                  - is serializable
+ * "D"                  - skip defaulting values upon serialization
+ * "f"                  - float indicator, reduce precision to IEEE 754 Single
+ * GUI Options:
+ * "G"                  - is GUI representable
+ * "ro"                 - read-only, not mutable by GUI
+ * "radio"              - radio button hint
+ * "dial"               - dial knob hint
+ * "scale"              - scale adjustment hint
+ * "log-scale"          - logarithmic scale adjustment hint
+ * "trigger"            - trigger button hint
+ * "searchpath"         - indicates colon seperated directory list
+ */
+/* common option combinations: */
+#define	SFI_PARAM_READWRITE      ":r:w:"
+#define	SFI_PARAM_STORAGE	 ":r:w:S:"
+#define	SFI_PARAM_DEFAULT        ":r:w:G:S:"
+#define	SFI_PARAM_GUI		 ":r:w:G:"
+#define SFI_PARAM_DEFAULT_RDONLY ":r:w:G:S:ro:"
+#define	SFI_PARAM_GUI_RDONLY	 ":r:w:G:ro:"
 
 
 /* --- serializable categories --- */
@@ -289,17 +292,16 @@ const gchar*	sfi_pspec_get_group		(GParamSpec	*pspec);
 void		sfi_pspec_set_owner		(GParamSpec	*pspec,
 						 const gchar	*owner);
 const gchar*	sfi_pspec_get_owner		(GParamSpec	*pspec);
-void		sfi_pspec_set_hints		(GParamSpec	*pspec,
+void		sfi_pspec_set_options		(GParamSpec	*pspec,
 						 const gchar	*hints);
-void		sfi_pspec_add_hint		(GParamSpec	*pspec,
+void		sfi_pspec_add_option		(GParamSpec	*pspec,
+						 const gchar	*option,
+                                                 const gchar    *value);
+gboolean	sfi_pspec_check_option		(GParamSpec	*pspec,
 						 const gchar	*hint);
-void		sfi_pspec_remove_hint		(GParamSpec	*pspec,
-						 const gchar	*hint);
-gboolean	sfi_pspec_test_hint		(GParamSpec	*pspec,
-						 const gchar	*hint);
-gboolean	sfi_pspec_test_all_hints	(GParamSpec	*pspec,
+gboolean	sfi_pspec_require_options	(GParamSpec	*pspec,
 						 const gchar	*hints);
-const gchar*	sfi_pspec_get_hints		(GParamSpec	*pspec);
+const gchar*	sfi_pspec_get_options		(GParamSpec	*pspec);
 SfiBool		sfi_pspec_get_bool_default	(GParamSpec	*pspec);
 SfiInt		sfi_pspec_get_int_default	(GParamSpec	*pspec);
 void		sfi_pspec_get_int_range		(GParamSpec	*pspec,

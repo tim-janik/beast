@@ -308,7 +308,7 @@ bool Options::parse (int *argc_p, char **argv_p[])
     {
       generateExtern = true;
       generateTypeH = true;
-      generateConstant = true;
+      generateConstant = false; // useless
     }
 
   if (doSource)

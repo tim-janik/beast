@@ -639,7 +639,7 @@ GTokenType Parser::parseStringOrConst (string &s)
 		    g_free (x);
 		    break;
 		  case Constant::tFloat:
-		    s = x = g_strdup_printf ("%f", ci->f);
+		    s = x = g_strdup_printf ("%.17g", ci->f);
 		    g_free (x);
 		    break;
 		  case Constant::tString:
@@ -1026,10 +1026,10 @@ GTokenType Parser::parseParamHints (Param &def)
     {
       GTokenType t = g_scanner_get_next_token (scanner);
       gchar *token_as_string = 0, *x = 0;
-      
+
       if(int(t) > 0 && int(t) <= 255)
 	{
-	  token_as_string = (char *)calloc(2, 1);
+	  token_as_string = g_new0 (char, 2); /* FIXME: leak */
 	  token_as_string[0] = char(t);
 	}
       switch (t)
@@ -1046,7 +1046,35 @@ GTokenType Parser::parseParamHints (Param &def)
 	  break;
 	case G_TOKEN_FLOAT:	  token_as_string = g_strdup_printf ("%.17g", scanner->value.v_float);
 	  break;
-	case G_TOKEN_IDENTIFIER:  token_as_string = g_strdup_printf ("%s", scanner->value.v_identifier);
+	case G_TOKEN_IDENTIFIER:
+          {
+            vector<Constant>::iterator ci;
+            string coname = ModuleHelper::qualify (scanner->value.v_identifier);
+            /* FIXME: there should be a generic const_to_string() function */
+            for (ci = constants.begin(); ci != constants.end(); ci++)
+              if (ci->name == coname)
+                break;
+            // else g_printerr("lookup failed: %s (%s)\n", scanner->value.v_identifier, ci->name.c_str());
+            if (ci == constants.end())
+              token_as_string = g_strdup_printf ("%s", scanner->value.v_identifier);
+            else switch (ci->type)
+              {
+              case Constant::tInt:
+                token_as_string = g_strdup_printf ("%d", ci->i);
+                break;
+              case Constant::tFloat:
+                token_as_string = g_strdup_printf ("%.17g", ci->f);
+                break;
+              case Constant::tString:
+                x = g_strescape (ci->str.c_str(), 0);
+                token_as_string = g_strdup_printf ("\"%s\"", x);
+                g_free (x);
+                break;
+              default:
+                g_assert_not_reached ();
+                break;
+              }
+          }
 	  break;
 	default:
 	  if (!token_as_string)

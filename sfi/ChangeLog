@@ -1,3 +1,20 @@
+Sun Oct 12 00:52:58 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: implemented g_option_check() which checks
+	for an option string in a colon seperated options list.
+
+	* sfidl-options.cc: disable Constants code generation, this just
+	produces potential conflicts and should be resolved upon idl file
+	parsing anyways.
+
+	* sfidl-parser.cc: fix constnats loosing precision due to %f.
+	allow param hints to contain constants.
+
+	* sfiparams.[hc]: renamed hints to options in public API.
+	use g_option_check() to check for options.
+	reduced SFI_PARAM_* macros, users are supposed to use the strings
+	instead, shortened option names.
+
 Fri Oct 10 12:35:34 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.cc: handle icon file paths idl-file location relative.

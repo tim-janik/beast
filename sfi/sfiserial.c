@@ -301,7 +301,7 @@ sfi_serialize_primitives (SfiSCategory scat,
 	{
 	  gchar numbuf[G_ASCII_DTOSTR_BUF_SIZE + 1] = "";
 	  
-	  if (hints && strstr (hints, ":"SFI_PARAM_FLOAT))
+	  if (g_option_check (hints, "f"))      /* float hint */
 	    gstring_puts (gstring, g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.7g", sfi_value_get_real (value)));
 	  else
 	    gstring_puts (gstring, g_ascii_formatd (numbuf, G_ASCII_DTOSTR_BUF_SIZE, "%.17g", sfi_value_get_real (value)));
@@ -707,7 +707,7 @@ value_store_param (const GValue *value,
     case SFI_SCAT_PSPEC:
     case SFI_SCAT_NOTE:
     case SFI_SCAT_TIME:
-      sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL, sfi_pspec_get_hints (pspec));
+      sfi_serialize_primitives (scat, (GValue*) value, gstring, NULL, sfi_pspec_get_options (pspec));
       break;
     case SFI_SCAT_SEQ:
       seq = sfi_value_get_seq (value);
@@ -820,7 +820,7 @@ value_parse_param (GValue     *value,
     case SFI_SCAT_PSPEC:
     case SFI_SCAT_NOTE:
     case SFI_SCAT_TIME:
-      token = sfi_serialize_primitives (scat, value, NULL, scanner, sfi_pspec_get_hints (pspec));
+      token = sfi_serialize_primitives (scat, value, NULL, scanner, sfi_pspec_get_options (pspec));
       if (token != G_TOKEN_NONE)
 	return token;
       break;

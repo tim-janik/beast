@@ -127,6 +127,58 @@ g_strdup_lstrip (const gchar *string)
 }
 
 
+/* --- string options --- */
+static const gchar*
+g_option_find_value (const gchar *option_string,
+                     const gchar *option)
+{
+  const gchar *p;
+  gboolean valid, retry, l = strlen (option);
+
+  g_return_val_if_fail (l > 0, NULL);
+
+  if (!option_string)
+    return NULL;        /* option not found */
+
+  /* try first match */
+  p = strstr (option_string, option);
+  valid = p && (p == option_string || p[-1] == ':') &&
+          (p[l] == '-' || p[l] == '+' || p[l] == ':' || p[l] == 0);
+  /* allow later matches to override */
+  retry = valid;
+  while (retry)
+    {
+      const gchar *n = strstr (p + l, option);
+      retry = n && n[-1] == ':' &&
+              (n[l] == '-' || n[l] == '+' || n[l] == ':' || n[l] == 0);
+      if (retry)
+        p = n;
+    }
+  return valid ? p + l : NULL;
+}
+
+gboolean
+g_option_check (const gchar *option_string,
+                const gchar *option)
+{
+  const gchar *value = NULL;
+
+  if (option && option[0])
+    value = g_option_find_value (option_string, option);
+
+  if (!value)
+    return FALSE;               /* option not present */
+  else switch (value[0])
+    {
+    case ':':   return TRUE;    /* option was present, no modifier */
+    case 0:     return TRUE;    /* option was present, no modifier */
+    case '+':   return TRUE;    /* option was present, enable modifier */
+    case '-':   return FALSE;   /* option was present, disable modifier */
+    default:    return FALSE;   /* anything else, undefined */
+    }
+}
+
+
 /* --- list extensions --- */
 gpointer
 g_slist_pop_head (GSList **slist_p)

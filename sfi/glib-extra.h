@@ -66,7 +66,12 @@ guint		g_strlenv	  (gchar	**str_array);
 gchar*		g_strdup_stripped (const gchar	 *string);
 gchar*		g_strdup_rstrip   (const gchar	 *string);
 gchar*		g_strdup_lstrip   (const gchar	 *string);
-     
+
+
+/* --- string options --- */
+gboolean        g_option_check    (const gchar   *option_string,
+                                   const gchar   *option);
+
 
 /* --- list extensions --- */
 gpointer	g_slist_pop_head	(GSList	     **slist_p);

@@ -802,8 +802,8 @@ test_sfidl_seq (void)
   }
 
   /* test constants */
-  ASSERT (TEST_ANSWER_B == 42);
-  ASSERT (strcmp(TEST_ULTIMATE_ANSWER, "the answer to all questions is 42") == 0);
+  // ASSERT (TEST_ANSWER_B == 42);
+  // ASSERT (strcmp(TEST_ULTIMATE_ANSWER, "the answer to all questions is 42") == 0);
   DONE ();
 }
 
