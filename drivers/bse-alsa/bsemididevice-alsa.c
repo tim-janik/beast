@@ -18,7 +18,7 @@
  */
 #include "configure.h"
 #include "bsemididevice-alsa.h"
-#include <bse/bseserver.h>      // FIXME
+#include <bse/bsessequencer.h>
 #include <bse/bsemididecoder.h>
 #include <alsa/asoundlib.h>
 #include <string.h>
@@ -33,15 +33,14 @@ typedef struct
   BseMidiHandle   handle;
   snd_rawmidi_t  *read_handle;
   snd_rawmidi_t  *write_handle;
-  BseMidiDecoder *midi_decoder;
 } AlsaMidiHandle;
 
 /* --- prototypes --- */
-static void bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *class);
-static void bse_midi_device_alsa_init       (BseMidiDeviceALSA      *self);
-static void alsa_midi_io_handler            (AlsaMidiHandle         *alsa,
-                                             guint                   n_pfds,
-                                             GPollFD                *pfds);
+static void     bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *class);
+static void     bse_midi_device_alsa_init       (BseMidiDeviceALSA      *self);
+static gboolean alsa_midi_io_handler            (gpointer                data,
+                                                 guint                   n_pfds,
+                                                 GPollFD                *pfds);
 
 /* --- define object type and export to BSE --- */
 BSE_REGISTER_OBJECT (BseMidiDeviceALSA, BseMidiDevice, NULL, NULL, NULL, bse_midi_device_alsa_class_init, NULL, bse_midi_device_alsa_init);
@@ -150,7 +149,7 @@ bse_midi_device_alsa_open (BseDevice     *device,
   /* setup request */
   handle->readable = require_readable;
   handle->writable = require_writable;
-  alsa->midi_decoder = BSE_MIDI_DEVICE (device)->midi_decoder;
+  handle->midi_decoder = BSE_MIDI_DEVICE (device)->midi_decoder;
   /* try open */
   gchar *dname = n_args ? g_strjoinv (",", (gchar**) args) : g_strdup ("default");
   if (!aerror)
@@ -180,8 +179,8 @@ bse_midi_device_alsa_open (BseDevice     *device,
                     !snd_rawmidi_params_get_no_active_sensing (mparams),
                     snd_rawmidi_params_get_avail_min (mparams));
     }
-  if (!error && alsa->read_handle && snd_rawmidi_poll_descriptors_count (alsa->read_handle) != 1)
-    error = BSE_ERROR_FILE_OPEN_FAILED; // FIXME
+  if (!error && alsa->read_handle && snd_rawmidi_poll_descriptors_count (alsa->read_handle) <= 0)
+    error = BSE_ERROR_FILE_OPEN_FAILED;
 
   /* setup MIDI handle or shutdown */
   if (!error)
@@ -195,10 +194,14 @@ bse_midi_device_alsa_open (BseDevice     *device,
       BSE_MIDI_DEVICE (device)->handle = handle;
       if (alsa->read_handle) // FIXME
         {
-          struct pollfd pfd;
           snd_rawmidi_nonblock (alsa->read_handle, 1);
-          if (snd_rawmidi_poll_descriptors (alsa->read_handle, &pfd, 1) >= 0)
-            bse_server_add_io_watch (bse_server_get (), pfd.fd, pfd.events, (BseIOWatch) alsa_midi_io_handler, alsa);
+          gint n_pfds = snd_rawmidi_poll_descriptors_count (alsa->read_handle);
+          if (n_pfds > 0)
+            {
+              struct pollfd *pfds = g_newa (struct pollfd, n_pfds);
+              if (snd_rawmidi_poll_descriptors (alsa->read_handle, pfds, n_pfds) >= 0)
+                bse_sequencer_add_io_watch (n_pfds, (GPollFD*) pfds, alsa_midi_io_handler, alsa);
+            }
         }
     }
   else
@@ -221,6 +224,8 @@ bse_midi_device_alsa_close (BseDevice *device)
   AlsaMidiHandle *alsa = (AlsaMidiHandle*) BSE_MIDI_DEVICE (device)->handle;
   BSE_MIDI_DEVICE (device)->handle = NULL;
 
+  bse_sequencer_remove_io_watch (alsa_midi_io_handler, alsa);
+
   if (alsa->read_handle)
     snd_rawmidi_close (alsa->read_handle);
   if (alsa->write_handle)
@@ -240,12 +245,13 @@ bse_midi_device_alsa_finalize (GObject *object)
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static void
-alsa_midi_io_handler (AlsaMidiHandle *alsa,
+static gboolean
+alsa_midi_io_handler (gpointer        data,     /* Sequencer Thread */
                       guint           n_pfds,
                       GPollFD        *pfds)
 {
-  // BseMidiHandle *handle = &alsa->handle;
+  AlsaMidiHandle *alsa = (AlsaMidiHandle*) data;
+  BseMidiHandle *handle = &alsa->handle;
   const gsize buf_size = 8192;
   guint8 buffer[buf_size];
   gssize l;
@@ -256,7 +262,8 @@ alsa_midi_io_handler (AlsaMidiHandle *alsa,
   while (l < 0 && errno == EINTR);      /* don't mind signals */
 
   if (l > 0)
-    bse_midi_decoder_push_data (alsa->midi_decoder, l, buffer, systime);
+    bse_midi_decoder_push_data (handle->midi_decoder, l, buffer, systime);
+  return TRUE;
 }
 
 static void
@@ -286,8 +293,7 @@ bse_midi_device_alsa_class_init (BseMidiDeviceALSAClass *class)
                                          "  DEV    - the device number for plugins like 'hw'\n"
                                          "  SUBDEV - the subdevice number for plugins like 'hw'\n"),
                                        snd_asoundlib_version());
-  if (0)
-    bse_device_class_setup (class, BSE_RATING_PREFERRED, name, syntax, info);
+  bse_device_class_setup (class, BSE_RATING_PREFERRED, name, syntax, info);
   device_class->open = bse_midi_device_alsa_open;
   device_class->close = bse_midi_device_alsa_close;
 }
