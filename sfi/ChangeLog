@@ -1,3 +1,8 @@
+Sat Aug  9 17:29:45 2003  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-parser.cc: support string concatenation in {I|J|O}Stream
+	parsing.
+
 Thu Jul 31 18:09:23 2003  Tim Janik  <timj@gtk.org>
 
 	* sfidl-module.[hc]*: conditionalize generated code into

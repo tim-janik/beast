@@ -858,15 +858,9 @@ Parser::parseStream (Stream&      stream,
   parse_or_return ('=');
 
   parse_or_return ('(');
-
-  parse_or_return (G_TOKEN_STRING);     // FIXME: support string concatenation
-  stream.name = scanner->value.v_string;
-
+  parse_string_or_return (stream.name);
   parse_or_return (',');
-
-  parse_or_return (G_TOKEN_STRING);     // FIXME: support string concatenation
-  stream.blurb = scanner->value.v_string;
-
+  parse_string_or_return (stream.blurb);
   parse_or_return (')');
 
   parse_or_return (';');
