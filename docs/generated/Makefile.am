@@ -19,6 +19,7 @@ markup_targets = $(strip		\
 	release-notes.markup		\
 	release-news.markup		\
 	engine-mplan.markup		\
+	plugin-devel.markup		\
 	quickstart.markup		\
 	beast-index.markup		\
 	objdoc.markup			\
@@ -50,6 +51,7 @@ html_targets = $(strip		\
 	$(man1_MANS:.1=.1.html)	\
 	$(man3_MANS:.3=.3.html)	\
 	faq.html		\
+	plugin-devel.html	\
 	quickstart.html		\
 	overview-de.html	\
 	engine-mplan.html	\

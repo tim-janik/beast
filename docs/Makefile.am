@@ -1,15 +1,23 @@
 SUBDIRS = generated
 
-texi_docs = $(strip								\
-	WRITING.3.texi			beast-index.texi	faq.texi	\
-	quickstart.texi			release-notes.texi			\
-	bse-plugin-generator.1.texi						\
+texi_docs = $(strip						\
+	WRITING.3.texi			beast-index.texi	\
+	quickstart.texi			plugin-devel.texi	\
+	release-notes.texi		faq.texi		\
+	bse-plugin-generator.1.texi				\
 )
-extra_docs = $(strip					\
-	bse-categories.txt	interpolation.txt	\
+texi_images = $(strip		\
+	module-voices.png	\
+)
+EXTRA_DIST = $(strip		\
+	bse-categories.txt	\
+	interpolation.txt	\
+	${texi_docs}		\
+	$(texi_images)		\
 )
 
-EXTRA_DIST = ${texi_docs} ${extra_docs}
+docimages_DATA = ${texi_images}
+docimagesdir = ${beastimagesdir}
 
 site site-upgrade site-update site-preview site-update-con site-update-img site-update-nav:
 	$(MAKE) -C generated/ $(AM_MAKEFLAGS) $@

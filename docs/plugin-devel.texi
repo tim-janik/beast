@@ -1,0 +1,103 @@
+\input texinfo   @c emacs: -*-texinfo-*-
+@c %**start of header
+@settitle BSE Plugin Development
+@footnotestyle end
+@c %**end of header
+
+@include texiutils.texi
+
+@doctitle @bse Plugin Development
+@docauthor Tim Janik
+
+@center @revision{Document revised:}
+
+In this document, the basic concepts necessary for @bse plugin development
+are established, and an example plugin is being developed.
+
+@contents
+
+@chapter Getting Started
+
+You don't need a full fledged software development environment in order
+build a @bse plugin, a proper @beast installation, your favourite text editor
+and a recent version of
+@uref{http://gcc.gnu.org/,,GCC}
+will do fine on the technical side.
+Writing a synthesis plugin also requires at least some basic knowledge
+about digital audio mathematics (digital signal processing) and for @bse
+also a reasonably good idea of OO and C++. If you are new to digital
+audio processing in general you can find
+a link list to tutorials and DSP programming tips at the @beast
+@uref{http://beast.gtk.org/,, Website}. A good foundation in maths
+helps a lot in understanding the materiels covered.
+
+@chapter Basic Concepts
+
+The most central element realised in @bse for the creation and modification
+of audio signals is the ``Module''. A module almost always has one or
+more output signals and may have any amount of input signals.
+In addition, modules can define a variety of ``Properties'' which
+represent settings used to alter behaviour of a module.
+
+@center @image{module-voices,,,Module and Voices,png}
+
+@bse supports multiple dynamically allocated voices internally which are
+represented by a single object in GUIs like the one provided by @beast{}.
+For this reason, a distinction is made in module implementations between
+the ``Module Object'' corresponding to the object displayed at the GUI,
+and the ``Engine Modules'' of which there may be many per module object,
+used for audio processing within the dynamic voices.
+Properties and channels are registered with the module object class and
+individual property changes are sent to the module object. The module
+object then passes on property changes to the engine modules, taking
+care of syncronization issues, because engine modules may live and
+process audio data in seperate threads.
+
+To summarize, in order to write a @bse module, we need to:
+@itemize
+@item define the module object
+@item add properties to the module object
+@item add input and output channels to the module object
+@item define an engine module in the module object
+@item implement the data processing function of the engine module.
+@end itemize
+
+@chapter Defining the module
+
+In the past, the @bse plugin API went through quite a few major rewrites
+to make plugin implementations as easy as possible. A standard module needs
+three files for a full implementation:
+
+@enumerate
+@item an @file{.idl} file containing all the definitions
+@item a @file{.cc} file containing the data processing and property
+      handling logic
+@item an icon, 64 by 64 pixels RGBA format, saved as @file{.png} file.
+@end enumerate
+
+
+@section Writing the @file{IDL} file
+
+@bse sports an IDL compiler for object definitions to eliminate any
+mechanic code fragments the programmer would need to create manually
+otherwise and to generate binding and glue code between various
+@bse components.
+
+@section Adding a @file{PNG} icon
+
+@chapter Writing the @file{C++} file
+
+@section Module object methods
+
+@section Engine module methods
+
+@chapter An example notch filter
+
+@chapter Integrating presets
+
+@chapter Storing custom data
+
+@chapter Additional Methods
+@section Changing the icon
+
+@bye

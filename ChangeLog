@@ -1,3 +1,15 @@
+Fri Jan 16 23:13:56 2004  Tim Janik  <timj@gtk.org>
+
+	* docs/generated/Makefile.am: build plugin-devel.markup
+	and plugin-devel.html.
+
+	* docs/Makefile.am: install images in ${beastimagesdir}.
+
+	* docs/module-voices.png:
+	* docs/module-voices.dia: accompanying diagram for plugin-devel.texi.
+
+	* docs/plugin-devel.texi: started plugin development documentation.
+
 Thu Jan 15 23:48:01 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bsteventroll.c:
