@@ -1,3 +1,11 @@
+Thu Jan 20 01:21:24 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* standardguspatchenvelope.cc: Don't assume that in the attack phase,
+	the envelope rate is always positive, and in the decay phase always
+	negative. Instead, look at the offsets of adjacent envelope points to
+	figure out the sign for rate. Fixes: problems with freepats fretless
+	bass envelope and probably others.
+
 Fri Jan  7 00:44:24 2005  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* standardguspatchenvelope.cc: Implemented chunk specific envelope

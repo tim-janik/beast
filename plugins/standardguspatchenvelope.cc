@@ -143,9 +143,17 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 	    {
 	      envelope_valid = true;
 
+	      for (int i = 1; i < 6; i++)
+		{
+		  if (envelope_offsets[i-1] > envelope_offsets[i]) /* rate needs to be negative if envelope offset gets smaller */
+		    envelope_rates[i] *= -1;
+		}
+
 	      /*
+	      printf ("envelope:\n");
+	      printf ("  wave-format=%s\n", bse_xinfos_get_value (wave_chunk->dcache->dhandle->setup.xinfos, "gus-patch-wave-format"));
 	      for (int i = 0; i < 6; i++)
-		printf ("rate=%f, offset=%f\n", envelope_rates[i], envelope_offsets[i]);
+		printf ("  rate=%f, offset=%f\n", envelope_rates[i], envelope_offsets[i]);
 	      */
 	    }
 	}
@@ -183,7 +191,7 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 			{
 			  gdouble new_value = envelope_value + envelope_rates[envelope_phase];
 
-			  if (new_value > envelope_offsets[envelope_phase])
+			  if ((new_value > envelope_offsets[envelope_phase]) ^ (envelope_rates[envelope_phase] < 0))
 			    {
 			      envelope_value = envelope_offsets[envelope_phase];
 
@@ -214,8 +222,8 @@ class GusPatchEnvelope : public GusPatchEnvelopeBase {
 			      envelope_phase++;
 			    }
 
-			  gdouble new_value = envelope_value - envelope_rates[envelope_phase];
-			  if (new_value < envelope_offsets[envelope_phase])
+			  gdouble new_value = envelope_value + envelope_rates[envelope_phase];
+			  if ((new_value > envelope_offsets[envelope_phase]) ^ (envelope_rates[envelope_phase] < 0))
 			    {
 			      envelope_value = envelope_offsets[envelope_phase];
 
