@@ -213,7 +213,13 @@ CodeGenerator::rename (NamespaceType namespace_type, const string& name, WordCas
 
   if (namespace_type == ABSOLUTE)
     {
-      result = namespace_join;
+      /*
+       * note that if namespace_join is "::", then "::" will also be prefixed to the result,
+       * whereas if namespace_join is "_", it will only be used to seperate the namespaces
+       * (this is required/useful for C++)
+       */
+      if (namespace_join == "::")
+	result = namespace_join;
       namespace_words = splitName (NamespaceHelper::namespaceOf (name));
     }
 

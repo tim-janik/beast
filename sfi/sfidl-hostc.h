@@ -70,7 +70,10 @@ namespace Sfidl {
      * 
      * name: the name to be renamed
      * namespace_wc: the desired case for the namespace
-     * namespace_join: how to join the namespace
+     * namespace_join: how to join the namespace - note that if namespace_join
+     *   is "::", then "::" will also be prefixed to the result, whereas if
+     *   namespace_join is "_", it will only be used to seperate the namespaces
+     *   (this is required/useful for C++)
      * namespace_append: words to append to the namespace
      * typename_wc: the desired case for the typename
      * typename_join: how to join the typename

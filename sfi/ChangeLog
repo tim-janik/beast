@@ -1,3 +1,13 @@
+Sat Jan 24 04:44:00 2004  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* sfidl-generator.*: Make rename() prefix namespace_seperator for
+	absolute namespaces only if the seperator is "::", as for C++, its
+	useful, for the other supported languages, useless. Result: make check
+	passes now, finally.
+
+	* testsfidl.c: Changed the message from "Foo." to something more
+	meaningful.
+
 Sat Jan 24 04:16:43 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl.cc sfidl-options.* sfidl-factory.* Makefile.am: Added a new

@@ -39,7 +39,7 @@ public:
   }
   void run()
   {
-    MSG ("Foo.");
+    MSG ("Testing CodeGenerator::rename():");
 
     vector<string> procedures;
     vector<string> empty;
