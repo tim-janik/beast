@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-01 17:10+0100\n"
-"PO-Revision-Date: 2003-11-01 17:26+0100\n"
+"POT-Creation-Date: 2003-11-02 05:31+0100\n"
+"PO-Revision-Date: 2003-11-02 05:32+0100\n"
 "Last-Translator: Danilo Šegan <danilo@prevod.org>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -193,72 +193,72 @@ msgstr "/Sintetizatori/Sačuvaj kao instrument"
 msgid "/_Tools"
 msgstr "/_Alati"
 
-#: beast-gtk/bstapp.c:126
+#: beast-gtk/bstapp.c:127
 msgid "/Tools/_Song"
 msgstr "/Alati/_Pesma"
 
-#: beast-gtk/bstapp.c:127
+#: beast-gtk/bstapp.c:128
 msgid "/Tools/_Synth"
 msgstr "/Alati/_Sintetizator"
 
-#: beast-gtk/bstapp.c:128
+#: beast-gtk/bstapp.c:129
 msgid "/Tools/Wave_s"
 msgstr "/Alati/_Talasi"
 
 # Hteo sam „proba“, ali imamo i „Test“, pa je bolje tu iskoristiti
-#: beast-gtk/bstapp.c:129
+#: beast-gtk/bstapp.c:130
 msgid "/_Demo"
 msgstr "/_Demo"
 
-#: beast-gtk/bstapp.c:133
+#: beast-gtk/bstapp.c:134
 msgid "/_Help"
 msgstr "/_Pomoć"
 
-#: beast-gtk/bstapp.c:135
+#: beast-gtk/bstapp.c:136
 msgid "/Help/_Release Notes..."
 msgstr "/Pomoć/_Objava izdanja..."
 
-#: beast-gtk/bstapp.c:136
+#: beast-gtk/bstapp.c:137
 msgid "/Help/Quick Start..."
 msgstr "/Pomoć/Brzi početak..."
 
-#: beast-gtk/bstapp.c:137
+#: beast-gtk/bstapp.c:138
 msgid "/Help/_FAQ..."
 msgstr "/Pomoć/Pitanja i _odgovori"
 
-#: beast-gtk/bstapp.c:138
+#: beast-gtk/bstapp.c:139
 msgid "/Help/Development/GSL Engine..."
 msgstr "/Pomoć/Razvoj/GSL struktura..."
 
-#: beast-gtk/bstapp.c:140
+#: beast-gtk/bstapp.c:141
 msgid "/Help/_About..."
 msgstr "/Pomoć/_O programu..."
 
-#: beast-gtk/bstapp.c:604 beast-gtk/bstapp.c:611 beast-gtk/bstfiledialog.c:438
+#: beast-gtk/bstapp.c:605 beast-gtk/bstapp.c:612 beast-gtk/bstfiledialog.c:438
 #: beast-gtk/bstfiledialog.c:445
 #, c-format
 msgid "Opening project `%s'"
 msgstr "Otvara projekat „%s“"
 
 #. FIXME: undo Edit when hide && GXK_DIALOG_HIDE_ON_DELETE
-#: beast-gtk/bstapp.c:783
+#: beast-gtk/bstapp.c:784
 msgid "Rack editor"
 msgstr "Uređivač polica"
 
-#: beast-gtk/bstapp.c:797
+#: beast-gtk/bstapp.c:798
 msgid "Preferences"
 msgstr "Postavke"
 
 #. FIXME: GXK_DIALOG_HIDE_ON_DELETE && save dialog pointer
-#: beast-gtk/bstapp.c:811
+#: beast-gtk/bstapp.c:812
 msgid "Device Monitor"
 msgstr "Praćenje uređaja"
 
-#: beast-gtk/bstapp.c:826
+#: beast-gtk/bstapp.c:827
 msgid "Procedure Browser"
 msgstr "Razgledač procedura"
 
-#: beast-gtk/bstapp.c:883
+#: beast-gtk/bstapp.c:884
 #, c-format
 msgid "BEAST-%s Release Notes"
 msgstr "ZVER-%s Objava izdanja"
@@ -466,6 +466,22 @@ msgstr "Dodaj"
 #: beast-gtk/bsttrackview.c:62
 msgid "Delete"
 msgstr "Obriši"
+
+#: beast-gtk/bstitemview.c:267
+msgid "ID"
+msgstr "ID"
+
+#: beast-gtk/bstitemview.c:270
+msgid "Name"
+msgstr "Ime"
+
+#: beast-gtk/bstitemview.c:273 beast-gtk/bsttrackview.c:589
+msgid "Comment"
+msgstr "Primedba"
+
+#: beast-gtk/bstitemview.c:277
+msgid "Type"
+msgstr "Vrsta"
 
 #. now, we can popup the splash screen
 #.
@@ -1115,10 +1131,6 @@ msgstr "Uvećanje"
 #: beast-gtk/bsttrackview.c:558
 msgid "Horizontal Zoom"
 msgstr "Vodoravno uvećanje"
-
-#: beast-gtk/bsttrackview.c:589
-msgid "Comment"
-msgstr "Primedba"
 
 #: beast-gtk/bstusermessage.c:91
 msgid "Notice"
