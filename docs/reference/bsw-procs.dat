@@ -2,14 +2,14 @@
 name    = BSW-Procedures
 blurb   = BSE Procedure Reference
 package = BEAST-0.4.1
-date    = 21 Jul 2002
+date    = 23 Jul 2002
 image   = bsw-procedures
 
 @DOC-TITLE@
 BSW-Procedures
 
 @DOC-HEAD@
-BSW-Procedures 21 Jul 2002 BEAST-0.4.1
+BSW-Procedures 23 Jul 2002 BEAST-0.4.1
 
 @DOC-NAME@
 BSW-Procedures - BSE Procedure Reference
@@ -1017,10 +1017,10 @@ is-a-check:
 @DOC-DESCRIPTION@
 Check object type  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-change-note@ (@EMPH part@, @EMPH id@, @EMPH tick@, @EMPH duration@, @EMPH freq@, @EMPH velocity@);
+@STRONG bsw-part-change-note@ (@EMPH part@, @EMPH id@, @EMPH tick@, @EMPH duration@, @EMPH note@, @EMPH fine-tune@, @EMPH velocity@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 11
+parspace = 12
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1058,9 +1058,17 @@ duration
 type = 
 typeraw = 
 @DOC-PARAMETER@
-freq
+note
 @DOC-PARDESC@
 
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+fine-tune
+@DOC-PARDESC@
+Fine tune in cents per semitone
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1071,7 +1079,7 @@ velocity
 
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 11
+retspace = 12
 
 @DOC-RETURNS@
 error: 
@@ -1079,7 +1087,7 @@ error:
 @DOC-DESCRIPTION@
 Change an existing note within a part.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-check-overlap@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@);
+@STRONG bsw-part-check-overlap@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH note@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1112,7 +1120,7 @@ duration
 type = 
 typeraw = 
 @DOC-PARAMETER@
-freq
+note
 @DOC-PARDESC@
 
 
@@ -1183,7 +1191,7 @@ retspace = 7
 @DOC-DESCRIPTION@
 Deselect an existing event.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-deselect-rectangle@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
+@STRONG bsw-part-deselect-rectangle@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-note@, @EMPH max-note@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1216,17 +1224,17 @@ Selection Duration
 type = 
 typeraw = 
 @DOC-PARAMETER@
-min-freq
+min-note
 @DOC-PARDESC@
-Minimum Selection Frequency
+
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
 typeraw = 
 @DOC-PARAMETER@
-max-freq
+max-note
 @DOC-PARDESC@
-Maximum Selection Frequency
+
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
@@ -1235,45 +1243,7 @@ retspace = 11
 @DOC-DESCRIPTION@
 Deselect all notes within rectangle.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-freq-equals@ (@EMPH part@, @EMPH freq1@, @EMPH freq2@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-part
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-freq1
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-freq2
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-equals: 
-
-@DOC-DESCRIPTION@
-Check whether two frequencies are equal.  
-@DOC-SYNOPSIS@
-@STRONG bsw-part-get-max-half-tone@ (@EMPH part@);
+@STRONG bsw-part-get-max-note@ (@EMPH part@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1290,32 +1260,10 @@ part
 retspace = 11
 
 @DOC-RETURNS@
-half-tone: 
+note: 
 
 @DOC-DESCRIPTION@
-Retrive the maximum half tone of the maximum octave supported.  
-@DOC-SYNOPSIS@
-@STRONG bsw-part-get-max-octave@ (@EMPH part@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-part
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-octave: 
-
-@DOC-DESCRIPTION@
-Retrive the maximum octave supported.  
+Retrive the maximum note supported in this part.  
 @DOC-SYNOPSIS@
 @STRONG bsw-part-get-max-tick@ (@EMPH part@);
 
@@ -1339,7 +1287,7 @@ tick: Maximum Tick
 @DOC-DESCRIPTION@
 Retrive the maximum tick count represented in a part.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-get-min-half-tone@ (@EMPH part@);
+@STRONG bsw-part-get-min-note@ (@EMPH part@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1356,34 +1304,12 @@ part
 retspace = 11
 
 @DOC-RETURNS@
-half-tone: 
+note: 
 
 @DOC-DESCRIPTION@
-Retrive the minimum half tone of the minimum octave supported.  
+Retrive the minimum note supported in this part.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-get-min-octave@ (@EMPH part@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-part
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-octave: 
-
-@DOC-DESCRIPTION@
-Retrive the minimum octave supported.  
-@DOC-SYNOPSIS@
-@STRONG bsw-part-get-notes@ (@EMPH part@, @EMPH tick@, @EMPH freq@);
+@STRONG bsw-part-get-notes@ (@EMPH part@, @EMPH tick@, @EMPH note@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1408,7 +1334,7 @@ tick
 type = 
 typeraw = 
 @DOC-PARAMETER@
-freq
+note
 @DOC-PARDESC@
 
 
@@ -1421,10 +1347,10 @@ note-list:
 @DOC-DESCRIPTION@
 Retrive all notes of specific frequency at a specific tick.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-insert-note@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH freq@, @EMPH velocity@);
+@STRONG bsw-part-insert-note@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH note@, @EMPH fine-tune@, @EMPH velocity@);
 
 @DOC-VARIABLE-DEFINITIONS@
-parspace = 11
+parspace = 12
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1454,9 +1380,17 @@ duration
 type = 
 typeraw = 
 @DOC-PARAMETER@
-freq
+note
 @DOC-PARDESC@
 
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+fine-tune
+@DOC-PARDESC@
+Fine tune in cents per semitone
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
@@ -1467,7 +1401,7 @@ velocity
 
 
 @DOC-VARIABLE-DEFINITIONS@
-retspace = 11
+retspace = 12
 
 @DOC-RETURNS@
 id: 
@@ -1565,7 +1499,7 @@ note-list:
 @DOC-DESCRIPTION@
 List all currently selected notes.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-queue-notes-within@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
+@STRONG bsw-part-queue-notes-within@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-note@, @EMPH max-note@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1598,7 +1532,7 @@ duration
 type = 
 typeraw = 
 @DOC-PARAMETER@
-min-freq
+min-note
 @DOC-PARDESC@
 
 
@@ -1606,7 +1540,7 @@ min-freq
 type = 
 typeraw = 
 @DOC-PARAMETER@
-max-freq
+max-note
 @DOC-PARDESC@
 
 
@@ -1645,7 +1579,7 @@ retspace = 7
 @DOC-DESCRIPTION@
 Select an existing event.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-select-rectangle@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
+@STRONG bsw-part-select-rectangle@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-note@, @EMPH max-note@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1678,17 +1612,17 @@ Selection Duration
 type = 
 typeraw = 
 @DOC-PARAMETER@
-min-freq
+min-note
 @DOC-PARDESC@
-Minimum Selection Frequency
+
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
 typeraw = 
 @DOC-PARAMETER@
-max-freq
+max-note
 @DOC-PARDESC@
-Maximum Selection Frequency
+
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
@@ -1697,7 +1631,7 @@ retspace = 11
 @DOC-DESCRIPTION@
 Select all notes within rectangle.  
 @DOC-SYNOPSIS@
-@STRONG bsw-part-select-rectangle-exclusive@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-freq@, @EMPH max-freq@);
+@STRONG bsw-part-select-rectangle-exclusive@ (@EMPH part@, @EMPH tick@, @EMPH duration@, @EMPH min-note@, @EMPH max-note@);
 
 @DOC-VARIABLE-DEFINITIONS@
 parspace = 11
@@ -1730,17 +1664,17 @@ Selection Duration
 type = 
 typeraw = 
 @DOC-PARAMETER@
-min-freq
+min-note
 @DOC-PARDESC@
-Minimum Selection Frequency
+
 
 @DOC-VARIABLE-DEFINITIONS@
 type = 
 typeraw = 
 @DOC-PARAMETER@
-max-freq
+max-note
 @DOC-PARDESC@
-Maximum Selection Frequency
+
 
 @DOC-VARIABLE-DEFINITIONS@
 retspace = 11
@@ -1748,234 +1682,6 @@ retspace = 11
 
 @DOC-DESCRIPTION@
 Select all notes within rectangle and deselect all others.  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-clear-content@ (@EMPH pattern@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 10
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 10
-
-
-@DOC-DESCRIPTION@
-Reset note and instrument contents of the selectionto none  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-clear-instrument@ (@EMPH pattern@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 10
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 10
-
-
-@DOC-DESCRIPTION@
-Reset instrument for selected notes  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-delete-note@ (@EMPH pattern@, @EMPH focus-channel@, @EMPH focus-row@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 16
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-focus-channel
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-focus-row
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 16
-
-
-@DOC-DESCRIPTION@
-Delete current note and shift remaining notes up  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-fill-instrument@ (@EMPH pattern@, @EMPH instrument@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 13
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-instrument
-@DOC-PARDESC@
-Instrument to use
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 13
-
-
-@DOC-DESCRIPTION@
-Reset instrument for selected notes  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-insert-note@ (@EMPH pattern@, @EMPH focus-channel@, @EMPH focus-row@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 16
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-focus-channel
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-focus-row
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 16
-
-
-@DOC-DESCRIPTION@
-Insert new note and shift remaining notes down  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-select-all@ (@EMPH pattern@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 10
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 10
-
-
-@DOC-DESCRIPTION@
-Select all notes  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-select-invert@ (@EMPH pattern@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 10
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 10
-
-
-@DOC-DESCRIPTION@
-Invert the current selection  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-select-none@ (@EMPH pattern@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 10
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 10
-
-
-@DOC-DESCRIPTION@
-Unselect all notes  
-@DOC-SYNOPSIS@
-@STRONG bsw-pattern-random-fill@ (@EMPH pattern@, @EMPH seed-value@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 13
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-pattern
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-seed-value
-@DOC-PARDESC@
-Enter any number here, it will be used as seed value for the note generator
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 13
-
-
-@DOC-DESCRIPTION@
-Reset note and instrument contents of the selectionto none  
 @DOC-SYNOPSIS@
 @STRONG bsw-project-restore-from-file@ (@EMPH project@, @EMPH file-name@);
 
@@ -2885,28 +2591,6 @@ project:
 @DOC-DESCRIPTION@
 Create a new project, owned by the caller (name is modified to be unique if necessary)  
 @DOC-SYNOPSIS@
-@STRONG bsw-song-create-instrument@ (@EMPH song@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 11
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-song
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 11
-
-@DOC-RETURNS@
-instrument: 
-
-@DOC-DESCRIPTION@
-Create a new Instrument in a Song  
-@DOC-SYNOPSIS@
 @STRONG bsw-song-create-part@ (@EMPH song@);
 
 @DOC-VARIABLE-DEFINITIONS@
@@ -2950,34 +2634,6 @@ track:
 
 @DOC-DESCRIPTION@
 Create a new Track for a Song  
-@DOC-SYNOPSIS@
-@STRONG bsw-song-remove-instrument@ (@EMPH song@, @EMPH instrument@);
-
-@DOC-VARIABLE-DEFINITIONS@
-parspace = 13
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-song
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-type = 
-typeraw = 
-@DOC-PARAMETER@
-instrument
-@DOC-PARDESC@
-
-
-@DOC-VARIABLE-DEFINITIONS@
-retspace = 13
-
-
-@DOC-DESCRIPTION@
-Delete an Instrument from a Song  
 @DOC-SYNOPSIS@
 @STRONG bsw-song-remove-part@ (@EMPH song@, @EMPH part@);
 

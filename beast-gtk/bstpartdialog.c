@@ -31,7 +31,7 @@ static void	part_dialog_update_tool		(BstPartDialog		*part_dialog);
 static void	piano_canvas_press		(BstPartDialog		*part_dialog,
 						 guint			 button,
 						 guint			 tick_position,
-						 gfloat			 freq,
+						 gint			 note,
 						 GdkEvent		*event,
 						 BstPianoRoll		*proll);
 static void	part_dialog_run_proc		(GtkWidget		*widget,
@@ -43,21 +43,33 @@ static void	part_dialog_qnote_choice	(BstPartDialog		*self,
 						 guint			 choice);
 static void	menu_select_tool		(BstPartDialog		*self,
 						 guint			 tool);
+static void	menu_activate_tool		(BstPartDialog		*self,
+						 guint			 tool);
 
 
 /* --- variables --- */
+enum {
+  ACTION_CLEAR,
+  ACTION_CUT,
+  ACTION_COPY,
+  ACTION_PASTE
+};
 static GtkItemFactoryEntry popup_entries[] =
 {
 #define MENU_CB(xxx)	menu_select_tool, BST_PIANO_ROLL_TOOL_ ## xxx
-  { "/Tools",		NULL,		NULL,   0,		"<Title>",	0 },
-  { "/-----0",		NULL,		NULL,	0,		"<Separator>",	0 },
-  { "/Insert",		"<ctrl>I",	MENU_CB (INSERT),	"<StockItem>",	BST_STOCK_PART_TOOL },
-  { "/Delete",		"<ctrl>D",	MENU_CB (DELETE),	"<StockItem>",	BST_STOCK_TRASHCAN },
-  { "/Select",		NULL,		MENU_CB (SELECT),	"<StockItem>",	BST_STOCK_RECT_SELECT },
-  { "/Vertical Select",	NULL,		MENU_CB (VSELECT),	"<StockItem>",	BST_STOCK_VERT_SELECT },
+#define ACTION_CB(xxx)	menu_activate_tool, ACTION_ ## xxx
+  { "/_Tools",		NULL,		NULL,   0,		"<Branch>",	0 },
+  { "/Tools/Insert",	"I",		MENU_CB (INSERT),	"<StockItem>",	BST_STOCK_PART_TOOL },
+  { "/Tools/Delete",	"D",		MENU_CB (DELETE),	"<StockItem>",	BST_STOCK_TRASHCAN },
+  { "/Tools/Select",	"S",		MENU_CB (SELECT),	"<StockItem>",	BST_STOCK_RECT_SELECT },
+  { "/Tools/Vertical Select",	"V",	MENU_CB (VSELECT),	"<StockItem>",	BST_STOCK_VERT_SELECT },
+  { "/_Edit",		NULL,		NULL,   0,		"<Branch>",	0 },
+  { "/Edit/Cut",	"<ctrl>X",	ACTION_CB (CUT),	"<StockItem>",	BST_STOCK_MUSIC_CUT },
+  { "/Edit/Copy",	"<ctrl>C",	ACTION_CB (COPY),	"<StockItem>",	BST_STOCK_MUSIC_COPY },
+  { "/Edit/Paste",	"<ctrl>V",	ACTION_CB (PASTE),	"<StockItem>",	BST_STOCK_MUSIC_PASTE },
+  { "/Edit/Clear",	"<ctrl>K",	ACTION_CB (CLEAR),	"<StockItem>",	BST_STOCK_TRASH_SCISSORS },
   { "/-----1",		NULL,		NULL,	0,		"<Separator>",	0 },
   { "/Scripts",		NULL,		NULL,   0,		"<Title>",	0 },
-  { "/-----2",		NULL,		NULL,	0,		"<Separator>",	0 },
   { "/Test",		NULL,		NULL,	0,		"<Branch>",	0 },
 };
 static gpointer	parent_class = NULL;
@@ -333,7 +345,7 @@ part_dialog_update_tool (BstPartDialog *self)
     case BST_PIANO_ROLL_TOOL_SELECT:
       bst_piano_roll_controller_set_obj_tools (self->proll_ctrl,
 					       BST_PIANO_ROLL_TOOL_SELECT,
-					       BST_PIANO_ROLL_TOOL_NONE,
+					       BST_PIANO_ROLL_TOOL_MOVE,
 					       BST_PIANO_ROLL_TOOL_NONE);
       bst_piano_roll_controller_set_bg_tools (self->proll_ctrl,
 					      BST_PIANO_ROLL_TOOL_SELECT,
@@ -374,7 +386,7 @@ static void
 piano_canvas_press (BstPartDialog *self,
                     guint          button,
                     guint          tick,
-                    gfloat         freq,
+                    gint           note,
 		    GdkEvent      *event,
                     BstPianoRoll  *proll)
 {
@@ -409,4 +421,25 @@ menu_select_tool (BstPartDialog *self,
 		  guint          tool)
 {
   bst_radio_tools_set_tool (self->rtools, tool);
+}
+
+static void
+menu_activate_tool (BstPartDialog *self,
+		    guint          tool)
+{
+  switch (tool)
+    {
+    case ACTION_CLEAR:
+      bst_piano_roll_controller_clear (self->proll_ctrl);
+      break;
+    case ACTION_CUT:
+      bst_piano_roll_controller_cut (self->proll_ctrl);
+      break;
+    case ACTION_COPY:
+      bst_piano_roll_controller_copy (self->proll_ctrl);
+      break;
+    case ACTION_PASTE:
+      bst_piano_roll_controller_paste (self->proll_ctrl);
+      break;
+    }
 }

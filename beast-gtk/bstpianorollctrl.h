@@ -49,7 +49,8 @@ typedef struct {
   BswIterPartNote *sel_iter;
   guint		   tool_index;
   guint		   obj_id, obj_tick, obj_duration;
-  gfloat	   obj_freq, obj_velocity;
+  gint		   obj_note, obj_fine_tune;
+  gfloat           obj_velocity;
   guint		   xoffset;
   guint		   tick_bound;
 } BstPianoRollController;

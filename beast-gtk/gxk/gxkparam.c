@@ -569,10 +569,15 @@ bst_param_create (gpointer	owner,
     case G_TYPE_FLOAT:
     case G_TYPE_DOUBLE:
     case BSE_TYPE_TIME:
-    case BSE_TYPE_NOTE:
       switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec)))
 	{
 	case G_TYPE_INT:
+	  if (BSE_IS_PARAM_SPEC_NOTE (pspec))
+	    {
+	      width = 50;
+	      break;
+	    }
+	  /* fall through */
 	case G_TYPE_UINT:
 	  width = 70;
 	  break;
@@ -584,9 +589,6 @@ bst_param_create (gpointer	owner,
 	case BSE_TYPE_TIME:
 	  expandable = TRUE;
 	  width = 140;
-	  break;
-	case BSE_TYPE_NOTE:
-	  width = 50;
 	  break;
 	default:
 	  width = 3;
@@ -912,17 +914,20 @@ bst_param_update (BstParam *bparam)
     case G_TYPE_FLOAT:
     case G_TYPE_DOUBLE:
     case BSE_TYPE_TIME:
-    case BSE_TYPE_NOTE:
       action = bst_gmask_get_action (group);
       string = NULL; /* eek, cure stupid compiler */
       switch (G_TYPE_FUNDAMENTAL (G_PARAM_SPEC_VALUE_TYPE (pspec)))
 	{
-	case G_TYPE_INT:	string = g_strdup_printf ("%d", g_value_get_int (value));	break;
 	case G_TYPE_UINT:	string = g_strdup_printf ("%u", g_value_get_uint (value));	break;
 	case G_TYPE_FLOAT:	string = g_strdup_printf ("%f", g_value_get_float (value));	break;
 	case G_TYPE_DOUBLE:	string = g_strdup_printf ("%f", g_value_get_double (value));	break;
 	case BSE_TYPE_TIME:	string = bse_time_to_str (bse_value_get_time (value));		break;
-	case BSE_TYPE_NOTE:	string = bse_note_to_string (bse_value_get_note (value));	break;
+	case G_TYPE_INT:
+	  if (BSE_IS_PARAM_SPEC_NOTE (pspec))
+	    string = bse_note_to_string (bse_value_get_note (value));
+	  else
+	    string = g_strdup_printf ("%d", g_value_get_int (value));
+	  break;
 	}
       if (!g_str_equal (gtk_entry_get_text (GTK_ENTRY (action)), string))
 	{
@@ -1035,21 +1040,32 @@ bst_param_apply (BstParam *bparam,
       break;
     case G_TYPE_INT:
       action = bst_gmask_get_action (group);
-      string = gtk_entry_get_text (GTK_ENTRY (action));
-      if (string && string[0] == '0')
+      if (BSE_IS_PARAM_SPEC_NOTE (pspec))
 	{
-	  base = 8;
-	  string++;
-	  if (string[0] == 'x' || string[0] == 'X')
-	    {
-	      base = 16;
-	      string++;
-	    }
+	  note_data = bse_note_from_string (gtk_entry_get_text (GTK_ENTRY (action)));
+	  if (note_data != BSE_NOTE_UNPARSABLE)
+	    bse_value_set_note (value, note_data);
+	  else
+	    dirty++;
 	}
       else
-	base = 10;
-      g_value_set_int (value, strtol (string, &dummy, base));
-      dirty += dummy != NULL && (*dummy != 0 || dummy == string);
+	{
+	  string = gtk_entry_get_text (GTK_ENTRY (action));
+	  if (string && string[0] == '0')
+	    {
+	      base = 8;
+	      string++;
+	      if (string[0] == 'x' || string[0] == 'X')
+		{
+		  base = 16;
+		  string++;
+		}
+	    }
+	  else
+	    base = 10;
+	  g_value_set_int (value, strtol (string, &dummy, base));
+	  dirty += dummy != NULL && (*dummy != 0 || dummy == string);
+	}
       break;
     case G_TYPE_UINT:
       action = bst_gmask_get_action (group);
@@ -1082,14 +1098,6 @@ bst_param_apply (BstParam *bparam,
       time_data = bse_time_from_string (gtk_entry_get_text (GTK_ENTRY (action)), NULL);
       if (time_data)
 	bse_value_set_time (value, time_data);
-      else
-	dirty++;
-      break;
-    case BSE_TYPE_NOTE:
-      action = bst_gmask_get_action (group);
-      note_data = bse_note_from_string (gtk_entry_get_text (GTK_ENTRY (action)));
-      if (note_data != BSE_NOTE_UNPARSABLE)
-	bse_value_set_note (value, note_data);
       else
 	dirty++;
       break;

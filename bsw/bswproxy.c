@@ -81,6 +81,16 @@ bsw_init (gint               *argc,
     }
   
   bse_init (argc, argv, lock_funcs ? &lfuncs : NULL);
+
+  g_assert (BSW_MIN_NOTE == BSE_MIN_NOTE &&
+	    BSW_MAX_NOTE == BSE_MAX_NOTE &&
+	    BSW_NOTE_VOID == BSE_NOTE_VOID &&
+	    BSW_NOTE_UNPARSABLE == BSE_NOTE_UNPARSABLE &&
+	    BSW_KAMMER_OCTAVE == BSE_KAMMER_OCTAVE &&
+	    BSW_MIN_OCTAVE == BSE_MIN_OCTAVE &&
+	    BSW_MAX_OCTAVE == BSE_MAX_OCTAVE &&
+	    BSW_MIN_FINE_TUNE == BSE_MIN_FINE_TUNE &&
+	    BSW_MAX_FINE_TUNE == BSE_MAX_FINE_TUNE);
 }
 
 void
@@ -169,7 +179,7 @@ bsw_proxy_set (BswProxy     proxy,
 	  case G_TYPE_CHAR: case G_TYPE_UCHAR: case G_TYPE_BOOLEAN: case G_TYPE_INT:
 	  case G_TYPE_UINT: case G_TYPE_LONG: case G_TYPE_ULONG: case G_TYPE_ENUM:
 	  case G_TYPE_FLAGS: case G_TYPE_FLOAT: case G_TYPE_DOUBLE: case G_TYPE_STRING:
-	  case BSE_TYPE_TIME: case BSE_TYPE_NOTE: case BSE_TYPE_DOTS:
+	  case BSE_TYPE_TIME: case BSE_TYPE_DOTS:
 	    break;
 	  default:
 	    if (g_type_is_a (G_PARAM_SPEC_VALUE_TYPE (pspec), BSE_TYPE_OBJECT))

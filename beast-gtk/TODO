@@ -1,4 +1,4 @@
-URGENT:
+RELEASE:
 - put a WARNING somewhere about file format changes in future versions
 - subsynth cycle search algorithm
 - bsw_item_check_value(item,name,value) to filter non-valid objects property settings
@@ -6,6 +6,7 @@ URGENT:
 - remove GenOsc plugin
 - Module Menu: add EDIT
 - help: QuickStart-Samples, QuickStart-Synthesis, QuickStart-Songs
+- disallow creating more than one track as long as playback isn't supported for it
 
 GENERAL:
 * BLIT, band-limited impulse train

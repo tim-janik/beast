@@ -2234,7 +2234,7 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
       if (pea_mask == BST_PEA_NOTE_VOID)
 	note = BSE_NOTE_VOID;
       else if (pea_mask)
-	note = BSE_NOTE_GENERIC ((pea_mask >> BST_PEA_NOTE_SHIFT) - 1, pe->base_octave);
+	note = BSE_NOTE_GENERIC (pe->base_octave, (pea_mask >> BST_PEA_NOTE_SHIFT) - 1);
       /* octave shifting */
       switch (pea & BST_PEA_OCTAVE_MASK)
 	{
@@ -2258,7 +2258,7 @@ bst_pattern_editor_key_press (GtkWidget	  *widget,
 	      guint half_tone;
 	      
 	      bse_note_examine (note, NULL, &half_tone, NULL, NULL);
-	      note = BSE_NOTE_GENERIC (half_tone, pe->base_octave);
+	      note = BSE_NOTE_GENERIC (pe->base_octave, half_tone);
 	    }
 	  break;
 	}

@@ -47,11 +47,11 @@ typedef struct {
   BstDragMode   mode;
   guint	        button;
   guint	        start_tick;
-  gfloat        start_freq;
+  gint          start_note;
   guint		start_valid : 1;
   guint         current_tick;
-  gfloat        current_freq;
-  guint		current_valid : 1;	/* freq out of range or non-existant black key */
+  gint          current_note;
+  guint		current_valid : 1;	/* note out of range or non-existant black key */
   /* user data */
   BstDragStatus state;		/* request type: unhandled/continue/handled/error */
 } BstPianoRollDrag;
@@ -60,12 +60,8 @@ struct _BstPianoRoll
   GtkContainer	 parent_instance;
 
   BswProxy	 proxy;
-  gint		 min_octave;
-  gint		 min_half_tone;
-  gfloat	 min_freq;
-  gint		 max_octave;
-  gint		 max_half_tone;
-  gfloat	 max_freq;
+  gint		 min_note;
+  gint		 max_note;
   guint		 vzoom;
 
   /* horizontal layout */
@@ -91,8 +87,8 @@ struct _BstPianoRoll
   /* selection rectangle */
   guint		 selection_tick;
   guint		 selection_duration;
-  gfloat	 selection_min_freq;
-  gfloat	 selection_max_freq;
+  gint		 selection_min_note;
+  gint		 selection_max_note;
 
   /* drag operations */
   guint		   canvas_drag : 1;
@@ -110,7 +106,7 @@ struct _BstPianoRollClass
   void		(*canvas_press)			(BstPianoRoll	  *proll,
 						 guint		   button,
 						 guint		   tick_position,
-						 gfloat		   freq,
+						 gint              note,
 						 GdkEvent	  *event);
 };
 
@@ -138,13 +134,13 @@ void	bst_piano_roll_set_quantization		(BstPianoRoll	*proll,
 void	bst_piano_roll_set_view_selection	(BstPianoRoll	*proll,
 						 guint		 tick,
 						 guint		 duration,
-						 gfloat		 min_freq,
-						 gfloat		 max_freq);
+						 gint		 min_note,
+						 gint		 max_note);
 guint	bst_piano_roll_quantize			(BstPianoRoll	*self,
 						 guint		 fine_tick);
 void    bst_piano_roll_get_paste_pos		(BstPianoRoll	*self,
 						 guint          *tick_p,
-						 gfloat		*freq_p);
+						 gint		*note_p);
 
      
 

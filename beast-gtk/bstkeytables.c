@@ -153,6 +153,7 @@ bst_key_table_patch_get_base_patch (BstKeyTablePatch *patch)
 void
 bst_key_table_install_patch (BstKeyTablePatch *patch)
 {
+#if 0
   BstPatternEditorClass *class;
   GSList *slist, *patch_slist = NULL;
 
@@ -182,4 +183,5 @@ bst_key_table_install_patch (BstKeyTablePatch *patch)
     }
 
   g_slist_free (patch_slist);
+#endif
 }

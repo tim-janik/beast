@@ -24,7 +24,6 @@
 #include	"bstusermessage.h"
 #include	"bststatusbar.h"
 #include	"bstpreferences.h"
-#include	"bstpatterndialog.h"	// FIXME
 #include	"../PKG_config.h"
 #include	<unistd.h>
 #include	<stdio.h>
@@ -113,7 +112,6 @@ main (int   argc,
   /* BEAST initialization
    */
   bst_init_gentypes ();
-  bst_pattern_dialog_gtkfix_default_accels ();
   gtk_rc_parse_string (bst_rc_string);
   g_type_name (bst_free_radio_button_get_type ());	/* urg, GCC_CONST */
   bst_global_tooltips = gtk_tooltips_new ();

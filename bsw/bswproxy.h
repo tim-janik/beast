@@ -68,6 +68,51 @@ void		bsw_proxy_remove_data		(BswProxy		 proxy,
 gchar*		bsw_collector_get_string	(GValue			*value);
 
 
+/* --- manual glue --- */
+#define BSW_MIN_NOTE                    (0)
+#define BSW_MAX_NOTE                    (131)
+#define BSW_NOTE_VOID                   (BSW_MAX_NOTE + 1)
+#define BSW_NOTE_UNPARSABLE             (BSW_NOTE_VOID + 1)
+#define BSW_KAMMER_NOTE                 ((gint) (69) /* A' */)
+#define BSW_KAMMER_OCTAVE               ((gint) (+1))
+#define BSW_MIN_OCTAVE                  (BSW_NOTE_OCTAVE (BSW_MIN_NOTE))
+#define BSW_MAX_OCTAVE                  (BSW_NOTE_OCTAVE (BSW_MAX_NOTE))
+#define BSW_NOTE_MAKE_VALID(n)          ((n) > BSW_MAX_NOTE || (n) < BSW_MIN_NOTE ? BSW_KAMMER_NOTE : ((gint) (n)))
+#define BSW_NOTE_IS_VALID(n)            ((n) >= BSW_MIN_NOTE && (n) <= BSW_MAX_NOTE)
+#define BSW_NOTE_CLAMP(n)               (CLAMP (((gint) (n)), BSW_MIN_NOTE, BSW_MAX_NOTE))
+#define BSW_NOTE_OCTAVE(n)              ((((gint) (n)) - BSW_NOTE_HALF_TONE (n) - (BSW_KAMMER_NOTE - 9)) / 12 + BSW_KAMMER_OCTAVE)
+#define BSW_NOTE_HALF_TONE(n)           (((gint) (n)) % 12 + (9 - (BSW_KAMMER_NOTE % 12)))
+#define BSW_NOTE_GENERIC(o,ht_i)        (BSW_KAMMER_NOTE - 9 + ((gint) (ht_i)) + (((gint) (o)) - BSW_KAMMER_OCTAVE) * 12)
+#define BSW_NOTE_C(o)                   (BSW_NOTE_GENERIC ((o), 0))
+#define BSW_NOTE_Cis(o)                 (BSW_NOTE_GENERIC ((o), 1))
+#define BSW_NOTE_Des(o)                 (BSW_NOTE_Cis (o))
+#define BSW_NOTE_D(o)                   (BSW_NOTE_GENERIC ((o), 2))
+#define BSW_NOTE_Dis(o)                 (BSW_NOTE_GENERIC ((o), 3))
+#define BSW_NOTE_Es(o)                  (BSW_NOTE_Dis (o))
+#define BSW_NOTE_E(o)                   (BSW_NOTE_GENERIC ((o), 4))
+#define BSW_NOTE_F(o)                   (BSW_NOTE_GENERIC ((o), 5))
+#define BSW_NOTE_Fis(o)                 (BSW_NOTE_GENERIC ((o), 6))
+#define BSW_NOTE_Ges(o)                 (BSW_NOTE_Fis (o))
+#define BSW_NOTE_G(o)                   (BSW_NOTE_GENERIC ((o), 7))
+#define BSW_NOTE_Gis(o)                 (BSW_NOTE_GENERIC ((o), 8))
+#define BSW_NOTE_As(o)                  (BSW_NOTE_Gis (o))
+#define BSW_NOTE_A(o)                   (BSW_NOTE_GENERIC ((o), 9))
+#define BSW_NOTE_Ais(o)                 (BSW_NOTE_GENERIC ((o), 10))
+#define BSW_NOTE_Bes(o)                 (BSW_NOTE_Ais (o))
+#define BSW_NOTE_B(o)                   (BSW_NOTE_GENERIC ((o), 11))
+#define _BSW_NOTE_SHIFT_AUX(n,ht,dfl)   (n + ht >= BSW_MIN_NOTE && n + ht <= BSW_MAX_NOTE ? n + ht : dfl)
+#define BSW_NOTE_SHIFT(n,ht_i)          (_BSW_NOTE_SHIFT_AUX ((gint) (n), (gint) (ht), (gint) (n)))
+#define BSW_NOTE_OCTAVE_UP(n)           (BSW_NOTE_SHIFT ((n), +12))
+#define BSW_NOTE_OCTAVE_DOWN(n)         (BSW_NOTE_SHIFT ((n), -12))
+#define BSW_MIN_FINE_TUNE               (-100)
+#define BSW_MAX_FINE_TUNE               (+100)
+#define BSW_FINE_TUNE_IS_VALID(n)       ((n) >= BSW_MIN_FINE_TUNE && (n) <= BSW_MAX_FINE_TUNE)
+
+												  
+
+
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -83,9 +83,7 @@ static void
 bst_song_shell_init (BstSongShell *song_shell)
 {
   song_shell->param_view = NULL;
-  song_shell->instrument_view = NULL;
   song_shell->track_view = NULL;
-  song_shell->pattern_view = NULL;
   song_shell->part_view = NULL;
   song_shell->snet_router = NULL;
 }
@@ -105,13 +103,6 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 		NULL);
   g_object_connect (GTK_WIDGET (song_shell->param_view),
 		    "signal::destroy", gtk_widget_destroyed, &song_shell->param_view,
-		    NULL);
-  song_shell->instrument_view = (BstItemView*) bst_instrument_view_new (song);
-  g_object_set (GTK_WIDGET (song_shell->instrument_view),
-		"visible", TRUE,
-		NULL);
-  g_object_connect (GTK_WIDGET (song_shell->instrument_view),
-		    "signal::destroy", gtk_widget_destroyed, &song_shell->instrument_view,
 		    NULL);
   song_shell->track_view = (BstItemView*) bst_track_view_new (song);
   g_object_set (GTK_WIDGET (song_shell->track_view),
@@ -157,39 +148,6 @@ bst_song_shell_rebuild (BstSuperShell *super_shell)
 					    "label", "Tracks",
 					    "visible", TRUE,
 					    NULL));
-  gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->instrument_view),
-			    gtk_widget_new (GTK_TYPE_LABEL,
-					    "label", "Instruments",
-					    "visible", TRUE,
-					    NULL));
-  if (BST_DVL_EXT)
-    {
-      song_shell->pattern_view = (BstItemView*) bst_pattern_view_new (song);
-      g_object_set (GTK_WIDGET (song_shell->pattern_view),
-		    "visible", TRUE,
-		    NULL);
-      g_object_connect (GTK_WIDGET (song_shell->pattern_view),
-			"signal::destroy", gtk_widget_destroyed, &song_shell->pattern_view,
-			NULL);
-      gtk_notebook_append_page (GTK_NOTEBOOK (notebook), GTK_WIDGET (song_shell->pattern_view),
-				gtk_widget_new (GTK_TYPE_LABEL,
-						"label", "Patterns",
-						"visible", TRUE,
-						NULL));
-    }
-  if (BST_DVL_EXT)
-    {
-      GtkWidget *play_list = bst_play_list_new (song);
-
-      g_object_set (GTK_WIDGET (play_list),
-		    "visible", TRUE,
-		    NULL);
-      gtk_notebook_append_page (GTK_NOTEBOOK (notebook), play_list,
-				gtk_widget_new (GTK_TYPE_LABEL,
-						"label", "Arrangement",
-						"visible", TRUE,
-						NULL));
-    }
   if (BST_DVL_EXT)
     {
       song_shell->snet_router = bst_snet_router_build_page (super_shell->super);
@@ -212,11 +170,8 @@ bst_song_shell_update (BstSuperShell *super_shell)
   song_shell = BST_SONG_SHELL (super_shell);
   
   bst_param_view_update (song_shell->param_view);
-  bst_item_view_update (song_shell->instrument_view);
   bst_item_view_update (song_shell->track_view);
   bst_item_view_update (song_shell->part_view);
-  if (song_shell->pattern_view)
-    bst_item_view_update (song_shell->pattern_view);
   if (song_shell->snet_router)
     bst_snet_router_update (song_shell->snet_router);
 }
@@ -232,20 +187,10 @@ bst_song_shell_operate (BstSuperShell *super_shell,
   
   switch (op)
     {
-    case BST_OP_PATTERN_ADD:
-    case BST_OP_PATTERN_DELETE:
-    case BST_OP_PATTERN_EDITOR:
-      if (song_shell->pattern_view)
-	bst_item_view_operate (song_shell->pattern_view, op);
-      break;
     case BST_OP_PART_ADD:
     case BST_OP_PART_DELETE:
     case BST_OP_PART_EDITOR:
       bst_item_view_operate (song_shell->part_view, op);
-      break;
-    case BST_OP_INSTRUMENT_ADD:
-    case BST_OP_INSTRUMENT_DELETE:
-      bst_item_view_operate (song_shell->instrument_view, op);
       break;
     case BST_OP_TRACK_ADD:
     case BST_OP_TRACK_DELETE:
@@ -267,20 +212,11 @@ bst_song_shell_can_operate (BstSuperShell *super_shell,
 
   switch (op)
     {
-    case BST_OP_PATTERN_ADD:
-    case BST_OP_PATTERN_DELETE:
-    case BST_OP_PATTERN_EDITOR:
-      return (song_shell->pattern_view &&
-	      bst_item_view_can_operate (song_shell->pattern_view, op));
     case BST_OP_PART_ADD:
     case BST_OP_PART_DELETE:
     case BST_OP_PART_EDITOR:
       return (song_shell->part_view &&
 	      bst_item_view_can_operate (song_shell->part_view, op));
-    case BST_OP_INSTRUMENT_ADD:
-    case BST_OP_INSTRUMENT_DELETE:
-      return (song_shell->instrument_view &&
-	      bst_item_view_can_operate (song_shell->instrument_view, op));
     case BST_OP_TRACK_ADD:
     case BST_OP_TRACK_DELETE:
       return (song_shell->track_view &&

@@ -46,11 +46,9 @@ beast_headers = $(strip \
 	bstdial.h \
 	bstdialog.h \
 	bstdragutils.h \
-	bsteffectview.h \
 	bstfiledialog.h \
 	bstfreeradiobutton.h \
 	bstgconfig.h \
-	bstinstrumentview.h \
 	bstitemview.h \
 	bstkeytables.h \
 	bstknob.h \
@@ -61,13 +59,9 @@ beast_headers = $(strip \
 	bstparamview.h \
 	bstpartdialog.h \
 	bstpartview.h \
-	bstpatterndialog.h \
-	bstpatterneditor.h \
-	bstpatternview.h \
 	bstpianoroll.h \
 	bstpianorollctrl.h \
 	bstplayback.h \
-	bstplaylist.h \
 	bstpreferences.h \
 	bstprocbrowser.h \
 	bstprocedure.h \
@@ -108,11 +102,9 @@ beast_sources = $(strip \
 	bstdial.c \
 	bstdialog.c \
 	bstdragutils.c \
-	bsteffectview.c \
 	bstfiledialog.c \
 	bstfreeradiobutton.c \
 	bstgconfig.c \
-	bstinstrumentview.c \
 	bstitemview.c \
 	bstkeytables.c \
 	bstknob.c \
@@ -123,13 +115,9 @@ beast_sources = $(strip \
 	bstparamview.c \
 	bstpartdialog.c \
 	bstpartview.c \
-	bstpatterndialog.c \
-	bstpatterneditor.c \
-	bstpatternview.c \
 	bstpianoroll.c \
 	bstpianorollctrl.c \
 	bstplayback.c \
-	bstplaylist.c \
 	bstpreferences.c \
 	bstprocbrowser.c \
 	bstprocedure.c \
@@ -163,13 +151,10 @@ beast_sources = $(strip \
 )
 # BEAST sources that get included (don't have own .lo rules)
 beast_extra_sources = $(strip \
-	bstpatterneditorselection.c \
 	bstrackeditor-covers.c \
 	bstkeytable-base.c \
 	bstkeytable-us.c \
 	bstkeytable-de.c \
-	bstdraggroup.c \
-	bstdragpattern.c \
 	bstmarshal.c \
 	bstmarshal.list \
 	bstenum_arrays.stamp \

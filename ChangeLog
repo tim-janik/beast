@@ -1,3 +1,32 @@
+Tue Jul 23 08:12:54 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/icons/music-cut.png: minor icon fixup.
+
+	* beast-gtk/Makefile.am: remove unused code from build list, regarding
+	patterns, instruments and effects.
+
+	* bstapp.c: menu changes to reflect part/track usage vs. patterns
+	and instruments.
+
+	* bstkeytables.c: disable pattern editor dependancies.
+
+	* bstparam.c: there's no fundamental type BSE_TYPE_NOTE anymore.
+
+	* bstpartdialog.c: extend menu with newly added cut/copy/paste/clear
+	functions.
+
+	* bstpartdialog.c:
+	* bstpianoroll.[hc]:
+	* bstpianorollctrl.[hc]: port this over to use notes instead of
+	frequencies, bug fixes.
+
+	* bstsongshell.[hc]: remove dependancies on unused code.
+
+	* bsttrackview.c: properly deal with track removal during playback.
+
+	* bsw/bswproxy.[hc]: wrap BSE_NOTE_*() macros, get rid of BSE_TYPE_NOTE
+	fundamental.
+
 Sun Jul 21 21:16:22 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpartdialog.[hc]: add clipboard functions to toolbar,

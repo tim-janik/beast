@@ -120,13 +120,15 @@ bst_track_view_operate (BstItemView *item_view,
   switch (op)
     {
       BswProxy item;
-      gchar *string;
     case BST_OP_TRACK_ADD:
       item = bsw_song_create_track (song);
-      string = g_strdup_printf ("Track-%02X", bsw_item_get_seqid (item));
-      bsw_proxy_set (item, "uname", string, NULL);
-      g_free (string);
-      bst_item_view_select (item_view, item);
+      if (item)
+	{
+	  gchar *string = g_strdup_printf ("Track-%02X", bsw_item_get_seqid (item));
+	  bsw_proxy_set (item, "uname", string, NULL);
+	  g_free (string);
+	  bst_item_view_select (item_view, item);
+	}
       break;
     case BST_OP_TRACK_DELETE:
       item = bst_item_view_get_current (item_view);

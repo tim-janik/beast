@@ -27,7 +27,6 @@
 #include	"bstgconfig.h"
 #include	"bstpreferences.h"
 #include	"bstprocbrowser.h"
-#include	"bstpatterneditor.h"
 #include	"bstservermonitor.h"
 #include	"bstrackeditor.h"
 #include	"bstmenus.h"
@@ -85,10 +84,10 @@ static GtkItemFactoryEntry menubar_entries[] =
   { "/Edit/_Redo",			"<ctrl>R",	BST_OP (REDO_LAST),		"<Item>" },
   { "/S_ong",				NULL,		NULL, 0,			"<Branch>" },
   { "/Song/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
-  { "/Song/_Add Pattern",		"<ctrl>P",	BST_OP (PATTERN_ADD),		"<Item>" },
-  { "/Song/Delete Pattern",		NULL,		BST_OP (PATTERN_DELETE),	"<Item>" },
-  { "/Song/_Edit Pattern...",		"<ctrl>E",	BST_OP (PATTERN_EDITOR),	"<Item>" },
-  { "/Song/Add _Instrument",		"<ctrl>I",	BST_OP (INSTRUMENT_ADD),	"<Item>" },
+  { "/Song/Add _Part",			NULL,		BST_OP (PART_ADD),		"<Item>" },
+  { "/Song/Delete _Part",		NULL,		BST_OP (PART_DELETE),		"<Item>" },
+  { "/Song/Add _Track",			NULL,		BST_OP (TRACK_ADD),		"<Item>" },
+  { "/Song/Delete _Track",		NULL,		BST_OP (TRACK_DELETE),		"<Item>" },
   { "/_Waves",				NULL,		NULL, 0,			"<Branch>" },
   { "/Waves/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Waves/_Load Wave...",		"",		BST_OP (WAVE_LOAD),		"<Item>" },
@@ -104,7 +103,6 @@ static GtkItemFactoryEntry menubar_help_entries[] = {
   { "/Help/<<<<<<",			NULL,		NULL, 0,			"<Tearoff>" },
   { "/Help/_Release Notes...",		NULL,		BST_OP (HELP_RELEASE_NOTES),	"<Item>" },
   { "/Help/_FAQ...",			NULL,		BST_OP (HELP_FAQ),		"<Item>" },
-  { "/Help/_Keytable...",		NULL,		BST_OP (HELP_KEYTABLE),		"<Item>" },
   { "/Help/Development/GSL Engine...",	NULL,		BST_OP (HELP_GSL_PLAN),		"<Item>" },
   { "/Help/-----",			NULL,		NULL, 0,			"<Separator>" },
   { "/Help/_About...",			NULL,		BST_OP (HELP_ABOUT),		"<Item>" },
@@ -750,10 +748,6 @@ bst_app_operate (BstApp *app,
       help_file = g_strconcat (BST_PATH_DOCS, "/faq.markup", NULL);
       help_title = help_file;
       goto case_help_dialog;
-    case BST_OP_HELP_KEYTABLE:
-      help_string = bst_pattern_editor_class_keydump (gtk_type_class (BST_TYPE_PATTERN_EDITOR));
-      help_title = "Keytable";
-      goto case_help_dialog;
     case BST_OP_HELP_RELEASE_NOTES:
       help_file = g_strconcat (BST_PATH_DOCS, "/release-notes.markup", NULL);
       help_title = help_file;
@@ -863,7 +857,6 @@ bst_app_can_operate (BstApp *app,
       return TRUE;
       // case BST_OP_HELP_ABOUT:
     case BST_OP_HELP_FAQ:
-    case BST_OP_HELP_KEYTABLE:
     case BST_OP_HELP_GSL_PLAN:
     case BST_OP_HELP_RELEASE_NOTES:
       return TRUE;
