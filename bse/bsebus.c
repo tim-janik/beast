@@ -291,7 +291,7 @@ BSE_BUILTIN_TYPE (BseBus)
   };
   GType type = bse_type_register_static (BSE_TYPE_SUB_SYNTH,
                                          "BseBus",
-                                         _("Bus implementation for songs, used to to route track audio signals "
+                                         _("Bus implementation for songs, used to route track audio signals "
                                            "to the master output."),
                                          &bus_info);
   return type;
