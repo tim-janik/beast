@@ -53,7 +53,7 @@ bse_public_h_sources = $(strip \
 	bsepcminput.h		bsepcmoutput.h		bseparam.h			bseparasite.h \
 	bsepcmdevice.h		bsepcmdevice-oss.h	bsepcmdevice-null.h		bseplugin.h \
 	bseprocedure.h		bseproject.h		bsescripthelper.h		bseserver.h \
-	bsesnet.h		bsesnooper.h		bsesong.h			bsessequencer.h \
+	bsesnet.h		bsesnooper.h		bsesong.h			bsesequencer.h \
 	bsesource.h		bsestandardosc.h	bsestandardsynths.h		bsestorage.h \
 	bseinstrumentoutput.h	bsesubiport.h		bseinstrumentinput.h		bsesuboport.h \
 	bsesubsynth.h		bsesuper.h		bsetrack.h			bsetype.h \
@@ -82,7 +82,7 @@ bse_c_sources = $(strip \
 	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \
 	bsepcmdevice.c		bsepcmdevice-oss.c	bsepcmdevice-null.c		bseplugin.c \
 	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.c \
-	bsesnet.c		bsesnooper.c		bsesong.c			bsessequencer.cc \
+	bsesnet.c		bsesnooper.c		bsesong.c			bsesequencer.cc \
 	bsesource.c		bsestandardosc.c	bsestandardsynths.c		bsestorage.c \
 	bseinstrumentoutput.c	bsesubiport.c		bseinstrumentinput.c		bsesuboport.c \
 	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \

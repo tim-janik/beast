@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
  */
 #include "bsepcmdevice-null.h"
-#include "bsessequencer.h"
+#include "bsesequencer.h"
 #include "bseengine.h"
 #include <string.h>
 

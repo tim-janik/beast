@@ -26,7 +26,7 @@
 #include "bsestorage.h"
 #include "bsemain.h"
 #include "bsecsynth.h"
-#include "bsessequencer.h"
+#include "bsesequencer.h"
 #include "bsesubsynth.h"
 #include "bseengine.h"	// FIXME: for bse_engine_sample_freq()
 #include <string.h>

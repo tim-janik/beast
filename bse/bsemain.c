@@ -18,7 +18,7 @@
 #include "bsemain.h"
 #include "topconfig.h"
 #include "bseserver.h"
-#include "bsessequencer.h"
+#include "bsesequencer.h"
 #include "bsejanitor.h"
 #include "bseplugin.h"
 #include "bsecategories.h"

@@ -23,7 +23,7 @@
 #include "bsesnet.h"
 #include "bsecsynth.h"
 #include "bsewaverepo.h"
-#include "bsessequencer.h"
+#include "bsesequencer.h"
 #include "bseserver.h"
 #include "bseundostack.h"
 #include "bsemain.h"

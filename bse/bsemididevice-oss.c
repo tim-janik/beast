@@ -19,7 +19,7 @@
 #include "bseserver.h"
 #include "bsemididecoder.h"
 #include "gslcommon.h"
-#include "bsessequencer.h"
+#include "bsesequencer.h"
 #include "topconfig.h"
 
 #ifndef	BSE_MIDI_DEVICE_CONF_OSS
