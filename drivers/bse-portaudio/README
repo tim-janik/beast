@@ -1,9 +1,8 @@
 BSE Driver Package
 ==================
 
-This is a BSE (Bedevilled Sound Engine) plugin/driver package.
-In order to build this package, you need recent versions
-of BSE (>=0.6.4) and PortAudioV19.
+This is a BSE (Bedevilled Sound Engine) plugin/driver package.  In order to
+build this package, you need recent versions of BSE (>=0.6.4) and PortAudioV19.
 
 PortAudio (>= V19):
   http://www.portaudio.com/
@@ -23,12 +22,77 @@ And a related IRC channel:
 Installation
 ============
 
-This package is a driver package and may install files under
-a prefix different from the prefix specified at configure time.
-In particular, the BSE drivers build from this package will
-be installed under the drivers/. subdirectory of an existing
-libbse installtion. The exact installation location can be
-found out via pkg-config with:
+This package is a driver package and may install files under a prefix different
+from the prefix specified at configure time.  In particular, the BSE drivers
+build from this package will be installed under the drivers/. subdirectory of
+an existing libbse installation. The exact installation location can be found
+out via pkg-config with:
+
   pkg-config --variable=driverdir bse	
 
 For general installation instructions, see the file `INSTALL'.
+
+Known Issues with the Current Release
+=====================================
+
+* the driver doesn't yet work with the PortAudio JACK driver
+
+  Although one of the motivations for implementing the PortAudioV19 support
+  was JACK support, it turned out that I needed to use PortAudios blocking
+  API for integrating with BEAST properly. You can read the discussion at
+  PortAudios list archive:
+
+  http://techweb.rfa.org/pipermail/portaudio/2004-November/003979.html
+
+  Since the PortAudio JACK driver doesn't support blocking yet, I started to
+  work on a patch against PortAudio that will fix this. It works with my
+  locally modified version of PortAudio already, but I have some cleanup work
+  to do before I can submit it to the PortAudio Team for merging the patch.
+  
+  But once this happened, this PortAudio driver will support JACK, OSS and
+  ALSA. You can expect me to make the required patch against PortAudio
+  publically available soon.
+
+* you need a CVS version of PortAudioV19
+
+  Since there is no released version of PortAudioV19, you need to grab a
+  snapshot from the CVS, which can be obtained at
+
+  http://www.portaudio.com/archives/pa_snapshot_v19.tar.gz
+
+  This is required since we use the blocking API, and the driver list
+  function, both of which were introduced at PortAudioV19.
+
+* the driver is untested
+
+  I only tested it here, so currently, I didn't receive user feedback. Please
+  supply feedback if possible. It appears that some cards may not work when
+  opened in readwrite mode through PortAudio. I didn't investigate this
+  completely, but you can initialize PortAudio using
+
+  beast -p portaudio=oss:0,wo
+
+  to use the writeonly mode. This should definitely work.
+
+* the default device used may not be right.
+
+  BEAST requires the default device to be used to be listed first, but I don't
+  sort according to PortAudio defaults yet. Thus if you say
+
+  beast -p portaudio
+
+  BEAST may or may not be using the default PortAudio driver. But for now, you
+  may want to explicitely specify the driver to use, since the "default"
+  option of my PortAudio driver is also not implemented correctly (it will
+  probably go away in the next release anyway).
+
+* latency for the OSS driver is not too good
+
+  This appears to be PortAudios fault, because it doesn't initialize the
+  fragment settings of OSS in the correct way. Again, I didn't investigate
+  this too much, but I think PortAudio should be patched to fix this.
+
+Please let me know any issues you have with the driver. I want to make it
+stable and solid as I receive feedback. Currently, this is work in progress.
+
+Stefan Westerfeld <stefan@space.twc.de>
