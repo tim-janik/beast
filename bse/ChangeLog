@@ -1,3 +1,8 @@
+Tue Mar  1 15:24:23 2005  Tim Janik  <timj@gtk.org>
+
+	* bsemidievent.c (bse_midi_signal_default): fixed wrong division for
+	CONTINUOUS_11 default value.
+
 Sat Feb  5 14:46:13 2005  Tim Janik  <timj@gtk.org>
 
 	* bseloader-guspatch.cc: disabled gus-patch specific xinfos, so gus 

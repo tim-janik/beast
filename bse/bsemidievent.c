@@ -45,7 +45,7 @@ bse_midi_signal_default (BseMidiSignalType type)
     case BSE_MIDI_SIGNAL_CONTINUOUS_7:	return 100.0 / 127.0;   /* Volume */
     case BSE_MIDI_SIGNAL_CONTINUOUS_8:	return 0.5;	        /* Balance */
     case BSE_MIDI_SIGNAL_CONTINUOUS_10:	return 0.5;	        /* Panorama */
-    case BSE_MIDI_SIGNAL_CONTINUOUS_11:	return 0x3fff / (gfloat) 0x3f80; /* Expression */
+    case BSE_MIDI_SIGNAL_CONTINUOUS_11:	return 0x3f80 / (gfloat) 0x3fff; /* Expression */
     case BSE_MIDI_SIGNAL_CONTROL_7:	return 100.0 / 127.0;	/* Volume MSB */
     case BSE_MIDI_SIGNAL_CONTROL_8:	return 0.5;	        /* Balance MSB */
     case BSE_MIDI_SIGNAL_CONTROL_10:	return 0.5;	        /* Panorama MSB */
