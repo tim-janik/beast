@@ -92,6 +92,8 @@ beast_headers = $(strip \
 	glewidgets.h \
 	gtklistwrapper.h \
 )
+# FIXME: remove extra dist for bstpatterneditor.h which is required by keytable legacy code
+EXTRA_DIST += bstpatterneditor.h
 # BEAST c sources to build the program from
 beast_sources = $(strip \
 	bstapp.c \

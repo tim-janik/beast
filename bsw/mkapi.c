@@ -205,9 +205,9 @@ marshal_add (GType  type,
 }
 
 static const gchar *cfile_header =
-("#include \"bsw.h\"\n"
+("#include <bsw/bsw.h>\n"
  "#include <bse/bse.h>\n"
- "#include \"bswglue.h\"\n"
+ "#include <bsw/bswglue.h>\n"
  );
 
 static void

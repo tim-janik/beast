@@ -17,8 +17,7 @@ images_DATA = ${public_images}
 EXTRA_DIST += ${public_images} ${private_images}
 
 gen_sources           = xgen-bstih
-CLEANFILES           += $(gen_sources)
-MAINTAINERCLEANFILES += beast-images.h
+CLEANFILES           += $(gen_sources) beast-images.h
 noinst_DATA           = beast-images.h
 
 beast-images.h:	Makefile
@@ -32,4 +31,3 @@ beast-images.h:	Makefile
 	&& echo "/* Generated data ends here */" >> xgen-bstih \
 	&& (cp xgen-bstih $@) \
 	&& rm -f xgen-bstih
-EXTRA_DIST = beast-images.h

@@ -203,7 +203,7 @@ AC_DEFUN(AC_BSW_SHELL_REQUIREMENTS,
       BSW_SHELL_LIBS="-lguile $BSW_SHELL_LIBS"
     else
       BSW_SHELL_LIBS="$BSE_LIBS"
-      AC_MSG_WARN([failed to detect guile library (>= 1.4) or headers])
+      AC_MSG_ERROR([failed to find guile library (>= 1.4) or headers])
     fi
     AC_SUBST(BSW_SHELL_CFLAGS)
     AC_SUBST(BSW_SHELL_LIBS)

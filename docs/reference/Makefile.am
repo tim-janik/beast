@@ -5,6 +5,9 @@ DOC_SOURCE_GLOB = $(top_srcdir)/bse/bse*.[hcp]*
 MAN_PAGES_3 = gsl.3 bse.3 bsw-procs.3 bst.3
 DATA_FILES = gsl.dat bse.dat bsw-procs.dat bst.dat
 
+# install man pages
+man_MANS = gsl.3 bsw-procs.3
+
 BSE_MAN_SRC_GLOBS=$(top_srcdir)/bse/bse*.[hc]
 GSL_MAN_SRC_GLOBS=$(top_srcdir)/bse/gsl*.[hc]
 BST_MAN_SRC_GLOBS=$(top_srcdir)/beast-gtk/bst*.[hc]
@@ -48,15 +51,16 @@ bst.dat: $(BST_MAN_SRC_GLOBS) $(srcdir)/scandocs.pl
 # man page generation
 #
 MAN_DEPS = $(TAGS2DOC) $(srcdir)/man-conf.pl
+EXTRA_DIST += man-conf.pl
 DOC2MAN = $(TAGS2DOC) --config $(srcdir)/man-conf.pl
 gsl.3:		gsl.dat $(MAN_DEPS)
-	$(DOC2MAN) < gsl.dat > $@
+	$(DOC2MAN) < $(srcdir)/gsl.dat > $@
 bse.3:		bse.dat $(MAN_DEPS)
-	$(DOC2MAN) < bse.dat > $@
+	$(DOC2MAN) < $(srcdir)/bse.dat > $@
 bsw-procs.3:	bsw-procs.dat $(MAN_DEPS)
-	$(DOC2MAN) < bsw-procs.dat > $@
+	$(DOC2MAN) < $(srcdir)/bsw-procs.dat > $@
 bst.3:		bst.dat $(MAN_DEPS)
-	$(DOC2MAN) < bst.dat > $@
+	$(DOC2MAN) < $(srcdir)/bst.dat > $@
 
 
 #

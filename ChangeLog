@@ -1,3 +1,28 @@
+Sat Jul 27 18:22:32 2002  Tim Janik  <timj@gtk.org>
+
+	* Makefile.am: fix gsl -> bse link.
+
+	* configure.in: error out if guile is missing.
+
+	* beast-gtk/Makefile.am: add missing files.
+
+	* beast-gtk/bstpartdialog.c: nuke wrong include.
+
+	* beast-gtk/icons/Makefile.am: fix build rules.
+
+	* beast-gtk/images/Makefile.am: add missing files.
+
+	* bsw/Makefile.am: add -I., fix build rules.
+
+	* bsw/mkapi.c: fix generated includes.
+
+	* bsw-shell/Makefile.am: add -I., add missing files.
+	scm glue is now kept in bsw-scm-glue.boot.
+
+	* docs/Makefile.am: nuke outdated files from EXTRA_DIST.
+
+	* docs/reference/Makefile.am: fix build rules.
+
 Sat Jul 27 13:30:39 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstmain.c (bst_parse_args): add --print-path option

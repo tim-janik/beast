@@ -153,7 +153,7 @@ shell_parse_args (gint    *argc_p,
     *argc_p = e;
 }
 
-#define	BOILERPLATE_SCM		BSW_PATH_SCRIPTS ## "/bsw-boilerplate.scm.x"
+#define	BOILERPLATE_SCM		BSW_PATH_SCRIPTS ## "/bsw-scm-glue.boot"
 
 static void
 gh_main (int   argc,

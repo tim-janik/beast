@@ -35,8 +35,12 @@ PKG_paths.h: $(top_srcdir)/configure Makefile
 
 # always built PKG_paths.h and create gsl link
 stamp-h: PKG_paths.h gsl
+
+# create builddir gsl link
 gsl:
 	ln -s bse gsl
+# dist ship the srcdir gsl link
+EXTRA_DIST += gsl
 
 MAINTAINERCLEANFILES += PKG_paths.h gsl
 

@@ -3,10 +3,6 @@
 #
 ## Makefile.am for BEAST icons
 
-EXTRA_DIST += @STRIP_BEGIN@ \
-	$(icon_list) \
-@STRIP_END@
-
 SRC_IMAGES = @STRIP_BEGIN@	\
 	aguitar.xcf		\
 	cdrom.xcf		\
@@ -77,13 +73,12 @@ STOCK_IMAGE_PAIRS = @STRIP_BEGIN@ \
 	stock_zoom_any			$(srcdir)/zoom-any.png		\
 @STRIP_END@
 
-gen_sources           = xgen-bstg
-CLEANFILES           += $(gen_sources)
-MAINTAINERCLEANFILES += bst-stock-gen.c
-noinst_DATA           = bst-stock-gen.c
+gen_sources = xgen-bstg
+CLEANFILES += $(gen_sources) bst-stock-gen.c
+noinst_DATA = bst-stock-gen.c
+EXTRA_DIST  = $(SRC_IMAGES) $(filter-out stock_%, $(STOCK_IMAGE_PAIRS))
 
-bst-stock-gen.c:	*.png
-	gdk-pixbuf-csource --build-list $(STOCK_IMAGE_PAIRS) >xgen-bstg && \
-	mv xgen-bstg $@
-
-EXTRA_DIST = bst-stock-gen.c
+bst-stock-gen.c:	$(srcdir)/*.png
+	gdk-pixbuf-csource --build-list $(STOCK_IMAGE_PAIRS) > xgen-bstg \
+	&& cp xgen-bstg $@ \
+	&& rm -f xgen-bstg

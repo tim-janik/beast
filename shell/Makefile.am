@@ -1,9 +1,9 @@
 # BSW-SCM - Bedevilled Sound Engine Scheme Wrapper
-# Copyright (C) 2001 Tim Janik
+# Copyright (C) 2001-2002 Tim Janik
 #
 ## Makefile.am for BSW-Shell
 
-INCLUDES = -I$(top_srcdir) $(BSW_SHELL_CFLAGS) -DG_DISABLE_CONST_RETURNS
+INCLUDES = -I$(top_srcdir) -I. $(BSW_SHELL_CFLAGS) -DG_DISABLE_CONST_RETURNS
 
 #
 # built sources
@@ -25,7 +25,7 @@ programs_ldadd = $(top_builddir)/bse/libbse.la $(top_builddir)/bsw/libbsw.la
 bswshell_SOURCES = bswshell.c bswscminterp.c
 bswshell_LDADD = $(programs_ldadd) $(BSW_SHELL_LIBS)
 bswscminterp.c: # bswscm-genglue.c
-EXTRA_DIST += # bswscmhandle.h
+EXTRA_DIST += bswscminterp.h
 
 
 #
@@ -33,12 +33,9 @@ EXTRA_DIST += # bswscmhandle.h
 #
 scriptdir = $(bswscriptdir)
 script_DATA = $(public_scripts)
-public_scripts = \
-	bsw-boilerplate.scm.x	\
-	progressor-example.scm
-
-
-#
-# auxillary files
-#
-EXTRA_DIST += test.scm  # TODO
+public_scripts = $(strip	\
+	bsw-scm-glue.boot	\
+	progressor-example.scm	\
+	test.scm		\
+)
+EXTRA_DIST += $(public_scripts)

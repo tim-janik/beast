@@ -1,11 +1,11 @@
 # BSW - Bedevilled Sound Engine Wrapper
-# Copyright (C) 2000-2001 Tim Janik
+# Copyright (C) 2000-2002 Tim Janik
 #
 ## Makefile.am for BSW
 
 # SUBDIRS = # icons
 
-INCLUDES = -I$(top_srcdir) $(BSE_CFLAGS) -DG_DISABLE_CONST_RETURNS
+INCLUDES = -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_DISABLE_CONST_RETURNS
 
 #
 # libraries to compile and install
@@ -84,19 +84,17 @@ CLEANFILES += $(gen_sources)
 COPYING: $(bsw_built_public_sources) $(bsw_built_sources)
 $(libbsw_la_OBJECTS): COPYING # this is our oldest-source-stamp
 # initial creation of the real stamp-* files
-bswgenapi.h: @MISSING_PERL5@		# never add deps here
-	test -f "$(srcdir)/$@" || touch $(srcdir)/$@
+bswgenapi.h: stamp-bswgenapi.h ;
 # normal autogeneration rules
-$(srcdir)/stamp-bswgenapi.h: @MISSING_PERL5@ mkapi
+stamp-bswgenapi.h: mkapi
 	$(top_builddir)/bsw/mkapi --header >xgen-sbpah \
-	&& (cmp -s xgen-sbpah $(srcdir)/bswgenapi.h || cp xgen-sbpah $(srcdir)/bswgenapi.h) \
+	&& (cmp -s xgen-sbpah bswgenapi.h || cp xgen-sbpah bswgenapi.h) \
 	&& rm -f xgen-sbpah \
 	&& echo timestamp > $@
-$(srcdir)/bswgenapi.c: @MISSING_PERL5@ bswgenapi.h mkapi
+bswgenapi.c: bswgenapi.h mkapi
 	$(top_builddir)/bsw/mkapi --body >xgen-sbpac \
-	&& cp xgen-sbpac $(srcdir)/bswgenapi.c \
+	&& cp xgen-sbpac $@ \
 	&& rm -f xgen-sbpac
-
 
 #
 # convenience targets for the builtsources

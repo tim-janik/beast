@@ -20,7 +20,6 @@
 #include	"bststatusbar.h"
 #include	"bstprocedure.h"
 #include	"bstmenus.h"
-#include	"bsteffectview.h"
 
 
 /* --- prototypes --- */

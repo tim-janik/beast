@@ -9,6 +9,7 @@ RELEASE:
 - disallow creating more than one track as long as playback isn't supported for it
 * add switch to set keytables directly, no-serverquery, which works without rc file
 * fix file selection (open load) dialog
+* plugin loading doesn't work for doc building after make uninstall
 
 GENERAL:
 * BLIT, band-limited impulse train
@@ -18,3 +19,5 @@ GENERAL:
 * get File/Save to work
 * quit/close needs to feature mod-time vs. creation-time handling
 * wave editor: provide transpose spinner for wave preview
+- dialogs without a menu should feature Escape for pop-down
+- middle mouse button on router canvas background should scroll
