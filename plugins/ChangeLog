@@ -1,3 +1,7 @@
+Mon Nov 17 18:03:09 2003  Tim Janik  <timj@gtk.org>
+
+	* evaluator/bseevaluator.idl: changed category.
+
 Sun Nov 16 22:40:58 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* evaluator/compiler.*: Support for parenthesis, and sin(x).
