@@ -42,6 +42,7 @@ extern "C" {
 typedef struct _BseSimpleADSR      BseSimpleADSR;
 typedef struct _BseSimpleADSRClass BseSimpleADSRClass;
 typedef struct {
+  gfloat	  attack_level;
   gfloat	  attack_inc;
   gfloat	  decay_dec;
   gfloat	  sustain_level;
@@ -67,11 +68,13 @@ struct _BseSimpleADSRClass
 enum
 {
   BSE_SIMPLE_ADSR_ICHANNEL_GATE,
-  BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER
+  BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER,
+  BSE_SIMPLE_ADSR_N_ICHANNELS
 };
 enum
 {
-  BSE_SIMPLE_ADSR_OCHANNEL_OUT
+  BSE_SIMPLE_ADSR_OCHANNEL_OUT,
+  BSE_SIMPLE_ADSR_N_OCHANNELS
 };
 
 

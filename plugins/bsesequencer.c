@@ -114,6 +114,8 @@ bse_sequencer_class_init (BseSequencerClass *class)
   
   ochannel = bse_source_class_add_ochannel (source_class, "Freq Out", "Frequency Signal");
   g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_FREQ);
+  ochannel = bse_source_class_add_ochannel (source_class, "Note Sync", "Note Sync Signal");
+  g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_NOTE_SYNC);
 }
 
 static void
@@ -288,22 +290,27 @@ sequencer_process (GslModule *module,
 		   guint      n_values)
 {
   SeqModule *smod = module->user_data;
-  gfloat *freq_out = GSL_MODULE_OBUFFER (module, 0);
+  gfloat *freq_out = GSL_MODULE_OBUFFER (module, BSE_SEQUENCER_OCHANNEL_FREQ);
+  gfloat *nsync_out = GSL_MODULE_OBUFFER (module, BSE_SEQUENCER_OCHANNEL_NOTE_SYNC);
   gfloat *bound = freq_out + n_values;
 
   while (freq_out < bound)
     {
       gfloat nval = smod->values[smod->index];
 
-      *freq_out++ = nval;
-      smod->c--;
       if (smod->c == 0)
 	{
 	  smod->c = smod->counter;
 	  smod->index++;
 	  if (smod->index >= smod->n_values)
 	    smod->index = 0;
+	  *nsync_out = 1.0;
 	}
+      else
+	*nsync_out = 0.0;
+      *freq_out++ = nval;
+      nsync_out++;
+      smod->c--;
     }
 }
 

@@ -21,6 +21,8 @@
 #include <bse/gslengine.h>
 
 
+#define	TIME_EPSILON	(0.00001)
+
 /* --- parameters --- */
 enum
 {
@@ -88,30 +90,30 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *class)
   
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_ATTACK_TIME,
-			      bse_param_spec_float ("attack_time", "Attack Time", NULL,
-						    0.0, 10.0,
-						    1.0, 1.0,
+			      bse_param_spec_float ("attack_time", "Attack Time [%]", NULL,
+						    0.0, 100.0,
+						    10.0, 1.0,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_DECAY_TIME,
-			      bse_param_spec_float ("decay_time", "Decay Time", NULL,
-						    0.0, 10.0,
-						    3.0, 1.0,
+			      bse_param_spec_float ("decay_time", "Decay Time [%]", NULL,
+						    0.0, 100.0,
+						    30.0, 1.0,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_SUSTAIN_LEVEL,
-			      bse_param_spec_float ("sustain_level", "Sustain Level", NULL,
-						    0.0, 10.0,
-						    5.0, 1.0,
+			      bse_param_spec_float ("sustain_level", "Sustain Level [%]", NULL,
+						    0.0, 100.0,
+						    50.0, 1.0,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
   bse_object_class_add_param (object_class, "Envelope",
 			      PARAM_RELEASE_TIME,
-			      bse_param_spec_float ("release_time", "Release Time", NULL,
-						    0.0, 10.0,
-						    4.0, 1.0,
+			      bse_param_spec_float ("release_time", "Release Time [%]", NULL,
+						    0.0, 100.0,
+						    40.0, 1.0,
 						    BSE_PARAM_DEFAULT |
 						    BSE_PARAM_HINT_DIAL));
   desc = g_strdup_printf ("Time ranges in seconds: %.1f %.1f %.1f",
@@ -126,7 +128,7 @@ bse_simple_adsr_class_init (BseSimpleADSRClass *class)
 						   BSE_PARAM_DEFAULT));
   g_free (desc);
 
-  ichannel = bse_source_class_add_ichannel (source_class, "Gate In", "Gate input");
+  ichannel = bse_source_class_add_ichannel (source_class, "Gate In", "Gate input (activates/deactivates envelope)");
   g_assert (ichannel == BSE_SIMPLE_ADSR_ICHANNEL_GATE);
   ichannel = bse_source_class_add_ichannel (source_class, "Retrigger In", "Retrigger input (raising edge retriggers envelope)");
   g_assert (ichannel == BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER);
@@ -153,19 +155,19 @@ bse_simple_adsr_set_property (BseSimpleADSR *adsr,
   switch (param_id)
     {
     case PARAM_ATTACK_TIME:
-      adsr->attack_time = g_value_get_float (value) / 10.0;
+      adsr->attack_time = g_value_get_float (value) / 100.0;
       bse_simple_adsr_update_modules (adsr, NULL);
       break;
     case PARAM_DECAY_TIME:
-      adsr->decay_time = g_value_get_float (value) / 10.0;
+      adsr->decay_time = g_value_get_float (value) / 100.0;
       bse_simple_adsr_update_modules (adsr, NULL);
       break;
     case PARAM_SUSTAIN_LEVEL:
-      adsr->sustain_level = g_value_get_float (value) / 10.0;
+      adsr->sustain_level = g_value_get_float (value) / 100.0;
       bse_simple_adsr_update_modules (adsr, NULL);
       break;
     case PARAM_RELEASE_TIME:
-      adsr->release_time = g_value_get_float (value) / 10.0;
+      adsr->release_time = g_value_get_float (value) / 100.0;
       bse_simple_adsr_update_modules (adsr, NULL);
       break;
     case PARAM_TIME_RANGE:
@@ -187,16 +189,16 @@ bse_simple_adsr_get_property (BseSimpleADSR *adsr,
   switch (param_id)
     {
     case PARAM_ATTACK_TIME:
-      g_value_set_float (value, adsr->attack_time * 10.0);
+      g_value_set_float (value, adsr->attack_time * 100.0);
       break;
     case PARAM_DECAY_TIME:
-      g_value_set_float (value, adsr->decay_time * 10.0);
+      g_value_set_float (value, adsr->decay_time * 100.0);
       break;
     case PARAM_SUSTAIN_LEVEL:
-      g_value_set_float (value, adsr->sustain_level * 10.0);
+      g_value_set_float (value, adsr->sustain_level * 100.0);
       break;
     case PARAM_RELEASE_TIME:
-      g_value_set_float (value, adsr->release_time * 10.0);
+      g_value_set_float (value, adsr->release_time * 100.0);
       break;
     case PARAM_TIME_RANGE:
       g_value_set_enum (value, adsr->time_range);
@@ -209,6 +211,10 @@ bse_simple_adsr_get_property (BseSimpleADSR *adsr,
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_gate_inc
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_GATE | BSE_MIX_RAMP_WITH_INC)
+#include "bsesimpleadsr-aux.c"
+
+#define	BSE_MIX_VARIANT_NAME	ramp_mix_inc
+#define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_INC)
 #include "bsesimpleadsr-aux.c"
 
 #define	BSE_MIX_VARIANT_NAME	ramp_mix_gate_trig_dec
@@ -235,6 +241,10 @@ bse_simple_adsr_get_property (BseSimpleADSR *adsr,
 #define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_IGATE)
 #include "bsesimpleadsr-aux.c"
 
+#define	BSE_MIX_VARIANT_NAME	const_mix_trig
+#define	BSE_MIX_VARIANT	(BSE_MIX_RAMP_WITH_TRIG)
+#include "bsesimpleadsr-aux.c"
+
 enum {
   ATTACK,
   DECAY,
@@ -257,75 +267,100 @@ simple_adsr_process (GslModule *module,
   SimpleADSR *env = module->user_data;
   BseSimpleADSRVars *vars = &env->vars;
   BseMixRampLinear *ramp = &env->ramp;
-  const BseSampleValue *gate_bound = GSL_MODULE_IBUFFER (module, 0) + n_values;
-  const BseSampleValue *trig_bound = GSL_MODULE_IBUFFER (module, 1) + n_values;
+  const gfloat *gate_in = GSL_MODULE_IBUFFER (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE);
+  const gfloat *trig_in = GSL_MODULE_IBUFFER (module, BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER);
+  gfloat *wave_out = GSL_MODULE_OBUFFER (module, BSE_SIMPLE_ADSR_OCHANNEL_OUT);
+  gboolean have_gate = GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected;
   guint state = 0;
 
   if (!module->ostreams[0].connected)
     return;	/* no output */
 
-  ramp->wave_out = GSL_MODULE_OBUFFER (module, 0);
-  if (env->phase == POST_RELEASE && !module->istreams[0].connected)
+  if (env->phase == POST_RELEASE &&
+      !GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_GATE).connected &&
+      !GSL_MODULE_ISTREAM (module, BSE_SIMPLE_ADSR_ICHANNEL_RETRIGGER).connected)
     {
-      /* no trigger input possible, FIXME: statuc-0 support */
-      memset (ramp->wave_out, 0, n_values * sizeof (ramp->wave_out[0]));
+      /* no trigger input possible */
+      ramp->wave_out = gsl_engine_const_values (0.0);
       return;
     }
-    
-  ramp->bound = ramp->wave_out + n_values;
+
+  ramp->wave_out = wave_out;
+  ramp->bound = wave_out + n_values;
   do
     {
-      ramp->gate_in = gate_bound - (ramp->bound - ramp->wave_out);
-      ramp->trig_in = trig_bound - (ramp->bound - ramp->wave_out);
+      /* since we're not always mixing with gate/trigger, adjust
+       * buffer pointers here
+       */
+      ramp->gate_in = gate_in + (ramp->wave_out - wave_out);
+      ramp->trig_in = trig_in + (ramp->wave_out - wave_out);
       switch (env->phase)
 	{
 	case ATTACK:
 	  ramp->level_step = vars->attack_inc;
-	  ramp->level_border = 1.0;
-	  state = ramp_mix_gate_inc (ramp);
-	  ramp->last_trigger = trig_bound[ramp->bound - ramp->wave_out - 1];
+	  ramp->level_border = vars->attack_level;
+	  state = (have_gate ? ramp_mix_gate_inc : ramp_mix_inc) (ramp);
+	  /* update last trigger val because we mixed without it */
+	  ramp->last_trigger = trig_in[ramp->wave_out - wave_out - 1];
 	  switch (state)
 	    {
-	    case BSE_MIX_RAMP_REACHED_BORDER:	env->phase = DECAY;		break;
-	    case BSE_MIX_RAMP_GATE_LOW:		env->phase = RELEASE;		break;
+	    case BSE_MIX_RAMP_REACHED_BORDER:	env->phase = DECAY;	break;
+	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = RELEASE;	break;
+	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
+	    default:	g_error ("should not be reached: state: %d\n", state);
 	    }
 	  break;
 	case DECAY:
 	  ramp->level_step = vars->decay_dec;
 	  ramp->level_border = vars->sustain_level;
-	  state = ramp_mix_gate_trig_dec (ramp);
+	  state = (have_gate ? ramp_mix_gate_trig_dec : ramp_mix_trig_dec) (ramp);
 	  switch (state)
 	    {
 	    case BSE_MIX_RAMP_REACHED_BORDER:	env->phase = SUSTAIN;		break;
-	    case BSE_MIX_RAMP_GATE_LOW:		env->phase = RELEASE;		break;
+	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = RELEASE;		break;
 	    case BSE_MIX_RAMP_RETRIGGER:	env->phase = ATTACK;		break;
+	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
+	    default:	g_error ("should not be reached: state: %d\n", state);
 	    }
 	  break;
 	case SUSTAIN:
-	  state = const_mix_gate_trig (ramp);
+	  if (have_gate)
+	    state = const_mix_gate_trig (ramp);
+	  else
+	    state = BSE_MIX_RAMP_GATE_CHANGE;
 	  switch (state)
 	    {
-	    case BSE_MIX_RAMP_GATE_LOW:		env->phase = RELEASE;		break;
+	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = RELEASE;		break;
 	    case BSE_MIX_RAMP_RETRIGGER:        env->phase = ATTACK;            break;
+	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
+	    default:	g_error ("should not be reached: state: %d\n", state);
 	    }
 	  break;
 	case RELEASE:
 	  ramp->level_step = vars->release_dec;
 	  ramp->level_border = 0.0;
-	  state = ramp_mix_invgate_dec (ramp);
+	  /* with gate input, mix without trigger as gate is low */
+	  state = (have_gate ? ramp_mix_invgate_dec : ramp_mix_trig_dec) (ramp);
           ramp->last_trigger = 0.0;
 	  switch (state)
 	    {
 	    case BSE_MIX_RAMP_REACHED_BORDER:	env->phase = POST_RELEASE;	break;
-	    case BSE_MIX_RAMP_GATE_LOW:		env->phase = ATTACK;		break;
+	    case BSE_MIX_RAMP_RETRIGGER:
+	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = ATTACK;		break;
+	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
+	    default:	g_error ("should not be reached: state: %d\n", state);
 	    }
 	  break;
 	case POST_RELEASE:
-	  state = const_mix_invgate (ramp);
+          /* with gate input, mix without trigger as gate is low */
+	  state = (have_gate ? const_mix_invgate : const_mix_trig) (ramp);
           ramp->last_trigger = 0.0;
 	  switch (state)
 	    {
-	    case BSE_MIX_RAMP_GATE_LOW:		env->phase = ATTACK;		break;
+	    case BSE_MIX_RAMP_RETRIGGER:
+	    case BSE_MIX_RAMP_GATE_CHANGE:	env->phase = ATTACK;		break;
+	    case BSE_MIX_RAMP_REACHED_BOUND:					break;
+	    default:	g_error ("should not be reached: state: %d\n", state);
 	    }
 	  break;
 	}
@@ -340,11 +375,26 @@ bse_simple_adsr_update_modules (BseSimpleADSR *adsr,
   BseSimpleADSRVars vars;
   gfloat ms = bse_time_range_to_ms (adsr->time_range);
 
-  ms *= BSE_MIX_FREQ_f / 1000.0;
-  vars.attack_inc = 1.0 / (ms * adsr->attack_time);
+  ms *= gsl_engine_sample_freq () / 1000.0;
+  if (adsr->attack_time < TIME_EPSILON)
+    {
+      vars.attack_level = adsr->sustain_level;
+      vars.attack_inc = 1.0;
+    }
+  else
+    {
+      vars.attack_level = 1.0;
+      vars.attack_inc = 1.0 / (ms * adsr->attack_time);
+    }
   vars.sustain_level = adsr->sustain_level;
-  vars.decay_dec = (1.0 - vars.sustain_level) / (ms * adsr->decay_time);
-  vars.release_dec = vars.sustain_level / (ms * adsr->release_time);
+  if (adsr->decay_time < TIME_EPSILON)
+    vars.decay_dec = 1.0;
+  else
+    vars.decay_dec = (1.0 - vars.sustain_level) / (ms * adsr->decay_time);
+  if (adsr->release_time < TIME_EPSILON)
+    vars.release_dec = 1.0;
+  else
+    vars.release_dec = vars.sustain_level / (ms * adsr->release_time);
   
   if (BSE_SOURCE_PREPARED (adsr))
     bse_source_update_omodules (BSE_SOURCE (adsr),
@@ -361,12 +411,12 @@ bse_simple_adsr_context_create (BseSource *source,
 				GslTrans  *trans)
 {
   static const GslClass env_class = {
-    2,				/* n_istreams */
-    0,				/* n_jstreams */
-    1,				/* n_ostreams */
-    simple_adsr_process,	/* process */
-    (GslModuleFreeFunc) g_free,	/* free */
-    GSL_COST_CHEAP,		/* cost */
+    BSE_SIMPLE_ADSR_N_ICHANNELS,	/* n_istreams */
+    0,					/* n_jstreams */
+    BSE_SIMPLE_ADSR_N_OCHANNELS,	/* n_ostreams */
+    simple_adsr_process,		/* process */
+    (GslModuleFreeFunc) g_free,		/* free */
+    GSL_COST_CHEAP,			/* cost */
   };
   BseSimpleADSR *simple_adsr = BSE_SIMPLE_ADSR (source);
   SimpleADSR *env = g_new0 (SimpleADSR, 1);

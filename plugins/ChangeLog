@@ -1,3 +1,9 @@
+Wed Feb  6 17:30:53 2002  Tim Janik  <timj@gtk.org>
+
+	* bsesequencer.[hc]: provide per-note sync signal.
+
+	* bsesimpleadsr*.[hc]: fix ranges and gate input handling.
+
 Wed Feb  6 04:54:16 2002  Tim Janik  <timj@gtk.org>
 
 	* bsesequencer.c: specify timings as floats, so more
