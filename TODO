@@ -12,7 +12,6 @@ FIXMES:
 - default-initialize authors: field with user name
 - add default-settings config preference (authors, license)
 - evaluate elimination of seqid
-- fix object docu not containing plugins
 - implement auto-save feature
 - undo across midi file import is broken
 - implement (GUI for) locked properties
