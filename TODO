@@ -1,4 +1,5 @@
 FIXMES:
+- add more menu tooltips
 - mixer icon
 - get rid of FIXMEs in beast-gtk/testgui.c
 - seqid changed notification *only* works for non-source children of BseSong

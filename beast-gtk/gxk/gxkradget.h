@@ -87,11 +87,13 @@ void          gxk_radget_sensitize      (GxkRadget          *radget,
 /* --- radget types --- */
 typedef struct GxkRadgetData GxkRadgetData;
 typedef struct {
+  GParamSpec* (*find_prop) (GTypeClass         *klass,
+                            const gchar        *construct_param_name);
   GxkRadget*  (*create)    (GType               type,
                             const gchar        *name,
+                            guint               n_construct_params,
+                            GParameter         *construct_params,
                             GxkRadgetData      *gdgdata);
-  GParamSpec* (*find_prop) (GxkRadget          *radget,
-                            const gchar        *prop_name);
   void        (*set_prop)  (GxkRadget          *radget,
                             const gchar        *prop_name,
                             const GValue       *value);

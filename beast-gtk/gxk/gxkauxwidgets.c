@@ -571,24 +571,26 @@ gxk_widget_patcher_get_type (void)
   return type;
 }
 
+static GParamSpec*
+widget_patcher_find_prop (GTypeClass  *klass,
+                          const gchar *prop_name)
+{
+  return g_object_class_find_property (G_OBJECT_CLASS (klass), prop_name);
+}
+
 static GxkRadget*
 widget_patcher_create (GType               type,
                        const gchar        *name,
+                       guint               n_construct_params,
+                       GParameter         *construct_params,
                        GxkRadgetData      *gdgdata)
 {
-  return g_object_new (type, NULL);
-}
-
-static GParamSpec*
-widget_patcher_find_prop (GxkRadget    *radget,
-                          const gchar  *prop_name)
-{
-  return g_object_class_find_property (G_OBJECT_GET_CLASS (radget), prop_name);
+  return g_object_newv (type, n_construct_params, construct_params);
 }
 
 static const GxkRadgetType widget_patcher_def = {
-  widget_patcher_create,
   widget_patcher_find_prop,
+  widget_patcher_create,
   (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
   widget_patcher_adopt,
   NULL,         /* find_pack */

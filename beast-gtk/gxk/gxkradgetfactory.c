@@ -483,19 +483,23 @@ gxk_radget_factory_attach (GxkRadgetFactory *self,
 
 
 /* --- radget type hooks --- */
+static GParamSpec*
+radget_factory_find_prop (GTypeClass  *klass,
+                          const gchar *prop_name)
+{
+  return g_object_class_find_property (G_OBJECT_CLASS (klass), prop_name);
+}
+
 static GxkRadget*
 radget_factory_create (GType               type,
                        const gchar        *name,
+                       guint               n_construct_params,
+                       GParameter         *construct_params,
                        GxkRadgetData      *gdgdata)
 {
-  return g_object_new (type, "name", name, NULL);
-}
-
-static GParamSpec*
-radget_factory_find_prop (GxkRadget    *radget,
-                          const gchar  *prop_name)
-{
-  return g_object_class_find_property (G_OBJECT_GET_CLASS (radget), prop_name);
+  GtkWidget *widget = g_object_newv (type, n_construct_params, construct_params);
+  g_object_set (widget, "name", name, NULL);
+  return widget;
 }
 
 static gboolean
@@ -512,8 +516,8 @@ radget_factory_adopt (GxkRadget          *radget,
 }
 
 static const GxkRadgetType radget_factory_def = {
-  radget_factory_create,
   radget_factory_find_prop,
+  radget_factory_create,
   (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
   radget_factory_adopt,
   NULL, /* find_pack */
@@ -597,18 +601,20 @@ gxk_factory_branch_get_type (void)
   return type;
 }
 /* --- GxkFactoryBranch radget type hooks --- */
+static GParamSpec*
+factory_branch_find_prop (GTypeClass  *klass,
+                          const gchar *prop_name)
+{
+  return g_object_class_find_property (G_OBJECT_CLASS (klass), prop_name);
+}
 static GxkRadget*
 factory_branch_create (GType               type,
                        const gchar        *name,
+                       guint               n_construct_params,
+                       GParameter         *construct_params,
                        GxkRadgetData      *gdgdata)
 {
-  return g_object_new (type, NULL);
-}
-static GParamSpec*
-factory_branch_find_prop (GxkRadget    *radget,
-                          const gchar  *prop_name)
-{
-  return g_object_class_find_property (G_OBJECT_GET_CLASS (radget), prop_name);
+  return g_object_newv (type, n_construct_params, construct_params);
 }
 static gboolean
 factory_branch_adopt (GxkRadget          *radget,
@@ -624,8 +630,8 @@ factory_branch_adopt (GxkRadget          *radget,
   return FALSE; /* no support for packing args */
 }
 static const GxkRadgetType factory_branch_def = {
-  factory_branch_create,
   factory_branch_find_prop,
+  factory_branch_create,
   (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
   factory_branch_adopt,
   NULL, /* find_pack */

@@ -1125,20 +1125,50 @@ radget_create_from_node (Node         *node,
 {
   GxkRadgetType tinfo;
   guint i, n_pops = 0;
-  /* prepare for $name lookups */
+  /* prepare for $id/$name lookups */
   env->name = node->name;
   /* retrive type info */
   if (!gxk_radget_type_lookup (node->type, &tinfo))
     g_error ("invalid radget type: %s", g_type_name (node->type));
+  /* precedence for property value lookups:
+   * - all node ancestry args
+   * - expanded call_args
+   */
+  if (node->call_stack)
+    n_pops++, env->args_list = g_slist_prepend (env->args_list, node->call_stack->data);
+  if (node->parent_arg_list)
+    n_pops += g_slist_length (node->parent_arg_list), env->args_list = g_slist_concat (g_slist_copy (node->parent_arg_list),
+                                                                                       env->args_list);
   /* create radget */
+  GTypeClass *klass = g_type_class_ref (node->type);
   if (!radget)
     {
+      GParameter *cparams = g_alloca (sizeof (*cparams) * ARGS_N_ENTRIES (node->prop_args));
+      memset (cparams, 0, sizeof (*cparams) * ARGS_N_ENTRIES (node->prop_args));
+      guint n_cparams = 0;
+      /* construct properties */
+      for (i = 0; i < ARGS_N_ENTRIES (node->prop_args); i++)
+        {
+          const gchar *pname = ARGS_NTH_NAME (node->prop_args, i);
+          const gchar *pvalue = ARGS_NTH_VALUE (node->prop_args, i);
+          GParamSpec *pspec = tinfo.find_prop (klass, pname);
+          if (pspec && (pspec->flags & (G_PARAM_CONSTRUCT | G_PARAM_CONSTRUCT_ONLY)))
+            {
+              guint j = n_cparams++;
+              cparams[j].name = pspec->name;
+              property_value_from_string (node->type, pspec, &cparams[j].value, pname, pvalue, env, error);
+              if (!G_VALUE_TYPE (&cparams[j].value))
+                n_cparams--;
+            }
+        }
       GxkRadgetData gdgdata;
       gdgdata.node = node;
       gdgdata.call_stack_top = node->call_stack->data;
       gdgdata.xdef_radget = env->xdef_radget;
       gdgdata.env = env;
-      radget = tinfo.create (node->type, node->name, &gdgdata);
+      radget = tinfo.create (node->type, node->name, n_cparams, cparams, &gdgdata);
+      for (i = 0; i < n_cparams; i++)
+        g_value_unset (&cparams[i].value);
     }
   g_object_set_qdata (radget, quark_radget_node, node);
   /* keep global xdef_radget for gdg_data */
@@ -1151,22 +1181,13 @@ radget_create_from_node (Node         *node,
     gtk_size_group_add_widget (env_get_size_group (env, node->size_vgroup, 'v'), radget);
   if (node->size_hvgroup)
     gtk_size_group_add_widget (env_get_size_group (env, node->size_hvgroup, 'b'), radget);
-  /* precedence for property value lookups:
-   * - all node ancestry args
-   * - expanded call_args
-   */
-  if (node->call_stack)
-    n_pops++, env->args_list = g_slist_prepend (env->args_list, node->call_stack->data);
-  if (node->parent_arg_list)
-    n_pops += g_slist_length (node->parent_arg_list), env->args_list = g_slist_concat (g_slist_copy (node->parent_arg_list),
-                                                                                       env->args_list);
   /* set properties */
   for (i = 0; i < ARGS_N_ENTRIES (node->prop_args); i++)
     {
       const gchar *pname = ARGS_NTH_NAME (node->prop_args, i);
       const gchar *pvalue = ARGS_NTH_VALUE (node->prop_args, i);
-      GParamSpec *pspec = tinfo.find_prop (radget, pname);
-      if (pspec)
+      GParamSpec *pspec = tinfo.find_prop (klass, pname);
+      if (pspec && !(pspec->flags & (G_PARAM_CONSTRUCT | G_PARAM_CONSTRUCT_ONLY)))
         {
           GValue value = { 0 };
           property_value_from_string (node->type, pspec, &value, pname, pvalue, env, error);
@@ -1176,10 +1197,11 @@ radget_create_from_node (Node         *node,
               g_value_unset (&value);
             }
         }
-      else
+      else if (!pspec)
         set_error (error, "radget \"%s\" has no property: %s", node->name, pname);
     }
   /* cleanup */
+  g_type_class_unref (klass);
   while (n_pops--)
     g_slist_pop_head (&env->args_list);
   return radget;
@@ -1686,19 +1708,23 @@ gxk_radget_define_type (GType                type,
 
 
 /* --- widget types --- */
+static GParamSpec*
+widget_find_prop (GTypeClass   *klass,
+                  const gchar  *construct_param_name)
+{
+  return g_object_class_find_property (G_OBJECT_CLASS (klass), construct_param_name);
+}
+
 static GxkRadget*
 widget_create (GType               type,
                const gchar        *name,
+               guint               n_construct_params,
+               GParameter         *construct_params,
                GxkRadgetData      *gdgdata)
 {
-  return g_object_new (type, "name", name, NULL);
-}
-
-static GParamSpec*
-widget_find_prop (GxkRadget    *radget,
-                  const gchar  *prop_name)
-{
-  return g_object_class_find_property (G_OBJECT_GET_CLASS (radget), prop_name);
+  GtkWidget *widget = g_object_newv (type, n_construct_params, construct_params);
+  g_object_set (widget, "name", name, NULL);
+  return widget;
 }
 
 static gboolean
@@ -1731,8 +1757,8 @@ void
 gxk_radget_define_widget_type (GType type)
 {
   static const GxkRadgetType widget_info = {
-    widget_create,
     widget_find_prop,
+    widget_create,
     (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
     widget_adopt,
     widget_find_pack,
@@ -1804,8 +1830,8 @@ static void
 radget_define_gtk_menu (void)
 {
   static const GxkRadgetType widget_info = {
-    widget_create,
     widget_find_prop,
+    widget_create,
     (void(*)(GxkRadget*,const gchar*,const GValue*)) g_object_set_property,
     menu_adopt,
     (void*) return_NULL,/* find_pack */
