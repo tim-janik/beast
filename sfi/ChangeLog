@@ -1,3 +1,12 @@
+Fri Dec 24 22:48:19 2004  Tim Janik  <timj@gtk.org>
+
+	* sfidl-corecxx.cc: there's no need to inline the choice 
+	value accessor for enum types in generated code.
+
+	* sfiparams.[hc]: allow provision of a choice value array for
+	GEnum types by setting an accessor function with
+	sfi_enum_type_set_choice_value_getter().
+
 Mon Dec 20 15:03:57 2004  Tim Janik  <timj@gtk.org>
 
 	* sfidl-corecxx.cc: call property_changed() in response to automated

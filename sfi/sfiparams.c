@@ -67,6 +67,7 @@ GType        *sfi__param_spec_types = NULL;
 static GQuark quark_hints = 0;
 static GQuark quark_param_group = 0;
 static GQuark quark_param_owner = 0;
+static GQuark quark_enum_choice_value_getter = 0;
 static GQuark quark_tmp_choice_values = 0;
 static GQuark quark_tmp_record_fields = 0;
 static GQuark quark_boxed_info = 0;
@@ -96,6 +97,7 @@ _sfi_init_params (void)
   quark_hints = g_quark_from_static_string ("sfi-pspec-hints");
   quark_param_group = g_quark_from_static_string ("sfi-pspec-group");
   quark_param_owner = g_quark_from_static_string ("sfi-pspec-owner");
+  quark_enum_choice_value_getter = g_quark_from_static_string ("sfi-enum-choice-value-getter");
   quark_tmp_choice_values = g_quark_from_static_string ("sfi-tmp-choice-values");
   quark_tmp_record_fields = g_quark_from_static_string ("sfi-tmp-choice-values");
   quark_boxed_info = g_quark_from_static_string ("sfi-boxed-info");
@@ -766,7 +768,7 @@ sfi_pspec_note (const gchar *name,
 }
 
 
-/* --- boxed type conversion support --- */
+/* --- conversion --- */
 enum {
   BOXED_RECORD = 1,
   BOXED_SEQUENCE
@@ -850,8 +852,16 @@ sfi_boxed_type_get_seq_element (GType               boxed_type)
   return pspec;
 }
 
+void
+sfi_enum_type_set_choice_value_getter (GType                 gtype,
+                                       SfiChoiceValueGetter  cvgetter)
+{
+  g_return_if_fail (G_TYPE_IS_ENUM (gtype));
+  if (g_type_get_qdata (gtype, quark_tmp_choice_values) != NULL)
+    g_warning ("%s: unsetting choice value getter of type `%s' while keeping old choice value references", G_STRFUNC, g_type_name (gtype));
+  g_type_set_qdata (gtype, quark_enum_choice_value_getter, cvgetter);
+}
 
-/* --- conversion --- */
 static SfiSeq*
 choice_values_to_seq (const SfiChoiceValues cvalues)
 {
@@ -934,6 +944,7 @@ tmp_record_fields_from_seq (SfiSeq *seq)
 
 typedef struct {
   guint           ref_count;
+  guint           free_values : 1;
   GEnumClass     *eclass; /* !eclass => free (cvalues[*].values.choice_ident) */
   SfiChoiceValues cvalues;
 } TmpChoiceValues;
@@ -947,20 +958,22 @@ tmp_choice_values_unref (TmpChoiceValues *tcv)
   tcv->ref_count--;
   if (!tcv->ref_count)
     {
-      guint i;
+      if (tcv->free_values)
+        {
+          guint i;
+          for (i = 0; i < tcv->cvalues.n_values; i++)
+            {
+              g_free ((char*) tcv->cvalues.values[i].choice_ident);
+              g_free ((char*) tcv->cvalues.values[i].choice_label);
+              g_free ((char*) tcv->cvalues.values[i].choice_blurb);
+            }
+        }
+      g_free ((gpointer) tcv->cvalues.values);
       if (tcv->eclass)	/* indicates from eclass or sequence */
 	{
 	  g_type_set_qdata (G_TYPE_FROM_CLASS (tcv->eclass), quark_tmp_choice_values, NULL);
 	  g_type_class_unref (tcv->eclass);
 	}
-      else
-	for (i = 0; i < tcv->cvalues.n_values; i++)
-          {
-            g_free ((char*) tcv->cvalues.values[i].choice_ident);
-            g_free ((char*) tcv->cvalues.values[i].choice_label);
-            g_free ((char*) tcv->cvalues.values[i].choice_blurb);
-          }
-      g_free ((gpointer) tcv->cvalues.values);
       g_free (tcv);
     }
 }
@@ -975,12 +988,12 @@ tmp_choice_values_from_seq (SfiSeq *seq)
       if (n && l == n * 3 && sfi_seq_check (seq, SFI_TYPE_STRING))
 	{
 	  TmpChoiceValues *tcv = g_new0 (TmpChoiceValues, 1);
-	  SfiChoiceValue *cvalues;
+	  tcv->ref_count = 1;
+          tcv->free_values = TRUE;
 	  tcv->eclass = NULL;
 	  tcv->cvalues.n_values = n;
-	  cvalues = g_new0 (SfiChoiceValue, tcv->cvalues.n_values);
+	  SfiChoiceValue *cvalues = g_new0 (SfiChoiceValue, tcv->cvalues.n_values);
 	  tcv->cvalues.values = cvalues;
-	  tcv->ref_count = 1;
 	  for (i = 0; i < tcv->cvalues.n_values; i++)
 	    {
 	      cvalues[i].choice_ident = g_strdup (sfi_seq_get_string (seq, 3 * i + 0));
@@ -1004,21 +1017,34 @@ tmp_choice_values_from_enum (GEnumClass *eclass)
   TmpChoiceValues *tcv = g_type_get_qdata (G_TYPE_FROM_CLASS (eclass), quark_tmp_choice_values);
   if (!tcv)
     {
-      SfiChoiceValue *cvalues;
       guint i;
       tcv = g_new0 (TmpChoiceValues, 1);
+      tcv->ref_count = 1;
+      tcv->free_values = FALSE;
       tcv->eclass = g_type_class_ref (G_TYPE_FROM_CLASS (eclass));
-      tcv->cvalues.n_values = eclass->n_values;
-      cvalues = g_new0 (SfiChoiceValue, tcv->cvalues.n_values);
+      SfiChoiceValues ccvalues = { 0, };
+      SfiChoiceValueGetter cvgetter = g_type_get_qdata (G_TYPE_FROM_CLASS (eclass), quark_enum_choice_value_getter);
+      if (cvgetter)
+        ccvalues = cvgetter (G_TYPE_FROM_CLASS (eclass));
+      tcv->cvalues.n_values = ccvalues.n_values ? MIN (eclass->n_values, ccvalues.n_values) : eclass->n_values;
+      SfiChoiceValue *cvalues = g_new0 (SfiChoiceValue, tcv->cvalues.n_values);
       tcv->cvalues.values = cvalues;
       for (i = 0; i < tcv->cvalues.n_values; i++)
-	{
-	  cvalues[i].choice_ident = eclass->values[i].value_name;
-	  cvalues[i].choice_label = eclass->values[i].value_nick;
-	}
+        if (ccvalues.n_values)
+          {
+            cvalues[i].choice_ident = ccvalues.values[i].choice_ident;
+            cvalues[i].choice_label = ccvalues.values[i].choice_label;
+            cvalues[i].choice_blurb = ccvalues.values[i].choice_blurb;
+          }
+        else
+          {
+            cvalues[i].choice_ident = eclass->values[i].value_name;
+            cvalues[i].choice_label = eclass->values[i].value_nick;
+          }
       g_type_set_qdata (G_TYPE_FROM_CLASS (eclass), quark_tmp_choice_values, tcv);
     }
-  tcv->ref_count++;
+  else
+    tcv->ref_count++;
   return tcv;
 }
 

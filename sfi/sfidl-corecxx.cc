@@ -487,7 +487,7 @@ public:
           continue;
         nspace.setFromSymbol(ci->name);
         const char *name = nspace.printable_form (ci->name);
-        printf ("static inline SfiChoiceValues %s_choice_values();\n", name);
+        printf ("static SfiChoiceValues %s_choice_values();\n", name);
       }
   }
   void
@@ -500,7 +500,7 @@ public:
           continue;
         nspace.setFromSymbol(ci->name);
         const char *name = nspace.printable_form (ci->name);
-        printf ("static inline SfiChoiceValues\n");
+        printf ("static SfiChoiceValues\n");
         printf ("%s_choice_values()\n", name);
         printf ("{\n");
         printf ("  static SfiChoiceValue values[%u];\n", ci->contents.size());

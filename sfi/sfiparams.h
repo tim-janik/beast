@@ -211,15 +211,18 @@ GParamSpec*	sfi_pspec_proxy		(const gchar    *name,
 
 
 /* --- conversion --- */
-GParamSpec*  sfi_pspec_to_serializable      (GParamSpec         *pspec);
-GParamSpec*  sfi_pspec_choice_from_enum     (GParamSpec         *enum_pspec);
-GParamSpec*  sfi_pspec_proxy_from_object    (GParamSpec         *object_pspec);
-void         sfi_boxed_type_set_rec_fields  (GType               boxed_type,
-                                             const SfiRecFields  static_const_fields);
-SfiRecFields sfi_boxed_type_get_rec_fields  (GType               boxed_type);
-void         sfi_boxed_type_set_seq_element (GType               boxed_type,
-                                             GParamSpec         *element);
-GParamSpec*  sfi_boxed_type_get_seq_element (GType               boxed_type);
+typedef SfiChoiceValues (*SfiChoiceValueGetter)     (GType                 enum_type);
+GParamSpec*  sfi_pspec_to_serializable              (GParamSpec           *pspec);
+GParamSpec*  sfi_pspec_choice_from_enum             (GParamSpec           *enum_pspec);
+GParamSpec*  sfi_pspec_proxy_from_object            (GParamSpec           *object_pspec);
+void         sfi_enum_type_set_choice_value_getter  (GType                 gtype,
+                                                     SfiChoiceValueGetter  cvgetter);
+void         sfi_boxed_type_set_rec_fields          (GType                 boxed_type,
+                                                     const SfiRecFields    static_const_fields);
+SfiRecFields sfi_boxed_type_get_rec_fields          (GType                 boxed_type);
+void         sfi_boxed_type_set_seq_element         (GType                 boxed_type,
+                                                     GParamSpec           *element);
+GParamSpec*  sfi_boxed_type_get_seq_element         (GType                 boxed_type);
 
 
 /* --- Sfi PSpec Options --- */
