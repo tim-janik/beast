@@ -1,3 +1,8 @@
+Sat Jan 15 20:03:19 2000  Tim Janik  <timj@gtk.org>
+
+	* test/bsemixer-test.bse: synthesis network to test the new
+	BseMixer plugin.
+
 Fri Jan 14 15:06:29 2000  Tim Janik  <timj@gtk.org>
 
         * released beast-0.3.1.tar.gz on http://beast.gtk.org.
