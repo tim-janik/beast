@@ -339,14 +339,8 @@ sfi_glue_call_valist (const gchar *proc_name,
 	error = g_strdup_printf ("%s: invalid category_type (%u)", G_STRLOC, arg_type);
       else
 	{
-	  GValue value = { 0, };
-	  g_value_init (&value, collect_type);
-	  G_VALUE_COLLECT (&value, var_args, 0, &error);
-	  if (!error)
-	    {
-	      sfi_seq_append (seq, &value);
-	      g_value_unset (&value);
-	    }
+	  GValue *value = sfi_seq_append_empty (seq, collect_type);
+	  G_VALUE_COLLECT (value, var_args, 0, &error);
 	}
       if (error)
 	{

@@ -417,122 +417,96 @@ void
 sfi_seq_append_bool (SfiSeq      *seq,
 		     SfiBool      v_bool)
 {
-  GValue *value = sfi_value_bool (v_bool);
-  sfi_seq_append (seq, value);
-  sfi_value_free (value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_BOOL);
+  sfi_value_set_bool (value, v_bool);
 }
 
 void
 sfi_seq_append_int (SfiSeq      *seq,
 		    SfiInt       v_int)
 {
-  GValue *value = sfi_value_int (v_int);
-  sfi_seq_append (seq, value);
-  sfi_value_free (value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_INT);
+  sfi_value_set_int (value, v_int);
 }
 
 void
 sfi_seq_append_num (SfiSeq      *seq,
 		    SfiNum       v_num)
 {
-  GValue *value = sfi_value_num (v_num);
-  sfi_seq_append (seq, value);
-  sfi_value_free (value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_NUM);
+  sfi_value_set_num (value, v_num);
 }
 
 void
 sfi_seq_append_real (SfiSeq          *seq,
 		     SfiReal         v_real)
 {
-  GValue *value = sfi_value_real (v_real);
-  sfi_seq_append (seq, value);
-  sfi_value_free (value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_REAL);
+  sfi_value_set_real (value, v_real);
 }
 
 void
 sfi_seq_append_string (SfiSeq      *seq,
 		       const gchar *string)
 {
-  GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_STRING);
-  g_value_set_static_string (&value, string);
-  sfi_seq_append (seq, &value);
-  g_value_unset (&value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_STRING);
+  sfi_value_set_string (value, string);
 }
 
 void
 sfi_seq_append_choice (SfiSeq      *seq,
 		       const gchar *choice)
 {
-  GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_CHOICE);
-  g_value_set_static_string (&value, choice);
-  sfi_seq_append (seq, &value);
-  g_value_unset (&value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_CHOICE);
+  sfi_value_set_choice (value, choice);
 }
 
 void
 sfi_seq_append_bblock (SfiSeq      *seq,
 		       SfiBBlock   *bblock)
 {
-  GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_BBLOCK);
-  g_value_set_static_boxed (&value, bblock);
-  sfi_seq_append (seq, &value);
-  g_value_unset (&value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_BBLOCK);
+  sfi_value_set_bblock (value, bblock);
 }
 
 void
 sfi_seq_append_fblock (SfiSeq      *seq,
 		       SfiFBlock   *fblock)
 {
-  GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_FBLOCK);
-  g_value_set_static_boxed (&value, fblock);
-  sfi_seq_append (seq, &value);
-  g_value_unset (&value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_FBLOCK);
+  sfi_value_set_fblock (value, fblock);
 }
 
 void
 sfi_seq_append_pspec (SfiSeq      *seq,
 		      GParamSpec  *pspec)
 {
-  GValue *value = sfi_value_pspec (pspec);
-  sfi_seq_append (seq, value);
-  sfi_value_free (value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_PSPEC);
+  sfi_value_set_pspec (value, pspec);
 }
 
 void
 sfi_seq_append_seq (SfiSeq      *seq,
 		    SfiSeq      *v_seq)
 {
-  GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_SEQ);
-  g_value_set_static_boxed (&value, v_seq);
-  sfi_seq_append (seq, &value);
-  g_value_unset (&value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_SEQ);
+  sfi_value_set_seq (value, v_seq);
 }
 
 void
 sfi_seq_append_rec (SfiSeq      *seq,
 		    SfiRec      *rec)
 {
-  GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_REC);
-  g_value_set_static_boxed (&value, rec);
-  sfi_seq_append (seq, &value);
-  g_value_unset (&value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_REC);
+  sfi_value_set_rec (value, rec);
 }
 
 void
 sfi_seq_append_proxy (SfiSeq      *seq,
 		      SfiProxy     proxy)
 {
-  GValue value = { 0, };
-  g_value_init (&value, SFI_TYPE_PROXY);
-  sfi_value_set_proxy (&value, proxy);
-  sfi_seq_append (seq, &value);
-  g_value_unset (&value);
+  GValue *value = sfi_seq_append_empty (seq, SFI_TYPE_PROXY);
+  sfi_value_set_proxy (value, proxy);
 }
 
 static inline SfiNum
