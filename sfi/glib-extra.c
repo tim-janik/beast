@@ -40,6 +40,32 @@ g_object_disconnect_any (gpointer object,
 
 
 /* --- string functions --- */
+const gchar*
+g_printf_find_localised_directive (const gchar *format)
+{
+  static const gchar *pass_flags = "#0- +0123456789*$hlLqjzt";
+  static const gchar *locale_flags = "I'";
+  static const gchar *pass_conversion = "%diouxXcCsSpn";
+  static const gchar *locale_conversion = "eEfFgGaA";
+  if (format)
+    {
+      const gchar *perc = strchr (format, '%');
+      while (perc)
+        {
+          const gchar *p = perc + 1;
+          while (strchr (pass_flags, *p))
+            p++;
+          if (strchr (locale_flags, *p) ||
+              strchr (locale_conversion, *p))
+            return perc;
+          if (!strchr (pass_conversion, *p))
+            return perc;        /* unable to determine directive specifier */
+          perc = strchr (p + 1, '%');
+        }
+    }
+  return NULL;
+}
+
 gchar**
 g_straddv (gchar      **str_array,
 	   const gchar *new_str)

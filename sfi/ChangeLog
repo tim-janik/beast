@@ -1,3 +1,8 @@
+Thu Jan 20 15:18:11 2005  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc] (g_printf_find_localised_directive): detect 
+	localised printf format directives.
+
 Thu Jan 20 05:13:30 2005  Tim Janik  <timj@gtk.org>
 
 	* sfistore.c (sfi_wstore_flush_fd): return negative errno

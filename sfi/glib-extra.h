@@ -81,6 +81,7 @@ void g_object_disconnect_any (gpointer object,
 
 
 /* --- string functions --- */
+const gchar*    g_printf_find_localised_directive (const gchar *format);
 gchar**		g_straddv	  (gchar	**str_array,
 				   const gchar	 *new_str);
 gchar**		g_strslistv	  (GSList	 *slist);
