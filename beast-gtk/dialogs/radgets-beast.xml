@@ -149,7 +149,7 @@
       </vbox>
     </hwrap>
   </xdef:snet-palette>
-
+  
   <!-- wave view -->
   <xdef:wave-view inherit="BstWaveView" border-width="3" >
     <hbox spacing="3" >
@@ -180,7 +180,7 @@
       <alignment name="property-area" />
     </vpaned>
   </xdef:part-view>
-
+  
   <!-- piano-roll-box -->
   <xdef:piano-roll-box inherit="vbox" spacing="3" >
     <vbox name="toolbar-area" area="north" >
@@ -211,24 +211,6 @@
       </toolbar>
     </vbox>
     <notebook pack:expand="1">
-      <vbox>
-	<hbox spacing="2" border-width="2" >
-	  <hbox name="pattern-control-box" spacing="2" />
-	  <hstock-button name="configure-button" pack:pack-type="end"
-	    _label="Configure" stock="BST_STOCK_EDIT"
-	    _tooltip="Configure the column layout of the pattern editor" />
-	</hbox>
-	<hbox pack:expand="1" >
-	  <frame-shadow-in pack:expand="1" >
-	    <pattern-view />
-	  </frame-shadow-in>
-	  <vscrollbar name="pattern-view-vscrollbar" size:hgroup="scroll-size" />
-	</hbox>
-	<hbox >
-	  <hscrollbar name="pattern-view-hscrollbar" expand="1" />
-	  <alignment size:hgroup="scroll-size" />
-	</hbox>
-      </vbox>
       <vbox>
 	<vpaned name="piano-paned" height="500" position="400" pack:expand="1" >
 	  <!--! child1 of the vpaned is meant to expand, but only gtk+-2.4 has
@@ -308,9 +290,27 @@
 	  <alignment size:hgroup="scroll-size" />
 	</hbox>
       </vbox>
+      <vbox>
+	<hbox spacing="2" border-width="2" >
+	  <hbox name="pattern-control-box" spacing="2" />
+	  <hstock-button name="configure-button" pack:pack-type="end"
+	    _label="Configure" stock="BST_STOCK_EDIT"
+	    _tooltip="Configure the column layout of the pattern editor" />
+	</hbox>
+	<hbox pack:expand="1" >
+	  <frame-shadow-in pack:expand="1" >
+	    <pattern-view />
+	  </frame-shadow-in>
+	  <vscrollbar name="pattern-view-vscrollbar" size:hgroup="scroll-size" />
+	</hbox>
+	<hbox >
+	  <hscrollbar name="pattern-view-hscrollbar" expand="1" />
+	  <alignment size:hgroup="scroll-size" />
+	</hbox>
+      </vbox>
     </notebook>
   </xdef:piano-roll-box>
-
+  
   <!-- pattern editor layout dialog -->
   <xdef:pattern-editor-layout-box inherit="vbox" spacing="3" border-width="3" >
     <frame expand="1" >
