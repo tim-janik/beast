@@ -830,6 +830,8 @@ bst_router_set_tool (BstSNetRouter *router)
       
       if (cursor)
 	gdk_cursor_destroy (cursor);
+
+      bst_status_clear ();
     }
 }
 
@@ -1053,12 +1055,11 @@ bst_snet_router_event (GtkWidget *widget,
 	  error = bsw_snet_can_create_source (router->snet, type);
 	  if (!error)
 	    bsw_snet_create_source (router->snet, type);
-	  bst_status_eprintf (error, "Insert Module");
-
-	  router->world_x = 0;
-	  router->world_y = 0;
 	  if (BST_SNET_EDIT_FALLBACK)
 	    bst_radio_tools_set_tool (router->rtools, 0);
+	  router->world_x = 0;
+	  router->world_y = 0;
+	  bst_status_eprintf (error, "Insert Module");
 	}
       else if (router->rtools->tool_id > 1 || (router->rtools->tool_id == 1 && event->button.button != 1))
 	{
@@ -1077,6 +1078,7 @@ bst_snet_router_event (GtkWidget *widget,
       if (event->key.keyval == GDK_Escape)
 	{
 	  handled = TRUE;
+	  bst_status_clear ();
 	  bst_radio_tools_set_tool (router->rtools, 0);
 	}
       break;

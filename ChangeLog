@@ -1,3 +1,14 @@
+Sun May  5 20:57:28 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw/Makefile.am ($(srcdir)/bswgenapi.c): don't invoke
+	mkapi with -p as procedure wrapper generation doesn't work
+	correctly for plugins on some platforms.
+
+Sun May  5 05:22:37 2002  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_router_set_tool): clear the status line
+	when the router tool is reset by the user.
+
 Wed Apr 24 06:16:56 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcanvassource.c (csource_info_update): 

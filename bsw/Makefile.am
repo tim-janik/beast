@@ -86,12 +86,12 @@ bswgenapi.h: @MISSING_PERL5@		# never add deps here
 	test -f "$(srcdir)/$@" || touch $(srcdir)/$@
 # normal autogeneration rules
 $(srcdir)/stamp-bswgenapi.h: @MISSING_PERL5@ mkapi
-	$(top_builddir)/bsw/mkapi -p --header >xgen-sbpah \
+	$(top_builddir)/bsw/mkapi --header >xgen-sbpah \
 	&& (cmp -s xgen-sbpah $(srcdir)/bswgenapi.h || cp xgen-sbpah $(srcdir)/bswgenapi.h) \
 	&& rm -f xgen-sbpah \
 	&& echo timestamp > $@
 $(srcdir)/bswgenapi.c: @MISSING_PERL5@ bswgenapi.h mkapi
-	$(top_builddir)/bsw/mkapi -p --body >xgen-sbpac \
+	$(top_builddir)/bsw/mkapi --body >xgen-sbpac \
 	&& cp xgen-sbpac $(srcdir)/bswgenapi.c \
 	&& rm -f xgen-sbpac
 

@@ -2,14 +2,14 @@
 name    = GSL-Functions
 blurb   = GSL Function Reference
 package = BEAST-0.4.1
-date    = 24 Apr 2002
+date    = 05 May 2002
 image   = gsl-functions
 
 @DOC-TITLE@
 GSL-Functions
 
 @DOC-HEAD@
-GSL-Functions 24 Apr 2002 BEAST-0.4.1
+GSL-Functions 05 May 2002 BEAST-0.4.1
 
 @DOC-NAME@
 GSL-Functions - GSL Function Reference
@@ -1852,3 +1852,133 @@ retspace = 3
 
 @DOC-DESCRIPTION@
 Fast conversion of linear frequency modulation factor to exponential frequency modulation factor. This is essentially an approximation of @STRONG exp2f()@. It can be much faster than the glibc function though, by taking advantage of a limited input range and smaller precision requirements.  
+@DOC-SYNOPSIS@
+@STRONG gsl_approx_atan1@ (@EMPH x@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = register\ double\ 
+typeraw = register double 
+@DOC-PARAMETER@
+x
+@DOC-PARDESC@
+
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+
+@DOC-DESCRIPTION@
+Fast @STRONG atan(x)@/(PI/2) approximation, with maximum error < 0.01 and @STRONG gsl_approx_atan1(0)@==0, according to the formula: n1 = -0.41156875521951602506487246309908; n2 = -1.0091272542790025586079663559158; d1 = 0.81901156857081841441890603235599; d2 = 1.0091272542790025586079663559158; @STRONG positive_atan1(x)@ = 1 + (n1 * x + n2) / ((1 + d1 * x) * x + d2);  
+@DOC-SYNOPSIS@
+@STRONG gsl_approx_atan1_prescale@ (@EMPH boost_amount@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 15
+
+@DOC-VARIABLE-DEFINITIONS@
+type = 
+typeraw = 
+@DOC-PARAMETER@
+boost_amount
+@DOC-PARDESC@
+boost amount between [0..1]
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 15
+
+@DOC-RETURNS@
+prescale factor for @STRONG gsl_approx_atan1()@
+
+@DOC-DESCRIPTION@
+Calculate the prescale factor for @STRONG gsl_approx_atan1(x*prescale)@ from a linear boost factor, where 0.5 amounts to prescale=1.0, 1.0 results in maximum boost and 0.0 results in maximum attenuation.  
+@DOC-SYNOPSIS@
+@STRONG gsl_approx_qcircle1@ (@EMPH x@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = register\ double\ 
+typeraw = register double 
+@DOC-PARAMETER@
+x
+@DOC-PARDESC@
+x within [0..1]
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+@DOC-RETURNS@
+y for circle approximation within [0..1]
+
+@DOC-DESCRIPTION@
+Fast approximation of the upper right quadrant of a circle. Errors at x=0 and x=1 are zero, for the rest of the curve, the error wasn't minimized, but distributed to best fit the curverture of a quarter circle. The maximum error is below 0.092.  
+@DOC-SYNOPSIS@
+@STRONG gsl_approx_qcircle2@ (@EMPH x@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = register\ double\ 
+typeraw = register double 
+@DOC-PARAMETER@
+x
+@DOC-PARDESC@
+x within [0..1]
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+@DOC-RETURNS@
+y for circle approximation within [0..1]
+
+@DOC-DESCRIPTION@
+Fast approximation of the upper left quadrant of a circle. Errors at x=0 and x=1 are zero, for the rest of the curve, the error wasn't minimized, but distributed to best fit the curverture of a quarter circle. The maximum error is below 0.092.  
+@DOC-SYNOPSIS@
+@STRONG gsl_approx_qcircle3@ (@EMPH x@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = register\ double\ 
+typeraw = register double 
+@DOC-PARAMETER@
+x
+@DOC-PARDESC@
+x within [0..1]
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+@DOC-RETURNS@
+y for circle approximation within [0..1]
+
+@DOC-DESCRIPTION@
+Fast approximation of the lower left quadrant of a circle. Errors at x=0 and x=1 are zero, for the rest of the curve, the error wasn't minimized, but distributed to best fit the curverture of a quarter circle. The maximum error is below 0.092.  
+@DOC-SYNOPSIS@
+@STRONG gsl_approx_qcircle4@ (@EMPH x@);
+
+@DOC-VARIABLE-DEFINITIONS@
+parspace = 20
+
+@DOC-VARIABLE-DEFINITIONS@
+type = register\ double\ 
+typeraw = register double 
+@DOC-PARAMETER@
+x
+@DOC-PARDESC@
+x within [0..1]
+
+@DOC-VARIABLE-DEFINITIONS@
+retspace = 20
+
+@DOC-RETURNS@
+y for circle approximation within [0..1]
+
+@DOC-DESCRIPTION@
+Fast approximation of the lower right quadrant of a circle. Errors at x=0 and x=1 are zero, for the rest of the curve, the error wasn't minimized, but distributed to best fit the curverture of a quarter circle. The maximum error is below 0.092.  

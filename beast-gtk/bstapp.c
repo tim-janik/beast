@@ -649,7 +649,36 @@ bst_app_operate (BstApp *app,
 			     (GtkCallback) bst_super_shell_update,
 			     NULL);
       gtk_widget_queue_draw (GTK_WIDGET (app->notebook));
-      gsl_alloc_report ();
+#if 0
+      //gsl_alloc_report ();
+      {
+	GSList *slist, *olist = g_object_debug_list();
+	guint i, n_buckets = 257;
+	guint buckets[n_buckets];
+	guint max=0,min=0xffffffff,empty=0,avg=0;
+	memset(buckets,0,sizeof(buckets[0])*n_buckets);
+	for (slist = olist; slist; slist = slist->next)
+	  {
+	    guint hash, h = (guint) slist->data;
+	    hash = (h & 0xffff) ^ (h >> 16);
+	    hash = (hash & 0xff) ^ (hash >> 8);
+	    hash = h % n_buckets;
+	    buckets[hash]++;
+	  }
+	for (i = 0; i < n_buckets; i++)
+	  {
+	    g_printerr ("bucket[%u] = %u\n", i, buckets[i]);
+	    max = MAX (max, buckets[i]);
+	    min = MIN (min, buckets[i]);
+	    avg += buckets[i];
+	    if (!buckets[i])
+	      empty++;
+	  }
+	g_printerr ("n_objects: %u, minbucket=%u, maxbucket=%u, empty=%u, avg=%u\n",
+		    avg, min, max, empty, avg / n_buckets);
+	g_slist_free (olist);
+      }
+#endif
       break;
     case BST_OP_REBUILD:
       gtk_container_foreach (GTK_CONTAINER (app->notebook),

@@ -3,6 +3,7 @@ Overview of Changes in BEAST/BSE 0.4.1:
 * Added part support for songs with piano roll editor
 * Added MIDI synthesis support
 * Added sample/wave display and preview facilities
+* Added sample loaders for .wav, .ogg and .mp3 files
 * Added GSL - a common sound backend for BSE and aRts
 * New threaded sound engine which can share synthesis
   module calculations between processors and process cycles
@@ -15,14 +16,15 @@ Overview of Changes in BEAST/BSE 0.4.1:
   Constant        - constant value output module
   WaveOsc         - Anti-aliasing wave playback
   Sequencer	  - a mini sequencer for harmonic tone switches
+  Amplifier	  - a VCA equivalent with featurefull control variants
 * Many (not yet all) synthesis modules got ported to the
   new engine and got improved in quality and speed
 * New 19"-rack alike GUI front-end for customized GUI presentation
   of .bse projects
 * Joint (multi-connect) channel support, allowing multiple input
-  connections er channel on some modules
+  connections per channel on some modules
 * New file caching layer
-* Major GUI cleanup
+* Major GUI cleanups and improvements
 * External Wave file support for WAVE, MPEG and Ogg/Vorbis
 * Ported BEAST/BSE to Gtk+2.0 and GLib-2.0
 * Moved BSEs type system into GLib-2.0
