@@ -23,10 +23,10 @@
 #include "bseproject.h"
 #include "bsemidireceiver.h"
 #include "bsemain.h"
-
+#include "gslieee754.h" // FIXME: remove
 
 #define DEBUG(...)      sfi_debug ("sequencer", __VA_ARGS__)
-
+inline guint64 bse_dtoull (const double v) { return v < -0.0 ? guint64 (v - 0.5) : guint64 (v + 0.5); } // FIXME 
 
 /* --- prototypes --- */
 static void	bse_ssequencer_thread_main	(gpointer	 data);
@@ -78,7 +78,7 @@ bse_ssequencer_start_song (BseSong        *song,
   SfiRing *ring;
   for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
     {
-      BseTrack *track = ring->data;
+      BseTrack *track = (BseTrack*) ring->data;
       track->track_done_SL = FALSE;
     }
   global_sequencer->songs = sfi_ring_append (global_sequencer->songs, song);
@@ -158,7 +158,7 @@ bse_ssequencer_thread_main (gpointer data)
               gdouble stamp_diff = (next_stamp - song->sequencer_start_SL) - song->delta_stamp_SL;
 	      while (stamp_diff > 0)
 		{
-		  guint n_ticks = stamp_diff * song->tpsi_SL;
+		  guint n_ticks = gsl_dtoi (stamp_diff * song->tpsi_SL);
 		  if (n_ticks < 1)
 		    break;
 		  bse_ssequencer_process_song_SL (song, n_ticks);
@@ -203,13 +203,13 @@ bse_ssequencer_process_song_unlooped_SL (BseSong *song,
   BseMidiReceiver *midi_receiver = song->midi_receiver_SL;
   gdouble current_stamp = song->sequencer_start_SL + song->delta_stamp_SL;
   gdouble stamps_per_tick = 1.0 / song->tpsi_SL;
-  guint64 next_stamp = current_stamp + n_ticks * stamps_per_tick;
+  guint64 next_stamp = bse_dtoull (current_stamp + n_ticks * stamps_per_tick);
   guint tick_bound = song->tick_SL + n_ticks;
   guint n_done_tracks = 0, n_tracks = 0;
   SfiRing *ring;
   for (ring = song->tracks_SL; ring; ring = sfi_ring_walk (ring, song->tracks_SL))
     {
-      BseTrack *track = ring->data;
+      BseTrack *track = (BseTrack*) ring->data;
       n_tracks++;
       if (!track->track_done_SL || force_active_tracks)
 	{
@@ -233,7 +233,7 @@ bse_ssequencer_process_song_SL (BseSong *song,
 				guint    n_ticks)
 {
   gboolean tracks_active = TRUE;
-  if (song->loop_enabled_SL && song->tick_SL <= song->loop_right_SL)
+  if (song->loop_enabled_SL && (gint64) song->tick_SL <= song->loop_right_SL)
     do
       {
 	guint tdiff = song->loop_right_SL - song->tick_SL;
@@ -241,7 +241,7 @@ bse_ssequencer_process_song_SL (BseSong *song,
 	if (tdiff)
 	  bse_ssequencer_process_song_unlooped_SL (song, tdiff, TRUE);
 	n_ticks -= tdiff;
-	if (song->tick_SL >= song->loop_right_SL)
+	if ((gint64) song->tick_SL >= song->loop_right_SL)
 	  {
 	    song->tick_SL = song->loop_left_SL;
 	  }
@@ -326,10 +326,10 @@ bse_ssequencer_process_part_SL (BsePart         *part,
           BseMidiEvent *eon, *eoff;
           gfloat freq = BSE_PART_NOTE_FREQ (note);
           eon  = bse_midi_event_note_on (midi_channel,
-                                         start_stamp + (note->tick - start_tick) * stamps_per_tick,
+                                         bse_dtoull (start_stamp + (note->tick - start_tick) * stamps_per_tick),
                                          freq, note->velocity);
           eoff = bse_midi_event_note_off (midi_channel,
-                                          start_stamp + (note->tick - start_tick + note->duration) * stamps_per_tick,
+                                          bse_dtoull (start_stamp + (note->tick - start_tick + note->duration) * stamps_per_tick),
                                           freq);
           bse_midi_receiver_push_event (midi_receiver, eon);
           bse_midi_receiver_push_event (midi_receiver, eoff);
@@ -348,8 +348,8 @@ bse_ssequencer_process_part_SL (BsePart         *part,
       for (cev = node->events; cev; cev = cev->next)
         {
           BseMidiEvent *event = bse_midi_event_signal (midi_channel,
-                                                       start_stamp + (node->tick - start_tick) * stamps_per_tick,
-                                                       cev->ctype, cev->value);
+                                                       bse_dtoull (start_stamp + (node->tick - start_tick) * stamps_per_tick),
+                                                       BseMidiSignalType (cev->ctype), cev->value);
           bse_midi_receiver_push_event (midi_receiver, event);
           DEBUG ("control: %llu signal=%d (value=%f)",
                  event->delta_time, cev->ctype, cev->value);

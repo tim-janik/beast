@@ -82,7 +82,7 @@ bse_c_sources = $(strip \
 	bsepcminput.c		bsepcmoutput.c		bseparam.c			bseparasite.c \
 	bsepcmdevice.c		bsepcmdevice-oss.c	bsepcmdevice-null.c		bseplugin.c \
 	bseprocedure.c		bseproject.c		bsescripthelper.c		bseserver.c \
-	bsesnet.c		bsesnooper.c		bsesong.c			bsessequencer.c \
+	bsesnet.c		bsesnooper.c		bsesong.c			bsessequencer.cc \
 	bsesource.c		bsestandardosc.c	bsestandardsynths.c		bsestorage.c \
 	bseinstrumentoutput.c	bsesubiport.c		bseinstrumentinput.c		bsesuboport.c \
 	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \

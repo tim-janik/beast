@@ -1,3 +1,10 @@
+Wed Sep 29 11:44:23 2004  Tim Janik  <timj@gtk.org>
+
+	* bsessequencer.c: removed.
+	* bsessequencer.cc: ported from C to C++.
+
+	* Makefile.am: build bsessequencer.cc instead of bsessequencer.c.
+
 Wed Sep 29 11:37:44 2004  Tim Janik  <timj@gtk.org>
 
 	* bsessequencer.cc: CVS copied from bsessequencer.c.
