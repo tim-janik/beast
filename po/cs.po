@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: beast VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-06 18:46+0100\n"
-"PO-Revision-Date: 2004-03-01 15:11+0100\n"
+"POT-Creation-Date: 2004-03-07 03:10+0100\n"
+"PO-Revision-Date: 2004-03-07 15:35+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -587,12 +587,11 @@ msgstr "Přispěli:"
 
 #: beast-gtk/bstparam-choice.c:142
 msgid "Popup Options"
-msgstr ""
+msgstr "Možnosti kontextového menu"
 
 #: beast-gtk/bstparam-choice.c:148
-#, fuzzy
 msgid "Drop Down Combo"
-msgstr "Tlačítko rozbalení"
+msgstr "Rozbalovací pole"
 
 #: beast-gtk/bstparam-choice.c:154
 msgid "Drop Down Button"
@@ -600,7 +599,7 @@ msgstr "Tlačítko rozbalení"
 
 #: beast-gtk/bstparam-choice.c:160
 msgid "Standard Option Menu"
-msgstr ""
+msgstr "Standardní menu možností"
 
 #: beast-gtk/bstparam-color-spinner.c:67
 msgid "Select Color"
@@ -867,7 +866,7 @@ msgstr "SZvětšení"
 
 #: beast-gtk/bstpatternctrl.c:80
 msgid "The tick/note length per line"
-msgstr ""
+msgstr "Délka znaménka/noty na řádku"
 
 #: beast-gtk/bstpatternctrl.c:83
 msgid "Steps"
@@ -898,13 +897,12 @@ msgstr ""
 "konce"
 
 #: beast-gtk/bstpatternctrl.c:97
-#, fuzzy
 msgid "Base Octave"
-msgstr "Oktávy"
+msgstr "Základní oktáva"
 
 #: beast-gtk/bstpatternctrl.c:98
 msgid "Controls the octave relative to which notes are entered"
-msgstr ""
+msgstr "Ovládá oktávu, relativně ke které se zadávájí noty"
 
 #. movement
 #: beast-gtk/bstpatternctrl.c:268
@@ -1275,217 +1273,180 @@ msgid "Step downwards"
 msgstr "Krok dolů"
 
 #: beast-gtk/bstrecords.idl:42
-#, fuzzy
 msgid "None"
-msgstr "Upozornění"
+msgstr "Žádné"
 
 #: beast-gtk/bstrecords.idl:42
 msgid "Unspecified length"
-msgstr ""
+msgstr "Neurčená délka"
 
 #: beast-gtk/bstrecords.idl:43
-#, fuzzy
 msgid "1/1"
-msgstr "1\\/1"
+msgstr "1/1"
 
 #: beast-gtk/bstrecords.idl:43
-#, fuzzy
 msgid "Whole note"
-msgstr "Přehrát notu"
+msgstr "Celá nota"
 
 #: beast-gtk/bstrecords.idl:44
-#, fuzzy
 msgid "1/2"
-msgstr "1\\/2"
+msgstr "1/2"
 
 #: beast-gtk/bstrecords.idl:44
-#, fuzzy
 msgid "Half note"
-msgstr "Přehrát notu"
+msgstr "Půlová nota"
 
 #: beast-gtk/bstrecords.idl:45
-#, fuzzy
 msgid "1/4"
-msgstr "1\\/4"
+msgstr "1/4"
 
 #: beast-gtk/bstrecords.idl:45
-#, fuzzy
 msgid "Quarter note"
-msgstr "Vložit čtvrťové noty"
+msgstr "Čtvrťová nota"
 
 #: beast-gtk/bstrecords.idl:46
-#, fuzzy
 msgid "1/8"
-msgstr "1\\/8"
+msgstr "1/8"
 
 #: beast-gtk/bstrecords.idl:46
-#, fuzzy
 msgid "Eighths note"
-msgstr "Vložit osminové noty"
+msgstr "Osminová nota"
 
 #: beast-gtk/bstrecords.idl:47
-#, fuzzy
 msgid "1/16"
-msgstr "1\\/16"
+msgstr "1/16"
 
 #: beast-gtk/bstrecords.idl:47
-#, fuzzy
 msgid "Sixteenth note"
-msgstr "Vložit šestnáctinové noty"
+msgstr "Šestnáctinová nota"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "1/32"
-msgstr "1\\/2"
+msgstr "1/32"
 
 #: beast-gtk/bstrecords.idl:48
-#, fuzzy
 msgid "Thirtysecondth note"
-msgstr "Vložit šestnáctinové noty"
+msgstr "Dvaatřicetinová nota"
 
 #: beast-gtk/bstrecords.idl:49
-#, fuzzy
 msgid "1/64"
-msgstr "1\\/4"
+msgstr "1/64"
 
 #: beast-gtk/bstrecords.idl:49
 msgid "Sixtyfourth note"
-msgstr ""
+msgstr "Čtyřiašedesátinová nota"
 
 #: beast-gtk/bstrecords.idl:50
-#, fuzzy
 msgid "1/1."
-msgstr "1\\/1"
+msgstr "1/1."
 
 #: beast-gtk/bstrecords.idl:50
 msgid "Dotted whole note"
-msgstr ""
+msgstr "Celá nota s tečkou"
 
 #: beast-gtk/bstrecords.idl:51
-#, fuzzy
 msgid "1/2."
-msgstr "1\\/2"
+msgstr "1/2."
 
 #: beast-gtk/bstrecords.idl:51
-#, fuzzy
 msgid "Dotted half note"
-msgstr "Vložit půlové noty"
+msgstr "Půlová nota s tečkou"
 
 #: beast-gtk/bstrecords.idl:52
-#, fuzzy
 msgid "1/4."
-msgstr "1\\/4"
+msgstr "1/4."
 
 #: beast-gtk/bstrecords.idl:52
-#, fuzzy
 msgid "Dotted quarter note"
-msgstr "Vložit čtvrťové noty"
+msgstr "Čtvrťová nota s tečkou"
 
 #: beast-gtk/bstrecords.idl:53
-#, fuzzy
 msgid "1/8."
-msgstr "1\\/8"
+msgstr "1/8."
 
 #: beast-gtk/bstrecords.idl:53
-#, fuzzy
 msgid "Dotted eighths note"
-msgstr "Vložit osminové noty"
+msgstr "Osminová nota s tečkou"
 
 #: beast-gtk/bstrecords.idl:54
-#, fuzzy
 msgid "1/16."
-msgstr "1\\/16"
+msgstr "1/16."
 
 #: beast-gtk/bstrecords.idl:54
-#, fuzzy
 msgid "Dotted sixteenth note"
-msgstr "Vložit šestnáctinové noty"
+msgstr "Šestnáctinová nota s tečkou"
 
 #: beast-gtk/bstrecords.idl:55
-#, fuzzy
 msgid "1/32."
-msgstr "1\\/2"
+msgstr "1/32."
 
 #: beast-gtk/bstrecords.idl:55
 msgid "Dotted thirtysecondth note"
-msgstr ""
+msgstr "Dvaatřicetinová nota s tečkou"
 
 #: beast-gtk/bstrecords.idl:56
-#, fuzzy
 msgid "1/64."
-msgstr "1\\/4"
+msgstr "1/64."
 
 #: beast-gtk/bstrecords.idl:56
 msgid "Dotted sixtyfourth note"
-msgstr ""
+msgstr "Čtyřiašedesátinová nota s tečkou"
 
 #: beast-gtk/bstrecords.idl:57
-#, fuzzy
 msgid "1/1T"
-msgstr "1\\/1"
+msgstr "1/1T"
 
 #: beast-gtk/bstrecords.idl:57
 msgid "Triplet whole note"
-msgstr ""
+msgstr "Celá nota v triole"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "1/2T"
-msgstr "1\\/2"
+msgstr "1/2T"
 
 #: beast-gtk/bstrecords.idl:58
-#, fuzzy
 msgid "Triplet half note"
-msgstr "Vložit půlové noty"
+msgstr "Půlová nota v triole"
 
 #: beast-gtk/bstrecords.idl:59
-#, fuzzy
 msgid "1/4T"
-msgstr "1\\/4"
+msgstr "1/4T"
 
 #: beast-gtk/bstrecords.idl:59
-#, fuzzy
 msgid "Triplet quarter note"
-msgstr "Vložit čtvrťové noty"
+msgstr "Čtvrťová nota v triole"
 
 #: beast-gtk/bstrecords.idl:60
-#, fuzzy
 msgid "1/8T"
-msgstr "1\\/8"
+msgstr "1/8T"
 
 #: beast-gtk/bstrecords.idl:60
-#, fuzzy
 msgid "Triplet eighths note"
-msgstr "Vložit osminové noty"
+msgstr "Osminová nota v triole"
 
 #: beast-gtk/bstrecords.idl:61
-#, fuzzy
 msgid "1/16T"
-msgstr "1\\/16"
+msgstr "1/16T"
 
 #: beast-gtk/bstrecords.idl:61
-#, fuzzy
 msgid "Triplet sixteenth note"
-msgstr "Vložit šestnáctinové noty"
+msgstr "Šestnáctinová nota v triole"
 
 #: beast-gtk/bstrecords.idl:62
-#, fuzzy
 msgid "1/32T"
-msgstr "1\\/2"
+msgstr "1/32T"
 
 #: beast-gtk/bstrecords.idl:62
 msgid "Triplet thirtysecondth note"
-msgstr ""
+msgstr "Dvaatřicetinová nota v triole"
 
 #: beast-gtk/bstrecords.idl:63
-#, fuzzy
 msgid "1/64T"
-msgstr "1\\/4"
+msgstr "1/64T"
 
 #: beast-gtk/bstrecords.idl:63
-#, fuzzy
 msgid "Triplet sixtyfourth note"
-msgstr "Vložit šestnáctinové noty"
+msgstr "Čtyřiašedesátinová nota v triole"
 
 #: beast-gtk/bstrecords.idl:68
 msgid "Release counter"
@@ -1993,7 +1954,7 @@ msgstr "Upravit momentálně vybranou vlnu"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:1
 msgid "Adjust pattern length"
-msgstr ""
+msgstr "Upravit délku vzorku"
 
 #: beast-gtk/dialogs/gadgets-beast.xml.h:2
 msgid "Adjust right view boundary"
@@ -2872,35 +2833,32 @@ msgid "Right channel Input"
 msgstr "Vstup pravého kanálu"
 
 #: bse/bsecore.idl:395
-#, fuzzy
 msgid "Latency [ms]"
-msgstr "Nástup [ms]"
+msgstr "Zpoždění [ms]"
 
 #: bse/bsecore.idl:396
 msgid ""
 "Processing duration between input and output of a single sample, smaller "
 "values increase CPU load"
-msgstr ""
+msgstr "Doba zpracovávání mezi vstupem a výstupem jednoho vzorku, menší hodnoty zvyšují zátěž CPU"
 
 #: bse/bsecore.idl:399
-#, fuzzy
 msgid "Synth Mixing Frequency"
-msgstr "Střední frekvence"
+msgstr "Frekvence mixování syntézy"
 
 #: bse/bsecore.idl:400
 msgid "Synthesis mixing frequency, common values are: 22050, 44100, 48000"
-msgstr ""
+msgstr "Frekvence mixování syntézy, obvyklé hodnoty jsou 22050, 4410, 48000"
 
 #: bse/bsecore.idl:402
-#, fuzzy
 msgid "Synth Control Frequency"
-msgstr "Střední frekvence"
+msgstr "Frekvence řízení syntézy"
 
 #: bse/bsecore.idl:403
 msgid ""
 "Frequency at which control values are evaluated, should be much smaller than "
 "Synth Mixing Frequency to reduce CPU load"
-msgstr ""
+msgstr "Frekvence, se kterou jsou vyhodnocovány řídicí hodnoty, pro snížení zátěže CPU by měla mít mnohem menší než frekvence mixování syntézy"
 
 #: bse/bsesnooper.c:113
 msgid "Signal In"
@@ -3677,9 +3635,6 @@ msgstr "Pravý výstup"
 
 #~ msgid "Device Monitor"
 #~ msgstr "Sledování zařízení"
-
-#~ msgid "Drop Down Box (Option Menu)"
-#~ msgstr "Rozbalovací pole (menu možností)"
 
 #~ msgid "Remove any events in the focus cell and move to the next cell"
 #~ msgstr "Odstranit události v aktivní buňce a aktivovat následující buňku"
