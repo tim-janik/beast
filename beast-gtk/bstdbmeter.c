@@ -1323,6 +1323,8 @@ bst_db_scale_hook_up_param (GtkRange     *range,
   gxk_param_add_object (param, GTK_OBJECT (adjustment));
   /* catch notifies *after* the widgets are updated */
   g_object_connect (adjustment, "signal_after::value-changed", db_scale_pixel_adjustment_value_changed, param, NULL);
+  /* save param for GtkRange */
+  g_object_set_data (range, "GxkParam", param);
 }
 
 static void
@@ -1363,6 +1365,8 @@ db_scale_size_allocate (GtkRange      *range,
       guint thickness = vertical ? YTHICKNESS (range) : XTHICKNESS (range);
       db_setup_size_allocate (dbsetup, thickness, border, vertical ? allocation->height : allocation->width, vertical);
     }
+  /* allow param handling */
+  GxkParam *param = g_object_get_data (range, "GxkParam");
   /* adapt adjustment to dbsetup */
   GtkAdjustment *adjustment = gtk_range_get_adjustment (range);
   if (dbsetup && adjustment)
@@ -1376,13 +1380,24 @@ db_scale_size_allocate (GtkRange      *range,
       adjustment->page_increment = ABS (page);
       adjustment->page_increment = MIN ((adjustment->upper - adjustment->lower) / 4, adjustment->page_increment);
       adjustment->step_increment = adjustment->page_increment / 4;
-      // FIXME: adjust adjustment->value
-      gtk_adjustment_changed (adjustment);
-      // FIXME: junk:
-      gtk_adjustment_set_value (adjustment, bst_db_setup_get_pixel (dbsetup, 0));
+      gboolean updating = FALSE;
+      if (param)
+        {
+          updating = param->updating;
+          param->updating = TRUE;       /* protect param from change-notifications */
+          double oldvalue = adjustment->value;
+          adjustment->value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
+          gtk_adjustment_changed (adjustment);
+          if (oldvalue != adjustment->value)
+            gtk_adjustment_value_changed (adjustment);
+          param->updating = updating;
+        }
     }
   /* propagate db meter border */
   bst_db_meter_propagate_border (dbmeter, border);
+  /* update from param value */
+  if (param)
+    gxk_param_update (param);
 }
 
 GtkRange*

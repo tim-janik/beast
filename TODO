@@ -8,7 +8,6 @@ FIXMES:	(release-critical)
 - queue discard on active module and dismiss transaction. will the module be freed (although the job was not processed)?
 - use only one of stock= or stock-image= in radget files
 - support candidate tooltip in bst_track_synth_dialog_popup() similar to bst_item_seq_dialog_popup()
-- opening new view resets mixer volume
 - enfore minimum size of ca. screen-width and screen-height for GxkDialog (should make preferences scrollable)  
 - in preferences the skin-editor viewport shouldn't gxk_widget_proxy_requisition()
 - add a "[_] never show this warning" toggle button to warnings
@@ -19,7 +18,6 @@ TODO:
                  \ |  overshoot: fill triangle
                   \|  fill level shrinks with time
 - delete track + undo doesn't preserve track order
-- derive track from context-merger and fix track property editing in tree view while prepared
 - rename bse_bus_get_stack() which is the only valid hook to setup song modules atm
 - evaluate typedef gpointer SfiProxy; instead of GType, this should get rid of a lot of casts
 - the skin editor should offer loading skins, just like View/Skins

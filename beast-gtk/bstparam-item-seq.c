@@ -29,9 +29,8 @@ param_item_seq_changed (gpointer             data,
   if (proxy)
     {
       SfiSeq *seq = bse_item_seq_to_seq (iseq);
-      GValue *value = sfi_value_seq (seq);
-      bse_proxy_set_property (proxy, "inputs", value);
-      sfi_value_free (value);
+      sfi_value_take_seq (&param->value, seq);
+      gxk_param_apply_value (param);
     }
 }
 
@@ -42,9 +41,8 @@ param_item_seq_popup_editor (GtkWidget *widget,
   SfiProxy proxy = bst_param_get_proxy (param);
   if (proxy)
     {
-      BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, "inputs");
-      const GValue *value = bse_proxy_get_property (proxy, "inputs");
-      SfiSeq *seq = g_value_get_boxed (value);
+      BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, param->pspec->name);
+      SfiSeq *seq = g_value_get_boxed (&param->value);
       BseItemSeq *iseq = bse_item_seq_from_seq (seq);
       bst_item_seq_dialog_popup (widget, proxy,
                                  pc->nick, pc->tooltip, pc->items,
@@ -103,10 +101,9 @@ param_item_seq_update (GxkParam  *param,
   gchar *content = NULL;
   if (proxy)
     {
-      BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, "inputs");
-      const GValue *value = bse_proxy_get_property (proxy, "inputs");
-      SfiSeq *seq = g_value_get_boxed (value);
-      BseItemSeq *iseq = bse_item_seq_from_seq (seq);
+      BsePropertyCandidates *pc = bse_item_get_property_candidates (proxy, param->pspec->name);
+      SfiSeq *seq = g_value_get_boxed (&param->value);
+      BseItemSeq *iseq = seq ? bse_item_seq_from_seq (seq) : NULL;
       if (iseq)
         {
           if (iseq->n_items == 1)

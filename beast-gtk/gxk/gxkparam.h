@@ -33,9 +33,9 @@ typedef struct {
   GValue	   value;
   GSList          *objects;       /* of type GObject* */
   guint16          size_group;
+  guint8	   updating;      /* flag to guard value against updates (recursions) */
   guint            editable : 1;  /* whether widgets should be editable */
   guint            sensitive : 1; /* whether widgets should be sensitive */
-  guint		   updating : 1;  /* flag to guard recursions */
   guint		   constant : 1;  /* whether binding allowes writes */
   guint		   treadonly : 1; /* binding is temporarily RO */
   guint		   ueditable : 1; /* user determined editability */

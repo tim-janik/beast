@@ -22,9 +22,17 @@ static void
 param_entry_changed (GtkWidget *entry,
                      GxkParam  *param)
 {
-  const gchar *string = gtk_entry_get_text (GTK_ENTRY (entry));
-  g_value_set_string (&param->value, string);
-  gxk_param_apply_value (param);
+  const gchar *estring = gtk_entry_get_text (GTK_ENTRY (entry));
+  const gchar *vstring = g_value_get_string (&param->value);
+  if (!estring)
+    estring = "";
+  if (!vstring)
+    vstring = "";
+  if (strcmp (estring, vstring) != 0)
+    {
+      g_value_set_string (&param->value, estring);
+      gxk_param_apply_value (param);
+    }
 }
 
 static GtkWidget*

@@ -1,3 +1,15 @@
+Thu Sep  2 21:51:35 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstdbmeter.c: fix mixer value resets upon size_allocations.
+	bst_db_scale_hook_up_param(): save GxkParam handle.
+	db_scale_size_allocate(): guard GxkParam against allocation related
+	value changes. properly updated value after allocation.
+
+	* beast-gtk/gxk/gxkparam-entry.c: avoid unneccessary value updates.
+
+	* beast-gtk/bstparam-item-seq.c: bug fixes, removed ::inputs property
+	specific left-overs.
+
 Thu Sep  2 05:00:14 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstbuseditor.c: added ::mute, ::sync and ::solo properties.
