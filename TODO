@@ -18,7 +18,7 @@ FIXMES:	(release-critical)
 - add a "[_] never show this warning" toggle button to warnings
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
-- update gtk/glib dependency to 2.4
+- update gtk/glib dependency to 2.4 in README and configure.in
 TODO:
 - davsyndrum needs gate-out (or done)
 - beast --debug=all --no-debug=comport doesn't disable comport messages
