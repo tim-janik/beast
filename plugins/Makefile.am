@@ -3,7 +3,7 @@
 #
 ## Makefile.am for BSE Plugins
 
-SUBDIRS = icons . freeverb
+SUBDIRS = icons . freeverb evaluator
 
 CFLAGS   += $(EXTRA_CFLAGS)
 INCLUDES += -I$(top_srcdir) -I. $(BSE_CFLAGS) -DG_LOG_DOMAIN=BSE_PLUGIN_NAME
