@@ -1,12 +1,14 @@
 # List of source files containing translatable strings.
 # Please keep this file sorted alphabetically
 beast-gtk/bstapp.c
+beast-gtk/bstauxdialogs.c
 beast-gtk/bstcanvaslink.c
 beast-gtk/bstcanvassource.c
 beast-gtk/bsteventrollctrl.c
 beast-gtk/bstfiledialog.c
 beast-gtk/bstinstrumentview.c
 beast-gtk/bstitemview.c
+beast-gtk/bstkeybindings.c
 beast-gtk/bstmain.c
 beast-gtk/bstparam-choice.c
 beast-gtk/bstparam-color-spinner.c
@@ -18,6 +20,8 @@ beast-gtk/bstparam-searchpath.c
 beast-gtk/bstparam-time.c
 beast-gtk/bstpartdialog.c
 beast-gtk/bstpartview.c
+beast-gtk/bstpatterncolumns.c
+beast-gtk/bstpatternctrl.c
 beast-gtk/bstpianorollctrl.c
 beast-gtk/bstplayback.c
 beast-gtk/bstpreferences.c
