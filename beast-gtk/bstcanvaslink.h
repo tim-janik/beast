@@ -48,8 +48,12 @@ struct _BstCanvasLink
   GnomeCanvasItem *arrow;
   GnomeCanvasItem *tag_start, *tag_end;
 
-  BstCanvasSource *start_source;
-  BstCanvasSource *end_source;
+  BstCanvasSource *ocsource;
+  guint            ochannel_id;
+  guint            oc_handler;
+  BstCanvasSource *icsource;
+  guint            ichannel_id;
+  guint            ic_handler;
 
   guint		   in_move : 1;
   gdouble          start_move_dx, start_move_dy;
@@ -64,10 +68,12 @@ struct _BstCanvasLinkClass
 /* --- prototypes --- */
 GtkType		 bst_canvas_link_get_type	(void);
 GnomeCanvasItem* bst_canvas_link_new		(GnomeCanvasGroup *group);
-void		 bst_canvas_link_set_start	(BstCanvasLink    *clink,
-						 BstCanvasSource  *start_source);
-void		 bst_canvas_link_set_end	(BstCanvasLink    *clink,
-						 BstCanvasSource  *end_source);
+void		 bst_canvas_link_set_ocsource	(BstCanvasLink    *clink,
+						 BstCanvasSource  *ocsource,
+						 guint             ochannel_id);
+void		 bst_canvas_link_set_icsource	(BstCanvasLink    *clink,
+						 BstCanvasSource  *icsource,
+						 guint             ichannel_id);
 
 
 

@@ -1,3 +1,28 @@
+Sun Nov  7 03:06:55 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.[hc]: ok, we can actually handle new links
+	and sources as of now (bunch of code added to achive that).
+
+	* beast-gtk/bstcanvaslink.[hc]: use names for the input/output
+	sources and fields that actually make sense. reordered drawing code,
+	so we draw stuff the correct way (from output to input).
+
+Sat Nov  6 19:04:06 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstcanvassource.[hc]: feature channel ids for
+	bst_canvas_source_link_start() and bst_canvas_source_link_end (),
+	keep track of when the source's input/output connections changed.
+
+	* beast-gtk/bstcanvaslink.h: maintain channel ids for input and
+	output sources.
+
+	* beast-gtk/bstsnetrouter.c: call bst_canvas_source_update_links()
+	for all newly created canvas items, setup a signal connection so
+	we can handle the link updating for the csources.
+
+	* beast-gtk/bstcanvassource.[hc]: introduced ::update_links
+	signal, to be emitted when the BseSource links changed.
+
 Sat Nov  6 05:58:29 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstsnetshell.c (bst_snet_shell_build): moved most of

@@ -1,4 +1,5 @@
 general:
+-	need -Wshadow
 -	need file-exists dialog
 -	get File/Save to work
 -	quit/close needs to feature mod-time vs. creation-time handling

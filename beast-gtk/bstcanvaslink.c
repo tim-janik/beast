@@ -94,8 +94,12 @@ bst_canvas_link_init (BstCanvasLink *clink)
   clink->arrow = NULL;
   clink->tag_start = NULL;
   clink->tag_end = NULL;
-  clink->start_source = NULL;
-  clink->end_source = NULL;
+  clink->ocsource = NULL;
+  clink->ochannel_id = 0;
+  clink->oc_handler = 0;
+  clink->icsource = NULL;
+  clink->ichannel_id = 0;
+  clink->ic_handler = 0;
 }
 
 static void
@@ -107,8 +111,8 @@ bst_canvas_link_destroy (GtkObject *object)
   while (group->item_list)
     gtk_object_destroy (group->item_list->data);
   
-  bst_canvas_link_set_start (clink, NULL);
-  bst_canvas_link_set_end (clink, NULL);
+  bst_canvas_link_set_ocsource (clink, NULL, 0);
+  bst_canvas_link_set_icsource (clink, NULL, 0);
   
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
 }
@@ -127,56 +131,57 @@ bst_canvas_link_new (GnomeCanvasGroup *group)
 }
 
 void
-bst_canvas_link_set_start (BstCanvasLink   *clink,
-			   BstCanvasSource *start_source)
+bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
+			      BstCanvasSource *ocsource,
+			      guint            ochannel_id)
 {
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
-  if (start_source)
-    g_return_if_fail (BST_CANVAS_SOURCE (start_source));
+  if (ocsource)
+    g_return_if_fail (BST_CANVAS_SOURCE (ocsource));
   
-  if (clink->start_source)
+  if (clink->ocsource)
     {
-      if (!GTK_OBJECT_DESTROYED (clink->start_source))
-	gtk_signal_disconnect_by_func (GTK_OBJECT (clink->start_source),
-				       bst_canvas_link_update,
-				       clink);
-      gtk_object_unref (GTK_OBJECT (clink->start_source));
+      if (!GTK_OBJECT_DESTROYED (clink->ocsource))
+	gtk_signal_disconnect (GTK_OBJECT (clink->ocsource), clink->oc_handler);
+      gtk_object_unref (GTK_OBJECT (clink->ocsource));
     }
-  clink->start_source = start_source;
-  if (clink->start_source)
+  clink->ocsource = ocsource;
+  clink->ochannel_id = ochannel_id;
+  if (clink->ocsource)
     {
-      gtk_object_ref (GTK_OBJECT (clink->start_source));
-      gtk_signal_connect_object (GTK_OBJECT (clink->start_source),
-				 "args_changed",
-				 bst_canvas_link_update,
-				 clink);
+      gtk_object_ref (GTK_OBJECT (clink->ocsource));
+      clink->oc_handler = gtk_signal_connect_object (GTK_OBJECT (clink->ocsource),
+						     "args_changed",
+						     bst_canvas_link_update,
+						     GTK_OBJECT (clink));
       bst_canvas_link_update (clink);
     }
 }
 
 void
-bst_canvas_link_set_end (BstCanvasLink   *clink,
-			 BstCanvasSource *end_source)
+bst_canvas_link_set_icsource (BstCanvasLink   *clink,
+			      BstCanvasSource *icsource,
+			      guint            ichannel_id)
 {
   g_return_if_fail (BST_IS_CANVAS_LINK (clink));
-  if (end_source)
-    g_return_if_fail (BST_CANVAS_SOURCE (end_source));
+  if (icsource)
+    g_return_if_fail (BST_CANVAS_SOURCE (icsource));
   
-  if (clink->end_source)
+  if (clink->icsource)
     {
-      gtk_signal_disconnect_by_func (GTK_OBJECT (clink->end_source),
-				     bst_canvas_link_update,
-				     clink);
-      gtk_object_unref (GTK_OBJECT (clink->end_source));
+      if (!GTK_OBJECT_DESTROYED (clink->icsource))
+        gtk_signal_disconnect (GTK_OBJECT (clink->icsource), clink->ic_handler);
+      gtk_object_unref (GTK_OBJECT (clink->icsource));
     }
-  clink->end_source = end_source;
-  if (clink->end_source)
+  clink->icsource = icsource;
+  clink->ichannel_id = ichannel_id;
+  if (clink->icsource)
     {
-      gtk_object_ref (GTK_OBJECT (clink->end_source));
-      gtk_signal_connect_object (GTK_OBJECT (clink->end_source),
-				 "args_changed",
-				 bst_canvas_link_update,
-				 clink);
+      gtk_object_ref (GTK_OBJECT (clink->icsource));
+      clink->ic_handler = gtk_signal_connect_object (GTK_OBJECT (clink->icsource),
+						     "args_changed",
+						     bst_canvas_link_update,
+						     GTK_OBJECT (clink));
       bst_canvas_link_update (clink);
     }
 }
@@ -188,20 +193,20 @@ bst_canvas_link_update (BstCanvasLink *clink)
   GnomeCanvasPoints *gpoints;
   gdouble start_x = 0, start_y = 0, end_x = 10, end_y = 10;
   
-  if (clink->start_source)
+  if (clink->ocsource)
     {
-      bst_canvas_source_link_start (clink->start_source, &start_x, &start_y);
+      bst_canvas_source_ochannel_pos (clink->ocsource, clink->ochannel_id, &start_x, &start_y);
       gnome_canvas_item_w2i (item, &start_x, &start_y);
     }
-  if (clink->end_source)
+  if (clink->icsource)
     {
-      bst_canvas_source_link_end (clink->end_source, &end_x, &end_y);
+      bst_canvas_source_ichannel_pos (clink->icsource, clink->ichannel_id, &end_x, &end_y);
       gnome_canvas_item_w2i (item, &end_x, &end_y);
     }
-  if (clink->start_source && clink->end_source)
+  if (clink->ocsource && clink->icsource)
     gnome_canvas_item_keep_between (GNOME_CANVAS_ITEM (clink),
-				    GNOME_CANVAS_ITEM (clink->start_source),
-				    GNOME_CANVAS_ITEM (clink->end_source));
+				    GNOME_CANVAS_ITEM (clink->ocsource),
+				    GNOME_CANVAS_ITEM (clink->icsource));
 				    
   
   if (!clink->arrow)
@@ -260,20 +265,20 @@ bst_canvas_link_adjust_tags (BstCanvasLink *clink)
     gpoints = gnome_canvas_points_new0 (2);
   points = gpoints->coords;
 
-  x1 = points[2] - TAG_DIAMETER;
-  y1 = points[3] - TAG_DIAMETER;
-  x2 = points[2] + TAG_DIAMETER;
-  y2 = points[3] + TAG_DIAMETER;
+  x1 = points[0] - TAG_DIAMETER;
+  y1 = points[1] - TAG_DIAMETER;
+  x2 = points[0] + TAG_DIAMETER;
+  y2 = points[1] + TAG_DIAMETER;
   bst_object_set (clink->tag_start,
 		  "x1", x1,
 		  "y1", y1,
 		  "x2", x2,
 		  "y2", y2,
 		  NULL);
-  x1 = points[0] - TAG_DIAMETER;
-  y1 = points[1] - TAG_DIAMETER;
-  x2 = points[0] + TAG_DIAMETER;
-  y2 = points[1] + TAG_DIAMETER;
+  x1 = points[2] - TAG_DIAMETER;
+  y1 = points[3] - TAG_DIAMETER;
+  x2 = points[2] + TAG_DIAMETER;
+  y2 = points[3] + TAG_DIAMETER;
   bst_object_set (clink->tag_end,
 		  "x1", x1,
 		  "y1", y1,
@@ -295,11 +300,11 @@ bst_canvas_link_adjust_arrow (BstCanvasLink *clink)
     gpoints = gnome_canvas_points_new0 (2);
   points = gpoints->coords;
   
-  dx = points[2] - points[0];
-  dy = points[3] - points[1];
+  dx = points[0] - points[2];
+  dy = points[1] - points[3];
   l = sqrt (dx * dx + dy * dy);
-  x = (points[0] + points[2]) / 2;
-  y = (points[1] + points[3]) / 2;
+  x = (points[2] + points[0]) / 2;
+  y = (points[3] + points[1]) / 2;
   
   gnome_canvas_points_free (gpoints);
   
@@ -341,19 +346,19 @@ bst_canvas_link_event (GnomeCanvasItem *item,
 	{
 	  GdkCursor *fleur;
 	  
-	  if (clink->start_source)
+	  if (clink->ocsource)
 	    {
 	      clink->start_move_dx = event->button.x;
 	      clink->start_move_dy = event->button.y;
-	      gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->start_source),
+	      gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->ocsource),
 				     &clink->start_move_dx,
 				     &clink->start_move_dy);
 	    }
-	  if (clink->end_source)
+	  if (clink->icsource)
 	    {
 	      clink->end_move_dx = event->button.x;
 	      clink->end_move_dy = event->button.y;
-	      gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->end_source),
+	      gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->icsource),
 				     &clink->end_move_dx,
 				     &clink->end_move_dy);
 	    }
@@ -369,26 +374,26 @@ bst_canvas_link_event (GnomeCanvasItem *item,
 	}
       break;
     case GDK_MOTION_NOTIFY:
-      if (clink->in_move && clink->start_source)
+      if (clink->in_move && clink->ocsource)
 	{
 	  gdouble x = event->motion.x, y = event->motion.y;
 	  
-	  gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->start_source), &x, &y);
-	  gnome_canvas_item_move (GNOME_CANVAS_ITEM (clink->start_source),
+	  gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->ocsource), &x, &y);
+	  gnome_canvas_item_move (GNOME_CANVAS_ITEM (clink->ocsource),
 				  x - clink->start_move_dx,
 				  y - clink->start_move_dy);
-	  BST_OBJECT_ARGS_CHANGED (clink->start_source);
+	  BST_OBJECT_ARGS_CHANGED (clink->ocsource);
 	  handled = TRUE;
 	}
-      if (clink->in_move && clink->end_source)
+      if (clink->in_move && clink->icsource)
 	{
 	  gdouble x = event->motion.x, y = event->motion.y;
 	  
-	  gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->end_source), &x, &y);
-	  gnome_canvas_item_move (GNOME_CANVAS_ITEM (clink->end_source),
+	  gnome_canvas_item_w2i (GNOME_CANVAS_ITEM (clink->icsource), &x, &y);
+	  gnome_canvas_item_move (GNOME_CANVAS_ITEM (clink->icsource),
 				  x - clink->end_move_dx,
 				  y - clink->end_move_dy);
-	  BST_OBJECT_ARGS_CHANGED (clink->end_source);
+	  BST_OBJECT_ARGS_CHANGED (clink->icsource);
 	  handled = TRUE;
 	}
       break;

@@ -55,6 +55,8 @@ struct _BstCanvasSource
 struct _BstCanvasSourceClass
 {
   GnomeCanvasGroupClass parent_class;
+
+  void (*update_links)	(BstCanvasSource *source);
 };
 
 
@@ -64,10 +66,13 @@ GnomeCanvasItem* bst_canvas_source_new		(GnomeCanvasGroup *group,
 						 BseSource	  *source,
 						 gdouble           world_x,
 						 gdouble           world_y);
-void		 bst_canvas_source_link_start	(BstCanvasSource  *csource,
+void		 bst_canvas_source_update_links	(BstCanvasSource  *csource);
+void		 bst_canvas_source_ochannel_pos	(BstCanvasSource  *csource,
+						 guint             ochannel_id,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
-void		 bst_canvas_source_link_end	(BstCanvasSource  *csource,
+void		 bst_canvas_source_ichannel_pos	(BstCanvasSource  *csource,
+						 guint             ichannel_id,
 						 gdouble          *world_x,
 						 gdouble          *world_y);
 

@@ -19,6 +19,7 @@
 #define __BST_SNET_ROUTER_H__
 
 #include	"bstdefs.h"
+#include	"bstcanvassource.h"
 
 
 #ifdef __cplusplus
@@ -47,9 +48,13 @@ struct _BstSNetRouter
 
   BseSNet	   *snet;
 
-  guint		    radio_action; /* radio_active ;) */
+  guint		    mode; /* 0, 1, radio_active ;) */
 
   gdouble           world_x, world_y;
+  guint             ochannel_id;
+  BstCanvasSource  *ocsource;
+  GnomeCanvasItem  *tmp_line;
+  GSList           *link_list;
 };
 struct _BstSNetRouterClass
 {
@@ -60,14 +65,15 @@ struct _BstSNetRouterClass
 
 
 /* --- prototypes --- */
-GtkType		bst_snet_router_get_type	(void);
-GtkWidget*	bst_snet_router_new		(BseSNet	*snet);
-void		bst_snet_router_set_snet 	(BstSNetRouter  *router,
-						 BseSNet        *snet);
-void		bst_snet_router_update		(BstSNetRouter	*snet_router);
-void		bst_snet_router_rebuild		(BstSNetRouter	*snet_router);
-void		bst_snet_router_adjust_region	(BstSNetRouter  *snet_router);
-     
+GtkType		 bst_snet_router_get_type	     (void);
+GtkWidget*	 bst_snet_router_new		     (BseSNet	    *snet);
+void		 bst_snet_router_set_snet 	     (BstSNetRouter *router,
+						      BseSNet       *snet);
+void		 bst_snet_router_update		     (BstSNetRouter *snet_router);
+void		 bst_snet_router_rebuild	     (BstSNetRouter *snet_router);
+void		 bst_snet_router_adjust_region	     (BstSNetRouter *snet_router);
+BstCanvasSource* bst_snet_router_csource_from_source (BstSNetRouter *snet_router,
+						      BseSource     *source);
 
 
 

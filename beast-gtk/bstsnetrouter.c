@@ -18,8 +18,8 @@
 #include "bstsnetrouter.h"
 
 #include <math.h>
-#include "bstcanvassource.h"
 #include "bstcanvaslink.h"
+#include "bststatusbar.h"
 
 
 /* --- prototypes --- */
@@ -35,8 +35,10 @@ static gboolean	  bst_snet_router_event		(GtkWidget		*widget,
 						 GdkEvent               *event);
 static gboolean	  bst_snet_router_root_event    (BstSNetRouter          *router,
 						 GdkEvent               *event);
-static void	  bst_snet_router_adjust_cursor	(BstSNetRouter		*router);
-     
+static void	  bst_snet_router_reset_mode	(BstSNetRouter		*router);
+static void	  bst_snet_router_update_links	(BstSNetRouter		*router,
+						 BstCanvasSource        *csource);
+
 
 /* --- static variables --- */
 static gpointer            parent_class = NULL;
@@ -81,9 +83,9 @@ bst_snet_router_class_init (BstSNetRouterClass *class)
   bst_snet_router_class = class;
   
   object_class->destroy = bst_snet_router_destroy;
-
+  
   widget_class->event = bst_snet_router_event;
-
+  
   class->tooltips = NULL;
 }
 
@@ -92,20 +94,25 @@ bst_snet_router_init (BstSNetRouter      *router,
 		      BstSNetRouterClass *class)
 {
   GnomeCanvas *canvas = GNOME_CANVAS (router);
-
+  
   canvas->aa = TRUE;
+  router->toolbar = NULL;
   router->snet = NULL;
-  router->radio_action = 0;
+  router->mode = 0;
   router->world_x = 0;
   router->world_y = 0;
+  router->ochannel_id = 0;
+  router->ocsource = NULL;
+  router->tmp_line = NULL;
+  router->link_list = NULL;
   
   bst_object_set (GTK_OBJECT (canvas->root),
 		  "object_signal::event", bst_snet_router_root_event, router,
 		  NULL);
   bst_object_set (GTK_OBJECT (router),
-		  "signal_after::realize", bst_snet_router_adjust_cursor, NULL,
+		  "signal_after::show", bst_snet_router_reset_mode, NULL,
 		  NULL);
-
+  
   if (!class->tooltips)
     {
       class->tooltips = gtk_tooltips_new ();
@@ -118,7 +125,7 @@ bst_snet_router_init (BstSNetRouter      *router,
     }
   else
     gtk_object_ref (GTK_OBJECT (class->tooltips));
-
+  
   router->toolbar = bst_snet_router_build_toolbar (router);
   gtk_widget_set (router->toolbar,
 		  "object_signal::destroy", bse_nullify_pointer, &router->toolbar,
@@ -130,7 +137,13 @@ bst_snet_router_destroy_contents (BstSNetRouter *router)
 {
   GnomeCanvas *canvas = GNOME_CANVAS (router);
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (canvas->root);
+  GSList *slist;
 
+  for (slist = router->link_list; slist; slist = slist->next)
+    gtk_object_destroy (slist->data);
+  g_slist_free (router->link_list);
+  router->link_list = NULL;
+  
   while (group->item_list)
     gtk_object_destroy (group->item_list->data);
 }
@@ -140,12 +153,15 @@ bst_snet_router_destroy (GtkObject *object)
 {
   BstSNetRouter *router = BST_SNET_ROUTER (object);
   
+  bst_snet_router_reset_mode (router);
+  
   bst_snet_router_destroy_contents (router);
-  if (router->toolbar)
-    gtk_widget_destroy (router->toolbar);
 
   bst_snet_router_set_snet (router, NULL);
 
+  if (router->toolbar)
+    gtk_widget_destroy (router->toolbar);
+  
   gtk_object_unref (GTK_OBJECT (BST_SNET_ROUTER_GET_CLASS (router)->tooltips));
   
   GTK_OBJECT_CLASS (parent_class)->destroy (object);
@@ -171,17 +187,17 @@ bst_snet_router_set_snet (BstSNetRouter *router,
   g_return_if_fail (BST_IS_SNET_ROUTER (router));
   if (snet)
     g_return_if_fail (BSE_IS_SNET (snet));
-
+  
   if (router->snet)
     {
       BseObject *object = BSE_OBJECT (router->snet);
-
+      
       bst_snet_router_destroy_contents (router);
       
       bse_object_remove_notifiers_by_func (BSE_CONTAINER (router->snet),
 					   bst_snet_router_item_added,
 					   router);
-
+      
       router->snet = NULL;
       bse_object_unref (object);
     }
@@ -191,7 +207,7 @@ bst_snet_router_set_snet (BstSNetRouter *router,
       
       bse_object_ref (object);
       router->snet = snet;
-
+      
       bse_object_add_data_notifier (BSE_CONTAINER (snet),
 				    "item_added",
 				    bst_snet_router_item_added,
@@ -204,14 +220,8 @@ bst_snet_router_set_snet (BstSNetRouter *router,
 void
 bst_snet_router_rebuild (BstSNetRouter *router)
 {
-  GnomeCanvas *canvas;
-  
   g_return_if_fail (BST_IS_SNET_ROUTER (router));
   
-  canvas = GNOME_CANVAS (router);
-
-  bst_snet_router_destroy_contents (router);
-
   bst_snet_router_update (router);
 
   bst_snet_router_adjust_region (router);
@@ -223,60 +233,84 @@ bst_snet_router_item_added (BstSNetRouter *router,
 			    BseContainer  *container)
 {
   GnomeCanvas *canvas = GNOME_CANVAS (router);
+  GnomeCanvasItem *csource;
   
   if (!BSE_IS_SOURCE (item))
     {
       g_warning ("Can't handle non-source snet items");
       return;
     }
-
-  bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
-			 BSE_SOURCE (item),
-			 router->world_x,
-			 router->world_y);
+  
+  csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
+				   BSE_SOURCE (item),
+				   router->world_x,
+				   router->world_y);
+  gtk_object_set (GTK_OBJECT (csource),
+		  "object_signal::update_links", bst_snet_router_update_links, router,
+		  NULL);
+  bst_canvas_source_update_links (BST_CANVAS_SOURCE (csource));
 }
 
 static gboolean
 walk_itmes (BseItem  *item,
-	    gpointer  data)
+	    gpointer  data_p)
 {
-  BstSNetRouter *router = BST_SNET_ROUTER (data);
+  gpointer *data = data_p;
+  BstSNetRouter *router = BST_SNET_ROUTER (data[0]);
   GnomeCanvas *canvas = GNOME_CANVAS (router);
   
   if (!BSE_IS_SOURCE (item))
     g_warning ("Can't handle non-source snet items");
   else
-    bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
-			   BSE_SOURCE (item),
-			   router->world_x,
-			   router->world_y);
+    {
+      GnomeCanvasItem *csource;
+      
+      csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
+				       BSE_SOURCE (item),
+				       router->world_x,
+				       router->world_y);
+      gtk_object_set (GTK_OBJECT (csource),
+		      "object_signal::update_links", bst_snet_router_update_links, router,
+		      NULL);
+      data[1] = g_slist_prepend (data[1], csource);
+    }
+  
   return TRUE;
 }
 
 void
 bst_snet_router_update (BstSNetRouter *router)
 {
-  GnomeCanvasGroup *group;
-  GnomeCanvasItem *item;
+  GnomeCanvasItem *csource;
   GnomeCanvas *canvas;
+  GSList *slist;
+  gpointer data[2];
   
   g_return_if_fail (BST_IS_SNET_ROUTER (router));
-
-  canvas = GNOME_CANVAS (router);
-  group = GNOME_CANVAS_GROUP (canvas->root);
   
-  while (group->item_list)
-    gtk_object_destroy (group->item_list->data);
+  canvas = GNOME_CANVAS (router);
+  
+  bst_snet_router_destroy_contents (router);
 
   /* add the snet itself */
-  item = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
-				BSE_SOURCE (router->snet),
-				0, 0);
-
+  csource = bst_canvas_source_new (GNOME_CANVAS_GROUP (canvas->root),
+				   BSE_SOURCE (router->snet),
+				   0, 0);
+  gtk_object_set (GTK_OBJECT (csource),
+		  "object_signal::update_links", bst_snet_router_update_links, router,
+		  NULL);
+  
   /* add all child sources */
+  data[0] = router;
+  data[1] = g_slist_prepend (NULL, csource);
   bse_container_forall_items (BSE_CONTAINER (router->snet),
 			      walk_itmes,
-			      router);
+			      data);
+
+  /* update all links */
+  for (slist = data[1]; slist; slist = slist->next)
+    bst_canvas_source_update_links (BST_CANVAS_SOURCE (slist->data));
+  g_slist_free (data[1]);
 }
 
 static void
@@ -284,25 +318,12 @@ toolbar_radio_toggle (GtkWidget *radio,
 		      guint     *radio_active)
 {
   if (GTK_TOGGLE_BUTTON (radio)->active)
-    *radio_active = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (radio)));
-}
-
-static void
-bst_snet_router_adjust_cursor (BstSNetRouter *router)
-{
-  GnomeCanvas *canvas = GNOME_CANVAS (router);
-
-  if (GTK_WIDGET_REALIZED (canvas))
     {
-      GdkCursor *cursor = NULL;
-
-      if (router->radio_action)
-	cursor = gdk_cursor_new (GDK_UL_ANGLE);
-
-      gdk_window_set_cursor (GTK_WIDGET (canvas)->window, cursor);
-
-      if (cursor)
-	gdk_cursor_destroy (cursor);
+      *radio_active = GPOINTER_TO_UINT (gtk_object_get_user_data (GTK_OBJECT (radio)));
+      if (*radio_active)
+	bst_status_set (0, bse_type_name (*radio_active), "Select Position");
+      else
+	bst_status_set (0, "Edit", NULL);
     }
 }
 
@@ -313,11 +334,11 @@ idle_zoom (gpointer data)
 {
   GnomeCanvas *canvas = GNOME_CANVAS (data);
   gdouble *d = gtk_object_get_data (GTK_OBJECT (canvas), "zoom_d");
-
+  
   if (!GTK_OBJECT_DESTROYED (canvas) &&
       EPSILON < fabs (canvas->pixels_per_unit - *d))
     gnome_canvas_set_pixels_per_unit (canvas, *d);
-
+  
   gtk_object_remove_data (GTK_OBJECT (canvas), "zoom_d");
   
   return FALSE;
@@ -329,7 +350,7 @@ toolbar_set_zoom (GtkAdjustment *adjustment,
 {
   GtkObject *object = GTK_OBJECT (router);
   gdouble *d = gtk_object_get_data (object, "zoom_d");
-
+  
   if (!d)
     {
       d = g_new (gdouble, 1);
@@ -355,13 +376,13 @@ toolbar_add_radio (BstSNetRouter *router,
 		   guint         *radio_active)
 {
   GtkWidget *button, *forest;
-
+  
   if (!icon)
     icon = bst_icon_from_stock (BST_ICON_NOICON);
-
+  
   if (name[0] == 'B' && name[1] == 's' && name[2] == 'e')
     name += 3;
-
+  
   forest = gtk_widget_new (GNOME_TYPE_FOREST,
 			   "visible", TRUE,
 			   "width", 32,
@@ -377,7 +398,7 @@ toolbar_add_radio (BstSNetRouter *router,
 							 icon->width *
 							 icon->bytes_per_pixel));
   gnome_forest_set_sprite_size (GNOME_FOREST (forest), 1, 32, 32);
-
+  
   button = gtk_toolbar_append_element (GTK_TOOLBAR (parent),
 				       GTK_TOOLBAR_CHILD_RADIOBUTTON, NULL,
 				       name,
@@ -388,10 +409,10 @@ toolbar_add_radio (BstSNetRouter *router,
 		  "group", last_radio,
 		  "user_data", GUINT_TO_POINTER (activation_id),
 		  "signal::toggled", toolbar_radio_toggle, radio_active,
-		  "object_signal::toggled", bst_snet_router_adjust_cursor, router,
+		  "object_signal::toggled", bst_snet_router_reset_mode, router,
 		  NULL);
   toolbar_radio_toggle (button, radio_active);
-
+  
   return button;
 }
 
@@ -405,10 +426,10 @@ toolbar_add_category (BstSNetRouter *router,
 {
   GtkWidget *radio;
   gchar *tip;
-
+  
   if (bse_type_is_a (category->type, BSE_TYPE_SUPER))
     return last_radio;
-
+  
   tip = g_strconcat (bse_type_name (category->type),
 		     " [",
 		     category->category + category->mindex + 1,
@@ -423,7 +444,7 @@ toolbar_add_category (BstSNetRouter *router,
 			     tooltips,
 			     radio_active);
   g_free (tip);
-
+  
   return radio;
 }
 
@@ -438,13 +459,13 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
   guint n_cats;
   
   g_return_val_if_fail (BST_IS_SNET_ROUTER (router), NULL);
-
+  
   bar = gtk_widget_new (GTK_TYPE_TOOLBAR,
 			"visible", TRUE,
 			"orientation", GTK_ORIENTATION_HORIZONTAL,
 			"toolbar_style", GTK_TOOLBAR_BOTH,
 			NULL);
-
+  
   /* add link/move/property edit tool
    */
   radio = toolbar_add_radio (router, bar, radio, 0,
@@ -455,17 +476,17 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
 			     "button3 to change properties",
 			     bst_icon_from_stock (BST_ICON_MOUSE_TOOL),
 			     BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
-			     &router->radio_action);
-
+			     &router->mode);
+  
   /* add BseSource types from categories
    */
   cats = bse_categories_match ("/Source/*", &n_cats);
   for (i = 0; i < n_cats; i++)
     radio = toolbar_add_category (router, bar, radio, cats + i,
 				  BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
-				  &router->radio_action);
+				  &router->mode);
   g_free (cats);
-
+  
   /* FIXME: test hackery
    */
   if (1)
@@ -477,9 +498,9 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
       radio = toolbar_add_radio (router, bar, radio, 0, "Song", NULL,
 				 &icon,
 				 BST_SNET_ROUTER_GET_CLASS (router)->tooltips,
-				 &router->radio_action);
+				 &router->mode);
     }
-
+  
   /* add Zoom: spinner */
   adjustment = (GtkAdjustment*) gtk_adjustment_new (1.00, 0.20, 5.00, 0.05, 0.50, 0.50);
   gtk_signal_connect (GTK_OBJECT (adjustment),
@@ -490,7 +511,7 @@ bst_snet_router_build_toolbar (BstSNetRouter *router)
   gtk_widget_set_usize (radio, 50, 0);
   gtk_widget_show (radio);
   gtk_toolbar_append_widget (GTK_TOOLBAR (bar), radio, "Zoom Factor", NULL);
-
+  
   return bar;
 }
 
@@ -501,19 +522,19 @@ bst_snet_router_adjust_region (BstSNetRouter *router)
   GtkLayout *layout;
   GnomeCanvas *canvas;
   gdouble x1, y1, x2, y2;
-
+  
   g_return_if_fail (BST_IS_SNET_ROUTER (router));
-
+  
   canvas = GNOME_CANVAS (router);
   layout = GTK_LAYOUT (router);
-
+  
   gnome_canvas_request_full_update (canvas);
   gnome_canvas_update_now (canvas);
   gnome_canvas_item_get_bounds (canvas->root, &x1, &y1, &x2, &y2);
-
+  
   /* add fudge */
   x1 -= 1; y1 -= 1; x2 += 1;  y2 += 1;
-
+  
   gnome_canvas_set_scroll_region (canvas, x1, y1, x2, y2);
   gnome_canvas_request_full_update (canvas);
   
@@ -527,12 +548,244 @@ bst_snet_router_adjust_region (BstSNetRouter *router)
 			    adjustment->page_size / 2);
 }
 
+BstCanvasSource*
+bst_snet_router_csource_from_source (BstSNetRouter *router,
+				     BseSource     *source)
+{
+  GnomeCanvas *canvas;
+  GnomeCanvasGroup *root;
+  GList *list;
+
+  g_return_val_if_fail (BST_IS_SNET_ROUTER (router), NULL);
+  g_return_val_if_fail (BSE_IS_SOURCE (source), NULL);
+
+  canvas = GNOME_CANVAS (router);
+  root = GNOME_CANVAS_GROUP (canvas->root);
+  for (list = root->item_list; list; list = list->next)
+    {
+      BstCanvasSource *csource = list->data;
+
+      if (BST_IS_CANVAS_SOURCE (csource) && csource->source == source)
+	return csource;
+    }
+
+  return NULL;
+}
+
+static void
+bst_snet_router_update_links (BstSNetRouter   *router,
+			      BstCanvasSource *csource)
+{
+  GnomeCanvas *canvas = GNOME_CANVAS (router);
+  GSList *slist, *tmp_list, *ilist;
+  BseSource *source = csource->source;
+  guint i;
+
+  /* sort out input links for csource */
+  ilist = NULL;
+  tmp_list = router->link_list;
+  router->link_list = NULL;
+  while (tmp_list)
+    {
+      BstCanvasLink *link = tmp_list->data;
+
+      slist = tmp_list;
+      tmp_list = tmp_list->next;
+      if (link->icsource == csource)
+	{
+	  slist->next = ilist;
+	  ilist = slist;
+	}
+      else
+	{
+	  slist->next = router->link_list;
+	  router->link_list = slist;
+	}
+    }
+
+  /* ok, we now walk the (c)source's input channels, keep
+   * existing links and create new ones on the fly
+   */
+  for (i = 0; i < source->n_inputs; i++)
+    {
+      BseSourceInput *input = source->inputs + i;
+      BstCanvasSource *ocsource = bst_snet_router_csource_from_source (router, input->osource);
+      BstCanvasLink *link = NULL;
+
+      if (!ocsource)
+	{
+	  g_warning ("Couldn't figure CanvasSource Item From BseSource");
+	  continue;
+	}
+      
+      /* find corresponding link */
+      for (slist = ilist; slist; slist = slist->next)
+	{
+	  link = slist->data;
+	  if (!link)
+	    continue;
+
+	  if (link->ichannel_id == input->ichannel_id &&
+	      link->ocsource == ocsource &&
+	      link->ochannel_id == input->ochannel_id)
+	    break;
+	}
+      if (slist) /* cool, found one already */
+	slist->data = NULL;
+      else /* got none, ok, need to create new one */
+	{
+	  link = (BstCanvasLink*) bst_canvas_link_new (GNOME_CANVAS_GROUP (canvas->root));
+	  bst_canvas_link_set_icsource (link, csource, input->ichannel_id);
+	  bst_canvas_link_set_ocsource (link, ocsource, input->ochannel_id);
+	}
+      router->link_list = g_slist_prepend (router->link_list, link);
+    }
+
+  /* gotta nuke outdated links now */
+  for (slist = ilist; slist; slist = slist->next)
+    if (slist->data)
+      gtk_object_destroy (slist->data);
+  g_slist_free (ilist);
+}
+
+static void
+update_tmp_line (BstSNetRouter *router)
+{
+  GnomeCanvasPoints *gpoints = NULL;
+
+  if (router->tmp_line)
+    gtk_object_get (GTK_OBJECT (router->tmp_line), "points", &gpoints, NULL);
+  if (gpoints)
+    {
+      gpoints->coords[2] = router->world_x;
+      gpoints->coords[3] = router->world_y;
+      if (gpoints->coords[0] > gpoints->coords[2])
+	gpoints->coords[2] += 0.5;
+      else
+	gpoints->coords[2] -= 0.5;
+      if (gpoints->coords[1] > gpoints->coords[3])
+	gpoints->coords[3] += 0.5;
+      else
+	gpoints->coords[3] -= 0.5;
+      bst_object_set (GTK_OBJECT (router->tmp_line), "points", gpoints, NULL);
+      gnome_canvas_points_free (gpoints);
+    }
+}
+
+static void
+update_mode (BstSNetRouter *router)
+{
+  GnomeCanvas *canvas = GNOME_CANVAS (router);
+
+  update_tmp_line (router);
+
+  if (GTK_WIDGET_REALIZED (canvas))
+    {
+      GdkCursor *cursor;
+      
+      if (router->mode > 1)
+	cursor = gdk_cursor_new (GDK_UL_ANGLE);
+      else if (router->mode == 1)
+	cursor = gdk_cursor_new (GDK_TCROSS);
+      else
+	cursor = NULL;
+      
+      gdk_window_set_cursor (GTK_WIDGET (canvas)->window, cursor);
+      
+      if (cursor)
+	gdk_cursor_destroy (cursor);
+    }
+}
+
+static void
+bst_snet_router_reset_mode (BstSNetRouter *router)
+{
+  if (router->mode == 1)
+    router->mode = 0;
+  if (router->tmp_line)
+    {
+      gtk_object_destroy (GTK_OBJECT (router->tmp_line));
+      bst_status_set (0, NULL, NULL);
+    }
+
+  update_mode (router);
+}
+
 static gboolean
 bst_snet_router_root_event (BstSNetRouter   *router,
 			    GdkEvent        *event)
 {
+  GnomeCanvas *canvas = GNOME_CANVAS (router);
   gboolean handled = FALSE;
 
+  if (event->type == GDK_BUTTON_PRESS  &&
+      event->button.button == 1 &&
+      router->mode == 0) /* start link */
+    {
+      GnomeCanvasItem *item;
+      BstCanvasSource *csource = NULL;
+
+      g_return_val_if_fail (router->tmp_line == NULL, FALSE);
+      
+      item = gnome_canvas_get_item_at (canvas, event->button.x, event->button.y);
+      if (item)
+	csource = gtk_object_get_data (GTK_OBJECT (item), "csource_oconnector");
+      
+      if (csource)
+	{
+	  GnomeCanvasPoints *gpoints = gnome_canvas_points_new (2);
+
+	  router->mode = 1;
+	  router->ochannel_id = 1;
+	  router->ocsource = csource;
+	  bst_canvas_source_ochannel_pos (csource,
+					  router->ochannel_id,
+					  &gpoints->coords[0],
+					  &gpoints->coords[1]);
+	  gpoints->coords[2] = gpoints->coords[0] + 50;
+	  gpoints->coords[3] = gpoints->coords[1] + 50;
+	  router->tmp_line =
+	    gnome_canvas_item_new (GNOME_CANVAS_GROUP (canvas->root),
+				   GNOME_TYPE_CANVAS_LINE,
+				   "fill_color", "black",
+				   "object_signal::destroy", bse_nullify_pointer, &router->tmp_line,
+				   "points", gpoints,
+				   NULL);
+	  gnome_canvas_points_free (gpoints);
+	  router->world_x = event->button.x;
+	  router->world_y = event->button.y;
+          bst_status_set (0, "Create Link", "Select input source");
+	  update_mode (router);
+	  handled = TRUE;
+	}
+    }
+  else if ((event->type == GDK_BUTTON_PRESS ||
+	    event->type == GDK_BUTTON_RELEASE) &&
+	   event->button.button == 1 &&
+	   router->mode == 1) /* finish link */
+    {
+      GnomeCanvasItem *item;
+      BstCanvasSource *csource = NULL;
+      
+      item = gnome_canvas_get_item_at (canvas, event->button.x, event->button.y);
+      if (item)
+	csource = gtk_object_get_data (GTK_OBJECT (item), "csource_iconnector");
+      
+      if (csource)
+	{
+	  guint ichannel_id = 1;
+	  BseErrorType error;
+
+	  error = bse_source_set_input (csource->source, ichannel_id,
+					router->ocsource->source,
+					router->ochannel_id,
+					1);
+	  bst_snet_router_reset_mode (router);
+	  bst_status_set (error ? 0 : 100, "Create Link", bse_error_blurb (error));
+	}
+      handled = TRUE;
+    }
+  
   return handled;
 }
 
@@ -543,39 +796,41 @@ bst_snet_router_event (GtkWidget *widget,
   BstSNetRouter *router = BST_SNET_ROUTER (widget);
   GnomeCanvas *canvas = GNOME_CANVAS (router);
   gboolean handled = FALSE;
-
+  
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-      handled = TRUE;
-      if (bse_type_is_a (router->radio_action, BSE_TYPE_SOURCE))
+      if (event->button.button == 1 && router->mode > 1) /* add new source */
 	{
-	  if (event->button.button == 1)
-	    {
-	      {
-		gnome_canvas_window_to_world (canvas,
-					      event->button.x, event->button.y,
-					      &router->world_x, &router->world_y);
-		bse_snet_new_source (router->snet,
-				     router->radio_action,
-				     NULL);
-		router->world_x = 0;
-		router->world_y = 0;
-	      }
-	    }
+	  handled = TRUE;
+	  gnome_canvas_window_to_world (canvas,
+					event->button.x, event->button.y,
+					&router->world_x, &router->world_y);
+	  bse_snet_new_source (router->snet,
+			       router->mode,
+			       NULL);
+	  router->world_x = 0;
+	  router->world_y = 0;
 	}
-      else
+      else if (router->mode > 1 || (router->mode == 1 && event->button.button != 1))
 	{
-	  if (event->button.button == 2)
-	    handled = FALSE; /* leave it up to the canvas items */
+	  /* disturbing button presses, reset stuff */
+	  handled = TRUE;
+	  bst_snet_router_reset_mode (router);
 	}
+      break;
+    case GDK_MOTION_NOTIFY:
+      gnome_canvas_window_to_world (canvas,
+				    event->motion.x, event->motion.y,
+				    &router->world_x, &router->world_y);
+      update_tmp_line (router);
       break;
     default:
       break;
     }
-
+  
   if (!handled && GTK_WIDGET_CLASS (parent_class)->event)
     handled = GTK_WIDGET_CLASS (parent_class)->event (widget, event);
-      
+  
   return handled;
 }
