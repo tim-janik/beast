@@ -1,3 +1,9 @@
+Mon Nov 17 00:49:34 2003  Tim Janik  <timj@gtk.org>
+
+	* glib-extra.[hc]: added g_strconcat_with_null() and defined
+	g_strconcat() to g_strconcat_with_null() which also accepts
+	its first argument to be NULL.
+
 Sun Nov 16 17:56:50 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* sfidl-module.cc: Escape user defined strings (like the blurb) from

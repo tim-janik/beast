@@ -75,6 +75,9 @@ gchar*		g_strdup_lstrip   (const gchar	 *string);
 const gchar*    g_intern_string        (const gchar   *string);
 const gchar*    g_intern_static_string (const gchar   *string);
 
+gchar*          g_strconcat_with_null  (const gchar   *string1, ...);
+#define         g_strconcat             g_strconcat_with_null
+
 gchar*          g_path_concat     (const gchar   *first_path,
                                    ...);
 
