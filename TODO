@@ -1,4 +1,5 @@
 FIXMES:
+- apply editable and sensitive to params
 - destroy piano roll dialog if part is released
 - disable bseevaluator without --devel as it's unstable
 - remove hpack and vpack
