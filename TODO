@@ -240,6 +240,12 @@ DRIVER DIALOG:
 - Driver NAme
 
 TASKS:
+- TableSynth(note mapping): allow multiple synths and presets per
+  track, configurable via table, e.g.:
+  Note | Synth | Preset
+  C-2  | Foo   | FooMetallic
+  D-2  | Foo   | FooWooden
+  E-2  | Bazzo | Default
 - Project/Song: move project+song properties into an extra File->Properties dialog
 - PianoRoll: allow editing parts from multiple tracks in a single window (syncronizing horizontal scroll position)
 - support sequencer input from and to ALSA and JACK
