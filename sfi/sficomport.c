@@ -376,13 +376,8 @@ sfi_com_port_send_bulk (SfiComPort   *port,
 {
   SfiRing *ring;
   g_return_if_fail (port != NULL);
-  if (!value_ring)
+  if (!value_ring || !port->connected)
     return;
-  if (!port->connected)
-    {
-      sfi_ring_free (value_ring);
-      return;
-    }
   g_return_if_fail (port->link || port->pfd[1].fd >= 0);
 
   if (port->link)

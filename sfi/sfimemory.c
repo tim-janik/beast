@@ -40,7 +40,7 @@ sfi_alloc_upper_power2 (const gulong number)
   return number ? 1 << g_bit_storage (number - 1) : 0;
 }
 
-#if 1
+#if 0
 static inline gpointer
 low_alloc (gsize mem_size)
 {
@@ -145,7 +145,8 @@ sfi_free_memblock (gsize    block_size,
   cmem = mem;
   cmem -= DBG8_SIZE;
   debug_size = (gsize*) cmem;
-  g_return_if_fail (block_size == *debug_size);
+  if (block_size != *debug_size)
+    g_printerr ("%s: in memory block at (%p): block_size=%d != *debug_size=%d\n", G_STRLOC, mem, block_size, *debug_size);
   
   low_free (block_size + DBG8_SIZE, cmem);
 }

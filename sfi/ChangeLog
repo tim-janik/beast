@@ -1,3 +1,14 @@
+Sun Aug 29 04:14:19 2004  Tim Janik  <timj@gtk.org>
+
+	* sficomport.c (sfi_com_port_send_bulk): in case the comport got
+	disconnected, don't free values not belonging to the port.
+
+	* sfimemory.c: disabled block-allocator, use malloc/free instead. there's
+	no platform currently where we have performance problems with malloc/free.
+
+	* sfiserial.[hc]: added sfi_value_store_stderr() to allow easy debugging
+	of marshalled value contents.
+
 Sat Aug 28 22:14:30 2004  Tim Janik  <timj@gtk.org>
 
 	* sfiprimitives.[hc]: const fixes for SfiRing.
