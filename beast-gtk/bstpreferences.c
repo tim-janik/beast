@@ -151,7 +151,7 @@ bst_preferences_build_rec_editor (SfiRec      *rec,
   for (i = 0; i < fields.n_fields; i++)
     {
       GParamSpec *pspec = fields.fields[i];
-      if (sfi_pspec_test_hint (pspec, SFI_PARAM_SERVE_GUI))
+      if (sfi_pspec_check_option (pspec, "G"))     /* GUI representable */
 	{
 	  BstParam *bparam = bst_param_rec_create (pspec, FALSE, NULL, rec);
 	  bst_param_pack_property (bparam, parent);

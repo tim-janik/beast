@@ -88,7 +88,7 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
   bse_object_class_add_param (object_class, "Frequency", PROP_BASE_FREQ,
                               bse_param_spec_freq ("base_freq", "Frequency", NULL,
                                                    bse_note_to_freq (SFI_NOTE_Gis (-1)),
-                                                   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+                                                   SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, "Frequency", PROP_BASE_NOTE,
                               bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
 
@@ -96,21 +96,21 @@ dav_syn_drum_class_init (DavSynDrumClass *class)
 			      sfi_pspec_real ("trigger_vel", "Trigger Velocity [%]",
                                               "Set the velocity of the drum hit",
                                               100.0, 0.0, 1000.0, 10.0,
-                                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+                                              SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Trigger", PROP_TRIGGER_HIT,
 			      sfi_pspec_bool ("force_trigger", "Trigger Hit", "Hit the drum",
-                                              FALSE, SFI_PARAM_GUI SFI_PARAM_HINT_TRIGGER));
+                                              FALSE, SFI_PARAM_GUI ":TRIGGER"));
   bse_object_class_add_param (object_class, "Parameters", PROP_RES,
 			      sfi_pspec_real ("res", "Resonance",
                                               "Set resonance half life in number of milli seconds",
                                               50, 1, 1000.0, 2.5,
-                                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+                                              SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Parameters", PROP_RATIO,
 			      sfi_pspec_real ("ratio", "Frequency Ratio",
                                               "Set ratio of frequency shift. (i.e. 1.0 means shift "
                                               "equal to the drum's base frequency)",
                                               1.0, 0.0, 10.0, 0.1,
-                                              SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+                                              SFI_PARAM_DEFAULT ":scale"));
 
   ichannel_id = bse_source_class_add_ichannel (source_class, "Freq In", "Drum Frequency Input");
   g_assert (ichannel_id == DAV_SYN_DRUM_ICHANNEL_FREQ);

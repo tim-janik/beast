@@ -104,7 +104,7 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
 			      PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
 						   BSE_KAMMER_FREQUENCY_f,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+						   SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, "Frequency",
 			      PARAM_BASE_NOTE,
 			      bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));
@@ -112,30 +112,30 @@ dav_xtal_strings_class_init (DavXtalStringsClass *class)
 			      sfi_pspec_real ("trigger_vel", "Trigger Velocity [%]",
 						   "Velocity of the string pluck",
 						   100.0,  0.0, 100.0, 1,
-						   SFI_PARAM_GUI SFI_PARAM_HINT_SCALE));
+						   SFI_PARAM_GUI ":scale"));
   bse_object_class_add_param (object_class, "Trigger", PARAM_TRIGGER_HIT,
 			      sfi_pspec_bool ("trigger_pulse", "Trigger Hit", "Pluck the string",
-						   FALSE, SFI_PARAM_GUI SFI_PARAM_HINT_TRIGGER));
+						   FALSE, SFI_PARAM_GUI ":trigger"));
   bse_object_class_add_param (object_class, "Decay", PARAM_NOTE_DECAY,
 			      sfi_pspec_real ("note_decay", "Note Decay",
 						   "Note decay is the 'half-life' of the note's decay in seconds",
 						   0.4, 0.001, 4.0, 0.01,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+						   SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Decay", PARAM_TENSION_DECAY,
 			      sfi_pspec_real ("tension_decay", "Tension Decay",
 						   "Tension of the string",
 						   0.04, 0.001, 1.0, 0.01,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+						   SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Flavour", PARAM_METALLIC_FACTOR,
 			      sfi_pspec_real ("metallic_factor", "Metallic Factor [%]",
 						   "Metallicness of the string",
 						   16.0, 0.0, 100.0, 1,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+						   SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Flavour", PARAM_SNAP_FACTOR,
 			      sfi_pspec_real ("snap_factor", "Snap Factor [%]",
 						   "Snappiness of the string",
 						   34.0, 0.0, 100.0, 1,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+						   SFI_PARAM_DEFAULT ":scale"));
   
   channel_id = bse_source_class_add_ichannel (source_class, "Freq In", "Pluck frequency input");
   g_assert (channel_id == DAV_XTAL_STRINGS_ICHANNEL_FREQ);

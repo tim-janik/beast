@@ -42,8 +42,8 @@ param_toggle_create_gmask (BstParam    *bparam,
 {
   GtkWidget *action, *prompt, *xframe;
   BstGMask *gmask;
-  gboolean radio = sfi_pspec_test_hint (bparam->pspec, SFI_PARAM_HINT_RADIO);
-  gboolean trigger = sfi_pspec_test_hint (bparam->pspec, SFI_PARAM_HINT_TRIGGER);
+  gboolean radio = sfi_pspec_check_option (bparam->pspec, "radio");
+  gboolean trigger = sfi_pspec_check_option (bparam->pspec, "trigger");
 
   action = g_object_new (radio ? BST_TYPE_FREE_RADIO_BUTTON :
                          trigger ? GTK_TYPE_TOGGLE_BUTTON :

@@ -149,7 +149,7 @@ bst_param_alloc (BstParamImpl *impl,
   bparam->column = 0;
   bparam->readonly = (!(bparam->impl->flags & BST_PARAM_EDITABLE) ||
 		      !(pspec->flags & G_PARAM_WRITABLE) ||
-		      sfi_pspec_test_hint (pspec, SFI_PARAM_HINT_RDONLY));
+		      sfi_pspec_check_option (pspec, "ro"));       /* read-only check */
   if (!bparam->readonly)
     bparam->readonly = !g_type_is_a (itype, vtype);
   bparam->writable = FALSE;
@@ -759,7 +759,7 @@ bst_param_rate_impl (BstParamImpl    *impl,
   if (impl->flags & BST_PARAM_PROXY_LIST)
     type_mismatch |= !binding || !binding->list_proxies;
 
-  does_match = !type_mismatch && (!impl->hints || sfi_pspec_test_all_hints (pspec, impl->hints));
+  does_match = !type_mismatch && (!impl->hints || sfi_pspec_require_options (pspec, impl->hints));
   if (!does_match)
     return 0;		/* mismatch */
 

@@ -19,6 +19,7 @@
 #include <bse/bse.idl>
 
 namespace Dav {
+Const STANDARD = Bse::STANDARD;
 
 class Chorus : Bse::Effect {
   Info    icon      = "icons/chorus.png";
@@ -27,8 +28,7 @@ class Chorus : Bse::Effect {
   IStream audio_in  = ("Audio In", "Audio input");
   OStream audio_out = ("Audio Out", "Chorus audio output");
   group "Parameters" {
-    Real wet_out = Real ("Wet out [%]", "Set the amount of modified data to mix",
-                         50.0, 0.0, 100.0, 0.1, SFI_PARAM_HINT_SCALE SFI_PARAM_DEFAULT);
+    Real wet_out = Perc ("Wet out [%]", "Set the amount of modified data to mix", 50.0, STANDARD);
   };
 };
 

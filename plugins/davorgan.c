@@ -79,7 +79,7 @@ harm_param (gchar *name,
 	    gchar *blurb,
 	    gint   dft)
 {
-  return sfi_pspec_real (name, nick, blurb, dft * 100., 0, 100.0, 1.0, SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE);
+  return sfi_pspec_real (name, nick, blurb, dft * 100., 0, 100.0, 1.0, SFI_PARAM_DEFAULT ":scale");
 }
 
 static void
@@ -102,7 +102,7 @@ dav_organ_class_init (DavOrganClass *class)
   bse_object_class_add_param (object_class, "Base Frequency", PARAM_BASE_FREQ,
 			      bse_param_spec_freq ("base_freq", "Frequency", NULL,
 						   BSE_KAMMER_FREQUENCY_f,
-						   SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+						   SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, "Base Frequency",
                               PARAM_BASE_NOTE,
                               bse_pspec_note_simple ("base_note", "Note", NULL, SFI_PARAM_GUI));

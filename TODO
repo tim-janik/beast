@@ -285,6 +285,18 @@ sfidl:
     can be demarshalled in non-validated form after incompatible changes)
   fixes:
   - support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
+  - Const lookups don't honour namespacing
+  - namespace using doesn't work:
+    namespace Dav {
+    using namespace Bse;
+    Num x = (STANDARD);
+    };
+  - namespace prefixing in ParamHints doesn't work:
+    namespace Dav {
+    Num x = (::Bse::STANDARD);
+    Num y = (Bse::STANDARD);
+    Num z = (::STANDARD);
+    };
   extensions:
   - choices need support for icons per value
   - choices need support for tooltips per value

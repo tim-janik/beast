@@ -86,7 +86,7 @@ bse_sequencer_class_init (BseSequencerClass *class)
 			      PARAM_LENGTH,
 			      sfi_pspec_int ("length", "Length", NULL,
 					     8, 1, 128, 4,
-					     SFI_PARAM_GUI SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_GUI ":scale"));
   bse_object_class_add_param (object_class, "Sequence",
 			      PARAM_NOTES,
 			      bse_param_spec_boxed ("notes", "Notes", NULL,
@@ -96,12 +96,12 @@ bse_sequencer_class_init (BseSequencerClass *class)
 			      PARAM_TRANSPOSE,
 			      sfi_pspec_int ("transpose", "Transpose", NULL,
 					     0, -36, +36, 3,
-					     SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE));
+					     SFI_PARAM_DEFAULT ":scale"));
   bse_object_class_add_param (object_class, "Sequence",
 			      PARAM_COUNTER,
 			      sfi_pspec_real ("counter", "Timing [ms]", NULL,
 					      100, 0, 1000, 5,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE SFI_PARAM_FLOAT));
+					      SFI_PARAM_DEFAULT ":f:scale"));
   
   ochannel = bse_source_class_add_ochannel (source_class, "Freq Out", "Frequency Signal");
   g_assert (ochannel == BSE_SEQUENCER_OCHANNEL_FREQ);

@@ -116,7 +116,7 @@ param_spinner_setup (BstParam   *bparam,
 		    "signal_after::value-changed", param_spinner_change_value, bparam,
 		    NULL);
   *spinner = gtk_spin_button_new (adjustment, 0, n_digits);
-  if (dial && sfi_pspec_test_hint (pspec, SFI_PARAM_HINT_DIAL))
+  if (dial && sfi_pspec_check_option (pspec, "dial"))
     {
       *dial = g_object_new (BST_TYPE_DIAL,
 			    "visible", TRUE,
@@ -124,8 +124,8 @@ param_spinner_setup (BstParam   *bparam,
 			    NULL);
       bst_dial_set_adjustment (BST_DIAL (*dial), adjustment);
     }
-  if (scale && (sfi_pspec_test_hint (pspec, SFI_PARAM_HINT_DIAL) ||
-		sfi_pspec_test_hint (pspec, SFI_PARAM_HINT_SCALE)))
+  if (scale && (sfi_pspec_check_option (pspec, "dial") ||
+		sfi_pspec_check_option (pspec, "scale")))
     {
       GtkAdjustment *scale_adjustment;
       SfiReal center, base, n_steps;

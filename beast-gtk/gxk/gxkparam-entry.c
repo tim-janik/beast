@@ -124,7 +124,7 @@ param_entry_create_gmask (BstParam    *bparam,
   gmask = bst_gmask_form (gmask_parent, action, BST_GMASK_FILL);
   bst_gmask_set_prompt (gmask, prompt);
   bst_gmask_set_tip (gmask, tooltip);
-  if (sfi_pspec_test_hint (bparam->pspec, "file-paths"))
+  if (sfi_pspec_check_option (bparam->pspec, "searchpath"))
     {
       GtkWidget *br, *ba;
       bst_gmask_set_atail (gmask, bst_hpack0 (":", br = bst_stock_icon_button (BST_STOCK_REMOVE),
@@ -153,7 +153,7 @@ param_entry_create_widget (BstParam    *bparam,
 		    "signal::activate", param_entry_change_value, bparam,
 		    "signal::focus_out_event", param_entry_focus_out, bparam,
 		    NULL);
-  if (sfi_pspec_test_hint (bparam->pspec, "file-paths"))
+  if (sfi_pspec_check_option (bparam->pspec, "searchpath"))
     {
       GtkWidget *br, *ba;
       bst_hpack0 ("*", action,

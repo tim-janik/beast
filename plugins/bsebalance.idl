@@ -39,19 +39,19 @@ class Balance : Bse::Effect {
   OStream mix_out    = ("Mix Out", "Mixed audio output");
   OStream right_out  = ("Right Out", "Right audio output");
   group "Audio Input" {
-    Real  alevel1    = Perc ("Input 1 [%]", "Attenuate the level of audio input 1", 100, SFI_PARAM_DEFAULT);
-    Real  alevel2    = Perc ("Input 2 [%]", "Attenuate the level of audio input 2", 100, SFI_PARAM_DEFAULT);
-    Real  abalance   = Balance ("Balance", "Balance audio input levels", 0, SFI_PARAM_GUI);
+    Real  alevel1    = Perc ("Input 1 [%]", "Attenuate the level of audio input 1", 100, STANDARD);
+    Real  alevel2    = Perc ("Input 2 [%]", "Attenuate the level of audio input 2", 100, STANDARD);
+    Real  abalance   = Balance ("Balance", "Balance audio input levels", 0, GUI);
   };
   group "Control Input" {
-    Real  clevel1    = Perc ("Input 1 [%]", "Attenuate the level of control input 1", 100, SFI_PARAM_DEFAULT);
-    Real  clevel2    = Perc ("Input 2 [%]", "Attenuate the level of control input 2", 100, SFI_PARAM_DEFAULT);
-    Real  cbalance   = Balance ("Balance", "Balance control input levels", 0, SFI_PARAM_GUI);
+    Real  clevel1    = Perc ("Input 1 [%]", "Attenuate the level of control input 1", 100, STANDARD);
+    Real  clevel2    = Perc ("Input 2 [%]", "Attenuate the level of control input 2", 100, STANDARD);
+    Real  cbalance   = Balance ("Balance", "Balance control input levels", 0, GUI);
   };
   group "Output Panning" {
-    Real  ostrength  = Perc ("Control Strength", "Adjust how much the control signals affect the output balance", 100, SFI_PARAM_DEFAULT);
-    Real  lowpass    = Frequency ("Lowpass [Hz]", "Lowpass filter frequency for the control signal", 100, 100, 1000, SFI_PARAM_DEFAULT);
-    Real  obalance   = Balance ("Output Balance", "Adjust output balance between left and right", 0, SFI_PARAM_DEFAULT);
+    Real  ostrength  = Perc ("Control Strength", "Adjust how much the control signals affect the output balance", 100, STANDARD);
+    Real  lowpass    = Frequency ("Lowpass [Hz]", "Lowpass filter frequency for the control signal", 100, 100, 1000, STANDARD);
+    Real  obalance   = Balance ("Output Balance", "Adjust output balance between left and right", 0, STANDARD);
   };
 };
 

@@ -84,7 +84,7 @@ bse_atan_distort_class_init (BseAtanDistortClass *class)
 					      "The atan distortion boost amount (strength) ranges "
 					      "from maximum attenuation (0%) to maximum boost (100%).",
 					      50, 0, 100.0, 5,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_SCALE SFI_PARAM_FLOAT));
+					      SFI_PARAM_DEFAULT ":f:scale"));
   
   channel_id = bse_source_class_add_ichannel (source_class, "Audio In", "Audio Input SIgnal");
   g_assert (channel_id == BSE_ATAN_DISTORT_ICHANNEL_MONO1);

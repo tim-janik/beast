@@ -91,20 +91,20 @@ bse_mixer_class_init (BseMixerClass *class)
 			      sfi_pspec_real ("master_volume_f", "Master [float]", NULL,
 					      bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB),
 					      0, bse_dB_to_factor (BSE_MAX_VOLUME_dB), 0.1,
-					      SFI_PARAM_STORAGE SFI_PARAM_FLOAT));
+					      SFI_PARAM_STORAGE ":f"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MVOLUME_dB,
 			      sfi_pspec_real ("master_volume_dB", "Master [dB]", NULL,
 					      BSE_DFL_MASTER_VOLUME_dB,
 					      BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 					      BSE_GCONFIG (step_volume_dB),
-					      SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_GUI ":dial"));
   bse_object_class_add_param (object_class, "Adjustments",
 			      PROP_MVOLUME_PERC,
 			      sfi_pspec_int ("master_volume_perc", "Master [%]", NULL,
 					     bse_dB_to_factor (BSE_DFL_MASTER_VOLUME_dB) * 100,
 					     0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-					     SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+					     SFI_PARAM_GUI ":dial"));
   ochannel = bse_source_class_add_ochannel (source_class, "Audio Out", "Sole Output");
   g_assert (ochannel == BSE_MIXER_OCHANNEL_MONO);
   for (i = 1; i <= BSE_MIXER_N_INPUTS; i++)
@@ -130,7 +130,7 @@ bse_mixer_class_init (BseMixerClass *class)
 						  BSE_DFL_MIXER_VOLUME_dB,
 						  BSE_MIN_VOLUME_dB, BSE_MAX_VOLUME_dB,
 						  BSE_GCONFIG (step_volume_dB),
-						  SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+						  SFI_PARAM_GUI ":dial"));
       g_free (string);
       g_free (name);
       string = g_strdup_printf ("volume_perc%u", i);
@@ -140,7 +140,7 @@ bse_mixer_class_init (BseMixerClass *class)
 				  sfi_pspec_int (string, name, NULL,
 						 bse_dB_to_factor (BSE_DFL_MIXER_VOLUME_dB) * 100,
 						 0, bse_dB_to_factor (BSE_MAX_VOLUME_dB) * 100, 1,
-						 SFI_PARAM_GUI SFI_PARAM_HINT_DIAL));
+						 SFI_PARAM_GUI ":dial"));
       g_free (group);
       g_free (string);
       g_free (name);

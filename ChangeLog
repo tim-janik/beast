@@ -1,3 +1,7 @@
+Sun Oct 12 01:14:21 2003  Tim Janik  <timj@gtk.org>
+
+        * fixes according to pspec hints->options change.
+
 Sat Oct 11 21:56:33 2003  Tim Janik  <timj@gtk.org>
 
 	* apllied patch from Christian Neumair <chris@gnome-de.org>

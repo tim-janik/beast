@@ -90,35 +90,35 @@ bse_free_verb_class_init (BseFreeVerbClass *class)
 					      constants->room_offset,
 					      constants->room_offset + constants->room_scale * 1.0,
 					      0.1 * constants->room_scale,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_DAMPING,
 			      sfi_pspec_real ("damping", "Damping [%]", NULL,
 					      constants->damp_scale * defaults.damp,
 					      0, constants->damp_scale * 1.0,
 					      0.1 * constants->damp_scale,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_WET_LEVEL,
 			      sfi_pspec_real ("wet_level", "Wet Level [dB]", NULL,
 					      constants->wet_scale * defaults.wet,
 					      0, constants->wet_scale * 1.0,
 					      0.1 * constants->wet_scale,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_DRY_LEVEL,
 			      sfi_pspec_real ("dry_level", "Dry Level [dB]", NULL,
 					      constants->dry_scale * defaults.dry,
 					      0, constants->dry_scale * 1.0,
 					      0.1 * constants->dry_scale,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_DEFAULT ":dial"));
   bse_object_class_add_param (object_class, "Reverb Style",
 			      PROP_WIDTH,
 			      sfi_pspec_real ("width", "Width [%]", NULL,
 					      constants->width_scale * defaults.width,
 					      0, constants->width_scale * 1.0,
 					      0.1 * constants->width_scale,
-					      SFI_PARAM_DEFAULT SFI_PARAM_HINT_DIAL));
+					      SFI_PARAM_DEFAULT ":dial"));
   channel = bse_source_class_add_ichannel (source_class, "Left Audio In", "Left Input");
   channel = bse_source_class_add_ichannel (source_class, "Right Audio In", "Right Input");
   channel = bse_source_class_add_ochannel (source_class, "Left Audio Out", "Left Output");
