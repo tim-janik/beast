@@ -66,10 +66,11 @@ static GEnumValue bse_iir_filter_algorithm_values[] = {
   { BSE_IIR_FILTER_CHEBYCHEFF2, "BSE_IIR_FILTER_CHEBYCHEFF2", "chebycheff2" },
   { 0, NULL, NULL }
 };
+static GEnumValue* return_bse_iir_filter_algorithm_values (void) { return bse_iir_filter_algorithm_values; }
 static BseExportNodeEnum __enode_BseIIRFilterAlgorithm = {
   { NULL,
     BSE_EXPORT_NODE_ENUM, "BseIIRFilterAlgorithm", },
-  bse_iir_filter_algorithm_values,
+  return_bse_iir_filter_algorithm_values,
 };
 #define BSE_TYPE_IIR_FILTER_TYPE        (BSE_EXPORT_TYPE_ID (BseIIRFilterType))
 static GEnumValue bse_iir_filter_type_values[] = {
@@ -79,10 +80,11 @@ static GEnumValue bse_iir_filter_type_values[] = {
   { BSE_IIR_FILTER_BAND_STOP, "BSE_IIR_FILTER_BAND_STOP", "band-stop" },
   { 0, NULL, NULL }
 };
+static GEnumValue* return_bse_iir_filter_type_values (void) { return bse_iir_filter_type_values; }
 static BseExportNodeEnum __enode_BseIIRFilterType = {
   { (BseExportNode*) &__enode_BseIIRFilterAlgorithm,
     BSE_EXPORT_NODE_ENUM, "BseIIRFilterType", },
-  bse_iir_filter_type_values,
+  return_bse_iir_filter_type_values,
 };
 #include "./icons/filter.c"
 BSE_REGISTER_OBJECT_P ((BseExportNode*) &__enode_BseIIRFilterType,

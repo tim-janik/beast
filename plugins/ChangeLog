@@ -1,3 +1,8 @@
+Wed Sep 15 22:06:03 2004  Tim Janik  <timj@gtk.org>
+
+	* bseiirfilter.c: fixup enum registration, according to recent
+	BseExportNodeEnum changes.
+
 Wed Sep 15 16:39:46 2004  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* artscompressor.idl: Adjusted the threshold [dB] range to [-100,0],
