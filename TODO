@@ -1,5 +1,4 @@
 FIXMES:
-- remove examplepeakfilter
 - nuke frequency fine-tune for biquad filter
 - fix syndrum parameter scale
 - introduce Volume() pspec type in idl files that the GUI can provide a dB slider for
