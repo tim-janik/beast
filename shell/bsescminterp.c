@@ -682,6 +682,21 @@ bse_scm_signal_disconnect (SCM s_proxy,
   return SCM_UNSPECIFIED;
 }
 
+SCM
+bse_scm_choice_match (SCM s_ch1,
+                      SCM s_ch2)
+{
+  SCM_ASSERT (SCM_SYMBOLP (s_ch1), s_ch1, SCM_ARG1, "bse-choice-match?");
+  SCM_ASSERT (SCM_SYMBOLP (s_ch2), s_ch2, SCM_ARG2, "bse-choice-match?");
+
+  gchar *ch1 = g_strndup (SCM_ROCHARS (s_ch1), SCM_LENGTH (s_ch1));
+  gchar *ch2 = g_strndup (SCM_ROCHARS (s_ch2), SCM_LENGTH (s_ch2));
+  int res = sfi_choice_match (ch1, ch2);
+  g_free (ch1);
+  g_free (ch2);
+  return SCM_BOOL (res);
+}
+
 static gboolean script_register_enabled = FALSE;
 
 void
@@ -903,7 +918,7 @@ bse_scm_interp_init (void)
   gh_new_procedure0_0 ("bse-server-get", bse_scm_server_get);
   gh_new_procedure ("bse-script-register", bse_scm_script_register, 7, 0, 1);
   gh_new_procedure ("bse-script-fetch-args", bse_scm_script_args, 0, 0, 0);
-  // FIXME: gh_new_procedure ("bse-enum-match?", bse_scm_enum_match, 2, 0, 0);
+  gh_new_procedure ("bse-choice-match?", bse_scm_choice_match, 2, 0, 0);
   gh_new_procedure ("bse-signal-connect", bse_scm_signal_connect, 3, 0, 0);
   gh_new_procedure ("bse-signal-disconnect", bse_scm_signal_disconnect, 2, 0, 0);
   gh_new_procedure ("bse-context-pending", bse_scm_context_pending, 0, 0, 0);

@@ -40,7 +40,7 @@
 
 (define bse-module-set bse-item-set)
 	
-(define (bse-test-error err) (not (bse-enum-match? err 'error-none)))
+(define (bse-test-error err) (not (bse-choice-match? err 'bse-error-none)))
 
 (define (bse-item-tname item) (bse-item-get-name-or-type item))
 

@@ -44,7 +44,7 @@ void	bse_scm_enable_server		(gboolean	 enabled);
 
 /* --- SCM procedures --- */
 SCM	bse_scm_server_get		(void);
-SCM	bse_scm_enum_match		(SCM		 s_ev1,
+SCM	bse_scm_choice_match		(SCM		 s_ev1,
 					 SCM		 s_ev2);
 SCM	bse_scm_glue_set_prop		(SCM		 s_proxy,
 					 SCM		 s_prop_name,
