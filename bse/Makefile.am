@@ -179,6 +179,7 @@ bse_extra_sources = @STRIP_BEGIN@ \
 	mkbuiltinlist.pl \
 	mkenums.pl \
 	mktypes.pl \
+	mkcalls.pl \
 	bseconfig.h.in \
 	bseparamcol.c \
 	bsebuffermixercore.c \
