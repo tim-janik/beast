@@ -109,16 +109,9 @@ dnl Define package requirements.
 dnl
 AC_DEFUN(AC_I18N_REQUIREMENTS,
 [
-    dnl TRANSLATORS: <LANG>.po files are required in both the po/ _and_ po-bse/
-    dnl directories before <LANG> may be added to ALL_LINGUAS.
     ALL_LINGUAS="az ca de el es nl pt sr sr@Latn sv ru"
-    dnl TRANSLATORS: <LANG>.po files are required in both the po/ _and_ po-bse/
-    dnl directories before <LANG> may be added to ALL_LINGUAS.
     AC_SUBST(ALL_LINGUAS)
 
-    dnl versioned BSE gettext domain (po-bse/)
-    BSE_GETTEXT_DOMAIN=bse-v$BSE_VERSION
-    AC_SUBST(BSE_GETTEXT_DOMAIN)
     dnl versioned BEAST gettext domain (po/)
     BST_GETTEXT_DOMAIN=beast-v$BSE_VERSION    # version without -rcZ
     AC_SUBST(BST_GETTEXT_DOMAIN)
@@ -580,10 +573,7 @@ data/sfi.pc
 data/bse.pc
 test/Makefile
 po/Makefile.in
-po-bse/Makefile.in
 po-helper.sh
 ])
-
-AC_CONFIG_COMMANDS([sed-po-makefiles], [sed -e "/POTFILES =/r po-bse/POTFILES" po-bse/Makefile.in > po-bse/Makefile])
 
 AC_OUTPUT

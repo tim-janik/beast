@@ -1,3 +1,7 @@
+Mon Dec 15 15:03:58 2003  Tim Janik  <timj@gtk.org>
+
+	* merged po/ with po-bse/. remove the po-bse/ directory.
+
 Sat Dec 13 19:18:30 2003  Stefan Westerfeld  <stefan@space.twc.de>
 
 	* bsw/bswcxxutils.h: Added missing const to sfi_value_get_cxxstring.
