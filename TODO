@@ -8,6 +8,8 @@ FIXMES:	(release-critical)
 - save mixer bus volumes
 - BseAmplifier: extend master volume to +24db
 TODO:
+- note-specific undo per part
+- piano roll interpret scroll events for vertical scrolling
 - implement GxkLogAdjustment in terms of GxkAdapterAdjustment and rename gxklogadjustment.h
 - remove [dB], [%], [uS] etc... unit specifications from property labels, use hints instead and let the GUI make such indications
 - add GxkDialog minimum shrink sizes support
