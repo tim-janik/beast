@@ -1,3 +1,8 @@
+Sat Dec 18 00:12:31 2004  Tim Janik  <timj@gtk.org>
+
+	* configure.in: release 0.6.4, binary 0, interface 0.
+	CFLAGS and CXXFLAGS fixups.
+
 Fri Dec 17 15:56:43 2004  Tim Janik  <timj@gtk.org>
 
 	* docs/architecture.texi: new documents, containing only block diagrams
