@@ -1,4 +1,5 @@
 FIXMES:
+- stefan: can we optimize cxx_value_get_sequence() returns?
 - rc setting for canvas font sizes
 - record classes in c++ need to derive from GNewAllocator
 - put bstrecords.idl generated files into CLEAN files or at least MAINTAINER-CLEAN files

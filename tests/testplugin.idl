@@ -50,6 +50,9 @@ class TestObject : Bse::Effect {
   property Int aninteger;
   property TestRecord r;
   property TestSequence s;
+  property BBlock bb;
+  property FBlock fb;
+  property Rec rr;
 };
 
 // test procedure
