@@ -38,7 +38,7 @@ param_automation_dialog_ok (GxkDialog *dialog)
       GxkParam *param_channel = g_object_get_data (dialog, "GxkParam-automation-channel");
       GxkParam *param_control = g_object_get_data (dialog, "GxkParam-automation-control");
       gint midi_channel = sfi_value_get_int (&param_channel->value);
-      gint control_type = bse_midi_signal_type_from_choice (sfi_value_get_choice (&param_control->value));
+      gint control_type = bse_midi_control_type_from_choice (sfi_value_get_choice (&param_control->value));
       bse_source_set_automation (proxy, param->pspec->name, midi_channel, control_type);
     }
   gxk_toplevel_delete (GTK_WIDGET (dialog));
@@ -86,9 +86,11 @@ param_automation_popup_editor (GtkWidget *widget,
       GxkParam *param_channel = g_object_get_data (automation_dialog, "GxkParam-automation-channel");
       GxkParam *param_control = g_object_get_data (automation_dialog, "GxkParam-automation-control");
       sfi_value_set_int (&param_channel->value, bse_source_get_automation_channel (proxy, param->pspec->name));
-      sfi_value_set_choice (&param_control->value, bse_midi_signal_type_to_choice (bse_source_get_automation_control (proxy, param->pspec->name)));
+      sfi_value_set_choice (&param_control->value, bse_midi_control_type_to_choice (bse_source_get_automation_control (proxy, param->pspec->name)));
       gxk_param_apply_value (param_channel); /* update model, auto updates GUI */
       gxk_param_apply_value (param_control); /* update model, auto updates GUI */
+      g_object_set_data (widget, "GxkParam-automation-channel", param_channel);
+      g_object_set_data (widget, "GxkParam-automation-control", param_control);
       /* setup for proxy */
       bst_window_sync_title_to_proxy (automation_dialog, proxy,
                                       /* TRANSLATORS: this is a dialog title and %s is replaced by an object name */
@@ -142,10 +144,6 @@ param_automation_create (GxkParam    *param,
                                    "xpad", 2,
                                    "parent", button,
                                    NULL);
-  gchar *string = g_strdup_printf (_("Setup automation for property: %s"), g_param_spec_get_nick (param->pspec));
-  gxk_widget_set_tooltip (button, string);
-  gxk_widget_set_tooltip (widget, string);
-  g_free (string);
   gtk_widget_show_all (widget);
   /* store handles */
   g_object_set_data (widget, "beast-GxkParam", param);
@@ -155,32 +153,81 @@ param_automation_create (GxkParam    *param,
   return widget;
 }
 
+static const SfiChoiceValue*
+param_automation_find_choice_value (const gchar *choice,
+                                    GParamSpec  *pspec)
+{
+  SfiChoiceValues cvalues = sfi_pspec_get_choice_values (pspec);
+  guint i;
+  for (i = 0; i < cvalues.n_values; i++)
+    if (sfi_choice_match (cvalues.values[i].choice_ident, choice))
+      return &cvalues.values[i];
+  return NULL;
+}
+
 static void
 param_automation_update (GxkParam  *param,
                          GtkWidget *widget)
 {
   SfiProxy proxy = bst_param_get_proxy (param);
-  gchar *content = NULL;
+  gchar *content = NULL, *tip = NULL;
   if (proxy)
     {
+      const gchar *prefix = "";
       gint midi_channel = bse_source_get_automation_channel (proxy, param->pspec->name);
       gint control_type = bse_source_get_automation_control (proxy, param->pspec->name);
-      if (control_type >= BSE_MIDI_SIGNAL_CONTINUOUS_0 && control_type <= BSE_MIDI_SIGNAL_CONTINUOUS_31)
-        control_type = control_type - BSE_MIDI_SIGNAL_CONTINUOUS_0 + 0x80;
-      else if (control_type >= BSE_MIDI_SIGNAL_CONTROL_0 && control_type <= BSE_MIDI_SIGNAL_CONTROL_127)
-        control_type = control_type - BSE_MIDI_SIGNAL_CONTROL_0 + 0x00;
+      GParamSpec *control_pspec = bst_procedure_ref_pspec ("BseSource+set-automation", "control-type");
+      const SfiChoiceValue *cv = param_automation_find_choice_value (bse_midi_control_type_to_choice (control_type), control_pspec);
+      g_param_spec_unref (control_pspec);
+      if (control_type >= BSE_MIDI_CONTROL_CONTINUOUS_0 && control_type <= BSE_MIDI_CONTROL_CONTINUOUS_31)
+        {
+          prefix = "c";
+          control_type = control_type - BSE_MIDI_CONTROL_CONTINUOUS_0;
+        }
+      else if (control_type >= BSE_MIDI_CONTROL_0 && control_type <= BSE_MIDI_CONTROL_127)
+        control_type = control_type - BSE_MIDI_CONTROL_0;
+      else if (control_type == BSE_MIDI_CONTROL_NONE)
+        control_type = -1;
       else
-        control_type += 0x1000; /* shouldn't happen */
-      if (midi_channel)
-        content = g_strdup_printf ("%u:%02X", midi_channel, control_type);
+        control_type += 10000; /* shouldn't happen */
+      if (control_type < 0)     /* none */
+        {
+          content = g_strdup ("--");
+          /* TRANSLATORS: %s is substituted with a property name */
+          tip = g_strdup_printf (_("%s: automation disabled"), g_param_spec_get_nick (param->pspec));
+        }
+      else if (midi_channel)
+        {
+          content = g_strdup_printf ("%u:%s%02d", midi_channel, prefix, control_type);
+          if (cv)
+            {
+              /* TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type */
+              tip = g_strdup_printf (_("%s: automation from MIDI control: %s (MIDI channel: %d)"),
+                                     g_param_spec_get_nick (param->pspec),
+                                     cv->choice_label ? cv->choice_label : cv->choice_ident,
+                                     midi_channel);
+            }
+        }
       else
-        content = g_strdup_printf ("%02X", control_type);
+        {
+          content = g_strdup_printf ("%s%02d", prefix, control_type);
+          if (cv)
+            {
+              /* TRANSLATORS: %s is substituted with a property name, %s is substituted with midi control type */
+              tip = g_strdup_printf (_("%s: automation from MIDI control: %s"),
+                                     g_param_spec_get_nick (param->pspec),
+                                     cv->choice_label ? cv->choice_label : cv->choice_ident);
+            }
+        }
     }
   GtkWidget *label = g_object_get_data (widget, "beast-GxkParam-label");
   g_object_set (label,
                 "label", content ? content : "--",
                 NULL);
   g_free (content);
+  gxk_widget_set_tooltip (widget, tip);
+  gxk_widget_set_tooltip (gxk_parent_find_descendant (widget, GTK_TYPE_BUTTON), tip);
+  g_free (tip);
   gtk_widget_set_sensitive (GTK_BIN (widget)->child, proxy && !bse_source_is_prepared (proxy));
 }
 

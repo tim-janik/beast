@@ -1,3 +1,9 @@
+Tue Sep 14 19:05:02 2004  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam-automation.c: use BseMidiControlType for
+	automation controls. changed abbreviation format, runtime adapt
+	tooltips.
+
 Tue Sep 14 13:35:26 2004  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam-automation.c: new parameter type, to adjust 

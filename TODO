@@ -15,6 +15,7 @@ FIXMES:	(release-critical)
   or disable "/dev/midi": no such device dialog
 TODO:
 - close piano roll on Escape
+- when starting to record events in automation, make sure an event at stamp=0 exists for default setup
 - add controller dialog popup for tracks to alter sliders corresponding to midi controls
 - implement part copying
 - overshoot LED: ___ 
