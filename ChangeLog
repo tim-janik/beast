@@ -1,3 +1,11 @@
+Tue Jan 25 00:38:48 2005  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstusermessage.c (dialog_show_above_modals): override active
+	event grabs of modal windows when showing new message dialogs.
+
+	* beast-gtk/gxk/gxkutils.c (gxk_toplevel_delete): deliver delete events 
+	asyncronously to the window despite active event grabs.
+
 Tue Jan 25 00:00:11 2005  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpianoroll.c: 

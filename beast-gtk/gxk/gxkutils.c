@@ -1051,13 +1051,34 @@ gxk_widget_showraise (GtkWidget *widget)
     gdk_window_raise (widget->window);
 }
 
+static gboolean
+async_delete_event_handler (gpointer data)
+{
+  GDK_THREADS_ENTER ();
+  GtkWidget *widget = GTK_WIDGET (data);
+  if (GTK_IS_WINDOW (widget) && GTK_WIDGET_DRAWABLE (widget))
+    {
+      GdkEvent event = { 0, };
+      event.any.type = GDK_DELETE;
+      event.any.window = widget->window;
+      event.any.send_event = TRUE;
+      if (!gtk_widget_event (widget, &event))
+        gtk_widget_destroy (widget);
+    }
+  g_object_unref (widget);
+  GDK_THREADS_LEAVE ();
+  return FALSE;
+}
+
 /**
  * gxk_toplevel_delete
  * @widget: a widget having a toplevel
  *
- * This function is useful to produce the exact same effect
- * as if the user caused window manager triggered window
- * deletion on the toplevel of @widget.
+ * This function is useful to produce the an effect
+ * similar to user caused window manager triggered
+ * window deletion on the toplevel of @widget.
+ * Note that this function will cause window deletion
+ * despite any grabs in effect however.
  */
 void
 gxk_toplevel_delete (GtkWidget *widget)
@@ -1066,14 +1087,7 @@ gxk_toplevel_delete (GtkWidget *widget)
 
   widget = gtk_widget_get_toplevel (widget);
   if (GTK_IS_WINDOW (widget) && GTK_WIDGET_DRAWABLE (widget))
-    {
-      GdkEvent event = { 0, };
-
-      event.any.type = GDK_DELETE;
-      event.any.window = widget->window;
-      event.any.send_event = TRUE;
-      gdk_event_put (&event);
-    }
+    g_idle_add_full (G_PRIORITY_DEFAULT, async_delete_event_handler, g_object_ref (widget), NULL);
 }
 
 /**

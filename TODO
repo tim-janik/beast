@@ -1,6 +1,5 @@
 FIXME(urgent):
 - GusPatch: fix loader magic (GF1PATCH100...?)
-- TrackRoll: SynthesizerPopup: loading an invalid wave file pops up an unaccassible message dialog (due to a modal popup dialog)
 - TrackRoll: display onky basename of wave files
 - WaveList: list items with basname first, add a field for full pathname
 - automatically change project name to basename fo saved file name

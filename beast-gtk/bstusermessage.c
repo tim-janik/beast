@@ -304,6 +304,18 @@ find_dialog (GSList           *dialog_list,
 }
 
 static void
+dialog_show_above_modals (GxkDialog *dialog)
+{
+  /* if a grab is in effect, we need to override it */
+  GtkWidget *grab = gtk_grab_get_current();
+  if (grab)
+    {
+      gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+    }
+  gtk_widget_show (GTK_WIDGET (dialog));
+}
+
+static void
 bst_user_message_popup (const BseUserMsg *umsg)
 {
   GxkDialog *dialog = (GxkDialog*) find_dialog (msg_windows, umsg->msg_type, umsg->message, umsg->pid);
@@ -315,7 +327,6 @@ bst_user_message_popup (const BseUserMsg *umsg)
     {
       dialog = gxk_dialog_new (NULL, NULL, 0, NULL, NULL);
       gxk_dialog_set_sizes (dialog, -1, -1, 512, -1);
-      GtkWidget *widget = GTK_WIDGET (dialog);
       
       update_dialog (dialog, umsg->msg_type, umsg->message, umsg, 0); /* deletes actions */
       gxk_dialog_add_flags (dialog, GXK_DIALOG_DELETE_BUTTON);
@@ -323,7 +334,7 @@ bst_user_message_popup (const BseUserMsg *umsg)
                         "signal::destroy", dialog_destroyed, NULL,
                         NULL);
       msg_windows = g_slist_prepend (msg_windows, dialog);
-      gtk_widget_show (widget);
+      dialog_show_above_modals (dialog);
     }
 }
 
@@ -413,7 +424,7 @@ create_janitor_dialog (SfiProxy janitor)
   g_object_connect (dialog,
 		    "swapped_signal::destroy", janitor_window_destroyed, dialog,
 		    NULL);
-  gtk_widget_show (GTK_WIDGET (dialog));
+  dialog_show_above_modals (dialog);
   
   return GTK_WIDGET (dialog);
 }
