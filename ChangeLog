@@ -1,3 +1,8 @@
+Fri Jun 20 00:29:55 2003  Tim Janik  <timj@gtk.org>
+
+	* fix looking for mad.pc to detect libmad which works only
+	for the debian package.
+
 Thu Jun 19 23:21:07 2003  Tim Janik  <timj@gtk.org>
 
 	* configure.in: up to v0.5.2-rc2.

@@ -137,12 +137,26 @@ AC_DEFUN(AC_BSE_REQUIREMENTS,
     fi
     
     dnl --- libmad MPEG decoder check ---
-    PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
+    dnl libmad doesn't come with a mad.pc file (just its debian package)
+    dnl PKG_CHECK_MODULES(MAD, mad >= 0.14.2,
+    dnl     GSL_HAVE_LIBMAD=1
+    dnl     ,
+    dnl     GSL_HAVE_LIBMAD=0
+    dnl     AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
+    dnl )
+    MAD_LIBS=
+    mad_tests=0
+    AC_CHECK_LIB(mad, mad_stream_errorstr,
+        [AC_CHECK_HEADER(mad.h, mad_tests=`expr $mad_tests + 1`)]
+        ,
+        mad_tests=0, -lm)
+    if test $mad_tests = 1 ; then
 	GSL_HAVE_LIBMAD=1
-	,
+        MAD_LIBS="-lmad -lm"
+    else
 	GSL_HAVE_LIBMAD=0
-	AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
-    )
+        AC_MSG_WARN([failed to detect libmad (MPEG I-III audio decoder) or headers])
+    fi
     AC_SUBST(GSL_HAVE_LIBMAD)
 
     dnl --- check codec requirements ---
