@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-<xsl:output method="html" indent="no" charset="UTF-8" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"/>
+<xsl:output method="html" indent="yes" charset="UTF-8" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"/>
 
 <xsl:param name="revision"/>
 <xsl:param name="banner"/>
@@ -142,6 +142,10 @@ span.important {
   text-decoration: underline;
 }
 
+span.keepspace {
+  white-space: pre;
+}
+
 span.revision {
   font-style: italic;
 }
@@ -279,7 +283,7 @@ p.tableitem {
   </div>
 </xsl:template>
 
-<xsl:template match="revision">
+<xsl:template match="para/revision">
   <xsl:choose>
     <xsl:when test="string-length($revision) > 0">
       <em><span class="revision"><xsl:text>Document revised: </xsl:text><xsl:value-of select="$revision"/></span></em>
@@ -683,7 +687,18 @@ p.tableitem {
 </xsl:template>
 
 <xsl:template match="para">
-  <p><xsl:apply-templates/></p>
+  <xsl:choose>
+    <!-- If this para is the parent of a revision or toc tag, then we -->
+    <!-- omit the <p> tag in output -->
+    <xsl:when test="count(./revision) > 0 or count(./table-of-contents) > 0">
+      <xsl:apply-templates/>
+    </xsl:when>
+    <!-- Paragrapgh is bogus (ie. white-space only), skip it -->
+    <xsl:when test="normalize-space(.) = ''"/>
+    <xsl:otherwise>
+      <p><xsl:apply-templates/></p>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="uref">
@@ -755,7 +770,7 @@ p.tableitem {
 </xsl:template>
 
 <xsl:template match="property">
-  "<em><span class="property">"<xsl:apply-templates/></span></em>"
+  "<em><span class="property"><xsl:apply-templates/></span></em>"
 </xsl:template>
 
 <xsl:template match="channel">
@@ -785,7 +800,7 @@ p.tableitem {
 </xsl:template>
 
 <xsl:template match="keepspace">
-  <div class="keepspace"><xsl:apply-templates/></div>
+  <span class="keepspace"><xsl:apply-templates/></span>
 </xsl:template>
 
 <xsl:template match="center">

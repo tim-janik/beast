@@ -2,14 +2,14 @@
 name    = BSE-Functions
 blurb   = BSE Function Reference
 package = BEAST-0.4.1-rc3
-date    = 22 Aug 2002
+date    = 23 Aug 2002
 image   = bse-functions
 
 @DOC-TITLE@
 BSE-Functions
 
 @DOC-HEAD@
-BSE-Functions 22 Aug 2002 BEAST-0.4.1-rc3
+BSE-Functions 23 Aug 2002 BEAST-0.4.1-rc3
 
 @DOC-NAME@
 BSE-Functions - BSE Function Reference

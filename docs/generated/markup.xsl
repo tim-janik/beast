@@ -84,7 +84,7 @@
   <xsl:template match="setfilename|settitle|itemfunction|columnfraction"/>
 
   <!-- revision bit -->
-  <xsl:template match="revision">
+  <xsl:template match="para/revision">
     <xsl:choose>
       <xsl:when test="string-length($revision) > 0">
 	<breakline/>
@@ -106,7 +106,7 @@
     <xsl:text>node-</xsl:text><xsl:number level="multiple" count="chapter|section|subsection|subsubsection|appendix|appendixsec|appendixsubsec|appendixsubsubsec|unnumbered|unnumberedsec|unnumberedsubsec|unnumberedsubsubsec" format="1-1-1-1"/>
   </xsl:template>
 
-  <xsl:template match="table-of-contents">
+  <xsl:template match="para/table-of-contents">
     <newline/><breakline/>
     <newline/><breakline/>
     <span tag="dline">
@@ -502,7 +502,10 @@
 
   <xsl:template match="para">
     <!-- <breakline/> -->
-    <xsl:apply-templates/>
+    <!-- If paragrapgh is bogus (ie. white-space only), skip it -->
+    <xsl:if test="not(normalize-space(.) = '') or count(./revision) > 0 or count(./table-of-contents) > 0">
+      <xsl:apply-templates/>
+    </xsl:if>
     <!-- <breakline/> -->
   </xsl:template>
 
