@@ -96,7 +96,7 @@ bse_noise_do_shutdown (BseObject *object)
   BSE_OBJECT_CLASS (parent_class)->shutdown (object);
 }
 
-#define N_STATIC_BLOCKS (2)
+#define N_STATIC_BLOCKS (17)
 
 static void
 bse_noise_prepare (BseSource *source,

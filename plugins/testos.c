@@ -38,7 +38,7 @@ testos_class_init (BseSourceClass *class)
   
   bse_source_class_add_ichannel (source_class,
 				 "Any In", "A Test Input Channel",
-				 1);
+				 1, 1);
   bse_source_class_add_ochannel (source_class,
                                  "Any Out", "A Test Output Channel",
 				 1);
