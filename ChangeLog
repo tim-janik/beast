@@ -1,3 +1,13 @@
+Tue Dec 21 07:16:52 1999  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstsnetrouter.c (bst_snet_router_root_event): feature canvas
+	link views and popup menu.
+
+	* beast-gtk/bstcanvaslink.[hc]: implemented canvas link view popup.
+
+	* beast-gtk/bstmain.c: more usefull convenience functions to popup
+	subwindows.
+
 Fri Dec 17 17:01:00 1999  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstparam.c (_GROUP_ADD_NAMED_OBJECT): use parameter nick

@@ -410,9 +410,8 @@ bst_app_operate (BstApp *app,
 			      "destroy",
 			      gtk_widget_destroyed,
 			      &bst_dialog_open);
-	  gtk_widget_show (bst_dialog_open);
 	}
-      gdk_window_raise (bst_dialog_open->window);
+      gtk_widget_showraise (bst_dialog_open);
       break;
     case BST_OP_PROJECT_SAVE_AS:
       if (bst_dialog_save)
@@ -422,8 +421,7 @@ bst_app_operate (BstApp *app,
 			  "destroy",
 			  gtk_widget_destroyed,
 			  &bst_dialog_save);
-      gtk_widget_show (bst_dialog_save);
-      gdk_window_raise (bst_dialog_save->window);
+      gtk_widget_showraise (bst_dialog_save);
       break;
     case BST_OP_PROJECT_CLOSE:
       bst_app_handle_delete_event (widget, NULL);

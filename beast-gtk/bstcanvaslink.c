@@ -100,6 +100,7 @@ bst_canvas_link_init (BstCanvasLink *clink)
   clink->icsource = NULL;
   clink->ichannel_id = 0;
   clink->ic_handler = 0;
+  clink->link_view = NULL;
 }
 
 static void
@@ -130,6 +131,105 @@ bst_canvas_link_new (GnomeCanvasGroup *group)
   return item;
 }
 
+BstCanvasLink*
+bst_canvas_link_at (GnomeCanvas *canvas,
+		    gdouble      world_x,
+		    gdouble      world_y)
+{
+  return (BstCanvasLink*) gnome_canvas_typed_item_at (canvas, BST_TYPE_CANVAS_LINK, world_x, world_y);
+}
+
+static void
+clink_view_update (BstCanvasLink *clink,
+		   gboolean       force_update)
+{
+  GtkWidget *frame = (clink->link_view && (force_update || GTK_WIDGET_VISIBLE (clink->link_view))
+		      ? bst_subwindow_get_child (clink->link_view)
+		      : NULL);
+
+  if (frame)
+    {
+      GtkWidget *label = GTK_BIN (frame)->child;
+      BseProject *project;
+      BseSourceIChannelDef *ic_def;
+      BseSourceOChannelDef *oc_def;
+      gchar *string, *iname, *oname;
+
+      /* figure appropriate window title
+       */
+      project = clink->icsource ? bse_item_get_project (BSE_ITEM (clink->icsource->source)) : NULL;
+      string = project ? bse_object_get_name_or_type (BSE_OBJECT (project)) : "BEAST";
+      string = g_strconcat (string, ": Source Link", NULL);
+      gtk_window_set_title (GTK_WINDOW (clink->link_view), string);
+      g_free (string);
+
+      /* construct actuall information
+       */
+      iname = clink->icsource ? bse_object_get_name_or_type (BSE_OBJECT (clink->icsource->source)) : "<???>";
+      oname = clink->ocsource ? bse_object_get_name_or_type (BSE_OBJECT (clink->ocsource->source)) : "<???>";
+      oc_def = clink->ocsource ? BSE_SOURCE_OCHANNEL_DEF (clink->ocsource->source, clink->ochannel_id) : NULL;
+      ic_def = clink->icsource ? BSE_SOURCE_ICHANNEL_DEF (clink->icsource->source, clink->ichannel_id) : NULL;
+      string = g_strdup_printf ("Output channel:\n"
+				"        %s:%d %s\n"
+				"        (%s)\n"
+				"Input channel:\n"
+				"        %s:%d %s\n"
+				"        (%s)\n"
+				"\n"
+				"Number of tracks: %d\n"
+				"History: %d\n",
+				oname, clink->ochannel_id, oc_def ? oc_def->name : "?",
+				oc_def ? oc_def->blurb : "?",
+				iname, clink->ichannel_id, ic_def ? ic_def->name : "?",
+				ic_def ? ic_def->blurb : "?",
+				oc_def ? oc_def->n_tracks : -1,
+				ic_def ? ic_def->history : -1);
+      gtk_label_set_text (GTK_LABEL (label), string);
+      g_free (string);
+    }
+}
+
+void
+bst_canvas_link_popup_view (BstCanvasLink *clink)
+{
+  g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+  
+  if (!clink->link_view)
+    clink->link_view = bst_subwindow_new (GTK_OBJECT (clink),
+					  &clink->link_view,
+					  gtk_widget_new (GTK_TYPE_FRAME,
+							  "visible", TRUE,
+							  "border_width", 5,
+							  "label", "Source link",
+							  "child", gtk_widget_new (GTK_TYPE_LABEL,
+										   "visible", TRUE,
+										   "justify", GTK_JUSTIFY_LEFT,
+										   "xpad", 5,
+										   NULL),
+							  NULL));
+  clink_view_update (clink, TRUE);
+  gtk_widget_showraise (clink->link_view);
+}
+
+void
+bst_canvas_link_toggle_view (BstCanvasLink *clink)
+{
+  g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+
+  if (!clink->link_view || !GTK_WIDGET_VISIBLE (clink->link_view))
+    bst_canvas_link_popup_view (clink);
+  else
+    gtk_widget_hide (clink->link_view);
+}
+
+static void
+clink_view_check_update (BstCanvasLink *clink)
+{
+  g_return_if_fail (BST_IS_CANVAS_LINK (clink));
+
+  clink_view_update (clink, FALSE);
+}
+
 void
 bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 			      BstCanvasSource *ocsource,
@@ -141,6 +241,9 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
   
   if (clink->ocsource)
     {
+      bse_object_remove_notifiers_by_func (BSE_OBJECT (clink->ocsource->source),
+					   clink_view_check_update,
+					   clink);
       if (!GTK_OBJECT_DESTROYED (clink->ocsource))
 	gtk_signal_disconnect (GTK_OBJECT (clink->ocsource), clink->oc_handler);
       gtk_object_unref (GTK_OBJECT (clink->ocsource));
@@ -154,6 +257,10 @@ bst_canvas_link_set_ocsource (BstCanvasLink   *clink,
 						     "args_changed",
 						     bst_canvas_link_update,
 						     GTK_OBJECT (clink));
+      bse_object_add_data_notifier (BSE_OBJECT (clink->ocsource->source),
+				    "name-set",
+				    clink_view_check_update,
+				    clink);
       bst_canvas_link_update (clink);
     }
 }
@@ -169,6 +276,9 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
   
   if (clink->icsource)
     {
+      bse_object_remove_notifiers_by_func (BSE_OBJECT (clink->icsource->source),
+					   clink_view_check_update,
+					   clink);
       if (!GTK_OBJECT_DESTROYED (clink->icsource))
         gtk_signal_disconnect (GTK_OBJECT (clink->icsource), clink->ic_handler);
       gtk_object_unref (GTK_OBJECT (clink->icsource));
@@ -182,6 +292,10 @@ bst_canvas_link_set_icsource (BstCanvasLink   *clink,
 						     "args_changed",
 						     bst_canvas_link_update,
 						     GTK_OBJECT (clink));
+      bse_object_add_data_notifier (BSE_OBJECT (clink->icsource->source),
+				    "name-set",
+				    clink_view_check_update,
+				    clink);
       bst_canvas_link_update (clink);
     }
 }

@@ -58,6 +58,8 @@ struct _BstCanvasLink
   guint		   in_move : 1;
   gdouble          start_move_dx, start_move_dy;
   gdouble          end_move_dx, end_move_dy;
+
+  GtkWidget	  *link_view;
 };
 struct _BstCanvasLinkClass
 {
@@ -74,6 +76,11 @@ void		 bst_canvas_link_set_ocsource	(BstCanvasLink    *clink,
 void		 bst_canvas_link_set_icsource	(BstCanvasLink    *clink,
 						 BstCanvasSource  *icsource,
 						 guint             ichannel_id);
+void             bst_canvas_link_popup_view	(BstCanvasLink	  *clink);
+void             bst_canvas_link_toggle_view	(BstCanvasLink	  *clink);
+BstCanvasLink*	 bst_canvas_link_at		(GnomeCanvas      *canvas,
+						 gdouble           world_x,
+						 gdouble           world_y);
 
 
 

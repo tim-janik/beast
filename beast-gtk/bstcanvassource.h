@@ -87,7 +87,7 @@ BstCanvasSource* bst_canvas_source_at  		(GnomeCanvas      *csource,
 						 gdouble           world_x,
 						 gdouble           world_y);
 void		 bst_canvas_source_popup_view	(BstCanvasSource  *csource);
-void		 bst_canvas_source_toggle_view	(BstCanvasSource  *csource);
+void		 bst_canvas_source_toggle_view	(BstCanvasSource  *canvas);
 
      
      

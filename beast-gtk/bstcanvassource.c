@@ -169,13 +169,9 @@ source_name_changed (BstCanvasSource *csource)
 
   g_return_if_fail (BST_IS_CANVAS_SOURCE (csource));
 
-  name = bse_object_get_name (BSE_OBJECT (csource->source));
-  if (!name)
-    name = bse_type_name (BSE_OBJECT_TYPE (csource->source));
+  name = bse_object_get_name_or_type (BSE_OBJECT (csource->source));
   project = bse_item_get_project (BSE_ITEM (csource->source));
-  pname = bse_object_get_name (BSE_OBJECT (project));
-  if (!pname)
-    pname = bse_type_name (BSE_OBJECT_TYPE (project));
+  pname = bse_object_get_name_or_type (BSE_OBJECT (project));
   pname = g_strconcat (pname, ": ", name, NULL);
 
   if (csource->text)
@@ -193,9 +189,6 @@ bst_canvas_source_destroy (GtkObject *object)
   BstCanvasSource *csource = BST_CANVAS_SOURCE (object);
   GnomeCanvasGroup *group = GNOME_CANVAS_GROUP (object);
 
-  if (csource->source_view)
-    gtk_widget_destroy (csource->source_view);
-  
   while (group->item_list)
     gtk_object_destroy (group->item_list->data);
 
@@ -321,22 +314,12 @@ bst_canvas_source_popup_view (BstCanvasSource *csource)
     {
       GtkWidget *param_view;
 
-      csource->source_view = gtk_widget_new (GTK_TYPE_WINDOW,
-					     "auto_shrink", FALSE,
-					     "allow_shrink", FALSE,
-					     "allow_grow", TRUE,
-					     "object_signal::destroy", bse_nullify_pointer, &csource->source_view,
-					     "signal::delete_event", gtk_widget_hide, NULL,
-					     "signal::delete_event", gtk_true, NULL,
-					     NULL);
       param_view = bst_param_view_new (BSE_OBJECT (csource->source));
       gtk_widget_show (param_view);
-      gtk_container_add (GTK_CONTAINER (csource->source_view), param_view);
+      csource->source_view = bst_subwindow_new (GTK_OBJECT (csource), &csource->source_view, param_view);
       source_name_changed (csource);
     }
-
-  gtk_widget_show (csource->source_view);
-  gdk_window_raise (csource->source_view->window);
+  gtk_widget_showraise (csource->source_view);
 }
 
 void
@@ -355,15 +338,7 @@ bst_canvas_source_at (GnomeCanvas *canvas,
 		      gdouble      world_x,
 		      gdouble      world_y)
 {
-  GnomeCanvasItem *item;
-
-  g_return_val_if_fail (GNOME_IS_CANVAS (canvas), NULL);
-
-  item = gnome_canvas_get_item_at (canvas, world_x, world_y);
-  while (item && !BST_IS_CANVAS_SOURCE (item))
-    item = item->parent;
-
-  return BST_IS_CANVAS_SOURCE (item) ? BST_CANVAS_SOURCE (item) : NULL;
+  return (BstCanvasSource*) gnome_canvas_typed_item_at (canvas, BST_TYPE_CANVAS_SOURCE, world_x, world_y);
 }
 
 void

@@ -121,6 +121,11 @@ extern void bst_object_set         (gpointer     object,
       gtk_signal_emit_by_name ((GtkObject*) (object), "args-changed"); \
 } G_STMT_END
 
+GtkWidget* bst_subwindow_new       (GtkObject	 *alive_host,
+				    GtkWidget	**ssubwindow_p,
+				    GtkWidget	 *child);
+GtkWidget* bst_subwindow_get_child (GtkWidget	 *subwindow);
+void	   gtk_widget_showraise    (GtkWidget	 *widget);
 
 /* --- canvas utils/workarounds --- */
 extern GnomeCanvasPoints* gnome_canvas_points_new0 (guint num_points);
@@ -133,10 +138,15 @@ extern void gnome_canvas_item_keep_between (GnomeCanvasItem *between,
 extern void gnome_canvas_item_keep_above (GnomeCanvasItem *above,
 					  GnomeCanvasItem *item1,
 					  GnomeCanvasItem *item2);
+extern GnomeCanvasItem* gnome_canvas_typed_item_at (GnomeCanvas *canvas,
+						    GtkType	 item_type,
+						    gdouble      world_x,
+						    gdouble      world_y);
 
 
 
-     
+
+
 #ifdef __cplusplus
 #pragma {
 }

@@ -513,6 +513,80 @@ bst_object_set (gpointer     object,
   gtk_object_unref (object);
 }
 
+static gint
+subwindow_delete_event (GtkWidget *window)
+{
+  gtk_widget_hide (window);
+
+  return TRUE;
+}
+
+GtkWidget*
+bst_subwindow_new (GtkObject  *alive_host,
+		   GtkWidget **ssubwindow_p,
+		   GtkWidget  *child)
+{
+  GtkWidget *window;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (child), NULL);
+  g_return_val_if_fail (child->parent == NULL, NULL);
+  if (alive_host)
+    g_return_val_if_fail (GTK_IS_OBJECT (alive_host), NULL);
+  if (ssubwindow_p)
+    g_return_val_if_fail (ssubwindow_p != NULL, NULL);
+
+  window = gtk_widget_new (GTK_TYPE_WINDOW,
+			   "auto_shrink", FALSE,
+			   "allow_shrink", FALSE,
+			   "allow_grow", TRUE,
+			   "signal::delete_event", subwindow_delete_event, NULL,
+			   "child", child,
+			   ssubwindow_p ? "object_signal::destroy" : NULL, bse_nullify_pointer, ssubwindow_p,
+			   NULL);
+  if (alive_host)
+    gtk_signal_connect_object_while_alive (alive_host,
+					   "destroy",
+					   GTK_SIGNAL_FUNC (gtk_widget_destroy),
+					   GTK_OBJECT (window));
+
+  return window;
+}
+
+GtkWidget*
+bst_subwindow_get_child (GtkWidget *subwindow)
+{
+  g_return_val_if_fail (GTK_IS_WINDOW (subwindow), NULL);
+
+  return GTK_BIN (subwindow)->child;
+}
+
+void
+gtk_widget_showraise (GtkWidget *widget)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  gtk_widget_show (widget);
+  if (GTK_WIDGET_REALIZED (widget))
+    gdk_window_raise (widget->window);
+}
+
+GnomeCanvasItem*
+gnome_canvas_typed_item_at (GnomeCanvas *canvas,
+			    GtkType      item_type,
+			    gdouble      world_x,
+			    gdouble      world_y)
+{
+  GnomeCanvasItem *item;
+
+  g_return_val_if_fail (GNOME_IS_CANVAS (canvas), NULL);
+
+  item = gnome_canvas_get_item_at (canvas, world_x, world_y);
+  while (item && !gtk_type_is_a (GTK_OBJECT_TYPE (item), item_type))
+    item = item->parent;
+
+  return item && gtk_type_is_a (GTK_OBJECT_TYPE (item), item_type) ? item : NULL;
+}
+
 /* read bstdefs.h on this */
 GnomeCanvasPoints*
 gnome_canvas_points_new0 (guint num_points)

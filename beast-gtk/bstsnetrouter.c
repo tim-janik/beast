@@ -738,6 +738,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
       router->mode == 0) /* start link (or popup source view) */
     {
       BstCanvasSource *csource;
+      BstCanvasLink *clink;
       guint ochannel_id, ichannel_id;
 
       g_return_val_if_fail (router->tmp_line == NULL, FALSE);
@@ -749,6 +750,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
       ichannel_id = (csource
 		     ? bst_canvas_source_ichannel_at (csource, event->button.x, event->button.y)
 		     : 0);
+      clink = csource ? NULL : bst_canvas_link_at (canvas, event->button.x, event->button.y);
       
       if (csource && ochannel_id)
 	{
@@ -781,6 +783,8 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	       csource->source != (BseSource*) router->snet &&
 	       ichannel_id == 0)
 	bst_canvas_source_toggle_view (csource);
+      else if (clink)
+	bst_canvas_link_toggle_view (clink);
     }
   else if ((event->type == GDK_BUTTON_PRESS ||
 	    event->type == GDK_BUTTON_RELEASE) &&
@@ -800,7 +804,7 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	  bst_canvas_source_ochannel_at (csource, event->button.x, event->button.y) ==
 	  router->ochannel_id)
 	csource = NULL;
-      
+
       if (csource)
 	{
 	  BseErrorType error;
@@ -817,8 +821,10 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	   event->button.button == 3)
     {
       BstCanvasSource *csource;
+      BstCanvasLink *clink;
 
       csource = bst_canvas_source_at (canvas, event->button.x, event->button.y);
+      clink = csource ? NULL : bst_canvas_link_at (canvas, event->button.x, event->button.y);
 
       if (csource)
 	{
@@ -854,6 +860,27 @@ bst_snet_router_root_event (BstSNetRouter   *router,
 	      break;
 	    case 4:
 	      bse_source_clear_ochannels (source);
+	      break;
+	    }
+	  bst_choice_destroy (choice);
+	}
+      else if (clink)
+	{
+	  GtkWidget *choice;
+
+	  choice = bst_choice_createv (BST_CHOICE_TITLE ("Source link"),
+				       BST_CHOICE_SEPERATOR,
+				       BST_CHOICE (2, "Properties", PROPERTIES),
+				       BST_CHOICE_SEPERATOR,
+				       BST_CHOICE (1, "Delete", TRASH),
+				       BST_CHOICE_END);
+	  switch (bst_choice_modal (choice, event->button.button, event->button.time))
+	    {
+	    case 1:
+	      bse_source_clear_ichannel (clink->icsource->source, clink->ichannel_id);
+	      break;
+	    case 2:
+	      bst_canvas_link_popup_view (clink);
 	      break;
 	    }
 	  bst_choice_destroy (choice);
