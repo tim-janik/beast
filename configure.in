@@ -198,18 +198,21 @@ AC_DEFUN(AC_BSW_SHELL_REQUIREMENTS,
 [
     BSW_SHELL_CFLAGS="$BSE_CFLAGS"
     BSW_SHELL_LIBS="$BSE_LIBS"
+
     dnl === libguile check ===
-    gh_headers=0
-    AC_CHECK_LIB(guile, gh_scm2doubles,
-      [AC_CHECK_HEADER(guile/gh.h, gh_headers=`expr $gh_headers + 1`)]
-      ,
-      gh_headers=0, -lguile)
-    if test $gh_headers = 1 ; then
-      BSW_SHELL_LIBS="-lguile $BSW_SHELL_LIBS"
-    else
-      BSW_SHELL_LIBS="$BSE_LIBS"
-      AC_MSG_ERROR([failed to find guile library (>= 1.4) or headers])
-    fi
+    # require guile-config
+    MC_ASSERT_PROG(GUILE_CONFIG, guile-config, [guile-config is supplied by libguile at http://www.gnu.org/software/guile/guile.html])
+    GUILE_VERSION=`$GUILE_CONFIG info guileversion`
+    GUILE_CFLAGS=`$GUILE_CONFIG compile`
+    GUILE_LDFLAGS=`$GUILE_CONFIG link`
+    REQUIRED_VERSION=1.4
+    MC_CHECK_VERSION($GUILE_VERSION, $REQUIRED_VERSION, [
+      BSW_SHELL_CFLAGS="$GUILE_CFLAGS $BSW_SHELL_CFLAGS"
+      BSW_SHELL_LIBS="$GUILE_LDFLAGS $BSW_SHELL_LIBS"
+    ],
+      AC_MSG_ERROR([failed to find guile library v$REQUIRED_VERSION - detected version: $GUILE_VERSION])
+    )
+
     AC_SUBST(BSW_SHELL_CFLAGS)
     AC_SUBST(BSW_SHELL_LIBS)
 
@@ -360,8 +363,8 @@ AC_SUBST(STRIP_DUMMY)
 AC_SUBST(STRIP_BEGIN)
 AC_SUBST(STRIP_END)
 
-# get us pkg-config
-MC_ASSERT_PKG_CONFIG()
+# require pkg-config
+MC_ASSERT_PROG(PKG_CONFIG, pkg-config, [pkg-config can be found at http://www.freedesktop.org/software/pkgconfig/])
 
 # GSL requirements
 AC_GSL_REQUIREMENTS

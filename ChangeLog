@@ -1,3 +1,7 @@
+Fri Aug  2 20:08:38 2002  Tim Janik  <timj@gtk.org>
+
+	* configure.in: fix libguile check by supporting guile-config.
+
 Fri Aug  2 18:33:47 2002  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstcluehunter.[hc]: copy and update clue hunter code from

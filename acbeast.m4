@@ -225,13 +225,14 @@ AC_DEFUN(MC_PROG_CC_WITH_CFLAGS,[
 	)
 ])
 
-dnl Find pkg-config
-AC_DEFUN(MC_ASSERT_PKG_CONFIG,[
-    AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-    case "x$PKG_CONFIG" in
-    xno) AC_MSG_ERROR([failed to find pkg-config which is required
-         for a functional build, grab it from
-	 http://www.freedesktop.org/software/pkgconfig/])
+dnl Find program
+dnl MC_ASSERT_PROG(variable, program, srcpackage)
+AC_DEFUN(MC_ASSERT_PROG,[
+    AC_PATH_PROG([$1], [$2], no)
+    case "x$[$1]" in
+    xno) AC_MSG_ERROR([failed to find $2 which is required
+                  for a functional build.
+                  $3])
 	 ;;
     esac
 ])
@@ -243,7 +244,7 @@ AC_DEFUN(MC_PKG_CONFIG_REQUIRE,[
     mc_VERSION="[$2]"
     AC_MSG_CHECKING([for $mc_PACKAGE - version >= $mc_VERSION])
     if $PKG_CONFIG --atleast-version="$mc_VERSION" $mc_PACKAGE 2>/dev/null ; then
-      VSERION=`$PKG_CONFIG --modversion $mc_PACKAGE`
+      mc_VERSION=`$PKG_CONFIG --modversion $mc_PACKAGE`
       AC_MSG_RESULT([yes ($mc_VERSION)])
     else
       AC_MSG_RESULT([no])
