@@ -1,17 +1,18 @@
 ;BseProjectV0
 
 
-(BseSNet::Unnamed
+(BseSNet::Organ_sound
   (creation-time "2000-01-15 22:23:37")
   (modification-time "2000-01-15 22:23:37")
-  (source-input "multi_in" BseSNet:1.BseMixer:1 "Mixer")
+  (source-input "multi_in" BseSNet:1.BseMixer:1 "mono_out")
   (parasite f "BstRouterCoords" 2 -233.000000 35.000000)
+  (parasite f "BstRouterZoom" 1 1.000000)
   (BseMixer::BseMixer-1
     (master-volume-f 0.630957)
-    (source-input "mono_in1" BseSNet:1.DavOrgan:2 "OrganOut")
-    (source-input "mono_in2" BseSNet:1.DavOrgan:3 "OrganOut")
-    (source-input "mono_in3" BseSNet:1.DavOrgan:4 "OrganOut")
-    (source-input "mono_in4" BseSNet:1.DavOrgan:5 "OrganOut")
+    (source-input "mono_in1" BseSNet:1.DavOrgan:2 "mono_out")
+    (source-input "mono_in2" BseSNet:1.DavOrgan:3 "mono_out")
+    (source-input "mono_in3" BseSNet:1.DavOrgan:4 "mono_out")
+    (source-input "mono_in4" BseSNet:1.DavOrgan:5 "mono_out")
     (parasite f "BstRouterCoords" 2 -109.000000 46.000000))
   (DavOrgan::DavOrgan-1
     (brass 't)

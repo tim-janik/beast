@@ -1,3 +1,15 @@
+Mon Feb  7 05:58:28 2000  Tim Janik  <timj@gtk.org>
+
+	* beast-gtk/bstparam.c (bst_param_create): fixed a stupid bug where a
+	string field's NULL toggle wasn't shown because of a hidden alignment.
+	(bst_param_set_editable): don't change editable state of entries, that
+	is taken care of by the entry itself, instead change sensibility like
+	we do for all other widgets.
+
+	* test/bsemixer-test.bse:
+	* test/davorgan.bse:
+	* test/osc-test.bse: fixups due to recent plugin changes.
+
 Mon Feb  7 03:40:20 2000  Tim Janik  <timj@gtk.org>
 
 	* beast-gtk/bstpatterneditor.*: changed things back so that we have

@@ -304,7 +304,7 @@ static void
 bst_string_toggle (GtkToggleButton *tb,
 		   GtkWidget       *widget)
 {
-  gtk_widget_set_sensitive (widget, tb->active);
+  gtk_editable_set_editable (GTK_EDITABLE (widget), tb->active);
   if (tb->active)
     gtk_widget_grab_focus (widget);
 }
@@ -840,6 +840,7 @@ bst_param_create (gpointer      owner,
 				       "width", 10,
 				       "height", 10,
 				       "parent", gtk_widget_new (GTK_TYPE_ALIGNMENT,
+								 "visible", TRUE,
 								 "xscale", 0.0,
 								 "yscale", 0.0,
 								 "xalign", 0.0,
@@ -848,8 +849,8 @@ bst_param_create (gpointer      owner,
 				       "object_signal::clicked", bst_param_gtk_changed, bparam,
 				       "signal::clicked", bst_string_toggle, action,
 				       NULL);
-	  bst_string_toggle (GTK_TOGGLE_BUTTON (pre_action), action);
 	  GROUP_ADD_PRE_ACTION (group, pre_action);
+	  bst_string_toggle (GTK_TOGGLE_BUTTON (pre_action), action);
 	}
       GROUP_SET_TIP (group, tooltip, NULL);
       widget_group = GROUP_DONE (group);
@@ -1310,13 +1311,11 @@ bst_param_set_editable (BstParam *bparam,
       
       if (GTK_IS_WIDGET (prompt))
 	gtk_widget_set_sensitive (prompt, editable);
-      if (GTK_IS_EDITABLE (action))
-	gtk_editable_set_editable (GTK_EDITABLE (action), editable);
-      else
-	gtk_widget_set_sensitive (action, editable);
-      if (GTK_IS_BUTTON (pre_action))
+      /* don't interfere with bst_string_toggle() */
+      gtk_widget_set_sensitive (action, editable);
+      if (GTK_IS_WIDGET (pre_action))
 	gtk_widget_set_sensitive (pre_action, editable);
-      if (GTK_IS_BUTTON (post_action))
+      if (GTK_IS_WIDGET (post_action))
 	gtk_widget_set_sensitive (post_action, editable);
     }
 }

@@ -2,16 +2,18 @@
 
 
 (BseSNet::Oscillator_test
+  (blurb "strange isn't it? ;)")
   (author "Tim Janik")
   (creation-time "1999-12-31 03:01:29")
   (modification-time "1999-12-31 03:01:29")
-  (source-input "multi_in" BseSNet:1.BseMult:5 "Mult")
+  (source-input "multi_in" BseSNet:1.BseMult:5 "mono_out")
   (parasite f "BstRouterCoords" 2 -176.000000 -11.000000)
+  (parasite f "BstRouterZoom" 1 1.000000)
   (BseGenOsc::BseGenOsc-1
     (base-freq 350.000000)
     (fm-perc 67.900002)
     (self-perc 0.000000)
-    (source-input "FreqMod" BseSNet:1.BseAdder:3 "Adder")
+    (source-input "freq_mod_in" BseSNet:1.BseAdder:3 "mono_out")
     (parasite f "BstRouterCoords" 2 40.000000 13.000000))
   (BseGenOsc::BseGenOsc-2
     (base-freq 44.000000)
@@ -19,20 +21,18 @@
     (parasite f "BstRouterCoords" 2 256.000000 33.000000))
   (BseAdder::BseAdder-1
     (subtract 'f)
-    (source-input "mono_in1" BseSNet:1.BseGenOsc:2 "OscOut")
-    (source-input "mono_in2" BseSNet:1.BseGenOsc:4 "OscOut")
+    (source-input "mono_in1" BseSNet:1.BseGenOsc:2 "mono_out")
+    (source-input "mono_in2" BseSNet:1.BseGenOsc:4 "mono_out")
     (parasite f "BstRouterCoords" 2 144.000000 19.000000))
   (BseGenOsc::BseGenOsc-3
-    (sine-table 'f)
-    (triangle-table 't)
+    (wave-form BSE_GEN_OSC_TRIANGLE)
     (base-freq 0.440000)
     (parasite f "BstRouterCoords" 2 272.000000 -57.000000))
   (BseMult::BseMult-1
-    (source-input "mono_in1" BseSNet:1.BseGenOsc:1 "OscOut")
-    (source-input "mono_in2" BseSNet:1.BseGenOsc:6 "OscOut")
+    (source-input "mono_in2" BseSNet:1.BseGenOsc:6 "mono_out")
+    (source-input "mono_in1" BseSNet:1.BseGenOsc:1 "mono_out")
     (parasite f "BstRouterCoords" 2 -77.000000 -17.000000))
   (BseGenOsc::BseGenOsc-4
-    (sine-table 'f)
-    (triangle-table 't)
+    (wave-form BSE_GEN_OSC_TRIANGLE)
     (base-freq 0.200000)
     (parasite f "BstRouterCoords" 2 66.000000 -74.000000)))

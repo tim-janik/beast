@@ -1,11 +1,13 @@
 ;BseProjectV0
 
 
-(BseSNet::Unnamed
+(BseSNet::Mixer_test
+  (blurb "gimme a short bing")
   (creation-time "2000-01-15 18:14:45")
   (modification-time "2000-01-15 18:14:45")
-  (source-input "multi_in" BseSNet:1.BseMult:7 "Mult")
+  (source-input "multi_in" BseSNet:1.BseMult:7 "mono_out")
   (parasite f "BstRouterCoords" 2 -332.000000 -20.000000)
+  (parasite f "BstRouterZoom" 1 1.000000)
   (BseGenOsc::BseGenOsc-1
     (self-modulation 't)
     (self-perc 18.000000)
@@ -27,16 +29,16 @@
     (volume-f2 0.800000)
     (volume-f3 0.320000)
     (volume-f4 0.616595)
-    (source-input "mono_in1" BseSNet:1.BseGenOsc:1 "OscOut")
-    (source-input "mono_in2" BseSNet:1.BseGenOsc:2 "OscOut")
-    (source-input "mono_in3" BseSNet:1.BseGenOsc:3 "OscOut")
-    (source-input "mono_in4" BseSNet:1.BseGenOsc:4 "OscOut")
+    (source-input "mono_in4" BseSNet:1.BseGenOsc:4 "mono_out")
+    (source-input "mono_in3" BseSNet:1.BseGenOsc:3 "mono_out")
+    (source-input "mono_in2" BseSNet:1.BseGenOsc:2 "mono_out")
+    (source-input "mono_in1" BseSNet:1.BseGenOsc:1 "mono_out")
     (parasite f "BstRouterCoords" 2 89.000000 -20.000000))
   (BseGenOsc::BseGenOsc-5
     (wave-form BSE_GEN_OSC_SSAW)
     (base-freq 2.000000)
     (parasite f "BstRouterCoords" 2 87.000000 -203.000000))
   (BseMult::BseMult-1
-    (source-input "mono_in4" BseSNet:1.BseGenOsc:6 "OscOut")
-    (source-input "mono_in1" BseSNet:1.BseMixer:5 "Mixer")
+    (source-input "mono_in1" BseSNet:1.BseMixer:5 "mono_out")
+    (source-input "mono_in2" BseSNet:1.BseGenOsc:6 "mono_out")
     (parasite f "BstRouterCoords" 2 -121.000000 -40.000000)))
