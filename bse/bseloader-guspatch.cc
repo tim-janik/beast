@@ -345,9 +345,9 @@ struct FileInfo
   }
 
   string
-  envelope_point_to_string (unsigned char c)
+  envelope_point_to_string (guint value)
   {
-    gchar *tmp_str = g_strdup_printf ("%d", c);
+    gchar *tmp_str = g_strdup_printf ("%u", value);
     string str = tmp_str;
     g_free (tmp_str);
     return str;
@@ -454,11 +454,12 @@ struct FileInfo
 	GUS_PATCH_DEBUG ("scale_freq = %d", patches[i]->freqScale);
 	GUS_PATCH_DEBUG ("scale_factor = %d", patches[i]->freqScaleFactor);
 
+	/* fill xinfos */
+	char**& xinfos = wdsc.chunks[i].xinfos;
+
 	int frame_size = bytes_per_frame (patches[i]->waveFormat);
         if (loop_type (patches[i]->waveFormat))
           {
-            char**& xinfos = wdsc.chunks[i].xinfos;
-
             xinfos = bse_xinfos_add_value (xinfos, "loop-type", gsl_wave_loop_type_to_string (loop_type (patches[i]->waveFormat)));
             xinfos = bse_xinfos_add_num (xinfos, "loop-count", 1000000);
             xinfos = bse_xinfos_add_num (xinfos, "loop-start", patches[i]->loopStart / frame_size);
@@ -469,6 +470,21 @@ struct FileInfo
 	    xinfos = bse_xinfos_add_value (xinfos, "gus-patch-envelope-offsets",
 		                           envelope_array_to_string (patches[i]->filterOffset).c_str());
           }
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-loop-fractions", patches[i]->fractions);
+	xinfos = bse_xinfos_add_float (xinfos, "gus-patch-min-freq", patches[i]->minFreq / 1000.0);
+	xinfos = bse_xinfos_add_float (xinfos, "gus-patch-max-freq", patches[i]->maxFreq / 1000.0);
+	xinfos = bse_xinfos_add_float (xinfos, "gus-patch-orig-freq", patches[i]->origFreq / 1000.0);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-fine-tune", patches[i]->fineTune);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-balance", patches[i]->balance);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-tremolo-sweep", patches[i]->tremoloSweep);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-tremolo-rate", patches[i]->tremoloRate);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-tremolo-depth", patches[i]->tremoloDepth);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-vibrato-sweep", patches[i]->vibratoSweep);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-vibrato-rate", patches[i]->vibratoRate);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-vibrato-depth", patches[i]->vibratoDepth);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-wave-format", patches[i]->waveFormat);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-freq-scale", patches[i]->freqScale);
+	xinfos = bse_xinfos_add_num (xinfos, "gus-patch-freq-scale-factor", patches[i]->freqScaleFactor);
       }
   }
 

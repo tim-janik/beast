@@ -1,3 +1,8 @@
+Thu Jan 20 01:28:59 2005  Stefan Westerfeld  <stefan@space.twc.de>
+
+	* bseloader-guspatch.cc: Make more data found in the GUS Patch headers
+	available as xinfos.
+
 Thu Jan 20 00:30:50 2005  Tim Janik  <timj@gtk.org>
 
 	* bse/gslloader-bsewave.c: changed BseWave magic to "#BseWave1".
