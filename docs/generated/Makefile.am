@@ -188,9 +188,10 @@ XPREFIX=_tmpFile~
 index.html: news.html
 	ln -s $< $@
 site:	$(html_targets) navigation.xsl navigation.xml index.html
-	tar zcf beast-site-con.tar.gz --mode=0664 $(html_targets) index.html
+	tar zcf beast-site-con.tar.gz --mode=0664 $(html_targets) index.html css/*.css
+	tar zcf beast-site-img.tar.gz --mode=0664 css/images/*.png
 	tar zcf beast-site-nav.tar.gz --mode=0664 navigation.xml navigation.xsl
-site-update-contents: site
+site-update-con: site
 	echo Connecting to ${ACCOUNT}... \
 	&& uuencode ${XPREFIX}-beast-site-con.tar.gz < beast-site-con.tar.gz \
 	| ssh ${ACCOUNT} \
@@ -200,7 +201,17 @@ site-update-contents: site
 	   && tar zxmpf ${XPREFIX}-beast-site-con.tar.gz -C /web/beast/html2 \
 	   && echo Cleaning up. \
 	   && rm ${XPREFIX}-beast-site-con.tar.gz"
-site-update-navigation: site
+site-update-img: site
+	echo Connecting to ${ACCOUNT}... \
+	&& uuencode ${XPREFIX}-beast-site-img.tar.gz < beast-site-img.tar.gz \
+	| ssh ${ACCOUNT} \
+	  "echo Receiving... \
+	   && uudecode \
+	   && echo Extracting... \
+	   && tar zxmpf ${XPREFIX}-beast-site-img.tar.gz -C /web/beast/html2 \
+	   && echo Cleaning up. \
+	   && rm ${XPREFIX}-beast-site-img.tar.gz"
+site-update-nav: site
 	echo Connecting to ${ACCOUNT}... \
 	&& uuencode ${XPREFIX}-beast-site-nav.tar.gz < beast-site-nav.tar.gz \
 	| ssh ${ACCOUNT} \
@@ -212,24 +223,19 @@ site-update-navigation: site
 	   && rm ${XPREFIX}-beast-site-nav.tar.gz \
 	   && echo Rebuilding... \
 	   && (cd /web/beast/dyn2 && make)"
-site-update: site-update-contents site-update-navigation
-CLEANFILES += beast-site-con.tar.gz beast-site-nav.tar.gz index.html $(html_targets)
+site-update: site-update-con # site-update-img site-update-nav
+site-upgrade: site-update-con site-update-img site-update-nav
+CLEANFILES += beast-site-*.tar.gz index.html
 
 
 #
 # extra rules
 #
-xml-clean:
-	rm -f *.xml
-clean: xml-clean
-# postscript variants
-ps_targets = $(patsubst %.3, %.ps, $(man_MANS))
-ps-targets:	$(ps_targets)
-CLEANFILES += $(ps_targets)
-# pdf variants
-pdf_targets = $(patsubst %.ps, %.pdf, $(ps_targets))
-pdf-targets:	$(pdf_targets)
-CLEANFILES += $(pdf_targets)
+clean-all-targets:	# clean targets that aren't shipped with tarballs
+	rm -f *.xml *.ps *.pdf *.html
+# postscript and pdf variants
+ps-targets:	$(patsubst %.3, %.ps, $(man_MANS))
+pdf-targets:	$(patsubst %.3, %.pdf, $(man_MANS))
 # xml linting
 lint: $(markup_targets)
 	@for i in $^ ; do \
@@ -246,4 +252,5 @@ MAINTAINERCLEANFILES +=
 )
 
 # non-file rules
-.PHONY: site ps-targets pdf-targets lint xml-clean
+.PHONY: site ps-targets pdf-targets lint clean-all-targets
+clean: clean-all-targets

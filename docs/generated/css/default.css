@@ -1,0 +1,653 @@
+/* {{{ banners,  large and small */
+#bigbanner {
+  position: fixed;
+  margin: 0;
+  height: 136px;
+  width: 100%;
+  background-image: url(images/banner-right.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  z-index: 6;
+}
+
+#bannerleft {
+  position: fixed;
+  margin: 0;
+  float: left;
+  height: 136px;
+  width: 363px;
+  background-image: url(images/banner-left.png);
+  background-position: top left;
+  background-repeat: no-repeat;
+  z-index: 6;
+}
+
+#bannertitle {
+  font-size: 14px;
+  font-weight: bold;
+  font-family: "verdana", sans-serif;
+  color: #a0a0a0;
+  position: absolute;
+  white-space: nowrap;
+  margin: 0;
+  margin-left: -3px;
+  top: 0;
+  left: 363px;
+  right: 374px;
+  height: 38px;
+  background-image: url(images/banner-dots.png);
+  background-repeat: repeat-x;
+  background-position: top left;
+  background-color: white;
+  padding: 98px 9px 0 9px;
+  text-align: center;
+  z-index: 6;
+}
+
+#bannerright {
+  position: absolute;
+  float: left;
+  margin: 0;
+  margin-top: 5px;
+  margin-left: -28px;
+  padding: 0;
+  height: 64px;
+  width: 100%;
+  top: 0;
+  background-image: url(images/banner-small.png);
+  background-position: top right;
+  background-repeat: no-repeat;
+  z-index: 6;
+}
+/* }}} */
+
+/* {{{ real content layout */
+#content {
+  font-size: 90%;
+  max-width: 76em;
+  right: 1em;
+}
+
+#content[class~="with_banner_nav"] {
+  position: absolute;
+  margin-left: 0;
+  padding-left: 1em;
+  padding-right: 1em;
+  top: 148px;
+  left: 230px;
+  z-index: 4;
+}
+
+#content[class~="with_banner_nonav"] {
+  position: absolute;
+  margin-left: 1em;
+  top: 148px;
+  z-index: 4;
+}
+
+#content[class~="with_nobanner_nav"] {
+  position: absolute;
+  margin: 0;
+  padding-right: 1.5em;
+  padding-top: 76px;
+  left: 230px;
+  background-image: url(images/horizontal-dots.png);
+  background-position: 0 56px;
+  background-repeat: repeat-x;
+  z-index: 4;
+}
+
+#content[class~="with_nobanner_nonav"] {
+  margin: 1em;
+  padding-top: 76px;
+  background-image: url(images/horizontal-dots.png);
+  background-position: 0 56px;
+  background-repeat: repeat-x;
+}
+/* }}} */
+
+/* {{{ navigation links */
+#navigation {
+  position: fixed;
+  font-family: sans-serif;
+  display: block;
+  width: 200px;
+  font-size: 85%;
+  float: left;
+  top: 148px;
+  /* bottom: 10px; */
+  padding: 0;
+  padding-left: 6px;
+  padding-right: 1em;
+  margin: 0;
+  list-style-type: none;
+  background-image: url(images/vertical-dots.png);
+  background-position: top right;
+  background-repeat: repeat-y;
+  background-color: white;
+  color: inherit;
+  z-index: 5;
+}
+
+#navigation[class~="with_nobanner"] {
+  top: 10px;
+  padding-top: 56px;
+}
+
+#navigation span[class~="subtree"] {
+  display: block;
+  list-style-type: none;
+  padding: 0;
+  padding-left: 1em;
+}
+
+#navigation a {
+  display: block;
+  padding: 0.2em;
+  padding-left: 14px;
+}
+
+#navigation a:hover {
+  text-decoration: underline; /* none */
+  background-image: url(images/gradient.png);
+  background-position: top left;
+  background-repeat: repeat-y;
+/*  background-color: #b0b0de; */
+}
+
+#navigation a[class~="closed_tree"] {
+  display: block;
+  font-weight: bold;
+  background-image: url(images/triangle-right-blue.png);
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+
+#navigation a[class~="closed_tree"]:hover {
+  background-image: url(images/gradient-with-triangle.png);
+}
+
+#navigation a[class~="open_tree"] {
+  display: block;
+  font-weight: bold;
+  background-image: url(images/triangle-down-blue.png);
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+
+#navigation a[class~="open_tree"]:hover {
+  background-image: url(images/gradient-with-triangle.png);
+}
+
+#navigation span {
+  display: block;
+  padding: 0.2em;
+  padding-left: 14px;
+}
+
+#navigation span[class~="nolink-tree"] {
+  font-weight: bold;
+  color: #aaa;
+  background-image: url(images/triangle-down-gray.png);
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+
+#navigation span[class~="nolink"] {
+  font-weight: bold;
+  color: #aaa;
+}
+
+#navigation span[class~="current"] {
+  display: block;
+  /* padding-left: 2em; */
+  font-weight: bold;
+  color: #535353;
+  background-image: url(images/gradient-light.png);
+  background-position: top left;
+  background-repeat: repeat-y;
+  background-color: #cfcfeb;
+}
+
+#navigation span[class~="current-tree"] {
+  font-weight: bold;
+  color: #535353;
+  background-image: url(images/gradient-light-with-triangle.png);
+  background-position: center left;
+  background-repeat: repeat-y;
+  background-color: #cfcfeb;
+}
+
+#navigation [class~="hidden"] {
+  display: none;
+}
+
+a[class~="homelink"] {
+  display: block;
+  min-height: 19px;
+  margin-bottom: 1em;
+  padding: 0;
+  padding-left: 32px;
+  padding-top: 0.4em;
+  padding-bottom: 0.2em;
+  width: 4em;
+  background-color: #f8f8f8;
+  background-image: url(images/arrow-left.png);
+  background-position: center left;
+  background-repeat: repeat-y;
+  font-weight: bold;
+  text-decoration: underline;
+  color: black;
+}
+
+a[class~="homelink"]:hover {
+  background-color: #8383cc;
+  color: white;
+}
+/* }}} */
+
+body {
+  background-color: white;
+  color: Black;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  font-size: 150%;
+  font-weight: normal;
+}
+
+h1[class~="banner"] {
+  margin: 0;
+  font-size: 140%;
+  font-weight: normal;
+}
+
+div[class~="banner"] {
+  letter-spacing: 0.4em;
+  background-image: url(images/arrow-right.png);
+  background-position: center left;
+  background-repeat: repeat-y;
+  background-color: #f8f8f8;
+  color: inherit;
+  margin-bottom: 1em;
+  margin-right: 0.5em;
+  padding: 0;
+  padding-left: 32px;
+  padding-top: 0.4em;
+  min-height: 1.2em;
+  /* border-top: 1px solid #b5b5b5; */
+  /* border-bottom: 1px solid #b5b5b5; */
+}
+
+h1, h2, h3, h4 {
+  color: #005a9c;
+  background-color: inherit;
+}
+
+h2 {
+  font-size: 130%;
+}
+
+h3 {
+  font-size: 120%;
+}
+
+h4 {
+  font-size: 110%;
+}
+
+dt {
+  /* text-decoration: underline; */
+  font-weight: bold;
+}
+
+dd {
+  margin-left: 2em;
+}
+
+ul, ol {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+h1[class~="document_title"] {
+  font-size: 160%;
+  color: #005a9c;
+  background-color: inherit;
+  text-align: center;
+}
+
+div[class~="document_author"] {
+  font-size: 140%;
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+thead td {
+  background-color: #005d5d;
+  color: #d0e4d0;
+  font-weight: bold;
+  padding-left: 4px;
+}
+
+div[class~="index"] {
+}
+
+span[class~="toc_chapter"] {
+}
+
+span[class~="toc_section"] {
+}
+
+span[class~="toc_subsection"] {
+}
+
+span[class~="toc_subsubsection"] {
+}
+
+code[class~="code"] {
+}
+
+code[class~="url"] {
+}
+
+code[class~="email"] {
+}
+
+code[class~="key"] {
+}
+
+code[class~="env"] {
+}
+
+code[class~="file"] {
+  font-weight: bold;
+}
+
+/* A bit more colorful file names in ChangeLogs */
+code[class~="logentry"] {
+  color: #b08000;
+  background-color: inherit;
+  font-weight: bold;
+}
+
+code[class~="command"] {
+}
+
+code[class~="option"] {
+}
+
+code[class~="menupath"] {
+  font-weight: bold;
+  /* FIXME italic monospace fonts look so ugly! :\ */
+  /* font-style: italic; */
+  background-color: #e0e0e0;
+  color: inherit;
+}
+
+code[class~="pagepath"] {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  color: inherit;
+}
+
+code[class~="object"] {
+  /* FIXME italic monospace fonts look so ugly! :\ */
+  /* font-style: italic; */
+}
+
+code[class~="channel"] {
+  /* FIXME italic monospace fonts look so ugly! :\ */
+  /* font-style: italic; */
+}
+
+acronym {
+  text-transform: uppercase;
+}
+
+strong[class~="important"] {
+  color: #df5fdf;
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: inherit;
+}
+
+/* {{{ api reference  */
+code[class~="reference-function"] {
+  color: #5555cc;
+  background-color: inherit;
+  font-weight: bold;
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+}
+
+code[class~="reference-parameter"] {
+  color: #555555;
+  background-color: inherit;
+  font-weight: normal;
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+}
+
+code[class~="reference-constant"] {
+  color: #00b0b0;
+  background-color: inherit;
+  font-family: sans-serif;
+}
+
+code[class~="reference-returns"] {
+  color: #00c000;
+  background-color: inherit;
+  margin-left: -1em;
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+}
+
+code[class~="reference-type"] {
+  color: #00c000;
+  background-color: inherit;
+  font-weight: normal;
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+}
+
+code[class~="reference-blurb"] {
+  background-color: inherit;
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+}
+
+code[class~="reference-struct-type"] {
+  color: #682407;
+  background-color: inherit;
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+  font-weight: normal;
+}
+
+code[class~="reference-struct-name"] {
+  color: #00c000;
+  background-color: inherit;
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+  font-weight: normal;
+}
+
+code[class~="reference-struct"] {
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+  font-weight: normal;
+}
+
+code[class~="reference-struct-close"] {
+  margin-left: -2em;
+  /* FIXME This is here because monospace looks ugly :\ */
+  font-family: sans-serif;
+}
+/* }}} */
+
+/* {{{ block enclosing commands */
+blockquote {
+  margin-top: 0;
+  margin-left: 4em;
+  text-indent: 2em;
+}
+
+div[class~="indented-block"] {
+  margin-top: -1em;
+  margin-left: 4em;
+}
+
+pre[class~="example"] {
+}
+
+pre[class~="smallexample"] {
+  font-size: 90%;
+}
+
+pre[class~="lisp"] {
+  color: #000040;
+  background-color: inherit;
+}
+
+pre[class~="smalllisp"] {
+  color: #000040;
+  background-color: inherit;
+  font-size: 90%;
+}
+
+pre[class~="display"] {
+  font-family: inherit;
+}
+
+pre[class~="smalldisplay"] {
+  font-family: inherit;
+  font-size: 90%;
+}
+
+pre[class~="format"] {
+  font-family: inherit;
+}
+
+pre[class~="smallformat"] {
+  font-family: inherit;
+  font-size: 90%;
+}
+/* }}} */
+
+div[class~="toc"] {
+}
+
+div[class~="chapter"] {
+}
+
+div[class~="unnumbered"] {
+}
+
+div[class~="appendix"] {
+}
+
+div[class~="chapheading"] {
+}
+
+div[class~="center"] {
+  text-align: center;
+}
+
+table[class~="multitable"] {
+}
+
+table[class~="indented"] {
+  margin-left: 2em;
+}
+
+/* {{{ news items */
+span[class~="news-date"] {
+  display: block;
+  border: none;
+  border-top: 1px dashed #dadada;
+  padding-left: 12px;
+  padding-top: 3px;
+  margin-bottom: -1em;
+  margin-right: 0.5em;
+  background-image: url(images/square.png);
+  background-repeat: no-repeat;
+  background-position: center left;
+}
+
+span[class~="news-heading"] {
+  font-weight: bold;
+  color: #4d4daa;
+  background-color: inherit;
+}
+/* }}} */
+
+/* {{{ image gallery */
+div[class~="gallery_info"] {
+  margin-bottom: 1em;
+}
+
+div[class~="paginate"] {
+  font-size: 75%;
+  background-color: #f6f6f6;
+  color: inherit;
+  padding: 0.5em;
+  width: 80%;
+  text-align: center;
+}
+
+table[class~="images"] {
+  width: 80%;
+}
+
+table[class~="images"] td {
+  background-color: #f6f6f6;
+  color: inherit;
+  padding: 1em;
+}
+
+img[class~="gallery-zoom"] {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+span[class~="paginate"] {
+}
+
+span[class~="paginate-disabled"] {
+  font-weight: bold;
+  color: #a0a0a0;
+  background-color: inherit;
+}
+
+span[class~="paginate-title"] {
+  font-weight: bold;
+  color: #4d4daa;
+  background-color: inherit;
+}
+
+span[class~="image_info"] {
+  font-size: 80%;
+  color: #666666;
+  background-color: inherit;
+}
+
+span[class~="image_text"] {
+  font-size: 90%;
+}
+
+a[class~="image-link"]:hover {
+  text-decoration: none;
+}
+/* }}} */
+
+/* vim: set fdm=marker: */

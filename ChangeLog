@@ -1,3 +1,27 @@
+Sat Jan 11 16:04:18 2003  Tim Janik  <timj@gtk.org>
+
+	* docs/Makefile.am: removed website related files from EXTRA_DIST,
+	as we don't plan to release the website with tarballs ;)
+	
+	* docs/generated/Makefile.am: send css stuff along with website
+	updates. simplified and broadened clean rules. watch your *.ps,
+	*.pdf, *.xml, *.html and beast-site-*.tar.gz files, make clean
+	will wipe them all. introduced site-upgrade rule which does
+	a complete upgrade of beast.gtk.org to CVS contents, while
+	site-update only transmits frequently altered docs.
+	
+	* docs/generated/css: new directory, containing site related
+	CSS stuff.
+
+	* docs/generated/css/default.css: Default CSS file for the BEAST
+	website from Alper Ersoy.
+
+	* docs/generated/css/images: new directory, containing site related
+	CSS images.
+
+	* docs/generated/css/images/*.png: added images from Alper Ersoy
+	for default.css.
+
 Sat Jan 11 15:21:08 2003  Tim Janik  <timj@gtk.org>
 
 	* docs/generated/log2texi.sh: use SYMBOL_GLIB to match GLib
