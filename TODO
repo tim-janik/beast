@@ -276,48 +276,46 @@ Effects:
   (main source for http://zynaddsubfx.sourceforge.net)
 
 sfidl:
-  - bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
-  - bse.idl defines bseamplifier, for which there is an idl file
+90- bse-plugin-generator: Effect->Property structure copies don't work for strings (merely a pointer copy)
+60- bse.idl defines bseamplifier, for which there is an idl file
     (touch bseamplifier.idl; make breaks)
-  - error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
+50- error "bseamplifier.idl:71: error: double definition of 'Bse::Amplifier' as same type" should
     indicate where the previous definition was
-  - #include "/absolute/path" is handled as relative path
-  - support records and sequences in bse-plugin-generator and bseprocidl
-  - reenable signals in bseprocidl
+89- #include "/absolute/path" is handled as relative path
+85- support records and sequences in bse-plugin-generator and bseprocidl
+51- reenable signals in bseprocidl
   - choice type should have validation function
   - handle non-validated sequences and records in generation code (things
     can be demarshalled in non-validated form after incompatible changes)
-  - generate foo-i18n.c files for foo.idl to be translated
+98- generate foo-i18n.c files for foo.idl to be translated
   - install sfidl
   fixes:
-  - support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
-  - Const lookups don't honour namespacing
-  - namespace using doesn't work:
+49- support N/A choice values, currently hardcoded for BseErrorType in bseprocidl
+59- Const lookups don't honour namespacing
+58- namespace using doesn't work:
     namespace Dav {
     using namespace Bse;
     Num x = (STANDARD);
     };
-  - namespace prefixing in ParamHints doesn't work:
+59- namespace prefixing in ParamHints doesn't work:
     namespace Dav {
     Num x = (::Bse::STANDARD);
     Num y = (Bse::STANDARD);
     Num z = (::STANDARD);
     };
   extensions:
-  - choices need support for icons per value
-  - choices need support for tooltips per value
-  - signals should be specified in idl files (and have to be documentable)
-  - procedure skeletons should be specified in idl files
-  parsing:
-    - plural generator
+30- choices need support for icons per value
+30- choices need support for tooltips per value
+20- signals should be specified in idl files (and have to be documentable)
+  - beautify procedure skeletons
   code generation:
-    - namespace substitution that works for both, C and C++
+    - extra namespace for C++ client code
     - restructure name generation to example-based output:
       foo-bar, foo_bar, fooBar, FOO_BAR, FooBar
   C language binding:
-    - review ParamSpec/Record primitive types
+99  - review Rec primitive types
   Qt language binding:
-    - everything
+05  - everything
 
 LEGAL:
 - email RMS about plugins covered by patents
