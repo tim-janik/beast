@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,10 +78,10 @@ BSE_BUILTIN_TYPE (BseItem)
   
   g_assert (BSE_ITEM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   
-  return bse_type_register_static (BSE_TYPE_OBJECT,
-				   "BseItem",
-				   "Base type for objects managed by a container",
-				   &item_info);
+  return bse_type_register_abstract (BSE_TYPE_OBJECT,
+                                     "BseItem",
+                                     "Base type for objects managed by a container",
+                                     &item_info);
 }
 
 static void

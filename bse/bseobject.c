@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,10 +95,10 @@ BSE_BUILTIN_TYPE (BseObject)
     (GInstanceInitFunc) bse_object_init,
   };
   
-  return bse_type_register_static (G_TYPE_OBJECT,
-				   "BseObject",
-				   "BSE Object Hierarchy base type",
-				   &object_info);
+  return bse_type_register_abstract (G_TYPE_OBJECT,
+                                     "BseObject",
+                                     "BSE Object Hierarchy base type",
+                                     &object_info);
 }
 
 void

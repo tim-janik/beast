@@ -85,6 +85,9 @@ show_nodes (GType        type,
       fputs ("]", f_out);
     }
 
+  if (G_TYPE_IS_ABSTRACT (type))
+    fputs ("\t(abstract)", f_out);
+
   if (feature_channels && g_type_is_a (type, BSE_TYPE_SOURCE))
     {
       BseSourceClass *class = g_type_class_ref (type);

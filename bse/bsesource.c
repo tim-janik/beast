@@ -130,10 +130,10 @@ BSE_BUILTIN_TYPE (BseSource)
 
   g_assert (BSE_SOURCE_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   
-  return bse_type_register_static (BSE_TYPE_ITEM,
-				   "BseSource",
-				   "Base type for sound sources",
-				   &source_info);
+  return bse_type_register_abstract (BSE_TYPE_ITEM,
+                                     "BseSource",
+                                     "Base type for sound sources",
+                                     &source_info);
 }
 
 static void

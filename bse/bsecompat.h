@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 2002 Tim Janik
+ * Copyright (C) 2002, 2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 G_BEGIN_DECLS
 
 
+/* --- ordinary renames --- */
 #define	BSE_MIN_NOTE		SFI_MIN_NOTE
 #define	BSE_KAMMER_NOTE		SFI_KAMMER_NOTE
 #define	BSE_MAX_NOTE		SFI_MAX_NOTE
@@ -38,6 +39,7 @@ G_BEGIN_DECLS
 #define	bse_note_to_string	sfi_note_to_string
 #define	bse_note_examine	sfi_note_examine
 
+/* --- parameter changes --- */
 #define bse_param_spec_genum(name,nick,blurb, genum_type, default_value, hints) \
    bse_param_spec_enum (name,nick,blurb, default_value, genum_type, hints)
 #define bse_param_spec_freq_simple(name, nick, blurb, hints) \
@@ -53,6 +55,11 @@ G_BEGIN_DECLS
 #define bse_pspec_note_simple(name, nick, blurb, hints) \
   bse_pspec_note (name, nick, blurb, SFI_KAMMER_NOTE, hints)
 
+/* --- BSE format changes --- */
+gchar*  bse_compat_rewrite_type_name (guint          vmajor,
+                                      guint          vminor,
+                                      guint          vmicro,
+                                      const gchar   *type_name);
 
 G_END_DECLS
 

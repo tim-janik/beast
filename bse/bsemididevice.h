@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-2002 Tim Janik
+ * Copyright (C) 1996-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,7 @@
 #include        <bse/bseobject.h>
 #include        <bse/bsemidievent.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_MIDI_DEVICE              (BSE_TYPE_ID (BseMidiDevice))
@@ -91,8 +87,6 @@ void		bse_midi_device_suspend		(BseMidiDevice		*mdev);
 void		bse_midi_handle_init		(BseMidiHandle		*handle);
      
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_MIDI_DEVICE_H__ */

@@ -42,7 +42,7 @@ libbse_la_LIBADD = $(BSE_LIBS) -lm
 #
 # BSE header files for public installation (non-generated)
 bse_public_h_sources = $(strip \
-	bse.h	bsedefs.h	bseexports.h	bsecompat.h	bseconfig.h	ladspa.h \
+	bse.h	bsedefs.h	bseexports.h	bseconfig.h	ladspa.h \
 	\
 	bseamplifier.h		bsebindata.h		bsebiquadfilter.h		bsecategories.h \
 	bseconstant.h		bseconstvalues.h	bsecontainer.h			bsecontextmerger.h \
@@ -59,7 +59,8 @@ bse_public_h_sources = $(strip \
 	bsesubinstrument.h	bsesubiport.h		bsesubkeyboard.h		bsesuboport.h \
 	bsesubsynth.h		bsesuper.h		bsetrack.h			bsetype.h \
 	bseutils.h		bsemidivoice.h		bsewave.h			bsewaveosc.h \
-	bsewaverepo.h		bseladspamodule.h	bsepcmwriter.h \
+	bsecsynth.h		bsewaverepo.h		bseladspamodule.h		bsepcmwriter.h \
+	bsecompat.h		\
 )
 # BSE header files that don't get installed
 bse_private_h_sources = $(strip \
@@ -82,7 +83,8 @@ bse_c_sources = $(strip \
 	bsesubinstrument.c	bsesubiport.c		bsesubkeyboard.c		bsesuboport.c \
 	bsesubsynth.c		bsesuper.c		bsetrack.c			bsetype.c \
 	bseutils.c		bsemidivoice.c		bsewave.c			bsewaveosc.c \
-	bsewaverepo.c		bseladspamodule.c	bsepcmwriter.c \
+	bsecsynth.c		bsewaverepo.c		bseladspamodule.c		bsepcmwriter.c \
+	bsecompat.c		\
 )
 # procedure sources
 bse_proc_sources = $(strip \
@@ -102,6 +104,7 @@ bse_proc_sources = $(strip \
 	bseserver.proc \
 	bsesong.proc \
 	bsesource.proc \
+	bsecsynth.proc \
 	bsesnet.proc \
 	bsetrack.proc \
 	bseitem.proc \
@@ -126,6 +129,7 @@ bse_proc_gen_sources = $(strip \
 	bseserver.gen-proc.c \
 	bsesong.gen-proc.c \
 	bsesource.gen-proc.c \
+	bsecsynth.gen-proc.c \
 	bsesnet.gen-proc.c \
 	bsetrack.gen-proc.c \
 	bseitem.gen-proc.c \

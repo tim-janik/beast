@@ -1,3 +1,32 @@
+Sun May 25 15:04:37 2003  Tim Janik  <timj@gtk.org>
+
+	* bsecompat.[hc]: added bse_compat_rewrite_type_name() to handle
+	types from different BSE file versions.
+	handle BseSNet->BseCSynth for 0.5.2.
+
+	* bsecontainer.c: inhibit restauration of abstract child types.
+
+	* bsemididevice.[hc]:
+	* bsecontainer.[hc]:
+	* bsepcmdevice.[hc]:
+	* bseobject.[hc]:
+	* bsesource.[hc]:
+	* bsesuper.[hc]:
+	* bseitem.[hc]: flagged types appropriately as abstract.
+
+	* bsesnet.[hc]: turned BseSNet into an abstract type.
+
+	* bsecsynth.[hc]: new type, deriving from BseSNet to implement
+	custom (user) synth functionality.
+
+	* bseproject.proc: provide csynth instead of snet procedures now.
+
+	* bsequery.c: indicate abstract types.
+
+	* bsetype.[hc]: added bse_type_register_abstract().
+
+	* bsestorage.[hc]: implemented bse-version handling.
+
 Tue May 20 18:39:03 2003  Tim Janik  <timj@gtk.org>
 
 	* tests/magictest.c: moved here from bsemagictest.c.

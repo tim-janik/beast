@@ -33,9 +33,13 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-/* --- some globally used defines --- */
+/* --- some globally used macros --- */
 #define	_(x)	(x)
 #define	N_(x)	(x)
+#define BSE_VERSION_CMP(v1_major, v1_minor, v1_micro, v2_major, v2_minor, v2_micro) ( \
+                                    (v1_major != v2_major) ? (v1_major > v2_major ? +1 : -1) : \
+                                    (v1_minor != v2_minor) ? (v1_minor > v2_minor ? +1 : -1) : \
+                                    (v1_micro < v2_micro ? -1 : v1_micro > v2_micro))
 
 
 /* --- BSE objects, classes & interfaces --- */
@@ -47,6 +51,8 @@ typedef struct  _BseContainer           BseContainer;
 typedef struct  _BseContainerClass      BseContainerClass;
 typedef struct  _BseContextMerger       BseContextMerger;
 typedef struct  _BseContextMergerClass  BseContextMergerClass;
+typedef struct  _BseCSynth              BseCSynth;
+typedef struct  _BseCSynthClass         BseCSynthClass;
 typedef struct  _BseEffect              BseEffect;
 typedef struct  _BseEffectClass         BseEffectClass;
 typedef struct  _BseItem                BseItem;

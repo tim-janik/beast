@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,10 +95,10 @@ BSE_BUILTIN_TYPE (BseContainer)
     (GInstanceInitFunc) bse_container_init,
   };
   
-  return bse_type_register_static (BSE_TYPE_SOURCE,
-				   "BseContainer",
-				   "Base type to manage BSE items",
-				   &container_info);
+  return bse_type_register_abstract (BSE_TYPE_SOURCE,
+                                     "BseContainer",
+                                     "Base type to manage BSE items",
+                                     &container_info);
 }
 
 static void
@@ -525,7 +525,8 @@ static gboolean
 container_default_check_restore (BseContainer   *self,
 				 const gchar    *child_type)
 {
-  return g_type_is_a (g_type_from_name (child_type), BSE_TYPE_ITEM);
+  GType type = g_type_from_name (child_type);
+  return g_type_is_a (type, BSE_TYPE_ITEM) && !G_TYPE_IS_ABSTRACT (type);
 }
 
 gboolean

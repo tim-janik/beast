@@ -128,6 +128,8 @@ bse_storage_init (BseStorage *self)
   self->indent = NULL;
   self->wblocks = NULL;
   self->gstring = NULL;
+
+  bse_storage_reset (self);
 }
 
 static void
@@ -159,6 +161,9 @@ bse_storage_reset (BseStorage *self)
       self->fd = -1;
       self->bin_offset = 0;
     }
+  self->major_version = 0;
+  self->minor_version = 5;
+  self->micro_version = 0;
   
   if (BSE_STORAGE_WRITABLE (self))
     {
@@ -209,7 +214,7 @@ bse_storage_prepare_write (BseStorage    *self,
   bse_storage_break (self);
   if (!(mode & BSE_STORAGE_SKIP_COMPAT))
     {
-      bse_storage_printf (self, "(bse-version \"%s\")", BSE_VERSION);
+      bse_storage_printf (self, "(bse-version \"%u.%u.%u\")", BSE_MAJOR_VERSION, BSE_MINOR_VERSION, BSE_MICRO_VERSION);
       bse_storage_break (self);
     }
 }
@@ -356,6 +361,50 @@ bse_storage_store_child (BseStorage *self,
   bse_storage_putc (self, ')');
 }
 
+static GTokenType
+storage_parse_bse_version (BseStorage *self)
+{
+  GScanner *scanner = self->scanner;
+  gchar *vstring, *pminor, *pmicro, *ep = NULL;
+  gboolean parsed_version = FALSE;
+  parse_or_return (scanner, G_TOKEN_IDENTIFIER);        /* eat bse-version */
+  parse_or_return (scanner, G_TOKEN_STRING);            /* fetch "version" */
+  peek_or_return (scanner, ')');                        /* check for closing paren */
+  vstring = g_strdup (scanner->value.v_string);
+  pminor = strchr (vstring, '.');
+  pmicro = !pminor ? NULL : strchr (pminor + 1, '.');
+  if (pmicro)
+    {
+      glong vmajor, vminor = -1, vmicro = -1;
+      *pminor++ = 0;
+      *pmicro++ = 0;
+      vmajor = strtol (vstring, &ep, 10);
+      if (!ep || *ep == 0)
+        vminor = strtol (pminor, &ep, 10);
+      if (!ep || *ep == 0)
+        vmicro = strtol (pmicro, &ep, 10);
+      if ((!ep || *ep == 0) && vmajor >= 0 && vminor >= 0 && vmicro >= 0 &&
+          BSE_VERSION_CMP (vmajor, vminor, vmicro, 0, 0, 0) > 0)
+        {
+          parsed_version = TRUE;
+          if (BSE_VERSION_CMP (vmajor, vminor, vmicro,
+                               self->major_version,
+                               self->minor_version,
+                               self->micro_version) > 0)
+            {
+              self->major_version = vmajor;
+              self->minor_version = vminor;
+              self->micro_version = vmicro;
+            }
+        }
+    }
+  g_free (vstring);
+  if (!parsed_version)
+    bse_storage_warn (self, "ignoring invalid version string: %s", scanner->value.v_string);
+  parse_or_return (scanner, ')');               /* eat closing paren */
+  return G_TOKEN_NONE;
+}
+
 static void
 item_link_resolved (gpointer     data,
 		    BseStorage  *storage,
@@ -443,7 +492,7 @@ restore_container_child (BseContainer *container,
   GTokenType expected_token;
   BseItem *item;
   const gchar *uname;
-  gchar *type_name;
+  gchar *type_name, *tmp;
 
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
@@ -462,16 +511,26 @@ restore_container_child (BseContainer *container,
   type_name = g_strndup (scanner->value.v_string, uname - scanner->value.v_string);
   uname += 2;
 
+  /* handle different versions */
+  tmp = bse_compat_rewrite_type_name (storage->major_version, storage->minor_version, storage->micro_version, type_name);
+  if (tmp)
+    {
+      g_free (type_name);
+      type_name = tmp;
+    }
+  
   /* check container's storage filter */
   if (!bse_container_check_restore (container, type_name))
     {
       g_free (type_name);
       return bse_storage_warn_skip (storage, "ignoring child: \"%s\"", scanner->value.v_string);
     }
-  g_free (type_name);
 
   /* create container child */
-  item = bse_container_retrieve_child (container, scanner->value.v_string);
+  tmp = g_strconcat (type_name, "::", uname, NULL);
+  g_free (type_name);
+  item = bse_container_retrieve_child (container, tmp);
+  g_free (tmp);
   if (!item)
     return bse_storage_warn_skip (storage, "failed to create object from (invalid?) handle: \"%s\"",
 				  scanner->value.v_string);
@@ -520,6 +579,9 @@ item_restore_try_statement (gpointer    item,
   if (expected_token == BSE_TOKEN_UNMATCHED && BSE_IS_CONTAINER (item))
     expected_token = restore_container_child (item, storage);
 
+  if (expected_token == BSE_TOKEN_UNMATCHED && strcmp (scanner->next_value.v_identifier, "bse-version") == 0)
+    expected_token = storage_parse_bse_version (storage);
+
   return expected_token;
 }
 
@@ -559,7 +621,7 @@ bse_storage_parse_statement (BseStorage *self,
     {
       gchar *identifier;
       if (g_scanner_get_next_token (self->scanner) != G_TOKEN_IDENTIFIER)
-	identifier = "<internal try_statement() error>";
+	identifier = "[internal try_statement() error]";
       else
 	identifier = self->scanner->value.v_identifier;
       expected_token = bse_storage_warn_skip (self, "unknown identifier: %s", identifier);
@@ -1550,6 +1612,7 @@ bse_storage_parse_note (BseStorage *storage,
   return G_TOKEN_NONE;
 }
 
+#if 0 // FIXME: remove
 static GTokenType
 parse_note (BseStorage *storage,
 	    gboolean    maybe_void,
@@ -1579,7 +1642,6 @@ parse_note (BseStorage *storage,
   return G_TOKEN_NONE;
 }
 
-#if 0 // FIXME: remove
 BseErrorType
 bse_storage_store_procedure (gpointer          storage,
 			     BseProcedureClass *proc,

@@ -78,6 +78,9 @@ struct _BseStorage
   glong			 bin_offset;
   GHashTable		*path_table;
   BseStorageItemLink	*item_links;
+  guint                  major_version;
+  guint                  minor_version;
+  guint                  micro_version;
   /* writing */
   GSList		*indent;
   BseStorageBBlock	*wblocks;	/* keeps ref */

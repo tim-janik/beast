@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1996-2002 Tim Janik
+ * Copyright (C) 1996-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,10 +64,10 @@ BSE_BUILTIN_TYPE (BseMidiDevice)
   
   g_assert (BSE_MIDI_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   
-  return bse_type_register_static (BSE_TYPE_OBJECT,
-				   "BseMidiDevice",
-				   "MIDI device base type",
-				   &midi_device_info);
+  return bse_type_register_abstract (BSE_TYPE_OBJECT,
+                                     "BseMidiDevice",
+                                     "MIDI device base type",
+                                     &midi_device_info);
 }
 
 static void

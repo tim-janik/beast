@@ -50,10 +50,10 @@ BSE_BUILTIN_TYPE (BsePcmDevice)
   
   g_assert (BSE_PCM_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
   
-  return bse_type_register_static (BSE_TYPE_ITEM,
-				   "BsePcmDevice",
-				   "PCM device base type",
-				   &pcm_device_info);
+  return bse_type_register_abstract (BSE_TYPE_ITEM,
+                                     "BsePcmDevice",
+                                     "PCM device base type",
+                                     &pcm_device_info);
 }
 
 static void

@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@
 
 #include	<bse/bsedefs.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* --- typedefs --- */
 #define BSE_TYPE_PROCEDURE	G_TYPE_MAKE_FUNDAMENTAL (G_TYPE_RESERVED_BSE_FIRST + 3)
@@ -42,6 +39,10 @@ gchar*		bse_type_blurb		  (GType  	      type);
 void		bse_type_set_blurb	  (GType  	      type,
 					   const gchar	     *blurb);
 GType  		bse_type_register_static  (GType  	      parent_type,
+					   const gchar	     *type_name,
+					   const gchar	     *type_blurb,
+					   const GTypeInfo   *info);
+GType  		bse_type_register_abstract(GType  	      parent_type,
 					   const gchar	     *type_name,
 					   const gchar	     *type_blurb,
 					   const GTypeInfo   *info);
@@ -76,8 +77,6 @@ GType  		bse_type_register_dynamic (GType              parent_type,
 extern BseGConfig        *bse_global_config;    /* from bsegconfig.[hc] */
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_TYPE_H__ */

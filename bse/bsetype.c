@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-2002 Tim Janik
+ * Copyright (C) 1998-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,33 @@ bse_type_register_static (GType            parent_type,
     }
   
   type = g_type_register_static (parent_type, type_name, info, 0);
+  
+  bse_type_set_blurb (type, type_blurb);
+  
+  return type;
+}
+
+GType  
+bse_type_register_abstract (GType            parent_type,
+                            const gchar     *type_name,
+                            const gchar     *type_blurb,
+                            const GTypeInfo *info)
+{
+  GType type;
+  
+  /* some builtin types have destructors eventhough they are registered
+   * statically, compensate for that
+   */
+  if (G_TYPE_IS_INSTANTIATABLE (parent_type) && info->class_finalize)
+    {
+      GTypeInfo tmp_info;
+      
+      tmp_info = *info;
+      tmp_info.class_finalize = NULL;
+      info = &tmp_info;
+    }
+  
+  type = g_type_register_static (parent_type, type_name, info, G_TYPE_FLAG_ABSTRACT);
   
   bse_type_set_blurb (type, type_blurb);
   

@@ -23,11 +23,7 @@
 #include <bse/bseitem.h>
 #include <bse/gsldefs.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define BSE_TYPE_PCM_DEVICE              (BSE_TYPE_ID (BsePcmDevice))
@@ -147,8 +143,6 @@ gfloat		bse_pcm_freq_from_freq_mode	(BsePcmFreqMode	freq_mode);
 BsePcmFreqMode	bse_pcm_freq_mode_from_freq	(gfloat		freq);
      
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_PCM_DEVICE_H__ */

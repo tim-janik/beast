@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1998-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1998-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,10 +72,10 @@ BSE_BUILTIN_TYPE (BseSuper)
     (GInstanceInitFunc) bse_super_init,
   };
   
-  return bse_type_register_static (BSE_TYPE_CONTAINER,
-				   "BseSuper",
-				   "Base type for item managers and undo facility",
-				   &super_info);
+  return bse_type_register_abstract (BSE_TYPE_CONTAINER,
+                                     "BseSuper",
+                                     "Base type for item managers and undo facility",
+                                     &super_info);
 }
 
 static void

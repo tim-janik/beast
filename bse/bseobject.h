@@ -1,5 +1,5 @@
 /* BSE - Bedevilled Sound Engine
- * Copyright (C) 1997-1999, 2000-2002 Tim Janik
+ * Copyright (C) 1997-1999, 2000-2003 Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +27,7 @@
 
 #include	<bse/bseparam.h>
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
+G_BEGIN_DECLS
 
 /* --- BSE type macros --- */
 #define BSE_TYPE_OBJECT              (BSE_TYPE_ID (BseObject))
@@ -159,9 +155,6 @@ const gchar*	bse_object_type_register	(const gchar *name,
 						 GType	     *ret_type);
 extern GQuark bse_quark_uname;
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_OBJECT_H__ */

@@ -101,29 +101,19 @@ static const GBSearchConfig port_array_config = {
 /* --- functions --- */
 BSE_BUILTIN_TYPE (BseSNet)
 {
-  GType   snet_type;
-  
-  static const GTypeInfo snet_info = {
+  static const GTypeInfo type_info = {
     sizeof (BseSNetClass),
-    
     (GBaseInitFunc) NULL,
     (GBaseFinalizeFunc) NULL,
     (GClassInitFunc) bse_snet_class_init,
     (GClassFinalizeFunc) NULL,
     NULL /* class_data */,
-    
     sizeof (BseSNet),
     0 /* n_preallocs */,
     (GInstanceInitFunc) bse_snet_init,
   };
-  
-  snet_type = bse_type_register_static (BSE_TYPE_SUPER,
-                                        "BseSNet",
-                                        "BSE Synthesis (Filter) Network",
-                                        &snet_info);
-  g_assert (BSE_SNET_FLAGS_USHIFT <= 32);
-  
-  return snet_type;
+  g_assert (BSE_SNET_FLAGS_USHIFT < BSE_OBJECT_FLAGS_MAX_SHIFT);
+  return bse_type_register_abstract (BSE_TYPE_SUPER, "BseSNet", "BSE Synthesis (Filter) Network", &type_info);
 }
 
 static void

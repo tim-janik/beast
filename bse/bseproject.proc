@@ -21,7 +21,7 @@
 #include        <bse/bsestorage.h>
 #include        <bse/bsesong.h>
 #include        <bse/bsewaverepo.h>
-#include        <bse/bsesnet.h>
+#include        <bse/bsecsynth.h>
 #include        <bse/bsemidisynth.h>
 #include        <bse/bsedatapocket.h>
 
@@ -234,14 +234,14 @@ METHOD (BseProject, get-data-pocket) {
   return BSE_ERROR_NONE;
 }
 
-METHOD (BseProject, create-snet) {
+METHOD (BseProject, create-csynth) {
   BLURB	= "Create a synthsizer network for this project.";
   IN	= bse_param_spec_object ("project", "Project", "The project",
 				 BSE_TYPE_PROJECT, SFI_PARAM_DEFAULT);
   IN    = sfi_pspec_string ("name", "Name", "Synth network name",
 			    NULL, SFI_PARAM_DEFAULT);
-  OUT	= bse_param_spec_object ("snet", "Synthesizer Network", "New synth network",
-				 BSE_TYPE_SNET, SFI_PARAM_DEFAULT);
+  OUT	= bse_param_spec_object ("csynth", "Synthesizer Network", "New synth network",
+				 BSE_TYPE_CSYNTH, SFI_PARAM_DEFAULT);
 } BODY (BseProcedureClass *proc,
 	const GValue      *in_values,
 	GValue            *out_values)
@@ -249,21 +249,21 @@ METHOD (BseProject, create-snet) {
   /* extract parameter values */
   BseProject *project = bse_value_get_object (in_values++);
   gchar *name         = sfi_value_get_string (in_values++);
-  BseSNet *snet;
+  BseCSynth *csynth;
   
   /* check parameters */
   if (!BSE_IS_PROJECT (project))
     return BSE_ERROR_PROC_PARAM_INVAL;
   
   /* action */
-  snet = g_object_new (BSE_TYPE_SNET,
-		       name ? "uname" : NULL, name,
-		       NULL);
-  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (snet));
+  csynth = g_object_new (BSE_TYPE_CSYNTH,
+                         name ? "uname" : NULL, name,
+                         NULL);
+  bse_container_add_item (BSE_CONTAINER (project), BSE_ITEM (csynth));
   
   /* set output parameters */
-  bse_value_set_object (out_values++, G_OBJECT (snet));
-  g_object_unref (snet);
+  bse_value_set_object (out_values++, G_OBJECT (csynth));
+  g_object_unref (csynth);
   
   return BSE_ERROR_NONE;
 }
