@@ -71,7 +71,7 @@ G_BEGIN_DECLS
 #define	sfi_value_set_string		g_value_set_string
 #define	sfi_value_dup_string		g_value_dup_string
 #define	sfi_value_set_static_string	g_value_set_static_string
-#define	sfi_value_take_string		g_value_set_string_take_ownership
+#define	sfi_value_take_string		g_value_take_string
 
 
 /* --- Sfi value accessors --- */
