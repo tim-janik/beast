@@ -362,10 +362,6 @@ bst_app_reload_supers (BstApp *app)
 
   g_return_if_fail (BST_IS_APP (app));
 
-  // gtk_widget_hide (GTK_WIDGET (app->notebook));
-
-  g_print ("notebook: %p\n", app->notebook);
-
   old_focus = GTK_WINDOW (app)->focus_widget;
   if (old_focus)
     gtk_widget_ref (old_focus);
@@ -376,8 +372,6 @@ bst_app_reload_supers (BstApp *app)
       page_list = g_slist_prepend (page_list, gtk_notebook_current_widget (app->notebook));
       gtk_container_remove (GTK_CONTAINER (app->notebook), page_list->data);
     }
-
-  // gtk_container_foreach (GTK_CONTAINER (app->notebook), (GtkCallback) gtk_widget_destroy, NULL);
 
   for (slist = BSE_PROJECT (bse_object_from_id (app->project))->supers; slist; slist = slist->next)
     {
@@ -421,8 +415,6 @@ bst_app_reload_supers (BstApp *app)
       gtk_widget_unref (slist->data);
     }
   g_slist_free (page_list);
-
-  // gtk_widget_show (GTK_WIDGET (app->notebook));
 }
 
 static gboolean

@@ -1,17 +1,32 @@
+* pattern copy
+* clippboard
+* fix file selection (open load) dialog
+* octave/note shift for pattern selection
+* fade in/out of samples (sample editor & sequencer)
+* highlight arranger patterns when played
+* need play-sinle-pattern mode
+* change default envelop to 0 attack
+* device monitor delay should be persistent in .beastrc
+* pattern-channel instrument selection should be persistent per pattern
+* arranger paned to 50%
+* arranger need sswitch to show pattern names instead of numbers
+* arranger menus need to provide "change name" as well (especially f. groups)
+* project playback can fail! should reset play mode afterwards
+* add switch to set keytables directly, no-serverquery, which works without rc file
+
 bugs:
 -	select/none + select/invert unselects focus
 
 icons:
--	need duplicate and duplicate-link menu icons
+-	need duplicate (clone) and duplicate-link menu icons
 
-important:
+important docs:
 -	sane default sizes for windows
 -	write up basic blurb 1) new song 2) instrument+sample 3) pattern etc..
 -	how to get instruments going in a pattern
 
 general:
--	use suxillary window for bsepatterdialog?
--	need -Wshadow
+-	use auxillary window for bsepatterdialog?
 -	get File/Save to work
 -	quit/close needs to feature mod-time vs. creation-time handling
 
@@ -19,17 +34,9 @@ instrument editor:
 -	prehearse fuctionality with spinner to indicate note
 
 sample repo:
--	this needs to be moved into BSE in a clean fashion
-
-Statusbars:
--	figure work around for button is hidden while depressed bug.
+-	this needs to be essentially removed from bst* files
 
 Pattern Editor
 -	the popup menu should be attached/detached instead of the ifactory ref/sink pair?
--	feature pattern note parameters
 -	user configurable toggle to start from 000 or 001 for row numbering
 -	per channel mute. per channel in-use flag (bg-color?) (active when any note or instr or eff)
-
-instrument editor
--	update the samples in the combo popup...
--	sample fetching needs to be moved back into BSE anyways

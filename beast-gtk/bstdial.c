@@ -451,7 +451,7 @@ bst_dial_mouse_update (BstDial *dial,
   GtkAdjustment *adjustment;
   GtkWidget *widget;
   gint xc, yc;
-  gfloat angle;
+  gdouble angle;
   
   g_return_if_fail (BST_IS_DIAL (dial));
   
@@ -653,7 +653,7 @@ bst_dial_update (BstDial *dial)
 {
   GtkAdjustment *adjustment;
   GtkWidget *widget;
-  gfloat new_value;
+  gdouble new_value;
   
   g_return_if_fail (BST_IS_DIAL (dial));
   
@@ -661,9 +661,12 @@ bst_dial_update (BstDial *dial)
   adjustment = GTK_ADJUSTMENT (dial->adjustment);
   
   new_value = CLAMP (adjustment->value, adjustment->lower, adjustment->upper - adjustment->page_size);
-  
+
   if (new_value != adjustment->value)
     {
+      if (0)
+	g_print ("dial-adjustment: %f <= %f <= %f, adjust: %f\n",
+		 adjustment->lower, adjustment->value, adjustment->upper, new_value);
       adjustment->value = new_value;
       gtk_adjustment_value_changed (GTK_ADJUSTMENT (dial->adjustment));
     }

@@ -54,6 +54,7 @@ static GDebugKey    bst_debug_keys[] = { /* keep in sync with bstdefs.h */
 };
 static const guint  bst_n_debug_keys = sizeof (bst_debug_keys) / sizeof (bst_debug_keys[0]);
 static gboolean     arg_force_xkb = FALSE;
+static gboolean     bst_load_plugins = TRUE;
 static const gchar *bst_rc_string =
 ( "style'BstTooltips-style'"
   "{"
@@ -144,7 +145,7 @@ main (int   argc,
   
   /* check load BSE plugins to register types
    */
-  if (1)
+  if (bst_load_plugins)
     {
       GList *free_list, *list;
       
@@ -336,7 +337,12 @@ bst_parse_args (int    *argc_p,
   
   for (i = 1; i < argc; i++)
     {
-      if (strcmp ("--beast-debug", argv[i]) == 0 ||
+      if (strcmp ("--no-plugins", argv[i]) == 0)
+	{
+	  bst_load_plugins = FALSE;
+	  argv[i] = NULL;
+	}
+      else if (strcmp ("--beast-debug", argv[i]) == 0 ||
 	  strncmp ("--beast-debug=", argv[i], 14) == 0)
 	{
 	  gchar *equal = argv[i] + 13;
@@ -476,6 +482,7 @@ bst_print_blurb (FILE    *fout,
   else
     {
       fprintf (fout, "Usage: beast [options] [files...]\n");
+      fprintf (fout, "  --no-plugins			disable plugins (debug usage only)\n");
       fprintf (fout, "  --beast-debug=keys		enable certain BEAST debug stages\n");
       fprintf (fout, "  --beast-no-debug=keys		disable certain BEAST debug stages\n");
       fprintf (fout, "  --force-xkb			force XKB keytable queries\n");

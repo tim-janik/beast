@@ -60,13 +60,13 @@ struct _BstDial
   guint timer;
   
   /* Current angle of the pointer */
-  gfloat angle;
+  gdouble angle;
   
   /* Old values from GtkAdjustment, stored so we know when something changed */
-  gfloat old_value;
-  gfloat old_lower;
-  gfloat old_upper;
-  gfloat old_page_size;
+  gdouble old_value;
+  gdouble old_lower;
+  gdouble old_upper;
+  gdouble old_page_size;
   
   /* The adjustment object that stores the data for this dial */
   GtkObject *adjustment;

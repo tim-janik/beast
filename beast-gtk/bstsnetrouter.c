@@ -222,7 +222,7 @@ bst_snet_router_new (BswProxy snet)
 {
   GtkWidget *router;
   
-  g_return_val_if_fail (BSE_IS_SNET (bse_object_from_id (snet)), NULL);
+  g_return_val_if_fail (BSW_IS_SNET (snet), NULL);
   
   router = gtk_widget_new (BST_TYPE_SNET_ROUTER,
 			   "aa", BST_SNET_ANTI_ALIASED,
@@ -238,7 +238,7 @@ bst_snet_router_set_snet (BstSNetRouter *router,
 {
   g_return_if_fail (BST_IS_SNET_ROUTER (router));
   if (snet)
-    g_return_if_fail (BSE_IS_SNET (bse_object_from_id (snet)));
+    g_return_if_fail (BSW_IS_SNET (snet));
   
   if (router->snet)
     {
@@ -612,7 +612,7 @@ bst_snet_router_csource_from_source (BstSNetRouter *router,
   GList *list;
 
   g_return_val_if_fail (BST_IS_SNET_ROUTER (router), NULL);
-  g_return_val_if_fail (BSE_IS_SOURCE (bse_object_from_id (source)), NULL);
+  g_return_val_if_fail (BSW_IS_SOURCE (source), NULL);
 
   canvas = GNOME_CANVAS (router);
   root = GNOME_CANVAS_GROUP (canvas->root);

@@ -431,6 +431,11 @@ bst_param_create (gpointer	owner,
     }
   if (adjustment)
     {
+      if (0)
+	g_print ("adjustm.increm: \"%s\": %f / %f\n", g_param_spec_get_nick (pspec),
+		 adjustment->step_increment,
+		 adjustment->page_increment);
+      
       gtk_object_ref (GTK_OBJECT (adjustment));
       gtk_object_sink (GTK_OBJECT (adjustment));
       
