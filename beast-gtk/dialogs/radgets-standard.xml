@@ -97,7 +97,6 @@
     default-area="menu"
     prop:uline-label="$label"
     prop:stock-image="$(ifdef,stock-image,$stock-image,BST_STOCK_FOLDER)"
-    prop:menubar-image="0"
     prop:right-justify="$(ifdef,last,$last,0)" >
     <hidden-when-insensitive hidden-when-insensitive="$hidden-when-insensitive" />
     <GtkMenu name="menu" tearoff-title="$label" />
