@@ -25,7 +25,6 @@ UNPORTED = @STRIP_BEGIN@	\
 	davcanyondelay.[hc]	\
 	davchorus.[hc]		\
 	davguitar.[hc]		\
-	davorgan.[hc]		\
 	davsyndrum.[hc]		\
 @STRIP_END@
 PLUGIN_CFILES = @STRIP_BEGIN@	\
@@ -41,6 +40,7 @@ PLUGIN_CFILES = @STRIP_BEGIN@	\
 	bsesequencer.[hc]	\
 	bsesnooper.[hc]		\
 	bsewaveosc.[hc]		\
+	davorgan.[hc]		\
 	davxtalstrings.[hc]	\
 	fldbsepattern.[hc]	\
 @STRIP_END@

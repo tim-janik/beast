@@ -1,3 +1,8 @@
+Mon Apr  8 22:19:42 2002  Tim Janik  <timj@gtk.org>
+
+	* davorgan.[hc]: ported DavOrgan to the engine, so we have our
+	organ back.
+
 Fri Apr  5 09:15:18 2002  Tim Janik  <timj@gtk.org>
 
 	* bsegenosc.[hc]: fix istream count.

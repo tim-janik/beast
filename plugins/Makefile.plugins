@@ -101,6 +101,14 @@ bsewaveosc_la_LIBADD  = $(plugin_libs)
 EXTRA_HEADERS         += bsewaveosc.h
 
 ##
+## Plugin davorgan
+##
+davorgan_la_SOURCES = davorgan.c
+davorgan_la_LDFLAGS = -module -avoid-version
+davorgan_la_LIBADD  = $(plugin_libs)
+EXTRA_HEADERS         += davorgan.h
+
+##
 ## Plugin davxtalstrings
 ##
 davxtalstrings_la_SOURCES = davxtalstrings.c
@@ -129,6 +137,7 @@ plugin_LTLIBRARIES += \
 	bsesequencer.la \
 	bsesnooper.la \
 	bsewaveosc.la \
+	davorgan.la \
 	davxtalstrings.la \
 	fldbsepattern.la
 

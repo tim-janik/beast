@@ -1,5 +1,5 @@
 /* DavOrgan - DAV Additive Organ Synthesizer
- * Copyright (c) 1999, 2000 David A. Bartold
+ * Copyright (c) 1999, 2000, 2002 David A. Bartold and Tim Janik
  *
  * This library is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Library General Public License as
@@ -16,7 +16,6 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 #ifndef __DAV_ORGAN_H__
 #define __DAV_ORGAN_H__
 
@@ -35,52 +34,54 @@ extern "C" {
 #define DAV_IS_ORGAN_CLASS(class)   (G_TYPE_CHECK_CLASS_TYPE ((class), DAV_TYPE_ORGAN))
 #define DAV_ORGAN_GET_CLASS(object) (G_TYPE_INSTANCE_GET_CLASS ((object), DAV_TYPE_ORGAN, DavOrganClass))
 
+
 /* --- DavOrgan source --- */
 typedef struct _DavOrgan      DavOrgan;
 typedef struct _DavOrganClass DavOrganClass;
-
-struct _DavOrgan
-{
-  BseSource parent_object;
-  
+typedef struct {
+  gfloat      freq;
+  /* harmonic weights */
+  gfloat      harm0;
+  gfloat      harm1;
+  gfloat      harm2;
+  gfloat      harm3;
+  gfloat      harm4;
+  gfloat      harm5;
+  /* temper */
   guint       brass : 1;
   guint       flute : 1;
   guint       reed : 1;
-  
-  gfloat      freq;
-  
-  BseMixValue harm0;
-  guint32     harm0_accum;
-  BseMixValue harm1;
-  guint32     harm1_accum;
-  BseMixValue harm2;
-  guint32     harm2_accum;
-  BseMixValue harm3;
-  guint32     harm3_accum;
-  BseMixValue harm4;
-  guint32     harm4_accum;
-  BseMixValue harm5;
-  guint32     harm5_accum;
+} DavOrganConfig;
+struct _DavOrgan
+{
+  BseSource parent_object;
+
+  DavOrganConfig config;
 };
 
 struct _DavOrganClass
 {
   BseSourceClass parent_class;
 
-  guint           ref_count;
-  BseSampleValue *sine_table;
-  BseSampleValue *triangle_table;
-  BseSampleValue *pulse_table;
+  guint   ref_count;
+  gfloat *sine_table;
+  gfloat *triangle_table;
+  gfloat *pulse_table;
 };
 
-/* --- enums --- */
 
 /* --- channels --- */
 enum
 {
-  DAV_ORGAN_OCHANNEL_NONE,
-  DAV_ORGAN_OCHANNEL_MONO
+  DAV_ORGAN_ICHANNEL_FREQ,
+  DAV_ORGAN_N_ICHANNELS
 };
+enum
+{
+  DAV_ORGAN_OCHANNEL_MONO,
+  DAV_ORGAN_N_OCHANNELS
+};
+
 
 #ifdef __cplusplus
 }
