@@ -11,6 +11,7 @@ FIXMES:	(release-critical)
   (not having /dev/midi gets really annoying)
   or disable "/dev/midi": no such device dialog
 TODO:
+- delete track + undo doesn't preserve track order
 - rename bse_bus_get_stack() which is the only valid hook to setup song modules atm
 - evaluate typedef gpointer SfiProxy; instead of GType, this should get rid of a lot of casts
 - the skin editor should offer loading skins, just like View/Skins
