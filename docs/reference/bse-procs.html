@@ -3,12 +3,38 @@
 <title>BEAST/BSE-0.4.0: BSE-Procedures</title>
 </head>
 <body text="#000000" bgcolor="#ffffff" link="#cc0000" alink="#cc0000" vlink="#990000">
-<h0>BSE-Procedures &nbsp &nbsp - &nbsp 06 Feb 2002 &nbsp - &nbsp BEAST/BSE-0.4.0 </h0>
+<h0>BSE-Procedures &nbsp &nbsp - &nbsp 11 Feb 2002 &nbsp - &nbsp BEAST/BSE-0.4.0 </h0>
 
 <h1>NAME</h1>
 <blockquote>BSE-Procedures - BSE Procedure Reference</blockquote>
 <h1>SYNOPSIS</h1>
 <blockquote>
+<strong>BseDataPocket::create-entry (</strong><u>data-pocket</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::delete-entry (</strong><u>data-pocket</u>, <u>entry-id</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::get-entry-id (</strong><u>data-pocket</u>, <u>entry-index</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::get-float (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::get-int (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::get-n-entries (</strong><u>data-pocket</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::get-object (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::get-string (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::set-float (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u>, <u>number</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::set-int (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u>, <u>number</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::set-object (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u>, <u>item</u><strong>)</strong>;
+<br>
+<strong>BseDataPocket::set-string (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u>, <u>string</u><strong>)</strong>;
+<br>
+<strong>BseItem::common-ancestor (</strong><u>item</u>, <u>item2</u><strong>)</strong>;
+<br>
 <strong>BseItem::get-name (</strong><u>item</u><strong>)</strong>;
 <br>
 <strong>BseItem::get-name-or-type (</strong><u>item</u><strong>)</strong>;
@@ -58,6 +84,8 @@
 <strong>BseProject::create-song (</strong><u>project</u>, <u>n-channels</u><strong>)</strong>;
 <br>
 <strong>BseProject::ensure-wave-repo (</strong><u>project</u><strong>)</strong>;
+<br>
+<strong>BseProject::get-data-pocket (</strong><u>project</u>, <u>name</u><strong>)</strong>;
 <br>
 <strong>BseProject::is_playing (</strong><u>project</u><strong>)</strong>;
 <br>
@@ -122,11 +150,190 @@
 </blockquote>
 <h1>DESCRIPTION</h1>
 <blockquote>
+<strong>BseDataPocket::create-entry (</strong><u>data-pocket</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>entry-id: The unique pocket entry ID
+</table>
+</blockquote>
+<blockquote>
+Create a new entry in a data pocket. Entries have a unique ID which is required to set values in a data pocket.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::delete-entry (</strong><u>data-pocket</u>, <u>entry-id</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td colspan=2><u>RETURNS:</u><td>error: BSE error code
+</table>
+</blockquote>
+<blockquote>
+Delete an existing entry from a data pocket  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::get-entry-id (</strong><u>data-pocket</u>, <u>entry-index</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-index</u><td>index into number of entries present
+<tr><td colspan=2><u>RETURNS:</u><td>entry-id: The unique pocket entry ID (or 0 if there's no such entry)
+</table>
+</blockquote>
+<blockquote>
+Retrive the ID of an entry in the data pocket by sequential index.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::get-float (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td><u></u><td><u>name</u><td>Name for the value
+<tr><td colspan=2><u>RETURNS:</u><td>number: The value stored in the data pocket entry
+</table>
+</blockquote>
+<blockquote>
+Retrive a previously set floating point value from a data pocket entry.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::get-int (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td><u></u><td><u>name</u><td>Name for the value
+<tr><td colspan=2><u>RETURNS:</u><td>number: The value stored in the data pocket entry
+</table>
+</blockquote>
+<blockquote>
+Retrive a previously set integer value from a data pocket entry.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::get-n-entries (</strong><u>data-pocket</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td colspan=2><u>RETURNS:</u><td>n-entries: The number of entries in use
+</table>
+</blockquote>
+<blockquote>
+Retrive the number of entries created in a data pocket.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::get-object (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td><u></u><td><u>name</u><td>Name for the value
+<tr><td colspan=2><u>RETURNS:</u><td>item: The value stored in the data pocket entry
+</table>
+</blockquote>
+<blockquote>
+Retrive a previously set object reference from a data pocket entry.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::get-string (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td><u></u><td><u>name</u><td>Name for the value
+<tr><td colspan=2><u>RETURNS:</u><td>string: The value stored in the data pocket entry
+</table>
+</blockquote>
+<blockquote>
+Retrive a previously set string from a data pocket entry.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::set-float (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u>, <u>number</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td><u></u><td><u>name</u><td>Name for the value
+<tr><td><u></u><td><u>number</u><td>The value to store in the data pocket entry
+<tr><td colspan=2><u>RETURNS:</u><td>error: BSE error code
+</table>
+</blockquote>
+<blockquote>
+Set a named floating point value in a data pocket entry. Names are required to distinguish different values from each other when accessing values in a data pocket.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::set-int (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u>, <u>number</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td><u></u><td><u>name</u><td>Name for the value
+<tr><td><u></u><td><u>number</u><td>The value to store in the data pocket entry
+<tr><td colspan=2><u>RETURNS:</u><td>error: BSE error code
+</table>
+</blockquote>
+<blockquote>
+Set a named integer value in a data pocket entry. Names are required to distinguish different values from each other when accessing values in a data pocket.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::set-object (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u>, <u>item</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td><u></u><td><u>name</u><td>Name for the value
+<tr><td><u></u><td><u>item</u><td>The value to store in the data pocket entry
+<tr><td colspan=2><u>RETURNS:</u><td>error: BSE error code
+</table>
+</blockquote>
+<blockquote>
+Set a named object reference in a data pocket entry. Object references stored in a data pocket must exist within the same project that the data pocket belongs to  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseDataPocket::set-string (</strong><u>data-pocket</u>, <u>entry-id</u>, <u>name</u>, <u>string</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>data-pocket</u><td>The data pocket storing values
+<tr><td><u></u><td><u>entry-id</u><td>The unique pocket entry ID
+<tr><td><u></u><td><u>name</u><td>Name for the value
+<tr><td><u></u><td><u>string</u><td>The value to store in the data pocket entry
+<tr><td colspan=2><u>RETURNS:</u><td>error: BSE error code
+</table>
+</blockquote>
+<blockquote>
+Set a named string in a data pocket entry.  
+</blockquote>
+</blockquote>
+<blockquote>
+<strong>BseItem::common-ancestor (</strong><u>item</u>, <u>item2</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>item</u><td>First item
+<tr><td><u></u><td><u>item2</u><td>Second item
+<tr><td colspan=2><u>RETURNS:</u><td>ancestor: Common ancestor of both items
+</table>
+</blockquote>
+<blockquote>
+Retrive the common ancestor of two items if there's any  
+</blockquote>
+</blockquote>
+<blockquote>
 <strong>BseItem::get-name (</strong><u>item</u><strong>)</strong>;
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>item</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>name: 
 </table>
 </blockquote>
 <blockquote>
@@ -138,7 +345,7 @@ Get an item's name
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>item</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>name: 
 </table>
 </blockquote>
 <blockquote>
@@ -150,7 +357,7 @@ Get an item's name or type if it has no name
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>item</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>parent: 
 </table>
 </blockquote>
 <blockquote>
@@ -162,7 +369,7 @@ Retrive item's parent
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>item</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>project: 
 </table>
 </blockquote>
 <blockquote>
@@ -174,7 +381,7 @@ Retrive item's parent
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>item</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>type-id: 
 </table>
 </blockquote>
 <blockquote>
@@ -186,7 +393,7 @@ Retrive Type ID
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>item</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>type-blurb: 
 </table>
 </blockquote>
 <blockquote>
@@ -198,7 +405,7 @@ Retrieve Type Description
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>item</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>type-name: 
 </table>
 </blockquote>
 <blockquote>
@@ -233,7 +440,7 @@ Increment use count to keep the object alive
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>item</u><td>
 <tr><td><u></u><td><u>type-name</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>is-a-check: 
 </table>
 </blockquote>
 <blockquote>
@@ -351,7 +558,7 @@ Reset note and instrument contents of the selectionto none
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>project</u><td>
 <tr><td><u></u><td><u>file-name</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>error: 
 </table>
 </blockquote>
 <blockquote>
@@ -365,7 +572,7 @@ Load a project from file
 <tr><td><u></u><td><u>project</u><td>
 <tr><td><u></u><td><u>file-name</u><td>
 <tr><td><u></u><td><u>self-contained</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>error: 
 </table>
 </blockquote>
 <blockquote>
@@ -377,7 +584,7 @@ Save a project into a BSE file
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>project</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>midi-synth: 
 </table>
 </blockquote>
 <blockquote>
@@ -389,7 +596,7 @@ Create a MIDI synthesizer network in project
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>project</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>snet: 
 </table>
 </blockquote>
 <blockquote>
@@ -402,7 +609,7 @@ Create a synthsizer network in project
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>project</u><td>
 <tr><td><u></u><td><u>n-channels</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>song: 
 </table>
 </blockquote>
 <blockquote>
@@ -414,7 +621,7 @@ Create a new song in project
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>project</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>wrepo: 
 </table>
 </blockquote>
 <blockquote>
@@ -422,11 +629,24 @@ Ensure the project has a wave repository
 </blockquote>
 </blockquote>
 <blockquote>
+<strong>BseProject::get-data-pocket (</strong><u>project</u>, <u>name</u><strong>)</strong>;
+<blockquote>
+<table border=0 summary=" ">
+<tr><td><u></u><td><u>project</u><td>
+<tr><td><u></u><td><u>name</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>data-pocket: 
+</table>
+</blockquote>
+<blockquote>
+Retrive a specifically named data pocket for this project  
+</blockquote>
+</blockquote>
+<blockquote>
 <strong>BseProject::is_playing (</strong><u>project</u><strong>)</strong>;
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>project</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>is-playing: 
 </table>
 </blockquote>
 <blockquote>
@@ -439,7 +659,7 @@ Check whether a project is currently playing
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>snet</u><td>
 <tr><td><u></u><td><u>source-type</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>error: 
 </table>
 </blockquote>
 <blockquote>
@@ -452,7 +672,7 @@ Check whether inserting a new module into a synthesis network is possible
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>snet</u><td>
 <tr><td><u></u><td><u>source-type</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>source: 
 </table>
 </blockquote>
 <blockquote>
@@ -465,7 +685,7 @@ Insert a new module into a synthesis network
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>snet</u><td>
 <tr><td><u></u><td><u>source</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>error: 
 </table>
 </blockquote>
 <blockquote>
@@ -490,7 +710,7 @@ Stop processing a project generating sound
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>server</u><td>
 <tr><td><u></u><td><u>project</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>error: 
 </table>
 </blockquote>
 <blockquote>
@@ -503,7 +723,7 @@ Process a project to generate sound
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>server</u><td>
 <tr><td><u></u><td><u>name</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>project: 
 </table>
 </blockquote>
 <blockquote>
@@ -538,7 +758,7 @@ Disconnect all source outputs
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>source</u><td>
 <tr><td><u></u><td><u>input-channel</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>channel-blurb: 
 </table>
 </blockquote>
 <blockquote>
@@ -551,7 +771,7 @@ Get input channel description
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>source</u><td>
 <tr><td><u></u><td><u>input-channel</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>n-joints: 
 </table>
 </blockquote>
 <blockquote>
@@ -565,7 +785,7 @@ Retrive the number of input connections of an input channel
 <tr><td><u></u><td><u>source</u><td>
 <tr><td><u></u><td><u>input-channel</u><td>
 <tr><td><u></u><td><u>input-joint</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>ochannel: 
 </table>
 </blockquote>
 <blockquote>
@@ -579,7 +799,7 @@ Retrive output channel of the source connected to a specific joint of an input c
 <tr><td><u></u><td><u>source</u><td>
 <tr><td><u></u><td><u>input-channel</u><td>
 <tr><td><u></u><td><u>input-joint</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>osource: 
 </table>
 </blockquote>
 <blockquote>
@@ -592,7 +812,7 @@ Retrive output source connected to a specific joint of an input channel
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>source</u><td>
 <tr><td><u></u><td><u>input-channel</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>channel-name: 
 </table>
 </blockquote>
 <blockquote>
@@ -605,7 +825,7 @@ Get input channel name
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>source</u><td>
 <tr><td><u></u><td><u>input-channel</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>is-jchannel: 
 </table>
 </blockquote>
 <blockquote>
@@ -617,7 +837,7 @@ Check if an input channel is a joint (multi-connect) channel
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>source</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>n-channels: 
 </table>
 </blockquote>
 <blockquote>
@@ -629,7 +849,7 @@ Get the number of input channels of a source
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>source</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>n-channels: 
 </table>
 </blockquote>
 <blockquote>
@@ -642,7 +862,7 @@ Get the number of output channels of a source
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>source</u><td>
 <tr><td><u></u><td><u>input-channel</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>channel-blurb: 
 </table>
 </blockquote>
 <blockquote>
@@ -655,7 +875,7 @@ Get output channel description
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>source</u><td>
 <tr><td><u></u><td><u>input-channel</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>channel-name: 
 </table>
 </blockquote>
 <blockquote>
@@ -670,7 +890,7 @@ Get output channel name
 <tr><td><u></u><td><u>input-channel</u><td>
 <tr><td><u></u><td><u>output-source</u><td>
 <tr><td><u></u><td><u>output-channel</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>error: 
 </table>
 </blockquote>
 <blockquote>
@@ -685,7 +905,7 @@ Connect a source input to another source's output
 <tr><td><u></u><td><u>input-channel</u><td>
 <tr><td><u></u><td><u>output-source</u><td>
 <tr><td><u></u><td><u>output-channel</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>error: 
 </table>
 </blockquote>
 <blockquote>
@@ -699,7 +919,7 @@ Disconnect a source input
 <tr><td><u></u><td><u>wave</u><td>Wave object to store loaded contents
 <tr><td><u></u><td><u>file-name</u><td>The wave file to read wave chunks from
 <tr><td><u></u><td><u>wave-name</u><td>The name of the wave to read wave chunks from
-<tr><td colspan=2><u>RETURNS:</u><td>BSE error type
+<tr><td colspan=2><u>RETURNS:</u><td>error: BSE error type
 </table>
 </blockquote>
 <blockquote>
@@ -711,7 +931,7 @@ Load sample chunks from a wave file
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>wave</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>n-channels: 
 </table>
 </blockquote>
 <blockquote>
@@ -724,7 +944,7 @@ Get the number of channels of a wave
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>wave-repo</u><td>
 <tr><td><u></u><td><u>file-name</u><td>The file to read waves from
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>error: 
 </table>
 </blockquote>
 <blockquote>
@@ -756,8 +976,8 @@ Hello World - First Plugin ever executed by BSE. Its purpose is to say "Hello Wo
 <tr><td><u></u><td><u>n-iterations</u><td>Number of total Iterations
 <tr><td><u></u><td><u>n-wait-spins</u><td>Number of internal iterations
 <tr><td><u></u><td><u>update-progress</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>text1: 
+<tr><td colspan=2><u>RETURNS:</u><td>text2: 
 </table>
 </blockquote>
 <blockquote>
@@ -770,7 +990,7 @@ Progressor takes two seed values and then starts progressing. It doesn't do anyt
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>use-seed</u><td>
 <tr><td><u></u><td><u>seed</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>text: 
 </table>
 </blockquote>
 <blockquote>
@@ -782,7 +1002,7 @@ Randomizer will take on integer as input parameter, use it as seed value and ret
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>error</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>blurb: 
 </table>
 </blockquote>
 <blockquote>
@@ -794,7 +1014,7 @@ Retrive the description of an error value
 <blockquote>
 <table border=0 summary=" ">
 <tr><td><u></u><td><u>error</u><td>
-<tr><td colspan=2><u>RETURNS:</u><td>
+<tr><td colspan=2><u>RETURNS:</u><td>name: 
 </table>
 </blockquote>
 <blockquote>

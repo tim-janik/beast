@@ -1,3 +1,73 @@
+Mon Feb 11 19:39:13 2002  Tim Janik  <timj@gtk.org>
+
+	* bsw/bswproxy.[hc]: bsw_proxy_get_pspec() get pspecs from proxies.
+
+	* docs/release-notes.tmpl: generate release-notes.txt from this.
+
+Mon Feb 11 18:48:46 2002  Tim Janik  <timj@gtk.org>
+
+	* bstlogadjustment.[hc]: new adjustment which, if connected
+	to another adjustment, translates the value settings into
+	a logartihmic scale (which needs to be configured on the log
+	adjustment).
+
+	* bstrackeditor-covers.c: produce cover widgets for the rack-editor.
+
+	* bstrackeditor.[hc]: widget, which features BstRackTable, a GtkTable
+	derived widget, which allowes free grid-aligned widget replacement via
+	DnD by the user if in edit mode.
+	the rack editor syncs the GUI layout with a BEAST-Rack-View data pocket
+	within bse projects.
+
+	* bstrackitem.[hc] bstrackitem-controllers.c: widget acting as a wrapper
+	around items being added to a rack table. this allowes user editing of
+	the GUI controller type for bse object properties.
+
+	* bstrtest.c: remove this simple test program.
+
+	* bstapp.[hc]: support the Rack Editor in the Projects/ menu.
+	bst_app_find(): support finding the app from a BseProject.
+
+	* bstgconfig.[hc]: add rc-file option which can be used to fire up
+	RELEASE-NOTES greeting windows.
+
+	* bstmain.c: fire up a text view for docs//release-notes.txt after
+	parsing rc file.
+
+	* bstmenus.[hc]: extend the BstChoice facilities to support submenus.
+
+	* bstparam.[hc]: add support for adding properties to the Rack Editor,
+	if this projects Rack Editor is in edit mode, when clicking on the
+	xframe widget of the property labels.
+	support logarithmic property scales via BstLogAdjustment.
+
+	* bstparamview.[hc]: change GUI for property editing from wrap boxes to
+	scrolled windows.
+
+	* bstplayback.[hc]: properly handle stopping and retrigger of the wave
+	preview playback.
+
+	* bstracktable.[hc]: emit a notification signal when the edit mode
+	was enabled/disabled.
+	set gtk_container_set_reallocate_redraws() to avoid drawing artefacts
+	when children get added/removed.
+	bst_rack_table_size_allocate(): properly update child position bit array.
+	bst_rack_table_button_press(): proxy button3 presses to BstRackItem
+	children.
+	bst_rack_table_add(): support BstRackItem GUI changed notifiaction upon
+	adding.
+	bst_rack_table_remove(): properly trigger a child position bit array
+	update here.
+
+	* bstwaveeditor.[hc]: grrrr, make osc_freq and mix_freq string properties
+	on the tree store model, because the cell text renderer is too stupid to
+	handle floats sanely.
+	play_back_wchunk(): halt preview playback before adjusting playback
+	settings, so we don't cause playback hickups ;)
+
+	* bstxframe.[hc]: add ::button_check signal to allow widget users to
+	check focussing and handle button presses on this widget.
+
 Wed Feb  6 17:32:47 2002  Tim Janik  <timj@gtk.org>
 
 	* test/simple-loop.bse: quick test loop, using the new sequencer

@@ -218,3 +218,16 @@ bsw_proxy_set (BswProxy     proxy,
   va_end (var_args);
   g_object_thaw_notify (object);
 }
+
+GParamSpec*
+bsw_proxy_get_pspec (BswProxy     proxy,
+		     const gchar *name)
+{
+  GObject *object;
+
+  object = bse_object_from_id (proxy);
+
+  g_return_val_if_fail (G_IS_OBJECT (object), NULL);
+
+  return g_object_class_find_property (G_OBJECT_GET_CLASS (object), name);
+}

@@ -321,10 +321,12 @@ AC_MSG_CHECKING(whether this is rambokid's machine)
 if fgrep birgrave.birnet.private /etc/hosts >/dev/null 2>&1; then
     BIRNET_Y=
     BIRNET_N=\#
+    AC_DEFINE_UNQUOTED(BST_HAVE_BIRNET, 1)
     AC_MSG_RESULT(yes)
 else
     BIRNET_Y=\#
     BIRNET_N=
+    AC_DEFINE_UNQUOTED(BST_HAVE_BIRNET, 0)
     AC_MSG_RESULT(no)
 fi
 AC_SUBST(MISSING_PERL5)

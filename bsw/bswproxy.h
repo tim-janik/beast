@@ -58,6 +58,9 @@ BswProxy	bsw_proxy_get_server		(void)	G_GNUC_CONST;
 void		bsw_proxy_set			(BswProxy		 proxy,
 						 const gchar		*prop,
 						 ...);
+GParamSpec*	bsw_proxy_get_pspec		(BswProxy		 proxy,
+						 const gchar		*name);
+
 
 /* --- garbage collection --- */
 gchar*		bsw_proxy_collector_get_string	(GValue			*value);
