@@ -40,7 +40,7 @@ GType			bse_glue_make_rosequence (const gchar	   *seq_name,
 						  GBoxedCopyFunc    copy,
 						  GBoxedFreeFunc    free,
 						  BseGlueBoxedToSeq to_sequence);
-GslGlueValue		bse_glue_boxed_to_value	 (GType		    boxed_type,
+GslGlueValue*		bse_glue_boxed_to_value	 (GType		    boxed_type,
 						  gpointer	    boxed);
 
 
@@ -49,3 +49,5 @@ GslGlueValue		bse_glue_boxed_to_value	 (GType		    boxed_type,
 #endif /* __cplusplus */
 
 #endif /* __BSE_GLUE_H__ */
+
+/* vim:set ts=8 sts=2 sw=2: */

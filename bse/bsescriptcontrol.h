@@ -20,6 +20,7 @@
 
 #include        <bse/bseitem.h>
 
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define	BSE_TYPE_SCRIPT_CONTROL	             (BSE_TYPE_ID (BseScriptControl))
@@ -81,8 +82,6 @@ void			bse_script_control_trigger_action    (BseScriptControl	*self,
 							      const gchar       *action);
 
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SCRIPT_CONTROL_H__ */

@@ -47,6 +47,7 @@ typedef enum /*< skip >*/
 #define	GSL_GLUE_TYPE_FIRST		GSL_GLUE_TYPE_BOOL
 #define	GSL_GLUE_TYPE_LAST		GSL_GLUE_TYPE_REC
 
+
 /* Automatic structure for primitive
  * value storage.
  */
@@ -70,54 +71,49 @@ typedef struct {
   }             value;
 } GslGlueValue;
 
+
 /* Value constructors from the corresponding
  * C (GLib) primitives.
  */
-static inline GslGlueValue gsl_glue_value_bool     (gboolean          bool_value);
-static inline GslGlueValue gsl_glue_value_int      (gint              int_value);
-static inline GslGlueValue gsl_glue_value_float    (gdouble           float_value);
-static inline GslGlueValue gsl_glue_value_string   (const gchar      *string_value);
-static inline GslGlueValue gsl_glue_value_stringl  (const gchar      *string_value,
-						    guint             string_length);
-static inline GslGlueValue gsl_glue_value_enum     (const gchar	     *enum_name,
-						    gint              enum_index);
-static inline GslGlueValue gsl_glue_value_proxy    (gulong            proxy);
-static inline GslGlueValue gsl_glue_value_seq      (const GslGlueSeq *seq);
-static inline GslGlueValue gsl_glue_value_take_seq (GslGlueSeq       *seq);
-static inline GslGlueValue gsl_glue_value_rec      (GslGlueRec       *rec);
-static inline GslGlueValue gsl_glue_value_take_rec (GslGlueRec       *rec);
+GslGlueValue*	gsl_glue_value_inval		(void);
+GslGlueValue*	gsl_glue_value_bool		(gboolean		 bool_value);
+GslGlueValue*	gsl_glue_value_int		(gint			 int_value);
+GslGlueValue*	gsl_glue_value_float		(gdouble		 float_value);
+GslGlueValue*	gsl_glue_value_string		(const gchar		*string_value);
+GslGlueValue*	gsl_glue_value_take_string	(gchar			*string_value);
+GslGlueValue*	gsl_glue_value_stringl		(const gchar		*string_value,
+						 guint			 string_length);
+GslGlueValue*	gsl_glue_value_enum		(const gchar		*enum_name,
+						 gint			 enum_index);
+GslGlueValue*	gsl_glue_value_proxy		(gulong			 proxy);
+GslGlueValue*	gsl_glue_value_seq		(GslGlueSeq		*seq);
+GslGlueValue*	gsl_glue_value_rec		(GslGlueRec		*rec);
 
-/* Glue parameter initializers (expect zero initialized GslGlueParam structs)
+
+/* Glue parameter initializers (expects zero initialized GslGlueParam structs)
  */
-void	gsl_glue_param_bool	(GslGlueParam	*param,
-				 const gchar	*name,
-				 gboolean	 dflt);
-void	gsl_glue_param_irange	(GslGlueParam	*param,
-				 const gchar	*name,
-				 gint		 dflt,
-				 gint		 min,
-				 gint		 max,
-				 gint		 stepping);
-void	gsl_glue_param_frange	(GslGlueParam	*param,
-				 const gchar	*name,
-				 gdouble	 dflt,
-				 gdouble	 min,
-				 gdouble	 max,
-				 gdouble	 stepping);
-void	gsl_glue_param_string	(GslGlueParam	*param,
-				 const gchar	*name,
-				 const gchar	*dflt);
-void	gsl_glue_param_enum	(GslGlueParam	*param,
-				 const gchar	*name,
-				 const gchar	*enum_name,
-				 guint		 dflt_index);
-void	gsl_glue_param_proxy	(GslGlueParam	*param,
-				 const gchar	*name,
-				 const gchar	*iface_name);
-void	gsl_glue_param_seq	(GslGlueParam	*param,
-				 const gchar	*name);
-void	gsl_glue_param_rec	(GslGlueParam	*param,
-				 const gchar	*name);
+GslGlueParam*	gsl_glue_param_bool	(const gchar	*name,
+					 gboolean	 dflt);
+GslGlueParam*	gsl_glue_param_irange	(const gchar	*name,
+					 gint		 dflt,
+					 gint		 min,
+					 gint		 max,
+					 gint		 stepping);
+GslGlueParam*	gsl_glue_param_frange	(const gchar	*name,
+					 gdouble	 dflt,
+					 gdouble	 min,
+					 gdouble	 max,
+					 gdouble	 stepping);
+GslGlueParam*	gsl_glue_param_string	(const gchar	*name,
+					 const gchar	*dflt);
+GslGlueParam*	gsl_glue_param_enum	(const gchar	*name,
+					 const gchar	*enum_name,
+					 guint		 dflt_index);
+GslGlueParam*	gsl_glue_param_proxy	(const gchar	*name,
+					 const gchar	*iface_name);
+GslGlueParam*	gsl_glue_param_seq	(const gchar	*name);
+GslGlueParam*	gsl_glue_param_rec	(const gchar	*name);
+
 
 /* Parameter descriptions for values
  * of the primitive types.
@@ -219,11 +215,11 @@ gchar**		gsl_glue_iface_children	(const gchar	*iface_name);
 /* Proxy property description
  */
 typedef struct {
-  GslGlueParam param;
-  gchar       *group;
-  gchar       *pretty_name;
-  gchar       *blurb;
-  guint	       flags;
+  GslGlueParam *param;
+  gchar        *group;
+  gchar        *pretty_name;
+  gchar        *blurb;
+  guint	        flags;
 } GslGlueProp;
 
 GslGlueProp*	gsl_glue_describe_prop	(gulong		 proxy,
@@ -244,10 +240,10 @@ GslGlueProp*	gsl_glue_describe_prop	(gulong		 proxy,
 /* Procedure description in terms of it's parameters
  */
 typedef struct {
-  gchar        *proc_name;
-  GslGlueParam *ret_param;
-  guint         n_params;
-  GslGlueParam *params;
+  gchar         *proc_name;
+  GslGlueParam  *ret_param;
+  guint          n_params;
+  GslGlueParam **params;
 } GslGlueProc;
 
 GslGlueProc*	gsl_glue_describe_proc		(const gchar	*proc_name);
@@ -257,67 +253,68 @@ gchar**		gsl_glue_list_method_names	(const gchar	*iface_name);
 /* Procedure/method invocation
  */
 typedef struct {
-  gchar       *proc_name;
-  GslGlueSeq  *params;
-  GslGlueValue retval;
+  gchar        *proc_name;
+  GslGlueSeq   *params;
+  GslGlueValue *ret_value;
 } GslGlueCall;
 
-GslGlueCall*	gsl_glue_call_proc	 (const gchar	*proc_name);
-GslGlueCall*	gsl_glue_call_method	 (gulong	 proxy_value,
-					  const gchar	*proc_name);
-void		gsl_glue_call_take_arg	 (GslGlueCall	*call,
-					  GslGlueValue	 value);
-void		gsl_glue_call_exec	 (GslGlueCall	*call);
+GslGlueCall*	gsl_glue_call_proc	 (const gchar		*proc_name);
+GslGlueCall*	gsl_glue_call_method	 (gulong		 proxy_value,
+					  const gchar		*proc_name);
+void		gsl_glue_call_add_arg	 (GslGlueCall		*call,
+					  const GslGlueValue	*value);
+void		gsl_glue_call_exec	 (GslGlueCall		*call);
+
 /* convenience arg putters */
-#define	gsl_glue_call_arg_bool(    call, bool_value)	gsl_glue_call_take_arg ((call), gsl_glue_value_bool (bool_value))
-#define	gsl_glue_call_arg_int(     call, int_value)	gsl_glue_call_take_arg ((call), gsl_glue_value_int (int_value))
-#define	gsl_glue_call_arg_float(   call, float_value)	gsl_glue_call_take_arg ((call), gsl_glue_value_float (float_value))
-#define	gsl_glue_call_arg_string(  call, string_value)	gsl_glue_call_take_arg ((call), gsl_glue_value_string (string_value))
-#define	gsl_glue_call_arg_stringl( call, string_val, l)	gsl_glue_call_take_arg ((call), gsl_glue_value_stringl ((string_val), (l)))
-#define	gsl_glue_call_arg_enum(    call, ename, eindex)	gsl_glue_call_take_arg ((call), gsl_glue_value_enum ((ename), (eindex)))
-#define	gsl_glue_call_arg_proxy(   call, proxy)		gsl_glue_call_take_arg ((call), gsl_glue_value_proxy (proxy))
-#define	gsl_glue_call_arg_seq(     call, seq)		gsl_glue_call_take_arg ((call), gsl_glue_value_seq (seq))
-#define	gsl_glue_call_arg_rec(     call, rec)		gsl_glue_call_take_arg ((call), gsl_glue_value_rec (rec))
+#define	gsl_glue_call_add_bool(    call, bool_value)	GSL_GLUE_CALL_AFV ((call), gsl_glue_value_bool (bool_value))
+#define	gsl_glue_call_add_int(     call, int_value)	GSL_GLUE_CALL_AFV ((call), gsl_glue_value_int (int_value))
+#define	gsl_glue_call_add_float(   call, float_value)	GSL_GLUE_CALL_AFV ((call), gsl_glue_value_float (float_value))
+#define	gsl_glue_call_add_string(  call, string_value)	GSL_GLUE_CALL_AFV ((call), gsl_glue_value_string (string_value))
+#define	gsl_glue_call_add_stringl( call, string_val, l)	GSL_GLUE_CALL_AFV ((call), gsl_glue_value_stringl ((string_val), (l)))
+#define	gsl_glue_call_add_enum(    call, ename, eindex)	GSL_GLUE_CALL_AFV ((call), gsl_glue_value_enum ((ename), (eindex)))
+#define	gsl_glue_call_add_proxy(   call, proxy)		GSL_GLUE_CALL_AFV ((call), gsl_glue_value_proxy (proxy))
+#define	gsl_glue_call_add_seq(     call, seq)		GSL_GLUE_CALL_AFV ((call), gsl_glue_value_seq (seq))
+#define	gsl_glue_call_add_rec(     call, rec)		GSL_GLUE_CALL_AFV ((call), gsl_glue_value_rec (rec))
 
 /* Sequence primitive type realization
  */
 struct _GslGlueSeq {
+  guint         ref_count;
   guint         n_elements;
   GslGlueValue *elements;
 };
 GslGlueSeq*	gsl_glue_seq		 (void);
-void		gsl_glue_seq_append	 (GslGlueSeq	   *seq,
-					  GslGlueValue	    value);
-void		gsl_glue_seq_take_append (GslGlueSeq	   *seq,
-					  GslGlueValue	   *value);
-guint		gsl_glue_seq_length	 (const GslGlueSeq *seq);
-GslGlueValue	gsl_glue_seq_get	 (const GslGlueSeq *seq,
-					  guint		    index);
-gboolean     gsl_glue_seq_check_elements (GslGlueSeq	   *seq,
-					  GslGlueType       element_type);
+GslGlueSeq*	gsl_glue_seq_ref	 (GslGlueSeq		*seq);
+void		gsl_glue_seq_unref	 (GslGlueSeq		*seq);
+void		gsl_glue_seq_append	 (GslGlueSeq		*seq,
+					  const GslGlueValue	*value);
+guint		gsl_glue_seq_length	 (const GslGlueSeq	*seq);
+GslGlueValue*	gsl_glue_seq_get	 (const GslGlueSeq	*seq,
+					  guint			 index);
+gboolean     gsl_glue_seq_check_elements (GslGlueSeq		*seq,
+					  GslGlueType		 element_type);
+
 
 /* Record primitive type realization
  */
 struct _GslGlueRec {
-  guint         n_fields;
-  guint         ref_count;
-  GslGlueValue *fields;
-  gchar       **field_names;
+  guint          ref_count;
+  guint          n_fields;
+  GslGlueValue  *fields;
+  gchar        **field_names;
 };
 GslGlueRec*	gsl_glue_rec		 (void);
-GslGlueRec*	gsl_glue_rec_ref	 (GslGlueRec	   *rec);
-void		gsl_glue_rec_unref	 (GslGlueRec	   *rec);
-void		gsl_glue_rec_set	 (GslGlueRec	   *rec,
-					  const gchar	   *field_name,
-					  GslGlueValue	    value);
-void		gsl_glue_rec_take	 (GslGlueRec	   *rec,
-					  const gchar	   *field_name,
-					  GslGlueValue	   *value);
-GslGlueValue	gsl_glue_rec_get	 (const GslGlueRec *rec,
-					  const gchar	   *field_name);
-guint		gsl_glue_rec_n_fields	 (const GslGlueRec *rec);
-GslGlueValue	gsl_glue_rec_field	 (const GslGlueRec *rec,
-					  guint		    index);
+GslGlueRec*	gsl_glue_rec_ref	 (GslGlueRec		*rec);
+void		gsl_glue_rec_unref	 (GslGlueRec		*rec);
+void		gsl_glue_rec_set	 (GslGlueRec		*rec,
+					  const gchar		*field_name,
+					  const GslGlueValue	*value);
+GslGlueValue*	gsl_glue_rec_get	 (const GslGlueRec	*rec,
+					  const gchar		*field_name);
+guint		gsl_glue_rec_n_fields	 (const GslGlueRec	*rec);
+GslGlueValue*	gsl_glue_rec_field	 (const GslGlueRec	*rec,
+					  guint			 index);
+
 
 /* Global glue context, captures memory pool and type/object
  * system bindings.
@@ -340,19 +337,19 @@ typedef struct {
                                                          const gchar    *iface_name);
   gchar*                (*proxy_iface)                  (GslGlueContext *context,
                                                          gulong          proxy);
-  GslGlueValue          (*exec_proc)                    (GslGlueContext *context,
+  GslGlueValue*         (*exec_proc)                    (GslGlueContext *context,
                                                          GslGlueCall    *proc_call);
   gboolean              (*signal_connection)            (GslGlueContext *context,
                                                          const gchar    *signal,
                                                          gulong          proxy,
                                                          gboolean        enable_connection);
-  GslGlueValue          (*client_msg)                   (GslGlueContext *context,
+  GslGlueValue*         (*client_msg)                   (GslGlueContext *context,
                                                          const gchar    *msg,
-                                                         GslGlueValue    value);
+                                                         GslGlueValue   *value);
 } GslGlueContextTable;
-typedef void (*GslGlueSignalFunc)  (gpointer      sig_data,
-				    const gchar  *signal,
-				    GslGlueSeq   *args);
+typedef void (*GslGlueSignalFunc)  (gpointer          sig_data,
+				    const gchar      *signal,
+				    const GslGlueSeq *args);
 struct _GslGlueContext
 {
   /*< private >*/
@@ -372,8 +369,8 @@ gulong	     gsl_glue_signal_connect	 (const gchar		*signal,
 void	     gsl_glue_signal_disconnect	 (const gchar		*signal,
 					  gulong		 proxy,
 					  gulong		 connection_id);
-GslGlueValue gsl_glue_client_msg	 (const gchar		*msg,
-					  GslGlueValue		 value);
+GslGlueValue* gsl_glue_client_msg	 (const gchar		*msg,
+					  GslGlueValue		*value);
 /* called from gsl_glue_receive() or vtable implementations */
 void	 gsl_glue_enqueue_signal_event	 (const gchar		*signal,
 					  GslGlueSeq		*args,
@@ -383,99 +380,57 @@ gboolean gsl_glue_context_pending	 (GslGlueContext	*context);
 
 
 /* --- Glue utilities --- */
-GslGlueValue	gsl_glue_valuedup	(const GslGlueValue value);
-GslGlueSeq*	gsl_glue_seqdup		(const GslGlueSeq  *seq);
+GslGlueValue*	gsl_glue_value_dup	(const GslGlueValue	*value);
+GslGlueValue*	gsl_glue_value_copy	(const GslGlueValue	*value);
+GslGlueSeq*	gsl_glue_seq_copy	(const GslGlueSeq	*seq);
+GslGlueRec*	gsl_glue_rec_copy	(const GslGlueRec	*rec);
 
-/* cleanup and free functions */
-void		gsl_glue_free_enum	(GslGlueEnum	*penum);
-void		gsl_glue_free_iface	(GslGlueIFace	*iface);
-void		gsl_glue_free_proc	(GslGlueProc	*proc);
-void		gsl_glue_free_prop	(GslGlueProp	*prop);
-void		gsl_glue_free_call	(GslGlueCall	*call);
-void		gsl_glue_reset_param	(GslGlueParam	*param);
-void		gsl_glue_reset_value	(GslGlueValue	*value);
-void		gsl_glue_free_seq	(GslGlueSeq	*seq);
+void		gsl_glue_gc_add		(gpointer	 data,
+					 gpointer	 free_func); // void (*free_func) (gpointer data);
+void		gsl_glue_gc_remove	(gpointer	 data,
+					 gpointer	 free_func); // void (*free_func) (gpointer data);
+void		gsl_glue_gc_free_now	(gpointer	 data,
+					 gpointer	 free_func); // void (*free_func) (gpointer data);
+void		gsl_glue_gc_run		(void);
+void	gsl_glue_gc_collect_value	(GslGlueValue	*value);
+void	gsl_glue_gc_collect_seq		(GslGlueSeq	*seq);
+void	gsl_glue_gc_collect_rec		(GslGlueRec	*rec);
+void	gsl_glue_gc_collect_enum	(GslGlueEnum	*penum);
+void	gsl_glue_gc_collect_iface	(GslGlueIFace	*iface);
+void	gsl_glue_gc_collect_prop	(GslGlueProp	*prop);
+void	gsl_glue_gc_collect_call	(GslGlueCall	*call);
+void	gsl_glue_gc_collect_proc	(GslGlueProc	*proc);
+void	gsl_glue_gc_collect_param	(GslGlueParam	*param);
+
+
+/* --- internal --- */
+GslGlueParam*	_gsl_glue_param_inval		(void);
+gboolean	_gsl_glue_gc_test		(gpointer	 data,
+						 gpointer	 free_func);
+void		_gsl_glue_value_free		(GslGlueValue	*value);
+GslGlueEnum*	_gsl_glue_enum			(const gchar	*enum_name);
+void		_gsl_glue_enum_free		(GslGlueEnum	*penum);
+GslGlueIFace*	_gsl_glue_iface			(const gchar	*iface_name);
+void		_gsl_glue_iface_free		(GslGlueIFace	*iface);
+GslGlueProc*	_gsl_glue_proc			(void);
+void		_gsl_glue_proc_take_param	(GslGlueProc	*proc,
+						 GslGlueParam	*param);
+void		_gsl_glue_proc_take_ret_param	(GslGlueProc	*proc,
+						 GslGlueParam	*param);
+void		_gsl_glue_proc_free		(GslGlueProc	*proc);
+GslGlueProp*	_gsl_glue_prop			(void);
+void		_gsl_glue_prop_take_param	(GslGlueProp	*prop,
+						 GslGlueParam	*param);
+void		_gsl_glue_prop_free		(GslGlueProp	*prop);
+void		_gsl_glue_call_free		(GslGlueCall	*call);
+void		_gsl_glue_param_free		(GslGlueParam	*param);
+GslGlueCall*	_gsl_glue_call_proc_seq		(const gchar	*proc_name,
+						 GslGlueSeq	*params);
 
 
 /* --- implementations --- */
 void gsl_glue_context_common_init (GslGlueContext            *context,
 				   const GslGlueContextTable *vtable);
-static inline GslGlueValue
-gsl_glue_value_bool (gboolean bool_value)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_BOOL, };
-  pv.value.v_bool = bool_value != FALSE;
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_int (gint int_value)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_IRANGE, };
-  pv.value.v_int = int_value;
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_float (gdouble float_value)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_FRANGE, };
-  pv.value.v_float = float_value;
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_string (const gchar *string_value)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_STRING, };
-  pv.value.v_string = g_strdup (string_value);
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_stringl (const gchar *string_value,
-			guint        string_length)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_STRING, };
-  pv.value.v_string = g_strndup (string_value, string_length);
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_enum (const gchar *enum_name,
-		     gint         enum_index)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_ENUM, };
-  pv.value.v_enum.name = g_strdup (enum_name);
-  pv.value.v_enum.index = enum_index;
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_proxy (gulong proxy)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_PROXY, };
-  pv.value.v_proxy = proxy;
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_take_seq (GslGlueSeq *seq)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_SEQ, };
-  pv.value.v_seq = seq;
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_seq (const GslGlueSeq *seq)
-{
-  return gsl_glue_value_take_seq (gsl_glue_seqdup (seq));
-}
-static inline GslGlueValue
-gsl_glue_value_take_rec (GslGlueRec *rec)
-{
-  GslGlueValue pv = { GSL_GLUE_TYPE_REC, };
-  pv.value.v_rec = rec;
-  return pv;
-}
-static inline GslGlueValue
-gsl_glue_value_rec (GslGlueRec *rec)
-{
-  return gsl_glue_value_take_rec (gsl_glue_rec_ref (rec));
-}
 static inline GslGlueContext*
 gsl_glue_fetch_context (const gchar *floc);
 static inline GslGlueContext*
@@ -488,6 +443,11 @@ gsl_glue_fetch_context (const gchar *floc)
 
   return context;
 }
+#define	GSL_GLUE_CALL_AFV(call, value)	G_STMT_START{ \
+  GslGlueValue *__v = (value); \
+  gsl_glue_call_add_arg (call, __v); \
+  gsl_glue_gc_collect_value (__v); \
+}G_STMT_END
 
 
 #ifdef __cplusplus
@@ -495,3 +455,5 @@ gsl_glue_fetch_context (const gchar *floc)
 #endif /* __cplusplus */
 
 #endif /* __GSL_GLUE_H__ */
+
+/* vim:set ts=8 sts=2 sw=2: */

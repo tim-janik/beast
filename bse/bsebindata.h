@@ -22,6 +22,7 @@
 
 #include        <bse/bseobject.h>
 
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define	BSE_TYPE_BIN_DATA	       (BSE_TYPE_ID (BseBinData))
@@ -72,12 +73,6 @@ void		bse_bin_data_set_byte_padding	(BseBinData	*bin_data,
 
 
 
-
-
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_BIN_DATA_H__ */

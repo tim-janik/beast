@@ -22,6 +22,8 @@
 
 #include	<bse/bsesource.h>
 
+G_BEGIN_DECLS
+
 /* --- object type macros --- */
 #define	BSE_TYPE_CONTAINER		(BSE_TYPE_ID (BseContainer))
 #define BSE_CONTAINER(object)		(G_TYPE_CHECK_INSTANCE_CAST ((object), BSE_TYPE_CONTAINER, BseContainer))
@@ -110,10 +112,6 @@ void		bse_container_cross_forall	(BseContainer	*container,
 
 
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_CONTAINER_H__ */

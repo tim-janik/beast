@@ -38,15 +38,15 @@ extern "C" {
  * layer, filtered through GslGlueCodecClientMsg() and may
  * be intercepted.
  */
-typedef struct _GslGlueCodec                   GslGlueCodec;
-typedef void         (*GslGlueCodecSendEvent) (GslGlueCodec *code,
-					       gpointer	     user_data,
-					       const gchar  *message);
-typedef GslGlueValue (*GslGlueCodecClientMsg) (GslGlueCodec *code,
-					       gpointer      user_data,
-					       const gchar  *message,
-					       GslGlueValue  value,
-					       gboolean     *handled);
+typedef struct _GslGlueCodec                    GslGlueCodec;
+typedef void         (*GslGlueCodecSendEvent)  (GslGlueCodec *code,
+					        gpointer     user_data,
+					        const gchar  *message);
+typedef GslGlueValue* (*GslGlueCodecClientMsg) (GslGlueCodec *code,
+					        gpointer      user_data,
+					        const gchar  *message,
+					        GslGlueValue *value,
+					        gboolean     *handled);
 struct _GslGlueCodec
 {
   gpointer		user_data;
@@ -111,3 +111,5 @@ typedef enum /*< skip >*/
 #endif /* __cplusplus */
 
 #endif /* __GSL_GLUE_CODEC_H__ */
+
+/* vim:set ts=8 sts=2 sw=2: */

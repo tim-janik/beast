@@ -109,7 +109,7 @@ gsl_glue_signals_dispatch (GslGlueContext *context)
 	  hook = g_hook_next_valid (&sig->hooks, hook, FALSE);
 	}
       
-      gsl_glue_free_seq (sevent->args);
+      gsl_glue_seq_unref (sevent->args);
       g_free (sevent->signal);
       g_free (sevent);
     }
@@ -224,7 +224,10 @@ gsl_glue_enqueue_signal_event (const gchar *signal,
 
   sevent = g_new0 (GlueEvent, 1);
   sevent->signal = g_strdup (signal);
-  sevent->args = gsl_glue_seqdup (args);
+  sevent->args = gsl_glue_seq_copy (args);
+  gsl_glue_gc_remove (sevent->args, gsl_glue_seq_unref);
   sevent->destroyed = disabled != FALSE;
   context->sigqueue = gsl_ring_append (context->sigqueue, sevent);
 }
+
+/* vim:set ts=8 sts=2 sw=2: */

@@ -96,14 +96,14 @@ struct _BseExportProcedure
   GType              *type_p;	   /* obligatory */
   const gchar  	     *name;	   /* obligatory */
   const gchar  	     *blurb;	   /* optional */
-  const guint  	      private_id;  /* optional */
+  guint  	      private_id;  /* optional */
 
   BseProcedureInit    init;	   /* obligatory */
   BseProcedureExec    exec;	   /* obligatory */
   BseProcedureUnload  unload;	   /* optional */
   
   const gchar  	     *category;	   /* recommended */
-  const BsePixdata    pixdata;     /* optional */
+  BsePixdata	      pixdata;     /* optional */
 };
 struct _BseExportObject
 {
@@ -115,7 +115,7 @@ struct _BseExportObject
   const GTypeInfo  *object_info; /* obligatory */
 
   const gchar  	     *category;	   /* recommended */
-  const BsePixdata    pixdata;     /* optional */
+  BsePixdata	      pixdata;     /* optional */
 };
 struct _BseExportEnum
 {

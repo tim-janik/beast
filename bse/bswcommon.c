@@ -245,8 +245,9 @@ iter_int_to_sequence (gpointer boxed)
   bsw_iter_rewind (iter);
   for (; bsw_iter_n_left (iter); bsw_iter_next (iter))
     {
-      GslGlueValue val = gsl_glue_value_int (bsw_iter_get_int (iter));
-      gsl_glue_seq_take_append (seq, &val);
+      GslGlueValue *val = gsl_glue_value_int (bsw_iter_get_int (iter));
+      gsl_glue_seq_append (seq, val);
+      gsl_glue_gc_collect_value (val);
     }
   return seq;
 }
@@ -298,8 +299,9 @@ iter_string_to_sequence (gpointer boxed)
   bsw_iter_rewind (iter);
   for (; bsw_iter_n_left (iter); bsw_iter_next (iter))
     {
-      GslGlueValue val = gsl_glue_value_string (bsw_iter_get_string (iter));
-      gsl_glue_seq_take_append (seq, &val);
+      GslGlueValue *val = gsl_glue_value_string (bsw_iter_get_string (iter));
+      gsl_glue_seq_append (seq, val);
+      gsl_glue_gc_collect_value (val);
     }
   return seq;
 }
@@ -412,8 +414,9 @@ iter_proxy_to_sequence (gpointer boxed)
   bsw_iter_rewind (iter);
   for (; bsw_iter_n_left (iter); bsw_iter_next (iter))
     {
-      GslGlueValue val = gsl_glue_value_proxy (bsw_iter_get_proxy (iter));
-      gsl_glue_seq_take_append (seq, &val);
+      GslGlueValue *val = gsl_glue_value_proxy (bsw_iter_get_proxy (iter));
+      gsl_glue_seq_append (seq, val);
+      gsl_glue_gc_collect_value (val);
     }
   return seq;
 }
@@ -481,24 +484,24 @@ static GslGlueRec*
 part_note_to_record (gpointer crecord)
 {
   BswPartNote *note = crecord;
-  GslGlueValue val;
+  GslGlueValue *val;
   GslGlueRec *rec;
 
   rec = gsl_glue_rec ();
   val = gsl_glue_value_int (note->id);		// FIXME: uint
-  gsl_glue_rec_take (rec, "id", &val);
+  gsl_glue_rec_set (rec, "id", val);
   val = gsl_glue_value_int (note->tick);	// FIXME: uint
-  gsl_glue_rec_take (rec, "tick", &val);
+  gsl_glue_rec_set (rec, "tick", val);
   val = gsl_glue_value_int (note->duration);	// FIXME: uint
-  gsl_glue_rec_take (rec, "duration", &val);
+  gsl_glue_rec_set (rec, "duration", val);
   val = gsl_glue_value_int (note->note);
-  gsl_glue_rec_take (rec, "note", &val);
+  gsl_glue_rec_set (rec, "note", val);
   val = gsl_glue_value_int (note->fine_tune);
-  gsl_glue_rec_take (rec, "fine-tune", &val);
+  gsl_glue_rec_set (rec, "fine-tune", val);
   val = gsl_glue_value_float (note->velocity);
-  gsl_glue_rec_take (rec, "velocity", &val);
+  gsl_glue_rec_set (rec, "velocity", val);
   val = gsl_glue_value_bool (note->selected);
-  gsl_glue_rec_take (rec, "selected", &val);
+  gsl_glue_rec_set (rec, "selected", val);
   return rec;
 }
 
@@ -558,8 +561,9 @@ iter_part_note_to_sequence (gpointer boxed)
   bsw_iter_rewind (iter);
   for (; bsw_iter_n_left (iter); bsw_iter_next (iter))
     {
-      GslGlueValue val = bse_glue_boxed_to_value (BSW_TYPE_PART_NOTE, bsw_iter_get_part_note (iter));
-      gsl_glue_seq_take_append (seq, &val);
+      GslGlueValue *val = bse_glue_boxed_to_value (BSW_TYPE_PART_NOTE, bsw_iter_get_part_note (iter));
+      gsl_glue_seq_append (seq, val);
+      gsl_glue_gc_collect_value (val);
     }
   return seq;
 }
@@ -631,40 +635,40 @@ static GslGlueRec*
 note_description_to_glue_rec (gpointer crecord)
 {
   BswNoteDescription *info = crecord;
-  GslGlueValue val;
+  GslGlueValue *val;
   GslGlueRec *rec;
 
   rec = gsl_glue_rec ();
   /* note */
   val = gsl_glue_value_int (info->note);
-  gsl_glue_rec_take (rec, "note", &val);
+  gsl_glue_rec_set (rec, "note", val);
   /* octave */
   val = gsl_glue_value_int (info->octave);
-  gsl_glue_rec_take (rec, "octave", &val);
+  gsl_glue_rec_set (rec, "octave", val);
   /* freq */
   val = gsl_glue_value_float (info->freq);
-  gsl_glue_rec_take (rec, "frequency", &val);
+  gsl_glue_rec_set (rec, "frequency", val);
   /* fine_tune */
   val = gsl_glue_value_int (info->fine_tune);
-  gsl_glue_rec_take (rec, "fine_tune", &val);
+  gsl_glue_rec_set (rec, "fine_tune", val);
   /* semitone */
   val = gsl_glue_value_int (info->semitone);
-  gsl_glue_rec_take (rec, "semitone", &val);
+  gsl_glue_rec_set (rec, "semitone", val);
   /* upshift */
   val = gsl_glue_value_bool (info->upshift);
-  gsl_glue_rec_take (rec, "upshift", &val);
+  gsl_glue_rec_set (rec, "upshift", val);
   /* letter */
   val = gsl_glue_value_int (info->letter);
-  gsl_glue_rec_take (rec, "letter", &val);
+  gsl_glue_rec_set (rec, "letter", val);
   /* name */
   val = gsl_glue_value_string (info->name);
-  gsl_glue_rec_take (rec, "name", &val);
+  gsl_glue_rec_set (rec, "name", val);
   /* max_fine_tune */
   val = gsl_glue_value_int (info->max_fine_tune);
-  gsl_glue_rec_take (rec, "max_fine_tune", &val);
+  gsl_glue_rec_set (rec, "max_fine_tune", val);
   /* kammer_note */
   val = gsl_glue_value_int (info->kammer_note);
-  gsl_glue_rec_take (rec, "kammer_note", &val);
+  gsl_glue_rec_set (rec, "kammer_note", val);
   
   return rec;
 }

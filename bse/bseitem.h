@@ -20,6 +20,8 @@
 
 #include        <bse/bseobject.h>
 
+G_BEGIN_DECLS
+
 
 /* --- object type macros --- */
 #define BSE_TYPE_ITEM               (BSE_TYPE_ID (BseItem))
@@ -126,10 +128,6 @@ void            bse_item_set_parent          (BseItem        *item,
 
 
 
-
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_ITEM_H__ */

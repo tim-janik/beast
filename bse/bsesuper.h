@@ -22,6 +22,7 @@
 
 #include        <bse/bsecontainer.h>
 
+G_BEGIN_DECLS
 
 /* --- object type macros --- */
 #define	BSE_TYPE_SUPER		    (BSE_TYPE_ID (BseSuper))
@@ -74,9 +75,6 @@ gchar*		bse_super_get_copyright		(BseSuper	*super);
 
 
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __BSE_SUPER_H__ */

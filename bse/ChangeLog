@@ -1,3 +1,28 @@
+Sun Sep 15 06:02:16 2002  Tim Janik  <timj@gtk.org>
+
+	* bsebindata.h:
+	* bsecontainer.h:
+	* bseexports.h:
+	* bseitem.h:
+	* bsescriptcontrol.h:
+	* bsesuper.h: fix extern "C" and constants in structures to fix
+	compilation with C++ sources.
+
+	* bseglue.[hc]:
+	* gslgluecodec.[hc]:
+	* gslglue.[hc]:
+	together with Stefan Westerfeld, started out to revise the glue
+	layer implementation.
+	don't operate on GslGlueValue and GslGlueParam in place, but
+	make them seperately allocated objects in their own respect.
+	turn GslGlueSeq into a ref counted structure.
+	implement deep-copy variants.
+	implement constructors for the various data structures.
+	implement simplisitic garbage colleciton boundary which frees
+	all temporarily kept values returned from the glue layer.
+
+	* *.c: fixed assorted code according to glue layer changes.
+
 Thu Sep 12 01:57:36 2002  Tim Janik  <timj@gtk.org>
 
 	* bsestandardosc.c: implement standard_osc_reset().

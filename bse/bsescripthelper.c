@@ -37,10 +37,10 @@ static BseErrorType	bse_script_procedure_exec	(BseProcedureClass	 *proc,
 static void		bse_script_send_event		(GslGlueCodec		 *codoex,
 							 gpointer		  user_data,
 							 const gchar		 *message);
-static GslGlueValue	bse_script_check_client_msg	(GslGlueCodec		 *codec,
+static GslGlueValue*	bse_script_check_client_msg	(GslGlueCodec		 *codec,
 							 gpointer		  data,
 							 const gchar		 *msg,
-							 GslGlueValue		  value,
+							 GslGlueValue		 *value,
 							 gboolean		 *handled);
 static gboolean		bse_script_dispatcher		(gpointer		  data,
 							 guint			  request,
@@ -217,24 +217,24 @@ bse_script_procedure_exec (BseProcedureClass *proc,
   return error;
 }
 
-static GslGlueValue
+static GslGlueValue*
 bse_script_check_client_msg (GslGlueCodec *codec,
 			     gpointer      data,
 			     const gchar  *msg,
-			     GslGlueValue  value,
+			     GslGlueValue *value,
 			     gboolean     *handled)
 {
   BseScriptControl *sctrl = codec->user_data;
-  GslGlueValue retval = { 0, };
+  GslGlueValue *retval = NULL;
   
   if (!msg)
     return retval;
   if (strcmp (msg, "bse-script-register") == 0)
     {
-      GslGlueSeq *seq = value.value.v_seq;
+      GslGlueSeq *seq = value->value.v_seq;
 
       *handled = TRUE;
-      if (value.glue_type != GSL_GLUE_TYPE_SEQ ||
+      if (value->glue_type != GSL_GLUE_TYPE_SEQ ||
 	  !seq || seq->n_elements < 7 ||
 	  !gsl_glue_seq_check_elements (seq, GSL_GLUE_TYPE_STRING))
 	retval = gsl_glue_value_string ("invalid arguments supplied");

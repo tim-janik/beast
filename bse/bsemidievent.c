@@ -173,65 +173,65 @@ static GslGlueRec*
 midi_event_to_record (gpointer crecord)
 {
   BseMidiEvent *event = crecord;
-  GslGlueValue val;
+  GslGlueValue *val;
   GslGlueRec *rec;
 
   rec = gsl_glue_rec ();
   /* status */
   val = gsl_glue_value_enum (g_type_name (BSE_TYPE_MIDI_EVENT_TYPE),
 			     bse_glue_enum_index (BSE_TYPE_MIDI_EVENT_TYPE, event->status));
-  gsl_glue_rec_take (rec, "status", &val);
+  gsl_glue_rec_set (rec, "status", val);
   /* channel */
   val = gsl_glue_value_int (event->channel);
-  gsl_glue_rec_take (rec, "channel", &val);
+  gsl_glue_rec_set (rec, "channel", val);
   /* msec_stamp */
   val = gsl_glue_value_int (event->tick_stamp / 1000); // FIXME: broken tick_stamp
-  gsl_glue_rec_take (rec, "stamp", &val); // FIXME: "tick_stamp"
+  gsl_glue_rec_set (rec, "stamp", val); // FIXME: "tick_stamp"
   switch (event->status)
     {
     case BSE_MIDI_NOTE_OFF:
     case BSE_MIDI_NOTE_ON:
     case BSE_MIDI_KEY_PRESSURE:
       val = gsl_glue_value_float (event->data.note.frequency);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       val = gsl_glue_value_float (event->data.note.velocity);
-      gsl_glue_rec_take (rec, "data2", &val);
+      gsl_glue_rec_set (rec, "data2", val);
       break;
     case BSE_MIDI_CONTROL_CHANGE:
       val = gsl_glue_value_int (event->data.control.control);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       val = gsl_glue_value_float (event->data.control.value);
-      gsl_glue_rec_take (rec, "data2", &val);
+      gsl_glue_rec_set (rec, "data2", val);
       break;
     case BSE_MIDI_PROGRAM_CHANGE:
       val = gsl_glue_value_int (event->data.program);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       val = gsl_glue_value_int (0);
-      gsl_glue_rec_take (rec, "data2", &val);
+      gsl_glue_rec_set (rec, "data2", val);
       break;
     case BSE_MIDI_CHANNEL_PRESSURE:
       val = gsl_glue_value_float (event->data.intensity);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       val = gsl_glue_value_int (0);
-      gsl_glue_rec_take (rec, "data2", &val);
+      gsl_glue_rec_set (rec, "data2", val);
       break;
     case BSE_MIDI_PITCH_BEND:
       val = gsl_glue_value_float (event->data.pitch_bend);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       val = gsl_glue_value_int (0);
-      gsl_glue_rec_take (rec, "data2", &val);
+      gsl_glue_rec_set (rec, "data2", val);
       break;
     case BSE_MIDI_SONG_POINTER:
       val = gsl_glue_value_int (event->data.song_pointer);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       val = gsl_glue_value_int (0);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       break;
     case BSE_MIDI_SONG_SELECT:
       val = gsl_glue_value_int (event->data.song_number);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       val = gsl_glue_value_int (0);
-      gsl_glue_rec_take (rec, "data2", &val);
+      gsl_glue_rec_set (rec, "data2", val);
       break;
     case BSE_MIDI_SYS_EX:
     case BSE_MIDI_TUNE:
@@ -244,9 +244,9 @@ midi_event_to_record (gpointer crecord)
     case BSE_MIDI_END_EX:
     default:
       val = gsl_glue_value_int (0);
-      gsl_glue_rec_take (rec, "data1", &val);
+      gsl_glue_rec_set (rec, "data1", val);
       val = gsl_glue_value_int (0);
-      gsl_glue_rec_take (rec, "data2", &val);
+      gsl_glue_rec_set (rec, "data2", val);
       break;
     }
   return rec;

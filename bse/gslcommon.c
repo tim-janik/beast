@@ -912,8 +912,8 @@ gsl_thread_sleep (glong max_msec)
 }
 
 /**
- * gsl_thread_awake_after
- * RETURNS: GPollFD for the current thread
+ * gsl_thread_get_pollfd
+ * @pfd: GPollFD to fill in for the current thread
  * Get the GPollfd for the current thread which is used
  * to signal thread wakeups (e.g. due to
  * gsl_thread_abort() or gsl_thread_wakeup()).
