@@ -26,6 +26,7 @@ beast-gtk/bstpianorollctrl.c
 beast-gtk/bstplayback.c
 beast-gtk/bstpreferences.c
 beast-gtk/bstprocedure.c
+beast-gtk/bstprofiler.c
 beast-gtk/bstprojectctrl.c
 beast-gtk/bstrackeditor.c
 beast-gtk/bstrackitem.c
