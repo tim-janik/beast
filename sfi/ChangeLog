@@ -1,3 +1,9 @@
+Wed Feb 11 02:08:04 2004  Tim Janik  <timj@gtk.org>
+
+	* bse-plugin-generator.c: removed this file.
+
+	* Makefile.am: install sfidl instead of bse-plugin-generator.
+
 Sun Feb  8 03:48:36 2004  Tim Janik  <timj@gtk.org>
 
 	* sfitypes.c (sfi_choice_match_detailed): only match partial choice

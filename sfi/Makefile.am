@@ -86,13 +86,11 @@ $(OBJECTS): sficonfig.h
 # source files
 common_idl_sources = sfidl-module.cc sfidl-generator.cc sfidl-namespace.cc sfidl-options.cc sfidl-parser.cc sfidl-cxx.cc sfidl-factory.cc sfidl-typelist.cc glib-extra.c
 
-noinst_PROGRAMS = sfidl testsfi testcxx testsfidl
+noinst_PROGRAMS = testsfi testcxx testsfidl
 sfidl_SOURCES = sfidl.cc $(common_idl_sources)
 sfidl_LDADD = $(SFI_LIBS) -lm
 
-bin_PROGRAMS = bse-plugin-generator
-bse_plugin_generator_SOURCES = bse-plugin-generator.cc $(common_idl_sources)
-bse_plugin_generator_LDADD = $(SFI_LIBS) -lm
+bin_PROGRAMS = sfidl
 
 EXTRA_DIST += sfidl-generator.h sfidl-namespace.h sfidl-options.h sfidl-parser.h sfidl-module.h sfidl-cxx.h sfidl-factory.h sfidl-typelist.h
 progs_extra_sources += sfidl-namespace.h
