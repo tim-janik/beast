@@ -65,6 +65,8 @@ static void	    bse_container_context_dismiss	(BseSource		*source,
 static void         bse_container_reset                 (BseSource              *source);
 static GSList*	    container_context_children		(BseContainer		*container);
 static void	    container_release_children		(BseContainer		*container);
+static gboolean	    container_default_check_restore	(BseContainer		*self,
+							 const gchar		*child_type);
 
 
 /* --- variables --- */
@@ -127,6 +129,7 @@ bse_container_class_init (BseContainerClass *class)
   class->add_item = bse_container_do_add_item;
   class->remove_item = bse_container_do_remove_item;
   class->forall_items = NULL;
+  class->check_restore = container_default_check_restore;
   class->retrieve_child = bse_container_real_retrieve_child;
   class->context_children = container_context_children;
   class->release_children = container_release_children;
@@ -516,6 +519,23 @@ bse_container_store_children (BseContainer *container,
   g_object_ref (container);
   bse_container_forall_items (container, store_forall, storage);
   g_object_unref (container);
+}
+
+static gboolean
+container_default_check_restore (BseContainer   *self,
+				 const gchar    *child_type)
+{
+  return g_type_is_a (g_type_from_name (child_type), BSE_TYPE_ITEM);
+}
+
+gboolean
+bse_container_check_restore (BseContainer   *self,
+			     const gchar    *child_type)
+{
+  g_return_val_if_fail (BSE_IS_CONTAINER (self), FALSE);
+  g_return_val_if_fail (child_type != NULL, FALSE);
+
+  return BSE_CONTAINER_GET_CLASS (self)->check_restore (self, child_type);
 }
 
 static gboolean

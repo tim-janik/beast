@@ -44,11 +44,16 @@ struct _BseTrack
 {
   BseItem	   parent_instance;
 
-  BseSNet	  *snet;
   guint		   max_voices;
+  BseSNet	  *snet;
 
-  BseSource       *voice_input;
+  /* wave synthesis */
+  BseWave	  *wave;
+  BseSNet	  *wnet;
+
+  /* playback intergration */
   BseSource       *sub_synth;
+  BseSource       *voice_input;
   BseSource       *voice_switch;
   BseSource       *context_merger;
 

@@ -84,6 +84,10 @@ BseProxySeq*	bse_item_gather_proxies	     (BseItem	           *item,
 					      BseItemCheckContainer ccheck,
 					      BseItemCheckProxy     pcheck,
 					      gpointer	            data);
+BseProxySeq*	bse_item_gather_proxies_typed(BseItem	           *item,
+					      BseProxySeq          *proxies,
+					      GType                 proxy_type,
+					      GType		    container_type);
 BseProxySeq*	bse_item_list_proxies	     (BseItem	      *item,
 					      const gchar     *property);
 guint           bse_item_get_seqid           (BseItem         *item);

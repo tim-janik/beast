@@ -349,7 +349,7 @@ main (gint   argc,
     }
   if (show_synth)
     {
-      gchar *text = bse_standard_synth_lookup (show_synth, NULL);
+      gchar *text = bse_standard_synth_inflate (show_synth, NULL);
       g_print ("%s", text);
       g_free (text);
     }

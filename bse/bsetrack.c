@@ -20,6 +20,7 @@
 #include "bseglobals.h"
 #include "bsestorage.h"
 #include "bsesnet.h"
+#include "bsewave.h"
 #include "bsepart.h"
 #include "bsemain.h"
 #include "gslcommon.h"
@@ -29,6 +30,7 @@
 #include "bsemidivoice.h"
 #include "bsecontextmerger.h"
 #include "bsemidireceiver.h"
+#include "bsewaverepo.h"
 #include <string.h>
 
 #define	DEBUG	sfi_nodebug
@@ -42,6 +44,7 @@ enum {
   PROP_0,
   PROP_MUTED,
   PROP_SYNTH_NET,
+  PROP_WAVE,
   PROP_N_SYNTH_VOICES
 };
 
@@ -122,6 +125,11 @@ bse_track_class_init (BseTrackClass *class)
 			      PROP_SYNTH_NET,
 			      bse_param_spec_object ("snet", "Custom Synth Net", "Synthesis network to be used as instrument",
 						     BSE_TYPE_SNET,
+						     SFI_PARAM_DEFAULT));
+  bse_object_class_add_param (object_class, "Synth Input",
+			      PROP_WAVE,
+			      bse_param_spec_object ("wave", "Custom Wave", "Wave to be used as instrument",
+						     BSE_TYPE_WAVE,
 						     SFI_PARAM_DEFAULT));
   bse_object_class_add_param (object_class, "Synth Input",
 			      PROP_N_SYNTH_VOICES,
@@ -303,11 +311,20 @@ bse_track_list_proxies (BseItem    *item,
   BseProxySeq *pseq = bse_proxy_seq_new ();
   switch (param_id)
     {
+      BseProject *project;
     case PROP_SYNTH_NET:
       bse_item_gather_proxies (item, pseq, BSE_TYPE_SNET,
 			       (BseItemCheckContainer) check_project,
 			       (BseItemCheckProxy) check_synth,
 			       NULL);
+      break;
+    case PROP_WAVE:
+      project = bse_item_get_project (item);
+      if (project)
+	{
+	  BseWaveRepo *wrepo = bse_project_get_wave_repo (project);
+	  bse_item_gather_proxies_typed (BSE_ITEM (wrepo), pseq, BSE_TYPE_WAVE, BSE_TYPE_WAVE_REPO);
+	}
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (self, param_id, pspec);
@@ -322,6 +339,64 @@ track_uncross_snet (BseItem *owner,
 {
   BseTrack *self = BSE_TRACK (owner);
   g_object_set (self, "snet", NULL, NULL);
+}
+
+static void
+track_uncross_wave (BseItem *owner,
+		    BseItem *ref_item)
+{
+  BseTrack *self = BSE_TRACK (owner);
+  g_object_set (self, "wave", NULL, NULL);
+}
+
+static void
+clear_snet_and_wave (BseTrack *self,
+		     gboolean  need_wnet)
+{
+  g_return_if_fail (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth));
+
+  if (self->sub_synth && !(self->wnet && need_wnet))
+    g_object_set (self->sub_synth,
+		  "snet", NULL,
+		  NULL);
+  if (self->snet)
+    {
+      bse_object_unproxy_notifies (self->snet, self, "changed");
+      bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
+      self->snet = NULL;
+      g_object_notify (self, "snet");
+    }
+  if (self->wave)
+    {
+      bse_object_unproxy_notifies (self->wave, self, "changed");
+      bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
+      self->wave = NULL;
+      g_object_notify (self, "wave");
+    }
+  if (need_wnet)
+    {
+      if (!self->wnet)
+	{
+	  self->wnet = bse_project_create_intern_synth (bse_item_get_project (BSE_ITEM (self)),
+							"BSE_STD_SYNTH_MONO_WAVE",
+							BSE_TYPE_SNET);
+	  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wnet), track_uncross_wave);
+	}
+      g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"),
+		    "wave", NULL,
+		    NULL);
+      if (self->sub_synth)
+	g_object_set (self->sub_synth,
+		      "snet", self->wnet,
+		      NULL);
+    }
+  else if (self->wnet)
+    {
+      BseSNet *wnet = self->wnet;
+      bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->wnet), track_uncross_wave);
+      self->wnet = NULL;
+      bse_container_remove_item (BSE_CONTAINER (bse_item_get_project (BSE_ITEM (self))), BSE_ITEM (wnet));
+    }
 }
 
 static void
@@ -342,21 +417,40 @@ bse_track_set_property (GObject      *object,
     case PROP_SYNTH_NET:
       if (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth))
 	{
-	  if (self->snet)
+	  BseSNet *snet = bse_value_get_object (value);
+	  if (snet || self->snet)
 	    {
-	      bse_object_unproxy_notifies (self->snet, self, "changed");
-	      bse_item_cross_unlink (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
+	      clear_snet_and_wave (self, FALSE);
+	      self->snet = snet;
+	      if (self->snet)
+		{
+		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
+		  bse_object_proxy_notifies (self->snet, self, "changed");
+		}
+	      if (self->sub_synth)
+		g_object_set (self->sub_synth,
+			      "snet", self->snet,
+			      NULL);
 	    }
-	  self->snet = bse_value_get_object (value);
-	  if (self->snet)
+	}
+      break;
+    case PROP_WAVE:
+      if (!self->sub_synth || !BSE_SOURCE_PREPARED (self->sub_synth))
+	{
+	  BseWave *wave = bse_value_get_object (value);
+	  if (wave || self->wave)
 	    {
-	      bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->snet), track_uncross_snet);
-	      bse_object_proxy_notifies (self->snet, self, "changed");
+	      clear_snet_and_wave (self, wave != NULL);
+	      self->wave = wave;
+	      if (self->wave)
+		{
+		  bse_item_cross_link (BSE_ITEM (self), BSE_ITEM (self->wave), track_uncross_wave);
+		  bse_object_proxy_notifies (self->wave, self, "changed");
+		  g_object_set (bse_container_resolve_upath (BSE_CONTAINER (self->wnet), "wave-osc"),
+				"wave", self->wave,
+				NULL);
+		}
 	    }
-	  if (self->sub_synth)
-	    g_object_set (self->sub_synth,
-			  "snet", self->snet,
-			  NULL);
 	}
       break;
     case PROP_N_SYNTH_VOICES:
@@ -383,6 +477,9 @@ bse_track_get_property (GObject    *object,
       break;
     case PROP_SYNTH_NET:
       bse_value_set_object (value, self->snet);
+      break;
+    case PROP_WAVE:
+      bse_value_set_object (value, self->wave);
       break;
     case PROP_N_SYNTH_VOICES:
       sfi_value_set_int (value, self->max_voices);
@@ -610,10 +707,10 @@ bse_track_remove_modules (BseTrack     *self,
   g_return_if_fail (BSE_IS_CONTAINER (container));
   g_return_if_fail (self->sub_synth != NULL);
   
-  bse_container_remove_item (container, BSE_ITEM (self->voice_input));
-  self->voice_input = NULL;
   bse_container_remove_item (container, BSE_ITEM (self->sub_synth));
   self->sub_synth = NULL;
+  bse_container_remove_item (container, BSE_ITEM (self->voice_input));
+  self->voice_input = NULL;
   bse_container_remove_item (container, BSE_ITEM (self->voice_switch));
   self->voice_switch = NULL;
   bse_container_remove_item (container, BSE_ITEM (self->context_merger));

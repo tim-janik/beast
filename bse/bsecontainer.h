@@ -57,6 +57,8 @@ struct _BseContainerClass
   void		(*forall_items)		(BseContainer		*container,
 					 BseForallItemsFunc	 func,
 					 gpointer		 data);
+  gboolean	(*check_restore)	(BseContainer		*container,
+					 const gchar		*child_type);
   BseItem*	(*retrieve_child)	(BseContainer		*container,
 					 GType			 child_type,
 					 const gchar		*uname);
@@ -93,6 +95,8 @@ BseItem*	bse_container_resolve_upath	(BseContainer	*container,
 						 const gchar	*upath);
 gchar* /*fr*/	bse_container_make_upath	(BseContainer	*container,
 						 BseItem	*item);
+gboolean	bse_container_check_restore	(BseContainer	*container,
+						 const gchar	*child_type);
 
 
 /* --- internal functions --- */

@@ -1,3 +1,21 @@
+Mon Apr 28 05:02:28 2003  Tim Janik  <timj@gtk.org>
+
+	* bsetrack.[hc]: support BseWave property concurrently to the
+	"snet" property. "wave" tracks are played through an internal
+	standard mono synth.
+
+	* bseproject.[hc]: added bse_project_create_intern_synth() to merge
+	an internal standard synth into the project.
+
+	* bsestandardsynths.[hc]: renamed bse_standard_synth_lookup()
+	to bse_standard_synth_inflate().
+
+	* bsestorage.c (restore_container_child): check container's child
+	filter before restoring a child.
+
+	* bsecontainer.[hc]: added check_restore() methods to prevent
+	certain children from being restored.
+
 Sun Apr 27 22:23:08 2003  Tim Janik  <timj@gtk.org>
 
 	* gslosctable.[hc]: added gsl_osc_wave_form_name(), improved debugging

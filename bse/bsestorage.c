@@ -443,6 +443,7 @@ restore_container_child (BseContainer *container,
   GTokenType expected_token;
   BseItem *item;
   const gchar *uname;
+  gchar *type_name;
 
   /* check identifier */
   if (g_scanner_peek_next_token (scanner) != G_TOKEN_IDENTIFIER ||
@@ -458,7 +459,16 @@ restore_container_child (BseContainer *container,
       bse_storage_error (storage, "invalid object handle: \"%s\"", scanner->value.v_string);
       return G_TOKEN_ERROR;
     }
+  type_name = g_strndup (scanner->value.v_string, uname - scanner->value.v_string);
   uname += 2;
+
+  /* check container's storage filter */
+  if (!bse_container_check_restore (container, type_name))
+    {
+      g_free (type_name);
+      return bse_storage_warn_skip (storage, "ignoring child: \"%s\"", scanner->value.v_string);
+    }
+  g_free (type_name);
 
   /* create container child */
   item = bse_container_retrieve_child (container, scanner->value.v_string);
@@ -1262,7 +1272,8 @@ bse_storage_warn_skip (BseStorage  *storage,
   
   g_return_val_if_fail (BSE_IS_STORAGE (storage), G_TOKEN_ERROR);
   g_return_val_if_fail (BSE_STORAGE_READABLE (storage), G_TOKEN_ERROR);
-  
+
+  /* construct warning *before* modifying scanner state */
   va_start (args, format);
   string = g_strdup_vprintf (format, args);
   va_end (args);

@@ -25,6 +25,7 @@
 #include "bsessequencer.h"
 #include "bseserver.h"
 #include "bsemain.h"
+#include "bsestandardsynths.h"
 #include "gslcommon.h"
 #include "gslengine.h"
 #include <string.h>
@@ -32,6 +33,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
+
+
+typedef struct {
+  GType   base_type;
+  guint   max_items;
+  GSList *items;
+} StorageTrap;
 
 
 /* --- macros --- */
@@ -59,6 +67,8 @@ static BseItem* bse_project_retrieve_child	(BseContainer           *container,
 						 GType                   child_type,
 						 const gchar            *uname);
 static void	bse_project_prepare		(BseSource		*source);
+static gboolean project_check_restore		(BseContainer           *container,
+						 const gchar            *child_type);
 
 
 /* --- variables --- */
@@ -67,6 +77,7 @@ static guint       signal_complete_restore = 0;
 static guint       signal_state_changed = 0;
 static GSList     *plist_auto_stop_SL = NULL;
 static guint       handler_id_auto_stop_check_SL = 0;
+static GQuark      quark_storage_trap = 0;
 
 
 /* --- functions --- */
@@ -101,7 +112,8 @@ bse_project_class_init (BseProjectClass *class)
   BseContainerClass *container_class = BSE_CONTAINER_CLASS (class);
   
   parent_class = g_type_class_peek_parent (class);
-  
+  quark_storage_trap = g_quark_from_static_string ("bse-project-storage-trap");
+
   gobject_class->dispose = bse_project_dispose;
   gobject_class->finalize = bse_project_finalize;
 
@@ -110,6 +122,7 @@ bse_project_class_init (BseProjectClass *class)
   container_class->add_item = bse_project_add_item;
   container_class->remove_item = bse_project_remove_item;
   container_class->forall_items = bse_project_forall_items;
+  container_class->check_restore = project_check_restore;
   container_class->retrieve_child = bse_project_retrieve_child;
   container_class->release_children = bse_project_release_children;
   
@@ -267,7 +280,16 @@ bse_project_retrieve_child (BseContainer *container,
       return NULL;	/* shouldn't happen */
     }
   else
-    return BSE_CONTAINER_CLASS (parent_class)->retrieve_child (container, child_type, uname);
+    {
+      BseItem *item = BSE_CONTAINER_CLASS (parent_class)->retrieve_child (container, child_type, uname);
+      StorageTrap *strap = g_object_get_qdata (project, quark_storage_trap);
+      if (item && strap)
+	{
+	  strap->items = g_slist_prepend (strap->items, item);
+	  strap->max_items--;
+	}
+      return item;
+    }
 }
 
 static gboolean
@@ -446,6 +468,62 @@ bse_project_get_wave_repo (BseProject *project)
     if (BSE_IS_WAVE_REPO (slist->data))
       return slist->data;
   return NULL;
+}
+
+static gboolean
+project_check_restore (BseContainer *container,
+		       const gchar  *child_type)
+{
+  if (BSE_CONTAINER_CLASS (parent_class)->check_restore (container, child_type))
+    {
+      StorageTrap *strap = g_object_get_qdata (container, quark_storage_trap);
+      if (!strap)
+	return TRUE;
+      if (!g_type_is_a (g_type_from_name (child_type), strap->base_type))
+	return FALSE;
+      if (strap->max_items < 1)
+	return FALSE;
+      return TRUE;
+    }
+  else
+    return FALSE;
+}
+
+gpointer
+bse_project_create_intern_synth (BseProject  *project,
+				 const gchar *synth_name,
+				 GType        check_type)
+{
+  BseItem *synth = NULL;
+  gchar *bse_synth;
+
+  g_return_val_if_fail (BSE_IS_PROJECT (project), NULL);
+  g_return_val_if_fail (synth_name != NULL, NULL);
+
+  bse_synth = bse_standard_synth_inflate (synth_name, NULL);
+  if (bse_synth)
+    {
+      BseStorage *storage = g_object_new (BSE_TYPE_STORAGE, NULL);
+      BseErrorType error = bse_storage_input_text (storage, bse_synth);
+      StorageTrap strap = { 0, }, *old_strap = g_object_get_qdata (project, quark_storage_trap);
+      g_object_set_qdata (project, quark_storage_trap, &strap);
+      strap.max_items = 1;
+      strap.base_type = check_type;
+      strap.items = NULL;
+      if (!error)
+	error = bse_project_restore (project, storage);
+      bse_storage_reset (storage);
+      g_object_unref (storage);
+      g_free (bse_synth);
+      if (error || !strap.items)
+	g_warning ("failed to create internal synth \"%s\": %s",
+		   synth_name, bse_error_blurb (error ? error : BSE_ERROR_NO_ENTRY));
+      else
+	synth = strap.items->data;
+      g_slist_free (strap.items);
+      g_object_set_qdata (project, quark_storage_trap, old_strap);
+    }
+  return synth;
 }
 
 static void

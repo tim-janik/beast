@@ -92,8 +92,8 @@ bse_zfile_uncompress (const BseZFile *zfile,
 }
 
 gchar*
-bse_standard_synth_lookup (const gchar *synth_name,
-			   guint       *text_len)
+bse_standard_synth_inflate (const gchar *synth_name,
+			    guint       *text_len)
 {
   guint i;
 
